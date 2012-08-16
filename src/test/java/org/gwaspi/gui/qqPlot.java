@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 
 /* ===========================================================
  * JFreeChart : a free chart library for the Java(tm) platform
