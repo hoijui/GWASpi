@@ -2,7 +2,6 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package org.gwaspi.reports;
 
 /**
@@ -11,7 +10,6 @@ package org.gwaspi.reports;
  * IBE, Institute of Evolutionary Biology (UPF-CSIC)
  * CEXS-UPF-PRBB
  */
-
 import org.gwaspi.constants.cDBGWASpi;
 import org.gwaspi.constants.cExport;
 import org.gwaspi.constants.cNetCDF;
@@ -37,243 +35,239 @@ import org.jfree.chart.plot.CombinedRangeXYPlot;
 import org.jfree.chart.plot.XYPlot;
 import ucar.nc2.NetcdfFile;
 
-
 public class OutputTrendTest_opt {
 
+	public static boolean writeReportsForTrendTestData(int opId) throws FileNotFoundException, IOException {
+		boolean result = false;
+		Operation op = new Operation(opId);
+		DbManager dBManager = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
 
-    public static boolean writeReportsForTrendTestData(int opId) throws FileNotFoundException, IOException{
-        boolean result = false;
-        Operation op = new Operation(opId);
-        DbManager dBManager = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
+		org.gwaspi.global.Utils.createFolder(org.gwaspi.global.Config.getConfigValue("ReportsDir", ""), "STUDY_" + op.getStudyId());
+		//String manhattanName = "mnhtt_"+outName;
+		String prefix = org.gwaspi.reports.ReportManager.getreportNamePrefix(op);
+		String manhattanName = prefix + "manhtt";
 
-        org.gwaspi.global.Utils.createFolder(org.gwaspi.global.Config.getConfigValue("ReportsDir", ""), "STUDY_"+op.getStudyId());
-        //String manhattanName = "mnhtt_"+outName;
-        String prefix = org.gwaspi.reports.ReportManager.getreportNamePrefix(op);
-        String manhattanName = prefix+"manhtt";
+		System.out.println(org.gwaspi.global.Text.All.processing);
+		if (writeManhattanPlotFromTrendTestData(opId, manhattanName, 4000, 500)) {
+			result = true;
+			ReportManager.insertRPMetadata(dBManager,
+					"Trend Test Manhattan Plot",
+					manhattanName + ".png",
+					cNetCDF.Defaults.OPType.MANHATTANPLOT.toString(),
+					op.getParentMatrixId(),
+					opId,
+					"Trend Test Manhattan Plot",
+					op.getStudyId());
+			System.out.println("Saved Manhattan Plot in reports folder at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
+		}
+		//String qqName = "qq_"+outName;
+		String qqName = prefix + "qq";
+		if (result && writeQQPlotFromTrendTestData(opId, qqName, 500, 500)) {
+			result = true;
+			ReportManager.insertRPMetadata(dBManager,
+					"Trend Test QQ Plot",
+					qqName + ".png",
+					cNetCDF.Defaults.OPType.QQPLOT.toString(),
+					op.getParentMatrixId(),
+					opId,
+					"Trend Test QQ Plot",
+					op.getStudyId());
 
-        System.out.println(org.gwaspi.global.Text.All.processing);
-        if(writeManhattanPlotFromTrendTestData(opId, manhattanName, 4000, 500)){
-            result=true;
-            ReportManager.insertRPMetadata(dBManager,
-                             "Trend Test Manhattan Plot",
-                             manhattanName+".png",
-                             cNetCDF.Defaults.OPType.MANHATTANPLOT.toString(),
-                             op.getParentMatrixId(),
-                             opId,
-                             "Trend Test Manhattan Plot",
-                             op.getStudyId());
-            System.out.println("Saved Manhattan Plot in reports folder at "  + org.gwaspi.global.Utils.getMediumDateTimeAsString());
-        }
-        //String qqName = "qq_"+outName;
-        String qqName = prefix+"qq";
-        if(result && writeQQPlotFromTrendTestData(opId, qqName, 500, 500)){
-            result=true;
-            ReportManager.insertRPMetadata(dBManager,
-                             "Trend Test QQ Plot",
-                             qqName+".png",
-                             cNetCDF.Defaults.OPType.QQPLOT.toString(),
-                             op.getParentMatrixId(),
-                             opId,
-                             "Trend Test QQ Plot",
-                             op.getStudyId());
+			System.out.println("Saved Trend Test QQ Plot in reports folder at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
+		}
+		//String assocName = "assoc_"+outName;
+		String assocName = prefix;
+		if (result && createSortedTrendTestReport(opId, assocName)) {
+			result = true;
+			ReportManager.insertRPMetadata(dBManager,
+					"Trend Tests Values",
+					assocName + ".txt",
+					cNetCDF.Defaults.OPType.TRENDTEST.toString(),
+					op.getParentMatrixId(),
+					opId,
+					"Trend Tests Values",
+					op.getStudyId());
 
-            System.out.println("Saved Trend Test QQ Plot in reports folder at "  + org.gwaspi.global.Utils.getMediumDateTimeAsString());
-        }
-        //String assocName = "assoc_"+outName;
-        String assocName = prefix;
-        if(result && createSortedTrendTestReport(opId, assocName)){
-            result=true;
-            ReportManager.insertRPMetadata(dBManager,
-                             "Trend Tests Values",
-                             assocName+".txt",
-                             cNetCDF.Defaults.OPType.TRENDTEST.toString(),
-                             op.getParentMatrixId(),
-                             opId,
-                             "Trend Tests Values",
-                             op.getStudyId());
+			org.gwaspi.global.Utils.sysoutCompleted("Trend Test Reports & Charts");
+		}
 
-            org.gwaspi.global.Utils.sysoutCompleted("Trend Test Reports & Charts");
-        }
-        
-        return result;
-    }
+		return result;
+	}
 
-    public static boolean writeManhattanPlotFromTrendTestData(int opId, String outName, int width, int height) throws FileNotFoundException, IOException{
-        boolean result = false;
-        //Generating XY scatter plot with loaded data
-        CombinedRangeXYPlot combinedPlot = GenericReportGenerator_opt.buildManhattanPlot(opId, org.gwaspi.constants.cNetCDF.Association.VAR_OP_MARKERS_ASTrendTestTP);
+	public static boolean writeManhattanPlotFromTrendTestData(int opId, String outName, int width, int height) throws FileNotFoundException, IOException {
+		boolean result = false;
+		//Generating XY scatter plot with loaded data
+		CombinedRangeXYPlot combinedPlot = GenericReportGenerator_opt.buildManhattanPlot(opId, org.gwaspi.constants.cNetCDF.Association.VAR_OP_MARKERS_ASTrendTestTP);
 
-        JFreeChart chart = new JFreeChart("P value", JFreeChart.DEFAULT_TITLE_FONT, combinedPlot, true);
-
-
-        //CHART BACKGROUD COLOR
-        chart.setBackgroundPaint(Color.getHSBColor(0.1f, 0.1f, 1.0f)); //Hue, saturation, brightness
-
-        OperationMetadata rdOPMetadata = new OperationMetadata(opId);
-        int pointNb = rdOPMetadata.getOpSetSize();
-        int picWidth = 4000;
-        if(pointNb<1000){
-            picWidth = 600;
-        } else if(pointNb<1E4){
-            picWidth = 1000;
-        } else if(pointNb<1E5){
-            picWidth = 1500;
-        } else if(pointNb<5E5){
-            picWidth = 2000;
-        }
-
-        String imagePath=global.Config.getConfigValue("ReportsDir", "") + "/STUDY_"+rdOPMetadata.getStudyId()+"/"+outName+".png";
-        try {
-            ChartUtilities.saveChartAsPNG(new File(imagePath),
-                                           chart,
-                                           picWidth,
-                                           height);
-            result = true;
-        } catch (IOException e) {
-            System.err.println("Problem occurred creating chart.");
-            e.printStackTrace();
-        }
-
-        return result;
-    }
-
-    public static boolean writeQQPlotFromTrendTestData(int opId, String outName, int width, int height) throws FileNotFoundException, IOException{
-        boolean result = false;
-        //Generating XY scatter plot with loaded data
-        XYPlot qqPlot = GenericReportGenerator_opt.buildQQPlot(opId, org.gwaspi.constants.cNetCDF.Association.VAR_OP_MARKERS_ASTrendTestTP, 1);
-
-        JFreeChart chart = new JFreeChart("X² QQ", JFreeChart.DEFAULT_TITLE_FONT, qqPlot, true);
-
-        OperationMetadata rdOPMetadata = new OperationMetadata(opId);
-        String imagePath=global.Config.getConfigValue("ReportsDir", "") + "/STUDY_"+rdOPMetadata.getStudyId()+"/"+outName+".png";
-        try {
-            ChartUtilities.saveChartAsPNG(new File(imagePath),
-                                           chart,
-                                           width,
-                                           height);
-            result = true;
-        } catch (IOException e) {
-            System.err.println("Problem occurred creating chart.");
-            e.printStackTrace();
-        }
-
-        return result;
-    }
+		JFreeChart chart = new JFreeChart("P value", JFreeChart.DEFAULT_TITLE_FONT, combinedPlot, true);
 
 
-   public static boolean createSortedTrendTestReport(int opId, String reportName) throws FileNotFoundException, IOException{
-        boolean result=false;
+		//CHART BACKGROUD COLOR
+		chart.setBackgroundPaint(Color.getHSBColor(0.1f, 0.1f, 1.0f)); //Hue, saturation, brightness
 
-        try {
-            LinkedHashMap unsortedMarkerIdTrendTestValsLHM = GenericReportGenerator_opt.getAnalysisVarData(opId, org.gwaspi.constants.cNetCDF.Association.VAR_OP_MARKERS_ASTrendTestTP);
-            LinkedHashMap unsortedMarkerIdPvalLHM = new LinkedHashMap();
-            for (Iterator it = unsortedMarkerIdTrendTestValsLHM.keySet().iterator(); it.hasNext();) {
-                Object key = it.next();
-                double[] values = (double[]) unsortedMarkerIdTrendTestValsLHM.get(key);
-                unsortedMarkerIdPvalLHM.put(key, values[1]);
-            }
+		OperationMetadata rdOPMetadata = new OperationMetadata(opId);
+		int pointNb = rdOPMetadata.getOpSetSize();
+		int picWidth = 4000;
+		if (pointNb < 1000) {
+			picWidth = 600;
+		} else if (pointNb < 1E4) {
+			picWidth = 1000;
+		} else if (pointNb < 1E5) {
+			picWidth = 1500;
+		} else if (pointNb < 5E5) {
+			picWidth = 2000;
+		}
 
-            LinkedHashMap sortingMarkerSetLHM = ReportManager.getSortedMarkerSetByDoubleValue(unsortedMarkerIdPvalLHM);
-            if (unsortedMarkerIdPvalLHM!=null) {
-                unsortedMarkerIdPvalLHM.clear();
-            }
+		String imagePath = org.gwaspi.global.Config.getConfigValue("ReportsDir", "") + "/STUDY_" + rdOPMetadata.getStudyId() + "/" + outName + ".png";
+		try {
+			ChartUtilities.saveChartAsPNG(new File(imagePath),
+					chart,
+					picWidth,
+					height);
+			result = true;
+		} catch (IOException e) {
+			System.err.println("Problem occurred creating chart.");
+			e.printStackTrace();
+		}
 
-            String sep = cExport.separator_REPORTS;
-            OperationMetadata rdOPMetadata = new OperationMetadata(opId);
-            MarkerSet_opt rdInfoMarkerSet = new MarkerSet_opt(rdOPMetadata.getStudyId(), rdOPMetadata.getParentMatrixId());
-            rdInfoMarkerSet.initFullMarkerIdSetLHM();
+		return result;
+	}
 
-            //WRITE HEADER OF FILE
-            String header = "MarkerID\trsID\tChr\tPosition\tMin. Allele\tMaj. Allele\tTrend-Test\tPval\n";
-            reportName += ".txt";
-            String reportPath = org.gwaspi.global.Config.getConfigValue("ReportsDir", "") + "/STUDY_"+rdOPMetadata.getStudyId()+"/";
+	public static boolean writeQQPlotFromTrendTestData(int opId, String outName, int width, int height) throws FileNotFoundException, IOException {
+		boolean result = false;
+		//Generating XY scatter plot with loaded data
+		XYPlot qqPlot = GenericReportGenerator_opt.buildQQPlot(opId, org.gwaspi.constants.cNetCDF.Association.VAR_OP_MARKERS_ASTrendTestTP, 1);
+
+		JFreeChart chart = new JFreeChart("X² QQ", JFreeChart.DEFAULT_TITLE_FONT, qqPlot, true);
+
+		OperationMetadata rdOPMetadata = new OperationMetadata(opId);
+		String imagePath = org.gwaspi.global.Config.getConfigValue("ReportsDir", "") + "/STUDY_" + rdOPMetadata.getStudyId() + "/" + outName + ".png";
+		try {
+			ChartUtilities.saveChartAsPNG(new File(imagePath),
+					chart,
+					width,
+					height);
+			result = true;
+		} catch (IOException e) {
+			System.err.println("Problem occurred creating chart.");
+			e.printStackTrace();
+		}
+
+		return result;
+	}
+
+	public static boolean createSortedTrendTestReport(int opId, String reportName) throws FileNotFoundException, IOException {
+		boolean result = false;
+
+		try {
+			LinkedHashMap unsortedMarkerIdTrendTestValsLHM = GenericReportGenerator_opt.getAnalysisVarData(opId, org.gwaspi.constants.cNetCDF.Association.VAR_OP_MARKERS_ASTrendTestTP);
+			LinkedHashMap unsortedMarkerIdPvalLHM = new LinkedHashMap();
+			for (Iterator it = unsortedMarkerIdTrendTestValsLHM.keySet().iterator(); it.hasNext();) {
+				Object key = it.next();
+				double[] values = (double[]) unsortedMarkerIdTrendTestValsLHM.get(key);
+				unsortedMarkerIdPvalLHM.put(key, values[1]);
+			}
+
+			LinkedHashMap sortingMarkerSetLHM = ReportManager.getSortedMarkerSetByDoubleValue(unsortedMarkerIdPvalLHM);
+			if (unsortedMarkerIdPvalLHM != null) {
+				unsortedMarkerIdPvalLHM.clear();
+			}
+
+			String sep = cExport.separator_REPORTS;
+			OperationMetadata rdOPMetadata = new OperationMetadata(opId);
+			MarkerSet_opt rdInfoMarkerSet = new MarkerSet_opt(rdOPMetadata.getStudyId(), rdOPMetadata.getParentMatrixId());
+			rdInfoMarkerSet.initFullMarkerIdSetLHM();
+
+			//WRITE HEADER OF FILE
+			String header = "MarkerID\trsID\tChr\tPosition\tMin. Allele\tMaj. Allele\tTrend-Test\tPval\n";
+			reportName += ".txt";
+			String reportPath = org.gwaspi.global.Config.getConfigValue("ReportsDir", "") + "/STUDY_" + rdOPMetadata.getStudyId() + "/";
 
 
-            //WRITE MARKERSET RSID
-            rdInfoMarkerSet.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_RSID);
-            for (Iterator it = sortingMarkerSetLHM.keySet().iterator(); it.hasNext();) {
-                Object key = it.next();
-                Object value = rdInfoMarkerSet.markerIdSetLHM.get(key);
-                sortingMarkerSetLHM.put(key, value);
-            }
-            ReportWriter.writeFirstColumnToReport(reportPath, reportName, header, sortingMarkerSetLHM, true);
+			//WRITE MARKERSET RSID
+			rdInfoMarkerSet.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_RSID);
+			for (Iterator it = sortingMarkerSetLHM.keySet().iterator(); it.hasNext();) {
+				Object key = it.next();
+				Object value = rdInfoMarkerSet.markerIdSetLHM.get(key);
+				sortingMarkerSetLHM.put(key, value);
+			}
+			ReportWriter.writeFirstColumnToReport(reportPath, reportName, header, sortingMarkerSetLHM, true);
 
 
-            //WRITE MARKERSET CHROMOSOME
-            rdInfoMarkerSet.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
-            for (Iterator it = sortingMarkerSetLHM.keySet().iterator(); it.hasNext();) {
-                Object key = it.next();
-                Object value = rdInfoMarkerSet.markerIdSetLHM.get(key);
-                sortingMarkerSetLHM.put(key, value);
-            }
-            ReportWriter.appendColumnToReport(reportPath, reportName, sortingMarkerSetLHM, false, false);
+			//WRITE MARKERSET CHROMOSOME
+			rdInfoMarkerSet.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
+			for (Iterator it = sortingMarkerSetLHM.keySet().iterator(); it.hasNext();) {
+				Object key = it.next();
+				Object value = rdInfoMarkerSet.markerIdSetLHM.get(key);
+				sortingMarkerSetLHM.put(key, value);
+			}
+			ReportWriter.appendColumnToReport(reportPath, reportName, sortingMarkerSetLHM, false, false);
 
-            //WRITE MARKERSET POS
-            rdInfoMarkerSet.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_POS);
-            for (Iterator it = sortingMarkerSetLHM.keySet().iterator(); it.hasNext();) {
-                Object key = it.next();
-                Object value = rdInfoMarkerSet.markerIdSetLHM.get(key);
-                sortingMarkerSetLHM.put(key, value);
-            }
-            ReportWriter.appendColumnToReport(reportPath, reportName, sortingMarkerSetLHM, false, false);
+			//WRITE MARKERSET POS
+			rdInfoMarkerSet.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_POS);
+			for (Iterator it = sortingMarkerSetLHM.keySet().iterator(); it.hasNext();) {
+				Object key = it.next();
+				Object value = rdInfoMarkerSet.markerIdSetLHM.get(key);
+				sortingMarkerSetLHM.put(key, value);
+			}
+			ReportWriter.appendColumnToReport(reportPath, reportName, sortingMarkerSetLHM, false, false);
 
 
-            //WRITE KNOWN ALLELES FROM QA
-            //get MARKER_QA Operation
-            ArrayList operationsAL = OperationManager.getMatrixOperations(rdOPMetadata.getParentMatrixId());
-            int markersQAopId = Integer.MIN_VALUE;
-            for(int i=0;i<operationsAL.size();i++){
-                Object[] element = (Object[]) operationsAL.get(i);
-                if(element[1].toString().equals(cNetCDF.Defaults.OPType.MARKER_QA.toString())){
-                    markersQAopId = (Integer) element[0];
-                }
-            }
-            if(markersQAopId!=Integer.MIN_VALUE){
-                OperationMetadata qaMetadata = new OperationMetadata(markersQAopId);
-                NetcdfFile qaNcFile = NetcdfFile.open(qaMetadata.getPathToMatrix());
+			//WRITE KNOWN ALLELES FROM QA
+			//get MARKER_QA Operation
+			ArrayList operationsAL = OperationManager.getMatrixOperations(rdOPMetadata.getParentMatrixId());
+			int markersQAopId = Integer.MIN_VALUE;
+			for (int i = 0; i < operationsAL.size(); i++) {
+				Object[] element = (Object[]) operationsAL.get(i);
+				if (element[1].toString().equals(cNetCDF.Defaults.OPType.MARKER_QA.toString())) {
+					markersQAopId = (Integer) element[0];
+				}
+			}
+			if (markersQAopId != Integer.MIN_VALUE) {
+				OperationMetadata qaMetadata = new OperationMetadata(markersQAopId);
+				NetcdfFile qaNcFile = NetcdfFile.open(qaMetadata.getPathToMatrix());
 
-                OperationSet rdOperationSet = new OperationSet(rdOPMetadata.getStudyId(),markersQAopId);
-                LinkedHashMap opMarkerSetLHM = rdOperationSet.getOpSetLHM();
+				OperationSet rdOperationSet = new OperationSet(rdOPMetadata.getStudyId(), markersQAopId);
+				LinkedHashMap opMarkerSetLHM = rdOperationSet.getOpSetLHM();
 
-                //MINOR ALLELE
-                opMarkerSetLHM = rdOperationSet.fillOpSetLHMWithVariable(qaNcFile, cNetCDF.Census.VAR_OP_MARKERS_MINALLELES);
-                for (Iterator it = rdInfoMarkerSet.markerIdSetLHM.keySet().iterator(); it.hasNext();) {
-                    Object key = it.next();
-                    Object minorAllele = opMarkerSetLHM.get(key);
-                    rdInfoMarkerSet.markerIdSetLHM.put(key, minorAllele);
-                }
+				//MINOR ALLELE
+				opMarkerSetLHM = rdOperationSet.fillOpSetLHMWithVariable(qaNcFile, cNetCDF.Census.VAR_OP_MARKERS_MINALLELES);
+				for (Iterator it = rdInfoMarkerSet.markerIdSetLHM.keySet().iterator(); it.hasNext();) {
+					Object key = it.next();
+					Object minorAllele = opMarkerSetLHM.get(key);
+					rdInfoMarkerSet.markerIdSetLHM.put(key, minorAllele);
+				}
 
-                //MAJOR ALLELE
-                opMarkerSetLHM = rdOperationSet.fillLHMWithDefaultValue(opMarkerSetLHM, "");
-                opMarkerSetLHM = rdOperationSet.fillOpSetLHMWithVariable(qaNcFile, cNetCDF.Census.VAR_OP_MARKERS_MAJALLELES);
-                for (Iterator it = rdInfoMarkerSet.markerIdSetLHM.keySet().iterator(); it.hasNext();) {
-                    Object key = it.next();
-                    Object minorAllele = rdInfoMarkerSet.markerIdSetLHM.get(key);
-                    rdInfoMarkerSet.markerIdSetLHM.put(key, minorAllele+sep+opMarkerSetLHM.get(key));
-                }
+				//MAJOR ALLELE
+				opMarkerSetLHM = rdOperationSet.fillLHMWithDefaultValue(opMarkerSetLHM, "");
+				opMarkerSetLHM = rdOperationSet.fillOpSetLHMWithVariable(qaNcFile, cNetCDF.Census.VAR_OP_MARKERS_MAJALLELES);
+				for (Iterator it = rdInfoMarkerSet.markerIdSetLHM.keySet().iterator(); it.hasNext();) {
+					Object key = it.next();
+					Object minorAllele = rdInfoMarkerSet.markerIdSetLHM.get(key);
+					rdInfoMarkerSet.markerIdSetLHM.put(key, minorAllele + sep + opMarkerSetLHM.get(key));
+				}
 
-            }
-            for (Iterator it = sortingMarkerSetLHM.keySet().iterator(); it.hasNext();) {
-                Object key = it.next();
-                Object value = rdInfoMarkerSet.markerIdSetLHM.get(key);
-                sortingMarkerSetLHM.put(key, value);
-            }
-            ReportWriter.appendColumnToReport(reportPath, reportName, sortingMarkerSetLHM, false, false);
+			}
+			for (Iterator it = sortingMarkerSetLHM.keySet().iterator(); it.hasNext();) {
+				Object key = it.next();
+				Object value = rdInfoMarkerSet.markerIdSetLHM.get(key);
+				sortingMarkerSetLHM.put(key, value);
+			}
+			ReportWriter.appendColumnToReport(reportPath, reportName, sortingMarkerSetLHM, false, false);
 
-            //WRITE TREND TEST VALUES
-            for (Iterator it = sortingMarkerSetLHM.keySet().iterator(); it.hasNext();) {
-                Object key = it.next();
-                Object value = unsortedMarkerIdTrendTestValsLHM.get(key);
-                sortingMarkerSetLHM.put(key, value);
-            }
-            ReportWriter.appendColumnToReport(reportPath, reportName, sortingMarkerSetLHM, true, false);
+			//WRITE TREND TEST VALUES
+			for (Iterator it = sortingMarkerSetLHM.keySet().iterator(); it.hasNext();) {
+				Object key = it.next();
+				Object value = unsortedMarkerIdTrendTestValsLHM.get(key);
+				sortingMarkerSetLHM.put(key, value);
+			}
+			ReportWriter.appendColumnToReport(reportPath, reportName, sortingMarkerSetLHM, true, false);
 
-            result = true;
-        } catch (IOException iOException) {
-            result = false;
-        }
+			result = true;
+		} catch (IOException iOException) {
+			result = false;
+		}
 
-        return result;
-    }
-
+		return result;
+	}
 }

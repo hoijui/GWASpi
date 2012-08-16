@@ -2,7 +2,6 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package org.gwaspi.netCDF.loader;
 
 import org.gwaspi.constants.cImport;
@@ -25,136 +24,136 @@ import org.gwaspi.constants.cNetCDF.Defaults.*;
  */
 public class MetadataLoaderBeagle {
 
-    private String markerFilePath;
-    private static String chr;
-    private String strand;
-    private int studyId;
-    protected enum Bases
-    {
-        A, C, T, G;
-    }
-    private static String tabulator= cNetCDF.Defaults.TMP_SEPARATOR;
+	private String markerFilePath;
+	private static String chr;
+	private String strand;
+	private int studyId;
 
-    public MetadataLoaderBeagle(String _mapPath, String _chr, String _strand, int _studyId) throws FileNotFoundException{
+	protected enum Bases {
 
-        markerFilePath = _mapPath;
-        studyId = _studyId;
-        chr = _chr;
-        strand = _strand;
+		A, C, T, G;
+	}
+	private static String tabulator = cNetCDF.Defaults.TMP_SEPARATOR;
 
-    }
+	public MetadataLoaderBeagle(String _mapPath, String _chr, String _strand, int _studyId) throws FileNotFoundException {
 
-    //ACCESSORS
-    public LinkedHashMap getSortedMarkerSetWithMetaData() throws IOException {
-        String startTime= org.gwaspi.global.Utils.getMediumDateTimeAsString();
+		markerFilePath = _mapPath;
+		studyId = _studyId;
+		chr = _chr;
+		strand = _strand;
 
-        TreeMap tempTM = parseAndSortMarkerFile(markerFilePath); //chr, markerId, genetic distance, position
+	}
 
-        org.gwaspi.global.Utils.sysoutStart("initilaizing Marker info");
+	//ACCESSORS
+	public LinkedHashMap getSortedMarkerSetWithMetaData() throws IOException {
+		String startTime = org.gwaspi.global.Utils.getMediumDateTimeAsString();
 
-        LinkedHashMap markerMetadataLHM = new LinkedHashMap();
-        for (Iterator it=tempTM.keySet().iterator(); it.hasNext();) {
-            String key = it.next().toString();
-            
-            //chr;pos;markerId
-            String[] keyValues = key.split(cNetCDF.Defaults.TMP_SEPARATOR);
-            int pos = 0;
-            try {
-                pos = Integer.parseInt(keyValues[1]);
-            } catch (Exception ex) {
-                pos = 0;
-            }
+		TreeMap tempTM = parseAndSortMarkerFile(markerFilePath); //chr, markerId, genetic distance, position
 
-            //rsId;alleles
-            String[] valValues = tempTM.get(key).toString().split(cNetCDF.Defaults.TMP_SEPARATOR);
+		org.gwaspi.global.Utils.sysoutStart("initilaizing Marker info");
 
-            Object[] markerInfo = new Object[5];
-            markerInfo[0] = keyValues[2];  //0 => markerid
-            markerInfo[1] = valValues[0];  //1 => rsId
-            markerInfo[2] = fixChrData(keyValues[0]);  //2 => chr
-            markerInfo[3] = pos;  //3 => pos
-            markerInfo[4] = valValues[1];  //4 => alleles
+		LinkedHashMap markerMetadataLHM = new LinkedHashMap();
+		for (Iterator it = tempTM.keySet().iterator(); it.hasNext();) {
+			String key = it.next().toString();
 
-            markerMetadataLHM.put(keyValues[2], markerInfo);
-        }
+			//chr;pos;markerId
+			String[] keyValues = key.split(cNetCDF.Defaults.TMP_SEPARATOR);
+			int pos = 0;
+			try {
+				pos = Integer.parseInt(keyValues[1]);
+			} catch (Exception ex) {
+				pos = 0;
+			}
 
-        String description="Generated sorted MarkerIdSet LHM sorted by chromosome and position";
-        logAsWhole(startTime, markerFilePath, description, studyId);
-        return markerMetadataLHM;
-    }
+			//rsId;alleles
+			String[] valValues = tempTM.get(key).toString().split(cNetCDF.Defaults.TMP_SEPARATOR);
 
-    public static TreeMap parseAndSortMarkerFile(String path) throws FileNotFoundException, IOException{
-        FileReader fr = new FileReader(path);
-        BufferedReader inputMapBR = new BufferedReader(fr);
-        TreeMap sortedMetadataTM = new TreeMap(new ComparatorChrAutPosMarkerIdAsc());
+			Object[] markerInfo = new Object[5];
+			markerInfo[0] = keyValues[2];  //0 => markerid
+			markerInfo[1] = valValues[0];  //1 => rsId
+			markerInfo[2] = fixChrData(keyValues[0]);  //2 => chr
+			markerInfo[3] = pos;  //3 => pos
+			markerInfo[4] = valValues[1];  //4 => alleles
 
-        String l;
-        String[] markerVals = null;
-        String markerId="";
+			markerMetadataLHM.put(keyValues[2], markerInfo);
+		}
 
-        int count=0;
-        while ((l = inputMapBR.readLine()) != null) {
+		String description = "Generated sorted MarkerIdSet LHM sorted by chromosome and position";
+		logAsWhole(startTime, markerFilePath, description, studyId);
+		return markerMetadataLHM;
+	}
 
-            markerVals = l.split(cImport.Separators.separators_SpaceTab_rgxp);
-            markerId=markerVals[Beagle_Standard.rsId].trim();
-            String rsId = "";
-            if(markerId.startsWith("rs")){
-                rsId = markerId;
-            }
+	public static TreeMap parseAndSortMarkerFile(String path) throws FileNotFoundException, IOException {
+		FileReader fr = new FileReader(path);
+		BufferedReader inputMapBR = new BufferedReader(fr);
+		TreeMap sortedMetadataTM = new TreeMap(new ComparatorChrAutPosMarkerIdAsc());
 
-            //chr;pos;markerId
-            StringBuffer sbKey = new StringBuffer(chr);
-            sbKey.append(cNetCDF.Defaults.TMP_SEPARATOR);
-            sbKey.append(markerVals[Beagle_Standard.pos].trim());
-            sbKey.append(cNetCDF.Defaults.TMP_SEPARATOR);
-            sbKey.append(markerId);
+		String l;
+		String[] markerVals = null;
+		String markerId = "";
 
-            //rsId;alleles
-            StringBuilder sbVal = new StringBuilder(rsId); //0 => rsId
-            sbVal.append(cNetCDF.Defaults.TMP_SEPARATOR);
-            sbVal.append(markerVals[Beagle_Standard.allele1].trim()+markerVals[Beagle_Standard.allele2].trim()); //1 => alleles
+		int count = 0;
+		while ((l = inputMapBR.readLine()) != null) {
 
-            sortedMetadataTM.put(sbKey.toString(), sbVal.toString());
+			markerVals = l.split(cImport.Separators.separators_SpaceTab_rgxp);
+			markerId = markerVals[Beagle_Standard.rsId].trim();
+			String rsId = "";
+			if (markerId.startsWith("rs")) {
+				rsId = markerId;
+			}
 
-            count++;
+			//chr;pos;markerId
+			StringBuffer sbKey = new StringBuffer(chr);
+			sbKey.append(cNetCDF.Defaults.TMP_SEPARATOR);
+			sbKey.append(markerVals[Beagle_Standard.pos].trim());
+			sbKey.append(cNetCDF.Defaults.TMP_SEPARATOR);
+			sbKey.append(markerId);
 
-            if(count==1){
-                System.out.println(org.gwaspi.global.Text.All.processing);
-            } else if(count%100000==0){
-                System.out.println("Parsed annotation lines: "+count);
-            }
-        }
-        System.out.println("Parsed annotation lines: "+count);
-        inputMapBR.close();
-        fr.close();
-        return sortedMetadataTM;
-    }
+			//rsId;alleles
+			StringBuilder sbVal = new StringBuilder(rsId); //0 => rsId
+			sbVal.append(cNetCDF.Defaults.TMP_SEPARATOR);
+			sbVal.append(markerVals[Beagle_Standard.allele1].trim() + markerVals[Beagle_Standard.allele2].trim()); //1 => alleles
 
-    public String fixChrData(String chr) throws IOException{
-        if(chr.equals("23")){
-            chr = "X";
-        }
-        if(chr.equals("24")){
-            chr = "Y";
-        }
-        if(chr.equals("25")){
-            chr = "XY";
-        }
-        if(chr.equals("26")){
-            chr = "MT";
-        }
-        return chr;
-    }
+			sortedMetadataTM.put(sbKey.toString(), sbVal.toString());
 
-    //METHODS
-    private static void logAsWhole(String startTime, String dirPath, String description, int studyId) throws IOException {
-         //LOG OPERATION IN STUDY HISTORY
-         StringBuffer operation = new StringBuffer("\nLoaded MAP metadata in path "+dirPath+".\n");
-         operation.append("Start Time: " + startTime + "\n");
-         operation.append("End Time: "+global.Utils.getMediumDateTimeAsString()+".\n");
-         operation.append("Description: "+description+".\n");
-         org.gwaspi.global.Utils.logOperationInStudyDesc(operation.toString(), studyId);
-         ////////////////////////////////
-    }
+			count++;
 
+			if (count == 1) {
+				System.out.println(org.gwaspi.global.Text.All.processing);
+			} else if (count % 100000 == 0) {
+				System.out.println("Parsed annotation lines: " + count);
+			}
+		}
+		System.out.println("Parsed annotation lines: " + count);
+		inputMapBR.close();
+		fr.close();
+		return sortedMetadataTM;
+	}
+
+	public String fixChrData(String chr) throws IOException {
+		if (chr.equals("23")) {
+			chr = "X";
+		}
+		if (chr.equals("24")) {
+			chr = "Y";
+		}
+		if (chr.equals("25")) {
+			chr = "XY";
+		}
+		if (chr.equals("26")) {
+			chr = "MT";
+		}
+		return chr;
+	}
+
+	//METHODS
+	private static void logAsWhole(String startTime, String dirPath, String description, int studyId) throws IOException {
+		//LOG OPERATION IN STUDY HISTORY
+		StringBuffer operation = new StringBuffer("\nLoaded MAP metadata in path " + dirPath + ".\n");
+		operation.append("Start Time: " + startTime + "\n");
+		operation.append("End Time: " + org.gwaspi.global.Utils.getMediumDateTimeAsString() + ".\n");
+		operation.append("Description: " + description + ".\n");
+		org.gwaspi.global.Utils.logOperationInStudyDesc(operation.toString(), studyId);
+		////////////////////////////////
+	}
 }

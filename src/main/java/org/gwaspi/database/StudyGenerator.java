@@ -14,89 +14,87 @@ import java.util.Map;
  * CEXS-UPF-PRBB
  */
 public class StudyGenerator {
-    
-    public static String createStudyManagementTable(DbManager db, Object[] insertValues) {
-        boolean result = false;
-        try {
-            //CREATE STUDIES table in APP SCHEMA and fill with data
-            db.createTable(org.gwaspi.constants.cDBGWASpi.SCH_APP,
-                    org.gwaspi.constants.cDBGWASpi.T_STUDIES,
-                    org.gwaspi.constants.cDBGWASpi.T_CREATE_STUDIES);
-           
-            result = db.insertValuesInTable(org.gwaspi.constants.cDBGWASpi.SCH_APP,
-                    org.gwaspi.constants.cDBGWASpi.T_STUDIES,
-                    org.gwaspi.constants.cDBGWASpi.F_INSERT_STUDIES,
-                    insertValues);
-        } catch (Exception e) {
-            System.out.println("Error creating Schema or Studies table");
-            System.out.print(e);
-            e.printStackTrace();
-        }
-        return  (result)?"1":"0";
-    }
-    
-    
-    public static void insertNewStudy(String studyName, String description) {
-        boolean result = false;
-        try{
-            DbManager db = ServiceLocator.getDbManager(org.gwaspi.constants.cDBGWASpi.DB_DATACENTER);
-            
-            //INSERT study data into study management table
-            result = db.insertValuesInTable(org.gwaspi.constants.cDBGWASpi.SCH_APP,
-                                            org.gwaspi.constants.cDBGWASpi.T_STUDIES,
-                                            org.gwaspi.constants.cDBGWASpi.F_INSERT_STUDIES ,
-                                            new Object[]{studyName,         //name
-                                                         description,        //description
-                                                         "external",        //stydy_type
-                                                         "1"});     //validity
-            
-        }catch(Exception e){
-            System.out.println("Error creating management database");
-            System.out.print(e);
-            e.printStackTrace();
-        }
-    
-    }
-    
-    public static void deleteStudy(int studyId, boolean deleteReports) throws IOException{
-        
-        org.gwaspi.model.MatricesList matrixMod = new org.gwaspi.model.MatricesList(studyId);
-        
-        for(int i=0; i<matrixMod.matrixList.size();i++){
-            try {
-                org.gwaspi.netCDF.matrices.MatrixManager.deleteMatrix(matrixMod.matrixList.get(i).getMatrixId(), deleteReports);
-                org.gwaspi.gui.GWASpiExplorerPanel.updateTreePanel(true);
-            } catch (IOException ex) {
-            }
-        }
-        
-        //DELETE METADATA INFO FROM DB
-        DbManager dBManager = ServiceLocator.getDbManager(org.gwaspi.constants.cDBGWASpi.DB_DATACENTER);
-        String statement = "DELETE FROM "+constants.cDBGWASpi.SCH_APP+"."+constants.cDBGWASpi.T_STUDIES+" WHERE "+constants.cDBGWASpi.f_ID+"="+studyId;
-        dBManager.executeStatement(statement);
 
-        //DELETE STUDY FOLDERS
-        String genotypesFolder = org.gwaspi.global.Config.getConfigValue("GTdir","");
-        File gtStudyFolder = new File(genotypesFolder+"/STUDY_"+studyId);
-        org.gwaspi.global.Utils.deleteFolder(gtStudyFolder);
+	public static String createStudyManagementTable(DbManager db, Object[] insertValues) {
+		boolean result = false;
+		try {
+			//CREATE STUDIES table in APP SCHEMA and fill with data
+			db.createTable(org.gwaspi.constants.cDBGWASpi.SCH_APP,
+					org.gwaspi.constants.cDBGWASpi.T_STUDIES,
+					org.gwaspi.constants.cDBGWASpi.T_CREATE_STUDIES);
 
-        if(deleteReports){
-            String reportsFolder = org.gwaspi.global.Config.getConfigValue("ReportsDir","");
-            File repStudyFolder = new File(reportsFolder+"/STUDY_"+studyId);
-            org.gwaspi.global.Utils.deleteFolder(repStudyFolder);
-        }
+			result = db.insertValuesInTable(org.gwaspi.constants.cDBGWASpi.SCH_APP,
+					org.gwaspi.constants.cDBGWASpi.T_STUDIES,
+					org.gwaspi.constants.cDBGWASpi.F_INSERT_STUDIES,
+					insertValues);
+		} catch (Exception e) {
+			System.out.println("Error creating Schema or Studies table");
+			System.out.print(e);
+			e.printStackTrace();
+		}
+		return (result) ? "1" : "0";
+	}
 
-        //DELETE STUDY POOL SAMPLES
-        org.gwaspi.samples.SampleManager.deleteSamplesByPoolId(studyId);
+	public static void insertNewStudy(String studyName, String description) {
+		boolean result = false;
+		try {
+			DbManager db = ServiceLocator.getDbManager(org.gwaspi.constants.cDBGWASpi.DB_DATACENTER);
 
-    }
+			//INSERT study data into study management table
+			result = db.insertValuesInTable(org.gwaspi.constants.cDBGWASpi.SCH_APP,
+					org.gwaspi.constants.cDBGWASpi.T_STUDIES,
+					org.gwaspi.constants.cDBGWASpi.F_INSERT_STUDIES,
+					new Object[]{studyName, //name
+						description, //description
+						"external", //stydy_type
+						"1"});     //validity
 
-    public static String createStudyLogFile(Integer studyId) throws IOException{
-        String result = "";
-        
-        //Create log file containing study history 
-        FileWriter fw = new FileWriter(org.gwaspi.global.Config.getConfigValue("LogDir", "") + "/"+studyId+".log");
-        return result;
-    }
+		} catch (Exception e) {
+			System.out.println("Error creating management database");
+			System.out.print(e);
+			e.printStackTrace();
+		}
 
+	}
+
+	public static void deleteStudy(int studyId, boolean deleteReports) throws IOException {
+
+		org.gwaspi.model.MatricesList matrixMod = new org.gwaspi.model.MatricesList(studyId);
+
+		for (int i = 0; i < matrixMod.matrixList.size(); i++) {
+			try {
+				org.gwaspi.netCDF.matrices.MatrixManager.deleteMatrix(matrixMod.matrixList.get(i).getMatrixId(), deleteReports);
+				org.gwaspi.gui.GWASpiExplorerPanel.updateTreePanel(true);
+			} catch (IOException ex) {
+			}
+		}
+
+		//DELETE METADATA INFO FROM DB
+		DbManager dBManager = ServiceLocator.getDbManager(org.gwaspi.constants.cDBGWASpi.DB_DATACENTER);
+		String statement = "DELETE FROM " + org.gwaspi.constants.cDBGWASpi.SCH_APP + "." + org.gwaspi.constants.cDBGWASpi.T_STUDIES + " WHERE " + org.gwaspi.constants.cDBGWASpi.f_ID + "=" + studyId;
+		dBManager.executeStatement(statement);
+
+		//DELETE STUDY FOLDERS
+		String genotypesFolder = org.gwaspi.global.Config.getConfigValue("GTdir", "");
+		File gtStudyFolder = new File(genotypesFolder + "/STUDY_" + studyId);
+		org.gwaspi.global.Utils.deleteFolder(gtStudyFolder);
+
+		if (deleteReports) {
+			String reportsFolder = org.gwaspi.global.Config.getConfigValue("ReportsDir", "");
+			File repStudyFolder = new File(reportsFolder + "/STUDY_" + studyId);
+			org.gwaspi.global.Utils.deleteFolder(repStudyFolder);
+		}
+
+		//DELETE STUDY POOL SAMPLES
+		org.gwaspi.samples.SampleManager.deleteSamplesByPoolId(studyId);
+
+	}
+
+	public static String createStudyLogFile(Integer studyId) throws IOException {
+		String result = "";
+
+		//Create log file containing study history
+		FileWriter fw = new FileWriter(org.gwaspi.global.Config.getConfigValue("LogDir", "") + "/" + studyId + ".log");
+		return result;
+	}
 }

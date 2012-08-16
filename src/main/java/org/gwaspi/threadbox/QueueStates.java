@@ -2,7 +2,6 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package org.gwaspi.threadbox;
 
 /**
@@ -12,10 +11,11 @@ package org.gwaspi.threadbox;
  * CEXS-UPF-PRBB
  */
 public class QueueStates {
-    public static String QUEUED = "QUEUED";
-    public static String PROCESSING = "PROCESSING";
-    public static String DONE = "DONE";
-    public static String ABORT = "ABORT";
-    public static String ERROR = "ERROR";
-    public static String DELETED = "DELETED";
+
+	public static String QUEUED = "QUEUED";
+	public static String PROCESSING = "PROCESSING";
+	public static String DONE = "DONE";
+	public static String ABORT = "ABORT";
+	public static String ERROR = "ERROR";
+	public static String DELETED = "DELETED";
 }

@@ -2,7 +2,6 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package org.gwaspi.threadbox;
 
 import org.gwaspi.constants.cNetCDF;
@@ -30,263 +29,262 @@ import org.gwaspi.reports.OutputTrendTest_opt;
  * IBE, Institute of Evolutionary Biology (UPF-CSIC)
  * CEXS-UPF-PRBB
  */
-public class Threaded_Loader_GWASifOK  implements Runnable {
-    Thread runner;
-    protected static String timeStamp="";
+public class Threaded_Loader_GWASifOK implements Runnable {
 
-    protected static int resultMatrixId;
-    protected static int samplesQAOpId;
-    protected static int markersQAOpId;
+	Thread runner;
+	protected static String timeStamp = "";
+	protected static int resultMatrixId;
+	protected static int samplesQAOpId;
+	protected static int markersQAOpId;
+	protected static String format;
+	protected static boolean dummySamples;
+	protected static int decision;
+	protected static String newMatrixName;
+	protected static String newMatrixDescription;
+	protected static String file1;
+	protected static String fileSampleInfo;
+	protected static String file2;
+	protected static String chromosome;
+	protected static String strandType;
+	protected static String gtCode;
+	protected static int studyId;
+	protected static GWASinOneGOParams gwasParams;
 
-    protected static String format;
-    protected static boolean dummySamples;
-    protected static int decision;
-    protected static String newMatrixName;
-    protected static String newMatrixDescription;
-    protected static String file1;
-    protected static String fileSampleInfo;
-    protected static String file2;
-    protected static String chromosome;
-    protected static String strandType;
-    protected static String gtCode;
-    protected static int studyId;
-    protected static GWASinOneGOParams gwasParams;
+	public Threaded_Loader_GWASifOK(String threadName,
+			String _timeStamp,
+			String _format,
+			boolean _dummySamples,
+			int _decision,
+			String _newMatrixName,
+			String _newMatrixDescription,
+			String _file1,
+			String _fileSampleInfo,
+			String _file2,
+			String _chromosome,
+			String _strandType,
+			String _gtCode,
+			int _studyId,
+			GWASinOneGOParams _gwasParams) {
 
-    public Threaded_Loader_GWASifOK(String threadName,
-                           String _timeStamp,
-                           String _format,
-                           boolean _dummySamples,
-                           int _decision,
-                           String _newMatrixName,
-                           String _newMatrixDescription,
-                           String _file1,
-                           String _fileSampleInfo,
-                           String _file2,
-                           String _chromosome,
-                           String _strandType,
-                           String _gtCode,
-                           int _studyId,
-                           GWASinOneGOParams _gwasParams) {
+		try {
+			timeStamp = _timeStamp;
+			org.gwaspi.global.Config.initPreferences(false, null);
 
-        try {
-            timeStamp = _timeStamp;
-            org.gwaspi.global.Config.initPreferences(false, null);
+			format = _format;
+			dummySamples = _dummySamples;
+			decision = _decision;
+			newMatrixName = _newMatrixName;
+			newMatrixDescription = _newMatrixDescription;
+			file1 = _file1;
+			fileSampleInfo = _fileSampleInfo;
+			file2 = _file2;
+			chromosome = _chromosome;
+			strandType = _strandType;
+			gtCode = _gtCode;
+			studyId = _studyId;
+			gwasParams = _gwasParams;
 
-            format = _format;
-            dummySamples = _dummySamples;
-            decision = _decision;
-            newMatrixName = _newMatrixName;
-            newMatrixDescription = _newMatrixDescription;
-            file1 = _file1;
-            fileSampleInfo = _fileSampleInfo;
-            file2 = _file2;
-            chromosome = _chromosome;
-            strandType = _strandType;
-            gtCode = _gtCode;
-            studyId = _studyId;
-            gwasParams = _gwasParams;
+			runner = new Thread(this, threadName); // (1) Create a new thread.
+			runner.start(); // (2) Start the thread.
+			runner.join();
+		} catch (InterruptedException ex) {
+			//Logger.getLogger(Threaded_Loader_GWAS.class.getName()).log(Level.SEVERE, null, ex);
+		}
+	}
 
-            runner = new Thread(this, threadName); // (1) Create a new thread.
-            runner.start(); // (2) Start the thread.
-            runner.join();
-        } catch (InterruptedException ex) {
-            //Logger.getLogger(Threaded_Loader_GWAS.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
+	@SuppressWarnings("static-access")
+	public void run() {
+		String currentTimeStamp = timeStamp;
+		SwingWorkerItem thisSwi = SwingWorkerItemList.getSwingWorkerItemByTimeStamp(timeStamp);
 
-    @SuppressWarnings("static-access")
-    public void run() {
-        String currentTimeStamp = timeStamp;
-        SwingWorkerItem thisSwi = SwingWorkerItemList.getSwingWorkerItemByTimeStamp(timeStamp);
+		try {
 
-        try {
+			LinkedHashMap sampleInfoLHM = SampleInfoCollectorSwitch.collectSampleInfo(format, dummySamples, fileSampleInfo, file1, file2);
+			HashSet affectionStates = SampleInfoCollectorSwitch.collectAffectionStates(sampleInfoLHM);
 
-            LinkedHashMap sampleInfoLHM = SampleInfoCollectorSwitch.collectSampleInfo(format, dummySamples, fileSampleInfo, file1, file2);
-            HashSet affectionStates = SampleInfoCollectorSwitch.collectAffectionStates(sampleInfoLHM);
-
-            //<editor-fold defaultstate="collapsed" desc="LOAD PROCESS">
-            if(thisSwi.getQueueState().equals(org.gwaspi.threadbox.QueueStates.PROCESSING)){
-                resultMatrixId = LoadManager.dispatchLoadByFormat(format,
-                        sampleInfoLHM,
-                        newMatrixName,
-                        newMatrixDescription,
-                        file1,
-                        fileSampleInfo,
-                        file2,
-                        chromosome,
-                        strandType,
-                        gtCode,
-                        studyId);
-                MultiOperations.printCompleted("Loading Genotypes");
-                GWASpiExplorerNodes.insertMatrixNode(studyId, resultMatrixId);
-            }
-            //</editor-fold>
-
-
-            //<editor-fold defaultstate="collapsed" desc="QA PROCESS">
-            if(thisSwi.getQueueState().equals(org.gwaspi.threadbox.QueueStates.PROCESSING)){
-                samplesQAOpId = OP_QASamples_opt.processMatrix(resultMatrixId);
-                GWASpiExplorerNodes.insertOperationUnderMatrixNode(resultMatrixId, samplesQAOpId);
-                org.gwaspi.reports.OutputQASamples.writeReportsForQASamplesData(samplesQAOpId, true);
-                GWASpiExplorerNodes.insertReportsUnderOperationNode(samplesQAOpId);
-            }
-
-            if(thisSwi.getQueueState().equals(org.gwaspi.threadbox.QueueStates.PROCESSING)){
-                markersQAOpId = OP_QAMarkers_opt.processMatrix(resultMatrixId);
-                GWASpiExplorerNodes.insertOperationUnderMatrixNode(resultMatrixId, markersQAOpId);
-                org.gwaspi.reports.OutputQAMarkers_opt.writeReportsForQAMarkersData(markersQAOpId);
-                GWASpiExplorerNodes.insertReportsUnderOperationNode(markersQAOpId);
-                MultiOperations.printCompleted("Matrix Quality Control");
-            }
-            //</editor-fold>
+			//<editor-fold defaultstate="collapsed" desc="LOAD PROCESS">
+			if (thisSwi.getQueueState().equals(org.gwaspi.threadbox.QueueStates.PROCESSING)) {
+				resultMatrixId = LoadManager.dispatchLoadByFormat(format,
+						sampleInfoLHM,
+						newMatrixName,
+						newMatrixDescription,
+						file1,
+						fileSampleInfo,
+						file2,
+						chromosome,
+						strandType,
+						gtCode,
+						studyId);
+				MultiOperations.printCompleted("Loading Genotypes");
+				GWASpiExplorerNodes.insertMatrixNode(studyId, resultMatrixId);
+			}
+			//</editor-fold>
 
 
-            
-            if (decision == JOptionPane.YES_OPTION &&
-                affectionStates.contains("1") &&
-                affectionStates.contains("2")) { //CHECK IF GWAS WAS REQUIRED AND IF AFFECTIONS AVAILABLE
+			//<editor-fold defaultstate="collapsed" desc="QA PROCESS">
+			if (thisSwi.getQueueState().equals(org.gwaspi.threadbox.QueueStates.PROCESSING)) {
+				samplesQAOpId = OP_QASamples_opt.processMatrix(resultMatrixId);
+				GWASpiExplorerNodes.insertOperationUnderMatrixNode(resultMatrixId, samplesQAOpId);
+				org.gwaspi.reports.OutputQASamples.writeReportsForQASamplesData(samplesQAOpId, true);
+				GWASpiExplorerNodes.insertReportsUnderOperationNode(samplesQAOpId);
+			}
 
-                if(!gwasParams.discardMarkerByMisRat){
-                    gwasParams.discardMarkerMisRatVal = 1;
-                }
-                if(!gwasParams.discardMarkerByHetzyRat){
-                    gwasParams.discardMarkerHetzyRatVal = 1;
-                }
-                if(!gwasParams.discardSampleByMisRat){
-                    gwasParams.discardSampleMisRatVal = 1;
-                }
-                if(!gwasParams.discardSampleByHetzyRat){
-                    gwasParams.discardSampleHetzyRatVal = 1;
-                }
+			if (thisSwi.getQueueState().equals(org.gwaspi.threadbox.QueueStates.PROCESSING)) {
+				markersQAOpId = OP_QAMarkers_opt.processMatrix(resultMatrixId);
+				GWASpiExplorerNodes.insertOperationUnderMatrixNode(resultMatrixId, markersQAOpId);
+				org.gwaspi.reports.OutputQAMarkers_opt.writeReportsForQAMarkersData(markersQAOpId);
+				GWASpiExplorerNodes.insertReportsUnderOperationNode(markersQAOpId);
+				MultiOperations.printCompleted("Matrix Quality Control");
+			}
+			//</editor-fold>
 
-                //<editor-fold defaultstate="collapsed" desc="PRE-GWAS PROCESS">
-                //GENOTYPE FREQ.
-                int censusOpId = Integer.MIN_VALUE;
-                if(thisSwi.getQueueState().equals(org.gwaspi.threadbox.QueueStates.PROCESSING)){
-                    censusOpId = OperationManager.censusCleanMatrixMarkers(resultMatrixId,
-                            samplesQAOpId,
-                            markersQAOpId,
-                            gwasParams.discardMarkerMisRatVal,
-                            gwasParams.discardGTMismatches,
-                            gwasParams.discardSampleMisRatVal,
-                            gwasParams.discardSampleHetzyRatVal,
-                            cNetCDF.Defaults.DEFAULT_AFFECTION);
-                    GWASpiExplorerNodes.insertOperationUnderMatrixNode(resultMatrixId, censusOpId);
-                }
 
-                //HW ON GENOTYPE FREQ.
-                int hwOpId = Integer.MIN_VALUE;
-                if(thisSwi.getQueueState().equals(org.gwaspi.threadbox.QueueStates.PROCESSING) &&
-                   censusOpId!=Integer.MIN_VALUE){
-                    hwOpId = org.gwaspi.netCDF.operations.OperationManager.performHardyWeinberg(censusOpId, cNetCDF.Defaults.DEFAULT_AFFECTION);
-                    GWASpiExplorerNodes.insertSubOperationUnderOperationNode(censusOpId, hwOpId);
-                }
-                //</editor-fold>
 
-                //<editor-fold defaultstate="collapsed" desc="GWAS TESTS & REPORTS">
-                //ALLELIC ASSOCIATION (needs newMatrixId, censusOpId, pickedMarkerSet, pickedSampleSet)
-                if(thisSwi.getQueueState().equals(org.gwaspi.threadbox.QueueStates.PROCESSING) &&
-                   censusOpId!=Integer.MIN_VALUE &&
-                   hwOpId!=Integer.MIN_VALUE){
-                    OperationMetadata markerQAMetadata = new OperationMetadata(markersQAOpId);
+			if (decision == JOptionPane.YES_OPTION
+					&& affectionStates.contains("1")
+					&& affectionStates.contains("2")) { //CHECK IF GWAS WAS REQUIRED AND IF AFFECTIONS AVAILABLE
 
-                    if (gwasParams.discardMarkerHWCalc) {
-                        gwasParams.discardMarkerHWTreshold = (double) 0.05 / markerQAMetadata.getOpSetSize();
-                    }
+				if (!gwasParams.discardMarkerByMisRat) {
+					gwasParams.discardMarkerMisRatVal = 1;
+				}
+				if (!gwasParams.discardMarkerByHetzyRat) {
+					gwasParams.discardMarkerHetzyRatVal = 1;
+				}
+				if (!gwasParams.discardSampleByMisRat) {
+					gwasParams.discardSampleMisRatVal = 1;
+				}
+				if (!gwasParams.discardSampleByHetzyRat) {
+					gwasParams.discardSampleHetzyRatVal = 1;
+				}
 
-                    int assocOpId = org.gwaspi.netCDF.operations.OperationManager.performCleanAllelicTests(resultMatrixId,
-                                                                                                    censusOpId,
-                                                                                                    hwOpId,
-                                                                                                    gwasParams.discardMarkerHWTreshold);
-                    GWASpiExplorerNodes.insertSubOperationUnderOperationNode(censusOpId, assocOpId);
+				//<editor-fold defaultstate="collapsed" desc="PRE-GWAS PROCESS">
+				//GENOTYPE FREQ.
+				int censusOpId = Integer.MIN_VALUE;
+				if (thisSwi.getQueueState().equals(org.gwaspi.threadbox.QueueStates.PROCESSING)) {
+					censusOpId = OperationManager.censusCleanMatrixMarkers(resultMatrixId,
+							samplesQAOpId,
+							markersQAOpId,
+							gwasParams.discardMarkerMisRatVal,
+							gwasParams.discardGTMismatches,
+							gwasParams.discardSampleMisRatVal,
+							gwasParams.discardSampleHetzyRatVal,
+							cNetCDF.Defaults.DEFAULT_AFFECTION);
+					GWASpiExplorerNodes.insertOperationUnderMatrixNode(resultMatrixId, censusOpId);
+				}
 
-                    //////Make Reports (needs newMatrixId, QAopId, AssocOpId)
-                    if (assocOpId != Integer.MIN_VALUE) {
-                        OutputAllelicAssociation_opt.writeReportsForAssociationData(assocOpId);
-                        GWASpiExplorerNodes.insertReportsUnderOperationNode(assocOpId);
-                    }
+				//HW ON GENOTYPE FREQ.
+				int hwOpId = Integer.MIN_VALUE;
+				if (thisSwi.getQueueState().equals(org.gwaspi.threadbox.QueueStates.PROCESSING)
+						&& censusOpId != Integer.MIN_VALUE) {
+					hwOpId = org.gwaspi.netCDF.operations.OperationManager.performHardyWeinberg(censusOpId, cNetCDF.Defaults.DEFAULT_AFFECTION);
+					GWASpiExplorerNodes.insertSubOperationUnderOperationNode(censusOpId, hwOpId);
+				}
+				//</editor-fold>
 
-                }
+				//<editor-fold defaultstate="collapsed" desc="GWAS TESTS & REPORTS">
+				//ALLELIC ASSOCIATION (needs newMatrixId, censusOpId, pickedMarkerSet, pickedSampleSet)
+				if (thisSwi.getQueueState().equals(org.gwaspi.threadbox.QueueStates.PROCESSING)
+						&& censusOpId != Integer.MIN_VALUE
+						&& hwOpId != Integer.MIN_VALUE) {
+					OperationMetadata markerQAMetadata = new OperationMetadata(markersQAOpId);
 
-                //GENOTYPIC TEST (needs newMatrixId, censusOpId, pickedMarkerSet, pickedSampleSet)
-                if(gwasParams.performGenotypicTests &&
-                   thisSwi.getQueueState().equals(org.gwaspi.threadbox.QueueStates.PROCESSING) &&
-                   censusOpId!=Integer.MIN_VALUE &&
-                   hwOpId!=Integer.MIN_VALUE){
+					if (gwasParams.discardMarkerHWCalc) {
+						gwasParams.discardMarkerHWTreshold = (double) 0.05 / markerQAMetadata.getOpSetSize();
+					}
 
-                    OperationMetadata markerQAMetadata = new OperationMetadata(markersQAOpId);
+					int assocOpId = org.gwaspi.netCDF.operations.OperationManager.performCleanAllelicTests(resultMatrixId,
+							censusOpId,
+							hwOpId,
+							gwasParams.discardMarkerHWTreshold);
+					GWASpiExplorerNodes.insertSubOperationUnderOperationNode(censusOpId, assocOpId);
 
-                    if (gwasParams.discardMarkerHWCalc) {
-                        gwasParams.discardMarkerHWTreshold = (double) 0.05 / markerQAMetadata.getOpSetSize();
-                    }
+					//////Make Reports (needs newMatrixId, QAopId, AssocOpId)
+					if (assocOpId != Integer.MIN_VALUE) {
+						OutputAllelicAssociation_opt.writeReportsForAssociationData(assocOpId);
+						GWASpiExplorerNodes.insertReportsUnderOperationNode(assocOpId);
+					}
 
-                    int assocOpId = org.gwaspi.netCDF.operations.OperationManager.performCleanGenotypicTests(resultMatrixId,
-                                                                                                    censusOpId,
-                                                                                                    hwOpId,
-                                                                                                    gwasParams.discardMarkerHWTreshold);
-                    GWASpiExplorerNodes.insertSubOperationUnderOperationNode(censusOpId, assocOpId);
+				}
 
-                    //////Make Reports (needs newMatrixId, QAopId, AssocOpId)
-                    if (assocOpId != Integer.MIN_VALUE) {
-                        OutputGenotypicAssociation_opt.writeReportsForAssociationData(assocOpId);
-                        GWASpiExplorerNodes.insertReportsUnderOperationNode(assocOpId);
-                    }
-                }
+				//GENOTYPIC TEST (needs newMatrixId, censusOpId, pickedMarkerSet, pickedSampleSet)
+				if (gwasParams.performGenotypicTests
+						&& thisSwi.getQueueState().equals(org.gwaspi.threadbox.QueueStates.PROCESSING)
+						&& censusOpId != Integer.MIN_VALUE
+						&& hwOpId != Integer.MIN_VALUE) {
 
-                //TREND TESTS (needs newMatrixId, censusOpId, pickedMarkerSet, pickedSampleSet)
-                if(gwasParams.performTrendTests &&
-                   thisSwi.getQueueState().equals(org.gwaspi.threadbox.QueueStates.PROCESSING) &&
-                   censusOpId!=Integer.MIN_VALUE &&
-                   hwOpId!=Integer.MIN_VALUE){
+					OperationMetadata markerQAMetadata = new OperationMetadata(markersQAOpId);
 
-                    OperationMetadata markerQAMetadata = new OperationMetadata(markersQAOpId);
+					if (gwasParams.discardMarkerHWCalc) {
+						gwasParams.discardMarkerHWTreshold = (double) 0.05 / markerQAMetadata.getOpSetSize();
+					}
 
-                    if (gwasParams.discardMarkerHWCalc) {
-                        gwasParams.discardMarkerHWTreshold = (double) 0.05 / markerQAMetadata.getOpSetSize();
-                    }
+					int assocOpId = org.gwaspi.netCDF.operations.OperationManager.performCleanGenotypicTests(resultMatrixId,
+							censusOpId,
+							hwOpId,
+							gwasParams.discardMarkerHWTreshold);
+					GWASpiExplorerNodes.insertSubOperationUnderOperationNode(censusOpId, assocOpId);
 
-                    int trendOpId = org.gwaspi.netCDF.operations.OperationManager.performCleanTrendTests(resultMatrixId,
-                                                                                            censusOpId,
-                                                                                            hwOpId,
-                                                                                            gwasParams.discardMarkerHWTreshold);
-                    GWASpiExplorerNodes.insertSubOperationUnderOperationNode(censusOpId, trendOpId);
+					//////Make Reports (needs newMatrixId, QAopId, AssocOpId)
+					if (assocOpId != Integer.MIN_VALUE) {
+						OutputGenotypicAssociation_opt.writeReportsForAssociationData(assocOpId);
+						GWASpiExplorerNodes.insertReportsUnderOperationNode(assocOpId);
+					}
+				}
 
-                    //////Make Reports (needs newMatrixId, QAopId, AssocOpId)
-                    if (trendOpId != Integer.MIN_VALUE) {
-                        OutputTrendTest_opt.writeReportsForTrendTestData(trendOpId);
-                        GWASpiExplorerNodes.insertReportsUnderOperationNode(trendOpId);
-                    }
-                }
-                //</editor-fold>
-            }
+				//TREND TESTS (needs newMatrixId, censusOpId, pickedMarkerSet, pickedSampleSet)
+				if (gwasParams.performTrendTests
+						&& thisSwi.getQueueState().equals(org.gwaspi.threadbox.QueueStates.PROCESSING)
+						&& censusOpId != Integer.MIN_VALUE
+						&& hwOpId != Integer.MIN_VALUE) {
 
-            
+					OperationMetadata markerQAMetadata = new OperationMetadata(markersQAOpId);
 
-            //FINISH OFF
-            if(!thisSwi.getQueueState().equals(org.gwaspi.threadbox.QueueStates.ABORT)){
-                MultiOperations.printFinished("Loading Genotypes");
-                MultiOperations.swingWorkerItemList.flagCurrentItemDone(timeStamp);
-            } else {
-                System.out.println("\n");
-                System.out.println(Text.Processes.abortingProcess);
-                System.out.println("Process Name: "+thisSwi.getSwingWorkerName());
-                System.out.println("Process Launch Time: "+thisSwi.getLaunchTime());
-                System.out.println("\n\n");
-            }
+					if (gwasParams.discardMarkerHWCalc) {
+						gwasParams.discardMarkerHWTreshold = (double) 0.05 / markerQAMetadata.getOpSetSize();
+					}
 
-            MultiOperations.updateProcessOverviewStartNext();
+					int trendOpId = org.gwaspi.netCDF.operations.OperationManager.performCleanTrendTests(resultMatrixId,
+							censusOpId,
+							hwOpId,
+							gwasParams.discardMarkerHWTreshold);
+					GWASpiExplorerNodes.insertSubOperationUnderOperationNode(censusOpId, trendOpId);
 
-        } catch (OutOfMemoryError e) {
-                System.out.println(Text.App.outOfMemoryError);
-        } catch (Exception ex) {
-            MultiOperations.printError("Loading Genotypes & Performing GWAS");
-            Logger.getLogger(Threaded_Loader_GWASifOK.class.getName()).log(Level.SEVERE, null, ex);
-            try {
-                MultiOperations.swingWorkerItemList.flagCurrentItemError(timeStamp);
-                MultiOperations.updateTree();
-                MultiOperations.updateProcessOverviewStartNext();
-            } catch (Exception ex1) {
-            }
-        }
-    }
+					//////Make Reports (needs newMatrixId, QAopId, AssocOpId)
+					if (trendOpId != Integer.MIN_VALUE) {
+						OutputTrendTest_opt.writeReportsForTrendTestData(trendOpId);
+						GWASpiExplorerNodes.insertReportsUnderOperationNode(trendOpId);
+					}
+				}
+				//</editor-fold>
+			}
+
+
+
+			//FINISH OFF
+			if (!thisSwi.getQueueState().equals(org.gwaspi.threadbox.QueueStates.ABORT)) {
+				MultiOperations.printFinished("Loading Genotypes");
+				MultiOperations.swingWorkerItemList.flagCurrentItemDone(timeStamp);
+			} else {
+				System.out.println("\n");
+				System.out.println(Text.Processes.abortingProcess);
+				System.out.println("Process Name: " + thisSwi.getSwingWorkerName());
+				System.out.println("Process Launch Time: " + thisSwi.getLaunchTime());
+				System.out.println("\n\n");
+			}
+
+			MultiOperations.updateProcessOverviewStartNext();
+
+		} catch (OutOfMemoryError e) {
+			System.out.println(Text.App.outOfMemoryError);
+		} catch (Exception ex) {
+			MultiOperations.printError("Loading Genotypes & Performing GWAS");
+			Logger.getLogger(Threaded_Loader_GWASifOK.class.getName()).log(Level.SEVERE, null, ex);
+			try {
+				MultiOperations.swingWorkerItemList.flagCurrentItemError(timeStamp);
+				MultiOperations.updateTree();
+				MultiOperations.updateProcessOverviewStartNext();
+			} catch (Exception ex1) {
+			}
+		}
+	}
 }

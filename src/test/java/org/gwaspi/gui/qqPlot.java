@@ -41,8 +41,6 @@
  * 29-Oct-2002 : Version 1 (DG);
  *
  */
-
-
 package org.gwaspi.gui;
 
 import java.awt.Color;
@@ -69,129 +67,127 @@ import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
 /**
- * Draws a scatter plot over and over for 10 seconds.  Reports on how many redraws were achieved.
- * <p>
- * On my PC (SuSE Linux 8.2, JDK 1.4, 256mb RAM, 2.66ghz Pentium) I get 13-14 charts per second.
- *
+ * Draws a scatter plot over and over for 10 seconds.
+ * Reports on how many redraws were achieved.
+ * <p/>
+ * On my PC (SuSE Linux 8.2, JDK 1.4, 256mb RAM, 2.66ghz Pentium),
+ * I get 13-14 charts per second.
  */
 public class qqPlot implements ActionListener {
 
-    /** A flag that indicates when time is up. */
-    private boolean finished;
-    
-    /**
-     * Creates a new application.
-     */
-    public qqPlot() {
-        // nothing to do
-    }
+	/**
+	 * A flag that indicates when time is up.
+	 */
+	private boolean finished;
 
-    
+	/**
+	 * Creates a new application.
+	 */
+	public qqPlot() {
+		// nothing to do
+	}
 
-    /**
-     * Runs the test.
-     */
-    public void run() {
-        
-        this.finished = false;
+	/**
+	 * Runs the test.
+	 */
+	public void run() {
 
-        ArrayList<XYSeries> seriesArray = new ArrayList<XYSeries>();
-        
-        Random generator = new Random();
-        int seriesNb = -1;
-        XYSeriesCollection dataSeries = new XYSeriesCollection();
-        XYSeries seriesData = new XYSeries("X²");
-        XYSeries seriesUpper = new XYSeries("Upper bound");
-        XYSeries seriesLower = new XYSeries("Lower bound");
+		this.finished = false;
 
-        int N = 10000;
-        ArrayList<Double> rndChiSqrDist1 = org.gwaspi.statistics.Chisquare.getChiSquareDistributionDf1AL(N, 1.0f);
-        Collections.sort(rndChiSqrDist1);
-        ArrayList<Double> rndChiSqrDist2 = org.gwaspi.statistics.Chisquare.getChiSquareDistributionDf1AL(N, 1.0f);
-        Collections.sort(rndChiSqrDist2);
-        for (int i = 0; i < rndChiSqrDist1.size(); i++) {
-            double obsVal = rndChiSqrDist1.get(i)+(generator.nextDouble()*0.00001);
-            double expVal = rndChiSqrDist2.get(i);
+		ArrayList<XYSeries> seriesArray = new ArrayList<XYSeries>();
 
-            //constant chi-square boundaries
+		Random generator = new Random();
+		int seriesNb = -1;
+		XYSeriesCollection dataSeries = new XYSeriesCollection();
+		XYSeries seriesData = new XYSeries("X²");
+		XYSeries seriesUpper = new XYSeries("Upper bound");
+		XYSeries seriesLower = new XYSeries("Lower bound");
+
+		int N = 10000;
+		ArrayList<Double> rndChiSqrDist1 = org.gwaspi.statistics.Chisquare.getChiSquareDistributionDf1AL(N, 1.0f);
+		Collections.sort(rndChiSqrDist1);
+		ArrayList<Double> rndChiSqrDist2 = org.gwaspi.statistics.Chisquare.getChiSquareDistributionDf1AL(N, 1.0f);
+		Collections.sort(rndChiSqrDist2);
+		for (int i = 0; i < rndChiSqrDist1.size(); i++) {
+			double obsVal = rndChiSqrDist1.get(i) + (generator.nextDouble() * 0.00001);
+			double expVal = rndChiSqrDist2.get(i);
+
+			//constant chi-square boundaries
 //            double upperVal = expVal*1.05;
 //            double lowerVal = expVal*0.95;
 //            double upperVal = expVal+Math.pow(Math.E,(1.96*Math.sqrt(1/expVal)));
 //            double lowerVal = expVal-Math.pow(Math.E,(1.96*Math.sqrt(1/expVal)));
-            double upperVal = expVal+1.96*Math.sqrt(0.05*(1-0.05/N));
-            double lowerVal = expVal-1.96*Math.sqrt(0.05*(1-0.05/N));
+			double upperVal = expVal + 1.96 * Math.sqrt(0.05 * (1 - 0.05 / N));
+			double lowerVal = expVal - 1.96 * Math.sqrt(0.05 * (1 - 0.05 / N));
 
-            seriesData.add(obsVal, expVal);
-            seriesLower.add(expVal, lowerVal);
-            seriesUpper.add(expVal, upperVal);
-        }
-        
-        dataSeries.addSeries(seriesData);
-        dataSeries.addSeries(seriesLower);
-        dataSeries.addSeries(seriesUpper);
-        final XYDataset data = dataSeries;
+			seriesData.add(obsVal, expVal);
+			seriesLower.add(expVal, lowerVal);
+			seriesUpper.add(expVal, upperVal);
+		}
 
-        // create a scatter chart...
-        final boolean withLegend = true;
-        JFreeChart chart = null;
+		dataSeries.addSeries(seriesData);
+		dataSeries.addSeries(seriesLower);
+		dataSeries.addSeries(seriesUpper);
+		final XYDataset data = dataSeries;
 
-        chart  = ChartFactory.createScatterPlot(
-                "QQ-plot", "Obs X²", "Exp X²",
-                data,
-                PlotOrientation.VERTICAL,
-                withLegend,
-                false,
-                false);
+		// create a scatter chart...
+		final boolean withLegend = true;
+		JFreeChart chart = null;
 
-        final XYPlot plot = chart.getXYPlot();
-        XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer(false, true);
-        renderer.setSeriesPaint(0, Color.blue);
-        renderer.setSeriesPaint(1, Color.gray);
-        renderer.setSeriesPaint(2, Color.gray);
+		chart = ChartFactory.createScatterPlot(
+				"QQ-plot", "Obs X²", "Exp X²",
+				data,
+				PlotOrientation.VERTICAL,
+				withLegend,
+				false,
+				false);
 
-        renderer.setBaseShapesVisible(true);
-        renderer.setBaseShapesFilled(true);
-        renderer.setSeriesShape(0, new Rectangle2D.Double(-1.0, -1.0, 2.0, 2.0));
-        renderer.setSeriesShape(1, new Rectangle2D.Double(-2.0, 0.0, 4.0, 0.0));
-        renderer.setSeriesShape(2, new Rectangle2D.Double(-2.0, 0.0, 4.0, 0.0));
+		final XYPlot plot = chart.getXYPlot();
+		XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer(false, true);
+		renderer.setSeriesPaint(0, Color.blue);
+		renderer.setSeriesPaint(1, Color.gray);
+		renderer.setSeriesPaint(2, Color.gray);
 
-        plot.setRenderer(renderer);
+		renderer.setBaseShapesVisible(true);
+		renderer.setBaseShapesFilled(true);
+		renderer.setSeriesShape(0, new Rectangle2D.Double(-1.0, -1.0, 2.0, 2.0));
+		renderer.setSeriesShape(1, new Rectangle2D.Double(-2.0, 0.0, 4.0, 0.0));
+		renderer.setSeriesShape(2, new Rectangle2D.Double(-2.0, 0.0, 4.0, 0.0));
 
-        try {
-            ChartUtilities.saveChartAsPNG(new File(System.getProperty("user.home")+"/Desktop/QQ_plot.png"),
-                                           chart,
-                                           400,
-                                           400);
+		plot.setRenderer(renderer);
 
-        } catch (IOException e) {
-            System.err.println("Problem occurred creating chart.");
-        }
-        
+		try {
+			ChartUtilities.saveChartAsPNG(new File(System.getProperty("user.home") + "/Desktop/QQ_plot.png"),
+					chart,
+					400,
+					400);
 
-    }
+		} catch (IOException e) {
+			System.err.println("Problem occurred creating chart.");
+		}
 
-    /**
-     * Receives notification of action events (in this case, from the Timer).
-     *
-     * @param event  the event.
-     */
-    public void actionPerformed(final ActionEvent event) {
-        this.finished = true;
-    }
 
-    
-    
-    /**
-     * Starting point for the application.
-     *
-     * @param args  ignored.
-     */
-    public static void main(final String[] args) {
-        
-        
-        final qqPlot app = new qqPlot();
-        app.run();
+	}
 
-    }
+	/**
+	 * Receives notification of action events (in this case, from the Timer).
+	 *
+	 * @param event the event.
+	 */
+	public void actionPerformed(final ActionEvent event) {
+		this.finished = true;
+	}
 
+	/**
+	 * Starting point for the application.
+	 *
+	 * @param args ignored.
+	 */
+	public static void main(final String[] args) {
+
+
+		final qqPlot app = new qqPlot();
+		app.run();
+
+	}
 }

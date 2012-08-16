@@ -31,149 +31,142 @@ import org.jfree.ui.TextAnchor;
  */
 public class PlinkReportLoaderCombined {
 
+	public static CombinedRangeXYPlot loadAssocUnadjLogPvsPos(File plinkReport, HashSet redMarkersHS) throws FileNotFoundException, IOException {
 
-        public static CombinedRangeXYPlot loadAssocUnadjLogPvsPos(File plinkReport, HashSet redMarkersHS) throws FileNotFoundException, IOException{
+		NumberAxis sharedAxis = new NumberAxis("-log₁₀(P)");
+		sharedAxis.setTickMarkInsideLength(3.0f);
+		CombinedRangeXYPlot combinedPlot = new CombinedRangeXYPlot(sharedAxis);
+		combinedPlot.setGap(0);
 
-            NumberAxis sharedAxis = new NumberAxis("-log₁₀(P)");
-            sharedAxis.setTickMarkInsideLength(3.0f);
-            CombinedRangeXYPlot combinedPlot = new CombinedRangeXYPlot(sharedAxis);
-            combinedPlot.setGap(0);
-
-            XYSeriesCollection tempChrData = null;
-            XYSeries series1 = null;
-            XYSeries series2 = null;
-            FileReader inputFileReader = new FileReader(plinkReport);
-            BufferedReader inputBufferReader = new BufferedReader(inputFileReader);
-            
-            
-            //Getting data from file and subdividing to series all points by chromosome
-            String l;
-            String[] cVals = null;
-            String tempChr="";
-            String header = inputBufferReader.readLine();
-            int count=0;
-            while ((l = inputBufferReader.readLine()) != null) {
-
-                if(count%10000==0){
-                    System.out.println("loadAssocUnadjLogPvsPos -> reader count: "+count);
-                }
-                count++;
+		XYSeriesCollection tempChrData = null;
+		XYSeries series1 = null;
+		XYSeries series2 = null;
+		FileReader inputFileReader = new FileReader(plinkReport);
+		BufferedReader inputBufferReader = new BufferedReader(inputFileReader);
 
 
-                l=l.trim().replaceAll("\\s+", ",");
-                cVals = l.split(",");
-                String markerId = cVals[1];
-                int position = Integer.parseInt(cVals[2]);
-                String s_pVal = cVals[8];
+		//Getting data from file and subdividing to series all points by chromosome
+		String l;
+		String[] cVals = null;
+		String tempChr = "";
+		String header = inputBufferReader.readLine();
+		int count = 0;
+		while ((l = inputBufferReader.readLine()) != null) {
 
-                if (!s_pVal.equals("NA")) {
-                    double pValue = Double.parseDouble(s_pVal); // P value
+			if (count % 10000 == 0) {
+				System.out.println("loadAssocUnadjLogPvsPos -> reader count: " + count);
+			}
+			count++;
 
-                    if(cVals[0].toString().equals(tempChr)){
-                        if(redMarkersHS.contains(markerId)){  //Insert in alternate color series
-                            series2.add(position, pValue);
-                        } else {
-                            series1.add(position, pValue);
-                        }
+
+			l = l.trim().replaceAll("\\s+", ",");
+			cVals = l.split(",");
+			String markerId = cVals[1];
+			int position = Integer.parseInt(cVals[2]);
+			String s_pVal = cVals[8];
+
+			if (!s_pVal.equals("NA")) {
+				double pValue = Double.parseDouble(s_pVal); // P value
+
+				if (cVals[0].toString().equals(tempChr)) {
+					if (redMarkersHS.contains(markerId)) {  //Insert in alternate color series
+						series2.add(position, pValue);
+					} else {
+						series1.add(position, pValue);
+					}
 
 //                        series1.add(position, logPValue);
 
-                    } else {
-                        if(!tempChr.equals("")){ //Not the first time round!
-                            tempChrData = new XYSeriesCollection();
-                            tempChrData.addSeries(series1);
-                            tempChrData.addSeries(series2);
-                            appendToCombinedRangePlot(combinedPlot,tempChr,tempChrData, false);
-                        }
+				} else {
+					if (!tempChr.equals("")) { //Not the first time round!
+						tempChrData = new XYSeriesCollection();
+						tempChrData.addSeries(series1);
+						tempChrData.addSeries(series2);
+						appendToCombinedRangePlot(combinedPlot, tempChr, tempChrData, false);
+					}
 
-                        tempChr=cVals[0];
-                        series1 = new XYSeries("Imputed");
-                        series2 = new XYSeries("Observed");  //Alternate color series
-                        if(redMarkersHS.contains(markerId)){  //Insert inlternate color series
-                            series2.add(position, pValue);
-                        } else {
-                            series1.add(position, pValue);
-                        }
+					tempChr = cVals[0];
+					series1 = new XYSeries("Imputed");
+					series2 = new XYSeries("Observed");  //Alternate color series
+					if (redMarkersHS.contains(markerId)) {  //Insert inlternate color series
+						series2.add(position, pValue);
+					} else {
+						series1.add(position, pValue);
+					}
 
 //                        series1 = new XYSeries(cVals[0]);
 //                        series1.add(position, logPValue);
-                    }
-                }
-            }
-            //Append last chromosome to combined plot
-            tempChrData = new XYSeriesCollection();
-            tempChrData.addSeries(series1);
-            tempChrData.addSeries(series2);
-            appendToCombinedRangePlot(combinedPlot,tempChr,tempChrData, true);
+				}
+			}
+		}
+		//Append last chromosome to combined plot
+		tempChrData = new XYSeriesCollection();
+		tempChrData.addSeries(series1);
+		tempChrData.addSeries(series2);
+		appendToCombinedRangePlot(combinedPlot, tempChr, tempChrData, true);
 
-            return combinedPlot;
-        }
-    
-        
-        
-        
-        private static void appendToCombinedRangePlot(CombinedRangeXYPlot combinedPlot, String chromosome, XYSeriesCollection tempChrData, boolean showlables) {
-                XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer(false, true);
-                renderer.setSeriesPaint(0, Color.blue);
-                renderer.setSeriesPaint(1, Color.red);
-                renderer.setSeriesVisibleInLegend(0, showlables);
-                renderer.setSeriesVisibleInLegend(1, showlables);
-                //renderer.setBaseShape(new Ellipse2D.Float(0, 0, 2,2), false);
+		return combinedPlot;
+	}
 
-                if(combinedPlot.getSubplots().size()==0){
-                    LogAxis rangeAxis = new LogAxis("P value");
-                    rangeAxis.setBase(10);
-                    rangeAxis.setInverted(true);
-                    rangeAxis.setNumberFormatOverride(new DecimalFormat("0.#E0#"));
+	private static void appendToCombinedRangePlot(CombinedRangeXYPlot combinedPlot, String chromosome, XYSeriesCollection tempChrData, boolean showlables) {
+		XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer(false, true);
+		renderer.setSeriesPaint(0, Color.blue);
+		renderer.setSeriesPaint(1, Color.red);
+		renderer.setSeriesVisibleInLegend(0, showlables);
+		renderer.setSeriesVisibleInLegend(1, showlables);
+		//renderer.setBaseShape(new Ellipse2D.Float(0, 0, 2,2), false);
 
-                    rangeAxis.setTickMarkOutsideLength(2.0f);
-                    rangeAxis.setMinorTickCount(2);
-                    rangeAxis.setMinorTickMarksVisible(true);
-                    rangeAxis.setAxisLineVisible(true);
-                    rangeAxis.setAutoRangeMinimumSize(0.0000005);
-                    rangeAxis.setLowerBound(1d);
-                    //rangeAxis.setAutoRangeIncludesZero(false);
+		if (combinedPlot.getSubplots().size() == 0) {
+			LogAxis rangeAxis = new LogAxis("P value");
+			rangeAxis.setBase(10);
+			rangeAxis.setInverted(true);
+			rangeAxis.setNumberFormatOverride(new DecimalFormat("0.#E0#"));
 
-                    combinedPlot.setRangeAxis(0, rangeAxis);
-                }
+			rangeAxis.setTickMarkOutsideLength(2.0f);
+			rangeAxis.setMinorTickCount(2);
+			rangeAxis.setMinorTickMarksVisible(true);
+			rangeAxis.setAxisLineVisible(true);
+			rangeAxis.setAutoRangeMinimumSize(0.0000005);
+			rangeAxis.setLowerBound(1d);
+			//rangeAxis.setAutoRangeIncludesZero(false);
 
-                JFreeChart subchart = ChartFactory.createScatterPlot("",
-                                                                     "Chr "+chromosome,
-                                                                     "",
-                                                                     tempChrData,
-                                                                     PlotOrientation.VERTICAL,
-                                                                     true,
-                                                                     false,
-                                                                     false);
-                
-                XYPlot subplot = (XYPlot) subchart.getPlot();
-                subplot.setRenderer(renderer);
-                subplot.setBackgroundPaint(null);
+			combinedPlot.setRangeAxis(0, rangeAxis);
+		}
+
+		JFreeChart subchart = ChartFactory.createScatterPlot("",
+				"Chr " + chromosome,
+				"",
+				tempChrData,
+				PlotOrientation.VERTICAL,
+				true,
+				false,
+				false);
+
+		XYPlot subplot = (XYPlot) subchart.getPlot();
+		subplot.setRenderer(renderer);
+		subplot.setBackgroundPaint(null);
 
 
-                final Marker thresholdLine = new ValueMarker(0.0000005);
-                thresholdLine.setPaint(Color.red);
-                if(showlables){
-                    thresholdLine.setLabel("P = 5·10⁻⁷");
-                }
-                thresholdLine.setLabelAnchor(RectangleAnchor.TOP_RIGHT);
-                thresholdLine.setLabelTextAnchor(TextAnchor.BOTTOM_RIGHT);
-                subplot.addRangeMarker(thresholdLine);
+		final Marker thresholdLine = new ValueMarker(0.0000005);
+		thresholdLine.setPaint(Color.red);
+		if (showlables) {
+			thresholdLine.setLabel("P = 5·10⁻⁷");
+		}
+		thresholdLine.setLabelAnchor(RectangleAnchor.TOP_RIGHT);
+		thresholdLine.setLabelTextAnchor(TextAnchor.BOTTOM_RIGHT);
+		subplot.addRangeMarker(thresholdLine);
 
 
 
-                NumberAxis chrAxis = (NumberAxis) subplot.getDomainAxis();
-                chrAxis.setAxisLineVisible(false);
-                chrAxis.setTickLabelsVisible(false);
-                chrAxis.setTickMarksVisible(false);
-                chrAxis.setAutoRangeIncludesZero(false);
-                //combinedPlot.setGap(0);
-                combinedPlot.add(subplot, 1);
-        }
-        
-    
+		NumberAxis chrAxis = (NumberAxis) subplot.getDomainAxis();
+		chrAxis.setAxisLineVisible(false);
+		chrAxis.setTickLabelsVisible(false);
+		chrAxis.setTickMarksVisible(false);
+		chrAxis.setAutoRangeIncludesZero(false);
+		//combinedPlot.setGap(0);
+		combinedPlot.add(subplot, 1);
+	}
 // <editor-fold defaultstate="collapsed" desc="Deprecated">
-    
 //    public static ArrayList<IdChrPosValuePoint> loadUnadjAssoReportFromFile(File reportFile, int valueColumn) throws FileNotFoundException, IOException {
 //        int idColumn=1;
 //        int chrColumn=0;
@@ -199,7 +192,5 @@ public class PlinkReportLoaderCombined {
 //        Collections.sort(pointsList, new graphics.IdChrPosValuePoint.AbsolutePositionComparator());
 //        return pointsList;
 //    }
-    
 // </editor-fold>
-
 }

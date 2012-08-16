@@ -5,36 +5,37 @@
     Created on : April 13, 2011, 12:56 PM
     Author     : Fernando Muñiz Fernandez
 
-    Number: current version number
-    Date: reslease date of current version
-    Type: type of release
-    Compatibility: current version is backwards compatible until version number (including)...
-    ActionCompatible: Recommended action if found compatible
-    ActionUnCompatible: Recommended action if found NOT compatible
-    Description: Description text of current version, changelog...
+ Number: current version number
+ Date: reslease date of current version
+ Type: type of release
+ Compatibility: current version is backwards compatible until version number (including)...
+ ActionCompatible: Recommended action if found compatible
+ ActionUnCompatible: Recommended action if found NOT compatible
+ Description: Description text of current version, changelog...
 -->
 
 <root>
-<GWASpi>
-    <Version>
-        <Release>
-            <Number>2.0.2</Number>
-            <Date>30-05-2011</Date>
-            <Type>Update</Type>
-            <Compatibility>1.9.8</Compatibility>
-            <GWASpi_DB_Version>2.0.2</GWASpi_DB_Version>
-            <ActionCompatible> --- Please download new version and update! ---</ActionCompatible>
-            <ActionUnCompatible> --- Please upadate with care! ---
-First export matrices you want to keep to a standard format (such as binary PLINK)
-and load them back again after updating.</ActionUnCompatible>
-            <Description>23/05/2011
-* Added GWASpi version number to matrices it creates
-* Added older GWASpi databases import capacity
-* Bugfix in Sample Info scanning for HapMap files
-* Bugfix in Matrix Merging: added genotype encoding field
-* Bugfix in Matrix Merging: Warning in merging all samples and markers has been addressed
-</Description>
-        </Release>
-    </Version>
-</GWASpi>
+	<GWASpi>
+		<Version>
+			<Release>
+				<Number>2.0.2</Number>
+				<Date>30-05-2011</Date>
+				<Type>Update</Type>
+				<Compatibility>1.9.8</Compatibility>
+				<GWASpi_DB_Version>2.0.2</GWASpi_DB_Version>
+				<ActionCompatible> --- Please download new version and update! ---</ActionCompatible>
+				<ActionUnCompatible> --- Please upadate with care! ---
+					First export matrices you want to keep to a standard format (such as binary PLINK)
+					and load them back again after updating.
+				</ActionUnCompatible>
+				<Description>23/05/2011
+					* Added GWASpi version number to matrices it creates
+					* Added older GWASpi databases import capacity
+					* Bugfix in Sample Info scanning for HapMap files
+					* Bugfix in Matrix Merging: added genotype encoding field
+					* Bugfix in Matrix Merging: Warning in merging all samples and markers has been addressed
+				</Description>
+			</Release>
+		</Version>
+	</GWASpi>
 </root>

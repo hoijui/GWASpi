@@ -13,98 +13,94 @@ import ucar.nc2.NetcdfFile;
  * IBE, Institute of Evolutionary Biology (UPF-CSIC)
  * CEXS-UPF-PRBB
  */
-
 public class GatherQAMarkersData {
-    
-    public static LinkedHashMap loadMarkerQAMissingRatio(int opId) throws FileNotFoundException, IOException{
 
-        OperationMetadata rdOPMetadata = new OperationMetadata(opId);
+	public static LinkedHashMap loadMarkerQAMissingRatio(int opId) throws FileNotFoundException, IOException {
 
-        OperationSet rdInfoMarkerSet = new OperationSet(rdOPMetadata.getStudyId(),opId);
-        LinkedHashMap rdMatrixMarkerSetLHM = rdInfoMarkerSet.getOpSetLHM();
+		OperationMetadata rdOPMetadata = new OperationMetadata(opId);
 
-        NetcdfFile markerQANcFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());
-        rdMatrixMarkerSetLHM = rdInfoMarkerSet.fillOpSetLHMWithVariable(markerQANcFile, org.gwaspi.constants.cNetCDF.Census.VAR_OP_MARKERS_MISSINGRAT);
+		OperationSet rdInfoMarkerSet = new OperationSet(rdOPMetadata.getStudyId(), opId);
+		LinkedHashMap rdMatrixMarkerSetLHM = rdInfoMarkerSet.getOpSetLHM();
 
-        markerQANcFile.close();
-        return rdMatrixMarkerSetLHM;
-    }
+		NetcdfFile markerQANcFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());
+		rdMatrixMarkerSetLHM = rdInfoMarkerSet.fillOpSetLHMWithVariable(markerQANcFile, org.gwaspi.constants.cNetCDF.Census.VAR_OP_MARKERS_MISSINGRAT);
 
+		markerQANcFile.close();
+		return rdMatrixMarkerSetLHM;
+	}
 
-    public static LinkedHashMap loadMarkerQAMismatchState(int opId) throws FileNotFoundException, IOException{
+	public static LinkedHashMap loadMarkerQAMismatchState(int opId) throws FileNotFoundException, IOException {
 
-        OperationMetadata rdOPMetadata = new OperationMetadata(opId);
+		OperationMetadata rdOPMetadata = new OperationMetadata(opId);
 
-        OperationSet rdInfoMarkerSet = new OperationSet(rdOPMetadata.getStudyId(),opId);
-        LinkedHashMap rdMatrixMarkerSetLHM = rdInfoMarkerSet.getOpSetLHM();
+		OperationSet rdInfoMarkerSet = new OperationSet(rdOPMetadata.getStudyId(), opId);
+		LinkedHashMap rdMatrixMarkerSetLHM = rdInfoMarkerSet.getOpSetLHM();
 
-        NetcdfFile markerQANcFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());
-        rdMatrixMarkerSetLHM = rdInfoMarkerSet.fillOpSetLHMWithVariable(markerQANcFile, org.gwaspi.constants.cNetCDF.Census.VAR_OP_MARKERS_MISMATCHSTATE);
+		NetcdfFile markerQANcFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());
+		rdMatrixMarkerSetLHM = rdInfoMarkerSet.fillOpSetLHMWithVariable(markerQANcFile, org.gwaspi.constants.cNetCDF.Census.VAR_OP_MARKERS_MISMATCHSTATE);
 
-        markerQANcFile.close();
-        return rdMatrixMarkerSetLHM;
+		markerQANcFile.close();
+		return rdMatrixMarkerSetLHM;
 
-    }
+	}
 
-    public static LinkedHashMap loadMarkerQAMinorAlleles(int opId) throws FileNotFoundException, IOException{
+	public static LinkedHashMap loadMarkerQAMinorAlleles(int opId) throws FileNotFoundException, IOException {
 
-        OperationMetadata rdOPMetadata = new OperationMetadata(opId);
+		OperationMetadata rdOPMetadata = new OperationMetadata(opId);
 
-        OperationSet rdInfoMarkerSet = new OperationSet(rdOPMetadata.getStudyId(),opId);
-        LinkedHashMap rdMatrixMarkerSetLHM = rdInfoMarkerSet.getOpSetLHM();
+		OperationSet rdInfoMarkerSet = new OperationSet(rdOPMetadata.getStudyId(), opId);
+		LinkedHashMap rdMatrixMarkerSetLHM = rdInfoMarkerSet.getOpSetLHM();
 
-        NetcdfFile markerQANcFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());
-        rdMatrixMarkerSetLHM = rdInfoMarkerSet.fillOpSetLHMWithVariable(markerQANcFile, org.gwaspi.constants.cNetCDF.Census.VAR_OP_MARKERS_MINALLELES);
+		NetcdfFile markerQANcFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());
+		rdMatrixMarkerSetLHM = rdInfoMarkerSet.fillOpSetLHMWithVariable(markerQANcFile, org.gwaspi.constants.cNetCDF.Census.VAR_OP_MARKERS_MINALLELES);
 
-        markerQANcFile.close();
-        return rdMatrixMarkerSetLHM;
+		markerQANcFile.close();
+		return rdMatrixMarkerSetLHM;
 
-    }
+	}
 
-    public static LinkedHashMap loadMarkerQAMajorAlleles(int opId) throws FileNotFoundException, IOException{
+	public static LinkedHashMap loadMarkerQAMajorAlleles(int opId) throws FileNotFoundException, IOException {
 
-        OperationMetadata rdOPMetadata = new OperationMetadata(opId);
+		OperationMetadata rdOPMetadata = new OperationMetadata(opId);
 
-        OperationSet rdInfoMarkerSet = new OperationSet(rdOPMetadata.getStudyId(),opId);
-        LinkedHashMap rdMatrixMarkerSetLHM = rdInfoMarkerSet.getOpSetLHM();
+		OperationSet rdInfoMarkerSet = new OperationSet(rdOPMetadata.getStudyId(), opId);
+		LinkedHashMap rdMatrixMarkerSetLHM = rdInfoMarkerSet.getOpSetLHM();
 
-        NetcdfFile markerQANcFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());
-        rdMatrixMarkerSetLHM = rdInfoMarkerSet.fillOpSetLHMWithVariable(markerQANcFile, org.gwaspi.constants.cNetCDF.Census.VAR_OP_MARKERS_MAJALLELES);
+		NetcdfFile markerQANcFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());
+		rdMatrixMarkerSetLHM = rdInfoMarkerSet.fillOpSetLHMWithVariable(markerQANcFile, org.gwaspi.constants.cNetCDF.Census.VAR_OP_MARKERS_MAJALLELES);
 
-        markerQANcFile.close();
-        return rdMatrixMarkerSetLHM;
+		markerQANcFile.close();
+		return rdMatrixMarkerSetLHM;
 
-    }
-    
-    public static LinkedHashMap loadMarkerQAMinorAlleleFrequency(int opId) throws FileNotFoundException, IOException{
+	}
 
-        OperationMetadata rdOPMetadata = new OperationMetadata(opId);
+	public static LinkedHashMap loadMarkerQAMinorAlleleFrequency(int opId) throws FileNotFoundException, IOException {
 
-        OperationSet rdInfoMarkerSet = new OperationSet(rdOPMetadata.getStudyId(),opId);
-        LinkedHashMap rdMatrixMarkerSetLHM = rdInfoMarkerSet.getOpSetLHM();
+		OperationMetadata rdOPMetadata = new OperationMetadata(opId);
 
-        NetcdfFile markerQANcFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());
-        rdMatrixMarkerSetLHM = rdInfoMarkerSet.fillOpSetLHMWithVariable(markerQANcFile, org.gwaspi.constants.cNetCDF.Census.VAR_OP_MARKERS_MINALLELEFRQ);
+		OperationSet rdInfoMarkerSet = new OperationSet(rdOPMetadata.getStudyId(), opId);
+		LinkedHashMap rdMatrixMarkerSetLHM = rdInfoMarkerSet.getOpSetLHM();
 
-        markerQANcFile.close();
-        return rdMatrixMarkerSetLHM;
+		NetcdfFile markerQANcFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());
+		rdMatrixMarkerSetLHM = rdInfoMarkerSet.fillOpSetLHMWithVariable(markerQANcFile, org.gwaspi.constants.cNetCDF.Census.VAR_OP_MARKERS_MINALLELEFRQ);
 
-    }
+		markerQANcFile.close();
+		return rdMatrixMarkerSetLHM;
 
-    public static LinkedHashMap loadMarkerQAMajorAlleleFrequency(int opId) throws FileNotFoundException, IOException{
+	}
 
-        OperationMetadata rdOPMetadata = new OperationMetadata(opId);
+	public static LinkedHashMap loadMarkerQAMajorAlleleFrequency(int opId) throws FileNotFoundException, IOException {
 
-        OperationSet rdInfoMarkerSet = new OperationSet(rdOPMetadata.getStudyId(),opId);
-        LinkedHashMap rdMatrixMarkerSetLHM = rdInfoMarkerSet.getOpSetLHM();
+		OperationMetadata rdOPMetadata = new OperationMetadata(opId);
 
-        NetcdfFile markerQANcFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());
-        rdMatrixMarkerSetLHM = rdInfoMarkerSet.fillOpSetLHMWithVariable(markerQANcFile, org.gwaspi.constants.cNetCDF.Census.VAR_OP_MARKERS_MAJALLELEFRQ);
+		OperationSet rdInfoMarkerSet = new OperationSet(rdOPMetadata.getStudyId(), opId);
+		LinkedHashMap rdMatrixMarkerSetLHM = rdInfoMarkerSet.getOpSetLHM();
 
-        markerQANcFile.close();
-        return rdMatrixMarkerSetLHM;
+		NetcdfFile markerQANcFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());
+		rdMatrixMarkerSetLHM = rdInfoMarkerSet.fillOpSetLHMWithVariable(markerQANcFile, org.gwaspi.constants.cNetCDF.Census.VAR_OP_MARKERS_MAJALLELEFRQ);
 
-    }
+		markerQANcFile.close();
+		return rdMatrixMarkerSetLHM;
 
-
+	}
 }

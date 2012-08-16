@@ -2,7 +2,6 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package org.gwaspi.threadbox;
 
 /**
@@ -13,8 +12,7 @@ package org.gwaspi.threadbox;
  */
 public class UseSwingWorker {
 
-    public static void main(String args[]) {
-
+	public static void main(String args[]) {
 //        SwingWorker worker = new SwingWorker() {
 //           public Object construct() {
 //               System.out.println("Started worker 1");
@@ -47,5 +45,5 @@ public class UseSwingWorker {
 //        }
 //
 //        System.out.println("MarkerQA: "+worker2.get().toString());
-    }
+	}
 }

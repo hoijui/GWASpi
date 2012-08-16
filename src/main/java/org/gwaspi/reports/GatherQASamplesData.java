@@ -13,36 +13,33 @@ import ucar.nc2.NetcdfFile;
  * IBE, Institute of Evolutionary Biology (UPF-CSIC)
  * CEXS-UPF-PRBB
  */
-
 public class GatherQASamplesData {
-    
-    public static LinkedHashMap loadSamplesQAMissingRatio(int opId) throws FileNotFoundException, IOException{
 
-        OperationMetadata rdOPMetadata = new OperationMetadata(opId);
+	public static LinkedHashMap loadSamplesQAMissingRatio(int opId) throws FileNotFoundException, IOException {
 
-        OperationSet rdInfoSampleSet = new OperationSet(rdOPMetadata.getStudyId(),opId);
-        LinkedHashMap rdMatrixSampleSetLHM = rdInfoSampleSet.getOpSetLHM();
+		OperationMetadata rdOPMetadata = new OperationMetadata(opId);
 
-        NetcdfFile ncFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());
-        rdMatrixSampleSetLHM = rdInfoSampleSet.fillOpSetLHMWithVariable(ncFile, org.gwaspi.constants.cNetCDF.Census.VAR_OP_SAMPLES_MISSINGRAT);
+		OperationSet rdInfoSampleSet = new OperationSet(rdOPMetadata.getStudyId(), opId);
+		LinkedHashMap rdMatrixSampleSetLHM = rdInfoSampleSet.getOpSetLHM();
 
-        ncFile.close();
-        return rdMatrixSampleSetLHM;
-    }
+		NetcdfFile ncFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());
+		rdMatrixSampleSetLHM = rdInfoSampleSet.fillOpSetLHMWithVariable(ncFile, org.gwaspi.constants.cNetCDF.Census.VAR_OP_SAMPLES_MISSINGRAT);
 
-    public static LinkedHashMap loadSamplesQAHetZygRatio(int opId) throws FileNotFoundException, IOException{
+		ncFile.close();
+		return rdMatrixSampleSetLHM;
+	}
 
-        OperationMetadata rdOPMetadata = new OperationMetadata(opId);
+	public static LinkedHashMap loadSamplesQAHetZygRatio(int opId) throws FileNotFoundException, IOException {
 
-        OperationSet rdInfoSampleSet = new OperationSet(rdOPMetadata.getStudyId(),opId);
-        LinkedHashMap rdMatrixSampleSetLHM = rdInfoSampleSet.getOpSetLHM();
+		OperationMetadata rdOPMetadata = new OperationMetadata(opId);
 
-        NetcdfFile ncFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());
-        rdMatrixSampleSetLHM = rdInfoSampleSet.fillOpSetLHMWithVariable(ncFile, org.gwaspi.constants.cNetCDF.Census.VAR_OP_SAMPLES_HETZYRAT);
+		OperationSet rdInfoSampleSet = new OperationSet(rdOPMetadata.getStudyId(), opId);
+		LinkedHashMap rdMatrixSampleSetLHM = rdInfoSampleSet.getOpSetLHM();
 
-        ncFile.close();
-        return rdMatrixSampleSetLHM;
-    }
-  
+		NetcdfFile ncFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());
+		rdMatrixSampleSetLHM = rdInfoSampleSet.fillOpSetLHMWithVariable(ncFile, org.gwaspi.constants.cNetCDF.Census.VAR_OP_SAMPLES_HETZYRAT);
 
+		ncFile.close();
+		return rdMatrixSampleSetLHM;
+	}
 }

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans
 	xmlns="http://www.springframework.org/schema/beans"
-    xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:tx="http://www.springframework.org/schema/tx"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="
   http://www.springframework.org/schema/beans
@@ -10,53 +10,53 @@
   http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
   ">
 
-  <!--
-  ===================================
-  External Configuration properties
-  ===================================
-  -->
-  <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-    <property name="locations">
-      <list>
-        <value>classpath:application.properties</value>
-      </list>
-    </property>
-  </bean>
+	<!--
+ ===================================
+ External Configuration properties
+ ===================================
+ -->
+	<bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations">
+			<list>
+				<value>classpath:application.properties</value>
+			</list>
+		</property>
+	</bean>
 
-  <!--
-  ===================================
-  Jdbc glue
-  ===================================
-  -->
-  <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
-    <property name="driverClass" value="${database.driverClassName}" />
-    <property name="jdbcUrl" value="${database.url}" />
-    <property name="user" value="${database.user}" />
-    <property name="password" value="${database.password}" />
-    <property name="idleConnectionTestPeriod" value="60" />
-    <property name="testConnectionOnCheckin" value="true" />
-    <property name="initialPoolSize" value="${database.poolsize.min}"/>
-    <property name="maxPoolSize" value="${database.poolsize.max}"/>
-  </bean>
+	<!--
+ ===================================
+ Jdbc glue
+ ===================================
+ -->
+	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
+		<property name="driverClass" value="${database.driverClassName}" />
+		<property name="jdbcUrl" value="${database.url}" />
+		<property name="user" value="${database.user}" />
+		<property name="password" value="${database.password}" />
+		<property name="idleConnectionTestPeriod" value="60" />
+		<property name="testConnectionOnCheckin" value="true" />
+		<property name="initialPoolSize" value="${database.poolsize.min}"/>
+		<property name="maxPoolSize" value="${database.poolsize.max}"/>
+	</bean>
 
-  <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
-    <property name="dataSource" ref="dataSource"/>
-  </bean>
+	<bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+		<property name="dataSource" ref="dataSource"/>
+	</bean>
 
-  <bean id="jdbctransactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
-    <property name="dataSource" ref="dataSource" />
-  </bean>
-  <tx:annotation-driven transaction-manager="jdbctransactionManager" />
+	<bean id="jdbctransactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+	<tx:annotation-driven transaction-manager="jdbctransactionManager" />
 
-  <!--
-  ===================================
-  Business
-  ===================================
-  -->
+	<!--
+ ===================================
+ Business
+ ===================================
+ -->
 
-  <bean id="DBManager" class="DBManagerImpl">
-    <property name="jdbcTemplate" ref="jdbcTemplate"/>
-  </bean>
+	<bean id="DBManager" class="DBManagerImpl">
+		<property name="jdbcTemplate" ref="jdbcTemplate"/>
+	</bean>
 
 
 </beans>

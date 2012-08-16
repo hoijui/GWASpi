@@ -2,9 +2,9 @@ package org.gwaspi.gui;
 
 public class TestJFrame extends javax.swing.JFrame {
 
-    public TestJFrame() {
-        initComponents();
-    }
+	public TestJFrame() {
+		initComponents();
+	}
 
     private void initComponents() {//GEN-BEGIN:initComponents
         
@@ -288,29 +288,28 @@ public class TestJFrame extends javax.swing.JFrame {
     }//GEN-END:initComponents
 
     private void button_MarkersCriteriaBrowseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_button_MarkersCriteriaBrowseActionPerformed
-        // TODO add your handling code here:
+		// TODO add your handling code here:
     }//GEN-LAST:event_button_MarkersCriteriaBrowseActionPerformed
 
     private void button_SamplesCriteriaBrowseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_button_SamplesCriteriaBrowseActionPerformed
-        // TODO add your handling code here:
+		// TODO add your handling code here:
     }//GEN-LAST:event_button_SamplesCriteriaBrowseActionPerformed
 
     private void button_BackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_button_BackActionPerformed
-        // TODO add your handling code here:
+		// TODO add your handling code here:
     }//GEN-LAST:event_button_BackActionPerformed
 
     private void button_GoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_button_GoActionPerformed
-        // TODO add your handling code here:
+		// TODO add your handling code here:
     }//GEN-LAST:event_button_GoActionPerformed
 
-    public static void main(String args[]) {
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new TestJFrame().setVisible(true);
-            }
-        });
-    }
-
+	public static void main(String args[]) {
+		java.awt.EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				new TestJFrame().setVisible(true);
+			}
+		});
+	}
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton button_Back;
     private javax.swing.JButton button_Go;
@@ -347,5 +346,4 @@ public class TestJFrame extends javax.swing.JFrame {
     private javax.swing.JTextField txt_NewMatrixName;
     private javax.swing.JTextField txt_SamplesCriteriaFile;
     // End of variables declaration//GEN-END:variables
-
 }

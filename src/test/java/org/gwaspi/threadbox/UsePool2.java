@@ -2,7 +2,6 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package org.gwaspi.threadbox;
 
 /**
@@ -17,9 +16,9 @@ import java.util.Random;
 //import org.gwaspi.netCDF.operations.Executor_OP_QASamples;
 import ucar.ma2.InvalidRangeException;
 
-
 public class UsePool2 {
- public static void main(String args[]) throws InterruptedException, IOException, InvalidRangeException {
+
+	public static void main(String args[]) throws InterruptedException, IOException, InvalidRangeException {
 //   Random random = new Random();
 //   ExecutorService executor = Executors.newFixedThreadPool(1);
 //   // Sum up wait times to know when to shutdown
@@ -46,10 +45,8 @@ public class UsePool2 {
 //   } catch (InterruptedException ignored) {
 //   }
 //   System.exit(0);
- }
-
+	}
 }
-
 //public class UsePool2 {
 // public static void main(String args[]) throws InterruptedException, IOException, InvalidRangeException, ExecutionException {
 //   Random random = new Random();

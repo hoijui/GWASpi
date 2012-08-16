@@ -4,7 +4,6 @@
  * IBE, Institute of Evolutionary Biology (UPF-CSIC)
  * CEXS-UPF-PRBB
  */
-
 package org.gwaspi.gui.utils;
 
 import javax.swing.text.AttributeSet;
@@ -12,24 +11,27 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.PlainDocument;
 
 public class JTextFieldLimit extends PlainDocument {
-    private int limit;
-    public JTextFieldLimit(int limit) {
-        super();
-        this.limit = limit;
-    }
 
-    JTextFieldLimit(int limit, boolean upper) {
-        super();
-        this.limit = limit;
-    }
+	private int limit;
 
-    public void insertString(int offset, String str, AttributeSet attr) throws BadLocationException {
-        if (str == null)
-          return;
+	public JTextFieldLimit(int limit) {
+		super();
+		this.limit = limit;
+	}
 
-        if ((getLength() + str.length()) <= limit) {
-          super.insertString(offset, str, attr);
-        }
+	JTextFieldLimit(int limit, boolean upper) {
+		super();
+		this.limit = limit;
+	}
 
-    }
+	public void insertString(int offset, String str, AttributeSet attr) throws BadLocationException {
+		if (str == null) {
+			return;
+		}
+
+		if ((getLength() + str.length()) <= limit) {
+			super.insertString(offset, str, attr);
+		}
+
+	}
 }

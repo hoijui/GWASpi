@@ -2,7 +2,6 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package org.gwaspi.gui.utils;
 
 import java.awt.Color;
@@ -20,42 +19,46 @@ import javax.swing.table.TableColumn;
  */
 public class RowRendererTrendTestWithZoomQueryDB extends DefaultTableCellRenderer {
 
-    private URL ZoomIconPath = getClass().getResource("/resources/zoom2_20x20.png");
-    private URL queryDBIconPath = getClass().getResource("/resources/arrow_20x20.png");
+	private URL ZoomIconPath = getClass().getResource("/resources/zoom2_20x20.png");
+	private URL queryDBIconPath = getClass().getResource("/resources/arrow_20x20.png");
 
-    @Override
-    public Component getTableCellRendererComponent(JTable table, Object value, boolean selected, boolean focused, int row, int column) {
-        super.getTableCellRendererComponent(table, value,selected, focused, row, column);
+	@Override
+	public Component getTableCellRendererComponent(JTable table, Object value, boolean selected, boolean focused, int row, int column) {
+		super.getTableCellRendererComponent(table, value, selected, focused, row, column);
 
-        Color bg;
-        if (!selected)  bg = (row % 2 == 0 ? org.gwaspi.constants.cGlobal.alternateRowColor : org.gwaspi.constants.cGlobal.background);
-        else            bg = org.gwaspi.constants.cGlobal.selectionBackground;
-        setBackground(bg);
+		Color bg;
+		if (!selected) {
+			bg = (row % 2 == 0 ? org.gwaspi.constants.cGlobal.alternateRowColor : org.gwaspi.constants.cGlobal.background);
+		} else {
+			bg = org.gwaspi.constants.cGlobal.selectionBackground;
+		}
+		setBackground(bg);
 
-        Color fg;
-        if (selected)   fg = org.gwaspi.constants.cGlobal.selectionForeground;
-        else            fg = org.gwaspi.constants.cGlobal.foreground;
-        setForeground(fg);
-     
-        ImageIcon ico;
-        if (column == 8){
-            ico = new ImageIcon(ZoomIconPath);
-            setHorizontalAlignment(SwingConstants.CENTER);
-            TableColumn col = table.getColumnModel().getColumn(column);
-            col.setPreferredWidth(45);
-        } else if (column == 9) {
-            ico = new ImageIcon(queryDBIconPath);
-            setHorizontalAlignment(SwingConstants.CENTER);
-            TableColumn col = table.getColumnModel().getColumn(column);
-            col.setPreferredWidth(80);
-        } else {
-            ico = null;
-            setHorizontalAlignment(SwingConstants.LEFT);
-        }
-        setIcon(ico);
-        
-        return this;
-    }
+		Color fg;
+		if (selected) {
+			fg = org.gwaspi.constants.cGlobal.selectionForeground;
+		} else {
+			fg = org.gwaspi.constants.cGlobal.foreground;
+		}
+		setForeground(fg);
 
+		ImageIcon ico;
+		if (column == 8) {
+			ico = new ImageIcon(ZoomIconPath);
+			setHorizontalAlignment(SwingConstants.CENTER);
+			TableColumn col = table.getColumnModel().getColumn(column);
+			col.setPreferredWidth(45);
+		} else if (column == 9) {
+			ico = new ImageIcon(queryDBIconPath);
+			setHorizontalAlignment(SwingConstants.CENTER);
+			TableColumn col = table.getColumnModel().getColumn(column);
+			col.setPreferredWidth(80);
+		} else {
+			ico = null;
+			setHorizontalAlignment(SwingConstants.LEFT);
+		}
+		setIcon(ico);
 
+		return this;
+	}
 }

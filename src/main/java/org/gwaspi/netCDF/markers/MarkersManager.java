@@ -6,18 +6,14 @@ package org.gwaspi.netCDF.markers;
  * IBE, Institute of Evolutionary Biology (UPF-CSIC)
  * CEXS-UPF-PRBB
  */
-
 public class MarkersManager {
-    
 
-    
-    public static String generateMarkerSetTableNameByDate(){
-        String setName = "";
-        setName += org.gwaspi.global.Utils.getShortDateTimeForFileName();
-        setName = setName.replace(":", "");
-        setName = setName.replace(" ", "");
-        setName = setName.replace("/", "");
-        return setName;
-    }
-    
+	public static String generateMarkerSetTableNameByDate() {
+		String setName = "";
+		setName += org.gwaspi.global.Utils.getShortDateTimeForFileName();
+		setName = setName.replace(":", "");
+		setName = setName.replace(" ", "");
+		setName = setName.replace("/", "");
+		return setName;
+	}
 }

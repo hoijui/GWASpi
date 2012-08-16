@@ -2,7 +2,6 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package org.gwaspi.netCDF.exporter;
 
 import java.io.BufferedWriter;
@@ -22,92 +21,90 @@ import ucar.nc2.*;
  * CEXS-UPF-PRBB
  */
 public class SpreadsheetFormatter_opt {
-    
 
-    public static boolean exportToFleurFormat(String exportPath,
-                                 MatrixMetadata rdMatrixMetadata,
-                                 MarkerSet_opt rdMarkerSet,
-                                 LinkedHashMap rdSampleSetLHM) throws IOException {
+	public static boolean exportToFleurFormat(String exportPath,
+			MatrixMetadata rdMatrixMetadata,
+			MarkerSet_opt rdMarkerSet,
+			LinkedHashMap rdSampleSetLHM) throws IOException {
 
-        File exportDir = new File(exportPath);
-        if(!exportDir.exists() || !exportDir.isDirectory()){
-            return false;
-        }
+		File exportDir = new File(exportPath);
+		if (!exportDir.exists() || !exportDir.isDirectory()) {
+			return false;
+		}
 
-        boolean result=false;
-        String sep = org.gwaspi.constants.cExport.separator_REPORTS;
-        NetcdfFile rdNcFile = NetcdfFile.open(rdMatrixMetadata.getPathToMatrix());
-        rdMarkerSet.initFullMarkerIdSetLHM();
-        
-        try {
+		boolean result = false;
+		String sep = org.gwaspi.constants.cExport.separator_REPORTS;
+		NetcdfFile rdNcFile = NetcdfFile.open(rdMatrixMetadata.getPathToMatrix());
+		rdMarkerSet.initFullMarkerIdSetLHM();
 
-            //<editor-fold defaultstate="collapsed" desc="SPREADSHEET FILE">
-            FileWriter pedFW = new FileWriter(exportDir.getPath()+"/"+rdMatrixMetadata.getMatrixFriendlyName()+".csv");
-            BufferedWriter pedBW = new BufferedWriter(pedFW);
+		try {
 
-            //HEADER CONTAINING MARKER IDs
-            StringBuilder line = new StringBuilder();
-            for (Iterator it = rdMarkerSet.markerIdSetLHM.keySet().iterator(); it.hasNext();) {
-                Object key = it.next();
-                line.append(sep);
-                line.append(key);
-            }
-            pedBW.append(line);
-            pedBW.append("\n");
-            pedBW.flush();
+			//<editor-fold defaultstate="collapsed" desc="SPREADSHEET FILE">
+			FileWriter pedFW = new FileWriter(exportDir.getPath() + "/" + rdMatrixMetadata.getMatrixFriendlyName() + ".csv");
+			BufferedWriter pedBW = new BufferedWriter(pedFW);
 
-            //Iterate through all samples
-            int sampleNb = 0;
-            for (Iterator it = rdSampleSetLHM.keySet().iterator(); it.hasNext();) {
+			//HEADER CONTAINING MARKER IDs
+			StringBuilder line = new StringBuilder();
+			for (Iterator it = rdMarkerSet.markerIdSetLHM.keySet().iterator(); it.hasNext();) {
+				Object key = it.next();
+				line.append(sep);
+				line.append(key);
+			}
+			pedBW.append(line);
+			pedBW.append("\n");
+			pedBW.flush();
 
-                String sampleId = it.next().toString();
+			//Iterate through all samples
+			int sampleNb = 0;
+			for (Iterator it = rdSampleSetLHM.keySet().iterator(); it.hasNext();) {
 
-                //Iterate through all markers
-                rdMarkerSet.fillGTsForCurrentSampleIntoInitLHM(sampleNb);
-                StringBuilder genotypes = new StringBuilder();
-                for (Iterator it2 = rdMarkerSet.markerIdSetLHM.keySet().iterator(); it2.hasNext();) {
-                    Object key = it2.next();
-                    byte[] tempGT = (byte[]) rdMarkerSet.markerIdSetLHM.get(key);
-                    genotypes.append(sep);
-                    genotypes.append(new String(new byte[]{tempGT[0]}));
-                    genotypes.append(new String(new byte[]{tempGT[1]}));
-                }
+				String sampleId = it.next().toString();
 
-                //Individual ID
-                //Genotypes
-                line = new StringBuilder();
-                line.append(sampleId);
-                line.append(genotypes);
+				//Iterate through all markers
+				rdMarkerSet.fillGTsForCurrentSampleIntoInitLHM(sampleNb);
+				StringBuilder genotypes = new StringBuilder();
+				for (Iterator it2 = rdMarkerSet.markerIdSetLHM.keySet().iterator(); it2.hasNext();) {
+					Object key = it2.next();
+					byte[] tempGT = (byte[]) rdMarkerSet.markerIdSetLHM.get(key);
+					genotypes.append(sep);
+					genotypes.append(new String(new byte[]{tempGT[0]}));
+					genotypes.append(new String(new byte[]{tempGT[1]}));
+				}
 
-                pedBW.append(line);
-                pedBW.append("\n");
-                pedBW.flush();
+				//Individual ID
+				//Genotypes
+				line = new StringBuilder();
+				line.append(sampleId);
+				line.append(genotypes);
 
-                sampleNb++;
-                if(sampleNb%100==0){
-                    System.out.println("Samples exported to Fleur file:"+sampleNb);
-                }
-                
-            }
-            System.out.println("Samples exported to Fleur file:"+sampleNb);
-            pedBW.close();
-            pedFW.close();
+				pedBW.append(line);
+				pedBW.append("\n");
+				pedBW.flush();
 
-            //</editor-fold>
+				sampleNb++;
+				if (sampleNb % 100 == 0) {
+					System.out.println("Samples exported to Fleur file:" + sampleNb);
+				}
 
-            result=true;
-        } catch (IOException iOException) {
-        } finally {
-           if (null != rdNcFile) try {
-                rdNcFile.close();
-           } catch (IOException ioe) {
-                System.out.println("Cannot close file: "+ioe);
-           }
-        }
+			}
+			System.out.println("Samples exported to Fleur file:" + sampleNb);
+			pedBW.close();
+			pedFW.close();
 
-        return result;
-    }
+			//</editor-fold>
 
- 
+			result = true;
+		} catch (IOException iOException) {
+		} finally {
+			if (null != rdNcFile) {
+				try {
+					rdNcFile.close();
+				} catch (IOException ioe) {
+					System.out.println("Cannot close file: " + ioe);
+				}
+			}
+		}
 
+		return result;
+	}
 }

@@ -16,127 +16,117 @@ import ucar.nc2.NetcdfFile;
  */
 public class GatherHardyWeinbergData {
 
+	//<editor-fold defaultstate="collapsed" desc="HARDY-WEINBERG REPORT METHODS">
+	public static LinkedHashMap loadHWPval_ALT(int opId) throws FileNotFoundException, IOException {
 
-    //<editor-fold defaultstate="collapsed" desc="HARDY-WEINBERG REPORT METHODS">
+		OperationMetadata rdOPMetadata = new OperationMetadata(opId);
 
-    public static LinkedHashMap loadHWPval_ALT(int opId) throws FileNotFoundException, IOException{
+		OperationSet rdInfoMarkerSet = new OperationSet(rdOPMetadata.getStudyId(), opId);
+		LinkedHashMap rdMatrixMarkerSetLHM = rdInfoMarkerSet.getOpSetLHM();
 
-        OperationMetadata rdOPMetadata = new OperationMetadata(opId);
+		NetcdfFile assocNcFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());
+		rdMatrixMarkerSetLHM = rdInfoMarkerSet.fillOpSetLHMWithVariable(assocNcFile, org.gwaspi.constants.cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWPval_ALT);
 
-        OperationSet rdInfoMarkerSet = new OperationSet(rdOPMetadata.getStudyId(),opId);
-        LinkedHashMap rdMatrixMarkerSetLHM = rdInfoMarkerSet.getOpSetLHM();
+		assocNcFile.close();
+		return rdMatrixMarkerSetLHM;
+	}
 
-        NetcdfFile assocNcFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());
-        rdMatrixMarkerSetLHM = rdInfoMarkerSet.fillOpSetLHMWithVariable(assocNcFile, org.gwaspi.constants.cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWPval_ALT);
+	public static LinkedHashMap loadHWPval_ALL(int opId) throws FileNotFoundException, IOException {
 
-        assocNcFile.close();
-        return rdMatrixMarkerSetLHM;
-    }
+		OperationMetadata rdOPMetadata = new OperationMetadata(opId);
 
+		OperationSet rdInfoMarkerSet = new OperationSet(rdOPMetadata.getStudyId(), opId);
+		LinkedHashMap rdMatrixMarkerSetLHM = rdInfoMarkerSet.getOpSetLHM();
 
-    public static LinkedHashMap loadHWPval_ALL(int opId) throws FileNotFoundException, IOException{
+		NetcdfFile assocNcFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());
+		rdMatrixMarkerSetLHM = rdInfoMarkerSet.fillOpSetLHMWithVariable(assocNcFile, org.gwaspi.constants.cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWPval_ALL);
 
-        OperationMetadata rdOPMetadata = new OperationMetadata(opId);
+		assocNcFile.close();
+		return rdMatrixMarkerSetLHM;
+	}
 
-        OperationSet rdInfoMarkerSet = new OperationSet(rdOPMetadata.getStudyId(),opId);
-        LinkedHashMap rdMatrixMarkerSetLHM = rdInfoMarkerSet.getOpSetLHM();
+	public static LinkedHashMap loadHWPval_CASE(int opId) throws FileNotFoundException, IOException {
 
-        NetcdfFile assocNcFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());
-        rdMatrixMarkerSetLHM = rdInfoMarkerSet.fillOpSetLHMWithVariable(assocNcFile, org.gwaspi.constants.cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWPval_ALL);
+		OperationMetadata rdOPMetadata = new OperationMetadata(opId);
 
-        assocNcFile.close();
-        return rdMatrixMarkerSetLHM;
-    }
+		OperationSet rdInfoMarkerSet = new OperationSet(rdOPMetadata.getStudyId(), opId);
+		LinkedHashMap rdMatrixMarkerSetLHM = rdInfoMarkerSet.getOpSetLHM();
 
-    public static LinkedHashMap loadHWPval_CASE(int opId) throws FileNotFoundException, IOException{
+		NetcdfFile assocNcFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());
+		rdMatrixMarkerSetLHM = rdInfoMarkerSet.fillOpSetLHMWithVariable(assocNcFile, org.gwaspi.constants.cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWPval_CASE);
 
-        OperationMetadata rdOPMetadata = new OperationMetadata(opId);
+		assocNcFile.close();
+		return rdMatrixMarkerSetLHM;
+	}
 
-        OperationSet rdInfoMarkerSet = new OperationSet(rdOPMetadata.getStudyId(),opId);
-        LinkedHashMap rdMatrixMarkerSetLHM = rdInfoMarkerSet.getOpSetLHM();
+	public static LinkedHashMap loadHWPval_CTRL(int opId) throws FileNotFoundException, IOException {
 
-        NetcdfFile assocNcFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());
-        rdMatrixMarkerSetLHM = rdInfoMarkerSet.fillOpSetLHMWithVariable(assocNcFile, org.gwaspi.constants.cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWPval_CASE);
+		OperationMetadata rdOPMetadata = new OperationMetadata(opId);
 
-        assocNcFile.close();
-        return rdMatrixMarkerSetLHM;
-    }
+		OperationSet rdInfoMarkerSet = new OperationSet(rdOPMetadata.getStudyId(), opId);
+		LinkedHashMap rdMatrixMarkerSetLHM = rdInfoMarkerSet.getOpSetLHM();
 
-    public static LinkedHashMap loadHWPval_CTRL(int opId) throws FileNotFoundException, IOException{
+		NetcdfFile assocNcFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());
+		rdMatrixMarkerSetLHM = rdInfoMarkerSet.fillOpSetLHMWithVariable(assocNcFile, org.gwaspi.constants.cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWPval_CTRL);
 
-        OperationMetadata rdOPMetadata = new OperationMetadata(opId);
+		assocNcFile.close();
+		return rdMatrixMarkerSetLHM;
+	}
 
-        OperationSet rdInfoMarkerSet = new OperationSet(rdOPMetadata.getStudyId(),opId);
-        LinkedHashMap rdMatrixMarkerSetLHM = rdInfoMarkerSet.getOpSetLHM();
+	public static LinkedHashMap loadHWHETZY_ALT(int opId) throws FileNotFoundException, IOException {
 
-        NetcdfFile assocNcFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());
-        rdMatrixMarkerSetLHM = rdInfoMarkerSet.fillOpSetLHMWithVariable(assocNcFile, org.gwaspi.constants.cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWPval_CTRL);
+		OperationMetadata rdOPMetadata = new OperationMetadata(opId);
 
-        assocNcFile.close();
-        return rdMatrixMarkerSetLHM;
-    }
+		OperationSet rdInfoMarkerSet = new OperationSet(rdOPMetadata.getStudyId(), opId);
+		LinkedHashMap rdMatrixMarkerSetLHM = rdInfoMarkerSet.getOpSetLHM();
 
+		NetcdfFile assocNcFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());
+		rdMatrixMarkerSetLHM = rdInfoMarkerSet.fillOpSetLHMWithVariable(assocNcFile, org.gwaspi.constants.cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWHETZY_ALT);
 
+		assocNcFile.close();
+		return rdMatrixMarkerSetLHM;
+	}
 
+	public static LinkedHashMap loadHWHETZY_ALL(int opId) throws FileNotFoundException, IOException {
 
+		OperationMetadata rdOPMetadata = new OperationMetadata(opId);
 
-    public static LinkedHashMap loadHWHETZY_ALT(int opId) throws FileNotFoundException, IOException{
+		OperationSet rdInfoMarkerSet = new OperationSet(rdOPMetadata.getStudyId(), opId);
+		LinkedHashMap rdMatrixMarkerSetLHM = rdInfoMarkerSet.getOpSetLHM();
 
-        OperationMetadata rdOPMetadata = new OperationMetadata(opId);
+		NetcdfFile assocNcFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());
+		rdMatrixMarkerSetLHM = rdInfoMarkerSet.fillOpSetLHMWithVariable(assocNcFile, org.gwaspi.constants.cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWHETZY_ALL);
 
-        OperationSet rdInfoMarkerSet = new OperationSet(rdOPMetadata.getStudyId(),opId);
-        LinkedHashMap rdMatrixMarkerSetLHM = rdInfoMarkerSet.getOpSetLHM();
+		assocNcFile.close();
+		return rdMatrixMarkerSetLHM;
+	}
 
-        NetcdfFile assocNcFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());
-        rdMatrixMarkerSetLHM = rdInfoMarkerSet.fillOpSetLHMWithVariable(assocNcFile, org.gwaspi.constants.cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWHETZY_ALT);
+	public static LinkedHashMap loadHWHETZY_CASE(int opId) throws FileNotFoundException, IOException {
 
-        assocNcFile.close();
-        return rdMatrixMarkerSetLHM;
-    }
+		OperationMetadata rdOPMetadata = new OperationMetadata(opId);
 
+		OperationSet rdInfoMarkerSet = new OperationSet(rdOPMetadata.getStudyId(), opId);
+		LinkedHashMap rdMatrixMarkerSetLHM = rdInfoMarkerSet.getOpSetLHM();
 
-    public static LinkedHashMap loadHWHETZY_ALL(int opId) throws FileNotFoundException, IOException{
+		NetcdfFile assocNcFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());
+		rdMatrixMarkerSetLHM = rdInfoMarkerSet.fillOpSetLHMWithVariable(assocNcFile, org.gwaspi.constants.cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWHETZY_CASE);
 
-        OperationMetadata rdOPMetadata = new OperationMetadata(opId);
+		assocNcFile.close();
+		return rdMatrixMarkerSetLHM;
+	}
 
-        OperationSet rdInfoMarkerSet = new OperationSet(rdOPMetadata.getStudyId(),opId);
-        LinkedHashMap rdMatrixMarkerSetLHM = rdInfoMarkerSet.getOpSetLHM();
+	public static LinkedHashMap loadHWHETZY_CTRL(int opId) throws FileNotFoundException, IOException {
 
-        NetcdfFile assocNcFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());
-        rdMatrixMarkerSetLHM = rdInfoMarkerSet.fillOpSetLHMWithVariable(assocNcFile, org.gwaspi.constants.cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWHETZY_ALL);
+		OperationMetadata rdOPMetadata = new OperationMetadata(opId);
 
-        assocNcFile.close();
-        return rdMatrixMarkerSetLHM;
-    }
+		OperationSet rdInfoMarkerSet = new OperationSet(rdOPMetadata.getStudyId(), opId);
+		LinkedHashMap rdMatrixMarkerSetLHM = rdInfoMarkerSet.getOpSetLHM();
 
-    public static LinkedHashMap loadHWHETZY_CASE(int opId) throws FileNotFoundException, IOException{
+		NetcdfFile assocNcFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());
+		rdMatrixMarkerSetLHM = rdInfoMarkerSet.fillOpSetLHMWithVariable(assocNcFile, org.gwaspi.constants.cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWHETZY_CTRL);
 
-        OperationMetadata rdOPMetadata = new OperationMetadata(opId);
-
-        OperationSet rdInfoMarkerSet = new OperationSet(rdOPMetadata.getStudyId(),opId);
-        LinkedHashMap rdMatrixMarkerSetLHM = rdInfoMarkerSet.getOpSetLHM();
-
-        NetcdfFile assocNcFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());
-        rdMatrixMarkerSetLHM = rdInfoMarkerSet.fillOpSetLHMWithVariable(assocNcFile, org.gwaspi.constants.cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWHETZY_CASE);
-
-        assocNcFile.close();
-        return rdMatrixMarkerSetLHM;
-    }
-
-    public static LinkedHashMap loadHWHETZY_CTRL(int opId) throws FileNotFoundException, IOException{
-
-        OperationMetadata rdOPMetadata = new OperationMetadata(opId);
-
-        OperationSet rdInfoMarkerSet = new OperationSet(rdOPMetadata.getStudyId(),opId);
-        LinkedHashMap rdMatrixMarkerSetLHM = rdInfoMarkerSet.getOpSetLHM();
-
-        NetcdfFile assocNcFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());
-        rdMatrixMarkerSetLHM = rdInfoMarkerSet.fillOpSetLHMWithVariable(assocNcFile, org.gwaspi.constants.cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWHETZY_CTRL);
-
-        assocNcFile.close();
-        return rdMatrixMarkerSetLHM;
-    }
-
-    //</editor-fold>
-
+		assocNcFile.close();
+		return rdMatrixMarkerSetLHM;
+	}
+	//</editor-fold>
 }
