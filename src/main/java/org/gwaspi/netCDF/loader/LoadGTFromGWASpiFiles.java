@@ -3,25 +3,23 @@ package org.gwaspi.netCDF.loader;
 import org.gwaspi.constants.cDBGWASpi;
 import org.gwaspi.constants.cImport;
 import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.database.DbManager;
+import org.gwaspi.global.ServiceLocator;
+import org.gwaspi.global.Text;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import ucar.ma2.*;
-import java.io.IOException;
-import java.util.LinkedHashMap;
-import org.gwaspi.constants.cNetCDF.*;
-import org.gwaspi.database.DbManager;
-import org.gwaspi.global.ServiceLocator;
-import org.gwaspi.global.Text;
-import java.util.Iterator;
 import org.gwaspi.netCDF.markers.MarkerSet_opt;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.gwaspi.netCDF.matrices.MatrixMetadata;
 import org.gwaspi.samples.SampleSet;
-import ucar.nc2.NetcdfFile;
+import ucar.ma2.*;
 import ucar.nc2.NetcdfFileWriteable;
 
 /**
@@ -161,7 +159,7 @@ public final class LoadGTFromGWASpiFiles {
 		MarkerSet_opt rdMarkerSet = new MarkerSet_opt(importMatrixMetadata.getStudyId(), gwaspiGTFilePath, importMatrixMetadata.getMatrixNetCDFName());
 		rdMarkerSet.initFullMarkerIdSetLHM();
 		rdMarkerSet.fillMarkerSetLHMWithChrAndPos();
-		LinkedHashMap rdMarkerSetLHM = rdMarkerSet.markerIdSetLHM;
+		LinkedHashMap rdMarkerSetLHM = rdMarkerSet.getMarkerIdSetLHM();
 
 		SampleSet rdSampleSet = new SampleSet(importMatrixMetadata.getStudyId(), gwaspiGTFilePath, importMatrixMetadata.getMatrixNetCDFName());
 		LinkedHashMap rdSampleSetLHM = rdSampleSet.getSampleIdSetLHM();
@@ -296,7 +294,7 @@ public final class LoadGTFromGWASpiFiles {
 			rdMarkerSet.fillGTsForCurrentSampleIntoInitLHM(sampleWrIndex);
 
 			//Write MarkerIdSetLHM to A3 ArrayChar and save to wrMatrix
-			org.gwaspi.netCDF.operations.Utils.saveSingleSampleGTsToMatrix(wrNcFile, rdMarkerSet.markerIdSetLHM, sampleWrIndex);
+			org.gwaspi.netCDF.operations.Utils.saveSingleSampleGTsToMatrix(wrNcFile, rdMarkerSet.getMarkerIdSetLHM(), sampleWrIndex);
 			if (sampleWrIndex % 100 == 0) {
 				System.out.println("Samples copied: " + sampleWrIndex);
 			}
@@ -310,9 +308,9 @@ public final class LoadGTFromGWASpiFiles {
 		try {
 			//GUESS GENOTYPE ENCODING
 			if (guessedGTCode.equals(org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding.UNKNOWN)) {
-				guessedGTCode = Utils.detectGTEncoding(rdMarkerSet.markerIdSetLHM);
+				guessedGTCode = Utils.detectGTEncoding(rdMarkerSet.getMarkerIdSetLHM());
 			} else if (guessedGTCode.equals(org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding.O12)) {
-				guessedGTCode = Utils.detectGTEncoding(rdMarkerSet.markerIdSetLHM);
+				guessedGTCode = Utils.detectGTEncoding(rdMarkerSet.getMarkerIdSetLHM());
 			}
 
 
@@ -331,11 +329,11 @@ public final class LoadGTFromGWASpiFiles {
 					new String[]{constants.cDBMatrix.f_DESCRIPTION},
 					new Object[]{descSB.toString()},
 					new String[]{constants.cDBMatrix.f_ID},
-					new Object[]{matrixFactory.matrixMetaData.getMatrixId()});
+					new Object[]{matrixFactory.getMatrixMetaData().getMatrixId()});
 
 			//CLOSE FILE
 			wrNcFile.close();
-			result = matrixFactory.matrixMetaData.getMatrixId();
+			result = matrixFactory.getMatrixMetaData().getMatrixId();
 		} catch (IOException e) {
 			System.err.println("ERROR creating file " + wrNcFile.getLocation() + "\n" + e);
 			e.printStackTrace();

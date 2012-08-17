@@ -44,15 +44,18 @@ import ucar.nc2.NetcdfFile;
  */
 public class GenericReportGenerator_opt {
 
-	protected static LinkedHashMap labelerHM = new LinkedHashMap();
-	protected static long snpNumber = 1000000;
-	protected static double threshold = 0.5 / snpNumber;  //(0.05/10⁶ SNPs => 5*10-⁷)
-	protected static Color manhattan_back = Color.getHSBColor(0.1f, 0.0f, 0.9f);
-	protected static Color manhattan_backalt = Color.getHSBColor(0.1f, 0.0f, 0.85f);
-	protected static Color manhattan_dot = Color.blue;
-	protected static Color qq_back = Color.getHSBColor(0.1f, 0.0f, 0.9f);
-	protected static Color qq_dot = Color.blue;
-	protected static Color qq_ci = Color.lightGray;
+	private static LinkedHashMap labelerHM = new LinkedHashMap();
+	private static long snpNumber = 1000000;
+	private static double threshold = 0.5 / snpNumber;  //(0.05/10⁶ SNPs => 5*10-⁷)
+	private static Color manhattan_back = Color.getHSBColor(0.1f, 0.0f, 0.9f);
+	private static Color manhattan_backalt = Color.getHSBColor(0.1f, 0.0f, 0.85f);
+	private static Color manhattan_dot = Color.blue;
+	private static Color qq_back = Color.getHSBColor(0.1f, 0.0f, 0.9f);
+	private static Color qq_dot = Color.blue;
+	private static Color qq_ci = Color.lightGray;
+
+	private GenericReportGenerator_opt() {
+	}
 
 	//<editor-fold defaultstate="collapsed" desc="ASSOCIATION CHARTS">
 	public static CombinedRangeXYPlot buildManhattanPlot(int opId, String netCDFVar) throws FileNotFoundException, IOException {
@@ -89,9 +92,9 @@ public class GenericReportGenerator_opt {
 
 
 		rdInfoMarkerSet.fillInitLHMWithVariable(org.gwaspi.constants.cNetCDF.Variables.VAR_MARKERS_CHR);
-		for (Iterator it = rdInfoMarkerSet.markerIdSetLHM.keySet().iterator(); it.hasNext();) {
+		for (Iterator it = rdInfoMarkerSet.getMarkerIdSetLHM().keySet().iterator(); it.hasNext();) {
 			Object key = it.next();
-			String chr = rdInfoMarkerSet.markerIdSetLHM.get(key).toString();
+			String chr = rdInfoMarkerSet.getMarkerIdSetLHM().get(key).toString();
 			Object[] data = new Object[3]; //CHR, POS, PVAL
 			data[0] = chr;
 			dataSetLHM.put(key, data);
@@ -99,16 +102,16 @@ public class GenericReportGenerator_opt {
 
 		rdInfoMarkerSet.fillInitLHMWithMyValue(0);
 		rdInfoMarkerSet.fillInitLHMWithVariable(org.gwaspi.constants.cNetCDF.Variables.VAR_MARKERS_POS);
-		for (Iterator it = rdInfoMarkerSet.markerIdSetLHM.keySet().iterator(); it.hasNext();) {
+		for (Iterator it = rdInfoMarkerSet.getMarkerIdSetLHM().keySet().iterator(); it.hasNext();) {
 			Object key = it.next();
 			Object[] data = (Object[]) dataSetLHM.get(key); //CHR, POS, PVAL
-			int pos = (Integer) rdInfoMarkerSet.markerIdSetLHM.get(key);
+			int pos = (Integer) rdInfoMarkerSet.getMarkerIdSetLHM().get(key);
 			data[1] = pos;
 			dataSetLHM.put(key, data);
 		}
 
-		if (rdInfoMarkerSet.markerIdSetLHM != null) {
-			rdInfoMarkerSet.markerIdSetLHM.clear();
+		if (rdInfoMarkerSet.getMarkerIdSetLHM() != null) {
+			rdInfoMarkerSet.getMarkerIdSetLHM().clear();
 		}
 		//</editor-fold>
 
@@ -197,7 +200,7 @@ public class GenericReportGenerator_opt {
 		renderer.setSeriesShape(currChrSC.getSeriesCount() - 1, new Rectangle2D.Double(-1.0, -1.0, 2.0, 2.0));
 
 		//Set range axis
-		if (combinedPlot.getSubplots().size() == 0) {
+		if (combinedPlot.getSubplots().isEmpty()) {
 			LogAxis rangeAxis = new LogAxis("P value");
 			rangeAxis.setBase(10);
 			rangeAxis.setInverted(true);
@@ -437,7 +440,7 @@ public class GenericReportGenerator_opt {
 			//CUT READ-LHM TO SIZE
 			for (Iterator it = rdAssocMarkerSetLHM.keySet().iterator(); it.hasNext();) {
 				Object key = it.next();
-				Object[] chrInfo = (Object[]) rdInfoMarkerSet.markerIdSetLHM.get(key);
+				Object[] chrInfo = (Object[]) rdInfoMarkerSet.getMarkerIdSetLHM().get(key);
 				Object[] plotInfo = new Object[3];
 				if (chrInfo[0].toString().equals(chr)) {
 					if ((Integer) chrInfo[1] >= minPosition && (Integer) chrInfo[1] <= maxPosition) {
@@ -612,12 +615,12 @@ public class GenericReportGenerator_opt {
 			//GET MARKER CHR & POS INFO
 			rdInfoMarkerSet.fillInitLHMWithVariable(org.gwaspi.constants.cNetCDF.Variables.VAR_MARKERS_CHR);
 			//First check for same chromosome data
-			String validateChr = rdInfoMarkerSet.markerIdSetLHM.get(origMarkerId).toString();
+			String validateChr = rdInfoMarkerSet.getMarkerIdSetLHM().get(origMarkerId).toString();
 			org.gwaspi.gui.reports.ManhattanPlotZoom.centerPhysPos = minPosition;
 
 			for (Iterator ite = dataSetLHM.keySet().iterator(); ite.hasNext();) {
 				Object key = ite.next();
-				String chr = rdInfoMarkerSet.markerIdSetLHM.get(key).toString();
+				String chr = rdInfoMarkerSet.getMarkerIdSetLHM().get(key).toString();
 				Object[] data = new Object[3]; //CHR, POS, PVAL
 				data[0] = chr;
 				dataSetLHM.put(key, data);
@@ -629,12 +632,12 @@ public class GenericReportGenerator_opt {
 			for (Iterator ite = dataSetLHM.keySet().iterator(); ite.hasNext();) {
 				Object key = ite.next();
 				Object[] data = (Object[]) dataSetLHM.get(key); //CHR, POS, PVAL
-				int pos = (Integer) rdInfoMarkerSet.markerIdSetLHM.get(key);
+				int pos = (Integer) rdInfoMarkerSet.getMarkerIdSetLHM().get(key);
 				data[1] = pos;
 				dataSetLHM.put(key, data);
 			}
-			if (rdInfoMarkerSet.markerIdSetLHM != null) {
-				rdInfoMarkerSet.markerIdSetLHM.clear();
+			if (rdInfoMarkerSet.getMarkerIdSetLHM() != null) {
+				rdInfoMarkerSet.getMarkerIdSetLHM().clear();
 			}
 			//</editor-fold>
 
@@ -699,7 +702,7 @@ public class GenericReportGenerator_opt {
 	//</editor-fold>
 	//<editor-fold defaultstate="collapsed/expanded" desc="SAMPLE-QA PLOTS">
 	public static XYDataset getSampleHetzygDataset(int opId) throws IOException {
-		XYDataset resultXYDataset = null;
+		XYDataset resultXYDataset;
 		OperationMetadata rdOPMetadata = new OperationMetadata(opId);
 		NetcdfFile sampleQANcFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());
 		OperationSet rdSampleQAOPSet = new OperationSet(rdOPMetadata.getStudyId(), opId);
@@ -774,9 +777,9 @@ public class GenericReportGenerator_opt {
 		rdInfoMarkerSet.initFullMarkerIdSetLHM();
 		snpNumber = rdInfoMarkerSet.getMarkerSetSize();
 		rdInfoMarkerSet.fillInitLHMWithVariable(org.gwaspi.constants.cNetCDF.Variables.VAR_MARKERS_CHR);
-		for (Iterator it = rdInfoMarkerSet.markerIdSetLHM.keySet().iterator(); it.hasNext();) {
+		for (Iterator it = rdInfoMarkerSet.getMarkerIdSetLHM().keySet().iterator(); it.hasNext();) {
 			Object key = it.next();
-			String chr = rdInfoMarkerSet.markerIdSetLHM.get(key).toString();
+			String chr = rdInfoMarkerSet.getMarkerIdSetLHM().get(key).toString();
 			Object[] data = new Object[2]; //CHR, POS
 			data[0] = chr;
 			dataSetLHM.put(key, data);
@@ -784,15 +787,15 @@ public class GenericReportGenerator_opt {
 
 		rdInfoMarkerSet.fillInitLHMWithMyValue(0);
 		rdInfoMarkerSet.fillInitLHMWithVariable(org.gwaspi.constants.cNetCDF.Variables.VAR_MARKERS_POS);
-		for (Iterator it = rdInfoMarkerSet.markerIdSetLHM.keySet().iterator(); it.hasNext();) {
+		for (Iterator it = rdInfoMarkerSet.getMarkerIdSetLHM().keySet().iterator(); it.hasNext();) {
 			Object key = it.next();
 			Object[] data = (Object[]) dataSetLHM.get(key); //CHR, POS
-			int pos = (Integer) rdInfoMarkerSet.markerIdSetLHM.get(key);
+			int pos = (Integer) rdInfoMarkerSet.getMarkerIdSetLHM().get(key);
 			data[1] = pos;
 			dataSetLHM.put(key, data);
 		}
-		if (rdInfoMarkerSet.markerIdSetLHM != null) {
-			rdInfoMarkerSet.markerIdSetLHM.clear();
+		if (rdInfoMarkerSet.getMarkerIdSetLHM() != null) {
+			rdInfoMarkerSet.getMarkerIdSetLHM().clear();
 		}
 		//</editor-fold>
 

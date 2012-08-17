@@ -1,6 +1,9 @@
 package org.gwaspi.netCDF.operations;
 
 import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.database.DbManager;
+import org.gwaspi.global.ServiceLocator;
+import org.gwaspi.global.Text;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -13,10 +16,6 @@ import org.gwaspi.netCDF.matrices.*;
 import org.gwaspi.samples.SampleSet;
 import ucar.ma2.*;
 import ucar.nc2.*;
-import org.gwaspi.constants.cNetCDF.*;
-import org.gwaspi.database.DbManager;
-import org.gwaspi.global.ServiceLocator;
-import org.gwaspi.global.Text;
 
 /**
  *
@@ -26,29 +25,29 @@ import org.gwaspi.global.Text;
  */
 public class MatrixDataExtractor_opt {
 
-	protected int studyId = Integer.MIN_VALUE;
-	protected int rdMatrixId = Integer.MIN_VALUE;
-	protected int wrMatrixId = Integer.MIN_VALUE;
-	protected String wrMatrixFriendlyName = "";
-	protected String wrMatrixDescription = "";
-	protected File markerCriteriaFile;
-	protected File sampleCriteriaFile;
-	protected cNetCDF.Defaults.SetMarkerPickCase markerPickCase;
-	protected String markerPickerVar;
-	protected StringBuilder markerPickerCriteria = new StringBuilder();
-	protected cNetCDF.Defaults.SetSamplePickCase samplePickCase;
-	protected String samplePickerVar;
-	protected StringBuilder samplePickerCriteria = new StringBuilder();
-	MatrixMetadata rdMatrixMetadata = null;
-	MatrixMetadata wrMatrixMetadata = null;
-	MarkerSet_opt rdMarkerSet = null;
-	MarkerSet_opt wrMarkerSet = null;
-	SampleSet rdSampleSet = null;
-	SampleSet wrSampleSet = null;
-	LinkedHashMap wrMarkerIdSetLHM = new LinkedHashMap();
-	LinkedHashMap rdSampleSetLHM = null;
-	LinkedHashMap wrSampleSetLHM = new LinkedHashMap();
-	LinkedHashMap rdChrInfoSetLHM = new LinkedHashMap();
+	private int studyId = Integer.MIN_VALUE;
+	private int rdMatrixId = Integer.MIN_VALUE;
+	private int wrMatrixId = Integer.MIN_VALUE;
+	private String wrMatrixFriendlyName = "";
+	private String wrMatrixDescription = "";
+	private File markerCriteriaFile;
+	private File sampleCriteriaFile;
+	private cNetCDF.Defaults.SetMarkerPickCase markerPickCase;
+	private String markerPickerVar;
+	private StringBuilder markerPickerCriteria = new StringBuilder();
+	private cNetCDF.Defaults.SetSamplePickCase samplePickCase;
+	private String samplePickerVar;
+	private StringBuilder samplePickerCriteria = new StringBuilder();
+	private MatrixMetadata rdMatrixMetadata = null;
+	private MatrixMetadata wrMatrixMetadata = null;
+	private MarkerSet_opt rdMarkerSet = null;
+	private MarkerSet_opt wrMarkerSet = null;
+	private SampleSet rdSampleSet = null;
+	private SampleSet wrSampleSet = null;
+	private LinkedHashMap wrMarkerIdSetLHM = new LinkedHashMap();
+	private LinkedHashMap rdSampleSetLHM = null;
+	private LinkedHashMap wrSampleSetLHM = new LinkedHashMap();
+	private LinkedHashMap rdChrInfoSetLHM = new LinkedHashMap();
 
 	/**
 	 * This constructor to extract data from Matrix a by passing a variable and
@@ -117,7 +116,7 @@ public class MatrixDataExtractor_opt {
 		if (!_markerPickerFile.toString().isEmpty() && _markerPickerFile.isFile()) {
 			FileReader fr = new FileReader(_markerPickerFile);
 			BufferedReader br = new BufferedReader(fr);
-			String l = "";
+			String l;
 			_markerCriteria.clear();
 			while ((l = br.readLine()) != null) {
 				_markerCriteria.add(l);
@@ -130,7 +129,7 @@ public class MatrixDataExtractor_opt {
 		switch (_markerPickCase) {
 			case ALL_MARKERS:
 				//Get all markers
-				wrMarkerIdSetLHM.putAll(rdMarkerSet.markerIdSetLHM);
+				wrMarkerIdSetLHM.putAll(rdMarkerSet.getMarkerIdSetLHM());
 				wrMarkerIdSetLHM = rdMarkerSet.fillLHMWithMyValue(wrMarkerIdSetLHM, cNetCDF.Defaults.DEFAULT_GT);
 				break;
 			case MARKERS_INCLUDE_BY_NETCDF_CRITERIA:
@@ -153,14 +152,14 @@ public class MatrixDataExtractor_opt {
 				break;
 			default:
 				//Get all markers
-				wrMarkerIdSetLHM.putAll(rdMarkerSet.markerIdSetLHM);
+				wrMarkerIdSetLHM.putAll(rdMarkerSet.getMarkerIdSetLHM());
 				wrMarkerIdSetLHM = rdMarkerSet.fillLHMWithMyValue(wrMarkerIdSetLHM, cNetCDF.Defaults.DEFAULT_GT);
 		}
 
 
 		//RETRIEVE CHROMOSOMES INFO
 		rdMarkerSet.fillMarkerSetLHMWithChrAndPos();
-		wrMarkerIdSetLHM = rdMarkerSet.fillWrLHMWithRdLHMValue(wrMarkerIdSetLHM, rdMarkerSet.markerIdSetLHM);
+		wrMarkerIdSetLHM = rdMarkerSet.fillWrLHMWithRdLHMValue(wrMarkerIdSetLHM, rdMarkerSet.getMarkerIdSetLHM());
 		rdChrInfoSetLHM = org.gwaspi.netCDF.matrices.Utils.aggregateChromosomeInfo(wrMarkerIdSetLHM, 0, 1);
 
 
@@ -176,7 +175,7 @@ public class MatrixDataExtractor_opt {
 		if (!_samplePickerFile.toString().isEmpty() && _samplePickerFile.isFile()) {
 			FileReader fr = new FileReader(_samplePickerFile);
 			BufferedReader br = new BufferedReader(fr);
-			String l = "";
+			String l;
 			_sampleCriteria.clear();
 			while ((l = br.readLine()) != null) {
 				_sampleCriteria.add(l);
@@ -350,12 +349,12 @@ public class MatrixDataExtractor_opt {
 
 				//MARKERSET RSID
 				rdMarkerSet.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_RSID);
-				wrMarkerIdSetLHM = rdMarkerSet.fillWrLHMWithRdLHMValue(wrMarkerIdSetLHM, rdMarkerSet.markerIdSetLHM);
+				wrMarkerIdSetLHM = rdMarkerSet.fillWrLHMWithRdLHMValue(wrMarkerIdSetLHM, rdMarkerSet.getMarkerIdSetLHM());
 				Utils.saveCharLHMValueToWrMatrix(wrNcFile, wrMarkerIdSetLHM, cNetCDF.Variables.VAR_MARKERS_RSID, cNetCDF.Strides.STRIDE_MARKER_NAME);
 
 				//MARKERSET CHROMOSOME
 				rdMarkerSet.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
-				wrMarkerIdSetLHM = rdMarkerSet.fillWrLHMWithRdLHMValue(wrMarkerIdSetLHM, rdMarkerSet.markerIdSetLHM);
+				wrMarkerIdSetLHM = rdMarkerSet.fillWrLHMWithRdLHMValue(wrMarkerIdSetLHM, rdMarkerSet.getMarkerIdSetLHM());
 				Utils.saveCharLHMValueToWrMatrix(wrNcFile, wrMarkerIdSetLHM, cNetCDF.Variables.VAR_MARKERS_CHR, cNetCDF.Strides.STRIDE_CHR);
 
 				//Set of chromosomes found in matrix along with number of markersinfo
@@ -367,19 +366,19 @@ public class MatrixDataExtractor_opt {
 
 				//MARKERSET POSITION
 				rdMarkerSet.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_POS);
-				wrMarkerIdSetLHM = rdMarkerSet.fillWrLHMWithRdLHMValue(wrMarkerIdSetLHM, rdMarkerSet.markerIdSetLHM);
+				wrMarkerIdSetLHM = rdMarkerSet.fillWrLHMWithRdLHMValue(wrMarkerIdSetLHM, rdMarkerSet.getMarkerIdSetLHM());
 				//Utils.saveCharLHMValueToWrMatrix(wrNcFile, wrMarkerIdSetLHM, cNetCDF.Variables.VAR_MARKERS_POS, cNetCDF.Strides.STRIDE_POS);
 				Utils.saveIntLHMD1ToWrMatrix(wrNcFile, wrMarkerIdSetLHM, cNetCDF.Variables.VAR_MARKERS_POS);
 
 
 				//MARKERSET DICTIONARY ALLELES
 				rdMarkerSet.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_BASES_DICT);
-				wrMarkerIdSetLHM = rdMarkerSet.fillWrLHMWithRdLHMValue(wrMarkerIdSetLHM, rdMarkerSet.markerIdSetLHM);
+				wrMarkerIdSetLHM = rdMarkerSet.fillWrLHMWithRdLHMValue(wrMarkerIdSetLHM, rdMarkerSet.getMarkerIdSetLHM());
 				Utils.saveCharLHMValueToWrMatrix(wrNcFile, wrMarkerIdSetLHM, cNetCDF.Variables.VAR_MARKERS_BASES_DICT, cNetCDF.Strides.STRIDE_GT);
 
 				//GENOTYPE STRAND
 				rdMarkerSet.fillInitLHMWithVariable(cNetCDF.Variables.VAR_GT_STRAND);
-				wrMarkerIdSetLHM = rdMarkerSet.fillWrLHMWithRdLHMValue(wrMarkerIdSetLHM, rdMarkerSet.markerIdSetLHM);
+				wrMarkerIdSetLHM = rdMarkerSet.fillWrLHMWithRdLHMValue(wrMarkerIdSetLHM, rdMarkerSet.getMarkerIdSetLHM());
 				Utils.saveCharLHMValueToWrMatrix(wrNcFile, wrMarkerIdSetLHM, cNetCDF.Variables.VAR_GT_STRAND, 3);
 
 				//</editor-fold>
@@ -395,7 +394,7 @@ public class MatrixDataExtractor_opt {
 					Integer rdPos = (Integer) wrSampleSetLHM.get(key);
 					rdMarkerSet.fillGTsForCurrentSampleIntoInitLHM(rdPos);
 //                    rdMarkerSet.fillGTsForCurrentSampleIntoInitLHM(sampleWrPos);
-					wrMarkerIdSetLHM = rdMarkerSet.fillWrLHMWithRdLHMValue(wrMarkerIdSetLHM, rdMarkerSet.markerIdSetLHM);
+					wrMarkerIdSetLHM = rdMarkerSet.fillWrLHMWithRdLHMValue(wrMarkerIdSetLHM, rdMarkerSet.getMarkerIdSetLHM());
 
 					//Write wrMarkerIdSetLHM to A3 ArrayChar and save to wrMatrix
 					Utils.saveSingleSampleGTsToMatrix(wrNcFile, wrMarkerIdSetLHM, sampleWrIndex);
@@ -438,7 +437,6 @@ public class MatrixDataExtractor_opt {
 		} else {
 			org.gwaspi.gui.utils.Dialogs.showWarningDialogue(org.gwaspi.global.Text.Trafo.criteriaReturnsNoResults);
 		}
-
 
 		return resultMatrixId;
 	}

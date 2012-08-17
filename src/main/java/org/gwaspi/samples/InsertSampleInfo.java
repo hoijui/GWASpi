@@ -1,37 +1,39 @@
 package org.gwaspi.samples;
 
+import org.gwaspi.constants.cImport.Annotation.GWASpi;
+import org.gwaspi.database.DbManager;
+import org.gwaspi.global.ServiceLocator;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
 /**
  *
  * @author Fernando Muñiz Fernandez
  * IBE, Institute of Evolutionary Biology (UPF-CSIC)
  * CEXS-UPF-PRBB
  */
-import org.gwaspi.database.DbManager;
-import org.gwaspi.global.ServiceLocator;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import org.gwaspi.constants.cImport.Annotation.GWASpi;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-
 public class InsertSampleInfo {
 
 	private static String processStartTime = org.gwaspi.global.Utils.getMediumDateTimeAsString();
 	private static DbManager db = null;
 
+	private InsertSampleInfo() {
+	}
+
 	public static ArrayList processData(Integer studyId, LinkedHashMap sampleInfoLHM) throws FileNotFoundException, IOException {
 		/////////////////////////////////////////////////
 		///////// Retrieving Samplelist from DB /////////
 		/////////////////////////////////////////////////
-		List<Map<String, Object>> rs = null;
 		ArrayList samplesAllreadyInDBAL = new ArrayList();
 		String dbName = org.gwaspi.constants.cDBGWASpi.DB_DATACENTER;
 		db = org.gwaspi.global.ServiceLocator.getDbManager(dbName);
 		try {
-			rs = SampleManager.selectSampleIDList(studyId);
+			List<Map<String, Object>> rs = SampleManager.selectSampleIDList(studyId);
 			for (int i = 0; i < rs.size(); i++) // loop through rows of result set
 			{
 				//PREVENT PHANTOM-DB READS EXCEPTIONS
@@ -89,7 +91,6 @@ public class InsertSampleInfo {
 							cVals[GWASpi.population], //population
 							cVals[GWASpi.age], //age
 							studyId});  //POOL ID
-				cVals = null;
 			}
 		}
 
@@ -99,11 +100,11 @@ public class InsertSampleInfo {
 
 		if (result.size() > 0) {
 			//LOG OPERATION IN STUDY HISTORY
-			StringBuffer operation = new StringBuffer("Start Time: ");
+			StringBuilder operation = new StringBuilder("Start Time: ");
 			operation.append(processStartTime);
 			operation.append("\n");
-			operation.append("Inserted " + result.size() + " Samples from info file.\n");
-			operation.append("End Time:" + org.gwaspi.global.Utils.getMediumDateTimeAsString() + "\n");
+			operation.append("Inserted ").append(result.size()).append(" Samples from info file.\n");
+			operation.append("End Time:").append(org.gwaspi.global.Utils.getMediumDateTimeAsString()).append("\n");
 			org.gwaspi.global.Utils.logBlockInStudyDesc(operation.toString(), studyId);
 			//////////////////////////////
 		}
@@ -146,7 +147,6 @@ public class InsertSampleInfo {
 						new String[]{constants.cDBSamples.f_SAMPLE_ID, org.gwaspi.constants.cDBSamples.f_POOL_ID},
 						new String[]{cVals[1].toString(), studyId.toString()});
 				result++;
-				cVals = null;
 			}
 
 		}
@@ -156,11 +156,11 @@ public class InsertSampleInfo {
 
 		if (result > 0) {
 			//LOG OPERATION IN STUDY HISTORY
-			StringBuffer operation = new StringBuffer("Start Time: ");
+			StringBuilder operation = new StringBuilder("Start Time: ");
 			operation.append(processStartTime);
 			operation.append("\n");
-			operation.append("Updated " + result + " Samples from info file.\n");
-			operation.append("End Time:" + org.gwaspi.global.Utils.getMediumDateTimeAsString() + "\n");
+			operation.append("Updated ").append(result).append(" Samples from info file.\n");
+			operation.append("End Time:").append(org.gwaspi.global.Utils.getMediumDateTimeAsString()).append("\n");
 			org.gwaspi.global.Utils.logBlockInStudyDesc(operation.toString(), studyId);
 			//////////////////////////////
 		}

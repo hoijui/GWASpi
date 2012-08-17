@@ -1,4 +1,3 @@
-
 /*
  * ManhattanPlotNavigator.java
  *

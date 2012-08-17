@@ -8,7 +8,10 @@ package org.gwaspi.gui.utils;
  */
 public class LinkEnsemblUrl {
 
-	public static String HOMOSAPIENS_BY_CHRPOS = "http://www.ensembl.org/Homo_sapiens/Location/View?r=";
+	private LinkEnsemblUrl() {
+	}
+
+	private static final String HOMOSAPIENS_BY_CHRPOS = "http://www.ensembl.org/Homo_sapiens/Location/View?r=";
 
 	public static String getHomoSapiensLink(String chr, int position) {
 		String baseUrl = HOMOSAPIENS_BY_CHRPOS;

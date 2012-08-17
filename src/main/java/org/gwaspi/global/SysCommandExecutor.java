@@ -13,17 +13,20 @@ public class SysCommandExecutor {
 
 	private static Process pr = null;
 
+	private SysCommandExecutor() {
+	}
+
 	public static void sysAnalyserCommandPost(String command) {
-//        org.gwaspi.gui.AnalyserTab.textArea_commandLine.setText(command);
+//		org.gwaspi.gui.AnalyserTab.textArea_commandLine.setText(command);
 	}
 
 	public static void sysAnalyserCommandExecute() {
 		try {
-//            String commandLine = org.gwaspi.gui.AnalyserTab.textArea_commandLine.getText();
-//            org.gwaspi.gui.AnalyserTab.textArea_cliResult.append("Command to be executed:\n"+ commandLine +"\n"+"\n");
+//			String commandLine = org.gwaspi.gui.AnalyserTab.textArea_commandLine.getText();
+//			org.gwaspi.gui.AnalyserTab.textArea_cliResult.append("Command to be executed:\n"+ commandLine +"\n"+"\n");
 //
-//            StringBuffer result=sysCommandExecute(commandLine);
-//            org.gwaspi.gui.AnalyserTab.textArea_cliResult.append(result.toString());
+//			StringBuffer result=sysCommandExecute(commandLine);
+//			org.gwaspi.gui.AnalyserTab.textArea_cliResult.append(result.toString());
 		} catch (Exception e) {
 			System.out.println(e.toString());
 			e.printStackTrace();
@@ -44,13 +47,13 @@ public class SysCommandExecutor {
 			}
 
 			BufferedReader input = new BufferedReader(new InputStreamReader(pr.getInputStream()));
-			String line = null;
+			String line;
 			while ((line = input.readLine()) != null) {
-				result.append(line + "\n");
+				result.append(line).append("\n");
 			}
 
 			int exitVal = pr.waitFor();
-			result.append("\n" + exitVal + "\n");
+			result.append("\n").append(exitVal).append("\n");
 
 		} catch (Exception e) {
 			System.out.println(e.toString());

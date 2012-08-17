@@ -1,18 +1,15 @@
 package org.gwaspi.database;
 
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-
 import org.gwaspi.framework.error.GeneralApplicationException;
 import org.gwaspi.framework.jdbc.connection.ConnectionProvider;
 import org.gwaspi.framework.jdbc.query.QueryExecutor;
 import org.gwaspi.framework.jdbc.resultset.RowMappingResultSetHandler;
 import java.sql.DriverManager;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 public class DbManagerImpl implements DbManager {
 
@@ -58,7 +55,7 @@ public class DbManagerImpl implements DbManager {
 		}
 
 		sql.append(" FROM ");
-		sql.append(schema + "." + table);
+		sql.append(schema).append(".").append(table);
 		sql.append(" WHERE ");
 
 		// append clauses fields
@@ -94,7 +91,7 @@ public class DbManagerImpl implements DbManager {
 	public boolean insertValuesInTable(String schema, String table, String[] fields, Object[] values) {
 		StringBuilder sql = new StringBuilder();
 		sql.append("INSERT INTO ");
-		sql.append(schema + "." + table);
+		sql.append(schema).append(".").append(table);
 		sql.append("(");
 		// append fields
 		for (int i = 0; i < fields.length; i++) {
@@ -126,7 +123,7 @@ public class DbManagerImpl implements DbManager {
 			String[] clauseFields, Object[] clauseValues) {
 		StringBuilder sql = new StringBuilder();
 		sql.append("UPDATE ");
-		sql.append(schema + "." + table);
+				sql.append(schema).append(".").append(table);
 		sql.append(" SET ");
 		// append fields
 		for (int i = 0; i < updateFields.length; i++) {
@@ -165,7 +162,7 @@ public class DbManagerImpl implements DbManager {
 	public boolean createTable(String schema, String table, String[] fieldStatements) {
 		StringBuilder sql = new StringBuilder();
 		sql.append("CREATE TABLE ");
-		sql.append(schema + "." + table);
+		sql.append(schema).append(".").append(table);
 		sql.append(" (");
 		// append fields
 		for (int i = 0; i < fieldStatements.length; i++) {
@@ -204,7 +201,7 @@ public class DbManagerImpl implements DbManager {
 		try {
 			DriverManager.getConnection("jdbc:derby:;shutdown=true");
 		} catch (SQLException ex) {
-//            Logger.getLogger(DbManagerImpl.class.getName()).log(Level.SEVERE, null, ex);
+//			Logger.getLogger(DbManagerImpl.class.getName()).log(Level.SEVERE, null, ex);
 		}
 	}
 }

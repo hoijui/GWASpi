@@ -17,11 +17,11 @@ import org.gwaspi.netCDF.operations.OperationManager;
  */
 public class Threaded_MatrixQA implements Runnable {
 
-	Thread runner;
-	protected String timeStamp = "";
-	public int sampleQAOpId;
-	public int markersQAOpId;
-	protected static int matrixId;
+	private Thread runner;
+	private String timeStamp = "";
+	private int sampleQAOpId;
+	private int markersQAOpId;
+	private static int matrixId;
 
 	public Threaded_MatrixQA(String threadName,
 			String _timeStamp,

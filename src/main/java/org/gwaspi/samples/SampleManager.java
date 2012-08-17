@@ -1,23 +1,21 @@
 package org.gwaspi.samples;
 
-/**
- *
- * @author Fernando Muñiz Fernandez
- * IBE, Institute of Evolutionary Biology (UPF-CSIC)
- * CEXS-UPF-PRBB
- */
 import org.gwaspi.database.DbManager;
 import org.gwaspi.global.ServiceLocator;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+/**
+ *
+ * @author Fernando Muñiz Fernandez
+ * IBE, Institute of Evolutionary Biology (UPF-CSIC)
+ * CEXS-UPF-PRBB
+ */
 public class SampleManager {
 
-	private static String processStartTime = org.gwaspi.global.Utils.getMediumDateTimeAsString();
-	private static DbManager db = null;
-	private static Integer currentLoadedSamples = 0;
-	private static Integer totalLoadedSamples;
+	private SampleManager() {
+	}
 
 	///////////////////////////////////////////
 	//////////// SAMPLE INFO TABLE ////////////
@@ -40,44 +38,33 @@ public class SampleManager {
 
 	public static List<Map<String, Object>> selectSampleIDList(Object poolId) {
 		try {
-			List<Map<String, Object>> rs = null;
 			DbManager dBManager = ServiceLocator.getDbManager(org.gwaspi.constants.cDBGWASpi.DB_DATACENTER);
 			String sql = "SELECT " + org.gwaspi.constants.cDBSamples.f_SAMPLE_ID + " FROM " + org.gwaspi.constants.cDBGWASpi.SCH_SAMPLES + "." + org.gwaspi.constants.cDBSamples.T_SAMPLES_INFO + " WHERE " + org.gwaspi.constants.cDBSamples.f_POOL_ID + "='" + poolId + "' ORDER BY order_id  WITH RR";
-			rs = dBManager.executeSelectStatement(sql);
-			return rs;
+			return dBManager.executeSelectStatement(sql);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 	}
 
 	public static List<Map<String, Object>> getAllSampleInfoFromDB() throws IOException {
-		List<Map<String, Object>> rs = null;
 		DbManager dBManager = ServiceLocator.getDbManager(org.gwaspi.constants.cDBGWASpi.DB_DATACENTER);
 
 		String sql = "SELECT * FROM " + org.gwaspi.constants.cDBGWASpi.SCH_SAMPLES + "." + org.gwaspi.constants.cDBSamples.T_SAMPLES_INFO + " ORDER BY order_id  WITH RR";
-		rs = dBManager.executeSelectStatement(sql);
-
-		return rs;
+		return dBManager.executeSelectStatement(sql);
 	}
 
 	public static List<Map<String, Object>> getAllSampleInfoFromDBByPoolID(Object poolId) throws IOException {
-		List<Map<String, Object>> rs = null;
 		DbManager dBManager = ServiceLocator.getDbManager(org.gwaspi.constants.cDBGWASpi.DB_DATACENTER);
 
 		String sql = "SELECT * FROM " + org.gwaspi.constants.cDBGWASpi.SCH_SAMPLES + "." + org.gwaspi.constants.cDBSamples.T_SAMPLES_INFO + " WHERE " + org.gwaspi.constants.cDBSamples.f_POOL_ID + "='" + poolId + "'" + " ORDER BY order_id  WITH RR";
-		rs = dBManager.executeSelectStatement(sql);
-
-		return rs;
+		return dBManager.executeSelectStatement(sql);
 	}
 
 	public static List<Map<String, Object>> getCurrentSampleInfoFromDB(String sampleId, Object poolId) throws IOException {
-		List<Map<String, Object>> rs = null;
 		DbManager dBManager = ServiceLocator.getDbManager(org.gwaspi.constants.cDBGWASpi.DB_DATACENTER);
 
 		String sql = "SELECT * FROM " + org.gwaspi.constants.cDBGWASpi.SCH_SAMPLES + "." + org.gwaspi.constants.cDBSamples.T_SAMPLES_INFO + " WHERE " + org.gwaspi.constants.cDBSamples.f_SAMPLE_ID + "='" + sampleId + "' AND " + org.gwaspi.constants.cDBSamples.f_POOL_ID + "='" + poolId + "'  WITH RR";
-		rs = dBManager.executeSelectStatement(sql);
-
-		return rs;
+		return dBManager.executeSelectStatement(sql);
 	}
 
 	public static void deleteSamplesByPoolId(Object poolId) throws IOException {

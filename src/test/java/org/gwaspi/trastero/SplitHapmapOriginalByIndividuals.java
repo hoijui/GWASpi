@@ -1,22 +1,22 @@
 package org.gwaspi.trastero;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+
 /**
  *
  * @author Fernando Muñiz Fernandez
  * IBE, Institute of Evolutionary Biology (UPF-CSIC)
  * CEXS-UPF-PRBB
  */
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-
 public class SplitHapmapOriginalByIndividuals {
 
-	protected static String hapmapBigFile = "/media/disk/Fernando/hapmap_orig/hapmapGenotypes_orden_OK_SORTED.txt";
+	private static final String hapmapBigFile = "/media/disk/Fernando/hapmap_orig/hapmapGenotypes_orden_OK_SORTED.txt";
 
 	public static void main(String[] args) throws FileNotFoundException, IOException, ClassNotFoundException, InstantiationException, IllegalAccessException {
 		processData();
@@ -33,7 +33,7 @@ public class SplitHapmapOriginalByIndividuals {
 		int hapmaprowcount = 0;
 		int samplecount = 0;
 		int genotypeCount = 0;
-		while (header) { //ignoring top empty line
+		while (header) { // ignoring top empty line
 			l = bigHapmapBufferReader.readLine();
 			header = false;
 		}
@@ -45,17 +45,16 @@ public class SplitHapmapOriginalByIndividuals {
 		while ((l = bigHapmapBufferReader.readLine()) != null) {
 
 			hapmaprowcount++;
-			String[] cVals = null;
-			cVals = l.split("[ \t,]");
+			String[] cVals = l.split("[ \t,]");
 
-			if (currentSampleId.equals(cVals[0])) { //same sample => engross current Sample's genotype file
+			if (currentSampleId.equals(cVals[0])) { // same sample => engross current Sample's genotype file
 				genotypeCount++;
 				bw.append(l + "\n");
-			} else { //encountered a new sampleId in bigHapmapFile
+			} else { // encountered a new sampleId in bigHapmapFile
 
 				samplecount++;
-				if (!currentSampleId.isEmpty()) { //obviate first time round when starting application
-					//Close previous Sample's files
+				if (!currentSampleId.isEmpty()) { // obviate first time round when starting application
+					// Close previous Sample's files
 					if (fw != null) {
 						bw.flush();
 						fw.flush();
@@ -66,7 +65,7 @@ public class SplitHapmapOriginalByIndividuals {
 				bw = new BufferedWriter(fw);
 
 				System.out.println("SampleId: " + currentSampleId + " count=" + samplecount);
-				//WRITE TO FILE
+				// WRITE TO FILE
 				bw.append(l + "\n");
 
 			}
@@ -74,6 +73,5 @@ public class SplitHapmapOriginalByIndividuals {
 
 		bw.close();
 		fw.close();
-
 	}
 }

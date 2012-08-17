@@ -14,12 +14,12 @@ import org.gwaspi.netCDF.exporter.MatrixExporter_opt;
  */
 public class Threaded_ExportMatrix implements Runnable {
 
-	Thread runner;
-	protected String timeStamp = "";
-	protected boolean startWithGUI = org.gwaspi.gui.StartGWASpi.guiMode;
-	public int matrixId;
-	public ExportFormat format;
-	public String phenotype;
+	private Thread runner;
+	private String timeStamp = "";
+	private boolean startWithGUI = org.gwaspi.gui.StartGWASpi.guiMode;
+	private int matrixId;
+	private ExportFormat format;
+	private String phenotype;
 
 	public Threaded_ExportMatrix(String threadName,
 			String _timeStamp,

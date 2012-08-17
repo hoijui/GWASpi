@@ -1,11 +1,5 @@
 package org.gwaspi.netCDF.operations;
 
-/**
- *
- * @author Fernando Muñiz Fernandez
- * IBE, Institute of Evolutionary Biology (UPF-CSIC)
- * CEXS-UPF-PRBB
- */
 import org.gwaspi.constants.cNetCDF;
 import java.io.IOException;
 import java.util.Iterator;
@@ -13,9 +7,17 @@ import java.util.LinkedHashMap;
 import org.gwaspi.model.Operation;
 import ucar.ma2.*;
 import ucar.nc2.*;
-import org.gwaspi.constants.cNetCDF.*;
 
+/**
+ *
+ * @author Fernando Muñiz Fernandez
+ * IBE, Institute of Evolutionary Biology (UPF-CSIC)
+ * CEXS-UPF-PRBB
+ */
 public class OP_HardyWeinberg {
+
+	private OP_HardyWeinberg() {
+	}
 
 	public static int processMatrix(Operation markerCensusOP, String censusName) throws IOException, InvalidRangeException {
 		int resultOpId = Integer.MIN_VALUE;
@@ -84,18 +86,18 @@ public class OP_HardyWeinberg {
 
 
 			//<editor-fold defaultstate="collapsed" desc="GET CENSUS & PERFORM HW">
-//            //PROCESS ALL SAMPLES
-//            rdMarkerSetLHM = rdOperationSet.fillLHMWithDefaultValue(rdMarkerSetLHM, 0); //PURGE
-//            rdMarkerSetLHM = rdOperationSet.fillOpSetLHMWithVariable(rdNcFile, cNetCDF.Census.VAR_OP_MARKERS_CENSUSALL);
-//            performHardyWeinberg(wrNcFile, rdMarkerSetLHM, "ALL");
+//			//PROCESS ALL SAMPLES
+//			rdMarkerSetLHM = rdOperationSet.fillLHMWithDefaultValue(rdMarkerSetLHM, 0); //PURGE
+//			rdMarkerSetLHM = rdOperationSet.fillOpSetLHMWithVariable(rdNcFile, cNetCDF.Census.VAR_OP_MARKERS_CENSUSALL);
+//			performHardyWeinberg(wrNcFile, rdMarkerSetLHM, "ALL");
 //
 //
-//            //PROCESS CASE SAMPLES
-//            rdMarkerSetLHM = rdOperationSet.fillLHMWithDefaultValue(rdMarkerSetLHM, 0); //PURGE
-//            rdMarkerSetLHM = rdOperationSet.fillOpSetLHMWithVariable(rdNcFile, cNetCDF.Census.VAR_OP_MARKERS_CENSUSCASE);
-//            performHardyWeinberg(wrNcFile, rdMarkerSetLHM, "CASE");
-//
-//
+//			//PROCESS CASE SAMPLES
+//			rdMarkerSetLHM = rdOperationSet.fillLHMWithDefaultValue(rdMarkerSetLHM, 0); //PURGE
+//			rdMarkerSetLHM = rdOperationSet.fillOpSetLHMWithVariable(rdNcFile, cNetCDF.Census.VAR_OP_MARKERS_CENSUSCASE);
+//			performHardyWeinberg(wrNcFile, rdMarkerSetLHM, "CASE");
+
+
 			//PROCESS CONTROL SAMPLES
 			System.out.println(org.gwaspi.global.Text.All.processing);
 			rdMarkerSetLHM = rdOperationSet.fillLHMWithDefaultValue(rdMarkerSetLHM, 0); //PURGE
@@ -122,9 +124,9 @@ public class OP_HardyWeinberg {
 					System.err.println("Cannot close file: " + ioe);
 				}
 			}
-			return resultOpId;
 		}
 
+		return resultOpId;
 	}
 
 	protected static void performHardyWeinberg(NetcdfFileWriteable wrNcFile, LinkedHashMap markersContingencyLHM, String category) {
@@ -171,20 +173,20 @@ public class OP_HardyWeinberg {
 
 		//<editor-fold defaultstate="collapsed" desc="HARDY-WEINBERG DATA WRITER">
 
-//        //ALL SAMPLES
-//        if(category.equals("ALL")){
-//            Utils.saveArrayDoubleItemD1ToWrMatrix(wrNcFile, markersContingencyLHM, 0, cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWPval_ALL);
-//            int[] boxes = new int[]{1,2};
-//            Utils.saveArrayDoubleD2ToWrMatrix(wrNcFile, markersContingencyLHM, boxes, cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWHETZY_ALL);
-//        }
+//		//ALL SAMPLES
+//		if(category.equals("ALL")){
+//			Utils.saveArrayDoubleItemD1ToWrMatrix(wrNcFile, markersContingencyLHM, 0, cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWPval_ALL);
+//			int[] boxes = new int[]{1,2};
+//			Utils.saveArrayDoubleD2ToWrMatrix(wrNcFile, markersContingencyLHM, boxes, cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWHETZY_ALL);
+//		}
 //
-//        //CASE SAMPLES
-//        if(category.equals("CASE")){
-//            Utils.saveArrayDoubleItemD1ToWrMatrix(wrNcFile, markersContingencyLHM, 0, cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWPval_CASE);
-//            int[] boxes = new int[]{1,2};
-//            Utils.saveArrayDoubleD2ToWrMatrix(wrNcFile, markersContingencyLHM, boxes, cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWHETZY_CASE);
-//        }
-//
+//		//CASE SAMPLES
+//		if(category.equals("CASE")){
+//			Utils.saveArrayDoubleItemD1ToWrMatrix(wrNcFile, markersContingencyLHM, 0, cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWPval_CASE);
+//			int[] boxes = new int[]{1,2};
+//			Utils.saveArrayDoubleD2ToWrMatrix(wrNcFile, markersContingencyLHM, boxes, cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWHETZY_CASE);
+//		}
+
 		//CONTROL SAMPLES
 		if (category.equals("CTRL")) {
 			Utils.saveDoubleLHMItemD1ToWrMatrix(wrNcFile, markersContingencyLHM, 0, cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWPval_CTRL);
@@ -199,6 +201,5 @@ public class OP_HardyWeinberg {
 			Utils.saveDoubleLHMD2ToWrMatrix(wrNcFile, markersContingencyLHM, boxes, cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWHETZY_ALT);
 		}
 		//</editor-fold>
-
 	}
 }

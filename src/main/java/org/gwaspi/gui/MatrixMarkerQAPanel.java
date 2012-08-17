@@ -3,7 +3,6 @@ package org.gwaspi.gui;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.utils.HelpURLs;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;

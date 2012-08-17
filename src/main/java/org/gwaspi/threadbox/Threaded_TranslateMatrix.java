@@ -17,14 +17,14 @@ import org.gwaspi.netCDF.operations.OP_QASamples_opt;
  */
 public class Threaded_TranslateMatrix implements Runnable {
 
-	Thread runner;
-	protected String timeStamp = "";
-	protected static int resultMatrixId;
-	protected static int studyId;
-	protected static int parentMatrixId;
-	protected static cNetCDF.Defaults.GenotypeEncoding gtEncoding;
-	protected static String newMatrixName;
-	protected static String description;
+	private Thread runner;
+	private String timeStamp = "";
+	private static int resultMatrixId;
+	private static int studyId;
+	private static int parentMatrixId;
+	private static cNetCDF.Defaults.GenotypeEncoding gtEncoding;
+	private static String newMatrixName;
+	private static String description;
 
 	public Threaded_TranslateMatrix(String threadName,
 			String _timeStamp,

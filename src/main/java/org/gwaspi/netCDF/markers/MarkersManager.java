@@ -8,6 +8,9 @@ package org.gwaspi.netCDF.markers;
  */
 public class MarkersManager {
 
+	private MarkersManager() {
+	}
+
 	public static String generateMarkerSetTableNameByDate() {
 		String setName = "";
 		setName += org.gwaspi.global.Utils.getShortDateTimeForFileName();

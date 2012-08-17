@@ -12,7 +12,6 @@ import java.awt.event.MouseMotionAdapter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -30,32 +29,32 @@ import org.gwaspi.netCDF.operations.OperationSet;
 public abstract class Report_Analysis extends javax.swing.JPanel {
 
 	// Variables declaration - do not modify
-	public static int studyId;
-	public static int opId;
-	public static String analysisFileName;
-	public static String NRows;
+	protected static int studyId;
+	protected static int opId;
+	protected static String analysisFileName;
+	protected static String NRows;
 	public static LinkedHashMap chrSetInfoLHM = new LinkedHashMap();
 	protected File reportFile;
-	protected javax.swing.JButton btn_Get;
-	protected javax.swing.JButton btn_Save;
-	protected javax.swing.JButton btn_Back;
-	protected javax.swing.JButton btn_Help;
-	protected javax.swing.JPanel pnl_Footer;
-	protected javax.swing.JLabel lbl_suffix1;
+	private javax.swing.JButton btn_Get;
+	private javax.swing.JButton btn_Save;
+	private javax.swing.JButton btn_Back;
+	private javax.swing.JButton btn_Help;
+	private javax.swing.JPanel pnl_Footer;
+	private javax.swing.JLabel lbl_suffix1;
 	public static javax.swing.JPanel pnl_Summary;
-	protected javax.swing.JPanel pnl_SearchDB;
+	private javax.swing.JPanel pnl_SearchDB;
 	public static javax.swing.JComboBox cmb_SearchDB;
-	protected javax.swing.JScrollPane scrl_ReportTable;
+	private javax.swing.JScrollPane scrl_ReportTable;
 	protected javax.swing.JTable tbl_ReportTable;
 	protected javax.swing.JTextField txt_NRows;
-	protected javax.swing.JTextField txt_PvalThreshold;
+	private javax.swing.JTextField txt_PvalThreshold;
 	// End of variables declaration
 
 	//protected Report_Analysis_old() {
 	protected Report_Analysis() {
 
 		String reportName = org.gwaspi.gui.GWASpiExplorerPanel.tree.getLastSelectedPathComponent().toString();
-		reportName = reportName.substring(reportName.indexOf("-") + 2);
+		reportName = reportName.substring(reportName.indexOf('-') + 2);
 
 		String reportPath = "";
 		try {
@@ -97,6 +96,7 @@ public abstract class Report_Analysis extends javax.swing.JPanel {
 			}
 		};
 		tbl_ReportTable.addMouseMotionListener(new MouseMotionAdapter() {
+			@Override
 			public void mouseMoved(MouseEvent me) {
 				displayColumnCursor(me);
 			}
@@ -301,14 +301,14 @@ public abstract class Report_Analysis extends javax.swing.JPanel {
 		OperationSet opSet = new OperationSet(studyId, opId);
 		chrSetInfoLHM = opSet.getChrInfoSetLHM(); //Nb of markers, first physical position, last physical position, start index number in MarkerSet,
 	}
-	Comparator<String> comparator = new Comparator<String>() {
-		public int compare(String s1, String s2) {
-			String[] strings1 = s1.split("\\s");
-			String[] strings2 = s2.split("\\s");
-			return strings1[strings1.length - 1]
-					.compareTo(strings2[strings2.length - 1]);
-		}
-	};
+//	private Comparator<String> comparator = new Comparator<String>() {
+//		public int compare(String s1, String s2) {
+//			String[] strings1 = s1.split("\\s");
+//			String[] strings2 = s2.split("\\s");
+//			return strings1[strings1.length - 1]
+//					.compareTo(strings2[strings2.length - 1]);
+//		}
+//	};
 
 	private void actionSaveCompleteReportAs(int studyId, String chartPath) {
 		try {
@@ -337,7 +337,7 @@ public abstract class Report_Analysis extends javax.swing.JPanel {
 			FileWriter writer = new FileWriter(newFile);
 
 			StringBuilder tableData = new StringBuilder();
-			//HEADER
+			// HEADER
 			for (int k = 0; k < tbl_ReportTable.getColumnCount() - 3; k++) { //Don't want last 3 columns
 				tableData.append(tbl_ReportTable.getColumnName(k));
 				if (k != tbl_ReportTable.getColumnCount() - 4) {
@@ -347,7 +347,7 @@ public abstract class Report_Analysis extends javax.swing.JPanel {
 			tableData.append("\n");
 			writer.write(tableData.toString());
 
-			//TABLE CONTENT
+			// TABLE CONTENT
 			for (int rowNb = 0; rowNb < tbl_ReportTable.getModel().getRowCount(); rowNb++) {
 				tableData = new StringBuilder();
 
@@ -410,6 +410,5 @@ public abstract class Report_Analysis extends javax.swing.JPanel {
 				setCursor(Cursor.getDefaultCursor());
 			}
 		}
-
 	}
 }

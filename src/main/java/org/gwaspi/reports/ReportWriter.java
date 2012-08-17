@@ -1,11 +1,5 @@
 package org.gwaspi.reports;
 
-/**
- *
- * @author Fernando Muñiz Fernandez
- * IBE, Institute of Evolutionary Biology (UPF-CSIC)
- * CEXS-UPF-PRBB
- */
 import org.gwaspi.constants.cExport;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -16,13 +10,21 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 
+/**
+ *
+ * @author Fernando Muñiz Fernandez
+ * IBE, Institute of Evolutionary Biology (UPF-CSIC)
+ * CEXS-UPF-PRBB
+ */
 public class ReportWriter {
+
+	private ReportWriter() {
+	}
 
 	protected static boolean writeFirstColumnToReport(String reportPath,
 			String reportName,

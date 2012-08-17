@@ -1,28 +1,30 @@
 package org.gwaspi.netCDF.operations;
 
+import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.constants.cNetCDF.Defaults.AlleleBytes;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import org.gwaspi.netCDF.markers.MarkerSet_opt;
+import org.gwaspi.netCDF.matrices.*;
+import org.gwaspi.netCDF.operations.CensusMethod.CensusDecision;
+import org.gwaspi.samples.SampleSet;
+import ucar.ma2.*;
+import ucar.nc2.*;
+
 /**
  *
  * @author Fernando Muñiz Fernandez
  * IBE, Institute of Evolutionary Biology (UPF-CSIC)
  * CEXS-UPF-PRBB
  */
-import org.gwaspi.constants.cNetCDF;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import org.gwaspi.netCDF.markers.MarkerSet_opt;
-import org.gwaspi.netCDF.matrices.*;
-import org.gwaspi.samples.SampleSet;
-import ucar.ma2.*;
-import ucar.nc2.*;
-import org.gwaspi.constants.cNetCDF.*;
-import org.gwaspi.constants.cNetCDF.Defaults.AlleleBytes;
-import java.util.List;
-import java.util.Map;
-import org.gwaspi.netCDF.operations.CensusMethod.CensusDecision;
-
 public class OP_QAMarkers_opt {
+
+	private OP_QAMarkers_opt() {
+	}
 
 	public static int processMatrix(int rdMatrixId) throws IOException, InvalidRangeException {
 		int resultOpId = Integer.MIN_VALUE;
@@ -48,12 +50,12 @@ public class OP_QAMarkers_opt {
 			///////////// CREATE netCDF-3 FILE ////////////
 			String description = "Marker Quality Assurance on "
 					+ rdMatrixMetadata.getMatrixFriendlyName()
-					+ "\nMarkers: " + rdMarkerSet.markerIdSetLHM.size()
+					+ "\nMarkers: " + rdMarkerSet.getMarkerIdSetLHM().size()
 					+ "\nStarted at: " + org.gwaspi.global.Utils.getShortDateTimeAsString();
 			OperationFactory wrOPHandler = new OperationFactory(rdMatrixMetadata.getStudyId(),
 					"Marker QA", //friendly name
 					description, //description
-					rdMarkerSet.markerIdSetLHM.size(),
+					rdMarkerSet.getMarkerIdSetLHM().size(),
 					rdSampleSetLHM.size(),
 					0,
 					cNetCDF.Defaults.OPType.MARKER_QA.toString(),
@@ -71,7 +73,7 @@ public class OP_QAMarkers_opt {
 
 			//<editor-fold defaultstate="collapsed" desc="METADATA WRITER">
 			//MARKERSET MARKERID
-			ArrayChar.D2 markersD2 = Utils.writeLHMKeysToD2ArrayChar(rdMarkerSet.markerIdSetLHM, cNetCDF.Strides.STRIDE_MARKER_NAME);
+			ArrayChar.D2 markersD2 = Utils.writeLHMKeysToD2ArrayChar(rdMarkerSet.getMarkerIdSetLHM(), cNetCDF.Strides.STRIDE_MARKER_NAME);
 			int[] markersOrig = new int[]{0, 0};
 			try {
 				wrNcFile.write(cNetCDF.Variables.VAR_OPSET, markersOrig, markersD2);
@@ -83,7 +85,7 @@ public class OP_QAMarkers_opt {
 
 			//MARKERSET RSID
 			rdMarkerSet.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_RSID);
-			Utils.saveCharLHMValueToWrMatrix(wrNcFile, rdMarkerSet.markerIdSetLHM, cNetCDF.Variables.VAR_MARKERS_RSID, cNetCDF.Strides.STRIDE_MARKER_NAME);
+			Utils.saveCharLHMValueToWrMatrix(wrNcFile, rdMarkerSet.getMarkerIdSetLHM(), cNetCDF.Variables.VAR_MARKERS_RSID, cNetCDF.Strides.STRIDE_MARKER_NAME);
 
 			//WRITE SAMPLESET TO MATRIX FROM SAMPLES ARRAYLIST
 			ArrayChar.D2 samplesD2 = org.gwaspi.netCDF.operations.Utils.writeLHMKeysToD2ArrayChar(rdSampleSetLHM, cNetCDF.Strides.STRIDE_SAMPLE_NAME);
@@ -107,9 +109,8 @@ public class OP_QAMarkers_opt {
 			//INIT MARKER AND SAMPLE INFO
 			rdMarkerSet.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
 
-			LinkedHashMap samplesInfoLHM = null;
 			List<Map<String, Object>> rsSamplesInfo = org.gwaspi.samples.SampleManager.getAllSampleInfoFromDBByPoolID(rdMatrixMetadata.getStudyId());
-			samplesInfoLHM = new LinkedHashMap();
+			LinkedHashMap samplesInfoLHM = new LinkedHashMap();
 			int count = 0;
 			while (count < rsSamplesInfo.size()) {
 				//PREVENT PHANTOM-DB READS EXCEPTIONS
@@ -130,7 +131,7 @@ public class OP_QAMarkers_opt {
 
 			//Iterate through markerset, take it marker by marker
 			int markerNb = 0;
-			for (Iterator it = rdMarkerSet.markerIdSetLHM.keySet().iterator(); it.hasNext();) {
+			for (Iterator it = rdMarkerSet.getMarkerIdSetLHM().keySet().iterator(); it.hasNext();) {
 				Object markerId = it.next();
 
 				LinkedHashMap knownAlleles = new LinkedHashMap();
@@ -146,7 +147,7 @@ public class OP_QAMarkers_opt {
 					Object sampleId = it2.next();
 
 					//<editor-fold defaultstate="expanded" desc="THE DECIDER">
-					CensusDecision decision = CensusDecision.getDecisionByChrAndSex(rdMarkerSet.markerIdSetLHM.get(markerId).toString(), samplesInfoLHM.get(sampleId).toString());
+					CensusDecision decision = CensusDecision.getDecisionByChrAndSex(rdMarkerSet.getMarkerIdSetLHM().get(markerId).toString(), samplesInfoLHM.get(sampleId).toString());
 					//</editor-fold>
 
 					//<editor-fold defaultstate="collapsed" desc="SUMMING SAMPLESET GENOTYPES">
@@ -390,9 +391,8 @@ public class OP_QAMarkers_opt {
 			}
 
 			org.gwaspi.global.Utils.sysoutCompleted("Marker QA");
-			return resultOpId;
 		}
 
-
+		return resultOpId;
 	}
 }

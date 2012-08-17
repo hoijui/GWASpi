@@ -1,16 +1,16 @@
 package org.gwaspi.netCDF;
 
-import java.util.List;
-import ucar.ma2.*;
-import ucar.nc2.*;
 import java.io.IOException;
 import java.util.Date;
 import java.util.LinkedHashMap;
+import java.util.List;
+import ucar.ma2.*;
+import ucar.nc2.*;
 
 public class BenchmarkReadCompareD3Array {
 
 	public static void main(String[] arg) throws InvalidRangeException, IOException {
-		int method = 2; //1=int, 2=byte, 3=char
+		int method = 2; // 1=int, 2=byte, 3=char
 		int markerNb = 100000;
 		String filename = "/media/data/work/GWASpi/genotypes/method" + method + "mk" + markerNb + ".nc";
 		NetcdfFile ncfile = null;
@@ -56,8 +56,6 @@ public class BenchmarkReadCompareD3Array {
 									+ " 0:" + (markersDim.getLength() - 1) + ":1,"
 									+ " 0:" + (allelesDim.getLength() - 1) + ":1");
 
-
-
 							int[] shape = rdArray.getShape();
 							Index index = rdArray.getIndex();
 							LinkedHashMap stringLHM = new LinkedHashMap();
@@ -73,9 +71,6 @@ public class BenchmarkReadCompareD3Array {
 								for (int h = 0; h < values.length; h = h + 2) {
 									stringLHM.put(h / 2, Byte.toString(values[h]) + Byte.toString(values[h + 1]));
 								}
-
-
-
 							}
 
 							Date end = new Date();
@@ -88,15 +83,16 @@ public class BenchmarkReadCompareD3Array {
 						}
 						System.out.println("Time average with byte: " + timeAverage + "");
 						break;
-					case 3: //char
+					case 3: // char
 						for (int sampleNb = 0; sampleNb < samplesDim.getLength(); sampleNb++) {
 							Date start = new Date();
 							ArrayChar.D3 gt_ACD3 = (ArrayChar.D3) genotypes.read("(" + sampleNb + ":" + sampleNb + ":1, "
 									+ "0:" + (markersDim.getLength() - 1) + ":1, "
 									+ "0:" + (allelesDim.getLength() - 1) + ":1)");
-//                            ArrayChar.D3 rdArray = (ArrayChar.D3) genotypes.read("("+sampleNb+":"+sampleNb+":1,"
-//                                                                                  + " 0:"+(markersDim.getLength()-1)+":1,"
-//                                                                                  + " 0:"+(allelesDim.getLength()-1)+":1)");
+//							ArrayChar.D3 rdArray = (ArrayChar.D3) genotypes.read(
+//									"(" + sampleNb + ":" + sampleNb + ":1,"
+//									+ " 0:" + (markersDim.getLength() - 1) + ":1,"
+//									+ " 0:" + (allelesDim.getLength() - 1) + ":1)");
 							Date end = new Date();
 							long tmpTime = end.getTime() - start.getTime();
 							//System.out.println("tmpTime: "+tmpTime);
@@ -109,17 +105,11 @@ public class BenchmarkReadCompareD3Array {
 						break;
 				}
 				//Array gt = genotypes.read("0:0:1, 0:9:1, 0:1:1"); //sample 1, snp 0 - 10, alleles 0+1
-
-
-
-
 			} catch (IOException ioe) {
 				System.out.println("Cannot read data: " + ioe);
 			} catch (InvalidRangeException e) {
 				System.out.println("Cannot read data: " + e);
 			}
-
-
 
 		} catch (IOException ioe) {
 			System.out.println("Cannot open file: " + ioe);
@@ -132,6 +122,5 @@ public class BenchmarkReadCompareD3Array {
 				}
 			}
 		}
-
 	}
 }

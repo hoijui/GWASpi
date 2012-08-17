@@ -1,6 +1,10 @@
 package org.gwaspi.netCDF.operations;
 
 import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
+import org.gwaspi.database.DbManager;
+import org.gwaspi.global.ServiceLocator;
+import org.gwaspi.global.Text;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -13,11 +17,6 @@ import org.gwaspi.netCDF.matrices.*;
 import org.gwaspi.samples.SampleSet;
 import ucar.ma2.*;
 import ucar.nc2.*;
-import org.gwaspi.constants.cNetCDF.*;
-import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
-import org.gwaspi.database.DbManager;
-import org.gwaspi.global.ServiceLocator;
-import org.gwaspi.global.Text;
 
 /**
  *
@@ -27,20 +26,20 @@ import org.gwaspi.global.Text;
  */
 public class MatrixGenotypesFlipper {
 
-	protected int studyId = Integer.MIN_VALUE;
-	protected int rdMatrixId = Integer.MIN_VALUE;
-	protected int wrMatrixId = Integer.MIN_VALUE;
-	protected String wrMatrixFriendlyName = "";
-	protected String wrMatrixDescription = "";
-	protected File flipperFile;
-	MatrixMetadata rdMatrixMetadata = null;
-	GenotypeEncoding gtEncoding = GenotypeEncoding.UNKNOWN;
-	MarkerSet_opt rdMarkerSet = null;
-	HashSet markerFlipHS = new HashSet();
-	SampleSet rdSampleSet = null;
-	LinkedHashMap rdMarkerIdSetLHM = new LinkedHashMap();
-	LinkedHashMap rdSampleSetLHM = new LinkedHashMap();
-	LinkedHashMap rdChrInfoSetLHM = new LinkedHashMap();
+	private int studyId = Integer.MIN_VALUE;
+	private int rdMatrixId = Integer.MIN_VALUE;
+	private int wrMatrixId = Integer.MIN_VALUE;
+	private String wrMatrixFriendlyName = "";
+	private String wrMatrixDescription = "";
+	private File flipperFile;
+	private MatrixMetadata rdMatrixMetadata = null;
+	private GenotypeEncoding gtEncoding = GenotypeEncoding.UNKNOWN;
+	private MarkerSet_opt rdMarkerSet = null;
+	private HashSet markerFlipHS = new HashSet();
+	private SampleSet rdSampleSet = null;
+	private LinkedHashMap rdMarkerIdSetLHM = new LinkedHashMap();
+	private LinkedHashMap rdSampleSetLHM = new LinkedHashMap();
+	private LinkedHashMap rdChrInfoSetLHM = new LinkedHashMap();
 
 	/**
 	 * This constructor to extract data from Matrix a by passing a variable and
@@ -82,7 +81,7 @@ public class MatrixGenotypesFlipper {
 
 		rdMarkerSet = new MarkerSet_opt(rdMatrixMetadata.getStudyId(), rdMatrixId);
 		rdMarkerSet.initFullMarkerIdSetLHM();
-		rdMarkerIdSetLHM = rdMarkerSet.markerIdSetLHM;
+		rdMarkerIdSetLHM = rdMarkerSet.getMarkerIdSetLHM();
 
 		rdChrInfoSetLHM = rdMarkerSet.getChrInfoSetLHM();
 
@@ -92,7 +91,7 @@ public class MatrixGenotypesFlipper {
 		if (flipperFile.isFile()) {
 			FileReader fr = new FileReader(flipperFile);
 			BufferedReader br = new BufferedReader(fr);
-			String l = "";
+			String l;
 			while ((l = br.readLine()) != null) {
 				markerFlipHS.add(l);
 			}
@@ -177,12 +176,12 @@ public class MatrixGenotypesFlipper {
 
 			//MARKERSET RSID
 			rdMarkerSet.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_RSID);
-			rdMarkerIdSetLHM = rdMarkerSet.fillWrLHMWithRdLHMValue(rdMarkerIdSetLHM, rdMarkerSet.markerIdSetLHM);
+			rdMarkerIdSetLHM = rdMarkerSet.fillWrLHMWithRdLHMValue(rdMarkerIdSetLHM, rdMarkerSet.getMarkerIdSetLHM());
 			Utils.saveCharLHMValueToWrMatrix(wrNcFile, rdMarkerIdSetLHM, cNetCDF.Variables.VAR_MARKERS_RSID, cNetCDF.Strides.STRIDE_MARKER_NAME);
 
 			//MARKERSET CHROMOSOME
 			rdMarkerSet.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
-			rdMarkerIdSetLHM = rdMarkerSet.fillWrLHMWithRdLHMValue(rdMarkerIdSetLHM, rdMarkerSet.markerIdSetLHM);
+			rdMarkerIdSetLHM = rdMarkerSet.fillWrLHMWithRdLHMValue(rdMarkerIdSetLHM, rdMarkerSet.getMarkerIdSetLHM());
 			Utils.saveCharLHMValueToWrMatrix(wrNcFile, rdMarkerIdSetLHM, cNetCDF.Variables.VAR_MARKERS_CHR, cNetCDF.Strides.STRIDE_CHR);
 
 			//Set of chromosomes found in matrix along with number of markersinfo
@@ -194,14 +193,14 @@ public class MatrixGenotypesFlipper {
 
 			//MARKERSET POSITION
 			rdMarkerSet.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_POS);
-			rdMarkerIdSetLHM = rdMarkerSet.fillWrLHMWithRdLHMValue(rdMarkerIdSetLHM, rdMarkerSet.markerIdSetLHM);
+			rdMarkerIdSetLHM = rdMarkerSet.fillWrLHMWithRdLHMValue(rdMarkerIdSetLHM, rdMarkerSet.getMarkerIdSetLHM());
 			//Utils.saveCharLHMValueToWrMatrix(wrNcFile, rdMarkerIdSetLHM, cNetCDF.Variables.VAR_MARKERS_POS, cNetCDF.Strides.STRIDE_POS);
 			Utils.saveIntLHMD1ToWrMatrix(wrNcFile, rdMarkerIdSetLHM, cNetCDF.Variables.VAR_MARKERS_POS);
 
 
 			//MARKERSET DICTIONARY ALLELES
 			rdMarkerSet.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_BASES_DICT);
-			rdMarkerIdSetLHM = rdMarkerSet.fillWrLHMWithRdLHMValue(rdMarkerIdSetLHM, rdMarkerSet.markerIdSetLHM);
+			rdMarkerIdSetLHM = rdMarkerSet.fillWrLHMWithRdLHMValue(rdMarkerIdSetLHM, rdMarkerSet.getMarkerIdSetLHM());
 			for (Iterator it = rdMarkerIdSetLHM.keySet().iterator(); it.hasNext();) {
 				Object markerId = it.next();
 				if (markerFlipHS.contains(markerId)) {
@@ -214,7 +213,7 @@ public class MatrixGenotypesFlipper {
 
 			//GENOTYPE STRAND
 			rdMarkerSet.fillInitLHMWithVariable(cNetCDF.Variables.VAR_GT_STRAND);
-			rdMarkerIdSetLHM = rdMarkerSet.fillWrLHMWithRdLHMValue(rdMarkerIdSetLHM, rdMarkerSet.markerIdSetLHM);
+			rdMarkerIdSetLHM = rdMarkerSet.fillWrLHMWithRdLHMValue(rdMarkerIdSetLHM, rdMarkerSet.getMarkerIdSetLHM());
 
 			for (Iterator it = rdMarkerIdSetLHM.keySet().iterator(); it.hasNext();) {
 				Object markerId = it.next();
@@ -256,7 +255,7 @@ public class MatrixGenotypesFlipper {
 
 			// CLOSE THE FILE AND BY THIS, MAKE IT READ-ONLY
 			try {
-				//GENOTYPE ENCODING
+				// GENOTYPE ENCODING
 				ArrayChar.D2 guessedGTCodeAC = new ArrayChar.D2(1, 8);
 				Index index = guessedGTCodeAC.getIndex();
 				guessedGTCodeAC.setString(index.set(0, 0), rdMatrixMetadata.getGenotypeEncoding());
@@ -283,8 +282,6 @@ public class MatrixGenotypesFlipper {
 		} catch (InvalidRangeException invalidRangeException) {
 		} catch (IOException iOException) {
 		}
-
-
 
 		return resultMatrixId;
 	}
@@ -345,7 +342,7 @@ public class MatrixGenotypesFlipper {
 
 
 				//MARKERSET MARKERID
-				ArrayChar.D2 markersD2 = Utils.writeLHMKeysToD2ArrayChar(rdMarkerSet.markerIdSetLHM, cNetCDF.Strides.STRIDE_MARKER_NAME);
+				ArrayChar.D2 markersD2 = Utils.writeLHMKeysToD2ArrayChar(rdMarkerSet.getMarkerIdSetLHM(), cNetCDF.Strides.STRIDE_MARKER_NAME);
 				int[] markersOrig = new int[]{0, 0};
 				try {
 					wrNcFile.write(cNetCDF.Variables.VAR_MARKERSET, markersOrig, markersD2);
@@ -355,14 +352,13 @@ public class MatrixGenotypesFlipper {
 					e.printStackTrace();
 				}
 
-
 				//MARKERSET RSID
 				rdMarkerSet.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_RSID);
-				Utils.saveCharLHMValueToWrMatrix(wrNcFile, rdMarkerSet.markerIdSetLHM, cNetCDF.Variables.VAR_MARKERS_RSID, cNetCDF.Strides.STRIDE_MARKER_NAME);
+				Utils.saveCharLHMValueToWrMatrix(wrNcFile, rdMarkerSet.getMarkerIdSetLHM(), cNetCDF.Variables.VAR_MARKERS_RSID, cNetCDF.Strides.STRIDE_MARKER_NAME);
 
 				//MARKERSET CHROMOSOME
 				rdMarkerSet.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
-				Utils.saveCharLHMValueToWrMatrix(wrNcFile, rdMarkerSet.markerIdSetLHM, cNetCDF.Variables.VAR_MARKERS_CHR, cNetCDF.Strides.STRIDE_CHR);
+				Utils.saveCharLHMValueToWrMatrix(wrNcFile, rdMarkerSet.getMarkerIdSetLHM(), cNetCDF.Variables.VAR_MARKERS_CHR, cNetCDF.Strides.STRIDE_CHR);
 
 				//Set of chromosomes found in matrix along with number of markersinfo
 				org.gwaspi.netCDF.operations.Utils.saveCharLHMKeyToWrMatrix(wrNcFile, rdChrInfoSetLHM, cNetCDF.Variables.VAR_CHR_IN_MATRIX, 8);
@@ -374,19 +370,19 @@ public class MatrixGenotypesFlipper {
 				//MARKERSET POSITION
 				rdMarkerSet.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_POS);
 				//Utils.saveCharLHMValueToWrMatrix(wrNcFile, rdMarkerIdSetLHM, cNetCDF.Variables.VAR_MARKERS_POS, cNetCDF.Strides.STRIDE_POS);
-				Utils.saveIntLHMD1ToWrMatrix(wrNcFile, rdMarkerSet.markerIdSetLHM, cNetCDF.Variables.VAR_MARKERS_POS);
+				Utils.saveIntLHMD1ToWrMatrix(wrNcFile, rdMarkerSet.getMarkerIdSetLHM(), cNetCDF.Variables.VAR_MARKERS_POS);
 
 
 				//MARKERSET DICTIONARY ALLELES
 				rdMarkerSet.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_BASES_DICT);
-				Utils.saveCharLHMValueToWrMatrix(wrNcFile, rdMarkerSet.markerIdSetLHM, cNetCDF.Variables.VAR_MARKERS_BASES_DICT, cNetCDF.Strides.STRIDE_GT);
+				Utils.saveCharLHMValueToWrMatrix(wrNcFile, rdMarkerSet.getMarkerIdSetLHM(), cNetCDF.Variables.VAR_MARKERS_BASES_DICT, cNetCDF.Strides.STRIDE_GT);
 
 				//GENOTYPE STRAND
-				for (Iterator it = rdMarkerSet.markerIdSetLHM.keySet().iterator(); it.hasNext();) {
+				for (Iterator it = rdMarkerSet.getMarkerIdSetLHM().keySet().iterator(); it.hasNext();) {
 					Object key = it.next();
-					rdMarkerSet.markerIdSetLHM.put(key, newStrand);
+					rdMarkerSet.getMarkerIdSetLHM().put(key, newStrand);
 				}
-				Utils.saveCharLHMValueToWrMatrix(wrNcFile, rdMarkerSet.markerIdSetLHM, cNetCDF.Variables.VAR_GT_STRAND, cNetCDF.Strides.STRIDE_STRAND);
+				Utils.saveCharLHMValueToWrMatrix(wrNcFile, rdMarkerSet.getMarkerIdSetLHM(), cNetCDF.Variables.VAR_GT_STRAND, cNetCDF.Strides.STRIDE_STRAND);
 
 				//</editor-fold>
 
@@ -498,6 +494,7 @@ public class MatrixGenotypesFlipper {
 				}
 			}
 		}
+
 		return result;
 	}
 }

@@ -1,18 +1,20 @@
 package org.gwaspi.gui;
 
-// A simple Java Console for your application (Swing version)
-// Requires Java 1.1.5 or higher
-//
-// Disclaimer the use of this source is at your own risk.
-//
-// Permission to use and distribute into your own applications
-//
-// RJHM van den Bergh , rvdb@comweb.nl
-import java.io.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.*;
 import javax.swing.*;
 
+/**
+ * A simple Java Console for your application (Swing version)
+ * Requires Java 1.1.5 or higher
+ *
+ * Disclaimer the use of this source is at your own risk.
+ *
+ * Permission to use and distribute into your own applications
+ *
+ * RJHM van den Bergh , rvdb@comweb.nl
+ */
 public class Console extends WindowAdapter implements WindowListener, ActionListener, Runnable {
 
 	private JFrame frame;
@@ -27,9 +29,9 @@ public class Console extends WindowAdapter implements WindowListener, ActionList
 		// create all components and add them
 		frame = new JFrame("Java Console");
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-		Dimension frameSize = new Dimension((int) (screenSize.width / 2), (int) (screenSize.height / 2));
-		int x = (int) (frameSize.width / 2);
-		int y = (int) (frameSize.height / 2);
+		Dimension frameSize = new Dimension(screenSize.width / 2, screenSize.height / 2);
+		int x = frameSize.width / 2;
+		int y = frameSize.height / 2;
 		frame.setBounds(x, y, frameSize.width, frameSize.height);
 
 		textArea = new JTextArea();
@@ -70,25 +72,33 @@ public class Console extends WindowAdapter implements WindowListener, ActionList
 		quit = false; // signals the Threads that they should exit
 
 		// Starting two separate threads to read from the PipedInputStreams
-		//
 		readerThread = new Thread(this);
 		readerThread.setDaemon(true);
 		readerThread.start();
-		//
+
 		readerThread2 = new Thread(this);
 		readerThread2.setDaemon(true);
 		readerThread2.start();
-
 	}
 
+	@Override
 	public synchronized void windowClosed(WindowEvent evt) {
 		quit = true;
 //		this.notifyAll(); // stop all threads
-//		try { reader.join(1000);pin.close();   } catch (Exception e){}
-//		try { reader2.join(1000);pin2.close(); } catch (Exception e){}
+//		try {
+//			reader.join(1000);
+//			pin.close();
+//		} catch (Exception e) {
+//		}
+//		try {
+//			reader2.join(1000);
+//			pin2.close();
+//		} catch (Exception e) {
+//		}
 //		System.exit(0);
 	}
 
+	@Override
 	public synchronized void windowClosing(WindowEvent evt) {
 		frame.setVisible(false); // default behaviour of JFrame
 		frame.dispose();
@@ -149,6 +159,6 @@ public class Console extends WindowAdapter implements WindowListener, ActionList
 	}
 
 	public static void main(String[] arg) {
-		new Console(); // create console with not reference
+		new Console(); // create console without reference
 	}
 }

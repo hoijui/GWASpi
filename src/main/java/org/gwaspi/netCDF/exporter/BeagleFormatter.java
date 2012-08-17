@@ -1,11 +1,5 @@
 package org.gwaspi.netCDF.exporter;
 
-/**
- *
- * @author Fernando Muñiz Fernandez
- * IBE, Institute of Evolutionary Biology (UPF-CSIC)
- * CEXS-UPF-PRBB
- */
 import org.gwaspi.constants.cNetCDF;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -23,7 +17,16 @@ import org.gwaspi.netCDF.operations.OperationSet;
 import org.gwaspi.samples.SampleSet;
 import ucar.nc2.*;
 
+/**
+ *
+ * @author Fernando Muñiz Fernandez
+ * IBE, Institute of Evolutionary Biology (UPF-CSIC)
+ * CEXS-UPF-PRBB
+ */
 class BeagleFormatter {
+
+	private BeagleFormatter() {
+	}
 
 	public static boolean exportToBeagle(String exportPath,
 			MatrixMetadata rdMatrixMetadata,
@@ -220,7 +223,7 @@ class BeagleFormatter {
 					Object infoValue = rdMarkerIdSetLHM.get(key);
 
 					StringBuilder sb = new StringBuilder();
-					sb.append(infoValue);  //previously stored info
+					sb.append(infoValue); // previously stored info
 					sb.append(sep);
 					sb.append(allele1Value);
 
@@ -236,7 +239,7 @@ class BeagleFormatter {
 					Object infoValue = rdMarkerIdSetLHM.get(key);
 
 					StringBuilder sb = new StringBuilder();
-					sb.append(infoValue);  //previously stored info
+					sb.append(infoValue); // previously stored info
 					sb.append(sep);
 					sb.append(allele2Value);
 

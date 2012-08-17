@@ -11,19 +11,22 @@ import javax.swing.UIManager;
  */
 public class cGlobal {
 
-	public final static String APP_NAME = "GWASpi";
-	public final static String OSNAME = System.getProperty("os.name");
-	public final static String OSARCH = System.getProperty("os.arch");
-	public final static String USERDIR = System.getProperty("user.dir");
-	public final static String HOMEDIR = System.getProperty("user.home");
-	public final static String JAVA_IO_TMPDIR = System.getProperty("java.io.tmpdir");
-	public final static String LOCAL_VERSION_XML = "/resources/version.xml";
-	public final static String REMOTE_VERSION_XML = "http://www.gwaspi.org/downloads/version.xml";
-	//Interloped table row colors
-	public static Color background = UIManager.getColor("Table.background");
-	public static Color alternateRowColor = new Color(background.getRed() - 20, background.getGreen() - 20, background.getBlue() - 20);
-	//public static Color alternateRowColor = UIManager.getColor("Table.dropLineColor");
-	public static Color foreground = UIManager.getColor("Table.foreground");
-	public static Color selectionBackground = UIManager.getColor("Table.selectionBackground");
-	public static Color selectionForeground = UIManager.getColor("Table.selectionForeground");
+	public static final String APP_NAME = "GWASpi";
+	public static final String OSNAME = System.getProperty("os.name");
+	public static final String OSARCH = System.getProperty("os.arch");
+	public static final String USERDIR = System.getProperty("user.dir");
+	public static final String HOMEDIR = System.getProperty("user.home");
+	public static final String JAVA_IO_TMPDIR = System.getProperty("java.io.tmpdir");
+	public static final String LOCAL_VERSION_XML = "/resources/version.xml";
+	public static final String REMOTE_VERSION_XML = "http://www.gwaspi.org/downloads/version.xml";
+	// Interloped table row colors
+	public static final Color background = UIManager.getColor("Table.background");
+	public static final Color alternateRowColor = new Color(background.getRed() - 20, background.getGreen() - 20, background.getBlue() - 20);
+	//public static final Color alternateRowColor = UIManager.getColor("Table.dropLineColor");
+	public static final Color foreground = UIManager.getColor("Table.foreground");
+	public static final Color selectionBackground = UIManager.getColor("Table.selectionBackground");
+	public static final Color selectionForeground = UIManager.getColor("Table.selectionForeground");
+
+	private cGlobal() {
+	}
 }

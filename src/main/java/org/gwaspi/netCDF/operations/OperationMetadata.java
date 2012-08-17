@@ -6,8 +6,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
 
@@ -33,8 +31,8 @@ public class OperationMetadata {
 
 	public OperationMetadata(int opId) throws IOException {
 		DbManager dBManager = ServiceLocator.getDbManager(org.gwaspi.constants.cDBGWASpi.DB_DATACENTER);
-		List<Map<String, Object>> rs = null;
-		rs = dBManager.executeSelectStatement("SELECT * FROM " + org.gwaspi.constants.cDBGWASpi.SCH_MATRICES + "." + org.gwaspi.constants.cDBOperations.T_OPERATIONS + " WHERE " + org.gwaspi.constants.cDBOperations.f_ID + "=" + opId + "  WITH RR");
+		List<Map<String, Object>> rs = dBManager.executeSelectStatement(
+				"SELECT * FROM " + org.gwaspi.constants.cDBGWASpi.SCH_MATRICES + "." + org.gwaspi.constants.cDBOperations.T_OPERATIONS + " WHERE " + org.gwaspi.constants.cDBOperations.f_ID + "=" + opId + "  WITH RR");
 
 		op_id = opId;
 
@@ -84,10 +82,9 @@ public class OperationMetadata {
 
 	public OperationMetadata(String netCDFname) throws IOException {
 		DbManager dBManager = ServiceLocator.getDbManager(org.gwaspi.constants.cDBGWASpi.DB_DATACENTER);
-		List<Map<String, Object>> rs = null;
 
 		String sql = "SELECT * FROM " + org.gwaspi.constants.cDBGWASpi.SCH_MATRICES + "." + org.gwaspi.constants.cDBOperations.T_OPERATIONS + " WHERE " + org.gwaspi.constants.cDBOperations.f_OP_NETCDF_NAME + "='" + netCDFname + "' ORDER BY " + org.gwaspi.constants.cDBOperations.f_ID + " DESC  WITH RR";
-		rs = dBManager.executeSelectStatement(sql);
+		List<Map<String, Object>> rs = dBManager.executeSelectStatement(sql);
 
 		//PREVENT PHANTOM-DB READS EXCEPTIONS
 		if (!rs.isEmpty() && rs.get(0).size() == org.gwaspi.constants.cDBOperations.T_CREATE_OPERATIONS.length) {

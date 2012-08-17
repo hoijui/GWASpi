@@ -20,7 +20,7 @@ import ucar.nc2.Variable;
  */
 public class DumpNCMatrix {
 
-	public static final void main(String[] args) throws Exception {
+	public static void main(String[] args) throws Exception {
 		printSystemOutMatrix("/media/data/work/GWASpi/genotypes/STUDY_8/GT_51310170721CEST.nc");
 	}
 
@@ -32,7 +32,7 @@ public class DumpNCMatrix {
 		FileWriter dumpFW = new FileWriter("/media/data/work/GWASpi/export/NCDump.txt");
 		BufferedWriter dumpBW = new BufferedWriter(dumpFW);
 
-		//GET MARKERSET
+		// GET MARKERSET
 		Variable var = ncfile.findVariable(org.gwaspi.constants.cNetCDF.Variables.VAR_MARKERSET);
 		DataType dataType = var.getDataType();
 		int[] varShape = var.getShape();
@@ -44,15 +44,13 @@ public class DumpNCMatrix {
 				ArrayChar.D2 markerSetAC = (ArrayChar.D2) var.read("(0:" + (markerSetSize - 1) + ":1, 0:" + (varShape[1] - 1) + ":1)");
 				markerIdSetLHM = org.gwaspi.netCDF.operations.Utils.writeD2ArrayCharToLHMKeys(markerSetAC);
 			}
-
 		} catch (IOException ioe) {
 			System.out.println("Cannot read data: " + ioe);
 		} catch (InvalidRangeException e) {
 			System.out.println("Cannot read data: " + e);
 		}
 
-
-		//GET SAMPLESET
+		// GET SAMPLESET
 		var = ncfile.findVariable(org.gwaspi.constants.cNetCDF.Variables.VAR_SAMPLESET);
 		varShape = var.getShape();
 		Dimension markerSetDim = ncfile.findDimension(org.gwaspi.constants.cNetCDF.Dimensions.DIM_SAMPLESET);
@@ -62,25 +60,22 @@ public class DumpNCMatrix {
 			ArrayChar.D2 sampleSetAC = (ArrayChar.D2) var.read("(0:" + (sampleSetSize - 1) + ":1, 0:" + (varShape[1] - 1) + ":1)");
 
 			sampleIdSetLHM = org.gwaspi.netCDF.operations.Utils.writeD2ArrayCharToLHMKeys(sampleSetAC);
-
 		} catch (IOException ioe) {
 			System.out.println("Cannot read data: " + ioe);
 		} catch (InvalidRangeException e) {
 			System.out.println("Cannot read data: " + e);
 		}
 
-
-
-		//BUILD MARKERSET HEADER
+		// BUILD MARKERSET HEADER
 		StringBuilder headerSB = new StringBuilder();
 		for (Iterator it = markerIdSetLHM.keySet().iterator(); it.hasNext();) {
 			Object markerId = it.next();
-			headerSB.append("\t" + markerId.toString());
+			headerSB.append("\t").append(markerId.toString());
 		}
 		dumpBW.append(headerSB.toString());
 		dumpBW.append("\n");
 
-		//ITERATE READ OF MARKERSETLHM BY SAMPLE
+		// ITERATE READ OF MARKERSETLHM BY SAMPLE
 		int sampleNb = 0;
 		for (Iterator it = sampleIdSetLHM.keySet().iterator(); it.hasNext();) {
 			Object sampleId = it.next();
@@ -99,9 +94,8 @@ public class DumpNCMatrix {
 				for (Iterator it2 = markerIdSetLHM.keySet().iterator(); it2.hasNext();) {
 					Object markerId = it2.next();
 					Object alleles = markerIdSetLHM.get(markerId);
-					sampleLineSB.append("\t" + alleles);
+					sampleLineSB.append("\t").append(alleles);
 				}
-
 			} catch (IOException ioe) {
 				System.out.println("Cannot read data: " + ioe);
 			} catch (InvalidRangeException e) {
@@ -111,11 +105,9 @@ public class DumpNCMatrix {
 			dumpBW.append(sampleLineSB.toString());
 			dumpBW.append("\n");
 			sampleNb++;
-
 		}
 
 		dumpBW.close();
 		dumpFW.close();
-
 	}
 }

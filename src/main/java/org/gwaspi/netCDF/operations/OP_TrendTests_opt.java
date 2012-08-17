@@ -1,24 +1,26 @@
 package org.gwaspi.netCDF.operations;
 
+import org.gwaspi.constants.cNetCDF;
+import java.io.IOException;
+import java.text.DecimalFormat;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import org.gwaspi.model.Operation;
+import org.gwaspi.netCDF.markers.MarkerSet_opt;
+import org.gwaspi.netCDF.matrices.MatrixMetadata;
+import ucar.ma2.*;
+import ucar.nc2.*;
+
 /**
  *
  * @author Fernando Muñiz Fernandez
  * IBE, Institute of Evolutionary Biology (UPF-CSIC)
  * CEXS-UPF-PRBB
  */
-import org.gwaspi.constants.cNetCDF;
-import java.io.IOException;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import org.gwaspi.model.Operation;
-import ucar.ma2.*;
-import ucar.nc2.*;
-import org.gwaspi.constants.cNetCDF.*;
-import java.text.DecimalFormat;
-import org.gwaspi.netCDF.markers.MarkerSet_opt;
-import org.gwaspi.netCDF.matrices.MatrixMetadata;
-
 public class OP_TrendTests_opt {
+
+	private OP_TrendTests_opt() {
+	}
 
 	public static int processMatrix(int _rdMatrixId,
 			Operation markerCensusOP,
@@ -82,7 +84,7 @@ public class OP_TrendTests_opt {
 
 			//retrieve chromosome info
 			rdMarkerSet.fillMarkerSetLHMWithChrAndPos();
-			wrMarkerSetLHM = rdMarkerSet.fillWrLHMWithRdLHMValue(wrMarkerSetLHM, rdMarkerSet.markerIdSetLHM);
+			wrMarkerSetLHM = rdMarkerSet.fillWrLHMWithRdLHMValue(wrMarkerSetLHM, rdMarkerSet.getMarkerIdSetLHM());
 			LinkedHashMap rdChrInfoSetLHM = org.gwaspi.netCDF.matrices.Utils.aggregateChromosomeInfo(wrMarkerSetLHM, 0, 1);
 
 
@@ -211,7 +213,6 @@ public class OP_TrendTests_opt {
 			System.out.println(org.gwaspi.global.Text.Operation.warnNoDataLeftAfterPicking);
 		}
 
-
 		return resultAssocId;
 	}
 
@@ -255,6 +256,5 @@ public class OP_TrendTests_opt {
 		int[] boxes = new int[]{0, 1};
 		Utils.saveDoubleLHMD2ToWrMatrix(wrNcFile, wrCaseMarkerIdSetLHM, boxes, cNetCDF.Association.VAR_OP_MARKERS_ASTrendTestTP);
 		//</editor-fold>
-
 	}
 }

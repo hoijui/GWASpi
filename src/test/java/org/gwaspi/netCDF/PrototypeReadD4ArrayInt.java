@@ -1,12 +1,10 @@
 package org.gwaspi.netCDF;
 
+import java.io.IOException;
+import java.util.LinkedHashMap;
 import java.util.List;
 import ucar.ma2.*;
-import ucar.ma2.ArrayInt.D2;
 import ucar.nc2.*;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
 
 public class PrototypeReadD4ArrayInt {
 
@@ -42,19 +40,14 @@ public class PrototypeReadD4ArrayInt {
 
 				int[] test = (int[]) wrIntArray.copyTo1DJavaArray();
 
-
 				//LinkedHashMap filledLhm = fillLinkedHashMap(lhm, gt, gtSpan);
 
 				int stopme = 0;
-
-
 			} catch (IOException ioe) {
 				System.out.println("Cannot read data: " + ioe);
 			} catch (InvalidRangeException e) {
 				System.out.println("Cannot read data: " + e);
 			}
-
-
 
 		} catch (IOException ioe) {
 			System.out.println("Cannot open file: " + ioe);
@@ -67,7 +60,6 @@ public class PrototypeReadD4ArrayInt {
 				}
 			}
 		}
-
 	}
 
 	public static LinkedHashMap fillLinkedHashMap(LinkedHashMap lhm, Array inputArray, int gtSpan) {

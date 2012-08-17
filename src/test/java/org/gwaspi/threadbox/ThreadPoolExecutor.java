@@ -6,10 +6,10 @@ import java.util.concurrent.*;
 
 class ThreadPoolExecutor implements ExecutorService {
 
-	int MAX_THREADPOOL_SIZE = 1;
-	public ExecutorService executor;
+	private int MAX_THREADPOOL_SIZE = 1;
+	private ExecutorService executor;
 
-	public ThreadPoolExecutor(int maxPoolSize) {
+	ThreadPoolExecutor(int maxPoolSize) {
 		MAX_THREADPOOL_SIZE = maxPoolSize;
 		executor = Executors.newFixedThreadPool(MAX_THREADPOOL_SIZE);
 	}

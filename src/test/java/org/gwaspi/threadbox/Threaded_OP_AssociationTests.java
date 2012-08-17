@@ -1,11 +1,9 @@
 package org.gwaspi.threadbox;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.gwaspi.model.Operation;
-import org.gwaspi.netCDF.operations.*;
 import ucar.ma2.InvalidRangeException;
 
 /**
@@ -16,12 +14,12 @@ import ucar.ma2.InvalidRangeException;
  */
 public class Threaded_OP_AssociationTests implements Runnable {
 
-	Thread runner;
-	public int resultOpId;
-	protected static int matrixId;
-	protected static Operation censusOP;
-	protected static Operation hwOP;
-	protected static double hwThreshold;
+	private Thread runner;
+	private int resultOpId;
+	private static int matrixId;
+	private static Operation censusOP;
+	private static Operation hwOP;
+	private static double hwThreshold;
 
 	public Threaded_OP_AssociationTests(String threadName,
 			int _matrixId,

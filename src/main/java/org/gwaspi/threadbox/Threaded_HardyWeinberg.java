@@ -3,17 +3,9 @@ package org.gwaspi.threadbox;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.global.Text;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.gwaspi.model.GWASpiExplorerNodes;
-import org.gwaspi.model.Operation;
-import org.gwaspi.model.OperationsList;
-import org.gwaspi.netCDF.operations.GWASinOneGOParams;
-import org.gwaspi.netCDF.operations.OperationManager;
-import org.gwaspi.samples.SamplesParser;
 
 /**
  *
@@ -23,11 +15,11 @@ import org.gwaspi.samples.SamplesParser;
  */
 public class Threaded_HardyWeinberg implements Runnable {
 
-	Thread runner;
-	protected String timeStamp = "";
-	protected static int matrixId;
-	protected static int censusOpId;
-	protected static File phenotypeFile;
+	private Thread runner;
+	private String timeStamp = "";
+	private static int matrixId;
+	private static int censusOpId;
+	private static File phenotypeFile;
 
 	public Threaded_HardyWeinberg(String threadName,
 			String _timeStamp,

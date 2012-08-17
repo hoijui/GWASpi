@@ -1,43 +1,45 @@
 package org.gwaspi.global;
 
+import org.gwaspi.database.DerbyDBReshaper;
+import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Properties;
+import java.util.prefs.BackingStoreException;
+import java.util.prefs.Preferences;
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
+import javax.xml.parsers.ParserConfigurationException;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.xml.sax.SAXException;
+
 /**
  *
  * @author Fernando Muñiz Fernandez
  * IBE, Institute of Evolutionary Biology (UPF-CSIC)
  * CEXS-UPF-PRBB
  */
-import org.gwaspi.database.DerbyDBReshaper;
-import java.net.URISyntaxException;
-import java.text.ParseException;
-import java.util.Properties;
-import java.util.prefs.BackingStoreException;
-import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
-
-import java.io.File;
-import java.io.IOException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.prefs.Preferences;
-import javax.xml.parsers.ParserConfigurationException;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.xml.sax.SAXException;
-
 public class Config {
 
-	protected static Properties properties = new Properties();
-	protected static JFileChooser fc;
-	protected static Preferences prefs = Preferences.userNodeForPackage(Config.class.getClass());
-	protected static int JVMbits = Integer.parseInt(System.getProperty("sun.arch.data.model", "32"));
-	protected static boolean startWithGUI = true;
+	private static Properties properties = new Properties();
+	private static JFileChooser fc;
+	private static Preferences prefs = Preferences.userNodeForPackage(Config.class.getClass());
+	private static int JVMbits = Integer.parseInt(System.getProperty("sun.arch.data.model", "32"));
+	private static boolean startWithGUI = true;
+
+	private Config() {
+	}
 
 	public static void setConfigValue(String key, Object value) throws IOException {
-		//GUI PREFS
+		// GUI PREFS
 		prefs.put(key, value.toString());
 
-		//CLI & THREAD PREFS
+		// CLI & THREAD PREFS
 		if (key.equals("DataDir")) {
 			org.gwaspi.gui.StartGWASpi.config_DataDir = (String) value;
 		}
@@ -133,16 +135,17 @@ public class Config {
 		return prop;
 	}
 
-//    public static int getConfigValue(String key, int defaultV) throws IOException{
-//        int prop = prefs.getInt(key, defaultV);
-//        return prop;
-//    }
+//	public static int getConfigValue(String key, int defaultV) throws IOException{
+//		int prop = prefs.getInt(key, defaultV);
+//		return prop;
+//	}
+
 	public static void clearConfigFile() throws IOException, BackingStoreException {
 		if (startWithGUI) {
-			//GUI MODE
+			// GUI MODE
 			prefs.clear();
 		} else {
-			//CLI MODE
+			// CLI MODE
 			org.gwaspi.gui.StartGWASpi.config_DataDir = null;
 			org.gwaspi.gui.StartGWASpi.config_GTdir = null;
 			org.gwaspi.gui.StartGWASpi.config_ExportDir = null;
@@ -159,18 +162,15 @@ public class Config {
 			//clearConfigFile();
 			File dirToData = new File(getConfigValue("DataDir", ""));
 
-			//CHECK FOR RECENT GWASPI VERSION
+			// CHECK FOR RECENT GWASPI VERSION
 			checkUpdates();
 
-			if (_startWithGUI) {   //GUI MODE
+			if (_startWithGUI) { // GUI MODE
 
 				if (dirToData.getPath().equals("")) {
 
-
-
-					File dataDir = null;
 					JOptionPane.showMessageDialog(org.gwaspi.gui.StartGWASpi.mainGUIFrame, org.gwaspi.global.Text.App.initText);
-					dataDir = org.gwaspi.gui.utils.Dialogs.selectDirectoryDialogue(JOptionPane.OK_OPTION);
+					File dataDir = org.gwaspi.gui.utils.Dialogs.selectDirectoryDialogue(JOptionPane.OK_OPTION);
 
 					if (dataDir != null) {
 						try {
@@ -204,20 +204,20 @@ public class Config {
 						}
 					}
 
-//                    if (getConfigValue("GTdir", "").equals("")) {
+//					if (getConfigValue("GTdir", "").equals("")) {
 					updateConfigDataDirs(dirToData);
-//                    } else {
+//					} else {
 					setDBSystemDir(derbyCenter.getPath());
-//                    }
+//					}
 
 					isInitiated = true;
 				}
 
-			} else { //CLI & THREAD MODE
+			} else { // CLI & THREAD MODE
 
 				if (dirToData.getPath().equals("")) {
 					if (scriptFile != null) {
-						//Use path from script file
+						// Use path from script file
 						File dataDir = new File(org.gwaspi.cli.Utils.readDataDirFromScript(scriptFile)); //1st line contains data path
 						if (!dataDir.exists()) {
 							dataDir = null;
@@ -244,7 +244,7 @@ public class Config {
 
 			}
 
-			//ALTER EXISTING DERBY DB TABLES TO SUIT CURRENT GWASPI VERSION
+			// ALTER EXISTING DERBY DB TABLES TO SUIT CURRENT GWASPI VERSION
 			DerbyDBReshaper.alterTableUpdates();
 
 		} catch (Exception e) {
@@ -274,7 +274,7 @@ public class Config {
 		setConfigValue("ReportsDir", dataDir.getPath() + "/reports");
 		setConfigValue("LogDir", dataDir.getPath() + "/reports/log");
 
-		//SET CHART PREFERENCES
+		// SET CHART PREFERENCES
 		setConfigValue("CHART_MANHATTAN_PLOT_BCKG", "200,200,200");
 		setConfigValue("CHART_MANHATTAN_PLOT_BCKG_ALT", "230,230,230");
 		setConfigValue("CHART_MANHATTAN_PLOT_DOT", "0,0,255");
@@ -321,7 +321,7 @@ public class Config {
 		setConfigValue("LAST_OPENED_DIR", lastOpenedDir);
 		setConfigValue("LAST_SELECTED_NODE", lastSelectedNode);
 
-		//SET CHART PREFERENCES
+		// SET CHART PREFERENCES
 		setConfigValue("CHART_MANHATTAN_PLOT_BCKG", lastMnhttBack);
 		setConfigValue("CHART_MANHATTAN_PLOT_BCKG_ALT", lastMnhttBackAlt);
 		setConfigValue("CHART_MANHATTAN_PLOT_DOT", lastMnhttDot);
@@ -356,8 +356,8 @@ public class Config {
 				URL remoteVersionPath = new URL(org.gwaspi.constants.cGlobal.REMOTE_VERSION_XML);
 				Document remoteDom = org.gwaspi.global.XMLParser.parseXmlFile(remoteVersionPath.toURI().toString());
 
-				if (remoteDom != null) { //Found remote version info
-					//Retrieve data from XML files
+				if (remoteDom != null) { // Found remote version info
+					// Retrieve data from XML files
 
 					Date localUpdateDate = org.gwaspi.global.XMLParser.getDateValue(localElements.get(0), "Date");
 					String localVersionNumber = org.gwaspi.global.XMLParser.getTextValue(localElements.get(0), "Number");
@@ -372,10 +372,10 @@ public class Config {
 					message.append("\nNewest Version: ").append(remoteVersionNumber);
 					message.append("\nUpdate Type: ").append(org.gwaspi.global.XMLParser.getTextValue(remoteElements.get(0), "Type"));
 
-					//MAKE VERSION CHECKS
+					// MAKE VERSION CHECKS
 					if (remoteCompatibilityNumber.compareTo(localVersionNumber) <= 0) { //Remote version is still compatible with local version
 						message.append("\n").append(org.gwaspi.global.Text.App.newVersionIsCompatible).append("\n").append(org.gwaspi.global.XMLParser.getTextValue(remoteElements.get(0), "ActionCompatible"));
-					} else {     //Remote version is NOT compatible with local version
+					} else { // Remote version is NOT compatible with local version
 						message.append("\n").append(org.gwaspi.global.Text.App.newVersionIsUnCompatible).append("\n").append(org.gwaspi.global.XMLParser.getTextValue(remoteElements.get(0), "ActionUnCompatible"));
 					}
 					message.append("\nChangelog: ").append(org.gwaspi.global.XMLParser.getTextValue(remoteElements.get(0), "Description"));
@@ -390,10 +390,7 @@ public class Config {
 
 				}
 			}
-
-
 		}
-
 	}
 
 	public static void setDBSystemDir(String dataCenter) throws IOException {

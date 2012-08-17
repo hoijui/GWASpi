@@ -3,12 +3,10 @@ package org.gwaspi.model;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.global.Text;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.JTree;
 import javax.swing.text.Position;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
@@ -22,6 +20,9 @@ import org.gwaspi.samples.SampleManager;
  * CEXS-UPF-PRBB
  */
 public class GWASpiExplorerNodes {
+
+	private GWASpiExplorerNodes() {
+	}
 
 	//<editor-fold defaultstate="collapsed" desc="NODE DEFINITION">
 	public static class NodeElementInfo {
@@ -89,14 +90,14 @@ public class GWASpiExplorerNodes {
 
 	protected static DefaultMutableTreeNode createSampleInfoTreeNode(int studyId) throws IOException {
 		DefaultMutableTreeNode tn = null;
-		//CHECK IF STUDY EXISTS
+		// CHECK IF STUDY EXISTS
 		List<Map<String, Object>> rs = SampleManager.getAllSampleInfoFromDBByPoolID(studyId);
 		if (!rs.isEmpty()) {
 
-			tn = new DefaultMutableTreeNode(new NodeElementInfo(studyId, //parentNodeId
-					studyId, //nodeId
-					org.gwaspi.global.Text.App.treeSampleInfo, //nodeType
-					org.gwaspi.global.Text.App.treeSampleInfo)); //nodeUniqueName
+			tn = new DefaultMutableTreeNode(new NodeElementInfo(studyId, // parentNodeId
+					studyId, // nodeId
+					org.gwaspi.global.Text.App.treeSampleInfo, // nodeType
+					org.gwaspi.global.Text.App.treeSampleInfo)); // nodeUniqueName
 		}
 		return tn;
 	}
@@ -158,7 +159,7 @@ public class GWASpiExplorerNodes {
 	//<editor-fold defaultstate="collapsed" desc="STUDY NODES">
 	public static void insertLatestStudyNode() throws IOException {
 		try {
-			//GET LATEST ADDED STUDY
+			// GET LATEST ADDED STUDY
 			org.gwaspi.model.StudyList studiesMod = new org.gwaspi.model.StudyList();
 			TreePath parentPath = org.gwaspi.gui.GWASpiExplorerPanel.tree.getNextMatch(Text.App.treeStudyManagement, 0, Position.Bias.Forward);
 
@@ -174,7 +175,7 @@ public class GWASpiExplorerNodes {
 
 	public static void insertStudyNode(int studyId) throws IOException {
 		try {
-			//GET STUDY
+			// GET STUDY
 			TreePath parentPath = org.gwaspi.gui.GWASpiExplorerPanel.tree.getNextMatch(Text.App.treeStudyManagement, 0, Position.Bias.Forward);
 
 			DefaultMutableTreeNode newNode = createStudyTreeNode(studyId);
@@ -189,7 +190,7 @@ public class GWASpiExplorerNodes {
 
 	public static void deleteStudyNode(int studyId) {
 		try {
-			//GET DELETE PATH BY PREFIX ONLY
+			// GET DELETE PATH BY PREFIX ONLY
 			TreePath deletePath = org.gwaspi.gui.GWASpiExplorerPanel.tree.getNextMatch("SID: " + studyId + " - ", 0, Position.Bias.Forward);
 
 			if (deletePath != null) {
@@ -205,7 +206,7 @@ public class GWASpiExplorerNodes {
 	public static void insertMatrixNode(int studyId, int matrixId) throws IOException {
 		if (org.gwaspi.gui.StartGWASpi.guiMode) {
 			try {
-				//GET STUDY
+				// GET STUDY
 				org.gwaspi.model.Study study = new org.gwaspi.model.Study(studyId);
 				TreePath parentPath = org.gwaspi.gui.GWASpiExplorerPanel.tree.getNextMatch("SID: " + study.getStudyId() + " - " + study.getStudyName(), 0, Position.Bias.Forward);
 
@@ -223,7 +224,7 @@ public class GWASpiExplorerNodes {
 
 	public static void deleteMatrixNode(int matrixId) {
 		try {
-			//GET DELETE PATH BY PREFIX ONLY
+			// GET DELETE PATH BY PREFIX ONLY
 			TreePath deletePath = org.gwaspi.gui.GWASpiExplorerPanel.tree.getNextMatch("MX: " + matrixId + " - ", 0, Position.Bias.Forward);
 
 			if (deletePath != null) {
@@ -238,7 +239,7 @@ public class GWASpiExplorerNodes {
 	//<editor-fold defaultstate="collapsed" desc="OPERATION NODES">
 	public static void insertOperationUnderMatrixNode(int matrixId, int opId) throws IOException {
 		try {
-			//GET MATRIX
+			// GET MATRIX
 			org.gwaspi.model.Matrix matrix = new org.gwaspi.model.Matrix(matrixId);
 			TreePath parentPath = org.gwaspi.gui.GWASpiExplorerPanel.tree.getNextMatch("MX: " + matrixId + " - " + matrix.matrixMetadata.getMatrixFriendlyName(), 0, Position.Bias.Forward);
 
@@ -254,7 +255,7 @@ public class GWASpiExplorerNodes {
 
 	public static void insertSubOperationUnderOperationNode(int parentOpId, int opId) throws IOException {
 		try {
-			//GET MATRIX
+			// GET MATRIX
 			org.gwaspi.model.Operation parentOP = new org.gwaspi.model.Operation(parentOpId);
 			TreePath parentPath = org.gwaspi.gui.GWASpiExplorerPanel.tree.getNextMatch("OP: " + parentOpId + " - " + parentOP.getOperationFriendlyName(), 0, Position.Bias.Forward);
 
@@ -270,7 +271,7 @@ public class GWASpiExplorerNodes {
 
 	public static void deleteOperationNode(int opId) {
 		try {
-			//GET DELETE PATH BY PREFIX ONLY
+			// GET DELETE PATH BY PREFIX ONLY
 			TreePath deletePath = org.gwaspi.gui.GWASpiExplorerPanel.tree.getNextMatch("OP: " + opId + " - ", 0, Position.Bias.Forward);
 
 			if (deletePath != null) {
@@ -285,12 +286,12 @@ public class GWASpiExplorerNodes {
 	//<editor-fold defaultstate="collapsed" desc="REPORT NODES">
 	public static void insertReportsUnderOperationNode(int parentOpId) throws IOException {
 		try {
-			//GET OPERATION
+			// GET OPERATION
 			org.gwaspi.model.Operation parentOP = new org.gwaspi.model.Operation(parentOpId);
 			TreePath parentPath = org.gwaspi.gui.GWASpiExplorerPanel.tree.getNextMatch("OP: " + parentOpId + " - " + parentOP.getOperationFriendlyName(), 0, Position.Bias.Forward);
 			DefaultMutableTreeNode parentNode = (DefaultMutableTreeNode) parentPath.getLastPathComponent();
 
-			//GET ALL REPORTS UNDER THIS OPERATION
+			// GET ALL REPORTS UNDER THIS OPERATION
 			org.gwaspi.model.ReportsList reportsMod = new org.gwaspi.model.ReportsList(parentOpId, Integer.MIN_VALUE);
 			for (int n = 0; n < reportsMod.reportsListAL.size(); n++) {
 				Report rp = reportsMod.reportsListAL.get(n);
@@ -337,9 +338,8 @@ public class GWASpiExplorerNodes {
 				TreePath treePath = org.gwaspi.gui.GWASpiExplorerPanel.tree.getPathForRow(i);
 				DefaultMutableTreeNode currentNode = (DefaultMutableTreeNode) treePath.getLastPathComponent();
 				Object currentElement = currentNode.getUserObject();
-				NodeElementInfo currentNodeInfo = null;
 				try {
-					currentNodeInfo = (NodeElementInfo) currentElement;
+					NodeElementInfo currentNodeInfo = (NodeElementInfo) currentElement;
 					if (!currentNodeInfo.isCollapsable) {
 						currentNodeInfo.isCollapsable = true;
 					}

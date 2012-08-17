@@ -1,7 +1,7 @@
 package org.gwaspi.cli;
 
-import java.io.File;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
@@ -15,6 +15,9 @@ import java.util.ArrayList;
  */
 public class Utils {
 
+	private Utils() {
+	}
+
 	public static String readDataDirFromScript(File src) throws FileNotFoundException, IOException {
 		String result = null;
 		FileReader fr = new FileReader(src);
@@ -23,7 +26,7 @@ public class Utils {
 		while (br.ready()) {
 			result = br.readLine();
 			if (result.startsWith("data-dir")) {
-				int start = result.indexOf("=") + 1;
+				int start = result.indexOf('=') + 1;
 				result = result.substring(start);
 				return result;
 			}
@@ -50,14 +53,16 @@ public class Utils {
 		while (br.ready()) {
 			String l = br.readLine();
 			if (!l.equals("[/script]")) {
-				int start = l.indexOf("=") + 1;
-//            if(start==-1){start=0;}
+				int start = l.indexOf('=') + 1;
+//				if (start == -1) {
+//					start = 0;
+//				}
 				tmpScript.add(l.substring(start));
 				count++;
 			} else {
 				result.add(tmpScript);
 				tmpScript = new ArrayList();
-				br.readLine(); //Ignore next [script] line
+				br.readLine(); // Ignore next [script] line
 			}
 		}
 		return result;

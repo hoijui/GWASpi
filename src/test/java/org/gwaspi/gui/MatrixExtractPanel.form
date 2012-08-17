@@ -42,7 +42,7 @@
               <Component id="pnl_SampleZone" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
               <Component id="pnl_Footer" min="-2" max="-2" attributes="0"/>
-              <EmptySpace pref="44" max="32767" attributes="0"/>
+              <EmptySpace pref="45" max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -65,11 +65,11 @@
               <Group type="102" alignment="0" attributes="0">
                   <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Component id="scrl_NewMatrixDescription" alignment="1" pref="688" max="32767" attributes="1"/>
+                      <Component id="scrl_NewMatrixDescription" alignment="1" max="32767" attributes="1"/>
                       <Group type="102" alignment="0" attributes="0">
                           <Component id="lbl_NewMatrixName" min="-2" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
-                          <Component id="txt_NewMatrixName" pref="559" max="32767" attributes="1"/>
+                          <Component id="txt_NewMatrixName" max="32767" attributes="1"/>
                       </Group>
                       <Group type="102" alignment="0" attributes="0">
                           <Component id="lbl_ParentMatrix" min="-2" max="-2" attributes="0"/>
@@ -168,8 +168,8 @@
                   <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Component id="cmb_MarkersVariable" linkSize="1" alignment="0" min="-2" pref="464" max="-2" attributes="1"/>
-                      <Component id="scrl_MarkersCriteria" linkSize="1" alignment="0" pref="464" max="32767" attributes="1"/>
-                      <Component id="txt_MarkersCriteriaFile" linkSize="1" alignment="0" pref="464" max="32767" attributes="1"/>
+                      <Component id="scrl_MarkersCriteria" linkSize="1" alignment="0" max="32767" attributes="1"/>
+                      <Component id="txt_MarkersCriteriaFile" linkSize="1" alignment="0" max="32767" attributes="1"/>
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="btn_MarkersCriteriaBrowse" min="-2" pref="80" max="-2" attributes="0"/>
@@ -279,13 +279,13 @@
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Component id="cmb_SamplesVariable" linkSize="2" alignment="0" pref="461" max="32767" attributes="1"/>
-                      <Component id="scrl_SamplesCriteria" linkSize="2" alignment="0" pref="461" max="32767" attributes="1"/>
-                      <Component id="txt_SamplesCriteriaFile" linkSize="2" alignment="0" pref="461" max="32767" attributes="1"/>
+                      <Component id="cmb_SamplesVariable" linkSize="2" alignment="0" max="32767" attributes="1"/>
+                      <Component id="scrl_SamplesCriteria" linkSize="2" alignment="0" max="32767" attributes="1"/>
+                      <Component id="txt_SamplesCriteriaFile" linkSize="2" alignment="0" max="32767" attributes="1"/>
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="btn_SamplesCriteriaBrowse" min="-2" pref="80" max="-2" attributes="1"/>
-                  <EmptySpace pref="15" max="32767" attributes="0"/>
+                  <EmptySpace max="32767" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -377,7 +377,7 @@
                   <Component id="btn_Back" min="-2" pref="79" max="-2" attributes="0"/>
                   <EmptySpace type="separate" max="-2" attributes="0"/>
                   <Component id="btn_Help" min="-2" pref="77" max="-2" attributes="1"/>
-                  <EmptySpace pref="331" max="32767" attributes="0"/>
+                  <EmptySpace max="32767" attributes="0"/>
                   <Component id="btn_Go" min="-2" pref="162" max="-2" attributes="0"/>
                   <EmptySpace min="-2" max="-2" attributes="0"/>
               </Group>

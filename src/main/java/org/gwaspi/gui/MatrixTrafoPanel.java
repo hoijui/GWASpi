@@ -13,9 +13,7 @@ import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import org.gwaspi.netCDF.matrices.MatrixMetadata;
-import org.gwaspi.netCDF.operations.MatrixMergeSamples_opt;
 import org.gwaspi.threadbox.MultiOperations;
-import ucar.ma2.InvalidRangeException;
 
 /**
  *

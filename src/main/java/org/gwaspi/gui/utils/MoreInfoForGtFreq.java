@@ -177,13 +177,13 @@ public class MoreInfoForGtFreq extends javax.swing.JFrame {
 			}
 		});
 
-//        GridBagConstraints c = new GridBagConstraints();
-//        setMyConstraints(c,0,0,GridBagConstraints.LINE_START);
-//        pnl_Footer.add(btn_Help,c);
-//        setMyConstraints(c,1,0,GridBagConstraints.LINE_END);
-//        pnl_Footer.add(new JLabel("    "),c);
-//        setMyConstraints(c,2,0,GridBagConstraints.LINE_END);
-//        pnl_Footer.add(btn_Go,c);
+//		GridBagConstraints c = new GridBagConstraints();
+//		setMyConstraints(c,0,0,GridBagConstraints.LINE_START);
+//		pnl_Footer.add(btn_Help,c);
+//		setMyConstraints(c,1,0,GridBagConstraints.LINE_END);
+//		pnl_Footer.add(new JLabel("    "),c);
+//		setMyConstraints(c,2,0,GridBagConstraints.LINE_END);
+//		pnl_Footer.add(btn_Go,c);
 
 		GridBagConstraints c = new GridBagConstraints();
 		setMyConstraints(c, 0, 0, GridBagConstraints.LINE_START);

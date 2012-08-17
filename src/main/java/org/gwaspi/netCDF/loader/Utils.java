@@ -1,11 +1,11 @@
 package org.gwaspi.netCDF.loader;
 
+import org.gwaspi.constants.cNetCDF.Defaults.AlleleBytes;
+import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import org.gwaspi.constants.cNetCDF.Defaults.AlleleBytes;
-import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 
 /**
  *
@@ -15,9 +15,12 @@ import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
  */
 public class Utils {
 
-	protected enum Bases {
+	private enum Bases {
 
 		A, C, T, G;
+	}
+
+	private Utils() {
 	}
 
 	public static String[] fixXYMTChrData(String[] values, int chrNb) throws IOException {
@@ -40,10 +43,10 @@ public class Utils {
 
 	public static Object[] fixPlusAlleles(Object[] values, int strandNb, int allelesNb) throws IOException {
 
-		//FLIP TO (+)STRAND AND PRESERVE ALPHABETICAL ORDER
+		// FLIP TO (+)STRAND AND PRESERVE ALPHABETICAL ORDER
 		String cleanAlleles = "";
-		if (values[strandNb].equals(org.gwaspi.constants.cImport.StrandFlags.strandMIN)) { //check if strand is "-"
-			switch (Bases.valueOf(values[allelesNb].toString().substring(0, 1))) //inspect 1st allele
+		if (values[strandNb].equals(org.gwaspi.constants.cImport.StrandFlags.strandMIN)) { // check if strand is "-"
+			switch (Bases.valueOf(values[allelesNb].toString().substring(0, 1))) // inspect 1st allele
 			{
 				case A:
 					cleanAlleles += "T";
@@ -84,7 +87,7 @@ public class Utils {
 	}
 
 	public static GenotypeEncoding detectGTEncoding(LinkedHashMap lhm) {
-		org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding gtEcoding = org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding.UNKNOWN;
+		GenotypeEncoding gtEcoding; // GenotypeEncoding.UNKNOWN
 
 		HashSet allAlleles = new HashSet();
 		for (Iterator it = lhm.keySet().iterator(); it.hasNext();) {
@@ -95,20 +98,16 @@ public class Utils {
 		}
 
 		if (allAlleles.contains(AlleleBytes.B)) {
-			gtEcoding = org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding.AB0;
-		} else {
-			if (allAlleles.contains(AlleleBytes.C)
-					|| allAlleles.contains(AlleleBytes.G)
-					|| allAlleles.contains(AlleleBytes.T)) {
-				gtEcoding = org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding.ACGT0;
-			} else {
-				if (allAlleles.contains(AlleleBytes._3)
-						|| allAlleles.contains(AlleleBytes._4)) {
-					gtEcoding = org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding.O1234;
-				} else { //ONLY CONTAINS 1,2
-					gtEcoding = org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding.O12;
-				}
-			}
+			gtEcoding = GenotypeEncoding.AB0;
+		} else if (allAlleles.contains(AlleleBytes.C)
+				|| allAlleles.contains(AlleleBytes.G)
+				|| allAlleles.contains(AlleleBytes.T)) {
+			gtEcoding = GenotypeEncoding.ACGT0;
+		} else if (allAlleles.contains(AlleleBytes._3)
+				|| allAlleles.contains(AlleleBytes._4)) {
+			gtEcoding = GenotypeEncoding.O1234;
+		} else { // ONLY CONTAINS 1, 2
+			gtEcoding = GenotypeEncoding.O12;
 		}
 
 		return gtEcoding;

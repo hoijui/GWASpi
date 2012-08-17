@@ -1,17 +1,17 @@
 package org.gwaspi.netCDF;
 
-import ucar.ma2.*;
-import ucar.nc2.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Random;
+import ucar.ma2.*;
+import ucar.nc2.*;
 
 public class BenchmarkWriteCompareD3Array {
 
 	public static void main(String[] arg) throws InvalidRangeException, IOException {
 
-		int method = 2; //1=int, 2=byte, 3=char
+		int method = 2; // 1=int, 2=byte, 3=char
 		int markerNb = 100000;
 		String filename = "/media/data/work/GWASpi/genotypes/method" + method + "mk" + markerNb + ".nc";
 		NetcdfFileWriteable ncfile = NetcdfFileWriteable.createNew(filename, false);
@@ -30,7 +30,7 @@ public class BenchmarkWriteCompareD3Array {
 		////////////// FILL'ER UP! ////////////////
 		int i, j, k;
 
-		int[] offsetOrigin = new int[3]; //0,0,0
+		int[] offsetOrigin = new int[3]; // 0, 0, 0
 		long timeAverage = 0;
 		switch (method) {
 			case 1:
@@ -117,8 +117,6 @@ public class BenchmarkWriteCompareD3Array {
 					}
 				}
 				System.out.println("Time average with int: " + timeAverage + "");
-
-
 				break;
 			case 3:
 				// Define Variable
@@ -129,7 +127,6 @@ public class BenchmarkWriteCompareD3Array {
 				} catch (IOException e) {
 					System.err.println("ERROR creating file " + ncfile.getLocation() + "\n" + e);
 				}
-
 
 				// Filler'up
 				ArrayChar charArray = new ArrayChar.D3(samplesDim.getLength(), markersDim.getLength(), allelesDim.getLength());
@@ -162,16 +159,11 @@ public class BenchmarkWriteCompareD3Array {
 
 		}
 
-
-
-
-
 		// close the file
 		try {
 			ncfile.close();
 		} catch (IOException e) {
 			System.err.println("ERROR creating file " + ncfile.getLocation() + "\n" + e);
 		}
-
 	}
 }

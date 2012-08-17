@@ -10,8 +10,6 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.TreeMap;
-import org.gwaspi.constants.cImport.Separators;
-import org.gwaspi.constants.cNetCDF.*;
 
 /**
  *
@@ -25,7 +23,7 @@ public class MetadataLoaderPlinkBinary {
 	private String strand;
 	private int studyId;
 
-	protected enum Bases {
+	private enum Bases {
 
 		A, C, T, G;
 	}
@@ -39,11 +37,11 @@ public class MetadataLoaderPlinkBinary {
 
 	}
 
-	//ACCESSORS
+	// ACCESSORS
 	public LinkedHashMap getSortedMarkerSetWithMetaData() throws IOException {
 		String startTime = org.gwaspi.global.Utils.getMediumDateTimeAsString();
 
-		TreeMap tempTM = parseAndSortBimFile(bimPath); //chr, markerId, genetic distance, position
+		TreeMap tempTM = parseAndSortBimFile(bimPath); // chr, markerId, genetic distance, position
 
 		org.gwaspi.global.Utils.sysoutStart("initilaizing marker info");
 		System.out.println(org.gwaspi.global.Text.All.processing);
@@ -53,7 +51,7 @@ public class MetadataLoaderPlinkBinary {
 			String key = it.next().toString();
 			//chr;pos;markerId
 			String[] keyValues = key.split(cNetCDF.Defaults.TMP_SEPARATOR);
-			int pos = 0;
+			int pos;
 			try {
 				pos = Integer.parseInt(keyValues[1]);
 			} catch (Exception ex) {
@@ -62,18 +60,18 @@ public class MetadataLoaderPlinkBinary {
 
 			//rsId
 			String valValues = tempTM.get(key).toString();
-//            values = fixPlusAlleles(values);
+//			values = fixPlusAlleles(values);
 
 			Object[] markerInfo = new Object[5];
-			markerInfo[0] = keyValues[2];  //0 => markerid
+			markerInfo[0] = keyValues[2]; // 0 => markerid
 			String rsId = "";
 			if (keyValues[2].startsWith("rs")) {
 				rsId = keyValues[2];
 			}
-			markerInfo[1] = rsId;  //1 => rsId
-			markerInfo[2] = fixChrData(keyValues[0]);  //2 => chr
-			markerInfo[3] = pos;  //3 => pos
-			markerInfo[4] = valValues;  //4 => alleles
+			markerInfo[1] = rsId; // 1 => rsId
+			markerInfo[2] = fixChrData(keyValues[0]); // 2 => chr
+			markerInfo[3] = pos; // 3 => pos
+			markerInfo[4] = valValues; // 4 => alleles
 
 			markerMetadataLHM.put(keyValues[2], markerInfo);
 		}
@@ -89,29 +87,25 @@ public class MetadataLoaderPlinkBinary {
 		TreeMap sortedMetadataTM = new TreeMap(new ComparatorChrAutPosMarkerIdAsc());
 
 		String l;
-		String[] bimVals = null;
-		String markerId = "";
-		String chr = "";
-
 		int count = 0;
 		while ((l = inputMapBR.readLine()) != null) {
 
-			bimVals = l.split(cImport.Separators.separators_SpaceTab_rgxp);
-			markerId = bimVals[Plink_Binary.bim_markerId].trim();
+			String[] bimVals = l.split(cImport.Separators.separators_SpaceTab_rgxp);
+			String markerId = bimVals[Plink_Binary.bim_markerId].trim();
 			String rsId = "";
 			if (markerId.startsWith("rs")) {
 				rsId = markerId;
 			}
-			chr = bimVals[Plink_Binary.bim_chr].trim();
+			String chr = bimVals[Plink_Binary.bim_chr].trim();
 
-			//chr;pos;markerId
+			// chr;pos;markerId
 			StringBuilder sbKey = new StringBuilder(chr);
 			sbKey.append(cNetCDF.Defaults.TMP_SEPARATOR);
 			sbKey.append(bimVals[Plink_Binary.bim_pos].trim());
 			sbKey.append(cNetCDF.Defaults.TMP_SEPARATOR);
 			sbKey.append(markerId);
 
-			//rsId
+			// rsId
 			StringBuilder sbVal = new StringBuilder(); //0 => markerid
 			sbVal.append(bimVals[Plink_Binary.bim_allele1].trim());
 			sbVal.append(bimVals[Plink_Binary.bim_allele2].trim());
@@ -138,14 +132,12 @@ public class MetadataLoaderPlinkBinary {
 		LinkedHashMap origMarkerIdSetLHM = new LinkedHashMap();
 
 		String l;
-		String[] mapVals = null;
-		String markerId = "";
 
 
 		while ((l = inputMapBR.readLine()) != null) {
 			String[] alleles = new String[2];
-			mapVals = l.split(cImport.Separators.separators_SpaceTab_rgxp);
-			markerId = mapVals[Plink_Binary.bim_markerId].trim();
+			String[] mapVals = l.split(cImport.Separators.separators_SpaceTab_rgxp);
+			String markerId = mapVals[Plink_Binary.bim_markerId].trim();
 			alleles[0] = mapVals[Plink_Binary.bim_allele1].trim();
 			alleles[1] = mapVals[Plink_Binary.bim_allele2].trim();
 			origMarkerIdSetLHM.put(markerId, alleles);
@@ -155,7 +147,7 @@ public class MetadataLoaderPlinkBinary {
 		return origMarkerIdSetLHM;
 	}
 
-	public String fixChrData(String chr) throws IOException {
+	public static String fixChrData(String chr) throws IOException {
 		if (chr.equals("23")) {
 			chr = "X";
 		}

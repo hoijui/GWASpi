@@ -20,6 +20,9 @@ public class MultiOperations {
 	public static SwingWorkerItemList swingWorkerItemList = new SwingWorkerItemList();
 	public static SwingDeleterItemList swingDeleterItemList = new SwingDeleterItemList();
 
+	private MultiOperations() {
+	}
+
 	//<editor-fold defaultstate="collapsed" desc="LOADERS">
 	/**
 	 * This XXX has now been deprecated in favor of YYY

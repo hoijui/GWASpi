@@ -1,15 +1,18 @@
 package org.gwaspi.database;
 
+import org.gwaspi.global.ServiceLocator;
+import java.io.IOException;
+
 /**
  *
  * @author Fernando Muñiz Fernandez
  * IBE, Institute of Evolutionary Biology (UPF-CSIC)
  * CEXS-UPF-PRBB
  */
-import org.gwaspi.global.ServiceLocator;
-import java.io.IOException;
-
 public class DatabaseGenerator {
+
+	private DatabaseGenerator() {
+	}
 
 	//private static DbManager db;
 	public static String initDataCenter() throws IOException {
@@ -19,7 +22,7 @@ public class DatabaseGenerator {
 		db.createSchema(org.gwaspi.constants.cDBGWASpi.SCH_SAMPLES);
 		//db.createSchema(org.gwaspi.database.cDBMoapi.SCH_MATRICES);
 
-		//MOAPI GENERIC TABLES
+		// MOAPI GENERIC TABLES
 		allResults += createStatusTypes(db);
 
 		allResults += org.gwaspi.samples.SampleManager.createSamplesInfoTable(db);
@@ -30,7 +33,7 @@ public class DatabaseGenerator {
 
 		allResults += org.gwaspi.reports.ReportManager.createReportsMetadataTable(db);
 
-		//STUDY_0 SPECIFIC DATA
+		// STUDY_0 SPECIFIC DATA
 		Object[] testStudy = new Object[]{"Study 1",
 			"",
 			"",
@@ -43,7 +46,7 @@ public class DatabaseGenerator {
 	public static String createStatusTypes(DbManager db) {
 		boolean result = false;
 		try {
-			//CREATE STATUS_TYPES table in APP SCHEMA and fill with init data
+			// CREATE STATUS_TYPES table in APP SCHEMA and fill with init data
 			db.createTable(org.gwaspi.constants.cDBGWASpi.SCH_APP,
 					org.gwaspi.constants.cDBGWASpi.T_STATUS_TYPES,
 					org.gwaspi.constants.cDBGWASpi.T_CREATE_STATUS_TYPES);

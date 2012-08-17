@@ -4,7 +4,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import org.gwaspi.netCDF.operations.OperationMetadata;
-
 import org.gwaspi.netCDF.operations.OperationSet;
 import ucar.nc2.NetcdfFile;
 
@@ -15,6 +14,9 @@ import ucar.nc2.NetcdfFile;
  * CEXS-UPF-PRBB
  */
 public class GatherHardyWeinbergData {
+
+	private GatherHardyWeinbergData() {
+	}
 
 	//<editor-fold defaultstate="collapsed" desc="HARDY-WEINBERG REPORT METHODS">
 	public static LinkedHashMap loadHWPval_ALT(int opId) throws FileNotFoundException, IOException {

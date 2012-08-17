@@ -24,8 +24,11 @@ import javax.swing.*;
  */
 public class Utils {
 
+	private Utils() {
+	}
+
 	// <editor-fold defaultstate="collapsed" desc="File and directory methods">
-	public static String currentAppPath = "";
+	private static String currentAppPath = "";
 	private static JFileChooser fc;
 
 	public static String GetAppPath() {
@@ -43,9 +46,11 @@ public class Utils {
 		return f;
 	}
 
-	// Deletes all files and subdirectories under dir.
-	// Returns true if all deletions were successful.
-	// If a deletion fails, the method stops attempting to delete and returns false.
+	/**
+	 * Deletes all files and subdirectories under dir.
+	 * Returns true if all deletions were successful.
+	 * If a deletion fails, the method stops attempting to delete and returns false.
+	 */
 	public static boolean deleteFolder(File dir) {
 		if (dir.isDirectory()) {
 			String[] children = dir.list();
@@ -70,11 +75,9 @@ public class Utils {
 
 	public static File[] listFiles(String path, final boolean foldersToo) {
 		File dir = new File(path);
-		File[] files = null;
+		File[] files;
 
 		if (dir.isDirectory()) {
-			files = dir.listFiles();
-
 			// This filter only returns files, not directories
 			java.io.FileFilter fileFilter = new java.io.FileFilter() {
 				public boolean accept(File file) {
@@ -111,7 +114,6 @@ public class Utils {
 				outChannel.close();
 			}
 		}
-
 	}
 
 	/**
@@ -127,49 +129,49 @@ public class Utils {
 	 * @throws IOException if unable to copy.
 	 */
 	public static void copyFileRecursive(File src, File dest) throws IOException {
-		//Check to ensure that the source is valid...
+		// Check to ensure that the source is valid...
 		if (!src.exists()) {
 			throw new IOException("copyFiles: Can not find source: " + src.getAbsolutePath() + ".");
 		} else if (!src.canRead()) { //check to ensure we have rights to the source...
 			throw new IOException("copyFiles: No right to source: " + src.getAbsolutePath() + ".");
 		}
-		//is this a directory copy?
+		// is this a directory copy?
 		if (src.isDirectory()) {
-			if (!dest.exists()) { //does the destination already exist?
-				//if not we need to make it exist if possible (note this is mkdirs not mkdir)
+			if (!dest.exists()) { // does the destination already exist?
+				// if not we need to make it exist if possible (note this is mkdirs not mkdir)
 				if (!dest.mkdirs()) {
 					throw new IOException("copyFiles: Could not create direcotry: " + dest.getAbsolutePath() + ".");
 				}
 			}
-			//get a listing of files...
+			// get a listing of files...
 			String list[] = src.list();
-			//copy all the files in the list.
+			// copy all the files in the list.
 			for (int i = 0; i < list.length; i++) {
 				File dest1 = new File(dest, list[i]);
 				File src1 = new File(src, list[i]);
 				copyFileRecursive(src1, dest1);
 			}
 		} else {
-			//This was not a directory, so lets just copy the file
+			// This was not a directory, so lets just copy the file
 			FileInputStream fin = null;
 			FileOutputStream fout = null;
-			byte[] buffer = new byte[4096]; //Buffer 4K at a time (you can change this).
+			byte[] buffer = new byte[4096]; // Buffer 4K at a time (you can change this).
 			int bytesRead;
 			try {
-				//open the files for input and output
+				// open the files for input and output
 				fin = new FileInputStream(src);
 				fout = new FileOutputStream(dest);
-				//while bytesRead indicates a successful read, lets write...
+				// while bytesRead indicates a successful read, lets write...
 				while ((bytesRead = fin.read(buffer)) >= 0) {
 					fout.write(buffer, 0, bytesRead);
 				}
-			} catch (IOException e) { //Error copying file...
+			} catch (IOException e) { // Error copying file...
 				IOException wrapper = new IOException("copyFiles: Unable to copy file: "
 						+ src.getAbsolutePath() + "to" + dest.getAbsolutePath() + ".");
 				wrapper.initCause(e);
 				wrapper.setStackTrace(e.getStackTrace());
 				throw wrapper;
-			} finally { //Ensure that the files are closed (if they were open).
+			} finally { // Ensure that the files are closed (if they were open).
 				if (fin != null) {
 					fin.close();
 				}
@@ -219,9 +221,9 @@ public class Utils {
 		today = new Date();
 		dateOut = dateFormatter.format(today);
 		dateOut = dateOut + " " + timeFormatter.format(today);
-//        dateOut = dateOut.replace(":", "-");
-//        dateOut = dateOut.replace(" ", "-");
-//        dateOut = dateOut.replace(",", "");
+//		dateOut = dateOut.replace(":", "-");
+//		dateOut = dateOut.replace(" ", "-");
+//		dateOut = dateOut.replace(",", "");
 		return dateOut;
 	}
 
@@ -240,7 +242,7 @@ public class Utils {
 		matrixName = matrixName.replace(":", "-");
 		matrixName = matrixName.replace(" ", "_");
 		matrixName = matrixName.replace("/", "-");
-		matrixName.replaceAll("[a-zA-Z]", "");
+		matrixName.replaceAll("[a-zA-Z]", ""); // FIXME result is unused!
 
 		//matrixName = matrixName.substring(0, matrixName.length()-3); //Remove "CET" from name
 		return matrixName;
@@ -266,9 +268,9 @@ public class Utils {
 	}
 
 	public static Date stringToDate(String txtDate) throws ParseException {
-		Date date = null;
+		Date date;
 		DateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
-		date = (Date) formatter.parse(txtDate);
+		date = formatter.parse(txtDate);
 		return date;
 	}
 
@@ -322,16 +324,16 @@ public class Utils {
 	}
 
 	public static void collectGarbageWithThreadSleep(int millisecs) {
-//        try {
-//            System.gc(); //Poke system to try to Garbage Collect!
-//            if (millisecs>0) {
-//                Thread.sleep(millisecs);
-//                System.gc(); //Poke system to try to Garbage Collect!
-//            }
-//            System.out.println("Garbage collected at "+global.Utils.getMediumDateTimeAsString());
-//        } catch (InterruptedException ex) {
-//            Logger.getLogger(Utils.class.getName()).log(Level.SEVERE, null, ex);
-//        }
+//		try {
+//			System.gc(); //Poke system to try to Garbage Collect!
+//			if (millisecs>0) {
+//				Thread.sleep(millisecs);
+//				System.gc(); //Poke system to try to Garbage Collect!
+//			}
+//			System.out.println("Garbage collected at "+global.Utils.getMediumDateTimeAsString());
+//		} catch (InterruptedException ex) {
+//			Logger.getLogger(Utils.class.getName()).log(Level.SEVERE, null, ex);
+//		}
 	}
 
 	public static boolean checkIntenetConnection() {
@@ -347,18 +349,17 @@ public class Utils {
 		} catch (SocketException ex) {
 		}
 
-//        try {
-//            InetAddress address = InetAddress.getByName("java.sun.com");
-//            if(address != null){
-//                isConnected = true;
-//            }
-//        } catch (UnknownHostException e) {
-//            isConnected = false;
-//        }
-//        catch (IOException e) {
-//            isConnected = false;
-//        }
-
+//		try {
+//			InetAddress address = InetAddress.getByName("java.sun.com");
+//			if(address != null){
+//				isConnected = true;
+//			}
+//		} catch (UnknownHostException e) {
+//			isConnected = false;
+//		}
+//		catch (IOException e) {
+//			isConnected = false;
+//		}
 
 		return isConnected;
 	}
@@ -412,32 +413,32 @@ public class Utils {
 	 * @deprecated Use ProcessTab instead
 	 */
 	public static String logOperationInStudyDesc(String operation, int studyId) throws IOException {
-//        StringBuffer result = new StringBuffer();
-//        try {
-//            String fileDir = org.gwaspi.global.Config.getConfigValue("LogDir","")+"/";
-//            String fileName = "Study_"+ studyId + ".log";
-//            File logFile = new File(fileDir+fileName);
-//            if(!logFile.exists()){
-//                createFile(fileDir, fileName);
-//            }
-//            StringBuffer description = new StringBuffer(org.gwaspi.framework.util.IOUtils.readFile(new FileReader(fileDir+fileName)));
+//		StringBuffer result = new StringBuffer();
+//		try {
+//			String fileDir = org.gwaspi.global.Config.getConfigValue("LogDir","")+"/";
+//			String fileName = "Study_"+ studyId + ".log";
+//			File logFile = new File(fileDir+fileName);
+//			if(!logFile.exists()){
+//				createFile(fileDir, fileName);
+//			}
+//			StringBuffer description = new StringBuffer(org.gwaspi.framework.util.IOUtils.readFile(new FileReader(fileDir+fileName)));
 //
-//            FileWriter fw = new FileWriter(fileDir+fileName);
-//            BufferedWriter bw = new BufferedWriter(fw);
+//			FileWriter fw = new FileWriter(fileDir+fileName);
+//			BufferedWriter bw = new BufferedWriter(fw);
 //
-//            bw.append(description.toString());
-//            bw.append(operation);
-//            bw.append("\nEnd Time: ");
-//            bw.append(org.gwaspi.global.Utils.getMediumDateTimeAsString());
-//            if(description.length()!=0){
-//                bw.append("\n\n");
-//            }
-//            bw.close();
+//			bw.append(description.toString());
+//			bw.append(operation);
+//			bw.append("\nEnd Time: ");
+//			bw.append(org.gwaspi.global.Utils.getMediumDateTimeAsString());
+//			if(description.length()!=0){
+//				bw.append("\n\n");
+//			}
+//			bw.close();
 //
-//            result = description;
-//        } catch (IOException ex) {
-//            Logger.getLogger(org.gwaspi.global.Utils.class.getName()).log(Level.SEVERE, null, ex);
-//        }
+//			result = description;
+//		} catch (IOException ex) {
+//			Logger.getLogger(org.gwaspi.global.Utils.class.getName()).log(Level.SEVERE, null, ex);
+//		}
 
 		//gui.LogTab_old.refreshLogInfo();
 
@@ -450,33 +451,33 @@ public class Utils {
 	 * @deprecated Use ProcessTab instead
 	 */
 	public static String logStartMessageEnd(String startTime, String operation, String endTime, String studyId) throws IOException {
-//        StringBuffer result = new StringBuffer();
-//        try {
-//            String fileDir = org.gwaspi.global.Config.getConfigValue("LogDir","")+"/";
-//            String fileName = "Study_"+ studyId + ".log";
-//            File logFile = new File(fileDir+fileName);
-//            if(!logFile.exists()){
-//                createFile(fileDir, fileName);
-//            }
-//            StringBuffer description = new StringBuffer(org.gwaspi.framework.util.IOUtils.readFile(new FileReader(fileDir+fileName)));
+//		StringBuffer result = new StringBuffer();
+//		try {
+//			String fileDir = org.gwaspi.global.Config.getConfigValue("LogDir","")+"/";
+//			String fileName = "Study_"+ studyId + ".log";
+//			File logFile = new File(fileDir+fileName);
+//			if(!logFile.exists()){
+//				createFile(fileDir, fileName);
+//			}
+//			StringBuffer description = new StringBuffer(org.gwaspi.framework.util.IOUtils.readFile(new FileReader(fileDir+fileName)));
 //
-//            FileWriter fw = new FileWriter(fileDir+fileName);
-//            BufferedWriter bw = new BufferedWriter(fw);
+//			FileWriter fw = new FileWriter(fileDir+fileName);
+//			BufferedWriter bw = new BufferedWriter(fw);
 //
-//            if(description.length()!=0){
-//                bw.append("\n");
-//            }
-//            bw.write(description.toString());
-//            bw.append("\nStart Time: "+startTime + "\n");
-//            bw.append(operation);
-//            bw.append("\nEnd Time: ");
-//            bw.append(org.gwaspi.global.Utils.getMediumDateTimeAsString());
-//            bw.close();
+//			if(description.length()!=0){
+//				bw.append("\n");
+//			}
+//			bw.write(description.toString());
+//			bw.append("\nStart Time: "+startTime + "\n");
+//			bw.append(operation);
+//			bw.append("\nEnd Time: ");
+//			bw.append(org.gwaspi.global.Utils.getMediumDateTimeAsString());
+//			bw.close();
 //
-//            result = description;
-//        } catch (IOException ex) {
-//            Logger.getLogger(org.gwaspi.global.Utils.class.getName()).log(Level.SEVERE, null, ex);
-//        }
+//			result = description;
+//		} catch (IOException ex) {
+//			Logger.getLogger(org.gwaspi.global.Utils.class.getName()).log(Level.SEVERE, null, ex);
+//		}
 
 		return operation;
 	}
@@ -487,30 +488,30 @@ public class Utils {
 	 * @deprecated Use ProcessTab instead
 	 */
 	public static String logBlockInStudyDesc(String operation, int studyId) throws IOException {
-//        StringBuffer result = new StringBuffer();
-//        try {
-//            String fileDir = org.gwaspi.global.Config.getConfigValue("LogDir","")+"/";
-//            String fileName = "Study_"+ studyId + ".log";
-//            File logFile = new File(fileDir+fileName);
-//            if(!logFile.exists()){
-//                createFile(fileDir, fileName);
-//            }
+//		StringBuffer result = new StringBuffer();
+//		try {
+//			String fileDir = org.gwaspi.global.Config.getConfigValue("LogDir","")+"/";
+//			String fileName = "Study_"+ studyId + ".log";
+//			File logFile = new File(fileDir+fileName);
+//			if(!logFile.exists()){
+//				createFile(fileDir, fileName);
+//			}
 //
-//            StringBuffer description = new StringBuffer(org.gwaspi.framework.util.IOUtils.readFile(new FileReader(fileDir+fileName)));
+//			StringBuffer description = new StringBuffer(org.gwaspi.framework.util.IOUtils.readFile(new FileReader(fileDir+fileName)));
 //
-//            FileWriter fw = new FileWriter(fileDir+fileName);
-//            BufferedWriter bw = new BufferedWriter(fw);
+//			FileWriter fw = new FileWriter(fileDir+fileName);
+//			BufferedWriter bw = new BufferedWriter(fw);
 //
-//            bw.append(description);
-//            bw.append(operation);
-//            bw.close();
+//			bw.append(description);
+//			bw.append(operation);
+//			bw.close();
 //
-//            result = description;
-//        } catch (IOException ex) {
-//            Logger.getLogger(org.gwaspi.global.Utils.class.getName()).log(Level.SEVERE, null, ex);
-//        }
+//			result = description;
+//		} catch (IOException ex) {
+//			Logger.getLogger(org.gwaspi.global.Utils.class.getName()).log(Level.SEVERE, null, ex);
+//		}
 //
-//        //gui.LogTab_old.refreshLogInfo();
+//		//gui.LogTab_old.refreshLogInfo();
 
 		return operation;
 	}

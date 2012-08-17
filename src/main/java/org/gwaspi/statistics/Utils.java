@@ -10,6 +10,9 @@ import java.math.BigInteger;
  */
 public class Utils {
 
+	private Utils() {
+	}
+
 	public static double calculatePunnettFrequency(int obsAA, int obsAa, int sampleNb) {
 		double freq = (double) ((obsAA * 2) + obsAa) / (sampleNb * 2);
 		return freq;

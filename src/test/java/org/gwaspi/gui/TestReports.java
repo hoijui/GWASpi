@@ -22,11 +22,10 @@ public class TestReports extends javax.swing.JPanel {
 		createCombinedPNGFromAssocUnadjLogPvsPos(plinkFile, outputFile, redMarkersHS, 4048, 700);
 
 		System.out.println("This is a main test");
-
 	}
 
 	public static File createCombinedPNGFromAssocUnadjLogPvsPos(File plinkReport, File outputFile, HashSet redMarkersHS, int width, int height) throws FileNotFoundException, IOException {
-		//Generating XY scatter plot with loaded data
+		// Generating XY scatter plot with loaded data
 		CombinedRangeXYPlot combinedPlot = org.gwaspi.reports.PlinkReportLoaderCombined.loadAssocUnadjLogPvsPos(plinkReport, redMarkersHS);
 
 		JFreeChart chart = new JFreeChart("P value x Chr position", JFreeChart.DEFAULT_TITLE_FONT, combinedPlot, true);

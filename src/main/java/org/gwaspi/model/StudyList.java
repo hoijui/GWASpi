@@ -15,7 +15,7 @@ import java.util.Map;
  */
 public class StudyList {
 
-	public ArrayList<model.Study> studyList = new ArrayList();
+	ArrayList<model.Study> studyList = new ArrayList();
 
 	public StudyList() throws IOException {
 
@@ -51,11 +51,10 @@ public class StudyList {
 	public static Object[][] getStudyTable() throws IOException {
 		Object[][] studyTable = null;
 
-		List<Map<String, Object>> rs = null;
 		String dbName = org.gwaspi.constants.cDBGWASpi.DB_DATACENTER;
 		DbManager studyDbManager = ServiceLocator.getDbManager(dbName);
 		try {
-			rs = studyDbManager.executeSelectStatement("SELECT * FROM " + org.gwaspi.constants.cDBGWASpi.SCH_APP + "." + org.gwaspi.constants.cDBGWASpi.T_STUDIES + " ORDER BY " + org.gwaspi.constants.cDBGWASpi.f_ID + " ASC WITH RR");
+			List<Map<String, Object>> rs = studyDbManager.executeSelectStatement("SELECT * FROM " + org.gwaspi.constants.cDBGWASpi.SCH_APP + "." + org.gwaspi.constants.cDBGWASpi.T_STUDIES + " ORDER BY " + org.gwaspi.constants.cDBGWASpi.f_ID + " ASC WITH RR");
 
 			studyTable = new Object[rs.size()][4];
 			for (int i = 0; i < rs.size(); i++) {
@@ -65,7 +64,7 @@ public class StudyList {
 					studyTable[i][1] = rs.get(i).get(org.gwaspi.constants.cDBGWASpi.f_NAME).toString();
 					studyTable[i][2] = rs.get(i).get(org.gwaspi.constants.cDBGWASpi.f_STUDY_DESCRIPTION).toString();
 					String timestamp = rs.get(i).get(org.gwaspi.constants.cDBOperations.f_CREATION_DATE).toString();
-					studyTable[i][3] = timestamp.substring(0, timestamp.lastIndexOf("."));
+					studyTable[i][3] = timestamp.substring(0, timestamp.lastIndexOf('.'));
 				}
 			}
 		} catch (Exception e) {

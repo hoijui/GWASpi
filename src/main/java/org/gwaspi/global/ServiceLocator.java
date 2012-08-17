@@ -1,20 +1,22 @@
 package org.gwaspi.global;
 
+import org.gwaspi.database.DbManager;
+import org.gwaspi.database.DbManagerImpl;
+import org.gwaspi.framework.jdbc.connection.ConnectionProvider;
+import org.gwaspi.framework.jdbc.connection.JavaDBConnectionProvider;
+import org.gwaspi.framework.jdbc.connection.JdbcConnectionProvider;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-import org.gwaspi.database.DbManager;
-import org.gwaspi.database.DbManagerImpl;
-import org.gwaspi.framework.jdbc.connection.ConnectionProvider;
-import org.gwaspi.framework.jdbc.connection.JdbcConnectionProvider;
-import org.gwaspi.framework.jdbc.connection.JavaDBConnectionProvider;
-
 public class ServiceLocator {
 
 	private static Map<String, DbManager> dbManagers;
 	private static Map<String, ConnectionProvider> connectionProviders;
+
+	private ServiceLocator() {
+	}
 
 	public static DbManager getDbManager(String dbName) throws IOException {
 		if (dbManagers == null) {

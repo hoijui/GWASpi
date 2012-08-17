@@ -1,4 +1,3 @@
-
 /*
  * IntroPanel.java
  *

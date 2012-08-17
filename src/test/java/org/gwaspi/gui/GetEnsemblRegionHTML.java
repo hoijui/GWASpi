@@ -7,22 +7,18 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.*;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
-import javax.swing.text.Element;
 import javax.swing.text.html.HTMLEditorKit;
-import javax.swing.text.html.HTMLFrameHyperlinkEvent;
 
 public class GetEnsemblRegionHTML extends JFrame {
 
 	public static void main(String[] args) throws MalformedURLException, IOException {
 
-//            System.setProperty("proxySet", "true");
-//            System.setProperty("http.proxyHost", "proxy.upf.edu");
-//            System.setProperty("http.proxyPort", "8080");
+//		System.setProperty("proxySet", "true");
+//		System.setProperty("http.proxyHost", "proxy.upf.edu");
+//		System.setProperty("http.proxyPort", "8080");
 
 		System.setProperty("java.net.useSystemProxies", "true");
 
@@ -43,17 +39,18 @@ public class GetEnsemblRegionHTML extends JFrame {
 				if (s.contains("class=\"ajax_load\"")) {
 					webContent += s.replace("value=\"/Homo_sapiens/", "value=\"" + hostName + "/Homo_sapiens/");
 				}
-			} //                if(s.contains("<img")){
-			//                    s = s.substring(s.indexOf("<img src=\""), s.indexOf("/>",s.indexOf("<img src=\""))+2);
-			//                    webContent += s.replace("<img src=\"", "<img src=\""+hostName);
-			//                }
-			//                else if(s.contains("<map")){
-			//                    webContent += s;
-			//                } else if(s.contains("</map") ){
-			//                    webContent += s;
-			//                } else if(s.contains("<area")){
-			//                    webContent += s;
-			//                }
+			}
+//			if(s.contains("<img")){
+//				s = s.substring(s.indexOf("<img src=\""), s.indexOf("/>",s.indexOf("<img src=\""))+2);
+//				webContent += s.replace("<img src=\"", "<img src=\""+hostName);
+//			}
+//			else if(s.contains("<map")){
+//				webContent += s;
+//			} else if(s.contains("</map") ){
+//				webContent += s;
+//			} else if(s.contains("<area")){
+//				webContent += s;
+//			}
 			else {
 				if (s.startsWith("<")) {
 					s = s.replaceFirst(" ", " style=\"visibility:hidden;\" ");
@@ -63,12 +60,10 @@ public class GetEnsemblRegionHTML extends JFrame {
 			}
 
 			//webContent += s;
-
-
 		}
-//            webContent += "<map name=\"mainmap\">";
-//            webContent += "<area shape=\"rect\" coords=\"0,0,800,337\" href=\"http://tata\">";
-//            webContent += "</map>";
+//		webContent += "<map name=\"mainmap\">";
+//		webContent += "<area shape=\"rect\" coords=\"0,0,800,337\" href=\"http://tata\">";
+//		webContent += "</map>";
 
 		//webContent += "</html>";
 
@@ -90,16 +85,16 @@ public class GetEnsemblRegionHTML extends JFrame {
 				}
 			}
 		});
-//            jep.addHyperlinkListener(new HyperlinkListener() {
-//                @Override
-//                public void hyperlinkUpdate(HyperlinkEvent e) {
-//                    try {
-//                        URLInDefaultBrowser.browseGenericURL(e.getURL().getPath());
-//                    } catch (IOException ex) {
-//                        Logger.getLogger(GetEnsemblRegionHTML.class.getName()).log(Level.SEVERE, null, ex);
-//                    }
-//                }
-//            });
+//		jep.addHyperlinkListener(new HyperlinkListener() {
+//			@Override
+//			public void hyperlinkUpdate(HyperlinkEvent e) {
+//				try {
+//					URLInDefaultBrowser.browseGenericURL(e.getURL().getPath());
+//				} catch (IOException ex) {
+//					Logger.getLogger(GetEnsemblRegionHTML.class.getName()).log(Level.SEVERE, null, ex);
+//				}
+//			}
+//		});
 		jep.setText(webContent);
 
 

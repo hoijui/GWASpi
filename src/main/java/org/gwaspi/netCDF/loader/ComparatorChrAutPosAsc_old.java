@@ -29,29 +29,29 @@ class ComparatorChrAutPosAsc_old implements Comparator<String> {
 		Matcher mA = p.matcher(chrA);
 		Matcher mB = p.matcher(chrB);
 
-		if (mA.matches() && mB.matches()) {  //Both chr are Int
+		if (mA.matches() && mB.matches()) { // Both chr are Int
 			int intA = Integer.parseInt(chrA);
 			int intB = Integer.parseInt(chrB);
-			if (intA == intB) { //same chr, compare positions
+			if (intA == intB) { // same chr, compare positions
 				int posA = Integer.parseInt(a.substring(a.lastIndexOf(separator) + 1));
 				int posB = Integer.parseInt(b.substring(b.lastIndexOf(separator) + 1));
 				return (posA - posB);
-			} else { //different chr, compare chr nb
+			} else { // different chr, compare chr nb
 				return (intA - intB);
 			}
 
-		} else { //One or both chr are not Int
-			if (Integer.signum(chrA.compareTo(chrB)) == 0) { //same chr
+		} else { // One or both chr are not Int
+			if (Integer.signum(chrA.compareTo(chrB)) == 0) { // same chr
 				String prfxA = a.substring(0, a.lastIndexOf(separator));
 				String prfxB = b.substring(0, b.lastIndexOf(separator));
-				if (Integer.signum(prfxA.compareTo(prfxB)) == 0) {   //same pseudo-autosomal status, compare positions
+				if (Integer.signum(prfxA.compareTo(prfxB)) == 0) { // same pseudo-autosomal status, compare positions
 					int posA = Integer.parseInt(a.substring(a.lastIndexOf(separator) + 1));
 					int posB = Integer.parseInt(b.substring(b.lastIndexOf(separator) + 1));
 					return (posA - posB);
-				} else { //different pseudo-autosomal status, compare prefix
+				} else { // different pseudo-autosomal status, compare prefix
 					return prfxA.compareTo(prfxB);
 				}
-			} else { //different chr, compare strings
+			} else { // different chr, compare strings
 				return a.compareTo(b);
 			}
 		}

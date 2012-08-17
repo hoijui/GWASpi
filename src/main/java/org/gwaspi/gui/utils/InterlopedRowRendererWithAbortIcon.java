@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import javax.swing.ImageIcon;
 import javax.swing.JTable;
 import javax.swing.SwingConstants;
-import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
 import org.gwaspi.threadbox.SwingDeleterItem;
 import org.gwaspi.threadbox.SwingWorkerItem;
@@ -20,8 +19,8 @@ public class InterlopedRowRendererWithAbortIcon extends InterlopedRowRenderer {
 
 	private URL abortIconPath = getClass().getResource("/resources/abort_16x16.png");
 	private URL noabortIconPath = getClass().getResource("/resources/abort-grey_16x16.png");
-	ArrayList<SwingWorkerItem> swAL = org.gwaspi.threadbox.SwingWorkerItemList.getSwingWorkerItemsAL();
-	ArrayList<SwingDeleterItem> sdAL = org.gwaspi.threadbox.SwingDeleterItemList.getSwingDeleterItemsAL();
+	private ArrayList<SwingWorkerItem> swAL = org.gwaspi.threadbox.SwingWorkerItemList.getSwingWorkerItemsAL();
+	private ArrayList<SwingDeleterItem> sdAL = org.gwaspi.threadbox.SwingDeleterItemList.getSwingDeleterItemsAL();
 
 	@Override
 	public Component getTableCellRendererComponent(JTable table, Object value, boolean selected, boolean focused, int row, int column) {
@@ -46,7 +45,7 @@ public class InterlopedRowRendererWithAbortIcon extends InterlopedRowRenderer {
 		//System.out.println("Row:"+row+" - Column count:"+table.getColumnModel().getColumnCount());
 		if (table.getColumnModel().getColumnCount() == 8) {
 			ImageIcon ico;
-			String queueState = "";
+			String queueState;
 			if (swAL.size() > row) {
 				queueState = swAL.get(row).getQueueState();
 			} else {

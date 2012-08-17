@@ -21,13 +21,15 @@ import org.gwaspi.samples.SamplesParser;
  */
 public class SampleInfoCollectorSwitch {
 
+	private SampleInfoCollectorSwitch() {
+	}
+
 	public static LinkedHashMap collectSampleInfo(String format,
 			boolean dummySamples,
 			String sampleInfoPath,
 			String altSampleInfoPath1,
 			String altSampleInfoPath2) throws FileNotFoundException, IOException {
 		LinkedHashMap sampleInfoLHM = new LinkedHashMap();
-		LinkedHashMap dummySamplesInfoLHM = new LinkedHashMap();
 		Object[] dummySampleValues = org.gwaspi.samples.DummySampleInfo.getDummySampleValues();
 
 		switch (org.gwaspi.constants.cImport.ImportFormat.compareTo(format)) {
@@ -36,7 +38,7 @@ public class SampleInfoCollectorSwitch {
 				if (dummySamples) {
 					sampleInfoLHM = SamplesParser.scanAffymetrixSampleInfo(altSampleInfoPath2);
 				} else {
-					dummySamplesInfoLHM = SamplesParser.scanAffymetrixSampleInfo(altSampleInfoPath2);
+					LinkedHashMap dummySamplesInfoLHM = SamplesParser.scanAffymetrixSampleInfo(altSampleInfoPath2);
 					sampleInfoLHM = SamplesParser.scanGwaspiSampleInfo(sampleInfoPath);
 
 					for (Iterator it = dummySamplesInfoLHM.keySet().iterator(); it.hasNext();) {
@@ -55,7 +57,7 @@ public class SampleInfoCollectorSwitch {
 				if (dummySamples) {
 					sampleInfoLHM = SamplesParser.scanPlinkStandardSampleInfo(altSampleInfoPath2);
 				} else {
-					dummySamplesInfoLHM = SamplesParser.scanPlinkStandardSampleInfo(altSampleInfoPath2);
+					LinkedHashMap dummySamplesInfoLHM = SamplesParser.scanPlinkStandardSampleInfo(altSampleInfoPath2);
 					sampleInfoLHM = SamplesParser.scanGwaspiSampleInfo(sampleInfoPath);
 					for (Iterator it = dummySamplesInfoLHM.keySet().iterator(); it.hasNext();) {
 						Object sampleId = it.next();
@@ -73,9 +75,9 @@ public class SampleInfoCollectorSwitch {
 				BufferedReader inputBufferReader = new BufferedReader(inputFileReader);
 				String header = inputBufferReader.readLine();
 				String[] cVals = header.split(cImport.Separators.separators_CommaSpaceTab_rgxp);
-				if (cVals.length == 6) {    //It's a FAM file
+				if (cVals.length == 6) { // It's a FAM file
 					dummySamples = true;
-				} else {    //It's a SampleInfo file
+				} else { // It's a SampleInfo file
 					dummySamples = false;
 				}
 
@@ -89,9 +91,9 @@ public class SampleInfoCollectorSwitch {
 				System.out.println(Text.Matrix.scanAffectionStandby);
 				if (dummySamples) {
 					sampleInfoLHM = SamplesParser.scanHapmapSampleInfo(altSampleInfoPath1);
-					//NO AFFECTION STATE AVAILABLE
+					// NO AFFECTION STATE AVAILABLE
 				} else {
-					dummySamplesInfoLHM = SamplesParser.scanHapmapSampleInfo(altSampleInfoPath1);
+					LinkedHashMap dummySamplesInfoLHM = SamplesParser.scanHapmapSampleInfo(altSampleInfoPath1);
 					sampleInfoLHM = SamplesParser.scanGwaspiSampleInfo(sampleInfoPath);
 					for (Iterator it = dummySamplesInfoLHM.keySet().iterator(); it.hasNext();) {
 						Object sampleId = it.next();
@@ -108,7 +110,7 @@ public class SampleInfoCollectorSwitch {
 				if (dummySamples) {
 					sampleInfoLHM = SamplesParser.scanBeagleSampleInfo(altSampleInfoPath1);
 				} else {
-					dummySamplesInfoLHM = SamplesParser.scanBeagleSampleInfo(altSampleInfoPath1);
+					LinkedHashMap dummySamplesInfoLHM = SamplesParser.scanBeagleSampleInfo(altSampleInfoPath1);
 					sampleInfoLHM = SamplesParser.scanGwaspiSampleInfo(sampleInfoPath);
 					for (Iterator it = dummySamplesInfoLHM.keySet().iterator(); it.hasNext();) {
 						Object sampleId = it.next();
@@ -124,9 +126,9 @@ public class SampleInfoCollectorSwitch {
 				System.out.println(Text.Matrix.scanAffectionStandby);
 				if (dummySamples) {
 					sampleInfoLHM = SamplesParser.scanHGDP1SampleInfo(altSampleInfoPath1);
-					//NO AFFECTION STATE AVAILABLE
+					// NO AFFECTION STATE AVAILABLE
 				} else {
-					dummySamplesInfoLHM = SamplesParser.scanHGDP1SampleInfo(altSampleInfoPath1);
+					LinkedHashMap dummySamplesInfoLHM = SamplesParser.scanHGDP1SampleInfo(altSampleInfoPath1);
 					sampleInfoLHM = SamplesParser.scanGwaspiSampleInfo(sampleInfoPath);
 					for (Iterator it = dummySamplesInfoLHM.keySet().iterator(); it.hasNext();) {
 						Object sampleId = it.next();
@@ -147,7 +149,7 @@ public class SampleInfoCollectorSwitch {
 					//gwasParams = org.gwaspi.gui.utils.MoreLoadInfoByFormat.showMoreInfoByFormat_Modal(cmb_Format.getSelectedItem().toString());
 					sampleInfoLHM = SamplesParser.scanIlluminaLGENSampleInfo(altSampleInfoPath2);
 				} else {
-					dummySamplesInfoLHM = SamplesParser.scanIlluminaLGENSampleInfo(altSampleInfoPath2);
+					LinkedHashMap dummySamplesInfoLHM = SamplesParser.scanIlluminaLGENSampleInfo(altSampleInfoPath2);
 					sampleInfoLHM = SamplesParser.scanGwaspiSampleInfo(sampleInfoPath);
 					for (Iterator it = dummySamplesInfoLHM.keySet().iterator(); it.hasNext();) {
 						Object sampleId = it.next();

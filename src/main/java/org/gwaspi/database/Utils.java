@@ -8,8 +8,11 @@ package org.gwaspi.database;
  */
 public class Utils {
 
+	private Utils() {
+	}
+
 	public static String arrayToString(String[] a, String separator) {
-		StringBuffer result = new StringBuffer();
+		StringBuilder result = new StringBuilder();
 		if (a.length > 0) {
 			result.append(a[0]);
 			for (int i = 1; i < a.length; i++) {

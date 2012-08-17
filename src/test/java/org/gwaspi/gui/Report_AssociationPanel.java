@@ -1,4 +1,3 @@
-
 /*
  * MatrixAnalysePanel.java
  *

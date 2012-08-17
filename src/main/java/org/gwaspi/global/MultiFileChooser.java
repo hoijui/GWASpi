@@ -1,9 +1,3 @@
-/**
- *
- * @author Fernando Muñiz Fernandez
- * IBE, Institute of Evolutionary Biology (UPF-CSIC)
- * CEXS-UPF-PRBB
- */
 package org.gwaspi.global;
 
 import java.awt.Container;
@@ -11,11 +5,18 @@ import java.io.File;
 import javax.swing.JFileChooser;
 import javax.swing.JList;
 
+/**
+ *
+ * @author Fernando Muñiz Fernandez
+ * IBE, Institute of Evolutionary Biology (UPF-CSIC)
+ * CEXS-UPF-PRBB
+ */
 public class MultiFileChooser extends JFileChooser {
 
 	public MultiFileChooser() {
 	}
 
+	@Override
 	public File[] getSelectedFiles() {
 		Container c1 = (Container) getComponent(3);
 		JList list = null;

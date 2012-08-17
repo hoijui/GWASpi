@@ -14,22 +14,21 @@ import ucar.nc2.NetcdfFile;
  */
 public class IterateThroughMarkerLHM {
 
-	LinkedHashMap basesLHM = new LinkedHashMap();
-	LinkedHashMap rdSampleSetLHM = new LinkedHashMap();
-	LinkedHashMap wrSampleSetLHM = new LinkedHashMap();
-	SampleSet rdSampleSet = null;
+	private LinkedHashMap basesLHM = new LinkedHashMap();
+	private LinkedHashMap rdSampleSetLHM = new LinkedHashMap();
+	private LinkedHashMap wrSampleSetLHM = new LinkedHashMap();
+	private SampleSet rdSampleSet = null;
 
 	public IterateThroughMarkerLHM() throws IOException {
-		//Iterate through pmAllelesAndStrandsLHM, use marker item position to read correct GTs from all Samples into rdMarkerIdSetLHM.
+		// Iterate through pmAllelesAndStrandsLHM, use marker item position to read correct GTs from all Samples into rdMarkerIdSetLHM.
 		int markerNb = 0;
 		NetcdfFile rdNcFile = NetcdfFile.open("pathToMatrix");
 		for (Iterator it = basesLHM.keySet().iterator(); it.hasNext();) {
 			Object markerId = it.next();
 			String bases = basesLHM.get(markerId).toString();
 
-			//Get alleles from read matrix
+			// Get alleles from read matrix
 			rdSampleSetLHM = rdSampleSet.readAllSamplesGTsFromCurrentMarkerToLHM(rdNcFile, rdSampleSetLHM, markerNb);
-
 
 			markerNb++;
 		}

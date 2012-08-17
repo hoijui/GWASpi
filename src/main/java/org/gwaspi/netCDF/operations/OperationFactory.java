@@ -1,6 +1,5 @@
 package org.gwaspi.netCDF.operations;
 
-import org.gwaspi.netCDF.matrices.*;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.database.DbManager;
 import org.gwaspi.global.ServiceLocator;
@@ -9,7 +8,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import ucar.ma2.*;
 import ucar.nc2.*;
-import org.gwaspi.constants.cNetCDF.Defaults.*;
 
 /**
  *
@@ -23,7 +21,7 @@ public class OperationFactory {
 	private String resultOPnetCDFName = "";
 	private String resultOPType = "";
 	private int resultOPId = Integer.MIN_VALUE;
-	public OperationMetadata opMetaData = null;
+	private OperationMetadata opMetaData = null;
 
 	//Costructor to use with matrix input
 	public OperationFactory(Integer studyId,
@@ -716,7 +714,7 @@ public class OperationFactory {
 		} catch (IOException iOException) {
 			iOException.printStackTrace();
 		}
-		return ncfile;
 
+		return ncfile;
 	}
 }

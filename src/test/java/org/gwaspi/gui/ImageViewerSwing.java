@@ -82,6 +82,7 @@ public class ImageViewerSwing extends JComponent {
 	 *
 	 * @param g Graphics context where to paint, e.g. to screen, printer, RAM.
 	 */
+	@Override
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		// get size of box we have to draw in
@@ -113,6 +114,7 @@ public class ImageViewerSwing extends JComponent {
 	 *
 	 * @return the recommended dimensions to display the Image.
 	 */
+	@Override
 	public Dimension getPreferredSize() {
 		if (image != null) {
 			/* should just fit  the Image */
@@ -127,6 +129,7 @@ public class ImageViewerSwing extends JComponent {
 	 *
 	 * @return he minimum dimensions to properly display the Image
 	 */
+	@Override
 	public Dimension getMinimumSize() {
 		return getPreferredSize();
 	}

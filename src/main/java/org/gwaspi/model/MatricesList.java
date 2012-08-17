@@ -25,7 +25,7 @@ public final class MatricesList {
 		if (rowcount > 0) {
 			for (int i = rowcount - 1; i >= 0; i--) // loop through rows of result set
 			{
-				//PREVENT PHANTOM-DB READS EXCEPTIONS
+				// PREVENT PHANTOM-DB READS EXCEPTIONS
 				if (!rsMatricesList.isEmpty() && rsMatricesList.get(i).size() == org.gwaspi.constants.cDBMatrix.T_CREATE_MATRICES.length) {
 					int currentMatrixId = (Integer) rsMatricesList.get(i).get(org.gwaspi.constants.cDBMatrix.f_ID);
 					Matrix currentMatrix = new Matrix(currentMatrixId);
@@ -43,7 +43,7 @@ public final class MatricesList {
 		if (rowcount > 0) {
 			for (int i = rowcount - 1; i >= 0; i--) // loop through rows of result set
 			{
-				//PREVENT PHANTOM-DB READS EXCEPTIONS
+				// PREVENT PHANTOM-DB READS EXCEPTIONS
 				if (!rsMatricesList.isEmpty() && rsMatricesList.get(i).size() == org.gwaspi.constants.cDBMatrix.T_CREATE_MATRICES.length) {
 					int currentMatrixId = (Integer) rsMatricesList.get(i).get(org.gwaspi.constants.cDBMatrix.f_ID);
 					Matrix currentMatrix = new Matrix(currentMatrixId);
@@ -90,7 +90,7 @@ public final class MatricesList {
 
 			table = new Object[rs.size()][4];
 			for (int i = 0; i < rs.size(); i++) {
-				//PREVENT PHANTOM-DB READS EXCEPTIONS
+				// PREVENT PHANTOM-DB READS EXCEPTIONS
 				if (!rs.isEmpty() && rs.get(i).size() == org.gwaspi.constants.cDBMatrix.T_CREATE_MATRICES.length) {
 					table[i][0] = (Integer) rs.get(i).get(org.gwaspi.constants.cDBMatrix.f_ID);
 					table[i][1] = rs.get(i).get(org.gwaspi.constants.cDBMatrix.f_MATRIX_NAME).toString();
@@ -100,7 +100,7 @@ public final class MatricesList {
 				}
 			}
 		} catch (Exception e) {
-			//e.printStackTrace();
+//			e.printStackTrace();
 		}
 		return table;
 	}

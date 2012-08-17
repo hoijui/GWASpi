@@ -2,7 +2,6 @@ package org.gwaspi.netCDF.markers;
 
 import org.gwaspi.constants.cNetCDF;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -11,11 +10,6 @@ import ucar.ma2.*;
 import ucar.nc2.*;
 
 /**
- *
- * @author Fernando Muñiz Fernandez
- * IBE, Institute of Evolutionary Biology (UPF-CSIC)
- * CEXS-UPF-PRBB
- *
  * This modification of the MarkerSet can create instances of the MarkerSetLHM
  * The markerSet Object has several methods to initialize it's LHM, which can later
  * be filled with it's corresponding values.
@@ -26,18 +20,21 @@ import ucar.nc2.*;
  * The matrix netCDF file is opened at creation of the MarkerSet and closed
  * at finalization of the class. No need to pass a netCDF handler anymore.
  *
+ * @author Fernando Muñiz Fernandez
+ * IBE, Institute of Evolutionary Biology (UPF-CSIC)
+ * CEXS-UPF-PRBB
  */
 public class MarkerSet_opt {
 
-	//MARKERSET_MEATADATA
-	private String technology = "";                       //platform
-	private int markerSetSize = 0;                       //probe_nb
+	// MARKERSET_MEATADATA
+	private String technology = ""; // platform
+	private int markerSetSize = 0; // probe_nb
 	private MatrixMetadata matrixMetadata;
 	private NetcdfFile ncfile = null;
 	private int startMkIdx = 0;
 	private int endMkIdx = Integer.MIN_VALUE;
-	public LinkedHashMap markerIdSetLHM = new LinkedHashMap();
-	public LinkedHashMap markerRsIdSetLHM = new LinkedHashMap();
+	private LinkedHashMap markerIdSetLHM = new LinkedHashMap();
+	private LinkedHashMap markerRsIdSetLHM = new LinkedHashMap();
 
 	public MarkerSet_opt(int studyId, int matrixId) throws IOException {
 		matrixMetadata = new MatrixMetadata(matrixId);
@@ -100,7 +97,7 @@ public class MarkerSet_opt {
 			int[] varShape = var.getShape();
 
 			try {
-				//KEEP INDEXES REAL
+				// KEEP INDEXES REAL
 				if (startMkIdx < 0) {
 					startMkIdx = 0;
 				}
@@ -126,7 +123,7 @@ public class MarkerSet_opt {
 
 	}
 
-	//USE RSID AS KEYS
+	// USE RSID AS KEYS
 	public void initFullRsIdSetLHM() {
 		startMkIdx = 0;
 		endMkIdx = Integer.MIN_VALUE;
@@ -145,7 +142,7 @@ public class MarkerSet_opt {
 			int[] varShape = var.getShape();
 
 			try {
-				//KEEP INDEXES REAL
+				// KEEP INDEXES REAL
 				if (startMkIdx == Integer.MIN_VALUE) {
 					startMkIdx = 0;
 				}
@@ -173,15 +170,15 @@ public class MarkerSet_opt {
 
 	//</editor-fold>
 	//<editor-fold defaultstate="collapsed" desc="CHROMOSOME INFO">
-	//**
-    /* This Method is safe to return an independent LHM.
+	/**
+     * This Method is safe to return an independent LHM.
 	 * The size of this LHM is very small.
 	 */
 	public LinkedHashMap getChrInfoSetLHM() {
 
 		LinkedHashMap chrInfoLHM = new LinkedHashMap();
 
-		//GET NAMES OF CHROMOSOMES
+		// GET NAMES OF CHROMOSOMES
 		Variable var = ncfile.findVariable(org.gwaspi.constants.cNetCDF.Variables.VAR_CHR_IN_MATRIX);
 		if (var != null) {
 			DataType dataType = var.getDataType();
@@ -197,7 +194,7 @@ public class MarkerSet_opt {
 				System.out.println("Cannot read data: " + e);
 			}
 
-			//GET INFO FOR EACH CHROMOSOME
+			// GET INFO FOR EACH CHROMOSOME
 			var = ncfile.findVariable(org.gwaspi.constants.cNetCDF.Variables.VAR_CHR_INFO); //Nb of markers, first physical position, last physical position, end index number in MarkerSet
 			dataType = var.getDataType();
 			varShape = var.getShape();
@@ -245,7 +242,7 @@ public class MarkerSet_opt {
 			int[] varShape = var.getShape();
 
 			try {
-				//KEEP INDEXES REAL
+				// KEEP INDEXES REAL
 				if (startMkIdx < 0) {
 					startMkIdx = 0;
 				}
@@ -332,11 +329,9 @@ public class MarkerSet_opt {
 	public void fillMarkerSetLHMWithChrAndPos() {
 
 		Variable var = ncfile.findVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
-		DataType dataType = null;
-		int[] varShape = null;
 		if (var != null) {
-			dataType = var.getDataType();
-			varShape = var.getShape();
+			DataType dataType = var.getDataType();
+			int[] varShape = var.getShape();
 
 			try {
 				if (dataType == DataType.CHAR) {
@@ -345,7 +340,6 @@ public class MarkerSet_opt {
 						markerIdSetLHM = org.gwaspi.netCDF.operations.Utils.writeD2ArrayCharToLHMValues(markerSetAC, markerIdSetLHM);
 					}
 				}
-
 			} catch (IOException ioe) {
 				System.out.println("Cannot read data: " + ioe);
 			} catch (InvalidRangeException e) {
@@ -355,8 +349,8 @@ public class MarkerSet_opt {
 
 		var = ncfile.findVariable(cNetCDF.Variables.VAR_MARKERS_POS);
 		if (var != null) {
-			dataType = var.getDataType();
-			varShape = var.getShape();
+			DataType dataType = var.getDataType();
+			int[] varShape = var.getShape();
 
 			try {
 				if (dataType == DataType.INT) {
@@ -373,7 +367,6 @@ public class MarkerSet_opt {
 						markerIdSetLHM.put(key, chrInfo);
 					}
 				}
-
 			} catch (IOException ioe) {
 				System.out.println("Cannot read data: " + ioe);
 			} catch (InvalidRangeException e) {
@@ -450,7 +443,6 @@ public class MarkerSet_opt {
 					if (varShape.length == 1) {
 						ArrayFloat.D1 markerSetAF = (ArrayFloat.D1) var.read("(" + startMkIdx + ":" + endMkIdx + ":1)");
 
-						Float floatValue = Float.NaN;
 						int[] shape = markerSetAF.getShape();
 						Index index = markerSetAF.getIndex();
 						Iterator it = markerIdSetLHM.keySet().iterator();
@@ -460,7 +452,7 @@ public class MarkerSet_opt {
 							if (!value.isEmpty()) {
 								value += separator;
 							}
-							floatValue = markerSetAF.getFloat(index.set(i));
+							Float floatValue = markerSetAF.getFloat(index.set(i));
 							markerIdSetLHM.put(key, value + floatValue.toString());
 						}
 					}
@@ -493,7 +485,9 @@ public class MarkerSet_opt {
 		}
 	}
 
-	//HELPER GETS DICTIONARY OF CURRENT MATRIX. IS CONCURRENT TO INSTANTIATED LHM
+	/**
+	 * HELPER GETS DICTIONARY OF CURRENT MATRIX. IS CONCURRENT TO INSTANTIATED LHM
+	 */
 	public LinkedHashMap getDictionaryBasesLHM() throws IOException {
 		LinkedHashMap dictionnaryLHM = new LinkedHashMap();
 		try {
@@ -508,7 +502,7 @@ public class MarkerSet_opt {
 				for (int i = 0; i < dictShape[0]; i++) {
 					Object key = it.next();
 					StringBuilder alleles = new StringBuilder("");
-					//Get Alleles
+					// Get Alleles
 					for (int j = 0; j < dictShape[1]; j++) {
 						alleles.append(dictAlleles_ACD2.getChar(index.set(i, j)));
 					}
@@ -524,8 +518,8 @@ public class MarkerSet_opt {
 
 	//</editor-fold>
 	//<editor-fold defaultstate="collapsed" desc="MARKERSET PICKERS">
-	//**
-    /* THESE LHMs DO NOT CONTAIN SAME ITEMS AS INIT LHM. 
+	/**
+	 * THESE LHMs DO NOT CONTAIN SAME ITEMS AS INIT LHM.
 	 * RETURN LHM OK
 	 */
 	public LinkedHashMap pickValidMarkerSetItemsByValue(String variable, HashSet criteria, boolean includes) {
@@ -577,4 +571,12 @@ public class MarkerSet_opt {
 		return returnLHM;
 	}
 	//</editor-fold>
+
+	public LinkedHashMap getMarkerIdSetLHM() {
+		return markerIdSetLHM;
+	}
+
+	public LinkedHashMap getMarkerRsIdSetLHM() {
+		return markerRsIdSetLHM;
+	}
 }

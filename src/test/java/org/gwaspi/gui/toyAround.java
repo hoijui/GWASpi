@@ -2,7 +2,6 @@ package org.gwaspi.gui;
 
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.regex.Pattern;
 
 /**
  *
@@ -26,7 +25,5 @@ public class toyAround {
 			Object value = lHashMap.get(key);
 			System.out.println(key + " : " + value);
 		}
-
-
 	}
 }

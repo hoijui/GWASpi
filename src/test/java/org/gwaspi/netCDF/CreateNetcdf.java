@@ -1,10 +1,10 @@
 package org.gwaspi.netCDF;
 
 import java.io.File;
-import ucar.ma2.*;
-import ucar.nc2.*;
 import java.io.IOException;
 import java.util.ArrayList;
+import ucar.ma2.*;
+import ucar.nc2.*;
 
 /**
  *
@@ -13,6 +13,9 @@ import java.util.ArrayList;
  * CEXS-UPF-PRBB
  */
 public class CreateNetcdf {
+
+	private CreateNetcdf() {
+	}
 
 	public static void main() throws InvalidRangeException, IOException {
 		setDimsAndAttributes(0,

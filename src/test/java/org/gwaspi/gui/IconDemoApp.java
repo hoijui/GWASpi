@@ -30,22 +30,15 @@ package org.gwaspi.gui;
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 import java.awt.BorderLayout;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
 import javax.swing.AbstractAction;
-
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.Icon;
@@ -59,19 +52,19 @@ import javax.swing.SwingWorker;
 
 /**
  * This application is intended to demonstrate the loading of image files into icons
- * for use in a Swing user interface. It creates a toolbar with a thumbnail preview
+ * for use in a Swing user interface. It creates a tool-bar with a thumbnail preview
  * of each image.  Clicking on the thumbnail will show the full image
  * in the main display area.
  *
- * IconDemoApp.java requires the following files: <br>
+ * IconDemoApp.java requires the following files: <br/>
  * The following files are copyright 2006 spriggs.net and licensed under a
  * Creative Commons License (http://creativecommons.org/licenses/by-sa/3.0/)
- * <br>
- * images/sunw01.jpg <br>
- * images/sunw02.jpg <br>
- * images/sunw03.jpg <br>
- * images/sunw04.jpg <br>
- * images/sunw05.jpg <br>
+ * <br/>
+ * images/sunw01.jpg <br/>
+ * images/sunw02.jpg <br/>
+ * images/sunw03.jpg <br/>
+ * images/sunw04.jpg <br/>
+ * images/sunw05.jpg <br/>
  *
  * @author Collin Fagan
  * @date 7/25/2007
@@ -237,9 +230,9 @@ public class IconDemoApp extends JFrame {
 		/**
 		 * @param Icon - The full size photo to show in the button.
 		 * @param Icon - The thumbnail to show in the button.
-		 * @param String - The descriptioon of the icon.
+		 * @param String - The description of the icon.
 		 */
-		public ThumbnailAction(Icon photo, Icon thumb, String desc) {
+		ThumbnailAction(Icon photo, Icon thumb, String desc) {
 			displayPhoto = photo;
 
 			// The short description becomes the tooltip of a button.

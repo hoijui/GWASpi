@@ -7,9 +7,11 @@ package org.gwaspi.statistics;
  * CEXS-UPF-PRBB
  */
 import java.math.BigInteger;
-import org.gwaspi.statistics.Utils.*;
 
 public class Associations {
+
+	private Associations() {
+	}
 
 	//<editor-fold defaultstate="collapsed" desc="GENOTYPIC TESTS">
 	public static double calculateChocranArmitageTrendTest(int caseAA,

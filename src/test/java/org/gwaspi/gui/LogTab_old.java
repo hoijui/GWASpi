@@ -11,7 +11,7 @@ public class LogTab_old extends javax.swing.JPanel {
 	// Variables declaration - do not modify
 	private javax.swing.JPanel panel_LogTab;
 	private javax.swing.JScrollPane jScrollPane1;
-	public static javax.swing.JTextArea textArea_log;
+	private static javax.swing.JTextArea textArea_log;
 	// End of variables declaration
 
 	@SuppressWarnings("unchecked")
@@ -53,6 +53,6 @@ public class LogTab_old extends javax.swing.JPanel {
 	}
 
 	public static void showLogTab() throws IOException {
-//        org.gwaspi.gui.StartGUI.allTabs.setSelectedIndex(org.gwaspi.gui.StartGUI.allTabs.getTabCount()-1);
+//		org.gwaspi.gui.StartGUI.allTabs.setSelectedIndex(org.gwaspi.gui.StartGUI.allTabs.getTabCount()-1);
 	}
 }

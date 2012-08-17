@@ -1,15 +1,15 @@
-/**
- *
- * @author Fernando Muñiz Fernandez
- * IBE, Institute of Evolutionary Biology (UPF-CSIC)
- * CEXS-UPF-PRBB
- */
 package org.gwaspi.gui.utils;
 
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.PlainDocument;
 
+/**
+ *
+ * @author Fernando Muñiz Fernandez
+ * IBE, Institute of Evolutionary Biology (UPF-CSIC)
+ * CEXS-UPF-PRBB
+ */
 public class JTextFieldLimit extends PlainDocument {
 
 	private int limit;
@@ -24,6 +24,7 @@ public class JTextFieldLimit extends PlainDocument {
 		this.limit = limit;
 	}
 
+	@Override
 	public void insertString(int offset, String str, AttributeSet attr) throws BadLocationException {
 		if (str == null) {
 			return;
@@ -32,6 +33,5 @@ public class JTextFieldLimit extends PlainDocument {
 		if ((getLength() + str.length()) <= limit) {
 			super.insertString(offset, str, attr);
 		}
-
 	}
 }

@@ -1,4 +1,3 @@
-
 /*
  * GWASpiExplorerPanel.java
  *

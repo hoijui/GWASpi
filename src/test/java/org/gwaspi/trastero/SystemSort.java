@@ -14,6 +14,9 @@ public class SystemSort {
 
 	private static int numFiles;
 
+	private SystemSort() {
+	}
+
 	public static void processData(File dir, String format, JProgressBar progressBar) throws IOException {
 		File[] filesToImport = org.gwaspi.global.Utils.listFiles(dir.toString(), false);
 		File formatFolder = org.gwaspi.global.Utils.createFolder(org.gwaspi.global.Config.getConfigValue("ESdir", org.gwaspi.constants.cGlobal.USERDIR), format);

@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import org.gwaspi.model.OperationsList;
+import org.gwaspi.netCDF.exporter.Utils;
 import org.gwaspi.netCDF.markers.MarkerSet_opt;
 import org.gwaspi.netCDF.matrices.*;
 import org.gwaspi.reports.GatherQAMarkersData;
@@ -23,6 +24,9 @@ import ucar.nc2.*;
  * CEXS-UPF-PRBB
  */
 public class PlinkFormatter_opt {
+
+	private PlinkFormatter_opt() {
+	}
 
 	public static boolean exportToPlink(String exportPath,
 			MatrixMetadata rdMatrixMetadata,
@@ -58,12 +62,12 @@ public class PlinkFormatter_opt {
 				String affection = sampleInfo.get(org.gwaspi.constants.cDBSamples.f_AFFECTION).toString();
 
 
-				//Iterate through all markers
+				// Iterate through all markers
 				rdMarkerSet.fillGTsForCurrentSampleIntoInitLHM(sampleNb);
 				StringBuilder genotypes = new StringBuilder();
-				for (Iterator it2 = rdMarkerSet.markerIdSetLHM.keySet().iterator(); it2.hasNext();) {
+				for (Iterator it2 = rdMarkerSet.getMarkerIdSetLHM().keySet().iterator(); it2.hasNext();) {
 					Object key = it2.next();
-					byte[] tempGT = (byte[]) rdMarkerSet.markerIdSetLHM.get(key);
+					byte[] tempGT = (byte[]) rdMarkerSet.getMarkerIdSetLHM().get(key);
 					genotypes.append(sep);
 					genotypes.append(new String(new byte[]{tempGT[0]}));
 					genotypes.append(sep);
@@ -129,20 +133,20 @@ public class PlinkFormatter_opt {
 			rdMarkerSet.appendVariableToMarkerSetLHMValue(org.gwaspi.constants.cNetCDF.Variables.VAR_MARKERS_RSID, sep);
 
 			//DEFAULT GENETIC DISTANCE = 0
-			for (Iterator it = rdMarkerSet.markerIdSetLHM.keySet().iterator(); it.hasNext();) {
+			for (Iterator it = rdMarkerSet.getMarkerIdSetLHM().keySet().iterator(); it.hasNext();) {
 				Object key = it.next();
-				StringBuilder value = new StringBuilder(rdMarkerSet.markerIdSetLHM.get(key).toString());
+				StringBuilder value = new StringBuilder(rdMarkerSet.getMarkerIdSetLHM().get(key).toString());
 				value.append(sep);
 				value.append("0");
-				rdMarkerSet.markerIdSetLHM.put(key, value);
+				rdMarkerSet.getMarkerIdSetLHM().put(key, value);
 			}
 
 			//MARKERSET POSITION
 			rdMarkerSet.appendVariableToMarkerSetLHMValue(org.gwaspi.constants.cNetCDF.Variables.VAR_MARKERS_POS, sep);
 			int markerNb = 0;
-			for (Iterator it = rdMarkerSet.markerIdSetLHM.keySet().iterator(); it.hasNext();) {
+			for (Iterator it = rdMarkerSet.getMarkerIdSetLHM().keySet().iterator(); it.hasNext();) {
 				Object key = it.next();
-				Object pos = rdMarkerSet.markerIdSetLHM.get(key);
+				Object pos = rdMarkerSet.getMarkerIdSetLHM().get(key);
 				mapBW.append(pos.toString());
 				mapBW.append("\n");
 				markerNb++;
@@ -166,7 +170,6 @@ public class PlinkFormatter_opt {
 				}
 			}
 		}
-
 
 		return result;
 	}
@@ -209,12 +212,12 @@ public class PlinkFormatter_opt {
 			rdMarkerSet.appendVariableToMarkerSetLHMValue(org.gwaspi.constants.cNetCDF.Variables.VAR_MARKERS_RSID, sep);
 
 			//DEFAULT GENETIC DISTANCE = 0
-			for (Iterator it = rdMarkerSet.markerIdSetLHM.keySet().iterator(); it.hasNext();) {
+			for (Iterator it = rdMarkerSet.getMarkerIdSetLHM().keySet().iterator(); it.hasNext();) {
 				Object key = it.next();
-				StringBuilder value = new StringBuilder(rdMarkerSet.markerIdSetLHM.get(key).toString());
+				StringBuilder value = new StringBuilder(rdMarkerSet.getMarkerIdSetLHM().get(key).toString());
 				value.append(sep);
 				value.append("0");
-				rdMarkerSet.markerIdSetLHM.put(key, value);
+				rdMarkerSet.getMarkerIdSetLHM().put(key, value);
 			}
 
 			//MARKERSET POSITION
@@ -222,10 +225,10 @@ public class PlinkFormatter_opt {
 
 			//Iterate through markerset
 			int markerNb = 0;
-			for (Iterator it = rdMarkerSet.markerIdSetLHM.keySet().iterator(); it.hasNext();) {
+			for (Iterator it = rdMarkerSet.getMarkerIdSetLHM().keySet().iterator(); it.hasNext();) {
 				StringBuilder line = new StringBuilder();
 				Object markerId = it.next();
-				Object pos = rdMarkerSet.markerIdSetLHM.get(markerId);
+				Object pos = rdMarkerSet.getMarkerIdSetLHM().get(markerId);
 
 				//Iterate through sampleset
 				StringBuilder genotypes = new StringBuilder();
@@ -262,7 +265,6 @@ public class PlinkFormatter_opt {
 			//Iterate through all samples
 			int sampleNb = 0;
 			for (Iterator it = rdSampleSetLHM.keySet().iterator(); it.hasNext();) {
-				StringBuilder line = new StringBuilder();
 				String sampleId = it.next().toString();
 
 				HashMap sampleInfo = Utils.getCurrentSampleFormattedInfo(sampleId, rdMatrixMetadata.getStudyId());
@@ -281,7 +283,7 @@ public class PlinkFormatter_opt {
 				//Sex (1=male; 2=female; other=unknown)
 				//Affection
 
-				line = new StringBuilder();
+				StringBuilder line = new StringBuilder();
 				line.append(familyId);
 				line.append(sep);
 				line.append(sampleId);
@@ -367,12 +369,12 @@ public class PlinkFormatter_opt {
 		rdMarkerSet.appendVariableToMarkerSetLHMValue(org.gwaspi.constants.cNetCDF.Variables.VAR_MARKERS_RSID, sep);
 
 		//DEFAULT GENETIC DISTANCE = 0
-		for (Iterator it = rdMarkerSet.markerIdSetLHM.keySet().iterator(); it.hasNext();) {
+		for (Iterator it = rdMarkerSet.getMarkerIdSetLHM().keySet().iterator(); it.hasNext();) {
 			Object key = it.next();
-			StringBuilder value = new StringBuilder(rdMarkerSet.markerIdSetLHM.get(key).toString());
+			StringBuilder value = new StringBuilder(rdMarkerSet.getMarkerIdSetLHM().get(key).toString());
 			value.append(sep);
 			value.append("0");
-			rdMarkerSet.markerIdSetLHM.put(key, value);
+			rdMarkerSet.getMarkerIdSetLHM().put(key, value);
 		}
 
 		//MARKERSET POSITION
@@ -385,13 +387,13 @@ public class PlinkFormatter_opt {
 		LinkedHashMap minorAllelesLHM = GatherQAMarkersData.loadMarkerQAMinorAlleles(markersQAOpId);
 		LinkedHashMap majorAllelesLHM = GatherQAMarkersData.loadMarkerQAMajorAlleles(markersQAOpId);
 		LinkedHashMap minorAlleleFreqLHM = GatherQAMarkersData.loadMarkerQAMinorAlleleFrequency(markersQAOpId);
-		for (Iterator it = rdMarkerSet.markerIdSetLHM.keySet().iterator(); it.hasNext();) {
+		for (Iterator it = rdMarkerSet.getMarkerIdSetLHM().keySet().iterator(); it.hasNext();) {
 			Object key = it.next();
 			String minorAllele = minorAllelesLHM.get(key).toString();
 			String majorAllele = majorAllelesLHM.get(key).toString();
 			Double minAlleleFreq = (Double) minorAlleleFreqLHM.get(key);
 
-			if (minAlleleFreq == 0.5) { //IF BOTH ALLELES ARE EQUALLY COMMON, USE ALPHABETICAL ORDER
+			if (minAlleleFreq == 0.5) { // IF BOTH ALLELES ARE EQUALLY COMMON, USE ALPHABETICAL ORDER
 				String tmpMinorAllele = majorAllele;
 				majorAllele = minorAllele;
 				minorAllele = tmpMinorAllele;
@@ -401,7 +403,7 @@ public class PlinkFormatter_opt {
 			}
 
 
-			Object values = rdMarkerSet.markerIdSetLHM.get(key);
+			Object values = rdMarkerSet.getMarkerIdSetLHM().get(key);
 			mapBW.append(values.toString());
 			mapBW.append(sep);
 			mapBW.append(minorAllele);
@@ -420,7 +422,7 @@ public class PlinkFormatter_opt {
 
 		//<editor-fold defaultstate="collapsed/expanded" desc="BED FILE">
 
-		//THIS SHOULD BE MULTIPLE OF SAMPLE SET LENGTH
+		// THIS SHOULD BE MULTIPLE OF SAMPLE SET LENGTH
 		int nbOfSamples = rdSampleSet.getSampleSetSize();
 		int bytesPerSampleSet = ((int) Math.ceil((double) nbOfSamples / 8)) * 2;
 		int nbOfMarkers = rdMarkerSet.getMarkerSetSize();
@@ -448,17 +450,17 @@ public class PlinkFormatter_opt {
 		int markerNb = 0;
 		int byteCount = 0;
 		byte[] wrBytes = new byte[byteChunkSize];
-		//ITERATE THROUGH ALL MARKERS, ONE SAMPLESET AT A TIME
-		for (Iterator it = rdMarkerSet.markerIdSetLHM.keySet().iterator(); it.hasNext();) {
+		// ITERATE THROUGH ALL MARKERS, ONE SAMPLESET AT A TIME
+		for (Iterator it = rdMarkerSet.getMarkerIdSetLHM().keySet().iterator(); it.hasNext();) {
 			Object markerId = it.next();
 			String tmpMinorAllele = minorAllelesLHM.get(markerId).toString();
 			String tmpMajorAllele = majorAllelesLHM.get(markerId).toString();
 
-			//GET SAMPLESET FOR CURRENT MARKER
+			// GET SAMPLESET FOR CURRENT MARKER
 			rdSampleSetLHM = rdSampleSet.readAllSamplesGTsFromCurrentMarkerToLHM(rdNcFile, rdSampleSetLHM, markerNb);
 
 			for (Iterator it2 = rdSampleSetLHM.keySet().iterator(); it2.hasNext();) {
-				//ONE BYTE AT A TIME (4 SAMPLES)
+				// ONE BYTE AT A TIME (4 SAMPLES)
 				StringBuilder tetraGTs = new StringBuilder("");
 				for (int i = 0; i < 4; i++) {
 					Object sampleId = null;
@@ -482,10 +484,10 @@ public class PlinkFormatter_opt {
 				byteCount++;
 
 				if (byteCount == byteChunkSize) {
-					//WRITE TO FILE
+					// WRITE TO FILE
 					data_out.write(wrBytes, 0, byteChunkSize);
 
-					//INIT NEW CHUNK
+					// INIT NEW CHUNK
 					wrBytes = new byte[byteChunkSize];
 					byteCount = 0;
 				}
@@ -494,7 +496,7 @@ public class PlinkFormatter_opt {
 			markerNb++;
 		}
 
-		//WRITE LAST BITES TO FILE
+		// WRITE LAST BITES TO FILE
 		data_out.write(wrBytes, 0, byteCount);
 
 		// Close file when finished with it..
@@ -512,7 +514,6 @@ public class PlinkFormatter_opt {
 		//Iterate through all samples
 		int sampleNb = 0;
 		for (Iterator it = rdSampleSetLHM.keySet().iterator(); it.hasNext();) {
-			StringBuilder line = new StringBuilder();
 			String sampleId = it.next().toString();
 
 			HashMap sampleInfo = Utils.getCurrentSampleFormattedInfo(sampleId, rdMatrixMetadata.getStudyId());
@@ -531,7 +532,7 @@ public class PlinkFormatter_opt {
 			//Sex (1=male; 2=female; other=unknown)
 			//Affection
 
-			line = new StringBuilder();
+			StringBuilder line = new StringBuilder();
 			line.append(familyId);
 			line.append(sep);
 			line.append(sampleId);
@@ -567,7 +568,7 @@ public class PlinkFormatter_opt {
 		byte[] result;
 		if (tempGT[0] == 48
 				|| tempGT[1] == 48) {
-			//SOME MISSING ALLELES => SET ALL TO MISSING
+			// SOME MISSING ALLELES => SET ALL TO MISSING
 			result = new byte[]{1, 0};
 		} else {
 			String allele1 = new String(new byte[]{tempGT[0]});
@@ -575,18 +576,18 @@ public class PlinkFormatter_opt {
 
 			if (allele1.equals(tmpMinorAllele)) {
 				if (allele2.equals(tmpMinorAllele)) {
-					//HOMOZYGOUS FOR MINOR ALLELE
+					// HOMOZYGOUS FOR MINOR ALLELE
 					result = new byte[]{0, 0};
 				} else {
-					//HETEROZYGOUS
+					// HETEROZYGOUS
 					result = new byte[]{0, 1};
 				}
 			} else {
 				if (allele2.equals(tmpMajorAllele)) {
-					//HOMOZYGOUS FOR MAJOR ALLELE
+					// HOMOZYGOUS FOR MAJOR ALLELE
 					result = new byte[]{1, 1};
 				} else {
-					//HETEROZYGOUS
+					// HETEROZYGOUS
 					result = new byte[]{0, 1};
 				}
 			}

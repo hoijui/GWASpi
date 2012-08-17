@@ -1,9 +1,8 @@
 package org.gwaspi.gui;
 
+import org.gwaspi.constants.cImport;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.utils.Dialogs;
-import org.gwaspi.constants.cImport;
-import org.gwaspi.constants.cNetCDF.Defaults.*;
 import org.gwaspi.gui.utils.HelpURLs;
 import java.awt.Color;
 import java.io.File;
@@ -64,7 +63,6 @@ public class LoadDataPanel extends javax.swing.JPanel {
 	public LoadDataPanel(int _studyId) {
 
 		studyId = _studyId;
-
 
 		pnl_NameAndDesc = new javax.swing.JPanel();
 		lbl_NewMatrixName = new javax.swing.JLabel();
@@ -311,7 +309,7 @@ public class LoadDataPanel extends javax.swing.JPanel {
 						org.gwaspi.gui.utils.Dialogs.showWarningDialogue(org.gwaspi.global.Text.App.warnProcessInterrupted);
 						System.out.println(org.gwaspi.global.Text.App.warnProcessInterrupted);
 
-						//DELETE BROKEN NEW MATRIX AND REPORTS
+						// DELETE BROKEN NEW MATRIX AND REPORTS
 						MatrixMetadata deleteMxMetaData = org.gwaspi.netCDF.matrices.MatrixManager.getLatestMatrixId();
 						if (deleteMxMetaData.getMatrixFriendlyName().equals(txt_NewMatrixName.getText())) {
 							System.out.println("Deleting orphan files and references");
@@ -382,58 +380,58 @@ public class LoadDataPanel extends javax.swing.JPanel {
 
 		//<editor-fold defaultstate="collapsed" desc="LAYOUT GIF">
 		javax.swing.GroupLayout pnl_GifLeftLayout = new javax.swing.GroupLayout(pnl_GifLeft);
-//        pnl_GifLeft.setLayout(pnl_GifLeftLayout);
-//        pnl_GifLeftLayout.setHorizontalGroup(
-//                pnl_GifLeftLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-//                .addGap(0, 308, Short.MAX_VALUE)
-//                );
-//        pnl_GifLeftLayout.setVerticalGroup(
-//                pnl_GifLeftLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-//                .addGap(0, 100, Short.MAX_VALUE)
-//                );
+//		pnl_GifLeft.setLayout(pnl_GifLeftLayout);
+//		pnl_GifLeftLayout.setHorizontalGroup(
+//				pnl_GifLeftLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+//				.addGap(0, 308, Short.MAX_VALUE)
+//				);
+//		pnl_GifLeftLayout.setVerticalGroup(
+//				pnl_GifLeftLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+//				.addGap(0, 100, Short.MAX_VALUE)
+//				);
 //
-//        javax.swing.GroupLayout pnl_GifCenterLayout = new javax.swing.GroupLayout(pnl_GifCenter);
-//        pnl_GifCenter.setLayout(pnl_GifCenterLayout);
-//        pnl_GifCenterLayout.setHorizontalGroup(
-//                pnl_GifCenterLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-//                .addComponent(scrl_Gif, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-//                );
-//        pnl_GifCenterLayout.setVerticalGroup(
-//                pnl_GifCenterLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-//                .addComponent(scrl_Gif, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-//                );
+//		javax.swing.GroupLayout pnl_GifCenterLayout = new javax.swing.GroupLayout(pnl_GifCenter);
+//		pnl_GifCenter.setLayout(pnl_GifCenterLayout);
+//		pnl_GifCenterLayout.setHorizontalGroup(
+//				pnl_GifCenterLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+//				.addComponent(scrl_Gif, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+//				);
+//		pnl_GifCenterLayout.setVerticalGroup(
+//				pnl_GifCenterLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+//				.addComponent(scrl_Gif, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+//				);
 //
-//        javax.swing.GroupLayout pnl_GifRightLayout = new javax.swing.GroupLayout(pnl_GifRight);
-//        pnl_GifRight.setLayout(pnl_GifRightLayout);
-//        pnl_GifRightLayout.setHorizontalGroup(
-//                pnl_GifRightLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-//                .addGap(0, 284, Short.MAX_VALUE)
-//                );
-//        pnl_GifRightLayout.setVerticalGroup(
-//                pnl_GifRightLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-//                .addGap(0, 100, Short.MAX_VALUE)
-//                );
+//		javax.swing.GroupLayout pnl_GifRightLayout = new javax.swing.GroupLayout(pnl_GifRight);
+//		pnl_GifRight.setLayout(pnl_GifRightLayout);
+//		pnl_GifRightLayout.setHorizontalGroup(
+//				pnl_GifRightLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+//				.addGap(0, 284, Short.MAX_VALUE)
+//				);
+//		pnl_GifRightLayout.setVerticalGroup(
+//				pnl_GifRightLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+//				.addGap(0, 100, Short.MAX_VALUE)
+//				);
 //
-//        javax.swing.GroupLayout pnl_GifLayout = new javax.swing.GroupLayout(pnl_Gif);
-//        pnl_Gif.setLayout(pnl_GifLayout);
-//        pnl_GifLayout.setHorizontalGroup(
-//                pnl_GifLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-//                .addGroup(pnl_GifLayout.createSequentialGroup()
-//                .addContainerGap()
-//                .addComponent(pnl_GifLeft, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-//                .addGap(18, 18, 18)
-//                .addComponent(pnl_GifCenter, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-//                .addGap(18, 18, 18)
-//                .addComponent(pnl_GifRight, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-//                .addGap(21, 21, 21))
-//                );
-//        pnl_GifLayout.setVerticalGroup(
-//                pnl_GifLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-//                .addGroup(pnl_GifLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-//                .addComponent(pnl_GifRight, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-//                .addComponent(pnl_GifLeft, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-//                .addComponent(pnl_GifCenter, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-//                );
+//		javax.swing.GroupLayout pnl_GifLayout = new javax.swing.GroupLayout(pnl_Gif);
+//		pnl_Gif.setLayout(pnl_GifLayout);
+//		pnl_GifLayout.setHorizontalGroup(
+//				pnl_GifLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+//				.addGroup(pnl_GifLayout.createSequentialGroup()
+//				.addContainerGap()
+//				.addComponent(pnl_GifLeft, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+//				.addGap(18, 18, 18)
+//				.addComponent(pnl_GifCenter, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+//				.addGap(18, 18, 18)
+//				.addComponent(pnl_GifRight, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+//				.addGap(21, 21, 21))
+//				);
+//		pnl_GifLayout.setVerticalGroup(
+//				pnl_GifLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+//				.addGroup(pnl_GifLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+//				.addComponent(pnl_GifRight, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+//				.addComponent(pnl_GifLeft, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+//				.addComponent(pnl_GifCenter, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+//				);
 		//</editor-fold>
 
 
@@ -652,8 +650,7 @@ public class LoadDataPanel extends javax.swing.JPanel {
 					dummySamples = false;
 				}
 
-				int decision = JOptionPane.NO_OPTION;
-				decision = Dialogs.showOptionDialogue(Text.Matrix.gwasInOne, Text.Matrix.ifCaseCtrlDetected, Text.All.yes, Text.Matrix.noJustLoad, Text.All.cancel);
+				int decision = Dialogs.showOptionDialogue(Text.Matrix.gwasInOne, Text.Matrix.ifCaseCtrlDetected, Text.All.yes, Text.Matrix.noJustLoad, Text.All.cancel);
 
 				if (decision == JOptionPane.YES_OPTION) {
 					//ASK MORE QUESTIONS
@@ -670,7 +667,7 @@ public class LoadDataPanel extends javax.swing.JPanel {
 					txtA_NewMatrixDescription.setText("");
 				}
 				if (gwasParams.proceed) {
-					//DO LOAD & GWAS
+					// DO LOAD & GWAS
 					MultiOperations.loadMatrixDoGWASifOK(cmb_Format.getSelectedItem().toString(),
 							dummySamples,
 							decision,
@@ -688,10 +685,7 @@ public class LoadDataPanel extends javax.swing.JPanel {
 					org.gwaspi.gui.ProcessTab.showTab();
 				}
 				//</editor-fold>
-
 			}
-
-
 
 			if (filesOK[0] == false) {
 				lbl_File1.setForeground(Color.red);
@@ -715,9 +709,9 @@ public class LoadDataPanel extends javax.swing.JPanel {
 
 	//<editor-fold defaultstate="collapsed" desc="HELPER METHODS">
 	private void actionBrowse1(java.awt.event.ActionEvent evt) {
-		//CHECK IF HOMONYM .PED FILE EXISTS IN PLINK CASE
+		// CHECK IF HOMONYM .PED FILE EXISTS IN PLINK CASE
 		if (cmb_Format.getSelectedItem().equals(cImport.ImportFormat.PLINK)) {
-			//Use standard file opener
+			// Use standard file opener
 			org.gwaspi.gui.utils.Dialogs.selectAndSetFileDialogue(evt, btn_File1, txt_File1, "");
 			if (!txt_File1.getText().isEmpty()) {
 				File pedFile = new File(txt_File1.getText().substring(0, txt_File1.getText().length() - 4) + ".ped");
@@ -733,7 +727,7 @@ public class LoadDataPanel extends javax.swing.JPanel {
 				}
 			}
 		} else if (cmb_Format.getSelectedItem().equals(cImport.ImportFormat.PLINK_Binary)) {
-			//Use standard file opener
+			// Use standard file opener
 			org.gwaspi.gui.utils.Dialogs.selectAndSetFileDialogue(evt, btn_File1, txt_File1, "");
 			if (!txt_File1.getText().isEmpty()) {
 				File bimFile = new File(txt_File1.getText().substring(0, txt_File1.getText().length() - 4) + ".bim");
@@ -760,17 +754,17 @@ public class LoadDataPanel extends javax.swing.JPanel {
 				}
 			}
 		} else if (cmb_Format.getSelectedItem().equals(cImport.ImportFormat.Sequenom)) {
-			//Use directory selector
+			// Use directory selector
 			org.gwaspi.gui.utils.Dialogs.selectAndSetDirectoryDialogue(evt, btn_File1, txt_File1, "", ""); //only dirs
 		} else {
-			//Use standard file opener
+			// Use standard file opener
 			org.gwaspi.gui.utils.Dialogs.selectAndSetFileDialogue(evt, btn_File1, txt_File1, "");
 		}
 
 	}
 
 	private void actionBrowse2(java.awt.event.ActionEvent evt) {
-		//Use standard file opener
+		// Use standard file opener
 		if (cmb_Format.getSelectedItem().equals(org.gwaspi.constants.cImport.ImportFormat.PLINK)) {
 			org.gwaspi.gui.utils.Dialogs.selectAndSetFileDialogue(evt, btn_File2, txt_File2, "");
 			if (!txt_File2.getText().isEmpty()) {
@@ -824,7 +818,7 @@ public class LoadDataPanel extends javax.swing.JPanel {
 	}
 
 	private void actionBrowseSampleInfo(java.awt.event.ActionEvent evt) {
-		//Use standard file opener
+		// Use standard file opener
 		org.gwaspi.gui.utils.Dialogs.selectAndSetFileDialogue(evt, btn_FileSampleInfo, txt_FileSampleInfo, "");
 	}
 

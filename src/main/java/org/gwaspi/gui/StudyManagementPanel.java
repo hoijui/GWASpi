@@ -301,19 +301,19 @@ public class StudyManagementPanel extends javax.swing.JPanel {
 							}
 							MultiOperations.deleteStudy(studyId, deleteReport);
 
-//                            try {
-//                                org.gwaspi.database.StudyGenerator.deleteStudy(studyId, deleteReport);
-//                                try {
-//                                    org.gwaspi.gui.GWASpiExplorerPanel.pnl_Content = new StudyManagementPanel();
-//                                    org.gwaspi.gui.GWASpiExplorerPanel.scrl_Content.setViewportView(org.gwaspi.gui.GWASpiExplorerPanel.pnl_Content);
-//                                    org.gwaspi.gui.GWASpiExplorerPanel.updateTreePanel(true);
-//                                } catch (IOException ex) {
-//                                    Logger.getLogger(StudyManagementPanel.class.getName()).log(Level.SEVERE, null, ex);
-//                                }
+//							try {
+//								org.gwaspi.database.StudyGenerator.deleteStudy(studyId, deleteReport);
+//								try {
+//									org.gwaspi.gui.GWASpiExplorerPanel.pnl_Content = new StudyManagementPanel();
+//									org.gwaspi.gui.GWASpiExplorerPanel.scrl_Content.setViewportView(org.gwaspi.gui.GWASpiExplorerPanel.pnl_Content);
+//									org.gwaspi.gui.GWASpiExplorerPanel.updateTreePanel(true);
+//								} catch (IOException ex) {
+//									Logger.getLogger(StudyManagementPanel.class.getName()).log(Level.SEVERE, null, ex);
+//								}
 //
-//                            } catch (IOException ex) {
-//                                Logger.getLogger(StudyManagementPanel.class.getName()).log(Level.SEVERE, null, ex);
-//                            }
+//							} catch (IOException ex) {
+//								Logger.getLogger(StudyManagementPanel.class.getName()).log(Level.SEVERE, null, ex);
+//							}
 						}
 					} else {
 						org.gwaspi.gui.utils.Dialogs.showWarningDialogue(Text.Processes.cantDeleteRequiredItem);

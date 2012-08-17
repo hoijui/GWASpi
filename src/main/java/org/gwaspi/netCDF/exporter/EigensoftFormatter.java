@@ -24,6 +24,9 @@ import ucar.nc2.*;
  */
 public class EigensoftFormatter {
 
+	private EigensoftFormatter() {
+	}
+
 	public static boolean exportToBinaryEigensoft(String exportPath,
 			MatrixMetadata rdMatrixMetadata,
 			MarkerSet_opt rdMarkerSet,
@@ -64,12 +67,12 @@ public class EigensoftFormatter {
 		rdMarkerSet.appendVariableToMarkerSetLHMValue(org.gwaspi.constants.cNetCDF.Variables.VAR_MARKERS_RSID, sep);
 
 		//DEFAULT GENETIC DISTANCE = 0
-		for (Iterator it = rdMarkerSet.markerIdSetLHM.keySet().iterator(); it.hasNext();) {
+		for (Iterator it = rdMarkerSet.getMarkerIdSetLHM().keySet().iterator(); it.hasNext();) {
 			Object key = it.next();
-			StringBuilder value = new StringBuilder(rdMarkerSet.markerIdSetLHM.get(key).toString());
+			StringBuilder value = new StringBuilder(rdMarkerSet.getMarkerIdSetLHM().get(key).toString());
 			value.append(sep);
 			value.append("0");
-			rdMarkerSet.markerIdSetLHM.put(key, value);
+			rdMarkerSet.getMarkerIdSetLHM().put(key, value);
 		}
 
 		//MARKERSET POSITION
@@ -82,7 +85,7 @@ public class EigensoftFormatter {
 		LinkedHashMap minorAllelesLHM = GatherQAMarkersData.loadMarkerQAMinorAlleles(markersQAOpId);
 		LinkedHashMap majorAllelesLHM = GatherQAMarkersData.loadMarkerQAMajorAlleles(markersQAOpId);
 		LinkedHashMap minorAlleleFreqLHM = GatherQAMarkersData.loadMarkerQAMinorAlleleFrequency(markersQAOpId);
-		for (Iterator it = rdMarkerSet.markerIdSetLHM.keySet().iterator(); it.hasNext();) {
+		for (Iterator it = rdMarkerSet.getMarkerIdSetLHM().keySet().iterator(); it.hasNext();) {
 			Object key = it.next();
 			String minorAllele = minorAllelesLHM.get(key).toString();
 			String majorAllele = majorAllelesLHM.get(key).toString();
@@ -98,7 +101,7 @@ public class EigensoftFormatter {
 			}
 
 
-			Object values = rdMarkerSet.markerIdSetLHM.get(key);
+			Object values = rdMarkerSet.getMarkerIdSetLHM().get(key);
 			mapBW.append(values.toString());
 			mapBW.append(sep);
 			mapBW.append(minorAllele);
@@ -146,7 +149,7 @@ public class EigensoftFormatter {
 		int byteCount = 0;
 		byte[] wrBytes = new byte[byteChunkSize];
 		//ITERATE THROUGH ALL MARKERS, ONE SAMPLESET AT A TIME
-		for (Iterator it = rdMarkerSet.markerIdSetLHM.keySet().iterator(); it.hasNext();) {
+		for (Iterator it = rdMarkerSet.getMarkerIdSetLHM().keySet().iterator(); it.hasNext();) {
 			Object markerId = it.next();
 			String tmpMinorAllele = minorAllelesLHM.get(markerId).toString();
 			String tmpMajorAllele = majorAllelesLHM.get(markerId).toString();
@@ -158,9 +161,8 @@ public class EigensoftFormatter {
 				//ONE BYTE AT A TIME (4 SAMPLES)
 				StringBuilder tetraGTs = new StringBuilder("");
 				for (int i = 0; i < 4; i++) {
-					Object sampleId = null;
 					if (it2.hasNext()) {
-						sampleId = it2.next();
+						Object sampleId = it2.next();
 						byte[] tempGT = (byte[]) rdSampleSetLHM.get(sampleId);
 						byte[] translatedByte = translateTo00011011Byte(tempGT, tmpMinorAllele, tmpMajorAllele);
 						tetraGTs.insert(0, translatedByte[0]); //REVERSE ORDER, AS PER PLINK SPECS http://pngu.mgh.harvard.edu/~purcell/plink/binary.shtml
@@ -209,7 +211,6 @@ public class EigensoftFormatter {
 		//Iterate through all samples
 		int sampleNb = 0;
 		for (Iterator it = rdSampleSetLHM.keySet().iterator(); it.hasNext();) {
-			StringBuilder line = new StringBuilder();
 			String sampleId = it.next().toString();
 
 			HashMap sampleInfo = Utils.getCurrentSampleFormattedInfo(sampleId, rdMatrixMetadata.getStudyId());
@@ -228,7 +229,7 @@ public class EigensoftFormatter {
 			//Sex (1=male; 2=female; other=unknown)
 			//Phenotype
 
-			line = new StringBuilder();
+			StringBuilder line = new StringBuilder();
 			line.append(familyId);
 			line.append(sep);
 			line.append(sampleId);

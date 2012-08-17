@@ -1,7 +1,6 @@
 package org.gwaspi.gui;
 
 import org.gwaspi.global.Config;
-import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
@@ -80,6 +79,7 @@ public class PreferencesPanel extends javax.swing.JPanel {
 				false, true
 			};
 
+					@Override
 			public boolean isCellEditable(int rowIndex, int columnIndex) {
 				return canEdit[columnIndex];
 			}
@@ -220,6 +220,7 @@ public class PreferencesPanel extends javax.swing.JPanel {
 				String[] tmp = tbl_PreferencesTable.getValueAt(i, 1).toString().split(",");
 				if (tmp.length == 3) {
 					try {
+						// FIXME This code does nothing... logic error?
 						int redInt = Integer.parseInt(tmp[0]);
 						if (redInt < 0 || redInt > 255) {
 							redInt = redInt % 255;
@@ -315,13 +316,9 @@ public class PreferencesPanel extends javax.swing.JPanel {
 			if (currentDataDirPath != null) {
 				File newDataDir = org.gwaspi.gui.utils.Dialogs.selectDirectoryDialogue(JOptionPane.OK_OPTION);
 
-				File newFile = null;
 				try {
-					File origFile = null;
-					newFile = null;
-
-					origFile = new File(currentDataDirPath + "/datacenter");
-					newFile = new File(newDataDir.getPath() + "/datacenter");
+					File origFile = new File(currentDataDirPath + "/datacenter");
+					File newFile = new File(newDataDir.getPath() + "/datacenter");
 					if (origFile.exists()) {
 						org.gwaspi.global.Utils.copyFileRecursive(origFile, newFile);
 					}
@@ -335,12 +332,12 @@ public class PreferencesPanel extends javax.swing.JPanel {
 					}
 					org.gwaspi.global.Config.setConfigValue("GTdir", newFile.getPath());
 
-//                    origFile = new File(currentDataDirPath + "/help");
-//                    newFile = new File(newDataDir.getPath() + "/help");
-//                    if (origFile.exists()) {
-//                        org.gwaspi.global.Utils.copyFileRecursive(origFile, newFile);
-//                    }
-//                    org.gwaspi.global.Config.setConfigValue("OfflineHelpDir", newFile.getPath());
+//					origFile = new File(currentDataDirPath + "/help");
+//					newFile = new File(newDataDir.getPath() + "/help");
+//					if (origFile.exists()) {
+//						org.gwaspi.global.Utils.copyFileRecursive(origFile, newFile);
+//					}
+//					org.gwaspi.global.Config.setConfigValue("OfflineHelpDir", newFile.getPath());
 
 					origFile = new File(currentDataDirPath + "/export");
 					newFile = new File(newDataDir.getPath() + "/export");

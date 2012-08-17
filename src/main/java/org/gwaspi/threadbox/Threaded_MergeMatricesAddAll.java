@@ -5,7 +5,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.gwaspi.model.GWASpiExplorerNodes;
 import org.gwaspi.netCDF.operations.MatrixMergeAll;
-import org.gwaspi.netCDF.operations.MatrixMergeMarkers_opt;
 import org.gwaspi.netCDF.operations.OP_QAMarkers_opt;
 import org.gwaspi.netCDF.operations.OP_QASamples_opt;
 
@@ -17,14 +16,14 @@ import org.gwaspi.netCDF.operations.OP_QASamples_opt;
  */
 public class Threaded_MergeMatricesAddAll implements Runnable {
 
-	Thread runner;
-	protected String timeStamp = "";
-	protected static int resultMatrixId;
-	protected static int studyId;
-	protected static int parentMatrixId1;
-	protected static int parentMatrixId2;
-	protected static String newMatrixName;
-	protected static String description;
+	private Thread runner;
+	private String timeStamp = "";
+	private static int resultMatrixId;
+	private static int studyId;
+	private static int parentMatrixId1;
+	private static int parentMatrixId2;
+	private static String newMatrixName;
+	private static String description;
 
 	public Threaded_MergeMatricesAddAll(String threadName,
 			String _timeStamp,

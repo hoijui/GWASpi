@@ -1,4 +1,3 @@
-
 /*
  * CurrentMatrixPanel.java
  *

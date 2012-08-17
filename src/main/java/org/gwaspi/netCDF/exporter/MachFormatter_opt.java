@@ -27,6 +27,9 @@ public class MachFormatter_opt {
 	protected static LinkedHashMap rdSampleSetLHM;
 	protected static File exportDir;
 
+	private MachFormatter_opt() {
+	}
+
 	public static boolean exportToMach(String exportPath,
 			MatrixMetadata _rdMatrixMetadata,
 			MarkerSet_opt _rdMarkerSet,
@@ -51,7 +54,7 @@ public class MachFormatter_opt {
 			//FIND START AND END MARKERS BY CHROMOSOME
 			rdMarkerSet.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
 			LinkedHashMap chrMarkerSetLHM = new LinkedHashMap();
-			chrMarkerSetLHM.putAll(rdMarkerSet.markerIdSetLHM);
+			chrMarkerSetLHM.putAll(rdMarkerSet.getMarkerIdSetLHM());
 			String tmpChr = "";
 			int start = 0;
 			int end = 0;
@@ -116,9 +119,9 @@ public class MachFormatter_opt {
 			rdMarkerSet.fillGTsForCurrentSampleIntoInitLHM(sampleNb);
 			StringBuilder genotypes = new StringBuilder();
 			int markerNb = 0;
-			for (Iterator it2 = rdMarkerSet.markerIdSetLHM.keySet().iterator(); it2.hasNext();) {
+			for (Iterator it2 = rdMarkerSet.getMarkerIdSetLHM().keySet().iterator(); it2.hasNext();) {
 				Object markerId = it2.next();
-				byte[] tempGT = (byte[]) rdMarkerSet.markerIdSetLHM.get(markerId);
+				byte[] tempGT = (byte[]) rdMarkerSet.getMarkerIdSetLHM().get(markerId);
 				genotypes.append(sep);
 				genotypes.append(new String(new byte[]{tempGT[0]}));
 				genotypes.append(sep);
@@ -174,11 +177,11 @@ public class MachFormatter_opt {
 		//INIT MARKERSET
 		rdMarkerSet.initMarkerIdSetLHM(startPos, endPos);
 		int markerNb = 0;
-		for (Iterator it = rdMarkerSet.markerIdSetLHM.keySet().iterator(); it.hasNext();) {
+		for (Iterator it = rdMarkerSet.getMarkerIdSetLHM().keySet().iterator(); it.hasNext();) {
 			Object key = it.next();
 
 			//CHECK IF rsID available
-			String value = rdMarkerSet.markerIdSetLHM.get(key).toString();
+			String value = rdMarkerSet.getMarkerIdSetLHM().get(key).toString();
 			String markerId = key.toString();
 			if (!value.isEmpty()) {
 				markerId = value;
@@ -191,13 +194,9 @@ public class MachFormatter_opt {
 			markerNb++;
 		}
 
-
-
 		System.out.println("Markers exported to chr" + chr + " DAT file: " + (endPos + 1 - startPos));
 
 		datBW.close();
 		datFW.close();
-
-
 	}
 }

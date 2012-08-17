@@ -21,8 +21,8 @@ public class AnalyserTab extends javax.swing.JPanel {
 	private javax.swing.JLabel label_PathToTped;
 	private javax.swing.JLabel label_commandLine;
 	private javax.swing.JScrollPane scrollPane_cliResult;
-	public static javax.swing.JTextArea textArea_cliResult;
-	public static javax.swing.JTextArea textArea_commandLine;
+	private static javax.swing.JTextArea textArea_cliResult;
+	private static javax.swing.JTextArea textArea_commandLine;
 	private javax.swing.JTextField textField_PathToTfam;
 	private javax.swing.JTextField textField_PathToTped;
 	private javax.swing.JScrollPane jScrollPane1;
@@ -49,9 +49,9 @@ public class AnalyserTab extends javax.swing.JPanel {
 
 
 		// Populate the combobox list
-//        for( int iCtr = 0; iCtr < analysis.PlinkBase.analysisList.length; iCtr++ ){
-//            combo_Analysis.addItem( analysis.PlinkBase.analysisList[iCtr] );
-//        }
+//		for( int iCtr = 0; iCtr < analysis.PlinkBase.analysisList.length; iCtr++ ){
+//			combo_Analysis.addItem( analysis.PlinkBase.analysisList[iCtr] );
+//		}
 		combo_Analysis.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				try {
@@ -188,9 +188,9 @@ public class AnalyserTab extends javax.swing.JPanel {
 	}
 
 	private void combo_AnalysisActionPerformed(java.awt.event.ActionEvent evt) throws IOException {
-		// JOptionPane.showMessageDialog(base.ApipelineGUI.getFrames()[0], "combo_AnalysisActionPerformed");
-//        String commandLine = analysis.PlinkBase.getCommandLine(combo_Analysis.getSelectedIndex(),textField_PathToTfam.getText(),textField_PathToTped.getText());
-//        org.gwaspi.global.SysCommandExecutor.sysAnalyserCommandPost(commandLine);
+//		JOptionPane.showMessageDialog(base.ApipelineGUI.getFrames()[0], "combo_AnalysisActionPerformed");
+//		String commandLine = analysis.PlinkBase.getCommandLine(combo_Analysis.getSelectedIndex(),textField_PathToTfam.getText(),textField_PathToTped.getText());
+//		org.gwaspi.global.SysCommandExecutor.sysAnalyserCommandPost(commandLine);
 	}
 	// </editor-fold>
 }

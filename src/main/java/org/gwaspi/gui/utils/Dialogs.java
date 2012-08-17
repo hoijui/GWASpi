@@ -1,17 +1,18 @@
 package org.gwaspi.gui.utils;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.swing.filechooser.FileFilter;
 import org.gwaspi.constants.cExport.ExportFormat;
 import org.gwaspi.constants.cImport.ImportFormat;
-import org.gwaspi.constants.cNetCDF.Defaults.*;
-import org.gwaspi.global.Text;
+import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
+import org.gwaspi.constants.cNetCDF.Defaults.OPType;
+import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
 import java.awt.GridBagConstraints;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.*;
+import javax.swing.filechooser.FileFilter;
 import org.gwaspi.model.Matrix;
 import org.gwaspi.model.Operation;
 
@@ -25,6 +26,9 @@ public class Dialogs {
 
 	public static String currentAppPath = "";
 	private static JFileChooser fc;
+
+	private Dialogs() {
+	}
 
 	//<editor-fold defaultstate="collapsed" desc="DIALOG BOXES">
 	public static Operation showOperationCombo(int matrixId, OPType filterOpType) throws IOException {
@@ -342,7 +346,7 @@ public class Dialogs {
 			}
 
 			public String getDescription() {
-				String filterDesc = "";
+				String filterDesc;
 				if (filter.equals("")) {
 					filterDesc = "All files";
 				} else {
@@ -395,7 +399,7 @@ public class Dialogs {
 				}
 
 				public String getDescription() {
-					String filterDesc = "";
+					String filterDesc;
 					if (filter.equals("")) {
 						filterDesc = "All files";
 					} else {

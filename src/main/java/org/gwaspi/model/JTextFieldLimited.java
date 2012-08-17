@@ -29,10 +29,10 @@ public class JTextFieldLimited extends PlainDocument {
 			throws BadLocationException {
 
 
-		//This rejects the entire insertion if it would make
-		//the contents too long. Another option would be
-		//to truncate the inserted string so the contents
-		//would be exactly maxCharacters in length.
+		// This rejects the entire insertion if it would make
+		// the contents too long. Another option would be
+		// to truncate the inserted string so the contents
+		// would be exactly maxCharacters in length.
 		if (str.length() <= limit) {
 			super.insertString(offs, str, a);
 		} else {
@@ -46,10 +46,10 @@ public class JTextFieldLimited extends PlainDocument {
 			String str,
 			AttributeSet a)
 			throws BadLocationException {
-		//This rejects the entire replacement if it would make
-		//the contents too long. Another option would be
-		//to truncate the replacement string so the contents
-		//would be exactly maxCharacters in length.
+		// This rejects the entire replacement if it would make
+		// the contents too long. Another option would be
+		// to truncate the replacement string so the contents
+		// would be exactly maxCharacters in length.
 		if ((str.length() - length) <= limit) {
 			super.replace(offs, length, str, a);
 		} else {

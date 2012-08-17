@@ -1,7 +1,5 @@
 package org.gwaspi.gui.utils;
 
-import java.util.ArrayList;
-
 /**
  *
  * @author Fernando Muñiz Fernandez
@@ -10,7 +8,10 @@ import java.util.ArrayList;
  */
 public class LinksExternalResouces {
 
-	public static String[][] linksDB = new String[][]{
+	private LinksExternalResouces() {
+	}
+
+	private static final String[][] LINKS_DB = new String[][]{
 		{"Ensembl region overview, rsId",
 			"http://www.ensembl.org/Homo_sapiens/Variation/Summary?source=dbSNP;v=$rsId$",
 			"rsId"},
@@ -64,9 +65,9 @@ public class LinksExternalResouces {
 			"rsId"},};
 
 	public static String[] getLinkNames() {
-		String[] result = new String[linksDB.length];
+		String[] result = new String[LINKS_DB.length];
 		int idx = 0;
-		for (String[] tmp : linksDB) {
+		for (String[] tmp : LINKS_DB) {
 			result[idx] = tmp[0];
 			idx++;
 		}
@@ -74,11 +75,11 @@ public class LinksExternalResouces {
 	}
 
 	public static String getLinkURL(int idx) {
-		return linksDB[idx][1];
+		return LINKS_DB[idx][1];
 	}
 
 	public static boolean checkIfRsNecessary(int idx) {
-		if (linksDB[idx][2].contains("rsId")) {
+		if (LINKS_DB[idx][2].contains("rsId")) {
 			return true;
 		} else {
 			return false;

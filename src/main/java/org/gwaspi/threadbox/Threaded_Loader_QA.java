@@ -17,21 +17,21 @@ import org.gwaspi.netCDF.operations.OP_QASamples_opt;
  */
 public class Threaded_Loader_QA implements Runnable {
 
-	Thread runner;
-	protected String timeStamp = "";
-	protected static int resultMatrixId;
-	protected static int resultOpId;
-	protected static String format;
-	protected static LinkedHashMap sampleInfoLHM;
-	protected static String newMatrixName;
-	protected static String newMatrixDescription;
-	protected static String file1;
-	protected static String fileSampleInfo;
-	protected static String file2;
-	protected static String chromosome;
-	protected static String strandType;
-	protected static String gtCode;
-	protected static int studyId;
+	private Thread runner;
+	private String timeStamp = "";
+	private static int resultMatrixId;
+	private static int resultOpId;
+	private static String format;
+	private static LinkedHashMap sampleInfoLHM;
+	private static String newMatrixName;
+	private static String newMatrixDescription;
+	private static String file1;
+	private static String fileSampleInfo;
+	private static String file2;
+	private static String chromosome;
+	private static String strandType;
+	private static String gtCode;
+	private static int studyId;
 
 	public Threaded_Loader_QA(String threadName,
 			String _timeStamp,

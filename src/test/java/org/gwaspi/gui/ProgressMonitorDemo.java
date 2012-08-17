@@ -32,9 +32,9 @@ package org.gwaspi.gui;
 
 import java.awt.*;
 import java.awt.event.*;
-import javax.swing.*;
 import java.beans.*;
 import java.util.Random;
+import javax.swing.*;
 
 public class ProgressMonitorDemo extends JPanel
 		implements ActionListener,
@@ -45,7 +45,7 @@ public class ProgressMonitorDemo extends JPanel
 	private JTextArea taskOutput;
 	private Task task;
 
-	class Task extends SwingWorker<Void, Void> {
+	private class Task extends SwingWorker<Void, Void> {
 
 		@Override
 		public Void doInBackground() {
@@ -55,9 +55,9 @@ public class ProgressMonitorDemo extends JPanel
 			try {
 				Thread.sleep(1000);
 				while (progress < 100 && !isCancelled()) {
-					//Sleep for up to one second.
+					// Sleep for up to one second.
 					Thread.sleep(random.nextInt(1000));
-					//Make random progress.
+					// Make random progress.
 					progress += random.nextInt(10);
 					setProgress(Math.min(progress, 100));
 				}
@@ -77,7 +77,7 @@ public class ProgressMonitorDemo extends JPanel
 	public ProgressMonitorDemo() {
 		super(new BorderLayout());
 
-		//Create the demo's UI.
+		// Create the demo's UI.
 		startButton = new JButton("Start");
 		startButton.setActionCommand("start");
 		startButton.addActionListener(this);
@@ -110,7 +110,7 @@ public class ProgressMonitorDemo extends JPanel
 	 * Invoked when task's progress property changes.
 	 */
 	public void propertyChange(PropertyChangeEvent evt) {
-		if ("progress" == evt.getPropertyName()) {
+		if ("progress" == evt.getPropertyName()) { // FIXME use equals()
 			int progress = (Integer) evt.getNewValue();
 			progressMonitor.setProgress(progress);
 			String message =
@@ -151,8 +151,8 @@ public class ProgressMonitorDemo extends JPanel
 	}
 
 	public static void main(String[] args) {
-		//Schedule a job for the event-dispatching thread:
-		//creating and showing this application's GUI.
+		// Schedule a job for the event-dispatching thread:
+		// creating and showing this application's GUI.
 		javax.swing.SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				createAndShowGUI();

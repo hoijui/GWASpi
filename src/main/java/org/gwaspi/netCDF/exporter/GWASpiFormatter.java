@@ -7,13 +7,10 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.gwaspi.netCDF.markers.MarkerSet;
 import org.gwaspi.netCDF.matrices.*;
-import org.gwaspi.samples.SampleManager;
 import org.gwaspi.samples.SampleSet;
 import ucar.nc2.*;
 
@@ -24,6 +21,9 @@ import ucar.nc2.*;
  * CEXS-UPF-PRBB
  */
 public class GWASpiFormatter {
+
+	private GWASpiFormatter() {
+	}
 
 	public static boolean exportGWASpiFiles(String exportPath,
 			MatrixMetadata rdMatrixMetadata,
@@ -51,7 +51,6 @@ public class GWASpiFormatter {
 			//Iterate through all samples
 			int sampleNb = 0;
 			for (Iterator it = rdSampleSetLHM.keySet().iterator(); it.hasNext();) {
-				StringBuilder line = new StringBuilder();
 				String sampleId = it.next().toString();
 
 //                FamilyID
@@ -78,7 +77,7 @@ public class GWASpiFormatter {
 					String population = sampleInfo.get(org.gwaspi.constants.cDBSamples.f_POPULATION).toString();
 					String age = sampleInfo.get(org.gwaspi.constants.cDBSamples.f_AGE).toString();
 
-					line = new StringBuilder();
+					StringBuilder line = new StringBuilder();
 					line.append(familyId);
 					line.append(sep);
 					line.append(sampleId);

@@ -10,7 +10,10 @@ import java.awt.Cursor;
  */
 public class CursorUtils {
 
-	public static Cursor waitCursor = new Cursor(Cursor.WAIT_CURSOR);
-	public static Cursor defaultCursor = new Cursor(Cursor.DEFAULT_CURSOR);
-	public static Cursor handCursor = new Cursor(Cursor.HAND_CURSOR);
+	public static final Cursor waitCursor = new Cursor(Cursor.WAIT_CURSOR);
+	public static final Cursor defaultCursor = new Cursor(Cursor.DEFAULT_CURSOR);
+	public static final Cursor handCursor = new Cursor(Cursor.HAND_CURSOR);
+
+	private CursorUtils() {
+	}
 }

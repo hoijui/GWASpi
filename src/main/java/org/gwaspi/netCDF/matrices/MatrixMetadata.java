@@ -35,16 +35,15 @@ public class MatrixMetadata {
 	private int markerSetSize = Integer.MIN_VALUE;
 	private int sampleSetSize = Integer.MIN_VALUE;
 	private int studyId = Integer.MIN_VALUE;
-	private String matrixType = "";         //matrix_type VARCHAR(32) NOT NULL
-	private int parentMatrixId1 = Integer.MIN_VALUE;    //parent_matrix1_id INTEGER
-	private int parentMatrixId2 = Integer.MIN_VALUE;    //parent_matrix2_id INTEGER
-	private String input_location = "";     //input_location VARCHAR(1000)
-	private String loaded = "";             //loaded CHAR(1)
+	private String matrixType = ""; // matrix_type VARCHAR(32) NOT NULL
+	private int parentMatrixId1 = Integer.MIN_VALUE; // parent_matrix1_id INTEGER
+	private int parentMatrixId2 = Integer.MIN_VALUE; // parent_matrix2_id INTEGER
+	private String input_location = ""; // input_location VARCHAR(1000)
+	private String loaded = ""; // loaded CHAR(1)
 
 	public MatrixMetadata(int _matrixId) throws IOException {
 		DbManager dBManager = ServiceLocator.getDbManager(org.gwaspi.constants.cDBGWASpi.DB_DATACENTER);
-		List<Map<String, Object>> rs = null;
-		rs = dBManager.executeSelectStatement("SELECT * FROM " + org.gwaspi.constants.cDBGWASpi.SCH_MATRICES + "." + org.gwaspi.constants.cDBMatrix.T_MATRICES + " WHERE " + org.gwaspi.constants.cDBMatrix.f_ID + "=" + _matrixId + "  WITH RR");
+		List<Map<String, Object>> rs = dBManager.executeSelectStatement("SELECT * FROM " + org.gwaspi.constants.cDBGWASpi.SCH_MATRICES + "." + org.gwaspi.constants.cDBMatrix.T_MATRICES + " WHERE " + org.gwaspi.constants.cDBMatrix.f_ID + "=" + _matrixId + "  WITH RR");
 
 		matrixId = _matrixId;
 
@@ -105,17 +104,14 @@ public class MatrixMetadata {
 					} catch (IOException ioe) {
 						System.out.println("Cannot close file: " + ioe);
 					}
-
 				}
 			}
 		}
-
 	}
 
 	public MatrixMetadata(String netCDFname) throws IOException {
 		DbManager dBManager = ServiceLocator.getDbManager(org.gwaspi.constants.cDBGWASpi.DB_DATACENTER);
-		List<Map<String, Object>> rs = null;
-		rs = dBManager.executeSelectStatement("SELECT * FROM " + org.gwaspi.constants.cDBGWASpi.SCH_MATRICES + "." + org.gwaspi.constants.cDBMatrix.T_MATRICES + " WHERE " + org.gwaspi.constants.cDBMatrix.f_NETCDF_NAME + "='" + netCDFname + "'  WITH RR");
+		List<Map<String, Object>> rs = dBManager.executeSelectStatement("SELECT * FROM " + org.gwaspi.constants.cDBGWASpi.SCH_MATRICES + "." + org.gwaspi.constants.cDBMatrix.T_MATRICES + " WHERE " + org.gwaspi.constants.cDBMatrix.f_NETCDF_NAME + "='" + netCDFname + "'  WITH RR");
 //        rs = dBManager.executeSelectStatement("SELECT * FROM "+constants.cDBGWASpi.SCH_MATRICES+"."+constants.cDBMatrix.T_MATRICES+" WHERE "+constants.cDBMatrix.f_INPUT_LOCATION+"='"+netCDFname+"'  WITH RR");
 
 		//PREVENT PHANTOM-DB READS EXCEPTIONS
@@ -175,12 +171,9 @@ public class MatrixMetadata {
 					} catch (IOException ioe) {
 						System.out.println("Cannot close file: " + ioe);
 					}
-
 				}
 			}
 		}
-
-
 	}
 
 	//**
@@ -233,7 +226,6 @@ public class MatrixMetadata {
 					} catch (IOException ioe) {
 						System.out.println("Cannot close file: " + ioe);
 					}
-
 				}
 			}
 		}

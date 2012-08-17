@@ -373,7 +373,6 @@ public class OperationSet {
 				if (varShape.length == 1) {
 					ArrayFloat.D1 markerSetAF = (ArrayFloat.D1) var.read("(0:" + (opSetSize - 1) + ":1)");
 
-					Float floatValue = Float.NaN;
 					int[] shape = markerSetAF.getShape();
 					Index index = markerSetAF.getIndex();
 					Iterator it = opSetLHM.keySet().iterator();
@@ -383,7 +382,7 @@ public class OperationSet {
 						if (!value.isEmpty()) {
 							value += separator;
 						}
-						floatValue = markerSetAF.getFloat(index.set(i));
+						Float floatValue = markerSetAF.getFloat(index.set(i));
 						opSetLHM.put(key, value + floatValue.toString());
 					}
 				}
@@ -392,7 +391,6 @@ public class OperationSet {
 				if (varShape.length == 1) {
 					ArrayInt.D1 markerSetAF = (ArrayInt.D1) var.read("(0:" + (opSetSize - 1) + ":1)");
 
-					Integer intValue = 0;
 					int[] shape = markerSetAF.getShape();
 					Index index = markerSetAF.getIndex();
 					Iterator it = opSetLHM.keySet().iterator();
@@ -402,7 +400,7 @@ public class OperationSet {
 						if (!value.isEmpty()) {
 							value += separator;
 						}
-						intValue = markerSetAF.getInt(index.set(i));
+						Integer intValue = markerSetAF.getInt(index.set(i));
 						opSetLHM.put(key, value + intValue.toString());
 					}
 				}

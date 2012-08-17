@@ -20,6 +20,9 @@ import ucar.nc2.*;
  */
 public class GWASpiFormatter_opt {
 
+	private GWASpiFormatter_opt() {
+	}
+
 	public static boolean exportGWASpiFiles(String exportPath,
 			MatrixMetadata rdMatrixMetadata,
 			LinkedHashMap rdSampleSetLHM) throws IOException {
@@ -43,7 +46,6 @@ public class GWASpiFormatter_opt {
 			//Iterate through all samples
 			int sampleNb = 0;
 			for (Iterator it = rdSampleSetLHM.keySet().iterator(); it.hasNext();) {
-				StringBuilder line = new StringBuilder();
 				String sampleId = it.next().toString();
 
 //                FamilyID
@@ -70,7 +72,7 @@ public class GWASpiFormatter_opt {
 					String population = sampleInfo.get(org.gwaspi.constants.cDBSamples.f_POPULATION).toString();
 					String age = sampleInfo.get(org.gwaspi.constants.cDBSamples.f_AGE).toString();
 
-					line = new StringBuilder();
+					StringBuilder line = new StringBuilder();
 					line.append(familyId);
 					line.append(sep);
 					line.append(sampleId);

@@ -18,6 +18,9 @@ import ucar.nc2.*;
  */
 public class FleurFormatter {
 
+	private FleurFormatter() {
+	}
+
 	public static boolean exportToFleurFormat(String exportPath,
 			MatrixMetadata rdMatrixMetadata,
 			MarkerSet rdMarkerSet,
@@ -39,7 +42,7 @@ public class FleurFormatter {
 			FileWriter pedFW = new FileWriter(exportDir.getPath() + "/" + rdMatrixMetadata.getMatrixFriendlyName() + ".csv");
 			BufferedWriter pedBW = new BufferedWriter(pedFW);
 
-			//HEADER CONTAINING MARKER IDs
+			// HEADER CONTAINING MARKER IDs
 			StringBuilder line = new StringBuilder();
 			for (Iterator it = rdMarkerIdSetLHM.keySet().iterator(); it.hasNext();) {
 				Object key = it.next();

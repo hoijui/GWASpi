@@ -34,6 +34,10 @@ package org.gwaspi.gui;
 /*
  * TableRenderDemo.java requires no other files.
  */
+
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.GridLayout;
 import javax.swing.DefaultCellEditor;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
@@ -44,9 +48,6 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.GridLayout;
 
 /**
  * TableRenderDemo is just like TableDemo, except that it explicitly initializes
@@ -63,47 +64,43 @@ public class TableRenderDemo extends JPanel {
 		table.setPreferredScrollableViewportSize(new Dimension(500, 70));
 		table.setFillsViewportHeight(true);
 
-		//Create the scroll pane and add the table to it.
+		// Create the scroll pane and add the table to it.
 		JScrollPane scrollPane = new JScrollPane(table);
 
-		//Set up column sizes.
+		// Set up column sizes.
 		initColumnSizes(table);
 
-		//Fiddle with the Sport column's cell editors/renderers.
+		// Fiddle with the Sport column's cell editors/renderers.
 		setUpSportColumn(table.getColumnModel().getColumn(2));
 
-		//Add the scroll pane to this panel.
+		// Add the scroll pane to this panel.
 		add(scrollPane);
 	}
 
-	/*
+	/**
 	 * This method picks good column sizes.
 	 * If all column heads are wider than the column's cells'
 	 * contents, then you can just use column.sizeWidthToFit().
 	 */
 	private void initColumnSizes(JTable table) {
 		MyTableModel model = (MyTableModel) table.getModel();
-		TableColumn column = null;
-		Component comp = null;
-		int headerWidth = 0;
-		int cellWidth = 0;
 		Object[] longValues = model.longValues;
 		TableCellRenderer headerRenderer =
 				table.getTableHeader().getDefaultRenderer();
 
 		for (int i = 0; i < 5; i++) {
-			column = table.getColumnModel().getColumn(i);
+			TableColumn column = table.getColumnModel().getColumn(i);
 
-			comp = headerRenderer.getTableCellRendererComponent(
+			Component comp = headerRenderer.getTableCellRendererComponent(
 					null, column.getHeaderValue(),
 					false, false, 0, 0);
-			headerWidth = comp.getPreferredSize().width;
+			int headerWidth = comp.getPreferredSize().width;
 
 			comp = table.getDefaultRenderer(model.getColumnClass(i)).
 					getTableCellRendererComponent(
 					table, longValues[i],
 					false, false, 0, i);
-			cellWidth = comp.getPreferredSize().width;
+			int cellWidth = comp.getPreferredSize().width;
 
 			if (DEBUG) {
 				System.out.println("Initializing width of column "
@@ -117,7 +114,7 @@ public class TableRenderDemo extends JPanel {
 	}
 
 	public void setUpSportColumn(TableColumn sportColumn) {
-		//Set up the editor for the sport cells.
+		// Set up the editor for the sport cells.
 		JComboBox comboBox = new JComboBox();
 		comboBox.addItem("Snowboarding");
 		comboBox.addItem("Rowing");
@@ -127,13 +124,13 @@ public class TableRenderDemo extends JPanel {
 		comboBox.addItem("None of the above");
 		sportColumn.setCellEditor(new DefaultCellEditor(comboBox));
 
-		//Set up tool tips for the sport cells.
+		// Set up tool tips for the sport cells.
 		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
 		renderer.setToolTipText("Click for combo box");
 		sportColumn.setCellRenderer(renderer);
 	}
 
-	class MyTableModel extends AbstractTableModel {
+	private class MyTableModel extends AbstractTableModel {
 
 		private String[] columnNames = {"First Name",
 			"Last Name",
@@ -142,15 +139,15 @@ public class TableRenderDemo extends JPanel {
 			"Vegetarian"};
 		private Object[][] data = {
 			{"Kathy", "Smith",
-				"Snowboarding", new Integer(5), new Boolean(false)},
+				"Snowboarding", new Integer(5), false},
 			{"John", "Doe",
-				"Rowing", new Integer(3), new Boolean(true)},
+				"Rowing", new Integer(3), true},
 			{"Sue", "Black",
-				"Knitting", new Integer(2), new Boolean(false)},
+				"Knitting", new Integer(2), false},
 			{"Jane", "White",
-				"Speed reading", new Integer(20), new Boolean(true)},
+				"Speed reading", new Integer(20), true},
 			{"Joe", "Brown",
-				"Pool", new Integer(10), new Boolean(false)}
+				"Pool", new Integer(10), false}
 		};
 		public final Object[] longValues = {"Jane", "Kathy",
 			"None of the above",
@@ -164,6 +161,7 @@ public class TableRenderDemo extends JPanel {
 			return data.length;
 		}
 
+		@Override
 		public String getColumnName(int col) {
 			return columnNames[col];
 		}
@@ -172,23 +170,25 @@ public class TableRenderDemo extends JPanel {
 			return data[row][col];
 		}
 
-		/*
+		/**
 		 * JTable uses this method to determine the default renderer/
 		 * editor for each cell.  If we didn't implement this method,
 		 * then the last column would contain text ("true"/"false"),
 		 * rather than a check box.
 		 */
+		@Override
 		public Class getColumnClass(int c) {
 			return getValueAt(0, c).getClass();
 		}
 
-		/*
+		/**
 		 * Don't need to implement this method unless your table's
 		 * editable.
 		 */
+		@Override
 		public boolean isCellEditable(int row, int col) {
-			//Note that the data/cell address is constant,
-			//no matter where the cell appears onscreen.
+			// Note that the data/cell address is constant,
+			// no matter where the cell appears onscreen.
 			if (col < 2) {
 				return false;
 			} else {
@@ -196,10 +196,11 @@ public class TableRenderDemo extends JPanel {
 			}
 		}
 
-		/*
+		/**
 		 * Don't need to implement this method unless your table's
 		 * data can change.
 		 */
+		@Override
 		public void setValueAt(Object value, int row, int col) {
 			if (DEBUG) {
 				System.out.println("Setting value at " + row + "," + col
@@ -237,23 +238,23 @@ public class TableRenderDemo extends JPanel {
 	 * invoked from the event-dispatching thread.
 	 */
 	private static void createAndShowGUI() {
-		//Create and set up the window.
+		// Create and set up the window.
 		JFrame frame = new JFrame("TableRenderDemo");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-		//Create and set up the content pane.
+		// Create and set up the content pane.
 		TableRenderDemo newContentPane = new TableRenderDemo();
 		newContentPane.setOpaque(true); //content panes must be opaque
 		frame.setContentPane(newContentPane);
 
-		//Display the window.
+		// Display the window.
 		frame.pack();
 		frame.setVisible(true);
 	}
 
 	public static void main(String[] args) {
-		//Schedule a job for the event-dispatching thread:
-		//creating and showing this application's GUI.
+		// Schedule a job for the event-dispatching thread:
+		// creating and showing this application's GUI.
 		javax.swing.SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				createAndShowGUI();

@@ -1,4 +1,3 @@
-
 /*
  * TestJFrame2.java
  *

@@ -1,4 +1,3 @@
-
 /*
  * MatrixTrafoPanel.java
  *

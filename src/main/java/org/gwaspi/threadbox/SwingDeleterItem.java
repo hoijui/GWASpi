@@ -8,20 +8,20 @@ package org.gwaspi.threadbox;
  */
 public class SwingDeleterItem {
 
-	protected String launchTime;
-	protected String startTime;
-	protected String endTime;
+	private String launchTime;
+	private String startTime;
+	private String endTime;
 	protected String queueState;
-	protected String description;
-	protected Integer[] parentStudyIds;
-	protected Integer[] parentMatricesIds;
-	protected Integer[] parentOperationsIds;
-	protected String deleteTarget;
-	protected boolean deleteReports;
-	protected int studyId;
-	protected int matrixId;
-	protected int opId;
-	protected int rpId;
+	private String description;
+	private Integer[] parentStudyIds;
+	private Integer[] parentMatricesIds;
+	private Integer[] parentOperationsIds;
+	private String deleteTarget;
+	private boolean deleteReports;
+	private int studyId;
+	private int matrixId;
+	private int opId;
+	private int rpId;
 
 	SwingDeleterItem(String _deleteTarget,
 			int _studyId,

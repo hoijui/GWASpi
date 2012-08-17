@@ -1,4 +1,3 @@
-
 /* ===========================================================
  * JFreeChart : a free chart library for the Java(tm) platform
  * ===========================================================
@@ -19,7 +18,7 @@
  * library; if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
  *
- * [Java is a trademark or registered trademark of Sun Microsystems, Inc. 
+ * [Java is a trademark or registered trademark of Sun Microsystems, Inc.
  * in the United States and other countries.]
  *
  * -----------------
@@ -43,20 +42,17 @@ import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.geom.Rectangle2D;
-import java.awt.image.BufferedImage;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Random;
-
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
-import org.jfree.chart.renderer.xy.XYDotRenderer;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
@@ -90,7 +86,7 @@ public class qqPlot implements ActionListener {
 
 		this.finished = false;
 
-		ArrayList<XYSeries> seriesArray = new ArrayList<XYSeries>();
+		List<XYSeries> seriesArray = new ArrayList<XYSeries>();
 
 		Random generator = new Random();
 		int seriesNb = -1;
@@ -108,11 +104,11 @@ public class qqPlot implements ActionListener {
 			double obsVal = rndChiSqrDist1.get(i) + (generator.nextDouble() * 0.00001);
 			double expVal = rndChiSqrDist2.get(i);
 
-			//constant chi-square boundaries
-//            double upperVal = expVal*1.05;
-//            double lowerVal = expVal*0.95;
-//            double upperVal = expVal+Math.pow(Math.E,(1.96*Math.sqrt(1/expVal)));
-//            double lowerVal = expVal-Math.pow(Math.E,(1.96*Math.sqrt(1/expVal)));
+			// constant chi-square boundaries
+//			double upperVal = expVal*1.05;
+//			double lowerVal = expVal*0.95;
+//			double upperVal = expVal+Math.pow(Math.E,(1.96*Math.sqrt(1/expVal)));
+//			double lowerVal = expVal-Math.pow(Math.E,(1.96*Math.sqrt(1/expVal)));
 			double upperVal = expVal + 1.96 * Math.sqrt(0.05 * (1 - 0.05 / N));
 			double lowerVal = expVal - 1.96 * Math.sqrt(0.05 * (1 - 0.05 / N));
 
@@ -128,9 +124,7 @@ public class qqPlot implements ActionListener {
 
 		// create a scatter chart...
 		final boolean withLegend = true;
-		JFreeChart chart = null;
-
-		chart = ChartFactory.createScatterPlot(
+		JFreeChart chart = ChartFactory.createScatterPlot(
 				"QQ-plot", "Obs X²", "Exp X²",
 				data,
 				PlotOrientation.VERTICAL,
@@ -161,8 +155,6 @@ public class qqPlot implements ActionListener {
 		} catch (IOException e) {
 			System.err.println("Problem occurred creating chart.");
 		}
-
-
 	}
 
 	/**
@@ -181,9 +173,7 @@ public class qqPlot implements ActionListener {
 	 */
 	public static void main(final String[] args) {
 
-
 		final qqPlot app = new qqPlot();
 		app.run();
-
 	}
 }

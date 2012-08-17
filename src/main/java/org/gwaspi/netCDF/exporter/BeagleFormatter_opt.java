@@ -1,11 +1,5 @@
 package org.gwaspi.netCDF.exporter;
 
-/**
- *
- * @author Fernando Muñiz Fernandez
- * IBE, Institute of Evolutionary Biology (UPF-CSIC)
- * CEXS-UPF-PRBB
- */
 import org.gwaspi.constants.cNetCDF;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -23,7 +17,16 @@ import org.gwaspi.netCDF.operations.OperationSet;
 import org.gwaspi.samples.SampleSet;
 import ucar.nc2.*;
 
+/**
+ *
+ * @author Fernando Muñiz Fernandez
+ * IBE, Institute of Evolutionary Biology (UPF-CSIC)
+ * CEXS-UPF-PRBB
+ */
 class BeagleFormatter_opt {
+
+	private BeagleFormatter_opt() {
+	}
 
 	public static boolean exportToBeagle(String exportPath,
 			MatrixMetadata rdMatrixMetadata,
@@ -140,7 +143,7 @@ class BeagleFormatter_opt {
 
 			//Iterate through markerset
 			int markerNb = 0;
-			for (Iterator it = rdMarkerSet.markerIdSetLHM.keySet().iterator(); it.hasNext();) {
+			for (Iterator it = rdMarkerSet.getMarkerIdSetLHM().keySet().iterator(); it.hasNext();) {
 				Object markerId = it.next();
 				StringBuilder markerLine = new StringBuilder("M" + sep + markerId.toString());
 
@@ -210,41 +213,41 @@ class BeagleFormatter_opt {
 
 				//MAJOR ALLELE
 				opMarkerSetLHM = rdOperationSet.fillOpSetLHMWithVariable(qaNcFile, cNetCDF.Census.VAR_OP_MARKERS_MAJALLELES);
-				for (Iterator it = rdMarkerSet.markerIdSetLHM.keySet().iterator(); it.hasNext();) {
+				for (Iterator it = rdMarkerSet.getMarkerIdSetLHM().keySet().iterator(); it.hasNext();) {
 					Object key = it.next();
 					Object allele1Value = opMarkerSetLHM.get(key);
-					Object infoValue = rdMarkerSet.markerIdSetLHM.get(key);
+					Object infoValue = rdMarkerSet.getMarkerIdSetLHM().get(key);
 
 					StringBuilder sb = new StringBuilder();
-					sb.append(infoValue);  //previously stored info
+					sb.append(infoValue); // previously stored info
 					sb.append(sep);
 					sb.append(allele1Value);
 
-					rdMarkerSet.markerIdSetLHM.put(key, sb.toString());
+					rdMarkerSet.getMarkerIdSetLHM().put(key, sb.toString());
 				}
 
 				//MINOR ALLELE
 				opMarkerSetLHM = rdOperationSet.fillLHMWithDefaultValue(opMarkerSetLHM, "");
 				opMarkerSetLHM = rdOperationSet.fillOpSetLHMWithVariable(qaNcFile, cNetCDF.Census.VAR_OP_MARKERS_MINALLELES);
-				for (Iterator it = rdMarkerSet.markerIdSetLHM.keySet().iterator(); it.hasNext();) {
+				for (Iterator it = rdMarkerSet.getMarkerIdSetLHM().keySet().iterator(); it.hasNext();) {
 					Object key = it.next();
 					Object allele2Value = opMarkerSetLHM.get(key);
-					Object infoValue = rdMarkerSet.markerIdSetLHM.get(key);
+					Object infoValue = rdMarkerSet.getMarkerIdSetLHM().get(key);
 
 					StringBuilder sb = new StringBuilder();
-					sb.append(infoValue);  //previously stored info
+					sb.append(infoValue); // previously stored info
 					sb.append(sep);
 					sb.append(allele2Value);
 
-					rdMarkerSet.markerIdSetLHM.put(key, sb.toString());
+					rdMarkerSet.getMarkerIdSetLHM().put(key, sb.toString());
 				}
 			}
 
 			//WRITE ALL LHM TO BUFFERWRITER
 			markerNb = 0;
-			for (Iterator it = rdMarkerSet.markerIdSetLHM.keySet().iterator(); it.hasNext();) {
+			for (Iterator it = rdMarkerSet.getMarkerIdSetLHM().keySet().iterator(); it.hasNext();) {
 				Object key = it.next();
-				Object value = rdMarkerSet.markerIdSetLHM.get(key);
+				Object value = rdMarkerSet.getMarkerIdSetLHM().get(key);
 				markerBW.append(value.toString());
 				markerBW.append("\n");
 				markerNb++;

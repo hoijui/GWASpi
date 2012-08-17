@@ -1,11 +1,5 @@
 package org.gwaspi.samples;
 
-/**
- *
- * @author Fernando Muñiz Fernandez
- * IBE, Institute of Evolutionary Biology (UPF-CSIC)
- * CEXS-UPF-PRBB
- */
 import org.gwaspi.database.DbManager;
 import org.gwaspi.global.ServiceLocator;
 import java.io.FileNotFoundException;
@@ -14,11 +8,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+/**
+ *
+ * @author Fernando Muñiz Fernandez
+ * IBE, Institute of Evolutionary Biology (UPF-CSIC)
+ * CEXS-UPF-PRBB
+ */
 public class InitDummySamples {
 
 	private static String processStartTime = org.gwaspi.global.Utils.getMediumDateTimeAsString();
 	private static DbManager db = null;
 	private static Integer currentLoadedSamples = 0;
+
+	private InitDummySamples() {
+	}
 
 	public static void processData(ArrayList sampleList, int studyId) throws FileNotFoundException, IOException {
 		initSamples(sampleList, studyId);
@@ -29,9 +32,8 @@ public class InitDummySamples {
 		db = ServiceLocator.getDbManager(org.gwaspi.constants.cDBGWASpi.DB_DATACENTER);
 		ArrayList samplesAllreadyInDBAL = new ArrayList();
 
-		List<Map<String, Object>> rs = null;
 		try {
-			rs = SampleManager.selectSampleIDList(studyId);
+			List<Map<String, Object>> rs = SampleManager.selectSampleIDList(studyId);
 			for (int i = 0; i < rs.size(); i++) // loop through rows of result set
 			{
 				//PREVENT PHANTOM-DB READS EXCEPTIONS
@@ -81,11 +83,11 @@ public class InitDummySamples {
 		}
 
 		//LOG OPERATION IN STUDY HISTORY
-		StringBuffer operation = new StringBuffer("Start Time: ");
+		StringBuilder operation = new StringBuilder("Start Time: ");
 		operation.append(processStartTime);
 		operation.append("\n");
-		operation.append("Initialized " + currentLoadedSamples + " dummy Samples from genotype input files.\n");
-		operation.append("End Time:" + org.gwaspi.global.Utils.getMediumDateTimeAsString() + "\n");
+		operation.append("Initialized ").append(currentLoadedSamples).append(" dummy Samples from genotype input files.\n");
+		operation.append("End Time:").append(org.gwaspi.global.Utils.getMediumDateTimeAsString()).append("\n");
 		org.gwaspi.global.Utils.logBlockInStudyDesc(operation.toString(), studyId);
 		//////////////////////////////
 

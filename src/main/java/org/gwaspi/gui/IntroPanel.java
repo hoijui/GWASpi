@@ -90,7 +90,7 @@ public class IntroPanel extends javax.swing.JPanel {
 
 		list_Help.setBorder(javax.swing.BorderFactory.createTitledBorder(null, Text.Help.aboutHelp, javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("DejaVu Sans", 1, 13))); // NOI18N
 		list_Help.setModel(new javax.swing.AbstractListModel() {
-			String[] strings = {helpLinksAL.get(0)[0].toString(),
+			private final String[] strings = {helpLinksAL.get(0)[0].toString(),
 				helpLinksAL.get(1)[0].toString(),
 				helpLinksAL.get(2)[0].toString(),
 				helpLinksAL.get(3)[0].toString(),

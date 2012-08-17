@@ -39,7 +39,7 @@
           <Group type="102" alignment="0" attributes="0">
               <Component id="pnl_Summary" min="-2" max="-2" attributes="0"/>
               <EmptySpace min="-2" max="-2" attributes="0"/>
-              <Component id="scrl_ReportTable" max="32767" attributes="0"/>
+              <Component id="scrl_ReportTable" pref="405" max="32767" attributes="0"/>
               <EmptySpace min="-2" max="-2" attributes="0"/>
               <Component id="pnl_Footer" min="-2" max="-2" attributes="0"/>
               <EmptySpace min="-2" max="-2" attributes="0"/>

@@ -1,9 +1,8 @@
 package org.gwaspi.database;
 
+import org.gwaspi.framework.jdbc.connection.ConnectionProvider;
 import java.util.List;
 import java.util.Map;
-
-import org.gwaspi.framework.jdbc.connection.ConnectionProvider;
 
 public interface DbManager {
 

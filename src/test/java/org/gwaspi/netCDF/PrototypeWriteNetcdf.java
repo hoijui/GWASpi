@@ -1,9 +1,9 @@
 package org.gwaspi.netCDF;
 
+import java.io.IOException;
 import java.util.List;
 import ucar.ma2.*;
 import ucar.nc2.*;
-import java.io.IOException;
 
 public class PrototypeWriteNetcdf {
 
@@ -49,20 +49,20 @@ public class PrototypeWriteNetcdf {
 				}
 				break;
 			case 2:
-				//METHOD 2: One snp at a time -> feed in all samples
+				// METHOD 2: One snp at a time -> feed in all samples
 				for (i = 0; i < markersDim.getLength(); i++) {
 					charArray.setString(ima.set(i, 0), "s" + i + "I0");
 					System.out.println("SNP: " + i);
 				}
 				break;
 			case 3:
-				//METHOD 3: One sample at a time -> feed in all snps
+				// METHOD 3: One sample at a time -> feed in all snps
 				break;
 		}
 
 
 
-		int[] offsetOrigin = new int[3]; //0,0
+		int[] offsetOrigin = new int[3]; // 0,0
 		try {
 			ncfile.write("genotypes", offsetOrigin, charArray);
 			//ncfile.write("genotype", origin, A);
@@ -78,6 +78,5 @@ public class PrototypeWriteNetcdf {
 		} catch (IOException e) {
 			System.err.println("ERROR creating file " + ncfile.getLocation() + "\n" + e);
 		}
-
 	}
 }

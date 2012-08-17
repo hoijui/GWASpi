@@ -1,4 +1,3 @@
-
 /*
  * TestJPanel.java
  *

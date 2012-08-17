@@ -15,6 +15,9 @@ import ucar.nc2.*;
  */
 public class Utils {
 
+	private Utils() {
+	}
+
 	//////// HELPER METHODS ////////
 	//<editor-fold defaultstate="collapsed" desc="SAVERS">
 	public static boolean saveCharLHMKeyToWrMatrix(NetcdfFileWriteable wrNcFile, LinkedHashMap wrLHM, String variable, int varStride) {
@@ -734,7 +737,7 @@ public class Utils {
 		for (int markerCounter = 0; markerCounter < markerNb; markerCounter++) {
 			for (int sampleCounter = 0; sampleCounter < sampleNb; sampleCounter++) {
 
-				byte[] value = (byte[]) genotypesAL.get(alCounter);
+				byte[] value = genotypesAL.get(alCounter);
 				byteArray.setByte(ima.set(sampleCounter, markerCounter, 0), value[0]); //1 Sample at a time, iterating through markers, first byte
 				byteArray.setByte(ima.set(sampleCounter, markerCounter, 1), value[1]); //1 Sample at a time, iterating through markers, second byte
 				alCounter++;
@@ -923,14 +926,13 @@ public class Utils {
 	//</editor-fold>
 	//<editor-fold defaultstate="collapsed" desc="ArrayDouble.D1">
 	public static LinkedHashMap writeD1ArrayDoubleToLHMValues(ArrayDouble inputArray, LinkedHashMap lhm) {
-		Double value = Double.NaN;
 
 		int[] shape = inputArray.getShape();
 		Index index = inputArray.getIndex();
 		Iterator it = lhm.keySet().iterator();
 		for (int i = 0; i < shape[0]; i++) {
 			Object key = it.next();
-			value = inputArray.getDouble(index.set(i));
+			Double value = inputArray.getDouble(index.set(i));
 			lhm.put(key, value);
 		}
 
@@ -942,12 +944,11 @@ public class Utils {
 		ArrayList<Double> alf = new ArrayList<Double>();
 		Long expectedSize = inputArray.getSize();
 		alf.ensureCapacity(expectedSize.intValue());
-		Double value = Double.NaN;
 
 		int[] shape = inputArray.getShape();
 		Index index = inputArray.getIndex();
 		for (int i = 0; i < shape[0]; i++) {
-			value = inputArray.getDouble(index.set(i));
+			Double value = inputArray.getDouble(index.set(i));
 			alf.add(value);
 		}
 
@@ -995,14 +996,13 @@ public class Utils {
 
 	//<editor-fold defaultstate="collapsed" desc="ArrayInt.D1">
 	public static LinkedHashMap writeD1ArrayIntToLHMValues(ArrayInt inputArray, LinkedHashMap lhm) {
-		Integer value = 0;
 
 		int[] shape = inputArray.getShape();
 		Index index = inputArray.getIndex();
 		Iterator it = lhm.keySet().iterator();
 		for (int i = 0; i < shape[0]; i++) {
 			Object key = it.next();
-			value = inputArray.getInt(index.set(i));
+			Integer value = inputArray.getInt(index.set(i));
 			lhm.put(key, value);
 		}
 
@@ -1014,12 +1014,11 @@ public class Utils {
 		ArrayList<Integer> ali = new ArrayList<Integer>();
 		Long expectedSize = inputArray.getSize();
 		ali.ensureCapacity(expectedSize.intValue());
-		int value = 0;
 
 		int[] shape = inputArray.getShape();
 		Index index = inputArray.getIndex();
 		for (int i = 0; i < shape[0]; i++) {
-			value = inputArray.getInt(index.set(i));
+			int value = inputArray.getInt(index.set(i));
 			ali.add(value);
 		}
 

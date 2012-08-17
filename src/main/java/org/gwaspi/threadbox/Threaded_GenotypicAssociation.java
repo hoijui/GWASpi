@@ -1,15 +1,12 @@
 package org.gwaspi.threadbox;
 
 import org.gwaspi.global.Text;
-import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.gwaspi.model.GWASpiExplorerNodes;
-import org.gwaspi.model.Operation;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.netCDF.operations.GWASinOneGOParams;
 import org.gwaspi.netCDF.operations.OperationMetadata;
-import org.gwaspi.reports.OutputAllelicAssociation_opt;
 import org.gwaspi.reports.OutputGenotypicAssociation_opt;
 
 /**
@@ -20,12 +17,12 @@ import org.gwaspi.reports.OutputGenotypicAssociation_opt;
  */
 public class Threaded_GenotypicAssociation implements Runnable {
 
-	Thread runner;
-	protected String timeStamp = "";
-	protected static int matrixId;
-	protected static int censusOpId;
-	protected static int hwOpId;
-	protected static GWASinOneGOParams gwasParams;
+	private Thread runner;
+	private String timeStamp = "";
+	private static int matrixId;
+	private static int censusOpId;
+	private static int hwOpId;
+	private static GWASinOneGOParams gwasParams;
 
 	public Threaded_GenotypicAssociation(String threadName,
 			String _timeStamp,

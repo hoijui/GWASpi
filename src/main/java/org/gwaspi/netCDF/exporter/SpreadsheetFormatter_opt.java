@@ -18,6 +18,9 @@ import ucar.nc2.*;
  */
 public class SpreadsheetFormatter_opt {
 
+	private SpreadsheetFormatter_opt() {
+	}
+
 	public static boolean exportToFleurFormat(String exportPath,
 			MatrixMetadata rdMatrixMetadata,
 			MarkerSet_opt rdMarkerSet,
@@ -41,7 +44,7 @@ public class SpreadsheetFormatter_opt {
 
 			//HEADER CONTAINING MARKER IDs
 			StringBuilder line = new StringBuilder();
-			for (Iterator it = rdMarkerSet.markerIdSetLHM.keySet().iterator(); it.hasNext();) {
+			for (Iterator it = rdMarkerSet.getMarkerIdSetLHM().keySet().iterator(); it.hasNext();) {
 				Object key = it.next();
 				line.append(sep);
 				line.append(key);
@@ -50,25 +53,25 @@ public class SpreadsheetFormatter_opt {
 			pedBW.append("\n");
 			pedBW.flush();
 
-			//Iterate through all samples
+			// Iterate through all samples
 			int sampleNb = 0;
 			for (Iterator it = rdSampleSetLHM.keySet().iterator(); it.hasNext();) {
 
 				String sampleId = it.next().toString();
 
-				//Iterate through all markers
+				// Iterate through all markers
 				rdMarkerSet.fillGTsForCurrentSampleIntoInitLHM(sampleNb);
 				StringBuilder genotypes = new StringBuilder();
-				for (Iterator it2 = rdMarkerSet.markerIdSetLHM.keySet().iterator(); it2.hasNext();) {
+				for (Iterator it2 = rdMarkerSet.getMarkerIdSetLHM().keySet().iterator(); it2.hasNext();) {
 					Object key = it2.next();
-					byte[] tempGT = (byte[]) rdMarkerSet.markerIdSetLHM.get(key);
+					byte[] tempGT = (byte[]) rdMarkerSet.getMarkerIdSetLHM().get(key);
 					genotypes.append(sep);
 					genotypes.append(new String(new byte[]{tempGT[0]}));
 					genotypes.append(new String(new byte[]{tempGT[1]}));
 				}
 
-				//Individual ID
-				//Genotypes
+				// Individual ID
+				// Genotypes
 				line = new StringBuilder();
 				line.append(sampleId);
 				line.append(genotypes);

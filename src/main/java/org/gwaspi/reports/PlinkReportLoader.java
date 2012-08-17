@@ -47,7 +47,10 @@ import org.jfree.ui.TextAnchor;
  */
 public class PlinkReportLoader {
 
-	protected static HashMap labelerHM = new HashMap();
+	private static HashMap labelerHM = new HashMap();
+
+	private PlinkReportLoader() {
+	}
 
 	public static CombinedRangeXYPlot loadAssocUnadjLogPvsPos(File plinkReport, HashSet redMarkersHS) throws FileNotFoundException, IOException {
 
@@ -68,7 +71,6 @@ public class PlinkReportLoader {
 
 		//Getting data from file and subdividing to series all points by chromosome
 		String l;
-		String[] cVals = null;
 		String tempChr = "";
 		String header = inputBufferReader.readLine();
 		int count = 0;
@@ -80,7 +82,7 @@ public class PlinkReportLoader {
 			count++;
 
 			l = l.trim().replaceAll("\\s+", ",");
-			cVals = l.split(",");
+			String[] cVals = l.split(",");
 
 			String markerId = cVals[1];
 			int position = Integer.parseInt(cVals[2]);
@@ -178,7 +180,7 @@ public class PlinkReportLoader {
 		combinedPlot.add(subplot, 1);
 	}
 
-	static class MySeriesItemLabelGenerator extends AbstractXYItemLabelGenerator
+	private static class MySeriesItemLabelGenerator extends AbstractXYItemLabelGenerator
 			implements XYItemLabelGenerator {
 
 		private double threshold;
@@ -190,7 +192,7 @@ public class PlinkReportLoader {
 		 *
 		 * @param threshold the threshold value.
 		 */
-		public MySeriesItemLabelGenerator(double threshold, String chr) {
+		MySeriesItemLabelGenerator(double threshold, String chr) {
 			this.threshold = threshold;
 			this.chr = chr;
 		}
@@ -212,7 +214,7 @@ public class PlinkReportLoader {
 			if (value != null) {
 				double v = value.doubleValue();
 				if (v > this.threshold) {
-					StringBuffer chrPos = new StringBuffer(chr);
+					StringBuilder chrPos = new StringBuilder(chr);
 					chrPos.append("_");
 					chrPos.append(position);
 					result = labelerHM.get(chrPos.toString()).toString();

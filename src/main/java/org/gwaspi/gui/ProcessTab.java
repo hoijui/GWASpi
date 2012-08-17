@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.net.URL;
-import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.Icon;
@@ -42,12 +42,14 @@ public class ProcessTab extends javax.swing.JPanel {
 	private javax.swing.JScrollPane scrl_ProcessLog;
 	private static javax.swing.JTextArea txtA_ProcessLog;
 	private javax.swing.JButton btn_Save;
-	static OutputStream sysOutPS = new OutputStream() {
+	private static OutputStream sysOutPS = new OutputStream() {
+		@Override
 		public void write(int b) throws IOException {
 			txtA_ProcessLog.append(String.valueOf((char) b));
 			txtA_ProcessLog.setCaretPosition(txtA_ProcessLog.getDocument().getLength());
 		}
 
+		@Override
 		public void write(byte[] b, int off, int len) {
 			txtA_ProcessLog.append(new String(b, off, len));
 			txtA_ProcessLog.setCaretPosition(txtA_ProcessLog.getDocument().getLength());
@@ -191,6 +193,7 @@ public class ProcessTab extends javax.swing.JPanel {
 				}
 			};
 			tmpTable.addMouseMotionListener(new MouseMotionAdapter() {
+				@Override
 				public void mouseMoved(MouseEvent me) {
 					//displayColumnCursor(me, tmpTable);
 				}
@@ -248,8 +251,8 @@ public class ProcessTab extends javax.swing.JPanel {
 	}
 
 	protected static Object[][] buildProcessTableModel() {
-		ArrayList<SwingWorkerItem> swingWorkerItemsAL = SwingWorkerItemList.getSwingWorkerItemsAL();
-		ArrayList<SwingDeleterItem> swingDeleterItemsAL = SwingDeleterItemList.getSwingDeleterItemsAL();
+		List<SwingWorkerItem> swingWorkerItemsAL = SwingWorkerItemList.getSwingWorkerItemsAL();
+		List<SwingDeleterItem> swingDeleterItemsAL = SwingDeleterItemList.getSwingDeleterItemsAL();
 
 		Object[][] spreadSheet = new Object[swingWorkerItemsAL.size() + swingDeleterItemsAL.size()][8];
 		int count = 0;
@@ -300,7 +303,7 @@ public class ProcessTab extends javax.swing.JPanel {
 	}
 
 	public static void toggleBusyLogo() {
-		ArrayList<SwingWorkerItem> swingWorkerItemsAL = SwingWorkerItemList.getSwingWorkerItemsAL();
+		List<SwingWorkerItem> swingWorkerItemsAL = SwingWorkerItemList.getSwingWorkerItemsAL();
 		int count = 0;
 		boolean idle = true;
 		while (count < swingWorkerItemsAL.size()) {

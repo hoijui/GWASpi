@@ -15,6 +15,9 @@ import ucar.nc2.NetcdfFile;
  */
 public class GatherQAMarkersData {
 
+	private GatherQAMarkersData() {
+	}
+
 	public static LinkedHashMap loadMarkerQAMissingRatio(int opId) throws FileNotFoundException, IOException {
 
 		OperationMetadata rdOPMetadata = new OperationMetadata(opId);
@@ -41,7 +44,6 @@ public class GatherQAMarkersData {
 
 		markerQANcFile.close();
 		return rdMatrixMarkerSetLHM;
-
 	}
 
 	public static LinkedHashMap loadMarkerQAMinorAlleles(int opId) throws FileNotFoundException, IOException {
@@ -56,7 +58,6 @@ public class GatherQAMarkersData {
 
 		markerQANcFile.close();
 		return rdMatrixMarkerSetLHM;
-
 	}
 
 	public static LinkedHashMap loadMarkerQAMajorAlleles(int opId) throws FileNotFoundException, IOException {
@@ -71,7 +72,6 @@ public class GatherQAMarkersData {
 
 		markerQANcFile.close();
 		return rdMatrixMarkerSetLHM;
-
 	}
 
 	public static LinkedHashMap loadMarkerQAMinorAlleleFrequency(int opId) throws FileNotFoundException, IOException {
@@ -86,7 +86,6 @@ public class GatherQAMarkersData {
 
 		markerQANcFile.close();
 		return rdMatrixMarkerSetLHM;
-
 	}
 
 	public static LinkedHashMap loadMarkerQAMajorAlleleFrequency(int opId) throws FileNotFoundException, IOException {
@@ -101,6 +100,5 @@ public class GatherQAMarkersData {
 
 		markerQANcFile.close();
 		return rdMatrixMarkerSetLHM;
-
 	}
 }

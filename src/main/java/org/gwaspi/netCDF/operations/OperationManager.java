@@ -10,9 +10,8 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.gwaspi.model.Operation;
-import ucar.ma2.InvalidRangeException;
-import org.gwaspi.constants.cNetCDF.*;
 import org.gwaspi.model.OperationsList;
+import ucar.ma2.InvalidRangeException;
 
 /**
  *
@@ -21,6 +20,9 @@ import org.gwaspi.model.OperationsList;
  * CEXS-UPF-PRBB
  */
 public class OperationManager {
+
+	private OperationManager() {
+	}
 
 	//<editor-fold defaultstate="collapsed" desc="MATRIX CENSUS">
 	public static int censusCleanMatrixMarkers(int _rdMatrixId,
@@ -34,7 +36,7 @@ public class OperationManager {
 
 		org.gwaspi.global.Utils.sysoutStart("Genotypes Frequency Count by Affection");
 
-		int resultOpId = Integer.MIN_VALUE;
+		int resultOpId; // Integer.MIN_VALUE
 		Operation sampleQAOP = new Operation(samplesQAOpId);
 		Operation markerQAOP = new Operation(markersQAOpId);
 
@@ -64,7 +66,7 @@ public class OperationManager {
 
 		org.gwaspi.global.Utils.sysoutStart("Genotypes Frequency Count using " + phenoFile.getName());
 
-		int resultOpId = Integer.MIN_VALUE;
+		int resultOpId; // Integer.MIN_VALUE
 		Operation sampleQAOP = new Operation(samplesQAOpId);
 		Operation markerQAOP = new Operation(markersQAOpId);
 
@@ -82,7 +84,7 @@ public class OperationManager {
 	}
 
 	public static int performHardyWeinberg(int censusOpId, String hwName) throws IOException, InvalidRangeException {
-		int resultOpId = Integer.MIN_VALUE;
+		int resultOpId; // Integer.MIN_VALUE
 		Operation censusOP = new Operation(censusOpId);
 
 		org.gwaspi.global.Utils.sysoutStart("Hardy-Weinberg");
@@ -101,7 +103,7 @@ public class OperationManager {
 			int censusOpId,
 			int hwOpId,
 			double hwThreshold) throws IOException, InvalidRangeException {
-		int resultOpId = Integer.MIN_VALUE;
+		int resultOpId; // Integer.MIN_VALUE
 
 		org.gwaspi.global.Utils.sysoutStart(" Allelic Association Test using QA and HW thresholds");
 
@@ -110,7 +112,6 @@ public class OperationManager {
 
 		resultOpId = org.gwaspi.netCDF.operations.OP_AllelicAssociationTests_opt.processMatrix(_rdMatrixId, markerCensusOP, hwOP, hwThreshold);
 
-
 		return resultOpId;
 	}
 
@@ -118,7 +119,7 @@ public class OperationManager {
 			int censusOpId,
 			int hwOpId,
 			double hwThreshold) throws IOException, InvalidRangeException {
-		int resultOpId = Integer.MIN_VALUE;
+		int resultOpId; // Integer.MIN_VALUE
 
 		org.gwaspi.global.Utils.sysoutStart(" Genotypic Association Test using QA and HW thresholds");
 
@@ -127,7 +128,6 @@ public class OperationManager {
 
 		resultOpId = org.gwaspi.netCDF.operations.OP_GenotypicAssociationTests_opt.processMatrix(_rdMatrixId, markerCensusOP, hwOP, hwThreshold);
 
-
 		return resultOpId;
 	}
 
@@ -135,7 +135,7 @@ public class OperationManager {
 			int censusOpId,
 			int hwOpId,
 			double hwThreshold) throws IOException, InvalidRangeException {
-		int resultOpId = Integer.MIN_VALUE;
+		int resultOpId; // Integer.MIN_VALUE
 
 		org.gwaspi.global.Utils.sysoutStart("Cochran-Armitage Trend Test using QA and HW thresholds");
 
@@ -143,7 +143,6 @@ public class OperationManager {
 		Operation hwOP = new Operation(hwOpId);
 
 		resultOpId = org.gwaspi.netCDF.operations.OP_TrendTests_opt.processMatrix(_rdMatrixId, markerCensusOP, hwOP, hwThreshold);
-
 
 		return resultOpId;
 	}
@@ -199,8 +198,7 @@ public class OperationManager {
 		ArrayList result = new ArrayList();
 
 		DbManager dBManager = ServiceLocator.getDbManager(org.gwaspi.constants.cDBGWASpi.DB_DATACENTER);
-		List<Map<String, Object>> rs = null;
-		rs = dBManager.executeSelectStatement("SELECT * FROM " + org.gwaspi.constants.cDBGWASpi.SCH_MATRICES + "." + org.gwaspi.constants.cDBOperations.T_OPERATIONS + " WHERE " + org.gwaspi.constants.cDBOperations.f_PARENT_MATRIXID + "=" + matrixId + "  WITH RR");
+		List<Map<String, Object>> rs = dBManager.executeSelectStatement("SELECT * FROM " + org.gwaspi.constants.cDBGWASpi.SCH_MATRICES + "." + org.gwaspi.constants.cDBOperations.T_OPERATIONS + " WHERE " + org.gwaspi.constants.cDBOperations.f_PARENT_MATRIXID + "=" + matrixId + "  WITH RR");
 
 		for (int rowcount = 0; rowcount < rs.size(); rowcount++) {
 			//PREVENT PHANTOM-DB READS EXCEPTIONS

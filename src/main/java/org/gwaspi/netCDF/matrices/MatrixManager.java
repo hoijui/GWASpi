@@ -8,8 +8,6 @@ import java.util.List;
 import java.util.Map;
 import org.gwaspi.model.Operation;
 import org.gwaspi.model.OperationsList;
-import org.gwaspi.netCDF.operations.OperationManager;
-import org.gwaspi.reports.ReportManager;
 
 /**
  *
@@ -18,6 +16,9 @@ import org.gwaspi.reports.ReportManager;
  * CEXS-UPF-PRBB
  */
 public class MatrixManager {
+
+	private MatrixManager() {
+	}
 
 	public static String createMatricesTable(DbManager db) {
 		boolean result = false;
@@ -138,6 +139,5 @@ public class MatrixManager {
 		MatrixMetadata mxMetaData = new MatrixMetadata((Integer) rs.get(0).get(org.gwaspi.constants.cDBMatrix.f_ID));
 
 		return mxMetaData;
-
 	}
 }

@@ -1,12 +1,10 @@
 package org.gwaspi.gui;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.PrintStream;
-import java.awt.*;
 import java.io.FilterOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
-import javax.swing.*;
+import java.io.PrintStream;
 
 /**
  *
@@ -19,7 +17,7 @@ public class SystemOutPanel_old extends javax.swing.JPanel {
 	private javax.swing.JPanel panel_SystemLog;
 	private javax.swing.JScrollPane jScrollPane1;
 	private javax.swing.JTextArea textArea_log;
-	PrintStream aPrintStream = new PrintStream(new FilteredStream(new ByteArrayOutputStream()));
+	private PrintStream aPrintStream = new PrintStream(new FilteredStream(new ByteArrayOutputStream()));
 	// End of variables declaration
 
 	public SystemOutPanel_old() throws IOException {
@@ -65,31 +63,33 @@ public class SystemOutPanel_old extends javax.swing.JPanel {
 	}
 
 	public static void showSystemOutPanel() throws IOException {
-//        org.gwaspi.gui.MOAPIPanel.pnl_Content = new SystemOutPanel_old();
-//        org.gwaspi.gui.MOAPIPanel.scrl_Content.setViewportView(org.gwaspi.gui.MOAPIPanel.pnl_Content);
+//		org.gwaspi.gui.MOAPIPanel.pnl_Content = new SystemOutPanel_old();
+//		org.gwaspi.gui.MOAPIPanel.scrl_Content.setViewportView(org.gwaspi.gui.MOAPIPanel.pnl_Content);
 	}
 
-	class FilteredStream extends FilterOutputStream {
+	private class FilteredStream extends FilterOutputStream {
 
-		public FilteredStream(OutputStream aStream) {
+		FilteredStream(OutputStream aStream) {
 			super(aStream);
 		}
 
+		@Override
 		public void write(byte b[]) throws IOException {
 			String aString = new String(b);
 			textArea_log.append(aString);
 		}
 
+		@Override
 		public void write(byte b[], int off, int len) throws IOException {
 			String aString = new String(b, off, len);
 			textArea_log.append(aString);
 
-			//Write to a text file
-//            if (logFile) {
-//                FileWriter aWriter = new FileWriter(fileName, true);
-//                aWriter.write(aString);
-//                aWriter.close();
-//            }
+//			// Write to a text file
+//			if (logFile) {
+//				FileWriter aWriter = new FileWriter(fileName, true);
+//				aWriter.write(aString);
+//				aWriter.close();
+//			}
 		}
 	}
 }

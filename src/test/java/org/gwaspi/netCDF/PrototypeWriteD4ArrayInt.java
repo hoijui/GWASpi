@@ -1,11 +1,10 @@
 package org.gwaspi.netCDF;
 
-import java.util.List;
-import ucar.ma2.*;
-import ucar.nc2.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
+import ucar.ma2.*;
+import ucar.nc2.*;
 
 public class PrototypeWriteD4ArrayInt {
 
@@ -16,14 +15,13 @@ public class PrototypeWriteD4ArrayInt {
 
 		// add dimensions
 		Dimension markersDim = ncfile.addDimension("markers", 100);
-		Dimension boxesDim = ncfile.addDimension("boxes", 4); //0=>AA, 1=>Aa, 2=>aa, 3=>00
+		Dimension boxesDim = ncfile.addDimension("boxes", 4); // 0=>AA, 1=>Aa, 2=>aa, 3=>00
 		ArrayList punettSpace = new ArrayList();
 		punettSpace.add(markersDim);
 		punettSpace.add(boxesDim);
 
 		// define Variable
 		ncfile.addVariable("contingencies", DataType.INT, punettSpace);
-
 
 		// create the file
 		try {
@@ -32,13 +30,11 @@ public class PrototypeWriteD4ArrayInt {
 			System.err.println("ERROR creating file " + ncfile.getLocation() + "\n" + e);
 		}
 
-
 		////////////// FILL'ER UP! ////////////////
 
 		ArrayInt intArray = new ArrayInt.D2(markersDim.getLength(), boxesDim.getLength());
 		int i, j;
 		Index ima = intArray.getIndex();
-
 
 		int method = 1;
 		switch (method) {
@@ -54,13 +50,13 @@ public class PrototypeWriteD4ArrayInt {
 				}
 				break;
 			case 3:
-				//METHOD 3: One sample at a time -> feed in all snps
+				// METHOD 3: One sample at a time -> feed in all snps
 				break;
 		}
 
 
 
-		int[] offsetOrigin = new int[2]; //0,0
+		int[] offsetOrigin = new int[2]; // 0,0
 		try {
 			ncfile.write("contingencies", offsetOrigin, intArray);
 			//ncfile.write("genotype", origin, A);
@@ -76,6 +72,5 @@ public class PrototypeWriteD4ArrayInt {
 		} catch (IOException e) {
 			System.err.println("ERROR creating file " + ncfile.getLocation() + "\n" + e);
 		}
-
 	}
 }

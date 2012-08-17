@@ -1,9 +1,5 @@
 package org.gwaspi.gui.reports;
 
-/**
- *
- * @author fernando
- */
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.utils.LinksExternalResouces;
@@ -26,7 +22,6 @@ import org.gwaspi.model.Operation;
 import org.gwaspi.model.ReportsList;
 import org.gwaspi.netCDF.matrices.MatrixMetadata;
 import org.gwaspi.netCDF.operations.OperationMetadata;
-
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartMouseEvent;
 import org.jfree.chart.ChartMouseListener;
@@ -55,6 +50,10 @@ import org.jfree.ui.RectangleAnchor;
 import org.jfree.ui.RectangleEdge;
 import org.jfree.ui.TextAnchor;
 
+/**
+ *
+ * @author fernando
+ */
 public final class ManhattanPlotZoom extends javax.swing.JPanel {
 
 	private static int opId;
@@ -233,31 +232,31 @@ public final class ManhattanPlotZoom extends javax.swing.JPanel {
 				ValueAxis domainAxis = plot.getDomainAxis();
 				RectangleEdge domainAxisEdge = plot.getDomainAxisEdge();
 				long chartX = (long) domainAxis.java2DToValue(p.getX(), dataArea, domainAxisEdge);
-//                ValueAxis rangeAxis = plot.getRangeAxis();
-//                RectangleEdge rangeAxisEdge = plot.getRangeAxisEdge();
-//                double chartY = rangeAxis.java2DToValue(p.getY(), dataArea,
-//                        rangeAxisEdge);
+//				ValueAxis rangeAxis = plot.getRangeAxis();
+//				RectangleEdge rangeAxisEdge = plot.getRangeAxisEdge();
+//				double chartY = rangeAxis.java2DToValue(p.getY(), dataArea,
+//						rangeAxisEdge);
 				try {
 					if (LinksExternalResouces.checkIfRsNecessary(cmb_SearchDB.getSelectedIndex())) { //THE SELECTED EXTERNAL RESOURCE NEEDS RSID INFO
 						String tooltip = zoomPanel.getToolTipText(event.getTrigger());
 						if (tooltip == null || tooltip.isEmpty()) { //CHECK IF THERE IS AN RSID
 							org.gwaspi.gui.utils.Dialogs.showWarningDialogue(Text.Reports.warnExternalResource);
 						} else {
-							String rsId = tooltip.substring(6, tooltip.indexOf("<", 6));
+							String rsId = tooltip.substring(6, tooltip.indexOf('<', 6));
 							org.gwaspi.gui.utils.URLInDefaultBrowser.browseGenericURL(org.gwaspi.gui.utils.LinksExternalResouces.getResourceLink(cmb_SearchDB.getSelectedIndex(),
-									currentChr, //chr
-									rsId, //rsId
-									chartX) //pos
+									currentChr, // chr
+									rsId, // rsId
+									chartX) // pos
 									);
 						}
-					} else {    //THE SELECTED EXTERNAL RESOURCE ONLY NEEDS CHR+POS INFO
+					} else { // THE SELECTED EXTERNAL RESOURCE ONLY NEEDS CHR+POS INFO
 						org.gwaspi.gui.utils.URLInDefaultBrowser.browseGenericURL(org.gwaspi.gui.utils.LinksExternalResouces.getResourceLink(cmb_SearchDB.getSelectedIndex(),
-								currentChr, //chr
-								"", //rsId
-								chartX) //pos
+								currentChr, // chr
+								"", // rsId
+								chartX) // pos
 								);
 					}
-//                    org.gwaspi.gui.utils.URLInDefaultBrowser.browseGenericURL(org.gwaspi.gui.utils.LinkEnsemblUrl.getHomoSapiensLink(currentChr, (int) chartX));
+//					org.gwaspi.gui.utils.URLInDefaultBrowser.browseGenericURL(org.gwaspi.gui.utils.LinkEnsemblUrl.getHomoSapiensLink(currentChr, (int) chartX));
 				} catch (IOException ex) {
 					System.out.println(Text.Reports.cannotOpenEnsembl);
 				}
@@ -292,8 +291,8 @@ public final class ManhattanPlotZoom extends javax.swing.JPanel {
 		btn_Reset = new javax.swing.JButton();
 		btn_Back = new javax.swing.JButton();
 		btn_Back2 = new javax.swing.JButton();
-//        pnl_Tracker = new javax.swing.JPanel();
-		//slid_Tracker = new javax.swing.JSlider();
+//		pnl_Tracker = new javax.swing.JPanel();
+//		slid_Tracker = new javax.swing.JSlider();
 
 		String titlePlot = ": " + origMarkerId + " - Chr" + currentChr;
 		if (origMarkerId == null) {
@@ -346,33 +345,33 @@ public final class ManhattanPlotZoom extends javax.swing.JPanel {
 		}
 
 		//<editor-fold defaultstate="collapsed" desc="TRACKER">
-//        pnl_Tracker.setBorder(javax.swing.BorderFactory.createTitledBorder("Marker Nº on "+lblChr));
+//		pnl_Tracker.setBorder(javax.swing.BorderFactory.createTitledBorder("Marker Nº on "+lblChr));
 //
-////
-////        slid_Tracker.setMaximum(max);
-//        slid_Tracker.setValue(currPos);
-//        slid_Tracker.addMouseListener(new java.awt.event.MouseAdapter() {
-//            public void mouseReleased(java.awt.event.MouseEvent evt) {
-//                actionSlide();
-//            }
-//        });
 //
-//        javax.swing.GroupLayout pnl_TrackerLayout = new javax.swing.GroupLayout(pnl_Tracker);
-//        pnl_Tracker.setLayout(pnl_TrackerLayout);
-//        pnl_TrackerLayout.setHorizontalGroup(
-//                pnl_TrackerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-//                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnl_TrackerLayout.createSequentialGroup()
-//                .addGap(18, 18, 18)
-//                .addComponent(slid_Tracker, javax.swing.GroupLayout.DEFAULT_SIZE, 814, Short.MAX_VALUE)
-//                .addContainerGap())
-//                );
-//        pnl_TrackerLayout.setVerticalGroup(
-//                pnl_TrackerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-//                .addGroup(pnl_TrackerLayout.createSequentialGroup()
-//                .addContainerGap()
-//                .addComponent(slid_Tracker, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-//                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-//                );
+//		slid_Tracker.setMaximum(max);
+//		slid_Tracker.setValue(currPos);
+//		slid_Tracker.addMouseListener(new java.awt.event.MouseAdapter() {
+//			public void mouseReleased(java.awt.event.MouseEvent evt) {
+//				actionSlide();
+//			}
+//		});
+//
+//		javax.swing.GroupLayout pnl_TrackerLayout = new javax.swing.GroupLayout(pnl_Tracker);
+//		pnl_Tracker.setLayout(pnl_TrackerLayout);
+//		pnl_TrackerLayout.setHorizontalGroup(
+//				pnl_TrackerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+//				.addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnl_TrackerLayout.createSequentialGroup()
+//				.addGap(18, 18, 18)
+//				.addComponent(slid_Tracker, javax.swing.GroupLayout.DEFAULT_SIZE, 814, Short.MAX_VALUE)
+//				.addContainerGap())
+//				);
+//		pnl_TrackerLayout.setVerticalGroup(
+//				pnl_TrackerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+//				.addGroup(pnl_TrackerLayout.createSequentialGroup()
+//				.addContainerGap()
+//				.addComponent(slid_Tracker, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+//				.addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+//				);
 		//</editor-fold>
 
 
@@ -488,28 +487,28 @@ public final class ManhattanPlotZoom extends javax.swing.JPanel {
 
 
 		// <editor-fold defaultstate="collapsed" desc="LAYOUT">
-//        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
-//        this.setLayout(layout);
-//        layout.setHorizontalGroup(
-//                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-//                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-//                .addContainerGap()
-//                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-//                .addComponent(pnl_Tracker, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-//                .addComponent(pnl_ChartNavigator, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-//                .addComponent(pnl_Footer, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-//                .addContainerGap())
-//                );
-//        layout.setVerticalGroup(
-//                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-//                .addGroup(layout.createSequentialGroup()
-//                .addComponent(pnl_ChartNavigator, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-//                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-//                .addComponent(pnl_Tracker, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE)
-//                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-//                .addComponent(pnl_Footer, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-//                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-//                );
+//		javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
+//		this.setLayout(layout);
+//		layout.setHorizontalGroup(
+//				layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+//				.addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+//				.addContainerGap()
+//				.addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+//				.addComponent(pnl_Tracker, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+//				.addComponent(pnl_ChartNavigator, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+//				.addComponent(pnl_Footer, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+//				.addContainerGap())
+//				);
+//		layout.setVerticalGroup(
+//				layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+//				.addGroup(layout.createSequentialGroup()
+//				.addComponent(pnl_ChartNavigator, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+//				.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+//				.addComponent(pnl_Tracker, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE)
+//				.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+//				.addComponent(pnl_Footer, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+//				.addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+//				);
 
 		javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
 		this.setLayout(layout);
@@ -538,7 +537,7 @@ public final class ManhattanPlotZoom extends javax.swing.JPanel {
 	}
 
 	// <editor-fold defaultstate="collapsed" desc="CHART GENERATOR">
-	protected static XYDataset getXYDataSetByPhysPos(int _opId,
+	static XYDataset getXYDataSetByPhysPos(int _opId,
 			String _origChr,
 			long _startPhysPos,
 			long _requestedPosWindow) {
@@ -577,18 +576,18 @@ public final class ManhattanPlotZoom extends javax.swing.JPanel {
 		return xyd;
 	}
 
-	protected static XYDataset getXYDataSetByMarkerIdAndPhysPos(int _opId,
+	static XYDataset getXYDataSetByMarkerIdAndPhysPos(int _opId,
 			String _origChr,
 			String _markerId,
 			long _centerPhysPos,
 			long _requestedPosWindow) {
 
-//        System.out.println("getXYDataSetByMarkerIdOrIdx");
-//        System.out.println("opId: "+_opId);
-//        System.out.println("markerId: "+_markerId);
-//        System.out.println("indexPosition: "+_startIdxPos);
-//        System.out.println("requestedSetSize: "+_requestedSetSize);
-//        System.out.println("\n");
+//		System.out.println("getXYDataSetByMarkerIdOrIdx");
+//		System.out.println("opId: "+_opId);
+//		System.out.println("markerId: "+_markerId);
+//		System.out.println("indexPosition: "+_startIdxPos);
+//		System.out.println("requestedSetSize: "+_requestedSetSize);
+//		System.out.println("\n");
 
 
 		XYDataset xyd = null;
@@ -623,18 +622,18 @@ public final class ManhattanPlotZoom extends javax.swing.JPanel {
 	 *
 	 * @deprecated Use getXYDataSetByMarkerIdAndPhysPos instead
 	 */
-	protected static XYDataset getXYDataSetByMarkerIdAndIdx(int _opId,
+	static XYDataset getXYDataSetByMarkerIdAndIdx(int _opId,
 			String _origChr,
 			String _markerId,
 			int _centerPhysPos,
 			int _requestedSetSize) {
 
-//        System.out.println("getXYDataSetByMarkerIdOrIdx");
-//        System.out.println("opId: "+_opId);
-//        System.out.println("markerId: "+_markerId);
-//        System.out.println("indexPosition: "+_startIdxPos);
-//        System.out.println("requestedSetSize: "+_requestedSetSize);
-//        System.out.println("\n");
+//		System.out.println("getXYDataSetByMarkerIdOrIdx");
+//		System.out.println("opId: "+_opId);
+//		System.out.println("markerId: "+_markerId);
+//		System.out.println("indexPosition: "+_startIdxPos);
+//		System.out.println("requestedSetSize: "+_requestedSetSize);
+//		System.out.println("\n");
 
 
 		XYDataset xyd = null;
@@ -676,12 +675,12 @@ public final class ManhattanPlotZoom extends javax.swing.JPanel {
 		plot.setRangeZeroBaselineVisible(true);
 
 
-		//CHART BACKGROUD COLOR
+		// CHART BACKGROUD COLOR
 		chart.setBackgroundPaint(Color.getHSBColor(0.1f, 0.1f, 1.0f)); //Hue, saturation, brightness
 		plot.setBackgroundPaint(manhattan_back); //Hue, saturation, brightness 9
 
 
-		//GRIDLINES
+		// GRIDLINES
 		plot.setDomainGridlineStroke(new BasicStroke(0.0f));
 		plot.setDomainMinorGridlineStroke(new BasicStroke(0.0f));
 		plot.setDomainGridlinePaint(manhattan_back.darker().darker()); //Hue, saturation, brightness 7
@@ -694,23 +693,23 @@ public final class ManhattanPlotZoom extends javax.swing.JPanel {
 		plot.setDomainMinorGridlinesVisible(true);
 		plot.setRangeMinorGridlinesVisible(true);
 
-		//DOTS RENDERER
+		// DOTS RENDERER
 		XYLineAndShapeRenderer renderer = (XYLineAndShapeRenderer) plot.getRenderer();
 		renderer.setSeriesPaint(0, manhattan_dot);
-//        renderer.setSeriesOutlinePaint(0, Color.DARK_GRAY);
-//        renderer.setUseOutlinePaint(true);
-		//Set dot shape of the currently appended Series
+//		renderer.setSeriesOutlinePaint(0, Color.DARK_GRAY);
+//		renderer.setUseOutlinePaint(true);
+		// Set dot shape of the currently appended Series
 		renderer.setSeriesShape(0, new Rectangle2D.Double(0.0, 0.0, 2, 2));
 
 
 		renderer.setSeriesVisibleInLegend(0, false);
 
 		NumberAxis positionAxis = (NumberAxis) plot.getDomainAxis();
-//        domainAxis.setAutoRangeIncludesZero(false);
-//        domainAxis.setTickMarkInsideLength(2.0f);
-//        domainAxis.setTickMarkOutsideLength(2.0f);
-//        domainAxis.setMinorTickCount(2);
-//        domainAxis.setMinorTickMarksVisible(true);
+//		domainAxis.setAutoRangeIncludesZero(false);
+//		domainAxis.setTickMarkInsideLength(2.0f);
+//		domainAxis.setTickMarkOutsideLength(2.0f);
+//		domainAxis.setMinorTickCount(2);
+//		domainAxis.setMinorTickMarksVisible(true);
 		positionAxis.setLabelAngle(1.0);
 		positionAxis.setAutoRangeIncludesZero(false);
 		positionAxis.setAxisLineVisible(true);
@@ -718,7 +717,7 @@ public final class ManhattanPlotZoom extends javax.swing.JPanel {
 		positionAxis.setTickMarksVisible(true);
 
 
-		//ADD INVERSE LOG(10) Y AXIS
+		// ADD INVERSE LOG(10) Y AXIS
 		LogAxis logPAxis = new LogAxis("P value");
 		logPAxis.setBase(10);
 		logPAxis.setInverted(true);
@@ -734,21 +733,21 @@ public final class ManhattanPlotZoom extends javax.swing.JPanel {
 		logPAxis.setStandardTickUnits(units);
 		plot.setRangeAxis(0, logPAxis);
 
-		//Add significance Threshold to subplot
+		// Add significance Threshold to subplot
 		//threshold = 0.5/rdMatrixMetadata.getMarkerSetSize();  //(0.05/10⁶ SNPs => 5*10-⁷)
 		final Marker thresholdLine = new ValueMarker(threshold);
 		thresholdLine.setPaint(Color.red);
 		DecimalFormat df1 = new DecimalFormat("0.#E0#");
-		//Add legend to threshold
+		// Add legend to threshold
 		thresholdLine.setLabel("P = " + df1.format(threshold));
 		thresholdLine.setLabelAnchor(RectangleAnchor.TOP_RIGHT);
 		thresholdLine.setLabelTextAnchor(TextAnchor.BOTTOM_RIGHT);
 		plot.addRangeMarker(thresholdLine);
 
-		//Marker label if below threshold
+		// Marker label if below threshold
 		XYItemRenderer lblRenderer = plot.getRenderer();
 
-		//THRESHOLD AND SELECTED LABEL GENERATOR
+		// THRESHOLD AND SELECTED LABEL GENERATOR
 		MySeriesItemLabelGenerator lblGenerator = new MySeriesItemLabelGenerator(threshold, chr);
 		lblRenderer.setSeriesItemLabelGenerator(0, lblGenerator);
 		lblRenderer.setSeriesItemLabelFont(0, new Font("SansSerif", Font.PLAIN, 12));
@@ -757,7 +756,7 @@ public final class ManhattanPlotZoom extends javax.swing.JPanel {
 				TextAnchor.BOTTOM_LEFT,
 				Math.PI / 4.0));
 
-		//TOOLTIP GENERATOR
+		// TOOLTIP GENERATOR
 		MyXYToolTipGenerator tooltipGenerator = new MyXYToolTipGenerator(chr);
 
 		lblRenderer.setBaseToolTipGenerator(tooltipGenerator);
@@ -767,14 +766,14 @@ public final class ManhattanPlotZoom extends javax.swing.JPanel {
 		return chart;
 	}
 
-	static class MyXYToolTipGenerator extends StandardXYToolTipGenerator
+	private static class MyXYToolTipGenerator extends StandardXYToolTipGenerator
 			implements XYToolTipGenerator {
 
-		DecimalFormat dfSci = new DecimalFormat("0.##E0#");
-		DecimalFormat dfInteger = new DecimalFormat("#");
-		String chr;
+		private DecimalFormat dfSci = new DecimalFormat("0.##E0#");
+		private DecimalFormat dfInteger = new DecimalFormat("#");
+		private String chr;
 
-		public MyXYToolTipGenerator(String _chr) {
+		MyXYToolTipGenerator(String _chr) {
 			this.chr = _chr;
 		}
 
@@ -797,7 +796,7 @@ public final class ManhattanPlotZoom extends javax.swing.JPanel {
 		}
 	}
 
-	static class MySeriesItemLabelGenerator extends AbstractXYItemLabelGenerator
+	private static class MySeriesItemLabelGenerator extends AbstractXYItemLabelGenerator
 			implements XYItemLabelGenerator {
 
 		private double threshold;
@@ -809,7 +808,7 @@ public final class ManhattanPlotZoom extends javax.swing.JPanel {
 		 *
 		 * @param threshold the threshold value.
 		 */
-		public MySeriesItemLabelGenerator(double threshold, String _chr) {
+		MySeriesItemLabelGenerator(double threshold, String _chr) {
 			this.threshold = threshold;
 			this.chr = _chr;
 		}
@@ -847,38 +846,38 @@ public final class ManhattanPlotZoom extends javax.swing.JPanel {
 			}
 			return rsLabel;
 		}
-//        @Override
-//        protected Object[] createItemArray(XYDataset dataset, int series, int item){
-//            Object[] returnObj = null; //series name, x data value, y data value
-//            dataset.get
+//		@Override
+//		protected Object[] createItemArray(XYDataset dataset, int series, int item){
+//			Object[] returnObj = null; //series name, x data value, y data value
+//			dataset.get
 //
 //
-//            return returnObj;
-//        }
+//			return returnObj;
+//		}
 	}
 
 	// </editor-fold>
 	//<editor-fold defaultstate="collapsed" desc="HELPERS">
 	private static void actionSlide() {
-//        if(slid_Tracker.getValue()>=(rdOPMetadata.getOpSetSize()-defaultMarkerNb)){
-//            indexPosition=sliderSize-defaultMarkerNb;
-//        } else {
-//            indexPosition=slid_Tracker.getValue();
-//        }
-//        org.gwaspi.gui.GWASpiExplorerPanel.pnl_Content = new ManhattanPlotZoom(opId,
-//                                                                 origChr,
-//                                                                 origMarkerId,
-//                                                                 indexPosition,
-//                                                                 defaultMarkerNb,
-//                                                                 txt_NRows);
-//        org.gwaspi.gui.GWASpiExplorerPanel.scrl_Content.setViewportView(org.gwaspi.gui.GWASpiExplorerPanel.pnl_Content);
+//		if(slid_Tracker.getValue()>=(rdOPMetadata.getOpSetSize()-defaultMarkerNb)){
+//			indexPosition=sliderSize-defaultMarkerNb;
+//		} else {
+//			indexPosition=slid_Tracker.getValue();
+//		}
+//		org.gwaspi.gui.GWASpiExplorerPanel.pnl_Content = new ManhattanPlotZoom(opId,
+//				 origChr,
+//				 origMarkerId,
+//				 indexPosition,
+//				 defaultMarkerNb,
+//				 txt_NRows);
+//		org.gwaspi.gui.GWASpiExplorerPanel.scrl_Content.setViewportView(org.gwaspi.gui.GWASpiExplorerPanel.pnl_Content);
 	}
 
 	private static void actionReset(ActionEvent evt) {
 		org.gwaspi.gui.GWASpiExplorerPanel.pnl_Content = new org.gwaspi.gui.reports.ManhattanPlotZoom(opId,
 				origChr,
-				startPhysPos, //startPhysPos
-				requestedPosWindow, //physPos window
+				startPhysPos, // startPhysPos
+				requestedPosWindow, // physPos window
 				txt_NRows);
 
 		org.gwaspi.gui.GWASpiExplorerPanel.scrl_Content.setViewportView(org.gwaspi.gui.GWASpiExplorerPanel.pnl_Content);

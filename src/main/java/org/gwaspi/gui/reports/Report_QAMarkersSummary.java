@@ -33,7 +33,7 @@ public class Report_QAMarkersSummary extends javax.swing.JPanel {
 	// Variables declaration - do not modify
 	private File reportFile;
 	private int opId;
-	Operation op = null;
+	private Operation op = null;
 	private static String qaValue;
 	private javax.swing.JButton btn_Get;
 	private javax.swing.JButton btn_Save;
@@ -52,7 +52,7 @@ public class Report_QAMarkersSummary extends javax.swing.JPanel {
 		opId = _opId;
 		op = new Operation(opId);
 		String reportName = org.gwaspi.gui.GWASpiExplorerPanel.tree.getLastSelectedPathComponent().toString();
-		reportName = reportName.substring(reportName.indexOf("-") + 2);
+		reportName = reportName.substring(reportName.indexOf('-') + 2);
 
 		qaValue = "Mismatching";
 		String nRowsSuffix = "Markers";
@@ -250,7 +250,7 @@ public class Report_QAMarkersSummary extends javax.swing.JPanel {
 		actionLoadReport();
 	}
 
-	//private void actionLoadReport(ActionEvent evt) {
+//	private void actionLoadReport(ActionEvent evt) {
 	private void actionLoadReport() {
 		FileReader inputFileReader = null;
 		try {
@@ -263,15 +263,14 @@ public class Report_QAMarkersSummary extends javax.swing.JPanel {
 				inputFileReader = new FileReader(reportFile);
 				BufferedReader inputBufferReader = new BufferedReader(inputFileReader);
 
-				//Getting data from file and subdividing to series all points by chromosome
+				// Getting data from file and subdividing to series all points by chromosome
 				ArrayList tableRowAL = new ArrayList();
 				String l;
-				String[] cVals = null;
 				String header = inputBufferReader.readLine();
 				int count = 0;
 				while ((l = inputBufferReader.readLine()) != null && count < getRowsNb) {
 					Object[] row = new Object[7];
-					cVals = l.split(org.gwaspi.constants.cImport.Separators.separators_SpaceTab_rgxp);
+					String[] cVals = l.split(org.gwaspi.constants.cImport.Separators.separators_SpaceTab_rgxp);
 
 					String markerId = cVals[0];
 					String rsId = cVals[1];
@@ -288,17 +287,17 @@ public class Report_QAMarkersSummary extends javax.swing.JPanel {
 					row[4] = minAllele;
 					row[5] = majAllele;
 
-//                    if (!org.gwaspi.constants.cGlobal.OSNAME.contains("Windows")){
-					Double missRat_f = Double.NaN;
+//					if (!org.gwaspi.constants.cGlobal.OSNAME.contains("Windows")){
+					Double missRat_f;
 					try {
 						missRat_f = Double.parseDouble(dfRound.format(missRat));
 					} catch (NumberFormatException numberFormatException) {
 						missRat_f = missRat;
 					}
 					row[6] = missRat_f;
-//                    } else {
-//                        row[6] = dfRound.format(missRat);
-//                    }
+//					} else {
+//						row[6] = dfRound.format(missRat);
+//					}
 
 					tableRowAL.add(row);
 					count++;
@@ -322,8 +321,8 @@ public class Report_QAMarkersSummary extends javax.swing.JPanel {
 				tbl_ReportTable.setModel(model);
 
 				//<editor-fold defaultstate="collapsed" desc="Linux Sorter">
-//                if (!org.gwaspi.constants.cGlobal.OSNAME.contains("Windows")){
-				//RowSorter<TableModel> sorter = new TableRowSorter<TableModel>(model);
+//				if (!org.gwaspi.constants.cGlobal.OSNAME.contains("Windows")){
+//					RowSorter<TableModel> sorter = new TableRowSorter<TableModel>(model);
 				TableRowSorter sorter = new TableRowSorter(model) {
 					Comparator<Object> comparator = new Comparator<Object>() {
 						public int compare(Object o1, Object o2) {
@@ -343,10 +342,12 @@ public class Report_QAMarkersSummary extends javax.swing.JPanel {
 						}
 					};
 
+					@Override
 					public Comparator getComparator(int column) {
 						return comparator;
 					}
 
+					@Override
 					public boolean useToString(int column) {
 						return false;
 					}

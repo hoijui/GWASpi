@@ -19,12 +19,12 @@ import org.gwaspi.reports.OutputTrendTest_opt;
  */
 public class Threaded_TrendTest implements Runnable {
 
-	Thread runner;
-	protected String timeStamp = "";
-	protected static int matrixId;
-	protected static int censusOpId;
-	protected static int hwOpId;
-	protected static GWASinOneGOParams gwasParams;
+	private Thread runner;
+	private String timeStamp = "";
+	private static int matrixId;
+	private static int censusOpId;
+	private static int hwOpId;
+	private static GWASinOneGOParams gwasParams;
 
 	public Threaded_TrendTest(String threadName,
 			String _timeStamp,

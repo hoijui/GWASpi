@@ -11,8 +11,8 @@ import java.util.ArrayList;
 public class SNPBlacklist {
 
 	// Duplicate SNPs to be removed
-	public ArrayList affyIDBlackList = new ArrayList();
-	public ArrayList rsIDBlackList = new ArrayList();
+	private ArrayList affyIDBlackList = new ArrayList();
+	private ArrayList rsIDBlackList = new ArrayList();
 
 	public SNPBlacklist() {
 

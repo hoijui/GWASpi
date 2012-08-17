@@ -96,11 +96,10 @@ public class OperationsList {
 	public static Object[][] getOperationsTable(int matrixId) throws IOException {
 		Object[][] table = null;
 
-		List<Map<String, Object>> rs = null;
 		String dbName = org.gwaspi.constants.cDBGWASpi.DB_DATACENTER;
 		DbManager dbManager = ServiceLocator.getDbManager(dbName);
 		try {
-			rs = dbManager.executeSelectStatement("SELECT * FROM " + org.gwaspi.constants.cDBGWASpi.SCH_MATRICES + "." + org.gwaspi.constants.cDBOperations.T_OPERATIONS + " WHERE " + org.gwaspi.constants.cDBOperations.f_PARENT_MATRIXID + "=" + matrixId + " AND " + org.gwaspi.constants.cDBOperations.f_PARENT_OPID + " = -1" + "  WITH RR");
+			List<Map<String, Object>>  rs = dbManager.executeSelectStatement("SELECT * FROM " + org.gwaspi.constants.cDBGWASpi.SCH_MATRICES + "." + org.gwaspi.constants.cDBOperations.T_OPERATIONS + " WHERE " + org.gwaspi.constants.cDBOperations.f_PARENT_MATRIXID + "=" + matrixId + " AND " + org.gwaspi.constants.cDBOperations.f_PARENT_OPID + " = -1" + "  WITH RR");
 
 			table = new Object[rs.size()][4];
 			for (int i = 0; i < rs.size(); i++) {
@@ -110,7 +109,7 @@ public class OperationsList {
 					table[i][1] = rs.get(i).get(org.gwaspi.constants.cDBOperations.f_OP_NAME).toString();
 					table[i][2] = rs.get(i).get(org.gwaspi.constants.cDBOperations.f_DESCRIPTION).toString();
 					String timestamp = rs.get(i).get(org.gwaspi.constants.cDBOperations.f_CREATION_DATE).toString();
-					table[i][3] = timestamp.substring(0, timestamp.lastIndexOf("."));
+					table[i][3] = timestamp.substring(0, timestamp.lastIndexOf('.'));
 				}
 			}
 		} catch (Exception e) {
@@ -122,35 +121,32 @@ public class OperationsList {
 	public static Object[][] getOperationsTable(int matrixId, int opId) throws IOException {
 		Object[][] table = null;
 
-		List<Map<String, Object>> rsSelf = null;
-		List<Map<String, Object>> rs = null;
 		String dbName = org.gwaspi.constants.cDBGWASpi.DB_DATACENTER;
 		DbManager dbManager = ServiceLocator.getDbManager(dbName);
 		try {
-
-			rs = dbManager.executeSelectStatement("SELECT * FROM " + org.gwaspi.constants.cDBGWASpi.SCH_MATRICES + "." + org.gwaspi.constants.cDBOperations.T_OPERATIONS + " WHERE " + org.gwaspi.constants.cDBOperations.f_PARENT_MATRIXID + "=" + matrixId + " AND " + org.gwaspi.constants.cDBOperations.f_PARENT_OPID + "=" + opId + "  WITH RR");
+			List<Map<String, Object>> rs = dbManager.executeSelectStatement("SELECT * FROM " + org.gwaspi.constants.cDBGWASpi.SCH_MATRICES + "." + org.gwaspi.constants.cDBOperations.T_OPERATIONS + " WHERE " + org.gwaspi.constants.cDBOperations.f_PARENT_MATRIXID + "=" + matrixId + " AND " + org.gwaspi.constants.cDBOperations.f_PARENT_OPID + "=" + opId + "  WITH RR");
 
 			table = new Object[rs.size() + 1][4];
-			rsSelf = dbManager.executeSelectStatement("SELECT * FROM " + org.gwaspi.constants.cDBGWASpi.SCH_MATRICES + "." + org.gwaspi.constants.cDBOperations.T_OPERATIONS + " WHERE " + org.gwaspi.constants.cDBOperations.f_PARENT_MATRIXID + "=" + matrixId + " AND " + org.gwaspi.constants.cDBOperations.f_ID + "=" + opId + "  WITH RR");
+			List<Map<String, Object>> rsSelf = dbManager.executeSelectStatement("SELECT * FROM " + org.gwaspi.constants.cDBGWASpi.SCH_MATRICES + "." + org.gwaspi.constants.cDBOperations.T_OPERATIONS + " WHERE " + org.gwaspi.constants.cDBOperations.f_PARENT_MATRIXID + "=" + matrixId + " AND " + org.gwaspi.constants.cDBOperations.f_ID + "=" + opId + "  WITH RR");
 
 			table[0][0] = (Integer) rsSelf.get(0).get(org.gwaspi.constants.cDBOperations.f_ID);
 			table[0][1] = rsSelf.get(0).get(org.gwaspi.constants.cDBOperations.f_OP_NAME).toString();
 			table[0][2] = rsSelf.get(0).get(org.gwaspi.constants.cDBOperations.f_DESCRIPTION).toString();
 			String timestamp = rsSelf.get(0).get(org.gwaspi.constants.cDBOperations.f_CREATION_DATE).toString();
-			table[0][3] = timestamp.substring(0, timestamp.lastIndexOf("."));
+			table[0][3] = timestamp.substring(0, timestamp.lastIndexOf('.'));
 
 			for (int i = 0; i < rs.size(); i++) {
-				//PREVENT PHANTOM-DB READS EXCEPTIONS
+				// PREVENT PHANTOM-DB READS EXCEPTIONS
 				if (!rs.isEmpty() && rs.get(i).size() == org.gwaspi.constants.cDBOperations.T_CREATE_OPERATIONS.length) {
 					table[i + 1][0] = (Integer) rs.get(i).get(org.gwaspi.constants.cDBOperations.f_ID);
 					table[i + 1][1] = rs.get(i).get(org.gwaspi.constants.cDBOperations.f_OP_NAME).toString();
 					table[i + 1][2] = rs.get(i).get(org.gwaspi.constants.cDBOperations.f_DESCRIPTION).toString();
 					timestamp = rs.get(i).get(org.gwaspi.constants.cDBOperations.f_CREATION_DATE).toString();
-					table[i + 1][3] = timestamp.substring(0, timestamp.lastIndexOf("."));
+					table[i + 1][3] = timestamp.substring(0, timestamp.lastIndexOf('.'));
 				}
 			}
 		} catch (Exception e) {
-			//e.printStackTrace();
+//			e.printStackTrace();
 		}
 		return table;
 	}

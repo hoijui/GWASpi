@@ -1,9 +1,9 @@
 package org.gwaspi.model;
 
-import org.gwaspi.gui.reports.ChartDefaultDisplay;
-import org.gwaspi.global.Text;
 import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.global.Text;
 import org.gwaspi.gui.*;
+import org.gwaspi.gui.reports.ChartDefaultDisplay;
 import org.gwaspi.gui.reports.ManhattanChartDisplay;
 import org.gwaspi.gui.reports.Report_AnalysisPanel;
 import org.gwaspi.gui.reports.Report_HardyWeinbergSummary;
@@ -19,14 +19,14 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JTree;
 import javax.swing.event.TreeExpansionEvent;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.TreeSelectionModel;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.event.TreeWillExpandListener;
+import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.ExpandVetoException;
 import javax.swing.tree.TreePath;
+import javax.swing.tree.TreeSelectionModel;
 import org.gwaspi.model.GWASpiExplorerNodes.NodeElementInfo;
 
 /**
@@ -37,28 +37,27 @@ import org.gwaspi.model.GWASpiExplorerNodes.NodeElementInfo;
  */
 public class GWASpiExplorer {
 
-//    public TreeModel treeModel;
+//	public TreeModel treeModel;
 	public static ArrayList lastExpanded;
 	private static JTree tree;
-	//Possible values are "Angled" (the default), "Horizontal", and "None".
+	// Possible values are "Angled" (the default), "Horizontal", and "None".
 	private static boolean playWithLineStyle = false;
 	private static String lineStyle = "Horizontal";
-	//Optionally set the look and feel.
+	// Optionally set the look and feel.
 	private static Icon customOpenIcon = initIcon("hex_open.png");
 	private static Icon customClosedIcon = initIcon("hex_closed.png");
 	private static Icon customLeafIcon = initIcon("leaf_sepia.png");
-//
 
 	public GWASpiExplorer() {
 	}
 
 	public JTree getGWASpiTree() throws IOException {
 
-		//Create the nodes.
+		// Create the nodes.
 		DefaultMutableTreeNode top = new DefaultMutableTreeNode(Text.App.appName);
 		growTree(top);
 
-		//Create a tree that allows one selection at a time.
+		// Create a tree that allows one selection at a time.
 		tree = new JTree(top);
 
 		DefaultTreeCellRenderer renderer = new DefaultTreeCellRenderer();
@@ -71,7 +70,7 @@ public class GWASpiExplorer {
 
 		tree.setSelectionRow(0);
 
-		//Listen for when the selection changes.
+		// Listen for when the selection changes.
 		tree.addTreeSelectionListener(treeListener);
 
 		// Add pre-expansion event listener
@@ -86,18 +85,10 @@ public class GWASpiExplorer {
 	}
 
 	private static void growTree(DefaultMutableTreeNode top) throws IOException {
-		DefaultMutableTreeNode category = null;
-		DefaultMutableTreeNode studyItem = null;
-		DefaultMutableTreeNode matrixItem = null;
-		DefaultMutableTreeNode sampleInfoItem = null;
-		DefaultMutableTreeNode operationItem = null;
-		DefaultMutableTreeNode subOperationItem = null;
-		DefaultMutableTreeNode reportItem = null;
-
 
 		//<editor-fold defaultstate="expanded" desc="STUDY MANAGEMENT">
 
-		category = new DefaultMutableTreeNode(org.gwaspi.global.Text.App.treeStudyManagement);
+		DefaultMutableTreeNode category = new DefaultMutableTreeNode(org.gwaspi.global.Text.App.treeStudyManagement);
 		top.add(category);
 
 
@@ -106,10 +97,10 @@ public class GWASpiExplorer {
 		for (int i = 0; i < studiesMod.studyList.size(); i++) {
 
 			//LOAD CURRENT STUDY
-			studyItem = GWASpiExplorerNodes.createStudyTreeNode(studiesMod.studyList.get(i).getStudyId());
+			DefaultMutableTreeNode studyItem = GWASpiExplorerNodes.createStudyTreeNode(studiesMod.studyList.get(i).getStudyId());
 
 			//LOAD SAMPLE INFO FOR CURRENT STUDY
-			sampleInfoItem = GWASpiExplorerNodes.createSampleInfoTreeNode(studiesMod.studyList.get(i).getStudyId());
+			DefaultMutableTreeNode sampleInfoItem = GWASpiExplorerNodes.createSampleInfoTreeNode(studiesMod.studyList.get(i).getStudyId());
 			if (sampleInfoItem != null) {
 				studyItem.add(sampleInfoItem);
 			}
@@ -118,7 +109,7 @@ public class GWASpiExplorer {
 			org.gwaspi.model.MatricesList matrixMod = new org.gwaspi.model.MatricesList(studiesMod.studyList.get(i).getStudyId());
 			for (int j = 0; j < matrixMod.matrixList.size(); j++) {
 
-				matrixItem = GWASpiExplorerNodes.createMatrixTreeNode(matrixMod.matrixList.get(j).getMatrixId());
+				DefaultMutableTreeNode matrixItem = GWASpiExplorerNodes.createMatrixTreeNode(matrixMod.matrixList.get(j).getMatrixId());
 
 				//LOAD Parent OPERATIONS ON CURRENT MATRIX
 				org.gwaspi.model.OperationsList parentOpsMod = new org.gwaspi.model.OperationsList(matrixMod.matrixList.get(j).getMatrixId(), -1);
@@ -126,13 +117,13 @@ public class GWASpiExplorer {
 				for (int k = 0; k < parentOpsMod.operationsListAL.size(); k++) {
 					//LOAD SUB OPERATIONS ON CURRENT MATRIX
 					Operation currentOP = parentOpsMod.operationsListAL.get(k);
-					operationItem = GWASpiExplorerNodes.createOperationTreeNode(currentOP.getOperationId());
+					DefaultMutableTreeNode operationItem = GWASpiExplorerNodes.createOperationTreeNode(currentOP.getOperationId());
 
 
 					ArrayList<Operation> childrenOpAL = getChildrenOperations(allOpsMod.operationsListAL, currentOP.getOperationId());
 					for (int m = 0; m < childrenOpAL.size(); m++) {
 						Operation subOP = childrenOpAL.get(m);
-						subOperationItem = GWASpiExplorerNodes.createSubOperationTreeNode(subOP.getOperationId());
+						DefaultMutableTreeNode subOperationItem = GWASpiExplorerNodes.createSubOperationTreeNode(subOP.getOperationId());
 
 						//LOAD REPORTS ON CURRENT SUB-OPERATION
 						if (!subOP.getOperationType().equals(cNetCDF.Defaults.OPType.HARDY_WEINBERG.toString())) { //NOT IF HW
@@ -142,7 +133,7 @@ public class GWASpiExplorer {
 								if (!rp.getReportType().equals(cNetCDF.Defaults.OPType.ALLELICTEST.toString())
 										&& !rp.getReportType().equals(cNetCDF.Defaults.OPType.GENOTYPICTEST.toString())
 										&& !rp.getReportType().equals(cNetCDF.Defaults.OPType.TRENDTEST.toString())) {
-									reportItem = GWASpiExplorerNodes.createReportTreeNode(reportsMod.reportsListAL.get(n).getReportId());
+									DefaultMutableTreeNode reportItem = GWASpiExplorerNodes.createReportTreeNode(reportsMod.reportsListAL.get(n).getReportId());
 									subOperationItem.add(reportItem);
 								}
 
@@ -158,15 +149,15 @@ public class GWASpiExplorer {
 					org.gwaspi.model.ReportsList reportsMod = new org.gwaspi.model.ReportsList(currentOP.getOperationId(), Integer.MIN_VALUE);
 					if (!currentOP.getOperationType().equals(cNetCDF.Defaults.OPType.SAMPLE_QA.toString())) { //SAMPLE_QA MUST BE DEALT DIFFERENTLY
 						for (int n = 0; n < reportsMod.reportsListAL.size(); n++) {
-							reportItem = GWASpiExplorerNodes.createReportTreeNode(reportsMod.reportsListAL.get(n).getReportId());
+							DefaultMutableTreeNode reportItem = GWASpiExplorerNodes.createReportTreeNode(reportsMod.reportsListAL.get(n).getReportId());
 							operationItem.add(reportItem);
 						}
 					} else {
-						//DEAL WITH SAMPLE_HTZYPLOT
+						// DEAL WITH SAMPLE_HTZYPLOT
 						for (int n = 0; n < reportsMod.reportsListAL.size(); n++) {
 							Report rp = reportsMod.reportsListAL.get(n);
 							if (rp.getReportType().equals(cNetCDF.Defaults.OPType.SAMPLE_HTZYPLOT.toString())) {
-								reportItem = GWASpiExplorerNodes.createReportTreeNode(reportsMod.reportsListAL.get(n).getReportId());
+								DefaultMutableTreeNode reportItem = GWASpiExplorerNodes.createReportTreeNode(reportsMod.reportsListAL.get(n).getReportId());
 								operationItem.add(reportItem);
 							}
 						}
@@ -182,7 +173,7 @@ public class GWASpiExplorer {
 				studyItem.add(matrixItem);
 			}
 
-			//ADD ALL TREE-NODES INTO TREE
+			// ADD ALL TREE-NODES INTO TREE
 			category.add(studyItem);
 		}
 
@@ -191,13 +182,13 @@ public class GWASpiExplorer {
 
 	}
 	//<editor-fold defaultstate="collapsed" desc="LISTENER">
-	//TREE SELECTION LISTENER
+	// TREE SELECTION LISTENER
 	private static TreeSelectionListener treeListener = new TreeSelectionListener() {
 		public void valueChanged(TreeSelectionEvent arg0) {
 
 			tree.setEnabled(false);
 
-			//CHECK IF LISTENER IS ALLOWED TO UPDATE CONTENT PANEL
+			// CHECK IF LISTENER IS ALLOWED TO UPDATE CONTENT PANEL
 			if (!org.gwaspi.gui.GWASpiExplorerPanel.refreshContentPanel) {
 				tree.setEnabled(true);
 				return;
@@ -209,13 +200,13 @@ public class GWASpiExplorer {
 				return;
 			}
 
-			//Check first if we are at the GWASpi root
-			if (currentNode.isRoot()) { //We are in GWASpi node
+			// Check first if we are at the GWASpi root
+			if (currentNode.isRoot()) { // We are in GWASpi node
 				org.gwaspi.gui.GWASpiExplorerPanel.pnl_Content = new IntroPanel();
 				org.gwaspi.gui.GWASpiExplorerPanel.scrl_Content.setViewportView(org.gwaspi.gui.GWASpiExplorerPanel.pnl_Content);
 			}
 
-			//Check where we are in tree and show appropiate content panel
+			// Check where we are in tree and show appropiate content panel
 			Object currentElement = currentNode.getUserObject();
 			NodeElementInfo currentElementInfo = null;
 			try {
@@ -245,32 +236,30 @@ public class GWASpiExplorer {
 				}
 			}
 
-			//Get parent node of currently selected node
-			DefaultMutableTreeNode parentNode = null;
+			// Get parent node of currently selected node
 			NodeElementInfo parentElementInfo = null;
-			Object parentElement = null;
 			if (treePath.getParentPath() != null) {
-				parentNode = (DefaultMutableTreeNode) treePath.getParentPath().getLastPathComponent();
-				parentElement = parentNode.getUserObject();
+				DefaultMutableTreeNode parentNode = (DefaultMutableTreeNode) treePath.getParentPath().getLastPathComponent();
+				Object parentElement = parentNode.getUserObject();
 				try {
 					parentElementInfo = (NodeElementInfo) parentElement;
 				} catch (Exception e) {
 				}
 			}
 
-			//Reference Databse Branch
+			// Reference Databse Branch
 			if (currentNode.toString().equals(org.gwaspi.global.Text.App.treeReferenceDBs)) {
-			} //Study Management Branch
+			} // Study Management Branch
 			//else if(currentElementInfo != null && currentElementInfo.nodeType.toString().equals(org.gwaspi.global.Text.App.treeStudyManagement)){
 			else if (currentNode.toString().equals(org.gwaspi.global.Text.App.treeStudyManagement)) {
 				try {
-					//We are in StudyList node
+					// We are in StudyList node
 					org.gwaspi.gui.GWASpiExplorerPanel.pnl_Content = new StudyManagementPanel();
 					org.gwaspi.gui.GWASpiExplorerPanel.scrl_Content.setViewportView(org.gwaspi.gui.GWASpiExplorerPanel.pnl_Content);
 				} catch (IOException ex) {
 					//Logger.getLogger(GWASpiExplorer.class.getName()).log(Level.SEVERE, null, ex);
 				}
-			} //Study Branch
+			} // Study Branch
 			//else if(parentNode!=null && parentNode.toString().equals(org.gwaspi.global.Text.App.treeStudyManagement)){
 			else if (currentElementInfo != null && currentElementInfo.nodeType.toString().equals(org.gwaspi.global.Text.App.treeStudy)) {
 				try {
@@ -280,7 +269,7 @@ public class GWASpiExplorer {
 					//System.out.println("StudyID: "+currentElementInfo.nodeId);
 					//Logger.getLogger(GWASpiExplorer.class.getName()).log(Level.SEVERE, null, ex);
 				}
-			} //Sample Info Branch
+			} // Sample Info Branch
 			else if (currentElementInfo != null && currentElementInfo.nodeType.toString().equals(org.gwaspi.global.Text.App.treeSampleInfo)) {
 				try {
 					org.gwaspi.gui.GWASpiExplorerPanel.pnl_Content = new Report_SampleInfoPanel(parentElementInfo.nodeId);
@@ -288,26 +277,26 @@ public class GWASpiExplorer {
 				} catch (IOException ex) {
 					//Logger.getLogger(GWASpiExplorer.class.getName()).log(Level.SEVERE, null, ex);
 				}
-			} //Matrix Branch
+			} // Matrix Branch
 			else if (currentElementInfo != null && currentElementInfo.nodeType.toString().equals(org.gwaspi.global.Text.App.treeMatrix)) {
 				try {
-					//We are in MatrixItemAL node
+					// We are in MatrixItemAL node
 					tree.expandPath(treePath);
 					org.gwaspi.gui.GWASpiExplorerPanel.pnl_Content = new CurrentMatrixPanel(currentElementInfo.nodeId);
 					org.gwaspi.gui.GWASpiExplorerPanel.scrl_Content.setViewportView(org.gwaspi.gui.GWASpiExplorerPanel.pnl_Content);
 				} catch (IOException ex) {
 					//Logger.getLogger(GWASpiExplorer.class.getName()).log(Level.SEVERE, null, ex);
 				}
-			} //Operations Branch
+			} // Operations Branch
 			else if (currentElementInfo != null && currentElementInfo.nodeType.toString().equals(org.gwaspi.global.Text.App.treeOperation)) {
 				try {
 					if (parentElementInfo.nodeType.toString().equals(org.gwaspi.global.Text.App.treeOperation)) {
-						//Display SubOperation analysis panel
+						// Display SubOperation analysis panel
 						tree.expandPath(treePath);
 						Operation currentOP = new Operation(currentElementInfo.nodeId);
 						Operation parentOP = new Operation(parentElementInfo.nodeId);
 						if (currentOP.getOperationType().equals(cNetCDF.Defaults.OPType.HARDY_WEINBERG.toString())) {
-							//Display HW Report
+							// Display HW Report
 							ReportsList reportList = new ReportsList(currentOP.getOperationId(), currentOP.getParentMatrixId());
 							if (reportList.reportsListAL.size() > 0) {
 								Report hwReport = reportList.reportsListAL.get(0);
@@ -316,15 +305,15 @@ public class GWASpiExplorer {
 								org.gwaspi.gui.GWASpiExplorerPanel.scrl_Content.setViewportView(org.gwaspi.gui.GWASpiExplorerPanel.pnl_Content);
 							}
 						} else if (currentOP.getOperationType().equals(cNetCDF.Defaults.OPType.ALLELICTEST.toString())) {
-							//Display Association Report
+							// Display Association Report
 							org.gwaspi.gui.GWASpiExplorerPanel.pnl_Content = new Report_AnalysisPanel(currentOP.getStudyId(), currentOP.getParentMatrixId(), currentOP.getOperationId(), null);
 							org.gwaspi.gui.GWASpiExplorerPanel.scrl_Content.setViewportView(org.gwaspi.gui.GWASpiExplorerPanel.pnl_Content);
 						} else if (currentOP.getOperationType().equals(cNetCDF.Defaults.OPType.GENOTYPICTEST.toString())) {
-							//Display Association Report
+							// Display Association Report
 							org.gwaspi.gui.GWASpiExplorerPanel.pnl_Content = new Report_AnalysisPanel(currentOP.getStudyId(), currentOP.getParentMatrixId(), currentOP.getOperationId(), null);
 							org.gwaspi.gui.GWASpiExplorerPanel.scrl_Content.setViewportView(org.gwaspi.gui.GWASpiExplorerPanel.pnl_Content);
 						} else if (currentOP.getOperationType().equals(cNetCDF.Defaults.OPType.TRENDTEST.toString())) {
-							//Display Trend Test Report
+							// Display Trend Test Report
 							org.gwaspi.gui.GWASpiExplorerPanel.pnl_Content = new Report_AnalysisPanel(currentOP.getStudyId(), currentOP.getParentMatrixId(), currentOP.getOperationId(), null);
 							org.gwaspi.gui.GWASpiExplorerPanel.scrl_Content.setViewportView(org.gwaspi.gui.GWASpiExplorerPanel.pnl_Content);
 						} else {
@@ -333,15 +322,15 @@ public class GWASpiExplorer {
 							org.gwaspi.gui.GWASpiExplorerPanel.scrl_Content.setViewportView(org.gwaspi.gui.GWASpiExplorerPanel.pnl_Content);
 						}
 					} else {
-						//Display Operation
+						// Display Operation
 						tree.expandPath(treePath);
 						Operation currentOP = new Operation(currentElementInfo.nodeId);
 						if (currentOP.getOperationType().equals(cNetCDF.Defaults.OPType.MARKER_QA.toString())) {
-							//Display MarkerQA panel
+							// Display MarkerQA panel
 							org.gwaspi.gui.GWASpiExplorerPanel.pnl_Content = new MatrixMarkerQAPanel(currentOP.getParentMatrixId(), currentOP.getOperationId());
 							org.gwaspi.gui.GWASpiExplorerPanel.scrl_Content.setViewportView(org.gwaspi.gui.GWASpiExplorerPanel.pnl_Content);
 						} else if (currentOP.getOperationType().equals(cNetCDF.Defaults.OPType.SAMPLE_QA.toString())) {
-							//Display SampleQA Report
+							// Display SampleQA Report
 							ReportsList reportList = new ReportsList(currentOP.getOperationId(), currentOP.getParentMatrixId());
 							if (reportList.reportsListAL.size() > 0) {
 								Report sampleQAReport = reportList.reportsListAL.get(0);
@@ -350,7 +339,7 @@ public class GWASpiExplorer {
 								org.gwaspi.gui.GWASpiExplorerPanel.scrl_Content.setViewportView(org.gwaspi.gui.GWASpiExplorerPanel.pnl_Content);
 							}
 						} else {
-							//Display Operation analysis panel
+							// Display Operation analysis panel
 							org.gwaspi.gui.GWASpiExplorerPanel.pnl_Content = new MatrixAnalysePanel(parentElementInfo.nodeId, currentElementInfo.nodeId);
 							org.gwaspi.gui.GWASpiExplorerPanel.scrl_Content.setViewportView(org.gwaspi.gui.GWASpiExplorerPanel.pnl_Content);
 						}
@@ -360,10 +349,10 @@ public class GWASpiExplorer {
 				} catch (IOException ex) {
 					//Logger.getLogger(GWASpiExplorer.class.getName()).log(Level.SEVERE, null, ex);
 				}
-			} //Reports Branch
+			} // Reports Branch
 			else if (currentElementInfo != null && currentElementInfo.nodeType.toString().equals(org.gwaspi.global.Text.App.treeReport)) {
 				try {
-					//Display report summary
+					// Display report summary
 					tree.expandPath(treePath);
 					Report rp = new Report(currentElementInfo.nodeId);
 					String reportFile = rp.getReportFileName();
@@ -388,10 +377,10 @@ public class GWASpiExplorer {
 						org.gwaspi.gui.GWASpiExplorerPanel.pnl_Content = new Report_QAMarkersSummary(rp.getStudyId(), reportFile, rp.getParentOperationId());
 						org.gwaspi.gui.GWASpiExplorerPanel.scrl_Content.setViewportView(org.gwaspi.gui.GWASpiExplorerPanel.pnl_Content);
 					}
-//                    if(rp.getReportType().equals(cNetCDF.Defaults.OPType.SAMPLE_QA.toString())){
-//                        org.gwaspi.gui.GWASpiExplorerPanel.pnl_Content = new Report_QASamplesSummary(rp.getStudyId(), reportFile, rp.getParentOperationId());
-//                        org.gwaspi.gui.GWASpiExplorerPanel.scrl_Content.setViewportView(org.gwaspi.gui.GWASpiExplorerPanel.pnl_Content);
-//                    }
+//					if(rp.getReportType().equals(cNetCDF.Defaults.OPType.SAMPLE_QA.toString())){
+//						org.gwaspi.gui.GWASpiExplorerPanel.pnl_Content = new Report_QASamplesSummary(rp.getStudyId(), reportFile, rp.getParentOperationId());
+//						org.gwaspi.gui.GWASpiExplorerPanel.scrl_Content.setViewportView(org.gwaspi.gui.GWASpiExplorerPanel.pnl_Content);
+//					}
 					if (rp.getReportType().equals(cNetCDF.Defaults.OPType.HARDY_WEINBERG.toString())) {
 						org.gwaspi.gui.GWASpiExplorerPanel.pnl_Content = new Report_HardyWeinbergSummary(rp.getStudyId(), reportFile, rp.getParentOperationId());
 						org.gwaspi.gui.GWASpiExplorerPanel.scrl_Content.setViewportView(org.gwaspi.gui.GWASpiExplorerPanel.pnl_Content);
@@ -404,18 +393,17 @@ public class GWASpiExplorer {
 				org.gwaspi.gui.GWASpiExplorerPanel.scrl_Content.setViewportView(org.gwaspi.gui.GWASpiExplorerPanel.pnl_Content);
 			}
 
-			//THIS TO AVOID RANDOM MONKEY CLICKER BUG
+			// THIS TO AVOID RANDOM MONKEY CLICKER BUG
 			try {
 				Thread.sleep(300);
 			} catch (InterruptedException ex) {
 			}
 
 			tree.setEnabled(true);
-
 		}
 	};
 
-	//PRE-EXPANSION/COLLAPSE LISTENER
+	// PRE-EXPANSION/COLLAPSE LISTENER
 	public class MyTreeWillExpandListener implements TreeWillExpandListener {
 
 		public void treeWillExpand(TreeExpansionEvent evt) throws ExpandVetoException {
@@ -424,11 +412,10 @@ public class GWASpiExplorer {
 
 			DefaultMutableTreeNode currentNode = (DefaultMutableTreeNode) treePath.getLastPathComponent();
 			Object currentElement = currentNode.getUserObject();
-			NodeElementInfo currentNodeInfo = null;
 			try {
-				currentNodeInfo = (NodeElementInfo) currentElement;
+				NodeElementInfo currentNodeInfo = (NodeElementInfo) currentElement;
 				if (currentNodeInfo.isCollapsable) {
-					//ALLWAYS ALLOW EXPANSION
+					// ALLWAYS ALLOW EXPANSION
 				}
 			} catch (Exception e) {
 			}
@@ -446,7 +433,7 @@ public class GWASpiExplorer {
 			} catch (Exception e) {
 			}
 			if (currentNodeInfo != null && !currentNodeInfo.isCollapsable) {
-				//VETO EXPANSION
+				// VETO EXPANSION
 				throw new ExpandVetoException(evt);
 			}
 
@@ -470,10 +457,9 @@ public class GWASpiExplorer {
 	}
 
 	protected static Icon initIcon(String iconName) {
-		Icon logo = null;
 		URL logoPath = GWASpiExplorer.class.getClass().getResource("/resources/" + iconName);
 		//String logoPath = org.gwaspi.global.Config.getConfigValue("ConfigDir", "") + "/" +iconName;
-		logo = new ImageIcon(logoPath);
+		Icon logo = new ImageIcon(logoPath);
 		return logo;
 	}
 	//</editor-fold>

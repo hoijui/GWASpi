@@ -29,14 +29,14 @@ public class MoreLoadInfoByFormat extends javax.swing.JFrame {
 	private static javax.swing.JButton btn_Go;
 	private static javax.swing.JButton btn_Help;
 	private static javax.swing.JButton btn_Cancel;
-//    private static javax.swing.JCheckBox chkB_1;
-//    private static javax.swing.JCheckBox chkB_2;
-//    private static javax.swing.JCheckBox chkB_3;
-//    private static javax.swing.JRadioButton rdioB_1;
-//    private static javax.swing.JRadioButton rdioB_2;
-//    private static javax.swing.JTextField txtF_1;
-//    private static javax.swing.JTextField txtF_2;
-//    private static javax.swing.JTextField txtF_3;
+//	private static javax.swing.JCheckBox chkB_1;
+//	private static javax.swing.JCheckBox chkB_2;
+//	private static javax.swing.JCheckBox chkB_3;
+//	private static javax.swing.JRadioButton rdioB_1;
+//	private static javax.swing.JRadioButton rdioB_2;
+//	private static javax.swing.JTextField txtF_1;
+//	private static javax.swing.JTextField txtF_2;
+//	private static javax.swing.JTextField txtF_3;
 	private static javax.swing.JLabel lbl_Chromosome;
 	private static javax.swing.JComboBox cmb_Chromosome;
 	private static javax.swing.JLabel lbl_Strand;
@@ -179,13 +179,13 @@ public class MoreLoadInfoByFormat extends javax.swing.JFrame {
 			}
 		});
 
-//        GridBagConstraints c = new GridBagConstraints();
-//        setMyConstraints(c,0,0,GridBagConstraints.LINE_START);
-//        pnl_Footer.add(btn_Help,c);
-//        setMyConstraints(c,1,0,GridBagConstraints.LINE_END);
-//        pnl_Footer.add(new JLabel("    "),c);
-//        setMyConstraints(c,2,0,GridBagConstraints.LINE_END);
-//        pnl_Footer.add(btn_Go,c);
+//		GridBagConstraints c = new GridBagConstraints();
+//		setMyConstraints(c,0,0,GridBagConstraints.LINE_START);
+//		pnl_Footer.add(btn_Help,c);
+//		setMyConstraints(c,1,0,GridBagConstraints.LINE_END);
+//		pnl_Footer.add(new JLabel("    "),c);
+//		setMyConstraints(c,2,0,GridBagConstraints.LINE_END);
+//		pnl_Footer.add(btn_Go,c);
 
 		GridBagConstraints c = new GridBagConstraints();
 		setMyConstraints(c, 0, 0, GridBagConstraints.LINE_START);

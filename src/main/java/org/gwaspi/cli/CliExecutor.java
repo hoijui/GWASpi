@@ -18,6 +18,9 @@ import org.gwaspi.threadbox.MultiOperations;
  */
 public class CliExecutor {
 
+	private CliExecutor() {
+	}
+
 	public static boolean execute(File scriptFile) throws FileNotFoundException, IOException {
 		boolean success = false;
 
@@ -38,7 +41,6 @@ public class CliExecutor {
 			String command = args.get(0).toString();
 
 			System.out.println("Script " + i + ": " + command);
-
 
 			//<editor-fold defaultstate="collapsed" desc="LOADERS">
 			if (command.equals("load_genotypes")) {
@@ -81,38 +83,40 @@ public class CliExecutor {
 			if (command.equals("load_genotypes_do_gwas_in_one_go")) {
 
 				// <editor-fold defaultstate="collapsed/expanded" desc="">
-//                #This is a demo file
-//                #Usage: java -Xms1500m -Xmx2500m -jar GWASpi.jar script scriptFile [log org.gwaspi.cli.log]
-//                data-dir=/GWASpi/data/
-//                [script]
-//                0.command=load_genotypes_do_gwas_in_one_go
-//                1.study-id=1
-//                2.format=PLINK
-//                3.use-dummy-samples=true
-//                4.new-matrix-name=Matrix 43
-//                5.description=Load genotypes of batch 42, perform GWAS in one go.
-//                6.file1-path=/GWASpi/input/Plink/mi_input.map
-//                7.file2-path=/GWASpi/input/Plink/mi_input.ped
-//                8.sample-info-path=no info file
-//                9.discard-marker-by-missing-ratio=false
-//                10.discard-marker-missing-ratio-threshold=0
-//                11.calculate-discard-threshold-for-HW=false
-//                12.discard-marker-with-provided-threshold=true
-//                13.discard-marker-HW-treshold=0.0000005
-//                14.discard-samples-by-missing-ratio=false
-//                15.discard-samples-missing-ratio-threshold=0
-//                16.discard-samples-by-heterozygosity-ratio=false
-//                17.discard-samples-heterozygosity-ratio-threshold=0.5
-//                18.perform-Allelic-Tests=true
-//                19.perform-Genotypic-Tests=true
-//                20.perform-Trend-Tests=true
-//                [/script]
+				/*
+				#This is a demo file
+				#Usage: java -Xms1500m -Xmx2500m -jar GWASpi.jar script scriptFile [log org.gwaspi.cli.log]
+				data-dir=/GWASpi/data/
+				[script]
+				0.command=load_genotypes_do_gwas_in_one_go
+				1.study-id=1
+				2.format=PLINK
+				3.use-dummy-samples=true
+				4.new-matrix-name=Matrix 43
+				5.description=Load genotypes of batch 42, perform GWAS in one go.
+				6.file1-path=/GWASpi/input/Plink/mi_input.map
+				7.file2-path=/GWASpi/input/Plink/mi_input.ped
+				8.sample-info-path=no info file
+				9.discard-marker-by-missing-ratio=false
+				10.discard-marker-missing-ratio-threshold=0
+				11.calculate-discard-threshold-for-HW=false
+				12.discard-marker-with-provided-threshold=true
+				13.discard-marker-HW-treshold=0.0000005
+				14.discard-samples-by-missing-ratio=false
+				15.discard-samples-missing-ratio-threshold=0
+				16.discard-samples-by-heterozygosity-ratio=false
+				17.discard-samples-heterozygosity-ratio-threshold=0.5
+				18.perform-Allelic-Tests=true
+				19.perform-Genotypic-Tests=true
+				20.perform-Trend-Tests=true
+				[/script]
+				*/
 				// </editor-fold>
 
 				GWASinOneGOParams gwasParams = new GWASinOneGOParams();
 
 
-				//CHECKING STUDY
+				// CHECKING STUDY
 				int studyId = Integer.MIN_VALUE;
 				try {
 					studyId = Integer.parseInt(args.get(1)); //Study Id
@@ -144,19 +148,19 @@ public class CliExecutor {
 				gwasParams.friendlyName = newMatrixName;
 				gwasParams.proceed = true;
 
-				MultiOperations.loadMatrixDoGWASifOK(format, //Format
-						Boolean.parseBoolean(args.get(3)), //Dummy samples
-						JOptionPane.YES_OPTION, //Do GWAS
-						newMatrixName, //New Matrix name
-						description, //Description
-						args.get(6), //File 1
-						args.get(8), //Sample Info file
-						args.get(7), //File 2
-						gwasParams.chromosome, //Chr (deprecated)
-						gwasParams.strandType, //Strand type (not necessary)
-						gwasParams.gtCode, //Gt code (deprecated)
-						studyId, //StudyId
-						gwasParams);                     //gwasParams (dummy)
+				MultiOperations.loadMatrixDoGWASifOK(format, // Format
+						Boolean.parseBoolean(args.get(3)), // Dummy samples
+						JOptionPane.YES_OPTION, // Do GWAS
+						newMatrixName, // New Matrix name
+						description, // Description
+						args.get(6), // File 1
+						args.get(8), // Sample Info file
+						args.get(7), // File 2
+						gwasParams.chromosome, // Chr (deprecated)
+						gwasParams.strandType, // Strand type (not necessary)
+						gwasParams.gtCode, // Gt code (deprecated)
+						studyId, // StudyId
+						gwasParams); // gwasParams (dummy)
 				success = true;
 			}
 			//</editor-fold>
@@ -165,54 +169,53 @@ public class CliExecutor {
 			//<editor-fold defaultstate="collapsed" desc="GWAS IN ONE GO">
 
 			//<editor-fold defaultstate="collapsed" desc="SCRIPT EXAMPLE">
-//                #This is a demo file
-//                #Usage: java -Xms1500m -Xmx2500m -jar GWASpi.jar script scriptFile [log org.gwaspi.cli.log]
-//                data-dir=/media/data/GWASpi
-//                [script]
-//                0.command=gwas_in_one_go
-//                1.study-id=1
-//                2.matrix-id=8
-//                3.gwas-name=alpha
-//                4.use-external-phenotype-file=true
-//                5.external-phenotype-file=/media/pheno_alpha
-//                6.discard-by-marker-missing-ratio=true
-//                7.discard-marker-missing-ratio-threshold=0.05
-//                8.calculate-discard-threshold-for-HW=false
-//                9.discard-marker-with-provided-HW-threshold=true
-//                10.discard-marker-HW-treshold=0.0000005
-//                11.discard-samples-by-missing-ratio=true
-//                12.discard-samples-missing-ratio-threshold=0.05
-//                13.discard-samples-by-heterozygosity-ratio=true
-//                14.discard-samples-heterozygosity-ratio-threshold=0.5
-//                15.perform-Allelic-Tests=true
-//                16.perform-Genotypic-Tests=true
-//                17.perform-Trend-Tests=true
-//                [/script]
+			/*
+			#This is a demo file
+			#Usage: java -Xms1500m -Xmx2500m -jar GWASpi.jar script scriptFile [log org.gwaspi.cli.log]
+			data-dir=/media/data/GWASpi
+			[script]
+			0.command=gwas_in_one_go
+			1.study-id=1
+			2.matrix-id=8
+			3.gwas-name=alpha
+			4.use-external-phenotype-file=true
+			5.external-phenotype-file=/media/pheno_alpha
+			6.discard-by-marker-missing-ratio=true
+			7.discard-marker-missing-ratio-threshold=0.05
+			8.calculate-discard-threshold-for-HW=false
+			9.discard-marker-with-provided-HW-threshold=true
+			10.discard-marker-HW-treshold=0.0000005
+			11.discard-samples-by-missing-ratio=true
+			12.discard-samples-missing-ratio-threshold=0.05
+			13.discard-samples-by-heterozygosity-ratio=true
+			14.discard-samples-heterozygosity-ratio-threshold=0.5
+			15.perform-Allelic-Tests=true
+			16.perform-Genotypic-Tests=true
+			17.perform-Trend-Tests=true
+			[/script]
+			*/
 			//</editor-fold>
 
 			if (command.equals("gwas_in_one_go")) {
 				GWASinOneGOParams gwasParams = new GWASinOneGOParams();
 
 
-				//CHECKING STUDY
+				// CHECKING STUDY
 				int studyId = Integer.MIN_VALUE;
 				try {
-					studyId = Integer.parseInt(args.get(1)); //Study Id
+					studyId = Integer.parseInt(args.get(1)); // Study Id
 				} catch (Exception e) {
 					System.out.println("The Study-id must be an integer value of an existing Study!");
 				}
 				boolean studyExists = checkStudy(studyId);
 
-
-				int matrixId = Integer.parseInt(args.get(2)); //Parent Matrix Id
+				int matrixId = Integer.parseInt(args.get(2)); // Parent Matrix Id
 				String gwasName = args.get(3);
 				boolean useExternalPhenoFile = Boolean.parseBoolean(args.get(4)); //Use external phenotype file?
 				File phenoFile = null;
 				if (useExternalPhenoFile) {
 					phenoFile = new File(args.get(5));
 				}
-
-
 
 				gwasParams.discardGTMismatches = true;
 				gwasParams.discardMarkerByMisRat = Boolean.parseBoolean(args.get(6));
@@ -235,14 +238,14 @@ public class CliExecutor {
 				necessaryOPsAL.add(org.gwaspi.constants.cNetCDF.Defaults.OPType.MARKER_QA.toString());
 				ArrayList missingOPsAL = OperationManager.checkForNecessaryOperations(necessaryOPsAL, matrixId);
 
-				//QA BLOCK
+				// QA BLOCK
 				if (gwasParams.proceed && missingOPsAL.size() > 0) {
 					gwasParams.proceed = false;
 					System.out.println(org.gwaspi.global.Text.Operation.warnQABeforeAnything + "\n" + org.gwaspi.global.Text.Operation.willPerformOperation);
 					MultiOperations.doMatrixQAs(studyId, matrixId);
 				}
 
-				//GWAS BLOCK
+				// GWAS BLOCK
 				if (gwasParams.proceed) {
 					System.out.println(org.gwaspi.global.Text.All.processing);
 					MultiOperations.doGWASwithAlterPhenotype(studyId,
@@ -258,27 +261,29 @@ public class CliExecutor {
 			//<editor-fold defaultstate="collapsed" desc="GT FREQ. & HW">
 
 			//<editor-fold defaultstate="collapsed" desc="SCRIPT EXAMPLE">
-//                #This is a demo file
-//                #Usage: java -Xms1500m -Xmx2500m -jar GWASpi.jar script scriptFile [log org.gwaspi.cli.log]
-//                data-dir=/media/data/GWASpi
-//                [script]
-//                0.command=genotype_frequency_hardy_weinberg
-//                1.study-id=1
-//                2.matrix-id=8
-//                3.gtfreq-name=alpha
-//                4.use-external-phenotype-file=true
-//                5.external-phenotype-file=/media/pheno_alpha
-//                6.discard-by-marker-missing-ratio=true
-//                7.discard-marker-missing-ratio-threshold=0.05
-//                8.discard-samples-by-missing-ratio=true
-//                9.discard-samples-missing-ratio-threshold=0.05
-//                [/script]
+			/*
+			#This is a demo file
+			#Usage: java -Xms1500m -Xmx2500m -jar GWASpi.jar script scriptFile [log org.gwaspi.cli.log]
+			data-dir=/media/data/GWASpi
+			[script]
+			0.command=genotype_frequency_hardy_weinberg
+			1.study-id=1
+			2.matrix-id=8
+			3.gtfreq-name=alpha
+			4.use-external-phenotype-file=true
+			5.external-phenotype-file=/media/pheno_alpha
+			6.discard-by-marker-missing-ratio=true
+			7.discard-marker-missing-ratio-threshold=0.05
+			8.discard-samples-by-missing-ratio=true
+			9.discard-samples-missing-ratio-threshold=0.05
+			[/script]
+			*/
 			//</editor-fold>
 
 			if (command.equals("genotype_frequency_hardy_weinberg")) {
 				GWASinOneGOParams gwasParams = new GWASinOneGOParams();
 
-				//CHECKING STUDY
+				// CHECKING STUDY
 				int studyId = Integer.MIN_VALUE;
 				try {
 					studyId = Integer.parseInt(args.get(1)); //Study Id
@@ -286,7 +291,6 @@ public class CliExecutor {
 					System.out.println("The Study-id must be an integer value of an existing Study!");
 				}
 				boolean studyExists = checkStudy(studyId);
-
 
 				int matrixId = Integer.parseInt(args.get(2)); //Parent Matrix Id
 				String gtFrqName = args.get(3);
@@ -296,9 +300,7 @@ public class CliExecutor {
 					phenoFile = new File(args.get(5));
 				}
 
-
-
-				//TODO: This looks like to much thresholds for the task
+				// TODO This looks like to much thresholds for the task
 				gwasParams.discardGTMismatches = true;
 				gwasParams.discardMarkerByMisRat = Boolean.parseBoolean(args.get(6));
 				gwasParams.discardMarkerMisRatVal = Double.parseDouble(args.get(7));
@@ -312,14 +314,14 @@ public class CliExecutor {
 				necessaryOPsAL.add(org.gwaspi.constants.cNetCDF.Defaults.OPType.MARKER_QA.toString());
 				ArrayList missingOPsAL = OperationManager.checkForNecessaryOperations(necessaryOPsAL, matrixId);
 
-				//QA BLOCK
+				// QA BLOCK
 				if (gwasParams.proceed && missingOPsAL.size() > 0) {
 					gwasParams.proceed = false;
 					System.out.println(org.gwaspi.global.Text.Operation.warnQABeforeAnything + "\n" + org.gwaspi.global.Text.Operation.willPerformOperation);
 					MultiOperations.doMatrixQAs(studyId, matrixId);
 				}
 
-				//GT FREQ. & HW BLOCK
+				// GT FREQ. & HW BLOCK
 				if (gwasParams.proceed) {
 					System.out.println(org.gwaspi.global.Text.All.processing);
 					MultiOperations.doGTFreqDoHW(studyId,
@@ -335,26 +337,28 @@ public class CliExecutor {
 			//<editor-fold defaultstate="collapsed" desc="ALLELIC TEST">
 
 			//<editor-fold defaultstate="collapsed" desc="SCRIPT EXAMPLE">
-//                #This is a demo file
-//                #Usage: java -Xms1500m -Xmx2500m -jar GWASpi.jar script scriptFile [log org.gwaspi.cli.log]
-//                data-dir=/media/data/GWASpi
-//                [script]
-//                0.command=allelic_association
-//                1.study-id=1
-//                2.matrix-id=8
-//                3.gtfreq-id=46
-//                4.hw-id=47
-//                5.calculate-discard-threshold-for-HW=false
-//                6.discard-marker-with-provided-HW-threshold=true
-//                7.discard-marker-HW-treshold=0.0000005
-//                [/script]
+			/*
+			#This is a demo file
+			#Usage: java -Xms1500m -Xmx2500m -jar GWASpi.jar script scriptFile [log org.gwaspi.cli.log]
+			data-dir=/media/data/GWASpi
+			[script]
+			0.command=allelic_association
+			1.study-id=1
+			2.matrix-id=8
+			3.gtfreq-id=46
+			4.hw-id=47
+			5.calculate-discard-threshold-for-HW=false
+			6.discard-marker-with-provided-HW-threshold=true
+			7.discard-marker-HW-treshold=0.0000005
+			[/script]
+			*/
 			//</editor-fold>
 
 
 			if (command.equals("allelic_association")) {
 				GWASinOneGOParams gwasParams = new GWASinOneGOParams();
 
-				//CHECKING STUDY
+				// CHECKING STUDY
 				int studyId = Integer.MIN_VALUE;
 				try {
 					studyId = Integer.parseInt(args.get(1)); //Study Id
@@ -363,9 +367,9 @@ public class CliExecutor {
 				}
 				boolean studyExists = checkStudy(studyId);
 
-				int matrixId = Integer.parseInt(args.get(2)); //Parent Matrix Id
-				int gtFreqId = Integer.parseInt(args.get(3)); //Parent GtFreq Id
-				int hwId = Integer.parseInt(args.get(4)); //Parent GtFreq Id
+				int matrixId = Integer.parseInt(args.get(2)); // Parent Matrix Id
+				int gtFreqId = Integer.parseInt(args.get(3)); // Parent GtFreq Id
+				int hwId = Integer.parseInt(args.get(4)); // Parent GtFreq Id
 
 				gwasParams.performAllelicTests = true;
 				gwasParams.performGenotypicTests = false;
@@ -382,14 +386,14 @@ public class CliExecutor {
 				necessaryOPsAL.add(org.gwaspi.constants.cNetCDF.Defaults.OPType.MARKER_QA.toString());
 				ArrayList missingOPsAL = OperationManager.checkForNecessaryOperations(necessaryOPsAL, matrixId);
 
-				//QA BLOCK
+				// QA BLOCK
 				if (gwasParams.proceed && missingOPsAL.size() > 0) {
 					gwasParams.proceed = false;
 					System.out.println(org.gwaspi.global.Text.Operation.warnQABeforeAnything + "\n" + org.gwaspi.global.Text.Operation.willPerformOperation);
 					MultiOperations.doMatrixQAs(studyId, matrixId);
 				}
 
-				//ALLELIC ALLELICTEST BLOCK
+				// ALLELIC ALLELICTEST BLOCK
 				if (gwasParams.proceed) {
 					System.out.println(org.gwaspi.global.Text.All.processing);
 					MultiOperations.doAllelicAssociationTest(studyId,
@@ -406,36 +410,38 @@ public class CliExecutor {
 			//<editor-fold defaultstate="collapsed" desc="GENOTYPIC TEST">
 
 			//<editor-fold defaultstate="collapsed" desc="SCRIPT EXAMPLE">
-//                #This is a demo file
-//                #Usage: java -Xms1500m -Xmx2500m -jar GWASpi.jar script scriptFile [log org.gwaspi.cli.log]
-//                data-dir=/media/data/GWASpi
-//                [script]
-//                0.command=genotypic_association
-//                1.study-id=1
-//                2.matrix-id=8
-//                3.gtfreq-id=46
-//                4.hw-id=47
-//                5.calculate-discard-threshold-for-HW=false
-//                6.discard-marker-with-provided-HW-threshold=true
-//                7.discard-marker-HW-treshold=0.0000005
-//                [/script]
+			/*
+			#This is a demo file
+			#Usage: java -Xms1500m -Xmx2500m -jar GWASpi.jar script scriptFile [log org.gwaspi.cli.log]
+			data-dir=/media/data/GWASpi
+			[script]
+			0.command=genotypic_association
+			1.study-id=1
+			2.matrix-id=8
+			3.gtfreq-id=46
+			4.hw-id=47
+			5.calculate-discard-threshold-for-HW=false
+			6.discard-marker-with-provided-HW-threshold=true
+			7.discard-marker-HW-treshold=0.0000005
+			[/script]
+			*/
 			//</editor-fold>
 
 			if (command.equals("genotypic_association")) {
 				GWASinOneGOParams gwasParams = new GWASinOneGOParams();
 
-				//CHECKING STUDY
+				// CHECKING STUDY
 				int studyId = Integer.MIN_VALUE;
 				try {
-					studyId = Integer.parseInt(args.get(1)); //Study Id
+					studyId = Integer.parseInt(args.get(1)); // Study Id
 				} catch (Exception e) {
 					System.out.println("The Study-id must be an integer value of an existing Study!");
 				}
 				boolean studyExists = checkStudy(studyId);
 
-				int matrixId = Integer.parseInt(args.get(2)); //Parent Matrix Id
-				int gtFreqId = Integer.parseInt(args.get(3)); //Parent GtFreq Id
-				int hwId = Integer.parseInt(args.get(4)); //Parent GtFreq Id
+				int matrixId = Integer.parseInt(args.get(2)); // Parent Matrix Id
+				int gtFreqId = Integer.parseInt(args.get(3)); // Parent GtFreq Id
+				int hwId = Integer.parseInt(args.get(4)); // Parent GtFreq Id
 
 				gwasParams.performAllelicTests = false;
 				gwasParams.performGenotypicTests = true;
@@ -452,14 +458,14 @@ public class CliExecutor {
 				necessaryOPsAL.add(org.gwaspi.constants.cNetCDF.Defaults.OPType.MARKER_QA.toString());
 				ArrayList missingOPsAL = OperationManager.checkForNecessaryOperations(necessaryOPsAL, matrixId);
 
-				//QA BLOCK
+				// QA BLOCK
 				if (gwasParams.proceed && missingOPsAL.size() > 0) {
 					gwasParams.proceed = false;
 					System.out.println(org.gwaspi.global.Text.Operation.warnQABeforeAnything + "\n" + org.gwaspi.global.Text.Operation.willPerformOperation);
 					MultiOperations.doMatrixQAs(studyId, matrixId);
 				}
 
-				//GENOTYPIC TEST BLOCK
+				// GENOTYPIC TEST BLOCK
 				if (gwasParams.proceed) {
 					System.out.println(org.gwaspi.global.Text.All.processing);
 					MultiOperations.doGenotypicAssociationTest(studyId,
@@ -476,36 +482,38 @@ public class CliExecutor {
 			//<editor-fold defaultstate="collapsed" desc="TREND TEST">
 
 			//<editor-fold defaultstate="collapsed" desc="SCRIPT EXAMPLE">
-//                #This is a demo file
-//                #Usage: java -Xms1500m -Xmx2500m -jar GWASpi.jar script scriptFile [log org.gwaspi.cli.log]
-//                data-dir=/media/data/GWASpi
-//                [script]
-//                0.command=trend_test
-//                1.study-id=1
-//                2.matrix-id=8
-//                3.gtfreq-id=46
-//                4.hw-id=47
-//                5.calculate-discard-threshold-for-HW=false
-//                6.discard-marker-with-provided-HW-threshold=true
-//                7.discard-marker-HW-treshold=0.0000005
-//                [/script]
+			/*
+			#This is a demo file
+			#Usage: java -Xms1500m -Xmx2500m -jar GWASpi.jar script scriptFile [log org.gwaspi.cli.log]
+			data-dir=/media/data/GWASpi
+			[script]
+			0.command=trend_test
+			1.study-id=1
+			2.matrix-id=8
+			3.gtfreq-id=46
+			4.hw-id=47
+			5.calculate-discard-threshold-for-HW=false
+			6.discard-marker-with-provided-HW-threshold=true
+			7.discard-marker-HW-treshold=0.0000005
+			[/script]
+			*/
 			//</editor-fold>
 
 			if (command.equals("trend_test")) {
 				GWASinOneGOParams gwasParams = new GWASinOneGOParams();
 
-				//CHECKING STUDY
+				// CHECKING STUDY
 				int studyId = Integer.MIN_VALUE;
 				try {
-					studyId = Integer.parseInt(args.get(1)); //Study Id
+					studyId = Integer.parseInt(args.get(1)); // Study Id
 				} catch (Exception e) {
 					System.out.println("The Study-id must be an integer value of an existing Study!");
 				}
 				boolean studyExists = checkStudy(studyId);
 
-				int matrixId = Integer.parseInt(args.get(2)); //Parent Matrix Id
-				int gtFreqId = Integer.parseInt(args.get(3)); //Parent GtFreq Id
-				int hwId = Integer.parseInt(args.get(4)); //Parent GtFreq Id
+				int matrixId = Integer.parseInt(args.get(2)); // Parent Matrix Id
+				int gtFreqId = Integer.parseInt(args.get(3)); // Parent GtFreq Id
+				int hwId = Integer.parseInt(args.get(4)); // Parent GtFreq Id
 
 				gwasParams.performAllelicTests = false;
 				gwasParams.performGenotypicTests = false;
@@ -522,14 +530,14 @@ public class CliExecutor {
 				necessaryOPsAL.add(org.gwaspi.constants.cNetCDF.Defaults.OPType.MARKER_QA.toString());
 				ArrayList missingOPsAL = OperationManager.checkForNecessaryOperations(necessaryOPsAL, matrixId);
 
-				//QA BLOCK
+				// QA BLOCK
 				if (gwasParams.proceed && missingOPsAL.size() > 0) {
 					gwasParams.proceed = false;
 					System.out.println(org.gwaspi.global.Text.Operation.warnQABeforeAnything + "\n" + org.gwaspi.global.Text.Operation.willPerformOperation);
 					MultiOperations.doMatrixQAs(studyId, matrixId);
 				}
 
-				//TRend TEST BLOCK
+				// TRend TEST BLOCK
 				if (gwasParams.proceed) {
 					System.out.println(org.gwaspi.global.Text.All.processing);
 					MultiOperations.doTrendTest(studyId,
@@ -542,8 +550,6 @@ public class CliExecutor {
 
 			}
 			//</editor-fold>
-
-
 
 			//<editor-fold defaultstate="collapsed" desc="EXPORT MATRIX">
 			if (command.equals("export_matrix")) {
@@ -564,14 +570,13 @@ public class CliExecutor {
 			}
 			//</editor-fold>
 
-
 			//<editor-fold defaultstate="collapsed" desc="SAMPLE INFO">
 			if (command.equals("update_sample_info")) {
 
-				//CHECKING STUDY
+				// CHECKING STUDY
 				int studyId = Integer.MIN_VALUE;
 				try {
-					studyId = Integer.parseInt(args.get(1)); //Study Id
+					studyId = Integer.parseInt(args.get(1)); // Study Id
 				} catch (Exception e) {
 					if (args.get(1).contains("New Study")) {
 						studyId = addStudy(args.get(1).substring(10), "Study created by command-line interface");
@@ -586,7 +591,6 @@ public class CliExecutor {
 					success = true;
 
 				}
-
 			}
 			//</editor-fold>
 		}
@@ -621,7 +625,7 @@ public class CliExecutor {
 	}
 
 	public static int addStudy(String newStudyName, String description) throws IOException {
-		int newStudyId = Integer.MIN_VALUE;
+		int newStudyId;
 
 		org.gwaspi.database.StudyGenerator.insertNewStudy(newStudyName, description);
 

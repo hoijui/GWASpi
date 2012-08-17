@@ -12,9 +12,10 @@ import javax.swing.tree.*;
  */
 public class TreeMemory extends JPanel {
 
-	JTree tree;
-	TreeModel model1, model2;
-	ArrayList lastExpanded;
+	private JTree tree;
+	private TreeModel model1;
+	private TreeModel model2;
+	private ArrayList lastExpanded;
 
 	/**
 	 * Creates a new instance of TreeMemory
@@ -56,13 +57,13 @@ public class TreeMemory extends JPanel {
 
 	}
 
-	TreeModel model(int n) {
+	private final TreeModel model(int n) {
 		DefaultMutableTreeNode root = new DefaultMutableTreeNode("Root " + n);
 		addNodes(root, 3);
 		return new DefaultTreeModel(root);
 	}
 
-	void addNodes(MutableTreeNode node, int depth) {
+	private void addNodes(MutableTreeNode node, int depth) {
 		if (depth == 0) {
 			return;
 		}
@@ -74,12 +75,12 @@ public class TreeMemory extends JPanel {
 		}
 	}
 
-	public static final void main(String[] args) throws Exception {
+	public static void main(String[] args) throws Exception {
 		JFrame f = new JFrame();
-		f.setDefaultCloseOperation(f.EXIT_ON_CLOSE);
+		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		f.getContentPane().add(new TreeMemory());
 		f.pack();
 		f.setLocationRelativeTo(null);
-		f.show();
+		f.setVisible(true);
 	}
 }

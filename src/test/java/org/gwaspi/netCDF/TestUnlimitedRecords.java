@@ -1,7 +1,7 @@
 package org.gwaspi.netCDF;
 
-import ucar.ma2.*;
 import java.io.IOException;
+import ucar.ma2.*;
 import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFileWriteable;
 
@@ -24,7 +24,6 @@ public class TestUnlimitedRecords {
 		String fileName = "/media/data/work/moapi/genotypes/testUnlimitedRecords.nc"; // default name of file created
 
 		NetcdfFileWriteable writeableFile = new NetcdfFileWriteable(fileName, false);
-
 
 		// define dimensions, including unlimited
 		Dimension latDim = writeableFile.addDimension("lat", 3);
@@ -73,18 +72,14 @@ public class TestUnlimitedRecords {
 
 		System.out.println("Done writing the non-record variables");
 
-
-
 		//// heres where we write the record variables
 		// different ways to create the data arrays. Note the outer dimension has shape 1.
 		ArrayInt rhData = new ArrayInt.D3(1, latDim.getLength(), lonDim.getLength());
 		ArrayDouble.D3 tempData = new ArrayDouble.D3(1, latDim.getLength(), lonDim.getLength());
 		Array timeData = Array.factory(DataType.INT, new int[]{1});
 
-
 		int[] origin = new int[]{0, 0, 0};
 		int[] time_origin = new int[]{0};
-
 
 		// loop over each record
 		for (int time = 0; time < 10; time++) {
@@ -100,11 +95,9 @@ public class TestUnlimitedRecords {
 				}
 			}
 
-
 			// write the data out for this record
 			time_origin[0] = time;
 			origin[0] = time;
-
 
 			writeableFile.write("rh", origin, rhData);
 			writeableFile.write("T", origin, tempData);

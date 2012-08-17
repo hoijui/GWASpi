@@ -49,7 +49,7 @@ public class Report_HardyWeinbergSummary extends javax.swing.JPanel {
 
 		opId = _opId;
 		String reportName = org.gwaspi.gui.GWASpiExplorerPanel.tree.getLastSelectedPathComponent().toString();
-		reportName = reportName.substring(reportName.indexOf("-") + 2);
+		reportName = reportName.substring(reportName.indexOf('-') + 2);
 
 		String reportPath = "";
 		try {
@@ -148,21 +148,21 @@ public class Report_HardyWeinbergSummary extends javax.swing.JPanel {
 					{null, null, null, "Go!"}
 				},
 				new String[]{"", "", "", ""}));
-//        tbl_ReportTable.addMouseListener(new MouseListener() {
-//            public void mouseClicked(MouseEvent e) {
-//                try {
-//                    int rowIndex = tbl_ReportTable.getSelectedRow();
-//                    int colIndex = tbl_ReportTable.getSelectedColumn();
-//                    org.gwaspi.gui.utils.URLInDefaultBrowser.browseGenericURL(org.gwaspi.gui.utils.EnsemblUrl.getHomoSapiensLink(tbl_ReportTable.getModel().getValueAt(rowIndex, 0).toString(), (Integer) tbl_ReportTable.getModel().getValueAt(rowIndex, 8)));
-//                } catch (IOException ex) {
-//                    Logger.getLogger(Report_HardyWeinbergSummary.class.getName()).log(Level.SEVERE, null, ex);
-//                }
-//            }
-//            public void mousePressed(MouseEvent e) {}
-//            public void mouseReleased(MouseEvent e) {}
-//            public void mouseExited(MouseEvent e) {}
-//            public void mouseEntered(MouseEvent e) {}
-//        });
+//		tbl_ReportTable.addMouseListener(new MouseListener() {
+//			public void mouseClicked(MouseEvent e) {
+//				try {
+//					int rowIndex = tbl_ReportTable.getSelectedRow();
+//					int colIndex = tbl_ReportTable.getSelectedColumn();
+//					org.gwaspi.gui.utils.URLInDefaultBrowser.browseGenericURL(org.gwaspi.gui.utils.EnsemblUrl.getHomoSapiensLink(tbl_ReportTable.getModel().getValueAt(rowIndex, 0).toString(), (Integer) tbl_ReportTable.getModel().getValueAt(rowIndex, 8)));
+//				} catch (IOException ex) {
+//					Logger.getLogger(Report_HardyWeinbergSummary.class.getName()).log(Level.SEVERE, null, ex);
+//				}
+//			}
+//			public void mousePressed(MouseEvent e) {}
+//			public void mouseReleased(MouseEvent e) {}
+//			public void mouseExited(MouseEvent e) {}
+//			public void mouseEntered(MouseEvent e) {}
+//		});
 		scrl_ReportTable.setViewportView(tbl_ReportTable);
 
 
@@ -268,16 +268,14 @@ public class Report_HardyWeinbergSummary extends javax.swing.JPanel {
 				inputFileReader = new FileReader(reportFile);
 				BufferedReader inputBufferReader = new BufferedReader(inputFileReader);
 
-				//Getting data from file and subdividing to series all points by chromosome
+				// Getting data from file and subdividing to series all points by chromosome
 				ArrayList tableRowAL = new ArrayList();
 				String l;
-				String[] cVals = null;
 				String header = inputBufferReader.readLine();
 				int count = 0;
 				while ((l = inputBufferReader.readLine()) != null && count < getRowsNb) {
 					Object[] row = new Object[9];
-					cVals = l.split(org.gwaspi.constants.cImport.Separators.separators_SpaceTab_rgxp);
-
+					String[] cVals = l.split(org.gwaspi.constants.cImport.Separators.separators_SpaceTab_rgxp);
 
 					String markerId = cVals[0];
 					String rsId = cVals[1];
@@ -297,9 +295,9 @@ public class Report_HardyWeinbergSummary extends javax.swing.JPanel {
 					row[5] = majAllele;
 
 //                    if (!org.gwaspi.constants.cGlobal.OSNAME.contains("Windows")){
-					Double hwPvalCtrl_f = Double.NaN;
-					Double obsHetzyCtrl_f = Double.NaN;
-					Double expHetzyCtrl_f = Double.NaN;
+					Double hwPvalCtrl_f;
+					Double obsHetzyCtrl_f;
+					Double expHetzyCtrl_f;
 					try {
 						hwPvalCtrl_f = Double.parseDouble(dfSci.format(hwPvalCtrl));
 					} catch (NumberFormatException numberFormatException) {
@@ -349,8 +347,8 @@ public class Report_HardyWeinbergSummary extends javax.swing.JPanel {
 				tbl_ReportTable.setModel(model);
 
 				//<editor-fold defaultstate="collapsed" desc="Linux Sorter">
-//                if (!org.gwaspi.constants.cGlobal.OSNAME.contains("Windows")){
-				//RowSorter<TableModel> sorter = new TableRowSorter<TableModel>(model);
+//				if (!org.gwaspi.constants.cGlobal.OSNAME.contains("Windows")){
+//					RowSorter<TableModel> sorter = new TableRowSorter<TableModel>(model);
 				TableRowSorter sorter = new TableRowSorter(model) {
 					Comparator<Object> comparator = new Comparator<Object>() {
 						public int compare(Object o1, Object o2) {
@@ -370,17 +368,19 @@ public class Report_HardyWeinbergSummary extends javax.swing.JPanel {
 						}
 					};
 
+					@Override
 					public Comparator getComparator(int column) {
 						return comparator;
 					}
 
+					@Override
 					public boolean useToString(int column) {
 						return false;
 					}
 				};
 
 				tbl_ReportTable.setRowSorter(sorter);
-//                }
+//				}
 				//</editor-fold>
 
 			}
@@ -424,7 +424,7 @@ public class Report_HardyWeinbergSummary extends javax.swing.JPanel {
 			FileWriter writer = new FileWriter(newFile);
 
 			StringBuilder tableData = new StringBuilder();
-			//HEADER
+			// HEADER
 			for (int k = 0; k < tbl_ReportTable.getColumnCount(); k++) {
 				tableData.append(tbl_ReportTable.getColumnName(k));
 				if (k != tbl_ReportTable.getColumnCount() - 1) {
@@ -434,7 +434,7 @@ public class Report_HardyWeinbergSummary extends javax.swing.JPanel {
 			tableData.append("\n");
 			writer.write(tableData.toString());
 
-			//TABLE CONTENT
+			// TABLE CONTENT
 			for (int rowNb = 0; rowNb < tbl_ReportTable.getModel().getRowCount(); rowNb++) {
 				tableData = new StringBuilder();
 

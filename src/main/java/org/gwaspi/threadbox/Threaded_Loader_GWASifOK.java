@@ -27,24 +27,24 @@ import org.gwaspi.reports.OutputTrendTest_opt;
  */
 public class Threaded_Loader_GWASifOK implements Runnable {
 
-	Thread runner;
-	protected static String timeStamp = "";
-	protected static int resultMatrixId;
-	protected static int samplesQAOpId;
-	protected static int markersQAOpId;
-	protected static String format;
-	protected static boolean dummySamples;
-	protected static int decision;
-	protected static String newMatrixName;
-	protected static String newMatrixDescription;
-	protected static String file1;
-	protected static String fileSampleInfo;
-	protected static String file2;
-	protected static String chromosome;
-	protected static String strandType;
-	protected static String gtCode;
-	protected static int studyId;
-	protected static GWASinOneGOParams gwasParams;
+	private Thread runner;
+	private static String timeStamp = "";
+	private static int resultMatrixId;
+	private static int samplesQAOpId;
+	private static int markersQAOpId;
+	private static String format;
+	private static boolean dummySamples;
+	private static int decision;
+	private static String newMatrixName;
+	private static String newMatrixDescription;
+	private static String file1;
+	private static String fileSampleInfo;
+	private static String file2;
+	private static String chromosome;
+	private static String strandType;
+	private static String gtCode;
+	private static int studyId;
+	private static GWASinOneGOParams gwasParams;
 
 	public Threaded_Loader_GWASifOK(String threadName,
 			String _timeStamp,

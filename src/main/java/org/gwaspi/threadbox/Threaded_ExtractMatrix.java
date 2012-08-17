@@ -19,21 +19,21 @@ import org.gwaspi.netCDF.operations.OP_QASamples_opt;
  */
 public class Threaded_ExtractMatrix implements Runnable {
 
-	Thread runner;
-	protected String timeStamp = "";
-	protected static int resultMatrixId;
-	protected static int studyId;
-	protected static int parentMatrixId;
-	protected static String newMatrixName;
-	protected static String description;
-	protected static cNetCDF.Defaults.SetMarkerPickCase markerPickCase;
-	protected static cNetCDF.Defaults.SetSamplePickCase samplePickCase;
-	protected static String markerPickVar;
-	protected static String samplePickVar;
-	protected static HashSet markerCriteria;
-	protected static HashSet sampleCriteria;
-	protected static File markerCriteriaFile;
-	protected static File sampleCriteriaFile;
+	private Thread runner;
+	private String timeStamp = "";
+	private static int resultMatrixId;
+	private static int studyId;
+	private static int parentMatrixId;
+	private static String newMatrixName;
+	private static String description;
+	private static cNetCDF.Defaults.SetMarkerPickCase markerPickCase;
+	private static cNetCDF.Defaults.SetSamplePickCase samplePickCase;
+	private static String markerPickVar;
+	private static String samplePickVar;
+	private static HashSet markerCriteria;
+	private static HashSet sampleCriteria;
+	private static File markerCriteriaFile;
+	private static File sampleCriteriaFile;
 
 	public Threaded_ExtractMatrix(String threadName,
 			String _timeStamp,

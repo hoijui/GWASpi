@@ -8,12 +8,12 @@ package org.gwaspi.threadbox;
  */
 class RunnableThread implements Runnable {
 
-	Thread runner;
+	private Thread runner;
 
-	public RunnableThread() {
+	RunnableThread() {
 	}
 
-	public RunnableThread(String threadName) {
+	RunnableThread(String threadName) {
 		runner = new Thread(this, threadName); // (1) Create a new thread.
 		System.out.println(runner.getName());
 		runner.start(); // (2) Start the thread.

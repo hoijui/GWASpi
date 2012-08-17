@@ -2,9 +2,9 @@ package org.gwaspi.gui.utils;
 
 import org.gwaspi.global.Text;
 import java.awt.*;
-import javax.swing.*;
 import java.io.*;
 import java.net.URL;
+import javax.swing.*;
 
 /**
  * http://tanksoftware.com/juk/developer/src/com/tanksoftware/util/RedirectedFrame.java
@@ -14,7 +14,7 @@ import java.net.URL;
  * This class was downloaded from: Java CodeGuru
  * (http://codeguru.earthweb.com/java/articles/382.shtml) <br/>
  *
- * The origional author was Real Gagnon (real.gagnon@tactika.com);
+ * The original author was Real Gagnon (real.gagnon@tactika.com);
  * William Denniss has edited the code, improving its customizability
  *
  * In brief, this class captures all output to the system and prints it in a
@@ -26,12 +26,12 @@ public class SystemOutPopup extends JFrame {
 	// Class information
 	private boolean catchErrors;
 	private boolean logFile;
-	private static String matrixId;
+	private static String matrixId; // FIXME Should this really be static?
 	private int width;
 	private int height;
 	private int closeOperation;
-	TextArea aTextArea = new TextArea();
-	PrintStream aPrintStream = new PrintStream(new FilteredStream(new ByteArrayOutputStream()));
+	private TextArea aTextArea = new TextArea();
+	private PrintStream aPrintStream = new PrintStream(new FilteredStream(new ByteArrayOutputStream()));
 
 	/**
 	 * Creates a new RedirectFrame. From the moment it is created, all
@@ -42,7 +42,7 @@ public class SystemOutPopup extends JFrame {
 	 * <code>
 	 * RedirectedFrame outputFrame = new RedirectedFrame (false, false, null, 700, 600, JFrame.DO_NOTHING_ON_CLOSE);
 	 * </code> this will create a new RedirectedFrame that doesn't catch errors,
-	 * nor logs to the file, with the dimentions 700x600 and it doesn't close
+	 * nor logs to the file, with the dimensions 700x600 and it doesn't close
 	 * this frame can be toggled to visible, hidden by a controlling class
 	 * by(using the example) outputFrame.setVisible(true|false)
 	 *
@@ -92,18 +92,20 @@ public class SystemOutPopup extends JFrame {
 		setIconImage(im);
 	}
 
-	class FilteredStream extends FilterOutputStream {
+	private class FilteredStream extends FilterOutputStream {
 
-		public FilteredStream(OutputStream aStream) {
+		FilteredStream(OutputStream aStream) {
 			super(aStream);
 		}
 
+		@Override
 		public void write(byte b[]) throws IOException {
 			String aString = new String(b);
 			aTextArea.append(aString);
 			aPrintStream.flush();
 		}
 
+		@Override
 		public void write(byte b[], int off, int len) throws IOException {
 			String aString = new String(b, off, len);
 			aTextArea.append(aString);
@@ -130,28 +132,28 @@ public class SystemOutPopup extends JFrame {
 		try {
 			if (org.gwaspi.constants.cGlobal.OSNAME.toLowerCase().contains("windows")) {
 				String logName = org.gwaspi.global.Utils.getURIDate();
-				SystemOutPopup sysout = new SystemOutPopup(false, //Catch errors?
-						true, //Log to file?
-						org.gwaspi.global.Config.getConfigValue("ReportsDir", "") + "/" + logName + ".log", //Log save path
-						600, //Width
-						400, //Height
-						WindowConstants.DISPOSE_ON_CLOSE);   //CloseOperation
+				SystemOutPopup sysout = new SystemOutPopup(false, // Catch errors?
+						true, // Log to file?
+						org.gwaspi.global.Config.getConfigValue("ReportsDir", "") + "/" + logName + ".log", // Log save path
+						600, // Width
+						400, // Height
+						WindowConstants.DISPOSE_ON_CLOSE); // CloseOperation
 			} else if (org.gwaspi.constants.cGlobal.OSNAME.toLowerCase().contains("mac")) {
 				String logName = org.gwaspi.global.Utils.getURIDate();
-				SystemOutPopup sysout = new SystemOutPopup(false, //Catch errors?
-						true, //Log to file?
-						org.gwaspi.global.Config.getConfigValue("ReportsDir", "") + "/" + logName + ".log", //Log save path
-						600, //Width
-						400, //Height
-						WindowConstants.DISPOSE_ON_CLOSE);   //CloseOperation
+				SystemOutPopup sysout = new SystemOutPopup(false, // Catch errors?
+						true, // Log to file?
+						org.gwaspi.global.Config.getConfigValue("ReportsDir", "") + "/" + logName + ".log", // Log save path
+						600, // Width
+						400, // Height
+						WindowConstants.DISPOSE_ON_CLOSE);   // CloseOperation
 			} else {
-//                String logName = org.gwaspi.global.Utils.getURIDate();
-//                SystemOutPopup_old sysout = new SystemOutPopup_old(false, //Catch errors?
-//                        true, //Log to file?
-//                        org.gwaspi.global.Config.getConfigValue("ReportsDir", "") + "/"+logName+".log", //Log save path
-//                        600, //Width
-//                        400, //Height
-//                        WindowConstants.DISPOSE_ON_CLOSE);   //CloseOperation
+//				String logName = org.gwaspi.global.Utils.getURIDate();
+//				SystemOutPopup_old sysout = new SystemOutPopup_old(false, // Catch errors?
+//						true, // Log to file?
+//						org.gwaspi.global.Config.getConfigValue("ReportsDir", "") + "/"+logName+".log", // Log save path
+//						600, // Width
+//						400, // Height
+//						WindowConstants.DISPOSE_ON_CLOSE);   // CloseOperation
 			}
 		} catch (IOException iOException) {
 		}
@@ -164,10 +166,10 @@ public class SystemOutPopup extends JFrame {
 		JLabel lbl_Running = new JLabel(logo);
 		lbl_Running.setBorder(null);
 		if (!org.gwaspi.constants.cGlobal.OSNAME.toLowerCase().contains("linux")) {
-//            scrl_Gif.getViewport().add(lbl_Running);
-//            pnl_GifCenter.add(scrl_Gif, BorderLayout.CENTER);
+//			scrl_Gif.getViewport().add(lbl_Running);
+//			pnl_GifCenter.add(scrl_Gif, BorderLayout.CENTER);
 //
-//            scrl_Gif.setVisible(true);
+//			scrl_Gif.setVisible(true);
 		}
 	}
 }

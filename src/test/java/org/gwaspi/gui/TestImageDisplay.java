@@ -1,18 +1,17 @@
 package org.gwaspi.gui;
 
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import javax.swing.*;
+
 /**
  *
  * @author u56124
  */
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.*;
-import java.awt.image.BufferedImage;
-
 public class TestImageDisplay extends JFrame {
 
-	JScrollPane scrl_Image = new javax.swing.JScrollPane();
-	JPanel pnl_Image = new javax.swing.JPanel();
+	private JScrollPane scrl_Image = new javax.swing.JScrollPane();
+	private JPanel pnl_Image = new javax.swing.JPanel();
 
 	public static void main(String[] args) {
 		TestImageDisplay t = new TestImageDisplay();
@@ -39,27 +38,26 @@ public class TestImageDisplay extends JFrame {
 		tPanel.add(scrl_Image, BorderLayout.CENTER);
 	}
 
-//    {
-//        addWindowListener(new WindowAdapter(){
-//            public void windowClosing(WindowEvent e)
-//            {
-//                System.exit(1);
-//            }
-//        });
-//        Container contentPane=getContentPane();
-//        contentPane.setLayout(null);
+//	{
+//		addWindowListener(new WindowAdapter() {
+//			public void windowClosing(WindowEvent e) {
+//				System.exit(1);
+//			}
+//		});
+//		Container contentPane = getContentPane();
+//		contentPane.setLayout(null);
 //
-//        ImageIcon ii = new ImageIcon(Toolkit.getDefaultToolkit().getImage("/media/data/work/moapi/reports/STUDY_1/qq_Comabella Imputed Chr13_Association-Tests_Genotype freq_Default-Affection.png"));
-//        ImageViewerSwing imv = new ImageViewerSwing(ii.getImage());
+//		ImageIcon ii = new ImageIcon(Toolkit.getDefaultToolkit().getImage("/media/data/work/moapi/reports/STUDY_1/qq_Comabella Imputed Chr13_Association-Tests_Genotype freq_Default-Affection.png"));
+//		ImageViewerSwing imv = new ImageViewerSwing(ii.getImage());
 //
-//        pnl_Image.add(imv);
-//        scrl_Image.add(pnl_Image);
+//		pnl_Image.add(imv);
+//		scrl_Image.add(pnl_Image);
 //
-//        contentPane.add(pnl_Image);
-//        pnl_Image.setBounds(10, 10, 600, 600);
-//        scrl_Image.setBounds(0, 0, 800, 800);
-//        //lb.setBounds(100,50,600,600);
-//    }
+//		contentPane.add(pnl_Image);
+//		pnl_Image.setBounds(10, 10, 600, 600);
+//		scrl_Image.setBounds(0, 0, 800, 800);
+////		lb.setBounds(100, 50, 600, 600);
+//	}
 	public BufferedImage zoomIn(BufferedImage bi, int scale) {
 		int width = scale * bi.getWidth();
 		int height = scale * bi.getHeight();

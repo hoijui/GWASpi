@@ -1,36 +1,32 @@
 package org.gwaspi.reports;
 
-/**
- *
- * @author Fernando Muñiz Fernandez
- * IBE, Institute of Evolutionary Biology (UPF-CSIC)
- * CEXS-UPF-PRBB
- */
 import org.gwaspi.constants.cDBGWASpi;
 import org.gwaspi.constants.cExport;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.database.DbManager;
 import org.gwaspi.global.ServiceLocator;
 import java.io.BufferedWriter;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
-
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import org.gwaspi.model.Operation;
-import org.gwaspi.netCDF.operations.OperationMetadata;
-import org.jfree.chart.ChartUtilities;
-import org.jfree.chart.JFreeChart;
-import org.jfree.chart.plot.XYPlot;
-import org.jfree.data.xy.XYDataset;
 
+/**
+ *
+ * @author Fernando Muñiz Fernandez
+ * IBE, Institute of Evolutionary Biology (UPF-CSIC)
+ * CEXS-UPF-PRBB
+ */
 public class OutputQASamples {
 
 	protected static String reportPath;
 	protected static String samplMissOutName;
+
+	private OutputQASamples() {
+	}
 
 	public static boolean writeReportsForQASamplesData(int opId, boolean newReport) throws FileNotFoundException, IOException {
 		Operation op = new Operation(opId);
@@ -79,7 +75,7 @@ public class OutputQASamples {
 	}
 
 	public static boolean createSortedSampleMissingnessReport(int opId, String reportName, Object poolId) throws FileNotFoundException, IOException {
-		boolean result = false;
+		boolean result;
 		String sep = cExport.separator_REPORTS;
 
 		try {

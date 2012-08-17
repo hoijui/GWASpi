@@ -17,9 +17,9 @@ import ucar.nc2.*;
  */
 public class MarkerSet {
 
-	//MARKERSET_MEATADATA
-	private String technology = "";                       //platform
-	private int markerSetSize = 0;                       //probe_nb
+	// MARKERSET_MEATADATA
+	private String technology = ""; // platform
+	private int markerSetSize = 0; // probe_nb
 	private MatrixMetadata matrixMetadata;
 	private LinkedHashMap markerIdSetLHM = new LinkedHashMap();
 	private LinkedHashMap markerRsIdSetLHM = new LinkedHashMap();
@@ -143,11 +143,10 @@ public class MarkerSet {
 		try {
 			int[] varShape = genotypes.getShape();
 
-//            ArrayChar.D3 gt_ACD3 = (ArrayChar.D3) genotypes.read("("+sampleNb+":"+sampleNb+":1, "
-//                                                                 + "0:"+(varShape[1]-1)+":1, "
-//                                                                 + "0:"+(varShape[2]-1)+":1)");
-
-
+//			ArrayChar.D3 gt_ACD3 = (ArrayChar.D3) genotypes.read(
+//					"(" + sampleNb + ":" + sampleNb + ":1, "
+//					+ "0:" + (varShape[1] - 1) + ":1, "
+//					+ "0:" + (varShape[2] - 1) + ":1)");
 			ArrayByte.D3 gt_ACD3 = (ArrayByte.D3) genotypes.read("(" + sampleNb + ":" + sampleNb + ":1, "
 					+ "0:" + (varShape[1] - 1) + ":1, "
 					+ "0:" + (varShape[2] - 1) + ":1)");
@@ -378,7 +377,6 @@ public class MarkerSet {
 				if (varShape.length == 1) {
 					ArrayFloat.D1 markerSetAF = (ArrayFloat.D1) var.read("(0:" + (markerSetSize - 1) + ":1)");
 
-					Float floatValue = Float.NaN;
 					int[] shape = markerSetAF.getShape();
 					Index index = markerSetAF.getIndex();
 					Iterator it = markerIdSetLHM.keySet().iterator();
@@ -388,7 +386,7 @@ public class MarkerSet {
 						if (!value.isEmpty()) {
 							value += separator;
 						}
-						floatValue = markerSetAF.getFloat(index.set(i));
+						Float floatValue = markerSetAF.getFloat(index.set(i));
 						markerIdSetLHM.put(key, value + floatValue.toString());
 					}
 				}
@@ -397,7 +395,6 @@ public class MarkerSet {
 				if (varShape.length == 1) {
 					ArrayInt.D1 markerSetAF = (ArrayInt.D1) var.read("(0:" + (markerSetSize - 1) + ":1)");
 
-					Integer intValue = 0;
 					int[] shape = markerSetAF.getShape();
 					Index index = markerSetAF.getIndex();
 					Iterator it = markerIdSetLHM.keySet().iterator();
@@ -407,7 +404,7 @@ public class MarkerSet {
 						if (!value.isEmpty()) {
 							value += separator;
 						}
-						intValue = markerSetAF.getInt(index.set(i));
+						Integer intValue = markerSetAF.getInt(index.set(i));
 						markerIdSetLHM.put(key, value + intValue.toString());
 					}
 				}

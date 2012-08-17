@@ -1,4 +1,4 @@
-<?xml version="1.1" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="UTF-8" ?>
 
 <Form version="1.3" maxVersion="1.7" type="org.netbeans.modules.form.forminfo.JPanelFormInfo">
   <Properties>
@@ -69,7 +69,7 @@
               <Group type="102" attributes="0">
                   <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Component id="scrl_MatrixOperations" alignment="1" pref="933" max="32767" attributes="0"/>
+                      <Component id="scrl_MatrixOperations" alignment="1" pref="900" max="32767" attributes="0"/>
                       <Component id="scrl_MatrixDesc" alignment="0" pref="933" max="32767" attributes="0"/>
                       <Group type="102" alignment="1" attributes="0">
                           <Component id="btn_DeleteMatrix" linkSize="5" min="-2" pref="162" max="-2" attributes="0"/>
@@ -92,7 +92,7 @@
                       <Component id="btn_DeleteMatrix" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                  <Component id="scrl_MatrixOperations" pref="56" max="32767" attributes="0"/>
+                  <Component id="scrl_MatrixOperations" pref="134" max="32767" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="btn_DeleteOperation" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
@@ -208,16 +208,13 @@
                       <Component id="btn_Operation1_2" linkSize="14" min="-2" pref="151" max="-2" attributes="1"/>
                       <EmptySpace type="separate" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="1" attributes="0">
-                          <Group type="102" alignment="1" attributes="0">
-                              <EmptySpace min="1" pref="1" max="1" attributes="0"/>
-                              <Component id="btn_Operation1_5" min="-2" pref="150" max="-2" attributes="1"/>
-                          </Group>
+                          <Component id="btn_Operation1_5" alignment="1" min="-2" pref="150" max="-2" attributes="1"/>
                           <Component id="btn_Operation1_3" linkSize="14" min="-2" pref="147" max="-2" attributes="1"/>
                       </Group>
                       <EmptySpace type="separate" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" max="-2" attributes="0">
                           <Component id="btn_Operation1_6" linkSize="14" max="32767" attributes="1"/>
-                          <Component id="btn_Operation1_4" linkSize="14" alignment="0" pref="150" max="32767" attributes="1"/>
+                          <Component id="btn_Operation1_4" linkSize="14" alignment="0" pref="151" max="32767" attributes="1"/>
                       </Group>
                       <EmptySpace max="32767" attributes="0"/>
                   </Group>
@@ -293,7 +290,7 @@
           <Layout>
             <DimensionLayout dim="0">
               <Group type="103" groupAlignment="0" attributes="0">
-                  <EmptySpace min="0" pref="33" max="32767" attributes="0"/>
+                  <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
               </Group>
             </DimensionLayout>
             <DimensionLayout dim="1">

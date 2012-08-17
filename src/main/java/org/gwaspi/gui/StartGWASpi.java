@@ -1,11 +1,5 @@
 package org.gwaspi.gui;
 
-/**
- *
- * @author Fernando Muñiz Fernandez
- * IBE, Institute of Evolutionary Biology (UPF-CSIC)
- * CEXS-UPF-PRBB
- */
 import org.gwaspi.database.DbManager;
 import org.gwaspi.global.ServiceLocator;
 import org.gwaspi.global.Text;
@@ -24,6 +18,12 @@ import javax.swing.*;
 import org.gwaspi.threadbox.SwingDeleterItemList;
 import org.gwaspi.threadbox.SwingWorkerItemList;
 
+/**
+ *
+ * @author Fernando Muñiz Fernandez
+ * IBE, Institute of Evolutionary Biology (UPF-CSIC)
+ * CEXS-UPF-PRBB
+ */
 public class StartGWASpi extends javax.swing.JFrame {
 
 	// create a JFrame to hold everything
@@ -33,10 +33,10 @@ public class StartGWASpi extends javax.swing.JFrame {
 	public static String logPath;
 	public static JFrame mainGUIFrame = new JFrame(org.gwaspi.constants.cGlobal.APP_NAME);
 	public static JTabbedPane allTabs = new JTabbedPane();
-	Preferences prefs;
+	private Preferences prefs;
 	public static long maxHeapSize = 0;
 	public static long maxProcessMarkers = 0;
-	//THIS TO WORK IN CLI MODE
+	// THIS TO WORK IN CLI MODE
 	public static String config_DataDir;
 	public static String config_GTdir;
 	public static String config_ExportDir;
@@ -46,7 +46,7 @@ public class StartGWASpi extends javax.swing.JFrame {
 
 	public void initGWASpi(boolean startWithGUI, File scriptFile) throws IOException, SQLException {
 
-		//initialize configuration of moapi
+		// initialize configuration of moapi
 		boolean isInitiated = org.gwaspi.global.Config.initPreferences(startWithGUI, scriptFile);
 
 		if (startWithGUI) {
@@ -95,8 +95,8 @@ public class StartGWASpi extends javax.swing.JFrame {
 	public static void main(String[] args) throws IOException, SQLException, ParseException {
 
 		// Get current size of heap in bytes
-		maxHeapSize = Math.round(Runtime.getRuntime().totalMemory() / 1048576); //heapSize in MB
-		maxProcessMarkers = Math.round(maxHeapSize * 625); //1.6GB needed for 10⁶ markers (safe, 1.4-1.5 real)
+		maxHeapSize = Math.round(Runtime.getRuntime().totalMemory() / 1048576); // heapSize in MB
+		maxProcessMarkers = Math.round(maxHeapSize * 625); // 1.6GB needed for 10⁶ markers (safe, 1.4-1.5 real)
 
 		ArrayList argsAL = new ArrayList();
 		for (int i = 0; i < args.length; i++) {
@@ -136,6 +136,7 @@ public class StartGWASpi extends javax.swing.JFrame {
 			}
 
 			mainGUIFrame.addWindowListener(new WindowAdapter() {
+				@Override
 				public void windowClosing(WindowEvent we) {
 					int jobsPending = SwingWorkerItemList.getSwingWorkerPendingItemsNb() + SwingDeleterItemList.getSwingDeleterPendingItemsNb();
 					if (jobsPending == 0) {
@@ -187,10 +188,6 @@ public class StartGWASpi extends javax.swing.JFrame {
 
 			mainGUIFrame.setExtendedState(MAXIMIZED_BOTH);
 		}
-
-
-
-
 	}
 
 	public static void exit() {

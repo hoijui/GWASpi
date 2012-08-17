@@ -14,6 +14,9 @@ import ucar.ma2.InvalidRangeException;
  */
 public class LoadManager {
 
+	private LoadManager() {
+	}
+
 	public static int dispatchLoadByFormat(String format,
 			LinkedHashMap sampleInfoLHM,
 			String txt_NewMatrixName,

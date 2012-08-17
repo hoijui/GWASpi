@@ -4,22 +4,24 @@ import java.io.*;
 import java.net.*;
 
 /*
- * Download data from URLs and save it to local files. 
+ * Download data from URLs and save it to local files.
  * @author Marco Schmidt
  * modified by me
  */
 public class FileDownload {
 
+	private FileDownload() {
+	}
+
 	public static boolean download(String address, String localFileName) {
 		boolean result = false;
 		OutputStream out = null;
-		URLConnection conn = null;
 		InputStream in = null;
 		try {
 			URL url = new URL(address);
 			out = new BufferedOutputStream(
 					new FileOutputStream(localFileName));
-			conn = url.openConnection();
+			URLConnection conn = url.openConnection();
 			in = conn.getInputStream();
 			byte[] buffer = new byte[1024];
 			int numRead;

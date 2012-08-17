@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.TreeMap;
-import org.gwaspi.constants.cNetCDF.*;
 
 /**
  *
@@ -23,7 +22,7 @@ public class MetadataLoaderIlluminaLGEN {
 	private String mapPath;
 	private int studyId;
 
-	protected enum Bases {
+	private enum Bases {
 
 		A, C, T, G;
 	}
@@ -36,11 +35,11 @@ public class MetadataLoaderIlluminaLGEN {
 
 	}
 
-	//ACCESSORS
+	// ACCESSORS
 	public LinkedHashMap getSortedMarkerSetWithMetaData() throws IOException {
 		String startTime = org.gwaspi.global.Utils.getMediumDateTimeAsString();
 
-		TreeMap tempTM = parseAndSortMapFile(mapPath); //chr, markerId, genetic distance, position
+		TreeMap tempTM = parseAndSortMapFile(mapPath); // chr, markerId, genetic distance, position
 
 		org.gwaspi.global.Utils.sysoutStart("initilaizing marker info");
 		System.out.println(org.gwaspi.global.Text.All.processing);
@@ -49,25 +48,25 @@ public class MetadataLoaderIlluminaLGEN {
 		for (Iterator it = tempTM.keySet().iterator(); it.hasNext();) {
 			String key = it.next().toString();
 
-			//chr;pos;markerId
+			// chr;pos;markerId
 			String[] keyValues = key.split(cNetCDF.Defaults.TMP_SEPARATOR);
-			int pos = 0;
+			int pos;
 			try {
 				pos = Integer.parseInt(keyValues[1]);
 			} catch (Exception ex) {
 				pos = 0;
 			}
 
-			//rsId
+			// rsId
 			String[] valValues = new String[]{tempTM.get(key).toString()};
 			valValues = Utils.fixXYMTChrData(valValues, 0);
-//            values = fixPlusAlleles(values);
+//			values = fixPlusAlleles(values);
 
 			Object[] markerInfo = new Object[4];
-			markerInfo[0] = keyValues[2];  //0 => markerid
-			markerInfo[1] = valValues[0];  //1 => rsId
-			markerInfo[2] = fixChrData(keyValues[0]);  //2 => chr
-			markerInfo[3] = pos;  //3 => pos
+			markerInfo[0] = keyValues[2]; // 0 => markerid
+			markerInfo[1] = valValues[0]; // 1 => rsId
+			markerInfo[2] = fixChrData(keyValues[0]); // 2 => chr
+			markerInfo[3] = pos; // 3 => pos
 
 			markerMetadataLHM.put(keyValues[2], markerInfo);
 		}
@@ -88,36 +87,32 @@ public class MetadataLoaderIlluminaLGEN {
 		while (!gotHeader && inputMapBR.ready()) {
 			header = inputMapBR.readLine();
 			if (header.startsWith("[Data]")) {
-				header = inputMapBR.readLine(); //Get next line which is real header
+				header = inputMapBR.readLine(); // Get next line which is real header
 				gotHeader = true;
 			}
 		}
 
 
 		String l;
-		String[] mapVals = null;
-		String markerId = "";
-		String chr = "";
-
 		int count = 0;
 		while ((l = inputMapBR.readLine()) != null) {
 
-			mapVals = l.split(cImport.Separators.separators_SpaceTab_rgxp);
-			markerId = mapVals[Plink_LGEN.map_markerId].trim();
+			String[] mapVals = l.split(cImport.Separators.separators_SpaceTab_rgxp);
+			String markerId = mapVals[Plink_LGEN.map_markerId].trim();
 			String rsId = "";
 			if (markerId.startsWith("rs")) {
 				rsId = markerId;
 			}
-			chr = mapVals[Plink_LGEN.map_chr].trim();
+			String chr = mapVals[Plink_LGEN.map_chr].trim();
 
-			//chr;pos;markerId
-			StringBuffer sbKey = new StringBuffer(chr);
+			// chr;pos;markerId
+			StringBuilder sbKey = new StringBuilder(chr);
 			sbKey.append(cNetCDF.Defaults.TMP_SEPARATOR);
 			sbKey.append(mapVals[Plink_LGEN.map_pos].trim());
 			sbKey.append(cNetCDF.Defaults.TMP_SEPARATOR);
 			sbKey.append(markerId);
 
-			//rsId
+			// rsId
 			StringBuilder sbVal = new StringBuilder(rsId); //0 => markerid
 
 			sortedMetadataTM.put(sbKey.toString(), sbVal.toString());
@@ -136,7 +131,7 @@ public class MetadataLoaderIlluminaLGEN {
 		return sortedMetadataTM;
 	}
 
-	public String fixChrData(String chr) throws IOException {
+	public static String fixChrData(String chr) throws IOException {
 		if (chr.equals("23")) {
 			chr = "X";
 		}
@@ -152,13 +147,13 @@ public class MetadataLoaderIlluminaLGEN {
 		return chr;
 	}
 
-	//METHODS
+	// METHODS
 	private static void logAsWhole(String startTime, String dirPath, String description, int studyId) throws IOException {
-		//LOG OPERATION IN STUDY HISTORY
-		StringBuffer operation = new StringBuffer("\nLoaded MAP metadata in path " + dirPath + ".\n");
-		operation.append("Start Time: " + startTime + "\n");
-		operation.append("End Time: " + org.gwaspi.global.Utils.getMediumDateTimeAsString() + ".\n");
-		operation.append("Description: " + description + ".\n");
+		// LOG OPERATION IN STUDY HISTORY
+		StringBuilder operation = new StringBuilder("\nLoaded MAP metadata in path " + dirPath + ".\n");
+		operation.append("Start Time: ").append(startTime).append("\n");
+		operation.append("End Time: ").append(org.gwaspi.global.Utils.getMediumDateTimeAsString()).append(".\n");
+		operation.append("Description: ").append(description).append(".\n");
 		org.gwaspi.global.Utils.logOperationInStudyDesc(operation.toString(), studyId);
 		////////////////////////////////
 	}

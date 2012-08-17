@@ -31,6 +31,9 @@ import org.jfree.ui.TextAnchor;
  */
 public class PlinkReportLoaderCombined {
 
+	private PlinkReportLoaderCombined() {
+	}
+
 	public static CombinedRangeXYPlot loadAssocUnadjLogPvsPos(File plinkReport, HashSet redMarkersHS) throws FileNotFoundException, IOException {
 
 		NumberAxis sharedAxis = new NumberAxis("-log₁₀(P)");
@@ -116,7 +119,7 @@ public class PlinkReportLoaderCombined {
 		renderer.setSeriesVisibleInLegend(1, showlables);
 		//renderer.setBaseShape(new Ellipse2D.Float(0, 0, 2,2), false);
 
-		if (combinedPlot.getSubplots().size() == 0) {
+		if (combinedPlot.getSubplots().isEmpty()) {
 			LogAxis rangeAxis = new LogAxis("P value");
 			rangeAxis.setBase(10);
 			rangeAxis.setInverted(true);
@@ -171,22 +174,22 @@ public class PlinkReportLoaderCombined {
 //        int idColumn=1;
 //        int chrColumn=0;
 //        int posColumn=2;
-//        
+//
 //        FileReader inputFileReader = new FileReader(reportFile);
 //        BufferedReader inputBufferReader = new BufferedReader(inputFileReader);
-//        
+//
 //        ArrayList<IdChrPosValuePoint> pointsList = new ArrayList<IdChrPosValuePoint>();
-//        
+//
 //        String l;
 //        while ((l = inputBufferReader.readLine()) != null) {
 //            String[] cVals = l.split(graphics.Constants.plinkReportSpaceSeparator_regexp);
 //            IdChrPosValuePoint temp_genotype = new IdChrPosValuePoint(cVals[idColumn],
-//                                                                  cVals[chrColumn], 
-//                                                                  Long.parseLong(cVals[posColumn]), 
+//                                                                  cVals[chrColumn],
+//                                                                  Long.parseLong(cVals[posColumn]),
 //                                                                  Long.parseLong(cVals[valueColumn]));
 //            pointsList.add(temp_genotype);
 //        }
-//        
+//
 //
 //        //Create comparators for sorting and grouping genotypeList
 //        Collections.sort(pointsList, new graphics.IdChrPosValuePoint.AbsolutePositionComparator());

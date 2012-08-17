@@ -18,9 +18,9 @@ import ucar.nc2.*;
  */
 public class MarkerSet_old {
 
-	//MARKERSET_MEATADATA
-	private String technology = "";                       //platform
-	private int markerSetSize = 0;                       //probe_nb
+	// MARKERSET_MEATADATA
+	private String technology = ""; // platform
+	private int markerSetSize = 0; // probe_nb
 	private MatrixMetadata matrixMetadata;
 	private LinkedHashMap markerIdSetLHM = new LinkedHashMap();
 	private LinkedHashMap markerRsIdSetLHM = new LinkedHashMap();
@@ -135,7 +135,7 @@ public class MarkerSet_old {
 		try {
 			ncfile = NetcdfFile.open(matrixMetadata.getPathToMatrix());
 
-			//GET NAMES OF CHROMOSOMES
+			// GET NAMES OF CHROMOSOMES
 			Variable var = ncfile.findVariable(org.gwaspi.constants.cNetCDF.Variables.VAR_CHR_IN_MATRIX);
 			DataType dataType = var.getDataType();
 			int[] varShape = var.getShape();
@@ -153,7 +153,7 @@ public class MarkerSet_old {
 				System.out.println("Cannot read data: " + e);
 			}
 
-			//GET INFO FOR EACH CHROMOSOME
+			// GET INFO FOR EACH CHROMOSOME
 			var = ncfile.findVariable(org.gwaspi.constants.cNetCDF.Variables.VAR_CHR_INFO); //Nb of markers, last physucal position, start index number in MarkerSet_old
 			dataType = var.getDataType();
 			varShape = var.getShape();
@@ -198,12 +198,12 @@ public class MarkerSet_old {
 		try {
 			int[] varShape = genotypes.getShape();
 
-//            ArrayChar.D3 gt_ACD3 = (ArrayChar.D3) genotypes.read("("+sampleNb+":"+sampleNb+":1, "
-//                                                                 + "0:"+(varShape[1]-1)+":1, "
-//                                                                 + "0:"+(varShape[2]-1)+":1)");
-
-
-			ArrayByte.D3 gt_ACD3 = (ArrayByte.D3) genotypes.read("(" + sampleNb + ":" + sampleNb + ":1, "
+//			ArrayChar.D3 gt_ACD3 = (ArrayChar.D3) genotypes.read(
+//					"(" + sampleNb + ":" + sampleNb + ":1, "
+//					+ "0:" + (varShape[1] - 1) + ":1, "
+//					+ "0:" + (varShape[2] - 1) + ":1)");
+			ArrayByte.D3 gt_ACD3 = (ArrayByte.D3) genotypes.read(
+					"(" + sampleNb + ":" + sampleNb + ":1, "
 					+ "0:" + (varShape[1] - 1) + ":1, "
 					+ "0:" + (varShape[2] - 1) + ":1)");
 
@@ -262,7 +262,7 @@ public class MarkerSet_old {
 				for (int i = 0; i < pmAllelesShape[0]; i++) {
 					Object key = it.next();
 					StringBuilder alleles = new StringBuilder("");
-					//Get Alleles
+					// Get Alleles
 					for (int j = 0; j < pmAllelesShape[1]; j++) {
 						alleles.append(pmAlleles_ACD2.getChar(index.set(i, j)));
 					}
@@ -502,7 +502,6 @@ public class MarkerSet_old {
 				if (varShape.length == 1) {
 					ArrayFloat.D1 markerSetAF = (ArrayFloat.D1) var.read("(0:" + (markerSetSize - 1) + ":1)");
 
-					Float floatValue = Float.NaN;
 					int[] shape = markerSetAF.getShape();
 					Index index = markerSetAF.getIndex();
 					Iterator it = markerIdSetLHM.keySet().iterator();
@@ -512,7 +511,7 @@ public class MarkerSet_old {
 						if (!value.isEmpty()) {
 							value += separator;
 						}
-						floatValue = markerSetAF.getFloat(index.set(i));
+						Float floatValue = markerSetAF.getFloat(index.set(i));
 						markerIdSetLHM.put(key, value + floatValue.toString());
 					}
 				}

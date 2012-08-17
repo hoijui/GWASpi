@@ -1,11 +1,5 @@
 package org.gwaspi.reports;
 
-/**
- *
- * @author Fernando Muñiz Fernandez
- * IBE, Institute of Evolutionary Biology (UPF-CSIC)
- * CEXS-UPF-PRBB
- */
 import org.gwaspi.constants.cDBGWASpi;
 import org.gwaspi.constants.cExport;
 import org.gwaspi.constants.cNetCDF;
@@ -14,7 +8,6 @@ import org.gwaspi.global.ServiceLocator;
 import org.gwaspi.global.Text;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -26,7 +19,16 @@ import org.gwaspi.netCDF.operations.OperationMetadata;
 import org.gwaspi.netCDF.operations.OperationSet;
 import ucar.nc2.NetcdfFile;
 
+/**
+ *
+ * @author Fernando Muñiz Fernandez
+ * IBE, Institute of Evolutionary Biology (UPF-CSIC)
+ * CEXS-UPF-PRBB
+ */
 public class OutputHardyWeinberg {
+
+	private OutputHardyWeinberg() {
+	}
 
 	public static boolean writeReportsForMarkersHWData(int opId) throws FileNotFoundException, IOException {
 		Operation op = new Operation(opId);
@@ -55,7 +57,7 @@ public class OutputHardyWeinberg {
 	}
 
 	protected static boolean processSortedHardyWeinbergReport(int opId, String reportName) throws FileNotFoundException, IOException {
-		boolean result = false;
+		boolean result;
 
 		try {
 			LinkedHashMap unsortedMarkerIdHWPval_ALTLHM = GatherHardyWeinbergData.loadHWPval_ALT(opId);

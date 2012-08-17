@@ -1,24 +1,26 @@
 package org.gwaspi.netCDF.operations;
 
+import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.constants.cNetCDF.Defaults.AlleleBytes;
+import java.io.IOException;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import org.gwaspi.netCDF.markers.MarkerSet_opt;
+import org.gwaspi.netCDF.matrices.*;
+import org.gwaspi.samples.SampleSet;
+import ucar.ma2.*;
+import ucar.nc2.*;
+
 /**
  *
  * @author Fernando Muñiz Fernandez
  * IBE, Institute of Evolutionary Biology (UPF-CSIC)
  * CEXS-UPF-PRBB
  */
-import org.gwaspi.constants.cNetCDF;
-import java.io.IOException;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import org.gwaspi.netCDF.matrices.*;
-import org.gwaspi.samples.SampleSet;
-import ucar.ma2.*;
-import ucar.nc2.*;
-import org.gwaspi.constants.cNetCDF.*;
-import org.gwaspi.constants.cNetCDF.Defaults.AlleleBytes;
-import org.gwaspi.netCDF.markers.MarkerSet_opt;
-
 public class OP_QASamples_opt {
+
+	private OP_QASamples_opt() {
+	}
 
 	public static int processMatrix(int rdMatrixId) throws IOException, InvalidRangeException {
 		int resultOpId = Integer.MIN_VALUE;
@@ -26,7 +28,6 @@ public class OP_QASamples_opt {
 		LinkedHashMap wrSampleSetMissingCountLHM = new LinkedHashMap();
 		LinkedHashMap wrSampleSetMissingRatioLHM = new LinkedHashMap();
 		LinkedHashMap wrSampleSetHetzyRatioLHM = new LinkedHashMap();
-		LinkedHashMap rdChrSetLHM = new LinkedHashMap();
 
 		MatrixMetadata rdMatrixMetadata = new MatrixMetadata(rdMatrixId);
 
@@ -35,7 +36,7 @@ public class OP_QASamples_opt {
 		MarkerSet_opt rdMarkerSet = new MarkerSet_opt(rdMatrixMetadata.getStudyId(), rdMatrixId);
 		rdMarkerSet.initFullMarkerIdSetLHM();
 
-		rdChrSetLHM = rdMarkerSet.getChrInfoSetLHM();
+		LinkedHashMap rdChrSetLHM = rdMarkerSet.getChrInfoSetLHM();
 
 		//LinkedHashMap rdMarkerSetLHM = rdMarkerSet.markerIdSetLHM; //This to test heap usage of copying locally the LHM from markerset
 
@@ -53,9 +54,9 @@ public class OP_QASamples_opt {
 			//Iterate through markerset
 			rdMarkerSet.fillGTsForCurrentSampleIntoInitLHM(sampleNb);
 			int markerIndex = 0;
-			for (Iterator it2 = rdMarkerSet.markerIdSetLHM.keySet().iterator(); it2.hasNext();) {
+			for (Iterator it2 = rdMarkerSet.getMarkerIdSetLHM().keySet().iterator(); it2.hasNext();) {
 				Object markerId = it2.next();
-				byte[] tempGT = (byte[]) rdMarkerSet.markerIdSetLHM.get(markerId);
+				byte[] tempGT = (byte[]) rdMarkerSet.getMarkerIdSetLHM().get(markerId);
 				if (tempGT[0] == AlleleBytes._0 && tempGT[1] == AlleleBytes._0) {
 					missingCount++;
 				}
@@ -75,9 +76,9 @@ public class OP_QASamples_opt {
 
 			wrSampleSetMissingCountLHM.put(sampleId, missingCount);
 
-			double missingRatio = (double) missingCount / rdMarkerSet.markerIdSetLHM.size();
+			double missingRatio = (double) missingCount / rdMarkerSet.getMarkerIdSetLHM().size();
 			wrSampleSetMissingRatioLHM.put(sampleId, missingRatio);
-			double heterozygRatio = (double) heterozygCount / (rdMarkerSet.markerIdSetLHM.size() - missingCount);
+			double heterozygRatio = (double) heterozygCount / (rdMarkerSet.getMarkerIdSetLHM().size() - missingCount);
 			wrSampleSetHetzyRatioLHM.put(sampleId, heterozygRatio);
 
 
@@ -128,7 +129,7 @@ public class OP_QASamples_opt {
 			System.out.println("Done writing SampleSet to matrix at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
 
 			//WRITE MARKERSET TO MATRIX
-			ArrayChar.D2 markersD2 = Utils.writeLHMKeysToD2ArrayChar(rdMarkerSet.markerIdSetLHM, cNetCDF.Strides.STRIDE_MARKER_NAME);
+			ArrayChar.D2 markersD2 = Utils.writeLHMKeysToD2ArrayChar(rdMarkerSet.getMarkerIdSetLHM(), cNetCDF.Strides.STRIDE_MARKER_NAME);
 			int[] markersOrig = new int[]{0, 0};
 			try {
 				wrNcFile.write(cNetCDF.Variables.VAR_IMPLICITSET, markersOrig, markersD2);
@@ -165,9 +166,8 @@ public class OP_QASamples_opt {
 			}
 
 			org.gwaspi.global.Utils.sysoutCompleted("Sample QA");
-			return resultOpId;
 		}
 
-
+		return resultOpId;
 	}
 }

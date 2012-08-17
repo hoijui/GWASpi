@@ -3,13 +3,11 @@ package org.gwaspi.threadbox;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.global.Text;
 import java.io.File;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.gwaspi.model.GWASpiExplorerNodes;
-import org.gwaspi.model.Operation;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.netCDF.operations.GWASinOneGOParams;
 import org.gwaspi.netCDF.operations.OperationManager;
@@ -27,11 +25,11 @@ import org.gwaspi.samples.SamplesParser;
  */
 public class Threaded_GWAS implements Runnable {
 
-	Thread runner;
-	protected String timeStamp = "";
-	protected static int matrixId;
-	protected static File phenotypeFile;
-	protected static GWASinOneGOParams gwasParams;
+	private Thread runner;
+	private String timeStamp = "";
+	private static int matrixId;
+	private static File phenotypeFile;
+	private static GWASinOneGOParams gwasParams;
 
 	public Threaded_GWAS(String threadName,
 			String _timeStamp,

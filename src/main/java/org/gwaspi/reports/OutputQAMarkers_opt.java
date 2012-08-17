@@ -1,11 +1,5 @@
 package org.gwaspi.reports;
 
-/**
- *
- * @author Fernando Muñiz Fernandez
- * IBE, Institute of Evolutionary Biology (UPF-CSIC)
- * CEXS-UPF-PRBB
- */
 import org.gwaspi.constants.cDBGWASpi;
 import org.gwaspi.constants.cExport;
 import org.gwaspi.constants.cNetCDF;
@@ -13,7 +7,6 @@ import org.gwaspi.database.DbManager;
 import org.gwaspi.global.ServiceLocator;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -24,7 +17,16 @@ import org.gwaspi.netCDF.operations.OperationMetadata;
 import org.gwaspi.netCDF.operations.OperationSet;
 import ucar.nc2.NetcdfFile;
 
+/**
+ *
+ * @author Fernando Muñiz Fernandez
+ * IBE, Institute of Evolutionary Biology (UPF-CSIC)
+ * CEXS-UPF-PRBB
+ */
 public class OutputQAMarkers_opt {
+
+	private OutputQAMarkers_opt() {
+	}
 
 	public static boolean writeReportsForQAMarkersData(int opId) throws FileNotFoundException, IOException {
 		Operation op = new Operation(opId);
@@ -68,7 +70,7 @@ public class OutputQAMarkers_opt {
 	}
 
 	public static boolean createSortedMarkerMissingnessReport(int opId, String reportName) throws FileNotFoundException, IOException {
-		boolean result = false;
+		boolean result;
 
 		try {
 			LinkedHashMap unsortedMarkerIdMissingRatLHM = GatherQAMarkersData.loadMarkerQAMissingRatio(opId);
@@ -108,7 +110,7 @@ public class OutputQAMarkers_opt {
 			rdInfoMarkerSet.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_RSID);
 			for (Iterator it = sortingMarkerSetLHM.keySet().iterator(); it.hasNext();) {
 				Object key = it.next();
-				Object value = rdInfoMarkerSet.markerIdSetLHM.get(key);
+				Object value = rdInfoMarkerSet.getMarkerIdSetLHM().get(key);
 				sortingMarkerSetLHM.put(key, value);
 			}
 			ReportWriter.writeFirstColumnToReport(reportPath, reportName, header, sortingMarkerSetLHM, true);
@@ -117,7 +119,7 @@ public class OutputQAMarkers_opt {
 			rdInfoMarkerSet.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
 			for (Iterator it = sortingMarkerSetLHM.keySet().iterator(); it.hasNext();) {
 				Object key = it.next();
-				Object value = rdInfoMarkerSet.markerIdSetLHM.get(key);
+				Object value = rdInfoMarkerSet.getMarkerIdSetLHM().get(key);
 				sortingMarkerSetLHM.put(key, value);
 			}
 			ReportWriter.appendColumnToReport(reportPath, reportName, sortingMarkerSetLHM, false, false);
@@ -127,7 +129,7 @@ public class OutputQAMarkers_opt {
 			rdInfoMarkerSet.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_POS);
 			for (Iterator it = sortingMarkerSetLHM.keySet().iterator(); it.hasNext();) {
 				Object key = it.next();
-				Object value = rdInfoMarkerSet.markerIdSetLHM.get(key);
+				Object value = rdInfoMarkerSet.getMarkerIdSetLHM().get(key);
 				sortingMarkerSetLHM.put(key, value);
 			}
 			ReportWriter.appendColumnToReport(reportPath, reportName, sortingMarkerSetLHM, false, false);
@@ -151,30 +153,30 @@ public class OutputQAMarkers_opt {
 
 				//MINOR ALLELE
 				opMarkerSetLHM = rdOperationSet.fillOpSetLHMWithVariable(qaNcFile, cNetCDF.Census.VAR_OP_MARKERS_MINALLELES);
-				for (Iterator it = rdInfoMarkerSet.markerIdSetLHM.keySet().iterator(); it.hasNext();) {
+				for (Iterator it = rdInfoMarkerSet.getMarkerIdSetLHM().keySet().iterator(); it.hasNext();) {
 					Object key = it.next();
 					Object minorAllele = opMarkerSetLHM.get(key);
-					rdInfoMarkerSet.markerIdSetLHM.put(key, minorAllele);
+					rdInfoMarkerSet.getMarkerIdSetLHM().put(key, minorAllele);
 				}
 
 				//MAJOR ALLELE
 				opMarkerSetLHM = rdOperationSet.fillLHMWithDefaultValue(opMarkerSetLHM, "");
 				opMarkerSetLHM = rdOperationSet.fillOpSetLHMWithVariable(qaNcFile, cNetCDF.Census.VAR_OP_MARKERS_MAJALLELES);
-				for (Iterator it = rdInfoMarkerSet.markerIdSetLHM.keySet().iterator(); it.hasNext();) {
+				for (Iterator it = rdInfoMarkerSet.getMarkerIdSetLHM().keySet().iterator(); it.hasNext();) {
 					Object key = it.next();
-					Object minorAllele = rdInfoMarkerSet.markerIdSetLHM.get(key);
-					rdInfoMarkerSet.markerIdSetLHM.put(key, minorAllele + sep + opMarkerSetLHM.get(key));
+					Object minorAllele = rdInfoMarkerSet.getMarkerIdSetLHM().get(key);
+					rdInfoMarkerSet.getMarkerIdSetLHM().put(key, minorAllele + sep + opMarkerSetLHM.get(key));
 				}
 
 
 			}
 			for (Iterator it = sortingMarkerSetLHM.keySet().iterator(); it.hasNext();) {
 				Object key = it.next();
-				Object value = rdInfoMarkerSet.markerIdSetLHM.get(key);
+				Object value = rdInfoMarkerSet.getMarkerIdSetLHM().get(key);
 				sortingMarkerSetLHM.put(key, value);
 			}
-			if (rdInfoMarkerSet.markerIdSetLHM != null) {
-				rdInfoMarkerSet.markerIdSetLHM.clear();
+			if (rdInfoMarkerSet.getMarkerIdSetLHM() != null) {
+				rdInfoMarkerSet.getMarkerIdSetLHM().clear();
 			}
 			ReportWriter.appendColumnToReport(reportPath, reportName, sortingMarkerSetLHM, false, false);
 
@@ -194,7 +196,7 @@ public class OutputQAMarkers_opt {
 	}
 
 	public static boolean createMarkerMismatchReport(int opId, String reportName) throws FileNotFoundException, IOException {
-		boolean result = false;
+		boolean result;
 
 		try {
 			LinkedHashMap unsortedMarkerIdMismatchStateLHM = GatherQAMarkersData.loadMarkerQAMismatchState(opId);
@@ -233,7 +235,7 @@ public class OutputQAMarkers_opt {
 			rdInfoMarkerSet.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_RSID);
 			for (Iterator it = sortingMarkerSetLHM.keySet().iterator(); it.hasNext();) {
 				Object key = it.next();
-				Object value = rdInfoMarkerSet.markerIdSetLHM.get(key);
+				Object value = rdInfoMarkerSet.getMarkerIdSetLHM().get(key);
 				sortingMarkerSetLHM.put(key, value);
 			}
 			ReportWriter.writeFirstColumnToReport(reportPath, reportName, header, sortingMarkerSetLHM, true);
@@ -243,7 +245,7 @@ public class OutputQAMarkers_opt {
 			rdInfoMarkerSet.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
 			for (Iterator it = sortingMarkerSetLHM.keySet().iterator(); it.hasNext();) {
 				Object key = it.next();
-				Object value = rdInfoMarkerSet.markerIdSetLHM.get(key);
+				Object value = rdInfoMarkerSet.getMarkerIdSetLHM().get(key);
 				sortingMarkerSetLHM.put(key, value);
 			}
 			ReportWriter.appendColumnToReport(reportPath, reportName, sortingMarkerSetLHM, false, true);
@@ -254,7 +256,7 @@ public class OutputQAMarkers_opt {
 			rdInfoMarkerSet.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_POS);
 			for (Iterator it = sortingMarkerSetLHM.keySet().iterator(); it.hasNext();) {
 				Object key = it.next();
-				Object value = rdInfoMarkerSet.markerIdSetLHM.get(key);
+				Object value = rdInfoMarkerSet.getMarkerIdSetLHM().get(key);
 				sortingMarkerSetLHM.put(key, value);
 			}
 			ReportWriter.appendColumnToReport(reportPath, reportName, sortingMarkerSetLHM, false, false);
@@ -278,25 +280,25 @@ public class OutputQAMarkers_opt {
 
 				//MINOR ALLELE
 				opMarkerSetLHM = rdOperationSet.fillOpSetLHMWithVariable(qaNcFile, cNetCDF.Census.VAR_OP_MARKERS_MINALLELES);
-				for (Iterator it = rdInfoMarkerSet.markerIdSetLHM.keySet().iterator(); it.hasNext();) {
+				for (Iterator it = rdInfoMarkerSet.getMarkerIdSetLHM().keySet().iterator(); it.hasNext();) {
 					Object key = it.next();
 					Object minorAllele = opMarkerSetLHM.get(key);
-					rdInfoMarkerSet.markerIdSetLHM.put(key, minorAllele);
+					rdInfoMarkerSet.getMarkerIdSetLHM().put(key, minorAllele);
 				}
 
 				//MAJOR ALLELE
 				opMarkerSetLHM = rdOperationSet.fillLHMWithDefaultValue(opMarkerSetLHM, "");
 				opMarkerSetLHM = rdOperationSet.fillOpSetLHMWithVariable(qaNcFile, cNetCDF.Census.VAR_OP_MARKERS_MAJALLELES);
-				for (Iterator it = rdInfoMarkerSet.markerIdSetLHM.keySet().iterator(); it.hasNext();) {
+				for (Iterator it = rdInfoMarkerSet.getMarkerIdSetLHM().keySet().iterator(); it.hasNext();) {
 					Object key = it.next();
-					Object minorAllele = rdInfoMarkerSet.markerIdSetLHM.get(key);
-					rdInfoMarkerSet.markerIdSetLHM.put(key, minorAllele + sep + opMarkerSetLHM.get(key));
+					Object minorAllele = rdInfoMarkerSet.getMarkerIdSetLHM().get(key);
+					rdInfoMarkerSet.getMarkerIdSetLHM().put(key, minorAllele + sep + opMarkerSetLHM.get(key));
 				}
 
 			}
 			for (Iterator it = sortingMarkerSetLHM.keySet().iterator(); it.hasNext();) {
 				Object key = it.next();
-				Object value = rdInfoMarkerSet.markerIdSetLHM.get(key);
+				Object value = rdInfoMarkerSet.getMarkerIdSetLHM().get(key);
 				sortingMarkerSetLHM.put(key, value);
 			}
 			ReportWriter.appendColumnToReport(reportPath, reportName, sortingMarkerSetLHM, false, false);

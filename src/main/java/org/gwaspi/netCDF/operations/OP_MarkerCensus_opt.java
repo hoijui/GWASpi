@@ -1,13 +1,8 @@
 package org.gwaspi.netCDF.operations;
 
-/**
- *
- * @author Fernando Muñiz Fernandez
- * IBE, Institute of Evolutionary Biology (UPF-CSIC)
- * CEXS-UPF-PRBB
- */
 import org.gwaspi.constants.cImport.Annotation.GWASpi;
 import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.constants.cNetCDF.Defaults.AlleleBytes;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -17,16 +12,20 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import org.gwaspi.model.Operation;
 import org.gwaspi.netCDF.markers.MarkerSet_opt;
 import org.gwaspi.netCDF.matrices.*;
+import org.gwaspi.netCDF.operations.CensusMethod.CensusDecision;
 import org.gwaspi.samples.SampleSet;
 import ucar.ma2.*;
 import ucar.nc2.*;
-import org.gwaspi.constants.cNetCDF.*;
-import org.gwaspi.constants.cNetCDF.Defaults.AlleleBytes;
-import org.gwaspi.model.Operation;
-import org.gwaspi.netCDF.operations.CensusMethod.CensusDecision;
 
+/**
+ *
+ * @author Fernando Muñiz Fernandez
+ * IBE, Institute of Evolutionary Biology (UPF-CSIC)
+ * CEXS-UPF-PRBB
+ */
 public class OP_MarkerCensus_opt {
 
 	public static int processMatrix(int _rdMatrixId,
@@ -89,9 +88,8 @@ public class OP_MarkerCensus_opt {
 		//EXCLUDE SAMPLE BY MISSING RATIO
 		rdQASampleSetLHM = rdQASampleSet.fillOpSetLHMWithVariable(rdSampleQANcFile, cNetCDF.Census.VAR_OP_SAMPLES_MISSINGRAT);
 
-		int brgl = 0;
 		if (rdQASampleSetLHM != null) {
-			brgl = 0;
+			int brgl = 0;
 			for (Iterator it = rdQASampleSetLHM.keySet().iterator(); it.hasNext();) {
 				Object key = it.next();
 				double value = (Double) rdQASampleSetLHM.get(key);
@@ -106,7 +104,7 @@ public class OP_MarkerCensus_opt {
 		rdQASampleSetLHM = rdQASampleSet.fillOpSetLHMWithVariable(rdSampleQANcFile, cNetCDF.Census.VAR_OP_SAMPLES_HETZYRAT);
 
 		if (rdQASampleSetLHM != null) {
-			brgl = 0;
+			int brgl = 0;
 			for (Iterator it = rdQASampleSetLHM.keySet().iterator(); it.hasNext();) {
 				Object key = it.next();
 				double value = (Double) rdQASampleSetLHM.get(key);
@@ -142,7 +140,7 @@ public class OP_MarkerCensus_opt {
 			rdMarkerSet.fillInitLHMWithMyValue(cNetCDF.Defaults.DEFAULT_GT);
 
 			LinkedHashMap wrMarkerSetLHM = new LinkedHashMap();
-			wrMarkerSetLHM.putAll(rdMarkerSet.markerIdSetLHM);
+			wrMarkerSetLHM.putAll(rdMarkerSet.getMarkerIdSetLHM());
 
 
 			SampleSet rdSampleSet = new SampleSet(rdMatrixMetadata.getStudyId(), rdMatrixId);
@@ -199,7 +197,7 @@ public class OP_MarkerCensus_opt {
 				rdMarkerSet.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_RSID);
 				for (Iterator it = wrMarkerSetLHM.keySet().iterator(); it.hasNext();) {
 					Object key = it.next();
-					Object value = rdMarkerSet.markerIdSetLHM.get(key);
+					Object value = rdMarkerSet.getMarkerIdSetLHM().get(key);
 					wrMarkerSetLHM.put(key, value);
 				}
 				Utils.saveCharLHMValueToWrMatrix(wrNcFile, wrMarkerSetLHM, cNetCDF.Variables.VAR_MARKERS_RSID, cNetCDF.Strides.STRIDE_MARKER_NAME);
@@ -225,7 +223,7 @@ public class OP_MarkerCensus_opt {
 				//<editor-fold defaultstate="collapsed" desc="PROCESSOR">
 
 				//<editor-fold defaultstate="collapsed" desc="GET SAMPLES INFO">
-				LinkedHashMap samplesInfoLHM = null;
+				LinkedHashMap samplesInfoLHM;
 				List<Map<String, Object>> rsSamplesInfo = org.gwaspi.samples.SampleManager.getAllSampleInfoFromDBByPoolID(rdMatrixMetadata.getStudyId());
 				if (phenoFile == null) {
 					samplesInfoLHM = new LinkedHashMap();
@@ -304,24 +302,24 @@ public class OP_MarkerCensus_opt {
 				rdMarkerSet.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
 				//INIT wrSampleSetLHM with indexing order and chromosome info
 				int idx = 0;
-				for (Iterator it = rdMarkerSet.markerIdSetLHM.keySet().iterator(); it.hasNext();) {
+				for (Iterator it = rdMarkerSet.getMarkerIdSetLHM().keySet().iterator(); it.hasNext();) {
 					Object key = it.next();
 					if (wrMarkerSetLHM.containsKey(key)) {
-						String chr = rdMarkerSet.markerIdSetLHM.get(key).toString();
+						String chr = rdMarkerSet.getMarkerIdSetLHM().get(key).toString();
 						Object[] markerInfo = new Object[]{idx, chr};
 						wrMarkerSetLHM.put(key, markerInfo);
 					}
 					//rdMarkerIdSetIndex.put(key, idx);
 					idx++;
 				}
-				if (rdMarkerSet.markerIdSetLHM != null) {
-					rdMarkerSet.markerIdSetLHM.clear();
+				if (rdMarkerSet.getMarkerIdSetLHM() != null) {
+					rdMarkerSet.getMarkerIdSetLHM().clear();
 				}
 
 				System.out.println(org.gwaspi.global.Text.All.processing);
 
 				int countMarkers = 0;
-				int chunkSize = (int) Math.round(org.gwaspi.gui.StartGWASpi.maxProcessMarkers / 4);
+				int chunkSize = Math.round(org.gwaspi.gui.StartGWASpi.maxProcessMarkers / 4);
 				if (chunkSize > 500000) {
 					chunkSize = 500000; //We want to keep things manageable for RAM
 				}
@@ -825,16 +823,15 @@ public class OP_MarkerCensus_opt {
 					} catch (IOException ioe) {
 						System.err.println("Cannot close file: " + ioe);
 					}
-
-
 				}
+
 				org.gwaspi.global.Utils.sysoutCompleted("Genotype Frequency Count");
 			}
 		} else {    //NO DATA LEFT AFTER THRESHOLD FILTER PICKING
 			System.out.println(org.gwaspi.global.Text.Operation.warnNoDataLeftAfterPicking);
 		}
-		return resultOpId;
 
+		return resultOpId;
 	}
 
 	protected void writeLHMToMatrix() {

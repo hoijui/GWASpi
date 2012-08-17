@@ -10,7 +10,10 @@ public class DummySampleInfo {
 
 	private static Object[] dummySampleValues = new Object[10];
 
-	public static Object[] getDummySampleValues() {
+	private DummySampleInfo() {
+	}
+
+	public static Object[] getDummySampleValues() { // TODO This can't be the optimal way to do this ...
 		dummySampleValues[0] = "0";  //FamilyID
 		dummySampleValues[1] = "0";  //SampleID
 		dummySampleValues[2] = "0";  //FatherID

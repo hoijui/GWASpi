@@ -21,9 +21,11 @@ public class MatrixFactory {
 	private NetcdfFileWriteable netCDFHandler = null;
 	private String resultMatrixName = "";
 	private int resultMatrixId = Integer.MIN_VALUE;
-	public MatrixMetadata matrixMetaData = null;
+	private MatrixMetadata matrixMetaData = null;
 
-	//Costructor to use with matrix input
+	/**
+	 * Constructor to use with matrix input
+	 */
 	public MatrixFactory(int studyId,
 			String technology,
 			String friendlyName,
@@ -271,5 +273,9 @@ public class MatrixFactory {
 
 		return ncfile;
 
+	}
+
+	public MatrixMetadata getMatrixMetaData() {
+		return matrixMetaData;
 	}
 }

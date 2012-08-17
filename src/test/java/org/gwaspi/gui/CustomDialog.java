@@ -30,15 +30,18 @@ package org.gwaspi.gui;
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-import javax.swing.JOptionPane;
-import javax.swing.JDialog;
-import javax.swing.JTextField;
-import java.beans.*; //property change stuff
+
 import java.awt.*;
 import java.awt.event.*;
+import java.beans.*;
+import javax.swing.JDialog;
+import javax.swing.JOptionPane;
+import javax.swing.JTextField;
 
-/* 1.4 example used by DialogDemo.java. */
-class CustomDialog extends JDialog
+/**
+ * 1.4 example used by DialogDemo.java.
+ */
+public class CustomDialog extends JDialog
 		implements ActionListener,
 		PropertyChangeListener {
 
@@ -70,17 +73,17 @@ class CustomDialog extends JDialog
 
 		textField = new JTextField(10);
 
-		//Create an array of the text and components to be displayed.
+		// Create an array of the text and components to be displayed.
 		String msgString1 = "What was Dr. SEUSS's real last name?";
 		String msgString2 = "(The answer is \"" + magicWord
 				+ "\".)";
 		Object[] array = {msgString1, msgString2, textField};
 
-		//Create an array specifying the number of dialog buttons
-		//and their text.
+		// Create an array specifying the number of dialog buttons
+		// and their text.
 		Object[] options = {btnString1, btnString2};
 
-		//Create the JOptionPane.
+		// Create the JOptionPane.
 		optionPane = new JOptionPane(array,
 				JOptionPane.QUESTION_MESSAGE,
 				JOptionPane.YES_NO_OPTION,
@@ -88,12 +91,13 @@ class CustomDialog extends JDialog
 				options,
 				options[0]);
 
-		//Make this dialog display it.
+		// Make this dialog display it.
 		setContentPane(optionPane);
 
-		//Handle window closing correctly.
+		// Handle window closing correctly.
 		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		addWindowListener(new WindowAdapter() {
+			@Override
 			public void windowClosing(WindowEvent we) {
 				/*
 				 * Instead of directly closing the window,
@@ -105,17 +109,18 @@ class CustomDialog extends JDialog
 			}
 		});
 
-		//Ensure the text field always gets the first focus.
+		// Ensure the text field always gets the first focus.
 		addComponentListener(new ComponentAdapter() {
+			@Override
 			public void componentShown(ComponentEvent ce) {
 				textField.requestFocusInWindow();
 			}
 		});
 
-		//Register an event handler that puts the text into the option pane.
+		// Register an event handler that puts the text into the option pane.
 		textField.addActionListener(this);
 
-		//Register an event handler that reacts to option pane state changes.
+		// Register an event handler that reacts to option pane state changes.
 		optionPane.addPropertyChangeListener(this);
 	}
 
@@ -139,14 +144,14 @@ class CustomDialog extends JDialog
 			Object value = optionPane.getValue();
 
 			if (value == JOptionPane.UNINITIALIZED_VALUE) {
-				//ignore reset
+				// ignore reset
 				return;
 			}
 
-			//Reset the JOptionPane's value.
-			//If you don't do this, then if the user
-			//presses the same button next time, no
-			//property change event will be fired.
+			// Reset the JOptionPane's value.
+			// If you don't do this, then if the user
+			// presses the same button next time, no
+			// property change event will be fired.
 			optionPane.setValue(
 					JOptionPane.UNINITIALIZED_VALUE);
 
@@ -154,10 +159,10 @@ class CustomDialog extends JDialog
 				typedText = textField.getText();
 				String ucText = typedText.toUpperCase();
 				if (magicWord.equals(ucText)) {
-					//we're done; clear and dismiss the dialog
+					// we're done; clear and dismiss the dialog
 					clearAndHide();
 				} else {
-					//text was invalid
+					// text was invalid
 					textField.selectAll();
 					JOptionPane.showMessageDialog(
 							CustomDialog.this,
@@ -170,10 +175,10 @@ class CustomDialog extends JDialog
 					typedText = null;
 					textField.requestFocusInWindow();
 				}
-			} else { //user closed dialog or clicked cancel
-//                dd.setLabel("It's OK.  "
-//                         + "We won't force you to type "
-//                         + magicWord + ".");
+			} else { // user closed dialog or clicked cancel
+//				dd.setLabel("It's OK.  "
+//						+ "We won't force you to type "
+//						+ magicWord + ".");
 				typedText = null;
 				clearAndHide();
 			}

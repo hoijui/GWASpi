@@ -16,10 +16,10 @@ import org.gwaspi.model.GWASpiExplorerNodes;
 public class GWASpiPanel extends javax.swing.JPanel {
 
 	// Variables declaration - do not modify
-	public static JTree tree;
-	public static boolean refreshContentPanel = true;
-	public static javax.swing.JPanel pnl_Content;
-	public static javax.swing.JScrollPane scrl_Content;
+	private static JTree tree;
+	private static boolean refreshContentPanel = true;
+	private static javax.swing.JPanel pnl_Content;
+	private static javax.swing.JScrollPane scrl_Content;
 	private static javax.swing.JScrollPane scrl_Tree;
 	private static javax.swing.JSplitPane splt_MoapiPanel;
 	// End of variables declaration
@@ -181,7 +181,7 @@ public class GWASpiPanel extends javax.swing.JPanel {
 
 		}
 
-		//TOGGLE CONTENT PANEL REFRESH BEHAVIOUR FOR CURRENT METHOD RUN
+		// TOGGLE CONTENT PANEL REFRESH BEHAVIOUR FOR CURRENT METHOD RUN
 		if (!_refreshContentPanel) {
 			refreshContentPanel = !refreshContentPanel;
 		}

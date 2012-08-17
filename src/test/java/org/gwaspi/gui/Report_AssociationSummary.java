@@ -1,4 +1,3 @@
-
 /*
  * Report_AssociationSummary.java
  *

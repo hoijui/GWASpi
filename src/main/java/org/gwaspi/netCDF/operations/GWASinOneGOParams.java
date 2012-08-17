@@ -6,7 +6,7 @@ package org.gwaspi.netCDF.operations;
  * IBE, Institute of Evolutionary Biology (UPF-CSIC)
  * CEXS-UPF-PRBB
  */
-public class GWASinOneGOParams {
+public class GWASinOneGOParams { // TODO re-factor this whole thing
 
 	public boolean proceed = false;
 	public boolean performAllelicTests = true;

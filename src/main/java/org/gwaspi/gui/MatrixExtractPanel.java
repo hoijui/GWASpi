@@ -1,20 +1,20 @@
 package org.gwaspi.gui;
 
-import org.gwaspi.global.Text;
 import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.global.Text;
+import org.gwaspi.gui.utils.Dialogs;
+import org.gwaspi.gui.utils.HelpURLs;
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.gwaspi.constants.cNetCDF.Defaults.*;
-import org.gwaspi.gui.utils.Dialogs;
-import org.gwaspi.gui.utils.HelpURLs;
-import java.awt.Color;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.SwingUtilities;
 import org.gwaspi.netCDF.markers.MarkerSet_opt;
 import org.gwaspi.threadbox.MultiOperations;
@@ -32,8 +32,8 @@ public class MatrixExtractPanel extends javax.swing.JPanel {
 	}
 	// Variables declaration - do not modify
 	private org.gwaspi.model.Matrix parentMatrix;
-	public static ArrayList<Object[]> markerPickerTable = new ArrayList<Object[]>();
-	public static ArrayList<Object[]> samplePickerTable = new ArrayList<Object[]>();
+	public static List<Object[]> markerPickerTable = new ArrayList<Object[]>();
+	public static List<Object[]> samplePickerTable = new ArrayList<Object[]>();
 	private javax.swing.JButton btn_Back;
 	private javax.swing.JButton btn_Go;
 	private javax.swing.JButton btn_Help;
@@ -589,7 +589,7 @@ public class MatrixExtractPanel extends javax.swing.JPanel {
 
 
 			File markerCriteriaFile = new File(mi_marker_criteria_file);
-			if (markerCriteria.size() == 0) {
+			if (markerCriteria.isEmpty()) {
 				if (cmb_MarkersVariable.getSelectedIndex() != 0) { //NOT ALL MARKERS
 					if (!markerCriteriaFile.isFile()) {
 						Dialogs.showWarningDialogue("Marker criteria file missing!");
@@ -598,7 +598,7 @@ public class MatrixExtractPanel extends javax.swing.JPanel {
 				}
 			}
 			File sampleCriteriaFile = new File(mi_sample_criteria_file);
-			if (sampleCriteria.size() == 0) {
+			if (sampleCriteria.isEmpty()) {
 				if (cmb_SamplesVariable.getSelectedIndex() != 0) { //NOT ALL SAMPLES
 					if (!sampleCriteriaFile.isFile()) {
 						Dialogs.showWarningDialogue("Sample criteria file missing!");

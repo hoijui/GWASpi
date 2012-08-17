@@ -30,29 +30,27 @@
  */
 package org.gwaspi.gui;
 
-/**
- * This application that requires the following additional files:
- * TreeDemoHelp.html arnold.html bloch.html chan.html jls.html
- * swingtutorial.html tutorial.html tutorialcont.html vm.html
- */
+import java.awt.Dimension;
+import java.awt.GridLayout;
+import java.io.IOException;
+import java.net.URL;
 import javax.swing.JEditorPane;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
-import javax.swing.UIManager;
-
 import javax.swing.JTree;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.TreeSelectionModel;
+import javax.swing.UIManager;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreeSelectionModel;
 
-import java.net.URL;
-import java.io.IOException;
-import java.awt.Dimension;
-import java.awt.GridLayout;
-
+/**
+ * This application that requires the following additional files:
+ * TreeDemoHelp.html arnold.html bloch.html chan.html jls.html
+ * swingtutorial.html tutorial.html tutorialcont.html vm.html
+ */
 public class TreeDemo extends JPanel
 		implements TreeSelectionListener {
 
@@ -141,7 +139,7 @@ public class TreeDemo extends JPanel
 		public String bookName;
 		public URL bookURL;
 
-		public BookInfo(String book, String filename) {
+		BookInfo(String book, String filename) {
 			bookName = book;
 			bookURL = getClass().getResource(filename);
 			if (bookURL == null) {
@@ -150,6 +148,7 @@ public class TreeDemo extends JPanel
 			}
 		}
 
+		@Override
 		public String toString() {
 			return bookName;
 		}
@@ -183,8 +182,8 @@ public class TreeDemo extends JPanel
 	}
 
 	private void createNodes(DefaultMutableTreeNode top) {
-		DefaultMutableTreeNode category = null;
-		DefaultMutableTreeNode book = null;
+		DefaultMutableTreeNode category;
+		DefaultMutableTreeNode book;
 
 		category = new DefaultMutableTreeNode("Books for Java Programmers");
 		top.add(category);
@@ -238,21 +237,21 @@ public class TreeDemo extends JPanel
 			}
 		}
 
-		//Create and set up the window.
+		// Create and set up the window.
 		JFrame frame = new JFrame("TreeDemo");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-		//Add content to the window.
+		// Add content to the window.
 		frame.add(new TreeDemo());
 
-		//Display the window.
+		// Display the window.
 		frame.pack();
 		frame.setVisible(true);
 	}
 
 	public static void main(String[] args) {
-		//Schedule a job for the event dispatch thread:
-		//creating and showing this application's GUI.
+		// Schedule a job for the event dispatch thread:
+		// creating and showing this application's GUI.
 		javax.swing.SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				createAndShowGUI();

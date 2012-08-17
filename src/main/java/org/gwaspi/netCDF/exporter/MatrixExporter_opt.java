@@ -1,11 +1,5 @@
 package org.gwaspi.netCDF.exporter;
 
-/**
- *
- * @author Fernando Muñiz Fernandez
- * IBE, Institute of Evolutionary Biology (UPF-CSIC)
- * CEXS-UPF-PRBB
- */
 import org.gwaspi.constants.cExport.ExportFormat;
 import java.io.IOException;
 import java.util.LinkedHashMap;
@@ -14,15 +8,21 @@ import org.gwaspi.netCDF.matrices.*;
 import org.gwaspi.samples.SampleSet;
 import ucar.ma2.*;
 
+/**
+ *
+ * @author Fernando Muñiz Fernandez
+ * IBE, Institute of Evolutionary Biology (UPF-CSIC)
+ * CEXS-UPF-PRBB
+ */
 public class MatrixExporter_opt {
 
-	protected int studyId = Integer.MIN_VALUE;
-	protected int rdMatrixId = Integer.MIN_VALUE;
-	MatrixMetadata rdMatrixMetadata = null;
-	MarkerSet_opt rdMarkerSet = null;
-	SampleSet rdSampleSet = null;
-	LinkedHashMap rdMarkerIdSetLHM = null;
-	LinkedHashMap rdSampleSetLHM = null;
+	private int studyId = Integer.MIN_VALUE;
+	private int rdMatrixId = Integer.MIN_VALUE;
+	private MatrixMetadata rdMatrixMetadata = null;
+	private MarkerSet_opt rdMarkerSet = null;
+	private SampleSet rdSampleSet = null;
+	private LinkedHashMap rdMarkerIdSetLHM = null;
+	private LinkedHashMap rdSampleSetLHM = null;
 
 	public MatrixExporter_opt(int _rdMatrixId) throws IOException, InvalidRangeException {
 
@@ -102,8 +102,8 @@ public class MatrixExporter_opt {
 				break;
 		}
 
-		if (rdMarkerSet.markerIdSetLHM != null) {
-			rdMarkerSet.markerIdSetLHM.clear();
+		if (rdMarkerSet.getMarkerIdSetLHM() != null) {
+			rdMarkerSet.getMarkerIdSetLHM().clear();
 		}
 
 		org.gwaspi.global.Utils.sysoutCompleted("exporting Matrix" + exportPath);

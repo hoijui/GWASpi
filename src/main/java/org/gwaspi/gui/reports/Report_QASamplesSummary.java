@@ -251,14 +251,13 @@ public class Report_QASamplesSummary extends javax.swing.JPanel {
 				inputFileReader = new FileReader(reportFile);
 				BufferedReader inputBufferReader = new BufferedReader(inputFileReader);
 
-				//Getting data from file and subdividing to series all points by chromosome
+				// Getting data from file and subdividing to series all points by chromosome
 				ArrayList tableRowAL = new ArrayList();
 				String l;
-				String[] cVals = null;
 				String header = inputBufferReader.readLine();
 				int count = 0;
 				while ((l = inputBufferReader.readLine()) != null && count < getRowsNb) {
-					cVals = l.split(org.gwaspi.constants.cImport.Separators.separators_SpaceTab_rgxp);
+					String[] cVals = l.split(org.gwaspi.constants.cImport.Separators.separators_SpaceTab_rgxp);
 					Object[] row = new Object[cVals.length];
 
 					String familyId = cVals[0];
@@ -318,8 +317,8 @@ public class Report_QASamplesSummary extends javax.swing.JPanel {
 				tbl_ReportTable.setModel(model);
 
 				//<editor-fold defaultstate="collapsed" desc="Linux Sorter">
-//                if (!org.gwaspi.constants.cGlobal.OSNAME.contains("Windows")){
-				//RowSorter<TableModel> sorter = new TableRowSorter<TableModel>(model);
+//				if (!org.gwaspi.constants.cGlobal.OSNAME.contains("Windows")) {
+//					RowSorter<TableModel> sorter = new TableRowSorter<TableModel>(model);
 				TableRowSorter sorter = new TableRowSorter(model) {
 					Comparator<Object> comparator = new Comparator<Object>() {
 						public int compare(Object o1, Object o2) {
@@ -339,10 +338,12 @@ public class Report_QASamplesSummary extends javax.swing.JPanel {
 						}
 					};
 
+					@Override
 					public Comparator getComparator(int column) {
 						return comparator;
 					}
 
+					@Override
 					public boolean useToString(int column) {
 						return false;
 					}
@@ -393,7 +394,7 @@ public class Report_QASamplesSummary extends javax.swing.JPanel {
 			FileWriter writer = new FileWriter(newFile);
 
 			StringBuilder tableData = new StringBuilder();
-			//HEADER
+			// HEADER
 			for (int k = 0; k < tbl_ReportTable.getColumnCount(); k++) {
 				tableData.append(tbl_ReportTable.getColumnName(k));
 				if (k != tbl_ReportTable.getColumnCount() - 1) {
@@ -403,7 +404,7 @@ public class Report_QASamplesSummary extends javax.swing.JPanel {
 			tableData.append("\n");
 			writer.write(tableData.toString());
 
-			//TABLE CONTENT
+			// TABLE CONTENT
 			for (int rowNb = 0; rowNb < tbl_ReportTable.getModel().getRowCount(); rowNb++) {
 				tableData = new StringBuilder();
 

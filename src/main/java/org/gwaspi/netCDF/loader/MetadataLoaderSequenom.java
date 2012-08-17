@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.TreeMap;
-import org.gwaspi.constants.cNetCDF.*;
 
 /**
  *
@@ -23,7 +22,7 @@ public class MetadataLoaderSequenom {
 	private String mapPath;
 	private int studyId;
 
-	protected enum Bases {
+	private enum Bases {
 
 		A, C, T, G;
 	}
@@ -36,11 +35,11 @@ public class MetadataLoaderSequenom {
 
 	}
 
-	//ACCESSORS
+	// ACCESSORS
 	public LinkedHashMap getSortedMarkerSetWithMetaData() throws IOException {
 		String startTime = org.gwaspi.global.Utils.getMediumDateTimeAsString();
 
-		TreeMap tempTM = parseAndSortMapFile(mapPath); //chr, markerId, genetic distance, position
+		TreeMap tempTM = parseAndSortMapFile(mapPath); // chr, markerId, genetic distance, position
 
 		org.gwaspi.global.Utils.sysoutStart("initilaizing marker info");
 		System.out.println(org.gwaspi.global.Text.All.processing);
@@ -50,7 +49,7 @@ public class MetadataLoaderSequenom {
 			String key = it.next().toString();
 			//chr;pos;markerId
 			String[] keyValues = key.split(cNetCDF.Defaults.TMP_SEPARATOR);
-			int pos = 0;
+			int pos;
 			try {
 				pos = Integer.parseInt(keyValues[1]);
 			} catch (Exception ex) {
@@ -63,10 +62,10 @@ public class MetadataLoaderSequenom {
 //            values = fixPlusAlleles(values);
 
 			Object[] markerInfo = new Object[4];
-			markerInfo[0] = keyValues[2];  //0 => markerid
-			markerInfo[1] = valValues[0];  //1 => rsId
-			markerInfo[2] = fixChrData(keyValues[0]);  //2 => chr
-			markerInfo[3] = pos;  //3 => pos
+			markerInfo[0] = keyValues[2]; // 0 => markerid
+			markerInfo[1] = valValues[0]; // 1 => rsId
+			markerInfo[2] = fixChrData(keyValues[0]); // 2 => chr
+			markerInfo[3] = pos; // 3 => pos
 
 			markerMetadataLHM.put(keyValues[2], markerInfo);
 		}
@@ -83,7 +82,6 @@ public class MetadataLoaderSequenom {
 		String l;
 		String[] mapVals = null;
 		String markerId = "";
-		String chr = "";
 
 		int count = 0;
 		while ((l = inputMapBR.readLine()) != null) {
@@ -100,7 +98,7 @@ public class MetadataLoaderSequenom {
 			if (markerId.startsWith("rs")) {
 				rsId = markerId;
 			}
-			chr = mapVals[Sequenom.annot_chr].trim();
+			String chr = mapVals[Sequenom.annot_chr].trim();
 
 			//chr;pos;markerId
 			StringBuilder sbKey = new StringBuilder(chr);
@@ -128,7 +126,7 @@ public class MetadataLoaderSequenom {
 		return sortedMetadataTM;
 	}
 
-	public String fixChrData(String chr) throws IOException {
+	public static String fixChrData(String chr) throws IOException {
 		if (chr.equals("23")) {
 			chr = "X";
 		}

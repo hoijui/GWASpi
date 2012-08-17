@@ -3,6 +3,7 @@ package org.gwaspi.gui.utils;
 import java.util.Enumeration;
 import java.util.LinkedHashMap;
 import javax.swing.tree.DefaultMutableTreeNode;
+import org.gwaspi.model.GWASpiExplorerNodes.NodeElementInfo;
 
 /**
  *
@@ -11,6 +12,9 @@ import javax.swing.tree.DefaultMutableTreeNode;
  * CEXS-UPF-PRBB
  */
 public class NodeToPathCorrespondence {
+
+	private NodeToPathCorrespondence() {
+	}
 
 	public static LinkedHashMap buildNodeToPathCorrespondence(DefaultMutableTreeNode currentNode, boolean getSubChildren) {
 
@@ -33,9 +37,8 @@ public class NodeToPathCorrespondence {
 		while (enumTN.hasMoreElements()) {
 			DefaultMutableTreeNode tmpNode = (DefaultMutableTreeNode) enumTN.nextElement();
 			Object tmpElement = tmpNode.getUserObject();
-			org.gwaspi.model.GWASpiExplorerNodes.NodeElementInfo currentElementInfo = null;
 			try {
-				currentElementInfo = (org.gwaspi.model.GWASpiExplorerNodes.NodeElementInfo) tmpElement;
+				NodeElementInfo currentElementInfo = (org.gwaspi.model.GWASpiExplorerNodes.NodeElementInfo) tmpElement;
 
 				for (int i = 0; i < org.gwaspi.gui.GWASpiExplorerPanel.tree.getRowCount(); i++) {
 					if (org.gwaspi.gui.GWASpiExplorerPanel.tree.getPathForRow(i).getLastPathComponent().toString().equals(currentElementInfo.nodeUniqueName)) {

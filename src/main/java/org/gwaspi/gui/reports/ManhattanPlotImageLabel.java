@@ -3,7 +3,6 @@ package org.gwaspi.gui.reports;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.image.ImageObserver;
-import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 
@@ -15,34 +14,33 @@ import javax.swing.JLabel;
  */
 public class ManhattanPlotImageLabel extends JLabel {
 
-	Image image;
-	ImageObserver imageObserver;
+	private Image image;
+	private ImageObserver imageObserver;
 
 	ManhattanPlotImageLabel() {
 		ManhattanChartDisplay.fired = false;
 	}
 
-	// constructor with filename
+	/** constructor with filename */
 	ManhattanPlotImageLabel(String filename) {
 		ImageIcon icon = new ImageIcon(filename);
 		image = icon.getImage();
 		imageObserver = icon.getImageObserver();
 	}
 
-	// constructor with icon
+	/** constructor with icon */
 	ManhattanPlotImageLabel(ImageIcon icon) {
 		image = icon.getImage();
 		imageObserver = icon.getImageObserver();
 	}
 
-	// overload setIcon method
+	// TODO Check, because this was meant to "overload setIcon method"
 	void setIcon(ImageIcon icon) {
 		ManhattanChartDisplay.fired = false;
 		image = icon.getImage();
 		imageObserver = icon.getImageObserver();
 	}
 
-	// overload paint()
 	@Override
 	public void paint(Graphics g) {
 		super.paint(g);

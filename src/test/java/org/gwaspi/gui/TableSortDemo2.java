@@ -6,10 +6,10 @@ import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Vector;
-
+import java.util.List;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
@@ -22,9 +22,9 @@ import javax.swing.table.TableColumnModel;
 
 public class TableSortDemo2 extends JFrame {
 
-	protected JTable table = new JTable();
-	protected MyTableModel tableModel;
-	protected JLabel titleLabel = new JLabel("Click table header to sort the column.");
+	private JTable table = new JTable();
+	private MyTableModel tableModel;
+	private JLabel titleLabel = new JLabel("Click table header to sort the column.");
 
 	public TableSortDemo2() {
 		super();
@@ -45,6 +45,7 @@ public class TableSortDemo2 extends JFrame {
 		getContentPane().add(ps, BorderLayout.CENTER);
 
 		WindowListener wndCloser = new WindowAdapter() {
+			@Override
 			public void windowClosing(WindowEvent e) {
 				System.exit(0);
 			}
@@ -60,23 +61,23 @@ public class TableSortDemo2 extends JFrame {
 
 class MyTableModel extends AbstractTableModel {
 
-	protected int sortCol = 0;
-	protected boolean isSortAsc = true;
-	protected int m_result = 0;
-	protected int columnsCount = 1;
-	Vector vector = new Vector();
+	private int sortCol = 0;
+	private boolean isSortAsc = true;
+	private int m_result = 0;
+	private int columnsCount = 1;
+	private List<Integer> vector = new ArrayList<Integer>();
 
-	public MyTableModel() {
-		vector.removeAllElements();
-		vector.addElement(new Integer(24976600));
-		vector.addElement(new Integer(24));
-		vector.addElement(new Integer(2497));
-		vector.addElement(new Integer(249766));
-		vector.addElement(new Integer(2497660));
-		vector.addElement(new Integer(6600));
-		vector.addElement(new Integer(76600));
-		vector.addElement(new Integer(976600));
-		vector.addElement(new Integer(4976600));
+	MyTableModel() {
+		vector.clear();
+		vector.add(new Integer(24976600));
+		vector.add(new Integer(24));
+		vector.add(new Integer(2497));
+		vector.add(new Integer(249766));
+		vector.add(new Integer(2497660));
+		vector.add(new Integer(6600));
+		vector.add(new Integer(76600));
+		vector.add(new Integer(976600));
+		vector.add(new Integer(4976600));
 	}
 
 	public int getRowCount() {
@@ -87,6 +88,7 @@ class MyTableModel extends AbstractTableModel {
 		return columnsCount;
 	}
 
+	@Override
 	public String getColumnName(int column) {
 		String str = "data";
 		if (column == sortCol) {
@@ -95,6 +97,7 @@ class MyTableModel extends AbstractTableModel {
 		return str;
 	}
 
+	@Override
 	public boolean isCellEditable(int nRow, int nCol) {
 		return false;
 	}
@@ -106,7 +109,7 @@ class MyTableModel extends AbstractTableModel {
 		if (nCol > 1) {
 			return "";
 		}
-		return vector.elementAt(nRow);
+		return vector.get(nRow);
 	}
 
 	public String getTitle() {
@@ -117,10 +120,11 @@ class MyTableModel extends AbstractTableModel {
 
 		protected JTable table;
 
-		public ColumnListener(JTable t) {
+		ColumnListener(JTable t) {
 			table = t;
 		}
 
+		@Override
 		public void mouseClicked(MouseEvent e) {
 			TableColumnModel colModel = table.getColumnModel();
 			int columnModelIndex = colModel.getColumnIndexAtX(e.getX());
@@ -150,9 +154,9 @@ class MyTableModel extends AbstractTableModel {
 
 class MyComparator implements Comparator {
 
-	protected boolean isSortAsc;
+	private boolean isSortAsc;
 
-	public MyComparator(boolean sortAsc) {
+	MyComparator(boolean sortAsc) {
 		isSortAsc = sortAsc;
 	}
 
@@ -162,14 +166,14 @@ class MyComparator implements Comparator {
 		}
 		Integer s1 = (Integer) o1;
 		Integer s2 = (Integer) o2;
-		int result = 0;
-		result = s1.compareTo(s2);
+		int result = s1.compareTo(s2);
 		if (!isSortAsc) {
 			result = -result;
 		}
 		return result;
 	}
 
+	@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof MyComparator) {
 			MyComparator compObj = (MyComparator) obj;

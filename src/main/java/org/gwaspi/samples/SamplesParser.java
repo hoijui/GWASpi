@@ -2,7 +2,6 @@ package org.gwaspi.samples;
 
 import org.gwaspi.constants.cImport.Annotation.*;
 import org.gwaspi.constants.cImport;
-import org.gwaspi.constants.cImport.Separators;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -25,6 +24,9 @@ import ucar.ma2.InvalidRangeException;
  * CEXS-UPF-PRBB
  */
 public class SamplesParser {
+
+	private SamplesParser() {
+	}
 
 	//<editor-fold defaultstate="collapsed" desc="DB SAMPLE INFO PROVIDERS">
 	public static HashSet getDBAffectionStates(int matrixId) {

@@ -15,6 +15,9 @@ import ucar.nc2.NetcdfFile;
  */
 public class GatherQASamplesData {
 
+	private GatherQASamplesData() {
+	}
+
 	public static LinkedHashMap loadSamplesQAMissingRatio(int opId) throws FileNotFoundException, IOException {
 
 		OperationMetadata rdOPMetadata = new OperationMetadata(opId);

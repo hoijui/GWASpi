@@ -1,4 +1,3 @@
-
 /*
  * CurrentStudyPanel.java
  *

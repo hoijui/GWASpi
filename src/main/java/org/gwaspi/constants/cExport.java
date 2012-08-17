@@ -8,11 +8,11 @@ package org.gwaspi.constants;
  */
 public class cExport {
 
-	public static String separator_PLINK = " ";
-	public static String separator_BEAGLE = " ";
-	public static String separator_MACH = " ";
-	public static String separator_REPORTS = "\t";
-	public static String separator_SAMPLE_INFO = "\t";
+	public static final String separator_PLINK = " ";
+	public static final String separator_BEAGLE = " ";
+	public static final String separator_MACH = " ";
+	public static final String separator_REPORTS = "\t";
+	public static final String separator_SAMPLE_INFO = "\t";
 
 	public static enum ExportFormat {
 
@@ -25,5 +25,8 @@ public class cExport {
 				return PLINK;
 			}
 		}
+	}
+
+	private cExport() {
 	}
 }

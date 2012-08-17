@@ -12,6 +12,9 @@ import java.util.Random;
  */
 public class Chisquare {
 
+	private Chisquare() {
+	}
+
 	public static double calculateHWChiSquare(int obsAA, double expAA,
 			int obsAa, double expAa,
 			int obsaa, double expaa) {

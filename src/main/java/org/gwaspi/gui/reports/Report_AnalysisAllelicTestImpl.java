@@ -91,7 +91,7 @@ public final class Report_AnalysisAllelicTestImpl extends Report_Analysis {
 		});
 
 		String reportName = org.gwaspi.gui.GWASpiExplorerPanel.tree.getLastSelectedPathComponent().toString();
-		reportName = reportName.substring(reportName.indexOf("-") + 2);
+		reportName = reportName.substring(reportName.indexOf('-') + 2);
 		String reportPath = "";
 		try {
 			reportPath = org.gwaspi.global.Config.getConfigValue("ReportsDir", "") + "/STUDY_" + studyId + "/";
@@ -117,16 +117,15 @@ public final class Report_AnalysisAllelicTestImpl extends Report_Analysis {
 				inputFileReader = new FileReader(reportFile);
 				BufferedReader inputBufferReader = new BufferedReader(inputFileReader);
 
-				//Getting data from file and subdividing to series all points by chromosome
+				// Getting data from file and subdividing to series all points by chromosome
 				final ArrayList tableRowAL = new ArrayList();
 				String l;
-				String[] cVals = null;
 				String header = inputBufferReader.readLine();
 				int count = 0;
 				while ((l = inputBufferReader.readLine()) != null && count < getRowsNb) {
 					Object[] row = new Object[11];
 
-					cVals = l.split(org.gwaspi.constants.cImport.Separators.separators_SpaceTab_rgxp);
+					String[] cVals = l.split(org.gwaspi.constants.cImport.Separators.separators_SpaceTab_rgxp);
 
 					String markerId = cVals[0];
 					String rsId = cVals[1];
@@ -146,10 +145,10 @@ public final class Report_AnalysisAllelicTestImpl extends Report_Analysis {
 					row[5] = majAllele;
 
 
-//                    if (!org.gwaspi.constants.cGlobal.OSNAME.contains("Windows")){
-					Double chiSqr_f = Double.NaN;
-					Double pVal_f = Double.NaN;
-					Double or_f = Double.NaN;
+//					if (!org.gwaspi.constants.cGlobal.OSNAME.contains("Windows")){
+					Double chiSqr_f;
+					Double pVal_f;
+					Double or_f;
 					try {
 						chiSqr_f = Double.parseDouble(dfRound.format(chiSqr));
 					} catch (NumberFormatException numberFormatException) {
@@ -168,11 +167,11 @@ public final class Report_AnalysisAllelicTestImpl extends Report_Analysis {
 					row[6] = chiSqr_f;
 					row[7] = pVal_f;
 					row[8] = or_f;
-//                    } else {
-//                        row[6]=dfRound.format(chiSqr);
-//                        row[7]=dfSci.format(pVal);
-//                        row[8]=dfRound.format(or);
-//                    }
+//					} else {
+//						row[6]=dfRound.format(chiSqr);
+//						row[7]=dfSci.format(pVal);
+//						row[8]=dfRound.format(or);
+//					}
 
 					row[9] = "";
 					row[10] = Text.Reports.queryDB;
@@ -203,10 +202,10 @@ public final class Report_AnalysisAllelicTestImpl extends Report_Analysis {
 				tbl_ReportTable.setModel(model);
 
 				//<editor-fold defaultstate="collapsed" desc="Linux Sorter">
-//                if (!org.gwaspi.constants.cGlobal.OSNAME.contains("Windows")){
-				//RowSorter<TableModel> sorter = new TableRowSorter<TableModel>(model);
+//				if (!org.gwaspi.constants.cGlobal.OSNAME.contains("Windows")){
+//					RowSorter<TableModel> sorter = new TableRowSorter<TableModel>(model);
 				TableRowSorter sorter = new TableRowSorter(model) {
-					Comparator<Object> comparator = new Comparator<Object>() {
+					private Comparator<Object> comparator = new Comparator<Object>() {
 						public int compare(Object o1, Object o2) {
 							try {
 								Double d1 = Double.parseDouble(o1.toString());
@@ -224,17 +223,19 @@ public final class Report_AnalysisAllelicTestImpl extends Report_Analysis {
 						}
 					};
 
+					@Override
 					public Comparator getComparator(int column) {
 						return comparator;
 					}
 
+					@Override
 					public boolean useToString(int column) {
 						return false;
 					}
 				};
 
 				tbl_ReportTable.setRowSorter(sorter);
-//                }
+//				}
 				//</editor-fold>
 
 			}
@@ -245,12 +246,12 @@ public final class Report_AnalysisAllelicTestImpl extends Report_Analysis {
 			//Logger.getLogger(Report_QAMarkersSummary.class.getName()).log(Level.SEVERE, null, ex);
 		}
 	}
-	Comparator<String> comparator = new Comparator<String>() {
-		public int compare(String s1, String s2) {
-			String[] strings1 = s1.split("\\s");
-			String[] strings2 = s2.split("\\s");
-			return strings1[strings1.length - 1]
-					.compareTo(strings2[strings2.length - 1]);
-		}
-	};
+//	private Comparator<String> comparator = new Comparator<String>() {
+//		public int compare(String s1, String s2) {
+//			String[] strings1 = s1.split("\\s");
+//			String[] strings2 = s2.split("\\s");
+//			return strings1[strings1.length - 1]
+//					.compareTo(strings2[strings2.length - 1]);
+//		}
+//	};
 }

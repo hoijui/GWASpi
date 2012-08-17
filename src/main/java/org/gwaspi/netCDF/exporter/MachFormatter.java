@@ -20,13 +20,16 @@ import ucar.nc2.*;
  */
 public class MachFormatter {
 
-	protected static String sep = org.gwaspi.constants.cExport.separator_MACH;
-	protected static MatrixMetadata rdMatrixMetadata;
-	protected static NetcdfFile rdNcFile;
-	protected static MarkerSet rdMarkerSet;
-	protected static LinkedHashMap rdMarkerIdSetLHM;
-	protected static LinkedHashMap rdSampleSetLHM;
-	protected static File exportDir;
+	private static String sep = org.gwaspi.constants.cExport.separator_MACH;
+	private static MatrixMetadata rdMatrixMetadata;
+	private static NetcdfFile rdNcFile;
+	private static MarkerSet rdMarkerSet;
+	private static LinkedHashMap rdMarkerIdSetLHM;
+	private static LinkedHashMap rdSampleSetLHM;
+	private static File exportDir;
+
+	private MachFormatter() {
+	}
 
 	public static boolean exportToMach(String exportPath,
 			MatrixMetadata _rdMatrixMetadata,
@@ -85,7 +88,6 @@ public class MachFormatter {
 				}
 			}
 		}
-
 
 		return result;
 	}
@@ -204,7 +206,5 @@ public class MachFormatter {
 
 		datBW.close();
 		datFW.close();
-
-
 	}
 }

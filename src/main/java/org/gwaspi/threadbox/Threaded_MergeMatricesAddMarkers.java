@@ -16,14 +16,14 @@ import org.gwaspi.netCDF.operations.OP_QASamples_opt;
  */
 public class Threaded_MergeMatricesAddMarkers implements Runnable {
 
-	Thread runner;
-	protected String timeStamp = "";
-	protected static int resultMatrixId;
-	protected static int studyId;
-	protected static int parentMatrixId1;
-	protected static int parentMatrixId2;
-	protected static String newMatrixName;
-	protected static String description;
+	private Thread runner;
+	private String timeStamp = "";
+	private static int resultMatrixId;
+	private static int studyId;
+	private static int parentMatrixId1;
+	private static int parentMatrixId2;
+	private static String newMatrixName;
+	private static String description;
 
 	public Threaded_MergeMatricesAddMarkers(String threadName,
 			String _timeStamp,

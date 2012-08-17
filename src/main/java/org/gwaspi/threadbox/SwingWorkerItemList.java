@@ -10,10 +10,10 @@ import java.util.ArrayList;
  */
 public class SwingWorkerItemList {
 
-	protected static ArrayList<SwingWorkerItem> swingWorkerItemsAL = new ArrayList();
-	protected static ArrayList parentStudyIds = new ArrayList();
-	protected static ArrayList parentMatricesIds = new ArrayList();
-	protected static ArrayList parentOperationsIds = new ArrayList();
+	private static ArrayList<SwingWorkerItem> swingWorkerItemsAL = new ArrayList();
+	private static ArrayList parentStudyIds = new ArrayList();
+	private static ArrayList parentMatricesIds = new ArrayList();
+	private static ArrayList parentOperationsIds = new ArrayList();
 
 	SwingWorkerItemList() {
 //        parentStudyIds = new ArrayList();

@@ -14,6 +14,7 @@ import org.gwaspi.constants.cNetCDF.*;
 /* Imports Hapmap genotype files as found on
  * http://hapmap.ncbi.nlm.nih.gov/downloads/genotypes/?N=D
  */
+
 /**
  *
  * @author Fernando Muñiz Fernandez
@@ -26,7 +27,7 @@ public class MetadataLoaderHapmap {
 	private String format;
 	private int studyId;
 
-	protected enum Bases {
+	private enum Bases {
 
 		A, C, T, G;
 	}
@@ -40,11 +41,11 @@ public class MetadataLoaderHapmap {
 
 	}
 
-	//ACCESSORS
+	// ACCESSORS
 	public LinkedHashMap getSortedMarkerSetWithMetaData() throws IOException {
 		String startTime = org.gwaspi.global.Utils.getMediumDateTimeAsString();
 
-		TreeMap tempTM = parseAnnotationBRFile(hapmapPath); //rsId, alleles [A/T], chr, pos, strand, genome_build, center, protLSID, assayLSID, panelLSID, QC_code, ensue GTs by SampleId
+		TreeMap tempTM = parseAnnotationBRFile(hapmapPath); // rsId, alleles [A/T], chr, pos, strand, genome_build, center, protLSID, assayLSID, panelLSID, QC_code, ensue GTs by SampleId
 
 		org.gwaspi.global.Utils.sysoutStart("initilaizing marker info");
 		System.out.println(org.gwaspi.global.Text.All.processing);
@@ -52,9 +53,9 @@ public class MetadataLoaderHapmap {
 		LinkedHashMap markerMetadataLHM = new LinkedHashMap();
 		for (Iterator it = tempTM.keySet().iterator(); it.hasNext();) {
 			String key = it.next().toString();
-			String[] keyValues = key.split(cNetCDF.Defaults.TMP_SEPARATOR); //chr;pos;markerId
+			String[] keyValues = key.split(cNetCDF.Defaults.TMP_SEPARATOR); // chr;pos;markerId
 			String[] valValues = tempTM.get(key).toString().split(cNetCDF.Defaults.TMP_SEPARATOR);  //rsId;strand;alleles
-			int pos = 0;
+			int pos;
 			try {
 				pos = Integer.parseInt(keyValues[1]);
 			} catch (Exception ex) {
@@ -62,12 +63,12 @@ public class MetadataLoaderHapmap {
 			}
 
 			Object[] markerInfo = new Object[6];
-			markerInfo[0] = keyValues[2];  //0 => markerid
-			markerInfo[1] = valValues[0];  //1 => rsId
-			markerInfo[2] = fixChrData(keyValues[0]);  //2 => chr
-			markerInfo[3] = pos;  //3 => pos
-			markerInfo[4] = valValues[1];  //4 => strand
-			markerInfo[5] = valValues[2];  //5 => alleles
+			markerInfo[0] = keyValues[2]; // 0 => markerid
+			markerInfo[1] = valValues[0]; // 1 => rsId
+			markerInfo[2] = fixChrData(keyValues[0]); // 2 => chr
+			markerInfo[3] = pos; // 3 => pos
+			markerInfo[4] = valValues[1]; // 4 => strand
+			markerInfo[5] = valValues[2]; // 5 => alleles
 
 			markerMetadataLHM.put(keyValues[2], markerInfo);
 		}
@@ -85,31 +86,29 @@ public class MetadataLoaderHapmap {
 		String header = inputAnnotationBr.readLine();
 
 		String l;
-		String[] hapmapVals = null;
-
 		int count = 0;
 		while ((l = inputAnnotationBr.readLine()) != null) {
 
-			hapmapVals = l.split(org.gwaspi.constants.cImport.Separators.separators_SpaceTab_rgxp);
+			String[] hapmapVals = l.split(org.gwaspi.constants.cImport.Separators.separators_SpaceTab_rgxp);
 			String alleles = hapmapVals[HapmapGT_Standard.alleles].replace("/", "");
 
-			//chr;pos;markerId
+			// chr;pos;markerId
 			String chr = hapmapVals[HapmapGT_Standard.chr];
 			if (chr.length() > 3) {
 				chr = chr.substring(3);
-			}       //Probably contains "chr" in front of number
-			StringBuffer sbKey = new StringBuffer(chr);         //0 => chr
+			} // Probably contains "chr" in front of number
+			StringBuilder sbKey = new StringBuilder(chr); // 0 => chr
 			sbKey.append(cNetCDF.Defaults.TMP_SEPARATOR);
-			sbKey.append(hapmapVals[HapmapGT_Standard.pos]);    //1 => pos
+			sbKey.append(hapmapVals[HapmapGT_Standard.pos]); // 1 => pos
 			sbKey.append(cNetCDF.Defaults.TMP_SEPARATOR);
-			sbKey.append(hapmapVals[HapmapGT_Standard.rsId]);   //2 => markerId
+			sbKey.append(hapmapVals[HapmapGT_Standard.rsId]); // 2 => markerId
 
 			//rsId;strand;alleles
-			StringBuilder sbVal = new StringBuilder(hapmapVals[HapmapGT_Standard.rsId]); //0 => markerId = rsId
+			StringBuilder sbVal = new StringBuilder(hapmapVals[HapmapGT_Standard.rsId]); // 0 => markerId = rsId
 			sbVal.append(cNetCDF.Defaults.TMP_SEPARATOR);
-			sbVal.append(hapmapVals[HapmapGT_Standard.strand]);         //1 => strand
+			sbVal.append(hapmapVals[HapmapGT_Standard.strand]); // 1 => strand
 			sbVal.append(cNetCDF.Defaults.TMP_SEPARATOR);
-			sbVal.append(alleles);                                      //2 => alleles
+			sbVal.append(alleles); // 2 => alleles
 
 
 			sortedMetadataTM.put(sbKey.toString(), sbVal.toString());
@@ -125,7 +124,7 @@ public class MetadataLoaderHapmap {
 		return sortedMetadataTM;
 	}
 
-	public String fixChrData(String chr) throws IOException {
+	public static String fixChrData(String chr) throws IOException {
 		if (chr.equals("23")) {
 			chr = "X";
 		}
@@ -141,13 +140,13 @@ public class MetadataLoaderHapmap {
 		return chr;
 	}
 
-	//METHODS
+	// METHODS
 	private static void logAsWhole(String startTime, String dirPath, String description, int studyId) throws IOException {
-		//LOG OPERATION IN STUDY HISTORY
-		StringBuffer operation = new StringBuffer("\nLoaded Annotation metadata in path " + dirPath + ".\n");
-		operation.append("Start Time: " + startTime + "\n");
-		operation.append("End Time: " + org.gwaspi.global.Utils.getMediumDateTimeAsString() + ".\n");
-		operation.append("Description: " + description + ".\n");
+		// LOG OPERATION IN STUDY HISTORY
+		StringBuilder operation = new StringBuilder("\nLoaded Annotation metadata in path " + dirPath + ".\n");
+		operation.append("Start Time: ").append(startTime).append("\n");
+		operation.append("End Time: ").append(org.gwaspi.global.Utils.getMediumDateTimeAsString()).append(".\n");
+		operation.append("Description: ").append(description).append(".\n");
 		org.gwaspi.global.Utils.logOperationInStudyDesc(operation.toString(), studyId);
 		////////////////////////////////
 	}

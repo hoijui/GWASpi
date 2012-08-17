@@ -1,13 +1,10 @@
 package org.gwaspi.threadbox;
 
-import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.global.Text;
 import java.io.File;
-import java.util.HashSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.gwaspi.model.GWASpiExplorerNodes;
-import org.gwaspi.netCDF.operations.MatrixDataExtractor_opt;
 import org.gwaspi.netCDF.operations.MatrixGenotypesFlipper;
 import org.gwaspi.netCDF.operations.OP_QAMarkers_opt;
 import org.gwaspi.netCDF.operations.OP_QASamples_opt;
@@ -20,15 +17,15 @@ import org.gwaspi.netCDF.operations.OP_QASamples_opt;
  */
 public class Threaded_FlipStrandMatrix implements Runnable {
 
-	Thread runner;
-	protected String timeStamp = "";
-	protected static int resultMatrixId;
-	protected static int studyId;
-	protected static int parentMatrixId;
-	protected static String newMatrixName;
-	protected static String description;
-	protected static String markerIdentifyer;
-	protected static File markerFlipFile;
+	private Thread runner;
+	private String timeStamp = "";
+	private static int resultMatrixId;
+	private static int studyId;
+	private static int parentMatrixId;
+	private static String newMatrixName;
+	private static String description;
+	private static String markerIdentifyer;
+	private static File markerFlipFile;
 
 	public Threaded_FlipStrandMatrix(String threadName,
 			String _timeStamp,

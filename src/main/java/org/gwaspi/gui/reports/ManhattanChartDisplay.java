@@ -30,7 +30,7 @@ public final class ManhattanChartDisplay extends javax.swing.JPanel {
 	private static javax.swing.JPanel pnl_Chart;
 	private static javax.swing.JPanel pnl_Footer;
 	private static javax.swing.JScrollPane scrl_Chart;
-//    private static ManhattanPlotImageLabel label = new ManhattanPlotImageLabel();
+//	private static ManhattanPlotImageLabel label = new ManhattanPlotImageLabel();
 	private static JLabel label = new JLabel();
 	public static boolean fired;
 	private static javax.swing.JButton btn_Save;
@@ -41,8 +41,8 @@ public final class ManhattanChartDisplay extends javax.swing.JPanel {
 	private static int chartWidth = 0;
 	private static int chrPlotWidth = 0;
 	private static int chrPlotWidthPad = 0;
-	private static int padLeft = 64; //Pixel padding to the left of graph
-	private static int padGap = 9; //Pixel padding between chromosome plots
+	private static int padLeft = 64; // Pixel padding to the left of graph
+	private static int padGap = 9; // Pixel padding between chromosome plots
 	// End of variables declaration
 
 	public ManhattanChartDisplay(final int studyId, final String chartPath, int _opId) {
@@ -69,12 +69,12 @@ public final class ManhattanChartDisplay extends javax.swing.JPanel {
 						if (mouseX > padLeft) {
 							pnl_Chart.setCursor(org.gwaspi.gui.utils.CursorUtils.waitCursor);
 
-							Object[] selectedSliceInfo = (Object[]) getChrSliceInfo(mouseX);
-//                            sliceInfo[0] = chrNb;
-//                            sliceInfo[1] = chr;
-//                            sliceInfo[2] = sliceNb;
-//                            sliceInfo[3] = startPhysPos;
-//                            sliceInfo[4] = defaultSlotsNb;
+							Object[] selectedSliceInfo = getChrSliceInfo(mouseX);
+//							sliceInfo[0] = chrNb;
+//							sliceInfo[1] = chr;
+//							sliceInfo[2] = sliceNb;
+//							sliceInfo[3] = startPhysPos;
+//							sliceInfo[4] = defaultSlotsNb;
 
 							org.gwaspi.gui.GWASpiExplorerPanel.pnl_Content = new org.gwaspi.gui.reports.ManhattanPlotZoom(opId,
 									selectedSliceInfo[1].toString(),
@@ -117,11 +117,11 @@ public final class ManhattanChartDisplay extends javax.swing.JPanel {
 				int mouseX = e.getX();
 				if (mouseX > padLeft) {
 					Object[] sliceInfo = getChrSliceInfo(mouseX);
-//                    System.out.println("chrNb: "+sliceInfo[0]);
-//                    System.out.println("chr: "+sliceInfo[1]);
-//                    System.out.println("sliceNb: "+sliceInfo[2]);
-//                    System.out.println("startPhysPos: "+sliceInfo[3]);
-//                    System.out.println("defaultSlotsNb: "+sliceInfo[4]);
+//					System.out.println("chrNb: "+sliceInfo[0]);
+//					System.out.println("chr: "+sliceInfo[1]);
+//					System.out.println("sliceNb: "+sliceInfo[2]);
+//					System.out.println("startPhysPos: "+sliceInfo[3]);
+//					System.out.println("defaultSlotsNb: "+sliceInfo[4]);
 
 					label.setToolTipText("<html>Zoom on chr " + sliceInfo[1].toString()
 							+ "<br>position " + sliceInfo[3] + " to " + ((Long) sliceInfo[3] + (Long) sliceInfo[4])
@@ -221,7 +221,7 @@ public final class ManhattanChartDisplay extends javax.swing.JPanel {
 
 	private static void initChromosmesMap(int studyId, String chartPath) {
 
-		//LOAD MANHATTANPLOT IMAGE
+		// LOAD MANHATTANPLOT IMAGE
 		try {
 			String reportPath = org.gwaspi.global.Config.getConfigValue("ReportsDir", "") + "/STUDY_" + studyId + "/";
 			File testF = new File(reportPath + chartPath);
@@ -247,11 +247,11 @@ public final class ManhattanChartDisplay extends javax.swing.JPanel {
 			OperationSet opSet = new OperationSet(studyId, opId);
 			chrSetInfoLHM = opSet.getChrInfoSetLHM();
 
-			//CHECK HOW MANY CHR HAVE PLOTS (ANY MARKERS?)
+			// CHECK HOW MANY CHR HAVE PLOTS (ANY MARKERS?)
 			int chrPlotNb = 0;
 			for (Iterator it = chrSetInfoLHM.keySet().iterator(); it.hasNext();) {
 				Object key = it.next();
-				int[] chrInfo = (int[]) chrSetInfoLHM.get(key); //Nb of markers, first physical position, last physical position, start index number in MarkerSet,
+				int[] chrInfo = (int[]) chrSetInfoLHM.get(key); // Nb of markers, first physical position, last physical position, start index number in MarkerSet,
 				if (chrInfo[0] > 0) {
 					chrPlotNb++;
 				}
@@ -261,7 +261,7 @@ public final class ManhattanChartDisplay extends javax.swing.JPanel {
 			chrPlotWidth = Math.round(
 					(chartWidth
 					- ((chrPlotNb - 1) * padGap))
-					/ chrPlotNb); //CALCULATE THE WIDTH OF 1 CHR PLOT
+					/ chrPlotNb); // CALCULATE THE WIDTH OF 1 CHR PLOT
 
 			chrPlotWidthPad = chrPlotWidth + padGap;
 
@@ -271,11 +271,11 @@ public final class ManhattanChartDisplay extends javax.swing.JPanel {
 
 	}
 
-	protected static Object[] getChrSliceInfo(int pxXpos) {
+	static Object[] getChrSliceInfo(int pxXpos) {
 
 		int pxXposNoLeftPad = pxXpos - padLeft;
 
-		int[] chrInfo = getChrInfo(pxXposNoLeftPad);  //Nb of markers, first physical position, last physical position, start index number in MarkerSet, placeholder
+		int[] chrInfo = getChrInfo(pxXposNoLeftPad);  // Nb of markers, first physical position, last physical position, start index number in MarkerSet, placeholder
 
 		int nbMarkers = (Integer) chrInfo[0];
 		int startPhysPos = (Integer) chrInfo[1];
@@ -285,7 +285,7 @@ public final class ManhattanChartDisplay extends javax.swing.JPanel {
 		double avgMarkersPerPx = (double) nbMarkers / chrPlotWidth;
 		double avgSlotsPerPx = (double) (maxPhysPos - startPhysPos) / chrPlotWidth;
 
-		int defaultSliceWidth = chrPlotWidth;
+		int defaultSliceWidth;
 		if (avgMarkersPerPx < 0) {
 			defaultSliceWidth = (int) Math.round(ManhattanPlotZoom.defaultMarkerNb / avgMarkersPerPx); //width of a slice inside current chr
 		} else {
@@ -305,20 +305,19 @@ public final class ManhattanChartDisplay extends javax.swing.JPanel {
 		sliceInfo[3] = longStartPhysPos;
 		sliceInfo[4] = defaultSlotsNb;
 
-
-//        System.out.println("getChrSliceInfo");
-//        System.out.println("chr: "+chr);
-//        System.out.println("sliceInfo[0] - chrNb: "+sliceInfo[0]);
-//        System.out.println("sliceInfo[1] - chr: "+sliceInfo[1]);
-//        System.out.println("sliceInfo[2] - sliceNb: "+sliceInfo[2]);
-//        System.out.println("sliceInfo[3] - startPhysPos: "+sliceInfo[3]);
-//        System.out.println("sliceInfo[4] - defaultSlotsNb: "+sliceInfo[4]);
-//        System.out.println("\n");
+//		System.out.println("getChrSliceInfo");
+//		System.out.println("chr: "+chr);
+//		System.out.println("sliceInfo[0] - chrNb: "+sliceInfo[0]);
+//		System.out.println("sliceInfo[1] - chr: "+sliceInfo[1]);
+//		System.out.println("sliceInfo[2] - sliceNb: "+sliceInfo[2]);
+//		System.out.println("sliceInfo[3] - startPhysPos: "+sliceInfo[3]);
+//		System.out.println("sliceInfo[4] - defaultSlotsNb: "+sliceInfo[4]);
+//		System.out.println("\n");
 
 		return sliceInfo;
 	}
 
-	protected static int[] getChrInfo(int pxXposNoLeftPad) {
+	static int[] getChrInfo(int pxXposNoLeftPad) {
 
 		int selectedChrMap = Math.round(pxXposNoLeftPad / chrPlotWidthPad);
 
@@ -330,13 +329,13 @@ public final class ManhattanChartDisplay extends javax.swing.JPanel {
 			chrInfo = (int[]) chrSetInfoLHM.get(key); //Nb of markers, first physical position, last physical position, start index number in MarkerSet,
 		}
 
-//        System.out.println("getChrInfo");
-//        System.out.println("selectedMap: "+selectedChrMap);
-//        System.out.println("info[0]: "+chrInfo[0]);
-//        System.out.println("info[1]: "+chrInfo[1]);
-//        System.out.println("info[2]: "+chrInfo[2]);
-//        System.out.println("info[3]: "+chrInfo[3]);
-//        System.out.println("\n");
+//		System.out.println("getChrInfo");
+//		System.out.println("selectedMap: "+selectedChrMap);
+//		System.out.println("info[0]: "+chrInfo[0]);
+//		System.out.println("info[1]: "+chrInfo[1]);
+//		System.out.println("info[2]: "+chrInfo[2]);
+//		System.out.println("info[3]: "+chrInfo[3]);
+//		System.out.println("\n");
 
 		return chrInfo;
 	}

@@ -19,10 +19,10 @@ import org.gwaspi.samples.SamplesParser;
  */
 public class Threaded_UpdateSampleInfo implements Runnable {
 
-	Thread runner;
-	protected String timeStamp = "";
-	public File sampleInfoFile;
-	protected static int poolId;
+	private Thread runner;
+	private String timeStamp = "";
+	private File sampleInfoFile;
+	private static int poolId;
 
 	public Threaded_UpdateSampleInfo(String threadName,
 			String _timeStamp,

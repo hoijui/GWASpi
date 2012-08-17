@@ -8,10 +8,13 @@ package org.gwaspi.threadbox;
  */
 public class QueueStates {
 
-	public static String QUEUED = "QUEUED";
-	public static String PROCESSING = "PROCESSING";
-	public static String DONE = "DONE";
-	public static String ABORT = "ABORT";
-	public static String ERROR = "ERROR";
-	public static String DELETED = "DELETED";
+	public static final String QUEUED = "QUEUED";
+	public static final String PROCESSING = "PROCESSING";
+	public static final String DONE = "DONE";
+	public static final String ABORT = "ABORT";
+	public static final String ERROR = "ERROR";
+	public static final String DELETED = "DELETED";
+
+	private QueueStates() {
+	}
 }

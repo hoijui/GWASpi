@@ -149,11 +149,11 @@ public class Report_SampleInfoPanel extends javax.swing.JPanel {
 		DecimalFormat dfSci = new DecimalFormat("0.##E0#");
 		DecimalFormat dfRound = new DecimalFormat("0.#####");
 
-		//Getting data from file and subdividing to series all points by chromosome
+		// Getting data from file and subdividing to series all points by chromosome
 		int count = 0;
 		ArrayList tableRowAL = new ArrayList();
 		while (count < rsAllSamplesFromPool.size()) {
-			//PREVENT PHANTOM-DB READS EXCEPTIONS
+			// PREVENT PHANTOM-DB READS EXCEPTIONS
 			if (!rsAllSamplesFromPool.isEmpty() && rsAllSamplesFromPool.get(count).size() == org.gwaspi.constants.cDBSamples.T_CREATE_SAMPLES_INFO.length) {
 				Object[] row = new Object[11];
 
@@ -208,8 +208,8 @@ public class Report_SampleInfoPanel extends javax.swing.JPanel {
 		tbl_ReportTable.setModel(model);
 
 		//<editor-fold defaultstate="collapsed" desc="Linux Sorter">
-//        if (!org.gwaspi.constants.cGlobal.OSNAME.contains("Windows")){
-		//RowSorter<TableModel> sorter = new TableRowSorter<TableModel>(model);
+//		if (!org.gwaspi.constants.cGlobal.OSNAME.contains("Windows")) {
+//			RowSorter<TableModel> sorter = new TableRowSorter<TableModel>(model);
 		TableRowSorter sorter = new TableRowSorter(model) {
 			Comparator<Object> comparator = new Comparator<Object>() {
 				public int compare(Object o1, Object o2) {
@@ -229,10 +229,12 @@ public class Report_SampleInfoPanel extends javax.swing.JPanel {
 				}
 			};
 
+			@Override
 			public Comparator getComparator(int column) {
 				return comparator;
 			}
 
+			@Override
 			public boolean useToString(int column) {
 				return false;
 			}

@@ -9,11 +9,7 @@ import java.util.Map;
  * IBE, Institute of Evolutionary Biology (UPF-CSIC)
  * CEXS-UPF-PRBB
  */
-class ComparatorPvalAsc implements Comparator {
-
-	public int compare(Object o1, Object o2) {
-		return compare((Map.Entry) o1, (Map.Entry) o2);
-	}
+class ComparatorPvalAsc implements Comparator<Map.Entry> {
 
 	public int compare(Map.Entry e1, Map.Entry e2) {
 		int cf = ((Comparable) e1.getValue()).compareTo(e2.getValue());

@@ -9,12 +9,12 @@ import java.util.*;
  */
 public class WriteBinaryPlink {
 
-	static byte[] allBytes = new byte[64];
-	static byte[] gtBytes = new byte[1];
-	static String AA = "AA";
-	static String AT = "AT";
-	static String CC = "CC";
-	static String CG = "CG";
+	private static final byte[] allBytes = new byte[64];
+	private static final byte[] gtBytes = new byte[1];
+	private static final String AA = "AA";
+	private static final String AT = "AT";
+	private static final String CC = "CC";
+	private static final String CG = "CG";
 
 	public static void main(String arg[]) {
 
@@ -45,14 +45,14 @@ public class WriteBinaryPlink {
 				Byte[] value = (Byte[]) sampleSetLHM.get(key);
 
 				tetraGTs.insert(0, translateTo00011011(value, "A", "T"));
-//            tetraGTs.append(translateTo00011011(value, "A", "T"));
+//				tetraGTs.append(translateTo00011011(value, "A", "T"));
 			}
 			tetraGTs.reverse();
 
 			int number = Integer.parseInt(tetraGTs.toString(), 2);
 			byte[] tetraGT = new byte[]{(byte) number};
 
-//      arraycopy(Object src, int srcPos, Object dest, int destPos, int length)
+//			arraycopy(Object src, int srcPos, Object dest, int destPos, int length)
 			System.arraycopy(tetraGT,
 					0,
 					allBytes,
@@ -68,9 +68,6 @@ public class WriteBinaryPlink {
 					1,
 					1);
 
-
-
-
 			data_out.write(allBytes, 0, allBytes.length);
 
 			// Close file when finished with it..
@@ -79,25 +76,25 @@ public class WriteBinaryPlink {
 			System.out.println("IO exception = " + e);
 		}
 
-	} // main
+	}
 
 	protected static String translateTo00011011(Byte[] gt, String minorAllele, String majorAllele) {
-		String result = "10"; //missing
+		String result = "10"; // missing
 
 		String allele1 = new String(new byte[]{gt[0]});
 		String allele2 = new String(new byte[]{gt[1]});
 
 		if (allele1.equals(minorAllele)) {
 			if (allele2.equals(minorAllele)) {
-				result = "00"; //Homozygous for minor allele
+				result = "00"; // Homozygous for minor allele
 			} else {
-				result = "01"; //Heterozygote
+				result = "01"; // Heterozygote
 			}
 		} else if (allele1.equals(majorAllele)) {
 			if (allele2.equals(majorAllele)) {
-				result = "11"; //Homozygous for major allele
+				result = "11"; // Homozygous for major allele
 			} else {
-				result = "01"; //Heterozygote
+				result = "01"; // Heterozygote
 			}
 		}
 

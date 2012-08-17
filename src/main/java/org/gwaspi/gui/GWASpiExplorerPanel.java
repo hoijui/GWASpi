@@ -181,7 +181,7 @@ public class GWASpiExplorerPanel extends javax.swing.JPanel {
 
 		}
 
-		//TOGGLE CONTENT PANEL REFRESH BEHAVIOUR FOR CURRENT METHOD RUN
+		// TOGGLE CONTENT PANEL REFRESH BEHAVIOUR FOR CURRENT METHOD RUN
 		if (!_refreshContentPanel) {
 			refreshContentPanel = !refreshContentPanel;
 		}

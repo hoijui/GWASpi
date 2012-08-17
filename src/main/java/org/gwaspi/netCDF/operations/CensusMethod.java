@@ -6,7 +6,7 @@ package org.gwaspi.netCDF.operations;
  * IBE, Institute of Evolutionary Biology (UPF-CSIC)
  * CEXS-UPF-PRBB
  */
-public class CensusMethod {
+public interface CensusMethod {
 
 	public static enum CensusDecision {
 

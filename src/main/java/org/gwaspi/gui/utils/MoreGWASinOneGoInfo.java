@@ -161,32 +161,32 @@ public class MoreGWASinOneGoInfo extends javax.swing.JFrame {
 		lbl_GTCode.setText("  " + Text.Dialog.genotypeEncoding);
 
 		switch (org.gwaspi.constants.cImport.ImportFormat.compareTo(format)) {
-//            case default:
-//                cmb_Chromosome.setModel(new javax.swing.DefaultComboBoxModel(org.gwaspi.constants.cNetCDF.Defaults.Chromosomes));
-//                cmb_Chromosome.setSelectedIndex(0);
+//			case default:
+//				cmb_Chromosome.setModel(new javax.swing.DefaultComboBoxModel(org.gwaspi.constants.cNetCDF.Defaults.Chromosomes));
+//				cmb_Chromosome.setSelectedIndex(0);
 //
-//                cmb_Strand.setModel(new javax.swing.DefaultComboBoxModel(org.gwaspi.constants.cNetCDF.Defaults.StrandType.values()));
-//                cmb_Strand.setSelectedIndex(6);
+//				cmb_Strand.setModel(new javax.swing.DefaultComboBoxModel(org.gwaspi.constants.cNetCDF.Defaults.StrandType.values()));
+//				cmb_Strand.setSelectedIndex(6);
 //
-//                cmb_GTCode.setModel(new javax.swing.DefaultComboBoxModel(org.gwaspi.constants.cNetCDF.Defaults.GenotypeCode.values()));
-//                cmb_GTCode.setSelectedIndex(0);
+//				cmb_GTCode.setModel(new javax.swing.DefaultComboBoxModel(org.gwaspi.constants.cNetCDF.Defaults.GenotypeCode.values()));
+//				cmb_GTCode.setSelectedIndex(0);
 //
-//                setMyConstraints(c,0,rowNb,GridBagConstraints.LINE_START);
-//                pnl_Questions.add(lbl_Chromosome,c);
-//                setMyConstraints(c,1,rowNb,GridBagConstraints.WEST);
-//                pnl_Questions.add(cmb_Chromosome,c);
-//                rowNb++;
-//                setMyConstraints(c,0,rowNb,GridBagConstraints.LINE_START);
-//                pnl_Questions.add(lbl_Strand,c);
-//                setMyConstraints(c,1,rowNb,GridBagConstraints.WEST);
-//                pnl_Questions.add(cmb_Strand,c);
-//                rowNb++;
-//                setMyConstraints(c,0,rowNb,GridBagConstraints.LINE_START);
-//                pnl_Questions.add(lbl_GTCode,c);
-//                setMyConstraints(c,1,rowNb,GridBagConstraints.WEST);
-//                pnl_Questions.add(cmb_GTCode,c);
-//                rowNb++;
-//                break;
+//				setMyConstraints(c,0,rowNb,GridBagConstraints.LINE_START);
+//				pnl_Questions.add(lbl_Chromosome,c);
+//				setMyConstraints(c,1,rowNb,GridBagConstraints.WEST);
+//				pnl_Questions.add(cmb_Chromosome,c);
+//				rowNb++;
+//				setMyConstraints(c,0,rowNb,GridBagConstraints.LINE_START);
+//				pnl_Questions.add(lbl_Strand,c);
+//				setMyConstraints(c,1,rowNb,GridBagConstraints.WEST);
+//				pnl_Questions.add(cmb_Strand,c);
+//				rowNb++;
+//				setMyConstraints(c,0,rowNb,GridBagConstraints.LINE_START);
+//				pnl_Questions.add(lbl_GTCode,c);
+//				setMyConstraints(c,1,rowNb,GridBagConstraints.WEST);
+//				pnl_Questions.add(cmb_GTCode,c);
+//				rowNb++;
+//				break;
 			case BEAGLE:
 				cmb_Chromosome.setModel(new javax.swing.DefaultComboBoxModel(org.gwaspi.constants.cNetCDF.Defaults.Chromosomes));
 				cmb_Chromosome.setSelectedIndex(0);
@@ -224,18 +224,18 @@ public class MoreGWASinOneGoInfo extends javax.swing.JFrame {
 		rdioB_HW_free.setText(Text.Operation.discardMarkerHWFree);
 		txtF_HW_free.setText("0.0000005");
 
-//        // Listen for changes in the text
-//        txtF_2.getDocument().addDocumentListener(new DocumentListener() {
-//            public void changedUpdate(DocumentEvent e) {
-//                rdioB_2.setEnabled(true);
-//            }
-//            public void removeUpdate(DocumentEvent e) {
-//                rdioB_2.setEnabled(true);
-//            }
-//            public void insertUpdate(DocumentEvent e) {
-//                rdioB_2.setEnabled(true);
-//            }
-//        });
+//		// Listen for changes in the text
+//		txtF_2.getDocument().addDocumentListener(new DocumentListener() {
+//			public void changedUpdate(DocumentEvent e) {
+//				rdioB_2.setEnabled(true);
+//			}
+//			public void removeUpdate(DocumentEvent e) {
+//				rdioB_2.setEnabled(true);
+//			}
+//			public void insertUpdate(DocumentEvent e) {
+//				rdioB_2.setEnabled(true);
+//			}
+//		});
 
 		txtF_HW_free.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -277,11 +277,11 @@ public class MoreGWASinOneGoInfo extends javax.swing.JFrame {
 		pnl_Questions.add(txtF_MMS, c);
 		rowNb++;
 
-//        setMyConstraints(c,0,rowNb,GridBagConstraints.LINE_START);
-//        pnl_Questions.add(chkB_MHZ,c);
-//        setMyConstraints(c,1,rowNb,GridBagConstraints.WEST);
-//        pnl_Questions.add(txtF_MHZ,c);
-//        rowNb++;
+//		setMyConstraints(c,0,rowNb,GridBagConstraints.LINE_START);
+//		pnl_Questions.add(chkB_MHZ,c);
+//		setMyConstraints(c,1,rowNb,GridBagConstraints.WEST);
+//		pnl_Questions.add(txtF_MHZ,c);
+//		rowNb++;
 
 		setMyConstraints(c, 0, rowNb, GridBagConstraints.LINE_START);
 		pnl_Questions.add(chkB_MMM, c);
@@ -335,13 +335,13 @@ public class MoreGWASinOneGoInfo extends javax.swing.JFrame {
 			}
 		});
 
-//        GridBagConstraints c = new GridBagConstraints();
-//        setMyConstraints(c,0,0,GridBagConstraints.LINE_START);
-//        pnl_Footer.add(btn_Help,c);
-//        setMyConstraints(c,1,0,GridBagConstraints.LINE_END);
-//        pnl_Footer.add(new JLabel("    "),c);
-//        setMyConstraints(c,2,0,GridBagConstraints.LINE_END);
-//        pnl_Footer.add(btn_Go,c);
+//		GridBagConstraints c = new GridBagConstraints();
+//		setMyConstraints(c,0,0,GridBagConstraints.LINE_START);
+//		pnl_Footer.add(btn_Help,c);
+//		setMyConstraints(c,1,0,GridBagConstraints.LINE_END);
+//		pnl_Footer.add(new JLabel("    "),c);
+//		setMyConstraints(c,2,0,GridBagConstraints.LINE_END);
+//		pnl_Footer.add(btn_Go,c);
 
 		GridBagConstraints c = new GridBagConstraints();
 		setMyConstraints(c, 0, 0, GridBagConstraints.LINE_START);
@@ -389,8 +389,8 @@ public class MoreGWASinOneGoInfo extends javax.swing.JFrame {
 				gwasParams.discardGTMismatches = chkB_MMM.isSelected();
 				gwasParams.discardMarkerByMisRat = chkB_MMS.isSelected();
 				gwasParams.discardMarkerMisRatVal = Double.parseDouble(txtF_MMS.getText());
-//                gwasParams.discardMarkerByHetzyRat = chkB_MHZ.isSelected();
-//                gwasParams.discardMarkerHetzyRatVal = Double.parseDouble(txtF_MHZ.getText());
+//				gwasParams.discardMarkerByHetzyRat = chkB_MHZ.isSelected();
+//				gwasParams.discardMarkerHetzyRatVal = Double.parseDouble(txtF_MHZ.getText());
 				gwasParams.discardMarkerHWCalc = rdioB_HW_Calc.isSelected();
 				gwasParams.discardMarkerHWFree = rdioB_HW_free.isSelected();
 				gwasParams.discardMarkerHWTreshold = Double.parseDouble(txtF_HW_free.getText());

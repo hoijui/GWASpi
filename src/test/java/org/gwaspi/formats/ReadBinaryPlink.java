@@ -4,10 +4,7 @@ import java.io.DataInputStream;
 import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.BitSet;
 
 /**
  *
@@ -17,22 +14,22 @@ import java.util.BitSet;
  */
 public class ReadBinaryPlink {
 
-	static String inputBed = "/media/data/work/GWASpi/input/Plink/mi_input.bed";
-	static String inputBim = "/media/data/work/GWASpi/input/Plink/mi_input.bim";
-	static String inputFam = "/media/data/work/GWASpi/input/Plink/mi_input.fam";
+	private static final String inputBed = "/media/data/work/GWASpi/input/Plink/mi_input.bed";
+	private static final String inputBim = "/media/data/work/GWASpi/input/Plink/mi_input.bim";
+	private static final String inputFam = "/media/data/work/GWASpi/input/Plink/mi_input.fam";
 
 	public static void main(String[] args) throws IOException {
 		// Wrap the FileInputStream with a DataInputStream
 		FileInputStream file_input = new FileInputStream(new File(inputBed));
 		DataInputStream data_in = new DataInputStream(file_input);
 
-		//SKIP HEADER
+		// SKIP HEADER
 		data_in.readByte();
 		data_in.readByte();
 		data_in.readByte();
 
 		int sampleNb = 15;
-		int byteToMunch = 0;
+		int byteToMunch;
 		if (sampleNb % 8 == 0) {
 			byteToMunch = (sampleNb / 8) * 2;
 		} else {
@@ -69,7 +66,7 @@ public class ReadBinaryPlink {
 	}
 
 	private static int translateBitSet(byte b, int bit) {
-		int result = 0;
+		int result;
 		boolean by = (b & (1 << bit)) != 0;
 		if (by) {
 			result = 1;

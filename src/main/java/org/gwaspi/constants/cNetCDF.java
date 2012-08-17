@@ -17,6 +17,9 @@ public class cNetCDF {
 		public static final String GLOB_STRAND = "strand";
 		public static final String LENGTH = "length";
 		public static final String GLOB_HAS_DICTIONARY = "glob_has_dictionnary";
+
+		private Attributes() {
+		}
 	}
 
 	public static class Dimensions {
@@ -38,10 +41,13 @@ public class cNetCDF {
 		public static final String DIM_4 = "dim4";
 		public static final String DIM_2 = "dim2";
 		public static final String DIM_1 = "dim1";
+
+		private Dimensions() {
+		}
 	}
 
 	public static class Variables {
-		//MARKER VARS
+		// MARKER VARS
 
 		public static final String VAR_MARKERSET = "marker_id";
 		public static final String VAR_MARKERS_RSID = "marker_rsId";
@@ -71,6 +77,9 @@ public class cNetCDF {
 		public static final String VAR_GT_STRAND = "genotype_strand";
 		public static final String VAR_ALLELES = "alleles";
 		public static final String GLOB_GTENCODING = "genotype_encoding";
+
+		private Variables() {
+		}
 	}
 
 	//<editor-fold defaultstate="collapsed" desc="OPERATION & ANALYSIS VARS">
@@ -90,7 +99,10 @@ public class cNetCDF {
 		public static final String VAR_OP_SAMPLES_MISSINGRAT = "OP_sample_missingrat";
 		public static final String VAR_OP_SAMPLES_MISSINGCOUNT = "OP_sample_missingcount";
 		public static final String VAR_OP_SAMPLES_HETZYRAT = "OP_sample_hetzyrat";
-	;
+
+		private Census() {
+		}
+
 
 	}
 
@@ -100,10 +112,13 @@ public class cNetCDF {
 		public static final String VAR_OP_MARKERS_HWPval_CASE = "OP_markers_hwpval_case";
 		public static final String VAR_OP_MARKERS_HWPval_CTRL = "OP_markers_hwpval_ctrl";
 		public static final String VAR_OP_MARKERS_HWPval_ALT = "OP_markers_hwpval_alt";
-		public static final String VAR_OP_MARKERS_HWHETZY_ALL = "OP_markers_hwhetzy_all"; //[OBSERVED, EXPECTED]
-		public static final String VAR_OP_MARKERS_HWHETZY_CASE = "OP_markers_hwhetzy_case"; //[OBSERVED, EXPECTED]
-		public static final String VAR_OP_MARKERS_HWHETZY_CTRL = "OP_markers_hwhetzy_ctrl"; //[OBSERVED, EXPECTED]
-		public static final String VAR_OP_MARKERS_HWHETZY_ALT = "OP_markers_hwhetzy_alt"; //[OBSERVED, EXPECTED]
+		public static final String VAR_OP_MARKERS_HWHETZY_ALL = "OP_markers_hwhetzy_all"; // [OBSERVED, EXPECTED]
+		public static final String VAR_OP_MARKERS_HWHETZY_CASE = "OP_markers_hwhetzy_case"; // [OBSERVED, EXPECTED]
+		public static final String VAR_OP_MARKERS_HWHETZY_CTRL = "OP_markers_hwhetzy_ctrl"; // [OBSERVED, EXPECTED]
+		public static final String VAR_OP_MARKERS_HWHETZY_ALT = "OP_markers_hwhetzy_alt"; // [OBSERVED, EXPECTED]
+
+		private HardyWeinberg() {
+		}
 	}
 
 	public static class Association {
@@ -111,28 +126,34 @@ public class cNetCDF {
 		public static final String VAR_OP_MARKERS_ASTrendTestTP = "OP_markers_as_cochranarmitageTP";
 		public static final String VAR_OP_MARKERS_ASGenotypicAssociationTP2OR = "OP_markers_as_gnotypTP";
 		public static final String VAR_OP_MARKERS_ASAllelicAssociationTPOR = "OP_markers_as_allelicTPOR";
+
+		private Association() {
+		}
 	}
 
 	//</editor-fold>
 	public static class Strides {
 
-		public final static int STRIDE_GT = 2;
-		public final static int STRIDE_MARKER_NAME = 64;
-		public final static int STRIDE_CHR = 8;
-		public final static int STRIDE_POS = 32;
-		public final static int STRIDE_SAMPLE_NAME = 64;
-		public final static int STRIDE_STRAND = 4;
+		public static final int STRIDE_GT = 2;
+		public static final int STRIDE_MARKER_NAME = 64;
+		public static final int STRIDE_CHR = 8;
+		public static final int STRIDE_POS = 32;
+		public static final int STRIDE_SAMPLE_NAME = 64;
+		public static final int STRIDE_STRAND = 4;
+
+		private Strides() {
+		}
 	}
 
 	public static class Defaults {
 
-		public final static byte[] DEFAULT_GT = new byte[]{48, 48};
-		public final static String TMP_SEPARATOR = ";";
-		public final static String DEFAULT_AFFECTION = "Affection";
-		public final static String DEFAULT_EXTPHENOTYPE = "External_Phenotype";
-		public final static String DEFAULT_HW = "Hardy-Weinberg";
-		public final static int DEFAULT_MISMATCH_YES = 1;
-		public final static int DEFAULT_MISMATCH_NO = 0;
+		public static final byte[] DEFAULT_GT = new byte[]{48, 48};
+		public static final String TMP_SEPARATOR = ";";
+		public static final String DEFAULT_AFFECTION = "Affection";
+		public static final String DEFAULT_EXTPHENOTYPE = "External_Phenotype";
+		public static final String DEFAULT_HW = "Hardy-Weinberg";
+		public static final int DEFAULT_MISMATCH_YES = 1;
+		public static final int DEFAULT_MISMATCH_NO = 0;
 
 		public static class AlleleBytes {
 
@@ -147,6 +168,9 @@ public class cNetCDF {
 			public static final byte _4 = 52;
 			public static final byte dash = 45;
 			public static final byte _0 = 48;
+
+			private AlleleBytes() {
+			}
 		}
 
 		public static enum GenotypeEncoding {
@@ -184,7 +208,7 @@ public class cNetCDF {
 				}
 			}
 		}
-		public static String[] Chromosomes = new String[]{"1", "2", "3", "4", "5", "6", "7", "8", "9",
+		public static final String[] Chromosomes = new String[]{"1", "2", "3", "4", "5", "6", "7", "8", "9",
 			"10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20",
 			"21", "22", "X", "Y", "XY", "MT"};
 
@@ -247,6 +271,9 @@ public class cNetCDF {
 					return null;
 				}
 			}
+		}
+
+		private Defaults() {
 		}
 	}
 }

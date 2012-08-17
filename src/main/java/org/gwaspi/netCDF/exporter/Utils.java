@@ -14,12 +14,15 @@ import org.gwaspi.samples.SampleManager;
  */
 public class Utils {
 
+	private Utils() {
+	}
+
 	public static HashMap getCurrentSampleFormattedInfo(String sampleId, Object poolId) throws IOException {
 		HashMap sampleInfo = new HashMap();
 
 		List<Map<String, Object>> rs = SampleManager.getCurrentSampleInfoFromDB(sampleId, poolId);
 
-		//PREVENT PHANTOM-DB READS EXCEPTIONS
+		// PREVENT PHANTOM-DB READS EXCEPTIONS
 		if (!rs.isEmpty() && rs.get(0).size() == org.gwaspi.constants.cDBSamples.T_CREATE_SAMPLES_INFO.length) {
 			Object familyId = rs.get(0).get(org.gwaspi.constants.cDBSamples.f_FAMILY_ID);
 			if (familyId == null) {

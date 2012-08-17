@@ -8,6 +8,9 @@ package org.gwaspi.statistics;
  */
 public class Pvalue {
 
+	private Pvalue() {
+	}
+
 	public static double calculatePvalueFromChiSqr(double chiSqr, int df) {
 		if (df == 1) {
 			if (chiSqr < 1) {
@@ -67,7 +70,7 @@ public class Pvalue {
 
 			double incr = 0.5;
 			int r = 7;
-			double w = (double) incr / (4 * r);
+			double w = incr / (4 * r);
 
 			double tempQ = 1;
 			double Q = 0;
@@ -115,7 +118,7 @@ public class Pvalue {
 		double q = Math.pow(z, 2);
 
 		if (Math.abs(z) > 7) {
-			return (double) (1 - (1 / q) + (3 / (q * q))) * Math.exp(-q / 2)
+			return (1 - (1 / q) + (3 / (q * q))) * Math.exp(-q / 2)
 					/ (Math.abs(z) * Math.sqrt(Math.PI / 2));
 		}
 		return calculatePvalueFromChiSqr(q, 1);

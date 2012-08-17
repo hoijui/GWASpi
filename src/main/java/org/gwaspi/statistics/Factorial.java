@@ -1,6 +1,7 @@
 package org.gwaspi.statistics;
 
-/* The Poor Man's Implementation of the factorial.
+/**
+ * The Poor Man's Implementation of the factorial.
  * All math is on board, no additional libraries
  * are needed. Good enough to compute the factorial
  * up to n=10000 in a few seconds.
@@ -23,7 +24,7 @@ public class Factorial {
 	}
 	private long N;
 
-	//TODO: CONVERT TO BIGINT?
+	// TODO CONVERT TO BIGINT?
 	public String factorial(int n) {
 		if (n < 0) {
 			throw new ArithmeticException("Factorial: n has to be >= 0, but was " + n);

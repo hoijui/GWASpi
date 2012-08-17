@@ -11,7 +11,7 @@ import javax.swing.JTextField;
  * IBE, Institute of Evolutionary Biology (UPF-CSIC)
  * CEXS-UPF-PRBB
  */
-class DoubleInputVerifier extends InputVerifier {
+public class DoubleInputVerifier extends InputVerifier {
 
 	private int lengthBeforeDot = 1;
 	private int lengthAfterDot = 10;

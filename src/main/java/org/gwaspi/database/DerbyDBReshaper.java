@@ -16,6 +16,9 @@ import org.w3c.dom.Element;
  */
 public class DerbyDBReshaper {
 
+	private DerbyDBReshaper() {
+	}
+
 	public static void alterTableUpdates() throws URISyntaxException, ParseException, IOException {
 
 		DbManager db = ServiceLocator.getDbManager(org.gwaspi.constants.cDBGWASpi.DB_DATACENTER);
@@ -23,16 +26,16 @@ public class DerbyDBReshaper {
 		URL localVersionPath = DerbyDBReshaper.class.getClass().getResource(org.gwaspi.constants.cGlobal.LOCAL_VERSION_XML);
 		Document localDom = org.gwaspi.global.XMLParser.parseXmlFile(localVersionPath.toURI().toString());
 
-		if (localDom != null) { //Found local version info
-			//Retrieve data from XML files
+		if (localDom != null) { // Found local version info
+			// Retrieve data from XML files
 			ArrayList<Element> localElements = org.gwaspi.global.XMLParser.parseDocument(localDom, "GWASpi");
 			Date localUpdateDate = org.gwaspi.global.XMLParser.getDateValue(localElements.get(0), "Date");
 			String localVersionNumber = org.gwaspi.global.XMLParser.getTextValue(localElements.get(0), "Number");
-			//MAKE VERSION CHECKS
+			// MAKE VERSION CHECKS
 
 			//<editor-fold defaultstate="collapsed" desc="IF < 2.0.1">
 
-			if (localVersionNumber.compareTo("2.0.1") < 0) { //Remote version is still compatible with local version
+			if (localVersionNumber.compareTo("2.0.1") < 0) { // Remote version is still compatible with local version
 				System.out.println("Updating Sample ID field size");
 				StringBuilder alterSQLprefix = new StringBuilder("ALTER TABLE ");
 				alterSQLprefix.append(org.gwaspi.constants.cDBGWASpi.SCH_SAMPLES);
@@ -70,8 +73,5 @@ public class DerbyDBReshaper {
 			//</editor-fold>
 
 		}
-
-		db = null;
-
 	}
 }

@@ -138,7 +138,7 @@ public class Report_AnalysisPanel extends javax.swing.JPanel {
 
 	//<editor-fold defaultstate="collapsed" desc="METHODS">
 	private void actionDeleteOperation(java.awt.event.ActionEvent evt) {
-		//TEST IF THE DELETED ITEM IS REQUIRED FOR A QUED WORKER
+		// TEST IF THE DELETED ITEM IS REQUIRED FOR A QUED WORKER
 		if (org.gwaspi.threadbox.SwingWorkerItemList.permitsDeletion(null, currentOP.getOperationId(), null)) {
 			int option = JOptionPane.showConfirmDialog(this, Text.Operation.confirmDelete1);
 			if (option == JOptionPane.YES_OPTION) {
@@ -156,8 +156,6 @@ public class Report_AnalysisPanel extends javax.swing.JPanel {
 		} else {
 			org.gwaspi.gui.utils.Dialogs.showWarningDialogue(Text.Processes.cantDeleteRequiredItem);
 		}
-
-
 	}
 	//</editor-fold>
 }

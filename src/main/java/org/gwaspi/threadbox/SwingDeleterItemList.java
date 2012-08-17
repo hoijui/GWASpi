@@ -1,7 +1,5 @@
 package org.gwaspi.threadbox;
 
-import org.gwaspi.database.DbManager;
-import org.gwaspi.global.ServiceLocator;
 import org.gwaspi.global.Text;
 import java.io.IOException;
 import java.util.ArrayList;

@@ -1,11 +1,11 @@
 package org.gwaspi.gui;
 
-import org.gwaspi.global.Text;
-import org.gwaspi.gui.utils.Dialogs;
 import org.gwaspi.constants.cExport.ExportFormat;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.database.DbManager;
 import org.gwaspi.global.ServiceLocator;
+import org.gwaspi.global.Text;
+import org.gwaspi.gui.utils.Dialogs;
 import org.gwaspi.gui.utils.HelpURLs;
 import java.awt.Component;
 import java.awt.event.ActionEvent;

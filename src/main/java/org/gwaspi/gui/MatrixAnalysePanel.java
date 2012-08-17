@@ -1,7 +1,7 @@
 package org.gwaspi.gui;
 
-import org.gwaspi.global.Text;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
+import org.gwaspi.global.Text;
 import org.gwaspi.gui.utils.HelpURLs;
 import java.awt.Color;
 import java.awt.Component;
@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JComponent;
@@ -19,8 +20,8 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import org.gwaspi.model.Operation;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.netCDF.matrices.MatrixMetadata;
-import org.gwaspi.netCDF.operations.OperationManager;
 import org.gwaspi.netCDF.operations.GWASinOneGOParams;
+import org.gwaspi.netCDF.operations.OperationManager;
 import org.gwaspi.samples.SamplesParser;
 import org.gwaspi.threadbox.MultiOperations;
 import ucar.ma2.InvalidRangeException;
@@ -387,15 +388,14 @@ public class MatrixAnalysePanel extends javax.swing.JPanel {
 	private void actionAllelicTests() throws IOException, InvalidRangeException {
 
 		int censusOPId = Integer.MIN_VALUE;
-		Operation markerCensusOP = null;
 		if (currentOP != null) {
 			censusOPId = currentOP.getOperationId();
 		} else {
-			//REQUEST WHICH CENSUS TO USE
+			// REQUEST WHICH CENSUS TO USE
 			ArrayList censusTypesAL = new ArrayList();
 			censusTypesAL.add(OPType.MARKER_CENSUS_BY_AFFECTION.toString());
 			censusTypesAL.add(OPType.MARKER_CENSUS_BY_PHENOTYPE.toString());
-			markerCensusOP = org.gwaspi.gui.utils.Dialogs.showOperationCombo(parentMatrix.getMatrixId(), censusTypesAL, Text.Operation.GTFreqAndHW);
+			Operation markerCensusOP = org.gwaspi.gui.utils.Dialogs.showOperationCombo(parentMatrix.getMatrixId(), censusTypesAL, Text.Operation.GTFreqAndHW);
 			if (markerCensusOP != null) {
 				censusOPId = markerCensusOP.getOperationId();
 			}
@@ -485,15 +485,14 @@ public class MatrixAnalysePanel extends javax.swing.JPanel {
 
 	private void actionGenotypicTests() throws IOException, InvalidRangeException {
 		int censusOPId = Integer.MIN_VALUE;
-		Operation markerCensusOP = null;
 		if (currentOP != null) {
 			censusOPId = currentOP.getOperationId();
 		} else {
-			//REQUEST WHICH CENSUS TO USE
+			// REQUEST WHICH CENSUS TO USE
 			ArrayList censusTypesAL = new ArrayList();
 			censusTypesAL.add(OPType.MARKER_CENSUS_BY_AFFECTION.toString());
 			censusTypesAL.add(OPType.MARKER_CENSUS_BY_PHENOTYPE.toString());
-			markerCensusOP = org.gwaspi.gui.utils.Dialogs.showOperationCombo(parentMatrix.getMatrixId(), censusTypesAL, Text.Operation.GTFreqAndHW);
+			Operation markerCensusOP = org.gwaspi.gui.utils.Dialogs.showOperationCombo(parentMatrix.getMatrixId(), censusTypesAL, Text.Operation.GTFreqAndHW);
 			if (markerCensusOP != null) {
 				censusOPId = markerCensusOP.getOperationId();
 			}
@@ -584,15 +583,14 @@ public class MatrixAnalysePanel extends javax.swing.JPanel {
 	private void actionTrendTests() throws IOException, InvalidRangeException {
 
 		int censusOPId = Integer.MIN_VALUE;
-		Operation markerCensusOP = null;
 		if (currentOP != null) {
 			censusOPId = currentOP.getOperationId();
 		} else {
-			//REQUEST WHICH CENSUS TO USE
+			// REQUEST WHICH CENSUS TO USE
 			ArrayList censusTypesAL = new ArrayList();
 			censusTypesAL.add(OPType.MARKER_CENSUS_BY_AFFECTION.toString());
 			censusTypesAL.add(OPType.MARKER_CENSUS_BY_PHENOTYPE.toString());
-			markerCensusOP = org.gwaspi.gui.utils.Dialogs.showOperationCombo(parentMatrix.getMatrixId(), censusTypesAL, Text.Operation.GTFreqAndHW);
+			Operation markerCensusOP = org.gwaspi.gui.utils.Dialogs.showOperationCombo(parentMatrix.getMatrixId(), censusTypesAL, Text.Operation.GTFreqAndHW);
 			if (markerCensusOP != null) {
 				censusOPId = markerCensusOP.getOperationId();
 			}
@@ -681,14 +679,13 @@ public class MatrixAnalysePanel extends javax.swing.JPanel {
 	}
 
 	private void actionGenFreqAndHW() throws InvalidRangeException {
-		int choice = JOptionPane.YES_OPTION;
 
 		ArrayList necessaryOPsAL = new ArrayList();
 		necessaryOPsAL.add(org.gwaspi.constants.cNetCDF.Defaults.OPType.SAMPLE_QA.toString());
 		necessaryOPsAL.add(org.gwaspi.constants.cNetCDF.Defaults.OPType.MARKER_QA.toString());
 		ArrayList missingOPsAL = OperationManager.checkForNecessaryOperations(necessaryOPsAL, parentMatrix.getMatrixId());
 
-		choice = org.gwaspi.gui.utils.Dialogs.showOptionDialogue(Text.Operation.chosePhenotype, Text.Operation.genotypeFreqAndHW, Text.Operation.htmlCurrentAffectionFromDB, Text.Operation.htmlAffectionFromFile, Text.All.cancel);
+		int choice = org.gwaspi.gui.utils.Dialogs.showOptionDialogue(Text.Operation.chosePhenotype, Text.Operation.genotypeFreqAndHW, Text.Operation.htmlCurrentAffectionFromDB, Text.Operation.htmlAffectionFromFile, Text.All.cancel);
 		File phenotypeFile = null;
 		if (choice == JOptionPane.NO_OPTION) { //BY EXTERNAL PHENOTYPE FILE
 			phenotypeFile = org.gwaspi.gui.utils.Dialogs.selectFilesAndDirertoriesDialogue(JOptionPane.OK_OPTION);
@@ -746,9 +743,8 @@ public class MatrixAnalysePanel extends javax.swing.JPanel {
 	}
 
 	private void actionGWASInOneGo() throws InvalidRangeException {
-		int choice = JOptionPane.YES_OPTION;
 		try {
-			ArrayList blackListOPsAL = new ArrayList();
+			List blackListOPsAL = new ArrayList();
 			blackListOPsAL.add(org.gwaspi.constants.cNetCDF.Defaults.OPType.MARKER_CENSUS_BY_AFFECTION.toString());
 
 			ArrayList necessaryOPsAL = new ArrayList();
@@ -758,7 +754,7 @@ public class MatrixAnalysePanel extends javax.swing.JPanel {
 
 			MatrixMetadata matrixMetadata = new MatrixMetadata(parentMatrix.getMatrixId());
 
-			choice = org.gwaspi.gui.utils.Dialogs.showOptionDialogue(Text.Operation.chosePhenotype, Text.Operation.genotypeFreqAndHW, Text.Operation.htmlCurrentAffectionFromDB, Text.Operation.htmlAffectionFromFile, Text.All.cancel);
+			int choice = org.gwaspi.gui.utils.Dialogs.showOptionDialogue(Text.Operation.chosePhenotype, Text.Operation.genotypeFreqAndHW, Text.Operation.htmlCurrentAffectionFromDB, Text.Operation.htmlAffectionFromFile, Text.All.cancel);
 			File phenotypeFile = null;
 			if (choice == JOptionPane.NO_OPTION) { //BY EXTERNAL PHENOTYPE FILE
 				phenotypeFile = org.gwaspi.gui.utils.Dialogs.selectFilesAndDirertoriesDialogue(JOptionPane.OK_OPTION);

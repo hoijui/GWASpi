@@ -2,6 +2,8 @@ package org.gwaspi.netCDF.operations;
 
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.database.DbManager;
+import org.gwaspi.global.ServiceLocator;
+import org.gwaspi.global.Text;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -11,9 +13,6 @@ import org.gwaspi.netCDF.matrices.MatrixMetadata;
 import org.gwaspi.samples.SampleSet;
 import ucar.ma2.*;
 import ucar.nc2.*;
-import org.gwaspi.constants.cNetCDF.*;
-import org.gwaspi.global.ServiceLocator;
-import org.gwaspi.global.Text;
 
 /**
  *
@@ -23,22 +22,22 @@ import org.gwaspi.global.Text;
  */
 public class MatrixMergeSamples_opt {
 
-	protected int studyId = Integer.MIN_VALUE;
-	protected int rdMatrix1Id = Integer.MIN_VALUE;
-	protected int rdMatrix2Id = Integer.MIN_VALUE;
-	protected int wrMatrixId = Integer.MIN_VALUE;
-	protected String wrMatrixFriendlyName = "";
-	protected String wrMatrixDescription = "";
-	MatrixMetadata rdMatrix1Metadata = null;
-	MatrixMetadata rdMatrix2Metadata = null;
-	MatrixMetadata wrMatrixMetadata = null;
-	MarkerSet_opt rdwrMarkerSet1 = null;
-	MarkerSet_opt rdMarkerSet2 = null;
-	MarkerSet_opt wrMarkerSet = null;
-	SampleSet rdSampleSet1 = null;
-	SampleSet rdSampleSet2 = null;
-	SampleSet wrSampleSet = null;
-	protected static DbManager dBManager = null;
+	private int studyId = Integer.MIN_VALUE;
+	private int rdMatrix1Id = Integer.MIN_VALUE;
+	private int rdMatrix2Id = Integer.MIN_VALUE;
+	private int wrMatrixId = Integer.MIN_VALUE;
+	private String wrMatrixFriendlyName = "";
+	private String wrMatrixDescription = "";
+	private MatrixMetadata rdMatrix1Metadata = null;
+	private MatrixMetadata rdMatrix2Metadata = null;
+	private MatrixMetadata wrMatrixMetadata = null;
+	private MarkerSet_opt rdwrMarkerSet1 = null;
+	private MarkerSet_opt rdMarkerSet2 = null;
+	private MarkerSet_opt wrMarkerSet = null;
+	private SampleSet rdSampleSet1 = null;
+	private SampleSet rdSampleSet2 = null;
+	private SampleSet wrSampleSet = null;
+	private static DbManager dBManager = null;
 
 	/**
 	 * This constructor to join 2 Matrices.
@@ -175,7 +174,7 @@ public class MatrixMergeSamples_opt {
 
 			//Keep rdwrMarkerIdSetLHM1 from Matrix1 constant
 			//MARKERSET MARKERID
-			ArrayChar.D2 markersD2 = Utils.writeLHMKeysToD2ArrayChar(rdwrMarkerSet1.markerIdSetLHM, cNetCDF.Strides.STRIDE_MARKER_NAME);
+			ArrayChar.D2 markersD2 = Utils.writeLHMKeysToD2ArrayChar(rdwrMarkerSet1.getMarkerIdSetLHM(), cNetCDF.Strides.STRIDE_MARKER_NAME);
 			int[] markersOrig = new int[]{0, 0};
 			try {
 				wrNcFile.write(cNetCDF.Variables.VAR_MARKERSET, markersOrig, markersD2);
@@ -187,11 +186,11 @@ public class MatrixMergeSamples_opt {
 
 			//MARKERSET RSID
 			rdwrMarkerSet1.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_RSID);
-			Utils.saveCharLHMValueToWrMatrix(wrNcFile, rdwrMarkerSet1.markerIdSetLHM, cNetCDF.Variables.VAR_MARKERS_RSID, cNetCDF.Strides.STRIDE_MARKER_NAME);
+			Utils.saveCharLHMValueToWrMatrix(wrNcFile, rdwrMarkerSet1.getMarkerIdSetLHM(), cNetCDF.Variables.VAR_MARKERS_RSID, cNetCDF.Strides.STRIDE_MARKER_NAME);
 
 			//MARKERSET CHROMOSOME
 			rdwrMarkerSet1.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
-			Utils.saveCharLHMValueToWrMatrix(wrNcFile, rdwrMarkerSet1.markerIdSetLHM, cNetCDF.Variables.VAR_MARKERS_CHR, cNetCDF.Strides.STRIDE_CHR);
+			Utils.saveCharLHMValueToWrMatrix(wrNcFile, rdwrMarkerSet1.getMarkerIdSetLHM(), cNetCDF.Variables.VAR_MARKERS_CHR, cNetCDF.Strides.STRIDE_CHR);
 
 			//Set of chromosomes found in matrix along with number of markersinfo
 			org.gwaspi.netCDF.operations.Utils.saveCharLHMKeyToWrMatrix(wrNcFile, rdChrInfoSetLHM, cNetCDF.Variables.VAR_CHR_IN_MATRIX, 8);
@@ -203,19 +202,19 @@ public class MatrixMergeSamples_opt {
 			//MARKERSET POSITION
 			rdwrMarkerSet1.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_POS);
 			//Utils.saveCharLHMValueToWrMatrix(wrNcFile, rdwrMarkerIdSetLHM1, cNetCDF.Variables.VAR_MARKERS_POS, cNetCDF.Strides.STRIDE_POS);
-			Utils.saveIntLHMD1ToWrMatrix(wrNcFile, rdwrMarkerSet1.markerIdSetLHM, cNetCDF.Variables.VAR_MARKERS_POS);
+			Utils.saveIntLHMD1ToWrMatrix(wrNcFile, rdwrMarkerSet1.getMarkerIdSetLHM(), cNetCDF.Variables.VAR_MARKERS_POS);
 
 
 			//MARKERSET DICTIONARY ALLELES
 			Attribute hasDictionary1 = rdNcFile1.findGlobalAttribute(cNetCDF.Attributes.GLOB_HAS_DICTIONARY);
 			if ((Integer) hasDictionary1.getNumericValue() == 1) {
 				rdwrMarkerSet1.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_BASES_DICT);
-				Utils.saveCharLHMValueToWrMatrix(wrNcFile, rdwrMarkerSet1.markerIdSetLHM, cNetCDF.Variables.VAR_MARKERS_BASES_DICT, cNetCDF.Strides.STRIDE_GT);
+				Utils.saveCharLHMValueToWrMatrix(wrNcFile, rdwrMarkerSet1.getMarkerIdSetLHM(), cNetCDF.Variables.VAR_MARKERS_BASES_DICT, cNetCDF.Strides.STRIDE_GT);
 			}
 
 			//GENOTYPE STRAND
 			rdwrMarkerSet1.fillInitLHMWithVariable(cNetCDF.Variables.VAR_GT_STRAND);
-			Utils.saveCharLHMValueToWrMatrix(wrNcFile, rdwrMarkerSet1.markerIdSetLHM, cNetCDF.Variables.VAR_GT_STRAND, 3);
+			Utils.saveCharLHMValueToWrMatrix(wrNcFile, rdwrMarkerSet1.getMarkerIdSetLHM(), cNetCDF.Variables.VAR_GT_STRAND, 3);
 
 			//</editor-fold>
 
@@ -237,18 +236,18 @@ public class MatrixMergeSamples_opt {
 				if (sampleIndices[0] == 2) { //Read from Matrix2
 					rdwrMarkerSet1.fillInitLHMWithMyValue(org.gwaspi.constants.cNetCDF.Defaults.DEFAULT_GT);
 					rdMarkerSet2.fillGTsForCurrentSampleIntoInitLHM(sampleIndices[1]);
-					for (Iterator it3 = rdwrMarkerSet1.markerIdSetLHM.keySet().iterator(); it3.hasNext();) {
+					for (Iterator it3 = rdwrMarkerSet1.getMarkerIdSetLHM().keySet().iterator(); it3.hasNext();) {
 						Object key = it3.next();
-						if (rdMarkerSet2.markerIdSetLHM.containsKey(key)) {
-							Object value = rdMarkerSet2.markerIdSetLHM.get(key);
-							rdwrMarkerSet1.markerIdSetLHM.put(key, value);
+						if (rdMarkerSet2.getMarkerIdSetLHM().containsKey(key)) {
+							Object value = rdMarkerSet2.getMarkerIdSetLHM().get(key);
+							rdwrMarkerSet1.getMarkerIdSetLHM().put(key, value);
 						}
 					}
 					//rdwrMarkerIdSetLHM1 = rdMarkerSet2.fillWrLHMWithRdLHMValue(rdwrMarkerIdSetLHM1, rdMarkerIdSetLHM2);
 				}
 
 				//Write wrMarkerIdSetLHM to A3 ArrayChar and save to wrMatrix
-				Utils.saveSingleSampleGTsToMatrix(wrNcFile, rdwrMarkerSet1.markerIdSetLHM, sampleIndices[2]);
+				Utils.saveSingleSampleGTsToMatrix(wrNcFile, rdwrMarkerSet1.getMarkerIdSetLHM(), sampleIndices[2]);
 
 			}
 
@@ -320,7 +319,7 @@ public class MatrixMergeSamples_opt {
 		rdPos = 0;
 		for (Iterator it = sampleSetLHM2.keySet().iterator(); it.hasNext();) {
 			Object key = it.next();
-			int[] position = new int[3];
+			int[] position;
 			//IF SAMPLE ALLREADY EXISTS IN MATRIX1 SUBSTITUTE VALUES WITH MATRIX2
 			if (resultLHM.containsKey(key)) {
 				position = (int[]) resultLHM.get(key);
@@ -349,13 +348,12 @@ public class MatrixMergeSamples_opt {
 
 		NetcdfFile rdNcFile = NetcdfFile.open(wrMatrixMetadata.getPathToMatrix());
 
-		//Iterate through markerset, take it marker by marker
+		// Iterate through markerset, take it marker by marker
 		int markerNb = 0;
 		double mismatchCount = 0;
-		double mismatchRatio = 0;
 
-		//Iterate through markerSet
-		for (Iterator it = wrMarkerSet.markerIdSetLHM.keySet().iterator(); it.hasNext();) {
+		// Iterate through markerSet
+		for (Iterator it = wrMarkerSet.getMarkerIdSetLHM().keySet().iterator(); it.hasNext();) {
 			Object markerId = it.next();
 			LinkedHashMap knownAlleles = new LinkedHashMap();
 
@@ -396,7 +394,7 @@ public class MatrixMergeSamples_opt {
 			}
 		}
 
-		mismatchRatio = (double) mismatchCount / wrSampleSet.getSampleSetSize();
+		double mismatchRatio = mismatchCount / wrSampleSet.getSampleSetSize();
 		result[0] = mismatchCount;
 		result[1] = mismatchRatio;
 

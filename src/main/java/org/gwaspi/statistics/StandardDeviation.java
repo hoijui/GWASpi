@@ -4,8 +4,6 @@ package org.gwaspi.statistics;
  *
  * @author u56124
  */
-import java.util.*;
-
 public class StandardDeviation {
 
 	public double findMean(int array[]) {

@@ -2,11 +2,6 @@ package org.gwaspi.gui.utils;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.NetworkInterface;
-import java.net.SocketException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.Enumeration;
 
 /**
  * <b>Bare Bones Browser Launch for Java</b><br> Utility class to open a web
@@ -25,6 +20,9 @@ public class URLInDefaultBrowser {
 	static final String[] browsers = {"firefox", "opera", "konqueror", "epiphany",
 		"seamonkey", "galeon", "kazehakase", "mozilla", "chromium-browser", "netscape"};
 
+	private URLInDefaultBrowser() {
+	}
+
 	/**
 	 * Opens the specified web page in a web browser
 	 *
@@ -34,14 +32,14 @@ public class URLInDefaultBrowser {
 	public static void browseGenericURL(String url) throws IOException {
 		if (!java.awt.Desktop.isDesktopSupported()) {
 			System.err.println("Desktop is not supported (fatal)");
-//            System.exit(1);
+//			System.exit(1);
 		}
 
 		java.awt.Desktop desktop = java.awt.Desktop.getDesktop();
 
 		if (!desktop.isSupported(java.awt.Desktop.Action.BROWSE)) {
 			System.err.println("Desktop doesn't support the browse action (fatal)");
-//            System.exit(1);
+//			System.exit(1);
 		}
 
 
@@ -62,7 +60,7 @@ public class URLInDefaultBrowser {
 
 	public static void browseHelpURL(String helpFile) throws IOException {
 		//String helpDir = org.gwaspi.global.Config.getConfigValue("HelpDir", "");
-		String url = "";
+		String url;
 
 		if (!org.gwaspi.global.Utils.checkIntenetConnection()) {
 			String[] resourceURL = URLInDefaultBrowser.class.getClass().getResource("/resources/logo_white.png").toString().split("/");

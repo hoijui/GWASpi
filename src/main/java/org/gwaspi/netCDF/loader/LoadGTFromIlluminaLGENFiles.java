@@ -9,13 +9,13 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import ucar.ma2.*;
-import ucar.nc2.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
+import ucar.ma2.*;
+import ucar.nc2.*;
 
 /**
  *
@@ -254,11 +254,11 @@ public class LoadGTFromIlluminaLGENFiles {
 					new String[]{constants.cDBMatrix.f_DESCRIPTION},
 					new Object[]{descSB.toString()},
 					new String[]{constants.cDBMatrix.f_ID},
-					new Object[]{matrixFactory.matrixMetaData.getMatrixId()});
+					new Object[]{matrixFactory.getMatrixMetaData().getMatrixId()});
 
 			//CLOSE FILE
 			ncfile.close();
-			result = matrixFactory.matrixMetaData.getMatrixId();
+			result = matrixFactory.getMatrixMetaData().getMatrixId();
 		} catch (IOException e) {
 			System.err.println("ERROR creating file " + ncfile.getLocation() + "\n" + e);
 		}

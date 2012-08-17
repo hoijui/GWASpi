@@ -1,4 +1,3 @@
-
 /*
  * ChartDefaultDisplay.java
  *

@@ -1,11 +1,10 @@
 package org.gwaspi.netCDF;
 
-import java.util.List;
-import ucar.ma2.*;
-import ucar.nc2.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
+import ucar.ma2.*;
+import ucar.nc2.*;
 
 public class PrototypeWriteD1ArrayLong {
 
@@ -30,17 +29,15 @@ public class PrototypeWriteD1ArrayLong {
 			System.err.println("ERROR creating file " + ncfile.getLocation() + "\n" + e);
 		}
 
-
 		////////////// FILL'ER UP! ////////////////
-//        List<Dimension> dims = ncfile.getDimensions();
-//        Dimension samplesDim = dims.get(0);
-//        Dimension markersDim = dims.get(1);
-//        Dimension markerSpanDim = dims.get(2);
+//		List<Dimension> dims = ncfile.getDimensions();
+//		Dimension samplesDim = dims.get(0);
+//		Dimension markersDim = dims.get(1);
+//		Dimension markerSpanDim = dims.get(2);
 
 		ArrayInt intArray = new ArrayInt.D1(markersDim.getLength());
 		int i;
 		Index ima = intArray.getIndex();
-
 
 		int method = 1;
 		switch (method) {
@@ -55,13 +52,11 @@ public class PrototypeWriteD1ArrayLong {
 				}
 				break;
 			case 3:
-				//METHOD 3: One sample at a time -> feed in all snps
+				// METHOD 3: One sample at a time -> feed in all snps
 				break;
 		}
 
-
-
-		int[] offsetOrigin = new int[1]; //0,0
+		int[] offsetOrigin = new int[1]; // 0,0
 		try {
 			ncfile.write("marker_position_int", offsetOrigin, intArray);
 			//ncfile.write("genotype", origin, A);
@@ -77,6 +72,5 @@ public class PrototypeWriteD1ArrayLong {
 		} catch (IOException e) {
 			System.err.println("ERROR creating file " + ncfile.getLocation() + "\n" + e);
 		}
-
 	}
 }

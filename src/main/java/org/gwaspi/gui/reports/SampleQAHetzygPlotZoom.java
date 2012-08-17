@@ -1,9 +1,5 @@
 package org.gwaspi.gui.reports;
 
-/**
- *
- * @author fernando
- */
 import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -21,7 +17,6 @@ import javax.swing.JOptionPane;
 import org.gwaspi.model.Operation;
 import org.gwaspi.netCDF.matrices.MatrixMetadata;
 import org.gwaspi.netCDF.operations.OperationMetadata;
-
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.ChartUtilities;
@@ -43,6 +38,10 @@ import org.jfree.data.xy.XYDataset;
 import org.jfree.ui.RectangleAnchor;
 import org.jfree.ui.TextAnchor;
 
+/**
+ *
+ * @author fernando
+ */
 public final class SampleQAHetzygPlotZoom extends javax.swing.JPanel {
 
 	private static int opId;
@@ -50,19 +49,19 @@ public final class SampleQAHetzygPlotZoom extends javax.swing.JPanel {
 	private static OperationMetadata rdOPMetadata;
 	public static LinkedHashMap labelerLHM;
 	private static MatrixMetadata rdMatrixMetadata;
-	public static String currentMarkerId;
-	public static long centerPhysPos;
-	public static long startPhysPos;
-	public static int defaultMarkerNb = (int) Math.round(100000 * ((double) org.gwaspi.gui.StartGWASpi.maxHeapSize / 2000)); //roughly 2000MB needed per 100.000 plotted markers
+	private static String currentMarkerId;
+	private static long centerPhysPos;
+	private static long startPhysPos;
+	private static int defaultMarkerNb = (int) Math.round(100000 * ((double) org.gwaspi.gui.StartGWASpi.maxHeapSize / 2000)); //roughly 2000MB needed per 100.000 plotted markers
 	//private int sliderSize;
 	private static XYDataset initXYDataset;
 	private static JFreeChart zoomChart;
 	private static ChartPanel zoomPanel;
-	protected static Double hetzyThreshold = 0.015;
-	protected static Double missingThreshold = 0.5;
-	protected static Color manhattan_back = Color.getHSBColor(0.1f, 0.0f, 0.9f);
-	protected static Color manhattan_backalt = Color.getHSBColor(0.1f, 0.0f, 0.85f);
-	protected static Color manhattan_dot = Color.red;
+	private static Double hetzyThreshold = 0.015;
+	private static Double missingThreshold = 0.5;
+	private static Color manhattan_back = Color.getHSBColor(0.1f, 0.0f, 0.9f);
+	private static Color manhattan_backalt = Color.getHSBColor(0.1f, 0.0f, 0.85f);
+	private static Color manhattan_dot = Color.red;
 	// Variables declaration - do not modify
 	private static javax.swing.JButton btn_Reset;
 	private static javax.swing.JButton btn_Save;
@@ -312,11 +311,11 @@ public final class SampleQAHetzygPlotZoom extends javax.swing.JPanel {
 
 		// </editor-fold>
 
-//        setCursor(org.gwaspi.gui.utils.CursorUtils.defaultCursor);
+//		setCursor(org.gwaspi.gui.utils.CursorUtils.defaultCursor);
 	}
 
 	// <editor-fold defaultstate="collapsed" desc="CHART GENERATOR">
-	protected static XYDataset getSampleHetzygDataset(int _opId) throws IOException {
+	static XYDataset getSampleHetzygDataset(int _opId) throws IOException {
 
 		XYDataset xyd = org.gwaspi.reports.GenericReportGenerator_opt.getSampleHetzygDataset(opId);
 		return xyd;
@@ -357,15 +356,15 @@ public final class SampleQAHetzygPlotZoom extends javax.swing.JPanel {
 		//DOTS RENDERER
 		XYLineAndShapeRenderer renderer = (XYLineAndShapeRenderer) plot.getRenderer();
 		renderer.setSeriesPaint(0, manhattan_dot);
-//        renderer.setSeriesOutlinePaint(0, Color.DARK_GRAY);
-//        renderer.setUseOutlinePaint(true);
+//		renderer.setSeriesOutlinePaint(0, Color.DARK_GRAY);
+//		renderer.setUseOutlinePaint(true);
 		//Set dot shape of the currently appended Series
 		renderer.setSeriesShape(0, new Rectangle2D.Double(-1, -1, 2, 2));
 
 
 		renderer.setSeriesVisibleInLegend(0, false);
 
-		//AXIS
+		// AXIS
 		double maxHetzy = 0.005;
 		for (int i = 0; i < dataset.getItemCount(0); i++) {
 			if (maxHetzy < dataset.getXValue(0, i)) {
@@ -393,14 +392,14 @@ public final class SampleQAHetzygPlotZoom extends javax.swing.JPanel {
 		missratAxis.setRange(0, maxMissrat * 1.1);
 
 
-		//Add significance Threshold to subplot
+		// Add significance Threshold to subplot
 		final Marker missingThresholdLine = new ValueMarker(missingThreshold);
 		missingThresholdLine.setPaint(Color.blue);
 
 		final Marker hetzyThresholdLine = new ValueMarker(hetzyThreshold);
 		hetzyThresholdLine.setPaint(Color.blue);
 
-		//Add legend to hetzyThreshold
+		// Add legend to hetzyThreshold
 		hetzyThresholdLine.setLabel("hetzyg. threshold = " + hetzyThreshold);
 		missingThresholdLine.setLabel("missing. threshold = " + missingThreshold);
 		hetzyThresholdLine.setLabelAnchor(RectangleAnchor.TOP_LEFT);
@@ -410,10 +409,10 @@ public final class SampleQAHetzygPlotZoom extends javax.swing.JPanel {
 		plot.addRangeMarker(missingThresholdLine);   //THIS FOR MISSING RATIO
 		plot.addDomainMarker(hetzyThresholdLine);    //THIS FOR HETZY RATIO
 
-		//Marker label if below hetzyThreshold
+		// Marker label if below hetzyThreshold
 		XYItemRenderer lblRenderer = plot.getRenderer();
 
-		//THRESHOLD AND SELECTED LABEL GENERATOR
+		// THRESHOLD AND SELECTED LABEL GENERATOR
 		MySeriesItemLabelGenerator lblGenerator = new MySeriesItemLabelGenerator(hetzyThreshold, missingThreshold);
 		lblRenderer.setSeriesItemLabelGenerator(0, lblGenerator);
 		lblRenderer.setSeriesItemLabelFont(0, new Font("SansSerif", Font.PLAIN, 10));
@@ -422,7 +421,7 @@ public final class SampleQAHetzygPlotZoom extends javax.swing.JPanel {
 				TextAnchor.BOTTOM_LEFT,
 				2 * Math.PI));
 
-		//TOOLTIP GENERATOR
+		// TOOLTIP GENERATOR
 		MyXYToolTipGenerator tooltipGenerator = new MyXYToolTipGenerator();
 
 		lblRenderer.setBaseToolTipGenerator(tooltipGenerator);
@@ -432,13 +431,13 @@ public final class SampleQAHetzygPlotZoom extends javax.swing.JPanel {
 		return chart;
 	}
 
-	static class MyXYToolTipGenerator extends StandardXYToolTipGenerator
+	private static class MyXYToolTipGenerator extends StandardXYToolTipGenerator
 			implements XYToolTipGenerator {
 
-		DecimalFormat dfSci = new DecimalFormat("0.##E0#");
-		DecimalFormat dfInteger = new DecimalFormat("#");
+		private DecimalFormat dfSci = new DecimalFormat("0.##E0#");
+		private DecimalFormat dfInteger = new DecimalFormat("#");
 
-		public MyXYToolTipGenerator() {
+		MyXYToolTipGenerator() {
 		}
 
 		@Override
@@ -459,10 +458,10 @@ public final class SampleQAHetzygPlotZoom extends javax.swing.JPanel {
 						toolTip.append("<br>");
 					}
 				}
-//            if(labelerLHM.containsKey(localizer)){
-//                toolTip.append(labelerLHM.get(localizer));
-//                toolTip.append("<br>");
-//            }
+//				if(labelerLHM.containsKey(localizer)){
+//					toolTip.append(labelerLHM.get(localizer));
+//					toolTip.append("<br>");
+//				}
 
 				toolTip.append("Miss. ratio: ").append(dfSci.format(missingRatValue));
 				toolTip.append("<br>Hetzyg. ratio: ").append(dfSci.format(hetzygValue));
@@ -473,7 +472,7 @@ public final class SampleQAHetzygPlotZoom extends javax.swing.JPanel {
 		}
 	}
 
-	static class MySeriesItemLabelGenerator extends AbstractXYItemLabelGenerator
+	private static class MySeriesItemLabelGenerator extends AbstractXYItemLabelGenerator
 			implements XYItemLabelGenerator {
 
 		private double hetzygThreshold;
@@ -485,7 +484,7 @@ public final class SampleQAHetzygPlotZoom extends javax.swing.JPanel {
 		 *
 		 * @param hetzyThreshold the hetzyThreshold value.
 		 */
-		public MySeriesItemLabelGenerator(double hetzygThreshold, double missingThreshold) {
+		MySeriesItemLabelGenerator(double hetzygThreshold, double missingThreshold) {
 			this.hetzygThreshold = hetzygThreshold;
 			this.missingThreshold = missingThreshold;
 		}

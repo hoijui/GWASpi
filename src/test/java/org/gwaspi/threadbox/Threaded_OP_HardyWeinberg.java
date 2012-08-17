@@ -1,6 +1,5 @@
 package org.gwaspi.threadbox;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -16,10 +15,10 @@ import ucar.ma2.InvalidRangeException;
  */
 public class Threaded_OP_HardyWeinberg implements Runnable {
 
-	Thread runner;
-	public int resultOpId;
-	protected static Operation censusOP;
-	protected static String hwName;
+	private Thread runner;
+	private int resultOpId;
+	private static Operation censusOP;
+	private static String hwName;
 
 	public Threaded_OP_HardyWeinberg(String threadName,
 			Operation _censusOP,

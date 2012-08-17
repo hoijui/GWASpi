@@ -20,6 +20,9 @@ import ucar.nc2.*;
  */
 public class PlinkFormatter {
 
+	private PlinkFormatter() {
+	}
+
 	public static boolean exportToPlink(String exportPath,
 			MatrixMetadata rdMatrixMetadata,
 			MarkerSet rdMarkerSet,
@@ -258,7 +261,6 @@ public class PlinkFormatter {
 			//Iterate through all samples
 			int sampleNb = 0;
 			for (Iterator it = rdSampleSetLHM.keySet().iterator(); it.hasNext();) {
-				StringBuilder line = new StringBuilder();
 				String sampleId = it.next().toString();
 
 				HashMap sampleInfo = Utils.getCurrentSampleFormattedInfo(sampleId, rdMatrixMetadata.getStudyId());
@@ -277,7 +279,7 @@ public class PlinkFormatter {
 				//Sex (1=male; 2=female; other=unknown)
 				//Affection
 
-				line = new StringBuilder();
+				StringBuilder line = new StringBuilder();
 				line.append(familyId);
 				line.append(sep);
 				line.append(sampleId);
@@ -305,8 +307,6 @@ public class PlinkFormatter {
 			tfamFW.close();
 
 			//</editor-fold>
-
-
 
 
 			result = true;

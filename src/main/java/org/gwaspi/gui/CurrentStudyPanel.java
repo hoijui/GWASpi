@@ -1,8 +1,8 @@
 package org.gwaspi.gui;
 
-import org.gwaspi.global.Text;
 import org.gwaspi.database.DbManager;
 import org.gwaspi.global.ServiceLocator;
+import org.gwaspi.global.Text;
 import org.gwaspi.gui.utils.HelpURLs;
 import java.awt.Component;
 import java.awt.event.ActionEvent;

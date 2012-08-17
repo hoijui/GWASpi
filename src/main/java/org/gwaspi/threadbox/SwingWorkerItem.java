@@ -8,12 +8,12 @@ package org.gwaspi.threadbox;
  */
 public class SwingWorkerItem {
 
-	protected String swingWorkerName;
+	private String swingWorkerName;
 	protected SwingWorker swingWorker = null;
-	protected String timeStamp = "";
-	protected String launchTime;
-	protected String startTime;
-	protected String endTime;
+	private String timeStamp = "";
+	private String launchTime;
+	private String startTime;
+	private String endTime;
 	protected String queueState;
 	protected Integer[] parentStudyIds;
 	protected Integer[] parentMatricesIds;

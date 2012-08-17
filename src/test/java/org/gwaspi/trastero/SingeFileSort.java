@@ -1,11 +1,5 @@
 package org.gwaspi.trastero;
 
-/**
- *
- * @author Fernando Muñiz Fernandez
- * IBE, Institute of Evolutionary Biology (UPF-CSIC)
- * CEXS-UPF-PRBB
- */
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -16,7 +10,16 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Random;
 
+/**
+ *
+ * @author Fernando Muñiz Fernandez
+ * IBE, Institute of Evolutionary Biology (UPF-CSIC)
+ * CEXS-UPF-PRBB
+ */
 public class SingeFileSort {
+
+	private SingeFileSort() {
+	}
 
 	public static String sortFile(String filePath, int compareIndex) throws IOException {
 		File tempSorted = null;
@@ -52,7 +55,7 @@ public class SingeFileSort {
 			int cnt = 0;
 			while (someFileStillHasRows) {
 				String min;
-				int minIndex = 0;
+				int minIndex;
 
 				row = filerows.get(0);
 				if (row != null) {
@@ -140,7 +143,7 @@ public class SingeFileSort {
 	}
 
 	private static String flattenArray(String[] a, String separator) {
-		StringBuffer result = new StringBuffer(a[0]);
+		StringBuilder result = new StringBuilder(a[0]);
 		for (int i = 1; i < Array.getLength(a); i++) {
 			result.append(separator);
 			result.append(a[i]);

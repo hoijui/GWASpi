@@ -4,7 +4,6 @@ import org.gwaspi.database.DbManager;
 import org.gwaspi.global.ServiceLocator;
 import java.io.File;
 import java.io.IOException;
-
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -12,8 +11,6 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.gwaspi.model.Operation;
 import org.gwaspi.model.Report;
 import org.gwaspi.netCDF.matrices.MatrixMetadata;
@@ -26,6 +23,9 @@ import org.gwaspi.netCDF.operations.OperationMetadata;
  * CEXS-UPF-PRBB
  */
 public class ReportManager {
+
+	private ReportManager() {
+	}
 
 	//<editor-fold defaultstate="collapsed" desc="UTILS">
 	static LinkedHashMap getSortedMarkerSetByDoubleValue(LinkedHashMap map) {

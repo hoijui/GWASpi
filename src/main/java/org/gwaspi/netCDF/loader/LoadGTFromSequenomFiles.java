@@ -9,12 +9,12 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import ucar.ma2.*;
-import ucar.nc2.*;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
+import ucar.ma2.*;
+import ucar.nc2.*;
 
 /**
  *
@@ -36,7 +36,7 @@ public class LoadGTFromSequenomFiles {
 	private String gtCode;
 	private org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding guessedGTCode = org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding.UNKNOWN;
 
-	//CONSTRUCTORS
+	// CONSTRUCTORS
 	public LoadGTFromSequenomFiles(String _gtDirPath,
 			String _sampleFilePath,
 			String _annotationFilePath,
@@ -59,13 +59,13 @@ public class LoadGTFromSequenomFiles {
 
 	}
 
-	//METHODS
+	// METHODS
 	public int processData() throws IOException, FileNotFoundException, InvalidRangeException, InterruptedException, NullPointerException {
 		int result = Integer.MIN_VALUE;
 
 		String startTime = org.gwaspi.global.Utils.getMediumDateTimeAsString();
 		File[] gtFilesToImport = org.gwaspi.global.Utils.listFiles(gtDirPath, false);
-//        File gtFileToImport = new File(gtDirPath);
+//		File gtFileToImport = new File(gtDirPath);
 
 		//<editor-fold defaultstate="collapsed" desc="CREATE MARKERSET & NETCDF">
 		MetadataLoaderSequenom markerSetLoader = new MetadataLoaderSequenom(annotationFilePath, studyId);
@@ -81,8 +81,8 @@ public class LoadGTFromSequenomFiles {
 			descSB.append(description);
 			descSB.append("\n");
 		}
-//        descSB.append("\nGenotype encoding: ");
-//        descSB.append(gtCode);
+//		descSB.append("\nGenotype encoding: ");
+//		descSB.append(gtCode);
 		descSB.append("\n");
 		descSB.append("Markers: ").append(markerSetLHM.size()).append(", Samples: ").append(sampleInfoLHM.size());
 		descSB.append("\n");
@@ -101,13 +101,13 @@ public class LoadGTFromSequenomFiles {
 			descSB.append(" (Sample Info file)\n");
 		}
 
-		//RETRIEVE CHROMOSOMES INFO
+		// RETRIEVE CHROMOSOMES INFO
 		LinkedHashMap chrSetLHM = org.gwaspi.netCDF.matrices.Utils.aggregateChromosomeInfo(markerSetLHM, 2, 3);
 
 		MatrixFactory matrixFactory = new MatrixFactory(studyId,
 				format,
 				friendlyName,
-				descSB.toString(), //description
+				descSB.toString(), // description
 				gtCode,
 				cNetCDF.Defaults.StrandType.PLSMIN.toString(),
 				0,
@@ -142,7 +142,7 @@ public class LoadGTFromSequenomFiles {
 		samplesD2 = null;
 		System.out.println("Done writing SampleSet to matrix at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
 
-		//WRITE RSID & MARKERID METADATA FROM METADATALHM
+		// WRITE RSID & MARKERID METADATA FROM METADATALHM
 		ArrayChar.D2 markersD2 = org.gwaspi.netCDF.operations.Utils.writeLHMValueItemToD2ArrayChar(markerSetLHM, 1, cNetCDF.Strides.STRIDE_MARKER_NAME);
 
 		int[] markersOrig = new int[]{0, 0};
@@ -163,7 +163,7 @@ public class LoadGTFromSequenomFiles {
 		}
 		System.out.println("Done writing MarkerId and RsId to matrix at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
 
-		//WRITE CHROMOSOME METADATA FROM ANNOTATION FILE
+		// WRITE CHROMOSOME METADATA FROM ANNOTATION FILE
 		markersD2 = org.gwaspi.netCDF.operations.Utils.writeLHMValueItemToD2ArrayChar(markerSetLHM, 2, cNetCDF.Strides.STRIDE_CHR);
 
 		try {
@@ -175,15 +175,15 @@ public class LoadGTFromSequenomFiles {
 		}
 		System.out.println("Done writing chromosomes to matrix at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
 
-		//Set of chromosomes found in matrix along with number of markersinfo
+		// Set of chromosomes found in matrix along with number of markersinfo
 		org.gwaspi.netCDF.operations.Utils.saveCharLHMKeyToWrMatrix(ncfile, chrSetLHM, cNetCDF.Variables.VAR_CHR_IN_MATRIX, 8);
 
-		//Number of marker per chromosome & max pos for each chromosome
+		// Number of marker per chromosome & max pos for each chromosome
 		int[] columns = new int[]{0, 1, 2, 3};
 		org.gwaspi.netCDF.operations.Utils.saveIntLHMD2ToWrMatrix(ncfile, chrSetLHM, columns, cNetCDF.Variables.VAR_CHR_INFO);
 
 
-		//WRITE POSITION METADATA FROM ANNOTATION FILE
+		// WRITE POSITION METADATA FROM ANNOTATION FILE
 		//markersD2 = org.gwaspi.netCDF.operations.Utils.writeLHMValueItemToD2ArrayChar(markerSetLHM, 5, cNetCDF.Strides.STRIDE_POS);
 		ArrayInt.D1 markersPosD1 = org.gwaspi.netCDF.operations.Utils.writeLHMValueItemToD1ArrayInt(markerSetLHM, 3);
 		int[] posOrig = new int[1];
@@ -196,7 +196,7 @@ public class LoadGTFromSequenomFiles {
 		}
 		System.out.println("Done writing positions to matrix at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
 
-		//WRITE GT STRAND FROM ANNOTATION FILE
+		// WRITE GT STRAND FROM ANNOTATION FILE
 		int[] gtOrig = new int[]{0, 0};
 		for (Iterator it = markerSetLHM.keySet().iterator(); it.hasNext();) {
 			Object key = it.next();
@@ -218,18 +218,18 @@ public class LoadGTFromSequenomFiles {
 		// </editor-fold>
 
 		// <editor-fold defaultstate="collapsed" desc="MATRIX GENOTYPES LOAD ">
-		//INIT AND PURGE SORTEDMARKERSET LHM
+		// INIT AND PURGE SORTEDMARKERSET LHM
 		int sampleCounter = 0;
 		for (Iterator it = sampleInfoLHM.keySet().iterator(); it.hasNext();) {
 			Object sampleId = it.next();
 
-			//PURGE MARKERSETLHM FOR CURRENT SAMPLE
+			// PURGE MARKERSETLHM FOR CURRENT SAMPLE
 			for (Iterator it2 = markerSetLHM.keySet().iterator(); it2.hasNext();) {
 				String key = it2.next().toString();
 				markerSetLHM.put(key, cNetCDF.Defaults.DEFAULT_GT);
 			}
 
-			//PARSE ALL FILES FOR ANY DATA ON CURRENT SAMPLE
+			// PARSE ALL FILES FOR ANY DATA ON CURRENT SAMPLE
 			for (int j = 0; j < gtFilesToImport.length; j++) {
 				//System.out.println("Input file: "+i);
 				loadIndividualFiles(gtFilesToImport[j],
@@ -237,7 +237,6 @@ public class LoadGTFromSequenomFiles {
 						markerSetLHM,
 						sampleId.toString());
 			}
-
 
 			if (guessedGTCode.equals(org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding.UNKNOWN)) {
 				guessedGTCode = Utils.detectGTEncoding(markerSetLHM);
@@ -256,8 +255,6 @@ public class LoadGTFromSequenomFiles {
 				e.printStackTrace();
 			}
 
-
-
 			if (sampleCounter == 0) {
 				System.out.println(org.gwaspi.global.Text.All.processing);
 			} else if (sampleCounter % 10 == 0) {
@@ -265,12 +262,11 @@ public class LoadGTFromSequenomFiles {
 			}
 			sampleCounter++;
 		}
-
 		// </editor-fold>
 
 		// CLOSE THE FILE AND BY THIS, MAKE IT READ-ONLY
 		try {
-			//GUESS GENOTYPE ENCODING
+			// GUESS GENOTYPE ENCODING
 			ArrayChar.D2 guessedGTCodeAC = new ArrayChar.D2(1, 8);
 			Index index = guessedGTCodeAC.getIndex();
 			guessedGTCodeAC.setString(index.set(0, 0), guessedGTCode.toString().trim());
@@ -285,11 +281,11 @@ public class LoadGTFromSequenomFiles {
 					new String[]{constants.cDBMatrix.f_DESCRIPTION},
 					new Object[]{descSB.toString()},
 					new String[]{constants.cDBMatrix.f_ID},
-					new Object[]{matrixFactory.matrixMetaData.getMatrixId()});
+					new Object[]{matrixFactory.getMatrixMetaData().getMatrixId()});
 
-			//CLOSE FILE
+			// CLOSE FILE
 			ncfile.close();
-			result = matrixFactory.matrixMetaData.getMatrixId();
+			result = matrixFactory.getMatrixMetaData().getMatrixId();
 		} catch (IOException e) {
 			System.err.println("ERROR creating file " + ncfile.getLocation() + "\n" + e);
 		}
@@ -307,10 +303,10 @@ public class LoadGTFromSequenomFiles {
 		FileReader inputFileReader = new FileReader(file);
 		BufferedReader inputBufferReader = new BufferedReader(inputFileReader);
 
-		//GET ALLELES
+		// GET ALLELES
 		String l;
 		while ((l = inputBufferReader.readLine()) != null) {
-			if (!l.contains("SAMPLE_ID")) { //SKIP ALL HEADER LINES
+			if (!l.contains("SAMPLE_ID")) { // SKIP ALL HEADER LINES
 				String[] cVals = l.split(cImport.Separators.separators_Tab_rgxp);
 				if (cVals[cImport.Genotypes.Sequenom.sampleId].equals(currentSampleId)) { //ONLY PROCESS CURRENT SAMPLEID DATA
 					String tmpMarkerId = cVals[cImport.Genotypes.Sequenom.markerId].trim();
@@ -331,6 +327,5 @@ public class LoadGTFromSequenomFiles {
 				}
 			}
 		}
-
 	}
 }
