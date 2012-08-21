@@ -5,7 +5,6 @@ import org.gwaspi.constants.cExport;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.database.DbManager;
 import org.gwaspi.global.ServiceLocator;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -28,7 +27,7 @@ public class OutputQAMarkers_opt {
 	private OutputQAMarkers_opt() {
 	}
 
-	public static boolean writeReportsForQAMarkersData(int opId) throws FileNotFoundException, IOException {
+	public static boolean writeReportsForQAMarkersData(int opId) throws IOException {
 		Operation op = new Operation(opId);
 		DbManager dBManager = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
 
@@ -69,7 +68,7 @@ public class OutputQAMarkers_opt {
 		return true;
 	}
 
-	public static boolean createSortedMarkerMissingnessReport(int opId, String reportName) throws FileNotFoundException, IOException {
+	public static boolean createSortedMarkerMissingnessReport(int opId, String reportName) throws IOException {
 		boolean result;
 
 		try {
@@ -195,7 +194,7 @@ public class OutputQAMarkers_opt {
 		return result;
 	}
 
-	public static boolean createMarkerMismatchReport(int opId, String reportName) throws FileNotFoundException, IOException {
+	public static boolean createMarkerMismatchReport(int opId, String reportName) throws IOException {
 		boolean result;
 
 		try {

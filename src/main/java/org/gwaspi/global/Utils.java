@@ -14,7 +14,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Locale;
-import javax.swing.*;
+import javax.swing.JFileChooser;
 
 /**
  *
@@ -144,7 +144,7 @@ public class Utils {
 				}
 			}
 			// get a listing of files...
-			String list[] = src.list();
+			String[] list = src.list();
 			// copy all the files in the list.
 			for (int i = 0; i < list.length; i++) {
 				File dest1 = new File(dest, list[i]);

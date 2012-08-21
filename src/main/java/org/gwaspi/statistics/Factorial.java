@@ -61,10 +61,12 @@ public class Factorial {
 	private DecInteger product(int n) {
 		int m = n / 2;
 		if (m == 0) {
-			return new DecInteger(N += 2);
+			N += 2;
+			return new DecInteger(N);
 		}
 		if (n == 2) {
-			return new DecInteger((N += 2) * (N += 2));
+			N += 4;
+			return new DecInteger((N - 2) * N);
 		}
 		return product(n - m).multiply(product(m));
 	}
@@ -86,7 +88,7 @@ class DecInteger {
 		digitsLength = length;
 	}
 
-	static public DecInteger pow2(int e) {
+	public static DecInteger pow2(int e) {
 		if (e < 31) {
 			return new DecInteger((int) Math.pow(2, e));
 		}

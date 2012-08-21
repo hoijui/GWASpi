@@ -119,10 +119,13 @@ public final class Report_AnalysisAllelicTestImpl extends Report_Analysis {
 
 				// Getting data from file and subdividing to series all points by chromosome
 				final ArrayList tableRowAL = new ArrayList();
-				String l;
 				String header = inputBufferReader.readLine();
 				int count = 0;
-				while ((l = inputBufferReader.readLine()) != null && count < getRowsNb) {
+				while (count < getRowsNb) {
+					String l = inputBufferReader.readLine();
+					if (l == null) {
+						break;
+					}
 					Object[] row = new Object[11];
 
 					String[] cVals = l.split(org.gwaspi.constants.cImport.Separators.separators_SpaceTab_rgxp);

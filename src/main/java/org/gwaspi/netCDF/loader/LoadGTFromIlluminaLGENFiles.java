@@ -7,15 +7,17 @@ import org.gwaspi.global.ServiceLocator;
 import org.gwaspi.global.Text;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
-import ucar.ma2.*;
-import ucar.nc2.*;
+import ucar.ma2.ArrayChar;
+import ucar.ma2.ArrayInt;
+import ucar.ma2.Index;
+import ucar.ma2.InvalidRangeException;
+import ucar.nc2.NetcdfFileWriteable;
 
 /**
  *
@@ -64,7 +66,7 @@ public class LoadGTFromIlluminaLGENFiles {
 	}
 
 	//METHODS
-	public int processData() throws IOException, FileNotFoundException, InvalidRangeException, InterruptedException, NullPointerException {
+	public int processData() throws IOException, InvalidRangeException, InterruptedException {
 		int result = Integer.MIN_VALUE;
 
 		String startTime = org.gwaspi.global.Utils.getMediumDateTimeAsString();
@@ -272,7 +274,7 @@ public class LoadGTFromIlluminaLGENFiles {
 	public void loadIndividualFiles(File file,
 			NetcdfFileWriteable ncfile,
 			LinkedHashMap sortedMarkerSetLHM,
-			ArrayList samplesAL) throws FileNotFoundException, IOException, InvalidRangeException {
+			ArrayList samplesAL) throws IOException, InvalidRangeException {
 
 		////////////// LOAD INPUT FILE ////////////////
 		FileReader inputFileReader = new FileReader(file);
@@ -375,7 +377,7 @@ public class LoadGTFromIlluminaLGENFiles {
 
 	}
 
-	private static String getAffySampleId(File fileToScan) throws FileNotFoundException, IOException {
+	private static String getAffySampleId(File fileToScan) throws IOException {
 //        FileReader inputFileReader = new FileReader(fileToScan);
 //        BufferedReader inputBufferReader = new BufferedReader(inputFileReader);
 		String l = fileToScan.getName();

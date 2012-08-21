@@ -6,7 +6,7 @@ package org.gwaspi.statistics;
  */
 public class StandardDeviation {
 
-	public double findMean(int array[]) {
+	public double findMean(int[] array) {
 		double total = 0;
 		for (int i = 0; i < array.length; i++) {
 			total = total + array[i];
@@ -15,7 +15,7 @@ public class StandardDeviation {
 		return mean;
 	}
 
-	public void findStandardDeviation(int array[]) {
+	public void findStandardDeviation(int[] array) {
 		double mean = findMean(array);
 		System.out.println("Mean is: " + mean);
 		double d1 = 0;
@@ -28,8 +28,8 @@ public class StandardDeviation {
 		System.out.println("Standard Deviation: " + Math.sqrt((d1 / (array.length - 1))));
 	}
 
-	public static void main(String args[]) {
-		int array[] = new int[]{0, 1, 6, 4, 8787, 2, 3564, 645, 54};
+	public static void main(String[] args) {
+		int[] array = new int[]{0, 1, 6, 4, 8787, 2, 3564, 645, 54};
 		StandardDeviation sd = new StandardDeviation();
 		sd.findStandardDeviation(array);
 	}

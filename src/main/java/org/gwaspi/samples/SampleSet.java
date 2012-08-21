@@ -7,9 +7,15 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import org.gwaspi.netCDF.matrices.*;
-import ucar.ma2.*;
-import ucar.nc2.*;
+import org.gwaspi.netCDF.matrices.MatrixMetadata;
+import ucar.ma2.ArrayByte;
+import ucar.ma2.ArrayChar;
+import ucar.ma2.ArrayDouble;
+import ucar.ma2.DataType;
+import ucar.ma2.InvalidRangeException;
+import ucar.nc2.Dimension;
+import ucar.nc2.NetcdfFile;
+import ucar.nc2.Variable;
 
 /**
  *

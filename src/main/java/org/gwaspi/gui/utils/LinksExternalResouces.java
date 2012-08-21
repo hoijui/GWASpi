@@ -62,7 +62,7 @@ public class LinksExternalResouces {
 			"rsId"},
 		{"UniProt Literature Citations, rsID",
 			"http://www.uniprot.org/citations/?query=$rsId$&sort=score",
-			"rsId"},};
+			"rsId"}};
 
 	public static String[] getLinkNames() {
 		String[] result = new String[LINKS_DB.length];
@@ -79,11 +79,7 @@ public class LinksExternalResouces {
 	}
 
 	public static boolean checkIfRsNecessary(int idx) {
-		if (LINKS_DB[idx][2].contains("rsId")) {
-			return true;
-		} else {
-			return false;
-		}
+		return LINKS_DB[idx][2].contains("rsId");
 	}
 
 	public static String getResourceLink(int idx, String chr, String rsId, Long position) {
@@ -92,7 +88,7 @@ public class LinksExternalResouces {
 		Long startPos = (position - 1000);
 		Long endPos = (position + 1000);
 		if (startPos < 0) {
-			startPos = 0l;
+			startPos = 0L;
 		}
 
 		String processedURL = baseUrl.replace("$chr$", chr);

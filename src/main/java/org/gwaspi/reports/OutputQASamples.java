@@ -6,7 +6,6 @@ import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.database.DbManager;
 import org.gwaspi.global.ServiceLocator;
 import java.io.BufferedWriter;
-import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
@@ -28,7 +27,7 @@ public class OutputQASamples {
 	private OutputQASamples() {
 	}
 
-	public static boolean writeReportsForQASamplesData(int opId, boolean newReport) throws FileNotFoundException, IOException {
+	public static boolean writeReportsForQASamplesData(int opId, boolean newReport) throws IOException {
 		Operation op = new Operation(opId);
 		DbManager dBManager = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
 
@@ -74,7 +73,7 @@ public class OutputQASamples {
 		return true;
 	}
 
-	public static boolean createSortedSampleMissingnessReport(int opId, String reportName, Object poolId) throws FileNotFoundException, IOException {
+	public static boolean createSortedSampleMissingnessReport(int opId, String reportName, Object poolId) throws IOException {
 		boolean result;
 		String sep = cExport.separator_REPORTS;
 
@@ -149,7 +148,7 @@ public class OutputQASamples {
 
 		return result;
 	}
-//    public static boolean createSampleHetzygPlot(int opId, String outName, int width, int height) throws FileNotFoundException, IOException{
+//    public static boolean createSampleHetzygPlot(int opId, String outName, int width, int height) throws IOException {
 //        boolean result = false;
 //        //Generating XY scatter plot with loaded data
 //        XYDataset hetZygDataset = GenericReportGenerator_opt.getSampleHetzygDataset(opId);

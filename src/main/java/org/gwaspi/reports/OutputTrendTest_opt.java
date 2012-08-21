@@ -7,7 +7,6 @@ import org.gwaspi.database.DbManager;
 import org.gwaspi.global.ServiceLocator;
 import java.awt.Color;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -34,7 +33,7 @@ public class OutputTrendTest_opt {
 	private OutputTrendTest_opt() {
 	}
 
-	public static boolean writeReportsForTrendTestData(int opId) throws FileNotFoundException, IOException {
+	public static boolean writeReportsForTrendTestData(int opId) throws IOException {
 		boolean result = false;
 		Operation op = new Operation(opId);
 		DbManager dBManager = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
@@ -91,7 +90,7 @@ public class OutputTrendTest_opt {
 		return result;
 	}
 
-	public static boolean writeManhattanPlotFromTrendTestData(int opId, String outName, int width, int height) throws FileNotFoundException, IOException {
+	public static boolean writeManhattanPlotFromTrendTestData(int opId, String outName, int width, int height) throws IOException {
 		boolean result = false;
 		//Generating XY scatter plot with loaded data
 		CombinedRangeXYPlot combinedPlot = GenericReportGenerator_opt.buildManhattanPlot(opId, org.gwaspi.constants.cNetCDF.Association.VAR_OP_MARKERS_ASTrendTestTP);
@@ -130,7 +129,7 @@ public class OutputTrendTest_opt {
 		return result;
 	}
 
-	public static boolean writeQQPlotFromTrendTestData(int opId, String outName, int width, int height) throws FileNotFoundException, IOException {
+	public static boolean writeQQPlotFromTrendTestData(int opId, String outName, int width, int height) throws IOException {
 		boolean result = false;
 		//Generating XY scatter plot with loaded data
 		XYPlot qqPlot = GenericReportGenerator_opt.buildQQPlot(opId, org.gwaspi.constants.cNetCDF.Association.VAR_OP_MARKERS_ASTrendTestTP, 1);
@@ -153,7 +152,7 @@ public class OutputTrendTest_opt {
 		return result;
 	}
 
-	public static boolean createSortedTrendTestReport(int opId, String reportName) throws FileNotFoundException, IOException {
+	public static boolean createSortedTrendTestReport(int opId, String reportName) throws IOException {
 		boolean result;
 
 		try {

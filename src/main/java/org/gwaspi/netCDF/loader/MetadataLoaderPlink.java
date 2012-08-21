@@ -79,7 +79,7 @@ public class MetadataLoaderPlink {
 		return markerMetadataLHM;
 	}
 
-	public static TreeMap parseAndSortMapFile(String path) throws FileNotFoundException, IOException {
+	public static TreeMap parseAndSortMapFile(String path) throws IOException {
 
 		FileReader fr = new FileReader(path);
 		BufferedReader inputMapBR = new BufferedReader(fr);
@@ -123,7 +123,7 @@ public class MetadataLoaderPlink {
 		return sortedMetadataTM;
 	}
 
-	public LinkedHashMap parseOrigMapFile(String path) throws FileNotFoundException, IOException {
+	public LinkedHashMap parseOrigMapFile(String path) throws IOException {
 		FileReader fr = new FileReader(path);
 		BufferedReader inputMapBR = new BufferedReader(fr);
 		LinkedHashMap origMarkerIdSetLHM = new LinkedHashMap();

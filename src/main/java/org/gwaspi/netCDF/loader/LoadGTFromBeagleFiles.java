@@ -7,14 +7,16 @@ import org.gwaspi.global.ServiceLocator;
 import org.gwaspi.global.Text;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
-import ucar.ma2.*;
-import ucar.nc2.*;
+import ucar.ma2.ArrayChar;
+import ucar.ma2.ArrayInt;
+import ucar.ma2.Index;
+import ucar.ma2.InvalidRangeException;
+import ucar.nc2.NetcdfFileWriteable;
 
 /**
  *
@@ -48,7 +50,7 @@ public class LoadGTFromBeagleFiles {
 			String _friendlyName,
 			String _gtCode,
 			String _description,
-			LinkedHashMap _sampleInfoLHM) throws FileNotFoundException, IOException {
+			LinkedHashMap _sampleInfoLHM) throws IOException {
 
 		gtFilePath = _gtFilePath;
 		sampleFilePath = _sampleFilePath;
@@ -65,7 +67,7 @@ public class LoadGTFromBeagleFiles {
 
 	//</editor-fold>
 	//<editor-fold defaultstate="collapsed" desc="PROCESS GENOTYPES">
-	public int processBeagleGTFiles() throws FileNotFoundException, IOException, InvalidRangeException {
+	public int processBeagleGTFiles() throws IOException, InvalidRangeException {
 		int result = Integer.MIN_VALUE;
 
 		String startTime = org.gwaspi.global.Utils.getMediumDateTimeAsString();
@@ -333,7 +335,7 @@ public class LoadGTFromBeagleFiles {
 
 	public LinkedHashMap loadIndividualFiles(File file,
 			String currSampleId,
-			LinkedHashMap wrMarkerSetLHM) throws FileNotFoundException, IOException, InvalidRangeException {
+			LinkedHashMap wrMarkerSetLHM) throws IOException, InvalidRangeException {
 
 		FileReader inputFileReader = new FileReader(file);
 		BufferedReader inputBufferReader = new BufferedReader(inputFileReader);
@@ -389,17 +391,20 @@ public class LoadGTFromBeagleFiles {
 	//</editor-fold>
 
 	//<editor-fold defaultstate="collapsed" desc="HELPER METHODS">
-	private LinkedHashMap getBeagleSampleIds(File hapmapGTFile) throws FileNotFoundException, IOException {
+	private LinkedHashMap getBeagleSampleIds(File hapmapGTFile) throws IOException {
 
 		LinkedHashMap uniqueSamples = new LinkedHashMap();
 
 		FileReader fr = new FileReader(hapmapGTFile.getPath());
 		BufferedReader inputBeagleBr = new BufferedReader(fr);
 
-		String l;
 		String sampleHeader = "";
 		boolean gotSamples = false;
-		while ((l = inputBeagleBr.readLine()) != null && !gotSamples) {
+		while (!gotSamples) {
+			String l = inputBeagleBr.readLine();
+			if (l == null) {
+				break;
+			}
 			if (l.startsWith("I")) {
 				sampleHeader = l;
 				gotSamples = true;

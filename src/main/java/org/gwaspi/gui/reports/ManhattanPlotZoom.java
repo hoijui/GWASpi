@@ -336,7 +336,7 @@ public final class ManhattanPlotZoom extends javax.swing.JPanel {
 		// </editor-fold>
 
 		String lblChr = "Chr ";
-		Long currPos = 0l;
+		Long currPos = 0L;
 		lblChr += currentChr;
 		if (centerPhysPos != Integer.MIN_VALUE) {
 			currPos = centerPhysPos;

@@ -2,7 +2,6 @@ package org.gwaspi.cli;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -18,7 +17,7 @@ public class Utils {
 	private Utils() {
 	}
 
-	public static String readDataDirFromScript(File src) throws FileNotFoundException, IOException {
+	public static String readDataDirFromScript(File src) throws IOException {
 		String result = null;
 		FileReader fr = new FileReader(src);
 		BufferedReader br = new BufferedReader(fr);
@@ -35,7 +34,7 @@ public class Utils {
 		return result;
 	}
 
-	public static ArrayList<Object> readArgsFromScript(File src) throws FileNotFoundException, IOException {
+	public static ArrayList<Object> readArgsFromScript(File src) throws IOException {
 		ArrayList result = new ArrayList();
 		ArrayList tmpScript = new ArrayList();
 		FileReader fr = new FileReader(src);

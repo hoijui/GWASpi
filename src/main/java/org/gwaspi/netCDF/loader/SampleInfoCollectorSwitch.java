@@ -5,7 +5,6 @@ import org.gwaspi.constants.cImport.Annotation.Plink_Standard;
 import org.gwaspi.global.Text;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashSet;
@@ -28,7 +27,7 @@ public class SampleInfoCollectorSwitch {
 			boolean dummySamples,
 			String sampleInfoPath,
 			String altSampleInfoPath1,
-			String altSampleInfoPath2) throws FileNotFoundException, IOException {
+			String altSampleInfoPath2) throws IOException {
 		LinkedHashMap sampleInfoLHM = new LinkedHashMap();
 		Object[] dummySampleValues = org.gwaspi.samples.DummySampleInfo.getDummySampleValues();
 

@@ -3,7 +3,8 @@ package org.gwaspi.gui;
 import org.gwaspi.database.DbManager;
 import org.gwaspi.global.ServiceLocator;
 import org.gwaspi.global.Text;
-import java.awt.event.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -14,7 +15,11 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
-import javax.swing.*;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.JTabbedPane;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 import org.gwaspi.threadbox.SwingDeleterItemList;
 import org.gwaspi.threadbox.SwingWorkerItemList;
 
@@ -24,7 +29,7 @@ import org.gwaspi.threadbox.SwingWorkerItemList;
  * IBE, Institute of Evolutionary Biology (UPF-CSIC)
  * CEXS-UPF-PRBB
  */
-public class StartGWASpi extends javax.swing.JFrame {
+public class StartGWASpi extends JFrame {
 
 	// create a JFrame to hold everything
 	public static boolean guiMode = true;
@@ -92,7 +97,7 @@ public class StartGWASpi extends javax.swing.JFrame {
 
 	}
 
-	public static void main(String[] args) throws IOException, SQLException, ParseException {
+	public static void main(String[] args) throws IOException, SQLException, ParseException, UnsupportedLookAndFeelException {
 
 		// Get current size of heap in bytes
 		maxHeapSize = Math.round(Runtime.getRuntime().totalMemory() / 1048576); // heapSize in MB

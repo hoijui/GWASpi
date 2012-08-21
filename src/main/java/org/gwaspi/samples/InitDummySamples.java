@@ -2,7 +2,6 @@ package org.gwaspi.samples;
 
 import org.gwaspi.database.DbManager;
 import org.gwaspi.global.ServiceLocator;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +22,7 @@ public class InitDummySamples {
 	private InitDummySamples() {
 	}
 
-	public static void processData(ArrayList sampleList, int studyId) throws FileNotFoundException, IOException {
+	public static void processData(ArrayList sampleList, int studyId) throws IOException {
 		initSamples(sampleList, studyId);
 	}
 

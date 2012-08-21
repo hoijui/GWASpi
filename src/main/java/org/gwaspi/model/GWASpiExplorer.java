@@ -2,7 +2,12 @@ package org.gwaspi.model;
 
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.global.Text;
-import org.gwaspi.gui.*;
+import org.gwaspi.gui.CurrentMatrixPanel;
+import org.gwaspi.gui.CurrentStudyPanel;
+import org.gwaspi.gui.IntroPanel;
+import org.gwaspi.gui.MatrixAnalysePanel;
+import org.gwaspi.gui.MatrixMarkerQAPanel;
+import org.gwaspi.gui.StudyManagementPanel;
 import org.gwaspi.gui.reports.ChartDefaultDisplay;
 import org.gwaspi.gui.reports.ManhattanChartDisplay;
 import org.gwaspi.gui.reports.Report_AnalysisPanel;

@@ -7,7 +7,6 @@ import org.gwaspi.database.DbManager;
 import org.gwaspi.global.ServiceLocator;
 import java.awt.Color;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -34,7 +33,7 @@ public class OutputGenotypicAssociation_opt {
 	private OutputGenotypicAssociation_opt() {
 	}
 
-	public static boolean writeReportsForAssociationData(int opId) throws FileNotFoundException, IOException {
+	public static boolean writeReportsForAssociationData(int opId) throws IOException {
 		boolean result = false;
 		Operation op = new Operation(opId);
 		DbManager dBManager = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
@@ -91,7 +90,7 @@ public class OutputGenotypicAssociation_opt {
 		return result;
 	}
 
-	public static boolean writeManhattanPlotFromAssociationData(int opId, String outName, int width, int height) throws FileNotFoundException, IOException {
+	public static boolean writeManhattanPlotFromAssociationData(int opId, String outName, int width, int height) throws IOException {
 		boolean result = false;
 		//Generating XY scatter plot with loaded data
 		CombinedRangeXYPlot combinedPlot = GenericReportGenerator_opt.buildManhattanPlot(opId, org.gwaspi.constants.cNetCDF.Association.VAR_OP_MARKERS_ASGenotypicAssociationTP2OR);
@@ -131,7 +130,7 @@ public class OutputGenotypicAssociation_opt {
 		return result;
 	}
 
-	public static boolean writeQQPlotFromAssociationData(int opId, String outName, int width, int height) throws FileNotFoundException, IOException {
+	public static boolean writeQQPlotFromAssociationData(int opId, String outName, int width, int height) throws IOException {
 		boolean result = false;
 		//Generating XY scatter plot with loaded data
 		XYPlot qqPlot = GenericReportGenerator_opt.buildQQPlot(opId, org.gwaspi.constants.cNetCDF.Association.VAR_OP_MARKERS_ASGenotypicAssociationTP2OR, 2);
@@ -154,7 +153,7 @@ public class OutputGenotypicAssociation_opt {
 		return result;
 	}
 
-	public static boolean createSortedAssociationReport(int opId, String reportName) throws FileNotFoundException, IOException {
+	public static boolean createSortedAssociationReport(int opId, String reportName) throws IOException {
 		boolean result = false;
 
 		try {

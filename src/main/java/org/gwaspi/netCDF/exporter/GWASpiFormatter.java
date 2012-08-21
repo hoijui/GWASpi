@@ -10,9 +10,9 @@ import java.util.LinkedHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.gwaspi.netCDF.markers.MarkerSet;
-import org.gwaspi.netCDF.matrices.*;
+import org.gwaspi.netCDF.matrices.MatrixMetadata;
 import org.gwaspi.samples.SampleSet;
-import ucar.nc2.*;
+import ucar.nc2.NetcdfFile;
 
 /**
  *

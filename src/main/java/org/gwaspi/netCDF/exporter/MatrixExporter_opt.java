@@ -4,9 +4,9 @@ import org.gwaspi.constants.cExport.ExportFormat;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import org.gwaspi.netCDF.markers.MarkerSet_opt;
-import org.gwaspi.netCDF.matrices.*;
+import org.gwaspi.netCDF.matrices.MatrixMetadata;
 import org.gwaspi.samples.SampleSet;
-import ucar.ma2.*;
+import ucar.ma2.InvalidRangeException;
 
 /**
  *

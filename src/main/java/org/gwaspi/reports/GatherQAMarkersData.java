@@ -1,6 +1,5 @@
 package org.gwaspi.reports;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import org.gwaspi.netCDF.operations.OperationMetadata;
@@ -18,7 +17,7 @@ public class GatherQAMarkersData {
 	private GatherQAMarkersData() {
 	}
 
-	public static LinkedHashMap loadMarkerQAMissingRatio(int opId) throws FileNotFoundException, IOException {
+	public static LinkedHashMap loadMarkerQAMissingRatio(int opId) throws IOException {
 
 		OperationMetadata rdOPMetadata = new OperationMetadata(opId);
 
@@ -32,7 +31,7 @@ public class GatherQAMarkersData {
 		return rdMatrixMarkerSetLHM;
 	}
 
-	public static LinkedHashMap loadMarkerQAMismatchState(int opId) throws FileNotFoundException, IOException {
+	public static LinkedHashMap loadMarkerQAMismatchState(int opId) throws IOException {
 
 		OperationMetadata rdOPMetadata = new OperationMetadata(opId);
 
@@ -46,7 +45,7 @@ public class GatherQAMarkersData {
 		return rdMatrixMarkerSetLHM;
 	}
 
-	public static LinkedHashMap loadMarkerQAMinorAlleles(int opId) throws FileNotFoundException, IOException {
+	public static LinkedHashMap loadMarkerQAMinorAlleles(int opId) throws IOException {
 
 		OperationMetadata rdOPMetadata = new OperationMetadata(opId);
 
@@ -60,7 +59,7 @@ public class GatherQAMarkersData {
 		return rdMatrixMarkerSetLHM;
 	}
 
-	public static LinkedHashMap loadMarkerQAMajorAlleles(int opId) throws FileNotFoundException, IOException {
+	public static LinkedHashMap loadMarkerQAMajorAlleles(int opId) throws IOException {
 
 		OperationMetadata rdOPMetadata = new OperationMetadata(opId);
 
@@ -74,7 +73,7 @@ public class GatherQAMarkersData {
 		return rdMatrixMarkerSetLHM;
 	}
 
-	public static LinkedHashMap loadMarkerQAMinorAlleleFrequency(int opId) throws FileNotFoundException, IOException {
+	public static LinkedHashMap loadMarkerQAMinorAlleleFrequency(int opId) throws IOException {
 
 		OperationMetadata rdOPMetadata = new OperationMetadata(opId);
 
@@ -88,7 +87,7 @@ public class GatherQAMarkersData {
 		return rdMatrixMarkerSetLHM;
 	}
 
-	public static LinkedHashMap loadMarkerQAMajorAlleleFrequency(int opId) throws FileNotFoundException, IOException {
+	public static LinkedHashMap loadMarkerQAMajorAlleleFrequency(int opId) throws IOException {
 
 		OperationMetadata rdOPMetadata = new OperationMetadata(opId);
 

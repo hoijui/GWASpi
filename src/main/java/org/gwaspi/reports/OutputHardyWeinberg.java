@@ -6,7 +6,6 @@ import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.database.DbManager;
 import org.gwaspi.global.ServiceLocator;
 import org.gwaspi.global.Text;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -30,7 +29,7 @@ public class OutputHardyWeinberg {
 	private OutputHardyWeinberg() {
 	}
 
-	public static boolean writeReportsForMarkersHWData(int opId) throws FileNotFoundException, IOException {
+	public static boolean writeReportsForMarkersHWData(int opId) throws IOException {
 		Operation op = new Operation(opId);
 		DbManager dBManager = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
 
@@ -56,7 +55,7 @@ public class OutputHardyWeinberg {
 		return true;
 	}
 
-	protected static boolean processSortedHardyWeinbergReport(int opId, String reportName) throws FileNotFoundException, IOException {
+	protected static boolean processSortedHardyWeinbergReport(int opId, String reportName) throws IOException {
 		boolean result;
 
 		try {

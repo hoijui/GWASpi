@@ -7,15 +7,17 @@ import org.gwaspi.global.ServiceLocator;
 import org.gwaspi.global.Text;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.StringTokenizer;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
-import ucar.ma2.*;
-import ucar.nc2.*;
+import ucar.ma2.ArrayChar;
+import ucar.ma2.ArrayInt;
+import ucar.ma2.Index;
+import ucar.ma2.InvalidRangeException;
+import ucar.nc2.NetcdfFileWriteable;
 
 /**
  *
@@ -51,7 +53,7 @@ public class LoadGTFromHapmapFiles {
 			String _friendlyName,
 			String _gtCode,
 			String _description,
-			LinkedHashMap _sampleInfoLHM) throws FileNotFoundException, IOException {
+			LinkedHashMap _sampleInfoLHM) throws IOException {
 
 		gtFilePath = _gtFilePath;
 		sampleFilePath = _sampleFilePath;
@@ -80,17 +82,17 @@ public class LoadGTFromHapmapFiles {
 
 	//</editor-fold>
 	//<editor-fold defaultstate="collapsed" desc="PROCESS GENOTYPES">
-	public int processHapmapGTFiles() throws IOException, FileNotFoundException, InvalidRangeException, InterruptedException {
+	public int processHapmapGTFiles() throws IOException, InvalidRangeException, InterruptedException {
 		File hapmapGTFile = new File(gtFilePath);
 		return processHapmapGTFiles(hapmapGTFile.isDirectory());
 	}
 
-	private int processHapmapGTFiles(boolean hasManyFiles) throws FileNotFoundException, IOException, InvalidRangeException {
+	private int processHapmapGTFiles(boolean hasManyFiles) throws IOException, InvalidRangeException {
 		int result = Integer.MIN_VALUE;
 
 		String startTime = org.gwaspi.global.Utils.getMediumDateTimeAsString();
 
-		File[] gtFilesToImport = null;
+		File[] gtFilesToImport;
 		if (hasManyFiles) {
 			gtFilesToImport = org.gwaspi.global.Utils.listFiles(gtFilePath, false);
 		} else {
@@ -334,7 +336,7 @@ public class LoadGTFromHapmapFiles {
 
 	public LinkedHashMap loadIndividualFiles(File file,
 			String currSampleId,
-			LinkedHashMap wrMarkerSetLHM) throws FileNotFoundException, IOException, InvalidRangeException {
+			LinkedHashMap wrMarkerSetLHM) throws IOException, InvalidRangeException {
 
 		int dataStartRow = cImport.Genotypes.Hapmap_Standard.dataStartRow;
 		FileReader inputFileReader = new FileReader(file);
@@ -380,7 +382,6 @@ public class LoadGTFromHapmapFiles {
 					}
 				}
 				wrMarkerSetLHM.put(markerId, tmpAlleles);
-				st = null;
 			}
 
 		}
@@ -396,7 +397,7 @@ public class LoadGTFromHapmapFiles {
 	//</editor-fold>
 
 	//<editor-fold defaultstate="collapsed" desc="HELPER METHODS">
-	private LinkedHashMap getHapmapSampleIds(File hapmapGTFile) throws FileNotFoundException, IOException {
+	private LinkedHashMap getHapmapSampleIds(File hapmapGTFile) throws IOException {
 
 		LinkedHashMap uniqueSamples = new LinkedHashMap();
 

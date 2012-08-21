@@ -4,8 +4,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import ucar.ma2.*;
-import ucar.nc2.*;
+import ucar.ma2.ArrayByte;
+import ucar.ma2.ArrayChar;
+import ucar.ma2.ArrayDouble;
+import ucar.ma2.ArrayInt;
+import ucar.ma2.Index;
+import ucar.ma2.InvalidRangeException;
+import ucar.nc2.NetcdfFileWriteable;
 
 /**
  *
@@ -323,7 +328,7 @@ public class Utils {
 	public static boolean saveChunkedCurrentSampleGTsToMatrix(NetcdfFileWriteable wrNcFile,
 			LinkedHashMap wrLhm,
 			int samplePos,
-			int offset) {
+			int offset) throws InvalidRangeException {
 		boolean result = false;
 		ArrayChar.D3 genotypes = org.gwaspi.netCDF.operations.Utils.writeLHMToCurrentSampleArrayCharD3(wrLhm, org.gwaspi.constants.cNetCDF.Strides.STRIDE_GT);
 

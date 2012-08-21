@@ -1,10 +1,11 @@
 package org.gwaspi.samples;
 
-import org.gwaspi.constants.cImport.Annotation.*;
 import org.gwaspi.constants.cImport;
+import org.gwaspi.constants.cImport.Annotation.GWASpi;
+import org.gwaspi.constants.cImport.Annotation.Plink_LGEN;
+import org.gwaspi.constants.cImport.Annotation.Sequenom;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashSet;
@@ -103,7 +104,7 @@ public class SamplesParser {
 		return sampleInfoLHM;
 	}
 
-	public static LinkedHashMap scanPlinkStandardSampleInfo(String pedPath) throws FileNotFoundException, IOException {
+	public static LinkedHashMap scanPlinkStandardSampleInfo(String pedPath) throws IOException {
 		LinkedHashMap sampleInfoLHM = new LinkedHashMap();
 		FileReader inputFileReader = null;
 		BufferedReader inputBufferReader = null;
@@ -194,7 +195,7 @@ public class SamplesParser {
 		return sampleInfoLHM;
 	}
 
-	public static LinkedHashMap scanPlinkLGENSampleInfo(String lgenPath) throws FileNotFoundException, IOException {
+	public static LinkedHashMap scanPlinkLGENSampleInfo(String lgenPath) throws IOException {
 		LinkedHashMap sampleInfoLHM = new LinkedHashMap();
 
 		File sampleFile = new File(lgenPath);
@@ -219,7 +220,7 @@ public class SamplesParser {
 		return sampleInfoLHM;
 	}
 
-	public static LinkedHashMap scanPlinkFAMSampleInfo(String famPath) throws FileNotFoundException, IOException {
+	public static LinkedHashMap scanPlinkFAMSampleInfo(String famPath) throws IOException {
 		LinkedHashMap sampleInfoLHM = new LinkedHashMap();
 		FileReader inputFileReader = new FileReader(new File(famPath));
 		BufferedReader inputBufferReader = new BufferedReader(inputFileReader);
@@ -260,7 +261,7 @@ public class SamplesParser {
 		return sampleInfoLHM;
 	}
 
-	public static LinkedHashMap scanIlluminaLGENSampleInfo(String lgenDir) throws FileNotFoundException, IOException {
+	public static LinkedHashMap scanIlluminaLGENSampleInfo(String lgenDir) throws IOException {
 		LinkedHashMap sampleInfoLHM = new LinkedHashMap();
 
 		File[] gtFilesToImport = org.gwaspi.global.Utils.listFiles(lgenDir, false);
@@ -302,7 +303,7 @@ public class SamplesParser {
 		return sampleInfoLHM;
 	}
 
-	public static LinkedHashMap scanMultipleIlluminaLGENSampleInfo(String lgenDir) throws FileNotFoundException, IOException {
+	public static LinkedHashMap scanMultipleIlluminaLGENSampleInfo(String lgenDir) throws IOException {
 		LinkedHashMap sampleInfoLHM = new LinkedHashMap();
 		File[] lgenFilesToScan = org.gwaspi.global.Utils.listFiles(lgenDir, false);
 
@@ -310,11 +311,14 @@ public class SamplesParser {
 			FileReader inputFileReader = new FileReader(currentLGENFile);
 			BufferedReader inputBufferReader = new BufferedReader(inputFileReader);
 
-			String header = "";
 			boolean gotHeader = false;
-			while ((header = inputBufferReader.readLine()) != null && !gotHeader) {
+			while (!gotHeader) {
+				String header = inputBufferReader.readLine();
+				if (header == null) {
+					break;
+				}
 				if (header.startsWith("[Data]")) {
-					header = inputBufferReader.readLine(); //Get next line which is real header
+					/*header = */inputBufferReader.readLine(); // get the next line, which is the real header
 					gotHeader = true;
 				}
 			}
@@ -340,17 +344,20 @@ public class SamplesParser {
 
 	public static LinkedHashMap scanBeagleSampleInfo(String beaglePath) throws IOException {
 		LinkedHashMap sampleInfoLHM = new LinkedHashMap();
-		FileReader inputFileReader = null;
+		FileReader inputFileReader;
 //        try {
 		File sampleFile = new File(beaglePath);
 		inputFileReader = new FileReader(sampleFile);
 		BufferedReader inputBufferReader = new BufferedReader(inputFileReader);
 
-		String l;
 		String sampleIdHeader = "";
 		String affectionHeader = "";
 		boolean gotAffection = false;
-		while ((l = inputBufferReader.readLine()) != null && !gotAffection) {
+		while (!gotAffection) {
+			String l = inputBufferReader.readLine();
+			if (l == null) {
+				break;
+			}
 			if (l.startsWith("I")) {
 				sampleIdHeader = l;
 			}
@@ -385,7 +392,7 @@ public class SamplesParser {
 		return sampleInfoLHM;
 	}
 
-	public static LinkedHashMap scanHapmapSampleInfo(String hapmapPath) throws FileNotFoundException, IOException {
+	public static LinkedHashMap scanHapmapSampleInfo(String hapmapPath) throws IOException {
 		LinkedHashMap sampleInfoLHM = new LinkedHashMap();
 		FileReader fr = null;
 		BufferedReader inputAnnotationBr = null;
@@ -438,7 +445,7 @@ public class SamplesParser {
 		return sampleInfoLHM;
 	}
 
-	public static LinkedHashMap scanHGDP1SampleInfo(String hgdpPath) throws FileNotFoundException, IOException {
+	public static LinkedHashMap scanHGDP1SampleInfo(String hgdpPath) throws IOException {
 		LinkedHashMap sampleInfoLHM = new LinkedHashMap();
 		FileReader inputFileReader = null;
 //        try {
@@ -472,7 +479,7 @@ public class SamplesParser {
 		return sampleInfoLHM;
 	}
 
-	public static LinkedHashMap scanAffymetrixSampleInfo(String genotypesPath) throws FileNotFoundException, IOException {
+	public static LinkedHashMap scanAffymetrixSampleInfo(String genotypesPath) throws IOException {
 		LinkedHashMap resultLHM = new LinkedHashMap();
 		File[] gtFilesToImport = org.gwaspi.global.Utils.listFiles(genotypesPath, false);
 
@@ -492,7 +499,7 @@ public class SamplesParser {
 		return resultLHM;
 	}
 
-	public static LinkedHashMap scanSequenomSampleInfo(String genotypePath) throws FileNotFoundException, IOException {
+	public static LinkedHashMap scanSequenomSampleInfo(String genotypePath) throws IOException {
 		LinkedHashMap sampleInfoLHM = new LinkedHashMap();
 
 		File gtFileToImport = new File(genotypePath);
@@ -525,7 +532,7 @@ public class SamplesParser {
 		return sampleInfoLHM;
 	}
 
-	public static HashSet scanSampleInfoAffectionStates(String sampleInfoPath) throws FileNotFoundException, IOException {
+	public static HashSet scanSampleInfoAffectionStates(String sampleInfoPath) throws IOException {
 		HashSet resultHS = new HashSet();
 		FileReader inputFileReader = null;
 

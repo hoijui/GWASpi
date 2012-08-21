@@ -1,9 +1,21 @@
 package org.gwaspi.gui;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.io.*;
-import javax.swing.*;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
+import java.io.IOException;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
+import java.io.PrintStream;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 
 /**
  * A simple Java Console for your application (Swing version)
@@ -151,7 +163,7 @@ public class Console extends WindowAdapter implements WindowListener, ActionList
 			if (available == 0) {
 				break;
 			}
-			byte b[] = new byte[available];
+			byte[] b = new byte[available];
 			in.read(b);
 			input = input + new String(b, 0, b.length);
 		} while (!input.endsWith("\n") && !input.endsWith("\r\n") && !quit);

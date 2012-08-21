@@ -33,10 +33,10 @@ public class IntegerInputVerifier extends InputVerifier {
 				return true;
 			}
 
-			if ((correct = isInteger(text))) {
-				//correct = isFormatCorrect(text);
-			}
-
+			correct = isInteger(text);
+//			if (correct) {
+//				correct = isFormatCorrect(text);
+//			}
 		} finally {
 			if (!correct) {
 				Toolkit.getDefaultToolkit().beep();

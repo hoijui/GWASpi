@@ -76,7 +76,7 @@ public class MetadataLoaderIlluminaLGEN {
 		return markerMetadataLHM;
 	}
 
-	public static TreeMap parseAndSortMapFile(String path) throws FileNotFoundException, IOException {
+	public static TreeMap parseAndSortMapFile(String path) throws IOException {
 
 		FileReader fr = new FileReader(path);
 		BufferedReader inputMapBR = new BufferedReader(fr);

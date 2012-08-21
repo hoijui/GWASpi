@@ -5,7 +5,6 @@ import java.awt.Color;
 import java.awt.Font;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
@@ -52,7 +51,7 @@ public class PlinkReportLoader {
 	private PlinkReportLoader() {
 	}
 
-	public static CombinedRangeXYPlot loadAssocUnadjLogPvsPos(File plinkReport, HashSet redMarkersHS) throws FileNotFoundException, IOException {
+	public static CombinedRangeXYPlot loadAssocUnadjLogPvsPos(File plinkReport, HashSet redMarkersHS) throws IOException {
 
 
 		XYSeriesCollection chrData = new XYSeriesCollection();

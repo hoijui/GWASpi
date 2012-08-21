@@ -9,8 +9,8 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.gwaspi.netCDF.matrices.*;
-import ucar.nc2.*;
+import org.gwaspi.netCDF.matrices.MatrixMetadata;
+import ucar.nc2.NetcdfFile;
 
 /**
  *

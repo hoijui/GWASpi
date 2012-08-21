@@ -1,10 +1,25 @@
 package org.gwaspi.gui.utils;
 
 import org.gwaspi.global.Text;
-import java.awt.*;
-import java.io.*;
+import java.awt.BorderLayout;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.Image;
+import java.awt.Rectangle;
+import java.awt.TextArea;
+import java.awt.Toolkit;
+import java.io.ByteArrayOutputStream;
+import java.io.FileWriter;
+import java.io.FilterOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.net.URL;
-import javax.swing.*;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.WindowConstants;
 
 /**
  * http://tanksoftware.com/juk/developer/src/com/tanksoftware/util/RedirectedFrame.java
@@ -99,14 +114,14 @@ public class SystemOutPopup extends JFrame {
 		}
 
 		@Override
-		public void write(byte b[]) throws IOException {
+		public void write(byte[] b) throws IOException {
 			String aString = new String(b);
 			aTextArea.append(aString);
 			aPrintStream.flush();
 		}
 
 		@Override
-		public void write(byte b[], int off, int len) throws IOException {
+		public void write(byte[] b, int off, int len) throws IOException {
 			String aString = new String(b, off, len);
 			aTextArea.append(aString);
 			aPrintStream.flush();

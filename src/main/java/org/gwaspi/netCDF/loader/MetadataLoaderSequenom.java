@@ -73,7 +73,7 @@ public class MetadataLoaderSequenom {
 		return markerMetadataLHM;
 	}
 
-	public static TreeMap parseAndSortMapFile(String path) throws FileNotFoundException, IOException {
+	public static TreeMap parseAndSortMapFile(String path) throws IOException {
 
 		FileReader fr = new FileReader(path);
 		BufferedReader inputMapBR = new BufferedReader(fr);
@@ -127,18 +127,22 @@ public class MetadataLoaderSequenom {
 	}
 
 	public static String fixChrData(String chr) throws IOException {
-		if (chr.equals("23")) {
-			chr = "X";
+
+		String chrFixed = chr;
+
+		if (chrFixed.equals("23")) {
+			chrFixed = "X";
 		}
-		if (chr.equals("24")) {
-			chr = "Y";
+		if (chrFixed.equals("24")) {
+			chrFixed = "Y";
 		}
-		if (chr.equals("25")) {
-			chr = "XY";
+		if (chrFixed.equals("25")) {
+			chrFixed = "XY";
 		}
-		if (chr.equals("26")) {
-			chr = "MT";
+		if (chrFixed.equals("26")) {
+			chrFixed = "MT";
 		}
-		return chr;
+
+		return chrFixed;
 	}
 }

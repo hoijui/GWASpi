@@ -80,7 +80,7 @@ public class MetadataLoaderPlinkBinary {
 		return markerMetadataLHM;
 	}
 
-	public static TreeMap parseAndSortBimFile(String path) throws FileNotFoundException, IOException {
+	public static TreeMap parseAndSortBimFile(String path) throws IOException {
 
 		FileReader fr = new FileReader(path);
 		BufferedReader inputMapBR = new BufferedReader(fr);
@@ -126,7 +126,7 @@ public class MetadataLoaderPlinkBinary {
 		return sortedMetadataTM;
 	}
 
-	public LinkedHashMap parseOrigBimFile(String path) throws FileNotFoundException, IOException {
+	public LinkedHashMap parseOrigBimFile(String path) throws IOException {
 		FileReader fr = new FileReader(path);
 		BufferedReader inputMapBR = new BufferedReader(fr);
 		LinkedHashMap origMarkerIdSetLHM = new LinkedHashMap();

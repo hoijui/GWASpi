@@ -10,12 +10,12 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import org.gwaspi.netCDF.markers.MarkerSet_opt;
-import org.gwaspi.netCDF.matrices.*;
+import org.gwaspi.netCDF.matrices.MatrixMetadata;
 import org.gwaspi.netCDF.operations.OperationManager;
 import org.gwaspi.netCDF.operations.OperationMetadata;
 import org.gwaspi.netCDF.operations.OperationSet;
 import org.gwaspi.samples.SampleSet;
-import ucar.nc2.*;
+import ucar.nc2.NetcdfFile;
 
 /**
  *

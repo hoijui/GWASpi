@@ -1,6 +1,5 @@
 package org.gwaspi.reports;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import org.gwaspi.netCDF.operations.OperationMetadata;
@@ -18,7 +17,7 @@ public class GatherQASamplesData {
 	private GatherQASamplesData() {
 	}
 
-	public static LinkedHashMap loadSamplesQAMissingRatio(int opId) throws FileNotFoundException, IOException {
+	public static LinkedHashMap loadSamplesQAMissingRatio(int opId) throws IOException {
 
 		OperationMetadata rdOPMetadata = new OperationMetadata(opId);
 
@@ -32,7 +31,7 @@ public class GatherQASamplesData {
 		return rdMatrixSampleSetLHM;
 	}
 
-	public static LinkedHashMap loadSamplesQAHetZygRatio(int opId) throws FileNotFoundException, IOException {
+	public static LinkedHashMap loadSamplesQAHetZygRatio(int opId) throws IOException {
 
 		OperationMetadata rdOPMetadata = new OperationMetadata(opId);
 

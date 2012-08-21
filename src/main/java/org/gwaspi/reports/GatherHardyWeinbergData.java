@@ -1,6 +1,5 @@
 package org.gwaspi.reports;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import org.gwaspi.netCDF.operations.OperationMetadata;
@@ -19,7 +18,7 @@ public class GatherHardyWeinbergData {
 	}
 
 	//<editor-fold defaultstate="collapsed" desc="HARDY-WEINBERG REPORT METHODS">
-	public static LinkedHashMap loadHWPval_ALT(int opId) throws FileNotFoundException, IOException {
+	public static LinkedHashMap loadHWPval_ALT(int opId) throws IOException {
 
 		OperationMetadata rdOPMetadata = new OperationMetadata(opId);
 
@@ -33,7 +32,7 @@ public class GatherHardyWeinbergData {
 		return rdMatrixMarkerSetLHM;
 	}
 
-	public static LinkedHashMap loadHWPval_ALL(int opId) throws FileNotFoundException, IOException {
+	public static LinkedHashMap loadHWPval_ALL(int opId) throws IOException {
 
 		OperationMetadata rdOPMetadata = new OperationMetadata(opId);
 
@@ -47,7 +46,7 @@ public class GatherHardyWeinbergData {
 		return rdMatrixMarkerSetLHM;
 	}
 
-	public static LinkedHashMap loadHWPval_CASE(int opId) throws FileNotFoundException, IOException {
+	public static LinkedHashMap loadHWPval_CASE(int opId) throws IOException {
 
 		OperationMetadata rdOPMetadata = new OperationMetadata(opId);
 
@@ -61,7 +60,7 @@ public class GatherHardyWeinbergData {
 		return rdMatrixMarkerSetLHM;
 	}
 
-	public static LinkedHashMap loadHWPval_CTRL(int opId) throws FileNotFoundException, IOException {
+	public static LinkedHashMap loadHWPval_CTRL(int opId) throws IOException {
 
 		OperationMetadata rdOPMetadata = new OperationMetadata(opId);
 
@@ -75,7 +74,7 @@ public class GatherHardyWeinbergData {
 		return rdMatrixMarkerSetLHM;
 	}
 
-	public static LinkedHashMap loadHWHETZY_ALT(int opId) throws FileNotFoundException, IOException {
+	public static LinkedHashMap loadHWHETZY_ALT(int opId) throws IOException {
 
 		OperationMetadata rdOPMetadata = new OperationMetadata(opId);
 
@@ -89,7 +88,7 @@ public class GatherHardyWeinbergData {
 		return rdMatrixMarkerSetLHM;
 	}
 
-	public static LinkedHashMap loadHWHETZY_ALL(int opId) throws FileNotFoundException, IOException {
+	public static LinkedHashMap loadHWHETZY_ALL(int opId) throws IOException {
 
 		OperationMetadata rdOPMetadata = new OperationMetadata(opId);
 
@@ -103,7 +102,7 @@ public class GatherHardyWeinbergData {
 		return rdMatrixMarkerSetLHM;
 	}
 
-	public static LinkedHashMap loadHWHETZY_CASE(int opId) throws FileNotFoundException, IOException {
+	public static LinkedHashMap loadHWHETZY_CASE(int opId) throws IOException {
 
 		OperationMetadata rdOPMetadata = new OperationMetadata(opId);
 
@@ -117,7 +116,7 @@ public class GatherHardyWeinbergData {
 		return rdMatrixMarkerSetLHM;
 	}
 
-	public static LinkedHashMap loadHWHETZY_CTRL(int opId) throws FileNotFoundException, IOException {
+	public static LinkedHashMap loadHWHETZY_CTRL(int opId) throws IOException {
 
 		OperationMetadata rdOPMetadata = new OperationMetadata(opId);
 

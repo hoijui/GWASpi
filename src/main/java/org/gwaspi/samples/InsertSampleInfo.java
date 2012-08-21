@@ -3,7 +3,6 @@ package org.gwaspi.samples;
 import org.gwaspi.constants.cImport.Annotation.GWASpi;
 import org.gwaspi.database.DbManager;
 import org.gwaspi.global.ServiceLocator;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -25,7 +24,7 @@ public class InsertSampleInfo {
 	private InsertSampleInfo() {
 	}
 
-	public static ArrayList processData(Integer studyId, LinkedHashMap sampleInfoLHM) throws FileNotFoundException, IOException {
+	public static ArrayList processData(Integer studyId, LinkedHashMap sampleInfoLHM) throws IOException {
 		/////////////////////////////////////////////////
 		///////// Retrieving Samplelist from DB /////////
 		/////////////////////////////////////////////////

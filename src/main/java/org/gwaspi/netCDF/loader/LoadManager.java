@@ -1,7 +1,6 @@
 package org.gwaspi.netCDF.loader;
 
 import org.gwaspi.constants.cNetCDF;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import ucar.ma2.InvalidRangeException;
@@ -27,7 +26,7 @@ public class LoadManager {
 			String chromosome,
 			String strandType,
 			String gtCode,
-			int studyId) throws FileNotFoundException, IOException, InvalidRangeException, InterruptedException, NullPointerException {
+			int studyId) throws IOException, InvalidRangeException, InterruptedException {
 		int newMatrixId = Integer.MIN_VALUE;
 
 		switch (org.gwaspi.constants.cImport.ImportFormat.compareTo(format)) {

@@ -11,8 +11,12 @@ import org.gwaspi.netCDF.markers.MarkerSet_opt;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.gwaspi.netCDF.matrices.MatrixMetadata;
 import org.gwaspi.samples.SampleSet;
-import ucar.ma2.*;
-import ucar.nc2.*;
+import ucar.ma2.ArrayChar;
+import ucar.ma2.Index;
+import ucar.ma2.InvalidRangeException;
+import ucar.nc2.Attribute;
+import ucar.nc2.NetcdfFile;
+import ucar.nc2.NetcdfFileWriteable;
 
 /**
  *

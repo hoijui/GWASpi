@@ -33,10 +33,10 @@ public class DoubleInputVerifier extends InputVerifier {
 				return true;
 			}
 
-			if ((correct = isDoubleOrFloat(text))) {
-				//correct = isFormatCorrect(text);
-			}
-
+			correct = isDoubleOrFloat(text);
+//			if (correct) {
+//				correct = isFormatCorrect(text);
+//			}
 		} finally {
 			if (!correct) {
 				Toolkit.getDefaultToolkit().beep();

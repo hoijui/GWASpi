@@ -8,7 +8,6 @@ import org.gwaspi.global.ServiceLocator;
 import org.gwaspi.global.Text;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -16,8 +15,11 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.StringTokenizer;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
-import ucar.ma2.*;
-import ucar.nc2.*;
+import ucar.ma2.ArrayChar;
+import ucar.ma2.ArrayInt;
+import ucar.ma2.Index;
+import ucar.ma2.InvalidRangeException;
+import ucar.nc2.NetcdfFileWriteable;
 
 /**
  *
@@ -66,7 +68,7 @@ public class LoadGTFromPlinkFlatFiles {
 	}
 
 	//METHODS
-	public int processData() throws IOException, FileNotFoundException, InvalidRangeException, InterruptedException {
+	public int processData() throws IOException, InvalidRangeException, InterruptedException {
 		int result = Integer.MIN_VALUE;
 
 		String startTime = org.gwaspi.global.Utils.getMediumDateTimeAsString();
@@ -292,7 +294,7 @@ public class LoadGTFromPlinkFlatFiles {
 			NetcdfFileWriteable ncfile,
 			LinkedHashMap wrMarkerIdSetLHM,
 			LinkedHashMap mapMarkerSetLHM,
-			ArrayList samplesAL) throws FileNotFoundException, IOException, InvalidRangeException {
+			ArrayList samplesAL) throws IOException, InvalidRangeException {
 
 		FileReader inputFileReader = new FileReader(file);
 		BufferedReader inputBufferReader = new BufferedReader(inputFileReader);
@@ -341,13 +343,7 @@ public class LoadGTFromPlinkFlatFiles {
 			if (sampleIndex != -1) {  //CHECK IF CURRENT SAMPLE IS KNOWN IN SAMPLEINFO FILE!!
 				org.gwaspi.netCDF.operations.Utils.saveSingleSampleGTsToMatrix(ncfile, wrMarkerIdSetLHM, sampleIndex);
 			}
-
 		}
-
-
-
-
-
 	}
 
 	private static void logAsWhole(String startTime, int studyId, String dirPath, String format, String matrixName, String description) throws IOException {

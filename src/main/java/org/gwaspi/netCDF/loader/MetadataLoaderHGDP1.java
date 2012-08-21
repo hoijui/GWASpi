@@ -75,7 +75,7 @@ public class MetadataLoaderHGDP1 {
 		return markerMetadataLHM;
 	}
 
-	public static TreeMap parseAndSortMarkerFile(String path) throws FileNotFoundException, IOException {
+	public static TreeMap parseAndSortMarkerFile(String path) throws IOException {
 		FileReader fr = new FileReader(path);
 		BufferedReader inputMapBR = new BufferedReader(fr);
 		TreeMap sortedMetadataTM = new TreeMap(new ComparatorChrAutPosMarkerIdAsc());

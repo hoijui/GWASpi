@@ -1,5 +1,6 @@
 package org.gwaspi.netCDF.loader;
 
+import org.gwaspi.constants.cImport.Annotation.HapmapGT_Standard;
 import org.gwaspi.constants.cNetCDF;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -8,8 +9,6 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.TreeMap;
-import org.gwaspi.constants.cImport.Annotation.HapmapGT_Standard;
-import org.gwaspi.constants.cNetCDF.*;
 
 /* Imports Hapmap genotype files as found on
  * http://hapmap.ncbi.nlm.nih.gov/downloads/genotypes/?N=D
@@ -78,7 +77,7 @@ public class MetadataLoaderHapmap {
 		return markerMetadataLHM;
 	}
 
-	public static TreeMap parseAnnotationBRFile(String path) throws FileNotFoundException, IOException {
+	public static TreeMap parseAnnotationBRFile(String path) throws IOException {
 		FileReader fr = new FileReader(path);
 		BufferedReader inputAnnotationBr = new BufferedReader(fr);
 		TreeMap sortedMetadataTM = new TreeMap(new ComparatorChrAutPosMarkerIdAsc());

@@ -8,8 +8,10 @@ import java.util.LinkedHashMap;
 import org.gwaspi.model.Operation;
 import org.gwaspi.netCDF.markers.MarkerSet_opt;
 import org.gwaspi.netCDF.matrices.MatrixMetadata;
-import ucar.ma2.*;
-import ucar.nc2.*;
+import ucar.ma2.ArrayChar;
+import ucar.ma2.InvalidRangeException;
+import ucar.nc2.NetcdfFile;
+import ucar.nc2.NetcdfFileWriteable;
 
 /**
  *

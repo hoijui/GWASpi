@@ -29,7 +29,7 @@ public class Associations {
 		double N = caseTot + ctrlTot;
 
 		//INIT MODEL WEIGHTS
-		int weights[] = new int[3];
+		int[] weights = new int[3];
 		switch (model) {
 			case 0: //DOMINANT
 				weights[0] = 1;

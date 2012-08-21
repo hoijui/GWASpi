@@ -270,10 +270,13 @@ public class Report_HardyWeinbergSummary extends javax.swing.JPanel {
 
 				// Getting data from file and subdividing to series all points by chromosome
 				ArrayList tableRowAL = new ArrayList();
-				String l;
 				String header = inputBufferReader.readLine();
 				int count = 0;
-				while ((l = inputBufferReader.readLine()) != null && count < getRowsNb) {
+				while (count < getRowsNb) {
+					String l = inputBufferReader.readLine();
+					if (l == null) {
+						break;
+					}
 					Object[] row = new Object[9];
 					String[] cVals = l.split(org.gwaspi.constants.cImport.Separators.separators_SpaceTab_rgxp);
 

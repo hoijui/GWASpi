@@ -6,8 +6,10 @@ import org.gwaspi.global.ServiceLocator;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import ucar.ma2.*;
-import ucar.nc2.*;
+import ucar.ma2.DataType;
+import ucar.ma2.InvalidRangeException;
+import ucar.nc2.Dimension;
+import ucar.nc2.NetcdfFileWriteable;
 
 /**
  *

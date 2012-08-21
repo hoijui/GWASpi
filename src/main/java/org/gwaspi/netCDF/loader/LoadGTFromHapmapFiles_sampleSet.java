@@ -7,15 +7,17 @@ import org.gwaspi.global.ServiceLocator;
 import org.gwaspi.global.Text;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.StringTokenizer;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
-import ucar.ma2.*;
-import ucar.nc2.*;
+import ucar.ma2.ArrayChar;
+import ucar.ma2.ArrayInt;
+import ucar.ma2.Index;
+import ucar.ma2.InvalidRangeException;
+import ucar.nc2.NetcdfFileWriteable;
 
 /**
  *
@@ -51,7 +53,7 @@ public class LoadGTFromHapmapFiles_sampleSet {
 			String _friendlyName,
 			String _gtCode,
 			String _description,
-			LinkedHashMap _sampleInfoLHM) throws FileNotFoundException, IOException {
+			LinkedHashMap _sampleInfoLHM) throws IOException {
 
 		gtFilePath = _gtFilePath;
 		sampleFilePath = _sampleFilePath;
@@ -80,7 +82,7 @@ public class LoadGTFromHapmapFiles_sampleSet {
 
 	//</editor-fold>
 	//<editor-fold defaultstate="collapsed" desc="PROCESS GENOTYPES">
-	public int processHapmapGTFile() throws FileNotFoundException, IOException, InvalidRangeException {
+	public int processHapmapGTFile() throws IOException, InvalidRangeException {
 		int result = Integer.MIN_VALUE;
 
 		String startTime = org.gwaspi.global.Utils.getMediumDateTimeAsString();
@@ -380,7 +382,7 @@ public class LoadGTFromHapmapFiles_sampleSet {
 
 	public LinkedHashMap loadIndividualFiles(File file,
 			String currSampleId,
-			LinkedHashMap wrSampleSetLHM) throws FileNotFoundException, IOException, InvalidRangeException {
+			LinkedHashMap wrSampleSetLHM) throws IOException, InvalidRangeException {
 
 		int dataStartRow = cImport.Genotypes.Hapmap_Standard.dataStartRow;
 		FileReader inputFileReader = new FileReader(file);
@@ -443,7 +445,7 @@ public class LoadGTFromHapmapFiles_sampleSet {
 	//</editor-fold>
 
 	//<editor-fold defaultstate="collapsed" desc="HELPER METHODS">
-	private LinkedHashMap getHapmapSampleIds(File hapmapGTFile) throws FileNotFoundException, IOException {
+	private LinkedHashMap getHapmapSampleIds(File hapmapGTFile) throws IOException {
 
 		LinkedHashMap uniqueSamples = new LinkedHashMap();
 

@@ -3,7 +3,6 @@ package org.gwaspi.reports;
 import java.awt.Color;
 import java.awt.geom.Rectangle2D;
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -58,7 +57,7 @@ public class GenericReportGenerator_opt {
 	}
 
 	//<editor-fold defaultstate="collapsed" desc="ASSOCIATION CHARTS">
-	public static CombinedRangeXYPlot buildManhattanPlot(int opId, String netCDFVar) throws FileNotFoundException, IOException {
+	public static CombinedRangeXYPlot buildManhattanPlot(int opId, String netCDFVar) throws IOException {
 
 		//<editor-fold defaultstate="collapsed" desc="PLOT DEFAULTS">
 		threshold = Double.parseDouble(org.gwaspi.global.Config.getConfigValue("CHART_MANHATTAN_PLOT_THRESHOLD", "5E-7"));
@@ -271,7 +270,7 @@ public class GenericReportGenerator_opt {
 		combinedPlot.add(subplot, 1);
 	}
 
-	public static XYPlot buildQQPlot(int opId, String netCDFVar, int df) throws FileNotFoundException, IOException {
+	public static XYPlot buildQQPlot(int opId, String netCDFVar, int df) throws IOException {
 
 		//<editor-fold defaultstate="collapsed" desc="PLOT DEFAULTS">
 		String[] tmp = org.gwaspi.global.Config.getConfigValue("CHART_QQ_PLOT_BCKG", "230,230,230").split(",");
@@ -322,13 +321,15 @@ public class GenericReportGenerator_opt {
 		InputStreamReader isr = new InputStreamReader(boundaryStream);
 		BufferedReader inputBufferReader = new BufferedReader(isr);
 
-		String l;
-		String[] cVals = null;
 		Double stopValue = expChiSqrDist.get(N - 1);
 		Double currentValue = 0d;
 		ArrayList<Double[]> boundaryAL = new ArrayList();
-		while ((l = inputBufferReader.readLine()) != null && currentValue <= stopValue) {
-			cVals = l.split(",");
+		while (currentValue <= stopValue) {
+			String l = inputBufferReader.readLine();
+			if (l == null) {
+				break;
+			}
+			String[] cVals = l.split(",");
 			Double[] slice = new Double[3];
 			slice[0] = Double.parseDouble(cVals[0]);
 			slice[1] = Double.parseDouble(cVals[1]);
@@ -423,9 +424,9 @@ public class GenericReportGenerator_opt {
 			rdInfoMarkerSet.fillMarkerSetLHMWithChrAndPos();
 
 			//ESTIMATE WINDOW SIZE
-			Long minPosition = 0l;
-			Long middlePosition = 0l;
-			Long maxPosition = 0l;
+			Long minPosition;
+			Long middlePosition;
+			Long maxPosition;
 			if (markerId == null) {
 				minPosition = requestedPhysPos;
 				middlePosition = Math.round((double) minPosition + requestedPosWindow / 2);
@@ -748,7 +749,7 @@ public class GenericReportGenerator_opt {
 	//</editor-fold>
 
 	//<editor-fold defaultstate="collapsed" desc="HELPERS">
-	public static LinkedHashMap getAnalysisVarData(int opId, String netCDFVar) throws FileNotFoundException, IOException {
+	public static LinkedHashMap getAnalysisVarData(int opId, String netCDFVar) throws IOException {
 
 		OperationMetadata rdOPMetadata = new OperationMetadata(opId);
 

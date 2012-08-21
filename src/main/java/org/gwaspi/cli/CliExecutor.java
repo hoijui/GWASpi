@@ -3,7 +3,6 @@ package org.gwaspi.cli;
 import org.gwaspi.constants.cExport.ExportFormat;
 import org.gwaspi.global.Text;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import javax.swing.JOptionPane;
@@ -21,7 +20,7 @@ public class CliExecutor {
 	private CliExecutor() {
 	}
 
-	public static boolean execute(File scriptFile) throws FileNotFoundException, IOException {
+	public static boolean execute(File scriptFile) throws IOException {
 		boolean success = false;
 
 		//GET ALL SCRIPTS CONTAINED IN FILE

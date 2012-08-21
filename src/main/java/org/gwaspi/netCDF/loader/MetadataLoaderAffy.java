@@ -37,7 +37,7 @@ public class MetadataLoaderAffy {
 	}
 
 	// ACCESSORS
-	public LinkedHashMap getSortedMarkerSetWithMetaData() throws IOException, NullPointerException {
+	public LinkedHashMap getSortedMarkerSetWithMetaData() throws IOException {
 		String startTime = org.gwaspi.global.Utils.getMediumDateTimeAsString();
 
 		TreeMap tempTM = parseAnnotationBRFile(annotationPath); // affyId, rsId,chr,pseudo-autosomal,pos, strand, alleles, plus-alleles
@@ -80,7 +80,7 @@ public class MetadataLoaderAffy {
 		return markerMetadataLHM;
 	}
 
-	public static TreeMap parseAnnotationBRFile(String path) throws FileNotFoundException, IOException, NullPointerException {
+	public static TreeMap parseAnnotationBRFile(String path) throws IOException {
 		FileReader fr = new FileReader(path);
 		BufferedReader inputAnnotationBr = new BufferedReader(fr);
 		TreeMap sortedMetadataTM = new TreeMap(new ComparatorChrAutPosMarkerIdAsc());

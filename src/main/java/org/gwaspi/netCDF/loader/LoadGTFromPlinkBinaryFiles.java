@@ -9,14 +9,17 @@ import java.io.DataInputStream;
 import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
-import ucar.ma2.*;
-import ucar.nc2.*;
+import ucar.ma2.ArrayByte;
+import ucar.ma2.ArrayChar;
+import ucar.ma2.ArrayInt;
+import ucar.ma2.Index;
+import ucar.ma2.InvalidRangeException;
+import ucar.nc2.NetcdfFileWriteable;
 
 /**
  *
@@ -61,7 +64,7 @@ public class LoadGTFromPlinkBinaryFiles {
 	}
 
 	//METHODS
-	public int processData() throws IOException, FileNotFoundException, InvalidRangeException, InterruptedException {
+	public int processData() throws IOException, InvalidRangeException, InterruptedException {
 		int result = Integer.MIN_VALUE;
 
 		String startTime = org.gwaspi.global.Utils.getMediumDateTimeAsString();
@@ -303,7 +306,7 @@ public class LoadGTFromPlinkBinaryFiles {
 			NetcdfFileWriteable ncfile,
 			LinkedHashMap wrMarkerIdSetLHM,
 			LinkedHashMap bimMarkerSetLHM,
-			LinkedHashMap sampleSetLHM) throws FileNotFoundException, IOException, InvalidRangeException {
+			LinkedHashMap sampleSetLHM) throws IOException, InvalidRangeException {
 
 		FileInputStream bedFS = new FileInputStream(file);
 		DataInputStream bedIS = new DataInputStream(bedFS);
@@ -337,7 +340,7 @@ public class LoadGTFromPlinkBinaryFiles {
 			//GET GENOTYPES
 			int rowCounter = 1;
 			ArrayList<byte[]> genotypesAL = new ArrayList();
-			while (true && itMarkerSet.hasNext()) {
+			while (itMarkerSet.hasNext()) {
 				try {
 					////////////////// NEW SNP //////////////
 					//PURGE LHM

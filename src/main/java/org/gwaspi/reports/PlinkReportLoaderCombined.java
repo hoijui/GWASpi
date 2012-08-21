@@ -3,7 +3,6 @@ package org.gwaspi.reports;
 import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.text.DecimalFormat;
@@ -34,14 +33,13 @@ public class PlinkReportLoaderCombined {
 	private PlinkReportLoaderCombined() {
 	}
 
-	public static CombinedRangeXYPlot loadAssocUnadjLogPvsPos(File plinkReport, HashSet redMarkersHS) throws FileNotFoundException, IOException {
+	public static CombinedRangeXYPlot loadAssocUnadjLogPvsPos(File plinkReport, HashSet redMarkersHS) throws IOException {
 
 		NumberAxis sharedAxis = new NumberAxis("-log₁₀(P)");
 		sharedAxis.setTickMarkInsideLength(3.0f);
 		CombinedRangeXYPlot combinedPlot = new CombinedRangeXYPlot(sharedAxis);
 		combinedPlot.setGap(0);
 
-		XYSeriesCollection tempChrData = null;
 		XYSeries series1 = null;
 		XYSeries series2 = null;
 		FileReader inputFileReader = new FileReader(plinkReport);
@@ -50,7 +48,6 @@ public class PlinkReportLoaderCombined {
 
 		//Getting data from file and subdividing to series all points by chromosome
 		String l;
-		String[] cVals = null;
 		String tempChr = "";
 		String header = inputBufferReader.readLine();
 		int count = 0;
@@ -63,7 +60,7 @@ public class PlinkReportLoaderCombined {
 
 
 			l = l.trim().replaceAll("\\s+", ",");
-			cVals = l.split(",");
+			String[] cVals = l.split(",");
 			String markerId = cVals[1];
 			int position = Integer.parseInt(cVals[2]);
 			String s_pVal = cVals[8];
@@ -82,7 +79,7 @@ public class PlinkReportLoaderCombined {
 
 				} else {
 					if (!tempChr.equals("")) { //Not the first time round!
-						tempChrData = new XYSeriesCollection();
+						XYSeriesCollection tempChrData = new XYSeriesCollection();
 						tempChrData.addSeries(series1);
 						tempChrData.addSeries(series2);
 						appendToCombinedRangePlot(combinedPlot, tempChr, tempChrData, false);
@@ -103,7 +100,7 @@ public class PlinkReportLoaderCombined {
 			}
 		}
 		//Append last chromosome to combined plot
-		tempChrData = new XYSeriesCollection();
+		XYSeriesCollection tempChrData = new XYSeriesCollection();
 		tempChrData.addSeries(series1);
 		tempChrData.addSeries(series2);
 		appendToCombinedRangePlot(combinedPlot, tempChr, tempChrData, true);

@@ -6,7 +6,6 @@ import org.gwaspi.gui.utils.Dialogs;
 import org.gwaspi.gui.utils.HelpURLs;
 import java.awt.Color;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -635,12 +634,12 @@ public class LoadDataPanel extends javax.swing.JPanel {
 	}
 
 	//</editor-fold>
-	private void actionLoadGenotypes() throws IOException, FileNotFoundException, InvalidRangeException, InterruptedException {
+	private void actionLoadGenotypes() throws IOException, InvalidRangeException, InterruptedException {
 		String newMatrixName = txt_NewMatrixName.getText().trim();
 		if (!newMatrixName.isEmpty()) {
 			lbl_NewMatrixName.setForeground(Color.black);
 			boolean[] filesOK = validateFiles();
-			if (filesOK[0] == true && filesOK[1] == true && filesOK[2] == true) {
+			if (filesOK[0] && filesOK[1] && filesOK[2]) {
 				lbl_File1.setForeground(Color.black);
 				lbl_File2.setForeground(Color.black);
 				lbl_FileSampleInfo.setForeground(Color.black);
@@ -655,7 +654,7 @@ public class LoadDataPanel extends javax.swing.JPanel {
 				if (decision == JOptionPane.YES_OPTION) {
 					//ASK MORE QUESTIONS
 					gwasParams = org.gwaspi.gui.utils.MoreGWASinOneGoInfo.showGWASInOneGo_Modal(cmb_Format.getSelectedItem().toString());
-					if (gwasParams.proceed == true) {
+					if (gwasParams.proceed) {
 						gwasParams.friendlyName = org.gwaspi.gui.utils.Dialogs.showInputBox(Text.Operation.GTFreqAndHWFriendlyName);
 					}
 				} else if (decision != JOptionPane.CANCEL_OPTION) {
@@ -687,15 +686,15 @@ public class LoadDataPanel extends javax.swing.JPanel {
 				//</editor-fold>
 			}
 
-			if (filesOK[0] == false) {
+			if (!filesOK[0]) {
 				lbl_File1.setForeground(Color.red);
 				Dialogs.showWarningDialogue(Text.Matrix.warnInputFileInField + lbl_File1.getText() + "!");
 			}
-			if (filesOK[1] == false) {
+			if (!filesOK[1]) {
 				lbl_File2.setForeground(Color.red);
 				Dialogs.showWarningDialogue(Text.Matrix.warnInputFileInField + lbl_File2.getText() + "!");
 			}
-			if (filesOK[2] == false) {
+			if (!filesOK[2]) {
 				lbl_FileSampleInfo.setForeground(Color.red);
 				Dialogs.showWarningDialogue(Text.Matrix.warnInputFileInField + lbl_FileSampleInfo.getText() + "!");
 			}
@@ -717,12 +716,10 @@ public class LoadDataPanel extends javax.swing.JPanel {
 				File pedFile = new File(txt_File1.getText().substring(0, txt_File1.getText().length() - 4) + ".ped");
 				if (txt_File2.getText().isEmpty() && pedFile.exists()) {
 					txt_File2.setText(pedFile.getPath());
-				} else {
-					if (pedFile.exists()) {
-						int option = org.gwaspi.gui.utils.Dialogs.showConfirmDialogue(org.gwaspi.global.Text.Matrix.findComplementaryPlink);
-						if (option == JOptionPane.YES_OPTION) {
-							txt_File2.setText(pedFile.getPath());
-						}
+				} else if (pedFile.exists()) {
+					int option = org.gwaspi.gui.utils.Dialogs.showConfirmDialogue(org.gwaspi.global.Text.Matrix.findComplementaryPlink);
+					if (option == JOptionPane.YES_OPTION) {
+						txt_File2.setText(pedFile.getPath());
 					}
 				}
 			}
@@ -735,21 +732,17 @@ public class LoadDataPanel extends javax.swing.JPanel {
 				int option = -1;
 				if (txt_File2.getText().isEmpty() && bimFile.exists()) {
 					txt_File2.setText(bimFile.getPath());
-				} else {
-					if (bimFile.exists()) {
-						option = org.gwaspi.gui.utils.Dialogs.showConfirmDialogue(org.gwaspi.global.Text.Matrix.findComplementaryPlinkBinary);
-						if (option == JOptionPane.YES_OPTION) {
-							txt_File2.setText(bimFile.getPath());
-						}
+				} else if (bimFile.exists()) {
+					option = org.gwaspi.gui.utils.Dialogs.showConfirmDialogue(org.gwaspi.global.Text.Matrix.findComplementaryPlinkBinary);
+					if (option == JOptionPane.YES_OPTION) {
+						txt_File2.setText(bimFile.getPath());
 					}
 				}
 				if (txt_FileSampleInfo.getText().isEmpty() && famFile.exists()) {
 					txt_FileSampleInfo.setText(famFile.getPath());
-				} else {
-					if (famFile.exists()) {
-						if (option == JOptionPane.YES_OPTION) {
-							txt_FileSampleInfo.setText(famFile.getPath());
-						}
+				} else if (famFile.exists()) {
+					if (option == JOptionPane.YES_OPTION) {
+						txt_FileSampleInfo.setText(famFile.getPath());
 					}
 				}
 			}
@@ -771,12 +764,10 @@ public class LoadDataPanel extends javax.swing.JPanel {
 				File mapFile = new File(txt_File2.getText().substring(0, txt_File2.getText().length() - 4) + ".map");
 				if (txt_File1.getText().isEmpty() && mapFile.exists()) {
 					txt_File1.setText(mapFile.getPath());
-				} else {
-					if (mapFile.exists()) {
-						int option = org.gwaspi.gui.utils.Dialogs.showConfirmDialogue(org.gwaspi.global.Text.Matrix.findComplementaryPlink);
-						if (option == JOptionPane.YES_OPTION) {
-							txt_File1.setText(mapFile.getPath());
-						}
+				} else if (mapFile.exists()) {
+					int option = org.gwaspi.gui.utils.Dialogs.showConfirmDialogue(org.gwaspi.global.Text.Matrix.findComplementaryPlink);
+					if (option == JOptionPane.YES_OPTION) {
+						txt_File1.setText(mapFile.getPath());
 					}
 				}
 			}
@@ -788,21 +779,17 @@ public class LoadDataPanel extends javax.swing.JPanel {
 				int option = -1;
 				if (txt_File1.getText().isEmpty() && bedFile.exists()) {
 					txt_File1.setText(bedFile.getPath());
-				} else {
-					if (bedFile.exists()) {
-						option = org.gwaspi.gui.utils.Dialogs.showConfirmDialogue(org.gwaspi.global.Text.Matrix.findComplementaryPlinkBinary);
-						if (option == JOptionPane.YES_OPTION) {
-							txt_File1.setText(bedFile.getPath());
-						}
+				} else if (bedFile.exists()) {
+					option = org.gwaspi.gui.utils.Dialogs.showConfirmDialogue(org.gwaspi.global.Text.Matrix.findComplementaryPlinkBinary);
+					if (option == JOptionPane.YES_OPTION) {
+						txt_File1.setText(bedFile.getPath());
 					}
 				}
 				if (txt_FileSampleInfo.getText().isEmpty() && famFile.exists()) {
 					txt_FileSampleInfo.setText(famFile.getPath());
-				} else {
-					if (famFile.exists()) {
-						if (option == JOptionPane.YES_OPTION) {
-							txt_FileSampleInfo.setText(famFile.getPath());
-						}
+				} else if (famFile.exists()) {
+					if (option == JOptionPane.YES_OPTION) {
+						txt_FileSampleInfo.setText(famFile.getPath());
 					}
 				}
 			}
@@ -836,15 +823,13 @@ public class LoadDataPanel extends javax.swing.JPanel {
 		if (txt_File1.isEnabled()) {
 			if (file1.exists()) {
 				buttonsOK[0] = true;
-			} else {
-				if (fieldObligatoryState[0] == false) {
-					if (txt_File1.getText().contains(org.gwaspi.global.Text.All.optional)
-							|| txt_File1.getText().isEmpty()) {
-						buttonsOK[0] = true;
-					}
-				} else {
-					buttonsOK[0] = false;
+			} else if (!fieldObligatoryState[0]) {
+				if (txt_File1.getText().contains(org.gwaspi.global.Text.All.optional)
+						|| txt_File1.getText().isEmpty()) {
+					buttonsOK[0] = true;
 				}
+			} else {
+				buttonsOK[0] = false;
 			}
 		} else {
 			buttonsOK[0] = true;
@@ -852,15 +837,14 @@ public class LoadDataPanel extends javax.swing.JPanel {
 		if (txt_File2.isEnabled()) {
 			if (file2.exists()) {
 				buttonsOK[1] = true;
-			} else {
-				if (fieldObligatoryState[1] == false) {
-					if (txt_File2.getText().contains(org.gwaspi.global.Text.All.optional)
-							|| txt_File2.getText().isEmpty()) {
-						buttonsOK[1] = true;
-					}
-				} else {
-					buttonsOK[1] = false;
+			} else if (!fieldObligatoryState[1]) {
+				if (txt_File2.getText().contains(org.gwaspi.global.Text.All.optional)
+						|| txt_File2.getText().isEmpty())
+				{
+					buttonsOK[1] = true;
 				}
+			} else {
+				buttonsOK[1] = false;
 			}
 		} else {
 			buttonsOK[1] = true;
@@ -868,15 +852,14 @@ public class LoadDataPanel extends javax.swing.JPanel {
 		if (txt_FileSampleInfo.isEnabled()) {
 			if (file3.exists()) {
 				buttonsOK[2] = true;
-			} else {
-				if (fieldObligatoryState[2] == false) {
-					if (txt_FileSampleInfo.getText().contains(org.gwaspi.global.Text.All.optional)
-							|| txt_FileSampleInfo.getText().isEmpty()) {
-						buttonsOK[2] = true;
-					}
-				} else {
-					buttonsOK[2] = false;
+			} else if (!fieldObligatoryState[2]) {
+				if (txt_FileSampleInfo.getText().contains(org.gwaspi.global.Text.All.optional)
+						|| txt_FileSampleInfo.getText().isEmpty())
+				{
+					buttonsOK[2] = true;
 				}
+			} else {
+				buttonsOK[2] = false;
 			}
 		} else {
 			buttonsOK[2] = true;

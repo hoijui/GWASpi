@@ -6,8 +6,16 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import org.gwaspi.netCDF.matrices.MatrixMetadata;
-import ucar.ma2.*;
-import ucar.nc2.*;
+import ucar.ma2.ArrayByte;
+import ucar.ma2.ArrayChar;
+import ucar.ma2.ArrayDouble;
+import ucar.ma2.ArrayFloat;
+import ucar.ma2.ArrayInt;
+import ucar.ma2.DataType;
+import ucar.ma2.Index;
+import ucar.ma2.InvalidRangeException;
+import ucar.nc2.NetcdfFile;
+import ucar.nc2.Variable;
 
 /**
  * This modification of the MarkerSet can create instances of the MarkerSetLHM
