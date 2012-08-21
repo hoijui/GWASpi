@@ -457,7 +457,7 @@ public class GWASpiExplorer {
 	}
 
 	protected static Icon initIcon(String iconName) {
-		URL logoPath = GWASpiExplorer.class.getClass().getResource("/resources/" + iconName);
+		URL logoPath = GWASpiExplorer.class.getClass().getResource("/img/icon/" + iconName);
 		//String logoPath = org.gwaspi.global.Config.getConfigValue("ConfigDir", "") + "/" +iconName;
 		Icon logo = new ImageIcon(logoPath);
 		return logo;

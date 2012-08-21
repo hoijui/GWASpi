@@ -215,7 +215,6 @@ public class IntroPanel extends javax.swing.JPanel {
 		// </editor-fold>
 
 		initLogo();
-
 	}
 
 	private void btn_preferencesActionPerformed(java.awt.event.ActionEvent evt) {
@@ -234,7 +233,7 @@ public class IntroPanel extends javax.swing.JPanel {
 	}
 
 	protected void initLogo() {
-		URL logoPath = this.getClass().getResource("/resources/logo_white.png");
+		URL logoPath = this.getClass().getResource("/img/logo/logo_white.png");
 		Icon logo = new ImageIcon(logoPath);
 
 		JButton btn_logo = new JButton(logo);
@@ -262,7 +261,7 @@ public class IntroPanel extends javax.swing.JPanel {
 		pnl_Logo.add(scrl_Logo, BorderLayout.CENTER);
 
 
-		URL ibePath = this.getClass().getResource("/resources/logo_INB2.png");
+		URL ibePath = this.getClass().getResource("/img/logo/logo_INB2.png");
 		Icon inbLogo = new ImageIcon(ibePath);
 
 		JButton btn_inblogo = new JButton(inbLogo);

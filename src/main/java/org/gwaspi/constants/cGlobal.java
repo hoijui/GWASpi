@@ -17,7 +17,7 @@ public class cGlobal {
 	public static final String USERDIR = System.getProperty("user.dir");
 	public static final String HOMEDIR = System.getProperty("user.home");
 	public static final String JAVA_IO_TMPDIR = System.getProperty("java.io.tmpdir");
-	public static final String LOCAL_VERSION_XML = "/resources/version.xml";
+	public static final String LOCAL_VERSION_XML = "/version.xml";
 	public static final String REMOTE_VERSION_XML = "http://www.gwaspi.org/downloads/version.xml";
 	// Interloped table row colors
 	public static final Color background = UIManager.getColor("Table.background");

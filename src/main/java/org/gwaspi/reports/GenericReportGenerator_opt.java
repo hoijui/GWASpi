@@ -318,7 +318,7 @@ public class GenericReportGenerator_opt {
 
 
 		//<editor-fold defaultstate="collapsed" desc="GET CONFIDENCE BOUNDARY">
-		InputStream boundaryStream = GenericReportGenerator_opt.class.getClass().getResourceAsStream("/resources/chisqrboundary-df" + df + ".txt");
+		InputStream boundaryStream = GenericReportGenerator_opt.class.getClass().getResourceAsStream("/samples/chisqrboundary-df" + df + ".txt");
 		InputStreamReader isr = new InputStreamReader(boundaryStream);
 		BufferedReader inputBufferReader = new BufferedReader(isr);
 

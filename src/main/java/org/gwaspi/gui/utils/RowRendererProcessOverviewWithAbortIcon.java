@@ -17,8 +17,8 @@ import org.gwaspi.threadbox.SwingWorkerItem;
  */
 public class RowRendererProcessOverviewWithAbortIcon extends RowRendererDefault {
 
-	private URL abortIconPath = getClass().getResource("/resources/abort_16x16.png");
-	private URL noabortIconPath = getClass().getResource("/resources/abort-grey_16x16.png");
+	private URL abortIconPath = getClass().getResource("/img/icon/abort_16x16.png");
+	private URL noabortIconPath = getClass().getResource("/img/icon/abort-grey_16x16.png");
 	private ArrayList<SwingWorkerItem> swAL = org.gwaspi.threadbox.SwingWorkerItemList.getSwingWorkerItemsAL();
 	private ArrayList<SwingDeleterItem> sdAL = org.gwaspi.threadbox.SwingDeleterItemList.getSwingDeleterItemsAL();
 

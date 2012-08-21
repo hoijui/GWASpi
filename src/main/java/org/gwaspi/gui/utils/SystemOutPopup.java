@@ -160,7 +160,7 @@ public class SystemOutPopup extends JFrame {
 	}
 
 	protected void startRunning() {
-		URL logoPath = this.getClass().getResource("/resources/bigrotation2.gif");
+		URL logoPath = this.getClass().getResource("/img/logo/bigrotation2.gif"); // FIXME this file does not exist!
 		Icon logo = new ImageIcon(logoPath);
 
 		JLabel lbl_Running = new JLabel(logo);

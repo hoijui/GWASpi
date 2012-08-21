@@ -63,7 +63,7 @@ public class URLInDefaultBrowser {
 		String url;
 
 		if (!org.gwaspi.global.Utils.checkIntenetConnection()) {
-			String[] resourceURL = URLInDefaultBrowser.class.getClass().getResource("/resources/logo_white.png").toString().split("/");
+			String[] resourceURL = URLInDefaultBrowser.class.getClass().getResource("/img/logo/logo_white.png").toString().split("/");
 			StringBuilder sb = new StringBuilder("/");
 			for (int i = 1; i < resourceURL.length - 4; i++) {
 				sb.append(resourceURL[i]);

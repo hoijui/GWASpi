@@ -15,8 +15,8 @@ import javax.swing.table.TableColumn;
  */
 public class RowRendererGenotypicAssocWithZoomQueryDB extends DefaultTableCellRenderer {
 
-	private URL ZoomIconPath = getClass().getResource("/resources/zoom2_20x20.png");
-	private URL queryDBIconPath = getClass().getResource("/resources/arrow_20x20.png");
+	private URL ZoomIconPath = getClass().getResource("/img/icon/zoom2_20x20.png");
+	private URL queryDBIconPath = getClass().getResource("/img/icon/arrow_20x20.png");
 
 	@Override
 	public Component getTableCellRendererComponent(JTable table, Object value, boolean selected, boolean focused, int row, int column) {
