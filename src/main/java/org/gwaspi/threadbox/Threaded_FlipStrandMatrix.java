@@ -1,13 +1,12 @@
 package org.gwaspi.threadbox;
 
-import org.gwaspi.global.Text;
 import java.io.File;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.gwaspi.model.GWASpiExplorerNodes;
 import org.gwaspi.netCDF.operations.MatrixGenotypesFlipper;
 import org.gwaspi.netCDF.operations.OP_QAMarkers_opt;
 import org.gwaspi.netCDF.operations.OP_QASamples_opt;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -15,104 +14,67 @@ import org.gwaspi.netCDF.operations.OP_QASamples_opt;
  * IBE, Institute of Evolutionary Biology (UPF-CSIC)
  * CEXS-UPF-PRBB
  */
-public class Threaded_FlipStrandMatrix implements Runnable {
+public class Threaded_FlipStrandMatrix extends CommonRunnable {
 
-	private Thread runner;
-	private String timeStamp = "";
-	private static int resultMatrixId;
-	private static int studyId;
-	private static int parentMatrixId;
-	private static String newMatrixName;
-	private static String description;
-	private static String markerIdentifyer;
-	private static File markerFlipFile;
+	private int resultMatrixId;
+	private int studyId;
+	private int parentMatrixId;
+	private String newMatrixName;
+	private String description;
+	private String markerIdentifyer;
+	private File markerFlipFile;
 
 	public Threaded_FlipStrandMatrix(String threadName,
-			String _timeStamp,
-			int _studyId,
-			int _parentMatrixId,
-			String _newMatrixName,
-			String _description,
-			String _markerIdentifyer,
-			File _markerFlipFile) {
-		try {
-			timeStamp = _timeStamp;
-			org.gwaspi.global.Utils.sysoutStart("Extracting");
-			org.gwaspi.global.Config.initPreferences(false, null);
+			String timeStamp,
+			int studyId,
+			int parentMatrixId,
+			String newMatrixName,
+			String description,
+			String markerIdentifyer,
+			File markerFlipFile)
+	{
+		super(threadName, timeStamp, "Flipping Genotypes");
 
-			studyId = _studyId;
-			parentMatrixId = _parentMatrixId;
-			newMatrixName = _newMatrixName;
-			description = _description;
-			markerIdentifyer = _markerIdentifyer;
-			markerFlipFile = _markerFlipFile;
+		this.studyId = studyId;
+		this.parentMatrixId = parentMatrixId;
+		this.newMatrixName = newMatrixName;
+		this.description = description;
+		this.markerIdentifyer = markerIdentifyer;
+		this.markerFlipFile = markerFlipFile;
 
-			runner = new Thread(this, threadName); // (1) Create a new thread.
-			runner.start(); // (2) Start the thread.
-			runner.join();
-
-		} catch (InterruptedException ex) {
-			//Logger.getLogger(Threaded_ExtractMatrix.class.getName()).log(Level.SEVERE, null, ex);
-		}
+		startInternal("Extracting");
 	}
 
-	@SuppressWarnings("static-access")
-	public void run() {
-		SwingWorkerItem thisSwi = SwingWorkerItemList.getSwingWorkerItemByTimeStamp(timeStamp);
+	protected Logger createLog() {
+		return LoggerFactory.getLogger(Threaded_FlipStrandMatrix.class);
+	}
 
-		try {
+	protected void runInternal(SwingWorkerItem thisSwi) throws Exception {
 
-			if (thisSwi.getQueueState().equals(org.gwaspi.threadbox.QueueStates.PROCESSING)) {
-				MatrixGenotypesFlipper flipMatrix = new MatrixGenotypesFlipper(studyId,
-						parentMatrixId,
-						newMatrixName,
-						description,
-						markerIdentifyer,
-						markerFlipFile);
-				resultMatrixId = flipMatrix.flipGenotypesToNewMatrix();
-				GWASpiExplorerNodes.insertMatrixNode(studyId, resultMatrixId);
-			}
+		if (thisSwi.getQueueState().equals(org.gwaspi.threadbox.QueueStates.PROCESSING)) {
+			MatrixGenotypesFlipper flipMatrix = new MatrixGenotypesFlipper(studyId,
+					parentMatrixId,
+					newMatrixName,
+					description,
+					markerIdentifyer,
+					markerFlipFile);
+			resultMatrixId = flipMatrix.flipGenotypesToNewMatrix();
+			GWASpiExplorerNodes.insertMatrixNode(studyId, resultMatrixId);
+		}
 
-			if (thisSwi.getQueueState().equals(org.gwaspi.threadbox.QueueStates.PROCESSING)) {
-				int sampleQAOpId = OP_QASamples_opt.processMatrix(resultMatrixId);
-				GWASpiExplorerNodes.insertOperationUnderMatrixNode(resultMatrixId, sampleQAOpId);
-				org.gwaspi.reports.OutputQASamples.writeReportsForQASamplesData(sampleQAOpId, true);
-				GWASpiExplorerNodes.insertReportsUnderOperationNode(sampleQAOpId);
-			}
+		if (thisSwi.getQueueState().equals(org.gwaspi.threadbox.QueueStates.PROCESSING)) {
+			int sampleQAOpId = OP_QASamples_opt.processMatrix(resultMatrixId);
+			GWASpiExplorerNodes.insertOperationUnderMatrixNode(resultMatrixId, sampleQAOpId);
+			org.gwaspi.reports.OutputQASamples.writeReportsForQASamplesData(sampleQAOpId, true);
+			GWASpiExplorerNodes.insertReportsUnderOperationNode(sampleQAOpId);
+		}
 
-			if (thisSwi.getQueueState().equals(org.gwaspi.threadbox.QueueStates.PROCESSING)) {
-				int markersQAOpId = OP_QAMarkers_opt.processMatrix(resultMatrixId);
-				GWASpiExplorerNodes.insertOperationUnderMatrixNode(resultMatrixId, markersQAOpId);
-				org.gwaspi.reports.OutputQAMarkers_opt.writeReportsForQAMarkersData(markersQAOpId);
-				GWASpiExplorerNodes.insertReportsUnderOperationNode(markersQAOpId);
-				MultiOperations.printCompleted("Matrix Quality Control");
-			}
-
-			//FINISH OFF
-			if (!thisSwi.getQueueState().equals(org.gwaspi.threadbox.QueueStates.ABORT)) {
-				MultiOperations.printFinished("Flipping Genotypes");
-				MultiOperations.swingWorkerItemList.flagCurrentItemDone(timeStamp);
-			} else {
-				System.out.println("\n");
-				System.out.println(Text.Processes.abortingProcess);
-				System.out.println("Process Name: " + thisSwi.getSwingWorkerName());
-				System.out.println("Process Launch Time: " + thisSwi.getLaunchTime());
-				System.out.println("\n\n");
-			}
-
-			MultiOperations.updateProcessOverviewStartNext();
-
-		} catch (OutOfMemoryError e) {
-			System.out.println(Text.App.outOfMemoryError);
-		} catch (Exception ex) {
-			Logger.getLogger(Threaded_FlipStrandMatrix.class.getName()).log(Level.SEVERE, null, ex);
-			MultiOperations.printError("Flipping Genotypes");
-			try {
-				MultiOperations.swingWorkerItemList.flagCurrentItemError(timeStamp);
-				MultiOperations.updateTree();
-				MultiOperations.updateProcessOverviewStartNext();
-			} catch (Exception ex1) {
-			}
+		if (thisSwi.getQueueState().equals(org.gwaspi.threadbox.QueueStates.PROCESSING)) {
+			int markersQAOpId = OP_QAMarkers_opt.processMatrix(resultMatrixId);
+			GWASpiExplorerNodes.insertOperationUnderMatrixNode(resultMatrixId, markersQAOpId);
+			org.gwaspi.reports.OutputQAMarkers_opt.writeReportsForQAMarkersData(markersQAOpId);
+			GWASpiExplorerNodes.insertReportsUnderOperationNode(markersQAOpId);
+			MultiOperations.printCompleted("Matrix Quality Control");
 		}
 	}
 }

@@ -2,13 +2,12 @@ package org.gwaspi.threadbox;
 
 import org.gwaspi.database.DbManager;
 import org.gwaspi.global.ServiceLocator;
-import org.gwaspi.global.Text;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.gwaspi.samples.SamplesParser;
 
 /**
@@ -17,79 +16,55 @@ import org.gwaspi.samples.SamplesParser;
  * IBE, Institute of Evolutionary Biology (UPF-CSIC)
  * CEXS-UPF-PRBB
  */
-public class Threaded_UpdateSampleInfo implements Runnable {
+public class Threaded_UpdateSampleInfo extends CommonRunnable {
 
-	private Thread runner;
-	private String timeStamp = "";
 	private File sampleInfoFile;
-	private static int poolId;
+	private int poolId;
 
 	public Threaded_UpdateSampleInfo(String threadName,
-			String _timeStamp,
-			int _poolId,
-			File _sampleInfoFile) {
-		try {
-			timeStamp = _timeStamp;
-			org.gwaspi.global.Utils.sysoutStart("Sample Info Update");
-			org.gwaspi.global.Config.initPreferences(false, null);
-			poolId = _poolId;
-			sampleInfoFile = _sampleInfoFile;
-			runner = new Thread(this, threadName); // (1) Create a new thread.
-			runner.start(); // (2) Start the thread.
-			runner.join();
-		} catch (InterruptedException ex) {
-			//Logger.getLogger(Threaded_UpdateSampleInfo.class.getName()).log(Level.SEVERE, null, ex);
-		}
+			String timeStamp,
+			int poolId,
+			File sampleInfoFile)
+	{
+		super(threadName, timeStamp, "Sample Info Update");
+
+		this.poolId = poolId;
+		this.sampleInfoFile = sampleInfoFile;
+
+		startInternal(getTaskDescription());
 	}
 
-	@SuppressWarnings("static-access")
-	public void run() {
-		SwingWorkerItem thisSwi = SwingWorkerItemList.getSwingWorkerItemByTimeStamp(timeStamp);
+	protected Logger createLog() {
+		return LoggerFactory.getLogger(Threaded_UpdateSampleInfo.class);
+	}
 
-		try {
-			LinkedHashMap sampleInfoLHM = SamplesParser.scanGwaspiSampleInfo(sampleInfoFile.getPath());
-			ArrayList updatedSamplesAL = org.gwaspi.samples.InsertSampleInfo.processData(poolId, sampleInfoLHM);
+	protected void runInternal(SwingWorkerItem thisSwi) throws Exception {
 
-			/////DO NOT! Write new reports of SAMPLE QA
-//            OperationsList opList = new OperationsList(matrix.getMatrixId());
-//            ArrayList<Operation> opAL = opList.operationsListAL;
-//            int qaOpId = Integer.MIN_VALUE;
-//            for (int i = 0; i < opAL.size(); i++) {
-//                if (opAL.get(i).getOperationType().equals(org.gwaspi.constants.cNetCDF.Defaults.OPType.SAMPLE_QA.toString())) {
-//                    qaOpId = opAL.get(i).getOperationId();
-//                }
-//            }
-//            if (qaOpId != Integer.MIN_VALUE) {
-//                org.gwaspi.reports.OutputQASamples.writeReportsForQASamplesData(qaOpId, false);
-//            }
+		LinkedHashMap sampleInfoLHM = SamplesParser.scanGwaspiSampleInfo(sampleInfoFile.getPath());
+		ArrayList updatedSamplesAL = org.gwaspi.samples.InsertSampleInfo.processData(poolId, sampleInfoLHM);
 
-			org.gwaspi.model.Study study = new org.gwaspi.model.Study(poolId);
+		// DO NOT! Write new reports of SAMPLE QA
+//		OperationsList opList = new OperationsList(matrix.getMatrixId());
+//		ArrayList<Operation> opAL = opList.operationsListAL;
+//		int qaOpId = Integer.MIN_VALUE;
+//		for (int i = 0; i < opAL.size(); i++) {
+//			if (opAL.get(i).getOperationType().equals(org.gwaspi.constants.cNetCDF.Defaults.OPType.SAMPLE_QA.toString())) {
+//				qaOpId = opAL.get(i).getOperationId();
+//			}
+//		}
+//		if (qaOpId != Integer.MIN_VALUE) {
+//			org.gwaspi.reports.OutputQASamples.writeReportsForQASamplesData(qaOpId, false);
+//		}
 
-			StringBuilder oldDesc = new StringBuilder(study.getStudyDescription());
-			oldDesc.append("\n* Sample Info updated from: ");
-			oldDesc.append(sampleInfoFile.getPath());
-			oldDesc.append(" (");
-			oldDesc.append(org.gwaspi.global.Utils.getShortDateTimeAsString());
-			oldDesc.append(") *");
-			saveDescription(oldDesc.toString(), poolId);
+		org.gwaspi.model.Study study = new org.gwaspi.model.Study(poolId);
 
-			org.gwaspi.global.Utils.sysoutFinish("Sample Info Update");
-			MultiOperations.swingWorkerItemList.flagCurrentItemDone(timeStamp);
-			//MultiOperations.updateTree();
-			MultiOperations.updateProcessOverviewStartNext();
-
-		} catch (OutOfMemoryError e) {
-			System.out.println(Text.App.outOfMemoryError);
-		} catch (Exception ex) {
-			Logger.getLogger(Threaded_UpdateSampleInfo.class.getName()).log(Level.SEVERE, null, ex);
-			MultiOperations.printError("Matrix Quality Control");
-			try {
-				MultiOperations.swingWorkerItemList.flagCurrentItemError(timeStamp);
-				MultiOperations.updateTree();
-				MultiOperations.updateProcessOverviewStartNext();
-			} catch (Exception ex1) {
-			}
-		}
+		StringBuilder oldDesc = new StringBuilder(study.getStudyDescription());
+		oldDesc.append("\n* Sample Info updated from: ");
+		oldDesc.append(sampleInfoFile.getPath());
+		oldDesc.append(" (");
+		oldDesc.append(org.gwaspi.global.Utils.getShortDateTimeAsString());
+		oldDesc.append(") *");
+		saveDescription(oldDesc.toString(), poolId);
 	}
 
 	private void saveDescription(String description, int studyId) {
@@ -105,7 +80,7 @@ public class Threaded_UpdateSampleInfo implements Runnable {
 					new Object[]{studyId});
 
 		} catch (IOException ex) {
-			Logger.getLogger(Threaded_UpdateSampleInfo.class.getName()).log(Level.SEVERE, null, ex);
+			getLog().error(null, ex);
 		}
 	}
 }

@@ -1,13 +1,12 @@
 package org.gwaspi.threadbox;
 
-import org.gwaspi.global.Text;
 import java.util.LinkedHashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.gwaspi.model.GWASpiExplorerNodes;
 import org.gwaspi.netCDF.loader.LoadManager;
 import org.gwaspi.netCDF.operations.OP_QAMarkers_opt;
 import org.gwaspi.netCDF.operations.OP_QASamples_opt;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -15,129 +14,89 @@ import org.gwaspi.netCDF.operations.OP_QASamples_opt;
  * IBE, Institute of Evolutionary Biology (UPF-CSIC)
  * CEXS-UPF-PRBB
  */
-public class Threaded_Loader_QA implements Runnable {
+public class Threaded_Loader_QA extends CommonRunnable {
 
-	private Thread runner;
-	private String timeStamp = "";
-	private static int resultMatrixId;
-	private static int resultOpId;
-	private static String format;
-	private static LinkedHashMap sampleInfoLHM;
-	private static String newMatrixName;
-	private static String newMatrixDescription;
-	private static String file1;
-	private static String fileSampleInfo;
-	private static String file2;
-	private static String chromosome;
-	private static String strandType;
-	private static String gtCode;
-	private static int studyId;
+	private int resultMatrixId;
+	private int resultOpId;
+	private String format;
+	private LinkedHashMap sampleInfoLHM;
+	private String newMatrixName;
+	private String newMatrixDescription;
+	private String file1;
+	private String fileSampleInfo;
+	private String file2;
+	private String chromosome;
+	private String strandType;
+	private String gtCode;
+	private int studyId;
 
 	public Threaded_Loader_QA(String threadName,
-			String _timeStamp,
-			String _format,
-			LinkedHashMap _sampleInfoLHM,
-			String _newMatrixName,
-			String _newMatrixDescription,
-			String _file1,
-			String _fileSampleInfo,
-			String _file2,
-			String _chromosome,
-			String _strandType,
-			String _gtCode,
-			int _studyId) {
-		try {
-			timeStamp = _timeStamp;
+			String timeStamp,
+			String format,
+			LinkedHashMap sampleInfoLHM,
+			String newMatrixName,
+			String newMatrixDescription,
+			String file1,
+			String fileSampleInfo,
+			String file2,
+			String chromosome,
+			String strandType,
+			String gtCode,
+			int studyId)
+	{
+		super(threadName, timeStamp, "Loading Genotypes");
 
-			org.gwaspi.global.Utils.sysoutStart("Loading Genotypes");
-			org.gwaspi.global.Config.initPreferences(false, null);
+		this.format = format;
+		this.sampleInfoLHM = sampleInfoLHM;
+		this.newMatrixName = newMatrixName;
+		this.newMatrixDescription = newMatrixDescription;
+		this.file1 = file1;
+		this.fileSampleInfo = fileSampleInfo;
+		this.file2 = file2;
+		this.chromosome = chromosome;
+		this.strandType = strandType;
+		this.gtCode = gtCode;
+		this.studyId = studyId;
 
-			format = _format;
-			sampleInfoLHM = _sampleInfoLHM;
-			newMatrixName = _newMatrixName;
-			newMatrixDescription = _newMatrixDescription;
-			file1 = _file1;
-			fileSampleInfo = _fileSampleInfo;
-			file2 = _file2;
-			chromosome = _chromosome;
-			strandType = _strandType;
-			gtCode = _gtCode;
-			studyId = _studyId;
-
-			runner = new Thread(this, threadName); // (1) Create a new thread.
-			runner.start(); // (2) Start the thread.
-			runner.join();
-
-		} catch (InterruptedException ex) {
-			//Logger.getLogger(Threaded_Loader_QA.class.getName()).log(Level.SEVERE, null, ex);
-		}
+		startInternal(getTaskDescription());
 	}
 
-	@SuppressWarnings("static-access")
-	public void run() {
-		try {
-			SwingWorkerItem thisSwi = SwingWorkerItemList.getSwingWorkerItemByTimeStamp(timeStamp);
+	protected Logger createLog() {
+		return LoggerFactory.getLogger(Threaded_Loader_QA.class);
+	}
 
-			if (thisSwi.getQueueState().equals(org.gwaspi.threadbox.QueueStates.PROCESSING)) {
-				resultMatrixId = LoadManager.dispatchLoadByFormat(format,
-						sampleInfoLHM,
-						newMatrixName,
-						newMatrixDescription,
-						file1,
-						fileSampleInfo,
-						file2,
-						chromosome,
-						strandType,
-						gtCode,
-						studyId);
+	protected void runInternal(SwingWorkerItem thisSwi) throws Exception {
 
-				MultiOperations.printCompleted("Loading Genotypes");
-				GWASpiExplorerNodes.insertMatrixNode(studyId, resultMatrixId);
-			}
+		if (thisSwi.getQueueState().equals(org.gwaspi.threadbox.QueueStates.PROCESSING)) {
+			resultMatrixId = LoadManager.dispatchLoadByFormat(format,
+					sampleInfoLHM,
+					newMatrixName,
+					newMatrixDescription,
+					file1,
+					fileSampleInfo,
+					file2,
+					chromosome,
+					strandType,
+					gtCode,
+					studyId);
 
+			MultiOperations.printCompleted("Loading Genotypes");
+			GWASpiExplorerNodes.insertMatrixNode(studyId, resultMatrixId);
+		}
 
+		if (thisSwi.getQueueState().equals(org.gwaspi.threadbox.QueueStates.PROCESSING)) {
+			resultOpId = OP_QASamples_opt.processMatrix(resultMatrixId);
+			GWASpiExplorerNodes.insertOperationUnderMatrixNode(resultMatrixId, resultOpId);
+			org.gwaspi.reports.OutputQASamples.writeReportsForQASamplesData(resultOpId, true);
+			GWASpiExplorerNodes.insertReportsUnderOperationNode(resultOpId);
+		}
 
-			if (thisSwi.getQueueState().equals(org.gwaspi.threadbox.QueueStates.PROCESSING)) {
-				resultOpId = OP_QASamples_opt.processMatrix(resultMatrixId);
-				GWASpiExplorerNodes.insertOperationUnderMatrixNode(resultMatrixId, resultOpId);
-				org.gwaspi.reports.OutputQASamples.writeReportsForQASamplesData(resultOpId, true);
-				GWASpiExplorerNodes.insertReportsUnderOperationNode(resultOpId);
-			}
-
-
-
-			if (thisSwi.getQueueState().equals(org.gwaspi.threadbox.QueueStates.PROCESSING)) {
-				resultOpId = OP_QAMarkers_opt.processMatrix(resultMatrixId);
-				GWASpiExplorerNodes.insertOperationUnderMatrixNode(resultMatrixId, resultOpId);
-				org.gwaspi.reports.OutputQAMarkers_opt.writeReportsForQAMarkersData(resultOpId);
-				MultiOperations.printCompleted("Matrix Quality Control");
-				GWASpiExplorerNodes.insertReportsUnderOperationNode(resultOpId);
-			}
-
-			if (!thisSwi.getQueueState().equals(org.gwaspi.threadbox.QueueStates.ABORT)) {
-				MultiOperations.printFinished("Loading Genotypes");
-				MultiOperations.swingWorkerItemList.flagCurrentItemDone(timeStamp);
-			} else {
-				System.out.println("\n");
-				System.out.println(Text.Processes.abortingProcess);
-				System.out.println("Process Name: " + thisSwi.getSwingWorkerName());
-				System.out.println("Process Launch Time: " + thisSwi.getLaunchTime());
-				System.out.println("\n\n");
-			}
-
-			MultiOperations.updateProcessOverviewStartNext();
-
-		} catch (OutOfMemoryError e) {
-			System.out.println(Text.App.outOfMemoryError);
-		} catch (Exception ex) {
-			MultiOperations.printError("Loading Genotypes");
-			Logger.getLogger(Threaded_Loader_QA.class.getName()).log(Level.SEVERE, null, ex);
-			try {
-				MultiOperations.swingWorkerItemList.flagCurrentItemError(timeStamp);
-				MultiOperations.updateTree();
-				MultiOperations.updateProcessOverviewStartNext();
-			} catch (Exception ex1) {
-			}
+		if (thisSwi.getQueueState().equals(org.gwaspi.threadbox.QueueStates.PROCESSING)) {
+			resultOpId = OP_QAMarkers_opt.processMatrix(resultMatrixId);
+			GWASpiExplorerNodes.insertOperationUnderMatrixNode(resultMatrixId, resultOpId);
+			org.gwaspi.reports.OutputQAMarkers_opt.writeReportsForQAMarkersData(resultOpId);
+			MultiOperations.printCompleted("Matrix Quality Control");
+			GWASpiExplorerNodes.insertReportsUnderOperationNode(resultOpId);
 		}
 	}
 }
