@@ -2,6 +2,8 @@ package org.gwaspi.gui.utils;
 
 import java.io.File;
 import java.io.IOException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <b>Bare Bones Browser Launch for Java</b><br> Utility class to open a web
@@ -17,6 +19,8 @@ import java.io.IOException;
  */
 public class URLInDefaultBrowser {
 
+	private static final Logger log = LoggerFactory.getLogger(URLInDefaultBrowser.class);
+
 	private static final String[] browsers = {"firefox", "opera", "konqueror", "epiphany",
 		"seamonkey", "galeon", "kazehakase", "mozilla", "chromium-browser", "netscape"};
 
@@ -31,14 +35,14 @@ public class URLInDefaultBrowser {
 	 */
 	public static void browseGenericURL(String url) throws IOException {
 		if (!java.awt.Desktop.isDesktopSupported()) {
-			System.err.println("Desktop is not supported (fatal)");
+			log.error("Desktop is not supported (fatal)");
 //			System.exit(1);
 		}
 
 		java.awt.Desktop desktop = java.awt.Desktop.getDesktop();
 
 		if (!desktop.isSupported(java.awt.Desktop.Action.BROWSE)) {
-			System.err.println("Desktop doesn't support the browse action (fatal)");
+			log.error("Desktop doesn't support the browse action (fatal)");
 //			System.exit(1);
 		}
 
@@ -51,10 +55,8 @@ public class URLInDefaultBrowser {
 				File file = new File(url);
 				desktop.open(file);
 			}
-
-		} catch (Exception e) {
-			System.err.println(e.getMessage());
-			e.printStackTrace();
+		} catch (Exception ex) {
+			log.error("Failed browsing " + url, ex);
 		}
 	}
 

@@ -1,6 +1,5 @@
 package org.gwaspi.global;
 
-
 import java.io.BufferedOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -8,6 +7,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Download data from URLs and save it to local files.
@@ -16,6 +17,8 @@ import java.net.URLConnection;
  * FIXME Who is me?
  */
 public class FileDownload {
+
+	private static final Logger log = LoggerFactory.getLogger(FileDownload.class);
 
 	private FileDownload() {
 	}
@@ -38,9 +41,9 @@ public class FileDownload {
 				numWritten += numRead;
 			}
 			result = true;
-			System.out.println(localFileName + "\t" + numWritten);
-		} catch (Exception exception) {
-			exception.printStackTrace();
+			log.info("{}\t{}", localFileName, numWritten);
+		} catch (Exception ex) {
+			log.warn("CFailed to download from " + address, ex);
 		} finally {
 			try {
 				if (in != null) {
@@ -61,8 +64,7 @@ public class FileDownload {
 				&& lastSlashIndex < address.length() - 1) {
 			download(address, address.substring(lastSlashIndex + 1));
 		} else {
-			System.err.println("Could not figure out local file name for "
-					+ address);
+			log.warn("Could not figure out local file name for {}", address);
 		}
 	}
 }
