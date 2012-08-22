@@ -404,20 +404,19 @@ public class LoadGTFromAffyFiles {
 	}
 
 	private static String getAffySampleId(File fileToScan) throws IOException {
-//        FileReader inputFileReader = new FileReader(fileToScan);
-//        BufferedReader inputBufferReader = new BufferedReader(inputFileReader);
+//		FileReader inputFileReader = new FileReader(fileToScan);
+//		BufferedReader inputBufferReader = new BufferedReader(inputFileReader);
 		String l = fileToScan.getName();
-		String sampleId = l;
+		String sampleId;
 		int end = l.lastIndexOf(".birdseed-v2");
 		if (end != -1) {
 			sampleId = l.substring(0, end);
 		} else {
-			sampleId = l.substring(0, l.indexOf("."));
+			sampleId = l.substring(0, l.indexOf('.'));
 		}
 
-
-//        String[] cVals = l.split("_");
-//        String sampleId = cVals[preprocessing.cFormats.sampleId];
+//		String[] cVals = l.split("_");
+//		String sampleId = cVals[preprocessing.cFormats.sampleId];
 
 		return sampleId;
 	}

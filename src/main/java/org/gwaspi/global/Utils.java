@@ -336,7 +336,7 @@ public class Utils {
 //		}
 	}
 
-	public static boolean checkIntenetConnection() {
+	public static boolean checkIntenetConnection() { // FIXME inteRnet?
 		boolean isConnected = false;
 		try {
 			Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();

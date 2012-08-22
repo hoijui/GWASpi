@@ -17,7 +17,7 @@ import java.io.IOException;
  */
 public class URLInDefaultBrowser {
 
-	static final String[] browsers = {"firefox", "opera", "konqueror", "epiphany",
+	private static final String[] browsers = {"firefox", "opera", "konqueror", "epiphany",
 		"seamonkey", "galeon", "kazehakase", "mozilla", "chromium-browser", "netscape"};
 
 	private URLInDefaultBrowser() {
