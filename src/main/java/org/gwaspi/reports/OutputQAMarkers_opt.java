@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.Map;
 import org.gwaspi.model.Operation;
 import org.gwaspi.netCDF.markers.MarkerSet_opt;
 import org.gwaspi.netCDF.operations.OperationManager;
@@ -72,17 +73,17 @@ public class OutputQAMarkers_opt {
 		boolean result;
 
 		try {
-			LinkedHashMap unsortedMarkerIdMissingRatLHM = GatherQAMarkersData.loadMarkerQAMissingRatio(opId);
-			LinkedHashMap sortedMarkerIdMissingRatLHM = ReportManager.getSortedDescendingMarkerSetByDoubleValue(unsortedMarkerIdMissingRatLHM);
+			Map<String, Object> unsortedMarkerIdMissingRatLHM = GatherQAMarkersData.loadMarkerQAMissingRatio(opId);
+			Map<String, Object> sortedMarkerIdMissingRatLHM = ReportManager.getSortedDescendingMarkerSetByDoubleValue(unsortedMarkerIdMissingRatLHM);
 			if (unsortedMarkerIdMissingRatLHM != null) {
 				unsortedMarkerIdMissingRatLHM.clear();
 			}
 
 			//PREPARE SORTING LHM & STORE QA VALUES FOR LATER
-			LinkedHashMap sortingMarkerSetLHM = new LinkedHashMap();
-			LinkedHashMap storedMissingRatLHM = new LinkedHashMap();
-			for (Iterator it = sortedMarkerIdMissingRatLHM.keySet().iterator(); it.hasNext();) {
-				Object key = it.next();
+			Map<String, Object> sortingMarkerSetLHM = new LinkedHashMap<String, Object>();
+			Map<String, Object> storedMissingRatLHM = new LinkedHashMap<String, Object>();
+			for (Iterator<String> it = sortedMarkerIdMissingRatLHM.keySet().iterator(); it.hasNext();) {
+				String key = it.next();
 				double missingValue = (Double) sortedMarkerIdMissingRatLHM.get(key);
 				if (missingValue > 0) {
 					storedMissingRatLHM.put(key, missingValue);
@@ -107,8 +108,8 @@ public class OutputQAMarkers_opt {
 
 			//WRITE MARKERSET RSID
 			rdInfoMarkerSet.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_RSID);
-			for (Iterator it = sortingMarkerSetLHM.keySet().iterator(); it.hasNext();) {
-				Object key = it.next();
+			for (Iterator<String> it = sortingMarkerSetLHM.keySet().iterator(); it.hasNext();) {
+				String key = it.next();
 				Object value = rdInfoMarkerSet.getMarkerIdSetLHM().get(key);
 				sortingMarkerSetLHM.put(key, value);
 			}
@@ -116,8 +117,8 @@ public class OutputQAMarkers_opt {
 
 			//WRITE MARKERSET CHROMOSOME
 			rdInfoMarkerSet.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
-			for (Iterator it = sortingMarkerSetLHM.keySet().iterator(); it.hasNext();) {
-				Object key = it.next();
+			for (Iterator<String> it = sortingMarkerSetLHM.keySet().iterator(); it.hasNext();) {
+				String key = it.next();
 				Object value = rdInfoMarkerSet.getMarkerIdSetLHM().get(key);
 				sortingMarkerSetLHM.put(key, value);
 			}
@@ -126,8 +127,8 @@ public class OutputQAMarkers_opt {
 			//WRITE MARKERSET POS
 			//infoMatrixMarkerSetLHM = rdInfoMarkerSet.appendVariableToMarkerSetLHMValue(matrixNcFile, cNetCDF.Variables.VAR_MARKERS_POS, sep);
 			rdInfoMarkerSet.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_POS);
-			for (Iterator it = sortingMarkerSetLHM.keySet().iterator(); it.hasNext();) {
-				Object key = it.next();
+			for (Iterator<String> it = sortingMarkerSetLHM.keySet().iterator(); it.hasNext();) {
+				String key = it.next();
 				Object value = rdInfoMarkerSet.getMarkerIdSetLHM().get(key);
 				sortingMarkerSetLHM.put(key, value);
 			}
@@ -148,29 +149,29 @@ public class OutputQAMarkers_opt {
 				NetcdfFile qaNcFile = NetcdfFile.open(qaMetadata.getPathToMatrix());
 
 				OperationSet rdOperationSet = new OperationSet(rdOPMetadata.getStudyId(), markersQAopId);
-				LinkedHashMap opMarkerSetLHM = rdOperationSet.getOpSetLHM();
+				Map<String, Object> opMarkerSetLHM = rdOperationSet.getOpSetLHM();
 
 				//MINOR ALLELE
 				opMarkerSetLHM = rdOperationSet.fillOpSetLHMWithVariable(qaNcFile, cNetCDF.Census.VAR_OP_MARKERS_MINALLELES);
-				for (Iterator it = rdInfoMarkerSet.getMarkerIdSetLHM().keySet().iterator(); it.hasNext();) {
-					Object key = it.next();
+				for (Iterator<String> it = rdInfoMarkerSet.getMarkerIdSetLHM().keySet().iterator(); it.hasNext();) {
+					String key = it.next();
 					Object minorAllele = opMarkerSetLHM.get(key);
 					rdInfoMarkerSet.getMarkerIdSetLHM().put(key, minorAllele);
 				}
 
 				//MAJOR ALLELE
-				opMarkerSetLHM = rdOperationSet.fillLHMWithDefaultValue(opMarkerSetLHM, "");
+				rdOperationSet.fillLHMWithDefaultValue(opMarkerSetLHM, "");
 				opMarkerSetLHM = rdOperationSet.fillOpSetLHMWithVariable(qaNcFile, cNetCDF.Census.VAR_OP_MARKERS_MAJALLELES);
-				for (Iterator it = rdInfoMarkerSet.getMarkerIdSetLHM().keySet().iterator(); it.hasNext();) {
-					Object key = it.next();
+				for (Iterator<String> it = rdInfoMarkerSet.getMarkerIdSetLHM().keySet().iterator(); it.hasNext();) {
+					String key = it.next();
 					Object minorAllele = rdInfoMarkerSet.getMarkerIdSetLHM().get(key);
 					rdInfoMarkerSet.getMarkerIdSetLHM().put(key, minorAllele + sep + opMarkerSetLHM.get(key));
 				}
 
 
 			}
-			for (Iterator it = sortingMarkerSetLHM.keySet().iterator(); it.hasNext();) {
-				Object key = it.next();
+			for (Iterator<String> it = sortingMarkerSetLHM.keySet().iterator(); it.hasNext();) {
+				String key = it.next();
 				Object value = rdInfoMarkerSet.getMarkerIdSetLHM().get(key);
 				sortingMarkerSetLHM.put(key, value);
 			}
@@ -198,10 +199,10 @@ public class OutputQAMarkers_opt {
 		boolean result;
 
 		try {
-			LinkedHashMap unsortedMarkerIdMismatchStateLHM = GatherQAMarkersData.loadMarkerQAMismatchState(opId);
-			LinkedHashMap sortingMarkerSetLHM = new LinkedHashMap();
-			for (Iterator it = unsortedMarkerIdMismatchStateLHM.keySet().iterator(); it.hasNext();) {
-				Object key = it.next();
+			Map<String, Object> unsortedMarkerIdMismatchStateLHM = GatherQAMarkersData.loadMarkerQAMismatchState(opId);
+			Map<String, Object> sortingMarkerSetLHM = new LinkedHashMap<String, Object>();
+			for (Iterator<String> it = unsortedMarkerIdMismatchStateLHM.keySet().iterator(); it.hasNext();) {
+				String key = it.next();
 				int mismatchState = (Integer) unsortedMarkerIdMismatchStateLHM.get(key);
 				if (mismatchState > 0) {
 					sortingMarkerSetLHM.put(key, mismatchState);
@@ -212,9 +213,9 @@ public class OutputQAMarkers_opt {
 			}
 
 			//STORE MISMATCH STATE FOR LATER
-			LinkedHashMap storedMismatchStateLHM = new LinkedHashMap();
-			for (Iterator it = sortingMarkerSetLHM.keySet().iterator(); it.hasNext();) {
-				Object key = it.next();
+			Map<String, Object> storedMismatchStateLHM = new LinkedHashMap<String, Object>();
+			for (Iterator<String> it = sortingMarkerSetLHM.keySet().iterator(); it.hasNext();) {
+				String key = it.next();
 				Object value = sortingMarkerSetLHM.get(key);
 				storedMismatchStateLHM.put(key, value);
 			}
@@ -232,8 +233,8 @@ public class OutputQAMarkers_opt {
 
 			//WRITE MARKERSET RSID
 			rdInfoMarkerSet.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_RSID);
-			for (Iterator it = sortingMarkerSetLHM.keySet().iterator(); it.hasNext();) {
-				Object key = it.next();
+			for (Iterator<String> it = sortingMarkerSetLHM.keySet().iterator(); it.hasNext();) {
+				String key = it.next();
 				Object value = rdInfoMarkerSet.getMarkerIdSetLHM().get(key);
 				sortingMarkerSetLHM.put(key, value);
 			}
@@ -242,8 +243,8 @@ public class OutputQAMarkers_opt {
 
 			//WRITE MARKERSET CHROMOSOME
 			rdInfoMarkerSet.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
-			for (Iterator it = sortingMarkerSetLHM.keySet().iterator(); it.hasNext();) {
-				Object key = it.next();
+			for (Iterator<String> it = sortingMarkerSetLHM.keySet().iterator(); it.hasNext();) {
+				String key = it.next();
 				Object value = rdInfoMarkerSet.getMarkerIdSetLHM().get(key);
 				sortingMarkerSetLHM.put(key, value);
 			}
@@ -253,8 +254,8 @@ public class OutputQAMarkers_opt {
 			//WRITE MARKERSET POS
 			//infoMatrixMarkerSetLHM = rdInfoMarkerSet.appendVariableToMarkerSetLHMValue(matrixNcFile, cNetCDF.Variables.VAR_MARKERS_POS, sep);
 			rdInfoMarkerSet.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_POS);
-			for (Iterator it = sortingMarkerSetLHM.keySet().iterator(); it.hasNext();) {
-				Object key = it.next();
+			for (Iterator<String> it = sortingMarkerSetLHM.keySet().iterator(); it.hasNext();) {
+				String key = it.next();
 				Object value = rdInfoMarkerSet.getMarkerIdSetLHM().get(key);
 				sortingMarkerSetLHM.put(key, value);
 			}
@@ -275,28 +276,28 @@ public class OutputQAMarkers_opt {
 				NetcdfFile qaNcFile = NetcdfFile.open(qaMetadata.getPathToMatrix());
 
 				OperationSet rdOperationSet = new OperationSet(rdOPMetadata.getStudyId(), markersQAopId);
-				LinkedHashMap opMarkerSetLHM = rdOperationSet.getOpSetLHM();
+				Map<String, Object> opMarkerSetLHM = rdOperationSet.getOpSetLHM();
 
 				//MINOR ALLELE
 				opMarkerSetLHM = rdOperationSet.fillOpSetLHMWithVariable(qaNcFile, cNetCDF.Census.VAR_OP_MARKERS_MINALLELES);
-				for (Iterator it = rdInfoMarkerSet.getMarkerIdSetLHM().keySet().iterator(); it.hasNext();) {
-					Object key = it.next();
+				for (Iterator<String> it = rdInfoMarkerSet.getMarkerIdSetLHM().keySet().iterator(); it.hasNext();) {
+					String key = it.next();
 					Object minorAllele = opMarkerSetLHM.get(key);
 					rdInfoMarkerSet.getMarkerIdSetLHM().put(key, minorAllele);
 				}
 
 				//MAJOR ALLELE
-				opMarkerSetLHM = rdOperationSet.fillLHMWithDefaultValue(opMarkerSetLHM, "");
+				rdOperationSet.fillLHMWithDefaultValue(opMarkerSetLHM, "");
 				opMarkerSetLHM = rdOperationSet.fillOpSetLHMWithVariable(qaNcFile, cNetCDF.Census.VAR_OP_MARKERS_MAJALLELES);
-				for (Iterator it = rdInfoMarkerSet.getMarkerIdSetLHM().keySet().iterator(); it.hasNext();) {
-					Object key = it.next();
+				for (Iterator<String> it = rdInfoMarkerSet.getMarkerIdSetLHM().keySet().iterator(); it.hasNext();) {
+					String key = it.next();
 					Object minorAllele = rdInfoMarkerSet.getMarkerIdSetLHM().get(key);
 					rdInfoMarkerSet.getMarkerIdSetLHM().put(key, minorAllele + sep + opMarkerSetLHM.get(key));
 				}
 
 			}
-			for (Iterator it = sortingMarkerSetLHM.keySet().iterator(); it.hasNext();) {
-				Object key = it.next();
+			for (Iterator<String> it = sortingMarkerSetLHM.keySet().iterator(); it.hasNext();) {
+				String key = it.next();
 				Object value = rdInfoMarkerSet.getMarkerIdSetLHM().get(key);
 				sortingMarkerSetLHM.put(key, value);
 			}

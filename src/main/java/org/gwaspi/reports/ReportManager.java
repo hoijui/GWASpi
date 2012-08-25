@@ -28,33 +28,31 @@ public class ReportManager {
 	}
 
 	//<editor-fold defaultstate="collapsed" desc="UTILS">
-	static LinkedHashMap getSortedMarkerSetByDoubleValue(LinkedHashMap map) {
-		List list = new LinkedList(map.entrySet());
-		Collections.sort(list, new Comparator() {
-			public int compare(Object o1, Object o2) {
-				return ((Comparable) ((Map.Entry) (o1)).getValue()).compareTo(((Map.Entry) (o2)).getValue());
+	static Map<String, Object> getSortedMarkerSetByDoubleValue(Map<String, Object> map) {
+		List<Map.Entry<String, Object>> list = new LinkedList<Map.Entry<String, Object>>(map.entrySet());
+		Collections.sort(list, new Comparator<Map.Entry<String, Object>>() {
+			public int compare(Map.Entry<String, Object> o1, Map.Entry<String, Object> o2) {
+				return ((Comparable) o1.getValue()).compareTo(o2.getValue());
 			}
 		});
 		// logger.info(list);
-		LinkedHashMap result = new LinkedHashMap();
-		for (Iterator it = list.iterator(); it.hasNext();) {
-			Map.Entry entry = (Map.Entry) it.next();
+		Map<String, Object> result = new LinkedHashMap<String, Object>();
+		for (Map.Entry<String, Object> entry : list) {
 			result.put(entry.getKey(), entry.getValue());
 		}
 		return result;
 	}
 
-	static LinkedHashMap getSortedDescendingMarkerSetByDoubleValue(LinkedHashMap map) {
-		List list = new LinkedList(map.entrySet());
-		Collections.sort(list, new Comparator() {
-			public int compare(Object o1, Object o2) {
-				return -1 * ((Comparable) ((Map.Entry) (o1)).getValue()).compareTo(((Map.Entry) (o2)).getValue());
+	static Map<String, Object> getSortedDescendingMarkerSetByDoubleValue(Map<String, Object> map) {
+		List<Map.Entry<String, Object>> list = new LinkedList<Map.Entry<String, Object>>(map.entrySet());
+		Collections.sort(list, new Comparator<Map.Entry<String, Object>>() {
+			public int compare(Map.Entry<String, Object> o1, Map.Entry<String, Object> o2) {
+				return -1 * ((Comparable) o1.getValue()).compareTo(o2.getValue());
 			}
 		});
 		// logger.info(list);
-		LinkedHashMap result = new LinkedHashMap();
-		for (Iterator it = list.iterator(); it.hasNext();) {
-			Map.Entry entry = (Map.Entry) it.next();
+		Map<String, Object> result = new LinkedHashMap<String, Object>();
+		for (Map.Entry<String, Object> entry : list) {
 			result.put(entry.getKey(), entry.getValue());
 		}
 		return result;

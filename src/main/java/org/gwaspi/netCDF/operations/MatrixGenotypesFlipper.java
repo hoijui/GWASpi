@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.Map;
 import org.gwaspi.netCDF.markers.MarkerSet_opt;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.gwaspi.netCDF.matrices.MatrixMetadata;
@@ -41,9 +42,9 @@ public class MatrixGenotypesFlipper {
 	private MarkerSet_opt rdMarkerSet = null;
 	private HashSet markerFlipHS = new HashSet();
 	private SampleSet rdSampleSet = null;
-	private LinkedHashMap rdMarkerIdSetLHM = new LinkedHashMap();
-	private LinkedHashMap rdSampleSetLHM = new LinkedHashMap();
-	private LinkedHashMap rdChrInfoSetLHM = new LinkedHashMap();
+	private Map<String, Object> rdMarkerIdSetLHM = new LinkedHashMap<String, Object>();
+	private Map<String, Object> rdSampleSetLHM = new LinkedHashMap<String, Object>();
+	private Map<String, Object> rdChrInfoSetLHM = new LinkedHashMap<String, Object>();
 
 	/**
 	 * This constructor to extract data from Matrix a by passing a variable and
@@ -205,8 +206,8 @@ public class MatrixGenotypesFlipper {
 			//MARKERSET DICTIONARY ALLELES
 			rdMarkerSet.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_BASES_DICT);
 			rdMarkerIdSetLHM = rdMarkerSet.fillWrLHMWithRdLHMValue(rdMarkerIdSetLHM, rdMarkerSet.getMarkerIdSetLHM());
-			for (Iterator it = rdMarkerIdSetLHM.keySet().iterator(); it.hasNext();) {
-				Object markerId = it.next();
+			for (Iterator<String> it = rdMarkerIdSetLHM.keySet().iterator(); it.hasNext();) {
+				String markerId = it.next();
 				if (markerFlipHS.contains(markerId)) {
 					String alleles = rdMarkerIdSetLHM.get(markerId).toString();
 					alleles = flipDictionaryAlleles(alleles);
@@ -219,8 +220,8 @@ public class MatrixGenotypesFlipper {
 			rdMarkerSet.fillInitLHMWithVariable(cNetCDF.Variables.VAR_GT_STRAND);
 			rdMarkerIdSetLHM = rdMarkerSet.fillWrLHMWithRdLHMValue(rdMarkerIdSetLHM, rdMarkerSet.getMarkerIdSetLHM());
 
-			for (Iterator it = rdMarkerIdSetLHM.keySet().iterator(); it.hasNext();) {
-				Object markerId = it.next();
+			for (Iterator<String> it = rdMarkerIdSetLHM.keySet().iterator(); it.hasNext();) {
+				String markerId = it.next();
 				if (markerFlipHS.contains(markerId)) {
 					String strand = rdMarkerIdSetLHM.get(markerId).toString();
 					strand = flipStranding(strand);
@@ -235,13 +236,13 @@ public class MatrixGenotypesFlipper {
 
 			System.out.println(org.gwaspi.global.Text.All.processing);
 			int markerIndex = 0;
-			for (Iterator it = rdMarkerIdSetLHM.keySet().iterator(); it.hasNext();) {
-				Object markerId = it.next();
+			for (Iterator<String> it = rdMarkerIdSetLHM.keySet().iterator(); it.hasNext();) {
+				String markerId = it.next();
 				rdSampleSetLHM = rdSampleSet.readAllSamplesGTsFromCurrentMarkerToLHM(rdNcFile, rdSampleSetLHM, markerIndex);
 
 				if (markerFlipHS.contains(markerId)) {
-					for (Iterator it2 = rdSampleSetLHM.keySet().iterator(); it2.hasNext();) {
-						Object sampleId = it2.next();
+					for (Iterator<String> it2 = rdSampleSetLHM.keySet().iterator(); it2.hasNext();) {
+						String sampleId = it2.next();
 						byte[] gt = (byte[]) rdSampleSetLHM.get(sampleId);
 						gt = flipGenotypes(gt, gtEncoding);
 						rdSampleSetLHM.put(sampleId, new byte[]{gt[0], gt[1]});
@@ -382,8 +383,8 @@ public class MatrixGenotypesFlipper {
 				Utils.saveCharLHMValueToWrMatrix(wrNcFile, rdMarkerSet.getMarkerIdSetLHM(), cNetCDF.Variables.VAR_MARKERS_BASES_DICT, cNetCDF.Strides.STRIDE_GT);
 
 				//GENOTYPE STRAND
-				for (Iterator it = rdMarkerSet.getMarkerIdSetLHM().keySet().iterator(); it.hasNext();) {
-					Object key = it.next();
+				for (Iterator<String> it = rdMarkerSet.getMarkerIdSetLHM().keySet().iterator(); it.hasNext();) {
+					String key = it.next();
 					rdMarkerSet.getMarkerIdSetLHM().put(key, newStrand);
 				}
 				Utils.saveCharLHMValueToWrMatrix(wrNcFile, rdMarkerSet.getMarkerIdSetLHM(), cNetCDF.Variables.VAR_GT_STRAND, cNetCDF.Strides.STRIDE_STRAND);
@@ -394,7 +395,7 @@ public class MatrixGenotypesFlipper {
 				//<editor-fold defaultstate="collapsed" desc="GENOTYPES WRITER">
 
 				//Get correct strand of each marker for newStrand translation
-				LinkedHashMap markerStrandsLHM = new LinkedHashMap();
+				Map<String, Object> markerStrandsLHM = new LinkedHashMap<String, Object>();
 				markerStrandsLHM.putAll(rdSampleSetLHM);
 
 				//Iterate through pmAllelesAndStrandsLHM, use Sample item position to read all Markers GTs from rdMarkerIdSetLHM.

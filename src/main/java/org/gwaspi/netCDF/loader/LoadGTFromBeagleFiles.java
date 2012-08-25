@@ -11,6 +11,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.Map;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
 import ucar.ma2.ArrayChar;
 import ucar.ma2.ArrayInt;
@@ -29,7 +30,7 @@ public class LoadGTFromBeagleFiles {
 	private String gtFilePath;
 	private String sampleFilePath;
 	private String annotationFilePath;
-	private LinkedHashMap wrSampleSetLHM = new LinkedHashMap();
+	private Map<String, Object> wrSampleSetLHM = new LinkedHashMap<String, Object>();
 	private int studyId;
 	private String format = cImport.ImportFormat.BEAGLE.toString();
 	private String chromosome;
@@ -38,7 +39,7 @@ public class LoadGTFromBeagleFiles {
 	private String description;
 	private String gtCode;
 	private org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding guessedGTCode = org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding.UNKNOWN;
-	private LinkedHashMap wrMarkerSetLHM = new LinkedHashMap();
+	private Map<String, Object> wrMarkerSetLHM = new LinkedHashMap<String, Object>();
 
 	//<editor-fold defaultstate="collapsed" desc="CONSTRUCTORS">
 	public LoadGTFromBeagleFiles(String _gtFilePath,
@@ -50,7 +51,7 @@ public class LoadGTFromBeagleFiles {
 			String _friendlyName,
 			String _gtCode,
 			String _description,
-			LinkedHashMap _sampleInfoLHM) throws IOException {
+			Map<String, Object> _sampleInfoLHM) throws IOException {
 
 		gtFilePath = _gtFilePath;
 		sampleFilePath = _sampleFilePath;
@@ -110,7 +111,7 @@ public class LoadGTFromBeagleFiles {
 		}
 
 		//RETRIEVE CHROMOSOMES INFO
-		LinkedHashMap chrSetLHM = org.gwaspi.netCDF.matrices.Utils.aggregateChromosomeInfo(wrMarkerSetLHM, 2, 3);
+		Map<String, Object> chrSetLHM = org.gwaspi.netCDF.matrices.Utils.aggregateChromosomeInfo(wrMarkerSetLHM, 2, 3);
 
 		MatrixFactory matrixFactory = new MatrixFactory(studyId,
 				format,
@@ -236,8 +237,8 @@ public class LoadGTFromBeagleFiles {
 				strandFlag = cImport.StrandFlags.strandREV;
 				break;
 		}
-		for (Iterator it = wrMarkerSetLHM.keySet().iterator(); it.hasNext();) {
-			Object key = it.next();
+		for (Iterator<String> it = wrMarkerSetLHM.keySet().iterator(); it.hasNext();) {
+			String key = it.next();
 			wrMarkerSetLHM.put(key, strandFlag);
 		}
 		markersD2 = org.gwaspi.netCDF.operations.Utils.writeLHMValueToD2ArrayChar(wrMarkerSetLHM, cNetCDF.Strides.STRIDE_STRAND);
@@ -263,8 +264,8 @@ public class LoadGTFromBeagleFiles {
 			String sampleId = it.next().toString();
 
 			//PURGE MarkerIdLHM
-			for (Iterator it2 = wrMarkerSetLHM.keySet().iterator(); it2.hasNext();) {
-				Object markerId = it2.next();
+			for (Iterator<String> it2 = wrMarkerSetLHM.keySet().iterator(); it2.hasNext();) {
+				String markerId = it2.next();
 				wrMarkerSetLHM.put(markerId, cNetCDF.Defaults.DEFAULT_GT);
 			}
 
@@ -333,9 +334,9 @@ public class LoadGTFromBeagleFiles {
 		return result;
 	}
 
-	public LinkedHashMap loadIndividualFiles(File file,
+	public Map<String, Object> loadIndividualFiles(File file,
 			String currSampleId,
-			LinkedHashMap wrMarkerSetLHM) throws IOException, InvalidRangeException {
+			Map<String, Object> wrMarkerSetLHM) throws IOException, InvalidRangeException {
 
 		FileReader inputFileReader = new FileReader(file);
 		BufferedReader inputBufferReader = new BufferedReader(inputFileReader);
@@ -346,8 +347,8 @@ public class LoadGTFromBeagleFiles {
 			sb.append('0');
 		}
 
-		LinkedHashMap tempMarkerIdLHM = new LinkedHashMap();
-		LinkedHashMap sampleOrderLHM = new LinkedHashMap();
+		Map<String, Object> tempMarkerIdLHM = new LinkedHashMap<String, Object>();
+		Map<String, Object> sampleOrderLHM = new LinkedHashMap<String, Object>();
 
 		String sampleHeader = null;
 		String l;
@@ -391,9 +392,9 @@ public class LoadGTFromBeagleFiles {
 	//</editor-fold>
 
 	//<editor-fold defaultstate="collapsed" desc="HELPER METHODS">
-	private LinkedHashMap getBeagleSampleIds(File hapmapGTFile) throws IOException {
+	private Map<String, Object> getBeagleSampleIds(File hapmapGTFile) throws IOException {
 
-		LinkedHashMap uniqueSamples = new LinkedHashMap();
+		Map<String, Object> uniqueSamples = new LinkedHashMap<String, Object>();
 
 		FileReader fr = new FileReader(hapmapGTFile.getPath());
 		BufferedReader inputBeagleBr = new BufferedReader(fr);

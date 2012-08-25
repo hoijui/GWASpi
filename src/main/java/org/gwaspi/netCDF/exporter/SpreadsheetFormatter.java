@@ -5,9 +5,10 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
+import java.util.Map;
 import org.gwaspi.netCDF.markers.MarkerSet_opt;
 import org.gwaspi.netCDF.matrices.MatrixMetadata;
+import org.gwaspi.samples.SampleSet;
 import ucar.nc2.NetcdfFile;
 
 /**
@@ -16,15 +17,17 @@ import ucar.nc2.NetcdfFile;
  * IBE, Institute of Evolutionary Biology (UPF-CSIC)
  * CEXS-UPF-PRBB
  */
-public class SpreadsheetFormatter_opt {
+public class SpreadsheetFormatter implements Formatter {
 
-	private SpreadsheetFormatter_opt() {
-	}
-
-	public static boolean exportToFleurFormat(String exportPath,
+	public boolean export(
+			String exportPath,
 			MatrixMetadata rdMatrixMetadata,
 			MarkerSet_opt rdMarkerSet,
-			LinkedHashMap rdSampleSetLHM) throws IOException {
+			SampleSet rdSampleSet,
+			Map<String, Object> rdSampleSetMap,
+			String phenotype)
+			throws IOException
+	{
 
 		File exportDir = new File(exportPath);
 		if (!exportDir.exists() || !exportDir.isDirectory()) {
@@ -55,7 +58,7 @@ public class SpreadsheetFormatter_opt {
 
 			// Iterate through all samples
 			int sampleNb = 0;
-			for (Iterator it = rdSampleSetLHM.keySet().iterator(); it.hasNext();) {
+			for (Iterator it = rdSampleSetMap.keySet().iterator(); it.hasNext();) {
 
 				String sampleId = it.next().toString();
 

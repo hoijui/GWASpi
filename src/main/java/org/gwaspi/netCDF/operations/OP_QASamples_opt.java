@@ -5,6 +5,7 @@ import org.gwaspi.constants.cNetCDF.Defaults.AlleleBytes;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.Map;
 import org.gwaspi.netCDF.markers.MarkerSet_opt;
 import org.gwaspi.netCDF.matrices.MatrixMetadata;
 import org.gwaspi.samples.SampleSet;
@@ -27,9 +28,9 @@ public class OP_QASamples_opt {
 	public static int processMatrix(int rdMatrixId) throws IOException, InvalidRangeException {
 		int resultOpId = Integer.MIN_VALUE;
 
-		LinkedHashMap wrSampleSetMissingCountLHM = new LinkedHashMap();
-		LinkedHashMap wrSampleSetMissingRatioLHM = new LinkedHashMap();
-		LinkedHashMap wrSampleSetHetzyRatioLHM = new LinkedHashMap();
+		Map<String, Object> wrSampleSetMissingCountLHM = new LinkedHashMap();
+		Map<String, Object> wrSampleSetMissingRatioLHM = new LinkedHashMap();
+		Map<String, Object> wrSampleSetHetzyRatioLHM = new LinkedHashMap();
 
 		MatrixMetadata rdMatrixMetadata = new MatrixMetadata(rdMatrixId);
 
@@ -38,17 +39,17 @@ public class OP_QASamples_opt {
 		MarkerSet_opt rdMarkerSet = new MarkerSet_opt(rdMatrixMetadata.getStudyId(), rdMatrixId);
 		rdMarkerSet.initFullMarkerIdSetLHM();
 
-		LinkedHashMap rdChrSetLHM = rdMarkerSet.getChrInfoSetLHM();
+		Map<String, Object> rdChrSetLHM = rdMarkerSet.getChrInfoSetLHM();
 
-		//LinkedHashMap rdMarkerSetLHM = rdMarkerSet.markerIdSetLHM; //This to test heap usage of copying locally the LHM from markerset
+		//Map<String, Object> rdMarkerSetLHM = rdMarkerSet.markerIdSetLHM; //This to test heap usage of copying locally the LHM from markerset
 
 		SampleSet rdSampleSet = new SampleSet(rdMatrixMetadata.getStudyId(), rdMatrixId);
-		LinkedHashMap rdSampleSetLHM = rdSampleSet.getSampleIdSetLHM();
+		Map<String, Object> rdSampleSetLHM = rdSampleSet.getSampleIdSetLHM();
 
 		//Iterate through samples
 		int sampleNb = 0;
-		for (Iterator it = rdSampleSetLHM.keySet().iterator(); it.hasNext();) {
-			Object sampleId = it.next();
+		for (Iterator<String> it = rdSampleSetLHM.keySet().iterator(); it.hasNext();) {
+			String sampleId = it.next();
 
 			Integer missingCount = 0;
 			Integer heterozygCount = 0;

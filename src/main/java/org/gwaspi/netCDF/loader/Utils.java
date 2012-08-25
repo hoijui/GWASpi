@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  *
@@ -86,7 +87,7 @@ public class Utils {
 		return values;
 	}
 
-	public static GenotypeEncoding detectGTEncoding(LinkedHashMap lhm) {
+	public static GenotypeEncoding detectGTEncoding(Map<String, Object> lhm) {
 		GenotypeEncoding gtEcoding; // GenotypeEncoding.UNKNOWN
 
 		HashSet allAlleles = new HashSet();

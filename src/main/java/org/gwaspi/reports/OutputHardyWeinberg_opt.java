@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.Map;
 import org.gwaspi.model.Operation;
 import org.gwaspi.netCDF.markers.MarkerSet_opt;
 import org.gwaspi.netCDF.operations.OperationManager;
@@ -58,16 +59,16 @@ public class OutputHardyWeinberg_opt {
 		boolean result;
 
 		try {
-			LinkedHashMap unsortedMarkerIdHWPval_ALTLHM = GatherHardyWeinbergData.loadHWPval_ALT(opId);
-			LinkedHashMap sortingMarkerSetLHM = ReportManager.getSortedMarkerSetByDoubleValue(unsortedMarkerIdHWPval_ALTLHM);
+			Map<String, Object> unsortedMarkerIdHWPval_ALTLHM = GatherHardyWeinbergData.loadHWPval_ALT(opId);
+			Map<String, Object> sortingMarkerSetLHM = ReportManager.getSortedMarkerSetByDoubleValue(unsortedMarkerIdHWPval_ALTLHM);
 			if (unsortedMarkerIdHWPval_ALTLHM != null) {
 				unsortedMarkerIdHWPval_ALTLHM.clear();
 			}
 
 			//STORE HW VALUES FOR LATER
-			LinkedHashMap storeHWPval_ALTLHM = new LinkedHashMap();
-			for (Iterator it = sortingMarkerSetLHM.keySet().iterator(); it.hasNext();) {
-				Object key = it.next();
+			Map<String, Object> storeHWPval_ALTLHM = new LinkedHashMap<String, Object>();
+			for (Iterator<String> it = sortingMarkerSetLHM.keySet().iterator(); it.hasNext();) {
+				String key = it.next();
 				Object value = sortingMarkerSetLHM.get(key);
 				storeHWPval_ALTLHM.put(key, value);
 			}
@@ -86,8 +87,8 @@ public class OutputHardyWeinberg_opt {
 
 			//WRITE MARKERSET RSID
 			rdInfoMarkerSet.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_RSID);
-			for (Iterator it = sortingMarkerSetLHM.keySet().iterator(); it.hasNext();) {
-				Object key = it.next();
+			for (Iterator<String> it = sortingMarkerSetLHM.keySet().iterator(); it.hasNext();) {
+				String key = it.next();
 				Object value = rdInfoMarkerSet.getMarkerIdSetLHM().get(key);
 				sortingMarkerSetLHM.put(key, value);
 			}
@@ -96,8 +97,8 @@ public class OutputHardyWeinberg_opt {
 
 			//WRITE MARKERSET CHROMOSOME
 			rdInfoMarkerSet.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
-			for (Iterator it = sortingMarkerSetLHM.keySet().iterator(); it.hasNext();) {
-				Object key = it.next();
+			for (Iterator<String> it = sortingMarkerSetLHM.keySet().iterator(); it.hasNext();) {
+				String key = it.next();
 				Object value = rdInfoMarkerSet.getMarkerIdSetLHM().get(key);
 				sortingMarkerSetLHM.put(key, value);
 			}
@@ -105,8 +106,8 @@ public class OutputHardyWeinberg_opt {
 
 			//WRITE MARKERSET POS
 			rdInfoMarkerSet.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_POS);
-			for (Iterator it = sortingMarkerSetLHM.keySet().iterator(); it.hasNext();) {
-				Object key = it.next();
+			for (Iterator<String> it = sortingMarkerSetLHM.keySet().iterator(); it.hasNext();) {
+				String key = it.next();
 				Object value = rdInfoMarkerSet.getMarkerIdSetLHM().get(key);
 				sortingMarkerSetLHM.put(key, value);
 			}
@@ -127,29 +128,29 @@ public class OutputHardyWeinberg_opt {
 				NetcdfFile qaNcFile = NetcdfFile.open(qaMetadata.getPathToMatrix());
 
 				OperationSet rdOperationSet = new OperationSet(rdOPMetadata.getStudyId(), markersQAopId);
-				LinkedHashMap opMarkerSetLHM = rdOperationSet.getOpSetLHM();
+				Map<String, Object> opMarkerSetLHM = rdOperationSet.getOpSetLHM();
 
 				//MINOR ALLELE
 				opMarkerSetLHM = rdOperationSet.fillOpSetLHMWithVariable(qaNcFile, cNetCDF.Census.VAR_OP_MARKERS_MINALLELES);
-				for (Iterator it = rdInfoMarkerSet.getMarkerIdSetLHM().keySet().iterator(); it.hasNext();) {
-					Object key = it.next();
+				for (Iterator<String> it = rdInfoMarkerSet.getMarkerIdSetLHM().keySet().iterator(); it.hasNext();) {
+					String key = it.next();
 					Object minorAllele = opMarkerSetLHM.get(key);
 					rdInfoMarkerSet.getMarkerIdSetLHM().put(key, minorAllele);
 				}
 
 				//MAJOR ALLELE
-				opMarkerSetLHM = rdOperationSet.fillLHMWithDefaultValue(opMarkerSetLHM, "");
+				rdOperationSet.fillLHMWithDefaultValue(opMarkerSetLHM, "");
 				opMarkerSetLHM = rdOperationSet.fillOpSetLHMWithVariable(qaNcFile, cNetCDF.Census.VAR_OP_MARKERS_MAJALLELES);
-				for (Iterator it = rdInfoMarkerSet.getMarkerIdSetLHM().keySet().iterator(); it.hasNext();) {
-					Object key = it.next();
+				for (Iterator<String> it = rdInfoMarkerSet.getMarkerIdSetLHM().keySet().iterator(); it.hasNext();) {
+					String key = it.next();
 					Object minorAllele = rdInfoMarkerSet.getMarkerIdSetLHM().get(key);
 					rdInfoMarkerSet.getMarkerIdSetLHM().put(key, minorAllele + sep + opMarkerSetLHM.get(key));
 				}
 
 
 			}
-			for (Iterator it = sortingMarkerSetLHM.keySet().iterator(); it.hasNext();) {
-				Object key = it.next();
+			for (Iterator<String> it = sortingMarkerSetLHM.keySet().iterator(); it.hasNext();) {
+				String key = it.next();
 				Object value = rdInfoMarkerSet.getMarkerIdSetLHM().get(key);
 				sortingMarkerSetLHM.put(key, value);
 			}
@@ -163,9 +164,9 @@ public class OutputHardyWeinberg_opt {
 			}
 
 			//WRITE HW HETZY ARRAY
-			LinkedHashMap markerIdHWHETZY_CTRLLHM = GatherHardyWeinbergData.loadHWHETZY_ALT(opId);
-			for (Iterator it = sortingMarkerSetLHM.keySet().iterator(); it.hasNext();) {
-				Object key = it.next();
+			Map<String, Object> markerIdHWHETZY_CTRLLHM = GatherHardyWeinbergData.loadHWHETZY_ALT(opId);
+			for (Iterator<String> it = sortingMarkerSetLHM.keySet().iterator(); it.hasNext();) {
+				String key = it.next();
 				Object value = markerIdHWHETZY_CTRLLHM.get(key);
 				sortingMarkerSetLHM.put(key, value);
 			}

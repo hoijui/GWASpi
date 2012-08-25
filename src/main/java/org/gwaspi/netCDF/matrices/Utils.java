@@ -2,6 +2,7 @@ package org.gwaspi.netCDF.matrices;
 
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  *
@@ -14,7 +15,7 @@ public class Utils {
 	private Utils() {
 	}
 
-	public static LinkedHashMap aggregateChromosomeInfo(LinkedHashMap wrMarkerSetLHM, int chrIdx, int posIdx) { //LHM to be aggregated, where is the chr, where is the position
+	public static Map<String, Object> aggregateChromosomeInfo(Map<String, Object> wrMarkerSetLHM, int chrIdx, int posIdx) { //LHM to be aggregated, where is the chr, where is the position
 		// RETRIEVE CHROMOSOMES INFO
 		LinkedHashMap chrSetLHM = new LinkedHashMap();
 		String tmpChr = "";
@@ -22,8 +23,8 @@ public class Utils {
 		int markerCount = 0;
 		int idx = 0;
 		int[] chrInfo = new int[4];
-		for (Iterator it = wrMarkerSetLHM.keySet().iterator(); it.hasNext();) {
-			Object key = it.next();
+		for (Iterator<String> it = wrMarkerSetLHM.keySet().iterator(); it.hasNext();) {
+			String key = it.next();
 			Object[] value = (Object[]) wrMarkerSetLHM.get(key); // markerid, rsId, chr, pos
 			if (!tmpChr.equals(value[chrIdx])) {
 				if (markerCount != 0) { // Not first time round

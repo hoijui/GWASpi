@@ -37,7 +37,7 @@ public class SamplesParser {
 			System.out.println("Getting Sample Affection info for: " + rdMatrixMetadata.getMatrixFriendlyName() + " at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
 //            NetcdfFile rdNcFile = NetcdfFile.open(rdMatrixMetadata.getPathToMatrix());
 			SampleSet rdSampleSet = new SampleSet(rdMatrixMetadata.getStudyId(), matrixId);
-			LinkedHashMap rdSampleSetLHM = rdSampleSet.getSampleIdSetLHM();
+			Map<String, Object> rdSampleSetLHM = rdSampleSet.getSampleIdSetLHM();
 			for (Iterator it = rdSampleSetLHM.keySet().iterator(); it.hasNext();) {
 				Object key = it.next();
 				List<Map<String, Object>> rs = SampleManager.getCurrentSampleInfoFromDB(key.toString(), rdMatrixMetadata.getStudyId());

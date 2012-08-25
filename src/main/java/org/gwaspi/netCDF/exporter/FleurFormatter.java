@@ -6,11 +6,15 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.Map;
 import org.gwaspi.netCDF.markers.MarkerSet;
 import org.gwaspi.netCDF.matrices.MatrixMetadata;
 import ucar.nc2.NetcdfFile;
 
 /**
+ * TODO Either remove this whole class, or support it again
+ *   by making it work like the other remaining formatters.
+ *   Though it looks like the SpreadsheetFormatter is doing this job now.
  *
  * @author Fernando Muñiz Fernandez
  * IBE, Institute of Evolutionary Biology (UPF-CSIC)
@@ -24,8 +28,8 @@ public class FleurFormatter {
 	public static boolean exportToFleurFormat(String exportPath,
 			MatrixMetadata rdMatrixMetadata,
 			MarkerSet rdMarkerSet,
-			LinkedHashMap rdMarkerIdSetLHM,
-			LinkedHashMap rdSampleSetLHM) throws IOException {
+			Map<String, Object> rdMarkerIdSetLHM,
+			Map<String, Object> rdSampleSetLHM) throws IOException {
 
 		File exportDir = new File(exportPath);
 		if (!exportDir.exists() || !exportDir.isDirectory()) {

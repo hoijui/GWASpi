@@ -8,6 +8,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.netCDF.markers.MarkerSet_opt;
@@ -22,7 +23,7 @@ import ucar.nc2.NetcdfFile;
  * IBE, Institute of Evolutionary Biology (UPF-CSIC)
  * CEXS-UPF-PRBB
  */
-public class EigensoftFormatter implements Formatter {
+public class PlinkBinaryFormatter implements Formatter {
 
 	public boolean export(
 			String exportPath,
@@ -41,7 +42,6 @@ public class EigensoftFormatter implements Formatter {
 		boolean result = false;
 		NetcdfFile rdNcFile = NetcdfFile.open(rdMatrixMetadata.getPathToMatrix());
 		String sep = org.gwaspi.constants.cExport.separator_PLINK;
-
 
 		//<editor-fold defaultstate="collapsed" desc="BIM FILE">
 		String filePath = exportDir.getPath() + "/" + rdMatrixMetadata.getMatrixFriendlyName() + ".bim";
@@ -91,7 +91,7 @@ public class EigensoftFormatter implements Formatter {
 			String majorAllele = majorAllelesLHM.get(key).toString();
 			Double minAlleleFreq = (Double) minorAlleleFreqLHM.get(key);
 
-			if (minAlleleFreq == 0.5) { //IF BOTH ALLELES ARE EQUALLY COMMON, USE ALPHABETICAL ORDER
+			if (minAlleleFreq == 0.5) { // IF BOTH ALLELES ARE EQUALLY COMMON, USE ALPHABETICAL ORDER
 				String tmpMinorAllele = majorAllele;
 				majorAllele = minorAllele;
 				minorAllele = tmpMinorAllele;
@@ -117,10 +117,9 @@ public class EigensoftFormatter implements Formatter {
 
 		//</editor-fold>
 
-
 		//<editor-fold defaultstate="collapsed/expanded" desc="BED FILE">
 
-		//THIS SHOULD BE MULTIPLE OF SAMPLE SET LENGTH
+		// THIS SHOULD BE MULTIPLE OF SAMPLE SET LENGTH
 		int nbOfSamples = rdSampleSet.getSampleSetSize();
 		int bytesPerSampleSet = ((int) Math.ceil((double) nbOfSamples / 8)) * 2;
 		int nbOfMarkers = rdMarkerSet.getMarkerSetSize();
@@ -148,21 +147,22 @@ public class EigensoftFormatter implements Formatter {
 		int markerNb = 0;
 		int byteCount = 0;
 		byte[] wrBytes = new byte[byteChunkSize];
-		//ITERATE THROUGH ALL MARKERS, ONE SAMPLESET AT A TIME
-		for (Iterator it = rdMarkerSet.getMarkerIdSetLHM().keySet().iterator(); it.hasNext();) {
-			Object markerId = it.next();
+		// ITERATE THROUGH ALL MARKERS, ONE SAMPLESET AT A TIME
+		for (Iterator<String> it = rdMarkerSet.getMarkerIdSetLHM().keySet().iterator(); it.hasNext();) {
+			String markerId = it.next();
 			String tmpMinorAllele = minorAllelesLHM.get(markerId).toString();
 			String tmpMajorAllele = majorAllelesLHM.get(markerId).toString();
 
-			//GET SAMPLESET FOR CURRENT MARKER
+			// GET SAMPLESET FOR CURRENT MARKER
 			rdSampleSetMap = rdSampleSet.readAllSamplesGTsFromCurrentMarkerToLHM(rdNcFile, rdSampleSetMap, markerNb);
 
 			for (Iterator it2 = rdSampleSetMap.keySet().iterator(); it2.hasNext();) {
-				//ONE BYTE AT A TIME (4 SAMPLES)
+				// ONE BYTE AT A TIME (4 SAMPLES)
 				StringBuilder tetraGTs = new StringBuilder("");
 				for (int i = 0; i < 4; i++) {
+					Object sampleId = null;
 					if (it2.hasNext()) {
-						Object sampleId = it2.next();
+						sampleId = it2.next();
 						byte[] tempGT = (byte[]) rdSampleSetMap.get(sampleId);
 						byte[] translatedByte = translateTo00011011Byte(tempGT, tmpMinorAllele, tmpMajorAllele);
 						tetraGTs.insert(0, translatedByte[0]); //REVERSE ORDER, AS PER PLINK SPECS http://pngu.mgh.harvard.edu/~purcell/plink/binary.shtml
@@ -181,10 +181,10 @@ public class EigensoftFormatter implements Formatter {
 				byteCount++;
 
 				if (byteCount == byteChunkSize) {
-					//WRITE TO FILE
+					// WRITE TO FILE
 					data_out.write(wrBytes, 0, byteChunkSize);
 
-					//INIT NEW CHUNK
+					// INIT NEW CHUNK
 					wrBytes = new byte[byteChunkSize];
 					byteCount = 0;
 				}
@@ -193,7 +193,7 @@ public class EigensoftFormatter implements Formatter {
 			markerNb++;
 		}
 
-		//WRITE LAST BITES TO FILE
+		// WRITE LAST BITES TO FILE
 		data_out.write(wrBytes, 0, byteCount);
 
 		// Close file when finished with it..
@@ -201,7 +201,6 @@ public class EigensoftFormatter implements Formatter {
 
 		org.gwaspi.global.Utils.sysoutCompleted("Completed exporting BED file to " + filePath);
 		//</editor-fold>
-
 
 		//<editor-fold defaultstate="collapsed" desc="FAM FILE">
 		filePath = exportDir.getPath() + "/" + rdMatrixMetadata.getMatrixFriendlyName() + ".fam";
@@ -219,7 +218,7 @@ public class EigensoftFormatter implements Formatter {
 			String fatherId = sampleInfo.get(org.gwaspi.constants.cDBSamples.f_FATHER_ID).toString();
 			String motherId = sampleInfo.get(org.gwaspi.constants.cDBSamples.f_MOTHER_ID).toString();
 			String sex = sampleInfo.get(org.gwaspi.constants.cDBSamples.f_SEX).toString();
-			String expPhenotype = sampleInfo.get(phenotype).toString();
+			String affection = sampleInfo.get(org.gwaspi.constants.cDBSamples.f_AFFECTION).toString();
 
 			//FAM files
 			//Family ID
@@ -227,7 +226,7 @@ public class EigensoftFormatter implements Formatter {
 			//Paternal ID
 			//Maternal ID
 			//Sex (1=male; 2=female; other=unknown)
-			//Phenotype
+			//Affection
 
 			StringBuilder line = new StringBuilder();
 			line.append(familyId);
@@ -240,7 +239,7 @@ public class EigensoftFormatter implements Formatter {
 			line.append(sep);
 			line.append(sex);
 			line.append(sep);
-			line.append(expPhenotype);
+			line.append(affection);
 
 
 			tfamBW.append(line);
@@ -261,11 +260,11 @@ public class EigensoftFormatter implements Formatter {
 		return result;
 	}
 
-	protected static byte[] translateTo00011011Byte(byte[] tempGT, String tmpMinorAllele, String tmpMajorAllele) {
+	private static byte[] translateTo00011011Byte(byte[] tempGT, String tmpMinorAllele, String tmpMajorAllele) {
 		byte[] result;
 		if (tempGT[0] == 48
 				|| tempGT[1] == 48) {
-			//SOME MISSING ALLELES => SET ALL TO MISSING
+			// SOME MISSING ALLELES => SET ALL TO MISSING
 			result = new byte[]{1, 0};
 		} else {
 			String allele1 = new String(new byte[]{tempGT[0]});
@@ -273,18 +272,18 @@ public class EigensoftFormatter implements Formatter {
 
 			if (allele1.equals(tmpMinorAllele)) {
 				if (allele2.equals(tmpMinorAllele)) {
-					//HOMOZYGOUS FOR MINOR ALLELE
+					// HOMOZYGOUS FOR MINOR ALLELE
 					result = new byte[]{0, 0};
 				} else {
-					//HETEROZYGOUS
+					// HETEROZYGOUS
 					result = new byte[]{0, 1};
 				}
 			} else {
 				if (allele2.equals(tmpMajorAllele)) {
-					//HOMOZYGOUS FOR MAJOR ALLELE
+					// HOMOZYGOUS FOR MAJOR ALLELE
 					result = new byte[]{1, 1};
 				} else {
-					//HETEROZYGOUS
+					// HETEROZYGOUS
 					result = new byte[]{0, 1};
 				}
 			}

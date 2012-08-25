@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
+import java.util.Map;
 import org.gwaspi.netCDF.markers.MarkerSet_opt;
 import org.gwaspi.netCDF.matrices.MatrixMetadata;
 import org.gwaspi.netCDF.operations.OperationManager;
@@ -23,16 +23,17 @@ import ucar.nc2.NetcdfFile;
  * IBE, Institute of Evolutionary Biology (UPF-CSIC)
  * CEXS-UPF-PRBB
  */
-class BeagleFormatter_opt {
+class BeagleFormatter implements Formatter {
 
-	private BeagleFormatter_opt() {
-	}
-
-	public static boolean exportToBeagle(String exportPath,
+	public boolean export(
+			String exportPath,
 			MatrixMetadata rdMatrixMetadata,
 			MarkerSet_opt rdMarkerSet,
 			SampleSet rdSampleSet,
-			LinkedHashMap rdSampleSetLHM) throws IOException {
+			Map<String, Object> rdSampleSetMap,
+			String phenotype)
+			throws IOException
+	{
 		File exportDir = new File(exportPath);
 		if (!exportDir.exists() || !exportDir.isDirectory()) {
 			return false;
@@ -75,7 +76,7 @@ class BeagleFormatter_opt {
 			StringBuilder ageLine = new StringBuilder("#" + sep + "age");
 			StringBuilder affectionLine = new StringBuilder("A" + sep + "affection");
 
-			for (Iterator it = rdSampleSetLHM.keySet().iterator(); it.hasNext();) {
+			for (Iterator it = rdSampleSetMap.keySet().iterator(); it.hasNext();) {
 				String sampleId = it.next().toString();
 				HashMap sampleInfo = Utils.getCurrentSampleFormattedInfo(sampleId, rdMatrixMetadata.getStudyId());
 
@@ -149,10 +150,10 @@ class BeagleFormatter_opt {
 
 				//Iterate through sampleset
 				StringBuilder currMarkerGTs = new StringBuilder();
-				rdSampleSetLHM = rdSampleSet.readAllSamplesGTsFromCurrentMarkerToLHM(rdNcFile, rdSampleSetLHM, markerNb);
-				for (Iterator it2 = rdSampleSetLHM.keySet().iterator(); it2.hasNext();) {
+				rdSampleSetMap = rdSampleSet.readAllSamplesGTsFromCurrentMarkerToLHM(rdNcFile, rdSampleSetMap, markerNb);
+				for (Iterator it2 = rdSampleSetMap.keySet().iterator(); it2.hasNext();) {
 					Object sampleId = it2.next();
-					byte[] tempGT = (byte[]) rdSampleSetLHM.get(sampleId);
+					byte[] tempGT = (byte[]) rdSampleSetMap.get(sampleId);
 					currMarkerGTs.append(sep);
 					currMarkerGTs.append(new String(new byte[]{tempGT[0]}));
 					currMarkerGTs.append(sep);
@@ -209,12 +210,12 @@ class BeagleFormatter_opt {
 				NetcdfFile qaNcFile = NetcdfFile.open(qaMetadata.getPathToMatrix());
 
 				OperationSet rdOperationSet = new OperationSet(rdMatrixMetadata.getStudyId(), markersQAopId);
-				LinkedHashMap opMarkerSetLHM = rdOperationSet.getOpSetLHM();
+				Map<String, Object> opMarkerSetLHM = rdOperationSet.getOpSetLHM();
 
 				//MAJOR ALLELE
 				opMarkerSetLHM = rdOperationSet.fillOpSetLHMWithVariable(qaNcFile, cNetCDF.Census.VAR_OP_MARKERS_MAJALLELES);
-				for (Iterator it = rdMarkerSet.getMarkerIdSetLHM().keySet().iterator(); it.hasNext();) {
-					Object key = it.next();
+				for (Iterator<String> it = rdMarkerSet.getMarkerIdSetLHM().keySet().iterator(); it.hasNext();) {
+					String key = it.next();
 					Object allele1Value = opMarkerSetLHM.get(key);
 					Object infoValue = rdMarkerSet.getMarkerIdSetLHM().get(key);
 
@@ -227,10 +228,10 @@ class BeagleFormatter_opt {
 				}
 
 				//MINOR ALLELE
-				opMarkerSetLHM = rdOperationSet.fillLHMWithDefaultValue(opMarkerSetLHM, "");
+				rdOperationSet.fillLHMWithDefaultValue(opMarkerSetLHM, "");
 				opMarkerSetLHM = rdOperationSet.fillOpSetLHMWithVariable(qaNcFile, cNetCDF.Census.VAR_OP_MARKERS_MINALLELES);
-				for (Iterator it = rdMarkerSet.getMarkerIdSetLHM().keySet().iterator(); it.hasNext();) {
-					Object key = it.next();
+				for (Iterator<String> it = rdMarkerSet.getMarkerIdSetLHM().keySet().iterator(); it.hasNext();) {
+					String key = it.next();
 					Object allele2Value = opMarkerSetLHM.get(key);
 					Object infoValue = rdMarkerSet.getMarkerIdSetLHM().get(key);
 

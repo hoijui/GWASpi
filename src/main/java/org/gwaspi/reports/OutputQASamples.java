@@ -10,7 +10,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
+import java.util.Map;
 import org.gwaspi.model.Operation;
 
 /**
@@ -78,13 +78,13 @@ public class OutputQASamples {
 		String sep = cExport.separator_REPORTS;
 
 		try {
-			LinkedHashMap unsortedSamplesMissingRatLHM = GatherQASamplesData.loadSamplesQAMissingRatio(opId);
-			LinkedHashMap sortedSamplesMissingRatLHM = ReportManager.getSortedDescendingMarkerSetByDoubleValue(unsortedSamplesMissingRatLHM);
+			Map<String, Object> unsortedSamplesMissingRatLHM = GatherQASamplesData.loadSamplesQAMissingRatio(opId);
+			Map<String, Object> sortedSamplesMissingRatLHM = ReportManager.getSortedDescendingMarkerSetByDoubleValue(unsortedSamplesMissingRatLHM);
 			if (unsortedSamplesMissingRatLHM != null) {
 				unsortedSamplesMissingRatLHM.clear();
 			}
 
-			LinkedHashMap samplesMissingRatLHM = GatherQASamplesData.loadSamplesQAHetZygRatio(opId);
+			Map<String, Object> samplesMissingRatLHM = GatherQASamplesData.loadSamplesQAHetZygRatio(opId);
 
 			//WRITE HEADER OF FILE
 			FileWriter tempFW = new FileWriter(reportPath + samplMissOutName);

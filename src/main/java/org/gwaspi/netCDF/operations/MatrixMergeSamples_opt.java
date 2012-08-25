@@ -7,6 +7,7 @@ import org.gwaspi.global.Text;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.Map;
 import org.gwaspi.netCDF.markers.MarkerSet_opt;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.gwaspi.netCDF.matrices.MatrixMetadata;
@@ -86,9 +87,9 @@ public class MatrixMergeSamples_opt {
 
 
 		//Get combo SampleSet with position[] (wrPos, rdMatrixNb, rdPos)
-		LinkedHashMap rdSampleSetLHM1 = rdSampleSet1.getSampleIdSetLHM();
-		LinkedHashMap rdSampleSetLHM2 = rdSampleSet2.getSampleIdSetLHM();
-		LinkedHashMap wrComboSampleSetLHM = getComboSampleSetwithPosArray(rdSampleSetLHM1, rdSampleSetLHM2);
+		Map<String, Object> rdSampleSetLHM1 = rdSampleSet1.getSampleIdSetLHM();
+		Map<String, Object> rdSampleSetLHM2 = rdSampleSet2.getSampleIdSetLHM();
+		Map<String, Object> wrComboSampleSetLHM = getComboSampleSetwithPosArray(rdSampleSetLHM1, rdSampleSetLHM2);
 
 		rdwrMarkerSet1.initFullMarkerIdSetLHM();
 		rdMarkerSet2.initFullMarkerIdSetLHM();
@@ -98,7 +99,7 @@ public class MatrixMergeSamples_opt {
 //        wrMarkerIdSetLHM = rdMarkerSet.fillWrLHMWithRdLHMValue(wrMarkerIdSetLHM, rdMarkerSet.markerIdSetLHM);
 //        rdChrInfoSetLHM = org.gwaspi.netCDF.matrices.Utils.aggregateChromosomeInfo(wrMarkerIdSetLHM, 0, 1);
 
-		LinkedHashMap rdChrInfoSetLHM = rdwrMarkerSet1.getChrInfoSetLHM();
+		Map<String, Object> rdChrInfoSetLHM = rdwrMarkerSet1.getChrInfoSetLHM();
 
 
 		try {
@@ -240,8 +241,8 @@ public class MatrixMergeSamples_opt {
 				if (sampleIndices[0] == 2) { //Read from Matrix2
 					rdwrMarkerSet1.fillInitLHMWithMyValue(org.gwaspi.constants.cNetCDF.Defaults.DEFAULT_GT);
 					rdMarkerSet2.fillGTsForCurrentSampleIntoInitLHM(sampleIndices[1]);
-					for (Iterator it3 = rdwrMarkerSet1.getMarkerIdSetLHM().keySet().iterator(); it3.hasNext();) {
-						Object key = it3.next();
+					for (Iterator<String> it3 = rdwrMarkerSet1.getMarkerIdSetLHM().keySet().iterator(); it3.hasNext();) {
+						String key = it3.next();
 						if (rdMarkerSet2.getMarkerIdSetLHM().containsKey(key)) {
 							Object value = rdMarkerSet2.getMarkerIdSetLHM().get(key);
 							rdwrMarkerSet1.getMarkerIdSetLHM().put(key, value);
@@ -307,13 +308,13 @@ public class MatrixMergeSamples_opt {
 		return resultMatrixId;
 	}
 
-	protected LinkedHashMap getComboSampleSetwithPosArray(LinkedHashMap sampleSetLHM1, LinkedHashMap sampleSetLHM2) {
-		LinkedHashMap resultLHM = new LinkedHashMap();
+	protected Map<String, Object> getComboSampleSetwithPosArray(Map<String, Object> sampleSetLHM1, Map<String, Object> sampleSetLHM2) {
+		Map<String, Object> resultLHM = new LinkedHashMap<String, Object>();
 
 		int wrPos = 0;
 		int rdPos = 0;
-		for (Iterator it = sampleSetLHM1.keySet().iterator(); it.hasNext();) {
-			Object key = it.next();
+		for (Iterator<String> it = sampleSetLHM1.keySet().iterator(); it.hasNext();) {
+			String key = it.next();
 			int[] position = new int[]{1, rdPos, wrPos}; //rdMatrixNb, rdPos, wrPos
 			resultLHM.put(key, position);
 			wrPos++;
@@ -321,8 +322,8 @@ public class MatrixMergeSamples_opt {
 		}
 
 		rdPos = 0;
-		for (Iterator it = sampleSetLHM2.keySet().iterator(); it.hasNext();) {
-			Object key = it.next();
+		for (Iterator<String> it = sampleSetLHM2.keySet().iterator(); it.hasNext();) {
+			String key = it.next();
 			int[] position;
 			//IF SAMPLE ALLREADY EXISTS IN MATRIX1 SUBSTITUTE VALUES WITH MATRIX2
 			if (resultLHM.containsKey(key)) {
@@ -348,7 +349,7 @@ public class MatrixMergeSamples_opt {
 		wrSampleSet = new SampleSet(wrMatrixMetadata.getStudyId(), wrMatrixId);
 		wrMarkerSet = new MarkerSet_opt(wrMatrixMetadata.getStudyId(), wrMatrixId);
 		wrMarkerSet.initFullMarkerIdSetLHM();
-		LinkedHashMap wrSampleSetLHM = wrSampleSet.getSampleIdSetLHM();
+		Map<String, Object> wrSampleSetLHM = wrSampleSet.getSampleIdSetLHM();
 
 		NetcdfFile rdNcFile = NetcdfFile.open(wrMatrixMetadata.getPathToMatrix());
 
@@ -357,17 +358,17 @@ public class MatrixMergeSamples_opt {
 		double mismatchCount = 0;
 
 		// Iterate through markerSet
-		for (Iterator it = wrMarkerSet.getMarkerIdSetLHM().keySet().iterator(); it.hasNext();) {
-			Object markerId = it.next();
-			LinkedHashMap knownAlleles = new LinkedHashMap();
+		for (Iterator<String> it = wrMarkerSet.getMarkerIdSetLHM().keySet().iterator(); it.hasNext();) {
+			String markerId = it.next();
+			Map<Character, Object> knownAlleles = new LinkedHashMap<Character, Object>();
 
 			//Get a sampleset-full of GTs
 			wrSampleSetLHM = wrSampleSet.readAllSamplesGTsFromCurrentMarkerToLHM(rdNcFile, wrSampleSetLHM, markerNb);
 
 			//Iterate through sampleSet
-			for (Iterator it2 = wrSampleSetLHM.keySet().iterator(); it2.hasNext();) {
+			for (Iterator<String> it2 = wrSampleSetLHM.keySet().iterator(); it2.hasNext();) {
 
-				Object sampleId = it2.next();
+				String sampleId = it2.next();
 
 				char[] tempGT = wrSampleSetLHM.get(sampleId).toString().toCharArray();
 

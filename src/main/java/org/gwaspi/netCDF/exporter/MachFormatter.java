@@ -8,8 +8,10 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.Map;
 import org.gwaspi.netCDF.markers.MarkerSet_opt;
 import org.gwaspi.netCDF.matrices.MatrixMetadata;
+import org.gwaspi.samples.SampleSet;
 import ucar.nc2.NetcdfFile;
 
 /**
@@ -18,35 +20,26 @@ import ucar.nc2.NetcdfFile;
  * IBE, Institute of Evolutionary Biology (UPF-CSIC)
  * CEXS-UPF-PRBB
  */
-public class MachFormatter_opt {
+public class MachFormatter implements Formatter {
 
-	protected static String sep = org.gwaspi.constants.cExport.separator_MACH;
-	protected static MatrixMetadata rdMatrixMetadata;
-	protected static NetcdfFile rdNcFile;
-	protected static MarkerSet_opt rdMarkerSet;
-	protected static LinkedHashMap rdSampleSetLHM;
-	protected static File exportDir;
+	private static final String SEP = org.gwaspi.constants.cExport.separator_MACH;
 
-	private MachFormatter_opt() {
-	}
-
-	public static boolean exportToMach(String exportPath,
-			MatrixMetadata _rdMatrixMetadata,
-			MarkerSet_opt _rdMarkerSet,
-			LinkedHashMap _rdSampleSetLHM) throws IOException {
-
-		exportDir = new File(exportPath);
+	public boolean export(
+			String exportPath,
+			MatrixMetadata rdMatrixMetadata,
+			MarkerSet_opt rdMarkerSet,
+			SampleSet rdSampleSet,
+			Map<String, Object> rdSampleSetMap,
+			String phenotype)
+			throws IOException
+	{
+		File exportDir = new File(exportPath);
 		if (!exportDir.exists() || !exportDir.isDirectory()) {
 			return false;
 		}
 
-		rdMatrixMetadata = _rdMatrixMetadata;
-		rdMarkerSet = _rdMarkerSet;
-
-		rdSampleSetLHM = _rdSampleSetLHM;
-
 		boolean result = false;
-		rdNcFile = NetcdfFile.open(rdMatrixMetadata.getPathToMatrix());
+		NetcdfFile rdNcFile = NetcdfFile.open(rdMatrixMetadata.getPathToMatrix());
 
 		try {
 			rdMarkerSet.initFullMarkerIdSetLHM();
@@ -63,16 +56,16 @@ public class MachFormatter_opt {
 				String chr = chrMarkerSetLHM.get(chrId).toString();
 				if (!chr.equals(tmpChr)) {
 					if (start != end) {
-						exportChromosomeToMped(tmpChr, start, end - 1);
-						exportChromosomeToDat(tmpChr, start, end - 1);
+						exportChromosomeToMped(exportDir, rdMatrixMetadata, rdMarkerSet, rdSampleSetMap, tmpChr, start, end - 1);
+						exportChromosomeToDat(exportDir, rdMatrixMetadata, rdMarkerSet, tmpChr, start, end - 1);
 						start = end;
 					}
 					tmpChr = chr;
 				}
 				end++;
 			}
-			exportChromosomeToMped(tmpChr, start, end);
-			exportChromosomeToDat(tmpChr, start, end - 1);
+			exportChromosomeToMped(exportDir, rdMatrixMetadata, rdMarkerSet, rdSampleSetMap, tmpChr, start, end);
+			exportChromosomeToDat(exportDir, rdMatrixMetadata, rdMarkerSet, tmpChr, start, end - 1);
 
 
 			result = true;
@@ -87,11 +80,10 @@ public class MachFormatter_opt {
 			}
 		}
 
-
 		return result;
 	}
 
-	public static void exportChromosomeToMped(String chr, int startPos, int endPos) throws IOException {
+	public static void exportChromosomeToMped(File exportDir, MatrixMetadata rdMatrixMetadata, MarkerSet_opt rdMarkerSet, Map<String, Object> rdSampleSetLHM, String chr, int startPos, int endPos) throws IOException {
 
 		FileWriter pedFW = new FileWriter(exportDir.getPath() + "/" + rdMatrixMetadata.getMatrixFriendlyName() + "_chr" + chr + ".mped");
 		BufferedWriter pedBW = new BufferedWriter(pedFW);
@@ -122,9 +114,9 @@ public class MachFormatter_opt {
 			for (Iterator it2 = rdMarkerSet.getMarkerIdSetLHM().keySet().iterator(); it2.hasNext();) {
 				Object markerId = it2.next();
 				byte[] tempGT = (byte[]) rdMarkerSet.getMarkerIdSetLHM().get(markerId);
-				genotypes.append(sep);
+				genotypes.append(SEP);
 				genotypes.append(new String(new byte[]{tempGT[0]}));
-				genotypes.append(sep);
+				genotypes.append(SEP);
 				genotypes.append(new String(new byte[]{tempGT[1]}));
 				markerNb++;
 			}
@@ -138,13 +130,13 @@ public class MachFormatter_opt {
 
 			StringBuilder line = new StringBuilder();
 			line.append(familyId);
-			line.append(sep);
+			line.append(SEP);
 			line.append(sampleId);
-			line.append(sep);
+			line.append(SEP);
 			line.append(fatherId);
-			line.append(sep);
+			line.append(SEP);
 			line.append(motherId);
-			line.append(sep);
+			line.append(SEP);
 			line.append(sex);
 			line.append(genotypes);
 
@@ -157,11 +149,9 @@ public class MachFormatter_opt {
 		System.out.println("Samples exported to chr" + chr + " MPED file: " + sampleNb);
 		pedBW.close();
 		pedFW.close();
-
-
 	}
 
-	public static void exportChromosomeToDat(String chr, int startPos, int endPos) throws IOException {
+	public void exportChromosomeToDat(File exportDir, MatrixMetadata rdMatrixMetadata, MarkerSet_opt rdMarkerSet, String chr, int startPos, int endPos) throws IOException {
 
 		FileWriter datFW = new FileWriter(exportDir.getPath() + "/" + rdMatrixMetadata.getMatrixFriendlyName() + "_chr" + chr + ".dat");
 		BufferedWriter datBW = new BufferedWriter(datFW);
@@ -187,7 +177,7 @@ public class MachFormatter_opt {
 				markerId = value;
 			}
 
-			datBW.append("M" + sep);
+			datBW.append("M" + SEP);
 			datBW.append(markerId);
 			datBW.append("\n");
 

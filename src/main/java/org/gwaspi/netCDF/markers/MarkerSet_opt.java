@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.Map;
 import org.gwaspi.netCDF.matrices.MatrixMetadata;
 import ucar.ma2.ArrayByte;
 import ucar.ma2.ArrayChar;
@@ -41,8 +42,8 @@ public class MarkerSet_opt {
 	private NetcdfFile ncfile = null;
 	private int startMkIdx = 0;
 	private int endMkIdx = Integer.MIN_VALUE;
-	private LinkedHashMap markerIdSetLHM = new LinkedHashMap();
-	private LinkedHashMap markerRsIdSetLHM = new LinkedHashMap();
+	private Map<String, Object> markerIdSetLHM = new LinkedHashMap();
+	private Map<String, Object> markerRsIdSetLHM = new LinkedHashMap();
 
 	public MarkerSet_opt(int studyId, int matrixId) throws IOException {
 		matrixMetadata = new MatrixMetadata(matrixId);
@@ -182,9 +183,9 @@ public class MarkerSet_opt {
      * This Method is safe to return an independent LHM.
 	 * The size of this LHM is very small.
 	 */
-	public LinkedHashMap getChrInfoSetLHM() {
+	public Map<String, Object> getChrInfoSetLHM() {
 
-		LinkedHashMap chrInfoLHM = new LinkedHashMap();
+		Map<String, Object> chrInfoLHM = new LinkedHashMap();
 
 		// GET NAMES OF CHROMOSOMES
 		Variable var = ncfile.findVariable(org.gwaspi.constants.cNetCDF.Variables.VAR_CHR_IN_MATRIX);
@@ -227,10 +228,10 @@ public class MarkerSet_opt {
 		return chrInfoLHM;
 	}
 
-	public static String getChrByMarkerIndex(LinkedHashMap chrInfoLHM, int markerIndex) {
+	public static String getChrByMarkerIndex(Map<String, Object> chrInfoLHM, int markerIndex) {
 		String result = null;
-		for (Iterator it = chrInfoLHM.keySet().iterator(); it.hasNext();) {
-			Object chr = it.next();
+		for (Iterator<String> it = chrInfoLHM.keySet().iterator(); it.hasNext();) {
+			String chr = it.next();
 			int[] value = (int[]) chrInfoLHM.get(chr);
 			if (markerIndex <= value[3] && result == null) {
 				result = chr.toString();
@@ -366,9 +367,9 @@ public class MarkerSet_opt {
 
 					int[] shape = markerSetAI.getShape();
 					Index index = markerSetAI.getIndex();
-					Iterator it = markerIdSetLHM.keySet().iterator();
+					Iterator<String> it = markerIdSetLHM.keySet().iterator();
 					for (int i = 0; i < shape[0]; i++) {
-						Object key = it.next();
+						String key = it.next();
 						Object[] chrInfo = new Object[2];
 						chrInfo[0] = markerIdSetLHM.get(key);   //CHR
 						chrInfo[1] = markerSetAI.getInt(index.set(i)); //POS
@@ -385,33 +386,33 @@ public class MarkerSet_opt {
 	}
 
 	public void fillInitLHMWithMyValue(Object defaultVal) {
-		for (Iterator it = markerIdSetLHM.keySet().iterator(); it.hasNext();) {
-			Object key = it.next();
+		for (Iterator<String> it = markerIdSetLHM.keySet().iterator(); it.hasNext();) {
+			String key = it.next();
 			markerIdSetLHM.put(key, defaultVal);
 		}
 	}
 
-	public LinkedHashMap fillLHMWithMyValue(LinkedHashMap lhm, Object defaultVal) {
-		for (Iterator it = lhm.keySet().iterator(); it.hasNext();) {
-			Object key = it.next();
+	public Map<String, Object> fillLHMWithMyValue(Map<String, Object> lhm, Object defaultVal) {
+		for (Iterator<String> it = lhm.keySet().iterator(); it.hasNext();) {
+			String key = it.next();
 			lhm.put(key, defaultVal);
 		}
 		return lhm;
 	}
 
 	//HELPERS TO TRANSFER VALUES FROM ONE LHM TO ANOTHER
-	public LinkedHashMap fillWrLHMWithRdLHMValue(LinkedHashMap wrLHM, LinkedHashMap rdLHM) {
-		for (Iterator it = wrLHM.keySet().iterator(); it.hasNext();) {
-			Object key = it.next();
+	public Map<String, Object> fillWrLHMWithRdLHMValue(Map<String, Object> wrLHM, Map<String, Object> rdLHM) {
+		for (Iterator<String> it = wrLHM.keySet().iterator(); it.hasNext();) {
+			String key = it.next();
 			Object value = rdLHM.get(key);
 			wrLHM.put(key, value);
 		}
 		return wrLHM;
 	}
 
-	public LinkedHashMap fillWrLHMWithRdLHMIntArray(LinkedHashMap wrLHM, LinkedHashMap rdLHM) {
-		for (Iterator it = wrLHM.keySet().iterator(); it.hasNext();) {
-			Object key = it.next();
+	public Map<String, Object> fillWrLHMWithRdLHMIntArray(Map<String, Object> wrLHM, Map<String, Object> rdLHM) {
+		for (Iterator<String> it = wrLHM.keySet().iterator(); it.hasNext();) {
+			String key = it.next();
 			int[] value = (int[]) rdLHM.get(key);
 			wrLHM.put(key, value);
 		}
@@ -432,9 +433,9 @@ public class MarkerSet_opt {
 
 						int[] shape = markerSetAC.getShape();
 						Index index = markerSetAC.getIndex();
-						Iterator it = markerIdSetLHM.keySet().iterator();
+						Iterator<String> it = markerIdSetLHM.keySet().iterator();
 						for (int i = 0; i < shape[0]; i++) {
-							Object key = it.next();
+							String key = it.next();
 							String value = markerIdSetLHM.get(key).toString();
 							if (!value.isEmpty()) {
 								value += separator;
@@ -453,9 +454,9 @@ public class MarkerSet_opt {
 
 						int[] shape = markerSetAF.getShape();
 						Index index = markerSetAF.getIndex();
-						Iterator it = markerIdSetLHM.keySet().iterator();
+						Iterator<String> it = markerIdSetLHM.keySet().iterator();
 						for (int i = 0; i < shape[0]; i++) {
-							Object key = it.next();
+							String key = it.next();
 							String value = markerIdSetLHM.get(key).toString();
 							if (!value.isEmpty()) {
 								value += separator;
@@ -472,9 +473,9 @@ public class MarkerSet_opt {
 						Integer intValue = 0;
 						int[] shape = markerSetAF.getShape();
 						Index index = markerSetAF.getIndex();
-						Iterator it = markerIdSetLHM.keySet().iterator();
+						Iterator<String> it = markerIdSetLHM.keySet().iterator();
 						for (int i = 0; i < shape[0]; i++) {
-							Object key = it.next();
+							String key = it.next();
 							String value = markerIdSetLHM.get(key).toString();
 							if (!value.isEmpty()) {
 								value += separator;
@@ -580,11 +581,11 @@ public class MarkerSet_opt {
 	}
 	//</editor-fold>
 
-	public LinkedHashMap getMarkerIdSetLHM() {
+	public Map<String, Object> getMarkerIdSetLHM() {
 		return markerIdSetLHM;
 	}
 
-	public LinkedHashMap getMarkerRsIdSetLHM() {
+	public Map<String, Object> getMarkerRsIdSetLHM() {
 		return markerRsIdSetLHM;
 	}
 }

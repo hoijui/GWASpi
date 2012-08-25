@@ -55,10 +55,10 @@ public class OP_MarkerCensus_opt {
 
 		OperationSet rdQAMarkerSet = new OperationSet(markerQAMetadata.getStudyId(), markerQAMetadata.getOPId());
 		OperationSet rdQASampleSet = new OperationSet(sampleQAMetadata.getStudyId(), sampleQAMetadata.getOPId());
-		LinkedHashMap rdQAMarkerSetLHM = rdQAMarkerSet.getOpSetLHM();
-		LinkedHashMap rdQASampleSetLHM = rdQASampleSet.getOpSetLHM();
-		LinkedHashMap excludeMarkerSetLHM = new LinkedHashMap();
-		LinkedHashMap excludeSampleSetLHM = new LinkedHashMap();
+		Map<String, Object> rdQAMarkerSetLHM = rdQAMarkerSet.getOpSetLHM();
+		Map<String, Object> rdQASampleSetLHM = rdQASampleSet.getOpSetLHM();
+		Map<String, Object> excludeMarkerSetLHM = new LinkedHashMap();
+		Map<String, Object> excludeSampleSetLHM = new LinkedHashMap();
 
 		int totalSampleNb = rdQASampleSetLHM.size();
 		int totalMarkerNb = rdQAMarkerSetLHM.size();
@@ -67,8 +67,8 @@ public class OP_MarkerCensus_opt {
 		if (discardMismatches) {
 			rdQAMarkerSetLHM = rdQAMarkerSet.fillOpSetLHMWithVariable(rdMarkerQANcFile, cNetCDF.Census.VAR_OP_MARKERS_MISMATCHSTATE);
 
-			for (Iterator it = rdQAMarkerSetLHM.keySet().iterator(); it.hasNext();) {
-				Object key = it.next();
+			for (Iterator<String> it = rdQAMarkerSetLHM.keySet().iterator(); it.hasNext();) {
+				String key = it.next();
 				Object value = rdQAMarkerSetLHM.get(key);
 				if (value.equals(cNetCDF.Defaults.DEFAULT_MISMATCH_YES)) {
 					excludeMarkerSetLHM.put(key, value);
@@ -79,8 +79,8 @@ public class OP_MarkerCensus_opt {
 		//EXCLUDE MARKER BY MISSING RATIO
 		rdQAMarkerSetLHM = rdQAMarkerSet.fillOpSetLHMWithVariable(rdMarkerQANcFile, cNetCDF.Census.VAR_OP_MARKERS_MISSINGRAT);
 
-		for (Iterator it = rdQAMarkerSetLHM.keySet().iterator(); it.hasNext();) {
-			Object key = it.next();
+		for (Iterator<String> it = rdQAMarkerSetLHM.keySet().iterator(); it.hasNext();) {
+			String key = it.next();
 			double value = (Double) rdQAMarkerSetLHM.get(key);
 			if (value > markerMissingRatio) {
 				excludeMarkerSetLHM.put(key, value);
@@ -92,8 +92,8 @@ public class OP_MarkerCensus_opt {
 
 		if (rdQASampleSetLHM != null) {
 			int brgl = 0;
-			for (Iterator it = rdQASampleSetLHM.keySet().iterator(); it.hasNext();) {
-				Object key = it.next();
+			for (Iterator<String> it = rdQASampleSetLHM.keySet().iterator(); it.hasNext();) {
+				String key = it.next();
 				double value = (Double) rdQASampleSetLHM.get(key);
 				if (value > sampleMissingRatio) {
 					excludeSampleSetLHM.put(key, value);
@@ -107,8 +107,8 @@ public class OP_MarkerCensus_opt {
 
 		if (rdQASampleSetLHM != null) {
 			int brgl = 0;
-			for (Iterator it = rdQASampleSetLHM.keySet().iterator(); it.hasNext();) {
-				Object key = it.next();
+			for (Iterator<String> it = rdQASampleSetLHM.keySet().iterator(); it.hasNext();) {
+				String key = it.next();
 				double value = (Double) rdQASampleSetLHM.get(key);
 				if (value > sampleHetzygRatio) {
 					excludeSampleSetLHM.put(key, value);
@@ -141,15 +141,15 @@ public class OP_MarkerCensus_opt {
 			rdMarkerSet.initFullMarkerIdSetLHM();
 			rdMarkerSet.fillInitLHMWithMyValue(cNetCDF.Defaults.DEFAULT_GT);
 
-			LinkedHashMap wrMarkerSetLHM = new LinkedHashMap();
+			Map<String, Object> wrMarkerSetLHM = new LinkedHashMap();
 			wrMarkerSetLHM.putAll(rdMarkerSet.getMarkerIdSetLHM());
 
 
 			SampleSet rdSampleSet = new SampleSet(rdMatrixMetadata.getStudyId(), rdMatrixId);
-			LinkedHashMap rdSampleSetLHM = rdSampleSet.getSampleIdSetLHM();
-			LinkedHashMap wrSampleSetLHM = new LinkedHashMap();
-			for (Iterator it = rdSampleSetLHM.keySet().iterator(); it.hasNext();) {
-				Object key = it.next();
+			Map<String, Object> rdSampleSetLHM = rdSampleSet.getSampleIdSetLHM();
+			Map<String, Object> wrSampleSetLHM = new LinkedHashMap();
+			for (Iterator<String> it = rdSampleSetLHM.keySet().iterator(); it.hasNext();) {
+				String key = it.next();
 				if (!excludeSampleSetLHM.containsKey(key)) {
 					wrSampleSetLHM.put(key, cNetCDF.Defaults.DEFAULT_GT);
 				}
@@ -197,8 +197,8 @@ public class OP_MarkerCensus_opt {
 
 				//MARKERSET RSID
 				rdMarkerSet.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_RSID);
-				for (Iterator it = wrMarkerSetLHM.keySet().iterator(); it.hasNext();) {
-					Object key = it.next();
+				for (Iterator<String> it = wrMarkerSetLHM.keySet().iterator(); it.hasNext();) {
+					String key = it.next();
 					Object value = rdMarkerSet.getMarkerIdSetLHM().get(key);
 					wrMarkerSetLHM.put(key, value);
 				}
@@ -304,8 +304,8 @@ public class OP_MarkerCensus_opt {
 				rdMarkerSet.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
 				//INIT wrSampleSetLHM with indexing order and chromosome info
 				int idx = 0;
-				for (Iterator it = rdMarkerSet.getMarkerIdSetLHM().keySet().iterator(); it.hasNext();) {
-					Object key = it.next();
+				for (Iterator<String> it = rdMarkerSet.getMarkerIdSetLHM().keySet().iterator(); it.hasNext();) {
+					String key = it.next();
 					if (wrMarkerSetLHM.containsKey(key)) {
 						String chr = rdMarkerSet.getMarkerIdSetLHM().get(key).toString();
 						Object[] markerInfo = new Object[]{idx, chr};

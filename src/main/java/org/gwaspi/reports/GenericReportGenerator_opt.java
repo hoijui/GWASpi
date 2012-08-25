@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.gwaspi.netCDF.markers.MarkerSet_opt;
@@ -43,7 +44,7 @@ import ucar.nc2.NetcdfFile;
  */
 public class GenericReportGenerator_opt {
 
-	private static LinkedHashMap labelerHM = new LinkedHashMap();
+	private static Map<String, Object> labelerHM = new LinkedHashMap<String, Object>();
 	private static long snpNumber = 1000000;
 	private static double threshold = 0.5 / snpNumber;  //(0.05/10⁶ SNPs => 5*10-⁷)
 	private static Color manhattan_back = Color.getHSBColor(0.1f, 0.0f, 0.9f);
@@ -75,7 +76,7 @@ public class GenericReportGenerator_opt {
 		manhattan_dot = Color.getHSBColor(hsbTmp[0], hsbTmp[1], hsbTmp[2]);
 		//</editor-fold>
 
-		LinkedHashMap dataSetLHM = new LinkedHashMap();
+		Map<String, Object> dataSetLHM = new LinkedHashMap<String, Object>();
 		OperationMetadata rdOPMetadata = new OperationMetadata(opId);
 
 		//<editor-fold defaultstate="collapsed" desc="GET POSITION DATA">
@@ -91,8 +92,8 @@ public class GenericReportGenerator_opt {
 
 
 		rdInfoMarkerSet.fillInitLHMWithVariable(org.gwaspi.constants.cNetCDF.Variables.VAR_MARKERS_CHR);
-		for (Iterator it = rdInfoMarkerSet.getMarkerIdSetLHM().keySet().iterator(); it.hasNext();) {
-			Object key = it.next();
+		for (Iterator<String> it = rdInfoMarkerSet.getMarkerIdSetLHM().keySet().iterator(); it.hasNext();) {
+			String key = it.next();
 			String chr = rdInfoMarkerSet.getMarkerIdSetLHM().get(key).toString();
 			Object[] data = new Object[3]; //CHR, POS, PVAL
 			data[0] = chr;
@@ -101,8 +102,8 @@ public class GenericReportGenerator_opt {
 
 		rdInfoMarkerSet.fillInitLHMWithMyValue(0);
 		rdInfoMarkerSet.fillInitLHMWithVariable(org.gwaspi.constants.cNetCDF.Variables.VAR_MARKERS_POS);
-		for (Iterator it = rdInfoMarkerSet.getMarkerIdSetLHM().keySet().iterator(); it.hasNext();) {
-			Object key = it.next();
+		for (Iterator<String> it = rdInfoMarkerSet.getMarkerIdSetLHM().keySet().iterator(); it.hasNext();) {
+			String key = it.next();
 			Object[] data = (Object[]) dataSetLHM.get(key); //CHR, POS, PVAL
 			int pos = (Integer) rdInfoMarkerSet.getMarkerIdSetLHM().get(key);
 			data[1] = pos;
@@ -117,11 +118,11 @@ public class GenericReportGenerator_opt {
 		//<editor-fold defaultstate="collapsed" desc="GET Pval">
 		NetcdfFile assocNcFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());
 		OperationSet rdAssocMarkerSet = new OperationSet(rdOPMetadata.getStudyId(), opId);
-		LinkedHashMap rdAssocMarkerSetLHM = rdAssocMarkerSet.getOpSetLHM();
+		Map<String, Object> rdAssocMarkerSetLHM = rdAssocMarkerSet.getOpSetLHM();
 		rdAssocMarkerSetLHM = rdAssocMarkerSet.fillOpSetLHMWithVariable(assocNcFile, netCDFVar);
 
-		for (Iterator it = rdAssocMarkerSetLHM.keySet().iterator(); it.hasNext();) {
-			Object key = it.next();
+		for (Iterator<String> it = rdAssocMarkerSetLHM.keySet().iterator(); it.hasNext();) {
+			String key = it.next();
 			Object[] data = (Object[]) dataSetLHM.get(key); //CHR, POS, PVAL
 
 			double[] value = (double[]) rdAssocMarkerSetLHM.get(key);
@@ -412,12 +413,12 @@ public class GenericReportGenerator_opt {
 
 		try {
 
-			LinkedHashMap dataSetLHM = new LinkedHashMap();
+			Map<String, Object> dataSetLHM = new LinkedHashMap<String, Object>();
 			OperationMetadata rdOPMetadata = new OperationMetadata(opId);
 
 			NetcdfFile assocNcFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());
 			OperationSet rdAssocMarkerSet = new OperationSet(rdOPMetadata.getStudyId(), opId);
-			LinkedHashMap rdAssocMarkerSetLHM = rdAssocMarkerSet.getOpSetLHM();
+			Map<String, Object> rdAssocMarkerSetLHM = rdAssocMarkerSet.getOpSetLHM();
 
 			MarkerSet_opt rdInfoMarkerSet = new MarkerSet_opt(rdOPMetadata.getStudyId(), rdOPMetadata.getParentMatrixId());
 			rdInfoMarkerSet.initFullMarkerIdSetLHM();
@@ -439,8 +440,8 @@ public class GenericReportGenerator_opt {
 
 
 			//CUT READ-LHM TO SIZE
-			for (Iterator it = rdAssocMarkerSetLHM.keySet().iterator(); it.hasNext();) {
-				Object key = it.next();
+			for (Iterator<String> it = rdAssocMarkerSetLHM.keySet().iterator(); it.hasNext();) {
+				String key = it.next();
 				Object[] chrInfo = (Object[]) rdInfoMarkerSet.getMarkerIdSetLHM().get(key);
 				Object[] plotInfo = new Object[3];
 				if (chrInfo[0].toString().equals(chr)) {
@@ -462,8 +463,8 @@ public class GenericReportGenerator_opt {
 
 			//<editor-fold defaultstate="collapsed" desc="GET Pval">
 			rdAssocMarkerSetLHM = rdAssocMarkerSet.fillOpSetLHMWithVariable(assocNcFile, netCDFVar);
-			for (Iterator ite = dataSetLHM.keySet().iterator(); ite.hasNext();) {
-				Object key = ite.next();
+			for (Iterator<String> ite = dataSetLHM.keySet().iterator(); ite.hasNext();) {
+				String key = ite.next();
 				Object[] data = (Object[]) dataSetLHM.get(key); //CHR, POS, PVAL
 				double[] value = (double[]) rdAssocMarkerSetLHM.get(key);
 				Double pval = (Double) value[1]; //PVAL
@@ -533,12 +534,12 @@ public class GenericReportGenerator_opt {
 
 		try {
 
-			LinkedHashMap dataSetLHM = new LinkedHashMap();
+			Map<String, Object> dataSetLHM = new LinkedHashMap<String, Object>();
 			OperationMetadata rdOPMetadata = new OperationMetadata(opId);
 
 			NetcdfFile assocNcFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());
 			OperationSet rdAssocMarkerSet = new OperationSet(rdOPMetadata.getStudyId(), opId);
-			LinkedHashMap rdAssocMarkerSetLHM = rdAssocMarkerSet.getOpSetLHM();
+			Map<String, Object> rdAssocMarkerSetLHM = rdAssocMarkerSet.getOpSetLHM();
 
 			//<editor-fold defaultstate="collapsed" desc="GET POSITION DATA">
 			MarkerSet_opt rdInfoMarkerSet = new MarkerSet_opt(rdOPMetadata.getStudyId(), rdOPMetadata.getParentMatrixId());
@@ -598,9 +599,9 @@ public class GenericReportGenerator_opt {
 
 			boolean goOn = true;
 			int i = 0;
-			Iterator it = rdAssocMarkerSetLHM.keySet().iterator();
+			Iterator<String> it = rdAssocMarkerSetLHM.keySet().iterator();
 			while (goOn && i < rdAssocMarkerSetLHM.size()) {
-				Object key = it.next();
+				String key = it.next();
 				if (i >= minPosition && i <= maxPosition) {
 					dataSetLHM.put(key, "");
 					if (i == middlePosition) { //MAKE SURE WE KNOW WHAT MARKERID IS IN THE MIDDLE
@@ -619,8 +620,8 @@ public class GenericReportGenerator_opt {
 			String validateChr = rdInfoMarkerSet.getMarkerIdSetLHM().get(origMarkerId).toString();
 			org.gwaspi.gui.reports.ManhattanPlotZoom.centerPhysPos = minPosition;
 
-			for (Iterator ite = dataSetLHM.keySet().iterator(); ite.hasNext();) {
-				Object key = ite.next();
+			for (Iterator<String> ite = dataSetLHM.keySet().iterator(); ite.hasNext();) {
+				String key = ite.next();
 				String chr = rdInfoMarkerSet.getMarkerIdSetLHM().get(key).toString();
 				Object[] data = new Object[3]; //CHR, POS, PVAL
 				data[0] = chr;
@@ -630,8 +631,8 @@ public class GenericReportGenerator_opt {
 
 			rdInfoMarkerSet.fillInitLHMWithMyValue(0);
 			rdInfoMarkerSet.fillInitLHMWithVariable(org.gwaspi.constants.cNetCDF.Variables.VAR_MARKERS_POS);
-			for (Iterator ite = dataSetLHM.keySet().iterator(); ite.hasNext();) {
-				Object key = ite.next();
+			for (Iterator<String> ite = dataSetLHM.keySet().iterator(); ite.hasNext();) {
+				String key = ite.next();
 				Object[] data = (Object[]) dataSetLHM.get(key); //CHR, POS, PVAL
 				int pos = (Integer) rdInfoMarkerSet.getMarkerIdSetLHM().get(key);
 				data[1] = pos;
@@ -644,8 +645,8 @@ public class GenericReportGenerator_opt {
 
 			//<editor-fold defaultstate="collapsed" desc="GET Pval">
 			rdAssocMarkerSetLHM = rdAssocMarkerSet.fillOpSetLHMWithVariable(assocNcFile, netCDFVar);
-			for (Iterator ite = dataSetLHM.keySet().iterator(); ite.hasNext();) {
-				Object key = ite.next();
+			for (Iterator<String> ite = dataSetLHM.keySet().iterator(); ite.hasNext();) {
+				String key = ite.next();
 				Object[] data = (Object[]) dataSetLHM.get(key); //CHR, POS, PVAL
 				double[] value = (double[]) rdAssocMarkerSetLHM.get(key);
 				Double pval = (Double) value[1]; //PVAL
@@ -708,7 +709,7 @@ public class GenericReportGenerator_opt {
 		NetcdfFile sampleQANcFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());
 		OperationSet rdSampleQAOPSet = new OperationSet(rdOPMetadata.getStudyId(), opId);
 
-		LinkedHashMap sampleSetLHM = rdSampleQAOPSet.getOpSetLHM();
+		Map<String, Object> sampleSetLHM = rdSampleQAOPSet.getOpSetLHM();
 		ArrayList<Double> hetzygVals = rdSampleQAOPSet.getALWithVariable(sampleQANcFile, org.gwaspi.constants.cNetCDF.Census.VAR_OP_SAMPLES_HETZYRAT);
 		ArrayList<Double> missingratVals = rdSampleQAOPSet.getALWithVariable(sampleQANcFile, org.gwaspi.constants.cNetCDF.Census.VAR_OP_SAMPLES_MISSINGRAT);
 
@@ -749,18 +750,18 @@ public class GenericReportGenerator_opt {
 	//</editor-fold>
 
 	//<editor-fold defaultstate="collapsed" desc="HELPERS">
-	public static LinkedHashMap getAnalysisVarData(int opId, String netCDFVar) throws IOException {
+	public static Map<String, Object> getAnalysisVarData(int opId, String netCDFVar) throws IOException {
 
 		OperationMetadata rdOPMetadata = new OperationMetadata(opId);
 
 
 		NetcdfFile assocNcFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());
 		OperationSet rdAssocMarkerSet = new OperationSet(rdOPMetadata.getStudyId(), opId);
-		LinkedHashMap rdAssocMarkerSetLHM = rdAssocMarkerSet.getOpSetLHM();
+		Map<String, Object> rdAssocMarkerSetLHM = rdAssocMarkerSet.getOpSetLHM();
 		rdAssocMarkerSetLHM = rdAssocMarkerSet.fillOpSetLHMWithVariable(assocNcFile, netCDFVar);
 
-		for (Iterator it = rdAssocMarkerSetLHM.keySet().iterator(); it.hasNext();) {
-			Object key = it.next();
+		for (Iterator<String> it = rdAssocMarkerSetLHM.keySet().iterator(); it.hasNext();) {
+			String key = it.next();
 			double[] values = (double[]) rdAssocMarkerSetLHM.get(key);
 			rdAssocMarkerSetLHM.put(key, values);
 		}
@@ -769,8 +770,8 @@ public class GenericReportGenerator_opt {
 		return rdAssocMarkerSetLHM;
 	}
 
-	public static LinkedHashMap getMarkerSetChrAndPos(int opId) throws IOException {
-		LinkedHashMap dataSetLHM = new LinkedHashMap();
+	public static Map<String, Object> getMarkerSetChrAndPos(int opId) throws IOException {
+		Map<String, Object> dataSetLHM = new LinkedHashMap<String, Object>();
 		OperationMetadata rdOPMetadata = new OperationMetadata(opId);
 
 		//<editor-fold defaultstate="collapsed" desc="GET POSITION DATA">
@@ -778,8 +779,8 @@ public class GenericReportGenerator_opt {
 		rdInfoMarkerSet.initFullMarkerIdSetLHM();
 		snpNumber = rdInfoMarkerSet.getMarkerSetSize();
 		rdInfoMarkerSet.fillInitLHMWithVariable(org.gwaspi.constants.cNetCDF.Variables.VAR_MARKERS_CHR);
-		for (Iterator it = rdInfoMarkerSet.getMarkerIdSetLHM().keySet().iterator(); it.hasNext();) {
-			Object key = it.next();
+		for (Iterator<String> it = rdInfoMarkerSet.getMarkerIdSetLHM().keySet().iterator(); it.hasNext();) {
+			String key = it.next();
 			String chr = rdInfoMarkerSet.getMarkerIdSetLHM().get(key).toString();
 			Object[] data = new Object[2]; //CHR, POS
 			data[0] = chr;
@@ -788,8 +789,8 @@ public class GenericReportGenerator_opt {
 
 		rdInfoMarkerSet.fillInitLHMWithMyValue(0);
 		rdInfoMarkerSet.fillInitLHMWithVariable(org.gwaspi.constants.cNetCDF.Variables.VAR_MARKERS_POS);
-		for (Iterator it = rdInfoMarkerSet.getMarkerIdSetLHM().keySet().iterator(); it.hasNext();) {
-			Object key = it.next();
+		for (Iterator<String> it = rdInfoMarkerSet.getMarkerIdSetLHM().keySet().iterator(); it.hasNext();) {
+			String key = it.next();
 			Object[] data = (Object[]) dataSetLHM.get(key); //CHR, POS
 			int pos = (Integer) rdInfoMarkerSet.getMarkerIdSetLHM().get(key);
 			data[1] = pos;

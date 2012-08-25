@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.Map;
 import ucar.ma2.ArrayChar;
 import ucar.ma2.ArrayDouble;
 import ucar.ma2.ArrayFloat;
@@ -27,8 +28,8 @@ public class OperationSet {
 	private int opSetSize = 0;
 	private int implicitSetSize = 0;
 	private OperationMetadata opMetadata;
-	private LinkedHashMap opSetLHM = new LinkedHashMap();
-	private LinkedHashMap opRsIdSetLHM = new LinkedHashMap();
+	private Map<String, Object> opSetLHM = new LinkedHashMap<String, Object>();
+	private Map<String, Object> opRsIdSetLHM = new LinkedHashMap<String, Object>();
 
 	public OperationSet(int studyId, int opId) throws IOException {
 		opMetadata = new OperationMetadata(opId);
@@ -45,7 +46,7 @@ public class OperationSet {
 	}
 
 	//<editor-fold defaultstate="collapsed" desc="OPERATION-SET FETCHERS">
-	public LinkedHashMap getOpSetLHM() {
+	public Map<String, Object> getOpSetLHM() {
 		NetcdfFile ncfile = null;
 
 		try {
@@ -88,7 +89,7 @@ public class OperationSet {
 		return opSetLHM;
 	}
 
-	public LinkedHashMap getMarkerRsIdSetLHM() {
+	public Map<String, Object> getMarkerRsIdSetLHM() {
 		NetcdfFile ncfile = null;
 
 		try {
@@ -130,9 +131,9 @@ public class OperationSet {
 		return opRsIdSetLHM;
 	}
 
-	LinkedHashMap getImplicitSetLHM() {
+	Map<String, Object> getImplicitSetLHM() {
 		NetcdfFile ncfile = null;
-		LinkedHashMap implicitSetLHM = new LinkedHashMap();
+		Map<String, Object> implicitSetLHM = new LinkedHashMap<String, Object>();
 
 		try {
 			ncfile = NetcdfFile.open(opMetadata.getPathToMatrix());
@@ -172,9 +173,9 @@ public class OperationSet {
 
 	//</editor-fold>
 	//<editor-fold defaultstate="collapsed" desc="CHROMOSOME INFO">
-	public LinkedHashMap getChrInfoSetLHM() {
+	public Map<String, Object> getChrInfoSetLHM() {
 		NetcdfFile ncfile = null;
-		LinkedHashMap chrInfoLHM = new LinkedHashMap();
+		Map<String, Object> chrInfoLHM = new LinkedHashMap<String, Object>();
 
 		try {
 			ncfile = NetcdfFile.open(opMetadata.getPathToMatrix());
@@ -236,7 +237,7 @@ public class OperationSet {
 
 	//</editor-fold>
 	//<editor-fold defaultstate="collapsed" desc="OPERATION-SET FILLERS">
-	public LinkedHashMap fillOpSetLHMWithVariable(NetcdfFile ncfile, String variable) {
+	public Map<String, Object> fillOpSetLHMWithVariable(NetcdfFile ncfile, String variable) {
 
 		Variable var = ncfile.findVariable(variable);
 
@@ -285,12 +286,10 @@ public class OperationSet {
 		return opSetLHM;
 	}
 
-	public LinkedHashMap fillLHMWithDefaultValue(LinkedHashMap lhm, Object defaultVal) {
-		for (Iterator it = lhm.keySet().iterator(); it.hasNext();) {
-			Object key = it.next();
-			lhm.put(key, defaultVal);
+	public void fillLHMWithDefaultValue(Map<String, Object> map, Object defaultVal) {
+		for (Map.Entry<String, Object> entry : map.entrySet()) {
+			entry.setValue(defaultVal);
 		}
-		return lhm;
 	}
 
 	public LinkedHashMap fillWrLHMWithRdLHMValue(LinkedHashMap wrLHM, LinkedHashMap rdLHM) {
@@ -343,7 +342,7 @@ public class OperationSet {
 		return al;
 	}
 
-	public LinkedHashMap appendVariableToMarkerSetLHMValue(NetcdfFile ncfile, String variable, String separator) {
+	public Map<String, Object> appendVariableToMarkerSetLHMValue(NetcdfFile ncfile, String variable, String separator) {
 
 		Variable var = ncfile.findVariable(variable);
 
@@ -361,9 +360,9 @@ public class OperationSet {
 
 					int[] shape = markerSetAC.getShape();
 					Index index = markerSetAC.getIndex();
-					Iterator it = opSetLHM.keySet().iterator();
+					Iterator<String> it = opSetLHM.keySet().iterator();
 					for (int i = 0; i < shape[0]; i++) {
-						Object key = it.next();
+						String key = it.next();
 						String value = opSetLHM.get(key).toString();
 						if (!value.isEmpty()) {
 							value += separator;
@@ -382,9 +381,9 @@ public class OperationSet {
 
 					int[] shape = markerSetAF.getShape();
 					Index index = markerSetAF.getIndex();
-					Iterator it = opSetLHM.keySet().iterator();
+					Iterator<String> it = opSetLHM.keySet().iterator();
 					for (int i = 0; i < shape[0]; i++) {
-						Object key = it.next();
+						String key = it.next();
 						String value = opSetLHM.get(key).toString();
 						if (!value.isEmpty()) {
 							value += separator;
@@ -400,9 +399,9 @@ public class OperationSet {
 
 					int[] shape = markerSetAF.getShape();
 					Index index = markerSetAF.getIndex();
-					Iterator it = opSetLHM.keySet().iterator();
+					Iterator<String> it = opSetLHM.keySet().iterator();
 					for (int i = 0; i < shape[0]; i++) {
-						Object key = it.next();
+						String key = it.next();
 						String value = opSetLHM.get(key).toString();
 						if (!value.isEmpty()) {
 							value += separator;
@@ -424,21 +423,21 @@ public class OperationSet {
 
 	//</editor-fold>
 	//<editor-fold defaultstate="collapsed" desc="OPERATION-SET PICKERS">
-	public LinkedHashMap pickValidMarkerSetItemsByValue(NetcdfFile ncfile, String variable, HashSet criteria, boolean includes) {
-		LinkedHashMap returnLHM = new LinkedHashMap();
-		LinkedHashMap readLhm = this.fillOpSetLHMWithVariable(ncfile, variable);
+	public Map<String, Object> pickValidMarkerSetItemsByValue(NetcdfFile ncfile, String variable, HashSet criteria, boolean includes) {
+		Map<String, Object> returnLHM = new LinkedHashMap<String, Object>();
+		Map<String, Object> readLhm = fillOpSetLHMWithVariable(ncfile, variable);
 
 		if (includes) {
-			for (Iterator it = readLhm.keySet().iterator(); it.hasNext();) {
-				Object key = it.next();
+			for (Iterator<String> it = readLhm.keySet().iterator(); it.hasNext();) {
+				String key = it.next();
 				Object value = readLhm.get(key);
 				if (criteria.contains(value)) {
 					returnLHM.put(key, value);
 				}
 			}
 		} else {
-			for (Iterator it = readLhm.keySet().iterator(); it.hasNext();) {
-				Object key = it.next();
+			for (Iterator<String> it = readLhm.keySet().iterator(); it.hasNext();) {
+				String key = it.next();
 				Object value = readLhm.get(key);
 				if (!criteria.contains(value)) {
 					returnLHM.put(key, value);
@@ -449,20 +448,20 @@ public class OperationSet {
 		return returnLHM;
 	}
 
-	public LinkedHashMap pickValidMarkerSetItemsByKey(LinkedHashMap lhm, HashSet criteria, boolean includes) {
-		LinkedHashMap returnLHM = new LinkedHashMap();
+	public Map<String, Object> pickValidMarkerSetItemsByKey(Map<String, Object> lhm, HashSet criteria, boolean includes) {
+		Map<String, Object> returnLHM = new LinkedHashMap<String, Object>();
 
 		if (includes) {
-			for (Iterator it = lhm.keySet().iterator(); it.hasNext();) {
-				Object key = it.next();
+			for (Iterator<String> it = lhm.keySet().iterator(); it.hasNext();) {
+				String key = it.next();
 				Object value = lhm.get(key);
 				if (criteria.contains(key)) {
 					returnLHM.put(key, value);
 				}
 			}
 		} else {
-			for (Iterator it = lhm.keySet().iterator(); it.hasNext();) {
-				Object key = it.next();
+			for (Iterator<String> it = lhm.keySet().iterator(); it.hasNext();) {
+				String key = it.next();
 				Object value = lhm.get(key);
 				if (!criteria.contains(key)) {
 					returnLHM.put(key, value);

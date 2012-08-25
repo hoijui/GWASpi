@@ -15,6 +15,7 @@ import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
@@ -59,7 +60,7 @@ public final class ManhattanPlotZoom extends javax.swing.JPanel {
 	private static int opId;
 	private static Operation op;
 	private static OperationMetadata rdOPMetadata;
-	public static LinkedHashMap labelerLHM;
+	public static Map<String, Object> labelerLHM;
 	private static MatrixMetadata rdMatrixMetadata;
 	public static String origMarkerId;
 	public static String origChr;

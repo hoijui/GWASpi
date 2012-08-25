@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.Map;
 import org.gwaspi.netCDF.matrices.MatrixMetadata;
 import ucar.ma2.ArrayByte;
 import ucar.ma2.ArrayChar;
@@ -29,8 +30,8 @@ public class MarkerSet {
 	private String technology = ""; // platform
 	private int markerSetSize = 0; // probe_nb
 	private MatrixMetadata matrixMetadata;
-	private LinkedHashMap markerIdSetLHM = new LinkedHashMap();
-	private LinkedHashMap markerRsIdSetLHM = new LinkedHashMap();
+	private Map<String, Object> markerIdSetLHM = new LinkedHashMap();
+	private Map<String, Object> markerRsIdSetLHM = new LinkedHashMap();
 
 	public MarkerSet(int studyId, int matrixId) throws IOException {
 		matrixMetadata = new MatrixMetadata(matrixId);
@@ -51,7 +52,7 @@ public class MarkerSet {
 	}
 
 	//<editor-fold defaultstate="collapsed" desc="MARKERSET FETCHERS">
-	public LinkedHashMap getMarkerIdSetLHM() {
+	public Map<String, Object> getMarkerIdSetLHM() {
 		NetcdfFile ncfile = null;
 
 		try {
@@ -98,7 +99,7 @@ public class MarkerSet {
 		return markerIdSetLHM;
 	}
 
-	public LinkedHashMap getMarkerRsIdSetLHM() {
+	public Map<String, Object> getMarkerRsIdSetLHM() {
 		NetcdfFile ncfile = null;
 
 		try {
@@ -142,7 +143,7 @@ public class MarkerSet {
 
 	//</editor-fold>
 	//<editor-fold defaultstate="collapsed" desc="MARKERSET FILLERS">
-	public LinkedHashMap readAllMarkersGTsForCurrentSampleToLHM(NetcdfFile ncfile, LinkedHashMap rdLhm, int sampleNb) throws IOException {
+	public Map<String, Object> readAllMarkersGTsForCurrentSampleToLHM(NetcdfFile ncfile, Map<String, Object> rdLhm, int sampleNb) throws IOException {
 		Variable genotypes = ncfile.findVariable(org.gwaspi.constants.cNetCDF.Variables.VAR_GENOTYPES);
 
 		if (null == genotypes) {
@@ -239,7 +240,7 @@ public class MarkerSet {
 		return dictionaryLhm;
 	}
 
-	public LinkedHashMap fillMarkerSetLHMWithVariable(NetcdfFile ncfile, String variable) {
+	public Map<String, Object> fillMarkerSetLHMWithVariable(NetcdfFile ncfile, String variable) {
 
 		Variable var = ncfile.findVariable(variable);
 
@@ -347,7 +348,7 @@ public class MarkerSet {
 		return al;
 	}
 
-	public LinkedHashMap appendVariableToMarkerSetLHMValue(NetcdfFile ncfile, String variable, String separator) {
+	public Map<String, Object> appendVariableToMarkerSetLHMValue(NetcdfFile ncfile, String variable, String separator) {
 
 		Variable var = ncfile.findVariable(variable);
 
@@ -366,9 +367,9 @@ public class MarkerSet {
 
 					int[] shape = markerSetAC.getShape();
 					Index index = markerSetAC.getIndex();
-					Iterator it = markerIdSetLHM.keySet().iterator();
+					Iterator<String> it = markerIdSetLHM.keySet().iterator();
 					for (int i = 0; i < shape[0]; i++) {
-						Object key = it.next();
+						String key = it.next();
 						String value = markerIdSetLHM.get(key).toString();
 						if (!value.isEmpty()) {
 							value += separator;
@@ -387,9 +388,9 @@ public class MarkerSet {
 
 					int[] shape = markerSetAF.getShape();
 					Index index = markerSetAF.getIndex();
-					Iterator it = markerIdSetLHM.keySet().iterator();
+					Iterator<String> it = markerIdSetLHM.keySet().iterator();
 					for (int i = 0; i < shape[0]; i++) {
-						Object key = it.next();
+						String key = it.next();
 						String value = markerIdSetLHM.get(key).toString();
 						if (!value.isEmpty()) {
 							value += separator;
@@ -405,9 +406,9 @@ public class MarkerSet {
 
 					int[] shape = markerSetAF.getShape();
 					Index index = markerSetAF.getIndex();
-					Iterator it = markerIdSetLHM.keySet().iterator();
+					Iterator<String> it = markerIdSetLHM.keySet().iterator();
 					for (int i = 0; i < shape[0]; i++) {
-						Object key = it.next();
+						String key = it.next();
 						String value = markerIdSetLHM.get(key).toString();
 						if (!value.isEmpty()) {
 							value += separator;
@@ -429,21 +430,21 @@ public class MarkerSet {
 
 	//</editor-fold>
 	//<editor-fold defaultstate="collapsed" desc="MARKERSET PICKERS">
-	public LinkedHashMap pickValidMarkerSetItemsByValue(NetcdfFile ncfile, String variable, HashSet criteria, boolean includes) {
-		LinkedHashMap returnLHM = new LinkedHashMap();
-		LinkedHashMap readLhm = this.fillMarkerSetLHMWithVariable(ncfile, variable);
+	public Map<String, Object> pickValidMarkerSetItemsByValue(NetcdfFile ncfile, String variable, HashSet criteria, boolean includes) {
+		Map<String, Object> returnLHM = new LinkedHashMap<String, Object>();
+		Map<String, Object> readLhm = this.fillMarkerSetLHMWithVariable(ncfile, variable);
 
 		if (includes) {
-			for (Iterator it = readLhm.keySet().iterator(); it.hasNext();) {
-				Object key = it.next();
+			for (Iterator<String> it = readLhm.keySet().iterator(); it.hasNext();) {
+				String key = it.next();
 				Object value = readLhm.get(key);
 				if (criteria.contains(value)) {
 					returnLHM.put(key, value);
 				}
 			}
 		} else {
-			for (Iterator it = readLhm.keySet().iterator(); it.hasNext();) {
-				Object key = it.next();
+			for (Iterator<String> it = readLhm.keySet().iterator(); it.hasNext();) {
+				String key = it.next();
 				Object value = readLhm.get(key);
 				if (!criteria.contains(value)) {
 					returnLHM.put(key, value);
@@ -454,20 +455,20 @@ public class MarkerSet {
 		return returnLHM;
 	}
 
-	public LinkedHashMap pickValidMarkerSetItemsByKey(LinkedHashMap lhm, HashSet criteria, boolean includes) {
-		LinkedHashMap returnLHM = new LinkedHashMap();
+	public Map<String, Object> pickValidMarkerSetItemsByKey(Map<String, Object> lhm, HashSet criteria, boolean includes) {
+		Map<String, Object> returnLHM = new LinkedHashMap<String, Object>();
 
 		if (includes) {
-			for (Iterator it = lhm.keySet().iterator(); it.hasNext();) {
-				Object key = it.next();
+			for (Iterator<String> it = lhm.keySet().iterator(); it.hasNext();) {
+				String key = it.next();
 				Object value = lhm.get(key);
 				if (criteria.contains(key)) {
 					returnLHM.put(key, value);
 				}
 			}
 		} else {
-			for (Iterator it = lhm.keySet().iterator(); it.hasNext();) {
-				Object key = it.next();
+			for (Iterator<String> it = lhm.keySet().iterator(); it.hasNext();) {
+				String key = it.next();
 				Object value = lhm.get(key);
 				if (!criteria.contains(key)) {
 					returnLHM.put(key, value);

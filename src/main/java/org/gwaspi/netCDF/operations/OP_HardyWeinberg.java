@@ -3,7 +3,7 @@ package org.gwaspi.netCDF.operations;
 import org.gwaspi.constants.cNetCDF;
 import java.io.IOException;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
+import java.util.Map;
 import org.gwaspi.model.Operation;
 import ucar.ma2.ArrayChar;
 import ucar.ma2.InvalidRangeException;
@@ -28,8 +28,8 @@ public class OP_HardyWeinberg {
 		NetcdfFile rdNcFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());
 
 		OperationSet rdOperationSet = new OperationSet(rdOPMetadata.getStudyId(), markerCensusOP.getOperationId());
-		LinkedHashMap rdMarkerSetLHM = rdOperationSet.getOpSetLHM();
-		LinkedHashMap rdSampleSetLHM = rdOperationSet.getImplicitSetLHM();
+		Map<String, Object> rdMarkerSetLHM = rdOperationSet.getOpSetLHM();
+		Map<String, Object> rdSampleSetLHM = rdOperationSet.getImplicitSetLHM();
 
 		NetcdfFileWriteable wrNcFile = null;
 		try {
@@ -102,13 +102,13 @@ public class OP_HardyWeinberg {
 
 			//PROCESS CONTROL SAMPLES
 			System.out.println(org.gwaspi.global.Text.All.processing);
-			rdMarkerSetLHM = rdOperationSet.fillLHMWithDefaultValue(rdMarkerSetLHM, 0); //PURGE
+			rdOperationSet.fillLHMWithDefaultValue(rdMarkerSetLHM, 0); //PURGE
 			rdMarkerSetLHM = rdOperationSet.fillOpSetLHMWithVariable(rdNcFile, cNetCDF.Census.VAR_OP_MARKERS_CENSUSCTRL);
 			performHardyWeinberg(wrNcFile, rdMarkerSetLHM, "CTRL");
 
 			//PROCESS ALTERNATE HW SAMPLES
 			System.out.println(org.gwaspi.global.Text.All.processing);
-			rdMarkerSetLHM = rdOperationSet.fillLHMWithDefaultValue(rdMarkerSetLHM, 0); //PURGE
+			rdOperationSet.fillLHMWithDefaultValue(rdMarkerSetLHM, 0); //PURGE
 			rdMarkerSetLHM = rdOperationSet.fillOpSetLHMWithVariable(rdNcFile, cNetCDF.Census.VAR_OP_MARKERS_CENSUSHW);
 			performHardyWeinberg(wrNcFile, rdMarkerSetLHM, "HW-ALT");
 			//</editor-fold>
@@ -131,11 +131,11 @@ public class OP_HardyWeinberg {
 		return resultOpId;
 	}
 
-	protected static void performHardyWeinberg(NetcdfFileWriteable wrNcFile, LinkedHashMap markersContingencyLHM, String category) {
+	protected static void performHardyWeinberg(NetcdfFileWriteable wrNcFile, Map<String, Object> markersContingencyLHM, String category) {
 		//Iterate through markerset
 		int markerNb = 0;
-		for (Iterator it = markersContingencyLHM.keySet().iterator(); it.hasNext();) {
-			Object markerId = it.next();
+		for (Iterator<String> it = markersContingencyLHM.keySet().iterator(); it.hasNext();) {
+			String markerId = it.next();
 
 			//HARDY-WEINBERG
 			int[] contingencyTable = (int[]) markersContingencyLHM.get(markerId);

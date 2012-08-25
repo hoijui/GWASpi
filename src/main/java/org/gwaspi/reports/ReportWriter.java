@@ -13,7 +13,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  *
@@ -29,7 +29,7 @@ public class ReportWriter {
 	protected static boolean writeFirstColumnToReport(String reportPath,
 			String reportName,
 			String header,
-			LinkedHashMap lhm,
+			Map<String, Object> lhm,
 			boolean withKey) throws IOException {
 		boolean appendResult = false;
 
@@ -64,7 +64,7 @@ public class ReportWriter {
 
 	protected static boolean appendColumnToReport(String reportPath,
 			String reportName,
-			LinkedHashMap lhm,
+			Map<String, Object> lhm,
 			boolean isArray,
 			boolean withKey) throws IOException {
 		boolean appendResult = false;

@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.Map;
 import org.gwaspi.model.Operation;
 import org.gwaspi.netCDF.markers.MarkerSet_opt;
 import org.gwaspi.netCDF.operations.OperationManager;
@@ -157,15 +158,15 @@ public class OutputGenotypicAssociation_opt {
 		boolean result = false;
 
 		try {
-			LinkedHashMap unsortedMarkerIdAssocValsLHM = GenericReportGenerator_opt.getAnalysisVarData(opId, org.gwaspi.constants.cNetCDF.Association.VAR_OP_MARKERS_ASGenotypicAssociationTP2OR);
-			LinkedHashMap unsortedMarkerIdPvalLHM = new LinkedHashMap();
-			for (Iterator it = unsortedMarkerIdAssocValsLHM.keySet().iterator(); it.hasNext();) {
-				Object key = it.next();
+			Map<String, Object> unsortedMarkerIdAssocValsLHM = GenericReportGenerator_opt.getAnalysisVarData(opId, org.gwaspi.constants.cNetCDF.Association.VAR_OP_MARKERS_ASGenotypicAssociationTP2OR);
+			Map<String, Object> unsortedMarkerIdPvalLHM = new LinkedHashMap<String, Object>();
+			for (Iterator<String> it = unsortedMarkerIdAssocValsLHM.keySet().iterator(); it.hasNext();) {
+				String key = it.next();
 				double[] values = (double[]) unsortedMarkerIdAssocValsLHM.get(key);
 				unsortedMarkerIdPvalLHM.put(key, values[1]);
 			}
 
-			LinkedHashMap sortingMarkerSetLHM = ReportManager.getSortedMarkerSetByDoubleValue(unsortedMarkerIdPvalLHM);
+			Map<String, Object> sortingMarkerSetLHM = ReportManager.getSortedMarkerSetByDoubleValue(unsortedMarkerIdPvalLHM);
 			if (unsortedMarkerIdPvalLHM != null) {
 				unsortedMarkerIdPvalLHM.clear();
 			}
@@ -184,8 +185,8 @@ public class OutputGenotypicAssociation_opt {
 			//WRITE MARKERSET RSID
 			//infoMatrixMarkerSetLHM = rdInfoMarkerSet.appendVariableToMarkerSetLHMValue(matrixNcFile, cNetCDF.Variables.VAR_MARKERS_RSID, sep);
 			rdInfoMarkerSet.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_RSID);
-			for (Iterator it = sortingMarkerSetLHM.keySet().iterator(); it.hasNext();) {
-				Object key = it.next();
+			for (Iterator<String> it = sortingMarkerSetLHM.keySet().iterator(); it.hasNext();) {
+				String key = it.next();
 				Object value = rdInfoMarkerSet.getMarkerIdSetLHM().get(key);
 				sortingMarkerSetLHM.put(key, value);
 			}
@@ -194,8 +195,8 @@ public class OutputGenotypicAssociation_opt {
 
 			//WRITE MARKERSET CHROMOSOME
 			rdInfoMarkerSet.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
-			for (Iterator it = sortingMarkerSetLHM.keySet().iterator(); it.hasNext();) {
-				Object key = it.next();
+			for (Iterator<String> it = sortingMarkerSetLHM.keySet().iterator(); it.hasNext();) {
+				String key = it.next();
 				Object value = rdInfoMarkerSet.getMarkerIdSetLHM().get(key);
 				sortingMarkerSetLHM.put(key, value);
 			}
@@ -204,8 +205,8 @@ public class OutputGenotypicAssociation_opt {
 			//WRITE MARKERSET POS
 			//infoMatrixMarkerSetLHM = rdInfoMarkerSet.appendVariableToMarkerSetLHMValue(matrixNcFile, cNetCDF.Variables.VAR_MARKERS_POS, sep);
 			rdInfoMarkerSet.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_POS);
-			for (Iterator it = sortingMarkerSetLHM.keySet().iterator(); it.hasNext();) {
-				Object key = it.next();
+			for (Iterator<String> it = sortingMarkerSetLHM.keySet().iterator(); it.hasNext();) {
+				String key = it.next();
 				Object value = rdInfoMarkerSet.getMarkerIdSetLHM().get(key);
 				sortingMarkerSetLHM.put(key, value);
 			}
@@ -227,36 +228,36 @@ public class OutputGenotypicAssociation_opt {
 				NetcdfFile qaNcFile = NetcdfFile.open(qaMetadata.getPathToMatrix());
 
 				OperationSet rdOperationSet = new OperationSet(rdOPMetadata.getStudyId(), markersQAopId);
-				LinkedHashMap opMarkerSetLHM = rdOperationSet.getOpSetLHM();
+				Map<String, Object> opMarkerSetLHM = rdOperationSet.getOpSetLHM();
 
 				//MINOR ALLELE
 				opMarkerSetLHM = rdOperationSet.fillOpSetLHMWithVariable(qaNcFile, cNetCDF.Census.VAR_OP_MARKERS_MINALLELES);
-				for (Iterator it = rdInfoMarkerSet.getMarkerIdSetLHM().keySet().iterator(); it.hasNext();) {
-					Object key = it.next();
+				for (Iterator<String> it = rdInfoMarkerSet.getMarkerIdSetLHM().keySet().iterator(); it.hasNext();) {
+					String key = it.next();
 					Object minorAllele = opMarkerSetLHM.get(key);
 					rdInfoMarkerSet.getMarkerIdSetLHM().put(key, minorAllele);
 				}
 
 				//MAJOR ALLELE
-				opMarkerSetLHM = rdOperationSet.fillLHMWithDefaultValue(opMarkerSetLHM, "");
+				rdOperationSet.fillLHMWithDefaultValue(opMarkerSetLHM, "");
 				opMarkerSetLHM = rdOperationSet.fillOpSetLHMWithVariable(qaNcFile, cNetCDF.Census.VAR_OP_MARKERS_MAJALLELES);
-				for (Iterator it = rdInfoMarkerSet.getMarkerIdSetLHM().keySet().iterator(); it.hasNext();) {
-					Object key = it.next();
+				for (Iterator<String> it = rdInfoMarkerSet.getMarkerIdSetLHM().keySet().iterator(); it.hasNext();) {
+					String key = it.next();
 					Object minorAllele = rdInfoMarkerSet.getMarkerIdSetLHM().get(key);
 					rdInfoMarkerSet.getMarkerIdSetLHM().put(key, minorAllele + sep + opMarkerSetLHM.get(key));
 				}
 
 			}
-			for (Iterator it = sortingMarkerSetLHM.keySet().iterator(); it.hasNext();) {
-				Object key = it.next();
+			for (Iterator<String> it = sortingMarkerSetLHM.keySet().iterator(); it.hasNext();) {
+				String key = it.next();
 				Object value = rdInfoMarkerSet.getMarkerIdSetLHM().get(key);
 				sortingMarkerSetLHM.put(key, value);
 			}
 			ReportWriter.appendColumnToReport(reportPath, reportName, sortingMarkerSetLHM, false, false);
 
 			//WRITE DATA TO REPORT
-			for (Iterator it = sortingMarkerSetLHM.keySet().iterator(); it.hasNext();) {
-				Object key = it.next();
+			for (Iterator<String> it = sortingMarkerSetLHM.keySet().iterator(); it.hasNext();) {
+				String key = it.next();
 				Object value = unsortedMarkerIdAssocValsLHM.get(key);
 				sortingMarkerSetLHM.put(key, value);
 			}

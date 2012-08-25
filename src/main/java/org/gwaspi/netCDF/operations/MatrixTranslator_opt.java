@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.Map;
 import org.gwaspi.netCDF.markers.MarkerSet_opt;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.gwaspi.netCDF.matrices.MatrixMetadata;
@@ -35,10 +36,10 @@ public class MatrixTranslator_opt {
 	private MarkerSet_opt wrMarkerSet = null;
 	private SampleSet rdSampleSet = null;
 	private SampleSet wrSampleSet = null;
-	private LinkedHashMap wrMarkerIdSetLHM = new LinkedHashMap();
-	private LinkedHashMap rdChrInfoSetLHM = null;
-	private LinkedHashMap rdSampleSetLHM = null;
-	private LinkedHashMap wrSampleSetLHM = new LinkedHashMap();
+	private Map<String, Object> wrMarkerIdSetLHM = new LinkedHashMap<String, Object>();
+	private Map<String, Object> rdChrInfoSetLHM = null;
+	private Map<String, Object> rdSampleSetLHM = null;
+	private Map<String, Object> wrSampleSetLHM = new LinkedHashMap<String, Object>();
 
 	public MatrixTranslator_opt(int _studyId,
 			int _rdMatrixId,
@@ -174,7 +175,7 @@ public class MatrixTranslator_opt {
 				//<editor-fold defaultstate="collapsed" desc="GENOTYPES WRITER">
 
 				//Get correct bases dictionary for translation
-				LinkedHashMap dictionnaryLHM = rdMarkerSet.getDictionaryBasesLHM();
+				Map<String, Object> dictionnaryLHM = rdMarkerSet.getDictionaryBasesLHM();
 
 				//Iterate through Samples, use Sample item position to read all Markers GTs from rdMarkerIdSetLHM.
 				int sampleIndex = 0;
@@ -335,7 +336,7 @@ public class MatrixTranslator_opt {
 				//<editor-fold defaultstate="collapsed" desc="GENOTYPES WRITER">
 
 				//Get correct strand of each marker for newStrand translation
-				LinkedHashMap markerStrandsLHM = new LinkedHashMap();
+				Map<String, Object> markerStrandsLHM = new LinkedHashMap<String, Object>();
 				markerStrandsLHM.putAll(rdSampleSetLHM);
 
 				//Iterate through pmAllelesAndStrandsLHM, use Sample item position to read all Markers GTs from rdMarkerIdSetLHM.
@@ -391,15 +392,15 @@ public class MatrixTranslator_opt {
 		return result;
 	}
 
-	protected LinkedHashMap translateCurrentSampleAB12AllelesLHM(LinkedHashMap codedLHM, String rdMatrixType, LinkedHashMap dictionaryLHM) {
+	protected Map<String, Object> translateCurrentSampleAB12AllelesLHM(Map<String, Object> codedLHM, String rdMatrixType, Map<String, Object> dictionaryLHM) {
 		byte alleleA = org.gwaspi.constants.cNetCDF.Defaults.AlleleBytes.A;
 		byte alleleB = org.gwaspi.constants.cNetCDF.Defaults.AlleleBytes.B;
 
 		switch (cNetCDF.Defaults.GenotypeEncoding.compareTo(rdMatrixType)) {
 			case AB0:
 				//Iterate through all markers
-				for (Iterator it = codedLHM.keySet().iterator(); it.hasNext();) {
-					Object markerId = it.next();
+				for (Iterator<String> it = codedLHM.keySet().iterator(); it.hasNext();) {
+					String markerId = it.next();
 					char[] basesDict = dictionaryLHM.get(markerId).toString().toCharArray();
 					byte[] codedAlleles = (byte[]) codedLHM.get(markerId);
 					byte[] transAlleles = new byte[2];
@@ -429,8 +430,8 @@ public class MatrixTranslator_opt {
 				alleleB = org.gwaspi.constants.cNetCDF.Defaults.AlleleBytes._2;
 
 				//Iterate through all markers
-				for (Iterator it = codedLHM.keySet().iterator(); it.hasNext();) {
-					Object markerId = it.next();
+				for (Iterator<String> it = codedLHM.keySet().iterator(); it.hasNext();) {
+					String markerId = it.next();
 					char[] basesDict = dictionaryLHM.get(markerId).toString().toCharArray();
 					byte[] codedAlleles = (byte[]) codedLHM.get(markerId);
 					byte[] transAlleles = new byte[2];
@@ -459,7 +460,7 @@ public class MatrixTranslator_opt {
 		return codedLHM;
 	}
 
-	protected LinkedHashMap translateCurrentSample1234AllelesLHM(LinkedHashMap codedLHM, LinkedHashMap markerStrandsLHM) {
+	protected Map<String, Object> translateCurrentSample1234AllelesLHM(Map<String, Object> codedLHM, Map<String, Object> markerStrandsLHM) {
 
 		HashMap dictionary = new HashMap();
 		dictionary.put(org.gwaspi.constants.cNetCDF.Defaults.AlleleBytes._0, org.gwaspi.constants.cNetCDF.Defaults.AlleleBytes._0);
@@ -469,8 +470,8 @@ public class MatrixTranslator_opt {
 		dictionary.put(org.gwaspi.constants.cNetCDF.Defaults.AlleleBytes._4, org.gwaspi.constants.cNetCDF.Defaults.AlleleBytes.T);
 
 		//Iterate through all markers
-		for (Iterator it = markerStrandsLHM.keySet().iterator(); it.hasNext();) {
-			Object markerId = it.next();
+		for (Iterator<String> it = markerStrandsLHM.keySet().iterator(); it.hasNext();) {
+			String markerId = it.next();
 			byte[] codedAlleles = (byte[]) codedLHM.get(markerId);
 
 			byte[] transAlleles = new byte[2];

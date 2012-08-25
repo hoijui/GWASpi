@@ -13,6 +13,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
@@ -33,7 +34,7 @@ public abstract class Report_Analysis extends javax.swing.JPanel {
 	protected static int opId;
 	protected static String analysisFileName;
 	protected static String NRows;
-	public static LinkedHashMap chrSetInfoLHM = new LinkedHashMap();
+	public static Map<String, Object> chrSetInfoLHM = new LinkedHashMap<String, Object>();
 	protected File reportFile;
 	private javax.swing.JButton btn_Get;
 	private javax.swing.JButton btn_Save;

@@ -29,7 +29,7 @@ public class SampleSet {
 	private int sampleset_id = Integer.MIN_VALUE;   //id
 	private int sampleSetSize = 0;
 	private MatrixMetadata matrixMetadata;
-	private LinkedHashMap sampleIdSetLHM = new LinkedHashMap();
+	private Map<String, Object> sampleIdSetLHM = new LinkedHashMap<String, Object>();
 
 	public SampleSet(int studyId, int matrixId) throws IOException {
 		matrixMetadata = new MatrixMetadata(matrixId);
@@ -63,7 +63,7 @@ public class SampleSet {
 	}
 
 	//<editor-fold defaultstate="collapsed" desc="SAMPLESET FETCHERS">
-	public LinkedHashMap getSampleIdSetLHM() throws InvalidRangeException {
+	public Map<String, Object> getSampleIdSetLHM() throws InvalidRangeException {
 		NetcdfFile ncfile = null;
 
 		try {
@@ -104,7 +104,7 @@ public class SampleSet {
 		return sampleIdSetLHM;
 	}
 
-	public LinkedHashMap getSampleIdSetLHM(String matrixImportPath) throws InvalidRangeException {
+	public Map<String, Object> getSampleIdSetLHM(String matrixImportPath) throws InvalidRangeException {
 		NetcdfFile ncfile = null;
 
 		try {
@@ -147,7 +147,7 @@ public class SampleSet {
 
 	//</editor-fold>
 	//<editor-fold defaultstate="collapsed" desc="SAMPLESET FILLERS">
-	public LinkedHashMap readAllSamplesGTsFromCurrentMarkerToLHM(NetcdfFile rdNcFile, LinkedHashMap rdLhm, int markerNb) throws IOException {
+	public Map<String, Object> readAllSamplesGTsFromCurrentMarkerToLHM(NetcdfFile rdNcFile, Map<String, Object> rdLhm, int markerNb) throws IOException {
 		try {
 			Variable genotypes = rdNcFile.findVariable(org.gwaspi.constants.cNetCDF.Variables.VAR_GENOTYPES);
 
@@ -201,7 +201,7 @@ public class SampleSet {
 		return rdLhm;
 	}
 
-	public LinkedHashMap fillSampleIdSetLHMWithVariable(NetcdfFile ncfile, String variable) {
+	public Map<String, Object> fillSampleIdSetLHMWithVariable(NetcdfFile ncfile, String variable) {
 		try {
 			Variable var = ncfile.findVariable(variable);
 
@@ -239,7 +239,7 @@ public class SampleSet {
 		return sampleIdSetLHM;
 	}
 
-	public LinkedHashMap fillSampleIdSetLHMWithVariable(LinkedHashMap lhm, String variable) {
+	public Map<String, Object> fillSampleIdSetLHMWithVariable(Map<String, Object> lhm, String variable) {
 		NetcdfFile ncfile = null;
 
 		try {
@@ -286,7 +286,7 @@ public class SampleSet {
 		return sampleIdSetLHM;
 	}
 
-	public LinkedHashMap fillSampleIdSetLHMWithFilterVariable(LinkedHashMap lhm, String variable, int filterPos) {
+	public Map<String, Object> fillSampleIdSetLHMWithFilterVariable(Map<String, Object> lhm, String variable, int filterPos) {
 		NetcdfFile ncfile = null;
 
 		try {
@@ -328,9 +328,9 @@ public class SampleSet {
 		return sampleIdSetLHM;
 	}
 
-	public LinkedHashMap fillLHMWithDefaultValue(LinkedHashMap lhm, Object defaultVal) {
-		for (Iterator it = lhm.keySet().iterator(); it.hasNext();) {
-			Object key = it.next();
+	public Map<String, Object> fillLHMWithDefaultValue(Map<String, Object> lhm, Object defaultVal) {
+		for (Iterator<String> it = lhm.keySet().iterator(); it.hasNext();) {
+			String key = it.next();
 			lhm.put(key, defaultVal);
 		}
 		return lhm;
@@ -338,14 +338,14 @@ public class SampleSet {
 	//</editor-fold>
 
 	//<editor-fold defaultstate="collapsed" desc="SAMPLESET PICKERS">
-	public LinkedHashMap pickValidSampleSetItemsByDBField(Object poolId, LinkedHashMap lhm, String dbField, HashSet criteria, boolean include) throws IOException {
-		LinkedHashMap returnLHM = new LinkedHashMap();
+	public Map<String, Object> pickValidSampleSetItemsByDBField(Object poolId, Map<String, Object> lhm, String dbField, HashSet criteria, boolean include) throws IOException {
+		Map<String, Object> returnLHM = new LinkedHashMap<String, Object>();
 		List<Map<String, Object>> rs = org.gwaspi.samples.SampleManager.getAllSampleInfoFromDBByPoolID(poolId);
 
 		int pickCounter = 0;
 		if (include) {
-			for (Iterator it = lhm.keySet().iterator(); it.hasNext();) {
-				Object key = it.next();
+			for (Iterator<String> it = lhm.keySet().iterator(); it.hasNext();) {
+				String key = it.next();
 				for (int i = 0; i < rs.size(); i++) // loop through rows of result set
 				{
 					//PREVENT PHANTOM-DB READS EXCEPTIONS - CAUTION!!
@@ -360,8 +360,8 @@ public class SampleSet {
 				pickCounter++;
 			}
 		} else {
-			for (Iterator it = lhm.keySet().iterator(); it.hasNext();) {
-				Object key = it.next();
+			for (Iterator<String> it = lhm.keySet().iterator(); it.hasNext();) {
+				String key = it.next();
 				for (int i = 0; i < rs.size(); i++) // loop through rows of result set
 				{
 					//PREVENT PHANTOM-DB READS EXCEPTIONS - CAUTION!!
@@ -380,14 +380,14 @@ public class SampleSet {
 		return returnLHM;
 	}
 
-	public LinkedHashMap pickValidSampleSetItemsByNetCDFValue(LinkedHashMap lhm, String variable, HashSet criteria, boolean include) {
-		LinkedHashMap returnLHM = new LinkedHashMap();
+	public Map<String, Object> pickValidSampleSetItemsByNetCDFValue(Map<String, Object> lhm, String variable, HashSet criteria, boolean include) {
+		Map<String, Object> returnLHM = new LinkedHashMap<String, Object> ();
 		lhm = this.fillSampleIdSetLHMWithVariable(lhm, variable);
 
 		int pickCounter = 0;
 		if (include) {
-			for (Iterator it = lhm.keySet().iterator(); it.hasNext();) {
-				Object key = it.next();
+			for (Iterator<String> it = lhm.keySet().iterator(); it.hasNext();) {
+				String key = it.next();
 				Object value = lhm.get(key);
 				if (criteria.contains(value)) {
 					returnLHM.put(key, pickCounter);
@@ -395,8 +395,8 @@ public class SampleSet {
 				pickCounter++;
 			}
 		} else {
-			for (Iterator it = lhm.keySet().iterator(); it.hasNext();) {
-				Object key = it.next();
+			for (Iterator<String> it = lhm.keySet().iterator(); it.hasNext();) {
+				String key = it.next();
 				Object value = lhm.get(key);
 				if (!criteria.contains(value)) {
 					returnLHM.put(key, pickCounter);
@@ -408,14 +408,14 @@ public class SampleSet {
 		return returnLHM;
 	}
 
-	public LinkedHashMap pickValidSampleSetItemsByNetCDFFilter(LinkedHashMap lhm, String variable, int fiterPos, HashSet criteria, boolean include) {
-		LinkedHashMap returnLHM = new LinkedHashMap();
+	public Map<String, Object> pickValidSampleSetItemsByNetCDFFilter(Map<String, Object> lhm, String variable, int fiterPos, HashSet criteria, boolean include) {
+		Map<String, Object> returnLHM = new LinkedHashMap<String, Object>();
 		lhm = this.fillSampleIdSetLHMWithFilterVariable(lhm, variable, fiterPos);
 
 		int pickCounter = 0;
 		if (include) {
-			for (Iterator it = lhm.keySet().iterator(); it.hasNext();) {
-				Object key = it.next();
+			for (Iterator<String> it = lhm.keySet().iterator(); it.hasNext();) {
+				String key = it.next();
 				Object value = lhm.get(key);
 				if (criteria.contains(value)) {
 					returnLHM.put(key, pickCounter);
@@ -423,8 +423,8 @@ public class SampleSet {
 				pickCounter++;
 			}
 		} else {
-			for (Iterator it = lhm.keySet().iterator(); it.hasNext();) {
-				Object key = it.next();
+			for (Iterator<String> it = lhm.keySet().iterator(); it.hasNext();) {
+				String key = it.next();
 				Object value = lhm.get(key);
 				if (!criteria.contains(value)) {
 					returnLHM.put(key, pickCounter);
@@ -436,21 +436,21 @@ public class SampleSet {
 		return returnLHM;
 	}
 
-	public LinkedHashMap pickValidSampleSetItemsByNetCDFKey(LinkedHashMap lhm, HashSet criteria, boolean include) throws IOException {
-		LinkedHashMap returnLHM = new LinkedHashMap();
+	public Map<String, Object> pickValidSampleSetItemsByNetCDFKey(Map<String, Object> lhm, HashSet criteria, boolean include) throws IOException {
+		Map<String, Object> returnLHM = new LinkedHashMap<String, Object>();
 
 		int pickCounter = 0;
 		if (include) {
-			for (Iterator it = lhm.keySet().iterator(); it.hasNext();) {
-				Object key = it.next();
+			for (Iterator<String> it = lhm.keySet().iterator(); it.hasNext();) {
+				String key = it.next();
 				if (criteria.contains(key)) {
 					returnLHM.put(key, pickCounter);
 				}
 				pickCounter++;
 			}
 		} else {
-			for (Iterator it = lhm.keySet().iterator(); it.hasNext();) {
-				Object key = it.next();
+			for (Iterator<String> it = lhm.keySet().iterator(); it.hasNext();) {
+				String key = it.next();
 				if (!criteria.contains(key)) {
 					returnLHM.put(key, pickCounter);
 				}

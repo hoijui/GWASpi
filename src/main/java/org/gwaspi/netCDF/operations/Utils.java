@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import ucar.ma2.ArrayByte;
 import ucar.ma2.ArrayChar;
 import ucar.ma2.ArrayDouble;
@@ -25,7 +27,7 @@ public class Utils {
 
 	//////// HELPER METHODS ////////
 	//<editor-fold defaultstate="collapsed" desc="SAVERS">
-	public static boolean saveCharLHMKeyToWrMatrix(NetcdfFileWriteable wrNcFile, LinkedHashMap wrLHM, String variable, int varStride) {
+	public static boolean saveCharLHMKeyToWrMatrix(NetcdfFileWriteable wrNcFile, Map<String, Object> wrLHM, String variable, int varStride) {
 		boolean result = false;
 
 		try {
@@ -48,7 +50,7 @@ public class Utils {
 		return result;
 	}
 
-	public static boolean saveCharLHMValueToWrMatrix(NetcdfFileWriteable wrNcFile, LinkedHashMap wrLHM, String variable, int varStride) {
+	public static boolean saveCharLHMValueToWrMatrix(NetcdfFileWriteable wrNcFile, Map<String, Object> wrLHM, String variable, int varStride) {
 		boolean result = false;
 
 		try {
@@ -71,7 +73,7 @@ public class Utils {
 		return result;
 	}
 
-	public static boolean saveCharLHMItemToWrMatrix(NetcdfFileWriteable wrNcFile, LinkedHashMap wrLHM, String variable, int itemIndex, int varStride) {
+	public static boolean saveCharLHMItemToWrMatrix(NetcdfFileWriteable wrNcFile, Map<String, Object> wrLHM, String variable, int itemIndex, int varStride) {
 		boolean result = false;
 
 		try {
@@ -94,7 +96,7 @@ public class Utils {
 	}
 
 	//<editor-fold defaultstate="collapsed" desc="GENOTYPE SAVERS">
-	public static boolean saveSingleSampleGTsToMatrix(NetcdfFileWriteable wrNcFile, LinkedHashMap wrLhm, int sampleIndex) {
+	public static boolean saveSingleSampleGTsToMatrix(NetcdfFileWriteable wrNcFile, Map<String, Object> wrLhm, int sampleIndex) {
 		boolean result = false;
 		ArrayByte.D3 genotypes = org.gwaspi.netCDF.operations.Utils.writeLHMToSingleSampleArrayByteD3(wrLhm, org.gwaspi.constants.cNetCDF.Strides.STRIDE_GT);
 //            ArrayByte.D3 genotypes = org.gwaspi.netCDF.operations.Utils.writeLHMToCurrentSampleArrayByteD3(wrLhm, org.gwaspi.constants.cNetCDF.Strides.STRIDE_GT);
@@ -112,7 +114,7 @@ public class Utils {
 		return result;
 	}
 
-	public static boolean saveSingleMarkerGTsToMatrix(NetcdfFileWriteable wrNcFile, LinkedHashMap wrLhm, int markerIndex) {
+	public static boolean saveSingleMarkerGTsToMatrix(NetcdfFileWriteable wrNcFile, Map<String, Object> wrLhm, int markerIndex) {
 		boolean result = false;
 		ArrayByte.D3 genotypes = org.gwaspi.netCDF.operations.Utils.writeLHMToSingleMarkerArrayByteD3(wrLhm, org.gwaspi.constants.cNetCDF.Strides.STRIDE_GT);
 
@@ -131,7 +133,7 @@ public class Utils {
 	//</editor-fold>
 
 	//<editor-fold defaultstate="collapsed" desc="D1 SAVERS">
-	public static boolean saveDoubleLHMD1ToWrMatrix(NetcdfFileWriteable wrNcFile, LinkedHashMap wrLHM, String variable) {
+	public static boolean saveDoubleLHMD1ToWrMatrix(NetcdfFileWriteable wrNcFile, Map<String, Object> wrLHM, String variable) {
 		boolean result = false;
 
 		try {
@@ -153,7 +155,7 @@ public class Utils {
 		return result;
 	}
 
-	public static boolean saveDoubleLHMItemD1ToWrMatrix(NetcdfFileWriteable wrNcFile, LinkedHashMap wrLHM, int itemNb, String variable) {
+	public static boolean saveDoubleLHMItemD1ToWrMatrix(NetcdfFileWriteable wrNcFile, Map<String, Object> wrLHM, int itemNb, String variable) {
 		boolean result = false;
 
 		try {
@@ -175,7 +177,7 @@ public class Utils {
 		return result;
 	}
 
-	public static boolean saveIntLHMD1ToWrMatrix(NetcdfFileWriteable wrNcFile, LinkedHashMap wrLHM, String variable) {
+	public static boolean saveIntLHMD1ToWrMatrix(NetcdfFileWriteable wrNcFile, Map<String, Object> wrLHM, String variable) {
 		boolean result = false;
 
 		try {
@@ -197,7 +199,7 @@ public class Utils {
 		return result;
 	}
 
-	public static boolean saveIntLHMItemD1ToWrMatrix(NetcdfFileWriteable wrNcFile, LinkedHashMap wrLHM, int itemNb, String variable) {
+	public static boolean saveIntLHMItemD1ToWrMatrix(NetcdfFileWriteable wrNcFile, Map<String, Object> wrLHM, int itemNb, String variable) {
 		boolean result = false;
 
 		try {
@@ -221,7 +223,7 @@ public class Utils {
 	//</editor-fold>
 
 	//<editor-fold defaultstate="collapsed" desc="D2 SAVERS">
-	public static boolean saveIntLHMD2ToWrMatrix(NetcdfFileWriteable wrNcFile, LinkedHashMap wrLHM, int[] columns, String variable) {
+	public static boolean saveIntLHMD2ToWrMatrix(NetcdfFileWriteable wrNcFile, Map<String, Object> wrLHM, int[] columns, String variable) {
 		boolean result = false;
 
 		try {
@@ -244,7 +246,7 @@ public class Utils {
 		return result;
 	}
 
-	public static boolean saveDoubleLHMD2ToWrMatrix(NetcdfFileWriteable wrNcFile, LinkedHashMap wrLHM, int[] columns, String variable) {
+	public static boolean saveDoubleLHMD2ToWrMatrix(NetcdfFileWriteable wrNcFile, Map<String, Object> wrLHM, int[] columns, String variable) {
 		boolean result = false;
 
 		try {
@@ -271,7 +273,7 @@ public class Utils {
 	//</editor-fold>
 	//<editor-fold defaultstate="collapsed" desc="CHUNKED SAVERS">
 	public static boolean saveCharChunkedLHMToWrMatrix(NetcdfFileWriteable wrNcFile,
-			LinkedHashMap wrLHM,
+			Map<String, Object> wrLHM,
 			String variable,
 			int varStride,
 			int offset) {
@@ -298,7 +300,7 @@ public class Utils {
 	}
 
 	public static boolean saveCharChunkedLHMItemToWrMatrix(NetcdfFileWriteable wrNcFile,
-			LinkedHashMap wrLHM,
+			Map<String, Object> wrLHM,
 			String variable,
 			int itemNb,
 			int varStride,
@@ -326,7 +328,7 @@ public class Utils {
 
 	//<editor-fold defaultstate="collapsed" desc="GENOTYPE SAVERS">
 	public static boolean saveChunkedCurrentSampleGTsToMatrix(NetcdfFileWriteable wrNcFile,
-			LinkedHashMap wrLhm,
+			Map<String, Object> wrLhm,
 			int samplePos,
 			int offset) throws InvalidRangeException {
 		boolean result = false;
@@ -346,7 +348,7 @@ public class Utils {
 	}
 
 	public static boolean saveChunkedCurrentMarkerGTsToMatrix(NetcdfFileWriteable wrNcFile,
-			LinkedHashMap wrLhm,
+			Map<String, Object> wrLhm,
 			int markerPos,
 			int offset) {
 		boolean result = false;
@@ -368,7 +370,7 @@ public class Utils {
 
 	//<editor-fold defaultstate="collapsed" desc="D1 SAVERS">
 	public static boolean saveDoubleChunkedLHMD1ToWrMatrix(NetcdfFileWriteable wrNcFile,
-			LinkedHashMap wrLHM,
+			Map<String, Object> wrLHM,
 			String variable,
 			int offset) {
 		boolean result = false;
@@ -393,7 +395,7 @@ public class Utils {
 	}
 
 	public static boolean saveDoubleChunkedLHMItemD1ToWrMatrix(NetcdfFileWriteable wrNcFile,
-			LinkedHashMap wrLHM,
+			Map<String, Object> wrLHM,
 			int itemNb,
 			String variable,
 			int offset) {
@@ -419,7 +421,7 @@ public class Utils {
 	}
 
 	public static boolean saveIntChunkedLHMD1ToWrMatrix(NetcdfFileWriteable wrNcFile,
-			LinkedHashMap wrLHM,
+			Map<String, Object> wrLHM,
 			String variable,
 			int offset) {
 		boolean result = false;
@@ -444,7 +446,7 @@ public class Utils {
 	}
 
 	public static boolean saveIntChunkedLHMItemD1ToWrMatrix(NetcdfFileWriteable wrNcFile,
-			LinkedHashMap wrLHM,
+			Map<String, Object> wrLHM,
 			int itemNb,
 			String variable,
 			int offset) {
@@ -472,7 +474,7 @@ public class Utils {
 
 	//<editor-fold defaultstate="collapsed" desc="D2 SAVERS">
 	public static boolean saveIntChunkedLHMD2ToWrMatrix(NetcdfFileWriteable wrNcFile,
-			LinkedHashMap wrLHM,
+			Map<String, Object> wrLHM,
 			int[] columns,
 			String variable,
 			int offset) {
@@ -499,7 +501,7 @@ public class Utils {
 	}
 
 	public static boolean saveDoubleChunkedD2ToWrMatrix(NetcdfFileWriteable wrNcFile,
-			LinkedHashMap wrLHM,
+			Map<String, Object> wrLHM,
 			int[] columns,
 			String variable,
 			int offset) {
@@ -529,7 +531,7 @@ public class Utils {
 	//</editor-fold>
 	//<editor-fold defaultstate="collapsed" desc="POJOs TO netCDFJOs">
 	//<editor-fold defaultstate="collapsed" desc="ArrayChar.D3">
-	public static ArrayChar.D3 writeLHMToCurrentSampleArrayCharD3(LinkedHashMap lhm, int stride) {
+	public static ArrayChar.D3 writeLHMToCurrentSampleArrayCharD3(Map<String, Object> lhm, int stride) {
 		ArrayChar.D3 charArray = new ArrayChar.D3(1, lhm.size(), stride);
 		Index ima = charArray.getIndex();
 
@@ -545,7 +547,7 @@ public class Utils {
 		return charArray;
 	}
 
-	public static ArrayChar.D3 writeLHMToCurrentMarkerArrayCharD3(LinkedHashMap lhm, int stride) {
+	public static ArrayChar.D3 writeLHMToCurrentMarkerArrayCharD3(Map<String, Object> lhm, int stride) {
 		ArrayChar.D3 charArray = new ArrayChar.D3(lhm.size(), 1, stride);
 		Index ima = charArray.getIndex();
 
@@ -563,7 +565,7 @@ public class Utils {
 	//</editor-fold>
 
 	//<editor-fold defaultstate="collapsed" desc="ArrayChar.D2">
-	public static ArrayChar.D2 writeALToD2ArrayChar(ArrayList al, int stride) {
+	public static ArrayChar.D2 writeALToD2ArrayChar(List al, int stride) {
 		ArrayChar.D2 charArray = new ArrayChar.D2(al.size(), stride);
 		Index ima = charArray.getIndex();
 
@@ -576,7 +578,7 @@ public class Utils {
 		return charArray;
 	}
 
-	public static ArrayChar.D2 writeLHMValueToD2ArrayChar(LinkedHashMap lhm, int stride) {
+	public static ArrayChar.D2 writeLHMValueToD2ArrayChar(Map<String, Object> lhm, int stride) {
 		ArrayChar.D2 charArray = new ArrayChar.D2(lhm.size(), stride);
 		Index ima = charArray.getIndex();
 
@@ -592,7 +594,7 @@ public class Utils {
 		return charArray;
 	}
 
-	public static ArrayChar.D2 writeLHMKeysToD2ArrayChar(LinkedHashMap lhm, int stride) {
+	public static ArrayChar.D2 writeLHMKeysToD2ArrayChar(Map<String, Object> lhm, int stride) {
 		ArrayChar.D2 charArray = new ArrayChar.D2(lhm.size(), stride);
 		Index ima = charArray.getIndex();
 
@@ -607,13 +609,13 @@ public class Utils {
 		return charArray;
 	}
 
-	public static ArrayChar.D2 writeLHMValueItemToD2ArrayChar(LinkedHashMap lhm, int itemNb, int stride) {
+	public static ArrayChar.D2 writeLHMValueItemToD2ArrayChar(Map<String, Object> lhm, int itemNb, int stride) {
 		ArrayChar.D2 charArray = new ArrayChar.D2(lhm.size(), stride);
 		Index index = charArray.getIndex();
 
 		int count = 0;
-		for (Iterator itWr = lhm.keySet().iterator(); itWr.hasNext();) {
-			String key = itWr.next().toString();
+		for (Iterator<String> itWr = lhm.keySet().iterator(); itWr.hasNext();) {
+			String key = itWr.next();
 			Object[] values = (Object[]) lhm.get(key);
 			String value = values[itemNb].toString();
 			charArray.setString(index.set(count, 0), value.trim());
@@ -626,7 +628,7 @@ public class Utils {
 	//</editor-fold>
 
 	//<editor-fold defaultstate="collapsed" desc="ArrayDouble.D1 & D2">
-	public static ArrayDouble.D1 writeLHMValueToD1ArrayDouble(LinkedHashMap lhm) {
+	public static ArrayDouble.D1 writeLHMValueToD1ArrayDouble(Map<String, Object> lhm) {
 		ArrayDouble.D1 doubleArray = new ArrayDouble.D1(lhm.size());
 		Index index = doubleArray.getIndex();
 
@@ -642,7 +644,7 @@ public class Utils {
 		return doubleArray;
 	}
 
-	private static ArrayDouble.D1 writeLHMValueItemToD1ArrayDouble(LinkedHashMap lhm, int itemNb) {
+	private static ArrayDouble.D1 writeLHMValueItemToD1ArrayDouble(Map<String, Object> lhm, int itemNb) {
 		ArrayDouble.D1 doubleArray = new ArrayDouble.D1(lhm.size());
 		Index index = doubleArray.getIndex();
 
@@ -657,7 +659,7 @@ public class Utils {
 		return doubleArray;
 	}
 
-	private static ArrayDouble.D2 writeLHMValueItemToD2ArrayDouble(LinkedHashMap lhm, int[] columns) {
+	private static ArrayDouble.D2 writeLHMValueItemToD2ArrayDouble(Map<String, Object> lhm, int[] columns) {
 		ArrayDouble.D2 doubleArray = new ArrayDouble.D2(lhm.size(), columns.length);
 		Index ima = doubleArray.getIndex();
 
@@ -677,7 +679,7 @@ public class Utils {
 	//</editor-fold>
 
 	//<editor-fold defaultstate="collapsed" desc="ArrayInt.D1 & D2">
-	public static ArrayInt.D1 writeLHMValueToD1ArrayInt(LinkedHashMap lhm) {
+	public static ArrayInt.D1 writeLHMValueToD1ArrayInt(Map<String, Object> lhm) {
 		ArrayInt.D1 intArray = new ArrayInt.D1(lhm.size());
 		Index index = intArray.getIndex();
 
@@ -693,7 +695,7 @@ public class Utils {
 		return intArray;
 	}
 
-	public static ArrayInt.D1 writeLHMValueItemToD1ArrayInt(LinkedHashMap lhm, int itemNb) {
+	public static ArrayInt.D1 writeLHMValueItemToD1ArrayInt(Map<String, Object> lhm, int itemNb) {
 		ArrayInt.D1 intArray = new ArrayInt.D1(lhm.size());
 		Index index = intArray.getIndex();
 
@@ -710,7 +712,7 @@ public class Utils {
 	}
 
 	//TODO: can be optimized with arraycopy?
-	public static ArrayInt.D2 writeLHMValueItemToD2ArrayInt(LinkedHashMap lhm, int[] columns) {
+	public static ArrayInt.D2 writeLHMValueItemToD2ArrayInt(Map<String, Object> lhm, int[] columns) {
 		ArrayInt.D2 intArray = new ArrayInt.D2(lhm.size(), columns.length);
 		Index ima = intArray.getIndex();
 
@@ -752,7 +754,7 @@ public class Utils {
 		return byteArray;
 	}
 
-	public static ArrayByte.D3 writeLHMToSingleSampleArrayByteD3(LinkedHashMap lhm, int stride) {
+	public static ArrayByte.D3 writeLHMToSingleSampleArrayByteD3(Map<String, Object> lhm, int stride) {
 		//samplesDim, markersDim, gtStrideDim
 		ArrayByte.D3 byteArray = new ArrayByte.D3(1, lhm.size(), stride);
 		Index ima = byteArray.getIndex();
@@ -776,7 +778,7 @@ public class Utils {
 	 *
 	 * @deprecated Use writeLHMToSingleSampleArrayByteD3 instead
 	 */
-	public static ArrayByte.D3 writeLHMToCurrentSampleArrayByteD3(LinkedHashMap lhm, int stride) {
+	public static ArrayByte.D3 writeLHMToCurrentSampleArrayByteD3(Map<String, Object> lhm, int stride) {
 		ArrayByte.D3 byteArray = new ArrayByte.D3(lhm.size(), 1, stride);
 		Index ima = byteArray.getIndex();
 
@@ -793,7 +795,7 @@ public class Utils {
 		return byteArray;
 	}
 
-	public static ArrayByte.D3 writeLHMToSingleMarkerArrayByteD3(LinkedHashMap lhm, int stride) {
+	public static ArrayByte.D3 writeLHMToSingleMarkerArrayByteD3(Map<String, Object> lhm, int stride) {
 		ArrayByte.D3 byteArray = new ArrayByte.D3(lhm.size(), 1, stride);
 		Index ima = byteArray.getIndex();
 
@@ -816,7 +818,7 @@ public class Utils {
 	 *
 	 * @deprecated Use writeLHMToSingleMarkerArrayByteD3 instead
 	 */
-	public static ArrayByte.D3 writeLHMToCurrentMarkerArrayByteD3(LinkedHashMap lhm, int stride) {
+	public static ArrayByte.D3 writeLHMToCurrentMarkerArrayByteD3(Map<String, Object> lhm, int stride) {
 		ArrayByte.D3 byteArray = new ArrayByte.D3(1, lhm.size(), stride);
 		Index ima = byteArray.getIndex();
 
@@ -837,8 +839,8 @@ public class Utils {
 	//</editor-fold>
 	//<editor-fold defaultstate="collapsed" desc="netCDFJOs TO POJOs">
 	//<editor-fold defaultstate="collapsed" desc="ArrayChar.D2">
-	public static LinkedHashMap writeD2ArrayCharToLHMKeys(ArrayChar inputArray) {
-		LinkedHashMap result = new LinkedHashMap();
+	public static Map<String, Object> writeD2ArrayCharToLHMKeys(ArrayChar inputArray) {
+		Map<String, Object> result = new LinkedHashMap<String, Object>();
 		StringBuilder key = new StringBuilder("");
 
 		int[] shape = inputArray.getShape();
@@ -860,12 +862,12 @@ public class Utils {
 		return result;
 	}
 
-	public static LinkedHashMap writeD2ArrayCharToLHMValues(ArrayChar inputArray, LinkedHashMap lhm) {
+	public static Map<String, Object> writeD2ArrayCharToLHMValues(ArrayChar inputArray, Map<String, Object> lhm) {
 
 		int[] shape = inputArray.getShape();
-		Iterator it = lhm.keySet().iterator();
+		Iterator<String> it = lhm.keySet().iterator();
 		for (int i = 0; i < shape[0]; i++) {
-			Object key = it.next();
+			String key = it.next();
 
 			ArrayChar wrCharArray = new ArrayChar(new int[]{1, shape[1]});
 			ArrayChar.D2.arraycopy(inputArray, i * shape[1], wrCharArray, 0, shape[1]);
@@ -897,8 +899,8 @@ public class Utils {
 	//</editor-fold>
 
 	//<editor-fold defaultstate="collapsed" desc="ArrayChar.D1">
-	public static LinkedHashMap writeD1ArrayCharToLHMKeys(ArrayChar inputArray) {
-		LinkedHashMap resultLHM = new LinkedHashMap();
+	public static Map<String, Object> writeD1ArrayCharToLHMKeys(ArrayChar inputArray) {
+		Map<String, Object> resultLHM = new LinkedHashMap();
 		StringBuilder key = new StringBuilder("");
 		Index index = inputArray.getIndex();
 
@@ -912,13 +914,13 @@ public class Utils {
 
 	}
 
-	public static LinkedHashMap writeD1ArrayCharToLHMValues(ArrayChar inputArray, LinkedHashMap lhm) {
+	public static Map<String, Object> writeD1ArrayCharToLHMValues(ArrayChar inputArray, Map<String, Object> lhm) {
 		StringBuilder value = new StringBuilder("");
 		Index index = inputArray.getIndex();
 
 		int[] shape = inputArray.getShape();
-		Iterator it = lhm.keySet().iterator();
-		Object key = it.next();
+		Iterator<String> it = lhm.keySet().iterator();
+		String key = it.next();
 
 		for (int j = 0; j < shape[0]; j++) {
 			value.append(inputArray.getChar(index.set(j)));
@@ -930,13 +932,13 @@ public class Utils {
 
 	//</editor-fold>
 	//<editor-fold defaultstate="collapsed" desc="ArrayDouble.D1">
-	public static LinkedHashMap writeD1ArrayDoubleToLHMValues(ArrayDouble inputArray, LinkedHashMap lhm) {
+	public static Map<String, Object> writeD1ArrayDoubleToLHMValues(ArrayDouble inputArray, Map<String, Object> lhm) {
 
 		int[] shape = inputArray.getShape();
 		Index index = inputArray.getIndex();
-		Iterator it = lhm.keySet().iterator();
+		Iterator<String> it = lhm.keySet().iterator();
 		for (int i = 0; i < shape[0]; i++) {
-			Object key = it.next();
+			String key = it.next();
 			Double value = inputArray.getDouble(index.set(i));
 			lhm.put(key, value);
 		}
@@ -963,12 +965,12 @@ public class Utils {
 
 	//</editor-fold>
 	//<editor-fold defaultstate="collapsed" desc="ArrayDouble.D2">
-	public static LinkedHashMap writeD2ArrayDoubleToLHMValues(ArrayDouble.D2 inputArray, LinkedHashMap lhm) {
+	public static Map<String, Object> writeD2ArrayDoubleToLHMValues(ArrayDouble.D2 inputArray, Map<String, Object> lhm) {
 		int[] shape = inputArray.getShape();
-		Iterator it = lhm.keySet().iterator();
+		Iterator<String> it = lhm.keySet().iterator();
 
 		for (int i = 0; i < (shape[0] * shape[1]); i = i + shape[1]) {
-			String key = it.next().toString();
+			String key = it.next();
 
 			ArrayDouble wrDoubleArray = new ArrayDouble(new int[]{1, shape[1]});
 			ArrayDouble.D2.arraycopy(inputArray, i, wrDoubleArray, 0, shape[1]);
@@ -1000,17 +1002,16 @@ public class Utils {
 	//</editor-fold>
 
 	//<editor-fold defaultstate="collapsed" desc="ArrayInt.D1">
-	public static LinkedHashMap writeD1ArrayIntToLHMValues(ArrayInt inputArray, LinkedHashMap lhm) {
+	public static Map<String, Object> writeD1ArrayIntToLHMValues(ArrayInt inputArray, Map<String, Object> lhm) {
 
 		int[] shape = inputArray.getShape();
 		Index index = inputArray.getIndex();
-		Iterator it = lhm.keySet().iterator();
+		Iterator<String> it = lhm.keySet().iterator();
 		for (int i = 0; i < shape[0]; i++) {
-			Object key = it.next();
+			String key = it.next();
 			Integer value = inputArray.getInt(index.set(i));
 			lhm.put(key, value);
 		}
-
 
 		return lhm;
 	}
@@ -1033,13 +1034,13 @@ public class Utils {
 
 	//</editor-fold>
 	//<editor-fold defaultstate="collapsed" desc="ArrayInt.D2">
-	public static LinkedHashMap writeD2ArrayIntToLHMValues(ArrayInt.D2 inputArray, LinkedHashMap lhm) {
+	public static Map<String, Object> writeD2ArrayIntToLHMValues(ArrayInt.D2 inputArray, Map<String, Object> lhm) {
 		int[] shape = inputArray.getShape();
 		Index index = inputArray.getIndex();
-		Iterator it = lhm.keySet().iterator();
+		Iterator<String> it = lhm.keySet().iterator();
 
 		for (int i = 0; i < (shape[0] * shape[1]); i = i + shape[1]) {
-			String key = it.next().toString();
+			String key = it.next();
 
 			ArrayInt wrIntArray = new ArrayInt(new int[]{1, shape[1]});
 			ArrayInt.D2.arraycopy(inputArray, i, wrIntArray, 0, shape[1]);
@@ -1054,22 +1055,19 @@ public class Utils {
 
 	//</editor-fold>
 	//<editor-fold defaultstate="collapsed" desc="ArrayByte.D2">
-	public static LinkedHashMap writeD2ArrayByteToLHMValues(ArrayByte inputArray, LinkedHashMap lhm) {
-		StringBuilder value = new StringBuilder("");
+	public static Map<String, Object> writeD2ArrayByteToLHMValues(ArrayByte inputArray, Map<String, Object> lhm) {
 
 		int[] shape = inputArray.getShape();
 		Index index = inputArray.getIndex();
-		Iterator it = lhm.keySet().iterator();
+		Iterator<String> it = lhm.keySet().iterator();
 		for (int i = 0; i < shape[0]; i++) {
-			Object key = it.next();
+			String key = it.next();
 
 			ArrayByte wrArray = new ArrayByte(new int[]{1, shape[1]});
 			ArrayByte.D2.arraycopy(inputArray, i * shape[1], wrArray, 0, shape[1]);
 			byte[] values = (byte[]) wrArray.copyTo1DJavaArray();
 			lhm.put(key, values);
-
 		}
-
 
 		return lhm;
 	}
@@ -1096,13 +1094,13 @@ public class Utils {
 	//</editor-fold>
 
 	//<editor-fold defaultstate="collapsed" desc="ArrayByte.D1">
-	public static LinkedHashMap writeD1ArrayByteToLHMValues(ArrayByte inputArray, LinkedHashMap lhm) {
+	public static Map<String, Object> writeD1ArrayByteToLHMValues(ArrayByte inputArray, Map<String, Object> lhm) {
 		StringBuilder value = new StringBuilder("");
 		Index index = inputArray.getIndex();
 
 		int[] shape = inputArray.getShape();
-		Iterator it = lhm.keySet().iterator();
-		Object key = it.next();
+		Iterator<String> it = lhm.keySet().iterator();
+		String key = it.next();
 
 		for (int j = 0; j < shape[0]; j++) {
 			value.append(inputArray.getChar(index.set(j)));

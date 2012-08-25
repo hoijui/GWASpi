@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.Map;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
 import ucar.ma2.ArrayChar;
 import ucar.ma2.ArrayInt;
@@ -107,7 +108,7 @@ public class LoadGTFromIlluminaLGENFiles {
 		}
 
 		//RETRIEVE CHROMOSOMES INFO
-		LinkedHashMap chrSetLHM = org.gwaspi.netCDF.matrices.Utils.aggregateChromosomeInfo(markerSetLHM, 2, 3);
+		Map<String, Object> chrSetLHM = org.gwaspi.netCDF.matrices.Utils.aggregateChromosomeInfo(markerSetLHM, 2, 3);
 
 		MatrixFactory matrixFactory = new MatrixFactory(studyId,
 				format,

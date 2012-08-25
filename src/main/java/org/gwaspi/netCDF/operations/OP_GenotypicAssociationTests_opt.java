@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.Map;
 import org.gwaspi.model.Operation;
 import org.gwaspi.netCDF.markers.MarkerSet_opt;
 import org.gwaspi.netCDF.matrices.MatrixMetadata;
@@ -32,20 +33,20 @@ public class OP_GenotypicAssociationTests_opt {
 
 		//<editor-fold defaultstate="collapsed" desc="EXCLUSION MARKERS FROM HW">
 
-		LinkedHashMap excludeMarkerSetLHM = new LinkedHashMap();
+		Map<String, Object> excludeMarkerSetLHM = new LinkedHashMap<String, Object>();
 		int totalMarkerNb = 0;
 
 		if (hwOP != null) {
 			OperationMetadata hwMetadata = new OperationMetadata(hwOP.getOperationId());
 			NetcdfFile rdHWNcFile = NetcdfFile.open(hwMetadata.getPathToMatrix());
 			OperationSet rdHWOperationSet = new OperationSet(hwMetadata.getStudyId(), hwMetadata.getOPId());
-			LinkedHashMap rdHWMarkerSetLHM = rdHWOperationSet.getOpSetLHM();
+			Map<String, Object> rdHWMarkerSetLHM = rdHWOperationSet.getOpSetLHM();
 			totalMarkerNb = rdHWMarkerSetLHM.size();
 
 			//EXCLUDE MARKER BY HARDY WEINBERG THRESHOLD
 			rdHWMarkerSetLHM = rdHWOperationSet.fillOpSetLHMWithVariable(rdHWNcFile, cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWPval_CTRL);
-			for (Iterator it = rdHWMarkerSetLHM.keySet().iterator(); it.hasNext();) {
-				Object key = it.next();
+			for (Iterator<String> it = rdHWMarkerSetLHM.keySet().iterator(); it.hasNext();) {
+				String key = it.next();
 				double value = (Double) rdHWMarkerSetLHM.get(key);
 				if (value < hwThreshold) {
 					excludeMarkerSetLHM.put(key, value);
@@ -66,13 +67,13 @@ public class OP_GenotypicAssociationTests_opt {
 
 			OperationSet rdCaseMarkerSet = new OperationSet(rdCensusOPMetadata.getStudyId(), markerCensusOP.getOperationId());
 			OperationSet rdCtrlMarkerSet = new OperationSet(rdCensusOPMetadata.getStudyId(), markerCensusOP.getOperationId());
-			LinkedHashMap rdSampleSetLHM = rdCaseMarkerSet.getImplicitSetLHM();
-			LinkedHashMap rdCaseMarkerIdSetLHM = rdCaseMarkerSet.getOpSetLHM();
-			LinkedHashMap rdCtrlMarkerIdSetLHM = rdCtrlMarkerSet.getOpSetLHM();
+			Map<String, Object> rdSampleSetLHM = rdCaseMarkerSet.getImplicitSetLHM();
+			Map<String, Object> rdCaseMarkerIdSetLHM = rdCaseMarkerSet.getOpSetLHM();
+			Map<String, Object> rdCtrlMarkerIdSetLHM = rdCtrlMarkerSet.getOpSetLHM();
 
-			LinkedHashMap wrMarkerSetLHM = new LinkedHashMap();
-			for (Iterator it = rdCtrlMarkerIdSetLHM.keySet().iterator(); it.hasNext();) {
-				Object key = it.next();
+			Map<String, Object> wrMarkerSetLHM = new LinkedHashMap<String, Object>();
+			for (Iterator<String> it = rdCtrlMarkerIdSetLHM.keySet().iterator(); it.hasNext();) {
+				String key = it.next();
 				if (!excludeMarkerSetLHM.containsKey(key)) {
 					wrMarkerSetLHM.put(key, "");
 				}
@@ -86,7 +87,7 @@ public class OP_GenotypicAssociationTests_opt {
 			//retrieve chromosome info
 			rdMarkerSet.fillMarkerSetLHMWithChrAndPos();
 			wrMarkerSetLHM = rdMarkerSet.fillWrLHMWithRdLHMValue(wrMarkerSetLHM, rdMarkerSet.getMarkerIdSetLHM());
-			LinkedHashMap rdChrInfoSetLHM = org.gwaspi.netCDF.matrices.Utils.aggregateChromosomeInfo(wrMarkerSetLHM, 0, 1);
+			Map<String, Object> rdChrInfoSetLHM = org.gwaspi.netCDF.matrices.Utils.aggregateChromosomeInfo(wrMarkerSetLHM, 0, 1);
 
 			NetcdfFileWriteable wrOPNcFile = null;
 			try {
@@ -126,8 +127,8 @@ public class OP_GenotypicAssociationTests_opt {
 
 				//MARKERSET RSID
 				rdCaseMarkerIdSetLHM = rdCaseMarkerSet.fillOpSetLHMWithVariable(rdOPNcFile, cNetCDF.Variables.VAR_MARKERS_RSID);
-				for (Iterator it = wrMarkerSetLHM.keySet().iterator(); it.hasNext();) {
-					Object key = it.next();
+				for (Iterator<String> it = wrMarkerSetLHM.keySet().iterator(); it.hasNext();) {
+					String key = it.next();
 					Object value = rdCaseMarkerIdSetLHM.get(key);
 					wrMarkerSetLHM.put(key, value);
 				}
@@ -160,10 +161,10 @@ public class OP_GenotypicAssociationTests_opt {
 				//<editor-fold defaultstate="collapsed" desc="GET CENSUS & PERFORM GENOTYPIC TESTS">
 
 				//CLEAN LHMs FROM MARKERS THAT FAILED THE HARDY WEINBERG THRESHOLD
-				LinkedHashMap wrCaseMarkerIdSetLHM = new LinkedHashMap();
+				Map<String, Object> wrCaseMarkerIdSetLHM = new LinkedHashMap<String, Object>();
 				rdCaseMarkerIdSetLHM = rdCaseMarkerSet.fillOpSetLHMWithVariable(rdOPNcFile, cNetCDF.Census.VAR_OP_MARKERS_CENSUSCASE);
-				for (Iterator it = rdCaseMarkerIdSetLHM.keySet().iterator(); it.hasNext();) {
-					Object key = it.next();
+				for (Iterator<String> it = rdCaseMarkerIdSetLHM.keySet().iterator(); it.hasNext();) {
+					String key = it.next();
 					Object value = rdCaseMarkerIdSetLHM.get(key);
 
 					if (!excludeMarkerSetLHM.containsKey(key)) {
@@ -174,10 +175,10 @@ public class OP_GenotypicAssociationTests_opt {
 					rdCaseMarkerIdSetLHM.clear();
 				}
 
-				LinkedHashMap wrCtrlMarkerSet = new LinkedHashMap();
+				Map<String, Object> wrCtrlMarkerSet = new LinkedHashMap<String, Object>();
 				rdCtrlMarkerIdSetLHM = rdCtrlMarkerSet.fillOpSetLHMWithVariable(rdOPNcFile, cNetCDF.Census.VAR_OP_MARKERS_CENSUSCTRL);
-				for (Iterator it = rdCtrlMarkerIdSetLHM.keySet().iterator(); it.hasNext();) {
-					Object key = it.next();
+				for (Iterator<String> it = rdCtrlMarkerIdSetLHM.keySet().iterator(); it.hasNext();) {
+					String key = it.next();
 					Object value = rdCtrlMarkerIdSetLHM.get(key);
 
 					if (!excludeMarkerSetLHM.containsKey(key)) {
@@ -217,11 +218,11 @@ public class OP_GenotypicAssociationTests_opt {
 		return resultAssocId;
 	}
 
-	protected static void performAssociationTests(NetcdfFileWriteable wrNcFile, LinkedHashMap wrCaseMarkerIdSetLHM, LinkedHashMap wrCtrlMarkerSet) {
+	protected static void performAssociationTests(NetcdfFileWriteable wrNcFile, Map<String, Object> wrCaseMarkerIdSetLHM, Map<String, Object> wrCtrlMarkerSet) {
 		//Iterate through markerset
 		int markerNb = 0;
-		for (Iterator it = wrCaseMarkerIdSetLHM.keySet().iterator(); it.hasNext();) {
-			Object markerId = it.next();
+		for (Iterator<String> it = wrCaseMarkerIdSetLHM.keySet().iterator(); it.hasNext();) {
+			String markerId = it.next();
 
 			int[] caseCntgTable = (int[]) wrCaseMarkerIdSetLHM.get(markerId);
 			int[] ctrlCntgTable = (int[]) wrCtrlMarkerSet.get(markerId);

@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.Map;
 import org.gwaspi.netCDF.markers.MarkerSet_opt;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.gwaspi.netCDF.matrices.MatrixMetadata;
@@ -48,10 +49,10 @@ public class MatrixDataExtractor_opt {
 	private MarkerSet_opt wrMarkerSet = null;
 	private SampleSet rdSampleSet = null;
 	private SampleSet wrSampleSet = null;
-	private LinkedHashMap wrMarkerIdSetLHM = new LinkedHashMap();
-	private LinkedHashMap rdSampleSetLHM = null;
-	private LinkedHashMap wrSampleSetLHM = new LinkedHashMap();
-	private LinkedHashMap rdChrInfoSetLHM = new LinkedHashMap();
+	private Map<String, Object> wrMarkerIdSetLHM = new LinkedHashMap<String, Object>();
+	private Map<String, Object> rdSampleSetLHM = null;
+	private Map<String, Object> wrSampleSetLHM = new LinkedHashMap<String, Object>();
+	private Map<String, Object> rdChrInfoSetLHM = new LinkedHashMap<String, Object>();
 
 	/**
 	 * This constructor to extract data from Matrix a by passing a variable and
@@ -193,8 +194,8 @@ public class MatrixDataExtractor_opt {
 				//Get all samples
 				wrSampleSetLHM.putAll(rdSampleSetLHM);
 				int i = 0;
-				for (Iterator it = wrSampleSetLHM.keySet().iterator(); it.hasNext();) {
-					Object key = it.next();
+				for (Iterator<String> it = wrSampleSetLHM.keySet().iterator(); it.hasNext();) {
+					String key = it.next();
 					wrSampleSetLHM.put(key, i);
 					i++;
 				}
@@ -231,8 +232,8 @@ public class MatrixDataExtractor_opt {
 				break;
 			default:
 				int j = 0;
-				for (Iterator it = wrSampleSetLHM.keySet().iterator(); it.hasNext();) {
-					Object key = it.next();
+				for (Iterator<String> it = wrSampleSetLHM.keySet().iterator(); it.hasNext();) {
+					String key = it.next();
 					wrSampleSetLHM.put(key, j);
 					j++;
 				}

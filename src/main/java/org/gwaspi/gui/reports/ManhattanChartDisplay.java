@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.ImageIcon;
@@ -36,7 +37,7 @@ public final class ManhattanChartDisplay extends javax.swing.JPanel {
 	private static javax.swing.JButton btn_Save;
 	private javax.swing.JButton btn_Back;
 	private static int opId;
-	private static LinkedHashMap chrSetInfoLHM = new LinkedHashMap();
+	private static Map<String, Object> chrSetInfoLHM = new LinkedHashMap<String, Object>();
 	private static String chr = "";
 	private static int chartWidth = 0;
 	private static int chrPlotWidth = 0;

@@ -5,6 +5,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.Map;
 import ucar.ma2.ArrayChar;
 import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
@@ -26,8 +27,8 @@ public class DumpNCMatrix {
 
 	public static void printSystemOutMatrix(String matrixPath) throws IOException, InvalidRangeException {
 		NetcdfFile ncfile = NetcdfFile.open(matrixPath);
-		LinkedHashMap markerIdSetLHM = new LinkedHashMap();
-		LinkedHashMap sampleIdSetLHM = new LinkedHashMap();
+		Map<String, Object> markerIdSetLHM = new LinkedHashMap<String, Object>();
+		Map<String, Object> sampleIdSetLHM = new LinkedHashMap<String, Object>();
 
 		FileWriter dumpFW = new FileWriter("/media/data/work/GWASpi/export/NCDump.txt");
 		BufferedWriter dumpBW = new BufferedWriter(dumpFW);

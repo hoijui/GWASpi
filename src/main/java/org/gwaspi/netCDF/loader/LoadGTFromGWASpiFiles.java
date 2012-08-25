@@ -12,6 +12,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.gwaspi.netCDF.markers.MarkerSet_opt;
@@ -54,7 +55,7 @@ public final class LoadGTFromGWASpiFiles {
 			int _studyId,
 			String _friendlyName,
 			String _description,
-			LinkedHashMap _sampleInfoLHM) throws IOException, InvalidRangeException, InterruptedException {
+			Map<String, Object> _sampleInfoLHM) throws IOException, InvalidRangeException, InterruptedException {
 
 		gwaspiGTFilePath = _gwaspiGTFilePath;
 		sampleInfoPath = _sampleInfoPath;
@@ -64,7 +65,7 @@ public final class LoadGTFromGWASpiFiles {
 
 		if (new File(gwaspiGTFilePath).exists()) {
 			SampleSet matrixSampleSet = new SampleSet(studyId, "");
-			LinkedHashMap matrixSampleSetLHM = matrixSampleSet.getSampleIdSetLHM(gwaspiGTFilePath);
+			Map<String, Object> matrixSampleSetLHM = matrixSampleSet.getSampleIdSetLHM(gwaspiGTFilePath);
 
 			boolean testExcessSamplesInMatrix = false;
 			boolean testExcessSamplesInFile = false;
@@ -161,15 +162,15 @@ public final class LoadGTFromGWASpiFiles {
 		MarkerSet_opt rdMarkerSet = new MarkerSet_opt(importMatrixMetadata.getStudyId(), gwaspiGTFilePath, importMatrixMetadata.getMatrixNetCDFName());
 		rdMarkerSet.initFullMarkerIdSetLHM();
 		rdMarkerSet.fillMarkerSetLHMWithChrAndPos();
-		LinkedHashMap rdMarkerSetLHM = rdMarkerSet.getMarkerIdSetLHM();
+		Map<String, Object> rdMarkerSetLHM = rdMarkerSet.getMarkerIdSetLHM();
 
 		SampleSet rdSampleSet = new SampleSet(importMatrixMetadata.getStudyId(), gwaspiGTFilePath, importMatrixMetadata.getMatrixNetCDFName());
-		LinkedHashMap rdSampleSetLHM = rdSampleSet.getSampleIdSetLHM();
+		Map<String, Object> rdSampleSetLHM = rdSampleSet.getSampleIdSetLHM();
 
 		System.out.println("Done initializing sorted MarkerSetLHM at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
 
 		//RETRIEVE CHROMOSOMES INFO
-		LinkedHashMap chrSetLHM = org.gwaspi.netCDF.matrices.Utils.aggregateChromosomeInfo(rdMarkerSetLHM, 0, 1);
+		Map<String, Object> chrSetLHM = org.gwaspi.netCDF.matrices.Utils.aggregateChromosomeInfo(rdMarkerSetLHM, 0, 1);
 
 
 		MatrixFactory matrixFactory = new MatrixFactory(studyId,
@@ -347,9 +348,9 @@ public final class LoadGTFromGWASpiFiles {
 
 	//</editor-fold>
 	//<editor-fold defaultstate="collapsed" desc="HELPER METHODS">
-	private LinkedHashMap getSampleIds(File hapmapGTFile) throws IOException {
+	private Map<String, Object> getSampleIds(File hapmapGTFile) throws IOException {
 
-		LinkedHashMap uniqueSamples = new LinkedHashMap();
+		Map<String, Object> uniqueSamples = new LinkedHashMap<String, Object>();
 
 		FileReader fr = new FileReader(hapmapGTFile.getPath());
 		BufferedReader inputAnnotationBr = new BufferedReader(fr);

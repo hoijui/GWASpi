@@ -31,10 +31,10 @@ public class OP_QAMarkers_opt {
 	public static int processMatrix(int rdMatrixId) throws IOException, InvalidRangeException {
 		int resultOpId = Integer.MIN_VALUE;
 
-		LinkedHashMap wrMarkerSetMismatchStateLHM = new LinkedHashMap();
-		LinkedHashMap wrMarkerSetCensusLHM = new LinkedHashMap();
-		LinkedHashMap wrMarkerSetMissingRatioLHM = new LinkedHashMap();
-		LinkedHashMap wrMarkerSetKnownAllelesLHM = new LinkedHashMap();
+		Map<String, Object> wrMarkerSetMismatchStateLHM = new LinkedHashMap();
+		Map<String, Object> wrMarkerSetCensusLHM = new LinkedHashMap();
+		Map<String, Object> wrMarkerSetMissingRatioLHM = new LinkedHashMap();
+		Map<String, Object> wrMarkerSetKnownAllelesLHM = new LinkedHashMap();
 
 		MatrixMetadata rdMatrixMetadata = new MatrixMetadata(rdMatrixId);
 
@@ -42,10 +42,10 @@ public class OP_QAMarkers_opt {
 
 		MarkerSet_opt rdMarkerSet = new MarkerSet_opt(rdMatrixMetadata.getStudyId(), rdMatrixId);
 		rdMarkerSet.initFullMarkerIdSetLHM();
-		//LinkedHashMap rdMarkerSetLHM = rdMarkerSet.markerIdSetLHM; //This to test heap usage of copying locally the LHM from markerset
+		//Map<String, Object> rdMarkerSetLHM = rdMarkerSet.markerIdSetLHM; //This to test heap usage of copying locally the LHM from markerset
 
 		SampleSet rdSampleSet = new SampleSet(rdMatrixMetadata.getStudyId(), rdMatrixId);
-		LinkedHashMap rdSampleSetLHM = rdSampleSet.getSampleIdSetLHM();
+		Map<String, Object> rdSampleSetLHM = rdSampleSet.getSampleIdSetLHM();
 
 		NetcdfFileWriteable wrNcFile = null;
 		try {
@@ -112,7 +112,7 @@ public class OP_QAMarkers_opt {
 			rdMarkerSet.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
 
 			List<Map<String, Object>> rsSamplesInfo = org.gwaspi.samples.SampleManager.getAllSampleInfoFromDBByPoolID(rdMatrixMetadata.getStudyId());
-			LinkedHashMap samplesInfoLHM = new LinkedHashMap();
+			Map<String, Object> samplesInfoLHM = new LinkedHashMap();
 			int count = 0;
 			while (count < rsSamplesInfo.size()) {
 				//PREVENT PHANTOM-DB READS EXCEPTIONS
@@ -133,12 +133,12 @@ public class OP_QAMarkers_opt {
 
 			//Iterate through markerset, take it marker by marker
 			int markerNb = 0;
-			for (Iterator it = rdMarkerSet.getMarkerIdSetLHM().keySet().iterator(); it.hasNext();) {
-				Object markerId = it.next();
+			for (Iterator<String> it = rdMarkerSet.getMarkerIdSetLHM().keySet().iterator(); it.hasNext();) {
+				String markerId = it.next();
 
-				LinkedHashMap knownAlleles = new LinkedHashMap();
-				LinkedHashMap allSamplesGTsTable = new LinkedHashMap();
-				LinkedHashMap allSamplesContingencyTable = new LinkedHashMap();
+				Map<Object, Object> knownAlleles = new LinkedHashMap();
+				Map<Object, Object> allSamplesGTsTable = new LinkedHashMap();
+				Map<Object, Object> allSamplesContingencyTable = new LinkedHashMap();
 				Integer missingCount = 0;
 
 

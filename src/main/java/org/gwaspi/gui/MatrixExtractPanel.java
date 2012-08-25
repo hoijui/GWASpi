@@ -13,6 +13,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.SwingUtilities;
@@ -70,7 +71,7 @@ public class MatrixExtractPanel extends javax.swing.JPanel {
 		parentMatrix = new org.gwaspi.model.Matrix(_matrixId);
 
 		MarkerSet_opt parentMarkerSet = new MarkerSet_opt(parentMatrix.getStudyId(), _matrixId);
-		final LinkedHashMap rdChrInfoSetLHM = parentMarkerSet.getChrInfoSetLHM();
+		final Map<String, Object> rdChrInfoSetLHM = parentMarkerSet.getChrInfoSetLHM();
 
 		pnl_NameAndDesc = new javax.swing.JPanel();
 		lbl_ParentMatrix = new javax.swing.JLabel();

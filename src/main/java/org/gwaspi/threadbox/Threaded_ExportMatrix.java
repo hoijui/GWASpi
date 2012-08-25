@@ -1,7 +1,7 @@
 package org.gwaspi.threadbox;
 
 import org.gwaspi.constants.cExport.ExportFormat;
-import org.gwaspi.netCDF.exporter.MatrixExporter_opt;
+import org.gwaspi.netCDF.exporter.MatrixExporter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,56 +45,56 @@ public class Threaded_ExportMatrix extends CommonRunnable {
 					if (startWithGUI) {
 						org.gwaspi.gui.ProcessTab.showTab();
 					}
-					MatrixExporter_opt mEx = new MatrixExporter_opt(matrixId);
+					MatrixExporter mEx = new MatrixExporter(matrixId);
 					mEx.exportToFormat(org.gwaspi.constants.cExport.ExportFormat.PLINK.toString(), phenotype);
 					break;
 				case PLINK_Binary:
 					if (startWithGUI) {
 						org.gwaspi.gui.ProcessTab.showTab();
 					}
-					mEx = new MatrixExporter_opt(matrixId);
+					mEx = new MatrixExporter(matrixId);
 					mEx.exportToFormat(org.gwaspi.constants.cExport.ExportFormat.PLINK_Binary.toString(), phenotype);
 					break;
 				case Eigensoft_Eigenstrat:
 					if (startWithGUI) {
 						org.gwaspi.gui.ProcessTab.showTab();
 					}
-					mEx = new MatrixExporter_opt(matrixId);
+					mEx = new MatrixExporter(matrixId);
 					mEx.exportToFormat(org.gwaspi.constants.cExport.ExportFormat.Eigensoft_Eigenstrat.toString(), phenotype);
 					break;
 				case PLINK_Transposed:
 					if (startWithGUI) {
 						org.gwaspi.gui.ProcessTab.showTab();
 					}
-					mEx = new MatrixExporter_opt(matrixId);
+					mEx = new MatrixExporter(matrixId);
 					mEx.exportToFormat(org.gwaspi.constants.cExport.ExportFormat.PLINK_Transposed.toString(), phenotype);
 					break;
 				case BEAGLE:
 					if (startWithGUI) {
 						org.gwaspi.gui.ProcessTab.showTab();
 					}
-					mEx = new MatrixExporter_opt(matrixId);
+					mEx = new MatrixExporter(matrixId);
 					mEx.exportToFormat(org.gwaspi.constants.cExport.ExportFormat.BEAGLE.toString(), phenotype);
 					break;
 				case GWASpi:
 					if (startWithGUI) {
 						org.gwaspi.gui.ProcessTab.showTab();
 					}
-					mEx = new MatrixExporter_opt(matrixId);
+					mEx = new MatrixExporter(matrixId);
 					mEx.exportToFormat(org.gwaspi.constants.cExport.ExportFormat.GWASpi.toString(), phenotype);
 					break;
 				case Spreadsheet:
 					if (startWithGUI) {
 						org.gwaspi.gui.ProcessTab.showTab();
 					}
-					mEx = new MatrixExporter_opt(matrixId);
+					mEx = new MatrixExporter(matrixId);
 					mEx.exportToFormat(org.gwaspi.constants.cExport.ExportFormat.Spreadsheet.toString(), phenotype);
 					break;
 				case MACH:
 					if (startWithGUI) {
 						org.gwaspi.gui.ProcessTab.showTab();
 					}
-					mEx = new MatrixExporter_opt(matrixId);
+					mEx = new MatrixExporter(matrixId);
 					mEx.exportToFormat(org.gwaspi.constants.cExport.ExportFormat.MACH.toString(), phenotype);
 					break;
 			}

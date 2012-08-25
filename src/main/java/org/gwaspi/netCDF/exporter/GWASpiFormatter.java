@@ -6,10 +6,12 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.gwaspi.netCDF.markers.MarkerSet_opt;
 import org.gwaspi.netCDF.matrices.MatrixMetadata;
+import org.gwaspi.samples.SampleSet;
 import ucar.nc2.NetcdfFile;
 
 /**
@@ -18,14 +20,17 @@ import ucar.nc2.NetcdfFile;
  * IBE, Institute of Evolutionary Biology (UPF-CSIC)
  * CEXS-UPF-PRBB
  */
-public class GWASpiFormatter_opt {
+public class GWASpiFormatter implements Formatter {
 
-	private GWASpiFormatter_opt() {
-	}
-
-	public static boolean exportGWASpiFiles(String exportPath,
+	public boolean export(
+			String exportPath,
 			MatrixMetadata rdMatrixMetadata,
-			LinkedHashMap rdSampleSetLHM) throws IOException {
+			MarkerSet_opt rdMarkerSet,
+			SampleSet rdSampleSet,
+			Map<String, Object> rdSampleSetMap,
+			String phenotype)
+			throws IOException
+	{
 		File exportDir = new File(exportPath);
 		if (!exportDir.exists() || !exportDir.isDirectory()) {
 			return false;
@@ -45,19 +50,19 @@ public class GWASpiFormatter_opt {
 
 			//Iterate through all samples
 			int sampleNb = 0;
-			for (Iterator it = rdSampleSetLHM.keySet().iterator(); it.hasNext();) {
+			for (Iterator it = rdSampleSetMap.keySet().iterator(); it.hasNext();) {
 				String sampleId = it.next().toString();
 
-//                FamilyID
-//                SampleID
-//                FatherID
-//                MotherID
-//                Sex
-//                Affection
-//                Category
-//                Desease
-//                Population
-//                Age
+//				FamilyID
+//				SampleID
+//				FatherID
+//				MotherID
+//				Sex
+//				Affection
+//				Category
+//				Desease
+//				Population
+//				Age
 
 				HashMap sampleInfo = Utils.getCurrentSampleFormattedInfo(sampleId, rdMatrixMetadata.getStudyId());
 
@@ -119,10 +124,10 @@ public class GWASpiFormatter_opt {
 				}
 			} catch (IOException ex) {
 				org.gwaspi.gui.utils.Dialogs.showWarningDialogue("A table saving error has occurred");
-				Logger.getLogger(GWASpiFormatter_opt.class.getName()).log(Level.SEVERE, null, ex);
+				Logger.getLogger(GWASpiFormatter.class.getName()).log(Level.SEVERE, null, ex);
 			} catch (Exception ex) {
 				org.gwaspi.gui.utils.Dialogs.showWarningDialogue("A table saving error has occurred");
-				Logger.getLogger(GWASpiFormatter_opt.class.getName()).log(Level.SEVERE, null, ex);
+				Logger.getLogger(GWASpiFormatter.class.getName()).log(Level.SEVERE, null, ex);
 			}
 
 			//</editor-fold>

@@ -7,6 +7,7 @@ import org.gwaspi.global.Text;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.TreeMap;
 import org.gwaspi.netCDF.markers.MarkerSet_opt;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
@@ -86,10 +87,10 @@ public class MatrixMergeMarkers_opt {
 	public static int mingleMarkersKeepSamplesConstant() {
 		int resultMatrixId = Integer.MIN_VALUE;
 
-		LinkedHashMap wrComboSortedMarkerSetLHM = mingleAndSortMarkerSet();
+		Map<String, Object> wrComboSortedMarkerSetLHM = mingleAndSortMarkerSet();
 
 		//RETRIEVE CHROMOSOMES INFO
-		LinkedHashMap chrSetLHM = org.gwaspi.netCDF.matrices.Utils.aggregateChromosomeInfo(wrComboSortedMarkerSetLHM, 0, 1);
+		Map<String, Object> chrSetLHM = org.gwaspi.netCDF.matrices.Utils.aggregateChromosomeInfo(wrComboSortedMarkerSetLHM, 0, 1);
 
 		//<editor-fold defaultstate="collapsed" desc="CREATE MATRIX">
 		try {
@@ -156,7 +157,7 @@ public class MatrixMergeMarkers_opt {
 
 			//SAMPLESET
 			//Keep rdSampleSetLHM1 from Matrix1 constant
-			LinkedHashMap rdSampleSetLHM1 = rdSampleSet1.getSampleIdSetLHM();
+			Map<String, Object> rdSampleSetLHM1 = rdSampleSet1.getSampleIdSetLHM();
 			ArrayChar.D2 samplesD2 = Utils.writeLHMKeysToD2ArrayChar(rdSampleSetLHM1, cNetCDF.Strides.STRIDE_SAMPLE_NAME);
 
 			int[] sampleOrig = new int[]{0, 0};
@@ -220,14 +221,14 @@ public class MatrixMergeMarkers_opt {
 			//<editor-fold defaultstate="collapsed" desc="MARKERSET RSID">
 
 			rdMarkerSet1.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_RSID);
-			for (Iterator it = rdMarkerSet1.getMarkerIdSetLHM().keySet().iterator(); it.hasNext();) {
-				Object key = it.next();
+			for (Iterator<String> it = rdMarkerSet1.getMarkerIdSetLHM().keySet().iterator(); it.hasNext();) {
+				String key = it.next();
 				Object value = rdMarkerSet1.getMarkerIdSetLHM().get(key);
 				wrComboSortedMarkerSetLHM.put(key, value);
 			}
 			rdMarkerSet2.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_RSID);
-			for (Iterator it = rdMarkerSet2.getMarkerIdSetLHM().keySet().iterator(); it.hasNext();) {
-				Object key = it.next();
+			for (Iterator<String> it = rdMarkerSet2.getMarkerIdSetLHM().keySet().iterator(); it.hasNext();) {
+				String key = it.next();
 				Object value = rdMarkerSet2.getMarkerIdSetLHM().get(key);
 				wrComboSortedMarkerSetLHM.put(key, value);
 			}
@@ -243,14 +244,14 @@ public class MatrixMergeMarkers_opt {
 			if ((Integer) hasDictionary1.getNumericValue() == 1
 					&& (Integer) hasDictionary2.getNumericValue() == 1) {
 				rdMarkerSet1.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_BASES_DICT);
-				for (Iterator it = rdMarkerSet1.getMarkerIdSetLHM().keySet().iterator(); it.hasNext();) {
-					Object key = it.next();
+				for (Iterator<String> it = rdMarkerSet1.getMarkerIdSetLHM().keySet().iterator(); it.hasNext();) {
+					String key = it.next();
 					Object value = rdMarkerSet1.getMarkerIdSetLHM().get(key);
 					wrComboSortedMarkerSetLHM.put(key, value);
 				}
 				rdMarkerSet2.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_BASES_DICT);
-				for (Iterator it = rdMarkerSet2.getMarkerIdSetLHM().keySet().iterator(); it.hasNext();) {
-					Object key = it.next();
+				for (Iterator<String> it = rdMarkerSet2.getMarkerIdSetLHM().keySet().iterator(); it.hasNext();) {
+					String key = it.next();
 					Object value = rdMarkerSet2.getMarkerIdSetLHM().get(key);
 					wrComboSortedMarkerSetLHM.put(key, value);
 				}
@@ -262,14 +263,14 @@ public class MatrixMergeMarkers_opt {
 			//<editor-fold defaultstate="collapsed/expanded" desc="GENOTYPE STRAND">
 
 			rdMarkerSet1.fillInitLHMWithVariable(cNetCDF.Variables.VAR_GT_STRAND);
-			for (Iterator it = rdMarkerSet1.getMarkerIdSetLHM().keySet().iterator(); it.hasNext();) {
-				Object key = it.next();
+			for (Iterator<String> it = rdMarkerSet1.getMarkerIdSetLHM().keySet().iterator(); it.hasNext();) {
+				String key = it.next();
 				Object value = rdMarkerSet1.getMarkerIdSetLHM().get(key);
 				wrComboSortedMarkerSetLHM.put(key, value);
 			}
 			rdMarkerSet2.fillInitLHMWithVariable(cNetCDF.Variables.VAR_GT_STRAND);
-			for (Iterator it = rdMarkerSet2.getMarkerIdSetLHM().keySet().iterator(); it.hasNext();) {
-				Object key = it.next();
+			for (Iterator<String> it = rdMarkerSet2.getMarkerIdSetLHM().keySet().iterator(); it.hasNext();) {
+				String key = it.next();
 				Object value = rdMarkerSet2.getMarkerIdSetLHM().get(key);
 				wrComboSortedMarkerSetLHM.put(key, value);
 			}
@@ -287,8 +288,8 @@ public class MatrixMergeMarkers_opt {
 			//<editor-fold defaultstate="collapsed" desc="GENOTYPES WRITER">
 
 			// Get SampleId index from each Matrix
-			LinkedHashMap rdSampleSetLHM2 = rdSampleSet2.getSampleIdSetLHM();
-			LinkedHashMap wrSampleSetLHM = getSampleSetWithIndicesLHM(rdSampleSetLHM1, rdSampleSetLHM2);
+			Map<String, Object> rdSampleSetLHM2 = rdSampleSet2.getSampleIdSetLHM();
+			Map<String, Object> wrSampleSetLHM = getSampleSetWithIndicesLHM(rdSampleSetLHM1, rdSampleSetLHM2);
 
 			// Iterate through wrSampleSetLHM
 			for (Iterator it = wrSampleSetLHM.keySet().iterator(); it.hasNext();) {
@@ -306,8 +307,8 @@ public class MatrixMergeMarkers_opt {
 
 
 				// Fill wrSortedMingledMarkerLHM with matrix 1+2 Genotypes
-				for (Iterator it3 = wrComboSortedMarkerSetLHM.keySet().iterator(); it3.hasNext();) {
-					Object markerId = it3.next();
+				for (Iterator<String> it3 = wrComboSortedMarkerSetLHM.keySet().iterator(); it3.hasNext();) {
+					String markerId = it3.next();
 					byte[] genotype = org.gwaspi.constants.cNetCDF.Defaults.DEFAULT_GT;
 					if (rdMarkerSet1.getMarkerIdSetLHM().containsKey(markerId)) {
 						genotype = (byte[]) rdMarkerSet1.getMarkerIdSetLHM().get(markerId);
@@ -375,10 +376,10 @@ public class MatrixMergeMarkers_opt {
 		return resultMatrixId;
 	}
 
-	protected static LinkedHashMap mingleAndSortMarkerSet() {
+	protected static Map<String, Object> mingleAndSortMarkerSet() {
 
 		//GET 1st MATRIX LHM WITH CHR AND POS
-		LinkedHashMap workLHM = new LinkedHashMap();
+		Map<String, Object> workLHM = new LinkedHashMap<String, Object>();
 		rdMarkerSet1.initFullMarkerIdSetLHM();
 		rdMarkerSet2.initFullMarkerIdSetLHM();
 		rdMarkerSet1.fillInitLHMWithMyValue("");
@@ -386,8 +387,8 @@ public class MatrixMergeMarkers_opt {
 		workLHM.putAll(rdMarkerSet1.getMarkerIdSetLHM());
 		rdMarkerSet1.fillInitLHMWithMyValue("");
 		rdMarkerSet1.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_POS);
-		for (Iterator it = workLHM.keySet().iterator(); it.hasNext();) {
-			Object markerId = it.next();
+		for (Iterator<String> it = workLHM.keySet().iterator(); it.hasNext();) {
+			String markerId = it.next();
 			String chr = workLHM.get(markerId).toString();
 			String pos = rdMarkerSet1.getMarkerIdSetLHM().get(markerId).toString();
 			StringBuilder sbKey = new StringBuilder(chr);
@@ -402,14 +403,14 @@ public class MatrixMergeMarkers_opt {
 		}
 
 		//GET 2nd MATRIX LHM WITH CHR AND POS
-		LinkedHashMap workLHM2 = new LinkedHashMap();
+		Map<String, Object> workLHM2 = new LinkedHashMap<String, Object>();
 		rdMarkerSet2.fillInitLHMWithMyValue("");
 		rdMarkerSet2.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
 		workLHM2.putAll(rdMarkerSet2.getMarkerIdSetLHM());
 		rdMarkerSet2.fillInitLHMWithMyValue("");
 		rdMarkerSet2.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_POS);
-		for (Iterator it = workLHM2.keySet().iterator(); it.hasNext();) {
-			Object markerId = it.next();
+		for (Iterator<String> it = workLHM2.keySet().iterator(); it.hasNext();) {
+			String markerId = it.next();
 			String chr = workLHM2.get(markerId).toString();
 			String pos = rdMarkerSet2.getMarkerIdSetLHM().get(markerId).toString();
 			StringBuilder sbKey = new StringBuilder(chr);
@@ -427,11 +428,11 @@ public class MatrixMergeMarkers_opt {
 
 
 		//SORT MERGED LHM
-		TreeMap sortedMetadataTM = new TreeMap(new org.gwaspi.netCDF.loader.ComparatorChrAutPosMarkerIdAsc());
-		for (Iterator it = workLHM.keySet().iterator(); it.hasNext();) {
-			Object key = it.next();
+		TreeMap<String, String> sortedMetadataTM = new TreeMap(new org.gwaspi.netCDF.loader.ComparatorChrAutPosMarkerIdAsc());
+		for (Iterator<String> it = workLHM.keySet().iterator(); it.hasNext();) {
+			String key = it.next();
 			Object value = workLHM.get(key);
-			sortedMetadataTM.put(value, key);
+			sortedMetadataTM.put((String)value, key);
 		}
 		if (workLHM != null) {
 			workLHM.clear();
@@ -439,34 +440,34 @@ public class MatrixMergeMarkers_opt {
 
 		//PACKAGE IN AN LHM
 
-		for (Iterator it = sortedMetadataTM.keySet().iterator(); it.hasNext();) {
-			String key = it.next().toString();
+		for (Iterator<String> it = sortedMetadataTM.keySet().iterator(); it.hasNext();) {
+			String key = it.next();
 			String[] keyValues = key.split(cNetCDF.Defaults.TMP_SEPARATOR);
 			Object[] markerInfo = new Object[2];
 			markerInfo[0] = keyValues[0];  //=> chr
 			markerInfo[1] = Integer.parseInt(keyValues[1]);  // => pos
 
-			Object markerId = sortedMetadataTM.get(key);
+			String markerId = sortedMetadataTM.get(key);
 			workLHM.put(markerId, markerInfo);
 		}
 
 		return workLHM;
 	}
 
-	protected static LinkedHashMap getSampleSetWithIndicesLHM(LinkedHashMap sampleSetLHM1, LinkedHashMap sampleSetLHM2) {
-		LinkedHashMap resultLHM = new LinkedHashMap();
+	protected static Map<String, Object> getSampleSetWithIndicesLHM(Map<String, Object> sampleSetLHM1, Map<String, Object> sampleSetLHM2) {
+		Map<String, Object> resultLHM = new LinkedHashMap<String, Object>();
 
 		int rdPos = 0;
-		for (Iterator it = sampleSetLHM1.keySet().iterator(); it.hasNext();) {
-			Object key = it.next();
+		for (Iterator<String> it = sampleSetLHM1.keySet().iterator(); it.hasNext();) {
+			String key = it.next();
 			int[] position = new int[]{rdPos, 0}; //rdPos matrix 1
 			resultLHM.put(key, position);
 			rdPos++;
 		}
 
 		rdPos = 0;
-		for (Iterator it = sampleSetLHM2.keySet().iterator(); it.hasNext();) {
-			Object key = it.next();
+		for (Iterator<String> it = sampleSetLHM2.keySet().iterator(); it.hasNext();) {
+			String key = it.next();
 			// IF SAMPLE ALLREADY EXISTS IN MATRIX1 SUBSTITUTE VALUES WITH MATRIX2
 			if (resultLHM.containsKey(key)) {
 				int[] position = (int[]) resultLHM.get(key);
@@ -487,7 +488,7 @@ public class MatrixMergeMarkers_opt {
 		wrSampleSet = new SampleSet(wrMatrixMetadata.getStudyId(), wrMatrixId);
 		wrMarkerSet = new MarkerSet_opt(wrMatrixMetadata.getStudyId(), wrMatrixId);
 		wrMarkerSet.initFullMarkerIdSetLHM();
-		LinkedHashMap wrSampleSetLHM = wrSampleSet.getSampleIdSetLHM();
+		Map<String, Object> wrSampleSetLHM = wrSampleSet.getSampleIdSetLHM();
 
 		NetcdfFile rdNcFile = NetcdfFile.open(wrMatrixMetadata.getPathToMatrix());
 
@@ -498,15 +499,15 @@ public class MatrixMergeMarkers_opt {
 		//Iterate through markerSet
 		for (Iterator it = wrMarkerSet.getMarkerIdSetLHM().keySet().iterator(); it.hasNext();) {
 			Object markerId = it.next();
-			LinkedHashMap knownAlleles = new LinkedHashMap();
+			Map<Character, Object> knownAlleles = new LinkedHashMap<Character, Object>();
 
 			//Get a sampleset-full of GTs
 			wrSampleSetLHM = wrSampleSet.readAllSamplesGTsFromCurrentMarkerToLHM(rdNcFile, wrSampleSetLHM, markerNb);
 
 			//Iterate through sampleSet
-			for (Iterator it2 = wrSampleSetLHM.keySet().iterator(); it2.hasNext();) {
+			for (Iterator<String> it2 = wrSampleSetLHM.keySet().iterator(); it2.hasNext();) {
 
-				Object sampleId = it2.next();
+				String sampleId = it2.next();
 
 				char[] tempGT = wrSampleSetLHM.get(sampleId).toString().toCharArray();
 
