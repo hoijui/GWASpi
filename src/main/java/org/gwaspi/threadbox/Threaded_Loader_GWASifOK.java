@@ -1,8 +1,8 @@
 package org.gwaspi.threadbox;
 
 import org.gwaspi.constants.cNetCDF;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Set;
 import javax.swing.JOptionPane;
 import org.gwaspi.model.GWASpiExplorerNodes;
 import org.gwaspi.netCDF.loader.LoadManager;
@@ -84,8 +84,8 @@ public class Threaded_Loader_GWASifOK extends CommonRunnable {
 
 	protected void runInternal(SwingWorkerItem thisSwi) throws Exception {
 
-		LinkedHashMap sampleInfoLHM = SampleInfoCollectorSwitch.collectSampleInfo(format, dummySamples, fileSampleInfo, file1, file2);
-		HashSet affectionStates = SampleInfoCollectorSwitch.collectAffectionStates(sampleInfoLHM);
+		Map<String, Object> sampleInfoLHM = SampleInfoCollectorSwitch.collectSampleInfo(format, dummySamples, fileSampleInfo, file1, file2);
+		Set<String> affectionStates = SampleInfoCollectorSwitch.collectAffectionStates(sampleInfoLHM);
 
 		//<editor-fold defaultstate="collapsed" desc="LOAD PROCESS">
 		if (thisSwi.getQueueState().equals(org.gwaspi.threadbox.QueueStates.PROCESSING)) {

@@ -8,9 +8,10 @@ import java.awt.Component;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JComponent;
@@ -37,7 +38,7 @@ public class MatrixAnalysePanel extends javax.swing.JPanel {
 	// Variables declaration - do not modify
 	private org.gwaspi.model.Matrix parentMatrix;
 	private org.gwaspi.model.Operation currentOP;
-	private LinkedHashMap treeChildrenLHM = new LinkedHashMap();
+	private Map<Integer, Object> treeChildrenLHM = new LinkedHashMap<Integer, Object>();
 	private javax.swing.JButton btn_1_1;
 	private javax.swing.JButton btn_1_2;
 	private javax.swing.JButton btn_1_3;
@@ -403,7 +404,7 @@ public class MatrixAnalysePanel extends javax.swing.JPanel {
 		int hwOPId = Integer.MIN_VALUE;
 
 		org.gwaspi.gui.StartGWASpi.mainGUIFrame.setCursor(org.gwaspi.gui.utils.CursorUtils.waitCursor);
-		HashSet affectionStates = org.gwaspi.samples.SamplesParser.getDBAffectionStates(parentMatrix.getMatrixId());
+		Set<Object> affectionStates = org.gwaspi.samples.SamplesParser.getDBAffectionStates(parentMatrix.getMatrixId());
 		org.gwaspi.gui.StartGWASpi.mainGUIFrame.setCursor(org.gwaspi.gui.utils.CursorUtils.defaultCursor);
 
 		if (affectionStates.contains("1") && affectionStates.contains("2")) {
@@ -500,7 +501,7 @@ public class MatrixAnalysePanel extends javax.swing.JPanel {
 		int hwOPId = Integer.MIN_VALUE;
 
 		org.gwaspi.gui.StartGWASpi.mainGUIFrame.setCursor(org.gwaspi.gui.utils.CursorUtils.waitCursor);
-		HashSet affectionStates = org.gwaspi.samples.SamplesParser.getDBAffectionStates(parentMatrix.getMatrixId());
+		Set<Object> affectionStates = org.gwaspi.samples.SamplesParser.getDBAffectionStates(parentMatrix.getMatrixId());
 		org.gwaspi.gui.StartGWASpi.mainGUIFrame.setCursor(org.gwaspi.gui.utils.CursorUtils.defaultCursor);
 
 		if (affectionStates.contains("1") && affectionStates.contains("2")) {
@@ -598,7 +599,7 @@ public class MatrixAnalysePanel extends javax.swing.JPanel {
 		int hwOPId = Integer.MIN_VALUE;
 
 		org.gwaspi.gui.StartGWASpi.mainGUIFrame.setCursor(org.gwaspi.gui.utils.CursorUtils.waitCursor);
-		HashSet affectionStates = org.gwaspi.samples.SamplesParser.getDBAffectionStates(parentMatrix.getMatrixId());
+		Set<Object> affectionStates = org.gwaspi.samples.SamplesParser.getDBAffectionStates(parentMatrix.getMatrixId());
 		org.gwaspi.gui.StartGWASpi.mainGUIFrame.setCursor(org.gwaspi.gui.utils.CursorUtils.defaultCursor);
 
 		if (affectionStates.contains("1") && affectionStates.contains("2")) {
@@ -788,7 +789,7 @@ public class MatrixAnalysePanel extends javax.swing.JPanel {
 					&& (gwasParams.performAllelicTests || gwasParams.performTrendTests)) { //At least one test has been picked
 				System.out.println(org.gwaspi.global.Text.All.processing);
 				org.gwaspi.gui.StartGWASpi.mainGUIFrame.setCursor(org.gwaspi.gui.utils.CursorUtils.waitCursor);
-				HashSet affectionStates = SamplesParser.getDBAffectionStates(parentMatrix.getMatrixId()); //use Sample Info file affection state
+				Set<Object> affectionStates = SamplesParser.getDBAffectionStates(parentMatrix.getMatrixId()); //use Sample Info file affection state
 				org.gwaspi.gui.StartGWASpi.mainGUIFrame.setCursor(org.gwaspi.gui.utils.CursorUtils.defaultCursor);
 				if (affectionStates.contains("1") && affectionStates.contains("2")) {
 					MultiOperations.doGWASwithAlterPhenotype(parentMatrix.getStudyId(),

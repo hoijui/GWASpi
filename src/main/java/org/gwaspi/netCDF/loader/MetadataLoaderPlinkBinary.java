@@ -9,6 +9,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.TreeMap;
 
 /**
@@ -38,7 +39,7 @@ public class MetadataLoaderPlinkBinary {
 	}
 
 	// ACCESSORS
-	public LinkedHashMap getSortedMarkerSetWithMetaData() throws IOException {
+	public Map<String, Object> getSortedMarkerSetWithMetaData() throws IOException {
 		String startTime = org.gwaspi.global.Utils.getMediumDateTimeAsString();
 
 		TreeMap tempTM = parseAndSortBimFile(bimPath); // chr, markerId, genetic distance, position
@@ -46,7 +47,7 @@ public class MetadataLoaderPlinkBinary {
 		org.gwaspi.global.Utils.sysoutStart("initilaizing marker info");
 		System.out.println(org.gwaspi.global.Text.All.processing);
 
-		LinkedHashMap markerMetadataLHM = new LinkedHashMap();
+		Map<String, Object> markerMetadataLHM = new LinkedHashMap<String, Object>();
 		for (Iterator it = tempTM.keySet().iterator(); it.hasNext();) {
 			String key = it.next().toString();
 			//chr;pos;markerId
@@ -126,10 +127,10 @@ public class MetadataLoaderPlinkBinary {
 		return sortedMetadataTM;
 	}
 
-	public LinkedHashMap parseOrigBimFile(String path) throws IOException {
+	public Map<String, Object> parseOrigBimFile(String path) throws IOException {
 		FileReader fr = new FileReader(path);
 		BufferedReader inputMapBR = new BufferedReader(fr);
-		LinkedHashMap origMarkerIdSetLHM = new LinkedHashMap();
+		Map<String, Object> origMarkerIdSetLHM = new LinkedHashMap<String, Object>();
 
 		String l;
 

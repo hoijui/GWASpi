@@ -11,9 +11,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.SwingUtilities;
@@ -568,7 +568,7 @@ public class MatrixExtractPanel extends javax.swing.JPanel {
 			if (mi_marker_criteria.equals(Text.All.optional)) {
 				mi_marker_criteria = "";
 			}
-			HashSet markerCriteria = new HashSet();
+			Set<Object> markerCriteria = new HashSet<Object>();
 			String[] mVals = mi_marker_criteria.split(org.gwaspi.constants.cImport.Separators.separators_CommaSpaceTabLf_rgxp);
 			for (String s : mVals) {
 				if (!s.isEmpty()) {
@@ -580,7 +580,7 @@ public class MatrixExtractPanel extends javax.swing.JPanel {
 			if (mi_sample_criteria.equals(Text.All.optional)) {
 				mi_sample_criteria = "";
 			}
-			HashSet sampleCriteria = new HashSet();
+			Set<Object> sampleCriteria = new HashSet<Object>();
 			String[] sVals = mi_sample_criteria.split(org.gwaspi.constants.cImport.Separators.separators_CommaSpaceTabLf_rgxp);
 			for (String s : sVals) {
 				if (!s.isEmpty()) {

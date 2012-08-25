@@ -1,11 +1,11 @@
 package org.gwaspi.samples;
 
 import java.io.IOException;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import org.gwaspi.netCDF.matrices.MatrixMetadata;
 import ucar.ma2.ArrayByte;
 import ucar.ma2.ArrayChar;
@@ -337,7 +337,7 @@ public class SampleSet {
 	//</editor-fold>
 
 	//<editor-fold defaultstate="collapsed" desc="SAMPLESET PICKERS">
-	public Map<String, Object> pickValidSampleSetItemsByDBField(Object poolId, Map<String, Object> lhm, String dbField, HashSet criteria, boolean include) throws IOException {
+	public Map<String, Object> pickValidSampleSetItemsByDBField(Object poolId, Map<String, Object> lhm, String dbField, Set<Object> criteria, boolean include) throws IOException {
 		Map<String, Object> returnLHM = new LinkedHashMap<String, Object>();
 		List<Map<String, Object>> rs = org.gwaspi.samples.SampleManager.getAllSampleInfoFromDBByPoolID(poolId);
 
@@ -379,7 +379,7 @@ public class SampleSet {
 		return returnLHM;
 	}
 
-	public Map<String, Object> pickValidSampleSetItemsByNetCDFValue(Map<String, Object> lhm, String variable, HashSet criteria, boolean include) {
+	public Map<String, Object> pickValidSampleSetItemsByNetCDFValue(Map<String, Object> lhm, String variable, Set<Object> criteria, boolean include) {
 		Map<String, Object> returnLHM = new LinkedHashMap<String, Object> ();
 		lhm = this.fillSampleIdSetLHMWithVariable(lhm, variable);
 
@@ -407,7 +407,7 @@ public class SampleSet {
 		return returnLHM;
 	}
 
-	public Map<String, Object> pickValidSampleSetItemsByNetCDFFilter(Map<String, Object> lhm, String variable, int fiterPos, HashSet criteria, boolean include) {
+	public Map<String, Object> pickValidSampleSetItemsByNetCDFFilter(Map<String, Object> lhm, String variable, int fiterPos, Set<Object> criteria, boolean include) {
 		Map<String, Object> returnLHM = new LinkedHashMap<String, Object>();
 		lhm = this.fillSampleIdSetLHMWithFilterVariable(lhm, variable, fiterPos);
 
@@ -435,7 +435,7 @@ public class SampleSet {
 		return returnLHM;
 	}
 
-	public Map<String, Object> pickValidSampleSetItemsByNetCDFKey(Map<String, Object> lhm, HashSet criteria, boolean include) throws IOException {
+	public Map<String, Object> pickValidSampleSetItemsByNetCDFKey(Map<String, Object> lhm, Set<Object> criteria, boolean include) throws IOException {
 		Map<String, Object> returnLHM = new LinkedHashMap<String, Object>();
 
 		int pickCounter = 0;

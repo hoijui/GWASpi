@@ -2,6 +2,7 @@ package org.gwaspi.gui.utils;
 
 import java.util.Enumeration;
 import java.util.LinkedHashMap;
+import java.util.Map;
 import javax.swing.tree.DefaultMutableTreeNode;
 import org.gwaspi.model.GWASpiExplorerNodes.NodeElementInfo;
 
@@ -16,14 +17,14 @@ public class NodeToPathCorrespondence {
 	private NodeToPathCorrespondence() {
 	}
 
-	public static LinkedHashMap buildNodeToPathCorrespondence(DefaultMutableTreeNode currentNode, boolean getSubChildren) {
+	public static Map<Integer, Object> buildNodeToPathCorrespondence(DefaultMutableTreeNode currentNode, boolean getSubChildren) {
 
-		LinkedHashMap nodeToPathChildrenLHM = getChildren(currentNode);
+		Map<Integer, Object> nodeToPathChildrenLHM = getChildren(currentNode);
 		if (getSubChildren) {
 			Enumeration enumTN = currentNode.children();
 			while (enumTN.hasMoreElements()) {
 				DefaultMutableTreeNode subNode = (DefaultMutableTreeNode) enumTN.nextElement();
-				LinkedHashMap subNodeToPathChildrenLHM = getChildren(subNode);
+				Map<Integer, Object> subNodeToPathChildrenLHM = getChildren(subNode);
 				nodeToPathChildrenLHM.putAll(subNodeToPathChildrenLHM);
 			}
 		}
@@ -31,8 +32,8 @@ public class NodeToPathCorrespondence {
 
 	}
 
-	protected static LinkedHashMap getChildren(DefaultMutableTreeNode currentNode) {
-		LinkedHashMap nodeToPathChildrenLHM = new LinkedHashMap();
+	private static Map<Integer, Object> getChildren(DefaultMutableTreeNode currentNode) {
+		Map<Integer, Object> nodeToPathChildrenLHM = new LinkedHashMap<Integer, Object>();
 		Enumeration enumTN = currentNode.children();
 		while (enumTN.hasMoreElements()) {
 			DefaultMutableTreeNode tmpNode = (DefaultMutableTreeNode) enumTN.nextElement();

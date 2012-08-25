@@ -8,6 +8,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.TreeMap;
 
 /* Imports Hapmap genotype files as found on
@@ -41,7 +42,7 @@ public class MetadataLoaderHapmap {
 	}
 
 	// ACCESSORS
-	public LinkedHashMap getSortedMarkerSetWithMetaData() throws IOException {
+	public Map<String, Object> getSortedMarkerSetWithMetaData() throws IOException {
 		String startTime = org.gwaspi.global.Utils.getMediumDateTimeAsString();
 
 		TreeMap tempTM = parseAnnotationBRFile(hapmapPath); // rsId, alleles [A/T], chr, pos, strand, genome_build, center, protLSID, assayLSID, panelLSID, QC_code, ensue GTs by SampleId
@@ -49,7 +50,7 @@ public class MetadataLoaderHapmap {
 		org.gwaspi.global.Utils.sysoutStart("initilaizing marker info");
 		System.out.println(org.gwaspi.global.Text.All.processing);
 
-		LinkedHashMap markerMetadataLHM = new LinkedHashMap();
+		Map<String, Object> markerMetadataLHM = new LinkedHashMap<String, Object>();
 		for (Iterator it = tempTM.keySet().iterator(); it.hasNext();) {
 			String key = it.next().toString();
 			String[] keyValues = key.split(cNetCDF.Defaults.TMP_SEPARATOR); // chr;pos;markerId

@@ -1,19 +1,14 @@
 package org.gwaspi.netCDF.exporter;
 
 import java.io.BufferedWriter;
-import java.io.DataOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.Map;
-import org.gwaspi.model.OperationsList;
 import org.gwaspi.netCDF.markers.MarkerSet_opt;
 import org.gwaspi.netCDF.matrices.MatrixMetadata;
-import org.gwaspi.reports.GatherQAMarkersData;
 import org.gwaspi.samples.SampleSet;
 import ucar.nc2.NetcdfFile;
 
@@ -66,8 +61,8 @@ public class PlinkFormatter implements Formatter {
 				// Iterate through all markers
 				rdMarkerSet.fillGTsForCurrentSampleIntoInitLHM(sampleNb);
 				StringBuilder genotypes = new StringBuilder();
-				for (Iterator it2 = rdMarkerSet.getMarkerIdSetLHM().keySet().iterator(); it2.hasNext();) {
-					Object key = it2.next();
+				for (Iterator<String> it2 = rdMarkerSet.getMarkerIdSetLHM().keySet().iterator(); it2.hasNext();) {
+					String key = it2.next();
 					byte[] tempGT = (byte[]) rdMarkerSet.getMarkerIdSetLHM().get(key);
 					genotypes.append(sep);
 					genotypes.append(new String(new byte[]{tempGT[0]}));
@@ -145,8 +140,8 @@ public class PlinkFormatter implements Formatter {
 			//MARKERSET POSITION
 			rdMarkerSet.appendVariableToMarkerSetLHMValue(org.gwaspi.constants.cNetCDF.Variables.VAR_MARKERS_POS, sep);
 			int markerNb = 0;
-			for (Iterator it = rdMarkerSet.getMarkerIdSetLHM().keySet().iterator(); it.hasNext();) {
-				Object key = it.next();
+			for (Iterator<String> it = rdMarkerSet.getMarkerIdSetLHM().keySet().iterator(); it.hasNext();) {
+				String key = it.next();
 				Object pos = rdMarkerSet.getMarkerIdSetLHM().get(key);
 				mapBW.append(pos.toString());
 				mapBW.append("\n");

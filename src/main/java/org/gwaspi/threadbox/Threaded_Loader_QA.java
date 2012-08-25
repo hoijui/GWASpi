@@ -1,6 +1,6 @@
 package org.gwaspi.threadbox;
 
-import java.util.LinkedHashMap;
+import java.util.Map;
 import org.gwaspi.model.GWASpiExplorerNodes;
 import org.gwaspi.netCDF.loader.LoadManager;
 import org.gwaspi.netCDF.operations.OP_QAMarkers_opt;
@@ -19,7 +19,7 @@ public class Threaded_Loader_QA extends CommonRunnable {
 	private int resultMatrixId;
 	private int resultOpId;
 	private String format;
-	private LinkedHashMap sampleInfoLHM;
+	private Map<String, Object> sampleInfoLHM;
 	private String newMatrixName;
 	private String newMatrixDescription;
 	private String file1;
@@ -33,7 +33,7 @@ public class Threaded_Loader_QA extends CommonRunnable {
 	public Threaded_Loader_QA(String threadName,
 			String timeStamp,
 			String format,
-			LinkedHashMap sampleInfoLHM,
+			Map<String, Object> sampleInfoLHM,
 			String newMatrixName,
 			String newMatrixDescription,
 			String file1,

@@ -5,9 +5,9 @@ import org.gwaspi.constants.cNetCDF;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import org.gwaspi.netCDF.operations.GWASinOneGOParams;
 
 /**
@@ -31,7 +31,7 @@ public class MultiOperations {
 	 * @deprecated Use YYY instead
 	 */
 	public static void loadMatrixDoQA(final String format,
-			final LinkedHashMap sampleInfoLHM,
+			final Map<String, Object> sampleInfoLHM,
 			final String newMatrixName,
 			final String newMatrixDescription,
 			final String file1,
@@ -389,8 +389,8 @@ public class MultiOperations {
 			final cNetCDF.Defaults.SetSamplePickCase samplePickCase,
 			final String markerPickVar,
 			final String samplePickVar,
-			final HashSet markerCriteria,
-			final HashSet sampleCriteria,
+			final Set<Object> markerCriteria,
+			final Set<Object> sampleCriteria,
 			final File markerCriteriaFile,
 			final File sampleCriteriaFile) {
 

@@ -8,10 +8,10 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 import org.gwaspi.netCDF.markers.MarkerSet_opt;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.gwaspi.netCDF.matrices.MatrixMetadata;
@@ -82,8 +82,8 @@ public class MatrixDataExtractor_opt {
 			cNetCDF.Defaults.SetSamplePickCase _samplePickCase,
 			String _markerPickerVar,
 			String _samplePickerVar,
-			HashSet _markerCriteria,
-			HashSet _sampleCriteria,
+			Set<Object> _markerCriteria,
+			Set<Object> _sampleCriteria,
 			int _sampleFilterPos,
 			File _markerPickerFile,
 			File _samplePickerFile) throws IOException, InvalidRangeException {

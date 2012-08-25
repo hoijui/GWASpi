@@ -1,19 +1,14 @@
 package org.gwaspi.netCDF.exporter;
 
 import java.io.BufferedWriter;
-import java.io.DataOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.Map;
-import org.gwaspi.model.OperationsList;
 import org.gwaspi.netCDF.markers.MarkerSet_opt;
 import org.gwaspi.netCDF.matrices.MatrixMetadata;
-import org.gwaspi.reports.GatherQAMarkersData;
 import org.gwaspi.samples.SampleSet;
 import ucar.nc2.NetcdfFile;
 
@@ -79,16 +74,16 @@ public class PlinkTransposedFormatter implements Formatter {
 
 			//Iterate through markerset
 			int markerNb = 0;
-			for (Iterator it = rdMarkerSet.getMarkerIdSetLHM().keySet().iterator(); it.hasNext();) {
+			for (Iterator<String> it = rdMarkerSet.getMarkerIdSetLHM().keySet().iterator(); it.hasNext();) {
 				StringBuilder line = new StringBuilder();
-				Object markerId = it.next();
+				String markerId = it.next();
 				Object pos = rdMarkerSet.getMarkerIdSetLHM().get(markerId);
 
 				//Iterate through sampleset
 				StringBuilder genotypes = new StringBuilder();
 				rdSampleSetMap = rdSampleSet.readAllSamplesGTsFromCurrentMarkerToLHM(rdNcFile, rdSampleSetMap, markerNb);
-				for (Iterator it2 = rdSampleSetMap.keySet().iterator(); it2.hasNext();) {
-					Object sampleId = it2.next();
+				for (Iterator<String> it2 = rdSampleSetMap.keySet().iterator(); it2.hasNext();) {
+					String sampleId = it2.next();
 					byte[] tempGT = (byte[]) rdSampleSetMap.get(sampleId);
 					genotypes.append(sep);
 					genotypes.append(new String(new byte[]{tempGT[0]}));
@@ -179,5 +174,4 @@ public class PlinkTransposedFormatter implements Formatter {
 
 		return result;
 	}
-
 }

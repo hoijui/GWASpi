@@ -6,7 +6,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.text.DecimalFormat;
-import java.util.HashSet;
+import java.util.Set;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.LogAxis;
@@ -33,7 +33,7 @@ public class PlinkReportLoaderCombined {
 	private PlinkReportLoaderCombined() {
 	}
 
-	public static CombinedRangeXYPlot loadAssocUnadjLogPvsPos(File plinkReport, HashSet redMarkersHS) throws IOException {
+	public static CombinedRangeXYPlot loadAssocUnadjLogPvsPos(File plinkReport, Set<String> redMarkersHS) throws IOException {
 
 		NumberAxis sharedAxis = new NumberAxis("-log₁₀(P)");
 		sharedAxis.setTickMarkInsideLength(3.0f);

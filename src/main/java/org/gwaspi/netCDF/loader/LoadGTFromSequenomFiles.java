@@ -10,7 +10,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
 import ucar.ma2.ArrayByte;
@@ -31,8 +30,8 @@ public class LoadGTFromSequenomFiles {
 	private String gtDirPath;
 	private String sampleFilePath;
 	private String annotationFilePath;
-	private LinkedHashMap sampleInfoLHM;
-	private LinkedHashMap markerSetLHM;
+	private Map<String, Object> sampleInfoLHM;
+	private Map<String, Object> markerSetLHM;
 	private int studyId;
 	private String format;
 	private String friendlyName;
@@ -49,7 +48,7 @@ public class LoadGTFromSequenomFiles {
 			String _friendlyName,
 			String _gtCode,
 			String _description,
-			LinkedHashMap _sampleInfoLHM) {
+			Map<String, Object> _sampleInfoLHM) {
 
 		gtDirPath = _gtDirPath;
 		sampleFilePath = _sampleFilePath;
@@ -202,8 +201,8 @@ public class LoadGTFromSequenomFiles {
 
 		// WRITE GT STRAND FROM ANNOTATION FILE
 		int[] gtOrig = new int[]{0, 0};
-		for (Iterator it = markerSetLHM.keySet().iterator(); it.hasNext();) {
-			Object key = it.next();
+		for (Iterator<String> it = markerSetLHM.keySet().iterator(); it.hasNext();) {
+			String key = it.next();
 			markerSetLHM.put(key, cNetCDF.Defaults.StrandType.FWD.toString());
 		}
 		markersD2 = org.gwaspi.netCDF.operations.Utils.writeLHMValueToD2ArrayChar(markerSetLHM, cNetCDF.Strides.STRIDE_STRAND);
@@ -224,11 +223,11 @@ public class LoadGTFromSequenomFiles {
 		// <editor-fold defaultstate="collapsed" desc="MATRIX GENOTYPES LOAD ">
 		// INIT AND PURGE SORTEDMARKERSET LHM
 		int sampleCounter = 0;
-		for (Iterator it = sampleInfoLHM.keySet().iterator(); it.hasNext();) {
-			Object sampleId = it.next();
+		for (Iterator<String> it = sampleInfoLHM.keySet().iterator(); it.hasNext();) {
+			String sampleId = it.next();
 
 			// PURGE MARKERSETLHM FOR CURRENT SAMPLE
-			for (Iterator it2 = markerSetLHM.keySet().iterator(); it2.hasNext();) {
+			for (Iterator<String> it2 = markerSetLHM.keySet().iterator(); it2.hasNext();) {
 				String key = it2.next().toString();
 				markerSetLHM.put(key, cNetCDF.Defaults.DEFAULT_GT);
 			}
@@ -300,7 +299,7 @@ public class LoadGTFromSequenomFiles {
 
 	public void loadIndividualFiles(File file,
 			NetcdfFileWriteable ncfile,
-			LinkedHashMap sortedMarkerSetLHM,
+			Map<String, Object> sortedMarkerSetLHM,
 			String currentSampleId) throws IOException, InvalidRangeException {
 
 		////////////// LOAD INPUT FILE ////////////////

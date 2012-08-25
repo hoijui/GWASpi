@@ -2,7 +2,7 @@ package org.gwaspi.netCDF.loader;
 
 import org.gwaspi.constants.cNetCDF;
 import java.io.IOException;
-import java.util.LinkedHashMap;
+import java.util.Map;
 import ucar.ma2.InvalidRangeException;
 
 /**
@@ -17,7 +17,7 @@ public class LoadManager {
 	}
 
 	public static int dispatchLoadByFormat(String format,
-			LinkedHashMap sampleInfoLHM,
+			Map<String, Object> sampleInfoLHM,
 			String txt_NewMatrixName,
 			String txtA_NewMatrixDescription,
 			String txt_File1,
@@ -26,7 +26,9 @@ public class LoadManager {
 			String chromosome,
 			String strandType,
 			String gtCode,
-			int studyId) throws IOException, InvalidRangeException, InterruptedException {
+			int studyId)
+			throws IOException, InvalidRangeException, InterruptedException
+	{
 		int newMatrixId = Integer.MIN_VALUE;
 
 		switch (org.gwaspi.constants.cImport.ImportFormat.compareTo(format)) {

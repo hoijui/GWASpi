@@ -37,7 +37,7 @@ public class LoadGTFromPlinkBinaryFiles {
 	private String strand;
 	private String friendlyName;
 	private String description;
-	private LinkedHashMap sampleInfoLHM = new LinkedHashMap();
+	private Map<String, Object> sampleInfoLHM = new LinkedHashMap<String, Object>();
 	private String gtCode;
 	private org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding guessedGTCode = org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding.O12;
 	private int hyperSlabRows;
@@ -51,7 +51,7 @@ public class LoadGTFromPlinkBinaryFiles {
 			String _friendlyName,
 			String _gtCode,
 			String _description,
-			LinkedHashMap _sampleInfoLHM) {
+			Map<String, Object> _sampleInfoLHM) {
 
 		bimFilePath = _bimFilePath;
 		sampleFilePath = _sampleFilePath;
@@ -72,7 +72,7 @@ public class LoadGTFromPlinkBinaryFiles {
 
 		//<editor-fold defaultstate="collapsed/expanded" desc="CREATE MARKERSET & NETCDF">
 		MetadataLoaderPlinkBinary markerSetLoader = new MetadataLoaderPlinkBinary(bimFilePath, strand, studyId);
-		LinkedHashMap sortedMarkerSetLHM = markerSetLoader.getSortedMarkerSetWithMetaData(); //markerid, rsId, chr, pos, allele1, allele2
+		Map<String, Object> sortedMarkerSetLHM = markerSetLoader.getSortedMarkerSetWithMetaData(); //markerid, rsId, chr, pos, allele1, allele2
 
 		hyperSlabRows = Math.round(org.gwaspi.gui.StartGWASpi.maxProcessMarkers
 				/ (sampleInfoLHM.size() * 2)); //PLAYING IT SAFE WITH HALF THE maxProcessMarkers
@@ -240,8 +240,8 @@ public class LoadGTFromPlinkBinaryFiles {
 				strandFlag = cImport.StrandFlags.strandREV;
 				break;
 		}
-		for (Iterator it = sortedMarkerSetLHM.keySet().iterator(); it.hasNext();) {
-			Object key = it.next();
+		for (Iterator<String> it = sortedMarkerSetLHM.keySet().iterator(); it.hasNext();) {
+			String key = it.next();
 			sortedMarkerSetLHM.put(key, strandFlag);
 		}
 		markersD2 = org.gwaspi.netCDF.operations.Utils.writeLHMValueToD2ArrayChar(sortedMarkerSetLHM, cNetCDF.Strides.STRIDE_STRAND);
@@ -261,7 +261,7 @@ public class LoadGTFromPlinkBinaryFiles {
 
 		// <editor-fold defaultstate="collapsed" desc="MATRIX GENOTYPES LOAD ">
 		System.out.println(org.gwaspi.global.Text.All.processing);
-		LinkedHashMap bimMarkerSetLHM = markerSetLoader.parseOrigBimFile(bimFilePath); //key = markerId, values{allele1 (minor), allele2 (major)}
+		Map<String, Object> bimMarkerSetLHM = markerSetLoader.parseOrigBimFile(bimFilePath); //key = markerId, values{allele1 (minor), allele2 (major)}
 		loadBedGenotypes(new File(bedFilePath),
 				ncfile,
 				sortedMarkerSetLHM,
@@ -305,9 +305,9 @@ public class LoadGTFromPlinkBinaryFiles {
 
 	public void loadBedGenotypes(File file,
 			NetcdfFileWriteable ncfile,
-			LinkedHashMap wrMarkerIdSetLHM,
-			LinkedHashMap bimMarkerSetLHM,
-			LinkedHashMap sampleSetLHM) throws IOException, InvalidRangeException {
+			Map<String, Object> wrMarkerIdSetLHM,
+			Map<String, Object> bimMarkerSetLHM,
+			Map<String, Object> sampleSetLHM) throws IOException, InvalidRangeException {
 
 		FileInputStream bedFS = new FileInputStream(file);
 		DataInputStream bedIS = new DataInputStream(bedFS);
@@ -322,7 +322,7 @@ public class LoadGTFromPlinkBinaryFiles {
 		}
 
 		Iterator itMarkerSet = bimMarkerSetLHM.keySet().iterator();
-		Iterator itSampleSet = sampleSetLHM.keySet().iterator();
+		Iterator<String> itSampleSet = sampleSetLHM.keySet().iterator();
 
 		//SKIP HEADER
 		bedIS.readByte();
@@ -336,7 +336,7 @@ public class LoadGTFromPlinkBinaryFiles {
 		byte byteData;
 		boolean allele1;
 		boolean allele2;
-		Object sampleId;
+		String sampleId;
 		if (mode == 1) {
 			//GET GENOTYPES
 			int rowCounter = 1;
@@ -346,7 +346,7 @@ public class LoadGTFromPlinkBinaryFiles {
 					////////////////// NEW SNP //////////////
 					//PURGE LHM
 					while (itSampleSet.hasNext()) {
-						Object key = itSampleSet.next();
+						String key = itSampleSet.next();
 						sampleSetLHM.put(key, cNetCDF.Defaults.DEFAULT_GT);
 					}
 

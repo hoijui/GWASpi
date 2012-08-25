@@ -2,10 +2,10 @@ package org.gwaspi.netCDF.markers;
 
 import org.gwaspi.constants.cNetCDF;
 import java.io.IOException;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 import org.gwaspi.netCDF.matrices.MatrixMetadata;
 import ucar.ma2.ArrayByte;
 import ucar.ma2.ArrayChar;
@@ -42,8 +42,8 @@ public class MarkerSet_opt {
 	private NetcdfFile ncfile = null;
 	private int startMkIdx = 0;
 	private int endMkIdx = Integer.MIN_VALUE;
-	private Map<String, Object> markerIdSetLHM = new LinkedHashMap();
-	private Map<String, Object> markerRsIdSetLHM = new LinkedHashMap();
+	private Map<String, Object> markerIdSetLHM = new LinkedHashMap<String, Object> ();
+	private Map<String, Object> markerRsIdSetLHM = new LinkedHashMap<String, Object> ();
 
 	public MarkerSet_opt(int studyId, int matrixId) throws IOException {
 		matrixMetadata = new MatrixMetadata(matrixId);
@@ -185,7 +185,7 @@ public class MarkerSet_opt {
 	 */
 	public Map<String, Object> getChrInfoSetLHM() {
 
-		Map<String, Object> chrInfoLHM = new LinkedHashMap();
+		Map<String, Object> chrInfoLHM = new LinkedHashMap<String, Object>();
 
 		// GET NAMES OF CHROMOSOMES
 		Variable var = ncfile.findVariable(org.gwaspi.constants.cNetCDF.Variables.VAR_CHR_IN_MATRIX);
@@ -497,8 +497,8 @@ public class MarkerSet_opt {
 	/**
 	 * HELPER GETS DICTIONARY OF CURRENT MATRIX. IS CONCURRENT TO INSTANTIATED LHM
 	 */
-	public LinkedHashMap getDictionaryBasesLHM() throws IOException {
-		LinkedHashMap dictionnaryLHM = new LinkedHashMap();
+	public Map<String, Object> getDictionaryBasesLHM() throws IOException {
+		Map<String, Object> dictionnaryLHM = new LinkedHashMap<String, Object>();
 		try {
 			Variable varBasesDict = ncfile.findVariable(cNetCDF.Variables.VAR_MARKERS_BASES_DICT);
 			if (null != varBasesDict) {
@@ -507,9 +507,9 @@ public class MarkerSet_opt {
 				ArrayChar.D2 dictAlleles_ACD2 = (ArrayChar.D2) varBasesDict.read("(" + startMkIdx + ":" + endMkIdx + ":1, 0:" + (dictShape[1] - 1) + ":1)");
 
 				Index index = dictAlleles_ACD2.getIndex();
-				Iterator it = markerIdSetLHM.keySet().iterator();
+				Iterator<String> it = markerIdSetLHM.keySet().iterator();
 				for (int i = 0; i < dictShape[0]; i++) {
-					Object key = it.next();
+					String key = it.next();
 					StringBuilder alleles = new StringBuilder("");
 					// Get Alleles
 					for (int j = 0; j < dictShape[1]; j++) {
@@ -531,21 +531,21 @@ public class MarkerSet_opt {
 	 * THESE LHMs DO NOT CONTAIN SAME ITEMS AS INIT LHM.
 	 * RETURN LHM OK
 	 */
-	public LinkedHashMap pickValidMarkerSetItemsByValue(String variable, HashSet criteria, boolean includes) {
-		LinkedHashMap returnLHM = new LinkedHashMap();
+	public Map<String, Object> pickValidMarkerSetItemsByValue(String variable, Set<Object> criteria, boolean includes) {
+		Map<String, Object> returnLHM = new LinkedHashMap<String, Object>();
 		this.fillInitLHMWithVariable(variable);
 
 		if (includes) {
-			for (Iterator it = markerIdSetLHM.keySet().iterator(); it.hasNext();) {
-				Object key = it.next();
+			for (Iterator<String> it = markerIdSetLHM.keySet().iterator(); it.hasNext();) {
+				String key = it.next();
 				Object value = markerIdSetLHM.get(key);
 				if (criteria.contains(value)) {
 					returnLHM.put(key, value);
 				}
 			}
 		} else {
-			for (Iterator it = markerIdSetLHM.keySet().iterator(); it.hasNext();) {
-				Object key = it.next();
+			for (Iterator<String> it = markerIdSetLHM.keySet().iterator(); it.hasNext();) {
+				String key = it.next();
 				Object value = markerIdSetLHM.get(key);
 				if (!criteria.contains(value)) {
 					returnLHM.put(key, value);
@@ -556,20 +556,20 @@ public class MarkerSet_opt {
 		return returnLHM;
 	}
 
-	public LinkedHashMap pickValidMarkerSetItemsByKey(HashSet criteria, boolean includes) {
-		LinkedHashMap returnLHM = new LinkedHashMap();
+	public Map<String, Object> pickValidMarkerSetItemsByKey(Set<Object> criteria, boolean includes) {
+		Map<String, Object> returnLHM = new LinkedHashMap<String, Object>();
 
 		if (includes) {
-			for (Iterator it = markerIdSetLHM.keySet().iterator(); it.hasNext();) {
-				Object key = it.next();
+			for (Iterator<String> it = markerIdSetLHM.keySet().iterator(); it.hasNext();) {
+				String key = it.next();
 				Object value = markerIdSetLHM.get(key);
 				if (criteria.contains(key)) {
 					returnLHM.put(key, value);
 				}
 			}
 		} else {
-			for (Iterator it = markerIdSetLHM.keySet().iterator(); it.hasNext();) {
-				Object key = it.next();
+			for (Iterator<String> it = markerIdSetLHM.keySet().iterator(); it.hasNext();) {
+				String key = it.next();
 				Object value = markerIdSetLHM.get(key);
 				if (!criteria.contains(key)) {
 					returnLHM.put(key, value);

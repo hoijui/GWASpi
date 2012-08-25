@@ -12,7 +12,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
@@ -50,7 +49,7 @@ public class LoadGTFromPlinkFlatFiles {
 			String _friendlyName,
 			String _gtCode,
 			String _description,
-			LinkedHashMap _sampleInfoLHM) {
+			Map<String, Object> _sampleInfoLHM) {
 
 		mapFilePath = _mapFilePath;
 		sampleFilePath = _sampleFilePath;
@@ -77,7 +76,7 @@ public class LoadGTFromPlinkFlatFiles {
 
 		//<editor-fold defaultstate="collapsed/expanded" desc="CREATE MARKERSET & NETCDF">
 		MetadataLoaderPlink markerSetLoader = new MetadataLoaderPlink(mapFilePath, pedFilePath, strand, studyId);
-		LinkedHashMap sortedMarkerSetLHM = markerSetLoader.getSortedMarkerSetWithMetaData(); //markerid, rsId, chr, pos
+		Map<String, Object> sortedMarkerSetLHM = markerSetLoader.getSortedMarkerSetWithMetaData(); //markerid, rsId, chr, pos
 
 		System.out.println("Done initializing sorted MarkerSetLHM at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
 
@@ -227,8 +226,8 @@ public class LoadGTFromPlinkFlatFiles {
 				strandFlag = cImport.StrandFlags.strandREV;
 				break;
 		}
-		for (Iterator it = sortedMarkerSetLHM.keySet().iterator(); it.hasNext();) {
-			Object key = it.next();
+		for (Iterator<String> it = sortedMarkerSetLHM.keySet().iterator(); it.hasNext();) {
+			String key = it.next();
 			sortedMarkerSetLHM.put(key, strandFlag);
 		}
 		markersD2 = org.gwaspi.netCDF.operations.Utils.writeLHMValueToD2ArrayChar(sortedMarkerSetLHM, cNetCDF.Strides.STRIDE_STRAND);
@@ -248,7 +247,7 @@ public class LoadGTFromPlinkFlatFiles {
 
 		// <editor-fold defaultstate="collapsed" desc="MATRIX GENOTYPES LOAD ">
 		System.out.println(org.gwaspi.global.Text.All.processing);
-		LinkedHashMap mapMarkerSetLHM = markerSetLoader.parseOrigMapFile(mapFilePath);
+		Map<String, Object> mapMarkerSetLHM = markerSetLoader.parseOrigMapFile(mapFilePath);
 		loadPedGenotypes(new File(pedFilePath),
 				ncfile,
 				sortedMarkerSetLHM,
@@ -293,8 +292,8 @@ public class LoadGTFromPlinkFlatFiles {
 
 	public void loadPedGenotypes(File file,
 			NetcdfFileWriteable ncfile,
-			LinkedHashMap wrMarkerIdSetLHM,
-			LinkedHashMap mapMarkerSetLHM,
+			Map<String, Object> wrMarkerIdSetLHM,
+			Map<String, Object> mapMarkerSetLHM,
 			ArrayList samplesAL) throws IOException, InvalidRangeException {
 
 		FileReader inputFileReader = new FileReader(file);
@@ -304,8 +303,8 @@ public class LoadGTFromPlinkFlatFiles {
 		String l;
 		while ((l = inputBufferReader.readLine()) != null) {
 			//PURGE WRITE MARKER SET
-			for (Iterator it = wrMarkerIdSetLHM.keySet().iterator(); it.hasNext();) {
-				Object markerId = it.next();
+			for (Iterator<String> it = wrMarkerIdSetLHM.keySet().iterator(); it.hasNext();) {
+				String markerId = it.next();
 				wrMarkerIdSetLHM.put(markerId, cNetCDF.Defaults.DEFAULT_GT);
 			}
 
@@ -324,9 +323,9 @@ public class LoadGTFromPlinkFlatFiles {
 			}
 
 			//read genotypes from this point on
-			Iterator it = mapMarkerSetLHM.keySet().iterator();
+			Iterator<String> it = mapMarkerSetLHM.keySet().iterator();
 			while (st.hasMoreTokens()) {
-				Object markerId = it.next();
+				String markerId = it.next();
 				byte[] alleles = new byte[]{(byte) (st.nextToken().charAt(0)),
 					(byte) (st.nextToken().charAt(0))};
 				wrMarkerIdSetLHM.put(markerId, alleles);

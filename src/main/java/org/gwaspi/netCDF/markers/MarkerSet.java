@@ -2,11 +2,11 @@ package org.gwaspi.netCDF.markers;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import org.gwaspi.netCDF.matrices.MatrixMetadata;
 import ucar.ma2.ArrayByte;
 import ucar.ma2.ArrayChar;
@@ -31,8 +31,8 @@ public class MarkerSet {
 	private String technology = ""; // platform
 	private int markerSetSize = 0; // probe_nb
 	private MatrixMetadata matrixMetadata;
-	private Map<String, Object> markerIdSetLHM = new LinkedHashMap();
-	private Map<String, Object> markerRsIdSetLHM = new LinkedHashMap();
+	private Map<String, Object> markerIdSetLHM = new LinkedHashMap<String, Object>();
+	private Map<String, Object> markerRsIdSetLHM = new LinkedHashMap<String, Object>();
 
 	public MarkerSet(int studyId, int matrixId) throws IOException {
 		matrixMetadata = new MatrixMetadata(matrixId);
@@ -190,8 +190,8 @@ public class MarkerSet {
 		return rdLhm;
 	}
 
-	public LinkedHashMap fillStrandedBasesToLHMArray(LinkedHashMap rdLhm, String strandedBases) throws IOException {
-		LinkedHashMap dictionaryLhm = new LinkedHashMap();
+	public Map<String, Object> fillStrandedBasesToLHMArray(Map<String, Object> rdLhm, String strandedBases) throws IOException {
+		Map<String, Object> dictionaryLhm = new LinkedHashMap<String, Object>();
 		NetcdfFile ncfile = null;
 		try {
 			ncfile = NetcdfFile.open(matrixMetadata.getPathToMatrix());
@@ -212,9 +212,9 @@ public class MarkerSet {
 				ArrayChar.D2 pmAlleles_ACD2 = (ArrayChar.D2) varStrandedBases.read("(0:" + (strandsShape[0] - 1) + ":1, 0:" + (pmAllelesShape[1] - 1) + ":1)");
 
 				Index index = pmAlleles_ACD2.getIndex();
-				Iterator it = rdLhm.keySet().iterator();
+				Iterator<String> it = rdLhm.keySet().iterator();
 				for (int i = 0; i < pmAllelesShape[0]; i++) {
-					Object key = it.next();
+					String key = it.next();
 					StringBuilder alleles = new StringBuilder("");
 					//Get Alleles
 					for (int j = 0; j < pmAllelesShape[1]; j++) {
@@ -291,17 +291,17 @@ public class MarkerSet {
 		return markerIdSetLHM;
 	}
 
-	public LinkedHashMap fillLHMWithDefaultValue(LinkedHashMap lhm, Object defaultVal) {
-		for (Iterator it = lhm.keySet().iterator(); it.hasNext();) {
-			Object key = it.next();
+	public Map<String, Object> fillLHMWithDefaultValue(Map<String, Object> lhm, Object defaultVal) {
+		for (Iterator<String> it = lhm.keySet().iterator(); it.hasNext();) {
+			String key = it.next();
 			lhm.put(key, defaultVal);
 		}
 		return lhm;
 	}
 
-	public LinkedHashMap fillWrLHMWithRdLHMValue(LinkedHashMap wrLHM, LinkedHashMap rdLHM) {
-		for (Iterator it = wrLHM.keySet().iterator(); it.hasNext();) {
-			Object key = it.next();
+	public Map<String, Object> fillWrLHMWithRdLHMValue(Map<String, Object> wrLHM, Map<String, Object> rdLHM) {
+		for (Iterator<String> it = wrLHM.keySet().iterator(); it.hasNext();) {
+			String key = it.next();
 			Object value = rdLHM.get(key);
 			wrLHM.put(key, value);
 		}
@@ -430,7 +430,7 @@ public class MarkerSet {
 
 	//</editor-fold>
 	//<editor-fold defaultstate="collapsed" desc="MARKERSET PICKERS">
-	public Map<String, Object> pickValidMarkerSetItemsByValue(NetcdfFile ncfile, String variable, HashSet criteria, boolean includes) {
+	public Map<String, Object> pickValidMarkerSetItemsByValue(NetcdfFile ncfile, String variable, Set<Object> criteria, boolean includes) {
 		Map<String, Object> returnLHM = new LinkedHashMap<String, Object>();
 		Map<String, Object> readLhm = this.fillMarkerSetLHMWithVariable(ncfile, variable);
 
@@ -455,7 +455,7 @@ public class MarkerSet {
 		return returnLHM;
 	}
 
-	public Map<String, Object> pickValidMarkerSetItemsByKey(Map<String, Object> lhm, HashSet criteria, boolean includes) {
+	public Map<String, Object> pickValidMarkerSetItemsByKey(Map<String, Object> lhm, Set<Object> criteria, boolean includes) {
 		Map<String, Object> returnLHM = new LinkedHashMap<String, Object>();
 
 		if (includes) {

@@ -48,7 +48,7 @@ public class LoadGTFromIlluminaLGENFiles {
 			String _friendlyName,
 			String _gtCode,
 			String _description,
-			LinkedHashMap _sampleInfoLHM) {
+			Map<String, Object> _sampleInfoLHM) {
 
 		gtDirPath = _gtDirPath;
 		sampleFilePath = _sampleFilePath;
@@ -75,7 +75,7 @@ public class LoadGTFromIlluminaLGENFiles {
 
 		//<editor-fold defaultstate="collapsed" desc="CREATE MARKERSET & NETCDF">
 		MetadataLoaderIlluminaLGEN markerSetLoader = new MetadataLoaderIlluminaLGEN(annotationFilePath, studyId);
-		LinkedHashMap markerSetLHM = markerSetLoader.getSortedMarkerSetWithMetaData();
+		Map<String, Object> markerSetLHM = markerSetLoader.getSortedMarkerSetWithMetaData();
 
 		System.out.println("Done initializing sorted MarkerSetLHM at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
 
@@ -204,8 +204,8 @@ public class LoadGTFromIlluminaLGENFiles {
 
 		//WRITE GT STRAND FROM ANNOTATION FILE
 		int[] gtOrig = new int[]{0, 0};
-		for (Iterator it = markerSetLHM.keySet().iterator(); it.hasNext();) {
-			Object key = it.next();
+		for (Iterator<String> it = markerSetLHM.keySet().iterator(); it.hasNext();) {
+			String key = it.next();
 			markerSetLHM.put(key, cNetCDF.Defaults.StrandType.FWD.toString());
 		}
 		markersD2 = org.gwaspi.netCDF.operations.Utils.writeLHMValueToD2ArrayChar(markerSetLHM, cNetCDF.Strides.STRIDE_STRAND);
@@ -274,7 +274,7 @@ public class LoadGTFromIlluminaLGENFiles {
 
 	public void loadIndividualFiles(File file,
 			NetcdfFileWriteable ncfile,
-			LinkedHashMap sortedMarkerSetLHM,
+			Map<String, Object> sortedMarkerSetLHM,
 			ArrayList samplesAL) throws IOException, InvalidRangeException {
 
 		////////////// LOAD INPUT FILE ////////////////
@@ -300,7 +300,7 @@ public class LoadGTFromIlluminaLGENFiles {
 
 		//GET ALLELES
 		String l;
-		LinkedHashMap tempMarkerSet = new LinkedHashMap();
+		Map<String, Object> tempMarkerSet = new LinkedHashMap<String, Object>();
 		String currentSampleId = "";
 		while ((l = inputBufferReader.readLine()) != null) {
 			String[] cVals = l.split(cImport.Separators.separators_CommaTab_rgxp);

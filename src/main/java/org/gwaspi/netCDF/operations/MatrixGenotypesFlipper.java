@@ -13,6 +13,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 import org.gwaspi.netCDF.markers.MarkerSet_opt;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.gwaspi.netCDF.matrices.MatrixMetadata;
@@ -40,7 +41,7 @@ public class MatrixGenotypesFlipper {
 	private MatrixMetadata rdMatrixMetadata = null;
 	private GenotypeEncoding gtEncoding = GenotypeEncoding.UNKNOWN;
 	private MarkerSet_opt rdMarkerSet = null;
-	private HashSet markerFlipHS = new HashSet();
+	private Set<String> markerFlipHS = new HashSet<String>();
 	private SampleSet rdSampleSet = null;
 	private Map<String, Object> rdMarkerIdSetLHM = new LinkedHashMap<String, Object>();
 	private Map<String, Object> rdSampleSetLHM = new LinkedHashMap<String, Object>();

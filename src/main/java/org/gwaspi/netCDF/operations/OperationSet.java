@@ -2,11 +2,11 @@ package org.gwaspi.netCDF.operations;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import ucar.ma2.ArrayChar;
 import ucar.ma2.ArrayDouble;
 import ucar.ma2.ArrayFloat;
@@ -293,9 +293,9 @@ public class OperationSet {
 		}
 	}
 
-	public LinkedHashMap fillWrLHMWithRdLHMValue(LinkedHashMap wrLHM, LinkedHashMap rdLHM) {
-		for (Iterator it = wrLHM.keySet().iterator(); it.hasNext();) {
-			Object key = it.next();
+	public Map<String, Object> fillWrLHMWithRdLHMValue(Map<String, Object> wrLHM, Map<String, Object> rdLHM) {
+		for (Iterator<String> it = wrLHM.keySet().iterator(); it.hasNext();) {
+			String key = it.next();
 			Object value = rdLHM.get(key);
 			wrLHM.put(key, value);
 		}
@@ -424,7 +424,7 @@ public class OperationSet {
 
 	//</editor-fold>
 	//<editor-fold defaultstate="collapsed" desc="OPERATION-SET PICKERS">
-	public Map<String, Object> pickValidMarkerSetItemsByValue(NetcdfFile ncfile, String variable, HashSet criteria, boolean includes) {
+	public Map<String, Object> pickValidMarkerSetItemsByValue(NetcdfFile ncfile, String variable, Set<Object> criteria, boolean includes) {
 		Map<String, Object> returnLHM = new LinkedHashMap<String, Object>();
 		Map<String, Object> readLhm = fillOpSetLHMWithVariable(ncfile, variable);
 
@@ -449,7 +449,7 @@ public class OperationSet {
 		return returnLHM;
 	}
 
-	public Map<String, Object> pickValidMarkerSetItemsByKey(Map<String, Object> lhm, HashSet criteria, boolean includes) {
+	public Map<String, Object> pickValidMarkerSetItemsByKey(Map<String, Object> lhm, Set<Object> criteria, boolean includes) {
 		Map<String, Object> returnLHM = new LinkedHashMap<String, Object>();
 
 		if (includes) {

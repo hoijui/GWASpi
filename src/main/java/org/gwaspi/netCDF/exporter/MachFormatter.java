@@ -46,13 +46,13 @@ public class MachFormatter implements Formatter {
 
 			//FIND START AND END MARKERS BY CHROMOSOME
 			rdMarkerSet.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
-			LinkedHashMap chrMarkerSetLHM = new LinkedHashMap();
+			Map<String, Object> chrMarkerSetLHM = new LinkedHashMap<String, Object>();
 			chrMarkerSetLHM.putAll(rdMarkerSet.getMarkerIdSetLHM());
 			String tmpChr = "";
 			int start = 0;
 			int end = 0;
-			for (Iterator it = chrMarkerSetLHM.keySet().iterator(); it.hasNext();) {
-				Object chrId = it.next();
+			for (Iterator<String> it = chrMarkerSetLHM.keySet().iterator(); it.hasNext();) {
+				String chrId = it.next();
 				String chr = chrMarkerSetLHM.get(chrId).toString();
 				if (!chr.equals(tmpChr)) {
 					if (start != end) {

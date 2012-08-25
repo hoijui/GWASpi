@@ -42,8 +42,8 @@ public class OP_MarkerCensus_opt {
 
 		int resultOpId = Integer.MIN_VALUE;
 
-//        LinkedHashMap wrMarkerSetCensusLHM = new LinkedHashMap();
-//        LinkedHashMap wrMarkerSetKnownAllelesLHM = new LinkedHashMap();
+//		Map wrMarkerSetCensusLHM = new LinkedHashMap();
+//		Map wrMarkerSetKnownAllelesLHM = new LinkedHashMap();
 
 		//<editor-fold defaultstate="collapsed" desc="PICKING CLEAN MARKERS AND SAMPLES FROM QA">
 
@@ -225,10 +225,10 @@ public class OP_MarkerCensus_opt {
 				//<editor-fold defaultstate="collapsed" desc="PROCESSOR">
 
 				//<editor-fold defaultstate="collapsed" desc="GET SAMPLES INFO">
-				LinkedHashMap samplesInfoLHM;
+				Map<String, Object> samplesInfoLHM;
 				List<Map<String, Object>> rsSamplesInfo = org.gwaspi.samples.SampleManager.getAllSampleInfoFromDBByPoolID(rdMatrixMetadata.getStudyId());
 				if (phenoFile == null) {
-					samplesInfoLHM = new LinkedHashMap();
+					samplesInfoLHM = new LinkedHashMap<String, Object>();
 					int count = 0;
 					while (count < rsSamplesInfo.size()) {
 						//PREVENT PHANTOM-DB READS EXCEPTIONS
@@ -256,7 +256,7 @@ public class OP_MarkerCensus_opt {
 				} else {
 					FileReader phenotypeFR = new FileReader(phenoFile); //Pheno file has SampleInfo format!
 					BufferedReader phenotypeBR = new BufferedReader(phenotypeFR);
-					samplesInfoLHM = new LinkedHashMap();
+					samplesInfoLHM = new LinkedHashMap<String, Object>();
 
 					String header = phenotypeBR.readLine(); //ignore header block
 					String l;
@@ -269,8 +269,8 @@ public class OP_MarkerCensus_opt {
 						//samplesInfoLHM.put(cVals[0], cVals[1]);
 					}
 					//CHECK IF THERE ARE MISSING SAMPLES IN THE PHENO PHILE
-					for (Iterator it = wrSampleSetLHM.keySet().iterator(); it.hasNext();) {
-						Object sampleId = it.next();
+					for (Iterator<String> it = wrSampleSetLHM.keySet().iterator(); it.hasNext();) {
+						String sampleId = it.next();
 						if (!samplesInfoLHM.containsKey(sampleId)) {
 							String sex = "0";
 							String affection = "0";
@@ -330,10 +330,10 @@ public class OP_MarkerCensus_opt {
 				}
 				int countChunks = 0;
 
-				LinkedHashMap wrChunkedMarkerCensusLHM = new LinkedHashMap();
-				LinkedHashMap wrChunkedKnownAllelesLHM = new LinkedHashMap();
-				for (Iterator it = wrMarkerSetLHM.keySet().iterator(); it.hasNext();) {
-					Object markerId = it.next();
+				Map<String, Object> wrChunkedMarkerCensusLHM = new LinkedHashMap<String, Object>();
+				Map<String, Object> wrChunkedKnownAllelesLHM = new LinkedHashMap<String, Object>();
+				for (Iterator<String> it = wrMarkerSetLHM.keySet().iterator(); it.hasNext();) {
+					String markerId = it.next();
 
 					if (countMarkers % chunkSize == 0) {
 
@@ -386,8 +386,8 @@ public class OP_MarkerCensus_opt {
 
 							countChunks++;
 						}
-						wrChunkedMarkerCensusLHM = new LinkedHashMap();
-						wrChunkedKnownAllelesLHM = new LinkedHashMap();
+						wrChunkedMarkerCensusLHM = new LinkedHashMap<String, Object>();
+						wrChunkedKnownAllelesLHM = new LinkedHashMap<String, Object>();
 						System.gc(); //Try to garbage collect here
 
 					}
@@ -395,15 +395,15 @@ public class OP_MarkerCensus_opt {
 					countMarkers++;
 
 
-					LinkedHashMap knownAlleles = new LinkedHashMap();
-					LinkedHashMap allSamplesGTsTable = new LinkedHashMap();
-					LinkedHashMap caseSamplesGTsTable = new LinkedHashMap();
-					LinkedHashMap ctrlSamplesGTsTable = new LinkedHashMap();
-					LinkedHashMap hwSamplesGTsTable = new LinkedHashMap();
-					LinkedHashMap allSamplesContingencyTable = new LinkedHashMap();
-					LinkedHashMap caseSamplesContingencyTable = new LinkedHashMap();
-					LinkedHashMap ctrlSamplesContingencyTable = new LinkedHashMap();
-					LinkedHashMap hwSamplesContingencyTable = new LinkedHashMap();
+					Map<Byte, Object> knownAlleles = new LinkedHashMap<Byte, Object>();
+					Map<Integer, Object> allSamplesGTsTable = new LinkedHashMap<Integer, Object>();
+					Map<Integer, Object> caseSamplesGTsTable = new LinkedHashMap<Integer, Object>();
+					Map<Integer, Object> ctrlSamplesGTsTable = new LinkedHashMap<Integer, Object>();
+					Map<Integer, Object> hwSamplesGTsTable = new LinkedHashMap<Integer, Object>();
+					Map<String, Object> allSamplesContingencyTable = new LinkedHashMap<String, Object>();
+					Map<String, Object> caseSamplesContingencyTable = new LinkedHashMap<String, Object>();
+					Map<String, Object> ctrlSamplesContingencyTable = new LinkedHashMap<String, Object>();
+					Map<String, Object> hwSamplesContingencyTable = new LinkedHashMap<String, Object>();
 					Integer missingCount = 0;
 
 					//Get a sampleset-full of GTs
@@ -413,9 +413,9 @@ public class OP_MarkerCensus_opt {
 					String markerChr = markerInfo[1].toString();
 
 					rdSampleSetLHM = rdSampleSet.readAllSamplesGTsFromCurrentMarkerToLHM(rdNcFile, rdSampleSetLHM, markerNb);
-					for (Iterator it2 = wrSampleSetLHM.keySet().iterator(); it2.hasNext();) {
+					for (Iterator<String> it2 = wrSampleSetLHM.keySet().iterator(); it2.hasNext();) {
 
-						Object sampleId = it2.next();
+						String sampleId = it2.next();
 						String[] sampleInfo = (String[]) samplesInfoLHM.get(sampleId);
 
 						//<editor-fold defaultstate="collapsed" desc="THE DECIDER">
@@ -539,8 +539,8 @@ public class OP_MarkerCensus_opt {
 						//</editor-fold>
 
 						//<editor-fold defaultstate="collapsed" desc="CONTINGENCY ALL SAMPLES">
-						for (Iterator itUnqGT = allSamplesGTsTable.keySet().iterator(); itUnqGT.hasNext();) {
-							Object key = itUnqGT.next();
+						for (Iterator<Integer> itUnqGT = allSamplesGTsTable.keySet().iterator(); itUnqGT.hasNext();) {
+							Integer key = itUnqGT.next();
 							Integer value = Math.round((Float) allSamplesGTsTable.get(key));
 
 							if (AAnumValsAL.contains(key)) { //compare to all possible character values of AA
@@ -571,8 +571,8 @@ public class OP_MarkerCensus_opt {
 						//</editor-fold>
 
 						//<editor-fold defaultstate="collapsed" desc="CONTINGENCY CASE SAMPLES">
-						for (Iterator itUnqGT = caseSamplesGTsTable.keySet().iterator(); itUnqGT.hasNext();) {
-							Object key = itUnqGT.next();
+						for (Iterator<Integer> itUnqGT = caseSamplesGTsTable.keySet().iterator(); itUnqGT.hasNext();) {
+							Integer key = itUnqGT.next();
 							Integer value = Math.round((Float) caseSamplesGTsTable.get(key));
 
 							if (AAnumValsAL.contains(key)) { //compare to all possible character values of AA
@@ -603,8 +603,8 @@ public class OP_MarkerCensus_opt {
 						//</editor-fold>
 
 						//<editor-fold defaultstate="collapsed" desc="CONTINGENCY CTRL SAMPLES">
-						for (Iterator itUnqGT = ctrlSamplesGTsTable.keySet().iterator(); itUnqGT.hasNext();) {
-							Object key = itUnqGT.next();
+						for (Iterator<Integer> itUnqGT = ctrlSamplesGTsTable.keySet().iterator(); itUnqGT.hasNext();) {
+							Integer key = itUnqGT.next();
 							Integer value = Math.round((Float) ctrlSamplesGTsTable.get(key));
 
 							if (AAnumValsAL.contains(key)) { //compare to all possible character values of AA
@@ -635,8 +635,8 @@ public class OP_MarkerCensus_opt {
 						//</editor-fold>
 
 						//<editor-fold defaultstate="collapsed" desc="CONTINGENCY HW SAMPLES">
-						for (Iterator itUnqGT = hwSamplesGTsTable.keySet().iterator(); itUnqGT.hasNext();) {
-							Object key = itUnqGT.next();
+						for (Iterator<Integer> itUnqGT = hwSamplesGTsTable.keySet().iterator(); itUnqGT.hasNext();) {
+							Integer key = itUnqGT.next();
 							Integer value = Math.round((Float) hwSamplesGTsTable.get(key));
 
 							if (AAnumValsAL.contains(key)) { //compare to all possible character values of AA

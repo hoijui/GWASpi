@@ -8,7 +8,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.netCDF.markers.MarkerSet_opt;
@@ -156,13 +155,12 @@ public class PlinkBinaryFormatter implements Formatter {
 			// GET SAMPLESET FOR CURRENT MARKER
 			rdSampleSetMap = rdSampleSet.readAllSamplesGTsFromCurrentMarkerToLHM(rdNcFile, rdSampleSetMap, markerNb);
 
-			for (Iterator it2 = rdSampleSetMap.keySet().iterator(); it2.hasNext();) {
+			for (Iterator<String> it2 = rdSampleSetMap.keySet().iterator(); it2.hasNext();) {
 				// ONE BYTE AT A TIME (4 SAMPLES)
 				StringBuilder tetraGTs = new StringBuilder("");
 				for (int i = 0; i < 4; i++) {
-					Object sampleId = null;
 					if (it2.hasNext()) {
-						sampleId = it2.next();
+						String sampleId = it2.next();
 						byte[] tempGT = (byte[]) rdSampleSetMap.get(sampleId);
 						byte[] translatedByte = translateTo00011011Byte(tempGT, tmpMinorAllele, tmpMajorAllele);
 						tetraGTs.insert(0, translatedByte[0]); //REVERSE ORDER, AS PER PLINK SPECS http://pngu.mgh.harvard.edu/~purcell/plink/binary.shtml

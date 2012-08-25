@@ -6,7 +6,6 @@ import org.gwaspi.global.ServiceLocator;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -24,7 +23,7 @@ public class InsertSampleInfo {
 	private InsertSampleInfo() {
 	}
 
-	public static List<String> processData(Integer studyId, LinkedHashMap sampleInfoLHM) throws IOException {
+	public static List<String> processData(Integer studyId, Map<String, Object> sampleInfoLHM) throws IOException {
 		/////////////////////////////////////////////////
 		///////// Retrieving Samplelist from DB /////////
 		/////////////////////////////////////////////////
@@ -112,13 +111,13 @@ public class InsertSampleInfo {
 		return result;
 	}
 
-	public static int updateSamplesByHashMap(Integer studyId, LinkedHashMap sampleInfoLHM, List<String> samplesAllreadyInDBAL) throws IOException {
+	public static int updateSamplesByHashMap(Integer studyId, Map<String, Object> sampleInfoLHM, List<String> samplesAllreadyInDBAL) throws IOException {
 
 		db = ServiceLocator.getDbManager(org.gwaspi.constants.cDBGWASpi.DB_DATACENTER);
 		int result = 0;
 
-		for (Iterator it = sampleInfoLHM.keySet().iterator(); it.hasNext();) {
-			Object sampleId = it.next();
+		for (Iterator<String> it = sampleInfoLHM.keySet().iterator(); it.hasNext();) {
+			String sampleId = it.next();
 			String[] cVals = (String[]) sampleInfoLHM.get(sampleId);
 
 			//Standardizing affection to CHAR(1), having 1=Unaffected, 2=Affected

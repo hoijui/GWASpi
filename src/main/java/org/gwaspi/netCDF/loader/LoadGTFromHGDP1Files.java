@@ -30,7 +30,7 @@ public class LoadGTFromHGDP1Files {
 	private String gtFilePath;
 	private String sampleFilePath;
 	private String annotationFilePath;
-	private LinkedHashMap wrSampleSetLHM = new LinkedHashMap();
+	private Map<String, Object> wrSampleSetLHM = new LinkedHashMap<String, Object>();
 	private int studyId;
 	private String format = cImport.ImportFormat.HGDP1.toString();
 	private String chromosome;
@@ -39,7 +39,7 @@ public class LoadGTFromHGDP1Files {
 	private String description;
 	private String gtCode;
 	private org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding guessedGTCode = org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding.UNKNOWN;
-	private LinkedHashMap wrMarkerSetLHM = new LinkedHashMap();
+	private Map<String, Object> wrMarkerSetLHM = new LinkedHashMap<String, Object>();
 
 	//<editor-fold defaultstate="collapsed" desc="CONSTRUCTORS">
 	public LoadGTFromHGDP1Files(String _gtFilePath,
@@ -51,7 +51,7 @@ public class LoadGTFromHGDP1Files {
 			String _friendlyName,
 			String _gtCode,
 			String _description,
-			LinkedHashMap _sampleInfoLHM) throws IOException {
+			Map<String, Object> _sampleInfoLHM) throws IOException {
 
 		gtFilePath = _gtFilePath;
 		sampleFilePath = _sampleFilePath;
@@ -226,8 +226,8 @@ public class LoadGTFromHGDP1Files {
 				strandFlag = cImport.StrandFlags.strandREV;
 				break;
 		}
-		for (Iterator it = wrMarkerSetLHM.keySet().iterator(); it.hasNext();) {
-			Object key = it.next();
+		for (Iterator<String> it = wrMarkerSetLHM.keySet().iterator(); it.hasNext();) {
+			String key = it.next();
 			wrMarkerSetLHM.put(key, strandFlag);
 		}
 		markersD2 = org.gwaspi.netCDF.operations.Utils.writeLHMValueToD2ArrayChar(wrMarkerSetLHM, cNetCDF.Strides.STRIDE_STRAND);
@@ -253,8 +253,8 @@ public class LoadGTFromHGDP1Files {
 			String sampleId = it.next().toString();
 
 			//PURGE MarkerIdLHM
-			for (Iterator it2 = wrMarkerSetLHM.keySet().iterator(); it2.hasNext();) {
-				Object markerId = it2.next();
+			for (Iterator<String> it2 = wrMarkerSetLHM.keySet().iterator(); it2.hasNext();) {
+				String markerId = it2.next();
 				wrMarkerSetLHM.put(markerId, cNetCDF.Defaults.DEFAULT_GT);
 			}
 
@@ -319,9 +319,9 @@ public class LoadGTFromHGDP1Files {
 		return result;
 	}
 
-	public LinkedHashMap loadIndividualFiles(File file,
+	public Map<String, Object> loadIndividualFiles(File file,
 			String currSampleId,
-			LinkedHashMap wrMarkerSetLHM) throws IOException, InvalidRangeException {
+			Map<String, Object> wrMarkerSetLHM) throws IOException, InvalidRangeException {
 
 		FileReader inputFileReader = new FileReader(file);
 		BufferedReader inputBufferReader = new BufferedReader(inputFileReader);
@@ -332,8 +332,8 @@ public class LoadGTFromHGDP1Files {
 			sb.append('0');
 		}
 
-		LinkedHashMap tempMarkerIdLHM = new LinkedHashMap();
-		LinkedHashMap sampleOrderLHM = new LinkedHashMap();
+		Map<String, Object> tempMarkerIdLHM = new LinkedHashMap<String, Object>();
+		Map<String, Object> sampleOrderLHM = new LinkedHashMap<String, Object>();
 
 		String sampleHeader = inputBufferReader.readLine();
 		String[] headerFields = null;
@@ -376,9 +376,9 @@ public class LoadGTFromHGDP1Files {
 	//</editor-fold>
 
 	//<editor-fold defaultstate="collapsed" desc="HELPER METHODS">
-	private LinkedHashMap getBeagleSampleIds(File hapmapGTFile) throws IOException {
+	private Map<String, Object> getBeagleSampleIds(File hapmapGTFile) throws IOException {
 
-		LinkedHashMap uniqueSamples = new LinkedHashMap();
+		Map<String, Object> uniqueSamples = new LinkedHashMap<String, Object>();
 
 		FileReader fr = new FileReader(hapmapGTFile.getPath());
 		BufferedReader inputBeagleBr = new BufferedReader(fr);

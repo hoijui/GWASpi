@@ -10,6 +10,8 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Set;
 import org.gwaspi.samples.SamplesParser;
 
 /**
@@ -23,12 +25,12 @@ public class SampleInfoCollectorSwitch {
 	private SampleInfoCollectorSwitch() {
 	}
 
-	public static LinkedHashMap collectSampleInfo(String format,
+	public static Map<String, Object> collectSampleInfo(String format,
 			boolean dummySamples,
 			String sampleInfoPath,
 			String altSampleInfoPath1,
 			String altSampleInfoPath2) throws IOException {
-		LinkedHashMap sampleInfoLHM = new LinkedHashMap();
+		Map<String, Object> sampleInfoLHM = new LinkedHashMap<String, Object>();
 		Object[] dummySampleValues = org.gwaspi.samples.DummySampleInfo.getDummySampleValues();
 
 		switch (org.gwaspi.constants.cImport.ImportFormat.compareTo(format)) {
@@ -37,11 +39,11 @@ public class SampleInfoCollectorSwitch {
 				if (dummySamples) {
 					sampleInfoLHM = SamplesParser.scanAffymetrixSampleInfo(altSampleInfoPath2);
 				} else {
-					LinkedHashMap dummySamplesInfoLHM = SamplesParser.scanAffymetrixSampleInfo(altSampleInfoPath2);
+					Map<String, Object> dummySamplesInfoLHM = SamplesParser.scanAffymetrixSampleInfo(altSampleInfoPath2);
 					sampleInfoLHM = SamplesParser.scanGwaspiSampleInfo(sampleInfoPath);
 
-					for (Iterator it = dummySamplesInfoLHM.keySet().iterator(); it.hasNext();) {
-						Object sampleId = it.next();
+					for (Iterator<String> it = dummySamplesInfoLHM.keySet().iterator(); it.hasNext();) {
+						String sampleId = it.next();
 						if (!sampleInfoLHM.containsKey(sampleId)) {
 							dummySampleValues[1] = sampleId.toString();
 							sampleInfoLHM.put(sampleId, dummySampleValues);
@@ -56,10 +58,10 @@ public class SampleInfoCollectorSwitch {
 				if (dummySamples) {
 					sampleInfoLHM = SamplesParser.scanPlinkStandardSampleInfo(altSampleInfoPath2);
 				} else {
-					LinkedHashMap dummySamplesInfoLHM = SamplesParser.scanPlinkStandardSampleInfo(altSampleInfoPath2);
+					Map<String, Object> dummySamplesInfoLHM = SamplesParser.scanPlinkStandardSampleInfo(altSampleInfoPath2);
 					sampleInfoLHM = SamplesParser.scanGwaspiSampleInfo(sampleInfoPath);
-					for (Iterator it = dummySamplesInfoLHM.keySet().iterator(); it.hasNext();) {
-						Object sampleId = it.next();
+					for (Iterator<String> it = dummySamplesInfoLHM.keySet().iterator(); it.hasNext();) {
+						String sampleId = it.next();
 						if (!sampleInfoLHM.containsKey(sampleId)) {
 							dummySampleValues[1] = sampleId.toString();
 							sampleInfoLHM.put(sampleId, dummySampleValues);
@@ -92,10 +94,10 @@ public class SampleInfoCollectorSwitch {
 					sampleInfoLHM = SamplesParser.scanHapmapSampleInfo(altSampleInfoPath1);
 					// NO AFFECTION STATE AVAILABLE
 				} else {
-					LinkedHashMap dummySamplesInfoLHM = SamplesParser.scanHapmapSampleInfo(altSampleInfoPath1);
+					Map<String, Object> dummySamplesInfoLHM = SamplesParser.scanHapmapSampleInfo(altSampleInfoPath1);
 					sampleInfoLHM = SamplesParser.scanGwaspiSampleInfo(sampleInfoPath);
-					for (Iterator it = dummySamplesInfoLHM.keySet().iterator(); it.hasNext();) {
-						Object sampleId = it.next();
+					for (Iterator<String> it = dummySamplesInfoLHM.keySet().iterator(); it.hasNext();) {
+						String sampleId = it.next();
 						if (!sampleInfoLHM.containsKey(sampleId)) {
 							dummySampleValues[1] = sampleId.toString();
 							sampleInfoLHM.put(sampleId, dummySampleValues);
@@ -109,10 +111,10 @@ public class SampleInfoCollectorSwitch {
 				if (dummySamples) {
 					sampleInfoLHM = SamplesParser.scanBeagleSampleInfo(altSampleInfoPath1);
 				} else {
-					LinkedHashMap dummySamplesInfoLHM = SamplesParser.scanBeagleSampleInfo(altSampleInfoPath1);
+					Map<String, Object> dummySamplesInfoLHM = SamplesParser.scanBeagleSampleInfo(altSampleInfoPath1);
 					sampleInfoLHM = SamplesParser.scanGwaspiSampleInfo(sampleInfoPath);
-					for (Iterator it = dummySamplesInfoLHM.keySet().iterator(); it.hasNext();) {
-						Object sampleId = it.next();
+					for (Iterator<String> it = dummySamplesInfoLHM.keySet().iterator(); it.hasNext();) {
+						String sampleId = it.next();
 						if (!sampleInfoLHM.containsKey(sampleId)) {
 							dummySampleValues[1] = sampleId.toString();
 							sampleInfoLHM.put(sampleId, dummySampleValues);
@@ -127,10 +129,10 @@ public class SampleInfoCollectorSwitch {
 					sampleInfoLHM = SamplesParser.scanHGDP1SampleInfo(altSampleInfoPath1);
 					// NO AFFECTION STATE AVAILABLE
 				} else {
-					LinkedHashMap dummySamplesInfoLHM = SamplesParser.scanHGDP1SampleInfo(altSampleInfoPath1);
+					Map<String, Object> dummySamplesInfoLHM = SamplesParser.scanHGDP1SampleInfo(altSampleInfoPath1);
 					sampleInfoLHM = SamplesParser.scanGwaspiSampleInfo(sampleInfoPath);
-					for (Iterator it = dummySamplesInfoLHM.keySet().iterator(); it.hasNext();) {
-						Object sampleId = it.next();
+					for (Iterator<String> it = dummySamplesInfoLHM.keySet().iterator(); it.hasNext();) {
+						String sampleId = it.next();
 						if (!sampleInfoLHM.containsKey(sampleId)) {
 							dummySampleValues[1] = sampleId.toString();
 							sampleInfoLHM.put(sampleId, dummySampleValues);
@@ -148,10 +150,10 @@ public class SampleInfoCollectorSwitch {
 					//gwasParams = org.gwaspi.gui.utils.MoreLoadInfoByFormat.showMoreInfoByFormat_Modal(cmb_Format.getSelectedItem().toString());
 					sampleInfoLHM = SamplesParser.scanIlluminaLGENSampleInfo(altSampleInfoPath2);
 				} else {
-					LinkedHashMap dummySamplesInfoLHM = SamplesParser.scanIlluminaLGENSampleInfo(altSampleInfoPath2);
+					Map<String, Object> dummySamplesInfoLHM = SamplesParser.scanIlluminaLGENSampleInfo(altSampleInfoPath2);
 					sampleInfoLHM = SamplesParser.scanGwaspiSampleInfo(sampleInfoPath);
-					for (Iterator it = dummySamplesInfoLHM.keySet().iterator(); it.hasNext();) {
-						Object sampleId = it.next();
+					for (Iterator<String> it = dummySamplesInfoLHM.keySet().iterator(); it.hasNext();) {
+						String sampleId = it.next();
 						if (!sampleInfoLHM.containsKey(sampleId)) {
 							dummySampleValues[1] = sampleId.toString();
 							sampleInfoLHM.put(sampleId, dummySampleValues);
@@ -169,10 +171,10 @@ public class SampleInfoCollectorSwitch {
 		return sampleInfoLHM;
 	}
 
-	public static HashSet collectAffectionStates(LinkedHashMap sampleInfoLHM) {
-		HashSet affectionStates = new HashSet();
-		for (Iterator it = sampleInfoLHM.keySet().iterator(); it.hasNext();) {
-			Object key = it.next();
+	public static Set<String> collectAffectionStates(Map<String, Object> sampleInfoLHM) {
+		Set<String> affectionStates = new HashSet<String>();
+		for (Iterator<String> it = sampleInfoLHM.keySet().iterator(); it.hasNext();) {
+			String key = it.next();
 			if (sampleInfoLHM.containsKey(key)) {
 				Object[] values = (Object[]) sampleInfoLHM.get(key);
 				String affection = values[Plink_Standard.ped_affection].toString();

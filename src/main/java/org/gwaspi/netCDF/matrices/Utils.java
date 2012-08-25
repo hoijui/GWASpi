@@ -17,7 +17,7 @@ public class Utils {
 
 	public static Map<String, Object> aggregateChromosomeInfo(Map<String, Object> wrMarkerSetLHM, int chrIdx, int posIdx) { //LHM to be aggregated, where is the chr, where is the position
 		// RETRIEVE CHROMOSOMES INFO
-		LinkedHashMap chrSetLHM = new LinkedHashMap();
+		Map<String, Object> chrSetLHM = new LinkedHashMap<String, Object>();
 		String tmpChr = "";
 		int firstPos = 0;
 		int markerCount = 0;

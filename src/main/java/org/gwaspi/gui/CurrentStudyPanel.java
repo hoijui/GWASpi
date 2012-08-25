@@ -9,6 +9,7 @@ import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
 import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JComponent;
@@ -27,7 +28,7 @@ public class CurrentStudyPanel extends javax.swing.JPanel {
 
 	// Variables declaration
 	private org.gwaspi.model.Study study;
-	private LinkedHashMap treeChildrenLHM = new LinkedHashMap();
+	private Map<Integer, Object> treeChildrenLHM = new LinkedHashMap<Integer, Object>();
 	private javax.swing.JButton btn_DeleteMatrix;
 	private javax.swing.JButton btn_LoadGenotypes;
 	private javax.swing.JButton btn_UpdateSampleInfo;

@@ -5,8 +5,8 @@ import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  *
@@ -90,9 +90,9 @@ public class Utils {
 	public static GenotypeEncoding detectGTEncoding(Map<String, Object> lhm) {
 		GenotypeEncoding gtEcoding; // GenotypeEncoding.UNKNOWN
 
-		HashSet allAlleles = new HashSet();
-		for (Iterator it = lhm.keySet().iterator(); it.hasNext();) {
-			Object key = it.next();
+		Set<Byte> allAlleles = new HashSet<Byte>();
+		for (Iterator<String> it = lhm.keySet().iterator(); it.hasNext();) {
+			String key = it.next();
 			byte[] values = (byte[]) lhm.get(key);
 			allAlleles.add(values[0]);
 			allAlleles.add(values[1]);

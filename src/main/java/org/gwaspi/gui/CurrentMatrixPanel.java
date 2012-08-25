@@ -10,7 +10,7 @@ import org.gwaspi.gui.utils.HelpURLs;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
-import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JComponent;
@@ -30,7 +30,7 @@ public class CurrentMatrixPanel extends javax.swing.JPanel {
 
 	// Variables declaration
 	private org.gwaspi.model.Matrix matrix;
-	private LinkedHashMap treeChildrenLHM;
+	private Map<Integer, Object> treeChildrenLHM;
 	private javax.swing.JButton btn_Back;
 	private javax.swing.JButton btn_DeleteMatrix;
 	private javax.swing.JButton btn_DeleteOperation;

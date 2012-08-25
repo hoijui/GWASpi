@@ -3,8 +3,8 @@ package org.gwaspi.threadbox;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.global.Text;
 import java.io.File;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Set;
 import org.gwaspi.model.GWASpiExplorerNodes;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.netCDF.operations.GWASinOneGOParams;
@@ -74,11 +74,11 @@ public class Threaded_GWAS extends CommonRunnable {
 
 			if (phenotypeFile != null && phenotypeFile.exists() && phenotypeFile.isFile()) { //BY EXTERNAL PHENOTYPE FILE
 
-				HashSet affectionStates = SamplesParser.scanSampleInfoAffectionStates(phenotypeFile.getPath()); //use Sample Info file affection state
+				Set<String> affectionStates = SamplesParser.scanSampleInfoAffectionStates(phenotypeFile.getPath()); //use Sample Info file affection state
 
 				if (affectionStates.contains("1") && affectionStates.contains("2")) {
 					System.out.println("Updating Sample Info in DB");
-					LinkedHashMap sampleInfoLHM = SamplesParser.scanGwaspiSampleInfo(phenotypeFile.getPath());
+					Map<String, Object> sampleInfoLHM = SamplesParser.scanGwaspiSampleInfo(phenotypeFile.getPath());
 					org.gwaspi.samples.InsertSampleInfo.processData(matrixId, sampleInfoLHM);
 
 					censusOpId = OperationManager.censusCleanMatrixMarkersByPhenotypeFile(matrixId,
@@ -96,7 +96,7 @@ public class Threaded_GWAS extends CommonRunnable {
 					System.out.println(Text.Operation.warnAffectionMissing);
 				}
 			} else { // BY DB AFFECTION
-				HashSet affectionStates = SamplesParser.getDBAffectionStates(matrixId); //use Sample Info file affection state
+				Set<Object> affectionStates = SamplesParser.getDBAffectionStates(matrixId); //use Sample Info file affection state
 				if (affectionStates.contains("1") && affectionStates.contains("2")) {
 					censusOpId = OperationManager.censusCleanMatrixMarkers(matrixId,
 							sampleQAOpId,

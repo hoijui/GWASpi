@@ -2,7 +2,7 @@ package org.gwaspi.threadbox;
 
 import org.gwaspi.constants.cNetCDF;
 import java.io.File;
-import java.util.HashSet;
+import java.util.Set;
 import org.gwaspi.model.GWASpiExplorerNodes;
 import org.gwaspi.netCDF.operations.MatrixDataExtractor_opt;
 import org.gwaspi.netCDF.operations.OP_QAMarkers_opt;
@@ -27,8 +27,8 @@ public class Threaded_ExtractMatrix extends CommonRunnable {
 	private cNetCDF.Defaults.SetSamplePickCase samplePickCase;
 	private String markerPickVar;
 	private String samplePickVar;
-	private HashSet markerCriteria;
-	private HashSet sampleCriteria;
+	private Set<Object> markerCriteria;
+	private Set<Object> sampleCriteria;
 	private File markerCriteriaFile;
 	private File sampleCriteriaFile;
 
@@ -42,8 +42,8 @@ public class Threaded_ExtractMatrix extends CommonRunnable {
 			cNetCDF.Defaults.SetSamplePickCase samplePickCase,
 			String markerPickVar,
 			String samplePickVar,
-			HashSet markerCriteria,
-			HashSet sampleCriteria,
+			Set<Object> markerCriteria,
+			Set<Object> sampleCriteria,
 			File markerCriteriaFile,
 			File sampleCriteriaFile)
 	{

@@ -36,7 +36,7 @@ public class LoadGTFromHapmapFiles {
 
 	private String gtFilePath;
 	private String sampleFilePath;
-	private LinkedHashMap wrSampleSetLHM = new LinkedHashMap();
+	private Map<String, Object> wrSampleSetLHM = new LinkedHashMap<String, Object>();
 	private int studyId;
 	private String format = cImport.ImportFormat.HAPMAP.toString();
 	private String strand;
@@ -44,7 +44,7 @@ public class LoadGTFromHapmapFiles {
 	private String description;
 	private String gtCode;
 	private org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding guessedGTCode = org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding.UNKNOWN;
-	private LinkedHashMap wrMarkerSetLHM = new LinkedHashMap();
+	private Map<String, Object> wrMarkerSetLHM = new LinkedHashMap<String, Object>();
 
 	//<editor-fold defaultstate="collapsed" desc="CONSTRUCTORS">
 	public LoadGTFromHapmapFiles(String _gtFilePath,
@@ -54,7 +54,7 @@ public class LoadGTFromHapmapFiles {
 			String _friendlyName,
 			String _gtCode,
 			String _description,
-			LinkedHashMap _sampleInfoLHM) throws IOException {
+			Map<String, Object> _sampleInfoLHM) throws IOException {
 
 		gtFilePath = _gtFilePath;
 		sampleFilePath = _sampleFilePath;
@@ -69,7 +69,7 @@ public class LoadGTFromHapmapFiles {
 		if (hapmapGTFile.isDirectory()) {
 			File[] gtFilesToImport = org.gwaspi.global.Utils.listFiles(gtFilePath, false);
 			for (int i = 0; i < gtFilesToImport.length; i++) {
-				LinkedHashMap tempSamplesLHM = getHapmapSampleIds(gtFilesToImport[i]);
+				Map<String, Object> tempSamplesLHM = getHapmapSampleIds(gtFilesToImport[i]);
 				wrSampleSetLHM.putAll(tempSamplesLHM);
 			}
 		} else {
@@ -104,7 +104,7 @@ public class LoadGTFromHapmapFiles {
 		//<editor-fold defaultstate="collapsed/expanded" desc="CREATE MARKERSET & NETCDF">
 		for (int i = 0; i < gtFilesToImport.length; i++) {
 			MetadataLoaderHapmap markerSetLoader = new MetadataLoaderHapmap(gtFilesToImport[i].getPath(), format, studyId);
-			LinkedHashMap tmpMarkerLHM = markerSetLoader.getSortedMarkerSetWithMetaData();
+			Map<String, Object> tmpMarkerLHM = markerSetLoader.getSortedMarkerSetWithMetaData();
 			wrMarkerSetLHM.putAll(tmpMarkerLHM);
 		}
 
@@ -276,8 +276,8 @@ public class LoadGTFromHapmapFiles {
 			String sampleId = it.next().toString();
 
 			//PURGE MarkerIdLHM
-			for (Iterator it2 = wrMarkerSetLHM.keySet().iterator(); it2.hasNext();) {
-				Object markerId = it2.next();
+			for (Iterator<String> it2 = wrMarkerSetLHM.keySet().iterator(); it2.hasNext();) {
+				String markerId = it2.next();
 				wrMarkerSetLHM.put(markerId, cNetCDF.Defaults.DEFAULT_GT);
 			}
 
@@ -335,9 +335,9 @@ public class LoadGTFromHapmapFiles {
 		return result;
 	}
 
-	public LinkedHashMap loadIndividualFiles(File file,
+	public Map<String, Object> loadIndividualFiles(File file,
 			String currSampleId,
-			LinkedHashMap wrMarkerSetLHM) throws IOException, InvalidRangeException {
+			Map<String, Object> wrMarkerSetLHM) throws IOException, InvalidRangeException {
 
 		int dataStartRow = cImport.Genotypes.Hapmap_Standard.dataStartRow;
 		FileReader inputFileReader = new FileReader(file);
@@ -349,7 +349,7 @@ public class LoadGTFromHapmapFiles {
 		}
 		String[] headerFields = header.split(cImport.Separators.separators_SpaceTab_rgxp);
 
-		LinkedHashMap sampleOrderLHM = new LinkedHashMap();
+		Map<String, Object> sampleOrderLHM = new LinkedHashMap<String, Object>();
 		for (int i = cImport.Genotypes.Hapmap_Standard.sampleId; i < headerFields.length; i++) {
 			sampleOrderLHM.put(headerFields[i], i);
 		}
@@ -398,9 +398,9 @@ public class LoadGTFromHapmapFiles {
 	//</editor-fold>
 
 	//<editor-fold defaultstate="collapsed" desc="HELPER METHODS">
-	private LinkedHashMap getHapmapSampleIds(File hapmapGTFile) throws IOException {
+	private Map<String, Object> getHapmapSampleIds(File hapmapGTFile) throws IOException {
 
-		LinkedHashMap uniqueSamples = new LinkedHashMap();
+		Map<String, Object> uniqueSamples = new LinkedHashMap<String, Object>();
 
 		FileReader fr = new FileReader(hapmapGTFile.getPath());
 		BufferedReader inputAnnotationBr = new BufferedReader(fr);

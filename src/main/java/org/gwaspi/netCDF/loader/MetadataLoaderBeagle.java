@@ -4,11 +4,11 @@ import org.gwaspi.constants.cImport;
 import org.gwaspi.constants.cImport.Annotation.Beagle_Standard;
 import org.gwaspi.constants.cNetCDF;
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.TreeMap;
 
 /**
@@ -30,24 +30,23 @@ public class MetadataLoaderBeagle {
 	}
 	private static String tabulator = cNetCDF.Defaults.TMP_SEPARATOR;
 
-	public MetadataLoaderBeagle(String _mapPath, String _chr, String _strand, int _studyId) throws FileNotFoundException {
+	public MetadataLoaderBeagle(String _mapPath, String _chr, String _strand, int _studyId) {
 
 		markerFilePath = _mapPath;
 		studyId = _studyId;
 		chr = _chr;
 		strand = _strand;
-
 	}
 
 	// ACCESSORS
-	public LinkedHashMap getSortedMarkerSetWithMetaData() throws IOException {
+	public Map<String, Object> getSortedMarkerSetWithMetaData() throws IOException {
 		String startTime = org.gwaspi.global.Utils.getMediumDateTimeAsString();
 
 		TreeMap tempTM = parseAndSortMarkerFile(markerFilePath); // chr, markerId, genetic distance, position
 
 		org.gwaspi.global.Utils.sysoutStart("initilaizing Marker info");
 
-		LinkedHashMap markerMetadataLHM = new LinkedHashMap();
+		Map<String, Object> markerMetadataLHM = new LinkedHashMap<String, Object>();
 		for (Iterator it = tempTM.keySet().iterator(); it.hasNext();) {
 			String key = it.next().toString();
 

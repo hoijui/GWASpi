@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
 import ucar.ma2.ArrayChar;
@@ -32,8 +32,8 @@ public class LoadGTFromAffyFiles {
 	private String gtDirPath;
 	private String sampleFilePath;
 	private String annotationFilePath;
-	private ArrayList samplesAL = new ArrayList();
-	private ArrayList sampleInfoAL = new ArrayList();
+	private List<String> samplesAL = new ArrayList();
+	private List<String> sampleInfoAL = new ArrayList();
 	private int studyId;
 	private String format;
 	private String friendlyName;
@@ -50,7 +50,7 @@ public class LoadGTFromAffyFiles {
 			String _friendlyName,
 			String _gtCode,
 			String _description,
-			LinkedHashMap _sampleInfoLHM) {
+			Map<String, Object> _sampleInfoLHM) {
 
 		gtDirPath = _gtDirPath;
 		sampleFilePath = _sampleFilePath;
@@ -61,8 +61,8 @@ public class LoadGTFromAffyFiles {
 		gtCode = _gtCode;
 		description = _description;
 
-		for (Iterator it = _sampleInfoLHM.keySet().iterator(); it.hasNext();) {
-			Object key = it.next();
+		for (Iterator<String> it = _sampleInfoLHM.keySet().iterator(); it.hasNext();) {
+			String key = it.next();
 			sampleInfoAL.add(key);
 		}
 
@@ -98,7 +98,7 @@ public class LoadGTFromAffyFiles {
 
 		//<editor-fold defaultstate="collapsed/expanded" desc="CREATE MARKERSET & NETCDF">
 		MetadataLoaderAffy markerSetLoader = new MetadataLoaderAffy(annotationFilePath, format, studyId);
-		LinkedHashMap markerSetLHM = markerSetLoader.getSortedMarkerSetWithMetaData();
+		Map<String, Object> markerSetLHM = markerSetLoader.getSortedMarkerSetWithMetaData();
 
 		System.out.println("Done initializing sorted MarkerSetLHM at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
 
@@ -279,8 +279,8 @@ public class LoadGTFromAffyFiles {
 
 		// <editor-fold defaultstate="collapsed" desc="MATRIX GENOTYPES LOAD ">
 		//PURGE markerSetLHM
-		for (Iterator it = markerSetLHM.keySet().iterator(); it.hasNext();) {
-			Object key = it.next();
+		for (Iterator<String> it = markerSetLHM.keySet().iterator(); it.hasNext();) {
+			String key = it.next();
 			markerSetLHM.put(key, cNetCDF.Defaults.DEFAULT_GT);
 		}
 
@@ -333,13 +333,13 @@ public class LoadGTFromAffyFiles {
 
 	public void loadIndividualFiles(File file,
 			NetcdfFileWriteable ncfile,
-			LinkedHashMap sortedMarkerSetLHM,
-			ArrayList samplesAL) throws IOException, InvalidRangeException {
+			Map<String, Object> sortedMarkerSetLHM,
+			List<String> samplesAL) throws IOException, InvalidRangeException {
 
 		//INIT LHMs
 		HashMap tempMarkerSet = new HashMap();
-		for (Iterator it = sortedMarkerSetLHM.keySet().iterator(); it.hasNext();) {
-			Object markerId = it.next();
+		for (Iterator<String> it = sortedMarkerSetLHM.keySet().iterator(); it.hasNext();) {
+			String markerId = it.next();
 			sortedMarkerSetLHM.put(markerId, cNetCDF.Defaults.DEFAULT_GT);
 		}
 

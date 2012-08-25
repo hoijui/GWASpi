@@ -8,6 +8,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.TreeMap;
 
 /**
@@ -37,7 +38,7 @@ public class MetadataLoaderAffy {
 	}
 
 	// ACCESSORS
-	public LinkedHashMap getSortedMarkerSetWithMetaData() throws IOException {
+	public Map<String, Object> getSortedMarkerSetWithMetaData() throws IOException {
 		String startTime = org.gwaspi.global.Utils.getMediumDateTimeAsString();
 
 		TreeMap tempTM = parseAnnotationBRFile(annotationPath); // affyId, rsId,chr,pseudo-autosomal,pos, strand, alleles, plus-alleles
@@ -45,7 +46,7 @@ public class MetadataLoaderAffy {
 		org.gwaspi.global.Utils.sysoutStart("initilaizing marker info");
 		System.out.println(org.gwaspi.global.Text.All.processing);
 
-		LinkedHashMap markerMetadataLHM = new LinkedHashMap();
+		Map<String, Object> markerMetadataLHM = new LinkedHashMap<String, Object>();
 		for (Iterator it = tempTM.keySet().iterator(); it.hasNext();) {
 			// keyValues = chr;pseudo-autosomal1;pseudo-autosomal2;pos;markerId"
 			String key = it.next().toString();

@@ -13,6 +13,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.gwaspi.netCDF.matrices.MatrixMetadata;
@@ -30,8 +31,8 @@ public class SamplesParser {
 	}
 
 	//<editor-fold defaultstate="collapsed" desc="DB SAMPLE INFO PROVIDERS">
-	public static HashSet getDBAffectionStates(int matrixId) {
-		HashSet resultHS = new HashSet();
+	public static Set<Object> getDBAffectionStates(int matrixId) {
+		Set<Object> resultHS = new HashSet<Object>();
 		try {
 			MatrixMetadata rdMatrixMetadata = new MatrixMetadata(matrixId);
 			System.out.println("Getting Sample Affection info for: " + rdMatrixMetadata.getMatrixFriendlyName() + " at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
@@ -58,8 +59,8 @@ public class SamplesParser {
 
 	//</editor-fold>
 	//<editor-fold defaultstate="collapsed" desc="FILE SAMPLE INFO SCANNERS">
-	public static LinkedHashMap scanGwaspiSampleInfo(String sampleInfoPath) throws IOException {
-		LinkedHashMap sampleInfoLHM = new LinkedHashMap();
+	public static Map<String, Object> scanGwaspiSampleInfo(String sampleInfoPath) throws IOException {
+		Map<String, Object> sampleInfoLHM = new LinkedHashMap<String, Object>();
 		FileReader inputFileReader = null;
 		BufferedReader inputBufferReader = null;
 //        try {
@@ -104,8 +105,8 @@ public class SamplesParser {
 		return sampleInfoLHM;
 	}
 
-	public static LinkedHashMap scanPlinkStandardSampleInfo(String pedPath) throws IOException {
-		LinkedHashMap sampleInfoLHM = new LinkedHashMap();
+	public static Map<String, Object> scanPlinkStandardSampleInfo(String pedPath) throws IOException {
+		Map<String, Object> sampleInfoLHM = new LinkedHashMap<String, Object>();
 		FileReader inputFileReader = null;
 		BufferedReader inputBufferReader = null;
 //        try {
@@ -195,8 +196,8 @@ public class SamplesParser {
 		return sampleInfoLHM;
 	}
 
-	public static LinkedHashMap scanPlinkLGENSampleInfo(String lgenPath) throws IOException {
-		LinkedHashMap sampleInfoLHM = new LinkedHashMap();
+	public static Map<String, Object> scanPlinkLGENSampleInfo(String lgenPath) throws IOException {
+		Map<String, Object> sampleInfoLHM = new LinkedHashMap<String, Object>();
 
 		File sampleFile = new File(lgenPath);
 		FileReader inputFileReader = new FileReader(sampleFile);
@@ -220,8 +221,8 @@ public class SamplesParser {
 		return sampleInfoLHM;
 	}
 
-	public static LinkedHashMap scanPlinkFAMSampleInfo(String famPath) throws IOException {
-		LinkedHashMap sampleInfoLHM = new LinkedHashMap();
+	public static Map<String, Object> scanPlinkFAMSampleInfo(String famPath) throws IOException {
+		Map<String, Object> sampleInfoLHM = new LinkedHashMap<String, Object>();
 		FileReader inputFileReader = new FileReader(new File(famPath));
 		BufferedReader inputBufferReader = new BufferedReader(inputFileReader);
 
@@ -261,8 +262,8 @@ public class SamplesParser {
 		return sampleInfoLHM;
 	}
 
-	public static LinkedHashMap scanIlluminaLGENSampleInfo(String lgenDir) throws IOException {
-		LinkedHashMap sampleInfoLHM = new LinkedHashMap();
+	public static Map<String, Object> scanIlluminaLGENSampleInfo(String lgenDir) throws IOException {
+		Map<String, Object> sampleInfoLHM = new LinkedHashMap<String, Object>();
 
 		File[] gtFilesToImport = org.gwaspi.global.Utils.listFiles(lgenDir, false);
 
@@ -303,8 +304,8 @@ public class SamplesParser {
 		return sampleInfoLHM;
 	}
 
-	public static LinkedHashMap scanMultipleIlluminaLGENSampleInfo(String lgenDir) throws IOException {
-		LinkedHashMap sampleInfoLHM = new LinkedHashMap();
+	public static Map<String, Object> scanMultipleIlluminaLGENSampleInfo(String lgenDir) throws IOException {
+		Map<String, Object> sampleInfoLHM = new LinkedHashMap<String, Object>();
 		File[] lgenFilesToScan = org.gwaspi.global.Utils.listFiles(lgenDir, false);
 
 		for (File currentLGENFile : lgenFilesToScan) {
@@ -342,8 +343,8 @@ public class SamplesParser {
 		return sampleInfoLHM;
 	}
 
-	public static LinkedHashMap scanBeagleSampleInfo(String beaglePath) throws IOException {
-		LinkedHashMap sampleInfoLHM = new LinkedHashMap();
+	public static Map<String, Object> scanBeagleSampleInfo(String beaglePath) throws IOException {
+		Map<String, Object> sampleInfoLHM = new LinkedHashMap<String, Object>();
 		FileReader inputFileReader;
 //        try {
 		File sampleFile = new File(beaglePath);
@@ -392,8 +393,8 @@ public class SamplesParser {
 		return sampleInfoLHM;
 	}
 
-	public static LinkedHashMap scanHapmapSampleInfo(String hapmapPath) throws IOException {
-		LinkedHashMap sampleInfoLHM = new LinkedHashMap();
+	public static Map<String, Object> scanHapmapSampleInfo(String hapmapPath) throws IOException {
+		Map<String, Object> sampleInfoLHM = new LinkedHashMap<String, Object>();
 		FileReader fr = null;
 		BufferedReader inputAnnotationBr = null;
 		//        try {
@@ -445,8 +446,8 @@ public class SamplesParser {
 		return sampleInfoLHM;
 	}
 
-	public static LinkedHashMap scanHGDP1SampleInfo(String hgdpPath) throws IOException {
-		LinkedHashMap sampleInfoLHM = new LinkedHashMap();
+	public static Map<String, Object> scanHGDP1SampleInfo(String hgdpPath) throws IOException {
+		Map<String, Object> sampleInfoLHM = new LinkedHashMap<String, Object>();
 		FileReader inputFileReader = null;
 //        try {
 		File sampleFile = new File(hgdpPath);
@@ -479,8 +480,8 @@ public class SamplesParser {
 		return sampleInfoLHM;
 	}
 
-	public static LinkedHashMap scanAffymetrixSampleInfo(String genotypesPath) throws IOException {
-		LinkedHashMap resultLHM = new LinkedHashMap();
+	public static Map<String, Object> scanAffymetrixSampleInfo(String genotypesPath) throws IOException {
+		Map<String, Object> resultLHM = new LinkedHashMap<String, Object>();
 		File[] gtFilesToImport = org.gwaspi.global.Utils.listFiles(genotypesPath, false);
 
 		for (int i = 0; i < gtFilesToImport.length; i++) {
@@ -499,8 +500,8 @@ public class SamplesParser {
 		return resultLHM;
 	}
 
-	public static LinkedHashMap scanSequenomSampleInfo(String genotypePath) throws IOException {
-		LinkedHashMap sampleInfoLHM = new LinkedHashMap();
+	public static Map<String, Object> scanSequenomSampleInfo(String genotypePath) throws IOException {
+		Map<String, Object> sampleInfoLHM = new LinkedHashMap<String, Object>();
 
 		File gtFileToImport = new File(genotypePath);
 		FileReader inputFileReader = new FileReader(gtFileToImport);
@@ -532,8 +533,8 @@ public class SamplesParser {
 		return sampleInfoLHM;
 	}
 
-	public static HashSet scanSampleInfoAffectionStates(String sampleInfoPath) throws IOException {
-		HashSet resultHS = new HashSet();
+	public static Set<String> scanSampleInfoAffectionStates(String sampleInfoPath) throws IOException {
+		Set<String> resultHS = new HashSet<String>();
 		FileReader inputFileReader = null;
 
 		File sampleFile = new File(sampleInfoPath);
