@@ -29,9 +29,9 @@ import ucar.nc2.NetcdfFile;
  * IBE, Institute of Evolutionary Biology (UPF-CSIC)
  * CEXS-UPF-PRBB
  */
-public class OutputTrendTest_opt {
+public class OutputTrendTest {
 
-	private OutputTrendTest_opt() {
+	private OutputTrendTest() {
 	}
 
 	public static boolean writeReportsForTrendTestData(int opId) throws IOException {
@@ -94,7 +94,7 @@ public class OutputTrendTest_opt {
 	public static boolean writeManhattanPlotFromTrendTestData(int opId, String outName, int width, int height) throws IOException {
 		boolean result = false;
 		//Generating XY scatter plot with loaded data
-		CombinedRangeXYPlot combinedPlot = GenericReportGenerator_opt.buildManhattanPlot(opId, org.gwaspi.constants.cNetCDF.Association.VAR_OP_MARKERS_ASTrendTestTP);
+		CombinedRangeXYPlot combinedPlot = GenericReportGenerator.buildManhattanPlot(opId, org.gwaspi.constants.cNetCDF.Association.VAR_OP_MARKERS_ASTrendTestTP);
 
 		JFreeChart chart = new JFreeChart("P value", JFreeChart.DEFAULT_TITLE_FONT, combinedPlot, true);
 
@@ -133,7 +133,7 @@ public class OutputTrendTest_opt {
 	public static boolean writeQQPlotFromTrendTestData(int opId, String outName, int width, int height) throws IOException {
 		boolean result = false;
 		//Generating XY scatter plot with loaded data
-		XYPlot qqPlot = GenericReportGenerator_opt.buildQQPlot(opId, org.gwaspi.constants.cNetCDF.Association.VAR_OP_MARKERS_ASTrendTestTP, 1);
+		XYPlot qqPlot = GenericReportGenerator.buildQQPlot(opId, org.gwaspi.constants.cNetCDF.Association.VAR_OP_MARKERS_ASTrendTestTP, 1);
 
 		JFreeChart chart = new JFreeChart("X² QQ", JFreeChart.DEFAULT_TITLE_FONT, qqPlot, true);
 
@@ -157,7 +157,7 @@ public class OutputTrendTest_opt {
 		boolean result;
 
 		try {
-			Map<String, Object> unsortedMarkerIdTrendTestValsLHM = GenericReportGenerator_opt.getAnalysisVarData(opId, org.gwaspi.constants.cNetCDF.Association.VAR_OP_MARKERS_ASTrendTestTP);
+			Map<String, Object> unsortedMarkerIdTrendTestValsLHM = GenericReportGenerator.getAnalysisVarData(opId, org.gwaspi.constants.cNetCDF.Association.VAR_OP_MARKERS_ASTrendTestTP);
 			Map<String, Object> unsortedMarkerIdPvalLHM = new LinkedHashMap<String, Object>();
 			for (Iterator<String> it = unsortedMarkerIdTrendTestValsLHM.keySet().iterator(); it.hasNext();) {
 				String key = it.next();

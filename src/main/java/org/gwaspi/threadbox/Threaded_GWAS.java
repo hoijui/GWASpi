@@ -12,9 +12,9 @@ import org.gwaspi.netCDF.operations.OperationManager;
 import org.gwaspi.netCDF.operations.OperationMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.gwaspi.reports.OutputAllelicAssociation_opt;
-import org.gwaspi.reports.OutputGenotypicAssociation_opt;
-import org.gwaspi.reports.OutputTrendTest_opt;
+import org.gwaspi.reports.OutputAllelicAssociation;
+import org.gwaspi.reports.OutputGenotypicAssociation;
+import org.gwaspi.reports.OutputTrendTest;
 import org.gwaspi.samples.SamplesParser;
 
 /**
@@ -148,7 +148,7 @@ public class Threaded_GWAS extends CommonRunnable {
 
 			// Make Reports (needs newMatrixId, QAopId, AssocOpId)
 			if (assocOpId != Integer.MIN_VALUE) {
-				OutputAllelicAssociation_opt.writeReportsForAssociationData(assocOpId);
+				OutputAllelicAssociation.writeReportsForAssociationData(assocOpId);
 				GWASpiExplorerNodes.insertReportsUnderOperationNode(assocOpId);
 			}
 		}
@@ -174,7 +174,7 @@ public class Threaded_GWAS extends CommonRunnable {
 
 			// Make Reports (needs newMatrixId, QAopId, AssocOpId)
 			if (assocOpId != Integer.MIN_VALUE) {
-				OutputGenotypicAssociation_opt.writeReportsForAssociationData(assocOpId);
+				OutputGenotypicAssociation.writeReportsForAssociationData(assocOpId);
 				GWASpiExplorerNodes.insertReportsUnderOperationNode(assocOpId);
 			}
 		}
@@ -200,7 +200,7 @@ public class Threaded_GWAS extends CommonRunnable {
 
 			// Make Reports (needs newMatrixId, QAopId, AssocOpId)
 			if (trendOpId != Integer.MIN_VALUE) {
-				OutputTrendTest_opt.writeReportsForTrendTestData(trendOpId);
+				OutputTrendTest.writeReportsForTrendTestData(trendOpId);
 				GWASpiExplorerNodes.insertReportsUnderOperationNode(trendOpId);
 			}
 		}

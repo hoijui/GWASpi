@@ -23,9 +23,9 @@ import ucar.nc2.NetcdfFile;
  * IBE, Institute of Evolutionary Biology (UPF-CSIC)
  * CEXS-UPF-PRBB
  */
-public class OutputQAMarkers_opt {
+public class OutputQAMarkers {
 
-	private OutputQAMarkers_opt() {
+	private OutputQAMarkers() {
 	}
 
 	public static boolean writeReportsForQAMarkersData(int opId) throws IOException {

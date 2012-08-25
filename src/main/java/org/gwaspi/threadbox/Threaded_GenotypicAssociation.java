@@ -6,7 +6,7 @@ import org.gwaspi.netCDF.operations.GWASinOneGOParams;
 import org.gwaspi.netCDF.operations.OperationMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.gwaspi.reports.OutputGenotypicAssociation_opt;
+import org.gwaspi.reports.OutputGenotypicAssociation;
 
 /**
  *
@@ -77,7 +77,7 @@ public class Threaded_GenotypicAssociation extends CommonRunnable {
 
 			// Make Reports (needs newMatrixId, QAopId, AssocOpId)
 			if (assocOpId != Integer.MIN_VALUE) {
-				OutputGenotypicAssociation_opt.writeReportsForAssociationData(assocOpId);
+				OutputGenotypicAssociation.writeReportsForAssociationData(assocOpId);
 				GWASpiExplorerNodes.insertReportsUnderOperationNode(assocOpId);
 			}
 		}

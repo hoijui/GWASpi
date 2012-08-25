@@ -552,21 +552,21 @@ public final class ManhattanPlotZoom extends javax.swing.JPanel {
 
 		XYDataset xyd = null;
 		if (op.getOperationType().equals(cNetCDF.Defaults.OPType.ALLELICTEST.toString())) {
-			xyd = org.gwaspi.reports.GenericReportGenerator_opt.getManhattanZoomByChrAndPos(_opId,
+			xyd = org.gwaspi.reports.GenericReportGenerator.getManhattanZoomByChrAndPos(_opId,
 					org.gwaspi.constants.cNetCDF.Association.VAR_OP_MARKERS_ASAllelicAssociationTPOR,
 					_origChr,
 					null,
 					_startPhysPos,
 					_requestedPosWindow);
 		} else if (op.getOperationType().equals(cNetCDF.Defaults.OPType.GENOTYPICTEST.toString())) {
-			xyd = org.gwaspi.reports.GenericReportGenerator_opt.getManhattanZoomByChrAndPos(_opId,
+			xyd = org.gwaspi.reports.GenericReportGenerator.getManhattanZoomByChrAndPos(_opId,
 					org.gwaspi.constants.cNetCDF.Association.VAR_OP_MARKERS_ASGenotypicAssociationTP2OR,
 					_origChr,
 					null,
 					_startPhysPos,
 					_requestedPosWindow);
 		} else if (op.getOperationType().equals(cNetCDF.Defaults.OPType.TRENDTEST.toString())) {
-			xyd = org.gwaspi.reports.GenericReportGenerator_opt.getManhattanZoomByChrAndPos(_opId,
+			xyd = org.gwaspi.reports.GenericReportGenerator.getManhattanZoomByChrAndPos(_opId,
 					org.gwaspi.constants.cNetCDF.Association.VAR_OP_MARKERS_ASTrendTestTP,
 					_origChr,
 					null,
@@ -592,21 +592,21 @@ public final class ManhattanPlotZoom extends javax.swing.JPanel {
 
 		XYDataset xyd = null;
 		if (op.getOperationType().equals(cNetCDF.Defaults.OPType.ALLELICTEST.toString())) {
-			xyd = org.gwaspi.reports.GenericReportGenerator_opt.getManhattanZoomByChrAndPos(_opId,
+			xyd = org.gwaspi.reports.GenericReportGenerator.getManhattanZoomByChrAndPos(_opId,
 					org.gwaspi.constants.cNetCDF.Association.VAR_OP_MARKERS_ASAllelicAssociationTPOR,
 					_origChr,
 					_markerId,
 					_centerPhysPos,
 					_requestedPosWindow);
 		} else if (op.getOperationType().equals(cNetCDF.Defaults.OPType.GENOTYPICTEST.toString())) {
-			xyd = org.gwaspi.reports.GenericReportGenerator_opt.getManhattanZoomByChrAndPos(_opId,
+			xyd = org.gwaspi.reports.GenericReportGenerator.getManhattanZoomByChrAndPos(_opId,
 					org.gwaspi.constants.cNetCDF.Association.VAR_OP_MARKERS_ASGenotypicAssociationTP2OR,
 					_origChr,
 					_markerId,
 					_centerPhysPos,
 					_requestedPosWindow);
 		} else if (op.getOperationType().equals(cNetCDF.Defaults.OPType.TRENDTEST.toString())) {
-			xyd = org.gwaspi.reports.GenericReportGenerator_opt.getManhattanZoomByChrAndPos(_opId,
+			xyd = org.gwaspi.reports.GenericReportGenerator.getManhattanZoomByChrAndPos(_opId,
 					org.gwaspi.constants.cNetCDF.Association.VAR_OP_MARKERS_ASTrendTestTP,
 					_origChr,
 					_markerId,
@@ -638,19 +638,19 @@ public final class ManhattanPlotZoom extends javax.swing.JPanel {
 
 		XYDataset xyd = null;
 		if (op.getOperationType().equals(cNetCDF.Defaults.OPType.ALLELICTEST.toString())) {
-			xyd = org.gwaspi.reports.GenericReportGenerator_opt.getManhattanZoomByMarkerIdOrIdx(_opId,
+			xyd = org.gwaspi.reports.GenericReportGenerator.getManhattanZoomByMarkerIdOrIdx(_opId,
 					org.gwaspi.constants.cNetCDF.Association.VAR_OP_MARKERS_ASAllelicAssociationTPOR,
 					_markerId,
 					_centerPhysPos,
 					_requestedSetSize);
 		} else if (op.getOperationType().equals(cNetCDF.Defaults.OPType.GENOTYPICTEST.toString())) {
-			xyd = org.gwaspi.reports.GenericReportGenerator_opt.getManhattanZoomByMarkerIdOrIdx(_opId,
+			xyd = org.gwaspi.reports.GenericReportGenerator.getManhattanZoomByMarkerIdOrIdx(_opId,
 					org.gwaspi.constants.cNetCDF.Association.VAR_OP_MARKERS_ASGenotypicAssociationTP2OR,
 					_markerId,
 					_centerPhysPos,
 					_requestedSetSize);
 		} else if (op.getOperationType().equals(cNetCDF.Defaults.OPType.TRENDTEST.toString())) {
-			xyd = org.gwaspi.reports.GenericReportGenerator_opt.getManhattanZoomByMarkerIdOrIdx(_opId,
+			xyd = org.gwaspi.reports.GenericReportGenerator.getManhattanZoomByMarkerIdOrIdx(_opId,
 					org.gwaspi.constants.cNetCDF.Association.VAR_OP_MARKERS_ASTrendTestTP,
 					_markerId,
 					_centerPhysPos,

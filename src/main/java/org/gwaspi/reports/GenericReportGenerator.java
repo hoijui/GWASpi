@@ -43,7 +43,7 @@ import ucar.nc2.NetcdfFile;
  * IBE, Institute of Evolutionary Biology (UPF-CSIC)
  * CEXS-UPF-PRBB
  */
-public class GenericReportGenerator_opt {
+public class GenericReportGenerator {
 
 	private static Map<String, Object> labelerHM = new LinkedHashMap<String, Object>();
 	private static long snpNumber = 1000000;
@@ -55,7 +55,7 @@ public class GenericReportGenerator_opt {
 	private static Color qq_dot = Color.blue;
 	private static Color qq_ci = Color.lightGray;
 
-	private GenericReportGenerator_opt() {
+	private GenericReportGenerator() {
 	}
 
 	//<editor-fold defaultstate="collapsed" desc="ASSOCIATION CHARTS">
@@ -319,7 +319,7 @@ public class GenericReportGenerator_opt {
 
 
 		//<editor-fold defaultstate="collapsed" desc="GET CONFIDENCE BOUNDARY">
-		InputStream boundaryStream = GenericReportGenerator_opt.class.getClass().getResourceAsStream("/samples/chisqrboundary-df" + df + ".txt");
+		InputStream boundaryStream = GenericReportGenerator.class.getClass().getResourceAsStream("/samples/chisqrboundary-df" + df + ".txt");
 		InputStreamReader isr = new InputStreamReader(boundaryStream);
 		BufferedReader inputBufferReader = new BufferedReader(isr);
 
@@ -514,7 +514,7 @@ public class GenericReportGenerator_opt {
 
 
 		} catch (IOException ex) {
-			Logger.getLogger(GenericReportGenerator_opt.class.getName()).log(Level.SEVERE, null, ex);
+			Logger.getLogger(GenericReportGenerator.class.getName()).log(Level.SEVERE, null, ex);
 		}
 
 		return resultXYDataset;
@@ -696,7 +696,7 @@ public class GenericReportGenerator_opt {
 
 
 		} catch (IOException ex) {
-			Logger.getLogger(GenericReportGenerator_opt.class.getName()).log(Level.SEVERE, null, ex);
+			Logger.getLogger(GenericReportGenerator.class.getName()).log(Level.SEVERE, null, ex);
 		}
 
 		return resultXYDataset;

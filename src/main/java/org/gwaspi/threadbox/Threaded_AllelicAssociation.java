@@ -6,7 +6,7 @@ import org.gwaspi.netCDF.operations.GWASinOneGOParams;
 import org.gwaspi.netCDF.operations.OperationMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.gwaspi.reports.OutputAllelicAssociation_opt;
+import org.gwaspi.reports.OutputAllelicAssociation;
 
 /**
  *
@@ -77,7 +77,7 @@ public class Threaded_AllelicAssociation extends CommonRunnable {
 
 			// Make Reports (needs newMatrixId, QAopId, AssocOpId)
 			if (assocOpId != Integer.MIN_VALUE) {
-				OutputAllelicAssociation_opt.writeReportsForAssociationData(assocOpId);
+				OutputAllelicAssociation.writeReportsForAssociationData(assocOpId);
 				GWASpiExplorerNodes.insertReportsUnderOperationNode(assocOpId);
 			}
 		}

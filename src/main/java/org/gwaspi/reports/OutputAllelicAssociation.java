@@ -12,8 +12,8 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import org.gwaspi.netCDF.markers.MarkerSet_opt;
 import org.gwaspi.model.Operation;
+import org.gwaspi.netCDF.markers.MarkerSet_opt;
 import org.gwaspi.netCDF.operations.OperationManager;
 import org.gwaspi.netCDF.operations.OperationMetadata;
 import org.gwaspi.netCDF.operations.OperationSet;
@@ -29,9 +29,9 @@ import ucar.nc2.NetcdfFile;
  * IBE, Institute of Evolutionary Biology (UPF-CSIC)
  * CEXS-UPF-PRBB
  */
-public class OutputAllelicAssociation_opt {
+public class OutputAllelicAssociation {
 
-	private OutputAllelicAssociation_opt() {
+	private OutputAllelicAssociation() {
 	}
 
 	public static boolean writeReportsForAssociationData(int opId) throws IOException {
@@ -94,7 +94,7 @@ public class OutputAllelicAssociation_opt {
 	public static boolean writeManhattanPlotFromAssociationData(int opId, String outName, int width, int height) throws IOException {
 		boolean result = false;
 		//Generating XY scatter plot with loaded data
-		CombinedRangeXYPlot combinedPlot = GenericReportGenerator_opt.buildManhattanPlot(opId, org.gwaspi.constants.cNetCDF.Association.VAR_OP_MARKERS_ASAllelicAssociationTPOR);
+		CombinedRangeXYPlot combinedPlot = GenericReportGenerator.buildManhattanPlot(opId, org.gwaspi.constants.cNetCDF.Association.VAR_OP_MARKERS_ASAllelicAssociationTPOR);
 
 		JFreeChart chart = new JFreeChart("P value", JFreeChart.DEFAULT_TITLE_FONT, combinedPlot, true);
 
@@ -132,7 +132,7 @@ public class OutputAllelicAssociation_opt {
 	public static boolean writeQQPlotFromAssociationData(int opId, String outName, int width, int height) throws IOException {
 		boolean result = false;
 		//Generating XY scatter plot with loaded data
-		XYPlot qqPlot = GenericReportGenerator_opt.buildQQPlot(opId, org.gwaspi.constants.cNetCDF.Association.VAR_OP_MARKERS_ASAllelicAssociationTPOR, 1);
+		XYPlot qqPlot = GenericReportGenerator.buildQQPlot(opId, org.gwaspi.constants.cNetCDF.Association.VAR_OP_MARKERS_ASAllelicAssociationTPOR, 1);
 
 		JFreeChart chart = new JFreeChart("X² QQ", JFreeChart.DEFAULT_TITLE_FONT, qqPlot, true);
 
@@ -156,7 +156,7 @@ public class OutputAllelicAssociation_opt {
 		boolean result;
 
 		try {
-			Map<String, Object> unsortedMarkerIdAssocValsLHM = GenericReportGenerator_opt.getAnalysisVarData(opId, org.gwaspi.constants.cNetCDF.Association.VAR_OP_MARKERS_ASAllelicAssociationTPOR);
+			Map<String, Object> unsortedMarkerIdAssocValsLHM = GenericReportGenerator.getAnalysisVarData(opId, org.gwaspi.constants.cNetCDF.Association.VAR_OP_MARKERS_ASAllelicAssociationTPOR);
 			Map<String, Object> unsortedMarkerIdPvalLHM = new LinkedHashMap<String, Object>();
 			for (Iterator<String> it = unsortedMarkerIdAssocValsLHM.keySet().iterator(); it.hasNext();) {
 				String key = it.next();
@@ -253,7 +253,7 @@ public class OutputAllelicAssociation_opt {
 			}
 			ReportWriter.appendColumnToReport(reportPath, reportName, sortingMarkerSetLHM, false, false);
 
-			//WRITE HW HETZY ARRAY
+			//WRITE DATA TO REPORT
 			for (Iterator<String> it = sortingMarkerSetLHM.keySet().iterator(); it.hasNext();) {
 				String key = it.next();
 				Object value = unsortedMarkerIdAssocValsLHM.get(key);

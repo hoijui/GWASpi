@@ -51,7 +51,7 @@ public class Threaded_MatrixQA extends CommonRunnable {
 			if (missingOPsAL.contains(org.gwaspi.constants.cNetCDF.Defaults.OPType.MARKER_QA.toString())) {
 				int markersQAOpId = OP_QAMarkers_opt.processMatrix(matrixId);
 				GWASpiExplorerNodes.insertOperationUnderMatrixNode(matrixId, markersQAOpId);
-				org.gwaspi.reports.OutputQAMarkers_opt.writeReportsForQAMarkersData(markersQAOpId);
+				org.gwaspi.reports.OutputQAMarkers.writeReportsForQAMarkersData(markersQAOpId);
 				GWASpiExplorerNodes.insertReportsUnderOperationNode(markersQAOpId);
 			}
 			MultiOperations.printCompleted("Matrix Quality Control");

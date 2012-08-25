@@ -317,7 +317,7 @@ public final class SampleQAHetzygPlotZoom extends javax.swing.JPanel {
 	// <editor-fold defaultstate="collapsed" desc="CHART GENERATOR">
 	static XYDataset getSampleHetzygDataset(int _opId) throws IOException {
 
-		XYDataset xyd = org.gwaspi.reports.GenericReportGenerator_opt.getSampleHetzygDataset(opId);
+		XYDataset xyd = org.gwaspi.reports.GenericReportGenerator.getSampleHetzygDataset(opId);
 		return xyd;
 	}
 

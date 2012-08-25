@@ -92,7 +92,7 @@ public class OperationManager {
 		resultOpId = org.gwaspi.netCDF.operations.OP_HardyWeinberg.processMatrix(censusOP,
 				hwName);
 
-		org.gwaspi.reports.OutputHardyWeinberg_opt.writeReportsForMarkersHWData(resultOpId);
+		org.gwaspi.reports.OutputHardyWeinberg.writeReportsForMarkersHWData(resultOpId);
 
 		return resultOpId;
 	}

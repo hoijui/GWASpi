@@ -24,9 +24,9 @@ import ucar.nc2.NetcdfFile;
  * IBE, Institute of Evolutionary Biology (UPF-CSIC)
  * CEXS-UPF-PRBB
  */
-public class OutputHardyWeinberg_opt {
+public class OutputHardyWeinberg {
 
-	private OutputHardyWeinberg_opt() {
+	private OutputHardyWeinberg() {
 	}
 
 	public static boolean writeReportsForMarkersHWData(int opId) throws IOException {

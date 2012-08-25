@@ -68,7 +68,7 @@ public class Threaded_MergeMatricesAddAll extends CommonRunnable {
 		if (thisSwi.getQueueState().equals(org.gwaspi.threadbox.QueueStates.PROCESSING)) {
 			int markersQAOpId = OP_QAMarkers_opt.processMatrix(resultMatrixId);
 			GWASpiExplorerNodes.insertOperationUnderMatrixNode(resultMatrixId, markersQAOpId);
-			org.gwaspi.reports.OutputQAMarkers_opt.writeReportsForQAMarkersData(markersQAOpId);
+			org.gwaspi.reports.OutputQAMarkers.writeReportsForQAMarkersData(markersQAOpId);
 			GWASpiExplorerNodes.insertReportsUnderOperationNode(markersQAOpId);
 			MultiOperations.printCompleted("Matrix Quality Control");
 		}

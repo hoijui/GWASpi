@@ -29,9 +29,9 @@ import ucar.nc2.NetcdfFile;
  * IBE, Institute of Evolutionary Biology (UPF-CSIC)
  * CEXS-UPF-PRBB
  */
-public class OutputGenotypicAssociation_opt {
+public class OutputGenotypicAssociation {
 
-	private OutputGenotypicAssociation_opt() {
+	private OutputGenotypicAssociation() {
 	}
 
 	public static boolean writeReportsForAssociationData(int opId) throws IOException {
@@ -94,14 +94,12 @@ public class OutputGenotypicAssociation_opt {
 	public static boolean writeManhattanPlotFromAssociationData(int opId, String outName, int width, int height) throws IOException {
 		boolean result = false;
 		//Generating XY scatter plot with loaded data
-		CombinedRangeXYPlot combinedPlot = GenericReportGenerator_opt.buildManhattanPlot(opId, org.gwaspi.constants.cNetCDF.Association.VAR_OP_MARKERS_ASGenotypicAssociationTP2OR);
+		CombinedRangeXYPlot combinedPlot = GenericReportGenerator.buildManhattanPlot(opId, org.gwaspi.constants.cNetCDF.Association.VAR_OP_MARKERS_ASGenotypicAssociationTP2OR);
 
 		JFreeChart chart = new JFreeChart("P value", JFreeChart.DEFAULT_TITLE_FONT, combinedPlot, true);
 
-
 		//CHART BACKGROUD COLOR
 		chart.setBackgroundPaint(Color.getHSBColor(0.1f, 0.1f, 1.0f)); //Hue, saturation, brightness
-
 
 		OperationMetadata rdOPMetadata = new OperationMetadata(opId);
 		int pointNb = rdOPMetadata.getOpSetSize();
@@ -134,7 +132,7 @@ public class OutputGenotypicAssociation_opt {
 	public static boolean writeQQPlotFromAssociationData(int opId, String outName, int width, int height) throws IOException {
 		boolean result = false;
 		//Generating XY scatter plot with loaded data
-		XYPlot qqPlot = GenericReportGenerator_opt.buildQQPlot(opId, org.gwaspi.constants.cNetCDF.Association.VAR_OP_MARKERS_ASGenotypicAssociationTP2OR, 2);
+		XYPlot qqPlot = GenericReportGenerator.buildQQPlot(opId, org.gwaspi.constants.cNetCDF.Association.VAR_OP_MARKERS_ASGenotypicAssociationTP2OR, 2);
 
 		JFreeChart chart = new JFreeChart("X² QQ", JFreeChart.DEFAULT_TITLE_FONT, qqPlot, true);
 
@@ -155,10 +153,10 @@ public class OutputGenotypicAssociation_opt {
 	}
 
 	public static boolean createSortedAssociationReport(int opId, String reportName) throws IOException {
-		boolean result = false;
+		boolean result;
 
 		try {
-			Map<String, Object> unsortedMarkerIdAssocValsLHM = GenericReportGenerator_opt.getAnalysisVarData(opId, org.gwaspi.constants.cNetCDF.Association.VAR_OP_MARKERS_ASGenotypicAssociationTP2OR);
+			Map<String, Object> unsortedMarkerIdAssocValsLHM = GenericReportGenerator.getAnalysisVarData(opId, org.gwaspi.constants.cNetCDF.Association.VAR_OP_MARKERS_ASGenotypicAssociationTP2OR);
 			Map<String, Object> unsortedMarkerIdPvalLHM = new LinkedHashMap<String, Object>();
 			for (Iterator<String> it = unsortedMarkerIdAssocValsLHM.keySet().iterator(); it.hasNext();) {
 				String key = it.next();
@@ -218,7 +216,7 @@ public class OutputGenotypicAssociation_opt {
 			List<Object[]> operationsAL = OperationManager.getMatrixOperations(rdOPMetadata.getParentMatrixId());
 			int markersQAopId = Integer.MIN_VALUE;
 			for (int i = 0; i < operationsAL.size(); i++) {
-				Object[] element = (Object[]) operationsAL.get(i);
+				Object[] element = operationsAL.get(i);
 				if (element[1].toString().equals(cNetCDF.Defaults.OPType.MARKER_QA.toString())) {
 					markersQAopId = (Integer) element[0];
 				}

@@ -8,7 +8,7 @@ import org.gwaspi.netCDF.operations.GWASinOneGOParams;
 import org.gwaspi.netCDF.operations.OperationMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.gwaspi.reports.OutputTrendTest_opt;
+import org.gwaspi.reports.OutputTrendTest;
 
 /**
  *
@@ -80,7 +80,7 @@ public class Threaded_TrendTest extends CommonRunnable {
 
 			// Make Reports (needs newMatrixId, QAopId, AssocOpId)
 			if (trendTestOpId != Integer.MIN_VALUE) {
-				OutputTrendTest_opt.writeReportsForTrendTestData(trendTestOpId);
+				OutputTrendTest.writeReportsForTrendTestData(trendTestOpId);
 				GWASpiExplorerNodes.insertReportsUnderOperationNode(trendTestOpId);
 			}
 		}

@@ -94,7 +94,7 @@ public class Threaded_Loader_QA extends CommonRunnable {
 		if (thisSwi.getQueueState().equals(org.gwaspi.threadbox.QueueStates.PROCESSING)) {
 			resultOpId = OP_QAMarkers_opt.processMatrix(resultMatrixId);
 			GWASpiExplorerNodes.insertOperationUnderMatrixNode(resultMatrixId, resultOpId);
-			org.gwaspi.reports.OutputQAMarkers_opt.writeReportsForQAMarkersData(resultOpId);
+			org.gwaspi.reports.OutputQAMarkers.writeReportsForQAMarkersData(resultOpId);
 			MultiOperations.printCompleted("Matrix Quality Control");
 			GWASpiExplorerNodes.insertReportsUnderOperationNode(resultOpId);
 		}
