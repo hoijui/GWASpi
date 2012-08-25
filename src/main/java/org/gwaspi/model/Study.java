@@ -25,7 +25,7 @@ public class Study {
 	private String validity = ""; // validity SMALLINT
 	private Date creationDate; // creation_date TIMESTAMP (2009-05-13 17:22:10.984)
 	private StringBuffer studyLog = new StringBuffer();
-	private ArrayList studyMatrices = new ArrayList();
+	private List<Integer> studyMatrices = new ArrayList<Integer>();
 
 	/**
 	 * This will init the Study object requested from the DB
@@ -79,8 +79,8 @@ public class Study {
 		return rs;
 	}
 
-	public static ArrayList getStudyMatricesId(int studyId) throws IOException {
-		ArrayList studyMatricesList = new ArrayList();
+	public static List<Integer> getStudyMatricesId(int studyId) throws IOException {
+		List<Integer> studyMatricesList = new ArrayList<Integer>();
 		List<Map<String, Object>> rs = null;
 		String dbName = org.gwaspi.constants.cDBGWASpi.DB_DATACENTER;
 		DbManager studyDbManager = ServiceLocator.getDbManager(dbName);

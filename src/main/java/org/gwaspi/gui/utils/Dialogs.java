@@ -9,6 +9,7 @@ import java.awt.GridBagConstraints;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JButton;
@@ -40,8 +41,8 @@ public class Dialogs {
 		org.gwaspi.model.OperationsList operations = new org.gwaspi.model.OperationsList(matrixId);
 
 		if (!operations.operationsListAL.isEmpty()) {
-			ArrayList operationsNames = new ArrayList();
-			ArrayList<Operation> operationAL = new ArrayList<Operation>();
+			List<String> operationsNames = new ArrayList<String>();
+			List<Operation> operationAL = new ArrayList<Operation>();
 			for (int i = 0; i < operations.operationsListAL.size(); i++) {
 				Operation op = operations.operationsListAL.get(i);
 				if (op.getOperationType().equals(filterOpType.toString())) {
@@ -72,13 +73,13 @@ public class Dialogs {
 		return selectedOP;
 	}
 
-	public static Operation showOperationCombo(int matrixId, ArrayList filterOpTypeAL, String title) throws IOException {
+	public static Operation showOperationCombo(int matrixId, List<String> filterOpTypeAL, String title) throws IOException {
 		Operation selectedOP = null;
 		org.gwaspi.model.OperationsList operations = new org.gwaspi.model.OperationsList(matrixId);
 
 		if (!operations.operationsListAL.isEmpty()) {
-			ArrayList operationsNames = new ArrayList();
-			ArrayList<Operation> operationAL = new ArrayList<Operation>();
+			List<String> operationsNames = new ArrayList<String>();
+			List<Operation> operationAL = new ArrayList<Operation>();
 			for (int i = 0; i < operations.operationsListAL.size(); i++) {
 				Operation op = operations.operationsListAL.get(i);
 				if (filterOpTypeAL.contains(op.getOperationType())) {
@@ -116,8 +117,8 @@ public class Dialogs {
 		org.gwaspi.model.OperationsList operations = new org.gwaspi.model.OperationsList(matrixId, parentOpId);
 
 		if (!operations.operationsListAL.isEmpty()) {
-			ArrayList operationsNames = new ArrayList();
-			ArrayList<Operation> operationAL = new ArrayList<Operation>();
+			List<String> operationsNames = new ArrayList<String>();
+			List<Operation> operationAL = new ArrayList<Operation>();
 			for (int i = 0; i < operations.operationsListAL.size(); i++) {
 				Operation op = operations.operationsListAL.get(i);
 				if (op.getOperationType().equals(filterOpType.toString())) {
@@ -243,8 +244,8 @@ public class Dialogs {
 	public static int showMatrixSelectCombo() throws IOException {
 		org.gwaspi.model.MatricesList matrices = new org.gwaspi.model.MatricesList();
 		//String[] matrixNames = new String[matrices.matrixList.size()];
-		ArrayList matrixNames = new ArrayList();
-		ArrayList<Integer> matrixIDs = new ArrayList<Integer>();
+		List<String> matrixNames = new ArrayList<String>();
+		List<Integer> matrixIDs = new ArrayList<Integer>();
 		for (int i = 0; i < matrices.matrixList.size(); i++) {
 			Matrix mx = matrices.matrixList.get(i);
 			StringBuilder mn = new StringBuilder();

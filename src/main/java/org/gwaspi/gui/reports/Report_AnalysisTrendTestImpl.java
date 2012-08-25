@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.table.DefaultTableModel;
@@ -117,7 +118,7 @@ public final class Report_AnalysisTrendTestImpl extends Report_Analysis {
 				BufferedReader inputBufferReader = new BufferedReader(inputFileReader);
 
 				//Getting data from file and subdividing to series all points by chromosome
-				ArrayList tableRowAL = new ArrayList();
+				List<Object[]> tableRowAL = new ArrayList<Object[]>();
 				String header = inputBufferReader.readLine();
 				int count = 0;
 				while (count < getRowsNb) {
@@ -178,7 +179,7 @@ public final class Report_AnalysisTrendTestImpl extends Report_Analysis {
 
 				Object[][] tableMatrix = new Object[tableRowAL.size()][11];
 				for (int i = 0; i < tableRowAL.size(); i++) {
-					tableMatrix[i] = (Object[]) tableRowAL.get(i);
+					tableMatrix[i] = tableRowAL.get(i);
 				}
 
 				String[] columns = new String[]{Text.Reports.markerId,

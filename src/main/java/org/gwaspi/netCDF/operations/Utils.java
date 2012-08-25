@@ -733,7 +733,7 @@ public class Utils {
 
 	//</editor-fold>
 	//<editor-fold defaultstate="collapsed" desc="ArrayByte.D3">
-	public static ArrayByte.D3 writeALValuesToSamplesHyperSlabArrayByteD3(ArrayList<byte[]> genotypesAL, int sampleNb, int stride) {
+	public static ArrayByte.D3 writeALValuesToSamplesHyperSlabArrayByteD3(List<byte[]> genotypesAL, int sampleNb, int stride) {
 		int markerNb = genotypesAL.size() / sampleNb;
 		int alCounter = 0;
 
@@ -880,10 +880,9 @@ public class Utils {
 		return lhm;
 	}
 
-	public static ArrayList writeD2ArrayCharToAL(ArrayChar inputArray) {
-		ArrayList als = new ArrayList();
+	public static List<String> writeD2ArrayCharToAL(ArrayChar inputArray) {
 		Long expectedSize = inputArray.getSize();
-		als.ensureCapacity(expectedSize.intValue());
+		List<String> als = new ArrayList(expectedSize.intValue());
 
 		int[] shape = inputArray.getShape();
 		for (int i = 0; i < shape[0]; i++) {
@@ -947,10 +946,9 @@ public class Utils {
 		return lhm;
 	}
 
-	public static ArrayList<Double> writeD1ArrayDoubleToAL(ArrayDouble.D1 inputArray) {
-		ArrayList<Double> alf = new ArrayList<Double>();
+	public static List<Double> writeD1ArrayDoubleToAL(ArrayDouble.D1 inputArray) {
 		Long expectedSize = inputArray.getSize();
-		alf.ensureCapacity(expectedSize.intValue());
+		List<Double> alf = new ArrayList<Double>(expectedSize.intValue());
 
 		int[] shape = inputArray.getShape();
 		Index index = inputArray.getIndex();
@@ -958,7 +956,6 @@ public class Utils {
 			Double value = inputArray.getDouble(index.set(i));
 			alf.add(value);
 		}
-
 
 		return alf;
 	}
@@ -983,10 +980,9 @@ public class Utils {
 		return lhm;
 	}
 
-	public static ArrayList<double[]> writeD2ArrayDoubleToAL(ArrayDouble.D2 inputArray) {
-		ArrayList<double[]> alf = new ArrayList<double[]>();
+	public static List<double[]> writeD2ArrayDoubleToAL(ArrayDouble.D2 inputArray) {
 		Long expectedSize = inputArray.getSize();
-		alf.ensureCapacity(expectedSize.intValue());
+		List<double[]> alf = new ArrayList<double[]>(expectedSize.intValue());
 
 		int[] shape = inputArray.getShape();
 		for (int i = 0; i < (shape[0] * shape[1]); i = i + shape[1]) {
@@ -995,7 +991,6 @@ public class Utils {
 			double[] values = (double[]) wrDoubleArray.copyTo1DJavaArray();
 			alf.add(values);
 		}
-
 
 		return alf;
 	}
@@ -1016,10 +1011,9 @@ public class Utils {
 		return lhm;
 	}
 
-	public static ArrayList<Integer> writeD1ArrayIntToAL(ArrayInt.D1 inputArray) {
-		ArrayList<Integer> ali = new ArrayList<Integer>();
+	public static List<Integer> writeD1ArrayIntToAL(ArrayInt.D1 inputArray) {
 		Long expectedSize = inputArray.getSize();
-		ali.ensureCapacity(expectedSize.intValue());
+		List<Integer> ali = new ArrayList<Integer>(expectedSize.intValue());
 
 		int[] shape = inputArray.getShape();
 		Index index = inputArray.getIndex();
@@ -1027,7 +1021,6 @@ public class Utils {
 			int value = inputArray.getInt(index.set(i));
 			ali.add(value);
 		}
-
 
 		return ali;
 	}
@@ -1072,11 +1065,9 @@ public class Utils {
 		return lhm;
 	}
 
-	public static ArrayList writeD2ArrayByteToAL(ArrayByte inputArray) {
-		ArrayList als = new ArrayList();
+	public static List<byte[]> writeD2ArrayByteToAL(ArrayByte inputArray) {
 		Long expectedSize = inputArray.getSize();
-		als.ensureCapacity(expectedSize.intValue());
-		StringBuilder value = new StringBuilder("");
+		List<byte[]> als = new ArrayList<byte[]>(expectedSize.intValue());
 
 		int[] shape = inputArray.getShape();
 		Index index = inputArray.getIndex();
@@ -1085,9 +1076,7 @@ public class Utils {
 			ArrayByte.D2.arraycopy(inputArray, i * shape[1], wrArray, 0, shape[1]);
 			byte[] values = (byte[]) wrArray.copyTo1DJavaArray();
 			als.add(values);
-
 		}
-
 
 		return als;
 	}

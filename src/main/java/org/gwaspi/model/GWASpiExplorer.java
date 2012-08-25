@@ -18,6 +18,7 @@ import org.gwaspi.gui.reports.Report_SampleInfoPanel;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.Icon;
@@ -125,7 +126,7 @@ public class GWASpiExplorer {
 					DefaultMutableTreeNode operationItem = GWASpiExplorerNodes.createOperationTreeNode(currentOP.getOperationId());
 
 
-					ArrayList<Operation> childrenOpAL = getChildrenOperations(allOpsMod.operationsListAL, currentOP.getOperationId());
+					List<Operation> childrenOpAL = getChildrenOperations(allOpsMod.operationsListAL, currentOP.getOperationId());
 					for (int m = 0; m < childrenOpAL.size(); m++) {
 						Operation subOP = childrenOpAL.get(m);
 						DefaultMutableTreeNode subOperationItem = GWASpiExplorerNodes.createSubOperationTreeNode(subOP.getOperationId());
@@ -447,9 +448,9 @@ public class GWASpiExplorer {
 
 	//</editor-fold>
 	//<editor-fold defaultstate="collapsed" desc="HELPERS">
-	protected static ArrayList getChildrenOperations(ArrayList<Operation> opAL, int parentOpId) {
+	protected static List<Operation> getChildrenOperations(List<Operation> opAL, int parentOpId) {
 
-		ArrayList childrednOperationsAL = new ArrayList();
+		List<Operation> childrednOperationsAL = new ArrayList<Operation>();
 
 		for (int i = 0; i < opAL.size(); i++) {
 			int currentParentOPId = (Integer) opAL.get(i).getParentOperationId();

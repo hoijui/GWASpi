@@ -6,6 +6,7 @@ import java.awt.BorderLayout;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.Icon;
@@ -34,7 +35,7 @@ public class IntroPanel extends javax.swing.JPanel {
 	private javax.swing.JButton btn_exit;
 	private javax.swing.JButton btn_preferences;
 	private javax.swing.JButton btn_start;
-	private ArrayList<Object[]> helpLinksAL;
+	private List<Object[]> helpLinksAL;
 	// End of variables declaration
 
 	@SuppressWarnings("unchecked")

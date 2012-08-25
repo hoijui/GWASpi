@@ -16,7 +16,7 @@ import java.util.Map;
  */
 public class OperationsList {
 
-	public ArrayList<model.Operation> operationsListAL = new ArrayList();
+	public List<model.Operation> operationsListAL = new ArrayList<model.Operation>();
 
 	public OperationsList(int matrixId) throws IOException {
 
@@ -155,7 +155,7 @@ public class OperationsList {
 	//<editor-fold defaultstate="collapsed" desc="HELPERS">
 	public int getIdOfLastOperationTypeOccurance(org.gwaspi.constants.cNetCDF.Defaults.OPType opType) {
 		int result = Integer.MIN_VALUE;
-		ArrayList<Operation> opAL = this.operationsListAL;
+		List<Operation> opAL = this.operationsListAL;
 		for (int i = 0; i < opAL.size(); i++) {
 			if (opAL.get(i).getOperationType().equals(org.gwaspi.constants.cNetCDF.Defaults.OPType.MARKER_QA.toString())) {
 				result = opAL.get(i).getOperationId();

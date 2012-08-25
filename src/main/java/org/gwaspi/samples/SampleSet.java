@@ -1,7 +1,6 @@
 package org.gwaspi.samples;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -58,7 +57,7 @@ public class SampleSet {
 		return sampleSetSize;
 	}
 
-	public MatrixMetadata getMatrixMetadata(ArrayList _sampleSetAL) {
+	public MatrixMetadata getMatrixMetadata(List<String> _sampleSetAL) {
 		return matrixMetadata;
 	}
 

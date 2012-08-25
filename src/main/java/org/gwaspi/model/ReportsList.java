@@ -15,7 +15,7 @@ import java.util.Map;
  */
 public class ReportsList {
 
-	public ArrayList<model.Report> reportsListAL = new ArrayList();
+	public List<model.Report> reportsListAL = new ArrayList<model.Report>();
 
 	public ReportsList(int opId, int matrixId) throws IOException {
 

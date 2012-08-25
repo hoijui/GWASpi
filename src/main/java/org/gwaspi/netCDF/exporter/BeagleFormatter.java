@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import org.gwaspi.netCDF.markers.MarkerSet_opt;
 import org.gwaspi.netCDF.matrices.MatrixMetadata;
@@ -197,10 +198,10 @@ class BeagleFormatter implements Formatter {
 
 			//WRITE KNOWN ALLELES FROM QA
 			//get MARKER_QA Operation
-			ArrayList operationsAL = OperationManager.getMatrixOperations(rdMatrixMetadata.getMatrixId());
+			List<Object[]> operationsAL = OperationManager.getMatrixOperations(rdMatrixMetadata.getMatrixId());
 			int markersQAopId = Integer.MIN_VALUE;
 			for (int i = 0; i < operationsAL.size(); i++) {
-				Object[] element = (Object[]) operationsAL.get(i);
+				Object[] element = operationsAL.get(i);
 				if (element[1].toString().equals(cNetCDF.Defaults.OPType.MARKER_QA.toString())) {
 					markersQAopId = (Integer) element[0];
 				}

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import ucar.ma2.ArrayChar;
 import ucar.ma2.ArrayDouble;
@@ -301,9 +302,9 @@ public class OperationSet {
 		return wrLHM;
 	}
 
-	public ArrayList getALWithVariable(NetcdfFile ncfile, String variable) {
+	public List getALWithVariable(NetcdfFile ncfile, String variable) {
 
-		ArrayList al = new ArrayList();
+		List al = new ArrayList();
 
 		Variable var = ncfile.findVariable(variable);
 		if (null == var) {
@@ -313,7 +314,7 @@ public class OperationSet {
 		DataType dataType = var.getDataType();
 		int[] varShape = var.getShape();
 		opSetSize = varShape[0];
-		al.ensureCapacity(opSetSize);
+		((ArrayList) al).ensureCapacity(opSetSize);
 
 		try {
 			if (dataType == DataType.CHAR) {

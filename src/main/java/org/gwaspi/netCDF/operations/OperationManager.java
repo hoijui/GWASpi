@@ -194,8 +194,8 @@ public class OperationManager {
 
 	}
 
-	public static ArrayList getMatrixOperations(int matrixId) throws IOException {
-		ArrayList result = new ArrayList();
+	public static List<Object[]> getMatrixOperations(int matrixId) throws IOException {
+		List<Object[]> result = new ArrayList<Object[]>();
 
 		DbManager dBManager = ServiceLocator.getDbManager(org.gwaspi.constants.cDBGWASpi.DB_DATACENTER);
 		List<Map<String, Object>> rs = dBManager.executeSelectStatement("SELECT * FROM " + org.gwaspi.constants.cDBGWASpi.SCH_MATRICES + "." + org.gwaspi.constants.cDBOperations.T_OPERATIONS + " WHERE " + org.gwaspi.constants.cDBOperations.f_PARENT_MATRIXID + "=" + matrixId + "  WITH RR");
@@ -220,7 +220,7 @@ public class OperationManager {
 			String genotypesFolder = org.gwaspi.global.Config.getConfigValue("GTdir", "");
 
 			OperationsList opList = new OperationsList(op.getParentMatrixId(), opId);
-			ArrayList<Operation> opAL = opList.operationsListAL;
+			List<Operation> opAL = opList.operationsListAL;
 			if (!opAL.isEmpty()) {
 				opAL.add(op);
 				for (int i = 0; i < opAL.size(); i++) {
@@ -269,10 +269,10 @@ public class OperationManager {
 
 	}
 
-	public static ArrayList checkForNecessaryOperations(ArrayList necessaryOPs, int matrixId) {
+	public static List<String> checkForNecessaryOperations(List<String> necessaryOPs, int matrixId) {
 		try {
 			OperationsList chkList = new OperationsList(matrixId);
-			ArrayList<Operation> chkOpAL = chkList.operationsListAL;
+			List<Operation> chkOpAL = chkList.operationsListAL;
 
 			for (int i = 0; i < chkOpAL.size(); i++) {
 				if (necessaryOPs.contains(chkOpAL.get(i).getOperationType())) {
@@ -285,10 +285,10 @@ public class OperationManager {
 		return necessaryOPs;
 	}
 
-	public static ArrayList checkForNecessaryOperations(ArrayList necessaryOPs, int matrixId, int opId) {
+	public static List<String> checkForNecessaryOperations(List<String> necessaryOPs, int matrixId, int opId) {
 		try {
 			OperationsList chkMatrixList = new OperationsList(matrixId);
-			ArrayList<Operation> chkMatrixAL = chkMatrixList.operationsListAL;
+			List<Operation> chkMatrixAL = chkMatrixList.operationsListAL;
 
 			for (int i = 0; i < chkMatrixAL.size(); i++) {
 				//Check if current operation is from parent matrix or parent operation
@@ -304,11 +304,11 @@ public class OperationManager {
 		return necessaryOPs;
 	}
 
-	public static ArrayList checkForBlackListedOperations(ArrayList blackListOPs, int matrixId) {
-		ArrayList nonoOPs = new ArrayList();
+	public static List<String> checkForBlackListedOperations(List<String> blackListOPs, int matrixId) {
+		List<String> nonoOPs = new ArrayList<String>();
 		try {
 			OperationsList chkList = new OperationsList(matrixId);
-			ArrayList<Operation> chkOpAL = chkList.operationsListAL;
+			List<Operation> chkOpAL = chkList.operationsListAL;
 
 			for (int i = 0; i < chkOpAL.size(); i++) {
 				if (blackListOPs.contains(chkOpAL.get(i).getOperationType())) {
@@ -321,11 +321,11 @@ public class OperationManager {
 		return nonoOPs;
 	}
 
-	public static ArrayList checkForBlackListedOperations(ArrayList blackListOPs, int matrixId, int opId) {
-		ArrayList nonoOPs = new ArrayList();
+	public static List<String> checkForBlackListedOperations(List<String> blackListOPs, int matrixId, int opId) {
+		List<String> nonoOPs = new ArrayList<String>();
 		try {
 			OperationsList chkList = new OperationsList(matrixId, opId);
-			ArrayList<Operation> chkOpAL = chkList.operationsListAL;
+			List<Operation> chkOpAL = chkList.operationsListAL;
 
 			for (int i = 0; i < chkOpAL.size(); i++) {
 				if (blackListOPs.contains(chkOpAL.get(i).getOperationType())) {

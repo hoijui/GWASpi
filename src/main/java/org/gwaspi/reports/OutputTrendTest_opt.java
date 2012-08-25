@@ -8,9 +8,9 @@ import org.gwaspi.global.ServiceLocator;
 import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import org.gwaspi.model.Operation;
 import org.gwaspi.netCDF.markers.MarkerSet_opt;
@@ -212,7 +212,7 @@ public class OutputTrendTest_opt {
 
 			//WRITE KNOWN ALLELES FROM QA
 			//get MARKER_QA Operation
-			ArrayList operationsAL = OperationManager.getMatrixOperations(rdOPMetadata.getParentMatrixId());
+			List<Object[]> operationsAL = OperationManager.getMatrixOperations(rdOPMetadata.getParentMatrixId());
 			int markersQAopId = Integer.MIN_VALUE;
 			for (int i = 0; i < operationsAL.size(); i++) {
 				Object[] element = (Object[]) operationsAL.get(i);

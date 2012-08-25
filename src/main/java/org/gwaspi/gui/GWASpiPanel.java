@@ -3,6 +3,7 @@ package org.gwaspi.gui;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.List;
 import javax.swing.JTree;
 import javax.swing.tree.TreePath;
 import org.gwaspi.model.GWASpiExplorerNodes;
@@ -108,11 +109,11 @@ public class GWASpiPanel extends javax.swing.JPanel {
 		String lastSelectedNode = org.gwaspi.global.Config.getConfigValue("LAST_SELECTED_NODE", "0");
 
 		//Find out what paths are expanded
-		ArrayList<TreePath> expandedNodesAL = null;
+		List<TreePath> expandedNodesAL = null;
 		if (tree != null) {
 			TreePath rootPath = tree.getPathForRow(0);
 			Enumeration e = tree.getExpandedDescendants(rootPath);
-			ArrayList expanded = new ArrayList();
+			List<TreePath> expanded = new ArrayList<TreePath>();
 			if (e != null) {
 				while (e.hasMoreElements()) {
 					expanded.add((TreePath) e.nextElement());

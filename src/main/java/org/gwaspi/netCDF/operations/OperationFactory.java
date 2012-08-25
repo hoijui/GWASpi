@@ -6,6 +6,7 @@ import org.gwaspi.global.ServiceLocator;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.Dimension;
@@ -196,29 +197,29 @@ public class OperationFactory {
 			Dimension dim4 = ncfile.addDimension(cNetCDF.Dimensions.DIM_4, 4);
 
 			//OP SPACES
-			ArrayList OP1Space = new ArrayList();
+			List<Dimension> OP1Space = new ArrayList<Dimension>();
 			OP1Space.add(markerSetDim);
 
-			ArrayList OP2x4Space = new ArrayList();
+			List<Dimension> OP2x4Space = new ArrayList<Dimension>();
 			OP2x4Space.add(markerSetDim);
 			OP2x4Space.add(boxes4Dim);
 
 			//MARKER SPACES
-			ArrayList markerNameSpace = new ArrayList();
+			List<Dimension> markerNameSpace = new ArrayList<Dimension>();
 			markerNameSpace.add(markerSetDim);
 			markerNameSpace.add(markerStrideDim);
 
-			ArrayList markerPropertySpace4 = new ArrayList();
+			List<Dimension> markerPropertySpace4 = new ArrayList<Dimension>();
 			markerPropertySpace4.add(markerSetDim);
 			markerPropertySpace4.add(dim4);
 
 			//SAMPLE SPACES
-			ArrayList sampleSetSpace = new ArrayList();
+			List<Dimension> sampleSetSpace = new ArrayList<Dimension>();
 			sampleSetSpace.add(implicitSetDim);
 			sampleSetSpace.add(sampleStrideDim);
 
 			//ALLELES SPACES
-			ArrayList allelesSpace = new ArrayList();
+			List<Dimension> allelesSpace = new ArrayList<Dimension>();
 			allelesSpace.add(markerSetDim);
 			allelesSpace.add(alleleStrideDim);
 
@@ -282,16 +283,16 @@ public class OperationFactory {
 			Dimension markerStrideDim = ncfile.addDimension(cNetCDF.Dimensions.DIM_MARKERSTRIDE, markerStride);
 
 			//OP SPACES
-			ArrayList OP1Space = new ArrayList();
+			List<Dimension> OP1Space = new ArrayList<Dimension>();
 			OP1Space.add(sampleSetDim);
 
 			//SAMPLE SPACES
-			ArrayList sampleSetSpace = new ArrayList();
+			List<Dimension> sampleSetSpace = new ArrayList<Dimension>();
 			sampleSetSpace.add(sampleSetDim);
 			sampleSetSpace.add(sampleStrideDim);
 
 			//MARKER SPACES
-			ArrayList markerSetSpace = new ArrayList();
+			List<Dimension> markerSetSpace = new ArrayList<Dimension>();
 			markerSetSpace.add(implicitSetDim);
 			markerSetSpace.add(markerStrideDim);
 
@@ -349,33 +350,33 @@ public class OperationFactory {
 			Dimension dim4 = ncfile.addDimension(cNetCDF.Dimensions.DIM_4, 4);
 
 			//OP SPACES
-//                ArrayList OP1Space = new ArrayList();
+//                List<Dimension> OP1Space = new ArrayList<Dimension>();
 //                OP1Space.add(markerSetDim);
 
-			ArrayList OP2x3Space = new ArrayList();
+			List<Dimension> OP2x3Space = new ArrayList<Dimension>();
 			OP2x3Space.add(markerSetDim);
 			OP2x3Space.add(boxes3Dim);
 
-			ArrayList OP2x4Space = new ArrayList();
+			List<Dimension> OP2x4Space = new ArrayList<Dimension>();
 			OP2x4Space.add(markerSetDim);
 			OP2x4Space.add(boxes4Dim);
 
 			//MARKER SPACES
-			ArrayList markerNameSpace = new ArrayList();
+			List<Dimension> markerNameSpace = new ArrayList<Dimension>();
 			markerNameSpace.add(markerSetDim);
 			markerNameSpace.add(markerStrideDim);
 
-			ArrayList markerPropertySpace4 = new ArrayList();
+			List<Dimension> markerPropertySpace4 = new ArrayList<Dimension>();
 			markerPropertySpace4.add(markerSetDim);
 			markerPropertySpace4.add(dim4);
 
 			//SAMPLE SPACES
-			ArrayList sampleSetSpace = new ArrayList();
+			List<Dimension> sampleSetSpace = new ArrayList<Dimension>();
 			sampleSetSpace.add(implicitSetDim);
 			sampleSetSpace.add(sampleStrideDim);
 
 			//ALLELES SPACES
-			ArrayList allelesSpace = new ArrayList();
+			List<Dimension> allelesSpace = new ArrayList<Dimension>();
 			allelesSpace.add(markerSetDim);
 			allelesSpace.add(gtStrideDim);
 
@@ -434,20 +435,20 @@ public class OperationFactory {
 			Dimension boxesDim = ncfile.addDimension(cNetCDF.Dimensions.DIM_4BOXES, 2);
 
 			//OP SPACES
-			ArrayList OP1Space = new ArrayList();
+			List<Dimension> OP1Space = new ArrayList<Dimension>();
 			OP1Space.add(setDim);
 
-			ArrayList OP2Space = new ArrayList();
+			List<Dimension> OP2Space = new ArrayList<Dimension>();
 			OP2Space.add(setDim);
 			OP2Space.add(boxesDim);
 
 			//MARKER SPACES
-			ArrayList markerNameSpace = new ArrayList();
+			List<Dimension> markerNameSpace = new ArrayList<Dimension>();
 			markerNameSpace.add(setDim);
 			markerNameSpace.add(markerStrideDim);
 
 			//SAMPLE SPACES
-			ArrayList sampleSetSpace = new ArrayList();
+			List<Dimension> sampleSetSpace = new ArrayList<Dimension>();
 			sampleSetSpace.add(implicitSetDim);
 			sampleSetSpace.add(sampleStrideDim);
 
@@ -513,30 +514,30 @@ public class OperationFactory {
 			Dimension dim4 = ncfile.addDimension(cNetCDF.Dimensions.DIM_4, 4);
 
 			//OP SPACES
-			ArrayList OP2Space = new ArrayList();
+			List<Dimension> OP2Space = new ArrayList<Dimension>();
 			OP2Space.add(setDim);
 			OP2Space.add(box2Dim);
 
-			ArrayList OP3Space = new ArrayList();
+			List<Dimension> OP3Space = new ArrayList<Dimension>();
 			OP3Space.add(setDim);
 			OP3Space.add(box3Dim);
 
 			//MARKER SPACES
-			ArrayList markerNameSpace = new ArrayList();
+			List<Dimension> markerNameSpace = new ArrayList<Dimension>();
 			markerNameSpace.add(setDim);
 			markerNameSpace.add(markerStrideDim);
 
 			//CHROMOSOME SPACES
-			ArrayList chrSetSpace = new ArrayList();
+			List<Dimension> chrSetSpace = new ArrayList<Dimension>();
 			chrSetSpace.add(chrSetDim);
 			chrSetSpace.add(dim8);
 
-			ArrayList chrInfoSpace = new ArrayList();
+			List<Dimension> chrInfoSpace = new ArrayList<Dimension>();
 			chrInfoSpace.add(chrSetDim);
 			chrInfoSpace.add(dim4);
 
 			//SAMPLE SPACES
-			ArrayList sampleSetSpace = new ArrayList();
+			List<Dimension> sampleSetSpace = new ArrayList<Dimension>();
 			sampleSetSpace.add(implicitSetDim);
 			sampleSetSpace.add(sampleStrideDim);
 
@@ -598,26 +599,26 @@ public class OperationFactory {
 			Dimension dim4 = ncfile.addDimension(cNetCDF.Dimensions.DIM_4, 4);
 
 			//OP SPACES
-			ArrayList OP4Space = new ArrayList();
+			List<Dimension> OP4Space = new ArrayList<Dimension>();
 			OP4Space.add(setDim);
 			OP4Space.add(box4Dim);
 
 			//MARKER SPACES
-			ArrayList markerNameSpace = new ArrayList();
+			List<Dimension> markerNameSpace = new ArrayList<Dimension>();
 			markerNameSpace.add(setDim);
 			markerNameSpace.add(markerStrideDim);
 
 			//CHROMOSOME SPACES
-			ArrayList chrSetSpace = new ArrayList();
+			List<Dimension> chrSetSpace = new ArrayList<Dimension>();
 			chrSetSpace.add(chrSetDim);
 			chrSetSpace.add(dim8);
 
-			ArrayList chrInfoSpace = new ArrayList();
+			List<Dimension> chrInfoSpace = new ArrayList<Dimension>();
 			chrInfoSpace.add(chrSetDim);
 			chrInfoSpace.add(dim4);
 
 			//SAMPLE SPACES
-			ArrayList sampleSetSpace = new ArrayList();
+			List<Dimension> sampleSetSpace = new ArrayList<Dimension>();
 			sampleSetSpace.add(implicitSetDim);
 			sampleSetSpace.add(sampleStrideDim);
 
@@ -678,26 +679,26 @@ public class OperationFactory {
 			Dimension dim4 = ncfile.addDimension(cNetCDF.Dimensions.DIM_4, 4);
 
 			//OP SPACES
-			ArrayList OP2Space = new ArrayList();
+			List<Dimension> OP2Space = new ArrayList<Dimension>();
 			OP2Space.add(setDim);
 			OP2Space.add(box2Dim);
 
 			//MARKER SPACES
-			ArrayList markerNameSpace = new ArrayList();
+			List<Dimension> markerNameSpace = new ArrayList<Dimension>();
 			markerNameSpace.add(setDim);
 			markerNameSpace.add(markerStrideDim);
 
 			//CHROMOSOME SPACES
-			ArrayList chrSetSpace = new ArrayList();
+			List<Dimension> chrSetSpace = new ArrayList<Dimension>();
 			chrSetSpace.add(chrSetDim);
 			chrSetSpace.add(dim8);
 
-			ArrayList chrInfoSpace = new ArrayList();
+			List<Dimension> chrInfoSpace = new ArrayList<Dimension>();
 			chrInfoSpace.add(chrSetDim);
 			chrInfoSpace.add(dim4);
 
 			//SAMPLE SPACES
-			ArrayList sampleSetSpace = new ArrayList();
+			List<Dimension> sampleSetSpace = new ArrayList<Dimension>();
 			sampleSetSpace.add(implicitSetDim);
 			sampleSetSpace.add(sampleStrideDim);
 

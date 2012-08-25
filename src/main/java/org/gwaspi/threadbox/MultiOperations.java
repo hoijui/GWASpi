@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.List;
 import org.gwaspi.netCDF.operations.GWASinOneGOParams;
 
 /**
@@ -281,7 +282,7 @@ public class MultiOperations {
 			}
 		};
 
-		ArrayList holdOpIds = new ArrayList();
+		List<Integer> holdOpIds = new ArrayList<Integer>();
 		holdOpIds.add(censusOPId);
 		holdOpIds.add(hwOPId);
 
@@ -320,7 +321,7 @@ public class MultiOperations {
 			}
 		};
 
-		ArrayList holdOpIds = new ArrayList();
+		List<Integer> holdOpIds = new ArrayList<Integer>();
 		holdOpIds.add(censusOPId);
 		holdOpIds.add(hwOPId);
 
@@ -359,7 +360,7 @@ public class MultiOperations {
 			}
 		};
 
-		ArrayList holdOpIds = new ArrayList();
+		List<Integer> holdOpIds = new ArrayList<Integer>();
 		holdOpIds.add(censusOPId);
 		holdOpIds.add(hwOPId);
 

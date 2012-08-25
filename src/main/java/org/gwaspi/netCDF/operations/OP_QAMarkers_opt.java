@@ -200,9 +200,9 @@ public class OP_QAMarkers_opt {
 				if (knownAlleles.size() <= 2) { //Check if there are mismatches in alleles
 
 					//<editor-fold defaultstate="collapsed" desc="KNOW YOUR ALLELES">
-					ArrayList intAA = new ArrayList();
-					ArrayList intAa = new ArrayList();
-					ArrayList intaa = new ArrayList();
+					List<Integer> intAA = new ArrayList<Integer>();
+					List<Integer> intAa = new ArrayList<Integer>();
+					List<Integer> intaa = new ArrayList<Integer>();
 
 					Iterator itKnAll = knownAlleles.keySet().iterator();
 					if (knownAlleles.size() == 0) { //Completely missing (00)

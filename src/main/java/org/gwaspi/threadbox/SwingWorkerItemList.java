@@ -1,6 +1,7 @@
 package org.gwaspi.threadbox;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -10,15 +11,15 @@ import java.util.ArrayList;
  */
 public class SwingWorkerItemList {
 
-	private static ArrayList<SwingWorkerItem> swingWorkerItemsAL = new ArrayList();
-	private static ArrayList parentStudyIds = new ArrayList();
-	private static ArrayList parentMatricesIds = new ArrayList();
-	private static ArrayList parentOperationsIds = new ArrayList();
+	private static List<SwingWorkerItem> swingWorkerItemsAL = new ArrayList<SwingWorkerItem>();
+	private static List<Integer> parentStudyIds = new ArrayList<Integer>();
+	private static List<Integer> parentMatricesIds = new ArrayList<Integer>();
+	private static List<Integer> parentOperationsIds = new ArrayList<Integer>();
 
 	SwingWorkerItemList() {
-//        parentStudyIds = new ArrayList();
-//        parentMatricesIds = new ArrayList();
-//        parentOperationsIds = new ArrayList();
+//		parentStudyIds = new ArrayList<Integer>();
+//		parentMatricesIds = new ArrayList<Integer>();
+//		parentOperationsIds = new ArrayList<Integer>();
 	}
 
 	public void add(SwingWorkerItem swi,
@@ -77,7 +78,7 @@ public class SwingWorkerItemList {
 		}
 	}
 
-	public static ArrayList<SwingWorkerItem> getSwingWorkerItemsAL() {
+	public static List<SwingWorkerItem> getSwingWorkerItemsAL() {
 		return swingWorkerItemsAL;
 	}
 

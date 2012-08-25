@@ -167,7 +167,7 @@ public class PlinkReportLoaderCombined {
 		combinedPlot.add(subplot, 1);
 	}
 // <editor-fold defaultstate="collapsed" desc="Deprecated">
-//    public static ArrayList<IdChrPosValuePoint> loadUnadjAssoReportFromFile(File reportFile, int valueColumn) throws FileNotFoundException, IOException {
+//    public static List<IdChrPosValuePoint> loadUnadjAssoReportFromFile(File reportFile, int valueColumn) throws FileNotFoundException, IOException {
 //        int idColumn=1;
 //        int chrColumn=0;
 //        int posColumn=2;
@@ -175,7 +175,7 @@ public class PlinkReportLoaderCombined {
 //        FileReader inputFileReader = new FileReader(reportFile);
 //        BufferedReader inputBufferReader = new BufferedReader(inputFileReader);
 //
-//        ArrayList<IdChrPosValuePoint> pointsList = new ArrayList<IdChrPosValuePoint>();
+//        List<IdChrPosValuePoint> pointsList = new ArrayList<IdChrPosValuePoint>();
 //
 //        String l;
 //        while ((l = inputBufferReader.readLine()) != null) {

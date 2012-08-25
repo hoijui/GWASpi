@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -294,8 +295,8 @@ public class GenericReportGenerator_opt {
 		NetcdfFile assocNcFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());
 		OperationSet rdAssocMarkerSet = new OperationSet(rdOPMetadata.getStudyId(), opId);
 
-		ArrayList<double[]> gntypAssocChiSqrVals = rdAssocMarkerSet.getALWithVariable(assocNcFile, netCDFVar);
-		ArrayList obsChiSqrVals = new ArrayList();
+		List<double[]> gntypAssocChiSqrVals = rdAssocMarkerSet.getALWithVariable(assocNcFile, netCDFVar);
+		List<Double> obsChiSqrVals = new ArrayList<Double>();
 		for (double[] vals : gntypAssocChiSqrVals) {
 			Double chiSqr = (Double) vals[0];
 			if (!chiSqr.equals(Double.NaN) && !chiSqr.equals(Double.POSITIVE_INFINITY) && !chiSqr.equals(Double.NEGATIVE_INFINITY)) {
@@ -305,7 +306,7 @@ public class GenericReportGenerator_opt {
 		Collections.sort(obsChiSqrVals);
 
 		int N = obsChiSqrVals.size();
-		ArrayList<Double> expChiSqrDist = null;
+		List<Double> expChiSqrDist = null;
 		if (df == 1) {
 			expChiSqrDist = org.gwaspi.statistics.Chisquare.getChiSquareDistributionDf1AL(N, 1.0f);
 		} else if (df == 2) {
@@ -324,7 +325,7 @@ public class GenericReportGenerator_opt {
 
 		Double stopValue = expChiSqrDist.get(N - 1);
 		Double currentValue = 0d;
-		ArrayList<Double[]> boundaryAL = new ArrayList();
+		List<Double[]> boundaryAL = new ArrayList<Double[]>();
 		while (currentValue <= stopValue) {
 			String l = inputBufferReader.readLine();
 			if (l == null) {
@@ -710,8 +711,8 @@ public class GenericReportGenerator_opt {
 		OperationSet rdSampleQAOPSet = new OperationSet(rdOPMetadata.getStudyId(), opId);
 
 		Map<String, Object> sampleSetLHM = rdSampleQAOPSet.getOpSetLHM();
-		ArrayList<Double> hetzygVals = rdSampleQAOPSet.getALWithVariable(sampleQANcFile, org.gwaspi.constants.cNetCDF.Census.VAR_OP_SAMPLES_HETZYRAT);
-		ArrayList<Double> missingratVals = rdSampleQAOPSet.getALWithVariable(sampleQANcFile, org.gwaspi.constants.cNetCDF.Census.VAR_OP_SAMPLES_MISSINGRAT);
+		List<Double> hetzygVals = rdSampleQAOPSet.getALWithVariable(sampleQANcFile, org.gwaspi.constants.cNetCDF.Census.VAR_OP_SAMPLES_HETZYRAT);
+		List<Double> missingratVals = rdSampleQAOPSet.getALWithVariable(sampleQANcFile, org.gwaspi.constants.cNetCDF.Census.VAR_OP_SAMPLES_MISSINGRAT);
 
 		//<editor-fold defaultstate="collapsed" desc="BUILD XYDataset">
 		XYSeries dataSeries = new XYSeries("");

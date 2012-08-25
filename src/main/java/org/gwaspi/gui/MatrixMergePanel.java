@@ -28,7 +28,7 @@ public class MatrixMergePanel extends javax.swing.JPanel {
 
 	// Variables declaration - do not modify
 	private org.gwaspi.model.Matrix parentMatrix;
-	private ArrayList<Object[]> matrixItemsAL;
+	private List<Object[]> matrixItemsAL;
 	private javax.swing.JButton btn_Back;
 	private javax.swing.JButton btn_Help;
 	private javax.swing.JButton btn_Merge;
@@ -444,9 +444,9 @@ public class MatrixMergePanel extends javax.swing.JPanel {
 		return study_name;
 	}
 
-	public static ArrayList getMatrixItemsAL() throws IOException {
+	public static List<Object[]> getMatrixItemsAL() throws IOException {
 
-		ArrayList resultAL = new ArrayList();
+		List<Object[]> resultAL = new ArrayList<Object[]>();
 
 		List<Map<String, Object>> rsMatrices = MatricesList.getAllMatricesList();
 		int rowcount = rsMatrices.size();

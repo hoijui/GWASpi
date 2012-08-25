@@ -15,7 +15,7 @@ import java.util.Map;
  */
 public class StudyList {
 
-	ArrayList<model.Study> studyList = new ArrayList();
+	List<model.Study> studyList = new ArrayList<model.Study>();
 
 	public StudyList() throws IOException {
 

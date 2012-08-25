@@ -499,9 +499,9 @@ public class OP_MarkerCensus_opt {
 					if (knownAlleles.size() <= 2) { //Check if there are mismatches in alleles
 
 						//<editor-fold defaultstate="collapsed" desc="KNOW YOUR ALLELES">
-						ArrayList AAnumValsAL = new ArrayList();
-						ArrayList AanumValsAL = new ArrayList();
-						ArrayList aanumValsAL = new ArrayList();
+						List<Integer> AAnumValsAL = new ArrayList<Integer>();
+						List<Integer> AanumValsAL = new ArrayList<Integer>();
+						List<Integer> aanumValsAL = new ArrayList<Integer>();
 
 						Iterator itKnAll = knownAlleles.keySet().iterator();
 						if (knownAlleles.size() == 1) { //Homozygote (AA or aa)

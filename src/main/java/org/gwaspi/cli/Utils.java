@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -34,9 +35,9 @@ public class Utils {
 		return result;
 	}
 
-	public static ArrayList<Object> readArgsFromScript(File src) throws IOException {
-		ArrayList result = new ArrayList();
-		ArrayList tmpScript = new ArrayList();
+	public static List<List<String>> readArgsFromScript(File src) throws IOException {
+		List<List<String>> result = new ArrayList<List<String>>();
+		List<String> tmpScript = new ArrayList<String>();
 		FileReader fr = new FileReader(src);
 		BufferedReader br = new BufferedReader(fr);
 
@@ -60,7 +61,7 @@ public class Utils {
 				count++;
 			} else {
 				result.add(tmpScript);
-				tmpScript = new ArrayList();
+				tmpScript = new ArrayList<String>();
 				br.readLine(); // Ignore next [script] line
 			}
 		}

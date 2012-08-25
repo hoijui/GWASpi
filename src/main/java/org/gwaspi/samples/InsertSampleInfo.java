@@ -24,11 +24,11 @@ public class InsertSampleInfo {
 	private InsertSampleInfo() {
 	}
 
-	public static ArrayList processData(Integer studyId, LinkedHashMap sampleInfoLHM) throws IOException {
+	public static List<String> processData(Integer studyId, LinkedHashMap sampleInfoLHM) throws IOException {
 		/////////////////////////////////////////////////
 		///////// Retrieving Samplelist from DB /////////
 		/////////////////////////////////////////////////
-		ArrayList samplesAllreadyInDBAL = new ArrayList();
+		List<String> samplesAllreadyInDBAL = new ArrayList<String>();
 		String dbName = org.gwaspi.constants.cDBGWASpi.DB_DATACENTER;
 		db = org.gwaspi.global.ServiceLocator.getDbManager(dbName);
 		try {
@@ -44,7 +44,7 @@ public class InsertSampleInfo {
 			e.printStackTrace();
 		}
 
-		ArrayList result = new ArrayList();
+		List<String> result = new ArrayList<String>();
 		if (!sampleInfoLHM.isEmpty()) {
 			//FIRST UPDATE SAMPLES ALLREADY IN DB
 			updateSamplesByHashMap(studyId, sampleInfoLHM, samplesAllreadyInDBAL);
@@ -55,13 +55,13 @@ public class InsertSampleInfo {
 		return result;
 	}
 
-	private static ArrayList insertSamplesByHashMap(Integer studyId, LinkedHashMap sampleInfoLHM, ArrayList samplesAllreadyInDBAL) throws IOException {
+	private static List<String> insertSamplesByHashMap(Integer studyId, Map<String, Object> sampleInfoLHM, List<String> samplesAllreadyInDBAL) throws IOException {
 
 		db = ServiceLocator.getDbManager(org.gwaspi.constants.cDBGWASpi.DB_DATACENTER);
 
-		ArrayList result = new ArrayList();
-		for (Iterator it = sampleInfoLHM.keySet().iterator(); it.hasNext();) {
-			Object key = it.next();
+		List<String> result = new ArrayList<String>();
+		for (Iterator<String> it = sampleInfoLHM.keySet().iterator(); it.hasNext();) {
+			String key = it.next();
 			String[] cVals = (String[]) sampleInfoLHM.get(key);
 
 			String sampleId = cVals[GWASpi.sampleId];
@@ -112,7 +112,7 @@ public class InsertSampleInfo {
 		return result;
 	}
 
-	public static int updateSamplesByHashMap(Integer studyId, LinkedHashMap sampleInfoLHM, ArrayList samplesAllreadyInDBAL) throws IOException {
+	public static int updateSamplesByHashMap(Integer studyId, LinkedHashMap sampleInfoLHM, List<String> samplesAllreadyInDBAL) throws IOException {
 
 		db = ServiceLocator.getDbManager(org.gwaspi.constants.cDBGWASpi.DB_DATACENTER);
 		int result = 0;

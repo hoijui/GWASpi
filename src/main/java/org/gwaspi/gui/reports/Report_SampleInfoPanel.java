@@ -151,7 +151,7 @@ public class Report_SampleInfoPanel extends javax.swing.JPanel {
 
 		// Getting data from file and subdividing to series all points by chromosome
 		int count = 0;
-		ArrayList tableRowAL = new ArrayList();
+		List<Object[]> tableRowAL = new ArrayList<Object[]>();
 		while (count < rsAllSamplesFromPool.size()) {
 			// PREVENT PHANTOM-DB READS EXCEPTIONS
 			if (!rsAllSamplesFromPool.isEmpty() && rsAllSamplesFromPool.get(count).size() == org.gwaspi.constants.cDBSamples.T_CREATE_SAMPLES_INFO.length) {
@@ -188,7 +188,7 @@ public class Report_SampleInfoPanel extends javax.swing.JPanel {
 
 		Object[][] tableMatrix = new Object[tableRowAL.size()][10];
 		for (int i = 0; i < tableRowAL.size(); i++) {
-			tableMatrix[i] = (Object[]) tableRowAL.get(i);
+			tableMatrix[i] = tableRowAL.get(i);
 		}
 
 		String[] columns = new String[]{"#",

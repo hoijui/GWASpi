@@ -15,7 +15,7 @@ import java.util.Map;
  */
 public final class MatricesList {
 
-	public ArrayList<model.Matrix> matrixList = new ArrayList();
+	public List<model.Matrix> matrixList = new ArrayList<model.Matrix>();
 
 	public MatricesList(int studyId) throws IOException {
 

@@ -1,6 +1,7 @@
 package org.gwaspi.threadbox;
 
 import java.util.ArrayList;
+import java.util.List;
 import org.gwaspi.model.GWASpiExplorerNodes;
 import org.gwaspi.netCDF.operations.OP_QAMarkers_opt;
 import org.gwaspi.netCDF.operations.OP_QASamples_opt;
@@ -35,10 +36,10 @@ public class Threaded_MatrixQA extends CommonRunnable {
 
 	protected void runInternal(SwingWorkerItem thisSwi) throws Exception {
 
-		ArrayList necessaryOPsAL = new ArrayList();
+		List<String> necessaryOPsAL = new ArrayList<String>();
 		necessaryOPsAL.add(org.gwaspi.constants.cNetCDF.Defaults.OPType.SAMPLE_QA.toString());
 		necessaryOPsAL.add(org.gwaspi.constants.cNetCDF.Defaults.OPType.MARKER_QA.toString());
-		ArrayList missingOPsAL = OperationManager.checkForNecessaryOperations(necessaryOPsAL, matrixId);
+		List<String> missingOPsAL = OperationManager.checkForNecessaryOperations(necessaryOPsAL, matrixId);
 
 		if (missingOPsAL.size() > 0) {
 			if (missingOPsAL.contains(org.gwaspi.constants.cNetCDF.Defaults.OPType.SAMPLE_QA.toString())) {

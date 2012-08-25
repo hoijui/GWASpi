@@ -1,6 +1,6 @@
 package org.gwaspi.threadbox;
 
-import java.util.ArrayList;
+import java.util.List;
 import org.gwaspi.model.GWASpiExplorerNodes;
 import org.gwaspi.model.Operation;
 import org.gwaspi.model.OperationsList;
@@ -47,7 +47,7 @@ public class Threaded_TrendTest extends CommonRunnable {
 	protected void runInternal(SwingWorkerItem thisSwi) throws Exception {
 
 		OperationsList opList = new OperationsList(matrixId);
-		ArrayList<Operation> opAL = opList.operationsListAL;
+		List<Operation> opAL = opList.operationsListAL;
 		int markersQAOpId = opList.getIdOfLastOperationTypeOccurance(org.gwaspi.constants.cNetCDF.Defaults.OPType.MARKER_QA);
 
 		if (!gwasParams.discardMarkerByMisRat) {

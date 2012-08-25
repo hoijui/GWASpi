@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import org.gwaspi.netCDF.matrices.MatrixMetadata;
 import ucar.ma2.ArrayByte;
@@ -307,9 +308,9 @@ public class MarkerSet {
 		return wrLHM;
 	}
 
-	public ArrayList fillALWithVariable(NetcdfFile ncfile, String variable) {
+	public List fillALWithVariable(NetcdfFile ncfile, String variable) {
 
-		ArrayList al = new ArrayList();
+		List al = new ArrayList();
 
 		Variable var = ncfile.findVariable(variable);
 		if (null == var) {
@@ -319,7 +320,7 @@ public class MarkerSet {
 		DataType dataType = var.getDataType();
 		int[] varShape = var.getShape();
 		markerSetSize = varShape[0];
-		al.ensureCapacity(markerSetSize);
+		((ArrayList) al).ensureCapacity(markerSetSize);
 
 		try {
 			if (dataType == DataType.CHAR) {
@@ -338,7 +339,6 @@ public class MarkerSet {
 					al = org.gwaspi.netCDF.operations.Utils.writeD2ArrayDoubleToAL(markerSetAF);
 				}
 			}
-
 		} catch (IOException ioe) {
 			System.out.println("Cannot read data: " + ioe);
 		} catch (InvalidRangeException e) {

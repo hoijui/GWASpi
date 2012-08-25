@@ -5,8 +5,8 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -28,7 +28,7 @@ public class DerbyDBReshaper {
 
 		if (localDom != null) { // Found local version info
 			// Retrieve data from XML files
-			ArrayList<Element> localElements = org.gwaspi.global.XMLParser.parseDocument(localDom, "GWASpi");
+			List<Element> localElements = org.gwaspi.global.XMLParser.parseDocument(localDom, "GWASpi");
 			Date localUpdateDate = org.gwaspi.global.XMLParser.getDateValue(localElements.get(0), "Date");
 			String localVersionNumber = org.gwaspi.global.XMLParser.getTextValue(localElements.get(0), "Number");
 			// MAKE VERSION CHECKS

@@ -7,6 +7,7 @@ import org.gwaspi.global.ServiceLocator;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.Dimension;
@@ -200,49 +201,49 @@ public class MatrixFactory {
 		Dimension dim1 = ncfile.addDimension(cNetCDF.Dimensions.DIM_1, 1);
 
 		//GENOTYPE SPACES
-		ArrayList genotypeSpace = new ArrayList();
+		List<Dimension> genotypeSpace = new ArrayList<Dimension>();
 		genotypeSpace.add(samplesDim);
 		genotypeSpace.add(markersDim);
 		genotypeSpace.add(gtStrideDim);
 
 		//MARKER SPACES
-		ArrayList markerNameSpace = new ArrayList();
+		List<Dimension> markerNameSpace = new ArrayList<Dimension>();
 		markerNameSpace.add(markersDim);
 		markerNameSpace.add(markerStrideDim);
 
-		ArrayList markerPositionSpace = new ArrayList();
+		List<Dimension> markerPositionSpace = new ArrayList<Dimension>();
 		markerPositionSpace.add(markersDim);
 
-		ArrayList markerPropertySpace8 = new ArrayList();
+		List<Dimension> markerPropertySpace8 = new ArrayList<Dimension>();
 		markerPropertySpace8.add(markersDim);
 		markerPropertySpace8.add(dim8);
 
-		ArrayList markerPropertySpace4 = new ArrayList();
+		List<Dimension> markerPropertySpace4 = new ArrayList<Dimension>();
 		markerPropertySpace4.add(markersDim);
 		markerPropertySpace4.add(dim4);
 
-		ArrayList markerPropertySpace2 = new ArrayList();
+		List<Dimension> markerPropertySpace2 = new ArrayList<Dimension>();
 		markerPropertySpace2.add(markersDim);
 		markerPropertySpace2.add(dim2);
 
 		//CHROMOSOME SPACES
-		ArrayList chrSetSpace = new ArrayList();
+		List<Dimension> chrSetSpace = new ArrayList<Dimension>();
 		chrSetSpace.add(chrSetDim);
 		chrSetSpace.add(dim8);
 
-		ArrayList chrInfoSpace = new ArrayList();
+		List<Dimension> chrInfoSpace = new ArrayList<Dimension>();
 		chrInfoSpace.add(chrSetDim);
 		chrInfoSpace.add(dim4);
 
 
 		//SAMPLE SPACES
-		ArrayList sampleSetSpace = new ArrayList();
+		List<Dimension> sampleSetSpace = new ArrayList<Dimension>();
 		sampleSetSpace.add(samplesDim);
 		sampleSetSpace.add(sampleStrideDim);
 
 
 		//OTHER SPACES
-		ArrayList gtEncodingSpace = new ArrayList();
+		List<Dimension> gtEncodingSpace = new ArrayList<Dimension>();
 		gtEncodingSpace.add(dim1);
 		gtEncodingSpace.add(dim8);
 

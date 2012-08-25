@@ -3,7 +3,7 @@ package org.gwaspi.gui.utils;
 import java.awt.Color;
 import java.awt.Component;
 import java.net.URL;
-import java.util.ArrayList;
+import java.util.List;
 import javax.swing.ImageIcon;
 import javax.swing.JTable;
 import javax.swing.SwingConstants;
@@ -19,8 +19,8 @@ public class RowRendererProcessOverviewWithAbortIcon extends RowRendererDefault 
 
 	private URL abortIconPath = getClass().getResource("/img/icon/abort_16x16.png");
 	private URL noabortIconPath = getClass().getResource("/img/icon/abort-grey_16x16.png");
-	private ArrayList<SwingWorkerItem> swAL = org.gwaspi.threadbox.SwingWorkerItemList.getSwingWorkerItemsAL();
-	private ArrayList<SwingDeleterItem> sdAL = org.gwaspi.threadbox.SwingDeleterItemList.getSwingDeleterItemsAL();
+	private List<SwingWorkerItem> swAL = org.gwaspi.threadbox.SwingWorkerItemList.getSwingWorkerItemsAL();
+	private List<SwingDeleterItem> sdAL = org.gwaspi.threadbox.SwingDeleterItemList.getSwingDeleterItemsAL();
 
 	@Override
 	public Component getTableCellRendererComponent(JTable table, Object value, boolean selected, boolean focused, int row, int column) {

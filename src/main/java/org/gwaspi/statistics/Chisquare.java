@@ -2,6 +2,7 @@ package org.gwaspi.statistics;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -59,8 +60,8 @@ public class Chisquare {
 	}
 
 	//<editor-fold defaultstate="collapsed" desc="HELPER METHODS">
-	public static ArrayList<Double> getChiSquareDistributionDf1AL(int size, float C) {
-		ArrayList chiQuareDist = new ArrayList();
+	public static List<Double> getChiSquareDistributionDf1AL(int size, float C) {
+		List<Double> chiQuareDist = new ArrayList<Double>();
 		Random generator = new Random();
 		for (int i = 0; i < size; i++) {
 			double gaussRnd = (generator.nextGaussian()) * C;
@@ -71,8 +72,8 @@ public class Chisquare {
 		return chiQuareDist;
 	}
 
-	public static ArrayList<Double> getChiSquareDistributionDf2AL(int size, float C) {
-		ArrayList chiQuareDist = new ArrayList();
+	public static List<Double> getChiSquareDistributionDf2AL(int size, float C) {
+		List<Double> chiQuareDist = new ArrayList<Double>();
 		Random generator = new Random();
 		for (int i = 0; i < size; i++) {
 			double gaussRnd1 = (generator.nextGaussian()) * C;
@@ -84,12 +85,12 @@ public class Chisquare {
 		return chiQuareDist;
 	}
 
-	public static ArrayList sortAscendingDistAL(ArrayList distArray) {
+	public static List sortAscendingDistAL(List distArray) {
 		Collections.sort(distArray);
 		return distArray;
 	}
 
-	public static ArrayList sortDescendingDistAL(ArrayList distArray) {
+	public static List sortDescendingDistAL(List distArray) {
 		Collections.sort(distArray);
 		Collections.reverse(distArray);
 		return distArray;

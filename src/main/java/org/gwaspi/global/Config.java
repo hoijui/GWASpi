@@ -6,8 +6,8 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Properties;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
@@ -289,7 +289,7 @@ public class Config {
 
 		URL localVersionPath = Config.class.getClass().getResource(org.gwaspi.constants.cGlobal.LOCAL_VERSION_XML);
 		Document localDom = org.gwaspi.global.XMLParser.parseXmlFile(localVersionPath.toURI().toString());
-		ArrayList<Element> localElements = org.gwaspi.global.XMLParser.parseDocument(localDom, "GWASpi");
+		List<Element> localElements = org.gwaspi.global.XMLParser.parseDocument(localDom, "GWASpi");
 		setConfigValue("CURRENT_GWASPIDB_VERSION", org.gwaspi.global.XMLParser.getTextValue(localElements.get(0), "GWASpi_DB_Version"));
 
 		org.gwaspi.database.StudyGenerator.createStudyLogFile(0);
@@ -336,7 +336,7 @@ public class Config {
 
 		URL localVersionPath = Config.class.getClass().getResource(org.gwaspi.constants.cGlobal.LOCAL_VERSION_XML);
 		Document localDom = org.gwaspi.global.XMLParser.parseXmlFile(localVersionPath.toURI().toString());
-		ArrayList<Element> localElements = org.gwaspi.global.XMLParser.parseDocument(localDom, "GWASpi");
+		List<Element> localElements = org.gwaspi.global.XMLParser.parseDocument(localDom, "GWASpi");
 		setConfigValue("CURRENT_GWASPIDB_VERSION", org.gwaspi.global.XMLParser.getTextValue(localElements.get(0), "GWASpi_DB_Version"));
 
 		setDBSystemDir(derbyCenter.getPath());
@@ -350,7 +350,7 @@ public class Config {
 			if (localDom != null) { //Found local version info
 				System.setProperty("java.net.useSystemProxies", "true");
 
-				ArrayList<Element> localElements = org.gwaspi.global.XMLParser.parseDocument(localDom, "GWASpi");
+				List<Element> localElements = org.gwaspi.global.XMLParser.parseDocument(localDom, "GWASpi");
 				setConfigValue("CURRENT_GWASPIDB_VERSION", org.gwaspi.global.XMLParser.getTextValue(localElements.get(0), "GWASpi_DB_Version"));
 
 				URL remoteVersionPath = new URL(org.gwaspi.constants.cGlobal.REMOTE_VERSION_XML);
@@ -362,7 +362,7 @@ public class Config {
 					Date localUpdateDate = org.gwaspi.global.XMLParser.getDateValue(localElements.get(0), "Date");
 					String localVersionNumber = org.gwaspi.global.XMLParser.getTextValue(localElements.get(0), "Number");
 
-					ArrayList<Element> remoteElements = org.gwaspi.global.XMLParser.parseDocument(remoteDom, "GWASpi");
+					List<Element> remoteElements = org.gwaspi.global.XMLParser.parseDocument(remoteDom, "GWASpi");
 					Date remoteUpdateDate = org.gwaspi.global.XMLParser.getDateValue(remoteElements.get(0), "Date");
 					String remoteVersionNumber = org.gwaspi.global.XMLParser.getTextValue(remoteElements.get(0), "Number");
 					String remoteCompatibilityNumber = org.gwaspi.global.XMLParser.getTextValue(remoteElements.get(0), "Compatibility");

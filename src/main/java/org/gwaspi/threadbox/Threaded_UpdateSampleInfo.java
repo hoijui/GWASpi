@@ -4,8 +4,8 @@ import org.gwaspi.database.DbManager;
 import org.gwaspi.global.ServiceLocator;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.gwaspi.samples.SamplesParser;
@@ -41,11 +41,11 @@ public class Threaded_UpdateSampleInfo extends CommonRunnable {
 	protected void runInternal(SwingWorkerItem thisSwi) throws Exception {
 
 		LinkedHashMap sampleInfoLHM = SamplesParser.scanGwaspiSampleInfo(sampleInfoFile.getPath());
-		ArrayList updatedSamplesAL = org.gwaspi.samples.InsertSampleInfo.processData(poolId, sampleInfoLHM);
+		List<String> updatedSamplesAL = org.gwaspi.samples.InsertSampleInfo.processData(poolId, sampleInfoLHM);
 
 		// DO NOT! Write new reports of SAMPLE QA
 //		OperationsList opList = new OperationsList(matrix.getMatrixId());
-//		ArrayList<Operation> opAL = opList.operationsListAL;
+//		List<Operation> opAL = opList.operationsListAL;
 //		int qaOpId = Integer.MIN_VALUE;
 //		for (int i = 0; i < opAL.size(); i++) {
 //			if (opAL.get(i).getOperationType().equals(org.gwaspi.constants.cNetCDF.Defaults.OPType.SAMPLE_QA.toString())) {

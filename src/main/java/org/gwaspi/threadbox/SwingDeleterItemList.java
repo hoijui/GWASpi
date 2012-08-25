@@ -3,6 +3,7 @@ package org.gwaspi.threadbox;
 import org.gwaspi.global.Text;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.gwaspi.model.GWASpiExplorerNodes;
@@ -16,7 +17,7 @@ import org.gwaspi.threadbox.SwingDeleterItem.DeleteTarget;
  */
 public class SwingDeleterItemList extends SwingWorkerItemList {
 
-	protected static ArrayList<SwingDeleterItem> swingDeleterItemsAL = new ArrayList();
+	protected static List<SwingDeleterItem> swingDeleterItemsAL = new ArrayList<SwingDeleterItem>();
 
 	SwingDeleterItemList() {
 	}
@@ -128,7 +129,7 @@ public class SwingDeleterItemList extends SwingWorkerItemList {
 
 	}
 
-	public static ArrayList<SwingDeleterItem> getSwingDeleterItemsAL() {
+	public static List<SwingDeleterItem> getSwingDeleterItemsAL() {
 		return swingDeleterItemsAL;
 	}
 

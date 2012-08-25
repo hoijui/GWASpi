@@ -12,6 +12,7 @@ import java.io.PrintStream;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
@@ -103,7 +104,7 @@ public class StartGWASpi extends JFrame {
 		maxHeapSize = Math.round(Runtime.getRuntime().totalMemory() / 1048576); // heapSize in MB
 		maxProcessMarkers = Math.round(maxHeapSize * 625); // 1.6GB needed for 10⁶ markers (safe, 1.4-1.5 real)
 
-		ArrayList argsAL = new ArrayList();
+		List<String> argsAL = new ArrayList<String>();
 		for (int i = 0; i < args.length; i++) {
 			argsAL.add(args[i]);
 		}

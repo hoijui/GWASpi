@@ -1,6 +1,7 @@
 package org.gwaspi.netCDF.loader;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -11,8 +12,8 @@ import java.util.ArrayList;
 public class SNPBlacklist {
 
 	// Duplicate SNPs to be removed
-	private ArrayList affyIDBlackList = new ArrayList();
-	private ArrayList rsIDBlackList = new ArrayList();
+	private List<String> affyIDBlackList = new ArrayList<String>();
+	private List<String> rsIDBlackList = new ArrayList<String>();
 
 	public SNPBlacklist() {
 
@@ -48,11 +49,11 @@ public class SNPBlacklist {
 
 	}
 
-	public ArrayList getAffyIdBlacklist() {
+	public List<String> getAffyIdBlacklist() {
 		return affyIDBlackList;
 	}
 
-	public ArrayList getRsIdBlacklist() {
+	public List<String> getRsIdBlacklist() {
 		return rsIDBlackList;
 	}
 }

@@ -5,6 +5,7 @@ import org.gwaspi.global.Text;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import javax.swing.JOptionPane;
 import org.gwaspi.netCDF.operations.GWASinOneGOParams;
 import org.gwaspi.netCDF.operations.OperationManager;
@@ -24,7 +25,7 @@ public class CliExecutor {
 		boolean success = false;
 
 		//GET ALL SCRIPTS CONTAINED IN FILE
-		ArrayList<Object> scriptsAL = org.gwaspi.cli.Utils.readArgsFromScript(scriptFile);
+		List<List<String>> scriptsAL = org.gwaspi.cli.Utils.readArgsFromScript(scriptFile);
 
 		System.out.println("\nScripts in queue: " + scriptsAL.size());
 
@@ -35,7 +36,7 @@ public class CliExecutor {
 			System.gc();
 
 			//GET ARGS FOR CURRENT SCRIPT
-			ArrayList<String> args = (ArrayList) scriptsAL.get(i);
+			List<String> args = scriptsAL.get(i);
 			//GET COMMAND LINE OF CURRENT SCRIPT
 			String command = args.get(0).toString();
 
@@ -232,10 +233,10 @@ public class CliExecutor {
 				gwasParams.friendlyName = gwasName;
 				gwasParams.proceed = true;
 
-				ArrayList necessaryOPsAL = new ArrayList();
+				List<String> necessaryOPsAL = new ArrayList<String>();
 				necessaryOPsAL.add(org.gwaspi.constants.cNetCDF.Defaults.OPType.SAMPLE_QA.toString());
 				necessaryOPsAL.add(org.gwaspi.constants.cNetCDF.Defaults.OPType.MARKER_QA.toString());
-				ArrayList missingOPsAL = OperationManager.checkForNecessaryOperations(necessaryOPsAL, matrixId);
+				List missingOPsAL = OperationManager.checkForNecessaryOperations(necessaryOPsAL, matrixId);
 
 				// QA BLOCK
 				if (gwasParams.proceed && missingOPsAL.size() > 0) {
@@ -308,10 +309,10 @@ public class CliExecutor {
 				gwasParams.friendlyName = gtFrqName;
 				gwasParams.proceed = true;
 
-				ArrayList necessaryOPsAL = new ArrayList();
+				List<String> necessaryOPsAL = new ArrayList<String>();
 				necessaryOPsAL.add(org.gwaspi.constants.cNetCDF.Defaults.OPType.SAMPLE_QA.toString());
 				necessaryOPsAL.add(org.gwaspi.constants.cNetCDF.Defaults.OPType.MARKER_QA.toString());
-				ArrayList missingOPsAL = OperationManager.checkForNecessaryOperations(necessaryOPsAL, matrixId);
+				List<String> missingOPsAL = OperationManager.checkForNecessaryOperations(necessaryOPsAL, matrixId);
 
 				// QA BLOCK
 				if (gwasParams.proceed && missingOPsAL.size() > 0) {
@@ -380,10 +381,10 @@ public class CliExecutor {
 				gwasParams.discardMarkerHWTreshold = Double.parseDouble(args.get(7));
 				gwasParams.proceed = true;
 
-				ArrayList necessaryOPsAL = new ArrayList();
+				List<String> necessaryOPsAL = new ArrayList<String>();
 				necessaryOPsAL.add(org.gwaspi.constants.cNetCDF.Defaults.OPType.SAMPLE_QA.toString());
 				necessaryOPsAL.add(org.gwaspi.constants.cNetCDF.Defaults.OPType.MARKER_QA.toString());
-				ArrayList missingOPsAL = OperationManager.checkForNecessaryOperations(necessaryOPsAL, matrixId);
+				List<String> missingOPsAL = OperationManager.checkForNecessaryOperations(necessaryOPsAL, matrixId);
 
 				// QA BLOCK
 				if (gwasParams.proceed && missingOPsAL.size() > 0) {
@@ -452,10 +453,10 @@ public class CliExecutor {
 				gwasParams.discardMarkerHWTreshold = Double.parseDouble(args.get(7));
 				gwasParams.proceed = true;
 
-				ArrayList necessaryOPsAL = new ArrayList();
+				List<String> necessaryOPsAL = new ArrayList<String>();
 				necessaryOPsAL.add(org.gwaspi.constants.cNetCDF.Defaults.OPType.SAMPLE_QA.toString());
 				necessaryOPsAL.add(org.gwaspi.constants.cNetCDF.Defaults.OPType.MARKER_QA.toString());
-				ArrayList missingOPsAL = OperationManager.checkForNecessaryOperations(necessaryOPsAL, matrixId);
+				List<String> missingOPsAL = OperationManager.checkForNecessaryOperations(necessaryOPsAL, matrixId);
 
 				// QA BLOCK
 				if (gwasParams.proceed && missingOPsAL.size() > 0) {
@@ -524,10 +525,10 @@ public class CliExecutor {
 				gwasParams.discardMarkerHWTreshold = Double.parseDouble(args.get(7));
 				gwasParams.proceed = true;
 
-				ArrayList necessaryOPsAL = new ArrayList();
+				List<String> necessaryOPsAL = new ArrayList<String>();
 				necessaryOPsAL.add(org.gwaspi.constants.cNetCDF.Defaults.OPType.SAMPLE_QA.toString());
 				necessaryOPsAL.add(org.gwaspi.constants.cNetCDF.Defaults.OPType.MARKER_QA.toString());
-				ArrayList missingOPsAL = OperationManager.checkForNecessaryOperations(necessaryOPsAL, matrixId);
+				List<String> missingOPsAL = OperationManager.checkForNecessaryOperations(necessaryOPsAL, matrixId);
 
 				// QA BLOCK
 				if (gwasParams.proceed && missingOPsAL.size() > 0) {

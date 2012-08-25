@@ -71,7 +71,7 @@ public class ChiSqrBoundaryCalculator {
 		// add dimensions
 		Dimension sizeDim = ncfile.addDimension("size", 0, true, true, false);
 		Dimension simsDim = ncfile.addDimension("sims", simNb); //0=>AA, 1=>Aa, 2=>aa, 3=>00
-		ArrayList distSpace = new ArrayList();
+		List<Dimension> distSpace = new ArrayList<Dimension>();
 		distSpace.add(sizeDim);
 		distSpace.add(simsDim);
 
@@ -88,7 +88,7 @@ public class ChiSqrBoundaryCalculator {
 		//Make simNb X² distributions
 		for (int i = 0; i < simNb; i++) {
 			try {
-				ArrayList<Double> expChiSqrDist = null;
+				List<Double> expChiSqrDist = null;
 				if (df == 1) {
 					expChiSqrDist = org.gwaspi.statistics.Chisquare.getChiSquareDistributionDf1AL(N, 1.0f);
 				}

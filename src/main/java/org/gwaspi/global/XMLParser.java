@@ -5,6 +5,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import org.w3c.dom.Document;
@@ -44,8 +45,8 @@ public class XMLParser {
 		return dom;
 	}
 
-	public static ArrayList parseDocument(Document dom, String tagName) {
-		ArrayList resultList = new ArrayList();
+	public static List<Element> parseDocument(Document dom, String tagName) {
+		List<Element> resultList = new ArrayList<Element>();
 		Object tagObject = new Object();
 
 		// get the root element

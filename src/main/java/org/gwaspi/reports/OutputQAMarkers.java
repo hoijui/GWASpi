@@ -6,9 +6,9 @@ import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.database.DbManager;
 import org.gwaspi.global.ServiceLocator;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import org.gwaspi.model.Operation;
 import org.gwaspi.netCDF.markers.MarkerSet;
@@ -140,7 +140,7 @@ public class OutputQAMarkers {
 
 			//WRITE KNOWN ALLELES FROM QA
 			//get MARKER_QA Operation
-			ArrayList operationsAL = OperationManager.getMatrixOperations(rdOPMetadata.getParentMatrixId());
+			List<Object[]> operationsAL = OperationManager.getMatrixOperations(rdOPMetadata.getParentMatrixId());
 			int markersQAopId = Integer.MIN_VALUE;
 			for (int i = 0; i < operationsAL.size(); i++) {
 				Object[] element = (Object[]) operationsAL.get(i);
@@ -266,7 +266,7 @@ public class OutputQAMarkers {
 
 			//WRITE KNOWN ALLELES FROM QA
 			//get MARKER_QA Operation
-			ArrayList operationsAL = OperationManager.getMatrixOperations(rdOPMetadata.getParentMatrixId());
+			List<Object[]> operationsAL = OperationManager.getMatrixOperations(rdOPMetadata.getParentMatrixId());
 			int markersQAopId = Integer.MIN_VALUE;
 			for (int i = 0; i < operationsAL.size(); i++) {
 				Object[] element = (Object[]) operationsAL.get(i);
