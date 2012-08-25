@@ -18,7 +18,7 @@ import java.util.TreeMap;
  * IBE, Institute of Evolutionary Biology (UPF-CSIC)
  * CEXS-UPF-PRBB
  */
-public class MetadataLoaderPlinkBinary {
+public class MetadataLoaderPlinkBinary implements MetadataLoader {
 
 	private String bimPath;
 	private String strand;

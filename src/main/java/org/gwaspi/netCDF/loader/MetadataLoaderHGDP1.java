@@ -18,7 +18,7 @@ import java.util.TreeMap;
  * IBE, Institute of Evolutionary Biology (UPF-CSIC)
  * CEXS-UPF-PRBB
  */
-public class MetadataLoaderHGDP1 {
+public class MetadataLoaderHGDP1 implements MetadataLoader {
 
 	private String markerFilePath;
 	private String strand;

@@ -17,7 +17,7 @@ import java.util.TreeMap;
  * IBE, Institute of Evolutionary Biology (UPF-CSIC)
  * CEXS-UPF-PRBB
  */
-public class MetadataLoaderAffy {
+public class MetadataLoaderAffy implements MetadataLoader {
 
 	private String annotationPath;
 	private String format;

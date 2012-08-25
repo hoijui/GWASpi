@@ -21,7 +21,7 @@ import java.util.TreeMap;
  * IBE, Institute of Evolutionary Biology (UPF-CSIC)
  * CEXS-UPF-PRBB
  */
-public class MetadataLoaderHapmap {
+public class MetadataLoaderHapmap implements MetadataLoader {
 
 	private String hapmapPath;
 	private String format;

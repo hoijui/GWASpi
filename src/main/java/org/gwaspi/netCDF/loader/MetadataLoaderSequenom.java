@@ -18,7 +18,7 @@ import java.util.TreeMap;
  * IBE, Institute of Evolutionary Biology (UPF-CSIC)
  * CEXS-UPF-PRBB
  */
-public class MetadataLoaderSequenom {
+public class MetadataLoaderSequenom implements MetadataLoader {
 
 	private String mapPath;
 	private int studyId;
