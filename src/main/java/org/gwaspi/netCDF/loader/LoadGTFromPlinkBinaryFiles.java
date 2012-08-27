@@ -225,7 +225,7 @@ public class LoadGTFromPlinkBinaryFiles {
 		System.out.println("Done writing forward alleles to matrix at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
 
 		//WRITE GT STRAND FROM ANNOTATION FILE
-		String strandFlag = cImport.StrandFlags.strandUNK;
+		String strandFlag;
 		switch (cNetCDF.Defaults.StrandType.compareTo(strand)) {
 			case PLUS:
 				strandFlag = cImport.StrandFlags.strandPLS;
@@ -238,6 +238,9 @@ public class LoadGTFromPlinkBinaryFiles {
 				break;
 			case REV:
 				strandFlag = cImport.StrandFlags.strandREV;
+				break;
+			default:
+				strandFlag = cImport.StrandFlags.strandUNK;
 				break;
 		}
 		for (Iterator<String> it = sortedMarkerSetLHM.keySet().iterator(); it.hasNext();) {

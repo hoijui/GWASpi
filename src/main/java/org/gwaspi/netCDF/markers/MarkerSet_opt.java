@@ -42,8 +42,8 @@ public class MarkerSet_opt {
 	private NetcdfFile ncfile = null;
 	private int startMkIdx = 0;
 	private int endMkIdx = Integer.MIN_VALUE;
-	private Map<String, Object> markerIdSetLHM = new LinkedHashMap<String, Object> ();
-	private Map<String, Object> markerRsIdSetLHM = new LinkedHashMap<String, Object> ();
+	private Map<String, Object> markerIdSetLHM = new LinkedHashMap<String, Object>();
+	private Map<String, Object> markerRsIdSetLHM = new LinkedHashMap<String, Object>();
 
 	public MarkerSet_opt(int studyId, int matrixId) throws IOException {
 		matrixMetadata = new MatrixMetadata(matrixId);

@@ -376,7 +376,7 @@ public class SampleSet {
 	}
 
 	public Map<String, Object> pickValidSampleSetItemsByNetCDFValue(Map<String, Object> lhm, String variable, Set<Object> criteria, boolean include) {
-		Map<String, Object> returnLHM = new LinkedHashMap<String, Object> ();
+		Map<String, Object> returnLHM = new LinkedHashMap<String, Object>();
 		lhm = this.fillSampleIdSetLHMWithVariable(lhm, variable);
 
 		int pickCounter = 0;

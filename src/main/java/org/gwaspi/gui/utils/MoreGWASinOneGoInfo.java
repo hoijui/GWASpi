@@ -161,7 +161,16 @@ public class MoreGWASinOneGoInfo extends javax.swing.JFrame {
 		lbl_GTCode.setText("  " + Text.Dialog.genotypeEncoding);
 
 		switch (org.gwaspi.constants.cImport.ImportFormat.compareTo(format)) {
-//			case default:
+			case BEAGLE:
+				cmb_Chromosome.setModel(new javax.swing.DefaultComboBoxModel(org.gwaspi.constants.cNetCDF.Defaults.Chromosomes));
+				cmb_Chromosome.setSelectedIndex(0);
+				setMyConstraints(c, 0, rowNb, GridBagConstraints.LINE_START);
+				pnl_Questions.add(lbl_Chromosome, c);
+				setMyConstraints(c, 1, rowNb, GridBagConstraints.WEST);
+				pnl_Questions.add(cmb_Chromosome, c);
+				rowNb++;
+				break;
+			default:
 //				cmb_Chromosome.setModel(new javax.swing.DefaultComboBoxModel(org.gwaspi.constants.cNetCDF.Defaults.Chromosomes));
 //				cmb_Chromosome.setSelectedIndex(0);
 //
@@ -186,15 +195,6 @@ public class MoreGWASinOneGoInfo extends javax.swing.JFrame {
 //				setMyConstraints(c,1,rowNb,GridBagConstraints.WEST);
 //				pnl_Questions.add(cmb_GTCode,c);
 //				rowNb++;
-//				break;
-			case BEAGLE:
-				cmb_Chromosome.setModel(new javax.swing.DefaultComboBoxModel(org.gwaspi.constants.cNetCDF.Defaults.Chromosomes));
-				cmb_Chromosome.setSelectedIndex(0);
-				setMyConstraints(c, 0, rowNb, GridBagConstraints.LINE_START);
-				pnl_Questions.add(lbl_Chromosome, c);
-				setMyConstraints(c, 1, rowNb, GridBagConstraints.WEST);
-				pnl_Questions.add(cmb_Chromosome, c);
-				rowNb++;
 				break;
 		}
 		//</editor-fold>

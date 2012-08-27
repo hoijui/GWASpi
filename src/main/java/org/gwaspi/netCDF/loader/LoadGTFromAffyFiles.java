@@ -75,10 +75,13 @@ public class LoadGTFromAffyFiles {
 		//<editor-fold defaultstate="collapsed" desc="SAMPLES GATHERING">
 		//GET SAMPLES FROM FILES
 		for (int i = 0; i < gtFilesToImport.length; i++) {
-			String sampleId = "";
+			String sampleId;
 			switch (cImport.ImportFormat.compareTo(format)) {
 				case Affymetrix_GenomeWide6:
 					sampleId = getAffySampleId(gtFilesToImport[i]);
+					break;
+				default:
+					sampleId = "";
 					break;
 			}
 			samplesAL.add(sampleId);
@@ -358,7 +361,7 @@ public class LoadGTFromAffyFiles {
 		while ((l = inputBufferReader.readLine()) != null) {
 			String[] cVals = l.split(cImport.Separators.separators_CommaTab_rgxp);
 
-			byte[] alleles = new byte[cNetCDF.Strides.STRIDE_GT];
+			byte[] alleles;
 			switch (cImport.ImportFormat.compareTo(format)) {
 				case Affymetrix_GenomeWide6:
 					if (cVals[cImport.Genotypes.Affymetrix_GenomeWide6.alleles].equals(cImport.Genotypes.Affymetrix_GenomeWide6.missing)) {
@@ -367,6 +370,9 @@ public class LoadGTFromAffyFiles {
 						alleles = new byte[]{(byte) (cVals[cImport.Genotypes.Affymetrix_GenomeWide6.alleles].charAt(0)),
 							(byte) (cVals[cImport.Genotypes.Affymetrix_GenomeWide6.alleles].charAt(1))};
 					}
+					break;
+				default:
+					alleles = new byte[cNetCDF.Strides.STRIDE_GT];
 					break;
 			}
 

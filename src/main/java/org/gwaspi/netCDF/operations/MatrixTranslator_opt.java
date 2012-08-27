@@ -392,11 +392,13 @@ public class MatrixTranslator_opt {
 	}
 
 	protected Map<String, Object> translateCurrentSampleAB12AllelesLHM(Map<String, Object> codedLHM, String rdMatrixType, Map<String, Object> dictionaryLHM) {
-		byte alleleA = org.gwaspi.constants.cNetCDF.Defaults.AlleleBytes.A;
-		byte alleleB = org.gwaspi.constants.cNetCDF.Defaults.AlleleBytes.B;
+		byte alleleA;
+		byte alleleB;
 
 		switch (cNetCDF.Defaults.GenotypeEncoding.compareTo(rdMatrixType)) {
 			case AB0:
+				alleleA = org.gwaspi.constants.cNetCDF.Defaults.AlleleBytes.A;
+				alleleB = org.gwaspi.constants.cNetCDF.Defaults.AlleleBytes.B;
 				//Iterate through all markers
 				for (Map.Entry<String, Object> entry : codedLHM.entrySet()) {
 					String markerId = entry.getKey();
@@ -422,7 +424,6 @@ public class MatrixTranslator_opt {
 
 					entry.setValue(transAlleles);
 				}
-
 				break;
 			case O12:
 				alleleA = org.gwaspi.constants.cNetCDF.Defaults.AlleleBytes._1;
@@ -453,9 +454,11 @@ public class MatrixTranslator_opt {
 
 					entry.setValue(transAlleles);
 				}
-
+				break;
+			default:
 				break;
 		}
+
 		return codedLHM;
 	}
 

@@ -46,6 +46,8 @@ public class Associations {
 				weights[1] = 1;
 				weights[2] = 2;
 				break;
+			default:
+				throw new IllegalArgumentException("model may only be in range [0, 2]");
 		}
 
 		//CALCULATE TREND TEST

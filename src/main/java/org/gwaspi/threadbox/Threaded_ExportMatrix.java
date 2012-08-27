@@ -97,6 +97,8 @@ public class Threaded_ExportMatrix extends CommonRunnable {
 					mEx = new MatrixExporter(matrixId);
 					mEx.exportToFormat(org.gwaspi.constants.cExport.ExportFormat.MACH.toString(), phenotype);
 					break;
+				default:
+					throw new IllegalArgumentException("invalid format: " + format.toString());
 			}
 		}
 	}

@@ -26,7 +26,9 @@ public class OperationFactory {
 	private int resultOPId = Integer.MIN_VALUE;
 	private OperationMetadata opMetaData = null;
 
-	//Costructor to use with matrix input
+	/**
+	 * To use with matrix input.
+	 */
 	public OperationFactory(Integer studyId,
 			String friendlyName,
 			String description,
@@ -35,10 +37,10 @@ public class OperationFactory {
 			int chrSetSize,
 			String OPType,
 			int parentMatrixId,
-			int parentOperationId) throws InvalidRangeException, IOException {
-
-
-		//OPERATION CASE SELECTOR
+			int parentOperationId)
+			throws InvalidRangeException, IOException
+	{
+		// OPERATION CASE SELECTOR
 		resultOPnetCDFName = OPType + "_" + org.gwaspi.netCDF.matrices.MatrixManager.generateMatrixNetCDFNameByDate();
 		switch (cNetCDF.Defaults.OPType.compareTo(OPType)) {
 			case MARKER_QA:
@@ -120,6 +122,8 @@ public class OperationFactory {
 						implicitSetSize,
 						chrSetSize);
 				break;
+			default:
+				throw new IllegalArgumentException("invalid OPType: " + OPType);
 		}
 
 

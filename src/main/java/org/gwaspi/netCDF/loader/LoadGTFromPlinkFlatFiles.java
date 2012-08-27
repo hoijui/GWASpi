@@ -211,7 +211,7 @@ public class LoadGTFromPlinkFlatFiles {
 
 
 		//WRITE GT STRAND FROM ANNOTATION FILE
-		String strandFlag = cImport.StrandFlags.strandUNK;
+		String strandFlag;
 		switch (cNetCDF.Defaults.StrandType.compareTo(strand)) {
 			case PLUS:
 				strandFlag = cImport.StrandFlags.strandPLS;
@@ -224,6 +224,9 @@ public class LoadGTFromPlinkFlatFiles {
 				break;
 			case REV:
 				strandFlag = cImport.StrandFlags.strandREV;
+				break;
+			default:
+				strandFlag = cImport.StrandFlags.strandUNK;
 				break;
 		}
 		for (Iterator<String> it = sortedMarkerSetLHM.keySet().iterator(); it.hasNext();) {

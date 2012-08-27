@@ -210,7 +210,7 @@ public class LoadGTFromHGDP1Files {
 
 		//WRITE GT STRAND FROM ANNOTATION FILE
 		int[] gtOrig = new int[]{0, 0};
-		String strandFlag = cImport.StrandFlags.strandUNK;
+		String strandFlag;
 		switch (cNetCDF.Defaults.StrandType.compareTo(strand)) {
 			case PLUS:
 				strandFlag = cImport.StrandFlags.strandPLS;
@@ -223,6 +223,9 @@ public class LoadGTFromHGDP1Files {
 				break;
 			case REV:
 				strandFlag = cImport.StrandFlags.strandREV;
+				break;
+			default:
+				strandFlag = cImport.StrandFlags.strandUNK;
 				break;
 		}
 		for (Map.Entry<String, Object> entry : wrMarkerSetLHM.entrySet()) {
