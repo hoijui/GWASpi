@@ -7,6 +7,7 @@ import org.gwaspi.global.Text;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.SortedMap;
 import java.util.TreeMap;
 import org.gwaspi.netCDF.markers.MarkerSet_opt;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
@@ -409,7 +410,7 @@ public class MatrixMergeAll {
 
 
 		//SORT MERGED LHM
-		TreeMap<String, String> sortedMetadataTM = new TreeMap<String, String>(new org.gwaspi.netCDF.loader.ComparatorChrAutPosMarkerIdAsc());
+		SortedMap<String, String> sortedMetadataTM = new TreeMap<String, String>(new org.gwaspi.netCDF.loader.ComparatorChrAutPosMarkerIdAsc());
 		for (Map.Entry<String, Object> entry : workLHM.entrySet()) {
 			sortedMetadataTM.put((String)entry.getValue(), entry.getKey());
 		}
