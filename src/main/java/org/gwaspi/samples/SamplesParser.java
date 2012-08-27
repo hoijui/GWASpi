@@ -9,7 +9,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,8 +38,7 @@ public class SamplesParser {
 //            NetcdfFile rdNcFile = NetcdfFile.open(rdMatrixMetadata.getPathToMatrix());
 			SampleSet rdSampleSet = new SampleSet(rdMatrixMetadata.getStudyId(), matrixId);
 			Map<String, Object> rdSampleSetLHM = rdSampleSet.getSampleIdSetLHM();
-			for (Iterator it = rdSampleSetLHM.keySet().iterator(); it.hasNext();) {
-				Object key = it.next();
+			for (String key : rdSampleSetLHM.keySet()) {
 				List<Map<String, Object>> rs = SampleManager.getCurrentSampleInfoFromDB(key.toString(), rdMatrixMetadata.getStudyId());
 				if (rs != null) {
 					//PREVENT PHANTOM-DB READS EXCEPTIONS

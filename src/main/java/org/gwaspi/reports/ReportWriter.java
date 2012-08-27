@@ -14,6 +14,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  *
@@ -26,31 +27,29 @@ public class ReportWriter {
 	private ReportWriter() {
 	}
 
-	protected static boolean writeFirstColumnToReport(String reportPath,
+	protected static boolean writeFirstColumnToReport(
+			String reportPath,
 			String reportName,
 			String header,
 			Map<String, Object> lhm,
-			boolean withKey) throws IOException {
+			boolean withKey)
+			throws IOException
+	{
 		boolean appendResult = false;
 
 		FileWriter outputFW = new FileWriter(reportPath + reportName);
 		BufferedWriter outputBW = new BufferedWriter(outputFW);
 
-		String l;
-		int count = 0;
 		String sep = cExport.separator_REPORTS;
 		outputBW.append(header);
 
-		for (Iterator it = lhm.keySet().iterator(); it.hasNext();) {
-			Object key = it.next();
-			Object value = lhm.get(key);
-
+		for (Map.Entry<String, Object> entry : lhm.entrySet()) {
 			StringBuilder sb = new StringBuilder();
 			if (withKey) {
-				sb.append(key.toString());
+				sb.append(entry.getKey());
 				sb.append(sep);
 			}
-			sb.append(value.toString());
+			sb.append(entry.getValue().toString());
 
 			sb.append("\n");
 			outputBW.append(sb);
@@ -81,7 +80,7 @@ public class ReportWriter {
 		String l;
 		int count = 0;
 		String sep = cExport.separator_REPORTS;
-		Iterator it = lhm.keySet().iterator();
+		Iterator<Entry<String, Object>> it = lhm.entrySet().iterator();
 		while ((l = inputBR.readLine()) != null) {
 			if (count == 0) {
 				tempBW.append(l);
@@ -90,35 +89,35 @@ public class ReportWriter {
 				StringBuilder sb = new StringBuilder();
 				sb.append(l);
 
-				Object key = it.next();
+				Entry<String, Object> entry = it.next();
+				String key = entry.getKey();
 				if (isArray) {
 					if (withKey) {
 						sb.append(sep);
-						sb.append(key.toString());
+						sb.append(key);
 					}
 
-					if (lhm.get(key).getClass().getName().equals("[D")) {
-						double[] value = (double[]) lhm.get(key);
+					if (entry.getValue().getClass().getName().equals("[D")) {
+						double[] value = (double[]) entry.getValue();
 						for (Double v : value) {
 							sb.append(sep);
 							sb.append(v.toString());
 						}
 					}
-					if (lhm.get(key).getClass().getName().equals("[I")) {
-						int[] value = (int[]) lhm.get(key);
+					if (entry.getValue().getClass().getName().equals("[I")) {
+						int[] value = (int[]) entry.getValue();
 						for (Integer v : value) {
 							sb.append(sep);
 							sb.append(v.toString());
 						}
 					}
 				} else {
-					Object value = lhm.get(key);
 					if (withKey) {
 						sb.append(sep);
 						sb.append(key.toString());
 					}
 					sb.append(sep);
-					sb.append(value.toString());
+					sb.append(entry.getValue().toString());
 				}
 
 				sb.append("\n");

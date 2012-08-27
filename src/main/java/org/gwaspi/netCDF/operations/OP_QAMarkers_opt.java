@@ -133,8 +133,8 @@ public class OP_QAMarkers_opt {
 
 			//Iterate through markerset, take it marker by marker
 			int markerNb = 0;
-			for (Iterator<String> it = rdMarkerSet.getMarkerIdSetLHM().keySet().iterator(); it.hasNext();) {
-				String markerId = it.next();
+			for (Map.Entry<String, Object> entry : rdMarkerSet.getMarkerIdSetLHM().entrySet()) {
+				String markerId = entry.getKey();
 
 				Map<Object, Object> knownAlleles = new LinkedHashMap();
 				Map<Object, Object> allSamplesGTsTable = new LinkedHashMap();
@@ -144,17 +144,16 @@ public class OP_QAMarkers_opt {
 
 				//Get a sampleset-full of GTs
 				rdSampleSetLHM = rdSampleSet.readAllSamplesGTsFromCurrentMarkerToLHM(rdNcFile, rdSampleSetLHM, markerNb);
-				for (Iterator it2 = rdSampleSetLHM.keySet().iterator(); it2.hasNext();) {
-
-					Object sampleId = it2.next();
+				for (Map.Entry<String, Object> sampleEntry : rdSampleSetLHM.entrySet()) {
+					String sampleId = sampleEntry.getKey();
 
 					//<editor-fold defaultstate="expanded" desc="THE DECIDER">
-					CensusDecision decision = CensusDecision.getDecisionByChrAndSex(rdMarkerSet.getMarkerIdSetLHM().get(markerId).toString(), samplesInfoLHM.get(sampleId).toString());
+					CensusDecision decision = CensusDecision.getDecisionByChrAndSex(sampleEntry.getValue().toString(), samplesInfoLHM.get(sampleId).toString());
 					//</editor-fold>
 
 					//<editor-fold defaultstate="collapsed" desc="SUMMING SAMPLESET GENOTYPES">
 					float counter = 1;
-					byte[] tempGT = (byte[]) rdSampleSetLHM.get(sampleId);
+					byte[] tempGT = (byte[]) sampleEntry.getValue();
 					//Gather alleles different from 0 into a list of known alleles and count the number of appearences
 					//48 is byte for 0
 					//65 is byte for A
@@ -204,8 +203,8 @@ public class OP_QAMarkers_opt {
 					List<Integer> intAa = new ArrayList<Integer>();
 					List<Integer> intaa = new ArrayList<Integer>();
 
-					Iterator itKnAll = knownAlleles.keySet().iterator();
-					if (knownAlleles.size() == 0) { //Completely missing (00)
+					Iterator<Object> itKnAll = knownAlleles.keySet().iterator();
+					if (knownAlleles.isEmpty()) { //Completely missing (00)
 						orderedAlleles[0] = '0';
 						orderedAlleles[1] = 0d;
 						orderedAlleles[2] = '0';
@@ -263,9 +262,9 @@ public class OP_QAMarkers_opt {
 					//</editor-fold>
 
 					//<editor-fold defaultstate="collapsed" desc="CONTINGENCY ALL SAMPLES">
-					for (Iterator itUnqGT = allSamplesGTsTable.keySet().iterator(); itUnqGT.hasNext();) {
-						Object key = itUnqGT.next();
-						Integer value = Math.round((Float) allSamplesGTsTable.get(key));
+					for (Map.Entry<Object, Object> sampleEntry : allSamplesGTsTable.entrySet()) {
+						Object key = sampleEntry.getKey();
+						Integer value = Math.round((Float) sampleEntry.getValue());
 
 						if (intAA.contains(key)) { //compare to all possible character values of AA
 							//ALL CENSUS

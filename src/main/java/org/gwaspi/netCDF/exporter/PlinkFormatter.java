@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import org.gwaspi.netCDF.markers.MarkerSet_opt;
 import org.gwaspi.netCDF.matrices.MatrixMetadata;
@@ -47,8 +46,7 @@ public class PlinkFormatter implements Formatter {
 
 			//Iterate through all samples
 			int sampleNb = 0;
-			for (Iterator it = rdSampleSetMap.keySet().iterator(); it.hasNext();) {
-				String sampleId = it.next().toString();
+			for (String sampleId : rdSampleSetMap.keySet()) {
 				HashMap sampleInfo = Utils.getCurrentSampleFormattedInfo(sampleId, rdMatrixMetadata.getStudyId());
 
 				String familyId = sampleInfo.get(org.gwaspi.constants.cDBSamples.f_FAMILY_ID).toString();
@@ -61,15 +59,13 @@ public class PlinkFormatter implements Formatter {
 				// Iterate through all markers
 				rdMarkerSet.fillGTsForCurrentSampleIntoInitLHM(sampleNb);
 				StringBuilder genotypes = new StringBuilder();
-				for (Iterator<String> it2 = rdMarkerSet.getMarkerIdSetLHM().keySet().iterator(); it2.hasNext();) {
-					String key = it2.next();
-					byte[] tempGT = (byte[]) rdMarkerSet.getMarkerIdSetLHM().get(key);
+				for (Object value : rdMarkerSet.getMarkerIdSetLHM().values()) {
+					byte[] tempGT = (byte[]) value;
 					genotypes.append(sep);
 					genotypes.append(new String(new byte[]{tempGT[0]}));
 					genotypes.append(sep);
 					genotypes.append(new String(new byte[]{tempGT[1]}));
 				}
-
 
 				//Family ID
 				//Individual ID
@@ -129,20 +125,17 @@ public class PlinkFormatter implements Formatter {
 			rdMarkerSet.appendVariableToMarkerSetLHMValue(org.gwaspi.constants.cNetCDF.Variables.VAR_MARKERS_RSID, sep);
 
 			//DEFAULT GENETIC DISTANCE = 0
-			for (Iterator<String> it = rdMarkerSet.getMarkerIdSetLHM().keySet().iterator(); it.hasNext();) {
-				String key = it.next();
-				StringBuilder value = new StringBuilder(rdMarkerSet.getMarkerIdSetLHM().get(key).toString());
+			for (Map.Entry<String, Object> entry : rdMarkerSet.getMarkerIdSetLHM().entrySet()) {
+				StringBuilder value = new StringBuilder(entry.getValue().toString());
 				value.append(sep);
 				value.append("0");
-				rdMarkerSet.getMarkerIdSetLHM().put(key, value);
+				entry.setValue(value); // FIXME use toString()?
 			}
 
 			//MARKERSET POSITION
 			rdMarkerSet.appendVariableToMarkerSetLHMValue(org.gwaspi.constants.cNetCDF.Variables.VAR_MARKERS_POS, sep);
 			int markerNb = 0;
-			for (Iterator<String> it = rdMarkerSet.getMarkerIdSetLHM().keySet().iterator(); it.hasNext();) {
-				String key = it.next();
-				Object pos = rdMarkerSet.getMarkerIdSetLHM().get(key);
+			for (Object pos : rdMarkerSet.getMarkerIdSetLHM().values()) {
 				mapBW.append(pos.toString());
 				mapBW.append("\n");
 				markerNb++;

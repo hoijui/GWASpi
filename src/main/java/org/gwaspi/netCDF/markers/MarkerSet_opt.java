@@ -230,9 +230,9 @@ public class MarkerSet_opt {
 
 	public static String getChrByMarkerIndex(Map<String, Object> chrInfoLHM, int markerIndex) {
 		String result = null;
-		for (Iterator<String> it = chrInfoLHM.keySet().iterator(); it.hasNext();) {
-			String chr = it.next();
-			int[] value = (int[]) chrInfoLHM.get(chr);
+		for (Map.Entry<String, Object> entry : chrInfoLHM.entrySet()) {
+			String chr = entry.getKey();
+			int[] value = (int[]) entry.getValue();
 			if (markerIndex <= value[3] && result == null) {
 				result = chr.toString();
 			}
@@ -386,35 +386,29 @@ public class MarkerSet_opt {
 	}
 
 	public void fillInitLHMWithMyValue(Object defaultVal) {
-		for (Iterator<String> it = markerIdSetLHM.keySet().iterator(); it.hasNext();) {
-			String key = it.next();
-			markerIdSetLHM.put(key, defaultVal);
+		for (Map.Entry<String, Object> entry : markerIdSetLHM.entrySet()) {
+			entry.setValue(defaultVal);
 		}
 	}
 
 	public Map<String, Object> fillLHMWithMyValue(Map<String, Object> lhm, Object defaultVal) {
-		for (Iterator<String> it = lhm.keySet().iterator(); it.hasNext();) {
-			String key = it.next();
-			lhm.put(key, defaultVal);
+		for (Map.Entry<String, Object> entry : lhm.entrySet()) {
+			entry.setValue(defaultVal);
 		}
 		return lhm;
 	}
 
 	//HELPERS TO TRANSFER VALUES FROM ONE LHM TO ANOTHER
 	public Map<String, Object> fillWrLHMWithRdLHMValue(Map<String, Object> wrLHM, Map<String, Object> rdLHM) {
-		for (Iterator<String> it = wrLHM.keySet().iterator(); it.hasNext();) {
-			String key = it.next();
-			Object value = rdLHM.get(key);
-			wrLHM.put(key, value);
+		for (Map.Entry<String, Object> entry : wrLHM.entrySet()) {
+			entry.setValue(rdLHM.get(entry.getKey()));
 		}
 		return wrLHM;
 	}
 
-	public Map<String, Object> fillWrLHMWithRdLHMIntArray(Map<String, Object> wrLHM, Map<String, Object> rdLHM) {
-		for (Iterator<String> it = wrLHM.keySet().iterator(); it.hasNext();) {
-			String key = it.next();
-			int[] value = (int[]) rdLHM.get(key);
-			wrLHM.put(key, value);
+	public Map<String, int[]> fillWrLHMWithRdLHMIntArray(Map<String, int[]> wrLHM, Map<String, int[]> rdLHM) { // FIXME merge into fillWrLHMWithRdLHMValue using smarter generics
+		for (Map.Entry<String, int[]> entry : wrLHM.entrySet()) {
+			entry.setValue(rdLHM.get(entry.getKey()));
 		}
 		return wrLHM;
 	}
@@ -536,17 +530,17 @@ public class MarkerSet_opt {
 		this.fillInitLHMWithVariable(variable);
 
 		if (includes) {
-			for (Iterator<String> it = markerIdSetLHM.keySet().iterator(); it.hasNext();) {
-				String key = it.next();
-				Object value = markerIdSetLHM.get(key);
+			for (Map.Entry<String, Object> entry : markerIdSetLHM.entrySet()) {
+				String key = entry.getKey();
+				Object value = entry.getValue();
 				if (criteria.contains(value)) {
 					returnLHM.put(key, value);
 				}
 			}
 		} else {
-			for (Iterator<String> it = markerIdSetLHM.keySet().iterator(); it.hasNext();) {
-				String key = it.next();
-				Object value = markerIdSetLHM.get(key);
+			for (Map.Entry<String, Object> entry : markerIdSetLHM.entrySet()) {
+				String key = entry.getKey();
+				Object value = entry.getValue();
 				if (!criteria.contains(value)) {
 					returnLHM.put(key, value);
 				}
@@ -560,17 +554,17 @@ public class MarkerSet_opt {
 		Map<String, Object> returnLHM = new LinkedHashMap<String, Object>();
 
 		if (includes) {
-			for (Iterator<String> it = markerIdSetLHM.keySet().iterator(); it.hasNext();) {
-				String key = it.next();
-				Object value = markerIdSetLHM.get(key);
+			for (Map.Entry<String, Object> entry : markerIdSetLHM.entrySet()) {
+				String key = entry.getKey();
+				Object value = entry.getValue();
 				if (criteria.contains(key)) {
 					returnLHM.put(key, value);
 				}
 			}
 		} else {
-			for (Iterator<String> it = markerIdSetLHM.keySet().iterator(); it.hasNext();) {
-				String key = it.next();
-				Object value = markerIdSetLHM.get(key);
+			for (Map.Entry<String, Object> entry : markerIdSetLHM.entrySet()) {
+				String key = entry.getKey();
+				Object value = entry.getValue();
 				if (!criteria.contains(key)) {
 					returnLHM.put(key, value);
 				}

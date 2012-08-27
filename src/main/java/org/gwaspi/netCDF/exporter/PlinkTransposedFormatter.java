@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import org.gwaspi.netCDF.markers.MarkerSet_opt;
 import org.gwaspi.netCDF.matrices.MatrixMetadata;
@@ -61,12 +60,11 @@ public class PlinkTransposedFormatter implements Formatter {
 			rdMarkerSet.appendVariableToMarkerSetLHMValue(org.gwaspi.constants.cNetCDF.Variables.VAR_MARKERS_RSID, sep);
 
 			//DEFAULT GENETIC DISTANCE = 0
-			for (Iterator<String> it = rdMarkerSet.getMarkerIdSetLHM().keySet().iterator(); it.hasNext();) {
-				String key = it.next();
-				StringBuilder value = new StringBuilder(rdMarkerSet.getMarkerIdSetLHM().get(key).toString());
+			for (Map.Entry<String, Object> entry : rdMarkerSet.getMarkerIdSetLHM().entrySet()) {
+				StringBuilder value = new StringBuilder(entry.getValue().toString());
 				value.append(sep);
 				value.append("0");
-				rdMarkerSet.getMarkerIdSetLHM().put(key, value);
+				entry.setValue(value); // FIXME use toString()?
 			}
 
 			//MARKERSET POSITION
@@ -74,17 +72,14 @@ public class PlinkTransposedFormatter implements Formatter {
 
 			//Iterate through markerset
 			int markerNb = 0;
-			for (Iterator<String> it = rdMarkerSet.getMarkerIdSetLHM().keySet().iterator(); it.hasNext();) {
+			for (Object pos : rdMarkerSet.getMarkerIdSetLHM().values()) {
 				StringBuilder line = new StringBuilder();
-				String markerId = it.next();
-				Object pos = rdMarkerSet.getMarkerIdSetLHM().get(markerId);
 
 				//Iterate through sampleset
 				StringBuilder genotypes = new StringBuilder();
 				rdSampleSetMap = rdSampleSet.readAllSamplesGTsFromCurrentMarkerToLHM(rdNcFile, rdSampleSetMap, markerNb);
-				for (Iterator<String> it2 = rdSampleSetMap.keySet().iterator(); it2.hasNext();) {
-					String sampleId = it2.next();
-					byte[] tempGT = (byte[]) rdSampleSetMap.get(sampleId);
+				for (Object value : rdSampleSetMap.values()) {
+					byte[] tempGT = (byte[]) value;
 					genotypes.append(sep);
 					genotypes.append(new String(new byte[]{tempGT[0]}));
 					genotypes.append(sep);
@@ -112,9 +107,7 @@ public class PlinkTransposedFormatter implements Formatter {
 
 			//Iterate through all samples
 			int sampleNb = 0;
-			for (Iterator<String> it = rdSampleSetMap.keySet().iterator(); it.hasNext();) {
-				String sampleId = it.next();
-
+			for (String sampleId : rdSampleSetMap.keySet()) {
 				HashMap sampleInfo = Utils.getCurrentSampleFormattedInfo(sampleId, rdMatrixMetadata.getStudyId());
 
 				String familyId = sampleInfo.get(org.gwaspi.constants.cDBSamples.f_FAMILY_ID).toString();

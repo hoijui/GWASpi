@@ -67,9 +67,9 @@ public class OP_MarkerCensus_opt {
 		if (discardMismatches) {
 			rdQAMarkerSetLHM = rdQAMarkerSet.fillOpSetLHMWithVariable(rdMarkerQANcFile, cNetCDF.Census.VAR_OP_MARKERS_MISMATCHSTATE);
 
-			for (Iterator<String> it = rdQAMarkerSetLHM.keySet().iterator(); it.hasNext();) {
-				String key = it.next();
-				Object value = rdQAMarkerSetLHM.get(key);
+			for (Map.Entry<String, Object> entry : rdQAMarkerSetLHM.entrySet()) {
+				String key = entry.getKey();
+				Object value = entry.getValue();
 				if (value.equals(cNetCDF.Defaults.DEFAULT_MISMATCH_YES)) {
 					excludeMarkerSetLHM.put(key, value);
 				}
@@ -79,9 +79,9 @@ public class OP_MarkerCensus_opt {
 		//EXCLUDE MARKER BY MISSING RATIO
 		rdQAMarkerSetLHM = rdQAMarkerSet.fillOpSetLHMWithVariable(rdMarkerQANcFile, cNetCDF.Census.VAR_OP_MARKERS_MISSINGRAT);
 
-		for (Iterator<String> it = rdQAMarkerSetLHM.keySet().iterator(); it.hasNext();) {
-			String key = it.next();
-			double value = (Double) rdQAMarkerSetLHM.get(key);
+		for (Map.Entry<String, Object> entry : rdQAMarkerSetLHM.entrySet()) {
+			String key = entry.getKey();
+			double value = (Double) entry.getValue();
 			if (value > markerMissingRatio) {
 				excludeMarkerSetLHM.put(key, value);
 			}
@@ -92,9 +92,9 @@ public class OP_MarkerCensus_opt {
 
 		if (rdQASampleSetLHM != null) {
 			int brgl = 0;
-			for (Iterator<String> it = rdQASampleSetLHM.keySet().iterator(); it.hasNext();) {
-				String key = it.next();
-				double value = (Double) rdQASampleSetLHM.get(key);
+			for (Map.Entry<String, Object> entry : rdQASampleSetLHM.entrySet()) {
+				String key = entry.getKey();
+				double value = (Double) entry.getValue();
 				if (value > sampleMissingRatio) {
 					excludeSampleSetLHM.put(key, value);
 				}
@@ -107,9 +107,9 @@ public class OP_MarkerCensus_opt {
 
 		if (rdQASampleSetLHM != null) {
 			int brgl = 0;
-			for (Iterator<String> it = rdQASampleSetLHM.keySet().iterator(); it.hasNext();) {
-				String key = it.next();
-				double value = (Double) rdQASampleSetLHM.get(key);
+			for (Map.Entry<String, Object> entry : rdQASampleSetLHM.entrySet()) {
+				String key = entry.getKey();
+				double value = (Double) entry.getValue();
 				if (value > sampleHetzygRatio) {
 					excludeSampleSetLHM.put(key, value);
 				}
@@ -148,8 +148,7 @@ public class OP_MarkerCensus_opt {
 			SampleSet rdSampleSet = new SampleSet(rdMatrixMetadata.getStudyId(), rdMatrixId);
 			Map<String, Object> rdSampleSetLHM = rdSampleSet.getSampleIdSetLHM();
 			Map<String, Object> wrSampleSetLHM = new LinkedHashMap();
-			for (Iterator<String> it = rdSampleSetLHM.keySet().iterator(); it.hasNext();) {
-				String key = it.next();
+			for (String key : rdSampleSetLHM.keySet()) {
 				if (!excludeSampleSetLHM.containsKey(key)) {
 					wrSampleSetLHM.put(key, cNetCDF.Defaults.DEFAULT_GT);
 				}
@@ -197,10 +196,10 @@ public class OP_MarkerCensus_opt {
 
 				//MARKERSET RSID
 				rdMarkerSet.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_RSID);
-				for (Iterator<String> it = wrMarkerSetLHM.keySet().iterator(); it.hasNext();) {
-					String key = it.next();
+				for (Map.Entry<String, Object> entry : wrMarkerSetLHM.entrySet()) {
+					String key = entry.getKey();
 					Object value = rdMarkerSet.getMarkerIdSetLHM().get(key);
-					wrMarkerSetLHM.put(key, value);
+					entry.setValue(value);
 				}
 				Utils.saveCharLHMValueToWrMatrix(wrNcFile, wrMarkerSetLHM, cNetCDF.Variables.VAR_MARKERS_RSID, cNetCDF.Strides.STRIDE_MARKER_NAME);
 
@@ -269,8 +268,7 @@ public class OP_MarkerCensus_opt {
 						//samplesInfoLHM.put(cVals[0], cVals[1]);
 					}
 					//CHECK IF THERE ARE MISSING SAMPLES IN THE PHENO PHILE
-					for (Iterator<String> it = wrSampleSetLHM.keySet().iterator(); it.hasNext();) {
-						String sampleId = it.next();
+					for (String sampleId : wrSampleSetLHM.keySet()) {
 						if (!samplesInfoLHM.containsKey(sampleId)) {
 							String sex = "0";
 							String affection = "0";
@@ -303,18 +301,19 @@ public class OP_MarkerCensus_opt {
 				//Iterate through markerset, take it marker by marker
 				rdMarkerSet.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
 				//INIT wrSampleSetLHM with indexing order and chromosome info
-				int idx = 0;
-				for (Iterator<String> it = rdMarkerSet.getMarkerIdSetLHM().keySet().iterator(); it.hasNext();) {
-					String key = it.next();
-					if (wrMarkerSetLHM.containsKey(key)) {
-						String chr = rdMarkerSet.getMarkerIdSetLHM().get(key).toString();
-						Object[] markerInfo = new Object[]{idx, chr};
-						wrMarkerSetLHM.put(key, markerInfo);
-					}
-					//rdMarkerIdSetIndex.put(key, idx);
-					idx++;
-				}
 				if (rdMarkerSet.getMarkerIdSetLHM() != null) {
+					int idx = 0;
+					for (Map.Entry<String, Object> entry : rdMarkerSet.getMarkerIdSetLHM().entrySet()) {
+						String key = entry.getKey();
+						if (wrMarkerSetLHM.containsKey(key)) {
+							String chr = entry.getValue().toString();
+							Object[] markerInfo = new Object[]{idx, chr};
+							wrMarkerSetLHM.put(key, markerInfo);
+						}
+						//rdMarkerIdSetIndex.put(key, idx);
+						idx++;
+					}
+
 					rdMarkerSet.getMarkerIdSetLHM().clear();
 				}
 
@@ -332,9 +331,8 @@ public class OP_MarkerCensus_opt {
 
 				Map<String, Object> wrChunkedMarkerCensusLHM = new LinkedHashMap<String, Object>();
 				Map<String, Object> wrChunkedKnownAllelesLHM = new LinkedHashMap<String, Object>();
-				for (Iterator<String> it = wrMarkerSetLHM.keySet().iterator(); it.hasNext();) {
-					String markerId = it.next();
-
+				for (Map.Entry<String, Object> entry : wrMarkerSetLHM.entrySet()) {
+					String markerId = entry.getKey();
 					if (countMarkers % chunkSize == 0) {
 
 						if (countMarkers > 0) {
@@ -408,14 +406,12 @@ public class OP_MarkerCensus_opt {
 
 					//Get a sampleset-full of GTs
 					//int markerNb = (Integer) rdMarkerIdSetIndex.get(markerId);
-					Object[] markerInfo = (Object[]) wrMarkerSetLHM.get(markerId);
+					Object[] markerInfo = (Object[]) entry.getValue();
 					int markerNb = Integer.parseInt(markerInfo[0].toString());
 					String markerChr = markerInfo[1].toString();
 
 					rdSampleSetLHM = rdSampleSet.readAllSamplesGTsFromCurrentMarkerToLHM(rdNcFile, rdSampleSetLHM, markerNb);
-					for (Iterator<String> it2 = wrSampleSetLHM.keySet().iterator(); it2.hasNext();) {
-
-						String sampleId = it2.next();
+					for (String sampleId : wrSampleSetLHM.keySet()) {
 						String[] sampleInfo = (String[]) samplesInfoLHM.get(sampleId);
 
 						//<editor-fold defaultstate="collapsed" desc="THE DECIDER">
@@ -492,7 +488,6 @@ public class OP_MarkerCensus_opt {
 
 						}
 						//</editor-fold>
-
 					}
 
 					//AFFECTION ALLELE CENSUS + MISMATCH STATE + MISSINGNESS
@@ -503,18 +498,18 @@ public class OP_MarkerCensus_opt {
 						List<Integer> AanumValsAL = new ArrayList<Integer>();
 						List<Integer> aanumValsAL = new ArrayList<Integer>();
 
-						Iterator itKnAll = knownAlleles.keySet().iterator();
+						Iterator<Byte> itKnAll = knownAlleles.keySet().iterator();
 						if (knownAlleles.size() == 1) { //Homozygote (AA or aa)
-							byte key = (Byte) itKnAll.next();
+							byte key = itKnAll.next();
 							int intAllele1 = (int) key;
 							AAnumValsAL.add(intAllele1); //Single A
 							AAnumValsAL.add(intAllele1 * 2); //Double AA
 						}
 						if (knownAlleles.size() == 2) { //Heterezygote (AA, Aa or aa)
-							byte key = (Byte) itKnAll.next();
+							byte key = itKnAll.next();
 							int countA = Math.round((Float) knownAlleles.get(key));
 							int intAllele1 = (int) key;
-							key = (Byte) itKnAll.next();
+							key = itKnAll.next();
 							int countB = Math.round((Float) knownAlleles.get(key));
 							int intAllele2 = (int) key;
 
@@ -539,9 +534,9 @@ public class OP_MarkerCensus_opt {
 						//</editor-fold>
 
 						//<editor-fold defaultstate="collapsed" desc="CONTINGENCY ALL SAMPLES">
-						for (Iterator<Integer> itUnqGT = allSamplesGTsTable.keySet().iterator(); itUnqGT.hasNext();) {
-							Integer key = itUnqGT.next();
-							Integer value = Math.round((Float) allSamplesGTsTable.get(key));
+						for (Map.Entry<Integer, Object> samplesEntry : allSamplesGTsTable.entrySet()) {
+							Integer key = samplesEntry.getKey();
+							Integer value = Math.round((Float) samplesEntry.getValue());
 
 							if (AAnumValsAL.contains(key)) { //compare to all possible character values of AA
 								//ALL CENSUS
@@ -571,9 +566,9 @@ public class OP_MarkerCensus_opt {
 						//</editor-fold>
 
 						//<editor-fold defaultstate="collapsed" desc="CONTINGENCY CASE SAMPLES">
-						for (Iterator<Integer> itUnqGT = caseSamplesGTsTable.keySet().iterator(); itUnqGT.hasNext();) {
-							Integer key = itUnqGT.next();
-							Integer value = Math.round((Float) caseSamplesGTsTable.get(key));
+						for (Map.Entry<Integer, Object> samplesEntry : caseSamplesGTsTable.entrySet()) {
+							Integer key = samplesEntry.getKey();
+							Integer value = Math.round((Float) samplesEntry.getValue());
 
 							if (AAnumValsAL.contains(key)) { //compare to all possible character values of AA
 								//ALL CENSUS
@@ -603,9 +598,9 @@ public class OP_MarkerCensus_opt {
 						//</editor-fold>
 
 						//<editor-fold defaultstate="collapsed" desc="CONTINGENCY CTRL SAMPLES">
-						for (Iterator<Integer> itUnqGT = ctrlSamplesGTsTable.keySet().iterator(); itUnqGT.hasNext();) {
-							Integer key = itUnqGT.next();
-							Integer value = Math.round((Float) ctrlSamplesGTsTable.get(key));
+						for (Map.Entry<Integer, Object> samplesEntry : ctrlSamplesGTsTable.entrySet()) {
+							Integer key = samplesEntry.getKey();
+							Integer value = Math.round((Float) samplesEntry.getValue());
 
 							if (AAnumValsAL.contains(key)) { //compare to all possible character values of AA
 								//ALL CENSUS
@@ -635,9 +630,9 @@ public class OP_MarkerCensus_opt {
 						//</editor-fold>
 
 						//<editor-fold defaultstate="collapsed" desc="CONTINGENCY HW SAMPLES">
-						for (Iterator<Integer> itUnqGT = hwSamplesGTsTable.keySet().iterator(); itUnqGT.hasNext();) {
-							Integer key = itUnqGT.next();
-							Integer value = Math.round((Float) hwSamplesGTsTable.get(key));
+						for (Map.Entry<Integer, Object> samplesEntry : hwSamplesGTsTable.entrySet()) {
+							Integer key = samplesEntry.getKey();
+							Integer value = Math.round((Float) samplesEntry.getValue());
 
 							if (AAnumValsAL.contains(key)) { //compare to all possible character values of AA
 								//HW CENSUS
@@ -737,20 +732,17 @@ public class OP_MarkerCensus_opt {
 
 						StringBuilder sb = new StringBuilder();
 						byte[] alleles = org.gwaspi.constants.cNetCDF.Defaults.DEFAULT_GT;
-						Iterator knit = knownAlleles.keySet().iterator();
+						Iterator<Byte> knit = knownAlleles.keySet().iterator();
 						if (knownAlleles.size() == 2) {
-							Byte allele1 = (Byte) knit.next();
-							Byte allele2 = (Byte) knit.next();
+							Byte allele1 = knit.next();
+							Byte allele2 = knit.next();
 							alleles = new byte[]{allele1, allele2};
 						}
 						if (knownAlleles.size() == 1) {
-							Byte allele1 = (Byte) knit.next();
+							Byte allele1 = knit.next();
 							alleles = new byte[]{allele1, allele1};
 						}
 						sb.append(new String(alleles));
-
-
-
 
 						wrChunkedKnownAllelesLHM.put(markerId, sb.toString());
 					} else {
@@ -763,7 +755,6 @@ public class OP_MarkerCensus_opt {
 					if (markerNb != 0 && markerNb % 100000 == 0) {
 						System.out.println("Processed markers: " + markerNb + " at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
 					}
-
 				}
 				//</editor-fold>
 

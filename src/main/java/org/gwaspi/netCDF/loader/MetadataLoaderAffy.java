@@ -6,9 +6,9 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.SortedMap;
 import java.util.TreeMap;
 
 /**
@@ -41,16 +41,15 @@ public class MetadataLoaderAffy implements MetadataLoader {
 	public Map<String, Object> getSortedMarkerSetWithMetaData() throws IOException {
 		String startTime = org.gwaspi.global.Utils.getMediumDateTimeAsString();
 
-		TreeMap tempTM = parseAnnotationBRFile(annotationPath); // affyId, rsId,chr,pseudo-autosomal,pos, strand, alleles, plus-alleles
+		SortedMap<String, String> tempTM = parseAnnotationBRFile(annotationPath); // affyId, rsId,chr,pseudo-autosomal,pos, strand, alleles, plus-alleles
 
 		org.gwaspi.global.Utils.sysoutStart("initilaizing marker info");
 		System.out.println(org.gwaspi.global.Text.All.processing);
 
 		Map<String, Object> markerMetadataLHM = new LinkedHashMap<String, Object>();
-		for (Iterator it = tempTM.keySet().iterator(); it.hasNext();) {
+		for (Map.Entry<String, String> entry : tempTM.entrySet()) {
 			// keyValues = chr;pseudo-autosomal1;pseudo-autosomal2;pos;markerId"
-			String key = it.next().toString();
-			String[] keyValues = key.split(cNetCDF.Defaults.TMP_SEPARATOR);
+			String[] keyValues = entry.getKey().split(cNetCDF.Defaults.TMP_SEPARATOR);
 			int pos;
 			try {
 				pos = Integer.parseInt(keyValues[3]);
@@ -59,7 +58,7 @@ public class MetadataLoaderAffy implements MetadataLoader {
 			}
 
 			//valValues = rsId;strand;alleles
-			String[] valValues = tempTM.get(key).toString().split(cNetCDF.Defaults.TMP_SEPARATOR);
+			String[] valValues = entry.getValue().split(cNetCDF.Defaults.TMP_SEPARATOR);
 			valValues = fixRsId(keyValues, valValues);
 			keyValues = fixChrData(keyValues);
 
@@ -81,10 +80,10 @@ public class MetadataLoaderAffy implements MetadataLoader {
 		return markerMetadataLHM;
 	}
 
-	public static TreeMap parseAnnotationBRFile(String path) throws IOException {
+	public static SortedMap<String, String> parseAnnotationBRFile(String path) throws IOException {
 		FileReader fr = new FileReader(path);
 		BufferedReader inputAnnotationBr = new BufferedReader(fr);
-		TreeMap sortedMetadataTM = new TreeMap(new ComparatorChrAutPosMarkerIdAsc());
+		SortedMap<String, String> sortedMetadataTM = new TreeMap<String, String>(new ComparatorChrAutPosMarkerIdAsc());
 
 		String header = "";
 		while (!header.startsWith("\"Probe Set ID") && header != null) {

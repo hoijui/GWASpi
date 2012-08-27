@@ -250,9 +250,8 @@ public final class ManhattanChartDisplay extends javax.swing.JPanel {
 
 			// CHECK HOW MANY CHR HAVE PLOTS (ANY MARKERS?)
 			int chrPlotNb = 0;
-			for (Iterator it = chrSetInfoLHM.keySet().iterator(); it.hasNext();) {
-				Object key = it.next();
-				int[] chrInfo = (int[]) chrSetInfoLHM.get(key); // Nb of markers, first physical position, last physical position, start index number in MarkerSet,
+			for (Object value : chrSetInfoLHM.values()) {
+				int[] chrInfo = (int[]) value; // Nb of markers, first physical position, last physical position, start index number in MarkerSet,
 				if (chrInfo[0] > 0) {
 					chrPlotNb++;
 				}
@@ -323,7 +322,7 @@ public final class ManhattanChartDisplay extends javax.swing.JPanel {
 		int selectedChrMap = Math.round(pxXposNoLeftPad / chrPlotWidthPad);
 
 		int[] chrInfo = new int[4];
-		Iterator it = chrSetInfoLHM.keySet().iterator();
+		Iterator it = chrSetInfoLHM.keySet().iterator(); // FIXME unuse Iterator
 		for (int i = 0; i <= selectedChrMap && i < chrSetInfoLHM.size(); i++) {
 			Object key = it.next();
 			chr = key.toString();

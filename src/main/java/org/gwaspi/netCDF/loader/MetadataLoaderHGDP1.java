@@ -7,9 +7,9 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.SortedMap;
 import java.util.TreeMap;
 
 /**
@@ -42,17 +42,15 @@ public class MetadataLoaderHGDP1 implements MetadataLoader {
 	public Map<String, Object> getSortedMarkerSetWithMetaData() throws IOException {
 		String startTime = org.gwaspi.global.Utils.getMediumDateTimeAsString();
 
-		TreeMap tempTM = parseAndSortMarkerFile(markerFilePath); //chr, markerId, genetic distance, position
+		SortedMap<String, String> tempTM = parseAndSortMarkerFile(markerFilePath); //chr, markerId, genetic distance, position
 
 		org.gwaspi.global.Utils.sysoutStart("initilaizing marker info");
 		System.out.println(org.gwaspi.global.Text.All.processing);
 
 		Map<String, Object> markerMetadataLHM = new LinkedHashMap<String, Object>();
-		for (Iterator it = tempTM.keySet().iterator(); it.hasNext();) {
-			String key = it.next().toString();
-
+		for (Map.Entry<String, String> entry : tempTM.entrySet()) {
 			//chr;pos;markerId
-			String[] keyValues = key.split(cNetCDF.Defaults.TMP_SEPARATOR);
+			String[] keyValues = entry.getKey().split(cNetCDF.Defaults.TMP_SEPARATOR);
 			int pos;
 			try {
 				pos = Integer.parseInt(keyValues[1]);
@@ -60,7 +58,7 @@ public class MetadataLoaderHGDP1 implements MetadataLoader {
 				pos = 0;
 			}
 
-			String valValues = tempTM.get(key).toString();
+			String valValues = entry.getValue();
 
 			Object[] markerInfo = new Object[4];
 			markerInfo[0] = keyValues[2]; // 0 => markerid
@@ -76,10 +74,10 @@ public class MetadataLoaderHGDP1 implements MetadataLoader {
 		return markerMetadataLHM;
 	}
 
-	public static TreeMap parseAndSortMarkerFile(String path) throws IOException {
+	public static SortedMap<String, String> parseAndSortMarkerFile(String path) throws IOException {
 		FileReader fr = new FileReader(path);
 		BufferedReader inputMapBR = new BufferedReader(fr);
-		TreeMap sortedMetadataTM = new TreeMap(new ComparatorChrAutPosMarkerIdAsc());
+		SortedMap<String, String> sortedMetadataTM = new TreeMap<String, String>(new ComparatorChrAutPosMarkerIdAsc());
 
 		String l;
 		int count = 0;

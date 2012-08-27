@@ -10,7 +10,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
@@ -207,12 +206,12 @@ public class MatrixGenotypesFlipper {
 			//MARKERSET DICTIONARY ALLELES
 			rdMarkerSet.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_BASES_DICT);
 			rdMarkerIdSetLHM = rdMarkerSet.fillWrLHMWithRdLHMValue(rdMarkerIdSetLHM, rdMarkerSet.getMarkerIdSetLHM());
-			for (Iterator<String> it = rdMarkerIdSetLHM.keySet().iterator(); it.hasNext();) {
-				String markerId = it.next();
+			for (Map.Entry<String, Object> entry : rdMarkerIdSetLHM.entrySet()) {
+				String markerId = entry.getKey();
 				if (markerFlipHS.contains(markerId)) {
-					String alleles = rdMarkerIdSetLHM.get(markerId).toString();
+					String alleles = entry.getValue().toString();
 					alleles = flipDictionaryAlleles(alleles);
-					rdMarkerIdSetLHM.put(markerId, alleles);
+					entry.setValue(alleles);
 				}
 			}
 			Utils.saveCharLHMValueToWrMatrix(wrNcFile, rdMarkerIdSetLHM, cNetCDF.Variables.VAR_MARKERS_BASES_DICT, cNetCDF.Strides.STRIDE_GT);
@@ -221,12 +220,12 @@ public class MatrixGenotypesFlipper {
 			rdMarkerSet.fillInitLHMWithVariable(cNetCDF.Variables.VAR_GT_STRAND);
 			rdMarkerIdSetLHM = rdMarkerSet.fillWrLHMWithRdLHMValue(rdMarkerIdSetLHM, rdMarkerSet.getMarkerIdSetLHM());
 
-			for (Iterator<String> it = rdMarkerIdSetLHM.keySet().iterator(); it.hasNext();) {
-				String markerId = it.next();
+			for (Map.Entry<String, Object> entry : rdMarkerIdSetLHM.entrySet()) {
+				String markerId = entry.getKey();
 				if (markerFlipHS.contains(markerId)) {
-					String strand = rdMarkerIdSetLHM.get(markerId).toString();
+					String strand = entry.getValue().toString();
 					strand = flipStranding(strand);
-					rdMarkerIdSetLHM.put(markerId, strand);
+					entry.setValue(strand);
 				}
 			}
 			Utils.saveCharLHMValueToWrMatrix(wrNcFile, rdMarkerIdSetLHM, cNetCDF.Variables.VAR_GT_STRAND, 3);
@@ -237,16 +236,15 @@ public class MatrixGenotypesFlipper {
 
 			System.out.println(org.gwaspi.global.Text.All.processing);
 			int markerIndex = 0;
-			for (Iterator<String> it = rdMarkerIdSetLHM.keySet().iterator(); it.hasNext();) {
-				String markerId = it.next();
+			for (Map.Entry<String, Object> entry : rdMarkerIdSetLHM.entrySet()) {
+				String markerId = entry.getKey();
 				rdSampleSetLHM = rdSampleSet.readAllSamplesGTsFromCurrentMarkerToLHM(rdNcFile, rdSampleSetLHM, markerIndex);
 
 				if (markerFlipHS.contains(markerId)) {
-					for (Iterator<String> it2 = rdSampleSetLHM.keySet().iterator(); it2.hasNext();) {
-						String sampleId = it2.next();
-						byte[] gt = (byte[]) rdSampleSetLHM.get(sampleId);
+					for (Map.Entry<String, Object> sampleEntry : rdSampleSetLHM.entrySet()) {
+						byte[] gt = (byte[]) sampleEntry.getValue();
 						gt = flipGenotypes(gt, gtEncoding);
-						rdSampleSetLHM.put(sampleId, new byte[]{gt[0], gt[1]});
+						sampleEntry.setValue(new byte[]{gt[0], gt[1]});
 					}
 				}
 
@@ -384,9 +382,8 @@ public class MatrixGenotypesFlipper {
 				Utils.saveCharLHMValueToWrMatrix(wrNcFile, rdMarkerSet.getMarkerIdSetLHM(), cNetCDF.Variables.VAR_MARKERS_BASES_DICT, cNetCDF.Strides.STRIDE_GT);
 
 				//GENOTYPE STRAND
-				for (Iterator<String> it = rdMarkerSet.getMarkerIdSetLHM().keySet().iterator(); it.hasNext();) {
-					String key = it.next();
-					rdMarkerSet.getMarkerIdSetLHM().put(key, newStrand);
+				for (Map.Entry<String, Object> entry : rdMarkerSet.getMarkerIdSetLHM().entrySet()) {
+					entry.setValue(newStrand);
 				}
 				Utils.saveCharLHMValueToWrMatrix(wrNcFile, rdMarkerSet.getMarkerIdSetLHM(), cNetCDF.Variables.VAR_GT_STRAND, cNetCDF.Strides.STRIDE_STRAND);
 

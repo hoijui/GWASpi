@@ -8,7 +8,6 @@ import org.gwaspi.global.ServiceLocator;
 import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -158,9 +157,9 @@ public class OutputAllelicAssociation {
 		try {
 			Map<String, Object> unsortedMarkerIdAssocValsLHM = GenericReportGenerator.getAnalysisVarData(opId, org.gwaspi.constants.cNetCDF.Association.VAR_OP_MARKERS_ASAllelicAssociationTPOR);
 			Map<String, Object> unsortedMarkerIdPvalLHM = new LinkedHashMap<String, Object>();
-			for (Iterator<String> it = unsortedMarkerIdAssocValsLHM.keySet().iterator(); it.hasNext();) {
-				String key = it.next();
-				double[] values = (double[]) unsortedMarkerIdAssocValsLHM.get(key);
+			for (Map.Entry<String, Object> entry : unsortedMarkerIdAssocValsLHM.entrySet()) {
+				String key = entry.getKey();
+				double[] values = (double[]) entry.getValue();
 				unsortedMarkerIdPvalLHM.put(key, values[1]);
 			}
 
@@ -183,30 +182,30 @@ public class OutputAllelicAssociation {
 			//WRITE MARKERSET RSID
 			//infoMatrixMarkerSetLHM = rdInfoMarkerSet.appendVariableToMarkerSetLHMValue(matrixNcFile, cNetCDF.Variables.VAR_MARKERS_RSID, sep);
 			rdInfoMarkerSet.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_RSID);
-			for (Iterator<String> it = sortingMarkerSetLHM.keySet().iterator(); it.hasNext();) {
-				String key = it.next();
+			for (Map.Entry<String, Object> entry : sortingMarkerSetLHM.entrySet()) {
+				String key = entry.getKey();
 				Object value = rdInfoMarkerSet.getMarkerIdSetLHM().get(key);
-				sortingMarkerSetLHM.put(key, value);
+				entry.setValue(value);
 			}
 			ReportWriter.writeFirstColumnToReport(reportPath, reportName, header, sortingMarkerSetLHM, true);
 
 
 			//WRITE MARKERSET CHROMOSOME
 			rdInfoMarkerSet.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
-			for (Iterator<String> it = sortingMarkerSetLHM.keySet().iterator(); it.hasNext();) {
-				String key = it.next();
+			for (Map.Entry<String, Object> entry : sortingMarkerSetLHM.entrySet()) {
+				String key = entry.getKey();
 				Object value = rdInfoMarkerSet.getMarkerIdSetLHM().get(key);
-				sortingMarkerSetLHM.put(key, value);
+				entry.setValue(value);
 			}
 			ReportWriter.appendColumnToReport(reportPath, reportName, sortingMarkerSetLHM, false, false);
 
 			//WRITE MARKERSET POS
 			//infoMatrixMarkerSetLHM = rdInfoMarkerSet.appendVariableToMarkerSetLHMValue(matrixNcFile, cNetCDF.Variables.VAR_MARKERS_POS, sep);
 			rdInfoMarkerSet.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_POS);
-			for (Iterator<String> it = sortingMarkerSetLHM.keySet().iterator(); it.hasNext();) {
-				String key = it.next();
+			for (Map.Entry<String, Object> entry : sortingMarkerSetLHM.entrySet()) {
+				String key = entry.getKey();
 				Object value = rdInfoMarkerSet.getMarkerIdSetLHM().get(key);
-				sortingMarkerSetLHM.put(key, value);
+				entry.setValue(value);
 			}
 			ReportWriter.appendColumnToReport(reportPath, reportName, sortingMarkerSetLHM, false, false);
 
@@ -230,34 +229,33 @@ public class OutputAllelicAssociation {
 
 				//MINOR ALLELE
 				opMarkerSetLHM = rdOperationSet.fillOpSetLHMWithVariable(qaNcFile, cNetCDF.Census.VAR_OP_MARKERS_MINALLELES);
-				for (Iterator<String> it = rdInfoMarkerSet.getMarkerIdSetLHM().keySet().iterator(); it.hasNext();) {
-					String key = it.next();
+				for (Map.Entry<String, Object> entry : rdInfoMarkerSet.getMarkerIdSetLHM().entrySet()) {
+					String key = entry.getKey();
 					Object minorAllele = opMarkerSetLHM.get(key);
-					rdInfoMarkerSet.getMarkerIdSetLHM().put(key, minorAllele);
+					entry.setValue(minorAllele);
 				}
 
 				//MAJOR ALLELE
 				rdOperationSet.fillLHMWithDefaultValue(opMarkerSetLHM, "");
 				opMarkerSetLHM = rdOperationSet.fillOpSetLHMWithVariable(qaNcFile, cNetCDF.Census.VAR_OP_MARKERS_MAJALLELES);
-				for (Iterator<String> it = rdInfoMarkerSet.getMarkerIdSetLHM().keySet().iterator(); it.hasNext();) {
-					String key = it.next();
-					Object minorAllele = rdInfoMarkerSet.getMarkerIdSetLHM().get(key);
-					rdInfoMarkerSet.getMarkerIdSetLHM().put(key, minorAllele + sep + opMarkerSetLHM.get(key));
+				for (Map.Entry<String, Object> entry : rdInfoMarkerSet.getMarkerIdSetLHM().entrySet()) {
+					String key = entry.getKey();
+					Object minorAllele = entry.getValue();
+					entry.setValue(minorAllele + sep + opMarkerSetLHM.get(key));
 				}
-
 			}
-			for (Iterator<String> it = sortingMarkerSetLHM.keySet().iterator(); it.hasNext();) {
-				String key = it.next();
+			for (Map.Entry<String, Object> entry : sortingMarkerSetLHM.entrySet()) {
+				String key = entry.getKey();
 				Object value = rdInfoMarkerSet.getMarkerIdSetLHM().get(key);
-				sortingMarkerSetLHM.put(key, value);
+				entry.setValue(value);
 			}
 			ReportWriter.appendColumnToReport(reportPath, reportName, sortingMarkerSetLHM, false, false);
 
 			//WRITE DATA TO REPORT
-			for (Iterator<String> it = sortingMarkerSetLHM.keySet().iterator(); it.hasNext();) {
-				String key = it.next();
+			for (Map.Entry<String, Object> entry : sortingMarkerSetLHM.entrySet()) {
+				String key = entry.getKey();
 				Object value = unsortedMarkerIdAssocValsLHM.get(key);
-				sortingMarkerSetLHM.put(key, value);
+				entry.setValue(value);
 			}
 			ReportWriter.appendColumnToReport(reportPath, reportName, sortingMarkerSetLHM, true, false);
 

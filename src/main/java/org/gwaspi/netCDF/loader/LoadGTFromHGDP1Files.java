@@ -9,7 +9,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
@@ -226,9 +225,8 @@ public class LoadGTFromHGDP1Files {
 				strandFlag = cImport.StrandFlags.strandREV;
 				break;
 		}
-		for (Iterator<String> it = wrMarkerSetLHM.keySet().iterator(); it.hasNext();) {
-			String key = it.next();
-			wrMarkerSetLHM.put(key, strandFlag);
+		for (Map.Entry<String, Object> entry : wrMarkerSetLHM.entrySet()) {
+			entry.setValue(strandFlag);
 		}
 		markersD2 = org.gwaspi.netCDF.operations.Utils.writeLHMValueToD2ArrayChar(wrMarkerSetLHM, cNetCDF.Strides.STRIDE_STRAND);
 
@@ -249,13 +247,10 @@ public class LoadGTFromHGDP1Files {
 		// <editor-fold defaultstate="collapsed" desc="MATRIX GENOTYPES LOAD ">
 
 		int sampleIndex = 0;
-		for (Iterator it = wrSampleSetLHM.keySet().iterator(); it.hasNext();) {
-			String sampleId = it.next().toString();
-
+		for (String sampleId : wrSampleSetLHM.keySet()) {
 			//PURGE MarkerIdLHM
-			for (Iterator<String> it2 = wrMarkerSetLHM.keySet().iterator(); it2.hasNext();) {
-				String markerId = it2.next();
-				wrMarkerSetLHM.put(markerId, cNetCDF.Defaults.DEFAULT_GT);
+			for (Map.Entry<String, Object> entry : wrMarkerSetLHM.entrySet()) {
+				entry.setValue(cNetCDF.Defaults.DEFAULT_GT);
 			}
 
 			try {
@@ -265,9 +260,6 @@ public class LoadGTFromHGDP1Files {
 
 				/////////// WRITING GENOTYPE DATA INTO netCDF FILE ////////////
 				org.gwaspi.netCDF.operations.Utils.saveSingleSampleGTsToMatrix(ncfile, wrMarkerSetLHM, sampleIndex);
-
-
-
 			} catch (IOException iOException) {
 				//NOTHING
 			} catch (InvalidRangeException invalidRangeException) {

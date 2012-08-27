@@ -5,8 +5,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
+import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -148,7 +148,7 @@ public class ChiSqrBoundaryCalculator {
 				ArrayDouble.D2 rdDoubleArrayD2 = (ArrayDouble.D2) distributions.read(i + ":" + i + ":1, 0:" + (simsDim.getLength() - 1) + ":1");
 				ArrayDouble.D1 rdDoubleArrayD1 = (D1) rdDoubleArrayD2.reduce();
 
-				TreeSet<Double> currentTS = new TreeSet();
+				SortedSet<Double> currentTS = new TreeSet<Double>();
 				for (int j = 0; j < rdDoubleArrayD2.getSize(); j++) {
 					currentTS.add(rdDoubleArrayD1.get(j));
 				}
@@ -160,8 +160,7 @@ public class ChiSqrBoundaryCalculator {
 				double low95 = 0;
 				int topCount = 0;
 				double top95 = 0;
-				for (Iterator it = currentTS.iterator(); it.hasNext();) {
-					Double key = (Double) it.next();
+				for (Double key : currentTS) {
 					long lowLimit = Math.round(simNb * lowFrac) - 1;
 					if (loCount == lowLimit) {
 						low95 = key;
@@ -191,8 +190,6 @@ public class ChiSqrBoundaryCalculator {
 				repBW.append(sb + "\n");
 
 			}
-
-
 		} catch (IOException ioe) {
 			System.out.println("Cannot read data: " + ioe);
 		} catch (InvalidRangeException e) {

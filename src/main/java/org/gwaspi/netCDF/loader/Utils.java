@@ -4,7 +4,6 @@ import org.gwaspi.constants.cNetCDF.Defaults.AlleleBytes;
 import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import java.io.IOException;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -91,9 +90,8 @@ public class Utils {
 		GenotypeEncoding gtEcoding; // GenotypeEncoding.UNKNOWN
 
 		Set<Byte> allAlleles = new HashSet<Byte>();
-		for (Iterator<String> it = lhm.keySet().iterator(); it.hasNext();) {
-			String key = it.next();
-			byte[] values = (byte[]) lhm.get(key);
+		for (Object value : lhm.values()) {
+			byte[] values = (byte[]) value;
 			allAlleles.add(values[0]);
 			allAlleles.add(values[1]);
 		}

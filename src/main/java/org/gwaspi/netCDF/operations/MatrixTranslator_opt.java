@@ -4,7 +4,6 @@ import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.global.Text;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.gwaspi.netCDF.markers.MarkerSet_opt;
@@ -399,10 +398,10 @@ public class MatrixTranslator_opt {
 		switch (cNetCDF.Defaults.GenotypeEncoding.compareTo(rdMatrixType)) {
 			case AB0:
 				//Iterate through all markers
-				for (Iterator<String> it = codedLHM.keySet().iterator(); it.hasNext();) {
-					String markerId = it.next();
+				for (Map.Entry<String, Object> entry : codedLHM.entrySet()) {
+					String markerId = entry.getKey();
 					char[] basesDict = dictionaryLHM.get(markerId).toString().toCharArray();
-					byte[] codedAlleles = (byte[]) codedLHM.get(markerId);
+					byte[] codedAlleles = (byte[]) entry.getValue();
 					byte[] transAlleles = new byte[2];
 
 					if (codedAlleles[0] == alleleA) {
@@ -421,7 +420,7 @@ public class MatrixTranslator_opt {
 						transAlleles[1] = org.gwaspi.constants.cNetCDF.Defaults.AlleleBytes._0;
 					}
 
-					codedLHM.put(markerId, transAlleles);
+					entry.setValue(transAlleles);
 				}
 
 				break;
@@ -430,10 +429,10 @@ public class MatrixTranslator_opt {
 				alleleB = org.gwaspi.constants.cNetCDF.Defaults.AlleleBytes._2;
 
 				//Iterate through all markers
-				for (Iterator<String> it = codedLHM.keySet().iterator(); it.hasNext();) {
-					String markerId = it.next();
+				for (Map.Entry<String, Object> entry : codedLHM.entrySet()) {
+					String markerId = entry.getKey();
 					char[] basesDict = dictionaryLHM.get(markerId).toString().toCharArray();
-					byte[] codedAlleles = (byte[]) codedLHM.get(markerId);
+					byte[] codedAlleles = (byte[]) entry.getValue();
 					byte[] transAlleles = new byte[2];
 
 					if (codedAlleles[0] == alleleA) {
@@ -452,7 +451,7 @@ public class MatrixTranslator_opt {
 						transAlleles[0] = org.gwaspi.constants.cNetCDF.Defaults.AlleleBytes._0;
 					}
 
-					codedLHM.put(markerId, transAlleles);
+					entry.setValue(transAlleles);
 				}
 
 				break;
@@ -470,8 +469,7 @@ public class MatrixTranslator_opt {
 		dictionary.put(org.gwaspi.constants.cNetCDF.Defaults.AlleleBytes._4, org.gwaspi.constants.cNetCDF.Defaults.AlleleBytes.T);
 
 		//Iterate through all markers
-		for (Iterator<String> it = markerStrandsLHM.keySet().iterator(); it.hasNext();) {
-			String markerId = it.next();
+		for (String markerId : markerStrandsLHM.keySet()) {
 			byte[] codedAlleles = (byte[]) codedLHM.get(markerId);
 
 			byte[] transAlleles = new byte[2];

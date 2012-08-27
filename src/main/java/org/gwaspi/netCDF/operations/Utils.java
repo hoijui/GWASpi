@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import ucar.ma2.ArrayByte;
 import ucar.ma2.ArrayChar;
 import ucar.ma2.ArrayDouble;
@@ -536,13 +537,10 @@ public class Utils {
 		Index ima = charArray.getIndex();
 
 		int markerCounter = 0;
-		for (Iterator itWr = lhm.keySet().iterator(); itWr.hasNext();) {
-			String key = itWr.next().toString();
-			String value = lhm.get(key).toString();
-			charArray.setString(ima.set(0, markerCounter, 0), value.trim()); //1 Sample at a time, iterating through markers, starting at gtSpan 0
+		for (Object value : lhm.values()) {
+			charArray.setString(ima.set(0, markerCounter, 0), value.toString().trim()); //1 Sample at a time, iterating through markers, starting at gtSpan 0
 			markerCounter++;
 		}
-
 
 		return charArray;
 	}
@@ -552,13 +550,10 @@ public class Utils {
 		Index ima = charArray.getIndex();
 
 		int sampleCounter = 0;
-		for (Iterator itWr = lhm.keySet().iterator(); itWr.hasNext();) {
-			String key = itWr.next().toString();
-			String value = lhm.get(key).toString();
-			charArray.setString(ima.set(sampleCounter, 0, 0), value.trim()); //1 Marker at a time, iterating through samples, starting at gtSpan 0
+		for (Object value : lhm.values()) {
+			charArray.setString(ima.set(sampleCounter, 0, 0), value.toString().trim()); //1 Marker at a time, iterating through samples, starting at gtSpan 0
 			sampleCounter++;
 		}
-
 
 		return charArray;
 	}
@@ -574,7 +569,6 @@ public class Utils {
 			charArray.setString(ima.set(i, 0), value.trim());
 		}
 
-
 		return charArray;
 	}
 
@@ -583,13 +577,10 @@ public class Utils {
 		Index ima = charArray.getIndex();
 
 		int count = 0;
-		for (Iterator itWr = lhm.keySet().iterator(); itWr.hasNext();) {
-			String key = itWr.next().toString();
-			String value = lhm.get(key).toString();
-			charArray.setString(ima.set(count, 0), value.trim());
+		for (Object value : lhm.values()) {
+			charArray.setString(ima.set(count, 0), value.toString().trim());
 			count++;
 		}
-
 
 		return charArray;
 	}
@@ -599,12 +590,10 @@ public class Utils {
 		Index ima = charArray.getIndex();
 
 		int count = 0;
-		for (Iterator itWr = lhm.keySet().iterator(); itWr.hasNext();) {
-			String key = itWr.next().toString();
+		for (String key : lhm.keySet()) {
 			charArray.setString(ima.set(count, 0), key.trim());
 			count++;
 		}
-
 
 		return charArray;
 	}
@@ -614,14 +603,12 @@ public class Utils {
 		Index index = charArray.getIndex();
 
 		int count = 0;
-		for (Iterator<String> itWr = lhm.keySet().iterator(); itWr.hasNext();) {
-			String key = itWr.next();
-			Object[] values = (Object[]) lhm.get(key);
-			String value = values[itemNb].toString();
-			charArray.setString(index.set(count, 0), value.trim());
+		for (Object value : lhm.values()) {
+			Object[] values = (Object[]) value;
+			String newValue = values[itemNb].toString();
+			charArray.setString(index.set(count, 0), newValue.trim());
 			count++;
 		}
-
 
 		return charArray;
 	}
@@ -633,13 +620,10 @@ public class Utils {
 		Index index = doubleArray.getIndex();
 
 		int count = 0;
-		for (Iterator itWr = lhm.keySet().iterator(); itWr.hasNext();) {
-			String key = itWr.next().toString();
-			double value = (Double) lhm.get(key);
-			doubleArray.setDouble(index.set(count), value);
+		for (Object value : lhm.values()) {
+			doubleArray.setDouble(index.set(count), (Double) value);
 			count++;
 		}
-
 
 		return doubleArray;
 	}
@@ -649,9 +633,8 @@ public class Utils {
 		Index index = doubleArray.getIndex();
 
 		int count = 0;
-		for (Iterator itWr = lhm.keySet().iterator(); itWr.hasNext();) {
-			String key = itWr.next().toString();
-			Object[] values = (Object[]) lhm.get(key);
+		for (Object value : lhm.values()) {
+			Object[] values = (Object[]) value;
 			doubleArray.setDouble(index.set(count), (Double) values[itemNb]);
 			count++;
 		}
@@ -664,15 +647,13 @@ public class Utils {
 		Index ima = doubleArray.getIndex();
 
 		int i = 0;
-		for (Iterator itWr = lhm.keySet().iterator(); itWr.hasNext();) {
-			String key = itWr.next().toString();
-			Object[] values = (Object[]) lhm.get(key);
+		for (Object value : lhm.values()) {
+			Object[] values = (Object[]) value;
 			for (int j = 0; j < columns.length; j++) {
 				doubleArray.setDouble(ima.set(i, j), (Double) values[columns[j]]);
 			}
 			i++;
 		}
-
 
 		return doubleArray;
 	}
@@ -684,13 +665,10 @@ public class Utils {
 		Index index = intArray.getIndex();
 
 		int count = 0;
-		for (Iterator itWr = lhm.keySet().iterator(); itWr.hasNext();) {
-			String key = itWr.next().toString();
-			int value = (Integer) lhm.get(key);
-			intArray.setInt(index.set(count), value);
+		for (Object value : lhm.values()) {
+			intArray.setInt(index.set(count), (Integer) value);
 			count++;
 		}
-
 
 		return intArray;
 	}
@@ -700,33 +678,28 @@ public class Utils {
 		Index index = intArray.getIndex();
 
 		int count = 0;
-		for (Iterator itWr = lhm.keySet().iterator(); itWr.hasNext();) {
-			String key = itWr.next().toString();
-			Object[] values = (Object[]) lhm.get(key);
+		for (Object value : lhm.values()) {
+			Object[] values = (Object[]) value;
 			intArray.setInt(index.set(count), (Integer) values[itemNb]);
 			count++;
 		}
 
-
 		return intArray;
 	}
 
-	//TODO: can be optimized with arraycopy?
+	// TODO can be optimized with arraycopy?
 	public static ArrayInt.D2 writeLHMValueItemToD2ArrayInt(Map<String, Object> lhm, int[] columns) {
 		ArrayInt.D2 intArray = new ArrayInt.D2(lhm.size(), columns.length);
 		Index ima = intArray.getIndex();
 
 		int i = 0;
-		for (Iterator itWr = lhm.keySet().iterator(); itWr.hasNext();) {
-			String key = itWr.next().toString();
-			int[] values = (int[]) lhm.get(key);
-//                Object[] values = (Object[]) lhm.get(key);
+		for (Object value : lhm.values()) {
+			int[] values = (int[]) value;
 			for (int j = 0; j < columns.length; j++) {
 				intArray.setInt(ima.set(i, j), values[columns[j]]);
 			}
 			i++;
 		}
-
 
 		return intArray;
 	}
@@ -760,18 +733,17 @@ public class Utils {
 		Index ima = byteArray.getIndex();
 
 		int markerCount = 0;
-		for (Iterator itWr = lhm.keySet().iterator(); itWr.hasNext();) {
-			String key = itWr.next().toString();
-			byte[] value = (byte[]) lhm.get(key);
-			byteArray.setByte(ima.set(0, markerCount, 0), value[0]); //1 Sample at a time, iterating through markers, first byte
-			byteArray.setByte(ima.set(0, markerCount, 1), value[1]); //1 Sample at a time, iterating through markers, second byte
+		for (Object value : lhm.values()) {
+			byte[] values = (byte[]) value;
+			byteArray.setByte(ima.set(0, markerCount, 0), values[0]); //1 Sample at a time, iterating through markers, first byte
+			byteArray.setByte(ima.set(0, markerCount, 1), values[1]); //1 Sample at a time, iterating through markers, second byte
 			markerCount++;
 		}
 
 		return byteArray;
 	}
 
-	//TODO CHECK ALL USAGES
+	// TODO CHECK ALL USAGES, and potentially remove
 	/**
 	 * This writeLHMToCurrentSampleArrayByteD3 has now been deprecated in favor
 	 * of writeLHMToSingleSampleArrayByteD3 Method is probably INCORRECT!
@@ -783,14 +755,12 @@ public class Utils {
 		Index ima = byteArray.getIndex();
 
 		int markerCount = 0;
-		for (Iterator itWr = lhm.keySet().iterator(); itWr.hasNext();) {
-			String key = itWr.next().toString();
-			byte[] value = (byte[]) lhm.get(key);
-			byteArray.setByte(ima.set(markerCount, 0, 0), value[0]); //1 Sample at a time, iterating through markers, first byte
-			byteArray.setByte(ima.set(markerCount, 0, 1), value[1]); //1 Sample at a time, iterating through markers, second byte
+		for (Object value : lhm.values()) {
+			byte[] values = (byte[]) value;
+			byteArray.setByte(ima.set(markerCount, 0, 0), values[0]); //1 Sample at a time, iterating through markers, first byte
+			byteArray.setByte(ima.set(markerCount, 0, 1), values[1]); //1 Sample at a time, iterating through markers, second byte
 			markerCount++;
 		}
-
 
 		return byteArray;
 	}
@@ -800,11 +770,10 @@ public class Utils {
 		Index ima = byteArray.getIndex();
 
 		int markerCounter = 0;
-		for (Iterator itWr = lhm.keySet().iterator(); itWr.hasNext();) {
-			String key = itWr.next().toString();
-			byte[] value = (byte[]) lhm.get(key);
-			byteArray.setByte(ima.set(markerCounter, 0, 0), value[0]); //1 Marker at a time, iterating through samples, first byte
-			byteArray.setByte(ima.set(markerCounter, 0, 1), value[1]); //1 Marker at a time, iterating through samples, second byte
+		for (Object value : lhm.values()) {
+			byte[] values = (byte[]) value;
+			byteArray.setByte(ima.set(markerCounter, 0, 0), values[0]); //1 Marker at a time, iterating through samples, first byte
+			byteArray.setByte(ima.set(markerCounter, 0, 1), values[1]); //1 Marker at a time, iterating through samples, second byte
 			markerCounter++;
 		}
 
@@ -823,14 +792,12 @@ public class Utils {
 		Index ima = byteArray.getIndex();
 
 		int markerCounter = 0;
-		for (Iterator itWr = lhm.keySet().iterator(); itWr.hasNext();) {
-			String key = itWr.next().toString();
-			byte[] value = (byte[]) lhm.get(key);
-			byteArray.setByte(ima.set(0, markerCounter, 0), value[0]); //1 Marker at a time, iterating through samples, first byte
-			byteArray.setByte(ima.set(0, markerCounter, 1), value[1]); //1 Marker at a time, iterating through samples, second byte
+		for (Object value : lhm.values()) {
+			byte[] values = (byte[]) value;
+			byteArray.setByte(ima.set(0, markerCounter, 0), values[0]); //1 Marker at a time, iterating through samples, first byte
+			byteArray.setByte(ima.set(0, markerCounter, 1), values[1]); //1 Marker at a time, iterating through samples, second byte
 			markerCounter++;
 		}
-
 
 		return byteArray;
 	}
@@ -858,24 +825,19 @@ public class Utils {
 //                result.put(key.toString().trim(), "");
 		}
 
-
 		return result;
 	}
 
 	public static Map<String, Object> writeD2ArrayCharToLHMValues(ArrayChar inputArray, Map<String, Object> lhm) {
 
 		int[] shape = inputArray.getShape();
-		Iterator<String> it = lhm.keySet().iterator();
+		Iterator<Entry<String, Object>> it = lhm.entrySet().iterator();
 		for (int i = 0; i < shape[0]; i++) {
-			String key = it.next();
-
 			ArrayChar wrCharArray = new ArrayChar(new int[]{1, shape[1]});
 			ArrayChar.D2.arraycopy(inputArray, i * shape[1], wrCharArray, 0, shape[1]);
 			char[] values = (char[]) wrCharArray.copyTo1DJavaArray();
-			lhm.put(key, String.valueOf(values).trim());
-
+			it.next().setValue(String.valueOf(values).trim());
 		}
-
 
 		return lhm;
 	}

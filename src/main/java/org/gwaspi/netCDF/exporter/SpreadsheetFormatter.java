@@ -4,7 +4,6 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.Map;
 import org.gwaspi.netCDF.markers.MarkerSet_opt;
 import org.gwaspi.netCDF.matrices.MatrixMetadata;
@@ -47,8 +46,7 @@ public class SpreadsheetFormatter implements Formatter {
 
 			//HEADER CONTAINING MARKER IDs
 			StringBuilder line = new StringBuilder();
-			for (Iterator it = rdMarkerSet.getMarkerIdSetLHM().keySet().iterator(); it.hasNext();) {
-				Object key = it.next();
+			for (String key : rdMarkerSet.getMarkerIdSetLHM().keySet()) {
 				line.append(sep);
 				line.append(key);
 			}
@@ -58,16 +56,12 @@ public class SpreadsheetFormatter implements Formatter {
 
 			// Iterate through all samples
 			int sampleNb = 0;
-			for (Iterator it = rdSampleSetMap.keySet().iterator(); it.hasNext();) {
-
-				String sampleId = it.next().toString();
-
+			for (String sampleId : rdSampleSetMap.keySet()) {
 				// Iterate through all markers
 				rdMarkerSet.fillGTsForCurrentSampleIntoInitLHM(sampleNb);
 				StringBuilder genotypes = new StringBuilder();
-				for (Iterator it2 = rdMarkerSet.getMarkerIdSetLHM().keySet().iterator(); it2.hasNext();) {
-					Object key = it2.next();
-					byte[] tempGT = (byte[]) rdMarkerSet.getMarkerIdSetLHM().get(key);
+				for (Object value : rdMarkerSet.getMarkerIdSetLHM().values()) {
+					byte[] tempGT = (byte[]) value;
 					genotypes.append(sep);
 					genotypes.append(new String(new byte[]{tempGT[0]}));
 					genotypes.append(new String(new byte[]{tempGT[1]}));

@@ -6,7 +6,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.gwaspi.netCDF.markers.MarkerSet_opt;
@@ -51,9 +50,8 @@ public class MachFormatter implements Formatter {
 			String tmpChr = "";
 			int start = 0;
 			int end = 0;
-			for (Iterator<String> it = chrMarkerSetLHM.keySet().iterator(); it.hasNext();) {
-				String chrId = it.next();
-				String chr = chrMarkerSetLHM.get(chrId).toString();
+			for (Object value : chrMarkerSetLHM.values()) {
+				String chr = value.toString();
 				if (!chr.equals(tmpChr)) {
 					if (start != end) {
 						exportChromosomeToMped(exportDir, rdMatrixMetadata, rdMarkerSet, rdSampleSetMap, tmpChr, start, end - 1);
@@ -90,9 +88,7 @@ public class MachFormatter implements Formatter {
 
 		//Iterate through all samples
 		int sampleNb = 0;
-		for (Iterator it = rdSampleSetLHM.keySet().iterator(); it.hasNext();) {
-			String sampleId = it.next().toString();
-
+		for (String sampleId : rdSampleSetLHM.keySet()) {
 			HashMap sampleInfo = Utils.getCurrentSampleFormattedInfo(sampleId, rdMatrixMetadata.getStudyId());
 			String familyId = sampleInfo.get(org.gwaspi.constants.cDBSamples.f_FAMILY_ID).toString();
 			String fatherId = sampleInfo.get(org.gwaspi.constants.cDBSamples.f_FATHER_ID).toString();
@@ -111,9 +107,8 @@ public class MachFormatter implements Formatter {
 			rdMarkerSet.fillGTsForCurrentSampleIntoInitLHM(sampleNb);
 			StringBuilder genotypes = new StringBuilder();
 			int markerNb = 0;
-			for (Iterator it2 = rdMarkerSet.getMarkerIdSetLHM().keySet().iterator(); it2.hasNext();) {
-				Object markerId = it2.next();
-				byte[] tempGT = (byte[]) rdMarkerSet.getMarkerIdSetLHM().get(markerId);
+			for (Object value : rdMarkerSet.getMarkerIdSetLHM().values()) {
+				byte[] tempGT = (byte[]) value;
 				genotypes.append(SEP);
 				genotypes.append(new String(new byte[]{tempGT[0]}));
 				genotypes.append(SEP);
@@ -167,12 +162,10 @@ public class MachFormatter implements Formatter {
 		//INIT MARKERSET
 		rdMarkerSet.initMarkerIdSetLHM(startPos, endPos);
 		int markerNb = 0;
-		for (Iterator it = rdMarkerSet.getMarkerIdSetLHM().keySet().iterator(); it.hasNext();) {
-			Object key = it.next();
-
+		for (Map.Entry<String, Object> entry : rdMarkerSet.getMarkerIdSetLHM().entrySet()) {
 			//CHECK IF rsID available
-			String value = rdMarkerSet.getMarkerIdSetLHM().get(key).toString();
-			String markerId = key.toString();
+			String markerId = entry.getKey();
+			String value = entry.getValue().toString();
 			if (!value.isEmpty()) {
 				markerId = value;
 			}

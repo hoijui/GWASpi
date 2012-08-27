@@ -10,7 +10,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -231,8 +230,7 @@ public class MatrixExtractPanel extends javax.swing.JPanel {
 
 			private void cmb_MarkersVariableActionPerformed(ActionEvent evt) {
 				StringBuilder sb = new StringBuilder();
-				for (Iterator it = rdChrInfoSetLHM.keySet().iterator(); it.hasNext();) {
-					Object key = it.next();
+				for (String key : rdChrInfoSetLHM.keySet()) {
 					sb.append(key.toString());
 					sb.append(",");
 				}

@@ -2,7 +2,6 @@ package org.gwaspi.netCDF.operations;
 
 import org.gwaspi.constants.cNetCDF;
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.Map;
 import org.gwaspi.model.Operation;
 import ucar.ma2.ArrayChar;
@@ -134,11 +133,9 @@ public class OP_HardyWeinberg {
 	protected static void performHardyWeinberg(NetcdfFileWriteable wrNcFile, Map<String, Object> markersContingencyLHM, String category) {
 		//Iterate through markerset
 		int markerNb = 0;
-		for (Iterator<String> it = markersContingencyLHM.keySet().iterator(); it.hasNext();) {
-			String markerId = it.next();
-
+		for (Map.Entry<String, Object> entry : markersContingencyLHM.entrySet()) {
 			//HARDY-WEINBERG
-			int[] contingencyTable = (int[]) markersContingencyLHM.get(markerId);
+			int[] contingencyTable = (int[]) entry.getValue();
 			int obsAA = contingencyTable[0];
 			int obsAa = contingencyTable[1];
 			int obsaa = contingencyTable[2];
@@ -164,7 +161,7 @@ public class OP_HardyWeinberg {
 			store[0] = pvalue;
 			store[1] = obsHzy;
 			store[2] = expHzy;
-			markersContingencyLHM.put(markerId, store); //Re-use AALHM to store P-value value
+			entry.setValue(store); //Re-use AALHM to store P-value value
 
 			markerNb++;
 			if (markerNb % 100000 == 0) {

@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -50,9 +49,7 @@ public class GWASpiFormatter implements Formatter {
 
 			//Iterate through all samples
 			int sampleNb = 0;
-			for (Iterator it = rdSampleSetMap.keySet().iterator(); it.hasNext();) {
-				String sampleId = it.next().toString();
-
+			for (String sampleId : rdSampleSetMap.keySet()) {
 //				FamilyID
 //				SampleID
 //				FatherID

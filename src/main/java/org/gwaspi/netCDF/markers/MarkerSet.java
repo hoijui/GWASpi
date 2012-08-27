@@ -292,18 +292,15 @@ public class MarkerSet {
 	}
 
 	public Map<String, Object> fillLHMWithDefaultValue(Map<String, Object> lhm, Object defaultVal) {
-		for (Iterator<String> it = lhm.keySet().iterator(); it.hasNext();) {
-			String key = it.next();
-			lhm.put(key, defaultVal);
+		for (Map.Entry<String, Object> entry : lhm.entrySet()) {
+			entry.setValue(defaultVal);
 		}
 		return lhm;
 	}
 
 	public Map<String, Object> fillWrLHMWithRdLHMValue(Map<String, Object> wrLHM, Map<String, Object> rdLHM) {
-		for (Iterator<String> it = wrLHM.keySet().iterator(); it.hasNext();) {
-			String key = it.next();
-			Object value = rdLHM.get(key);
-			wrLHM.put(key, value);
+		for (Map.Entry<String, Object> entry : wrLHM.entrySet()) {
+			entry.setValue(rdLHM.get(entry.getKey()));
 		}
 		return wrLHM;
 	}
@@ -435,17 +432,17 @@ public class MarkerSet {
 		Map<String, Object> readLhm = this.fillMarkerSetLHMWithVariable(ncfile, variable);
 
 		if (includes) {
-			for (Iterator<String> it = readLhm.keySet().iterator(); it.hasNext();) {
-				String key = it.next();
-				Object value = readLhm.get(key);
+			for (Map.Entry<String, Object> entry : readLhm.entrySet()) {
+				String key = entry.getKey();
+				Object value = entry.getValue();
 				if (criteria.contains(value)) {
 					returnLHM.put(key, value);
 				}
 			}
 		} else {
-			for (Iterator<String> it = readLhm.keySet().iterator(); it.hasNext();) {
-				String key = it.next();
-				Object value = readLhm.get(key);
+			for (Map.Entry<String, Object> entry : readLhm.entrySet()) {
+				String key = entry.getKey();
+				Object value = entry.getValue();
 				if (!criteria.contains(value)) {
 					returnLHM.put(key, value);
 				}
@@ -459,17 +456,17 @@ public class MarkerSet {
 		Map<String, Object> returnLHM = new LinkedHashMap<String, Object>();
 
 		if (includes) {
-			for (Iterator<String> it = lhm.keySet().iterator(); it.hasNext();) {
-				String key = it.next();
-				Object value = lhm.get(key);
+			for (Map.Entry<String, Object> entry : lhm.entrySet()) {
+				String key = entry.getKey();
+				Object value = entry.getValue();
 				if (criteria.contains(key)) {
 					returnLHM.put(key, value);
 				}
 			}
 		} else {
-			for (Iterator<String> it = lhm.keySet().iterator(); it.hasNext();) {
-				String key = it.next();
-				Object value = lhm.get(key);
+			for (Map.Entry<String, Object> entry : lhm.entrySet()) {
+				String key = entry.getKey();
+				Object value = entry.getValue();
 				if (!criteria.contains(key)) {
 					returnLHM.put(key, value);
 				}

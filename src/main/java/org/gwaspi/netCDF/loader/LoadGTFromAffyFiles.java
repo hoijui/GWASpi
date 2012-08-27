@@ -11,7 +11,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
@@ -61,11 +60,7 @@ public class LoadGTFromAffyFiles {
 		gtCode = _gtCode;
 		description = _description;
 
-		for (Iterator<String> it = _sampleInfoLHM.keySet().iterator(); it.hasNext();) {
-			String key = it.next();
-			sampleInfoAL.add(key);
-		}
-
+		sampleInfoAL.addAll(_sampleInfoLHM.keySet());
 	}
 
 	//METHODS
@@ -279,8 +274,7 @@ public class LoadGTFromAffyFiles {
 
 		// <editor-fold defaultstate="collapsed" desc="MATRIX GENOTYPES LOAD ">
 		//PURGE markerSetLHM
-		for (Iterator<String> it = markerSetLHM.keySet().iterator(); it.hasNext();) {
-			String key = it.next();
+		for (String key : markerSetLHM.keySet()) {
 			markerSetLHM.put(key, cNetCDF.Defaults.DEFAULT_GT);
 		}
 
@@ -338,8 +332,7 @@ public class LoadGTFromAffyFiles {
 
 		//INIT LHMs
 		HashMap tempMarkerSet = new HashMap();
-		for (Iterator<String> it = sortedMarkerSetLHM.keySet().iterator(); it.hasNext();) {
-			String markerId = it.next();
+		for (String markerId : sortedMarkerSetLHM.keySet()) {
 			sortedMarkerSetLHM.put(markerId, cNetCDF.Defaults.DEFAULT_GT);
 		}
 
@@ -380,8 +373,7 @@ public class LoadGTFromAffyFiles {
 			tempMarkerSet.put(cVals[cImport.Genotypes.Affymetrix_GenomeWide6.markerId], alleles);
 		}
 
-		for (Iterator it = sortedMarkerSetLHM.keySet().iterator(); it.hasNext();) {
-			String key = it.next().toString();
+		for (String key : sortedMarkerSetLHM.keySet()) {
 			byte[] value = tempMarkerSet.containsKey(key) ? (byte[]) tempMarkerSet.get(key) : cNetCDF.Defaults.DEFAULT_GT;
 			sortedMarkerSetLHM.put(key, value);
 		}

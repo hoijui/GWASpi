@@ -9,7 +9,6 @@ import java.awt.geom.Rectangle2D;
 import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -451,10 +450,9 @@ public final class SampleQAHetzygPlotZoom extends javax.swing.JPanel {
 				localizer.append(missingRatValue);
 				localizer.append("_");
 				localizer.append(hetzygValue);
-				for (Iterator it = labelerLHM.keySet().iterator(); it.hasNext();) {
-					Object key = it.next();
-					if (key.toString().contains(localizer.toString())) {
-						toolTip.append("Sample ID: ").append(labelerLHM.get(key).toString());
+				for (Map.Entry<String, Object> entry : labelerLHM.entrySet()) {
+					if (entry.getKey().contains(localizer.toString())) {
+						toolTip.append("Sample ID: ").append(entry.getValue().toString());
 						toolTip.append("<br>");
 					}
 				}
@@ -510,10 +508,9 @@ public final class SampleQAHetzygPlotZoom extends javax.swing.JPanel {
 				localizer.append("_");
 				localizer.append(hetzygValue);
 				if (hetzygValue > this.hetzygThreshold || missingRatValue > this.missingThreshold) {
-					for (Iterator it = labelerLHM.keySet().iterator(); it.hasNext();) {
-						Object key = it.next();
-						if (key.toString().contains(localizer.toString())) {
-							rsLabel = labelerLHM.get(key).toString();
+					for (Map.Entry<String, Object> entry : labelerLHM.entrySet()) {
+						if (entry.getKey().contains(localizer.toString())) {
+							rsLabel = entry.getValue().toString();
 						}
 					}
 				}

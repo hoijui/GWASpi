@@ -10,7 +10,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
@@ -59,11 +58,7 @@ public class LoadGTFromIlluminaLGENFiles {
 		gtCode = _gtCode;
 		description = _description;
 
-		for (Iterator it = _sampleInfoLHM.keySet().iterator(); it.hasNext();) {
-			Object key = it.next();
-			sampleInfoAL.add(key);
-		}
-
+		sampleInfoAL.addAll(_sampleInfoLHM.keySet());
 	}
 
 	//METHODS
@@ -204,9 +199,8 @@ public class LoadGTFromIlluminaLGENFiles {
 
 		//WRITE GT STRAND FROM ANNOTATION FILE
 		int[] gtOrig = new int[]{0, 0};
-		for (Iterator<String> it = markerSetLHM.keySet().iterator(); it.hasNext();) {
-			String key = it.next();
-			markerSetLHM.put(key, cNetCDF.Defaults.StrandType.FWD.toString());
+		for (Map.Entry<String, Object> entry : markerSetLHM.entrySet()) {
+			entry.setValue(cNetCDF.Defaults.StrandType.FWD.toString());
 		}
 		markersD2 = org.gwaspi.netCDF.operations.Utils.writeLHMValueToD2ArrayChar(markerSetLHM, cNetCDF.Strides.STRIDE_STRAND);
 
@@ -312,16 +306,15 @@ public class LoadGTFromIlluminaLGENFiles {
 			} else {
 				if (!currentSampleId.equals("")) { //EXCEPT FIRST TIME ROUND
 					//INIT AND PURGE SORTEDMARKERSET LHM
-					for (Iterator it = sortedMarkerSetLHM.keySet().iterator(); it.hasNext();) {
-						String key = it.next().toString();
-						sortedMarkerSetLHM.put(key, cNetCDF.Defaults.DEFAULT_GT);
+					for (Map.Entry<String, Object> entry : sortedMarkerSetLHM.entrySet()) {
+						entry.setValue(cNetCDF.Defaults.DEFAULT_GT);
 					}
 
 					//WRITE LHM TO MATRIX
-					for (Iterator it = sortedMarkerSetLHM.keySet().iterator(); it.hasNext();) {
-						String key = it.next().toString();
-						byte[] value = (tempMarkerSet.get(key) != null) ? (byte[]) tempMarkerSet.get(key) : cNetCDF.Defaults.DEFAULT_GT;
-						sortedMarkerSetLHM.put(key, value);
+					for (Map.Entry<String, Object> entry : sortedMarkerSetLHM.entrySet()) {
+						String markerId = entry.getKey();
+						byte[] value = (tempMarkerSet.get(markerId) != null) ? (byte[]) tempMarkerSet.get(markerId) : cNetCDF.Defaults.DEFAULT_GT;
+						entry.setValue(value);
 					}
 					if (tempMarkerSet != null) {
 						tempMarkerSet.clear();
@@ -351,14 +344,13 @@ public class LoadGTFromIlluminaLGENFiles {
 
 		//WRITE LAST SAMPLE LHM TO MATRIX
 		//INIT AND PURGE SORTEDMARKERSET LHM
-		for (Iterator it = sortedMarkerSetLHM.keySet().iterator(); it.hasNext();) {
-			String key = it.next().toString();
-			sortedMarkerSetLHM.put(key, cNetCDF.Defaults.DEFAULT_GT);
+		for (Map.Entry<String, Object> entry : sortedMarkerSetLHM.entrySet()) {
+			entry.setValue(cNetCDF.Defaults.DEFAULT_GT);
 		}
-		for (Iterator it = sortedMarkerSetLHM.keySet().iterator(); it.hasNext();) {
-			String key = it.next().toString();
-			byte[] value = (tempMarkerSet.get(key) != null) ? (byte[]) tempMarkerSet.get(key) : cNetCDF.Defaults.DEFAULT_GT;
-			sortedMarkerSetLHM.put(key, value);
+		for (Map.Entry<String, Object> entry : sortedMarkerSetLHM.entrySet()) {
+			String markerId = entry.getKey();
+			byte[] value = (tempMarkerSet.get(markerId) != null) ? (byte[]) tempMarkerSet.get(markerId) : cNetCDF.Defaults.DEFAULT_GT;
+			entry.setValue(value);
 		}
 		if (tempMarkerSet != null) {
 			tempMarkerSet.clear();

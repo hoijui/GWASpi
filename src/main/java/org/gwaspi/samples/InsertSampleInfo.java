@@ -5,7 +5,6 @@ import org.gwaspi.database.DbManager;
 import org.gwaspi.global.ServiceLocator;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -59,9 +58,8 @@ public class InsertSampleInfo {
 		db = ServiceLocator.getDbManager(org.gwaspi.constants.cDBGWASpi.DB_DATACENTER);
 
 		List<String> result = new ArrayList<String>();
-		for (Iterator<String> it = sampleInfoLHM.keySet().iterator(); it.hasNext();) {
-			String key = it.next();
-			String[] cVals = (String[]) sampleInfoLHM.get(key);
+		for (Object value : sampleInfoLHM.values()) {
+			String[] cVals = (String[]) value;
 
 			String sampleId = cVals[GWASpi.sampleId];
 			result.add(sampleId);
@@ -116,9 +114,8 @@ public class InsertSampleInfo {
 		db = ServiceLocator.getDbManager(org.gwaspi.constants.cDBGWASpi.DB_DATACENTER);
 		int result = 0;
 
-		for (Iterator<String> it = sampleInfoLHM.keySet().iterator(); it.hasNext();) {
-			String sampleId = it.next();
-			String[] cVals = (String[]) sampleInfoLHM.get(sampleId);
+		for (Object value : sampleInfoLHM.values()) {
+			String[] cVals = (String[]) value;
 
 			//Standardizing affection to CHAR(1), having 1=Unaffected, 2=Affected
 			//TODO: someday this should allow other affection values

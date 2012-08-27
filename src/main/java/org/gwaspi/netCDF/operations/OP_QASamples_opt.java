@@ -3,7 +3,6 @@ package org.gwaspi.netCDF.operations;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.AlleleBytes;
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.gwaspi.netCDF.markers.MarkerSet_opt;
@@ -48,18 +47,15 @@ public class OP_QASamples_opt {
 
 		//Iterate through samples
 		int sampleNb = 0;
-		for (Iterator<String> it = rdSampleSetLHM.keySet().iterator(); it.hasNext();) {
-			String sampleId = it.next();
-
+		for (String sampleId : rdSampleSetLHM.keySet()) {
 			Integer missingCount = 0;
 			Integer heterozygCount = 0;
 
 			//Iterate through markerset
 			rdMarkerSet.fillGTsForCurrentSampleIntoInitLHM(sampleNb);
 			int markerIndex = 0;
-			for (Iterator it2 = rdMarkerSet.getMarkerIdSetLHM().keySet().iterator(); it2.hasNext();) {
-				Object markerId = it2.next();
-				byte[] tempGT = (byte[]) rdMarkerSet.getMarkerIdSetLHM().get(markerId);
+			for (Map.Entry<String, Object> entry : rdMarkerSet.getMarkerIdSetLHM().entrySet()) {
+				byte[] tempGT = (byte[]) entry.getValue();
 				if (tempGT[0] == AlleleBytes._0 && tempGT[1] == AlleleBytes._0) {
 					missingCount++;
 				}

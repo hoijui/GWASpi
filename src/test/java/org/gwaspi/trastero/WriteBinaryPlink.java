@@ -1,7 +1,11 @@
 package org.gwaspi.trastero;
 
-import java.io.*;
-import java.util.*;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  *
@@ -33,16 +37,16 @@ public class WriteBinaryPlink {
 			data_out.write(27);
 			data_out.write(1);
 
-			LinkedHashMap sampleSetLHM = new LinkedHashMap();
+			Map<String, Byte[]> sampleSetLHM = new LinkedHashMap<String, Byte[]>();
 			sampleSetLHM.put("smpl01", new Byte[]{84, 84}); //65,84
 			sampleSetLHM.put("smpl02", new Byte[]{84, 84});
 			sampleSetLHM.put("smpl03", new Byte[]{84, 84});
 			sampleSetLHM.put("smpl04", new Byte[]{84, 84});
 
 			StringBuilder tetraGTs = new StringBuilder("");
-			for (Iterator it = sampleSetLHM.keySet().iterator(); it.hasNext();) {
-				Object key = it.next();
-				Byte[] value = (Byte[]) sampleSetLHM.get(key);
+			for (Map.Entry<String, Byte[]> entry : sampleSetLHM.entrySet()) {
+				String key = entry.getKey();
+				Byte[] value = entry.getValue();
 
 				tetraGTs.insert(0, translateTo00011011(value, "A", "T"));
 //				tetraGTs.append(translateTo00011011(value, "A", "T"));

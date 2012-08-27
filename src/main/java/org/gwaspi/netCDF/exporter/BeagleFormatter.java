@@ -5,9 +5,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import org.gwaspi.netCDF.markers.MarkerSet_opt;
@@ -77,8 +75,7 @@ class BeagleFormatter implements Formatter {
 			StringBuilder ageLine = new StringBuilder("#" + sep + "age");
 			StringBuilder affectionLine = new StringBuilder("A" + sep + "affection");
 
-			for (Iterator it = rdSampleSetMap.keySet().iterator(); it.hasNext();) {
-				String sampleId = it.next().toString();
+			for (String sampleId : rdSampleSetMap.keySet()) {
 				HashMap sampleInfo = Utils.getCurrentSampleFormattedInfo(sampleId, rdMatrixMetadata.getStudyId());
 
 				String category = sampleInfo.get(org.gwaspi.constants.cDBSamples.f_CATEGORY).toString();
@@ -145,16 +142,14 @@ class BeagleFormatter implements Formatter {
 
 			//Iterate through markerset
 			int markerNb = 0;
-			for (Iterator it = rdMarkerSet.getMarkerIdSetLHM().keySet().iterator(); it.hasNext();) {
-				Object markerId = it.next();
+			for (String markerId : rdMarkerSet.getMarkerIdSetLHM().keySet()) {
 				StringBuilder markerLine = new StringBuilder("M" + sep + markerId.toString());
 
 				//Iterate through sampleset
 				StringBuilder currMarkerGTs = new StringBuilder();
 				rdSampleSetMap = rdSampleSet.readAllSamplesGTsFromCurrentMarkerToLHM(rdNcFile, rdSampleSetMap, markerNb);
-				for (Iterator it2 = rdSampleSetMap.keySet().iterator(); it2.hasNext();) {
-					Object sampleId = it2.next();
-					byte[] tempGT = (byte[]) rdSampleSetMap.get(sampleId);
+				for (Object value : rdSampleSetMap.values()) {
+					byte[] tempGT = (byte[]) value;
 					currMarkerGTs.append(sep);
 					currMarkerGTs.append(new String(new byte[]{tempGT[0]}));
 					currMarkerGTs.append(sep);
@@ -215,10 +210,10 @@ class BeagleFormatter implements Formatter {
 
 				//MAJOR ALLELE
 				opMarkerSetLHM = rdOperationSet.fillOpSetLHMWithVariable(qaNcFile, cNetCDF.Census.VAR_OP_MARKERS_MAJALLELES);
-				for (Iterator<String> it = rdMarkerSet.getMarkerIdSetLHM().keySet().iterator(); it.hasNext();) {
-					String key = it.next();
+				for (Map.Entry<String, Object> entry : rdMarkerSet.getMarkerIdSetLHM().entrySet()) {
+					String key = entry.getKey();
 					Object allele1Value = opMarkerSetLHM.get(key);
-					Object infoValue = rdMarkerSet.getMarkerIdSetLHM().get(key);
+					Object infoValue = entry.getValue();
 
 					StringBuilder sb = new StringBuilder();
 					sb.append(infoValue); // previously stored info
@@ -231,10 +226,10 @@ class BeagleFormatter implements Formatter {
 				//MINOR ALLELE
 				rdOperationSet.fillLHMWithDefaultValue(opMarkerSetLHM, "");
 				opMarkerSetLHM = rdOperationSet.fillOpSetLHMWithVariable(qaNcFile, cNetCDF.Census.VAR_OP_MARKERS_MINALLELES);
-				for (Iterator<String> it = rdMarkerSet.getMarkerIdSetLHM().keySet().iterator(); it.hasNext();) {
-					String key = it.next();
+				for (Map.Entry<String, Object> entry : rdMarkerSet.getMarkerIdSetLHM().entrySet()) {
+					String key = entry.getKey();
 					Object allele2Value = opMarkerSetLHM.get(key);
-					Object infoValue = rdMarkerSet.getMarkerIdSetLHM().get(key);
+					Object infoValue = entry.getValue();
 
 					StringBuilder sb = new StringBuilder();
 					sb.append(infoValue); // previously stored info
@@ -247,9 +242,7 @@ class BeagleFormatter implements Formatter {
 
 			//WRITE ALL LHM TO BUFFERWRITER
 			markerNb = 0;
-			for (Iterator it = rdMarkerSet.getMarkerIdSetLHM().keySet().iterator(); it.hasNext();) {
-				Object key = it.next();
-				Object value = rdMarkerSet.getMarkerIdSetLHM().get(key);
+			for (Object value : rdMarkerSet.getMarkerIdSetLHM().values()) {
 				markerBW.append(value.toString());
 				markerBW.append("\n");
 				markerNb++;

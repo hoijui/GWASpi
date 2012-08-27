@@ -5,7 +5,6 @@ import org.gwaspi.database.DbManager;
 import org.gwaspi.global.ServiceLocator;
 import org.gwaspi.global.Text;
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.gwaspi.netCDF.markers.MarkerSet_opt;
@@ -229,9 +228,8 @@ public class MatrixMergeSamples_opt {
 			rdMarkerSet2.initFullMarkerIdSetLHM();
 
 			//Iterate through wrSampleSetLHM, use item position to read correct sample GTs into rdMarkerIdSetLHM.
-			for (Iterator it = wrComboSampleSetLHM.keySet().iterator(); it.hasNext();) {
-				Object sampleId = it.next();                 //Next SampleId
-				int[] sampleIndices = (int[]) wrComboSampleSetLHM.get(sampleId); //Next position[rdMatrixNb, rdPos, wrPos] to read/write
+			for (Object value : wrComboSampleSetLHM.values()) {             //Next SampleId
+				int[] sampleIndices = (int[]) value; //Next position[rdMatrixNb, rdPos, wrPos] to read/write
 
 				//Iterate through wrMarkerIdSetLHM, get the correct GT from rdMarkerIdSetLHM
 				if (sampleIndices[0] == 1) { //Read from Matrix1
@@ -241,11 +239,11 @@ public class MatrixMergeSamples_opt {
 				if (sampleIndices[0] == 2) { //Read from Matrix2
 					rdwrMarkerSet1.fillInitLHMWithMyValue(org.gwaspi.constants.cNetCDF.Defaults.DEFAULT_GT);
 					rdMarkerSet2.fillGTsForCurrentSampleIntoInitLHM(sampleIndices[1]);
-					for (Iterator<String> it3 = rdwrMarkerSet1.getMarkerIdSetLHM().keySet().iterator(); it3.hasNext();) {
-						String key = it3.next();
+					for (Map.Entry<String, Object> entry : rdwrMarkerSet1.getMarkerIdSetLHM().entrySet()) {
+						String key = entry.getKey();
 						if (rdMarkerSet2.getMarkerIdSetLHM().containsKey(key)) {
-							Object value = rdMarkerSet2.getMarkerIdSetLHM().get(key);
-							rdwrMarkerSet1.getMarkerIdSetLHM().put(key, value);
+							Object markerValue = rdMarkerSet2.getMarkerIdSetLHM().get(key);
+							entry.setValue(markerValue);
 						}
 					}
 					//rdwrMarkerIdSetLHM1 = rdMarkerSet2.fillWrLHMWithRdLHMValue(rdwrMarkerIdSetLHM1, rdMarkerIdSetLHM2);
@@ -313,8 +311,7 @@ public class MatrixMergeSamples_opt {
 
 		int wrPos = 0;
 		int rdPos = 0;
-		for (Iterator<String> it = sampleSetLHM1.keySet().iterator(); it.hasNext();) {
-			String key = it.next();
+		for (String key : sampleSetLHM1.keySet()) {
 			int[] position = new int[]{1, rdPos, wrPos}; //rdMatrixNb, rdPos, wrPos
 			resultLHM.put(key, position);
 			wrPos++;
@@ -322,8 +319,7 @@ public class MatrixMergeSamples_opt {
 		}
 
 		rdPos = 0;
-		for (Iterator<String> it = sampleSetLHM2.keySet().iterator(); it.hasNext();) {
-			String key = it.next();
+		for (String key : sampleSetLHM2.keySet()) {
 			int[] position;
 			//IF SAMPLE ALLREADY EXISTS IN MATRIX1 SUBSTITUTE VALUES WITH MATRIX2
 			if (resultLHM.containsKey(key)) {
@@ -358,19 +354,15 @@ public class MatrixMergeSamples_opt {
 		double mismatchCount = 0;
 
 		// Iterate through markerSet
-		for (Iterator<String> it = wrMarkerSet.getMarkerIdSetLHM().keySet().iterator(); it.hasNext();) {
-			String markerId = it.next();
+		for (String markerId : wrMarkerSet.getMarkerIdSetLHM().keySet()) {
 			Map<Character, Object> knownAlleles = new LinkedHashMap<Character, Object>();
 
 			//Get a sampleset-full of GTs
 			wrSampleSetLHM = wrSampleSet.readAllSamplesGTsFromCurrentMarkerToLHM(rdNcFile, wrSampleSetLHM, markerNb);
 
 			//Iterate through sampleSet
-			for (Iterator<String> it2 = wrSampleSetLHM.keySet().iterator(); it2.hasNext();) {
-
-				String sampleId = it2.next();
-
-				char[] tempGT = wrSampleSetLHM.get(sampleId).toString().toCharArray();
+			for (Object value : wrSampleSetLHM.values()) {
+				char[] tempGT = value.toString().toCharArray();
 
 				//Gather alleles different from 0 into a list of known alleles and count the number of appearences
 				if (tempGT[0] != '0') {

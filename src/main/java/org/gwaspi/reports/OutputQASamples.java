@@ -9,7 +9,6 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import org.gwaspi.model.Operation;
 
@@ -95,8 +94,8 @@ public class OutputQASamples {
 
 
 			//GET SAMPLE INFO FROM DB
-			for (Iterator it = sortedSamplesMissingRatLHM.keySet().iterator(); it.hasNext();) {
-				String tempSampleId = it.next().toString();
+			for (Map.Entry<String, Object> entry : sortedSamplesMissingRatLHM.entrySet()) {
+				String tempSampleId = entry.getKey();
 				HashMap sampleInfo = org.gwaspi.netCDF.exporter.Utils.getCurrentSampleFormattedInfo(tempSampleId, poolId);
 
 				String tmpFamId = (sampleInfo.get(org.gwaspi.constants.cDBSamples.f_FAMILY_ID) != null) ? sampleInfo.get(org.gwaspi.constants.cDBSamples.f_FAMILY_ID).toString() : "0";
@@ -130,7 +129,7 @@ public class OutputQASamples {
 				sb.append(sep);
 				sb.append(tmpPopulation);
 				sb.append(sep);
-				sb.append(sortedSamplesMissingRatLHM.get(tempSampleId).toString());
+				sb.append(entry.getValue().toString());
 				sb.append(sep);
 				sb.append(samplesMissingRatLHM.get(tempSampleId).toString());
 				sb.append("\n");

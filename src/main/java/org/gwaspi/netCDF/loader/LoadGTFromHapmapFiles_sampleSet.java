@@ -9,7 +9,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
@@ -258,9 +257,8 @@ public class LoadGTFromHapmapFiles_sampleSet {
 
 		//Index MarkerIdLHM
 		int count = 0;
-		for (Iterator<String> it2 = wrMarkerSetLHM.keySet().iterator(); it2.hasNext();) {
-			String key = it2.next();
-			wrMarkerSetLHM.put(key, count);
+		for (Map.Entry<String, Object> entry : wrMarkerSetLHM.entrySet()) {
+			entry.setValue(count);
 			count++;
 		}
 

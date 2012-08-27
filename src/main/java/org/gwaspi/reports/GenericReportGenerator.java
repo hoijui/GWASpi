@@ -93,9 +93,9 @@ public class GenericReportGenerator {
 
 
 		rdInfoMarkerSet.fillInitLHMWithVariable(org.gwaspi.constants.cNetCDF.Variables.VAR_MARKERS_CHR);
-		for (Iterator<String> it = rdInfoMarkerSet.getMarkerIdSetLHM().keySet().iterator(); it.hasNext();) {
-			String key = it.next();
-			String chr = rdInfoMarkerSet.getMarkerIdSetLHM().get(key).toString();
+		for (Map.Entry<String, Object> entry : rdInfoMarkerSet.getMarkerIdSetLHM().entrySet()) {
+			String key = entry.getKey();
+			String chr = entry.getValue().toString();
 			Object[] data = new Object[3]; //CHR, POS, PVAL
 			data[0] = chr;
 			dataSetLHM.put(key, data);
@@ -103,15 +103,15 @@ public class GenericReportGenerator {
 
 		rdInfoMarkerSet.fillInitLHMWithMyValue(0);
 		rdInfoMarkerSet.fillInitLHMWithVariable(org.gwaspi.constants.cNetCDF.Variables.VAR_MARKERS_POS);
-		for (Iterator<String> it = rdInfoMarkerSet.getMarkerIdSetLHM().keySet().iterator(); it.hasNext();) {
-			String key = it.next();
-			Object[] data = (Object[]) dataSetLHM.get(key); //CHR, POS, PVAL
-			int pos = (Integer) rdInfoMarkerSet.getMarkerIdSetLHM().get(key);
-			data[1] = pos;
-			dataSetLHM.put(key, data);
-		}
-
 		if (rdInfoMarkerSet.getMarkerIdSetLHM() != null) {
+			for (Map.Entry<String, Object> entry : rdInfoMarkerSet.getMarkerIdSetLHM().entrySet()) {
+				String key = entry.getKey();
+				Object[] data = (Object[]) dataSetLHM.get(key); //CHR, POS, PVAL
+				int pos = (Integer) entry.getValue();
+				data[1] = pos;
+				dataSetLHM.put(key, data);
+			}
+
 			rdInfoMarkerSet.getMarkerIdSetLHM().clear();
 		}
 		//</editor-fold>
@@ -121,21 +121,21 @@ public class GenericReportGenerator {
 		OperationSet rdAssocMarkerSet = new OperationSet(rdOPMetadata.getStudyId(), opId);
 		Map<String, Object> rdAssocMarkerSetLHM = rdAssocMarkerSet.getOpSetLHM();
 		rdAssocMarkerSetLHM = rdAssocMarkerSet.fillOpSetLHMWithVariable(assocNcFile, netCDFVar);
-
-		for (Iterator<String> it = rdAssocMarkerSetLHM.keySet().iterator(); it.hasNext();) {
-			String key = it.next();
-			Object[] data = (Object[]) dataSetLHM.get(key); //CHR, POS, PVAL
-
-			double[] value = (double[]) rdAssocMarkerSetLHM.get(key);
-			Double pval = (Double) value[1];  //PVAL
-			if (!pval.equals(Double.NaN) && !pval.equals(Double.POSITIVE_INFINITY) && !pval.equals(Double.NEGATIVE_INFINITY)) { //Ignore NaN Pvalues
-				data[2] = pval;
-				dataSetLHM.put(key, data);
-			}
-		}
-
 		assocNcFile.close();
+
 		if (rdAssocMarkerSetLHM != null) {
+			for (Map.Entry<String, Object> entry : rdAssocMarkerSetLHM.entrySet()) {
+				String key = entry.getKey();
+				Object[] data = (Object[]) dataSetLHM.get(key); //CHR, POS, PVAL
+
+				double[] value = (double[]) entry.getValue();
+				Double pval = (Double) value[1];  //PVAL
+				if (!pval.equals(Double.NaN) && !pval.equals(Double.POSITIVE_INFINITY) && !pval.equals(Double.NEGATIVE_INFINITY)) { //Ignore NaN Pvalues
+					data[2] = pval;
+					dataSetLHM.put(key, data);
+				}
+			}
+
 			rdAssocMarkerSetLHM.clear();
 		}
 		//</editor-fold>
@@ -153,9 +153,9 @@ public class GenericReportGenerator {
 
 		//Subdividing points into sub-XYSeries, per chromosome
 		String currChr = "";
-		for (Iterator it = dataSetLHM.keySet().iterator(); it.hasNext();) {
-			Object markerId = it.next();
-			Object[] data = (Object[]) dataSetLHM.get(markerId); //CHR, POS, PVAL
+		for (Map.Entry<String, Object> entry : dataSetLHM.entrySet()) {
+			Object markerId = entry.getKey();
+			Object[] data = (Object[]) entry.getValue(); //CHR, POS, PVAL
 
 			String chr = data[0].toString();
 			int position = (Integer) data[1];
@@ -346,7 +346,7 @@ public class GenericReportGenerator {
 		XYSeries seriesRef = new XYSeries("Expected");
 
 		for (int i = 0; i < obsChiSqrVals.size(); i++) {
-			double obsVal = (Double) obsChiSqrVals.get(i);
+			double obsVal = obsChiSqrVals.get(i);
 			double expVal = expChiSqrDist.get(i);
 
 			seriesData.add(expVal, obsVal);
@@ -370,9 +370,7 @@ public class GenericReportGenerator {
 
 		//create QQ plot
 		final boolean withLegend = true;
-		JFreeChart chart = null;
-
-		chart = ChartFactory.createScatterPlot(
+		JFreeChart chart = ChartFactory.createScatterPlot(
 				"QQ-plot", "Exp X²", "Obs X²",
 				data,
 				PlotOrientation.VERTICAL,
@@ -435,14 +433,14 @@ public class GenericReportGenerator {
 				maxPosition = minPosition + requestedPosWindow;
 			} else {
 				middlePosition = requestedPhysPos;
-				minPosition = (long) Math.round((double) middlePosition - requestedPosWindow / 2);
+				minPosition = Math.round((double) middlePosition - requestedPosWindow / 2);
 				maxPosition = minPosition + requestedPosWindow;
 			}
 
 
 			//CUT READ-LHM TO SIZE
-			for (Iterator<String> it = rdAssocMarkerSetLHM.keySet().iterator(); it.hasNext();) {
-				String key = it.next();
+			for (Map.Entry<String, Object> entry : rdAssocMarkerSetLHM.entrySet()) {
+				String key = entry.getKey();
 				Object[] chrInfo = (Object[]) rdInfoMarkerSet.getMarkerIdSetLHM().get(key);
 				Object[] plotInfo = new Object[3];
 				if (chrInfo[0].toString().equals(chr)) {
@@ -464,19 +462,20 @@ public class GenericReportGenerator {
 
 			//<editor-fold defaultstate="collapsed" desc="GET Pval">
 			rdAssocMarkerSetLHM = rdAssocMarkerSet.fillOpSetLHMWithVariable(assocNcFile, netCDFVar);
-			for (Iterator<String> ite = dataSetLHM.keySet().iterator(); ite.hasNext();) {
-				String key = ite.next();
-				Object[] data = (Object[]) dataSetLHM.get(key); //CHR, POS, PVAL
-				double[] value = (double[]) rdAssocMarkerSetLHM.get(key);
-				Double pval = (Double) value[1]; //PVAL
-				if (!pval.equals(Double.NaN) && !pval.equals(Double.POSITIVE_INFINITY) && !pval.equals(Double.NEGATIVE_INFINITY)) {
-					//Ignore NaN Pvalues
-					data[2] = pval;
-					dataSetLHM.put(key, data);
-				}
-			}
 			assocNcFile.close();
 			if (rdAssocMarkerSetLHM != null) {
+				for (Map.Entry<String, Object> entry : dataSetLHM.entrySet()) {
+					String key = entry.getKey();
+					Object[] data = (Object[]) entry.getValue(); //CHR, POS, PVAL
+					double[] value = (double[]) rdAssocMarkerSetLHM.get(key);
+					Double pval = (Double) value[1]; //PVAL
+					if (!pval.equals(Double.NaN) && !pval.equals(Double.POSITIVE_INFINITY) && !pval.equals(Double.NEGATIVE_INFINITY)) {
+						//Ignore NaN Pvalues
+						data[2] = pval;
+						entry.setValue(data);
+					}
+				}
+
 				rdAssocMarkerSetLHM.clear();
 			}
 			//</editor-fold>
@@ -485,9 +484,9 @@ public class GenericReportGenerator {
 			//<editor-fold defaultstate="collapsed" desc="BUILD XYDataset">
 			XYSeries dataSeries = new XYSeries("");
 
-			for (Iterator ite = dataSetLHM.keySet().iterator(); ite.hasNext();) {
-				Object tmpMarker = ite.next();
-				Object[] data = (Object[]) dataSetLHM.get(tmpMarker); //CHR, POS, PVAL
+			for (Map.Entry<String, Object> entry : dataSetLHM.entrySet()) {
+				Object tmpMarker = entry.getKey();
+				Object[] data = (Object[]) entry.getValue(); //CHR, POS, PVAL
 
 				int position = (Integer) data[1];
 				double pVal = 1;
@@ -621,23 +620,23 @@ public class GenericReportGenerator {
 			String validateChr = rdInfoMarkerSet.getMarkerIdSetLHM().get(origMarkerId).toString();
 			org.gwaspi.gui.reports.ManhattanPlotZoom.centerPhysPos = minPosition;
 
-			for (Iterator<String> ite = dataSetLHM.keySet().iterator(); ite.hasNext();) {
-				String key = ite.next();
+			for (Map.Entry<String, Object> entry : dataSetLHM.entrySet()) {
+				String key = entry.getKey();
 				String chr = rdInfoMarkerSet.getMarkerIdSetLHM().get(key).toString();
 				Object[] data = new Object[3]; //CHR, POS, PVAL
 				data[0] = chr;
-				dataSetLHM.put(key, data);
+				entry.setValue(data);
 			}
 
 
 			rdInfoMarkerSet.fillInitLHMWithMyValue(0);
 			rdInfoMarkerSet.fillInitLHMWithVariable(org.gwaspi.constants.cNetCDF.Variables.VAR_MARKERS_POS);
-			for (Iterator<String> ite = dataSetLHM.keySet().iterator(); ite.hasNext();) {
-				String key = ite.next();
-				Object[] data = (Object[]) dataSetLHM.get(key); //CHR, POS, PVAL
+			for (Map.Entry<String, Object> entry : dataSetLHM.entrySet()) {
+				String key = entry.getKey();
+				Object[] data = (Object[]) entry.getValue(); //CHR, POS, PVAL
 				int pos = (Integer) rdInfoMarkerSet.getMarkerIdSetLHM().get(key);
 				data[1] = pos;
-				dataSetLHM.put(key, data);
+				entry.setValue(data);
 			}
 			if (rdInfoMarkerSet.getMarkerIdSetLHM() != null) {
 				rdInfoMarkerSet.getMarkerIdSetLHM().clear();
@@ -646,15 +645,15 @@ public class GenericReportGenerator {
 
 			//<editor-fold defaultstate="collapsed" desc="GET Pval">
 			rdAssocMarkerSetLHM = rdAssocMarkerSet.fillOpSetLHMWithVariable(assocNcFile, netCDFVar);
-			for (Iterator<String> ite = dataSetLHM.keySet().iterator(); ite.hasNext();) {
-				String key = ite.next();
-				Object[] data = (Object[]) dataSetLHM.get(key); //CHR, POS, PVAL
+			for (Map.Entry<String, Object> entry : dataSetLHM.entrySet()) {
+				String key = entry.getKey();
+				Object[] data = (Object[]) entry.getValue(); //CHR, POS, PVAL
 				double[] value = (double[]) rdAssocMarkerSetLHM.get(key);
 				Double pval = (Double) value[1]; //PVAL
 				if (!pval.equals(Double.NaN) && !pval.equals(Double.POSITIVE_INFINITY) && !pval.equals(Double.NEGATIVE_INFINITY)) {
 					//Ignore NaN Pvalues
 					data[2] = pval;
-					dataSetLHM.put(key, data);
+					entry.setValue(data);
 				}
 			}
 			assocNcFile.close();
@@ -667,9 +666,9 @@ public class GenericReportGenerator {
 			//<editor-fold defaultstate="collapsed" desc="BUILD XYDataset">
 			XYSeries dataSeries = new XYSeries("");
 
-			for (Iterator ite = dataSetLHM.keySet().iterator(); ite.hasNext();) {
-				Object tmpMarker = ite.next();
-				Object[] data = (Object[]) dataSetLHM.get(tmpMarker); //CHR, POS, PVAL
+			for (Map.Entry<String, Object> entry : dataSetLHM.entrySet()) {
+				String tmpMarker = entry.getKey();
+				Object[] data = (Object[]) entry.getValue(); //CHR, POS, PVAL
 
 				String chr = data[0].toString();
 				int position = (Integer) data[1];
@@ -718,8 +717,8 @@ public class GenericReportGenerator {
 		XYSeries dataSeries = new XYSeries("");
 
 		int count = 0;
-		for (Iterator ite = sampleSetLHM.keySet().iterator(); ite.hasNext();) {
-			Object tmpSampleId = ite.next();
+		for (Map.Entry<String, Object> entry : sampleSetLHM.entrySet()) {
+			String tmpSampleId = entry.getKey();
 			double tmpHetzyVal = hetzygVals.get(count);
 			double tmpMissratVal = missingratVals.get(count);
 			if (tmpHetzyVal == Double.NaN || tmpHetzyVal == Double.NEGATIVE_INFINITY || tmpHetzyVal == Double.POSITIVE_INFINITY) {
@@ -739,14 +738,9 @@ public class GenericReportGenerator {
 		dataSeries.setDescription(rdOPMetadata.getDescription());
 
 		resultXYDataset = new XYSeriesCollection(dataSeries);
-
-
 		//</editor-fold>
 
-
 		return resultXYDataset;
-
-
 	}
 	//</editor-fold>
 
@@ -761,12 +755,6 @@ public class GenericReportGenerator {
 		Map<String, Object> rdAssocMarkerSetLHM = rdAssocMarkerSet.getOpSetLHM();
 		rdAssocMarkerSetLHM = rdAssocMarkerSet.fillOpSetLHMWithVariable(assocNcFile, netCDFVar);
 
-		for (Iterator<String> it = rdAssocMarkerSetLHM.keySet().iterator(); it.hasNext();) {
-			String key = it.next();
-			double[] values = (double[]) rdAssocMarkerSetLHM.get(key);
-			rdAssocMarkerSetLHM.put(key, values);
-		}
-
 		assocNcFile.close();
 		return rdAssocMarkerSetLHM;
 	}
@@ -780,24 +768,25 @@ public class GenericReportGenerator {
 		rdInfoMarkerSet.initFullMarkerIdSetLHM();
 		snpNumber = rdInfoMarkerSet.getMarkerSetSize();
 		rdInfoMarkerSet.fillInitLHMWithVariable(org.gwaspi.constants.cNetCDF.Variables.VAR_MARKERS_CHR);
-		for (Iterator<String> it = rdInfoMarkerSet.getMarkerIdSetLHM().keySet().iterator(); it.hasNext();) {
-			String key = it.next();
-			String chr = rdInfoMarkerSet.getMarkerIdSetLHM().get(key).toString();
-			Object[] data = new Object[2]; //CHR, POS
-			data[0] = chr;
-			dataSetLHM.put(key, data);
-		}
-
-		rdInfoMarkerSet.fillInitLHMWithMyValue(0);
-		rdInfoMarkerSet.fillInitLHMWithVariable(org.gwaspi.constants.cNetCDF.Variables.VAR_MARKERS_POS);
-		for (Iterator<String> it = rdInfoMarkerSet.getMarkerIdSetLHM().keySet().iterator(); it.hasNext();) {
-			String key = it.next();
-			Object[] data = (Object[]) dataSetLHM.get(key); //CHR, POS
-			int pos = (Integer) rdInfoMarkerSet.getMarkerIdSetLHM().get(key);
-			data[1] = pos;
-			dataSetLHM.put(key, data);
-		}
 		if (rdInfoMarkerSet.getMarkerIdSetLHM() != null) {
+			for (Map.Entry<String, Object> entry : rdInfoMarkerSet.getMarkerIdSetLHM().entrySet()) {
+				String key = entry.getKey();
+				String chr = entry.getValue().toString();
+				Object[] data = new Object[2]; //CHR, POS
+				data[0] = chr;
+				dataSetLHM.put(key, data);
+			}
+
+			rdInfoMarkerSet.fillInitLHMWithMyValue(0);
+			rdInfoMarkerSet.fillInitLHMWithVariable(org.gwaspi.constants.cNetCDF.Variables.VAR_MARKERS_POS);
+			for (Map.Entry<String, Object> entry : rdInfoMarkerSet.getMarkerIdSetLHM().entrySet()) {
+				String key = entry.getKey();
+				Object[] data = (Object[]) dataSetLHM.get(key); //CHR, POS
+				int pos = (Integer) entry.getValue();
+				data[1] = pos;
+				dataSetLHM.put(key, data);
+			}
+
 			rdInfoMarkerSet.getMarkerIdSetLHM().clear();
 		}
 		//</editor-fold>

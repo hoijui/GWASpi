@@ -3,7 +3,6 @@ package org.gwaspi.netCDF;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import ucar.ma2.ArrayChar;
@@ -69,8 +68,7 @@ public class DumpNCMatrix {
 
 		// BUILD MARKERSET HEADER
 		StringBuilder headerSB = new StringBuilder();
-		for (Iterator it = markerIdSetLHM.keySet().iterator(); it.hasNext();) {
-			Object markerId = it.next();
+		for (String markerId : markerIdSetLHM.keySet()) {
 			headerSB.append("\t").append(markerId.toString());
 		}
 		dumpBW.append(headerSB.toString());
@@ -78,8 +76,7 @@ public class DumpNCMatrix {
 
 		// ITERATE READ OF MARKERSETLHM BY SAMPLE
 		int sampleNb = 0;
-		for (Iterator it = sampleIdSetLHM.keySet().iterator(); it.hasNext();) {
-			Object sampleId = it.next();
+		for (String sampleId : sampleIdSetLHM.keySet()) {
 			StringBuilder sampleLineSB = new StringBuilder(sampleId.toString());
 
 			Variable genotypes = ncfile.findVariable(org.gwaspi.constants.cNetCDF.Variables.VAR_GENOTYPES);
@@ -92,9 +89,7 @@ public class DumpNCMatrix {
 
 				markerIdSetLHM = org.gwaspi.netCDF.operations.Utils.writeD2ArrayCharToLHMValues(gt_ACD2, markerIdSetLHM);
 
-				for (Iterator it2 = markerIdSetLHM.keySet().iterator(); it2.hasNext();) {
-					Object markerId = it2.next();
-					Object alleles = markerIdSetLHM.get(markerId);
+				for (Object alleles : markerIdSetLHM.values()) {
 					sampleLineSB.append("\t").append(alleles);
 				}
 			} catch (IOException ioe) {

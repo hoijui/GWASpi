@@ -8,7 +8,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
@@ -111,8 +110,8 @@ public class MatrixDataExtractor_opt {
 
 
 		//<editor-fold defaultstate="collapsed" desc="MARKERSET PICKING">
-		for (Iterator it = _markerCriteria.iterator(); it.hasNext();) {
-			markerPickerCriteria.append(it.next().toString());
+		for (Object value : _markerCriteria) {
+			markerPickerCriteria.append(value.toString());
 			markerPickerCriteria.append(",");
 		}
 
@@ -171,8 +170,8 @@ public class MatrixDataExtractor_opt {
 		//</editor-fold>
 
 		//<editor-fold defaultstate="collapsed" desc="SAMPLESET PICKING">
-		for (Iterator it = _sampleCriteria.iterator(); it.hasNext();) {
-			samplePickerCriteria.append(it.next().toString());
+		for (Object value : _sampleCriteria) {
+			samplePickerCriteria.append(value.toString());
 			samplePickerCriteria.append(",");
 		}
 
@@ -194,9 +193,8 @@ public class MatrixDataExtractor_opt {
 				//Get all samples
 				wrSampleSetLHM.putAll(rdSampleSetLHM);
 				int i = 0;
-				for (Iterator<String> it = wrSampleSetLHM.keySet().iterator(); it.hasNext();) {
-					String key = it.next();
-					wrSampleSetLHM.put(key, i);
+				for (Map.Entry<String, Object> entry : wrSampleSetLHM.entrySet()) {
+					entry.setValue(i);
 					i++;
 				}
 				break;
@@ -232,9 +230,8 @@ public class MatrixDataExtractor_opt {
 				break;
 			default:
 				int j = 0;
-				for (Iterator<String> it = wrSampleSetLHM.keySet().iterator(); it.hasNext();) {
-					String key = it.next();
-					wrSampleSetLHM.put(key, j);
+				for (Map.Entry<String, Object> entry : wrSampleSetLHM.entrySet()) {
+					entry.setValue(j);
 					j++;
 				}
 		}
@@ -393,10 +390,9 @@ public class MatrixDataExtractor_opt {
 				//Iterate through wrSampleSetLHM, use item position to read correct sample GTs into rdMarkerIdSetLHM.
 				System.out.println(org.gwaspi.global.Text.All.processing);
 				int sampleWrIndex = 0;
-				for (Iterator it = wrSampleSetLHM.keySet().iterator(); it.hasNext();) {
+				for (Object value : wrSampleSetLHM.values()) {
 					//Iterate through wrMarkerIdSetLHM, get the correct GT from rdMarkerIdSetLHM
-					Object key = it.next();
-					Integer rdPos = (Integer) wrSampleSetLHM.get(key);
+					Integer rdPos = (Integer) value;
 					rdMarkerSet.fillGTsForCurrentSampleIntoInitLHM(rdPos);
 //                    rdMarkerSet.fillGTsForCurrentSampleIntoInitLHM(sampleWrPos);
 					wrMarkerIdSetLHM = rdMarkerSet.fillWrLHMWithRdLHMValue(wrMarkerIdSetLHM, rdMarkerSet.getMarkerIdSetLHM());

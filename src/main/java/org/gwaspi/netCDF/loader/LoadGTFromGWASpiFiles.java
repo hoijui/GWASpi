@@ -10,7 +10,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
@@ -69,17 +68,17 @@ public final class LoadGTFromGWASpiFiles {
 
 			boolean testExcessSamplesInMatrix = false;
 			boolean testExcessSamplesInFile = false;
-			for (Iterator it = matrixSampleSetLHM.keySet().iterator(); it.hasNext();) {
-				Object key = it.next();
+			for (String key : matrixSampleSetLHM.keySet()) {
 				if (!_sampleInfoLHM.containsKey(key)) {
 					testExcessSamplesInMatrix = true;
+					break;
 				}
 			}
 
-			for (Iterator it = _sampleInfoLHM.keySet().iterator(); it.hasNext();) {
-				Object key = it.next();
+			for (String key : _sampleInfoLHM.keySet()) {
 				if (!matrixSampleSetLHM.containsKey(key)) {
 					testExcessSamplesInFile = true;
+					break;
 				}
 			}
 
@@ -292,8 +291,7 @@ public final class LoadGTFromGWASpiFiles {
 		//Iterate through rdSampleSetLHM, use item position to read correct sample GTs into rdMarkerIdSetLHM.
 		System.out.println(org.gwaspi.global.Text.All.processing);
 		int sampleWrIndex = 0;
-		for (Iterator it = rdSampleSetLHM.keySet().iterator(); it.hasNext();) {
-			it.next();
+		for (int i = 0; i < rdSampleSetLHM.size(); i++) {
 			rdMarkerSet.fillGTsForCurrentSampleIntoInitLHM(sampleWrIndex);
 
 			//Write MarkerIdSetLHM to A3 ArrayChar and save to wrMatrix

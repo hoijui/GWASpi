@@ -1,7 +1,6 @@
 package org.gwaspi.samples;
 
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -328,9 +327,8 @@ public class SampleSet {
 	}
 
 	public Map<String, Object> fillLHMWithDefaultValue(Map<String, Object> lhm, Object defaultVal) {
-		for (Iterator<String> it = lhm.keySet().iterator(); it.hasNext();) {
-			String key = it.next();
-			lhm.put(key, defaultVal);
+		for (Map.Entry<String, Object> entry : lhm.entrySet()) {
+			entry.setValue(defaultVal);
 		}
 		return lhm;
 	}
@@ -343,8 +341,7 @@ public class SampleSet {
 
 		int pickCounter = 0;
 		if (include) {
-			for (Iterator<String> it = lhm.keySet().iterator(); it.hasNext();) {
-				String key = it.next();
+			for (String key : lhm.keySet()) {
 				for (int i = 0; i < rs.size(); i++) // loop through rows of result set
 				{
 					//PREVENT PHANTOM-DB READS EXCEPTIONS - CAUTION!!
@@ -359,8 +356,7 @@ public class SampleSet {
 				pickCounter++;
 			}
 		} else {
-			for (Iterator<String> it = lhm.keySet().iterator(); it.hasNext();) {
-				String key = it.next();
+			for (String key : lhm.keySet()) {
 				for (int i = 0; i < rs.size(); i++) // loop through rows of result set
 				{
 					//PREVENT PHANTOM-DB READS EXCEPTIONS - CAUTION!!
@@ -385,20 +381,16 @@ public class SampleSet {
 
 		int pickCounter = 0;
 		if (include) {
-			for (Iterator<String> it = lhm.keySet().iterator(); it.hasNext();) {
-				String key = it.next();
-				Object value = lhm.get(key);
-				if (criteria.contains(value)) {
-					returnLHM.put(key, pickCounter);
+			for (Map.Entry<String, Object> entry : lhm.entrySet()) {
+				if (criteria.contains(entry.getValue())) {
+					returnLHM.put(entry.getKey(), pickCounter);
 				}
 				pickCounter++;
 			}
 		} else {
-			for (Iterator<String> it = lhm.keySet().iterator(); it.hasNext();) {
-				String key = it.next();
-				Object value = lhm.get(key);
-				if (!criteria.contains(value)) {
-					returnLHM.put(key, pickCounter);
+			for (Map.Entry<String, Object> entry : lhm.entrySet()) {
+				if (!criteria.contains(entry.getValue())) {
+					returnLHM.put(entry.getKey(), pickCounter);
 				}
 				pickCounter++;
 			}
@@ -413,20 +405,16 @@ public class SampleSet {
 
 		int pickCounter = 0;
 		if (include) {
-			for (Iterator<String> it = lhm.keySet().iterator(); it.hasNext();) {
-				String key = it.next();
-				Object value = lhm.get(key);
-				if (criteria.contains(value)) {
-					returnLHM.put(key, pickCounter);
+			for (Map.Entry<String, Object> entry : lhm.entrySet()) {
+				if (criteria.contains(entry.getValue())) {
+					returnLHM.put(entry.getKey(), pickCounter);
 				}
 				pickCounter++;
 			}
 		} else {
-			for (Iterator<String> it = lhm.keySet().iterator(); it.hasNext();) {
-				String key = it.next();
-				Object value = lhm.get(key);
-				if (!criteria.contains(value)) {
-					returnLHM.put(key, pickCounter);
+			for (Map.Entry<String, Object> entry : lhm.entrySet()) {
+				if (!criteria.contains(entry.getValue())) {
+					returnLHM.put(entry.getKey(), pickCounter);
 				}
 				pickCounter++;
 			}
@@ -440,16 +428,14 @@ public class SampleSet {
 
 		int pickCounter = 0;
 		if (include) {
-			for (Iterator<String> it = lhm.keySet().iterator(); it.hasNext();) {
-				String key = it.next();
+			for (String key : lhm.keySet()) {
 				if (criteria.contains(key)) {
 					returnLHM.put(key, pickCounter);
 				}
 				pickCounter++;
 			}
 		} else {
-			for (Iterator<String> it = lhm.keySet().iterator(); it.hasNext();) {
-				String key = it.next();
+			for (String key : lhm.keySet()) {
 				if (!criteria.contains(key)) {
 					returnLHM.put(key, pickCounter);
 				}
