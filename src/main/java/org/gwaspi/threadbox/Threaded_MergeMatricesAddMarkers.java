@@ -15,7 +15,6 @@ import org.slf4j.LoggerFactory;
  */
 public class Threaded_MergeMatricesAddMarkers extends CommonRunnable {
 
-	private int resultMatrixId; // FIXME can be a local var
 	private int studyId;
 	private int parentMatrixId1;
 	private int parentMatrixId2;
@@ -54,18 +53,20 @@ public class Threaded_MergeMatricesAddMarkers extends CommonRunnable {
 					newMatrixName,
 					description);
 
-			resultMatrixId = jointedMatrix.mingleMarkersKeepSamplesConstant();
+			int resultMatrixId = MatrixMergeMarkers_opt.mingleMarkersKeepSamplesConstant();
 			GWASpiExplorerNodes.insertMatrixNode(studyId, resultMatrixId);
-		}
 
-		if (thisSwi.getQueueState().equals(org.gwaspi.threadbox.QueueStates.PROCESSING)) {
+			if (!thisSwi.getQueueState().equals(org.gwaspi.threadbox.QueueStates.PROCESSING)) {
+				return;
+			}
 			int sampleQAOpId = OP_QASamples_opt.processMatrix(resultMatrixId);
 			GWASpiExplorerNodes.insertOperationUnderMatrixNode(resultMatrixId, sampleQAOpId);
 			org.gwaspi.reports.OutputQASamples.writeReportsForQASamplesData(sampleQAOpId, true);
 			GWASpiExplorerNodes.insertReportsUnderOperationNode(sampleQAOpId);
-		}
 
-		if (thisSwi.getQueueState().equals(org.gwaspi.threadbox.QueueStates.PROCESSING)) {
+			if (!thisSwi.getQueueState().equals(org.gwaspi.threadbox.QueueStates.PROCESSING)) {
+				return;
+			}
 			int markersQAOpId = OP_QAMarkers_opt.processMatrix(resultMatrixId);
 			GWASpiExplorerNodes.insertOperationUnderMatrixNode(resultMatrixId, markersQAOpId);
 			org.gwaspi.reports.OutputQAMarkers.writeReportsForQAMarkersData(markersQAOpId);

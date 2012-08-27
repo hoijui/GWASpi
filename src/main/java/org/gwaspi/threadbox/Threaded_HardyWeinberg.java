@@ -14,9 +14,7 @@ import org.slf4j.LoggerFactory;
  */
 public class Threaded_HardyWeinberg extends CommonRunnable {
 
-	private int matrixId; // FIXME remove? copy paste left-over?
 	private int censusOpId;
-	private File phenotypeFile; // FIXME remove? copy paste left-over?
 
 	public Threaded_HardyWeinberg(String threadName,
 			String timeStamp,
@@ -25,9 +23,7 @@ public class Threaded_HardyWeinberg extends CommonRunnable {
 	{
 		super(threadName, timeStamp, "Hardy-Weinberg test");
 
-		this.matrixId = matrixId;
 		this.censusOpId = censusOpId;
-		this.phenotypeFile = phenotypeFile;
 
 		startInternal("Hardy-Weinberg");
 	}
@@ -39,10 +35,9 @@ public class Threaded_HardyWeinberg extends CommonRunnable {
 	protected void runInternal(SwingWorkerItem thisSwi) throws Exception {
 
 		// HW ON GENOTYPE FREQ.
-		int hwOpId = Integer.MIN_VALUE;
 		if (thisSwi.getQueueState().equals(org.gwaspi.threadbox.QueueStates.PROCESSING)) {
 			if (censusOpId != Integer.MIN_VALUE) {
-				hwOpId = org.gwaspi.netCDF.operations.OperationManager.performHardyWeinberg(censusOpId, cNetCDF.Defaults.DEFAULT_AFFECTION);
+				int hwOpId = org.gwaspi.netCDF.operations.OperationManager.performHardyWeinberg(censusOpId, cNetCDF.Defaults.DEFAULT_AFFECTION);
 				GWASpiExplorerNodes.insertSubOperationUnderOperationNode(censusOpId, hwOpId);
 			}
 		}

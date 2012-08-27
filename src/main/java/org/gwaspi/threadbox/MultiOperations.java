@@ -25,60 +25,6 @@ public class MultiOperations {
 	}
 
 	//<editor-fold defaultstate="collapsed" desc="LOADERS">
-	/**
-	 * This XXX has now been deprecated in favor of YYY
-	 *
-	 * @deprecated Use YYY instead
-	 */
-	public static void loadMatrixDoQA(final String format,
-			final Map<String, Object> sampleInfoLHM,
-			final String newMatrixName,
-			final String newMatrixDescription,
-			final String file1,
-			final String fileSampleInfo,
-			final String file2,
-			final String chromosome,
-			final String strandType,
-			final String gtCode,
-			final int studyId) {
-
-		//SAMPLES QA
-		final String timeStamp = org.gwaspi.global.Utils.getTimeStamp();
-		SwingWorker worker = new SwingWorker() {
-			public Object construct() {
-				Threaded_Loader_QA gtLoader = new Threaded_Loader_QA("Genotypes Loader",
-						timeStamp,
-						format,
-						sampleInfoLHM,
-						newMatrixName,
-						newMatrixDescription,
-						file1,
-						fileSampleInfo,
-						file2,
-						chromosome,
-						strandType,
-						gtCode,
-						studyId);
-
-				return gtLoader;
-			}
-		};
-
-
-		SwingWorkerItem swi = new SwingWorkerItem("Genotypes Loader: " + newMatrixName,
-				worker,
-				timeStamp,
-				new Integer[]{studyId});
-		swingWorkerItemList.add(swi,
-				new Integer[]{studyId}, //Studies to be put on hold
-				null, //Matrices to be put on hold
-				null);        //Operations to be put on hold
-
-		org.gwaspi.gui.ProcessTab.updateProcessOverview();
-
-
-	}
-
 	public static void doMatrixQAs(final int studyId, final int matrixId) {
 
 		//SAMPLES QA

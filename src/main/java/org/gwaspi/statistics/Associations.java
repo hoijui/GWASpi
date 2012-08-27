@@ -153,8 +153,9 @@ public class Associations {
 			int obsCtrlAA,
 			int obsCtrlAa,
 			int obsCtrlaa,
-			int ctrlTot) {
-		//TODO: implement Fisher's exact test
+			int ctrlTot)
+	{
+		// TODO implement Fisher's exact test
 		int obsCaseRowTot = obsCaseAA + obsCaseAa + obsCaseaa;
 		int obsCtrlRowTot = obsCtrlAA + obsCtrlAa + obsCtrlaa;
 		int obsAAColTot = obsCaseAA + obsCtrlAA;
@@ -188,8 +189,8 @@ public class Associations {
 			int obsCtrlAA,
 			int obsCtrlAa,
 			int obsCtrlaa,
-			int ctrlTot) {
-
+			int ctrlTot)
+	{
 		int[][] obsCntgTable = new int[3][2]; //3 columns: AA Aa aa, 2 rows: case, ctrl
 		double[][] expCntgTable = new double[3][2]; //3 columns: AA Aa aa, 2 rows: case, ctrl
 

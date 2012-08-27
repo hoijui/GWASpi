@@ -30,7 +30,7 @@ public class SampleInfoCollectorSwitch {
 			String altSampleInfoPath1,
 			String altSampleInfoPath2) throws IOException {
 		Map<String, Object> sampleInfoLHM = new LinkedHashMap<String, Object>();
-		Object[] dummySampleValues = org.gwaspi.samples.DummySampleInfo.getDummySampleValues();
+		Object[] dummySampleValues = org.gwaspi.samples.DummySampleInfo.createDummySampleValues();
 
 		switch (org.gwaspi.constants.cImport.ImportFormat.compareTo(format)) {
 			case Affymetrix_GenomeWide6:

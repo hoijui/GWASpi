@@ -16,7 +16,6 @@ import org.slf4j.LoggerFactory;
  */
 public class Threaded_TranslateMatrix extends CommonRunnable {
 
-	private int resultMatrixId; // FIXME can be a local var
 	private int studyId;
 	private int parentMatrixId;
 	private cNetCDF.Defaults.GenotypeEncoding gtEncoding;
@@ -54,26 +53,31 @@ public class Threaded_TranslateMatrix extends CommonRunnable {
 					newMatrixName,
 					description);
 
+			int resultMatrixId;
 			if (gtEncoding.equals(cNetCDF.Defaults.GenotypeEncoding.AB0)
-					|| gtEncoding.equals(cNetCDF.Defaults.GenotypeEncoding.O12)) {
-
+					|| gtEncoding.equals(cNetCDF.Defaults.GenotypeEncoding.O12))
+			{
 				resultMatrixId = matrixTransformer.translateAB12AllelesToACGT();
-			} else if (gtEncoding.equals(cNetCDF.Defaults.GenotypeEncoding.O1234)) {
-
+			} else if (gtEncoding.equals(cNetCDF.Defaults.GenotypeEncoding.O1234))
+			{
 				resultMatrixId = matrixTransformer.translate1234AllelesToACGT();
+			} else {
+				throw new IllegalStateException("Invalid value for gtEncoding: " + gtEncoding);
 			}
+
 			GWASpiExplorerNodes.insertMatrixNode(studyId, resultMatrixId);
-		}
 
-
-		if (thisSwi.getQueueState().equals(org.gwaspi.threadbox.QueueStates.PROCESSING)) {
+			if (!thisSwi.getQueueState().equals(org.gwaspi.threadbox.QueueStates.PROCESSING)) {
+				return;
+			}
 			int sampleQAOpId = OP_QASamples_opt.processMatrix(resultMatrixId);
 			GWASpiExplorerNodes.insertOperationUnderMatrixNode(resultMatrixId, sampleQAOpId);
 			org.gwaspi.reports.OutputQASamples.writeReportsForQASamplesData(sampleQAOpId, true);
 			GWASpiExplorerNodes.insertReportsUnderOperationNode(sampleQAOpId);
-		}
-
-		if (thisSwi.getQueueState().equals(org.gwaspi.threadbox.QueueStates.PROCESSING)) {
+			
+			if (!thisSwi.getQueueState().equals(org.gwaspi.threadbox.QueueStates.PROCESSING)) {
+				return;
+			}
 			int markersQAOpId = OP_QAMarkers_opt.processMatrix(resultMatrixId);
 			GWASpiExplorerNodes.insertOperationUnderMatrixNode(resultMatrixId, markersQAOpId);
 			org.gwaspi.reports.OutputQAMarkers.writeReportsForQAMarkersData(markersQAOpId);

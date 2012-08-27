@@ -743,28 +743,6 @@ public class Utils {
 		return byteArray;
 	}
 
-	// TODO CHECK ALL USAGES, and potentially remove
-	/**
-	 * This writeLHMToCurrentSampleArrayByteD3 has now been deprecated in favor
-	 * of writeLHMToSingleSampleArrayByteD3 Method is probably INCORRECT!
-	 *
-	 * @deprecated Use writeLHMToSingleSampleArrayByteD3 instead
-	 */
-	public static ArrayByte.D3 writeLHMToCurrentSampleArrayByteD3(Map<String, Object> lhm, int stride) {
-		ArrayByte.D3 byteArray = new ArrayByte.D3(lhm.size(), 1, stride);
-		Index ima = byteArray.getIndex();
-
-		int markerCount = 0;
-		for (Object value : lhm.values()) {
-			byte[] values = (byte[]) value;
-			byteArray.setByte(ima.set(markerCount, 0, 0), values[0]); //1 Sample at a time, iterating through markers, first byte
-			byteArray.setByte(ima.set(markerCount, 0, 1), values[1]); //1 Sample at a time, iterating through markers, second byte
-			markerCount++;
-		}
-
-		return byteArray;
-	}
-
 	public static ArrayByte.D3 writeLHMToSingleMarkerArrayByteD3(Map<String, Object> lhm, int stride) {
 		ArrayByte.D3 byteArray = new ArrayByte.D3(lhm.size(), 1, stride);
 		Index ima = byteArray.getIndex();
@@ -780,12 +758,11 @@ public class Utils {
 		return byteArray;
 	}
 
-	//TODO CHECK ALL USAGES
 	/**
 	 * This writeLHMToCurrentMarkerArrayByteD3 has now been deprecated in favor
 	 * of writeLHMToSingleMarkerArrayByteD3 Method is probably INCORRECT!
 	 *
-	 * @deprecated Use writeLHMToSingleMarkerArrayByteD3 instead
+	 * @deprecated Use {@link #writeLHMToSingleMarkerArrayByteD3} instead
 	 */
 	public static ArrayByte.D3 writeLHMToCurrentMarkerArrayByteD3(Map<String, Object> lhm, int stride) {
 		ArrayByte.D3 byteArray = new ArrayByte.D3(1, lhm.size(), stride);

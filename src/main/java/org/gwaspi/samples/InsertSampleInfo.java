@@ -64,8 +64,8 @@ public class InsertSampleInfo {
 			String sampleId = cVals[GWASpi.sampleId];
 			result.add(sampleId);
 
-			//Standardizing affection to CHAR(1), having 1=Unaffected, 2=Affected
-			//TODO: someday this should allow other affection values
+			// Standardizing affection to CHAR(1), having 1=Unaffected, 2=Affected
+			// HACK TODO someday this should allow other affection values
 			String affection = cVals[GWASpi.affection];
 			if (!affection.equals("1") && !affection.equals("2")) {
 				affection = "0";
@@ -117,8 +117,8 @@ public class InsertSampleInfo {
 		for (Object value : sampleInfoLHM.values()) {
 			String[] cVals = (String[]) value;
 
-			//Standardizing affection to CHAR(1), having 1=Unaffected, 2=Affected
-			//TODO: someday this should allow other affection values
+			// Standardizing affection to CHAR(1), having 1=Unaffected, 2=Affected
+			// HACK TODO someday this should allow other affection values
 			String affection = cVals[GWASpi.affection];
 			if (!affection.equals("1") && !affection.equals("2")) {
 				affection = "0";
