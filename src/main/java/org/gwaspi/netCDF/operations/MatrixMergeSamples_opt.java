@@ -95,7 +95,7 @@ public class MatrixMergeSamples_opt {
 
 		//RETRIEVE CHROMOSOMES INFO
 //        rdwrMarkerSet1.fillMarkerSetLHMWithChrAndPos();
-//        wrMarkerIdSetLHM = rdMarkerSet.fillWrLHMWithRdLHMValue(wrMarkerIdSetLHM, rdMarkerSet.markerIdSetLHM);
+//        wrMarkerIdSetLHM = rdMarkerSet.replaceWithValuesFrom(wrMarkerIdSetLHM, rdMarkerSet.markerIdSetLHM);
 //        rdChrInfoSetLHM = org.gwaspi.netCDF.matrices.Utils.aggregateChromosomeInfo(wrMarkerIdSetLHM, 0, 1);
 
 		Map<String, Object> rdChrInfoSetLHM = rdwrMarkerSet1.getChrInfoSetLHM();
@@ -233,11 +233,11 @@ public class MatrixMergeSamples_opt {
 
 				//Iterate through wrMarkerIdSetLHM, get the correct GT from rdMarkerIdSetLHM
 				if (sampleIndices[0] == 1) { //Read from Matrix1
-					rdwrMarkerSet1.fillInitLHMWithMyValue(org.gwaspi.constants.cNetCDF.Defaults.DEFAULT_GT);
+					rdwrMarkerSet1.fillWith(org.gwaspi.constants.cNetCDF.Defaults.DEFAULT_GT);
 					rdwrMarkerSet1.fillGTsForCurrentSampleIntoInitLHM(sampleIndices[1]);
 				}
 				if (sampleIndices[0] == 2) { //Read from Matrix2
-					rdwrMarkerSet1.fillInitLHMWithMyValue(org.gwaspi.constants.cNetCDF.Defaults.DEFAULT_GT);
+					rdwrMarkerSet1.fillWith(org.gwaspi.constants.cNetCDF.Defaults.DEFAULT_GT);
 					rdMarkerSet2.fillGTsForCurrentSampleIntoInitLHM(sampleIndices[1]);
 					for (Map.Entry<String, Object> entry : rdwrMarkerSet1.getMarkerIdSetLHM().entrySet()) {
 						String key = entry.getKey();
@@ -246,7 +246,7 @@ public class MatrixMergeSamples_opt {
 							entry.setValue(markerValue);
 						}
 					}
-					//rdwrMarkerIdSetLHM1 = rdMarkerSet2.fillWrLHMWithRdLHMValue(rdwrMarkerIdSetLHM1, rdMarkerIdSetLHM2);
+					//rdwrMarkerIdSetLHM1 = rdMarkerSet2.replaceWithValuesFrom(rdwrMarkerIdSetLHM1, rdMarkerIdSetLHM2);
 				}
 
 				//Write wrMarkerIdSetLHM to A3 ArrayChar and save to wrMatrix

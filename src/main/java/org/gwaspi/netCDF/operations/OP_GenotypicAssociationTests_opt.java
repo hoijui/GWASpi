@@ -83,7 +83,7 @@ public class OP_GenotypicAssociationTests_opt {
 
 			//retrieve chromosome info
 			rdMarkerSet.fillMarkerSetLHMWithChrAndPos();
-			wrMarkerSetLHM = rdMarkerSet.fillWrLHMWithRdLHMValue(wrMarkerSetLHM, rdMarkerSet.getMarkerIdSetLHM());
+			wrMarkerSetLHM = rdMarkerSet.replaceWithValuesFrom(wrMarkerSetLHM, rdMarkerSet.getMarkerIdSetLHM());
 			Map<String, Object> rdChrInfoSetLHM = org.gwaspi.netCDF.matrices.Utils.aggregateChromosomeInfo(wrMarkerSetLHM, 0, 1);
 
 			NetcdfFileWriteable wrOPNcFile = null;

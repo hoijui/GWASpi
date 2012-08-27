@@ -181,12 +181,12 @@ public class MatrixGenotypesFlipper {
 
 			//MARKERSET RSID
 			rdMarkerSet.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_RSID);
-			rdMarkerIdSetLHM = rdMarkerSet.fillWrLHMWithRdLHMValue(rdMarkerIdSetLHM, rdMarkerSet.getMarkerIdSetLHM());
+			rdMarkerIdSetLHM = rdMarkerSet.replaceWithValuesFrom(rdMarkerIdSetLHM, rdMarkerSet.getMarkerIdSetLHM());
 			Utils.saveCharLHMValueToWrMatrix(wrNcFile, rdMarkerIdSetLHM, cNetCDF.Variables.VAR_MARKERS_RSID, cNetCDF.Strides.STRIDE_MARKER_NAME);
 
 			//MARKERSET CHROMOSOME
 			rdMarkerSet.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
-			rdMarkerIdSetLHM = rdMarkerSet.fillWrLHMWithRdLHMValue(rdMarkerIdSetLHM, rdMarkerSet.getMarkerIdSetLHM());
+			rdMarkerIdSetLHM = rdMarkerSet.replaceWithValuesFrom(rdMarkerIdSetLHM, rdMarkerSet.getMarkerIdSetLHM());
 			Utils.saveCharLHMValueToWrMatrix(wrNcFile, rdMarkerIdSetLHM, cNetCDF.Variables.VAR_MARKERS_CHR, cNetCDF.Strides.STRIDE_CHR);
 
 			//Set of chromosomes found in matrix along with number of markersinfo
@@ -198,14 +198,14 @@ public class MatrixGenotypesFlipper {
 
 			//MARKERSET POSITION
 			rdMarkerSet.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_POS);
-			rdMarkerIdSetLHM = rdMarkerSet.fillWrLHMWithRdLHMValue(rdMarkerIdSetLHM, rdMarkerSet.getMarkerIdSetLHM());
+			rdMarkerIdSetLHM = rdMarkerSet.replaceWithValuesFrom(rdMarkerIdSetLHM, rdMarkerSet.getMarkerIdSetLHM());
 			//Utils.saveCharLHMValueToWrMatrix(wrNcFile, rdMarkerIdSetLHM, cNetCDF.Variables.VAR_MARKERS_POS, cNetCDF.Strides.STRIDE_POS);
 			Utils.saveIntLHMD1ToWrMatrix(wrNcFile, rdMarkerIdSetLHM, cNetCDF.Variables.VAR_MARKERS_POS);
 
 
 			//MARKERSET DICTIONARY ALLELES
 			rdMarkerSet.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_BASES_DICT);
-			rdMarkerIdSetLHM = rdMarkerSet.fillWrLHMWithRdLHMValue(rdMarkerIdSetLHM, rdMarkerSet.getMarkerIdSetLHM());
+			rdMarkerIdSetLHM = rdMarkerSet.replaceWithValuesFrom(rdMarkerIdSetLHM, rdMarkerSet.getMarkerIdSetLHM());
 			for (Map.Entry<String, Object> entry : rdMarkerIdSetLHM.entrySet()) {
 				String markerId = entry.getKey();
 				if (markerFlipHS.contains(markerId)) {
@@ -218,7 +218,7 @@ public class MatrixGenotypesFlipper {
 
 			//GENOTYPE STRAND
 			rdMarkerSet.fillInitLHMWithVariable(cNetCDF.Variables.VAR_GT_STRAND);
-			rdMarkerIdSetLHM = rdMarkerSet.fillWrLHMWithRdLHMValue(rdMarkerIdSetLHM, rdMarkerSet.getMarkerIdSetLHM());
+			rdMarkerIdSetLHM = rdMarkerSet.replaceWithValuesFrom(rdMarkerIdSetLHM, rdMarkerSet.getMarkerIdSetLHM());
 
 			for (Map.Entry<String, Object> entry : rdMarkerIdSetLHM.entrySet()) {
 				String markerId = entry.getKey();

@@ -63,7 +63,7 @@ public class LoadGTFromHapmapFiles {
 		gtCode = _gtCode;
 		description = _description;
 
-		//TODO: check if real samplefiles coincides with sampleInfoFile
+		// TODO check if real samplefiles coincides with sampleInfoFile
 		File hapmapGTFile = new File(gtFilePath);
 		if (hapmapGTFile.isDirectory()) {
 			File[] gtFilesToImport = org.gwaspi.global.Utils.listFiles(gtFilePath, false);
@@ -250,7 +250,7 @@ public class LoadGTFromHapmapFiles {
 
 
 		//WRITE GT STRAND FROM ANNOTATION FILE
-		//TODO: Strand info is buggy in Hapmap bulk download!
+		// TODO Strand info is buggy in Hapmap bulk download!
 		int[] gtOrig = new int[]{0, 0};
 		markersD2 = org.gwaspi.netCDF.operations.Utils.writeLHMValueItemToD2ArrayChar(wrMarkerSetLHM, 4, cNetCDF.Strides.STRIDE_STRAND);
 

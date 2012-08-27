@@ -101,7 +101,7 @@ public class GenericReportGenerator {
 			dataSetLHM.put(key, data);
 		}
 
-		rdInfoMarkerSet.fillInitLHMWithMyValue(0);
+		rdInfoMarkerSet.fillWith(0);
 		rdInfoMarkerSet.fillInitLHMWithVariable(org.gwaspi.constants.cNetCDF.Variables.VAR_MARKERS_POS);
 		if (rdInfoMarkerSet.getMarkerIdSetLHM() != null) {
 			for (Map.Entry<String, Object> entry : rdInfoMarkerSet.getMarkerIdSetLHM().entrySet()) {
@@ -629,7 +629,7 @@ public class GenericReportGenerator {
 			}
 
 
-			rdInfoMarkerSet.fillInitLHMWithMyValue(0);
+			rdInfoMarkerSet.fillWith(0);
 			rdInfoMarkerSet.fillInitLHMWithVariable(org.gwaspi.constants.cNetCDF.Variables.VAR_MARKERS_POS);
 			for (Map.Entry<String, Object> entry : dataSetLHM.entrySet()) {
 				String key = entry.getKey();
@@ -777,7 +777,7 @@ public class GenericReportGenerator {
 				dataSetLHM.put(key, data);
 			}
 
-			rdInfoMarkerSet.fillInitLHMWithMyValue(0);
+			rdInfoMarkerSet.fillWith(0);
 			rdInfoMarkerSet.fillInitLHMWithVariable(org.gwaspi.constants.cNetCDF.Variables.VAR_MARKERS_POS);
 			for (Map.Entry<String, Object> entry : rdInfoMarkerSet.getMarkerIdSetLHM().entrySet()) {
 				String key = entry.getKey();

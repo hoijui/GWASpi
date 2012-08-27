@@ -57,7 +57,7 @@ public class EigensoftFormatter implements Formatter {
 
 		//PURGE MARKERSET
 		rdMarkerSet.initFullMarkerIdSetLHM();
-		rdMarkerSet.fillInitLHMWithMyValue("");
+		rdMarkerSet.fillWith("");
 
 		//MARKERSET CHROMOSOME
 		rdMarkerSet.fillInitLHMWithVariable(org.gwaspi.constants.cNetCDF.Variables.VAR_MARKERS_CHR);
@@ -70,7 +70,7 @@ public class EigensoftFormatter implements Formatter {
 			StringBuilder value = new StringBuilder(entry.getValue().toString());
 			value.append(sep);
 			value.append("0");
-			rdMarkerSet.getMarkerIdSetLHM().put(entry.getKey(), value); // FIXME use value.toString() instead?
+			rdMarkerSet.getMarkerIdSetLHM().put(entry.getKey(), value.toString());
 		}
 
 		//MARKERSET POSITION

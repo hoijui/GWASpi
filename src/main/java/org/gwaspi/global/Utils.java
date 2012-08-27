@@ -336,7 +336,7 @@ public class Utils {
 //		}
 	}
 
-	public static boolean checkIntenetConnection() { // FIXME inteRnet?
+	public static boolean checkInternetConnection() {
 		boolean isConnected = false;
 		try {
 			Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
@@ -367,43 +367,47 @@ public class Utils {
 	//</editor-fold>
 	// <editor-fold defaultstate="collapsed" desc="Logging methods">
 	public static String sysoutStart(String message) {
+		String printMessage;
 		if (message == null || message.isEmpty()) {
-			message = "******* Started Operation at " + org.gwaspi.global.Utils.getMediumDateTimeAsString() + " *******";
+			printMessage = "******* Started Operation at " + org.gwaspi.global.Utils.getMediumDateTimeAsString() + " *******";
 		} else {
-			message = "******* Started " + message + " at " + org.gwaspi.global.Utils.getMediumDateTimeAsString() + " *******";
+			printMessage = "******* Started " + message + " at " + org.gwaspi.global.Utils.getMediumDateTimeAsString() + " *******";
 		}
-		System.out.println(message);
-		return message;
+		System.out.println(printMessage);
+		return printMessage;
 	}
 
 	public static String sysoutCompleted(String message) {
+		String printMessage;
 		if (message == null || message.isEmpty()) {
-			message = "===> Completed Operation at " + org.gwaspi.global.Utils.getMediumDateTimeAsString() + " <===";
+			printMessage = "===> Completed Operation at " + org.gwaspi.global.Utils.getMediumDateTimeAsString() + " <===";
 		} else {
-			message = "===> Completed " + message + " at " + org.gwaspi.global.Utils.getMediumDateTimeAsString() + " <===";
+			printMessage = "===> Completed " + message + " at " + org.gwaspi.global.Utils.getMediumDateTimeAsString() + " <===";
 		}
-		System.out.println(message);
-		return message;
+		System.out.println(printMessage);
+		return printMessage;
 	}
 
 	public static String sysoutFinish(String message) {
+		String printMessage;
 		if (message == null || message.isEmpty()) {
-			message = "################# Finished Operation at " + org.gwaspi.global.Utils.getMediumDateTimeAsString() + " #################\n\n";
+			printMessage = "################# Finished Operation at " + org.gwaspi.global.Utils.getMediumDateTimeAsString() + " #################\n\n";
 		} else {
-			message = "################# Finished " + message + " at " + org.gwaspi.global.Utils.getMediumDateTimeAsString() + " #################\n\n";
+			printMessage = "################# Finished " + message + " at " + org.gwaspi.global.Utils.getMediumDateTimeAsString() + " #################\n\n";
 		}
-		System.out.println(message);
-		return message;
+		System.out.println(printMessage);
+		return printMessage;
 	}
 
 	public static String sysoutError(String message) {
+		String printMessage;
 		if (message == null || message.isEmpty()) {
-			message = "!!!!! Error encountered at " + org.gwaspi.global.Utils.getMediumDateTimeAsString() + " !!!!!";
+			printMessage = "!!!!! Error encountered at " + org.gwaspi.global.Utils.getMediumDateTimeAsString() + " !!!!!";
 		} else {
-			message = "!!!!! Error encountered perfoming " + message + " at " + org.gwaspi.global.Utils.getMediumDateTimeAsString() + " !!!!!";
+			printMessage = "!!!!! Error encountered perfoming " + message + " at " + org.gwaspi.global.Utils.getMediumDateTimeAsString() + " !!!!!";
 		}
-		System.out.println(message);
-		return message;
+		System.out.println(printMessage);
+		return printMessage;
 	}
 
 	/**

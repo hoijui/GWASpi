@@ -385,32 +385,27 @@ public class MarkerSet_opt {
 		}
 	}
 
-	public void fillInitLHMWithMyValue(Object defaultVal) {
-		for (Map.Entry<String, Object> entry : markerIdSetLHM.entrySet()) {
-			entry.setValue(defaultVal);
-		}
+	public void fillWith(Object value) {
+		fillWith(markerIdSetLHM, value);
 	}
 
-	public Map<String, Object> fillLHMWithMyValue(Map<String, Object> lhm, Object defaultVal) {
-		for (Map.Entry<String, Object> entry : lhm.entrySet()) {
+	public static <K, V> Map<K, V> fillWith(Map<K, V> map, V defaultVal) {
+
+		for (Map.Entry<K, V> entry : map.entrySet()) {
 			entry.setValue(defaultVal);
 		}
-		return lhm;
+
+		return map;
 	}
 
 	//HELPERS TO TRANSFER VALUES FROM ONE LHM TO ANOTHER
-	public Map<String, Object> fillWrLHMWithRdLHMValue(Map<String, Object> wrLHM, Map<String, Object> rdLHM) {
-		for (Map.Entry<String, Object> entry : wrLHM.entrySet()) {
-			entry.setValue(rdLHM.get(entry.getKey()));
-		}
-		return wrLHM;
-	}
+	public static<K, V> Map<K, V> replaceWithValuesFrom(Map<K, V> toBeModified, Map<K, V> newValuesSource) {
 
-	public Map<String, int[]> fillWrLHMWithRdLHMIntArray(Map<String, int[]> wrLHM, Map<String, int[]> rdLHM) { // FIXME merge into fillWrLHMWithRdLHMValue using smarter generics
-		for (Map.Entry<String, int[]> entry : wrLHM.entrySet()) {
-			entry.setValue(rdLHM.get(entry.getKey()));
+		for (Map.Entry<K, V> entry : toBeModified.entrySet()) {
+			entry.setValue(newValuesSource.get(entry.getKey()));
 		}
-		return wrLHM;
+
+		return toBeModified;
 	}
 
 	//HELPER TO APPEND VALUE TO AN EXISTING LHM CHAR VALUE
@@ -491,8 +486,8 @@ public class MarkerSet_opt {
 	/**
 	 * HELPER GETS DICTIONARY OF CURRENT MATRIX. IS CONCURRENT TO INSTANTIATED LHM
 	 */
-	public Map<String, Object> getDictionaryBasesLHM() throws IOException {
-		Map<String, Object> dictionnaryLHM = new LinkedHashMap<String, Object>();
+	public Map<String, Object> getDictionaryBases() throws IOException {
+		Map<String, Object> dictionnary = new LinkedHashMap<String, Object>();
 		try {
 			Variable varBasesDict = ncfile.findVariable(cNetCDF.Variables.VAR_MARKERS_BASES_DICT);
 			if (null != varBasesDict) {
@@ -509,14 +504,14 @@ public class MarkerSet_opt {
 					for (int j = 0; j < dictShape[1]; j++) {
 						alleles.append(dictAlleles_ACD2.getChar(index.set(i, j)));
 					}
-					dictionnaryLHM.put(key, alleles.toString().trim());
+					dictionnary.put(key, alleles.toString().trim());
 				}
 			}
 
 		} catch (InvalidRangeException e) {
 			System.out.println("Cannot read data: " + e);
 		}
-		return dictionnaryLHM;
+		return dictionnary;
 	}
 
 	//</editor-fold>

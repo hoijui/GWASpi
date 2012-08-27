@@ -343,7 +343,7 @@ public class Config {
 	}
 
 	public static void checkUpdates() throws IOException, ParseException, ParserConfigurationException, SAXException, URISyntaxException {
-		if (org.gwaspi.global.Utils.checkIntenetConnection()) {
+		if (org.gwaspi.global.Utils.checkInternetConnection()) {
 			URL localVersionPath = Config.class.getClass().getResource(org.gwaspi.constants.cGlobal.LOCAL_VERSION_XML);
 			Document localDom = org.gwaspi.global.XMLParser.parseXmlFile(localVersionPath.toURI().toString());
 

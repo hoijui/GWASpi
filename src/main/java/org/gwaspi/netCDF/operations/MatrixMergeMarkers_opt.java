@@ -272,11 +272,11 @@ public class MatrixMergeMarkers_opt {
 				int[] sampleIndices = (int[]) value; // position[rdPos matrix 1, rdPos matrix 2]
 
 				// Read from Matrix1
-				rdMarkerSet1.fillInitLHMWithMyValue(org.gwaspi.constants.cNetCDF.Defaults.DEFAULT_GT);
+				rdMarkerSet1.fillWith(org.gwaspi.constants.cNetCDF.Defaults.DEFAULT_GT);
 				rdMarkerSet1.fillGTsForCurrentSampleIntoInitLHM(sampleIndices[0]);
 
 				// Read from Matrix2
-				rdMarkerSet2.fillInitLHMWithMyValue(org.gwaspi.constants.cNetCDF.Defaults.DEFAULT_GT);
+				rdMarkerSet2.fillWith(org.gwaspi.constants.cNetCDF.Defaults.DEFAULT_GT);
 				rdMarkerSet2.fillGTsForCurrentSampleIntoInitLHM(sampleIndices[1]);
 
 
@@ -355,10 +355,10 @@ public class MatrixMergeMarkers_opt {
 		Map<String, Object> workLHM = new LinkedHashMap<String, Object>();
 		rdMarkerSet1.initFullMarkerIdSetLHM();
 		rdMarkerSet2.initFullMarkerIdSetLHM();
-		rdMarkerSet1.fillInitLHMWithMyValue("");
+		rdMarkerSet1.fillWith("");
 		rdMarkerSet1.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
 		workLHM.putAll(rdMarkerSet1.getMarkerIdSetLHM());
-		rdMarkerSet1.fillInitLHMWithMyValue("");
+		rdMarkerSet1.fillWith("");
 		rdMarkerSet1.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_POS);
 		for (Map.Entry<String, Object> entry : workLHM.entrySet()) {
 			String markerId = entry.getKey();
@@ -377,10 +377,10 @@ public class MatrixMergeMarkers_opt {
 
 		//GET 2nd MATRIX LHM WITH CHR AND POS
 		Map<String, Object> workLHM2 = new LinkedHashMap<String, Object>();
-		rdMarkerSet2.fillInitLHMWithMyValue("");
+		rdMarkerSet2.fillWith("");
 		rdMarkerSet2.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
 		workLHM2.putAll(rdMarkerSet2.getMarkerIdSetLHM());
-		rdMarkerSet2.fillInitLHMWithMyValue("");
+		rdMarkerSet2.fillWith("");
 		rdMarkerSet2.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_POS);
 		for (Map.Entry<String, Object> entry : workLHM2.entrySet()) {
 			String markerId = entry.getKey();

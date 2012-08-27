@@ -56,7 +56,7 @@ public class PlinkBinaryFormatter implements Formatter {
 
 		//PURGE MARKERSET
 		rdMarkerSet.initFullMarkerIdSetLHM();
-		rdMarkerSet.fillInitLHMWithMyValue("");
+		rdMarkerSet.fillWith("");
 
 		//MARKERSET CHROMOSOME
 		rdMarkerSet.fillInitLHMWithVariable(org.gwaspi.constants.cNetCDF.Variables.VAR_MARKERS_CHR);
@@ -69,7 +69,7 @@ public class PlinkBinaryFormatter implements Formatter {
 			StringBuilder value = new StringBuilder(entry.getValue().toString());
 			value.append(sep);
 			value.append("0");
-			entry.setValue(value); // FIXME use toString() instead?
+			entry.setValue(value.toString());
 		}
 
 		//MARKERSET POSITION

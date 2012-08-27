@@ -160,7 +160,7 @@ public class MatrixTranslator_opt {
 
 				//MARKERSET DICTIONARY ALLELES
 				rdMarkerSet.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_BASES_DICT);
-				wrMarkerIdSetLHM = rdMarkerSet.fillWrLHMWithRdLHMValue(wrMarkerIdSetLHM, rdMarkerSet.getMarkerIdSetLHM());
+				wrMarkerIdSetLHM = rdMarkerSet.replaceWithValuesFrom(wrMarkerIdSetLHM, rdMarkerSet.getMarkerIdSetLHM());
 				Utils.saveCharLHMValueToWrMatrix(wrNcFile, wrMarkerIdSetLHM, cNetCDF.Variables.VAR_MARKERS_BASES_DICT, cNetCDF.Strides.STRIDE_GT);
 
 				//GENOTYPE STRAND
@@ -174,7 +174,7 @@ public class MatrixTranslator_opt {
 				//<editor-fold defaultstate="collapsed" desc="GENOTYPES WRITER">
 
 				//Get correct bases dictionary for translation
-				Map<String, Object> dictionnaryLHM = rdMarkerSet.getDictionaryBasesLHM();
+				Map<String, Object> dictionnaryLHM = rdMarkerSet.getDictionaryBases();
 
 				//Iterate through Samples, use Sample item position to read all Markers GTs from rdMarkerIdSetLHM.
 				int sampleIndex = 0;

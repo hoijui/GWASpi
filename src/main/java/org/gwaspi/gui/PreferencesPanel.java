@@ -220,7 +220,7 @@ public class PreferencesPanel extends javax.swing.JPanel {
 				String[] tmp = tbl_PreferencesTable.getValueAt(i, 1).toString().split(",");
 				if (tmp.length == 3) {
 					try {
-						// FIXME This code does nothing... logic error?
+						// XXX This code does nothing... logic error?
 						int redInt = Integer.parseInt(tmp[0]);
 						if (redInt < 0 || redInt > 255) {
 							redInt = redInt % 255;

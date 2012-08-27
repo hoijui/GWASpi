@@ -48,7 +48,7 @@ public class URLInDefaultBrowser {
 
 
 		try {
-			if (org.gwaspi.global.Utils.checkIntenetConnection() && desktop.isSupported(java.awt.Desktop.Action.BROWSE)) {
+			if (org.gwaspi.global.Utils.checkInternetConnection() && desktop.isSupported(java.awt.Desktop.Action.BROWSE)) {
 				java.net.URI uri = new java.net.URI(url);
 				desktop.browse(uri);
 			} else {
@@ -64,7 +64,7 @@ public class URLInDefaultBrowser {
 		//String helpDir = org.gwaspi.global.Config.getConfigValue("HelpDir", "");
 		String url;
 
-		if (!org.gwaspi.global.Utils.checkIntenetConnection()) {
+		if (!org.gwaspi.global.Utils.checkInternetConnection()) {
 			String[] resourceURL = URLInDefaultBrowser.class.getClass().getResource("/img/logo/logo_white.png").toString().split("/");
 			StringBuilder sb = new StringBuilder("/");
 			for (int i = 1; i < resourceURL.length - 4; i++) {

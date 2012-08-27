@@ -34,7 +34,7 @@ public class ManhattanPlotImageLabel extends JLabel {
 		imageObserver = icon.getImageObserver();
 	}
 
-	// TODO Check, because this was meant to "overload setIcon method"
+	// TODO Check, because this was meant to "overload setIcon method" (<- original comment) of class JLabel
 	void setIcon(ImageIcon icon) {
 		ManhattanChartDisplay.fired = false;
 		image = icon.getImage();

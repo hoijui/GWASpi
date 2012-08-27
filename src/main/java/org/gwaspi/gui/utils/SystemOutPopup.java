@@ -41,7 +41,7 @@ public class SystemOutPopup extends JFrame {
 	// Class information
 	private boolean catchErrors;
 	private boolean logFile;
-	private static String matrixId; // FIXME Should this really be static?
+	private String matrixId;
 	private int width;
 	private int height;
 	private int closeOperation;
@@ -174,7 +174,7 @@ public class SystemOutPopup extends JFrame {
 		}
 	}
 
-	protected void startRunning() {
+	private void startRunning() {
 		URL logoPath = this.getClass().getResource("/img/logo/bigrotation2.gif"); // FIXME this file does not exist!
 		Icon logo = new ImageIcon(logoPath);
 

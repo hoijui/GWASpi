@@ -322,11 +322,14 @@ public final class ManhattanChartDisplay extends javax.swing.JPanel {
 		int selectedChrMap = Math.round(pxXposNoLeftPad / chrPlotWidthPad);
 
 		int[] chrInfo = new int[4];
-		Iterator it = chrSetInfoLHM.keySet().iterator(); // FIXME unuse Iterator
-		for (int i = 0; i <= selectedChrMap && i < chrSetInfoLHM.size(); i++) {
-			Object key = it.next();
-			chr = key.toString();
-			chrInfo = (int[]) chrSetInfoLHM.get(key); //Nb of markers, first physical position, last physical position, start index number in MarkerSet,
+		int i = 0;
+		for (Map.Entry<String, Object> entry : chrSetInfoLHM.entrySet()) {
+			if ((i > selectedChrMap) || (i >= chrSetInfoLHM.size())) {
+				break;
+			}
+			chr = entry.getKey();
+			chrInfo = (int[]) entry.getValue(); //Nb of markers, first physical position, last physical position, start index number in MarkerSet,
+			i++;
 		}
 
 //		System.out.println("getChrInfo");

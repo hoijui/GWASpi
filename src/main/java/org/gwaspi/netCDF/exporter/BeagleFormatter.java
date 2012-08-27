@@ -181,7 +181,7 @@ class BeagleFormatter implements Formatter {
 			//     Allele 2
 
 			//PURGE MARKERSET
-			rdMarkerSet.fillInitLHMWithMyValue("");
+			rdMarkerSet.fillWith("");
 
 			//MARKERSET RSID
 			rdMarkerSet.fillInitLHMWithVariable(org.gwaspi.constants.cNetCDF.Variables.VAR_MARKERS_RSID);

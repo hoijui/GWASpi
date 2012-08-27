@@ -139,7 +139,7 @@ public class OP_MarkerCensus_opt {
 
 			MarkerSet_opt rdMarkerSet = new MarkerSet_opt(rdMatrixMetadata.getStudyId(), rdMatrixId);
 			rdMarkerSet.initFullMarkerIdSetLHM();
-			rdMarkerSet.fillInitLHMWithMyValue(cNetCDF.Defaults.DEFAULT_GT);
+			rdMarkerSet.fillWith(cNetCDF.Defaults.DEFAULT_GT);
 
 			Map<String, Object> wrMarkerSetLHM = new LinkedHashMap();
 			wrMarkerSetLHM.putAll(rdMarkerSet.getMarkerIdSetLHM());

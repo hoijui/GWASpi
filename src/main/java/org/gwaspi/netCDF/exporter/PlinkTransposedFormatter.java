@@ -50,7 +50,7 @@ public class PlinkTransposedFormatter implements Formatter {
 			//Genotypes
 
 			//PURGE MARKERSET
-			rdMarkerSet.fillInitLHMWithMyValue("");
+			rdMarkerSet.fillWith("");
 
 			//MARKERSET CHROMOSOME
 			rdMarkerSet.fillInitLHMWithVariable(org.gwaspi.constants.cNetCDF.Variables.VAR_MARKERS_CHR);
@@ -63,7 +63,7 @@ public class PlinkTransposedFormatter implements Formatter {
 				StringBuilder value = new StringBuilder(entry.getValue().toString());
 				value.append(sep);
 				value.append("0");
-				entry.setValue(value); // FIXME use toString()?
+				entry.setValue(value.toString());
 			}
 
 			//MARKERSET POSITION
