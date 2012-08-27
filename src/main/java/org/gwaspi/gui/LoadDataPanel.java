@@ -654,18 +654,18 @@ public class LoadDataPanel extends javax.swing.JPanel {
 				if (decision == JOptionPane.YES_OPTION) {
 					//ASK MORE QUESTIONS
 					gwasParams = org.gwaspi.gui.utils.MoreGWASinOneGoInfo.showGWASInOneGo_Modal(cmb_Format.getSelectedItem().toString());
-					if (gwasParams.proceed) {
-						gwasParams.friendlyName = org.gwaspi.gui.utils.Dialogs.showInputBox(Text.Operation.GTFreqAndHWFriendlyName);
+					if (gwasParams.isProceed()) {
+						gwasParams.setFriendlyName(org.gwaspi.gui.utils.Dialogs.showInputBox(Text.Operation.GTFreqAndHWFriendlyName));
 					}
 				} else if (decision != JOptionPane.CANCEL_OPTION) {
-					gwasParams.proceed = true;
+					gwasParams.setProceed(true);
 				}
 
 				//<editor-fold defaultstate="collapsed" desc="DATA LOAD">
 				if (txtA_NewMatrixDescription.getText().equals(Text.All.optional)) {
 					txtA_NewMatrixDescription.setText("");
 				}
-				if (gwasParams.proceed) {
+				if (gwasParams.isProceed()) {
 					// DO LOAD & GWAS
 					MultiOperations.loadMatrixDoGWASifOK(cmb_Format.getSelectedItem().toString(),
 							dummySamples,
@@ -674,10 +674,9 @@ public class LoadDataPanel extends javax.swing.JPanel {
 							txtA_NewMatrixDescription.getText(),
 							txt_File1.getText(),
 							txt_FileSampleInfo.getText(),
-							txt_File2.getText(),
-							gwasParams.chromosome, //Chr
-							gwasParams.strandType.toString(), //strandType
-							gwasParams.gtCode.toString(), //GtCode
+							txt_File2.getText(), gwasParams.getChromosome(), //Chr
+							gwasParams.getStrandType().toString(), //strandType
+							gwasParams.getGtCode().toString(), //GtCode
 							studyId,
 							gwasParams);
 

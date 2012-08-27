@@ -51,12 +51,12 @@ public class MoreLoadInfoByFormat extends javax.swing.JFrame {
 	// End of variables declaration
 	public static GWASinOneGOParams showMoreInfoByFormat_Modal(String _format) {
 
-		gwasParams.proceed = false;
+		gwasParams.setProceed(false);
 		format = _format;
 
 		switch (org.gwaspi.constants.cImport.ImportFormat.compareTo(format)) {
 			case Affymetrix_GenomeWide6:
-				gwasParams.proceed = true;
+				gwasParams.setProceed(true);
 				break;
 			default:
 				// Create a modal dialog
@@ -215,15 +215,15 @@ public class MoreLoadInfoByFormat extends javax.swing.JFrame {
 	private static void actionGo(ActionEvent evt) {
 		try {
 			if (cmb_Chromosome.getSelectedItem() != null) {
-				gwasParams.chromosome = cmb_Chromosome.getSelectedItem().toString();
+				gwasParams.setChromosome(cmb_Chromosome.getSelectedItem().toString());
 			}
 			if (cmb_Strand.getSelectedItem() != null) {
-				gwasParams.strandType = cmb_Strand.getSelectedItem().toString();
+				gwasParams.setStrandType(cmb_Strand.getSelectedItem().toString());
 			}
 			if (cmb_GTCode.getSelectedItem() != null) {
-				gwasParams.gtCode = cmb_GTCode.getSelectedItem().toString();
+				gwasParams.setGtCode(cmb_GTCode.getSelectedItem().toString());
 			}
-			gwasParams.proceed = true;
+			gwasParams.setProceed(true);
 
 		} catch (NumberFormatException numberFormatException) {
 		}

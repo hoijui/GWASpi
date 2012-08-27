@@ -44,7 +44,7 @@ public class MoreInfoForGtFreq extends javax.swing.JFrame {
 	// End of variables declaration
 	public static GWASinOneGOParams showMoreInfoForQA_Modal() {
 
-		gwasParams.proceed = false;
+		gwasParams.setProceed(false);
 		// Create a modal dialog
 		dialog = new JDialog(myFrame, "Genotype freq. info", true);
 
@@ -213,19 +213,19 @@ public class MoreInfoForGtFreq extends javax.swing.JFrame {
 	private static void actionGo(ActionEvent evt) {
 		if (!txtF_1.getText().isEmpty() && !txtF_SMS.getText().isEmpty()) {
 			try {
-				gwasParams.discardGTMismatches = chkB_1.isSelected();
-				gwasParams.discardMarkerByMisRat = chkB_2.isSelected();
-				gwasParams.discardMarkerMisRatVal = Double.parseDouble(txtF_1.getText());
-				gwasParams.discardSampleByMisRat = chkB_SMS.isSelected();
-				gwasParams.discardSampleMisRatVal = Double.parseDouble(txtF_SMS.getText());
-				gwasParams.discardSampleByHetzyRat = chkB_SHZ.isSelected();
-				gwasParams.discardSampleHetzyRatVal = Double.parseDouble(txtF_SHZ.getText());
-				gwasParams.proceed = true;
+				gwasParams.setDiscardGTMismatches(chkB_1.isSelected());
+				gwasParams.setDiscardMarkerByMisRat(chkB_2.isSelected());
+				gwasParams.setDiscardMarkerMisRatVal(Double.parseDouble(txtF_1.getText()));
+				gwasParams.setDiscardSampleByMisRat(chkB_SMS.isSelected());
+				gwasParams.setDiscardSampleMisRatVal(Double.parseDouble(txtF_SMS.getText()));
+				gwasParams.setDiscardSampleByHetzyRat(chkB_SHZ.isSelected());
+				gwasParams.setDiscardSampleHetzyRatVal(Double.parseDouble(txtF_SHZ.getText()));
+				gwasParams.setProceed(true);
 			} catch (NumberFormatException numberFormatException) {
 			}
 			dialog.dispose();
 		} else {
-			gwasParams.proceed = false;
+			gwasParams.setProceed(false);
 		}
 	}
 

@@ -42,7 +42,7 @@ public class MoreAssocInfo extends javax.swing.JFrame {
 
 	// End of variables declaration
 	public static GWASinOneGOParams showAssocInfo_Modal() {
-		gwasParams.proceed = false;
+		gwasParams.setProceed(false);
 		// Create a modal dialog
 		dialog = new JDialog(myFrame, Text.Operation.gwasInOneGo, true);
 
@@ -180,15 +180,15 @@ public class MoreAssocInfo extends javax.swing.JFrame {
 	private static GWASinOneGOParams actionGo(ActionEvent evt) {
 		if (!txtF_2.getText().isEmpty()) {
 			try {
-				gwasParams.discardMarkerHWCalc = rdioB_1.isSelected();
-				gwasParams.discardMarkerHWFree = rdioB_2.isSelected();
-				gwasParams.discardMarkerHWTreshold = Double.parseDouble(txtF_2.getText());
-				gwasParams.proceed = true;
+				gwasParams.setDiscardMarkerHWCalc(rdioB_1.isSelected());
+				gwasParams.setDiscardMarkerHWFree(rdioB_2.isSelected());
+				gwasParams.setDiscardMarkerHWTreshold(Double.parseDouble(txtF_2.getText()));
+				gwasParams.setProceed(true);
 			} catch (NumberFormatException numberFormatException) {
 			}
 			dialog.dispose();
 		} else {
-			gwasParams.proceed = false;
+			gwasParams.setProceed(false);
 		}
 		return gwasParams;
 	}

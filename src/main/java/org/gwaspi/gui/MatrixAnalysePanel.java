@@ -453,7 +453,7 @@ public class MatrixAnalysePanel extends javax.swing.JPanel {
 					gwasParams = org.gwaspi.gui.utils.MoreAssocInfo.showAssocInfo_Modal();
 				}
 
-				if (gwasParams.proceed) {
+				if (gwasParams.isProceed()) {
 					org.gwaspi.gui.ProcessTab.showTab();
 					//GET HW OPERATION
 					OperationsList hwOPList = new OperationsList(parentMatrix.getMatrixId(), censusOPId, OPType.HARDY_WEINBERG);
@@ -550,7 +550,7 @@ public class MatrixAnalysePanel extends javax.swing.JPanel {
 					gwasParams = org.gwaspi.gui.utils.MoreAssocInfo.showAssocInfo_Modal();
 				}
 
-				if (gwasParams.proceed) {
+				if (gwasParams.isProceed()) {
 					org.gwaspi.gui.ProcessTab.showTab();
 					//GET HW OPERATION
 					OperationsList hwOPList = new OperationsList(parentMatrix.getMatrixId(), censusOPId, OPType.HARDY_WEINBERG);
@@ -648,7 +648,7 @@ public class MatrixAnalysePanel extends javax.swing.JPanel {
 					gwasParams = org.gwaspi.gui.utils.MoreAssocInfo.showAssocInfo_Modal();
 				}
 
-				if (gwasParams.proceed) {
+				if (gwasParams.isProceed()) {
 					org.gwaspi.gui.ProcessTab.showTab();
 					//GET HW OPERATION
 					OperationsList hwOPList = new OperationsList(parentMatrix.getMatrixId(), censusOPId, OPType.HARDY_WEINBERG);
@@ -693,38 +693,38 @@ public class MatrixAnalysePanel extends javax.swing.JPanel {
 			if (phenotypeFile != null) {
 				gwasParams = org.gwaspi.gui.utils.MoreInfoForGtFreq.showMoreInfoForQA_Modal();
 				if (choice != JOptionPane.CANCEL_OPTION) {
-					gwasParams.friendlyName = org.gwaspi.gui.utils.Dialogs.showInputBox(Text.Operation.GTFreqAndHWFriendlyName);
+					gwasParams.setFriendlyName(org.gwaspi.gui.utils.Dialogs.showInputBox(Text.Operation.GTFreqAndHWFriendlyName));
 				}
 			}
 		} else if (choice != JOptionPane.CANCEL_OPTION) {
 			gwasParams = org.gwaspi.gui.utils.MoreInfoForGtFreq.showMoreInfoForQA_Modal();
 			if (choice != JOptionPane.CANCEL_OPTION) {
-				gwasParams.friendlyName = org.gwaspi.gui.utils.Dialogs.showInputBox(Text.Operation.GTFreqAndHWFriendlyName);
+				gwasParams.setFriendlyName(org.gwaspi.gui.utils.Dialogs.showInputBox(Text.Operation.GTFreqAndHWFriendlyName));
 			}
 		}
 
-		if (!gwasParams.discardMarkerByMisRat) {
-			gwasParams.discardMarkerMisRatVal = 1;
+		if (!gwasParams.isDiscardMarkerByMisRat()) {
+			gwasParams.setDiscardMarkerMisRatVal(1);
 		}
-		if (!gwasParams.discardMarkerByHetzyRat) {
-			gwasParams.discardMarkerHetzyRatVal = 1;
+		if (!gwasParams.isDiscardMarkerByHetzyRat()) {
+			gwasParams.setDiscardMarkerHetzyRatVal(1);
 		}
-		if (!gwasParams.discardSampleByMisRat) {
-			gwasParams.discardSampleMisRatVal = 1;
+		if (!gwasParams.isDiscardSampleByMisRat()) {
+			gwasParams.setDiscardSampleMisRatVal(1);
 		}
-		if (!gwasParams.discardSampleByHetzyRat) {
-			gwasParams.discardSampleHetzyRatVal = 1;
+		if (!gwasParams.isDiscardSampleByHetzyRat()) {
+			gwasParams.setDiscardSampleHetzyRatVal(1);
 		}
 
-		if (gwasParams.proceed) {
+		if (gwasParams.isProceed()) {
 			org.gwaspi.gui.ProcessTab.showTab();
 		}
 
 
 		// <editor-fold defaultstate="collapsed" desc="QA BLOCK">
-		if (gwasParams.proceed && missingOPsAL.size() > 0) {
-			gwasParams.proceed = false;
-			gwasParams.proceed = false;
+		if (gwasParams.isProceed() && missingOPsAL.size() > 0) {
+			gwasParams.setProceed(false);
+			gwasParams.setProceed(false);
 			org.gwaspi.gui.utils.Dialogs.showWarningDialogue(org.gwaspi.global.Text.Operation.warnQABeforeAnything + "\n" + org.gwaspi.global.Text.Operation.willPerformOperation);
 			MultiOperations.doMatrixQAs(parentMatrix.getStudyId(), parentMatrix.getMatrixId());
 		}
@@ -732,7 +732,7 @@ public class MatrixAnalysePanel extends javax.swing.JPanel {
 
 
 		// <editor-fold defaultstate="collapsed" desc="GENOTYPE FREQ. & HW BLOCK">
-		if (gwasParams.proceed) {
+		if (gwasParams.isProceed()) {
 			MultiOperations.doGTFreqDoHW(parentMatrix.getStudyId(),
 					parentMatrix.getMatrixId(),
 					phenotypeFile,
@@ -761,32 +761,32 @@ public class MatrixAnalysePanel extends javax.swing.JPanel {
 				phenotypeFile = org.gwaspi.gui.utils.Dialogs.selectFilesAndDirertoriesDialogue(JOptionPane.OK_OPTION);
 				if (phenotypeFile != null) {
 					gwasParams = org.gwaspi.gui.utils.MoreGWASinOneGoInfo.showGWASInOneGo_Modal(matrixMetadata.getTechnology().toString());
-					if (choice != JOptionPane.CANCEL_OPTION && gwasParams.proceed) {
-						gwasParams.friendlyName = org.gwaspi.gui.utils.Dialogs.showInputBox(Text.Operation.GTFreqAndHWFriendlyName);
+					if (choice != JOptionPane.CANCEL_OPTION && gwasParams.isProceed()) {
+						gwasParams.setFriendlyName(org.gwaspi.gui.utils.Dialogs.showInputBox(Text.Operation.GTFreqAndHWFriendlyName));
 					}
 				}
 			} else if (choice != JOptionPane.CANCEL_OPTION) {
 				gwasParams = org.gwaspi.gui.utils.MoreGWASinOneGoInfo.showGWASInOneGo_Modal(matrixMetadata.getTechnology().toString());
-				if (choice != JOptionPane.CANCEL_OPTION && gwasParams.proceed) {
-					gwasParams.friendlyName = org.gwaspi.gui.utils.Dialogs.showInputBox(Text.Operation.GTFreqAndHWFriendlyName);
+				if (choice != JOptionPane.CANCEL_OPTION && gwasParams.isProceed()) {
+					gwasParams.setFriendlyName(org.gwaspi.gui.utils.Dialogs.showInputBox(Text.Operation.GTFreqAndHWFriendlyName));
 				}
 			}
 
-			if (gwasParams.proceed) {
+			if (gwasParams.isProceed()) {
 				org.gwaspi.gui.ProcessTab.showTab();
 			}
 
 			//QA BLOCK
-			if (gwasParams.proceed && missingOPsAL.size() > 0) {
-				gwasParams.proceed = false;
+			if (gwasParams.isProceed() && missingOPsAL.size() > 0) {
+				gwasParams.setProceed(false);
 				org.gwaspi.gui.utils.Dialogs.showWarningDialogue(org.gwaspi.global.Text.Operation.warnQABeforeAnything + "\n" + org.gwaspi.global.Text.Operation.willPerformOperation);
 				MultiOperations.doMatrixQAs(parentMatrix.getStudyId(), parentMatrix.getMatrixId());
 			}
 
 			//GWAS BLOCK
-			if (gwasParams.proceed
+			if (gwasParams.isProceed()
 					&& choice != JOptionPane.CANCEL_OPTION
-					&& (gwasParams.performAllelicTests || gwasParams.performTrendTests)) { //At least one test has been picked
+					&& (gwasParams.isPerformAllelicTests() || gwasParams.isPerformTrendTests())) { //At least one test has been picked
 				System.out.println(org.gwaspi.global.Text.All.processing);
 				org.gwaspi.gui.StartGWASpi.mainGUIFrame.setCursor(org.gwaspi.gui.utils.CursorUtils.waitCursor);
 				Set<Object> affectionStates = SamplesParser.getDBAffectionStates(parentMatrix.getMatrixId()); //use Sample Info file affection state

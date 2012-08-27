@@ -60,7 +60,7 @@ public class MoreGWASinOneGoInfo extends javax.swing.JFrame {
 	// End of variables declaration
 	public static GWASinOneGOParams showGWASInOneGo_Modal(String _format) {
 		// Create a modal dialog
-		gwasParams.proceed = false;
+		gwasParams.setProceed(false);
 		dialog = new JDialog(myFrame, Text.Operation.gwasInOneGo, true);
 		format = _format;
 
@@ -372,38 +372,38 @@ public class MoreGWASinOneGoInfo extends javax.swing.JFrame {
 		if (!txtF_MMS.getText().isEmpty() && !txtF_HW_free.getText().isEmpty() && !txtF_SMS.getText().isEmpty()) {
 			try {
 
-				gwasParams.performAllelicTests = chkB_allelic.isSelected();
-				gwasParams.performGenotypicTests = chkB_geno.isSelected();
-				gwasParams.performTrendTests = chkB_trend.isSelected();
+				gwasParams.setPerformAllelicTests(chkB_allelic.isSelected());
+				gwasParams.setPerformGenotypicTests(chkB_geno.isSelected());
+				gwasParams.setPerformTrendTests(chkB_trend.isSelected());
 
 				if (cmb_Chromosome.getSelectedItem() != null) {
-					gwasParams.chromosome = cmb_Chromosome.getSelectedItem().toString();
+					gwasParams.setChromosome(cmb_Chromosome.getSelectedItem().toString());
 				}
 				if (cmb_Strand.getSelectedItem() != null) {
-					gwasParams.strandType = cmb_Strand.getSelectedItem().toString();
+					gwasParams.setStrandType(cmb_Strand.getSelectedItem().toString());
 				}
 				if (cmb_GTCode.getSelectedItem() != null) {
-					gwasParams.gtCode = cmb_GTCode.getSelectedItem().toString();
+					gwasParams.setGtCode(cmb_GTCode.getSelectedItem().toString());
 				}
 
-				gwasParams.discardGTMismatches = chkB_MMM.isSelected();
-				gwasParams.discardMarkerByMisRat = chkB_MMS.isSelected();
-				gwasParams.discardMarkerMisRatVal = Double.parseDouble(txtF_MMS.getText());
+				gwasParams.setDiscardGTMismatches(chkB_MMM.isSelected());
+				gwasParams.setDiscardMarkerByMisRat(chkB_MMS.isSelected());
+				gwasParams.setDiscardMarkerMisRatVal(Double.parseDouble(txtF_MMS.getText()));
 //				gwasParams.discardMarkerByHetzyRat = chkB_MHZ.isSelected();
 //				gwasParams.discardMarkerHetzyRatVal = Double.parseDouble(txtF_MHZ.getText());
-				gwasParams.discardMarkerHWCalc = rdioB_HW_Calc.isSelected();
-				gwasParams.discardMarkerHWFree = rdioB_HW_free.isSelected();
-				gwasParams.discardMarkerHWTreshold = Double.parseDouble(txtF_HW_free.getText());
-				gwasParams.discardSampleByMisRat = chkB_SMS.isSelected();
-				gwasParams.discardSampleMisRatVal = Double.parseDouble(txtF_SMS.getText());
-				gwasParams.discardSampleByHetzyRat = chkB_SHZ.isSelected();
-				gwasParams.discardSampleHetzyRatVal = Double.parseDouble(txtF_SHZ.getText());
-				gwasParams.proceed = true;
+				gwasParams.setDiscardMarkerHWCalc(rdioB_HW_Calc.isSelected());
+				gwasParams.setDiscardMarkerHWFree(rdioB_HW_free.isSelected());
+				gwasParams.setDiscardMarkerHWTreshold(Double.parseDouble(txtF_HW_free.getText()));
+				gwasParams.setDiscardSampleByMisRat(chkB_SMS.isSelected());
+				gwasParams.setDiscardSampleMisRatVal(Double.parseDouble(txtF_SMS.getText()));
+				gwasParams.setDiscardSampleByHetzyRat(chkB_SHZ.isSelected());
+				gwasParams.setDiscardSampleHetzyRatVal(Double.parseDouble(txtF_SHZ.getText()));
+				gwasParams.setProceed(true);
 			} catch (NumberFormatException numberFormatException) {
 			}
 			dialog.dispose();
 		} else {
-			gwasParams.proceed = false;
+			gwasParams.setProceed(false);
 		}
 		return gwasParams;
 	}

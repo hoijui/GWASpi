@@ -6,26 +6,186 @@ package org.gwaspi.netCDF.operations;
  * IBE, Institute of Evolutionary Biology (UPF-CSIC)
  * CEXS-UPF-PRBB
  */
-public class GWASinOneGOParams { // TODO re-factor this whole thing
+public class GWASinOneGOParams {
 
-	public boolean proceed = false;
-	public boolean performAllelicTests = true;
-	public boolean performGenotypicTests = true;
-	public boolean performTrendTests = true;
-	public boolean discardGTMismatches = true;
-	public boolean discardMarkerByMisRat = true;
-	public double discardMarkerMisRatVal = 0;
-	public boolean discardMarkerByHetzyRat = false;
-	public double discardMarkerHetzyRatVal = 0;
-	public boolean discardMarkerHWCalc = true;
-	public boolean discardMarkerHWFree = false;
-	public double discardMarkerHWTreshold = 0;
-	public boolean discardSampleByMisRat = true;
-	public double discardSampleMisRatVal = 0;
-	public boolean discardSampleByHetzyRat = false;
-	public double discardSampleHetzyRatVal = 0;
-	public String chromosome = "";
-	public String strandType = org.gwaspi.constants.cNetCDF.Defaults.StrandType.UNKNOWN.toString();
-	public String gtCode = org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding.UNKNOWN.toString();
-	public String friendlyName = "";
+	private boolean proceed = false;
+	private boolean performAllelicTests = true;
+	private boolean performGenotypicTests = true;
+	private boolean performTrendTests = true;
+	private boolean discardGTMismatches = true;
+	private boolean discardMarkerByMisRat = true;
+	private double discardMarkerMisRatVal = 0;
+	private boolean discardMarkerByHetzyRat = false;
+	private double discardMarkerHetzyRatVal = 0;
+	private boolean discardMarkerHWCalc = true;
+	private boolean discardMarkerHWFree = false;
+	private double discardMarkerHWTreshold = 0;
+	private boolean discardSampleByMisRat = true;
+	private double discardSampleMisRatVal = 0;
+	private boolean discardSampleByHetzyRat = false;
+	private double discardSampleHetzyRatVal = 0;
+	private String chromosome = "";
+	private String strandType = org.gwaspi.constants.cNetCDF.Defaults.StrandType.UNKNOWN.toString();
+	private String gtCode = org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding.UNKNOWN.toString();
+	private String friendlyName = "";
+
+	public boolean isProceed() {
+		return proceed;
+	}
+
+	public void setProceed(boolean proceed) {
+		this.proceed = proceed;
+	}
+
+	public boolean isPerformAllelicTests() {
+		return performAllelicTests;
+	}
+
+	public void setPerformAllelicTests(boolean performAllelicTests) {
+		this.performAllelicTests = performAllelicTests;
+	}
+
+	public boolean isPerformGenotypicTests() {
+		return performGenotypicTests;
+	}
+
+	public void setPerformGenotypicTests(boolean performGenotypicTests) {
+		this.performGenotypicTests = performGenotypicTests;
+	}
+
+	public boolean isPerformTrendTests() {
+		return performTrendTests;
+	}
+
+	public void setPerformTrendTests(boolean performTrendTests) {
+		this.performTrendTests = performTrendTests;
+	}
+
+	public boolean isDiscardGTMismatches() {
+		return discardGTMismatches;
+	}
+
+	public void setDiscardGTMismatches(boolean discardGTMismatches) {
+		this.discardGTMismatches = discardGTMismatches;
+	}
+
+	public boolean isDiscardMarkerByMisRat() {
+		return discardMarkerByMisRat;
+	}
+
+	public void setDiscardMarkerByMisRat(boolean discardMarkerByMisRat) {
+		this.discardMarkerByMisRat = discardMarkerByMisRat;
+	}
+
+	public double getDiscardMarkerMisRatVal() {
+		return discardMarkerMisRatVal;
+	}
+
+	public void setDiscardMarkerMisRatVal(double discardMarkerMisRatVal) {
+		this.discardMarkerMisRatVal = discardMarkerMisRatVal;
+	}
+
+	public boolean isDiscardMarkerByHetzyRat() {
+		return discardMarkerByHetzyRat;
+	}
+
+	public void setDiscardMarkerByHetzyRat(boolean discardMarkerByHetzyRat) {
+		this.discardMarkerByHetzyRat = discardMarkerByHetzyRat;
+	}
+
+	public double getDiscardMarkerHetzyRatVal() {
+		return discardMarkerHetzyRatVal;
+	}
+
+	public void setDiscardMarkerHetzyRatVal(double discardMarkerHetzyRatVal) {
+		this.discardMarkerHetzyRatVal = discardMarkerHetzyRatVal;
+	}
+
+	public boolean isDiscardMarkerHWCalc() {
+		return discardMarkerHWCalc;
+	}
+
+	public void setDiscardMarkerHWCalc(boolean discardMarkerHWCalc) {
+		this.discardMarkerHWCalc = discardMarkerHWCalc;
+	}
+
+	public boolean isDiscardMarkerHWFree() {
+		return discardMarkerHWFree;
+	}
+
+	public void setDiscardMarkerHWFree(boolean discardMarkerHWFree) {
+		this.discardMarkerHWFree = discardMarkerHWFree;
+	}
+
+	public double getDiscardMarkerHWTreshold() {
+		return discardMarkerHWTreshold;
+	}
+
+	public void setDiscardMarkerHWTreshold(double discardMarkerHWTreshold) {
+		this.discardMarkerHWTreshold = discardMarkerHWTreshold;
+	}
+
+	public boolean isDiscardSampleByMisRat() {
+		return discardSampleByMisRat;
+	}
+
+	public void setDiscardSampleByMisRat(boolean discardSampleByMisRat) {
+		this.discardSampleByMisRat = discardSampleByMisRat;
+	}
+
+	public double getDiscardSampleMisRatVal() {
+		return discardSampleMisRatVal;
+	}
+
+	public void setDiscardSampleMisRatVal(double discardSampleMisRatVal) {
+		this.discardSampleMisRatVal = discardSampleMisRatVal;
+	}
+
+	public boolean isDiscardSampleByHetzyRat() {
+		return discardSampleByHetzyRat;
+	}
+
+	public void setDiscardSampleByHetzyRat(boolean discardSampleByHetzyRat) {
+		this.discardSampleByHetzyRat = discardSampleByHetzyRat;
+	}
+
+	public double getDiscardSampleHetzyRatVal() {
+		return discardSampleHetzyRatVal;
+	}
+
+	public void setDiscardSampleHetzyRatVal(double discardSampleHetzyRatVal) {
+		this.discardSampleHetzyRatVal = discardSampleHetzyRatVal;
+	}
+
+	public String getChromosome() {
+		return chromosome;
+	}
+
+	public void setChromosome(String chromosome) {
+		this.chromosome = chromosome;
+	}
+
+	public String getStrandType() {
+		return strandType;
+	}
+
+	public void setStrandType(String strandType) {
+		this.strandType = strandType;
+	}
+
+	public String getGtCode() {
+		return gtCode;
+	}
+
+	public void setGtCode(String gtCode) {
+		this.gtCode = gtCode;
+	}
+
+	public String getFriendlyName() {
+		return friendlyName;
+	}
+
+	public void setFriendlyName(String friendlyName) {
+		this.friendlyName = friendlyName;
+	}
 }

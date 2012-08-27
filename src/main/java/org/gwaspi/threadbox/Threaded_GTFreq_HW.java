@@ -50,17 +50,17 @@ public class Threaded_GTFreq_HW extends CommonRunnable {
 		int markersQAOpId = opList.getIdOfLastOperationTypeOccurance(org.gwaspi.constants.cNetCDF.Defaults.OPType.MARKER_QA);
 
 		//<editor-fold defaultstate="collapsed" desc="GT FREQ. & HW PROCESS">
-		if (!gwasParams.discardMarkerByMisRat) {
-			gwasParams.discardMarkerMisRatVal = 1;
+		if (!gwasParams.isDiscardMarkerByMisRat()) {
+			gwasParams.setDiscardMarkerMisRatVal(1);
 		}
-		if (!gwasParams.discardMarkerByHetzyRat) {
-			gwasParams.discardMarkerHetzyRatVal = 1;
+		if (!gwasParams.isDiscardMarkerByHetzyRat()) {
+			gwasParams.setDiscardMarkerHetzyRatVal(1);
 		}
-		if (!gwasParams.discardSampleByMisRat) {
-			gwasParams.discardSampleMisRatVal = 1;
+		if (!gwasParams.isDiscardSampleByMisRat()) {
+			gwasParams.setDiscardSampleMisRatVal(1);
 		}
-		if (!gwasParams.discardSampleByHetzyRat) {
-			gwasParams.discardSampleHetzyRatVal = 1;
+		if (!gwasParams.isDiscardSampleByHetzyRat()) {
+			gwasParams.setDiscardSampleHetzyRatVal(1);
 		}
 
 		// GT FREQ. BY PHENOFILE OR DB AFFECTION
@@ -77,12 +77,8 @@ public class Threaded_GTFreq_HW extends CommonRunnable {
 
 					censusOpId = OperationManager.censusCleanMatrixMarkersByPhenotypeFile(matrixId,
 							sampleQAOpId,
-							markersQAOpId,
-							gwasParams.discardMarkerMisRatVal,
-							gwasParams.discardGTMismatches,
-							gwasParams.discardSampleMisRatVal,
-							gwasParams.discardSampleHetzyRatVal,
-							new StringBuilder().append(gwasParams.friendlyName).append(" using ").append(phenotypeFile.getName()).toString(),
+							markersQAOpId, gwasParams.getDiscardMarkerMisRatVal(), gwasParams.isDiscardGTMismatches(), gwasParams.getDiscardSampleMisRatVal(), gwasParams.getDiscardSampleHetzyRatVal(),
+							new StringBuilder().append(gwasParams.getFriendlyName()).append(" using ").append(phenotypeFile.getName()).toString(),
 							phenotypeFile);
 
 					org.gwaspi.global.Utils.sysoutCompleted("Genotype Frequency Count");
@@ -95,12 +91,8 @@ public class Threaded_GTFreq_HW extends CommonRunnable {
 				if (affectionStates.contains("1") && affectionStates.contains("2")) {
 					censusOpId = OperationManager.censusCleanMatrixMarkers(matrixId,
 							sampleQAOpId,
-							markersQAOpId,
-							gwasParams.discardMarkerMisRatVal,
-							gwasParams.discardGTMismatches,
-							gwasParams.discardSampleMisRatVal,
-							gwasParams.discardSampleHetzyRatVal,
-							new StringBuilder().append(gwasParams.friendlyName).append(" using ").append(cNetCDF.Defaults.DEFAULT_AFFECTION).toString());
+							markersQAOpId, gwasParams.getDiscardMarkerMisRatVal(), gwasParams.isDiscardGTMismatches(), gwasParams.getDiscardSampleMisRatVal(), gwasParams.getDiscardSampleHetzyRatVal(),
+							new StringBuilder().append(gwasParams.getFriendlyName()).append(" using ").append(cNetCDF.Defaults.DEFAULT_AFFECTION).toString());
 
 
 					org.gwaspi.global.Utils.sysoutCompleted("Genotype Frequency Count");

@@ -50,32 +50,31 @@ public class Threaded_TrendTest extends CommonRunnable {
 		List<Operation> opAL = opList.operationsListAL;
 		int markersQAOpId = opList.getIdOfLastOperationTypeOccurance(org.gwaspi.constants.cNetCDF.Defaults.OPType.MARKER_QA);
 
-		if (!gwasParams.discardMarkerByMisRat) {
-			gwasParams.discardMarkerMisRatVal = 1;
+		if (!gwasParams.isDiscardMarkerByMisRat()) {
+			gwasParams.setDiscardMarkerMisRatVal(1);
 		}
-		if (!gwasParams.discardMarkerByHetzyRat) {
-			gwasParams.discardMarkerHetzyRatVal = 1;
+		if (!gwasParams.isDiscardMarkerByHetzyRat()) {
+			gwasParams.setDiscardMarkerHetzyRatVal(1);
 		}
-		if (!gwasParams.discardSampleByMisRat) {
-			gwasParams.discardSampleMisRatVal = 1;
+		if (!gwasParams.isDiscardSampleByMisRat()) {
+			gwasParams.setDiscardSampleMisRatVal(1);
 		}
-		if (!gwasParams.discardSampleByHetzyRat) {
-			gwasParams.discardSampleHetzyRatVal = 1;
+		if (!gwasParams.isDiscardSampleByHetzyRat()) {
+			gwasParams.setDiscardSampleHetzyRatVal(1);
 		}
 
 		// TREND-TEST (needs newMatrixId, censusOpId, pickedMarkerSet, pickedSampleSet)
 
 		OperationMetadata markerQAMetadata = new OperationMetadata(markersQAOpId);
 
-		if (gwasParams.discardMarkerHWCalc) {
-			gwasParams.discardMarkerHWTreshold = (double) 0.05 / markerQAMetadata.getOpSetSize();
+		if (gwasParams.isDiscardMarkerHWCalc()) {
+			gwasParams.setDiscardMarkerHWTreshold((double) 0.05 / markerQAMetadata.getOpSetSize());
 		}
 
 		if (thisSwi.getQueueState().equals(org.gwaspi.threadbox.QueueStates.PROCESSING)) {
 			int trendTestOpId = org.gwaspi.netCDF.operations.OperationManager.performCleanTrendTests(matrixId,
 					censusOpId,
-					hwOpId,
-					gwasParams.discardMarkerHWTreshold);
+					hwOpId, gwasParams.getDiscardMarkerHWTreshold());
 			GWASpiExplorerNodes.insertSubOperationUnderOperationNode(censusOpId, trendTestOpId);
 
 			// Make Reports (needs newMatrixId, QAopId, AssocOpId)
