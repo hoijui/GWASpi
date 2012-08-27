@@ -331,7 +331,6 @@ public class LoadGTFromAffyFiles {
 			List<String> samplesAL) throws IOException, InvalidRangeException {
 
 		//INIT LHMs
-		HashMap tempMarkerSet = new HashMap();
 		for (String markerId : sortedMarkerSetLHM.keySet()) {
 			sortedMarkerSetLHM.put(markerId, cNetCDF.Defaults.DEFAULT_GT);
 		}
@@ -354,6 +353,7 @@ public class LoadGTFromAffyFiles {
 
 
 		//GET ALLELES
+		Map<String, byte[]> tempMarkerSet = new HashMap<String, byte[]>();
 		String l;
 		while ((l = inputBufferReader.readLine()) != null) {
 			String[] cVals = l.split(cImport.Separators.separators_CommaTab_rgxp);
@@ -374,7 +374,7 @@ public class LoadGTFromAffyFiles {
 		}
 
 		for (String key : sortedMarkerSetLHM.keySet()) {
-			byte[] value = tempMarkerSet.containsKey(key) ? (byte[]) tempMarkerSet.get(key) : cNetCDF.Defaults.DEFAULT_GT;
+			byte[] value = tempMarkerSet.containsKey(key) ? tempMarkerSet.get(key) : cNetCDF.Defaults.DEFAULT_GT;
 			sortedMarkerSetLHM.put(key, value);
 		}
 		if (tempMarkerSet != null) {

@@ -461,7 +461,7 @@ public class MatrixTranslator_opt {
 
 	protected Map<String, Object> translateCurrentSample1234AllelesLHM(Map<String, Object> codedLHM, Map<String, Object> markerStrandsLHM) {
 
-		HashMap dictionary = new HashMap();
+		Map<Byte, Byte> dictionary = new HashMap<Byte, Byte>();
 		dictionary.put(org.gwaspi.constants.cNetCDF.Defaults.AlleleBytes._0, org.gwaspi.constants.cNetCDF.Defaults.AlleleBytes._0);
 		dictionary.put(org.gwaspi.constants.cNetCDF.Defaults.AlleleBytes._1, org.gwaspi.constants.cNetCDF.Defaults.AlleleBytes.A);
 		dictionary.put(org.gwaspi.constants.cNetCDF.Defaults.AlleleBytes._2, org.gwaspi.constants.cNetCDF.Defaults.AlleleBytes.C);
@@ -473,8 +473,8 @@ public class MatrixTranslator_opt {
 			byte[] codedAlleles = (byte[]) codedLHM.get(markerId);
 
 			byte[] transAlleles = new byte[2];
-			transAlleles[0] = (Byte) dictionary.get(codedAlleles[0]);
-			transAlleles[1] = (Byte) dictionary.get(codedAlleles[1]);
+			transAlleles[0] = dictionary.get(codedAlleles[0]);
+			transAlleles[1] = dictionary.get(codedAlleles[1]);
 
 			codedLHM.put(markerId, transAlleles);
 		}

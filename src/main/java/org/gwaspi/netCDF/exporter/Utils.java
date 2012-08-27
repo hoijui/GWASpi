@@ -17,8 +17,8 @@ public class Utils {
 	private Utils() {
 	}
 
-	public static HashMap getCurrentSampleFormattedInfo(String sampleId, Object poolId) throws IOException {
-		HashMap sampleInfo = new HashMap();
+	public static Map<String, Object> getCurrentSampleFormattedInfo(String sampleId, Object poolId) throws IOException {
+		Map<String, Object> sampleInfo = new HashMap<String, Object>();
 
 		List<Map<String, Object>> rs = SampleManager.getCurrentSampleInfoFromDB(sampleId, poolId);
 

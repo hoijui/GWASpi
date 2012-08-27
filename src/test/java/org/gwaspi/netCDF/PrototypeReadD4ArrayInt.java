@@ -3,6 +3,7 @@ package org.gwaspi.netCDF;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import ucar.ma2.*;
 import ucar.nc2.*;
 
@@ -13,7 +14,7 @@ public class PrototypeReadD4ArrayInt {
 		String filename = "/media/data/work/moapi/genotypes/prototype.nc";
 		NetcdfFile ncfile = null;
 
-		LinkedHashMap lhm = new LinkedHashMap();
+		Map<Object, Object> lhm = new LinkedHashMap<Object, Object>();
 		for (int i = 0; i < 10; i++) {
 			lhm.put(i, "00");
 		}
@@ -40,7 +41,7 @@ public class PrototypeReadD4ArrayInt {
 
 				int[] test = (int[]) wrIntArray.copyTo1DJavaArray();
 
-				//LinkedHashMap filledLhm = fillLinkedHashMap(lhm, gt, gtSpan);
+				//Map<Object, Object> filledLhm = fillLinkedHashMap(lhm, gt, gtSpan);
 
 				int stopme = 0;
 			} catch (IOException ioe) {
@@ -62,7 +63,7 @@ public class PrototypeReadD4ArrayInt {
 		}
 	}
 
-	public static LinkedHashMap fillLinkedHashMap(LinkedHashMap lhm, Array inputArray, int gtSpan) {
+	public static Map<Object, Object> fillLinkedHashMap(Map<Object, Object> lhm, Array inputArray, int gtSpan) {
 		StringBuffer alleles = new StringBuffer("");
 		int lhmIndex = 0;
 		int alleleCount = 0;

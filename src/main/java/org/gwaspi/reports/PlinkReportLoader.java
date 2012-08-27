@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
@@ -46,13 +47,12 @@ import org.jfree.ui.TextAnchor;
  */
 public class PlinkReportLoader {
 
-	private static HashMap labelerHM = new HashMap();
+	private static Map<String, String> labelerHM = new HashMap<String, String>();
 
 	private PlinkReportLoader() {
 	}
 
 	public static CombinedRangeXYPlot loadAssocUnadjLogPvsPos(File plinkReport, Set<String> redMarkersHS) throws IOException {
-
 
 		XYSeriesCollection chrData = new XYSeriesCollection();
 

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import ucar.ma2.*;
 import ucar.nc2.*;
 
@@ -58,7 +59,7 @@ public class BenchmarkReadCompareD3Array {
 
 							int[] shape = rdArray.getShape();
 							Index index = rdArray.getIndex();
-							LinkedHashMap stringLHM = new LinkedHashMap();
+							Map<Object, String> stringLHM = new LinkedHashMap<Object, String>();
 							for (int i = 0; i < shape[0]; i++) {
 								//ArrayChar wrCharArray = new ArrayChar ( new int[] {1, shape[1]} );
 								//ArrayChar.D2.arraycopy(rdArray, i*shape[1], wrCharArray, 0, shape[1]);

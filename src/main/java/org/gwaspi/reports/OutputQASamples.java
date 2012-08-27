@@ -8,7 +8,6 @@ import org.gwaspi.global.ServiceLocator;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
 import org.gwaspi.model.Operation;
 
@@ -96,7 +95,7 @@ public class OutputQASamples {
 			//GET SAMPLE INFO FROM DB
 			for (Map.Entry<String, Object> entry : sortedSamplesMissingRatLHM.entrySet()) {
 				String tempSampleId = entry.getKey();
-				HashMap sampleInfo = org.gwaspi.netCDF.exporter.Utils.getCurrentSampleFormattedInfo(tempSampleId, poolId);
+				Map<String, Object> sampleInfo = org.gwaspi.netCDF.exporter.Utils.getCurrentSampleFormattedInfo(tempSampleId, poolId);
 
 				String tmpFamId = (sampleInfo.get(org.gwaspi.constants.cDBSamples.f_FAMILY_ID) != null) ? sampleInfo.get(org.gwaspi.constants.cDBSamples.f_FAMILY_ID).toString() : "0";
 				String tmpSex = (sampleInfo.get(org.gwaspi.constants.cDBSamples.f_SEX) != null) ? sampleInfo.get(org.gwaspi.constants.cDBSamples.f_SEX).toString() : "0";

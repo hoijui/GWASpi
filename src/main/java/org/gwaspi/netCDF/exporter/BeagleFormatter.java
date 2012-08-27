@@ -5,7 +5,6 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.gwaspi.netCDF.markers.MarkerSet_opt;
@@ -76,7 +75,7 @@ class BeagleFormatter implements Formatter {
 			StringBuilder affectionLine = new StringBuilder("A" + sep + "affection");
 
 			for (String sampleId : rdSampleSetMap.keySet()) {
-				HashMap sampleInfo = Utils.getCurrentSampleFormattedInfo(sampleId, rdMatrixMetadata.getStudyId());
+				Map<String, Object> sampleInfo = Utils.getCurrentSampleFormattedInfo(sampleId, rdMatrixMetadata.getStudyId());
 
 				String category = sampleInfo.get(org.gwaspi.constants.cDBSamples.f_CATEGORY).toString();
 				String population = sampleInfo.get(org.gwaspi.constants.cDBSamples.f_POPULATION).toString();
