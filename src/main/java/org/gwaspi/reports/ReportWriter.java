@@ -15,6 +15,8 @@ import java.io.OutputStream;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -23,6 +25,8 @@ import java.util.Map.Entry;
  * CEXS-UPF-PRBB
  */
 public class ReportWriter {
+
+	private final static Logger log = LoggerFactory.getLogger(ReportWriter.class);
 
 	private ReportWriter() {
 	}
@@ -156,10 +160,10 @@ public class ReportWriter {
 			in.close();
 			out.close();
 		} catch (FileNotFoundException ex) {
-			System.out.println(ex.getMessage() + " in the specified directory.");
-//            org.gwaspi.gui.StartGWASpi.exit();
-		} catch (IOException e) {
-			System.out.println(e.getMessage());
+			log.error("File not found in the specified directory", ex);
+//			org.gwaspi.gui.StartGWASpi.exit();
+		} catch (IOException ex) {
+			log.error(null, ex);
 		}
 	}
 

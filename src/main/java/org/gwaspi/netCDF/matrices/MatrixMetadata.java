@@ -6,8 +6,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.ma2.ArrayChar;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.Dimension;
@@ -21,6 +21,8 @@ import ucar.nc2.Variable;
  * CEXS-UPF-PRBB
  */
 public class MatrixMetadata {
+
+	private final Logger log = LoggerFactory.getLogger(MatrixManager.class);
 
 	private int matrixId = Integer.MIN_VALUE;
 	private String matrixFriendlyName = "";
@@ -82,7 +84,7 @@ public class MatrixMetadata {
 						ArrayChar.D2 gtCodeAC = (ArrayChar.D2) var.read("(0:0:1, 0:7:1)");
 						gtEncoding = gtCodeAC.getString(0);
 					} catch (InvalidRangeException ex) {
-						Logger.getLogger(MatrixMetadata.class.getName()).log(Level.SEVERE, null, ex);
+						log.error(null, ex);
 					}
 				}
 
@@ -94,15 +96,14 @@ public class MatrixMetadata {
 
 				Dimension sampleSetDim = ncfile.findDimension(org.gwaspi.constants.cNetCDF.Dimensions.DIM_SAMPLESET);
 				sampleSetSize = sampleSetDim.getLength();
-
-			} catch (IOException ioe) {
-				System.out.println("Cannot open file: " + ioe);
+			} catch (IOException ex) {
+				log.error("Cannot open file: " + ncfile, ex);
 			} finally {
 				if (null != ncfile) {
 					try {
 						ncfile.close();
-					} catch (IOException ioe) {
-						System.out.println("Cannot close file: " + ioe);
+					} catch (IOException ex) {
+						log.error("Cannot close file: " + ncfile, ex);
 					}
 				}
 			}
@@ -149,7 +150,7 @@ public class MatrixMetadata {
 						ArrayChar.D2 gtCodeAC = (ArrayChar.D2) var.read("(0:0:1, 0:7:1)");
 						gtEncoding = gtCodeAC.getString(0);
 					} catch (InvalidRangeException ex) {
-						Logger.getLogger(MatrixMetadata.class.getName()).log(Level.SEVERE, null, ex);
+						log.error(null, ex);
 					}
 				}
 
@@ -161,23 +162,22 @@ public class MatrixMetadata {
 
 				Dimension sampleSetDim = ncfile.findDimension(org.gwaspi.constants.cNetCDF.Dimensions.DIM_SAMPLESET);
 				sampleSetSize = sampleSetDim.getLength();
-
-			} catch (IOException ioe) {
-				System.out.println("Cannot open file: " + ioe);
+			} catch (IOException ex) {
+				log.error("Cannot open file: " + ncfile, ex);
 			} finally {
 				if (null != ncfile) {
 					try {
 						ncfile.close();
-					} catch (IOException ioe) {
-						System.out.println("Cannot close file: " + ioe);
+					} catch (IOException ex) {
+						log.error("Cannot close file: " + ncfile, ex);
 					}
 				}
 			}
 		}
 	}
 
-	//**
-    /* This Method used to import GWASpi matrix from an external file
+    /**
+	 * This Method used to import GWASpi matrix from an external file
 	 * The size of this LHM is very small.
 	 */
 	public MatrixMetadata(String netCDFpath, int _studyId, String newMatrixName) throws IOException {
@@ -204,7 +204,7 @@ public class MatrixMetadata {
 						ArrayChar.D2 gtCodeAC = (ArrayChar.D2) var.read("(0:0:1, 0:7:1)");
 						gtEncoding = gtCodeAC.getString(0);
 					} catch (InvalidRangeException ex) {
-						Logger.getLogger(MatrixMetadata.class.getName()).log(Level.SEVERE, null, ex);
+						log.error(null, ex);
 					}
 				}
 
@@ -216,15 +216,14 @@ public class MatrixMetadata {
 
 				Dimension sampleSetDim = ncfile.findDimension(org.gwaspi.constants.cNetCDF.Dimensions.DIM_SAMPLESET);
 				sampleSetSize = sampleSetDim.getLength();
-
-			} catch (IOException ioe) {
-				System.out.println("Cannot open file: " + ioe);
+			} catch (IOException ex) {
+				log.error("Cannot open file: " + ncfile, ex);
 			} finally {
 				if (null != ncfile) {
 					try {
 						ncfile.close();
-					} catch (IOException ioe) {
-						System.out.println("Cannot close file: " + ioe);
+					} catch (IOException ex) {
+						log.error("Cannot close file: " + ncfile, ex);
 					}
 				}
 			}

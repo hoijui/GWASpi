@@ -27,6 +27,8 @@ import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 import org.jfree.ui.TextAnchor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * ASSOC File columns
@@ -46,6 +48,8 @@ import org.jfree.ui.TextAnchor;
  * CEXS-UPF-PRBB
  */
 public class PlinkReportLoader {
+
+	private final static Logger log = LoggerFactory.getLogger(PlinkReportLoader.class);
 
 	private static Map<String, String> labelerHM = new HashMap<String, String>();
 
@@ -76,7 +80,7 @@ public class PlinkReportLoader {
 		while ((l = inputBufferReader.readLine()) != null) {
 
 			if (count % 10000 == 0) {
-				System.out.println("loadAssocUnadjLogPvsPos -> reader count: " + count);
+				log.info("loadAssocUnadjLogPvsPos -> reader count: {}", count);
 			}
 			count++;
 

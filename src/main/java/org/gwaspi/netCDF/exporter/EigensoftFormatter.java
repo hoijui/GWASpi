@@ -1,5 +1,8 @@
 package org.gwaspi.netCDF.exporter;
 
+import org.gwaspi.constants.cDBSamples;
+import org.gwaspi.constants.cExport;
+import org.gwaspi.constants.cNetCDF;
 import java.io.BufferedWriter;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -11,6 +14,8 @@ import java.util.Map;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.netCDF.markers.MarkerSet_opt;
 import org.gwaspi.netCDF.matrices.MatrixMetadata;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.gwaspi.reports.GatherQAMarkersData;
 import org.gwaspi.samples.SampleSet;
 import ucar.nc2.NetcdfFile;
@@ -22,6 +27,8 @@ import ucar.nc2.NetcdfFile;
  * CEXS-UPF-PRBB
  */
 public class EigensoftFormatter implements Formatter {
+
+	private final Logger log = LoggerFactory.getLogger(EigensoftFormatter.class);
 
 	public boolean export(
 			String exportPath,
@@ -39,15 +46,14 @@ public class EigensoftFormatter implements Formatter {
 
 		boolean result = false;
 		NetcdfFile rdNcFile = NetcdfFile.open(rdMatrixMetadata.getPathToMatrix());
-		String sep = org.gwaspi.constants.cExport.separator_PLINK;
-
+		String sep = cExport.separator_PLINK;
 
 		//<editor-fold defaultstate="collapsed" desc="BIM FILE">
 		String filePath = exportDir.getPath() + "/" + rdMatrixMetadata.getMatrixFriendlyName() + ".bim";
 		FileWriter mapFW = new FileWriter(filePath);
 		BufferedWriter mapBW = new BufferedWriter(mapFW);
 
-		//BIM files
+		// BIM files
 		//     chromosome (1-22, X(23), Y(24), XY(25), MT(26) or 0 if unplaced)
 		//     rs# or snp identifier
 		//     Genetic distance (morgans)
@@ -55,17 +61,17 @@ public class EigensoftFormatter implements Formatter {
 		//     Allele 1
 		//     Allele 2
 
-		//PURGE MARKERSET
+		// PURGE MARKERSET
 		rdMarkerSet.initFullMarkerIdSetLHM();
 		rdMarkerSet.fillWith("");
 
-		//MARKERSET CHROMOSOME
-		rdMarkerSet.fillInitLHMWithVariable(org.gwaspi.constants.cNetCDF.Variables.VAR_MARKERS_CHR);
+		// MARKERSET CHROMOSOME
+		rdMarkerSet.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
 
-		//MARKERSET RSID
-		rdMarkerSet.appendVariableToMarkerSetLHMValue(org.gwaspi.constants.cNetCDF.Variables.VAR_MARKERS_RSID, sep);
+		// MARKERSET RSID
+		rdMarkerSet.appendVariableToMarkerSetLHMValue(cNetCDF.Variables.VAR_MARKERS_RSID, sep);
 
-		//DEFAULT GENETIC DISTANCE = 0
+		// DEFAULT GENETIC DISTANCE = 0
 		for (Map.Entry<String, Object> entry : rdMarkerSet.getMarkerIdSetLHM().entrySet()) {
 			StringBuilder value = new StringBuilder(entry.getValue().toString());
 			value.append(sep);
@@ -73,12 +79,12 @@ public class EigensoftFormatter implements Formatter {
 			rdMarkerSet.getMarkerIdSetLHM().put(entry.getKey(), value.toString());
 		}
 
-		//MARKERSET POSITION
-		rdMarkerSet.appendVariableToMarkerSetLHMValue(org.gwaspi.constants.cNetCDF.Variables.VAR_MARKERS_POS, sep);
+		// MARKERSET POSITION
+		rdMarkerSet.appendVariableToMarkerSetLHMValue(cNetCDF.Variables.VAR_MARKERS_POS, sep);
 
-		//ALLELES
+		// ALLELES
 		OperationsList opList = new OperationsList(rdMatrixMetadata.getMatrixId());
-		int markersQAOpId = opList.getIdOfLastOperationTypeOccurance(org.gwaspi.constants.cNetCDF.Defaults.OPType.MARKER_QA);
+		int markersQAOpId = opList.getIdOfLastOperationTypeOccurance(cNetCDF.Defaults.OPType.MARKER_QA);
 
 		Map<String, Object> minorAllelesLHM = GatherQAMarkersData.loadMarkerQAMinorAlleles(markersQAOpId);
 		Map<String, Object> majorAllelesLHM = GatherQAMarkersData.loadMarkerQAMajorAlleles(markersQAOpId);
@@ -97,7 +103,6 @@ public class EigensoftFormatter implements Formatter {
 				minorAllelesLHM.put(key, minorAllele);
 			}
 
-
 			Object values = rdMarkerSet.getMarkerIdSetLHM().get(key);
 			mapBW.append(values.toString());
 			mapBW.append(sep);
@@ -107,17 +112,13 @@ public class EigensoftFormatter implements Formatter {
 			mapBW.append("\n");
 		}
 
-
 		mapBW.close();
 		mapFW.close();
 		org.gwaspi.global.Utils.sysoutCompleted("Completed exporting BIM file to " + filePath);
-
 		//</editor-fold>
 
-
 		//<editor-fold defaultstate="collapsed/expanded" desc="BED FILE">
-
-		//THIS SHOULD BE MULTIPLE OF SAMPLE SET LENGTH
+		// THIS SHOULD BE MULTIPLE OF SAMPLE SET LENGTH
 		int nbOfSamples = rdSampleSet.getSampleSetSize();
 		int bytesPerSampleSet = ((int) Math.ceil((double) nbOfSamples / 8)) * 2;
 		int nbOfMarkers = rdMarkerSet.getMarkerSetSize();
@@ -137,31 +138,31 @@ public class EigensoftFormatter implements Formatter {
 //          01101100 00011011   00000001   11011100 00001111 11100111
 //                                              (SNP-major)
 
-		data_out.writeByte(108);      //magic number
-		data_out.writeByte(27);        //magic number
-		data_out.writeByte(1);          //mode SNP-major
-
+		data_out.writeByte(108); // TODO document magic number
+		data_out.writeByte(27);  // TODO document magic number
+		data_out.writeByte(1);   // mode SNP-major
 
 		int markerNb = 0;
 		int byteCount = 0;
 		byte[] wrBytes = new byte[byteChunkSize];
-		//ITERATE THROUGH ALL MARKERS, ONE SAMPLESET AT A TIME
+		// ITERATE THROUGH ALL MARKERS, ONE SAMPLESET AT A TIME
 		for (String markerId : rdMarkerSet.getMarkerIdSetLHM().keySet()) {
 			String tmpMinorAllele = minorAllelesLHM.get(markerId).toString();
 			String tmpMajorAllele = majorAllelesLHM.get(markerId).toString();
 
-			//GET SAMPLESET FOR CURRENT MARKER
-			rdSampleSetMap = rdSampleSet.readAllSamplesGTsFromCurrentMarkerToLHM(rdNcFile, rdSampleSetMap, markerNb);
+			// GET SAMPLESET FOR CURRENT MARKER
+			Map<String, Object> remainingSampleSet = rdSampleSet.readAllSamplesGTsFromCurrentMarkerToLHM(rdNcFile, rdSampleSetMap, markerNb);
+			rdSampleSetMap = remainingSampleSet; // FIXME This line should most likely be removed, because further down this is used again ... check out!
 
-			for (Iterator<String> rdSampleIds = rdSampleSetMap.keySet().iterator(); rdSampleIds.hasNext();) {
-				//ONE BYTE AT A TIME (4 SAMPLES)
+			for (Iterator<String> rdSampleIds = remainingSampleSet.keySet().iterator(); rdSampleIds.hasNext();) {
+				// ONE BYTE AT A TIME (4 SAMPLES)
 				StringBuilder tetraGTs = new StringBuilder("");
 				for (int i = 0; i < 4; i++) {
 					if (rdSampleIds.hasNext()) {
 						String sampleId = rdSampleIds.next();
-						byte[] tempGT = (byte[]) rdSampleSetMap.get(sampleId);
+						byte[] tempGT = (byte[]) remainingSampleSet.get(sampleId);
 						byte[] translatedByte = translateTo00011011Byte(tempGT, tmpMinorAllele, tmpMajorAllele);
-						tetraGTs.insert(0, translatedByte[0]); //REVERSE ORDER, AS PER PLINK SPECS http://pngu.mgh.harvard.edu/~purcell/plink/binary.shtml
+						tetraGTs.insert(0, translatedByte[0]); // REVERSE ORDER, AS PER PLINK SPECS http://pngu.mgh.harvard.edu/~purcell/plink/binary.shtml
 						tetraGTs.insert(0, translatedByte[1]);
 					}
 				}
@@ -177,10 +178,10 @@ public class EigensoftFormatter implements Formatter {
 				byteCount++;
 
 				if (byteCount == byteChunkSize) {
-					//WRITE TO FILE
+					// WRITE TO FILE
 					data_out.write(wrBytes, 0, byteChunkSize);
 
-					//INIT NEW CHUNK
+					// INIT NEW CHUNK
 					wrBytes = new byte[byteChunkSize];
 					byteCount = 0;
 				}
@@ -189,7 +190,7 @@ public class EigensoftFormatter implements Formatter {
 			markerNb++;
 		}
 
-		//WRITE LAST BITES TO FILE
+		// WRITE LAST BITES TO FILE
 		data_out.write(wrBytes, 0, byteCount);
 
 		// Close file when finished with it..
@@ -198,21 +199,20 @@ public class EigensoftFormatter implements Formatter {
 		org.gwaspi.global.Utils.sysoutCompleted("Completed exporting BED file to " + filePath);
 		//</editor-fold>
 
-
 		//<editor-fold defaultstate="collapsed" desc="FAM FILE">
 		filePath = exportDir.getPath() + "/" + rdMatrixMetadata.getMatrixFriendlyName() + ".fam";
 		FileWriter tfamFW = new FileWriter(filePath);
 		BufferedWriter tfamBW = new BufferedWriter(tfamFW);
 
-		//Iterate through all samples
+		// Iterate through all samples
 		int sampleNb = 0;
 		for (String sampleId : rdSampleSetMap.keySet()) {
 			Map<String, Object> sampleInfo = Utils.getCurrentSampleFormattedInfo(sampleId, rdMatrixMetadata.getStudyId());
 
-			String familyId = sampleInfo.get(org.gwaspi.constants.cDBSamples.f_FAMILY_ID).toString();
-			String fatherId = sampleInfo.get(org.gwaspi.constants.cDBSamples.f_FATHER_ID).toString();
-			String motherId = sampleInfo.get(org.gwaspi.constants.cDBSamples.f_MOTHER_ID).toString();
-			String sex = sampleInfo.get(org.gwaspi.constants.cDBSamples.f_SEX).toString();
+			String familyId = sampleInfo.get(cDBSamples.f_FAMILY_ID).toString();
+			String fatherId = sampleInfo.get(cDBSamples.f_FATHER_ID).toString();
+			String motherId = sampleInfo.get(cDBSamples.f_MOTHER_ID).toString();
+			String sex = sampleInfo.get(cDBSamples.f_SEX).toString();
 			String expPhenotype = sampleInfo.get(phenotype).toString();
 
 			//FAM files
@@ -236,16 +236,14 @@ public class EigensoftFormatter implements Formatter {
 			line.append(sep);
 			line.append(expPhenotype);
 
-
 			tfamBW.append(line);
 			tfamBW.append("\n");
 			tfamBW.flush();
 
 			sampleNb++;
 			if (sampleNb % 100 == 0) {
-				System.out.println("Samples exported:" + sampleNb);
+				log.info("Samples exported: {}", sampleNb);
 			}
-
 		}
 		tfamBW.close();
 		tfamFW.close();

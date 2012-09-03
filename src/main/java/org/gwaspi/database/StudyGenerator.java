@@ -4,6 +4,8 @@ import org.gwaspi.global.ServiceLocator;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -12,6 +14,8 @@ import java.io.IOException;
  * CEXS-UPF-PRBB
  */
 public class StudyGenerator {
+
+	private static final Logger log = LoggerFactory.getLogger(StudyGenerator.class);
 
 	private StudyGenerator() {
 	}
@@ -28,10 +32,8 @@ public class StudyGenerator {
 					org.gwaspi.constants.cDBGWASpi.T_STUDIES,
 					org.gwaspi.constants.cDBGWASpi.F_INSERT_STUDIES,
 					insertValues);
-		} catch (Exception e) {
-			System.out.println("Error creating Schema or Studies table");
-			System.out.print(e);
-			e.printStackTrace();
+		} catch (Exception ex) {
+			log.error("Failed creating Schema or Studies table", ex);
 		}
 		return (result) ? "1" : "0";
 	}
@@ -49,10 +51,8 @@ public class StudyGenerator {
 						"external", // stydy_type
 						"1"}); // validity
 
-		} catch (Exception e) {
-			System.out.println("Error creating management database");
-			System.out.print(e);
-			e.printStackTrace();
+		} catch (Exception ex) {
+			log.error("Failed creating management database", ex);
 		}
 	}
 

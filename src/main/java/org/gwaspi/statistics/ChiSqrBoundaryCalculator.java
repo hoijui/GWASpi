@@ -8,12 +8,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.apache.commons.math.MathException;
 import org.apache.commons.math.distribution.TDistributionImpl;
 import org.apache.commons.math.stat.descriptive.moment.StandardDeviation;
 import org.apache.commons.math.stat.descriptive.moment.Variance;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.ma2.ArrayDouble;
 import ucar.ma2.ArrayDouble.D1;
 import ucar.ma2.DataType;
@@ -31,6 +31,8 @@ import ucar.nc2.Variable;
  * CEXS-UPF-PRBB
  */
 public class ChiSqrBoundaryCalculator {
+
+	private final static Logger log = LoggerFactory.getLogger(ChiSqrBoundaryCalculator.class);
 
 	protected static int df = 2;
 	protected static String method = "2stDev"; // variance, 2stDev, samplingCI, calculatedCI
@@ -62,8 +64,6 @@ public class ChiSqrBoundaryCalculator {
 		if (method.equals("calculatedCI")) {
 			calculateChisqrBoundaryByFormula();
 		}
-
-
 	}
 
 	protected static void generatChisqrDistributions(NetcdfFileWriteable ncfile, int df) throws IOException {
@@ -81,11 +81,11 @@ public class ChiSqrBoundaryCalculator {
 		// create the file
 		try {
 			ncfile.create();
-		} catch (IOException e) {
-			System.err.println("ERROR creating file " + ncfile.getLocation() + "\n" + e);
+		} catch (IOException ex) {
+			log.error("Failed creating file " + ncfile.getLocation(), ex);
 		}
 
-		//Make simNb X² distributions
+		// Make simNb X² distributions
 		for (int i = 0; i < simNb; i++) {
 			try {
 				List<Double> expChiSqrDist = null;
@@ -111,22 +111,19 @@ public class ChiSqrBoundaryCalculator {
 				ncfile.write("distributions", offsetOrigin, chiArray);
 
 				if (i % 100 == 0) {
-					System.out.println(i + " X² simulations of " + simNb + " run at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
+					log.info("{} X² simulations of {} run at {}", new Object[] {i, simNb, org.gwaspi.global.Utils.getMediumDateTimeAsString()}); // FIXME log system already supplies time
 				}
-
-
 			} catch (InvalidRangeException ex) {
-				Logger.getLogger(ChiSqrBoundaryCalculator.class.getName()).log(Level.SEVERE, null, ex);
+				log.error(null, ex);
 			}
 		}
 
 		// close the file
 		try {
 			ncfile.close();
-		} catch (IOException e) {
-			System.err.println("ERROR creating file " + ncfile.getLocation() + "\n" + e);
+		} catch (IOException ex) {
+			log.error("Failed creating file " + ncfile.getLocation(), ex);
 		}
-
 	}
 
 	protected static void calculateChisqrBoundaryBySampling() throws IOException {
@@ -154,7 +151,6 @@ public class ChiSqrBoundaryCalculator {
 				}
 
 				double currentTot = 0;
-				double currentAvg = 0;
 
 				int loCount = 0;
 				double low95 = 0;
@@ -179,28 +175,26 @@ public class ChiSqrBoundaryCalculator {
 
 					currentTot += key;
 				}
-				currentAvg = currentTot / simNb;
+				double avg = currentTot / simNb;
 
 				StringBuilder sb = new StringBuilder();
 				sb.append(top95);
 				sb.append(",");
-				sb.append(currentAvg);
+				sb.append(avg);
 				sb.append(",");
 				sb.append(low95);
 				repBW.append(sb + "\n");
-
 			}
-		} catch (IOException ioe) {
-			System.out.println("Cannot read data: " + ioe);
-		} catch (InvalidRangeException e) {
-			System.out.println("Cannot read data: " + e);
+		} catch (IOException ex) {
+			log.error("Cannot read data", ex);
+		} catch (InvalidRangeException ex) {
+			log.error("Cannot read data", ex);
 		}
-
 
 		repBW.close();
 		repFW.close();
 
-		System.out.println("Confidence boundary created for " + N + " points at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
+		log.info("Confidence boundary created for {} points at {}", N, org.gwaspi.global.Utils.getMediumDateTimeAsString()); // FIXME log system already supplies time
 	}
 
 	protected static void calculateChisqrBoundaryByFormula() throws IOException, MathException {
@@ -255,7 +249,6 @@ public class ChiSqrBoundaryCalculator {
 				double low95 = currentAvg - confidenceInterval;
 				double top95 = currentAvg + confidenceInterval;
 
-
 				StringBuilder sb = new StringBuilder();
 				sb.append(top95);
 				sb.append(",");
@@ -263,21 +256,17 @@ public class ChiSqrBoundaryCalculator {
 				sb.append(",");
 				sb.append(low95);
 				repBW.append(sb + "\n");
-
 			}
-
-
-		} catch (IOException ioe) {
-			System.out.println("Cannot read data: " + ioe);
-		} catch (InvalidRangeException e) {
-			System.out.println("Cannot read data: " + e);
+		} catch (IOException ex) {
+			log.error("Cannot read data", ex);
+		} catch (InvalidRangeException ex) {
+			log.error("Cannot read data", ex);
 		}
-
 
 		repBW.close();
 		repFW.close();
 
-		System.out.println("Confidence boundary created for " + N + " points at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
+		log.info("Confidence boundary created for {} points at {}", N, org.gwaspi.global.Utils.getMediumDateTimeAsString()); // FIXME log system already supplies time
 	}
 
 	protected static void calculateChisqrBoundaryByStDev() throws IOException, MathException {
@@ -316,7 +305,6 @@ public class ChiSqrBoundaryCalculator {
 				double low95 = currentAvg - (2 * stdDevValue); //Display 2 standard deviations
 				double top95 = currentAvg + (2 * stdDevValue); //Display 2 standard deviations
 
-
 				StringBuilder sb = new StringBuilder();
 				sb.append(top95);
 				sb.append(",");
@@ -324,21 +312,17 @@ public class ChiSqrBoundaryCalculator {
 				sb.append(",");
 				sb.append(low95);
 				repBW.append(sb + "\n");
-
 			}
-
-
-		} catch (IOException ioe) {
-			System.out.println("Cannot read data: " + ioe);
-		} catch (InvalidRangeException e) {
-			System.out.println("Cannot read data: " + e);
+		} catch (IOException ex) {
+			log.error("Cannot read data", ex);
+		} catch (InvalidRangeException ex) {
+			log.error("Cannot read data", ex);
 		}
-
 
 		repBW.close();
 		repFW.close();
 
-		System.out.println("Confidence boundary created for " + N + " points at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
+		log.info("Confidence boundary created for {} points at {}", N, org.gwaspi.global.Utils.getMediumDateTimeAsString()); // FIXME log system already supplies time
 	}
 
 	protected static void calculateChisqrBoundaryByVariance() throws IOException, MathException {
@@ -377,7 +361,6 @@ public class ChiSqrBoundaryCalculator {
 				double low95 = currentAvg - varianceValue;
 				double top95 = currentAvg + varianceValue;
 
-
 				StringBuilder sb = new StringBuilder();
 				sb.append(top95);
 				sb.append(",");
@@ -385,20 +368,16 @@ public class ChiSqrBoundaryCalculator {
 				sb.append(",");
 				sb.append(low95);
 				repBW.append(sb + "\n");
-
 			}
-
-
-		} catch (IOException ioe) {
-			System.out.println("Cannot read data: " + ioe);
-		} catch (InvalidRangeException e) {
-			System.out.println("Cannot read data: " + e);
+		} catch (IOException ex) {
+			log.error("Cannot read data", ex);
+		} catch (InvalidRangeException ex) {
+			log.error("Cannot read data", ex);
 		}
-
 
 		repBW.close();
 		repFW.close();
 
-		System.out.println("Confidence boundary created for " + N + " points at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
+		log.info("Confidence boundary created for {} points at {}", N, org.gwaspi.global.Utils.getMediumDateTimeAsString()); // FIXME log system already supplies time
 	}
 }

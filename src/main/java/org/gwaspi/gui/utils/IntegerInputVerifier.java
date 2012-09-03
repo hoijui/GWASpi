@@ -4,6 +4,8 @@ import java.awt.Toolkit;
 import javax.swing.InputVerifier;
 import javax.swing.JComponent;
 import javax.swing.JTextField;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -12,6 +14,8 @@ import javax.swing.JTextField;
  * CEXS-UPF-PRBB
  */
 public class IntegerInputVerifier extends InputVerifier {
+
+	private final Logger log = LoggerFactory.getLogger(IntegerInputVerifier.class);
 
 	public IntegerInputVerifier() {
 	}
@@ -32,7 +36,7 @@ public class IntegerInputVerifier extends InputVerifier {
 		} finally {
 			if (!correct) {
 				Toolkit.getDefaultToolkit().beep();
-				System.out.println("Must be integer!");
+				log.warn("Must be integer!");
 			}
 		}
 		return correct;

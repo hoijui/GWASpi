@@ -16,6 +16,8 @@ import java.util.prefs.Preferences;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.xml.parsers.ParserConfigurationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
@@ -27,6 +29,8 @@ import org.xml.sax.SAXException;
  * CEXS-UPF-PRBB
  */
 public class Config {
+
+	private static final Logger log = LoggerFactory.getLogger(Config.class);
 
 	private static Properties properties = new Properties();
 	private static JFileChooser fc;
@@ -179,10 +183,9 @@ public class Config {
 								JOptionPane.showMessageDialog(StartGWASpi.mainGUIFrame, "Databases and working folders initialized successfully!");
 							}
 							isInitiated = true;
-
 						} catch (Exception ex) {
 							JOptionPane.showMessageDialog(StartGWASpi.mainGUIFrame, Text.App.warnUnableToInitForFirstTime);
-							ex.printStackTrace();
+							log.error(Text.App.warnUnableToInitForFirstTime, ex);
 						}
 					}
 				} else {
@@ -227,11 +230,10 @@ public class Config {
 								createDataStructure(dataDir);
 								isInitiated = true;
 							} catch (Exception ex) {
-								System.out.println(Text.App.warnUnableToInitForFirstTime);
-								ex.printStackTrace();
+								log.error(Text.App.warnUnableToInitForFirstTime, ex);
 							}
 						}
-						System.out.println("Databases and working folders initialized successfully!");
+						log.info("Databases and working folders initialized successfully!");
 						isInitiated = true;
 					}
 				} else {
@@ -383,7 +385,7 @@ public class Config {
 						if (StartGWASpi.guiMode) {
 							Dialogs.showWarningDialogue(message.toString());
 						} else {
-							System.out.println(message.toString());
+							log.error(message.toString());
 						}
 					}
 

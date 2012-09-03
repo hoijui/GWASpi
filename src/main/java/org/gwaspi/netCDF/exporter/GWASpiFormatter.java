@@ -1,14 +1,15 @@
 package org.gwaspi.netCDF.exporter;
 
+import org.gwaspi.gui.utils.Dialogs;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.gwaspi.netCDF.markers.MarkerSet_opt;
 import org.gwaspi.netCDF.matrices.MatrixMetadata;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.gwaspi.samples.SampleSet;
 import ucar.nc2.NetcdfFile;
 
@@ -19,6 +20,8 @@ import ucar.nc2.NetcdfFile;
  * CEXS-UPF-PRBB
  */
 public class GWASpiFormatter implements Formatter {
+
+	private final Logger log = LoggerFactory.getLogger(GWASpiFormatter.class);
 
 	public boolean export(
 			String exportPath,
@@ -101,31 +104,24 @@ public class GWASpiFormatter implements Formatter {
 
 				sampleNb++;
 				if (sampleNb % 100 == 0) {
-					System.out.println("Samples exported:" + sampleNb);
+					log.info("Samples exported: {}", sampleNb);
 				}
-
 			}
 			sampleInfoBW.close();
 			sampleInfoFW.close();
-
 			//</editor-fold>
 
 			//<editor-fold defaultstate="collapsed" desc="GWASpi netCDF MATRIX">
-
 			try {
 				File origFile = new File(rdMatrixMetadata.getPathToMatrix());
 				File newFile = new File(exportDir.getPath() + "/" + rdMatrixMetadata.getMatrixFriendlyName() + ".nc");
 				if (origFile.exists()) {
 					org.gwaspi.global.Utils.copyFile(origFile, newFile);
 				}
-			} catch (IOException ex) {
-				org.gwaspi.gui.utils.Dialogs.showWarningDialogue("A table saving error has occurred");
-				Logger.getLogger(GWASpiFormatter.class.getName()).log(Level.SEVERE, null, ex);
 			} catch (Exception ex) {
-				org.gwaspi.gui.utils.Dialogs.showWarningDialogue("A table saving error has occurred");
-				Logger.getLogger(GWASpiFormatter.class.getName()).log(Level.SEVERE, null, ex);
+				Dialogs.showWarningDialogue("A table saving error has occurred");
+				log.error("A table saving error has occurred", ex);
 			}
-
 			//</editor-fold>
 
 			result = true;
@@ -134,8 +130,8 @@ public class GWASpiFormatter implements Formatter {
 			if (null != rdNcFile) {
 				try {
 					rdNcFile.close();
-				} catch (IOException ioe) {
-					System.out.println("Cannot close file: " + ioe);
+				} catch (IOException ex) {
+					log.error("Cannot close file: " + rdNcFile, ex);
 				}
 			}
 		}

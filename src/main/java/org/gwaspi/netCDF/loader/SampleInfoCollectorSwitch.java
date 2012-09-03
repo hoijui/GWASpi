@@ -11,6 +11,8 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.gwaspi.samples.SamplesParser;
 
 /**
@@ -20,6 +22,8 @@ import org.gwaspi.samples.SamplesParser;
  * CEXS-UPF-PRBB
  */
 public class SampleInfoCollectorSwitch {
+
+	private final static Logger log = LoggerFactory.getLogger(SampleInfoCollectorSwitch.class);
 
 	private SampleInfoCollectorSwitch() {
 	}
@@ -34,7 +38,7 @@ public class SampleInfoCollectorSwitch {
 
 		switch (org.gwaspi.constants.cImport.ImportFormat.compareTo(format)) {
 			case Affymetrix_GenomeWide6:
-				System.out.println(Text.Matrix.scanAffectionStandby);
+				log.info(Text.Matrix.scanAffectionStandby);
 				if (dummySamples) {
 					sampleInfoLHM = SamplesParser.scanAffymetrixSampleInfo(altSampleInfoPath2);
 				} else {
@@ -45,14 +49,15 @@ public class SampleInfoCollectorSwitch {
 						if (!sampleInfoLHM.containsKey(sampleId)) {
 							dummySampleValues[1] = sampleId.toString();
 							sampleInfoLHM.put(sampleId, dummySampleValues);
-							System.out.println(Text.Study.warnMissingSampleInfo + "\nSampleID: " + sampleId.toString());
+							log.warn(Text.Study.warnMissingSampleInfo);
+							log.warn("SampleID: {}", sampleId.toString());
 						}
 					}
 				}
 
 				break;
 			case PLINK:
-				System.out.println(Text.Matrix.scanAffectionStandby);
+				log.info(Text.Matrix.scanAffectionStandby);
 				if (dummySamples) {
 					sampleInfoLHM = SamplesParser.scanPlinkStandardSampleInfo(altSampleInfoPath2);
 				} else {
@@ -62,31 +67,26 @@ public class SampleInfoCollectorSwitch {
 						if (!sampleInfoLHM.containsKey(sampleId)) {
 							dummySampleValues[1] = sampleId.toString();
 							sampleInfoLHM.put(sampleId, dummySampleValues);
-							System.out.println(Text.Study.warnMissingSampleInfo + "\nSampleID: " + sampleId.toString());
+							log.warn(Text.Study.warnMissingSampleInfo);
+							log.warn("SampleID: {}", sampleId.toString());
 						}
 					}
 				}
 				break;
 			case PLINK_Binary:
-				System.out.println(Text.Matrix.scanAffectionStandby);
+				log.info(Text.Matrix.scanAffectionStandby);
 				FileReader inputFileReader = new FileReader(new File(sampleInfoPath));
 				BufferedReader inputBufferReader = new BufferedReader(inputFileReader);
 				String header = inputBufferReader.readLine();
 				String[] cVals = header.split(cImport.Separators.separators_CommaSpaceTab_rgxp);
 				if (cVals.length == 6) { // It's a FAM file
-					dummySamples = true;
-				} else { // It's a SampleInfo file
-					dummySamples = false;
-				}
-
-				if (dummySamples) {
 					sampleInfoLHM = SamplesParser.scanPlinkFAMSampleInfo(sampleInfoPath);
-				} else {
+				} else { // It's a SampleInfo file
 					sampleInfoLHM = SamplesParser.scanGwaspiSampleInfo(sampleInfoPath);
 				}
 				break;
 			case HAPMAP:
-				System.out.println(Text.Matrix.scanAffectionStandby);
+				log.info(Text.Matrix.scanAffectionStandby);
 				if (dummySamples) {
 					sampleInfoLHM = SamplesParser.scanHapmapSampleInfo(altSampleInfoPath1);
 					// NO AFFECTION STATE AVAILABLE
@@ -97,13 +97,14 @@ public class SampleInfoCollectorSwitch {
 						if (!sampleInfoLHM.containsKey(sampleId)) {
 							dummySampleValues[1] = sampleId.toString();
 							sampleInfoLHM.put(sampleId, dummySampleValues);
-							System.out.println(Text.Study.warnMissingSampleInfo + "\nSampleID: " + sampleId.toString());
+							log.warn(Text.Study.warnMissingSampleInfo);
+							log.warn("SampleID: {}", sampleId.toString());
 						}
 					}
 				}
 				break;
 			case BEAGLE:
-				System.out.println(Text.Matrix.scanAffectionStandby);
+				log.info(Text.Matrix.scanAffectionStandby);
 				if (dummySamples) {
 					sampleInfoLHM = SamplesParser.scanBeagleSampleInfo(altSampleInfoPath1);
 				} else {
@@ -113,13 +114,14 @@ public class SampleInfoCollectorSwitch {
 						if (!sampleInfoLHM.containsKey(sampleId)) {
 							dummySampleValues[1] = sampleId.toString();
 							sampleInfoLHM.put(sampleId, dummySampleValues);
-							System.out.println(Text.Study.warnMissingSampleInfo + "\nSampleID: " + sampleId.toString());
+							log.warn(Text.Study.warnMissingSampleInfo);
+							log.warn("SampleID: {}", sampleId.toString());
 						}
 					}
 				}
 				break;
 			case HGDP1:
-				System.out.println(Text.Matrix.scanAffectionStandby);
+				log.info(Text.Matrix.scanAffectionStandby);
 				if (dummySamples) {
 					sampleInfoLHM = SamplesParser.scanHGDP1SampleInfo(altSampleInfoPath1);
 					// NO AFFECTION STATE AVAILABLE
@@ -130,7 +132,8 @@ public class SampleInfoCollectorSwitch {
 						if (!sampleInfoLHM.containsKey(sampleId)) {
 							dummySampleValues[1] = sampleId.toString();
 							sampleInfoLHM.put(sampleId, dummySampleValues);
-							System.out.println(Text.Study.warnMissingSampleInfo + "\nSampleID: " + sampleId.toString());
+							log.warn(Text.Study.warnMissingSampleInfo);
+							log.warn("SampleID: {}", sampleId.toString());
 						}
 					}
 				}
@@ -139,7 +142,7 @@ public class SampleInfoCollectorSwitch {
 				sampleInfoLHM = SamplesParser.scanGwaspiSampleInfo(sampleInfoPath);
 				break;
 			case Illumina_LGEN:
-				System.out.println(Text.Matrix.scanAffectionStandby);
+				log.info(Text.Matrix.scanAffectionStandby);
 				if (dummySamples) {
 					//gwasParams = org.gwaspi.gui.utils.MoreLoadInfoByFormat.showMoreInfoByFormat_Modal(cmb_Format.getSelectedItem().toString());
 					sampleInfoLHM = SamplesParser.scanIlluminaLGENSampleInfo(altSampleInfoPath2);
@@ -150,7 +153,8 @@ public class SampleInfoCollectorSwitch {
 						if (!sampleInfoLHM.containsKey(sampleId)) {
 							dummySampleValues[1] = sampleId.toString();
 							sampleInfoLHM.put(sampleId, dummySampleValues);
-							System.out.println(Text.Study.warnMissingSampleInfo + "\nSampleID: " + sampleId.toString());
+							log.warn(Text.Study.warnMissingSampleInfo);
+							log.warn("SampleID: {}", sampleId.toString());
 						}
 					}
 				}

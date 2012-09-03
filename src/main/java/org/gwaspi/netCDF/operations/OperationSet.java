@@ -7,6 +7,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.ma2.ArrayChar;
 import ucar.ma2.ArrayDouble;
 import ucar.ma2.ArrayFloat;
@@ -25,7 +27,9 @@ import ucar.nc2.Variable;
  */
 public class OperationSet {
 
-	//MARKERSET_MEATADATA
+	private final static Logger log = LoggerFactory.getLogger(OperationSet.class);
+
+	// MARKERSET_MEATADATA
 	private int opSetSize = 0;
 	private int implicitSetSize = 0;
 	private OperationMetadata opMetadata;
@@ -37,7 +41,7 @@ public class OperationSet {
 		opSetSize = opMetadata.getOpSetSize();
 	}
 
-	////////// ACCESSORS /////////
+	// ACCESSORS
 	public int getOpSetSize() {
 		return opSetSize;
 	}
@@ -68,21 +72,19 @@ public class OperationSet {
 					ArrayChar.D2 markerSetAC = (ArrayChar.D2) var.read("(0:" + (opSetSize - 1) + ":1, 0:" + (varShape[1] - 1) + ":1)");
 					opSetLHM = org.gwaspi.netCDF.operations.Utils.writeD2ArrayCharToLHMKeys(markerSetAC);
 				}
-
-			} catch (IOException ioe) {
-				System.out.println("Cannot read data: " + ioe);
-			} catch (InvalidRangeException e) {
-				System.out.println("Cannot read data: " + e);
+			} catch (IOException ex) {
+				log.error("Cannot read data", ex);
+			} catch (InvalidRangeException ex) {
+				log.error("Cannot read data", ex);
 			}
-
-		} catch (IOException ioe) {
-			System.out.println("Cannot open file: " + ioe);
+		} catch (IOException ex) {
+			log.error("Cannot open file", ex);
 		} finally {
 			if (null != ncfile) {
 				try {
 					ncfile.close();
-				} catch (IOException ioe) {
-					System.out.println("Cannot close file: " + ioe);
+				} catch (IOException ex) {
+					log.error("Cannot close file", ex);
 				}
 			}
 		}
@@ -110,21 +112,19 @@ public class OperationSet {
 					ArrayChar.D2 markerSetAC = (ArrayChar.D2) var.read("(0:" + (opSetSize - 1) + ":1, 0:" + (varShape[1] - 1) + ":1)");
 					opSetLHM = org.gwaspi.netCDF.operations.Utils.writeD2ArrayCharToLHMKeys(markerSetAC);
 				}
-
-			} catch (IOException ioe) {
-				System.out.println("Cannot read data: " + ioe);
-			} catch (InvalidRangeException e) {
-				System.out.println("Cannot read data: " + e);
+			} catch (IOException ex) {
+				log.error("Cannot read data", ex);
+			} catch (InvalidRangeException ex) {
+				log.error("Cannot read data", ex);
 			}
-
-		} catch (IOException ioe) {
-			System.out.println("Cannot open file: " + ioe);
+		} catch (IOException ex) {
+			log.error("Cannot open file", ex);
 		} finally {
 			if (null != ncfile) {
 				try {
 					ncfile.close();
-				} catch (IOException ioe) {
-					System.out.println("Cannot close file: " + ioe);
+				} catch (IOException ex) {
+					log.error("Cannot close file", ex);
 				}
 			}
 		}
@@ -151,28 +151,27 @@ public class OperationSet {
 
 				implicitSetLHM = org.gwaspi.netCDF.operations.Utils.writeD2ArrayCharToLHMKeys(sampleSetAC);
 
-			} catch (IOException ioe) {
-				System.out.println("Cannot read data: " + ioe);
-			} catch (InvalidRangeException e) {
-				System.out.println("Cannot read data: " + e);
+			} catch (IOException ex) {
+				log.error("Cannot read data", ex);
+			} catch (InvalidRangeException ex) {
+				log.error("Cannot read data", ex);
 			}
-
-		} catch (IOException ioe) {
-			System.out.println("Cannot open file: " + ioe);
+		} catch (IOException ex) {
+			log.error("Cannot open file", ex);
 		} finally {
 			if (null != ncfile) {
 				try {
 					ncfile.close();
-				} catch (IOException ioe) {
-					System.out.println("Cannot close file: " + ioe);
+				} catch (IOException ex) {
+					log.error("Cannot close file", ex);
 				}
 			}
 		}
 
 		return implicitSetLHM;
 	}
-
 	//</editor-fold>
+
 	//<editor-fold defaultstate="collapsed" desc="CHROMOSOME INFO">
 	public Map<String, Object> getChrInfoSetLHM() {
 		NetcdfFile ncfile = null;
@@ -181,7 +180,7 @@ public class OperationSet {
 		try {
 			ncfile = NetcdfFile.open(opMetadata.getPathToMatrix());
 
-			//GET NAMES OF CHROMOSOMES
+			// GET NAMES OF CHROMOSOMES
 			Variable var = ncfile.findVariable(org.gwaspi.constants.cNetCDF.Variables.VAR_CHR_IN_MATRIX);
 
 			if (null == var) {
@@ -196,10 +195,10 @@ public class OperationSet {
 					ArrayChar.D2 markerSetAC = (ArrayChar.D2) var.read("(0:" + (varShape[0] - 1) + ":1, 0:7:1)");
 					chrInfoLHM = org.gwaspi.netCDF.operations.Utils.writeD2ArrayCharToLHMKeys(markerSetAC);
 				}
-			} catch (IOException ioe) {
-				System.out.println("Cannot read data: " + ioe);
-			} catch (InvalidRangeException e) {
-				System.out.println("Cannot read data: " + e);
+			} catch (IOException ex) {
+				log.error("Cannot read data", ex);
+			} catch (InvalidRangeException ex) {
+				log.error("Cannot read data", ex);
 			}
 
 			//GET INFO FOR EACH CHROMOSOME
@@ -215,28 +214,27 @@ public class OperationSet {
 					ArrayInt.D2 chrSetAI = (ArrayInt.D2) var.read("(0:" + (varShape[0] - 1) + ":1, 0:3:1)");
 					chrInfoLHM = org.gwaspi.netCDF.operations.Utils.writeD2ArrayIntToLHMValues(chrSetAI, chrInfoLHM);
 				}
-			} catch (IOException ioe) {
-				System.out.println("Cannot read data: " + ioe);
-			} catch (InvalidRangeException e) {
-				System.out.println("Cannot read data: " + e);
+			} catch (IOException ex) {
+				log.error("Cannot read data", ex);
+			} catch (InvalidRangeException ex) {
+				log.error("Cannot read data", ex);
 			}
-
-		} catch (IOException ioe) {
-			System.out.println("Cannot open file: " + ioe);
+		} catch (IOException ex) {
+			log.error("Cannot open file", ex);
 		} finally {
 			if (null != ncfile) {
 				try {
 					ncfile.close();
-				} catch (IOException ioe) {
-					System.out.println("Cannot close file: " + ioe);
+				} catch (IOException ex) {
+					log.error("Cannot close file", ex);
 				}
 			}
 		}
 
 		return chrInfoLHM;
 	}
-
 	//</editor-fold>
+
 	//<editor-fold defaultstate="collapsed" desc="OPERATION-SET FILLERS">
 	public Map<String, Object> fillOpSetLHMWithVariable(NetcdfFile ncfile, String variable) {
 
@@ -276,12 +274,10 @@ public class OperationSet {
 					opSetLHM = org.gwaspi.netCDF.operations.Utils.writeD2ArrayIntToLHMValues(markerSetAD, opSetLHM);
 				}
 			}
-
-		} catch (IOException ioe) {
-			System.err.println("Cannot read data: " + ioe);
-		} catch (InvalidRangeException e) {
-			System.err.println("Cannot read data: " + e);
-			e.printStackTrace();
+		} catch (IOException ex) {
+			log.error("Cannot read data", ex);
+		} catch (InvalidRangeException ex) {
+			log.error("Cannot read data", ex);
 		}
 
 		return opSetLHM;
@@ -334,10 +330,10 @@ public class OperationSet {
 				}
 			}
 
-		} catch (IOException ioe) {
-			System.err.println("Cannot read data: " + ioe);
-		} catch (InvalidRangeException e) {
-			System.err.println("Cannot read data: " + e);
+		} catch (IOException ex) {
+			log.error("Cannot read data", ex);
+		} catch (InvalidRangeException ex) {
+			log.error("Cannot read data", ex);
 		}
 
 		return al;
@@ -413,16 +409,16 @@ public class OperationSet {
 				}
 			}
 
-		} catch (IOException ioe) {
-			System.err.println("Cannot read data: " + ioe);
-		} catch (InvalidRangeException e) {
-			System.err.println("Cannot read data: " + e);
+		} catch (IOException ex) {
+			log.error("Cannot read data", ex);
+		} catch (InvalidRangeException ex) {
+			log.error("Cannot read data", ex);
 		}
 
 		return opSetLHM;
 	}
-
 	//</editor-fold>
+
 	//<editor-fold defaultstate="collapsed" desc="OPERATION-SET PICKERS">
 	public Map<String, Object> pickValidMarkerSetItemsByValue(NetcdfFile ncfile, String variable, Set<Object> criteria, boolean includes) {
 		Map<String, Object> returnLHM = new LinkedHashMap<String, Object>();
@@ -473,5 +469,4 @@ public class OperationSet {
 		return returnLHM;
 	}
 	//</editor-fold>
-	//////////// HELPER METHODS ///////////
 }

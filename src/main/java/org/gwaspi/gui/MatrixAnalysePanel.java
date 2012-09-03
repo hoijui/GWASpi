@@ -22,8 +22,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.BorderFactory;
@@ -47,9 +45,10 @@ import org.gwaspi.model.OperationsList;
 import org.gwaspi.netCDF.matrices.MatrixMetadata;
 import org.gwaspi.netCDF.operations.GWASinOneGOParams;
 import org.gwaspi.netCDF.operations.OperationManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.gwaspi.samples.SamplesParser;
 import org.gwaspi.threadbox.MultiOperations;
-import ucar.ma2.InvalidRangeException;
 
 /**
  *
@@ -58,6 +57,8 @@ import ucar.ma2.InvalidRangeException;
  * CEXS-UPF-PRBB
  */
 public class MatrixAnalysePanel extends JPanel {
+
+	private static final Logger log = LoggerFactory.getLogger(MatrixAnalysePanel.class);
 
 	// Variables declaration - do not modify
 	private Matrix parentMatrix;
@@ -721,8 +722,7 @@ public class MatrixAnalysePanel extends JPanel {
 			// </editor-fold>
 			} catch (Exception ex) {
 				Dialogs.showWarningDialogue(Text.Operation.warnOperationError);
-				System.out.println(Text.All.warnLoadError);
-				Logger.getLogger(MatrixAnalysePanel.class.getName()).log(Level.SEVERE, null, ex);
+				log.error(Text.All.warnLoadError, ex);
 			}
 		}
 	}
@@ -781,7 +781,7 @@ public class MatrixAnalysePanel extends JPanel {
 						}
 					}
 				} catch (IOException ex) {
-					Logger.getLogger(CurrentStudyPanel.class.getName()).log(Level.SEVERE, null, ex);
+					log.error(null, ex);
 				}
 			}
 		}
@@ -845,7 +845,7 @@ public class MatrixAnalysePanel extends JPanel {
 				if (gwasParams.isProceed()
 						&& choice != JOptionPane.CANCEL_OPTION
 						&& (gwasParams.isPerformAllelicTests() || gwasParams.isPerformTrendTests())) { //At least one test has been picked
-					System.out.println(Text.All.processing);
+					log.info(Text.All.processing);
 					StartGWASpi.mainGUIFrame.setCursor(CursorUtils.waitCursor);
 					Set<Object> affectionStates = SamplesParser.getDBAffectionStates(parentMatrix.getMatrixId()); //use Sample Info file affection state
 					StartGWASpi.mainGUIFrame.setCursor(CursorUtils.defaultCursor);
@@ -860,11 +860,10 @@ public class MatrixAnalysePanel extends JPanel {
 					}
 				}
 			} catch (IOException ex) {
-				Logger.getLogger(MatrixAnalysePanel.class.getName()).log(Level.SEVERE, null, ex);
+				log.error(null, ex);
 			} catch (Exception ex) {
 				Dialogs.showWarningDialogue(Text.Operation.warnOperationError);
-				System.out.println(Text.All.warnLoadError);
-				Logger.getLogger(MatrixAnalysePanel.class.getName()).log(Level.SEVERE, null, ex);
+				log.error(Text.All.warnLoadError, ex);
 			}
 		}
 	}
@@ -897,7 +896,7 @@ public class MatrixAnalysePanel extends JPanel {
 					GWASpiExplorerPanel.scrl_Content.setViewportView(GWASpiExplorerPanel.pnl_Content);
 				}
 			} catch (IOException ex) {
-				Logger.getLogger(BackAction.class.getName()).log(Level.SEVERE, null, ex);
+				log.error(null, ex);
 			}
 		}
 	}
@@ -914,7 +913,7 @@ public class MatrixAnalysePanel extends JPanel {
 			try {
 				URLInDefaultBrowser.browseHelpURL(HelpURLs.QryURL.matrixAnalyse);
 			} catch (IOException ex) {
-				Logger.getLogger(CurrentMatrixPanel.class.getName()).log(Level.SEVERE, null, ex);
+				log.error(null, ex);
 			}
 		}
 	}

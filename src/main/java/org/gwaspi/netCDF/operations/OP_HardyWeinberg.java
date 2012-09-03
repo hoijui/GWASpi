@@ -4,6 +4,8 @@ import org.gwaspi.constants.cNetCDF;
 import java.io.IOException;
 import java.util.Map;
 import org.gwaspi.model.Operation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.ma2.ArrayChar;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.NetcdfFile;
@@ -16,6 +18,8 @@ import ucar.nc2.NetcdfFileWriteable;
  * CEXS-UPF-PRBB
  */
 public class OP_HardyWeinberg {
+
+	private final static Logger log = LoggerFactory.getLogger(OP_HardyWeinberg.class);
 
 	private OP_HardyWeinberg() {
 	}
@@ -32,81 +36,74 @@ public class OP_HardyWeinberg {
 
 		NetcdfFileWriteable wrNcFile = null;
 		try {
-			///////////// CREATE netCDF-3 FILE ////////////
+			// CREATE netCDF-3 FILE
 
 			OperationFactory wrOPHandler = new OperationFactory(rdOPMetadata.getStudyId(),
-					"Hardy-Weinberg_" + censusName, //friendly name
+					"Hardy-Weinberg_" + censusName, // friendly name
 					"Hardy-Weinberg test on Samples marked as controls (only females for the X chromosome)\nMarkers: " + rdMarkerSetLHM.size() + "\nSamples: " + rdSampleSetLHM.size(), //description
 					rdMarkerSetLHM.size(),
 					rdSampleSetLHM.size(),
 					0,
 					cNetCDF.Defaults.OPType.HARDY_WEINBERG.toString(),
-					rdOPMetadata.getParentMatrixId(), //Parent matrixId
-					markerCensusOP.getOperationId());       //Parent operationId
+					rdOPMetadata.getParentMatrixId(), // Parent matrixId
+					markerCensusOP.getOperationId()); // Parent operationId
 			wrNcFile = wrOPHandler.getNetCDFHandler();
 
 			try {
 				wrNcFile.create();
-			} catch (IOException e) {
-				System.err.println("ERROR creating file " + wrNcFile.getLocation() + "\n" + e);
+			} catch (IOException ex) {
+				log.error("Failed creating file: " + wrNcFile.getLocation(), ex);
 			}
 
-
-
 			//<editor-fold defaultstate="collapsed" desc="METADATA WRITER">
-			//MARKERSET MARKERID
+			// MARKERSET MARKERID
 			ArrayChar.D2 markersD2 = Utils.writeLHMKeysToD2ArrayChar(rdMarkerSetLHM, cNetCDF.Strides.STRIDE_MARKER_NAME);
 			int[] markersOrig = new int[]{0, 0};
 			try {
 				wrNcFile.write(cNetCDF.Variables.VAR_OPSET, markersOrig, markersD2);
-			} catch (IOException e) {
-				System.err.println("ERROR writing file");
-			} catch (InvalidRangeException e) {
-				e.printStackTrace();
+			} catch (IOException ex) {
+				log.error("Failed writing file: " + wrNcFile.getLocation(), ex);
+			} catch (InvalidRangeException ex) {
+				log.error(null, ex);
 			}
 
-			//MARKERSET RSID
+			// MARKERSET RSID
 			rdMarkerSetLHM = rdOperationSet.fillOpSetLHMWithVariable(rdNcFile, cNetCDF.Variables.VAR_MARKERS_RSID);
 			Utils.saveCharLHMValueToWrMatrix(wrNcFile, rdMarkerSetLHM, cNetCDF.Variables.VAR_MARKERS_RSID, cNetCDF.Strides.STRIDE_MARKER_NAME);
 
-			//WRITE SAMPLESET TO MATRIX FROM SAMPLES ARRAYLIST
+			// WRITE SAMPLESET TO MATRIX FROM SAMPLES ARRAYLIST
 			ArrayChar.D2 samplesD2 = org.gwaspi.netCDF.operations.Utils.writeLHMKeysToD2ArrayChar(rdSampleSetLHM, cNetCDF.Strides.STRIDE_SAMPLE_NAME);
 
 			int[] sampleOrig = new int[]{0, 0};
 			try {
 				wrNcFile.write(cNetCDF.Variables.VAR_IMPLICITSET, sampleOrig, samplesD2);
-			} catch (IOException e) {
-				System.err.println("ERROR writing file");
-			} catch (InvalidRangeException e) {
-				e.printStackTrace();
+			} catch (IOException ex) {
+				log.error("Failed writing file: " + wrNcFile.getLocation(), ex);
+			} catch (InvalidRangeException ex) {
+				log.error(null, ex);
 			}
-			samplesD2 = null;
-			System.out.println("Done writing SampleSet to matrix at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
-
+			log.info("Done writing SampleSet to matrix at {}", org.gwaspi.global.Utils.getMediumDateTimeAsString()); // FIXME log system already supplies time
 			//</editor-fold>
 
-
 			//<editor-fold defaultstate="collapsed" desc="GET CENSUS & PERFORM HW">
-//			//PROCESS ALL SAMPLES
+//			// PROCESS ALL SAMPLES
 //			rdMarkerSetLHM = rdOperationSet.fillLHMWithDefaultValue(rdMarkerSetLHM, 0); //PURGE
 //			rdMarkerSetLHM = rdOperationSet.fillOpSetLHMWithVariable(rdNcFile, cNetCDF.Census.VAR_OP_MARKERS_CENSUSALL);
 //			performHardyWeinberg(wrNcFile, rdMarkerSetLHM, "ALL");
 //
-//
-//			//PROCESS CASE SAMPLES
+//			// PROCESS CASE SAMPLES
 //			rdMarkerSetLHM = rdOperationSet.fillLHMWithDefaultValue(rdMarkerSetLHM, 0); //PURGE
 //			rdMarkerSetLHM = rdOperationSet.fillOpSetLHMWithVariable(rdNcFile, cNetCDF.Census.VAR_OP_MARKERS_CENSUSCASE);
 //			performHardyWeinberg(wrNcFile, rdMarkerSetLHM, "CASE");
 
-
-			//PROCESS CONTROL SAMPLES
-			System.out.println(org.gwaspi.global.Text.All.processing);
+			// PROCESS CONTROL SAMPLES
+			log.info(org.gwaspi.global.Text.All.processing);
 			rdOperationSet.fillLHMWithDefaultValue(rdMarkerSetLHM, 0); //PURGE
 			rdMarkerSetLHM = rdOperationSet.fillOpSetLHMWithVariable(rdNcFile, cNetCDF.Census.VAR_OP_MARKERS_CENSUSCTRL);
 			performHardyWeinberg(wrNcFile, rdMarkerSetLHM, "CTRL");
 
-			//PROCESS ALTERNATE HW SAMPLES
-			System.out.println(org.gwaspi.global.Text.All.processing);
+			// PROCESS ALTERNATE HW SAMPLES
+			log.info(org.gwaspi.global.Text.All.processing);
 			rdOperationSet.fillLHMWithDefaultValue(rdMarkerSetLHM, 0); //PURGE
 			rdMarkerSetLHM = rdOperationSet.fillOpSetLHMWithVariable(rdNcFile, cNetCDF.Census.VAR_OP_MARKERS_CENSUSHW);
 			performHardyWeinberg(wrNcFile, rdMarkerSetLHM, "HW-ALT");
@@ -114,15 +111,17 @@ public class OP_HardyWeinberg {
 
 			resultOpId = wrOPHandler.getResultOPId();
 			org.gwaspi.global.Utils.sysoutCompleted("Hardy-Weinberg Equilibrium Test");
-		} catch (InvalidRangeException invalidRangeException) {
-		} catch (IOException iOException) {
+		} catch (InvalidRangeException ex) {
+			log.error(null, ex);
+		} catch (IOException ex) {
+			log.error(null, ex);
 		} finally {
 			if (null != rdNcFile) {
 				try {
 					rdNcFile.close();
 					wrNcFile.close();
-				} catch (IOException ioe) {
-					System.err.println("Cannot close file: " + ioe);
+				} catch (IOException ex) {
+					log.error("Cannot close file", ex);
 				}
 			}
 		}
@@ -131,10 +130,10 @@ public class OP_HardyWeinberg {
 	}
 
 	protected static void performHardyWeinberg(NetcdfFileWriteable wrNcFile, Map<String, Object> markersContingencyLHM, String category) {
-		//Iterate through markerset
+		// Iterate through markerset
 		int markerNb = 0;
 		for (Map.Entry<String, Object> entry : markersContingencyLHM.entrySet()) {
-			//HARDY-WEINBERG
+			// HARDY-WEINBERG
 			int[] contingencyTable = (int[]) entry.getValue();
 			int obsAA = contingencyTable[0];
 			int obsAa = contingencyTable[1];
@@ -161,39 +160,40 @@ public class OP_HardyWeinberg {
 			store[0] = pvalue;
 			store[1] = obsHzy;
 			store[2] = expHzy;
-			entry.setValue(store); //Re-use AALHM to store P-value value
+			entry.setValue(store); // Re-use AALHM to store P-value value
 
 			markerNb++;
 			if (markerNb % 100000 == 0) {
-				System.out.println("Processed " + markerNb + " markers on catgetory: " + category + " at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
+				log.info("Processed {} markers on category {} at {}",
+						new Object[] {markerNb, category, org.gwaspi.global.Utils.getMediumDateTimeAsString()}); // FIXME log system already supplies time
 			}
 		}
-		System.out.println("Processed " + markerNb + " markers on catgetory: " + category + " at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
+		log.info("Processed {} markers on category: {} at {}",
+				new Object[] {markerNb, category, org.gwaspi.global.Utils.getMediumDateTimeAsString()}); // FIXME log system already supplies time
 
 		//<editor-fold defaultstate="collapsed" desc="HARDY-WEINBERG DATA WRITER">
-
-//		//ALL SAMPLES
+//		// ALL SAMPLES
 //		if(category.equals("ALL")){
 //			Utils.saveArrayDoubleItemD1ToWrMatrix(wrNcFile, markersContingencyLHM, 0, cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWPval_ALL);
 //			int[] boxes = new int[]{1,2};
 //			Utils.saveArrayDoubleD2ToWrMatrix(wrNcFile, markersContingencyLHM, boxes, cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWHETZY_ALL);
 //		}
 //
-//		//CASE SAMPLES
+//		// CASE SAMPLES
 //		if(category.equals("CASE")){
 //			Utils.saveArrayDoubleItemD1ToWrMatrix(wrNcFile, markersContingencyLHM, 0, cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWPval_CASE);
 //			int[] boxes = new int[]{1,2};
 //			Utils.saveArrayDoubleD2ToWrMatrix(wrNcFile, markersContingencyLHM, boxes, cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWHETZY_CASE);
 //		}
 
-		//CONTROL SAMPLES
+		// CONTROL SAMPLES
 		if (category.equals("CTRL")) {
 			Utils.saveDoubleLHMItemD1ToWrMatrix(wrNcFile, markersContingencyLHM, 0, cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWPval_CTRL);
 			int[] boxes = new int[]{1, 2};
 			Utils.saveDoubleLHMD2ToWrMatrix(wrNcFile, markersContingencyLHM, boxes, cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWHETZY_CTRL);
 		}
 
-		//HW-ALT SAMPLES
+		// HW-ALT SAMPLES
 		if (category.equals("HW-ALT")) {
 			Utils.saveDoubleLHMItemD1ToWrMatrix(wrNcFile, markersContingencyLHM, 0, cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWPval_ALT);
 			int[] boxes = new int[]{1, 2};

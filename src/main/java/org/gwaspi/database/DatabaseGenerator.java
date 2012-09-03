@@ -2,6 +2,8 @@ package org.gwaspi.database;
 
 import org.gwaspi.global.ServiceLocator;
 import java.io.IOException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -10,6 +12,8 @@ import java.io.IOException;
  * CEXS-UPF-PRBB
  */
 public class DatabaseGenerator {
+
+	private static final Logger log = LoggerFactory.getLogger(DatabaseGenerator.class);
 
 	private DatabaseGenerator() {
 	}
@@ -52,11 +56,8 @@ public class DatabaseGenerator {
 					org.gwaspi.constants.cDBGWASpi.T_CREATE_STATUS_TYPES);
 
 			db.executeStatement(org.gwaspi.constants.cDBGWASpi.IE_STATUS_TYPES_INIT);
-
-		} catch (Exception e) {
-			System.out.println("Error creating management database");
-			System.out.print(e);
-			e.printStackTrace();
+		} catch (Exception ex) {
+			log.error("Error creating management database", ex);
 		}
 
 		return (result) ? "1" : "0";

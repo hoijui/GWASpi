@@ -12,6 +12,8 @@ import java.util.TreeMap;
 import org.gwaspi.netCDF.markers.MarkerSet_opt;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.gwaspi.netCDF.matrices.MatrixMetadata;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.gwaspi.samples.SampleSet;
 import ucar.ma2.ArrayChar;
 import ucar.ma2.ArrayInt;
@@ -28,6 +30,8 @@ import ucar.nc2.NetcdfFileWriteable;
  * CEXS-UPF-PRBB
  */
 public class MatrixMergeAll {
+
+	private final static Logger log = LoggerFactory.getLogger(MatrixMergeAll.class);
 
 	private static int studyId = Integer.MIN_VALUE;
 	private static int rdMatrix1Id = Integer.MIN_VALUE;
@@ -100,7 +104,7 @@ public class MatrixMergeAll {
 
 		//<editor-fold defaultstate="collapsed" desc="CREATE MATRIX">
 		try {
-			///////////// CREATE netCDF-3 FILE ////////////
+			// CREATE netCDF-3 FILE
 			int hasDictionary = 0;
 			if (rdMatrix1Metadata.getHasDictionray() == rdMatrix2Metadata.getHasDictionray()) {
 				hasDictionary = rdMatrix1Metadata.getHasDictionray();
@@ -113,7 +117,6 @@ public class MatrixMergeAll {
 			if (rdMatrix1Metadata.getTechnology().equals(rdMatrix2Metadata.getTechnology())) {
 				technology = rdMatrix1Metadata.getTechnology();
 			}
-
 
 			StringBuilder descSB = new StringBuilder(Text.Matrix.descriptionHeader1);
 			descSB.append(org.gwaspi.global.Utils.getShortDateTimeAsString());
@@ -153,88 +156,80 @@ public class MatrixMergeAll {
 			NetcdfFileWriteable wrNcFile = wrMatrixHandler.getNetCDFHandler();
 			try {
 				wrNcFile.create();
-			} catch (IOException e) {
-				System.err.println("ERROR creating file " + wrNcFile.getLocation() + "\n" + e);
+			} catch (IOException ex) {
+				log.error("Failed creating file " + wrNcFile.getLocation(), ex);
 			}
-			//System.out.println("Done creating netCDF handle in MatrixSampleJoin: " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
-
+			//log.trace("Done creating netCDF handle in MatrixSampleJoin: " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
 
 			//<editor-fold defaultstate="collapsed" desc="METADATA WRITER">
-
-			//SAMPLESET
+			// SAMPLESET
 			ArrayChar.D2 samplesD2 = Utils.writeLHMKeysToD2ArrayChar(wrComboSampleSetLHM, cNetCDF.Strides.STRIDE_SAMPLE_NAME);
 
 			int[] sampleOrig = new int[]{0, 0};
 			try {
 				wrNcFile.write(cNetCDF.Variables.VAR_SAMPLESET, sampleOrig, samplesD2);
-			} catch (IOException e) {
-				System.err.println("ERROR writing file");
-			} catch (InvalidRangeException e) {
-				e.printStackTrace();
+			} catch (IOException ex) {
+				log.error("Failed writing file", ex);
+			} catch (InvalidRangeException ex) {
+				log.error(null, ex);
 			}
-			samplesD2 = null;
-			System.out.println("Done writing SampleSet to matrix at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
+			log.info("Done writing SampleSet to matrix at {}", org.gwaspi.global.Utils.getMediumDateTimeAsString()); // FIXME log system already adds time
 
-
-			//MARKERSET MARKERID
+			// MARKERSET MARKERID
 			ArrayChar.D2 markersD2 = Utils.writeLHMKeysToD2ArrayChar(wrComboSortedMarkerSetLHM, cNetCDF.Strides.STRIDE_MARKER_NAME);
 			int[] markersOrig = new int[]{0, 0};
 			try {
 				wrNcFile.write(cNetCDF.Variables.VAR_MARKERSET, markersOrig, markersD2);
-			} catch (IOException e) {
-				System.err.println("ERROR writing file");
-			} catch (InvalidRangeException e) {
-				e.printStackTrace();
+			} catch (IOException ex) {
+				log.error("Failed writing file", ex);
+			} catch (InvalidRangeException ex) {
+				log.error(null, ex);
 			}
 
-			//WRITE CHROMOSOME METADATA FROM ANNOTATION FILE
+			// WRITE CHROMOSOME METADATA FROM ANNOTATION FILE
 			markersD2 = org.gwaspi.netCDF.operations.Utils.writeLHMValueItemToD2ArrayChar(wrComboSortedMarkerSetLHM, 0, cNetCDF.Strides.STRIDE_CHR);
 
 			try {
 				wrNcFile.write(cNetCDF.Variables.VAR_MARKERS_CHR, markersOrig, markersD2);
-			} catch (IOException e) {
-				System.err.println("ERROR writing file");
-			} catch (InvalidRangeException e) {
-				e.printStackTrace();
+			} catch (IOException ex) {
+				log.error("Failed writing file", ex);
+			} catch (InvalidRangeException ex) {
+				log.error(null, ex);
 			}
-			System.out.println("Done writing chromosomes to matrix at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
+			log.info("Done writing chromosomes to matrix at {}", org.gwaspi.global.Utils.getMediumDateTimeAsString()); // FIXME log system already adds time
 
-			//Set of chromosomes found in matrix along with number of markersinfo
+			// Set of chromosomes found in matrix along with number of markersinfo
 			org.gwaspi.netCDF.operations.Utils.saveCharLHMKeyToWrMatrix(wrNcFile, chrSetLHM, cNetCDF.Variables.VAR_CHR_IN_MATRIX, 8);
-			//Number of marker per chromosome & max pos for each chromosome
+			// Number of marker per chromosome & max pos for each chromosome
 			int[] columns = new int[]{0, 1, 2, 3};
 			org.gwaspi.netCDF.operations.Utils.saveIntLHMD2ToWrMatrix(wrNcFile, chrSetLHM, columns, cNetCDF.Variables.VAR_CHR_INFO);
 
-			//WRITE POSITION METADATA FROM ANNOTATION FILE
+			// WRITE POSITION METADATA FROM ANNOTATION FILE
 			ArrayInt.D1 markersPosD1 = org.gwaspi.netCDF.operations.Utils.writeLHMValueItemToD1ArrayInt(wrComboSortedMarkerSetLHM, 1);
 			int[] posOrig = new int[1];
 			try {
 				wrNcFile.write(cNetCDF.Variables.VAR_MARKERS_POS, posOrig, markersPosD1);
-			} catch (IOException e) {
-				System.err.println("ERROR writing file");
-			} catch (InvalidRangeException e) {
-				e.printStackTrace();
+			} catch (IOException ex) {
+				log.error("Failed writing file", ex);
+			} catch (InvalidRangeException ex) {
+				log.error(null, ex);
 			}
-			System.out.println("Done writing positions to matrix at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
-
+			log.info("Done writing positions to matrix at {}", org.gwaspi.global.Utils.getMediumDateTimeAsString()); // FIXME log system already adds time
 
 			//<editor-fold defaultstate="collapsed" desc="GATHER METADATA FROM BOTH MATRICES">
 			rdMarkerSet1.initFullMarkerIdSetLHM();
 			rdMarkerSet2.initFullMarkerIdSetLHM();
 
 			//<editor-fold defaultstate="collapsed" desc="MARKERSET RSID">
-
 			rdMarkerSet1.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_RSID);
 			wrComboSortedMarkerSetLHM.putAll(rdMarkerSet1.getMarkerIdSetLHM());
 			rdMarkerSet2.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_RSID);
 			wrComboSortedMarkerSetLHM.putAll(rdMarkerSet2.getMarkerIdSetLHM());
 
 			Utils.saveCharLHMValueToWrMatrix(wrNcFile, wrComboSortedMarkerSetLHM, cNetCDF.Variables.VAR_MARKERS_RSID, cNetCDF.Strides.STRIDE_MARKER_NAME);
-
 			//</editor-fold>
 
 			//<editor-fold defaultstate="collapsed" desc="MARKERSET DICTIONARY ALLELES">
-
 			Attribute hasDictionary1 = rdNcFile1.findGlobalAttribute(cNetCDF.Attributes.GLOB_HAS_DICTIONARY);
 			Attribute hasDictionary2 = rdNcFile2.findGlobalAttribute(cNetCDF.Attributes.GLOB_HAS_DICTIONARY);
 			if ((Integer) hasDictionary1.getNumericValue() == 1
@@ -249,47 +244,38 @@ public class MatrixMergeAll {
 			//</editor-fold>
 
 			//<editor-fold defaultstate="collapsed/expanded" desc="GENOTYPE STRAND">
-
 			rdMarkerSet1.fillInitLHMWithVariable(cNetCDF.Variables.VAR_GT_STRAND);
 			wrComboSortedMarkerSetLHM.putAll(rdMarkerSet1.getMarkerIdSetLHM());
 			rdMarkerSet2.fillInitLHMWithVariable(cNetCDF.Variables.VAR_GT_STRAND);
 			wrComboSortedMarkerSetLHM.putAll(rdMarkerSet2.getMarkerIdSetLHM());
 
 			Utils.saveCharLHMValueToWrMatrix(wrNcFile, wrComboSortedMarkerSetLHM, cNetCDF.Variables.VAR_GT_STRAND, 3);
-
 			//</editor-fold>
-
 			//</editor-fold>
-
-
 			//</editor-fold>
-
 
 			//<editor-fold defaultstate="collapsed" desc="GENOTYPES WRITER">
-
-			//Get SampleId index from each Matrix
-			//Iterate through wrSampleSetLHM
+			// Get SampleId index from each Matrix
+			// Iterate through wrSampleSetLHM
 			int wrSampleIndex = 0;
 			for (Map.Entry<String, Object> entry : wrComboSampleSetLHM.entrySet()) {
 				String sampleId = entry.getKey();
 				int[] rdSampleIndices = (int[]) entry.getValue(); //Next position[rdPos matrix 1, rdPos matrix 2]
 
-				//Read from Matrix1
+				// Read from Matrix1
 				rdMarkerSet1.fillWith(org.gwaspi.constants.cNetCDF.Defaults.DEFAULT_GT);
 				if (rdSampleSet1.getSampleIdSetLHM().containsKey(sampleId)) {
 					rdMarkerSet1.fillGTsForCurrentSampleIntoInitLHM(rdSampleIndices[0]);
 				}
 
-
-				//Read from Matrix2
+				// Read from Matrix2
 				rdMarkerSet2.fillWith(org.gwaspi.constants.cNetCDF.Defaults.DEFAULT_GT);
 
 				if (rdSampleSet2.getSampleIdSetLHM().containsKey(sampleId)) {
 					rdMarkerSet2.fillGTsForCurrentSampleIntoInitLHM(rdSampleIndices[1]);
 				}
 
-
-				//Fill wrSortedMingledMarkerLHM with matrix 1+2 Genotypes
+				// Fill wrSortedMingledMarkerLHM with matrix 1+2 Genotypes
 				for (Map.Entry<String, Object> markerEntry : wrComboSortedMarkerSetLHM.entrySet()) {
 					String markerId = markerEntry.getKey();
 					byte[] genotype = org.gwaspi.constants.cNetCDF.Defaults.DEFAULT_GT;
@@ -303,16 +289,15 @@ public class MatrixMergeAll {
 					markerEntry.setValue(genotype);
 				}
 
-				//Write wrMarkerIdSetLHM to A3 ArrayChar and save to wrMatrix
+				// Write wrMarkerIdSetLHM to A3 ArrayChar and save to wrMatrix
 				Utils.saveSingleSampleGTsToMatrix(wrNcFile, wrComboSortedMarkerSetLHM, wrSampleIndex);
 				wrSampleIndex++;
 			}
-
 			//</editor-fold>
 
 			// CLOSE THE FILE AND BY THIS, MAKE IT READ-ONLY
 			try {
-				//GENOTYPE ENCODING
+				// GENOTYPE ENCODING
 				ArrayChar.D2 guessedGTCodeAC = new ArrayChar.D2(1, 8);
 				Index index = guessedGTCodeAC.getIndex();
 				guessedGTCodeAC.setString(index.set(0, 0), rdMatrix1Metadata.getGenotypeEncoding());
@@ -333,25 +318,27 @@ public class MatrixMergeAll {
 				rdNcFile1.close();
 				rdNcFile2.close();
 
-
 				// CHECK FOR MISMATCHES
 				if (rdMatrix1Metadata.getGenotypeEncoding().equals(cNetCDF.Defaults.GenotypeEncoding.ACGT0.toString())
 						|| rdMatrix1Metadata.getGenotypeEncoding().equals(cNetCDF.Defaults.GenotypeEncoding.O1234.toString())) {
 					double[] mismatchState = checkForMismatches(wrMatrixHandler.getResultMatrixId()); //mismatchCount, mismatchRatio
 					if (mismatchState[1] > 0.01) {
-						System.out.println("\n\nWARNING! Mismatch ratio is bigger that 1% (" + mismatchState[1] * 100 + " %)!\nThere might be an issue with strand positioning of your genotypes!\n\n");
+						log.warn("");
+						log.warn("Mismatch ratio is bigger than 1% ({}%)!", (mismatchState[1] * 100));
+						log.warn("There might be an issue with strand positioning of your genotypes!");
+						log.warn("");
 						//resultMatrixId = new int[]{wrMatrixHandler.getResultMatrixId(),-4};  //The threshold of acceptable mismatching genotypes has been crossed
 					}
 				}
-
-			} catch (IOException e) {
-				System.err.println("ERROR creating file " + wrNcFile.getLocation() + "\n" + e);
+			} catch (IOException ex) {
+				log.error("Failed creating file " + wrNcFile.getLocation(), ex);
 			}
 
 			org.gwaspi.global.Utils.sysoutCompleted("extraction to new Matrix");
-
-		} catch (InvalidRangeException invalidRangeException) {
-		} catch (IOException iOException) {
+		} catch (InvalidRangeException ex) {
+			log.error(null, ex);
+		} catch (IOException ex) {
+			log.error(null, ex);
 		}
 		//</editor-fold>
 
@@ -360,7 +347,7 @@ public class MatrixMergeAll {
 
 	protected static Map<String, Object> mingleAndSortMarkerSet() {
 
-		//GET 1st MATRIX LHM WITH CHR AND POS
+		// GET 1st MATRIX LHM WITH CHR AND POS
 		Map<String, Object> workLHM = new LinkedHashMap();
 		rdMarkerSet1.initFullMarkerIdSetLHM();
 		rdMarkerSet2.initFullMarkerIdSetLHM();
@@ -384,7 +371,7 @@ public class MatrixMergeAll {
 			rdMarkerSet1.getMarkerIdSetLHM().clear();
 		}
 
-		//GET 2nd MATRIX LHM WITH CHR AND POS
+		// GET 2nd MATRIX LHM WITH CHR AND POS
 		Map<String, Object> workLHM2 = new LinkedHashMap<String, Object>();
 		rdMarkerSet2.fillWith("");
 		rdMarkerSet2.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
@@ -408,8 +395,7 @@ public class MatrixMergeAll {
 
 		workLHM.putAll(workLHM2);
 
-
-		//SORT MERGED LHM
+		// SORT MERGED LHM
 		SortedMap<String, String> sortedMetadataTM = new TreeMap<String, String>(new org.gwaspi.netCDF.loader.ComparatorChrAutPosMarkerIdAsc());
 		for (Map.Entry<String, Object> entry : workLHM.entrySet()) {
 			sortedMetadataTM.put((String)entry.getValue(), entry.getKey());
@@ -418,8 +404,7 @@ public class MatrixMergeAll {
 			workLHM.clear();
 		}
 
-		//PACKAGE IN AN LHM
-
+		// PACKAGE IN AN LHM
 		for (Map.Entry<String, String> entry : sortedMetadataTM.entrySet()) {
 			String[] keyValues = entry.getKey().split(cNetCDF.Defaults.TMP_SEPARATOR);
 			Object[] markerInfo = new Object[2];
@@ -539,7 +524,7 @@ public class MatrixMergeAll {
 
 			markerNb++;
 			if (markerNb % 100000 == 0) {
-				System.out.println("Checking markers for mismatches: " + markerNb + " at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
+				log.info("Checking markers for mismatches: {} at {}", markerNb, org.gwaspi.global.Utils.getMediumDateTimeAsString()); // FIXME log system already adds time
 			}
 		}
 

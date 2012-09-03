@@ -24,20 +24,20 @@ public class CliExecutor {
 	public static boolean execute(File scriptFile) throws IOException {
 		boolean success = false;
 
-		//GET ALL SCRIPTS CONTAINED IN FILE
+		// GET ALL SCRIPTS CONTAINED IN FILE
 		List<List<String>> scriptsAL = org.gwaspi.cli.Utils.readArgsFromScript(scriptFile);
 
 		System.out.println("\nScripts in queue: " + scriptsAL.size());
 
-		//ITERATE THROUGH SCRIPTS AND LAUNCH THREAD FOR EACH
+		// ITERATE THROUGH SCRIPTS AND LAUNCH THREAD FOR EACH
 		for (int i = 0; i < scriptsAL.size(); i++) {
 
-			//TRY TO GARBAGE COLLECT BEFORE ANY OTHER THING
+			// TRY TO GARBAGE COLLECT BEFORE ANY OTHER THING
 			System.gc();
 
-			//GET ARGS FOR CURRENT SCRIPT
+			// GET ARGS FOR CURRENT SCRIPT
 			List<String> args = scriptsAL.get(i);
-			//GET COMMAND LINE OF CURRENT SCRIPT
+			// GET COMMAND LINE OF CURRENT SCRIPT
 			String command = args.get(0).toString();
 
 			System.out.println("Script " + i + ": " + command);
@@ -47,7 +47,7 @@ public class CliExecutor {
 
 				GWASinOneGOParams gwasParams = new GWASinOneGOParams();
 
-				//CHECKING STUDY
+				// CHECKING STUDY
 				int studyId = Integer.MIN_VALUE;
 				try {
 					studyId = Integer.parseInt(args.get(1)); //Study Id
@@ -58,28 +58,26 @@ public class CliExecutor {
 				}
 				boolean studyExists = checkStudy(studyId);
 
-
 				String format = args.get(2);
 				String newMatrixName = args.get(4);
 				String description = args.get(5);
 
-
-				MultiOperations.loadMatrixDoGWASifOK(format, //Format
-						Boolean.parseBoolean(args.get(3)), //Dummy samples
-						JOptionPane.NO_OPTION, //Do GWAS
-						newMatrixName, //New Matrix name
-						description, //Description
-						args.get(6), //File 1
-						args.get(8), //Sample Info file
+				MultiOperations.loadMatrixDoGWASifOK(format, // Format
+						Boolean.parseBoolean(args.get(3)), // Dummy samples
+						JOptionPane.NO_OPTION, // Do GWAS
+						newMatrixName, // New Matrix name
+						description, // Description
+						args.get(6), // File 1
+						args.get(8), // Sample Info file
 						args.get(7), gwasParams.getChromosome(), gwasParams.getStrandType(), gwasParams.getGtCode(), //Gt code (deprecated)
-						studyId, //StudyId
-						gwasParams);                     //gwasParams (dummy)
+						studyId, // StudyId
+						gwasParams); // gwasParams (dummy)
 				success = true;
 			}
 
 			if (command.equals("load_genotypes_do_gwas_in_one_go")) {
 
-				// <editor-fold defaultstate="collapsed/expanded" desc="">
+				// <editor-fold defaultstate="collapsed" desc="SCRIPT EXAMPLE">
 				/*
 				#This is a demo file
 				#Usage: java -Xms1500m -Xmx2500m -jar GWASpi.jar script scriptFile [log org.gwaspi.cli.log]
@@ -112,18 +110,16 @@ public class CliExecutor {
 
 				GWASinOneGOParams gwasParams = new GWASinOneGOParams();
 
-
 				// CHECKING STUDY
 				int studyId = Integer.MIN_VALUE;
 				try {
-					studyId = Integer.parseInt(args.get(1)); //Study Id
+					studyId = Integer.parseInt(args.get(1)); // Study Id
 				} catch (Exception e) {
 					if (args.get(1).contains("New Study")) {
 						studyId = addStudy(args.get(1), "Study created by command-line interface");
 					}
 				}
 				boolean studyExists = checkStudy(studyId);
-
 
 				String format = args.get(2);
 				String newMatrixName = args.get(4);
@@ -159,7 +155,6 @@ public class CliExecutor {
 			}
 			//</editor-fold>
 
-
 			//<editor-fold defaultstate="collapsed" desc="GWAS IN ONE GO">
 
 			//<editor-fold defaultstate="collapsed" desc="SCRIPT EXAMPLE">
@@ -192,7 +187,6 @@ public class CliExecutor {
 
 			if (command.equals("gwas_in_one_go")) {
 				GWASinOneGOParams gwasParams = new GWASinOneGOParams();
-
 
 				// CHECKING STUDY
 				int studyId = Integer.MIN_VALUE;
@@ -248,7 +242,6 @@ public class CliExecutor {
 							gwasParams);
 					success = true;
 				}
-
 			}
 			//</editor-fold>
 
@@ -324,7 +317,6 @@ public class CliExecutor {
 							gwasParams);
 					success = true;
 				}
-
 			}
 			//</editor-fold>
 
@@ -347,7 +339,6 @@ public class CliExecutor {
 			[/script]
 			*/
 			//</editor-fold>
-
 
 			if (command.equals("allelic_association")) {
 				GWASinOneGOParams gwasParams = new GWASinOneGOParams();
@@ -397,7 +388,6 @@ public class CliExecutor {
 							gwasParams);
 					success = true;
 				}
-
 			}
 			//</editor-fold>
 
@@ -469,7 +459,6 @@ public class CliExecutor {
 							gwasParams);
 					success = true;
 				}
-
 			}
 			//</editor-fold>
 
@@ -541,14 +530,13 @@ public class CliExecutor {
 							gwasParams);
 					success = true;
 				}
-
 			}
 			//</editor-fold>
 
 			//<editor-fold defaultstate="collapsed" desc="EXPORT MATRIX">
 			if (command.equals("export_matrix")) {
 
-				//CHECKING STUDY
+				// CHECKING STUDY
 				int studyId = Integer.parseInt(args.get(1)); //Study Id
 				int matrixId = Integer.parseInt(args.get(2)); //Study Id
 				boolean studyExists = checkStudy(studyId);
@@ -560,7 +548,6 @@ public class CliExecutor {
 					success = true;
 
 				}
-
 			}
 			//</editor-fold>
 
@@ -583,7 +570,6 @@ public class CliExecutor {
 					MultiOperations.updateSampleInfo(studyId,
 							sampleInfoFile);
 					success = true;
-
 				}
 			}
 			//</editor-fold>

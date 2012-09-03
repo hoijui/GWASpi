@@ -564,14 +564,7 @@ public class GenericReportGenerator {
 				}
 			}
 
-			//CUT READ-LHM TO SIZE
-
-//        System.out.println("getXYDataSet");
-//        System.out.println("minPosition: "+minPosition);
-//        System.out.println("middlePosition: "+middlePosition);
-//        System.out.println("maxPosition: "+maxPosition);
-//        System.out.println("---------------------------------------");
-//        System.out.println("\n");
+			// CUT READ-LHM TO SIZE
 
 			boolean goOn = true;
 			int i = 0;
@@ -580,7 +573,7 @@ public class GenericReportGenerator {
 				String key = it.next();
 				if (i >= minPosition && i <= maxPosition) {
 					dataSetLHM.put(key, "");
-					if (i == middlePosition) { //MAKE SURE WE KNOW WHAT MARKERID IS IN THE MIDDLE
+					if (i == middlePosition) { // MAKE SURE WE KNOW WHAT MARKERID IS IN THE MIDDLE
 						origMarkerId = key.toString();
 					}
 				}
@@ -590,26 +583,25 @@ public class GenericReportGenerator {
 				i++;
 			}
 
-			//GET MARKER CHR & POS INFO
+			// GET MARKER CHR & POS INFO
 			rdInfoMarkerSet.fillInitLHMWithVariable(org.gwaspi.constants.cNetCDF.Variables.VAR_MARKERS_CHR);
-			//First check for same chromosome data
+			// First check for same chromosome data
 			String validateChr = rdInfoMarkerSet.getMarkerIdSetLHM().get(origMarkerId).toString();
 			ManhattanPlotZoom.centerPhysPos = minPosition;
 
 			for (Map.Entry<String, Object> entry : dataSetLHM.entrySet()) {
 				String key = entry.getKey();
 				String chr = rdInfoMarkerSet.getMarkerIdSetLHM().get(key).toString();
-				Object[] data = new Object[3]; //CHR, POS, PVAL
+				Object[] data = new Object[3]; // CHR, POS, PVAL
 				data[0] = chr;
 				entry.setValue(data);
 			}
-
 
 			rdInfoMarkerSet.fillWith(0);
 			rdInfoMarkerSet.fillInitLHMWithVariable(org.gwaspi.constants.cNetCDF.Variables.VAR_MARKERS_POS);
 			for (Map.Entry<String, Object> entry : dataSetLHM.entrySet()) {
 				String key = entry.getKey();
-				Object[] data = (Object[]) entry.getValue(); //CHR, POS, PVAL
+				Object[] data = (Object[]) entry.getValue(); // CHR, POS, PVAL
 				int pos = (Integer) rdInfoMarkerSet.getMarkerIdSetLHM().get(key);
 				data[1] = pos;
 				entry.setValue(data);
@@ -638,7 +630,6 @@ public class GenericReportGenerator {
 			}
 			//</editor-fold>
 
-
 			//<editor-fold defaultstate="collapsed" desc="BUILD XYDataset">
 			XYSeries dataSeries = new XYSeries("");
 
@@ -664,20 +655,15 @@ public class GenericReportGenerator {
 			dataSeries.setDescription("Zoom on " + origMarkerId + ", window size: " + snpNumber);
 
 			resultXYDataset = new XYSeriesCollection(dataSeries);
-
-
 			//</editor-fold>
-
-
-
 		} catch (IOException ex) {
 			Logger.getLogger(GenericReportGenerator.class.getName()).log(Level.SEVERE, null, ex);
 		}
 
 		return resultXYDataset;
 	}
-
 	//</editor-fold>
+
 	//<editor-fold defaultstate="collapsed/expanded" desc="SAMPLE-QA PLOTS">
 	public static XYDataset getSampleHetzygDataset(int opId) throws IOException {
 		XYDataset resultXYDataset;

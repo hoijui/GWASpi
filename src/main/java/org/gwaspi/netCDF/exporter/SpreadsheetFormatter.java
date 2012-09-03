@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.util.Map;
 import org.gwaspi.netCDF.markers.MarkerSet_opt;
 import org.gwaspi.netCDF.matrices.MatrixMetadata;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.gwaspi.samples.SampleSet;
 import ucar.nc2.NetcdfFile;
 
@@ -17,6 +19,8 @@ import ucar.nc2.NetcdfFile;
  * CEXS-UPF-PRBB
  */
 public class SpreadsheetFormatter implements Formatter {
+
+	private final Logger log = LoggerFactory.getLogger(SpreadsheetFormatter.class);
 
 	public boolean export(
 			String exportPath,
@@ -39,12 +43,11 @@ public class SpreadsheetFormatter implements Formatter {
 		rdMarkerSet.initFullMarkerIdSetLHM();
 
 		try {
-
 			//<editor-fold defaultstate="collapsed" desc="SPREADSHEET FILE">
 			FileWriter pedFW = new FileWriter(exportDir.getPath() + "/" + rdMatrixMetadata.getMatrixFriendlyName() + ".csv");
 			BufferedWriter pedBW = new BufferedWriter(pedFW);
 
-			//HEADER CONTAINING MARKER IDs
+			// HEADER CONTAINING MARKER IDs
 			StringBuilder line = new StringBuilder();
 			for (String key : rdMarkerSet.getMarkerIdSetLHM().keySet()) {
 				line.append(sep);
@@ -79,24 +82,23 @@ public class SpreadsheetFormatter implements Formatter {
 
 				sampleNb++;
 				if (sampleNb % 100 == 0) {
-					System.out.println("Samples exported to Fleur file:" + sampleNb);
+					log.info("Samples exported to Fleur file: {}", sampleNb);
 				}
-
 			}
-			System.out.println("Samples exported to Fleur file:" + sampleNb);
+			log.info("Samples exported to Fleur file: {}", sampleNb);
 			pedBW.close();
 			pedFW.close();
-
 			//</editor-fold>
 
 			result = true;
-		} catch (IOException iOException) {
+		} catch (IOException ex) {
+			log.error(null, ex);
 		} finally {
 			if (null != rdNcFile) {
 				try {
 					rdNcFile.close();
-				} catch (IOException ioe) {
-					System.out.println("Cannot close file: " + ioe);
+				} catch (IOException ex) {
+					log.error("Cannot close file: " + rdNcFile, ex);
 				}
 			}
 		}

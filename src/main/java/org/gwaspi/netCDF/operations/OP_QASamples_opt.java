@@ -7,6 +7,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import org.gwaspi.netCDF.markers.MarkerSet_opt;
 import org.gwaspi.netCDF.matrices.MatrixMetadata;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.gwaspi.samples.SampleSet;
 import ucar.ma2.ArrayChar;
 import ucar.ma2.InvalidRangeException;
@@ -20,6 +22,8 @@ import ucar.nc2.NetcdfFileWriteable;
  * CEXS-UPF-PRBB
  */
 public class OP_QASamples_opt {
+
+	private final static Logger log = LoggerFactory.getLogger(OP_QASamples_opt.class);
 
 	private OP_QASamples_opt() {
 	}
@@ -40,18 +44,18 @@ public class OP_QASamples_opt {
 
 		Map<String, Object> rdChrSetLHM = rdMarkerSet.getChrInfoSetLHM();
 
-		//Map<String, Object> rdMarkerSetLHM = rdMarkerSet.markerIdSetLHM; //This to test heap usage of copying locally the LHM from markerset
+		//Map<String, Object> rdMarkerSetLHM = rdMarkerSet.markerIdSetLHM; // This to test heap usage of copying locally the LHM from markerset
 
 		SampleSet rdSampleSet = new SampleSet(rdMatrixMetadata.getStudyId(), rdMatrixId);
 		Map<String, Object> rdSampleSetLHM = rdSampleSet.getSampleIdSetLHM();
 
-		//Iterate through samples
+		// Iterate through samples
 		int sampleNb = 0;
 		for (String sampleId : rdSampleSetLHM.keySet()) {
 			Integer missingCount = 0;
 			Integer heterozygCount = 0;
 
-			//Iterate through markerset
+			// Iterate through markerset
 			rdMarkerSet.fillGTsForCurrentSampleIntoInitLHM(sampleNb);
 			int markerIndex = 0;
 			for (Map.Entry<String, Object> entry : rdMarkerSet.getMarkerIdSetLHM().entrySet()) {
@@ -60,7 +64,7 @@ public class OP_QASamples_opt {
 					missingCount++;
 				}
 
-				//WE DON'T WANT NON AUTOSOMAL CHR FOR HETZY
+				// WE DON'T WANT NON AUTOSOMAL CHR FOR HETZY
 				String currentChr = MarkerSet_opt.getChrByMarkerIndex(rdChrSetLHM, markerIndex);
 				if (!currentChr.equals("X")
 						&& !currentChr.equals("Y")
@@ -80,18 +84,17 @@ public class OP_QASamples_opt {
 			double heterozygRatio = (double) heterozygCount / (rdMarkerSet.getMarkerIdSetLHM().size() - missingCount);
 			wrSampleSetHetzyRatioLHM.put(sampleId, heterozygRatio);
 
-
 			sampleNb++;
 
 			if (sampleNb % 100 == 0) {
-				System.out.println("Processed samples: " + sampleNb + " at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
+				log.info("Processed samples: {} at {}", sampleNb, org.gwaspi.global.Utils.getMediumDateTimeAsString()); // FIXME log system already supplies time
 			}
 		}
 
-		//Write census, missing-ratio and mismatches to netCDF
+		// Write census, missing-ratio and mismatches to netCDF
 		NetcdfFileWriteable wrNcFile = null;
 		try {
-			///////////// CREATE netCDF-3 FILE ////////////
+			// CREATE netCDF-3 FILE
 
 			OperationFactory wrOPHandler = new OperationFactory(rdMatrixMetadata.getStudyId(),
 					"Sample QA", //friendly name
@@ -100,56 +103,52 @@ public class OP_QASamples_opt {
 					rdMatrixMetadata.getMarkerSetSize(),
 					0,
 					cNetCDF.Defaults.OPType.SAMPLE_QA.toString(),
-					rdMatrixMetadata.getMatrixId(), //Parent matrixId
-					-1);                            //Parent operationId
+					rdMatrixMetadata.getMatrixId(), // Parent matrixId
+					-1);                            // Parent operationId
 
 			wrNcFile = wrOPHandler.getNetCDFHandler();
 			try {
 				wrNcFile.create();
-			} catch (IOException e) {
-				System.err.println("ERROR creating file " + wrNcFile.getLocation() + "\n" + e);
+			} catch (IOException ex) {
+				log.error("Failed creating file: " + wrNcFile.getLocation(), ex);
 			}
-			//System.out.println("Done creating netCDF handle: " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
-
+			//log.trace("Done creating netCDF handle: " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
 
 			//<editor-fold defaultstate="collapsed" desc="METADATA WRITER">
-			//SAMPLESET
+			// SAMPLESET
 			ArrayChar.D2 samplesD2 = Utils.writeLHMKeysToD2ArrayChar(rdSampleSetLHM, cNetCDF.Strides.STRIDE_SAMPLE_NAME);
 
 			int[] sampleOrig = new int[]{0, 0};
 			try {
 				wrNcFile.write(cNetCDF.Variables.VAR_OPSET, sampleOrig, samplesD2);
-			} catch (IOException e) {
-				System.err.println("ERROR writing file");
-			} catch (InvalidRangeException e) {
-				e.printStackTrace();
+			} catch (IOException ex) {
+				log.error("Failed writing file: " + wrNcFile.getLocation(), ex);
+			} catch (InvalidRangeException ex) {
+				log.error(null, ex);
 			}
-			samplesD2 = null;
-			System.out.println("Done writing SampleSet to matrix at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
+			log.info("Done writing SampleSet to matrix at {}", org.gwaspi.global.Utils.getMediumDateTimeAsString()); // FIXME log system already supplies time
 
 			//WRITE MARKERSET TO MATRIX
 			ArrayChar.D2 markersD2 = Utils.writeLHMKeysToD2ArrayChar(rdMarkerSet.getMarkerIdSetLHM(), cNetCDF.Strides.STRIDE_MARKER_NAME);
 			int[] markersOrig = new int[]{0, 0};
 			try {
 				wrNcFile.write(cNetCDF.Variables.VAR_IMPLICITSET, markersOrig, markersD2);
-			} catch (IOException e) {
-				System.err.println("ERROR writing file");
-			} catch (InvalidRangeException e) {
-				e.printStackTrace();
+			} catch (IOException ex) {
+				log.error("Failed writing file: " + wrNcFile.getLocation(), ex);
+			} catch (InvalidRangeException ex) {
+				log.error(null, ex);
 			}
-			samplesD2 = null;
-			System.out.println("Done writing MarkerSet to matrix at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
-
+			log.info("Done writing MarkerSet to matrix at {}", org.gwaspi.global.Utils.getMediumDateTimeAsString()); // FIXME log system already supplies time
 			//</editor-fold>
 
 			//<editor-fold defaultstate="collapsed" desc="CENSUS DATA WRITER">
-			//MISSING RATIO
+			// MISSING RATIO
 			Utils.saveDoubleLHMD1ToWrMatrix(wrNcFile, wrSampleSetMissingRatioLHM, cNetCDF.Census.VAR_OP_SAMPLES_MISSINGRAT);
 
-			//MISSING COUNT
+			// MISSING COUNT
 			Utils.saveIntLHMD1ToWrMatrix(wrNcFile, wrSampleSetMissingCountLHM, cNetCDF.Census.VAR_OP_SAMPLES_MISSINGCOUNT);
 
-			//HETEROZYGOSITY RATIO
+			// HETEROZYGOSITY RATIO
 			Utils.saveDoubleLHMD1ToWrMatrix(wrNcFile, wrSampleSetHetzyRatioLHM, cNetCDF.Census.VAR_OP_SAMPLES_HETZYRAT);
 			//</editor-fold>
 
@@ -159,8 +158,8 @@ public class OP_QASamples_opt {
 				try {
 					rdNcFile.close();
 					wrNcFile.close();
-				} catch (IOException ioe) {
-					System.err.println("Cannot close file: " + ioe);
+				} catch (IOException ex) {
+					log.error("Cannot close file", ex);
 				}
 			}
 

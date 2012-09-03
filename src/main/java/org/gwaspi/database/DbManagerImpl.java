@@ -172,7 +172,6 @@ public class DbManagerImpl implements DbManager {
 			}
 		}
 		sql.append(")");
-		//System.out.print(sql.toString());
 
 		try {
 			qex.executeUpdate(sql.toString());

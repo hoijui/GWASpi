@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 import org.gwaspi.model.Operation;
 import org.gwaspi.model.OperationsList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -16,6 +18,8 @@ import org.gwaspi.model.OperationsList;
  * CEXS-UPF-PRBB
  */
 public class MatrixManager {
+
+	private final static Logger log = LoggerFactory.getLogger(MatrixManager.class);
 
 	private MatrixManager() {
 	}
@@ -27,11 +31,8 @@ public class MatrixManager {
 			db.createTable(org.gwaspi.constants.cDBGWASpi.SCH_MATRICES,
 					org.gwaspi.constants.cDBMatrix.T_MATRICES,
 					org.gwaspi.constants.cDBMatrix.T_CREATE_MATRICES);
-
-		} catch (Exception e) {
-			System.out.println("Error creating management database");
-			System.out.print(e);
-			e.printStackTrace();
+		} catch (Exception ex) {
+			log.error("Failed creating management database", ex);
 		}
 
 		return (result) ? "1" : "0";
@@ -46,10 +47,12 @@ public class MatrixManager {
 			int parent_matrix2_id,
 			String input_location,
 			String description,
-			int loaded) throws IOException {
-
-		if (description.length() > 1999) {
-			description = description.substring(0, 1999);
+			int loaded)
+			throws IOException
+	{
+		String trimmedDescription = description;
+		if (trimmedDescription.length() > 1999) {
+			trimmedDescription = trimmedDescription.substring(0, 1999);
 		}
 
 		Object[] matrixMetaData = new Object[]{matrix_name,
@@ -58,7 +61,7 @@ public class MatrixManager {
 			parent_matrix1_id,
 			parent_matrix2_id,
 			input_location,
-			description,
+			trimmedDescription,
 			loaded,
 			studyId
 		};
@@ -76,7 +79,7 @@ public class MatrixManager {
 			String genotypesFolder = org.gwaspi.global.Config.getConfigValue("GTdir", "");
 			genotypesFolder += "/STUDY_" + matrixMetadata.getStudyId() + "/";
 
-			//DELETE OPERATION netCDFs FROM THIS MATRIX
+			// DELETE OPERATION netCDFs FROM THIS MATRIX
 			org.gwaspi.model.OperationsList opList = new OperationsList(matrixId);
 			for (Operation op : opList.operationsListAL) {
 				File opFile = new File(genotypesFolder + op.getOperationNetCDFName() + ".nc");
@@ -91,7 +94,7 @@ public class MatrixManager {
 
 			org.gwaspi.reports.ReportManager.deleteReportByMatrixId(matrixId);
 
-			//DELETE MATRIX NETCDF FILE
+			// DELETE MATRIX NETCDF FILE
 			File matrixFile = new File(genotypesFolder + matrixMetadata.getMatrixNetCDFName() + ".nc");
 			if (matrixFile.exists()) {
 				if (!matrixFile.canWrite()) {
@@ -101,15 +104,13 @@ public class MatrixManager {
 				boolean success = matrixFile.delete();
 			}
 
-			//DELETE METADATA INFO FROM DB
+			// DELETE METADATA INFO FROM DB
 			DbManager dBManager = ServiceLocator.getDbManager(org.gwaspi.constants.cDBGWASpi.DB_DATACENTER);
 			String statement = "DELETE FROM " + org.gwaspi.constants.cDBGWASpi.SCH_MATRICES + "." + org.gwaspi.constants.cDBMatrix.T_MATRICES + " WHERE ID=" + matrixMetadata.getMatrixId();
 			dBManager.executeStatement(statement);
 
-		} catch (Exception e) {
-			System.out.println("Error deleteing Matrix!");
-			System.out.print(e);
-			e.printStackTrace();
+		} catch (Exception ex) {
+			log.error("Failed deleteing Matrix", ex);
 		}
 	}
 
@@ -132,8 +133,8 @@ public class MatrixManager {
 		DbManager studyDbManager = ServiceLocator.getDbManager(dbName);
 		try {
 			rs = studyDbManager.executeSelectStatement("SELECT " + org.gwaspi.constants.cDBMatrix.f_ID + " FROM " + org.gwaspi.constants.cDBGWASpi.SCH_MATRICES + "." + org.gwaspi.constants.cDBMatrix.T_MATRICES + " ORDER BY " + org.gwaspi.constants.cDBMatrix.f_ID + " DESC  WITH RR");
-		} catch (Exception e) {
-			e.printStackTrace();
+		} catch (Exception ex) {
+			log.error("Failed retreiving latest Matrix", ex);
 		}
 
 		MatrixMetadata mxMetaData = new MatrixMetadata((Integer) rs.get(0).get(org.gwaspi.constants.cDBMatrix.f_ID));

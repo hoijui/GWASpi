@@ -1,12 +1,14 @@
 package org.gwaspi.threadbox;
 
 import org.gwaspi.global.Text;
+import org.gwaspi.gui.ProcessTab;
+import org.gwaspi.gui.StartGWASpi;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.gwaspi.model.GWASpiExplorerNodes;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.gwaspi.threadbox.SwingDeleterItem.DeleteTarget;
 
 /**
@@ -17,6 +19,7 @@ import org.gwaspi.threadbox.SwingDeleterItem.DeleteTarget;
  */
 public class SwingDeleterItemList extends SwingWorkerItemList {
 
+	private final static Logger log = LoggerFactory.getLogger(SwingDeleterItemList.class);
 	protected static List<SwingDeleterItem> swingDeleterItemsAL = new ArrayList<SwingDeleterItem>();
 
 	SwingDeleterItemList() {
@@ -37,24 +40,22 @@ public class SwingDeleterItemList extends SwingWorkerItemList {
 			SwingDeleterItemList.swingDeleterItemsAL.add(SwingDeleterItemList.swingDeleterItemsAL.size(), sdi); //Add at start of list
 		}
 
-
-		//CHECK IF ANY ITEM IS RUNNING, START PROCESSING NEWLY ADDED SwingDeleter
+		// CHECK IF ANY ITEM IS RUNNING, START PROCESSING NEWLY ADDED SwingDeleter
 		if (SwingWorkerItemList.getSwingWorkerPendingItemsNb() == 0) {
 			deleteAllListed();
 		}
-
 	}
 
 	public static void deleteAllListed() {
-		if (org.gwaspi.gui.StartGWASpi.guiMode) {
-			org.gwaspi.gui.StartGWASpi.mainGUIFrame.setCursor(org.gwaspi.gui.utils.CursorUtils.waitCursor);
+		if (StartGWASpi.guiMode) {
+			StartGWASpi.mainGUIFrame.setCursor(org.gwaspi.gui.utils.CursorUtils.waitCursor);
 		}
 
 		for (SwingDeleterItem currentSdi : swingDeleterItemsAL) {
 			if (currentSdi.queueState.equals(QueueStates.QUEUED)) {
 				String deleteTarget = currentSdi.getDeleteTarget();
 
-				//DELETE STUDY
+				// DELETE STUDY
 				if (deleteTarget.equals(DeleteTarget.STUDY)) {
 					try {
 						currentSdi.setStartTime(org.gwaspi.global.Utils.getShortDateTimeAsString());
@@ -66,10 +67,10 @@ public class SwingDeleterItemList extends SwingWorkerItemList {
 						GWASpiExplorerNodes.deleteStudyNode(currentSdi.getStudyId());
 						flagCurrentItemDeleted();
 					} catch (IOException ex) {
-						Logger.getLogger(SwingDeleterItemList.class.getName()).log(Level.SEVERE, null, ex);
+						log.error(null, ex);
 					}
 				}
-				//DELETE MATRIX
+				// DELETE MATRIX
 				if (deleteTarget.equals(DeleteTarget.MATRIX)) {
 					currentSdi.setStartTime(org.gwaspi.global.Utils.getShortDateTimeAsString());
 					currentSdi.setQueueState(QueueStates.PROCESSING);
@@ -80,7 +81,7 @@ public class SwingDeleterItemList extends SwingWorkerItemList {
 					GWASpiExplorerNodes.deleteMatrixNode(currentSdi.getMatrixId());
 					flagCurrentItemDeleted();
 				}
-				//DELETE OPERATION BY OPID
+				// DELETE OPERATION BY OPID
 				if (deleteTarget.equals(DeleteTarget.OPERATION_BY_OPID)) {
 					try {
 						currentSdi.setStartTime(org.gwaspi.global.Utils.getShortDateTimeAsString());
@@ -92,10 +93,11 @@ public class SwingDeleterItemList extends SwingWorkerItemList {
 						GWASpiExplorerNodes.deleteOperationNode(currentSdi.getOpId());
 						flagCurrentItemDeleted();
 					} catch (IOException ex) {
-						Logger.getLogger(SwingDeleterItemList.class.getName()).log(Level.SEVERE, null, ex);
+
+						log.error(null, ex);
 					}
 				}
-				//DELETE REPORTS BY MATRIXID -- NOT IN USAGE???
+				// DELETE REPORTS BY MATRIXID -- NOT IN USAGE???
 				if (deleteTarget.equals(DeleteTarget.REPORTS_BY_MATRIXID)) {
 					try {
 						currentSdi.setStartTime(org.gwaspi.global.Utils.getShortDateTimeAsString());
@@ -106,27 +108,26 @@ public class SwingDeleterItemList extends SwingWorkerItemList {
 
 						flagCurrentItemDeleted();
 					} catch (IOException ex) {
-						Logger.getLogger(SwingDeleterItemList.class.getName()).log(Level.SEVERE, null, ex);
+						log.error(null, ex);
 					}
 				}
 			}
 		}
 
-		//IF WE ARE IN GUI MODE, UPDATE TREE. ELSE EXIT PROGRAM
-		if (org.gwaspi.gui.StartGWASpi.guiMode) {
-			org.gwaspi.gui.StartGWASpi.mainGUIFrame.setCursor(org.gwaspi.gui.utils.CursorUtils.defaultCursor);
-			org.gwaspi.gui.ProcessTab.updateProcessOverview();
+		// IF WE ARE IN GUI MODE, UPDATE TREE. ELSE EXIT PROGRAM
+		if (StartGWASpi.guiMode) {
+			StartGWASpi.mainGUIFrame.setCursor(org.gwaspi.gui.utils.CursorUtils.defaultCursor);
+			ProcessTab.updateProcessOverview();
 			try {
 				MultiOperations.updateTreeAndPanel();
 			} catch (IOException ex) {
+				log.warn(null, ex);
 			}
 			GWASpiExplorerNodes.setAllNodesCollapsable();
 		} else {
-			System.out.println(Text.Cli.doneExiting);
-			org.gwaspi.gui.StartGWASpi.exit();
+			log.info(Text.Cli.doneExiting);
+			StartGWASpi.exit();
 		}
-
-
 	}
 
 	public static List<SwingDeleterItem> getSwingDeleterItemsAL() {
@@ -196,12 +197,12 @@ public class SwingDeleterItemList extends SwingWorkerItemList {
 		if (queueState.equals(org.gwaspi.threadbox.QueueStates.PROCESSING) || queueState.equals(org.gwaspi.threadbox.QueueStates.QUEUED)) {
 			swingDeleterItemsAL.get(idx).setQueueState(org.gwaspi.threadbox.QueueStates.ABORT);
 
-			System.out.println("\n\n");
-			System.out.println(Text.Processes.abortingProcess);
-			System.out.println(swingDeleterItemsAL.get(idx).getDescription());
-			System.out.println("Delete Launch Time: " + swingDeleterItemsAL.get(idx).getLaunchTime());
-			System.out.println("\n");
-			org.gwaspi.gui.ProcessTab.updateProcessOverview();
+			log.info("");
+			log.info(Text.Processes.abortingProcess);
+			log.info(swingDeleterItemsAL.get(idx).getDescription());
+			log.info("Delete Launch Time: {}", swingDeleterItemsAL.get(idx).getLaunchTime());
+			log.info("");
+			ProcessTab.updateProcessOverview();
 		}
 	}
 }

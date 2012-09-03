@@ -9,6 +9,8 @@ import java.util.Map;
 import org.gwaspi.netCDF.markers.MarkerSet_opt;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.gwaspi.netCDF.matrices.MatrixMetadata;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.gwaspi.samples.SampleSet;
 import ucar.ma2.ArrayChar;
 import ucar.ma2.Index;
@@ -23,6 +25,8 @@ import ucar.nc2.NetcdfFileWriteable;
  * CEXS-UPF-PRBB
  */
 public class MatrixTranslator_opt {
+
+	private final static Logger log = LoggerFactory.getLogger(MatrixTranslator_opt.class);
 
 	private int studyId = Integer.MIN_VALUE;
 	private int rdMatrixId = Integer.MIN_VALUE;
@@ -43,9 +47,10 @@ public class MatrixTranslator_opt {
 	public MatrixTranslator_opt(int _studyId,
 			int _rdMatrixId,
 			String _wrMatrixFriendlyName,
-			String _wrMatrixDescription) throws IOException, InvalidRangeException {
-
-		/////////// INIT EXTRACTOR OBJECTS //////////
+			String _wrMatrixDescription)
+			throws IOException, InvalidRangeException
+	{
+		// INIT EXTRACTOR OBJECTS
 
 		rdMatrixId = _rdMatrixId;
 		rdMatrixMetadata = new MatrixMetadata(rdMatrixId);
@@ -60,7 +65,6 @@ public class MatrixTranslator_opt {
 
 		rdSampleSet = new SampleSet(rdMatrixMetadata.getStudyId(), rdMatrixId);
 		rdSampleSetLHM = rdSampleSet.getSampleIdSetLHM();
-
 	}
 
 	public int translateAB12AllelesToACGT() throws InvalidRangeException, IOException {
@@ -72,7 +76,7 @@ public class MatrixTranslator_opt {
 		if (!rdMatrixGtCode.equals(cNetCDF.Defaults.GenotypeEncoding.ACGT0.toString())) { //Has not allready been translated
 
 			try {
-				///////////// CREATE netCDF-3 FILE ////////////
+				// CREATE netCDF-3 FILE
 				StringBuilder descSB = new StringBuilder(Text.Matrix.descriptionHeader1);
 				descSB.append(org.gwaspi.global.Utils.getShortDateTimeAsString());
 				descSB.append("\nThrough Matrix translation from parent Matrix MX: ").append(rdMatrixId).append(" - ").append(rdMatrixMetadata.getMatrixFriendlyName());
@@ -103,101 +107,91 @@ public class MatrixTranslator_opt {
 				NetcdfFileWriteable wrNcFile = wrMatrixHandler.getNetCDFHandler();
 				try {
 					wrNcFile.create();
-				} catch (IOException e) {
-					System.err.println("ERROR creating file " + wrNcFile.getLocation() + "\n" + e);
+				} catch (IOException ex) {
+					log.error("Failed creating file " + wrNcFile.getLocation(), ex);
 				}
-				//System.out.println("Done creating netCDF handle in MatrixataTransform: " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
-
+				//log.trace("Done creating netCDF handle in MatrixataTransform: " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
 
 				//<editor-fold defaultstate="collapsed" desc="METADATA WRITER">
+				// WRITING METADATA TO MATRIX
 
-				//////// WRITING METADATA TO MATRIX /////////
-
-				//SAMPLESET
+				// SAMPLESET
 				ArrayChar.D2 samplesD2 = Utils.writeLHMKeysToD2ArrayChar(rdSampleSetLHM, cNetCDF.Strides.STRIDE_SAMPLE_NAME);
 
 				int[] sampleOrig = new int[]{0, 0};
 				try {
 					wrNcFile.write(cNetCDF.Variables.VAR_SAMPLESET, sampleOrig, samplesD2);
-				} catch (IOException e) {
-					System.err.println("ERROR writing file");
-				} catch (InvalidRangeException e) {
-					e.printStackTrace();
+				} catch (IOException ex) {
+					log.error("Failed writing file", ex);
+				} catch (InvalidRangeException ex) {
+					log.error(null, ex);
 				}
-				samplesD2 = null;
-				System.out.println("Done writing SampleSet to matrix at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
+				log.info("Done writing SampleSet to matrix at {}", org.gwaspi.global.Utils.getMediumDateTimeAsString()); // FIXME log system already adds time
 
-
-				//MARKERSET MARKERID
+				// MARKERSET MARKERID
 				ArrayChar.D2 markersD2 = Utils.writeLHMKeysToD2ArrayChar(rdMarkerSet.getMarkerIdSetLHM(), cNetCDF.Strides.STRIDE_MARKER_NAME);
 				int[] markersOrig = new int[]{0, 0};
 				try {
 					wrNcFile.write(cNetCDF.Variables.VAR_MARKERSET, markersOrig, markersD2);
-				} catch (IOException e) {
-					System.err.println("ERROR writing file");
-				} catch (InvalidRangeException e) {
-					e.printStackTrace();
+				} catch (IOException ex) {
+					log.error("Failed writing file", ex);
+				} catch (InvalidRangeException ex) {
+					log.error(null, ex);
 				}
 
-
-				//MARKERSET RSID
+				// MARKERSET RSID
 				rdMarkerSet.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_RSID);
 				Utils.saveCharLHMValueToWrMatrix(wrNcFile, rdMarkerSet.getMarkerIdSetLHM(), cNetCDF.Variables.VAR_MARKERS_RSID, cNetCDF.Strides.STRIDE_MARKER_NAME);
 
-				//MARKERSET CHROMOSOME
+				// MARKERSET CHROMOSOME
 				rdMarkerSet.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
 				Utils.saveCharLHMValueToWrMatrix(wrNcFile, rdMarkerSet.getMarkerIdSetLHM(), cNetCDF.Variables.VAR_MARKERS_CHR, cNetCDF.Strides.STRIDE_CHR);
 
-				//Set of chromosomes found in matrix along with number of markersinfo
+				// Set of chromosomes found in matrix along with number of markersinfo
 				org.gwaspi.netCDF.operations.Utils.saveCharLHMKeyToWrMatrix(wrNcFile, rdChrInfoSetLHM, cNetCDF.Variables.VAR_CHR_IN_MATRIX, 8);
-				//Number of marker per chromosome & max pos for each chromosome
+				// Number of marker per chromosome & max pos for each chromosome
 				int[] columns = new int[]{0, 1, 2, 3};
 				org.gwaspi.netCDF.operations.Utils.saveIntLHMD2ToWrMatrix(wrNcFile, rdChrInfoSetLHM, columns, cNetCDF.Variables.VAR_CHR_INFO);
 
-				//MARKERSET POSITION
+				// MARKERSET POSITION
 				rdMarkerSet.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_POS);
 				Utils.saveIntLHMD1ToWrMatrix(wrNcFile, rdMarkerSet.getMarkerIdSetLHM(), cNetCDF.Variables.VAR_MARKERS_POS);
 
-				//MARKERSET DICTIONARY ALLELES
+				// MARKERSET DICTIONARY ALLELES
 				rdMarkerSet.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_BASES_DICT);
-				wrMarkerIdSetLHM = rdMarkerSet.replaceWithValuesFrom(wrMarkerIdSetLHM, rdMarkerSet.getMarkerIdSetLHM());
+				wrMarkerIdSetLHM = MarkerSet_opt.replaceWithValuesFrom(wrMarkerIdSetLHM, rdMarkerSet.getMarkerIdSetLHM());
 				Utils.saveCharLHMValueToWrMatrix(wrNcFile, wrMarkerIdSetLHM, cNetCDF.Variables.VAR_MARKERS_BASES_DICT, cNetCDF.Strides.STRIDE_GT);
 
-				//GENOTYPE STRAND
+				// GENOTYPE STRAND
 				rdMarkerSet.fillInitLHMWithVariable(cNetCDF.Variables.VAR_GT_STRAND);
 				Utils.saveCharLHMValueToWrMatrix(wrNcFile, rdMarkerSet.getMarkerIdSetLHM(), cNetCDF.Variables.VAR_GT_STRAND, cNetCDF.Strides.STRIDE_STRAND);
-
-
 				//</editor-fold>
 
-
 				//<editor-fold defaultstate="collapsed" desc="GENOTYPES WRITER">
-
-				//Get correct bases dictionary for translation
+				// Get correct bases dictionary for translation
 				Map<String, Object> dictionnaryLHM = rdMarkerSet.getDictionaryBases();
 
-				//Iterate through Samples, use Sample item position to read all Markers GTs from rdMarkerIdSetLHM.
+				// Iterate through Samples, use Sample item position to read all Markers GTs from rdMarkerIdSetLHM.
 				int sampleIndex = 0;
 				for (int i = 0; i < rdSampleSetLHM.size(); i++) {
-					//Get alleles from read matrix
+					// Get alleles from read matrix
 					rdMarkerSet.fillGTsForCurrentSampleIntoInitLHM(sampleIndex);
-					//Send to be translated
+					// Send to be translated
 					wrMarkerIdSetLHM = translateCurrentSampleAB12AllelesLHM(rdMarkerSet.getMarkerIdSetLHM(), rdMatrixGtCode, dictionnaryLHM);
 
-					//Write wrMarkerIdSetLHM to A3 ArrayChar and save to wrMatrix
+					// Write wrMarkerIdSetLHM to A3 ArrayChar and save to wrMatrix
 					Utils.saveSingleSampleGTsToMatrix(wrNcFile, wrMarkerIdSetLHM, sampleIndex);
 					if (sampleIndex % 100 == 0) {
-						System.out.println("Samples translated:" + sampleIndex);
+						log.info("Samples translated: {}", sampleIndex);
 					}
 					sampleIndex++;
 				}
-				System.out.println("Total Samples translated:" + sampleIndex);
-
+				log.info("Total Samples translated: {}", sampleIndex);
 				//</editor-fold>
 
 				// CLOSE THE FILE AND BY THIS, MAKE IT READ-ONLY
 				try {
-					//GUESS GENOTYPE ENCODING
+					// GUESS GENOTYPE ENCODING
 					ArrayChar.D2 guessedGTCodeAC = new ArrayChar.D2(1, 8);
 					Index index = guessedGTCodeAC.getIndex();
 					guessedGTCodeAC.setString(index.set(0, 0), cNetCDF.Defaults.GenotypeEncoding.ACGT0.toString());
@@ -206,40 +200,39 @@ public class MatrixTranslator_opt {
 
 					wrNcFile.close();
 					result = wrMatrixHandler.getResultMatrixId();
-				} catch (IOException e) {
-					System.err.println("ERROR creating file " + wrNcFile.getLocation() + "\n" + e);
+				} catch (IOException ex) {
+					log.error("Failed creating file " + wrNcFile.getLocation(), ex);
 				}
 
 				org.gwaspi.global.Utils.sysoutCompleted("Translation");
-
-			} catch (InvalidRangeException invalidRangeException) {
-			} catch (IOException iOException) {
+			} catch (InvalidRangeException ex) {
+				log.error(null, ex);
+			} catch (IOException ex) {
+				log.error(null, ex);
 			} finally {
 				if (null != rdNcFile) {
 					try {
 						rdNcFile.close();
-					} catch (IOException ioe) {
-						System.out.println("Cannot close file: " + ioe);
+					} catch (IOException ex) {
+						log.error("Failed to close file " + rdNcFile.getLocation(), ex);
 					}
 				}
 			}
-
-
 		}
 
 		return result;
 	}
 
-	//TODO: Test translate1234AllelesToACGT
+	// TODO Test translate1234AllelesToACGT
 	public int translate1234AllelesToACGT() throws IOException, InvalidRangeException {
 		int result = Integer.MIN_VALUE;
 
 		NetcdfFile rdNcFile = NetcdfFile.open(rdMatrixMetadata.getPathToMatrix());
 		String rdMatrixGTCode = rdMatrixMetadata.getGenotypeEncoding();
 
-		if (!rdMatrixGTCode.equals(cNetCDF.Defaults.GenotypeEncoding.ACGT0.toString())) { //Has not allready been translated
+		if (!rdMatrixGTCode.equals(cNetCDF.Defaults.GenotypeEncoding.ACGT0.toString())) { // Has not yet been translated
 			try {
-				///////////// CREATE netCDF-3 FILE ////////////
+				// CREATE netCDF-3 FILE
 				StringBuilder descSB = new StringBuilder(Text.Matrix.descriptionHeader1);
 				descSB.append(org.gwaspi.global.Utils.getShortDateTimeAsString());
 				descSB.append("\nThrough Matrix translation from parent Matrix MX: ").append(rdMatrixMetadata.getMatrixId()).append(" - ").append(rdMatrixMetadata.getMatrixFriendlyName());
@@ -255,112 +248,102 @@ public class MatrixTranslator_opt {
 				descSB.append("Markers: ").append(rdMatrixMetadata.getMarkerSetSize()).append(", Samples: ").append(rdMatrixMetadata.getSampleSetSize());
 
 				MatrixFactory wrMatrixHandler = new MatrixFactory(studyId,
-						rdMatrixMetadata.getTechnology(), //technology
+						rdMatrixMetadata.getTechnology(), // technology
 						wrMatrixFriendlyName,
-						descSB.toString(), //description
+						descSB.toString(), // description
 						rdMatrixMetadata.getStrand(),
-						rdMatrixMetadata.getHasDictionray(), //has dictionary?
+						rdMatrixMetadata.getHasDictionray(), // has dictionary?
 						rdSampleSet.getSampleSetSize(),
 						rdMarkerSet.getMarkerSetSize(),
 						rdChrInfoSetLHM.size(),
-						cNetCDF.Defaults.GenotypeEncoding.ACGT0.toString(), //New matrix genotype encoding
-						rdMatrixId, //Orig matrixId 1
-						Integer.MIN_VALUE);         //Orig matrixId 2
+						cNetCDF.Defaults.GenotypeEncoding.ACGT0.toString(), // New matrix genotype encoding
+						rdMatrixId, // Orig matrixId 1
+						Integer.MIN_VALUE); // Orig matrixId 2
 
 				NetcdfFileWriteable wrNcFile = wrMatrixHandler.getNetCDFHandler();
 				try {
 					wrNcFile.create();
-				} catch (IOException e) {
-					System.err.println("ERROR creating file " + wrNcFile.getLocation() + "\n" + e);
+				} catch (IOException ex) {
+					log.error("Failed creating file " + wrNcFile.getLocation(), ex);
 				}
-				//System.out.println("Done creating netCDF handle in MatrixataTransform: " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
-
+				//log.trace("Done creating netCDF handle in MatrixataTransform: " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
 
 				//<editor-fold defaultstate="collapsed" desc="METADATA WRITER">
+				// WRITING METADATA TO MATRIX
 
-				//////// WRITING METADATA TO MATRIX /////////
-
-				//SAMPLESET
+				// SAMPLESET
 				ArrayChar.D2 samplesD2 = Utils.writeLHMKeysToD2ArrayChar(rdSampleSetLHM, cNetCDF.Strides.STRIDE_SAMPLE_NAME);
 
 				int[] sampleOrig = new int[]{0, 0};
 				try {
 					wrNcFile.write(cNetCDF.Variables.VAR_SAMPLESET, sampleOrig, samplesD2);
-				} catch (IOException e) {
-					System.err.println("ERROR writing file");
-				} catch (InvalidRangeException e) {
-					e.printStackTrace();
+				} catch (IOException ex) {
+					log.error("Failed writing file", ex);
+				} catch (InvalidRangeException ex) {
+					log.error(null, ex);
 				}
-				samplesD2 = null;
-				System.out.println("Done writing SampleSet to matrix at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
+				log.info("Done writing SampleSet to matrix at {}", org.gwaspi.global.Utils.getMediumDateTimeAsString()); // FIXME log system already adds time
 
-
-				//MARKERSET MARKERID
+				// MARKERSET MARKERID
 				ArrayChar.D2 markersD2 = Utils.writeLHMKeysToD2ArrayChar(rdMarkerSet.getMarkerIdSetLHM(), cNetCDF.Strides.STRIDE_MARKER_NAME);
 				int[] markersOrig = new int[]{0, 0};
 				try {
 					wrNcFile.write(cNetCDF.Variables.VAR_MARKERSET, markersOrig, markersD2);
-				} catch (IOException e) {
-					System.err.println("ERROR writing file");
-				} catch (InvalidRangeException e) {
-					e.printStackTrace();
+				} catch (IOException ex) {
+					log.error("Failed writing file", ex);
+				} catch (InvalidRangeException ex) {
+					log.error(null, ex);
 				}
 
-
-				//MARKERSET RSID
+				// MARKERSET RSID
 				rdMarkerSet.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_RSID);
 				Utils.saveCharLHMValueToWrMatrix(wrNcFile, rdMarkerSet.getMarkerIdSetLHM(), cNetCDF.Variables.VAR_MARKERS_RSID, cNetCDF.Strides.STRIDE_MARKER_NAME);
 
-				//MARKERSET CHROMOSOME
+				// MARKERSET CHROMOSOME
 				rdMarkerSet.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
 				Utils.saveCharLHMValueToWrMatrix(wrNcFile, rdMarkerSet.getMarkerIdSetLHM(), cNetCDF.Variables.VAR_MARKERS_CHR, cNetCDF.Strides.STRIDE_CHR);
 
-				//MARKERSET POSITION
+				// MARKERSET POSITION
 				rdMarkerSet.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_POS);
 				//Utils.saveCharLHMValueToWrMatrix(wrNcFile, rdMarkerIdSetLHM, cNetCDF.Variables.VAR_MARKERS_POS, cNetCDF.Strides.STRIDE_POS);
 				Utils.saveIntLHMD1ToWrMatrix(wrNcFile, rdMarkerSet.getMarkerIdSetLHM(), cNetCDF.Variables.VAR_MARKERS_POS);
 
-				//MARKERSET DICTIONARY ALLELES
+				// MARKERSET DICTIONARY ALLELES
 				rdMarkerSet.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_BASES_DICT);
 				Utils.saveCharLHMValueToWrMatrix(wrNcFile, rdMarkerSet.getMarkerIdSetLHM(), cNetCDF.Variables.VAR_MARKERS_BASES_DICT, cNetCDF.Strides.STRIDE_GT);
 
-				//GENOTYPE STRAND
+				// GENOTYPE STRAND
 				rdMarkerSet.fillInitLHMWithVariable(cNetCDF.Variables.VAR_GT_STRAND);
 				Utils.saveCharLHMValueToWrMatrix(wrNcFile, rdMarkerSet.getMarkerIdSetLHM(), cNetCDF.Variables.VAR_GT_STRAND, cNetCDF.Strides.STRIDE_STRAND);
-
-
 				//</editor-fold>
 
-
 				//<editor-fold defaultstate="collapsed" desc="GENOTYPES WRITER">
-
-				//Get correct strand of each marker for newStrand translation
+				// Get correct strand of each marker for newStrand translation
 				Map<String, Object> markerStrandsLHM = new LinkedHashMap<String, Object>();
 				markerStrandsLHM.putAll(rdSampleSetLHM);
 
-				//Iterate through pmAllelesAndStrandsLHM, use Sample item position to read all Markers GTs from rdMarkerIdSetLHM.
+				// Iterate through pmAllelesAndStrandsLHM, use Sample item position to read all Markers GTs from rdMarkerIdSetLHM.
 				int sampleNb = 0;
 				for (int i = 0; i < rdSampleSetLHM.size(); i++) {
-					//Get alleles from read matrix
+					// Get alleles from read matrix
 					rdMarkerSet.fillGTsForCurrentSampleIntoInitLHM(sampleNb);
-					//Send to be translated
+					// Send to be translated
 					wrMarkerIdSetLHM = translateCurrentSample1234AllelesLHM(rdMarkerSet.getMarkerIdSetLHM(), markerStrandsLHM);
 
-					//Write wrMarkerIdSetLHM to A3 ArrayChar and save to wrMatrix
+					// Write wrMarkerIdSetLHM to A3 ArrayChar and save to wrMatrix
 					Utils.saveSingleSampleGTsToMatrix(wrNcFile, wrMarkerIdSetLHM, sampleNb);
 
 					if (sampleNb % 100 == 0) {
-						System.out.println("Samples translated:" + sampleNb);
+						log.info("Samples translated: {}", sampleNb);
 					}
 					sampleNb++;
 				}
-				System.out.println("Total Samples translated:" + sampleNb);
-
+				log.info("Total Samples translated: {}", sampleNb);
 				//</editor-fold>
 
 				// CLOSE THE FILE AND BY THIS, MAKE IT READ-ONLY
 				try {
-					//GUESS GENOTYPE ENCODING
+					// GUESS GENOTYPE ENCODING
 					ArrayChar.D2 guessedGTCodeAC = new ArrayChar.D2(1, 8);
 					Index index = guessedGTCodeAC.getIndex();
 					guessedGTCodeAC.setString(index.set(0, 0), cNetCDF.Defaults.GenotypeEncoding.ACGT0.toString());
@@ -369,20 +352,21 @@ public class MatrixTranslator_opt {
 
 					wrNcFile.close();
 					result = wrMatrixHandler.getResultMatrixId();
-				} catch (IOException e) {
-					System.err.println("ERROR creating file " + wrNcFile.getLocation() + "\n" + e);
+				} catch (IOException ex) {
+					log.error("Failed creating file " + wrNcFile.getLocation(), ex);
 				}
 
 				org.gwaspi.global.Utils.sysoutCompleted("Translation");
-
-			} catch (InvalidRangeException invalidRangeException) {
-			} catch (IOException iOException) {
+			} catch (InvalidRangeException ex) {
+				log.error(null, ex);
+			} catch (IOException ex) {
+				log.error(null, ex);
 			} finally {
 				if (null != rdNcFile) {
 					try {
 						rdNcFile.close();
-					} catch (IOException ioe) {
-						System.out.println("Cannot close file: " + ioe);
+					} catch (IOException ex) {
+						log.error("Failed close file " + rdNcFile.getLocation(), ex);
 					}
 				}
 			}
@@ -399,7 +383,7 @@ public class MatrixTranslator_opt {
 			case AB0:
 				alleleA = org.gwaspi.constants.cNetCDF.Defaults.AlleleBytes.A;
 				alleleB = org.gwaspi.constants.cNetCDF.Defaults.AlleleBytes.B;
-				//Iterate through all markers
+				// Iterate through all markers
 				for (Map.Entry<String, Object> entry : codedLHM.entrySet()) {
 					String markerId = entry.getKey();
 					char[] basesDict = dictionaryLHM.get(markerId).toString().toCharArray();
@@ -429,7 +413,7 @@ public class MatrixTranslator_opt {
 				alleleA = org.gwaspi.constants.cNetCDF.Defaults.AlleleBytes._1;
 				alleleB = org.gwaspi.constants.cNetCDF.Defaults.AlleleBytes._2;
 
-				//Iterate through all markers
+				// Iterate through all markers
 				for (Map.Entry<String, Object> entry : codedLHM.entrySet()) {
 					String markerId = entry.getKey();
 					char[] basesDict = dictionaryLHM.get(markerId).toString().toCharArray();
@@ -471,7 +455,7 @@ public class MatrixTranslator_opt {
 		dictionary.put(org.gwaspi.constants.cNetCDF.Defaults.AlleleBytes._3, org.gwaspi.constants.cNetCDF.Defaults.AlleleBytes.G);
 		dictionary.put(org.gwaspi.constants.cNetCDF.Defaults.AlleleBytes._4, org.gwaspi.constants.cNetCDF.Defaults.AlleleBytes.T);
 
-		//Iterate through all markers
+		// Iterate through all markers
 		for (String markerId : markerStrandsLHM.keySet()) {
 			byte[] codedAlleles = (byte[]) codedLHM.get(markerId);
 

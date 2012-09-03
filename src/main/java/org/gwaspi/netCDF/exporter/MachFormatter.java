@@ -9,6 +9,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import org.gwaspi.netCDF.markers.MarkerSet_opt;
 import org.gwaspi.netCDF.matrices.MatrixMetadata;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.gwaspi.samples.SampleSet;
 import ucar.nc2.NetcdfFile;
 
@@ -20,6 +22,7 @@ import ucar.nc2.NetcdfFile;
  */
 public class MachFormatter implements Formatter {
 
+	private final Logger log = LoggerFactory.getLogger(MachFormatter.class);
 	private static final String SEP = org.gwaspi.constants.cExport.separator_MACH;
 
 	public boolean export(
@@ -64,15 +67,14 @@ public class MachFormatter implements Formatter {
 			exportChromosomeToMped(exportDir, rdMatrixMetadata, rdMarkerSet, rdSampleSetMap, tmpChr, start, end);
 			exportChromosomeToDat(exportDir, rdMatrixMetadata, rdMarkerSet, tmpChr, start, end - 1);
 
-
 			result = true;
 		} catch (IOException iOException) {
 		} finally {
 			if (null != rdNcFile) {
 				try {
 					rdNcFile.close();
-				} catch (IOException ioe) {
-					System.out.println("Cannot close file: " + ioe);
+				} catch (IOException ex) {
+					log.error("Cannot close file: " + rdNcFile, ex);
 				}
 			}
 		}
@@ -80,12 +82,12 @@ public class MachFormatter implements Formatter {
 		return result;
 	}
 
-	public static void exportChromosomeToMped(File exportDir, MatrixMetadata rdMatrixMetadata, MarkerSet_opt rdMarkerSet, Map<String, Object> rdSampleSetLHM, String chr, int startPos, int endPos) throws IOException {
+	private void exportChromosomeToMped(File exportDir, MatrixMetadata rdMatrixMetadata, MarkerSet_opt rdMarkerSet, Map<String, Object> rdSampleSetLHM, String chr, int startPos, int endPos) throws IOException {
 
 		FileWriter pedFW = new FileWriter(exportDir.getPath() + "/" + rdMatrixMetadata.getMatrixFriendlyName() + "_chr" + chr + ".mped");
 		BufferedWriter pedBW = new BufferedWriter(pedFW);
 
-		//Iterate through all samples
+		// Iterate through all samples
 		int sampleNb = 0;
 		for (String sampleId : rdSampleSetLHM.keySet()) {
 			Map<String, Object> sampleInfo = Utils.getCurrentSampleFormattedInfo(sampleId, rdMatrixMetadata.getStudyId());
@@ -100,8 +102,7 @@ public class MachFormatter implements Formatter {
 				sex = "F";
 			}
 
-
-			//Iterate through current chrl markers
+			// Iterate through current chrl markers
 			rdMarkerSet.initMarkerIdSetLHM(startPos, endPos);
 			rdMarkerSet.fillGTsForCurrentSampleIntoInitLHM(sampleNb);
 			StringBuilder genotypes = new StringBuilder();
@@ -115,12 +116,12 @@ public class MachFormatter implements Formatter {
 				markerNb++;
 			}
 
-			//Family ID
-			//Individual ID
-			//Paternal ID
-			//Maternal ID
-			//Sex (1=male; 2=female; other=unknown)
-			//Genotypes
+			// Family ID
+			// Individual ID
+			// Paternal ID
+			// Maternal ID
+			// Sex (1=male; 2=female; other=unknown)
+			// Genotypes
 
 			StringBuilder line = new StringBuilder();
 			line.append(familyId);
@@ -140,7 +141,7 @@ public class MachFormatter implements Formatter {
 
 			sampleNb++;
 		}
-		System.out.println("Samples exported to chr" + chr + " MPED file: " + sampleNb);
+		log.info("Samples exported to chr{} MPED file: {}", chr, sampleNb);
 		pedBW.close();
 		pedFW.close();
 	}
@@ -176,7 +177,7 @@ public class MachFormatter implements Formatter {
 			markerNb++;
 		}
 
-		System.out.println("Markers exported to chr" + chr + " DAT file: " + (endPos + 1 - startPos));
+		log.info("Markers exported to chr{} DAT file: {}", chr, (endPos + 1 - startPos));
 
 		datBW.close();
 		datFW.close();

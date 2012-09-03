@@ -11,6 +11,8 @@ import java.util.Map;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.netCDF.markers.MarkerSet_opt;
 import org.gwaspi.netCDF.matrices.MatrixMetadata;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.gwaspi.reports.GatherQAMarkersData;
 import org.gwaspi.samples.SampleSet;
 import ucar.nc2.NetcdfFile;
@@ -22,6 +24,8 @@ import ucar.nc2.NetcdfFile;
  * CEXS-UPF-PRBB
  */
 public class PlinkBinaryFormatter implements Formatter {
+
+	private final Logger log = LoggerFactory.getLogger(PlinkBinaryFormatter.class);
 
 	public boolean export(
 			String exportPath,
@@ -149,15 +153,16 @@ public class PlinkBinaryFormatter implements Formatter {
 			String tmpMajorAllele = majorAllelesLHM.get(markerId).toString();
 
 			// GET SAMPLESET FOR CURRENT MARKER
-			rdSampleSetMap = rdSampleSet.readAllSamplesGTsFromCurrentMarkerToLHM(rdNcFile, rdSampleSetMap, markerNb);
+			Map<String, Object> remainingSampleSet = rdSampleSet.readAllSamplesGTsFromCurrentMarkerToLHM(rdNcFile, rdSampleSetMap, markerNb);
+			rdSampleSetMap = remainingSampleSet; // FIXME This line should most likely be removed, because further down this is used again ... check out!
 
-			for (Iterator<String> rdSampleIds = rdSampleSetMap.keySet().iterator(); rdSampleIds.hasNext();) {
+			for (Iterator<String> rdSampleIds = remainingSampleSet.keySet().iterator(); rdSampleIds.hasNext();) {
 				// ONE BYTE AT A TIME (4 SAMPLES)
 				StringBuilder tetraGTs = new StringBuilder("");
 				for (int i = 0; i < 4; i++) {
 					if (rdSampleIds.hasNext()) {
 						String sampleId = rdSampleIds.next();
-						byte[] tempGT = (byte[]) rdSampleSetMap.get(sampleId);
+						byte[] tempGT = (byte[]) remainingSampleSet.get(sampleId);
 						byte[] translatedByte = translateTo00011011Byte(tempGT, tmpMinorAllele, tmpMajorAllele);
 						tetraGTs.insert(0, translatedByte[0]); //REVERSE ORDER, AS PER PLINK SPECS http://pngu.mgh.harvard.edu/~purcell/plink/binary.shtml
 						tetraGTs.insert(0, translatedByte[1]);
@@ -201,7 +206,7 @@ public class PlinkBinaryFormatter implements Formatter {
 		FileWriter tfamFW = new FileWriter(filePath);
 		BufferedWriter tfamBW = new BufferedWriter(tfamFW);
 
-		//Iterate through all samples
+		// Iterate through all samples
 		int sampleNb = 0;
 		for (String sampleId : rdSampleSetMap.keySet()) {
 			Map<String, Object> sampleInfo = Utils.getCurrentSampleFormattedInfo(sampleId, rdMatrixMetadata.getStudyId());
@@ -212,13 +217,13 @@ public class PlinkBinaryFormatter implements Formatter {
 			String sex = sampleInfo.get(org.gwaspi.constants.cDBSamples.f_SEX).toString();
 			String affection = sampleInfo.get(org.gwaspi.constants.cDBSamples.f_AFFECTION).toString();
 
-			//FAM files
-			//Family ID
-			//Individual ID
-			//Paternal ID
-			//Maternal ID
-			//Sex (1=male; 2=female; other=unknown)
-			//Affection
+			// FAM files
+			// Family ID
+			// Individual ID
+			// Paternal ID
+			// Maternal ID
+			// Sex (1=male; 2=female; other=unknown)
+			// Affection
 
 			StringBuilder line = new StringBuilder();
 			line.append(familyId);
@@ -240,7 +245,7 @@ public class PlinkBinaryFormatter implements Formatter {
 
 			sampleNb++;
 			if (sampleNb % 100 == 0) {
-				System.out.println("Samples exported:" + sampleNb);
+				log.info("Samples exported: {}", sampleNb);
 			}
 
 		}

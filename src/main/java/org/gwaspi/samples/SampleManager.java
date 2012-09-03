@@ -5,6 +5,8 @@ import org.gwaspi.global.ServiceLocator;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -13,6 +15,8 @@ import java.util.Map;
  * CEXS-UPF-PRBB
  */
 public class SampleManager {
+
+	private final static Logger log = LoggerFactory.getLogger(SampleManager.class);
 
 	private SampleManager() {
 	}
@@ -28,10 +32,8 @@ public class SampleManager {
 					org.gwaspi.constants.cDBSamples.T_SAMPLES_INFO,
 					org.gwaspi.constants.cDBSamples.T_CREATE_SAMPLES_INFO);
 			result = true;
-		} catch (Exception e) {
-			System.out.println("Error creating Sample table");
-			System.out.print(e);
-			e.printStackTrace();
+		} catch (Exception ex) {
+			log.error("Error creating Sample table", ex);
 		}
 		return (result) ? "1" : "0";
 	}

@@ -13,8 +13,6 @@ import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 import javax.swing.GroupLayout;
 import javax.swing.JFrame;
@@ -22,6 +20,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JTabbedPane;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.gwaspi.threadbox.SwingDeleterItemList;
 import org.gwaspi.threadbox.SwingWorkerItemList;
 
@@ -32,6 +32,8 @@ import org.gwaspi.threadbox.SwingWorkerItemList;
  * CEXS-UPF-PRBB
  */
 public class StartGWASpi extends JFrame {
+
+	private static final Logger log = LoggerFactory.getLogger(StartGWASpi.class);
 
 	// create a JFrame to hold everything
 	public static boolean guiMode = true;
@@ -120,10 +122,10 @@ public class StartGWASpi extends JFrame {
 			File scriptFile = new File(argsAL.get(argsAL.indexOf("script") + 1).toString());
 			if (scriptFile.exists()) {
 				if (maxHeapSize > 254) {
-					System.out.println(maxHeapSize + Text.App.memoryAvailable1 + "\n"
+					log.info(maxHeapSize + Text.App.memoryAvailable1 + "\n"
 							+ Text.App.memoryAvailable2 + maxProcessMarkers + Text.App.memoryAvailable3);
 				} else {
-					System.out.println(maxHeapSize + Text.App.memoryAvailable1 + "\n"
+					log.info(maxHeapSize + Text.App.memoryAvailable1 + "\n"
 							+ Text.App.memoryAvailable2 + maxProcessMarkers + Text.App.memoryAvailable3 + "\n"
 							+ Text.App.memoryAvailable4);
 				}
@@ -133,7 +135,7 @@ public class StartGWASpi extends JFrame {
 				//BIT THAT READS COMMAND LINES AND EXECUTES THEM
 				org.gwaspi.cli.CliExecutor.execute(scriptFile);
 			} else {
-				System.out.println(Text.Cli.wrongScriptFilePath);
+				log.error(Text.Cli.wrongScriptFilePath);
 				exit();
 			}
 
@@ -184,13 +186,14 @@ public class StartGWASpi extends JFrame {
 							+ Text.App.memoryAvailable4);
 				}
 
-			} catch (RuntimeException runtimeException) {
-				runtimeException.printStackTrace();
+			} catch (RuntimeException ex) {
+				log.error(Text.App.warnOnlyOneInstance, ex);
 				org.gwaspi.gui.utils.Dialogs.showWarningDialogue(Text.App.warnOnlyOneInstance);
 				exit();
-			} catch (OutOfMemoryError e) {
-				System.out.println(Text.App.outOfMemoryError);
-			} catch (Exception exception) {
+			} catch (OutOfMemoryError ex) {
+				log.error(Text.App.outOfMemoryError, ex);
+			} catch (Exception ex) {
+				log.error(null, ex);
 			}
 
 			mainGUIFrame.setExtendedState(MAXIMIZED_BOTH);
@@ -202,7 +205,7 @@ public class StartGWASpi extends JFrame {
 			DbManager db = ServiceLocator.getDbManager(org.gwaspi.constants.cDBGWASpi.DB_DATACENTER);
 			db.shutdownConnection();
 		} catch (IOException ex) {
-			Logger.getLogger(StartGWASpi.class.getName()).log(Level.SEVERE, null, ex);
+			log.error(null, ex);
 		}
 		System.exit(0);
 	}

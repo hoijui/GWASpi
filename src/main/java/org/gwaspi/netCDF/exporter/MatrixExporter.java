@@ -1,11 +1,15 @@
 package org.gwaspi.netCDF.exporter;
 
 import org.gwaspi.constants.cExport.ExportFormat;
+import org.gwaspi.global.Config;
+import org.gwaspi.global.Text;
 import java.io.IOException;
 import java.util.EnumMap;
 import java.util.Map;
 import org.gwaspi.netCDF.markers.MarkerSet_opt;
 import org.gwaspi.netCDF.matrices.MatrixMetadata;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.gwaspi.samples.SampleSet;
 import ucar.ma2.InvalidRangeException;
 
@@ -16,6 +20,8 @@ import ucar.ma2.InvalidRangeException;
  * CEXS-UPF-PRBB
  */
 public class MatrixExporter {
+
+	private final Logger log = LoggerFactory.getLogger(MachFormatter.class);
 
 	private int rdMatrixId = Integer.MIN_VALUE;
 	private MatrixMetadata rdMatrixMetadata = null;
@@ -48,9 +54,9 @@ public class MatrixExporter {
 	}
 
 	public boolean exportToFormat(String exportFormatStr, String phenotype) throws IOException {
-		System.out.println(org.gwaspi.global.Text.All.processing);
+		log.info(Text.All.processing);
 
-		String exportPath = org.gwaspi.global.Config.getConfigValue("ExportDir", "");
+		String exportPath = Config.getConfigValue("ExportDir", "");
 		org.gwaspi.global.Utils.createFolder(exportPath, "STUDY_" + rdMatrixMetadata.getStudyId());
 		exportPath = exportPath + "/STUDY_" + rdMatrixMetadata.getStudyId();
 		ExportFormat exportFormat = ExportFormat.compareTo(exportFormatStr);

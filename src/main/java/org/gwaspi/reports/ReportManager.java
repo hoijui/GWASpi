@@ -14,6 +14,8 @@ import org.gwaspi.model.Operation;
 import org.gwaspi.model.Report;
 import org.gwaspi.netCDF.matrices.MatrixMetadata;
 import org.gwaspi.netCDF.operations.OperationMetadata;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -22,6 +24,8 @@ import org.gwaspi.netCDF.operations.OperationMetadata;
  * CEXS-UPF-PRBB
  */
 public class ReportManager {
+
+	private final static Logger log = LoggerFactory.getLogger(ReportManager.class);
 
 	private ReportManager() {
 	}
@@ -56,8 +60,8 @@ public class ReportManager {
 		}
 		return result;
 	}
-
 	//</editor-fold>
+
 	//<editor-fold defaultstate="collapsed" desc="OPERATIONS METADATA">
 	public static String getreportNamePrefix(Operation op) {
 		StringBuilder prefix = new StringBuilder();
@@ -89,15 +93,12 @@ public class ReportManager {
 	public static String createReportsMetadataTable(DbManager db) {
 		boolean result = false;
 		try {
-			//CREATE SAMPLESET_METADATA table in given SCHEMA
+			// CREATE SAMPLESET_METADATA table in given SCHEMA
 			db.createTable(org.gwaspi.constants.cDBGWASpi.SCH_MATRICES,
 					org.gwaspi.constants.cDBReports.T_REPORTS,
 					org.gwaspi.constants.cDBReports.T_CREATE_REPORTS);
-
-		} catch (Exception e) {
-			System.out.println("Error creating management database");
-			System.out.print(e);
-			e.printStackTrace();
+		} catch (Exception ex) {
+			log.error("Failed creating management database", ex);
 		}
 
 		return (result) ? "1" : "0";

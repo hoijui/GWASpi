@@ -1,10 +1,15 @@
 package org.gwaspi.statistics;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  *
  * @author u56124
  */
 public class StandardDeviation {
+
+	private final Logger log = LoggerFactory.getLogger(StandardDeviation.class);
 
 	public double findMean(int[] array) {
 		double total = 0;
@@ -17,7 +22,7 @@ public class StandardDeviation {
 
 	public void findStandardDeviation(int[] array) {
 		double mean = findMean(array);
-		System.out.println("Mean is: " + mean);
+		log.info("Mean is: {}", mean);
 		double d1 = 0;
 		double d2 = 0;
 		double sum = 0;
@@ -25,7 +30,7 @@ public class StandardDeviation {
 			d2 = (mean - array[i]) * (mean - array[i]);
 			d1 = d2 + d1;
 		}
-		System.out.println("Standard Deviation: " + Math.sqrt((d1 / (array.length - 1))));
+		log.info("Standard Deviation: " + Math.sqrt((d1 / (array.length - 1))));
 	}
 
 	public static void main(String[] args) {

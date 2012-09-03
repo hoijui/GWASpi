@@ -15,6 +15,8 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.Locale;
 import javax.swing.JFileChooser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -23,6 +25,8 @@ import javax.swing.JFileChooser;
  * CEXS-UPF-PRBB
  */
 public class Utils {
+
+	private static final Logger log = LoggerFactory.getLogger(Utils.class);
 
 	private Utils() {
 	}
@@ -183,6 +187,7 @@ public class Utils {
 	}
 
 	// </editor-fold>
+
 	// <editor-fold defaultstate="collapsed" desc="Date Time methods">
 	public static String getShortDateTimeForFileName() {
 		Date today;
@@ -237,7 +242,7 @@ public class Utils {
 	}
 
 	public static String getURIDate() {
-		String matrixName = org.gwaspi.global.Utils.getMediumDateTimeAsString();
+		String matrixName = Utils.getMediumDateTimeAsString();
 		matrixName = matrixName.replace(",", "");
 		matrixName = matrixName.replace(":", "-");
 		matrixName = matrixName.replace(" ", "_");
@@ -279,8 +284,8 @@ public class Utils {
 		DateFormat df = new SimpleDateFormat(format);
 		try {
 			dateDate = df.parse(txtDate);
-		} catch (ParseException e) {
-			e.printStackTrace();
+		} catch (ParseException ex) {
+			log.error("Failed to convert to a dat: " + txtDate, ex);
 		}
 		return dateDate;
 	}
@@ -292,6 +297,7 @@ public class Utils {
 	}
 
 	// </editor-fold>
+
 	// <editor-fold defaultstate="collapsed" desc="String manipulation methods">
 	public static String stripNonAlphaNumeric(String s) {
 		String good =
@@ -316,8 +322,8 @@ public class Utils {
 		}
 		return result;
 	}
-
 	// </editor-fold>
+
 	//<editor-fold defaultstate="collapsed" desc="SYSTEM MANAGEMENT">
 	public static void takeOutTheGarbage() {
 		collectGarbageWithThreadSleep(0);    //Poke system to try to Garbage Collect!
@@ -330,9 +336,9 @@ public class Utils {
 //				Thread.sleep(millisecs);
 //				System.gc(); //Poke system to try to Garbage Collect!
 //			}
-//			System.out.println("Garbage collected at "+global.Utils.getMediumDateTimeAsString());
+//			log.info("Garbage collected at " + Utils.getMediumDateTimeAsString());
 //		} catch (InterruptedException ex) {
-//			Logger.getLogger(Utils.class.getName()).log(Level.SEVERE, null, ex);
+//			log.error(null, ex);
 //		}
 	}
 
@@ -363,51 +369,34 @@ public class Utils {
 
 		return isConnected;
 	}
-
 	//</editor-fold>
+
 	// <editor-fold defaultstate="collapsed" desc="Logging methods">
-	public static String sysoutStart(String message) {
-		String printMessage;
-		if (message == null || message.isEmpty()) {
-			printMessage = "******* Started Operation at " + org.gwaspi.global.Utils.getMediumDateTimeAsString() + " *******";
-		} else {
-			printMessage = "******* Started " + message + " at " + org.gwaspi.global.Utils.getMediumDateTimeAsString() + " *******";
-		}
-		System.out.println(printMessage);
-		return printMessage;
+	public static String createActualMessage(String message) {
+		return ((message == null) || message.isEmpty())
+				? message
+				: "Operation";
 	}
 
-	public static String sysoutCompleted(String message) {
-		String printMessage;
-		if (message == null || message.isEmpty()) {
-			printMessage = "===> Completed Operation at " + org.gwaspi.global.Utils.getMediumDateTimeAsString() + " <===";
-		} else {
-			printMessage = "===> Completed " + message + " at " + org.gwaspi.global.Utils.getMediumDateTimeAsString() + " <===";
-		}
-		System.out.println(printMessage);
-		return printMessage;
+	public static void sysoutStart(String message) { // FIXME We dont need to add a time manually, as the logging system does that for us (also see other methods below)
+		log.info("******* Started {} at {} *******", createActualMessage(message), Utils.getMediumDateTimeAsString());
 	}
 
-	public static String sysoutFinish(String message) {
-		String printMessage;
-		if (message == null || message.isEmpty()) {
-			printMessage = "################# Finished Operation at " + org.gwaspi.global.Utils.getMediumDateTimeAsString() + " #################\n\n";
-		} else {
-			printMessage = "################# Finished " + message + " at " + org.gwaspi.global.Utils.getMediumDateTimeAsString() + " #################\n\n";
-		}
-		System.out.println(printMessage);
-		return printMessage;
+	public static void sysoutCompleted(String message) {
+		log.info("===> Completed {} at {} <===", createActualMessage(message), Utils.getMediumDateTimeAsString());
 	}
 
-	public static String sysoutError(String message) {
-		String printMessage;
-		if (message == null || message.isEmpty()) {
-			printMessage = "!!!!! Error encountered at " + org.gwaspi.global.Utils.getMediumDateTimeAsString() + " !!!!!";
-		} else {
-			printMessage = "!!!!! Error encountered perfoming " + message + " at " + org.gwaspi.global.Utils.getMediumDateTimeAsString() + " !!!!!";
-		}
-		System.out.println(printMessage);
-		return printMessage;
+	public static void sysoutFinish(String message) {
+		log.info("################# Finished {} at {} #################", createActualMessage(message), Utils.getMediumDateTimeAsString());
+		log.info("");
+		log.info("");
+	}
+
+	public static void sysoutError(String message) {
+		String actualMessage = ((message == null) || message.isEmpty())
+				? " perfoming "  + message
+				: "";
+		log.info("!!!!! Error encountered{} at {} !!!!!", actualMessage, Utils.getMediumDateTimeAsString());
 	}
 
 	/**
@@ -416,10 +405,10 @@ public class Utils {
 	 *
 	 * @deprecated Use ProcessTab instead
 	 */
-	public static String logOperationInStudyDesc(String operation, int studyId) throws IOException {
+	public static void logOperationInStudyDesc(String operation, int studyId) throws IOException {
 //		StringBuffer result = new StringBuffer();
 //		try {
-//			String fileDir = org.gwaspi.global.Config.getConfigValue("LogDir","")+"/";
+//			String fileDir = Config.getConfigValue("LogDir","")+"/";
 //			String fileName = "Study_"+ studyId + ".log";
 //			File logFile = new File(fileDir+fileName);
 //			if(!logFile.exists()){
@@ -433,7 +422,7 @@ public class Utils {
 //			bw.append(description.toString());
 //			bw.append(operation);
 //			bw.append("\nEnd Time: ");
-//			bw.append(org.gwaspi.global.Utils.getMediumDateTimeAsString());
+//			bw.append(Utils.getMediumDateTimeAsString());
 //			if(description.length()!=0){
 //				bw.append("\n\n");
 //			}
@@ -441,12 +430,10 @@ public class Utils {
 //
 //			result = description;
 //		} catch (IOException ex) {
-//			Logger.getLogger(org.gwaspi.global.Utils.class.getName()).log(Level.SEVERE, null, ex);
+//			Logger.getLogger(Utils.class.getName()).log(Level.SEVERE, null, ex);
 //		}
-
-		//gui.LogTab_old.refreshLogInfo();
-
-		return operation;
+//
+//		//gui.LogTab_old.refreshLogInfo();
 	}
 
 	/**
@@ -454,10 +441,10 @@ public class Utils {
 	 *
 	 * @deprecated Use ProcessTab instead
 	 */
-	public static String logStartMessageEnd(String startTime, String operation, String endTime, String studyId) throws IOException {
+	public static void logStartMessageEnd(String startTime, String operation, String endTime, String studyId) throws IOException {
 //		StringBuffer result = new StringBuffer();
 //		try {
-//			String fileDir = org.gwaspi.global.Config.getConfigValue("LogDir","")+"/";
+//			String fileDir = Config.getConfigValue("LogDir","")+"/";
 //			String fileName = "Study_"+ studyId + ".log";
 //			File logFile = new File(fileDir+fileName);
 //			if(!logFile.exists()){
@@ -475,15 +462,13 @@ public class Utils {
 //			bw.append("\nStart Time: "+startTime + "\n");
 //			bw.append(operation);
 //			bw.append("\nEnd Time: ");
-//			bw.append(org.gwaspi.global.Utils.getMediumDateTimeAsString());
+//			bw.append(Utils.getMediumDateTimeAsString());
 //			bw.close();
 //
 //			result = description;
 //		} catch (IOException ex) {
-//			Logger.getLogger(org.gwaspi.global.Utils.class.getName()).log(Level.SEVERE, null, ex);
+//			Logger.getLogger(Utils.class.getName()).log(Level.SEVERE, null, ex);
 //		}
-
-		return operation;
 	}
 
 	/**
@@ -491,10 +476,10 @@ public class Utils {
 	 *
 	 * @deprecated Use ProcessTab instead
 	 */
-	public static String logBlockInStudyDesc(String operation, int studyId) throws IOException {
+	public static void logBlockInStudyDesc(String operation, int studyId) throws IOException {
 //		StringBuffer result = new StringBuffer();
 //		try {
-//			String fileDir = org.gwaspi.global.Config.getConfigValue("LogDir","")+"/";
+//			String fileDir = Config.getConfigValue("LogDir","")+"/";
 //			String fileName = "Study_"+ studyId + ".log";
 //			File logFile = new File(fileDir+fileName);
 //			if(!logFile.exists()){
@@ -512,12 +497,10 @@ public class Utils {
 //
 //			result = description;
 //		} catch (IOException ex) {
-//			Logger.getLogger(org.gwaspi.global.Utils.class.getName()).log(Level.SEVERE, null, ex);
+//			Logger.getLogger(Utils.class.getName()).log(Level.SEVERE, null, ex);
 //		}
 //
 //		//gui.LogTab_old.refreshLogInfo();
-
-		return operation;
 	}
 	// </editor-fold>
 }

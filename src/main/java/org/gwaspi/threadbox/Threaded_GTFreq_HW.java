@@ -29,7 +29,8 @@ public class Threaded_GTFreq_HW extends CommonRunnable {
 			String timeStamp,
 			int matrixId,
 			File phenotypeFile,
-			GWASinOneGOParams gwasParams) {
+			GWASinOneGOParams gwasParams)
+	{
 		super(threadName, timeStamp, "Genotype Frequency count & Hardy-Weinberg test");
 
 		this.matrixId = matrixId;
@@ -71,7 +72,7 @@ public class Threaded_GTFreq_HW extends CommonRunnable {
 				Set<String> affectionStates = SamplesParser.scanSampleInfoAffectionStates(phenotypeFile.getPath()); //use Sample Info file affection state
 
 				if (affectionStates.contains("1") && affectionStates.contains("2")) {
-					System.out.println("Updating Sample Info in DB");
+					getLog().info("Updating Sample Info in DB");
 					Map<String, Object> sampleInfoLHM = SamplesParser.scanGwaspiSampleInfo(phenotypeFile.getPath());
 					org.gwaspi.samples.InsertSampleInfo.processData(matrixId, sampleInfoLHM);
 
@@ -84,7 +85,7 @@ public class Threaded_GTFreq_HW extends CommonRunnable {
 					org.gwaspi.global.Utils.sysoutCompleted("Genotype Frequency Count");
 					//MultiOperations.updateTree();
 				} else {
-					System.out.println(Text.Operation.warnAffectionMissing);
+					getLog().info(Text.Operation.warnAffectionMissing);
 				}
 			} else { // BY DB AFFECTION
 				Set<Object> affectionStates = SamplesParser.getDBAffectionStates(matrixId); //use Sample Info file affection state
@@ -98,7 +99,7 @@ public class Threaded_GTFreq_HW extends CommonRunnable {
 					org.gwaspi.global.Utils.sysoutCompleted("Genotype Frequency Count");
 					//MultiOperations.updateTree();
 				} else {
-					System.out.println(Text.Operation.warnAffectionMissing);
+					getLog().info(Text.Operation.warnAffectionMissing);
 				}
 			}
 			GWASpiExplorerNodes.insertOperationUnderMatrixNode(matrixId, censusOpId);
@@ -106,10 +107,9 @@ public class Threaded_GTFreq_HW extends CommonRunnable {
 
 
 		// HW ON GENOTYPE FREQ.
-		int hwOpId = Integer.MIN_VALUE;
 		if (thisSwi.getQueueState().equals(org.gwaspi.threadbox.QueueStates.PROCESSING)) {
 			if (censusOpId != Integer.MIN_VALUE) {
-				hwOpId = org.gwaspi.netCDF.operations.OperationManager.performHardyWeinberg(censusOpId, cNetCDF.Defaults.DEFAULT_AFFECTION);
+				int hwOpId = OperationManager.performHardyWeinberg(censusOpId, cNetCDF.Defaults.DEFAULT_AFFECTION);
 				GWASpiExplorerNodes.insertSubOperationUnderOperationNode(censusOpId, hwOpId);
 			}
 		}

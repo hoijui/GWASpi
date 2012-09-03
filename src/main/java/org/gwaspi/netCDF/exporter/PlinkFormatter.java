@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.util.Map;
 import org.gwaspi.netCDF.markers.MarkerSet_opt;
 import org.gwaspi.netCDF.matrices.MatrixMetadata;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.gwaspi.samples.SampleSet;
 import ucar.nc2.NetcdfFile;
 
@@ -17,6 +19,8 @@ import ucar.nc2.NetcdfFile;
  * CEXS-UPF-PRBB
  */
 public class PlinkFormatter implements Formatter {
+
+	private final Logger log = LoggerFactory.getLogger(PlinkFormatter.class);
 
 	public boolean export(
 			String exportPath,
@@ -38,12 +42,11 @@ public class PlinkFormatter implements Formatter {
 		rdMarkerSet.initFullMarkerIdSetLHM();
 
 		try {
-
 			//<editor-fold defaultstate="collapsed" desc="PED FILE">
 			FileWriter pedFW = new FileWriter(exportDir.getPath() + "/" + rdMatrixMetadata.getMatrixFriendlyName() + ".ped");
 			BufferedWriter pedBW = new BufferedWriter(pedFW);
 
-			//Iterate through all samples
+			// Iterate through all samples
 			int sampleNb = 0;
 			for (String sampleId : rdSampleSetMap.keySet()) {
 				Map<String, Object> sampleInfo = Utils.getCurrentSampleFormattedInfo(sampleId, rdMatrixMetadata.getStudyId());
@@ -66,13 +69,13 @@ public class PlinkFormatter implements Formatter {
 					genotypes.append(new String(new byte[]{tempGT[1]}));
 				}
 
-				//Family ID
-				//Individual ID
-				//Paternal ID
-				//Maternal ID
-				//Sex (1=male; 2=female; other=unknown)
-				//Affection
-				//Genotypes
+				// Family ID
+				// Individual ID
+				// Paternal ID
+				// Maternal ID
+				// Sex (1=male; 2=female; other=unknown)
+				// Affection
+				// Genotypes
 
 				StringBuilder line = new StringBuilder();
 				line.append(familyId);
@@ -94,36 +97,34 @@ public class PlinkFormatter implements Formatter {
 
 				sampleNb++;
 				if (sampleNb % 100 == 0) {
-					System.out.println("Samples exported to PED file:" + sampleNb);
+					log.info("Samples exported to PED file: {}", sampleNb);
 				}
-
 			}
-			System.out.println("Samples exported to PED file:" + sampleNb);
+			log.info("Samples exported to PED file: {}", sampleNb);
 			pedBW.close();
 			pedFW.close();
-
 			//</editor-fold>
 
 			//<editor-fold defaultstate="collapsed" desc="MAP FILE">
 			FileWriter mapFW = new FileWriter(exportDir.getPath() + "/" + rdMatrixMetadata.getMatrixFriendlyName() + ".map");
 			BufferedWriter mapBW = new BufferedWriter(mapFW);
 
-			//MAP files
+			// MAP files
 			//     chromosome (1-22, X(23), Y(24), XY(25), MT(26) or 0 if unplaced)
 			//     rs# or snp identifier
 			//     Genetic distance (morgans)
 			//     Base-pair position (bp units)
 
-			//PURGE MARKERSET
+			// PURGE MARKERSET
 			rdMarkerSet.fillWith("");
 
-			//MARKERSET CHROMOSOME
+			// MARKERSET CHROMOSOME
 			rdMarkerSet.fillInitLHMWithVariable(org.gwaspi.constants.cNetCDF.Variables.VAR_MARKERS_CHR);
 
-			//MARKERSET RSID
+			// MARKERSET RSID
 			rdMarkerSet.appendVariableToMarkerSetLHMValue(org.gwaspi.constants.cNetCDF.Variables.VAR_MARKERS_RSID, sep);
 
-			//DEFAULT GENETIC DISTANCE = 0
+			// DEFAULT GENETIC DISTANCE = 0
 			for (Map.Entry<String, Object> entry : rdMarkerSet.getMarkerIdSetLHM().entrySet()) {
 				StringBuilder value = new StringBuilder(entry.getValue().toString());
 				value.append(sep);
@@ -131,7 +132,7 @@ public class PlinkFormatter implements Formatter {
 				entry.setValue(value.toString());
 			}
 
-			//MARKERSET POSITION
+			// MARKERSET POSITION
 			rdMarkerSet.appendVariableToMarkerSetLHMValue(org.gwaspi.constants.cNetCDF.Variables.VAR_MARKERS_POS, sep);
 			int markerNb = 0;
 			for (Object pos : rdMarkerSet.getMarkerIdSetLHM().values()) {
@@ -140,21 +141,21 @@ public class PlinkFormatter implements Formatter {
 				markerNb++;
 			}
 
-			System.out.println("Markers exported to MAP file:" + markerNb);
+			log.info("Markers exported to MAP file: {}", markerNb);
 
 			mapBW.close();
 			mapFW.close();
-
 			//</editor-fold>
 
 			result = true;
-		} catch (IOException iOException) {
+		} catch (IOException ex) {
+			log.error(null, ex);
 		} finally {
 			if (null != rdNcFile) {
 				try {
 					rdNcFile.close();
-				} catch (IOException ioe) {
-					System.out.println("Cannot close file: " + ioe);
+				} catch (IOException ex) {
+					log.warn("Cannot close file: " + rdNcFile, ex);
 				}
 			}
 		}

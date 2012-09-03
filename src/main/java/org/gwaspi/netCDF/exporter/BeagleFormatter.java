@@ -12,6 +12,8 @@ import org.gwaspi.netCDF.matrices.MatrixMetadata;
 import org.gwaspi.netCDF.operations.OperationManager;
 import org.gwaspi.netCDF.operations.OperationMetadata;
 import org.gwaspi.netCDF.operations.OperationSet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.gwaspi.samples.SampleSet;
 import ucar.nc2.NetcdfFile;
 
@@ -22,6 +24,8 @@ import ucar.nc2.NetcdfFile;
  * CEXS-UPF-PRBB
  */
 class BeagleFormatter implements Formatter {
+
+	private final Logger log = LoggerFactory.getLogger(BeagleFormatter.class);
 
 	public boolean export(
 			String exportPath,
@@ -42,7 +46,6 @@ class BeagleFormatter implements Formatter {
 		NetcdfFile rdNcFile = NetcdfFile.open(rdMatrixMetadata.getPathToMatrix());
 
 		try {
-
 			FileWriter beagleFW = new FileWriter(exportDir.getPath() + "/" + rdMatrixMetadata.getMatrixFriendlyName() + ".beagle");
 			BufferedWriter beagleBW = new BufferedWriter(beagleFW);
 
@@ -61,7 +64,6 @@ class BeagleFormatter implements Formatter {
 			// # age [integer]
 			// A affection (0=NA, 1=unaffected, 2=affected)
 			// M markerId & genotypes
-
 
 			//<editor-fold defaultstate="collapsed" desc="BEAGLE GENOTYPE FILE">
 
@@ -104,10 +106,10 @@ class BeagleFormatter implements Formatter {
 				popLine.append(sep);
 				popLine.append(population);
 
-				//                diseaseLine.append(sep);
-				//                diseaseLine.append(disease);
-				//                diseaseLine.append(sep);
-				//                diseaseLine.append(disease);
+//				diseaseLine.append(sep);
+//				diseaseLine.append(disease);
+//				diseaseLine.append(sep);
+//				diseaseLine.append(disease);
 
 				ageLine.append(sep);
 				ageLine.append(age);
@@ -118,7 +120,6 @@ class BeagleFormatter implements Formatter {
 				affectionLine.append(affection);
 				affectionLine.append(sep);
 				affectionLine.append(affection);
-
 			}
 			beagleBW.append(sampleLine);
 			beagleBW.append("\n");
@@ -128,8 +129,8 @@ class BeagleFormatter implements Formatter {
 			beagleBW.append("\n");
 			beagleBW.append(popLine);
 			beagleBW.append("\n");
-			//            beagleBW.append(diseaseLine);
-			//            beagleBW.append("\n");
+//			beagleBW.append(diseaseLine);
+//			beagleBW.append("\n");
 			beagleBW.append(ageLine);
 			beagleBW.append("\n");
 			beagleBW.append(affectionLine);
@@ -144,10 +145,10 @@ class BeagleFormatter implements Formatter {
 			for (String markerId : rdMarkerSet.getMarkerIdSetLHM().keySet()) {
 				StringBuilder markerLine = new StringBuilder("M" + sep + markerId.toString());
 
-				//Iterate through sampleset
+				// Iterate through sampleset
 				StringBuilder currMarkerGTs = new StringBuilder();
-				rdSampleSetMap = rdSampleSet.readAllSamplesGTsFromCurrentMarkerToLHM(rdNcFile, rdSampleSetMap, markerNb);
-				for (Object value : rdSampleSetMap.values()) {
+				Map<String, Object> remainingSampleSet = rdSampleSet.readAllSamplesGTsFromCurrentMarkerToLHM(rdNcFile, rdSampleSetMap, markerNb);
+				for (Object value : remainingSampleSet.values()) {
 					byte[] tempGT = (byte[]) value;
 					currMarkerGTs.append(sep);
 					currMarkerGTs.append(new String(new byte[]{tempGT[0]}));
@@ -161,37 +162,34 @@ class BeagleFormatter implements Formatter {
 				beagleBW.append("\n");
 				markerNb++;
 				if (markerNb % 100 == 0) {
-					System.out.println("Markers exported to Beagle file:" + markerNb);
+					log.info("Markers exported to Beagle file: {}", markerNb);
 				}
 			}
-			System.out.println("Markers exported to Beagle file:" + markerNb);
+			log.info("Markers exported to Beagle file: {}", markerNb);
 			//</editor-fold>
-
 			//</editor-fold>
-
 
 			//<editor-fold defaultstate="collapsed" desc="BEAGLE MARKER FILE">
 			FileWriter markerFW = new FileWriter(exportDir.getPath() + "/" + rdMatrixMetadata.getMatrixFriendlyName() + ".markers");
 			BufferedWriter markerBW = new BufferedWriter(markerFW);
 
-			//MARKER files
+			// MARKER files
 			//     rs# or snp identifier
 			//     Base-pair position (bp units)
 			//     Allele 1
 			//     Allele 2
 
-			//PURGE MARKERSET
+			// PURGE MARKERSET
 			rdMarkerSet.fillWith("");
 
-			//MARKERSET RSID
+			// MARKERSET RSID
 			rdMarkerSet.fillInitLHMWithVariable(org.gwaspi.constants.cNetCDF.Variables.VAR_MARKERS_RSID);
 
-			//MARKERSET POSITION
+			// MARKERSET POSITION
 			rdMarkerSet.appendVariableToMarkerSetLHMValue(org.gwaspi.constants.cNetCDF.Variables.VAR_MARKERS_POS, sep);
 
-
-			//WRITE KNOWN ALLELES FROM QA
-			//get MARKER_QA Operation
+			// WRITE KNOWN ALLELES FROM QA
+			// get MARKER_QA Operation
 			List<Object[]> operationsAL = OperationManager.getMatrixOperations(rdMatrixMetadata.getMatrixId());
 			int markersQAopId = Integer.MIN_VALUE;
 			for (int i = 0; i < operationsAL.size(); i++) {
@@ -207,7 +205,7 @@ class BeagleFormatter implements Formatter {
 				OperationSet rdOperationSet = new OperationSet(rdMatrixMetadata.getStudyId(), markersQAopId);
 				Map<String, Object> opMarkerSetLHM = rdOperationSet.getOpSetLHM();
 
-				//MAJOR ALLELE
+				// MAJOR ALLELE
 				opMarkerSetLHM = rdOperationSet.fillOpSetLHMWithVariable(qaNcFile, cNetCDF.Census.VAR_OP_MARKERS_MAJALLELES);
 				for (Map.Entry<String, Object> entry : rdMarkerSet.getMarkerIdSetLHM().entrySet()) {
 					String key = entry.getKey();
@@ -222,7 +220,7 @@ class BeagleFormatter implements Formatter {
 					rdMarkerSet.getMarkerIdSetLHM().put(key, sb.toString());
 				}
 
-				//MINOR ALLELE
+				// MINOR ALLELE
 				rdOperationSet.fillLHMWithDefaultValue(opMarkerSetLHM, "");
 				opMarkerSetLHM = rdOperationSet.fillOpSetLHMWithVariable(qaNcFile, cNetCDF.Census.VAR_OP_MARKERS_MINALLELES);
 				for (Map.Entry<String, Object> entry : rdMarkerSet.getMarkerIdSetLHM().entrySet()) {
@@ -239,7 +237,7 @@ class BeagleFormatter implements Formatter {
 				}
 			}
 
-			//WRITE ALL LHM TO BUFFERWRITER
+			// WRITE ALL LHM TO BUFFERWRITER
 			markerNb = 0;
 			for (Object value : rdMarkerSet.getMarkerIdSetLHM().values()) {
 				markerBW.append(value.toString());
@@ -247,28 +245,26 @@ class BeagleFormatter implements Formatter {
 				markerNb++;
 			}
 
-
-			System.out.println("Markers exported to MARKER file:" + markerNb);
+			log.info("Markers exported to MARKER file: {}", markerNb);
 
 			markerBW.close();
 			markerFW.close();
-
 			//</editor-fold>
 
-
-			System.out.println("Markers exported to BEAGLE:" + markerNb);
+			log.info("Markers exported to BEAGLE: {}", markerNb);
 
 			beagleBW.close();
 			beagleFW.close();
 
 			result = true;
-		} catch (IOException iOException) {
+		} catch (IOException ex) {
+			log.error(null, ex);
 		} finally {
 			if (null != rdNcFile) {
 				try {
 					rdNcFile.close();
-				} catch (IOException ioe) {
-					System.out.println("Cannot close file: " + ioe);
+				} catch (IOException ex) {
+					log.error("Cannot close file: " + rdNcFile, ex);
 				}
 			}
 		}

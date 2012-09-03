@@ -77,7 +77,7 @@ public class Threaded_GWAS extends CommonRunnable {
 				Set<String> affectionStates = SamplesParser.scanSampleInfoAffectionStates(phenotypeFile.getPath()); //use Sample Info file affection state
 
 				if (affectionStates.contains("1") && affectionStates.contains("2")) {
-					System.out.println("Updating Sample Info in DB");
+					getLog().info("Updating Sample Info in DB");
 					Map<String, Object> sampleInfoLHM = SamplesParser.scanGwaspiSampleInfo(phenotypeFile.getPath());
 					org.gwaspi.samples.InsertSampleInfo.processData(matrixId, sampleInfoLHM);
 
@@ -89,7 +89,7 @@ public class Threaded_GWAS extends CommonRunnable {
 
 					org.gwaspi.global.Utils.sysoutCompleted("Genotype Frequency Count");
 				} else {
-					System.out.println(Text.Operation.warnAffectionMissing);
+					getLog().info(Text.Operation.warnAffectionMissing);
 				}
 			} else { // BY DB AFFECTION
 				Set<Object> affectionStates = SamplesParser.getDBAffectionStates(matrixId); //use Sample Info file affection state
@@ -101,7 +101,7 @@ public class Threaded_GWAS extends CommonRunnable {
 
 					org.gwaspi.global.Utils.sysoutCompleted("Genotype Frequency Count");
 				} else {
-					System.out.println(Text.Operation.warnAffectionMissing);
+					getLog().info(Text.Operation.warnAffectionMissing);
 				}
 			}
 
@@ -118,7 +118,6 @@ public class Threaded_GWAS extends CommonRunnable {
 		//</editor-fold>
 
 		//<editor-fold defaultstate="collapsed" desc="GWAS TESTS & REPORTS">
-
 		// ALLELIC TEST (needs newMatrixId, censusOpId, pickedMarkerSet, pickedSampleSet)
 		if (gwasParams.isPerformAllelicTests()
 				&& thisSwi.getQueueState().equals(org.gwaspi.threadbox.QueueStates.PROCESSING)
@@ -129,7 +128,7 @@ public class Threaded_GWAS extends CommonRunnable {
 			int qaMarkerSetSize = markerQAMetadata.getOpSetSize();
 
 			if (	gwasParams.isDiscardMarkerHWCalc()) {
-				gwasParams.setDiscardMarkerHWTreshold((double) 0.05 / qaMarkerSetSize);
+				gwasParams.setDiscardMarkerHWTreshold(0.05 / qaMarkerSetSize);
 			}
 
 			int assocOpId = org.gwaspi.netCDF.operations.OperationManager.performCleanAllelicTests(matrixId,
@@ -154,7 +153,7 @@ public class Threaded_GWAS extends CommonRunnable {
 			int qaMarkerSetSize = markerQAMetadata.getOpSetSize();
 
 			if (	gwasParams.isDiscardMarkerHWCalc()) {
-				gwasParams.setDiscardMarkerHWTreshold((double) 0.05 / qaMarkerSetSize);
+				gwasParams.setDiscardMarkerHWTreshold(0.05 / qaMarkerSetSize);
 			}
 
 			int assocOpId = org.gwaspi.netCDF.operations.OperationManager.performCleanGenotypicTests(matrixId,
@@ -178,8 +177,8 @@ public class Threaded_GWAS extends CommonRunnable {
 			OperationMetadata markerQAMetadata = new OperationMetadata(markersQAOpId);
 			int qaMarkerSetSize = markerQAMetadata.getOpSetSize();
 
-			if (	gwasParams.isDiscardMarkerHWCalc()) {
-				gwasParams.setDiscardMarkerHWTreshold((double) 0.05 / qaMarkerSetSize);
+			if (gwasParams.isDiscardMarkerHWCalc()) {
+				gwasParams.setDiscardMarkerHWTreshold(0.05 / qaMarkerSetSize);
 			}
 
 			int trendOpId = org.gwaspi.netCDF.operations.OperationManager.performCleanTrendTests(matrixId,

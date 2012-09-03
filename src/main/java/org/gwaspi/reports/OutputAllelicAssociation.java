@@ -5,6 +5,7 @@ import org.gwaspi.constants.cExport;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.database.DbManager;
 import org.gwaspi.global.ServiceLocator;
+import org.gwaspi.global.Text;
 import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
@@ -20,6 +21,8 @@ import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.CombinedRangeXYPlot;
 import org.jfree.chart.plot.XYPlot;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.nc2.NetcdfFile;
 
 /**
@@ -29,6 +32,8 @@ import ucar.nc2.NetcdfFile;
  * CEXS-UPF-PRBB
  */
 public class OutputAllelicAssociation {
+
+	private final static Logger log = LoggerFactory.getLogger(OperationSet.class);
 
 	private OutputAllelicAssociation() {
 	}
@@ -43,7 +48,7 @@ public class OutputAllelicAssociation {
 		String prefix = org.gwaspi.reports.ReportManager.getreportNamePrefix(op);
 		String manhattanName = prefix + "manhtt";
 
-		System.out.println(org.gwaspi.global.Text.All.processing);
+		log.info(Text.All.processing);
 		if (writeManhattanPlotFromAssociationData(opId, manhattanName, 4000, 500)) {
 			result = true;
 			ReportManager.insertRPMetadata(dBManager,
@@ -54,7 +59,7 @@ public class OutputAllelicAssociation {
 					opId,
 					"Allelic Association Manhattan Plot",
 					op.getStudyId());
-			System.out.println("Saved Allelic Association Manhattan Plot in reports folder at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
+			log.info("Saved Allelic Association Manhattan Plot in reports folder at {}", org.gwaspi.global.Utils.getMediumDateTimeAsString()); // FIXME log system already adds time
 		}
 		//String qqName = "qq_"+outName;
 		String qqName = prefix + "qq";
@@ -69,7 +74,7 @@ public class OutputAllelicAssociation {
 					"Allelic Association QQ Plot",
 					op.getStudyId());
 
-			System.out.println("Saved Allelic Association QQ Plot in reports folder at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
+			log.info("Saved Allelic Association QQ Plot in reports folder at {}", org.gwaspi.global.Utils.getMediumDateTimeAsString()); // FIXME log system already adds time
 		}
 		//String assocName = "assoc_"+outName;
 		String assocName = prefix;
@@ -120,9 +125,8 @@ public class OutputAllelicAssociation {
 					picWidth,
 					height);
 			result = true;
-		} catch (IOException e) {
-			System.err.println("Problem occurred creating chart.");
-			e.printStackTrace();
+		} catch (IOException ex) {
+			log.error("Problem occurred creating chart", ex);
 		}
 
 		return result;
@@ -143,9 +147,8 @@ public class OutputAllelicAssociation {
 					width,
 					height);
 			result = true;
-		} catch (IOException e) {
-			System.err.println("Problem occurred creating chart.");
-			e.printStackTrace();
+		} catch (IOException ex) {
+			log.error("Problem occurred creating chart", ex);
 		}
 
 		return result;
@@ -175,11 +178,10 @@ public class OutputAllelicAssociation {
 
 			//WRITE HEADER OF FILE
 			String header = "MarkerID\trsID\tChr\tPosition\tMin. Allele\tMaj. Allele\tX²\tPval\tOR\n";
-			reportName += ".txt";
+			String reportNameExt = reportName + ".txt";
 			String reportPath = org.gwaspi.global.Config.getConfigValue("ReportsDir", "") + "/STUDY_" + rdOPMetadata.getStudyId() + "/";
 
-
-			//WRITE MARKERSET RSID
+			// WRITE MARKERSET RSID
 			//infoMatrixMarkerSetLHM = rdInfoMarkerSet.appendVariableToMarkerSetLHMValue(matrixNcFile, cNetCDF.Variables.VAR_MARKERS_RSID, sep);
 			rdInfoMarkerSet.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_RSID);
 			for (Map.Entry<String, Object> entry : sortingMarkerSetLHM.entrySet()) {
@@ -187,19 +189,18 @@ public class OutputAllelicAssociation {
 				Object value = rdInfoMarkerSet.getMarkerIdSetLHM().get(key);
 				entry.setValue(value);
 			}
-			ReportWriter.writeFirstColumnToReport(reportPath, reportName, header, sortingMarkerSetLHM, true);
+			ReportWriter.writeFirstColumnToReport(reportPath, reportNameExt, header, sortingMarkerSetLHM, true);
 
-
-			//WRITE MARKERSET CHROMOSOME
+			// WRITE MARKERSET CHROMOSOME
 			rdInfoMarkerSet.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
 			for (Map.Entry<String, Object> entry : sortingMarkerSetLHM.entrySet()) {
 				String key = entry.getKey();
 				Object value = rdInfoMarkerSet.getMarkerIdSetLHM().get(key);
 				entry.setValue(value);
 			}
-			ReportWriter.appendColumnToReport(reportPath, reportName, sortingMarkerSetLHM, false, false);
+			ReportWriter.appendColumnToReport(reportPath, reportNameExt, sortingMarkerSetLHM, false, false);
 
-			//WRITE MARKERSET POS
+			// WRITE MARKERSET POS
 			//infoMatrixMarkerSetLHM = rdInfoMarkerSet.appendVariableToMarkerSetLHMValue(matrixNcFile, cNetCDF.Variables.VAR_MARKERS_POS, sep);
 			rdInfoMarkerSet.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_POS);
 			for (Map.Entry<String, Object> entry : sortingMarkerSetLHM.entrySet()) {
@@ -207,11 +208,10 @@ public class OutputAllelicAssociation {
 				Object value = rdInfoMarkerSet.getMarkerIdSetLHM().get(key);
 				entry.setValue(value);
 			}
-			ReportWriter.appendColumnToReport(reportPath, reportName, sortingMarkerSetLHM, false, false);
+			ReportWriter.appendColumnToReport(reportPath, reportNameExt, sortingMarkerSetLHM, false, false);
 
-
-			//WRITE KNOWN ALLELES FROM QA
-			//get MARKER_QA Operation
+			// WRITE KNOWN ALLELES FROM QA
+			// get MARKER_QA Operation
 			List<Object[]> operationsAL = OperationManager.getMatrixOperations(rdOPMetadata.getParentMatrixId());
 			int markersQAopId = Integer.MIN_VALUE;
 			for (int i = 0; i < operationsAL.size(); i++) {
@@ -227,7 +227,7 @@ public class OutputAllelicAssociation {
 				OperationSet rdOperationSet = new OperationSet(rdOPMetadata.getStudyId(), markersQAopId);
 				Map<String, Object> opMarkerSetLHM = rdOperationSet.getOpSetLHM();
 
-				//MINOR ALLELE
+				// MINOR ALLELE
 				opMarkerSetLHM = rdOperationSet.fillOpSetLHMWithVariable(qaNcFile, cNetCDF.Census.VAR_OP_MARKERS_MINALLELES);
 				for (Map.Entry<String, Object> entry : rdInfoMarkerSet.getMarkerIdSetLHM().entrySet()) {
 					String key = entry.getKey();
@@ -235,7 +235,7 @@ public class OutputAllelicAssociation {
 					entry.setValue(minorAllele);
 				}
 
-				//MAJOR ALLELE
+				// MAJOR ALLELE
 				rdOperationSet.fillLHMWithDefaultValue(opMarkerSetLHM, "");
 				opMarkerSetLHM = rdOperationSet.fillOpSetLHMWithVariable(qaNcFile, cNetCDF.Census.VAR_OP_MARKERS_MAJALLELES);
 				for (Map.Entry<String, Object> entry : rdInfoMarkerSet.getMarkerIdSetLHM().entrySet()) {
@@ -249,18 +249,18 @@ public class OutputAllelicAssociation {
 				Object value = rdInfoMarkerSet.getMarkerIdSetLHM().get(key);
 				entry.setValue(value);
 			}
-			ReportWriter.appendColumnToReport(reportPath, reportName, sortingMarkerSetLHM, false, false);
+			ReportWriter.appendColumnToReport(reportPath, reportNameExt, sortingMarkerSetLHM, false, false);
 
-			//WRITE DATA TO REPORT
+			// WRITE DATA TO REPORT
 			for (Map.Entry<String, Object> entry : sortingMarkerSetLHM.entrySet()) {
 				String key = entry.getKey();
 				Object value = unsortedMarkerIdAssocValsLHM.get(key);
 				entry.setValue(value);
 			}
-			ReportWriter.appendColumnToReport(reportPath, reportName, sortingMarkerSetLHM, true, false);
+			ReportWriter.appendColumnToReport(reportPath, reportNameExt, sortingMarkerSetLHM, true, false);
 
 			result = true;
-		} catch (IOException iOException) {
+		} catch (IOException ex) {
 			result = false;
 		}
 

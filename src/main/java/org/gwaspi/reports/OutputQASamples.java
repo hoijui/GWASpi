@@ -140,7 +140,7 @@ public class OutputQASamples {
 			tempFW.close();
 
 			result = true;
-		} catch (IOException iOException) {
+		} catch (IOException ex) {
 			result = false;
 		}
 
@@ -161,9 +161,8 @@ public class OutputQASamples {
 //                                           width,
 //                                           height);
 //            result = true;
-//        } catch (IOException e) {
-//            System.err.println("Problem occurred creating chart.");
-//            e.printStackTrace();
+//        } catch (IOException ex) {
+//            log.error("Problem occurred creating chart", ex);
 //        }
 //
 //        return result;

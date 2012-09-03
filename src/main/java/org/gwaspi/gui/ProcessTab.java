@@ -17,8 +17,6 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.net.URL;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.GroupLayout;
@@ -35,6 +33,8 @@ import javax.swing.LayoutStyle;
 import javax.swing.SwingConstants;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.gwaspi.threadbox.SwingDeleterItem;
 import org.gwaspi.threadbox.SwingDeleterItemList;
 import org.gwaspi.threadbox.SwingWorkerItem;
@@ -47,6 +47,8 @@ import org.gwaspi.threadbox.SwingWorkerItemList;
  * CEXS-UPF-PRBB
  */
 public class ProcessTab extends JPanel {
+
+	private static final Logger log = LoggerFactory.getLogger(MatrixAnalysePanel.class);
 
 	// Variables declaration - do not modify
 	private static JPanel pnl_Logo;
@@ -131,9 +133,7 @@ public class ProcessTab extends JPanel {
 		scrl_ProcessLog.setViewportView(txtA_ProcessLog);
 		btn_Save.setAction(new SaveAsAction());
 
-
 		//<editor-fold defaultstate="collapsed" desc="PROCESS LOG LAYOUT">
-
 		GroupLayout pnl_ProcessLogLayout = new GroupLayout(pnl_ProcessLog);
 		pnl_ProcessLog.setLayout(pnl_ProcessLogLayout);
 		pnl_ProcessLogLayout.setHorizontalGroup(
@@ -153,7 +153,6 @@ public class ProcessTab extends JPanel {
 				.addComponent(btn_Save)
 				.addContainerGap()));
 		//</editor-fold>
-
 
 		//<editor-fold defaultstate="collapsed" desc="LAYOUT">
 		GroupLayout layout = new GroupLayout(this);
@@ -192,7 +191,7 @@ public class ProcessTab extends JPanel {
 			final JTable tmpTable = new JTable() {
 				@Override
 				public boolean isCellEditable(int row, int col) {
-					return false; //Renders column 0 uneditable.
+					return false; // Renders column 0 uneditable.
 				}
 			};
 			tmpTable.addMouseMotionListener(new MouseMotionAdapter() {
@@ -330,17 +329,24 @@ public class ProcessTab extends JPanel {
 
 		@Override
 		public void actionPerformed(ActionEvent evt) {
+			FileWriter writer = null;
 			try {
 				File newFile = new File(org.gwaspi.gui.utils.Dialogs.selectDirectoryDialog(JOptionPane.OK_OPTION).getPath() + "/process.log");
-				FileWriter writer = new FileWriter(newFile);
+				writer = new FileWriter(newFile);
 				writer.write(txtA_ProcessLog.getText());
 				writer.flush();
-				writer.close();
-
 			} catch (IOException ex) {
-				Logger.getLogger(ProcessTab.class.getName()).log(Level.SEVERE, null, ex);
+				log.error(null, ex);
 			} catch (Exception ex) {
-				//Logger.getLogger(ChartDefaultDisplay.class.getName()).log(Level.SEVERE, null, ex);
+				log.error(null, ex);
+			} finally {
+				if (writer != null) {
+					try {
+						writer.close();
+					} catch (IOException ex) {
+						log.warn(null, ex);
+					}
+				}
 			}
 		}
 	}

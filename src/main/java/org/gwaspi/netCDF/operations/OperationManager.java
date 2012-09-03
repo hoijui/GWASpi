@@ -7,10 +7,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.gwaspi.model.Operation;
 import org.gwaspi.model.OperationsList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.ma2.InvalidRangeException;
 
 /**
@@ -20,6 +20,8 @@ import ucar.ma2.InvalidRangeException;
  * CEXS-UPF-PRBB
  */
 public class OperationManager {
+
+	private final static Logger log = LoggerFactory.getLogger(OperationManager.class);
 
 	private OperationManager() {
 	}
@@ -32,8 +34,9 @@ public class OperationManager {
 			boolean discardMismatches,
 			double sampleMissingRatio,
 			double sampleHetzygRatio,
-			String censusName) throws IOException, InvalidRangeException {
-
+			String censusName)
+			throws IOException, InvalidRangeException
+	{
 		org.gwaspi.global.Utils.sysoutStart("Genotypes Frequency Count by Affection");
 
 		int resultOpId; // Integer.MIN_VALUE
@@ -62,8 +65,9 @@ public class OperationManager {
 			double sampleMissingRatio,
 			double sampleHetzygRatio,
 			String censusName,
-			File phenoFile) throws IOException, InvalidRangeException {
-
+			File phenoFile)
+			throws IOException, InvalidRangeException
+	{
 		org.gwaspi.global.Utils.sysoutStart("Genotypes Frequency Count using " + phenoFile.getName());
 
 		int resultOpId; // Integer.MIN_VALUE
@@ -102,7 +106,9 @@ public class OperationManager {
 	public static int performCleanAllelicTests(int _rdMatrixId,
 			int censusOpId,
 			int hwOpId,
-			double hwThreshold) throws IOException, InvalidRangeException {
+			double hwThreshold)
+			throws IOException, InvalidRangeException
+	{
 		int resultOpId; // Integer.MIN_VALUE
 
 		org.gwaspi.global.Utils.sysoutStart(" Allelic Association Test using QA and HW thresholds");
@@ -118,7 +124,9 @@ public class OperationManager {
 	public static int performCleanGenotypicTests(int _rdMatrixId,
 			int censusOpId,
 			int hwOpId,
-			double hwThreshold) throws IOException, InvalidRangeException {
+			double hwThreshold)
+			throws IOException, InvalidRangeException
+	{
 		int resultOpId; // Integer.MIN_VALUE
 
 		org.gwaspi.global.Utils.sysoutStart(" Genotypic Association Test using QA and HW thresholds");
@@ -134,7 +142,9 @@ public class OperationManager {
 	public static int performCleanTrendTests(int _rdMatrixId,
 			int censusOpId,
 			int hwOpId,
-			double hwThreshold) throws IOException, InvalidRangeException {
+			double hwThreshold)
+			throws IOException, InvalidRangeException
+	{
 		int resultOpId; // Integer.MIN_VALUE
 
 		org.gwaspi.global.Utils.sysoutStart("Cochran-Armitage Trend Test using QA and HW thresholds");
@@ -150,19 +160,18 @@ public class OperationManager {
 
 	//<editor-fold defaultstate="collapsed" desc="TRAFO">
 	//</editor-fold>
+
 	//<editor-fold defaultstate="collapsed" desc="OPERATIONS METADATA">
 	public static String createOperationsMetadataTable(DbManager db) {
 		boolean result = false;
 		try {
-			//CREATE SAMPLESET_METADATA table in given SCHEMA
+			// CREATE SAMPLESET_METADATA table in given SCHEMA
 			db.createTable(org.gwaspi.constants.cDBGWASpi.SCH_MATRICES,
 					org.gwaspi.constants.cDBOperations.T_OPERATIONS,
 					org.gwaspi.constants.cDBOperations.T_CREATE_OPERATIONS);
 
-		} catch (Exception e) {
-			System.out.println("Error creating management database");
-			System.out.print(e);
-			e.printStackTrace();
+		} catch (Exception ex) {
+			log.error("Failed creating management database", ex);
 		}
 
 		return (result) ? "1" : "0";
@@ -280,7 +289,7 @@ public class OperationManager {
 				}
 			}
 		} catch (IOException ex) {
-			Logger.getLogger(OperationManager.class.getName()).log(Level.SEVERE, null, ex);
+			log.error(null, ex);
 		}
 		return necessaryOPs;
 	}
@@ -299,7 +308,7 @@ public class OperationManager {
 				}
 			}
 		} catch (IOException ex) {
-			Logger.getLogger(OperationManager.class.getName()).log(Level.SEVERE, null, ex);
+			log.error(null, ex);
 		}
 		return necessaryOPs;
 	}
@@ -316,7 +325,7 @@ public class OperationManager {
 				}
 			}
 		} catch (IOException ex) {
-			Logger.getLogger(OperationManager.class.getName()).log(Level.SEVERE, null, ex);
+			log.error(null, ex);
 		}
 		return nonoOPs;
 	}
@@ -333,7 +342,7 @@ public class OperationManager {
 				}
 			}
 		} catch (IOException ex) {
-			Logger.getLogger(OperationManager.class.getName()).log(Level.SEVERE, null, ex);
+			log.error(null, ex);
 		}
 		return nonoOPs;
 	}

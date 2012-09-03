@@ -59,7 +59,6 @@ public class RowRendererDefault extends DefaultTableCellRenderer {
 
 	protected static void setAbortIcon(DefaultTableCellRenderer tableCellRenderer, JTable table, int row, int column) {
 
-		//System.out.println("Row:"+row+" - Column count:"+table.getColumnModel().getColumnCount());
 		if (table.getColumnModel().getColumnCount() == 8) {
 			ImageIcon ico;
 			String queueState;

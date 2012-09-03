@@ -3,7 +3,13 @@ package org.gwaspi.gui;
 import org.gwaspi.database.DbManager;
 import org.gwaspi.global.ServiceLocator;
 import org.gwaspi.global.Text;
+import org.gwaspi.global.Utils;
+import org.gwaspi.gui.utils.CursorUtils;
+import org.gwaspi.gui.utils.Dialogs;
 import org.gwaspi.gui.utils.HelpURLs;
+import org.gwaspi.gui.utils.NodeToPathCorrespondence;
+import org.gwaspi.gui.utils.RowRendererDefault;
+import org.gwaspi.gui.utils.URLInDefaultBrowser;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
@@ -12,8 +18,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.GroupLayout;
@@ -31,6 +35,8 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.tree.DefaultMutableTreeNode;
 import org.gwaspi.model.Study;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.gwaspi.threadbox.MultiOperations;
 
 /**
@@ -40,6 +46,8 @@ import org.gwaspi.threadbox.MultiOperations;
  * CEXS-UPF-PRBB
  */
 public class CurrentStudyPanel extends JPanel {
+
+	private static final Logger log = LoggerFactory.getLogger(CurrentStudyPanel.class);
 
 	// Variables declaration
 	private Study study;
@@ -69,8 +77,8 @@ public class CurrentStudyPanel extends JPanel {
 	public CurrentStudyPanel(int _studyId) throws IOException {
 
 		study = new org.gwaspi.model.Study(_studyId);
-		DefaultMutableTreeNode matrixNode = (DefaultMutableTreeNode) org.gwaspi.gui.GWASpiExplorerPanel.tree.getLastSelectedPathComponent();
-		treeChildrenLHM = org.gwaspi.gui.utils.NodeToPathCorrespondence.buildNodeToPathCorrespondence(matrixNode, false);
+		DefaultMutableTreeNode matrixNode = (DefaultMutableTreeNode) GWASpiExplorerPanel.tree.getLastSelectedPathComponent();
+		treeChildrenLHM = NodeToPathCorrespondence.buildNodeToPathCorrespondence(matrixNode, false);
 
 		pnl_StudyDesc = new JPanel();
 		scrl_Desc = new JScrollPane();
@@ -100,7 +108,7 @@ public class CurrentStudyPanel extends JPanel {
 				return c;
 			}
 		};
-		tbl_MatrixTable.setDefaultRenderer(Object.class, new org.gwaspi.gui.utils.RowRendererDefault());
+		tbl_MatrixTable.setDefaultRenderer(Object.class, new RowRendererDefault());
 
 		btn_DeleteMatrix = new JButton();
 
@@ -257,7 +265,7 @@ public class CurrentStudyPanel extends JPanel {
 		@Override
 		public void actionPerformed(ActionEvent evt) {
 			try {
-				org.gwaspi.global.Utils.logBlockInStudyDesc(descriptionSource.getText(), study.getStudyId());
+				Utils.logBlockInStudyDesc(descriptionSource.getText(), study.getStudyId());
 
 				DbManager db = ServiceLocator.getDbManager(org.gwaspi.constants.cDBGWASpi.DB_DATACENTER);
 				db.updateTable(org.gwaspi.constants.cDBGWASpi.SCH_APP,
@@ -267,7 +275,7 @@ public class CurrentStudyPanel extends JPanel {
 						new String[]{constants.cDBGWASpi.f_ID},
 						new Object[]{study.getStudyId()});
 			} catch (IOException ex) {
-				Logger.getLogger(CurrentStudyPanel.class.getName()).log(Level.SEVERE, null, ex);
+				log.error(null, ex);
 			}
 		}
 	}
@@ -284,9 +292,9 @@ public class CurrentStudyPanel extends JPanel {
 
 		@Override
 		public void actionPerformed(ActionEvent evt) {
-			//gui.GWASpiExplorerPanel.pnl_Content = new LoadDataPanel(study.getStudyId());
-			org.gwaspi.gui.GWASpiExplorerPanel.pnl_Content = new LoadDataPanel(study.getStudyId());
-			org.gwaspi.gui.GWASpiExplorerPanel.scrl_Content.setViewportView(org.gwaspi.gui.GWASpiExplorerPanel.pnl_Content);
+			//GWASpiExplorerPanel.pnl_Content = new LoadDataPanel(study.getStudyId());
+			GWASpiExplorerPanel.pnl_Content = new LoadDataPanel(study.getStudyId());
+			GWASpiExplorerPanel.scrl_Content.setViewportView(GWASpiExplorerPanel.pnl_Content);
 		}
 	}
 
@@ -303,19 +311,18 @@ public class CurrentStudyPanel extends JPanel {
 		@Override
 		public void actionPerformed(ActionEvent evt) {
 			try {
-				org.gwaspi.gui.utils.Dialogs.showInfoDialogue(Text.Study.infoSampleInfo);
-				File sampleInfoFile = org.gwaspi.gui.utils.Dialogs.selectFilesAndDirectoriesDialog(JOptionPane.OK_OPTION);
+				Dialogs.showInfoDialogue(Text.Study.infoSampleInfo);
+				File sampleInfoFile = Dialogs.selectFilesAndDirectoriesDialog(JOptionPane.OK_OPTION);
 				if (sampleInfoFile != null && sampleInfoFile.exists()) {
-					org.gwaspi.gui.ProcessTab.showTab();
+					ProcessTab.showTab();
 
 					MultiOperations.updateSampleInfo(study.getStudyId(),
 							sampleInfoFile);
-
 				}
 			} catch (Exception ex) {
-				org.gwaspi.gui.utils.Dialogs.showWarningDialogue(org.gwaspi.global.Text.All.warnLoadError + "\n" + org.gwaspi.global.Text.All.warnWrongFormat);
-				System.out.println(org.gwaspi.global.Text.All.warnLoadError);
-				System.out.println(org.gwaspi.global.Text.All.warnWrongFormat);
+				Dialogs.showWarningDialogue(Text.All.warnLoadError + "\n" + Text.All.warnWrongFormat);
+				log.error(Text.All.warnLoadError, ex);
+				log.error(Text.All.warnWrongFormat);
 				//Logger.getLogger(CurrentMatrixPanel.class.getName()).log(Level.SEVERE, null, ex);
 			}
 		}
@@ -343,7 +350,7 @@ public class CurrentStudyPanel extends JPanel {
 				if (option == JOptionPane.YES_OPTION) {
 					int deleteReportOption = JOptionPane.showConfirmDialog(dialogParent, Text.Reports.confirmDelete);
 					if (option == JOptionPane.YES_OPTION && deleteReportOption != JOptionPane.CANCEL_OPTION) {
-						dialogParent.setCursor(org.gwaspi.gui.utils.CursorUtils.waitCursor);
+						dialogParent.setCursor(CursorUtils.waitCursor);
 						for (int i = 0; i < selectedMatrices.length; i++) {
 							int tmpMatrixRow = selectedMatrices[i];
 							int matrixId = (Integer) table.getModel().getValueAt(tmpMatrixRow, 0);
@@ -356,13 +363,13 @@ public class CurrentStudyPanel extends JPanel {
 								MultiOperations.deleteMatrix(study.getStudyId(), matrixId, deleteReport);
 								//netCDF.matrices.MatrixManager.deleteMatrix(matrixId, deleteReport);
 							} else {
-								org.gwaspi.gui.utils.Dialogs.showWarningDialogue(Text.Processes.cantDeleteRequiredItem);
+								Dialogs.showWarningDialogue(Text.Processes.cantDeleteRequiredItem);
 							}
 						}
 					}
 				}
 			}
-			dialogParent.setCursor(org.gwaspi.gui.utils.CursorUtils.defaultCursor);
+			dialogParent.setCursor(CursorUtils.defaultCursor);
 		}
 	}
 
@@ -395,7 +402,7 @@ public class CurrentStudyPanel extends JPanel {
 					}
 				}
 			} else {
-				org.gwaspi.gui.utils.Dialogs.showWarningDialogue(Text.Processes.cantDeleteRequiredItem);
+				Dialogs.showWarningDialogue(Text.Processes.cantDeleteRequiredItem);
 			}
 		}
 	}
@@ -411,11 +418,11 @@ public class CurrentStudyPanel extends JPanel {
 		@Override
 		public void actionPerformed(ActionEvent evt) {
 			try {
-				org.gwaspi.gui.GWASpiExplorerPanel.tree.setSelectionPath(org.gwaspi.gui.GWASpiExplorerPanel.tree.getSelectionPath().getParentPath());
-				org.gwaspi.gui.GWASpiExplorerPanel.pnl_Content = new StudyManagementPanel();
-				org.gwaspi.gui.GWASpiExplorerPanel.scrl_Content.setViewportView(org.gwaspi.gui.GWASpiExplorerPanel.pnl_Content);
+				GWASpiExplorerPanel.tree.setSelectionPath(GWASpiExplorerPanel.tree.getSelectionPath().getParentPath());
+				GWASpiExplorerPanel.pnl_Content = new StudyManagementPanel();
+				GWASpiExplorerPanel.scrl_Content.setViewportView(GWASpiExplorerPanel.pnl_Content);
 			} catch (IOException ex) {
-				Logger.getLogger(CurrentStudyPanel.class.getName()).log(Level.SEVERE, null, ex);
+				log.error(null, ex);
 			}
 		}
 	}
@@ -431,9 +438,9 @@ public class CurrentStudyPanel extends JPanel {
 		@Override
 		public void actionPerformed(ActionEvent evt) {
 			try {
-				org.gwaspi.gui.utils.URLInDefaultBrowser.browseHelpURL(HelpURLs.QryURL.currentStudy);
+				URLInDefaultBrowser.browseHelpURL(HelpURLs.QryURL.currentStudy);
 			} catch (IOException ex) {
-				Logger.getLogger(CurrentMatrixPanel.class.getName()).log(Level.SEVERE, null, ex);
+				log.error(null, ex);
 			}
 		}
 	}

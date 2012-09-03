@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.util.Map;
 import org.gwaspi.netCDF.markers.MarkerSet_opt;
 import org.gwaspi.netCDF.matrices.MatrixMetadata;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.gwaspi.samples.SampleSet;
 import ucar.nc2.NetcdfFile;
 
@@ -17,6 +19,8 @@ import ucar.nc2.NetcdfFile;
  * CEXS-UPF-PRBB
  */
 public class PlinkTransposedFormatter implements Formatter {
+
+	private final Logger log = LoggerFactory.getLogger(PlinkTransposedFormatter.class);
 
 	public boolean export(
 			String exportPath,
@@ -42,23 +46,23 @@ public class PlinkTransposedFormatter implements Formatter {
 			FileWriter tpedFW = new FileWriter(exportDir.getPath() + "/" + rdMatrixMetadata.getMatrixFriendlyName() + ".tped");
 			BufferedWriter tpedBW = new BufferedWriter(tpedFW);
 
-			//TPED files:
-			//chromosome (1-22, X(23), Y(24), XY(25), MT(26) or 0 if unplaced)
-			//rs# or snp identifier
-			//Genetic distance (morgans)
-			//Base-pair position (bp units)
-			//Genotypes
+			// TPED files:
+			// chromosome (1-22, X(23), Y(24), XY(25), MT(26) or 0 if unplaced)
+			// rs# or snp identifier
+			// Genetic distance (morgans)
+			// Base-pair position (bp units)
+			// Genotypes
 
-			//PURGE MARKERSET
+			// PURGE MARKERSET
 			rdMarkerSet.fillWith("");
 
-			//MARKERSET CHROMOSOME
+			// MARKERSET CHROMOSOME
 			rdMarkerSet.fillInitLHMWithVariable(org.gwaspi.constants.cNetCDF.Variables.VAR_MARKERS_CHR);
 
-			//MARKERSET RSID
+			// MARKERSET RSID
 			rdMarkerSet.appendVariableToMarkerSetLHMValue(org.gwaspi.constants.cNetCDF.Variables.VAR_MARKERS_RSID, sep);
 
-			//DEFAULT GENETIC DISTANCE = 0
+			// DEFAULT GENETIC DISTANCE = 0
 			for (Map.Entry<String, Object> entry : rdMarkerSet.getMarkerIdSetLHM().entrySet()) {
 				StringBuilder value = new StringBuilder(entry.getValue().toString());
 				value.append(sep);
@@ -66,18 +70,19 @@ public class PlinkTransposedFormatter implements Formatter {
 				entry.setValue(value.toString());
 			}
 
-			//MARKERSET POSITION
+			// MARKERSET POSITION
 			rdMarkerSet.appendVariableToMarkerSetLHMValue(org.gwaspi.constants.cNetCDF.Variables.VAR_MARKERS_POS, sep);
 
-			//Iterate through markerset
+			// Iterate through markerset
 			int markerNb = 0;
 			for (Object pos : rdMarkerSet.getMarkerIdSetLHM().values()) {
 				StringBuilder line = new StringBuilder();
 
-				//Iterate through sampleset
+				// Iterate through sampleset
 				StringBuilder genotypes = new StringBuilder();
-				rdSampleSetMap = rdSampleSet.readAllSamplesGTsFromCurrentMarkerToLHM(rdNcFile, rdSampleSetMap, markerNb);
-				for (Object value : rdSampleSetMap.values()) {
+				Map<String, Object> remainingSampleSet = rdSampleSet.readAllSamplesGTsFromCurrentMarkerToLHM(rdNcFile, rdSampleSetMap, markerNb);
+				rdSampleSetMap = remainingSampleSet; // FIXME This line should most likely be removed, because further down this is used again ... check out!
+				for (Object value : remainingSampleSet.values()) {
 					byte[] tempGT = (byte[]) value;
 					genotypes.append(sep);
 					genotypes.append(new String(new byte[]{tempGT[0]}));
@@ -93,18 +98,17 @@ public class PlinkTransposedFormatter implements Formatter {
 				markerNb++;
 			}
 
-			System.out.println("Markers exported to tped:" + markerNb);
+			log.info("Markers exported to tped: {}", markerNb);
 
 			tpedBW.close();
 			tpedFW.close();
-
 			//</editor-fold>
 
 			//<editor-fold defaultstate="collapsed" desc="TFAM FILE">
 			FileWriter tfamFW = new FileWriter(exportDir.getPath() + "/" + rdMatrixMetadata.getMatrixFriendlyName() + ".tfam");
 			BufferedWriter tfamBW = new BufferedWriter(tfamFW);
 
-			//Iterate through all samples
+			// Iterate through all samples
 			int sampleNb = 0;
 			for (String sampleId : rdSampleSetMap.keySet()) {
 				Map<String, Object> sampleInfo = Utils.getCurrentSampleFormattedInfo(sampleId, rdMatrixMetadata.getStudyId());
@@ -115,13 +119,13 @@ public class PlinkTransposedFormatter implements Formatter {
 				String sex = sampleInfo.get(org.gwaspi.constants.cDBSamples.f_SEX).toString();
 				String affection = sampleInfo.get(org.gwaspi.constants.cDBSamples.f_AFFECTION).toString();
 
-				//TFAM files
-				//Family ID
-				//Individual ID
-				//Paternal ID
-				//Maternal ID
-				//Sex (1=male; 2=female; other=unknown)
-				//Affection
+				// TFAM files
+				// Family ID
+				// Individual ID
+				// Paternal ID
+				// Maternal ID
+				// Sex (1=male; 2=female; other=unknown)
+				// Affection
 
 				StringBuilder line = new StringBuilder();
 				line.append(familyId);
@@ -136,29 +140,28 @@ public class PlinkTransposedFormatter implements Formatter {
 				line.append(sep);
 				line.append(affection);
 
-
 				tfamBW.append(line);
 				tfamBW.append("\n");
 				tfamBW.flush();
 
 				sampleNb++;
 				if (sampleNb % 100 == 0) {
-					System.out.println("Samples exported:" + sampleNb);
+					log.info("Samples exported: {}", sampleNb);
 				}
 			}
 			tfamBW.close();
 			tfamFW.close();
-
 			//</editor-fold>
 
 			result = true;
-		} catch (IOException iOException) {
+		} catch (IOException ex) {
+			log.error(null, ex);
 		} finally {
 			if (null != rdNcFile) {
 				try {
 					rdNcFile.close();
-				} catch (IOException ioe) {
-					System.out.println("Cannot close file: " + ioe);
+				} catch (IOException ex) {
+					log.error("Cannot close file: " + rdNcFile, ex);
 				}
 			}
 		}

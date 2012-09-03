@@ -21,6 +21,8 @@ import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 import org.jfree.ui.RectangleAnchor;
 import org.jfree.ui.TextAnchor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -29,6 +31,8 @@ import org.jfree.ui.TextAnchor;
  * CEXS-UPF-PRBB
  */
 public class PlinkReportLoaderCombined {
+
+	private final static Logger log = LoggerFactory.getLogger(PlinkReportLoaderCombined.class);
 
 	private PlinkReportLoaderCombined() {
 	}
@@ -54,7 +58,7 @@ public class PlinkReportLoaderCombined {
 		while ((l = inputBufferReader.readLine()) != null) {
 
 			if (count % 10000 == 0) {
-				System.out.println("loadAssocUnadjLogPvsPos -> reader count: " + count);
+				log.info("loadAssocUnadjLogPvsPos -> reader count: {}", count);
 			}
 			count++;
 

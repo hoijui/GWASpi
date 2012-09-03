@@ -17,8 +17,6 @@ import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.io.File;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.BorderFactory;
@@ -38,6 +36,8 @@ import javax.swing.SwingUtilities;
 import javax.swing.border.TitledBorder;
 import org.gwaspi.netCDF.matrices.MatrixMetadata;
 import org.gwaspi.netCDF.operations.GWASinOneGOParams;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.gwaspi.threadbox.MultiOperations;
 
 /**
@@ -47,6 +47,8 @@ import org.gwaspi.threadbox.MultiOperations;
  * CEXS-UPF-PRBB
  */
 public class LoadDataPanel extends JPanel {
+
+	private static final Logger log = LoggerFactory.getLogger(LoadDataPanel.class);
 
 	// Variables declaration - do not modify
 	private JButton btn_Back;
@@ -670,21 +672,20 @@ public class LoadDataPanel extends JPanel {
 				}
 			} catch (Exception ex) {
 				try {
-					ex.printStackTrace();
 					Dialogs.showWarningDialogue(Text.All.warnLoadError + "\n" + Text.All.warnWrongFormat);
-					System.out.println(Text.All.warnLoadError);
-					System.out.println(Text.All.warnWrongFormat);
+					log.error(Text.All.warnLoadError, ex);
+					log.error(Text.All.warnWrongFormat);
 
 					//DELETE BROKEN NEW MATRIX AND REPORTS
 					MatrixMetadata deleteMxMetaData = org.gwaspi.netCDF.matrices.MatrixManager.getLatestMatrixId();
 					if (deleteMxMetaData.getMatrixFriendlyName().equals(txt_NewMatrixName.getText())) {
-						System.out.println("Deleting orphan files and references");
+						log.info("Deleting orphan files and references");
 						org.gwaspi.netCDF.matrices.MatrixManager.deleteMatrix(deleteMxMetaData.getMatrixId(), true);
 					}
 
 					GWASpiExplorerPanel.updateTreePanel(true);
 				} catch (IOException ex1) {
-					Logger.getLogger(LoadDataPanel.class.getName()).log(Level.SEVERE, null, ex1);
+					log.error(null, ex);
 				}
 				//Logger.getLogger(LoadDataPanel.class.getName()).log(Level.SEVERE, null, ex);
 			}
@@ -899,7 +900,7 @@ public class LoadDataPanel extends JPanel {
 				GWASpiExplorerPanel.pnl_Content = new CurrentStudyPanel(studyId);
 				GWASpiExplorerPanel.scrl_Content.setViewportView(GWASpiExplorerPanel.pnl_Content);
 			} catch (IOException ex) {
-				Logger.getLogger(CurrentStudyPanel.class.getName()).log(Level.SEVERE, null, ex);
+				log.error(null, ex);
 			}
 		}
 	}
@@ -916,7 +917,7 @@ public class LoadDataPanel extends JPanel {
 			try {
 				URLInDefaultBrowser.browseHelpURL(HelpURLs.QryURL.loadGts);
 			} catch (IOException ex) {
-				Logger.getLogger(CurrentMatrixPanel.class.getName()).log(Level.SEVERE, null, ex);
+				log.error(null, ex);
 			}
 		}
 	}

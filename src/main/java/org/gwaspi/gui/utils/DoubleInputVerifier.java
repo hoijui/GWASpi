@@ -4,6 +4,8 @@ import java.awt.Toolkit;
 import javax.swing.InputVerifier;
 import javax.swing.JComponent;
 import javax.swing.JTextField;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -12,6 +14,8 @@ import javax.swing.JTextField;
  * CEXS-UPF-PRBB
  */
 public class DoubleInputVerifier extends InputVerifier {
+
+	private final Logger log = LoggerFactory.getLogger(DoubleInputVerifier.class);
 
 	public DoubleInputVerifier() {
 	}
@@ -32,7 +36,7 @@ public class DoubleInputVerifier extends InputVerifier {
 		} finally {
 			if (!correct) {
 				Toolkit.getDefaultToolkit().beep();
-				System.out.println("Must be numeric!");
+				log.warn("Must be numeric!");
 			}
 		}
 		return correct;

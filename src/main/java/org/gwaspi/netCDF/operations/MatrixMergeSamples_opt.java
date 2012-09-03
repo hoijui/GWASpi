@@ -10,6 +10,8 @@ import java.util.Map;
 import org.gwaspi.netCDF.markers.MarkerSet_opt;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.gwaspi.netCDF.matrices.MatrixMetadata;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.gwaspi.samples.SampleSet;
 import ucar.ma2.ArrayChar;
 import ucar.ma2.Index;
@@ -25,6 +27,8 @@ import ucar.nc2.NetcdfFileWriteable;
  * CEXS-UPF-PRBB
  */
 public class MatrixMergeSamples_opt {
+
+	private final static Logger log = LoggerFactory.getLogger(MatrixMergeSamples_opt.class);
 
 	private int studyId = Integer.MIN_VALUE;
 	private int rdMatrix1Id = Integer.MIN_VALUE;
@@ -56,7 +60,7 @@ public class MatrixMergeSamples_opt {
 			String _wrMatrixFriendlyName,
 			String _wrMatrixDescription) throws IOException, InvalidRangeException {
 
-		/////////// INIT EXTRACTOR OBJECTS //////////
+		// INIT EXTRACTOR OBJECTS
 		rdMatrix1Metadata = new MatrixMetadata(_rdMatrix1Id);
 		rdMatrix2Metadata = new MatrixMetadata(_rdMatrix2Id);
 		studyId = rdMatrix1Metadata.getStudyId();
@@ -75,7 +79,6 @@ public class MatrixMergeSamples_opt {
 
 		wrMatrixFriendlyName = _wrMatrixFriendlyName;
 		wrMatrixDescription = _wrMatrixDescription;
-
 	}
 
 	public int appendSamplesKeepMarkersConstant() throws IOException, InvalidRangeException {
@@ -84,8 +87,7 @@ public class MatrixMergeSamples_opt {
 		NetcdfFile rdNcFile1 = NetcdfFile.open(rdMatrix1Metadata.getPathToMatrix());
 		NetcdfFile rdNcFile2 = NetcdfFile.open(rdMatrix2Metadata.getPathToMatrix());
 
-
-		//Get combo SampleSet with position[] (wrPos, rdMatrixNb, rdPos)
+		// Get combo SampleSet with position[] (wrPos, rdMatrixNb, rdPos)
 		Map<String, Object> rdSampleSetLHM1 = rdSampleSet1.getSampleIdSetLHM();
 		Map<String, Object> rdSampleSetLHM2 = rdSampleSet2.getSampleIdSetLHM();
 		Map<String, Object> wrComboSampleSetLHM = getComboSampleSetwithPosArray(rdSampleSetLHM1, rdSampleSetLHM2);
@@ -93,16 +95,16 @@ public class MatrixMergeSamples_opt {
 		rdwrMarkerSet1.initFullMarkerIdSetLHM();
 		rdMarkerSet2.initFullMarkerIdSetLHM();
 
-		//RETRIEVE CHROMOSOMES INFO
-//        rdwrMarkerSet1.fillMarkerSetLHMWithChrAndPos();
-//        wrMarkerIdSetLHM = rdMarkerSet.replaceWithValuesFrom(wrMarkerIdSetLHM, rdMarkerSet.markerIdSetLHM);
-//        rdChrInfoSetLHM = org.gwaspi.netCDF.matrices.Utils.aggregateChromosomeInfo(wrMarkerIdSetLHM, 0, 1);
+		// RETRIEVE CHROMOSOMES INFO
+//		rdwrMarkerSet1.fillMarkerSetLHMWithChrAndPos();
+//		wrMarkerIdSetLHM = rdMarkerSet.replaceWithValuesFrom(wrMarkerIdSetLHM, rdMarkerSet.markerIdSetLHM);
+//		rdChrInfoSetLHM = org.gwaspi.netCDF.matrices.Utils.aggregateChromosomeInfo(wrMarkerIdSetLHM, 0, 1);
 
 		Map<String, Object> rdChrInfoSetLHM = rdwrMarkerSet1.getChrInfoSetLHM();
 
 
 		try {
-			///////////// CREATE netCDF-3 FILE ////////////
+			// CREATE netCDF-3 FILE
 			int hasDictionary = 0;
 			if (rdMatrix1Metadata.getHasDictionray() == rdMatrix2Metadata.getHasDictionray()) {
 				hasDictionary = rdMatrix1Metadata.getHasDictionray();
@@ -137,106 +139,96 @@ public class MatrixMergeSamples_opt {
 			descSB.append(Text.Trafo.mergeMethodSampleJoin);
 
 			MatrixFactory wrMatrixHandler = new MatrixFactory(studyId,
-					technology, //technology
+					technology, // technology
 					wrMatrixFriendlyName,
-					wrMatrixDescription + "\n\n" + descSB.toString(), //description
+					wrMatrixDescription + "\n\n" + descSB.toString(), // description
 					rdMatrix1Metadata.getStrand(),
-					hasDictionary, //has dictionary?
-					wrComboSampleSetLHM.size(), //Use comboed wrComboSampleSetLHM as SampleSet
-					rdwrMarkerSet1.getMarkerSetSize(), //Keep rdwrMarkerIdSetLHM1 from Matrix1. MarkerSet is constant
+					hasDictionary, // has dictionary?
+					wrComboSampleSetLHM.size(), // Use comboed wrComboSampleSetLHM as SampleSet
+					rdwrMarkerSet1.getMarkerSetSize(), // Keep rdwrMarkerIdSetLHM1 from Matrix1. MarkerSet is constant
 					rdChrInfoSetLHM.size(),
 					gtEncoding,
-					rdMatrix1Id, //Parent matrixId 1
-					rdMatrix2Id);         //Parent matrixId 2
-
+					rdMatrix1Id, // Parent matrixId 1
+					rdMatrix2Id); // Parent matrixId 2
 
 			NetcdfFileWriteable wrNcFile = wrMatrixHandler.getNetCDFHandler();
 			try {
 				wrNcFile.create();
-			} catch (IOException e) {
-				System.err.println("ERROR creating file " + wrNcFile.getLocation() + "\n" + e);
+			} catch (IOException ex) {
+				log.error("Failed creating file " + wrNcFile.getLocation(), ex);
 			}
-			//System.out.println("Done creating netCDF handle in MatrixSampleJoin_opt: " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
-
+			//log.trace("Done creating netCDF handle in MatrixSampleJoin_opt: " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
 
 			//<editor-fold defaultstate="collapsed" desc="METADATA WRITER">
-
-			//SAMPLESET
+			// SAMPLESET
 			ArrayChar.D2 samplesD2 = Utils.writeLHMKeysToD2ArrayChar(wrComboSampleSetLHM, cNetCDF.Strides.STRIDE_SAMPLE_NAME);
 
 			int[] sampleOrig = new int[]{0, 0};
 			try {
 				wrNcFile.write(cNetCDF.Variables.VAR_SAMPLESET, sampleOrig, samplesD2);
-			} catch (IOException e) {
-				System.err.println("ERROR writing file");
-			} catch (InvalidRangeException e) {
-				e.printStackTrace();
+			} catch (IOException ex) {
+				log.error("Failed writing file", ex);
+			} catch (InvalidRangeException ex) {
+				log.error(null, ex);
 			}
-			samplesD2 = null;
-			System.out.println("Done writing SampleSet to matrix at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
+			log.info("Done writing SampleSet to matrix at {}", org.gwaspi.global.Utils.getMediumDateTimeAsString()); // FIXME log system already adds time
 
-
-			//Keep rdwrMarkerIdSetLHM1 from Matrix1 constant
-			//MARKERSET MARKERID
+			// Keep rdwrMarkerIdSetLHM1 from Matrix1 constant
+			// MARKERSET MARKERID
 			ArrayChar.D2 markersD2 = Utils.writeLHMKeysToD2ArrayChar(rdwrMarkerSet1.getMarkerIdSetLHM(), cNetCDF.Strides.STRIDE_MARKER_NAME);
 			int[] markersOrig = new int[]{0, 0};
 			try {
 				wrNcFile.write(cNetCDF.Variables.VAR_MARKERSET, markersOrig, markersD2);
-			} catch (IOException e) {
-				System.err.println("ERROR writing file");
-			} catch (InvalidRangeException e) {
-				e.printStackTrace();
+			} catch (IOException ex) {
+				log.error("Failed writing file", ex);
+			} catch (InvalidRangeException ex) {
+				log.error(null, ex);
 			}
 
-			//MARKERSET RSID
+			// MARKERSET RSID
 			rdwrMarkerSet1.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_RSID);
 			Utils.saveCharLHMValueToWrMatrix(wrNcFile, rdwrMarkerSet1.getMarkerIdSetLHM(), cNetCDF.Variables.VAR_MARKERS_RSID, cNetCDF.Strides.STRIDE_MARKER_NAME);
 
-			//MARKERSET CHROMOSOME
+			// MARKERSET CHROMOSOME
 			rdwrMarkerSet1.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
 			Utils.saveCharLHMValueToWrMatrix(wrNcFile, rdwrMarkerSet1.getMarkerIdSetLHM(), cNetCDF.Variables.VAR_MARKERS_CHR, cNetCDF.Strides.STRIDE_CHR);
 
-			//Set of chromosomes found in matrix along with number of markersinfo
+			// Set of chromosomes found in matrix along with number of markersinfo
 			org.gwaspi.netCDF.operations.Utils.saveCharLHMKeyToWrMatrix(wrNcFile, rdChrInfoSetLHM, cNetCDF.Variables.VAR_CHR_IN_MATRIX, 8);
-			//Number of marker per chromosome & max pos for each chromosome
+			// Number of marker per chromosome & max pos for each chromosome
 			int[] columns = new int[]{0, 1, 2, 3};
 			org.gwaspi.netCDF.operations.Utils.saveIntLHMD2ToWrMatrix(wrNcFile, rdChrInfoSetLHM, columns, cNetCDF.Variables.VAR_CHR_INFO);
 
-
-			//MARKERSET POSITION
+			// MARKERSET POSITION
 			rdwrMarkerSet1.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_POS);
 			//Utils.saveCharLHMValueToWrMatrix(wrNcFile, rdwrMarkerIdSetLHM1, cNetCDF.Variables.VAR_MARKERS_POS, cNetCDF.Strides.STRIDE_POS);
 			Utils.saveIntLHMD1ToWrMatrix(wrNcFile, rdwrMarkerSet1.getMarkerIdSetLHM(), cNetCDF.Variables.VAR_MARKERS_POS);
 
-
-			//MARKERSET DICTIONARY ALLELES
+			// MARKERSET DICTIONARY ALLELES
 			Attribute hasDictionary1 = rdNcFile1.findGlobalAttribute(cNetCDF.Attributes.GLOB_HAS_DICTIONARY);
 			if ((Integer) hasDictionary1.getNumericValue() == 1) {
 				rdwrMarkerSet1.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_BASES_DICT);
 				Utils.saveCharLHMValueToWrMatrix(wrNcFile, rdwrMarkerSet1.getMarkerIdSetLHM(), cNetCDF.Variables.VAR_MARKERS_BASES_DICT, cNetCDF.Strides.STRIDE_GT);
 			}
 
-			//GENOTYPE STRAND
+			// GENOTYPE STRAND
 			rdwrMarkerSet1.fillInitLHMWithVariable(cNetCDF.Variables.VAR_GT_STRAND);
 			Utils.saveCharLHMValueToWrMatrix(wrNcFile, rdwrMarkerSet1.getMarkerIdSetLHM(), cNetCDF.Variables.VAR_GT_STRAND, 3);
-
 			//</editor-fold>
 
-
 			//<editor-fold defaultstate="collapsed" desc="GENOTYPES WRITER">
-
 			rdMarkerSet2.initFullMarkerIdSetLHM();
 
-			//Iterate through wrSampleSetLHM, use item position to read correct sample GTs into rdMarkerIdSetLHM.
+			// Iterate through wrSampleSetLHM, use item position to read correct sample GTs into rdMarkerIdSetLHM.
 			for (Object value : wrComboSampleSetLHM.values()) {             //Next SampleId
 				int[] sampleIndices = (int[]) value; //Next position[rdMatrixNb, rdPos, wrPos] to read/write
 
-				//Iterate through wrMarkerIdSetLHM, get the correct GT from rdMarkerIdSetLHM
-				if (sampleIndices[0] == 1) { //Read from Matrix1
+				// Iterate through wrMarkerIdSetLHM, get the correct GT from rdMarkerIdSetLHM
+				if (sampleIndices[0] == 1) { // Read from Matrix1
 					rdwrMarkerSet1.fillWith(org.gwaspi.constants.cNetCDF.Defaults.DEFAULT_GT);
 					rdwrMarkerSet1.fillGTsForCurrentSampleIntoInitLHM(sampleIndices[1]);
 				}
-				if (sampleIndices[0] == 2) { //Read from Matrix2
+				if (sampleIndices[0] == 2) { // Read from Matrix2
 					rdwrMarkerSet1.fillWith(org.gwaspi.constants.cNetCDF.Defaults.DEFAULT_GT);
 					rdMarkerSet2.fillGTsForCurrentSampleIntoInitLHM(sampleIndices[1]);
 					for (Map.Entry<String, Object> entry : rdwrMarkerSet1.getMarkerIdSetLHM().entrySet()) {
@@ -249,17 +241,14 @@ public class MatrixMergeSamples_opt {
 					//rdwrMarkerIdSetLHM1 = rdMarkerSet2.replaceWithValuesFrom(rdwrMarkerIdSetLHM1, rdMarkerIdSetLHM2);
 				}
 
-				//Write wrMarkerIdSetLHM to A3 ArrayChar and save to wrMatrix
+				// Write wrMarkerIdSetLHM to A3 ArrayChar and save to wrMatrix
 				Utils.saveSingleSampleGTsToMatrix(wrNcFile, rdwrMarkerSet1.getMarkerIdSetLHM(), sampleIndices[2]);
-
 			}
-
 			//</editor-fold>
-
 
 			// CLOSE THE FILE AND BY THIS, MAKE IT READ-ONLY
 			try {
-				//GENOTYPE ENCODING
+				// GENOTYPE ENCODING
 				ArrayChar.D2 guessedGTCodeAC = new ArrayChar.D2(1, 8);
 				Index index = guessedGTCodeAC.getIndex();
 				guessedGTCodeAC.setString(index.set(0, 0), rdMatrix1Metadata.getGenotypeEncoding());
@@ -282,26 +271,28 @@ public class MatrixMergeSamples_opt {
 				rdNcFile1.close();
 				rdNcFile2.close();
 
-				//CHECK FOR MISMATCHES
+				// CHECK FOR MISMATCHES
 				if (rdMatrix1Metadata.getGenotypeEncoding().equals(cNetCDF.Defaults.GenotypeEncoding.ACGT0.toString())
 						|| rdMatrix1Metadata.getGenotypeEncoding().equals(cNetCDF.Defaults.GenotypeEncoding.O1234.toString())) {
 					double[] mismatchState = checkForMismatches(wrMatrixHandler.getResultMatrixId()); //mismatchCount, mismatchRatio
 					if (mismatchState[1] > 0.01) {
-						System.out.println("Mismatch ratio is bigger that 1% (" + mismatchState[1] * 100 + " %)!\nThere might be an issue with strand positioning of your genotypes!");
+						log.warn("");
+						log.warn("Mismatch ratio is bigger than 1% ({}%)!", (mismatchState[1] * 100));
+						log.warn("There might be an issue with strand positioning of your genotypes!");
+						log.warn("");
 						//resultMatrixId = new int[]{wrMatrixHandler.getResultMatrixId(),-4};  //The threshold of acceptable mismatching genotypes has been crossed
 					}
 				}
-
-			} catch (IOException e) {
-				System.err.println("ERROR creating file " + wrNcFile.getLocation() + "\n" + e);
+			} catch (IOException ex) {
+				log.error("Failed creating file " + wrNcFile.getLocation(), ex);
 			}
 
 			org.gwaspi.global.Utils.sysoutCompleted("extraction to new Matrix");
-
-		} catch (InvalidRangeException invalidRangeException) {
-		} catch (IOException iOException) {
+		} catch (InvalidRangeException ex) {
+			log.error(null, ex);
+		} catch (IOException ex) {
+			log.error(null, ex);
 		}
-
 
 		return resultMatrixId;
 	}
@@ -312,7 +303,7 @@ public class MatrixMergeSamples_opt {
 		int wrPos = 0;
 		int rdPos = 0;
 		for (String key : sampleSetLHM1.keySet()) {
-			int[] position = new int[]{1, rdPos, wrPos}; //rdMatrixNb, rdPos, wrPos
+			int[] position = new int[]{1, rdPos, wrPos}; // rdMatrixNb, rdPos, wrPos
 			resultLHM.put(key, position);
 			wrPos++;
 			rdPos++;
@@ -321,7 +312,7 @@ public class MatrixMergeSamples_opt {
 		rdPos = 0;
 		for (String key : sampleSetLHM2.keySet()) {
 			int[] position;
-			//IF SAMPLE ALLREADY EXISTS IN MATRIX1 SUBSTITUTE VALUES WITH MATRIX2
+			// IF SAMPLE ALLREADY EXISTS IN MATRIX1 SUBSTITUTE VALUES WITH MATRIX2
 			if (resultLHM.containsKey(key)) {
 				position = (int[]) resultLHM.get(key);
 				position[0] = 2; //rdMatrixNb
@@ -357,14 +348,14 @@ public class MatrixMergeSamples_opt {
 		for (String markerId : wrMarkerSet.getMarkerIdSetLHM().keySet()) {
 			Map<Character, Object> knownAlleles = new LinkedHashMap<Character, Object>();
 
-			//Get a sampleset-full of GTs
+			// Get a sampleset-full of GTs
 			wrSampleSetLHM = wrSampleSet.readAllSamplesGTsFromCurrentMarkerToLHM(rdNcFile, wrSampleSetLHM, markerNb);
 
-			//Iterate through sampleSet
+			// Iterate through sampleSet
 			for (Object value : wrSampleSetLHM.values()) {
 				char[] tempGT = value.toString().toCharArray();
 
-				//Gather alleles different from 0 into a list of known alleles and count the number of appearences
+				// Gather alleles different from 0 into a list of known alleles and count the number of appearences
 				if (tempGT[0] != '0') {
 					int tempCount = 0;
 					if (knownAlleles.containsKey(tempGT[0])) {
@@ -387,7 +378,7 @@ public class MatrixMergeSamples_opt {
 
 			markerNb++;
 			if (markerNb % 100000 == 0) {
-				System.out.println("Checking markers for mismatches: " + markerNb + " at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
+				log.info("Checking markers for mismatches: {} at {}", markerNb, org.gwaspi.global.Utils.getMediumDateTimeAsString()); // FIXME log system already adds time
 			}
 		}
 

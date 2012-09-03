@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -14,6 +16,8 @@ import java.util.Map;
  * CEXS-UPF-PRBB
  */
 public class InitDummySamples {
+
+	private final static Logger log = LoggerFactory.getLogger(InitDummySamples.class);
 
 	private static String processStartTime = org.gwaspi.global.Utils.getMediumDateTimeAsString();
 	private static DbManager db = null;
@@ -35,22 +39,22 @@ public class InitDummySamples {
 			List<Map<String, Object>> rs = SampleManager.selectSampleIDList(studyId);
 			for (int i = 0; i < rs.size(); i++) // loop through rows of result set
 			{
-				//PREVENT PHANTOM-DB READS EXCEPTIONS
+				// PREVENT PHANTOM-DB READS EXCEPTIONS
 				if (!rs.isEmpty() && rs.get(i).size() == 1) {
 					samplesAllreadyInDBAL.add(rs.get(i).get(org.gwaspi.constants.cDBSamples.f_SAMPLE_ID).toString());
 				}
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
+		} catch (Exception ex) {
+			log.error(null, ex);
 		}
 
-		ArrayList<Object[]> samplesValuesList = new ArrayList<Object[]>();
+		List<Object[]> samplesValuesList = new ArrayList<Object[]>();
 
 		boolean result = false;
 		for (int i = 0; i < samplesFromFileAL.size(); i++) {
-			//Insert new Samples
-			//sample_id
-			//status_id_fk
+			// Insert new Samples
+			// sample_id
+			// status_id_fk
 
 			if (samplesAllreadyInDBAL.contains(samplesFromFileAL.get(i))) {
 				samplesValuesList.add(new Object[]{samplesFromFileAL.get(i), //SampleID
@@ -62,33 +66,31 @@ public class InitDummySamples {
 					result = db.insertValuesInTable(org.gwaspi.constants.cDBGWASpi.SCH_SAMPLES,
 							org.gwaspi.constants.cDBSamples.T_SAMPLES_INFO,
 							org.gwaspi.constants.cDBSamples.F_INSERT_DUMMY_SAMPLES_INFO,
-							(Object[]) samplesValuesList.get(j));
+							samplesValuesList.get(j));
 				}
 				samplesValuesList.clear();
 			}
 			currentLoadedSamples++;
 		}
 
-
-		//Writing remaining Samples to DB
+		// Writing remaining Samples to DB
 		if (samplesValuesList.size() > 0) {
 			for (int i = 0; i < samplesValuesList.size(); i++) {
 				result = db.insertValuesInTable(org.gwaspi.constants.cDBGWASpi.SCH_SAMPLES,
 						org.gwaspi.constants.cDBSamples.T_SAMPLES_INFO,
 						org.gwaspi.constants.cDBSamples.F_INSERT_DUMMY_SAMPLES_INFO,
-						(Object[]) samplesValuesList.get(i));
+						samplesValuesList.get(i));
 			}
 			samplesValuesList.clear();
 		}
 
-		//LOG OPERATION IN STUDY HISTORY
+		// LOG OPERATION IN STUDY HISTORY
 		StringBuilder operation = new StringBuilder("Start Time: ");
 		operation.append(processStartTime);
 		operation.append("\n");
 		operation.append("Initialized ").append(currentLoadedSamples).append(" dummy Samples from genotype input files.\n");
 		operation.append("End Time:").append(org.gwaspi.global.Utils.getMediumDateTimeAsString()).append("\n");
 		org.gwaspi.global.Utils.logBlockInStudyDesc(operation.toString(), studyId);
-		//////////////////////////////
 
 		return result;
 	}

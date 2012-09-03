@@ -6,6 +6,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
 
@@ -16,6 +18,8 @@ import ucar.nc2.NetcdfFile;
  * CEXS-UPF-PRBB
  */
 public class OperationMetadata {
+
+	private final static Logger log = LoggerFactory.getLogger(OperationMetadata.class);
 
 	private int op_id = Integer.MIN_VALUE;
 	private int parentMatrixId = Integer.MIN_VALUE;
@@ -47,7 +51,6 @@ public class OperationMetadata {
 				studyId = (Integer) rs.get(0).get(org.gwaspi.constants.cDBOperations.f_STUDYID);
 			}
 
-
 			String genotypesFolder = org.gwaspi.global.Config.getConfigValue("GTdir", "");
 			String pathToStudy = genotypesFolder + "/STUDY_" + studyId + "/";
 			pathToMatrix = pathToStudy + netCDF_name + ".nc";
@@ -55,29 +58,26 @@ public class OperationMetadata {
 			if (new File(pathToMatrix).exists()) {
 				try {
 					ncfile = NetcdfFile.open(pathToMatrix);
-//                gtCode = ncfile.findGlobalAttribute(org.gwaspi.constants.cNetCDF.Attributes.GLOB_GTCODE).getStringValue();
+//					gtCode = ncfile.findGlobalAttribute(org.gwaspi.constants.cNetCDF.Attributes.GLOB_GTCODE).getStringValue();
 
 					Dimension setDim = ncfile.findDimension(org.gwaspi.constants.cNetCDF.Dimensions.DIM_OPSET);
 					opSetSize = setDim.getLength();
 
 					Dimension implicitDim = ncfile.findDimension(org.gwaspi.constants.cNetCDF.Dimensions.DIM_IMPLICITSET);
 					implicitSetSize = implicitDim.getLength();
-
-				} catch (IOException ioe) {
-					System.out.println("Cannot open file: " + ioe);
+				} catch (IOException ex) {
+					log.error("Cannot open file: " + ncfile.getLocation(), ex);
 				} finally {
 					if (null != ncfile) {
 						try {
 							ncfile.close();
-						} catch (IOException ioe) {
-							System.out.println("Cannot close file: " + ioe);
+						} catch (IOException ex) {
+							log.error("Cannot close file: " + ncfile.getLocation(), ex);
 						}
-
 					}
 				}
 			}
 		}
-
 	}
 
 	public OperationMetadata(String netCDFname) throws IOException {
@@ -105,7 +105,7 @@ public class OperationMetadata {
 			try {
 				ncfile = NetcdfFile.open(pathToMatrix);
 
-//                gtCode = ncfile.findGlobalAttribute(org.gwaspi.constants.cNetCDF.Attributes.GLOB_GTCODE).getStringValue();
+//				gtCode = ncfile.findGlobalAttribute(org.gwaspi.constants.cNetCDF.Attributes.GLOB_GTCODE).getStringValue();
 
 				Dimension markerSetDim = ncfile.findDimension(org.gwaspi.constants.cNetCDF.Dimensions.DIM_OPSET);
 				opSetSize = markerSetDim.getLength();
@@ -113,21 +113,18 @@ public class OperationMetadata {
 				Dimension implicitDim = ncfile.findDimension(org.gwaspi.constants.cNetCDF.Dimensions.DIM_IMPLICITSET);
 				implicitSetSize = implicitDim.getLength();
 
-			} catch (IOException ioe) {
-				System.out.println("Cannot open file: " + ioe);
+			} catch (IOException ex) {
+				log.error("Cannot open file: " + ncfile.getLocation(), ex);
 			} finally {
 				if (null != ncfile) {
 					try {
 						ncfile.close();
-					} catch (IOException ioe) {
-						System.out.println("Cannot close file: " + ioe);
+					} catch (IOException ex) {
+						log.error("Cannot close file: " + ncfile.getLocation(), ex);
 					}
-
 				}
 			}
 		}
-
-
 	}
 
 	public int getOPId() {

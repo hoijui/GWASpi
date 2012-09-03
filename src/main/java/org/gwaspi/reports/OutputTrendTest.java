@@ -20,6 +20,8 @@ import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.CombinedRangeXYPlot;
 import org.jfree.chart.plot.XYPlot;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.nc2.NetcdfFile;
 
 /**
@@ -29,6 +31,8 @@ import ucar.nc2.NetcdfFile;
  * CEXS-UPF-PRBB
  */
 public class OutputTrendTest {
+
+	private final static Logger log = LoggerFactory.getLogger(OutputTrendTest.class);
 
 	private OutputTrendTest() {
 	}
@@ -43,7 +47,7 @@ public class OutputTrendTest {
 		String prefix = org.gwaspi.reports.ReportManager.getreportNamePrefix(op);
 		String manhattanName = prefix + "manhtt";
 
-		System.out.println(org.gwaspi.global.Text.All.processing);
+		log.info(org.gwaspi.global.Text.All.processing);
 		if (writeManhattanPlotFromTrendTestData(opId, manhattanName, 4000, 500)) {
 			result = true;
 			ReportManager.insertRPMetadata(dBManager,
@@ -54,7 +58,7 @@ public class OutputTrendTest {
 					opId,
 					"Trend Test Manhattan Plot",
 					op.getStudyId());
-			System.out.println("Saved Manhattan Plot in reports folder at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
+			log.info("Saved Manhattan Plot in reports folder at {}", org.gwaspi.global.Utils.getMediumDateTimeAsString()); // FIXME log system already supplies time
 		}
 		//String qqName = "qq_"+outName;
 		String qqName = prefix + "qq";
@@ -69,7 +73,7 @@ public class OutputTrendTest {
 					"Trend Test QQ Plot",
 					op.getStudyId());
 
-			System.out.println("Saved Trend Test QQ Plot in reports folder at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
+			log.info("Saved Trend Test QQ Plot in reports folder at {}", org.gwaspi.global.Utils.getMediumDateTimeAsString()); // FIXME log system already supplies time
 		}
 		//String assocName = "assoc_"+outName;
 		String assocName = prefix;
@@ -121,9 +125,8 @@ public class OutputTrendTest {
 					picWidth,
 					height);
 			result = true;
-		} catch (IOException e) {
-			System.err.println("Problem occurred creating chart.");
-			e.printStackTrace();
+		} catch (IOException ex) {
+			log.error("Problem occurred creating chart", ex);
 		}
 
 		return result;
@@ -144,9 +147,8 @@ public class OutputTrendTest {
 					width,
 					height);
 			result = true;
-		} catch (IOException e) {
-			System.err.println("Problem occurred creating chart.");
-			e.printStackTrace();
+		} catch (IOException ex) {
+			log.error("Problem occurred creating chart", ex);
 		}
 
 		return result;
@@ -173,40 +175,37 @@ public class OutputTrendTest {
 			MarkerSet_opt rdInfoMarkerSet = new MarkerSet_opt(rdOPMetadata.getStudyId(), rdOPMetadata.getParentMatrixId());
 			rdInfoMarkerSet.initFullMarkerIdSetLHM();
 
-			//WRITE HEADER OF FILE
+			// WRITE HEADER OF FILE
 			String header = "MarkerID\trsID\tChr\tPosition\tMin. Allele\tMaj. Allele\tTrend-Test\tPval\n";
-			reportName += ".txt";
+			String reportNameExt = reportName + ".txt";
 			String reportPath = org.gwaspi.global.Config.getConfigValue("ReportsDir", "") + "/STUDY_" + rdOPMetadata.getStudyId() + "/";
 
-
-			//WRITE MARKERSET RSID
+			// WRITE MARKERSET RSID
 			rdInfoMarkerSet.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_RSID);
 			for (Map.Entry<String, Object> entry : sortingMarkerSetLHM.entrySet()) {
 				Object value = rdInfoMarkerSet.getMarkerIdSetLHM().get(entry.getKey());
 				entry.setValue(value);
 			}
-			ReportWriter.writeFirstColumnToReport(reportPath, reportName, header, sortingMarkerSetLHM, true);
+			ReportWriter.writeFirstColumnToReport(reportPath, reportNameExt, header, sortingMarkerSetLHM, true);
 
-
-			//WRITE MARKERSET CHROMOSOME
+			// WRITE MARKERSET CHROMOSOME
 			rdInfoMarkerSet.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
 			for (Map.Entry<String, Object> entry : sortingMarkerSetLHM.entrySet()) {
 				Object value = rdInfoMarkerSet.getMarkerIdSetLHM().get(entry.getKey());
 				entry.setValue(value);
 			}
-			ReportWriter.appendColumnToReport(reportPath, reportName, sortingMarkerSetLHM, false, false);
+			ReportWriter.appendColumnToReport(reportPath, reportNameExt, sortingMarkerSetLHM, false, false);
 
-			//WRITE MARKERSET POS
+			// WRITE MARKERSET POS
 			rdInfoMarkerSet.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_POS);
 			for (Map.Entry<String, Object> entry : sortingMarkerSetLHM.entrySet()) {
 				Object value = rdInfoMarkerSet.getMarkerIdSetLHM().get(entry.getKey());
 				entry.setValue(value);
 			}
-			ReportWriter.appendColumnToReport(reportPath, reportName, sortingMarkerSetLHM, false, false);
+			ReportWriter.appendColumnToReport(reportPath, reportNameExt, sortingMarkerSetLHM, false, false);
 
-
-			//WRITE KNOWN ALLELES FROM QA
-			//get MARKER_QA Operation
+			// WRITE KNOWN ALLELES FROM QA
+			// get MARKER_QA Operation
 			List<Object[]> operationsAL = OperationManager.getMatrixOperations(rdOPMetadata.getParentMatrixId());
 			int markersQAopId = Integer.MIN_VALUE;
 			for (int i = 0; i < operationsAL.size(); i++) {
@@ -222,14 +221,14 @@ public class OutputTrendTest {
 				OperationSet rdOperationSet = new OperationSet(rdOPMetadata.getStudyId(), markersQAopId);
 				Map<String, Object> opMarkerSetLHM = rdOperationSet.getOpSetLHM();
 
-				//MINOR ALLELE
+				// MINOR ALLELE
 				opMarkerSetLHM = rdOperationSet.fillOpSetLHMWithVariable(qaNcFile, cNetCDF.Census.VAR_OP_MARKERS_MINALLELES);
 				for (Map.Entry<String, Object> entry : rdInfoMarkerSet.getMarkerIdSetLHM().entrySet()) {
 					Object minorAllele = opMarkerSetLHM.get(entry.getKey());
 					entry.setValue(minorAllele);
 				}
 
-				//MAJOR ALLELE
+				// MAJOR ALLELE
 				rdOperationSet.fillLHMWithDefaultValue(opMarkerSetLHM, "");
 				opMarkerSetLHM = rdOperationSet.fillOpSetLHMWithVariable(qaNcFile, cNetCDF.Census.VAR_OP_MARKERS_MAJALLELES);
 				for (Map.Entry<String, Object> entry : rdInfoMarkerSet.getMarkerIdSetLHM().entrySet()) {
@@ -241,17 +240,17 @@ public class OutputTrendTest {
 				Object value = rdInfoMarkerSet.getMarkerIdSetLHM().get(entry.getKey());
 				entry.setValue(value);
 			}
-			ReportWriter.appendColumnToReport(reportPath, reportName, sortingMarkerSetLHM, false, false);
+			ReportWriter.appendColumnToReport(reportPath, reportNameExt, sortingMarkerSetLHM, false, false);
 
-			//WRITE TREND TEST VALUES
+			// WRITE TREND TEST VALUES
 			for (Map.Entry<String, Object> entry : sortingMarkerSetLHM.entrySet()) {
 				Object value = unsortedMarkerIdTrendTestValsLHM.get(entry.getKey());
 				entry.setValue(value);
 			}
-			ReportWriter.appendColumnToReport(reportPath, reportName, sortingMarkerSetLHM, true, false);
+			ReportWriter.appendColumnToReport(reportPath, reportNameExt, sortingMarkerSetLHM, true, false);
 
 			result = true;
-		} catch (IOException iOException) {
+		} catch (IOException ex) {
 			result = false;
 		}
 

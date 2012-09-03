@@ -1,7 +1,10 @@
 package org.gwaspi.global;
 
+import org.gwaspi.constants.cGlobal;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -11,25 +14,25 @@ import java.io.InputStreamReader;
  */
 public class SysCommandExecutor {
 
+	private static final Logger log = LoggerFactory.getLogger(SysCommandExecutor.class);
 	private static Process pr = null;
 
 	private SysCommandExecutor() {
 	}
 
 	public static void sysAnalyserCommandPost(String command) {
-//		org.gwaspi.gui.AnalyserTab.textArea_commandLine.setText(command);
+//		AnalyserTab.textArea_commandLine.setText(command);
 	}
 
 	public static void sysAnalyserCommandExecute() {
 		try {
 //			String commandLine = org.gwaspi.gui.AnalyserTab.textArea_commandLine.getText();
-//			org.gwaspi.gui.AnalyserTab.textArea_cliResult.append("Command to be executed:\n"+ commandLine +"\n"+"\n");
+//			AnalyserTab.textArea_cliResult.append("Command to be executed:\n"+ commandLine +"\n"+"\n");
 //
 //			StringBuffer result=sysCommandExecute(commandLine);
-//			org.gwaspi.gui.AnalyserTab.textArea_cliResult.append(result.toString());
-		} catch (Exception e) {
-			System.out.println(e.toString());
-			e.printStackTrace();
+//			AnalyserTab.textArea_cliResult.append(result.toString());
+		} catch (Exception ex) {
+			log.error("Failed to execute command", ex);
 		}
 	}
 
@@ -38,9 +41,9 @@ public class SysCommandExecutor {
 		try {
 			Runtime rt = Runtime.getRuntime();
 
-			if (org.gwaspi.constants.cGlobal.OSNAME.equals("Linux")) {
+			if (cGlobal.OSNAME.equals("Linux")) {
 				pr = rt.exec(cmd);
-			} else if (org.gwaspi.constants.cGlobal.OSNAME.contains("Windows")) {
+			} else if (cGlobal.OSNAME.contains("Windows")) {
 				pr = rt.exec("cmd /c " + cmd);
 			} else {
 				//JOptionPane.showMessageDialog(org.gwaspi.gui.StartGUI.getFrames()[0], "Sorry, your Operating System is not supported by our software.\nSupported platforms include Windows and Linux.");
@@ -54,10 +57,8 @@ public class SysCommandExecutor {
 
 			int exitVal = pr.waitFor();
 			result.append("\n").append(exitVal).append("\n");
-
-		} catch (Exception e) {
-			System.out.println(e.toString());
-			e.printStackTrace();
+		} catch (Exception ex) {
+			log.error("Failed to execute command: " + cmd, ex);
 		}
 		return result;
 	}

@@ -21,8 +21,6 @@ import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultComboBoxModel;
@@ -66,12 +64,16 @@ import org.jfree.data.xy.XYDataset;
 import org.jfree.ui.RectangleAnchor;
 import org.jfree.ui.RectangleEdge;
 import org.jfree.ui.TextAnchor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author fernando
  */
 public final class ManhattanPlotZoom extends JPanel {
+
+	private static final Logger log = LoggerFactory.getLogger(ManhattanPlotZoom.class);
 
 	private static int opId;
 	private static Operation op;
@@ -147,7 +149,7 @@ public final class ManhattanPlotZoom extends JPanel {
 			hsbTmp = Color.RGBtoHSB(Integer.parseInt(tmp[0]), Integer.parseInt(tmp[1]), Integer.parseInt(tmp[2]), null);
 			manhattan_dot = Color.getHSBColor(hsbTmp[0], hsbTmp[1], hsbTmp[2]);
 		} catch (IOException ex) {
-			Logger.getLogger(ManhattanPlotZoom.class.getName()).log(Level.SEVERE, null, ex);
+			log.error(null, ex);
 		}
 		//</editor-fold>
 
@@ -159,7 +161,7 @@ public final class ManhattanPlotZoom extends JPanel {
 //			OperationSet rdAssocMarkerSet = new OperationSet(rdOPMetadata.getStudyId(), opId);
 //			labelerLHM = rdAssocMarkerSet.getOpSetLHM();
 		} catch (IOException ex) {
-			Logger.getLogger(ManhattanPlotZoom.class.getName()).log(Level.SEVERE, null, ex);
+			log.error(null, ex);
 		}
 
 		initChart(true);
@@ -199,7 +201,7 @@ public final class ManhattanPlotZoom extends JPanel {
 //            OperationSet rdAssocMarkerSet = new OperationSet(rdOPMetadata.getStudyId(), opId);
 //            labelerLHM = rdAssocMarkerSet.getOpSetLHM();
 		} catch (IOException ex) {
-			Logger.getLogger(ManhattanPlotZoom.class.getName()).log(Level.SEVERE, null, ex);
+			log.error(null, ex);
 		}
 
 		initChart(false);
@@ -267,7 +269,7 @@ public final class ManhattanPlotZoom extends JPanel {
 					}
 //					URLInDefaultBrowser.browseGenericURL(LinkEnsemblUrl.getHomoSapiensLink(currentChr, (int) chartX));
 				} catch (IOException ex) {
-					System.out.println(Text.Reports.cannotOpenEnsembl);
+					log.error(Text.Reports.cannotOpenEnsembl, ex);
 				}
 			}
 
@@ -850,12 +852,12 @@ public final class ManhattanPlotZoom extends JPanel {
 				File newFile = new File(Dialogs.selectDirectoryDialog(JOptionPane.OK_OPTION).getPath() + "/zoom_" + origMarkerId + ".png");
 				ChartUtilities.saveChartAsPNG(newFile, zoomChart, scrl_Chart.getWidth(), scrl_Chart.getHeight());
 			} catch (IOException ex) {
-				Logger.getLogger(ChartDefaultDisplay.class.getName()).log(Level.SEVERE, null, ex);
+				log.error(null, ex);
 			} catch (NullPointerException ex) {
 				//Dialogs.showWarningDialogue("A table saving error has occurred");
-				//Logger.getLogger(ChartDefaultDisplay.class.getName()).log(Level.SEVERE, null, ex);
+				//log.error(null, ex);
 			} catch (Exception ex) {
-				Logger.getLogger(ChartDefaultDisplay.class.getName()).log(Level.SEVERE, null, ex);
+				log.error(null, ex);
 			}
 		}
 	}
@@ -874,7 +876,7 @@ public final class ManhattanPlotZoom extends JPanel {
 				GWASpiExplorerPanel.pnl_Content = new Report_AnalysisPanel(rdOPMetadata.getStudyId(), rdOPMetadata.getParentMatrixId(), rdOPMetadata.getOPId(), txt_NRows);
 				GWASpiExplorerPanel.scrl_Content.setViewportView(GWASpiExplorerPanel.pnl_Content);
 			} catch (IOException ex) {
-				Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
+				log.error(null, ex);
 			}
 		}
 	}
@@ -901,7 +903,7 @@ public final class ManhattanPlotZoom extends JPanel {
 				GWASpiExplorerPanel.pnl_Content = new ManhattanChartDisplay(rdOPMetadata.getStudyId(), reportFile, rdOPMetadata.getOPId());
 				GWASpiExplorerPanel.scrl_Content.setViewportView(GWASpiExplorerPanel.pnl_Content);
 			} catch (IOException ex) {
-				Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
+				log.error(null, ex);
 			}
 		}
 	}
