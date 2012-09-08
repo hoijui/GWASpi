@@ -2,11 +2,11 @@ package org.gwaspi.threadbox;
 
 import org.gwaspi.constants.cExport.ExportFormat;
 import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.gui.GWASpiExplorerPanel;
+import org.gwaspi.gui.ProcessTab;
+import org.gwaspi.gui.StartGWASpi;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import org.gwaspi.netCDF.operations.GWASinOneGOParams;
 
@@ -18,8 +18,8 @@ import org.gwaspi.netCDF.operations.GWASinOneGOParams;
  */
 public class MultiOperations {
 
-	public static SwingWorkerItemList swingWorkerItemList = new SwingWorkerItemList();
-	public static SwingDeleterItemList swingDeleterItemList = new SwingDeleterItemList();
+	private static SwingWorkerItemList swingWorkerItemList = new SwingWorkerItemList();
+	private static SwingDeleterItemList swingDeleterItemList = new SwingDeleterItemList();
 
 	private MultiOperations() {
 	}
@@ -27,7 +27,7 @@ public class MultiOperations {
 	//<editor-fold defaultstate="collapsed" desc="LOADERS">
 	public static void doMatrixQAs(final int studyId, final int matrixId) {
 
-		//SAMPLES QA
+		// SAMPLES QA
 		final String timeStamp = org.gwaspi.global.Utils.getTimeStamp();
 		SwingWorker worker = new SwingWorker() {
 			public Object construct() {
@@ -44,12 +44,11 @@ public class MultiOperations {
 				new Integer[]{studyId},
 				new Integer[]{matrixId});
 		swingWorkerItemList.add(swi,
-				new Integer[]{studyId}, //Studies to be put on hold
-				new Integer[]{matrixId}, //Matrices to be put on hold
-				null);        //Operations to be put on hold
+				new Integer[]{studyId}, // Studies to be put on hold
+				new Integer[]{matrixId}, // Matrices to be put on hold
+				null); // Operations to be put on hold
 
-		org.gwaspi.gui.ProcessTab.updateProcessOverview();
-
+		ProcessTab.updateProcessOverview();
 	}
 
 	public static void loadMatrixDoGWASifOK(final String format,
@@ -64,10 +63,9 @@ public class MultiOperations {
 			final String strandType,
 			final String gtCode,
 			final int studyId,
-			final GWASinOneGOParams gwasParams) {
-
-
-		//LOAD & GWAS if requested and OK
+			final GWASinOneGOParams gwasParams)
+	{
+		// LOAD & GWAS if requested and OK
 		final String timeStamp = org.gwaspi.global.Utils.getTimeStamp();
 
 		SwingWorker worker = new SwingWorker() {
@@ -98,23 +96,21 @@ public class MultiOperations {
 				new Integer[]{studyId});
 
 		swingWorkerItemList.add(swi,
-				new Integer[]{studyId}, //Studies to be put on hold
-				null, //Matrices to be put on hold
-				null);        //Operations to be put on hold
+				new Integer[]{studyId}, // Studies to be put on hold
+				null, // Matrices to be put on hold
+				null); // Operations to be put on hold
 
-
-		org.gwaspi.gui.ProcessTab.updateProcessOverview();
-
+		ProcessTab.updateProcessOverview();
 	}
-
 	//</editor-fold>
+
 	//<editor-fold defaultstate="collapsed" desc="ANALYSIS">
 	public static void doGWASwithAlterPhenotype(final int studyId,
 			final int matrixId,
 			final File phenofile,
-			final GWASinOneGOParams gwasParams) {
-
-		//LOAD & GWAS
+			final GWASinOneGOParams gwasParams)
+	{
+		// LOAD & GWAS
 		final String timeStamp = org.gwaspi.global.Utils.getTimeStamp();
 		SwingWorker worker = new SwingWorker() {
 			public Object construct() {
@@ -134,19 +130,18 @@ public class MultiOperations {
 				new Integer[]{studyId},
 				new Integer[]{matrixId});
 		swingWorkerItemList.add(swi,
-				new Integer[]{studyId}, //Studies to be put on hold
-				new Integer[]{matrixId}, //Matrices to be put on hold
-				null);        //Operations to be put on hold
+				new Integer[]{studyId}, // Studies to be put on hold
+				new Integer[]{matrixId}, // Matrices to be put on hold
+				null); // Operations to be put on hold
 
-		org.gwaspi.gui.ProcessTab.updateProcessOverview();
-
-
+		ProcessTab.updateProcessOverview();
 	}
 
 	public static void doHardyWeinberg(final int studyId,
 			final int matrixId,
-			final int censusOpId) {
-		//LOAD & GWAS
+			final int censusOpId)
+	{
+		// LOAD & GWAS
 		final String timeStamp = org.gwaspi.global.Utils.getTimeStamp();
 		SwingWorker worker = new SwingWorker() {
 			public Object construct() {
@@ -159,26 +154,25 @@ public class MultiOperations {
 			}
 		};
 
-
 		SwingWorkerItem swi = new SwingWorkerItem("Hardy-Weinberg on Matrix ID: " + matrixId,
 				worker,
 				timeStamp,
 				new Integer[]{studyId},
 				new Integer[]{matrixId});
 		swingWorkerItemList.add(swi,
-				new Integer[]{studyId}, //Studies to be put on hold
-				new Integer[]{matrixId}, //Matrices to be put on hold
-				null);        //Operations to be put on hold
+				new Integer[]{studyId}, // Studies to be put on hold
+				new Integer[]{matrixId}, // Matrices to be put on hold
+				null); // Operations to be put on hold
 
-		org.gwaspi.gui.ProcessTab.updateProcessOverview();
+		ProcessTab.updateProcessOverview();
 	}
 
 	public static void doGTFreqDoHW(final int studyId,
 			final int matrixId,
 			final File phenoFile,
-			final GWASinOneGOParams gwasParams) {
-
-		//LOAD & GWAS
+			final GWASinOneGOParams gwasParams)
+	{
+		// LOAD & GWAS
 		final String timeStamp = org.gwaspi.global.Utils.getTimeStamp();
 		SwingWorker worker = new SwingWorker() {
 			public Object construct() {
@@ -192,28 +186,26 @@ public class MultiOperations {
 			}
 		};
 
-
 		SwingWorkerItem swi = new SwingWorkerItem("Genotypes Freq. & HW on Matrix ID: " + matrixId,
 				worker,
 				timeStamp,
 				new Integer[]{studyId},
 				new Integer[]{matrixId});
 		swingWorkerItemList.add(swi,
-				new Integer[]{studyId}, //Studies to be put on hold
-				new Integer[]{matrixId}, //Matrices to be put on hold
-				null);        //Operations to be put on hold
+				new Integer[]{studyId}, // Studies to be put on hold
+				new Integer[]{matrixId}, // Matrices to be put on hold
+				null); // Operations to be put on hold
 
-		org.gwaspi.gui.ProcessTab.updateProcessOverview();
-
+		ProcessTab.updateProcessOverview();
 	}
 
 	public static void doAllelicAssociationTest(final int studyId,
 			final int matrixId,
 			final int censusOPId,
 			final int hwOPId,
-			final GWASinOneGOParams gwasParams) {
-
-		//LOAD & GWAS
+			final GWASinOneGOParams gwasParams)
+	{
+		// LOAD & GWAS
 		final String timeStamp = org.gwaspi.global.Utils.getTimeStamp();
 		SwingWorker worker = new SwingWorker() {
 			public Object construct() {
@@ -228,9 +220,9 @@ public class MultiOperations {
 			}
 		};
 
-		List<Integer> holdOpIds = new ArrayList<Integer>();
-		holdOpIds.add(censusOPId);
-		holdOpIds.add(hwOPId);
+//		List<Integer> holdOpIds = new ArrayList<Integer>();
+//		holdOpIds.add(censusOPId);
+//		holdOpIds.add(hwOPId);
 
 		SwingWorkerItem swi = new SwingWorkerItem("Allelic Association Test on Matrix ID: " + matrixId,
 				worker,
@@ -239,20 +231,20 @@ public class MultiOperations {
 				new Integer[]{matrixId},
 				new Integer[]{censusOPId, hwOPId});
 		swingWorkerItemList.add(swi,
-				new Integer[]{studyId}, //Studies to be put on hold
-				new Integer[]{matrixId}, //Matrices to be put on hold
-				new Integer[]{censusOPId, hwOPId});        //Operations to be put on hold
+				new Integer[]{studyId}, // Studies to be put on hold
+				new Integer[]{matrixId}, // Matrices to be put on hold
+				new Integer[]{censusOPId, hwOPId}); // Operations to be put on hold
 
-		org.gwaspi.gui.ProcessTab.updateProcessOverview();
-
+		ProcessTab.updateProcessOverview();
 	}
 
 	public static void doGenotypicAssociationTest(final int studyId,
 			final int matrixId,
 			final int censusOPId,
 			final int hwOPId,
-			final GWASinOneGOParams gwasParams) {
-		//LOAD & GWAS
+			final GWASinOneGOParams gwasParams)
+	{
+		// LOAD & GWAS
 		final String timeStamp = org.gwaspi.global.Utils.getTimeStamp();
 		SwingWorker worker = new SwingWorker() {
 			public Object construct() {
@@ -267,9 +259,9 @@ public class MultiOperations {
 			}
 		};
 
-		List<Integer> holdOpIds = new ArrayList<Integer>();
-		holdOpIds.add(censusOPId);
-		holdOpIds.add(hwOPId);
+//		List<Integer> holdOpIds = new ArrayList<Integer>();
+//		holdOpIds.add(censusOPId);
+//		holdOpIds.add(hwOPId);
 
 		SwingWorkerItem swi = new SwingWorkerItem("Genotypic Association Test on Matrix ID: " + matrixId,
 				worker,
@@ -278,20 +270,20 @@ public class MultiOperations {
 				new Integer[]{matrixId},
 				new Integer[]{censusOPId, hwOPId});
 		swingWorkerItemList.add(swi,
-				new Integer[]{studyId}, //Studies to be put on hold
-				new Integer[]{matrixId}, //Matrices to be put on hold
-				new Integer[]{censusOPId, hwOPId});        //Operations to be put on hold
+				new Integer[]{studyId}, // Studies to be put on hold
+				new Integer[]{matrixId}, // Matrices to be put on hold
+				new Integer[]{censusOPId, hwOPId}); // Operations to be put on hold
 
-		org.gwaspi.gui.ProcessTab.updateProcessOverview();
+		ProcessTab.updateProcessOverview();
 	}
 
 	public static void doTrendTest(final int studyId,
 			final int matrixId,
 			final int censusOPId,
 			final int hwOPId,
-			final GWASinOneGOParams gwasParams) {
-
-		//LOAD & GWAS
+			final GWASinOneGOParams gwasParams)
+	{
+		// LOAD & GWAS
 		final String timeStamp = org.gwaspi.global.Utils.getTimeStamp();
 		SwingWorker worker = new SwingWorker() {
 			public Object construct() {
@@ -306,9 +298,9 @@ public class MultiOperations {
 			}
 		};
 
-		List<Integer> holdOpIds = new ArrayList<Integer>();
-		holdOpIds.add(censusOPId);
-		holdOpIds.add(hwOPId);
+//		List<Integer> holdOpIds = new ArrayList<Integer>();
+//		holdOpIds.add(censusOPId);
+//		holdOpIds.add(hwOPId);
 
 		SwingWorkerItem swi = new SwingWorkerItem("Cochran-Armitage Trend Test on Matrix ID: " + matrixId,
 				worker,
@@ -317,15 +309,14 @@ public class MultiOperations {
 				new Integer[]{matrixId},
 				new Integer[]{censusOPId, hwOPId});
 		swingWorkerItemList.add(swi,
-				new Integer[]{studyId}, //Studies to be put on hold
-				new Integer[]{matrixId}, //Matrices to be put on hold
-				new Integer[]{censusOPId, hwOPId});        //Operations to be put on hold
+				new Integer[]{studyId}, // Studies to be put on hold
+				new Integer[]{matrixId}, // Matrices to be put on hold
+				new Integer[]{censusOPId, hwOPId}); // Operations to be put on hold
 
-		org.gwaspi.gui.ProcessTab.updateProcessOverview();
-
+		ProcessTab.updateProcessOverview();
 	}
-
 	//</editor-fold>
+
 	//<editor-fold defaultstate="collapsed/expanded" desc="DATA MANAGEMENT">
 	public static void doExtractData(final int studyId,
 			final int parentMatrixId,
@@ -338,8 +329,8 @@ public class MultiOperations {
 			final Set<Object> markerCriteria,
 			final Set<Object> sampleCriteria,
 			final File markerCriteriaFile,
-			final File sampleCriteriaFile) {
-
+			final File sampleCriteriaFile)
+	{
 		final String timeStamp = org.gwaspi.global.Utils.getTimeStamp();
 		SwingWorker worker = new SwingWorker() {
 			public Object construct() {
@@ -369,20 +360,19 @@ public class MultiOperations {
 				new Integer[]{studyId},
 				new Integer[]{parentMatrixId});
 		swingWorkerItemList.add(swi,
-				new Integer[]{studyId}, //Studies to be put on hold
-				new Integer[]{parentMatrixId}, //Matrices to be put on hold
-				null);        //Operations to be put on hold
+				new Integer[]{studyId}, // Studies to be put on hold
+				new Integer[]{parentMatrixId}, // Matrices to be put on hold
+				null); // Operations to be put on hold
 
-		org.gwaspi.gui.ProcessTab.updateProcessOverview();
-
+		ProcessTab.updateProcessOverview();
 	}
 
 	public static void doTranslateAB12ToACGT(final int studyId,
 			final int parentMatrixId,
 			final cNetCDF.Defaults.GenotypeEncoding gtEncoding,
 			final String newMatrixName,
-			final String description) {
-
+			final String description)
+	{
 		final String timeStamp = org.gwaspi.global.Utils.getTimeStamp();
 		SwingWorker worker = new SwingWorker() {
 			public Object construct() {
@@ -405,19 +395,18 @@ public class MultiOperations {
 				new Integer[]{studyId},
 				new Integer[]{parentMatrixId});
 		swingWorkerItemList.add(swi,
-				new Integer[]{studyId}, //Studies to be put on hold
-				new Integer[]{parentMatrixId}, //Matrices to be put on hold
-				null);        //Operations to be put on hold
+				new Integer[]{studyId}, // Studies to be put on hold
+				new Integer[]{parentMatrixId}, // Matrices to be put on hold
+				null); // Operations to be put on hold
 
-		org.gwaspi.gui.ProcessTab.updateProcessOverview();
-
+		ProcessTab.updateProcessOverview();
 	}
 
 	public static void doExportMatrix(final int studyId,
 			final int matrixId,
 			final ExportFormat format,
-			final String phenotype) {
-
+			final String phenotype)
+	{
 		final String timeStamp = org.gwaspi.global.Utils.getTimeStamp();
 		SwingWorker worker = new SwingWorker() {
 			public Object construct() {
@@ -438,20 +427,19 @@ public class MultiOperations {
 				new Integer[]{studyId},
 				new Integer[]{matrixId});
 		swingWorkerItemList.add(swi,
-				new Integer[]{studyId}, //Studies to be put on hold
-				new Integer[]{matrixId}, //Matrices to be put on hold
-				null);        //Operations to be put on hold
+				new Integer[]{studyId}, // Studies to be put on hold
+				new Integer[]{matrixId}, // Matrices to be put on hold
+				null); // Operations to be put on hold
 
-		org.gwaspi.gui.ProcessTab.updateProcessOverview();
-
+		ProcessTab.updateProcessOverview();
 	}
 
 	public static void doMergeMatrixAddMarkers(final int studyId,
 			final int parentMatrixId1,
 			final int parentMatrixId2,
 			final String newMatrixName,
-			final String description) {
-
+			final String description)
+	{
 		final String timeStamp = org.gwaspi.global.Utils.getTimeStamp();
 		SwingWorker worker = new SwingWorker() {
 			public Object construct() {
@@ -474,20 +462,19 @@ public class MultiOperations {
 				new Integer[]{studyId},
 				new Integer[]{parentMatrixId1, parentMatrixId2});
 		swingWorkerItemList.add(swi,
-				new Integer[]{studyId}, //Studies to be put on hold
-				new Integer[]{parentMatrixId1, parentMatrixId2}, //Matrices to be put on hold
-				null);        //Operations to be put on hold
+				new Integer[]{studyId}, // Studies to be put on hold
+				new Integer[]{parentMatrixId1, parentMatrixId2}, // Matrices to be put on hold
+				null); // Operations to be put on hold
 
-		org.gwaspi.gui.ProcessTab.updateProcessOverview();
-
+		ProcessTab.updateProcessOverview();
 	}
 
 	public static void doMergeMatrixAddSamples(final int studyId,
 			final int parentMatrixId1,
 			final int parentMatrixId2,
 			final String newMatrixName,
-			final String description) {
-
+			final String description)
+	{
 		final String timeStamp = org.gwaspi.global.Utils.getTimeStamp();
 		SwingWorker worker = new SwingWorker() {
 			public Object construct() {
@@ -510,20 +497,19 @@ public class MultiOperations {
 				new Integer[]{studyId},
 				new Integer[]{parentMatrixId1, parentMatrixId2});
 		swingWorkerItemList.add(swi,
-				new Integer[]{studyId}, //Studies to be put on hold
-				new Integer[]{parentMatrixId1, parentMatrixId2}, //Matrices to be put on hold
-				null);        //Operations to be put on hold
+				new Integer[]{studyId}, // Studies to be put on hold
+				new Integer[]{parentMatrixId1, parentMatrixId2}, // Matrices to be put on hold
+				null); // Operations to be put on hold
 
-		org.gwaspi.gui.ProcessTab.updateProcessOverview();
-
+		ProcessTab.updateProcessOverview();
 	}
 
 	public static void doMergeMatrixAll(final int studyId,
 			final int parentMatrixId1,
 			final int parentMatrixId2,
 			final String newMatrixName,
-			final String description) {
-
+			final String description)
+	{
 		final String timeStamp = org.gwaspi.global.Utils.getTimeStamp();
 		SwingWorker worker = new SwingWorker() {
 			public Object construct() {
@@ -546,12 +532,11 @@ public class MultiOperations {
 				new Integer[]{studyId},
 				new Integer[]{parentMatrixId1, parentMatrixId2});
 		swingWorkerItemList.add(swi,
-				new Integer[]{studyId}, //Studies to be put on hold
-				new Integer[]{parentMatrixId1, parentMatrixId2}, //Matrices to be put on hold
-				null);        //Operations to be put on hold
+				new Integer[]{studyId}, // Studies to be put on hold
+				new Integer[]{parentMatrixId1, parentMatrixId2}, // Matrices to be put on hold
+				null); // Operations to be put on hold
 
-		org.gwaspi.gui.ProcessTab.updateProcessOverview();
-
+		ProcessTab.updateProcessOverview();
 	}
 
 	public static void doStrandFlipMatrix(final int studyId,
@@ -559,7 +544,8 @@ public class MultiOperations {
 			final String markerIdentifyer,
 			final File markerFlipFile,
 			final String newMatrixName,
-			final String description) {
+			final String description)
+	{
 		final String timeStamp = org.gwaspi.global.Utils.getTimeStamp();
 		SwingWorker worker = new SwingWorker() {
 			public Object construct() {
@@ -583,16 +569,16 @@ public class MultiOperations {
 				new Integer[]{studyId},
 				new Integer[]{parentMatrixId});
 		swingWorkerItemList.add(swi,
-				new Integer[]{studyId}, //Studies to be put on hold
-				new Integer[]{parentMatrixId}, //Matrices to be put on hold
-				null);        //Operations to be put on hold
+				new Integer[]{studyId}, // Studies to be put on hold
+				new Integer[]{parentMatrixId}, // Matrices to be put on hold
+				null); // Operations to be put on hold
 
-		org.gwaspi.gui.ProcessTab.updateProcessOverview();
+		ProcessTab.updateProcessOverview();
 	}
 
 	public static void updateSampleInfo(final int studyId,
-			final File sampleInfoFile) {
-
+			final File sampleInfoFile)
+	{
 		final String timeStamp = org.gwaspi.global.Utils.getTimeStamp();
 		SwingWorker worker = new SwingWorker() {
 			public Object construct() {
@@ -611,15 +597,14 @@ public class MultiOperations {
 				timeStamp,
 				new Integer[]{studyId});
 		swingWorkerItemList.add(swi,
-				new Integer[]{studyId}, //Studies to be put on hold
-				null, //Matrices to be put on hold
-				null);        //Operations to be put on hold
+				new Integer[]{studyId}, // Studies to be put on hold
+				null, // Matrices to be put on hold
+				null); // Operations to be put on hold
 
-		org.gwaspi.gui.ProcessTab.updateProcessOverview();
-
+		ProcessTab.updateProcessOverview();
 	}
-
 	//</editor-fold>
+
 	//<editor-fold defaultstate="collapsed" desc="DELETERS">
 	public static void deleteStudy(final int studyId, final boolean deleteReports) {
 
@@ -628,11 +613,10 @@ public class MultiOperations {
 				deleteReports);
 		swingDeleterItemList.add(sdi);
 
-		org.gwaspi.gui.ProcessTab.updateProcessOverview();
+		ProcessTab.updateProcessOverview();
 	}
 
 	public static void deleteMatrix(final int studyId, final int matrixId, final boolean deleteReports) {
-
 
 		SwingDeleterItem sdi = new SwingDeleterItem(SwingDeleterItem.DeleteTarget.MATRIX,
 				studyId,
@@ -640,8 +624,7 @@ public class MultiOperations {
 				deleteReports);
 		swingDeleterItemList.add(sdi);
 
-		org.gwaspi.gui.ProcessTab.updateProcessOverview();
-
+		ProcessTab.updateProcessOverview();
 	}
 
 	public static void deleteOperationsByOpId(final int studyId, final int matrixId, final int opId, final boolean deleteReports) {
@@ -653,11 +636,10 @@ public class MultiOperations {
 				deleteReports);
 		swingDeleterItemList.add(sdi);
 
-		org.gwaspi.gui.ProcessTab.updateProcessOverview();
-
+		ProcessTab.updateProcessOverview();
 	}
-
 	//</editor-fold>
+
 	//<editor-fold defaultstate="collapsed" desc="HELPERS">
 	public static void printFinished(String text) {
 		org.gwaspi.global.Utils.sysoutFinish(text);
@@ -672,40 +654,40 @@ public class MultiOperations {
 	}
 
 	public static void updateTree() throws IOException {
-		if (org.gwaspi.gui.StartGWASpi.guiMode) {
-			org.gwaspi.gui.GWASpiExplorerPanel.tree.setEnabled(false);
-			org.gwaspi.gui.GWASpiExplorerPanel.updateTreePanel(false);
-			org.gwaspi.gui.GWASpiExplorerPanel.tree.setEnabled(true);
+		if (StartGWASpi.guiMode) {
+			GWASpiExplorerPanel.tree.setEnabled(false);
+			GWASpiExplorerPanel.updateTreePanel(false);
+			GWASpiExplorerPanel.tree.setEnabled(true);
 		}
 	}
 
 	public static void updateTreeAndPanel() throws IOException {
-		if (org.gwaspi.gui.StartGWASpi.guiMode) {
-			org.gwaspi.gui.GWASpiExplorerPanel.tree.setEnabled(false);
-			org.gwaspi.gui.GWASpiExplorerPanel.updateTreePanel(true);
-			org.gwaspi.gui.GWASpiExplorerPanel.tree.setEnabled(true);
+		if (StartGWASpi.guiMode) {
+			GWASpiExplorerPanel.tree.setEnabled(false);
+			GWASpiExplorerPanel.updateTreePanel(true);
+			GWASpiExplorerPanel.tree.setEnabled(true);
 		}
 	}
 
 	public static void refreshPanel() {
-		if (org.gwaspi.gui.StartGWASpi.guiMode) {
-			org.gwaspi.gui.GWASpiExplorerPanel.refreshContentPanel();
+		if (StartGWASpi.guiMode) {
+			GWASpiExplorerPanel.refreshContentPanel();
 		}
 	}
 
 	public static void updateProcessOverviewStartNext() throws IOException {
 		org.gwaspi.threadbox.SwingWorkerItemList.startNext();
-		if (org.gwaspi.gui.StartGWASpi.guiMode) {
-			org.gwaspi.gui.ProcessTab.updateProcessOverview();
-			org.gwaspi.gui.ProcessTab.toggleBusyLogo();
+		if (StartGWASpi.guiMode) {
+			ProcessTab.updateProcessOverview();
+			ProcessTab.toggleBusyLogo();
 		}
 	}
 
 	public static void updateProcessOverviewDeleteNext() throws IOException {
 		org.gwaspi.threadbox.SwingDeleterItemList.deleteAllListed();
-		if (org.gwaspi.gui.StartGWASpi.guiMode) {
-			org.gwaspi.gui.ProcessTab.updateProcessOverview();
-			org.gwaspi.gui.ProcessTab.toggleBusyLogo();
+		if (StartGWASpi.guiMode) {
+			ProcessTab.updateProcessOverview();
+			ProcessTab.toggleBusyLogo();
 		}
 	}
 	//</editor-fold>

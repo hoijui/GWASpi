@@ -44,7 +44,7 @@ class StreamToTextArea extends JFrame {
 		return ps;
 	}
 
-	public static void main(String args[]) {
+	public static void main(String[] args) {
 		// create object
 		StreamToTextArea blah = new StreamToTextArea();
 		// show it

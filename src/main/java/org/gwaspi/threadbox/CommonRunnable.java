@@ -56,7 +56,7 @@ public abstract class CommonRunnable implements Runnable {
 			// FINISH OFF
 			if (!thisSwi.getQueueState().equals(org.gwaspi.threadbox.QueueStates.ABORT)) {
 				MultiOperations.printFinished("Performing " + taskDescription);
-				MultiOperations.swingWorkerItemList.flagCurrentItemDone(timeStamp);
+				SwingWorkerItemList.flagCurrentItemDone(timeStamp);
 			} else {
 				getLog().info("");
 				getLog().info(Text.Processes.abortingProcess);
@@ -74,7 +74,7 @@ public abstract class CommonRunnable implements Runnable {
 			MultiOperations.printError("Performing " + taskDescription);
 			getLog().error(null, ex);
 			try {
-				MultiOperations.swingWorkerItemList.flagCurrentItemError(timeStamp);
+				SwingWorkerItemList.flagCurrentItemError(timeStamp);
 				MultiOperations.updateTree();
 				MultiOperations.updateProcessOverviewStartNext();
 			} catch (Exception ex1) {

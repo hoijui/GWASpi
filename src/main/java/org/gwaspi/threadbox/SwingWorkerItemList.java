@@ -1,6 +1,7 @@
 package org.gwaspi.threadbox;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -17,37 +18,28 @@ public class SwingWorkerItemList {
 	private static List<Integer> parentOperationsIds = new ArrayList<Integer>();
 
 	SwingWorkerItemList() {
-//		parentStudyIds = new ArrayList<Integer>();
-//		parentMatricesIds = new ArrayList<Integer>();
-//		parentOperationsIds = new ArrayList<Integer>();
 	}
 
 	public void add(SwingWorkerItem swi,
 			Integer[] _parentStudyId,
 			Integer[] _parentMatricesIds,
-			Integer[] _parentOperationsIds) {
-
+			Integer[] _parentOperationsIds)
+	{
 		SwingDeleterItemList.purgeDoneDeletes();
 		SwingWorkerItemList.swingWorkerItemsAL.add(swi);
 
-		//LOCK PARENT ITEMS
+		// LOCK PARENT ITEMS
 		if (_parentStudyId != null) {
-			for (Integer id : _parentStudyId) {
-				parentStudyIds.add(id);
-			}
+			parentStudyIds.addAll(Arrays.asList(_parentStudyId));
 		}
 		if (_parentMatricesIds != null) {
-			for (Integer id : _parentMatricesIds) {
-				parentMatricesIds.add(id);
-			}
+			parentMatricesIds.addAll(Arrays.asList(_parentMatricesIds));
 		}
 		if (_parentOperationsIds != null) {
-			for (Integer id : _parentOperationsIds) {
-				parentOperationsIds.add(id);
-			}
+			parentOperationsIds.addAll(Arrays.asList(_parentOperationsIds));
 		}
 
-		//CHECK IF ANY ITEM IS ALLREADY RUNNING
+		// CHECK IF ANY ITEM IS ALLREADY RUNNING
 		boolean kickStart = true;
 		for (SwingWorkerItem currentSwi : swingWorkerItemsAL) {
 			if (currentSwi.queueState.equals(QueueStates.PROCESSING)) {
@@ -55,7 +47,7 @@ public class SwingWorkerItemList {
 			}
 		}
 
-		//START PROCESSING NEWLY ADDED SwingWorker
+		// START PROCESSING NEWLY ADDED SwingWorker
 		if (kickStart) {
 			swi.getSwingWorker().start();
 			swi.setStartTime(org.gwaspi.global.Utils.getShortDateTimeAsString());
