@@ -4,16 +4,26 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Random;
-import ucar.ma2.*;
-import ucar.nc2.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import ucar.ma2.ArrayByte;
+import ucar.ma2.ArrayChar;
+import ucar.ma2.ArrayInt;
+import ucar.ma2.DataType;
+import ucar.ma2.Index;
+import ucar.ma2.InvalidRangeException;
+import ucar.nc2.Dimension;
+import ucar.nc2.NetcdfFileWriteable;
 
 public class BenchmarkWriteCompareD3Array {
+
+	private final static Logger log = LoggerFactory.getLogger(BenchmarkWriteCompareD3Array.class);
 
 	public static void main(String[] arg) throws InvalidRangeException, IOException {
 
 		int method = 2; // 1=int, 2=byte, 3=char
 		int markerNb = 100000;
-		String filename = "/media/data/work/GWASpi/genotypes/method" + method + "mk" + markerNb + ".nc";
+		String filename = "/media/data/work/GWASpi/genotypes/method" + method + "mk" + markerNb + ".nc"; // XXX system dependent path
 		NetcdfFileWriteable ncfile = NetcdfFileWriteable.createNew(filename, false);
 
 		// add dimensions
@@ -26,14 +36,13 @@ public class BenchmarkWriteCompareD3Array {
 		gtSpace.add(markersDim);
 		gtSpace.add(allelesDim);
 
-
-		////////////// FILL'ER UP! ////////////////
+		// FILL'ER UP!
 		int i, j, k;
 
 		int[] offsetOrigin = new int[3]; // 0, 0, 0
 		long timeAverage = 0;
 		switch (method) {
-			case 1:
+			case 1: {
 				Random generator = new Random();
 
 				// Define Variable
@@ -41,8 +50,8 @@ public class BenchmarkWriteCompareD3Array {
 				// Create the file
 				try {
 					ncfile.create();
-				} catch (IOException e) {
-					System.err.println("ERROR creating file " + ncfile.getLocation() + "\n" + e);
+				} catch (IOException ex) {
+					log.error("Failed creating file " + ncfile.getLocation(), ex);
 				}
 
 				// Filler'up
@@ -59,37 +68,36 @@ public class BenchmarkWriteCompareD3Array {
 					// Write
 					try {
 						//offsetOrigin[0] = k;
-						//System.out.println("offsetOrigin: "+offsetOrigin[0]+":"+offsetOrigin[1]+":"+offsetOrigin[2]);
 						ncfile.write("genotypes", offsetOrigin, intArray);
 						//ncfile.write("genotype", origin, A);
-					} catch (IOException e) {
-						System.err.println("ERROR writing file");
-					} catch (InvalidRangeException e) {
-						e.printStackTrace();
+					} catch (IOException ex) {
+						log.error("Failed writing file", ex);
+					} catch (InvalidRangeException ex) {
+						log.error(null, ex);
 					}
 					Date end = new Date();
 					long tmpTime = end.getTime() - start.getTime();
-					//System.out.println("tmpTime: "+tmpTime);
 					timeAverage = ((timeAverage * k) + tmpTime) / (k + 1);
 					if (k % 10 == 0) {
-						System.out.println("Processing " + k + " at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
+						log.info("Processing {} at {}", k, org.gwaspi.global.Utils.getMediumDateTimeAsString());
 					}
 				}
-				System.out.println("Time average with int: " + timeAverage + "");
+				log.info("Time average with int: {}", timeAverage);
 				break;
-			case 2:
+			}
+			case 2: {
 				// Define Variable
 				ncfile.addVariable("genotypes", DataType.BYTE, gtSpace);
 				// Create the file
 				try {
 					ncfile.create();
-				} catch (IOException e) {
-					System.err.println("ERROR creating file " + ncfile.getLocation() + "\n" + e);
+				} catch (IOException ex) {
+					log.error("Failed writing file " + ncfile.getLocation(), ex);
 				}
 
 				// Filler'up
 				ArrayByte byteArray = new ArrayByte.D3(samplesDim.getLength(), markersDim.getLength(), allelesDim.getLength());
-				ima = byteArray.getIndex();
+				Index ima = byteArray.getIndex();
 				for (k = 0; k < 100; k++) { //Samples
 					for (i = 0; i < markersDim.getLength(); i++) { //Markers
 						for (j = 0; j < allelesDim.getLength(); j++) {  //Alleles
@@ -99,71 +107,70 @@ public class BenchmarkWriteCompareD3Array {
 					}
 					// Write
 					Date start = new Date();
-					//System.out.println("Start writing: "+start.getMinutes()+":"+start.getSeconds());
 					try {
 						//offsetOrigin[0] = k;
 						ncfile.write("genotypes", offsetOrigin, byteArray);
 						//ncfile.write("genotype", origin, A);
-					} catch (IOException e) {
-						System.err.println("ERROR writing file");
-					} catch (InvalidRangeException e) {
-						e.printStackTrace();
+					} catch (IOException ex) {
+						log.error("Failed writing file", ex);
+					} catch (InvalidRangeException ex) {
+						log.error(null, ex);
 					}
 					Date end = new Date();
 					long tmpTime = end.getTime() - start.getTime();
 					timeAverage = ((timeAverage * k) + tmpTime) / (k + 1);
 					if (k % 10 == 0) {
-						System.out.println("Processing " + k + " at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
+						log.info("Processing {} at {}", k, org.gwaspi.global.Utils.getMediumDateTimeAsString());
 					}
 				}
-				System.out.println("Time average with int: " + timeAverage + "");
+				log.info("Time average with int: {}", timeAverage);
 				break;
-			case 3:
+			}
+			case 3: {
 				// Define Variable
 				ncfile.addVariable("genotypes", DataType.CHAR, gtSpace);
 				// Create the file
 				try {
 					ncfile.create();
-				} catch (IOException e) {
-					System.err.println("ERROR creating file " + ncfile.getLocation() + "\n" + e);
+				} catch (IOException ex) {
+					log.error("Failed writing file " + ncfile.getLocation(), ex);
 				}
 
 				// Filler'up
 				ArrayChar charArray = new ArrayChar.D3(samplesDim.getLength(), markersDim.getLength(), allelesDim.getLength());
-				ima = charArray.getIndex();
+				Index ima = charArray.getIndex();
 				for (k = 0; k < 100; k++) { //Samples
 					for (i = 0; i < markersDim.getLength(); i++) { //Markers
 						charArray.setString(ima.set(0, i, 0), "AA");
 					}
 					// Write
 					Date start = new Date();
-					//System.out.println("Start writing: "+start.getMinutes()+":"+start.getSeconds());
 					//offsetOrigin[0] = k;
 					try {
 						ncfile.write("genotypes", offsetOrigin, charArray);
 						//ncfile.write("genotype", origin, A);
-					} catch (IOException e) {
-						System.err.println("ERROR writing file");
-					} catch (InvalidRangeException e) {
-						e.printStackTrace();
+					} catch (IOException ex) {
+						log.error("Failed writing file", ex);
+					} catch (InvalidRangeException ex) {
+						log.error(null, ex);
 					}
 					Date end = new Date();
 					long tmpTime = end.getTime() - start.getTime();
 					timeAverage = ((timeAverage * k) + tmpTime) / (k + 1);
 					if (k % 10 == 0) {
-						System.out.println("Processing " + k + " at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
+						log.info("Processing {} at {}", k, org.gwaspi.global.Utils.getMediumDateTimeAsString());
 					}
 				}
-				System.out.println("Time average with int: " + timeAverage + "");
+				log.info("Time average with int: {}", timeAverage);
 				break;
-
+			}
 		}
 
 		// close the file
 		try {
 			ncfile.close();
-		} catch (IOException e) {
-			System.err.println("ERROR creating file " + ncfile.getLocation() + "\n" + e);
+		} catch (IOException ex) {
+			log.error("Failed writing file " + ncfile.getLocation(), ex);
 		}
 	}
 }

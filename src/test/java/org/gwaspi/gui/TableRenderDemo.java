@@ -48,6 +48,8 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * TableRenderDemo is just like TableDemo, except that it explicitly initializes
@@ -55,7 +57,8 @@ import javax.swing.table.TableColumn;
  */
 public class TableRenderDemo extends JPanel {
 
-	private boolean DEBUG = true;
+	private final static Logger log
+			= LoggerFactory.getLogger(TableRenderDemo.class);
 
 	public TableRenderDemo() {
 		super(new GridLayout(1, 0));
@@ -102,12 +105,9 @@ public class TableRenderDemo extends JPanel {
 					false, false, 0, i);
 			int cellWidth = comp.getPreferredSize().width;
 
-			if (DEBUG) {
-				System.out.println("Initializing width of column "
-						+ i + ". "
-						+ "headerWidth = " + headerWidth
-						+ "; cellWidth = " + cellWidth);
-			}
+			log.debug("Initializing width of column {}."
+					+ " headerWidth = {}; cellWidth = {}",
+					new Object[] {i, headerWidth, cellWidth});
 
 			column.setPreferredWidth(Math.max(headerWidth, cellWidth));
 		}
@@ -202,18 +202,14 @@ public class TableRenderDemo extends JPanel {
 		 */
 		@Override
 		public void setValueAt(Object value, int row, int col) {
-			if (DEBUG) {
-				System.out.println("Setting value at " + row + "," + col
-						+ " to " + value
-						+ " (an instance of "
-						+ value.getClass() + ")");
-			}
+			log.debug("Setting value at {},{} to {} (an instance of {})",
+					new Object[] {row, col, value, value.getClass()});
 
 			data[row][col] = value;
 			fireTableCellUpdated(row, col);
 
-			if (DEBUG) {
-				System.out.println("New value of data:");
+			if (log.isDebugEnabled()) {
+				log.debug("New value of data:");
 				printDebugData();
 			}
 		}
@@ -223,13 +219,13 @@ public class TableRenderDemo extends JPanel {
 			int numCols = getColumnCount();
 
 			for (int i = 0; i < numRows; i++) {
-				System.out.print("    row " + i + ":");
+				log.debug("    row {}:", i);
 				for (int j = 0; j < numCols; j++) {
-					System.out.print("  " + data[i][j]);
+					log.debug("  {}", data[i][j]);
 				}
-				System.out.println();
+				log.debug("");
 			}
-			System.out.println("--------------------------");
+			log.debug("--------------------------");
 		}
 	}
 

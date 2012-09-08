@@ -5,15 +5,25 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import ucar.ma2.*;
-import ucar.nc2.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import ucar.ma2.ArrayByte;
+import ucar.ma2.ArrayChar;
+import ucar.ma2.ArrayInt;
+import ucar.ma2.Index;
+import ucar.ma2.InvalidRangeException;
+import ucar.nc2.Dimension;
+import ucar.nc2.NetcdfFile;
+import ucar.nc2.Variable;
 
 public class BenchmarkReadCompareD3Array {
+
+	private final static Logger log = LoggerFactory.getLogger(BenchmarkReadCompareD3Array.class);
 
 	public static void main(String[] arg) throws InvalidRangeException, IOException {
 		int method = 2; // 1=int, 2=byte, 3=char
 		int markerNb = 100000;
-		String filename = "/media/data/work/GWASpi/genotypes/method" + method + "mk" + markerNb + ".nc";
+		String filename = "/media/data/work/GWASpi/genotypes/method" + method + "mk" + markerNb + ".nc"; // XXX system dependent path
 		NetcdfFile ncfile = null;
 
 		long timeAverage = 0;
@@ -33,7 +43,8 @@ public class BenchmarkReadCompareD3Array {
 
 			try {
 				switch (method) {
-					case 1: //int
+					case 1: {
+						// int
 						for (int sampleNb = 0; sampleNb < samplesDim.getLength(); sampleNb++) {
 							Date start = new Date();
 							ArrayInt.D3 rdArray = (ArrayInt.D3) genotypes.read(sampleNb + ":" + sampleNb + ":1,"
@@ -42,15 +53,16 @@ public class BenchmarkReadCompareD3Array {
 
 							Date end = new Date();
 							long tmpTime = end.getTime() - start.getTime();
-							//System.out.println("tmpTime: "+tmpTime);
 							timeAverage = ((timeAverage * sampleNb) + tmpTime) / (sampleNb + 1);
 							if (sampleNb % 10 == 0) {
-								System.out.println("Processing " + sampleNb + " at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
+								log.info("Processing {} at {}", sampleNb, org.gwaspi.global.Utils.getMediumDateTimeAsString());
 							}
 						}
-						System.out.println("Time average with int: " + timeAverage + "");
+						log.info("Time average with int: {}", timeAverage);
 						break;
-					case 2: //byte
+					}
+					case 2: {
+						// byte
 						for (int sampleNb = 0; sampleNb < samplesDim.getLength(); sampleNb++) {
 							Date start = new Date();
 							ArrayByte.D3 rdArray = (ArrayByte.D3) genotypes.read(sampleNb + ":" + sampleNb + ":1,"
@@ -76,15 +88,16 @@ public class BenchmarkReadCompareD3Array {
 
 							Date end = new Date();
 							long tmpTime = end.getTime() - start.getTime();
-							//System.out.println("tmpTime: "+tmpTime);
 							timeAverage = ((timeAverage * sampleNb) + tmpTime) / (sampleNb + 1);
 							if (sampleNb % 10 == 0) {
-								System.out.println("Processing " + sampleNb + " at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
+								log.info("Processing {} at {}", sampleNb, org.gwaspi.global.Utils.getMediumDateTimeAsString());
 							}
 						}
-						System.out.println("Time average with byte: " + timeAverage + "");
+						log.info("Time average with int: {}", timeAverage);
 						break;
-					case 3: // char
+					}
+					case 3: {
+						// char
 						for (int sampleNb = 0; sampleNb < samplesDim.getLength(); sampleNb++) {
 							Date start = new Date();
 							ArrayChar.D3 gt_ACD3 = (ArrayChar.D3) genotypes.read("(" + sampleNb + ":" + sampleNb + ":1, "
@@ -96,30 +109,29 @@ public class BenchmarkReadCompareD3Array {
 //									+ " 0:" + (allelesDim.getLength() - 1) + ":1)");
 							Date end = new Date();
 							long tmpTime = end.getTime() - start.getTime();
-							//System.out.println("tmpTime: "+tmpTime);
 							timeAverage = ((timeAverage * sampleNb) + tmpTime) / (sampleNb + 1);
 							if (sampleNb % 10 == 0) {
-								System.out.println("Processing " + sampleNb + " at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
+								log.info("Processing {} at {}", sampleNb, org.gwaspi.global.Utils.getMediumDateTimeAsString());
 							}
 						}
-						System.out.println("Time average with char: " + timeAverage + "");
+						log.info("Time average with int: {}", timeAverage);
 						break;
+					}
 				}
 				//Array gt = genotypes.read("0:0:1, 0:9:1, 0:1:1"); //sample 1, snp 0 - 10, alleles 0+1
-			} catch (IOException ioe) {
-				System.out.println("Cannot read data: " + ioe);
-			} catch (InvalidRangeException e) {
-				System.out.println("Cannot read data: " + e);
+			} catch (IOException ex) {
+				log.error("Cannot read data", ex);
+			} catch (InvalidRangeException ex) {
+				log.error("Cannot read data", ex);
 			}
-
-		} catch (IOException ioe) {
-			System.out.println("Cannot open file: " + ioe);
+		} catch (IOException ex) {
+			log.error("Cannot open file", ex);
 		} finally {
 			if (null != ncfile) {
 				try {
 					ncfile.close();
-				} catch (IOException ioe) {
-					System.out.println("Cannot close file: " + ioe);
+				} catch (IOException ex) {
+					log.error("Cannot close file", ex);
 				}
 			}
 		}

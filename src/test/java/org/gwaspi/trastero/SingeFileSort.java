@@ -9,6 +9,8 @@ import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Random;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -17,6 +19,8 @@ import java.util.Random;
  * CEXS-UPF-PRBB
  */
 public class SingeFileSort {
+
+	private final static Logger log = LoggerFactory.getLogger(SingeFileSort.class);
 
 	private SingeFileSort() {
 	}
@@ -103,7 +107,7 @@ public class SingeFileSort {
 					someFileStillHasRows = false;
 					if (filerows.get(i) != null) {
 						if (minIndex < 0) {
-							//System.out ("mindex < 0 and found row not null" + filerows.get(i).toString());
+							//log.trace("mindex < 0 and found row not null" + filerows.get(i).toString());
 							System.exit(-1);
 						}
 						someFileStillHasRows = true;
@@ -114,7 +118,7 @@ public class SingeFileSort {
 				// check the actual files one more time
 				if (!someFileStillHasRows) {
 
-					//write the last one not covered above
+					// write the last one not covered above
 					for (int i = 0; i < filerows.size(); i++) {
 						if (filerows.get(i) == null) {
 							line = br.readLine();
@@ -135,7 +139,7 @@ public class SingeFileSort {
 			br.close();
 			fr.close();
 		} catch (Exception ex) {
-			ex.printStackTrace();
+			log.error(null, ex);
 			System.exit(-1);
 		}
 

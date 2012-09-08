@@ -25,15 +25,14 @@ public class UsePool2 {
 //
 //			Runnable runner = qa;
 //
-//			System.out.println("Adding: " + name + " / " + time);
+//			log.info("Adding: {} / {}", name, time);
 //			executor.execute(runner);
-//
 //		}
 //		try {
 //			Thread.sleep(waitTime);
 //			executor.shutdown();
 //			executor.awaitTermination(waitTime, TimeUnit.MILLISECONDS);
-//			System.out.println("Executed OperationId: " + qa.getResult());
+//			log.info("Executed OperationId: {}", qa.getResult());
 //		} catch (InterruptedException ignored) {
 //		}
 //		System.exit(0);
@@ -55,10 +54,10 @@ public class UsePool2 {
 //			Executor_OP_QASamples qa = new Executor_OP_QASamples(145);
 //			FutureTask task = new FutureTask(qa);
 //
-//			System.out.println("Adding: " + name + " / " + time);
+//			log.info("Adding: {} / {}", name, time);
 //			executor.execute(task);
 //
-//			System.out.println("Executed OperationId: " + task.get());
+//			log.info("Executed OperationId: {}", task.get());
 //		}
 //		System.exit(0);
 //	}

@@ -7,6 +7,8 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -16,6 +18,7 @@ import java.io.IOException;
  */
 public class SplitHapmapOriginalByIndividuals {
 
+	private final static Logger log = LoggerFactory.getLogger(WriteBinaryPlink.class);
 	private static final String hapmapBigFile = "/media/disk/Fernando/hapmap_orig/hapmapGenotypes_orden_OK_SORTED.txt";
 
 	public static void main(String[] args) throws FileNotFoundException, IOException, ClassNotFoundException, InstantiationException, IllegalAccessException {
@@ -28,22 +31,20 @@ public class SplitHapmapOriginalByIndividuals {
 		BufferedReader bigHapmapBufferReader = new BufferedReader(bigHapmapFileReader);
 
 		String currentSampleId = "";
-		String l = null;
 		boolean header = true;
 		int hapmaprowcount = 0;
 		int samplecount = 0;
 		int genotypeCount = 0;
 		while (header) { // ignoring top empty line
-			l = bigHapmapBufferReader.readLine();
+			bigHapmapBufferReader.readLine();
 			header = false;
 		}
-
 
 		FileWriter fw = null;
 		BufferedWriter bw = null;
 
-		while ((l = bigHapmapBufferReader.readLine()) != null) {
-
+		String l = bigHapmapBufferReader.readLine();
+		while (l != null) {
 			hapmaprowcount++;
 			String[] cVals = l.split("[ \t,]");
 
@@ -61,14 +62,15 @@ public class SplitHapmapOriginalByIndividuals {
 					}
 				}
 				currentSampleId = cVals[0];
-				fw = new FileWriter("/media/disk/Fernando/hapmap_orig/by_individuals/" + currentSampleId + ".txt");
+				fw = new FileWriter("/media/disk/Fernando/hapmap_orig/by_individuals/" + currentSampleId + ".txt"); // XXX system dependent path
 				bw = new BufferedWriter(fw);
 
-				System.out.println("SampleId: " + currentSampleId + " count=" + samplecount);
+				log.info("SampleId: {} count={}", currentSampleId, samplecount);
 				// WRITE TO FILE
 				bw.append(l + "\n");
-
 			}
+
+			l = bigHapmapBufferReader.readLine();
 		}
 
 		bw.close();

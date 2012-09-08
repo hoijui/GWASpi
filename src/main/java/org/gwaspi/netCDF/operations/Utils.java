@@ -7,6 +7,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.ma2.ArrayByte;
 import ucar.ma2.ArrayChar;
 import ucar.ma2.ArrayDouble;
@@ -23,6 +25,9 @@ import ucar.nc2.NetcdfFileWriteable;
  */
 public class Utils {
 
+	private final static Logger log
+			= LoggerFactory.getLogger(Utils.class);
+
 	private Utils() {
 	}
 
@@ -37,15 +42,15 @@ public class Utils {
 			int[] markersOrig = new int[]{0, 0};
 			try {
 				wrNcFile.write(variable, markersOrig, markersD2);
-				System.out.println("Done writing " + variable + " at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
+				log.info("Done writing {} at {}", variable, org.gwaspi.global.Utils.getMediumDateTimeAsString());
 				result = true;
-			} catch (IOException e) {
-				System.err.println("ERROR writing file");
-			} catch (InvalidRangeException e) {
-				e.printStackTrace();
+			} catch (IOException ex) {
+				log.error("Failed writing file", ex);
+			} catch (InvalidRangeException ex) {
+				log.error("Failed writing file", ex);
 			}
-		} catch (Exception e) {
-			System.out.println("ERROR writing " + variable + " at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
+		} catch (Exception ex) {
+			log.error("Failed writing " + variable + " at " + org.gwaspi.global.Utils.getMediumDateTimeAsString(), ex);
 		}
 
 		return result;
@@ -60,15 +65,15 @@ public class Utils {
 			int[] markersOrig = new int[]{0, 0};
 			try {
 				wrNcFile.write(variable, markersOrig, markersD2);
-				System.out.println("Done writing " + variable + " at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
+				log.info("Done writing {} at {}", variable, org.gwaspi.global.Utils.getMediumDateTimeAsString());
 				result = true;
-			} catch (IOException e) {
-				System.err.println("ERROR writing file");
-			} catch (InvalidRangeException e) {
-				e.printStackTrace();
+			} catch (IOException ex) {
+				log.error("Failed writing file", ex);
+			} catch (InvalidRangeException ex) {
+				log.error("Failed writing file", ex);
 			}
-		} catch (Exception e) {
-			System.out.println("ERROR writing " + variable + " at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
+		} catch (Exception ex) {
+			log.error("Failed writing " + variable + " at " + org.gwaspi.global.Utils.getMediumDateTimeAsString(), ex);
 		}
 
 		return result;
@@ -82,15 +87,15 @@ public class Utils {
 			int[] markersOrig = new int[]{0, 0};
 			try {
 				wrNcFile.write(variable, markersOrig, markersD2);
-				System.out.println("Done writing " + variable + " at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
+				log.info("Done writing {} at {}", variable, org.gwaspi.global.Utils.getMediumDateTimeAsString());
 				result = true;
-			} catch (IOException e) {
-				System.err.println("ERROR writing file");
-			} catch (InvalidRangeException e) {
-				e.printStackTrace();
+			} catch (IOException ex) {
+				log.error("Failed writing file", ex);
+			} catch (InvalidRangeException ex) {
+				log.error("Failed writing file", ex);
 			}
-		} catch (Exception e) {
-			System.out.println("ERROR writing " + variable + " at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
+		} catch (Exception ex) {
+			log.error("Failed writing " + variable + " at " + org.gwaspi.global.Utils.getMediumDateTimeAsString(), ex);
 		}
 
 		return result;
@@ -100,17 +105,17 @@ public class Utils {
 	public static boolean saveSingleSampleGTsToMatrix(NetcdfFileWriteable wrNcFile, Map<String, Object> wrLhm, int sampleIndex) {
 		boolean result = false;
 		ArrayByte.D3 genotypes = org.gwaspi.netCDF.operations.Utils.writeLHMToSingleSampleArrayByteD3(wrLhm, org.gwaspi.constants.cNetCDF.Strides.STRIDE_GT);
-//            ArrayByte.D3 genotypes = org.gwaspi.netCDF.operations.Utils.writeLHMToCurrentSampleArrayByteD3(wrLhm, org.gwaspi.constants.cNetCDF.Strides.STRIDE_GT);
+//		ArrayByte.D3 genotypes = org.gwaspi.netCDF.operations.Utils.writeLHMToCurrentSampleArrayByteD3(wrLhm, org.gwaspi.constants.cNetCDF.Strides.STRIDE_GT);
 
 		int[] origin = new int[]{sampleIndex, 0, 0};
 		try {
 			wrNcFile.write(org.gwaspi.constants.cNetCDF.Variables.VAR_GENOTYPES, origin, genotypes);
-//                System.out.println("Done writing Sample "+samplePos+" genotypes at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
+//			log.info("Done writing Sample {} genotypes at {}", samplePos, org.gwaspi.global.Utils.getMediumDateTimeAsString());
 			result = true;
-		} catch (IOException e) {
-			System.err.println("ERROR writing genotypes to netCDF in MAtrixDataExtractor");
-		} catch (InvalidRangeException e) {
-			e.printStackTrace();
+		} catch (IOException ex) {
+			log.error("Failed writing genotypes to netCDF in MatrixDataExtractor", ex);
+		} catch (InvalidRangeException ex) {
+			log.error("Failed writing genotypes to netCDF in MatrixDataExtractor", ex);
 		}
 		return result;
 	}
@@ -122,12 +127,12 @@ public class Utils {
 		int[] origin = new int[]{0, markerIndex, 0};
 		try {
 			wrNcFile.write(org.gwaspi.constants.cNetCDF.Variables.VAR_GENOTYPES, origin, genotypes);
-//                System.out.println("Done writing genotypes at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
+//			log.info("Done writing genotypes at {}", org.gwaspi.global.Utils.getMediumDateTimeAsString());
 			result = true;
-		} catch (IOException e) {
-			System.err.println("ERROR writing genotypes to netCDF in MAtrixDataExtractor");
-		} catch (InvalidRangeException e) {
-			e.printStackTrace();
+		} catch (IOException ex) {
+			log.error("Failed writing genotypes to netCDF in MatrixDataExtractor", ex);
+		} catch (InvalidRangeException ex) {
+			log.error("Failed writing genotypes to netCDF in MatrixDataExtractor", ex);
 		}
 		return result;
 	}
@@ -142,15 +147,15 @@ public class Utils {
 			int[] origin1 = new int[1];
 			try {
 				wrNcFile.write(variable, origin1, arrayDouble);
-				System.out.println("Done writing " + variable + " at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
+				log.info("Done writing {} at {}", variable, org.gwaspi.global.Utils.getMediumDateTimeAsString());
 				result = true;
-			} catch (IOException e) {
-				System.err.println("ERROR writing " + variable + " to netCDF");
-			} catch (InvalidRangeException e) {
-				e.printStackTrace();
+			} catch (IOException ex) {
+				log.error("Failed writing " + variable + " to netCDF", ex);
+			} catch (InvalidRangeException ex) {
+				log.error("Failed writing " + variable + " to netCDF", ex);
 			}
-		} catch (Exception e) {
-			System.out.println("ERROR writing " + variable + " at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
+		} catch (Exception ex) {
+			log.error("Failed writing " + variable + " at " + org.gwaspi.global.Utils.getMediumDateTimeAsString(), ex);
 		}
 
 		return result;
@@ -164,15 +169,15 @@ public class Utils {
 			int[] origin1 = new int[1];
 			try {
 				wrNcFile.write(variable, origin1, arrayDouble);
-				System.out.println("Done writing " + variable + " at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
+				log.info("Done writing {} at {}", variable, org.gwaspi.global.Utils.getMediumDateTimeAsString());
 				result = true;
-			} catch (IOException e) {
-				System.err.println("ERROR writing " + variable + " to netCDF");
-			} catch (InvalidRangeException e) {
-				e.printStackTrace();
+			} catch (IOException ex) {
+				log.error("Failed writing " + variable + " to netCDF", ex);
+			} catch (InvalidRangeException ex) {
+				log.error("Failed writing " + variable + " to netCDF", ex);
 			}
-		} catch (Exception e) {
-			System.out.println("ERROR writing " + variable + " at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
+		} catch (Exception ex) {
+			log.error("Failed writing " + variable + " at " + org.gwaspi.global.Utils.getMediumDateTimeAsString(), ex);
 		}
 
 		return result;
@@ -186,15 +191,15 @@ public class Utils {
 			int[] origin1 = new int[1];
 			try {
 				wrNcFile.write(variable, origin1, arrayInt);
-				System.out.println("Done writing " + variable + " at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
+				log.info("Done writing {} at {}", variable, org.gwaspi.global.Utils.getMediumDateTimeAsString());
 				result = true;
-			} catch (IOException e) {
-				System.err.println("ERROR writing " + variable + " to netCDF");
-			} catch (InvalidRangeException e) {
-				e.printStackTrace();
+			} catch (IOException ex) {
+				log.error("Failed writing " + variable + " to netCDF", ex);
+			} catch (InvalidRangeException ex) {
+				log.error("Failed writing " + variable + " to netCDF", ex);
 			}
-		} catch (Exception e) {
-			System.out.println("ERROR writing " + variable + " at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
+		} catch (Exception ex) {
+			log.error("Failed writing " + variable + " at " + org.gwaspi.global.Utils.getMediumDateTimeAsString(), ex);
 		}
 
 		return result;
@@ -208,15 +213,15 @@ public class Utils {
 			int[] origin1 = new int[1];
 			try {
 				wrNcFile.write(variable, origin1, arrayInt);
-				System.out.println("Done writing " + variable + " at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
+				log.info("Done writing {} at {}", variable, org.gwaspi.global.Utils.getMediumDateTimeAsString());
 				result = true;
-			} catch (IOException e) {
-				System.err.println("ERROR writing " + variable + " to netCDF");
-			} catch (InvalidRangeException e) {
-				e.printStackTrace();
+			} catch (IOException ex) {
+				log.error("Failed writing " + variable + " to netCDF", ex);
+			} catch (InvalidRangeException ex) {
+				log.error("Failed writing " + variable + " to netCDF", ex);
 			}
-		} catch (Exception e) {
-			System.out.println("ERROR writing " + variable + " at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
+		} catch (Exception ex) {
+			log.error("Failed writing " + variable + " at " + org.gwaspi.global.Utils.getMediumDateTimeAsString(), ex);
 		}
 
 		return result;
@@ -232,16 +237,15 @@ public class Utils {
 			int[] origin1 = new int[2];
 			try {
 				wrNcFile.write(variable, origin1, arrayIntD2);
-				System.out.println("Done writing " + variable + " at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
+				log.info("Done writing {} at {}", variable, org.gwaspi.global.Utils.getMediumDateTimeAsString());
 				result = true;
-			} catch (IOException e) {
-				System.err.println("ERROR writing " + variable + " to netCDF");
-			} catch (InvalidRangeException e) {
-				e.printStackTrace();
+			} catch (IOException ex) {
+				log.error("Failed writing " + variable + " to netCDF", ex);
+			} catch (InvalidRangeException ex) {
+				log.error("Failed writing " + variable + " to netCDF", ex);
 			}
-		} catch (Exception e) {
-			System.out.println("ERROR writing " + variable + " at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
-			e.printStackTrace();
+		} catch (Exception ex) {
+			log.error("Failed writing " + variable + " at " + org.gwaspi.global.Utils.getMediumDateTimeAsString(), ex);
 		}
 
 		return result;
@@ -255,16 +259,15 @@ public class Utils {
 			int[] origin1 = new int[2];
 			try {
 				wrNcFile.write(variable, origin1, arrayDoubleD2);
-				System.out.println("Done writing " + variable + " at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
+				log.info("Done writing {} at {}", variable, org.gwaspi.global.Utils.getMediumDateTimeAsString());
 				result = true;
-			} catch (IOException e) {
-				System.err.println("ERROR writing " + variable + " to netCDF");
-			} catch (InvalidRangeException e) {
-				e.printStackTrace();
+			} catch (IOException ex) {
+				log.error("Failed writing " + variable + " to netCDF", ex);
+			} catch (InvalidRangeException ex) {
+				log.error("Failed writing " + variable + " to netCDF", ex);
 			}
-		} catch (Exception e) {
-			System.out.println("ERROR writing " + variable + " at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
-			e.printStackTrace();
+		} catch (Exception ex) {
+			log.error("Failed writing " + variable + " at " + org.gwaspi.global.Utils.getMediumDateTimeAsString(), ex);
 		}
 
 		return result;
@@ -286,15 +289,15 @@ public class Utils {
 			int[] markersOrig = new int[]{offset, 0}; //first origin is the initial markerset position, second is the original allele position
 			try {
 				wrNcFile.write(variable, markersOrig, markersD2);
-				System.out.println("Done writing " + variable + " at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
+				log.info("Done writing {} at {}", variable, org.gwaspi.global.Utils.getMediumDateTimeAsString());
 				result = true;
-			} catch (IOException e) {
-				System.err.println("ERROR writing file");
-			} catch (InvalidRangeException e) {
-				e.printStackTrace();
+			} catch (IOException ex) {
+				log.error("Failed writing file", ex);
+			} catch (InvalidRangeException ex) {
+				log.error("Failed writing file", ex);
 			}
-		} catch (Exception e) {
-			System.out.println("ERROR writing " + variable + " at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
+		} catch (Exception ex) {
+			log.error("Failed writing " + variable + " at " + org.gwaspi.global.Utils.getMediumDateTimeAsString(), ex);
 		}
 
 		return result;
@@ -313,15 +316,15 @@ public class Utils {
 			int[] markersOrig = new int[]{offset, 0};
 			try {
 				wrNcFile.write(variable, markersOrig, markersD2);
-				System.out.println("Done writing " + variable + " at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
+				log.info("Done writing {} at {}", variable, org.gwaspi.global.Utils.getMediumDateTimeAsString());
 				result = true;
-			} catch (IOException e) {
-				System.err.println("ERROR writing file");
-			} catch (InvalidRangeException e) {
-				e.printStackTrace();
+			} catch (IOException ex) {
+				log.error("Failed writing file", ex);
+			} catch (InvalidRangeException ex) {
+				log.error("Failed writing file", ex);
 			}
-		} catch (Exception e) {
-			System.out.println("ERROR writing " + variable + " at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
+		} catch (Exception ex) {
+			log.error("Failed writing " + variable + " at " + org.gwaspi.global.Utils.getMediumDateTimeAsString(), ex);
 		}
 
 		return result;
@@ -338,12 +341,12 @@ public class Utils {
 		int[] origin = new int[]{samplePos, offset, 0};
 		try {
 			wrNcFile.write(org.gwaspi.constants.cNetCDF.Variables.VAR_GENOTYPES, origin, genotypes);
-			System.out.println("Done writing Sample " + samplePos + " genotypes at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
+			log.info("Done writing Sample {} genotypes at {}", samplePos, org.gwaspi.global.Utils.getMediumDateTimeAsString());
 			result = true;
-		} catch (IOException e) {
-			System.err.println("ERROR writing genotypes to netCDF in MAtrixDataExtractor");
-		} catch (InvalidRangeException e) {
-			e.printStackTrace();
+		} catch (IOException ex) {
+			log.error("Failed writing genotypes to netCDF in MatrixDataExtractor", ex);
+		} catch (InvalidRangeException ex) {
+			log.error("Failed writing genotypes to netCDF in MatrixDataExtractor", ex);
 		}
 		return result;
 	}
@@ -358,12 +361,12 @@ public class Utils {
 		int[] origin = new int[]{offset, markerPos, 0};
 		try {
 			wrNcFile.write(org.gwaspi.constants.cNetCDF.Variables.VAR_GENOTYPES, origin, genotypes);
-			System.out.println("Done writing genotypes at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
+			log.info("Done writing genotypes at {}", org.gwaspi.global.Utils.getMediumDateTimeAsString());
 			result = true;
-		} catch (IOException e) {
-			System.err.println("ERROR writing genotypes to netCDF in MAtrixDataExtractor");
-		} catch (InvalidRangeException e) {
-			e.printStackTrace();
+		} catch (IOException ex) {
+			log.error("Failed writing genotypes to netCDF in MatrixDataExtractor", ex);
+		} catch (InvalidRangeException ex) {
+			log.error("Failed writing genotypes to netCDF in MatrixDataExtractor", ex);
 		}
 		return result;
 	}
@@ -381,15 +384,15 @@ public class Utils {
 			int[] origin1 = new int[]{offset};
 			try {
 				wrNcFile.write(variable, origin1, arrayDouble);
-				System.out.println("Done writing " + variable + " at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
+				log.info("Done writing {} at {}", variable, org.gwaspi.global.Utils.getMediumDateTimeAsString());
 				result = true;
-			} catch (IOException e) {
-				System.err.println("ERROR writing " + variable + " to netCDF");
-			} catch (InvalidRangeException e) {
-				e.printStackTrace();
+			} catch (IOException ex) {
+				log.error("Failed writing " + variable + " to netCDF", ex);
+			} catch (InvalidRangeException ex) {
+				log.error("Failed writing " + variable + " to netCDF", ex);
 			}
-		} catch (Exception e) {
-			System.out.println("ERROR writing " + variable + " at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
+		} catch (Exception ex) {
+			log.error("Failed writing " + variable + " at " + org.gwaspi.global.Utils.getMediumDateTimeAsString(), ex);
 		}
 
 		return result;
@@ -407,15 +410,15 @@ public class Utils {
 			int[] origin1 = new int[]{offset};
 			try {
 				wrNcFile.write(variable, origin1, arrayDouble);
-				System.out.println("Done writing " + variable + " at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
+				log.info("Done writing {} at {}", variable, org.gwaspi.global.Utils.getMediumDateTimeAsString());
 				result = true;
-			} catch (IOException e) {
-				System.err.println("ERROR writing " + variable + " to netCDF");
-			} catch (InvalidRangeException e) {
-				e.printStackTrace();
+			} catch (IOException ex) {
+				log.error("Failed writing " + variable + " to netCDF", ex);
+			} catch (InvalidRangeException ex) {
+				log.error("Failed writing " + variable + " to netCDF", ex);
 			}
-		} catch (Exception e) {
-			System.out.println("ERROR writing " + variable + " at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
+		} catch (Exception ex) {
+			log.error("Failed writing " + variable + " at " + org.gwaspi.global.Utils.getMediumDateTimeAsString(), ex);
 		}
 
 		return result;
@@ -432,15 +435,15 @@ public class Utils {
 			int[] origin1 = new int[]{offset};
 			try {
 				wrNcFile.write(variable, origin1, arrayInt);
-				System.out.println("Done writing " + variable + " at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
+				log.info("Done writing {} at {}", variable, org.gwaspi.global.Utils.getMediumDateTimeAsString());
 				result = true;
-			} catch (IOException e) {
-				System.err.println("ERROR writing " + variable + " to netCDF");
-			} catch (InvalidRangeException e) {
-				e.printStackTrace();
+			} catch (IOException ex) {
+				log.error("Failed writing " + variable + " to netCDF", ex);
+			} catch (InvalidRangeException ex) {
+				log.error("Failed writing " + variable + " to netCDF", ex);
 			}
-		} catch (Exception e) {
-			System.out.println("ERROR writing " + variable + " at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
+		} catch (Exception ex) {
+			log.error("Failed writing " + variable + " at " + org.gwaspi.global.Utils.getMediumDateTimeAsString(), ex);
 		}
 
 		return result;
@@ -458,15 +461,15 @@ public class Utils {
 			int[] origin1 = new int[]{offset};
 			try {
 				wrNcFile.write(variable, origin1, arrayInt);
-				System.out.println("Done writing " + variable + " at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
+				log.info("Done writing {} at {}", variable, org.gwaspi.global.Utils.getMediumDateTimeAsString());
 				result = true;
-			} catch (IOException e) {
-				System.err.println("ERROR writing " + variable + " to netCDF");
-			} catch (InvalidRangeException e) {
-				e.printStackTrace();
+			} catch (IOException ex) {
+				log.error("Failed writing " + variable + " to netCDF", ex);
+			} catch (InvalidRangeException ex) {
+				log.error("Failed writing " + variable + " to netCDF", ex);
 			}
-		} catch (Exception e) {
-			System.out.println("ERROR writing " + variable + " at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
+		} catch (Exception ex) {
+			log.error("Failed writing " + variable + " at " + org.gwaspi.global.Utils.getMediumDateTimeAsString(), ex);
 		}
 
 		return result;
@@ -486,16 +489,15 @@ public class Utils {
 			int[] origin1 = new int[]{offset, 0};
 			try {
 				wrNcFile.write(variable, origin1, arrayIntD2);
-				System.out.println("Done writing " + variable + " at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
+				log.info("Done writing {} at {}", variable, org.gwaspi.global.Utils.getMediumDateTimeAsString());
 				result = true;
-			} catch (IOException e) {
-				System.err.println("ERROR writing " + variable + " to netCDF");
-			} catch (InvalidRangeException e) {
-				e.printStackTrace();
+			} catch (IOException ex) {
+				log.error("Failed writing " + variable + " to netCDF", ex);
+			} catch (InvalidRangeException ex) {
+				log.error("Failed writing " + variable + " to netCDF", ex);
 			}
-		} catch (Exception e) {
-			System.out.println("ERROR writing " + variable + " at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
-			e.printStackTrace();
+		} catch (Exception ex) {
+			log.error("Failed writing " + variable + " at " + org.gwaspi.global.Utils.getMediumDateTimeAsString(), ex);
 		}
 
 		return result;
@@ -513,16 +515,15 @@ public class Utils {
 			int[] origin1 = new int[]{offset, 0};
 			try {
 				wrNcFile.write(variable, origin1, arrayDoubleD2);
-				System.out.println("Done writing " + variable + " at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
+				log.info("Done writing {} at {}", variable, org.gwaspi.global.Utils.getMediumDateTimeAsString());
 				result = true;
-			} catch (IOException e) {
-				System.err.println("ERROR writing " + variable + " to netCDF");
-			} catch (InvalidRangeException e) {
-				e.printStackTrace();
+			} catch (IOException ex) {
+				log.error("Failed writing " + variable + " to netCDF", ex);
+			} catch (InvalidRangeException ex) {
+				log.error("Failed writing " + variable + " to netCDF", ex);
 			}
-		} catch (Exception e) {
-			System.out.println("ERROR writing " + variable + " at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
-			e.printStackTrace();
+		} catch (Exception ex) {
+			log.error("Failed writing " + variable + " at " + org.gwaspi.global.Utils.getMediumDateTimeAsString(), ex);
 		}
 
 		return result;

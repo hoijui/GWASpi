@@ -13,9 +13,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.gwaspi.netCDF.matrices.MatrixMetadata;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.ma2.InvalidRangeException;
 
 /**
@@ -26,6 +26,9 @@ import ucar.ma2.InvalidRangeException;
  */
 public class SamplesParser {
 
+	private final static Logger log
+			= LoggerFactory.getLogger(SamplesParser.class);
+
 	private SamplesParser() {
 	}
 
@@ -34,34 +37,35 @@ public class SamplesParser {
 		Set<Object> resultHS = new HashSet<Object>();
 		try {
 			MatrixMetadata rdMatrixMetadata = new MatrixMetadata(matrixId);
-			System.out.println("Getting Sample Affection info for: " + rdMatrixMetadata.getMatrixFriendlyName() + " at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
-//            NetcdfFile rdNcFile = NetcdfFile.open(rdMatrixMetadata.getPathToMatrix());
+			log.info("Getting Sample Affection info for: {} at {}",
+					rdMatrixMetadata.getMatrixFriendlyName(),
+					org.gwaspi.global.Utils.getMediumDateTimeAsString());
+//			NetcdfFile rdNcFile = NetcdfFile.open(rdMatrixMetadata.getPathToMatrix());
 			SampleSet rdSampleSet = new SampleSet(rdMatrixMetadata.getStudyId(), matrixId);
 			Map<String, Object> rdSampleSetLHM = rdSampleSet.getSampleIdSetLHM();
 			for (String key : rdSampleSetLHM.keySet()) {
 				List<Map<String, Object>> rs = SampleManager.getCurrentSampleInfoFromDB(key.toString(), rdMatrixMetadata.getStudyId());
 				if (rs != null) {
-					//PREVENT PHANTOM-DB READS EXCEPTIONS
+					// PREVENT PHANTOM-DB READS EXCEPTIONS
 					if (!rs.isEmpty() && rs.get(0).size() == org.gwaspi.constants.cDBSamples.T_CREATE_SAMPLES_INFO.length) {
 						resultHS.add(rs.get(0).get(org.gwaspi.constants.cDBSamples.f_AFFECTION));
 					}
 				}
 			}
 		} catch (InvalidRangeException ex) {
-			Logger.getLogger(SamplesParser.class.getName()).log(Level.SEVERE, null, ex);
+			log.error(null, ex);
 		} catch (IOException ex) {
-			Logger.getLogger(SamplesParser.class.getName()).log(Level.SEVERE, null, ex);
+			log.error(null, ex);
 		}
 		return resultHS;
 	}
-
 	//</editor-fold>
+
 	//<editor-fold defaultstate="collapsed" desc="FILE SAMPLE INFO SCANNERS">
 	public static Map<String, Object> scanGwaspiSampleInfo(String sampleInfoPath) throws IOException {
 		Map<String, Object> sampleInfoLHM = new LinkedHashMap<String, Object>();
-		FileReader inputFileReader = null;
-		BufferedReader inputBufferReader = null;
-//        try {
+		FileReader inputFileReader;
+		BufferedReader inputBufferReader;
 		File sampleFile = new File(sampleInfoPath);
 		inputFileReader = new FileReader(sampleFile);
 		inputBufferReader = new BufferedReader(inputFileReader);
@@ -70,7 +74,7 @@ public class SamplesParser {
 		while (inputBufferReader.ready()) {
 			String[] cVals = new String[10];
 			if (count == 0) {
-				inputBufferReader.readLine(); //Skip header
+				inputBufferReader.readLine(); // Skip header
 			} else {
 				int i = 0;
 				for (String field : inputBufferReader.readLine().split(cImport.Separators.separators_CommaSpaceTab_rgxp, 10)) {
@@ -82,32 +86,20 @@ public class SamplesParser {
 
 			count++;
 			if (count % 100 == 0) {
-				System.out.println("Parsed " + count + " Samples for info...");
+				log.info("Parsed {} Samples for info...", count);
 			}
 		}
 
 		inputBufferReader.close();
 		inputFileReader.close();
 
-//        } catch (IOException ex) {
-//            Logger.getLogger(SamplesParser.class.getName()).log(Level.SEVERE, null, ex);
-//        } finally {
-//            try {
-//                inputBufferReader.close();
-//                inputFileReader.close();
-//            } catch (IOException ex) {
-//                Logger.getLogger(SamplesParser.class.getName()).log(Level.SEVERE, null, ex);
-//            }
-//        }
-
 		return sampleInfoLHM;
 	}
 
 	public static Map<String, Object> scanPlinkStandardSampleInfo(String pedPath) throws IOException {
 		Map<String, Object> sampleInfoLHM = new LinkedHashMap<String, Object>();
-		FileReader inputFileReader = null;
-		BufferedReader inputBufferReader = null;
-//        try {
+		FileReader inputFileReader;
+		BufferedReader inputBufferReader;
 
 		File sampleFile = new File(pedPath);
 		inputFileReader = new FileReader(sampleFile);
@@ -115,16 +107,15 @@ public class SamplesParser {
 
 		char[] chunker = new char[300];
 		inputBufferReader.read(chunker, 0, 300);
-		if (String.valueOf(chunker).contains("\n")) { //SHORT PED FILE
+		if (String.valueOf(chunker).contains("\n")) { // SHORT PED FILE
 			inputBufferReader.close();
 			inputFileReader.close();
 			inputFileReader = new FileReader(sampleFile);
 			inputBufferReader = new BufferedReader(inputFileReader);
 
 			int count = 0;
-			String l;
 			while (inputBufferReader.ready()) {
-				l = inputBufferReader.readLine();
+				String l = inputBufferReader.readLine();
 				String[] cVals = new String[10];
 				if (chunker.length > 0) {
 					cVals = l.split(cImport.Separators.separators_CommaSpaceTab_rgxp, 10);
@@ -135,23 +126,23 @@ public class SamplesParser {
 					cVals[6] = "0"; //
 					cVals[7] = "0";
 					cVals[8] = "0";
-					cVals[9] = "0"; //AGE
+					cVals[9] = "0"; // AGE
 				}
 
 				sampleInfoLHM.put(cVals[GWASpi.sampleId], cVals);
 
 				count++;
 				if (count % 100 == 0) {
-					System.out.println("Parsed " + count + " Samples for info...");
+					log.info("Parsed {} Samples for info...", count);
 				}
 			}
-		} else { //LONG PED FILE
-			//This has sucked out 1 week of my life and caused many grey hairs!
+		} else { // LONG PED FILE
+			// This has sucked out 1 week of my life and caused many grey hairs!
 			int count = 0;
 			while (inputBufferReader.ready()) {
 				if (count != 0) {
 					chunker = new char[300];
-					inputBufferReader.read(chunker, 0, 300); //Read a sizable but conrolled chunk of data into memory
+					inputBufferReader.read(chunker, 0, 300); // Read a sizable but conrolled chunk of data into memory
 				}
 
 				String[] cVals = new String[10];
@@ -164,32 +155,21 @@ public class SamplesParser {
 					cVals[6] = "0"; //
 					cVals[7] = "0";
 					cVals[8] = "0";
-					cVals[9] = "0"; //AGE
+					cVals[9] = "0"; // AGE
 				}
-				inputBufferReader.readLine(); //Read rest of line and discard it...
+				inputBufferReader.readLine(); // Read rest of line and discard it...
 
 				sampleInfoLHM.put(cVals[GWASpi.sampleId], cVals);
 
 				count++;
 				if (count % 100 == 0) {
-					System.out.println("Parsed " + count + " Samples for info...");
+					log.info("Parsed {} Samples for info...", count);
 				}
 			}
 		}
 
 		inputBufferReader.close();
 		inputFileReader.close();
-
-//        } catch (IOException ex) {
-//            Logger.getLogger(SamplesParser.class.getName()).log(Level.SEVERE, null, ex);
-//        } finally {
-//            try {
-//                inputBufferReader.close();
-//                inputFileReader.close();
-//            } catch (IOException ex) {
-//                Logger.getLogger(SamplesParser.class.getName()).log(Level.SEVERE, null, ex);
-//            }
-//        }
 
 		return sampleInfoLHM;
 	}
@@ -201,9 +181,8 @@ public class SamplesParser {
 		FileReader inputFileReader = new FileReader(sampleFile);
 		BufferedReader inputBufferReader = new BufferedReader(inputFileReader);
 
-		String l;
 		while (inputBufferReader.ready()) {
-			l = inputBufferReader.readLine();
+			String l = inputBufferReader.readLine();
 			String[] cVals = l.split(cImport.Separators.separators_CommaSpaceTab_rgxp);
 			String[] infoVals = new String[]{cVals[Plink_LGEN.lgen_familyId],
 				cVals[Plink_LGEN.lgen_sampleId],
@@ -211,7 +190,8 @@ public class SamplesParser {
 
 			sampleInfoLHM.put(cVals[Plink_LGEN.lgen_sampleId], infoVals);
 		}
-		System.out.println("Parsed " + sampleInfoLHM.size() + " Samples in LGEN file " + sampleFile.getName() + "...");
+		log.info("Parsed {} Samples in LGEN file {}...",
+				sampleInfoLHM.size(), sampleFile.getName());
 
 		inputBufferReader.close();
 		inputFileReader.close();
@@ -225,9 +205,8 @@ public class SamplesParser {
 		BufferedReader inputBufferReader = new BufferedReader(inputFileReader);
 
 		int count = 0;
-		String l;
 		while (inputBufferReader.ready()) {
-			l = inputBufferReader.readLine();
+			String l = inputBufferReader.readLine();
 			String[] cVals = new String[10];
 			String[] sampleInfoVals = l.split(cImport.Separators.separators_CommaSpaceTab_rgxp);
 
@@ -243,16 +222,15 @@ public class SamplesParser {
 			cVals[6] = "0"; //
 			cVals[7] = "0";
 			cVals[8] = "0";
-			cVals[9] = "0"; //AGE
+			cVals[9] = "0"; // AGE
 
 			sampleInfoLHM.put(cVals[GWASpi.sampleId], cVals);
 
 			count++;
 			if (count % 100 == 0) {
-				System.out.println("Parsed " + count + " Samples for info...");
+				log.info("Parsed {} Samples for info...", count);
 			}
 		}
-
 
 		inputBufferReader.close();
 		inputFileReader.close();
@@ -269,12 +247,11 @@ public class SamplesParser {
 			FileReader inputFileReader = new FileReader(gtFilesToImport[i]);
 			BufferedReader inputBufferReader = new BufferedReader(inputFileReader);
 
-			String header = "";
 			boolean gotHeader = false;
 			while (!gotHeader && inputBufferReader.ready()) {
-				header = inputBufferReader.readLine();
+				String header = inputBufferReader.readLine();
 				if (header.startsWith("[Data]")) {
-					header = inputBufferReader.readLine(); //Get next line which is real header
+					/*header = */inputBufferReader.readLine(); // Get next line which is real header
 					gotHeader = true;
 				}
 			}
@@ -290,10 +267,11 @@ public class SamplesParser {
 				sampleInfoLHM.put(cVals[Plink_LGEN.lgen_sampleId], infoVals);
 
 				if (sampleInfoLHM.size() % 100 == 0) {
-					System.out.println("Parsed " + sampleInfoLHM.size() + " Samples...");
+					log.info("Parsed {} Samples...", sampleInfoLHM.size());
 				}
 			}
-			System.out.println("Parsed " + sampleInfoLHM.size() + " Samples in LGEN file " + gtFilesToImport[i].getName() + "...");
+			log.info("Parsed {} Samples in LGEN file {}...",
+					sampleInfoLHM.size(), gtFilesToImport[i].getName());
 
 			inputBufferReader.close();
 			inputFileReader.close();
@@ -332,7 +310,8 @@ public class SamplesParser {
 
 				sampleInfoLHM.put(cVals[Plink_LGEN.lgen_sampleId], infoVals);
 			}
-			System.out.println("Parsed " + sampleInfoLHM.size() + " Samples in LGEN file " + currentLGENFile.getName() + "...");
+			log.info("Parsed {} Samples in LGEN file {}...",
+					sampleInfoLHM.size(), currentLGENFile.getName());
 
 			inputBufferReader.close();
 			inputFileReader.close();
@@ -344,7 +323,6 @@ public class SamplesParser {
 	public static Map<String, Object> scanBeagleSampleInfo(String beaglePath) throws IOException {
 		Map<String, Object> sampleInfoLHM = new LinkedHashMap<String, Object>();
 		FileReader inputFileReader;
-//        try {
 		File sampleFile = new File(beaglePath);
 		inputFileReader = new FileReader(sampleFile);
 		BufferedReader inputBufferReader = new BufferedReader(inputFileReader);
@@ -378,16 +356,6 @@ public class SamplesParser {
 
 		inputFileReader.close();
 
-//        } catch (IOException ex) {
-//            Logger.getLogger(SamplesParser.class.getName()).log(Level.SEVERE, null, ex);
-//        } finally {
-//            try {
-//                inputFileReader.close();
-//            } catch (IOException ex) {
-//                Logger.getLogger(SamplesParser.class.getName()).log(Level.SEVERE, null, ex);
-//            }
-//        }
-
 		return sampleInfoLHM;
 	}
 
@@ -395,8 +363,6 @@ public class SamplesParser {
 		Map<String, Object> sampleInfoLHM = new LinkedHashMap<String, Object>();
 		FileReader fr = null;
 		BufferedReader inputAnnotationBr = null;
-		//        try {
-
 		File hapmapGTFile = new File(hapmapPath);
 		if (hapmapGTFile.isDirectory()) {
 			File[] gtFilesToImport = org.gwaspi.global.Utils.listFiles(hapmapPath, false);
@@ -430,29 +396,15 @@ public class SamplesParser {
 		inputAnnotationBr.close();
 		fr.close();
 
-//        } catch (IOException ex) {
-//            Logger.getLogger(SamplesParser.class.getName()).log(Level.SEVERE, null, ex);
-//        } finally {
-//            try {
-//                inputAnnotationBr.close();
-//                fr.close();
-//            } catch (IOException ex) {
-//                Logger.getLogger(SamplesParser.class.getName()).log(Level.SEVERE, null, ex);
-//            }
-//        }
-
 		return sampleInfoLHM;
 	}
 
 	public static Map<String, Object> scanHGDP1SampleInfo(String hgdpPath) throws IOException {
 		Map<String, Object> sampleInfoLHM = new LinkedHashMap<String, Object>();
-		FileReader inputFileReader = null;
-//        try {
 		File sampleFile = new File(hgdpPath);
-		inputFileReader = new FileReader(sampleFile);
+		FileReader inputFileReader = new FileReader(sampleFile);
 		BufferedReader inputBufferReader = new BufferedReader(inputFileReader);
 
-		String l;
 		String sampleIdHeader = inputBufferReader.readLine();
 
 		String[] sampleIds = sampleIdHeader.split(cImport.Separators.separators_SpaceTab_rgxp);
@@ -465,16 +417,6 @@ public class SamplesParser {
 
 		inputFileReader.close();
 
-//        } catch (IOException ex) {
-//            Logger.getLogger(SamplesParser.class.getName()).log(Level.SEVERE, null, ex);
-//        } finally {
-//            try {
-//                inputFileReader.close();
-//            } catch (IOException ex) {
-//                Logger.getLogger(SamplesParser.class.getName()).log(Level.SEVERE, null, ex);
-//            }
-//        }
-
 		return sampleInfoLHM;
 	}
 
@@ -484,12 +426,12 @@ public class SamplesParser {
 
 		for (int i = 0; i < gtFilesToImport.length; i++) {
 			String l = gtFilesToImport[i].getName();
-			String sampleId = l;
+			String sampleId;
 			int end = l.lastIndexOf(".birdseed-v2");
 			if (end != -1) {
 				sampleId = l.substring(0, end);
 			} else {
-				sampleId = l.substring(0, l.lastIndexOf("."));
+				sampleId = l.substring(0, l.lastIndexOf('.'));
 			}
 			String[] infoVals = new String[]{"0", "0", "0", "0", "0", "0", "0", "0", "0", "0"};
 			infoVals[GWASpi.sampleId] = sampleId;
@@ -518,12 +460,13 @@ public class SamplesParser {
 				}
 
 				if (sampleInfoLHM.size() % 100 == 0) {
-					System.out.println("Parsed " + sampleInfoLHM.size() + " lines...");
+					log.info("Parsed {} lines...", sampleInfoLHM.size());
 				}
 			}
 
 		}
-		System.out.println("Parsed " + sampleInfoLHM.size() + " Samples in Sequenom file " + gtFileToImport + "...");
+		log.info("Parsed {} Samples in Sequenom file {}...",
+				sampleInfoLHM.size(), gtFileToImport);
 
 		inputBufferReader.close();
 		inputFileReader.close();
@@ -533,13 +476,12 @@ public class SamplesParser {
 
 	public static Set<String> scanSampleInfoAffectionStates(String sampleInfoPath) throws IOException {
 		Set<String> resultHS = new HashSet<String>();
-		FileReader inputFileReader = null;
 
 		File sampleFile = new File(sampleInfoPath);
-		inputFileReader = new FileReader(sampleFile);
+		FileReader inputFileReader = new FileReader(sampleFile);
 		BufferedReader inputBufferReader = new BufferedReader(inputFileReader);
 
-		String header = inputBufferReader.readLine(); //ignore header block
+		String header = inputBufferReader.readLine(); // ignore header block
 		String l;
 		while ((l = inputBufferReader.readLine()) != null) {
 			String[] cVals = l.split(org.gwaspi.constants.cImport.Separators.separators_CommaSpaceTab_rgxp);

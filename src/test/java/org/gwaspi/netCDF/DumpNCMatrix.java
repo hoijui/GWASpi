@@ -5,6 +5,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.ma2.ArrayChar;
 import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
@@ -20,8 +22,10 @@ import ucar.nc2.Variable;
  */
 public class DumpNCMatrix {
 
+	private final static Logger log = LoggerFactory.getLogger(DumpNCMatrix.class);
+
 	public static void main(String[] args) throws Exception {
-		printSystemOutMatrix("/media/data/work/GWASpi/genotypes/STUDY_8/GT_51310170721CEST.nc");
+		printSystemOutMatrix("/media/data/work/GWASpi/genotypes/STUDY_8/GT_51310170721CEST.nc"); // XXX system dependent path
 	}
 
 	public static void printSystemOutMatrix(String matrixPath) throws IOException, InvalidRangeException {
@@ -29,7 +33,7 @@ public class DumpNCMatrix {
 		Map<String, Object> markerIdSetLHM = new LinkedHashMap<String, Object>();
 		Map<String, Object> sampleIdSetLHM = new LinkedHashMap<String, Object>();
 
-		FileWriter dumpFW = new FileWriter("/media/data/work/GWASpi/export/NCDump.txt");
+		FileWriter dumpFW = new FileWriter("/media/data/work/GWASpi/export/NCDump.txt"); // XXX system dependent path
 		BufferedWriter dumpBW = new BufferedWriter(dumpFW);
 
 		// GET MARKERSET
@@ -44,10 +48,10 @@ public class DumpNCMatrix {
 				ArrayChar.D2 markerSetAC = (ArrayChar.D2) var.read("(0:" + (markerSetSize - 1) + ":1, 0:" + (varShape[1] - 1) + ":1)");
 				markerIdSetLHM = org.gwaspi.netCDF.operations.Utils.writeD2ArrayCharToLHMKeys(markerSetAC);
 			}
-		} catch (IOException ioe) {
-			System.out.println("Cannot read data: " + ioe);
-		} catch (InvalidRangeException e) {
-			System.out.println("Cannot read data: " + e);
+		} catch (IOException ex) {
+			log.error("Cannot read data", ex);
+		} catch (InvalidRangeException ex) {
+			log.error("Cannot read data", ex);
 		}
 
 		// GET SAMPLESET
@@ -60,10 +64,10 @@ public class DumpNCMatrix {
 			ArrayChar.D2 sampleSetAC = (ArrayChar.D2) var.read("(0:" + (sampleSetSize - 1) + ":1, 0:" + (varShape[1] - 1) + ":1)");
 
 			sampleIdSetLHM = org.gwaspi.netCDF.operations.Utils.writeD2ArrayCharToLHMKeys(sampleSetAC);
-		} catch (IOException ioe) {
-			System.out.println("Cannot read data: " + ioe);
-		} catch (InvalidRangeException e) {
-			System.out.println("Cannot read data: " + e);
+		} catch (IOException ex) {
+			log.error("Cannot read data", ex);
+		} catch (InvalidRangeException ex) {
+			log.error("Cannot read data", ex);
 		}
 
 		// BUILD MARKERSET HEADER
@@ -87,15 +91,15 @@ public class DumpNCMatrix {
 				ArrayChar.D3 gt_ACD3 = (ArrayChar.D3) genotypes.read("(" + sampleNb + ":" + sampleNb + ":1, 0:" + (varShape[1] - 1) + ":1, 0:" + (varShape[2] - 1) + ":1)");
 				ArrayChar.D2 gt_ACD2 = (ArrayChar.D2) gt_ACD3.reduce();
 
-				markerIdSetLHM = org.gwaspi.netCDF.operations.Utils.writeD2ArrayCharToLHMValues(gt_ACD2, markerIdSetLHM);
+				org.gwaspi.netCDF.operations.Utils.writeD2ArrayCharToLHMValues(gt_ACD2, markerIdSetLHM);
 
 				for (Object alleles : markerIdSetLHM.values()) {
 					sampleLineSB.append("\t").append(alleles);
 				}
-			} catch (IOException ioe) {
-				System.out.println("Cannot read data: " + ioe);
-			} catch (InvalidRangeException e) {
-				System.out.println("Cannot read data: " + e);
+			} catch (IOException ex) {
+				log.error("Cannot read data", ex);
+			} catch (InvalidRangeException ex) {
+				log.error("Cannot read data", ex);
 			}
 
 			dumpBW.append(sampleLineSB.toString());

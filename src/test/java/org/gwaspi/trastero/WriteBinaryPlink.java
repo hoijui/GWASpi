@@ -6,12 +6,16 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author fernando
  */
 public class WriteBinaryPlink {
+
+	private final static Logger log = LoggerFactory.getLogger(WriteBinaryPlink.class);
 
 	private static final byte[] allBytes = new byte[64];
 	private static final byte[] gtBytes = new byte[1];
@@ -22,8 +26,7 @@ public class WriteBinaryPlink {
 
 	public static void main(String arg[]) {
 
-
-		File file = new File("/media/data/work/GWASpi/export/STUDY_1/test.bed");
+		File file = new File("/media/data/work/GWASpi/export/STUDY_1/test.bed"); // XXX system dependent path
 
 		// Now write the data array to the file.
 		try {
@@ -31,7 +34,6 @@ public class WriteBinaryPlink {
 			FileOutputStream file_output = new FileOutputStream(file);
 			// Wrap the FileOutputStream with a DataOutputStream
 			DataOutputStream data_out = new DataOutputStream(file_output);
-
 
 			data_out.write(114);
 			data_out.write(27);
@@ -56,7 +58,7 @@ public class WriteBinaryPlink {
 			int number = Integer.parseInt(tetraGTs.toString(), 2);
 			byte[] tetraGT = new byte[]{(byte) number};
 
-//			arraycopy(Object src, int srcPos, Object dest, int destPos, int length)
+			// arraycopy(Object src, int srcPos, Object dest, int destPos, int length)
 			System.arraycopy(tetraGT,
 					0,
 					allBytes,
@@ -76,10 +78,9 @@ public class WriteBinaryPlink {
 
 			// Close file when finished with it..
 			file_output.close();
-		} catch (IOException e) {
-			System.out.println("IO exception = " + e);
+		} catch (IOException ex) {
+			log.error(null, ex);
 		}
-
 	}
 
 	protected static String translateTo00011011(Byte[] gt, String minorAllele, String majorAllele) {

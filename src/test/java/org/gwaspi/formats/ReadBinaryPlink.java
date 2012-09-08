@@ -5,6 +5,8 @@ import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -14,9 +16,12 @@ import java.io.IOException;
  */
 public class ReadBinaryPlink {
 
-	private static final String inputBed = "/media/data/work/GWASpi/input/Plink/mi_input.bed";
-	private static final String inputBim = "/media/data/work/GWASpi/input/Plink/mi_input.bim";
-	private static final String inputFam = "/media/data/work/GWASpi/input/Plink/mi_input.fam";
+	private final static Logger log
+			= LoggerFactory.getLogger(ReadBinaryPlink.class);
+
+	private static final String inputBed = "/media/data/work/GWASpi/input/Plink/mi_input.bed"; // XXX system dependent path
+	private static final String inputBim = "/media/data/work/GWASpi/input/Plink/mi_input.bim"; // XXX system dependent path
+	private static final String inputFam = "/media/data/work/GWASpi/input/Plink/mi_input.fam"; // XXX system dependent path
 
 	public static void main(String[] args) throws IOException {
 		// Wrap the FileInputStream with a DataInputStream
@@ -37,28 +42,26 @@ public class ReadBinaryPlink {
 		}
 		while (true) {
 			try {
-				System.out.println("New SNP");
+				log.info("New SNP");
 				int sampleCount = 1;
 				for (int j = 0; j < byteToMunch; j++) {
 					byte b_data = data_in.readByte();
 
 					for (int i = 0; i < 8; i++) {
 						if (sampleCount <= (sampleNb * 2)) {
-							//System.out.println(isBitSet(b_data, i));
-							System.out.println(translateBitSet(b_data, i));
+//							log.trace("{}", isBitSet(b_data, i).toString());
+							log.info("{}", translateBitSet(b_data, i));
 							sampleCount++;
 						}
 					}
 
 				}
-			} catch (EOFException eof) {
-				System.out.println("End of File");
+			} catch (EOFException ex) {
+				log.error(null, ex);
 				break;
 			}
 		}
 		data_in.close();
-
-
 	}
 
 	private static Boolean isBitSet(byte b, int bit) {

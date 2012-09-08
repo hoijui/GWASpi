@@ -79,7 +79,6 @@ public class GetEnsemblRegionHTML extends JFrame {
 			public void hyperlinkUpdate(HyperlinkEvent ev) {
 				if (ev.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
 					try {
-						//System.out.println("URL: " + ev.getURL() + " desc: " + ev.getDescription() + " element: " + ev.getSourceElement());
 						URLInDefaultBrowser.browseGenericURL("http://www.ensembl.org/Homo_sapiens/Location/Overview?" + u.getQuery());
 					} catch (IOException ioe) {
 						// Some warning to user

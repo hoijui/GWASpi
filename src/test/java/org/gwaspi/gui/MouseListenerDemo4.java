@@ -24,12 +24,17 @@ import org.jfree.data.xy.XYSeriesCollection;
 import org.jfree.ui.ApplicationFrame;
 import org.jfree.ui.RectangleEdge;
 import org.jfree.ui.RefineryUtilities;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * An example showing how to convert the mouse location to chart coordinates.
  */
 public class MouseListenerDemo4 extends ApplicationFrame
-		implements ChartMouseListener {
+		implements ChartMouseListener
+{
+	private final static Logger log
+			= LoggerFactory.getLogger(TableRenderDemo.class);
 
 	private JFreeChart chart;
 	private ChartPanel chartPanel;
@@ -58,7 +63,7 @@ public class MouseListenerDemo4 extends ApplicationFrame
 	 *
 	 * @return The dataset.
 	 */
-	public XYDataset createDataset() {
+	private XYDataset createDataset() {
 		XYSeries series = new XYSeries("Series 1");
 		series.add(12.5, 11.0);
 		series.add(15.0, 9.3);
@@ -76,7 +81,7 @@ public class MouseListenerDemo4 extends ApplicationFrame
 	public void chartMouseClicked(ChartMouseEvent event) {
 		int mouseX = event.getTrigger().getX();
 		int mouseY = event.getTrigger().getY();
-		System.out.println("x = " + mouseX + ", y = " + mouseY);
+		log.info("x = {}, y = {}", mouseX, mouseY);
 		Point2D p = this.chartPanel.translateScreenToJava2D(
 				new Point(mouseX, mouseY));
 		XYPlot plot = (XYPlot) this.chart.getPlot();
@@ -91,7 +96,7 @@ public class MouseListenerDemo4 extends ApplicationFrame
 				domainAxisEdge);
 		double chartY = rangeAxis.java2DToValue(p.getY(), dataArea,
 				rangeAxisEdge);
-		System.out.println("Chart: x = " + chartX + ", y = " + chartY);
+		log.info("Chart: x = {}, y = {}", chartX, chartY);
 	}
 
 	/**

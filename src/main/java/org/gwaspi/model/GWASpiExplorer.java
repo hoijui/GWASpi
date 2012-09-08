@@ -266,7 +266,7 @@ public class GWASpiExplorer {
 					GWASpiExplorerPanel.pnl_Content = new StudyManagementPanel();
 					GWASpiExplorerPanel.scrl_Content.setViewportView(GWASpiExplorerPanel.pnl_Content);
 				} catch (IOException ex) {
-					//Logger.getLogger(GWASpiExplorer.class.getName()).log(Level.SEVERE, null, ex);
+					log.warn(null, ex);
 				}
 			} // Study Branch
 			//else if(parentNode!=null && parentNode.toString().equals(Text.App.treeStudyManagement)){
@@ -275,8 +275,7 @@ public class GWASpiExplorer {
 					GWASpiExplorerPanel.pnl_Content = new CurrentStudyPanel(currentElementInfo.nodeId);
 					GWASpiExplorerPanel.scrl_Content.setViewportView(GWASpiExplorerPanel.pnl_Content);
 				} catch (IOException ex) {
-					//System.out.println("StudyID: "+currentElementInfo.nodeId);
-					//Logger.getLogger(GWASpiExplorer.class.getName()).log(Level.SEVERE, null, ex);
+					log.warn("StudyID: " + currentElementInfo.nodeId, ex);
 				}
 			} // Sample Info Branch
 			else if (currentElementInfo != null && currentElementInfo.nodeType.toString().equals(Text.App.treeSampleInfo)) {
@@ -284,7 +283,7 @@ public class GWASpiExplorer {
 					GWASpiExplorerPanel.pnl_Content = new Report_SampleInfoPanel(parentElementInfo.nodeId);
 					GWASpiExplorerPanel.scrl_Content.setViewportView(GWASpiExplorerPanel.pnl_Content);
 				} catch (IOException ex) {
-					//Logger.getLogger(GWASpiExplorer.class.getName()).log(Level.SEVERE, null, ex);
+					log.warn(null, ex);
 				}
 			} // Matrix Branch
 			else if (currentElementInfo != null && currentElementInfo.nodeType.toString().equals(Text.App.treeMatrix)) {
@@ -294,7 +293,7 @@ public class GWASpiExplorer {
 					GWASpiExplorerPanel.pnl_Content = new CurrentMatrixPanel(currentElementInfo.nodeId);
 					GWASpiExplorerPanel.scrl_Content.setViewportView(GWASpiExplorerPanel.pnl_Content);
 				} catch (IOException ex) {
-					//Logger.getLogger(GWASpiExplorer.class.getName()).log(Level.SEVERE, null, ex);
+					log.warn(null, ex);
 				}
 			} // Operations Branch
 			else if (currentElementInfo != null && currentElementInfo.nodeType.toString().equals(Text.App.treeOperation)) {
@@ -352,11 +351,9 @@ public class GWASpiExplorer {
 							GWASpiExplorerPanel.pnl_Content = new MatrixAnalysePanel(parentElementInfo.nodeId, currentElementInfo.nodeId);
 							GWASpiExplorerPanel.scrl_Content.setViewportView(GWASpiExplorerPanel.pnl_Content);
 						}
-
 					}
-
 				} catch (IOException ex) {
-					//Logger.getLogger(GWASpiExplorer.class.getName()).log(Level.SEVERE, null, ex);
+					log.warn(null, ex);
 				}
 			} // Reports Branch
 			else if (currentElementInfo != null && currentElementInfo.nodeType.toString().equals(Text.App.treeReport)) {
@@ -395,7 +392,7 @@ public class GWASpiExplorer {
 						GWASpiExplorerPanel.scrl_Content.setViewportView(GWASpiExplorerPanel.pnl_Content);
 					}
 				} catch (IOException ex) {
-					//Logger.getLogger(GWASpiExplorer.class.getName()).log(Level.SEVERE, null, ex);
+					log.warn(null, ex);
 				}
 			} else {
 				GWASpiExplorerPanel.pnl_Content = new IntroPanel();

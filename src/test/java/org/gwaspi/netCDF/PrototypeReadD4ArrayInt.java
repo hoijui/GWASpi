@@ -4,14 +4,23 @@ import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import ucar.ma2.*;
-import ucar.nc2.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import ucar.ma2.Array;
+import ucar.ma2.ArrayInt;
+import ucar.ma2.InvalidRangeException;
+import ucar.nc2.Dimension;
+import ucar.nc2.NCdump;
+import ucar.nc2.NetcdfFile;
+import ucar.nc2.Variable;
 
 public class PrototypeReadD4ArrayInt {
 
+	private final static Logger log = LoggerFactory.getLogger(PrototypeReadD4ArrayInt.class);
+
 	public static void main(String[] arg) throws InvalidRangeException, IOException {
 
-		String filename = "/media/data/work/moapi/genotypes/prototype.nc";
+		String filename = "/media/data/work/moapi/genotypes/prototype.nc"; // XXX system dependent path
 		NetcdfFile ncfile = null;
 
 		Map<Object, Object> lhm = new LinkedHashMap<Object, Object>();
@@ -44,20 +53,19 @@ public class PrototypeReadD4ArrayInt {
 				//Map<Object, Object> filledLhm = fillLinkedHashMap(lhm, gt, gtSpan);
 
 				int stopme = 0;
-			} catch (IOException ioe) {
-				System.out.println("Cannot read data: " + ioe);
-			} catch (InvalidRangeException e) {
-				System.out.println("Cannot read data: " + e);
+			} catch (IOException ex) {
+				log.error("Cannot read data", ex);
+			} catch (InvalidRangeException ex) {
+				log.error("Cannot read data", ex);
 			}
-
-		} catch (IOException ioe) {
-			System.out.println("Cannot open file: " + ioe);
+		} catch (IOException ex) {
+			log.error("Cannot open file", ex);
 		} finally {
 			if (null != ncfile) {
 				try {
 					ncfile.close();
-				} catch (IOException ioe) {
-					System.out.println("Cannot close file: " + ioe);
+				} catch (IOException ex) {
+					log.error("Cannot close file", ex);
 				}
 			}
 		}

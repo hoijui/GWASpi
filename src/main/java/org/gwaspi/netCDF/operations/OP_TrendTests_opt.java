@@ -111,7 +111,7 @@ public class OP_TrendTests_opt {
 				} catch (IOException ex) {
 					log.error("Failed creating file: " + wrOPNcFile.getLocation(), ex);
 				}
-				//System.out.println("Done creating netCDF handle: " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
+				//log.info("Done creating netCDF handle: {}", org.gwaspi.global.Utils.getMediumDateTimeAsString());
 
 				//<editor-fold defaultstate="collapsed" desc="METADATA WRITER">
 				// MARKERSET MARKERID

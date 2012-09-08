@@ -1,5 +1,8 @@
 package org.gwaspi.threadbox;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  *
  * @author Fernando Muñiz Fernandez
@@ -8,6 +11,8 @@ package org.gwaspi.threadbox;
  */
 class RunnableThread implements Runnable {
 
+	private final static Logger log = LoggerFactory.getLogger(RunnableThread.class);
+
 	private Thread runner;
 
 	RunnableThread() {
@@ -15,12 +20,12 @@ class RunnableThread implements Runnable {
 
 	RunnableThread(String threadName) {
 		runner = new Thread(this, threadName); // (1) Create a new thread.
-		System.out.println(runner.getName());
+		log.info(runner.getName());
 		runner.start(); // (2) Start the thread.
 	}
 
 	public void run() {
-		//Display info about this particular thread
-		System.out.println(Thread.currentThread());
+		// Display info about this particular thread
+		log.info(Thread.currentThread().toString());
 	}
 }

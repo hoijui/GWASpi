@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.gwaspi.netCDF.matrices.MatrixMetadata;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.ma2.ArrayByte;
 import ucar.ma2.ArrayChar;
 import ucar.ma2.ArrayDouble;
@@ -23,7 +25,10 @@ import ucar.nc2.Variable;
  */
 public class SampleSet {
 
-	//SAMPLESET_MEATADATA
+	private final static Logger log
+			= LoggerFactory.getLogger(SampleSet.class);
+
+	// SAMPLESET_MEATADATA
 	private int sampleset_id = Integer.MIN_VALUE;   //id
 	private int sampleSetSize = 0;
 	private MatrixMetadata matrixMetadata;
@@ -47,7 +52,7 @@ public class SampleSet {
 
 	}
 
-	////////// ACCESSORS /////////
+	// ACCESSORS
 	public int getSampleSetId() {
 		return sampleset_id;
 	}
@@ -81,20 +86,20 @@ public class SampleSet {
 
 				sampleIdSetLHM = org.gwaspi.netCDF.operations.Utils.writeD2ArrayCharToLHMKeys(sampleSetAC);
 
-			} catch (IOException ioe) {
-				System.out.println("Cannot read data: " + ioe);
-			} catch (InvalidRangeException e) {
-				System.out.println("Cannot read data: " + e);
+			} catch (IOException ex) {
+				log.error("Cannot read data", ex);
+			} catch (InvalidRangeException ex) {
+				log.error("Cannot read data", ex);
 			}
 
-		} catch (IOException ioe) {
-			System.out.println("Cannot open file: " + ioe);
+		} catch (IOException ex) {
+			log.error("Cannot open file", ex);
 		} finally {
 			if (null != ncfile) {
 				try {
 					ncfile.close();
-				} catch (IOException ioe) {
-					System.out.println("Cannot close file: " + ioe);
+				} catch (IOException ex) {
+					log.error("Cannot close file", ex);
 				}
 			}
 		}
@@ -122,20 +127,20 @@ public class SampleSet {
 
 				sampleIdSetLHM = org.gwaspi.netCDF.operations.Utils.writeD2ArrayCharToLHMKeys(sampleSetAC);
 
-			} catch (IOException ioe) {
-				System.out.println("Cannot read data: " + ioe);
-			} catch (InvalidRangeException e) {
-				System.out.println("Cannot read data: " + e);
+			} catch (IOException ex) {
+				log.error("Cannot read data", ex);
+			} catch (InvalidRangeException ex) {
+				log.error("Cannot read data", ex);
 			}
 
-		} catch (IOException ioe) {
-			System.out.println("Cannot open file: " + ioe);
+		} catch (IOException ex) {
+			log.error("Cannot open file", ex);
 		} finally {
 			if (null != ncfile) {
 				try {
 					ncfile.close();
-				} catch (IOException ioe) {
-					System.out.println("Cannot close file: " + ioe);
+				} catch (IOException ex) {
+					log.error("Cannot close file", ex);
 				}
 			}
 		}
@@ -186,14 +191,13 @@ public class SampleSet {
 					rdLhm = org.gwaspi.netCDF.operations.Utils.writeD1ArrayByteToLHMValues(gt_ACD1, rdLhm);
 				}
 
-//                ArrayChar.D2 gt_ACD2 = (ArrayChar.D2) gt_ACD3.reduce();
-//                rdLhm = org.gwaspi.netCDF.operations.Utils.writeD2ArrayCharToLHMValues(gt_ACD2, rdLhm);
-
-			} catch (InvalidRangeException e) {
-				System.out.println("Cannot read data: " + e);
+//				ArrayChar.D2 gt_ACD2 = (ArrayChar.D2) gt_ACD3.reduce();
+//				rdLhm = org.gwaspi.netCDF.operations.Utils.writeD2ArrayCharToLHMValues(gt_ACD2, rdLhm);
+			} catch (InvalidRangeException ex) {
+				log.error("Cannot read data", ex);
 			}
-		} catch (IOException iOException) {
-			System.out.println("Cannot open file: " + iOException);
+		} catch (IOException ex) {
+			log.error("Cannot open file", ex);
 		}
 
 		return rdLhm;
@@ -219,17 +223,16 @@ public class SampleSet {
 				ArrayDouble.D1 sampleSetAF = (ArrayDouble.D1) var.read("(0:" + (sampleSetSize - 1) + ":1");
 				sampleIdSetLHM = org.gwaspi.netCDF.operations.Utils.writeD1ArrayDoubleToLHMValues(sampleSetAF, sampleIdSetLHM);
 			}
-
-		} catch (IOException ioe) {
-			System.out.println("Cannot open file: " + ioe);
-		} catch (InvalidRangeException e) {
-			System.out.println("Cannot read data: " + e);
+		} catch (IOException ex) {
+			log.error("Cannot open file", ex);
+		} catch (InvalidRangeException ex) {
+			log.error("Cannot read data", ex);
 		} finally {
 			if (null != ncfile) {
 				try {
 					ncfile.close();
-				} catch (IOException ioe) {
-					System.out.println("Cannot close file: " + ioe);
+				} catch (IOException ex) {
+					log.error("Cannot close file", ex);
 				}
 			}
 		}
@@ -262,21 +265,19 @@ public class SampleSet {
 					ArrayDouble.D1 sampleSetAF = (ArrayDouble.D1) var.read("(0:" + (sampleSetSize - 1) + ":1");
 					sampleIdSetLHM = org.gwaspi.netCDF.operations.Utils.writeD1ArrayDoubleToLHMValues(sampleSetAF, lhm);
 				}
-
-			} catch (IOException ioe) {
-				System.out.println("Cannot read data: " + ioe);
-			} catch (InvalidRangeException e) {
-				System.out.println("Cannot read data: " + e);
+			} catch (IOException ex) {
+				log.error("Cannot read data", ex);
+			} catch (InvalidRangeException ex) {
+				log.error("Cannot read data", ex);
 			}
-
-		} catch (IOException ioe) {
-			System.out.println("Cannot open file: " + ioe);
+		} catch (IOException ex) {
+			log.error("Cannot open file", ex);
 		} finally {
 			if (null != ncfile) {
 				try {
 					ncfile.close();
-				} catch (IOException ioe) {
-					System.out.println("Cannot close file: " + ioe);
+				} catch (IOException ex) {
+					log.error("Cannot close file", ex);
 				}
 			}
 		}
@@ -305,20 +306,19 @@ public class SampleSet {
 					ArrayChar.D2 sampleSetAC = (ArrayChar.D2) var.read("(0:" + (sampleSetSize - 1) + ":1, " + filterPos + ":" + filterPos + ":1)");
 					sampleIdSetLHM = org.gwaspi.netCDF.operations.Utils.writeD2ArrayCharToLHMValues(sampleSetAC, lhm);
 				}
-			} catch (IOException ioe) {
-				System.out.println("Cannot read data: " + ioe);
-			} catch (InvalidRangeException e) {
-				System.out.println("Cannot read data: " + e);
+			} catch (IOException ex) {
+				log.error("Cannot read data", ex);
+			} catch (InvalidRangeException ex) {
+				log.error("Cannot read data", ex);
 			}
-
-		} catch (IOException ioe) {
-			System.out.println("Cannot open file: " + ioe);
+		} catch (IOException ex) {
+			log.error("Cannot open file", ex);
 		} finally {
 			if (null != ncfile) {
 				try {
 					ncfile.close();
-				} catch (IOException ioe) {
-					System.out.println("Cannot close file: " + ioe);
+				} catch (IOException ex) {
+					log.error("Cannot close file", ex);
 				}
 			}
 		}

@@ -2,12 +2,16 @@ package org.gwaspi.gui;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author u56124
  */
 public class toyAround {
+
+	private final static Logger log = LoggerFactory.getLogger(toyAround.class);
 
 	protected static String mumbo = "This is  a,test	stringg";
 
@@ -21,7 +25,7 @@ public class toyAround {
 		String obj = lHashMap.remove("2");
 
 		for (Map.Entry<String, String> entry : lHashMap.entrySet()) {
-			System.out.println(entry.getKey() + " : " + entry.getValue());
+			log.info("{} : {}", entry.getKey(), entry.getValue());
 		}
 	}
 }

@@ -3,6 +3,8 @@ package org.gwaspi.trastero;
 import java.sql.Timestamp;
 import java.text.*;
 import java.util.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -12,20 +14,22 @@ import java.util.*;
  */
 public class DateToTimestamp {
 
+	private final static Logger log = LoggerFactory.getLogger(DateToTimestamp.class);
+
 	public static void main(String[] args) {
 		try {
 			Calendar cal = Calendar.getInstance();
 			SimpleDateFormat sdf = new SimpleDateFormat("ddMMyyyyhhmmssSSSS");
 			String str_date = sdf.format(cal.getTime());
-			System.out.println("Raw Date: " + str_date);
+			log.info("Raw Date: {}", str_date);
 
 			DateFormat formatter = new SimpleDateFormat("ddMMyyyyhhmmssSSSS");
 			Date date = formatter.parse(str_date);
-			java.sql.Timestamp timeStampDate = new Timestamp(date.getTime());
-			System.out.println("Today is " + timeStampDate.toString());
-			System.out.println("Today is " + date.toString());
-		} catch (ParseException e) {
-			System.out.println("Exception :" + e);
+			Timestamp timeStampDate = new Timestamp(date.getTime());
+			log.info("Today is {}", timeStampDate.toString());
+			log.info("Today is {}", date.toString());
+		} catch (ParseException ex) {
+			log.warn("Failed ot format date" + ex);
 		}
 	}
 }

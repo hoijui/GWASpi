@@ -45,56 +45,71 @@ import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeSelectionModel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This application that requires the following additional files:
- * TreeDemoHelp.html arnold.html bloch.html chan.html jls.html
- * swingtutorial.html tutorial.html tutorialcont.html vm.html
+ * TreeDemoHelp.html
+ * arnold.html
+ * bloch.html
+ * chan.html
+ * jls.html
+ * swingtutorial.html
+ * tutorial.html
+ * tutorialcont.html
+ * vm.html
  */
-public class TreeDemo extends JPanel
-		implements TreeSelectionListener {
+public class TreeDemo extends JPanel implements TreeSelectionListener {
+
+	private final static Logger log = LoggerFactory.getLogger(TreeDemo.class);
 
 	private JEditorPane htmlPane;
 	private JTree tree;
 	private URL helpURL;
-	private static boolean DEBUG = true;
-	//Optionally play with line styles.  Possible values are
-	//"Angled" (the default), "Horizontal", and "None".
+	/**
+	 * Optionally play with line styles.
+	 */
 	private static boolean playWithLineStyle = false;
+	/**
+	 * Possible values are "Angled" (the default), "Horizontal", and "None".
+	 */
 	private static String lineStyle = "Horizontal";
-	//Optionally set the look and feel.
+	/**
+	 * Optionally set the look and feel.
+	 */
 	private static boolean useSystemLookAndFeel = false;
 
 	public TreeDemo() {
 		super(new GridLayout(1, 0));
 
-		//Create the nodes.
+		// Create the nodes.
 		DefaultMutableTreeNode top =
 				new DefaultMutableTreeNode("The Java Series");
 		createNodes(top);
 
-		//Create a tree that allows one selection at a time.
+		// Create a tree that allows one selection at a time.
 		tree = new JTree(top);
 		tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 
-		//Listen for when the selection changes.
+		// Listen for when the selection changes.
 		tree.addTreeSelectionListener(this);
 
 		if (playWithLineStyle) {
-			System.out.println("line style = " + lineStyle);
+			log.info("line style = {}", lineStyle);
 			tree.putClientProperty("JTree.lineStyle", lineStyle);
 		}
 
-		//Create the scroll pane and add the tree to it.
+		// Create the scroll pane and add the tree to it.
 		JScrollPane treeView = new JScrollPane(tree);
 
-		//Create the HTML viewing pane.
+		// Create the HTML viewing pane.
 		htmlPane = new JEditorPane();
 		htmlPane.setEditable(false);
 		initHelp();
 		JScrollPane htmlView = new JScrollPane(htmlPane);
 
-		//Add the scroll panes to a split pane.
+		// Add the scroll panes to a split pane.
 		JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
 		splitPane.setTopComponent(treeView);
 		splitPane.setBottomComponent(htmlView);
@@ -105,7 +120,7 @@ public class TreeDemo extends JPanel
 		splitPane.setDividerLocation(100);
 		splitPane.setPreferredSize(new Dimension(500, 300));
 
-		//Add the split pane to this panel.
+		// Add the split pane to this panel.
 		add(splitPane);
 	}
 
@@ -123,15 +138,11 @@ public class TreeDemo extends JPanel
 		if (node.isLeaf()) {
 			BookInfo book = (BookInfo) nodeInfo;
 			displayURL(book.bookURL);
-			if (DEBUG) {
-				System.out.print(book.bookURL + ":  \n    ");
-			}
+			log.debug("{}:  \n    ", book.bookURL);
 		} else {
 			displayURL(helpURL);
 		}
-		if (DEBUG) {
-			System.out.println(nodeInfo.toString());
-		}
+		log.debug(nodeInfo.toString());
 	}
 
 	private class BookInfo {
@@ -143,8 +154,7 @@ public class TreeDemo extends JPanel
 			bookName = book;
 			bookURL = getClass().getResource(filename);
 			if (bookURL == null) {
-				System.err.println("Couldn't find file: "
-						+ filename);
+				log.info("Couldn't find file: {}", filename);
 			}
 		}
 
@@ -158,9 +168,9 @@ public class TreeDemo extends JPanel
 		String s = "TreeDemoHelp.html";
 		helpURL = getClass().getResource(s);
 		if (helpURL == null) {
-			System.err.println("Couldn't open help file: " + s);
-		} else if (DEBUG) {
-			System.out.println("Help URL is " + helpURL);
+			log.warn("Couldn't open help file: {}", s);
+		} else {
+			log.debug("Help URL is {}", helpURL);
 		}
 
 		displayURL(helpURL);
@@ -172,12 +182,10 @@ public class TreeDemo extends JPanel
 				htmlPane.setPage(url);
 			} else { //null url
 				htmlPane.setText("File Not Found");
-				if (DEBUG) {
-					System.out.println("Attempted to display a null URL.");
-				}
+				log.debug("Attempted to display a null URL.");
 			}
-		} catch (IOException e) {
-			System.err.println("Attempted to read a bad URL: " + url);
+		} catch (IOException ex) {
+			log.warn("Attempted to read a bad URL: " + url, ex);
 		}
 	}
 
@@ -232,8 +240,8 @@ public class TreeDemo extends JPanel
 			try {
 				UIManager.setLookAndFeel(
 						UIManager.getSystemLookAndFeelClassName());
-			} catch (Exception e) {
-				System.err.println("Couldn't use system look and feel.");
+			} catch (Exception ex) {
+				log.error("Couldn't use system look and feel", ex);
 			}
 		}
 

@@ -7,6 +7,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 import org.gwaspi.netCDF.matrices.MatrixMetadata;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.ma2.ArrayByte;
 import ucar.ma2.ArrayChar;
 import ucar.ma2.ArrayDouble;
@@ -34,6 +36,9 @@ import ucar.nc2.Variable;
  * CEXS-UPF-PRBB
  */
 public class MarkerSet_opt {
+
+	private final static Logger log
+			= LoggerFactory.getLogger(MarkerSet_opt.class);
 
 	// MARKERSET_MEATADATA
 	private String technology = ""; // platform
@@ -68,8 +73,8 @@ public class MarkerSet_opt {
 			if (null != ncfile) {
 				try {
 					ncfile.close();
-				} catch (IOException ioe) {
-					System.out.println("Cannot close netCDF file: " + ioe);
+				} catch (IOException ex) {
+					log.error("Cannot close netCDF file: " + ncfile.getLocation(), ex);
 				}
 			}
 		} finally {
@@ -77,7 +82,7 @@ public class MarkerSet_opt {
 		}
 	}
 
-	////////// ACCESSORS /////////
+	// ACCESSORS
 	public String getTechnology() {
 		return technology;
 	}
@@ -122,14 +127,12 @@ public class MarkerSet_opt {
 					ArrayChar.D2 markerSetAC = (ArrayChar.D2) var.read("(" + startMkIdx + ":" + endMkIdx + ":1, 0:" + (varShape[1] - 1) + ":1)");
 					markerIdSetLHM = org.gwaspi.netCDF.operations.Utils.writeD2ArrayCharToLHMKeys(markerSetAC);
 				}
-
-			} catch (IOException ioe) {
-				System.out.println("Cannot read data: " + ioe);
-			} catch (InvalidRangeException e) {
-				System.out.println("Cannot read data: " + e);
+			} catch (IOException ex) {
+				log.error("Cannot read data", ex);
+			} catch (InvalidRangeException ex) {
+				log.error("Cannot read data", ex);
 			}
 		}
-
 	}
 
 	// USE RSID AS KEYS
@@ -167,17 +170,16 @@ public class MarkerSet_opt {
 					ArrayChar.D2 markerSetAC = (ArrayChar.D2) var.read("(" + startMkIdx + ":" + endMkIdx + ":1, 0:" + (varShape[1] - 1) + ":1)");
 					markerIdSetLHM = org.gwaspi.netCDF.operations.Utils.writeD2ArrayCharToLHMKeys(markerSetAC);
 				}
-
-			} catch (IOException ioe) {
-				System.out.println("Cannot read data: " + ioe);
-			} catch (InvalidRangeException e) {
-				System.out.println("Cannot read data: " + e);
+			} catch (IOException ex) {
+				log.error("Cannot read data", ex);
+			} catch (InvalidRangeException ex) {
+				log.error("Cannot read data", ex);
 			}
 		}
 
 	}
-
 	//</editor-fold>
+
 	//<editor-fold defaultstate="collapsed" desc="CHROMOSOME INFO">
 	/**
      * This Method is safe to return an independent LHM.
@@ -197,10 +199,10 @@ public class MarkerSet_opt {
 					ArrayChar.D2 markerSetAC = (ArrayChar.D2) var.read("(0:" + (varShape[0] - 1) + ":1, 0:7:1)");
 					chrInfoLHM = org.gwaspi.netCDF.operations.Utils.writeD2ArrayCharToLHMKeys(markerSetAC);
 				}
-			} catch (IOException ioe) {
-				System.out.println("Cannot read data: " + ioe);
-			} catch (InvalidRangeException e) {
-				System.out.println("Cannot read data: " + e);
+			} catch (IOException ex) {
+				log.error("Cannot read data", ex);
+			} catch (InvalidRangeException ex) {
+				log.error("Cannot read data", ex);
 			}
 
 			// GET INFO FOR EACH CHROMOSOME
@@ -214,12 +216,12 @@ public class MarkerSet_opt {
 			try {
 				if (dataType == DataType.INT) {
 					ArrayInt.D2 chrSetAI = (ArrayInt.D2) var.read("(0:" + (varShape[0] - 1) + ":1, 0:3:1)");
-					chrInfoLHM = org.gwaspi.netCDF.operations.Utils.writeD2ArrayIntToLHMValues(chrSetAI, chrInfoLHM);
+					org.gwaspi.netCDF.operations.Utils.writeD2ArrayIntToLHMValues(chrSetAI, chrInfoLHM);
 				}
-			} catch (IOException ioe) {
-				System.out.println("Cannot read data: " + ioe);
-			} catch (InvalidRangeException e) {
-				System.out.println("Cannot read data: " + e);
+			} catch (IOException ex) {
+				log.error("Cannot read data", ex);
+			} catch (InvalidRangeException ex) {
+				log.error("Cannot read data", ex);
 			}
 		} else {
 			return null;
@@ -239,8 +241,8 @@ public class MarkerSet_opt {
 		}
 		return result;
 	}
-
 	//</editor-fold>
+
 	//<editor-fold defaultstate="collapsed" desc="MARKERSET FILLERS">
 	public void fillGTsForCurrentSampleIntoInitLHM(int sampleNb) throws IOException {
 
@@ -277,16 +279,15 @@ public class MarkerSet_opt {
 
 				if (reducer == 1) {
 					ArrayByte.D2 gt_ACD2 = (ArrayByte.D2) gt_ACD3.reduce();
-					markerIdSetLHM = org.gwaspi.netCDF.operations.Utils.writeD2ArrayByteToLHMValues(gt_ACD2, markerIdSetLHM);
+					org.gwaspi.netCDF.operations.Utils.writeD2ArrayByteToLHMValues(gt_ACD2, markerIdSetLHM);
 				} else if (reducer == 2) {
 					ArrayByte.D1 gt_ACD1 = (ArrayByte.D1) gt_ACD3.reduce();
-					markerIdSetLHM = org.gwaspi.netCDF.operations.Utils.writeD1ArrayByteToLHMValues(gt_ACD1, markerIdSetLHM);
+					org.gwaspi.netCDF.operations.Utils.writeD1ArrayByteToLHMValues(gt_ACD1, markerIdSetLHM);
 				}
-
-			} catch (IOException ioe) {
-				System.out.println("Cannot read data: " + ioe);
-			} catch (InvalidRangeException e) {
-				System.out.println("Cannot read data: " + e);
+			} catch (IOException ex) {
+				log.error("Cannot read data", ex);
+			} catch (InvalidRangeException ex) {
+				log.error("Cannot read data", ex);
 			}
 		}
 	}
@@ -302,37 +303,35 @@ public class MarkerSet_opt {
 				if (dataType == DataType.CHAR) {
 					if (varShape.length == 2) {
 						ArrayChar.D2 markerSetAC = (ArrayChar.D2) var.read("(" + startMkIdx + ":" + endMkIdx + ":1, 0:" + (varShape[1] - 1) + ":1)");
-						markerIdSetLHM = org.gwaspi.netCDF.operations.Utils.writeD2ArrayCharToLHMValues(markerSetAC, markerIdSetLHM);
+						org.gwaspi.netCDF.operations.Utils.writeD2ArrayCharToLHMValues(markerSetAC, markerIdSetLHM);
 					}
 				}
 				if (dataType == DataType.DOUBLE) {
 					if (varShape.length == 1) {
 						ArrayDouble.D1 markerSetAF = (ArrayDouble.D1) var.read("(" + startMkIdx + ":" + endMkIdx + ":1)");
-						markerIdSetLHM = org.gwaspi.netCDF.operations.Utils.writeD1ArrayDoubleToLHMValues(markerSetAF, markerIdSetLHM);
+						org.gwaspi.netCDF.operations.Utils.writeD1ArrayDoubleToLHMValues(markerSetAF, markerIdSetLHM);
 					}
 					if (varShape.length == 2) {
 						ArrayDouble.D2 markerSetAF = (ArrayDouble.D2) var.read("(" + startMkIdx + ":" + endMkIdx + ":1, 0:" + (varShape[1] - 1) + ":1))");
-						markerIdSetLHM = org.gwaspi.netCDF.operations.Utils.writeD2ArrayDoubleToLHMValues(markerSetAF, markerIdSetLHM);
+						org.gwaspi.netCDF.operations.Utils.writeD2ArrayDoubleToLHMValues(markerSetAF, markerIdSetLHM);
 					}
 				}
 				if (dataType == DataType.INT) {
 					if (varShape.length == 1) {
 						ArrayInt.D1 markerSetAD = (ArrayInt.D1) var.read("(" + startMkIdx + ":" + endMkIdx + ":1)");
-						markerIdSetLHM = org.gwaspi.netCDF.operations.Utils.writeD1ArrayIntToLHMValues(markerSetAD, markerIdSetLHM);
+						org.gwaspi.netCDF.operations.Utils.writeD1ArrayIntToLHMValues(markerSetAD, markerIdSetLHM);
 					}
 					if (varShape.length == 2) {
 						ArrayInt.D2 markerSetAD = (ArrayInt.D2) var.read("(" + startMkIdx + ":" + endMkIdx + ":1, 0:" + (varShape[1] - 1) + ":1))");
-						markerIdSetLHM = org.gwaspi.netCDF.operations.Utils.writeD2ArrayIntToLHMValues(markerSetAD, markerIdSetLHM);
+						org.gwaspi.netCDF.operations.Utils.writeD2ArrayIntToLHMValues(markerSetAD, markerIdSetLHM);
 					}
 				}
-
 			} catch (IOException ex) {
-				System.out.println("Cannot read data: " + ex);
+				log.error("Cannot read data", ex);
 			} catch (InvalidRangeException ex) {
-				System.out.println("Cannot read data: " + ex);
+				log.error("Cannot read data", ex);
 			}
 		}
-
 	}
 
 	public void fillMarkerSetLHMWithChrAndPos() {
@@ -346,20 +345,20 @@ public class MarkerSet_opt {
 				if (dataType == DataType.CHAR) {
 					if (varShape.length == 2) {
 						ArrayChar.D2 markerSetAC = (ArrayChar.D2) var.read("(" + startMkIdx + ":" + endMkIdx + ":1, 0:" + (varShape[1] - 1) + ":1)");
-						markerIdSetLHM = org.gwaspi.netCDF.operations.Utils.writeD2ArrayCharToLHMValues(markerSetAC, markerIdSetLHM);
+						org.gwaspi.netCDF.operations.Utils.writeD2ArrayCharToLHMValues(markerSetAC, markerIdSetLHM);
 					}
 				}
-			} catch (IOException ioe) {
-				System.out.println("Cannot read data: " + ioe);
-			} catch (InvalidRangeException e) {
-				System.out.println("Cannot read data: " + e);
+			} catch (IOException ex) {
+				log.error("Cannot read data", ex);
+			} catch (InvalidRangeException ex) {
+				log.error("Cannot read data", ex);
 			}
 		}
 
 		var = ncfile.findVariable(cNetCDF.Variables.VAR_MARKERS_POS);
 		if (var != null) {
 			DataType dataType = var.getDataType();
-			int[] varShape = var.getShape();
+//			int[] varShape = var.getShape();
 
 			try {
 				if (dataType == DataType.INT) {
@@ -376,11 +375,10 @@ public class MarkerSet_opt {
 						markerIdSetLHM.put(key, chrInfo);
 					}
 				}
-			} catch (IOException ioe) {
-				System.out.println("Cannot read data: " + ioe);
-			} catch (InvalidRangeException e) {
-				System.out.println("Cannot read data: " + e);
-				e.printStackTrace();
+			} catch (IOException ex) {
+				log.error("Cannot read data", ex);
+			} catch (InvalidRangeException ex) {
+				log.error("Cannot read data", ex);
 			}
 		}
 	}
@@ -398,7 +396,7 @@ public class MarkerSet_opt {
 		return map;
 	}
 
-	//HELPERS TO TRANSFER VALUES FROM ONE LHM TO ANOTHER
+	// HELPERS TO TRANSFER VALUES FROM ONE LHM TO ANOTHER
 	public static<K, V> Map<K, V> replaceWithValuesFrom(Map<K, V> toBeModified, Map<K, V> newValuesSource) {
 
 		for (Map.Entry<K, V> entry : toBeModified.entrySet()) {
@@ -408,7 +406,7 @@ public class MarkerSet_opt {
 		return toBeModified;
 	}
 
-	//HELPER TO APPEND VALUE TO AN EXISTING LHM CHAR VALUE
+	// HELPER TO APPEND VALUE TO AN EXISTING LHM CHAR VALUE
 	public void appendVariableToMarkerSetLHMValue(String variable, String separator) {
 
 		Variable var = ncfile.findVariable(variable);
@@ -459,7 +457,6 @@ public class MarkerSet_opt {
 					if (varShape.length == 1) {
 						ArrayInt.D1 markerSetAF = (ArrayInt.D1) var.read("(" + startMkIdx + ":" + endMkIdx + ":1)");
 
-						Integer intValue = 0;
 						int[] shape = markerSetAF.getShape();
 						Index index = markerSetAF.getIndex();
 						Iterator<String> it = markerIdSetLHM.keySet().iterator();
@@ -469,16 +466,15 @@ public class MarkerSet_opt {
 							if (!value.isEmpty()) {
 								value += separator;
 							}
-							intValue = markerSetAF.getInt(index.set(i));
+							Integer intValue = markerSetAF.getInt(index.set(i));
 							markerIdSetLHM.put(key, value + intValue.toString());
 						}
 					}
 				}
-
-			} catch (IOException ioe) {
-				System.out.println("Cannot read data: " + ioe);
-			} catch (InvalidRangeException e) {
-				System.out.println("Cannot read data: " + e);
+			} catch (IOException ex) {
+				log.error("Cannot read data", ex);
+			} catch (InvalidRangeException ex) {
+				log.error("Cannot read data", ex);
 			}
 		}
 	}
@@ -507,14 +503,13 @@ public class MarkerSet_opt {
 					dictionnary.put(key, alleles.toString().trim());
 				}
 			}
-
-		} catch (InvalidRangeException e) {
-			System.out.println("Cannot read data: " + e);
+		} catch (InvalidRangeException ex) {
+			log.error("Cannot read data", ex);
 		}
 		return dictionnary;
 	}
-
 	//</editor-fold>
+
 	//<editor-fold defaultstate="collapsed" desc="MARKERSET PICKERS">
 	/**
 	 * THESE LHMs DO NOT CONTAIN SAME ITEMS AS INIT LHM.

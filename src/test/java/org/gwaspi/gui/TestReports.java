@@ -7,12 +7,16 @@ import java.util.HashSet;
 import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.CombinedRangeXYPlot;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author u56124
  */
 public class TestReports extends javax.swing.JPanel {
+
+	private final static Logger log = LoggerFactory.getLogger(TestReports.class);
 
 	public static void main(final String[] args) throws InterruptedException, FileNotFoundException, IOException {
 
@@ -21,7 +25,7 @@ public class TestReports extends javax.swing.JPanel {
 		HashSet redMarkersHS = new HashSet();
 		createCombinedPNGFromAssocUnadjLogPvsPos(plinkFile, outputFile, redMarkersHS, 4048, 700);
 
-		System.out.println("This is a main test");
+		log.info("This is a main test");
 	}
 
 	public static File createCombinedPNGFromAssocUnadjLogPvsPos(File plinkReport, File outputFile, HashSet redMarkersHS, int width, int height) throws FileNotFoundException, IOException {
@@ -35,9 +39,8 @@ public class TestReports extends javax.swing.JPanel {
 					chart,
 					width,
 					height);
-		} catch (IOException e) {
-			System.err.println("Problem occurred creating chart.");
-			e.printStackTrace();
+		} catch (IOException ex) {
+			log.error("Problem occurred creating chart", ex);
 		}
 
 		return null;
