@@ -212,7 +212,7 @@ public class OperationSet {
 			try {
 				if (dataType == DataType.INT) {
 					ArrayInt.D2 chrSetAI = (ArrayInt.D2) var.read("(0:" + (varShape[0] - 1) + ":1, 0:3:1)");
-					chrInfoLHM = org.gwaspi.netCDF.operations.Utils.writeD2ArrayIntToLHMValues(chrSetAI, chrInfoLHM);
+					org.gwaspi.netCDF.operations.Utils.writeD2ArrayIntToLHMValues(chrSetAI, chrInfoLHM);
 				}
 			} catch (IOException ex) {
 				log.error("Cannot read data", ex);
@@ -251,27 +251,27 @@ public class OperationSet {
 			if (dataType == DataType.CHAR) {
 				if (varShape.length == 2) {
 					ArrayChar.D2 markerSetAC = (ArrayChar.D2) var.read("(0:" + (opSetSize - 1) + ":1, 0:" + (varShape[1] - 1) + ":1)");
-					opSetLHM = org.gwaspi.netCDF.operations.Utils.writeD2ArrayCharToLHMValues(markerSetAC, opSetLHM);
+					org.gwaspi.netCDF.operations.Utils.writeD2ArrayCharToLHMValues(markerSetAC, opSetLHM);
 				}
 			}
 			if (dataType == DataType.DOUBLE) {
 				if (varShape.length == 1) {
 					ArrayDouble.D1 markerSetAF = (ArrayDouble.D1) var.read("(0:" + (opSetSize - 1) + ":1)");
-					opSetLHM = org.gwaspi.netCDF.operations.Utils.writeD1ArrayDoubleToLHMValues(markerSetAF, opSetLHM);
+					org.gwaspi.netCDF.operations.Utils.writeD1ArrayDoubleToLHMValues(markerSetAF, opSetLHM);
 				}
 				if (varShape.length == 2) {
 					ArrayDouble.D2 markerSetAF = (ArrayDouble.D2) var.read("(0:" + (opSetSize - 1) + ":1, 0:" + (varShape[1] - 1) + ":1))");
-					opSetLHM = org.gwaspi.netCDF.operations.Utils.writeD2ArrayDoubleToLHMValues(markerSetAF, opSetLHM);
+					org.gwaspi.netCDF.operations.Utils.writeD2ArrayDoubleToLHMValues(markerSetAF, opSetLHM);
 				}
 			}
 			if (dataType == DataType.INT) {
 				if (varShape.length == 1) {
 					ArrayInt.D1 markerSetAD = (ArrayInt.D1) var.read("(0:" + (opSetSize - 1) + ":1)");
-					opSetLHM = org.gwaspi.netCDF.operations.Utils.writeD1ArrayIntToLHMValues(markerSetAD, opSetLHM);
+					org.gwaspi.netCDF.operations.Utils.writeD1ArrayIntToLHMValues(markerSetAD, opSetLHM);
 				}
 				if (varShape.length == 2) {
 					ArrayInt.D2 markerSetAD = (ArrayInt.D2) var.read("(0:" + (opSetSize - 1) + ":1, 0:" + (varShape[1] - 1) + ":1))");
-					opSetLHM = org.gwaspi.netCDF.operations.Utils.writeD2ArrayIntToLHMValues(markerSetAD, opSetLHM);
+					org.gwaspi.netCDF.operations.Utils.writeD2ArrayIntToLHMValues(markerSetAD, opSetLHM);
 				}
 			}
 		} catch (IOException ex) {

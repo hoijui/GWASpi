@@ -786,38 +786,36 @@ public class Utils {
 	//<editor-fold defaultstate="collapsed" desc="ArrayChar.D2">
 	public static Map<String, Object> writeD2ArrayCharToLHMKeys(ArrayChar inputArray) {
 		Map<String, Object> result = new LinkedHashMap<String, Object>();
-		StringBuilder key = new StringBuilder("");
+//		StringBuilder key = new StringBuilder("");
 
 		int[] shape = inputArray.getShape();
-		Index index = inputArray.getIndex();
+//		Index index = inputArray.getIndex();
 		for (int i = 0; i < shape[0]; i++) {
 			ArrayChar wrCharArray = new ArrayChar(new int[]{1, shape[1]});
 			ArrayChar.D2.arraycopy(inputArray, i * shape[1], wrCharArray, 0, shape[1]);
 			char[] values = (char[]) wrCharArray.copyTo1DJavaArray();
 			result.put(String.valueOf(values).trim(), "");
 
-//                key = new StringBuilder("");
-//                for (int j=0; j<shape[1]; j++) {
-//                    key.append(inputArray.getChar(index.set(i,j)));
-//                }
-//                result.put(key.toString().trim(), "");
+//			key = new StringBuilder("");
+//			for (int j=0; j<shape[1]; j++) {
+//				key.append(inputArray.getChar(index.set(i,j)));
+//			}
+//			result.put(key.toString().trim(), "");
 		}
 
 		return result;
 	}
 
-	public static Map<String, Object> writeD2ArrayCharToLHMValues(ArrayChar inputArray, Map<String, Object> lhm) {
+	public static void writeD2ArrayCharToLHMValues(ArrayChar inputArray, Map<String, Object> map) {
 
 		int[] shape = inputArray.getShape();
-		Iterator<Entry<String, Object>> it = lhm.entrySet().iterator();
+		Iterator<Entry<String, Object>> it = map.entrySet().iterator();
 		for (int i = 0; i < shape[0]; i++) {
 			ArrayChar wrCharArray = new ArrayChar(new int[]{1, shape[1]});
 			ArrayChar.D2.arraycopy(inputArray, i * shape[1], wrCharArray, 0, shape[1]);
 			char[] values = (char[]) wrCharArray.copyTo1DJavaArray();
 			it.next().setValue(String.valueOf(values).trim());
 		}
-
-		return lhm;
 	}
 
 	public static List<String> writeD2ArrayCharToAL(ArrayChar inputArray) {
@@ -871,19 +869,15 @@ public class Utils {
 
 	//</editor-fold>
 	//<editor-fold defaultstate="collapsed" desc="ArrayDouble.D1">
-	public static Map<String, Object> writeD1ArrayDoubleToLHMValues(ArrayDouble inputArray, Map<String, Object> lhm) {
+	public static void writeD1ArrayDoubleToLHMValues(ArrayDouble inputArray, Map<String, Object> map) {
 
 		int[] shape = inputArray.getShape();
 		Index index = inputArray.getIndex();
-		Iterator<String> it = lhm.keySet().iterator();
+		Iterator<Entry<String, Object>> entries = map.entrySet().iterator();
 		for (int i = 0; i < shape[0]; i++) {
-			String key = it.next();
 			Double value = inputArray.getDouble(index.set(i));
-			lhm.put(key, value);
+			entries.next().setValue(value);
 		}
-
-
-		return lhm;
 	}
 
 	public static List<Double> writeD1ArrayDoubleToAL(ArrayDouble.D1 inputArray) {
@@ -902,22 +896,17 @@ public class Utils {
 
 	//</editor-fold>
 	//<editor-fold defaultstate="collapsed" desc="ArrayDouble.D2">
-	public static Map<String, Object> writeD2ArrayDoubleToLHMValues(ArrayDouble.D2 inputArray, Map<String, Object> lhm) {
+	public static void writeD2ArrayDoubleToLHMValues(ArrayDouble.D2 inputArray, Map<String, Object> map) {
 		int[] shape = inputArray.getShape();
-		Iterator<String> it = lhm.keySet().iterator();
+		Iterator<Entry<String, Object>> entries = map.entrySet().iterator();
 
 		for (int i = 0; i < (shape[0] * shape[1]); i = i + shape[1]) {
-			String key = it.next();
-
 			ArrayDouble wrDoubleArray = new ArrayDouble(new int[]{1, shape[1]});
 			ArrayDouble.D2.arraycopy(inputArray, i, wrDoubleArray, 0, shape[1]);
 			double[] values = (double[]) wrDoubleArray.copyTo1DJavaArray();
 
-			lhm.put(key, values);
+			entries.next().setValue(values);
 		}
-
-
-		return lhm;
 	}
 
 	public static List<double[]> writeD2ArrayDoubleToAL(ArrayDouble.D2 inputArray) {
@@ -937,18 +926,15 @@ public class Utils {
 	//</editor-fold>
 
 	//<editor-fold defaultstate="collapsed" desc="ArrayInt.D1">
-	public static Map<String, Object> writeD1ArrayIntToLHMValues(ArrayInt inputArray, Map<String, Object> lhm) {
+	public static void writeD1ArrayIntToLHMValues(ArrayInt inputArray, Map<String, Object> map) {
 
 		int[] shape = inputArray.getShape();
 		Index index = inputArray.getIndex();
-		Iterator<String> it = lhm.keySet().iterator();
+		Iterator<Entry<String, Object>> entries = map.entrySet().iterator();
 		for (int i = 0; i < shape[0]; i++) {
-			String key = it.next();
 			Integer value = inputArray.getInt(index.set(i));
-			lhm.put(key, value);
+			entries.next().setValue(value);
 		}
-
-		return lhm;
 	}
 
 	public static List<Integer> writeD1ArrayIntToAL(ArrayInt.D1 inputArray) {
@@ -967,42 +953,33 @@ public class Utils {
 
 	//</editor-fold>
 	//<editor-fold defaultstate="collapsed" desc="ArrayInt.D2">
-	public static Map<String, Object> writeD2ArrayIntToLHMValues(ArrayInt.D2 inputArray, Map<String, Object> lhm) {
+	public static void writeD2ArrayIntToLHMValues(ArrayInt.D2 inputArray, Map<String, Object> map) {
 		int[] shape = inputArray.getShape();
-		Index index = inputArray.getIndex();
-		Iterator<String> it = lhm.keySet().iterator();
+		Iterator<Entry<String, Object>> entries = map.entrySet().iterator();
 
 		for (int i = 0; i < (shape[0] * shape[1]); i = i + shape[1]) {
-			String key = it.next();
-
 			ArrayInt wrIntArray = new ArrayInt(new int[]{1, shape[1]});
 			ArrayInt.D2.arraycopy(inputArray, i, wrIntArray, 0, shape[1]);
 			int[] values = (int[]) wrIntArray.copyTo1DJavaArray();
 
-			lhm.put(key, values);
+			entries.next().setValue(values);
 		}
-
-
-		return lhm;
 	}
 
 	//</editor-fold>
 	//<editor-fold defaultstate="collapsed" desc="ArrayByte.D2">
-	public static Map<String, Object> writeD2ArrayByteToLHMValues(ArrayByte inputArray, Map<String, Object> lhm) {
+	public static void writeD2ArrayByteToLHMValues(ArrayByte inputArray, Map<String, Object> map) {
 
 		int[] shape = inputArray.getShape();
-		Index index = inputArray.getIndex();
-		Iterator<String> it = lhm.keySet().iterator();
+		Iterator<Entry<String, Object>> entries = map.entrySet().iterator();
 		for (int i = 0; i < shape[0]; i++) {
-			String key = it.next();
+			Entry<String, Object> entry = entries.next();
 
 			ArrayByte wrArray = new ArrayByte(new int[]{1, shape[1]});
 			ArrayByte.D2.arraycopy(inputArray, i * shape[1], wrArray, 0, shape[1]);
 			byte[] values = (byte[]) wrArray.copyTo1DJavaArray();
-			lhm.put(key, values);
+			entry.setValue(values);
 		}
-
-		return lhm;
 	}
 
 	public static List<byte[]> writeD2ArrayByteToAL(ArrayByte inputArray) {
@@ -1010,7 +987,6 @@ public class Utils {
 		List<byte[]> als = new ArrayList<byte[]>(expectedSize.intValue());
 
 		int[] shape = inputArray.getShape();
-		Index index = inputArray.getIndex();
 		for (int i = 0; i < shape[0]; i++) {
 			ArrayByte wrArray = new ArrayByte(new int[]{1, shape[1]});
 			ArrayByte.D2.arraycopy(inputArray, i * shape[1], wrArray, 0, shape[1]);
@@ -1023,20 +999,17 @@ public class Utils {
 	//</editor-fold>
 
 	//<editor-fold defaultstate="collapsed" desc="ArrayByte.D1">
-	public static Map<String, Object> writeD1ArrayByteToLHMValues(ArrayByte inputArray, Map<String, Object> lhm) {
+	public static void writeD1ArrayByteToLHMValues(ArrayByte inputArray, Map<String, Object> map) {
 		StringBuilder value = new StringBuilder("");
 		Index index = inputArray.getIndex();
 
 		int[] shape = inputArray.getShape();
-		Iterator<String> it = lhm.keySet().iterator();
+		Iterator<String> it = map.keySet().iterator();
 		String key = it.next();
-
 		for (int j = 0; j < shape[0]; j++) {
 			value.append(inputArray.getChar(index.set(j)));
 		}
-		lhm.put(key, value.toString().trim());
-
-		return lhm;
+		map.put(key, value.toString().trim());
 	}
 	//</editor-fold>
 	//</editor-fold>
