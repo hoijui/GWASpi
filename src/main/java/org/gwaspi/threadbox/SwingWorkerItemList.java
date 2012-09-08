@@ -74,7 +74,6 @@ public class SwingWorkerItemList {
 		return swingWorkerItemsAL;
 	}
 
-	@SuppressWarnings("static-access")
 	public static void flagCurrentItemDone(String timeStamp) {
 		for (SwingWorkerItem currentSwi : swingWorkerItemsAL) {
 			if (currentSwi.getTimeStamp().equals(timeStamp)) {
@@ -88,7 +87,6 @@ public class SwingWorkerItemList {
 		}
 	}
 
-	@SuppressWarnings("static-access")
 	public static void flagCurrentItemAborted(String timeStamp) {
 		for (SwingWorkerItem currentSwi : swingWorkerItemsAL) {
 			if (currentSwi.getTimeStamp().equals(timeStamp)) {
@@ -115,7 +113,6 @@ public class SwingWorkerItemList {
 		}
 	}
 
-	@SuppressWarnings("static-access")
 	public static void flagCurrentItemError(String timeStamp) {
 		for (SwingWorkerItem currentSwi : swingWorkerItemsAL) {
 			if (currentSwi.getTimeStamp().equals(timeStamp)) {
@@ -178,7 +175,6 @@ public class SwingWorkerItemList {
 		return result;
 	}
 
-	@SuppressWarnings("static-access")
 	public static SwingWorkerItem getSwingWorkerItemByTimeStamp(String timeStamp) {
 		SwingWorkerItem result = null;
 		for (SwingWorkerItem currentSwi : swingWorkerItemsAL) {

@@ -17,7 +17,6 @@ public class DbManagerImpl implements DbManager {
 	private ConnectionProvider connectionProvider;
 
 	public DbManagerImpl(ConnectionProvider cp) {
-		super();
 		qex = new QueryExecutor(cp);
 		connectionProvider = cp;
 	}
@@ -35,14 +34,14 @@ public class DbManagerImpl implements DbManager {
 		try {
 			int affectedRows = qex.executeUpdate(statement);
 			return affectedRows;
-		} catch (GeneralApplicationException e) {
-			throw new RuntimeException(e);
+		} catch (GeneralApplicationException ee) {
+			throw new RuntimeException(ee);
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	public List<Map<String, Object>> selectMutipleClauses(String schema, String table,
-			String[] fields, String[] clauseFields, Object[] clauseValues) {
+			String[] fields, String[] clauseFields, Object[] clauseValues)
+	{
 		StringBuilder sql = new StringBuilder();
 		sql.append("SELECT ");
 
