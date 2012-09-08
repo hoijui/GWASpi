@@ -8,36 +8,23 @@ import java.awt.Component;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
-import javax.swing.SwingUtilities;
 import javax.swing.BorderFactory;
-import javax.swing.ButtonGroup;
-import javax.swing.DefaultComboBoxModel;
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
-import javax.swing.JTable;
 import javax.swing.JTextArea;
-import javax.swing.JTextField;
 import javax.swing.LayoutStyle;
 import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
 import javax.swing.border.TitledBorder;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableCellRenderer;
-import javax.swing.tree.DefaultMutableTreeNode;
 import org.gwaspi.model.Matrix;
 import org.gwaspi.model.Operation;
 import org.gwaspi.netCDF.operations.GWASinOneGOParams;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.gwaspi.threadbox.MultiOperations;
 
 /**
@@ -47,6 +34,9 @@ import org.gwaspi.threadbox.MultiOperations;
  * CEXS-UPF-PRBB
  */
 public class MatrixMarkerQAPanel extends JPanel {
+
+	private final static Logger log
+			= LoggerFactory.getLogger(MatrixMarkerQAPanel.class);
 
 	// Variables declaration - do not modify
 	private Matrix parentMatrix;
@@ -209,7 +199,7 @@ public class MatrixMarkerQAPanel extends JPanel {
 					Dialogs.showWarningDialogue(Text.Processes.cantDeleteRequiredItem);
 				}
 			} catch (IOException ex) {
-				Logger.getLogger(CurrentStudyPanel.class.getName()).log(Level.SEVERE, null, ex);
+				log.error(null, ex);
 			}
 		}
 	}
@@ -231,7 +221,7 @@ public class MatrixMarkerQAPanel extends JPanel {
 				GWASpiExplorerPanel.pnl_Content = new CurrentMatrixPanel(parentMatrix.getMatrixId());
 				GWASpiExplorerPanel.scrl_Content.setViewportView(GWASpiExplorerPanel.pnl_Content);
 			} catch (IOException ex) {
-				Logger.getLogger(BackAction.class.getName()).log(Level.SEVERE, null, ex);
+				log.error(null, ex);
 			}
 		}
 	}
@@ -248,7 +238,7 @@ public class MatrixMarkerQAPanel extends JPanel {
 			try {
 				URLInDefaultBrowser.browseHelpURL(HelpURLs.QryURL.markerQAreport);
 			} catch (IOException ex) {
-				Logger.getLogger(HelpAction.class.getName()).log(Level.SEVERE, null, ex);
+				log.error(null, ex);
 			}
 		}
 	}

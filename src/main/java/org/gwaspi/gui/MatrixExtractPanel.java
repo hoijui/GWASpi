@@ -19,8 +19,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultComboBoxModel;
@@ -38,6 +36,8 @@ import javax.swing.SwingUtilities;
 import javax.swing.border.TitledBorder;
 import org.gwaspi.model.Matrix;
 import org.gwaspi.netCDF.markers.MarkerSet_opt;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.gwaspi.threadbox.MultiOperations;
 
 /**
@@ -47,6 +47,9 @@ import org.gwaspi.threadbox.MultiOperations;
  * CEXS-UPF-PRBB
  */
 public class MatrixExtractPanel extends JPanel {
+
+	private final static Logger log
+			= LoggerFactory.getLogger(MatrixExtractPanel.class);
 
 	public MatrixExtractPanel(int _matrixId, String newMatrixName, String newMatrixDesc) throws IOException {
 		initComponents(_matrixId, newMatrixName, newMatrixDesc);
@@ -690,7 +693,7 @@ public class MatrixExtractPanel extends JPanel {
 				GWASpiExplorerPanel.pnl_Content = new CurrentMatrixPanel(parentMatrix.getMatrixId());
 				GWASpiExplorerPanel.scrl_Content.setViewportView(GWASpiExplorerPanel.pnl_Content);
 			} catch (IOException ex) {
-				Logger.getLogger(BackAction.class.getName()).log(Level.SEVERE, null, ex);
+				log.error(null, ex);
 			}
 		}
 	}
@@ -707,7 +710,7 @@ public class MatrixExtractPanel extends JPanel {
 			try {
 				URLInDefaultBrowser.browseHelpURL(HelpURLs.QryURL.matrixExtract);
 			} catch (IOException ex) {
-				Logger.getLogger(CurrentMatrixPanel.class.getName()).log(Level.SEVERE, null, ex);
+				log.error(null, ex);
 			}
 		}
 	}

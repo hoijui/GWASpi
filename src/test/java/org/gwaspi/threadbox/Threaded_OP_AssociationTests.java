@@ -1,9 +1,9 @@
 package org.gwaspi.threadbox;
 
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.gwaspi.model.Operation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.ma2.InvalidRangeException;
 
 /**
@@ -13,6 +13,9 @@ import ucar.ma2.InvalidRangeException;
  * CEXS-UPF-PRBB
  */
 public class Threaded_OP_AssociationTests implements Runnable {
+
+	private final static Logger log
+			= LoggerFactory.getLogger(Threaded_OP_HardyWeinberg.class);
 
 	private Thread runner;
 	private int resultOpId;
@@ -25,7 +28,9 @@ public class Threaded_OP_AssociationTests implements Runnable {
 			int _matrixId,
 			Operation _censusOP,
 			Operation _hwOP,
-			double _hwThreshold) throws InterruptedException {
+			double _hwThreshold)
+			throws InterruptedException
+	{
 		org.gwaspi.global.Config.initPreferences(false, null);
 		matrixId = _matrixId;
 		censusOP = _censusOP;
@@ -44,9 +49,9 @@ public class Threaded_OP_AssociationTests implements Runnable {
 					hwOP,
 					hwThreshold);
 		} catch (IOException ex) {
-			Logger.getLogger(Threaded_OP_AssociationTests.class.getName()).log(Level.SEVERE, null, ex);
+			log.error(null, ex);
 		} catch (InvalidRangeException ex) {
-			Logger.getLogger(Threaded_OP_AssociationTests.class.getName()).log(Level.SEVERE, null, ex);
+			log.error(null, ex);
 		}
 	}
 }

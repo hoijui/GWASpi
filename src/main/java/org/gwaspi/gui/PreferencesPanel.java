@@ -10,13 +10,10 @@ import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
-import javax.swing.table.TableModel;
 import javax.swing.BorderFactory;
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
@@ -28,6 +25,9 @@ import javax.swing.LayoutStyle;
 import javax.swing.SwingConstants;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -36,6 +36,9 @@ import javax.swing.table.DefaultTableModel;
  * CEXS-UPF-PRBB
  */
 public class PreferencesPanel extends JPanel {
+
+	private final static Logger log
+			= LoggerFactory.getLogger(PreferencesPanel.class);
 
 	protected static Preferences prefs = Preferences.userNodeForPackage(Config.class.getClass());
 	// Variables declaration - do not modify
@@ -258,7 +261,7 @@ public class PreferencesPanel extends JPanel {
 							try {
 								Config.setConfigValue(preferencesTable.getValueAt(i, 0).toString(), preferencesTable.getValueAt(i, 1).toString());
 							} catch (IOException ex) {
-								Logger.getLogger(PreferencesPanel.class.getName()).log(Level.SEVERE, null, ex);
+								log.error(null, ex);
 							}
 						}
 						Dialogs.showInfoDialogue("Preferences & Paths Saved");
@@ -299,7 +302,7 @@ public class PreferencesPanel extends JPanel {
 				TableModel model = new DefaultTableModel(tableMatrix, columns);
 				preferencesTable.setModel(model);
 			} catch (BackingStoreException ex) {
-				Logger.getLogger(PreferencesPanel.class.getName()).log(Level.SEVERE, null, ex);
+				log.error(null, ex);
 			}
 		}
 
@@ -312,7 +315,7 @@ public class PreferencesPanel extends JPanel {
 					Config.setConfigValue(pref[0], pref[1]);
 				} catch (IOException ex) {
 					result = false;
-					Logger.getLogger(PreferencesPanel.class.getName()).log(Level.SEVERE, null, ex);
+					log.error(null, ex);
 				}
 			}
 

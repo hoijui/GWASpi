@@ -6,8 +6,6 @@ import org.gwaspi.gui.utils.Dialogs;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -17,12 +15,17 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.LayoutStyle;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author u56124
  */
 public class AnalyserTab extends JPanel {
+
+	private final static Logger log
+			= LoggerFactory.getLogger(AnalyserTab.class);
 
 	// Variables declaration - do not modify
 	private JPanel panel_Analysis;
@@ -71,7 +74,7 @@ public class AnalyserTab extends JPanel {
 				try {
 					combo_AnalysisActionPerformed(evt);
 				} catch (IOException ex) {
-					Logger.getLogger(AnalyserTab.class.getName()).log(Level.SEVERE, null, ex);
+					log.error(null, ex);
 				}
 			}
 		});
@@ -88,7 +91,7 @@ public class AnalyserTab extends JPanel {
 				try {
 					button_PathToTfamActionPerformed(evt);
 				} catch (IOException ex) {
-					Logger.getLogger(AnalyserTab.class.getName()).log(Level.SEVERE, null, ex);
+					log.error(null, ex);
 				}
 			}
 		});
@@ -99,7 +102,7 @@ public class AnalyserTab extends JPanel {
 				try {
 					button_PathToTpedActionPerformed(evt);
 				} catch (IOException ex) {
-					Logger.getLogger(AnalyserTab.class.getName()).log(Level.SEVERE, null, ex);
+					log.error(null, ex);
 				}
 			}
 		});

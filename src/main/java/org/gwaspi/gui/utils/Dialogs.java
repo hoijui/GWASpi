@@ -6,14 +6,11 @@ import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
 import org.gwaspi.global.Config;
-import java.awt.GridBagConstraints;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -23,6 +20,8 @@ import javax.swing.filechooser.FileFilter;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.Matrix;
 import org.gwaspi.model.Operation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -32,7 +31,9 @@ import org.gwaspi.model.Operation;
  */
 public class Dialogs {
 
-	public static String currentAppPath = "";
+	private final static Logger log
+			= LoggerFactory.getLogger(Dialogs.class);
+
 	private static JFileChooser fc;
 
 	private Dialogs() {
@@ -332,7 +333,7 @@ public class Dialogs {
 			fc.setCurrentDirectory(new java.io.File(dir));
 //			}
 		} catch (IOException ex) {
-			Logger.getLogger(Dialogs.class.getName()).log(Level.SEVERE, null, ex);
+			log.error(null, ex);
 		}
 
 		// displaying only necessary files as requested by "filter"
@@ -362,7 +363,7 @@ public class Dialogs {
 			try {
 				Config.setConfigValue("LAST_OPENED_DIR", file.getParent());
 			} catch (IOException ex) {
-				Logger.getLogger(Dialogs.class.getName()).log(Level.SEVERE, null, ex);
+				log.error(null, ex);
 			}
 		}
 	}
@@ -385,7 +386,7 @@ public class Dialogs {
 				fc.setCurrentDirectory(new java.io.File(dir));
 //				}
 			} catch (IOException ex) {
-				Logger.getLogger(Dialogs.class.getName()).log(Level.SEVERE, null, ex);
+				log.error(null, ex);
 			}
 
 			fc.setFileFilter(new FileFilter() {
@@ -413,7 +414,7 @@ public class Dialogs {
 				try {
 					Config.setConfigValue("LAST_OPENED_DIR", resultFile.getParent());
 				} catch (IOException ex) {
-					Logger.getLogger(Dialogs.class.getName()).log(Level.SEVERE, null, ex);
+					log.error(null, ex);
 				}
 			}
 		}
@@ -436,7 +437,7 @@ public class Dialogs {
 				String dir = Config.getConfigValue("LAST_OPENED_DIR", org.gwaspi.constants.cGlobal.HOMEDIR);
 				fc.setCurrentDirectory(new java.io.File(dir));
 			} catch (IOException ex) {
-				Logger.getLogger(Dialogs.class.getName()).log(Level.SEVERE, null, ex);
+				log.error(null, ex);
 			}
 
 			int returnVal = fc.showOpenDialog(org.gwaspi.gui.StartGWASpi.mainGUIFrame);
@@ -447,7 +448,7 @@ public class Dialogs {
 				try {
 					Config.setConfigValue("LAST_OPENED_DIR", resultFile.getParent());
 				} catch (IOException ex) {
-					Logger.getLogger(Dialogs.class.getName()).log(Level.SEVERE, null, ex);
+					log.error(null, ex);
 				}
 			}
 		}
@@ -469,7 +470,7 @@ public class Dialogs {
 				String dir = Config.getConfigValue("LAST_OPENED_DIR", org.gwaspi.constants.cGlobal.HOMEDIR);
 				fc.setCurrentDirectory(new java.io.File(dir));
 			} catch (IOException ex) {
-				Logger.getLogger(Dialogs.class.getName()).log(Level.SEVERE, null, ex);
+				log.error(null, ex);
 			}
 
 			int returnVal = fc.showOpenDialog(org.gwaspi.gui.StartGWASpi.mainGUIFrame);
@@ -481,7 +482,7 @@ public class Dialogs {
 				try {
 					Config.setConfigValue("LAST_OPENED_DIR", resultFile.getParent());
 				} catch (IOException ex) {
-					Logger.getLogger(Dialogs.class.getName()).log(Level.SEVERE, null, ex);
+					log.error(null, ex);
 				}
 			}
 		}

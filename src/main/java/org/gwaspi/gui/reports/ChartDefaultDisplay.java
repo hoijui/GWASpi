@@ -10,8 +10,6 @@ import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.AbstractAction;
 import javax.swing.GroupLayout;
 import javax.swing.Icon;
@@ -23,6 +21,8 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.LayoutStyle;
 import org.gwaspi.model.Operation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -31,6 +31,9 @@ import org.gwaspi.model.Operation;
  * CEXS-UPF-PRBB
  */
 public class ChartDefaultDisplay extends JPanel {
+
+	private final static Logger log
+			= LoggerFactory.getLogger(ManhattanChartDisplay.class);
 
 	// Variables declaration - do not modify
 	private static JPanel pnl_Chart;
@@ -128,7 +131,7 @@ public class ChartDefaultDisplay extends JPanel {
 				pnl_Chart.add(scrl_Chart, BorderLayout.CENTER);
 			}
 		} catch (IOException ex) {
-			Logger.getLogger(ChartDefaultDisplay.class.getName()).log(Level.SEVERE, null, ex);
+			log.error(null, ex);
 		}
 	}
 
@@ -154,9 +157,9 @@ public class ChartDefaultDisplay extends JPanel {
 					Utils.copyFile(origFile, newFile);
 				}
 			} catch (IOException ex) {
-				Logger.getLogger(ChartDefaultDisplay.class.getName()).log(Level.SEVERE, null, ex);
+				log.error(null, ex);
 			} catch (Exception ex) {
-				//Logger.getLogger(ChartDefaultDisplay.class.getName()).log(Level.SEVERE, null, ex);
+				//log.error(null, ex);
 			}
 		}
 	}
@@ -179,7 +182,7 @@ public class ChartDefaultDisplay extends JPanel {
 				GWASpiExplorerPanel.pnl_Content = new MatrixAnalysePanel(op.getParentMatrixId(), opId);
 				GWASpiExplorerPanel.scrl_Content.setViewportView(GWASpiExplorerPanel.pnl_Content);
 			} catch (IOException ex) {
-				Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
+				log.error(null, ex);
 			}
 		}
 	}

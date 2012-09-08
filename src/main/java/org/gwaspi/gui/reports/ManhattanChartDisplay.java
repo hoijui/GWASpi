@@ -16,8 +16,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.AbstractAction;
 import javax.swing.GroupLayout;
 import javax.swing.ImageIcon;
@@ -29,6 +27,8 @@ import javax.swing.JScrollPane;
 import javax.swing.LayoutStyle;
 import org.gwaspi.model.Operation;
 import org.gwaspi.netCDF.operations.OperationSet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -37,6 +37,9 @@ import org.gwaspi.netCDF.operations.OperationSet;
  * CEXS-UPF-PRBB
  */
 public final class ManhattanChartDisplay extends JPanel {
+
+	private final static Logger log
+			= LoggerFactory.getLogger(ManhattanChartDisplay.class);
 
 	// Variables declaration - do not modify
 	private static JPanel pnl_Chart;
@@ -226,7 +229,7 @@ public final class ManhattanChartDisplay extends JPanel {
 
 			chrPlotWidthPad = chrPlotWidth + padGap;
 		} catch (IOException ex) {
-			Logger.getLogger(ManhattanChartDisplay.class.getName()).log(Level.SEVERE, null, ex);
+			log.error(null, ex);
 		}
 	}
 
@@ -307,9 +310,9 @@ public final class ManhattanChartDisplay extends JPanel {
 					Utils.copyFile(origFile, newFile);
 				}
 			} catch (IOException ex) {
-				Logger.getLogger(ManhattanChartDisplay.class.getName()).log(Level.SEVERE, null, ex);
+				log.error(null, ex);
 			} catch (Exception ex) {
-				//Logger.getLogger(ChartDefaultDisplay.class.getName()).log(Level.SEVERE, null, ex);
+				//log.error(null, ex);
 			}
 		}
 	}
@@ -329,7 +332,7 @@ public final class ManhattanChartDisplay extends JPanel {
 				GWASpiExplorerPanel.pnl_Content = new MatrixAnalysePanel(op.getParentMatrixId(), opId);
 				GWASpiExplorerPanel.scrl_Content.setViewportView(GWASpiExplorerPanel.pnl_Content);
 			} catch (IOException ex) {
-				Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
+				log.error(null, ex);
 			}
 		}
 	}

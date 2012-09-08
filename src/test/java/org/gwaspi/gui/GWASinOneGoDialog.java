@@ -9,8 +9,6 @@ import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.DefaultComboBoxModel;
@@ -23,12 +21,17 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author u56124
  */
 public class GWASinOneGoDialog extends JFrame {
+
+	private final static Logger log
+			= LoggerFactory.getLogger(GWASinOneGoDialog.class);
 
 	// Variables declaration - do not modify
 	private static JButton btn_Go;
@@ -255,7 +258,7 @@ public class GWASinOneGoDialog extends JFrame {
 		try {
 			URLInDefaultBrowser.browseHelpURL(HelpURLs.QryURL.fileFormats);
 		} catch (IOException ex) {
-			Logger.getLogger(GWASinOneGoDialog.class.getName()).log(Level.SEVERE, null, ex);
+			log.error(null, ex);
 		}
 	}
 

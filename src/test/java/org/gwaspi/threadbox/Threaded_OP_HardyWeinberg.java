@@ -1,10 +1,10 @@
 package org.gwaspi.threadbox;
 
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.gwaspi.model.Operation;
-import org.gwaspi.netCDF.operations.*;
+import org.gwaspi.netCDF.operations.OP_HardyWeinberg;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.ma2.InvalidRangeException;
 
 /**
@@ -15,6 +15,9 @@ import ucar.ma2.InvalidRangeException;
  */
 public class Threaded_OP_HardyWeinberg implements Runnable {
 
+	private final static Logger log
+			= LoggerFactory.getLogger(Threaded_OP_HardyWeinberg.class);
+
 	private Thread runner;
 	private int resultOpId;
 	private static Operation censusOP;
@@ -22,7 +25,9 @@ public class Threaded_OP_HardyWeinberg implements Runnable {
 
 	public Threaded_OP_HardyWeinberg(String threadName,
 			Operation _censusOP,
-			String _hwName) throws InterruptedException {
+			String _hwName)
+			throws InterruptedException
+	{
 		org.gwaspi.global.Config.initPreferences(false, null);
 		censusOP = _censusOP;
 		hwName = _hwName;
@@ -37,9 +42,9 @@ public class Threaded_OP_HardyWeinberg implements Runnable {
 			resultOpId = OP_HardyWeinberg.processMatrix(censusOP,
 					hwName);
 		} catch (IOException ex) {
-			Logger.getLogger(Threaded_OP_HardyWeinberg.class.getName()).log(Level.SEVERE, null, ex);
+			log.error(null, ex);
 		} catch (InvalidRangeException ex) {
-			Logger.getLogger(Threaded_OP_HardyWeinberg.class.getName()).log(Level.SEVERE, null, ex);
+			log.error(null, ex);
 		}
 	}
 }

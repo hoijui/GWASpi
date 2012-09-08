@@ -12,8 +12,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.gwaspi.netCDF.markers.MarkerSet_opt;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.gwaspi.netCDF.matrices.MatrixMetadata;
@@ -379,10 +377,10 @@ public final class LoadGTFromGWASpiFiles {
 			}
 		} catch (IOException ex) {
 			org.gwaspi.gui.utils.Dialogs.showWarningDialogue("A table saving error has occurred");
-			Logger.getLogger(LoadGTFromGWASpiFiles.class.getName()).log(Level.SEVERE, null, ex);
+			ex.printStackTrace();
 		} catch (Exception ex) {
 			org.gwaspi.gui.utils.Dialogs.showWarningDialogue("A table saving error has occurred");
-			Logger.getLogger(LoadGTFromGWASpiFiles.class.getName()).log(Level.SEVERE, null, ex);
+			ex.printStackTrace();
 		}
 	}
 

@@ -15,8 +15,6 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.gwaspi.netCDF.markers.MarkerSet_opt;
 import org.gwaspi.netCDF.operations.OperationMetadata;
 import org.gwaspi.netCDF.operations.OperationSet;
@@ -37,6 +35,8 @@ import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 import org.jfree.ui.RectangleAnchor;
 import org.jfree.ui.TextAnchor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.nc2.NetcdfFile;
 
 /**
@@ -46,6 +46,9 @@ import ucar.nc2.NetcdfFile;
  * CEXS-UPF-PRBB
  */
 public class GenericReportGenerator {
+
+	private final static Logger log
+			= LoggerFactory.getLogger(GenericReportGenerator.class);
 
 	private static Map<String, Object> labelerHM = new LinkedHashMap<String, Object>();
 	private static long snpNumber = 1000000;
@@ -489,7 +492,7 @@ public class GenericReportGenerator {
 			resultXYDataset = new XYSeriesCollection(dataSeries);
 			//</editor-fold>
 		} catch (IOException ex) {
-			Logger.getLogger(GenericReportGenerator.class.getName()).log(Level.SEVERE, null, ex);
+			log.error(null, ex);
 		}
 
 		return resultXYDataset;
@@ -509,7 +512,6 @@ public class GenericReportGenerator {
 		XYDataset resultXYDataset = null;
 
 		try {
-
 			Map<String, Object> dataSetLHM = new LinkedHashMap<String, Object>();
 			OperationMetadata rdOPMetadata = new OperationMetadata(opId);
 
@@ -657,7 +659,7 @@ public class GenericReportGenerator {
 			resultXYDataset = new XYSeriesCollection(dataSeries);
 			//</editor-fold>
 		} catch (IOException ex) {
-			Logger.getLogger(GenericReportGenerator.class.getName()).log(Level.SEVERE, null, ex);
+			log.error(null, ex);
 		}
 
 		return resultXYDataset;

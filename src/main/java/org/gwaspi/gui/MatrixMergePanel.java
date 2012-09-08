@@ -16,8 +16,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
@@ -38,6 +36,8 @@ import javax.swing.border.TitledBorder;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.Matrix;
 import org.gwaspi.netCDF.matrices.MatrixMetadata;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.gwaspi.threadbox.MultiOperations;
 
 /**
@@ -47,6 +47,9 @@ import org.gwaspi.threadbox.MultiOperations;
  * CEXS-UPF-PRBB
  */
 public class MatrixMergePanel extends JPanel {
+
+	private final static Logger log
+			= LoggerFactory.getLogger(MatrixMergePanel.class);
 
 	// Variables declaration - do not modify
 	private Matrix parentMatrix;
@@ -408,7 +411,7 @@ public class MatrixMergePanel extends JPanel {
 					Dialogs.showWarningDialogue(Text.Trafo.warnMatrixEncMismatch);
 				}
 			} catch (IOException ex) {
-				Logger.getLogger(MatrixMergePanel.class.getName()).log(Level.SEVERE, null, ex);
+				log.error(null, ex);
 			}
 		}
 	}
@@ -431,7 +434,7 @@ public class MatrixMergePanel extends JPanel {
 				GWASpiExplorerPanel.pnl_Content = new CurrentMatrixPanel(parentMatrix.getMatrixId());
 				GWASpiExplorerPanel.scrl_Content.setViewportView(org.gwaspi.gui.GWASpiExplorerPanel.pnl_Content);
 			} catch (IOException ex) {
-				Logger.getLogger(BackAction.class.getName()).log(Level.SEVERE, null, ex);
+				log.error(null, ex);
 			}
 		}
 	}
@@ -448,7 +451,7 @@ public class MatrixMergePanel extends JPanel {
 			try {
 				URLInDefaultBrowser.browseHelpURL(HelpURLs.QryURL.matrixMerge);
 			} catch (IOException ex) {
-				Logger.getLogger(HelpAction.class.getName()).log(Level.SEVERE, null, ex);
+				log.error(null, ex);
 			}
 		}
 	}

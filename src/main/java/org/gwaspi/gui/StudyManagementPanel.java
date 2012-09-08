@@ -16,8 +16,6 @@ import java.awt.event.FocusEvent;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.GroupLayout;
@@ -38,6 +36,8 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.tree.DefaultMutableTreeNode;
 import org.gwaspi.model.Study;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.gwaspi.threadbox.MultiOperations;
 
 /**
@@ -47,6 +47,9 @@ import org.gwaspi.threadbox.MultiOperations;
  * CEXS-UPF-PRBB
  */
 public class StudyManagementPanel extends JPanel {
+
+	private final static Logger log
+			= LoggerFactory.getLogger(StudyManagementPanel.class);
 
 	// Variables declaration
 	private Study study;
@@ -281,7 +284,7 @@ public class StudyManagementPanel extends JPanel {
 					lbl_NewStudyName.setForeground(Color.red);
 				}
 			} catch (IOException ex) {
-				Logger.getLogger(StudyManagementPanel.class.getName()).log(Level.SEVERE, null, ex);
+				log.error(null, ex);
 			}
 		}
 	}
@@ -325,11 +328,11 @@ public class StudyManagementPanel extends JPanel {
 	//									GWASpiExplorerPanel.scrl_Content.setViewportView(GWASpiExplorerPanel.pnl_Content);
 	//									GWASpiExplorerPanel.updateTreePanel(true);
 	//								} catch (IOException ex) {
-	//									Logger.getLogger(StudyManagementPanel.class.getName()).log(Level.SEVERE, null, ex);
+	//									log.error(null, ex);
 	//								}
 	//
 	//							} catch (IOException ex) {
-	//								Logger.getLogger(StudyManagementPanel.class.getName()).log(Level.SEVERE, null, ex);
+	//								log.error(null, ex);
 	//							}
 							}
 						} else {
@@ -339,7 +342,7 @@ public class StudyManagementPanel extends JPanel {
 					try {
 						GWASpiExplorerPanel.updateTreePanel(true);
 					} catch (IOException ex) {
-						Logger.getLogger(StudyManagementPanel.class.getName()).log(Level.SEVERE, null, ex);
+						log.error(null, ex);
 					}
 				}
 			}
@@ -373,7 +376,7 @@ public class StudyManagementPanel extends JPanel {
 			try {
 				URLInDefaultBrowser.browseHelpURL(HelpURLs.QryURL.createStudy);
 			} catch (IOException ex) {
-				Logger.getLogger(CurrentMatrixPanel.class.getName()).log(Level.SEVERE, null, ex);
+				log.error(null, ex);
 			}
 		}
 	}

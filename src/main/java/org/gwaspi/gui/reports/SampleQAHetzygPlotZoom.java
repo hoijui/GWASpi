@@ -18,8 +18,6 @@ import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.GroupLayout;
@@ -55,12 +53,17 @@ import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.ui.RectangleAnchor;
 import org.jfree.ui.TextAnchor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author fernando
  */
 public final class SampleQAHetzygPlotZoom extends JPanel {
+
+	private final static Logger log
+			= LoggerFactory.getLogger(SampleQAHetzygPlotZoom.class);
 
 	private static int opId;
 	private static Operation op;
@@ -113,7 +116,7 @@ public final class SampleQAHetzygPlotZoom extends JPanel {
 			rdOPMetadata = new OperationMetadata(opId);
 			rdMatrixMetadata = new MatrixMetadata(rdOPMetadata.getParentMatrixId());
 		} catch (IOException ex) {
-			Logger.getLogger(SampleQAHetzygPlotZoom.class.getName()).log(Level.SEVERE, null, ex);
+			log.error(null, ex);
 		}
 
 		initChart();
@@ -552,7 +555,7 @@ public final class SampleQAHetzygPlotZoom extends JPanel {
 				GWASpiExplorerPanel.pnl_Content = new SampleQAHetzygPlotZoom(opId);
 				GWASpiExplorerPanel.scrl_Content.setViewportView(GWASpiExplorerPanel.pnl_Content);
 			} catch (IOException ex) {
-				Logger.getLogger(SampleQAHetzygPlotZoom.class.getName()).log(Level.SEVERE, null, ex);
+				log.error(null, ex);
 			}
 		}
 	}
@@ -570,12 +573,12 @@ public final class SampleQAHetzygPlotZoom extends JPanel {
 				File newFile = new File(Dialogs.selectDirectoryDialog(JOptionPane.OK_OPTION).getPath() + "/SampleQA_hetzyg-missingrat_" + Utils.stripNonAlphaNumeric(rdMatrixMetadata.getMatrixFriendlyName()) + ".png");
 				ChartUtilities.saveChartAsPNG(newFile, zoomChart, scrl_Chart.getWidth(), scrl_Chart.getHeight());
 			} catch (IOException ex) {
-				Logger.getLogger(ChartDefaultDisplay.class.getName()).log(Level.SEVERE, null, ex);
+				log.error(null, ex);
 			} catch (NullPointerException ex) {
 				//Dialogs.showWarningDialogue("A table saving error has occurred");
-				//Logger.getLogger(ChartDefaultDisplay.class.getName()).log(Level.SEVERE, null, ex);
+				//log.error(null, ex);
 			} catch (Exception ex) {
-				Logger.getLogger(ChartDefaultDisplay.class.getName()).log(Level.SEVERE, null, ex);
+				log.error(null, ex);
 			}
 		}
 	}

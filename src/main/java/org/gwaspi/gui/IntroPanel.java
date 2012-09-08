@@ -15,8 +15,6 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.AbstractAction;
 import javax.swing.AbstractListModel;
 import javax.swing.BorderFactory;
@@ -31,6 +29,8 @@ import javax.swing.JTextPane;
 import javax.swing.LayoutStyle;
 import javax.swing.SwingConstants;
 import javax.swing.border.TitledBorder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -39,6 +39,9 @@ import javax.swing.border.TitledBorder;
  * CEXS-UPF-PRBB
  */
 public class IntroPanel extends JPanel {
+
+	private final static Logger log
+			= LoggerFactory.getLogger(IntroPanel.class);
 
 	// Variables declaration - do not modify
 	private static JScrollPane scrl_Logo;
@@ -135,7 +138,7 @@ public class IntroPanel extends JPanel {
 					try {
 						list_HelpMouseReleased(evt);
 					} catch (IOException ex) {
-						Logger.getLogger(IntroPanel.class.getName()).log(Level.SEVERE, null, ex);
+						log.error(null, ex);
 					}
 				}
 			}
@@ -248,7 +251,7 @@ public class IntroPanel extends JPanel {
 				GWASpiExplorerPanel.pnl_Content = new StudyManagementPanel();
 				GWASpiExplorerPanel.scrl_Content.setViewportView(GWASpiExplorerPanel.pnl_Content);
 			} catch (IOException ex) {
-				Logger.getLogger(IntroPanel.class.getName()).log(Level.SEVERE, null, ex);
+				log.error(null, ex);
 			}
 		}
 	}
@@ -282,7 +285,7 @@ public class IntroPanel extends JPanel {
 				try {
 					list_HelpMouseReleased(evt);
 				} catch (IOException ex) {
-					Logger.getLogger(IntroPanel.class.getName()).log(Level.SEVERE, null, ex);
+					log.error(null, ex);
 				}
 			}
 
@@ -310,7 +313,7 @@ public class IntroPanel extends JPanel {
 				try {
 					list_HelpMouseReleased(evt);
 				} catch (IOException ex) {
-					Logger.getLogger(IntroPanel.class.getName()).log(Level.SEVERE, null, ex);
+					log.error(null, ex);
 				}
 			}
 

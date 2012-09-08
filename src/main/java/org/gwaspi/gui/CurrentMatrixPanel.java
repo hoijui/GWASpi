@@ -12,8 +12,6 @@ import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.GroupLayout;
@@ -32,6 +30,8 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.tree.DefaultMutableTreeNode;
 import org.gwaspi.model.Matrix;
 import org.gwaspi.model.OperationsList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.gwaspi.threadbox.MultiOperations;
 
 /**
@@ -41,6 +41,9 @@ import org.gwaspi.threadbox.MultiOperations;
  * CEXS-UPF-PRBB
  */
 public class CurrentMatrixPanel extends JPanel {
+
+	private final static Logger log
+			= LoggerFactory.getLogger(CurrentMatrixPanel.class);
 
 	// Variables declaration
 	private Matrix matrix;
@@ -306,7 +309,6 @@ public class CurrentMatrixPanel extends JPanel {
 				.addComponent(pnl_Footer, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 				.addContainerGap()));
 		// </editor-fold>
-
 	}
 
 	//<editor-fold defaultstate="collapsed" desc="HELPERS">
@@ -326,7 +328,7 @@ public class CurrentMatrixPanel extends JPanel {
 				org.gwaspi.gui.GWASpiExplorerPanel.pnl_Content = new MatrixExtractPanel(matrix.getMatrixId(), "", "");
 				org.gwaspi.gui.GWASpiExplorerPanel.scrl_Content.setViewportView(org.gwaspi.gui.GWASpiExplorerPanel.pnl_Content);
 			} catch (IOException ex) {
-				Logger.getLogger(CurrentMatrixPanel.class.getName()).log(Level.SEVERE, null, ex);
+				log.error(null, ex);
 			}
 		}
 	}
@@ -348,7 +350,7 @@ public class CurrentMatrixPanel extends JPanel {
 				org.gwaspi.gui.GWASpiExplorerPanel.pnl_Content = new MatrixTrafoPanel(matrix.getMatrixId());
 				org.gwaspi.gui.GWASpiExplorerPanel.scrl_Content.setViewportView(org.gwaspi.gui.GWASpiExplorerPanel.pnl_Content);
 			} catch (IOException ex) {
-				Logger.getLogger(CurrentMatrixPanel.class.getName()).log(Level.SEVERE, null, ex);
+				log.error(null, ex);
 			}
 		}
 	}
@@ -370,7 +372,7 @@ public class CurrentMatrixPanel extends JPanel {
 				org.gwaspi.gui.GWASpiExplorerPanel.pnl_Content = new MatrixAnalysePanel(matrix.getMatrixId(), Integer.MIN_VALUE);
 				org.gwaspi.gui.GWASpiExplorerPanel.scrl_Content.setViewportView(org.gwaspi.gui.GWASpiExplorerPanel.pnl_Content);
 			} catch (IOException ex) {
-				Logger.getLogger(CurrentMatrixPanel.class.getName()).log(Level.SEVERE, null, ex);
+				log.error(null, ex);
 			}
 		}
 	}
@@ -410,7 +412,7 @@ public class CurrentMatrixPanel extends JPanel {
 						}
 
 					} catch (IOException ex) {
-						Logger.getLogger(CurrentMatrixPanel.class.getName()).log(Level.SEVERE, null, ex);
+						log.error(null, ex);
 					}
 				} else {
 					MultiOperations.doExportMatrix(matrix.getStudyId(), matrix.getMatrixId(), format, expPhenotype);
@@ -435,7 +437,7 @@ public class CurrentMatrixPanel extends JPanel {
 				org.gwaspi.gui.GWASpiExplorerPanel.pnl_Content = new MatrixMergePanel(matrix.getMatrixId());
 				org.gwaspi.gui.GWASpiExplorerPanel.scrl_Content.setViewportView(org.gwaspi.gui.GWASpiExplorerPanel.pnl_Content);
 			} catch (IOException ex) {
-				Logger.getLogger(CurrentMatrixPanel.class.getName()).log(Level.SEVERE, null, ex);
+				log.error(null, ex);
 			}
 		}
 	}
@@ -454,7 +456,7 @@ public class CurrentMatrixPanel extends JPanel {
 		public void actionPerformed(ActionEvent evt) {
 			try {
 			} catch (Exception ex) {
-				Logger.getLogger(CurrentMatrixPanel.class.getName()).log(Level.SEVERE, null, ex);
+				log.error(null, ex);
 			}
 			throw new UnsupportedOperationException("Not yet implemented!");
 		}
@@ -483,7 +485,7 @@ public class CurrentMatrixPanel extends JPanel {
 						new String[]{constants.cDBMatrix.f_ID},
 						new Object[]{matrix.getMatrixId()});
 			} catch (IOException ex) {
-				Logger.getLogger(CurrentMatrixPanel.class.getName()).log(Level.SEVERE, null, ex);
+				log.error(null, ex);
 			}
 		}
 	}
@@ -567,7 +569,7 @@ public class CurrentMatrixPanel extends JPanel {
 						}
 					}
 				} catch (IOException ex) {
-					Logger.getLogger(CurrentStudyPanel.class.getName()).log(Level.SEVERE, null, ex);
+					log.error(null, ex);
 				}
 			}
 		}
@@ -590,7 +592,7 @@ public class CurrentMatrixPanel extends JPanel {
 				org.gwaspi.gui.GWASpiExplorerPanel.pnl_Content = new CurrentStudyPanel(matrix.getStudyId());
 				org.gwaspi.gui.GWASpiExplorerPanel.scrl_Content.setViewportView(org.gwaspi.gui.GWASpiExplorerPanel.pnl_Content);
 			} catch (IOException ex) {
-				Logger.getLogger(CurrentMatrixPanel.class.getName()).log(Level.SEVERE, null, ex);
+				log.error(null, ex);
 			}
 		}
 	}
@@ -607,7 +609,7 @@ public class CurrentMatrixPanel extends JPanel {
 			try {
 				org.gwaspi.gui.utils.URLInDefaultBrowser.browseHelpURL(HelpURLs.QryURL.currentMatrix);
 			} catch (IOException ex) {
-				Logger.getLogger(CurrentMatrixPanel.class.getName()).log(Level.SEVERE, null, ex);
+				log.error(null, ex);
 			}
 		}
 	}

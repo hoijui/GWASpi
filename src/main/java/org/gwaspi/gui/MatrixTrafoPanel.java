@@ -15,8 +15,6 @@ import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.io.File;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.GroupLayout;
@@ -33,6 +31,8 @@ import javax.swing.SwingUtilities;
 import javax.swing.border.TitledBorder;
 import org.gwaspi.model.Matrix;
 import org.gwaspi.netCDF.matrices.MatrixMetadata;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.gwaspi.threadbox.MultiOperations;
 
 /**
@@ -42,6 +42,9 @@ import org.gwaspi.threadbox.MultiOperations;
  * CEXS-UPF-PRBB
  */
 public class MatrixTrafoPanel extends JPanel {
+
+	private final static Logger log
+			= LoggerFactory.getLogger(MatrixTrafoPanel.class);
 
 	// Variables declaration - do not modify
 	private Matrix parentMatrix;
@@ -325,7 +328,7 @@ public class MatrixTrafoPanel extends JPanel {
 						Dialogs.showWarningDialogue(Text.Trafo.warnNotAB12);
 					}
 				} catch (IOException ex) {
-					Logger.getLogger(MatrixTrafoPanel.class.getName()).log(Level.SEVERE, null, ex);
+					log.error(null, ex);
 				}
 			} else {
 				Dialogs.showWarningDialogue(Text.Matrix.warnInputNewMatrixName);
@@ -363,7 +366,7 @@ public class MatrixTrafoPanel extends JPanel {
 						Dialogs.showWarningDialogue(Text.Trafo.warnNot1234);
 					}
 				} catch (IOException ex) {
-					Logger.getLogger(MatrixTrafoPanel.class.getName()).log(Level.SEVERE, null, ex);
+					log.error(null, ex);
 				}
 			} else {
 				Dialogs.showWarningDialogue(Text.Matrix.warnInputNewMatrixName);
@@ -404,7 +407,7 @@ public class MatrixTrafoPanel extends JPanel {
 						Dialogs.showWarningDialogue(Text.Trafo.warnNotACGTor1234);
 					}
 				} catch (Exception ex) {
-					Logger.getLogger(CurrentMatrixPanel.class.getName()).log(Level.SEVERE, null, ex);
+					log.error(null, ex);
 				}
 			} else {
 				Dialogs.showWarningDialogue(Text.Matrix.warnInputNewMatrixName);
@@ -430,7 +433,7 @@ public class MatrixTrafoPanel extends JPanel {
 				GWASpiExplorerPanel.pnl_Content = new CurrentMatrixPanel(parentMatrix.getMatrixId());
 				GWASpiExplorerPanel.scrl_Content.setViewportView(GWASpiExplorerPanel.pnl_Content);
 			} catch (IOException ex) {
-				Logger.getLogger(MatrixTrafoPanel.class.getName()).log(Level.SEVERE, null, ex);
+				log.error(null, ex);
 			}
 		}
 	}
@@ -447,7 +450,7 @@ public class MatrixTrafoPanel extends JPanel {
 			try {
 				URLInDefaultBrowser.browseHelpURL(HelpURLs.QryURL.matrixTranslate);
 			} catch (IOException ex) {
-				Logger.getLogger(CurrentMatrixPanel.class.getName()).log(Level.SEVERE, null, ex);
+				log.error(null, ex);
 			}
 		}
 	}

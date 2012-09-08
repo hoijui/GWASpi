@@ -5,12 +5,12 @@ import org.gwaspi.global.Text;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.text.Position;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.gwaspi.samples.SampleManager;
 
 /**
@@ -20,6 +20,9 @@ import org.gwaspi.samples.SampleManager;
  * CEXS-UPF-PRBB
  */
 public class GWASpiExplorerNodes {
+
+	private final static Logger log
+			= LoggerFactory.getLogger(GWASpiExplorerNodes.class);
 
 	private GWASpiExplorerNodes() {
 	}
@@ -36,13 +39,13 @@ public class GWASpiExplorerNodes {
 		public NodeElementInfo(int _parentNodeId,
 				int _nodeId,
 				String _nodeType,
-				String _nodeName) {
+				String _nodeName)
+		{
 			parentNodeId = _parentNodeId;
 			nodeId = _nodeId;
 			nodeType = _nodeType;
 			nodeUniqueName = _nodeName;
 			isCollapsable = false;
-
 		}
 
 		@Override
@@ -66,9 +69,8 @@ public class GWASpiExplorerNodes {
 					study.getStudyId(),
 					org.gwaspi.global.Text.App.treeStudy,
 					"SID: " + study.getStudyId() + " - " + study.getStudyName()));
-
 		} catch (IOException ex) {
-			Logger.getLogger(GWASpiExplorer.class.getName()).log(Level.SEVERE, null, ex);
+			log.error(null, ex);
 		}
 
 		return tn;
@@ -83,7 +85,7 @@ public class GWASpiExplorerNodes {
 					org.gwaspi.global.Text.App.treeMatrix,
 					"MX: " + matrixId + " - " + mx.matrixMetadata.getMatrixFriendlyName()));
 		} catch (IOException ex) {
-			Logger.getLogger(GWASpiExplorer.class.getName()).log(Level.SEVERE, null, ex);
+			log.error(null, ex);
 		}
 		return tn;
 	}
@@ -93,7 +95,6 @@ public class GWASpiExplorerNodes {
 		// CHECK IF STUDY EXISTS
 		List<Map<String, Object>> rs = SampleManager.getAllSampleInfoFromDBByPoolID(studyId);
 		if (!rs.isEmpty()) {
-
 			tn = new DefaultMutableTreeNode(new NodeElementInfo(studyId, // parentNodeId
 					studyId, // nodeId
 					org.gwaspi.global.Text.App.treeSampleInfo, // nodeType
@@ -111,7 +112,7 @@ public class GWASpiExplorerNodes {
 					org.gwaspi.global.Text.App.treeOperation,
 					"OP: " + opId + " - " + op.getOperationFriendlyName()));
 		} catch (IOException ex) {
-			Logger.getLogger(GWASpiExplorer.class.getName()).log(Level.SEVERE, null, ex);
+			log.error(null, ex);
 		}
 		return tn;
 	}
@@ -134,7 +135,7 @@ public class GWASpiExplorerNodes {
 					org.gwaspi.global.Text.App.treeOperation,
 					"OP: " + opId + " - " + op.getOperationFriendlyName()));
 		} catch (IOException ex) {
-			Logger.getLogger(GWASpiExplorer.class.getName()).log(Level.SEVERE, null, ex);
+			log.error(null, ex);
 		}
 		return tn;
 	}
@@ -149,7 +150,7 @@ public class GWASpiExplorerNodes {
 					org.gwaspi.global.Text.App.treeReport,
 					"RP: " + rpId + " - " + rp.getReportFriendlyName()));
 		} catch (IOException ex) {
-			Logger.getLogger(GWASpiExplorer.class.getName()).log(Level.SEVERE, null, ex);
+			log.error(null, ex);
 		}
 		return tn;
 	}
