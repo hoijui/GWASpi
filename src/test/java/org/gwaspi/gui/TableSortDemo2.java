@@ -27,7 +27,6 @@ public class TableSortDemo2 extends JFrame {
 	private JLabel titleLabel = new JLabel("Click table header to sort the column.");
 
 	public TableSortDemo2() {
-		super();
 		setSize(600, 300);
 
 		tableModel = new MyTableModel();

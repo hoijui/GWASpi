@@ -18,7 +18,6 @@ public class JTextAreaLimited extends PlainDocument {
 	private int limit;
 
 	public JTextAreaLimited(int limit) {
-		super();
 		this.limit = limit;
 	}
 

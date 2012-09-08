@@ -15,7 +15,6 @@ public class JTextFieldLimited extends PlainDocument {
 	private int limit;
 
 	public JTextFieldLimited(int limit) {
-		super();
 		this.limit = limit;
 	}
 
