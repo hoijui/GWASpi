@@ -67,8 +67,8 @@ public class StudyList {
 					studyTable[i][3] = timestamp.substring(0, timestamp.lastIndexOf('.'));
 				}
 			}
-		} catch (Exception e) {
-			//e.printStackTrace();
+		} catch (Exception ex) {
+			//log.error(null, ex);
 		}
 		return studyTable;
 	}

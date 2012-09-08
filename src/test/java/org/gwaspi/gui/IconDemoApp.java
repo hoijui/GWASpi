@@ -49,6 +49,8 @@ import javax.swing.JLabel;
 import javax.swing.JToolBar;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This application is intended to demonstrate the loading of image files into icons
@@ -72,10 +74,14 @@ import javax.swing.SwingWorker;
  */
 public class IconDemoApp extends JFrame {
 
+	private final static Logger log
+			= LoggerFactory.getLogger(IconDemoApp.class);
+
 	private JLabel photographLabel = new JLabel();
 	private JToolBar buttonBar = new JToolBar();
 	private String imagedir = "";
 	private MissingIcon placeholderIcon = new MissingIcon();
+
 	/**
 	 * List of all the descriptions of the image files. These correspond one to
 	 * one with the image file names
@@ -195,7 +201,7 @@ public class IconDemoApp extends JFrame {
 		if (imgURL != null) {
 			return new ImageIcon(imgURL, description);
 		} else {
-			System.err.println("Couldn't find file: " + path);
+			log.error("Couldn't find file: {}", path);
 			return null;
 		}
 	}

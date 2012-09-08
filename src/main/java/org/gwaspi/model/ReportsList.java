@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -14,6 +16,9 @@ import java.util.Map;
  * CEXS-UPF-PRBB
  */
 public class ReportsList {
+
+	private final static Logger log
+			= LoggerFactory.getLogger(ReportsList.class);
 
 	public List<model.Report> reportsListAL = new ArrayList<model.Report>();
 
@@ -47,8 +52,8 @@ public class ReportsList {
 		DbManager studyDbManager = ServiceLocator.getDbManager(dbName);
 		try {
 			rs = studyDbManager.executeSelectStatement("SELECT * FROM " + org.gwaspi.constants.cDBGWASpi.SCH_MATRICES + "." + org.gwaspi.constants.cDBReports.T_REPORTS + " WHERE " + org.gwaspi.constants.cDBReports.f_PARENT_OPID + "=" + opId + " ORDER BY " + org.gwaspi.constants.cDBMatrix.f_ID + " DESC  WITH RR");
-		} catch (Exception e) {
-			e.printStackTrace();
+		} catch (Exception ex) {
+			log.error(null, ex);
 		}
 
 		return rs;
@@ -60,8 +65,8 @@ public class ReportsList {
 		DbManager studyDbManager = ServiceLocator.getDbManager(dbName);
 		try {
 			rs = studyDbManager.executeSelectStatement("SELECT * FROM " + org.gwaspi.constants.cDBGWASpi.SCH_MATRICES + "." + org.gwaspi.constants.cDBReports.T_REPORTS + " WHERE " + org.gwaspi.constants.cDBReports.f_PARENT_MATRIXID + "=" + matrixId + " ORDER BY " + org.gwaspi.constants.cDBMatrix.f_ID + " DESC  WITH RR");
-		} catch (Exception e) {
-			e.printStackTrace();
+		} catch (Exception ex) {
+			log.error(null, ex);
 		}
 
 		return rs;
@@ -70,11 +75,10 @@ public class ReportsList {
 	public static Object[][] getReportsTable(int opId) throws IOException {
 		Object[][] reportsTable = null;
 
-		List<Map<String, Object>> rs = null;
 		String dbName = org.gwaspi.constants.cDBGWASpi.DB_DATACENTER;
 		DbManager dbManager = ServiceLocator.getDbManager(dbName);
 		try {
-			rs = dbManager.executeSelectStatement("SELECT * FROM " + org.gwaspi.constants.cDBGWASpi.SCH_MATRICES + "." + org.gwaspi.constants.cDBReports.T_REPORTS + " WHERE " + org.gwaspi.constants.cDBReports.f_ID + "=" + opId + "  WITH RR");
+			List<Map<String, Object>> rs = dbManager.executeSelectStatement("SELECT * FROM " + org.gwaspi.constants.cDBGWASpi.SCH_MATRICES + "." + org.gwaspi.constants.cDBReports.T_REPORTS + " WHERE " + org.gwaspi.constants.cDBReports.f_ID + "=" + opId + "  WITH RR");
 
 			reportsTable = new Object[rs.size()][3];
 			for (int i = 0; i < rs.size(); i++) {
@@ -85,8 +89,8 @@ public class ReportsList {
 					reportsTable[i][2] = rs.get(i).get(org.gwaspi.constants.cDBReports.f_DESCRIPTION).toString();
 				}
 			}
-		} catch (Exception e) {
-			//e.printStackTrace();
+		} catch (Exception ex) {
+			//log.error(null, ex);
 		}
 		return reportsTable;
 	}

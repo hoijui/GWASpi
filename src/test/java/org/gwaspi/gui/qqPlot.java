@@ -57,6 +57,8 @@ import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Draws a scatter plot over and over for 10 seconds.
@@ -66,6 +68,9 @@ import org.jfree.data.xy.XYSeriesCollection;
  * I get 13-14 charts per second.
  */
 public class qqPlot implements ActionListener {
+
+	private final static Logger log
+			= LoggerFactory.getLogger(qqPlot.class);
 
 	/**
 	 * A flag that indicates when time is up.
@@ -151,9 +156,8 @@ public class qqPlot implements ActionListener {
 					chart,
 					400,
 					400);
-
-		} catch (IOException e) {
-			System.err.println("Problem occurred creating chart.");
+		} catch (IOException ex) {
+			log.error("Problem occurred creating chart", ex);
 		}
 	}
 

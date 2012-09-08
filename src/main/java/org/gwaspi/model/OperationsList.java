@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -15,6 +17,9 @@ import java.util.Map;
  * CEXS-UPF-PRBB
  */
 public class OperationsList {
+
+	private final static Logger log
+			= LoggerFactory.getLogger(OperationsList.class);
 
 	public List<model.Operation> operationsListAL = new ArrayList<model.Operation>();
 
@@ -85,8 +90,8 @@ public class OperationsList {
 		DbManager studyDbManager = ServiceLocator.getDbManager(dbName);
 		try {
 			rs = studyDbManager.executeSelectStatement("SELECT * FROM " + org.gwaspi.constants.cDBGWASpi.SCH_MATRICES + "." + org.gwaspi.constants.cDBOperations.T_OPERATIONS + " WHERE " + org.gwaspi.constants.cDBOperations.f_PARENT_MATRIXID + "=" + matrixId + "  WITH RR");
-		} catch (Exception e) {
-			e.printStackTrace();
+		} catch (Exception ex) {
+			log.error(null, ex);
 		}
 
 		return rs;
@@ -103,7 +108,7 @@ public class OperationsList {
 
 			table = new Object[rs.size()][4];
 			for (int i = 0; i < rs.size(); i++) {
-				//PREVENT PHANTOM-DB READS EXCEPTIONS
+				// PREVENT PHANTOM-DB READS EXCEPTIONS
 				if (!rs.isEmpty() && rs.get(i).size() == org.gwaspi.constants.cDBOperations.T_CREATE_OPERATIONS.length) {
 					table[i][0] = (Integer) rs.get(i).get(org.gwaspi.constants.cDBOperations.f_ID);
 					table[i][1] = rs.get(i).get(org.gwaspi.constants.cDBOperations.f_OP_NAME).toString();
@@ -112,8 +117,8 @@ public class OperationsList {
 					table[i][3] = timestamp.substring(0, timestamp.lastIndexOf('.'));
 				}
 			}
-		} catch (Exception e) {
-			//e.printStackTrace();
+		} catch (Exception ex) {
+			//log.error(null, ex);
 		}
 		return table;
 	}
@@ -145,13 +150,13 @@ public class OperationsList {
 					table[i + 1][3] = timestamp.substring(0, timestamp.lastIndexOf('.'));
 				}
 			}
-		} catch (Exception e) {
-//			e.printStackTrace();
+		} catch (Exception ex) {
+//			log.error(null, ex);
 		}
 		return table;
 	}
-
 	//</editor-fold>
+
 	//<editor-fold defaultstate="collapsed" desc="HELPERS">
 	public int getIdOfLastOperationTypeOccurance(org.gwaspi.constants.cNetCDF.Defaults.OPType opType) {
 		int result = Integer.MIN_VALUE;
