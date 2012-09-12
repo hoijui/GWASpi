@@ -1,8 +1,11 @@
 package org.gwaspi.netCDF.operations;
 
+import org.gwaspi.constants.cDBSamples;
+import org.gwaspi.constants.cImport;
 import org.gwaspi.constants.cImport.Annotation.GWASpi;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.AlleleBytes;
+import org.gwaspi.global.Text;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -230,13 +233,13 @@ public class OP_MarkerCensus_opt {
 					int count = 0;
 					while (count < rsSamplesInfo.size()) {
 						// PREVENT PHANTOM-DB READS EXCEPTIONS
-						if (!rsSamplesInfo.isEmpty() && rsSamplesInfo.get(count).size() == org.gwaspi.constants.cDBSamples.T_CREATE_SAMPLES_INFO.length) {
-							String tempSampleId = rsSamplesInfo.get(count).get(org.gwaspi.constants.cDBSamples.f_SAMPLE_ID).toString();
+						if (!rsSamplesInfo.isEmpty() && rsSamplesInfo.get(count).size() == cDBSamples.T_CREATE_SAMPLES_INFO.length) {
+							String tempSampleId = rsSamplesInfo.get(count).get(cDBSamples.f_SAMPLE_ID).toString();
 							if (wrSampleSetLHM.containsKey(tempSampleId)) {
 								String sex = "0";
 								String affection = "0";
-								Object tmpSex = rsSamplesInfo.get(count).get(org.gwaspi.constants.cDBSamples.f_SEX);
-								Object tmpAffection = rsSamplesInfo.get(count).get(org.gwaspi.constants.cDBSamples.f_AFFECTION);
+								Object tmpSex = rsSamplesInfo.get(count).get(cDBSamples.f_SEX);
+								Object tmpAffection = rsSamplesInfo.get(count).get(cDBSamples.f_AFFECTION);
 								if (tmpSex != null) {
 									sex = tmpSex.toString();
 								}
@@ -260,7 +263,7 @@ public class OP_MarkerCensus_opt {
 					String l;
 					while ((l = phenotypeBR.readLine()) != null) {
 
-						String[] cVals = l.split(org.gwaspi.constants.cImport.Separators.separators_CommaSpaceTab_rgxp);
+						String[] cVals = l.split(cImport.Separators.separators_CommaSpaceTab_rgxp);
 						String[] info = new String[]{cVals[GWASpi.sex], cVals[GWASpi.affection]};
 						samplesInfoLHM.put(cVals[1], info);
 
@@ -274,10 +277,10 @@ public class OP_MarkerCensus_opt {
 							int count = 0;
 							boolean seeking = true;
 							while (count < rsSamplesInfo.size() && seeking) {
-								Object tmpSampleId = rsSamplesInfo.get(count).get(org.gwaspi.constants.cDBSamples.f_SAMPLE_ID);
+								Object tmpSampleId = rsSamplesInfo.get(count).get(cDBSamples.f_SAMPLE_ID);
 								if (tmpSampleId.equals(sampleId)) {
-									Object tmpSex = rsSamplesInfo.get(count).get(org.gwaspi.constants.cDBSamples.f_SEX);
-									Object tmpAffection = rsSamplesInfo.get(count).get(org.gwaspi.constants.cDBSamples.f_AFFECTION);
+									Object tmpSex = rsSamplesInfo.get(count).get(cDBSamples.f_SEX);
+									Object tmpAffection = rsSamplesInfo.get(count).get(cDBSamples.f_AFFECTION);
 									if (tmpSex != null) {
 										sex = tmpSex.toString();
 									}
@@ -315,7 +318,7 @@ public class OP_MarkerCensus_opt {
 					rdMarkerSet.getMarkerIdSetLHM().clear();
 				}
 
-				log.info(org.gwaspi.global.Text.All.processing);
+				log.info(Text.All.processing);
 
 				int countMarkers = 0;
 				int chunkSize = Math.round(org.gwaspi.gui.StartGWASpi.maxProcessMarkers / 4);
@@ -734,7 +737,7 @@ public class OP_MarkerCensus_opt {
 						wrChunkedMarkerCensusLHM.put(markerId, census);
 
 						StringBuilder sb = new StringBuilder();
-						byte[] alleles = org.gwaspi.constants.cNetCDF.Defaults.DEFAULT_GT;
+						byte[] alleles = cNetCDF.Defaults.DEFAULT_GT;
 						Iterator<Byte> knit = knownAlleles.keySet().iterator();
 						if (knownAlleles.size() == 2) {
 							Byte allele1 = knit.next();
@@ -821,7 +824,7 @@ public class OP_MarkerCensus_opt {
 			}
 		} else {
 			// NO DATA LEFT AFTER THRESHOLD FILTER PICKING
-			log.info(org.gwaspi.global.Text.Operation.warnNoDataLeftAfterPicking);
+			log.info(Text.Operation.warnNoDataLeftAfterPicking);
 		}
 
 		return resultOpId;

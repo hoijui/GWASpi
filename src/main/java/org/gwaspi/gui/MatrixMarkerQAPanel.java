@@ -26,6 +26,7 @@ import org.gwaspi.netCDF.operations.GWASinOneGOParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.gwaspi.threadbox.MultiOperations;
+import org.gwaspi.threadbox.SwingWorkerItemList;
 
 /**
  *
@@ -175,7 +176,7 @@ public class MatrixMarkerQAPanel extends JPanel {
 			try {
 				int opId = currentOP.getOperationId();
 				// TEST IF THE DELETED ITEM IS REQUIRED FOR A QUED WORKER
-				if (org.gwaspi.threadbox.SwingWorkerItemList.permitsDeletion(null, null, opId)) {
+				if (SwingWorkerItemList.permitsDeletion(null, null, opId)) {
 					int option = JOptionPane.showConfirmDialog(dialogParent, Text.Operation.confirmDelete1);
 					if (option == JOptionPane.YES_OPTION) {
 						int deleteReportOption = JOptionPane.showConfirmDialog(dialogParent, Text.Reports.confirmDelete);

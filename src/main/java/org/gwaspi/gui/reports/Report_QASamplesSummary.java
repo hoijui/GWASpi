@@ -1,5 +1,6 @@
 package org.gwaspi.gui.reports;
 
+import org.gwaspi.constants.cImport;
 import org.gwaspi.global.Config;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.GWASpiExplorerPanel;
@@ -256,7 +257,7 @@ public class Report_QASamplesSummary extends JPanel {
 						if (l == null) {
 							break;
 						}
-						String[] cVals = l.split(org.gwaspi.constants.cImport.Separators.separators_SpaceTab_rgxp);
+						String[] cVals = l.split(cImport.Separators.separators_SpaceTab_rgxp);
 						Object[] row = new Object[cVals.length];
 
 						String familyId = cVals[0];
@@ -314,7 +315,7 @@ public class Report_QASamplesSummary extends JPanel {
 					reportTable.setModel(model);
 
 					//<editor-fold defaultstate="collapsed" desc="Linux Sorter">
-	//				if (!org.gwaspi.constants.cGlobal.OSNAME.contains("Windows")) {
+	//				if (!cGlobal.OSNAME.contains("Windows")) {
 	//					RowSorter<TableModel> sorter = new TableRowSorter<TableModel>(model);
 					TableRowSorter sorter = new TableRowSorter(model) {
 						Comparator<Object> comparator = new Comparator<Object>() {
@@ -382,7 +383,7 @@ public class Report_QASamplesSummary extends JPanel {
 
 		@Override
 		public void actionPerformed(ActionEvent evt) {
-			int decision = Dialogs.showOptionDialogue(org.gwaspi.global.Text.All.save, org.gwaspi.global.Text.Reports.selectSaveMode, org.gwaspi.global.Text.Reports.currentReportView, org.gwaspi.global.Text.Reports.completeReport, org.gwaspi.global.Text.All.cancel);
+			int decision = Dialogs.showOptionDialogue(Text.All.save, Text.Reports.selectSaveMode, Text.Reports.currentReportView, Text.Reports.completeReport, Text.All.cancel);
 
 			switch (decision) {
 				case 0:

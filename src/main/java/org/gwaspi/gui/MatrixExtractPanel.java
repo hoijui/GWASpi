@@ -1,5 +1,7 @@
 package org.gwaspi.gui;
 
+import org.gwaspi.constants.cDBSamples;
+import org.gwaspi.constants.cImport;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.utils.BrowserHelpUrlAction;
@@ -126,37 +128,37 @@ public class MatrixExtractPanel extends JPanel {
 		setBorder(BorderFactory.createTitledBorder(null, Text.Trafo.extractData, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("FreeSans", 1, 18))); // NOI18N
 
 		markerPickerTable.add(new Object[]{"All Markers", cNetCDF.Defaults.SetMarkerPickCase.ALL_MARKERS, null});
-		markerPickerTable.add(new Object[]{"Exclude by Chromosomes", cNetCDF.Defaults.SetMarkerPickCase.MARKERS_EXCLUDE_BY_NETCDF_CRITERIA, org.gwaspi.constants.cNetCDF.Variables.VAR_MARKERS_CHR});
-		markerPickerTable.add(new Object[]{"Exclude by MarkerId", cNetCDF.Defaults.SetMarkerPickCase.MARKERS_EXCLUDE_BY_NETCDF_CRITERIA, org.gwaspi.constants.cNetCDF.Variables.VAR_MARKERSET});
-		markerPickerTable.add(new Object[]{"Exclude by RsId", cNetCDF.Defaults.SetMarkerPickCase.MARKERS_EXCLUDE_BY_NETCDF_CRITERIA, org.gwaspi.constants.cNetCDF.Variables.VAR_MARKERS_RSID});
-		markerPickerTable.add(new Object[]{"Include by Chromosomes", cNetCDF.Defaults.SetMarkerPickCase.MARKERS_INCLUDE_BY_NETCDF_CRITERIA, org.gwaspi.constants.cNetCDF.Variables.VAR_MARKERS_CHR});
-		markerPickerTable.add(new Object[]{"Include by MarkerId", cNetCDF.Defaults.SetMarkerPickCase.MARKERS_INCLUDE_BY_NETCDF_CRITERIA, org.gwaspi.constants.cNetCDF.Variables.VAR_MARKERSET});
-		markerPickerTable.add(new Object[]{"Include by RsId", cNetCDF.Defaults.SetMarkerPickCase.MARKERS_INCLUDE_BY_NETCDF_CRITERIA, org.gwaspi.constants.cNetCDF.Variables.VAR_MARKERS_RSID});
+		markerPickerTable.add(new Object[]{"Exclude by Chromosomes", cNetCDF.Defaults.SetMarkerPickCase.MARKERS_EXCLUDE_BY_NETCDF_CRITERIA, cNetCDF.Variables.VAR_MARKERS_CHR});
+		markerPickerTable.add(new Object[]{"Exclude by MarkerId", cNetCDF.Defaults.SetMarkerPickCase.MARKERS_EXCLUDE_BY_NETCDF_CRITERIA, cNetCDF.Variables.VAR_MARKERSET});
+		markerPickerTable.add(new Object[]{"Exclude by RsId", cNetCDF.Defaults.SetMarkerPickCase.MARKERS_EXCLUDE_BY_NETCDF_CRITERIA, cNetCDF.Variables.VAR_MARKERS_RSID});
+		markerPickerTable.add(new Object[]{"Include by Chromosomes", cNetCDF.Defaults.SetMarkerPickCase.MARKERS_INCLUDE_BY_NETCDF_CRITERIA, cNetCDF.Variables.VAR_MARKERS_CHR});
+		markerPickerTable.add(new Object[]{"Include by MarkerId", cNetCDF.Defaults.SetMarkerPickCase.MARKERS_INCLUDE_BY_NETCDF_CRITERIA, cNetCDF.Variables.VAR_MARKERSET});
+		markerPickerTable.add(new Object[]{"Include by RsId", cNetCDF.Defaults.SetMarkerPickCase.MARKERS_INCLUDE_BY_NETCDF_CRITERIA, cNetCDF.Variables.VAR_MARKERS_RSID});
 
-		//markerPickerTable.add(new Object[]{"Exclude by Position Window", cNetCDF.Defaults.SetMarkerPickCase.MARKERS_EXCLUDE_BY_NETCDF_CRITERIA, org.gwaspi.constants.cNetCDF.Variables.VAR_MARKERS_POS});
-		//markerPickerTable.add(new Object[]{"Exclude by Strand", cNetCDF.Defaults.SetMarkerPickCase.MARKERS_EXCLUDE_BY_NETCDF_CRITERIA, org.gwaspi.constants.cNetCDF.Variables.VAR_GT_STRAND});
-		//markerPickerTable.add(new Object[]{"Include by Position Window", cNetCDF.Defaults.SetMarkerPickCase.MARKERS_INCLUDE_BY_NETCDF_CRITERIA, org.gwaspi.constants.cNetCDF.Variables.VAR_MARKERS_POS});
-		//markerPickerTable.add(new Object[]{"Include by Strand", cNetCDF.Defaults.SetMarkerPickCase.MARKERS_INCLUDE_BY_NETCDF_CRITERIA, org.gwaspi.constants.cNetCDF.Variables.VAR_GT_STRAND});
+		//markerPickerTable.add(new Object[]{"Exclude by Position Window", cNetCDF.Defaults.SetMarkerPickCase.MARKERS_EXCLUDE_BY_NETCDF_CRITERIA, cNetCDF.Variables.VAR_MARKERS_POS});
+		//markerPickerTable.add(new Object[]{"Exclude by Strand", cNetCDF.Defaults.SetMarkerPickCase.MARKERS_EXCLUDE_BY_NETCDF_CRITERIA, cNetCDF.Variables.VAR_GT_STRAND});
+		//markerPickerTable.add(new Object[]{"Include by Position Window", cNetCDF.Defaults.SetMarkerPickCase.MARKERS_INCLUDE_BY_NETCDF_CRITERIA, cNetCDF.Variables.VAR_MARKERS_POS});
+		//markerPickerTable.add(new Object[]{"Include by Strand", cNetCDF.Defaults.SetMarkerPickCase.MARKERS_INCLUDE_BY_NETCDF_CRITERIA, cNetCDF.Variables.VAR_GT_STRAND});
 
 
 		samplePickerTable.add(new Object[]{"All Samples", cNetCDF.Defaults.SetSamplePickCase.ALL_SAMPLES, null});
-		samplePickerTable.add(new Object[]{"Exclude by Affection", cNetCDF.Defaults.SetSamplePickCase.SAMPLES_EXCLUDE_BY_DB_FIELD, org.gwaspi.constants.cDBSamples.f_AFFECTION});
-		samplePickerTable.add(new Object[]{"Exclude by Age", cNetCDF.Defaults.SetSamplePickCase.SAMPLES_EXCLUDE_BY_DB_FIELD, org.gwaspi.constants.cDBSamples.f_AGE});
-		samplePickerTable.add(new Object[]{"Exclude by Category", cNetCDF.Defaults.SetSamplePickCase.SAMPLES_EXCLUDE_BY_DB_FIELD, org.gwaspi.constants.cDBSamples.f_CATEGORY});
-		samplePickerTable.add(new Object[]{"Exclude by Disease", cNetCDF.Defaults.SetSamplePickCase.SAMPLES_EXCLUDE_BY_DB_FIELD, org.gwaspi.constants.cDBSamples.f_DISEASE});
-		samplePickerTable.add(new Object[]{"Exclude by FamilyID", cNetCDF.Defaults.SetSamplePickCase.SAMPLES_EXCLUDE_BY_DB_FIELD, org.gwaspi.constants.cDBSamples.f_FAMILY_ID});
-		samplePickerTable.add(new Object[]{"Exclude by Population", cNetCDF.Defaults.SetSamplePickCase.SAMPLES_EXCLUDE_BY_DB_FIELD, org.gwaspi.constants.cDBSamples.f_POPULATION});
-		samplePickerTable.add(new Object[]{"Exclude by SampleID", cNetCDF.Defaults.SetSamplePickCase.SAMPLES_EXCLUDE_BY_DB_FIELD, org.gwaspi.constants.cDBSamples.f_SAMPLE_ID});
-		samplePickerTable.add(new Object[]{"Exclude by Sex", cNetCDF.Defaults.SetSamplePickCase.SAMPLES_EXCLUDE_BY_DB_FIELD, org.gwaspi.constants.cDBSamples.f_SEX});
+		samplePickerTable.add(new Object[]{"Exclude by Affection", cNetCDF.Defaults.SetSamplePickCase.SAMPLES_EXCLUDE_BY_DB_FIELD, cDBSamples.f_AFFECTION});
+		samplePickerTable.add(new Object[]{"Exclude by Age", cNetCDF.Defaults.SetSamplePickCase.SAMPLES_EXCLUDE_BY_DB_FIELD, cDBSamples.f_AGE});
+		samplePickerTable.add(new Object[]{"Exclude by Category", cNetCDF.Defaults.SetSamplePickCase.SAMPLES_EXCLUDE_BY_DB_FIELD, cDBSamples.f_CATEGORY});
+		samplePickerTable.add(new Object[]{"Exclude by Disease", cNetCDF.Defaults.SetSamplePickCase.SAMPLES_EXCLUDE_BY_DB_FIELD, cDBSamples.f_DISEASE});
+		samplePickerTable.add(new Object[]{"Exclude by FamilyID", cNetCDF.Defaults.SetSamplePickCase.SAMPLES_EXCLUDE_BY_DB_FIELD, cDBSamples.f_FAMILY_ID});
+		samplePickerTable.add(new Object[]{"Exclude by Population", cNetCDF.Defaults.SetSamplePickCase.SAMPLES_EXCLUDE_BY_DB_FIELD, cDBSamples.f_POPULATION});
+		samplePickerTable.add(new Object[]{"Exclude by SampleID", cNetCDF.Defaults.SetSamplePickCase.SAMPLES_EXCLUDE_BY_DB_FIELD, cDBSamples.f_SAMPLE_ID});
+		samplePickerTable.add(new Object[]{"Exclude by Sex", cNetCDF.Defaults.SetSamplePickCase.SAMPLES_EXCLUDE_BY_DB_FIELD, cDBSamples.f_SEX});
 
-		samplePickerTable.add(new Object[]{"Include by Affection", cNetCDF.Defaults.SetSamplePickCase.SAMPLES_INCLUDE_BY_DB_FIELD, org.gwaspi.constants.cDBSamples.f_AFFECTION});
-		samplePickerTable.add(new Object[]{"Include by Age", cNetCDF.Defaults.SetSamplePickCase.SAMPLES_INCLUDE_BY_DB_FIELD, org.gwaspi.constants.cDBSamples.f_AGE});
-		samplePickerTable.add(new Object[]{"Include by Category", cNetCDF.Defaults.SetSamplePickCase.SAMPLES_INCLUDE_BY_DB_FIELD, org.gwaspi.constants.cDBSamples.f_CATEGORY});
-		samplePickerTable.add(new Object[]{"Include by Disease", cNetCDF.Defaults.SetSamplePickCase.SAMPLES_INCLUDE_BY_DB_FIELD, org.gwaspi.constants.cDBSamples.f_DISEASE});
-		samplePickerTable.add(new Object[]{"Include by FamilyID", cNetCDF.Defaults.SetSamplePickCase.SAMPLES_INCLUDE_BY_DB_FIELD, org.gwaspi.constants.cDBSamples.f_FAMILY_ID});
-		samplePickerTable.add(new Object[]{"Include by Population", cNetCDF.Defaults.SetSamplePickCase.SAMPLES_INCLUDE_BY_DB_FIELD, org.gwaspi.constants.cDBSamples.f_POPULATION});
-		samplePickerTable.add(new Object[]{"Include by SampleID", cNetCDF.Defaults.SetSamplePickCase.SAMPLES_INCLUDE_BY_DB_FIELD, org.gwaspi.constants.cDBSamples.f_SAMPLE_ID});
-		samplePickerTable.add(new Object[]{"Include by Sex", cNetCDF.Defaults.SetSamplePickCase.SAMPLES_INCLUDE_BY_DB_FIELD, org.gwaspi.constants.cDBSamples.f_SEX});
+		samplePickerTable.add(new Object[]{"Include by Affection", cNetCDF.Defaults.SetSamplePickCase.SAMPLES_INCLUDE_BY_DB_FIELD, cDBSamples.f_AFFECTION});
+		samplePickerTable.add(new Object[]{"Include by Age", cNetCDF.Defaults.SetSamplePickCase.SAMPLES_INCLUDE_BY_DB_FIELD, cDBSamples.f_AGE});
+		samplePickerTable.add(new Object[]{"Include by Category", cNetCDF.Defaults.SetSamplePickCase.SAMPLES_INCLUDE_BY_DB_FIELD, cDBSamples.f_CATEGORY});
+		samplePickerTable.add(new Object[]{"Include by Disease", cNetCDF.Defaults.SetSamplePickCase.SAMPLES_INCLUDE_BY_DB_FIELD, cDBSamples.f_DISEASE});
+		samplePickerTable.add(new Object[]{"Include by FamilyID", cNetCDF.Defaults.SetSamplePickCase.SAMPLES_INCLUDE_BY_DB_FIELD, cDBSamples.f_FAMILY_ID});
+		samplePickerTable.add(new Object[]{"Include by Population", cNetCDF.Defaults.SetSamplePickCase.SAMPLES_INCLUDE_BY_DB_FIELD, cDBSamples.f_POPULATION});
+		samplePickerTable.add(new Object[]{"Include by SampleID", cNetCDF.Defaults.SetSamplePickCase.SAMPLES_INCLUDE_BY_DB_FIELD, cDBSamples.f_SAMPLE_ID});
+		samplePickerTable.add(new Object[]{"Include by Sex", cNetCDF.Defaults.SetSamplePickCase.SAMPLES_INCLUDE_BY_DB_FIELD, cDBSamples.f_SEX});
 
 
 		pnl_NameAndDesc.setBorder(BorderFactory.createTitledBorder(null, Text.Trafo.extratedMatrixDetails, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("DejaVu Sans", 1, 13))); // NOI18N
@@ -543,7 +545,7 @@ public class MatrixExtractPanel extends JPanel {
 						mi_marker_criteria = "";
 					}
 					Set<Object> markerCriteria = new HashSet<Object>();
-					String[] mVals = mi_marker_criteria.split(org.gwaspi.constants.cImport.Separators.separators_CommaSpaceTabLf_rgxp);
+					String[] mVals = mi_marker_criteria.split(cImport.Separators.separators_CommaSpaceTabLf_rgxp);
 					for (String s : mVals) {
 						if (!s.isEmpty()) {
 							markerCriteria.add(s);
@@ -555,7 +557,7 @@ public class MatrixExtractPanel extends JPanel {
 						mi_sample_criteria = "";
 					}
 					Set<Object> sampleCriteria = new HashSet<Object>();
-					String[] sVals = mi_sample_criteria.split(org.gwaspi.constants.cImport.Separators.separators_CommaSpaceTabLf_rgxp);
+					String[] sVals = mi_sample_criteria.split(cImport.Separators.separators_CommaSpaceTabLf_rgxp);
 					for (String s : sVals) {
 						if (!s.isEmpty()) {
 							sampleCriteria.add(s);
@@ -609,7 +611,7 @@ public class MatrixExtractPanel extends JPanel {
 							markerCriteriaFile,
 							sampleCriteriaFile);
 				} else {
-					Dialogs.showWarningDialogue(org.gwaspi.global.Text.Matrix.pleaseInsertMatrixName);
+					Dialogs.showWarningDialogue(Text.Matrix.pleaseInsertMatrixName);
 				}
 			} catch (Exception ex) {
 				Dialogs.showWarningDialogue(ex.getMessage());

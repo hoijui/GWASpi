@@ -1,5 +1,6 @@
 package org.gwaspi.reports;
 
+import org.gwaspi.constants.cNetCDF;
 import java.io.IOException;
 import java.util.Map;
 import org.gwaspi.netCDF.operations.OperationMetadata;
@@ -25,7 +26,7 @@ public class GatherQASamplesData {
 		Map<String, Object> rdMatrixSampleSetLHM = rdInfoSampleSet.getOpSetLHM();
 
 		NetcdfFile ncFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());
-		rdMatrixSampleSetLHM = rdInfoSampleSet.fillOpSetLHMWithVariable(ncFile, org.gwaspi.constants.cNetCDF.Census.VAR_OP_SAMPLES_MISSINGRAT);
+		rdMatrixSampleSetLHM = rdInfoSampleSet.fillOpSetLHMWithVariable(ncFile, cNetCDF.Census.VAR_OP_SAMPLES_MISSINGRAT);
 
 		ncFile.close();
 		return rdMatrixSampleSetLHM;
@@ -39,7 +40,7 @@ public class GatherQASamplesData {
 		Map<String, Object> rdMatrixSampleSetLHM = rdInfoSampleSet.getOpSetLHM();
 
 		NetcdfFile ncFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());
-		rdMatrixSampleSetLHM = rdInfoSampleSet.fillOpSetLHMWithVariable(ncFile, org.gwaspi.constants.cNetCDF.Census.VAR_OP_SAMPLES_HETZYRAT);
+		rdMatrixSampleSetLHM = rdInfoSampleSet.fillOpSetLHMWithVariable(ncFile, cNetCDF.Census.VAR_OP_SAMPLES_HETZYRAT);
 
 		ncFile.close();
 		return rdMatrixSampleSetLHM;

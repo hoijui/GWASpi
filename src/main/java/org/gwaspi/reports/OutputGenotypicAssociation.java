@@ -6,6 +6,7 @@ import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.database.DbManager;
 import org.gwaspi.global.Config;
 import org.gwaspi.global.ServiceLocator;
+import org.gwaspi.global.Text;
 import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
@@ -48,7 +49,7 @@ public class OutputGenotypicAssociation {
 		String prefix = org.gwaspi.reports.ReportManager.getreportNamePrefix(op);
 		String manhattanName = prefix + "manhtt";
 
-		log.info(org.gwaspi.global.Text.All.processing);
+		log.info(Text.All.processing);
 		if (writeManhattanPlotFromAssociationData(opId, manhattanName, 4000, 500)) {
 			result = true;
 			ReportManager.insertRPMetadata(dBManager,
@@ -98,7 +99,7 @@ public class OutputGenotypicAssociation {
 	public static boolean writeManhattanPlotFromAssociationData(int opId, String outName, int width, int height) throws IOException {
 		boolean result = false;
 		//Generating XY scatter plot with loaded data
-		CombinedRangeXYPlot combinedPlot = GenericReportGenerator.buildManhattanPlot(opId, org.gwaspi.constants.cNetCDF.Association.VAR_OP_MARKERS_ASGenotypicAssociationTP2OR);
+		CombinedRangeXYPlot combinedPlot = GenericReportGenerator.buildManhattanPlot(opId, cNetCDF.Association.VAR_OP_MARKERS_ASGenotypicAssociationTP2OR);
 
 		JFreeChart chart = new JFreeChart("P value", JFreeChart.DEFAULT_TITLE_FONT, combinedPlot, true);
 
@@ -135,7 +136,7 @@ public class OutputGenotypicAssociation {
 	public static boolean writeQQPlotFromAssociationData(int opId, String outName, int width, int height) throws IOException {
 		boolean result = false;
 		//Generating XY scatter plot with loaded data
-		XYPlot qqPlot = GenericReportGenerator.buildQQPlot(opId, org.gwaspi.constants.cNetCDF.Association.VAR_OP_MARKERS_ASGenotypicAssociationTP2OR, 2);
+		XYPlot qqPlot = GenericReportGenerator.buildQQPlot(opId, cNetCDF.Association.VAR_OP_MARKERS_ASGenotypicAssociationTP2OR, 2);
 
 		JFreeChart chart = new JFreeChart("X² QQ", JFreeChart.DEFAULT_TITLE_FONT, qqPlot, true);
 
@@ -158,7 +159,7 @@ public class OutputGenotypicAssociation {
 		boolean result;
 
 		try {
-			Map<String, Object> unsortedMarkerIdAssocValsLHM = GenericReportGenerator.getAnalysisVarData(opId, org.gwaspi.constants.cNetCDF.Association.VAR_OP_MARKERS_ASGenotypicAssociationTP2OR);
+			Map<String, Object> unsortedMarkerIdAssocValsLHM = GenericReportGenerator.getAnalysisVarData(opId, cNetCDF.Association.VAR_OP_MARKERS_ASGenotypicAssociationTP2OR);
 			Map<String, Object> unsortedMarkerIdPvalLHM = new LinkedHashMap<String, Object>();
 			for (Map.Entry<String, Object> entry : unsortedMarkerIdAssocValsLHM.entrySet()) {
 				double[] values = (double[]) entry.getValue();

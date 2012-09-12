@@ -1,6 +1,7 @@
 package org.gwaspi.gui.reports;
 
 import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.global.Config;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.GWASpiExplorerPanel;
 import org.gwaspi.gui.StartGWASpi;
@@ -139,13 +140,13 @@ public final class ManhattanPlotZoom extends JPanel {
 
 		//<editor-fold defaultstate="collapsed" desc="PLOT DEFAULTS">
 		try {
-			threshold = Double.parseDouble(org.gwaspi.global.Config.getConfigValue("CHART_MANHATTAN_PLOT_THRESHOLD", "5E-7"));
+			threshold = Double.parseDouble(Config.getConfigValue("CHART_MANHATTAN_PLOT_THRESHOLD", "5E-7"));
 
-			String[] tmp = org.gwaspi.global.Config.getConfigValue("CHART_MANHATTAN_PLOT_BCKG", "200,200,200").split(",");
+			String[] tmp = Config.getConfigValue("CHART_MANHATTAN_PLOT_BCKG", "200,200,200").split(",");
 			float[] hsbTmp = Color.RGBtoHSB(Integer.parseInt(tmp[0]), Integer.parseInt(tmp[1]), Integer.parseInt(tmp[2]), null);
 			manhattan_back = Color.getHSBColor(hsbTmp[0], hsbTmp[1], hsbTmp[2]);
 
-			tmp = org.gwaspi.global.Config.getConfigValue("CHART_MANHATTAN_PLOT_DOT", "0,0,255").split(",");
+			tmp = Config.getConfigValue("CHART_MANHATTAN_PLOT_DOT", "0,0,255").split(",");
 			hsbTmp = Color.RGBtoHSB(Integer.parseInt(tmp[0]), Integer.parseInt(tmp[1]), Integer.parseInt(tmp[2]), null);
 			manhattan_dot = Color.getHSBColor(hsbTmp[0], hsbTmp[1], hsbTmp[2]);
 		} catch (IOException ex) {
@@ -522,21 +523,21 @@ public final class ManhattanPlotZoom extends JPanel {
 		XYDataset xyd = null;
 		if (op.getOperationType().equals(cNetCDF.Defaults.OPType.ALLELICTEST.toString())) {
 			xyd = org.gwaspi.reports.GenericReportGenerator.getManhattanZoomByChrAndPos(_opId,
-					org.gwaspi.constants.cNetCDF.Association.VAR_OP_MARKERS_ASAllelicAssociationTPOR,
+					cNetCDF.Association.VAR_OP_MARKERS_ASAllelicAssociationTPOR,
 					_origChr,
 					null,
 					_startPhysPos,
 					_requestedPosWindow);
 		} else if (op.getOperationType().equals(cNetCDF.Defaults.OPType.GENOTYPICTEST.toString())) {
 			xyd = org.gwaspi.reports.GenericReportGenerator.getManhattanZoomByChrAndPos(_opId,
-					org.gwaspi.constants.cNetCDF.Association.VAR_OP_MARKERS_ASGenotypicAssociationTP2OR,
+					cNetCDF.Association.VAR_OP_MARKERS_ASGenotypicAssociationTP2OR,
 					_origChr,
 					null,
 					_startPhysPos,
 					_requestedPosWindow);
 		} else if (op.getOperationType().equals(cNetCDF.Defaults.OPType.TRENDTEST.toString())) {
 			xyd = org.gwaspi.reports.GenericReportGenerator.getManhattanZoomByChrAndPos(_opId,
-					org.gwaspi.constants.cNetCDF.Association.VAR_OP_MARKERS_ASTrendTestTP,
+					cNetCDF.Association.VAR_OP_MARKERS_ASTrendTestTP,
 					_origChr,
 					null,
 					_startPhysPos,
@@ -555,21 +556,21 @@ public final class ManhattanPlotZoom extends JPanel {
 		XYDataset xyd = null;
 		if (op.getOperationType().equals(cNetCDF.Defaults.OPType.ALLELICTEST.toString())) {
 			xyd = org.gwaspi.reports.GenericReportGenerator.getManhattanZoomByChrAndPos(_opId,
-					org.gwaspi.constants.cNetCDF.Association.VAR_OP_MARKERS_ASAllelicAssociationTPOR,
+					cNetCDF.Association.VAR_OP_MARKERS_ASAllelicAssociationTPOR,
 					_origChr,
 					_markerId,
 					_centerPhysPos,
 					_requestedPosWindow);
 		} else if (op.getOperationType().equals(cNetCDF.Defaults.OPType.GENOTYPICTEST.toString())) {
 			xyd = org.gwaspi.reports.GenericReportGenerator.getManhattanZoomByChrAndPos(_opId,
-					org.gwaspi.constants.cNetCDF.Association.VAR_OP_MARKERS_ASGenotypicAssociationTP2OR,
+					cNetCDF.Association.VAR_OP_MARKERS_ASGenotypicAssociationTP2OR,
 					_origChr,
 					_markerId,
 					_centerPhysPos,
 					_requestedPosWindow);
 		} else if (op.getOperationType().equals(cNetCDF.Defaults.OPType.TRENDTEST.toString())) {
 			xyd = org.gwaspi.reports.GenericReportGenerator.getManhattanZoomByChrAndPos(_opId,
-					org.gwaspi.constants.cNetCDF.Association.VAR_OP_MARKERS_ASTrendTestTP,
+					cNetCDF.Association.VAR_OP_MARKERS_ASTrendTestTP,
 					_origChr,
 					_markerId,
 					_centerPhysPos,
@@ -594,19 +595,19 @@ public final class ManhattanPlotZoom extends JPanel {
 		XYDataset xyd = null;
 		if (op.getOperationType().equals(cNetCDF.Defaults.OPType.ALLELICTEST.toString())) {
 			xyd = org.gwaspi.reports.GenericReportGenerator.getManhattanZoomByMarkerIdOrIdx(_opId,
-					org.gwaspi.constants.cNetCDF.Association.VAR_OP_MARKERS_ASAllelicAssociationTPOR,
+					cNetCDF.Association.VAR_OP_MARKERS_ASAllelicAssociationTPOR,
 					_markerId,
 					_centerPhysPos,
 					_requestedSetSize);
 		} else if (op.getOperationType().equals(cNetCDF.Defaults.OPType.GENOTYPICTEST.toString())) {
 			xyd = org.gwaspi.reports.GenericReportGenerator.getManhattanZoomByMarkerIdOrIdx(_opId,
-					org.gwaspi.constants.cNetCDF.Association.VAR_OP_MARKERS_ASGenotypicAssociationTP2OR,
+					cNetCDF.Association.VAR_OP_MARKERS_ASGenotypicAssociationTP2OR,
 					_markerId,
 					_centerPhysPos,
 					_requestedSetSize);
 		} else if (op.getOperationType().equals(cNetCDF.Defaults.OPType.TRENDTEST.toString())) {
 			xyd = org.gwaspi.reports.GenericReportGenerator.getManhattanZoomByMarkerIdOrIdx(_opId,
-					org.gwaspi.constants.cNetCDF.Association.VAR_OP_MARKERS_ASTrendTestTP,
+					cNetCDF.Association.VAR_OP_MARKERS_ASTrendTestTP,
 					_markerId,
 					_centerPhysPos,
 					_requestedSetSize);
@@ -896,7 +897,7 @@ public final class ManhattanPlotZoom extends JPanel {
 				String reportFile = "";
 				for (int i = 0; i < rpList.reportsListAL.size(); i++) {
 					String reportType = rpList.reportsListAL.get(i).getReportType();
-					if (reportType.equals(org.gwaspi.constants.cNetCDF.Defaults.OPType.MANHATTANPLOT.toString())) {
+					if (reportType.equals(cNetCDF.Defaults.OPType.MANHATTANPLOT.toString())) {
 						reportFile = rpList.reportsListAL.get(i).getReportFileName();
 					}
 				}

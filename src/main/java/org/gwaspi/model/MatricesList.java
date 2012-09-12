@@ -1,5 +1,8 @@
 package org.gwaspi.model;
 
+import org.gwaspi.constants.cDBGWASpi;
+import org.gwaspi.constants.cDBMatrix;
+import org.gwaspi.constants.cDBOperations;
 import org.gwaspi.database.DbManager;
 import org.gwaspi.global.ServiceLocator;
 import java.io.IOException;
@@ -31,8 +34,8 @@ public final class MatricesList {
 			for (int i = rowcount - 1; i >= 0; i--) // loop through rows of result set
 			{
 				// PREVENT PHANTOM-DB READS EXCEPTIONS
-				if (!rsMatricesList.isEmpty() && rsMatricesList.get(i).size() == org.gwaspi.constants.cDBMatrix.T_CREATE_MATRICES.length) {
-					int currentMatrixId = (Integer) rsMatricesList.get(i).get(org.gwaspi.constants.cDBMatrix.f_ID);
+				if (!rsMatricesList.isEmpty() && rsMatricesList.get(i).size() == cDBMatrix.T_CREATE_MATRICES.length) {
+					int currentMatrixId = (Integer) rsMatricesList.get(i).get(cDBMatrix.f_ID);
 					Matrix currentMatrix = new Matrix(currentMatrixId);
 					matrixList.add(currentMatrix);
 				}
@@ -49,8 +52,8 @@ public final class MatricesList {
 			for (int i = rowcount - 1; i >= 0; i--) // loop through rows of result set
 			{
 				// PREVENT PHANTOM-DB READS EXCEPTIONS
-				if (!rsMatricesList.isEmpty() && rsMatricesList.get(i).size() == org.gwaspi.constants.cDBMatrix.T_CREATE_MATRICES.length) {
-					int currentMatrixId = (Integer) rsMatricesList.get(i).get(org.gwaspi.constants.cDBMatrix.f_ID);
+				if (!rsMatricesList.isEmpty() && rsMatricesList.get(i).size() == cDBMatrix.T_CREATE_MATRICES.length) {
+					int currentMatrixId = (Integer) rsMatricesList.get(i).get(cDBMatrix.f_ID);
 					Matrix currentMatrix = new Matrix(currentMatrixId);
 					matrixList.add(currentMatrix);
 				}
@@ -60,10 +63,10 @@ public final class MatricesList {
 
 	public List<Map<String, Object>> getMatrixListByStudyId(int studyId) throws IOException {
 		List<Map<String, Object>> rs = null;
-		String dbName = org.gwaspi.constants.cDBGWASpi.DB_DATACENTER;
+		String dbName = cDBGWASpi.DB_DATACENTER;
 		DbManager studyDbManager = ServiceLocator.getDbManager(dbName);
 		try {
-			rs = studyDbManager.executeSelectStatement("SELECT * FROM " + org.gwaspi.constants.cDBGWASpi.SCH_MATRICES + "." + org.gwaspi.constants.cDBMatrix.T_MATRICES + " WHERE " + org.gwaspi.constants.cDBMatrix.f_STUDYID + "=" + studyId + " ORDER BY " + org.gwaspi.constants.cDBMatrix.f_ID + " DESC  WITH RR");
+			rs = studyDbManager.executeSelectStatement("SELECT * FROM " + cDBGWASpi.SCH_MATRICES + "." + cDBMatrix.T_MATRICES + " WHERE " + cDBMatrix.f_STUDYID + "=" + studyId + " ORDER BY " + cDBMatrix.f_ID + " DESC  WITH RR");
 		} catch (Exception ex) {
 			log.error(null, ex);
 		}
@@ -73,10 +76,10 @@ public final class MatricesList {
 
 	public static List<Map<String, Object>> getAllMatricesList() throws IOException {
 		List<Map<String, Object>> rs = null;
-		String dbName = org.gwaspi.constants.cDBGWASpi.DB_DATACENTER;
+		String dbName = cDBGWASpi.DB_DATACENTER;
 		DbManager studyDbManager = ServiceLocator.getDbManager(dbName);
 		try {
-			rs = studyDbManager.executeSelectStatement("SELECT * FROM " + org.gwaspi.constants.cDBGWASpi.SCH_MATRICES + "." + org.gwaspi.constants.cDBMatrix.T_MATRICES + "  WITH RR");
+			rs = studyDbManager.executeSelectStatement("SELECT * FROM " + cDBGWASpi.SCH_MATRICES + "." + cDBMatrix.T_MATRICES + "  WITH RR");
 		} catch (Exception ex) {
 			log.error(null, ex);
 		}
@@ -87,19 +90,19 @@ public final class MatricesList {
 	public static Object[][] getMatricesTable(int studyId) throws IOException {
 		Object[][] table = null;
 
-		String dbName = org.gwaspi.constants.cDBGWASpi.DB_DATACENTER;
+		String dbName = cDBGWASpi.DB_DATACENTER;
 		DbManager dbManager = ServiceLocator.getDbManager(dbName);
 		try {
-			List<Map<String, Object>> rs = dbManager.executeSelectStatement("SELECT * FROM " + org.gwaspi.constants.cDBGWASpi.SCH_MATRICES + "." + org.gwaspi.constants.cDBMatrix.T_MATRICES + " WHERE " + org.gwaspi.constants.cDBMatrix.f_STUDYID + "=" + studyId + "  WITH RR");
+			List<Map<String, Object>> rs = dbManager.executeSelectStatement("SELECT * FROM " + cDBGWASpi.SCH_MATRICES + "." + cDBMatrix.T_MATRICES + " WHERE " + cDBMatrix.f_STUDYID + "=" + studyId + "  WITH RR");
 
 			table = new Object[rs.size()][4];
 			for (int i = 0; i < rs.size(); i++) {
 				// PREVENT PHANTOM-DB READS EXCEPTIONS
-				if (!rs.isEmpty() && rs.get(i).size() == org.gwaspi.constants.cDBMatrix.T_CREATE_MATRICES.length) {
-					table[i][0] = (Integer) rs.get(i).get(org.gwaspi.constants.cDBMatrix.f_ID);
-					table[i][1] = rs.get(i).get(org.gwaspi.constants.cDBMatrix.f_MATRIX_NAME).toString();
-					table[i][2] = rs.get(i).get(org.gwaspi.constants.cDBMatrix.f_DESCRIPTION).toString();
-					String timestamp = rs.get(i).get(org.gwaspi.constants.cDBOperations.f_CREATION_DATE).toString();
+				if (!rs.isEmpty() && rs.get(i).size() == cDBMatrix.T_CREATE_MATRICES.length) {
+					table[i][0] = (Integer) rs.get(i).get(cDBMatrix.f_ID);
+					table[i][1] = rs.get(i).get(cDBMatrix.f_MATRIX_NAME).toString();
+					table[i][2] = rs.get(i).get(cDBMatrix.f_DESCRIPTION).toString();
+					String timestamp = rs.get(i).get(cDBOperations.f_CREATION_DATE).toString();
 					table[i][3] = timestamp.substring(0, timestamp.lastIndexOf('.'));
 				}
 			}

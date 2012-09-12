@@ -2,6 +2,7 @@ package org.gwaspi.model;
 
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.global.Text;
+import org.gwaspi.gui.GWASpiExplorerPanel;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -67,7 +68,7 @@ public class GWASpiExplorerNodes {
 
 			tn = new DefaultMutableTreeNode(new NodeElementInfo(0,
 					study.getStudyId(),
-					org.gwaspi.global.Text.App.treeStudy,
+					Text.App.treeStudy,
 					"SID: " + study.getStudyId() + " - " + study.getStudyName()));
 		} catch (IOException ex) {
 			log.error(null, ex);
@@ -82,7 +83,7 @@ public class GWASpiExplorerNodes {
 			Matrix mx = new Matrix(matrixId);
 			tn = new DefaultMutableTreeNode(new NodeElementInfo(mx.getStudyId(),
 					matrixId,
-					org.gwaspi.global.Text.App.treeMatrix,
+					Text.App.treeMatrix,
 					"MX: " + matrixId + " - " + mx.matrixMetadata.getMatrixFriendlyName()));
 		} catch (IOException ex) {
 			log.error(null, ex);
@@ -97,8 +98,8 @@ public class GWASpiExplorerNodes {
 		if (!rs.isEmpty()) {
 			tn = new DefaultMutableTreeNode(new NodeElementInfo(studyId, // parentNodeId
 					studyId, // nodeId
-					org.gwaspi.global.Text.App.treeSampleInfo, // nodeType
-					org.gwaspi.global.Text.App.treeSampleInfo)); // nodeUniqueName
+					Text.App.treeSampleInfo, // nodeType
+					Text.App.treeSampleInfo)); // nodeUniqueName
 		}
 		return tn;
 	}
@@ -109,7 +110,7 @@ public class GWASpiExplorerNodes {
 			Operation op = new Operation(opId);
 			tn = new DefaultMutableTreeNode(new NodeElementInfo(op.getParentMatrixId(),
 					opId,
-					org.gwaspi.global.Text.App.treeOperation,
+					Text.App.treeOperation,
 					"OP: " + opId + " - " + op.getOperationFriendlyName()));
 		} catch (IOException ex) {
 			log.error(null, ex);
@@ -132,7 +133,7 @@ public class GWASpiExplorerNodes {
 			int[] pathIds = new int[]{0, op.getStudyId(), op.getParentMatrixId(), op.getParentOperationId(), opId};
 			tn = new DefaultMutableTreeNode(new NodeElementInfo(op.getParentOperationId(),
 					opId,
-					org.gwaspi.global.Text.App.treeOperation,
+					Text.App.treeOperation,
 					"OP: " + opId + " - " + op.getOperationFriendlyName()));
 		} catch (IOException ex) {
 			log.error(null, ex);
@@ -147,7 +148,7 @@ public class GWASpiExplorerNodes {
 			int[] pathIds = new int[]{0, rp.getStudyId(), rp.getParentMatrixId(), rp.getParentOperationId(), rpId};
 			tn = new DefaultMutableTreeNode(new NodeElementInfo(rpId,
 					rpId,
-					org.gwaspi.global.Text.App.treeReport,
+					Text.App.treeReport,
 					"RP: " + rpId + " - " + rp.getReportFriendlyName()));
 		} catch (IOException ex) {
 			log.error(null, ex);
@@ -162,7 +163,7 @@ public class GWASpiExplorerNodes {
 		try {
 			// GET LATEST ADDED STUDY
 			org.gwaspi.model.StudyList studiesMod = new org.gwaspi.model.StudyList();
-			TreePath parentPath = org.gwaspi.gui.GWASpiExplorerPanel.tree.getNextMatch(Text.App.treeStudyManagement, 0, Position.Bias.Forward);
+			TreePath parentPath = GWASpiExplorerPanel.tree.getNextMatch(Text.App.treeStudyManagement, 0, Position.Bias.Forward);
 
 			DefaultMutableTreeNode newNode = createStudyTreeNode(studiesMod.studyList.get(studiesMod.studyList.size() - 1).getStudyId());
 
@@ -177,7 +178,7 @@ public class GWASpiExplorerNodes {
 	public static void insertStudyNode(int studyId) throws IOException {
 		try {
 			// GET STUDY
-			TreePath parentPath = org.gwaspi.gui.GWASpiExplorerPanel.tree.getNextMatch(Text.App.treeStudyManagement, 0, Position.Bias.Forward);
+			TreePath parentPath = GWASpiExplorerPanel.tree.getNextMatch(Text.App.treeStudyManagement, 0, Position.Bias.Forward);
 
 			DefaultMutableTreeNode newNode = createStudyTreeNode(studyId);
 
@@ -192,7 +193,7 @@ public class GWASpiExplorerNodes {
 	public static void deleteStudyNode(int studyId) {
 		try {
 			// GET DELETE PATH BY PREFIX ONLY
-			TreePath deletePath = org.gwaspi.gui.GWASpiExplorerPanel.tree.getNextMatch("SID: " + studyId + " - ", 0, Position.Bias.Forward);
+			TreePath deletePath = GWASpiExplorerPanel.tree.getNextMatch("SID: " + studyId + " - ", 0, Position.Bias.Forward);
 
 			if (deletePath != null) {
 				DefaultMutableTreeNode deleteNode = (DefaultMutableTreeNode) deletePath.getLastPathComponent();
@@ -209,7 +210,7 @@ public class GWASpiExplorerNodes {
 			try {
 				// GET STUDY
 				org.gwaspi.model.Study study = new org.gwaspi.model.Study(studyId);
-				TreePath parentPath = org.gwaspi.gui.GWASpiExplorerPanel.tree.getNextMatch("SID: " + study.getStudyId() + " - " + study.getStudyName(), 0, Position.Bias.Forward);
+				TreePath parentPath = GWASpiExplorerPanel.tree.getNextMatch("SID: " + study.getStudyId() + " - " + study.getStudyName(), 0, Position.Bias.Forward);
 
 				DefaultMutableTreeNode newNode = createMatrixTreeNode(matrixId);
 
@@ -226,7 +227,7 @@ public class GWASpiExplorerNodes {
 	public static void deleteMatrixNode(int matrixId) {
 		try {
 			// GET DELETE PATH BY PREFIX ONLY
-			TreePath deletePath = org.gwaspi.gui.GWASpiExplorerPanel.tree.getNextMatch("MX: " + matrixId + " - ", 0, Position.Bias.Forward);
+			TreePath deletePath = GWASpiExplorerPanel.tree.getNextMatch("MX: " + matrixId + " - ", 0, Position.Bias.Forward);
 
 			if (deletePath != null) {
 				DefaultMutableTreeNode deleteNode = (DefaultMutableTreeNode) deletePath.getLastPathComponent();
@@ -242,7 +243,7 @@ public class GWASpiExplorerNodes {
 		try {
 			// GET MATRIX
 			org.gwaspi.model.Matrix matrix = new org.gwaspi.model.Matrix(matrixId);
-			TreePath parentPath = org.gwaspi.gui.GWASpiExplorerPanel.tree.getNextMatch("MX: " + matrixId + " - " + matrix.matrixMetadata.getMatrixFriendlyName(), 0, Position.Bias.Forward);
+			TreePath parentPath = GWASpiExplorerPanel.tree.getNextMatch("MX: " + matrixId + " - " + matrix.matrixMetadata.getMatrixFriendlyName(), 0, Position.Bias.Forward);
 
 			DefaultMutableTreeNode newNode = createOperationTreeNode(opId);
 
@@ -258,7 +259,7 @@ public class GWASpiExplorerNodes {
 		try {
 			// GET MATRIX
 			org.gwaspi.model.Operation parentOP = new org.gwaspi.model.Operation(parentOpId);
-			TreePath parentPath = org.gwaspi.gui.GWASpiExplorerPanel.tree.getNextMatch("OP: " + parentOpId + " - " + parentOP.getOperationFriendlyName(), 0, Position.Bias.Forward);
+			TreePath parentPath = GWASpiExplorerPanel.tree.getNextMatch("OP: " + parentOpId + " - " + parentOP.getOperationFriendlyName(), 0, Position.Bias.Forward);
 
 			DefaultMutableTreeNode newNode = createOperationTreeNode(opId);
 
@@ -273,7 +274,7 @@ public class GWASpiExplorerNodes {
 	public static void deleteOperationNode(int opId) {
 		try {
 			// GET DELETE PATH BY PREFIX ONLY
-			TreePath deletePath = org.gwaspi.gui.GWASpiExplorerPanel.tree.getNextMatch("OP: " + opId + " - ", 0, Position.Bias.Forward);
+			TreePath deletePath = GWASpiExplorerPanel.tree.getNextMatch("OP: " + opId + " - ", 0, Position.Bias.Forward);
 
 			if (deletePath != null) {
 				DefaultMutableTreeNode deleteNode = (DefaultMutableTreeNode) deletePath.getLastPathComponent();
@@ -289,7 +290,7 @@ public class GWASpiExplorerNodes {
 		try {
 			// GET OPERATION
 			org.gwaspi.model.Operation parentOP = new org.gwaspi.model.Operation(parentOpId);
-			TreePath parentPath = org.gwaspi.gui.GWASpiExplorerPanel.tree.getNextMatch("OP: " + parentOpId + " - " + parentOP.getOperationFriendlyName(), 0, Position.Bias.Forward);
+			TreePath parentPath = GWASpiExplorerPanel.tree.getNextMatch("OP: " + parentOpId + " - " + parentOP.getOperationFriendlyName(), 0, Position.Bias.Forward);
 			DefaultMutableTreeNode parentNode = (DefaultMutableTreeNode) parentPath.getLastPathComponent();
 
 			// GET ALL REPORTS UNDER THIS OPERATION
@@ -316,10 +317,10 @@ public class GWASpiExplorerNodes {
 			DefaultMutableTreeNode child,
 			boolean shouldBeVisible) {
 
-		DefaultTreeModel treeModel = (DefaultTreeModel) org.gwaspi.gui.GWASpiExplorerPanel.tree.getModel();
+		DefaultTreeModel treeModel = (DefaultTreeModel) GWASpiExplorerPanel.tree.getModel();
 		treeModel.insertNodeInto(child, parentNode, parentNode.getChildCount());
 
-		org.gwaspi.gui.GWASpiExplorerPanel.tree.expandPath(new TreePath(parentNode.getPath()));
+		GWASpiExplorerPanel.tree.expandPath(new TreePath(parentNode.getPath()));
 
 
 		return child;
@@ -327,7 +328,7 @@ public class GWASpiExplorerNodes {
 
 	public static DefaultMutableTreeNode deleteNode(DefaultMutableTreeNode child) {
 
-		DefaultTreeModel treeModel = (DefaultTreeModel) org.gwaspi.gui.GWASpiExplorerPanel.tree.getModel();
+		DefaultTreeModel treeModel = (DefaultTreeModel) GWASpiExplorerPanel.tree.getModel();
 		treeModel.removeNodeFromParent(child);
 
 		return child;
@@ -335,8 +336,8 @@ public class GWASpiExplorerNodes {
 
 	public static void setAllNodesCollapsable() {
 		if (org.gwaspi.gui.StartGWASpi.guiMode) {
-			for (int i = 0; i < org.gwaspi.gui.GWASpiExplorerPanel.tree.getRowCount(); i++) {
-				TreePath treePath = org.gwaspi.gui.GWASpiExplorerPanel.tree.getPathForRow(i);
+			for (int i = 0; i < GWASpiExplorerPanel.tree.getRowCount(); i++) {
+				TreePath treePath = GWASpiExplorerPanel.tree.getPathForRow(i);
 				DefaultMutableTreeNode currentNode = (DefaultMutableTreeNode) treePath.getLastPathComponent();
 				Object currentElement = currentNode.getUserObject();
 				try {

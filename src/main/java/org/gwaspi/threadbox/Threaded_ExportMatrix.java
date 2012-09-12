@@ -1,5 +1,6 @@
 package org.gwaspi.threadbox;
 
+import org.gwaspi.constants.cExport;
 import org.gwaspi.constants.cExport.ExportFormat;
 import org.gwaspi.netCDF.exporter.MatrixExporter;
 import org.slf4j.Logger;
@@ -40,62 +41,62 @@ public class Threaded_ExportMatrix extends CommonRunnable {
 	protected void runInternal(SwingWorkerItem thisSwi) throws Exception {
 
 		if (format != null) {
-			switch (org.gwaspi.constants.cExport.ExportFormat.compareTo(format.toString())) {
+			switch (cExport.ExportFormat.compareTo(format.toString())) {
 				case PLINK:
 					if (startWithGUI) {
 						org.gwaspi.gui.ProcessTab.showTab();
 					}
 					MatrixExporter mEx = new MatrixExporter(matrixId);
-					mEx.exportToFormat(org.gwaspi.constants.cExport.ExportFormat.PLINK.toString(), phenotype);
+					mEx.exportToFormat(cExport.ExportFormat.PLINK.toString(), phenotype);
 					break;
 				case PLINK_Binary:
 					if (startWithGUI) {
 						org.gwaspi.gui.ProcessTab.showTab();
 					}
 					mEx = new MatrixExporter(matrixId);
-					mEx.exportToFormat(org.gwaspi.constants.cExport.ExportFormat.PLINK_Binary.toString(), phenotype);
+					mEx.exportToFormat(cExport.ExportFormat.PLINK_Binary.toString(), phenotype);
 					break;
 				case Eigensoft_Eigenstrat:
 					if (startWithGUI) {
 						org.gwaspi.gui.ProcessTab.showTab();
 					}
 					mEx = new MatrixExporter(matrixId);
-					mEx.exportToFormat(org.gwaspi.constants.cExport.ExportFormat.Eigensoft_Eigenstrat.toString(), phenotype);
+					mEx.exportToFormat(cExport.ExportFormat.Eigensoft_Eigenstrat.toString(), phenotype);
 					break;
 				case PLINK_Transposed:
 					if (startWithGUI) {
 						org.gwaspi.gui.ProcessTab.showTab();
 					}
 					mEx = new MatrixExporter(matrixId);
-					mEx.exportToFormat(org.gwaspi.constants.cExport.ExportFormat.PLINK_Transposed.toString(), phenotype);
+					mEx.exportToFormat(cExport.ExportFormat.PLINK_Transposed.toString(), phenotype);
 					break;
 				case BEAGLE:
 					if (startWithGUI) {
 						org.gwaspi.gui.ProcessTab.showTab();
 					}
 					mEx = new MatrixExporter(matrixId);
-					mEx.exportToFormat(org.gwaspi.constants.cExport.ExportFormat.BEAGLE.toString(), phenotype);
+					mEx.exportToFormat(cExport.ExportFormat.BEAGLE.toString(), phenotype);
 					break;
 				case GWASpi:
 					if (startWithGUI) {
 						org.gwaspi.gui.ProcessTab.showTab();
 					}
 					mEx = new MatrixExporter(matrixId);
-					mEx.exportToFormat(org.gwaspi.constants.cExport.ExportFormat.GWASpi.toString(), phenotype);
+					mEx.exportToFormat(cExport.ExportFormat.GWASpi.toString(), phenotype);
 					break;
 				case Spreadsheet:
 					if (startWithGUI) {
 						org.gwaspi.gui.ProcessTab.showTab();
 					}
 					mEx = new MatrixExporter(matrixId);
-					mEx.exportToFormat(org.gwaspi.constants.cExport.ExportFormat.Spreadsheet.toString(), phenotype);
+					mEx.exportToFormat(cExport.ExportFormat.Spreadsheet.toString(), phenotype);
 					break;
 				case MACH:
 					if (startWithGUI) {
 						org.gwaspi.gui.ProcessTab.showTab();
 					}
 					mEx = new MatrixExporter(matrixId);
-					mEx.exportToFormat(org.gwaspi.constants.cExport.ExportFormat.MACH.toString(), phenotype);
+					mEx.exportToFormat(cExport.ExportFormat.MACH.toString(), phenotype);
 					break;
 				default:
 					throw new IllegalArgumentException("invalid format: " + format.toString());

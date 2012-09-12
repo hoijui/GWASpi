@@ -1,5 +1,7 @@
 package org.gwaspi.model;
 
+import org.gwaspi.constants.cDBGWASpi;
+import org.gwaspi.constants.cDBReports;
 import org.gwaspi.database.DbManager;
 import org.gwaspi.global.ServiceLocator;
 import java.io.IOException;
@@ -36,14 +38,14 @@ public class Report {
 		reportId = _reportId;
 
 		// PREVENT PHANTOM-DB READS EXCEPTIONS
-		if (!rs.isEmpty() && rs.get(0).size() == org.gwaspi.constants.cDBReports.T_CREATE_REPORTS.length) {
-			rpFriendlyName = (rs.get(0).get(org.gwaspi.constants.cDBReports.f_RP_NAME) != null) ? rs.get(0).get(org.gwaspi.constants.cDBReports.f_RP_NAME).toString() : "";
-			rpFileName = (rs.get(0).get(org.gwaspi.constants.cDBReports.f_RP_FILE_NAME) != null) ? rs.get(0).get(org.gwaspi.constants.cDBReports.f_RP_FILE_NAME).toString() : "";
-			rpType = (rs.get(0).get(org.gwaspi.constants.cDBReports.f_RP_TYPE) != null) ? rs.get(0).get(org.gwaspi.constants.cDBReports.f_RP_TYPE).toString() : "";
-			parentMatrixId = (rs.get(0).get(org.gwaspi.constants.cDBReports.f_PARENT_MATRIXID) != null) ? Integer.parseInt(rs.get(0).get(org.gwaspi.constants.cDBReports.f_PARENT_MATRIXID).toString()) : -1;
-			parentOpId = (rs.get(0).get(org.gwaspi.constants.cDBReports.f_PARENT_OPID) != null) ? Integer.parseInt(rs.get(0).get(org.gwaspi.constants.cDBReports.f_PARENT_OPID).toString()) : -1;
-			description = (rs.get(0).get(org.gwaspi.constants.cDBReports.f_DESCRIPTION) != null) ? rs.get(0).get(org.gwaspi.constants.cDBReports.f_DESCRIPTION).toString() : "";
-			studyId = (rs.get(0).get(org.gwaspi.constants.cDBReports.f_STUDYID) != null) ? Integer.parseInt(rs.get(0).get(org.gwaspi.constants.cDBReports.f_STUDYID).toString()) : 0;
+		if (!rs.isEmpty() && rs.get(0).size() == cDBReports.T_CREATE_REPORTS.length) {
+			rpFriendlyName = (rs.get(0).get(cDBReports.f_RP_NAME) != null) ? rs.get(0).get(cDBReports.f_RP_NAME).toString() : "";
+			rpFileName = (rs.get(0).get(cDBReports.f_RP_FILE_NAME) != null) ? rs.get(0).get(cDBReports.f_RP_FILE_NAME).toString() : "";
+			rpType = (rs.get(0).get(cDBReports.f_RP_TYPE) != null) ? rs.get(0).get(cDBReports.f_RP_TYPE).toString() : "";
+			parentMatrixId = (rs.get(0).get(cDBReports.f_PARENT_MATRIXID) != null) ? Integer.parseInt(rs.get(0).get(cDBReports.f_PARENT_MATRIXID).toString()) : -1;
+			parentOpId = (rs.get(0).get(cDBReports.f_PARENT_OPID) != null) ? Integer.parseInt(rs.get(0).get(cDBReports.f_PARENT_OPID).toString()) : -1;
+			description = (rs.get(0).get(cDBReports.f_DESCRIPTION) != null) ? rs.get(0).get(cDBReports.f_DESCRIPTION).toString() : "";
+			studyId = (rs.get(0).get(cDBReports.f_STUDYID) != null) ? Integer.parseInt(rs.get(0).get(cDBReports.f_STUDYID).toString()) : 0;
 		}
 	}
 
@@ -81,10 +83,10 @@ public class Report {
 
 	public static List<Map<String, Object>> getReportMetadata(int rpId) throws IOException {
 		List<Map<String, Object>> rs = null;
-		String dbName = org.gwaspi.constants.cDBGWASpi.DB_DATACENTER;
+		String dbName = cDBGWASpi.DB_DATACENTER;
 		DbManager studyDbManager = ServiceLocator.getDbManager(dbName);
 		try {
-			rs = studyDbManager.executeSelectStatement("SELECT * FROM " + org.gwaspi.constants.cDBGWASpi.SCH_MATRICES + "." + org.gwaspi.constants.cDBReports.T_REPORTS + " WHERE " + org.gwaspi.constants.cDBReports.f_ID + "=" + rpId + "  WITH RR");
+			rs = studyDbManager.executeSelectStatement("SELECT * FROM " + cDBGWASpi.SCH_MATRICES + "." + cDBReports.T_REPORTS + " WHERE " + cDBReports.f_ID + "=" + rpId + "  WITH RR");
 		} catch (Exception ex) {
 			log.error(null, ex);
 		}

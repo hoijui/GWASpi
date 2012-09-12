@@ -1,5 +1,6 @@
 package org.gwaspi.trastero;
 
+import org.gwaspi.constants.cGlobal;
 import java.io.File;
 import java.io.IOException;
 import javax.swing.JProgressBar;
@@ -19,7 +20,7 @@ public class SystemSort {
 
 	public static void processData(File dir, String format, JProgressBar progressBar) throws IOException {
 		File[] filesToImport = org.gwaspi.global.Utils.listFiles(dir.toString(), false);
-		File formatFolder = org.gwaspi.global.Utils.createFolder(org.gwaspi.global.Config.getConfigValue("ESdir", org.gwaspi.constants.cGlobal.USERDIR), format);
+		File formatFolder = org.gwaspi.global.Utils.createFolder(org.gwaspi.global.Config.getConfigValue("ESdir", cGlobal.USERDIR), format);
 		String processingDir = formatFolder.getPath() + "/";
 		File[] alreadySortedFiles = org.gwaspi.global.Utils.listFiles(processingDir, false);
 		numFiles = alreadySortedFiles.length;
@@ -35,13 +36,13 @@ public class SystemSort {
 	public static String getCommandLine(String pathToFile, String format) throws IOException {
 		String executable;
 		String commandLine = "";
-		String outputPath = org.gwaspi.global.Config.getConfigValue("ESdir", org.gwaspi.constants.cGlobal.USERDIR).toString() + "/" + format + "/" + (numFiles - 1) + ".csv";
+		String outputPath = org.gwaspi.global.Config.getConfigValue("ESdir", cGlobal.USERDIR).toString() + "/" + format + "/" + (numFiles - 1) + ".csv";
 		numFiles++;
 
-		if (org.gwaspi.constants.cGlobal.OSNAME.equals("Linux")) {
+		if (cGlobal.OSNAME.equals("Linux")) {
 			executable = "sort ";
 			commandLine = executable + " -u " + pathToFile + " -o " + outputPath;
-		} else if (org.gwaspi.constants.cGlobal.OSNAME.contains("Windows")) {
+		} else if (cGlobal.OSNAME.contains("Windows")) {
 			executable = "sort ";
 			commandLine = executable + pathToFile + " /O " + outputPath;
 		}

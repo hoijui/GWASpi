@@ -103,8 +103,8 @@ public class SwingWorkerItemList {
 	public static void flagCurrentItemAborted(int rowIdx) {
 		SwingWorkerItem currentSwi = swingWorkerItemsAL.get(rowIdx);
 		String queueState = currentSwi.getQueueState();
-		if (queueState.equals(org.gwaspi.threadbox.QueueStates.PROCESSING) || queueState.equals(org.gwaspi.threadbox.QueueStates.QUEUED)) {
-			swingWorkerItemsAL.get(rowIdx).setQueueState(org.gwaspi.threadbox.QueueStates.ABORT);
+		if (queueState.equals(QueueStates.PROCESSING) || queueState.equals(QueueStates.QUEUED)) {
+			swingWorkerItemsAL.get(rowIdx).setQueueState(QueueStates.ABORT);
 			org.gwaspi.gui.ProcessTab.updateProcessOverview();
 
 			unlockParentItems(currentSwi.parentStudyIds,

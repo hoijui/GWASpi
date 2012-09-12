@@ -1,5 +1,6 @@
 package org.gwaspi.gui;
 
+import org.gwaspi.constants.cDBGWASpi;
 import org.gwaspi.database.DbManager;
 import org.gwaspi.global.ServiceLocator;
 import org.gwaspi.global.Text;
@@ -38,6 +39,7 @@ import org.gwaspi.model.Study;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.gwaspi.threadbox.MultiOperations;
+import org.gwaspi.threadbox.SwingWorkerItemList;
 
 /**
  *
@@ -260,12 +262,12 @@ public class CurrentStudyPanel extends JPanel {
 			try {
 				Utils.logBlockInStudyDesc(descriptionSource.getText(), study.getStudyId());
 
-				DbManager db = ServiceLocator.getDbManager(org.gwaspi.constants.cDBGWASpi.DB_DATACENTER);
-				db.updateTable(org.gwaspi.constants.cDBGWASpi.SCH_APP,
-						org.gwaspi.constants.cDBGWASpi.T_STUDIES,
-						new String[]{constants.cDBGWASpi.f_STUDY_DESCRIPTION},
+				DbManager db = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
+				db.updateTable(cDBGWASpi.SCH_APP,
+						cDBGWASpi.T_STUDIES,
+						new String[]{cDBGWASpi.f_STUDY_DESCRIPTION},
 						new Object[]{descriptionSource.getText()},
-						new String[]{constants.cDBGWASpi.f_ID},
+						new String[]{cDBGWASpi.f_ID},
 						new Object[]{study.getStudyId()});
 			} catch (IOException ex) {
 				log.error(null, ex);
@@ -348,7 +350,7 @@ public class CurrentStudyPanel extends JPanel {
 							int tmpMatrixRow = selectedMatrices[i];
 							int matrixId = (Integer) table.getModel().getValueAt(tmpMatrixRow, 0);
 							//TEST IF THE DELETED ITEM IS REQUIRED FOR A QUED WORKER
-							if (org.gwaspi.threadbox.SwingWorkerItemList.permitsDeletion(null, matrixId, null)) {
+							if (SwingWorkerItemList.permitsDeletion(null, matrixId, null)) {
 								boolean deleteReport = false;
 								if (deleteReportOption == JOptionPane.YES_OPTION) {
 									deleteReport = true;
@@ -381,7 +383,7 @@ public class CurrentStudyPanel extends JPanel {
 		@Override
 		public void actionPerformed(ActionEvent evt) {
 			// TODO TEST IF THE DELETED ITEM IS REQUIRED FOR A QUED WORKER
-			if (org.gwaspi.threadbox.SwingWorkerItemList.permitsDeletion(study.getStudyId(), null, null)) {
+			if (SwingWorkerItemList.permitsDeletion(study.getStudyId(), null, null)) {
 				int option = JOptionPane.showConfirmDialog(dialogParent, Text.Study.confirmDelete1 + Text.Study.confirmDelete2);
 				if (option == JOptionPane.YES_OPTION) {
 					int deleteReportOption = JOptionPane.showConfirmDialog(dialogParent, Text.Reports.confirmDelete);

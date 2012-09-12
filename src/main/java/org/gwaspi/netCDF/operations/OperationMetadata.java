@@ -1,5 +1,8 @@
 package org.gwaspi.netCDF.operations;
 
+import org.gwaspi.constants.cDBGWASpi;
+import org.gwaspi.constants.cDBOperations;
+import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.database.DbManager;
 import org.gwaspi.global.Config;
 import org.gwaspi.global.ServiceLocator;
@@ -35,21 +38,21 @@ public class OperationMetadata {
 	private int studyId = Integer.MIN_VALUE;
 
 	public OperationMetadata(int opId) throws IOException {
-		DbManager dBManager = ServiceLocator.getDbManager(org.gwaspi.constants.cDBGWASpi.DB_DATACENTER);
+		DbManager dBManager = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
 		List<Map<String, Object>> rs = dBManager.executeSelectStatement(
-				"SELECT * FROM " + org.gwaspi.constants.cDBGWASpi.SCH_MATRICES + "." + org.gwaspi.constants.cDBOperations.T_OPERATIONS + " WHERE " + org.gwaspi.constants.cDBOperations.f_ID + "=" + opId + "  WITH RR");
+				"SELECT * FROM " + cDBGWASpi.SCH_MATRICES + "." + cDBOperations.T_OPERATIONS + " WHERE " + cDBOperations.f_ID + "=" + opId + "  WITH RR");
 
 		op_id = opId;
 
 		if (!rs.isEmpty()) {
 			//PREVENT PHANTOM-DB READS EXCEPTIONS
-			if (!rs.isEmpty() && rs.get(0).size() == org.gwaspi.constants.cDBOperations.T_CREATE_OPERATIONS.length) {
-				parentMatrixId = Integer.parseInt(rs.get(0).get(org.gwaspi.constants.cDBOperations.f_PARENT_MATRIXID).toString());
-				parentOperationId = Integer.parseInt(rs.get(0).get(org.gwaspi.constants.cDBOperations.f_PARENT_OPID).toString());
-				op_name = rs.get(0).get(org.gwaspi.constants.cDBOperations.f_OP_NAME).toString();
-				netCDF_name = rs.get(0).get(org.gwaspi.constants.cDBOperations.f_OP_NETCDF_NAME).toString();
-				description = rs.get(0).get(org.gwaspi.constants.cDBOperations.f_DESCRIPTION).toString();
-				studyId = (Integer) rs.get(0).get(org.gwaspi.constants.cDBOperations.f_STUDYID);
+			if (!rs.isEmpty() && rs.get(0).size() == cDBOperations.T_CREATE_OPERATIONS.length) {
+				parentMatrixId = Integer.parseInt(rs.get(0).get(cDBOperations.f_PARENT_MATRIXID).toString());
+				parentOperationId = Integer.parseInt(rs.get(0).get(cDBOperations.f_PARENT_OPID).toString());
+				op_name = rs.get(0).get(cDBOperations.f_OP_NAME).toString();
+				netCDF_name = rs.get(0).get(cDBOperations.f_OP_NETCDF_NAME).toString();
+				description = rs.get(0).get(cDBOperations.f_DESCRIPTION).toString();
+				studyId = (Integer) rs.get(0).get(cDBOperations.f_STUDYID);
 			}
 
 			String genotypesFolder = Config.getConfigValue(Config.PROPERTY_GENOTYPES_DIR, "");
@@ -59,12 +62,12 @@ public class OperationMetadata {
 			if (new File(pathToMatrix).exists()) {
 				try {
 					ncfile = NetcdfFile.open(pathToMatrix);
-//					gtCode = ncfile.findGlobalAttribute(org.gwaspi.constants.cNetCDF.Attributes.GLOB_GTCODE).getStringValue();
+//					gtCode = ncfile.findGlobalAttribute(cNetCDF.Attributes.GLOB_GTCODE).getStringValue();
 
-					Dimension setDim = ncfile.findDimension(org.gwaspi.constants.cNetCDF.Dimensions.DIM_OPSET);
+					Dimension setDim = ncfile.findDimension(cNetCDF.Dimensions.DIM_OPSET);
 					opSetSize = setDim.getLength();
 
-					Dimension implicitDim = ncfile.findDimension(org.gwaspi.constants.cNetCDF.Dimensions.DIM_IMPLICITSET);
+					Dimension implicitDim = ncfile.findDimension(cNetCDF.Dimensions.DIM_IMPLICITSET);
 					implicitSetSize = implicitDim.getLength();
 				} catch (IOException ex) {
 					log.error("Cannot open file: " + ncfile.getLocation(), ex);
@@ -82,20 +85,20 @@ public class OperationMetadata {
 	}
 
 	public OperationMetadata(String netCDFname) throws IOException {
-		DbManager dBManager = ServiceLocator.getDbManager(org.gwaspi.constants.cDBGWASpi.DB_DATACENTER);
+		DbManager dBManager = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
 
-		String sql = "SELECT * FROM " + org.gwaspi.constants.cDBGWASpi.SCH_MATRICES + "." + org.gwaspi.constants.cDBOperations.T_OPERATIONS + " WHERE " + org.gwaspi.constants.cDBOperations.f_OP_NETCDF_NAME + "='" + netCDFname + "' ORDER BY " + org.gwaspi.constants.cDBOperations.f_ID + " DESC  WITH RR";
+		String sql = "SELECT * FROM " + cDBGWASpi.SCH_MATRICES + "." + cDBOperations.T_OPERATIONS + " WHERE " + cDBOperations.f_OP_NETCDF_NAME + "='" + netCDFname + "' ORDER BY " + cDBOperations.f_ID + " DESC  WITH RR";
 		List<Map<String, Object>> rs = dBManager.executeSelectStatement(sql);
 
 		//PREVENT PHANTOM-DB READS EXCEPTIONS
-		if (!rs.isEmpty() && rs.get(0).size() == org.gwaspi.constants.cDBOperations.T_CREATE_OPERATIONS.length) {
-			op_id = Integer.parseInt(rs.get(0).get(org.gwaspi.constants.cDBOperations.f_ID).toString());
-			parentMatrixId = Integer.parseInt(rs.get(0).get(org.gwaspi.constants.cDBOperations.f_PARENT_MATRIXID).toString());
-			parentOperationId = Integer.parseInt(rs.get(0).get(org.gwaspi.constants.cDBOperations.f_PARENT_OPID).toString());
-			op_name = rs.get(0).get(org.gwaspi.constants.cDBOperations.f_OP_NAME).toString();
+		if (!rs.isEmpty() && rs.get(0).size() == cDBOperations.T_CREATE_OPERATIONS.length) {
+			op_id = Integer.parseInt(rs.get(0).get(cDBOperations.f_ID).toString());
+			parentMatrixId = Integer.parseInt(rs.get(0).get(cDBOperations.f_PARENT_MATRIXID).toString());
+			parentOperationId = Integer.parseInt(rs.get(0).get(cDBOperations.f_PARENT_OPID).toString());
+			op_name = rs.get(0).get(cDBOperations.f_OP_NAME).toString();
 			netCDF_name = netCDFname;
-			description = rs.get(0).get(org.gwaspi.constants.cDBOperations.f_DESCRIPTION).toString();
-			studyId = (Integer) rs.get(0).get(org.gwaspi.constants.cDBOperations.f_STUDYID);
+			description = rs.get(0).get(cDBOperations.f_DESCRIPTION).toString();
+			studyId = (Integer) rs.get(0).get(cDBOperations.f_STUDYID);
 		}
 
 		String genotypesFolder = Config.getConfigValue(Config.PROPERTY_GENOTYPES_DIR, "");
@@ -106,12 +109,12 @@ public class OperationMetadata {
 			try {
 				ncfile = NetcdfFile.open(pathToMatrix);
 
-//				gtCode = ncfile.findGlobalAttribute(org.gwaspi.constants.cNetCDF.Attributes.GLOB_GTCODE).getStringValue();
+//				gtCode = ncfile.findGlobalAttribute(cNetCDF.Attributes.GLOB_GTCODE).getStringValue();
 
-				Dimension markerSetDim = ncfile.findDimension(org.gwaspi.constants.cNetCDF.Dimensions.DIM_OPSET);
+				Dimension markerSetDim = ncfile.findDimension(cNetCDF.Dimensions.DIM_OPSET);
 				opSetSize = markerSetDim.getLength();
 
-				Dimension implicitDim = ncfile.findDimension(org.gwaspi.constants.cNetCDF.Dimensions.DIM_IMPLICITSET);
+				Dimension implicitDim = ncfile.findDimension(cNetCDF.Dimensions.DIM_IMPLICITSET);
 				implicitSetSize = implicitDim.getLength();
 
 			} catch (IOException ex) {

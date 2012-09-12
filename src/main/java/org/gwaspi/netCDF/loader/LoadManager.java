@@ -1,5 +1,6 @@
 package org.gwaspi.netCDF.loader;
 
+import org.gwaspi.constants.cImport;
 import org.gwaspi.constants.cNetCDF;
 import java.io.IOException;
 import java.util.Map;
@@ -31,7 +32,7 @@ public class LoadManager {
 	{
 		int newMatrixId = Integer.MIN_VALUE;
 
-		switch (org.gwaspi.constants.cImport.ImportFormat.compareTo(format)) {
+		switch (cImport.ImportFormat.compareTo(format)) {
 			case Affymetrix_GenomeWide6:
 				org.gwaspi.samples.InsertSampleInfo.processData(studyId, sampleInfoLHM);
 				LoadGTFromAffyFiles affyGTLoader = new LoadGTFromAffyFiles(txt_File2,
@@ -157,7 +158,6 @@ public class LoadManager {
 				newMatrixId = sequenomGTLoader.processData();
 				break;
 			default:
-
 		}
 
 		return newMatrixId;

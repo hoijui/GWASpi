@@ -1,5 +1,6 @@
 package org.gwaspi.threadbox;
 
+import org.gwaspi.constants.cDBGWASpi;
 import org.gwaspi.database.DbManager;
 import org.gwaspi.global.ServiceLocator;
 import java.io.File;
@@ -48,7 +49,7 @@ public class Threaded_UpdateSampleInfo extends CommonRunnable {
 //		List<Operation> opAL = opList.operationsListAL;
 //		int qaOpId = Integer.MIN_VALUE;
 //		for (int i = 0; i < opAL.size(); i++) {
-//			if (opAL.get(i).getOperationType().equals(org.gwaspi.constants.cNetCDF.Defaults.OPType.SAMPLE_QA.toString())) {
+//			if (opAL.get(i).getOperationType().equals(cNetCDF.Defaults.OPType.SAMPLE_QA.toString())) {
 //				qaOpId = opAL.get(i).getOperationId();
 //			}
 //		}
@@ -71,12 +72,12 @@ public class Threaded_UpdateSampleInfo extends CommonRunnable {
 		try {
 			org.gwaspi.global.Utils.logBlockInStudyDesc(description, studyId);
 
-			DbManager db = ServiceLocator.getDbManager(org.gwaspi.constants.cDBGWASpi.DB_DATACENTER);
-			db.updateTable(org.gwaspi.constants.cDBGWASpi.SCH_APP,
-					org.gwaspi.constants.cDBGWASpi.T_STUDIES,
-					new String[]{constants.cDBGWASpi.f_STUDY_DESCRIPTION},
+			DbManager db = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
+			db.updateTable(cDBGWASpi.SCH_APP,
+					cDBGWASpi.T_STUDIES,
+					new String[]{cDBGWASpi.f_STUDY_DESCRIPTION},
 					new Object[]{description},
-					new String[]{constants.cDBGWASpi.f_ID},
+					new String[]{cDBGWASpi.f_ID},
 					new Object[]{studyId});
 
 		} catch (IOException ex) {

@@ -1,5 +1,6 @@
 package org.gwaspi.netCDF;
 
+import org.gwaspi.constants.cNetCDF;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -37,7 +38,7 @@ public class DumpNCMatrix {
 		BufferedWriter dumpBW = new BufferedWriter(dumpFW);
 
 		// GET MARKERSET
-		Variable var = ncfile.findVariable(org.gwaspi.constants.cNetCDF.Variables.VAR_MARKERSET);
+		Variable var = ncfile.findVariable(cNetCDF.Variables.VAR_MARKERSET);
 		DataType dataType = var.getDataType();
 		int[] varShape = var.getShape();
 
@@ -55,9 +56,9 @@ public class DumpNCMatrix {
 		}
 
 		// GET SAMPLESET
-		var = ncfile.findVariable(org.gwaspi.constants.cNetCDF.Variables.VAR_SAMPLESET);
+		var = ncfile.findVariable(cNetCDF.Variables.VAR_SAMPLESET);
 		varShape = var.getShape();
-		Dimension markerSetDim = ncfile.findDimension(org.gwaspi.constants.cNetCDF.Dimensions.DIM_SAMPLESET);
+		Dimension markerSetDim = ncfile.findDimension(cNetCDF.Dimensions.DIM_SAMPLESET);
 
 		try {
 			int sampleSetSize = markerSetDim.getLength();
@@ -83,7 +84,7 @@ public class DumpNCMatrix {
 		for (String sampleId : sampleIdSetLHM.keySet()) {
 			StringBuilder sampleLineSB = new StringBuilder(sampleId.toString());
 
-			Variable genotypes = ncfile.findVariable(org.gwaspi.constants.cNetCDF.Variables.VAR_GENOTYPES);
+			Variable genotypes = ncfile.findVariable(cNetCDF.Variables.VAR_GENOTYPES);
 
 			try {
 				varShape = genotypes.getShape();

@@ -1,5 +1,7 @@
 package org.gwaspi.gui;
 
+import org.gwaspi.constants.cImport;
+import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.utils.HelpURLs;
 import org.gwaspi.gui.utils.URLInDefaultBrowser;
@@ -119,18 +121,18 @@ public class GWASinOneGoDialog extends JFrame {
 		int rowNb = 0;
 		//<editor-fold defaultstate="collapsed" desc="FORMAT DEPENDANT">
 		lbl_Chromosome.setText("  " + Text.Dialog.chromosome);
-		cmb_Chromosome.setModel(new DefaultComboBoxModel(org.gwaspi.constants.cNetCDF.Defaults.Chromosomes));
+		cmb_Chromosome.setModel(new DefaultComboBoxModel(cNetCDF.Defaults.Chromosomes));
 		cmb_Chromosome.setSelectedIndex(0);
 
 		lbl_Strand.setText("  " + Text.Dialog.strand);
-		cmb_Strand.setModel(new DefaultComboBoxModel(org.gwaspi.constants.cNetCDF.Defaults.StrandType.values()));
+		cmb_Strand.setModel(new DefaultComboBoxModel(cNetCDF.Defaults.StrandType.values()));
 		cmb_Strand.setSelectedIndex(6);
 
 		lbl_GTCode.setText("  " + Text.Dialog.genotypeEncoding);
-		cmb_GTCode.setModel(new DefaultComboBoxModel(org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding.values()));
+		cmb_GTCode.setModel(new DefaultComboBoxModel(cNetCDF.Defaults.GenotypeEncoding.values()));
 		cmb_GTCode.setSelectedIndex(0);
 
-		switch (org.gwaspi.constants.cImport.ImportFormat.compareTo(format)) {
+		switch (cImport.ImportFormat.compareTo(format)) {
 			case BEAGLE:
 				setMyConstraints(c, 0, rowNb, GridBagConstraints.LINE_START);
 				pnl_Questions.add(lbl_Chromosome, c);

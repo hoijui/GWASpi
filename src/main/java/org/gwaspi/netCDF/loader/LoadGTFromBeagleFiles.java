@@ -378,9 +378,9 @@ public class LoadGTFromBeagleFiles {
 
 		wrMarkerSetLHM.putAll(tempMarkerIdLHM);
 
-		if (guessedGTCode.equals(org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding.UNKNOWN)) {
+		if (guessedGTCode.equals(cNetCDF.Defaults.GenotypeEncoding.UNKNOWN)) {
 			guessedGTCode = Utils.detectGTEncoding(wrMarkerSetLHM);
-		} else if (guessedGTCode.equals(org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding.O12)) {
+		} else if (guessedGTCode.equals(cNetCDF.Defaults.GenotypeEncoding.O12)) {
 			guessedGTCode = Utils.detectGTEncoding(wrMarkerSetLHM);
 		}
 

@@ -1,6 +1,8 @@
 package org.gwaspi.cli;
 
+import org.gwaspi.constants.cDBSamples;
 import org.gwaspi.constants.cExport.ExportFormat;
+import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.global.Text;
 import java.io.File;
 import java.io.IOException;
@@ -222,20 +224,20 @@ public class CliExecutor {
 				gwasParams.setProceed(true);
 
 				List<String> necessaryOPsAL = new ArrayList<String>();
-				necessaryOPsAL.add(org.gwaspi.constants.cNetCDF.Defaults.OPType.SAMPLE_QA.toString());
-				necessaryOPsAL.add(org.gwaspi.constants.cNetCDF.Defaults.OPType.MARKER_QA.toString());
+				necessaryOPsAL.add(cNetCDF.Defaults.OPType.SAMPLE_QA.toString());
+				necessaryOPsAL.add(cNetCDF.Defaults.OPType.MARKER_QA.toString());
 				List missingOPsAL = OperationManager.checkForNecessaryOperations(necessaryOPsAL, matrixId);
 
 				// QA BLOCK
 				if (gwasParams.isProceed() && missingOPsAL.size() > 0) {
 					gwasParams.setProceed(false);
-					System.out.println(org.gwaspi.global.Text.Operation.warnQABeforeAnything + "\n" + org.gwaspi.global.Text.Operation.willPerformOperation);
+					System.out.println(Text.Operation.warnQABeforeAnything + "\n" + Text.Operation.willPerformOperation);
 					MultiOperations.doMatrixQAs(studyId, matrixId);
 				}
 
 				// GWAS BLOCK
 				if (gwasParams.isProceed()) {
-					System.out.println(org.gwaspi.global.Text.All.processing);
+					System.out.println(Text.All.processing);
 					MultiOperations.doGWASwithAlterPhenotype(studyId,
 							matrixId,
 							phenoFile,
@@ -297,20 +299,20 @@ public class CliExecutor {
 				gwasParams.setProceed(true);
 
 				List<String> necessaryOPsAL = new ArrayList<String>();
-				necessaryOPsAL.add(org.gwaspi.constants.cNetCDF.Defaults.OPType.SAMPLE_QA.toString());
-				necessaryOPsAL.add(org.gwaspi.constants.cNetCDF.Defaults.OPType.MARKER_QA.toString());
+				necessaryOPsAL.add(cNetCDF.Defaults.OPType.SAMPLE_QA.toString());
+				necessaryOPsAL.add(cNetCDF.Defaults.OPType.MARKER_QA.toString());
 				List<String> missingOPsAL = OperationManager.checkForNecessaryOperations(necessaryOPsAL, matrixId);
 
 				// QA BLOCK
 				if (gwasParams.isProceed() && missingOPsAL.size() > 0) {
 					gwasParams.setProceed(false);
-					System.out.println(org.gwaspi.global.Text.Operation.warnQABeforeAnything + "\n" + org.gwaspi.global.Text.Operation.willPerformOperation);
+					System.out.println(Text.Operation.warnQABeforeAnything + "\n" + Text.Operation.willPerformOperation);
 					MultiOperations.doMatrixQAs(studyId, matrixId);
 				}
 
 				// GT FREQ. & HW BLOCK
 				if (gwasParams.isProceed()) {
-					System.out.println(org.gwaspi.global.Text.All.processing);
+					System.out.println(Text.All.processing);
 					MultiOperations.doGTFreqDoHW(studyId,
 							matrixId,
 							phenoFile,
@@ -367,20 +369,20 @@ public class CliExecutor {
 				gwasParams.setProceed(true);
 
 				List<String> necessaryOPsAL = new ArrayList<String>();
-				necessaryOPsAL.add(org.gwaspi.constants.cNetCDF.Defaults.OPType.SAMPLE_QA.toString());
-				necessaryOPsAL.add(org.gwaspi.constants.cNetCDF.Defaults.OPType.MARKER_QA.toString());
+				necessaryOPsAL.add(cNetCDF.Defaults.OPType.SAMPLE_QA.toString());
+				necessaryOPsAL.add(cNetCDF.Defaults.OPType.MARKER_QA.toString());
 				List<String> missingOPsAL = OperationManager.checkForNecessaryOperations(necessaryOPsAL, matrixId);
 
 				// QA BLOCK
 				if (gwasParams.isProceed() && missingOPsAL.size() > 0) {
 					gwasParams.setProceed(false);
-					System.out.println(org.gwaspi.global.Text.Operation.warnQABeforeAnything + "\n" + org.gwaspi.global.Text.Operation.willPerformOperation);
+					System.out.println(Text.Operation.warnQABeforeAnything + "\n" + Text.Operation.willPerformOperation);
 					MultiOperations.doMatrixQAs(studyId, matrixId);
 				}
 
 				// ALLELIC ALLELICTEST BLOCK
 				if (gwasParams.isProceed()) {
-					System.out.println(org.gwaspi.global.Text.All.processing);
+					System.out.println(Text.All.processing);
 					MultiOperations.doAllelicAssociationTest(studyId,
 							matrixId,
 							gtFreqId,
@@ -438,20 +440,20 @@ public class CliExecutor {
 				gwasParams.setProceed(true);
 
 				List<String> necessaryOPsAL = new ArrayList<String>();
-				necessaryOPsAL.add(org.gwaspi.constants.cNetCDF.Defaults.OPType.SAMPLE_QA.toString());
-				necessaryOPsAL.add(org.gwaspi.constants.cNetCDF.Defaults.OPType.MARKER_QA.toString());
+				necessaryOPsAL.add(cNetCDF.Defaults.OPType.SAMPLE_QA.toString());
+				necessaryOPsAL.add(cNetCDF.Defaults.OPType.MARKER_QA.toString());
 				List<String> missingOPsAL = OperationManager.checkForNecessaryOperations(necessaryOPsAL, matrixId);
 
 				// QA BLOCK
 				if (gwasParams.isProceed() && missingOPsAL.size() > 0) {
 					gwasParams.setProceed(false);
-					System.out.println(org.gwaspi.global.Text.Operation.warnQABeforeAnything + "\n" + org.gwaspi.global.Text.Operation.willPerformOperation);
+					System.out.println(Text.Operation.warnQABeforeAnything + "\n" + Text.Operation.willPerformOperation);
 					MultiOperations.doMatrixQAs(studyId, matrixId);
 				}
 
 				// GENOTYPIC TEST BLOCK
 				if (gwasParams.isProceed()) {
-					System.out.println(org.gwaspi.global.Text.All.processing);
+					System.out.println(Text.All.processing);
 					MultiOperations.doGenotypicAssociationTest(studyId,
 							matrixId,
 							gtFreqId,
@@ -509,20 +511,20 @@ public class CliExecutor {
 				gwasParams.setProceed(true);
 
 				List<String> necessaryOPsAL = new ArrayList<String>();
-				necessaryOPsAL.add(org.gwaspi.constants.cNetCDF.Defaults.OPType.SAMPLE_QA.toString());
-				necessaryOPsAL.add(org.gwaspi.constants.cNetCDF.Defaults.OPType.MARKER_QA.toString());
+				necessaryOPsAL.add(cNetCDF.Defaults.OPType.SAMPLE_QA.toString());
+				necessaryOPsAL.add(cNetCDF.Defaults.OPType.MARKER_QA.toString());
 				List<String> missingOPsAL = OperationManager.checkForNecessaryOperations(necessaryOPsAL, matrixId);
 
 				// QA BLOCK
 				if (gwasParams.isProceed() && missingOPsAL.size() > 0) {
 					gwasParams.setProceed(false);
-					System.out.println(org.gwaspi.global.Text.Operation.warnQABeforeAnything + "\n" + org.gwaspi.global.Text.Operation.willPerformOperation);
+					System.out.println(Text.Operation.warnQABeforeAnything + "\n" + Text.Operation.willPerformOperation);
 					MultiOperations.doMatrixQAs(studyId, matrixId);
 				}
 
 				// TRend TEST BLOCK
 				if (gwasParams.isProceed()) {
-					System.out.println(org.gwaspi.global.Text.All.processing);
+					System.out.println(Text.All.processing);
 					MultiOperations.doTrendTest(studyId,
 							matrixId,
 							gtFreqId,
@@ -544,7 +546,7 @@ public class CliExecutor {
 				String format = args.get(3);
 
 				if (studyExists) {
-					MultiOperations.doExportMatrix(studyId, matrixId, ExportFormat.valueOf(format), org.gwaspi.constants.cDBSamples.f_AFFECTION);
+					MultiOperations.doExportMatrix(studyId, matrixId, ExportFormat.valueOf(format), cDBSamples.f_AFFECTION);
 					success = true;
 
 				}

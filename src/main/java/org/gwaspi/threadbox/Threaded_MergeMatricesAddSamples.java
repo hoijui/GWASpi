@@ -46,7 +46,7 @@ public class Threaded_MergeMatricesAddSamples extends CommonRunnable {
 
 	protected void runInternal(SwingWorkerItem thisSwi) throws Exception {
 
-		if (thisSwi.getQueueState().equals(org.gwaspi.threadbox.QueueStates.PROCESSING)) {
+		if (thisSwi.getQueueState().equals(QueueStates.PROCESSING)) {
 			MatrixMergeSamples_opt jointedMatrix = new MatrixMergeSamples_opt(studyId,
 					parentMatrixId1,
 					parentMatrixId2,
@@ -55,8 +55,8 @@ public class Threaded_MergeMatricesAddSamples extends CommonRunnable {
 
 			int resultMatrixId = jointedMatrix.appendSamplesKeepMarkersConstant();
 			GWASpiExplorerNodes.insertMatrixNode(studyId, resultMatrixId);
-			
-			if (!thisSwi.getQueueState().equals(org.gwaspi.threadbox.QueueStates.PROCESSING)) {
+
+			if (!thisSwi.getQueueState().equals(QueueStates.PROCESSING)) {
 				return;
 			}
 			int sampleQAOpId = OP_QASamples_opt.processMatrix(resultMatrixId);
@@ -64,7 +64,7 @@ public class Threaded_MergeMatricesAddSamples extends CommonRunnable {
 			org.gwaspi.reports.OutputQASamples.writeReportsForQASamplesData(sampleQAOpId, true);
 			GWASpiExplorerNodes.insertReportsUnderOperationNode(sampleQAOpId);
 
-			if (!thisSwi.getQueueState().equals(org.gwaspi.threadbox.QueueStates.PROCESSING)) {
+			if (!thisSwi.getQueueState().equals(QueueStates.PROCESSING)) {
 				return;
 			}
 			int markersQAOpId = OP_QAMarkers_opt.processMatrix(resultMatrixId);

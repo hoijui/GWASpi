@@ -6,6 +6,7 @@ import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.database.DbManager;
 import org.gwaspi.global.Config;
 import org.gwaspi.global.ServiceLocator;
+import org.gwaspi.global.Text;
 import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
@@ -48,7 +49,7 @@ public class OutputTrendTest {
 		String prefix = org.gwaspi.reports.ReportManager.getreportNamePrefix(op);
 		String manhattanName = prefix + "manhtt";
 
-		log.info(org.gwaspi.global.Text.All.processing);
+		log.info(Text.All.processing);
 		if (writeManhattanPlotFromTrendTestData(opId, manhattanName, 4000, 500)) {
 			result = true;
 			ReportManager.insertRPMetadata(dBManager,
@@ -98,7 +99,7 @@ public class OutputTrendTest {
 	public static boolean writeManhattanPlotFromTrendTestData(int opId, String outName, int width, int height) throws IOException {
 		boolean result = false;
 		//Generating XY scatter plot with loaded data
-		CombinedRangeXYPlot combinedPlot = GenericReportGenerator.buildManhattanPlot(opId, org.gwaspi.constants.cNetCDF.Association.VAR_OP_MARKERS_ASTrendTestTP);
+		CombinedRangeXYPlot combinedPlot = GenericReportGenerator.buildManhattanPlot(opId, cNetCDF.Association.VAR_OP_MARKERS_ASTrendTestTP);
 
 		JFreeChart chart = new JFreeChart("P value", JFreeChart.DEFAULT_TITLE_FONT, combinedPlot, true);
 
@@ -136,7 +137,7 @@ public class OutputTrendTest {
 	public static boolean writeQQPlotFromTrendTestData(int opId, String outName, int width, int height) throws IOException {
 		boolean result = false;
 		//Generating XY scatter plot with loaded data
-		XYPlot qqPlot = GenericReportGenerator.buildQQPlot(opId, org.gwaspi.constants.cNetCDF.Association.VAR_OP_MARKERS_ASTrendTestTP, 1);
+		XYPlot qqPlot = GenericReportGenerator.buildQQPlot(opId, cNetCDF.Association.VAR_OP_MARKERS_ASTrendTestTP, 1);
 
 		JFreeChart chart = new JFreeChart("X² QQ", JFreeChart.DEFAULT_TITLE_FONT, qqPlot, true);
 
@@ -159,7 +160,7 @@ public class OutputTrendTest {
 		boolean result;
 
 		try {
-			Map<String, Object> unsortedMarkerIdTrendTestValsLHM = GenericReportGenerator.getAnalysisVarData(opId, org.gwaspi.constants.cNetCDF.Association.VAR_OP_MARKERS_ASTrendTestTP);
+			Map<String, Object> unsortedMarkerIdTrendTestValsLHM = GenericReportGenerator.getAnalysisVarData(opId, cNetCDF.Association.VAR_OP_MARKERS_ASTrendTestTP);
 			Map<String, Object> unsortedMarkerIdPvalLHM = new LinkedHashMap<String, Object>();
 			for (Map.Entry<String, Object> entry : unsortedMarkerIdTrendTestValsLHM.entrySet()) {
 				double[] values = (double[]) entry.getValue();

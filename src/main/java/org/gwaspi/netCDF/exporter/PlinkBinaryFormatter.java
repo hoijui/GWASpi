@@ -1,5 +1,8 @@
 package org.gwaspi.netCDF.exporter;
 
+import org.gwaspi.constants.cDBSamples;
+import org.gwaspi.constants.cExport;
+import org.gwaspi.constants.cNetCDF;
 import java.io.BufferedWriter;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -43,7 +46,7 @@ public class PlinkBinaryFormatter implements Formatter {
 
 		boolean result = false;
 		NetcdfFile rdNcFile = NetcdfFile.open(rdMatrixMetadata.getPathToMatrix());
-		String sep = org.gwaspi.constants.cExport.separator_PLINK;
+		String sep = cExport.separator_PLINK;
 
 		//<editor-fold defaultstate="collapsed" desc="BIM FILE">
 		String filePath = exportDir.getPath() + "/" + rdMatrixMetadata.getMatrixFriendlyName() + ".bim";
@@ -63,10 +66,10 @@ public class PlinkBinaryFormatter implements Formatter {
 		rdMarkerSet.fillWith("");
 
 		//MARKERSET CHROMOSOME
-		rdMarkerSet.fillInitLHMWithVariable(org.gwaspi.constants.cNetCDF.Variables.VAR_MARKERS_CHR);
+		rdMarkerSet.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
 
 		//MARKERSET RSID
-		rdMarkerSet.appendVariableToMarkerSetLHMValue(org.gwaspi.constants.cNetCDF.Variables.VAR_MARKERS_RSID, sep);
+		rdMarkerSet.appendVariableToMarkerSetLHMValue(cNetCDF.Variables.VAR_MARKERS_RSID, sep);
 
 		//DEFAULT GENETIC DISTANCE = 0
 		for (Map.Entry<String, Object> entry : rdMarkerSet.getMarkerIdSetLHM().entrySet()) {
@@ -77,11 +80,11 @@ public class PlinkBinaryFormatter implements Formatter {
 		}
 
 		//MARKERSET POSITION
-		rdMarkerSet.appendVariableToMarkerSetLHMValue(org.gwaspi.constants.cNetCDF.Variables.VAR_MARKERS_POS, sep);
+		rdMarkerSet.appendVariableToMarkerSetLHMValue(cNetCDF.Variables.VAR_MARKERS_POS, sep);
 
 		//ALLELES
 		OperationsList opList = new OperationsList(rdMatrixMetadata.getMatrixId());
-		int markersQAOpId = opList.getIdOfLastOperationTypeOccurance(org.gwaspi.constants.cNetCDF.Defaults.OPType.MARKER_QA);
+		int markersQAOpId = opList.getIdOfLastOperationTypeOccurance(cNetCDF.Defaults.OPType.MARKER_QA);
 
 		Map<String, Object> minorAllelesLHM = GatherQAMarkersData.loadMarkerQAMinorAlleles(markersQAOpId);
 		Map<String, Object> majorAllelesLHM = GatherQAMarkersData.loadMarkerQAMajorAlleles(markersQAOpId);
@@ -211,11 +214,11 @@ public class PlinkBinaryFormatter implements Formatter {
 		for (String sampleId : rdSampleSetMap.keySet()) {
 			Map<String, Object> sampleInfo = Utils.getCurrentSampleFormattedInfo(sampleId, rdMatrixMetadata.getStudyId());
 
-			String familyId = sampleInfo.get(org.gwaspi.constants.cDBSamples.f_FAMILY_ID).toString();
-			String fatherId = sampleInfo.get(org.gwaspi.constants.cDBSamples.f_FATHER_ID).toString();
-			String motherId = sampleInfo.get(org.gwaspi.constants.cDBSamples.f_MOTHER_ID).toString();
-			String sex = sampleInfo.get(org.gwaspi.constants.cDBSamples.f_SEX).toString();
-			String affection = sampleInfo.get(org.gwaspi.constants.cDBSamples.f_AFFECTION).toString();
+			String familyId = sampleInfo.get(cDBSamples.f_FAMILY_ID).toString();
+			String fatherId = sampleInfo.get(cDBSamples.f_FATHER_ID).toString();
+			String motherId = sampleInfo.get(cDBSamples.f_MOTHER_ID).toString();
+			String sex = sampleInfo.get(cDBSamples.f_SEX).toString();
+			String affection = sampleInfo.get(cDBSamples.f_AFFECTION).toString();
 
 			// FAM files
 			// Family ID

@@ -1,5 +1,6 @@
 package org.gwaspi.netCDF;
 
+import org.gwaspi.constants.cNetCDF;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -36,9 +37,9 @@ public class CreateNetcdf {
 		///////////// CREATE netCDF-3 FILE ////////////
 		String genotypesFolder = "/media/data/work/GWASpi/genotypes";
 		File pathToStudy = new File(genotypesFolder + "/STUDY_1");
-		int gtSpan = org.gwaspi.constants.cNetCDF.Strides.STRIDE_GT;
-		int markerSpan = org.gwaspi.constants.cNetCDF.Strides.STRIDE_MARKER_NAME;
-		int sampleSpan = org.gwaspi.constants.cNetCDF.Strides.STRIDE_SAMPLE_NAME;
+		int gtSpan = cNetCDF.Strides.STRIDE_GT;
+		int markerSpan = cNetCDF.Strides.STRIDE_MARKER_NAME;
+		int sampleSpan = cNetCDF.Strides.STRIDE_SAMPLE_NAME;
 
 		String matrixName = "prototype";
 		String writeFileName = pathToStudy + "/" + matrixName + ".nc";
@@ -86,7 +87,7 @@ public class CreateNetcdf {
 
 		// Define Marker Variables
 		ncfile.addVariable("markerset", DataType.CHAR, markerGenotypeDims);
-		ncfile.addVariableAttribute("markerset", org.gwaspi.constants.cNetCDF.Attributes.LENGTH, markerSetSize);
+		ncfile.addVariableAttribute("markerset", cNetCDF.Attributes.LENGTH, markerSetSize);
 
 		ncfile.addVariable("marker_chromosome", DataType.CHAR, markerPropertyDim8);
 		ncfile.addVariable("marker_position", DataType.CHAR, markerPropertyDim32);
@@ -101,16 +102,16 @@ public class CreateNetcdf {
 
 		// Define Sample Variables
 		ncfile.addVariable("sampleset", DataType.CHAR, sampleSetDims);
-		ncfile.addVariableAttribute("sampleset", org.gwaspi.constants.cNetCDF.Attributes.LENGTH, sampleSetSize);
+		ncfile.addVariableAttribute("sampleset", cNetCDF.Attributes.LENGTH, sampleSetSize);
 
 		// Define Genotype Variables
 		ncfile.addVariable("genotypes", DataType.CHAR, dims);
-		ncfile.addVariableAttribute("genotypes", org.gwaspi.constants.cNetCDF.Attributes.GLOB_STRAND, "+/-");
+		ncfile.addVariableAttribute("genotypes", cNetCDF.Attributes.GLOB_STRAND, "+/-");
 
 		// add global attributes
-		ncfile.addGlobalAttribute(org.gwaspi.constants.cNetCDF.Attributes.GLOB_STUDY, studyId);
-		ncfile.addGlobalAttribute(org.gwaspi.constants.cNetCDF.Attributes.GLOB_TECHNOLOGY, "INTERNAL");
-		ncfile.addGlobalAttribute(org.gwaspi.constants.cNetCDF.Attributes.GLOB_DESCRIPTION, "Matrix created by MOAPI through addition of 2 matrices");
+		ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_STUDY, studyId);
+		ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_TECHNOLOGY, "INTERNAL");
+		ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_DESCRIPTION, "Matrix created by MOAPI through addition of 2 matrices");
 
 		return ncfile;
 

@@ -190,7 +190,7 @@ public class LoadDataPanel extends JPanel {
 
 		lbl_Format.setText(Text.Matrix.format);
 
-		cmb_Format.setModel(new DefaultComboBoxModel(org.gwaspi.constants.cImport.ImportFormat.values()));
+		cmb_Format.setModel(new DefaultComboBoxModel(cImport.ImportFormat.values()));
 		cmb_Format.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
 				formatAction.actionPerformed(evt);
@@ -761,7 +761,7 @@ public class LoadDataPanel extends JPanel {
 		@Override
 		public void actionPerformed(ActionEvent evt) {
 			// Use standard file opener
-			if (cmb_Format.getSelectedItem().equals(org.gwaspi.constants.cImport.ImportFormat.PLINK)) {
+			if (cmb_Format.getSelectedItem().equals(cImport.ImportFormat.PLINK)) {
 				Dialogs.selectAndSetFileDialog(evt, btn_File2, txt_File2, "");
 				if (!txt_File2.getText().isEmpty()) {
 					File mapFile = new File(txt_File2.getText().substring(0, txt_File2.getText().length() - 4) + ".map");
@@ -774,7 +774,7 @@ public class LoadDataPanel extends JPanel {
 						}
 					}
 				}
-			} else if (cmb_Format.getSelectedItem().equals(org.gwaspi.constants.cImport.ImportFormat.PLINK_Binary)) {
+			} else if (cmb_Format.getSelectedItem().equals(cImport.ImportFormat.PLINK_Binary)) {
 				Dialogs.selectAndSetFileDialog(evt, btn_File2, txt_File2, "");
 				if (!txt_File2.getText().isEmpty()) {
 					File bedFile = new File(txt_File2.getText().substring(0, txt_File2.getText().length() - 4) + ".bed");
@@ -796,9 +796,9 @@ public class LoadDataPanel extends JPanel {
 						}
 					}
 				}
-			} else if (cmb_Format.getSelectedItem().equals(org.gwaspi.constants.cImport.ImportFormat.BEAGLE)) {
+			} else if (cmb_Format.getSelectedItem().equals(cImport.ImportFormat.BEAGLE)) {
 				Dialogs.selectAndSetFileDialog(evt, btn_File2, txt_File2, "");
-			} else if (cmb_Format.getSelectedItem().equals(org.gwaspi.constants.cImport.ImportFormat.HGDP1)) {
+			} else if (cmb_Format.getSelectedItem().equals(cImport.ImportFormat.HGDP1)) {
 				Dialogs.selectAndSetFileDialog(evt, btn_File2, txt_File2, "");
 			} else if (cmb_Format.getSelectedItem().equals(cImport.ImportFormat.Sequenom)) {
 				Dialogs.selectAndSetFileDialog(evt, btn_File2, txt_File2, "");

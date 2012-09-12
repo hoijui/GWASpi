@@ -1,5 +1,7 @@
 package org.gwaspi.netCDF.matrices;
 
+import org.gwaspi.constants.cDBGWASpi;
+import org.gwaspi.constants.cDBMatrix;
 import org.gwaspi.database.DbManager;
 import org.gwaspi.global.Config;
 import org.gwaspi.global.ServiceLocator;
@@ -29,9 +31,9 @@ public class MatrixManager {
 		boolean result = false;
 		try {
 			//CREATE MATRIX_METADATA table in MATRICES SCHEMA
-			db.createTable(org.gwaspi.constants.cDBGWASpi.SCH_MATRICES,
-					org.gwaspi.constants.cDBMatrix.T_MATRICES,
-					org.gwaspi.constants.cDBMatrix.T_CREATE_MATRICES);
+			db.createTable(cDBGWASpi.SCH_MATRICES,
+					cDBMatrix.T_MATRICES,
+					cDBMatrix.T_CREATE_MATRICES);
 		} catch (Exception ex) {
 			log.error("Failed creating management database", ex);
 		}
@@ -67,9 +69,9 @@ public class MatrixManager {
 			studyId
 		};
 
-		dBManager.insertValuesInTable(org.gwaspi.constants.cDBGWASpi.SCH_MATRICES,
-				org.gwaspi.constants.cDBMatrix.T_MATRICES,
-				org.gwaspi.constants.cDBMatrix.F_INSERT_MATRICES,
+		dBManager.insertValuesInTable(cDBGWASpi.SCH_MATRICES,
+				cDBMatrix.T_MATRICES,
+				cDBMatrix.F_INSERT_MATRICES,
 				matrixMetaData);
 	}
 
@@ -106,8 +108,8 @@ public class MatrixManager {
 			}
 
 			// DELETE METADATA INFO FROM DB
-			DbManager dBManager = ServiceLocator.getDbManager(org.gwaspi.constants.cDBGWASpi.DB_DATACENTER);
-			String statement = "DELETE FROM " + org.gwaspi.constants.cDBGWASpi.SCH_MATRICES + "." + org.gwaspi.constants.cDBMatrix.T_MATRICES + " WHERE ID=" + matrixMetadata.getMatrixId();
+			DbManager dBManager = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
+			String statement = "DELETE FROM " + cDBGWASpi.SCH_MATRICES + "." + cDBMatrix.T_MATRICES + " WHERE ID=" + matrixMetadata.getMatrixId();
 			dBManager.executeStatement(statement);
 
 		} catch (Exception ex) {
@@ -130,15 +132,15 @@ public class MatrixManager {
 	public static MatrixMetadata getLatestMatrixId() throws IOException {
 
 		List<Map<String, Object>> rs = null;
-		String dbName = org.gwaspi.constants.cDBGWASpi.DB_DATACENTER;
+		String dbName = cDBGWASpi.DB_DATACENTER;
 		DbManager studyDbManager = ServiceLocator.getDbManager(dbName);
 		try {
-			rs = studyDbManager.executeSelectStatement("SELECT " + org.gwaspi.constants.cDBMatrix.f_ID + " FROM " + org.gwaspi.constants.cDBGWASpi.SCH_MATRICES + "." + org.gwaspi.constants.cDBMatrix.T_MATRICES + " ORDER BY " + org.gwaspi.constants.cDBMatrix.f_ID + " DESC  WITH RR");
+			rs = studyDbManager.executeSelectStatement("SELECT " + cDBMatrix.f_ID + " FROM " + cDBGWASpi.SCH_MATRICES + "." + cDBMatrix.T_MATRICES + " ORDER BY " + cDBMatrix.f_ID + " DESC  WITH RR");
 		} catch (Exception ex) {
 			log.error("Failed retreiving latest Matrix", ex);
 		}
 
-		MatrixMetadata mxMetaData = new MatrixMetadata((Integer) rs.get(0).get(org.gwaspi.constants.cDBMatrix.f_ID));
+		MatrixMetadata mxMetaData = new MatrixMetadata((Integer) rs.get(0).get(cDBMatrix.f_ID));
 
 		return mxMetaData;
 	}

@@ -1,5 +1,6 @@
 package org.gwaspi.netCDF.operations;
 
+import org.gwaspi.constants.cDBGWASpi;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.database.DbManager;
 import org.gwaspi.global.Config;
@@ -131,7 +132,7 @@ public class OperationFactory {
 				throw new IllegalArgumentException("invalid OPType: " + OPType);
 		}
 
-		DbManager dBManager = ServiceLocator.getDbManager(org.gwaspi.constants.cDBGWASpi.DB_DATACENTER);
+		DbManager dBManager = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
 		org.gwaspi.netCDF.operations.OperationManager.insertOPMetadata(dBManager,
 				parentMatrixId,
 				parentOperationId,
@@ -185,9 +186,9 @@ public class OperationFactory {
 				org.gwaspi.global.Utils.createFolder(genotypesFolder, "/STUDY_" + studyId);
 			}
 
-			int gtStride = org.gwaspi.constants.cNetCDF.Strides.STRIDE_GT;
-			int markerStride = org.gwaspi.constants.cNetCDF.Strides.STRIDE_MARKER_NAME;
-			int sampleStride = org.gwaspi.constants.cNetCDF.Strides.STRIDE_SAMPLE_NAME;
+			int gtStride = cNetCDF.Strides.STRIDE_GT;
+			int markerStride = cNetCDF.Strides.STRIDE_MARKER_NAME;
+			int sampleStride = cNetCDF.Strides.STRIDE_SAMPLE_NAME;
 
 			String writeFileName = pathToStudy + "/" + resultOPName + ".nc";
 			ncfile = NetcdfFileWriteable.createNew(writeFileName, false);
@@ -276,8 +277,8 @@ public class OperationFactory {
 			ncfile = NetcdfFileWriteable.createNew(writeFileName, false);
 
 			// global attributes
-			int sampleStride = org.gwaspi.constants.cNetCDF.Strides.STRIDE_SAMPLE_NAME;
-			int markerStride = org.gwaspi.constants.cNetCDF.Strides.STRIDE_MARKER_NAME;
+			int sampleStride = cNetCDF.Strides.STRIDE_SAMPLE_NAME;
+			int markerStride = cNetCDF.Strides.STRIDE_MARKER_NAME;
 
 			ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_STUDY, studyId);
 			ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_DESCRIPTION, description);
@@ -334,9 +335,9 @@ public class OperationFactory {
 				org.gwaspi.global.Utils.createFolder(genotypesFolder, "/STUDY_" + studyId);
 			}
 
-			int gtStride = org.gwaspi.constants.cNetCDF.Strides.STRIDE_GT;
-			int markerStride = org.gwaspi.constants.cNetCDF.Strides.STRIDE_MARKER_NAME;
-			int sampleStride = org.gwaspi.constants.cNetCDF.Strides.STRIDE_SAMPLE_NAME;
+			int gtStride = cNetCDF.Strides.STRIDE_GT;
+			int markerStride = cNetCDF.Strides.STRIDE_MARKER_NAME;
+			int sampleStride = cNetCDF.Strides.STRIDE_SAMPLE_NAME;
 
 			String writeFileName = pathToStudy + "/" + matrixName + ".nc";
 			ncfile = NetcdfFileWriteable.createNew(writeFileName, false);
@@ -423,8 +424,8 @@ public class OperationFactory {
 				org.gwaspi.global.Utils.createFolder(genotypesFolder, "/STUDY_" + studyId);
 			}
 
-			int markerStride = org.gwaspi.constants.cNetCDF.Strides.STRIDE_MARKER_NAME;
-			int sampleStride = org.gwaspi.constants.cNetCDF.Strides.STRIDE_SAMPLE_NAME;
+			int markerStride = cNetCDF.Strides.STRIDE_MARKER_NAME;
+			int sampleStride = cNetCDF.Strides.STRIDE_SAMPLE_NAME;
 
 			String writeFileName = pathToStudy + "/" + matrixName + ".nc";
 			ncfile = NetcdfFileWriteable.createNew(writeFileName, false);
@@ -499,8 +500,8 @@ public class OperationFactory {
 				org.gwaspi.global.Utils.createFolder(genotypesFolder, "/STUDY_" + studyId);
 			}
 
-			int markerStride = org.gwaspi.constants.cNetCDF.Strides.STRIDE_MARKER_NAME;
-			int sampleStride = org.gwaspi.constants.cNetCDF.Strides.STRIDE_SAMPLE_NAME;
+			int markerStride = cNetCDF.Strides.STRIDE_MARKER_NAME;
+			int sampleStride = cNetCDF.Strides.STRIDE_SAMPLE_NAME;
 
 			String writeFileName = pathToStudy + "/" + matrixName + ".nc";
 			ncfile = NetcdfFileWriteable.createNew(writeFileName, false);
@@ -586,8 +587,8 @@ public class OperationFactory {
 				org.gwaspi.global.Utils.createFolder(genotypesFolder, "/STUDY_" + studyId);
 			}
 
-			int markerStride = org.gwaspi.constants.cNetCDF.Strides.STRIDE_MARKER_NAME;
-			int sampleStride = org.gwaspi.constants.cNetCDF.Strides.STRIDE_SAMPLE_NAME;
+			int markerStride = cNetCDF.Strides.STRIDE_MARKER_NAME;
+			int sampleStride = cNetCDF.Strides.STRIDE_SAMPLE_NAME;
 
 			String writeFileName = pathToStudy + "/" + matrixName + ".nc";
 			ncfile = NetcdfFileWriteable.createNew(writeFileName, false);
@@ -667,8 +668,8 @@ public class OperationFactory {
 				org.gwaspi.global.Utils.createFolder(genotypesFolder, "/STUDY_" + studyId);
 			}
 
-			int markerStride = org.gwaspi.constants.cNetCDF.Strides.STRIDE_MARKER_NAME;
-			int sampleStride = org.gwaspi.constants.cNetCDF.Strides.STRIDE_SAMPLE_NAME;
+			int markerStride = cNetCDF.Strides.STRIDE_MARKER_NAME;
+			int sampleStride = cNetCDF.Strides.STRIDE_SAMPLE_NAME;
 
 			String writeFileName = pathToStudy + "/" + matrixName + ".nc";
 			ncfile = NetcdfFileWriteable.createNew(writeFileName, false);

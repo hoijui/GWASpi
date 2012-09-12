@@ -1,6 +1,8 @@
 package org.gwaspi.gui;
 
 import org.gwaspi.global.Text;
+import org.gwaspi.gui.utils.Dialogs;
+import org.gwaspi.gui.utils.RowRendererProcessOverviewWithAbortIcon;
 import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
@@ -35,6 +37,7 @@ import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.gwaspi.threadbox.QueueStates;
 import org.gwaspi.threadbox.SwingDeleterItem;
 import org.gwaspi.threadbox.SwingDeleterItemList;
 import org.gwaspi.threadbox.SwingWorkerItem;
@@ -91,7 +94,6 @@ public class ProcessTab extends JPanel {
 		pnl_Logo.setMaximumSize(new Dimension(100, 100));
 		pnl_Logo.setPreferredSize(new Dimension(100, 100));
 
-
 		//<editor-fold defaultstate="collapsed" desc="PROCESS OVERVIEW LAYOUT">
 		GroupLayout pnl_LogoLayout = new GroupLayout(pnl_Logo);
 		pnl_Logo.setLayout(pnl_LogoLayout);
@@ -123,7 +125,6 @@ public class ProcessTab extends JPanel {
 
 		pnl_OrverviewLayout.linkSize(SwingConstants.VERTICAL, new Component[]{pnl_Logo, scrl_Overview});
 		//</editor-fold>
-
 
 		pnl_ProcessLog.setBorder(BorderFactory.createTitledBorder(null, Text.Processes.processLog, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("DejaVu Sans", 1, 13))); // NOI18N
 
@@ -206,15 +207,15 @@ public class ProcessTab extends JPanel {
 					int rowIndex = tmpTable.getSelectedRow();
 					int colIndex = tmpTable.getSelectedColumn();
 					if (colIndex == 7) {    //Abort
-						if (rowIndex < org.gwaspi.threadbox.SwingWorkerItemList.getSwingWorkerItemsALsize()) {
-							org.gwaspi.threadbox.SwingWorkerItemList.flagCurrentItemAborted(rowIndex);
+						if (rowIndex < SwingWorkerItemList.getSwingWorkerItemsALsize()) {
+							SwingWorkerItemList.flagCurrentItemAborted(rowIndex);
 						} else {
-							org.gwaspi.threadbox.SwingDeleterItemList.abortSwingWorker(rowIndex - org.gwaspi.threadbox.SwingWorkerItemList.getSwingWorkerItemsALsize());
+							SwingDeleterItemList.abortSwingWorker(rowIndex - SwingWorkerItemList.getSwingWorkerItemsALsize());
 						}
 					}
 				}
 			});
-			tmpTable.setDefaultRenderer(Object.class, new org.gwaspi.gui.utils.RowRendererProcessOverviewWithAbortIcon());
+			tmpTable.setDefaultRenderer(Object.class, new RowRendererProcessOverviewWithAbortIcon());
 			tmpTable.setSelectionMode(0);
 
 			tmpTable.setModel(new DefaultTableModel(
@@ -295,9 +296,9 @@ public class ProcessTab extends JPanel {
 		boolean idle = true;
 		while (count < swingWorkerItemsAL.size()) {
 			String queueState = swingWorkerItemsAL.get(count).getQueueState();
-			if (!queueState.equals(org.gwaspi.threadbox.QueueStates.DONE)
-					&& !queueState.equals(org.gwaspi.threadbox.QueueStates.ABORT)
-					&& !queueState.equals(org.gwaspi.threadbox.QueueStates.ERROR)) {
+			if (!queueState.equals(QueueStates.DONE)
+					&& !queueState.equals(QueueStates.ABORT)
+					&& !queueState.equals(QueueStates.ERROR)) {
 				idle = false;
 			} else {
 				idle = true;
@@ -331,7 +332,7 @@ public class ProcessTab extends JPanel {
 		public void actionPerformed(ActionEvent evt) {
 			FileWriter writer = null;
 			try {
-				File newFile = new File(org.gwaspi.gui.utils.Dialogs.selectDirectoryDialog(JOptionPane.OK_OPTION).getPath() + "/process.log");
+				File newFile = new File(Dialogs.selectDirectoryDialog(JOptionPane.OK_OPTION).getPath() + "/process.log");
 				writer = new FileWriter(newFile);
 				writer.write(txtA_ProcessLog.getText());
 				writer.flush();

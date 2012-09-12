@@ -1,5 +1,6 @@
 package org.gwaspi.gui.reports;
 
+import org.gwaspi.constants.cImport;
 import org.gwaspi.global.Config;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.GWASpiExplorerPanel;
@@ -117,7 +118,7 @@ public final class Report_AnalysisAllelicTestImpl extends Report_Analysis {
 					}
 					Object[] row = new Object[11];
 
-					String[] cVals = l.split(org.gwaspi.constants.cImport.Separators.separators_SpaceTab_rgxp);
+					String[] cVals = l.split(cImport.Separators.separators_SpaceTab_rgxp);
 
 					String markerId = cVals[0];
 					String rsId = cVals[1];
@@ -137,7 +138,7 @@ public final class Report_AnalysisAllelicTestImpl extends Report_Analysis {
 					row[5] = majAllele;
 
 
-//					if (!org.gwaspi.constants.cGlobal.OSNAME.contains("Windows")){
+//					if (!cGlobal.OSNAME.contains("Windows")){
 					Double chiSqr_f;
 					Double pVal_f;
 					Double or_f;
@@ -193,7 +194,7 @@ public final class Report_AnalysisAllelicTestImpl extends Report_Analysis {
 				tbl_ReportTable.setModel(model);
 
 				//<editor-fold defaultstate="collapsed" desc="Linux Sorter">
-//				if (!org.gwaspi.constants.cGlobal.OSNAME.contains("Windows")){
+//				if (!cGlobal.OSNAME.contains("Windows")){
 //					RowSorter<TableModel> sorter = new TableRowSorter<TableModel>(model);
 				TableRowSorter sorter = new TableRowSorter(model) {
 					private Comparator<Object> comparator = new Comparator<Object>() {

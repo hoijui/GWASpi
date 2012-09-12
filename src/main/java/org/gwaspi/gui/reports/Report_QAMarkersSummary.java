@@ -1,5 +1,6 @@
 package org.gwaspi.gui.reports;
 
+import org.gwaspi.constants.cImport;
 import org.gwaspi.global.Config;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.GWASpiExplorerPanel;
@@ -262,7 +263,7 @@ public class Report_QAMarkersSummary extends JPanel {
 							break;
 						}
 						Object[] row = new Object[7];
-						String[] cVals = l.split(org.gwaspi.constants.cImport.Separators.separators_SpaceTab_rgxp);
+						String[] cVals = l.split(cImport.Separators.separators_SpaceTab_rgxp);
 
 						String markerId = cVals[0];
 						String rsId = cVals[1];
@@ -279,7 +280,7 @@ public class Report_QAMarkersSummary extends JPanel {
 						row[4] = minAllele;
 						row[5] = majAllele;
 
-	//					if (!org.gwaspi.constants.cOSNAME.contains("Windows")){
+	//					if (!cOSNAME.contains("Windows")){
 						Double missRat_f;
 						try {
 							missRat_f = Double.parseDouble(dfRound.format(missRat));
@@ -313,7 +314,7 @@ public class Report_QAMarkersSummary extends JPanel {
 					reportTable.setModel(model);
 
 					//<editor-fold defaultstate="collapsed" desc="Linux Sorter">
-	//				if (!org.gwaspi.constants.cOSNAME.contains("Windows")){
+	//				if (!cOSNAME.contains("Windows")){
 	//					RowSorter<TableModel> sorter = new TableRowSorter<TableModel>(model);
 					TableRowSorter sorter = new TableRowSorter(model) {
 						Comparator<Object> comparator = new Comparator<Object>() {

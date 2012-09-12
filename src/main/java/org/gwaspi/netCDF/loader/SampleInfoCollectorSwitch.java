@@ -36,7 +36,7 @@ public class SampleInfoCollectorSwitch {
 		Map<String, Object> sampleInfoLHM = new LinkedHashMap<String, Object>();
 		Object[] dummySampleValues = org.gwaspi.samples.DummySampleInfo.createDummySampleValues();
 
-		switch (org.gwaspi.constants.cImport.ImportFormat.compareTo(format)) {
+		switch (cImport.ImportFormat.compareTo(format)) {
 			case Affymetrix_GenomeWide6:
 				log.info(Text.Matrix.scanAffectionStandby);
 				if (dummySamples) {
@@ -144,7 +144,7 @@ public class SampleInfoCollectorSwitch {
 			case Illumina_LGEN:
 				log.info(Text.Matrix.scanAffectionStandby);
 				if (dummySamples) {
-					//gwasParams = org.gwaspi.gui.utils.MoreLoadInfoByFormat.showMoreInfoByFormat_Modal(cmb_Format.getSelectedItem().toString());
+					//gwasParams = MoreLoadInfoByFormat.showMoreInfoByFormat_Modal(cmb_Format.getSelectedItem().toString());
 					sampleInfoLHM = SamplesParser.scanIlluminaLGENSampleInfo(altSampleInfoPath2);
 				} else {
 					Map<String, Object> dummySamplesInfoLHM = SamplesParser.scanIlluminaLGENSampleInfo(altSampleInfoPath2);

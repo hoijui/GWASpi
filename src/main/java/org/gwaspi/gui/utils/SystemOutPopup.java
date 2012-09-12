@@ -1,5 +1,6 @@
 package org.gwaspi.gui.utils;
 
+import org.gwaspi.constants.cGlobal;
 import org.gwaspi.global.Config;
 import org.gwaspi.global.Text;
 import java.awt.BorderLayout;
@@ -146,7 +147,7 @@ public class SystemOutPopup extends JFrame {
 
 	public static void showDefaultProcessOutput() {
 		try {
-			if (org.gwaspi.constants.cGlobal.OSNAME.toLowerCase().contains("windows")) {
+			if (cGlobal.OSNAME.toLowerCase().contains("windows")) {
 				String logName = org.gwaspi.global.Utils.getURIDate();
 				SystemOutPopup sysout = new SystemOutPopup(false, // Catch errors?
 						true, // Log to file?
@@ -154,7 +155,7 @@ public class SystemOutPopup extends JFrame {
 						600, // Width
 						400, // Height
 						WindowConstants.DISPOSE_ON_CLOSE); // CloseOperation
-			} else if (org.gwaspi.constants.cGlobal.OSNAME.toLowerCase().contains("mac")) {
+			} else if (cGlobal.OSNAME.toLowerCase().contains("mac")) {
 				String logName = org.gwaspi.global.Utils.getURIDate();
 				SystemOutPopup sysout = new SystemOutPopup(false, // Catch errors?
 						true, // Log to file?
@@ -181,7 +182,7 @@ public class SystemOutPopup extends JFrame {
 
 		JLabel lbl_Running = new JLabel(logo);
 		lbl_Running.setBorder(null);
-		if (!org.gwaspi.constants.cGlobal.OSNAME.toLowerCase().contains("linux")) {
+		if (!cGlobal.OSNAME.toLowerCase().contains("linux")) {
 //			scrl_Gif.getViewport().add(lbl_Running);
 //			pnl_GifCenter.add(scrl_Gif, BorderLayout.CENTER);
 //

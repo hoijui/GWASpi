@@ -1,5 +1,7 @@
 package org.gwaspi.samples;
 
+import org.gwaspi.constants.cDBSamples;
+import org.gwaspi.constants.cNetCDF;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -71,14 +73,14 @@ public class SampleSet {
 
 		try {
 			ncfile = NetcdfFile.open(matrixMetadata.getPathToMatrix());
-			Variable var = ncfile.findVariable(org.gwaspi.constants.cNetCDF.Variables.VAR_SAMPLESET);
+			Variable var = ncfile.findVariable(cNetCDF.Variables.VAR_SAMPLESET);
 
 			if (null == var) {
 				return null;
 			}
 
 			int[] varShape = var.getShape();
-			Dimension markerSetDim = ncfile.findDimension(org.gwaspi.constants.cNetCDF.Dimensions.DIM_SAMPLESET);
+			Dimension markerSetDim = ncfile.findDimension(cNetCDF.Dimensions.DIM_SAMPLESET);
 
 			try {
 				sampleSetSize = markerSetDim.getLength();
@@ -112,14 +114,14 @@ public class SampleSet {
 
 		try {
 			ncfile = NetcdfFile.open(matrixImportPath);
-			Variable var = ncfile.findVariable(org.gwaspi.constants.cNetCDF.Variables.VAR_SAMPLESET);
+			Variable var = ncfile.findVariable(cNetCDF.Variables.VAR_SAMPLESET);
 
 			if (null == var) {
 				return null;
 			}
 
 			int[] varShape = var.getShape();
-			Dimension markerSetDim = ncfile.findDimension(org.gwaspi.constants.cNetCDF.Dimensions.DIM_SAMPLESET);
+			Dimension markerSetDim = ncfile.findDimension(cNetCDF.Dimensions.DIM_SAMPLESET);
 
 			try {
 				sampleSetSize = markerSetDim.getLength();
@@ -153,20 +155,20 @@ public class SampleSet {
 	public Map<String, Object> readAllSamplesGTsFromCurrentMarkerToLHM(NetcdfFile rdNcFile, Map<String, Object> rdLhm, int markerNb) throws IOException {
 
 		try {
-			Variable genotypes = rdNcFile.findVariable(org.gwaspi.constants.cNetCDF.Variables.VAR_GENOTYPES);
+			Variable genotypes = rdNcFile.findVariable(cNetCDF.Variables.VAR_GENOTYPES);
 
 			if (null == genotypes) {
 				return rdLhm;
 			}
 			try {
 				int[] varShape = genotypes.getShape();
-//				Dimension markerSetDim = ncfile.findDimension(org.gwaspi.constants.cNetCDF.DIM_MARKERSET);
+//				Dimension markerSetDim = ncfile.findDimension(cNetCDF.DIM_MARKERSET);
 //				ArrayChar.D3 gt_ACD3 = (ArrayChar.D3) genotypes.read(
 //						"(" + markerNb + ":" + markerNb + ":1, 0:"
 //						+ (markerSetDim.getLength() - 1) + ":1, 0:"
 //						+ (varShape[2] - 1) + ":1)");
 
-				Dimension sampleSetDim = rdNcFile.findDimension(org.gwaspi.constants.cNetCDF.Dimensions.DIM_SAMPLESET);
+				Dimension sampleSetDim = rdNcFile.findDimension(cNetCDF.Dimensions.DIM_SAMPLESET);
 //				ArrayChar.D3 gt_ACD3 = (ArrayChar.D3) genotypes.read(
 //						"(0:" + (sampleSetDim.getLength() - 1) + ":1, "
 //						 + markerNb + ":" + markerNb + ":1, "
@@ -259,7 +261,7 @@ public class SampleSet {
 
 			DataType dataType = var.getDataType();
 			int[] varShape = var.getShape();
-			Dimension sampleSetDim = ncfile.findDimension(org.gwaspi.constants.cNetCDF.Dimensions.DIM_SAMPLESET);
+			Dimension sampleSetDim = ncfile.findDimension(cNetCDF.Dimensions.DIM_SAMPLESET);
 
 			try {
 				sampleSetSize = sampleSetDim.getLength();
@@ -304,7 +306,7 @@ public class SampleSet {
 
 			DataType dataType = var.getDataType();
 //			int[] varShape = var.getShape();
-			Dimension sampleSetDim = ncfile.findDimension(org.gwaspi.constants.cNetCDF.Dimensions.DIM_SAMPLESET);
+			Dimension sampleSetDim = ncfile.findDimension(cNetCDF.Dimensions.DIM_SAMPLESET);
 
 			try {
 				sampleSetSize = sampleSetDim.getLength();
@@ -350,8 +352,8 @@ public class SampleSet {
 				for (int i = 0; i < rs.size(); i++) // loop through rows of result set
 				{
 					//PREVENT PHANTOM-DB READS EXCEPTIONS - CAUTION!!
-					if (!rs.isEmpty() && rs.get(i).size() == org.gwaspi.constants.cDBSamples.T_CREATE_SAMPLES_INFO.length) {
-						if (rs.get(i).get(org.gwaspi.constants.cDBSamples.f_SAMPLE_ID).toString().equals(key.toString())) {
+					if (!rs.isEmpty() && rs.get(i).size() == cDBSamples.T_CREATE_SAMPLES_INFO.length) {
+						if (rs.get(i).get(cDBSamples.f_SAMPLE_ID).toString().equals(key.toString())) {
 							if (criteria.contains(rs.get(i).get(dbField).toString())) {
 								returnLHM.put(key, pickCounter);
 							}
@@ -365,8 +367,8 @@ public class SampleSet {
 				for (int i = 0; i < rs.size(); i++) // loop through rows of result set
 				{
 					//PREVENT PHANTOM-DB READS EXCEPTIONS - CAUTION!!
-					if (!rs.isEmpty() && rs.get(i).size() == org.gwaspi.constants.cDBSamples.T_CREATE_SAMPLES_INFO.length) {
-						if (rs.get(i).get(org.gwaspi.constants.cDBSamples.f_SAMPLE_ID).toString().equals(key.toString())) {
+					if (!rs.isEmpty() && rs.get(i).size() == cDBSamples.T_CREATE_SAMPLES_INFO.length) {
+						if (rs.get(i).get(cDBSamples.f_SAMPLE_ID).toString().equals(key.toString())) {
 							if (!criteria.contains(rs.get(i).get(dbField).toString())) {
 								returnLHM.put(key, pickCounter);
 							}

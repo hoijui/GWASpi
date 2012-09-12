@@ -1,5 +1,8 @@
 package org.gwaspi.netCDF.matrices;
 
+import org.gwaspi.constants.cDBGWASpi;
+import org.gwaspi.constants.cDBMatrix;
+import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.database.DbManager;
 import org.gwaspi.global.Config;
 import org.gwaspi.global.ServiceLocator;
@@ -45,22 +48,22 @@ public class MatrixMetadata {
 	private String loaded = ""; // loaded CHAR(1)
 
 	public MatrixMetadata(int _matrixId) throws IOException {
-		DbManager dBManager = ServiceLocator.getDbManager(org.gwaspi.constants.cDBGWASpi.DB_DATACENTER);
-		List<Map<String, Object>> rs = dBManager.executeSelectStatement("SELECT * FROM " + org.gwaspi.constants.cDBGWASpi.SCH_MATRICES + "." + org.gwaspi.constants.cDBMatrix.T_MATRICES + " WHERE " + org.gwaspi.constants.cDBMatrix.f_ID + "=" + _matrixId + "  WITH RR");
+		DbManager dBManager = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
+		List<Map<String, Object>> rs = dBManager.executeSelectStatement("SELECT * FROM " + cDBGWASpi.SCH_MATRICES + "." + cDBMatrix.T_MATRICES + " WHERE " + cDBMatrix.f_ID + "=" + _matrixId + "  WITH RR");
 
 		matrixId = _matrixId;
 
 		//PREVENT PHANTOM-DB READS EXCEPTIONS
-		if (!rs.isEmpty() && rs.get(0).size() == org.gwaspi.constants.cDBMatrix.T_CREATE_MATRICES.length) {
-			matrixFriendlyName = (rs.get(0).get(org.gwaspi.constants.cDBMatrix.f_MATRIX_NAME) != null) ? rs.get(0).get(org.gwaspi.constants.cDBMatrix.f_MATRIX_NAME).toString() : ""; //matrix_name VARCHAR(64) NOT NULL
-			matrixNetCDFName = (rs.get(0).get(org.gwaspi.constants.cDBMatrix.f_NETCDF_NAME) != null) ? rs.get(0).get(org.gwaspi.constants.cDBMatrix.f_NETCDF_NAME).toString() : "";   //netcdf_name VARCHAR(64) NOT NULL
-			matrixType = (rs.get(0).get(org.gwaspi.constants.cDBMatrix.f_MATRIX_TYPE) != null) ? rs.get(0).get(org.gwaspi.constants.cDBMatrix.f_MATRIX_TYPE).toString() : "";         //matrix_type VARCHAR(32) NOT NULL
-			parentMatrixId1 = (rs.get(0).get(org.gwaspi.constants.cDBMatrix.f_PARENT_MATRIX1_ID) != null) ? Integer.parseInt(rs.get(0).get(org.gwaspi.constants.cDBMatrix.f_PARENT_MATRIX1_ID).toString()) : -1;    //parent_matrix1_id INTEGER
-			parentMatrixId2 = (rs.get(0).get(org.gwaspi.constants.cDBMatrix.f_PARENT_MATRIX2_ID) != null) ? Integer.parseInt(rs.get(0).get(org.gwaspi.constants.cDBMatrix.f_PARENT_MATRIX2_ID).toString()) : -1;    //parent_matrix2_id INTEGER
-			input_location = (rs.get(0).get(org.gwaspi.constants.cDBMatrix.f_INPUT_LOCATION) != null) ? rs.get(0).get(org.gwaspi.constants.cDBMatrix.f_INPUT_LOCATION).toString() : "";     //input_location VARCHAR(1000)
-			description = (rs.get(0).get(org.gwaspi.constants.cDBMatrix.f_DESCRIPTION) != null) ? rs.get(0).get(org.gwaspi.constants.cDBMatrix.f_DESCRIPTION).toString() : "";        //description VARCHAR(2000)
-			loaded = (rs.get(0).get(org.gwaspi.constants.cDBMatrix.f_LOADED) != null) ? rs.get(0).get(org.gwaspi.constants.cDBMatrix.f_LOADED).toString() : "0";             //loaded CHAR(1)
-			studyId = (rs.get(0).get(org.gwaspi.constants.cDBMatrix.f_STUDYID) != null) ? Integer.parseInt(rs.get(0).get(org.gwaspi.constants.cDBMatrix.f_STUDYID).toString()) : 0;
+		if (!rs.isEmpty() && rs.get(0).size() == cDBMatrix.T_CREATE_MATRICES.length) {
+			matrixFriendlyName = (rs.get(0).get(cDBMatrix.f_MATRIX_NAME) != null) ? rs.get(0).get(cDBMatrix.f_MATRIX_NAME).toString() : ""; //matrix_name VARCHAR(64) NOT NULL
+			matrixNetCDFName = (rs.get(0).get(cDBMatrix.f_NETCDF_NAME) != null) ? rs.get(0).get(cDBMatrix.f_NETCDF_NAME).toString() : "";   //netcdf_name VARCHAR(64) NOT NULL
+			matrixType = (rs.get(0).get(cDBMatrix.f_MATRIX_TYPE) != null) ? rs.get(0).get(cDBMatrix.f_MATRIX_TYPE).toString() : "";         //matrix_type VARCHAR(32) NOT NULL
+			parentMatrixId1 = (rs.get(0).get(cDBMatrix.f_PARENT_MATRIX1_ID) != null) ? Integer.parseInt(rs.get(0).get(cDBMatrix.f_PARENT_MATRIX1_ID).toString()) : -1;    //parent_matrix1_id INTEGER
+			parentMatrixId2 = (rs.get(0).get(cDBMatrix.f_PARENT_MATRIX2_ID) != null) ? Integer.parseInt(rs.get(0).get(cDBMatrix.f_PARENT_MATRIX2_ID).toString()) : -1;    //parent_matrix2_id INTEGER
+			input_location = (rs.get(0).get(cDBMatrix.f_INPUT_LOCATION) != null) ? rs.get(0).get(cDBMatrix.f_INPUT_LOCATION).toString() : "";     //input_location VARCHAR(1000)
+			description = (rs.get(0).get(cDBMatrix.f_DESCRIPTION) != null) ? rs.get(0).get(cDBMatrix.f_DESCRIPTION).toString() : "";        //description VARCHAR(2000)
+			loaded = (rs.get(0).get(cDBMatrix.f_LOADED) != null) ? rs.get(0).get(cDBMatrix.f_LOADED).toString() : "0";             //loaded CHAR(1)
+			studyId = (rs.get(0).get(cDBMatrix.f_STUDYID) != null) ? Integer.parseInt(rs.get(0).get(cDBMatrix.f_STUDYID).toString()) : 0;
 		}
 
 
@@ -72,14 +75,14 @@ public class MatrixMetadata {
 			try {
 				ncfile = NetcdfFile.open(pathToMatrix);
 
-				technology = ncfile.findGlobalAttribute(org.gwaspi.constants.cNetCDF.Attributes.GLOB_TECHNOLOGY).getStringValue();
+				technology = ncfile.findGlobalAttribute(cNetCDF.Attributes.GLOB_TECHNOLOGY).getStringValue();
 				try {
-					gwaspiDBVersion = ncfile.findGlobalAttribute(org.gwaspi.constants.cNetCDF.Attributes.GLOB_GWASPIDB_VERSION).getStringValue();
+					gwaspiDBVersion = ncfile.findGlobalAttribute(cNetCDF.Attributes.GLOB_GWASPIDB_VERSION).getStringValue();
 				} catch (Exception e) {
 				}
 
 
-				Variable var = ncfile.findVariable(org.gwaspi.constants.cNetCDF.Variables.GLOB_GTENCODING);
+				Variable var = ncfile.findVariable(cNetCDF.Variables.GLOB_GTENCODING);
 				if (var != null) {
 					try {
 						ArrayChar.D2 gtCodeAC = (ArrayChar.D2) var.read("(0:0:1, 0:7:1)");
@@ -89,13 +92,13 @@ public class MatrixMetadata {
 					}
 				}
 
-				strand = ncfile.findGlobalAttribute(org.gwaspi.constants.cNetCDF.Attributes.GLOB_STRAND).getStringValue();
-				hasDictionray = (Integer) ncfile.findGlobalAttribute(org.gwaspi.constants.cNetCDF.Attributes.GLOB_HAS_DICTIONARY).getNumericValue();
+				strand = ncfile.findGlobalAttribute(cNetCDF.Attributes.GLOB_STRAND).getStringValue();
+				hasDictionray = (Integer) ncfile.findGlobalAttribute(cNetCDF.Attributes.GLOB_HAS_DICTIONARY).getNumericValue();
 
-				Dimension markerSetDim = ncfile.findDimension(org.gwaspi.constants.cNetCDF.Dimensions.DIM_MARKERSET);
+				Dimension markerSetDim = ncfile.findDimension(cNetCDF.Dimensions.DIM_MARKERSET);
 				markerSetSize = markerSetDim.getLength();
 
-				Dimension sampleSetDim = ncfile.findDimension(org.gwaspi.constants.cNetCDF.Dimensions.DIM_SAMPLESET);
+				Dimension sampleSetDim = ncfile.findDimension(cNetCDF.Dimensions.DIM_SAMPLESET);
 				sampleSetSize = sampleSetDim.getLength();
 			} catch (IOException ex) {
 				log.error("Cannot open file: " + ncfile, ex);
@@ -112,22 +115,22 @@ public class MatrixMetadata {
 	}
 
 	public MatrixMetadata(String netCDFname) throws IOException {
-		DbManager dBManager = ServiceLocator.getDbManager(org.gwaspi.constants.cDBGWASpi.DB_DATACENTER);
-		List<Map<String, Object>> rs = dBManager.executeSelectStatement("SELECT * FROM " + org.gwaspi.constants.cDBGWASpi.SCH_MATRICES + "." + org.gwaspi.constants.cDBMatrix.T_MATRICES + " WHERE " + org.gwaspi.constants.cDBMatrix.f_NETCDF_NAME + "='" + netCDFname + "'  WITH RR");
-//        rs = dBManager.executeSelectStatement("SELECT * FROM "+constants.cDBGWASpi.SCH_MATRICES+"."+constants.cDBMatrix.T_MATRICES+" WHERE "+constants.cDBMatrix.f_INPUT_LOCATION+"='"+netCDFname+"'  WITH RR");
+		DbManager dBManager = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
+		List<Map<String, Object>> rs = dBManager.executeSelectStatement("SELECT * FROM " + cDBGWASpi.SCH_MATRICES + "." + cDBMatrix.T_MATRICES + " WHERE " + cDBMatrix.f_NETCDF_NAME + "='" + netCDFname + "'  WITH RR");
+//        rs = dBManager.executeSelectStatement("SELECT * FROM "+cDBGWASpi.SCH_MATRICES+"."+cDBMatrix.T_MATRICES+" WHERE "+cDBMatrix.f_INPUT_LOCATION+"='"+netCDFname+"'  WITH RR");
 
 		//PREVENT PHANTOM-DB READS EXCEPTIONS
-		if (!rs.isEmpty() && rs.get(0).size() == org.gwaspi.constants.cDBMatrix.T_CREATE_MATRICES.length) {
-			matrixId = Integer.parseInt(rs.get(0).get(org.gwaspi.constants.cDBMatrix.f_ID).toString());
-			matrixFriendlyName = (rs.get(0).get(org.gwaspi.constants.cDBMatrix.f_MATRIX_NAME) != null) ? rs.get(0).get(org.gwaspi.constants.cDBMatrix.f_MATRIX_NAME).toString() : ""; //matrix_name VARCHAR(64) NOT NULL
-			matrixNetCDFName = (rs.get(0).get(org.gwaspi.constants.cDBMatrix.f_NETCDF_NAME) != null) ? rs.get(0).get(org.gwaspi.constants.cDBMatrix.f_NETCDF_NAME).toString() : "";   //netcdf_name VARCHAR(64) NOT NULL
-			matrixType = (rs.get(0).get(org.gwaspi.constants.cDBMatrix.f_MATRIX_TYPE) != null) ? rs.get(0).get(org.gwaspi.constants.cDBMatrix.f_MATRIX_TYPE).toString() : "";         //matrix_type VARCHAR(32) NOT NULL
-			parentMatrixId1 = (rs.get(0).get(org.gwaspi.constants.cDBMatrix.f_PARENT_MATRIX1_ID) != null) ? Integer.parseInt(rs.get(0).get(org.gwaspi.constants.cDBMatrix.f_PARENT_MATRIX1_ID).toString()) : -1;    //parent_matrix1_id INTEGER
-			parentMatrixId2 = (rs.get(0).get(org.gwaspi.constants.cDBMatrix.f_PARENT_MATRIX2_ID) != null) ? Integer.parseInt(rs.get(0).get(org.gwaspi.constants.cDBMatrix.f_PARENT_MATRIX2_ID).toString()) : -1;    //parent_matrix2_id INTEGER
-			input_location = (rs.get(0).get(org.gwaspi.constants.cDBMatrix.f_INPUT_LOCATION) != null) ? rs.get(0).get(org.gwaspi.constants.cDBMatrix.f_INPUT_LOCATION).toString() : "";     //input_location VARCHAR(1000)
-			description = (rs.get(0).get(org.gwaspi.constants.cDBMatrix.f_DESCRIPTION) != null) ? rs.get(0).get(org.gwaspi.constants.cDBMatrix.f_DESCRIPTION).toString() : "";        //description VARCHAR(2000)
-			loaded = (rs.get(0).get(org.gwaspi.constants.cDBMatrix.f_LOADED) != null) ? rs.get(0).get(org.gwaspi.constants.cDBMatrix.f_LOADED).toString() : "0";             //loaded CHAR(1)
-			studyId = (rs.get(0).get(org.gwaspi.constants.cDBMatrix.f_STUDYID) != null) ? Integer.parseInt(rs.get(0).get(org.gwaspi.constants.cDBMatrix.f_STUDYID).toString()) : 0;
+		if (!rs.isEmpty() && rs.get(0).size() == cDBMatrix.T_CREATE_MATRICES.length) {
+			matrixId = Integer.parseInt(rs.get(0).get(cDBMatrix.f_ID).toString());
+			matrixFriendlyName = (rs.get(0).get(cDBMatrix.f_MATRIX_NAME) != null) ? rs.get(0).get(cDBMatrix.f_MATRIX_NAME).toString() : ""; //matrix_name VARCHAR(64) NOT NULL
+			matrixNetCDFName = (rs.get(0).get(cDBMatrix.f_NETCDF_NAME) != null) ? rs.get(0).get(cDBMatrix.f_NETCDF_NAME).toString() : "";   //netcdf_name VARCHAR(64) NOT NULL
+			matrixType = (rs.get(0).get(cDBMatrix.f_MATRIX_TYPE) != null) ? rs.get(0).get(cDBMatrix.f_MATRIX_TYPE).toString() : "";         //matrix_type VARCHAR(32) NOT NULL
+			parentMatrixId1 = (rs.get(0).get(cDBMatrix.f_PARENT_MATRIX1_ID) != null) ? Integer.parseInt(rs.get(0).get(cDBMatrix.f_PARENT_MATRIX1_ID).toString()) : -1;    //parent_matrix1_id INTEGER
+			parentMatrixId2 = (rs.get(0).get(cDBMatrix.f_PARENT_MATRIX2_ID) != null) ? Integer.parseInt(rs.get(0).get(cDBMatrix.f_PARENT_MATRIX2_ID).toString()) : -1;    //parent_matrix2_id INTEGER
+			input_location = (rs.get(0).get(cDBMatrix.f_INPUT_LOCATION) != null) ? rs.get(0).get(cDBMatrix.f_INPUT_LOCATION).toString() : "";     //input_location VARCHAR(1000)
+			description = (rs.get(0).get(cDBMatrix.f_DESCRIPTION) != null) ? rs.get(0).get(cDBMatrix.f_DESCRIPTION).toString() : "";        //description VARCHAR(2000)
+			loaded = (rs.get(0).get(cDBMatrix.f_LOADED) != null) ? rs.get(0).get(cDBMatrix.f_LOADED).toString() : "0";             //loaded CHAR(1)
+			studyId = (rs.get(0).get(cDBMatrix.f_STUDYID) != null) ? Integer.parseInt(rs.get(0).get(cDBMatrix.f_STUDYID).toString()) : 0;
 
 		}
 
@@ -139,13 +142,13 @@ public class MatrixMetadata {
 			try {
 				ncfile = NetcdfFile.open(pathToMatrix);
 
-				technology = ncfile.findGlobalAttribute(org.gwaspi.constants.cNetCDF.Attributes.GLOB_TECHNOLOGY).getStringValue();
+				technology = ncfile.findGlobalAttribute(cNetCDF.Attributes.GLOB_TECHNOLOGY).getStringValue();
 				try {
-					gwaspiDBVersion = ncfile.findGlobalAttribute(org.gwaspi.constants.cNetCDF.Attributes.GLOB_GWASPIDB_VERSION).getStringValue();
+					gwaspiDBVersion = ncfile.findGlobalAttribute(cNetCDF.Attributes.GLOB_GWASPIDB_VERSION).getStringValue();
 				} catch (Exception e) {
 				}
 
-				Variable var = ncfile.findVariable(org.gwaspi.constants.cNetCDF.Variables.GLOB_GTENCODING);
+				Variable var = ncfile.findVariable(cNetCDF.Variables.GLOB_GTENCODING);
 				if (var != null) {
 					try {
 						ArrayChar.D2 gtCodeAC = (ArrayChar.D2) var.read("(0:0:1, 0:7:1)");
@@ -155,13 +158,13 @@ public class MatrixMetadata {
 					}
 				}
 
-				strand = ncfile.findGlobalAttribute(org.gwaspi.constants.cNetCDF.Attributes.GLOB_STRAND).getStringValue();
-				hasDictionray = (Integer) ncfile.findGlobalAttribute(org.gwaspi.constants.cNetCDF.Attributes.GLOB_HAS_DICTIONARY).getNumericValue();
+				strand = ncfile.findGlobalAttribute(cNetCDF.Attributes.GLOB_STRAND).getStringValue();
+				hasDictionray = (Integer) ncfile.findGlobalAttribute(cNetCDF.Attributes.GLOB_HAS_DICTIONARY).getNumericValue();
 
-				Dimension markerSetDim = ncfile.findDimension(org.gwaspi.constants.cNetCDF.Dimensions.DIM_MARKERSET);
+				Dimension markerSetDim = ncfile.findDimension(cNetCDF.Dimensions.DIM_MARKERSET);
 				markerSetSize = markerSetDim.getLength();
 
-				Dimension sampleSetDim = ncfile.findDimension(org.gwaspi.constants.cNetCDF.Dimensions.DIM_SAMPLESET);
+				Dimension sampleSetDim = ncfile.findDimension(cNetCDF.Dimensions.DIM_SAMPLESET);
 				sampleSetSize = sampleSetDim.getLength();
 			} catch (IOException ex) {
 				log.error("Cannot open file: " + ncfile, ex);
@@ -193,13 +196,13 @@ public class MatrixMetadata {
 			try {
 				ncfile = NetcdfFile.open(pathToMatrix);
 
-				technology = ncfile.findGlobalAttribute(org.gwaspi.constants.cNetCDF.Attributes.GLOB_TECHNOLOGY).getStringValue();
+				technology = ncfile.findGlobalAttribute(cNetCDF.Attributes.GLOB_TECHNOLOGY).getStringValue();
 				try {
-					gwaspiDBVersion = ncfile.findGlobalAttribute(org.gwaspi.constants.cNetCDF.Attributes.GLOB_GWASPIDB_VERSION).getStringValue();
+					gwaspiDBVersion = ncfile.findGlobalAttribute(cNetCDF.Attributes.GLOB_GWASPIDB_VERSION).getStringValue();
 				} catch (Exception e) {
 				}
 
-				Variable var = ncfile.findVariable(org.gwaspi.constants.cNetCDF.Variables.GLOB_GTENCODING);
+				Variable var = ncfile.findVariable(cNetCDF.Variables.GLOB_GTENCODING);
 				if (var != null) {
 					try {
 						ArrayChar.D2 gtCodeAC = (ArrayChar.D2) var.read("(0:0:1, 0:7:1)");
@@ -209,13 +212,13 @@ public class MatrixMetadata {
 					}
 				}
 
-				strand = ncfile.findGlobalAttribute(org.gwaspi.constants.cNetCDF.Attributes.GLOB_STRAND).getStringValue();
-				hasDictionray = (Integer) ncfile.findGlobalAttribute(org.gwaspi.constants.cNetCDF.Attributes.GLOB_HAS_DICTIONARY).getNumericValue();
+				strand = ncfile.findGlobalAttribute(cNetCDF.Attributes.GLOB_STRAND).getStringValue();
+				hasDictionray = (Integer) ncfile.findGlobalAttribute(cNetCDF.Attributes.GLOB_HAS_DICTIONARY).getNumericValue();
 
-				Dimension markerSetDim = ncfile.findDimension(org.gwaspi.constants.cNetCDF.Dimensions.DIM_MARKERSET);
+				Dimension markerSetDim = ncfile.findDimension(cNetCDF.Dimensions.DIM_MARKERSET);
 				markerSetSize = markerSetDim.getLength();
 
-				Dimension sampleSetDim = ncfile.findDimension(org.gwaspi.constants.cNetCDF.Dimensions.DIM_SAMPLESET);
+				Dimension sampleSetDim = ncfile.findDimension(cNetCDF.Dimensions.DIM_SAMPLESET);
 				sampleSetSize = sampleSetDim.getLength();
 			} catch (IOException ex) {
 				log.error("Cannot open file: " + ncfile, ex);

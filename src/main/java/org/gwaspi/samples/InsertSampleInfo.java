@@ -1,5 +1,7 @@
 package org.gwaspi.samples;
 
+import org.gwaspi.constants.cDBGWASpi;
+import org.gwaspi.constants.cDBSamples;
 import org.gwaspi.constants.cImport.Annotation.GWASpi;
 import org.gwaspi.database.DbManager;
 import org.gwaspi.global.ServiceLocator;
@@ -31,7 +33,7 @@ public class InsertSampleInfo {
 		///////// Retrieving Samplelist from DB /////////
 		/////////////////////////////////////////////////
 		List<String> samplesAllreadyInDBAL = new ArrayList<String>();
-		String dbName = org.gwaspi.constants.cDBGWASpi.DB_DATACENTER;
+		String dbName = cDBGWASpi.DB_DATACENTER;
 		db = ServiceLocator.getDbManager(dbName);
 		try {
 			List<Map<String, Object>> rs = SampleManager.selectSampleIDList(studyId);
@@ -39,7 +41,7 @@ public class InsertSampleInfo {
 			{
 				//PREVENT PHANTOM-DB READS EXCEPTIONS
 				if (!rs.isEmpty() && rs.get(i).size() == 1) {
-					samplesAllreadyInDBAL.add(rs.get(i).get(org.gwaspi.constants.cDBSamples.f_SAMPLE_ID).toString());
+					samplesAllreadyInDBAL.add(rs.get(i).get(cDBSamples.f_SAMPLE_ID).toString());
 				}
 			}
 		} catch (Exception ex) {
@@ -59,7 +61,7 @@ public class InsertSampleInfo {
 
 	private static List<String> insertSamplesByHashMap(Integer studyId, Map<String, Object> sampleInfoLHM, List<String> samplesAllreadyInDBAL) throws IOException {
 
-		db = ServiceLocator.getDbManager(org.gwaspi.constants.cDBGWASpi.DB_DATACENTER);
+		db = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
 
 		List<String> result = new ArrayList<String>();
 		for (Object value : sampleInfoLHM.values()) {
@@ -77,9 +79,9 @@ public class InsertSampleInfo {
 
 			if (!samplesAllreadyInDBAL.contains(sampleId)) {
 
-				db.insertValuesInTable(org.gwaspi.constants.cDBGWASpi.SCH_SAMPLES,
-						org.gwaspi.constants.cDBSamples.T_SAMPLES_INFO,
-						org.gwaspi.constants.cDBSamples.F_INSERT_SAMPLES_ALLINFO,
+				db.insertValuesInTable(cDBGWASpi.SCH_SAMPLES,
+						cDBSamples.T_SAMPLES_INFO,
+						cDBSamples.F_INSERT_SAMPLES_ALLINFO,
 						new Object[]{sampleId, //SampleID (max 32 chars, null=unknown)
 							cVals[GWASpi.familyId], //FamilyID (max 32 chars, null=unknown)
 							cVals[GWASpi.fatherId], //FatherID (max 32 chars, null=unknown)
@@ -112,7 +114,7 @@ public class InsertSampleInfo {
 
 	public static int updateSamplesByHashMap(Integer studyId, Map<String, Object> sampleInfoLHM, List<String> samplesAllreadyInDBAL) throws IOException {
 
-		db = ServiceLocator.getDbManager(org.gwaspi.constants.cDBGWASpi.DB_DATACENTER);
+		db = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
 		int result = 0;
 
 		for (Object value : sampleInfoLHM.values()) {
@@ -126,9 +128,9 @@ public class InsertSampleInfo {
 			}
 
 			if (samplesAllreadyInDBAL.contains(cVals[1].toString())) {
-				db.updateTable(org.gwaspi.constants.cDBGWASpi.SCH_SAMPLES,
-						org.gwaspi.constants.cDBSamples.T_SAMPLES_INFO,
-						org.gwaspi.constants.cDBSamples.F_UPDATE_SAMPLES_ALLINFO,
+				db.updateTable(cDBGWASpi.SCH_SAMPLES,
+						cDBSamples.T_SAMPLES_INFO,
+						cDBSamples.F_UPDATE_SAMPLES_ALLINFO,
 						new Object[]{cVals[0], //FamilyID (max 32 chars, null=unknown)
 							cVals[2], //FatherID (max 32 chars, null=unknown)
 							cVals[3], //MotherID (max 32 chars, null=unknown)
@@ -140,7 +142,7 @@ public class InsertSampleInfo {
 							Integer.parseInt(cVals[9]), //age
 							studyId.toString(),
 							100}, //status_id_fk = 100 (OK)
-						new String[]{constants.cDBSamples.f_SAMPLE_ID, org.gwaspi.constants.cDBSamples.f_POOL_ID},
+						new String[]{cDBSamples.f_SAMPLE_ID, cDBSamples.f_POOL_ID},
 						new String[]{cVals[1].toString(), studyId.toString()});
 				result++;
 			}

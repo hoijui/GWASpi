@@ -43,7 +43,7 @@ public class cDBMarkers {
 		"description",
 		"last_update"
 	};
-	public static final String IE_MARKERSET_METADATA_INIT = "INSERT INTO " + org.gwaspi.constants.cDBGWASpi.SCH_MARKERS + "." + T_MARKERSET_METADATA
+	public static final String IE_MARKERSET_METADATA_INIT = "INSERT INTO " + cDBGWASpi.SCH_MARKERS + "." + T_MARKERSET_METADATA
 			+ " (" + F_CONCAT_INSERT_MARKERSET_METADATA + ") "
 			+ "VALUES "
 			+ "(%arrayinitSQL%)";

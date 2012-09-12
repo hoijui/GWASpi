@@ -1,5 +1,6 @@
 package org.gwaspi.netCDF.exporter;
 
+import org.gwaspi.constants.cDBSamples;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -23,61 +24,61 @@ public class Utils {
 		List<Map<String, Object>> rs = SampleManager.getCurrentSampleInfoFromDB(sampleId, poolId);
 
 		// PREVENT PHANTOM-DB READS EXCEPTIONS
-		if (!rs.isEmpty() && rs.get(0).size() == org.gwaspi.constants.cDBSamples.T_CREATE_SAMPLES_INFO.length) {
-			Object familyId = rs.get(0).get(org.gwaspi.constants.cDBSamples.f_FAMILY_ID);
+		if (!rs.isEmpty() && rs.get(0).size() == cDBSamples.T_CREATE_SAMPLES_INFO.length) {
+			Object familyId = rs.get(0).get(cDBSamples.f_FAMILY_ID);
 			if (familyId == null) {
 				familyId = "0";
 			}
-			sampleInfo.put(org.gwaspi.constants.cDBSamples.f_FAMILY_ID, familyId);
+			sampleInfo.put(cDBSamples.f_FAMILY_ID, familyId);
 
 
-			Object fatherId = rs.get(0).get(org.gwaspi.constants.cDBSamples.f_FATHER_ID);
+			Object fatherId = rs.get(0).get(cDBSamples.f_FATHER_ID);
 			if (fatherId == null) {
 				fatherId = "0";
 			}
-			sampleInfo.put(org.gwaspi.constants.cDBSamples.f_FATHER_ID, fatherId);
+			sampleInfo.put(cDBSamples.f_FATHER_ID, fatherId);
 
-			Object motherId = rs.get(0).get(org.gwaspi.constants.cDBSamples.f_MOTHER_ID);
+			Object motherId = rs.get(0).get(cDBSamples.f_MOTHER_ID);
 			if (motherId == null) {
 				motherId = "0";
 			}
-			sampleInfo.put(org.gwaspi.constants.cDBSamples.f_MOTHER_ID, motherId);
+			sampleInfo.put(cDBSamples.f_MOTHER_ID, motherId);
 
-			Object sex = rs.get(0).get(org.gwaspi.constants.cDBSamples.f_SEX);
+			Object sex = rs.get(0).get(cDBSamples.f_SEX);
 			if (sex == null) {
 				sex = "0";
 			}
-			sampleInfo.put(org.gwaspi.constants.cDBSamples.f_SEX, sex);
+			sampleInfo.put(cDBSamples.f_SEX, sex);
 
-			Object affection = rs.get(0).get(org.gwaspi.constants.cDBSamples.f_AFFECTION);
+			Object affection = rs.get(0).get(cDBSamples.f_AFFECTION);
 			if (affection == null) {
 				affection = "0";
 			}
-			sampleInfo.put(org.gwaspi.constants.cDBSamples.f_AFFECTION, affection);
+			sampleInfo.put(cDBSamples.f_AFFECTION, affection);
 
-			Object disease = rs.get(0).get(org.gwaspi.constants.cDBSamples.f_DISEASE);
+			Object disease = rs.get(0).get(cDBSamples.f_DISEASE);
 			if (disease == null) {
 				disease = "0";
 			}
-			sampleInfo.put(org.gwaspi.constants.cDBSamples.f_DISEASE, disease);
+			sampleInfo.put(cDBSamples.f_DISEASE, disease);
 
-			Object category = rs.get(0).get(org.gwaspi.constants.cDBSamples.f_CATEGORY);
+			Object category = rs.get(0).get(cDBSamples.f_CATEGORY);
 			if (category == null) {
 				category = "0";
 			}
-			sampleInfo.put(org.gwaspi.constants.cDBSamples.f_CATEGORY, category);
+			sampleInfo.put(cDBSamples.f_CATEGORY, category);
 
-			Object population = rs.get(0).get(org.gwaspi.constants.cDBSamples.f_POPULATION);
+			Object population = rs.get(0).get(cDBSamples.f_POPULATION);
 			if (population == null) {
 				population = "0";
 			}
-			sampleInfo.put(org.gwaspi.constants.cDBSamples.f_POPULATION, population);
+			sampleInfo.put(cDBSamples.f_POPULATION, population);
 
-			Object age = rs.get(0).get(org.gwaspi.constants.cDBSamples.f_AGE);
+			Object age = rs.get(0).get(cDBSamples.f_AGE);
 			if (age == null || age.equals("-1")) {
 				age = "0";
 			}
-			sampleInfo.put(org.gwaspi.constants.cDBSamples.f_AGE, age);
+			sampleInfo.put(cDBSamples.f_AGE, age);
 		}
 
 		return sampleInfo;

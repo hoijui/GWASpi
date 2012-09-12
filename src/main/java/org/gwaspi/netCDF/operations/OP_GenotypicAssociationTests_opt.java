@@ -1,6 +1,7 @@
 package org.gwaspi.netCDF.operations;
 
 import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.global.Text;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.LinkedHashMap;
@@ -186,7 +187,7 @@ public class OP_GenotypicAssociationTests_opt {
 					rdCtrlMarkerIdSetLHM.clear();
 				}
 
-				log.info(org.gwaspi.global.Text.All.processing);
+				log.info(Text.All.processing);
 				performAssociationTests(wrOPNcFile, wrCaseMarkerIdSetLHM, wrCtrlMarkerSet);
 
 				org.gwaspi.global.Utils.sysoutCompleted("Genotypic Association Tests");
@@ -206,7 +207,7 @@ public class OP_GenotypicAssociationTests_opt {
 				}
 			}
 		} else { // NO DATA LEFT AFTER THRESHOLD FILTER PICKING
-			log.info(org.gwaspi.global.Text.Operation.warnNoDataLeftAfterPicking);
+			log.info(Text.Operation.warnNoDataLeftAfterPicking);
 		}
 
 		return resultAssocId;

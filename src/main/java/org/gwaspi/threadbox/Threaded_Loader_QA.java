@@ -67,7 +67,7 @@ public class Threaded_Loader_QA extends CommonRunnable {
 
 	protected void runInternal(SwingWorkerItem thisSwi) throws Exception {
 
-		if (thisSwi.getQueueState().equals(org.gwaspi.threadbox.QueueStates.PROCESSING)) {
+		if (thisSwi.getQueueState().equals(QueueStates.PROCESSING)) {
 			resultMatrixId = LoadManager.dispatchLoadByFormat(format,
 					sampleInfoLHM,
 					newMatrixName,
@@ -84,14 +84,14 @@ public class Threaded_Loader_QA extends CommonRunnable {
 			GWASpiExplorerNodes.insertMatrixNode(studyId, resultMatrixId);
 		}
 
-		if (thisSwi.getQueueState().equals(org.gwaspi.threadbox.QueueStates.PROCESSING)) {
+		if (thisSwi.getQueueState().equals(QueueStates.PROCESSING)) {
 			resultOpId = OP_QASamples_opt.processMatrix(resultMatrixId);
 			GWASpiExplorerNodes.insertOperationUnderMatrixNode(resultMatrixId, resultOpId);
 			org.gwaspi.reports.OutputQASamples.writeReportsForQASamplesData(resultOpId, true);
 			GWASpiExplorerNodes.insertReportsUnderOperationNode(resultOpId);
 		}
 
-		if (thisSwi.getQueueState().equals(org.gwaspi.threadbox.QueueStates.PROCESSING)) {
+		if (thisSwi.getQueueState().equals(QueueStates.PROCESSING)) {
 			resultOpId = OP_QAMarkers_opt.processMatrix(resultMatrixId);
 			GWASpiExplorerNodes.insertOperationUnderMatrixNode(resultMatrixId, resultOpId);
 			org.gwaspi.reports.OutputQAMarkers.writeReportsForQAMarkersData(resultOpId);

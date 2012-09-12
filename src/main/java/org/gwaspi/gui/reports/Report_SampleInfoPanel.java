@@ -1,5 +1,6 @@
 package org.gwaspi.gui.reports;
 
+import org.gwaspi.constants.cDBSamples;
 import org.gwaspi.global.Config;
 import org.gwaspi.global.Text;
 import org.gwaspi.global.Utils;
@@ -152,19 +153,19 @@ public class Report_SampleInfoPanel extends JPanel {
 		List<Object[]> tableRowAL = new ArrayList<Object[]>();
 		while (count < rsAllSamplesFromPool.size()) {
 			// PREVENT PHANTOM-DB READS EXCEPTIONS
-			if (!rsAllSamplesFromPool.isEmpty() && rsAllSamplesFromPool.get(count).size() == org.gwaspi.constants.cDBSamples.T_CREATE_SAMPLES_INFO.length) {
+			if (!rsAllSamplesFromPool.isEmpty() && rsAllSamplesFromPool.get(count).size() == cDBSamples.T_CREATE_SAMPLES_INFO.length) {
 				Object[] row = new Object[11];
 
-				String familyId = rsAllSamplesFromPool.get(count).get(org.gwaspi.constants.cDBSamples.f_FAMILY_ID).toString();
-				String sampleId = rsAllSamplesFromPool.get(count).get(org.gwaspi.constants.cDBSamples.f_SAMPLE_ID).toString();
-				String fatherId = rsAllSamplesFromPool.get(count).get(org.gwaspi.constants.cDBSamples.f_FATHER_ID).toString();
-				String motherId = rsAllSamplesFromPool.get(count).get(org.gwaspi.constants.cDBSamples.f_MOTHER_ID).toString();
-				String sex = rsAllSamplesFromPool.get(count).get(org.gwaspi.constants.cDBSamples.f_SEX).toString();
-				String affection = rsAllSamplesFromPool.get(count).get(org.gwaspi.constants.cDBSamples.f_AFFECTION).toString();
-				String age = rsAllSamplesFromPool.get(count).get(org.gwaspi.constants.cDBSamples.f_AGE).toString();
-				String category = rsAllSamplesFromPool.get(count).get(org.gwaspi.constants.cDBSamples.f_CATEGORY).toString();
-				String disease = rsAllSamplesFromPool.get(count).get(org.gwaspi.constants.cDBSamples.f_DISEASE).toString();
-				String population = rsAllSamplesFromPool.get(count).get(org.gwaspi.constants.cDBSamples.f_POPULATION).toString();
+				String familyId = rsAllSamplesFromPool.get(count).get(cDBSamples.f_FAMILY_ID).toString();
+				String sampleId = rsAllSamplesFromPool.get(count).get(cDBSamples.f_SAMPLE_ID).toString();
+				String fatherId = rsAllSamplesFromPool.get(count).get(cDBSamples.f_FATHER_ID).toString();
+				String motherId = rsAllSamplesFromPool.get(count).get(cDBSamples.f_MOTHER_ID).toString();
+				String sex = rsAllSamplesFromPool.get(count).get(cDBSamples.f_SEX).toString();
+				String affection = rsAllSamplesFromPool.get(count).get(cDBSamples.f_AFFECTION).toString();
+				String age = rsAllSamplesFromPool.get(count).get(cDBSamples.f_AGE).toString();
+				String category = rsAllSamplesFromPool.get(count).get(cDBSamples.f_CATEGORY).toString();
+				String disease = rsAllSamplesFromPool.get(count).get(cDBSamples.f_DISEASE).toString();
+				String population = rsAllSamplesFromPool.get(count).get(cDBSamples.f_POPULATION).toString();
 
 				row[0] = count + 1;
 				row[1] = familyId;
@@ -206,7 +207,7 @@ public class Report_SampleInfoPanel extends JPanel {
 		tbl_ReportTable.setModel(model);
 
 		//<editor-fold defaultstate="collapsed" desc="Linux Sorter">
-//		if (!org.gwaspi.constants.cGlobal.OSNAME.contains("Windows")) {
+//		if (!cGlobal.OSNAME.contains("Windows")) {
 //			RowSorter<TableModel> sorter = new TableRowSorter<TableModel>(model);
 		TableRowSorter sorter = new TableRowSorter(model) {
 			Comparator<Object> comparator = new Comparator<Object>() {

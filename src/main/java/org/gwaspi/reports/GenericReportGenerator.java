@@ -1,5 +1,6 @@
 package org.gwaspi.reports;
 
+import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.gui.reports.ManhattanPlotZoom;
 import org.gwaspi.gui.reports.SampleQAHetzygPlotZoom;
 import java.awt.Color;
@@ -96,7 +97,7 @@ public class GenericReportGenerator {
 		threshold = Double.parseDouble(org.gwaspi.global.Config.getConfigValue("CHART_MANHATTAN_PLOT_THRESHOLD", "5E-7"));
 
 
-		rdInfoMarkerSet.fillInitLHMWithVariable(org.gwaspi.constants.cNetCDF.Variables.VAR_MARKERS_CHR);
+		rdInfoMarkerSet.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
 		for (Map.Entry<String, Object> entry : rdInfoMarkerSet.getMarkerIdSetLHM().entrySet()) {
 			String key = entry.getKey();
 			String chr = entry.getValue().toString();
@@ -106,7 +107,7 @@ public class GenericReportGenerator {
 		}
 
 		rdInfoMarkerSet.fillWith(0);
-		rdInfoMarkerSet.fillInitLHMWithVariable(org.gwaspi.constants.cNetCDF.Variables.VAR_MARKERS_POS);
+		rdInfoMarkerSet.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_POS);
 		if (rdInfoMarkerSet.getMarkerIdSetLHM() != null) {
 			for (Map.Entry<String, Object> entry : rdInfoMarkerSet.getMarkerIdSetLHM().entrySet()) {
 				String key = entry.getKey();
@@ -586,7 +587,7 @@ public class GenericReportGenerator {
 			}
 
 			// GET MARKER CHR & POS INFO
-			rdInfoMarkerSet.fillInitLHMWithVariable(org.gwaspi.constants.cNetCDF.Variables.VAR_MARKERS_CHR);
+			rdInfoMarkerSet.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
 			// First check for same chromosome data
 			String validateChr = rdInfoMarkerSet.getMarkerIdSetLHM().get(origMarkerId).toString();
 			ManhattanPlotZoom.centerPhysPos = minPosition;
@@ -600,7 +601,7 @@ public class GenericReportGenerator {
 			}
 
 			rdInfoMarkerSet.fillWith(0);
-			rdInfoMarkerSet.fillInitLHMWithVariable(org.gwaspi.constants.cNetCDF.Variables.VAR_MARKERS_POS);
+			rdInfoMarkerSet.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_POS);
 			for (Map.Entry<String, Object> entry : dataSetLHM.entrySet()) {
 				String key = entry.getKey();
 				Object[] data = (Object[]) entry.getValue(); // CHR, POS, PVAL
@@ -674,8 +675,8 @@ public class GenericReportGenerator {
 		OperationSet rdSampleQAOPSet = new OperationSet(rdOPMetadata.getStudyId(), opId);
 
 		Map<String, Object> sampleSetLHM = rdSampleQAOPSet.getOpSetLHM();
-		List<Double> hetzygVals = rdSampleQAOPSet.getALWithVariable(sampleQANcFile, org.gwaspi.constants.cNetCDF.Census.VAR_OP_SAMPLES_HETZYRAT);
-		List<Double> missingratVals = rdSampleQAOPSet.getALWithVariable(sampleQANcFile, org.gwaspi.constants.cNetCDF.Census.VAR_OP_SAMPLES_MISSINGRAT);
+		List<Double> hetzygVals = rdSampleQAOPSet.getALWithVariable(sampleQANcFile, cNetCDF.Census.VAR_OP_SAMPLES_HETZYRAT);
+		List<Double> missingratVals = rdSampleQAOPSet.getALWithVariable(sampleQANcFile, cNetCDF.Census.VAR_OP_SAMPLES_MISSINGRAT);
 
 		//<editor-fold defaultstate="collapsed" desc="BUILD XYDataset">
 		XYSeries dataSeries = new XYSeries("");
@@ -731,7 +732,7 @@ public class GenericReportGenerator {
 		MarkerSet_opt rdInfoMarkerSet = new MarkerSet_opt(rdOPMetadata.getStudyId(), rdOPMetadata.getParentMatrixId());
 		rdInfoMarkerSet.initFullMarkerIdSetLHM();
 		snpNumber = rdInfoMarkerSet.getMarkerSetSize();
-		rdInfoMarkerSet.fillInitLHMWithVariable(org.gwaspi.constants.cNetCDF.Variables.VAR_MARKERS_CHR);
+		rdInfoMarkerSet.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
 		if (rdInfoMarkerSet.getMarkerIdSetLHM() != null) {
 			for (Map.Entry<String, Object> entry : rdInfoMarkerSet.getMarkerIdSetLHM().entrySet()) {
 				String key = entry.getKey();
@@ -742,7 +743,7 @@ public class GenericReportGenerator {
 			}
 
 			rdInfoMarkerSet.fillWith(0);
-			rdInfoMarkerSet.fillInitLHMWithVariable(org.gwaspi.constants.cNetCDF.Variables.VAR_MARKERS_POS);
+			rdInfoMarkerSet.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_POS);
 			for (Map.Entry<String, Object> entry : rdInfoMarkerSet.getMarkerIdSetLHM().entrySet()) {
 				String key = entry.getKey();
 				Object[] data = (Object[]) dataSetLHM.get(key); //CHR, POS

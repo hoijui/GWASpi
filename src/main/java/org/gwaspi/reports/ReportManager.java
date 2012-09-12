@@ -1,5 +1,8 @@
 package org.gwaspi.reports;
 
+import org.gwaspi.constants.cDBGWASpi;
+import org.gwaspi.constants.cDBReports;
+import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.database.DbManager;
 import org.gwaspi.global.Config;
 import org.gwaspi.global.ServiceLocator;
@@ -74,9 +77,9 @@ public class ReportManager {
 
 		//Get Genotype Freq. assigned name. Pry out the part inserted by user only
 		try {
-			if (op.getOperationType().equals(org.gwaspi.constants.cNetCDF.Defaults.OPType.ALLELICTEST.toString())
-					|| op.getOperationType().equals(org.gwaspi.constants.cNetCDF.Defaults.OPType.GENOTYPICTEST.toString())
-					|| op.getOperationType().equals(org.gwaspi.constants.cNetCDF.Defaults.OPType.TRENDTEST.toString())) {
+			if (op.getOperationType().equals(cNetCDF.Defaults.OPType.ALLELICTEST.toString())
+					|| op.getOperationType().equals(cNetCDF.Defaults.OPType.GENOTYPICTEST.toString())
+					|| op.getOperationType().equals(cNetCDF.Defaults.OPType.TRENDTEST.toString())) {
 				Operation parentOp = new Operation(op.getParentOperationId());
 				String[] tmp = parentOp.getOperationFriendlyName().split("-", 2);
 				tmp = tmp[1].split("using");
@@ -95,9 +98,9 @@ public class ReportManager {
 		boolean result = false;
 		try {
 			// CREATE SAMPLESET_METADATA table in given SCHEMA
-			db.createTable(org.gwaspi.constants.cDBGWASpi.SCH_MATRICES,
-					org.gwaspi.constants.cDBReports.T_REPORTS,
-					org.gwaspi.constants.cDBReports.T_CREATE_REPORTS);
+			db.createTable(cDBGWASpi.SCH_MATRICES,
+					cDBReports.T_REPORTS,
+					cDBReports.T_CREATE_REPORTS);
 		} catch (Exception ex) {
 			log.error("Failed creating management database", ex);
 		}
@@ -122,9 +125,9 @@ public class ReportManager {
 			parentOPId,
 			studyId};
 
-		dBManager.insertValuesInTable(org.gwaspi.constants.cDBGWASpi.SCH_MATRICES,
-				org.gwaspi.constants.cDBReports.T_REPORTS,
-				org.gwaspi.constants.cDBReports.F_INSERT_REPORT,
+		dBManager.insertValuesInTable(cDBGWASpi.SCH_MATRICES,
+				cDBReports.T_REPORTS,
+				cDBReports.F_INSERT_REPORT,
 				rpMetaData);
 
 	}
@@ -145,8 +148,8 @@ public class ReportManager {
 			}
 		}
 
-		DbManager dBManager = ServiceLocator.getDbManager(org.gwaspi.constants.cDBGWASpi.DB_DATACENTER);
-		String statement = "DELETE FROM " + org.gwaspi.constants.cDBGWASpi.SCH_MATRICES + "." + org.gwaspi.constants.cDBReports.T_REPORTS + " WHERE " + org.gwaspi.constants.cDBReports.f_PARENT_MATRIXID + "=" + matrixId;
+		DbManager dBManager = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
+		String statement = "DELETE FROM " + cDBGWASpi.SCH_MATRICES + "." + cDBReports.T_REPORTS + " WHERE " + cDBReports.f_PARENT_MATRIXID + "=" + matrixId;
 		dBManager.executeStatement(statement);
 	}
 
@@ -166,8 +169,8 @@ public class ReportManager {
 			}
 		}
 
-		DbManager dBManager = ServiceLocator.getDbManager(org.gwaspi.constants.cDBGWASpi.DB_DATACENTER);
-		String statement = "DELETE FROM " + org.gwaspi.constants.cDBGWASpi.SCH_MATRICES + "." + org.gwaspi.constants.cDBReports.T_REPORTS + " WHERE " + org.gwaspi.constants.cDBReports.f_PARENT_MATRIXID + "=" + opId;
+		DbManager dBManager = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
+		String statement = "DELETE FROM " + cDBGWASpi.SCH_MATRICES + "." + cDBReports.T_REPORTS + " WHERE " + cDBReports.f_PARENT_MATRIXID + "=" + opId;
 		dBManager.executeStatement(statement);
 	}
 	//</editor-fold>

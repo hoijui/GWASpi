@@ -399,7 +399,7 @@ public class MatrixTrafoPanel extends JPanel {
 						File flipMarkersFile = Dialogs.selectFilesAndDirectoriesDialog(JOptionPane.OK_OPTION);
 						MultiOperations.doStrandFlipMatrix(parentMatrix.getStudyId(),
 								parentMatrix.getMatrixId(),
-								org.gwaspi.constants.cNetCDF.Variables.VAR_MARKERSET,
+								cNetCDF.Variables.VAR_MARKERSET,
 								flipMarkersFile,
 								newMatrixName,
 								description);

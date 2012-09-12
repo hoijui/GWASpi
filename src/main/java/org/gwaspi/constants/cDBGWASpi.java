@@ -65,7 +65,7 @@ public class cDBGWASpi {
 		"name",
 		"status_description"
 	};
-	public static final String IE_STATUS_TYPES_INIT = "INSERT INTO " + org.gwaspi.constants.cDBGWASpi.SCH_APP + "." + T_STATUS_TYPES
+	public static final String IE_STATUS_TYPES_INIT = "INSERT INTO " + cDBGWASpi.SCH_APP + "." + T_STATUS_TYPES
 			+ " (id, name, status_description) "
 			+ "VALUES "
 			+ "(0,'LOADED','Freshly loaded data'),"

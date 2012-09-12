@@ -54,7 +54,7 @@ public abstract class CommonRunnable implements Runnable {
 			runInternal(thisSwi);
 
 			// FINISH OFF
-			if (!thisSwi.getQueueState().equals(org.gwaspi.threadbox.QueueStates.ABORT)) {
+			if (!thisSwi.getQueueState().equals(QueueStates.ABORT)) {
 				MultiOperations.printFinished("Performing " + taskDescription);
 				SwingWorkerItemList.flagCurrentItemDone(timeStamp);
 			} else {

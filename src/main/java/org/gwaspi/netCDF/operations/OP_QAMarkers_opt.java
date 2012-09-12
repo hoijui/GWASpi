@@ -1,5 +1,6 @@
 package org.gwaspi.netCDF.operations;
 
+import org.gwaspi.constants.cDBSamples;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.AlleleBytes;
 import org.gwaspi.global.Text;
@@ -117,11 +118,11 @@ public class OP_QAMarkers_opt {
 			int count = 0;
 			while (count < rsSamplesInfo.size()) {
 				// PREVENT PHANTOM-DB READS EXCEPTIONS
-				if (!rsSamplesInfo.isEmpty() && rsSamplesInfo.get(count).size() == org.gwaspi.constants.cDBSamples.T_CREATE_SAMPLES_INFO.length) {
-					String tempSampleId = rsSamplesInfo.get(count).get(org.gwaspi.constants.cDBSamples.f_SAMPLE_ID).toString();
+				if (!rsSamplesInfo.isEmpty() && rsSamplesInfo.get(count).size() == cDBSamples.T_CREATE_SAMPLES_INFO.length) {
+					String tempSampleId = rsSamplesInfo.get(count).get(cDBSamples.f_SAMPLE_ID).toString();
 					if (rdSampleSetLHM.containsKey(tempSampleId)) {
 						String sex = "0";
-						Object tmpSex = rsSamplesInfo.get(count).get(org.gwaspi.constants.cDBSamples.f_SEX);
+						Object tmpSex = rsSamplesInfo.get(count).get(cDBSamples.f_SEX);
 						if (tmpSex != null) {
 							sex = tmpSex.toString();
 						}

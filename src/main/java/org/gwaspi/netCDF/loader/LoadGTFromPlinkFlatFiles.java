@@ -1,5 +1,7 @@
 package org.gwaspi.netCDF.loader;
 
+import org.gwaspi.constants.cDBGWASpi;
+import org.gwaspi.constants.cDBMatrix;
 import org.gwaspi.constants.cImport;
 import org.gwaspi.constants.cImport.Annotation.Plink_Standard;
 import org.gwaspi.constants.cNetCDF;
@@ -38,7 +40,7 @@ public class LoadGTFromPlinkFlatFiles {
 	private String friendlyName;
 	private String description;
 	private String gtCode;
-	private org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding guessedGTCode = org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding.UNKNOWN;
+	private cNetCDF.Defaults.GenotypeEncoding guessedGTCode = cNetCDF.Defaults.GenotypeEncoding.UNKNOWN;
 
 	//CONSTRUCTORS
 	public LoadGTFromPlinkFlatFiles(String _mapFilePath,
@@ -249,7 +251,7 @@ public class LoadGTFromPlinkFlatFiles {
 		// </editor-fold>
 
 		// <editor-fold defaultstate="collapsed" desc="MATRIX GENOTYPES LOAD ">
-		System.out.println(org.gwaspi.global.Text.All.processing);
+		System.out.println(Text.All.processing);
 		Map<String, Object> mapMarkerSetLHM = markerSetLoader.parseOrigMapFile(mapFilePath);
 		loadPedGenotypes(new File(pedFilePath),
 				ncfile,
@@ -271,12 +273,12 @@ public class LoadGTFromPlinkFlatFiles {
 
 			descSB.append("Genotype encoding: ");
 			descSB.append(guessedGTCode);
-			DbManager db = ServiceLocator.getDbManager(org.gwaspi.constants.cDBGWASpi.DB_DATACENTER);
-			db.updateTable(org.gwaspi.constants.cDBGWASpi.SCH_MATRICES,
-					org.gwaspi.constants.cDBMatrix.T_MATRICES,
-					new String[]{constants.cDBMatrix.f_DESCRIPTION},
+			DbManager db = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
+			db.updateTable(cDBGWASpi.SCH_MATRICES,
+					cDBMatrix.T_MATRICES,
+					new String[]{cDBMatrix.f_DESCRIPTION},
 					new Object[]{descSB.toString()},
-					new String[]{constants.cDBMatrix.f_ID},
+					new String[]{cDBMatrix.f_ID},
 					new Object[]{matrixFactory.getMatrixMetaData().getMatrixId()});
 
 			//CLOSE FILE
@@ -335,9 +337,9 @@ public class LoadGTFromPlinkFlatFiles {
 			}
 			st = null;
 
-			if (guessedGTCode.equals(org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding.UNKNOWN)) {
+			if (guessedGTCode.equals(cNetCDF.Defaults.GenotypeEncoding.UNKNOWN)) {
 				guessedGTCode = Utils.detectGTEncoding(wrMarkerIdSetLHM);
-			} else if (guessedGTCode.equals(org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding.O12)) {
+			} else if (guessedGTCode.equals(cNetCDF.Defaults.GenotypeEncoding.O12)) {
 				guessedGTCode = Utils.detectGTEncoding(wrMarkerIdSetLHM);
 			}
 

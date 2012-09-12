@@ -381,8 +381,8 @@ public class MatrixTranslator_opt {
 
 		switch (cNetCDF.Defaults.GenotypeEncoding.compareTo(rdMatrixType)) {
 			case AB0:
-				alleleA = org.gwaspi.constants.cNetCDF.Defaults.AlleleBytes.A;
-				alleleB = org.gwaspi.constants.cNetCDF.Defaults.AlleleBytes.B;
+				alleleA = cNetCDF.Defaults.AlleleBytes.A;
+				alleleB = cNetCDF.Defaults.AlleleBytes.B;
 				// Iterate through all markers
 				for (Map.Entry<String, Object> entry : codedLHM.entrySet()) {
 					String markerId = entry.getKey();
@@ -395,7 +395,7 @@ public class MatrixTranslator_opt {
 					} else if (codedAlleles[0] == alleleB) {
 						transAlleles[0] = (byte) basesDict[1];
 					} else {
-						transAlleles[0] = org.gwaspi.constants.cNetCDF.Defaults.AlleleBytes._0;
+						transAlleles[0] = cNetCDF.Defaults.AlleleBytes._0;
 					}
 
 					if (codedAlleles[1] == alleleA) {
@@ -403,15 +403,15 @@ public class MatrixTranslator_opt {
 					} else if (codedAlleles[1] == alleleB) {
 						transAlleles[1] = (byte) basesDict[1];
 					} else {
-						transAlleles[1] = org.gwaspi.constants.cNetCDF.Defaults.AlleleBytes._0;
+						transAlleles[1] = cNetCDF.Defaults.AlleleBytes._0;
 					}
 
 					entry.setValue(transAlleles);
 				}
 				break;
 			case O12:
-				alleleA = org.gwaspi.constants.cNetCDF.Defaults.AlleleBytes._1;
-				alleleB = org.gwaspi.constants.cNetCDF.Defaults.AlleleBytes._2;
+				alleleA = cNetCDF.Defaults.AlleleBytes._1;
+				alleleB = cNetCDF.Defaults.AlleleBytes._2;
 
 				// Iterate through all markers
 				for (Map.Entry<String, Object> entry : codedLHM.entrySet()) {
@@ -425,7 +425,7 @@ public class MatrixTranslator_opt {
 					} else if (codedAlleles[0] == alleleB) {
 						transAlleles[0] = (byte) basesDict[1];
 					} else {
-						transAlleles[0] = org.gwaspi.constants.cNetCDF.Defaults.AlleleBytes._0;
+						transAlleles[0] = cNetCDF.Defaults.AlleleBytes._0;
 					}
 
 					if (codedAlleles[1] == alleleA) {
@@ -433,7 +433,7 @@ public class MatrixTranslator_opt {
 					} else if (codedAlleles[1] == alleleB) {
 						transAlleles[1] = (byte) basesDict[1];
 					} else {
-						transAlleles[0] = org.gwaspi.constants.cNetCDF.Defaults.AlleleBytes._0;
+						transAlleles[0] = cNetCDF.Defaults.AlleleBytes._0;
 					}
 
 					entry.setValue(transAlleles);
@@ -449,11 +449,11 @@ public class MatrixTranslator_opt {
 	protected Map<String, Object> translateCurrentSample1234AllelesLHM(Map<String, Object> codedLHM, Map<String, Object> markerStrandsLHM) {
 
 		Map<Byte, Byte> dictionary = new HashMap<Byte, Byte>();
-		dictionary.put(org.gwaspi.constants.cNetCDF.Defaults.AlleleBytes._0, org.gwaspi.constants.cNetCDF.Defaults.AlleleBytes._0);
-		dictionary.put(org.gwaspi.constants.cNetCDF.Defaults.AlleleBytes._1, org.gwaspi.constants.cNetCDF.Defaults.AlleleBytes.A);
-		dictionary.put(org.gwaspi.constants.cNetCDF.Defaults.AlleleBytes._2, org.gwaspi.constants.cNetCDF.Defaults.AlleleBytes.C);
-		dictionary.put(org.gwaspi.constants.cNetCDF.Defaults.AlleleBytes._3, org.gwaspi.constants.cNetCDF.Defaults.AlleleBytes.G);
-		dictionary.put(org.gwaspi.constants.cNetCDF.Defaults.AlleleBytes._4, org.gwaspi.constants.cNetCDF.Defaults.AlleleBytes.T);
+		dictionary.put(cNetCDF.Defaults.AlleleBytes._0, cNetCDF.Defaults.AlleleBytes._0);
+		dictionary.put(cNetCDF.Defaults.AlleleBytes._1, cNetCDF.Defaults.AlleleBytes.A);
+		dictionary.put(cNetCDF.Defaults.AlleleBytes._2, cNetCDF.Defaults.AlleleBytes.C);
+		dictionary.put(cNetCDF.Defaults.AlleleBytes._3, cNetCDF.Defaults.AlleleBytes.G);
+		dictionary.put(cNetCDF.Defaults.AlleleBytes._4, cNetCDF.Defaults.AlleleBytes.T);
 
 		// Iterate through all markers
 		for (String markerId : markerStrandsLHM.keySet()) {

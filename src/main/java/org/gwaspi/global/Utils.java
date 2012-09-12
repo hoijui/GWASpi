@@ -1,5 +1,6 @@
 package org.gwaspi.global;
 
+import org.gwaspi.constants.cGlobal;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -36,7 +37,7 @@ public class Utils {
 	private static JFileChooser fc;
 
 	public static String GetAppPath() {
-		currentAppPath = org.gwaspi.constants.cGlobal.USERDIR;
+		currentAppPath = cGlobal.USERDIR;
 		//JOptionPane.showMessageDialog(base.ApipelineGUI.getFrames()[0], currentAppPath);
 		return currentAppPath;
 	}

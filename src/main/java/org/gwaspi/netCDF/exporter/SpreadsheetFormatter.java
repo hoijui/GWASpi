@@ -1,5 +1,6 @@
 package org.gwaspi.netCDF.exporter;
 
+import org.gwaspi.constants.cExport;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -38,7 +39,7 @@ public class SpreadsheetFormatter implements Formatter {
 		}
 
 		boolean result = false;
-		String sep = org.gwaspi.constants.cExport.separator_REPORTS;
+		String sep = cExport.separator_REPORTS;
 		NetcdfFile rdNcFile = NetcdfFile.open(rdMatrixMetadata.getPathToMatrix());
 		rdMarkerSet.initFullMarkerIdSetLHM();
 

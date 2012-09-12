@@ -1,5 +1,6 @@
 package org.gwaspi.reports;
 
+import org.gwaspi.constants.cNetCDF;
 import java.io.IOException;
 import java.util.Map;
 import org.gwaspi.netCDF.operations.OperationMetadata;
@@ -25,7 +26,7 @@ public class GatherQAMarkersData {
 		Map<String, Object> rdMatrixMarkerSetLHM = rdInfoMarkerSet.getOpSetLHM();
 
 		NetcdfFile markerQANcFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());
-		rdMatrixMarkerSetLHM = rdInfoMarkerSet.fillOpSetLHMWithVariable(markerQANcFile, org.gwaspi.constants.cNetCDF.Census.VAR_OP_MARKERS_MISSINGRAT);
+		rdMatrixMarkerSetLHM = rdInfoMarkerSet.fillOpSetLHMWithVariable(markerQANcFile, cNetCDF.Census.VAR_OP_MARKERS_MISSINGRAT);
 
 		markerQANcFile.close();
 		return rdMatrixMarkerSetLHM;
@@ -39,7 +40,7 @@ public class GatherQAMarkersData {
 		Map<String, Object> rdMatrixMarkerSetLHM = rdInfoMarkerSet.getOpSetLHM();
 
 		NetcdfFile markerQANcFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());
-		rdMatrixMarkerSetLHM = rdInfoMarkerSet.fillOpSetLHMWithVariable(markerQANcFile, org.gwaspi.constants.cNetCDF.Census.VAR_OP_MARKERS_MISMATCHSTATE);
+		rdMatrixMarkerSetLHM = rdInfoMarkerSet.fillOpSetLHMWithVariable(markerQANcFile, cNetCDF.Census.VAR_OP_MARKERS_MISMATCHSTATE);
 
 		markerQANcFile.close();
 		return rdMatrixMarkerSetLHM;
@@ -53,7 +54,7 @@ public class GatherQAMarkersData {
 		Map<String, Object> rdMatrixMarkerSetLHM = rdInfoMarkerSet.getOpSetLHM();
 
 		NetcdfFile markerQANcFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());
-		rdMatrixMarkerSetLHM = rdInfoMarkerSet.fillOpSetLHMWithVariable(markerQANcFile, org.gwaspi.constants.cNetCDF.Census.VAR_OP_MARKERS_MINALLELES);
+		rdMatrixMarkerSetLHM = rdInfoMarkerSet.fillOpSetLHMWithVariable(markerQANcFile, cNetCDF.Census.VAR_OP_MARKERS_MINALLELES);
 
 		markerQANcFile.close();
 		return rdMatrixMarkerSetLHM;
@@ -67,7 +68,7 @@ public class GatherQAMarkersData {
 		Map<String, Object> rdMatrixMarkerSetLHM = rdInfoMarkerSet.getOpSetLHM();
 
 		NetcdfFile markerQANcFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());
-		rdMatrixMarkerSetLHM = rdInfoMarkerSet.fillOpSetLHMWithVariable(markerQANcFile, org.gwaspi.constants.cNetCDF.Census.VAR_OP_MARKERS_MAJALLELES);
+		rdMatrixMarkerSetLHM = rdInfoMarkerSet.fillOpSetLHMWithVariable(markerQANcFile, cNetCDF.Census.VAR_OP_MARKERS_MAJALLELES);
 
 		markerQANcFile.close();
 		return rdMatrixMarkerSetLHM;
@@ -81,7 +82,7 @@ public class GatherQAMarkersData {
 		Map<String, Object> rdMatrixMarkerSetLHM = rdInfoMarkerSet.getOpSetLHM();
 
 		NetcdfFile markerQANcFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());
-		rdMatrixMarkerSetLHM = rdInfoMarkerSet.fillOpSetLHMWithVariable(markerQANcFile, org.gwaspi.constants.cNetCDF.Census.VAR_OP_MARKERS_MINALLELEFRQ);
+		rdMatrixMarkerSetLHM = rdInfoMarkerSet.fillOpSetLHMWithVariable(markerQANcFile, cNetCDF.Census.VAR_OP_MARKERS_MINALLELEFRQ);
 
 		markerQANcFile.close();
 		return rdMatrixMarkerSetLHM;
@@ -95,7 +96,7 @@ public class GatherQAMarkersData {
 		Map<String, Object> rdMatrixMarkerSetLHM = rdInfoMarkerSet.getOpSetLHM();
 
 		NetcdfFile markerQANcFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());
-		rdMatrixMarkerSetLHM = rdInfoMarkerSet.fillOpSetLHMWithVariable(markerQANcFile, org.gwaspi.constants.cNetCDF.Census.VAR_OP_MARKERS_MAJALLELEFRQ);
+		rdMatrixMarkerSetLHM = rdInfoMarkerSet.fillOpSetLHMWithVariable(markerQANcFile, cNetCDF.Census.VAR_OP_MARKERS_MAJALLELEFRQ);
 
 		markerQANcFile.close();
 		return rdMatrixMarkerSetLHM;

@@ -1,5 +1,7 @@
 package org.gwaspi.samples;
 
+import org.gwaspi.constants.cDBGWASpi;
+import org.gwaspi.constants.cDBSamples;
 import org.gwaspi.database.DbManager;
 import org.gwaspi.global.ServiceLocator;
 import java.io.IOException;
@@ -32,7 +34,7 @@ public class InitDummySamples {
 
 	private static boolean initSamples(ArrayList samplesFromFileAL, int studyId) throws IOException {
 
-		db = ServiceLocator.getDbManager(org.gwaspi.constants.cDBGWASpi.DB_DATACENTER);
+		db = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
 		ArrayList samplesAllreadyInDBAL = new ArrayList();
 
 		try {
@@ -41,7 +43,7 @@ public class InitDummySamples {
 			{
 				// PREVENT PHANTOM-DB READS EXCEPTIONS
 				if (!rs.isEmpty() && rs.get(i).size() == 1) {
-					samplesAllreadyInDBAL.add(rs.get(i).get(org.gwaspi.constants.cDBSamples.f_SAMPLE_ID).toString());
+					samplesAllreadyInDBAL.add(rs.get(i).get(cDBSamples.f_SAMPLE_ID).toString());
 				}
 			}
 		} catch (Exception ex) {
@@ -63,9 +65,9 @@ public class InitDummySamples {
 
 			if (samplesValuesList.size() > 1000) { //Writing data to DB batch by batch
 				for (int j = 0; j < samplesValuesList.size(); j++) {
-					result = db.insertValuesInTable(org.gwaspi.constants.cDBGWASpi.SCH_SAMPLES,
-							org.gwaspi.constants.cDBSamples.T_SAMPLES_INFO,
-							org.gwaspi.constants.cDBSamples.F_INSERT_DUMMY_SAMPLES_INFO,
+					result = db.insertValuesInTable(cDBGWASpi.SCH_SAMPLES,
+							cDBSamples.T_SAMPLES_INFO,
+							cDBSamples.F_INSERT_DUMMY_SAMPLES_INFO,
 							samplesValuesList.get(j));
 				}
 				samplesValuesList.clear();
@@ -76,9 +78,9 @@ public class InitDummySamples {
 		// Writing remaining Samples to DB
 		if (samplesValuesList.size() > 0) {
 			for (int i = 0; i < samplesValuesList.size(); i++) {
-				result = db.insertValuesInTable(org.gwaspi.constants.cDBGWASpi.SCH_SAMPLES,
-						org.gwaspi.constants.cDBSamples.T_SAMPLES_INFO,
-						org.gwaspi.constants.cDBSamples.F_INSERT_DUMMY_SAMPLES_INFO,
+				result = db.insertValuesInTable(cDBGWASpi.SCH_SAMPLES,
+						cDBSamples.T_SAMPLES_INFO,
+						cDBSamples.F_INSERT_DUMMY_SAMPLES_INFO,
 						samplesValuesList.get(i));
 			}
 			samplesValuesList.clear();

@@ -1,5 +1,6 @@
 package org.gwaspi.database;
 
+import org.gwaspi.constants.cDBGWASpi;
 import org.gwaspi.global.ServiceLocator;
 import java.io.IOException;
 import org.slf4j.Logger;
@@ -21,9 +22,9 @@ public class DatabaseGenerator {
 	//private static DbManager db;
 	public static String initDataCenter() throws IOException {
 		String allResults = "";
-		DbManager db = ServiceLocator.getDbManager(org.gwaspi.constants.cDBGWASpi.DB_DATACENTER);
-		db.createSchema(org.gwaspi.constants.cDBGWASpi.SCH_MARKERS);
-		db.createSchema(org.gwaspi.constants.cDBGWASpi.SCH_SAMPLES);
+		DbManager db = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
+		db.createSchema(cDBGWASpi.SCH_MARKERS);
+		db.createSchema(cDBGWASpi.SCH_SAMPLES);
 		//db.createSchema(org.gwaspi.database.cDBMoapi.SCH_MATRICES);
 
 		// MOAPI GENERIC TABLES
@@ -51,11 +52,11 @@ public class DatabaseGenerator {
 		boolean result = false;
 		try {
 			// CREATE STATUS_TYPES table in APP SCHEMA and fill with init data
-			db.createTable(org.gwaspi.constants.cDBGWASpi.SCH_APP,
-					org.gwaspi.constants.cDBGWASpi.T_STATUS_TYPES,
-					org.gwaspi.constants.cDBGWASpi.T_CREATE_STATUS_TYPES);
+			db.createTable(cDBGWASpi.SCH_APP,
+					cDBGWASpi.T_STATUS_TYPES,
+					cDBGWASpi.T_CREATE_STATUS_TYPES);
 
-			db.executeStatement(org.gwaspi.constants.cDBGWASpi.IE_STATUS_TYPES_INIT);
+			db.executeStatement(cDBGWASpi.IE_STATUS_TYPES_INIT);
 		} catch (Exception ex) {
 			log.error("Error creating management database", ex);
 		}

@@ -1,5 +1,7 @@
 package org.gwaspi.model;
 
+import org.gwaspi.constants.cDBGWASpi;
+import org.gwaspi.constants.cDBOperations;
 import org.gwaspi.database.DbManager;
 import org.gwaspi.global.ServiceLocator;
 import java.io.IOException;
@@ -37,15 +39,15 @@ public class Operation {
 		operationId = _operationId;
 
 		// PREVENT PHANTOM-DB READS EXCEPTIONS
-		if (!rs.isEmpty() && rs.get(0).size() == org.gwaspi.constants.cDBOperations.T_CREATE_OPERATIONS.length) {
-			opFriendlyName = (rs.get(0).get(org.gwaspi.constants.cDBOperations.f_OP_NAME) != null) ? rs.get(0).get(org.gwaspi.constants.cDBOperations.f_OP_NAME).toString() : "";
-			opNetCDFName = (rs.get(0).get(org.gwaspi.constants.cDBOperations.f_OP_NETCDF_NAME) != null) ? rs.get(0).get(org.gwaspi.constants.cDBOperations.f_OP_NETCDF_NAME).toString() : "";
-			opType = (rs.get(0).get(org.gwaspi.constants.cDBOperations.f_OP_TYPE) != null) ? rs.get(0).get(org.gwaspi.constants.cDBOperations.f_OP_TYPE).toString() : "";
-			parentMatrixId = (rs.get(0).get(org.gwaspi.constants.cDBOperations.f_PARENT_MATRIXID) != null) ? Integer.parseInt(rs.get(0).get(org.gwaspi.constants.cDBOperations.f_PARENT_MATRIXID).toString()) : -1;
-			parentOperationId = (rs.get(0).get(org.gwaspi.constants.cDBOperations.f_PARENT_OPID) != null) ? Integer.parseInt(rs.get(0).get(org.gwaspi.constants.cDBOperations.f_PARENT_OPID).toString()) : -1;
-			opCommand = (rs.get(0).get(org.gwaspi.constants.cDBOperations.f_OP_COMMAND) != null) ? rs.get(0).get(org.gwaspi.constants.cDBOperations.f_OP_COMMAND).toString() : "";
-			description = (rs.get(0).get(org.gwaspi.constants.cDBOperations.f_DESCRIPTION) != null) ? rs.get(0).get(org.gwaspi.constants.cDBOperations.f_DESCRIPTION).toString() : "";
-			studyId = (rs.get(0).get(org.gwaspi.constants.cDBOperations.f_STUDYID) != null) ? Integer.parseInt(rs.get(0).get(org.gwaspi.constants.cDBOperations.f_STUDYID).toString()) : 0;
+		if (!rs.isEmpty() && rs.get(0).size() == cDBOperations.T_CREATE_OPERATIONS.length) {
+			opFriendlyName = (rs.get(0).get(cDBOperations.f_OP_NAME) != null) ? rs.get(0).get(cDBOperations.f_OP_NAME).toString() : "";
+			opNetCDFName = (rs.get(0).get(cDBOperations.f_OP_NETCDF_NAME) != null) ? rs.get(0).get(cDBOperations.f_OP_NETCDF_NAME).toString() : "";
+			opType = (rs.get(0).get(cDBOperations.f_OP_TYPE) != null) ? rs.get(0).get(cDBOperations.f_OP_TYPE).toString() : "";
+			parentMatrixId = (rs.get(0).get(cDBOperations.f_PARENT_MATRIXID) != null) ? Integer.parseInt(rs.get(0).get(cDBOperations.f_PARENT_MATRIXID).toString()) : -1;
+			parentOperationId = (rs.get(0).get(cDBOperations.f_PARENT_OPID) != null) ? Integer.parseInt(rs.get(0).get(cDBOperations.f_PARENT_OPID).toString()) : -1;
+			opCommand = (rs.get(0).get(cDBOperations.f_OP_COMMAND) != null) ? rs.get(0).get(cDBOperations.f_OP_COMMAND).toString() : "";
+			description = (rs.get(0).get(cDBOperations.f_DESCRIPTION) != null) ? rs.get(0).get(cDBOperations.f_DESCRIPTION).toString() : "";
+			studyId = (rs.get(0).get(cDBOperations.f_STUDYID) != null) ? Integer.parseInt(rs.get(0).get(cDBOperations.f_STUDYID).toString()) : 0;
 		}
 	}
 
@@ -87,10 +89,10 @@ public class Operation {
 
 	public static List<Map<String, Object>> getOperationMetadata(int opId) throws IOException {
 		List<Map<String, Object>> rs = null;
-		String dbName = org.gwaspi.constants.cDBGWASpi.DB_DATACENTER;
+		String dbName = cDBGWASpi.DB_DATACENTER;
 		DbManager studyDbManager = ServiceLocator.getDbManager(dbName);
 		try {
-			rs = studyDbManager.executeSelectStatement("SELECT * FROM " + org.gwaspi.constants.cDBGWASpi.SCH_MATRICES + "." + org.gwaspi.constants.cDBOperations.T_OPERATIONS + " WHERE " + org.gwaspi.constants.cDBOperations.f_ID + "=" + opId + "  WITH RR");
+			rs = studyDbManager.executeSelectStatement("SELECT * FROM " + cDBGWASpi.SCH_MATRICES + "." + cDBOperations.T_OPERATIONS + " WHERE " + cDBOperations.f_ID + "=" + opId + "  WITH RR");
 		} catch (Exception ex) {
 			log.error(null, ex);
 		}

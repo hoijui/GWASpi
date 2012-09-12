@@ -1,5 +1,7 @@
 package org.gwaspi.netCDF.operations;
 
+import org.gwaspi.constants.cDBGWASpi;
+import org.gwaspi.constants.cDBMatrix;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.database.DbManager;
 import org.gwaspi.global.ServiceLocator;
@@ -225,11 +227,11 @@ public class MatrixMergeSamples_opt {
 
 				// Iterate through wrMarkerIdSetLHM, get the correct GT from rdMarkerIdSetLHM
 				if (sampleIndices[0] == 1) { // Read from Matrix1
-					rdwrMarkerSet1.fillWith(org.gwaspi.constants.cNetCDF.Defaults.DEFAULT_GT);
+					rdwrMarkerSet1.fillWith(cNetCDF.Defaults.DEFAULT_GT);
 					rdwrMarkerSet1.fillGTsForCurrentSampleIntoInitLHM(sampleIndices[1]);
 				}
 				if (sampleIndices[0] == 2) { // Read from Matrix2
-					rdwrMarkerSet1.fillWith(org.gwaspi.constants.cNetCDF.Defaults.DEFAULT_GT);
+					rdwrMarkerSet1.fillWith(cNetCDF.Defaults.DEFAULT_GT);
 					rdMarkerSet2.fillGTsForCurrentSampleIntoInitLHM(sampleIndices[1]);
 					for (Map.Entry<String, Object> entry : rdwrMarkerSet1.getMarkerIdSetLHM().entrySet()) {
 						String key = entry.getKey();
@@ -257,12 +259,12 @@ public class MatrixMergeSamples_opt {
 
 				descSB.append("\nGenotype encoding: ");
 				descSB.append(rdMatrix1Metadata.getGenotypeEncoding());
-				DbManager db = ServiceLocator.getDbManager(org.gwaspi.constants.cDBGWASpi.DB_DATACENTER);
-				db.updateTable(org.gwaspi.constants.cDBGWASpi.SCH_MATRICES,
-						org.gwaspi.constants.cDBMatrix.T_MATRICES,
-						new String[]{constants.cDBMatrix.f_DESCRIPTION},
+				DbManager db = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
+				db.updateTable(cDBGWASpi.SCH_MATRICES,
+						cDBMatrix.T_MATRICES,
+						new String[]{cDBMatrix.f_DESCRIPTION},
 						new Object[]{descSB.toString()},
-						new String[]{constants.cDBMatrix.f_ID},
+						new String[]{cDBMatrix.f_ID},
 						new Object[]{resultMatrixId});
 
 				resultMatrixId = wrMatrixHandler.getResultMatrixId();

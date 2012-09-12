@@ -1,5 +1,7 @@
 package org.gwaspi.netCDF.exporter;
 
+import org.gwaspi.constants.cDBSamples;
+import org.gwaspi.constants.cExport;
 import org.gwaspi.constants.cNetCDF;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -23,7 +25,7 @@ import ucar.nc2.NetcdfFile;
 public class MachFormatter implements Formatter {
 
 	private final Logger log = LoggerFactory.getLogger(MachFormatter.class);
-	private static final String SEP = org.gwaspi.constants.cExport.separator_MACH;
+	private static final String SEP = cExport.separator_MACH;
 
 	public boolean export(
 			String exportPath,
@@ -91,10 +93,10 @@ public class MachFormatter implements Formatter {
 		int sampleNb = 0;
 		for (String sampleId : rdSampleSetLHM.keySet()) {
 			Map<String, Object> sampleInfo = Utils.getCurrentSampleFormattedInfo(sampleId, rdMatrixMetadata.getStudyId());
-			String familyId = sampleInfo.get(org.gwaspi.constants.cDBSamples.f_FAMILY_ID).toString();
-			String fatherId = sampleInfo.get(org.gwaspi.constants.cDBSamples.f_FATHER_ID).toString();
-			String motherId = sampleInfo.get(org.gwaspi.constants.cDBSamples.f_MOTHER_ID).toString();
-			String sex = sampleInfo.get(org.gwaspi.constants.cDBSamples.f_SEX).toString();
+			String familyId = sampleInfo.get(cDBSamples.f_FAMILY_ID).toString();
+			String fatherId = sampleInfo.get(cDBSamples.f_FATHER_ID).toString();
+			String motherId = sampleInfo.get(cDBSamples.f_MOTHER_ID).toString();
+			String sex = sampleInfo.get(cDBSamples.f_SEX).toString();
 			if (sex.equals("1")) {
 				sex = "M";
 			}
@@ -156,7 +158,7 @@ public class MachFormatter implements Formatter {
 		//     rs# or marker identifier
 
 		//MARKERSET RSID
-		rdMarkerSet.fillInitLHMWithVariable(org.gwaspi.constants.cNetCDF.Variables.VAR_MARKERS_RSID);
+		rdMarkerSet.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_RSID);
 
 		//Iterate through current chr markers
 		//INIT MARKERSET

@@ -99,7 +99,7 @@ public class OutputAllelicAssociation {
 	public static boolean writeManhattanPlotFromAssociationData(int opId, String outName, int width, int height) throws IOException {
 		boolean result = false;
 		//Generating XY scatter plot with loaded data
-		CombinedRangeXYPlot combinedPlot = GenericReportGenerator.buildManhattanPlot(opId, org.gwaspi.constants.cNetCDF.Association.VAR_OP_MARKERS_ASAllelicAssociationTPOR);
+		CombinedRangeXYPlot combinedPlot = GenericReportGenerator.buildManhattanPlot(opId, cNetCDF.Association.VAR_OP_MARKERS_ASAllelicAssociationTPOR);
 
 		JFreeChart chart = new JFreeChart("P value", JFreeChart.DEFAULT_TITLE_FONT, combinedPlot, true);
 
@@ -136,7 +136,7 @@ public class OutputAllelicAssociation {
 	public static boolean writeQQPlotFromAssociationData(int opId, String outName, int width, int height) throws IOException {
 		boolean result = false;
 		//Generating XY scatter plot with loaded data
-		XYPlot qqPlot = GenericReportGenerator.buildQQPlot(opId, org.gwaspi.constants.cNetCDF.Association.VAR_OP_MARKERS_ASAllelicAssociationTPOR, 1);
+		XYPlot qqPlot = GenericReportGenerator.buildQQPlot(opId, cNetCDF.Association.VAR_OP_MARKERS_ASAllelicAssociationTPOR, 1);
 
 		JFreeChart chart = new JFreeChart("X² QQ", JFreeChart.DEFAULT_TITLE_FONT, qqPlot, true);
 
@@ -159,7 +159,7 @@ public class OutputAllelicAssociation {
 		boolean result;
 
 		try {
-			Map<String, Object> unsortedMarkerIdAssocValsLHM = GenericReportGenerator.getAnalysisVarData(opId, org.gwaspi.constants.cNetCDF.Association.VAR_OP_MARKERS_ASAllelicAssociationTPOR);
+			Map<String, Object> unsortedMarkerIdAssocValsLHM = GenericReportGenerator.getAnalysisVarData(opId, cNetCDF.Association.VAR_OP_MARKERS_ASAllelicAssociationTPOR);
 			Map<String, Object> unsortedMarkerIdPvalLHM = new LinkedHashMap<String, Object>();
 			for (Map.Entry<String, Object> entry : unsortedMarkerIdAssocValsLHM.entrySet()) {
 				String key = entry.getKey();

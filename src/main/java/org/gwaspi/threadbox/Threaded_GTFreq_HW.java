@@ -47,8 +47,8 @@ public class Threaded_GTFreq_HW extends CommonRunnable {
 	protected void runInternal(SwingWorkerItem thisSwi) throws Exception {
 
 		OperationsList opList = new OperationsList(matrixId);
-		int sampleQAOpId = opList.getIdOfLastOperationTypeOccurance(org.gwaspi.constants.cNetCDF.Defaults.OPType.SAMPLE_QA);
-		int markersQAOpId = opList.getIdOfLastOperationTypeOccurance(org.gwaspi.constants.cNetCDF.Defaults.OPType.MARKER_QA);
+		int sampleQAOpId = opList.getIdOfLastOperationTypeOccurance(cNetCDF.Defaults.OPType.SAMPLE_QA);
+		int markersQAOpId = opList.getIdOfLastOperationTypeOccurance(cNetCDF.Defaults.OPType.MARKER_QA);
 
 		//<editor-fold defaultstate="collapsed" desc="GT FREQ. & HW PROCESS">
 		if (!gwasParams.isDiscardMarkerByMisRat()) {
@@ -66,7 +66,7 @@ public class Threaded_GTFreq_HW extends CommonRunnable {
 
 		// GT FREQ. BY PHENOFILE OR DB AFFECTION
 		int censusOpId = Integer.MIN_VALUE;
-		if (thisSwi.getQueueState().equals(org.gwaspi.threadbox.QueueStates.PROCESSING)) {
+		if (thisSwi.getQueueState().equals(QueueStates.PROCESSING)) {
 			if (phenotypeFile != null && phenotypeFile.exists() && phenotypeFile.isFile()) { //BY EXTERNAL PHENOTYPE FILE
 
 				Set<String> affectionStates = SamplesParser.scanSampleInfoAffectionStates(phenotypeFile.getPath()); //use Sample Info file affection state
@@ -107,7 +107,7 @@ public class Threaded_GTFreq_HW extends CommonRunnable {
 
 
 		// HW ON GENOTYPE FREQ.
-		if (thisSwi.getQueueState().equals(org.gwaspi.threadbox.QueueStates.PROCESSING)) {
+		if (thisSwi.getQueueState().equals(QueueStates.PROCESSING)) {
 			if (censusOpId != Integer.MIN_VALUE) {
 				int hwOpId = OperationManager.performHardyWeinberg(censusOpId, cNetCDF.Defaults.DEFAULT_AFFECTION);
 				GWASpiExplorerNodes.insertSubOperationUnderOperationNode(censusOpId, hwOpId);

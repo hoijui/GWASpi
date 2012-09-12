@@ -1,5 +1,7 @@
 package org.gwaspi.netCDF.operations;
 
+import org.gwaspi.constants.cDBGWASpi;
+import org.gwaspi.constants.cDBMatrix;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import org.gwaspi.database.DbManager;
@@ -226,7 +228,7 @@ public class MatrixGenotypesFlipper {
 			//</editor-fold>
 
 			//<editor-fold defaultstate="collapsed" desc="GENOTYPES WRITER">
-			log.info(org.gwaspi.global.Text.All.processing);
+			log.info(Text.All.processing);
 			int markerIndex = 0;
 			for (Map.Entry<String, Object> entry : rdMarkerIdSetLHM.entrySet()) {
 				String markerId = entry.getKey();
@@ -260,12 +262,12 @@ public class MatrixGenotypesFlipper {
 
 				descSB.append("\nGenotype encoding: ");
 				descSB.append(rdMatrixMetadata.getGenotypeEncoding());
-				DbManager db = ServiceLocator.getDbManager(org.gwaspi.constants.cDBGWASpi.DB_DATACENTER);
-				db.updateTable(org.gwaspi.constants.cDBGWASpi.SCH_MATRICES,
-						org.gwaspi.constants.cDBMatrix.T_MATRICES,
-						new String[]{constants.cDBMatrix.f_DESCRIPTION},
+				DbManager db = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
+				db.updateTable(cDBGWASpi.SCH_MATRICES,
+						cDBMatrix.T_MATRICES,
+						new String[]{cDBMatrix.f_DESCRIPTION},
 						new Object[]{descSB.toString()},
-						new String[]{constants.cDBMatrix.f_ID},
+						new String[]{cDBMatrix.f_ID},
 						new Object[]{resultMatrixId});
 
 				wrNcFile.close();

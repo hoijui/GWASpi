@@ -1,5 +1,6 @@
 package org.gwaspi.netCDF.operations;
 
+import org.gwaspi.constants.cNetCDF;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -104,12 +105,12 @@ public class Utils {
 	//<editor-fold defaultstate="collapsed" desc="GENOTYPE SAVERS">
 	public static boolean saveSingleSampleGTsToMatrix(NetcdfFileWriteable wrNcFile, Map<String, Object> wrLhm, int sampleIndex) {
 		boolean result = false;
-		ArrayByte.D3 genotypes = org.gwaspi.netCDF.operations.Utils.writeLHMToSingleSampleArrayByteD3(wrLhm, org.gwaspi.constants.cNetCDF.Strides.STRIDE_GT);
-//		ArrayByte.D3 genotypes = org.gwaspi.netCDF.operations.Utils.writeLHMToCurrentSampleArrayByteD3(wrLhm, org.gwaspi.constants.cNetCDF.Strides.STRIDE_GT);
+		ArrayByte.D3 genotypes = org.gwaspi.netCDF.operations.Utils.writeLHMToSingleSampleArrayByteD3(wrLhm, cNetCDF.Strides.STRIDE_GT);
+//		ArrayByte.D3 genotypes = org.gwaspi.netCDF.operations.Utils.writeLHMToCurrentSampleArrayByteD3(wrLhm, cNetCDF.Strides.STRIDE_GT);
 
 		int[] origin = new int[]{sampleIndex, 0, 0};
 		try {
-			wrNcFile.write(org.gwaspi.constants.cNetCDF.Variables.VAR_GENOTYPES, origin, genotypes);
+			wrNcFile.write(cNetCDF.Variables.VAR_GENOTYPES, origin, genotypes);
 //			log.info("Done writing Sample {} genotypes at {}", samplePos, org.gwaspi.global.Utils.getMediumDateTimeAsString());
 			result = true;
 		} catch (IOException ex) {
@@ -122,11 +123,11 @@ public class Utils {
 
 	public static boolean saveSingleMarkerGTsToMatrix(NetcdfFileWriteable wrNcFile, Map<String, Object> wrLhm, int markerIndex) {
 		boolean result = false;
-		ArrayByte.D3 genotypes = org.gwaspi.netCDF.operations.Utils.writeLHMToSingleMarkerArrayByteD3(wrLhm, org.gwaspi.constants.cNetCDF.Strides.STRIDE_GT);
+		ArrayByte.D3 genotypes = org.gwaspi.netCDF.operations.Utils.writeLHMToSingleMarkerArrayByteD3(wrLhm, cNetCDF.Strides.STRIDE_GT);
 
 		int[] origin = new int[]{0, markerIndex, 0};
 		try {
-			wrNcFile.write(org.gwaspi.constants.cNetCDF.Variables.VAR_GENOTYPES, origin, genotypes);
+			wrNcFile.write(cNetCDF.Variables.VAR_GENOTYPES, origin, genotypes);
 //			log.info("Done writing genotypes at {}", org.gwaspi.global.Utils.getMediumDateTimeAsString());
 			result = true;
 		} catch (IOException ex) {
@@ -336,11 +337,11 @@ public class Utils {
 			int samplePos,
 			int offset) throws InvalidRangeException {
 		boolean result = false;
-		ArrayChar.D3 genotypes = org.gwaspi.netCDF.operations.Utils.writeLHMToCurrentSampleArrayCharD3(wrLhm, org.gwaspi.constants.cNetCDF.Strides.STRIDE_GT);
+		ArrayChar.D3 genotypes = org.gwaspi.netCDF.operations.Utils.writeLHMToCurrentSampleArrayCharD3(wrLhm, cNetCDF.Strides.STRIDE_GT);
 
 		int[] origin = new int[]{samplePos, offset, 0};
 		try {
-			wrNcFile.write(org.gwaspi.constants.cNetCDF.Variables.VAR_GENOTYPES, origin, genotypes);
+			wrNcFile.write(cNetCDF.Variables.VAR_GENOTYPES, origin, genotypes);
 			log.info("Done writing Sample {} genotypes at {}", samplePos, org.gwaspi.global.Utils.getMediumDateTimeAsString());
 			result = true;
 		} catch (IOException ex) {
@@ -356,11 +357,11 @@ public class Utils {
 			int markerPos,
 			int offset) {
 		boolean result = false;
-		ArrayChar.D3 genotypes = org.gwaspi.netCDF.operations.Utils.writeLHMToCurrentMarkerArrayCharD3(wrLhm, org.gwaspi.constants.cNetCDF.Strides.STRIDE_GT);
+		ArrayChar.D3 genotypes = org.gwaspi.netCDF.operations.Utils.writeLHMToCurrentMarkerArrayCharD3(wrLhm, cNetCDF.Strides.STRIDE_GT);
 
 		int[] origin = new int[]{offset, markerPos, 0};
 		try {
-			wrNcFile.write(org.gwaspi.constants.cNetCDF.Variables.VAR_GENOTYPES, origin, genotypes);
+			wrNcFile.write(cNetCDF.Variables.VAR_GENOTYPES, origin, genotypes);
 			log.info("Done writing genotypes at {}", org.gwaspi.global.Utils.getMediumDateTimeAsString());
 			result = true;
 		} catch (IOException ex) {

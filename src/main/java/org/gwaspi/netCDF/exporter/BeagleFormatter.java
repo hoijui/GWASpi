@@ -1,5 +1,7 @@
 package org.gwaspi.netCDF.exporter;
 
+import org.gwaspi.constants.cDBSamples;
+import org.gwaspi.constants.cExport;
 import org.gwaspi.constants.cNetCDF;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -42,7 +44,7 @@ class BeagleFormatter implements Formatter {
 		}
 
 		boolean result = false;
-		String sep = org.gwaspi.constants.cExport.separator_BEAGLE;
+		String sep = cExport.separator_BEAGLE;
 		NetcdfFile rdNcFile = NetcdfFile.open(rdMatrixMetadata.getPathToMatrix());
 
 		try {
@@ -79,12 +81,12 @@ class BeagleFormatter implements Formatter {
 			for (String sampleId : rdSampleSetMap.keySet()) {
 				Map<String, Object> sampleInfo = Utils.getCurrentSampleFormattedInfo(sampleId, rdMatrixMetadata.getStudyId());
 
-				String category = sampleInfo.get(org.gwaspi.constants.cDBSamples.f_CATEGORY).toString();
-				String population = sampleInfo.get(org.gwaspi.constants.cDBSamples.f_POPULATION).toString();
-				String disease = sampleInfo.get(org.gwaspi.constants.cDBSamples.f_DISEASE).toString();
-				String sex = sampleInfo.get(org.gwaspi.constants.cDBSamples.f_SEX).toString();
-				String affection = sampleInfo.get(org.gwaspi.constants.cDBSamples.f_AFFECTION).toString();
-				String age = sampleInfo.get(org.gwaspi.constants.cDBSamples.f_AGE).toString();
+				String category = sampleInfo.get(cDBSamples.f_CATEGORY).toString();
+				String population = sampleInfo.get(cDBSamples.f_POPULATION).toString();
+				String disease = sampleInfo.get(cDBSamples.f_DISEASE).toString();
+				String sex = sampleInfo.get(cDBSamples.f_SEX).toString();
+				String affection = sampleInfo.get(cDBSamples.f_AFFECTION).toString();
+				String age = sampleInfo.get(cDBSamples.f_AGE).toString();
 
 				sampleLine.append(sep);
 				sampleLine.append(sampleId);
@@ -183,10 +185,10 @@ class BeagleFormatter implements Formatter {
 			rdMarkerSet.fillWith("");
 
 			// MARKERSET RSID
-			rdMarkerSet.fillInitLHMWithVariable(org.gwaspi.constants.cNetCDF.Variables.VAR_MARKERS_RSID);
+			rdMarkerSet.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_RSID);
 
 			// MARKERSET POSITION
-			rdMarkerSet.appendVariableToMarkerSetLHMValue(org.gwaspi.constants.cNetCDF.Variables.VAR_MARKERS_POS, sep);
+			rdMarkerSet.appendVariableToMarkerSetLHMValue(cNetCDF.Variables.VAR_MARKERS_POS, sep);
 
 			// WRITE KNOWN ALLELES FROM QA
 			// get MARKER_QA Operation

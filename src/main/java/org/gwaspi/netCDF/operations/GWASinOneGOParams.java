@@ -1,5 +1,7 @@
 package org.gwaspi.netCDF.operations;
 
+import org.gwaspi.constants.cNetCDF;
+
 /**
  *
  * @author Fernando Muñiz Fernandez
@@ -25,8 +27,8 @@ public class GWASinOneGOParams {
 	private boolean discardSampleByHetzyRat = false;
 	private double discardSampleHetzyRatVal = 0;
 	private String chromosome = "";
-	private String strandType = org.gwaspi.constants.cNetCDF.Defaults.StrandType.UNKNOWN.toString();
-	private String gtCode = org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding.UNKNOWN.toString();
+	private String strandType = cNetCDF.Defaults.StrandType.UNKNOWN.toString();
+	private String gtCode = cNetCDF.Defaults.GenotypeEncoding.UNKNOWN.toString();
 	private String friendlyName = "";
 
 	public boolean isProceed() {

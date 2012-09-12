@@ -3,6 +3,7 @@ package org.gwaspi.database;
 import org.gwaspi.constants.cDBGWASpi;
 import org.gwaspi.global.Config;
 import org.gwaspi.global.ServiceLocator;
+import org.gwaspi.gui.GWASpiExplorerPanel;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -65,7 +66,7 @@ public class StudyGenerator {
 		for (int i = 0; i < matrixMod.matrixList.size(); i++) {
 			try {
 				org.gwaspi.netCDF.matrices.MatrixManager.deleteMatrix(matrixMod.matrixList.get(i).getMatrixId(), deleteReports);
-				org.gwaspi.gui.GWASpiExplorerPanel.updateTreePanel(true);
+				GWASpiExplorerPanel.updateTreePanel(true);
 			} catch (IOException ex) {
 			}
 		}

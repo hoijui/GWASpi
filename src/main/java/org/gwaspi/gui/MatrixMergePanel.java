@@ -1,5 +1,6 @@
 package org.gwaspi.gui;
 
+import org.gwaspi.constants.cDBMatrix;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.utils.BrowserHelpUrlAction;
@@ -432,7 +433,7 @@ public class MatrixMergePanel extends JPanel {
 		public void actionPerformed(ActionEvent evt) {
 			try {
 				GWASpiExplorerPanel.pnl_Content = new CurrentMatrixPanel(parentMatrix.getMatrixId());
-				GWASpiExplorerPanel.scrl_Content.setViewportView(org.gwaspi.gui.GWASpiExplorerPanel.pnl_Content);
+				GWASpiExplorerPanel.scrl_Content.setViewportView(GWASpiExplorerPanel.pnl_Content);
 			} catch (IOException ex) {
 				log.error(null, ex);
 			}
@@ -461,8 +462,8 @@ public class MatrixMergePanel extends JPanel {
 			for (int i = rowcount - 1; i >= 0; i--) // loop through rows of result set
 			{
 				//PREVENT PHANTOM-DB READS EXCEPTIONS
-				if (!rsMatrices.isEmpty() && rsMatrices.get(i).size() == org.gwaspi.constants.cDBMatrix.T_CREATE_MATRICES.length) {
-					int currentMatrixId = (Integer) rsMatrices.get(i).get(org.gwaspi.constants.cDBMatrix.f_ID);
+				if (!rsMatrices.isEmpty() && rsMatrices.get(i).size() == cDBMatrix.T_CREATE_MATRICES.length) {
+					int currentMatrixId = (Integer) rsMatrices.get(i).get(cDBMatrix.f_ID);
 					Matrix currentMatrix = new Matrix(currentMatrixId);
 					StringBuilder sb = new StringBuilder();
 					sb.append("SID: ");

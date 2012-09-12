@@ -1,5 +1,7 @@
 package org.gwaspi.netCDF.operations;
 
+import org.gwaspi.constants.cDBGWASpi;
+import org.gwaspi.constants.cDBMatrix;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.database.DbManager;
 import org.gwaspi.global.ServiceLocator;
@@ -376,7 +378,7 @@ public class MatrixDataExtractor_opt {
 
 				//<editor-fold defaultstate="collapsed" desc="GENOTYPES WRITER">
 				// Iterate through wrSampleSetLHM, use item position to read correct sample GTs into rdMarkerIdSetLHM.
-				log.info(org.gwaspi.global.Text.All.processing);
+				log.info(Text.All.processing);
 				int sampleWrIndex = 0;
 				for (Object value : wrSampleSetLHM.values()) {
 					// Iterate through wrMarkerIdSetLHM, get the correct GT from rdMarkerIdSetLHM
@@ -405,12 +407,12 @@ public class MatrixDataExtractor_opt {
 
 					descSB.append("\nGenotype encoding: ");
 					descSB.append(rdMatrixMetadata.getGenotypeEncoding());
-					DbManager db = ServiceLocator.getDbManager(org.gwaspi.constants.cDBGWASpi.DB_DATACENTER);
-					db.updateTable(org.gwaspi.constants.cDBGWASpi.SCH_MATRICES,
-							org.gwaspi.constants.cDBMatrix.T_MATRICES,
-							new String[]{constants.cDBMatrix.f_DESCRIPTION},
+					DbManager db = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
+					db.updateTable(cDBGWASpi.SCH_MATRICES,
+							cDBMatrix.T_MATRICES,
+							new String[]{cDBMatrix.f_DESCRIPTION},
 							new Object[]{descSB.toString()},
-							new String[]{constants.cDBMatrix.f_ID},
+							new String[]{cDBMatrix.f_ID},
 							new Object[]{resultMatrixId});
 
 					wrNcFile.close();
@@ -425,7 +427,7 @@ public class MatrixDataExtractor_opt {
 				log.error(null, ex);
 			}
 		} else {
-			Dialogs.showWarningDialogue(org.gwaspi.global.Text.Trafo.criteriaReturnsNoResults);
+			Dialogs.showWarningDialogue(Text.Trafo.criteriaReturnsNoResults);
 		}
 
 		return resultMatrixId;

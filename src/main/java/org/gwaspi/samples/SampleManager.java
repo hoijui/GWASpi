@@ -1,5 +1,7 @@
 package org.gwaspi.samples;
 
+import org.gwaspi.constants.cDBGWASpi;
+import org.gwaspi.constants.cDBSamples;
 import org.gwaspi.database.DbManager;
 import org.gwaspi.global.ServiceLocator;
 import java.io.IOException;
@@ -28,9 +30,9 @@ public class SampleManager {
 		boolean result = false;
 		try {
 			//CREATE SAMPLE table in given SCHEMA
-			db.createTable(org.gwaspi.constants.cDBGWASpi.SCH_SAMPLES,
-					org.gwaspi.constants.cDBSamples.T_SAMPLES_INFO,
-					org.gwaspi.constants.cDBSamples.T_CREATE_SAMPLES_INFO);
+			db.createTable(cDBGWASpi.SCH_SAMPLES,
+					cDBSamples.T_SAMPLES_INFO,
+					cDBSamples.T_CREATE_SAMPLES_INFO);
 			result = true;
 		} catch (Exception ex) {
 			log.error("Error creating Sample table", ex);
@@ -40,8 +42,8 @@ public class SampleManager {
 
 	public static List<Map<String, Object>> selectSampleIDList(Object poolId) {
 		try {
-			DbManager dBManager = ServiceLocator.getDbManager(org.gwaspi.constants.cDBGWASpi.DB_DATACENTER);
-			String sql = "SELECT " + org.gwaspi.constants.cDBSamples.f_SAMPLE_ID + " FROM " + org.gwaspi.constants.cDBGWASpi.SCH_SAMPLES + "." + org.gwaspi.constants.cDBSamples.T_SAMPLES_INFO + " WHERE " + org.gwaspi.constants.cDBSamples.f_POOL_ID + "='" + poolId + "' ORDER BY order_id  WITH RR";
+			DbManager dBManager = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
+			String sql = "SELECT " + cDBSamples.f_SAMPLE_ID + " FROM " + cDBGWASpi.SCH_SAMPLES + "." + cDBSamples.T_SAMPLES_INFO + " WHERE " + cDBSamples.f_POOL_ID + "='" + poolId + "' ORDER BY order_id  WITH RR";
 			return dBManager.executeSelectStatement(sql);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
@@ -49,30 +51,30 @@ public class SampleManager {
 	}
 
 	public static List<Map<String, Object>> getAllSampleInfoFromDB() throws IOException {
-		DbManager dBManager = ServiceLocator.getDbManager(org.gwaspi.constants.cDBGWASpi.DB_DATACENTER);
+		DbManager dBManager = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
 
-		String sql = "SELECT * FROM " + org.gwaspi.constants.cDBGWASpi.SCH_SAMPLES + "." + org.gwaspi.constants.cDBSamples.T_SAMPLES_INFO + " ORDER BY order_id  WITH RR";
+		String sql = "SELECT * FROM " + cDBGWASpi.SCH_SAMPLES + "." + cDBSamples.T_SAMPLES_INFO + " ORDER BY order_id  WITH RR";
 		return dBManager.executeSelectStatement(sql);
 	}
 
 	public static List<Map<String, Object>> getAllSampleInfoFromDBByPoolID(Object poolId) throws IOException {
-		DbManager dBManager = ServiceLocator.getDbManager(org.gwaspi.constants.cDBGWASpi.DB_DATACENTER);
+		DbManager dBManager = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
 
-		String sql = "SELECT * FROM " + org.gwaspi.constants.cDBGWASpi.SCH_SAMPLES + "." + org.gwaspi.constants.cDBSamples.T_SAMPLES_INFO + " WHERE " + org.gwaspi.constants.cDBSamples.f_POOL_ID + "='" + poolId + "'" + " ORDER BY order_id  WITH RR";
+		String sql = "SELECT * FROM " + cDBGWASpi.SCH_SAMPLES + "." + cDBSamples.T_SAMPLES_INFO + " WHERE " + cDBSamples.f_POOL_ID + "='" + poolId + "'" + " ORDER BY order_id  WITH RR";
 		return dBManager.executeSelectStatement(sql);
 	}
 
 	public static List<Map<String, Object>> getCurrentSampleInfoFromDB(String sampleId, Object poolId) throws IOException {
-		DbManager dBManager = ServiceLocator.getDbManager(org.gwaspi.constants.cDBGWASpi.DB_DATACENTER);
+		DbManager dBManager = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
 
-		String sql = "SELECT * FROM " + org.gwaspi.constants.cDBGWASpi.SCH_SAMPLES + "." + org.gwaspi.constants.cDBSamples.T_SAMPLES_INFO + " WHERE " + org.gwaspi.constants.cDBSamples.f_SAMPLE_ID + "='" + sampleId + "' AND " + org.gwaspi.constants.cDBSamples.f_POOL_ID + "='" + poolId + "'  WITH RR";
+		String sql = "SELECT * FROM " + cDBGWASpi.SCH_SAMPLES + "." + cDBSamples.T_SAMPLES_INFO + " WHERE " + cDBSamples.f_SAMPLE_ID + "='" + sampleId + "' AND " + cDBSamples.f_POOL_ID + "='" + poolId + "'  WITH RR";
 		return dBManager.executeSelectStatement(sql);
 	}
 
 	public static void deleteSamplesByPoolId(Object poolId) throws IOException {
-		DbManager dBManager = ServiceLocator.getDbManager(org.gwaspi.constants.cDBGWASpi.DB_DATACENTER);
+		DbManager dBManager = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
 
-		String sql = "DELETE FROM " + org.gwaspi.constants.cDBGWASpi.SCH_SAMPLES + "." + org.gwaspi.constants.cDBSamples.T_SAMPLES_INFO + " WHERE " + org.gwaspi.constants.cDBSamples.f_POOL_ID + "='" + poolId + "'";
+		String sql = "DELETE FROM " + cDBGWASpi.SCH_SAMPLES + "." + cDBSamples.T_SAMPLES_INFO + " WHERE " + cDBSamples.f_POOL_ID + "='" + poolId + "'";
 		dBManager.executeStatement(sql);
 	}
 }

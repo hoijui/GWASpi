@@ -60,7 +60,7 @@ public class URLInDefaultBrowser {
 	}
 
 	public static void browseHelpURL(String helpFile) throws IOException {
-		//String helpDir = org.gwaspi.global.Config.getConfigValue("HelpDir", "");
+		//String helpDir = Config.getConfigValue("HelpDir", "");
 		String url;
 
 		if (!org.gwaspi.global.Utils.checkInternetConnection()) {

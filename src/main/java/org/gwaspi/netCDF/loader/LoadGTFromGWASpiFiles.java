@@ -1,12 +1,14 @@
 package org.gwaspi.netCDF.loader;
 
 import org.gwaspi.constants.cDBGWASpi;
+import org.gwaspi.constants.cDBMatrix;
 import org.gwaspi.constants.cImport;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.database.DbManager;
 import org.gwaspi.global.Config;
 import org.gwaspi.global.ServiceLocator;
 import org.gwaspi.global.Text;
+import org.gwaspi.gui.utils.Dialogs;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -45,7 +47,7 @@ public final class LoadGTFromGWASpiFiles {
 	private String description;
 	private String gtCode;
 	private MatrixMetadata importMatrixMetadata;
-	private org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding guessedGTCode = org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding.UNKNOWN;
+	private cNetCDF.Defaults.GenotypeEncoding guessedGTCode = cNetCDF.Defaults.GenotypeEncoding.UNKNOWN;
 
 	//<editor-fold defaultstate="collapsed" desc="CONSTRUCTORS">
 	public LoadGTFromGWASpiFiles(String _gwaspiGTFilePath,
@@ -82,7 +84,7 @@ public final class LoadGTFromGWASpiFiles {
 			}
 
 			if (testExcessSamplesInFile) {
-				System.out.println("There were Samples in the Sample Info file that are not present in the genotypes file.\n" + org.gwaspi.global.Text.App.appName + " will attempt to ignore them...");
+				System.out.println("There were Samples in the Sample Info file that are not present in the genotypes file.\n" + Text.App.appName + " will attempt to ignore them...");
 			}
 			if (testExcessSamplesInMatrix) {
 				System.out.println("Warning!\nSome Samples in the imported genotypes are not described in the Sample Info file!\nData will not be imported!");
@@ -288,7 +290,7 @@ public final class LoadGTFromGWASpiFiles {
 		//<editor-fold defaultstate="collapsed" desc="GENOTYPES WRITER">
 
 		//Iterate through rdSampleSetLHM, use item position to read correct sample GTs into rdMarkerIdSetLHM.
-		System.out.println(org.gwaspi.global.Text.All.processing);
+		System.out.println(Text.All.processing);
 		int sampleWrIndex = 0;
 		for (int i = 0; i < rdSampleSetLHM.size(); i++) {
 			rdMarkerSet.fillGTsForCurrentSampleIntoInitLHM(sampleWrIndex);
@@ -307,9 +309,9 @@ public final class LoadGTFromGWASpiFiles {
 		// CLOSE THE FILE AND BY THIS, MAKE IT READ-ONLY
 		try {
 			//GUESS GENOTYPE ENCODING
-			if (guessedGTCode.equals(org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding.UNKNOWN)) {
+			if (guessedGTCode.equals(cNetCDF.Defaults.GenotypeEncoding.UNKNOWN)) {
 				guessedGTCode = Utils.detectGTEncoding(rdMarkerSet.getMarkerIdSetLHM());
-			} else if (guessedGTCode.equals(org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding.O12)) {
+			} else if (guessedGTCode.equals(cNetCDF.Defaults.GenotypeEncoding.O12)) {
 				guessedGTCode = Utils.detectGTEncoding(rdMarkerSet.getMarkerIdSetLHM());
 			}
 
@@ -323,12 +325,12 @@ public final class LoadGTFromGWASpiFiles {
 			StringBuilder descSB = new StringBuilder(description);
 			descSB.append("Genotype encoding: ");
 			descSB.append(guessedGTCode);
-			DbManager db = ServiceLocator.getDbManager(org.gwaspi.constants.cDBGWASpi.DB_DATACENTER);
-			db.updateTable(org.gwaspi.constants.cDBGWASpi.SCH_MATRICES,
-					org.gwaspi.constants.cDBMatrix.T_MATRICES,
-					new String[]{constants.cDBMatrix.f_DESCRIPTION},
+			DbManager db = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
+			db.updateTable(cDBGWASpi.SCH_MATRICES,
+					cDBMatrix.T_MATRICES,
+					new String[]{cDBMatrix.f_DESCRIPTION},
 					new Object[]{descSB.toString()},
-					new String[]{constants.cDBMatrix.f_ID},
+					new String[]{cDBMatrix.f_ID},
 					new Object[]{matrixFactory.getMatrixMetaData().getMatrixId()});
 
 			//CLOSE FILE
@@ -377,10 +379,10 @@ public final class LoadGTFromGWASpiFiles {
 				org.gwaspi.global.Utils.copyFile(origFile, newFile);
 			}
 		} catch (IOException ex) {
-			org.gwaspi.gui.utils.Dialogs.showWarningDialogue("A table saving error has occurred");
+			Dialogs.showWarningDialogue("A table saving error has occurred");
 			ex.printStackTrace();
 		} catch (Exception ex) {
-			org.gwaspi.gui.utils.Dialogs.showWarningDialogue("A table saving error has occurred");
+			Dialogs.showWarningDialogue("A table saving error has occurred");
 			ex.printStackTrace();
 		}
 	}

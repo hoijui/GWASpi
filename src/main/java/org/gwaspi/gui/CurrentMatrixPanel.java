@@ -1,5 +1,9 @@
 package org.gwaspi.gui;
 
+import org.gwaspi.constants.cDBGWASpi;
+import org.gwaspi.constants.cDBMatrix;
+import org.gwaspi.constants.cDBSamples;
+import org.gwaspi.constants.cExport;
 import org.gwaspi.constants.cExport.ExportFormat;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.database.DbManager;
@@ -8,6 +12,9 @@ import org.gwaspi.global.Text;
 import org.gwaspi.gui.utils.BrowserHelpUrlAction;
 import org.gwaspi.gui.utils.Dialogs;
 import org.gwaspi.gui.utils.HelpURLs;
+import org.gwaspi.gui.utils.JTextFieldLimit;
+import org.gwaspi.gui.utils.NodeToPathCorrespondence;
+import org.gwaspi.gui.utils.RowRendererDefault;
 import java.awt.Component;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -34,6 +41,7 @@ import org.gwaspi.model.OperationsList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.gwaspi.threadbox.MultiOperations;
+import org.gwaspi.threadbox.SwingWorkerItemList;
 
 /**
  *
@@ -75,8 +83,8 @@ public class CurrentMatrixPanel extends JPanel {
 	public CurrentMatrixPanel(int _matrixId) throws IOException {
 
 		matrix = new org.gwaspi.model.Matrix(_matrixId);
-		DefaultMutableTreeNode matrixNode = (DefaultMutableTreeNode) org.gwaspi.gui.GWASpiExplorerPanel.tree.getLastSelectedPathComponent();
-		treeChildrenLHM = org.gwaspi.gui.utils.NodeToPathCorrespondence.buildNodeToPathCorrespondence(matrixNode, true);
+		DefaultMutableTreeNode matrixNode = (DefaultMutableTreeNode) GWASpiExplorerPanel.tree.getLastSelectedPathComponent();
+		treeChildrenLHM = NodeToPathCorrespondence.buildNodeToPathCorrespondence(matrixNode, true);
 
 		pnl_MatrixDesc = new JPanel();
 		scrl_MatrixDesc = new JScrollPane();
@@ -100,7 +108,7 @@ public class CurrentMatrixPanel extends JPanel {
 				return c;
 			}
 		};
-		tbl_MatrixOperations.setDefaultRenderer(Object.class, new org.gwaspi.gui.utils.RowRendererDefault());
+		tbl_MatrixOperations.setDefaultRenderer(Object.class, new RowRendererDefault());
 
 		btn_DeleteOperation = new JButton();
 		pnl_NewOperation = new JPanel();
@@ -123,7 +131,7 @@ public class CurrentMatrixPanel extends JPanel {
 		txtA_MatrixDesc.setColumns(20);
 		txtA_MatrixDesc.setRows(5);
 		txtA_MatrixDesc.setBorder(BorderFactory.createTitledBorder(null, Text.All.description, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("DejaVu Sans", 1, 13))); // NOI18N
-		txtA_MatrixDesc.setDocument(new org.gwaspi.gui.utils.JTextFieldLimit(1999));
+		txtA_MatrixDesc.setDocument(new JTextFieldLimit(1999));
 		txtA_MatrixDesc.setText(matrix.matrixMetadata.getDescription());
 		scrl_MatrixDesc.setViewportView(txtA_MatrixDesc);
 		btn_DeleteMatrix.setAction(new DeleteMatrixAction(matrix, this));
@@ -319,8 +327,8 @@ public class CurrentMatrixPanel extends JPanel {
 		@Override
 		public void actionPerformed(ActionEvent evt) {
 			try {
-				org.gwaspi.gui.GWASpiExplorerPanel.pnl_Content = new MatrixExtractPanel(matrix.getMatrixId(), "", "");
-				org.gwaspi.gui.GWASpiExplorerPanel.scrl_Content.setViewportView(org.gwaspi.gui.GWASpiExplorerPanel.pnl_Content);
+				GWASpiExplorerPanel.pnl_Content = new MatrixExtractPanel(matrix.getMatrixId(), "", "");
+				GWASpiExplorerPanel.scrl_Content.setViewportView(GWASpiExplorerPanel.pnl_Content);
 			} catch (IOException ex) {
 				log.error(null, ex);
 			}
@@ -341,8 +349,8 @@ public class CurrentMatrixPanel extends JPanel {
 		public void actionPerformed(ActionEvent evt) {
 			// Goto Trafo Pane
 			try {
-				org.gwaspi.gui.GWASpiExplorerPanel.pnl_Content = new MatrixTrafoPanel(matrix.getMatrixId());
-				org.gwaspi.gui.GWASpiExplorerPanel.scrl_Content.setViewportView(org.gwaspi.gui.GWASpiExplorerPanel.pnl_Content);
+				GWASpiExplorerPanel.pnl_Content = new MatrixTrafoPanel(matrix.getMatrixId());
+				GWASpiExplorerPanel.scrl_Content.setViewportView(GWASpiExplorerPanel.pnl_Content);
 			} catch (IOException ex) {
 				log.error(null, ex);
 			}
@@ -363,8 +371,8 @@ public class CurrentMatrixPanel extends JPanel {
 		public void actionPerformed(ActionEvent evt) {
 			// Goto Matrix Analysis Panel
 			try {
-				org.gwaspi.gui.GWASpiExplorerPanel.pnl_Content = new MatrixAnalysePanel(matrix.getMatrixId(), Integer.MIN_VALUE);
-				org.gwaspi.gui.GWASpiExplorerPanel.scrl_Content.setViewportView(org.gwaspi.gui.GWASpiExplorerPanel.pnl_Content);
+				GWASpiExplorerPanel.pnl_Content = new MatrixAnalysePanel(matrix.getMatrixId(), Integer.MIN_VALUE);
+				GWASpiExplorerPanel.scrl_Content.setViewportView(GWASpiExplorerPanel.pnl_Content);
 			} catch (IOException ex) {
 				log.error(null, ex);
 			}
@@ -387,13 +395,13 @@ public class CurrentMatrixPanel extends JPanel {
 			ExportFormat format = Dialogs.showExportFormatsSelectCombo();
 
 			if (format != null) {
-				String expPhenotype = org.gwaspi.constants.cDBSamples.f_AFFECTION;
-				if (format.equals(org.gwaspi.constants.cExport.ExportFormat.PLINK_Binary) || format.equals(org.gwaspi.constants.cExport.ExportFormat.Eigensoft_Eigenstrat)) {
+				String expPhenotype = cDBSamples.f_AFFECTION;
+				if (format.equals(cExport.ExportFormat.PLINK_Binary) || format.equals(cExport.ExportFormat.Eigensoft_Eigenstrat)) {
 					try {
 						//SELECT PHENOTYPE COLUMN TO USE
 
-						if (format.equals(org.gwaspi.constants.cExport.ExportFormat.Eigensoft_Eigenstrat)) {
-							expPhenotype = org.gwaspi.gui.utils.Dialogs.showPhenotypeColumnsSelectCombo();
+						if (format.equals(cExport.ExportFormat.Eigensoft_Eigenstrat)) {
+							expPhenotype = Dialogs.showPhenotypeColumnsSelectCombo();
 						}
 
 						//CHECK IF MARKER QA EXISTS FOR EXPORT TO BE PERMITTED
@@ -402,7 +410,7 @@ public class CurrentMatrixPanel extends JPanel {
 						if (markersQAOpId != Integer.MIN_VALUE) {
 							MultiOperations.doExportMatrix(matrix.getStudyId(), matrix.getMatrixId(), format, expPhenotype);
 						} else {
-							org.gwaspi.gui.utils.Dialogs.showWarningDialogue(org.gwaspi.global.Text.Operation.warnOperationsMissing + " Marker QA");
+							Dialogs.showWarningDialogue(Text.Operation.warnOperationsMissing + " Marker QA");
 						}
 
 					} catch (IOException ex) {
@@ -428,8 +436,8 @@ public class CurrentMatrixPanel extends JPanel {
 		@Override
 		public void actionPerformed(ActionEvent evt) {
 			try {
-				org.gwaspi.gui.GWASpiExplorerPanel.pnl_Content = new MatrixMergePanel(matrix.getMatrixId());
-				org.gwaspi.gui.GWASpiExplorerPanel.scrl_Content.setViewportView(org.gwaspi.gui.GWASpiExplorerPanel.pnl_Content);
+				GWASpiExplorerPanel.pnl_Content = new MatrixMergePanel(matrix.getMatrixId());
+				GWASpiExplorerPanel.scrl_Content.setViewportView(GWASpiExplorerPanel.pnl_Content);
 			} catch (IOException ex) {
 				log.error(null, ex);
 			}
@@ -471,12 +479,12 @@ public class CurrentMatrixPanel extends JPanel {
 		@Override
 		public void actionPerformed(ActionEvent evt) {
 			try {
-				DbManager db = ServiceLocator.getDbManager(org.gwaspi.constants.cDBGWASpi.DB_DATACENTER);
-				db.updateTable(org.gwaspi.constants.cDBGWASpi.SCH_MATRICES,
-						org.gwaspi.constants.cDBMatrix.T_MATRICES,
-						new String[]{constants.cDBMatrix.f_DESCRIPTION},
+				DbManager db = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
+				db.updateTable(cDBGWASpi.SCH_MATRICES,
+						cDBMatrix.T_MATRICES,
+						new String[]{cDBMatrix.f_DESCRIPTION},
 						new Object[]{matrixDesc.getText()},
-						new String[]{constants.cDBMatrix.f_ID},
+						new String[]{cDBMatrix.f_ID},
 						new Object[]{matrix.getMatrixId()});
 			} catch (IOException ex) {
 				log.error(null, ex);
@@ -499,7 +507,7 @@ public class CurrentMatrixPanel extends JPanel {
 		@Override
 		public void actionPerformed(ActionEvent evt) {
 			// TODO TEST IF THE DELETED ITEM IS REQUIRED FOR A QUED WORKER
-			if (org.gwaspi.threadbox.SwingWorkerItemList.permitsDeletion(null, matrix.getMatrixId(), null)) {
+			if (SwingWorkerItemList.permitsDeletion(null, matrix.getMatrixId(), null)) {
 				int option = JOptionPane.showConfirmDialog(dialogParent, Text.Matrix.confirmDelete1 + Text.Matrix.confirmDelete2);
 				if (option == JOptionPane.YES_OPTION) {
 					int deleteReportOption = JOptionPane.showConfirmDialog(dialogParent, Text.Reports.confirmDelete);
@@ -513,7 +521,7 @@ public class CurrentMatrixPanel extends JPanel {
 					}
 				}
 			} else {
-				org.gwaspi.gui.utils.Dialogs.showWarningDialogue(Text.Processes.cantDeleteRequiredItem);
+				Dialogs.showWarningDialogue(Text.Processes.cantDeleteRequiredItem);
 			}
 		}
 	}
@@ -545,7 +553,7 @@ public class CurrentMatrixPanel extends JPanel {
 								int tmpOPRow = selectedOPs[i];
 								int opId = (Integer) matrixOperationsTable.getModel().getValueAt(tmpOPRow, 0);
 								//TEST IF THE DELETED ITEM IS REQUIRED FOR A QUED WORKER
-								if (org.gwaspi.threadbox.SwingWorkerItemList.permitsDeletion(null, null, opId)) {
+								if (SwingWorkerItemList.permitsDeletion(null, null, opId)) {
 									if (option == JOptionPane.YES_OPTION) {
 										boolean deleteReport = false;
 										if (deleteReportOption == JOptionPane.YES_OPTION) {
@@ -556,10 +564,10 @@ public class CurrentMatrixPanel extends JPanel {
 										//netCDF.operations.OperationManager.deleteOperationAndChildren(matrix.getStudyId(), opId, deleteReport);
 									}
 								} else {
-									org.gwaspi.gui.utils.Dialogs.showWarningDialogue(Text.Processes.cantDeleteRequiredItem);
+									Dialogs.showWarningDialogue(Text.Processes.cantDeleteRequiredItem);
 								}
 							}
-							org.gwaspi.gui.GWASpiExplorerPanel.updateTreePanel(true);
+							GWASpiExplorerPanel.updateTreePanel(true);
 						}
 					}
 				} catch (IOException ex) {
@@ -582,9 +590,9 @@ public class CurrentMatrixPanel extends JPanel {
 		@Override
 		public void actionPerformed(ActionEvent evt) {
 			try {
-				org.gwaspi.gui.GWASpiExplorerPanel.tree.setSelectionPath(org.gwaspi.gui.GWASpiExplorerPanel.tree.getSelectionPath().getParentPath());
-				org.gwaspi.gui.GWASpiExplorerPanel.pnl_Content = new CurrentStudyPanel(matrix.getStudyId());
-				org.gwaspi.gui.GWASpiExplorerPanel.scrl_Content.setViewportView(org.gwaspi.gui.GWASpiExplorerPanel.pnl_Content);
+				GWASpiExplorerPanel.tree.setSelectionPath(GWASpiExplorerPanel.tree.getSelectionPath().getParentPath());
+				GWASpiExplorerPanel.pnl_Content = new CurrentStudyPanel(matrix.getStudyId());
+				GWASpiExplorerPanel.scrl_Content.setViewportView(GWASpiExplorerPanel.pnl_Content);
 			} catch (IOException ex) {
 				log.error(null, ex);
 			}

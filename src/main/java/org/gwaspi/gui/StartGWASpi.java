@@ -1,5 +1,6 @@
 package org.gwaspi.gui;
 
+import org.gwaspi.constants.cDBGWASpi;
 import org.gwaspi.constants.cGlobal;
 import org.gwaspi.database.DbManager;
 import org.gwaspi.global.Config;
@@ -203,7 +204,7 @@ public class StartGWASpi extends JFrame {
 
 	public static void exit() {
 		try {
-			DbManager db = ServiceLocator.getDbManager(org.gwaspi.constants.cDBGWASpi.DB_DATACENTER);
+			DbManager db = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
 			db.shutdownConnection();
 		} catch (IOException ex) {
 			log.error(null, ex);

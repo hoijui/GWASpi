@@ -1,5 +1,6 @@
 package org.gwaspi.threadbox;
 
+import org.gwaspi.constants.cNetCDF;
 import java.util.List;
 import org.gwaspi.model.GWASpiExplorerNodes;
 import org.gwaspi.model.Operation;
@@ -48,7 +49,7 @@ public class Threaded_TrendTest extends CommonRunnable {
 
 		OperationsList opList = new OperationsList(matrixId);
 		List<Operation> opAL = opList.operationsListAL;
-		int markersQAOpId = opList.getIdOfLastOperationTypeOccurance(org.gwaspi.constants.cNetCDF.Defaults.OPType.MARKER_QA);
+		int markersQAOpId = opList.getIdOfLastOperationTypeOccurance(cNetCDF.Defaults.OPType.MARKER_QA);
 
 		if (!gwasParams.isDiscardMarkerByMisRat()) {
 			gwasParams.setDiscardMarkerMisRatVal(1);
@@ -71,7 +72,7 @@ public class Threaded_TrendTest extends CommonRunnable {
 			gwasParams.setDiscardMarkerHWTreshold((double) 0.05 / markerQAMetadata.getOpSetSize());
 		}
 
-		if (thisSwi.getQueueState().equals(org.gwaspi.threadbox.QueueStates.PROCESSING)) {
+		if (thisSwi.getQueueState().equals(QueueStates.PROCESSING)) {
 			int trendTestOpId = org.gwaspi.netCDF.operations.OperationManager.performCleanTrendTests(matrixId,
 					censusOpId,
 					hwOpId, gwasParams.getDiscardMarkerHWTreshold());

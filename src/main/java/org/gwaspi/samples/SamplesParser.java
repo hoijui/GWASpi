@@ -1,5 +1,6 @@
 package org.gwaspi.samples;
 
+import org.gwaspi.constants.cDBSamples;
 import org.gwaspi.constants.cImport;
 import org.gwaspi.constants.cImport.Annotation.GWASpi;
 import org.gwaspi.constants.cImport.Annotation.Plink_LGEN;
@@ -47,8 +48,8 @@ public class SamplesParser {
 				List<Map<String, Object>> rs = SampleManager.getCurrentSampleInfoFromDB(key.toString(), rdMatrixMetadata.getStudyId());
 				if (rs != null) {
 					// PREVENT PHANTOM-DB READS EXCEPTIONS
-					if (!rs.isEmpty() && rs.get(0).size() == org.gwaspi.constants.cDBSamples.T_CREATE_SAMPLES_INFO.length) {
-						resultHS.add(rs.get(0).get(org.gwaspi.constants.cDBSamples.f_AFFECTION));
+					if (!rs.isEmpty() && rs.get(0).size() == cDBSamples.T_CREATE_SAMPLES_INFO.length) {
+						resultHS.add(rs.get(0).get(cDBSamples.f_AFFECTION));
 					}
 				}
 			}
@@ -484,7 +485,7 @@ public class SamplesParser {
 		String header = inputBufferReader.readLine(); // ignore header block
 		String l;
 		while ((l = inputBufferReader.readLine()) != null) {
-			String[] cVals = l.split(org.gwaspi.constants.cImport.Separators.separators_CommaSpaceTab_rgxp);
+			String[] cVals = l.split(cImport.Separators.separators_CommaSpaceTab_rgxp);
 			resultHS.add(cVals[GWASpi.affection]);
 		}
 

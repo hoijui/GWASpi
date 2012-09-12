@@ -1,5 +1,6 @@
 package org.gwaspi.reports;
 
+import org.gwaspi.constants.cNetCDF;
 import java.io.IOException;
 import java.util.Map;
 import org.gwaspi.netCDF.operations.OperationMetadata;
@@ -26,7 +27,7 @@ public class GatherHardyWeinbergData {
 		Map<String, Object> rdMatrixMarkerSetLHM = rdInfoMarkerSet.getOpSetLHM();
 
 		NetcdfFile assocNcFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());
-		rdMatrixMarkerSetLHM = rdInfoMarkerSet.fillOpSetLHMWithVariable(assocNcFile, org.gwaspi.constants.cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWPval_ALT);
+		rdMatrixMarkerSetLHM = rdInfoMarkerSet.fillOpSetLHMWithVariable(assocNcFile, cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWPval_ALT);
 
 		assocNcFile.close();
 		return rdMatrixMarkerSetLHM;
@@ -40,7 +41,7 @@ public class GatherHardyWeinbergData {
 		Map<String, Object> rdMatrixMarkerSetLHM = rdInfoMarkerSet.getOpSetLHM();
 
 		NetcdfFile assocNcFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());
-		rdMatrixMarkerSetLHM = rdInfoMarkerSet.fillOpSetLHMWithVariable(assocNcFile, org.gwaspi.constants.cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWPval_ALL);
+		rdMatrixMarkerSetLHM = rdInfoMarkerSet.fillOpSetLHMWithVariable(assocNcFile, cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWPval_ALL);
 
 		assocNcFile.close();
 		return rdMatrixMarkerSetLHM;
@@ -54,7 +55,7 @@ public class GatherHardyWeinbergData {
 		Map<String, Object> rdMatrixMarkerSetLHM = rdInfoMarkerSet.getOpSetLHM();
 
 		NetcdfFile assocNcFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());
-		rdMatrixMarkerSetLHM = rdInfoMarkerSet.fillOpSetLHMWithVariable(assocNcFile, org.gwaspi.constants.cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWPval_CASE);
+		rdMatrixMarkerSetLHM = rdInfoMarkerSet.fillOpSetLHMWithVariable(assocNcFile, cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWPval_CASE);
 
 		assocNcFile.close();
 		return rdMatrixMarkerSetLHM;
@@ -68,7 +69,7 @@ public class GatherHardyWeinbergData {
 		Map<String, Object> rdMatrixMarkerSetLHM = rdInfoMarkerSet.getOpSetLHM();
 
 		NetcdfFile assocNcFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());
-		rdMatrixMarkerSetLHM = rdInfoMarkerSet.fillOpSetLHMWithVariable(assocNcFile, org.gwaspi.constants.cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWPval_CTRL);
+		rdMatrixMarkerSetLHM = rdInfoMarkerSet.fillOpSetLHMWithVariable(assocNcFile, cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWPval_CTRL);
 
 		assocNcFile.close();
 		return rdMatrixMarkerSetLHM;
@@ -82,7 +83,7 @@ public class GatherHardyWeinbergData {
 		Map<String, Object> rdMatrixMarkerSetLHM = rdInfoMarkerSet.getOpSetLHM();
 
 		NetcdfFile assocNcFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());
-		rdMatrixMarkerSetLHM = rdInfoMarkerSet.fillOpSetLHMWithVariable(assocNcFile, org.gwaspi.constants.cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWHETZY_ALT);
+		rdMatrixMarkerSetLHM = rdInfoMarkerSet.fillOpSetLHMWithVariable(assocNcFile, cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWHETZY_ALT);
 
 		assocNcFile.close();
 		return rdMatrixMarkerSetLHM;
@@ -96,7 +97,7 @@ public class GatherHardyWeinbergData {
 		Map<String, Object> rdMatrixMarkerSetLHM = rdInfoMarkerSet.getOpSetLHM();
 
 		NetcdfFile assocNcFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());
-		rdMatrixMarkerSetLHM = rdInfoMarkerSet.fillOpSetLHMWithVariable(assocNcFile, org.gwaspi.constants.cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWHETZY_ALL);
+		rdMatrixMarkerSetLHM = rdInfoMarkerSet.fillOpSetLHMWithVariable(assocNcFile, cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWHETZY_ALL);
 
 		assocNcFile.close();
 		return rdMatrixMarkerSetLHM;
@@ -110,7 +111,7 @@ public class GatherHardyWeinbergData {
 		Map<String, Object> rdMatrixMarkerSetLHM = rdInfoMarkerSet.getOpSetLHM();
 
 		NetcdfFile assocNcFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());
-		rdMatrixMarkerSetLHM = rdInfoMarkerSet.fillOpSetLHMWithVariable(assocNcFile, org.gwaspi.constants.cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWHETZY_CASE);
+		rdMatrixMarkerSetLHM = rdInfoMarkerSet.fillOpSetLHMWithVariable(assocNcFile, cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWHETZY_CASE);
 
 		assocNcFile.close();
 		return rdMatrixMarkerSetLHM;
@@ -124,7 +125,7 @@ public class GatherHardyWeinbergData {
 		Map<String, Object> rdMatrixMarkerSetLHM = rdInfoMarkerSet.getOpSetLHM();
 
 		NetcdfFile assocNcFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());
-		rdMatrixMarkerSetLHM = rdInfoMarkerSet.fillOpSetLHMWithVariable(assocNcFile, org.gwaspi.constants.cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWHETZY_CTRL);
+		rdMatrixMarkerSetLHM = rdInfoMarkerSet.fillOpSetLHMWithVariable(assocNcFile, cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWHETZY_CTRL);
 
 		assocNcFile.close();
 		return rdMatrixMarkerSetLHM;

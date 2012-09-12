@@ -676,7 +676,7 @@ public class MultiOperations {
 	}
 
 	public static void updateProcessOverviewStartNext() throws IOException {
-		org.gwaspi.threadbox.SwingWorkerItemList.startNext();
+		SwingWorkerItemList.startNext();
 		if (StartGWASpi.guiMode) {
 			ProcessTab.updateProcessOverview();
 			ProcessTab.toggleBusyLogo();
@@ -684,7 +684,7 @@ public class MultiOperations {
 	}
 
 	public static void updateProcessOverviewDeleteNext() throws IOException {
-		org.gwaspi.threadbox.SwingDeleterItemList.deleteAllListed();
+		SwingDeleterItemList.deleteAllListed();
 		if (StartGWASpi.guiMode) {
 			ProcessTab.updateProcessOverview();
 			ProcessTab.toggleBusyLogo();

@@ -1,6 +1,7 @@
 package org.gwaspi.reports;
 
 import org.gwaspi.constants.cDBGWASpi;
+import org.gwaspi.constants.cDBSamples;
 import org.gwaspi.constants.cExport;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.database.DbManager;
@@ -98,15 +99,15 @@ public class OutputQASamples {
 				String tempSampleId = entry.getKey();
 				Map<String, Object> sampleInfo = org.gwaspi.netCDF.exporter.Utils.getCurrentSampleFormattedInfo(tempSampleId, poolId);
 
-				String tmpFamId = (sampleInfo.get(org.gwaspi.constants.cDBSamples.f_FAMILY_ID) != null) ? sampleInfo.get(org.gwaspi.constants.cDBSamples.f_FAMILY_ID).toString() : "0";
-				String tmpSex = (sampleInfo.get(org.gwaspi.constants.cDBSamples.f_SEX) != null) ? sampleInfo.get(org.gwaspi.constants.cDBSamples.f_SEX).toString() : "0";
-				String tmpAffection = (sampleInfo.get(org.gwaspi.constants.cDBSamples.f_AFFECTION) != null) ? sampleInfo.get(org.gwaspi.constants.cDBSamples.f_AFFECTION).toString() : "0";
-				String tmpAge = (sampleInfo.get(org.gwaspi.constants.cDBSamples.f_AGE) != null) ? sampleInfo.get(org.gwaspi.constants.cDBSamples.f_AGE).toString() : "-1";
-				String tmpCategory = (sampleInfo.get(org.gwaspi.constants.cDBSamples.f_CATEGORY) != null) ? sampleInfo.get(org.gwaspi.constants.cDBSamples.f_CATEGORY).toString() : "0";
-				String tmpDisease = (sampleInfo.get(org.gwaspi.constants.cDBSamples.f_DISEASE) != null) ? sampleInfo.get(org.gwaspi.constants.cDBSamples.f_DISEASE).toString() : "0";
-				String tmpPopulation = (sampleInfo.get(org.gwaspi.constants.cDBSamples.f_POPULATION) != null) ? sampleInfo.get(org.gwaspi.constants.cDBSamples.f_POPULATION).toString() : "0";
-				String tmpFatherId = (sampleInfo.get(org.gwaspi.constants.cDBSamples.f_FATHER_ID) != null) ? sampleInfo.get(org.gwaspi.constants.cDBSamples.f_FATHER_ID).toString() : "0";
-				String tmpMotherId = (sampleInfo.get(org.gwaspi.constants.cDBSamples.f_MOTHER_ID) != null) ? sampleInfo.get(org.gwaspi.constants.cDBSamples.f_MOTHER_ID).toString() : "0";
+				String tmpFamId = (sampleInfo.get(cDBSamples.f_FAMILY_ID) != null) ? sampleInfo.get(cDBSamples.f_FAMILY_ID).toString() : "0";
+				String tmpSex = (sampleInfo.get(cDBSamples.f_SEX) != null) ? sampleInfo.get(cDBSamples.f_SEX).toString() : "0";
+				String tmpAffection = (sampleInfo.get(cDBSamples.f_AFFECTION) != null) ? sampleInfo.get(cDBSamples.f_AFFECTION).toString() : "0";
+				String tmpAge = (sampleInfo.get(cDBSamples.f_AGE) != null) ? sampleInfo.get(cDBSamples.f_AGE).toString() : "-1";
+				String tmpCategory = (sampleInfo.get(cDBSamples.f_CATEGORY) != null) ? sampleInfo.get(cDBSamples.f_CATEGORY).toString() : "0";
+				String tmpDisease = (sampleInfo.get(cDBSamples.f_DISEASE) != null) ? sampleInfo.get(cDBSamples.f_DISEASE).toString() : "0";
+				String tmpPopulation = (sampleInfo.get(cDBSamples.f_POPULATION) != null) ? sampleInfo.get(cDBSamples.f_POPULATION).toString() : "0";
+				String tmpFatherId = (sampleInfo.get(cDBSamples.f_FATHER_ID) != null) ? sampleInfo.get(cDBSamples.f_FATHER_ID).toString() : "0";
+				String tmpMotherId = (sampleInfo.get(cDBSamples.f_MOTHER_ID) != null) ? sampleInfo.get(cDBSamples.f_MOTHER_ID).toString() : "0";
 
 				StringBuilder sb = new StringBuilder();
 				sb.append(tmpFamId);

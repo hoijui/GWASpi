@@ -1,5 +1,7 @@
 package org.gwaspi.netCDF.exporter;
 
+import org.gwaspi.constants.cDBSamples;
+import org.gwaspi.constants.cExport;
 import org.gwaspi.gui.utils.Dialogs;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -38,7 +40,7 @@ public class GWASpiFormatter implements Formatter {
 		}
 
 		boolean result = false;
-		String sep = org.gwaspi.constants.cExport.separator_SAMPLE_INFO;
+		String sep = cExport.separator_SAMPLE_INFO;
 		NetcdfFile rdNcFile = NetcdfFile.open(rdMatrixMetadata.getPathToMatrix());
 		try {
 
@@ -66,15 +68,15 @@ public class GWASpiFormatter implements Formatter {
 				Map<String, Object> sampleInfo = Utils.getCurrentSampleFormattedInfo(sampleId, rdMatrixMetadata.getStudyId());
 
 				if (!sampleInfo.isEmpty()) {
-					String familyId = sampleInfo.get(org.gwaspi.constants.cDBSamples.f_FAMILY_ID).toString();
-					String fatherId = sampleInfo.get(org.gwaspi.constants.cDBSamples.f_FATHER_ID).toString();
-					String motherId = sampleInfo.get(org.gwaspi.constants.cDBSamples.f_MOTHER_ID).toString();
-					String sex = sampleInfo.get(org.gwaspi.constants.cDBSamples.f_SEX).toString();
-					String affection = sampleInfo.get(org.gwaspi.constants.cDBSamples.f_AFFECTION).toString();
-					String category = sampleInfo.get(org.gwaspi.constants.cDBSamples.f_CATEGORY).toString();
-					String desease = sampleInfo.get(org.gwaspi.constants.cDBSamples.f_DISEASE).toString();
-					String population = sampleInfo.get(org.gwaspi.constants.cDBSamples.f_POPULATION).toString();
-					String age = sampleInfo.get(org.gwaspi.constants.cDBSamples.f_AGE).toString();
+					String familyId = sampleInfo.get(cDBSamples.f_FAMILY_ID).toString();
+					String fatherId = sampleInfo.get(cDBSamples.f_FATHER_ID).toString();
+					String motherId = sampleInfo.get(cDBSamples.f_MOTHER_ID).toString();
+					String sex = sampleInfo.get(cDBSamples.f_SEX).toString();
+					String affection = sampleInfo.get(cDBSamples.f_AFFECTION).toString();
+					String category = sampleInfo.get(cDBSamples.f_CATEGORY).toString();
+					String desease = sampleInfo.get(cDBSamples.f_DISEASE).toString();
+					String population = sampleInfo.get(cDBSamples.f_POPULATION).toString();
+					String age = sampleInfo.get(cDBSamples.f_AGE).toString();
 
 					StringBuilder line = new StringBuilder();
 					line.append(familyId);

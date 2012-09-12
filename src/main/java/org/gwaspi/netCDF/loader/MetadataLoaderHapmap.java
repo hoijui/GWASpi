@@ -1,7 +1,9 @@
 package org.gwaspi.netCDF.loader;
 
+import org.gwaspi.constants.cImport;
 import org.gwaspi.constants.cImport.Annotation.HapmapGT_Standard;
 import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.global.Text;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -48,7 +50,7 @@ public class MetadataLoaderHapmap implements MetadataLoader {
 		SortedMap<String, String> tempTM = parseAnnotationBRFile(hapmapPath); // rsId, alleles [A/T], chr, pos, strand, genome_build, center, protLSID, assayLSID, panelLSID, QC_code, ensue GTs by SampleId
 
 		org.gwaspi.global.Utils.sysoutStart("initilaizing marker info");
-		System.out.println(org.gwaspi.global.Text.All.processing);
+		System.out.println(Text.All.processing);
 
 		Map<String, Object> markerMetadataLHM = new LinkedHashMap<String, Object>();
 		for (Map.Entry<String, String> entry : tempTM.entrySet()) {
@@ -88,7 +90,7 @@ public class MetadataLoaderHapmap implements MetadataLoader {
 		int count = 0;
 		while ((l = inputAnnotationBr.readLine()) != null) {
 
-			String[] hapmapVals = l.split(org.gwaspi.constants.cImport.Separators.separators_SpaceTab_rgxp);
+			String[] hapmapVals = l.split(cImport.Separators.separators_SpaceTab_rgxp);
 			String alleles = hapmapVals[HapmapGT_Standard.alleles].replace("/", "");
 
 			// chr;pos;markerId
@@ -114,7 +116,7 @@ public class MetadataLoaderHapmap implements MetadataLoader {
 
 			count++;
 			if (count == 1) {
-				System.out.println(org.gwaspi.global.Text.All.processing);
+				System.out.println(Text.All.processing);
 			} else if (count % 100000 == 0) {
 				System.out.println("Parsed annotation lines: " + count);
 			}

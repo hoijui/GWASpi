@@ -1,5 +1,8 @@
 package org.gwaspi.netCDF.exporter;
 
+import org.gwaspi.constants.cDBSamples;
+import org.gwaspi.constants.cExport;
+import org.gwaspi.constants.cNetCDF;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -37,7 +40,7 @@ public class PlinkFormatter implements Formatter {
 		}
 
 		boolean result = false;
-		String sep = org.gwaspi.constants.cExport.separator_PLINK;
+		String sep = cExport.separator_PLINK;
 		NetcdfFile rdNcFile = NetcdfFile.open(rdMatrixMetadata.getPathToMatrix());
 		rdMarkerSet.initFullMarkerIdSetLHM();
 
@@ -51,11 +54,11 @@ public class PlinkFormatter implements Formatter {
 			for (String sampleId : rdSampleSetMap.keySet()) {
 				Map<String, Object> sampleInfo = Utils.getCurrentSampleFormattedInfo(sampleId, rdMatrixMetadata.getStudyId());
 
-				String familyId = sampleInfo.get(org.gwaspi.constants.cDBSamples.f_FAMILY_ID).toString();
-				String fatherId = sampleInfo.get(org.gwaspi.constants.cDBSamples.f_FATHER_ID).toString();
-				String motherId = sampleInfo.get(org.gwaspi.constants.cDBSamples.f_MOTHER_ID).toString();
-				String sex = sampleInfo.get(org.gwaspi.constants.cDBSamples.f_SEX).toString();
-				String affection = sampleInfo.get(org.gwaspi.constants.cDBSamples.f_AFFECTION).toString();
+				String familyId = sampleInfo.get(cDBSamples.f_FAMILY_ID).toString();
+				String fatherId = sampleInfo.get(cDBSamples.f_FATHER_ID).toString();
+				String motherId = sampleInfo.get(cDBSamples.f_MOTHER_ID).toString();
+				String sex = sampleInfo.get(cDBSamples.f_SEX).toString();
+				String affection = sampleInfo.get(cDBSamples.f_AFFECTION).toString();
 
 
 				// Iterate through all markers
@@ -119,10 +122,10 @@ public class PlinkFormatter implements Formatter {
 			rdMarkerSet.fillWith("");
 
 			// MARKERSET CHROMOSOME
-			rdMarkerSet.fillInitLHMWithVariable(org.gwaspi.constants.cNetCDF.Variables.VAR_MARKERS_CHR);
+			rdMarkerSet.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
 
 			// MARKERSET RSID
-			rdMarkerSet.appendVariableToMarkerSetLHMValue(org.gwaspi.constants.cNetCDF.Variables.VAR_MARKERS_RSID, sep);
+			rdMarkerSet.appendVariableToMarkerSetLHMValue(cNetCDF.Variables.VAR_MARKERS_RSID, sep);
 
 			// DEFAULT GENETIC DISTANCE = 0
 			for (Map.Entry<String, Object> entry : rdMarkerSet.getMarkerIdSetLHM().entrySet()) {
@@ -133,7 +136,7 @@ public class PlinkFormatter implements Formatter {
 			}
 
 			// MARKERSET POSITION
-			rdMarkerSet.appendVariableToMarkerSetLHMValue(org.gwaspi.constants.cNetCDF.Variables.VAR_MARKERS_POS, sep);
+			rdMarkerSet.appendVariableToMarkerSetLHMValue(cNetCDF.Variables.VAR_MARKERS_POS, sep);
 			int markerNb = 0;
 			for (Object pos : rdMarkerSet.getMarkerIdSetLHM().values()) {
 				mapBW.append(pos.toString());

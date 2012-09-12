@@ -51,8 +51,8 @@ public class Threaded_GWAS extends CommonRunnable {
 	protected void runInternal(SwingWorkerItem thisSwi) throws Exception {
 
 		OperationsList opList = new OperationsList(matrixId);
-		int sampleQAOpId = opList.getIdOfLastOperationTypeOccurance(org.gwaspi.constants.cNetCDF.Defaults.OPType.SAMPLE_QA);
-		int markersQAOpId = opList.getIdOfLastOperationTypeOccurance(org.gwaspi.constants.cNetCDF.Defaults.OPType.MARKER_QA);
+		int sampleQAOpId = opList.getIdOfLastOperationTypeOccurance(cNetCDF.Defaults.OPType.SAMPLE_QA);
+		int markersQAOpId = opList.getIdOfLastOperationTypeOccurance(cNetCDF.Defaults.OPType.MARKER_QA);
 
 		if (!gwasParams.isDiscardMarkerByMisRat()) {
 			gwasParams.setDiscardMarkerMisRatVal(1);
@@ -70,7 +70,7 @@ public class Threaded_GWAS extends CommonRunnable {
 		//<editor-fold defaultstate="collapsed" desc="PRE-GWAS PROCESS">
 		// GENOTYPE FREQ.
 		int censusOpId = Integer.MIN_VALUE;
-		if (thisSwi.getQueueState().equals(org.gwaspi.threadbox.QueueStates.PROCESSING)) {
+		if (thisSwi.getQueueState().equals(QueueStates.PROCESSING)) {
 
 			if (phenotypeFile != null && phenotypeFile.exists() && phenotypeFile.isFile()) { //BY EXTERNAL PHENOTYPE FILE
 
@@ -110,7 +110,7 @@ public class Threaded_GWAS extends CommonRunnable {
 
 		// HW ON GENOTYPE FREQ.
 		int hwOpId = Integer.MIN_VALUE;
-		if (thisSwi.getQueueState().equals(org.gwaspi.threadbox.QueueStates.PROCESSING)
+		if (thisSwi.getQueueState().equals(QueueStates.PROCESSING)
 				&& censusOpId != Integer.MIN_VALUE) {
 			hwOpId = org.gwaspi.netCDF.operations.OperationManager.performHardyWeinberg(censusOpId, cNetCDF.Defaults.DEFAULT_AFFECTION);
 			GWASpiExplorerNodes.insertSubOperationUnderOperationNode(censusOpId, hwOpId);
@@ -120,7 +120,7 @@ public class Threaded_GWAS extends CommonRunnable {
 		//<editor-fold defaultstate="collapsed" desc="GWAS TESTS & REPORTS">
 		// ALLELIC TEST (needs newMatrixId, censusOpId, pickedMarkerSet, pickedSampleSet)
 		if (gwasParams.isPerformAllelicTests()
-				&& thisSwi.getQueueState().equals(org.gwaspi.threadbox.QueueStates.PROCESSING)
+				&& thisSwi.getQueueState().equals(QueueStates.PROCESSING)
 				&& censusOpId != Integer.MIN_VALUE
 				&& hwOpId != Integer.MIN_VALUE) {
 
@@ -145,7 +145,7 @@ public class Threaded_GWAS extends CommonRunnable {
 
 		// GENOTYPIC TEST (needs newMatrixId, censusOpId, pickedMarkerSet, pickedSampleSet)
 		if (gwasParams.isPerformGenotypicTests()
-				&& thisSwi.getQueueState().equals(org.gwaspi.threadbox.QueueStates.PROCESSING)
+				&& thisSwi.getQueueState().equals(QueueStates.PROCESSING)
 				&& censusOpId != Integer.MIN_VALUE
 				&& hwOpId != Integer.MIN_VALUE) {
 
@@ -170,7 +170,7 @@ public class Threaded_GWAS extends CommonRunnable {
 
 		// TREND TESTS (needs newMatrixId, censusOpId, pickedMarkerSet, pickedSampleSet)
 		if (gwasParams.isPerformTrendTests()
-				&& thisSwi.getQueueState().equals(org.gwaspi.threadbox.QueueStates.PROCESSING)
+				&& thisSwi.getQueueState().equals(QueueStates.PROCESSING)
 				&& censusOpId != Integer.MIN_VALUE
 				&& hwOpId != Integer.MIN_VALUE) {
 

@@ -1,5 +1,7 @@
 package org.gwaspi.netCDF.operations;
 
+import org.gwaspi.constants.cDBGWASpi;
+import org.gwaspi.constants.cDBOperations;
 import org.gwaspi.database.DbManager;
 import org.gwaspi.global.Config;
 import org.gwaspi.global.ServiceLocator;
@@ -167,9 +169,9 @@ public class OperationManager {
 		boolean result = false;
 		try {
 			// CREATE SAMPLESET_METADATA table in given SCHEMA
-			db.createTable(org.gwaspi.constants.cDBGWASpi.SCH_MATRICES,
-					org.gwaspi.constants.cDBOperations.T_OPERATIONS,
-					org.gwaspi.constants.cDBOperations.T_CREATE_OPERATIONS);
+			db.createTable(cDBGWASpi.SCH_MATRICES,
+					cDBOperations.T_OPERATIONS,
+					cDBOperations.T_CREATE_OPERATIONS);
 
 		} catch (Exception ex) {
 			log.error("Failed creating management database", ex);
@@ -197,9 +199,9 @@ public class OperationManager {
 			description,
 			studyId};
 
-		dBManager.insertValuesInTable(org.gwaspi.constants.cDBGWASpi.SCH_MATRICES,
-				org.gwaspi.constants.cDBOperations.T_OPERATIONS,
-				org.gwaspi.constants.cDBOperations.F_INSERT_OPERATION,
+		dBManager.insertValuesInTable(cDBGWASpi.SCH_MATRICES,
+				cDBOperations.T_OPERATIONS,
+				cDBOperations.F_INSERT_OPERATION,
 				opMetaData);
 
 	}
@@ -207,15 +209,15 @@ public class OperationManager {
 	public static List<Object[]> getMatrixOperations(int matrixId) throws IOException {
 		List<Object[]> result = new ArrayList<Object[]>();
 
-		DbManager dBManager = ServiceLocator.getDbManager(org.gwaspi.constants.cDBGWASpi.DB_DATACENTER);
-		List<Map<String, Object>> rs = dBManager.executeSelectStatement("SELECT * FROM " + org.gwaspi.constants.cDBGWASpi.SCH_MATRICES + "." + org.gwaspi.constants.cDBOperations.T_OPERATIONS + " WHERE " + org.gwaspi.constants.cDBOperations.f_PARENT_MATRIXID + "=" + matrixId + "  WITH RR");
+		DbManager dBManager = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
+		List<Map<String, Object>> rs = dBManager.executeSelectStatement("SELECT * FROM " + cDBGWASpi.SCH_MATRICES + "." + cDBOperations.T_OPERATIONS + " WHERE " + cDBOperations.f_PARENT_MATRIXID + "=" + matrixId + "  WITH RR");
 
 		for (int rowcount = 0; rowcount < rs.size(); rowcount++) {
 			//PREVENT PHANTOM-DB READS EXCEPTIONS
-			if (!rs.isEmpty() && rs.get(rowcount).size() == org.gwaspi.constants.cDBOperations.T_CREATE_OPERATIONS.length) {
+			if (!rs.isEmpty() && rs.get(rowcount).size() == cDBOperations.T_CREATE_OPERATIONS.length) {
 				Object[] element = new Object[2];
-				element[0] = (Integer) rs.get(rowcount).get(org.gwaspi.constants.cDBOperations.f_ID);
-				element[1] = rs.get(rowcount).get(org.gwaspi.constants.cDBOperations.f_OP_TYPE).toString();
+				element[0] = (Integer) rs.get(rowcount).get(cDBOperations.f_ID);
+				element[1] = rs.get(rowcount).get(cDBOperations.f_OP_TYPE).toString();
 				result.add(element);
 			}
 		}
@@ -245,8 +247,8 @@ public class OperationManager {
 						org.gwaspi.reports.ReportManager.deleteReportByOperationId(opAL.get(i).getOperationId());
 					}
 
-					DbManager dBManager = ServiceLocator.getDbManager(org.gwaspi.constants.cDBGWASpi.DB_DATACENTER);
-					String statement = "DELETE FROM " + org.gwaspi.constants.cDBGWASpi.SCH_MATRICES + "." + org.gwaspi.constants.cDBOperations.T_OPERATIONS + " WHERE " + org.gwaspi.constants.cDBOperations.f_ID + "=" + opAL.get(i).getOperationId();
+					DbManager dBManager = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
+					String statement = "DELETE FROM " + cDBGWASpi.SCH_MATRICES + "." + cDBOperations.T_OPERATIONS + " WHERE " + cDBOperations.f_ID + "=" + opAL.get(i).getOperationId();
 					dBManager.executeStatement(statement);
 				}
 			} else {
@@ -261,19 +263,19 @@ public class OperationManager {
 					org.gwaspi.reports.ReportManager.deleteReportByOperationId(opId);
 				}
 
-				DbManager dBManager = ServiceLocator.getDbManager(org.gwaspi.constants.cDBGWASpi.DB_DATACENTER);
-				String statement = "DELETE FROM " + org.gwaspi.constants.cDBGWASpi.SCH_MATRICES + "." + org.gwaspi.constants.cDBOperations.T_OPERATIONS + " WHERE " + org.gwaspi.constants.cDBOperations.f_ID + "=" + opId;
+				DbManager dBManager = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
+				String statement = "DELETE FROM " + cDBGWASpi.SCH_MATRICES + "." + cDBOperations.T_OPERATIONS + " WHERE " + cDBOperations.f_ID + "=" + opId;
 				dBManager.executeStatement(statement);
 			}
 		} catch (IOException iOException) {
 			//PURGE INEXISTING OPERATIONS FROM DB
-			DbManager dBManager = ServiceLocator.getDbManager(org.gwaspi.constants.cDBGWASpi.DB_DATACENTER);
-			String statement = "DELETE FROM " + org.gwaspi.constants.cDBGWASpi.SCH_MATRICES + "." + org.gwaspi.constants.cDBOperations.T_OPERATIONS + " WHERE " + org.gwaspi.constants.cDBOperations.f_ID + "=" + opId;
+			DbManager dBManager = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
+			String statement = "DELETE FROM " + cDBGWASpi.SCH_MATRICES + "." + cDBOperations.T_OPERATIONS + " WHERE " + cDBOperations.f_ID + "=" + opId;
 			dBManager.executeStatement(statement);
 		} catch (IllegalArgumentException illegalArgumentException) {
 			//PURGE INEXISTING OPERATIONS FROM DB
-			DbManager dBManager = ServiceLocator.getDbManager(org.gwaspi.constants.cDBGWASpi.DB_DATACENTER);
-			String statement = "DELETE FROM " + org.gwaspi.constants.cDBGWASpi.SCH_MATRICES + "." + org.gwaspi.constants.cDBOperations.T_OPERATIONS + " WHERE " + org.gwaspi.constants.cDBOperations.f_ID + "=" + opId;
+			DbManager dBManager = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
+			String statement = "DELETE FROM " + cDBGWASpi.SCH_MATRICES + "." + cDBOperations.T_OPERATIONS + " WHERE " + cDBOperations.f_ID + "=" + opId;
 			dBManager.executeStatement(statement);
 		}
 

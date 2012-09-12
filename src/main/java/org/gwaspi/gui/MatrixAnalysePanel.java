@@ -1,5 +1,6 @@
 package org.gwaspi.gui;
 
+import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.utils.BrowserHelpUrlAction;
@@ -49,6 +50,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.gwaspi.samples.SamplesParser;
 import org.gwaspi.threadbox.MultiOperations;
+import org.gwaspi.threadbox.SwingWorkerItemList;
 
 /**
  *
@@ -364,11 +366,11 @@ public class MatrixAnalysePanel extends JPanel {
 				if (affectionStates.contains("1") && affectionStates.contains("2")) {
 
 					List<String> necessaryOPsAL = new ArrayList<String>();
-					necessaryOPsAL.add(org.gwaspi.constants.cNetCDF.Defaults.OPType.SAMPLE_QA.toString());
-					necessaryOPsAL.add(org.gwaspi.constants.cNetCDF.Defaults.OPType.MARKER_QA.toString());
-					necessaryOPsAL.add(org.gwaspi.constants.cNetCDF.Defaults.OPType.MARKER_CENSUS_BY_PHENOTYPE.toString());
-					necessaryOPsAL.add(org.gwaspi.constants.cNetCDF.Defaults.OPType.MARKER_CENSUS_BY_AFFECTION.toString());
-					necessaryOPsAL.add(org.gwaspi.constants.cNetCDF.Defaults.OPType.HARDY_WEINBERG.toString());
+					necessaryOPsAL.add(cNetCDF.Defaults.OPType.SAMPLE_QA.toString());
+					necessaryOPsAL.add(cNetCDF.Defaults.OPType.MARKER_QA.toString());
+					necessaryOPsAL.add(cNetCDF.Defaults.OPType.MARKER_CENSUS_BY_PHENOTYPE.toString());
+					necessaryOPsAL.add(cNetCDF.Defaults.OPType.MARKER_CENSUS_BY_AFFECTION.toString());
+					necessaryOPsAL.add(cNetCDF.Defaults.OPType.HARDY_WEINBERG.toString());
 					List<String> missingOPsAL = OperationManager.checkForNecessaryOperations(necessaryOPsAL, parentMatrix.getMatrixId());
 
 					// WHAT TO DO IF OPs ARE MISSING
@@ -467,11 +469,11 @@ public class MatrixAnalysePanel extends JPanel {
 				if (affectionStates.contains("1") && affectionStates.contains("2")) {
 
 					List<String> necessaryOPsAL = new ArrayList<String>();
-					necessaryOPsAL.add(org.gwaspi.constants.cNetCDF.Defaults.OPType.SAMPLE_QA.toString());
-					necessaryOPsAL.add(org.gwaspi.constants.cNetCDF.Defaults.OPType.MARKER_QA.toString());
-					necessaryOPsAL.add(org.gwaspi.constants.cNetCDF.Defaults.OPType.MARKER_CENSUS_BY_PHENOTYPE.toString());
-					necessaryOPsAL.add(org.gwaspi.constants.cNetCDF.Defaults.OPType.MARKER_CENSUS_BY_AFFECTION.toString());
-					necessaryOPsAL.add(org.gwaspi.constants.cNetCDF.Defaults.OPType.HARDY_WEINBERG.toString());
+					necessaryOPsAL.add(cNetCDF.Defaults.OPType.SAMPLE_QA.toString());
+					necessaryOPsAL.add(cNetCDF.Defaults.OPType.MARKER_QA.toString());
+					necessaryOPsAL.add(cNetCDF.Defaults.OPType.MARKER_CENSUS_BY_PHENOTYPE.toString());
+					necessaryOPsAL.add(cNetCDF.Defaults.OPType.MARKER_CENSUS_BY_AFFECTION.toString());
+					necessaryOPsAL.add(cNetCDF.Defaults.OPType.HARDY_WEINBERG.toString());
 					List<String> missingOPsAL = OperationManager.checkForNecessaryOperations(necessaryOPsAL, parentMatrix.getMatrixId());
 
 					// WHAT TO DO IF OPs ARE MISSING
@@ -570,11 +572,11 @@ public class MatrixAnalysePanel extends JPanel {
 				if (affectionStates.contains("1") && affectionStates.contains("2")) {
 
 					List<String> necessaryOPsAL = new ArrayList<String>();
-					necessaryOPsAL.add(org.gwaspi.constants.cNetCDF.Defaults.OPType.SAMPLE_QA.toString());
-					necessaryOPsAL.add(org.gwaspi.constants.cNetCDF.Defaults.OPType.MARKER_QA.toString());
-					necessaryOPsAL.add(org.gwaspi.constants.cNetCDF.Defaults.OPType.MARKER_CENSUS_BY_PHENOTYPE.toString());
-					necessaryOPsAL.add(org.gwaspi.constants.cNetCDF.Defaults.OPType.MARKER_CENSUS_BY_AFFECTION.toString());
-					necessaryOPsAL.add(org.gwaspi.constants.cNetCDF.Defaults.OPType.HARDY_WEINBERG.toString());
+					necessaryOPsAL.add(cNetCDF.Defaults.OPType.SAMPLE_QA.toString());
+					necessaryOPsAL.add(cNetCDF.Defaults.OPType.MARKER_QA.toString());
+					necessaryOPsAL.add(cNetCDF.Defaults.OPType.MARKER_CENSUS_BY_PHENOTYPE.toString());
+					necessaryOPsAL.add(cNetCDF.Defaults.OPType.MARKER_CENSUS_BY_AFFECTION.toString());
+					necessaryOPsAL.add(cNetCDF.Defaults.OPType.HARDY_WEINBERG.toString());
 					List<String> missingOPsAL = OperationManager.checkForNecessaryOperations(necessaryOPsAL, parentMatrix.getMatrixId());
 
 					// WHAT TO DO IF OPs ARE MISSING
@@ -665,8 +667,8 @@ public class MatrixAnalysePanel extends JPanel {
 		public void actionPerformed(ActionEvent evt) {
 			try {
 				List<String> necessaryOPsAL = new ArrayList<String>();
-				necessaryOPsAL.add(org.gwaspi.constants.cNetCDF.Defaults.OPType.SAMPLE_QA.toString());
-				necessaryOPsAL.add(org.gwaspi.constants.cNetCDF.Defaults.OPType.MARKER_QA.toString());
+				necessaryOPsAL.add(cNetCDF.Defaults.OPType.SAMPLE_QA.toString());
+				necessaryOPsAL.add(cNetCDF.Defaults.OPType.MARKER_QA.toString());
 				List<String> missingOPsAL = OperationManager.checkForNecessaryOperations(necessaryOPsAL, parentMatrix.getMatrixId());
 
 				int choice = Dialogs.showOptionDialogue(Text.Operation.chosePhenotype, Text.Operation.genotypeFreqAndHW, Text.Operation.htmlCurrentAffectionFromDB, Text.Operation.htmlAffectionFromFile, Text.All.cancel);
@@ -759,7 +761,7 @@ public class MatrixAnalysePanel extends JPanel {
 								int tmpOPRow = selectedOPs[i];
 								opId = (Integer) table.getModel().getValueAt(tmpOPRow, 0);
 								//TEST IF THE DELETED ITEM IS REQUIRED FOR A QUED WORKER
-								if (org.gwaspi.threadbox.SwingWorkerItemList.permitsDeletion(null, null, opId)) {
+								if (SwingWorkerItemList.permitsDeletion(null, null, opId)) {
 									if (option == JOptionPane.YES_OPTION) {
 										boolean deleteReport = false;
 										if (deleteReportOption == JOptionPane.YES_OPTION) {
@@ -804,11 +806,11 @@ public class MatrixAnalysePanel extends JPanel {
 		public void actionPerformed(ActionEvent evt) {
 			try {
 //				List<String> blackListOPsAL = new ArrayList<String>();
-//				blackListOPsAL.add(org.gwaspi.constants.cNetCDF.Defaults.OPType.MARKER_CENSUS_BY_AFFECTION.toString());
+//				blackListOPsAL.add(cNetCDF.Defaults.OPType.MARKER_CENSUS_BY_AFFECTION.toString());
 
 				List<String> necessaryOPsAL = new ArrayList<String>();
-				necessaryOPsAL.add(org.gwaspi.constants.cNetCDF.Defaults.OPType.SAMPLE_QA.toString());
-				necessaryOPsAL.add(org.gwaspi.constants.cNetCDF.Defaults.OPType.MARKER_QA.toString());
+				necessaryOPsAL.add(cNetCDF.Defaults.OPType.SAMPLE_QA.toString());
+				necessaryOPsAL.add(cNetCDF.Defaults.OPType.MARKER_QA.toString());
 				List<String> missingOPsAL = OperationManager.checkForNecessaryOperations(necessaryOPsAL, parentMatrix.getMatrixId());
 
 				MatrixMetadata matrixMetadata = new MatrixMetadata(parentMatrix.getMatrixId());
@@ -856,7 +858,7 @@ public class MatrixAnalysePanel extends JPanel {
 								gwasParams);
 					} else {
 						Dialogs.showWarningDialogue(Text.Operation.warnAffectionMissing);
-						org.gwaspi.threadbox.MultiOperations.updateProcessOverviewStartNext();
+						MultiOperations.updateProcessOverviewStartNext();
 					}
 				}
 			} catch (IOException ex) {

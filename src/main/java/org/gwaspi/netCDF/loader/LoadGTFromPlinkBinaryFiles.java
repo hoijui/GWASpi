@@ -1,5 +1,7 @@
 package org.gwaspi.netCDF.loader;
 
+import org.gwaspi.constants.cDBGWASpi;
+import org.gwaspi.constants.cDBMatrix;
 import org.gwaspi.constants.cImport;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.database.DbManager;
@@ -39,7 +41,7 @@ public class LoadGTFromPlinkBinaryFiles {
 	private String description;
 	private Map<String, Object> sampleInfoLHM = new LinkedHashMap<String, Object>();
 	private String gtCode;
-	private org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding guessedGTCode = org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding.O12;
+	private cNetCDF.Defaults.GenotypeEncoding guessedGTCode = cNetCDF.Defaults.GenotypeEncoding.O12;
 	private int hyperSlabRows;
 
 	//CONSTRUCTORS
@@ -263,7 +265,7 @@ public class LoadGTFromPlinkBinaryFiles {
 		// </editor-fold>
 
 		// <editor-fold defaultstate="collapsed" desc="MATRIX GENOTYPES LOAD ">
-		System.out.println(org.gwaspi.global.Text.All.processing);
+		System.out.println(Text.All.processing);
 		Map<String, Object> bimMarkerSetLHM = markerSetLoader.parseOrigBimFile(bimFilePath); //key = markerId, values{allele1 (minor), allele2 (major)}
 		loadBedGenotypes(new File(bedFilePath),
 				ncfile,
@@ -285,12 +287,12 @@ public class LoadGTFromPlinkBinaryFiles {
 
 			descSB.append("Genotype encoding: ");
 			descSB.append(guessedGTCode);
-			DbManager db = ServiceLocator.getDbManager(org.gwaspi.constants.cDBGWASpi.DB_DATACENTER);
-			db.updateTable(org.gwaspi.constants.cDBGWASpi.SCH_MATRICES,
-					org.gwaspi.constants.cDBMatrix.T_MATRICES,
-					new String[]{constants.cDBMatrix.f_DESCRIPTION},
+			DbManager db = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
+			db.updateTable(cDBGWASpi.SCH_MATRICES,
+					cDBMatrix.T_MATRICES,
+					new String[]{cDBMatrix.f_DESCRIPTION},
 					new Object[]{descSB.toString()},
-					new String[]{constants.cDBMatrix.f_ID},
+					new String[]{cDBMatrix.f_ID},
 					new Object[]{matrixFactory.getMatrixMetaData().getMatrixId()});
 
 			//CLOSE FILE
@@ -383,9 +385,9 @@ public class LoadGTFromPlinkBinaryFiles {
 					}
 
 					/////////// WRITING GENOTYPE DATA INTO netCDF FILE ////////////
-					if (guessedGTCode.equals(org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding.UNKNOWN)) {
+					if (guessedGTCode.equals(cNetCDF.Defaults.GenotypeEncoding.UNKNOWN)) {
 						guessedGTCode = Utils.detectGTEncoding(sampleSetLHM);
-					} else if (guessedGTCode.equals(org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding.O12)) {
+					} else if (guessedGTCode.equals(cNetCDF.Defaults.GenotypeEncoding.O12)) {
 						guessedGTCode = Utils.detectGTEncoding(sampleSetLHM);
 					}
 

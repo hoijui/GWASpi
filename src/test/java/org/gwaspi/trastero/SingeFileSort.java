@@ -1,5 +1,7 @@
 package org.gwaspi.trastero;
 
+import org.gwaspi.constants.cGlobal;
+import org.gwaspi.constants.cImport;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -34,7 +36,7 @@ public class SingeFileSort {
 			ArrayList<String[]> filerows = new ArrayList<String[]>();
 			Random generator = new Random();
 			int rnd = Math.abs(generator.nextInt());
-			tempSorted = new File(org.gwaspi.global.Config.getConfigValue("SSdir", org.gwaspi.constants.cGlobal.USERDIR).toString() + "/" + rnd + ".csv");
+			tempSorted = new File(org.gwaspi.global.Config.getConfigValue("SSdir", cGlobal.USERDIR).toString() + "/" + rnd + ".csv");
 			FileWriter fw = new FileWriter(tempSorted);
 			BufferedWriter bw = new BufferedWriter(fw);
 			String[] header;
@@ -42,13 +44,13 @@ public class SingeFileSort {
 			boolean someFileStillHasRows = false;
 
 			// get each one past the header
-			header = br.readLine().split(org.gwaspi.constants.cImport.Separators.separators_CommaTab_rgxp);
+			header = br.readLine().split(cImport.Separators.separators_CommaTab_rgxp);
 			bw.write(flattenArray(header, ",") + "\n");
 
 			// get the first row
 			String line = br.readLine();
 			if (line != null) {
-				filerows.add(line.split(org.gwaspi.constants.cImport.Separators.separators_CommaTab_rgxp));
+				filerows.add(line.split(cImport.Separators.separators_CommaTab_rgxp));
 				someFileStillHasRows = true;
 			} else {
 				filerows.add(null);
@@ -96,7 +98,7 @@ public class SingeFileSort {
 					// get another row from the file that had the min
 					line = br.readLine();
 					if (line != null) {
-						filerows.set(minIndex, line.split(org.gwaspi.constants.cImport.Separators.separators_CommaTab_rgxp));
+						filerows.set(minIndex, line.split(cImport.Separators.separators_CommaTab_rgxp));
 					} else {
 						filerows.set(minIndex, null);
 					}
@@ -124,7 +126,7 @@ public class SingeFileSort {
 							line = br.readLine();
 							if (line != null) {
 								someFileStillHasRows = true;
-								filerows.set(i, line.split(org.gwaspi.constants.cImport.Separators.separators_CommaTab_rgxp));
+								filerows.set(i, line.split(cImport.Separators.separators_CommaTab_rgxp));
 							}
 						}
 

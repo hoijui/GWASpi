@@ -1,5 +1,6 @@
 package org.gwaspi.threadbox;
 
+import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.model.GWASpiExplorerNodes;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.netCDF.operations.GWASinOneGOParams;
@@ -45,7 +46,7 @@ public class Threaded_GenotypicAssociation extends CommonRunnable {
 	protected void runInternal(SwingWorkerItem thisSwi) throws Exception {
 
 		OperationsList opList = new OperationsList(matrixId);
-		int markersQAOpId = opList.getIdOfLastOperationTypeOccurance(org.gwaspi.constants.cNetCDF.Defaults.OPType.MARKER_QA);
+		int markersQAOpId = opList.getIdOfLastOperationTypeOccurance(cNetCDF.Defaults.OPType.MARKER_QA);
 
 		if (!gwasParams.isDiscardMarkerByMisRat()) {
 			gwasParams.setDiscardMarkerMisRatVal(1);
@@ -68,7 +69,7 @@ public class Threaded_GenotypicAssociation extends CommonRunnable {
 			gwasParams.setDiscardMarkerHWTreshold((double) 0.05 / markerQAMetadata.getOpSetSize());
 		}
 
-		if (thisSwi.getQueueState().equals(org.gwaspi.threadbox.QueueStates.PROCESSING)) {
+		if (thisSwi.getQueueState().equals(QueueStates.PROCESSING)) {
 			int assocOpId = org.gwaspi.netCDF.operations.OperationManager.performCleanGenotypicTests(matrixId,
 					censusOpId,
 					hwOpId, gwasParams.getDiscardMarkerHWTreshold());

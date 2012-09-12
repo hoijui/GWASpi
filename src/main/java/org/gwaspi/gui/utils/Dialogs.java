@@ -1,7 +1,12 @@
 package org.gwaspi.gui.utils;
 
+import org.gwaspi.constants.cDBSamples;
+import org.gwaspi.constants.cExport;
 import org.gwaspi.constants.cExport.ExportFormat;
+import org.gwaspi.constants.cGlobal;
+import org.gwaspi.constants.cImport;
 import org.gwaspi.constants.cImport.ImportFormat;
+import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
@@ -154,7 +159,7 @@ public class Dialogs {
 	}
 
 	public static ImportFormat showTechnologySelectCombo() {
-		ImportFormat[] formats = org.gwaspi.constants.cImport.ImportFormat.values();
+		ImportFormat[] formats = cImport.ImportFormat.values();
 
 		JFrame frame = new JFrame("Format Combo Dialog");
 		ImportFormat technology = (ImportFormat) JOptionPane.showInputDialog(frame,
@@ -169,7 +174,7 @@ public class Dialogs {
 	}
 
 	public static ExportFormat showExportFormatsSelectCombo() {
-		ExportFormat[] formats = org.gwaspi.constants.cExport.ExportFormat.values();
+		ExportFormat[] formats = cExport.ExportFormat.values();
 
 		JFrame frame = new JFrame("Format Combo Dialog");
 		ExportFormat expFormat = (ExportFormat) JOptionPane.showInputDialog(frame,
@@ -184,7 +189,7 @@ public class Dialogs {
 	}
 
 	public static String showPhenotypeColumnsSelectCombo() {
-		String[] phenotype = org.gwaspi.constants.cDBSamples.f_PHENOTYPES_COLUMNS;
+		String[] phenotype = cDBSamples.f_PHENOTYPES_COLUMNS;
 
 		JFrame frame = new JFrame("Phenotype Combo Dialog");
 		String expPhenotype = (String) JOptionPane.showInputDialog(frame,
@@ -199,7 +204,7 @@ public class Dialogs {
 	}
 
 	public static StrandType showStrandSelectCombo() {
-		StrandType[] strandFlags = org.gwaspi.constants.cNetCDF.Defaults.StrandType.values();
+		StrandType[] strandFlags = cNetCDF.Defaults.StrandType.values();
 
 		JFrame frame = new JFrame("Strand Combo Dialog");
 		StrandType strandType = (StrandType) JOptionPane.showInputDialog(frame,
@@ -215,7 +220,7 @@ public class Dialogs {
 	}
 
 	public static String showChromosomeSelectCombo() {
-		String[] chroms = org.gwaspi.constants.cNetCDF.Defaults.Chromosomes;
+		String[] chroms = cNetCDF.Defaults.Chromosomes;
 
 		JFrame frame = new JFrame("Chromosomes Combo Dialog");
 		String chr = (String) JOptionPane.showInputDialog(frame,
@@ -230,7 +235,7 @@ public class Dialogs {
 	}
 
 	public static GenotypeEncoding showGenotypeCodeSelectCombo() {
-		GenotypeEncoding[] gtCode = org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding.values();
+		GenotypeEncoding[] gtCode = cNetCDF.Defaults.GenotypeEncoding.values();
 
 		JFrame frame = new JFrame("Genotype Encoding Combo Dialog");
 		GenotypeEncoding strandType = (GenotypeEncoding) JOptionPane.showInputDialog(frame,
@@ -317,7 +322,7 @@ public class Dialogs {
 
 	// <editor-fold defaultstate="expanded" desc="FILE OPEN DIALOGUES">
 	public static void selectAndSetFileDialog(ActionEvent evt, JButton openButton, JTextField textField, final String filter) {
-		selectAndSetFileInCurrentDirDialog(evt, openButton, org.gwaspi.constants.cGlobal.HOMEDIR, textField, filter);
+		selectAndSetFileInCurrentDirDialog(evt, openButton, cGlobal.HOMEDIR, textField, filter);
 	}
 
 	public static void selectAndSetFileInCurrentDirDialog(ActionEvent evt, JButton openButton, String dir, JTextField textField, final String filter) {
@@ -329,7 +334,7 @@ public class Dialogs {
 		try {
 //			File tmpFile = new File(dir);
 //			if(!tmpFile.exists()){
-			dir = Config.getConfigValue(Config.PROPERTY_LAST_OPENED_DIR, org.gwaspi.constants.cGlobal.HOMEDIR);
+			dir = Config.getConfigValue(Config.PROPERTY_LAST_OPENED_DIR, cGlobal.HOMEDIR);
 			fc.setCurrentDirectory(new java.io.File(dir));
 //			}
 		} catch (IOException ex) {
@@ -382,7 +387,7 @@ public class Dialogs {
 			try {
 //				File tmpFile = new File(dir);
 //				if(!tmpFile.exists()){
-				dir = Config.getConfigValue(Config.PROPERTY_LAST_OPENED_DIR, org.gwaspi.constants.cGlobal.HOMEDIR);
+				dir = Config.getConfigValue(Config.PROPERTY_LAST_OPENED_DIR, cGlobal.HOMEDIR);
 				fc.setCurrentDirectory(new java.io.File(dir));
 //				}
 			} catch (IOException ex) {
@@ -434,7 +439,7 @@ public class Dialogs {
 
 			// getting the latest opened dir
 			try {
-				String dir = Config.getConfigValue(Config.PROPERTY_LAST_OPENED_DIR, org.gwaspi.constants.cGlobal.HOMEDIR);
+				String dir = Config.getConfigValue(Config.PROPERTY_LAST_OPENED_DIR, cGlobal.HOMEDIR);
 				fc.setCurrentDirectory(new java.io.File(dir));
 			} catch (IOException ex) {
 				log.error(null, ex);
@@ -467,7 +472,7 @@ public class Dialogs {
 
 			// getting the last opened dir
 			try {
-				String dir = Config.getConfigValue(Config.PROPERTY_LAST_OPENED_DIR, org.gwaspi.constants.cGlobal.HOMEDIR);
+				String dir = Config.getConfigValue(Config.PROPERTY_LAST_OPENED_DIR, cGlobal.HOMEDIR);
 				fc.setCurrentDirectory(new java.io.File(dir));
 			} catch (IOException ex) {
 				log.error(null, ex);

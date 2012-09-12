@@ -297,7 +297,7 @@ public class Config {
 		setConfigValue("CHART_SAMPLEQA_HETZYG_THRESHOLD", "0.5");
 		setConfigValue("CHART_SAMPLEQA_MISSING_THRESHOLD", "0.5");
 
-		URL localVersionPath = Config.class.getClass().getResource(org.gwaspi.constants.cGlobal.LOCAL_VERSION_XML);
+		URL localVersionPath = Config.class.getClass().getResource(cGlobal.LOCAL_VERSION_XML);
 		Document localDom = XMLParser.parseXmlFile(localVersionPath.toURI().toString());
 		List<Element> localElements = XMLParser.parseDocument(localDom, "GWASpi");
 		setConfigValue(PROPERTY_CURRENT_GWASPIDB_VERSION, XMLParser.getTextValue(localElements.get(0), "GWASpi_DB_Version"));
@@ -306,7 +306,7 @@ public class Config {
 	}
 
 	protected static void updateConfigDataDirs(File dataDir) throws IOException, BackingStoreException, URISyntaxException {
-		String lastOpenedDir = getConfigValue(PROPERTY_LAST_OPENED_DIR, org.gwaspi.constants.cGlobal.HOMEDIR);
+		String lastOpenedDir = getConfigValue(PROPERTY_LAST_OPENED_DIR, cGlobal.HOMEDIR);
 		String lastSelectedNode = getConfigValue(PROPERTY_LAST_SELECTED_NODE, Text.App.appName);
 
 		String lastMnhttBack = getConfigValue("CHART_MANHATTAN_PLOT_BCKG", "200,200,200");
@@ -354,7 +354,7 @@ public class Config {
 
 	public static void checkUpdates() throws IOException, ParseException, ParserConfigurationException, SAXException, URISyntaxException {
 		if (Utils.checkInternetConnection()) {
-			URL localVersionPath = Config.class.getClass().getResource(org.gwaspi.constants.cGlobal.LOCAL_VERSION_XML);
+			URL localVersionPath = Config.class.getClass().getResource(cGlobal.LOCAL_VERSION_XML);
 			Document localDom = XMLParser.parseXmlFile(localVersionPath.toURI().toString());
 
 			if (localDom != null) { // Found local version info
@@ -363,7 +363,7 @@ public class Config {
 				List<Element> localElements = XMLParser.parseDocument(localDom, "GWASpi");
 				setConfigValue(PROPERTY_CURRENT_GWASPIDB_VERSION, XMLParser.getTextValue(localElements.get(0), "GWASpi_DB_Version"));
 
-				URL remoteVersionPath = new URL(org.gwaspi.constants.cGlobal.REMOTE_VERSION_XML);
+				URL remoteVersionPath = new URL(cGlobal.REMOTE_VERSION_XML);
 				Document remoteDom = XMLParser.parseXmlFile(remoteVersionPath.toURI().toString());
 
 				if (remoteDom != null) { // Found remote version info

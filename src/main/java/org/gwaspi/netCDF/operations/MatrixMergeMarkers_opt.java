@@ -1,5 +1,7 @@
 package org.gwaspi.netCDF.operations;
 
+import org.gwaspi.constants.cDBGWASpi;
+import org.gwaspi.constants.cDBMatrix;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.database.DbManager;
 import org.gwaspi.global.ServiceLocator;
@@ -262,17 +264,17 @@ public class MatrixMergeMarkers_opt {
 				int[] sampleIndices = (int[]) value; // position[rdPos matrix 1, rdPos matrix 2]
 
 				// Read from Matrix1
-				rdMarkerSet1.fillWith(org.gwaspi.constants.cNetCDF.Defaults.DEFAULT_GT);
+				rdMarkerSet1.fillWith(cNetCDF.Defaults.DEFAULT_GT);
 				rdMarkerSet1.fillGTsForCurrentSampleIntoInitLHM(sampleIndices[0]);
 
 				// Read from Matrix2
-				rdMarkerSet2.fillWith(org.gwaspi.constants.cNetCDF.Defaults.DEFAULT_GT);
+				rdMarkerSet2.fillWith(cNetCDF.Defaults.DEFAULT_GT);
 				rdMarkerSet2.fillGTsForCurrentSampleIntoInitLHM(sampleIndices[1]);
 
 				// Fill wrSortedMingledMarkerLHM with matrix 1+2 Genotypes
 				for (Map.Entry<String, Object> entry : wrComboSortedMarkerSetLHM.entrySet()) {
 					String markerId = entry.getKey();
-					byte[] genotype = org.gwaspi.constants.cNetCDF.Defaults.DEFAULT_GT;
+					byte[] genotype = cNetCDF.Defaults.DEFAULT_GT;
 					if (rdMarkerSet1.getMarkerIdSetLHM().containsKey(markerId)) {
 						genotype = (byte[]) rdMarkerSet1.getMarkerIdSetLHM().get(markerId);
 					}
@@ -299,12 +301,12 @@ public class MatrixMergeMarkers_opt {
 
 				descSB.append("\nGenotype encoding: ");
 				descSB.append(rdMatrix1Metadata.getGenotypeEncoding());
-				DbManager db = ServiceLocator.getDbManager(org.gwaspi.constants.cDBGWASpi.DB_DATACENTER);
-				db.updateTable(org.gwaspi.constants.cDBGWASpi.SCH_MATRICES,
-						org.gwaspi.constants.cDBMatrix.T_MATRICES,
-						new String[]{constants.cDBMatrix.f_DESCRIPTION},
+				DbManager db = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
+				db.updateTable(cDBGWASpi.SCH_MATRICES,
+						cDBMatrix.T_MATRICES,
+						new String[]{cDBMatrix.f_DESCRIPTION},
 						new Object[]{descSB.toString()},
-						new String[]{constants.cDBMatrix.f_ID},
+						new String[]{cDBMatrix.f_ID},
 						new Object[]{resultMatrixId});
 
 				wrNcFile.close();

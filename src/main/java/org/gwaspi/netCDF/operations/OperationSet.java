@@ -1,5 +1,6 @@
 package org.gwaspi.netCDF.operations;
 
+import org.gwaspi.constants.cNetCDF;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -56,7 +57,7 @@ public class OperationSet {
 
 		try {
 			ncfile = NetcdfFile.open(opMetadata.getPathToMatrix());
-			Variable var = ncfile.findVariable(org.gwaspi.constants.cNetCDF.Variables.VAR_OPSET);
+			Variable var = ncfile.findVariable(cNetCDF.Variables.VAR_OPSET);
 
 			if (null == var) {
 				return null;
@@ -97,7 +98,7 @@ public class OperationSet {
 
 		try {
 			ncfile = NetcdfFile.open(opMetadata.getPathToMatrix());
-			Variable var = ncfile.findVariable(org.gwaspi.constants.cNetCDF.Variables.VAR_MARKERS_RSID);
+			Variable var = ncfile.findVariable(cNetCDF.Variables.VAR_MARKERS_RSID);
 
 			if (null == var) {
 				return null;
@@ -138,7 +139,7 @@ public class OperationSet {
 
 		try {
 			ncfile = NetcdfFile.open(opMetadata.getPathToMatrix());
-			Variable var = ncfile.findVariable(org.gwaspi.constants.cNetCDF.Variables.VAR_IMPLICITSET);
+			Variable var = ncfile.findVariable(cNetCDF.Variables.VAR_IMPLICITSET);
 
 			if (null == var) {
 				return null;
@@ -181,7 +182,7 @@ public class OperationSet {
 			ncfile = NetcdfFile.open(opMetadata.getPathToMatrix());
 
 			// GET NAMES OF CHROMOSOMES
-			Variable var = ncfile.findVariable(org.gwaspi.constants.cNetCDF.Variables.VAR_CHR_IN_MATRIX);
+			Variable var = ncfile.findVariable(cNetCDF.Variables.VAR_CHR_IN_MATRIX);
 
 			if (null == var) {
 				return null;
@@ -202,7 +203,7 @@ public class OperationSet {
 			}
 
 			//GET INFO FOR EACH CHROMOSOME
-			var = ncfile.findVariable(org.gwaspi.constants.cNetCDF.Variables.VAR_CHR_INFO); //Nb of markers, first physical position, last physical position, start index number in MarkerSet
+			var = ncfile.findVariable(cNetCDF.Variables.VAR_CHR_INFO); //Nb of markers, first physical position, last physical position, start index number in MarkerSet
 			dataType = var.getDataType();
 			varShape = var.getShape();
 

@@ -290,7 +290,7 @@ public class IntroPanel extends JPanel {
 			}
 
 			private void list_HelpMouseReleased(MouseEvent evt) throws IOException {
-				org.gwaspi.gui.utils.URLInDefaultBrowser.browseHelpURL(helpLinksAL.get(0)[1].toString());
+				URLInDefaultBrowser.browseHelpURL(helpLinksAL.get(0)[1].toString());
 			}
 		});
 
@@ -318,7 +318,7 @@ public class IntroPanel extends JPanel {
 			}
 
 			private void list_HelpMouseReleased(MouseEvent evt) throws IOException {
-				org.gwaspi.gui.utils.URLInDefaultBrowser.browseGenericURL("http://www.inab.org/");
+				URLInDefaultBrowser.browseGenericURL("http://www.inab.org/");
 			}
 		});
 

@@ -1,6 +1,7 @@
 package org.gwaspi.netCDF.operations;
 
 import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.global.Text;
 import java.io.IOException;
 import java.util.Map;
 import org.gwaspi.model.Operation;
@@ -97,13 +98,13 @@ public class OP_HardyWeinberg {
 //			performHardyWeinberg(wrNcFile, rdMarkerSetLHM, "CASE");
 
 			// PROCESS CONTROL SAMPLES
-			log.info(org.gwaspi.global.Text.All.processing);
+			log.info(Text.All.processing);
 			rdOperationSet.fillLHMWithDefaultValue(rdMarkerSetLHM, 0); //PURGE
 			rdMarkerSetLHM = rdOperationSet.fillOpSetLHMWithVariable(rdNcFile, cNetCDF.Census.VAR_OP_MARKERS_CENSUSCTRL);
 			performHardyWeinberg(wrNcFile, rdMarkerSetLHM, "CTRL");
 
 			// PROCESS ALTERNATE HW SAMPLES
-			log.info(org.gwaspi.global.Text.All.processing);
+			log.info(Text.All.processing);
 			rdOperationSet.fillLHMWithDefaultValue(rdMarkerSetLHM, 0); //PURGE
 			rdMarkerSetLHM = rdOperationSet.fillOpSetLHMWithVariable(rdNcFile, cNetCDF.Census.VAR_OP_MARKERS_CENSUSHW);
 			performHardyWeinberg(wrNcFile, rdMarkerSetLHM, "HW-ALT");

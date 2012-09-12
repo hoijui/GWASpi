@@ -3,6 +3,7 @@ package org.gwaspi.netCDF.loader;
 import org.gwaspi.constants.cImport;
 import org.gwaspi.constants.cImport.Annotation.Plink_Binary;
 import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.global.Text;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -45,7 +46,7 @@ public class MetadataLoaderPlinkBinary implements MetadataLoader {
 		SortedMap<String, String> tempTM = parseAndSortBimFile(bimPath); // chr, markerId, genetic distance, position
 
 		org.gwaspi.global.Utils.sysoutStart("initilaizing marker info");
-		System.out.println(org.gwaspi.global.Text.All.processing);
+		System.out.println(Text.All.processing);
 
 		Map<String, Object> markerMetadataLHM = new LinkedHashMap<String, Object>();
 		for (Map.Entry<String, String> entry : tempTM.entrySet()) {
@@ -115,7 +116,7 @@ public class MetadataLoaderPlinkBinary implements MetadataLoader {
 			count++;
 
 			if (count == 1) {
-				System.out.println(org.gwaspi.global.Text.All.processing);
+				System.out.println(Text.All.processing);
 			} else if (count % 100000 == 0) {
 				System.out.println("Parsed annotation lines: " + count);
 			}

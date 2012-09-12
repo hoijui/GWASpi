@@ -103,7 +103,7 @@ public class MarkerSet_opt {
 		startMkIdx = _startMkInd;
 		endMkIdx = _endMkIdx;
 
-		Variable var = ncfile.findVariable(org.gwaspi.constants.cNetCDF.Variables.VAR_MARKERSET);
+		Variable var = ncfile.findVariable(cNetCDF.Variables.VAR_MARKERSET);
 
 		if (var != null) {
 
@@ -146,7 +146,7 @@ public class MarkerSet_opt {
 		startMkIdx = _startMkInd;
 		endMkIdx = _endMkIdx;
 
-		Variable var = ncfile.findVariable(org.gwaspi.constants.cNetCDF.Variables.VAR_MARKERS_RSID);
+		Variable var = ncfile.findVariable(cNetCDF.Variables.VAR_MARKERS_RSID);
 
 		if (var != null) {
 
@@ -190,7 +190,7 @@ public class MarkerSet_opt {
 		Map<String, Object> chrInfoLHM = new LinkedHashMap<String, Object>();
 
 		// GET NAMES OF CHROMOSOMES
-		Variable var = ncfile.findVariable(org.gwaspi.constants.cNetCDF.Variables.VAR_CHR_IN_MATRIX);
+		Variable var = ncfile.findVariable(cNetCDF.Variables.VAR_CHR_IN_MATRIX);
 		if (var != null) {
 			DataType dataType = var.getDataType();
 			int[] varShape = var.getShape();
@@ -206,7 +206,7 @@ public class MarkerSet_opt {
 			}
 
 			// GET INFO FOR EACH CHROMOSOME
-			var = ncfile.findVariable(org.gwaspi.constants.cNetCDF.Variables.VAR_CHR_INFO); //Nb of markers, first physical position, last physical position, end index number in MarkerSet
+			var = ncfile.findVariable(cNetCDF.Variables.VAR_CHR_INFO); //Nb of markers, first physical position, last physical position, end index number in MarkerSet
 			dataType = var.getDataType();
 			varShape = var.getShape();
 			if (null == var) {
@@ -246,7 +246,7 @@ public class MarkerSet_opt {
 	//<editor-fold defaultstate="collapsed" desc="MARKERSET FILLERS">
 	public void fillGTsForCurrentSampleIntoInitLHM(int sampleNb) throws IOException {
 
-		Variable var = ncfile.findVariable(org.gwaspi.constants.cNetCDF.Variables.VAR_GENOTYPES);
+		Variable var = ncfile.findVariable(cNetCDF.Variables.VAR_GENOTYPES);
 
 		if (var != null) {
 

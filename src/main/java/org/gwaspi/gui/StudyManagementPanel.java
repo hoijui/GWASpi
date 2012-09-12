@@ -39,6 +39,7 @@ import org.gwaspi.model.Study;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.gwaspi.threadbox.MultiOperations;
+import org.gwaspi.threadbox.SwingWorkerItemList;
 
 /**
  *
@@ -280,7 +281,7 @@ public class StudyManagementPanel extends JPanel {
 					GWASpiExplorerPanel.updateTreePanel(true);
 					//model.GWASpiExplorer.insertLatestStudyNode();
 				} else {
-					Dialogs.showWarningDialogue(org.gwaspi.global.Text.Study.warnNoStudyName);
+					Dialogs.showWarningDialogue(Text.Study.warnNoStudyName);
 					lbl_NewStudyName.setForeground(Color.red);
 				}
 			} catch (IOException ex) {
@@ -312,7 +313,7 @@ public class StudyManagementPanel extends JPanel {
 					for (int i = 0; i < selectedStudyIds.length; i++) {
 						int studyId = selectedStudyIds[i];
 						//TEST IF THE DELETED ITEM IS REQUIRED FOR A QUED WORKER
-						if (org.gwaspi.threadbox.SwingWorkerItemList.permitsDeletion(studyId, null, null)) {
+						if (SwingWorkerItemList.permitsDeletion(studyId, null, null)) {
 							if (option == JOptionPane.YES_OPTION && deleteReportOption != JOptionPane.CANCEL_OPTION) {
 
 								boolean deleteReport = false;

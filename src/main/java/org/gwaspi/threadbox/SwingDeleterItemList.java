@@ -3,6 +3,7 @@ package org.gwaspi.threadbox;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.ProcessTab;
 import org.gwaspi.gui.StartGWASpi;
+import org.gwaspi.gui.utils.CursorUtils;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -48,7 +49,7 @@ public class SwingDeleterItemList extends SwingWorkerItemList {
 
 	public static void deleteAllListed() {
 		if (StartGWASpi.guiMode) {
-			StartGWASpi.mainGUIFrame.setCursor(org.gwaspi.gui.utils.CursorUtils.waitCursor);
+			StartGWASpi.mainGUIFrame.setCursor(CursorUtils.waitCursor);
 		}
 
 		for (SwingDeleterItem currentSdi : swingDeleterItemsAL) {
@@ -116,7 +117,7 @@ public class SwingDeleterItemList extends SwingWorkerItemList {
 
 		// IF WE ARE IN GUI MODE, UPDATE TREE. ELSE EXIT PROGRAM
 		if (StartGWASpi.guiMode) {
-			StartGWASpi.mainGUIFrame.setCursor(org.gwaspi.gui.utils.CursorUtils.defaultCursor);
+			StartGWASpi.mainGUIFrame.setCursor(CursorUtils.defaultCursor);
 			ProcessTab.updateProcessOverview();
 			try {
 				MultiOperations.updateTreeAndPanel();
@@ -194,8 +195,8 @@ public class SwingDeleterItemList extends SwingWorkerItemList {
 
 	public static void abortSwingWorker(int idx) {
 		String queueState = swingDeleterItemsAL.get(idx).getQueueState();
-		if (queueState.equals(org.gwaspi.threadbox.QueueStates.PROCESSING) || queueState.equals(org.gwaspi.threadbox.QueueStates.QUEUED)) {
-			swingDeleterItemsAL.get(idx).setQueueState(org.gwaspi.threadbox.QueueStates.ABORT);
+		if (queueState.equals(QueueStates.PROCESSING) || queueState.equals(QueueStates.QUEUED)) {
+			swingDeleterItemsAL.get(idx).setQueueState(QueueStates.ABORT);
 
 			log.info("");
 			log.info(Text.Processes.abortingProcess);
