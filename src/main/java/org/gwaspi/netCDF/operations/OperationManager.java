@@ -1,6 +1,7 @@
 package org.gwaspi.netCDF.operations;
 
 import org.gwaspi.database.DbManager;
+import org.gwaspi.global.Config;
 import org.gwaspi.global.ServiceLocator;
 import java.io.File;
 import java.io.IOException;
@@ -226,7 +227,7 @@ public class OperationManager {
 
 		try {
 			Operation op = new Operation(opId);
-			String genotypesFolder = org.gwaspi.global.Config.getConfigValue("GTdir", "");
+			String genotypesFolder = Config.getConfigValue(Config.PROPERTY_GENOTYPES_DIR, "");
 
 			OperationsList opList = new OperationsList(op.getParentMatrixId(), opId);
 			List<Operation> opAL = opList.operationsListAL;

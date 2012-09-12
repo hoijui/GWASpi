@@ -1,6 +1,7 @@
 package org.gwaspi.netCDF.operations;
 
 import org.gwaspi.database.DbManager;
+import org.gwaspi.global.Config;
 import org.gwaspi.global.ServiceLocator;
 import java.io.File;
 import java.io.IOException;
@@ -51,7 +52,7 @@ public class OperationMetadata {
 				studyId = (Integer) rs.get(0).get(org.gwaspi.constants.cDBOperations.f_STUDYID);
 			}
 
-			String genotypesFolder = org.gwaspi.global.Config.getConfigValue("GTdir", "");
+			String genotypesFolder = Config.getConfigValue(Config.PROPERTY_GENOTYPES_DIR, "");
 			String pathToStudy = genotypesFolder + "/STUDY_" + studyId + "/";
 			pathToMatrix = pathToStudy + netCDF_name + ".nc";
 			NetcdfFile ncfile = null;
@@ -97,7 +98,7 @@ public class OperationMetadata {
 			studyId = (Integer) rs.get(0).get(org.gwaspi.constants.cDBOperations.f_STUDYID);
 		}
 
-		String genotypesFolder = org.gwaspi.global.Config.getConfigValue("GTdir", "");
+		String genotypesFolder = Config.getConfigValue(Config.PROPERTY_GENOTYPES_DIR, "");
 		String pathToStudy = genotypesFolder + "/STUDY_" + studyId + "/";
 		pathToMatrix = pathToStudy + netCDF_name + ".nc";
 		NetcdfFile ncfile = null;

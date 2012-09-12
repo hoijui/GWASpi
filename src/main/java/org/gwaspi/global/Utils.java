@@ -408,7 +408,7 @@ public class Utils {
 	public static void logOperationInStudyDesc(String operation, int studyId) throws IOException {
 //		StringBuffer result = new StringBuffer();
 //		try {
-//			String fileDir = Config.getConfigValue("LogDir","")+"/";
+//			String fileDir = Config.getConfigValue(Config.PROPERTY_LOG_DIR,"")+"/";
 //			String fileName = "Study_"+ studyId + ".log";
 //			File logFile = new File(fileDir+fileName);
 //			if(!logFile.exists()){
@@ -444,7 +444,7 @@ public class Utils {
 	public static void logStartMessageEnd(String startTime, String operation, String endTime, String studyId) throws IOException {
 //		StringBuffer result = new StringBuffer();
 //		try {
-//			String fileDir = Config.getConfigValue("LogDir","")+"/";
+//			String fileDir = Config.getConfigValue(Config.PROPERTY_LOG_DIR,"")+"/";
 //			String fileName = "Study_"+ studyId + ".log";
 //			File logFile = new File(fileDir+fileName);
 //			if(!logFile.exists()){
@@ -479,7 +479,7 @@ public class Utils {
 	public static void logBlockInStudyDesc(String operation, int studyId) throws IOException {
 //		StringBuffer result = new StringBuffer();
 //		try {
-//			String fileDir = Config.getConfigValue("LogDir","")+"/";
+//			String fileDir = Config.getConfigValue(Config.PROPERTY_LOG_DIR,"")+"/";
 //			String fileName = "Study_"+ studyId + ".log";
 //			File logFile = new File(fileDir+fileName);
 //			if(!logFile.exists()){

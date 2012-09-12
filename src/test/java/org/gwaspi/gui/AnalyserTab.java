@@ -195,12 +195,12 @@ public class AnalyserTab extends JPanel {
 
 	private void button_PathToTfamActionPerformed(ActionEvent evt) throws IOException {
 		// Use standard file opener
-		Dialogs.selectAndSetFileInCurrentDirDialog(evt, button_PathToTfam, Config.getConfigValue("ExportDir", org.gwaspi.constants.cGlobal.HOMEDIR), textField_PathToTfam, ".tfam");
+		Dialogs.selectAndSetFileInCurrentDirDialog(evt, button_PathToTfam, Config.getConfigValue(Config.PROPERTY_EXPORT_DIR, org.gwaspi.constants.cGlobal.HOMEDIR), textField_PathToTfam, ".tfam");
 	}
 
 	private void button_PathToTpedActionPerformed(ActionEvent evt) throws IOException {
 		// Use standard file opener
-		Dialogs.selectAndSetFileInCurrentDirDialog(evt, button_PathToTped, Config.getConfigValue("ExportDir", org.gwaspi.constants.cGlobal.HOMEDIR), textField_PathToTped, ".tped");
+		Dialogs.selectAndSetFileInCurrentDirDialog(evt, button_PathToTped, Config.getConfigValue(Config.PROPERTY_EXPORT_DIR, org.gwaspi.constants.cGlobal.HOMEDIR), textField_PathToTped, ".tped");
 	}
 
 	private void combo_AnalysisActionPerformed(ActionEvent evt) throws IOException {

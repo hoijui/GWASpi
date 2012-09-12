@@ -1,5 +1,6 @@
 package org.gwaspi.gui.reports;
 
+import org.gwaspi.global.Config;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.GWASpiExplorerPanel;
 import org.gwaspi.gui.MatrixAnalysePanel;
@@ -26,11 +27,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.table.TableRowSorter;
-import javax.swing.SwingUtilities;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
-import javax.swing.table.TableModel;
 import javax.swing.BorderFactory;
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
@@ -42,8 +40,11 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.LayoutStyle;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
 import org.gwaspi.model.Operation;
 
 /**
@@ -75,7 +76,7 @@ public class Report_QASamplesSummary extends JPanel {
 
 		String reportPath = "";
 		try {
-			reportPath = org.gwaspi.global.Config.getConfigValue("ReportsDir", "") + "/STUDY_" + _studyId + "/";
+			reportPath = Config.getConfigValue(Config.PROPERTY_REPORTS_DIR, "") + "/STUDY_" + _studyId + "/";
 		} catch (IOException ex) {
 			Logger.getLogger(Report_QASamplesSummary.class.getName()).log(Level.SEVERE, null, ex);
 		}
@@ -452,7 +453,7 @@ public class Report_QASamplesSummary extends JPanel {
 
 		private void actionSaveCompleteReportAs() {
 			try {
-				String reportPath = org.gwaspi.global.Config.getConfigValue("ReportsDir", "") + "/STUDY_" + studyId + "/";
+				String reportPath = Config.getConfigValue(Config.PROPERTY_REPORTS_DIR, "") + "/STUDY_" + studyId + "/";
 				File origFile = new File(reportPath + chartPath);
 				File newFile = new File(Dialogs.selectDirectoryDialog(JOptionPane.OK_OPTION).getPath() + "/" + chartPath);
 				if (origFile.exists()) {

@@ -4,6 +4,7 @@ import org.gwaspi.constants.cDBGWASpi;
 import org.gwaspi.constants.cImport;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.database.DbManager;
+import org.gwaspi.global.Config;
 import org.gwaspi.global.ServiceLocator;
 import org.gwaspi.global.Text;
 import java.io.BufferedReader;
@@ -116,7 +117,7 @@ public final class LoadGTFromGWASpiFiles {
 
 			description = descSB.toString();
 
-			if (importMatrixMetadata.getGwaspiDBVersion().equals(org.gwaspi.global.Config.getConfigValue("CURRENT_GWASPIDB_VERSION", "2.0.2"))) { //COMPARE DATABASE VERSIONS
+			if (importMatrixMetadata.getGwaspiDBVersion().equals(Config.getConfigValue(Config.PROPERTY_CURRENT_GWASPIDB_VERSION, "2.0.2"))) { //COMPARE DATABASE VERSIONS
 				if (!testExcessSamplesInMatrix) {
 					DbManager dBManager = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
 					org.gwaspi.netCDF.matrices.MatrixManager.insertMatrixMetadata(dBManager,
@@ -364,7 +365,7 @@ public final class LoadGTFromGWASpiFiles {
 
 	private void copyMatrixToGenotypesFolder(int studyId, String importMatrixPath, String newMatrixCDFName) {
 		try {
-			String genotypesFolder = org.gwaspi.global.Config.getConfigValue("GTdir", "");
+			String genotypesFolder = Config.getConfigValue(Config.PROPERTY_GENOTYPES_DIR, "");
 			File pathToStudy = new File(genotypesFolder + "/STUDY_" + studyId);
 			if (!pathToStudy.exists()) {
 				org.gwaspi.global.Utils.createFolder(genotypesFolder, "/STUDY_" + studyId);

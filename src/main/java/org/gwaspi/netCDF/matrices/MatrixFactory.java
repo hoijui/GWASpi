@@ -3,6 +3,7 @@ package org.gwaspi.netCDF.matrices;
 import org.gwaspi.constants.cDBGWASpi;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.database.DbManager;
+import org.gwaspi.global.Config;
 import org.gwaspi.global.ServiceLocator;
 import java.io.File;
 import java.io.IOException;
@@ -40,8 +41,9 @@ public class MatrixFactory {
 			int chrDimSize,
 			String gtCode,
 			int origMatrix1Id,
-			int origMatrix2Id) throws InvalidRangeException, IOException {
-
+			int origMatrix2Id)
+			throws InvalidRangeException, IOException
+	{
 		if (samplesDimSize > 0 && markerDimSize > 0) {
 			resultMatrixName = org.gwaspi.netCDF.matrices.MatrixManager.generateMatrixNetCDFNameByDate();
 			netCDFHandler = generateNetcdfHandler(studyId,
@@ -55,7 +57,7 @@ public class MatrixFactory {
 					markerDimSize,
 					chrDimSize);
 
-			//CHECK IF JVM IS 32/64 bits to use LFS or not
+			// CHECK IF JVM IS 32/64 bits to use LFS or not
 			int JVMbits = Integer.parseInt(System.getProperty("sun.arch.data.model", "32"));
 			if (JVMbits == 64) {
 				netCDFHandler.setLargeFile(true);
@@ -78,10 +80,9 @@ public class MatrixFactory {
 
 			resultMatrixId = matrixMetaData.getMatrixId();
 		}
-
 	}
 
-	//Costructor to use with file input
+	// Costructor to use with file input
 	public MatrixFactory(Integer studyId,
 			String technology,
 			String friendlyName,
@@ -92,8 +93,9 @@ public class MatrixFactory {
 			int samplesDimSize,
 			int markerDimSize,
 			int chrDimSize,
-			String data_location) throws InvalidRangeException, IOException {
-
+			String data_location)
+			throws InvalidRangeException, IOException
+	{
 		if (samplesDimSize > 0 && markerDimSize > 0) {
 			resultMatrixName = org.gwaspi.netCDF.matrices.MatrixManager.generateMatrixNetCDFNameByDate();
 			netCDFHandler = generateNetcdfHandler(studyId,
@@ -107,7 +109,7 @@ public class MatrixFactory {
 					markerDimSize,
 					chrDimSize);
 
-			//CHECK IF JVM IS 32/64 bits to use LFS or not
+			// CHECK IF JVM IS 32/64 bits to use LFS or not
 			int JVMbits = Integer.parseInt(System.getProperty("sun.arch.data.model", "32"));
 			if (JVMbits == 64) {
 				netCDFHandler.setLargeFile(true);
@@ -130,10 +132,9 @@ public class MatrixFactory {
 
 			resultMatrixId = matrixMetaData.getMatrixId();
 		}
-
 	}
 
-	///// ACCESSORS /////
+	// ACCESSORS
 	public NetcdfFileWriteable getNetCDFHandler() {
 		return netCDFHandler;
 	}
@@ -159,10 +160,11 @@ public class MatrixFactory {
 			int hasDictionary,
 			int sampleSetSize,
 			int markerSetSize,
-			int chrSetSize) throws InvalidRangeException, IOException {
-
-		///////////// CREATE netCDF-3 FILE ////////////
-		String genotypesFolder = org.gwaspi.global.Config.getConfigValue("GTdir", "");
+			int chrSetSize)
+			throws InvalidRangeException, IOException
+	{
+		// CREATE netCDF-3 FILE
+		String genotypesFolder = Config.getConfigValue(Config.PROPERTY_GENOTYPES_DIR, "");
 		File pathToStudy = new File(genotypesFolder + "/STUDY_" + studyId);
 		if (!pathToStudy.exists()) {
 			org.gwaspi.global.Utils.createFolder(genotypesFolder, "/STUDY_" + studyId);
@@ -171,42 +173,41 @@ public class MatrixFactory {
 		int gtStride = cNetCDF.Strides.STRIDE_GT;
 		int markerStride = cNetCDF.Strides.STRIDE_MARKER_NAME;
 		int sampleStride = cNetCDF.Strides.STRIDE_SAMPLE_NAME;
-//        int strandStride = cNetCDF.Strides.STRIDE_STRAND;
-
+//		int strandStride = cNetCDF.Strides.STRIDE_STRAND;
 
 		String writeFileName = pathToStudy + "/" + matrixName + ".nc";
 		NetcdfFileWriteable ncfile = NetcdfFileWriteable.createNew(writeFileName, false);
 
-		//global attributes
+		// global attributes
 		ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_STUDY, studyId);
 		ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_TECHNOLOGY, technology);
-		String versionNb = org.gwaspi.global.Config.getConfigValue("CURRENT_GWASPIDB_VERSION", "2.0.2");
+		String versionNb = Config.getConfigValue(Config.PROPERTY_CURRENT_GWASPIDB_VERSION, "2.0.2");
 		ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_GWASPIDB_VERSION, versionNb);
 		ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_DESCRIPTION, description);
 		ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_STRAND, strand);
 		ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_HAS_DICTIONARY, hasDictionary);
 
-		//dimensions
+		// dimensions
 		Dimension samplesDim = ncfile.addDimension(cNetCDF.Dimensions.DIM_SAMPLESET, 0, true, true, false);
 		Dimension markersDim = ncfile.addDimension(cNetCDF.Dimensions.DIM_MARKERSET, markerSetSize);
 		Dimension chrSetDim = ncfile.addDimension(cNetCDF.Dimensions.DIM_CHRSET, chrSetSize);
 		Dimension gtStrideDim = ncfile.addDimension(cNetCDF.Dimensions.DIM_GTSTRIDE, gtStride);
 		Dimension markerStrideDim = ncfile.addDimension(cNetCDF.Dimensions.DIM_MARKERSTRIDE, markerStride);
 		Dimension sampleStrideDim = ncfile.addDimension(cNetCDF.Dimensions.DIM_SAMPLESTRIDE, sampleStride);
-//        Dimension dim32 = ncfile.addDimension(cNetCDF.Dimensions.DIM_32, 32);
-//        Dimension dim16 = ncfile.addDimension(cNetCDF.Dimensions.DIM_16, 16);
+//		Dimension dim32 = ncfile.addDimension(cNetCDF.Dimensions.DIM_32, 32);
+//		Dimension dim16 = ncfile.addDimension(cNetCDF.Dimensions.DIM_16, 16);
 		Dimension dim8 = ncfile.addDimension(cNetCDF.Dimensions.DIM_8, 8);
 		Dimension dim4 = ncfile.addDimension(cNetCDF.Dimensions.DIM_4, 4);
 		Dimension dim2 = ncfile.addDimension(cNetCDF.Dimensions.DIM_2, 2);
 		Dimension dim1 = ncfile.addDimension(cNetCDF.Dimensions.DIM_1, 1);
 
-		//GENOTYPE SPACES
+		// GENOTYPE SPACES
 		List<Dimension> genotypeSpace = new ArrayList<Dimension>();
 		genotypeSpace.add(samplesDim);
 		genotypeSpace.add(markersDim);
 		genotypeSpace.add(gtStrideDim);
 
-		//MARKER SPACES
+		// MARKER SPACES
 		List<Dimension> markerNameSpace = new ArrayList<Dimension>();
 		markerNameSpace.add(markersDim);
 		markerNameSpace.add(markerStrideDim);
@@ -226,7 +227,7 @@ public class MatrixFactory {
 		markerPropertySpace2.add(markersDim);
 		markerPropertySpace2.add(dim2);
 
-		//CHROMOSOME SPACES
+		// CHROMOSOME SPACES
 		List<Dimension> chrSetSpace = new ArrayList<Dimension>();
 		chrSetSpace.add(chrSetDim);
 		chrSetSpace.add(dim8);
@@ -235,18 +236,15 @@ public class MatrixFactory {
 		chrInfoSpace.add(chrSetDim);
 		chrInfoSpace.add(dim4);
 
-
-		//SAMPLE SPACES
+		// SAMPLE SPACES
 		List<Dimension> sampleSetSpace = new ArrayList<Dimension>();
 		sampleSetSpace.add(samplesDim);
 		sampleSetSpace.add(sampleStrideDim);
 
-
-		//OTHER SPACES
+		// OTHER SPACES
 		List<Dimension> gtEncodingSpace = new ArrayList<Dimension>();
 		gtEncodingSpace.add(dim1);
 		gtEncodingSpace.add(dim8);
-
 
 		// Define Marker Variables
 		ncfile.addVariable(cNetCDF.Variables.VAR_MARKERSET, DataType.CHAR, markerNameSpace);
@@ -265,17 +263,15 @@ public class MatrixFactory {
 		ncfile.addVariable(cNetCDF.Variables.VAR_SAMPLESET, DataType.CHAR, sampleSetSpace);
 		ncfile.addVariableAttribute(cNetCDF.Variables.VAR_SAMPLESET, cNetCDF.Attributes.LENGTH, sampleSetSize);
 
-
 		// Define Genotype Variables
 		ncfile.addVariable(cNetCDF.Variables.VAR_GENOTYPES, DataType.BYTE, genotypeSpace);
 		ncfile.addVariableAttribute(cNetCDF.Variables.VAR_GENOTYPES, cNetCDF.Attributes.GLOB_STRAND, "");
 		ncfile.addVariable(cNetCDF.Variables.VAR_GT_STRAND, DataType.CHAR, markerPropertySpace4);
 
-		//ENCODING VARIABLE
+		// ENCODING VARIABLE
 		ncfile.addVariable(cNetCDF.Variables.GLOB_GTENCODING, DataType.CHAR, gtEncodingSpace);
 
 		return ncfile;
-
 	}
 
 	public MatrixMetadata getMatrixMetaData() {

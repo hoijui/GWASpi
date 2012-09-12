@@ -2,6 +2,7 @@ package org.gwaspi.netCDF.operations;
 
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.database.DbManager;
+import org.gwaspi.global.Config;
 import org.gwaspi.global.ServiceLocator;
 import java.io.File;
 import java.io.IOException;
@@ -178,7 +179,7 @@ public class OperationFactory {
 		NetcdfFileWriteable ncfile = null;
 		try {
 			// CREATE netCDF-3 FILE
-			String genotypesFolder = org.gwaspi.global.Config.getConfigValue("GTdir", "");
+			String genotypesFolder = Config.getConfigValue(Config.PROPERTY_GENOTYPES_DIR, "");
 			File pathToStudy = new File(genotypesFolder + "/STUDY_" + studyId);
 			if (!pathToStudy.exists()) {
 				org.gwaspi.global.Utils.createFolder(genotypesFolder, "/STUDY_" + studyId);
@@ -265,7 +266,7 @@ public class OperationFactory {
 		NetcdfFileWriteable ncfile = null;
 		try {
 			// CREATE netCDF-3 FILE
-			String genotypesFolder = org.gwaspi.global.Config.getConfigValue("GTdir", "");
+			String genotypesFolder = Config.getConfigValue(Config.PROPERTY_GENOTYPES_DIR, "");
 			File pathToStudy = new File(genotypesFolder + "/STUDY_" + studyId);
 			if (!pathToStudy.exists()) {
 				org.gwaspi.global.Utils.createFolder(genotypesFolder, "/STUDY_" + studyId);
@@ -327,7 +328,7 @@ public class OperationFactory {
 		NetcdfFileWriteable ncfile = null;
 		try {
 			// CREATE netCDF-3 FILE
-			String genotypesFolder = org.gwaspi.global.Config.getConfigValue("GTdir", "");
+			String genotypesFolder = Config.getConfigValue(Config.PROPERTY_GENOTYPES_DIR, "");
 			File pathToStudy = new File(genotypesFolder + "/STUDY_" + studyId);
 			if (!pathToStudy.exists()) {
 				org.gwaspi.global.Utils.createFolder(genotypesFolder, "/STUDY_" + studyId);
@@ -416,7 +417,7 @@ public class OperationFactory {
 		NetcdfFileWriteable ncfile = null;
 		try {
 			// CREATE netCDF-3 FILE
-			String genotypesFolder = org.gwaspi.global.Config.getConfigValue("GTdir", "");
+			String genotypesFolder = Config.getConfigValue(Config.PROPERTY_GENOTYPES_DIR, "");
 			File pathToStudy = new File(genotypesFolder + "/STUDY_" + studyId);
 			if (!pathToStudy.exists()) {
 				org.gwaspi.global.Utils.createFolder(genotypesFolder, "/STUDY_" + studyId);
@@ -492,7 +493,7 @@ public class OperationFactory {
 		NetcdfFileWriteable ncfile = null;
 		try {
 			// CREATE netCDF-3 FILE
-			String genotypesFolder = org.gwaspi.global.Config.getConfigValue("GTdir", "");
+			String genotypesFolder = Config.getConfigValue(Config.PROPERTY_GENOTYPES_DIR, "");
 			File pathToStudy = new File(genotypesFolder + "/STUDY_" + studyId);
 			if (!pathToStudy.exists()) {
 				org.gwaspi.global.Utils.createFolder(genotypesFolder, "/STUDY_" + studyId);
@@ -520,9 +521,9 @@ public class OperationFactory {
 			Dimension dim4 = ncfile.addDimension(cNetCDF.Dimensions.DIM_4, 4);
 
 			// OP SPACES
-			List<Dimension> OP2Space = new ArrayList<Dimension>();
-			OP2Space.add(setDim);
-			OP2Space.add(box2Dim);
+//			List<Dimension> OP2Space = new ArrayList<Dimension>();
+//			OP2Space.add(setDim);
+//			OP2Space.add(box2Dim);
 
 			List<Dimension> OP3Space = new ArrayList<Dimension>();
 			OP3Space.add(setDim);
@@ -579,7 +580,7 @@ public class OperationFactory {
 		NetcdfFileWriteable ncfile = null;
 		try {
 			// CREATE netCDF-3 FILE
-			String genotypesFolder = org.gwaspi.global.Config.getConfigValue("GTdir", "");
+			String genotypesFolder = Config.getConfigValue(Config.PROPERTY_GENOTYPES_DIR, "");
 			File pathToStudy = new File(genotypesFolder + "/STUDY_" + studyId);
 			if (!pathToStudy.exists()) {
 				org.gwaspi.global.Utils.createFolder(genotypesFolder, "/STUDY_" + studyId);
@@ -660,7 +661,7 @@ public class OperationFactory {
 		NetcdfFileWriteable ncfile = null;
 		try {
 			// CREATE netCDF-3 FILE
-			String genotypesFolder = org.gwaspi.global.Config.getConfigValue("GTdir", "");
+			String genotypesFolder = Config.getConfigValue(Config.PROPERTY_GENOTYPES_DIR, "");
 			File pathToStudy = new File(genotypesFolder + "/STUDY_" + studyId);
 			if (!pathToStudy.exists()) {
 				org.gwaspi.global.Utils.createFolder(genotypesFolder, "/STUDY_" + studyId);

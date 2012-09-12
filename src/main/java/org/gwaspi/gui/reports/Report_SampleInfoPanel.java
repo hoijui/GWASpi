@@ -245,7 +245,7 @@ public class Report_SampleInfoPanel extends JPanel {
 
 	private void actionSaveCompleteReportAs(int studyId, String chartPath) {
 		try {
-			String reportPath = Config.getConfigValue("ReportsDir", "") + "/STUDY_" + studyId + "/";
+			String reportPath = Config.getConfigValue(Config.PROPERTY_REPORTS_DIR, "") + "/STUDY_" + studyId + "/";
 			File origFile = new File(reportPath + chartPath);
 			File newFile = new File(Dialogs.selectDirectoryDialog(JOptionPane.OK_OPTION).getPath() + "/" + chartPath);
 			if (origFile.exists()) {

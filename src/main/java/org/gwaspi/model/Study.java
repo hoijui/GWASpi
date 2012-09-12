@@ -1,6 +1,9 @@
 package org.gwaspi.model;
 
+import org.gwaspi.constants.cDBGWASpi;
+import org.gwaspi.constants.cDBMatrix;
 import org.gwaspi.database.DbManager;
+import org.gwaspi.global.Config;
 import org.gwaspi.global.ServiceLocator;
 import java.io.File;
 import java.io.FileReader;
@@ -39,7 +42,7 @@ public class Study {
 		List<Map<String, Object>> rs = getStudy(_studyId);
 
 		// PREVENT PHANTOM-DB READS EXCEPTIONS
-		if (!rs.isEmpty() && rs.get(0).size() == org.gwaspi.constants.cDBGWASpi.T_CREATE_STUDIES.length) {
+		if (!rs.isEmpty() && rs.get(0).size() == cDBGWASpi.T_CREATE_STUDIES.length) {
 			studyId = Integer.parseInt(rs.get(0).get("id").toString());
 			studyName = rs.get(0).get("name").toString();
 			studyDescription.append(rs.get(0).get("study_description").toString());
@@ -73,10 +76,10 @@ public class Study {
 
 	public static List<Map<String, Object>> getStudy(int studyId) throws IOException {
 		List<Map<String, Object>> rs = null;
-		String dbName = org.gwaspi.constants.cDBGWASpi.DB_DATACENTER;
+		String dbName = cDBGWASpi.DB_DATACENTER;
 		DbManager studyDbManager = ServiceLocator.getDbManager(dbName);
 		try {
-			rs = studyDbManager.executeSelectStatement("SELECT * FROM " + org.gwaspi.constants.cDBGWASpi.SCH_APP + "." + org.gwaspi.constants.cDBGWASpi.T_STUDIES + " WHERE id=" + studyId + "  WITH RR");
+			rs = studyDbManager.executeSelectStatement("SELECT * FROM " + cDBGWASpi.SCH_APP + "." + cDBGWASpi.T_STUDIES + " WHERE id=" + studyId + "  WITH RR");
 		} catch (Exception ex) {
 			log.error(null, ex);
 		}
@@ -87,10 +90,10 @@ public class Study {
 	public static List<Integer> getStudyMatricesId(int studyId) throws IOException {
 		List<Integer> studyMatricesList = new ArrayList<Integer>();
 		List<Map<String, Object>> rs = null;
-		String dbName = org.gwaspi.constants.cDBGWASpi.DB_DATACENTER;
+		String dbName = cDBGWASpi.DB_DATACENTER;
 		DbManager studyDbManager = ServiceLocator.getDbManager(dbName);
 		try {
-			rs = studyDbManager.executeSelectStatement("SELECT * FROM " + org.gwaspi.constants.cDBGWASpi.SCH_MATRICES + "." + org.gwaspi.constants.cDBMatrix.T_MATRICES + " WHERE " + org.gwaspi.constants.cDBMatrix.f_STUDYID + "=" + studyId + "  WITH RR");
+			rs = studyDbManager.executeSelectStatement("SELECT * FROM " + cDBGWASpi.SCH_MATRICES + "." + cDBMatrix.T_MATRICES + " WHERE " + cDBMatrix.f_STUDYID + "=" + studyId + "  WITH RR");
 		} catch (Exception ex) {
 			log.error(null, ex);
 		}
@@ -99,7 +102,7 @@ public class Study {
 		if (rowcount > 0) {
 			for (int i = rowcount - 1; i >= 0; i--) // loop through rows of result set
 			{
-				int currentMatrixId = (Integer) rs.get(i).get(org.gwaspi.constants.cDBMatrix.f_ID);
+				int currentMatrixId = (Integer) rs.get(i).get(cDBMatrix.f_ID);
 				studyMatricesList.add(currentMatrixId);
 			}
 		}
@@ -108,7 +111,7 @@ public class Study {
 	}
 
 	public StringBuffer getStudyLog() throws IOException {
-		String history_path = org.gwaspi.global.Config.getConfigValue("LogDir", "") + "/STUDY_" + this.studyId + ".log";
+		String history_path = Config.getConfigValue(Config.PROPERTY_LOG_DIR, "") + "/STUDY_" + this.studyId + ".log";
 		File input = new File(history_path);
 		studyLog = new StringBuffer(org.gwaspi.framework.util.IOUtils.readFile(new FileReader(input)));
 		return studyLog;

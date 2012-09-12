@@ -329,7 +329,7 @@ public class Dialogs {
 		try {
 //			File tmpFile = new File(dir);
 //			if(!tmpFile.exists()){
-			dir = Config.getConfigValue("LAST_OPENED_DIR", org.gwaspi.constants.cGlobal.HOMEDIR);
+			dir = Config.getConfigValue(Config.PROPERTY_LAST_OPENED_DIR, org.gwaspi.constants.cGlobal.HOMEDIR);
 			fc.setCurrentDirectory(new java.io.File(dir));
 //			}
 		} catch (IOException ex) {
@@ -361,7 +361,7 @@ public class Dialogs {
 
 			// setting the directory to latest opened dir
 			try {
-				Config.setConfigValue("LAST_OPENED_DIR", file.getParent());
+				Config.setConfigValue(Config.PROPERTY_LAST_OPENED_DIR, file.getParent());
 			} catch (IOException ex) {
 				log.error(null, ex);
 			}
@@ -382,7 +382,7 @@ public class Dialogs {
 			try {
 //				File tmpFile = new File(dir);
 //				if(!tmpFile.exists()){
-				dir = Config.getConfigValue("LAST_OPENED_DIR", org.gwaspi.constants.cGlobal.HOMEDIR);
+				dir = Config.getConfigValue(Config.PROPERTY_LAST_OPENED_DIR, org.gwaspi.constants.cGlobal.HOMEDIR);
 				fc.setCurrentDirectory(new java.io.File(dir));
 //				}
 			} catch (IOException ex) {
@@ -412,7 +412,7 @@ public class Dialogs {
 
 				// setting the directory to latest opened dir
 				try {
-					Config.setConfigValue("LAST_OPENED_DIR", resultFile.getParent());
+					Config.setConfigValue(Config.PROPERTY_LAST_OPENED_DIR, resultFile.getParent());
 				} catch (IOException ex) {
 					log.error(null, ex);
 				}
@@ -434,7 +434,7 @@ public class Dialogs {
 
 			// getting the latest opened dir
 			try {
-				String dir = Config.getConfigValue("LAST_OPENED_DIR", org.gwaspi.constants.cGlobal.HOMEDIR);
+				String dir = Config.getConfigValue(Config.PROPERTY_LAST_OPENED_DIR, org.gwaspi.constants.cGlobal.HOMEDIR);
 				fc.setCurrentDirectory(new java.io.File(dir));
 			} catch (IOException ex) {
 				log.error(null, ex);
@@ -446,7 +446,7 @@ public class Dialogs {
 
 				// setting the directory to latest opened dir
 				try {
-					Config.setConfigValue("LAST_OPENED_DIR", resultFile.getParent());
+					Config.setConfigValue(Config.PROPERTY_LAST_OPENED_DIR, resultFile.getParent());
 				} catch (IOException ex) {
 					log.error(null, ex);
 				}
@@ -467,7 +467,7 @@ public class Dialogs {
 
 			// getting the last opened dir
 			try {
-				String dir = Config.getConfigValue("LAST_OPENED_DIR", org.gwaspi.constants.cGlobal.HOMEDIR);
+				String dir = Config.getConfigValue(Config.PROPERTY_LAST_OPENED_DIR, org.gwaspi.constants.cGlobal.HOMEDIR);
 				fc.setCurrentDirectory(new java.io.File(dir));
 			} catch (IOException ex) {
 				log.error(null, ex);
@@ -480,7 +480,7 @@ public class Dialogs {
 
 				// setting the directory to last opened dir
 				try {
-					Config.setConfigValue("LAST_OPENED_DIR", resultFile.getParent());
+					Config.setConfigValue(Config.PROPERTY_LAST_OPENED_DIR, resultFile.getParent());
 				} catch (IOException ex) {
 					log.error(null, ex);
 				}

@@ -1,5 +1,6 @@
 package org.gwaspi.gui;
 
+import org.gwaspi.global.Config;
 import java.awt.Dimension;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -66,7 +67,7 @@ public class GWASpiExplorerPanel extends JPanel {
 
 	public static void refreshContentPanel() {
 		try {
-			String lastSelectedNode = org.gwaspi.global.Config.getConfigValue("LAST_SELECTED_NODE", "0");
+			String lastSelectedNode = Config.getConfigValue(Config.PROPERTY_LAST_SELECTED_NODE, "0");
 			tree.setSelectionPath(null);
 			if (!lastSelectedNode.equals("0")) {
 				for (int i = 0; i < tree.getRowCount(); i++) {
@@ -105,7 +106,7 @@ public class GWASpiExplorerPanel extends JPanel {
 		scrl_Tree.setViewportView(tmpTree);
 		splt_MoapiPanel.setLeftComponent(scrl_Tree);
 
-		String lastSelectedNode = org.gwaspi.global.Config.getConfigValue("LAST_SELECTED_NODE", "0");
+		String lastSelectedNode = Config.getConfigValue(Config.PROPERTY_LAST_SELECTED_NODE, "0");
 
 		// Find out what paths are expanded
 		List<TreePath> expandedNodesAL = null;

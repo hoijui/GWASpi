@@ -1,5 +1,6 @@
 package org.gwaspi.gui.reports;
 
+import org.gwaspi.global.Config;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.GWASpiExplorerPanel;
 import org.gwaspi.gui.utils.CursorUtils;
@@ -84,7 +85,7 @@ public final class Report_AnalysisAllelicTestImpl extends Report_Analysis {
 		reportName = reportName.substring(reportName.indexOf('-') + 2);
 		String reportPath = "";
 		try {
-			reportPath = org.gwaspi.global.Config.getConfigValue("ReportsDir", "") + "/STUDY_" + studyId + "/";
+			reportPath = Config.getConfigValue(Config.PROPERTY_REPORTS_DIR, "") + "/STUDY_" + studyId + "/";
 		} catch (IOException ex) {
 			Logger.getLogger(Report_AnalysisAllelicTestImpl.class.getName()).log(Level.SEVERE, null, ex);
 		}

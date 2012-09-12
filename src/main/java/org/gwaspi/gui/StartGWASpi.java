@@ -1,8 +1,11 @@
 package org.gwaspi.gui;
 
+import org.gwaspi.constants.cGlobal;
 import org.gwaspi.database.DbManager;
+import org.gwaspi.global.Config;
 import org.gwaspi.global.ServiceLocator;
 import org.gwaspi.global.Text;
+import org.gwaspi.gui.utils.Dialogs;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
@@ -12,6 +15,7 @@ import java.io.PrintStream;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.prefs.Preferences;
 import javax.swing.GroupLayout;
@@ -40,7 +44,7 @@ public class StartGWASpi extends JFrame {
 	public static boolean logToFile = false;
 	public static boolean logOff = false;
 	public static String logPath;
-	public static JFrame mainGUIFrame = new JFrame(org.gwaspi.constants.cGlobal.APP_NAME);
+	public static JFrame mainGUIFrame = new JFrame(cGlobal.APP_NAME);
 	public static JTabbedPane allTabs = new JTabbedPane();
 	private Preferences prefs;
 	public static long maxHeapSize = 0;
@@ -56,7 +60,7 @@ public class StartGWASpi extends JFrame {
 	public void initGWASpi(boolean startWithGUI, File scriptFile) throws IOException, SQLException {
 
 		// initialize configuration of moapi
-		boolean isInitiated = org.gwaspi.global.Config.initPreferences(startWithGUI, scriptFile);
+		boolean isInitiated = Config.initPreferences(startWithGUI, scriptFile);
 
 		if (startWithGUI) {
 			if (isInitiated) {
@@ -88,7 +92,7 @@ public class StartGWASpi extends JFrame {
 				if (logToFile) {
 					//LOGGING OF SYSTEM OUTPUT
 					if (logPath == null) {
-						logPath = org.gwaspi.global.Config.getConfigValue("ReportsDir", "") + "/cli.log";
+						logPath = Config.getConfigValue(Config.PROPERTY_REPORTS_DIR, "") + "/cli.log";
 					}
 					FileOutputStream fos = new FileOutputStream(logPath);
 					PrintStream ps = new PrintStream(fos);
@@ -108,9 +112,7 @@ public class StartGWASpi extends JFrame {
 		maxProcessMarkers = Math.round(maxHeapSize * 625); // 1.6GB needed for 10⁶ markers (safe, 1.4-1.5 real)
 
 		List<String> argsAL = new ArrayList<String>();
-		for (int i = 0; i < args.length; i++) {
-			argsAL.add(args[i]);
-		}
+		argsAL.addAll(Arrays.asList(args));
 
 		if (argsAL.contains("script")) {
 			guiMode = false;
@@ -132,7 +134,7 @@ public class StartGWASpi extends JFrame {
 
 				new StartGWASpi().initGWASpi(false, scriptFile);
 
-				//BIT THAT READS COMMAND LINES AND EXECUTES THEM
+				// BIT THAT READS COMMAND LINES AND EXECUTES THEM
 				org.gwaspi.cli.CliExecutor.execute(scriptFile);
 			} else {
 				log.error(Text.Cli.wrongScriptFilePath);
@@ -151,7 +153,7 @@ public class StartGWASpi extends JFrame {
 					if (jobsPending == 0) {
 						exit();
 					} else {
-						int decision = org.gwaspi.gui.utils.Dialogs.showConfirmDialogue(Text.App.jobsStillPending);
+						int decision = Dialogs.showConfirmDialogue(Text.App.jobsStillPending);
 						if (decision == JOptionPane.YES_OPTION) {
 							exit();
 						}
@@ -164,31 +166,30 @@ public class StartGWASpi extends JFrame {
 				//UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
 				// Set System L&F
 				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-			} catch (UnsupportedLookAndFeelException e) {
-				// handle exception
-			} catch (ClassNotFoundException e) {
-				// handle exception
-			} catch (InstantiationException e) {
-				// handle exception
-			} catch (IllegalAccessException e) {
-				// handle exception
+			} catch (UnsupportedLookAndFeelException ex) {
+				// TODO handle exception
+			} catch (ClassNotFoundException ex) {
+				// TODO handle exception
+			} catch (InstantiationException ex) {
+				// TODO handle exception
+			} catch (IllegalAccessException ex) {
+				// TODO handle exception
 			}
 
 			try {
 				new StartGWASpi().initGWASpi(true, null);
 
 				if (maxHeapSize > 254) {
-					org.gwaspi.gui.utils.Dialogs.showInfoDialogue(maxHeapSize + Text.App.memoryAvailable1 + "\n"
+					Dialogs.showInfoDialogue(maxHeapSize + Text.App.memoryAvailable1 + "\n"
 							+ Text.App.memoryAvailable2 + maxProcessMarkers + Text.App.memoryAvailable3);
 				} else {
-					org.gwaspi.gui.utils.Dialogs.showInfoDialogue(maxHeapSize + Text.App.memoryAvailable1 + "\n"
+					Dialogs.showInfoDialogue(maxHeapSize + Text.App.memoryAvailable1 + "\n"
 							+ Text.App.memoryAvailable2 + maxProcessMarkers + Text.App.memoryAvailable3 + "\n"
 							+ Text.App.memoryAvailable4);
 				}
-
 			} catch (RuntimeException ex) {
 				log.error(Text.App.warnOnlyOneInstance, ex);
-				org.gwaspi.gui.utils.Dialogs.showWarningDialogue(Text.App.warnOnlyOneInstance);
+				Dialogs.showWarningDialogue(Text.App.warnOnlyOneInstance);
 				exit();
 			} catch (OutOfMemoryError ex) {
 				log.error(Text.App.outOfMemoryError, ex);

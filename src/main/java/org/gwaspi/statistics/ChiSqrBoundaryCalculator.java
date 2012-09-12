@@ -1,5 +1,6 @@
 package org.gwaspi.statistics;
 
+import org.gwaspi.global.Config;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -46,8 +47,8 @@ public class ChiSqrBoundaryCalculator {
 
 	public static void main(String[] args) throws IOException, MathException {
 
-		boundaryPath = org.gwaspi.global.Config.getConfigValue("ReportsDir", "") + "/chisqrboundary" + df + "_" + method + simNb + "x" + N + ".txt";
-		netCDFFile = org.gwaspi.global.Config.getConfigValue("ReportsDir", "") + "/chisqrdist" + df + ".nc";
+		boundaryPath = Config.getConfigValue(Config.PROPERTY_REPORTS_DIR, "") + "/chisqrboundary" + df + "_" + method + simNb + "x" + N + ".txt";
+		netCDFFile = Config.getConfigValue(Config.PROPERTY_REPORTS_DIR, "") + "/chisqrdist" + df + ".nc";
 		NetcdfFileWriteable ncfile = NetcdfFileWriteable.createNew(netCDFFile, false);
 
 		generatChisqrDistributions(ncfile, df);

@@ -1,5 +1,7 @@
 package org.gwaspi.database;
 
+import org.gwaspi.constants.cDBGWASpi;
+import org.gwaspi.global.Config;
 import org.gwaspi.global.ServiceLocator;
 import java.io.File;
 import java.io.FileWriter;
@@ -24,13 +26,13 @@ public class StudyGenerator {
 		boolean result = false;
 		try {
 			// CREATE STUDIES table in APP SCHEMA and fill with data
-			db.createTable(org.gwaspi.constants.cDBGWASpi.SCH_APP,
-					org.gwaspi.constants.cDBGWASpi.T_STUDIES,
-					org.gwaspi.constants.cDBGWASpi.T_CREATE_STUDIES);
+			db.createTable(cDBGWASpi.SCH_APP,
+					cDBGWASpi.T_STUDIES,
+					cDBGWASpi.T_CREATE_STUDIES);
 
-			result = db.insertValuesInTable(org.gwaspi.constants.cDBGWASpi.SCH_APP,
-					org.gwaspi.constants.cDBGWASpi.T_STUDIES,
-					org.gwaspi.constants.cDBGWASpi.F_INSERT_STUDIES,
+			result = db.insertValuesInTable(cDBGWASpi.SCH_APP,
+					cDBGWASpi.T_STUDIES,
+					cDBGWASpi.F_INSERT_STUDIES,
 					insertValues);
 		} catch (Exception ex) {
 			log.error("Failed creating Schema or Studies table", ex);
@@ -40,12 +42,12 @@ public class StudyGenerator {
 
 	public static void insertNewStudy(String studyName, String description) {
 		try {
-			DbManager db = ServiceLocator.getDbManager(org.gwaspi.constants.cDBGWASpi.DB_DATACENTER);
+			DbManager db = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
 
 			// INSERT study data into study management table
-			boolean result = db.insertValuesInTable(org.gwaspi.constants.cDBGWASpi.SCH_APP,
-					org.gwaspi.constants.cDBGWASpi.T_STUDIES,
-					org.gwaspi.constants.cDBGWASpi.F_INSERT_STUDIES,
+			boolean result = db.insertValuesInTable(cDBGWASpi.SCH_APP,
+					cDBGWASpi.T_STUDIES,
+					cDBGWASpi.F_INSERT_STUDIES,
 					new Object[]{studyName, // name
 						description, // description
 						"external", // stydy_type
@@ -69,17 +71,17 @@ public class StudyGenerator {
 		}
 
 		// DELETE METADATA INFO FROM DB
-		DbManager dBManager = ServiceLocator.getDbManager(org.gwaspi.constants.cDBGWASpi.DB_DATACENTER);
-		String statement = "DELETE FROM " + org.gwaspi.constants.cDBGWASpi.SCH_APP + "." + org.gwaspi.constants.cDBGWASpi.T_STUDIES + " WHERE " + org.gwaspi.constants.cDBGWASpi.f_ID + "=" + studyId;
+		DbManager dBManager = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
+		String statement = "DELETE FROM " + cDBGWASpi.SCH_APP + "." + cDBGWASpi.T_STUDIES + " WHERE " + cDBGWASpi.f_ID + "=" + studyId;
 		dBManager.executeStatement(statement);
 
 		// DELETE STUDY FOLDERS
-		String genotypesFolder = org.gwaspi.global.Config.getConfigValue("GTdir", "");
+		String genotypesFolder = Config.getConfigValue(Config.PROPERTY_GENOTYPES_DIR, "");
 		File gtStudyFolder = new File(genotypesFolder + "/STUDY_" + studyId);
 		org.gwaspi.global.Utils.deleteFolder(gtStudyFolder);
 
 		if (deleteReports) {
-			String reportsFolder = org.gwaspi.global.Config.getConfigValue("ReportsDir", "");
+			String reportsFolder = Config.getConfigValue(Config.PROPERTY_REPORTS_DIR, "");
 			File repStudyFolder = new File(reportsFolder + "/STUDY_" + studyId);
 			org.gwaspi.global.Utils.deleteFolder(repStudyFolder);
 		}
@@ -92,7 +94,7 @@ public class StudyGenerator {
 		String result = "";
 
 		// Create log file containing study history
-		FileWriter fw = new FileWriter(org.gwaspi.global.Config.getConfigValue("LogDir", "") + "/" + studyId + ".log");
+		FileWriter fw = new FileWriter(Config.getConfigValue(Config.PROPERTY_LOG_DIR, "") + "/" + studyId + ".log");
 		return result;
 	}
 }

@@ -1,5 +1,6 @@
 package org.gwaspi.gui.utils;
 
+import org.gwaspi.global.Config;
 import org.gwaspi.global.Text;
 import java.awt.BorderLayout;
 import java.awt.Container;
@@ -149,7 +150,7 @@ public class SystemOutPopup extends JFrame {
 				String logName = org.gwaspi.global.Utils.getURIDate();
 				SystemOutPopup sysout = new SystemOutPopup(false, // Catch errors?
 						true, // Log to file?
-						org.gwaspi.global.Config.getConfigValue("ReportsDir", "") + "/" + logName + ".log", // Log save path
+						Config.getConfigValue(Config.PROPERTY_REPORTS_DIR, "") + "/" + logName + ".log", // Log save path
 						600, // Width
 						400, // Height
 						WindowConstants.DISPOSE_ON_CLOSE); // CloseOperation
@@ -157,7 +158,7 @@ public class SystemOutPopup extends JFrame {
 				String logName = org.gwaspi.global.Utils.getURIDate();
 				SystemOutPopup sysout = new SystemOutPopup(false, // Catch errors?
 						true, // Log to file?
-						org.gwaspi.global.Config.getConfigValue("ReportsDir", "") + "/" + logName + ".log", // Log save path
+						Config.getConfigValue(Config.PROPERTY_REPORTS_DIR, "") + "/" + logName + ".log", // Log save path
 						600, // Width
 						400, // Height
 						WindowConstants.DISPOSE_ON_CLOSE);   // CloseOperation
@@ -165,12 +166,12 @@ public class SystemOutPopup extends JFrame {
 //				String logName = org.gwaspi.global.Utils.getURIDate();
 //				SystemOutPopup_old sysout = new SystemOutPopup_old(false, // Catch errors?
 //						true, // Log to file?
-//						org.gwaspi.global.Config.getConfigValue("ReportsDir", "") + "/"+logName+".log", // Log save path
+//						Config.getConfigValue(Config.PROPERTY_REPORTS_DIR, "") + "/"+logName+".log", // Log save path
 //						600, // Width
 //						400, // Height
 //						WindowConstants.DISPOSE_ON_CLOSE);   // CloseOperation
 			}
-		} catch (IOException iOException) {
+		} catch (IOException ex) {
 		}
 	}
 

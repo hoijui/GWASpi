@@ -4,6 +4,7 @@ import org.gwaspi.constants.cDBGWASpi;
 import org.gwaspi.constants.cExport;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.database.DbManager;
+import org.gwaspi.global.Config;
 import org.gwaspi.global.ServiceLocator;
 import java.awt.Color;
 import java.io.File;
@@ -42,7 +43,7 @@ public class OutputTrendTest {
 		Operation op = new Operation(opId);
 		DbManager dBManager = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
 
-		org.gwaspi.global.Utils.createFolder(org.gwaspi.global.Config.getConfigValue("ReportsDir", ""), "STUDY_" + op.getStudyId());
+		org.gwaspi.global.Utils.createFolder(Config.getConfigValue(Config.PROPERTY_REPORTS_DIR, ""), "STUDY_" + op.getStudyId());
 		//String manhattanName = "mnhtt_"+outName;
 		String prefix = org.gwaspi.reports.ReportManager.getreportNamePrefix(op);
 		String manhattanName = prefix + "manhtt";
@@ -118,7 +119,7 @@ public class OutputTrendTest {
 			picWidth = 2000;
 		}
 
-		String imagePath = org.gwaspi.global.Config.getConfigValue("ReportsDir", "") + "/STUDY_" + rdOPMetadata.getStudyId() + "/" + outName + ".png";
+		String imagePath = Config.getConfigValue(Config.PROPERTY_REPORTS_DIR, "") + "/STUDY_" + rdOPMetadata.getStudyId() + "/" + outName + ".png";
 		try {
 			ChartUtilities.saveChartAsPNG(new File(imagePath),
 					chart,
@@ -140,7 +141,7 @@ public class OutputTrendTest {
 		JFreeChart chart = new JFreeChart("X² QQ", JFreeChart.DEFAULT_TITLE_FONT, qqPlot, true);
 
 		OperationMetadata rdOPMetadata = new OperationMetadata(opId);
-		String imagePath = org.gwaspi.global.Config.getConfigValue("ReportsDir", "") + "/STUDY_" + rdOPMetadata.getStudyId() + "/" + outName + ".png";
+		String imagePath = Config.getConfigValue(Config.PROPERTY_REPORTS_DIR, "") + "/STUDY_" + rdOPMetadata.getStudyId() + "/" + outName + ".png";
 		try {
 			ChartUtilities.saveChartAsPNG(new File(imagePath),
 					chart,
@@ -178,7 +179,7 @@ public class OutputTrendTest {
 			// WRITE HEADER OF FILE
 			String header = "MarkerID\trsID\tChr\tPosition\tMin. Allele\tMaj. Allele\tTrend-Test\tPval\n";
 			String reportNameExt = reportName + ".txt";
-			String reportPath = org.gwaspi.global.Config.getConfigValue("ReportsDir", "") + "/STUDY_" + rdOPMetadata.getStudyId() + "/";
+			String reportPath = Config.getConfigValue(Config.PROPERTY_REPORTS_DIR, "") + "/STUDY_" + rdOPMetadata.getStudyId() + "/";
 
 			// WRITE MARKERSET RSID
 			rdInfoMarkerSet.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_RSID);

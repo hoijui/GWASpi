@@ -1,5 +1,6 @@
 package org.gwaspi.global;
 
+import org.gwaspi.constants.cGlobal;
 import org.gwaspi.database.DerbyDBReshaper;
 import org.gwaspi.gui.StartGWASpi;
 import org.gwaspi.gui.utils.Dialogs;
@@ -32,6 +33,15 @@ public class Config {
 
 	private static final Logger log = LoggerFactory.getLogger(Config.class);
 
+	public static final String PROPERTY_LAST_OPENED_DIR = "LAST_OPENED_DIR";
+	public static final String PROPERTY_LAST_SELECTED_NODE = "LAST_SELECTED_NODE";
+	public static final String PROPERTY_DATA_DIR = "DataDir";
+	public static final String PROPERTY_GENOTYPES_DIR = "GTdir";
+	public static final String PROPERTY_EXPORT_DIR = "ExportDir";
+	public static final String PROPERTY_REPORTS_DIR = "ReportsDir";
+	public static final String PROPERTY_LOG_DIR = "LogDir";
+	public static final String PROPERTY_CURRENT_GWASPIDB_VERSION = "CURRENT_GWASPIDB_VERSION";
+
 	private static Properties properties = new Properties();
 	private static JFileChooser fc;
 	private static Preferences prefs = Preferences.userNodeForPackage(Config.class.getClass());
@@ -46,19 +56,19 @@ public class Config {
 		prefs.put(key, value.toString());
 
 		// CLI & THREAD PREFS
-		if (key.equals("DataDir")) {
+		if (key.equals(PROPERTY_DATA_DIR)) {
 			StartGWASpi.config_DataDir = (String) value;
 		}
-		if (key.equals("GTdir")) {
+		if (key.equals(PROPERTY_GENOTYPES_DIR)) {
 			StartGWASpi.config_GTdir = (String) value;
 		}
-		if (key.equals("ExportDir")) {
+		if (key.equals(PROPERTY_EXPORT_DIR)) {
 			StartGWASpi.config_ExportDir = (String) value;
 		}
-		if (key.equals("ReportsDir")) {
+		if (key.equals(PROPERTY_REPORTS_DIR)) {
 			StartGWASpi.config_ReportsDir = (String) value;
 		}
-		if (key.equals("LogDir")) {
+		if (key.equals(PROPERTY_LOG_DIR)) {
 			StartGWASpi.config_LogDir = (String) value;
 		}
 	}
@@ -66,32 +76,32 @@ public class Config {
 	public static String getConfigValue(String key, String defaultV) throws IOException {
 		String prop = "";
 		if (StartGWASpi.guiMode) {
-			//GUI MODE
+			// GUI MODE
 			prop = prefs.get(key, defaultV);
 		} else {
-			//CLI MODE
-			if (key.equals("DataDir")) {
+			// CLI MODE
+			if (key.equals(PROPERTY_DATA_DIR)) {
 				if (StartGWASpi.config_DataDir != null) {
 					prop = StartGWASpi.config_DataDir;
 				} else {
 					prop = defaultV;
 				}
 			}
-			if (key.equals("GTdir")) {
+			if (key.equals(PROPERTY_GENOTYPES_DIR)) {
 				if (StartGWASpi.config_GTdir != null) {
 					prop = StartGWASpi.config_GTdir;
 				} else {
 					prop = defaultV;
 				}
 			}
-			if (key.equals("ExportDir")) {
+			if (key.equals(PROPERTY_EXPORT_DIR)) {
 				if (StartGWASpi.config_ExportDir != null) {
 					prop = StartGWASpi.config_ExportDir;
 				} else {
 					prop = defaultV;
 				}
 			}
-			if (key.equals("ReportsDir")) {
+			if (key.equals(PROPERTY_REPORTS_DIR)) {
 				if (StartGWASpi.config_ReportsDir != null) {
 					prop = StartGWASpi.config_ReportsDir;
 				} else {
@@ -125,10 +135,10 @@ public class Config {
 			if (key.equals("CHART_SAMPLEQA_MISSING_THRESHOLD")) {
 				prop = defaultV;
 			}
-			if (key.equals("CURRENT_GWASPIDB_VERSION")) {
+			if (key.equals(PROPERTY_CURRENT_GWASPIDB_VERSION)) {
 				prop = defaultV;
 			}
-			if (key.equals("LogDir")) {
+			if (key.equals(PROPERTY_LOG_DIR)) {
 				if (StartGWASpi.config_LogDir != null) {
 					prop = StartGWASpi.config_LogDir;
 				} else {
@@ -136,7 +146,6 @@ public class Config {
 				}
 			}
 		}
-
 
 		return prop;
 	}
@@ -166,7 +175,7 @@ public class Config {
 		//startWithGUI = _startWithGUI;
 		try {
 			//clearConfigFile();
-			File dirToData = new File(getConfigValue("DataDir", ""));
+			File dirToData = new File(getConfigValue(PROPERTY_DATA_DIR, ""));
 
 			// CHECK FOR RECENT GWASPI VERSION
 			checkUpdates();
@@ -206,7 +215,7 @@ public class Config {
 						}
 					}
 
-//					if (getConfigValue("GTdir", "").equals("")) {
+//					if (getConfigValue(PROPERTY_GENOTYPES_DIR, "").equals("")) {
 					updateConfigDataDirs(dirToData);
 //					} else {
 					setDBSystemDir(derbyCenter.getPath());
@@ -237,7 +246,7 @@ public class Config {
 						isInitiated = true;
 					}
 				} else {
-					if (getConfigValue("GTdir", "").equals("")) {
+					if (getConfigValue(PROPERTY_GENOTYPES_DIR, "").equals("")) {
 						updateConfigDataDirs(dirToData);
 					}
 					isInitiated = true;
@@ -256,7 +265,7 @@ public class Config {
 
 	protected static void createDataStructure(File dataDir) throws IOException, BackingStoreException, URISyntaxException {
 		clearConfigFile();
-		setConfigValue("DataDir", dataDir.getPath());
+		setConfigValue(PROPERTY_DATA_DIR, dataDir.getPath());
 		File derbyCenter = new File(dataDir.getPath() + "/datacenter");
 		setDBSystemDir(derbyCenter.getPath());
 
@@ -270,10 +279,10 @@ public class Config {
 		Utils.createFolder(dataDir.getPath(), "reports");
 		Utils.createFolder(dataDir.getPath() + "/reports", "log");
 
-		setConfigValue("GTdir", dataDir.getPath() + "/genotypes");
-		setConfigValue("ExportDir", dataDir.getPath() + "/export");
-		setConfigValue("ReportsDir", dataDir.getPath() + "/reports");
-		setConfigValue("LogDir", dataDir.getPath() + "/reports/log");
+		setConfigValue(PROPERTY_GENOTYPES_DIR, dataDir.getPath() + "/genotypes");
+		setConfigValue(PROPERTY_EXPORT_DIR, dataDir.getPath() + "/export");
+		setConfigValue(PROPERTY_REPORTS_DIR, dataDir.getPath() + "/reports");
+		setConfigValue(PROPERTY_LOG_DIR, dataDir.getPath() + "/reports/log");
 
 		// SET CHART PREFERENCES
 		setConfigValue("CHART_MANHATTAN_PLOT_BCKG", "200,200,200");
@@ -291,14 +300,14 @@ public class Config {
 		URL localVersionPath = Config.class.getClass().getResource(org.gwaspi.constants.cGlobal.LOCAL_VERSION_XML);
 		Document localDom = XMLParser.parseXmlFile(localVersionPath.toURI().toString());
 		List<Element> localElements = XMLParser.parseDocument(localDom, "GWASpi");
-		setConfigValue("CURRENT_GWASPIDB_VERSION", XMLParser.getTextValue(localElements.get(0), "GWASpi_DB_Version"));
+		setConfigValue(PROPERTY_CURRENT_GWASPIDB_VERSION, XMLParser.getTextValue(localElements.get(0), "GWASpi_DB_Version"));
 
 		org.gwaspi.database.StudyGenerator.createStudyLogFile(0);
 	}
 
 	protected static void updateConfigDataDirs(File dataDir) throws IOException, BackingStoreException, URISyntaxException {
-		String lastOpenedDir = getConfigValue("LAST_OPENED_DIR", org.gwaspi.constants.cGlobal.HOMEDIR);
-		String lastSelectedNode = getConfigValue("LAST_SELECTED_NODE", Text.App.appName);
+		String lastOpenedDir = getConfigValue(PROPERTY_LAST_OPENED_DIR, org.gwaspi.constants.cGlobal.HOMEDIR);
+		String lastSelectedNode = getConfigValue(PROPERTY_LAST_SELECTED_NODE, Text.App.appName);
 
 		String lastMnhttBack = getConfigValue("CHART_MANHATTAN_PLOT_BCKG", "200,200,200");
 		String lastMnhttBackAlt = getConfigValue("CHART_MANHATTAN_PLOT_BCKG_ALT", "230,230,230");
@@ -309,18 +318,18 @@ public class Config {
 		String lastQQCi = getConfigValue("CHART_QQ_PLOT_2SIGMA", "170,170,170");
 		String lastSampleQAHetzyg = getConfigValue("CHART_SAMPLEQA_HETZYG_THRESHOLD", "0.5");
 		String lastSampleQAMissingratio = getConfigValue("CHART_SAMPLEQA_MISSING_THRESHOLD", "0.5");
-		String lastVersionNb = Config.getConfigValue("CURRENT_GWASPIDB_VERSION", "2.0.1");
+		String lastVersionNb = getConfigValue(PROPERTY_CURRENT_GWASPIDB_VERSION, "2.0.1");
 
 		clearConfigFile();
-		setConfigValue("DataDir", dataDir.getPath());
+		setConfigValue(PROPERTY_DATA_DIR, dataDir.getPath());
 		File derbyCenter = new File(dataDir.getPath() + "/datacenter");
 
-		setConfigValue("GTdir", dataDir.getPath() + "/genotypes");
-		setConfigValue("ExportDir", dataDir.getPath() + "/export");
-		setConfigValue("ReportsDir", dataDir.getPath() + "/reports");
-		setConfigValue("LogDir", dataDir.getPath() + "/reports/log");
-		setConfigValue("LAST_OPENED_DIR", lastOpenedDir);
-		setConfigValue("LAST_SELECTED_NODE", lastSelectedNode);
+		setConfigValue(PROPERTY_GENOTYPES_DIR, dataDir.getPath() + "/genotypes");
+		setConfigValue(PROPERTY_EXPORT_DIR, dataDir.getPath() + "/export");
+		setConfigValue(PROPERTY_REPORTS_DIR, dataDir.getPath() + "/reports");
+		setConfigValue(PROPERTY_LOG_DIR, dataDir.getPath() + "/reports/log");
+		setConfigValue(PROPERTY_LAST_OPENED_DIR, lastOpenedDir);
+		setConfigValue(PROPERTY_LAST_SELECTED_NODE, lastSelectedNode);
 
 		// SET CHART PREFERENCES
 		setConfigValue("CHART_MANHATTAN_PLOT_BCKG", lastMnhttBack);
@@ -335,10 +344,10 @@ public class Config {
 		setConfigValue("CHART_SAMPLEQA_HETZYG_THRESHOLD", lastSampleQAHetzyg);
 		setConfigValue("CHART_SAMPLEQA_MISSING_THRESHOLD", lastSampleQAMissingratio);
 
-		URL localVersionPath = Config.class.getClass().getResource(org.gwaspi.constants.cGlobal.LOCAL_VERSION_XML);
+		URL localVersionPath = Config.class.getClass().getResource(cGlobal.LOCAL_VERSION_XML);
 		Document localDom = XMLParser.parseXmlFile(localVersionPath.toURI().toString());
 		List<Element> localElements = XMLParser.parseDocument(localDom, "GWASpi");
-		setConfigValue("CURRENT_GWASPIDB_VERSION", XMLParser.getTextValue(localElements.get(0), "GWASpi_DB_Version"));
+		setConfigValue(PROPERTY_CURRENT_GWASPIDB_VERSION, XMLParser.getTextValue(localElements.get(0), "GWASpi_DB_Version"));
 
 		setDBSystemDir(derbyCenter.getPath());
 	}
@@ -348,11 +357,11 @@ public class Config {
 			URL localVersionPath = Config.class.getClass().getResource(org.gwaspi.constants.cGlobal.LOCAL_VERSION_XML);
 			Document localDom = XMLParser.parseXmlFile(localVersionPath.toURI().toString());
 
-			if (localDom != null) { //Found local version info
+			if (localDom != null) { // Found local version info
 				System.setProperty("java.net.useSystemProxies", "true");
 
 				List<Element> localElements = XMLParser.parseDocument(localDom, "GWASpi");
-				setConfigValue("CURRENT_GWASPIDB_VERSION", XMLParser.getTextValue(localElements.get(0), "GWASpi_DB_Version"));
+				setConfigValue(PROPERTY_CURRENT_GWASPIDB_VERSION, XMLParser.getTextValue(localElements.get(0), "GWASpi_DB_Version"));
 
 				URL remoteVersionPath = new URL(org.gwaspi.constants.cGlobal.REMOTE_VERSION_XML);
 				Document remoteDom = XMLParser.parseXmlFile(remoteVersionPath.toURI().toString());
@@ -388,7 +397,6 @@ public class Config {
 							log.error(message.toString());
 						}
 					}
-
 				}
 			}
 		}

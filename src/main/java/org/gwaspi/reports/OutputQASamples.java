@@ -4,6 +4,7 @@ import org.gwaspi.constants.cDBGWASpi;
 import org.gwaspi.constants.cExport;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.database.DbManager;
+import org.gwaspi.global.Config;
 import org.gwaspi.global.ServiceLocator;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -29,8 +30,8 @@ public class OutputQASamples {
 		Operation op = new Operation(opId);
 		DbManager dBManager = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
 
-		org.gwaspi.global.Utils.createFolder(org.gwaspi.global.Config.getConfigValue("ReportsDir", ""), "STUDY_" + op.getStudyId());
-		reportPath = org.gwaspi.global.Config.getConfigValue("ReportsDir", "") + "/" + "STUDY_" + op.getStudyId() + "/";
+		org.gwaspi.global.Utils.createFolder(Config.getConfigValue(Config.PROPERTY_REPORTS_DIR, ""), "STUDY_" + op.getStudyId());
+		reportPath = Config.getConfigValue(Config.PROPERTY_REPORTS_DIR, "") + "/" + "STUDY_" + op.getStudyId() + "/";
 
 		String prefix = org.gwaspi.reports.ReportManager.getreportNamePrefix(op);
 		samplMissOutName = prefix + "samplmissing.txt";
@@ -154,7 +155,7 @@ public class OutputQASamples {
 //        JFreeChart chart = new JFreeChart("Sample Heterozygosity vs. Missingness", JFreeChart.DEFAULT_TITLE_FONT, qqPlot, true);
 //
 //        OperationMetadata rdOPMetadata = new OperationMetadata(opId);
-//        String imagePath=global.Config.getConfigValue("ReportsDir", "") + "/STUDY_"+rdOPMetadata.getStudyId()+"/"+outName+".png";
+//        String imagePath=Config.getConfigValue(Config.PROPERTY_REPORTS_DIR, "") + "/STUDY_"+rdOPMetadata.getStudyId()+"/"+outName+".png";
 //        try {
 //            ChartUtilities.saveChartAsPNG(new File(imagePath),
 //                                           chart,

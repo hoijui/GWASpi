@@ -4,6 +4,7 @@ import org.gwaspi.constants.cDBGWASpi;
 import org.gwaspi.constants.cExport;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.database.DbManager;
+import org.gwaspi.global.Config;
 import org.gwaspi.global.ServiceLocator;
 import org.gwaspi.global.Text;
 import java.io.IOException;
@@ -36,7 +37,7 @@ public class OutputHardyWeinberg {
 		String prefix = org.gwaspi.reports.ReportManager.getreportNamePrefix(op);
 		String hwOutName = prefix + "hardy-weinberg.txt";
 
-		org.gwaspi.global.Utils.createFolder(org.gwaspi.global.Config.getConfigValue("ReportsDir", ""), "STUDY_" + op.getStudyId());
+		org.gwaspi.global.Utils.createFolder(Config.getConfigValue(Config.PROPERTY_REPORTS_DIR, ""), "STUDY_" + op.getStudyId());
 
 		if (processSortedHardyWeinbergReport(opId, hwOutName)) {
 			ReportManager.insertRPMetadata(dBManager,
@@ -76,7 +77,7 @@ public class OutputHardyWeinberg {
 
 			//WRITE HEADER OF FILE
 			String header = "MarkerID\trsID\tChr\tPosition\tMin_Allele\tMaj_Allele\t" + Text.Reports.hwPval + Text.Reports.CTRL + "\t" + Text.Reports.hwObsHetzy + Text.Reports.CTRL + "\t" + Text.Reports.hwExpHetzy + Text.Reports.CTRL + "\n";
-			String reportPath = org.gwaspi.global.Config.getConfigValue("ReportsDir", "") + "/STUDY_" + rdOPMetadata.getStudyId() + "/";
+			String reportPath = Config.getConfigValue(Config.PROPERTY_REPORTS_DIR, "") + "/STUDY_" + rdOPMetadata.getStudyId() + "/";
 
 
 

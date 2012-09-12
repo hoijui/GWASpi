@@ -189,7 +189,7 @@ public final class ManhattanChartDisplay extends JPanel {
 
 		// LOAD MANHATTANPLOT IMAGE
 		try {
-			String reportPath = Config.getConfigValue("ReportsDir", "") + "/STUDY_" + studyId + "/";
+			String reportPath = Config.getConfigValue(Config.PROPERTY_REPORTS_DIR, "") + "/STUDY_" + studyId + "/";
 			File testF = new File(reportPath + chartPath);
 			if (testF.exists()) {
 				ImageIcon image = new ImageIcon(testF.getPath());
@@ -303,7 +303,7 @@ public final class ManhattanChartDisplay extends JPanel {
 		@Override
 		public void actionPerformed(ActionEvent evt) {
 			try {
-				String reportPath = Config.getConfigValue("ReportsDir", "") + "/STUDY_" + studyId + "/";
+				String reportPath = Config.getConfigValue(Config.PROPERTY_REPORTS_DIR, "") + "/STUDY_" + studyId + "/";
 				File origFile = new File(reportPath + chartPath);
 				File newFile = new File(Dialogs.selectDirectoryDialog(JOptionPane.OK_OPTION).getPath() + "/" + chartPath);
 				if (origFile.exists()) {

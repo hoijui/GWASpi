@@ -1,5 +1,6 @@
 package org.gwaspi.gui.reports;
 
+import org.gwaspi.global.Config;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.GWASpiExplorerPanel;
 import org.gwaspi.gui.utils.CursorUtils;
@@ -8,7 +9,6 @@ import org.gwaspi.gui.utils.RowRendererGenotypicAssocWithZoomQueryDB;
 import org.gwaspi.gui.utils.URLInDefaultBrowser;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -85,7 +85,7 @@ public final class Report_AnalysisGenotypicTestImpl extends Report_Analysis {
 		reportName = reportName.substring(reportName.indexOf('-') + 2);
 		String reportPath = "";
 		try {
-			reportPath = org.gwaspi.global.Config.getConfigValue("ReportsDir", "") + "/STUDY_" + studyId + "/";
+			reportPath = Config.getConfigValue(Config.PROPERTY_REPORTS_DIR, "") + "/STUDY_" + studyId + "/";
 		} catch (IOException ex) {
 			Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
 		}

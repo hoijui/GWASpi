@@ -56,7 +56,7 @@ public class MatrixExporter {
 	public boolean exportToFormat(String exportFormatStr, String phenotype) throws IOException {
 		log.info(Text.All.processing);
 
-		String exportPath = Config.getConfigValue("ExportDir", "");
+		String exportPath = Config.getConfigValue(Config.PROPERTY_EXPORT_DIR, "");
 		org.gwaspi.global.Utils.createFolder(exportPath, "STUDY_" + rdMatrixMetadata.getStudyId());
 		exportPath = exportPath + "/STUDY_" + rdMatrixMetadata.getStudyId();
 		ExportFormat exportFormat = ExportFormat.compareTo(exportFormatStr);

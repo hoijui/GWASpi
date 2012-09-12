@@ -75,7 +75,7 @@ public class Report_HardyWeinbergSummary extends JPanel {
 
 		String reportPath = "";
 		try {
-			reportPath = Config.getConfigValue("ReportsDir", "") + "/STUDY_" + _studyId + "/";
+			reportPath = Config.getConfigValue(Config.PROPERTY_REPORTS_DIR, "") + "/STUDY_" + _studyId + "/";
 		} catch (IOException ex) {
 			Logger.getLogger(Report_HardyWeinbergSummary.class.getName()).log(Level.SEVERE, null, ex);
 		}

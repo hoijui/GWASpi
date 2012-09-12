@@ -227,19 +227,19 @@ public class GWASpiExplorer {
 			TreePath treePath = arg0.getPath();
 			if (treePath != null && currentElementInfo != null) {
 				try {
-					Config.setConfigValue("LAST_SELECTED_NODE", currentElementInfo.nodeUniqueName);
+					Config.setConfigValue(Config.PROPERTY_LAST_SELECTED_NODE, currentElementInfo.nodeUniqueName);
 				} catch (IOException ex) {
 					log.error(null, ex);
 				}
 			} else if (currentElement.equals(Text.App.treeStudyManagement)) {
 				try {
-					Config.setConfigValue("LAST_SELECTED_NODE", Text.App.treeStudyManagement);
+					Config.setConfigValue(Config.PROPERTY_LAST_SELECTED_NODE, Text.App.treeStudyManagement);
 				} catch (IOException ex) {
 					log.error(null, ex);
 				}
 			} else {
 				try {
-					Config.setConfigValue("LAST_SELECTED_NODE", Text.App.appName);
+					Config.setConfigValue(Config.PROPERTY_LAST_SELECTED_NODE, Text.App.appName);
 				} catch (IOException ex) {
 					log.error(null, ex);
 				}

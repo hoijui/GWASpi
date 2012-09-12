@@ -85,7 +85,7 @@ public final class Report_AnalysisTrendTestImpl extends Report_Analysis {
 		reportName = reportName.substring(reportName.indexOf('-') + 2);
 		String reportPath = "";
 		try {
-			reportPath = Config.getConfigValue("ReportsDir", "") + "/STUDY_" + studyId + "/";
+			reportPath = Config.getConfigValue(Config.PROPERTY_REPORTS_DIR, "") + "/STUDY_" + studyId + "/";
 		} catch (IOException ex) {
 			Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
 		}

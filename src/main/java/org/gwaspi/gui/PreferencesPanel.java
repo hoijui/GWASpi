@@ -347,7 +347,7 @@ public class PreferencesPanel extends JPanel {
 				String currentDataDirPath = null;
 				for (int i = 0; i < tm.getRowCount(); i++) {
 					String key = tm.getValueAt(i, 0).toString();
-					if (key.equals("DataDir")) {
+					if (key.equals(Config.PROPERTY_DATA_DIR)) {
 						currentDataDirPath = tm.getValueAt(i, 1).toString();
 					}
 				}
@@ -369,7 +369,7 @@ public class PreferencesPanel extends JPanel {
 						if (origFile.exists()) {
 							org.gwaspi.global.Utils.copyFileRecursive(origFile, newFile);
 						}
-						Config.setConfigValue("GTdir", newFile.getPath());
+						Config.setConfigValue(Config.PROPERTY_GENOTYPES_DIR, newFile.getPath());
 
 	//					origFile = new File(currentDataDirPath + "/help");
 	//					newFile = new File(newDataDir.getPath() + "/help");
@@ -383,16 +383,16 @@ public class PreferencesPanel extends JPanel {
 						if (origFile.exists()) {
 							org.gwaspi.global.Utils.copyFileRecursive(origFile, newFile);
 						}
-						Config.setConfigValue("ExportDir", newFile.getPath());
+						Config.setConfigValue(Config.PROPERTY_EXPORT_DIR, newFile.getPath());
 
 						origFile = new File(currentDataDirPath + "/reports");
 						newFile = new File(newDataDir.getPath() + "/reports");
 						if (origFile.exists()) {
 							org.gwaspi.global.Utils.copyFileRecursive(origFile, newFile);
 						}
-						Config.setConfigValue("ReportsDir", newFile.getPath());
-						Config.setConfigValue("LogDir", newFile.getPath() + "/log");
-						Config.setConfigValue("DataDir", newDataDir.getPath());
+						Config.setConfigValue(Config.PROPERTY_REPORTS_DIR, newFile.getPath());
+						Config.setConfigValue(Config.PROPERTY_LOG_DIR, newFile.getPath() + "/log");
+						Config.setConfigValue(Config.PROPERTY_DATA_DIR, newDataDir.getPath());
 
 						GWASpiExplorerPanel.pnl_Content = new PreferencesPanel();
 						GWASpiExplorerPanel.scrl_Content.setViewportView(GWASpiExplorerPanel.pnl_Content);

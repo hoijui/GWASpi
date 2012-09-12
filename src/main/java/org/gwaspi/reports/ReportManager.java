@@ -1,6 +1,7 @@
 package org.gwaspi.reports;
 
 import org.gwaspi.database.DbManager;
+import org.gwaspi.global.Config;
 import org.gwaspi.global.ServiceLocator;
 import java.io.File;
 import java.io.IOException;
@@ -131,7 +132,7 @@ public class ReportManager {
 	public static void deleteReportByMatrixId(int matrixId) throws IOException {
 		MatrixMetadata matrixMetadata = new MatrixMetadata(matrixId);
 		org.gwaspi.model.ReportsList reportsList = new org.gwaspi.model.ReportsList(Integer.MIN_VALUE, matrixId);
-		String reportsFolder = org.gwaspi.global.Config.getConfigValue("ReportsDir", "");
+		String reportsFolder = Config.getConfigValue(Config.PROPERTY_REPORTS_DIR, "");
 
 		for (Report rp : reportsList.reportsListAL) {
 			File reportFile = new File(reportsFolder + "/STUDY_" + matrixMetadata.getStudyId() + "/" + rp.getReportFileName());
@@ -152,7 +153,7 @@ public class ReportManager {
 	public static void deleteReportByOperationId(int opId) throws IOException {
 		OperationMetadata operationMetadata = new OperationMetadata(opId);
 		org.gwaspi.model.ReportsList reportsList = new org.gwaspi.model.ReportsList(opId, operationMetadata.getParentMatrixId());
-		String reportsFolder = org.gwaspi.global.Config.getConfigValue("ReportsDir", "");
+		String reportsFolder = Config.getConfigValue(Config.PROPERTY_REPORTS_DIR, "");
 
 		for (Report rp : reportsList.reportsListAL) {
 			File reportFile = new File(reportsFolder + "/STUDY_" + operationMetadata.getStudyId() + "/" + rp.getReportFileName());

@@ -1,6 +1,7 @@
 package org.gwaspi.netCDF.matrices;
 
 import org.gwaspi.database.DbManager;
+import org.gwaspi.global.Config;
 import org.gwaspi.global.ServiceLocator;
 import java.io.File;
 import java.io.IOException;
@@ -76,7 +77,7 @@ public class MatrixManager {
 		try {
 			MatrixMetadata matrixMetadata = new MatrixMetadata(matrixId);
 
-			String genotypesFolder = org.gwaspi.global.Config.getConfigValue("GTdir", "");
+			String genotypesFolder = Config.getConfigValue(Config.PROPERTY_GENOTYPES_DIR, "");
 			genotypesFolder += "/STUDY_" + matrixMetadata.getStudyId() + "/";
 
 			// DELETE OPERATION netCDFs FROM THIS MATRIX
