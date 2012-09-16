@@ -26,16 +26,14 @@ import ucar.ma2.InvalidRangeException;
 import ucar.nc2.NetcdfFileWriteable;
 
 /**
+ * Hapmap genotypes loader
+ * Can load a single file or multiple files, as long as they belong to a single population (CEU, YRI, JPT...)
+ * Imports Hapmap genotype files as found on
+ * http://hapmap.ncbi.nlm.nih.gov/downloads/genotypes/?N=D
  *
  * @author Fernando Muñiz Fernandez
  * IBE, Institute of Evolutionary Biology (UPF-CSIC)
  * CEXS-UPF-PRBB
- */
-
-/* Hapmap genotypes loader
- * Can load a single file or multiple files, as long as they belong to a single population (CEU, YRI, JPT...)
- * Imports Hapmap genotype files as found on
- * http://hapmap.ncbi.nlm.nih.gov/downloads/genotypes/?N=D
  */
 public final class LoadGTFromGWASpiFiles implements GTFilesLoader {
 
@@ -385,17 +383,6 @@ public final class LoadGTFromGWASpiFiles implements GTFilesLoader {
 			Dialogs.showWarningDialogue("A table saving error has occurred");
 			ex.printStackTrace();
 		}
-	}
-
-	private static void logAsWhole(String startTime, int studyId, String dirPath, String format, String matrixName, String description) throws IOException {
-		//LOG OPERATION IN STUDY HISTORY
-		StringBuffer operation = new StringBuffer("\nLoaded raw " + format + " genotype data in path " + dirPath + ".\n");
-		operation.append("Start Time: " + startTime + "\n");
-		operation.append("End Time: " + org.gwaspi.global.Utils.getMediumDateTimeAsString() + ".\n");
-		operation.append("Data stored in matrix " + matrixName + ".\n");
-		operation.append("Description: " + description + ".\n");
-		org.gwaspi.global.Utils.logOperationInStudyDesc(operation.toString(), studyId);
-		////////////////////////////////
 	}
 	//</editor-fold>
 }

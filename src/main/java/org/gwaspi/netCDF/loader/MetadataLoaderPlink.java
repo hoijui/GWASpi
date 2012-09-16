@@ -157,14 +157,12 @@ public class MetadataLoaderPlink implements MetadataLoader {
 		return chr;
 	}
 
-	// METHODS
-	private static void logAsWhole(String startTime, String dirPath, String description, int studyId) throws IOException {
+	static void logAsWhole(String startTime, String dirPath, String description, int studyId) throws IOException {
 		// LOG OPERATION IN STUDY HISTORY
 		StringBuilder operation = new StringBuilder("\nLoaded MAP metadata in path " + dirPath + ".\n");
 		operation.append("Start Time: ").append(startTime).append("\n");
 		operation.append("End Time: ").append(org.gwaspi.global.Utils.getMediumDateTimeAsString()).append(".\n");
 		operation.append("Description: ").append(description).append(".\n");
 		org.gwaspi.global.Utils.logOperationInStudyDesc(operation.toString(), studyId);
-		////////////////////////////////
 	}
 }

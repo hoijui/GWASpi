@@ -22,16 +22,14 @@ import ucar.ma2.InvalidRangeException;
 import ucar.nc2.NetcdfFileWriteable;
 
 /**
+ * Hapmap genotypes loader
+ * Can load a single file or multiple files, as long as they belong to a single population (CEU, YRI, JPT...)
+ * Imports Hapmap genotype files as found on
+ * http://hapmap.ncbi.nlm.nih.gov/downloads/genotypes/?N=D
  *
  * @author Fernando Muñiz Fernandez
  * IBE, Institute of Evolutionary Biology (UPF-CSIC)
  * CEXS-UPF-PRBB
- */
-
-/* Hapmap genotypes loader
- * Can load a single file or multiple files, as long as they belong to a single population (CEU, YRI, JPT...)
- * Imports Hapmap genotype files as found on
- * http://hapmap.ncbi.nlm.nih.gov/downloads/genotypes/?N=D
  */
 public class LoadGTFromHapmapFiles implements GTFilesLoader {
 

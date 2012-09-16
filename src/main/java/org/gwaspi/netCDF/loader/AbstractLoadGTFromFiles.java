@@ -357,14 +357,13 @@ public abstract class AbstractLoadGTFromFiles implements GTFilesLoader {
 
 	//</editor-fold>
 
-	private static void logAsWhole(String startTime, int studyId, String dirPath, String format, String matrixName, String description) throws IOException {
-		//LOG OPERATION IN STUDY HISTORY
-		StringBuffer operation = new StringBuffer("\nLoaded raw " + format + " genotype data in path " + dirPath + ".\n");
-		operation.append("Start Time: " + startTime + "\n");
-		operation.append("End Time: " + org.gwaspi.global.Utils.getMediumDateTimeAsString() + ".\n");
-		operation.append("Data stored in matrix " + matrixName + ".\n");
-		operation.append("Description: " + description + ".\n");
+	static void logAsWhole(String startTime, int studyId, String dirPath, String format, String matrixName, String description) throws IOException {
+		// LOG OPERATION IN STUDY HISTORY
+		StringBuilder operation = new StringBuilder("\nLoaded raw " + format + " genotype data in path " + dirPath + ".\n");
+		operation.append("Start Time: ").append(startTime).append("\n");
+		operation.append("End Time: ").append(org.gwaspi.global.Utils.getMediumDateTimeAsString()).append(".\n");
+		operation.append("Data stored in matrix ").append(matrixName).append(".\n");
+		operation.append("Description: ").append(description).append(".\n");
 		org.gwaspi.global.Utils.logOperationInStudyDesc(operation.toString(), studyId);
-		////////////////////////////////
 	}
 }

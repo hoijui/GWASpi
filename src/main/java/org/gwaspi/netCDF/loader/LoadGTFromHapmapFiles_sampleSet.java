@@ -22,16 +22,14 @@ import ucar.ma2.InvalidRangeException;
 import ucar.nc2.NetcdfFileWriteable;
 
 /**
+ * Hapmap genotypes loader
+ * Can load a single file or multiple files, as long as they belong to a single population (CEU, YRI, JPT...)
+ * Imports Hapmap genotype files as found on
+ * http://hapmap.ncbi.nlm.nih.gov/downloads/genotypes/?N=D
  *
  * @author Fernando Muñiz Fernandez
  * IBE, Institute of Evolutionary Biology (UPF-CSIC)
  * CEXS-UPF-PRBB
- */
-
-/* Hapmap genotypes loader
- * Can load a single file or multiple files, as long as they belong to a single population (CEU, YRI, JPT...)
- * Imports Hapmap genotype files as found on
- * http://hapmap.ncbi.nlm.nih.gov/downloads/genotypes/?N=D
  */
 public class LoadGTFromHapmapFiles_sampleSet implements GTFilesLoader {
 
@@ -65,7 +63,7 @@ public class LoadGTFromHapmapFiles_sampleSet implements GTFilesLoader {
 		gtCode = _gtCode;
 		description = _description;
 
-		//TODO: check if real samplefiles coincides with sampleInfoFile
+		// TODO check if real samplefiles coincides with sampleInfoFile
 		File hapmapGTFile = new File(gtFilePath);
 		if (hapmapGTFile.isDirectory()) {
 			File[] gtFilesToImport = org.gwaspi.global.Utils.listFiles(gtFilePath, false);
@@ -110,7 +108,7 @@ public class LoadGTFromHapmapFiles_sampleSet implements GTFilesLoader {
 //        descSB.append("Genotype encoding: ");
 //        descSB.append(gtCode);
 		descSB.append("\n");
-		descSB.append("Markers: " + wrMarkerSetLHM.size() + ", Samples: " + wrSampleSetLHM.size());
+		descSB.append("Markers: ").append(wrMarkerSetLHM.size()).append(", Samples: ").append(wrSampleSetLHM.size());
 		descSB.append("\n");
 		descSB.append(Text.Matrix.descriptionHeader2);
 		descSB.append(format);
@@ -237,7 +235,7 @@ public class LoadGTFromHapmapFiles_sampleSet implements GTFilesLoader {
 
 
 		//WRITE GT STRAND FROM ANNOTATION FILE
-		//TODO: Strand info is buggy in Hapmap bulk download!
+		// TODO Strand info is buggy in Hapmap bulk download!
 		int[] gtOrig = new int[]{0, 0};
 		markersD2 = org.gwaspi.netCDF.operations.Utils.writeLHMValueItemToD2ArrayChar(wrMarkerSetLHM, 4, cNetCDF.Strides.STRIDE_STRAND);
 
@@ -374,7 +372,7 @@ public class LoadGTFromHapmapFiles_sampleSet implements GTFilesLoader {
 			System.err.println("ERROR creating file " + ncfile.getLocation() + "\n" + e);
 		}
 
-		logAsWhole(startTime, studyId, gtFilePath, format, friendlyName, description);
+		AbstractLoadGTFromFiles.logAsWhole(startTime, studyId, gtFilePath, format, friendlyName, description);
 
 		org.gwaspi.global.Utils.sysoutCompleted("writing Genotypes to Matrix");
 		return result;
@@ -461,17 +459,6 @@ public class LoadGTFromHapmapFiles_sampleSet implements GTFilesLoader {
 		}
 
 		return uniqueSamples;
-	}
-
-	private static void logAsWhole(String startTime, int studyId, String dirPath, String format, String matrixName, String description) throws IOException {
-		//LOG OPERATION IN STUDY HISTORY
-		StringBuffer operation = new StringBuffer("\nLoaded raw " + format + " genotype data in path " + dirPath + ".\n");
-		operation.append("Start Time: " + startTime + "\n");
-		operation.append("End Time: " + org.gwaspi.global.Utils.getMediumDateTimeAsString() + ".\n");
-		operation.append("Data stored in matrix " + matrixName + ".\n");
-		operation.append("Description: " + description + ".\n");
-		org.gwaspi.global.Utils.logOperationInStudyDesc(operation.toString(), studyId);
-		////////////////////////////////
 	}
 	//</editor-fold>
 }

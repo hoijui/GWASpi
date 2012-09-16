@@ -310,7 +310,7 @@ public class LoadGTFromHGDP1Files implements GTFilesLoader {
 			System.err.println("ERROR creating file " + ncfile.getLocation() + "\n" + e);
 		}
 
-		logAsWhole(startTime, studyId, gtFilePath, format, friendlyName, description);
+		AbstractLoadGTFromFiles.logAsWhole(startTime, studyId, gtFilePath, format, friendlyName, description);
 
 		org.gwaspi.global.Utils.sysoutCompleted("writing data to Matrix");
 		return result;
@@ -400,17 +400,6 @@ public class LoadGTFromHGDP1Files implements GTFilesLoader {
 		}
 
 		return uniqueSamples;
-	}
-
-	private static void logAsWhole(String startTime, int studyId, String dirPath, String format, String matrixName, String description) throws IOException {
-		//LOG OPERATION IN STUDY HISTORY
-		StringBuffer operation = new StringBuffer("\nLoaded raw " + format + " genotype data in path " + dirPath + ".\n");
-		operation.append("Start Time: " + startTime + "\n");
-		operation.append("End Time: " + org.gwaspi.global.Utils.getMediumDateTimeAsString() + ".\n");
-		operation.append("Data stored in matrix " + matrixName + ".\n");
-		operation.append("Description: " + description + ".\n");
-		org.gwaspi.global.Utils.logOperationInStudyDesc(operation.toString(), studyId);
-		////////////////////////////////
 	}
 	//</editor-fold>
 }
