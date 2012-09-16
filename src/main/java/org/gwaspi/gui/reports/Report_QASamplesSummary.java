@@ -3,11 +3,11 @@ package org.gwaspi.gui.reports;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.GWASpiExplorerPanel;
 import org.gwaspi.gui.MatrixAnalysePanel;
+import org.gwaspi.gui.utils.BrowserHelpUrlAction;
 import org.gwaspi.gui.utils.Dialogs;
 import org.gwaspi.gui.utils.HelpURLs;
 import org.gwaspi.gui.utils.IntegerInputVerifier;
 import org.gwaspi.gui.utils.RowRendererDefault;
-import org.gwaspi.gui.utils.URLInDefaultBrowser;
 import java.awt.Component;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -169,7 +169,7 @@ public class Report_QASamplesSummary extends JPanel {
 
 		btn_Back.setAction(new BackAction(opId));
 
-		btn_Help.setAction(new HelpAction());
+		btn_Help.setAction(new BrowserHelpUrlAction(HelpURLs.QryURL.sampleQAreport));
 
 		GroupLayout pnl_FooterLayout = new GroupLayout(pnl_Footer);
 		pnl_Footer.setLayout(pnl_FooterLayout);
@@ -490,22 +490,6 @@ public class Report_QASamplesSummary extends JPanel {
 				GWASpiExplorerPanel.scrl_Content.setViewportView(GWASpiExplorerPanel.pnl_Content);
 			} catch (IOException ex) {
 				Logger.getLogger(Report_SampleInfoPanel.class.getName()).log(Level.SEVERE, null, ex);
-			}
-		}
-	}
-
-	private static class HelpAction extends AbstractAction {
-
-		HelpAction() {
-
-			putValue(NAME, Text.Help.help);
-		}
-
-		@Override
-		public void actionPerformed(ActionEvent evt) {
-			try {
-				URLInDefaultBrowser.browseHelpURL(HelpURLs.QryURL.sampleQAreport);
-			} catch (Exception ex) {
 			}
 		}
 	}

@@ -5,6 +5,7 @@ import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.database.DbManager;
 import org.gwaspi.global.ServiceLocator;
 import org.gwaspi.global.Text;
+import org.gwaspi.gui.utils.BrowserHelpUrlAction;
 import org.gwaspi.gui.utils.Dialogs;
 import org.gwaspi.gui.utils.HelpURLs;
 import java.awt.Component;
@@ -185,7 +186,6 @@ public class CurrentMatrixPanel extends JPanel {
 				.addContainerGap()));
 		//</editor-fold>
 
-
 		//<editor-fold defaultstate="collapsed" desc="LAYOUT BUTTONS">
 		GroupLayout pnl_ButtonsLayout = new GroupLayout(pnl_Buttons);
 		pnl_Buttons.setLayout(pnl_ButtonsLayout);
@@ -233,7 +233,6 @@ public class CurrentMatrixPanel extends JPanel {
 				.addGap(0, 77, Short.MAX_VALUE));
 		//</editor-fold>
 
-
 		//<editor-fold defaultstate="collapsed" desc="LAYOUT NEW OPERATION">
 		GroupLayout pnl_NewOperationLayout = new GroupLayout(pnl_NewOperation);
 		pnl_NewOperation.setLayout(pnl_NewOperationLayout);
@@ -254,11 +253,9 @@ public class CurrentMatrixPanel extends JPanel {
 				.addContainerGap()));
 		//</editor-fold>
 
-
 		//<editor-fold defaultstate="collapsed" desc="FOOTER">
 		btn_Back.setAction(new BackAction(matrix));
-		btn_Help.setAction(new HelpAction());
-
+		btn_Help.setAction(new BrowserHelpUrlAction(HelpURLs.QryURL.currentMatrix));
 
 		GroupLayout pnl_FooterLayout = new GroupLayout(pnl_Footer);
 		pnl_Footer.setLayout(pnl_FooterLayout);
@@ -268,7 +265,6 @@ public class CurrentMatrixPanel extends JPanel {
 				.addComponent(btn_Back, GroupLayout.PREFERRED_SIZE, 94, GroupLayout.PREFERRED_SIZE)
 				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, 692, Short.MAX_VALUE)
 				.addComponent(btn_Help)));
-
 
 		pnl_FooterLayout.linkSize(SwingConstants.HORIZONTAL, new Component[]{btn_Back, btn_Help});
 
@@ -280,8 +276,6 @@ public class CurrentMatrixPanel extends JPanel {
 				.addComponent(btn_Back)
 				.addComponent(btn_Help))));
 		//</editor-fold>
-
-
 
 		GroupLayout layout = new GroupLayout(this);
 		this.setLayout(layout);
@@ -591,23 +585,6 @@ public class CurrentMatrixPanel extends JPanel {
 				org.gwaspi.gui.GWASpiExplorerPanel.tree.setSelectionPath(org.gwaspi.gui.GWASpiExplorerPanel.tree.getSelectionPath().getParentPath());
 				org.gwaspi.gui.GWASpiExplorerPanel.pnl_Content = new CurrentStudyPanel(matrix.getStudyId());
 				org.gwaspi.gui.GWASpiExplorerPanel.scrl_Content.setViewportView(org.gwaspi.gui.GWASpiExplorerPanel.pnl_Content);
-			} catch (IOException ex) {
-				log.error(null, ex);
-			}
-		}
-	}
-
-	private static class HelpAction extends AbstractAction {
-
-		HelpAction() {
-
-			putValue(NAME, Text.Help.help);
-		}
-
-		@Override
-		public void actionPerformed(ActionEvent evt) {
-			try {
-				org.gwaspi.gui.utils.URLInDefaultBrowser.browseHelpURL(HelpURLs.QryURL.currentMatrix);
 			} catch (IOException ex) {
 				log.error(null, ex);
 			}

@@ -4,10 +4,10 @@ import org.gwaspi.global.Config;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.GWASpiExplorerPanel;
 import org.gwaspi.gui.MatrixAnalysePanel;
+import org.gwaspi.gui.utils.BrowserHelpUrlAction;
 import org.gwaspi.gui.utils.HelpURLs;
 import org.gwaspi.gui.utils.IntegerInputVerifier;
 import org.gwaspi.gui.utils.RowRendererDefault;
-import org.gwaspi.gui.utils.URLInDefaultBrowser;
 import java.awt.Component;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -178,7 +178,7 @@ public class Report_HardyWeinbergSummary extends JPanel {
 
 		btn_Back.setAction(new BackAction(opId));
 
-		btn_Help.setAction(new HelpAction(HelpURLs.QryURL.hwReport));
+		btn_Help.setAction(new BrowserHelpUrlAction(HelpURLs.QryURL.hwReport));
 
 		GroupLayout pnl_FooterLayout = new GroupLayout(pnl_Footer);
 		pnl_Footer.setLayout(pnl_FooterLayout);
@@ -405,25 +405,6 @@ public class Report_HardyWeinbergSummary extends JPanel {
 				GWASpiExplorerPanel.scrl_Content.setViewportView(GWASpiExplorerPanel.pnl_Content);
 			} catch (IOException ex) {
 				Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
-			}
-		}
-	}
-
-	public static class HelpAction extends AbstractAction {
-
-		private String helpUrl;
-
-		public HelpAction(String helpUrl) {
-
-			this.helpUrl = helpUrl;
-			putValue(NAME, Text.Help.help);
-		}
-
-		@Override
-		public void actionPerformed(ActionEvent evt) {
-			try {
-				URLInDefaultBrowser.browseHelpURL(helpUrl);
-			} catch (Exception ex) {
 			}
 		}
 	}

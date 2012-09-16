@@ -2,10 +2,10 @@ package org.gwaspi.gui;
 
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.global.Text;
+import org.gwaspi.gui.utils.BrowserHelpUrlAction;
 import org.gwaspi.gui.utils.Dialogs;
 import org.gwaspi.gui.utils.HelpURLs;
 import org.gwaspi.gui.utils.JTextFieldLimit;
-import org.gwaspi.gui.utils.URLInDefaultBrowser;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -234,7 +234,7 @@ public class MatrixTrafoPanel extends JPanel {
 		//</editor-fold>
 
 		btn_Back.setAction(new BackAction(parentMatrix));
-		btn_Help.setAction(new HelpAction());
+		btn_Help.setAction(new BrowserHelpUrlAction(HelpURLs.QryURL.matrixTranslate));
 
 		//<editor-fold defaultstate="collapsed" desc="FOOTER">
 		GroupLayout pnl_FooterLayout = new GroupLayout(pnl_Footer);
@@ -432,23 +432,6 @@ public class MatrixTrafoPanel extends JPanel {
 			try {
 				GWASpiExplorerPanel.pnl_Content = new CurrentMatrixPanel(parentMatrix.getMatrixId());
 				GWASpiExplorerPanel.scrl_Content.setViewportView(GWASpiExplorerPanel.pnl_Content);
-			} catch (IOException ex) {
-				log.error(null, ex);
-			}
-		}
-	}
-
-	private static class HelpAction extends AbstractAction {
-
-		HelpAction() {
-
-			putValue(NAME, Text.Help.help);
-		}
-
-		@Override
-		public void actionPerformed(ActionEvent evt) {
-			try {
-				URLInDefaultBrowser.browseHelpURL(HelpURLs.QryURL.matrixTranslate);
 			} catch (IOException ex) {
 				log.error(null, ex);
 			}

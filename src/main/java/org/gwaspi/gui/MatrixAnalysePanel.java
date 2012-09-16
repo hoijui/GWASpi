@@ -2,6 +2,7 @@ package org.gwaspi.gui;
 
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.global.Text;
+import org.gwaspi.gui.utils.BrowserHelpUrlAction;
 import org.gwaspi.gui.utils.CursorUtils;
 import org.gwaspi.gui.utils.Dialogs;
 import org.gwaspi.gui.utils.HelpURLs;
@@ -10,7 +11,6 @@ import org.gwaspi.gui.utils.MoreGWASinOneGoInfo;
 import org.gwaspi.gui.utils.MoreInfoForGtFreq;
 import org.gwaspi.gui.utils.NodeToPathCorrespondence;
 import org.gwaspi.gui.utils.RowRendererDefault;
-import org.gwaspi.gui.utils.URLInDefaultBrowser;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -267,7 +267,7 @@ public class MatrixAnalysePanel extends JPanel {
 		//</editor-fold>
 
 		btn_Back.setAction(new BackAction(parentMatrix, currentOP));
-		btn_Help.setAction(new HelpAction());
+		btn_Help.setAction(new BrowserHelpUrlAction(HelpURLs.QryURL.matrixAnalyse));
 
 		//<editor-fold defaultstate="collapsed" desc="LAYOUT FOOTER">
 		GroupLayout pnl_FooterLayout = new GroupLayout(pnl_Footer);
@@ -803,8 +803,8 @@ public class MatrixAnalysePanel extends JPanel {
 		@Override
 		public void actionPerformed(ActionEvent evt) {
 			try {
-				List<String> blackListOPsAL = new ArrayList<String>();
-				blackListOPsAL.add(org.gwaspi.constants.cNetCDF.Defaults.OPType.MARKER_CENSUS_BY_AFFECTION.toString());
+//				List<String> blackListOPsAL = new ArrayList<String>();
+//				blackListOPsAL.add(org.gwaspi.constants.cNetCDF.Defaults.OPType.MARKER_CENSUS_BY_AFFECTION.toString());
 
 				List<String> necessaryOPsAL = new ArrayList<String>();
 				necessaryOPsAL.add(org.gwaspi.constants.cNetCDF.Defaults.OPType.SAMPLE_QA.toString());
@@ -895,23 +895,6 @@ public class MatrixAnalysePanel extends JPanel {
 					GWASpiExplorerPanel.pnl_Content = new CurrentMatrixPanel(parentMatrix.getMatrixId());
 					GWASpiExplorerPanel.scrl_Content.setViewportView(GWASpiExplorerPanel.pnl_Content);
 				}
-			} catch (IOException ex) {
-				log.error(null, ex);
-			}
-		}
-	}
-
-	private static class HelpAction extends AbstractAction {
-
-		HelpAction() {
-
-			putValue(NAME, Text.Help.help);
-		}
-
-		@Override
-		public void actionPerformed(ActionEvent evt) {
-			try {
-				URLInDefaultBrowser.browseHelpURL(HelpURLs.QryURL.matrixAnalyse);
 			} catch (IOException ex) {
 				log.error(null, ex);
 			}

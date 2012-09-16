@@ -7,8 +7,6 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
@@ -124,7 +122,7 @@ public class MoreAssocInfo extends JFrame {
 		btn_Help = new JButton();
 		btn_Cancel = new JButton();
 
-		btn_Help.setAction(new HelpAction());
+		btn_Help.setAction(new BrowserHelpUrlAction(HelpURLs.QryURL.GWASinOneGo));
 
 		btn_Go.setAction(new GoAction());
 
@@ -145,23 +143,6 @@ public class MoreAssocInfo extends JFrame {
 		pnl_Footer.setVisible(true);
 
 		return pnl_Footer;
-	}
-
-	private static class HelpAction extends AbstractAction {
-
-		HelpAction() {
-
-			putValue(NAME, Text.Help.help);
-		}
-
-		@Override
-		public void actionPerformed(ActionEvent evt) {
-			try {
-				URLInDefaultBrowser.browseHelpURL(HelpURLs.QryURL.GWASinOneGo);
-			} catch (Exception ex) {
-				Logger.getLogger(MoreAssocInfo.class.getName()).log(Level.SEVERE, null, ex);
-			}
-		}
 	}
 
 	private static class GoAction extends AbstractAction {

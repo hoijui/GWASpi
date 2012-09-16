@@ -1,9 +1,9 @@
 package org.gwaspi.gui;
 
 import org.gwaspi.global.Text;
+import org.gwaspi.gui.utils.BrowserHelpUrlAction;
 import org.gwaspi.gui.utils.Dialogs;
 import org.gwaspi.gui.utils.HelpURLs;
-import org.gwaspi.gui.utils.URLInDefaultBrowser;
 import java.awt.Component;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -111,7 +111,7 @@ public class MatrixMarkerQAPanel extends JPanel {
 		Action backAction = new BackAction(parentMatrix);
 		backAction.setEnabled(currentOP != null);
 		btn_Back.setAction(backAction);
-		btn_Help.setAction(new HelpAction());
+		btn_Help.setAction(new BrowserHelpUrlAction(HelpURLs.QryURL.markerQAreport));
 
 		//<editor-fold defaultstate="collapsed" desc="LAYOUT FOOTER">
 		GroupLayout pnl_FooterLayout = new GroupLayout(pnl_Footer);
@@ -220,23 +220,6 @@ public class MatrixMarkerQAPanel extends JPanel {
 				GWASpiExplorerPanel.tree.setSelectionPath(GWASpiExplorerPanel.tree.getSelectionPath().getParentPath());
 				GWASpiExplorerPanel.pnl_Content = new CurrentMatrixPanel(parentMatrix.getMatrixId());
 				GWASpiExplorerPanel.scrl_Content.setViewportView(GWASpiExplorerPanel.pnl_Content);
-			} catch (IOException ex) {
-				log.error(null, ex);
-			}
-		}
-	}
-
-	private static class HelpAction extends AbstractAction {
-
-		HelpAction() {
-
-			putValue(NAME, Text.Help.help);
-		}
-
-		@Override
-		public void actionPerformed(ActionEvent evt) {
-			try {
-				URLInDefaultBrowser.browseHelpURL(HelpURLs.QryURL.markerQAreport);
 			} catch (IOException ex) {
 				log.error(null, ex);
 			}

@@ -1,12 +1,12 @@
 package org.gwaspi.gui;
 
 import org.gwaspi.global.Text;
+import org.gwaspi.gui.utils.BrowserHelpUrlAction;
 import org.gwaspi.gui.utils.Dialogs;
 import org.gwaspi.gui.utils.HelpURLs;
 import org.gwaspi.gui.utils.JTextFieldLimit;
 import org.gwaspi.gui.utils.NodeToPathCorrespondence;
 import org.gwaspi.gui.utils.RowRendererDefault;
-import org.gwaspi.gui.utils.URLInDefaultBrowser;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
@@ -211,7 +211,7 @@ public class StudyManagementPanel extends JPanel {
 
 		//<editor-fold defaultstate="collapsed" desc="FOOTER">
 		btn_Back.setAction(new BackAction());
-		btn_Help.setAction(new HelpAction());
+		btn_Help.setAction(new BrowserHelpUrlAction(HelpURLs.QryURL.createStudy));
 		GroupLayout pnl_FooterLayout = new GroupLayout(pnl_Footer);
 		pnl_Footer.setLayout(pnl_FooterLayout);
 		pnl_FooterLayout.setHorizontalGroup(
@@ -361,23 +361,6 @@ public class StudyManagementPanel extends JPanel {
 			GWASpiExplorerPanel.tree.setSelectionPath(GWASpiExplorerPanel.tree.getSelectionPath().getParentPath());
 			GWASpiExplorerPanel.pnl_Content = new IntroPanel();
 			GWASpiExplorerPanel.scrl_Content.setViewportView(GWASpiExplorerPanel.pnl_Content);
-		}
-	}
-
-	private static class HelpAction extends AbstractAction {
-
-		HelpAction() {
-
-			putValue(NAME, Text.Help.help);
-		}
-
-		@Override
-		public void actionPerformed(ActionEvent evt) {
-			try {
-				URLInDefaultBrowser.browseHelpURL(HelpURLs.QryURL.createStudy);
-			} catch (IOException ex) {
-				log.error(null, ex);
-			}
 		}
 	}
 }

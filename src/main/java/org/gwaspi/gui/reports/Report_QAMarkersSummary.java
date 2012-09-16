@@ -4,6 +4,7 @@ import org.gwaspi.global.Config;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.GWASpiExplorerPanel;
 import org.gwaspi.gui.MatrixMarkerQAPanel;
+import org.gwaspi.gui.utils.BrowserHelpUrlAction;
 import org.gwaspi.gui.utils.HelpURLs;
 import org.gwaspi.gui.utils.IntegerInputVerifier;
 import org.gwaspi.gui.utils.RowRendererDefault;
@@ -174,7 +175,7 @@ public class Report_QAMarkersSummary extends JPanel {
 
 		btn_Back.setAction(new BackAction(opId));
 
-		btn_Help.setAction(new Report_HardyWeinbergSummary.HelpAction(HelpURLs.QryURL.markerQAreport));
+		btn_Help.setAction(new BrowserHelpUrlAction(HelpURLs.QryURL.markerQAreport));
 
 		GroupLayout pnl_FooterLayout = new GroupLayout(pnl_Footer);
 		pnl_Footer.setLayout(pnl_FooterLayout);

@@ -1,6 +1,7 @@
 package org.gwaspi.gui.reports;
 
 import org.gwaspi.global.Text;
+import org.gwaspi.gui.utils.BrowserHelpUrlAction;
 import org.gwaspi.gui.utils.Dialogs;
 import java.awt.Component;
 import java.awt.Font;
@@ -112,7 +113,7 @@ public class Report_AnalysisPanel extends JPanel {
 
 		btn_Back.setAction(new BackAction());
 
-		btn_Help.setAction(new HelpAction());
+		btn_Help.setAction(new BrowserHelpUrlAction(null)); // FIXME no help implemented yet
 
 		//<editor-fold defaultstate="collapsed" desc="LAYOUT">
 		GroupLayout layout = new GroupLayout(this);
@@ -181,19 +182,6 @@ public class Report_AnalysisPanel extends JPanel {
 		BackAction() {
 
 			putValue(NAME, Text.All.Back);
-		}
-
-		@Override
-		public void actionPerformed(ActionEvent evt) {
-			throw new UnsupportedOperationException("Not yet implemented!");
-		}
-	}
-
-	private static class HelpAction extends AbstractAction {
-
-		HelpAction() {
-
-			putValue(NAME, Text.Help.help);
 		}
 
 		@Override

@@ -4,12 +4,12 @@ import org.gwaspi.database.DbManager;
 import org.gwaspi.global.ServiceLocator;
 import org.gwaspi.global.Text;
 import org.gwaspi.global.Utils;
+import org.gwaspi.gui.utils.BrowserHelpUrlAction;
 import org.gwaspi.gui.utils.CursorUtils;
 import org.gwaspi.gui.utils.Dialogs;
 import org.gwaspi.gui.utils.HelpURLs;
 import org.gwaspi.gui.utils.NodeToPathCorrespondence;
 import org.gwaspi.gui.utils.RowRendererDefault;
-import org.gwaspi.gui.utils.URLInDefaultBrowser;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
@@ -140,9 +140,6 @@ public class CurrentStudyPanel extends JPanel {
 		btn_DeleteMatrix.setAction(new DeleteMatrixAction(study, this, tbl_MatrixTable));
 		btn_DeleteMatrix.setBackground(new Color(242, 138, 121));
 
-
-
-
 		//<editor-fold defaultstate="collapsed" desc="LAYOUT STUDY">
 		GroupLayout pnl_StudyDescLayout = new GroupLayout(pnl_StudyDesc);
 		pnl_StudyDesc.setLayout(pnl_StudyDescLayout);
@@ -179,7 +176,6 @@ public class CurrentStudyPanel extends JPanel {
 		pnl_StudyDescLayout.linkSize(SwingConstants.VERTICAL, new Component[]{btn_LoadGenotypes, btn_SaveDesc, btn_UpdateSampleInfo});
 		//</editor-fold>
 
-
 		//<editor-fold defaultstate="collapsed" desc="LAYOUT MATRICES">
 		GroupLayout pnl_MatrixTableLayout = new GroupLayout(pnl_MatrixTable);
 		pnl_MatrixTable.setLayout(pnl_MatrixTableLayout);
@@ -200,10 +196,9 @@ public class CurrentStudyPanel extends JPanel {
 				.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)));
 		//</editor-fold>
 
-
 		//<editor-fold defaultstate="collapsed" desc="FOOTER">
 		btn_Back.setAction(new BackAction());
-		btn_Help.setAction(new HelpAction());
+		btn_Help.setAction(new BrowserHelpUrlAction(HelpURLs.QryURL.currentStudy));
 		GroupLayout pnl_FooterLayout = new GroupLayout(pnl_Footer);
 		pnl_Footer.setLayout(pnl_FooterLayout);
 		pnl_FooterLayout.setHorizontalGroup(
@@ -222,7 +217,6 @@ public class CurrentStudyPanel extends JPanel {
 				.addComponent(btn_Back)
 				.addComponent(btn_Help))));
 		//</editor-fold>
-
 
 		// <editor-fold defaultstate="collapsed/expanded" desc="LAYOUT">
 		GroupLayout layout = new GroupLayout(this);
@@ -246,7 +240,6 @@ public class CurrentStudyPanel extends JPanel {
 				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
 				.addComponent(pnl_Footer, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 				.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)));
-
 		// </editor-fold>
 	}
 
@@ -421,24 +414,6 @@ public class CurrentStudyPanel extends JPanel {
 				GWASpiExplorerPanel.tree.setSelectionPath(GWASpiExplorerPanel.tree.getSelectionPath().getParentPath());
 				GWASpiExplorerPanel.pnl_Content = new StudyManagementPanel();
 				GWASpiExplorerPanel.scrl_Content.setViewportView(GWASpiExplorerPanel.pnl_Content);
-			} catch (IOException ex) {
-				log.error(null, ex);
-			}
-		}
-	}
-
-
-	private static class HelpAction extends AbstractAction {
-
-		HelpAction() {
-
-			putValue(NAME, Text.Help.help);
-		}
-
-		@Override
-		public void actionPerformed(ActionEvent evt) {
-			try {
-				URLInDefaultBrowser.browseHelpURL(HelpURLs.QryURL.currentStudy);
 			} catch (IOException ex) {
 				log.error(null, ex);
 			}

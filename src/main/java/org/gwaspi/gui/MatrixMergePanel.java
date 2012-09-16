@@ -2,10 +2,10 @@ package org.gwaspi.gui;
 
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.global.Text;
+import org.gwaspi.gui.utils.BrowserHelpUrlAction;
 import org.gwaspi.gui.utils.Dialogs;
 import org.gwaspi.gui.utils.HelpURLs;
 import org.gwaspi.gui.utils.JTextFieldLimit;
-import org.gwaspi.gui.utils.URLInDefaultBrowser;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
@@ -270,7 +270,7 @@ public class MatrixMergePanel extends JPanel {
 		//</editor-fold>
 
 		btn_Back.setAction(new BackAction(parentMatrix));
-		btn_Help.setAction(new HelpAction());
+		btn_Help.setAction(new BrowserHelpUrlAction(HelpURLs.QryURL.matrixMerge));
 
 		//<editor-fold defaultstate="collapsed" desc="LAYOUT FOOTER">
 		GroupLayout pnl_FooterLayout = new GroupLayout(pnl_Footer);
@@ -433,23 +433,6 @@ public class MatrixMergePanel extends JPanel {
 			try {
 				GWASpiExplorerPanel.pnl_Content = new CurrentMatrixPanel(parentMatrix.getMatrixId());
 				GWASpiExplorerPanel.scrl_Content.setViewportView(org.gwaspi.gui.GWASpiExplorerPanel.pnl_Content);
-			} catch (IOException ex) {
-				log.error(null, ex);
-			}
-		}
-	}
-
-	private static class HelpAction extends AbstractAction {
-
-		HelpAction() {
-
-			putValue(NAME, Text.Help.help);
-		}
-
-		@Override
-		public void actionPerformed(ActionEvent evt) {
-			try {
-				URLInDefaultBrowser.browseHelpURL(HelpURLs.QryURL.matrixMerge);
 			} catch (IOException ex) {
 				log.error(null, ex);
 			}
