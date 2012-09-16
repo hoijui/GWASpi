@@ -37,7 +37,7 @@ import ucar.nc2.NetcdfFileWriteable;
  * Imports Hapmap genotype files as found on
  * http://hapmap.ncbi.nlm.nih.gov/downloads/genotypes/?N=D
  */
-public final class LoadGTFromGWASpiFiles {
+public final class LoadGTFromGWASpiFiles implements GTFilesLoader {
 
 	private String gwaspiGTFilePath;
 	private String sampleInfoPath;
@@ -144,7 +144,7 @@ public final class LoadGTFromGWASpiFiles {
 
 	}
 
-	public int processGWASpiGTFiles() {
+	public int processData() {
 		if (importMatrixMetadata != null) {
 			return importMatrixMetadata.getMatrixId();
 		} else {

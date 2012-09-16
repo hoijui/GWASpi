@@ -24,7 +24,7 @@ import ucar.nc2.NetcdfFileWriteable;
  * IBE, Institute of Evolutionary Biology (UPF-CSIC)
  * CEXS-UPF-PRBB
  */
-public class LoadGTFromBeagleFiles {
+public class LoadGTFromBeagleFiles implements GTFilesLoader {
 
 	private String gtFilePath;
 	private String sampleFilePath;
@@ -69,7 +69,7 @@ public class LoadGTFromBeagleFiles {
 
 	//</editor-fold>
 	//<editor-fold defaultstate="collapsed" desc="PROCESS GENOTYPES">
-	public int processBeagleGTFiles() throws IOException, InvalidRangeException {
+	public int processData() throws IOException, InvalidRangeException {
 		int result = Integer.MIN_VALUE;
 
 		String startTime = org.gwaspi.global.Utils.getMediumDateTimeAsString();

@@ -28,7 +28,7 @@ import ucar.nc2.NetcdfFileWriteable;
  * IBE, Institute of Evolutionary Biology (UPF-CSIC)
  * CEXS-UPF-PRBB
  */
-public class LoadGTFromAffyFiles {
+public class LoadGTFromAffyFiles implements GTFilesLoader {
 
 	private String gtDirPath;
 	private String sampleFilePath;

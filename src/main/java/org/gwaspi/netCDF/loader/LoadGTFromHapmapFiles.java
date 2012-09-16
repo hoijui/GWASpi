@@ -33,7 +33,7 @@ import ucar.nc2.NetcdfFileWriteable;
  * Imports Hapmap genotype files as found on
  * http://hapmap.ncbi.nlm.nih.gov/downloads/genotypes/?N=D
  */
-public class LoadGTFromHapmapFiles {
+public class LoadGTFromHapmapFiles implements GTFilesLoader {
 
 	private String gtFilePath;
 	private String sampleFilePath;
@@ -84,7 +84,7 @@ public class LoadGTFromHapmapFiles {
 
 	//</editor-fold>
 	//<editor-fold defaultstate="collapsed" desc="PROCESS GENOTYPES">
-	public int processHapmapGTFiles() throws IOException, InvalidRangeException, InterruptedException {
+	public int processData() throws IOException, InvalidRangeException, InterruptedException {
 		File hapmapGTFile = new File(gtFilePath);
 		return processHapmapGTFiles(hapmapGTFile.isDirectory());
 	}
