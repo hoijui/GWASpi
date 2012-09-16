@@ -1,59 +1,73 @@
 package org.gwaspi.gui;
 
+import org.gwaspi.global.Config;
+import org.gwaspi.global.SysCommandExecutor;
+import org.gwaspi.gui.utils.Dialogs;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.GroupLayout;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.LayoutStyle;
 
 /**
  *
  * @author u56124
  */
-public class AnalyserTab extends javax.swing.JPanel {
+public class AnalyserTab extends JPanel {
 
 	// Variables declaration - do not modify
-	private javax.swing.JPanel panel_Analysis;
-	private javax.swing.JButton button_Go;
-	private javax.swing.JButton button_PathToTfam;
-	private javax.swing.JButton button_PathToTped;
-	private javax.swing.JComboBox combo_Analysis;
-	private javax.swing.JLabel label_Analysis;
-	private javax.swing.JLabel label_PathToTfam;
-	private javax.swing.JLabel label_PathToTped;
-	private javax.swing.JLabel label_commandLine;
-	private javax.swing.JScrollPane scrollPane_cliResult;
-	private static javax.swing.JTextArea textArea_cliResult;
-	private static javax.swing.JTextArea textArea_commandLine;
-	private javax.swing.JTextField textField_PathToTfam;
-	private javax.swing.JTextField textField_PathToTped;
-	private javax.swing.JScrollPane jScrollPane1;
+	private JPanel panel_Analysis;
+	private JButton button_Go;
+	private JButton button_PathToTfam;
+	private JButton button_PathToTped;
+	private JComboBox combo_Analysis;
+	private JLabel label_Analysis;
+	private JLabel label_PathToTfam;
+	private JLabel label_PathToTped;
+	private JLabel label_commandLine;
+	private JScrollPane scrollPane_cliResult;
+	private static JTextArea textArea_cliResult;
+	private static JTextArea textArea_commandLine;
+	private JTextField textField_PathToTfam;
+	private JTextField textField_PathToTped;
+	private JScrollPane jScrollPane1;
 	// End of variables declaration
 
 	// <editor-fold defaultstate="expanded" desc="Init">
 	public AnalyserTab() {
 
-		panel_Analysis = new javax.swing.JPanel();
-		combo_Analysis = new javax.swing.JComboBox();
-		label_Analysis = new javax.swing.JLabel();
-		label_PathToTfam = new javax.swing.JLabel();
-		label_PathToTped = new javax.swing.JLabel();
-		textField_PathToTfam = new javax.swing.JTextField();
-		textField_PathToTped = new javax.swing.JTextField();
-		button_PathToTfam = new javax.swing.JButton();
-		button_PathToTped = new javax.swing.JButton();
-		button_Go = new javax.swing.JButton();
-		scrollPane_cliResult = new javax.swing.JScrollPane();
-		textArea_cliResult = new javax.swing.JTextArea();
-		textArea_commandLine = new javax.swing.JTextArea();
-		label_commandLine = new javax.swing.JLabel();
-		jScrollPane1 = new javax.swing.JScrollPane();
+		panel_Analysis = new JPanel();
+		combo_Analysis = new JComboBox();
+		label_Analysis = new JLabel();
+		label_PathToTfam = new JLabel();
+		label_PathToTped = new JLabel();
+		textField_PathToTfam = new JTextField();
+		textField_PathToTped = new JTextField();
+		button_PathToTfam = new JButton();
+		button_PathToTped = new JButton();
+		button_Go = new JButton();
+		scrollPane_cliResult = new JScrollPane();
+		textArea_cliResult = new JTextArea();
+		textArea_commandLine = new JTextArea();
+		label_commandLine = new JLabel();
+		jScrollPane1 = new JScrollPane();
 
 
 		// Populate the combobox list
 //		for( int iCtr = 0; iCtr < analysis.PlinkBase.analysisList.length; iCtr++ ){
 //			combo_Analysis.addItem( analysis.PlinkBase.analysisList[iCtr] );
 //		}
-		combo_Analysis.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
+		combo_Analysis.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent evt) {
 				try {
 					combo_AnalysisActionPerformed(evt);
 				} catch (IOException ex) {
@@ -69,8 +83,8 @@ public class AnalyserTab extends javax.swing.JPanel {
 		label_PathToTped.setText("Path to .tped file");
 
 		button_PathToTfam.setText("Browse");
-		button_PathToTfam.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
+		button_PathToTfam.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent evt) {
 				try {
 					button_PathToTfamActionPerformed(evt);
 				} catch (IOException ex) {
@@ -80,8 +94,8 @@ public class AnalyserTab extends javax.swing.JPanel {
 		});
 
 		button_PathToTped.setText("Browse");
-		button_PathToTped.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
+		button_PathToTped.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent evt) {
 				try {
 					button_PathToTpedActionPerformed(evt);
 				} catch (IOException ex) {
@@ -92,8 +106,8 @@ public class AnalyserTab extends javax.swing.JPanel {
 
 		button_Go.setText("Go!");
 		button_Go.setEnabled(true);
-		button_Go.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
+		button_Go.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent evt) {
 				button_GoActionPerformed(evt);
 			}
 		});
@@ -109,88 +123,87 @@ public class AnalyserTab extends javax.swing.JPanel {
 
 		label_commandLine.setText("Command line to be executed:");
 
-		javax.swing.GroupLayout panel_AnalysisLayout = new javax.swing.GroupLayout(panel_Analysis);
+		GroupLayout panel_AnalysisLayout = new GroupLayout(panel_Analysis);
 		panel_Analysis.setLayout(panel_AnalysisLayout);
 		panel_AnalysisLayout.setHorizontalGroup(
-				panel_AnalysisLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+				panel_AnalysisLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
 				.addGroup(panel_AnalysisLayout.createSequentialGroup()
 				.addContainerGap()
-				.addGroup(panel_AnalysisLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+				.addGroup(panel_AnalysisLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
 				.addGroup(panel_AnalysisLayout.createSequentialGroup()
-				.addGroup(panel_AnalysisLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+				.addGroup(panel_AnalysisLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
 				.addComponent(label_PathToTfam)
 				.addComponent(label_PathToTped))
 				.addGap(31, 31, 31)
-				.addGroup(panel_AnalysisLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+				.addGroup(panel_AnalysisLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
 				.addComponent(button_PathToTfam)
 				.addComponent(button_PathToTped)
-				.addComponent(textField_PathToTfam, javax.swing.GroupLayout.DEFAULT_SIZE, 845, Short.MAX_VALUE)
-				.addComponent(textField_PathToTped, javax.swing.GroupLayout.DEFAULT_SIZE, 845, Short.MAX_VALUE)))
+				.addComponent(textField_PathToTfam, GroupLayout.DEFAULT_SIZE, 845, Short.MAX_VALUE)
+				.addComponent(textField_PathToTped, GroupLayout.DEFAULT_SIZE, 845, Short.MAX_VALUE)))
 				.addGroup(panel_AnalysisLayout.createSequentialGroup()
 				.addComponent(label_Analysis)
-				.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-				.addComponent(combo_Analysis, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE))
-				.addComponent(scrollPane_cliResult, javax.swing.GroupLayout.DEFAULT_SIZE, 981, Short.MAX_VALUE)
+				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+				.addComponent(combo_Analysis, GroupLayout.PREFERRED_SIZE, 188, GroupLayout.PREFERRED_SIZE))
+				.addComponent(scrollPane_cliResult, GroupLayout.DEFAULT_SIZE, 981, Short.MAX_VALUE)
 				.addComponent(label_commandLine)
 				.addGroup(panel_AnalysisLayout.createSequentialGroup()
-				.addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 863, javax.swing.GroupLayout.PREFERRED_SIZE)
+				.addComponent(jScrollPane1, GroupLayout.PREFERRED_SIZE, 863, GroupLayout.PREFERRED_SIZE)
 				.addGap(18, 18, 18)
-				.addComponent(button_Go, javax.swing.GroupLayout.PREFERRED_SIZE, 89, javax.swing.GroupLayout.PREFERRED_SIZE)))
+				.addComponent(button_Go, GroupLayout.PREFERRED_SIZE, 89, GroupLayout.PREFERRED_SIZE)))
 				.addContainerGap()));
 		panel_AnalysisLayout.setVerticalGroup(
-				panel_AnalysisLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-				.addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panel_AnalysisLayout.createSequentialGroup()
+				panel_AnalysisLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+				.addGroup(GroupLayout.Alignment.TRAILING, panel_AnalysisLayout.createSequentialGroup()
 				.addContainerGap()
-				.addGroup(panel_AnalysisLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+				.addGroup(panel_AnalysisLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
 				.addComponent(label_PathToTfam)
-				.addComponent(textField_PathToTfam, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+				.addComponent(textField_PathToTfam, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
 				.addGap(5, 5, 5)
 				.addComponent(button_PathToTfam)
 				.addGap(18, 18, 18)
-				.addGroup(panel_AnalysisLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+				.addGroup(panel_AnalysisLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
 				.addComponent(label_PathToTped)
-				.addComponent(textField_PathToTped, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-				.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+				.addComponent(textField_PathToTped, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
 				.addComponent(button_PathToTped)
 				.addGap(18, 18, 18)
-				.addGroup(panel_AnalysisLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+				.addGroup(panel_AnalysisLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
 				.addComponent(label_Analysis)
-				.addComponent(combo_Analysis, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+				.addComponent(combo_Analysis, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
 				.addGap(23, 23, 23)
 				.addComponent(label_commandLine)
-				.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-				.addGroup(panel_AnalysisLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
-				.addComponent(button_Go, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE)
-				.addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-				.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-				.addComponent(scrollPane_cliResult, javax.swing.GroupLayout.PREFERRED_SIZE, 293, javax.swing.GroupLayout.PREFERRED_SIZE)
+				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+				.addGroup(panel_AnalysisLayout.createParallelGroup(GroupLayout.Alignment.CENTER)
+				.addComponent(button_Go, GroupLayout.PREFERRED_SIZE, 61, GroupLayout.PREFERRED_SIZE)
+				.addComponent(jScrollPane1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+				.addComponent(scrollPane_cliResult, GroupLayout.PREFERRED_SIZE, 293, GroupLayout.PREFERRED_SIZE)
 				.addContainerGap()));
 
 		this.add(panel_Analysis);
 		this.setVisible(true);
-
 	}
 	// </editor-fold>
 
 	// <editor-fold defaultstate="expanded" desc="Actions codeblock ">
-	private void button_GoActionPerformed(java.awt.event.ActionEvent evt) {
-		org.gwaspi.global.SysCommandExecutor.sysAnalyserCommandExecute();
+	private void button_GoActionPerformed(ActionEvent evt) {
+		SysCommandExecutor.sysAnalyserCommandExecute();
 	}
 
-	private void button_PathToTfamActionPerformed(java.awt.event.ActionEvent evt) throws IOException {
-		//Use standard file opener
-		org.gwaspi.gui.utils.Dialogs.selectAndSetFileInCurrentDirDialogue(evt, button_PathToTfam, org.gwaspi.global.Config.getConfigValue("ExportDir", org.gwaspi.constants.cGlobal.HOMEDIR), textField_PathToTfam, ".tfam");
+	private void button_PathToTfamActionPerformed(ActionEvent evt) throws IOException {
+		// Use standard file opener
+		Dialogs.selectAndSetFileInCurrentDirDialog(evt, button_PathToTfam, Config.getConfigValue("ExportDir", org.gwaspi.constants.cGlobal.HOMEDIR), textField_PathToTfam, ".tfam");
 	}
 
-	private void button_PathToTpedActionPerformed(java.awt.event.ActionEvent evt) throws IOException {
-		//Use standard file opener
-		org.gwaspi.gui.utils.Dialogs.selectAndSetFileInCurrentDirDialogue(evt, button_PathToTped, org.gwaspi.global.Config.getConfigValue("ExportDir", org.gwaspi.constants.cGlobal.HOMEDIR), textField_PathToTped, ".tped");
+	private void button_PathToTpedActionPerformed(ActionEvent evt) throws IOException {
+		// Use standard file opener
+		Dialogs.selectAndSetFileInCurrentDirDialog(evt, button_PathToTped, Config.getConfigValue("ExportDir", org.gwaspi.constants.cGlobal.HOMEDIR), textField_PathToTped, ".tped");
 	}
 
-	private void combo_AnalysisActionPerformed(java.awt.event.ActionEvent evt) throws IOException {
+	private void combo_AnalysisActionPerformed(ActionEvent evt) throws IOException {
 //		JOptionPane.showMessageDialog(base.ApipelineGUI.getFrames()[0], "combo_AnalysisActionPerformed");
 //		String commandLine = analysis.PlinkBase.getCommandLine(combo_Analysis.getSelectedIndex(),textField_PathToTfam.getText(),textField_PathToTped.getText());
-//		org.gwaspi.global.SysCommandExecutor.sysAnalyserCommandPost(commandLine);
+//		SysCommandExecutor.sysAnalyserCommandPost(commandLine);
 	}
 	// </editor-fold>
 }

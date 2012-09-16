@@ -337,7 +337,6 @@ public class Text {
 		public static final String mergeSamplesOnly = "Merge new Samples only";
 		public static final String mergeAll = "Merge Markers & Samples";
 		public static final String merge = "Merge";
-		public static final String warnSelectMergeMethod = "You must choose the merge method to use!";
 		public static final String mergedFrom = "Matrix merged from parent Matrices:";
 		public static final String mergeMethodMarkerJoin = "· The SampleSet from the 1st Matrix will be used in the result Matrix.\n· No new Samples from the 2nd Matrix will be added.\n· Markers from the 2nd Matrix will be merged in chromosome and position order to the\n  MarkersSet from the 1st Matrix.\n· Duplicate genotypes from the 2nd Matrix will overwrite genotypes from the 1st Matrix.";
 		public static final String mergeMethodSampleJoin = "· The MarkerSet from the 1st Matrix will be used in the result Matrix.\n· No new Markers from the 2nd Matrix will be added.\n· Samples from the 2nd Matrix will be appended to the end of the SampleSet from the 1st Matrix.\n· Duplicate genotypes from the 2nd Matrix will overwrite genotypes in the 1st Matrix.";

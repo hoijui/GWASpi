@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
+import javax.swing.GroupLayout;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JTabbedPane;
@@ -66,12 +67,12 @@ public class StartGWASpi extends JFrame {
 				allTabs.addTab(Text.App.Tab0, panel0);
 				allTabs.addTab(Text.App.Tab1, panel1);
 
-				javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+				GroupLayout layout = new GroupLayout(getContentPane());
 				getContentPane().setLayout(layout);
 				layout.setHorizontalGroup(
-						layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING).addComponent(allTabs, javax.swing.GroupLayout.DEFAULT_SIZE, 1000, Short.MAX_VALUE));
+						layout.createParallelGroup(GroupLayout.Alignment.LEADING).addComponent(allTabs, GroupLayout.DEFAULT_SIZE, 1000, Short.MAX_VALUE));
 				layout.setVerticalGroup(
-						layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING).addComponent(allTabs, javax.swing.GroupLayout.DEFAULT_SIZE, 750, Short.MAX_VALUE));
+						layout.createParallelGroup(GroupLayout.Alignment.LEADING).addComponent(allTabs, GroupLayout.DEFAULT_SIZE, 750, Short.MAX_VALUE));
 
 				mainGUIFrame.getContentPane().add(allTabs);
 				mainGUIFrame.setVisible(true);

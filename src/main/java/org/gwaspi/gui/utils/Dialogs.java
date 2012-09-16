@@ -5,7 +5,9 @@ import org.gwaspi.constants.cImport.ImportFormat;
 import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
+import org.gwaspi.global.Config;
 import java.awt.GridBagConstraints;
+import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -18,6 +20,7 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.filechooser.FileFilter;
+import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.Matrix;
 import org.gwaspi.model.Operation;
 
@@ -238,11 +241,10 @@ public class Dialogs {
 				gtCode[0]);
 
 		return strandType;
-
 	}
 
 	public static int showMatrixSelectCombo() throws IOException {
-		org.gwaspi.model.MatricesList matrices = new org.gwaspi.model.MatricesList();
+		MatricesList matrices = new MatricesList();
 		//String[] matrixNames = new String[matrices.matrixList.size()];
 		List<String> matrixNames = new ArrayList<String>();
 		List<Integer> matrixIDs = new ArrayList<Integer>();
@@ -272,7 +274,6 @@ public class Dialogs {
 			selectedMatrix = matrixIDs.get(matrixNames.indexOf(selectedRow));
 		}
 		return selectedMatrix;
-
 	}
 
 	public static Integer showConfirmDialogue(String message) {
@@ -286,7 +287,7 @@ public class Dialogs {
 	}
 
 	public static void showInfoDialogue(String message) {
-		JFrame frame = new JFrame("Information");
+		JFrame frame = new JFrame("Information"); // FIXME would we not rather use this string in a title, isnted of in an invisible parent frame? :/ same above
 		JOptionPane.showMessageDialog(frame, message);
 
 		frame.setVisible(false);
@@ -305,46 +306,36 @@ public class Dialogs {
 				null,
 				options,
 				options[2]);
-
 	}
 
 	public static String showInputBox(String message) {
 		JFrame frame = new JFrame("Input text...");
 		return JOptionPane.showInputDialog(frame, message);
 	}
-
-	private static void setMyConstraints(GridBagConstraints c,
-			int gridx,
-			int gridy,
-			int anchor) {
-		c.gridx = gridx;
-		c.gridy = gridy;
-		c.anchor = anchor;
-	}
 	//</editor-fold>
 
 	// <editor-fold defaultstate="expanded" desc="FILE OPEN DIALOGUES">
-	public static void selectAndSetFileDialogue(java.awt.event.ActionEvent evt, JButton openButton, JTextField textField, final String filter) {
-		selectAndSetFileInCurrentDirDialogue(evt, openButton, org.gwaspi.constants.cGlobal.HOMEDIR, textField, filter);
+	public static void selectAndSetFileDialog(ActionEvent evt, JButton openButton, JTextField textField, final String filter) {
+		selectAndSetFileInCurrentDirDialog(evt, openButton, org.gwaspi.constants.cGlobal.HOMEDIR, textField, filter);
 	}
 
-	public static void selectAndSetFileInCurrentDirDialogue(java.awt.event.ActionEvent evt, JButton openButton, String dir, JTextField textField, final String filter) {
-		//Create a file chooser
+	public static void selectAndSetFileInCurrentDirDialog(ActionEvent evt, JButton openButton, String dir, JTextField textField, final String filter) {
+		// Create a file chooser
 		fc = new JFileChooser();
 		fc.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
 
-		//getting the latest opened dir
+		// getting the latest opened dir
 		try {
-//            File tmpFile = new File(dir);
-//            if(!tmpFile.exists()){
-			dir = org.gwaspi.global.Config.getConfigValue("LAST_OPENED_DIR", org.gwaspi.constants.cGlobal.HOMEDIR);
+//			File tmpFile = new File(dir);
+//			if(!tmpFile.exists()){
+			dir = Config.getConfigValue("LAST_OPENED_DIR", org.gwaspi.constants.cGlobal.HOMEDIR);
 			fc.setCurrentDirectory(new java.io.File(dir));
-//            }
+//			}
 		} catch (IOException ex) {
 			Logger.getLogger(Dialogs.class.getName()).log(Level.SEVERE, null, ex);
 		}
 
-		//displaying only necessary files as requested by "filter"
+		// displaying only necessary files as requested by "filter"
 		fc.setFileFilter(new FileFilter() {
 			public boolean accept(File f) {
 				return f.getName().toLowerCase().endsWith(filter) || f.isDirectory();
@@ -367,33 +358,32 @@ public class Dialogs {
 			File file = fc.getSelectedFile();
 			textField.setText(file.getAbsolutePath());
 
-			//setting the directory to latest opened dir
+			// setting the directory to latest opened dir
 			try {
-				org.gwaspi.global.Config.setConfigValue("LAST_OPENED_DIR", file.getParent());
+				Config.setConfigValue("LAST_OPENED_DIR", file.getParent());
 			} catch (IOException ex) {
 				Logger.getLogger(Dialogs.class.getName()).log(Level.SEVERE, null, ex);
 			}
 		}
-
 	}
 
-	public static File selectAndSetDirectoryDialogue(java.awt.event.ActionEvent evt, JButton openButton, JTextField textField, String dir, final String filter) {
+	public static File selectAndSetDirectoryDialog(ActionEvent evt, JButton openButton, JTextField textField, String dir, final String filter) {
 
 		File resultFile = null;
-		//Create a file chooser
+		// Create a file chooser
 		fc = new JFileChooser();
 		fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 
-		//Handle open button action.
+		// Handle open button action.
 		if (evt.getSource() == openButton) {
 
-			//getting the latest opened dir
+			// getting the latest opened dir
 			try {
-//                File tmpFile = new File(dir);
-//                if(!tmpFile.exists()){
-				dir = org.gwaspi.global.Config.getConfigValue("LAST_OPENED_DIR", org.gwaspi.constants.cGlobal.HOMEDIR);
+//				File tmpFile = new File(dir);
+//				if(!tmpFile.exists()){
+				dir = Config.getConfigValue("LAST_OPENED_DIR", org.gwaspi.constants.cGlobal.HOMEDIR);
 				fc.setCurrentDirectory(new java.io.File(dir));
-//                }
+//				}
 			} catch (IOException ex) {
 				Logger.getLogger(Dialogs.class.getName()).log(Level.SEVERE, null, ex);
 			}
@@ -405,7 +395,7 @@ public class Dialogs {
 
 				public String getDescription() {
 					String filterDesc;
-					if (filter.equals("")) {
+					if (filter.isEmpty()) {
 						filterDesc = "All files";
 					} else {
 						filterDesc = filter + " files";
@@ -419,9 +409,9 @@ public class Dialogs {
 				resultFile = fc.getSelectedFile();
 				textField.setText(resultFile.getPath());
 
-				//setting the directory to latest opened dir
+				// setting the directory to latest opened dir
 				try {
-					org.gwaspi.global.Config.setConfigValue("LAST_OPENED_DIR", resultFile.getParent());
+					Config.setConfigValue("LAST_OPENED_DIR", resultFile.getParent());
 				} catch (IOException ex) {
 					Logger.getLogger(Dialogs.class.getName()).log(Level.SEVERE, null, ex);
 				}
@@ -431,19 +421,19 @@ public class Dialogs {
 		return resultFile;
 	}
 
-	public static File selectDirectoryDialogue(int okOption) {
+	public static File selectDirectoryDialog(int okOption) {
 
 		File resultFile = null;
-		//Create a file chooser
+		// Create a file chooser
 		fc = new JFileChooser();
 		fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 
-		//Handle open button action.
+		// Handle open button action.
 		if (okOption == JOptionPane.OK_OPTION) {
 
-			//getting the latest opened dir
+			// getting the latest opened dir
 			try {
-				String dir = org.gwaspi.global.Config.getConfigValue("LAST_OPENED_DIR", org.gwaspi.constants.cGlobal.HOMEDIR);
+				String dir = Config.getConfigValue("LAST_OPENED_DIR", org.gwaspi.constants.cGlobal.HOMEDIR);
 				fc.setCurrentDirectory(new java.io.File(dir));
 			} catch (IOException ex) {
 				Logger.getLogger(Dialogs.class.getName()).log(Level.SEVERE, null, ex);
@@ -453,9 +443,9 @@ public class Dialogs {
 			if (returnVal == JFileChooser.APPROVE_OPTION) {
 				resultFile = fc.getSelectedFile();
 
-				//setting the directory to latest opened dir
+				// setting the directory to latest opened dir
 				try {
-					org.gwaspi.global.Config.setConfigValue("LAST_OPENED_DIR", resultFile.getParent());
+					Config.setConfigValue("LAST_OPENED_DIR", resultFile.getParent());
 				} catch (IOException ex) {
 					Logger.getLogger(Dialogs.class.getName()).log(Level.SEVERE, null, ex);
 				}
@@ -464,19 +454,19 @@ public class Dialogs {
 		return resultFile;
 	}
 
-	public static File selectFilesAndDirertoriesDialogue(int okOption) {
+	public static File selectFilesAndDirectoriesDialog(int okOption) {
 
 		File resultFile = null;
-		//Create a file chooser
+		// Create a file chooser
 		fc = new JFileChooser();
 		fc.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
 
-		//Handle open button action.
+		// Handle open button action.
 		if (okOption == JOptionPane.OK_OPTION) {
 
-			//getting the latest opened dir
+			// getting the last opened dir
 			try {
-				String dir = org.gwaspi.global.Config.getConfigValue("LAST_OPENED_DIR", org.gwaspi.constants.cGlobal.HOMEDIR);
+				String dir = Config.getConfigValue("LAST_OPENED_DIR", org.gwaspi.constants.cGlobal.HOMEDIR);
 				fc.setCurrentDirectory(new java.io.File(dir));
 			} catch (IOException ex) {
 				Logger.getLogger(Dialogs.class.getName()).log(Level.SEVERE, null, ex);
@@ -487,9 +477,9 @@ public class Dialogs {
 			if (returnVal == JFileChooser.APPROVE_OPTION) {
 				resultFile = fc.getSelectedFile();
 
-				//setting the directory to latest opened dir
+				// setting the directory to last opened dir
 				try {
-					org.gwaspi.global.Config.setConfigValue("LAST_OPENED_DIR", resultFile.getParent());
+					Config.setConfigValue("LAST_OPENED_DIR", resultFile.getParent());
 				} catch (IOException ex) {
 					Logger.getLogger(Dialogs.class.getName()).log(Level.SEVERE, null, ex);
 				}

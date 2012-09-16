@@ -2,10 +2,16 @@ package org.gwaspi.gui.reports;
 
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.global.Text;
+import org.gwaspi.gui.GWASpiExplorerPanel;
+import org.gwaspi.gui.StartGWASpi;
+import org.gwaspi.gui.utils.CursorUtils;
+import org.gwaspi.gui.utils.Dialogs;
 import org.gwaspi.gui.utils.LinksExternalResouces;
+import org.gwaspi.gui.utils.URLInDefaultBrowser;
 import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Font;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
@@ -17,7 +23,18 @@ import java.text.DecimalFormat;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.AbstractAction;
+import javax.swing.BorderFactory;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.GroupLayout;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.LayoutStyle;
+import javax.swing.SwingConstants;
+import javax.swing.border.TitledBorder;
 import org.gwaspi.model.Operation;
 import org.gwaspi.model.ReportsList;
 import org.gwaspi.netCDF.matrices.MatrixMetadata;
@@ -54,21 +71,21 @@ import org.jfree.ui.TextAnchor;
  *
  * @author fernando
  */
-public final class ManhattanPlotZoom extends javax.swing.JPanel {
+public final class ManhattanPlotZoom extends JPanel {
 
 	private static int opId;
 	private static Operation op;
 	private static OperationMetadata rdOPMetadata;
 	public static Map<String, Object> labelerLHM;
 	private static MatrixMetadata rdMatrixMetadata;
-	public static String origMarkerId;
-	public static String origChr;
-	public static String currentMarkerId;
-	public static String currentChr;
-	public static String txt_NRows;
+	private static String origMarkerId;
+	private static String origChr;
+	private static String currentMarkerId;
+	private static String currentChr;
+	private static String txt_NRows;
 	public static long centerPhysPos;
-	public static long startPhysPos;
-	public static int defaultMarkerNb = (int) Math.round(100000 * ((double) org.gwaspi.gui.StartGWASpi.maxHeapSize / 2000)); //roughly 2000MB needed per 100.000 plotted markers
+	private static long startPhysPos;
+	public static int defaultMarkerNb = (int) Math.round(100000 * ((double) StartGWASpi.maxHeapSize / 2000)); //roughly 2000MB needed per 100.000 plotted markers
 	private static long requestedSetSize;
 	private static long requestedPosWindow;
 	//private int sliderSize;
@@ -80,19 +97,19 @@ public final class ManhattanPlotZoom extends javax.swing.JPanel {
 	protected static Color manhattan_backalt = Color.getHSBColor(0.1f, 0.0f, 0.85f);
 	protected static Color manhattan_dot = Color.blue;
 	// Variables declaration - do not modify
-	private static javax.swing.JButton btn_Back;
-	private static javax.swing.JButton btn_Back2;
-	private static javax.swing.JButton btn_Reset;
-	private static javax.swing.JButton btn_Save;
-	private static javax.swing.JPanel pnl_Chart;
-	private static javax.swing.JPanel pnl_ChartNavigator;
-	private javax.swing.JPanel pnl_SearchDB;
-	private javax.swing.JComboBox cmb_SearchDB;
-	private static javax.swing.JPanel pnl_Footer;
-	private static javax.swing.JPanel pnl_FooterGroup1;
-	//private javax.swing.JPanel pnl_Tracker;
-	private static javax.swing.JScrollPane scrl_Chart;
-	//private javax.swing.JSlider slid_Tracker;
+	private static JButton btn_Back;
+	private static JButton btn_Back2;
+	private static JButton btn_Reset;
+	private static JButton btn_Save;
+	private static JPanel pnl_Chart;
+	private static JPanel pnl_ChartNavigator;
+	private JPanel pnl_SearchDB;
+	private JComboBox cmb_SearchDB;
+	private static JPanel pnl_Footer;
+	private static JPanel pnl_FooterGroup1;
+	//private JPanel pnl_Tracker;
+	private static JScrollPane scrl_Chart;
+	//private JSlider slid_Tracker;
 	// End of variables declaration
 
 	/**
@@ -107,11 +124,9 @@ public final class ManhattanPlotZoom extends javax.swing.JPanel {
 			String _chr,
 			long _startPhysPos,
 			long _requestedPosWindow,
-			String _txt_NRows) {
-
-
-
-//        long start = new Date().getTime();
+			String _txt_NRows)
+	{
+//		long start = new Date().getTime();
 
 		opId = _opId;
 		currentChr = _chr;
@@ -141,21 +156,15 @@ public final class ManhattanPlotZoom extends javax.swing.JPanel {
 			rdOPMetadata = new OperationMetadata(opId);
 			rdMatrixMetadata = new MatrixMetadata(rdOPMetadata.getParentMatrixId());
 
-//            OperationSet rdAssocMarkerSet = new OperationSet(rdOPMetadata.getStudyId(), opId);
-//            labelerLHM = rdAssocMarkerSet.getOpSetLHM();
+//			OperationSet rdAssocMarkerSet = new OperationSet(rdOPMetadata.getStudyId(), opId);
+//			labelerLHM = rdAssocMarkerSet.getOpSetLHM();
 		} catch (IOException ex) {
 			Logger.getLogger(ManhattanPlotZoom.class.getName()).log(Level.SEVERE, null, ex);
 		}
 
 		initChart(true);
 
-		setCursor(org.gwaspi.gui.utils.CursorUtils.defaultCursor);
-
-//        long end = new Date().getTime();
-//        System.out.println("Time spent zooming: "+(end-start));
-//        Runtime runtime = Runtime.getRuntime();
-//        long heapMB = (runtime.totalMemory() - runtime.freeMemory()) / 1048576;
-//        System.out.println("Used Heap Memory:"+ heapMB);
+		setCursor(CursorUtils.defaultCursor);
 	}
 
 	/**
@@ -171,8 +180,8 @@ public final class ManhattanPlotZoom extends javax.swing.JPanel {
 			String _markerId,
 			long _centerPhysPos,
 			long _requestedSetSize,
-			String _txt_NRows) {
-
+			String _txt_NRows)
+	{
 		opId = _opId;
 		currentMarkerId = _markerId;
 		origMarkerId = _markerId;
@@ -213,7 +222,7 @@ public final class ManhattanPlotZoom extends javax.swing.JPanel {
 					requestedSetSize);
 		}
 
-//        slid_Tracker = new javax.swing.JSlider();
+//		slid_Tracker = new JSlider();
 
 		zoomChart = createChart(initXYDataset, currentChr);
 		zoomPanel = new ChartPanel(zoomChart);
@@ -240,23 +249,23 @@ public final class ManhattanPlotZoom extends javax.swing.JPanel {
 					if (LinksExternalResouces.checkIfRsNecessary(cmb_SearchDB.getSelectedIndex())) { //THE SELECTED EXTERNAL RESOURCE NEEDS RSID INFO
 						String tooltip = zoomPanel.getToolTipText(event.getTrigger());
 						if (tooltip == null || tooltip.isEmpty()) { //CHECK IF THERE IS AN RSID
-							org.gwaspi.gui.utils.Dialogs.showWarningDialogue(Text.Reports.warnExternalResource);
+							Dialogs.showWarningDialogue(Text.Reports.warnExternalResource);
 						} else {
 							String rsId = tooltip.substring(6, tooltip.indexOf('<', 6));
-							org.gwaspi.gui.utils.URLInDefaultBrowser.browseGenericURL(org.gwaspi.gui.utils.LinksExternalResouces.getResourceLink(cmb_SearchDB.getSelectedIndex(),
+							URLInDefaultBrowser.browseGenericURL(LinksExternalResouces.getResourceLink(cmb_SearchDB.getSelectedIndex(),
 									currentChr, // chr
 									rsId, // rsId
 									chartX) // pos
 									);
 						}
 					} else { // THE SELECTED EXTERNAL RESOURCE ONLY NEEDS CHR+POS INFO
-						org.gwaspi.gui.utils.URLInDefaultBrowser.browseGenericURL(org.gwaspi.gui.utils.LinksExternalResouces.getResourceLink(cmb_SearchDB.getSelectedIndex(),
+						URLInDefaultBrowser.browseGenericURL(LinksExternalResouces.getResourceLink(cmb_SearchDB.getSelectedIndex(),
 								currentChr, // chr
 								"", // rsId
 								chartX) // pos
 								);
 					}
-//					org.gwaspi.gui.utils.URLInDefaultBrowser.browseGenericURL(org.gwaspi.gui.utils.LinkEnsemblUrl.getHomoSapiensLink(currentChr, (int) chartX));
+//					URLInDefaultBrowser.browseGenericURL(LinkEnsemblUrl.getHomoSapiensLink(currentChr, (int) chartX));
 				} catch (IOException ex) {
 					System.out.println(Text.Reports.cannotOpenEnsembl);
 				}
@@ -278,21 +287,21 @@ public final class ManhattanPlotZoom extends javax.swing.JPanel {
 
 	private void initGUI() {
 
-		setCursor(org.gwaspi.gui.utils.CursorUtils.waitCursor);
+		setCursor(CursorUtils.waitCursor);
 
-		pnl_ChartNavigator = new javax.swing.JPanel();
-		pnl_Chart = new javax.swing.JPanel();
-		pnl_SearchDB = new javax.swing.JPanel();
-		cmb_SearchDB = new javax.swing.JComboBox();
-		scrl_Chart = new javax.swing.JScrollPane();
-		pnl_Footer = new javax.swing.JPanel();
-		pnl_FooterGroup1 = new javax.swing.JPanel();
-		btn_Save = new javax.swing.JButton();
-		btn_Reset = new javax.swing.JButton();
-		btn_Back = new javax.swing.JButton();
-		btn_Back2 = new javax.swing.JButton();
-//		pnl_Tracker = new javax.swing.JPanel();
-//		slid_Tracker = new javax.swing.JSlider();
+		pnl_ChartNavigator = new JPanel();
+		pnl_Chart = new JPanel();
+		pnl_SearchDB = new JPanel();
+		cmb_SearchDB = new JComboBox();
+		scrl_Chart = new JScrollPane();
+		pnl_Footer = new JPanel();
+		pnl_FooterGroup1 = new JPanel();
+		btn_Save = new JButton();
+		btn_Reset = new JButton();
+		btn_Back = new JButton();
+		btn_Back2 = new JButton();
+//		pnl_Tracker = new JPanel();
+//		slid_Tracker = new JSlider();
 
 		String titlePlot = ": " + origMarkerId + " - Chr" + currentChr;
 		if (origMarkerId == null) {
@@ -300,37 +309,36 @@ public final class ManhattanPlotZoom extends javax.swing.JPanel {
 		}
 
 
-		pnl_ChartNavigator.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Manhattan Plot Navigator" + titlePlot, javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("FreeSans", 1, 18))); // NOI18N
+		pnl_ChartNavigator.setBorder(BorderFactory.createTitledBorder(null, "Manhattan Plot Navigator" + titlePlot, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("FreeSans", 1, 18))); // NOI18N
 
-		pnl_Chart.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+		pnl_Chart.setBorder(BorderFactory.createLineBorder(new Color(0, 0, 0)));
 
 		scrl_Chart.getViewport().add(zoomPanel);
 		pnl_Chart.add(scrl_Chart, BorderLayout.CENTER);
 
-
 		// <editor-fold defaultstate="collapsed" desc="LAYOUT1">
-		javax.swing.GroupLayout pnl_ChartLayout = new javax.swing.GroupLayout(pnl_Chart);
+		GroupLayout pnl_ChartLayout = new GroupLayout(pnl_Chart);
 		pnl_Chart.setLayout(pnl_ChartLayout);
 		pnl_ChartLayout.setHorizontalGroup(
-				pnl_ChartLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-				.addComponent(scrl_Chart, javax.swing.GroupLayout.DEFAULT_SIZE, 812, Short.MAX_VALUE));
+				pnl_ChartLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+				.addComponent(scrl_Chart, GroupLayout.DEFAULT_SIZE, 812, Short.MAX_VALUE));
 		pnl_ChartLayout.setVerticalGroup(
-				pnl_ChartLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-				.addComponent(scrl_Chart, javax.swing.GroupLayout.DEFAULT_SIZE, 437, Short.MAX_VALUE));
+				pnl_ChartLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+				.addComponent(scrl_Chart, GroupLayout.DEFAULT_SIZE, 437, Short.MAX_VALUE));
 
-		javax.swing.GroupLayout pnl_ChartNavigatorLayout = new javax.swing.GroupLayout(pnl_ChartNavigator);
+		GroupLayout pnl_ChartNavigatorLayout = new GroupLayout(pnl_ChartNavigator);
 		pnl_ChartNavigator.setLayout(pnl_ChartNavigatorLayout);
 		pnl_ChartNavigatorLayout.setHorizontalGroup(
-				pnl_ChartNavigatorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-				.addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnl_ChartNavigatorLayout.createSequentialGroup()
+				pnl_ChartNavigatorLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+				.addGroup(GroupLayout.Alignment.TRAILING, pnl_ChartNavigatorLayout.createSequentialGroup()
 				.addContainerGap()
-				.addComponent(pnl_Chart, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+				.addComponent(pnl_Chart, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
 				.addContainerGap()));
 		pnl_ChartNavigatorLayout.setVerticalGroup(
-				pnl_ChartNavigatorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+				pnl_ChartNavigatorLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
 				.addGroup(pnl_ChartNavigatorLayout.createSequentialGroup()
 				.addContainerGap()
-				.addComponent(pnl_Chart, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+				.addComponent(pnl_Chart, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
 				.addContainerGap()));
 
 		// </editor-fold>
@@ -345,211 +353,170 @@ public final class ManhattanPlotZoom extends javax.swing.JPanel {
 		}
 
 		//<editor-fold defaultstate="collapsed" desc="TRACKER">
-//		pnl_Tracker.setBorder(javax.swing.BorderFactory.createTitledBorder("Marker Nº on "+lblChr));
+//		pnl_Tracker.setBorder(BorderFactory.createTitledBorder("Marker Nº on "+lblChr));
 //
 //
 //		slid_Tracker.setMaximum(max);
 //		slid_Tracker.setValue(currPos);
-//		slid_Tracker.addMouseListener(new java.awt.event.MouseAdapter() {
-//			public void mouseReleased(java.awt.event.MouseEvent evt) {
+//		slid_Tracker.addMouseListener(new event.MouseAdapter() {
+//			public void mouseReleased(event.MouseEvent evt) {
 //				actionSlide();
 //			}
 //		});
 //
-//		javax.swing.GroupLayout pnl_TrackerLayout = new javax.swing.GroupLayout(pnl_Tracker);
+//		GroupLayout pnl_TrackerLayout = new GroupLayout(pnl_Tracker);
 //		pnl_Tracker.setLayout(pnl_TrackerLayout);
 //		pnl_TrackerLayout.setHorizontalGroup(
-//				pnl_TrackerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-//				.addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnl_TrackerLayout.createSequentialGroup()
+//				pnl_TrackerLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+//				.addGroup(GroupLayout.Alignment.TRAILING, pnl_TrackerLayout.createSequentialGroup()
 //				.addGap(18, 18, 18)
-//				.addComponent(slid_Tracker, javax.swing.GroupLayout.DEFAULT_SIZE, 814, Short.MAX_VALUE)
+//				.addComponent(slid_Tracker, GroupLayout.DEFAULT_SIZE, 814, Short.MAX_VALUE)
 //				.addContainerGap())
 //				);
 //		pnl_TrackerLayout.setVerticalGroup(
-//				pnl_TrackerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+//				pnl_TrackerLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
 //				.addGroup(pnl_TrackerLayout.createSequentialGroup()
 //				.addContainerGap()
-//				.addComponent(slid_Tracker, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-//				.addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+//				.addComponent(slid_Tracker, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+//				.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
 //				);
 		//</editor-fold>
 
-
 		//<editor-fold defaultstate="collapsed" desc="EXTERNAL RESOURCE DBs">
-		pnl_SearchDB = new javax.swing.JPanel();
-		pnl_SearchDB.setBorder(javax.swing.BorderFactory.createTitledBorder(Text.Reports.externalResourceDB));
-		cmb_SearchDB = new javax.swing.JComboBox();
-		cmb_SearchDB.setModel(new javax.swing.DefaultComboBoxModel(org.gwaspi.gui.utils.LinksExternalResouces.getLinkNames()));
+		pnl_SearchDB = new JPanel();
+		pnl_SearchDB.setBorder(BorderFactory.createTitledBorder(Text.Reports.externalResourceDB));
+		cmb_SearchDB = new JComboBox();
+		cmb_SearchDB.setModel(new DefaultComboBoxModel(LinksExternalResouces.getLinkNames()));
 
-		javax.swing.GroupLayout pnl_SearchDBLayout = new javax.swing.GroupLayout(pnl_SearchDB);
+		GroupLayout pnl_SearchDBLayout = new GroupLayout(pnl_SearchDB);
 		pnl_SearchDB.setLayout(pnl_SearchDBLayout);
 		pnl_SearchDBLayout.setHorizontalGroup(
-				pnl_SearchDBLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+				pnl_SearchDBLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
 				.addGroup(pnl_SearchDBLayout.createSequentialGroup()
 				.addContainerGap()
 				.addComponent(cmb_SearchDB, 0, 614, Short.MAX_VALUE)
 				.addContainerGap()));
 		pnl_SearchDBLayout.setVerticalGroup(
-				pnl_SearchDBLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+				pnl_SearchDBLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
 				.addGroup(pnl_SearchDBLayout.createSequentialGroup()
-				.addComponent(cmb_SearchDB, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+				.addComponent(cmb_SearchDB, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 				.addContainerGap(14, Short.MAX_VALUE)));
 		//</editor-fold>
 
+		btn_Save.setAction(new SaveAsAction());
 
-		btn_Save.setText("  " + org.gwaspi.global.Text.All.save + "  ");
-		btn_Save.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				actionSaveAs(rdOPMetadata.getStudyId());
-			}
-		});
+		btn_Reset.setAction(new ResetAction(opId));
 
-		btn_Reset.setText("  " + org.gwaspi.global.Text.All.reset + "  ");
-		btn_Reset.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				actionReset(evt);
-			}
-		});
+		btn_Back.setAction(new BackToTableAction());
 
-		btn_Back.setText("  " + org.gwaspi.global.Text.Reports.backToTable + "  ");
-		btn_Back.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				try {
-					actionBackToTable(evt);
-				} catch (IOException ex) {
-				}
-			}
-		});
-
-		btn_Back2.setText("  " + org.gwaspi.global.Text.Reports.backToManhattanPlot + "  ");
-		btn_Back2.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				try {
-					actionBackToManhattanPlot(evt);
-				} catch (IOException ex) {
-				}
-			}
-		});
+		btn_Back2.setAction(new BackToManhattanPlotAction());
 
 		// <editor-fold defaultstate="collapsed" desc="FOOTER">
-		javax.swing.GroupLayout pnl_FooterGroup1Layout = new javax.swing.GroupLayout(pnl_FooterGroup1);
+		GroupLayout pnl_FooterGroup1Layout = new GroupLayout(pnl_FooterGroup1);
 		pnl_FooterGroup1.setLayout(pnl_FooterGroup1Layout);
 		pnl_FooterGroup1Layout.setHorizontalGroup(
-				pnl_FooterGroup1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-				.addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnl_FooterGroup1Layout.createSequentialGroup()
+				pnl_FooterGroup1Layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+				.addGroup(GroupLayout.Alignment.TRAILING, pnl_FooterGroup1Layout.createSequentialGroup()
 				.addContainerGap()
-				.addComponent(btn_Reset, javax.swing.GroupLayout.DEFAULT_SIZE, 111, Short.MAX_VALUE)
+				.addComponent(btn_Reset, GroupLayout.DEFAULT_SIZE, 111, Short.MAX_VALUE)
 				.addGap(18, 18, 18)
-				.addComponent(btn_Save, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE)
+				.addComponent(btn_Save, GroupLayout.PREFERRED_SIZE, 96, GroupLayout.PREFERRED_SIZE)
 				.addContainerGap()));
 
-
-		pnl_FooterGroup1Layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[]{btn_Reset, btn_Save});
+		pnl_FooterGroup1Layout.linkSize(SwingConstants.HORIZONTAL, new Component[]{btn_Reset, btn_Save});
 
 		pnl_FooterGroup1Layout.setVerticalGroup(
-				pnl_FooterGroup1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+				pnl_FooterGroup1Layout.createParallelGroup(GroupLayout.Alignment.LEADING)
 				.addGroup(pnl_FooterGroup1Layout.createSequentialGroup()
-				.addGroup(pnl_FooterGroup1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+				.addGroup(pnl_FooterGroup1Layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
 				.addComponent(btn_Save)
 				.addComponent(btn_Reset))
 				.addContainerGap(16, Short.MAX_VALUE)));
 
+		pnl_FooterGroup1Layout.linkSize(SwingConstants.VERTICAL, new Component[]{btn_Reset, btn_Save});
 
-		pnl_FooterGroup1Layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[]{btn_Reset, btn_Save});
-
-
-		javax.swing.GroupLayout pnl_FooterLayout = new javax.swing.GroupLayout(pnl_Footer);
+		GroupLayout pnl_FooterLayout = new GroupLayout(pnl_Footer);
 		pnl_Footer.setLayout(pnl_FooterLayout);
 		pnl_FooterLayout.setHorizontalGroup(
-				pnl_FooterLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+				pnl_FooterLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
 				.addGroup(pnl_FooterLayout.createSequentialGroup()
 				.addContainerGap()
 				.addComponent(btn_Back)
 				.addGap(18, 18, 18)
 				.addComponent(btn_Back2)
-				.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 368, Short.MAX_VALUE)
-				.addComponent(pnl_FooterGroup1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, 368, Short.MAX_VALUE)
+				.addComponent(pnl_FooterGroup1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 				.addContainerGap()));
 		pnl_FooterLayout.setVerticalGroup(
-				pnl_FooterLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+				pnl_FooterLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
 				.addGroup(pnl_FooterLayout.createSequentialGroup()
 				.addContainerGap()
-				.addGroup(pnl_FooterLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-				.addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnl_FooterLayout.createSequentialGroup()
-				.addGroup(pnl_FooterLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+				.addGroup(pnl_FooterLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+				.addGroup(GroupLayout.Alignment.TRAILING, pnl_FooterLayout.createSequentialGroup()
+				.addGroup(pnl_FooterLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
 				.addComponent(btn_Back)
 				.addComponent(btn_Back2))
 				.addGap(71, 71, 71))
-				.addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnl_FooterLayout.createSequentialGroup()
-				.addComponent(pnl_FooterGroup1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+				.addGroup(GroupLayout.Alignment.TRAILING, pnl_FooterLayout.createSequentialGroup()
+				.addComponent(pnl_FooterGroup1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 				.addGap(55, 55, 55)))));
 		// </editor-fold>
 
-
 		// <editor-fold defaultstate="collapsed" desc="LAYOUT">
-//		javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
+//		GroupLayout layout = new GroupLayout(this);
 //		this.setLayout(layout);
 //		layout.setHorizontalGroup(
-//				layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-//				.addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+//				layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+//				.addGroup(GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
 //				.addContainerGap()
-//				.addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-//				.addComponent(pnl_Tracker, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-//				.addComponent(pnl_ChartNavigator, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-//				.addComponent(pnl_Footer, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+//				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.TRAILING)
+//				.addComponent(pnl_Tracker, GroupLayout.Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+//				.addComponent(pnl_ChartNavigator, GroupLayout.Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+//				.addComponent(pnl_Footer, GroupLayout.Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
 //				.addContainerGap())
 //				);
 //		layout.setVerticalGroup(
-//				layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+//				layout.createParallelGroup(GroupLayout.Alignment.LEADING)
 //				.addGroup(layout.createSequentialGroup()
-//				.addComponent(pnl_ChartNavigator, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-//				.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-//				.addComponent(pnl_Tracker, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE)
-//				.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-//				.addComponent(pnl_Footer, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-//				.addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+//				.addComponent(pnl_ChartNavigator, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+//				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+//				.addComponent(pnl_Tracker, GroupLayout.PREFERRED_SIZE, 86, GroupLayout.PREFERRED_SIZE)
+//				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+//				.addComponent(pnl_Footer, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+//				.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
 //				);
 
-		javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
+		GroupLayout layout = new GroupLayout(this);
 		this.setLayout(layout);
 		layout.setHorizontalGroup(
-				layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+				layout.createParallelGroup(GroupLayout.Alignment.LEADING)
 				.addGroup(layout.createSequentialGroup()
 				.addContainerGap()
-				.addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-				.addComponent(pnl_SearchDB, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-				.addComponent(pnl_ChartNavigator, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-				.addComponent(pnl_Footer, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+				.addComponent(pnl_SearchDB, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+				.addComponent(pnl_ChartNavigator, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+				.addComponent(pnl_Footer, GroupLayout.Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
 				.addContainerGap()));
 		layout.setVerticalGroup(
-				layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+				layout.createParallelGroup(GroupLayout.Alignment.LEADING)
 				.addGroup(layout.createSequentialGroup()
-				.addComponent(pnl_ChartNavigator, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-				.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-				.addComponent(pnl_SearchDB, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-				.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-				.addComponent(pnl_Footer, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)
+				.addComponent(pnl_ChartNavigator, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+				.addComponent(pnl_SearchDB, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+				.addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
+				.addComponent(pnl_Footer, GroupLayout.PREFERRED_SIZE, 55, GroupLayout.PREFERRED_SIZE)
 				.addContainerGap()));
-
 		// </editor-fold>
 
-		setCursor(org.gwaspi.gui.utils.CursorUtils.defaultCursor);
+		setCursor(CursorUtils.defaultCursor);
 	}
 
 	// <editor-fold defaultstate="collapsed" desc="CHART GENERATOR">
-	static XYDataset getXYDataSetByPhysPos(int _opId,
+	private static XYDataset getXYDataSetByPhysPos(int _opId,
 			String _origChr,
 			long _startPhysPos,
-			long _requestedPosWindow) {
-
-//        System.out.println("getXYDataSetByPhysPos");
-//        System.out.println("opId: "+_opId);
-//        System.out.println("chr: "+_origChr);
-//        System.out.println("startPhysPos: "+_startPhysPos);
-//        System.out.println("requestedPosWindow: "+_requestedPosWindow);
-//        System.out.println("\n");
-
-
+			long _requestedPosWindow)
+	{
 		XYDataset xyd = null;
 		if (op.getOperationType().equals(cNetCDF.Defaults.OPType.ALLELICTEST.toString())) {
 			xyd = org.gwaspi.reports.GenericReportGenerator.getManhattanZoomByChrAndPos(_opId,
@@ -573,23 +540,16 @@ public final class ManhattanPlotZoom extends javax.swing.JPanel {
 					_startPhysPos,
 					_requestedPosWindow);
 		}
+
 		return xyd;
 	}
 
-	static XYDataset getXYDataSetByMarkerIdAndPhysPos(int _opId,
+	private static XYDataset getXYDataSetByMarkerIdAndPhysPos(int _opId,
 			String _origChr,
 			String _markerId,
 			long _centerPhysPos,
-			long _requestedPosWindow) {
-
-//		System.out.println("getXYDataSetByMarkerIdOrIdx");
-//		System.out.println("opId: "+_opId);
-//		System.out.println("markerId: "+_markerId);
-//		System.out.println("indexPosition: "+_startIdxPos);
-//		System.out.println("requestedSetSize: "+_requestedSetSize);
-//		System.out.println("\n");
-
-
+			long _requestedPosWindow)
+	{
 		XYDataset xyd = null;
 		if (op.getOperationType().equals(cNetCDF.Defaults.OPType.ALLELICTEST.toString())) {
 			xyd = org.gwaspi.reports.GenericReportGenerator.getManhattanZoomByChrAndPos(_opId,
@@ -613,6 +573,7 @@ public final class ManhattanPlotZoom extends javax.swing.JPanel {
 					_centerPhysPos,
 					_requestedPosWindow);
 		}
+
 		return xyd;
 	}
 
@@ -626,16 +587,8 @@ public final class ManhattanPlotZoom extends javax.swing.JPanel {
 			String _origChr,
 			String _markerId,
 			int _centerPhysPos,
-			int _requestedSetSize) {
-
-//		System.out.println("getXYDataSetByMarkerIdOrIdx");
-//		System.out.println("opId: "+_opId);
-//		System.out.println("markerId: "+_markerId);
-//		System.out.println("indexPosition: "+_startIdxPos);
-//		System.out.println("requestedSetSize: "+_requestedSetSize);
-//		System.out.println("\n");
-
-
+			int _requestedSetSize)
+	{
 		XYDataset xyd = null;
 		if (op.getOperationType().equals(cNetCDF.Defaults.OPType.ALLELICTEST.toString())) {
 			xyd = org.gwaspi.reports.GenericReportGenerator.getManhattanZoomByMarkerIdOrIdx(_opId,
@@ -656,6 +609,7 @@ public final class ManhattanPlotZoom extends javax.swing.JPanel {
 					_centerPhysPos,
 					_requestedSetSize);
 		}
+
 		return xyd;
 	}
 
@@ -667,18 +621,14 @@ public final class ManhattanPlotZoom extends javax.swing.JPanel {
 				PlotOrientation.VERTICAL,
 				true, false, false);
 
-
-
 		XYPlot plot = (XYPlot) chart.getPlot();
 		plot.setNoDataMessage("NO DATA");
 		plot.setDomainZeroBaselineVisible(true);
 		plot.setRangeZeroBaselineVisible(true);
 
-
 		// CHART BACKGROUD COLOR
 		chart.setBackgroundPaint(Color.getHSBColor(0.1f, 0.1f, 1.0f)); //Hue, saturation, brightness
 		plot.setBackgroundPaint(manhattan_back); //Hue, saturation, brightness 9
-
 
 		// GRIDLINES
 		plot.setDomainGridlineStroke(new BasicStroke(0.0f));
@@ -767,8 +717,8 @@ public final class ManhattanPlotZoom extends javax.swing.JPanel {
 	}
 
 	private static class MyXYToolTipGenerator extends StandardXYToolTipGenerator
-			implements XYToolTipGenerator {
-
+			implements XYToolTipGenerator
+	{
 		private DecimalFormat dfSci = new DecimalFormat("0.##E0#");
 		private DecimalFormat dfInteger = new DecimalFormat("#");
 		private String chr;
@@ -797,8 +747,8 @@ public final class ManhattanPlotZoom extends javax.swing.JPanel {
 	}
 
 	private static class MySeriesItemLabelGenerator extends AbstractXYItemLabelGenerator
-			implements XYItemLabelGenerator {
-
+			implements XYItemLabelGenerator
+	{
 		private double threshold;
 		private String chr;
 
@@ -846,75 +796,114 @@ public final class ManhattanPlotZoom extends javax.swing.JPanel {
 			}
 			return rsLabel;
 		}
-//		@Override
-//		protected Object[] createItemArray(XYDataset dataset, int series, int item){
-//			Object[] returnObj = null; //series name, x data value, y data value
-//			dataset.get
-//
-//
-//			return returnObj;
-//		}
 	}
-
 	// </editor-fold>
+
 	//<editor-fold defaultstate="collapsed" desc="HELPERS">
 	private static void actionSlide() {
-//		if(slid_Tracker.getValue()>=(rdOPMetadata.getOpSetSize()-defaultMarkerNb)){
+//		if (slid_Tracker.getValue()>=(rdOPMetadata.getOpSetSize()-defaultMarkerNb)){
 //			indexPosition=sliderSize-defaultMarkerNb;
 //		} else {
 //			indexPosition=slid_Tracker.getValue();
 //		}
-//		org.gwaspi.gui.GWASpiExplorerPanel.pnl_Content = new ManhattanPlotZoom(opId,
+//		GWASpiExplorerPanel.pnl_Content = new ManhattanPlotZoom(opId,
 //				 origChr,
 //				 origMarkerId,
 //				 indexPosition,
 //				 defaultMarkerNb,
 //				 txt_NRows);
-//		org.gwaspi.gui.GWASpiExplorerPanel.scrl_Content.setViewportView(org.gwaspi.gui.GWASpiExplorerPanel.pnl_Content);
+//		GWASpiExplorerPanel.scrl_Content.setViewportView(GWASpiExplorerPanel.pnl_Content);
 	}
 
-	private static void actionReset(ActionEvent evt) {
-		org.gwaspi.gui.GWASpiExplorerPanel.pnl_Content = new org.gwaspi.gui.reports.ManhattanPlotZoom(opId,
-				origChr,
-				startPhysPos, // startPhysPos
-				requestedPosWindow, // physPos window
-				txt_NRows);
+	private static class ResetAction extends AbstractAction {
 
-		org.gwaspi.gui.GWASpiExplorerPanel.scrl_Content.setViewportView(org.gwaspi.gui.GWASpiExplorerPanel.pnl_Content);
-	}
+		private int opId;
 
-	private static void actionSaveAs(int studyId) {
-		try {
-			File newFile = new File(org.gwaspi.gui.utils.Dialogs.selectDirectoryDialogue(JOptionPane.OK_OPTION).getPath() + "/zoom_" + origMarkerId + ".png");
-			ChartUtilities.saveChartAsPNG(newFile, zoomChart, scrl_Chart.getWidth(), scrl_Chart.getHeight());
-		} catch (IOException ex) {
-			Logger.getLogger(ChartDefaultDisplay.class.getName()).log(Level.SEVERE, null, ex);
-		} catch (NullPointerException ex) {
-			//gui.utils.Dialogs.showWarningDialogue("A table saving error has occurred");
-			//Logger.getLogger(ChartDefaultDisplay.class.getName()).log(Level.SEVERE, null, ex);
-		} catch (Exception ex) {
-			Logger.getLogger(ChartDefaultDisplay.class.getName()).log(Level.SEVERE, null, ex);
+		ResetAction(int opId) {
+
+			this.opId = opId;
+			putValue(NAME, Text.All.reset);
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent evt) {
+			GWASpiExplorerPanel.pnl_Content = new ManhattanPlotZoom(opId,
+					origChr,
+					startPhysPos, // startPhysPos
+					requestedPosWindow, // physPos window
+					txt_NRows);
+
+			GWASpiExplorerPanel.scrl_Content.setViewportView(GWASpiExplorerPanel.pnl_Content);
 		}
 	}
 
-	private static void actionBackToTable(java.awt.event.ActionEvent evt) throws IOException {
-		ReportsList rpList = new ReportsList(rdOPMetadata.getOPId(), rdOPMetadata.getParentMatrixId());
-		org.gwaspi.gui.GWASpiExplorerPanel.pnl_Content = new Report_AnalysisPanel(rdOPMetadata.getStudyId(), rdOPMetadata.getParentMatrixId(), rdOPMetadata.getOPId(), txt_NRows);
-		org.gwaspi.gui.GWASpiExplorerPanel.scrl_Content.setViewportView(org.gwaspi.gui.GWASpiExplorerPanel.pnl_Content);
-	}
+	private static class SaveAsAction extends AbstractAction {
 
-	private static void actionBackToManhattanPlot(java.awt.event.ActionEvent evt) throws IOException {
-		ManhattanChartDisplay.fired = false;
-		ReportsList rpList = new ReportsList(rdOPMetadata.getOPId(), rdOPMetadata.getParentMatrixId());
-		String reportFile = "";
-		for (int i = 0; i < rpList.reportsListAL.size(); i++) {
-			String reportType = rpList.reportsListAL.get(i).getReportType();
-			if (reportType.equals(org.gwaspi.constants.cNetCDF.Defaults.OPType.MANHATTANPLOT.toString())) {
-				reportFile = rpList.reportsListAL.get(i).getReportFileName();
+		SaveAsAction() {
+
+			putValue(NAME, Text.All.save);
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent evt) {
+			try {
+				File newFile = new File(Dialogs.selectDirectoryDialog(JOptionPane.OK_OPTION).getPath() + "/zoom_" + origMarkerId + ".png");
+				ChartUtilities.saveChartAsPNG(newFile, zoomChart, scrl_Chart.getWidth(), scrl_Chart.getHeight());
+			} catch (IOException ex) {
+				Logger.getLogger(ChartDefaultDisplay.class.getName()).log(Level.SEVERE, null, ex);
+			} catch (NullPointerException ex) {
+				//Dialogs.showWarningDialogue("A table saving error has occurred");
+				//Logger.getLogger(ChartDefaultDisplay.class.getName()).log(Level.SEVERE, null, ex);
+			} catch (Exception ex) {
+				Logger.getLogger(ChartDefaultDisplay.class.getName()).log(Level.SEVERE, null, ex);
 			}
 		}
-		org.gwaspi.gui.GWASpiExplorerPanel.pnl_Content = new ManhattanChartDisplay(rdOPMetadata.getStudyId(), reportFile, rdOPMetadata.getOPId());
-		org.gwaspi.gui.GWASpiExplorerPanel.scrl_Content.setViewportView(org.gwaspi.gui.GWASpiExplorerPanel.pnl_Content);
+	}
+
+	private static class BackToTableAction extends AbstractAction {
+
+		BackToTableAction() {
+
+			putValue(NAME, Text.Reports.backToTable);
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent evt) {
+			try {
+				ReportsList rpList = new ReportsList(rdOPMetadata.getOPId(), rdOPMetadata.getParentMatrixId());
+				GWASpiExplorerPanel.pnl_Content = new Report_AnalysisPanel(rdOPMetadata.getStudyId(), rdOPMetadata.getParentMatrixId(), rdOPMetadata.getOPId(), txt_NRows);
+				GWASpiExplorerPanel.scrl_Content.setViewportView(GWASpiExplorerPanel.pnl_Content);
+			} catch (IOException ex) {
+				Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
+			}
+		}
+	}
+
+	private static class BackToManhattanPlotAction extends AbstractAction {
+
+		BackToManhattanPlotAction() {
+
+			putValue(NAME, Text.Reports.backToManhattanPlot);
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent evt) {
+			try {
+				ManhattanChartDisplay.fired = false;
+				ReportsList rpList = new ReportsList(rdOPMetadata.getOPId(), rdOPMetadata.getParentMatrixId());
+				String reportFile = "";
+				for (int i = 0; i < rpList.reportsListAL.size(); i++) {
+					String reportType = rpList.reportsListAL.get(i).getReportType();
+					if (reportType.equals(org.gwaspi.constants.cNetCDF.Defaults.OPType.MANHATTANPLOT.toString())) {
+						reportFile = rpList.reportsListAL.get(i).getReportFileName();
+					}
+				}
+				GWASpiExplorerPanel.pnl_Content = new ManhattanChartDisplay(rdOPMetadata.getStudyId(), reportFile, rdOPMetadata.getOPId());
+				GWASpiExplorerPanel.scrl_Content.setViewportView(GWASpiExplorerPanel.pnl_Content);
+			} catch (IOException ex) {
+				Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
+			}
+		}
 	}
 	//</editor-fold>
 }

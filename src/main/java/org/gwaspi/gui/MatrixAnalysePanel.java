@@ -2,9 +2,19 @@ package org.gwaspi.gui;
 
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.global.Text;
+import org.gwaspi.gui.utils.CursorUtils;
+import org.gwaspi.gui.utils.Dialogs;
 import org.gwaspi.gui.utils.HelpURLs;
-import java.awt.Color;
+import org.gwaspi.gui.utils.MoreAssocInfo;
+import org.gwaspi.gui.utils.MoreGWASinOneGoInfo;
+import org.gwaspi.gui.utils.MoreInfoForGtFreq;
+import org.gwaspi.gui.utils.NodeToPathCorrespondence;
+import org.gwaspi.gui.utils.RowRendererDefault;
+import org.gwaspi.gui.utils.URLInDefaultBrowser;
 import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -14,10 +24,24 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.BorderFactory;
+import javax.swing.GroupLayout;
+import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JTextArea;
+import javax.swing.LayoutStyle;
+import javax.swing.SwingConstants;
+import javax.swing.border.TitledBorder;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.tree.DefaultMutableTreeNode;
+import org.gwaspi.model.Matrix;
 import org.gwaspi.model.Operation;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.netCDF.matrices.MatrixMetadata;
@@ -33,49 +57,50 @@ import ucar.ma2.InvalidRangeException;
  * IBE, Institute of Evolutionary Biology (UPF-CSIC)
  * CEXS-UPF-PRBB
  */
-public class MatrixAnalysePanel extends javax.swing.JPanel {
+public class MatrixAnalysePanel extends JPanel {
 
 	// Variables declaration - do not modify
-	private org.gwaspi.model.Matrix parentMatrix;
-	private org.gwaspi.model.Operation currentOP;
+	private Matrix parentMatrix;
+	private final Operation currentOP;
 	private Map<Integer, Object> treeChildrenLHM = new LinkedHashMap<Integer, Object>();
-	private javax.swing.JButton btn_1_1;
-	private javax.swing.JButton btn_1_2;
-	private javax.swing.JButton btn_1_3;
-	private javax.swing.JButton btn_1_4;
-	private javax.swing.JButton btn_1_5;
-	private javax.swing.JButton btn_Back;
-	private javax.swing.JButton btn_DeleteOperation;
-	private javax.swing.JButton btn_Help;
-	private javax.swing.JPanel pnl_Spacer;
-	private javax.swing.JPanel pnl_NewOperation;
-	private javax.swing.JPanel pnl_Buttons;
-	private javax.swing.JPanel pnl_Footer;
-	private javax.swing.JPanel pnl_MatrixDesc;
-	private javax.swing.JScrollPane scrl_MatrixDesc;
-	private javax.swing.JScrollPane scrl_MatrixOperations;
-	private javax.swing.JTable tbl_MatrixOperations;
-	private javax.swing.JTextArea txtA_Description;
+	private JButton btn_1_1;
+	private JButton btn_1_2;
+	private JButton btn_1_3;
+	private JButton btn_1_4;
+	private JButton btn_1_5;
+	private JButton btn_Back;
+	private JButton btn_DeleteOperation;
+	private JButton btn_Help;
+	private JPanel pnl_Spacer;
+	private JPanel pnl_NewOperation;
+	private JPanel pnl_Buttons;
+	private JPanel pnl_Footer;
+	private JPanel pnl_MatrixDesc;
+	private JScrollPane scrl_MatrixDesc;
+	private JScrollPane scrl_MatrixOperations;
+	private JTable tbl_MatrixOperations;
+	private JTextArea txtA_Description;
 	public GWASinOneGOParams gwasParams = new GWASinOneGOParams();
-	private Object op;
+	private final Action gwasInOneGoAction;
 	// End of variables declaration
 
 	@SuppressWarnings("unchecked")
 	public MatrixAnalysePanel(int _matrixId, int _opId) throws IOException {
 
-		parentMatrix = new org.gwaspi.model.Matrix(_matrixId);
+		parentMatrix = new Matrix(_matrixId);
 		if (_opId != Integer.MIN_VALUE) {
-			currentOP = new org.gwaspi.model.Operation(_opId);
+			currentOP = new Operation(_opId);
+		} else {
+			currentOP = null;
 		}
-		DefaultMutableTreeNode matrixNode = (DefaultMutableTreeNode) org.gwaspi.gui.GWASpiExplorerPanel.tree.getLastSelectedPathComponent();
-		treeChildrenLHM = org.gwaspi.gui.utils.NodeToPathCorrespondence.buildNodeToPathCorrespondence(matrixNode, true);
+		DefaultMutableTreeNode matrixNode = (DefaultMutableTreeNode) GWASpiExplorerPanel.tree.getLastSelectedPathComponent();
+		treeChildrenLHM = NodeToPathCorrespondence.buildNodeToPathCorrespondence(matrixNode, true);
 
-
-		pnl_MatrixDesc = new javax.swing.JPanel();
-		scrl_MatrixDesc = new javax.swing.JScrollPane();
-		txtA_Description = new javax.swing.JTextArea();
-		scrl_MatrixOperations = new javax.swing.JScrollPane();
-		tbl_MatrixOperations = new javax.swing.JTable() {
+		pnl_MatrixDesc = new JPanel();
+		scrl_MatrixDesc = new JScrollPane();
+		txtA_Description = new JTextArea();
+		scrl_MatrixOperations = new JScrollPane();
+		tbl_MatrixOperations = new JTable() {
 			@Override
 			public boolean isCellEditable(int row, int col) {
 				return false; //Renders column 0 uneditable.
@@ -91,37 +116,37 @@ public class MatrixAnalysePanel extends javax.swing.JPanel {
 				return c;
 			}
 		};
-		tbl_MatrixOperations.setDefaultRenderer(Object.class, new org.gwaspi.gui.utils.RowRendererDefault());
+		tbl_MatrixOperations.setDefaultRenderer(Object.class, new RowRendererDefault());
 
+		btn_DeleteOperation = new JButton();
+		pnl_Footer = new JPanel();
+		btn_Back = new JButton();
+		btn_Help = new JButton();
+		pnl_Spacer = new JPanel();
+		pnl_Buttons = new JPanel();
+		pnl_NewOperation = new JPanel();
+		btn_1_1 = new JButton();
+		btn_1_2 = new JButton();
+		btn_1_3 = new JButton();
+		btn_1_4 = new JButton();
+		btn_1_5 = new JButton();
 
-		btn_DeleteOperation = new javax.swing.JButton();
-		pnl_Footer = new javax.swing.JPanel();
-		btn_Back = new javax.swing.JButton();
-		btn_Help = new javax.swing.JButton();
-		pnl_Spacer = new javax.swing.JPanel();
-		pnl_Buttons = new javax.swing.JPanel();
-		pnl_NewOperation = new javax.swing.JPanel();
-		btn_1_1 = new javax.swing.JButton();
-		btn_1_2 = new javax.swing.JButton();
-		btn_1_3 = new javax.swing.JButton();
-		btn_1_4 = new javax.swing.JButton();
-		btn_1_5 = new javax.swing.JButton();
+		gwasInOneGoAction = new GwasInOneGoAction(parentMatrix, gwasParams);
+		gwasInOneGoAction.setEnabled(currentOP == null);
 
-		setBorder(javax.swing.BorderFactory.createTitledBorder(null, Text.Operation.analyseData, javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("FreeSans", 1, 18))); // NOI18N
-
+		setBorder(BorderFactory.createTitledBorder(null, Text.Operation.analyseData, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("FreeSans", 1, 18))); // NOI18N
 
 		txtA_Description.setColumns(20);
 		txtA_Description.setRows(5);
 		txtA_Description.setEditable(false);
-		txtA_Description.setBorder(javax.swing.BorderFactory.createTitledBorder(null, Text.All.description, javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("DejaVu Sans", 1, 13))); // NOI18N
+		txtA_Description.setBorder(BorderFactory.createTitledBorder(null, Text.All.description, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("DejaVu Sans", 1, 13))); // NOI18N
 		if (_opId != Integer.MIN_VALUE) {
-			pnl_MatrixDesc.setBorder(javax.swing.BorderFactory.createTitledBorder(null, Text.Operation.operation + ": " + currentOP.getOperationFriendlyName() + ", " + Text.Operation.operationId + ": " + currentOP.getOperationId(), javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("DejaVu Sans", 1, 13))); // NOI18N
+			pnl_MatrixDesc.setBorder(BorderFactory.createTitledBorder(null, Text.Operation.operation + ": " + currentOP.getOperationFriendlyName() + ", " + Text.Operation.operationId + ": " + currentOP.getOperationId(), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("DejaVu Sans", 1, 13))); // NOI18N
 			txtA_Description.setText(currentOP.getDescription().toString());
 		} else {
-			pnl_MatrixDesc.setBorder(javax.swing.BorderFactory.createTitledBorder(null, Text.Matrix.matrix + ": " + parentMatrix.matrixMetadata.getMatrixFriendlyName(), javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("DejaVu Sans", 1, 13))); // NOI18N
+			pnl_MatrixDesc.setBorder(BorderFactory.createTitledBorder(null, Text.Matrix.matrix + ": " + parentMatrix.matrixMetadata.getMatrixFriendlyName(), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("DejaVu Sans", 1, 13))); // NOI18N
 			txtA_Description.setText(parentMatrix.matrixMetadata.getDescription().toString());
 		}
-
 
 		scrl_MatrixDesc.setViewportView(txtA_Description);
 
@@ -132,742 +157,765 @@ public class MatrixAnalysePanel extends javax.swing.JPanel {
 			tableMatrix = org.gwaspi.model.OperationsList.getOperationsTable(_matrixId);
 		}
 
-		tbl_MatrixOperations.setModel(new javax.swing.table.DefaultTableModel(
+		tbl_MatrixOperations.setModel(new DefaultTableModel(
 				tableMatrix,
 				new String[]{
 					Text.Operation.operationId, Text.Operation.operationName, Text.All.description, Text.All.createDate
 				}));
 		scrl_MatrixOperations.setViewportView(tbl_MatrixOperations);
-		btn_DeleteOperation.setText(Text.Operation.deleteOperation);
-		btn_DeleteOperation.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				actionDeleteOperation(evt);
-			}
-		});
+		btn_DeleteOperation.setAction(new DeleteOperationAction(currentOP, this, parentMatrix, tbl_MatrixOperations));
 
 		//<editor-fold defaultstate="collapsed" desc="LAYOUT MATRIX DESC">
-		javax.swing.GroupLayout pnl_MatrixDescLayout = new javax.swing.GroupLayout(pnl_MatrixDesc);
+		GroupLayout pnl_MatrixDescLayout = new GroupLayout(pnl_MatrixDesc);
 		pnl_MatrixDesc.setLayout(pnl_MatrixDescLayout);
 		pnl_MatrixDescLayout.setHorizontalGroup(
-				pnl_MatrixDescLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+				pnl_MatrixDescLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
 				.addGroup(pnl_MatrixDescLayout.createSequentialGroup()
 				.addContainerGap()
-				.addGroup(pnl_MatrixDescLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-				.addComponent(scrl_MatrixDesc, javax.swing.GroupLayout.DEFAULT_SIZE, 711, Short.MAX_VALUE)
-				.addComponent(scrl_MatrixOperations, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 711, Short.MAX_VALUE)
-				.addComponent(btn_DeleteOperation, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE))
+				.addGroup(pnl_MatrixDescLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+				.addComponent(scrl_MatrixDesc, GroupLayout.DEFAULT_SIZE, 711, Short.MAX_VALUE)
+				.addComponent(scrl_MatrixOperations, GroupLayout.Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 711, Short.MAX_VALUE)
+				.addComponent(btn_DeleteOperation, GroupLayout.PREFERRED_SIZE, 160, GroupLayout.PREFERRED_SIZE))
 				.addContainerGap()));
 		pnl_MatrixDescLayout.setVerticalGroup(
-				pnl_MatrixDescLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-				.addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnl_MatrixDescLayout.createSequentialGroup()
-				.addComponent(scrl_MatrixDesc, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-				.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-				.addComponent(scrl_MatrixOperations, javax.swing.GroupLayout.DEFAULT_SIZE, 174, Short.MAX_VALUE)
-				.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+				pnl_MatrixDescLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+				.addGroup(GroupLayout.Alignment.TRAILING, pnl_MatrixDescLayout.createSequentialGroup()
+				.addComponent(scrl_MatrixDesc, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+				.addComponent(scrl_MatrixOperations, GroupLayout.DEFAULT_SIZE, 174, Short.MAX_VALUE)
+				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
 				.addComponent(btn_DeleteOperation)
 				.addContainerGap()));
 		//</editor-fold>
 
-		pnl_NewOperation.setBorder(javax.swing.BorderFactory.createTitledBorder(null, Text.Operation.newOperation, javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("DejaVu Sans", 1, 13))); // NOI18N
-		pnl_NewOperation.setMaximumSize(new java.awt.Dimension(32767, 100));
-		pnl_NewOperation.setPreferredSize(new java.awt.Dimension(926, 100));
+		pnl_NewOperation.setBorder(BorderFactory.createTitledBorder(null, Text.Operation.newOperation, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("DejaVu Sans", 1, 13))); // NOI18N
+		pnl_NewOperation.setMaximumSize(new Dimension(32767, 100));
+		pnl_NewOperation.setPreferredSize(new Dimension(926, 100));
 
-		btn_1_1.setText(Text.Operation.gwasInOneGo);
-		if (currentOP == null) {
-			btn_1_1.setEnabled(true);
-		} else {
-			btn_1_1.setEnabled(false);
-		}
+		btn_1_1.setAction(gwasInOneGoAction);
 
-		btn_1_1.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				try {
-					actionGWASInOneGo();
-				} catch (InvalidRangeException ex) {
-					org.gwaspi.gui.utils.Dialogs.showWarningDialogue(org.gwaspi.global.Text.Operation.warnOperationError);
-					System.out.println(org.gwaspi.global.Text.All.warnLoadError);
-					Logger.getLogger(MatrixAnalysePanel.class.getName()).log(Level.SEVERE, null, ex);
-				} catch (Exception ex) {
-					org.gwaspi.gui.utils.Dialogs.showWarningDialogue(org.gwaspi.global.Text.Operation.warnOperationError);
-					System.out.println(org.gwaspi.global.Text.All.warnLoadError);
-					Logger.getLogger(MatrixAnalysePanel.class.getName()).log(Level.SEVERE, null, ex);
-				}
-			}
-		});
+		Action genFreqAndHWAction = new GenFreqAndHWAction(parentMatrix, gwasParams);
+		genFreqAndHWAction.setEnabled(currentOP == null);
+		btn_1_2.setAction(genFreqAndHWAction);
 
-		btn_1_2.setText(Text.Operation.htmlGTFreqAndHW);
-		if (currentOP == null) {
-			btn_1_2.setEnabled(true);
-		} else {
-			btn_1_2.setEnabled(false);
-			btn_1_2.setForeground(Color.LIGHT_GRAY);
-		}
-		btn_1_2.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				try {
-					actionGenFreqAndHW();
-				} catch (Exception ex) {
-					org.gwaspi.gui.utils.Dialogs.showWarningDialogue(org.gwaspi.global.Text.Operation.warnOperationError);
-					System.out.println(org.gwaspi.global.Text.All.warnLoadError);
-					Logger.getLogger(MatrixAnalysePanel.class.getName()).log(Level.SEVERE, null, ex);
-				}
-			}
-		});
+		btn_1_3.setAction(new AllelicTestsAction(parentMatrix, gwasParams, currentOP));
 
+		btn_1_4.setAction(new GenotypicTestsAction(parentMatrix, gwasParams, currentOP));
 
-		btn_1_3.setText(Text.Operation.htmlAllelicAssocTest);
-		btn_1_3.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				try {
-					actionAllelicTests();
-				} catch (Exception ex) {
-					//Logger.getLogger(MatrixAnalysePanel.class.getName()).log(Level.SEVERE, null, ex);
-					org.gwaspi.gui.utils.Dialogs.showWarningDialogue(Text.Operation.warnOperationError);
-				}
-			}
-		});
-
-		btn_1_4.setText(Text.Operation.htmlGenotypicTest);
-		btn_1_4.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				try {
-					actionGenotypicTests();
-				} catch (Exception ex) {
-					//Logger.getLogger(MatrixAnalysePanel.class.getName()).log(Level.SEVERE, null, ex);
-					org.gwaspi.gui.utils.Dialogs.showWarningDialogue(Text.Operation.warnOperationError);
-				}
-			}
-		});
-
-
-		btn_1_5.setText(Text.Operation.htmlTrendTest);
-		btn_1_5.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				try {
-					actionTrendTests();
-
-				} catch (Exception ex) {
-					//Logger.getLogger(MatrixAnalysePanel.class.getName()).log(Level.SEVERE, null, ex);
-					org.gwaspi.gui.utils.Dialogs.showWarningDialogue(Text.Operation.warnOperationError);
-				}
-			}
-		});
-
-
+		btn_1_5.setAction(new TrendTestsAction(parentMatrix, gwasParams, currentOP));
 
 		//<editor-fold defaultstate="collapsed" desc="LAYOUT BUTTONS">
-		javax.swing.GroupLayout pnl_SpacerLayout = new javax.swing.GroupLayout(pnl_Spacer);
+		GroupLayout pnl_SpacerLayout = new GroupLayout(pnl_Spacer);
 		pnl_Spacer.setLayout(pnl_SpacerLayout);
 		pnl_SpacerLayout.setHorizontalGroup(
-				pnl_SpacerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+				pnl_SpacerLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
 				.addGap(0, 46, Short.MAX_VALUE));
 		pnl_SpacerLayout.setVerticalGroup(
-				pnl_SpacerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+				pnl_SpacerLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
 				.addGap(0, 124, Short.MAX_VALUE));
 
-
-		javax.swing.GroupLayout pnl_ButtonsLayout = new javax.swing.GroupLayout(pnl_Buttons);
+		GroupLayout pnl_ButtonsLayout = new GroupLayout(pnl_Buttons);
 		pnl_Buttons.setLayout(pnl_ButtonsLayout);
 		pnl_ButtonsLayout.setHorizontalGroup(
-				pnl_ButtonsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+				pnl_ButtonsLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
 				.addGroup(pnl_ButtonsLayout.createSequentialGroup()
 				.addContainerGap()
-				.addGroup(pnl_ButtonsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
-				.addComponent(btn_1_2, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE)
-				.addComponent(btn_1_1, javax.swing.GroupLayout.PREFERRED_SIZE, 162, javax.swing.GroupLayout.PREFERRED_SIZE))
+				.addGroup(pnl_ButtonsLayout.createParallelGroup(GroupLayout.Alignment.CENTER)
+				.addComponent(btn_1_2, GroupLayout.PREFERRED_SIZE, 167, GroupLayout.PREFERRED_SIZE)
+				.addComponent(btn_1_1, GroupLayout.PREFERRED_SIZE, 162, GroupLayout.PREFERRED_SIZE))
 				.addGap(18, 18, 18)
-				.addGroup(pnl_ButtonsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
-				.addComponent(btn_1_3, javax.swing.GroupLayout.PREFERRED_SIZE, 163, javax.swing.GroupLayout.PREFERRED_SIZE)
-				.addComponent(btn_1_4, javax.swing.GroupLayout.PREFERRED_SIZE, 163, javax.swing.GroupLayout.PREFERRED_SIZE))
+				.addGroup(pnl_ButtonsLayout.createParallelGroup(GroupLayout.Alignment.CENTER)
+				.addComponent(btn_1_3, GroupLayout.PREFERRED_SIZE, 163, GroupLayout.PREFERRED_SIZE)
+				.addComponent(btn_1_4, GroupLayout.PREFERRED_SIZE, 163, GroupLayout.PREFERRED_SIZE))
 				.addGap(18, 18, 18)
-				.addComponent(btn_1_5, javax.swing.GroupLayout.PREFERRED_SIZE, 163, javax.swing.GroupLayout.PREFERRED_SIZE)
+				.addComponent(btn_1_5, GroupLayout.PREFERRED_SIZE, 163, GroupLayout.PREFERRED_SIZE)
 				.addGap(108, 108, 108)));
 
-
-		pnl_ButtonsLayout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[]{btn_1_1, btn_1_2, btn_1_3, btn_1_4});
+		pnl_ButtonsLayout.linkSize(SwingConstants.HORIZONTAL, new Component[]{btn_1_1, btn_1_2, btn_1_3, btn_1_4});
 
 		pnl_ButtonsLayout.setVerticalGroup(
-				pnl_ButtonsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+				pnl_ButtonsLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
 				.addGroup(pnl_ButtonsLayout.createSequentialGroup()
-				.addGroup(pnl_ButtonsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
-				.addComponent(btn_1_1, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-				.addComponent(btn_1_3, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-				.addComponent(btn_1_5, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE))
-				.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-				.addGroup(pnl_ButtonsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
-				.addComponent(btn_1_2, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-				.addComponent(btn_1_4, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE))
-				.addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)));
+				.addGroup(pnl_ButtonsLayout.createParallelGroup(GroupLayout.Alignment.CENTER)
+				.addComponent(btn_1_1, GroupLayout.PREFERRED_SIZE, 50, GroupLayout.PREFERRED_SIZE)
+				.addComponent(btn_1_3, GroupLayout.PREFERRED_SIZE, 50, GroupLayout.PREFERRED_SIZE)
+				.addComponent(btn_1_5, GroupLayout.PREFERRED_SIZE, 50, GroupLayout.PREFERRED_SIZE))
+				.addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
+				.addGroup(pnl_ButtonsLayout.createParallelGroup(GroupLayout.Alignment.CENTER)
+				.addComponent(btn_1_2, GroupLayout.PREFERRED_SIZE, 50, GroupLayout.PREFERRED_SIZE)
+				.addComponent(btn_1_4, GroupLayout.PREFERRED_SIZE, 50, GroupLayout.PREFERRED_SIZE))
+				.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)));
 
-		javax.swing.GroupLayout pnl_NewOperationLayout = new javax.swing.GroupLayout(pnl_NewOperation);
+		GroupLayout pnl_NewOperationLayout = new GroupLayout(pnl_NewOperation);
 		pnl_NewOperation.setLayout(pnl_NewOperationLayout);
 		pnl_NewOperationLayout.setHorizontalGroup(
-				pnl_NewOperationLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-				.addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnl_NewOperationLayout.createSequentialGroup()
+				pnl_NewOperationLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+				.addGroup(GroupLayout.Alignment.TRAILING, pnl_NewOperationLayout.createSequentialGroup()
 				.addContainerGap()
-				.addComponent(pnl_Spacer, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-				.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-				.addComponent(pnl_Buttons, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+				.addComponent(pnl_Spacer, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+				.addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
+				.addComponent(pnl_Buttons, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
 				.addContainerGap()));
 		pnl_NewOperationLayout.setVerticalGroup(
-				pnl_NewOperationLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-				.addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnl_NewOperationLayout.createSequentialGroup()
-				.addGroup(pnl_NewOperationLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-				.addComponent(pnl_Buttons, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-				.addComponent(pnl_Spacer, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+				pnl_NewOperationLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+				.addGroup(GroupLayout.Alignment.TRAILING, pnl_NewOperationLayout.createSequentialGroup()
+				.addGroup(pnl_NewOperationLayout.createParallelGroup(GroupLayout.Alignment.TRAILING)
+				.addComponent(pnl_Buttons, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+				.addComponent(pnl_Spacer, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
 				.addContainerGap()));
 		//</editor-fold>
 
-
-		btn_Back.setText("Back");
-		btn_Back.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				try {
-					actionGoBack(evt);
-				} catch (IOException ex) {
-					Logger.getLogger(MatrixTrafoPanel.class.getName()).log(Level.SEVERE, null, ex);
-				}
-			}
-		});
-		btn_Help.setText("Help");
-		btn_Help.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				actionHelp(evt);
-			}
-		});
-
+		btn_Back.setAction(new BackAction(parentMatrix, currentOP));
+		btn_Help.setAction(new HelpAction());
 
 		//<editor-fold defaultstate="collapsed" desc="LAYOUT FOOTER">
-		javax.swing.GroupLayout pnl_FooterLayout = new javax.swing.GroupLayout(pnl_Footer);
+		GroupLayout pnl_FooterLayout = new GroupLayout(pnl_Footer);
 		pnl_Footer.setLayout(pnl_FooterLayout);
 		pnl_FooterLayout.setHorizontalGroup(
-				pnl_FooterLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+				pnl_FooterLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
 				.addGroup(pnl_FooterLayout.createSequentialGroup()
 				.addContainerGap()
-				.addComponent(btn_Back, javax.swing.GroupLayout.PREFERRED_SIZE, 79, javax.swing.GroupLayout.PREFERRED_SIZE)
-				.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 565, Short.MAX_VALUE)
+				.addComponent(btn_Back, GroupLayout.PREFERRED_SIZE, 79, GroupLayout.PREFERRED_SIZE)
+				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, 565, Short.MAX_VALUE)
 				.addComponent(btn_Help)
 				.addContainerGap()));
 
-
-		pnl_FooterLayout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[]{btn_Back, btn_Help});
+		pnl_FooterLayout.linkSize(SwingConstants.HORIZONTAL, new Component[]{btn_Back, btn_Help});
 
 		pnl_FooterLayout.setVerticalGroup(
-				pnl_FooterLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-				.addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnl_FooterLayout.createSequentialGroup()
+				pnl_FooterLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+				.addGroup(GroupLayout.Alignment.TRAILING, pnl_FooterLayout.createSequentialGroup()
 				.addContainerGap(53, Short.MAX_VALUE)
-				.addGroup(pnl_FooterLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+				.addGroup(pnl_FooterLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
 				.addComponent(btn_Back)
 				.addComponent(btn_Help))));
 		//</editor-fold>
 
 		//<editor-fold defaultstate="collapsed" desc="LAYOUT">
-		javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
+		GroupLayout layout = new GroupLayout(this);
 		this.setLayout(layout);
 		layout.setHorizontalGroup(
-				layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-				.addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+				layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+				.addGroup(GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
 				.addContainerGap()
-				.addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-				.addComponent(pnl_NewOperation, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 747, Short.MAX_VALUE)
-				.addComponent(pnl_Footer, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-				.addComponent(pnl_MatrixDesc, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.TRAILING)
+				.addComponent(pnl_NewOperation, GroupLayout.Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 747, Short.MAX_VALUE)
+				.addComponent(pnl_Footer, GroupLayout.Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+				.addComponent(pnl_MatrixDesc, GroupLayout.Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
 				.addGap(0, 0, 0)));
 		layout.setVerticalGroup(
-				layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+				layout.createParallelGroup(GroupLayout.Alignment.LEADING)
 				.addGroup(layout.createSequentialGroup()
-				.addComponent(pnl_MatrixDesc, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-				.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-				.addComponent(pnl_NewOperation, javax.swing.GroupLayout.PREFERRED_SIZE, 159, javax.swing.GroupLayout.PREFERRED_SIZE)
-				.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-				.addComponent(pnl_Footer, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+				.addComponent(pnl_MatrixDesc, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+				.addComponent(pnl_NewOperation, GroupLayout.PREFERRED_SIZE, 159, GroupLayout.PREFERRED_SIZE)
+				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+				.addComponent(pnl_Footer, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
 				.addContainerGap()));
 		//</editor-fold>
 	}
 
 	//<editor-fold defaultstate="collapsed" desc="ANALYSIS">
-	private void actionAllelicTests() throws IOException, InvalidRangeException {
+	private static class AllelicTestsAction extends AbstractAction {
 
-		int censusOPId = Integer.MIN_VALUE;
-		if (currentOP != null) {
-			censusOPId = currentOP.getOperationId();
-		} else {
-			// REQUEST WHICH CENSUS TO USE
-			List<String> censusTypesAL = new ArrayList<String>();
-			censusTypesAL.add(OPType.MARKER_CENSUS_BY_AFFECTION.toString());
-			censusTypesAL.add(OPType.MARKER_CENSUS_BY_PHENOTYPE.toString());
-			Operation markerCensusOP = org.gwaspi.gui.utils.Dialogs.showOperationCombo(parentMatrix.getMatrixId(), censusTypesAL, Text.Operation.GTFreqAndHW);
-			if (markerCensusOP != null) {
-				censusOPId = markerCensusOP.getOperationId();
-			}
+		private Matrix parentMatrix;
+		private GWASinOneGOParams gwasParams;
+		private final Operation currentOP;
+
+		AllelicTestsAction(Matrix parentMatrix, GWASinOneGOParams gwasParams, Operation currentOP) {
+
+			this.parentMatrix = parentMatrix;
+			this.gwasParams = gwasParams;
+			this.currentOP = currentOP;
+			putValue(NAME, Text.Operation.htmlAllelicAssocTest);
 		}
-		int hwOPId = Integer.MIN_VALUE;
 
-		org.gwaspi.gui.StartGWASpi.mainGUIFrame.setCursor(org.gwaspi.gui.utils.CursorUtils.waitCursor);
-		Set<Object> affectionStates = org.gwaspi.samples.SamplesParser.getDBAffectionStates(parentMatrix.getMatrixId());
-		org.gwaspi.gui.StartGWASpi.mainGUIFrame.setCursor(org.gwaspi.gui.utils.CursorUtils.defaultCursor);
+		public static int evaluateCensusOPId(Operation currentOP, Matrix parentMatrix) throws IOException {
 
-		if (affectionStates.contains("1") && affectionStates.contains("2")) {
+			int censusOPId = Integer.MIN_VALUE;
 
-			List<String> necessaryOPsAL = new ArrayList<String>();
-			necessaryOPsAL.add(org.gwaspi.constants.cNetCDF.Defaults.OPType.SAMPLE_QA.toString());
-			necessaryOPsAL.add(org.gwaspi.constants.cNetCDF.Defaults.OPType.MARKER_QA.toString());
-			necessaryOPsAL.add(org.gwaspi.constants.cNetCDF.Defaults.OPType.MARKER_CENSUS_BY_PHENOTYPE.toString());
-			necessaryOPsAL.add(org.gwaspi.constants.cNetCDF.Defaults.OPType.MARKER_CENSUS_BY_AFFECTION.toString());
-			necessaryOPsAL.add(org.gwaspi.constants.cNetCDF.Defaults.OPType.HARDY_WEINBERG.toString());
-			List<String> missingOPsAL = OperationManager.checkForNecessaryOperations(necessaryOPsAL, parentMatrix.getMatrixId());
-
-			//WHAT TO DO IF OPs ARE MISSING
-			int decision = JOptionPane.YES_OPTION;
-			if (missingOPsAL.size() > 0) {
-				if (missingOPsAL.contains(OPType.SAMPLE_QA.toString())
-						|| missingOPsAL.contains(OPType.MARKER_QA.toString())) {
-					org.gwaspi.gui.utils.Dialogs.showWarningDialogue("Before performing an " + Text.Operation.allelicAssocTest + " you must launch\n a '" + Text.Operation.GTFreqAndHW + "' first or perform a '" + Text.Operation.gwasInOneGo + "' instead.");
-					MultiOperations.doMatrixQAs(parentMatrix.getStudyId(), parentMatrix.getMatrixId());
-					decision = JOptionPane.NO_OPTION;
-				} else if (missingOPsAL.contains(OPType.MARKER_CENSUS_BY_AFFECTION.toString())
-						&& missingOPsAL.contains(OPType.MARKER_CENSUS_BY_PHENOTYPE.toString())) {
-					org.gwaspi.gui.utils.Dialogs.showWarningDialogue("Before performing an " + Text.Operation.allelicAssocTest + " you must launch\n a '" + Text.Operation.GTFreqAndHW + "' first or perform a '" + Text.Operation.gwasInOneGo + "' instead.");
-					decision = JOptionPane.NO_OPTION;
-				} else if (missingOPsAL.contains(OPType.HARDY_WEINBERG.toString())
-						&& !(missingOPsAL.contains(OPType.MARKER_CENSUS_BY_AFFECTION.toString())
-						&& missingOPsAL.contains(OPType.MARKER_CENSUS_BY_PHENOTYPE.toString()))) {
-					org.gwaspi.gui.utils.Dialogs.showWarningDialogue("Before performing an " + Text.Operation.allelicAssocTest + " you must launch\n a '" + Text.Operation.hardyWeiberg + "' first or perform a '" + Text.Operation.gwasInOneGo + "' instead.");
-					MultiOperations.doHardyWeinberg(parentMatrix.getStudyId(),
-							parentMatrix.getMatrixId(),
-							censusOPId);
-					decision = JOptionPane.NO_OPTION;
+			if (currentOP != null) {
+				censusOPId = currentOP.getOperationId();
+			} else {
+				// REQUEST WHICH CENSUS TO USE
+				List<String> censusTypesAL = new ArrayList<String>();
+				censusTypesAL.add(OPType.MARKER_CENSUS_BY_AFFECTION.toString());
+				censusTypesAL.add(OPType.MARKER_CENSUS_BY_PHENOTYPE.toString());
+				Operation markerCensusOP = Dialogs.showOperationCombo(parentMatrix.getMatrixId(), censusTypesAL, Text.Operation.GTFreqAndHW);
+				if (markerCensusOP != null) {
+					censusOPId = markerCensusOP.getOperationId();
 				}
 			}
 
-
-			//DO ALLELIC TEST
-			if (decision == JOptionPane.YES_OPTION) {
-
-				boolean reProceed = true;
-				if (censusOPId == Integer.MIN_VALUE) {
-					reProceed = false;
-				}
-
-				if (reProceed) {
-					gwasParams = org.gwaspi.gui.utils.MoreAssocInfo.showAssocInfo_Modal();
-				}
-
-				if (gwasParams.isProceed()) {
-					org.gwaspi.gui.ProcessTab.showTab();
-					//GET HW OPERATION
-					OperationsList hwOPList = new OperationsList(parentMatrix.getMatrixId(), censusOPId, OPType.HARDY_WEINBERG);
-					for (Operation currentHWop : hwOPList.operationsListAL) {
-						//REQUEST WHICH HW TO USE
-						if (currentHWop != null) {
-							hwOPId = currentHWop.getOperationId();
-						} else {
-							reProceed = false;
-						}
-					}
-
-					if (reProceed && censusOPId != Integer.MIN_VALUE && hwOPId != Integer.MIN_VALUE) {
-
-						//>>>>>> START THREADING HERE <<<<<<<
-						MultiOperations.doAllelicAssociationTest(parentMatrix.getStudyId(),
-								parentMatrix.getMatrixId(),
-								censusOPId,
-								hwOPId,
-								gwasParams);
-
-					}
-				}
-
-			}
-		} else {
-			org.gwaspi.gui.utils.Dialogs.showInfoDialogue(Text.Operation.warnAffectionMissing);
-		}
-	}
-
-	private void actionGenotypicTests() throws IOException, InvalidRangeException {
-		int censusOPId = Integer.MIN_VALUE;
-		if (currentOP != null) {
-			censusOPId = currentOP.getOperationId();
-		} else {
-			// REQUEST WHICH CENSUS TO USE
-			List<String> censusTypesAL = new ArrayList<String>();
-			censusTypesAL.add(OPType.MARKER_CENSUS_BY_AFFECTION.toString());
-			censusTypesAL.add(OPType.MARKER_CENSUS_BY_PHENOTYPE.toString());
-			Operation markerCensusOP = org.gwaspi.gui.utils.Dialogs.showOperationCombo(parentMatrix.getMatrixId(), censusTypesAL, Text.Operation.GTFreqAndHW);
-			if (markerCensusOP != null) {
-				censusOPId = markerCensusOP.getOperationId();
-			}
-		}
-		int hwOPId = Integer.MIN_VALUE;
-
-		org.gwaspi.gui.StartGWASpi.mainGUIFrame.setCursor(org.gwaspi.gui.utils.CursorUtils.waitCursor);
-		Set<Object> affectionStates = org.gwaspi.samples.SamplesParser.getDBAffectionStates(parentMatrix.getMatrixId());
-		org.gwaspi.gui.StartGWASpi.mainGUIFrame.setCursor(org.gwaspi.gui.utils.CursorUtils.defaultCursor);
-
-		if (affectionStates.contains("1") && affectionStates.contains("2")) {
-
-			List<String> necessaryOPsAL = new ArrayList<String>();
-			necessaryOPsAL.add(org.gwaspi.constants.cNetCDF.Defaults.OPType.SAMPLE_QA.toString());
-			necessaryOPsAL.add(org.gwaspi.constants.cNetCDF.Defaults.OPType.MARKER_QA.toString());
-			necessaryOPsAL.add(org.gwaspi.constants.cNetCDF.Defaults.OPType.MARKER_CENSUS_BY_PHENOTYPE.toString());
-			necessaryOPsAL.add(org.gwaspi.constants.cNetCDF.Defaults.OPType.MARKER_CENSUS_BY_AFFECTION.toString());
-			necessaryOPsAL.add(org.gwaspi.constants.cNetCDF.Defaults.OPType.HARDY_WEINBERG.toString());
-			List<String> missingOPsAL = OperationManager.checkForNecessaryOperations(necessaryOPsAL, parentMatrix.getMatrixId());
-
-			//WHAT TO DO IF OPs ARE MISSING
-			int decision = JOptionPane.YES_OPTION;
-			if (missingOPsAL.size() > 0) {
-				if (missingOPsAL.contains(OPType.SAMPLE_QA.toString())
-						|| missingOPsAL.contains(OPType.MARKER_QA.toString())) {
-					org.gwaspi.gui.utils.Dialogs.showWarningDialogue("Before performing a " + Text.Operation.genoAssocTest + " you must launch\n a '" + Text.Operation.GTFreqAndHW + "' first or perform a '" + Text.Operation.gwasInOneGo + "' instead.");
-					MultiOperations.doMatrixQAs(parentMatrix.getStudyId(), parentMatrix.getMatrixId());
-					decision = JOptionPane.NO_OPTION;
-				} else if (missingOPsAL.contains(OPType.MARKER_CENSUS_BY_AFFECTION.toString())
-						&& missingOPsAL.contains(OPType.MARKER_CENSUS_BY_PHENOTYPE.toString())) {
-					org.gwaspi.gui.utils.Dialogs.showWarningDialogue("Before performing a " + Text.Operation.genoAssocTest + " you must launch\n a '" + Text.Operation.GTFreqAndHW + "' first or perform a '" + Text.Operation.gwasInOneGo + "' instead.");
-					decision = JOptionPane.NO_OPTION;
-				} else if (missingOPsAL.contains(OPType.HARDY_WEINBERG.toString())
-						&& !(missingOPsAL.contains(OPType.MARKER_CENSUS_BY_AFFECTION.toString())
-						&& missingOPsAL.contains(OPType.MARKER_CENSUS_BY_PHENOTYPE.toString()))) {
-					org.gwaspi.gui.utils.Dialogs.showWarningDialogue("Before performing a " + Text.Operation.genoAssocTest + " you must launch\n a '" + Text.Operation.hardyWeiberg + "' first or perform a '" + Text.Operation.gwasInOneGo + "' instead.");
-					MultiOperations.doHardyWeinberg(parentMatrix.getStudyId(),
-							parentMatrix.getMatrixId(),
-							censusOPId);
-					decision = JOptionPane.NO_OPTION;
-				}
-			}
-
-
-			//DO TEST
-			if (decision == JOptionPane.YES_OPTION) {
-
-				boolean reProceed = true;
-				if (censusOPId == Integer.MIN_VALUE) {
-					reProceed = false;
-				}
-
-				if (reProceed) {
-					gwasParams = org.gwaspi.gui.utils.MoreAssocInfo.showAssocInfo_Modal();
-				}
-
-				if (gwasParams.isProceed()) {
-					org.gwaspi.gui.ProcessTab.showTab();
-					//GET HW OPERATION
-					OperationsList hwOPList = new OperationsList(parentMatrix.getMatrixId(), censusOPId, OPType.HARDY_WEINBERG);
-					for (Operation currentHWop : hwOPList.operationsListAL) {
-						//REQUEST WHICH HW TO USE
-						if (currentHWop != null) {
-							hwOPId = currentHWop.getOperationId();
-						} else {
-							reProceed = false;
-						}
-					}
-
-					if (reProceed && censusOPId != Integer.MIN_VALUE && hwOPId != Integer.MIN_VALUE) {
-
-						//>>>>>> START THREADING HERE <<<<<<<
-						MultiOperations.doGenotypicAssociationTest(parentMatrix.getStudyId(),
-								parentMatrix.getMatrixId(),
-								censusOPId,
-								hwOPId,
-								gwasParams);
-
-					}
-				}
-
-			}
-		} else {
-			org.gwaspi.gui.utils.Dialogs.showInfoDialogue(Text.Operation.warnAffectionMissing);
-		}
-	}
-
-	private void actionTrendTests() throws IOException, InvalidRangeException {
-
-		int censusOPId = Integer.MIN_VALUE;
-		if (currentOP != null) {
-			censusOPId = currentOP.getOperationId();
-		} else {
-			// REQUEST WHICH CENSUS TO USE
-			List<String> censusTypesAL = new ArrayList<String>();
-			censusTypesAL.add(OPType.MARKER_CENSUS_BY_AFFECTION.toString());
-			censusTypesAL.add(OPType.MARKER_CENSUS_BY_PHENOTYPE.toString());
-			Operation markerCensusOP = org.gwaspi.gui.utils.Dialogs.showOperationCombo(parentMatrix.getMatrixId(), censusTypesAL, Text.Operation.GTFreqAndHW);
-			if (markerCensusOP != null) {
-				censusOPId = markerCensusOP.getOperationId();
-			}
-		}
-		int hwOPId = Integer.MIN_VALUE;
-
-		org.gwaspi.gui.StartGWASpi.mainGUIFrame.setCursor(org.gwaspi.gui.utils.CursorUtils.waitCursor);
-		Set<Object> affectionStates = org.gwaspi.samples.SamplesParser.getDBAffectionStates(parentMatrix.getMatrixId());
-		org.gwaspi.gui.StartGWASpi.mainGUIFrame.setCursor(org.gwaspi.gui.utils.CursorUtils.defaultCursor);
-
-		if (affectionStates.contains("1") && affectionStates.contains("2")) {
-
-			List<String> necessaryOPsAL = new ArrayList<String>();
-			necessaryOPsAL.add(org.gwaspi.constants.cNetCDF.Defaults.OPType.SAMPLE_QA.toString());
-			necessaryOPsAL.add(org.gwaspi.constants.cNetCDF.Defaults.OPType.MARKER_QA.toString());
-			necessaryOPsAL.add(org.gwaspi.constants.cNetCDF.Defaults.OPType.MARKER_CENSUS_BY_PHENOTYPE.toString());
-			necessaryOPsAL.add(org.gwaspi.constants.cNetCDF.Defaults.OPType.MARKER_CENSUS_BY_AFFECTION.toString());
-			necessaryOPsAL.add(org.gwaspi.constants.cNetCDF.Defaults.OPType.HARDY_WEINBERG.toString());
-			List<String> missingOPsAL = OperationManager.checkForNecessaryOperations(necessaryOPsAL, parentMatrix.getMatrixId());
-
-			//WHAT TO DO IF OPs ARE MISSING
-			int decision = JOptionPane.YES_OPTION;
-			if (missingOPsAL.size() > 0) {
-				if (missingOPsAL.contains(OPType.SAMPLE_QA.toString())
-						|| missingOPsAL.contains(OPType.MARKER_QA.toString())) {
-					org.gwaspi.gui.utils.Dialogs.showWarningDialogue("Before performing a " + Text.Operation.trendTest + " you must launch\n a '" + Text.Operation.GTFreqAndHW + "' first or perform a '" + Text.Operation.gwasInOneGo + "' instead.");
-					MultiOperations.doMatrixQAs(parentMatrix.getStudyId(), parentMatrix.getMatrixId());
-					decision = JOptionPane.NO_OPTION;
-				} else if (missingOPsAL.contains(OPType.MARKER_CENSUS_BY_AFFECTION.toString())
-						&& missingOPsAL.contains(OPType.MARKER_CENSUS_BY_PHENOTYPE.toString())) {
-					org.gwaspi.gui.utils.Dialogs.showWarningDialogue("Before performing a " + Text.Operation.trendTest + " you must launch\n a '" + Text.Operation.GTFreqAndHW + "' first or perform a '" + Text.Operation.gwasInOneGo + "' instead.");
-					decision = JOptionPane.NO_OPTION;
-				} else if (missingOPsAL.contains(OPType.HARDY_WEINBERG.toString())
-						&& !(missingOPsAL.contains(OPType.MARKER_CENSUS_BY_AFFECTION.toString())
-						&& missingOPsAL.contains(OPType.MARKER_CENSUS_BY_PHENOTYPE.toString()))) {
-					org.gwaspi.gui.utils.Dialogs.showWarningDialogue("Before performing a " + Text.Operation.trendTest + " you must launch\n a '" + Text.Operation.hardyWeiberg + "' first or perform a '" + Text.Operation.gwasInOneGo + "' instead.");
-					MultiOperations.doHardyWeinberg(parentMatrix.getStudyId(),
-							parentMatrix.getMatrixId(),
-							censusOPId);
-					decision = JOptionPane.NO_OPTION;
-				}
-			}
-
-
-			//DO TEST
-			if (decision == JOptionPane.YES_OPTION) {
-
-				boolean reProceed = true;
-				if (censusOPId == Integer.MIN_VALUE) {
-					reProceed = false;
-				}
-
-				if (reProceed) {
-					gwasParams = org.gwaspi.gui.utils.MoreAssocInfo.showAssocInfo_Modal();
-				}
-
-				if (gwasParams.isProceed()) {
-					org.gwaspi.gui.ProcessTab.showTab();
-					//GET HW OPERATION
-					OperationsList hwOPList = new OperationsList(parentMatrix.getMatrixId(), censusOPId, OPType.HARDY_WEINBERG);
-					for (Operation currentHWop : hwOPList.operationsListAL) {
-						//REQUEST WHICH HW TO USE
-						if (currentHWop != null) {
-							hwOPId = currentHWop.getOperationId();
-						} else {
-							reProceed = false;
-						}
-					}
-
-					if (reProceed && censusOPId != Integer.MIN_VALUE && hwOPId != Integer.MIN_VALUE) {
-
-						//>>>>>> START THREADING HERE <<<<<<<
-						MultiOperations.doTrendTest(parentMatrix.getStudyId(),
-								parentMatrix.getMatrixId(),
-								censusOPId,
-								hwOPId,
-								gwasParams);
-
-					}
-				}
-
-			}
-		} else {
-			org.gwaspi.gui.utils.Dialogs.showInfoDialogue(Text.Operation.warnAffectionMissing);
-		}
-	}
-
-	private void actionGenFreqAndHW() throws InvalidRangeException {
-
-		List<String> necessaryOPsAL = new ArrayList<String>();
-		necessaryOPsAL.add(org.gwaspi.constants.cNetCDF.Defaults.OPType.SAMPLE_QA.toString());
-		necessaryOPsAL.add(org.gwaspi.constants.cNetCDF.Defaults.OPType.MARKER_QA.toString());
-		List<String> missingOPsAL = OperationManager.checkForNecessaryOperations(necessaryOPsAL, parentMatrix.getMatrixId());
-
-		int choice = org.gwaspi.gui.utils.Dialogs.showOptionDialogue(Text.Operation.chosePhenotype, Text.Operation.genotypeFreqAndHW, Text.Operation.htmlCurrentAffectionFromDB, Text.Operation.htmlAffectionFromFile, Text.All.cancel);
-		File phenotypeFile = null;
-		if (choice == JOptionPane.NO_OPTION) { //BY EXTERNAL PHENOTYPE FILE
-			phenotypeFile = org.gwaspi.gui.utils.Dialogs.selectFilesAndDirertoriesDialogue(JOptionPane.OK_OPTION);
-			if (phenotypeFile != null) {
-				gwasParams = org.gwaspi.gui.utils.MoreInfoForGtFreq.showMoreInfoForQA_Modal();
-				if (choice != JOptionPane.CANCEL_OPTION) {
-					gwasParams.setFriendlyName(org.gwaspi.gui.utils.Dialogs.showInputBox(Text.Operation.GTFreqAndHWFriendlyName));
-				}
-			}
-		} else if (choice != JOptionPane.CANCEL_OPTION) {
-			gwasParams = org.gwaspi.gui.utils.MoreInfoForGtFreq.showMoreInfoForQA_Modal();
-			if (choice != JOptionPane.CANCEL_OPTION) {
-				gwasParams.setFriendlyName(org.gwaspi.gui.utils.Dialogs.showInputBox(Text.Operation.GTFreqAndHWFriendlyName));
-			}
+			return censusOPId;
 		}
 
-		if (!gwasParams.isDiscardMarkerByMisRat()) {
-			gwasParams.setDiscardMarkerMisRatVal(1);
-		}
-		if (!gwasParams.isDiscardMarkerByHetzyRat()) {
-			gwasParams.setDiscardMarkerHetzyRatVal(1);
-		}
-		if (!gwasParams.isDiscardSampleByMisRat()) {
-			gwasParams.setDiscardSampleMisRatVal(1);
-		}
-		if (!gwasParams.isDiscardSampleByHetzyRat()) {
-			gwasParams.setDiscardSampleHetzyRatVal(1);
-		}
-
-		if (gwasParams.isProceed()) {
-			org.gwaspi.gui.ProcessTab.showTab();
-		}
-
-
-		// <editor-fold defaultstate="collapsed" desc="QA BLOCK">
-		if (gwasParams.isProceed() && missingOPsAL.size() > 0) {
-			gwasParams.setProceed(false);
-			gwasParams.setProceed(false);
-			org.gwaspi.gui.utils.Dialogs.showWarningDialogue(org.gwaspi.global.Text.Operation.warnQABeforeAnything + "\n" + org.gwaspi.global.Text.Operation.willPerformOperation);
-			MultiOperations.doMatrixQAs(parentMatrix.getStudyId(), parentMatrix.getMatrixId());
-		}
-		// </editor-fold>
-
-
-		// <editor-fold defaultstate="collapsed" desc="GENOTYPE FREQ. & HW BLOCK">
-		if (gwasParams.isProceed()) {
-			MultiOperations.doGTFreqDoHW(parentMatrix.getStudyId(),
-					parentMatrix.getMatrixId(),
-					phenotypeFile,
-					gwasParams);
-		}
-		// </editor-fold>
-
-
-	}
-
-	private void actionGWASInOneGo() throws InvalidRangeException {
-		try {
-			List<String> blackListOPsAL = new ArrayList<String>();
-			blackListOPsAL.add(org.gwaspi.constants.cNetCDF.Defaults.OPType.MARKER_CENSUS_BY_AFFECTION.toString());
-
-			List<String> necessaryOPsAL = new ArrayList<String>();
-			necessaryOPsAL.add(org.gwaspi.constants.cNetCDF.Defaults.OPType.SAMPLE_QA.toString());
-			necessaryOPsAL.add(org.gwaspi.constants.cNetCDF.Defaults.OPType.MARKER_QA.toString());
-			List<String> missingOPsAL = OperationManager.checkForNecessaryOperations(necessaryOPsAL, parentMatrix.getMatrixId());
-
-			MatrixMetadata matrixMetadata = new MatrixMetadata(parentMatrix.getMatrixId());
-
-			int choice = org.gwaspi.gui.utils.Dialogs.showOptionDialogue(Text.Operation.chosePhenotype, Text.Operation.genotypeFreqAndHW, Text.Operation.htmlCurrentAffectionFromDB, Text.Operation.htmlAffectionFromFile, Text.All.cancel);
-			File phenotypeFile = null;
-			if (choice == JOptionPane.NO_OPTION) { //BY EXTERNAL PHENOTYPE FILE
-				phenotypeFile = org.gwaspi.gui.utils.Dialogs.selectFilesAndDirertoriesDialogue(JOptionPane.OK_OPTION);
-				if (phenotypeFile != null) {
-					gwasParams = org.gwaspi.gui.utils.MoreGWASinOneGoInfo.showGWASInOneGo_Modal(matrixMetadata.getTechnology().toString());
-					if (choice != JOptionPane.CANCEL_OPTION && gwasParams.isProceed()) {
-						gwasParams.setFriendlyName(org.gwaspi.gui.utils.Dialogs.showInputBox(Text.Operation.GTFreqAndHWFriendlyName));
-					}
-				}
-			} else if (choice != JOptionPane.CANCEL_OPTION) {
-				gwasParams = org.gwaspi.gui.utils.MoreGWASinOneGoInfo.showGWASInOneGo_Modal(matrixMetadata.getTechnology().toString());
-				if (choice != JOptionPane.CANCEL_OPTION && gwasParams.isProceed()) {
-					gwasParams.setFriendlyName(org.gwaspi.gui.utils.Dialogs.showInputBox(Text.Operation.GTFreqAndHWFriendlyName));
-				}
-			}
-
-			if (gwasParams.isProceed()) {
-				org.gwaspi.gui.ProcessTab.showTab();
-			}
-
-			//QA BLOCK
-			if (gwasParams.isProceed() && missingOPsAL.size() > 0) {
-				gwasParams.setProceed(false);
-				org.gwaspi.gui.utils.Dialogs.showWarningDialogue(org.gwaspi.global.Text.Operation.warnQABeforeAnything + "\n" + org.gwaspi.global.Text.Operation.willPerformOperation);
-				MultiOperations.doMatrixQAs(parentMatrix.getStudyId(), parentMatrix.getMatrixId());
-			}
-
-			//GWAS BLOCK
-			if (gwasParams.isProceed()
-					&& choice != JOptionPane.CANCEL_OPTION
-					&& (gwasParams.isPerformAllelicTests() || gwasParams.isPerformTrendTests())) { //At least one test has been picked
-				System.out.println(org.gwaspi.global.Text.All.processing);
-				org.gwaspi.gui.StartGWASpi.mainGUIFrame.setCursor(org.gwaspi.gui.utils.CursorUtils.waitCursor);
-				Set<Object> affectionStates = SamplesParser.getDBAffectionStates(parentMatrix.getMatrixId()); //use Sample Info file affection state
-				org.gwaspi.gui.StartGWASpi.mainGUIFrame.setCursor(org.gwaspi.gui.utils.CursorUtils.defaultCursor);
-				if (affectionStates.contains("1") && affectionStates.contains("2")) {
-					MultiOperations.doGWASwithAlterPhenotype(parentMatrix.getStudyId(),
-							parentMatrix.getMatrixId(),
-							phenotypeFile,
-							gwasParams);
-				} else {
-					org.gwaspi.gui.utils.Dialogs.showWarningDialogue(Text.Operation.warnAffectionMissing);
-					org.gwaspi.threadbox.MultiOperations.updateProcessOverviewStartNext();
-				}
-			}
-		} catch (IOException ex) {
-			Logger.getLogger(MatrixAnalysePanel.class.getName()).log(Level.SEVERE, null, ex);
-		}
-	}
-
-	//</editor-fold>
-	//<editor-fold defaultstate="collapsed" desc="HELPERS">
-	private void actionDeleteOperation(java.awt.event.ActionEvent evt) {
-		int[] selectedOPs = tbl_MatrixOperations.getSelectedRows();
-		if (selectedOPs.length > 0) {
+		@Override
+		public void actionPerformed(ActionEvent evt) {
 			try {
-				int option = JOptionPane.showConfirmDialog(this, Text.Operation.confirmDelete1);
-				if (option == JOptionPane.YES_OPTION) {
-					int deleteReportOption = JOptionPane.showConfirmDialog(this, Text.Reports.confirmDelete);
-					int opId = Integer.MIN_VALUE;
-					if (deleteReportOption != JOptionPane.CANCEL_OPTION) {
-						for (int i = selectedOPs.length - 1; i >= 0; i--) {
-							int tmpOPRow = selectedOPs[i];
-							opId = (Integer) tbl_MatrixOperations.getModel().getValueAt(tmpOPRow, 0);
-							//TEST IF THE DELETED ITEM IS REQUIRED FOR A QUED WORKER
-							if (org.gwaspi.threadbox.SwingWorkerItemList.permitsDeletion(null, null, opId)) {
-								if (option == JOptionPane.YES_OPTION) {
-									boolean deleteReport = false;
-									if (deleteReportOption == JOptionPane.YES_OPTION) {
-										deleteReport = true;
-									}
-									MultiOperations.deleteOperationsByOpId(parentMatrix.getStudyId(), parentMatrix.getMatrixId(), opId, deleteReport);
+				int censusOPId = evaluateCensusOPId(currentOP, parentMatrix);
+				int hwOPId = Integer.MIN_VALUE;
 
-									//netCDF.operations.OperationManager.deleteOperationBranch(parentMatrix.getStudyId(), opId, deleteReport);
+				StartGWASpi.mainGUIFrame.setCursor(CursorUtils.waitCursor);
+				Set<Object> affectionStates = org.gwaspi.samples.SamplesParser.getDBAffectionStates(parentMatrix.getMatrixId());
+				StartGWASpi.mainGUIFrame.setCursor(CursorUtils.defaultCursor);
+
+				if (affectionStates.contains("1") && affectionStates.contains("2")) {
+
+					List<String> necessaryOPsAL = new ArrayList<String>();
+					necessaryOPsAL.add(org.gwaspi.constants.cNetCDF.Defaults.OPType.SAMPLE_QA.toString());
+					necessaryOPsAL.add(org.gwaspi.constants.cNetCDF.Defaults.OPType.MARKER_QA.toString());
+					necessaryOPsAL.add(org.gwaspi.constants.cNetCDF.Defaults.OPType.MARKER_CENSUS_BY_PHENOTYPE.toString());
+					necessaryOPsAL.add(org.gwaspi.constants.cNetCDF.Defaults.OPType.MARKER_CENSUS_BY_AFFECTION.toString());
+					necessaryOPsAL.add(org.gwaspi.constants.cNetCDF.Defaults.OPType.HARDY_WEINBERG.toString());
+					List<String> missingOPsAL = OperationManager.checkForNecessaryOperations(necessaryOPsAL, parentMatrix.getMatrixId());
+
+					// WHAT TO DO IF OPs ARE MISSING
+					int decision = JOptionPane.YES_OPTION;
+					if (missingOPsAL.size() > 0) {
+						if (missingOPsAL.contains(OPType.SAMPLE_QA.toString())
+								|| missingOPsAL.contains(OPType.MARKER_QA.toString())) {
+							Dialogs.showWarningDialogue("Before performing an " + Text.Operation.allelicAssocTest + " you must launch\n a '" + Text.Operation.GTFreqAndHW + "' first or perform a '" + Text.Operation.gwasInOneGo + "' instead.");
+							MultiOperations.doMatrixQAs(parentMatrix.getStudyId(), parentMatrix.getMatrixId());
+							decision = JOptionPane.NO_OPTION;
+						} else if (missingOPsAL.contains(OPType.MARKER_CENSUS_BY_AFFECTION.toString())
+								&& missingOPsAL.contains(OPType.MARKER_CENSUS_BY_PHENOTYPE.toString())) {
+							Dialogs.showWarningDialogue("Before performing an " + Text.Operation.allelicAssocTest + " you must launch\n a '" + Text.Operation.GTFreqAndHW + "' first or perform a '" + Text.Operation.gwasInOneGo + "' instead.");
+							decision = JOptionPane.NO_OPTION;
+						} else if (missingOPsAL.contains(OPType.HARDY_WEINBERG.toString())
+								&& !(missingOPsAL.contains(OPType.MARKER_CENSUS_BY_AFFECTION.toString())
+								&& missingOPsAL.contains(OPType.MARKER_CENSUS_BY_PHENOTYPE.toString()))) {
+							Dialogs.showWarningDialogue("Before performing an " + Text.Operation.allelicAssocTest + " you must launch\n a '" + Text.Operation.hardyWeiberg + "' first or perform a '" + Text.Operation.gwasInOneGo + "' instead.");
+							MultiOperations.doHardyWeinberg(parentMatrix.getStudyId(),
+									parentMatrix.getMatrixId(),
+									censusOPId);
+							decision = JOptionPane.NO_OPTION;
+						}
+					}
+
+					// DO ALLELIC TEST
+					if (decision == JOptionPane.YES_OPTION) {
+
+						boolean reProceed = true;
+						if (censusOPId == Integer.MIN_VALUE) {
+							reProceed = false;
+						}
+
+						if (reProceed) {
+							gwasParams = MoreAssocInfo.showAssocInfo_Modal();
+						}
+
+						if (gwasParams.isProceed()) {
+							ProcessTab.showTab();
+							// GET HW OPERATION
+							OperationsList hwOPList = new OperationsList(parentMatrix.getMatrixId(), censusOPId, OPType.HARDY_WEINBERG);
+							for (Operation currentHWop : hwOPList.operationsListAL) {
+								// REQUEST WHICH HW TO USE
+								if (currentHWop != null) {
+									hwOPId = currentHWop.getOperationId();
+								} else {
+									reProceed = false;
 								}
-							} else {
-								org.gwaspi.gui.utils.Dialogs.showWarningDialogue(Text.Processes.cantDeleteRequiredItem);
+							}
+
+							if (reProceed && censusOPId != Integer.MIN_VALUE && hwOPId != Integer.MIN_VALUE) {
+
+								//>>>>>> START THREADING HERE <<<<<<<
+								MultiOperations.doAllelicAssociationTest(parentMatrix.getStudyId(),
+										parentMatrix.getMatrixId(),
+										censusOPId,
+										hwOPId,
+										gwasParams);
 							}
 						}
+					}
+				} else {
+					Dialogs.showInfoDialogue(Text.Operation.warnAffectionMissing);
+				}
+			} catch (Exception ex) {
+				//Logger.getLogger(MatrixAnalysePanel.class.getName()).log(Level.SEVERE, null, ex);
+				Dialogs.showWarningDialogue(Text.Operation.warnOperationError);
+			}
+		}
+	}
 
-						if (currentOP.getOperationId() == opId) {
-							org.gwaspi.gui.GWASpiExplorerPanel.tree.setSelectionPath(org.gwaspi.gui.GWASpiExplorerPanel.tree.getSelectionPath().getParentPath());
+	private static class GenotypicTestsAction extends AbstractAction {
+
+		private Matrix parentMatrix;
+		private GWASinOneGOParams gwasParams;
+		private final Operation currentOP;
+
+		GenotypicTestsAction(Matrix parentMatrix, GWASinOneGOParams gwasParams, Operation currentOP) {
+
+			this.parentMatrix = parentMatrix;
+			this.gwasParams = gwasParams;
+			this.currentOP = currentOP;
+			putValue(NAME, Text.Operation.htmlGenotypicTest);
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent evt) {
+			try {
+				int censusOPId = AllelicTestsAction.evaluateCensusOPId(currentOP, parentMatrix);
+				int hwOPId = Integer.MIN_VALUE;
+
+				StartGWASpi.mainGUIFrame.setCursor(CursorUtils.waitCursor);
+				Set<Object> affectionStates = org.gwaspi.samples.SamplesParser.getDBAffectionStates(parentMatrix.getMatrixId());
+				StartGWASpi.mainGUIFrame.setCursor(CursorUtils.defaultCursor);
+
+				if (affectionStates.contains("1") && affectionStates.contains("2")) {
+
+					List<String> necessaryOPsAL = new ArrayList<String>();
+					necessaryOPsAL.add(org.gwaspi.constants.cNetCDF.Defaults.OPType.SAMPLE_QA.toString());
+					necessaryOPsAL.add(org.gwaspi.constants.cNetCDF.Defaults.OPType.MARKER_QA.toString());
+					necessaryOPsAL.add(org.gwaspi.constants.cNetCDF.Defaults.OPType.MARKER_CENSUS_BY_PHENOTYPE.toString());
+					necessaryOPsAL.add(org.gwaspi.constants.cNetCDF.Defaults.OPType.MARKER_CENSUS_BY_AFFECTION.toString());
+					necessaryOPsAL.add(org.gwaspi.constants.cNetCDF.Defaults.OPType.HARDY_WEINBERG.toString());
+					List<String> missingOPsAL = OperationManager.checkForNecessaryOperations(necessaryOPsAL, parentMatrix.getMatrixId());
+
+					// WHAT TO DO IF OPs ARE MISSING
+					int decision = JOptionPane.YES_OPTION;
+					if (missingOPsAL.size() > 0) {
+						if (missingOPsAL.contains(OPType.SAMPLE_QA.toString())
+								|| missingOPsAL.contains(OPType.MARKER_QA.toString())) {
+							Dialogs.showWarningDialogue("Before performing a " + Text.Operation.genoAssocTest + " you must launch\n a '" + Text.Operation.GTFreqAndHW + "' first or perform a '" + Text.Operation.gwasInOneGo + "' instead.");
+							MultiOperations.doMatrixQAs(parentMatrix.getStudyId(), parentMatrix.getMatrixId());
+							decision = JOptionPane.NO_OPTION;
+						} else if (missingOPsAL.contains(OPType.MARKER_CENSUS_BY_AFFECTION.toString())
+								&& missingOPsAL.contains(OPType.MARKER_CENSUS_BY_PHENOTYPE.toString())) {
+							Dialogs.showWarningDialogue("Before performing a " + Text.Operation.genoAssocTest + " you must launch\n a '" + Text.Operation.GTFreqAndHW + "' first or perform a '" + Text.Operation.gwasInOneGo + "' instead.");
+							decision = JOptionPane.NO_OPTION;
+						} else if (missingOPsAL.contains(OPType.HARDY_WEINBERG.toString())
+								&& !(missingOPsAL.contains(OPType.MARKER_CENSUS_BY_AFFECTION.toString())
+								&& missingOPsAL.contains(OPType.MARKER_CENSUS_BY_PHENOTYPE.toString()))) {
+							Dialogs.showWarningDialogue("Before performing a " + Text.Operation.genoAssocTest + " you must launch\n a '" + Text.Operation.hardyWeiberg + "' first or perform a '" + Text.Operation.gwasInOneGo + "' instead.");
+							MultiOperations.doHardyWeinberg(parentMatrix.getStudyId(),
+									parentMatrix.getMatrixId(),
+									censusOPId);
+							decision = JOptionPane.NO_OPTION;
 						}
-						org.gwaspi.gui.GWASpiExplorerPanel.updateTreePanel(true);
+					}
+
+					// DO TEST
+					if (decision == JOptionPane.YES_OPTION) {
+
+						boolean reProceed = true;
+						if (censusOPId == Integer.MIN_VALUE) {
+							reProceed = false;
+						}
+
+						if (reProceed) {
+							gwasParams = MoreAssocInfo.showAssocInfo_Modal();
+						}
+
+						if (gwasParams.isProceed()) {
+							ProcessTab.showTab();
+							// GET HW OPERATION
+							OperationsList hwOPList = new OperationsList(parentMatrix.getMatrixId(), censusOPId, OPType.HARDY_WEINBERG);
+							for (Operation currentHWop : hwOPList.operationsListAL) {
+								// REQUEST WHICH HW TO USE
+								if (currentHWop != null) {
+									hwOPId = currentHWop.getOperationId();
+								} else {
+									reProceed = false;
+								}
+							}
+
+							if (reProceed && censusOPId != Integer.MIN_VALUE && hwOPId != Integer.MIN_VALUE) {
+
+								//>>>>>> START THREADING HERE <<<<<<<
+								MultiOperations.doGenotypicAssociationTest(parentMatrix.getStudyId(),
+										parentMatrix.getMatrixId(),
+										censusOPId,
+										hwOPId,
+										gwasParams);
+							}
+						}
+					}
+				} else {
+					Dialogs.showInfoDialogue(Text.Operation.warnAffectionMissing);
+				}
+			} catch (Exception ex) {
+				//Logger.getLogger(MatrixAnalysePanel.class.getName()).log(Level.SEVERE, null, ex);
+				Dialogs.showWarningDialogue(Text.Operation.warnOperationError);
+			}
+		}
+	}
+
+	private static class TrendTestsAction extends AbstractAction {
+
+		private Matrix parentMatrix;
+		private GWASinOneGOParams gwasParams;
+		private final Operation currentOP;
+
+		TrendTestsAction(Matrix parentMatrix, GWASinOneGOParams gwasParams, Operation currentOP) {
+
+			this.parentMatrix = parentMatrix;
+			this.gwasParams = gwasParams;
+			this.currentOP = currentOP;
+			putValue(NAME, Text.Operation.htmlTrendTest);
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent evt) {
+			try {
+				int censusOPId = AllelicTestsAction.evaluateCensusOPId(currentOP, parentMatrix);
+				int hwOPId = Integer.MIN_VALUE;
+
+				StartGWASpi.mainGUIFrame.setCursor(CursorUtils.waitCursor);
+				Set<Object> affectionStates = org.gwaspi.samples.SamplesParser.getDBAffectionStates(parentMatrix.getMatrixId());
+				StartGWASpi.mainGUIFrame.setCursor(CursorUtils.defaultCursor);
+
+				if (affectionStates.contains("1") && affectionStates.contains("2")) {
+
+					List<String> necessaryOPsAL = new ArrayList<String>();
+					necessaryOPsAL.add(org.gwaspi.constants.cNetCDF.Defaults.OPType.SAMPLE_QA.toString());
+					necessaryOPsAL.add(org.gwaspi.constants.cNetCDF.Defaults.OPType.MARKER_QA.toString());
+					necessaryOPsAL.add(org.gwaspi.constants.cNetCDF.Defaults.OPType.MARKER_CENSUS_BY_PHENOTYPE.toString());
+					necessaryOPsAL.add(org.gwaspi.constants.cNetCDF.Defaults.OPType.MARKER_CENSUS_BY_AFFECTION.toString());
+					necessaryOPsAL.add(org.gwaspi.constants.cNetCDF.Defaults.OPType.HARDY_WEINBERG.toString());
+					List<String> missingOPsAL = OperationManager.checkForNecessaryOperations(necessaryOPsAL, parentMatrix.getMatrixId());
+
+					// WHAT TO DO IF OPs ARE MISSING
+					int decision = JOptionPane.YES_OPTION;
+					if (missingOPsAL.size() > 0) {
+						if (missingOPsAL.contains(OPType.SAMPLE_QA.toString())
+								|| missingOPsAL.contains(OPType.MARKER_QA.toString()))
+						{
+							Dialogs.showWarningDialogue("Before performing a " + Text.Operation.trendTest + " you must launch\n a '" + Text.Operation.GTFreqAndHW + "' first or perform a '" + Text.Operation.gwasInOneGo + "' instead.");
+							MultiOperations.doMatrixQAs(parentMatrix.getStudyId(), parentMatrix.getMatrixId());
+							decision = JOptionPane.NO_OPTION;
+						} else if (missingOPsAL.contains(OPType.MARKER_CENSUS_BY_AFFECTION.toString())
+								&& missingOPsAL.contains(OPType.MARKER_CENSUS_BY_PHENOTYPE.toString()))
+						{
+							Dialogs.showWarningDialogue("Before performing a " + Text.Operation.trendTest + " you must launch\n a '" + Text.Operation.GTFreqAndHW + "' first or perform a '" + Text.Operation.gwasInOneGo + "' instead.");
+							decision = JOptionPane.NO_OPTION;
+						} else if (missingOPsAL.contains(OPType.HARDY_WEINBERG.toString())
+								&& !(missingOPsAL.contains(OPType.MARKER_CENSUS_BY_AFFECTION.toString())
+								&& missingOPsAL.contains(OPType.MARKER_CENSUS_BY_PHENOTYPE.toString())))
+						{
+							Dialogs.showWarningDialogue("Before performing a " + Text.Operation.trendTest + " you must launch\n a '" + Text.Operation.hardyWeiberg + "' first or perform a '" + Text.Operation.gwasInOneGo + "' instead.");
+							MultiOperations.doHardyWeinberg(parentMatrix.getStudyId(),
+									parentMatrix.getMatrixId(),
+									censusOPId);
+							decision = JOptionPane.NO_OPTION;
+						}
+					}
+
+					// DO TEST
+					if (decision == JOptionPane.YES_OPTION) {
+
+						boolean reProceed = true;
+						if (censusOPId == Integer.MIN_VALUE) {
+							reProceed = false;
+						}
+
+						if (reProceed) {
+							gwasParams = MoreAssocInfo.showAssocInfo_Modal();
+						}
+
+						if (gwasParams.isProceed()) {
+							ProcessTab.showTab();
+							//GET HW OPERATION
+							OperationsList hwOPList = new OperationsList(parentMatrix.getMatrixId(), censusOPId, OPType.HARDY_WEINBERG);
+							for (Operation currentHWop : hwOPList.operationsListAL) {
+								//REQUEST WHICH HW TO USE
+								if (currentHWop != null) {
+									hwOPId = currentHWop.getOperationId();
+								} else {
+									reProceed = false;
+								}
+							}
+
+							if (reProceed && censusOPId != Integer.MIN_VALUE && hwOPId != Integer.MIN_VALUE) {
+
+								//>>>>>> START THREADING HERE <<<<<<<
+								MultiOperations.doTrendTest(parentMatrix.getStudyId(),
+										parentMatrix.getMatrixId(),
+										censusOPId,
+										hwOPId,
+										gwasParams);
+							}
+						}
+					}
+				} else {
+					Dialogs.showInfoDialogue(Text.Operation.warnAffectionMissing);
+				}
+			} catch (Exception ex) {
+				//Logger.getLogger(MatrixAnalysePanel.class.getName()).log(Level.SEVERE, null, ex);
+				Dialogs.showWarningDialogue(Text.Operation.warnOperationError);
+			}
+		}
+	}
+
+	private static class GenFreqAndHWAction extends AbstractAction {
+
+		private Matrix parentMatrix;
+		private GWASinOneGOParams gwasParams;
+
+		GenFreqAndHWAction(Matrix parentMatrix, GWASinOneGOParams gwasParams) {
+
+			this.parentMatrix = parentMatrix;
+			this.gwasParams = gwasParams;
+			putValue(NAME, Text.Operation.htmlGTFreqAndHW);
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent evt) {
+			try {
+				List<String> necessaryOPsAL = new ArrayList<String>();
+				necessaryOPsAL.add(org.gwaspi.constants.cNetCDF.Defaults.OPType.SAMPLE_QA.toString());
+				necessaryOPsAL.add(org.gwaspi.constants.cNetCDF.Defaults.OPType.MARKER_QA.toString());
+				List<String> missingOPsAL = OperationManager.checkForNecessaryOperations(necessaryOPsAL, parentMatrix.getMatrixId());
+
+				int choice = Dialogs.showOptionDialogue(Text.Operation.chosePhenotype, Text.Operation.genotypeFreqAndHW, Text.Operation.htmlCurrentAffectionFromDB, Text.Operation.htmlAffectionFromFile, Text.All.cancel);
+				File phenotypeFile = null;
+				if (choice == JOptionPane.NO_OPTION) { //BY EXTERNAL PHENOTYPE FILE
+					phenotypeFile = Dialogs.selectFilesAndDirectoriesDialog(JOptionPane.OK_OPTION);
+					if (phenotypeFile != null) {
+						gwasParams = MoreInfoForGtFreq.showMoreInfoForQA_Modal();
+						if (choice != JOptionPane.CANCEL_OPTION) {
+							gwasParams.setFriendlyName(Dialogs.showInputBox(Text.Operation.GTFreqAndHWFriendlyName));
+						}
+					}
+				} else if (choice != JOptionPane.CANCEL_OPTION) {
+					gwasParams = MoreInfoForGtFreq.showMoreInfoForQA_Modal();
+					if (choice != JOptionPane.CANCEL_OPTION) {
+						gwasParams.setFriendlyName(Dialogs.showInputBox(Text.Operation.GTFreqAndHWFriendlyName));
+					}
+				}
+
+				if (!gwasParams.isDiscardMarkerByMisRat()) {
+					gwasParams.setDiscardMarkerMisRatVal(1);
+				}
+				if (!gwasParams.isDiscardMarkerByHetzyRat()) {
+					gwasParams.setDiscardMarkerHetzyRatVal(1);
+				}
+				if (!gwasParams.isDiscardSampleByMisRat()) {
+					gwasParams.setDiscardSampleMisRatVal(1);
+				}
+				if (!gwasParams.isDiscardSampleByHetzyRat()) {
+					gwasParams.setDiscardSampleHetzyRatVal(1);
+				}
+
+				if (gwasParams.isProceed()) {
+					ProcessTab.showTab();
+				}
+
+				// <editor-fold defaultstate="collapsed" desc="QA BLOCK">
+				if (gwasParams.isProceed() && missingOPsAL.size() > 0) {
+					gwasParams.setProceed(false);
+					gwasParams.setProceed(false);
+					Dialogs.showWarningDialogue(Text.Operation.warnQABeforeAnything + "\n" + Text.Operation.willPerformOperation);
+					MultiOperations.doMatrixQAs(parentMatrix.getStudyId(), parentMatrix.getMatrixId());
+				}
+				// </editor-fold>
+
+				// <editor-fold defaultstate="collapsed" desc="GENOTYPE FREQ. & HW BLOCK">
+			if (gwasParams.isProceed()) {
+				MultiOperations.doGTFreqDoHW(parentMatrix.getStudyId(),
+						parentMatrix.getMatrixId(),
+						phenotypeFile,
+						gwasParams);
+			}
+			// </editor-fold>
+			} catch (Exception ex) {
+				Dialogs.showWarningDialogue(Text.Operation.warnOperationError);
+				System.out.println(Text.All.warnLoadError);
+				Logger.getLogger(MatrixAnalysePanel.class.getName()).log(Level.SEVERE, null, ex);
+			}
+		}
+	}
+	//</editor-fold>
+
+	//<editor-fold defaultstate="collapsed" desc="HELPERS">
+	private static class DeleteOperationAction extends AbstractAction {
+
+		private Operation currentOP;
+		private Component dialogParent;
+		private Matrix parentMatrix;
+		private JTable table;
+
+		DeleteOperationAction(Operation currentOP, Component dialogParent, Matrix parentMatrix, JTable table) {
+
+			this.currentOP = currentOP;
+			this.dialogParent = dialogParent;
+			this.parentMatrix = parentMatrix;
+			this.table = table;
+			putValue(NAME, Text.Operation.deleteOperation);
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent evt) {
+			int[] selectedOPs = table.getSelectedRows();
+			if (selectedOPs.length > 0) {
+				try {
+					int option = JOptionPane.showConfirmDialog(dialogParent, Text.Operation.confirmDelete1);
+					if (option == JOptionPane.YES_OPTION) {
+						int deleteReportOption = JOptionPane.showConfirmDialog(dialogParent, Text.Reports.confirmDelete);
+						int opId = Integer.MIN_VALUE;
+						if (deleteReportOption != JOptionPane.CANCEL_OPTION) {
+							for (int i = selectedOPs.length - 1; i >= 0; i--) {
+								int tmpOPRow = selectedOPs[i];
+								opId = (Integer) table.getModel().getValueAt(tmpOPRow, 0);
+								//TEST IF THE DELETED ITEM IS REQUIRED FOR A QUED WORKER
+								if (org.gwaspi.threadbox.SwingWorkerItemList.permitsDeletion(null, null, opId)) {
+									if (option == JOptionPane.YES_OPTION) {
+										boolean deleteReport = false;
+										if (deleteReportOption == JOptionPane.YES_OPTION) {
+											deleteReport = true;
+										}
+										MultiOperations.deleteOperationsByOpId(parentMatrix.getStudyId(), parentMatrix.getMatrixId(), opId, deleteReport);
+
+										//netCDF.operations.OperationManager.deleteOperationBranch(parentMatrix.getStudyId(), opId, deleteReport);
+									}
+								} else {
+									Dialogs.showWarningDialogue(Text.Processes.cantDeleteRequiredItem);
+								}
+							}
+
+							if (currentOP.getOperationId() == opId) {
+								GWASpiExplorerPanel.tree.setSelectionPath(GWASpiExplorerPanel.tree.getSelectionPath().getParentPath());
+							}
+							GWASpiExplorerPanel.updateTreePanel(true);
+						}
+					}
+				} catch (IOException ex) {
+					Logger.getLogger(CurrentStudyPanel.class.getName()).log(Level.SEVERE, null, ex);
+				}
+			}
+		}
+	}
+
+	private static class GwasInOneGoAction extends AbstractAction {
+
+		private Matrix parentMatrix;
+		private GWASinOneGOParams gwasParams;
+
+		GwasInOneGoAction(Matrix parentMatrix, GWASinOneGOParams gwasParams) {
+
+			this.parentMatrix = parentMatrix;
+			this.gwasParams = gwasParams;
+			setEnabled(false);
+			putValue(NAME, Text.Operation.gwasInOneGo);
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent evt) {
+			try {
+				List<String> blackListOPsAL = new ArrayList<String>();
+				blackListOPsAL.add(org.gwaspi.constants.cNetCDF.Defaults.OPType.MARKER_CENSUS_BY_AFFECTION.toString());
+
+				List<String> necessaryOPsAL = new ArrayList<String>();
+				necessaryOPsAL.add(org.gwaspi.constants.cNetCDF.Defaults.OPType.SAMPLE_QA.toString());
+				necessaryOPsAL.add(org.gwaspi.constants.cNetCDF.Defaults.OPType.MARKER_QA.toString());
+				List<String> missingOPsAL = OperationManager.checkForNecessaryOperations(necessaryOPsAL, parentMatrix.getMatrixId());
+
+				MatrixMetadata matrixMetadata = new MatrixMetadata(parentMatrix.getMatrixId());
+
+				int choice = Dialogs.showOptionDialogue(Text.Operation.chosePhenotype, Text.Operation.genotypeFreqAndHW, Text.Operation.htmlCurrentAffectionFromDB, Text.Operation.htmlAffectionFromFile, Text.All.cancel);
+				File phenotypeFile = null;
+				if (choice == JOptionPane.NO_OPTION) { //BY EXTERNAL PHENOTYPE FILE
+					phenotypeFile = Dialogs.selectFilesAndDirectoriesDialog(JOptionPane.OK_OPTION);
+					if (phenotypeFile != null) {
+						gwasParams = MoreGWASinOneGoInfo.showGWASInOneGo_Modal(matrixMetadata.getTechnology().toString());
+						if (choice != JOptionPane.CANCEL_OPTION && gwasParams.isProceed()) {
+							gwasParams.setFriendlyName(Dialogs.showInputBox(Text.Operation.GTFreqAndHWFriendlyName));
+						}
+					}
+				} else if (choice != JOptionPane.CANCEL_OPTION) {
+					gwasParams = MoreGWASinOneGoInfo.showGWASInOneGo_Modal(matrixMetadata.getTechnology().toString());
+					if (choice != JOptionPane.CANCEL_OPTION && gwasParams.isProceed()) {
+						gwasParams.setFriendlyName(Dialogs.showInputBox(Text.Operation.GTFreqAndHWFriendlyName));
+					}
+				}
+
+				if (gwasParams.isProceed()) {
+					ProcessTab.showTab();
+				}
+
+				//QA BLOCK
+				if (gwasParams.isProceed() && missingOPsAL.size() > 0) {
+					gwasParams.setProceed(false);
+					Dialogs.showWarningDialogue(Text.Operation.warnQABeforeAnything + "\n" + Text.Operation.willPerformOperation);
+					MultiOperations.doMatrixQAs(parentMatrix.getStudyId(), parentMatrix.getMatrixId());
+				}
+
+				//GWAS BLOCK
+				if (gwasParams.isProceed()
+						&& choice != JOptionPane.CANCEL_OPTION
+						&& (gwasParams.isPerformAllelicTests() || gwasParams.isPerformTrendTests())) { //At least one test has been picked
+					System.out.println(Text.All.processing);
+					StartGWASpi.mainGUIFrame.setCursor(CursorUtils.waitCursor);
+					Set<Object> affectionStates = SamplesParser.getDBAffectionStates(parentMatrix.getMatrixId()); //use Sample Info file affection state
+					StartGWASpi.mainGUIFrame.setCursor(CursorUtils.defaultCursor);
+					if (affectionStates.contains("1") && affectionStates.contains("2")) {
+						MultiOperations.doGWASwithAlterPhenotype(parentMatrix.getStudyId(),
+								parentMatrix.getMatrixId(),
+								phenotypeFile,
+								gwasParams);
+					} else {
+						Dialogs.showWarningDialogue(Text.Operation.warnAffectionMissing);
+						org.gwaspi.threadbox.MultiOperations.updateProcessOverviewStartNext();
 					}
 				}
 			} catch (IOException ex) {
-				Logger.getLogger(CurrentStudyPanel.class.getName()).log(Level.SEVERE, null, ex);
+				Logger.getLogger(MatrixAnalysePanel.class.getName()).log(Level.SEVERE, null, ex);
+			} catch (Exception ex) {
+				Dialogs.showWarningDialogue(Text.Operation.warnOperationError);
+				System.out.println(Text.All.warnLoadError);
+				Logger.getLogger(MatrixAnalysePanel.class.getName()).log(Level.SEVERE, null, ex);
 			}
 		}
 	}
 
-	private void actionGoBack(java.awt.event.ActionEvent evt) throws IOException {
-		if (currentOP != null && currentOP.getParentOperationId() != -1) {
-			org.gwaspi.gui.GWASpiExplorerPanel.tree.setSelectionPath(org.gwaspi.gui.GWASpiExplorerPanel.tree.getSelectionPath().getParentPath());
-			org.gwaspi.gui.GWASpiExplorerPanel.pnl_Content = new MatrixAnalysePanel(currentOP.getParentMatrixId(), currentOP.getParentOperationId());
-			org.gwaspi.gui.GWASpiExplorerPanel.scrl_Content.setViewportView(org.gwaspi.gui.GWASpiExplorerPanel.pnl_Content);
-		} else if (currentOP != null) {
-			org.gwaspi.gui.GWASpiExplorerPanel.tree.setSelectionPath(org.gwaspi.gui.GWASpiExplorerPanel.tree.getSelectionPath().getParentPath());
-			org.gwaspi.gui.GWASpiExplorerPanel.pnl_Content = new CurrentMatrixPanel(parentMatrix.getMatrixId());
-			org.gwaspi.gui.GWASpiExplorerPanel.scrl_Content.setViewportView(org.gwaspi.gui.GWASpiExplorerPanel.pnl_Content);
-		} else {
-			org.gwaspi.gui.GWASpiExplorerPanel.pnl_Content = new CurrentMatrixPanel(parentMatrix.getMatrixId());
-			org.gwaspi.gui.GWASpiExplorerPanel.scrl_Content.setViewportView(org.gwaspi.gui.GWASpiExplorerPanel.pnl_Content);
+	private static class BackAction extends AbstractAction {
+
+		private Matrix parentMatrix;
+		private final Operation currentOP;
+
+		BackAction(Matrix parentMatrix, Operation currentOP) {
+
+			this.parentMatrix = parentMatrix;
+			this.currentOP = currentOP;
+			putValue(NAME, Text.All.Back);
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent evt) {
+			try {
+				if (currentOP != null && currentOP.getParentOperationId() != -1) {
+					GWASpiExplorerPanel.tree.setSelectionPath(GWASpiExplorerPanel.tree.getSelectionPath().getParentPath());
+					GWASpiExplorerPanel.pnl_Content = new MatrixAnalysePanel(currentOP.getParentMatrixId(), currentOP.getParentOperationId());
+					GWASpiExplorerPanel.scrl_Content.setViewportView(GWASpiExplorerPanel.pnl_Content);
+				} else if (currentOP != null) {
+					GWASpiExplorerPanel.tree.setSelectionPath(GWASpiExplorerPanel.tree.getSelectionPath().getParentPath());
+					GWASpiExplorerPanel.pnl_Content = new CurrentMatrixPanel(parentMatrix.getMatrixId());
+					GWASpiExplorerPanel.scrl_Content.setViewportView(GWASpiExplorerPanel.pnl_Content);
+				} else {
+					GWASpiExplorerPanel.pnl_Content = new CurrentMatrixPanel(parentMatrix.getMatrixId());
+					GWASpiExplorerPanel.scrl_Content.setViewportView(GWASpiExplorerPanel.pnl_Content);
+				}
+			} catch (IOException ex) {
+				Logger.getLogger(BackAction.class.getName()).log(Level.SEVERE, null, ex);
+			}
 		}
 	}
 
-	private void actionHelp(java.awt.event.ActionEvent evt) {
-		try {
-			org.gwaspi.gui.utils.URLInDefaultBrowser.browseHelpURL(HelpURLs.QryURL.matrixAnalyse);
-		} catch (IOException ex) {
-			Logger.getLogger(CurrentMatrixPanel.class.getName()).log(Level.SEVERE, null, ex);
+	private static class HelpAction extends AbstractAction {
+
+		HelpAction() {
+
+			putValue(NAME, Text.Help.help);
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent evt) {
+			try {
+				URLInDefaultBrowser.browseHelpURL(HelpURLs.QryURL.matrixAnalyse);
+			} catch (IOException ex) {
+				Logger.getLogger(CurrentMatrixPanel.class.getName()).log(Level.SEVERE, null, ex);
+			}
 		}
 	}
 	//</editor-fold>

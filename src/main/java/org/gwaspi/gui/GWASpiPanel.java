@@ -1,9 +1,14 @@
 package org.gwaspi.gui;
 
+import java.awt.Dimension;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
+import javax.swing.GroupLayout;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
 import javax.swing.JTree;
 import javax.swing.tree.TreePath;
 import org.gwaspi.model.GWASpiExplorerNodes;
@@ -14,54 +19,49 @@ import org.gwaspi.model.GWASpiExplorerNodes;
  * IBE, Institute of Evolutionary Biology (UPF-CSIC)
  * CEXS-UPF-PRBB
  */
-public class GWASpiPanel extends javax.swing.JPanel {
+public class GWASpiPanel extends JPanel {
 
 	// Variables declaration - do not modify
 	private static JTree tree;
 	private static boolean refreshContentPanel = true;
-	private static javax.swing.JPanel pnl_Content;
-	private static javax.swing.JScrollPane scrl_Content;
-	private static javax.swing.JScrollPane scrl_Tree;
-	private static javax.swing.JSplitPane splt_MoapiPanel;
+	private static JPanel pnl_Content;
+	private static JScrollPane scrl_Content;
+	private static JScrollPane scrl_Tree;
+	private static JSplitPane splt_MoapiPanel;
 	// End of variables declaration
 
 	@SuppressWarnings("unchecked")
 	// <editor-fold defaultstate="expanded" desc="Generated Code">
 	public GWASpiPanel() throws IOException {
 
+		splt_MoapiPanel = new JSplitPane();
+		scrl_Tree = new JScrollPane();
+		scrl_Content = new JScrollPane();
+		pnl_Content = new JPanel();
 
-		splt_MoapiPanel = new javax.swing.JSplitPane();
-		scrl_Tree = new javax.swing.JScrollPane();
-		scrl_Content = new javax.swing.JScrollPane();
-		pnl_Content = new javax.swing.JPanel();
-
-		scrl_Tree.setMinimumSize(new java.awt.Dimension(200, 600));
-		scrl_Tree.setPreferredSize(new java.awt.Dimension(200, 600));
+		scrl_Tree.setMinimumSize(new Dimension(200, 600));
+		scrl_Tree.setPreferredSize(new Dimension(200, 600));
 		splt_MoapiPanel.setLeftComponent(scrl_Tree);
-
 
 		initContentPanel();
 		updateTreePanel(true);
 
 		//<editor-fold defaultstate="collapsed/expanded" desc="LAYOUT">
-		javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
+		GroupLayout layout = new GroupLayout(this);
 		this.setLayout(layout);
 		layout.setHorizontalGroup(
-				layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+				layout.createParallelGroup(GroupLayout.Alignment.LEADING)
 				.addGroup(layout.createSequentialGroup()
 				.addContainerGap()
-				.addComponent(splt_MoapiPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 1035, Short.MAX_VALUE)
+				.addComponent(splt_MoapiPanel, GroupLayout.DEFAULT_SIZE, 1035, Short.MAX_VALUE)
 				.addContainerGap()));
 		layout.setVerticalGroup(
-				layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+				layout.createParallelGroup(GroupLayout.Alignment.LEADING)
 				.addGroup(layout.createSequentialGroup()
 				.addContainerGap()
-				.addComponent(splt_MoapiPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 600, Short.MAX_VALUE)
+				.addComponent(splt_MoapiPanel, GroupLayout.DEFAULT_SIZE, 600, Short.MAX_VALUE)
 				.addContainerGap()));
 		//</editor-fold>
-
-
-
 	}
 
 	public static void refreshContentPanel() {
@@ -86,11 +86,10 @@ public class GWASpiPanel extends javax.swing.JPanel {
 
 	public static void updateTreePanel(boolean _refreshContentPanel) throws IOException {
 
-		//TOGGLE CONTENT PANEL REFRESH BEHAVIOUR FOR CURRENT METHOD RUN
+		// TOGGLE CONTENT PANEL REFRESH BEHAVIOUR FOR CURRENT METHOD RUN
 		if (!_refreshContentPanel) {
 			refreshContentPanel = !refreshContentPanel;
 		}
-
 
 		JTree tmpTree = new JTree();
 		tmpTree.setEnabled(false);
@@ -108,7 +107,7 @@ public class GWASpiPanel extends javax.swing.JPanel {
 
 		String lastSelectedNode = org.gwaspi.global.Config.getConfigValue("LAST_SELECTED_NODE", "0");
 
-		//Find out what paths are expanded
+		// Find out what paths are expanded
 		List<TreePath> expandedNodesAL = null;
 		if (tree != null) {
 			TreePath rootPath = tree.getPathForRow(0);
@@ -148,8 +147,7 @@ public class GWASpiPanel extends javax.swing.JPanel {
 				TreePath tp = tmpTree.getPathForRow(0);
 				tmpTree.setSelectionPath(tp);
 			}
-
-		} else { //HAPPENS AT INIT OF APPLICATION
+		} else { // HAPPENS AT INIT OF APPLICATION
 			int row = 0;
 			while (row < tmpTree.getRowCount()) {
 				tmpTree.expandRow(row);
@@ -179,7 +177,6 @@ public class GWASpiPanel extends javax.swing.JPanel {
 				}
 				row--;
 			}
-
 		}
 
 		// TOGGLE CONTENT PANEL REFRESH BEHAVIOUR FOR CURRENT METHOD RUN

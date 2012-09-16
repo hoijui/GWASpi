@@ -1,6 +1,12 @@
 package org.gwaspi.gui.reports;
 
 import org.gwaspi.global.Text;
+import org.gwaspi.gui.GWASpiExplorerPanel;
+import org.gwaspi.gui.utils.CursorUtils;
+import org.gwaspi.gui.utils.LinksExternalResouces;
+import org.gwaspi.gui.utils.RowRendererGenotypicAssocWithZoomQueryDB;
+import org.gwaspi.gui.utils.URLInDefaultBrowser;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.BufferedReader;
@@ -31,10 +37,10 @@ public final class Report_AnalysisGenotypicTestImpl extends Report_Analysis {
 		NRows = _NRows;
 		analysisFileName = _analysisFileName;
 
-		tbl_ReportTable.setDefaultRenderer(Object.class, new org.gwaspi.gui.utils.RowRendererGenotypicAssocWithZoomQueryDB());
-		tbl_ReportTable.addMouseListener(new MouseListener() {
+		tbl_ReportTable.setDefaultRenderer(Object.class, new RowRendererGenotypicAssocWithZoomQueryDB());
+		tbl_ReportTable.addMouseListener(new MouseAdapter() {
 			@Override
-			public void mouseClicked(MouseEvent e) {
+			public void mouseClicked(MouseEvent evt) {
 				try {
 					int rowIndex = tbl_ReportTable.getSelectedRow();
 					int colIndex = tbl_ReportTable.getSelectedColumn();
@@ -43,7 +49,7 @@ public final class Report_AnalysisGenotypicTestImpl extends Report_Analysis {
 					}
 
 					if (colIndex == 10) {    //Zoom
-						setCursor(org.gwaspi.gui.utils.CursorUtils.waitCursor);
+						setCursor(CursorUtils.waitCursor);
 						long markerPhysPos = (Long) tbl_ReportTable.getValueAt(rowIndex, 3); //marker physical position in chromosome
 						String chr = tbl_ReportTable.getValueAt(rowIndex, 2).toString(); //Chromosome
 
@@ -54,16 +60,16 @@ public final class Report_AnalysisGenotypicTestImpl extends Report_Analysis {
 						double avgMarkersPerPhysPos = (double) nbMarkers / (maxPhysPos - startPhysPos);
 						int requestedWindowSize = Math.abs((int) Math.round(ManhattanPlotZoom.defaultMarkerNb / avgMarkersPerPhysPos));
 
-						org.gwaspi.gui.GWASpiExplorerPanel.pnl_Content = new org.gwaspi.gui.reports.ManhattanPlotZoom(opId,
+						GWASpiExplorerPanel.pnl_Content = new ManhattanPlotZoom(opId,
 								chr,
 								tbl_ReportTable.getValueAt(rowIndex, 0).toString(), //MarkerID
 								markerPhysPos,
 								requestedWindowSize, //requested window size in phys positions
 								txt_NRows.getText());
-						org.gwaspi.gui.GWASpiExplorerPanel.scrl_Content.setViewportView(org.gwaspi.gui.GWASpiExplorerPanel.pnl_Content);
+						GWASpiExplorerPanel.scrl_Content.setViewportView(GWASpiExplorerPanel.pnl_Content);
 					}
 					if (colIndex == 11) {    //Show selected resource database
-						org.gwaspi.gui.utils.URLInDefaultBrowser.browseGenericURL(org.gwaspi.gui.utils.LinksExternalResouces.getResourceLink(cmb_SearchDB.getSelectedIndex(),
+						URLInDefaultBrowser.browseGenericURL(LinksExternalResouces.getResourceLink(cmb_SearchDB.getSelectedIndex(),
 								tbl_ReportTable.getValueAt(rowIndex, 2).toString(), //chr
 								tbl_ReportTable.getValueAt(rowIndex, 1).toString(), //rsId
 								(Long) tbl_ReportTable.getValueAt(rowIndex, 3)) //pos
@@ -73,25 +79,9 @@ public final class Report_AnalysisGenotypicTestImpl extends Report_Analysis {
 					Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
 				}
 			}
-
-			@Override
-			public void mousePressed(MouseEvent e) {
-			}
-
-			@Override
-			public void mouseReleased(MouseEvent e) {
-			}
-
-			@Override
-			public void mouseExited(MouseEvent e) {
-			}
-
-			@Override
-			public void mouseEntered(MouseEvent e) {
-			}
 		});
 
-		String reportName = org.gwaspi.gui.GWASpiExplorerPanel.tree.getLastSelectedPathComponent().toString();
+		String reportName = GWASpiExplorerPanel.tree.getLastSelectedPathComponent().toString();
 		reportName = reportName.substring(reportName.indexOf('-') + 2);
 		String reportPath = "";
 		try {
@@ -240,12 +230,4 @@ public final class Report_AnalysisGenotypicTestImpl extends Report_Analysis {
 			//Logger.getLogger(Report_QAMarkersSummary.class.getName()).log(Level.SEVERE, null, ex);
 		}
 	}
-//	private Comparator<String> comparator = new Comparator<String>() {
-//		public int compare(String s1, String s2) {
-//			String[] strings1 = s1.split("\\s");
-//			String[] strings2 = s2.split("\\s");
-//			return strings1[strings1.length - 1]
-//					.compareTo(strings2[strings2.length - 1]);
-//		}
-//	};
 }

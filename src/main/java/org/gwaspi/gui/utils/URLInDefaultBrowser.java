@@ -46,7 +46,6 @@ public class URLInDefaultBrowser {
 //			System.exit(1);
 		}
 
-
 		try {
 			if (org.gwaspi.global.Utils.checkInternetConnection() && desktop.isSupported(java.awt.Desktop.Action.BROWSE)) {
 				java.net.URI uri = new java.net.URI(url);

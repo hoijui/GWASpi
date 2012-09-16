@@ -1,10 +1,14 @@
 package org.gwaspi.gui;
 
 import org.gwaspi.global.Text;
+import java.awt.Component;
 import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionAdapter;
 import java.io.File;
 import java.io.FileWriter;
@@ -15,11 +19,22 @@ import java.net.URL;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.AbstractAction;
+import javax.swing.BorderFactory;
+import javax.swing.GroupLayout;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTextArea;
+import javax.swing.LayoutStyle;
 import javax.swing.SwingConstants;
+import javax.swing.border.TitledBorder;
+import javax.swing.table.DefaultTableModel;
 import org.gwaspi.threadbox.SwingDeleterItem;
 import org.gwaspi.threadbox.SwingDeleterItemList;
 import org.gwaspi.threadbox.SwingWorkerItem;
@@ -31,17 +46,17 @@ import org.gwaspi.threadbox.SwingWorkerItemList;
  * IBE, Institute of Evolutionary Biology (UPF-CSIC)
  * CEXS-UPF-PRBB
  */
-public class ProcessTab extends javax.swing.JPanel {
+public class ProcessTab extends JPanel {
 
 	// Variables declaration - do not modify
-	private static javax.swing.JPanel pnl_Logo;
-	private static javax.swing.JLabel lbl_Logo;
-	private javax.swing.JPanel pnl_Orverview;
-	private javax.swing.JPanel pnl_ProcessLog;
-	private static javax.swing.JScrollPane scrl_Overview;
-	private javax.swing.JScrollPane scrl_ProcessLog;
-	private static javax.swing.JTextArea txtA_ProcessLog;
-	private javax.swing.JButton btn_Save;
+	private static JPanel pnl_Logo;
+	private static JLabel lbl_Logo;
+	private JPanel pnl_Orverview;
+	private JPanel pnl_ProcessLog;
+	private static JScrollPane scrl_Overview;
+	private JScrollPane scrl_ProcessLog;
+	private static JTextArea txtA_ProcessLog;
+	private JButton btn_Save;
 	private static OutputStream sysOutPS = new OutputStream() {
 		@Override
 		public void write(int b) throws IOException {
@@ -58,118 +73,108 @@ public class ProcessTab extends javax.swing.JPanel {
 	// End of variables declaration
 
 	public ProcessTab() throws IOException {
-		pnl_Orverview = new javax.swing.JPanel();
-		scrl_Overview = new javax.swing.JScrollPane();
+		pnl_Orverview = new JPanel();
+		scrl_Overview = new JScrollPane();
 
-		pnl_Logo = new javax.swing.JPanel();
-		lbl_Logo = new javax.swing.JLabel();
-		pnl_ProcessLog = new javax.swing.JPanel();
-		scrl_ProcessLog = new javax.swing.JScrollPane();
-		txtA_ProcessLog = new javax.swing.JTextArea();
-		btn_Save = new javax.swing.JButton();
+		pnl_Logo = new JPanel();
+		lbl_Logo = new JLabel();
+		pnl_ProcessLog = new JPanel();
+		scrl_ProcessLog = new JScrollPane();
+		txtA_ProcessLog = new JTextArea();
+		btn_Save = new JButton();
 
-		setBorder(javax.swing.BorderFactory.createTitledBorder(null, Text.Processes.processes, javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("FreeSans", 1, 18))); // NOI18N
+		setBorder(BorderFactory.createTitledBorder(null, Text.Processes.processes, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("FreeSans", 1, 18))); // NOI18N
 
-		pnl_Logo.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-		pnl_Logo.setMaximumSize(new java.awt.Dimension(100, 100));
-		pnl_Logo.setPreferredSize(new java.awt.Dimension(100, 100));
+		pnl_Logo.setBorder(BorderFactory.createEtchedBorder());
+		pnl_Logo.setMaximumSize(new Dimension(100, 100));
+		pnl_Logo.setPreferredSize(new Dimension(100, 100));
 
 
 		//<editor-fold defaultstate="collapsed" desc="PROCESS OVERVIEW LAYOUT">
-		javax.swing.GroupLayout pnl_LogoLayout = new javax.swing.GroupLayout(pnl_Logo);
+		GroupLayout pnl_LogoLayout = new GroupLayout(pnl_Logo);
 		pnl_Logo.setLayout(pnl_LogoLayout);
 		pnl_LogoLayout.setHorizontalGroup(
-				pnl_LogoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-				.addComponent(lbl_Logo, javax.swing.GroupLayout.DEFAULT_SIZE, 100, Short.MAX_VALUE));
+				pnl_LogoLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+				.addComponent(lbl_Logo, GroupLayout.DEFAULT_SIZE, 100, Short.MAX_VALUE));
 		pnl_LogoLayout.setVerticalGroup(
-				pnl_LogoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-				.addComponent(lbl_Logo, javax.swing.GroupLayout.DEFAULT_SIZE, 100, Short.MAX_VALUE));
+				pnl_LogoLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+				.addComponent(lbl_Logo, GroupLayout.DEFAULT_SIZE, 100, Short.MAX_VALUE));
 
 
-		javax.swing.GroupLayout pnl_OrverviewLayout = new javax.swing.GroupLayout(pnl_Orverview);
+		GroupLayout pnl_OrverviewLayout = new GroupLayout(pnl_Orverview);
 		pnl_Orverview.setLayout(pnl_OrverviewLayout);
 		pnl_OrverviewLayout.setHorizontalGroup(
-				pnl_OrverviewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-				.addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnl_OrverviewLayout.createSequentialGroup()
+				pnl_OrverviewLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+				.addGroup(GroupLayout.Alignment.TRAILING, pnl_OrverviewLayout.createSequentialGroup()
 				.addContainerGap()
-				.addComponent(scrl_Overview, javax.swing.GroupLayout.DEFAULT_SIZE, 650, Short.MAX_VALUE)
+				.addComponent(scrl_Overview, GroupLayout.DEFAULT_SIZE, 650, Short.MAX_VALUE)
 				.addGap(18, 18, 18)
-				.addComponent(pnl_Logo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+				.addComponent(pnl_Logo, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 				.addContainerGap()));
 		pnl_OrverviewLayout.setVerticalGroup(
-				pnl_OrverviewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+				pnl_OrverviewLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
 				.addGroup(pnl_OrverviewLayout.createSequentialGroup()
-				.addGroup(pnl_OrverviewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-				.addComponent(scrl_Overview, javax.swing.GroupLayout.PREFERRED_SIZE, 106, javax.swing.GroupLayout.PREFERRED_SIZE)
-				.addComponent(pnl_Logo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-				.addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)));
+				.addGroup(pnl_OrverviewLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+				.addComponent(scrl_Overview, GroupLayout.PREFERRED_SIZE, 106, GroupLayout.PREFERRED_SIZE)
+				.addComponent(pnl_Logo, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+				.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)));
 
-		pnl_OrverviewLayout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[]{pnl_Logo, scrl_Overview});
+		pnl_OrverviewLayout.linkSize(SwingConstants.VERTICAL, new Component[]{pnl_Logo, scrl_Overview});
 		//</editor-fold>
 
 
-		pnl_ProcessLog.setBorder(javax.swing.BorderFactory.createTitledBorder(null, Text.Processes.processLog, javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("DejaVu Sans", 1, 13))); // NOI18N
+		pnl_ProcessLog.setBorder(BorderFactory.createTitledBorder(null, Text.Processes.processLog, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("DejaVu Sans", 1, 13))); // NOI18N
 
 		txtA_ProcessLog.setColumns(20);
 		txtA_ProcessLog.setRows(5);
 		txtA_ProcessLog.setEditable(false);
 		scrl_ProcessLog.setViewportView(txtA_ProcessLog);
-		btn_Save.setText(Text.All.save);
-		btn_Save.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				actionSaveAs();
-			}
-		});
+		btn_Save.setAction(new SaveAsAction());
 
 
 		//<editor-fold defaultstate="collapsed" desc="PROCESS LOG LAYOUT">
 
-		javax.swing.GroupLayout pnl_ProcessLogLayout = new javax.swing.GroupLayout(pnl_ProcessLog);
+		GroupLayout pnl_ProcessLogLayout = new GroupLayout(pnl_ProcessLog);
 		pnl_ProcessLog.setLayout(pnl_ProcessLogLayout);
 		pnl_ProcessLogLayout.setHorizontalGroup(
-				pnl_ProcessLogLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-				.addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnl_ProcessLogLayout.createSequentialGroup()
-				.addGroup(pnl_ProcessLogLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+				pnl_ProcessLogLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+				.addGroup(GroupLayout.Alignment.TRAILING, pnl_ProcessLogLayout.createSequentialGroup()
+				.addGroup(pnl_ProcessLogLayout.createParallelGroup(GroupLayout.Alignment.TRAILING)
 				.addGroup(pnl_ProcessLogLayout.createSequentialGroup()
 				.addContainerGap()
-				.addComponent(btn_Save, javax.swing.GroupLayout.PREFERRED_SIZE, 89, javax.swing.GroupLayout.PREFERRED_SIZE))
-				.addComponent(scrl_ProcessLog, javax.swing.GroupLayout.DEFAULT_SIZE, 671, Short.MAX_VALUE))
+				.addComponent(btn_Save, GroupLayout.PREFERRED_SIZE, 89, GroupLayout.PREFERRED_SIZE))
+				.addComponent(scrl_ProcessLog, GroupLayout.DEFAULT_SIZE, 671, Short.MAX_VALUE))
 				.addContainerGap()));
 		pnl_ProcessLogLayout.setVerticalGroup(
-				pnl_ProcessLogLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+				pnl_ProcessLogLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
 				.addGroup(pnl_ProcessLogLayout.createSequentialGroup()
-				.addComponent(scrl_ProcessLog, javax.swing.GroupLayout.DEFAULT_SIZE, 357, Short.MAX_VALUE)
-				.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+				.addComponent(scrl_ProcessLog, GroupLayout.DEFAULT_SIZE, 357, Short.MAX_VALUE)
+				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
 				.addComponent(btn_Save)
 				.addContainerGap()));
-
 		//</editor-fold>
 
 
 		//<editor-fold defaultstate="collapsed" desc="LAYOUT">
-
-		javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
+		GroupLayout layout = new GroupLayout(this);
 		this.setLayout(layout);
 		layout.setHorizontalGroup(
-				layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-				.addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+				layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+				.addGroup(GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
 				.addContainerGap()
-				.addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-				.addComponent(pnl_ProcessLog, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-				.addComponent(pnl_Orverview, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.TRAILING)
+				.addComponent(pnl_ProcessLog, GroupLayout.Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+				.addComponent(pnl_Orverview, GroupLayout.Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
 				.addContainerGap()));
 		layout.setVerticalGroup(
-				layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+				layout.createParallelGroup(GroupLayout.Alignment.LEADING)
 				.addGroup(layout.createSequentialGroup()
 				.addContainerGap()
-				.addComponent(pnl_Orverview, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-				.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-				.addComponent(pnl_ProcessLog, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+				.addComponent(pnl_Orverview, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+				.addComponent(pnl_ProcessLog, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
 				.addContainerGap()));
-
 		//</editor-fold>
-
-
 
 		if (!org.gwaspi.gui.StartGWASpi.logOff) {
 			PrintStream printStream = new PrintStream(System.out) {
@@ -179,14 +184,12 @@ public class ProcessTab extends javax.swing.JPanel {
 				}
 			};
 			System.setOut(new PrintStream(sysOutPS, true));
-		} else {
 		}
-
 	}
 
 	public static void updateProcessOverview() {
 		if (org.gwaspi.gui.StartGWASpi.guiMode) {
-			final JTable tmpTable = new javax.swing.JTable() {
+			final JTable tmpTable = new JTable() {
 				@Override
 				public boolean isCellEditable(int row, int col) {
 					return false; //Renders column 0 uneditable.
@@ -198,7 +201,8 @@ public class ProcessTab extends javax.swing.JPanel {
 					//displayColumnCursor(me, tmpTable);
 				}
 			});
-			tmpTable.addMouseListener(new MouseListener() {
+			tmpTable.addMouseListener(new MouseAdapter() {
+				@Override
 				public void mouseClicked(MouseEvent e) {
 					int rowIndex = tmpTable.getSelectedRow();
 					int colIndex = tmpTable.getSelectedColumn();
@@ -208,26 +212,13 @@ public class ProcessTab extends javax.swing.JPanel {
 						} else {
 							org.gwaspi.threadbox.SwingDeleterItemList.abortSwingWorker(rowIndex - org.gwaspi.threadbox.SwingWorkerItemList.getSwingWorkerItemsALsize());
 						}
-
 					}
-				}
-
-				public void mousePressed(MouseEvent e) {
-				}
-
-				public void mouseReleased(MouseEvent e) {
-				}
-
-				public void mouseExited(MouseEvent e) {
-				}
-
-				public void mouseEntered(MouseEvent e) {
 				}
 			});
 			tmpTable.setDefaultRenderer(Object.class, new org.gwaspi.gui.utils.RowRendererProcessOverviewWithAbortIcon());
 			tmpTable.setSelectionMode(0);
 
-			tmpTable.setModel(new javax.swing.table.DefaultTableModel(
+			tmpTable.setModel(new DefaultTableModel(
 					buildProcessTableModel(),
 					new String[]{
 						Text.Processes.id,
@@ -245,9 +236,7 @@ public class ProcessTab extends javax.swing.JPanel {
 			scrl_Overview.setViewportView(tmpTable);
 			scrl_Overview.getHorizontalScrollBar().setValue(X);
 			scrl_Overview.getVerticalScrollBar().setValue(Y);
-
 		}
-
 	}
 
 	protected static Object[][] buildProcessTableModel() {
@@ -289,7 +278,6 @@ public class ProcessTab extends javax.swing.JPanel {
 
 			count++;
 		}
-
 
 		return spreadSheet;
 	}
@@ -333,25 +321,34 @@ public class ProcessTab extends javax.swing.JPanel {
 		startBusyLogo();
 	}
 
-	private void actionSaveAs() {
-		try {
-			File newFile = new File(org.gwaspi.gui.utils.Dialogs.selectDirectoryDialogue(JOptionPane.OK_OPTION).getPath() + "/process.log");
-			FileWriter writer = new FileWriter(newFile);
-			writer.write(txtA_ProcessLog.getText());
-			writer.flush();
-			writer.close();
+	private static class SaveAsAction extends AbstractAction {
 
-		} catch (IOException ex) {
-			Logger.getLogger(ProcessTab.class.getName()).log(Level.SEVERE, null, ex);
-		} catch (Exception ex) {
-			//Logger.getLogger(ChartDefaultDisplay.class.getName()).log(Level.SEVERE, null, ex);
+		SaveAsAction() {
+
+			putValue(NAME, Text.All.save);
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent evt) {
+			try {
+				File newFile = new File(org.gwaspi.gui.utils.Dialogs.selectDirectoryDialog(JOptionPane.OK_OPTION).getPath() + "/process.log");
+				FileWriter writer = new FileWriter(newFile);
+				writer.write(txtA_ProcessLog.getText());
+				writer.flush();
+				writer.close();
+
+			} catch (IOException ex) {
+				Logger.getLogger(ProcessTab.class.getName()).log(Level.SEVERE, null, ex);
+			} catch (Exception ex) {
+				//Logger.getLogger(ChartDefaultDisplay.class.getName()).log(Level.SEVERE, null, ex);
+			}
 		}
 	}
 
 	/**
 	 * Method to change cursor based on some arbitrary rule.
 	 */
-	protected void displayColumnCursor(MouseEvent me, JTable table) {
+	private void displayColumnCursor(MouseEvent me, JTable table) {
 		Point p = me.getPoint();
 		int column = table.columnAtPoint(p);
 		int row = table.rowAtPoint(p);

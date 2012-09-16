@@ -2,44 +2,53 @@ package org.gwaspi.gui;
 
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.utils.HelpURLs;
+import org.gwaspi.gui.utils.URLInDefaultBrowser;
 import java.awt.Container;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.BorderFactory;
+import javax.swing.ButtonGroup;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.JTextField;
 
 /**
  *
  * @author u56124
  */
-public class GWASinOneGoDialog extends javax.swing.JFrame {
+public class GWASinOneGoDialog extends JFrame {
 
 	// Variables declaration - do not modify
-	private static javax.swing.JButton btn_Go;
-	private static javax.swing.JButton btn_Help;
-	private static javax.swing.JCheckBox chkB_1;
-	private static javax.swing.JCheckBox chkB_2;
-	private static javax.swing.JCheckBox chkB_3;
-	private static javax.swing.JRadioButton rdioB_1;
-	private static javax.swing.JLabel lbl_1;
-	private static javax.swing.JRadioButton rdioB_2;
-	private static javax.swing.JTextField txtF_1;
-	private static javax.swing.JTextField txtF_2;
-	private static javax.swing.JTextField txtF_3;
-	private static javax.swing.ButtonGroup rdiogrp_HW;
-	private static javax.swing.JLabel lbl_Chromosome;
-	private static javax.swing.JComboBox cmb_Chromosome;
-	private static javax.swing.JLabel lbl_Strand;
-	private static javax.swing.JComboBox cmb_Strand;
-	private static javax.swing.JLabel lbl_GTCode;
-	private static javax.swing.JComboBox cmb_GTCode;
+	private static JButton btn_Go;
+	private static JButton btn_Help;
+	private static JCheckBox chkB_1;
+	private static JCheckBox chkB_2;
+	private static JCheckBox chkB_3;
+	private static JRadioButton rdioB_1;
+	private static JLabel lbl_1;
+	private static JRadioButton rdioB_2;
+	private static JTextField txtF_1;
+	private static JTextField txtF_2;
+	private static JTextField txtF_3;
+	private static ButtonGroup rdiogrp_HW;
+	private static JLabel lbl_Chromosome;
+	private static JComboBox cmb_Chromosome;
+	private static JLabel lbl_Strand;
+	private static JComboBox cmb_Strand;
+	private static JLabel lbl_GTCode;
+	private static JComboBox cmb_GTCode;
 	private static JDialog dialog;
 	private static JFrame myFrame = new JFrame("GridBagLayout Test");
 	private static String format = "";
@@ -84,38 +93,38 @@ public class GWASinOneGoDialog extends javax.swing.JFrame {
 		JPanel pnl_Questions = new JPanel(new GridBagLayout());
 		pnl_Questions.setBorder(BorderFactory.createTitledBorder("A few questions..."));
 
-		chkB_1 = new javax.swing.JCheckBox();
-		chkB_2 = new javax.swing.JCheckBox();
-		chkB_3 = new javax.swing.JCheckBox();
-		rdioB_1 = new javax.swing.JRadioButton();
-		lbl_1 = new javax.swing.JLabel();
-		lbl_Chromosome = new javax.swing.JLabel();
-		lbl_Strand = new javax.swing.JLabel();
-		lbl_GTCode = new javax.swing.JLabel();
-		rdioB_2 = new javax.swing.JRadioButton();
-		txtF_1 = new javax.swing.JTextField();
-		txtF_2 = new javax.swing.JTextField();
-		txtF_3 = new javax.swing.JTextField();
-		rdiogrp_HW = new javax.swing.ButtonGroup();
+		chkB_1 = new JCheckBox();
+		chkB_2 = new JCheckBox();
+		chkB_3 = new JCheckBox();
+		rdioB_1 = new JRadioButton();
+		lbl_1 = new JLabel();
+		lbl_Chromosome = new JLabel();
+		lbl_Strand = new JLabel();
+		lbl_GTCode = new JLabel();
+		rdioB_2 = new JRadioButton();
+		txtF_1 = new JTextField();
+		txtF_2 = new JTextField();
+		txtF_3 = new JTextField();
+		rdiogrp_HW = new ButtonGroup();
 
-		cmb_Chromosome = new javax.swing.JComboBox();
-		cmb_Strand = new javax.swing.JComboBox();
-		cmb_GTCode = new javax.swing.JComboBox();
+		cmb_Chromosome = new JComboBox();
+		cmb_Strand = new JComboBox();
+		cmb_GTCode = new JComboBox();
 
 
 		GridBagConstraints c = new GridBagConstraints();
 		int rowNb = 0;
 		//<editor-fold defaultstate="collapsed" desc="FORMAT DEPENDANT">
 		lbl_Chromosome.setText("  " + Text.Dialog.chromosome);
-		cmb_Chromosome.setModel(new javax.swing.DefaultComboBoxModel(org.gwaspi.constants.cNetCDF.Defaults.Chromosomes));
+		cmb_Chromosome.setModel(new DefaultComboBoxModel(org.gwaspi.constants.cNetCDF.Defaults.Chromosomes));
 		cmb_Chromosome.setSelectedIndex(0);
 
 		lbl_Strand.setText("  " + Text.Dialog.strand);
-		cmb_Strand.setModel(new javax.swing.DefaultComboBoxModel(org.gwaspi.constants.cNetCDF.Defaults.StrandType.values()));
+		cmb_Strand.setModel(new DefaultComboBoxModel(org.gwaspi.constants.cNetCDF.Defaults.StrandType.values()));
 		cmb_Strand.setSelectedIndex(6);
 
 		lbl_GTCode.setText("  " + Text.Dialog.genotypeEncoding);
-		cmb_GTCode.setModel(new javax.swing.DefaultComboBoxModel(org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding.values()));
+		cmb_GTCode.setModel(new DefaultComboBoxModel(org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding.values()));
 		cmb_GTCode.setSelectedIndex(0);
 
 		switch (org.gwaspi.constants.cImport.ImportFormat.compareTo(format)) {
@@ -212,19 +221,19 @@ public class GWASinOneGoDialog extends javax.swing.JFrame {
 
 		JPanel pnl_Footer = new JPanel(new GridBagLayout());
 
-		btn_Go = new javax.swing.JButton();
-		btn_Help = new javax.swing.JButton();
+		btn_Go = new JButton();
+		btn_Help = new JButton();
 
 		btn_Help.setText("Help");
-		btn_Help.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
+		btn_Help.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent evt) {
 				actionHelp(evt);
 			}
 		});
 
 		btn_Go.setText("Go");
-		btn_Go.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
+		btn_Go.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent evt) {
 				actionGo(evt);
 			}
 		});
@@ -244,7 +253,7 @@ public class GWASinOneGoDialog extends javax.swing.JFrame {
 
 	private static void actionHelp(ActionEvent evt) {
 		try {
-			org.gwaspi.gui.utils.URLInDefaultBrowser.browseHelpURL(HelpURLs.QryURL.fileFormats);
+			URLInDefaultBrowser.browseHelpURL(HelpURLs.QryURL.fileFormats);
 		} catch (IOException ex) {
 			Logger.getLogger(GWASinOneGoDialog.class.getName()).log(Level.SEVERE, null, ex);
 		}

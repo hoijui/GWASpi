@@ -1,6 +1,8 @@
 package org.gwaspi.global;
 
 import org.gwaspi.database.DerbyDBReshaper;
+import org.gwaspi.gui.StartGWASpi;
+import org.gwaspi.gui.utils.Dialogs;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -41,53 +43,53 @@ public class Config {
 
 		// CLI & THREAD PREFS
 		if (key.equals("DataDir")) {
-			org.gwaspi.gui.StartGWASpi.config_DataDir = (String) value;
+			StartGWASpi.config_DataDir = (String) value;
 		}
 		if (key.equals("GTdir")) {
-			org.gwaspi.gui.StartGWASpi.config_GTdir = (String) value;
+			StartGWASpi.config_GTdir = (String) value;
 		}
 		if (key.equals("ExportDir")) {
-			org.gwaspi.gui.StartGWASpi.config_ExportDir = (String) value;
+			StartGWASpi.config_ExportDir = (String) value;
 		}
 		if (key.equals("ReportsDir")) {
-			org.gwaspi.gui.StartGWASpi.config_ReportsDir = (String) value;
+			StartGWASpi.config_ReportsDir = (String) value;
 		}
 		if (key.equals("LogDir")) {
-			org.gwaspi.gui.StartGWASpi.config_LogDir = (String) value;
+			StartGWASpi.config_LogDir = (String) value;
 		}
 	}
 
 	public static String getConfigValue(String key, String defaultV) throws IOException {
 		String prop = "";
-		if (org.gwaspi.gui.StartGWASpi.guiMode) {
+		if (StartGWASpi.guiMode) {
 			//GUI MODE
 			prop = prefs.get(key, defaultV);
 		} else {
 			//CLI MODE
 			if (key.equals("DataDir")) {
-				if (org.gwaspi.gui.StartGWASpi.config_DataDir != null) {
-					prop = org.gwaspi.gui.StartGWASpi.config_DataDir;
+				if (StartGWASpi.config_DataDir != null) {
+					prop = StartGWASpi.config_DataDir;
 				} else {
 					prop = defaultV;
 				}
 			}
 			if (key.equals("GTdir")) {
-				if (org.gwaspi.gui.StartGWASpi.config_GTdir != null) {
-					prop = org.gwaspi.gui.StartGWASpi.config_GTdir;
+				if (StartGWASpi.config_GTdir != null) {
+					prop = StartGWASpi.config_GTdir;
 				} else {
 					prop = defaultV;
 				}
 			}
 			if (key.equals("ExportDir")) {
-				if (org.gwaspi.gui.StartGWASpi.config_ExportDir != null) {
-					prop = org.gwaspi.gui.StartGWASpi.config_ExportDir;
+				if (StartGWASpi.config_ExportDir != null) {
+					prop = StartGWASpi.config_ExportDir;
 				} else {
 					prop = defaultV;
 				}
 			}
 			if (key.equals("ReportsDir")) {
-				if (org.gwaspi.gui.StartGWASpi.config_ReportsDir != null) {
-					prop = org.gwaspi.gui.StartGWASpi.config_ReportsDir;
+				if (StartGWASpi.config_ReportsDir != null) {
+					prop = StartGWASpi.config_ReportsDir;
 				} else {
 					prop = defaultV;
 				}
@@ -123,8 +125,8 @@ public class Config {
 				prop = defaultV;
 			}
 			if (key.equals("LogDir")) {
-				if (org.gwaspi.gui.StartGWASpi.config_LogDir != null) {
-					prop = org.gwaspi.gui.StartGWASpi.config_LogDir;
+				if (StartGWASpi.config_LogDir != null) {
+					prop = StartGWASpi.config_LogDir;
 				} else {
 					prop = defaultV;
 				}
@@ -146,12 +148,12 @@ public class Config {
 			prefs.clear();
 		} else {
 			// CLI MODE
-			org.gwaspi.gui.StartGWASpi.config_DataDir = null;
-			org.gwaspi.gui.StartGWASpi.config_GTdir = null;
-			org.gwaspi.gui.StartGWASpi.config_ExportDir = null;
-			org.gwaspi.gui.StartGWASpi.config_ReportsDir = null;
-			org.gwaspi.gui.StartGWASpi.config_OfflineHelpDir = null;
-			org.gwaspi.gui.StartGWASpi.config_LogDir = null;
+			StartGWASpi.config_DataDir = null;
+			StartGWASpi.config_GTdir = null;
+			StartGWASpi.config_ExportDir = null;
+			StartGWASpi.config_ReportsDir = null;
+			StartGWASpi.config_OfflineHelpDir = null;
+			StartGWASpi.config_LogDir = null;
 		}
 	}
 
@@ -166,38 +168,35 @@ public class Config {
 			checkUpdates();
 
 			if (_startWithGUI) { // GUI MODE
-
 				if (dirToData.getPath().equals("")) {
-
-					JOptionPane.showMessageDialog(org.gwaspi.gui.StartGWASpi.mainGUIFrame, org.gwaspi.global.Text.App.initText);
-					File dataDir = org.gwaspi.gui.utils.Dialogs.selectDirectoryDialogue(JOptionPane.OK_OPTION);
+					JOptionPane.showMessageDialog(StartGWASpi.mainGUIFrame, Text.App.initText);
+					File dataDir = Dialogs.selectDirectoryDialog(JOptionPane.OK_OPTION);
 
 					if (dataDir != null) {
 						try {
 							if (dataDir != null) {
 								createDataStructure(dataDir);
-								JOptionPane.showMessageDialog(org.gwaspi.gui.StartGWASpi.mainGUIFrame, "Databases and working folders initialized successfully!");
+								JOptionPane.showMessageDialog(StartGWASpi.mainGUIFrame, "Databases and working folders initialized successfully!");
 							}
 							isInitiated = true;
 
 						} catch (Exception ex) {
-							JOptionPane.showMessageDialog(org.gwaspi.gui.StartGWASpi.mainGUIFrame, Text.App.warnUnableToInitForFirstTime);
+							JOptionPane.showMessageDialog(StartGWASpi.mainGUIFrame, Text.App.warnUnableToInitForFirstTime);
 							ex.printStackTrace();
 						}
 					}
-
 				} else {
 					File derbyCenter = new File(dirToData.getPath() + "/datacenter");
 					if (!derbyCenter.exists()) {
-						int decision = org.gwaspi.gui.utils.Dialogs.showOptionDialogue("Data folder unreachable", "The data folder is unreachable (deleted?).\nShould GWASpi recreate it or do you want to provide a new path?", "Recreate", "New Path", "Cancel");
+						int decision = Dialogs.showOptionDialogue("Data folder unreachable", "The data folder is unreachable (deleted?).\nShould GWASpi recreate it or do you want to provide a new path?", "Recreate", "New Path", "Cancel");
 						if (decision == JOptionPane.OK_OPTION) {
 							createDataStructure(dirToData);
-							JOptionPane.showMessageDialog(org.gwaspi.gui.StartGWASpi.mainGUIFrame, "Databases and working folders initialized successfully!");
+							JOptionPane.showMessageDialog(StartGWASpi.mainGUIFrame, "Databases and working folders initialized successfully!");
 						}
 						if (decision == JOptionPane.NO_OPTION) {
-							dirToData = org.gwaspi.gui.utils.Dialogs.selectDirectoryDialogue(JOptionPane.OK_OPTION);
+							dirToData = Dialogs.selectDirectoryDialog(JOptionPane.OK_OPTION);
 							createDataStructure(dirToData);
-							JOptionPane.showMessageDialog(org.gwaspi.gui.StartGWASpi.mainGUIFrame, "Databases and working folders initialized successfully!");
+							JOptionPane.showMessageDialog(StartGWASpi.mainGUIFrame, "Databases and working folders initialized successfully!");
 						}
 						if (decision == JOptionPane.CANCEL_OPTION) {
 							System.exit(0);
@@ -263,11 +262,11 @@ public class Config {
 			org.gwaspi.database.DatabaseGenerator.initDataCenter();
 		}
 
-		org.gwaspi.global.Utils.createFolder(dataDir.getPath(), "genotypes");
-		org.gwaspi.global.Utils.createFolder(dataDir.getPath(), "help");
-		org.gwaspi.global.Utils.createFolder(dataDir.getPath(), "export");
-		org.gwaspi.global.Utils.createFolder(dataDir.getPath(), "reports");
-		org.gwaspi.global.Utils.createFolder(dataDir.getPath() + "/reports", "log");
+		Utils.createFolder(dataDir.getPath(), "genotypes");
+		Utils.createFolder(dataDir.getPath(), "help");
+		Utils.createFolder(dataDir.getPath(), "export");
+		Utils.createFolder(dataDir.getPath(), "reports");
+		Utils.createFolder(dataDir.getPath() + "/reports", "log");
 
 		setConfigValue("GTdir", dataDir.getPath() + "/genotypes");
 		setConfigValue("ExportDir", dataDir.getPath() + "/export");
@@ -288,16 +287,16 @@ public class Config {
 		setConfigValue("CHART_SAMPLEQA_MISSING_THRESHOLD", "0.5");
 
 		URL localVersionPath = Config.class.getClass().getResource(org.gwaspi.constants.cGlobal.LOCAL_VERSION_XML);
-		Document localDom = org.gwaspi.global.XMLParser.parseXmlFile(localVersionPath.toURI().toString());
-		List<Element> localElements = org.gwaspi.global.XMLParser.parseDocument(localDom, "GWASpi");
-		setConfigValue("CURRENT_GWASPIDB_VERSION", org.gwaspi.global.XMLParser.getTextValue(localElements.get(0), "GWASpi_DB_Version"));
+		Document localDom = XMLParser.parseXmlFile(localVersionPath.toURI().toString());
+		List<Element> localElements = XMLParser.parseDocument(localDom, "GWASpi");
+		setConfigValue("CURRENT_GWASPIDB_VERSION", XMLParser.getTextValue(localElements.get(0), "GWASpi_DB_Version"));
 
 		org.gwaspi.database.StudyGenerator.createStudyLogFile(0);
 	}
 
 	protected static void updateConfigDataDirs(File dataDir) throws IOException, BackingStoreException, URISyntaxException {
 		String lastOpenedDir = getConfigValue("LAST_OPENED_DIR", org.gwaspi.constants.cGlobal.HOMEDIR);
-		String lastSelectedNode = getConfigValue("LAST_SELECTED_NODE", org.gwaspi.global.Text.App.appName);
+		String lastSelectedNode = getConfigValue("LAST_SELECTED_NODE", Text.App.appName);
 
 		String lastMnhttBack = getConfigValue("CHART_MANHATTAN_PLOT_BCKG", "200,200,200");
 		String lastMnhttBackAlt = getConfigValue("CHART_MANHATTAN_PLOT_BCKG_ALT", "230,230,230");
@@ -308,7 +307,7 @@ public class Config {
 		String lastQQCi = getConfigValue("CHART_QQ_PLOT_2SIGMA", "170,170,170");
 		String lastSampleQAHetzyg = getConfigValue("CHART_SAMPLEQA_HETZYG_THRESHOLD", "0.5");
 		String lastSampleQAMissingratio = getConfigValue("CHART_SAMPLEQA_MISSING_THRESHOLD", "0.5");
-		String lastVersionNb = org.gwaspi.global.Config.getConfigValue("CURRENT_GWASPIDB_VERSION", "2.0.1");
+		String lastVersionNb = Config.getConfigValue("CURRENT_GWASPIDB_VERSION", "2.0.1");
 
 		clearConfigFile();
 		setConfigValue("DataDir", dataDir.getPath());
@@ -335,54 +334,54 @@ public class Config {
 		setConfigValue("CHART_SAMPLEQA_MISSING_THRESHOLD", lastSampleQAMissingratio);
 
 		URL localVersionPath = Config.class.getClass().getResource(org.gwaspi.constants.cGlobal.LOCAL_VERSION_XML);
-		Document localDom = org.gwaspi.global.XMLParser.parseXmlFile(localVersionPath.toURI().toString());
-		List<Element> localElements = org.gwaspi.global.XMLParser.parseDocument(localDom, "GWASpi");
-		setConfigValue("CURRENT_GWASPIDB_VERSION", org.gwaspi.global.XMLParser.getTextValue(localElements.get(0), "GWASpi_DB_Version"));
+		Document localDom = XMLParser.parseXmlFile(localVersionPath.toURI().toString());
+		List<Element> localElements = XMLParser.parseDocument(localDom, "GWASpi");
+		setConfigValue("CURRENT_GWASPIDB_VERSION", XMLParser.getTextValue(localElements.get(0), "GWASpi_DB_Version"));
 
 		setDBSystemDir(derbyCenter.getPath());
 	}
 
 	public static void checkUpdates() throws IOException, ParseException, ParserConfigurationException, SAXException, URISyntaxException {
-		if (org.gwaspi.global.Utils.checkInternetConnection()) {
+		if (Utils.checkInternetConnection()) {
 			URL localVersionPath = Config.class.getClass().getResource(org.gwaspi.constants.cGlobal.LOCAL_VERSION_XML);
-			Document localDom = org.gwaspi.global.XMLParser.parseXmlFile(localVersionPath.toURI().toString());
+			Document localDom = XMLParser.parseXmlFile(localVersionPath.toURI().toString());
 
 			if (localDom != null) { //Found local version info
 				System.setProperty("java.net.useSystemProxies", "true");
 
-				List<Element> localElements = org.gwaspi.global.XMLParser.parseDocument(localDom, "GWASpi");
-				setConfigValue("CURRENT_GWASPIDB_VERSION", org.gwaspi.global.XMLParser.getTextValue(localElements.get(0), "GWASpi_DB_Version"));
+				List<Element> localElements = XMLParser.parseDocument(localDom, "GWASpi");
+				setConfigValue("CURRENT_GWASPIDB_VERSION", XMLParser.getTextValue(localElements.get(0), "GWASpi_DB_Version"));
 
 				URL remoteVersionPath = new URL(org.gwaspi.constants.cGlobal.REMOTE_VERSION_XML);
-				Document remoteDom = org.gwaspi.global.XMLParser.parseXmlFile(remoteVersionPath.toURI().toString());
+				Document remoteDom = XMLParser.parseXmlFile(remoteVersionPath.toURI().toString());
 
 				if (remoteDom != null) { // Found remote version info
 					// Retrieve data from XML files
 
-					Date localUpdateDate = org.gwaspi.global.XMLParser.getDateValue(localElements.get(0), "Date");
-					String localVersionNumber = org.gwaspi.global.XMLParser.getTextValue(localElements.get(0), "Number");
+					Date localUpdateDate = XMLParser.getDateValue(localElements.get(0), "Date");
+					String localVersionNumber = XMLParser.getTextValue(localElements.get(0), "Number");
 
-					List<Element> remoteElements = org.gwaspi.global.XMLParser.parseDocument(remoteDom, "GWASpi");
-					Date remoteUpdateDate = org.gwaspi.global.XMLParser.getDateValue(remoteElements.get(0), "Date");
-					String remoteVersionNumber = org.gwaspi.global.XMLParser.getTextValue(remoteElements.get(0), "Number");
-					String remoteCompatibilityNumber = org.gwaspi.global.XMLParser.getTextValue(remoteElements.get(0), "Compatibility");
+					List<Element> remoteElements = XMLParser.parseDocument(remoteDom, "GWASpi");
+					Date remoteUpdateDate = XMLParser.getDateValue(remoteElements.get(0), "Date");
+					String remoteVersionNumber = XMLParser.getTextValue(remoteElements.get(0), "Number");
+					String remoteCompatibilityNumber = XMLParser.getTextValue(remoteElements.get(0), "Compatibility");
 
-					StringBuilder message = new StringBuilder(org.gwaspi.global.Text.App.newVersionAvailable);
+					StringBuilder message = new StringBuilder(Text.App.newVersionAvailable);
 					message.append("\nLocal Version: ").append(localVersionNumber);
 					message.append("\nNewest Version: ").append(remoteVersionNumber);
-					message.append("\nUpdate Type: ").append(org.gwaspi.global.XMLParser.getTextValue(remoteElements.get(0), "Type"));
+					message.append("\nUpdate Type: ").append(XMLParser.getTextValue(remoteElements.get(0), "Type"));
 
 					// MAKE VERSION CHECKS
 					if (remoteCompatibilityNumber.compareTo(localVersionNumber) <= 0) { //Remote version is still compatible with local version
-						message.append("\n").append(org.gwaspi.global.Text.App.newVersionIsCompatible).append("\n").append(org.gwaspi.global.XMLParser.getTextValue(remoteElements.get(0), "ActionCompatible"));
+						message.append("\n").append(Text.App.newVersionIsCompatible).append("\n").append(XMLParser.getTextValue(remoteElements.get(0), "ActionCompatible"));
 					} else { // Remote version is NOT compatible with local version
-						message.append("\n").append(org.gwaspi.global.Text.App.newVersionIsUnCompatible).append("\n").append(org.gwaspi.global.XMLParser.getTextValue(remoteElements.get(0), "ActionUnCompatible"));
+						message.append("\n").append(Text.App.newVersionIsUnCompatible).append("\n").append(XMLParser.getTextValue(remoteElements.get(0), "ActionUnCompatible"));
 					}
-					message.append("\nChangelog: ").append(org.gwaspi.global.XMLParser.getTextValue(remoteElements.get(0), "Description"));
+					message.append("\nChangelog: ").append(XMLParser.getTextValue(remoteElements.get(0), "Description"));
 
 					if (localUpdateDate.compareTo(remoteUpdateDate) < 0) { //Remote version is more recent
-						if (org.gwaspi.gui.StartGWASpi.guiMode) {
-							org.gwaspi.gui.utils.Dialogs.showWarningDialogue(message.toString());
+						if (StartGWASpi.guiMode) {
+							Dialogs.showWarningDialogue(message.toString());
 						} else {
 							System.out.println(message.toString());
 						}
@@ -401,7 +400,7 @@ public class Config {
 	public static boolean downloadFile(String dwnlUrl, String savePath, String saveName) {
 		boolean result;
 		File saveFile = new File(savePath + "/" + saveName);
-		result = org.gwaspi.global.FileDownload.download(dwnlUrl, saveFile.getPath());
+		result = FileDownload.download(dwnlUrl, saveFile.getPath());
 		return result;
 	}
 }

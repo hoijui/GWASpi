@@ -1,11 +1,42 @@
 package org.gwaspi.gui;
 
 import org.gwaspi.global.Text;
+import org.gwaspi.gui.utils.Dialogs;
 import org.gwaspi.gui.utils.HelpURLs;
+import org.gwaspi.gui.utils.URLInDefaultBrowser;
+import java.awt.Component;
+import java.awt.Font;
+import java.awt.event.ActionEvent;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.SwingUtilities;
+import javax.swing.BorderFactory;
+import javax.swing.ButtonGroup;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.GroupLayout;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.LayoutStyle;
+import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
+import javax.swing.border.TitledBorder;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.tree.DefaultMutableTreeNode;
+import org.gwaspi.model.Matrix;
+import org.gwaspi.model.Operation;
 import org.gwaspi.netCDF.operations.GWASinOneGOParams;
 import org.gwaspi.threadbox.MultiOperations;
 
@@ -15,192 +46,210 @@ import org.gwaspi.threadbox.MultiOperations;
  * IBE, Institute of Evolutionary Biology (UPF-CSIC)
  * CEXS-UPF-PRBB
  */
-public class MatrixMarkerQAPanel extends javax.swing.JPanel {
+public class MatrixMarkerQAPanel extends JPanel {
 
 	// Variables declaration - do not modify
-	private org.gwaspi.model.Matrix parentMatrix;
-	private org.gwaspi.model.Operation currentOP;
-	private javax.swing.JButton btn_Back;
-	private javax.swing.JButton btn_DeleteOperation;
-	private javax.swing.JButton btn_Help;
-	private javax.swing.JPanel pnl_Footer;
-	private javax.swing.JPanel pnl_MatrixDesc;
-	private javax.swing.JScrollPane scrl_MatrixDesc;
-	private javax.swing.JTextArea txtA_Description;
+	private Matrix parentMatrix;
+	private final Operation currentOP;
+	private JButton btn_Back;
+	private JButton btn_DeleteOperation;
+	private JButton btn_Help;
+	private JPanel pnl_Footer;
+	private JPanel pnl_MatrixDesc;
+	private JScrollPane scrl_MatrixDesc;
+	private JTextArea txtA_Description;
 	public GWASinOneGOParams gwasParams = new GWASinOneGOParams();
 	// End of variables declaration
 
 	@SuppressWarnings("unchecked")
 	public MatrixMarkerQAPanel(int _matrixId, int _opId) throws IOException {
 
-		parentMatrix = new org.gwaspi.model.Matrix(_matrixId);
+		parentMatrix = new Matrix(_matrixId);
 		if (_opId != Integer.MIN_VALUE) {
-			currentOP = new org.gwaspi.model.Operation(_opId);
+			currentOP = new Operation(_opId);
+		} else {
+			currentOP = null;
 		}
 
+		pnl_MatrixDesc = new JPanel();
+		scrl_MatrixDesc = new JScrollPane();
+		txtA_Description = new JTextArea();
 
-		pnl_MatrixDesc = new javax.swing.JPanel();
-		scrl_MatrixDesc = new javax.swing.JScrollPane();
-		txtA_Description = new javax.swing.JTextArea();
+		btn_DeleteOperation = new JButton();
+		pnl_Footer = new JPanel();
+		btn_Back = new JButton();
+		btn_Help = new JButton();
 
-		btn_DeleteOperation = new javax.swing.JButton();
-		pnl_Footer = new javax.swing.JPanel();
-		btn_Back = new javax.swing.JButton();
-		btn_Help = new javax.swing.JButton();
-
-		setBorder(javax.swing.BorderFactory.createTitledBorder(null, Text.Operation.operation + ": " + currentOP.getOperationFriendlyName(), javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("FreeSans", 1, 18))); // NOI18N
-
+		setBorder(BorderFactory.createTitledBorder(null, Text.Operation.operation + ": " + currentOP.getOperationFriendlyName(), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("FreeSans", 1, 18))); // NOI18N
 
 		txtA_Description.setColumns(20);
 		txtA_Description.setRows(5);
 		txtA_Description.setEditable(false);
-		txtA_Description.setBorder(javax.swing.BorderFactory.createTitledBorder(null, Text.All.description, javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("DejaVu Sans", 1, 13))); // NOI18N
+		txtA_Description.setBorder(BorderFactory.createTitledBorder(null, Text.All.description, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("DejaVu Sans", 1, 13))); // NOI18N
 		if (_opId != Integer.MIN_VALUE) {
-			pnl_MatrixDesc.setBorder(javax.swing.BorderFactory.createTitledBorder(null, Text.Operation.operationId + ": " + currentOP.getOperationId(), javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("DejaVu Sans", 1, 13))); // NOI18N
+			pnl_MatrixDesc.setBorder(BorderFactory.createTitledBorder(null, Text.Operation.operationId + ": " + currentOP.getOperationId(), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("DejaVu Sans", 1, 13))); // NOI18N
 			txtA_Description.setText(currentOP.getDescription().toString());
 		} else {
-			pnl_MatrixDesc.setBorder(javax.swing.BorderFactory.createTitledBorder(null, Text.Matrix.matrix + ": " + parentMatrix.matrixMetadata.getMatrixFriendlyName(), javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("DejaVu Sans", 1, 13))); // NOI18N
+			pnl_MatrixDesc.setBorder(BorderFactory.createTitledBorder(null, Text.Matrix.matrix + ": " + parentMatrix.matrixMetadata.getMatrixFriendlyName(), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("DejaVu Sans", 1, 13))); // NOI18N
 			txtA_Description.setText(parentMatrix.matrixMetadata.getDescription().toString());
 		}
 		scrl_MatrixDesc.setViewportView(txtA_Description);
 
-		btn_DeleteOperation.setText(Text.Operation.deleteOperation);
-		btn_DeleteOperation.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				actionDeleteOperation(evt);
-			}
-		});
-
+		btn_DeleteOperation.setAction(new DeleteOperationAction(currentOP, this, parentMatrix));
 
 		//<editor-fold defaultstate="collapsed" desc="LAYOUT MATRIX DESC">
-		javax.swing.GroupLayout pnl_MatrixDescLayout = new javax.swing.GroupLayout(pnl_MatrixDesc);
+		GroupLayout pnl_MatrixDescLayout = new GroupLayout(pnl_MatrixDesc);
 		pnl_MatrixDesc.setLayout(pnl_MatrixDescLayout);
 		pnl_MatrixDescLayout.setHorizontalGroup(
-				pnl_MatrixDescLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+				pnl_MatrixDescLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
 				.addGroup(pnl_MatrixDescLayout.createSequentialGroup()
 				.addContainerGap()
-				.addGroup(pnl_MatrixDescLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-				.addComponent(scrl_MatrixDesc, javax.swing.GroupLayout.DEFAULT_SIZE, 810, Short.MAX_VALUE)
-				.addComponent(btn_DeleteOperation, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE))
+				.addGroup(pnl_MatrixDescLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+				.addComponent(scrl_MatrixDesc, GroupLayout.DEFAULT_SIZE, 810, Short.MAX_VALUE)
+				.addComponent(btn_DeleteOperation, GroupLayout.PREFERRED_SIZE, 160, GroupLayout.PREFERRED_SIZE))
 				.addContainerGap()));
 		pnl_MatrixDescLayout.setVerticalGroup(
-				pnl_MatrixDescLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+				pnl_MatrixDescLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
 				.addGroup(pnl_MatrixDescLayout.createSequentialGroup()
-				.addComponent(scrl_MatrixDesc, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-				.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+				.addComponent(scrl_MatrixDesc, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
 				.addComponent(btn_DeleteOperation)
-				.addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)));
+				.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)));
 
 		//</editor-fold>
 
-
-		btn_Back.setText("Back");
-		btn_Back.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				try {
-					actionGoBack(evt);
-				} catch (IOException ex) {
-					Logger.getLogger(MatrixTrafoPanel.class.getName()).log(Level.SEVERE, null, ex);
-				}
-			}
-		});
-		btn_Help.setText("Help");
-		btn_Help.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				actionHelp(evt);
-			}
-		});
-
+		Action backAction = new BackAction(parentMatrix);
+		backAction.setEnabled(currentOP != null);
+		btn_Back.setAction(backAction);
+		btn_Help.setAction(new HelpAction());
 
 		//<editor-fold defaultstate="collapsed" desc="LAYOUT FOOTER">
-		javax.swing.GroupLayout pnl_FooterLayout = new javax.swing.GroupLayout(pnl_Footer);
+		GroupLayout pnl_FooterLayout = new GroupLayout(pnl_Footer);
 		pnl_Footer.setLayout(pnl_FooterLayout);
 		pnl_FooterLayout.setHorizontalGroup(
-				pnl_FooterLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+				pnl_FooterLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
 				.addGroup(pnl_FooterLayout.createSequentialGroup()
 				.addContainerGap()
-				.addComponent(btn_Back, javax.swing.GroupLayout.PREFERRED_SIZE, 79, javax.swing.GroupLayout.PREFERRED_SIZE)
-				.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 664, Short.MAX_VALUE)
+				.addComponent(btn_Back, GroupLayout.PREFERRED_SIZE, 79, GroupLayout.PREFERRED_SIZE)
+				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, 664, Short.MAX_VALUE)
 				.addComponent(btn_Help)
 				.addContainerGap()));
 
-		pnl_FooterLayout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[]{btn_Back, btn_Help});
+		pnl_FooterLayout.linkSize(SwingConstants.HORIZONTAL, new Component[]{btn_Back, btn_Help});
 
 		pnl_FooterLayout.setVerticalGroup(
-				pnl_FooterLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-				.addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnl_FooterLayout.createSequentialGroup()
-				.addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-				.addGroup(pnl_FooterLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+				pnl_FooterLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+				.addGroup(GroupLayout.Alignment.TRAILING, pnl_FooterLayout.createSequentialGroup()
+				.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+				.addGroup(pnl_FooterLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
 				.addComponent(btn_Back)
 				.addComponent(btn_Help))));
 		//</editor-fold>
 
 		//<editor-fold defaultstate="collapsed" desc="LAYOUT">
-		javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
+		GroupLayout layout = new GroupLayout(this);
 		this.setLayout(layout);
 		layout.setHorizontalGroup(
-				layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+				layout.createParallelGroup(GroupLayout.Alignment.LEADING)
 				.addGroup(layout.createSequentialGroup()
 				.addContainerGap()
-				.addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-				.addComponent(pnl_Footer, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-				.addComponent(pnl_MatrixDesc, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))));
+				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+				.addComponent(pnl_Footer, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+				.addComponent(pnl_MatrixDesc, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))));
 		layout.setVerticalGroup(
-				layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+				layout.createParallelGroup(GroupLayout.Alignment.LEADING)
 				.addGroup(layout.createSequentialGroup()
-				.addComponent(pnl_MatrixDesc, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-				.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-				.addComponent(pnl_Footer, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-				.addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)));
+				.addComponent(pnl_MatrixDesc, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+				.addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
+				.addComponent(pnl_Footer, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+				.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)));
 		//</editor-fold>
 	}
 
-	private void actionDeleteOperation(java.awt.event.ActionEvent evt) {
-		try {
-			int opId = currentOP.getOperationId();
-			//TEST IF THE DELETED ITEM IS REQUIRED FOR A QUED WORKER
-			if (org.gwaspi.threadbox.SwingWorkerItemList.permitsDeletion(null, null, opId)) {
-				int option = JOptionPane.showConfirmDialog(this, Text.Operation.confirmDelete1);
-				if (option == JOptionPane.YES_OPTION) {
-					int deleteReportOption = JOptionPane.showConfirmDialog(this, Text.Reports.confirmDelete);
-					if (deleteReportOption != JOptionPane.CANCEL_OPTION) {
-						if (option == JOptionPane.YES_OPTION) {
-							boolean deleteReport = false;
-							if (deleteReportOption == JOptionPane.YES_OPTION) {
-								deleteReport = true;
+	private static class DeleteOperationAction extends AbstractAction {
+
+		private Operation currentOP;
+		private Component dialogParent;
+		private Matrix parentMatrix;
+
+		DeleteOperationAction(Operation currentOP, Component dialogParent, Matrix parentMatrix) {
+
+			this.currentOP = currentOP;
+			this.dialogParent = dialogParent;
+			this.parentMatrix = parentMatrix;
+			putValue(NAME, Text.Operation.deleteOperation);
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent evt) {
+			try {
+				int opId = currentOP.getOperationId();
+				// TEST IF THE DELETED ITEM IS REQUIRED FOR A QUED WORKER
+				if (org.gwaspi.threadbox.SwingWorkerItemList.permitsDeletion(null, null, opId)) {
+					int option = JOptionPane.showConfirmDialog(dialogParent, Text.Operation.confirmDelete1);
+					if (option == JOptionPane.YES_OPTION) {
+						int deleteReportOption = JOptionPane.showConfirmDialog(dialogParent, Text.Reports.confirmDelete);
+						if (deleteReportOption != JOptionPane.CANCEL_OPTION) {
+							if (option == JOptionPane.YES_OPTION) {
+								boolean deleteReport = false;
+								if (deleteReportOption == JOptionPane.YES_OPTION) {
+									deleteReport = true;
+								}
+								MultiOperations.deleteOperationsByOpId(parentMatrix.getStudyId(), parentMatrix.getMatrixId(), opId, deleteReport);
+
+								//netCDF.operations.OperationManager.deleteOperationAndChildren(parentMatrix.getStudyId(), opId, deleteReport);
 							}
-							MultiOperations.deleteOperationsByOpId(parentMatrix.getStudyId(), parentMatrix.getMatrixId(), opId, deleteReport);
-
-							//netCDF.operations.OperationManager.deleteOperationAndChildren(parentMatrix.getStudyId(), opId, deleteReport);
+							if (currentOP.getOperationId() == opId) {
+								GWASpiExplorerPanel.tree.setSelectionPath(GWASpiExplorerPanel.tree.getSelectionPath().getParentPath());
+							}
+							GWASpiExplorerPanel.updateTreePanel(true);
 						}
-						if (currentOP.getOperationId() == opId) {
-							org.gwaspi.gui.GWASpiExplorerPanel.tree.setSelectionPath(org.gwaspi.gui.GWASpiExplorerPanel.tree.getSelectionPath().getParentPath());
-						}
-						org.gwaspi.gui.GWASpiExplorerPanel.updateTreePanel(true);
 					}
+				} else {
+					Dialogs.showWarningDialogue(Text.Processes.cantDeleteRequiredItem);
 				}
-			} else {
-				org.gwaspi.gui.utils.Dialogs.showWarningDialogue(Text.Processes.cantDeleteRequiredItem);
+			} catch (IOException ex) {
+				Logger.getLogger(CurrentStudyPanel.class.getName()).log(Level.SEVERE, null, ex);
 			}
-		} catch (IOException ex) {
-			Logger.getLogger(CurrentStudyPanel.class.getName()).log(Level.SEVERE, null, ex);
-		}
-
-	}
-
-	private void actionGoBack(java.awt.event.ActionEvent evt) throws IOException {
-		if (currentOP != null) {
-			org.gwaspi.gui.GWASpiExplorerPanel.tree.setSelectionPath(org.gwaspi.gui.GWASpiExplorerPanel.tree.getSelectionPath().getParentPath());
-			org.gwaspi.gui.GWASpiExplorerPanel.pnl_Content = new CurrentMatrixPanel(parentMatrix.getMatrixId());
-			org.gwaspi.gui.GWASpiExplorerPanel.scrl_Content.setViewportView(org.gwaspi.gui.GWASpiExplorerPanel.pnl_Content);
 		}
 	}
 
-	private void actionHelp(java.awt.event.ActionEvent evt) {
-		try {
-			org.gwaspi.gui.utils.URLInDefaultBrowser.browseHelpURL(HelpURLs.QryURL.markerQAreport);
-		} catch (IOException ex) {
-			Logger.getLogger(CurrentMatrixPanel.class.getName()).log(Level.SEVERE, null, ex);
+	private static class BackAction extends AbstractAction {
+
+		private Matrix parentMatrix;
+
+		BackAction(Matrix parentMatrix) {
+
+			this.parentMatrix = parentMatrix;
+			putValue(NAME, Text.All.Back);
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent evt) {
+			try {
+				GWASpiExplorerPanel.tree.setSelectionPath(GWASpiExplorerPanel.tree.getSelectionPath().getParentPath());
+				GWASpiExplorerPanel.pnl_Content = new CurrentMatrixPanel(parentMatrix.getMatrixId());
+				GWASpiExplorerPanel.scrl_Content.setViewportView(GWASpiExplorerPanel.pnl_Content);
+			} catch (IOException ex) {
+				Logger.getLogger(BackAction.class.getName()).log(Level.SEVERE, null, ex);
+			}
+		}
+	}
+
+	private static class HelpAction extends AbstractAction {
+
+		HelpAction() {
+
+			putValue(NAME, Text.Help.help);
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent evt) {
+			try {
+				URLInDefaultBrowser.browseHelpURL(HelpURLs.QryURL.markerQAreport);
+			} catch (IOException ex) {
+				Logger.getLogger(HelpAction.class.getName()).log(Level.SEVERE, null, ex);
+			}
 		}
 	}
 }

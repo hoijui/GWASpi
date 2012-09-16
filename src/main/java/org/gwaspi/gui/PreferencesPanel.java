@@ -1,16 +1,33 @@
 package org.gwaspi.gui;
 
 import org.gwaspi.global.Config;
+import org.gwaspi.global.Text;
+import org.gwaspi.gui.utils.Dialogs;
+import org.gwaspi.gui.utils.RowRendererDefault;
+import java.awt.Component;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
-import javax.swing.JOptionPane;
-import javax.swing.table.DefaultTableModel;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.table.TableModel;
+import javax.swing.BorderFactory;
+import javax.swing.GroupLayout;
+import javax.swing.JButton;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.LayoutStyle;
+import javax.swing.SwingConstants;
+import javax.swing.border.TitledBorder;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -18,18 +35,18 @@ import javax.swing.table.TableModel;
  * IBE, Institute of Evolutionary Biology (UPF-CSIC)
  * CEXS-UPF-PRBB
  */
-public class PreferencesPanel extends javax.swing.JPanel {
+public class PreferencesPanel extends JPanel {
 
 	protected static Preferences prefs = Preferences.userNodeForPackage(Config.class.getClass());
 	// Variables declaration - do not modify
-	private javax.swing.JButton btn_Back;
-	private javax.swing.JButton btn_Reset;
-	private javax.swing.JButton btn_Save;
-	private javax.swing.JButton btn_ChangeDataDir;
-	private javax.swing.JPanel pnl_Footer;
-	private javax.swing.JScrollPane scrl_PreferencesTable;
-	private javax.swing.JTable tbl_PreferencesTable;
-	private String[][] prefBackup;
+	private JButton btn_Back;
+	private JButton btn_Reset;
+	private JButton btn_Save;
+	private JButton btn_ChangeDataDir;
+	private JPanel pnl_Footer;
+	private JScrollPane scrl_PreferencesTable;
+	private JTable tbl_PreferencesTable;
+	private List<String[]> prefBackup;
 	// End of variables declaration
 
 	/**
@@ -37,7 +54,7 @@ public class PreferencesPanel extends javax.swing.JPanel {
 	 */
 	public PreferencesPanel() {
 		initGui();
-		loadPrefs();
+		ResetPreferencesAction.loadPrefs(prefBackup, tbl_PreferencesTable);
 	}
 
 	/**
@@ -48,8 +65,8 @@ public class PreferencesPanel extends javax.swing.JPanel {
 	@SuppressWarnings("unchecked")
 	private void initGui() {
 
-		scrl_PreferencesTable = new javax.swing.JScrollPane();
-		tbl_PreferencesTable = new javax.swing.JTable() {
+		scrl_PreferencesTable = new JScrollPane();
+		tbl_PreferencesTable = new JTable() {
 			@Override
 			public boolean isCellEditable(int row, int col) {
 				if (col == 0) {
@@ -58,23 +75,23 @@ public class PreferencesPanel extends javax.swing.JPanel {
 				return true;
 			}
 		};
-		tbl_PreferencesTable.setDefaultRenderer(Object.class, new org.gwaspi.gui.utils.RowRendererDefault());
-		pnl_Footer = new javax.swing.JPanel();
-		btn_Back = new javax.swing.JButton();
-		btn_Save = new javax.swing.JButton();
-		btn_Reset = new javax.swing.JButton();
-		btn_ChangeDataDir = new javax.swing.JButton();
+		tbl_PreferencesTable.setDefaultRenderer(Object.class, new RowRendererDefault());
+		pnl_Footer = new JPanel();
+		btn_Back = new JButton();
+		btn_Save = new JButton();
+		btn_Reset = new JButton();
+		btn_ChangeDataDir = new JButton();
 
-		setBorder(javax.swing.BorderFactory.createTitledBorder(null, org.gwaspi.global.Text.App.propertiesPaths, javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("FreeSans", 0, 24))); // NOI18N
+		setBorder(BorderFactory.createTitledBorder(null, Text.App.propertiesPaths, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("FreeSans", 0, 24))); // NOI18N
 
-		tbl_PreferencesTable.setModel(new javax.swing.table.DefaultTableModel(
+		tbl_PreferencesTable.setModel(new DefaultTableModel(
 				new Object[][]{
 					{null, null},
 					{null, null},
 					{null, null},
 					{null, null}
 				},
-				new String[]{global.Text.App.propertyName, org.gwaspi.global.Text.App.propertyValue}) {
+				new String[]{Text.App.propertyName, Text.App.propertyValue}) {
 			boolean[] canEdit = new boolean[]{
 				false, true
 			};
@@ -86,288 +103,317 @@ public class PreferencesPanel extends javax.swing.JPanel {
 		});
 		scrl_PreferencesTable.setViewportView(tbl_PreferencesTable);
 
-		btn_Back.setText(org.gwaspi.global.Text.All.Back);
-		btn_Back.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				btn_BackActionPerformed(evt);
-			}
-		});
+		btn_Back.setAction(new BackAction());
 
+		Action resetPreferencesAction = new ResetPreferencesAction(prefBackup, tbl_PreferencesTable);
+		btn_Reset.setAction(resetPreferencesAction);
 
-		btn_Reset.setText(org.gwaspi.global.Text.All.reset);
-		btn_Reset.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				actionResetPreferences();
-			}
-		});
+		btn_Save.setAction(new SavePreferencesAction(tbl_PreferencesTable, resetPreferencesAction));
 
-
-		btn_Save.setText(org.gwaspi.global.Text.All.save);
-		btn_Save.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				actionSavePreferences(evt);
-			}
-		});
-
-		btn_ChangeDataDir.setText(org.gwaspi.global.Text.App.changeDataDir);
-		btn_ChangeDataDir.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				actionChangeDataDir();
-			}
-		});
-
+		btn_ChangeDataDir.setAction(new ChangeDataDirAction(tbl_PreferencesTable, resetPreferencesAction));
 
 		//<editor-fold defaultstate="collapsed" desc="LAYOUT FOOTER">
-		javax.swing.GroupLayout pnl_FooterLayout = new javax.swing.GroupLayout(pnl_Footer);
+		GroupLayout pnl_FooterLayout = new GroupLayout(pnl_Footer);
 		pnl_Footer.setLayout(pnl_FooterLayout);
 		pnl_FooterLayout.setHorizontalGroup(
-				pnl_FooterLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-				.addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnl_FooterLayout.createSequentialGroup()
+				pnl_FooterLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+				.addGroup(GroupLayout.Alignment.TRAILING, pnl_FooterLayout.createSequentialGroup()
 				.addContainerGap()
 				.addComponent(btn_Back)
-				.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 403, Short.MAX_VALUE)
-				.addGroup(pnl_FooterLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-				.addComponent(btn_ChangeDataDir, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-				.addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnl_FooterLayout.createSequentialGroup()
-				.addComponent(btn_Reset, javax.swing.GroupLayout.PREFERRED_SIZE, 126, javax.swing.GroupLayout.PREFERRED_SIZE)
+				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, 403, Short.MAX_VALUE)
+				.addGroup(pnl_FooterLayout.createParallelGroup(GroupLayout.Alignment.LEADING, false)
+				.addComponent(btn_ChangeDataDir, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+				.addGroup(GroupLayout.Alignment.TRAILING, pnl_FooterLayout.createSequentialGroup()
+				.addComponent(btn_Reset, GroupLayout.PREFERRED_SIZE, 126, GroupLayout.PREFERRED_SIZE)
 				.addGap(18, 18, 18)
-				.addComponent(btn_Save, javax.swing.GroupLayout.PREFERRED_SIZE, 134, javax.swing.GroupLayout.PREFERRED_SIZE)))
+				.addComponent(btn_Save, GroupLayout.PREFERRED_SIZE, 134, GroupLayout.PREFERRED_SIZE)))
 				.addContainerGap()));
 
 
-		pnl_FooterLayout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[]{btn_Back, btn_Reset, btn_Save});
+		pnl_FooterLayout.linkSize(SwingConstants.HORIZONTAL, new Component[]{btn_Back, btn_Reset, btn_Save});
 
 		pnl_FooterLayout.setVerticalGroup(
-				pnl_FooterLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-				.addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnl_FooterLayout.createSequentialGroup()
+				pnl_FooterLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+				.addGroup(GroupLayout.Alignment.TRAILING, pnl_FooterLayout.createSequentialGroup()
 				.addContainerGap()
-				.addComponent(btn_ChangeDataDir, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
-				.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 18, Short.MAX_VALUE)
-				.addGroup(pnl_FooterLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+				.addComponent(btn_ChangeDataDir, GroupLayout.PREFERRED_SIZE, 31, GroupLayout.PREFERRED_SIZE)
+				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, 18, Short.MAX_VALUE)
+				.addGroup(pnl_FooterLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
 				.addComponent(btn_Save)
 				.addComponent(btn_Reset)
 				.addComponent(btn_Back))));
 
 
-		pnl_FooterLayout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[]{btn_Back, btn_ChangeDataDir, btn_Reset, btn_Save});
+		pnl_FooterLayout.linkSize(SwingConstants.VERTICAL, new Component[]{btn_Back, btn_ChangeDataDir, btn_Reset, btn_Save});
 		//</editor-fold>
 
-
-		javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
+		GroupLayout layout = new GroupLayout(this);
 		this.setLayout(layout);
 		layout.setHorizontalGroup(
-				layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+				layout.createParallelGroup(GroupLayout.Alignment.LEADING)
 				.addGroup(layout.createSequentialGroup()
 				.addContainerGap()
-				.addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-				.addComponent(pnl_Footer, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-				.addComponent(scrl_PreferencesTable, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 744, Short.MAX_VALUE))
+				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.TRAILING)
+				.addComponent(pnl_Footer, GroupLayout.Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+				.addComponent(scrl_PreferencesTable, GroupLayout.Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 744, Short.MAX_VALUE))
 				.addContainerGap()));
 		layout.setVerticalGroup(
-				layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+				layout.createParallelGroup(GroupLayout.Alignment.LEADING)
 				.addGroup(layout.createSequentialGroup()
 				.addContainerGap()
-				.addComponent(scrl_PreferencesTable, javax.swing.GroupLayout.DEFAULT_SIZE, 395, Short.MAX_VALUE)
-				.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-				.addComponent(pnl_Footer, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+				.addComponent(scrl_PreferencesTable, GroupLayout.DEFAULT_SIZE, 395, Short.MAX_VALUE)
+				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+				.addComponent(pnl_Footer, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 				.addGap(99, 99, 99)));
 	}
 
-	private void loadPrefs() {
-		try {
-			String[] preferences = prefs.keys();
-			prefBackup = new String[preferences.length][2];
+	private static class SavePreferencesAction extends AbstractAction {
 
-			Object[][] tableMatrix = new Object[preferences.length][2];
-			for (int i = 0; i < preferences.length; i++) {
-				tableMatrix[i][0] = preferences[i];
-				tableMatrix[i][1] = prefs.get(preferences[i], "");
+		private JTable preferencesTable;
+		private Action resetPreferencesAction;
 
-				prefBackup[i][0] = tableMatrix[i][0].toString();
-				prefBackup[i][1] = tableMatrix[i][1].toString();
-			}
-			String[] columns = new String[]{global.Text.App.propertyName, org.gwaspi.global.Text.App.propertyValue};
-			TableModel model = new DefaultTableModel(tableMatrix, columns);
-			tbl_PreferencesTable.setModel(model);
-		} catch (BackingStoreException ex) {
-			Logger.getLogger(PreferencesPanel.class.getName()).log(Level.SEVERE, null, ex);
+		SavePreferencesAction(JTable preferencesTable, Action resetPreferencesAction) {
+
+			this.preferencesTable = preferencesTable;
+			this.resetPreferencesAction = resetPreferencesAction;
+			putValue(NAME, Text.All.save);
 		}
 
-	}
+		@Override
+		public void actionPerformed(ActionEvent evt) {
+			boolean proceed = true;
+			preferencesTable.editCellAt(0, 0); //commit edited changes by chnaging the focus of table
 
-	private void actionSavePreferences(ActionEvent evt) {
-		boolean proceed = true;
-		tbl_PreferencesTable.editCellAt(0, 0); //commit edited changes by chnaging the focus of table
+			//<editor-fold defaultstate="collapsed" desc="VALIDATION">
+			for (int i = 0; i < preferencesTable.getRowCount(); i++) {
+				if (preferencesTable.getValueAt(i, 0).toString().toLowerCase().contains("dir")) {
+					File path = new File(preferencesTable.getValueAt(i, 1).toString());
+					if (!path.exists()) {
+						proceed = false;
+						Dialogs.showInfoDialogue("Warning! Path provided does not exists!\nThis may cause " + Text.App.appName + " to fail!\nPlease fix broken path: " + preferencesTable.getValueAt(i, 1).toString());
+						resetPreferencesAction.actionPerformed(null);
+					}
+				} else if (preferencesTable.getValueAt(i, 0).toString().equals("CHART_MANHATTAN_PLOT_BCKG") || //Check if it's a color setting
+						preferencesTable.getValueAt(i, 0).toString().equals("CHART_MANHATTAN_PLOT_BCKG_ALT")
+						|| preferencesTable.getValueAt(i, 0).toString().equals("CHART_MANHATTAN_PLOT_DOT")
+						|| preferencesTable.getValueAt(i, 0).toString().equals("CHART_QQ_PLOT_BCKG")
+						|| preferencesTable.getValueAt(i, 0).toString().equals("CHART_QQ_PLOT_DOT")
+						|| preferencesTable.getValueAt(i, 0).toString().equals("CHART_QQ_PLOT_2SIGMA")
+						|| preferencesTable.getValueAt(i, 0).toString().equals("CHART_SAMPLEQA_HETZYG_THRESHOLD")
+						|| preferencesTable.getValueAt(i, 0).toString().equals("CHART_SAMPLEQA_MISSING_THRESHOLD")) {
 
-		//<editor-fold defaultstate="collapsed" desc="VALIDATION">
-		for (int i = 0; i < tbl_PreferencesTable.getRowCount(); i++) {
-			if (tbl_PreferencesTable.getValueAt(i, 0).toString().toLowerCase().contains("dir")) {
-				File path = new File(tbl_PreferencesTable.getValueAt(i, 1).toString());
-				if (!path.exists()) {
-					proceed = false;
-					org.gwaspi.gui.utils.Dialogs.showInfoDialogue("Warning! Path provided does not exists!\nThis may cause " + org.gwaspi.global.Text.App.appName + " to fail!\nPlease fix broken path: " + tbl_PreferencesTable.getValueAt(i, 1).toString());
-					actionResetPreferences();
-				}
-			} else if (tbl_PreferencesTable.getValueAt(i, 0).toString().equals("CHART_MANHATTAN_PLOT_BCKG") || //Check if it's a color setting
-					tbl_PreferencesTable.getValueAt(i, 0).toString().equals("CHART_MANHATTAN_PLOT_BCKG_ALT")
-					|| tbl_PreferencesTable.getValueAt(i, 0).toString().equals("CHART_MANHATTAN_PLOT_DOT")
-					|| tbl_PreferencesTable.getValueAt(i, 0).toString().equals("CHART_QQ_PLOT_BCKG")
-					|| tbl_PreferencesTable.getValueAt(i, 0).toString().equals("CHART_QQ_PLOT_DOT")
-					|| tbl_PreferencesTable.getValueAt(i, 0).toString().equals("CHART_QQ_PLOT_2SIGMA")
-					|| tbl_PreferencesTable.getValueAt(i, 0).toString().equals("CHART_SAMPLEQA_HETZYG_THRESHOLD")
-					|| tbl_PreferencesTable.getValueAt(i, 0).toString().equals("CHART_SAMPLEQA_MISSING_THRESHOLD")) {
-
-				String[] tmp = tbl_PreferencesTable.getValueAt(i, 1).toString().split(",");
-				if (tmp.length == 3) {
-					try {
-						// XXX This code does nothing... logic error?
-						int redInt = Integer.parseInt(tmp[0]);
-						if (redInt < 0 || redInt > 255) {
-							redInt = redInt % 255;
+					String[] tmp = preferencesTable.getValueAt(i, 1).toString().split(",");
+					if (tmp.length == 3) {
+						try {
+							// XXX This code does nothing... logic error?
+							int redInt = Integer.parseInt(tmp[0]);
+							if (redInt < 0 || redInt > 255) {
+								redInt = redInt % 255;
+							}
+							int greenInt = Integer.parseInt(tmp[1]);
+							if (greenInt < 0 || greenInt > 255) {
+								greenInt = greenInt % 255;
+							}
+							int blueInt = Integer.parseInt(tmp[2]);
+							if (blueInt < 0 || blueInt > 255) {
+								blueInt = blueInt % 255;
+							}
+						} catch (Exception e) {
+							Dialogs.showWarningDialogue(Text.App.warnPropertyRGB + "\nField: " + preferencesTable.getValueAt(i, 0).toString());
+							proceed = false;
 						}
-						int greenInt = Integer.parseInt(tmp[1]);
-						if (greenInt < 0 || greenInt > 255) {
-							greenInt = greenInt % 255;
-						}
-						int blueInt = Integer.parseInt(tmp[2]);
-						if (blueInt < 0 || blueInt > 255) {
-							blueInt = blueInt % 255;
-						}
-					} catch (Exception e) {
-						org.gwaspi.gui.utils.Dialogs.showWarningDialogue(org.gwaspi.global.Text.App.warnPropertyRGB + "\nField: " + tbl_PreferencesTable.getValueAt(i, 0).toString());
+					} else {
+						Dialogs.showWarningDialogue(Text.App.warnPropertyRGB + "\nField: " + preferencesTable.getValueAt(i, 0).toString());
 						proceed = false;
 					}
-				} else {
-					org.gwaspi.gui.utils.Dialogs.showWarningDialogue(org.gwaspi.global.Text.App.warnPropertyRGB + "\nField: " + tbl_PreferencesTable.getValueAt(i, 0).toString());
-					proceed = false;
-				}
-			} else if (tbl_PreferencesTable.getValueAt(i, 0).toString().equals("CHART_MANHATTAN_PLOT_THRESHOLD")) {    //Check if it's a number
-				try {
-					double tmpNb = Double.parseDouble(tbl_PreferencesTable.getValueAt(i, 1).toString());
-				} catch (Exception e) {
-					org.gwaspi.gui.utils.Dialogs.showWarningDialogue(org.gwaspi.global.Text.App.warnMustBeNumeric + "\nField: " + tbl_PreferencesTable.getValueAt(i, 0).toString());
-					proceed = false;
-				}
-			} else if (tbl_PreferencesTable.getValueAt(i, 0).toString().equals("CHART_SAMPLEQA_HETZYG_THRESHOLD")) {    //Check if it's a number
-				try {
-					double tmpNb = Double.parseDouble(tbl_PreferencesTable.getValueAt(i, 1).toString());
-				} catch (Exception e) {
-					org.gwaspi.gui.utils.Dialogs.showWarningDialogue(org.gwaspi.global.Text.App.warnMustBeNumeric + "\nField: " + tbl_PreferencesTable.getValueAt(i, 0).toString());
-					proceed = false;
-				}
-			} else if (tbl_PreferencesTable.getValueAt(i, 0).toString().equals("CHART_SAMPLEQA_MISSING_THRESHOLD")) {    //Check if it's a number
-				try {
-					double tmpNb = Double.parseDouble(tbl_PreferencesTable.getValueAt(i, 1).toString());
-				} catch (Exception e) {
-					org.gwaspi.gui.utils.Dialogs.showWarningDialogue(org.gwaspi.global.Text.App.warnMustBeNumeric + "\nField: " + tbl_PreferencesTable.getValueAt(i, 0).toString());
-					proceed = false;
+				} else if (preferencesTable.getValueAt(i, 0).toString().equals("CHART_MANHATTAN_PLOT_THRESHOLD")) {    //Check if it's a number
+					try {
+						double tmpNb = Double.parseDouble(preferencesTable.getValueAt(i, 1).toString());
+					} catch (Exception e) {
+						Dialogs.showWarningDialogue(Text.App.warnMustBeNumeric + "\nField: " + preferencesTable.getValueAt(i, 0).toString());
+						proceed = false;
+					}
+				} else if (preferencesTable.getValueAt(i, 0).toString().equals("CHART_SAMPLEQA_HETZYG_THRESHOLD")) {    //Check if it's a number
+					try {
+						double tmpNb = Double.parseDouble(preferencesTable.getValueAt(i, 1).toString());
+					} catch (Exception e) {
+						Dialogs.showWarningDialogue(Text.App.warnMustBeNumeric + "\nField: " + preferencesTable.getValueAt(i, 0).toString());
+						proceed = false;
+					}
+				} else if (preferencesTable.getValueAt(i, 0).toString().equals("CHART_SAMPLEQA_MISSING_THRESHOLD")) {    //Check if it's a number
+					try {
+						double tmpNb = Double.parseDouble(preferencesTable.getValueAt(i, 1).toString());
+					} catch (Exception e) {
+						Dialogs.showWarningDialogue(Text.App.warnMustBeNumeric + "\nField: " + preferencesTable.getValueAt(i, 0).toString());
+						proceed = false;
+					}
 				}
 			}
-		}
-		//</editor-fold>
-		if (proceed) {
-			Integer decision = org.gwaspi.gui.utils.Dialogs.showConfirmDialogue("Do you really want to change the current preference values?\nDoing so may cause breakage if the data expected (databases, genotypes...) is not available at the new paths.");
-			if (decision == JOptionPane.YES_OPTION) {
-				if (proceed) {
-					for (int i = 0; i < tbl_PreferencesTable.getRowCount(); i++) {
-						try {
-							org.gwaspi.global.Config.setConfigValue(tbl_PreferencesTable.getValueAt(i, 0).toString(), tbl_PreferencesTable.getValueAt(i, 1).toString());
-						} catch (IOException ex) {
-							Logger.getLogger(PreferencesPanel.class.getName()).log(Level.SEVERE, null, ex);
+			//</editor-fold>
+			if (proceed) {
+				Integer decision = Dialogs.showConfirmDialogue("Do you really want to change the current preference values?\nDoing so may cause breakage if the data expected (databases, genotypes...) is not available at the new paths.");
+				if (decision == JOptionPane.YES_OPTION) {
+					if (proceed) {
+						for (int i = 0; i < preferencesTable.getRowCount(); i++) {
+							try {
+								Config.setConfigValue(preferencesTable.getValueAt(i, 0).toString(), preferencesTable.getValueAt(i, 1).toString());
+							} catch (IOException ex) {
+								Logger.getLogger(PreferencesPanel.class.getName()).log(Level.SEVERE, null, ex);
+							}
 						}
+						Dialogs.showInfoDialogue("Preferences & Paths Saved");
 					}
-					org.gwaspi.gui.utils.Dialogs.showInfoDialogue("Preferences & Paths Saved");
 				}
 			}
 		}
 	}
 
-	private void actionResetPreferences() {
-		boolean result = true;
+	private static class ResetPreferencesAction extends AbstractAction {
 
-		for (int i = 0; i < prefBackup.length; i++) {
+		private List<String[]> prefBackup;
+		private JTable preferencesTable;
+
+		ResetPreferencesAction(List<String[]> prefBackup, JTable preferencesTable) {
+
+			this.prefBackup = prefBackup;
+			this.preferencesTable = preferencesTable;
+			putValue(NAME, Text.All.reset);
+		}
+
+		public static void loadPrefs(List<String[]> prefBackup, JTable preferencesTable) {
 			try {
-				org.gwaspi.global.Config.setConfigValue(prefBackup[i][0], prefBackup[i][1]);
-			} catch (IOException ex) {
+				String[] preferences = prefs.keys();
+				prefBackup.clear();
+
+				Object[][] tableMatrix = new Object[preferences.length][2];
+				for (int i = 0; i < preferences.length; i++) {
+					tableMatrix[i][0] = preferences[i];
+					tableMatrix[i][1] = prefs.get(preferences[i], "");
+
+					String[] pref = new String[2];
+					pref[0] = tableMatrix[i][0].toString();
+					pref[1] = tableMatrix[i][1].toString();
+					prefBackup.add(pref);
+				}
+				String[] columns = new String[]{Text.App.propertyName, Text.App.propertyValue};
+				TableModel model = new DefaultTableModel(tableMatrix, columns);
+				preferencesTable.setModel(model);
+			} catch (BackingStoreException ex) {
 				Logger.getLogger(PreferencesPanel.class.getName()).log(Level.SEVERE, null, ex);
 			}
 		}
 
-		if (result) {
-			loadPrefs();
-			org.gwaspi.gui.utils.Dialogs.showInfoDialogue("Preferences & Paths reset to previous values.");
-		}
+		@Override
+		public void actionPerformed(ActionEvent evt) {
+			boolean result = true;
 
-	}
-
-	private void actionChangeDataDir() {
-		int decision = org.gwaspi.gui.utils.Dialogs.showConfirmDialogue(org.gwaspi.global.Text.App.confirmCopyDataDir);
-		if (decision == JOptionPane.YES_OPTION) {
-
-			TableModel tm = tbl_PreferencesTable.getModel();
-			String currentDataDirPath = null;
-			for (int i = 0; i < tm.getRowCount(); i++) {
-				String key = tm.getValueAt(i, 0).toString();
-				if (key.equals("DataDir")) {
-					currentDataDirPath = tm.getValueAt(i, 1).toString();
-				}
-			}
-
-			if (currentDataDirPath != null) {
-				File newDataDir = org.gwaspi.gui.utils.Dialogs.selectDirectoryDialogue(JOptionPane.OK_OPTION);
-
+			for (String[] pref : prefBackup) {
 				try {
-					File origFile = new File(currentDataDirPath + "/datacenter");
-					File newFile = new File(newDataDir.getPath() + "/datacenter");
-					if (origFile.exists()) {
-						org.gwaspi.global.Utils.copyFileRecursive(origFile, newFile);
+					Config.setConfigValue(pref[0], pref[1]);
+				} catch (IOException ex) {
+					result = false;
+					Logger.getLogger(PreferencesPanel.class.getName()).log(Level.SEVERE, null, ex);
+				}
+			}
+
+			if (result) {
+				loadPrefs(prefBackup, preferencesTable);
+				Dialogs.showInfoDialogue("Preferences & Paths reset to previous values.");
+			}
+		}
+	}
+
+	private static class ChangeDataDirAction extends AbstractAction {
+
+		private JTable preferencesTable;
+		private Action resetPreferencesAction;
+
+		ChangeDataDirAction(JTable preferencesTable, Action resetPreferencesAction) {
+
+			this.preferencesTable = preferencesTable;
+			this.resetPreferencesAction = resetPreferencesAction;
+			putValue(NAME, Text.App.changeDataDir);
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent evt) {
+			int decision = Dialogs.showConfirmDialogue(Text.App.confirmCopyDataDir);
+			if (decision == JOptionPane.YES_OPTION) {
+
+				TableModel tm = preferencesTable.getModel();
+				String currentDataDirPath = null;
+				for (int i = 0; i < tm.getRowCount(); i++) {
+					String key = tm.getValueAt(i, 0).toString();
+					if (key.equals("DataDir")) {
+						currentDataDirPath = tm.getValueAt(i, 1).toString();
 					}
-					org.gwaspi.global.Config.setDBSystemDir(newFile.getPath());
-					org.gwaspi.global.Config.setDBSystemDir(newFile.getPath());
+				}
 
-					origFile = new File(currentDataDirPath + "/genotypes");
-					newFile = new File(newDataDir.getPath() + "/genotypes");
-					if (origFile.exists()) {
-						org.gwaspi.global.Utils.copyFileRecursive(origFile, newFile);
+				if (currentDataDirPath != null) {
+					File newDataDir = Dialogs.selectDirectoryDialog(JOptionPane.OK_OPTION);
+
+					try {
+						File origFile = new File(currentDataDirPath + "/datacenter");
+						File newFile = new File(newDataDir.getPath() + "/datacenter");
+						if (origFile.exists()) {
+							org.gwaspi.global.Utils.copyFileRecursive(origFile, newFile);
+						}
+						Config.setDBSystemDir(newFile.getPath());
+						Config.setDBSystemDir(newFile.getPath());
+
+						origFile = new File(currentDataDirPath + "/genotypes");
+						newFile = new File(newDataDir.getPath() + "/genotypes");
+						if (origFile.exists()) {
+							org.gwaspi.global.Utils.copyFileRecursive(origFile, newFile);
+						}
+						Config.setConfigValue("GTdir", newFile.getPath());
+
+	//					origFile = new File(currentDataDirPath + "/help");
+	//					newFile = new File(newDataDir.getPath() + "/help");
+	//					if (origFile.exists()) {
+	//						org.gwaspi.global.Utils.copyFileRecursive(origFile, newFile);
+	//					}
+	//					Config.setConfigValue("OfflineHelpDir", newFile.getPath());
+
+						origFile = new File(currentDataDirPath + "/export");
+						newFile = new File(newDataDir.getPath() + "/export");
+						if (origFile.exists()) {
+							org.gwaspi.global.Utils.copyFileRecursive(origFile, newFile);
+						}
+						Config.setConfigValue("ExportDir", newFile.getPath());
+
+						origFile = new File(currentDataDirPath + "/reports");
+						newFile = new File(newDataDir.getPath() + "/reports");
+						if (origFile.exists()) {
+							org.gwaspi.global.Utils.copyFileRecursive(origFile, newFile);
+						}
+						Config.setConfigValue("ReportsDir", newFile.getPath());
+						Config.setConfigValue("LogDir", newFile.getPath() + "/log");
+						Config.setConfigValue("DataDir", newDataDir.getPath());
+
+						GWASpiExplorerPanel.pnl_Content = new PreferencesPanel();
+						GWASpiExplorerPanel.scrl_Content.setViewportView(GWASpiExplorerPanel.pnl_Content);
+						Dialogs.showInfoDialogue(Text.App.infoDataDirCopyOK);
+					} catch (IOException iOException) {
+						Dialogs.showWarningDialogue(Text.App.warnErrorCopyData);
+						resetPreferencesAction.actionPerformed(null);
 					}
-					org.gwaspi.global.Config.setConfigValue("GTdir", newFile.getPath());
-
-//					origFile = new File(currentDataDirPath + "/help");
-//					newFile = new File(newDataDir.getPath() + "/help");
-//					if (origFile.exists()) {
-//						org.gwaspi.global.Utils.copyFileRecursive(origFile, newFile);
-//					}
-//					org.gwaspi.global.Config.setConfigValue("OfflineHelpDir", newFile.getPath());
-
-					origFile = new File(currentDataDirPath + "/export");
-					newFile = new File(newDataDir.getPath() + "/export");
-					if (origFile.exists()) {
-						org.gwaspi.global.Utils.copyFileRecursive(origFile, newFile);
-					}
-					org.gwaspi.global.Config.setConfigValue("ExportDir", newFile.getPath());
-
-					origFile = new File(currentDataDirPath + "/reports");
-					newFile = new File(newDataDir.getPath() + "/reports");
-					if (origFile.exists()) {
-						org.gwaspi.global.Utils.copyFileRecursive(origFile, newFile);
-					}
-					org.gwaspi.global.Config.setConfigValue("ReportsDir", newFile.getPath());
-					org.gwaspi.global.Config.setConfigValue("LogDir", newFile.getPath() + "/log");
-					org.gwaspi.global.Config.setConfigValue("DataDir", newDataDir.getPath());
-
-					org.gwaspi.gui.GWASpiExplorerPanel.pnl_Content = new PreferencesPanel();
-					org.gwaspi.gui.GWASpiExplorerPanel.scrl_Content.setViewportView(org.gwaspi.gui.GWASpiExplorerPanel.pnl_Content);
-					org.gwaspi.gui.utils.Dialogs.showInfoDialogue(org.gwaspi.global.Text.App.infoDataDirCopyOK);
-				} catch (IOException iOException) {
-					org.gwaspi.gui.utils.Dialogs.showWarningDialogue(org.gwaspi.global.Text.App.warnErrorCopyData);
-					actionResetPreferences();
 				}
 			}
 		}
 	}
 
-	private void btn_BackActionPerformed(ActionEvent evt) {
-		org.gwaspi.gui.GWASpiExplorerPanel.pnl_Content = new IntroPanel();
-		org.gwaspi.gui.GWASpiExplorerPanel.scrl_Content.setViewportView(org.gwaspi.gui.GWASpiExplorerPanel.pnl_Content);
+	private static class BackAction extends AbstractAction {
+
+		BackAction() {
+
+			putValue(NAME, Text.All.Back);
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent evt) {
+			GWASpiExplorerPanel.pnl_Content = new IntroPanel();
+			GWASpiExplorerPanel.scrl_Content.setViewportView(GWASpiExplorerPanel.pnl_Content);
+		}
 	}
 }

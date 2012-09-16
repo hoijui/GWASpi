@@ -4,8 +4,14 @@ import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.utils.Dialogs;
 import org.gwaspi.gui.utils.HelpURLs;
+import org.gwaspi.gui.utils.JTextFieldLimit;
+import org.gwaspi.gui.utils.URLInDefaultBrowser;
 import java.awt.Color;
+import java.awt.Component;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -15,7 +21,22 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.AbstractAction;
+import javax.swing.BorderFactory;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.GroupLayout;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.LayoutStyle;
+import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
+import javax.swing.border.TitledBorder;
+import org.gwaspi.model.Matrix;
 import org.gwaspi.netCDF.markers.MarkerSet_opt;
 import org.gwaspi.threadbox.MultiOperations;
 
@@ -25,84 +46,81 @@ import org.gwaspi.threadbox.MultiOperations;
  * IBE, Institute of Evolutionary Biology (UPF-CSIC)
  * CEXS-UPF-PRBB
  */
-public class MatrixExtractPanel extends javax.swing.JPanel {
+public class MatrixExtractPanel extends JPanel {
 
 	public MatrixExtractPanel(int _matrixId, String newMatrixName, String newMatrixDesc) throws IOException {
 		initComponents(_matrixId, newMatrixName, newMatrixDesc);
 	}
 	// Variables declaration - do not modify
-	private org.gwaspi.model.Matrix parentMatrix;
+	private Matrix parentMatrix;
 	public static List<Object[]> markerPickerTable = new ArrayList<Object[]>();
 	public static List<Object[]> samplePickerTable = new ArrayList<Object[]>();
-	private javax.swing.JButton btn_Back;
-	private javax.swing.JButton btn_Go;
-	private javax.swing.JButton btn_Help;
-	private javax.swing.JButton btn_MarkersCriteriaBrowse;
-	private javax.swing.JButton btn_SamplesCriteriaBrowse;
-	private javax.swing.JComboBox cmb_MarkersVariable;
-	private javax.swing.JComboBox cmb_SamplesVariable;
-	private javax.swing.JLabel lbl_MarkersCriteria;
-	private javax.swing.JLabel lbl_MarkersCriteriaFile;
-	private javax.swing.JLabel lbl_MarkersVariable;
-	private javax.swing.JLabel lbl_NewMatrixName;
-	private javax.swing.JLabel lbl_ParentMatrix;
-	private javax.swing.JLabel lbl_ParentMatrixName;
-	private javax.swing.JLabel lbl_SamplesCriteria;
-	private javax.swing.JLabel lbl_SamplesCriteriaFile;
-	private javax.swing.JLabel lbl_SamplesVariable;
-	private javax.swing.JPanel pnl_Footer;
-	private javax.swing.JPanel pnl_MarkerZone;
-	private javax.swing.JPanel pnl_NameAndDesc;
-	private javax.swing.JPanel pnl_SampleZone;
-	private javax.swing.JScrollPane scrl_MarkersCriteria;
-	private javax.swing.JScrollPane scrl_NewMatrixDescription;
-	private javax.swing.JScrollPane scrl_SamplesCriteria;
-	private javax.swing.JTextArea txtA_MarkersCriteria;
-	private javax.swing.JTextArea txtA_NewMatrixDescription;
-	private javax.swing.JTextArea txtA_SamplesCriteria;
-	private javax.swing.JTextField txt_MarkersCriteriaFile;
-	private javax.swing.JTextField txt_NewMatrixName;
-	private javax.swing.JTextField txt_SamplesCriteriaFile;
+	private JButton btn_Back;
+	private JButton btn_Go;
+	private JButton btn_Help;
+	private JButton btn_MarkersCriteriaBrowse;
+	private JButton btn_SamplesCriteriaBrowse;
+	private JComboBox cmb_MarkersVariable;
+	private JComboBox cmb_SamplesVariable;
+	private JLabel lbl_MarkersCriteria;
+	private JLabel lbl_MarkersCriteriaFile;
+	private JLabel lbl_MarkersVariable;
+	private JLabel lbl_NewMatrixName;
+	private JLabel lbl_ParentMatrix;
+	private JLabel lbl_ParentMatrixName;
+	private JLabel lbl_SamplesCriteria;
+	private JLabel lbl_SamplesCriteriaFile;
+	private JLabel lbl_SamplesVariable;
+	private JPanel pnl_Footer;
+	private JPanel pnl_MarkerZone;
+	private JPanel pnl_NameAndDesc;
+	private JPanel pnl_SampleZone;
+	private JScrollPane scrl_MarkersCriteria;
+	private JScrollPane scrl_NewMatrixDescription;
+	private JScrollPane scrl_SamplesCriteria;
+	private JTextArea txtA_MarkersCriteria;
+	private JTextArea txtA_NewMatrixDescription;
+	private JTextArea txtA_SamplesCriteria;
+	private JTextField txt_MarkersCriteriaFile;
+	private JTextField txt_NewMatrixName;
+	private JTextField txt_SamplesCriteriaFile;
 	// End of variables declaration
 
 	@SuppressWarnings("unchecked")
 	private void initComponents(int _matrixId, String newMatrixName, String newMatrixDesc) throws IOException {
-		parentMatrix = new org.gwaspi.model.Matrix(_matrixId);
+		parentMatrix = new Matrix(_matrixId);
 
-		MarkerSet_opt parentMarkerSet = new MarkerSet_opt(parentMatrix.getStudyId(), _matrixId);
-		final Map<String, Object> rdChrInfoSetLHM = parentMarkerSet.getChrInfoSetLHM();
+		pnl_NameAndDesc = new JPanel();
+		lbl_ParentMatrix = new JLabel();
+		lbl_ParentMatrixName = new JLabel();
+		lbl_NewMatrixName = new JLabel();
+		txt_NewMatrixName = new JTextField(newMatrixName);
+		scrl_NewMatrixDescription = new JScrollPane();
+		txtA_NewMatrixDescription = new JTextArea(newMatrixDesc);
+		pnl_MarkerZone = new JPanel();
+		lbl_MarkersVariable = new JLabel();
+		cmb_MarkersVariable = new JComboBox();
+		btn_Help = new JButton();
+		lbl_MarkersCriteria = new JLabel();
+		scrl_MarkersCriteria = new JScrollPane();
+		txtA_MarkersCriteria = new JTextArea();
+		lbl_MarkersCriteriaFile = new JLabel();
+		txt_MarkersCriteriaFile = new JTextField();
+		btn_MarkersCriteriaBrowse = new JButton();
+		pnl_SampleZone = new JPanel();
+		lbl_SamplesVariable = new JLabel();
+		cmb_SamplesVariable = new JComboBox();
+		lbl_SamplesCriteria = new JLabel();
+		scrl_SamplesCriteria = new JScrollPane();
+		txtA_SamplesCriteria = new JTextArea();
+		lbl_SamplesCriteriaFile = new JLabel();
+		txt_SamplesCriteriaFile = new JTextField();
+		btn_SamplesCriteriaBrowse = new JButton();
+		pnl_Footer = new JPanel();
+		btn_Back = new JButton();
+		btn_Go = new JButton();
 
-		pnl_NameAndDesc = new javax.swing.JPanel();
-		lbl_ParentMatrix = new javax.swing.JLabel();
-		lbl_ParentMatrixName = new javax.swing.JLabel();
-		lbl_NewMatrixName = new javax.swing.JLabel();
-		txt_NewMatrixName = new javax.swing.JTextField(newMatrixName);
-		scrl_NewMatrixDescription = new javax.swing.JScrollPane();
-		txtA_NewMatrixDescription = new javax.swing.JTextArea(newMatrixDesc);
-		pnl_MarkerZone = new javax.swing.JPanel();
-		lbl_MarkersVariable = new javax.swing.JLabel();
-		cmb_MarkersVariable = new javax.swing.JComboBox();
-		btn_Help = new javax.swing.JButton();
-		lbl_MarkersCriteria = new javax.swing.JLabel();
-		scrl_MarkersCriteria = new javax.swing.JScrollPane();
-		txtA_MarkersCriteria = new javax.swing.JTextArea();
-		lbl_MarkersCriteriaFile = new javax.swing.JLabel();
-		txt_MarkersCriteriaFile = new javax.swing.JTextField();
-		btn_MarkersCriteriaBrowse = new javax.swing.JButton();
-		pnl_SampleZone = new javax.swing.JPanel();
-		lbl_SamplesVariable = new javax.swing.JLabel();
-		cmb_SamplesVariable = new javax.swing.JComboBox();
-		lbl_SamplesCriteria = new javax.swing.JLabel();
-		scrl_SamplesCriteria = new javax.swing.JScrollPane();
-		txtA_SamplesCriteria = new javax.swing.JTextArea();
-		lbl_SamplesCriteriaFile = new javax.swing.JLabel();
-		txt_SamplesCriteriaFile = new javax.swing.JTextField();
-		btn_SamplesCriteriaBrowse = new javax.swing.JButton();
-		pnl_Footer = new javax.swing.JPanel();
-		btn_Back = new javax.swing.JButton();
-		btn_Go = new javax.swing.JButton();
-
-		setBorder(javax.swing.BorderFactory.createTitledBorder(null, Text.Trafo.extractData, javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("FreeSans", 1, 18))); // NOI18N
+		setBorder(BorderFactory.createTitledBorder(null, Text.Trafo.extractData, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("FreeSans", 1, 18))); // NOI18N
 
 		markerPickerTable.add(new Object[]{"All Markers", cNetCDF.Defaults.SetMarkerPickCase.ALL_MARKERS, null});
 		markerPickerTable.add(new Object[]{"Exclude by Chromosomes", cNetCDF.Defaults.SetMarkerPickCase.MARKERS_EXCLUDE_BY_NETCDF_CRITERIA, org.gwaspi.constants.cNetCDF.Variables.VAR_MARKERS_CHR});
@@ -138,23 +156,23 @@ public class MatrixExtractPanel extends javax.swing.JPanel {
 		samplePickerTable.add(new Object[]{"Include by Sex", cNetCDF.Defaults.SetSamplePickCase.SAMPLES_INCLUDE_BY_DB_FIELD, org.gwaspi.constants.cDBSamples.f_SEX});
 
 
-		pnl_NameAndDesc.setBorder(javax.swing.BorderFactory.createTitledBorder(null, Text.Trafo.extratedMatrixDetails, javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("DejaVu Sans", 1, 13))); // NOI18N
-		pnl_MarkerZone.setBorder(javax.swing.BorderFactory.createTitledBorder(null, Text.Trafo.markerSelectZone, javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("DejaVu Sans", 1, 13))); // NOI18N
-		pnl_SampleZone.setBorder(javax.swing.BorderFactory.createTitledBorder(null, Text.Trafo.sampleSelectZone, javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("DejaVu Sans", 1, 13))); // NOI18N
+		pnl_NameAndDesc.setBorder(BorderFactory.createTitledBorder(null, Text.Trafo.extratedMatrixDetails, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("DejaVu Sans", 1, 13))); // NOI18N
+		pnl_MarkerZone.setBorder(BorderFactory.createTitledBorder(null, Text.Trafo.markerSelectZone, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("DejaVu Sans", 1, 13))); // NOI18N
+		pnl_SampleZone.setBorder(BorderFactory.createTitledBorder(null, Text.Trafo.sampleSelectZone, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("DejaVu Sans", 1, 13))); // NOI18N
 
 		lbl_ParentMatrix.setText(Text.Matrix.parentMatrix);
 		lbl_ParentMatrixName.setText(parentMatrix.matrixMetadata.getMatrixFriendlyName());
 		lbl_NewMatrixName.setText(Text.Matrix.newMatrixName);
-		txt_NewMatrixName.setDocument(new org.gwaspi.gui.utils.JTextFieldLimit(63));
+		txt_NewMatrixName.setDocument(new JTextFieldLimit(63));
 		txtA_NewMatrixDescription.setColumns(20);
 		txtA_NewMatrixDescription.setLineWrap(true);
 		txtA_NewMatrixDescription.setRows(5);
-		txtA_NewMatrixDescription.setBorder(javax.swing.BorderFactory.createTitledBorder(Text.All.description));
-		txtA_NewMatrixDescription.setDocument(new org.gwaspi.gui.utils.JTextFieldLimit(1999));
+		txtA_NewMatrixDescription.setBorder(BorderFactory.createTitledBorder(Text.All.description));
+		txtA_NewMatrixDescription.setDocument(new JTextFieldLimit(1999));
 		txtA_NewMatrixDescription.setText(Text.All.optional);
-		txtA_NewMatrixDescription.addFocusListener(new java.awt.event.FocusAdapter() {
+		txtA_NewMatrixDescription.addFocusListener(new FocusAdapter() {
 			@Override
-			public void focusGained(java.awt.event.FocusEvent evt) {
+			public void focusGained(FocusEvent evt) {
 				SwingUtilities.invokeLater(new Runnable() {
 					@Override
 					public void run() {
@@ -166,7 +184,7 @@ public class MatrixExtractPanel extends javax.swing.JPanel {
 			}
 
 			@Override
-			public void focusLost(java.awt.event.FocusEvent evt) {
+			public void focusLost(FocusEvent evt) {
 				SwingUtilities.invokeLater(new Runnable() {
 					@Override
 					public void run() {
@@ -178,36 +196,36 @@ public class MatrixExtractPanel extends javax.swing.JPanel {
 		scrl_NewMatrixDescription.setViewportView(txtA_NewMatrixDescription);
 
 		//<editor-fold defaultstate="collapsed" desc="LAYOUT NAME&DESC">
-		javax.swing.GroupLayout pnl_NameAndDescLayout = new javax.swing.GroupLayout(pnl_NameAndDesc);
+		GroupLayout pnl_NameAndDescLayout = new GroupLayout(pnl_NameAndDesc);
 		pnl_NameAndDesc.setLayout(pnl_NameAndDescLayout);
 		pnl_NameAndDescLayout.setHorizontalGroup(
-				pnl_NameAndDescLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+				pnl_NameAndDescLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
 				.addGroup(pnl_NameAndDescLayout.createSequentialGroup()
 				.addContainerGap()
-				.addGroup(pnl_NameAndDescLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-				.addComponent(scrl_NewMatrixDescription, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 688, Short.MAX_VALUE)
+				.addGroup(pnl_NameAndDescLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+				.addComponent(scrl_NewMatrixDescription, GroupLayout.Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 688, Short.MAX_VALUE)
 				.addGroup(pnl_NameAndDescLayout.createSequentialGroup()
 				.addComponent(lbl_NewMatrixName)
-				.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-				.addComponent(txt_NewMatrixName, javax.swing.GroupLayout.DEFAULT_SIZE, 559, Short.MAX_VALUE))
+				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+				.addComponent(txt_NewMatrixName, GroupLayout.DEFAULT_SIZE, 559, Short.MAX_VALUE))
 				.addGroup(pnl_NameAndDescLayout.createSequentialGroup()
 				.addComponent(lbl_ParentMatrix)
-				.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+				.addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
 				.addComponent(lbl_ParentMatrixName)))
 				.addContainerGap()));
 		pnl_NameAndDescLayout.setVerticalGroup(
-				pnl_NameAndDescLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+				pnl_NameAndDescLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
 				.addGroup(pnl_NameAndDescLayout.createSequentialGroup()
-				.addGroup(pnl_NameAndDescLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+				.addGroup(pnl_NameAndDescLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
 				.addComponent(lbl_ParentMatrix)
 				.addComponent(lbl_ParentMatrixName))
-				.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-				.addGroup(pnl_NameAndDescLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+				.addGroup(pnl_NameAndDescLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
 				.addComponent(lbl_NewMatrixName)
-				.addComponent(txt_NewMatrixName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-				.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-				.addComponent(scrl_NewMatrixDescription, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-				.addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)));
+				.addComponent(txt_NewMatrixName, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+				.addComponent(scrl_NewMatrixDescription, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+				.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)));
 		//</editor-fold>
 
 
@@ -219,35 +237,18 @@ public class MatrixExtractPanel extends javax.swing.JPanel {
 			markerPickerTable.get(4)[0].toString(),
 			markerPickerTable.get(5)[0].toString(),
 			markerPickerTable.get(6)[0].toString()};
-		cmb_MarkersVariable.setModel(new javax.swing.DefaultComboBoxModel(markerPickerVars));
-		//PREFILL CRITERIA TXT WITH CHROMOSOME CODES IF NECESSARY
-		cmb_MarkersVariable.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				if (cmb_MarkersVariable.getSelectedIndex() == 1 || cmb_MarkersVariable.getSelectedIndex() == 4) { //Chromosome variables
-					cmb_MarkersVariableActionPerformed(evt);
-				}
-			}
-
-			private void cmb_MarkersVariableActionPerformed(ActionEvent evt) {
-				StringBuilder sb = new StringBuilder();
-				for (String key : rdChrInfoSetLHM.keySet()) {
-					sb.append(key.toString());
-					sb.append(",");
-				}
-				sb.deleteCharAt(sb.length() - 1);
-
-				txtA_MarkersCriteria.setText(sb.toString());
-			}
-		});
+		cmb_MarkersVariable.setModel(new DefaultComboBoxModel(markerPickerVars));
+		// PREFILL CRITERIA TXT WITH CHROMOSOME CODES IF NECESSARY
+		cmb_MarkersVariable.setAction(new MarkersVariableAction(_matrixId));
 
 		lbl_MarkersCriteria.setText(Text.Trafo.criteria);
 		txtA_MarkersCriteria.setColumns(20);
 		txtA_MarkersCriteria.setRows(5);
 		txtA_MarkersCriteria.setText(Text.All.optional);
-		txtA_MarkersCriteria.setDocument(new org.gwaspi.gui.utils.JTextFieldLimit(999));
-		txtA_MarkersCriteria.addFocusListener(new java.awt.event.FocusAdapter() {
+		txtA_MarkersCriteria.setDocument(new JTextFieldLimit(999));
+		txtA_MarkersCriteria.addFocusListener(new FocusAdapter() {
 			@Override
-			public void focusGained(java.awt.event.FocusEvent evt) {
+			public void focusGained(FocusEvent evt) {
 				SwingUtilities.invokeLater(new Runnable() {
 					@Override
 					public void run() {
@@ -259,7 +260,7 @@ public class MatrixExtractPanel extends javax.swing.JPanel {
 			}
 
 			@Override
-			public void focusLost(java.awt.event.FocusEvent evt) {
+			public void focusLost(FocusEvent evt) {
 				SwingUtilities.invokeLater(new Runnable() {
 					@Override
 					public void run() {
@@ -272,9 +273,9 @@ public class MatrixExtractPanel extends javax.swing.JPanel {
 
 		lbl_MarkersCriteriaFile.setText(Text.Trafo.criteriaFile);
 		txt_MarkersCriteriaFile.setText(Text.All.optional);
-		txt_MarkersCriteriaFile.addFocusListener(new java.awt.event.FocusAdapter() {
+		txt_MarkersCriteriaFile.addFocusListener(new FocusAdapter() {
 			@Override
-			public void focusGained(java.awt.event.FocusEvent evt) {
+			public void focusGained(FocusEvent evt) {
 				SwingUtilities.invokeLater(new Runnable() {
 					@Override
 					public void run() {
@@ -284,7 +285,7 @@ public class MatrixExtractPanel extends javax.swing.JPanel {
 			}
 
 			@Override
-			public void focusLost(java.awt.event.FocusEvent evt) {
+			public void focusLost(FocusEvent evt) {
 				SwingUtilities.invokeLater(new Runnable() {
 					@Override
 					public void run() {
@@ -294,56 +295,45 @@ public class MatrixExtractPanel extends javax.swing.JPanel {
 			}
 		});
 
-		btn_MarkersCriteriaBrowse.setText(Text.All.browse);
-		btn_MarkersCriteriaBrowse.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				txtA_MarkersCriteria.setText("");
-				actionMarkersCriteriaBrowse(evt);
-			}
-		});
+		btn_MarkersCriteriaBrowse.setAction(new MarkersCriteriaBrowseAction());
 
-		btn_Help.setText(Text.Help.help);
-		btn_Help.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				actionHelp(evt);
-			}
-		});
+		btn_Help.setAction(new HelpAction());
 
 		//<editor-fold defaultstate="collapsed" desc="LAYOUT MARKERZONE">
-		javax.swing.GroupLayout pnl_MarkerZoneLayout = new javax.swing.GroupLayout(pnl_MarkerZone);
+		GroupLayout pnl_MarkerZoneLayout = new GroupLayout(pnl_MarkerZone);
 		pnl_MarkerZone.setLayout(pnl_MarkerZoneLayout);
 		pnl_MarkerZoneLayout.setHorizontalGroup(
-				pnl_MarkerZoneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+				pnl_MarkerZoneLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
 				.addGroup(pnl_MarkerZoneLayout.createSequentialGroup()
 				.addContainerGap()
-				.addGroup(pnl_MarkerZoneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+				.addGroup(pnl_MarkerZoneLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
 				.addComponent(lbl_MarkersCriteriaFile)
 				.addComponent(lbl_MarkersCriteria)
 				.addComponent(lbl_MarkersVariable))
-				.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-				.addGroup(pnl_MarkerZoneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-				.addComponent(cmb_MarkersVariable, javax.swing.GroupLayout.PREFERRED_SIZE, 464, javax.swing.GroupLayout.PREFERRED_SIZE)
-				.addComponent(scrl_MarkersCriteria, javax.swing.GroupLayout.DEFAULT_SIZE, 464, Short.MAX_VALUE)
-				.addComponent(txt_MarkersCriteriaFile, javax.swing.GroupLayout.DEFAULT_SIZE, 464, Short.MAX_VALUE))
-				.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-				.addComponent(btn_MarkersCriteriaBrowse, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
+				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+				.addGroup(pnl_MarkerZoneLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+				.addComponent(cmb_MarkersVariable, GroupLayout.PREFERRED_SIZE, 464, GroupLayout.PREFERRED_SIZE)
+				.addComponent(scrl_MarkersCriteria, GroupLayout.DEFAULT_SIZE, 464, Short.MAX_VALUE)
+				.addComponent(txt_MarkersCriteriaFile, GroupLayout.DEFAULT_SIZE, 464, Short.MAX_VALUE))
+				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+				.addComponent(btn_MarkersCriteriaBrowse, GroupLayout.PREFERRED_SIZE, 80, GroupLayout.PREFERRED_SIZE)
 				.addContainerGap()));
 
 
-		pnl_MarkerZoneLayout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[]{cmb_MarkersVariable, scrl_MarkersCriteria, txt_MarkersCriteriaFile});
+		pnl_MarkerZoneLayout.linkSize(SwingConstants.HORIZONTAL, new Component[]{cmb_MarkersVariable, scrl_MarkersCriteria, txt_MarkersCriteriaFile});
 
 		pnl_MarkerZoneLayout.setVerticalGroup(
-				pnl_MarkerZoneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-				.addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnl_MarkerZoneLayout.createSequentialGroup()
-				.addGroup(pnl_MarkerZoneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+				pnl_MarkerZoneLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+				.addGroup(GroupLayout.Alignment.TRAILING, pnl_MarkerZoneLayout.createSequentialGroup()
+				.addGroup(pnl_MarkerZoneLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
 				.addComponent(lbl_MarkersVariable)
-				.addComponent(cmb_MarkersVariable, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-				.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-				.addGroup(pnl_MarkerZoneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+				.addComponent(cmb_MarkersVariable, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+				.addGroup(pnl_MarkerZoneLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
 				.addComponent(lbl_MarkersCriteria)
-				.addComponent(scrl_MarkersCriteria, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-				.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-				.addGroup(pnl_MarkerZoneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+				.addComponent(scrl_MarkersCriteria, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+				.addGroup(pnl_MarkerZoneLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
 				.addComponent(lbl_MarkersCriteriaFile)
 				.addComponent(txt_MarkersCriteriaFile)
 				.addComponent(btn_MarkersCriteriaBrowse))
@@ -369,16 +359,16 @@ public class MatrixExtractPanel extends javax.swing.JPanel {
 			samplePickerTable.get(14)[0].toString(),
 			samplePickerTable.get(15)[0].toString(),
 			samplePickerTable.get(16)[0].toString()};
-		cmb_SamplesVariable.setModel(new javax.swing.DefaultComboBoxModel(samplePickerVars));
+		cmb_SamplesVariable.setModel(new DefaultComboBoxModel(samplePickerVars));
 
 		lbl_SamplesCriteria.setText(Text.Trafo.criteria);
 		txtA_SamplesCriteria.setColumns(20);
 		txtA_SamplesCriteria.setRows(5);
 		txtA_SamplesCriteria.setText(Text.All.optional);
-		txtA_SamplesCriteria.setDocument(new org.gwaspi.gui.utils.JTextFieldLimit(999));
-		txtA_SamplesCriteria.addFocusListener(new java.awt.event.FocusAdapter() {
+		txtA_SamplesCriteria.setDocument(new JTextFieldLimit(999));
+		txtA_SamplesCriteria.addFocusListener(new FocusAdapter() {
 			@Override
-			public void focusGained(java.awt.event.FocusEvent evt) {
+			public void focusGained(FocusEvent evt) {
 				SwingUtilities.invokeLater(new Runnable() {
 					@Override
 					public void run() {
@@ -390,7 +380,7 @@ public class MatrixExtractPanel extends javax.swing.JPanel {
 			}
 
 			@Override
-			public void focusLost(java.awt.event.FocusEvent evt) {
+			public void focusLost(FocusEvent evt) {
 				SwingUtilities.invokeLater(new Runnable() {
 					@Override
 					public void run() {
@@ -403,9 +393,9 @@ public class MatrixExtractPanel extends javax.swing.JPanel {
 
 		lbl_SamplesCriteriaFile.setText(Text.Trafo.criteriaFile);
 		txt_SamplesCriteriaFile.setText(Text.All.optional);
-		txt_SamplesCriteriaFile.addFocusListener(new java.awt.event.FocusAdapter() {
+		txt_SamplesCriteriaFile.addFocusListener(new FocusAdapter() {
 			@Override
-			public void focusGained(java.awt.event.FocusEvent evt) {
+			public void focusGained(FocusEvent evt) {
 				SwingUtilities.invokeLater(new Runnable() {
 					@Override
 					public void run() {
@@ -415,7 +405,7 @@ public class MatrixExtractPanel extends javax.swing.JPanel {
 			}
 
 			@Override
-			public void focusLost(java.awt.event.FocusEvent evt) {
+			public void focusLost(FocusEvent evt) {
 				SwingUtilities.invokeLater(new Runnable() {
 					@Override
 					public void run() {
@@ -425,265 +415,313 @@ public class MatrixExtractPanel extends javax.swing.JPanel {
 			}
 		});
 
-		btn_SamplesCriteriaBrowse.setText(Text.All.browse);
-		btn_SamplesCriteriaBrowse.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				txtA_SamplesCriteria.setText("");
-				actionSamplesCriteriaBrowse(evt);
-			}
-		});
-
-
+		btn_SamplesCriteriaBrowse.setAction(new SamplesCriteriaBrowseAction());
 
 		//<editor-fold defaultstate="collapsed" desc="LAYOUT SAMPLEZONE">
-		javax.swing.GroupLayout pnl_SampleZoneLayout = new javax.swing.GroupLayout(pnl_SampleZone);
+		GroupLayout pnl_SampleZoneLayout = new GroupLayout(pnl_SampleZone);
 		pnl_SampleZone.setLayout(pnl_SampleZoneLayout);
 		pnl_SampleZoneLayout.setHorizontalGroup(
-				pnl_SampleZoneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-				.addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnl_SampleZoneLayout.createSequentialGroup()
+				pnl_SampleZoneLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+				.addGroup(GroupLayout.Alignment.TRAILING, pnl_SampleZoneLayout.createSequentialGroup()
 				.addContainerGap()
-				.addGroup(pnl_SampleZoneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+				.addGroup(pnl_SampleZoneLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
 				.addComponent(lbl_SamplesVariable)
 				.addComponent(lbl_SamplesCriteria)
 				.addComponent(lbl_SamplesCriteriaFile))
-				.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-				.addGroup(pnl_SampleZoneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+				.addGroup(pnl_SampleZoneLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
 				.addComponent(cmb_SamplesVariable, 0, 461, Short.MAX_VALUE)
-				.addComponent(scrl_SamplesCriteria, javax.swing.GroupLayout.DEFAULT_SIZE, 461, Short.MAX_VALUE)
-				.addComponent(txt_SamplesCriteriaFile, javax.swing.GroupLayout.DEFAULT_SIZE, 461, Short.MAX_VALUE))
-				.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-				.addComponent(btn_SamplesCriteriaBrowse, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
+				.addComponent(scrl_SamplesCriteria, GroupLayout.DEFAULT_SIZE, 461, Short.MAX_VALUE)
+				.addComponent(txt_SamplesCriteriaFile, GroupLayout.DEFAULT_SIZE, 461, Short.MAX_VALUE))
+				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+				.addComponent(btn_SamplesCriteriaBrowse, GroupLayout.PREFERRED_SIZE, 80, GroupLayout.PREFERRED_SIZE)
 				.addContainerGap(15, Short.MAX_VALUE)));
 
-
-		pnl_SampleZoneLayout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[]{cmb_SamplesVariable, scrl_SamplesCriteria, txt_SamplesCriteriaFile});
+		pnl_SampleZoneLayout.linkSize(SwingConstants.HORIZONTAL, new Component[]{cmb_SamplesVariable, scrl_SamplesCriteria, txt_SamplesCriteriaFile});
 
 		pnl_SampleZoneLayout.setVerticalGroup(
-				pnl_SampleZoneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+				pnl_SampleZoneLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
 				.addGroup(pnl_SampleZoneLayout.createSequentialGroup()
-				.addGroup(pnl_SampleZoneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+				.addGroup(pnl_SampleZoneLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
 				.addComponent(lbl_SamplesVariable)
-				.addComponent(cmb_SamplesVariable, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-				.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-				.addGroup(pnl_SampleZoneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+				.addComponent(cmb_SamplesVariable, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+				.addGroup(pnl_SampleZoneLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
 				.addComponent(lbl_SamplesCriteria)
-				.addComponent(scrl_SamplesCriteria, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-				.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-				.addGroup(pnl_SampleZoneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-				.addComponent(txt_SamplesCriteriaFile, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+				.addComponent(scrl_SamplesCriteria, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+				.addGroup(pnl_SampleZoneLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+				.addComponent(txt_SamplesCriteriaFile, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 				.addComponent(btn_SamplesCriteriaBrowse)
 				.addComponent(lbl_SamplesCriteriaFile))
-				.addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)));
+				.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)));
 		//</editor-fold>
 
+		btn_Back.setAction(new BackAction(parentMatrix));
 
-		btn_Back.setText(Text.All.Back);
-		btn_Back.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				actionBack(evt);
-			}
-		});
-
-		btn_Go.setText(Text.Trafo.extract);
-		btn_Go.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				actionExtract(evt);
-			}
-		});
+		btn_Go.setAction(new ExtractAction());
 
 		//<editor-fold defaultstate="collapsed" desc="FOOTER">
-		javax.swing.GroupLayout pnl_FooterLayout = new javax.swing.GroupLayout(pnl_Footer);
+		GroupLayout pnl_FooterLayout = new GroupLayout(pnl_Footer);
 		pnl_Footer.setLayout(pnl_FooterLayout);
 		pnl_FooterLayout.setHorizontalGroup(
-				pnl_FooterLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-				.addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnl_FooterLayout.createSequentialGroup()
-				.addComponent(btn_Back, javax.swing.GroupLayout.PREFERRED_SIZE, 79, javax.swing.GroupLayout.PREFERRED_SIZE)
+				pnl_FooterLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+				.addGroup(GroupLayout.Alignment.TRAILING, pnl_FooterLayout.createSequentialGroup()
+				.addComponent(btn_Back, GroupLayout.PREFERRED_SIZE, 79, GroupLayout.PREFERRED_SIZE)
 				.addGap(18, 18, 18)
-				.addComponent(btn_Help, javax.swing.GroupLayout.PREFERRED_SIZE, 77, javax.swing.GroupLayout.PREFERRED_SIZE)
-				.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 331, Short.MAX_VALUE)
-				.addComponent(btn_Go, javax.swing.GroupLayout.PREFERRED_SIZE, 162, javax.swing.GroupLayout.PREFERRED_SIZE)
+				.addComponent(btn_Help, GroupLayout.PREFERRED_SIZE, 77, GroupLayout.PREFERRED_SIZE)
+				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, 331, Short.MAX_VALUE)
+				.addComponent(btn_Go, GroupLayout.PREFERRED_SIZE, 162, GroupLayout.PREFERRED_SIZE)
 				.addContainerGap()));
 		pnl_FooterLayout.setVerticalGroup(
-				pnl_FooterLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+				pnl_FooterLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
 				.addGroup(pnl_FooterLayout.createSequentialGroup()
 				.addGap(0, 0, 0)
-				.addGroup(pnl_FooterLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-				.addComponent(btn_Go, javax.swing.GroupLayout.PREFERRED_SIZE, 53, javax.swing.GroupLayout.PREFERRED_SIZE)
+				.addGroup(pnl_FooterLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+				.addComponent(btn_Go, GroupLayout.PREFERRED_SIZE, 53, GroupLayout.PREFERRED_SIZE)
 				.addComponent(btn_Back)
 				.addComponent(btn_Help))));
 		//</editor-fold>
 
-
 		//<editor-fold defaultstate="collapsed" desc="LAYOUT">
-		javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
+		GroupLayout layout = new GroupLayout(this);
 		this.setLayout(layout);
 		layout.setHorizontalGroup(
-				layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-				.addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+				layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+				.addGroup(GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
 				.addContainerGap()
-				.addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-				.addComponent(pnl_NameAndDesc, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-				.addComponent(pnl_MarkerZone, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-				.addComponent(pnl_SampleZone, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-				.addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-				.addComponent(pnl_Footer, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.TRAILING)
+				.addComponent(pnl_NameAndDesc, GroupLayout.Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+				.addComponent(pnl_MarkerZone, GroupLayout.Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+				.addComponent(pnl_SampleZone, GroupLayout.Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+				.addGroup(GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+				.addComponent(pnl_Footer, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
 				.addGap(45, 45, 45)))
 				.addContainerGap()));
 		layout.setVerticalGroup(
-				layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+				layout.createParallelGroup(GroupLayout.Alignment.LEADING)
 				.addGroup(layout.createSequentialGroup()
 				.addContainerGap()
-				.addComponent(pnl_NameAndDesc, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-				.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-				.addComponent(pnl_MarkerZone, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-				.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-				.addComponent(pnl_SampleZone, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-				.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-				.addComponent(pnl_Footer, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+				.addComponent(pnl_NameAndDesc, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+				.addComponent(pnl_MarkerZone, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+				.addComponent(pnl_SampleZone, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+				.addComponent(pnl_Footer, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 				.addContainerGap(44, Short.MAX_VALUE)));
 		//</editor-fold>
-
-
 	}
 
-	private boolean actionExtract(java.awt.event.ActionEvent evt) {
-		boolean result = false;
-		String newMatrixName = checkNewMatrixData();
-		if (!newMatrixName.isEmpty()) {
-			org.gwaspi.gui.ProcessTab.showTab();
+	private class ExtractAction extends AbstractAction { // FIXME make static
 
+		ExtractAction() {
 
-			String mi_marker_criteria_file = txt_MarkersCriteriaFile.getText();
-			if (mi_marker_criteria_file.equals(Text.All.optional)) {
-				mi_marker_criteria_file = "";
-			}
-			String mi_sample_criteria_file = txt_SamplesCriteriaFile.getText();
-			if (mi_sample_criteria_file.equals(Text.All.optional)) {
-				mi_sample_criteria_file = "";
-			}
-
-			String mi_marker_criteria = txtA_MarkersCriteria.getText();
-			if (mi_marker_criteria.equals(Text.All.optional)) {
-				mi_marker_criteria = "";
-			}
-			Set<Object> markerCriteria = new HashSet<Object>();
-			String[] mVals = mi_marker_criteria.split(org.gwaspi.constants.cImport.Separators.separators_CommaSpaceTabLf_rgxp);
-			for (String s : mVals) {
-				if (!s.isEmpty()) {
-					markerCriteria.add(s);
-				}
-			}
-
-			String mi_sample_criteria = txtA_SamplesCriteria.getText();
-			if (mi_sample_criteria.equals(Text.All.optional)) {
-				mi_sample_criteria = "";
-			}
-			Set<Object> sampleCriteria = new HashSet<Object>();
-			String[] sVals = mi_sample_criteria.split(org.gwaspi.constants.cImport.Separators.separators_CommaSpaceTabLf_rgxp);
-			for (String s : sVals) {
-				if (!s.isEmpty()) {
-					sampleCriteria.add(s);
-				}
-			}
-
-
-			File markerCriteriaFile = new File(mi_marker_criteria_file);
-			if (markerCriteria.isEmpty()) {
-				if (cmb_MarkersVariable.getSelectedIndex() != 0) { //NOT ALL MARKERS
-					if (!markerCriteriaFile.isFile()) {
-						Dialogs.showWarningDialogue("Marker criteria file missing!");
-						return result;
-					}
-				}
-			}
-			File sampleCriteriaFile = new File(mi_sample_criteria_file);
-			if (sampleCriteria.isEmpty()) {
-				if (cmb_SamplesVariable.getSelectedIndex() != 0) { //NOT ALL SAMPLES
-					if (!sampleCriteriaFile.isFile()) {
-						Dialogs.showWarningDialogue("Sample criteria file missing!");
-						return result;
-					}
-				}
-			}
-
-			String markerPickVar = "";
-			cNetCDF.Defaults.SetMarkerPickCase markerPickCase = (cNetCDF.Defaults.SetMarkerPickCase) markerPickerTable.get(cmb_MarkersVariable.getSelectedIndex())[1];
-			if (!markerPickCase.equals(cNetCDF.Defaults.SetMarkerPickCase.ALL_MARKERS)) {
-				markerPickVar = markerPickerTable.get(cmb_MarkersVariable.getSelectedIndex())[2].toString();
-			}
-
-			String samplePickVar = "";
-			cNetCDF.Defaults.SetSamplePickCase samplePickCase = (cNetCDF.Defaults.SetSamplePickCase) samplePickerTable.get(cmb_SamplesVariable.getSelectedIndex())[1];
-			if (!samplePickCase.equals(cNetCDF.Defaults.SetSamplePickCase.ALL_SAMPLES)) {
-				samplePickVar = samplePickerTable.get(cmb_SamplesVariable.getSelectedIndex())[2].toString();
-			}
-
-			String description = txtA_NewMatrixDescription.getText();
-			if (description.equals(Text.All.optional)) {
-				description = "";
-			}
-
-
-			MultiOperations.doExtractData(parentMatrix.getStudyId(),
-					parentMatrix.getMatrixId(),
-					newMatrixName,
-					description,
-					markerPickCase,
-					samplePickCase,
-					markerPickVar,
-					samplePickVar,
-					markerCriteria,
-					sampleCriteria,
-					markerCriteriaFile,
-					sampleCriteriaFile);
-
-
-
-
-		} else {
-			Dialogs.showWarningDialogue(org.gwaspi.global.Text.Matrix.pleaseInsertMatrixName);
+			putValue(NAME, Text.Trafo.extract);
 		}
 
-		return result;
+		@Override
+		public void actionPerformed(ActionEvent evt) {
+			try {
+				String newMatrixName = checkNewMatrixData();
+				if (!newMatrixName.isEmpty()) {
+					ProcessTab.showTab();
 
+					String mi_marker_criteria_file = txt_MarkersCriteriaFile.getText();
+					if (mi_marker_criteria_file.equals(Text.All.optional)) {
+						mi_marker_criteria_file = "";
+					}
+					String mi_sample_criteria_file = txt_SamplesCriteriaFile.getText();
+					if (mi_sample_criteria_file.equals(Text.All.optional)) {
+						mi_sample_criteria_file = "";
+					}
+
+					String mi_marker_criteria = txtA_MarkersCriteria.getText();
+					if (mi_marker_criteria.equals(Text.All.optional)) {
+						mi_marker_criteria = "";
+					}
+					Set<Object> markerCriteria = new HashSet<Object>();
+					String[] mVals = mi_marker_criteria.split(org.gwaspi.constants.cImport.Separators.separators_CommaSpaceTabLf_rgxp);
+					for (String s : mVals) {
+						if (!s.isEmpty()) {
+							markerCriteria.add(s);
+						}
+					}
+
+					String mi_sample_criteria = txtA_SamplesCriteria.getText();
+					if (mi_sample_criteria.equals(Text.All.optional)) {
+						mi_sample_criteria = "";
+					}
+					Set<Object> sampleCriteria = new HashSet<Object>();
+					String[] sVals = mi_sample_criteria.split(org.gwaspi.constants.cImport.Separators.separators_CommaSpaceTabLf_rgxp);
+					for (String s : sVals) {
+						if (!s.isEmpty()) {
+							sampleCriteria.add(s);
+						}
+					}
+
+					File markerCriteriaFile = new File(mi_marker_criteria_file);
+					if (markerCriteria.isEmpty()) {
+						if (cmb_MarkersVariable.getSelectedIndex() != 0) { //NOT ALL MARKERS
+							if (!markerCriteriaFile.isFile()) {
+								throw new IllegalArgumentException("Marker criteria file missing!");
+							}
+						}
+					}
+					File sampleCriteriaFile = new File(mi_sample_criteria_file);
+					if (sampleCriteria.isEmpty()) {
+						if (cmb_SamplesVariable.getSelectedIndex() != 0) { //NOT ALL SAMPLES
+							if (!sampleCriteriaFile.isFile()) {
+								throw new IllegalArgumentException("Sample criteria file missing!");
+							}
+						}
+					}
+
+					String markerPickVar = "";
+					cNetCDF.Defaults.SetMarkerPickCase markerPickCase = (cNetCDF.Defaults.SetMarkerPickCase) markerPickerTable.get(cmb_MarkersVariable.getSelectedIndex())[1];
+					if (!markerPickCase.equals(cNetCDF.Defaults.SetMarkerPickCase.ALL_MARKERS)) {
+						markerPickVar = markerPickerTable.get(cmb_MarkersVariable.getSelectedIndex())[2].toString();
+					}
+
+					String samplePickVar = "";
+					cNetCDF.Defaults.SetSamplePickCase samplePickCase = (cNetCDF.Defaults.SetSamplePickCase) samplePickerTable.get(cmb_SamplesVariable.getSelectedIndex())[1];
+					if (!samplePickCase.equals(cNetCDF.Defaults.SetSamplePickCase.ALL_SAMPLES)) {
+						samplePickVar = samplePickerTable.get(cmb_SamplesVariable.getSelectedIndex())[2].toString();
+					}
+
+					String description = txtA_NewMatrixDescription.getText();
+					if (description.equals(Text.All.optional)) {
+						description = "";
+					}
+
+					MultiOperations.doExtractData(parentMatrix.getStudyId(),
+							parentMatrix.getMatrixId(),
+							newMatrixName,
+							description,
+							markerPickCase,
+							samplePickCase,
+							markerPickVar,
+							samplePickVar,
+							markerCriteria,
+							sampleCriteria,
+							markerCriteriaFile,
+							sampleCriteriaFile);
+				} else {
+					Dialogs.showWarningDialogue(org.gwaspi.global.Text.Matrix.pleaseInsertMatrixName);
+				}
+			} catch (Exception ex) {
+				Dialogs.showWarningDialogue(ex.getMessage());
+			}
+		}
 	}
 
 	//<editor-fold defaultstate="collapsed" desc="HELPERS">
-	private void actionMarkersCriteriaBrowse(java.awt.event.ActionEvent evt) {
-		//Use standard file opener
-		org.gwaspi.gui.utils.Dialogs.selectAndSetFileDialogue(evt, btn_MarkersCriteriaBrowse, txt_MarkersCriteriaFile, "");
-	}
+	private class MarkersCriteriaBrowseAction extends AbstractAction { // FIXME make static
 
-	private void actionSamplesCriteriaBrowse(java.awt.event.ActionEvent evt) {
-		//Use standard file opener
-		org.gwaspi.gui.utils.Dialogs.selectAndSetFileDialogue(evt, btn_SamplesCriteriaBrowse, txt_SamplesCriteriaFile, "");
-	}
+		MarkersCriteriaBrowseAction() {
 
-	private void actionBack(java.awt.event.ActionEvent evt) {
-		try {
-			org.gwaspi.gui.GWASpiExplorerPanel.pnl_Content = new CurrentMatrixPanel(parentMatrix.getMatrixId());
-			org.gwaspi.gui.GWASpiExplorerPanel.scrl_Content.setViewportView(org.gwaspi.gui.GWASpiExplorerPanel.pnl_Content);
-		} catch (IOException ex) {
-			Logger.getLogger(MatrixExtractPanel.class.getName()).log(Level.SEVERE, null, ex);
+			putValue(NAME, Text.All.browse);
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent evt) {
+			txtA_MarkersCriteria.setText("");
+			// Use standard file opener
+			Dialogs.selectAndSetFileDialog(evt, btn_MarkersCriteriaBrowse, txt_MarkersCriteriaFile, "");
 		}
 	}
 
-	private void actionHelp(java.awt.event.ActionEvent evt) {
-		try {
-			org.gwaspi.gui.utils.URLInDefaultBrowser.browseHelpURL(HelpURLs.QryURL.matrixExtract);
-		} catch (IOException ex) {
-			Logger.getLogger(CurrentMatrixPanel.class.getName()).log(Level.SEVERE, null, ex);
+	private class SamplesCriteriaBrowseAction extends AbstractAction { // FIXME make static
+
+		SamplesCriteriaBrowseAction() {
+
+			putValue(NAME, Text.All.browse);
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent evt) {
+			txtA_SamplesCriteria.setText("");
+			// Use standard file opener
+			Dialogs.selectAndSetFileDialog(evt, btn_SamplesCriteriaBrowse, txt_SamplesCriteriaFile, "");
+		}
+	}
+
+	private class MarkersVariableAction extends AbstractAction { // FIXME make static
+
+		private final Map<String, Object> rdChrInfoSetLHM;
+
+		MarkersVariableAction(int matrixId) throws IOException {
+
+			MarkerSet_opt parentMarkerSet = new MarkerSet_opt(parentMatrix.getStudyId(), matrixId);
+			rdChrInfoSetLHM = parentMarkerSet.getChrInfoSetLHM();
+
+			putValue(NAME, Text.Trafo.variable);
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent evt) {
+				if (cmb_MarkersVariable.getSelectedIndex() == 1 || cmb_MarkersVariable.getSelectedIndex() == 4) { //Chromosome variables
+
+				StringBuilder sb = new StringBuilder();
+				for (String key : rdChrInfoSetLHM.keySet()) {
+					sb.append(key.toString());
+					sb.append(",");
+				}
+				sb.deleteCharAt(sb.length() - 1);
+
+				txtA_MarkersCriteria.setText(sb.toString());
+			}
+		}
+	}
+
+	private static class BackAction extends AbstractAction {
+
+		private Matrix parentMatrix;
+
+		BackAction(Matrix parentMatrix) {
+
+			this.parentMatrix = parentMatrix;
+			putValue(NAME, Text.All.Back);
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent evt) {
+			try {
+				GWASpiExplorerPanel.pnl_Content = new CurrentMatrixPanel(parentMatrix.getMatrixId());
+				GWASpiExplorerPanel.scrl_Content.setViewportView(GWASpiExplorerPanel.pnl_Content);
+			} catch (IOException ex) {
+				Logger.getLogger(BackAction.class.getName()).log(Level.SEVERE, null, ex);
+			}
+		}
+	}
+
+	private static class HelpAction extends AbstractAction {
+
+		HelpAction() {
+
+			putValue(NAME, Text.Help.help);
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent evt) {
+			try {
+				URLInDefaultBrowser.browseHelpURL(HelpURLs.QryURL.matrixExtract);
+			} catch (IOException ex) {
+				Logger.getLogger(CurrentMatrixPanel.class.getName()).log(Level.SEVERE, null, ex);
+			}
 		}
 	}
 
 	private String checkNewMatrixData() {
 
 		String study_name = txt_NewMatrixName.getText().trim();
+		Color labelColor;
 		if (!study_name.isEmpty()) {
-			lbl_NewMatrixName.setForeground(Color.black);
+			labelColor = Color.BLACK;
 		} else {
-			lbl_NewMatrixName.setForeground(Color.red);
+			labelColor = Color.RED;
 		}
+		lbl_NewMatrixName.setForeground(labelColor);
 
 		return study_name;
 	}

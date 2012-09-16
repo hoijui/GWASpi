@@ -75,8 +75,8 @@ public class SystemOutPopup extends JFrame {
 			String fileName,
 			int width,
 			int height,
-			int closeOperation) {
-
+			int closeOperation)
+	{
 		this.catchErrors = catchErrors;
 		this.logFile = logFile;
 		this.matrixId = fileName;

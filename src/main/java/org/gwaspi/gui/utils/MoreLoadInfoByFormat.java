@@ -1,5 +1,7 @@
 package org.gwaspi.gui.utils;
 
+import org.gwaspi.constants.cImport;
+import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.global.Text;
 import java.awt.Container;
 import java.awt.Dimension;
@@ -7,10 +9,13 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
-import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -23,26 +28,18 @@ import org.gwaspi.netCDF.operations.GWASinOneGOParams;
  * IBE, Institute of Evolutionary Biology (UPF-CSIC)
  * CEXS-UPF-PRBB
  */
-public class MoreLoadInfoByFormat extends javax.swing.JFrame {
+public class MoreLoadInfoByFormat extends JFrame {
 
 	// Variables declaration - do not modify
-	private static javax.swing.JButton btn_Go;
-	private static javax.swing.JButton btn_Help;
-	private static javax.swing.JButton btn_Cancel;
-//	private static javax.swing.JCheckBox chkB_1;
-//	private static javax.swing.JCheckBox chkB_2;
-//	private static javax.swing.JCheckBox chkB_3;
-//	private static javax.swing.JRadioButton rdioB_1;
-//	private static javax.swing.JRadioButton rdioB_2;
-//	private static javax.swing.JTextField txtF_1;
-//	private static javax.swing.JTextField txtF_2;
-//	private static javax.swing.JTextField txtF_3;
-	private static javax.swing.JLabel lbl_Chromosome;
-	private static javax.swing.JComboBox cmb_Chromosome;
-	private static javax.swing.JLabel lbl_Strand;
-	private static javax.swing.JComboBox cmb_Strand;
-	private static javax.swing.JLabel lbl_GTCode;
-	private static javax.swing.JComboBox cmb_GTCode;
+	private static JButton btn_Go;
+	private static JButton btn_Help;
+	private static JButton btn_Cancel;
+	private static JLabel lbl_Chromosome;
+	private static JComboBox cmb_Chromosome;
+	private static JLabel lbl_Strand;
+	private static JComboBox cmb_Strand;
+	private static JLabel lbl_GTCode;
+	private static JComboBox cmb_GTCode;
 	private static JFrame myFrame = new JFrame("GridBagLayout Test");
 	private static JDialog dialog;
 	public static GWASinOneGOParams gwasParams = new GWASinOneGOParams();
@@ -54,7 +51,7 @@ public class MoreLoadInfoByFormat extends javax.swing.JFrame {
 		gwasParams.setProceed(false);
 		format = _format;
 
-		switch (org.gwaspi.constants.cImport.ImportFormat.compareTo(format)) {
+		switch (cImport.ImportFormat.compareTo(format)) {
 			case Affymetrix_GenomeWide6:
 				gwasParams.setProceed(true);
 				break;
@@ -73,18 +70,15 @@ public class MoreLoadInfoByFormat extends javax.swing.JFrame {
 				Container myPane = dialog.getContentPane();
 				myPane.setLayout(new GridBagLayout());
 				GridBagConstraints c = new GridBagConstraints();
-				setMyConstraints(c, 0, 0, GridBagConstraints.CENTER);
+				setConstraints(c, 0, 0, GridBagConstraints.CENTER);
 				myPane.add(getQuestionsPanel(), c);
-				setMyConstraints(c, 0, 1, GridBagConstraints.CENTER);
+				setConstraints(c, 0, 1, GridBagConstraints.CENTER);
 				myPane.add(getFooterPanel(), c);
 				dialog.pack();
 				dialog.setVisible(true);
-
-
 		}
 
 		return gwasParams;
-
 	}
 
 	public static JPanel getQuestionsPanel() {
@@ -92,38 +86,38 @@ public class MoreLoadInfoByFormat extends javax.swing.JFrame {
 		JPanel pnl_Questions = new JPanel(new GridBagLayout());
 		pnl_Questions.setBorder(BorderFactory.createTitledBorder("Additional Information..."));
 
-		lbl_Chromosome = new javax.swing.JLabel();
-		lbl_Strand = new javax.swing.JLabel();
-		lbl_GTCode = new javax.swing.JLabel();
+		lbl_Chromosome = new JLabel();
+		lbl_Strand = new JLabel();
+		lbl_GTCode = new JLabel();
 
-		cmb_Chromosome = new javax.swing.JComboBox();
-		cmb_Strand = new javax.swing.JComboBox();
-		cmb_GTCode = new javax.swing.JComboBox();
-
+		cmb_Chromosome = new JComboBox();
+		cmb_Strand = new JComboBox();
+		cmb_GTCode = new JComboBox();
 
 		GridBagConstraints c = new GridBagConstraints();
 		int rowNb = 0;
+
 		//<editor-fold defaultstate="collapsed" desc="FORMAT DEPENDENT">
 		lbl_Chromosome.setText("  " + Text.Dialog.chromosome + "  ");
 		lbl_Strand.setText("  " + Text.Dialog.strand + "  ");
 		lbl_GTCode.setText("  " + Text.Dialog.genotypeEncoding + "  ");
 
-		switch (org.gwaspi.constants.cImport.ImportFormat.compareTo(format)) {
+		switch (cImport.ImportFormat.compareTo(format)) {
 			case BEAGLE:
-				cmb_Chromosome.setModel(new javax.swing.DefaultComboBoxModel(org.gwaspi.constants.cNetCDF.Defaults.Chromosomes));
+				cmb_Chromosome.setModel(new DefaultComboBoxModel(cNetCDF.Defaults.Chromosomes));
 				cmb_Chromosome.setSelectedIndex(0);
-				setMyConstraints(c, 0, rowNb, GridBagConstraints.LINE_START);
+				setConstraints(c, 0, rowNb, GridBagConstraints.LINE_START);
 				pnl_Questions.add(lbl_Chromosome, c);
-				setMyConstraints(c, 1, rowNb, GridBagConstraints.WEST);
+				setConstraints(c, 1, rowNb, GridBagConstraints.WEST);
 				pnl_Questions.add(cmb_Chromosome, c);
 				rowNb++;
 				break;
             default:
-//				cmb_Chromosome.setModel(new javax.swing.DefaultComboBoxModel(org.gwaspi.constants.cNetCDF.Defaults.Chromosomes));
+//				cmb_Chromosome.setModel(new DefaultComboBoxModel(cNetCDF.Defaults.Chromosomes));
 //				cmb_Chromosome.setSelectedIndex(0);
-//				cmb_Strand.setModel(new javax.swing.DefaultComboBoxModel(org.gwaspi.constants.cNetCDF.Defaults.StrandType.values()));
+//				cmb_Strand.setModel(new DefaultComboBoxModel(cNetCDF.Defaults.StrandType.values()));
 //				cmb_Strand.setSelectedIndex(6);
-//				cmb_GTCode.setModel(new javax.swing.DefaultComboBoxModel(org.gwaspi.constants.cNetCDF.Defaults.GenotypeCode.values()));
+//				cmb_GTCode.setModel(new DefaultComboBoxModel(cNetCDF.Defaults.GenotypeCode.values()));
 //				cmb_GTCode.setSelectedIndex(0);
 //
 //				setMyConstraints(c,0,rowNb,GridBagConstraints.LINE_START);
@@ -154,49 +148,26 @@ public class MoreLoadInfoByFormat extends javax.swing.JFrame {
 
 		JPanel pnl_Footer = new JPanel(new GridBagLayout());
 
-		btn_Go = new javax.swing.JButton();
-		btn_Help = new javax.swing.JButton();
-		btn_Cancel = new javax.swing.JButton();
+		btn_Go = new JButton();
+		btn_Help = new JButton();
+		btn_Cancel = new JButton();
 
-		btn_Help.setText("  " + Text.Help.help + "  ");
-		btn_Help.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				actionHelp(evt);
-			}
-		});
+		btn_Help.setAction(new HelpAction());
 
-		btn_Go.setText("   " + Text.All.go + "   ");
-		btn_Go.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				actionGo(evt);
-			}
-		});
+		btn_Go.setAction(new GoAction());
 
-		btn_Cancel.setText("   " + Text.All.cancel + "   ");
-		btn_Cancel.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				actionCancel(evt);
-			}
-		});
-
-//		GridBagConstraints c = new GridBagConstraints();
-//		setMyConstraints(c,0,0,GridBagConstraints.LINE_START);
-//		pnl_Footer.add(btn_Help,c);
-//		setMyConstraints(c,1,0,GridBagConstraints.LINE_END);
-//		pnl_Footer.add(new JLabel("    "),c);
-//		setMyConstraints(c,2,0,GridBagConstraints.LINE_END);
-//		pnl_Footer.add(btn_Go,c);
+		btn_Cancel.setAction(new CancelAction());
 
 		GridBagConstraints c = new GridBagConstraints();
-		setMyConstraints(c, 0, 0, GridBagConstraints.LINE_START);
+		setConstraints(c, 0, 0, GridBagConstraints.LINE_START);
 		pnl_Footer.add(btn_Cancel, c);
-		setMyConstraints(c, 1, 0, GridBagConstraints.LINE_END);
+		setConstraints(c, 1, 0, GridBagConstraints.LINE_END);
 		pnl_Footer.add(new JLabel("    "), c);
-		setMyConstraints(c, 2, 0, GridBagConstraints.LINE_START);
+		setConstraints(c, 2, 0, GridBagConstraints.LINE_START);
 		pnl_Footer.add(btn_Help, c);
-		setMyConstraints(c, 3, 0, GridBagConstraints.LINE_END);
+		setConstraints(c, 3, 0, GridBagConstraints.LINE_END);
 		pnl_Footer.add(new JLabel("    "), c);
-		setMyConstraints(c, 4, 0, GridBagConstraints.LINE_END);
+		setConstraints(c, 4, 0, GridBagConstraints.LINE_END);
 		pnl_Footer.add(btn_Go, c);
 
 		pnl_Footer.setVisible(true);
@@ -204,40 +175,68 @@ public class MoreLoadInfoByFormat extends javax.swing.JFrame {
 		return pnl_Footer;
 	}
 
-	private static void actionHelp(ActionEvent evt) {
-		try {
-			org.gwaspi.gui.utils.URLInDefaultBrowser.browseHelpURL(HelpURLs.QryURL.GWASinOneGo);
-		} catch (IOException ex) {
-			Logger.getLogger(MoreLoadInfoByFormat.class.getName()).log(Level.SEVERE, null, ex);
+	private static class HelpAction extends AbstractAction {
+
+		HelpAction() {
+
+			putValue(NAME, Text.Help.help);
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent evt) {
+			try {
+				URLInDefaultBrowser.browseHelpURL(HelpURLs.QryURL.GWASinOneGo);
+			} catch (Exception ex) {
+				Logger.getLogger(MoreAssocInfo.class.getName()).log(Level.SEVERE, null, ex);
+			}
 		}
 	}
 
-	private static void actionGo(ActionEvent evt) {
-		try {
-			if (cmb_Chromosome.getSelectedItem() != null) {
-				gwasParams.setChromosome(cmb_Chromosome.getSelectedItem().toString());
-			}
-			if (cmb_Strand.getSelectedItem() != null) {
-				gwasParams.setStrandType(cmb_Strand.getSelectedItem().toString());
-			}
-			if (cmb_GTCode.getSelectedItem() != null) {
-				gwasParams.setGtCode(cmb_GTCode.getSelectedItem().toString());
-			}
-			gwasParams.setProceed(true);
+	private static class GoAction extends AbstractAction {
 
-		} catch (NumberFormatException numberFormatException) {
+		GoAction() {
+
+			putValue(NAME, Text.All.go);
 		}
-		dialog.dispose();
+
+		@Override
+		public void actionPerformed(ActionEvent evt) {
+			try {
+				if (cmb_Chromosome.getSelectedItem() != null) {
+					gwasParams.setChromosome(cmb_Chromosome.getSelectedItem().toString());
+				}
+				if (cmb_Strand.getSelectedItem() != null) {
+					gwasParams.setStrandType(cmb_Strand.getSelectedItem().toString());
+				}
+				if (cmb_GTCode.getSelectedItem() != null) {
+					gwasParams.setGtCode(cmb_GTCode.getSelectedItem().toString());
+				}
+				gwasParams.setProceed(true);
+
+			} catch (NumberFormatException numberFormatException) {
+			}
+			dialog.dispose();
+		}
 	}
 
-	private static void actionCancel(ActionEvent evt) {
-		dialog.setVisible(false);
+	private static class CancelAction extends AbstractAction {
+
+		CancelAction() {
+
+			putValue(NAME, Text.All.cancel);
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent evt) {
+			dialog.setVisible(false);
+		}
 	}
 
-	private static void setMyConstraints(GridBagConstraints c,
+	private static void setConstraints(GridBagConstraints c,
 			int gridx,
 			int gridy,
-			int anchor) {
+			int anchor)
+	{
 		c.gridx = gridx;
 		c.gridy = gridy;
 		c.anchor = anchor;

@@ -13,15 +13,7 @@ import javax.swing.JTextField;
  */
 public class DoubleInputVerifier extends InputVerifier {
 
-	private int lengthBeforeDot = 1;
-	private int lengthAfterDot = 10;
-
 	public DoubleInputVerifier() {
-	}
-
-	public DoubleInputVerifier(int lengthBeforeDot, int lengthAfterDot) {
-		this.lengthAfterDot = lengthAfterDot;
-		this.lengthBeforeDot = lengthBeforeDot;
 	}
 
 	public boolean verify(JComponent input) {

@@ -1,13 +1,16 @@
 package org.gwaspi.gui;
 
 import org.gwaspi.gui.utils.URLInDefaultBrowser;
-import java.io.BufferedInputStream;
-import java.io.DataInputStream;
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
-import javax.swing.*;
+import javax.swing.JEditorPane;
+import javax.swing.JFrame;
+import javax.swing.JScrollPane;
+import javax.swing.WindowConstants;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 import javax.swing.text.html.HTMLEditorKit;
@@ -27,13 +30,12 @@ public class GetEnsemblRegionHTML extends JFrame {
 		final URL u = new URL(hostName + "/Homo_sapiens/Location/Overview?r=1:50000-150000");
 
 		InputStream inputStr = u.openStream();
-		DataInputStream br = new DataInputStream(new BufferedInputStream(inputStr));
+		BufferedReader br = new BufferedReader(new InputStreamReader(inputStr));
 
 		String s;
 		//String webContent = "<html>";
 		String webContent = "";
 		while ((s = br.readLine()) != null) {
-
 
 			if (s.contains("<div class=\"content\">")) {
 				if (s.contains("class=\"ajax_load\"")) {

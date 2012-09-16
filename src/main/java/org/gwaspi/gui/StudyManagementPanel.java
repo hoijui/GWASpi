@@ -1,20 +1,43 @@
 package org.gwaspi.gui;
 
 import org.gwaspi.global.Text;
+import org.gwaspi.gui.utils.Dialogs;
 import org.gwaspi.gui.utils.HelpURLs;
+import org.gwaspi.gui.utils.JTextFieldLimit;
+import org.gwaspi.gui.utils.NodeToPathCorrespondence;
+import org.gwaspi.gui.utils.RowRendererDefault;
+import org.gwaspi.gui.utils.URLInDefaultBrowser;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.AbstractAction;
+import javax.swing.BorderFactory;
+import javax.swing.GroupLayout;
+import javax.swing.JButton;
 import javax.swing.JComponent;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.LayoutStyle;
+import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
+import javax.swing.border.TitledBorder;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.tree.DefaultMutableTreeNode;
+import org.gwaspi.model.Study;
 import org.gwaspi.threadbox.MultiOperations;
 
 /**
@@ -23,48 +46,48 @@ import org.gwaspi.threadbox.MultiOperations;
  * IBE, Institute of Evolutionary Biology (UPF-CSIC)
  * CEXS-UPF-PRBB
  */
-public class StudyManagementPanel extends javax.swing.JPanel {
+public class StudyManagementPanel extends JPanel {
 
 	// Variables declaration
-	private org.gwaspi.model.Study study;
+	private Study study;
 	private Map<Integer, Object> treeChildrenLHM = new LinkedHashMap<Integer, Object>();
-	private javax.swing.JButton btn_AddStudy;
-	private javax.swing.JButton btn_DeleteStudy;
-	private javax.swing.JLabel lbl_Desc;
-	private javax.swing.JLabel lbl_NewStudyName;
-	private javax.swing.JPanel pnl_StudiesTable;
-	private javax.swing.JPanel pnl_StudyDesc;
-	private javax.swing.JPanel pnl_Footer;
-	private javax.swing.JButton btn_Back;
-	private javax.swing.JButton btn_Help;
-	private javax.swing.JScrollPane scrl_Desc;
-	private javax.swing.JScrollPane scrl_StudiesTable;
-	private javax.swing.JTable tbl_StudiesTable;
-	private javax.swing.JTextArea txtA_Desc;
-	private javax.swing.JTextField txtF_NewStudyName;
+	private JButton btn_AddStudy;
+	private JButton btn_DeleteStudy;
+	private JLabel lbl_Desc;
+	private JLabel lbl_NewStudyName;
+	private JPanel pnl_StudiesTable;
+	private JPanel pnl_StudyDesc;
+	private JPanel pnl_Footer;
+	private JButton btn_Back;
+	private JButton btn_Help;
+	private JScrollPane scrl_Desc;
+	private JScrollPane scrl_StudiesTable;
+	private JTable tbl_StudiesTable;
+	private JTextArea txtA_Desc;
+	private JTextField txtF_NewStudyName;
 	// End of variables declaration
 
 	@SuppressWarnings("unchecked")
 	public StudyManagementPanel() throws IOException {
 
-		DefaultMutableTreeNode studyManagementNode = (DefaultMutableTreeNode) org.gwaspi.gui.GWASpiExplorerPanel.tree.getLastSelectedPathComponent();
-		treeChildrenLHM = org.gwaspi.gui.utils.NodeToPathCorrespondence.buildNodeToPathCorrespondence(studyManagementNode, false);
+		DefaultMutableTreeNode studyManagementNode = (DefaultMutableTreeNode) GWASpiExplorerPanel.tree.getLastSelectedPathComponent();
+		treeChildrenLHM = NodeToPathCorrespondence.buildNodeToPathCorrespondence(studyManagementNode, false);
 
-		pnl_StudyDesc = new javax.swing.JPanel();
-		lbl_NewStudyName = new javax.swing.JLabel();
-		txtF_NewStudyName = new javax.swing.JTextField();
+		pnl_StudyDesc = new JPanel();
+		lbl_NewStudyName = new JLabel();
+		txtF_NewStudyName = new JTextField();
 		txtF_NewStudyName.setDocument(new org.gwaspi.model.JTextFieldLimited(64));
-		lbl_Desc = new javax.swing.JLabel();
-		scrl_Desc = new javax.swing.JScrollPane();
-		txtA_Desc = new javax.swing.JTextArea();
-		btn_DeleteStudy = new javax.swing.JButton();
-		btn_AddStudy = new javax.swing.JButton();
-		pnl_StudiesTable = new javax.swing.JPanel();
-		pnl_Footer = new javax.swing.JPanel();
-		btn_Help = new javax.swing.JButton();
-		btn_Back = new javax.swing.JButton();
-		scrl_StudiesTable = new javax.swing.JScrollPane();
-		tbl_StudiesTable = new javax.swing.JTable() {
+		lbl_Desc = new JLabel();
+		scrl_Desc = new JScrollPane();
+		txtA_Desc = new JTextArea();
+		btn_DeleteStudy = new JButton();
+		btn_AddStudy = new JButton();
+		pnl_StudiesTable = new JPanel();
+		pnl_Footer = new JPanel();
+		btn_Help = new JButton();
+		btn_Back = new JButton();
+		scrl_StudiesTable = new JScrollPane();
+		tbl_StudiesTable = new JTable() {
 			@Override
 			public boolean isCellEditable(int row, int col) {
 				return false;
@@ -80,21 +103,21 @@ public class StudyManagementPanel extends javax.swing.JPanel {
 				return c;
 			}
 		};
-		tbl_StudiesTable.setDefaultRenderer(Object.class, new org.gwaspi.gui.utils.RowRendererDefault());
+		tbl_StudiesTable.setDefaultRenderer(Object.class, new RowRendererDefault());
 
-		setBorder(javax.swing.BorderFactory.createTitledBorder(null, Text.Study.studies, javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("FreeSans", 1, 18))); // NOI18N
+		setBorder(BorderFactory.createTitledBorder(null, Text.Study.studies, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("FreeSans", 1, 18))); // NOI18N
 
-		pnl_StudyDesc.setBorder(javax.swing.BorderFactory.createTitledBorder(null, Text.Study.createNewStudy, javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("DejaVu Sans", 1, 13))); // NOI18N
+		pnl_StudyDesc.setBorder(BorderFactory.createTitledBorder(null, Text.Study.createNewStudy, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("DejaVu Sans", 1, 13))); // NOI18N
 		lbl_NewStudyName.setText(Text.Study.studyName);
-		txtF_NewStudyName.setDocument(new org.gwaspi.gui.utils.JTextFieldLimit(63));
+		txtF_NewStudyName.setDocument(new JTextFieldLimit(63));
 
 		lbl_Desc.setText(Text.All.description);
 		txtA_Desc.setColumns(20);
 		txtA_Desc.setRows(5);
 		txtA_Desc.setText(Text.All.optional);
-		txtA_Desc.addFocusListener(new java.awt.event.FocusAdapter() {
+		txtA_Desc.addFocusListener(new FocusAdapter() {
 			@Override
-			public void focusGained(java.awt.event.FocusEvent evt) {
+			public void focusGained(FocusEvent evt) {
 				SwingUtilities.invokeLater(new Runnable() {
 					@Override
 					public void run() {
@@ -106,7 +129,7 @@ public class StudyManagementPanel extends javax.swing.JPanel {
 			}
 
 			@Override
-			public void focusLost(java.awt.event.FocusEvent evt) {
+			public void focusLost(FocusEvent evt) {
 				SwingUtilities.invokeLater(new Runnable() {
 					@Override
 					public void run() {
@@ -117,230 +140,241 @@ public class StudyManagementPanel extends javax.swing.JPanel {
 		});
 
 		scrl_Desc.setViewportView(txtA_Desc);
-		btn_AddStudy.setText(Text.Study.addStudy);
-		btn_AddStudy.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				try {
-					btn_AddStudyActionPerformed(evt);
-				} catch (IOException ex) {
-					Logger.getLogger(StudyManagementPanel.class.getName()).log(Level.SEVERE, null, ex);
-				}
-			}
-		});
+		btn_AddStudy.setAction(new AddStudyAction());
 
-		pnl_StudiesTable.setBorder(javax.swing.BorderFactory.createTitledBorder(null, Text.Study.availableStudies, javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("DejaVu Sans", 1, 13))); // NOI18N
-		tbl_StudiesTable.setModel(new javax.swing.table.DefaultTableModel(
+		pnl_StudiesTable.setBorder(BorderFactory.createTitledBorder(null, Text.Study.availableStudies, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("DejaVu Sans", 1, 13))); // NOI18N
+		tbl_StudiesTable.setModel(new DefaultTableModel(
 				org.gwaspi.model.StudyList.getStudyTable(),
 				new String[]{
 					Text.Study.studyID, Text.Study.studyName, Text.All.description, Text.All.createDate
 				}));
 		scrl_StudiesTable.setViewportView(tbl_StudiesTable);
-		btn_DeleteStudy.setText(Text.Study.deleteStudy);
-		btn_DeleteStudy.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				actionDeleteStudy(evt);
-			}
-		});
-
+		btn_DeleteStudy.setAction(new DeleteStudyAction());
 
 		//<editor-fold defaultstate="collapsed" desc="LAYOUT STUDY TABLE">
-		javax.swing.GroupLayout pnl_StudiesTableLayout = new javax.swing.GroupLayout(pnl_StudiesTable);
+		GroupLayout pnl_StudiesTableLayout = new GroupLayout(pnl_StudiesTable);
 		pnl_StudiesTable.setLayout(pnl_StudiesTableLayout);
 		pnl_StudiesTableLayout.setHorizontalGroup(
-				pnl_StudiesTableLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+				pnl_StudiesTableLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
 				.addGroup(pnl_StudiesTableLayout.createSequentialGroup()
 				.addContainerGap()
-				.addGroup(pnl_StudiesTableLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-				.addComponent(scrl_StudiesTable, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 589, Short.MAX_VALUE)
-				.addComponent(btn_DeleteStudy, javax.swing.GroupLayout.PREFERRED_SIZE, 154, javax.swing.GroupLayout.PREFERRED_SIZE))
+				.addGroup(pnl_StudiesTableLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+				.addComponent(scrl_StudiesTable, GroupLayout.Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 589, Short.MAX_VALUE)
+				.addComponent(btn_DeleteStudy, GroupLayout.PREFERRED_SIZE, 154, GroupLayout.PREFERRED_SIZE))
 				.addContainerGap()));
 		pnl_StudiesTableLayout.setVerticalGroup(
-				pnl_StudiesTableLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+				pnl_StudiesTableLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
 				.addGroup(pnl_StudiesTableLayout.createSequentialGroup()
-				.addComponent(scrl_StudiesTable, javax.swing.GroupLayout.PREFERRED_SIZE, 288, javax.swing.GroupLayout.PREFERRED_SIZE)
-				.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+				.addComponent(scrl_StudiesTable, GroupLayout.PREFERRED_SIZE, 288, GroupLayout.PREFERRED_SIZE)
+				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
 				.addComponent(btn_DeleteStudy)
 				.addContainerGap()));
 		//</editor-fold>
 
-
 		// <editor-fold defaultstate="collapsed" desc="LAYOUT DESCRIPTION">
-		javax.swing.GroupLayout pnl_StudyDescLayout = new javax.swing.GroupLayout(pnl_StudyDesc);
+		GroupLayout pnl_StudyDescLayout = new GroupLayout(pnl_StudyDesc);
 		pnl_StudyDesc.setLayout(pnl_StudyDescLayout);
 		pnl_StudyDescLayout.setHorizontalGroup(
-				pnl_StudyDescLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+				pnl_StudyDescLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
 				.addGroup(pnl_StudyDescLayout.createSequentialGroup()
 				.addContainerGap()
-				.addGroup(pnl_StudyDescLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+				.addGroup(pnl_StudyDescLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
 				.addComponent(lbl_NewStudyName)
 				.addComponent(lbl_Desc))
 				.addGap(18, 18, 18)
-				.addGroup(pnl_StudyDescLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-				.addComponent(scrl_Desc, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 592, Short.MAX_VALUE)
-				.addComponent(txtF_NewStudyName, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 592, Short.MAX_VALUE))
+				.addGroup(pnl_StudyDescLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+				.addComponent(scrl_Desc, GroupLayout.Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 592, Short.MAX_VALUE)
+				.addComponent(txtF_NewStudyName, GroupLayout.Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 592, Short.MAX_VALUE))
 				.addContainerGap())
-				.addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnl_StudyDescLayout.createSequentialGroup()
+				.addGroup(GroupLayout.Alignment.TRAILING, pnl_StudyDescLayout.createSequentialGroup()
 				.addContainerGap(605, Short.MAX_VALUE)
-				.addComponent(btn_AddStudy, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE)
+				.addComponent(btn_AddStudy, GroupLayout.PREFERRED_SIZE, 99, GroupLayout.PREFERRED_SIZE)
 				.addGap(14, 14, 14)));
 		pnl_StudyDescLayout.setVerticalGroup(
-				pnl_StudyDescLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+				pnl_StudyDescLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
 				.addGroup(pnl_StudyDescLayout.createSequentialGroup()
-				.addGroup(pnl_StudyDescLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+				.addGroup(pnl_StudyDescLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
 				.addComponent(lbl_NewStudyName)
-				.addComponent(txtF_NewStudyName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-				.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-				.addGroup(pnl_StudyDescLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+				.addComponent(txtF_NewStudyName, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+				.addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
+				.addGroup(pnl_StudyDescLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
 				.addComponent(lbl_Desc)
 				.addGroup(pnl_StudyDescLayout.createSequentialGroup()
 				.addGap(2, 2, 2)
-				.addComponent(scrl_Desc, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-				.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+				.addComponent(scrl_Desc, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
+				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
 				.addComponent(btn_AddStudy)));
 		// </editor-fold>
 
 		//<editor-fold defaultstate="collapsed" desc="FOOTER">
-		btn_Back.setText("Back");
-		btn_Back.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				btn_BackActionPerformed(evt);
-			}
-		});
-		btn_Help.setText("Help");
-		btn_Help.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				btn_HelpActionPerformed(evt);
-			}
-		});
-		javax.swing.GroupLayout pnl_FooterLayout = new javax.swing.GroupLayout(pnl_Footer);
+		btn_Back.setAction(new BackAction());
+		btn_Help.setAction(new HelpAction());
+		GroupLayout pnl_FooterLayout = new GroupLayout(pnl_Footer);
 		pnl_Footer.setLayout(pnl_FooterLayout);
 		pnl_FooterLayout.setHorizontalGroup(
-				pnl_FooterLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+				pnl_FooterLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
 				.addGroup(pnl_FooterLayout.createSequentialGroup()
-				.addComponent(btn_Back, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE)
+				.addComponent(btn_Back, GroupLayout.PREFERRED_SIZE, 94, GroupLayout.PREFERRED_SIZE)
 				.addGap(18, 437, Short.MAX_VALUE)
 				.addComponent(btn_Help)));
 
-		pnl_FooterLayout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[]{btn_Back, btn_Help});
+		pnl_FooterLayout.linkSize(SwingConstants.HORIZONTAL, new Component[]{btn_Back, btn_Help});
 		pnl_FooterLayout.setVerticalGroup(
-				pnl_FooterLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+				pnl_FooterLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
 				.addGroup(pnl_FooterLayout.createSequentialGroup()
 				.addContainerGap(0, Short.MAX_VALUE)
-				.addGroup(pnl_FooterLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+				.addGroup(pnl_FooterLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
 				.addComponent(btn_Back)
 				.addComponent(btn_Help))));
 		//</editor-fold>
 
 		//<editor-fold defaultstate="collapsed" desc="LAYOUT">
-		javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
+		GroupLayout layout = new GroupLayout(this);
 		this.setLayout(layout);
 		layout.setHorizontalGroup(
-				layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+				layout.createParallelGroup(GroupLayout.Alignment.LEADING)
 				.addGroup(layout.createSequentialGroup()
 				.addContainerGap()
-				.addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-				.addComponent(pnl_StudiesTable, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-				.addComponent(pnl_StudyDesc, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-				.addComponent(pnl_Footer, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+				.addComponent(pnl_StudiesTable, GroupLayout.Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+				.addComponent(pnl_StudyDesc, GroupLayout.Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+				.addComponent(pnl_Footer, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
 				.addContainerGap()));
 		layout.setVerticalGroup(
-				layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+				layout.createParallelGroup(GroupLayout.Alignment.LEADING)
 				.addGroup(layout.createSequentialGroup()
 				.addContainerGap()
-				.addComponent(pnl_StudiesTable, javax.swing.GroupLayout.PREFERRED_SIZE, 362, javax.swing.GroupLayout.PREFERRED_SIZE)
-				.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-				.addComponent(pnl_StudyDesc, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-				.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-				.addComponent(pnl_Footer, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-				.addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)));
+				.addComponent(pnl_StudiesTable, GroupLayout.PREFERRED_SIZE, 362, GroupLayout.PREFERRED_SIZE)
+				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+				.addComponent(pnl_StudyDesc, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+				.addComponent(pnl_Footer, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+				.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)));
 		//</editor-fold>
-
 	}
 
-	private void btn_AddStudyActionPerformed(java.awt.event.ActionEvent evt) throws IOException {
+	private class AddStudyAction extends AbstractAction { // FIXME make static
 
-		String study_name = txtF_NewStudyName.getText();
-		if (!study_name.isEmpty()) {
-			lbl_NewStudyName.setForeground(Color.black);
-			String study_description = txtA_Desc.getText();
-			if (txtA_Desc.getText().equals(Text.All.optional)) {
-				study_description = "";
-			}
+		AddStudyAction() {
 
-			org.gwaspi.database.StudyGenerator.insertNewStudy(study_name, study_description);
-			org.gwaspi.gui.GWASpiExplorerPanel.pnl_Content = new StudyManagementPanel();
-			org.gwaspi.gui.GWASpiExplorerPanel.scrl_Content.setViewportView(org.gwaspi.gui.GWASpiExplorerPanel.pnl_Content);
-			org.gwaspi.gui.GWASpiExplorerPanel.updateTreePanel(true);
-			//model.GWASpiExplorer.insertLatestStudyNode();
-		} else {
-			org.gwaspi.gui.utils.Dialogs.showWarningDialogue(org.gwaspi.global.Text.Study.warnNoStudyName);
-			lbl_NewStudyName.setForeground(Color.red);
+			putValue(NAME, Text.Study.addStudy);
 		}
-	}
 
-	private void actionDeleteStudy(ActionEvent evt) {
-		if (tbl_StudiesTable.getSelectedRow() != -1) {
-
-			int[] selectedStudyRows = tbl_StudiesTable.getSelectedRows();
-			int[] selectedStudyIds = new int[selectedStudyRows.length];
-			for (int i = 0; i < selectedStudyRows.length; i++) {
-				selectedStudyIds[i] = (Integer) tbl_StudiesTable.getModel().getValueAt(selectedStudyRows[i], 0);
-			}
-
-			int option = JOptionPane.showConfirmDialog(this, Text.Study.confirmDelete1 + Text.Study.confirmDelete2);
-			if (option == JOptionPane.YES_OPTION) {
-				int deleteReportOption = JOptionPane.showConfirmDialog(this, Text.Reports.confirmDelete);
-				for (int i = 0; i < selectedStudyIds.length; i++) {
-					int studyId = selectedStudyIds[i];
-					//TEST IF THE DELETED ITEM IS REQUIRED FOR A QUED WORKER
-					if (org.gwaspi.threadbox.SwingWorkerItemList.permitsDeletion(studyId, null, null)) {
-						if (option == JOptionPane.YES_OPTION && deleteReportOption != JOptionPane.CANCEL_OPTION) {
-
-							boolean deleteReport = false;
-							if (deleteReportOption == JOptionPane.YES_OPTION) {
-								deleteReport = true;
-							}
-							MultiOperations.deleteStudy(studyId, deleteReport);
-
-//							try {
-//								org.gwaspi.database.StudyGenerator.deleteStudy(studyId, deleteReport);
-//								try {
-//									org.gwaspi.gui.GWASpiExplorerPanel.pnl_Content = new StudyManagementPanel();
-//									org.gwaspi.gui.GWASpiExplorerPanel.scrl_Content.setViewportView(org.gwaspi.gui.GWASpiExplorerPanel.pnl_Content);
-//									org.gwaspi.gui.GWASpiExplorerPanel.updateTreePanel(true);
-//								} catch (IOException ex) {
-//									Logger.getLogger(StudyManagementPanel.class.getName()).log(Level.SEVERE, null, ex);
-//								}
-//
-//							} catch (IOException ex) {
-//								Logger.getLogger(StudyManagementPanel.class.getName()).log(Level.SEVERE, null, ex);
-//							}
-						}
-					} else {
-						org.gwaspi.gui.utils.Dialogs.showWarningDialogue(Text.Processes.cantDeleteRequiredItem);
+		@Override
+		public void actionPerformed(ActionEvent evt) {
+			try {
+				String study_name = txtF_NewStudyName.getText();
+				if (!study_name.isEmpty()) {
+					lbl_NewStudyName.setForeground(Color.black);
+					String study_description = txtA_Desc.getText();
+					if (txtA_Desc.getText().equals(Text.All.optional)) {
+						study_description = "";
 					}
 
+					org.gwaspi.database.StudyGenerator.insertNewStudy(study_name, study_description);
+					GWASpiExplorerPanel.pnl_Content = new StudyManagementPanel();
+					GWASpiExplorerPanel.scrl_Content.setViewportView(GWASpiExplorerPanel.pnl_Content);
+					GWASpiExplorerPanel.updateTreePanel(true);
+					//model.GWASpiExplorer.insertLatestStudyNode();
+				} else {
+					Dialogs.showWarningDialogue(org.gwaspi.global.Text.Study.warnNoStudyName);
+					lbl_NewStudyName.setForeground(Color.red);
 				}
-				try {
-					org.gwaspi.gui.GWASpiExplorerPanel.updateTreePanel(true);
-				} catch (IOException ex) {
-					Logger.getLogger(StudyManagementPanel.class.getName()).log(Level.SEVERE, null, ex);
+			} catch (IOException ex) {
+				Logger.getLogger(StudyManagementPanel.class.getName()).log(Level.SEVERE, null, ex);
+			}
+		}
+	}
+
+	private class DeleteStudyAction extends AbstractAction { // FIXME make static
+
+		DeleteStudyAction() {
+
+			putValue(NAME, Text.Study.deleteStudy);
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent evt) {
+			if (tbl_StudiesTable.getSelectedRow() != -1) {
+
+				int[] selectedStudyRows = tbl_StudiesTable.getSelectedRows();
+				int[] selectedStudyIds = new int[selectedStudyRows.length];
+				for (int i = 0; i < selectedStudyRows.length; i++) {
+					selectedStudyIds[i] = (Integer) tbl_StudiesTable.getModel().getValueAt(selectedStudyRows[i], 0);
+				}
+
+				int option = JOptionPane.showConfirmDialog(StudyManagementPanel.this, Text.Study.confirmDelete1 + Text.Study.confirmDelete2);
+				if (option == JOptionPane.YES_OPTION) {
+					int deleteReportOption = JOptionPane.showConfirmDialog(StudyManagementPanel.this, Text.Reports.confirmDelete);
+					for (int i = 0; i < selectedStudyIds.length; i++) {
+						int studyId = selectedStudyIds[i];
+						//TEST IF THE DELETED ITEM IS REQUIRED FOR A QUED WORKER
+						if (org.gwaspi.threadbox.SwingWorkerItemList.permitsDeletion(studyId, null, null)) {
+							if (option == JOptionPane.YES_OPTION && deleteReportOption != JOptionPane.CANCEL_OPTION) {
+
+								boolean deleteReport = false;
+								if (deleteReportOption == JOptionPane.YES_OPTION) {
+									deleteReport = true;
+								}
+								MultiOperations.deleteStudy(studyId, deleteReport);
+
+	//							try {
+	//								org.gwaspi.database.StudyGenerator.deleteStudy(studyId, deleteReport);
+	//								try {
+	//									GWASpiExplorerPanel.pnl_Content = new StudyManagementPanel();
+	//									GWASpiExplorerPanel.scrl_Content.setViewportView(GWASpiExplorerPanel.pnl_Content);
+	//									GWASpiExplorerPanel.updateTreePanel(true);
+	//								} catch (IOException ex) {
+	//									Logger.getLogger(StudyManagementPanel.class.getName()).log(Level.SEVERE, null, ex);
+	//								}
+	//
+	//							} catch (IOException ex) {
+	//								Logger.getLogger(StudyManagementPanel.class.getName()).log(Level.SEVERE, null, ex);
+	//							}
+							}
+						} else {
+							Dialogs.showWarningDialogue(Text.Processes.cantDeleteRequiredItem);
+						}
+					}
+					try {
+						GWASpiExplorerPanel.updateTreePanel(true);
+					} catch (IOException ex) {
+						Logger.getLogger(StudyManagementPanel.class.getName()).log(Level.SEVERE, null, ex);
+					}
 				}
 			}
 		}
 	}
 
-	private void btn_BackActionPerformed(ActionEvent evt) {
-		org.gwaspi.gui.GWASpiExplorerPanel.tree.setSelectionPath(org.gwaspi.gui.GWASpiExplorerPanel.tree.getSelectionPath().getParentPath());
-		org.gwaspi.gui.GWASpiExplorerPanel.pnl_Content = new IntroPanel();
-		org.gwaspi.gui.GWASpiExplorerPanel.scrl_Content.setViewportView(org.gwaspi.gui.GWASpiExplorerPanel.pnl_Content);
+	private static class BackAction extends AbstractAction {
+
+		BackAction() {
+
+			putValue(NAME, Text.All.Back);
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent evt) {
+			GWASpiExplorerPanel.tree.setSelectionPath(GWASpiExplorerPanel.tree.getSelectionPath().getParentPath());
+			GWASpiExplorerPanel.pnl_Content = new IntroPanel();
+			GWASpiExplorerPanel.scrl_Content.setViewportView(GWASpiExplorerPanel.pnl_Content);
+		}
 	}
 
-	private void btn_HelpActionPerformed(ActionEvent evt) {
-		try {
-			org.gwaspi.gui.utils.URLInDefaultBrowser.browseHelpURL(HelpURLs.QryURL.createStudy);
-		} catch (IOException ex) {
-			Logger.getLogger(CurrentMatrixPanel.class.getName()).log(Level.SEVERE, null, ex);
+	private static class HelpAction extends AbstractAction {
+
+		HelpAction() {
+
+			putValue(NAME, Text.Help.help);
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent evt) {
+			try {
+				URLInDefaultBrowser.browseHelpURL(HelpURLs.QryURL.createStudy);
+			} catch (IOException ex) {
+				Logger.getLogger(CurrentMatrixPanel.class.getName()).log(Level.SEVERE, null, ex);
+			}
 		}
 	}
 }

@@ -1,8 +1,17 @@
 package org.gwaspi.gui.reports;
 
+import org.gwaspi.global.Config;
 import org.gwaspi.global.Text;
+import org.gwaspi.global.Utils;
 import org.gwaspi.gui.CurrentStudyPanel;
+import org.gwaspi.gui.GWASpiExplorerPanel;
+import org.gwaspi.gui.utils.Dialogs;
 import org.gwaspi.gui.utils.HelpURLs;
+import org.gwaspi.gui.utils.RowRendererDefault;
+import org.gwaspi.gui.utils.URLInDefaultBrowser;
+import java.awt.Component;
+import java.awt.Font;
+import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -13,7 +22,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.AbstractAction;
+import javax.swing.BorderFactory;
+import javax.swing.GroupLayout;
+import javax.swing.JButton;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.LayoutStyle;
+import javax.swing.SwingConstants;
+import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
@@ -26,115 +45,94 @@ import org.gwaspi.samples.SampleManager;
  * IBE, Institute of Evolutionary Biology (UPF-CSIC)
  * CEXS-UPF-PRBB
  */
-public class Report_SampleInfoPanel extends javax.swing.JPanel {
+public class Report_SampleInfoPanel extends JPanel {
 
 	// Variables declaration - do not modify
 	private File missingFile;
 	private int studyId;
-	private javax.swing.JButton btn_Save;
-	private javax.swing.JButton btn_Back;
-	private javax.swing.JButton btn_Help;
-	private javax.swing.JPanel pnl_Footer;
-	private javax.swing.JScrollPane scrl_ReportTable;
-	private javax.swing.JTable tbl_ReportTable;
+	private JButton btn_Save;
+	private JButton btn_Back;
+	private JButton btn_Help;
+	private JPanel pnl_Footer;
+	private JScrollPane scrl_ReportTable;
+	private JTable tbl_ReportTable;
 	// End of variables declaration
 
 	public Report_SampleInfoPanel(final int _studyId) throws IOException {
 
 		studyId = _studyId;
 
-		scrl_ReportTable = new javax.swing.JScrollPane();
-		tbl_ReportTable = new javax.swing.JTable() {
+		scrl_ReportTable = new JScrollPane();
+		tbl_ReportTable = new JTable() {
 			@Override
 			public boolean isCellEditable(int row, int col) {
 				return false;
 			}
 		};
-		pnl_Footer = new javax.swing.JPanel();
-		btn_Save = new javax.swing.JButton();
-		btn_Back = new javax.swing.JButton();
-		btn_Help = new javax.swing.JButton();
+		pnl_Footer = new JPanel();
+		btn_Save = new JButton();
+		btn_Back = new JButton();
+		btn_Help = new JButton();
 
-		setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Study Samples Info", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("FreeSans", 1, 18))); // NOI18N
+		setBorder(BorderFactory.createTitledBorder(null, "Study Samples Info", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("FreeSans", 1, 18))); // NOI18N
 
-		tbl_ReportTable.setModel(new javax.swing.table.DefaultTableModel(
+		tbl_ReportTable.setModel(new DefaultTableModel(
 				new Object[][]{
 					{null, null, null, "Go!"}
 				},
 				new String[]{"", "", "", "", ""}));
-		tbl_ReportTable.setDefaultRenderer(Object.class, new org.gwaspi.gui.utils.RowRendererDefault());
+		tbl_ReportTable.setDefaultRenderer(Object.class, new RowRendererDefault());
 		scrl_ReportTable.setViewportView(tbl_ReportTable);
-
 
 		//<editor-fold defaultstate="collapsed" desc="FOOTER">
 
-		btn_Save.setText(org.gwaspi.global.Text.All.save);
-		btn_Save.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				actionSaveReportViewAs(_studyId);
-			}
-		});
+		btn_Save.setAction(new SaveReportViewAsAction(tbl_ReportTable));
 
-		btn_Back.setText(Text.All.Back);
-		btn_Back.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				try {
-					actionBack();
-				} catch (IOException ex) {
-					Logger.getLogger(Report_SampleInfoPanel.class.getName()).log(Level.SEVERE, null, ex);
-				}
-			}
-		});
+		btn_Back.setAction(new BackAction(studyId));
 
-		btn_Help.setText(Text.Help.help);
-		btn_Help.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				actionHelp();
-			}
-		});
+		btn_Help.setAction(new HelpAction());
 
-		javax.swing.GroupLayout pnl_FooterLayout = new javax.swing.GroupLayout(pnl_Footer);
+		GroupLayout pnl_FooterLayout = new GroupLayout(pnl_Footer);
 		pnl_Footer.setLayout(pnl_FooterLayout);
 		pnl_FooterLayout.setHorizontalGroup(
-				pnl_FooterLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-				.addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnl_FooterLayout.createSequentialGroup()
+				pnl_FooterLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+				.addGroup(GroupLayout.Alignment.TRAILING, pnl_FooterLayout.createSequentialGroup()
 				.addContainerGap()
-				.addComponent(btn_Back, javax.swing.GroupLayout.PREFERRED_SIZE, 92, javax.swing.GroupLayout.PREFERRED_SIZE)
+				.addComponent(btn_Back, GroupLayout.PREFERRED_SIZE, 92, GroupLayout.PREFERRED_SIZE)
 				.addGap(18, 18, 18)
-				.addComponent(btn_Help, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
-				.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 321, Short.MAX_VALUE)
-				.addComponent(btn_Save, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
+				.addComponent(btn_Help, GroupLayout.PREFERRED_SIZE, 41, GroupLayout.PREFERRED_SIZE)
+				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, 321, Short.MAX_VALUE)
+				.addComponent(btn_Save, GroupLayout.PREFERRED_SIZE, 125, GroupLayout.PREFERRED_SIZE)
 				.addContainerGap()));
 
-		pnl_FooterLayout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[]{btn_Back, btn_Help});
+		pnl_FooterLayout.linkSize(SwingConstants.HORIZONTAL, new Component[]{btn_Back, btn_Help});
 
 		pnl_FooterLayout.setVerticalGroup(
-				pnl_FooterLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-				.addGroup(pnl_FooterLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+				pnl_FooterLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+				.addGroup(pnl_FooterLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
 				.addComponent(btn_Save)
 				.addComponent(btn_Back)
 				.addComponent(btn_Help)));
 
 		//</editor-fold>
 
-
 		//<editor-fold defaultstate="collapsed" desc="LAYOUT">
-		javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
+		GroupLayout layout = new GroupLayout(this);
 		this.setLayout(layout);
 		layout.setHorizontalGroup(
-				layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-				.addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+				layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+				.addGroup(GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
 				.addContainerGap()
-				.addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-				.addComponent(pnl_Footer, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-				.addComponent(scrl_ReportTable, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 672, Short.MAX_VALUE))
+				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.TRAILING)
+				.addComponent(pnl_Footer, GroupLayout.Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+				.addComponent(scrl_ReportTable, GroupLayout.Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 672, Short.MAX_VALUE))
 				.addContainerGap()));
 		layout.setVerticalGroup(
-				layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+				layout.createParallelGroup(GroupLayout.Alignment.LEADING)
 				.addGroup(layout.createSequentialGroup()
 				.addComponent(scrl_ReportTable)
-				.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-				.addComponent(pnl_Footer, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+				.addComponent(pnl_Footer, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 				.addContainerGap()));
 		//</editor-fold>
 
@@ -243,91 +241,124 @@ public class Report_SampleInfoPanel extends javax.swing.JPanel {
 		tbl_ReportTable.setRowSorter(sorter);
 //        }
 		//</editor-fold>
-
-
-
-
 	}
 
 	private void actionSaveCompleteReportAs(int studyId, String chartPath) {
 		try {
-			String reportPath = org.gwaspi.global.Config.getConfigValue("ReportsDir", "") + "/STUDY_" + studyId + "/";
+			String reportPath = Config.getConfigValue("ReportsDir", "") + "/STUDY_" + studyId + "/";
 			File origFile = new File(reportPath + chartPath);
-			File newFile = new File(org.gwaspi.gui.utils.Dialogs.selectDirectoryDialogue(JOptionPane.OK_OPTION).getPath() + "/" + chartPath);
+			File newFile = new File(Dialogs.selectDirectoryDialog(JOptionPane.OK_OPTION).getPath() + "/" + chartPath);
 			if (origFile.exists()) {
-				org.gwaspi.global.Utils.copyFile(origFile, newFile);
+				Utils.copyFile(origFile, newFile);
 			}
 		} catch (IOException ex) {
-			org.gwaspi.gui.utils.Dialogs.showWarningDialogue("A table saving error has occurred");
+			Dialogs.showWarningDialogue("A table saving error has occurred");
 			Logger.getLogger(ChartDefaultDisplay.class.getName()).log(Level.SEVERE, null, ex);
 		} catch (NullPointerException ex) {
-			//gui.utils.Dialogs.showWarningDialogue("A table saving error has occurred");
+			//Dialogs.showWarningDialogue("A table saving error has occurred");
 			//Logger.getLogger(ChartDefaultDisplay.class.getName()).log(Level.SEVERE, null, ex);
 		} catch (Exception ex) {
-			org.gwaspi.gui.utils.Dialogs.showWarningDialogue("A table saving error has occurred");
+			Dialogs.showWarningDialogue("A table saving error has occurred");
 			Logger.getLogger(ChartDefaultDisplay.class.getName()).log(Level.SEVERE, null, ex);
 		}
 	}
 
-	private void actionSaveReportViewAs(int studyId) {
-		try {
-			File newFile = new File(org.gwaspi.gui.utils.Dialogs.selectDirectoryDialogue(JOptionPane.OK_OPTION).getPath() + "/sampleInfo.txt");
-			FileWriter writer = new FileWriter(newFile);
+	private static class SaveReportViewAsAction extends AbstractAction {
 
-			StringBuilder tableData = new StringBuilder();
-			//HEADER
-			for (int k = 0; k < tbl_ReportTable.getColumnCount(); k++) {
-				tableData.append(tbl_ReportTable.getColumnName(k));
-				if (k != tbl_ReportTable.getColumnCount() - 1) {
-					tableData.append("\t");
-				}
-			}
-			tableData.append("\n");
-			writer.write(tableData.toString());
+		private JTable reportTable;
 
-			//TABLE CONTENT
-			for (int rowNb = 0; rowNb < tbl_ReportTable.getModel().getRowCount(); rowNb++) {
-				tableData = new StringBuilder();
+		SaveReportViewAsAction(JTable reportTable) {
 
-				for (int colNb = 0; colNb < tbl_ReportTable.getModel().getColumnCount(); colNb++) {
-					String curVal = tbl_ReportTable.getValueAt(rowNb, colNb).toString();
+			this.reportTable = reportTable;
+			putValue(NAME, Text.All.save);
+		}
 
-					if (curVal == null) {
-						curVal = "";
-					}
+		@Override
+		public void actionPerformed(ActionEvent evt) {
+			try {
+				File newFile = new File(Dialogs.selectDirectoryDialog(JOptionPane.OK_OPTION).getPath() + "/sampleInfo.txt");
+				FileWriter writer = new FileWriter(newFile);
 
-					tableData.append(curVal);
-					if (colNb != tbl_ReportTable.getModel().getColumnCount() - 1) {
+				StringBuilder tableData = new StringBuilder();
+				//HEADER
+				for (int k = 0; k < reportTable.getColumnCount(); k++) {
+					tableData.append(reportTable.getColumnName(k));
+					if (k != reportTable.getColumnCount() - 1) {
 						tableData.append("\t");
 					}
 				}
 				tableData.append("\n");
 				writer.write(tableData.toString());
+
+				// TABLE CONTENT
+				for (int rowNb = 0; rowNb < reportTable.getModel().getRowCount(); rowNb++) {
+					tableData = new StringBuilder();
+
+					for (int colNb = 0; colNb < reportTable.getModel().getColumnCount(); colNb++) {
+						String curVal = reportTable.getValueAt(rowNb, colNb).toString();
+
+						if (curVal == null) {
+							curVal = "";
+						}
+
+						tableData.append(curVal);
+						if (colNb != reportTable.getModel().getColumnCount() - 1) {
+							tableData.append("\t");
+						}
+					}
+					tableData.append("\n");
+					writer.write(tableData.toString());
+				}
+
+				writer.flush();
+				writer.close();
+
+			} catch (NullPointerException ex) {
+				//Dialogs.showWarningDialogue("A table saving error has occurred");
+				//Logger.getLogger(ChartDefaultDisplay.class.getName()).log(Level.SEVERE, null, ex);
+			} catch (IOException e) {
+				Dialogs.showWarningDialogue("A table saving error has occurred");
+				Logger.getLogger(ChartDefaultDisplay.class.getName()).log(Level.SEVERE, null, e);
 			}
-
-			writer.flush();
-			writer.close();
-
-		} catch (NullPointerException ex) {
-			//gui.utils.Dialogs.showWarningDialogue("A table saving error has occurred");
-			//Logger.getLogger(ChartDefaultDisplay.class.getName()).log(Level.SEVERE, null, ex);
-		} catch (IOException e) {
-			org.gwaspi.gui.utils.Dialogs.showWarningDialogue("A table saving error has occurred");
-			Logger.getLogger(ChartDefaultDisplay.class.getName()).log(Level.SEVERE, null, e);
 		}
 	}
 
-	private void actionBack() throws IOException {
-		Operation op = new Operation(studyId);
-		org.gwaspi.gui.GWASpiExplorerPanel.tree.setSelectionPath(org.gwaspi.gui.GWASpiExplorerPanel.tree.getSelectionPath().getParentPath());
-		org.gwaspi.gui.GWASpiExplorerPanel.pnl_Content = new CurrentStudyPanel(studyId);
-		org.gwaspi.gui.GWASpiExplorerPanel.scrl_Content.setViewportView(org.gwaspi.gui.GWASpiExplorerPanel.pnl_Content);
+	private static class BackAction extends AbstractAction {
+
+		private int studyId;
+
+		BackAction(int studyId) {
+
+			this.studyId = studyId;
+			putValue(NAME, Text.All.Back);
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent evt) {
+			try {
+				Operation op = new Operation(studyId);
+				GWASpiExplorerPanel.tree.setSelectionPath(GWASpiExplorerPanel.tree.getSelectionPath().getParentPath());
+				GWASpiExplorerPanel.pnl_Content = new CurrentStudyPanel(studyId);
+				GWASpiExplorerPanel.scrl_Content.setViewportView(GWASpiExplorerPanel.pnl_Content);
+			} catch (IOException ex) {
+				Logger.getLogger(Report_SampleInfoPanel.class.getName()).log(Level.SEVERE, null, ex);
+			}
+		}
 	}
 
-	private void actionHelp() {
-		try {
-			org.gwaspi.gui.utils.URLInDefaultBrowser.browseHelpURL(HelpURLs.QryURL.sampleInforeport);
-		} catch (Exception ex) {
+	private static class HelpAction extends AbstractAction {
+
+		HelpAction() {
+
+			putValue(NAME, Text.Help.help);
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent evt) {
+			try {
+				URLInDefaultBrowser.browseHelpURL(HelpURLs.QryURL.sampleInforeport);
+			} catch (Exception ex) {
+			}
 		}
 	}
 }

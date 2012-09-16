@@ -27,7 +27,7 @@ import javax.swing.JTextArea;
  *
  * RJHM van den Bergh , rvdb@comweb.nl
  */
-public class Console extends WindowAdapter implements WindowListener, ActionListener, Runnable {
+public class Console extends WindowAdapter implements WindowListener, Runnable {
 
 	private JFrame frame;
 	private JTextArea textArea;
@@ -56,15 +56,14 @@ public class Console extends WindowAdapter implements WindowListener, ActionList
 		frame.setVisible(true);
 
 		frame.addWindowListener(this);
-		//button.addActionListener(this);
-		button.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
+		button.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent evt) {
 				frame.setVisible(false);
 			}
 		});
 
 		try {
-			PipedOutputStream pout = new PipedOutputStream(this.pipInputStream);
+			PipedOutputStream pout = new PipedOutputStream(pipInputStream);
 			System.setOut(new PrintStream(pout, true));
 		} catch (java.io.IOException io) {
 			textArea.append("Couldn't redirect STDOUT to this console\n" + io.getMessage());
@@ -73,7 +72,7 @@ public class Console extends WindowAdapter implements WindowListener, ActionList
 		}
 
 		try {
-			PipedOutputStream pout2 = new PipedOutputStream(this.pipInputStream2);
+			PipedOutputStream pout2 = new PipedOutputStream(pipInputStream2);
 			System.setErr(new PrintStream(pout2, true));
 		} catch (java.io.IOException io) {
 			textArea.append("Couldn't redirect STDERR to this console\n" + io.getMessage());

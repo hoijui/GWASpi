@@ -1,5 +1,6 @@
 package org.gwaspi.gui.utils;
 
+import org.gwaspi.gui.GWASpiExplorerPanel;
 import java.util.Enumeration;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -20,6 +21,7 @@ public class NodeToPathCorrespondence {
 	public static Map<Integer, Object> buildNodeToPathCorrespondence(DefaultMutableTreeNode currentNode, boolean getSubChildren) {
 
 		Map<Integer, Object> nodeToPathChildrenLHM = getChildren(currentNode);
+
 		if (getSubChildren) {
 			Enumeration enumTN = currentNode.children();
 			while (enumTN.hasMoreElements()) {
@@ -28,12 +30,14 @@ public class NodeToPathCorrespondence {
 				nodeToPathChildrenLHM.putAll(subNodeToPathChildrenLHM);
 			}
 		}
-		return nodeToPathChildrenLHM;
 
+		return nodeToPathChildrenLHM;
 	}
 
 	private static Map<Integer, Object> getChildren(DefaultMutableTreeNode currentNode) {
+
 		Map<Integer, Object> nodeToPathChildrenLHM = new LinkedHashMap<Integer, Object>();
+
 		Enumeration enumTN = currentNode.children();
 		while (enumTN.hasMoreElements()) {
 			DefaultMutableTreeNode tmpNode = (DefaultMutableTreeNode) enumTN.nextElement();
@@ -41,15 +45,16 @@ public class NodeToPathCorrespondence {
 			try {
 				NodeElementInfo currentElementInfo = (org.gwaspi.model.GWASpiExplorerNodes.NodeElementInfo) tmpElement;
 
-				for (int i = 0; i < org.gwaspi.gui.GWASpiExplorerPanel.tree.getRowCount(); i++) {
-					if (org.gwaspi.gui.GWASpiExplorerPanel.tree.getPathForRow(i).getLastPathComponent().toString().equals(currentElementInfo.nodeUniqueName)) {
-						nodeToPathChildrenLHM.put(currentElementInfo.nodeId, org.gwaspi.gui.GWASpiExplorerPanel.tree.getPathForRow(i));
+				for (int i = 0; i < GWASpiExplorerPanel.tree.getRowCount(); i++) {
+					if (GWASpiExplorerPanel.tree.getPathForRow(i).getLastPathComponent().toString().equals(currentElementInfo.nodeUniqueName)) {
+						nodeToPathChildrenLHM.put(currentElementInfo.nodeId, GWASpiExplorerPanel.tree.getPathForRow(i));
 					}
 				}
 
 			} catch (Exception ex) {
 			}
 		}
+
 		return nodeToPathChildrenLHM;
 	}
 }

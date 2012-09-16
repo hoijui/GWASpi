@@ -50,7 +50,9 @@ public class LoadGTFromBeagleFiles {
 			String _friendlyName,
 			String _gtCode,
 			String _description,
-			Map<String, Object> _sampleInfoLHM) throws IOException {
+			Map<String, Object> _sampleInfoLHM)
+			throws IOException
+	{
 
 		gtFilePath = _gtFilePath;
 		sampleFilePath = _sampleFilePath;

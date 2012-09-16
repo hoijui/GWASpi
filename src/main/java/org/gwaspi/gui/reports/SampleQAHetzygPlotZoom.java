@@ -1,8 +1,16 @@
 package org.gwaspi.gui.reports;
 
+import org.gwaspi.global.Config;
+import org.gwaspi.global.Text;
+import org.gwaspi.global.Utils;
+import org.gwaspi.gui.GWASpiExplorerPanel;
+import org.gwaspi.gui.StartGWASpi;
+import org.gwaspi.gui.utils.CursorUtils;
+import org.gwaspi.gui.utils.Dialogs;
 import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.geom.Rectangle2D;
@@ -12,7 +20,18 @@ import java.text.DecimalFormat;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.AbstractAction;
+import javax.swing.BorderFactory;
+import javax.swing.GroupLayout;
+import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextField;
+import javax.swing.LayoutStyle;
+import javax.swing.SwingConstants;
+import javax.swing.border.TitledBorder;
 import org.gwaspi.model.Operation;
 import org.gwaspi.netCDF.matrices.MatrixMetadata;
 import org.gwaspi.netCDF.operations.OperationMetadata;
@@ -41,7 +60,7 @@ import org.jfree.ui.TextAnchor;
  *
  * @author fernando
  */
-public final class SampleQAHetzygPlotZoom extends javax.swing.JPanel {
+public final class SampleQAHetzygPlotZoom extends JPanel {
 
 	private static int opId;
 	private static Operation op;
@@ -51,8 +70,7 @@ public final class SampleQAHetzygPlotZoom extends javax.swing.JPanel {
 	private static String currentMarkerId;
 	private static long centerPhysPos;
 	private static long startPhysPos;
-	private static int defaultMarkerNb = (int) Math.round(100000 * ((double) org.gwaspi.gui.StartGWASpi.maxHeapSize / 2000)); //roughly 2000MB needed per 100.000 plotted markers
-	//private int sliderSize;
+	private static int defaultMarkerNb = (int) Math.round(100000 * ((double) StartGWASpi.maxHeapSize / 2000)); //roughly 2000MB needed per 100.000 plotted markers
 	private static XYDataset initXYDataset;
 	private static JFreeChart zoomChart;
 	private static ChartPanel zoomPanel;
@@ -62,20 +80,20 @@ public final class SampleQAHetzygPlotZoom extends javax.swing.JPanel {
 	private static Color manhattan_backalt = Color.getHSBColor(0.1f, 0.0f, 0.85f);
 	private static Color manhattan_dot = Color.red;
 	// Variables declaration - do not modify
-	private static javax.swing.JButton btn_Reset;
-	private static javax.swing.JButton btn_Save;
-	private static javax.swing.JPanel pnl_Chart;
-	private static javax.swing.JPanel pnl_ChartNavigator;
-	private static javax.swing.JPanel pnl_Footer;
-	private static javax.swing.JPanel pnl_FooterGroup1;
-	private static javax.swing.JPanel pnl_FooterGroup0;
-	private static javax.swing.JScrollPane scrl_Chart;
-	private static javax.swing.JButton btn_redraw;
-	private static javax.swing.JLabel lbl_hetzy;
-	private static javax.swing.JLabel lbl_missing;
-	private static javax.swing.JLabel lbl_thresholds;
-	private static javax.swing.JTextField txt_hetzy;
-	private static javax.swing.JTextField txt_missing;
+	private static JButton btn_Reset;
+	private static JButton btn_Save;
+	private static JPanel pnl_Chart;
+	private static JPanel pnl_ChartNavigator;
+	private static JPanel pnl_Footer;
+	private static JPanel pnl_FooterGroup1;
+	private static JPanel pnl_FooterGroup0;
+	private static JScrollPane scrl_Chart;
+	private static JButton btn_redraw;
+	private static JLabel lbl_hetzy;
+	private static JLabel lbl_missing;
+	private static JLabel lbl_thresholds;
+	private static JTextField txt_hetzy;
+	private static JTextField txt_missing;
 	// End of variables declaration
 
 	/**
@@ -100,14 +118,13 @@ public final class SampleQAHetzygPlotZoom extends javax.swing.JPanel {
 
 		initChart();
 
-		setCursor(org.gwaspi.gui.utils.CursorUtils.defaultCursor);
-
+		setCursor(CursorUtils.defaultCursor);
 	}
 
 	public void initChart() throws IOException {
 
-		hetzyThreshold = Double.parseDouble(org.gwaspi.global.Config.getConfigValue("CHART_SAMPLEQA_HETZYG_THRESHOLD", "0.5"));
-		missingThreshold = Double.parseDouble(org.gwaspi.global.Config.getConfigValue("CHART_SAMPLEQA_MISSING_THRESHOLD", "0.5"));
+		hetzyThreshold = Double.parseDouble(Config.getConfigValue("CHART_SAMPLEQA_HETZYG_THRESHOLD", "0.5"));
+		missingThreshold = Double.parseDouble(Config.getConfigValue("CHART_SAMPLEQA_MISSING_THRESHOLD", "0.5"));
 
 		initXYDataset = getSampleHetzygDataset(opId);
 
@@ -121,196 +138,172 @@ public final class SampleQAHetzygPlotZoom extends javax.swing.JPanel {
 
 	private void initGUI() {
 
-//        setCursor(org.gwaspi.gui.utils.CursorUtils.waitCursor);
+//        setCursor(CursorUtils.waitCursor);
 
-		pnl_ChartNavigator = new javax.swing.JPanel();
-		pnl_Chart = new javax.swing.JPanel();
-		scrl_Chart = new javax.swing.JScrollPane();
-		pnl_Footer = new javax.swing.JPanel();
-		pnl_FooterGroup1 = new javax.swing.JPanel();
-		pnl_FooterGroup0 = new javax.swing.JPanel();
-		btn_Save = new javax.swing.JButton();
-		btn_Reset = new javax.swing.JButton();
+		pnl_ChartNavigator = new JPanel();
+		pnl_Chart = new JPanel();
+		scrl_Chart = new JScrollPane();
+		pnl_Footer = new JPanel();
+		pnl_FooterGroup1 = new JPanel();
+		pnl_FooterGroup0 = new JPanel();
+		btn_Save = new JButton();
+		btn_Reset = new JButton();
 
-		lbl_thresholds = new javax.swing.JLabel();
-		lbl_hetzy = new javax.swing.JLabel();
-		txt_hetzy = new javax.swing.JTextField();
-		btn_redraw = new javax.swing.JButton();
-		lbl_missing = new javax.swing.JLabel();
-		txt_missing = new javax.swing.JTextField();
+		lbl_thresholds = new JLabel();
+		lbl_hetzy = new JLabel();
+		txt_hetzy = new JTextField();
+		btn_redraw = new JButton();
+		lbl_missing = new JLabel();
+		txt_missing = new JTextField();
 
+		String titlePlot = Text.Reports.smplHetzyVsMissingRat;
 
-		String titlePlot = org.gwaspi.global.Text.Reports.smplHetzyVsMissingRat;
+		pnl_ChartNavigator.setBorder(BorderFactory.createTitledBorder(null, titlePlot, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("FreeSans", 1, 18))); // NOI18N
 
-		pnl_ChartNavigator.setBorder(javax.swing.BorderFactory.createTitledBorder(null, titlePlot, javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("FreeSans", 1, 18))); // NOI18N
-
-		pnl_Chart.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+		pnl_Chart.setBorder(BorderFactory.createLineBorder(new Color(0, 0, 0)));
 
 		scrl_Chart.getViewport().add(zoomPanel);
 		pnl_Chart.add(scrl_Chart, BorderLayout.CENTER);
 
-
 		// <editor-fold defaultstate="collapsed" desc="LAYOUT1">
-		javax.swing.GroupLayout pnl_ChartLayout = new javax.swing.GroupLayout(pnl_Chart);
+		GroupLayout pnl_ChartLayout = new GroupLayout(pnl_Chart);
 		pnl_Chart.setLayout(pnl_ChartLayout);
 		pnl_ChartLayout.setHorizontalGroup(
-				pnl_ChartLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-				.addComponent(scrl_Chart, javax.swing.GroupLayout.DEFAULT_SIZE, 600, Short.MAX_VALUE));
+				pnl_ChartLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+				.addComponent(scrl_Chart, GroupLayout.DEFAULT_SIZE, 600, Short.MAX_VALUE));
 		pnl_ChartLayout.setVerticalGroup(
-				pnl_ChartLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-				.addComponent(scrl_Chart, javax.swing.GroupLayout.DEFAULT_SIZE, 600, Short.MAX_VALUE));
+				pnl_ChartLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+				.addComponent(scrl_Chart, GroupLayout.DEFAULT_SIZE, 600, Short.MAX_VALUE));
 
-		javax.swing.GroupLayout pnl_ChartNavigatorLayout = new javax.swing.GroupLayout(pnl_ChartNavigator);
+		GroupLayout pnl_ChartNavigatorLayout = new GroupLayout(pnl_ChartNavigator);
 		pnl_ChartNavigator.setLayout(pnl_ChartNavigatorLayout);
 		pnl_ChartNavigatorLayout.setHorizontalGroup(
-				pnl_ChartNavigatorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-				.addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnl_ChartNavigatorLayout.createSequentialGroup()
+				pnl_ChartNavigatorLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+				.addGroup(GroupLayout.Alignment.TRAILING, pnl_ChartNavigatorLayout.createSequentialGroup()
 				.addContainerGap()
-				.addComponent(pnl_Chart, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+				.addComponent(pnl_Chart, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
 				.addContainerGap()));
 		pnl_ChartNavigatorLayout.setVerticalGroup(
-				pnl_ChartNavigatorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+				pnl_ChartNavigatorLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
 				.addGroup(pnl_ChartNavigatorLayout.createSequentialGroup()
 				.addContainerGap()
-				.addComponent(pnl_Chart, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+				.addComponent(pnl_Chart, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
 				.addContainerGap()));
 
 		// </editor-fold>
 
+		lbl_thresholds.setText(Text.Reports.thresholds);
 
-		lbl_thresholds.setText(org.gwaspi.global.Text.Reports.thresholds);
-
-		lbl_hetzy.setText(org.gwaspi.global.Text.Reports.heterozygosity);
+		lbl_hetzy.setText(Text.Reports.heterozygosity);
 		txt_hetzy.setText(hetzyThreshold.toString());
 
-		lbl_missing.setText(org.gwaspi.global.Text.Reports.missRatio);
+		lbl_missing.setText(Text.Reports.missRatio);
 		txt_missing.setText(missingThreshold.toString());
-		btn_redraw.setText(org.gwaspi.global.Text.Reports.redraw);
-		btn_redraw.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				validateThresholdAndRedraw();
-			}
-		});
+		btn_redraw.setAction(new RedrawAction());
 
-		btn_Save.setText("  " + org.gwaspi.global.Text.All.save + "  ");
-		btn_Save.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				actionSaveAs(rdOPMetadata.getStudyId());
-			}
-		});
+		btn_Save.setAction(new SaveAsAction());
 
-		btn_Reset.setText("  " + org.gwaspi.global.Text.All.reset + "  ");
-		btn_Reset.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				try {
-					actionReset(evt);
-				} catch (IOException ex) {
-					Logger.getLogger(SampleQAHetzygPlotZoom.class.getName()).log(Level.SEVERE, null, ex);
-				}
-			}
-		});
-
+		btn_Reset.setAction(new ResetAction());
 
 		// <editor-fold defaultstate="collapsed" desc="FOOTER">
-		javax.swing.GroupLayout pnl_FooterGroup0Layout = new javax.swing.GroupLayout(pnl_FooterGroup0);
+		GroupLayout pnl_FooterGroup0Layout = new GroupLayout(pnl_FooterGroup0);
 		pnl_FooterGroup0.setLayout(pnl_FooterGroup0Layout);
 		pnl_FooterGroup0Layout.setHorizontalGroup(
-				pnl_FooterGroup0Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+				pnl_FooterGroup0Layout.createParallelGroup(GroupLayout.Alignment.LEADING)
 				.addGroup(pnl_FooterGroup0Layout.createSequentialGroup()
 				.addContainerGap()
-				.addGroup(pnl_FooterGroup0Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+				.addGroup(pnl_FooterGroup0Layout.createParallelGroup(GroupLayout.Alignment.LEADING)
 				.addGroup(pnl_FooterGroup0Layout.createSequentialGroup()
-				.addGroup(pnl_FooterGroup0Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+				.addGroup(pnl_FooterGroup0Layout.createParallelGroup(GroupLayout.Alignment.LEADING)
 				.addComponent(lbl_hetzy)
 				.addComponent(lbl_missing))
-				.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-				.addGroup(pnl_FooterGroup0Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-				.addComponent(txt_hetzy, javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE)
+				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+				.addGroup(pnl_FooterGroup0Layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+				.addComponent(txt_hetzy, GroupLayout.PREFERRED_SIZE, 113, GroupLayout.PREFERRED_SIZE)
 				.addGroup(pnl_FooterGroup0Layout.createSequentialGroup()
-				.addComponent(txt_missing, javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE)
+				.addComponent(txt_missing, GroupLayout.PREFERRED_SIZE, 113, GroupLayout.PREFERRED_SIZE)
 				.addGap(6, 6, 6)
-				.addComponent(btn_redraw, javax.swing.GroupLayout.PREFERRED_SIZE, 103, javax.swing.GroupLayout.PREFERRED_SIZE))))
+				.addComponent(btn_redraw, GroupLayout.PREFERRED_SIZE, 103, GroupLayout.PREFERRED_SIZE))))
 				.addComponent(lbl_thresholds))
-				.addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)));
+				.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)));
 		pnl_FooterGroup0Layout.setVerticalGroup(
-				pnl_FooterGroup0Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-				.addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnl_FooterGroup0Layout.createSequentialGroup()
-				.addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+				pnl_FooterGroup0Layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+				.addGroup(GroupLayout.Alignment.TRAILING, pnl_FooterGroup0Layout.createSequentialGroup()
+				.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
 				.addComponent(lbl_thresholds)
-				.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-				.addGroup(pnl_FooterGroup0Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+				.addGroup(pnl_FooterGroup0Layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
 				.addComponent(lbl_hetzy)
-				.addComponent(txt_hetzy, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-				.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-				.addGroup(pnl_FooterGroup0Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-				.addComponent(btn_redraw, javax.swing.GroupLayout.Alignment.TRAILING, 0, 0, Short.MAX_VALUE)
-				.addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnl_FooterGroup0Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+				.addComponent(txt_hetzy, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+				.addGroup(pnl_FooterGroup0Layout.createParallelGroup(GroupLayout.Alignment.LEADING, false)
+				.addComponent(btn_redraw, GroupLayout.Alignment.TRAILING, 0, 0, Short.MAX_VALUE)
+				.addGroup(GroupLayout.Alignment.TRAILING, pnl_FooterGroup0Layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
 				.addComponent(lbl_missing)
 				.addComponent(txt_missing)))));
 
-		javax.swing.GroupLayout pnl_FooterGroup1Layout = new javax.swing.GroupLayout(pnl_FooterGroup1);
+		GroupLayout pnl_FooterGroup1Layout = new GroupLayout(pnl_FooterGroup1);
 		pnl_FooterGroup1.setLayout(pnl_FooterGroup1Layout);
 		pnl_FooterGroup1Layout.setHorizontalGroup(
-				pnl_FooterGroup1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+				pnl_FooterGroup1Layout.createParallelGroup(GroupLayout.Alignment.LEADING)
 				.addGroup(pnl_FooterGroup1Layout.createSequentialGroup()
 				.addContainerGap()
-				.addComponent(btn_Reset, javax.swing.GroupLayout.PREFERRED_SIZE, 79, javax.swing.GroupLayout.PREFERRED_SIZE)
-				.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-				.addComponent(btn_Save, javax.swing.GroupLayout.PREFERRED_SIZE, 84, javax.swing.GroupLayout.PREFERRED_SIZE)
-				.addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)));
-		pnl_FooterGroup1Layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[]{btn_Reset, btn_Save});
+				.addComponent(btn_Reset, GroupLayout.PREFERRED_SIZE, 79, GroupLayout.PREFERRED_SIZE)
+				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+				.addComponent(btn_Save, GroupLayout.PREFERRED_SIZE, 84, GroupLayout.PREFERRED_SIZE)
+				.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)));
+		pnl_FooterGroup1Layout.linkSize(SwingConstants.HORIZONTAL, new Component[]{btn_Reset, btn_Save});
 		pnl_FooterGroup1Layout.setVerticalGroup(
-				pnl_FooterGroup1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-				.addGroup(pnl_FooterGroup1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
+				pnl_FooterGroup1Layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+				.addGroup(pnl_FooterGroup1Layout.createParallelGroup(GroupLayout.Alignment.CENTER)
 				.addComponent(btn_Reset)
 				.addComponent(btn_Save)));
 
 
-		pnl_FooterGroup1Layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[]{btn_Reset, btn_Save});
+		pnl_FooterGroup1Layout.linkSize(SwingConstants.VERTICAL, new Component[]{btn_Reset, btn_Save});
 
 
-		javax.swing.GroupLayout pnl_FooterLayout = new javax.swing.GroupLayout(pnl_Footer);
+		GroupLayout pnl_FooterLayout = new GroupLayout(pnl_Footer);
 		pnl_Footer.setLayout(pnl_FooterLayout);
 		pnl_FooterLayout.setHorizontalGroup(
-				pnl_FooterLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-				.addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnl_FooterLayout.createSequentialGroup()
-				.addComponent(pnl_FooterGroup0, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-				.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 174, Short.MAX_VALUE)
-				.addComponent(pnl_FooterGroup1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+				pnl_FooterLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+				.addGroup(GroupLayout.Alignment.TRAILING, pnl_FooterLayout.createSequentialGroup()
+				.addComponent(pnl_FooterGroup0, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, 174, Short.MAX_VALUE)
+				.addComponent(pnl_FooterGroup1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 				.addContainerGap()));
 		pnl_FooterLayout.setVerticalGroup(
-				pnl_FooterLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-				.addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnl_FooterLayout.createSequentialGroup()
-				.addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-				.addGroup(pnl_FooterLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-				.addComponent(pnl_FooterGroup0, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-				.addComponent(pnl_FooterGroup1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+				pnl_FooterLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+				.addGroup(GroupLayout.Alignment.TRAILING, pnl_FooterLayout.createSequentialGroup()
+				.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+				.addGroup(pnl_FooterLayout.createParallelGroup(GroupLayout.Alignment.TRAILING)
+				.addComponent(pnl_FooterGroup0, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+				.addComponent(pnl_FooterGroup1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
 				.addContainerGap()));
 		// </editor-fold>
-
 
 		// <editor-fold defaultstate="collapsed" desc="LAYOUT">
-		javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
+		GroupLayout layout = new GroupLayout(this);
 		this.setLayout(layout);
 		layout.setHorizontalGroup(
-				layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+				layout.createParallelGroup(GroupLayout.Alignment.LEADING)
 				.addGroup(layout.createSequentialGroup()
 				.addContainerGap()
-				.addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-				.addComponent(pnl_ChartNavigator, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-				.addComponent(pnl_Footer, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+				.addComponent(pnl_ChartNavigator, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+				.addComponent(pnl_Footer, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
 				.addContainerGap()));
 		layout.setVerticalGroup(
-				layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+				layout.createParallelGroup(GroupLayout.Alignment.LEADING)
 				.addGroup(layout.createSequentialGroup()
-				.addComponent(pnl_ChartNavigator, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-				.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-				.addComponent(pnl_Footer, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+				.addComponent(pnl_ChartNavigator, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+				.addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
+				.addComponent(pnl_Footer, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 				.addContainerGap()));
 
 		// </editor-fold>
 
-//		setCursor(org.gwaspi.gui.utils.CursorUtils.defaultCursor);
+//		setCursor(CursorUtils.defaultCursor);
 	}
 
 	// <editor-fold defaultstate="collapsed" desc="CHART GENERATOR">
@@ -518,41 +511,72 @@ public final class SampleQAHetzygPlotZoom extends javax.swing.JPanel {
 			return rsLabel;
 		}
 	}
-
 	// </editor-fold>
+
 	//<editor-fold defaultstate="collapsed" desc="HELPERS">
-	private void validateThresholdAndRedraw() {
-		try {
-			hetzyThreshold = Double.parseDouble(txt_hetzy.getText());
-			missingThreshold = Double.parseDouble(txt_missing.getText());
-			org.gwaspi.global.Config.setConfigValue("CHART_SAMPLEQA_HETZYG_THRESHOLD", hetzyThreshold.toString());
-			org.gwaspi.global.Config.setConfigValue("CHART_SAMPLEQA_MISSING_THRESHOLD", missingThreshold.toString());
-			org.gwaspi.gui.GWASpiExplorerPanel.pnl_Content = new SampleQAHetzygPlotZoom(opId);
-			org.gwaspi.gui.GWASpiExplorerPanel.scrl_Content.setViewportView(org.gwaspi.gui.GWASpiExplorerPanel.pnl_Content);
-		} catch (Exception e) {
-			org.gwaspi.gui.utils.Dialogs.showWarningDialogue(org.gwaspi.global.Text.App.warnMustBeNumeric);
+	/**
+	 * Validates the threshold and redraws
+	 */
+	private static class RedrawAction extends AbstractAction {
+
+		RedrawAction() {
+
+			putValue(NAME, Text.Reports.redraw);
 		}
 
-
+		@Override
+		public void actionPerformed(ActionEvent evt) {
+			try {
+				hetzyThreshold = Double.parseDouble(txt_hetzy.getText());
+				missingThreshold = Double.parseDouble(txt_missing.getText());
+				Config.setConfigValue("CHART_SAMPLEQA_HETZYG_THRESHOLD", hetzyThreshold.toString());
+				Config.setConfigValue("CHART_SAMPLEQA_MISSING_THRESHOLD", missingThreshold.toString());
+				GWASpiExplorerPanel.pnl_Content = new SampleQAHetzygPlotZoom(opId);
+				GWASpiExplorerPanel.scrl_Content.setViewportView(GWASpiExplorerPanel.pnl_Content);
+			} catch (Exception e) {
+				Dialogs.showWarningDialogue(Text.App.warnMustBeNumeric);
+			}
+		}
 	}
 
-	private static void actionReset(ActionEvent evt) throws IOException {
-		org.gwaspi.gui.GWASpiExplorerPanel.pnl_Content = new org.gwaspi.gui.reports.SampleQAHetzygPlotZoom(opId);
+	private static class ResetAction extends AbstractAction {
 
-		org.gwaspi.gui.GWASpiExplorerPanel.scrl_Content.setViewportView(org.gwaspi.gui.GWASpiExplorerPanel.pnl_Content);
+		ResetAction() {
+
+			putValue(NAME, Text.All.reset);
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent evt) {
+			try {
+				GWASpiExplorerPanel.pnl_Content = new SampleQAHetzygPlotZoom(opId);
+				GWASpiExplorerPanel.scrl_Content.setViewportView(GWASpiExplorerPanel.pnl_Content);
+			} catch (IOException ex) {
+				Logger.getLogger(SampleQAHetzygPlotZoom.class.getName()).log(Level.SEVERE, null, ex);
+			}
+		}
 	}
 
-	private static void actionSaveAs(int studyId) {
-		try {
-			File newFile = new File(org.gwaspi.gui.utils.Dialogs.selectDirectoryDialogue(JOptionPane.OK_OPTION).getPath() + "/SampleQA_hetzyg-missingrat_" + org.gwaspi.global.Utils.stripNonAlphaNumeric(rdMatrixMetadata.getMatrixFriendlyName()) + ".png");
-			ChartUtilities.saveChartAsPNG(newFile, zoomChart, scrl_Chart.getWidth(), scrl_Chart.getHeight());
-		} catch (IOException ex) {
-			Logger.getLogger(ChartDefaultDisplay.class.getName()).log(Level.SEVERE, null, ex);
-		} catch (NullPointerException ex) {
-			//gui.utils.Dialogs.showWarningDialogue("A table saving error has occurred");
-			//Logger.getLogger(ChartDefaultDisplay.class.getName()).log(Level.SEVERE, null, ex);
-		} catch (Exception ex) {
-			Logger.getLogger(ChartDefaultDisplay.class.getName()).log(Level.SEVERE, null, ex);
+	private static class SaveAsAction extends AbstractAction {
+
+		SaveAsAction() {
+
+			putValue(NAME, Text.All.save);
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent evt) {
+			try {
+				File newFile = new File(Dialogs.selectDirectoryDialog(JOptionPane.OK_OPTION).getPath() + "/SampleQA_hetzyg-missingrat_" + Utils.stripNonAlphaNumeric(rdMatrixMetadata.getMatrixFriendlyName()) + ".png");
+				ChartUtilities.saveChartAsPNG(newFile, zoomChart, scrl_Chart.getWidth(), scrl_Chart.getHeight());
+			} catch (IOException ex) {
+				Logger.getLogger(ChartDefaultDisplay.class.getName()).log(Level.SEVERE, null, ex);
+			} catch (NullPointerException ex) {
+				//Dialogs.showWarningDialogue("A table saving error has occurred");
+				//Logger.getLogger(ChartDefaultDisplay.class.getName()).log(Level.SEVERE, null, ex);
+			} catch (Exception ex) {
+				Logger.getLogger(ChartDefaultDisplay.class.getName()).log(Level.SEVERE, null, ex);
+			}
 		}
 	}
 	//</editor-fold>

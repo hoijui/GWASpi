@@ -1,5 +1,7 @@
 package org.gwaspi.reports;
 
+import org.gwaspi.gui.reports.ManhattanPlotZoom;
+import org.gwaspi.gui.reports.SampleQAHetzygPlotZoom;
 import java.awt.Color;
 import java.awt.geom.Rectangle2D;
 import java.io.BufferedReader;
@@ -84,11 +86,10 @@ public class GenericReportGenerator {
 		MarkerSet_opt rdInfoMarkerSet = new MarkerSet_opt(rdOPMetadata.getStudyId(), rdOPMetadata.getParentMatrixId());
 		rdInfoMarkerSet.initFullMarkerIdSetLHM();
 
-
 		snpNumber = rdInfoMarkerSet.getMarkerSetSize();
-//        if(snpNumber<250000){
-//            hetzyThreshold = 0.5/snpNumber;  //(0.05/10⁶ SNPs => 5*10-⁷)
-//        }
+//		if(snpNumber<250000){
+//			hetzyThreshold = 0.5/snpNumber;  //(0.05/10⁶ SNPs => 5*10-⁷)
+//		}
 		threshold = Double.parseDouble(org.gwaspi.global.Config.getConfigValue("CHART_MANHATTAN_PLOT_THRESHOLD", "5E-7"));
 
 
@@ -140,7 +141,6 @@ public class GenericReportGenerator {
 		}
 		//</editor-fold>
 
-
 		XYSeriesCollection currChrSC = new XYSeriesCollection();
 
 		NumberAxis sharedAxis = new NumberAxis("-log₁₀(P)");
@@ -148,10 +148,9 @@ public class GenericReportGenerator {
 		CombinedRangeXYPlot combinedPlot = new CombinedRangeXYPlot(sharedAxis);
 		combinedPlot.setGap(0);
 
-
 		XYSeries currChrS = null;
 
-		//Subdividing points into sub-XYSeries, per chromosome
+		// Subdividing points into sub-XYSeries, per chromosome
 		String currChr = "";
 		for (Map.Entry<String, Object> entry : dataSetLHM.entrySet()) {
 			Object markerId = entry.getKey();
@@ -161,13 +160,13 @@ public class GenericReportGenerator {
 			int position = (Integer) data[1];
 
 			if (data[2] != null) {
-				double pVal = (Double) data[2]; //Is allready free of NaN
+				double pVal = (Double) data[2]; // Is allready free of NaN
 				if (pVal < 1 && pVal != Double.POSITIVE_INFINITY && pVal != Double.NEGATIVE_INFINITY) {
 					if (chr.equals(currChr)) {
 						currChrS.add(position, pVal);
 						labelerHM.put(currChr + "_" + position, markerId);
 					} else {
-						if (!currChr.equals("")) { //SKIP FIRST TIME (NO DATA YET!)
+						if (!currChr.equals("")) { // SKIP FIRST TIME (NO DATA YET!)
 							currChrSC.addSeries(currChrS);
 							appendToCombinedRangeManhattanPlot(combinedPlot, currChr, currChrSC, false);
 						}
@@ -185,22 +184,21 @@ public class GenericReportGenerator {
 		currChrSC.addSeries(currChrS);
 		appendToCombinedRangeManhattanPlot(combinedPlot, currChr, currChrSC, true); //ADD LAST CHR TO PLOT
 
-		//Remove Legend from the bottom of the chart
+		// Remove Legend from the bottom of the chart
 		combinedPlot.setFixedLegendItems(new LegendItemCollection());
 
 		return combinedPlot;
-
 	}
 
 	private static void appendToCombinedRangeManhattanPlot(CombinedRangeXYPlot combinedPlot, String chromosome, XYSeriesCollection currChrSC, boolean showlables) {
 		XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer(false, true);
 
-		//Set dot shape of the currently appended Series
+		// Set dot shape of the currently appended Series
 		renderer.setSeriesPaint(currChrSC.getSeriesCount() - 1, manhattan_dot);
 		renderer.setSeriesVisibleInLegend(currChrSC.getSeriesCount() - 1, showlables);
 		renderer.setSeriesShape(currChrSC.getSeriesCount() - 1, new Rectangle2D.Double(-1.0, -1.0, 2.0, 2.0));
 
-		//Set range axis
+		// Set range axis
 		if (combinedPlot.getSubplots().isEmpty()) {
 			LogAxis rangeAxis = new LogAxis("P value");
 			rangeAxis.setBase(10);
@@ -219,7 +217,7 @@ public class GenericReportGenerator {
 			combinedPlot.setRangeAxis(0, rangeAxis);
 		}
 
-		//Build subchart
+		// Build subchart
 		JFreeChart subchart = ChartFactory.createScatterPlot("",
 				"Chr " + chromosome,
 				"",
@@ -229,24 +227,23 @@ public class GenericReportGenerator {
 				false,
 				false);
 
-
-		//Get subplot from subchart
+		// Get subplot from subchart
 		XYPlot subplot = (XYPlot) subchart.getPlot();
 		subplot.setRenderer(renderer);
 		subplot.setBackgroundPaint(null);
 
-		//CHART BACKGROUD COLOR
+		// CHART BACKGROUD COLOR
 		if (combinedPlot.getSubplots().size() % 2 == 0) {
 			subplot.setBackgroundPaint(manhattan_back); //Hue, saturation, brightness
 		} else {
 			subplot.setBackgroundPaint(manhattan_backalt); //Hue, saturation, brightness
 		}
 
-		//Add significance Threshold to subplot
+		// Add significance Threshold to subplot
 		final Marker thresholdLine = new ValueMarker(threshold);
 		thresholdLine.setPaint(Color.red);
 		DecimalFormat df1 = new DecimalFormat("0.#E0#");
-		//Add legend to hetzyThreshold
+		// Add legend to hetzyThreshold
 		if (showlables) {
 			thresholdLine.setLabel("P = " + df1.format(threshold));
 		}
@@ -254,8 +251,7 @@ public class GenericReportGenerator {
 		thresholdLine.setLabelTextAnchor(TextAnchor.BOTTOM_RIGHT);
 		subplot.addRangeMarker(thresholdLine);
 
-
-		//Chromosome Axis Labels
+		// Chromosome Axis Labels
 		NumberAxis chrAxis = (NumberAxis) subplot.getDomainAxis();
 		chrAxis.setLabelAngle(1.0);
 		chrAxis.setAutoRangeIncludesZero(false);
@@ -266,7 +262,6 @@ public class GenericReportGenerator {
 //            chrAxis.setNumberFormatOverride(new DecimalFormat("0.##E0#"));
 //            TickUnitSource units = NumberAxis.createIntegerTickUnits();
 //            chrAxis.setStandardTickUnits(units);
-
 
 		//combinedPlot.setGap(0);
 		combinedPlot.add(subplot, 1);
@@ -286,7 +281,6 @@ public class GenericReportGenerator {
 		tmp = org.gwaspi.global.Config.getConfigValue("CHART_QQ_PLOT_2SIGMA", "195,195,195").split(",");
 		hsbTmp = Color.RGBtoHSB(Integer.parseInt(tmp[0]), Integer.parseInt(tmp[1]), Integer.parseInt(tmp[2]), null);
 		qq_ci = Color.getHSBColor(hsbTmp[0], hsbTmp[1], hsbTmp[2]);
-
 		//</editor-fold>
 
 		OperationMetadata rdOPMetadata = new OperationMetadata(opId);
@@ -316,7 +310,6 @@ public class GenericReportGenerator {
 
 		assocNcFile.close();
 		//</editor-fold>
-
 
 		//<editor-fold defaultstate="collapsed" desc="GET CONFIDENCE BOUNDARY">
 		InputStream boundaryStream = GenericReportGenerator.class.getClass().getResourceAsStream("/samples/chisqrboundary-df" + df + ".txt");
@@ -394,12 +387,10 @@ public class GenericReportGenerator {
 
 		plot.setRenderer(renderer);
 
-		//PLOT BACKGROUND COLOR
+		// PLOT BACKGROUND COLOR
 		plot.setBackgroundPaint(qq_back); //Hue, saturation, brightness
 
-
 		return plot;
-
 	}
 
 	public static XYDataset getManhattanZoomByChrAndPos(int opId,
@@ -407,11 +398,11 @@ public class GenericReportGenerator {
 			String chr,
 			String markerId,
 			long requestedPhysPos,
-			long requestedPosWindow) {
+			long requestedPosWindow)
+	{
 		XYDataset resultXYDataset = null;
 
 		try {
-
 			Map<String, Object> dataSetLHM = new LinkedHashMap<String, Object>();
 			OperationMetadata rdOPMetadata = new OperationMetadata(opId);
 
@@ -423,7 +414,7 @@ public class GenericReportGenerator {
 			rdInfoMarkerSet.initFullMarkerIdSetLHM();
 			rdInfoMarkerSet.fillMarkerSetLHMWithChrAndPos();
 
-			//ESTIMATE WINDOW SIZE
+			// ESTIMATE WINDOW SIZE
 			Long minPosition;
 			Long middlePosition;
 			Long maxPosition;
@@ -437,8 +428,7 @@ public class GenericReportGenerator {
 				maxPosition = minPosition + requestedPosWindow;
 			}
 
-
-			//CUT READ-LHM TO SIZE
+			// CUT READ-LHM TO SIZE
 			for (Map.Entry<String, Object> entry : rdAssocMarkerSetLHM.entrySet()) {
 				String key = entry.getKey();
 				Object[] chrInfo = (Object[]) rdInfoMarkerSet.getMarkerIdSetLHM().get(key);
@@ -451,14 +441,6 @@ public class GenericReportGenerator {
 					}
 				}
 			}
-
-//        System.out.println("getXYDataSet");
-//        System.out.println("minPosition: "+minPosition);
-//        System.out.println("middlePosition: "+middlePosition);
-//        System.out.println("maxPosition: "+maxPosition);
-//        System.out.println("---------------------------------------");
-//        System.out.println("\n");
-
 
 			//<editor-fold defaultstate="collapsed" desc="GET Pval">
 			rdAssocMarkerSetLHM = rdAssocMarkerSet.fillOpSetLHMWithVariable(assocNcFile, netCDFVar);
@@ -480,7 +462,6 @@ public class GenericReportGenerator {
 			}
 			//</editor-fold>
 
-
 			//<editor-fold defaultstate="collapsed" desc="BUILD XYDataset">
 			XYSeries dataSeries = new XYSeries("");
 
@@ -501,17 +482,12 @@ public class GenericReportGenerator {
 				}
 			}
 			snpNumber = labelerHM.size();
-			org.gwaspi.gui.reports.ManhattanPlotZoom.labelerLHM = labelerHM;
+			ManhattanPlotZoom.labelerLHM = labelerHM;
 
 			dataSeries.setDescription("Zoom chr " + chr + " from position " + minPosition + " to " + maxPosition);
 
 			resultXYDataset = new XYSeriesCollection(dataSeries);
-
-
 			//</editor-fold>
-
-
-
 		} catch (IOException ex) {
 			Logger.getLogger(GenericReportGenerator.class.getName()).log(Level.SEVERE, null, ex);
 		}
@@ -618,7 +594,7 @@ public class GenericReportGenerator {
 			rdInfoMarkerSet.fillInitLHMWithVariable(org.gwaspi.constants.cNetCDF.Variables.VAR_MARKERS_CHR);
 			//First check for same chromosome data
 			String validateChr = rdInfoMarkerSet.getMarkerIdSetLHM().get(origMarkerId).toString();
-			org.gwaspi.gui.reports.ManhattanPlotZoom.centerPhysPos = minPosition;
+			ManhattanPlotZoom.centerPhysPos = minPosition;
 
 			for (Map.Entry<String, Object> entry : dataSetLHM.entrySet()) {
 				String key = entry.getKey();
@@ -683,7 +659,7 @@ public class GenericReportGenerator {
 				}
 			}
 			snpNumber = labelerHM.size();
-			org.gwaspi.gui.reports.ManhattanPlotZoom.labelerLHM = labelerHM;
+			ManhattanPlotZoom.labelerLHM = labelerHM;
 
 			dataSeries.setDescription("Zoom on " + origMarkerId + ", window size: " + snpNumber);
 
@@ -733,7 +709,7 @@ public class GenericReportGenerator {
 			count++;
 		}
 		snpNumber = labelerHM.size();
-		org.gwaspi.gui.reports.SampleQAHetzygPlotZoom.labelerLHM = labelerHM;
+		SampleQAHetzygPlotZoom.labelerLHM = labelerHM;
 
 		dataSeries.setDescription(rdOPMetadata.getDescription());
 
