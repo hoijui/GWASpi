@@ -53,14 +53,14 @@ public class SwingDeleterItemList extends SwingWorkerItemList {
 		}
 
 		for (SwingDeleterItem currentSdi : swingDeleterItemsAL) {
-			if (currentSdi.queueState.equals(QueueStates.QUEUED)) {
+			if (currentSdi.queueState.equals(QueueState.QUEUED)) {
 				String deleteTarget = currentSdi.getDeleteTarget();
 
 				// DELETE STUDY
 				if (deleteTarget.equals(DeleteTarget.STUDY)) {
 					try {
 						currentSdi.setStartTime(org.gwaspi.global.Utils.getShortDateTimeAsString());
-						currentSdi.setQueueState(QueueStates.PROCESSING);
+						currentSdi.setQueueState(QueueState.PROCESSING);
 
 						org.gwaspi.database.StudyGenerator.deleteStudy(currentSdi.getStudyId(), currentSdi.isDeleteReports());
 						MultiOperations.printCompleted("deleting Study ID: " + currentSdi.getStudyId());
@@ -74,7 +74,7 @@ public class SwingDeleterItemList extends SwingWorkerItemList {
 				// DELETE MATRIX
 				if (deleteTarget.equals(DeleteTarget.MATRIX)) {
 					currentSdi.setStartTime(org.gwaspi.global.Utils.getShortDateTimeAsString());
-					currentSdi.setQueueState(QueueStates.PROCESSING);
+					currentSdi.setQueueState(QueueState.PROCESSING);
 
 					org.gwaspi.netCDF.matrices.MatrixManager.deleteMatrix(currentSdi.getMatrixId(), currentSdi.isDeleteReports());
 					MultiOperations.printCompleted("deleting Matrix ID:" + currentSdi.getMatrixId());
@@ -86,7 +86,7 @@ public class SwingDeleterItemList extends SwingWorkerItemList {
 				if (deleteTarget.equals(DeleteTarget.OPERATION_BY_OPID)) {
 					try {
 						currentSdi.setStartTime(org.gwaspi.global.Utils.getShortDateTimeAsString());
-						currentSdi.setQueueState(QueueStates.PROCESSING);
+						currentSdi.setQueueState(QueueState.PROCESSING);
 
 						org.gwaspi.netCDF.operations.OperationManager.deleteOperationBranch(currentSdi.getStudyId(), currentSdi.getOpId(), currentSdi.isDeleteReports());
 						MultiOperations.printCompleted("deleting Operation ID: " + currentSdi.getOpId());
@@ -102,7 +102,7 @@ public class SwingDeleterItemList extends SwingWorkerItemList {
 				if (deleteTarget.equals(DeleteTarget.REPORTS_BY_MATRIXID)) {
 					try {
 						currentSdi.setStartTime(org.gwaspi.global.Utils.getShortDateTimeAsString());
-						currentSdi.setQueueState(QueueStates.PROCESSING);
+						currentSdi.setQueueState(QueueState.PROCESSING);
 
 						org.gwaspi.reports.ReportManager.deleteReportByMatrixId(currentSdi.getMatrixId());
 						MultiOperations.printCompleted("deleting Reports from Matrix ID: " + currentSdi.getMatrixId());
@@ -138,9 +138,9 @@ public class SwingDeleterItemList extends SwingWorkerItemList {
 	public static void flagCurrentItemAborted() {
 		boolean idle = false;
 		for (SwingDeleterItem currentSdi : swingDeleterItemsAL) {
-			if (!idle && currentSdi.queueState.equals(QueueStates.PROCESSING)) {
+			if (!idle && currentSdi.queueState.equals(QueueState.PROCESSING)) {
 				idle = true;
-				currentSdi.setQueueState(QueueStates.ABORT);
+				currentSdi.setQueueState(QueueState.ABORT);
 				currentSdi.setEndTime(org.gwaspi.global.Utils.getShortDateTimeAsString());
 			}
 		}
@@ -149,9 +149,9 @@ public class SwingDeleterItemList extends SwingWorkerItemList {
 	public static void flagCurrentItemError() {
 		boolean idle = false;
 		for (SwingDeleterItem currentSdi : swingDeleterItemsAL) {
-			if (!idle && currentSdi.queueState.equals(QueueStates.PROCESSING)) {
+			if (!idle && currentSdi.queueState.equals(QueueState.PROCESSING)) {
 				idle = true;
-				currentSdi.setQueueState(QueueStates.ERROR);
+				currentSdi.setQueueState(QueueState.ERROR);
 				currentSdi.setEndTime(org.gwaspi.global.Utils.getShortDateTimeAsString());
 			}
 		}
@@ -160,9 +160,9 @@ public class SwingDeleterItemList extends SwingWorkerItemList {
 	public static void flagCurrentItemDeleted() {
 		boolean idle = false;
 		for (SwingDeleterItem currentSdi : swingDeleterItemsAL) {
-			if (!idle && currentSdi.queueState.equals(QueueStates.PROCESSING)) {
+			if (!idle && currentSdi.queueState.equals(QueueState.PROCESSING)) {
 				idle = true;
-				currentSdi.setQueueState(QueueStates.DELETED);
+				currentSdi.setQueueState(QueueState.DELETED);
 				currentSdi.setEndTime(org.gwaspi.global.Utils.getShortDateTimeAsString());
 			}
 		}
@@ -175,10 +175,10 @@ public class SwingDeleterItemList extends SwingWorkerItemList {
 	public static int getSwingDeleterPendingItemsNb() {
 		int result = 0;
 		for (SwingDeleterItem currentSdi : SwingDeleterItemList.getSwingDeleterItemsAL()) {
-			if (currentSdi.queueState.equals(QueueStates.PROCESSING)) {
+			if (currentSdi.queueState.equals(QueueState.PROCESSING)) {
 				result++;
 			}
-			if (currentSdi.queueState.equals(QueueStates.QUEUED)) {
+			if (currentSdi.queueState.equals(QueueState.QUEUED)) {
 				result++;
 			}
 		}
@@ -187,16 +187,16 @@ public class SwingDeleterItemList extends SwingWorkerItemList {
 
 	public static void purgeDoneDeletes() {
 		for (int i = swingDeleterItemsAL.size(); i > 0; i--) {
-			if (swingDeleterItemsAL.get(i - 1).getQueueState().equals(QueueStates.DELETED)) {
+			if (swingDeleterItemsAL.get(i - 1).getQueueState().equals(QueueState.DELETED)) {
 				swingDeleterItemsAL.remove(i - 1);
 			}
 		}
 	}
 
 	public static void abortSwingWorker(int idx) {
-		String queueState = swingDeleterItemsAL.get(idx).getQueueState();
-		if (queueState.equals(QueueStates.PROCESSING) || queueState.equals(QueueStates.QUEUED)) {
-			swingDeleterItemsAL.get(idx).setQueueState(QueueStates.ABORT);
+		QueueState queueState = swingDeleterItemsAL.get(idx).getQueueState();
+		if (queueState.equals(QueueState.PROCESSING) || queueState.equals(QueueState.QUEUED)) {
+			swingDeleterItemsAL.get(idx).setQueueState(QueueState.ABORT);
 
 			log.info("");
 			log.info(Text.Processes.abortingProcess);

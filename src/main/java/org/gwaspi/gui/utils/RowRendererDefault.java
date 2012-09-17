@@ -10,7 +10,7 @@ import javax.swing.JTable;
 import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
-import org.gwaspi.threadbox.QueueStates;
+import org.gwaspi.threadbox.QueueState;
 import org.gwaspi.threadbox.SwingDeleterItem;
 import org.gwaspi.threadbox.SwingDeleterItemList;
 import org.gwaspi.threadbox.SwingWorkerItem;
@@ -62,7 +62,7 @@ public class RowRendererDefault extends DefaultTableCellRenderer {
 
 		if (table.getColumnModel().getColumnCount() == 8) {
 			ImageIcon ico;
-			String queueState;
+			QueueState queueState;
 			if (swAL.size() > row) {
 				queueState = swAL.get(row).getQueueState();
 			} else {
@@ -80,7 +80,7 @@ public class RowRendererDefault extends DefaultTableCellRenderer {
 				TableColumn col = table.getColumnModel().getColumn(column);
 				col.setPreferredWidth(25);
 			} else if (column == 7) {
-				if (queueState.equals(QueueStates.PROCESSING) || queueState.equals(QueueStates.QUEUED)) {
+				if (queueState.equals(QueueState.PROCESSING) || queueState.equals(QueueState.QUEUED)) {
 					ico = new ImageIcon(ICON_PATH_ABORT);
 				} else {
 					ico = new ImageIcon(ICON_PATH_NO_ABORT);

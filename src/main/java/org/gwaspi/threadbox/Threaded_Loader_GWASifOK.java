@@ -89,7 +89,7 @@ public class Threaded_Loader_GWASifOK extends CommonRunnable {
 		Set<String> affectionStates = SampleInfoCollectorSwitch.collectAffectionStates(sampleInfoLHM);
 
 		//<editor-fold defaultstate="collapsed" desc="LOAD PROCESS">
-		if (thisSwi.getQueueState().equals(QueueStates.PROCESSING)) {
+		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
 			resultMatrixId = LoadManager.dispatchLoadByFormat(format,
 					sampleInfoLHM,
 					newMatrixName,
@@ -107,14 +107,14 @@ public class Threaded_Loader_GWASifOK extends CommonRunnable {
 		//</editor-fold>
 
 		//<editor-fold defaultstate="collapsed" desc="QA PROCESS">
-		if (thisSwi.getQueueState().equals(QueueStates.PROCESSING)) {
+		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
 			samplesQAOpId = new OP_QASamples_opt().processMatrix(resultMatrixId);
 			GWASpiExplorerNodes.insertOperationUnderMatrixNode(resultMatrixId, samplesQAOpId);
 			org.gwaspi.reports.OutputQASamples.writeReportsForQASamplesData(samplesQAOpId, true);
 			GWASpiExplorerNodes.insertReportsUnderOperationNode(samplesQAOpId);
 		}
 
-		if (thisSwi.getQueueState().equals(QueueStates.PROCESSING)) {
+		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
 			markersQAOpId = new OP_QAMarkers_opt().processMatrix(resultMatrixId);
 			GWASpiExplorerNodes.insertOperationUnderMatrixNode(resultMatrixId, markersQAOpId);
 			org.gwaspi.reports.OutputQAMarkers.writeReportsForQAMarkersData(markersQAOpId);
@@ -145,7 +145,7 @@ public class Threaded_Loader_GWASifOK extends CommonRunnable {
 			//<editor-fold defaultstate="collapsed" desc="PRE-GWAS PROCESS">
 			// GENOTYPE FREQ.
 			int censusOpId = Integer.MIN_VALUE;
-			if (thisSwi.getQueueState().equals(QueueStates.PROCESSING)) {
+			if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
 				censusOpId = OperationManager.censusCleanMatrixMarkers(resultMatrixId,
 						samplesQAOpId,
 						markersQAOpId, gwasParams.getDiscardMarkerMisRatVal(), gwasParams.isDiscardGTMismatches(), gwasParams.getDiscardSampleMisRatVal(), gwasParams.getDiscardSampleHetzyRatVal(),
@@ -155,7 +155,7 @@ public class Threaded_Loader_GWASifOK extends CommonRunnable {
 
 			// HW ON GENOTYPE FREQ.
 			int hwOpId = Integer.MIN_VALUE;
-			if (thisSwi.getQueueState().equals(QueueStates.PROCESSING)
+			if (thisSwi.getQueueState().equals(QueueState.PROCESSING)
 					&& censusOpId != Integer.MIN_VALUE) {
 				hwOpId = org.gwaspi.netCDF.operations.OperationManager.performHardyWeinberg(censusOpId, cNetCDF.Defaults.DEFAULT_AFFECTION);
 				GWASpiExplorerNodes.insertSubOperationUnderOperationNode(censusOpId, hwOpId);
@@ -164,7 +164,7 @@ public class Threaded_Loader_GWASifOK extends CommonRunnable {
 
 			//<editor-fold defaultstate="collapsed" desc="GWAS TESTS & REPORTS">
 			// ALLELIC ASSOCIATION (needs newMatrixId, censusOpId, pickedMarkerSet, pickedSampleSet)
-			if (thisSwi.getQueueState().equals(QueueStates.PROCESSING)
+			if (thisSwi.getQueueState().equals(QueueState.PROCESSING)
 					&& censusOpId != Integer.MIN_VALUE
 					&& hwOpId != Integer.MIN_VALUE) {
 				OperationMetadata markerQAMetadata = new OperationMetadata(markersQAOpId);
@@ -188,7 +188,7 @@ public class Threaded_Loader_GWASifOK extends CommonRunnable {
 
 			// GENOTYPIC TEST (needs newMatrixId, censusOpId, pickedMarkerSet, pickedSampleSet)
 			if (gwasParams.isPerformGenotypicTests()
-					&& thisSwi.getQueueState().equals(QueueStates.PROCESSING)
+					&& thisSwi.getQueueState().equals(QueueState.PROCESSING)
 					&& censusOpId != Integer.MIN_VALUE
 					&& hwOpId != Integer.MIN_VALUE) {
 
@@ -212,7 +212,7 @@ public class Threaded_Loader_GWASifOK extends CommonRunnable {
 
 			// TREND TESTS (needs newMatrixId, censusOpId, pickedMarkerSet, pickedSampleSet)
 			if (gwasParams.isPerformTrendTests()
-					&& thisSwi.getQueueState().equals(QueueStates.PROCESSING)
+					&& thisSwi.getQueueState().equals(QueueState.PROCESSING)
 					&& censusOpId != Integer.MIN_VALUE
 					&& hwOpId != Integer.MIN_VALUE) {
 

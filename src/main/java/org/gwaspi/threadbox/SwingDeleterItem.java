@@ -11,7 +11,7 @@ public class SwingDeleterItem {
 	private String launchTime;
 	private String startTime;
 	private String endTime;
-	protected String queueState;
+	protected QueueState queueState;
 	private String description;
 	private Integer[] parentStudyIds;
 	private Integer[] parentMatricesIds;
@@ -28,7 +28,7 @@ public class SwingDeleterItem {
 			boolean _deleteReports) {
 
 		launchTime = org.gwaspi.global.Utils.getShortDateTimeAsString();
-		queueState = QueueStates.QUEUED;
+		queueState = QueueState.QUEUED;
 
 		deleteTarget = _deleteTarget;
 		deleteReports = _deleteReports;
@@ -45,7 +45,7 @@ public class SwingDeleterItem {
 			boolean _deleteReports) {
 
 		launchTime = org.gwaspi.global.Utils.getShortDateTimeAsString();
-		queueState = QueueStates.QUEUED;
+		queueState = QueueState.QUEUED;
 
 		deleteTarget = _deleteTarget;
 		deleteReports = _deleteReports;
@@ -63,7 +63,7 @@ public class SwingDeleterItem {
 			boolean _deleteReports) {
 
 		launchTime = org.gwaspi.global.Utils.getShortDateTimeAsString();
-		queueState = QueueStates.QUEUED;
+		queueState = QueueState.QUEUED;
 
 		deleteTarget = _deleteTarget;
 		deleteReports = _deleteReports;
@@ -82,7 +82,7 @@ public class SwingDeleterItem {
 			boolean _deleteReports) {
 
 		launchTime = org.gwaspi.global.Utils.getShortDateTimeAsString();
-		queueState = QueueStates.QUEUED;
+		queueState = QueueState.QUEUED;
 
 		deleteTarget = _deleteTarget;
 		deleteReports = _deleteReports;
@@ -93,7 +93,7 @@ public class SwingDeleterItem {
 
 	}
 
-	public String getQueueState() {
+	public QueueState getQueueState() {
 		return queueState;
 	}
 
@@ -171,7 +171,7 @@ public class SwingDeleterItem {
 
 	}
 
-	public void setQueueState(String queueState) {
+	public void setQueueState(QueueState queueState) {
 		this.queueState = queueState;
 	}
 
@@ -183,7 +183,7 @@ public class SwingDeleterItem {
 		this.startTime = startTime;
 	}
 
-	public static class DeleteTarget {
+	public static class DeleteTarget { // FIXME convert to enum
 
 		public static String STUDY = "STUDY";
 		public static String MATRIX = "MATRIX";

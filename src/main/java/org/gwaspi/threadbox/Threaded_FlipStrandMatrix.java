@@ -52,7 +52,7 @@ public class Threaded_FlipStrandMatrix extends CommonRunnable {
 
 	protected void runInternal(SwingWorkerItem thisSwi) throws Exception {
 
-		if (thisSwi.getQueueState().equals(QueueStates.PROCESSING)) {
+		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
 			MatrixGenotypesFlipper flipMatrix = new MatrixGenotypesFlipper(studyId,
 					parentMatrixId,
 					newMatrixName,
@@ -63,14 +63,14 @@ public class Threaded_FlipStrandMatrix extends CommonRunnable {
 			GWASpiExplorerNodes.insertMatrixNode(studyId, resultMatrixId);
 		}
 
-		if (thisSwi.getQueueState().equals(QueueStates.PROCESSING)) {
+		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
 			int sampleQAOpId = new OP_QASamples_opt().processMatrix(resultMatrixId);
 			GWASpiExplorerNodes.insertOperationUnderMatrixNode(resultMatrixId, sampleQAOpId);
 			org.gwaspi.reports.OutputQASamples.writeReportsForQASamplesData(sampleQAOpId, true);
 			GWASpiExplorerNodes.insertReportsUnderOperationNode(sampleQAOpId);
 		}
 
-		if (thisSwi.getQueueState().equals(QueueStates.PROCESSING)) {
+		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
 			int markersQAOpId = new OP_QAMarkers_opt().processMatrix(resultMatrixId);
 			GWASpiExplorerNodes.insertOperationUnderMatrixNode(resultMatrixId, markersQAOpId);
 			org.gwaspi.reports.OutputQAMarkers.writeReportsForQAMarkersData(markersQAOpId);

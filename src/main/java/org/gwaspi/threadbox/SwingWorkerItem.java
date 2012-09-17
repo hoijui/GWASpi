@@ -14,7 +14,7 @@ public class SwingWorkerItem {
 	private String launchTime;
 	private String startTime;
 	private String endTime;
-	protected String queueState;
+	protected QueueState queueState;
 	protected Integer[] parentStudyIds;
 	protected Integer[] parentMatricesIds;
 	protected Integer[] parentOperationsIds;
@@ -28,7 +28,7 @@ public class SwingWorkerItem {
 		this.timeStamp = timeStamp;
 		this.swingWorkerName = swingWorkerName;
 		this.swingWorker = swingWorker;
-		this.queueState = QueueStates.QUEUED;
+		this.queueState = QueueState.QUEUED;
 		this.parentStudyIds = parentStudyId;
 	}
 
@@ -42,7 +42,7 @@ public class SwingWorkerItem {
 		this.timeStamp = timeStamp;
 		this.swingWorkerName = swingWorkerName;
 		this.swingWorker = swingWorker;
-		this.queueState = QueueStates.QUEUED;
+		this.queueState = QueueState.QUEUED;
 		this.parentStudyIds = parentStudyId;
 		this.parentMatricesIds = parentMatricesIds;
 	}
@@ -58,13 +58,13 @@ public class SwingWorkerItem {
 		this.timeStamp = _timeStamp;
 		this.swingWorkerName = swingWorkerName;
 		this.swingWorker = swingWorker;
-		this.queueState = QueueStates.QUEUED;
+		this.queueState = QueueState.QUEUED;
 		this.parentStudyIds = parentStudyId;
 		this.parentMatricesIds = parentMatricesIds;
 		this.parentOperationsIds = parentOperationsIds;
 	}
 
-	public String getQueueState() {
+	public QueueState getQueueState() {
 		return queueState;
 	}
 
@@ -104,7 +104,7 @@ public class SwingWorkerItem {
 		return timeStamp;
 	}
 
-	public void setQueueState(String queueState) {
+	public void setQueueState(QueueState queueState) {
 		this.queueState = queueState;
 	}
 

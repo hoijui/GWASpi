@@ -73,7 +73,7 @@ public class Threaded_TrendTest extends CommonRunnable {
 			gwasParams.setDiscardMarkerHWTreshold((double) 0.05 / markerQAMetadata.getOpSetSize());
 		}
 
-		if (thisSwi.getQueueState().equals(QueueStates.PROCESSING)) {
+		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
 			int trendTestOpId = org.gwaspi.netCDF.operations.OperationManager.performCleanTrendTests(matrixId,
 					censusOpId,
 					hwOpId, gwasParams.getDiscardMarkerHWTreshold());

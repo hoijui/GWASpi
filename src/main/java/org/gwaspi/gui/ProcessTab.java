@@ -37,7 +37,7 @@ import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.gwaspi.threadbox.QueueStates;
+import org.gwaspi.threadbox.QueueState;
 import org.gwaspi.threadbox.SwingDeleterItem;
 import org.gwaspi.threadbox.SwingDeleterItemList;
 import org.gwaspi.threadbox.SwingWorkerItem;
@@ -295,10 +295,10 @@ public class ProcessTab extends JPanel {
 		int count = 0;
 		boolean idle = true;
 		while (count < swingWorkerItemsAL.size()) {
-			String queueState = swingWorkerItemsAL.get(count).getQueueState();
-			if (!queueState.equals(QueueStates.DONE)
-					&& !queueState.equals(QueueStates.ABORT)
-					&& !queueState.equals(QueueStates.ERROR)) {
+			QueueState queueState = swingWorkerItemsAL.get(count).getQueueState();
+			if (!queueState.equals(QueueState.DONE)
+					&& !queueState.equals(QueueState.ABORT)
+					&& !queueState.equals(QueueState.ERROR)) {
 				idle = false;
 			} else {
 				idle = true;

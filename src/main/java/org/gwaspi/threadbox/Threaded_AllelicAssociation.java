@@ -70,7 +70,7 @@ public class Threaded_AllelicAssociation extends CommonRunnable {
 			gwasParams.setDiscardMarkerHWTreshold((double) 0.05 / markerQAMetadata.getOpSetSize());
 		}
 
-		if (thisSwi.getQueueState().equals(QueueStates.PROCESSING)) {
+		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
 			int assocOpId = org.gwaspi.netCDF.operations.OperationManager.performCleanAllelicTests(matrixId,
 					censusOpId,
 					hwOpId, gwasParams.getDiscardMarkerHWTreshold());

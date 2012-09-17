@@ -48,7 +48,7 @@ public class Threaded_TranslateMatrix extends CommonRunnable {
 
 	protected void runInternal(SwingWorkerItem thisSwi) throws Exception {
 
-		if (thisSwi.getQueueState().equals(QueueStates.PROCESSING)) {
+		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
 			MatrixTranslator_opt matrixTransformer = new MatrixTranslator_opt(studyId,
 					parentMatrixId,
 					newMatrixName,
@@ -68,7 +68,7 @@ public class Threaded_TranslateMatrix extends CommonRunnable {
 
 			GWASpiExplorerNodes.insertMatrixNode(studyId, resultMatrixId);
 
-			if (!thisSwi.getQueueState().equals(QueueStates.PROCESSING)) {
+			if (!thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
 				return;
 			}
 			int sampleQAOpId = new OP_QASamples_opt().processMatrix(resultMatrixId);
@@ -76,7 +76,7 @@ public class Threaded_TranslateMatrix extends CommonRunnable {
 			org.gwaspi.reports.OutputQASamples.writeReportsForQASamplesData(sampleQAOpId, true);
 			GWASpiExplorerNodes.insertReportsUnderOperationNode(sampleQAOpId);
 
-			if (!thisSwi.getQueueState().equals(QueueStates.PROCESSING)) {
+			if (!thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
 				return;
 			}
 			int markersQAOpId = new OP_QAMarkers_opt().processMatrix(resultMatrixId);

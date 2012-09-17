@@ -36,7 +36,7 @@ public class Threaded_HardyWeinberg extends CommonRunnable {
 	protected void runInternal(SwingWorkerItem thisSwi) throws Exception {
 
 		// HW ON GENOTYPE FREQ.
-		if (thisSwi.getQueueState().equals(QueueStates.PROCESSING)) {
+		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
 			if (censusOpId != Integer.MIN_VALUE) {
 				int hwOpId = org.gwaspi.netCDF.operations.OperationManager.performHardyWeinberg(censusOpId, cNetCDF.Defaults.DEFAULT_AFFECTION);
 				GWASpiExplorerNodes.insertSubOperationUnderOperationNode(censusOpId, hwOpId);

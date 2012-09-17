@@ -67,7 +67,7 @@ public class Threaded_GTFreq_HW extends CommonRunnable {
 
 		// GT FREQ. BY PHENOFILE OR DB AFFECTION
 		int censusOpId = Integer.MIN_VALUE;
-		if (thisSwi.getQueueState().equals(QueueStates.PROCESSING)) {
+		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
 			if (phenotypeFile != null && phenotypeFile.exists() && phenotypeFile.isFile()) { //BY EXTERNAL PHENOTYPE FILE
 
 				Set<String> affectionStates = SamplesParser.scanSampleInfoAffectionStates(phenotypeFile.getPath()); //use Sample Info file affection state
@@ -108,7 +108,7 @@ public class Threaded_GTFreq_HW extends CommonRunnable {
 
 
 		// HW ON GENOTYPE FREQ.
-		if (thisSwi.getQueueState().equals(QueueStates.PROCESSING)) {
+		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
 			if (censusOpId != Integer.MIN_VALUE) {
 				int hwOpId = OperationManager.performHardyWeinberg(censusOpId, cNetCDF.Defaults.DEFAULT_AFFECTION);
 				GWASpiExplorerNodes.insertSubOperationUnderOperationNode(censusOpId, hwOpId);

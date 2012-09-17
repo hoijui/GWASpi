@@ -42,7 +42,7 @@ public class SwingWorkerItemList {
 		// CHECK IF ANY ITEM IS ALLREADY RUNNING
 		boolean kickStart = true;
 		for (SwingWorkerItem currentSwi : swingWorkerItemsAL) {
-			if (currentSwi.queueState.equals(QueueStates.PROCESSING)) {
+			if (currentSwi.queueState.equals(QueueState.PROCESSING)) {
 				kickStart = false;
 			}
 		}
@@ -51,18 +51,18 @@ public class SwingWorkerItemList {
 		if (kickStart) {
 			swi.getSwingWorker().start();
 			swi.setStartTime(org.gwaspi.global.Utils.getShortDateTimeAsString());
-			swi.setQueueState(QueueStates.PROCESSING);
+			swi.setQueueState(QueueState.PROCESSING);
 		}
 	}
 
 	public static void startNext() {
 		boolean idle = true;
 		for (SwingWorkerItem currentSwi : swingWorkerItemsAL) {
-			if (idle && currentSwi.getQueueState().equals(QueueStates.QUEUED)) {
+			if (idle && currentSwi.getQueueState().equals(QueueState.QUEUED)) {
 				idle = false;
 				currentSwi.swingWorker.start();
 				currentSwi.setStartTime(org.gwaspi.global.Utils.getShortDateTimeAsString());
-				currentSwi.setQueueState(QueueStates.PROCESSING);
+				currentSwi.setQueueState(QueueState.PROCESSING);
 			}
 		}
 		if (idle) {
@@ -77,7 +77,7 @@ public class SwingWorkerItemList {
 	public static void flagCurrentItemDone(String timeStamp) {
 		for (SwingWorkerItem currentSwi : swingWorkerItemsAL) {
 			if (currentSwi.getTimeStamp().equals(timeStamp)) {
-				currentSwi.setQueueState(QueueStates.DONE);
+				currentSwi.setQueueState(QueueState.DONE);
 				currentSwi.setEndTime(org.gwaspi.global.Utils.getShortDateTimeAsString());
 
 				unlockParentItems(currentSwi.parentStudyIds,
@@ -90,7 +90,7 @@ public class SwingWorkerItemList {
 	public static void flagCurrentItemAborted(String timeStamp) {
 		for (SwingWorkerItem currentSwi : swingWorkerItemsAL) {
 			if (currentSwi.getTimeStamp().equals(timeStamp)) {
-				currentSwi.setQueueState(QueueStates.ABORT);
+				currentSwi.setQueueState(QueueState.ABORT);
 				currentSwi.setEndTime(org.gwaspi.global.Utils.getShortDateTimeAsString());
 
 				unlockParentItems(currentSwi.parentStudyIds,
@@ -102,9 +102,9 @@ public class SwingWorkerItemList {
 
 	public static void flagCurrentItemAborted(int rowIdx) {
 		SwingWorkerItem currentSwi = swingWorkerItemsAL.get(rowIdx);
-		String queueState = currentSwi.getQueueState();
-		if (queueState.equals(QueueStates.PROCESSING) || queueState.equals(QueueStates.QUEUED)) {
-			swingWorkerItemsAL.get(rowIdx).setQueueState(QueueStates.ABORT);
+		QueueState queueState = currentSwi.getQueueState();
+		if (queueState.equals(QueueState.PROCESSING) || queueState.equals(QueueState.QUEUED)) {
+			swingWorkerItemsAL.get(rowIdx).setQueueState(QueueState.ABORT);
 			org.gwaspi.gui.ProcessTab.updateProcessOverview();
 
 			unlockParentItems(currentSwi.parentStudyIds,
@@ -116,7 +116,7 @@ public class SwingWorkerItemList {
 	public static void flagCurrentItemError(String timeStamp) {
 		for (SwingWorkerItem currentSwi : swingWorkerItemsAL) {
 			if (currentSwi.getTimeStamp().equals(timeStamp)) {
-				currentSwi.setQueueState(QueueStates.ERROR);
+				currentSwi.setQueueState(QueueState.ERROR);
 				currentSwi.setEndTime(org.gwaspi.global.Utils.getShortDateTimeAsString());
 
 				unlockParentItems(currentSwi.parentStudyIds,
@@ -165,10 +165,10 @@ public class SwingWorkerItemList {
 	public static int getSwingWorkerPendingItemsNb() {
 		int result = 0;
 		for (SwingWorkerItem currentSwi : SwingWorkerItemList.getSwingWorkerItemsAL()) {
-			if (currentSwi.queueState.equals(QueueStates.PROCESSING)) {
+			if (currentSwi.queueState.equals(QueueState.PROCESSING)) {
 				result++;
 			}
-			if (currentSwi.queueState.equals(QueueStates.QUEUED)) {
+			if (currentSwi.queueState.equals(QueueState.QUEUED)) {
 				result++;
 			}
 		}
