@@ -220,7 +220,7 @@ public class Associations {
 			expCntgTable[1][1] = (double) (obsCtrlRowTot * obsAaColTot) / totGT;
 			expCntgTable[2][1] = (double) (obsCtrlRowTot * obsaaColTot) / totGT;
 
-			chiSQ = org.gwaspi.statistics.Chisquare.calculateAllelicAssociationChiSquare(obsCntgTable, expCntgTable);
+			chiSQ = Chisquare.calculateAllelicAssociationChiSquare(obsCntgTable, expCntgTable);
 		}
 		return chiSQ;
 	}

@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Map;
 import org.gwaspi.netCDF.markers.MarkerSet_opt;
 import org.gwaspi.netCDF.matrices.MatrixMetadata;
-import org.gwaspi.netCDF.operations.CensusMethod.CensusDecision;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.gwaspi.samples.SampleSet;
@@ -29,7 +28,7 @@ import ucar.nc2.NetcdfFileWriteable;
  */
 public class OP_QAMarkers_opt {
 
-	private final static Logger log = LoggerFactory.getLogger(OP_QAMarkers_opt.class);
+	private final Logger log = LoggerFactory.getLogger(OP_QAMarkers_opt.class);
 
 	public OP_QAMarkers_opt() {
 	}

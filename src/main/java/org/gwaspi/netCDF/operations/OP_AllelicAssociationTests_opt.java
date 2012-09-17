@@ -24,7 +24,7 @@ import ucar.nc2.NetcdfFileWriteable;
  */
 public class OP_AllelicAssociationTests_opt {
 
-	private final static Logger log
+	private final Logger log
 			= LoggerFactory.getLogger(OP_AllelicAssociationTests_opt.class);
 
 	public OP_AllelicAssociationTests_opt() {
@@ -211,7 +211,7 @@ public class OP_AllelicAssociationTests_opt {
 		return resultAssocId;
 	}
 
-	private static void performAssociationTests(NetcdfFileWriteable wrNcFile, Map<String, Object> wrCaseMarkerIdSetLHM, Map<String, Object> wrCtrlMarkerSet) {
+	private void performAssociationTests(NetcdfFileWriteable wrNcFile, Map<String, Object> wrCaseMarkerIdSetLHM, Map<String, Object> wrCtrlMarkerSet) {
 		// Iterate through markerset
 		int markerNb = 0;
 		for (Map.Entry<String, Object> entry : wrCaseMarkerIdSetLHM.entrySet()) {

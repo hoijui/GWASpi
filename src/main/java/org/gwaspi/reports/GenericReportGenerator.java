@@ -38,6 +38,7 @@ import org.jfree.ui.RectangleAnchor;
 import org.jfree.ui.TextAnchor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.gwaspi.statistics.Chisquare;
 import ucar.nc2.NetcdfFile;
 
 /**
@@ -306,9 +307,9 @@ public class GenericReportGenerator {
 		int N = obsChiSqrVals.size();
 		List<Double> expChiSqrDist = null;
 		if (df == 1) {
-			expChiSqrDist = org.gwaspi.statistics.Chisquare.getChiSquareDistributionDf1AL(N, 1.0f);
+			expChiSqrDist = Chisquare.getChiSquareDistributionDf1AL(N, 1.0f);
 		} else if (df == 2) {
-			expChiSqrDist = org.gwaspi.statistics.Chisquare.getChiSquareDistributionDf2AL(N, 1.0f);
+			expChiSqrDist = Chisquare.getChiSquareDistributionDf2AL(N, 1.0f);
 		}
 		Collections.sort(expChiSqrDist);
 

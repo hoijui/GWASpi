@@ -24,20 +24,12 @@ public class MetadataLoaderIlluminaLGEN implements MetadataLoader {
 	private String mapPath;
 	private int studyId;
 
-	private enum Bases {
-
-		A, C, T, G;
-	}
-	private static String tabulator = cNetCDF.Defaults.TMP_SEPARATOR;
-
 	public MetadataLoaderIlluminaLGEN(String _mapPath, int _studyId) throws FileNotFoundException {
 
 		mapPath = _mapPath;
 		studyId = _studyId;
-
 	}
 
-	// ACCESSORS
 	public Map<String, Object> getSortedMarkerSetWithMetaData() throws IOException {
 		String startTime = org.gwaspi.global.Utils.getMediumDateTimeAsString();
 
@@ -76,7 +68,7 @@ public class MetadataLoaderIlluminaLGEN implements MetadataLoader {
 		return markerMetadataLHM;
 	}
 
-	public static SortedMap<String, String> parseAndSortMapFile(String path) throws IOException {
+	private static SortedMap<String, String> parseAndSortMapFile(String path) throws IOException {
 
 		FileReader fr = new FileReader(path);
 		BufferedReader inputMapBR = new BufferedReader(fr);
@@ -131,19 +123,23 @@ public class MetadataLoaderIlluminaLGEN implements MetadataLoader {
 		return sortedMetadataTM;
 	}
 
-	public static String fixChrData(String chr) throws IOException {
-		if (chr.equals("23")) {
-			chr = "X";
+	private static String fixChrData(String chr) {
+
+		String chrFixed = chr;
+
+		if (chrFixed.equals("23")) {
+			chrFixed = "X";
 		}
-		if (chr.equals("24")) {
-			chr = "Y";
+		if (chrFixed.equals("24")) {
+			chrFixed = "Y";
 		}
-		if (chr.equals("25")) {
-			chr = "XY";
+		if (chrFixed.equals("25")) {
+			chrFixed = "XY";
 		}
-		if (chr.equals("26")) {
-			chr = "MT";
+		if (chrFixed.equals("26")) {
+			chrFixed = "MT";
 		}
-		return chr;
+
+		return chrFixed;
 	}
 }

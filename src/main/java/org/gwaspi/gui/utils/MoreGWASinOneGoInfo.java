@@ -66,8 +66,8 @@ public class MoreGWASinOneGoInfo extends JFrame {
 	public static GWASinOneGOParams gwasParams = new GWASinOneGOParams();
 	private static JDialog dialog;
 	private static String format = "";
-
 	// End of variables declaration
+
 	public static GWASinOneGOParams showGWASInOneGo_Modal(String _format) {
 		// Create a modal dialog
 		gwasParams.setProceed(false);
@@ -96,7 +96,7 @@ public class MoreGWASinOneGoInfo extends JFrame {
 		return gwasParams;
 	}
 
-	public static JPanel getHeaderPanel() {
+	private static JPanel getHeaderPanel() {
 
 		JPanel pnl_Header = new JPanel(new GridBagLayout());
 		pnl_Header.setBorder(BorderFactory.createTitledBorder("Analysis to perform"));
@@ -130,7 +130,7 @@ public class MoreGWASinOneGoInfo extends JFrame {
 		return pnl_Header;
 	}
 
-	public static JPanel getQuestionsPanel() {
+	private static JPanel getQuestionsPanel() {
 
 		JPanel pnl_Questions = new JPanel(new GridBagLayout());
 		pnl_Questions.setBorder(BorderFactory.createTitledBorder("A few questions..."));
@@ -309,7 +309,7 @@ public class MoreGWASinOneGoInfo extends JFrame {
 		return pnl_Questions;
 	}
 
-	public static JPanel getFooterPanel() {
+	private static JPanel getFooterPanel() {
 
 		JPanel pnl_Footer = new JPanel(new GridBagLayout());
 

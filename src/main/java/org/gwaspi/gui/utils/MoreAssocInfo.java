@@ -41,8 +41,8 @@ public class MoreAssocInfo extends JFrame {
 	private static JFrame myFrame = new JFrame("GridBagLayout Test");
 	public static GWASinOneGOParams gwasParams = new GWASinOneGOParams();
 	private static JDialog dialog;
-
 	// End of variables declaration
+	
 	public static GWASinOneGOParams showAssocInfo_Modal() {
 		gwasParams.setProceed(false);
 		// Create a modal dialog
@@ -68,7 +68,7 @@ public class MoreAssocInfo extends JFrame {
 		return gwasParams;
 	}
 
-	public static JPanel getQuestionsPanel() {
+	private static JPanel getQuestionsPanel() {
 
 		JPanel pnl_Questions = new JPanel(new GridBagLayout());
 		pnl_Questions.setBorder(BorderFactory.createTitledBorder("A few questions..."));
@@ -114,7 +114,7 @@ public class MoreAssocInfo extends JFrame {
 		return pnl_Questions;
 	}
 
-	public static JPanel getFooterPanel() {
+	private static JPanel getFooterPanel() {
 
 		JPanel pnl_Footer = new JPanel(new GridBagLayout());
 

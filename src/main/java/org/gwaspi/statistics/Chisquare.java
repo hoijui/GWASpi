@@ -59,7 +59,6 @@ public class Chisquare {
 		return chiSQ;
 	}
 
-	//<editor-fold defaultstate="collapsed" desc="HELPER METHODS">
 	public static List<Double> getChiSquareDistributionDf1AL(int size, float C) {
 		List<Double> chiQuareDist = new ArrayList<Double>();
 		Random generator = new Random();
@@ -85,12 +84,13 @@ public class Chisquare {
 		return chiQuareDist;
 	}
 
-	public static List sortAscendingDistAL(List distArray) {
+	//<editor-fold defaultstate="collapsed" desc="HELPER METHODS">
+	private static List sortAscendingDistAL(List distArray) {
 		Collections.sort(distArray);
 		return distArray;
 	}
 
-	public static List sortDescendingDistAL(List distArray) {
+	private static List sortDescendingDistAL(List distArray) {
 		Collections.sort(distArray);
 		Collections.reverse(distArray);
 		return distArray;

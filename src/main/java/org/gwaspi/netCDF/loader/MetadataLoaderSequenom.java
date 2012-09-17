@@ -24,20 +24,12 @@ public class MetadataLoaderSequenom implements MetadataLoader {
 	private String mapPath;
 	private int studyId;
 
-	private enum Bases {
-
-		A, C, T, G;
-	}
-	private static String tabulator = cNetCDF.Defaults.TMP_SEPARATOR;
-
 	public MetadataLoaderSequenom(String _mapPath, int _studyId) throws FileNotFoundException {
 
 		mapPath = _mapPath;
 		studyId = _studyId;
-
 	}
 
-	// ACCESSORS
 	public Map<String, Object> getSortedMarkerSetWithMetaData() throws IOException {
 		String startTime = org.gwaspi.global.Utils.getMediumDateTimeAsString();
 
@@ -74,7 +66,7 @@ public class MetadataLoaderSequenom implements MetadataLoader {
 		return markerMetadataLHM;
 	}
 
-	public static SortedMap<String, String> parseAndSortMapFile(String path) throws IOException {
+	private static SortedMap<String, String> parseAndSortMapFile(String path) throws IOException {
 
 		FileReader fr = new FileReader(path);
 		BufferedReader inputMapBR = new BufferedReader(fr);
@@ -127,7 +119,7 @@ public class MetadataLoaderSequenom implements MetadataLoader {
 		return sortedMetadataTM;
 	}
 
-	public static String fixChrData(String chr) throws IOException {
+	private static String fixChrData(String chr) {
 
 		String chrFixed = chr;
 

@@ -23,7 +23,7 @@ import ucar.nc2.NetcdfFileWriteable;
  */
 public class OP_QASamples_opt {
 
-	private final static Logger log = LoggerFactory.getLogger(OP_QASamples_opt.class);
+	private final Logger log = LoggerFactory.getLogger(OP_QASamples_opt.class);
 
 	public OP_QASamples_opt() {
 	}

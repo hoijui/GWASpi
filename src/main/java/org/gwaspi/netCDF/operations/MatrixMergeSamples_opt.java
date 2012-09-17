@@ -30,7 +30,7 @@ import ucar.nc2.NetcdfFileWriteable;
  */
 public class MatrixMergeSamples_opt {
 
-	private final static Logger log = LoggerFactory.getLogger(MatrixMergeSamples_opt.class);
+	private final Logger log = LoggerFactory.getLogger(MatrixMergeSamples_opt.class);
 
 	private int studyId = Integer.MIN_VALUE;
 	private int rdMatrix1Id = Integer.MIN_VALUE;

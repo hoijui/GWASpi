@@ -34,7 +34,7 @@ import ucar.nc2.NetcdfFileWriteable;
  */
 public class MatrixMergeMarkers_opt {
 
-	private final static Logger log = LoggerFactory.getLogger(MatrixMergeMarkers_opt.class);
+	private final Logger log = LoggerFactory.getLogger(MatrixMergeMarkers_opt.class);
 
 	private int studyId;
 	private int rdMatrix1Id;

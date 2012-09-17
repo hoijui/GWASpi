@@ -26,7 +26,7 @@ import ucar.nc2.NetcdfFileWriteable;
  */
 public class MatrixTranslator_opt {
 
-	private final static Logger log = LoggerFactory.getLogger(MatrixTranslator_opt.class);
+	private final Logger log = LoggerFactory.getLogger(MatrixTranslator_opt.class);
 
 	private int studyId = Integer.MIN_VALUE;
 	private int rdMatrixId = Integer.MIN_VALUE;

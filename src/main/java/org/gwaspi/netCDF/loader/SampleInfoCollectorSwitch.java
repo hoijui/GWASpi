@@ -28,11 +28,14 @@ public class SampleInfoCollectorSwitch {
 	private SampleInfoCollectorSwitch() {
 	}
 
-	public static Map<String, Object> collectSampleInfo(String format,
+	public static Map<String, Object> collectSampleInfo(
+			String format,
 			boolean dummySamples,
 			String sampleInfoPath,
 			String altSampleInfoPath1,
-			String altSampleInfoPath2) throws IOException {
+			String altSampleInfoPath2)
+			throws IOException
+	{
 		Map<String, Object> sampleInfoLHM = new LinkedHashMap<String, Object>();
 		Object[] dummySampleValues = org.gwaspi.samples.DummySampleInfo.createDummySampleValues();
 

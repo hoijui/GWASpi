@@ -26,22 +26,14 @@ public class MetadataLoaderPlink implements MetadataLoader {
 	private String strand;
 	private int studyId;
 
-	private enum Bases {
-
-		A, C, T, G;
-	}
-	private static String tabulator = cNetCDF.Defaults.TMP_SEPARATOR;
-
 	public MetadataLoaderPlink(String _mapPath, String _pedPath, String _strand, int _studyId) throws FileNotFoundException {
 
 		mapPath = _mapPath;
 		pedPath = _pedPath;
 		studyId = _studyId;
 		strand = _strand;
-
 	}
 
-	// ACCESSORS
 	public Map<String, Object> getSortedMarkerSetWithMetaData() throws IOException {
 		String startTime = org.gwaspi.global.Utils.getMediumDateTimeAsString();
 
@@ -80,7 +72,7 @@ public class MetadataLoaderPlink implements MetadataLoader {
 		return markerMetadataLHM;
 	}
 
-	public static SortedMap<String, String> parseAndSortMapFile(String path) throws IOException {
+	private static SortedMap<String, String> parseAndSortMapFile(String path) throws IOException {
 
 		FileReader fr = new FileReader(path);
 		BufferedReader inputMapBR = new BufferedReader(fr);
@@ -141,20 +133,24 @@ public class MetadataLoaderPlink implements MetadataLoader {
 		return origMarkerIdSetLHM;
 	}
 
-	public static String fixChrData(String chr) throws IOException {
-		if (chr.equals("23")) {
-			chr = "X";
+	private static String fixChrData(String chr) {
+
+		String chrFixed = chr;
+
+		if (chrFixed.equals("23")) {
+			chrFixed = "X";
 		}
-		if (chr.equals("24")) {
-			chr = "Y";
+		if (chrFixed.equals("24")) {
+			chrFixed = "Y";
 		}
-		if (chr.equals("25")) {
-			chr = "XY";
+		if (chrFixed.equals("25")) {
+			chrFixed = "XY";
 		}
-		if (chr.equals("26")) {
-			chr = "MT";
+		if (chrFixed.equals("26")) {
+			chrFixed = "MT";
 		}
-		return chr;
+
+		return chrFixed;
 	}
 
 	static void logAsWhole(String startTime, String dirPath, String description, int studyId) throws IOException {

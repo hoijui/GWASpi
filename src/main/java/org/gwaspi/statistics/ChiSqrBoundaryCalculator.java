@@ -91,10 +91,10 @@ public class ChiSqrBoundaryCalculator {
 			try {
 				List<Double> expChiSqrDist = null;
 				if (df == 1) {
-					expChiSqrDist = org.gwaspi.statistics.Chisquare.getChiSquareDistributionDf1AL(N, 1.0f);
+					expChiSqrDist = Chisquare.getChiSquareDistributionDf1AL(N, 1.0f);
 				}
 				if (df == 2) {
-					expChiSqrDist = org.gwaspi.statistics.Chisquare.getChiSquareDistributionDf2AL(N, 1.0f);
+					expChiSqrDist = Chisquare.getChiSquareDistributionDf2AL(N, 1.0f);
 				}
 
 				Collections.sort(expChiSqrDist);

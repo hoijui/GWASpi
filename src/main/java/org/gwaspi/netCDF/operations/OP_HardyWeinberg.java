@@ -20,7 +20,7 @@ import ucar.nc2.NetcdfFileWriteable;
  */
 public class OP_HardyWeinberg {
 
-	private final static Logger log = LoggerFactory.getLogger(OP_HardyWeinberg.class);
+	private final Logger log = LoggerFactory.getLogger(OP_HardyWeinberg.class);
 
 	public OP_HardyWeinberg() {
 	}
@@ -130,7 +130,7 @@ public class OP_HardyWeinberg {
 		return resultOpId;
 	}
 
-	private static void performHardyWeinberg(NetcdfFileWriteable wrNcFile, Map<String, Object> markersContingencyLHM, String category) {
+	private void performHardyWeinberg(NetcdfFileWriteable wrNcFile, Map<String, Object> markersContingencyLHM, String category) {
 		// Iterate through markerset
 		int markerNb = 0;
 		for (Map.Entry<String, Object> entry : markersContingencyLHM.entrySet()) {

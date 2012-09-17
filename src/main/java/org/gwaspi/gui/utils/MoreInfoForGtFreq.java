@@ -43,8 +43,8 @@ public class MoreInfoForGtFreq extends JFrame {
 	private static JFrame myFrame = new JFrame("GridBagLayout Test");
 	private static JDialog dialog;
 	public static GWASinOneGOParams gwasParams = new GWASinOneGOParams();
-
 	// End of variables declaration
+
 	public static GWASinOneGOParams showMoreInfoForQA_Modal() {
 
 		gwasParams.setProceed(false);
@@ -71,7 +71,7 @@ public class MoreInfoForGtFreq extends JFrame {
 		return gwasParams;
 	}
 
-	public static JPanel getQuestionsPanel() {
+	private static JPanel getQuestionsPanel() {
 
 		JPanel pnl_Questions = new JPanel(new GridBagLayout());
 		pnl_Questions.setBorder(BorderFactory.createTitledBorder("A few questions..."));
@@ -149,7 +149,7 @@ public class MoreInfoForGtFreq extends JFrame {
 		return pnl_Questions;
 	}
 
-	public static JPanel getFooterPanel() {
+	private static JPanel getFooterPanel() {
 
 		JPanel pnl_Footer = new JPanel(new GridBagLayout());
 

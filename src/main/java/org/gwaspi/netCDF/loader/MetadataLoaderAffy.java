@@ -24,21 +24,13 @@ public class MetadataLoaderAffy implements MetadataLoader {
 	private String format;
 	private int studyId;
 
-	private enum Bases {
-
-		A, C, T, G;
-	}
-	private static String tabulator = cNetCDF.Defaults.TMP_SEPARATOR;
-
 	public MetadataLoaderAffy(String _annotationPath, String _format, int _studyId) throws FileNotFoundException {
 
 		annotationPath = _annotationPath;
 		studyId = _studyId;
 		format = _format;
-
 	}
 
-	// ACCESSORS
 	public Map<String, Object> getSortedMarkerSetWithMetaData() throws IOException {
 		String startTime = org.gwaspi.global.Utils.getMediumDateTimeAsString();
 
@@ -81,7 +73,7 @@ public class MetadataLoaderAffy implements MetadataLoader {
 		return markerMetadataLHM;
 	}
 
-	public static SortedMap<String, String> parseAnnotationBRFile(String path) throws IOException {
+	private static SortedMap<String, String> parseAnnotationBRFile(String path) throws IOException {
 		FileReader fr = new FileReader(path);
 		BufferedReader inputAnnotationBr = new BufferedReader(fr);
 		SortedMap<String, String> sortedMetadataTM = new TreeMap<String, String>(new ComparatorChrAutPosMarkerIdAsc());
@@ -136,7 +128,7 @@ public class MetadataLoaderAffy implements MetadataLoader {
 		return sortedMetadataTM;
 	}
 
-	public static String[] fixRsId(String[] keyValues, String[] valValues) throws IOException {
+	private static String[] fixRsId(String[] keyValues, String[] valValues) throws IOException {
 		// CHECK IF RSID EXISTS, USE AFFYID IF NOT
 
 		// valValues rsId;strand;alleles
@@ -147,7 +139,7 @@ public class MetadataLoaderAffy implements MetadataLoader {
 		return valValues;
 	}
 
-	public static String[] fixChrData(String[] keyValues) throws IOException {
+	private static String[] fixChrData(String[] keyValues) throws IOException {
 		// CHECK FOR PSEUDO-AUTOSOMAL FLAG => XY
 
 		//keyValues chr;pseudo-autosomal1;pseudo-autosomal2;pos;markerId

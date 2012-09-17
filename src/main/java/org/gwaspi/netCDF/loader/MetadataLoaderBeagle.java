@@ -21,15 +21,9 @@ import java.util.TreeMap;
 public class MetadataLoaderBeagle implements MetadataLoader {
 
 	private String markerFilePath;
-	private static String chr;
+	private String chr;
 	private String strand;
 	private int studyId;
-
-	private enum Bases {
-
-		A, C, T, G;
-	}
-	private static String tabulator = cNetCDF.Defaults.TMP_SEPARATOR;
 
 	public MetadataLoaderBeagle(String _mapPath, String _chr, String _strand, int _studyId) {
 
@@ -39,7 +33,6 @@ public class MetadataLoaderBeagle implements MetadataLoader {
 		strand = _strand;
 	}
 
-	// ACCESSORS
 	public Map<String, Object> getSortedMarkerSetWithMetaData() throws IOException {
 		String startTime = org.gwaspi.global.Utils.getMediumDateTimeAsString();
 
@@ -76,7 +69,7 @@ public class MetadataLoaderBeagle implements MetadataLoader {
 		return markerMetadataLHM;
 	}
 
-	public static SortedMap<String, String> parseAndSortMarkerFile(String path) throws IOException {
+	private SortedMap<String, String> parseAndSortMarkerFile(String path) throws IOException {
 		FileReader fr = new FileReader(path);
 		BufferedReader inputMapBR = new BufferedReader(fr);
 		SortedMap<String, String> sortedMetadataTM = new TreeMap<String, String>(new ComparatorChrAutPosMarkerIdAsc());
@@ -120,19 +113,23 @@ public class MetadataLoaderBeagle implements MetadataLoader {
 		return sortedMetadataTM;
 	}
 
-	public static String fixChrData(String chr) throws IOException {
-		if (chr.equals("23")) {
-			chr = "X";
+	private static String fixChrData(String chr) {
+
+		String chrFixed = chr;
+
+		if (chrFixed.equals("23")) {
+			chrFixed = "X";
 		}
-		if (chr.equals("24")) {
-			chr = "Y";
+		if (chrFixed.equals("24")) {
+			chrFixed = "Y";
 		}
-		if (chr.equals("25")) {
-			chr = "XY";
+		if (chrFixed.equals("25")) {
+			chrFixed = "XY";
 		}
-		if (chr.equals("26")) {
-			chr = "MT";
+		if (chrFixed.equals("26")) {
+			chrFixed = "MT";
 		}
-		return chr;
+
+		return chrFixed;
 	}
 }

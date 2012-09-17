@@ -27,7 +27,7 @@ import ucar.nc2.Variable;
  */
 public class SampleSet {
 
-	private final static Logger log
+	private final Logger log
 			= LoggerFactory.getLogger(SampleSet.class);
 
 	// SAMPLESET_MEATADATA

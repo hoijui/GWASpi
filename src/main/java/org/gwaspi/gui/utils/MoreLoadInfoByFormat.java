@@ -42,9 +42,9 @@ public class MoreLoadInfoByFormat extends JFrame {
 	private static JDialog dialog;
 	public static GWASinOneGOParams gwasParams = new GWASinOneGOParams();
 	private static String format = "";
-
 	// End of variables declaration
-	public static GWASinOneGOParams showMoreInfoByFormat_Modal(String _format) {
+
+	private static GWASinOneGOParams showMoreInfoByFormat_Modal(String _format) {
 
 		gwasParams.setProceed(false);
 		format = _format;
@@ -79,7 +79,7 @@ public class MoreLoadInfoByFormat extends JFrame {
 		return gwasParams;
 	}
 
-	public static JPanel getQuestionsPanel() {
+	private static JPanel getQuestionsPanel() {
 
 		JPanel pnl_Questions = new JPanel(new GridBagLayout());
 		pnl_Questions.setBorder(BorderFactory.createTitledBorder("Additional Information..."));
@@ -142,7 +142,7 @@ public class MoreLoadInfoByFormat extends JFrame {
 		return pnl_Questions;
 	}
 
-	public static JPanel getFooterPanel() {
+	private static JPanel getFooterPanel() {
 
 		JPanel pnl_Footer = new JPanel(new GridBagLayout());
 
@@ -221,9 +221,5 @@ public class MoreLoadInfoByFormat extends JFrame {
 		c.gridx = gridx;
 		c.gridy = gridy;
 		c.anchor = anchor;
-	}
-
-	public static void showMoreInfoByFormat(String toString) {
-		throw new UnsupportedOperationException("Not yet implemented");
 	}
 }

@@ -24,7 +24,7 @@ import ucar.nc2.NetcdfFileWriteable;
  */
 public class OP_TrendTests_opt {
 
-	private final static Logger log = LoggerFactory.getLogger(OP_TrendTests_opt.class);
+	private final Logger log = LoggerFactory.getLogger(OP_TrendTests_opt.class);
 
 	public OP_TrendTests_opt() {
 	}
