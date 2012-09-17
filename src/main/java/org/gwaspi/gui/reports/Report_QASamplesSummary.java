@@ -487,9 +487,9 @@ public class Report_QASamplesSummary extends JPanel {
 		public void actionPerformed(ActionEvent evt) {
 			try {
 				Operation op = new Operation(opId);
-				GWASpiExplorerPanel.tree.setSelectionPath(GWASpiExplorerPanel.tree.getSelectionPath().getParentPath());
-				GWASpiExplorerPanel.pnl_Content = new MatrixAnalysePanel(op.getParentMatrixId(), opId);
-				GWASpiExplorerPanel.scrl_Content.setViewportView(GWASpiExplorerPanel.pnl_Content);
+				GWASpiExplorerPanel.getSingleton().getTree().setSelectionPath(GWASpiExplorerPanel.getSingleton().getTree().getSelectionPath().getParentPath());
+				GWASpiExplorerPanel.getSingleton().setPnl_Content(new MatrixAnalysePanel(op.getParentMatrixId(), opId));
+				GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
 			} catch (IOException ex) {
 				Logger.getLogger(Report_SampleInfoPanel.class.getName()).log(Level.SEVERE, null, ex);
 			}

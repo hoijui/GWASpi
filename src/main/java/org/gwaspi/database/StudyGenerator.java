@@ -66,7 +66,7 @@ public class StudyGenerator {
 		for (int i = 0; i < matrixMod.matrixList.size(); i++) {
 			try {
 				org.gwaspi.netCDF.matrices.MatrixManager.deleteMatrix(matrixMod.matrixList.get(i).getMatrixId(), deleteReports);
-				GWASpiExplorerPanel.updateTreePanel(true);
+				GWASpiExplorerPanel.getSingleton().updateTreePanel(true);
 			} catch (IOException ex) {
 			}
 		}

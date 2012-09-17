@@ -32,14 +32,14 @@ import org.slf4j.LoggerFactory;
  */
 public class ChartDefaultDisplay extends JPanel {
 
-	private final static Logger log
-			= LoggerFactory.getLogger(ManhattanChartDisplay.class);
+	private static final Logger log
+			= LoggerFactory.getLogger(ChartDefaultDisplay.class);
 
 	// Variables declaration - do not modify
-	private static JPanel pnl_Chart;
-	private static JPanel pnl_Footer;
-	private static JScrollPane scrl_Chart;
-	private static JButton btn_Save;
+	private JPanel pnl_Chart;
+	private JPanel pnl_Footer;
+	private JScrollPane scrl_Chart;
+	private JButton btn_Save;
 	private JButton btn_Back;
 	private int opId;
 	// End of variables declaration
@@ -119,7 +119,7 @@ public class ChartDefaultDisplay extends JPanel {
 		diplayChart(studyId, chartPath);
 	}
 
-	private static void diplayChart(int studyId, String chartPath) {
+	private void diplayChart(int studyId, String chartPath) {
 		try {
 			String reportPath = Config.getConfigValue(Config.PROPERTY_REPORTS_DIR, "") + "/STUDY_" + studyId + "/";
 			File testF = new File(reportPath + chartPath);
@@ -178,9 +178,9 @@ public class ChartDefaultDisplay extends JPanel {
 		public void actionPerformed(ActionEvent evt) {
 			try {
 				Operation op = new Operation(opId);
-				GWASpiExplorerPanel.tree.setSelectionPath(GWASpiExplorerPanel.tree.getSelectionPath().getParentPath());
-				GWASpiExplorerPanel.pnl_Content = new MatrixAnalysePanel(op.getParentMatrixId(), opId);
-				GWASpiExplorerPanel.scrl_Content.setViewportView(GWASpiExplorerPanel.pnl_Content);
+				GWASpiExplorerPanel.getSingleton().getTree().setSelectionPath(GWASpiExplorerPanel.getSingleton().getTree().getSelectionPath().getParentPath());
+				GWASpiExplorerPanel.getSingleton().setPnl_Content(new MatrixAnalysePanel(op.getParentMatrixId(), opId));
+				GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
 			} catch (IOException ex) {
 				log.error(null, ex);
 			}

@@ -96,7 +96,7 @@ public class MatrixAnalysePanel extends JPanel {
 		} else {
 			currentOP = null;
 		}
-		DefaultMutableTreeNode matrixNode = (DefaultMutableTreeNode) GWASpiExplorerPanel.tree.getLastSelectedPathComponent();
+		DefaultMutableTreeNode matrixNode = (DefaultMutableTreeNode) GWASpiExplorerPanel.getSingleton().getTree().getLastSelectedPathComponent();
 		treeChildrenLHM = NodeToPathCorrespondence.buildNodeToPathCorrespondence(matrixNode, true);
 
 		pnl_MatrixDesc = new JPanel();
@@ -405,11 +405,11 @@ public class MatrixAnalysePanel extends JPanel {
 						}
 
 						if (reProceed) {
-							gwasParams = MoreAssocInfo.showAssocInfo_Modal();
+							gwasParams = new MoreAssocInfo().showMoreInfo();
 						}
 
 						if (gwasParams.isProceed()) {
-							ProcessTab.showTab();
+							ProcessTab.getSingleton().showTab();
 							// GET HW OPERATION
 							OperationsList hwOPList = new OperationsList(parentMatrix.getMatrixId(), censusOPId, OPType.HARDY_WEINBERG);
 							for (Operation currentHWop : hwOPList.operationsListAL) {
@@ -508,11 +508,11 @@ public class MatrixAnalysePanel extends JPanel {
 						}
 
 						if (reProceed) {
-							gwasParams = MoreAssocInfo.showAssocInfo_Modal();
+							gwasParams = new MoreAssocInfo().showMoreInfo();
 						}
 
 						if (gwasParams.isProceed()) {
-							ProcessTab.showTab();
+							ProcessTab.getSingleton().showTab();
 							// GET HW OPERATION
 							OperationsList hwOPList = new OperationsList(parentMatrix.getMatrixId(), censusOPId, OPType.HARDY_WEINBERG);
 							for (Operation currentHWop : hwOPList.operationsListAL) {
@@ -614,11 +614,11 @@ public class MatrixAnalysePanel extends JPanel {
 						}
 
 						if (reProceed) {
-							gwasParams = MoreAssocInfo.showAssocInfo_Modal();
+							gwasParams = new MoreAssocInfo().showMoreInfo();
 						}
 
 						if (gwasParams.isProceed()) {
-							ProcessTab.showTab();
+							ProcessTab.getSingleton().showTab();
 							//GET HW OPERATION
 							OperationsList hwOPList = new OperationsList(parentMatrix.getMatrixId(), censusOPId, OPType.HARDY_WEINBERG);
 							for (Operation currentHWop : hwOPList.operationsListAL) {
@@ -676,13 +676,13 @@ public class MatrixAnalysePanel extends JPanel {
 				if (choice == JOptionPane.NO_OPTION) { //BY EXTERNAL PHENOTYPE FILE
 					phenotypeFile = Dialogs.selectFilesAndDirectoriesDialog(JOptionPane.OK_OPTION);
 					if (phenotypeFile != null) {
-						gwasParams = MoreInfoForGtFreq.showMoreInfoForQA_Modal();
+						gwasParams = new MoreInfoForGtFreq().showMoreInfo();
 						if (choice != JOptionPane.CANCEL_OPTION) {
 							gwasParams.setFriendlyName(Dialogs.showInputBox(Text.Operation.GTFreqAndHWFriendlyName));
 						}
 					}
 				} else if (choice != JOptionPane.CANCEL_OPTION) {
-					gwasParams = MoreInfoForGtFreq.showMoreInfoForQA_Modal();
+					gwasParams = new MoreInfoForGtFreq().showMoreInfo();
 					if (choice != JOptionPane.CANCEL_OPTION) {
 						gwasParams.setFriendlyName(Dialogs.showInputBox(Text.Operation.GTFreqAndHWFriendlyName));
 					}
@@ -702,7 +702,7 @@ public class MatrixAnalysePanel extends JPanel {
 				}
 
 				if (gwasParams.isProceed()) {
-					ProcessTab.showTab();
+					ProcessTab.getSingleton().showTab();
 				}
 
 				// <editor-fold defaultstate="collapsed" desc="QA BLOCK">
@@ -777,9 +777,9 @@ public class MatrixAnalysePanel extends JPanel {
 							}
 
 							if (currentOP.getOperationId() == opId) {
-								GWASpiExplorerPanel.tree.setSelectionPath(GWASpiExplorerPanel.tree.getSelectionPath().getParentPath());
+								GWASpiExplorerPanel.getSingleton().getTree().setSelectionPath(GWASpiExplorerPanel.getSingleton().getTree().getSelectionPath().getParentPath());
 							}
-							GWASpiExplorerPanel.updateTreePanel(true);
+							GWASpiExplorerPanel.getSingleton().updateTreePanel(true);
 						}
 					}
 				} catch (IOException ex) {
@@ -820,20 +820,20 @@ public class MatrixAnalysePanel extends JPanel {
 				if (choice == JOptionPane.NO_OPTION) { //BY EXTERNAL PHENOTYPE FILE
 					phenotypeFile = Dialogs.selectFilesAndDirectoriesDialog(JOptionPane.OK_OPTION);
 					if (phenotypeFile != null) {
-						gwasParams = MoreGWASinOneGoInfo.showGWASInOneGo_Modal(matrixMetadata.getTechnology().toString());
+						gwasParams = new MoreGWASinOneGoInfo().showMoreInfo(matrixMetadata.getTechnology().toString());
 						if (choice != JOptionPane.CANCEL_OPTION && gwasParams.isProceed()) {
 							gwasParams.setFriendlyName(Dialogs.showInputBox(Text.Operation.GTFreqAndHWFriendlyName));
 						}
 					}
 				} else if (choice != JOptionPane.CANCEL_OPTION) {
-					gwasParams = MoreGWASinOneGoInfo.showGWASInOneGo_Modal(matrixMetadata.getTechnology().toString());
+					gwasParams = new MoreGWASinOneGoInfo().showMoreInfo(matrixMetadata.getTechnology().toString());
 					if (choice != JOptionPane.CANCEL_OPTION && gwasParams.isProceed()) {
 						gwasParams.setFriendlyName(Dialogs.showInputBox(Text.Operation.GTFreqAndHWFriendlyName));
 					}
 				}
 
 				if (gwasParams.isProceed()) {
-					ProcessTab.showTab();
+					ProcessTab.getSingleton().showTab();
 				}
 
 				//QA BLOCK
@@ -886,16 +886,16 @@ public class MatrixAnalysePanel extends JPanel {
 		public void actionPerformed(ActionEvent evt) {
 			try {
 				if (currentOP != null && currentOP.getParentOperationId() != -1) {
-					GWASpiExplorerPanel.tree.setSelectionPath(GWASpiExplorerPanel.tree.getSelectionPath().getParentPath());
-					GWASpiExplorerPanel.pnl_Content = new MatrixAnalysePanel(currentOP.getParentMatrixId(), currentOP.getParentOperationId());
-					GWASpiExplorerPanel.scrl_Content.setViewportView(GWASpiExplorerPanel.pnl_Content);
+					GWASpiExplorerPanel.getSingleton().getTree().setSelectionPath(GWASpiExplorerPanel.getSingleton().getTree().getSelectionPath().getParentPath());
+					GWASpiExplorerPanel.getSingleton().setPnl_Content(new MatrixAnalysePanel(currentOP.getParentMatrixId(), currentOP.getParentOperationId()));
+					GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
 				} else if (currentOP != null) {
-					GWASpiExplorerPanel.tree.setSelectionPath(GWASpiExplorerPanel.tree.getSelectionPath().getParentPath());
-					GWASpiExplorerPanel.pnl_Content = new CurrentMatrixPanel(parentMatrix.getMatrixId());
-					GWASpiExplorerPanel.scrl_Content.setViewportView(GWASpiExplorerPanel.pnl_Content);
+					GWASpiExplorerPanel.getSingleton().getTree().setSelectionPath(GWASpiExplorerPanel.getSingleton().getTree().getSelectionPath().getParentPath());
+					GWASpiExplorerPanel.getSingleton().setPnl_Content(new CurrentMatrixPanel(parentMatrix.getMatrixId()));
+					GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
 				} else {
-					GWASpiExplorerPanel.pnl_Content = new CurrentMatrixPanel(parentMatrix.getMatrixId());
-					GWASpiExplorerPanel.scrl_Content.setViewportView(GWASpiExplorerPanel.pnl_Content);
+					GWASpiExplorerPanel.getSingleton().setPnl_Content(new CurrentMatrixPanel(parentMatrix.getMatrixId()));
+					GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
 				}
 			} catch (IOException ex) {
 				log.error(null, ex);

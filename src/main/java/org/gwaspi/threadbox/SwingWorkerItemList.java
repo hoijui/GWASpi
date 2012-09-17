@@ -1,5 +1,6 @@
 package org.gwaspi.threadbox;
 
+import org.gwaspi.gui.ProcessTab;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -105,7 +106,7 @@ public class SwingWorkerItemList {
 		QueueState queueState = currentSwi.getQueueState();
 		if (queueState.equals(QueueState.PROCESSING) || queueState.equals(QueueState.QUEUED)) {
 			swingWorkerItemsAL.get(rowIdx).setQueueState(QueueState.ABORT);
-			org.gwaspi.gui.ProcessTab.updateProcessOverview();
+			ProcessTab.getSingleton().updateProcessOverview();
 
 			unlockParentItems(currentSwi.parentStudyIds,
 					currentSwi.parentMatricesIds,

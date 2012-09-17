@@ -398,7 +398,9 @@ public class GenericReportGenerator {
 		return plot;
 	}
 
-	public static XYDataset getManhattanZoomByChrAndPos(int opId,
+	public static XYDataset getManhattanZoomByChrAndPos(
+			ManhattanPlotZoom manhattanPlotZoom,
+			int opId,
 			String netCDFVar,
 			String chr,
 			String markerId,
@@ -487,7 +489,7 @@ public class GenericReportGenerator {
 				}
 			}
 			snpNumber = labelerHM.size();
-			ManhattanPlotZoom.labelerLHM = labelerHM;
+			manhattanPlotZoom.setLabelerLHM(labelerHM);
 
 			dataSeries.setDescription("Zoom chr " + chr + " from position " + minPosition + " to " + maxPosition);
 
@@ -506,7 +508,9 @@ public class GenericReportGenerator {
 	 *
 	 * @deprecated Use getManhattanZoomByChrAndPos instead
 	 */
-	public static XYDataset getManhattanZoomByMarkerIdOrIdx(int opId,
+	public static XYDataset getManhattanZoomByMarkerIdOrIdx(
+			ManhattanPlotZoom manhattanPlotZoom,
+			int opId,
 			String netCDFVar,
 			String origMarkerId,
 			int startIdxPos,
@@ -591,7 +595,7 @@ public class GenericReportGenerator {
 			rdInfoMarkerSet.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
 			// First check for same chromosome data
 			String validateChr = rdInfoMarkerSet.getMarkerIdSetLHM().get(origMarkerId).toString();
-			ManhattanPlotZoom.centerPhysPos = minPosition;
+			manhattanPlotZoom.setCenterPhysPos((long) minPosition);
 
 			for (Map.Entry<String, Object> entry : dataSetLHM.entrySet()) {
 				String key = entry.getKey();
@@ -654,7 +658,7 @@ public class GenericReportGenerator {
 				}
 			}
 			snpNumber = labelerHM.size();
-			ManhattanPlotZoom.labelerLHM = labelerHM;
+			manhattanPlotZoom.setLabelerLHM(labelerHM);
 
 			dataSeries.setDescription("Zoom on " + origMarkerId + ", window size: " + snpNumber);
 
@@ -669,7 +673,7 @@ public class GenericReportGenerator {
 	//</editor-fold>
 
 	//<editor-fold defaultstate="collapsed/expanded" desc="SAMPLE-QA PLOTS">
-	public static XYDataset getSampleHetzygDataset(int opId) throws IOException {
+	public static XYDataset getSampleHetzygDataset(SampleQAHetzygPlotZoom sampleQAHetzygPlotZoom, int opId) throws IOException {
 		XYDataset resultXYDataset;
 		OperationMetadata rdOPMetadata = new OperationMetadata(opId);
 		NetcdfFile sampleQANcFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());
@@ -699,7 +703,7 @@ public class GenericReportGenerator {
 			count++;
 		}
 		snpNumber = labelerHM.size();
-		SampleQAHetzygPlotZoom.labelerLHM = labelerHM;
+		sampleQAHetzygPlotZoom.setLabelerLHM(labelerHM);
 
 		dataSeries.setDescription(rdOPMetadata.getDescription());
 

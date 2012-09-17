@@ -36,39 +36,39 @@ import org.gwaspi.netCDF.operations.GWASinOneGOParams;
 public class MoreGWASinOneGoInfo extends JFrame {
 
 	// Variables declaration - do not modify
-	private static JButton btn_Go;
-	private static JButton btn_Help;
-	private static JButton btn_Cancel;
-	private static JCheckBox chkB_allelic;
-	private static JCheckBox chkB_geno;
-	private static JCheckBox chkB_trend;
-	private static JCheckBox chkB_MMM;
-	private static JCheckBox chkB_MMS;
-	private static JCheckBox chkB_MHZ;
-	private static JCheckBox chkB_SMS;
-	private static JCheckBox chkB_SHZ;
-	private static JRadioButton rdioB_HW_Calc;
-	private static JLabel lbl_HW;
-	private static JRadioButton rdioB_HW_free;
-	private static JTextField txtF_MMS;
-	private static JTextField txtF_MHZ;
-	private static JTextField txtF_HW_free;
-	private static JTextField txtF_SMS;
-	private static JTextField txtF_SHZ;
-	private static ButtonGroup rdiogrp_HW;
-	private static JLabel lbl_Chromosome;
-	private static JComboBox cmb_Chromosome;
-	private static JLabel lbl_Strand;
-	private static JComboBox cmb_Strand;
-	private static JLabel lbl_GTCode;
-	private static JComboBox cmb_GTCode;
-	private static JFrame myFrame = new JFrame("GridBagLayout Test");
-	public static GWASinOneGOParams gwasParams = new GWASinOneGOParams();
-	private static JDialog dialog;
-	private static String format = "";
+	private JButton btn_Go;
+	private JButton btn_Help;
+	private JButton btn_Cancel;
+	private JCheckBox chkB_allelic;
+	private JCheckBox chkB_geno;
+	private JCheckBox chkB_trend;
+	private JCheckBox chkB_MMM;
+	private JCheckBox chkB_MMS;
+	private JCheckBox chkB_MHZ;
+	private JCheckBox chkB_SMS;
+	private JCheckBox chkB_SHZ;
+	private JRadioButton rdioB_HW_Calc;
+	private JLabel lbl_HW;
+	private JRadioButton rdioB_HW_free;
+	private JTextField txtF_MMS;
+	private JTextField txtF_MHZ;
+	private JTextField txtF_HW_free;
+	private JTextField txtF_SMS;
+	private JTextField txtF_SHZ;
+	private ButtonGroup rdiogrp_HW;
+	private JLabel lbl_Chromosome;
+	private JComboBox cmb_Chromosome;
+	private JLabel lbl_Strand;
+	private JComboBox cmb_Strand;
+	private JLabel lbl_GTCode;
+	private JComboBox cmb_GTCode;
+	private JFrame myFrame = new JFrame("GridBagLayout Test");
+	private GWASinOneGOParams gwasParams = new GWASinOneGOParams();
+	private JDialog dialog;
+	private String format = "";
 	// End of variables declaration
 
-	public static GWASinOneGOParams showGWASInOneGo_Modal(String _format) {
+	public GWASinOneGOParams showMoreInfo(String _format) {
 		// Create a modal dialog
 		gwasParams.setProceed(false);
 		dialog = new JDialog(myFrame, Text.Operation.gwasInOneGo, true);
@@ -96,7 +96,7 @@ public class MoreGWASinOneGoInfo extends JFrame {
 		return gwasParams;
 	}
 
-	private static JPanel getHeaderPanel() {
+	private JPanel getHeaderPanel() {
 
 		JPanel pnl_Header = new JPanel(new GridBagLayout());
 		pnl_Header.setBorder(BorderFactory.createTitledBorder("Analysis to perform"));
@@ -130,7 +130,7 @@ public class MoreGWASinOneGoInfo extends JFrame {
 		return pnl_Header;
 	}
 
-	private static JPanel getQuestionsPanel() {
+	private JPanel getQuestionsPanel() {
 
 		JPanel pnl_Questions = new JPanel(new GridBagLayout());
 		pnl_Questions.setBorder(BorderFactory.createTitledBorder("A few questions..."));
@@ -309,7 +309,7 @@ public class MoreGWASinOneGoInfo extends JFrame {
 		return pnl_Questions;
 	}
 
-	private static JPanel getFooterPanel() {
+	private JPanel getFooterPanel() {
 
 		JPanel pnl_Footer = new JPanel(new GridBagLayout());
 
@@ -340,7 +340,7 @@ public class MoreGWASinOneGoInfo extends JFrame {
 		return pnl_Footer;
 	}
 
-	private static class GoAction extends AbstractAction {
+	private class GoAction extends AbstractAction {
 
 		GoAction() {
 
@@ -388,7 +388,7 @@ public class MoreGWASinOneGoInfo extends JFrame {
 		}
 	}
 
-	private static class CancelAction extends AbstractAction {
+	private class CancelAction extends AbstractAction {
 
 		CancelAction() {
 
@@ -401,7 +401,7 @@ public class MoreGWASinOneGoInfo extends JFrame {
 		}
 	}
 
-	private static void setConstraints(GridBagConstraints c,
+	private void setConstraints(GridBagConstraints c,
 			int gridx,
 			int gridy,
 			int anchor)

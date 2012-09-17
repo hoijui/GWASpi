@@ -83,7 +83,7 @@ public class CurrentMatrixPanel extends JPanel {
 	public CurrentMatrixPanel(int _matrixId) throws IOException {
 
 		matrix = new org.gwaspi.model.Matrix(_matrixId);
-		DefaultMutableTreeNode matrixNode = (DefaultMutableTreeNode) GWASpiExplorerPanel.tree.getLastSelectedPathComponent();
+		DefaultMutableTreeNode matrixNode = (DefaultMutableTreeNode) GWASpiExplorerPanel.getSingleton().getTree().getLastSelectedPathComponent();
 		treeChildrenLHM = NodeToPathCorrespondence.buildNodeToPathCorrespondence(matrixNode, true);
 
 		pnl_MatrixDesc = new JPanel();
@@ -327,8 +327,8 @@ public class CurrentMatrixPanel extends JPanel {
 		@Override
 		public void actionPerformed(ActionEvent evt) {
 			try {
-				GWASpiExplorerPanel.pnl_Content = new MatrixExtractPanel(matrix.getMatrixId(), "", "");
-				GWASpiExplorerPanel.scrl_Content.setViewportView(GWASpiExplorerPanel.pnl_Content);
+				GWASpiExplorerPanel.getSingleton().setPnl_Content(new MatrixExtractPanel(matrix.getMatrixId(), "", ""));
+				GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
 			} catch (IOException ex) {
 				log.error(null, ex);
 			}
@@ -349,8 +349,8 @@ public class CurrentMatrixPanel extends JPanel {
 		public void actionPerformed(ActionEvent evt) {
 			// Goto Trafo Pane
 			try {
-				GWASpiExplorerPanel.pnl_Content = new MatrixTrafoPanel(matrix.getMatrixId());
-				GWASpiExplorerPanel.scrl_Content.setViewportView(GWASpiExplorerPanel.pnl_Content);
+				GWASpiExplorerPanel.getSingleton().setPnl_Content(new MatrixTrafoPanel(matrix.getMatrixId()));
+				GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
 			} catch (IOException ex) {
 				log.error(null, ex);
 			}
@@ -371,8 +371,8 @@ public class CurrentMatrixPanel extends JPanel {
 		public void actionPerformed(ActionEvent evt) {
 			// Goto Matrix Analysis Panel
 			try {
-				GWASpiExplorerPanel.pnl_Content = new MatrixAnalysePanel(matrix.getMatrixId(), Integer.MIN_VALUE);
-				GWASpiExplorerPanel.scrl_Content.setViewportView(GWASpiExplorerPanel.pnl_Content);
+				GWASpiExplorerPanel.getSingleton().setPnl_Content(new MatrixAnalysePanel(matrix.getMatrixId(), Integer.MIN_VALUE));
+				GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
 			} catch (IOException ex) {
 				log.error(null, ex);
 			}
@@ -436,8 +436,8 @@ public class CurrentMatrixPanel extends JPanel {
 		@Override
 		public void actionPerformed(ActionEvent evt) {
 			try {
-				GWASpiExplorerPanel.pnl_Content = new MatrixMergePanel(matrix.getMatrixId());
-				GWASpiExplorerPanel.scrl_Content.setViewportView(GWASpiExplorerPanel.pnl_Content);
+				GWASpiExplorerPanel.getSingleton().setPnl_Content(new MatrixMergePanel(matrix.getMatrixId()));
+				GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
 			} catch (IOException ex) {
 				log.error(null, ex);
 			}
@@ -567,7 +567,7 @@ public class CurrentMatrixPanel extends JPanel {
 									Dialogs.showWarningDialogue(Text.Processes.cantDeleteRequiredItem);
 								}
 							}
-							GWASpiExplorerPanel.updateTreePanel(true);
+							GWASpiExplorerPanel.getSingleton().updateTreePanel(true);
 						}
 					}
 				} catch (IOException ex) {
@@ -590,9 +590,9 @@ public class CurrentMatrixPanel extends JPanel {
 		@Override
 		public void actionPerformed(ActionEvent evt) {
 			try {
-				GWASpiExplorerPanel.tree.setSelectionPath(GWASpiExplorerPanel.tree.getSelectionPath().getParentPath());
-				GWASpiExplorerPanel.pnl_Content = new CurrentStudyPanel(matrix.getStudyId());
-				GWASpiExplorerPanel.scrl_Content.setViewportView(GWASpiExplorerPanel.pnl_Content);
+				GWASpiExplorerPanel.getSingleton().getTree().setSelectionPath(GWASpiExplorerPanel.getSingleton().getTree().getSelectionPath().getParentPath());
+				GWASpiExplorerPanel.getSingleton().setPnl_Content(new CurrentStudyPanel(matrix.getStudyId()));
+				GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
 			} catch (IOException ex) {
 				log.error(null, ex);
 			}

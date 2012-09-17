@@ -56,7 +56,7 @@ public class Report_QAMarkersSummary extends JPanel {
 	// Variables declaration - do not modify
 	private File reportFile;
 	private int opId;
-	private static String qaValue;
+	private String qaValue;
 	private JButton btn_Get;
 	private JButton btn_Save;
 	private JButton btn_Back;
@@ -72,7 +72,7 @@ public class Report_QAMarkersSummary extends JPanel {
 	public Report_QAMarkersSummary(final int _studyId, final String _qaFileName, int _opId) throws IOException {
 
 		opId = _opId;
-		String reportName = GWASpiExplorerPanel.tree.getLastSelectedPathComponent().toString();
+		String reportName = GWASpiExplorerPanel.getSingleton().getTree().getLastSelectedPathComponent().toString();
 		reportName = reportName.substring(reportName.indexOf('-') + 2);
 
 		qaValue = "Mismatching";
@@ -124,7 +124,7 @@ public class Report_QAMarkersSummary extends JPanel {
 
 		pnl_Summary.setBorder(BorderFactory.createTitledBorder(Text.Reports.summary));
 
-		final Action loadReportAction = new LoadReportAction(reportFile, tbl_ReportTable, txt_NRows);
+		final Action loadReportAction = new LoadReportAction(reportFile, tbl_ReportTable, txt_NRows, qaValue);
 
 		txt_NRows.setText("100");
 		txt_NRows.setHorizontalAlignment(JTextField.TRAILING);
@@ -232,12 +232,14 @@ public class Report_QAMarkersSummary extends JPanel {
 		private File reportFile;
 		private JTable reportTable;
 		private JTextField nRows;
+		private String qaValue;
 
-		LoadReportAction(File reportFile, JTable reportTable, JTextField nRows) {
+		LoadReportAction(File reportFile, JTable reportTable, JTextField nRows, String qaValue) {
 
 			this.reportFile = reportFile;
 			this.reportTable = reportTable;
 			this.nRows = nRows;
+			this.qaValue = qaValue;
 			putValue(NAME, Text.All.get);
 		}
 
@@ -379,9 +381,9 @@ public class Report_QAMarkersSummary extends JPanel {
 		@Override
 		public void actionPerformed(ActionEvent evt) {
 			try {
-				GWASpiExplorerPanel.tree.setSelectionPath(GWASpiExplorerPanel.tree.getSelectionPath().getParentPath());
-				GWASpiExplorerPanel.pnl_Content = new MatrixMarkerQAPanel(op.getParentMatrixId(), opId);
-				GWASpiExplorerPanel.scrl_Content.setViewportView(GWASpiExplorerPanel.pnl_Content);
+				GWASpiExplorerPanel.getSingleton().getTree().setSelectionPath(GWASpiExplorerPanel.getSingleton().getTree().getSelectionPath().getParentPath());
+				GWASpiExplorerPanel.getSingleton().setPnl_Content(new MatrixMarkerQAPanel(op.getParentMatrixId(), opId));
+				GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
 			} catch (IOException ex) {
 				Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
 			}

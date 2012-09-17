@@ -48,7 +48,7 @@ public class MultiOperations {
 				new Integer[]{matrixId}, // Matrices to be put on hold
 				null); // Operations to be put on hold
 
-		ProcessTab.updateProcessOverview();
+		ProcessTab.getSingleton().updateProcessOverview();
 	}
 
 	public static void loadMatrixDoGWASifOK(final String format,
@@ -100,7 +100,7 @@ public class MultiOperations {
 				null, // Matrices to be put on hold
 				null); // Operations to be put on hold
 
-		ProcessTab.updateProcessOverview();
+		ProcessTab.getSingleton().updateProcessOverview();
 	}
 	//</editor-fold>
 
@@ -134,7 +134,7 @@ public class MultiOperations {
 				new Integer[]{matrixId}, // Matrices to be put on hold
 				null); // Operations to be put on hold
 
-		ProcessTab.updateProcessOverview();
+		ProcessTab.getSingleton().updateProcessOverview();
 	}
 
 	public static void doHardyWeinberg(final int studyId,
@@ -164,7 +164,7 @@ public class MultiOperations {
 				new Integer[]{matrixId}, // Matrices to be put on hold
 				null); // Operations to be put on hold
 
-		ProcessTab.updateProcessOverview();
+		ProcessTab.getSingleton().updateProcessOverview();
 	}
 
 	public static void doGTFreqDoHW(final int studyId,
@@ -196,7 +196,7 @@ public class MultiOperations {
 				new Integer[]{matrixId}, // Matrices to be put on hold
 				null); // Operations to be put on hold
 
-		ProcessTab.updateProcessOverview();
+		ProcessTab.getSingleton().updateProcessOverview();
 	}
 
 	public static void doAllelicAssociationTest(final int studyId,
@@ -235,7 +235,7 @@ public class MultiOperations {
 				new Integer[]{matrixId}, // Matrices to be put on hold
 				new Integer[]{censusOPId, hwOPId}); // Operations to be put on hold
 
-		ProcessTab.updateProcessOverview();
+		ProcessTab.getSingleton().updateProcessOverview();
 	}
 
 	public static void doGenotypicAssociationTest(final int studyId,
@@ -274,7 +274,7 @@ public class MultiOperations {
 				new Integer[]{matrixId}, // Matrices to be put on hold
 				new Integer[]{censusOPId, hwOPId}); // Operations to be put on hold
 
-		ProcessTab.updateProcessOverview();
+		ProcessTab.getSingleton().updateProcessOverview();
 	}
 
 	public static void doTrendTest(final int studyId,
@@ -313,7 +313,7 @@ public class MultiOperations {
 				new Integer[]{matrixId}, // Matrices to be put on hold
 				new Integer[]{censusOPId, hwOPId}); // Operations to be put on hold
 
-		ProcessTab.updateProcessOverview();
+		ProcessTab.getSingleton().updateProcessOverview();
 	}
 	//</editor-fold>
 
@@ -364,7 +364,7 @@ public class MultiOperations {
 				new Integer[]{parentMatrixId}, // Matrices to be put on hold
 				null); // Operations to be put on hold
 
-		ProcessTab.updateProcessOverview();
+		ProcessTab.getSingleton().updateProcessOverview();
 	}
 
 	public static void doTranslateAB12ToACGT(final int studyId,
@@ -399,7 +399,7 @@ public class MultiOperations {
 				new Integer[]{parentMatrixId}, // Matrices to be put on hold
 				null); // Operations to be put on hold
 
-		ProcessTab.updateProcessOverview();
+		ProcessTab.getSingleton().updateProcessOverview();
 	}
 
 	public static void doExportMatrix(final int studyId,
@@ -431,7 +431,7 @@ public class MultiOperations {
 				new Integer[]{matrixId}, // Matrices to be put on hold
 				null); // Operations to be put on hold
 
-		ProcessTab.updateProcessOverview();
+		ProcessTab.getSingleton().updateProcessOverview();
 	}
 
 	public static void doMergeMatrixAddMarkers(final int studyId,
@@ -466,7 +466,7 @@ public class MultiOperations {
 				new Integer[]{parentMatrixId1, parentMatrixId2}, // Matrices to be put on hold
 				null); // Operations to be put on hold
 
-		ProcessTab.updateProcessOverview();
+		ProcessTab.getSingleton().updateProcessOverview();
 	}
 
 	public static void doMergeMatrixAddSamples(final int studyId,
@@ -501,7 +501,7 @@ public class MultiOperations {
 				new Integer[]{parentMatrixId1, parentMatrixId2}, // Matrices to be put on hold
 				null); // Operations to be put on hold
 
-		ProcessTab.updateProcessOverview();
+		ProcessTab.getSingleton().updateProcessOverview();
 	}
 
 	public static void doMergeMatrixAll(final int studyId,
@@ -536,7 +536,7 @@ public class MultiOperations {
 				new Integer[]{parentMatrixId1, parentMatrixId2}, // Matrices to be put on hold
 				null); // Operations to be put on hold
 
-		ProcessTab.updateProcessOverview();
+		ProcessTab.getSingleton().updateProcessOverview();
 	}
 
 	public static void doStrandFlipMatrix(final int studyId,
@@ -573,7 +573,7 @@ public class MultiOperations {
 				new Integer[]{parentMatrixId}, // Matrices to be put on hold
 				null); // Operations to be put on hold
 
-		ProcessTab.updateProcessOverview();
+		ProcessTab.getSingleton().updateProcessOverview();
 	}
 
 	public static void updateSampleInfo(final int studyId,
@@ -601,7 +601,7 @@ public class MultiOperations {
 				null, // Matrices to be put on hold
 				null); // Operations to be put on hold
 
-		ProcessTab.updateProcessOverview();
+		ProcessTab.getSingleton().updateProcessOverview();
 	}
 	//</editor-fold>
 
@@ -613,7 +613,7 @@ public class MultiOperations {
 				deleteReports);
 		swingDeleterItemList.add(sdi);
 
-		ProcessTab.updateProcessOverview();
+		ProcessTab.getSingleton().updateProcessOverview();
 	}
 
 	public static void deleteMatrix(final int studyId, final int matrixId, final boolean deleteReports) {
@@ -624,7 +624,7 @@ public class MultiOperations {
 				deleteReports);
 		swingDeleterItemList.add(sdi);
 
-		ProcessTab.updateProcessOverview();
+		ProcessTab.getSingleton().updateProcessOverview();
 	}
 
 	public static void deleteOperationsByOpId(final int studyId, final int matrixId, final int opId, final boolean deleteReports) {
@@ -636,7 +636,7 @@ public class MultiOperations {
 				deleteReports);
 		swingDeleterItemList.add(sdi);
 
-		ProcessTab.updateProcessOverview();
+		ProcessTab.getSingleton().updateProcessOverview();
 	}
 	//</editor-fold>
 
@@ -655,39 +655,39 @@ public class MultiOperations {
 
 	public static void updateTree() throws IOException {
 		if (StartGWASpi.guiMode) {
-			GWASpiExplorerPanel.tree.setEnabled(false);
-			GWASpiExplorerPanel.updateTreePanel(false);
-			GWASpiExplorerPanel.tree.setEnabled(true);
+			GWASpiExplorerPanel.getSingleton().getTree().setEnabled(false);
+			GWASpiExplorerPanel.getSingleton().updateTreePanel(false);
+			GWASpiExplorerPanel.getSingleton().getTree().setEnabled(true);
 		}
 	}
 
 	public static void updateTreeAndPanel() throws IOException {
 		if (StartGWASpi.guiMode) {
-			GWASpiExplorerPanel.tree.setEnabled(false);
-			GWASpiExplorerPanel.updateTreePanel(true);
-			GWASpiExplorerPanel.tree.setEnabled(true);
+			GWASpiExplorerPanel.getSingleton().getTree().setEnabled(false);
+			GWASpiExplorerPanel.getSingleton().updateTreePanel(true);
+			GWASpiExplorerPanel.getSingleton().getTree().setEnabled(true);
 		}
 	}
 
 	public static void refreshPanel() {
 		if (StartGWASpi.guiMode) {
-			GWASpiExplorerPanel.refreshContentPanel();
+			GWASpiExplorerPanel.getSingleton().refreshContentPanel();
 		}
 	}
 
 	public static void updateProcessOverviewStartNext() throws IOException {
 		SwingWorkerItemList.startNext();
 		if (StartGWASpi.guiMode) {
-			ProcessTab.updateProcessOverview();
-			ProcessTab.toggleBusyLogo();
+			ProcessTab.getSingleton().updateProcessOverview();
+			ProcessTab.getSingleton().toggleBusyLogo();
 		}
 	}
 
 	public static void updateProcessOverviewDeleteNext() throws IOException {
 		SwingDeleterItemList.deleteAllListed();
 		if (StartGWASpi.guiMode) {
-			ProcessTab.updateProcessOverview();
-			ProcessTab.toggleBusyLogo();
+			ProcessTab.getSingleton().updateProcessOverview();
+			ProcessTab.getSingleton().toggleBusyLogo();
 		}
 	}
 	//</editor-fold>

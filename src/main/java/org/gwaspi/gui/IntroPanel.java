@@ -44,10 +44,10 @@ public class IntroPanel extends JPanel {
 			= LoggerFactory.getLogger(IntroPanel.class);
 
 	// Variables declaration - do not modify
-	private static JScrollPane scrl_Logo;
-	private static JPanel pnl_Logo;
-	private static JScrollPane scroll_IBE;
-	private static JPanel pnl_IBE;
+	private JScrollPane scrl_Logo;
+	private JPanel pnl_Logo;
+	private JScrollPane scroll_IBE;
+	private JPanel pnl_IBE;
 	private JList list_Help;
 	private JScrollPane scroll_About;
 	private JScrollPane scroll_Contact;
@@ -232,8 +232,8 @@ public class IntroPanel extends JPanel {
 
 		@Override
 		public void actionPerformed(ActionEvent evt) {
-			GWASpiExplorerPanel.pnl_Content = new PreferencesPanel();
-			GWASpiExplorerPanel.scrl_Content.setViewportView(GWASpiExplorerPanel.pnl_Content);
+			GWASpiExplorerPanel.getSingleton().setPnl_Content(new PreferencesPanel());
+			GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
 		}
 	}
 
@@ -247,9 +247,9 @@ public class IntroPanel extends JPanel {
 		@Override
 		public void actionPerformed(ActionEvent evt) {
 			try {
-				GWASpiExplorerPanel.tree.setSelectionRow(1);
-				GWASpiExplorerPanel.pnl_Content = new StudyManagementPanel();
-				GWASpiExplorerPanel.scrl_Content.setViewportView(GWASpiExplorerPanel.pnl_Content);
+				GWASpiExplorerPanel.getSingleton().getTree().setSelectionRow(1);
+				GWASpiExplorerPanel.getSingleton().setPnl_Content(new StudyManagementPanel());
+				GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
 			} catch (IOException ex) {
 				log.error(null, ex);
 			}

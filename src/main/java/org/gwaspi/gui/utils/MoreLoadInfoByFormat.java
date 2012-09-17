@@ -26,25 +26,25 @@ import org.gwaspi.netCDF.operations.GWASinOneGOParams;
  * IBE, Institute of Evolutionary Biology (UPF-CSIC)
  * CEXS-UPF-PRBB
  */
-public class MoreLoadInfoByFormat extends JFrame {
+public class MoreLoadInfoByFormat {
 
 	// Variables declaration - do not modify
-	private static JButton btn_Go;
-	private static JButton btn_Help;
-	private static JButton btn_Cancel;
-	private static JLabel lbl_Chromosome;
-	private static JComboBox cmb_Chromosome;
-	private static JLabel lbl_Strand;
-	private static JComboBox cmb_Strand;
-	private static JLabel lbl_GTCode;
-	private static JComboBox cmb_GTCode;
-	private static JFrame myFrame = new JFrame("GridBagLayout Test");
-	private static JDialog dialog;
-	public static GWASinOneGOParams gwasParams = new GWASinOneGOParams();
-	private static String format = "";
+	private JButton btn_Go;
+	private JButton btn_Help;
+	private JButton btn_Cancel;
+	private JLabel lbl_Chromosome;
+	private JComboBox cmb_Chromosome;
+	private JLabel lbl_Strand;
+	private JComboBox cmb_Strand;
+	private JLabel lbl_GTCode;
+	private JComboBox cmb_GTCode;
+	private JFrame myFrame = new JFrame("GridBagLayout Test");
+	private JDialog dialog;
+	private GWASinOneGOParams gwasParams = new GWASinOneGOParams();
+	private String format = "";
 	// End of variables declaration
 
-	private static GWASinOneGOParams showMoreInfoByFormat_Modal(String _format) {
+	private GWASinOneGOParams showMoreInfo(String _format) {
 
 		gwasParams.setProceed(false);
 		format = _format;
@@ -79,7 +79,7 @@ public class MoreLoadInfoByFormat extends JFrame {
 		return gwasParams;
 	}
 
-	private static JPanel getQuestionsPanel() {
+	private JPanel getQuestionsPanel() {
 
 		JPanel pnl_Questions = new JPanel(new GridBagLayout());
 		pnl_Questions.setBorder(BorderFactory.createTitledBorder("Additional Information..."));
@@ -142,7 +142,7 @@ public class MoreLoadInfoByFormat extends JFrame {
 		return pnl_Questions;
 	}
 
-	private static JPanel getFooterPanel() {
+	private JPanel getFooterPanel() {
 
 		JPanel pnl_Footer = new JPanel(new GridBagLayout());
 
@@ -173,7 +173,7 @@ public class MoreLoadInfoByFormat extends JFrame {
 		return pnl_Footer;
 	}
 
-	private static class GoAction extends AbstractAction {
+	private class GoAction extends AbstractAction {
 
 		GoAction() {
 
@@ -200,7 +200,7 @@ public class MoreLoadInfoByFormat extends JFrame {
 		}
 	}
 
-	private static class CancelAction extends AbstractAction {
+	private class CancelAction extends AbstractAction {
 
 		CancelAction() {
 
@@ -213,7 +213,7 @@ public class MoreLoadInfoByFormat extends JFrame {
 		}
 	}
 
-	private static void setConstraints(GridBagConstraints c,
+	private void setConstraints(GridBagConstraints c,
 			int gridx,
 			int gridy,
 			int anchor)

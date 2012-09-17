@@ -60,11 +60,11 @@ import org.gwaspi.netCDF.operations.OperationSet;
 public abstract class Report_Analysis extends JPanel {
 
 	// Variables declaration - do not modify
-	protected static int studyId;
-	protected static int opId;
-	protected static String analysisFileName;
-	protected static String NRows;
-	protected static Map<String, Object> chrSetInfoLHM = new LinkedHashMap<String, Object>();
+	protected int studyId;
+	protected int opId;
+	protected String analysisFileName;
+	protected String NRows;
+	protected Map<String, Object> chrSetInfoLHM = new LinkedHashMap<String, Object>();
 	protected File reportFile;
 	private JButton btn_Get;
 	private JButton btn_Save;
@@ -72,9 +72,9 @@ public abstract class Report_Analysis extends JPanel {
 	private JButton btn_Help;
 	private JPanel pnl_Footer;
 	private JLabel lbl_suffix1;
-	private static JPanel pnl_Summary;
+	private JPanel pnl_Summary;
 	private JPanel pnl_SearchDB;
-	protected static JComboBox cmb_SearchDB;
+	protected JComboBox cmb_SearchDB;
 	private JScrollPane scrl_ReportTable;
 	protected final JTable tbl_ReportTable;
 	protected final JTextField txt_NRows;
@@ -83,7 +83,7 @@ public abstract class Report_Analysis extends JPanel {
 
 	protected Report_Analysis() {
 
-		String reportName = GWASpiExplorerPanel.tree.getLastSelectedPathComponent().toString();
+		String reportName = GWASpiExplorerPanel.getSingleton().getTree().getLastSelectedPathComponent().toString();
 		reportName = reportName.substring(reportName.indexOf('-') + 2);
 
 		String reportPath = "";
@@ -278,7 +278,7 @@ public abstract class Report_Analysis extends JPanel {
 		}
 	}
 
-	protected static void initChrSetInfo() throws IOException {
+	protected void initChrSetInfo() throws IOException {
 		OperationSet opSet = new OperationSet(studyId, opId);
 		chrSetInfoLHM = opSet.getChrInfoSetLHM(); //Nb of markers, first physical position, last physical position, start index number in MarkerSet,
 	}
@@ -423,9 +423,9 @@ public abstract class Report_Analysis extends JPanel {
 		public void actionPerformed(ActionEvent evt) {
 			try {
 				Operation op = new Operation(opId);
-				GWASpiExplorerPanel.tree.setSelectionPath(GWASpiExplorerPanel.tree.getSelectionPath().getParentPath());
-				GWASpiExplorerPanel.pnl_Content = new MatrixAnalysePanel(op.getParentMatrixId(), opId);
-				GWASpiExplorerPanel.scrl_Content.setViewportView(GWASpiExplorerPanel.pnl_Content);
+				GWASpiExplorerPanel.getSingleton().getTree().setSelectionPath(GWASpiExplorerPanel.getSingleton().getTree().getSelectionPath().getParentPath());
+				GWASpiExplorerPanel.getSingleton().setPnl_Content(new MatrixAnalysePanel(op.getParentMatrixId(), opId));
+				GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
 			} catch (IOException ex) {
 				Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
 			}

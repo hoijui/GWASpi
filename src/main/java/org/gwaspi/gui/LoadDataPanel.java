@@ -620,7 +620,7 @@ public class LoadDataPanel extends JPanel {
 
 						if (decision == JOptionPane.YES_OPTION) {
 							//ASK MORE QUESTIONS
-							gwasParams = MoreGWASinOneGoInfo.showGWASInOneGo_Modal(cmb_Format.getSelectedItem().toString());
+							gwasParams = new MoreGWASinOneGoInfo().showMoreInfo(cmb_Format.getSelectedItem().toString());
 							if (gwasParams.isProceed()) {
 								gwasParams.setFriendlyName(Dialogs.showInputBox(Text.Operation.GTFreqAndHWFriendlyName));
 							}
@@ -647,7 +647,7 @@ public class LoadDataPanel extends JPanel {
 									studyId,
 									gwasParams);
 
-							ProcessTab.showTab();
+							ProcessTab.getSingleton().showTab();
 						}
 						//</editor-fold>
 					}
@@ -682,7 +682,7 @@ public class LoadDataPanel extends JPanel {
 						org.gwaspi.netCDF.matrices.MatrixManager.deleteMatrix(deleteMxMetaData.getMatrixId(), true);
 					}
 
-					GWASpiExplorerPanel.updateTreePanel(true);
+					GWASpiExplorerPanel.getSingleton().updateTreePanel(true);
 				} catch (IOException ex1) {
 					log.error(null, ex);
 				}
@@ -896,8 +896,8 @@ public class LoadDataPanel extends JPanel {
 		@Override
 		public void actionPerformed(ActionEvent evt) {
 			try {
-				GWASpiExplorerPanel.pnl_Content = new CurrentStudyPanel(studyId);
-				GWASpiExplorerPanel.scrl_Content.setViewportView(GWASpiExplorerPanel.pnl_Content);
+				GWASpiExplorerPanel.getSingleton().setPnl_Content(new CurrentStudyPanel(studyId));
+				GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
 			} catch (IOException ex) {
 				log.error(null, ex);
 			}

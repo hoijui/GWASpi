@@ -61,13 +61,13 @@ public final class Report_AnalysisAllelicTestImpl extends Report_Analysis {
 						double avgMarkersPerPhysPos = (double) nbMarkers / (maxPhysPos - startPhysPos);
 						int requestedWindowSize = Math.abs((int) Math.round(ManhattanPlotZoom.defaultMarkerNb / avgMarkersPerPhysPos));
 
-						GWASpiExplorerPanel.pnl_Content = new ManhattanPlotZoom(opId,
-								chr,
-								tbl_ReportTable.getValueAt(rowIndex, 0).toString(), //MarkerID
-								markerPhysPos,
-								requestedWindowSize, //requested window size in phys positions
-								txt_NRows.getText());
-						GWASpiExplorerPanel.scrl_Content.setViewportView(GWASpiExplorerPanel.pnl_Content);
+						GWASpiExplorerPanel.getSingleton().setPnl_Content(new ManhattanPlotZoom(opId,
+								 chr,
+								 tbl_ReportTable.getValueAt(rowIndex, 0).toString(), //MarkerID
+								 markerPhysPos,
+								 requestedWindowSize, //requested window size in phys positions
+								 txt_NRows.getText()));
+						GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
 					}
 					if (colIndex == 10) {    //Show selected resource database
 						URLInDefaultBrowser.browseGenericURL(LinksExternalResouces.getResourceLink(cmb_SearchDB.getSelectedIndex(),
@@ -82,7 +82,7 @@ public final class Report_AnalysisAllelicTestImpl extends Report_Analysis {
 			}
 		});
 
-		String reportName = GWASpiExplorerPanel.tree.getLastSelectedPathComponent().toString();
+		String reportName = GWASpiExplorerPanel.getSingleton().getTree().getLastSelectedPathComponent().toString();
 		reportName = reportName.substring(reportName.indexOf('-') + 2);
 		String reportPath = "";
 		try {

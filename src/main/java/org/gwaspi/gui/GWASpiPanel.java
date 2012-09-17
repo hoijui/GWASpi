@@ -12,7 +12,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTree;
 import javax.swing.tree.TreePath;
-import org.gwaspi.model.GWASpiExplorerNodes;
 
 /**
  *
@@ -23,15 +22,14 @@ import org.gwaspi.model.GWASpiExplorerNodes;
 public class GWASpiPanel extends JPanel {
 
 	// Variables declaration - do not modify
-	private static JTree tree;
-	private static boolean refreshContentPanel = true;
-	private static JPanel pnl_Content;
-	private static JScrollPane scrl_Content;
-	private static JScrollPane scrl_Tree;
-	private static JSplitPane splt_MoapiPanel;
+	private JTree tree;
+	private boolean refreshContentPanel = true;
+	private JPanel pnl_Content;
+	private JScrollPane scrl_Content;
+	private JScrollPane scrl_Tree;
+	private JSplitPane splt_MoapiPanel;
 	// End of variables declaration
 
-	@SuppressWarnings("unchecked")
 	// <editor-fold defaultstate="expanded" desc="Generated Code">
 	public GWASpiPanel() throws IOException {
 
@@ -65,7 +63,7 @@ public class GWASpiPanel extends JPanel {
 		//</editor-fold>
 	}
 
-	public static void refreshContentPanel() {
+	private void refreshContentPanel() {
 		try {
 			String lastSelectedNode = Config.getConfigValue(Config.PROPERTY_LAST_SELECTED_NODE, "0");
 			tree.setSelectionPath(null);
@@ -85,7 +83,7 @@ public class GWASpiPanel extends JPanel {
 		}
 	}
 
-	public static void updateTreePanel(boolean _refreshContentPanel) throws IOException {
+	private void updateTreePanel(boolean _refreshContentPanel) throws IOException {
 
 		// TOGGLE CONTENT PANEL REFRESH BEHAVIOUR FOR CURRENT METHOD RUN
 		if (!_refreshContentPanel) {
@@ -168,7 +166,7 @@ public class GWASpiPanel extends JPanel {
 				tmpTree.setSelectionPath(tp);
 			}
 
-			GWASpiExplorerNodes.setAllNodesCollapsable();
+			GWASpiExplorerPanel.getSingleton().setAllNodesCollapsable();
 
 			row--;
 			while (row >= 0) {
@@ -192,7 +190,7 @@ public class GWASpiPanel extends JPanel {
 		tmpTree.setEnabled(true);
 	}
 
-	public static void initContentPanel() {
+	private void initContentPanel() {
 		pnl_Content = new IntroPanel();
 		pnl_Content.setVisible(true);
 		scrl_Content.setViewportView(pnl_Content);

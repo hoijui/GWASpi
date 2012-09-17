@@ -4,11 +4,13 @@ import org.gwaspi.constants.cDBSamples;
 import org.gwaspi.constants.cExport.ExportFormat;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.global.Text;
+import org.gwaspi.gui.StartGWASpi;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JOptionPane;
+import org.gwaspi.model.StudyList;
 import org.gwaspi.netCDF.operations.GWASinOneGOParams;
 import org.gwaspi.netCDF.operations.OperationManager;
 import org.gwaspi.threadbox.MultiOperations;
@@ -20,10 +22,13 @@ import org.gwaspi.threadbox.MultiOperations;
  */
 public class CliExecutor {
 
-	private CliExecutor() {
+	private File scriptFile;
+
+	public CliExecutor(File scriptFile) {
+		this.scriptFile = scriptFile;
 	}
 
-	public static boolean execute(File scriptFile) throws IOException {
+	public boolean execute() throws IOException {
 		boolean success = false;
 
 		// GET ALL SCRIPTS CONTAINED IN FILE
@@ -581,7 +586,7 @@ public class CliExecutor {
 	}
 
 	//<editor-fold defaultstate="collapsed" desc="STUDY MANAGEMENT">
-	public static boolean checkStudy(int studyId) throws IOException {
+	private boolean checkStudy(int studyId) throws IOException {
 		boolean studyExists = false;
 		Object[][] studyTable = org.gwaspi.model.StudyList.getStudyTable();
 		for (int i = 0; i < studyTable.length; i++) {
@@ -600,18 +605,18 @@ public class CliExecutor {
 				System.out.println("\n");
 			}
 
-			org.gwaspi.gui.StartGWASpi.exit();
+			StartGWASpi.exit();
 		}
 
 		return studyExists;
 	}
 
-	public static int addStudy(String newStudyName, String description) throws IOException {
+	private int addStudy(String newStudyName, String description) throws IOException {
 		int newStudyId;
 
 		org.gwaspi.database.StudyGenerator.insertNewStudy(newStudyName, description);
 
-		Object[][] studyTable = org.gwaspi.model.StudyList.getStudyTable();
+		Object[][] studyTable = StudyList.getStudyTable();
 
 		newStudyId = (Integer) studyTable[studyTable.length - 1][0];
 

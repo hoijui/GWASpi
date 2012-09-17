@@ -38,35 +38,35 @@ import org.slf4j.LoggerFactory;
  */
 public final class ManhattanChartDisplay extends JPanel {
 
-	private final static Logger log
+	private static final Logger log
 			= LoggerFactory.getLogger(ManhattanChartDisplay.class);
 
 	// Variables declaration - do not modify
-	private static JPanel pnl_Chart;
-	private static JPanel pnl_Footer;
-	private static JScrollPane scrl_Chart;
-//	private static ManhattanPlotImageLabel label = new ManhattanPlotImageLabel();
-	private static JLabel label = new JLabel();
-	public static boolean fired;
-	private static JButton btn_Save;
+	private JPanel pnl_Chart;
+	private JPanel pnl_Footer;
+	private JScrollPane scrl_Chart;
+//	private ManhattanPlotImageLabel label = new ManhattanPlotImageLabel();
+	private JLabel label = new JLabel();
+	private boolean fired;
+	private JButton btn_Save;
 	private JButton btn_Back;
-	private static int opId;
-	private static Map<String, Object> chrSetInfoLHM = new LinkedHashMap<String, Object>();
-	private static String chr = "";
-	private static int chartWidth = 0;
-	private static int chrPlotWidth = 0;
-	private static int chrPlotWidthPad = 0;
-	private static int padLeft = 64; // Pixel padding to the left of graph
-	private static int padGap = 9; // Pixel padding between chromosome plots
+	private int opId;
+	private Map<String, Object> chrSetInfoLHM = new LinkedHashMap<String, Object>();
+	private String chr = "";
+	private int chartWidth = 0;
+	private int chrPlotWidth = 0;
+	private int chrPlotWidthPad = 0;
+	private int padLeft = 64; // Pixel padding to the left of graph
+	private int padGap = 9; // Pixel padding between chromosome plots
 	// End of variables declaration
 
 	public ManhattanChartDisplay(final int studyId, final String chartPath, int _opId) {
 		fired = false;
-		InitManhattanChartDisplay(studyId, chartPath, _opId);
+		initManhattanChartDisplay(studyId, chartPath, _opId);
 		initChromosmesMap(studyId, chartPath);
 	}
 
-	public void InitManhattanChartDisplay(final int studyId, final String chartPath, int _opId) {
+	public void initManhattanChartDisplay(final int studyId, final String chartPath, int _opId) {
 
 		opId = _opId;
 
@@ -78,8 +78,8 @@ public final class ManhattanChartDisplay extends JPanel {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				try {
-					if (e.getClickCount() == 1 && !fired) {
-						fired = true;
+					if (e.getClickCount() == 1 && !isFired()) {
+						setFired(true);
 						int mouseX = e.getX();
 						if (mouseX > padLeft) {
 							pnl_Chart.setCursor(CursorUtils.waitCursor);
@@ -91,12 +91,14 @@ public final class ManhattanChartDisplay extends JPanel {
 //							sliceInfo[3] = startPhysPos;
 //							sliceInfo[4] = defaultSlotsNb;
 
-							GWASpiExplorerPanel.pnl_Content = new ManhattanPlotZoom(opId,
-									selectedSliceInfo[1].toString(),
-									(Long) selectedSliceInfo[3], //startPhysPos
-									(Long) selectedSliceInfo[4], //physPos window
-									"100");
-							GWASpiExplorerPanel.scrl_Content.setViewportView(GWASpiExplorerPanel.pnl_Content);
+							GWASpiExplorerPanel.getSingleton().setPnl_Content(new ManhattanPlotZoom(
+									 ManhattanChartDisplay.this,
+									 opId,
+									 selectedSliceInfo[1].toString(),
+									 (Long) selectedSliceInfo[3], //startPhysPos
+									 (Long) selectedSliceInfo[4], //physPos window
+									 "100"));
+							GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
 						} else {
 						}
 					}
@@ -125,7 +127,7 @@ public final class ManhattanChartDisplay extends JPanel {
 		//<editor-fold defaultstate="collapsed/expanded" desc="">
 		btn_Save.setAction(new SaveAsAction(studyId, chartPath));
 
-		btn_Back.setAction(new BackToTableAction());
+		btn_Back.setAction(new BackToTableAction(opId));
 
 		GroupLayout pnl_FooterLayout = new GroupLayout(pnl_Footer);
 		pnl_Footer.setLayout(pnl_FooterLayout);
@@ -185,7 +187,7 @@ public final class ManhattanChartDisplay extends JPanel {
 		//</editor-fold>
 	}
 
-	private static void initChromosmesMap(int studyId, String chartPath) {
+	private void initChromosmesMap(int studyId, String chartPath) {
 
 		// LOAD MANHATTANPLOT IMAGE
 		try {
@@ -233,7 +235,7 @@ public final class ManhattanChartDisplay extends JPanel {
 		}
 	}
 
-	private static Object[] getChrSliceInfo(int pxXpos) {
+	private Object[] getChrSliceInfo(int pxXpos) {
 
 		int pxXposNoLeftPad = pxXpos - padLeft;
 
@@ -270,7 +272,7 @@ public final class ManhattanChartDisplay extends JPanel {
 		return sliceInfo;
 	}
 
-	private static int[] getChrInfo(int pxXposNoLeftPad) {
+	private int[] getChrInfo(int pxXposNoLeftPad) {
 
 		int selectedChrMap = Math.round(pxXposNoLeftPad / chrPlotWidthPad);
 
@@ -286,6 +288,14 @@ public final class ManhattanChartDisplay extends JPanel {
 		}
 
 		return chrInfo;
+	}
+
+	public boolean isFired() {
+		return fired;
+	}
+
+	public void setFired(boolean fired) {
+		this.fired = fired;
 	}
 
 	private static class SaveAsAction extends AbstractAction {
@@ -319,8 +329,11 @@ public final class ManhattanChartDisplay extends JPanel {
 
 	private static class BackToTableAction extends AbstractAction {
 
-		BackToTableAction() {
+		private int opId;
 
+		BackToTableAction(int opId) {
+
+			this.opId = opId;
 			putValue(NAME, Text.All.Back);
 		}
 
@@ -328,9 +341,9 @@ public final class ManhattanChartDisplay extends JPanel {
 		public void actionPerformed(ActionEvent evt) {
 			try {
 				Operation op = new Operation(opId);
-				GWASpiExplorerPanel.tree.setSelectionPath(GWASpiExplorerPanel.tree.getSelectionPath().getParentPath());
-				GWASpiExplorerPanel.pnl_Content = new MatrixAnalysePanel(op.getParentMatrixId(), opId);
-				GWASpiExplorerPanel.scrl_Content.setViewportView(GWASpiExplorerPanel.pnl_Content);
+				GWASpiExplorerPanel.getSingleton().getTree().setSelectionPath(GWASpiExplorerPanel.getSingleton().getTree().getSelectionPath().getParentPath());
+				GWASpiExplorerPanel.getSingleton().setPnl_Content(new MatrixAnalysePanel(op.getParentMatrixId(), opId));
+				GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
 			} catch (IOException ex) {
 				log.error(null, ex);
 			}

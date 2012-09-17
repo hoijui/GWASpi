@@ -71,7 +71,7 @@ public class Report_HardyWeinbergSummary extends JPanel {
 	public Report_HardyWeinbergSummary(final int _studyId, final String _hwFileName, int _opId) {
 
 		opId = _opId;
-		String reportName = GWASpiExplorerPanel.tree.getLastSelectedPathComponent().toString();
+		String reportName = GWASpiExplorerPanel.getSingleton().getTree().getLastSelectedPathComponent().toString();
 		reportName = reportName.substring(reportName.indexOf('-') + 2);
 
 		String reportPath = "";
@@ -401,9 +401,9 @@ public class Report_HardyWeinbergSummary extends JPanel {
 		public void actionPerformed(ActionEvent evt) {
 			try {
 				Operation op = new Operation(opId);
-				GWASpiExplorerPanel.tree.setSelectionPath(GWASpiExplorerPanel.tree.getSelectionPath().getParentPath());
-				GWASpiExplorerPanel.pnl_Content = new MatrixAnalysePanel(op.getParentMatrixId(), opId);
-				GWASpiExplorerPanel.scrl_Content.setViewportView(GWASpiExplorerPanel.pnl_Content);
+				GWASpiExplorerPanel.getSingleton().getTree().setSelectionPath(GWASpiExplorerPanel.getSingleton().getTree().getSelectionPath().getParentPath());
+				GWASpiExplorerPanel.getSingleton().setPnl_Content(new MatrixAnalysePanel(op.getParentMatrixId(), opId));
+				GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
 			} catch (IOException ex) {
 				Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
 			}

@@ -28,22 +28,22 @@ import org.gwaspi.netCDF.operations.GWASinOneGOParams;
 public class MoreAssocInfo extends JFrame {
 
 	// Variables declaration - do not modify
-	private static JButton btn_Go;
-	private static JButton btn_Help;
-	private static JButton btn_Cancel;
-	private static JRadioButton rdioB_1;
-	private static JLabel lbl_1;
-	private static JRadioButton rdioB_2;
-	private static JTextField txtF_1;
-	private static JTextField txtF_2;
-	private static JTextField txtF_3;
-	private static ButtonGroup rdiogrp_HW;
-	private static JFrame myFrame = new JFrame("GridBagLayout Test");
-	public static GWASinOneGOParams gwasParams = new GWASinOneGOParams();
-	private static JDialog dialog;
+	private JButton btn_Go;
+	private JButton btn_Help;
+	private JButton btn_Cancel;
+	private JRadioButton rdioB_1;
+	private JLabel lbl_1;
+	private JRadioButton rdioB_2;
+	private JTextField txtF_1;
+	private JTextField txtF_2;
+	private JTextField txtF_3;
+	private ButtonGroup rdiogrp_HW;
+	private JFrame myFrame = new JFrame("GridBagLayout Test");
+	private GWASinOneGOParams gwasParams = new GWASinOneGOParams();
+	private JDialog dialog;
 	// End of variables declaration
-	
-	public static GWASinOneGOParams showAssocInfo_Modal() {
+
+	public GWASinOneGOParams showMoreInfo() {
 		gwasParams.setProceed(false);
 		// Create a modal dialog
 		dialog = new JDialog(myFrame, Text.Operation.gwasInOneGo, true);
@@ -68,7 +68,7 @@ public class MoreAssocInfo extends JFrame {
 		return gwasParams;
 	}
 
-	private static JPanel getQuestionsPanel() {
+	private JPanel getQuestionsPanel() {
 
 		JPanel pnl_Questions = new JPanel(new GridBagLayout());
 		pnl_Questions.setBorder(BorderFactory.createTitledBorder("A few questions..."));
@@ -114,7 +114,7 @@ public class MoreAssocInfo extends JFrame {
 		return pnl_Questions;
 	}
 
-	private static JPanel getFooterPanel() {
+	private JPanel getFooterPanel() {
 
 		JPanel pnl_Footer = new JPanel(new GridBagLayout());
 
@@ -145,7 +145,7 @@ public class MoreAssocInfo extends JFrame {
 		return pnl_Footer;
 	}
 
-	private static class GoAction extends AbstractAction {
+	private class GoAction extends AbstractAction {
 
 		GoAction() {
 
@@ -169,7 +169,7 @@ public class MoreAssocInfo extends JFrame {
 		}
 	}
 
-	private static class CancelAction extends AbstractAction {
+	private class CancelAction extends AbstractAction {
 
 		CancelAction() {
 
@@ -182,7 +182,7 @@ public class MoreAssocInfo extends JFrame {
 		}
 	}
 
-	private static void setConstraints(GridBagConstraints c,
+	private void setConstraints(GridBagConstraints c,
 			int gridx,
 			int gridy,
 			int anchor)

@@ -79,7 +79,7 @@ public class CurrentStudyPanel extends JPanel {
 	public CurrentStudyPanel(int _studyId) throws IOException {
 
 		study = new org.gwaspi.model.Study(_studyId);
-		DefaultMutableTreeNode matrixNode = (DefaultMutableTreeNode) GWASpiExplorerPanel.tree.getLastSelectedPathComponent();
+		DefaultMutableTreeNode matrixNode = (DefaultMutableTreeNode) GWASpiExplorerPanel.getSingleton().getTree().getLastSelectedPathComponent();
 		treeChildrenLHM = NodeToPathCorrespondence.buildNodeToPathCorrespondence(matrixNode, false);
 
 		pnl_StudyDesc = new JPanel();
@@ -287,9 +287,9 @@ public class CurrentStudyPanel extends JPanel {
 
 		@Override
 		public void actionPerformed(ActionEvent evt) {
-			//GWASpiExplorerPanel.pnl_Content = new LoadDataPanel(study.getStudyId());
-			GWASpiExplorerPanel.pnl_Content = new LoadDataPanel(study.getStudyId());
-			GWASpiExplorerPanel.scrl_Content.setViewportView(GWASpiExplorerPanel.pnl_Content);
+			//GWASpiExplorerPanel.getSingleton().pnl_Content = new LoadDataPanel(study.getStudyId());
+			GWASpiExplorerPanel.getSingleton().setPnl_Content(new LoadDataPanel(study.getStudyId()));
+			GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
 		}
 	}
 
@@ -309,7 +309,7 @@ public class CurrentStudyPanel extends JPanel {
 				Dialogs.showInfoDialogue(Text.Study.infoSampleInfo);
 				File sampleInfoFile = Dialogs.selectFilesAndDirectoriesDialog(JOptionPane.OK_OPTION);
 				if (sampleInfoFile != null && sampleInfoFile.exists()) {
-					ProcessTab.showTab();
+					ProcessTab.getSingleton().showTab();
 
 					MultiOperations.updateSampleInfo(study.getStudyId(),
 							sampleInfoFile);
@@ -413,9 +413,9 @@ public class CurrentStudyPanel extends JPanel {
 		@Override
 		public void actionPerformed(ActionEvent evt) {
 			try {
-				GWASpiExplorerPanel.tree.setSelectionPath(GWASpiExplorerPanel.tree.getSelectionPath().getParentPath());
-				GWASpiExplorerPanel.pnl_Content = new StudyManagementPanel();
-				GWASpiExplorerPanel.scrl_Content.setViewportView(GWASpiExplorerPanel.pnl_Content);
+				GWASpiExplorerPanel.getSingleton().getTree().setSelectionPath(GWASpiExplorerPanel.getSingleton().getTree().getSelectionPath().getParentPath());
+				GWASpiExplorerPanel.getSingleton().setPnl_Content(new StudyManagementPanel());
+				GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
 			} catch (IOException ex) {
 				log.error(null, ex);
 			}

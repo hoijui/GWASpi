@@ -54,15 +54,15 @@ public class ProcessTab extends JPanel {
 	private static final Logger log = LoggerFactory.getLogger(MatrixAnalysePanel.class);
 
 	// Variables declaration - do not modify
-	private static JPanel pnl_Logo;
-	private static JLabel lbl_Logo;
+	private JPanel pnl_Logo;
+	private JLabel lbl_Logo;
 	private JPanel pnl_Orverview;
 	private JPanel pnl_ProcessLog;
-	private static JScrollPane scrl_Overview;
+	private JScrollPane scrl_Overview;
 	private JScrollPane scrl_ProcessLog;
-	private static JTextArea txtA_ProcessLog;
+	private JTextArea txtA_ProcessLog;
 	private JButton btn_Save;
-	private static OutputStream sysOutPS = new OutputStream() {
+	private OutputStream sysOutPS = new OutputStream() {
 		@Override
 		public void write(int b) throws IOException {
 			txtA_ProcessLog.append(String.valueOf((char) b));
@@ -75,9 +75,10 @@ public class ProcessTab extends JPanel {
 			txtA_ProcessLog.setCaretPosition(txtA_ProcessLog.getDocument().getLength());
 		}
 	};
+	private static ProcessTab singleton = null;
 	// End of variables declaration
 
-	public ProcessTab() throws IOException {
+	private ProcessTab() {
 		pnl_Orverview = new JPanel();
 		scrl_Overview = new JScrollPane();
 
@@ -132,7 +133,7 @@ public class ProcessTab extends JPanel {
 		txtA_ProcessLog.setRows(5);
 		txtA_ProcessLog.setEditable(false);
 		scrl_ProcessLog.setViewportView(txtA_ProcessLog);
-		btn_Save.setAction(new SaveAsAction());
+		btn_Save.setAction(new SaveAsAction(txtA_ProcessLog));
 
 		//<editor-fold defaultstate="collapsed" desc="PROCESS LOG LAYOUT">
 		GroupLayout pnl_ProcessLogLayout = new GroupLayout(pnl_ProcessLog);
@@ -176,7 +177,7 @@ public class ProcessTab extends JPanel {
 				.addContainerGap()));
 		//</editor-fold>
 
-		if (!org.gwaspi.gui.StartGWASpi.logOff) {
+		if (!StartGWASpi.logOff) {
 			PrintStream printStream = new PrintStream(System.out) {
 				@Override
 				public void println(String x) {
@@ -187,8 +188,17 @@ public class ProcessTab extends JPanel {
 		}
 	}
 
-	public static void updateProcessOverview() {
-		if (org.gwaspi.gui.StartGWASpi.guiMode) {
+	public static ProcessTab getSingleton() {
+
+		if (singleton == null) {
+			singleton = new ProcessTab();
+		}
+
+		return singleton;
+	}
+
+	public void updateProcessOverview() {
+		if (StartGWASpi.guiMode) {
 			final JTable tmpTable = new JTable() {
 				@Override
 				public boolean isCellEditable(int row, int col) {
@@ -239,7 +249,7 @@ public class ProcessTab extends JPanel {
 		}
 	}
 
-	protected static Object[][] buildProcessTableModel() {
+	protected Object[][] buildProcessTableModel() {
 		List<SwingWorkerItem> swingWorkerItemsAL = SwingWorkerItemList.getSwingWorkerItemsAL();
 		List<SwingDeleterItem> swingDeleterItemsAL = SwingDeleterItemList.getSwingDeleterItemsAL();
 
@@ -282,7 +292,7 @@ public class ProcessTab extends JPanel {
 		return spreadSheet;
 	}
 
-	public static void startBusyLogo() {
+	public void startBusyLogo() {
 		URL logoPath = ProcessTab.class.getClass().getResource("/img/logo/logo_busy.gif");
 		Icon logo = new ImageIcon(logoPath);
 
@@ -290,7 +300,7 @@ public class ProcessTab extends JPanel {
 		lbl_Logo.setHorizontalAlignment(SwingConstants.CENTER);
 	}
 
-	public static void toggleBusyLogo() {
+	public void toggleBusyLogo() {
 		List<SwingWorkerItem> swingWorkerItemsAL = SwingWorkerItemList.getSwingWorkerItemsAL();
 		int count = 0;
 		boolean idle = true;
@@ -316,15 +326,18 @@ public class ProcessTab extends JPanel {
 		lbl_Logo.setHorizontalAlignment(SwingConstants.CENTER);
 	}
 
-	public static void showTab() {
-		org.gwaspi.gui.StartGWASpi.allTabs.setSelectedIndex(org.gwaspi.gui.StartGWASpi.allTabs.getTabCount() - 1);
+	public void showTab() {
+		StartGWASpi.allTabs.setSelectedIndex(StartGWASpi.allTabs.getTabCount() - 1);
 		startBusyLogo();
 	}
 
 	private static class SaveAsAction extends AbstractAction {
 
-		SaveAsAction() {
+		private JTextArea processLog;
 
+		SaveAsAction(JTextArea processLog) {
+
+			this.processLog = processLog;
 			putValue(NAME, Text.All.save);
 		}
 
@@ -334,7 +347,7 @@ public class ProcessTab extends JPanel {
 			try {
 				File newFile = new File(Dialogs.selectDirectoryDialog(JOptionPane.OK_OPTION).getPath() + "/process.log");
 				writer = new FileWriter(newFile);
-				writer.write(txtA_ProcessLog.getText());
+				writer.write(processLog.getText());
 				writer.flush();
 			} catch (IOException ex) {
 				log.error(null, ex);

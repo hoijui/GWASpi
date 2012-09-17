@@ -11,8 +11,11 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTree;
+import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
-import org.gwaspi.model.GWASpiExplorerNodes;
+import org.gwaspi.model.GWASpiExplorerNodes.NodeElementInfo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -22,18 +25,21 @@ import org.gwaspi.model.GWASpiExplorerNodes;
  */
 public class GWASpiExplorerPanel extends JPanel {
 
+	private static final Logger log
+			= LoggerFactory.getLogger(GWASpiExplorerPanel.class);
+
 	// Variables declaration - do not modify
-	public static JTree tree;
-	public static boolean refreshContentPanel = true;
-	public static JPanel pnl_Content;
-	public static JScrollPane scrl_Content;
-	private static JScrollPane scrl_Tree;
-	private static JSplitPane splt_MoapiPanel;
+	private JTree tree;
+	private boolean refreshContentPanel = true;
+	private JPanel pnl_Content;
+	private JScrollPane scrl_Content;
+	private JScrollPane scrl_Tree;
+	private JSplitPane splt_MoapiPanel;
+	private static GWASpiExplorerPanel singleton = null;
 	// End of variables declaration
 
-	@SuppressWarnings("unchecked")
 	// <editor-fold defaultstate="expanded" desc="Generated Code">
-	public GWASpiExplorerPanel() throws IOException {
+	private GWASpiExplorerPanel() throws IOException {
 
 		splt_MoapiPanel = new JSplitPane();
 		scrl_Tree = new JScrollPane();
@@ -45,7 +51,6 @@ public class GWASpiExplorerPanel extends JPanel {
 		splt_MoapiPanel.setLeftComponent(scrl_Tree);
 
 		initContentPanel();
-		updateTreePanel(true);
 
 		//<editor-fold defaultstate="collapsed/expanded" desc="LAYOUT">
 		GroupLayout layout = new GroupLayout(this);
@@ -65,7 +70,22 @@ public class GWASpiExplorerPanel extends JPanel {
 		//</editor-fold>
 	}
 
-	public static void refreshContentPanel() {
+	public static GWASpiExplorerPanel getSingleton() {
+
+		if (singleton == null) {
+			try {
+				singleton = new GWASpiExplorerPanel();
+				singleton.updateTreePanel(true);
+			} catch (IOException ex) {
+				log.error(null, ex);
+				System.exit(-1);
+			}
+		}
+
+		return singleton;
+	}
+
+	public void refreshContentPanel() {
 		try {
 			String lastSelectedNode = Config.getConfigValue(Config.PROPERTY_LAST_SELECTED_NODE, "0");
 			tree.setSelectionPath(null);
@@ -85,7 +105,7 @@ public class GWASpiExplorerPanel extends JPanel {
 		}
 	}
 
-	public static void updateTreePanel(boolean _refreshContentPanel) throws IOException {
+	public void updateTreePanel(boolean _refreshContentPanel) throws IOException {
 
 		// TOGGLE CONTENT PANEL REFRESH BEHAVIOUR FOR CURRENT METHOD RUN
 		if (!_refreshContentPanel) {
@@ -168,7 +188,7 @@ public class GWASpiExplorerPanel extends JPanel {
 				tmpTree.setSelectionPath(tp);
 			}
 
-			GWASpiExplorerNodes.setAllNodesCollapsable();
+			setAllNodesCollapsable();
 
 			row--;
 			while (row >= 0) {
@@ -192,11 +212,60 @@ public class GWASpiExplorerPanel extends JPanel {
 		tmpTree.setEnabled(true);
 	}
 
-	public static void initContentPanel() {
+	private void initContentPanel() {
 		pnl_Content = new IntroPanel();
 		pnl_Content.setVisible(true);
 		scrl_Content.setViewportView(pnl_Content);
 		splt_MoapiPanel.setRightComponent(scrl_Content);
 	}
 	// </editor-fold>
+
+	public void setAllNodesCollapsable() {
+		if (StartGWASpi.guiMode) {
+			for (int i = 0; i < getTree().getRowCount(); i++) {
+				TreePath treePath = getTree().getPathForRow(i);
+				DefaultMutableTreeNode currentNode = (DefaultMutableTreeNode) treePath.getLastPathComponent();
+				Object currentElement = currentNode.getUserObject();
+				try {
+					NodeElementInfo currentNodeInfo = (NodeElementInfo) currentElement;
+					if (!currentNodeInfo.isCollapsable()) {
+						currentNodeInfo.setCollapsable(true);
+					}
+				} catch (Exception ex) {
+				}
+			}
+		}
+	}
+
+	public JTree getTree() {
+		return tree;
+	}
+
+	public void setTree(JTree tree) {
+		this.tree = tree;
+	}
+
+	public boolean isRefreshContentPanel() {
+		return refreshContentPanel;
+	}
+
+	public void setRefreshContentPanel(boolean refreshContentPanel) {
+		this.refreshContentPanel = refreshContentPanel;
+	}
+
+	public JPanel getPnl_Content() {
+		return pnl_Content;
+	}
+
+	public void setPnl_Content(JPanel pnl_Content) {
+		this.pnl_Content = pnl_Content;
+	}
+
+	public JScrollPane getScrl_Content() {
+		return scrl_Content;
+	}
+
+	public void setScrl_Content(JScrollPane scrl_Content) {
+		this.scrl_Content = scrl_Content;
+	}
 }

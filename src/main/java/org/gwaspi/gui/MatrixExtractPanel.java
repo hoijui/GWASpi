@@ -58,8 +58,8 @@ public class MatrixExtractPanel extends JPanel {
 	}
 	// Variables declaration - do not modify
 	private Matrix parentMatrix;
-	public static List<Object[]> markerPickerTable = new ArrayList<Object[]>();
-	public static List<Object[]> samplePickerTable = new ArrayList<Object[]>();
+	public List<Object[]> markerPickerTable = new ArrayList<Object[]>();
+	public List<Object[]> samplePickerTable = new ArrayList<Object[]>();
 	private JButton btn_Back;
 	private JButton btn_Go;
 	private JButton btn_Help;
@@ -529,7 +529,7 @@ public class MatrixExtractPanel extends JPanel {
 			try {
 				String newMatrixName = checkNewMatrixData();
 				if (!newMatrixName.isEmpty()) {
-					ProcessTab.showTab();
+					ProcessTab.getSingleton().showTab();
 
 					String mi_marker_criteria_file = txt_MarkersCriteriaFile.getText();
 					if (mi_marker_criteria_file.equals(Text.All.optional)) {
@@ -691,8 +691,8 @@ public class MatrixExtractPanel extends JPanel {
 		@Override
 		public void actionPerformed(ActionEvent evt) {
 			try {
-				GWASpiExplorerPanel.pnl_Content = new CurrentMatrixPanel(parentMatrix.getMatrixId());
-				GWASpiExplorerPanel.scrl_Content.setViewportView(GWASpiExplorerPanel.pnl_Content);
+				GWASpiExplorerPanel.getSingleton().setPnl_Content(new CurrentMatrixPanel(parentMatrix.getMatrixId()));
+				GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
 			} catch (IOException ex) {
 				log.error(null, ex);
 			}

@@ -29,23 +29,23 @@ import org.gwaspi.netCDF.operations.GWASinOneGOParams;
 public class MoreInfoForGtFreq extends JFrame {
 
 	// Variables declaration - do not modify
-	private static JButton btn_Go;
-	private static JButton btn_Help;
-	private static JButton btn_Cancel;
-	private static JCheckBox chkB_1;
-	private static JCheckBox chkB_2;
-	private static JCheckBox chkB_SMS;
-	private static JCheckBox chkB_SHZ;
-	private static JTextField txtF_1;
-	private static JTextField txtF_SMS;
-	private static JTextField txtF_MHZ;
-	private static JTextField txtF_SHZ;
-	private static JFrame myFrame = new JFrame("GridBagLayout Test");
-	private static JDialog dialog;
-	public static GWASinOneGOParams gwasParams = new GWASinOneGOParams();
+	private JButton btn_Go;
+	private JButton btn_Help;
+	private JButton btn_Cancel;
+	private JCheckBox chkB_1;
+	private JCheckBox chkB_2;
+	private JCheckBox chkB_SMS;
+	private JCheckBox chkB_SHZ;
+	private JTextField txtF_1;
+	private JTextField txtF_SMS;
+	private JTextField txtF_MHZ;
+	private JTextField txtF_SHZ;
+	private JFrame myFrame = new JFrame("GridBagLayout Test");
+	private JDialog dialog;
+	private GWASinOneGOParams gwasParams = new GWASinOneGOParams();
 	// End of variables declaration
 
-	public static GWASinOneGOParams showMoreInfoForQA_Modal() {
+	public GWASinOneGOParams showMoreInfo() {
 
 		gwasParams.setProceed(false);
 		// Create a modal dialog
@@ -71,7 +71,7 @@ public class MoreInfoForGtFreq extends JFrame {
 		return gwasParams;
 	}
 
-	private static JPanel getQuestionsPanel() {
+	private JPanel getQuestionsPanel() {
 
 		JPanel pnl_Questions = new JPanel(new GridBagLayout());
 		pnl_Questions.setBorder(BorderFactory.createTitledBorder("A few questions..."));
@@ -149,7 +149,7 @@ public class MoreInfoForGtFreq extends JFrame {
 		return pnl_Questions;
 	}
 
-	private static JPanel getFooterPanel() {
+	private JPanel getFooterPanel() {
 
 		JPanel pnl_Footer = new JPanel(new GridBagLayout());
 
@@ -180,7 +180,7 @@ public class MoreInfoForGtFreq extends JFrame {
 		return pnl_Footer;
 	}
 
-	private static class GoAction extends AbstractAction {
+	private class GoAction extends AbstractAction {
 
 		GoAction() {
 
@@ -208,7 +208,7 @@ public class MoreInfoForGtFreq extends JFrame {
 		}
 	}
 
-	private static class CancelAction extends AbstractAction {
+	private class CancelAction extends AbstractAction {
 
 		CancelAction() {
 
@@ -221,7 +221,7 @@ public class MoreInfoForGtFreq extends JFrame {
 		}
 	}
 
-	private static void setConstraints(GridBagConstraints c,
+	private void setConstraints(GridBagConstraints c,
 			int gridx,
 			int gridy,
 			int anchor)

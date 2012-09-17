@@ -1,6 +1,7 @@
 package org.gwaspi.threadbox;
 
 import org.gwaspi.global.Text;
+import org.gwaspi.gui.GWASpiExplorerPanel;
 import org.gwaspi.gui.ProcessTab;
 import org.gwaspi.gui.StartGWASpi;
 import org.gwaspi.gui.utils.CursorUtils;
@@ -118,13 +119,13 @@ public class SwingDeleterItemList extends SwingWorkerItemList {
 		// IF WE ARE IN GUI MODE, UPDATE TREE. ELSE EXIT PROGRAM
 		if (StartGWASpi.guiMode) {
 			StartGWASpi.mainGUIFrame.setCursor(CursorUtils.defaultCursor);
-			ProcessTab.updateProcessOverview();
+			ProcessTab.getSingleton().updateProcessOverview();
 			try {
 				MultiOperations.updateTreeAndPanel();
 			} catch (IOException ex) {
 				log.warn(null, ex);
 			}
-			GWASpiExplorerNodes.setAllNodesCollapsable();
+			GWASpiExplorerPanel.getSingleton().setAllNodesCollapsable();
 		} else {
 			log.info(Text.Cli.doneExiting);
 			StartGWASpi.exit();
@@ -203,7 +204,7 @@ public class SwingDeleterItemList extends SwingWorkerItemList {
 			log.info(swingDeleterItemsAL.get(idx).getDescription());
 			log.info("Delete Launch Time: {}", swingDeleterItemsAL.get(idx).getLaunchTime());
 			log.info("");
-			ProcessTab.updateProcessOverview();
+			ProcessTab.getSingleton().updateProcessOverview();
 		}
 	}
 }

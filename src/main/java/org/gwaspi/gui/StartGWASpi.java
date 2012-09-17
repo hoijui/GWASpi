@@ -1,5 +1,6 @@
 package org.gwaspi.gui;
 
+import org.gwaspi.cli.CliExecutor;
 import org.gwaspi.constants.cDBGWASpi;
 import org.gwaspi.constants.cGlobal;
 import org.gwaspi.database.DbManager;
@@ -41,6 +42,7 @@ public class StartGWASpi extends JFrame {
 	private static final Logger log = LoggerFactory.getLogger(StartGWASpi.class);
 
 	// create a JFrame to hold everything
+	// TODO convert all this to non-static, and make configuration in general more modular (eg, use swing preferences for everything?
 	public static boolean guiMode = true;
 	public static boolean logToFile = false;
 	public static boolean logOff = false;
@@ -58,71 +60,23 @@ public class StartGWASpi extends JFrame {
 	public static String config_OfflineHelpDir;
 	public static String config_LogDir;
 
-	public void initGWASpi(boolean startWithGUI, File scriptFile) throws IOException, SQLException {
-
-		// initialize configuration of moapi
-		boolean isInitiated = Config.initPreferences(startWithGUI, scriptFile);
-
-		if (startWithGUI) {
-			if (isInitiated) {
-				mainGUIFrame.setSize(1100, 800);
-				mainGUIFrame.setResizable(true);
-
-				GWASpiExplorerPanel panel0 = new GWASpiExplorerPanel();
-				ProcessTab panel1 = new ProcessTab();
-
-				allTabs.addTab(Text.App.Tab0, panel0);
-				allTabs.addTab(Text.App.Tab1, panel1);
-
-				GroupLayout layout = new GroupLayout(getContentPane());
-				getContentPane().setLayout(layout);
-				layout.setHorizontalGroup(
-						layout.createParallelGroup(GroupLayout.Alignment.LEADING).addComponent(allTabs, GroupLayout.DEFAULT_SIZE, 1000, Short.MAX_VALUE));
-				layout.setVerticalGroup(
-						layout.createParallelGroup(GroupLayout.Alignment.LEADING).addComponent(allTabs, GroupLayout.DEFAULT_SIZE, 750, Short.MAX_VALUE));
-
-				mainGUIFrame.getContentPane().add(allTabs);
-				mainGUIFrame.setVisible(true);
-			} else {
-				exit();
-			}
-		} else {
-			if (!isInitiated) {
-				exit();
-			} else {
-				if (logToFile) {
-					//LOGGING OF SYSTEM OUTPUT
-					if (logPath == null) {
-						logPath = Config.getConfigValue(Config.PROPERTY_REPORTS_DIR, "") + "/cli.log";
-					}
-					FileOutputStream fos = new FileOutputStream(logPath);
-					PrintStream ps = new PrintStream(fos);
-					System.setErr(ps);
-					System.setOut(ps);
-				}
-
-			}
-		}
-
+	private StartGWASpi() {
 	}
 
-	public static void main(String[] args) throws IOException, SQLException, ParseException, UnsupportedLookAndFeelException {
+	private void start(List<String> args) throws IOException, SQLException, ParseException, UnsupportedLookAndFeelException {
 
 		// Get current size of heap in bytes
 		maxHeapSize = Math.round(Runtime.getRuntime().totalMemory() / 1048576); // heapSize in MB
 		maxProcessMarkers = Math.round(maxHeapSize * 625); // 1.6GB needed for 10⁶ markers (safe, 1.4-1.5 real)
 
-		List<String> argsAL = new ArrayList<String>();
-		argsAL.addAll(Arrays.asList(args));
-
-		if (argsAL.contains("script")) {
+		if (args.contains("script")) {
 			guiMode = false;
-			if (argsAL.contains("log")) {
+			if (args.contains("log")) {
 				logToFile = true;
-				logPath = argsAL.get(argsAL.indexOf("log") + 1).toString();
+				logPath = args.get(args.indexOf("log") + 1).toString();
 			}
 
-			File scriptFile = new File(argsAL.get(argsAL.indexOf("script") + 1).toString());
+			File scriptFile = new File(args.get(args.indexOf("script") + 1).toString());
 			if (scriptFile.exists()) {
 				if (maxHeapSize > 254) {
 					log.info(maxHeapSize + Text.App.memoryAvailable1 + "\n"
@@ -133,17 +87,17 @@ public class StartGWASpi extends JFrame {
 							+ Text.App.memoryAvailable4);
 				}
 
-				new StartGWASpi().initGWASpi(false, scriptFile);
+				initGWASpi(false, scriptFile);
 
 				// BIT THAT READS COMMAND LINES AND EXECUTES THEM
-				org.gwaspi.cli.CliExecutor.execute(scriptFile);
+				CliExecutor cliExecutor = new CliExecutor(scriptFile);
+				cliExecutor.execute();
 			} else {
 				log.error(Text.Cli.wrongScriptFilePath);
 				exit();
 			}
-
 		} else {
-			if (argsAL.contains("nolog")) {
+			if (args.contains("nolog")) {
 				logOff = true;
 			}
 
@@ -178,7 +132,7 @@ public class StartGWASpi extends JFrame {
 			}
 
 			try {
-				new StartGWASpi().initGWASpi(true, null);
+				initGWASpi(true, null);
 
 				if (maxHeapSize > 254) {
 					Dialogs.showInfoDialogue(maxHeapSize + Text.App.memoryAvailable1 + "\n"
@@ -202,6 +156,52 @@ public class StartGWASpi extends JFrame {
 		}
 	}
 
+	private void initGWASpi(boolean startWithGUI, File scriptFile) throws IOException, SQLException {
+
+		// initialize configuration of moapi
+		boolean isInitiated = Config.initPreferences(startWithGUI, scriptFile);
+
+		if (startWithGUI) {
+			if (isInitiated) {
+				mainGUIFrame.setSize(1100, 800);
+				mainGUIFrame.setResizable(true);
+
+				GWASpiExplorerPanel panel0 = GWASpiExplorerPanel.getSingleton();
+				ProcessTab panel1 = ProcessTab.getSingleton();
+
+				allTabs.addTab(Text.App.Tab0, panel0);
+				allTabs.addTab(Text.App.Tab1, panel1);
+
+				GroupLayout layout = new GroupLayout(getContentPane());
+				getContentPane().setLayout(layout);
+				layout.setHorizontalGroup(
+						layout.createParallelGroup(GroupLayout.Alignment.LEADING).addComponent(allTabs, GroupLayout.DEFAULT_SIZE, 1000, Short.MAX_VALUE));
+				layout.setVerticalGroup(
+						layout.createParallelGroup(GroupLayout.Alignment.LEADING).addComponent(allTabs, GroupLayout.DEFAULT_SIZE, 750, Short.MAX_VALUE));
+
+				mainGUIFrame.getContentPane().add(allTabs);
+				mainGUIFrame.setVisible(true);
+			} else {
+				exit();
+			}
+		} else {
+			if (!isInitiated) {
+				exit();
+			} else {
+				if (logToFile) {
+					//LOGGING OF SYSTEM OUTPUT
+					if (logPath == null) {
+						logPath = Config.getConfigValue(Config.PROPERTY_REPORTS_DIR, "") + "/cli.log";
+					}
+					FileOutputStream fos = new FileOutputStream(logPath);
+					PrintStream ps = new PrintStream(fos);
+					System.setErr(ps);
+					System.setOut(ps);
+				}
+			}
+		}
+	}
+
 	public static void exit() {
 		try {
 			DbManager db = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
@@ -210,5 +210,10 @@ public class StartGWASpi extends JFrame {
 			log.error(null, ex);
 		}
 		System.exit(0);
+	}
+
+	public static void main(String[] args) throws IOException, SQLException, ParseException, UnsupportedLookAndFeelException {
+		StartGWASpi startGWASpi = new StartGWASpi();
+		startGWASpi.start(Arrays.asList(args));
 	}
 }

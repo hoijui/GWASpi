@@ -377,7 +377,7 @@ public class MatrixMergePanel extends JPanel {
 						Dialogs.showWarningDialogue(Text.Trafo.warnMatrixEncUnknown);
 					} else {
 						// ALL GOOD: MERGE!
-						org.gwaspi.gui.ProcessTab.showTab();
+						ProcessTab.getSingleton().showTab();
 
 						String description = newMatrixDescription.getText();
 						if (description.equals(Text.All.optional)) {
@@ -432,8 +432,8 @@ public class MatrixMergePanel extends JPanel {
 		@Override
 		public void actionPerformed(ActionEvent evt) {
 			try {
-				GWASpiExplorerPanel.pnl_Content = new CurrentMatrixPanel(parentMatrix.getMatrixId());
-				GWASpiExplorerPanel.scrl_Content.setViewportView(GWASpiExplorerPanel.pnl_Content);
+				GWASpiExplorerPanel.getSingleton().setPnl_Content(new CurrentMatrixPanel(parentMatrix.getMatrixId()));
+				GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
 			} catch (IOException ex) {
 				log.error(null, ex);
 			}

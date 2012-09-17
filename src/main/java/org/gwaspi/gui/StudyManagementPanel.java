@@ -49,7 +49,7 @@ import org.gwaspi.threadbox.SwingWorkerItemList;
  */
 public class StudyManagementPanel extends JPanel {
 
-	private final static Logger log
+	private final Logger log
 			= LoggerFactory.getLogger(StudyManagementPanel.class);
 
 	// Variables declaration
@@ -74,7 +74,7 @@ public class StudyManagementPanel extends JPanel {
 	@SuppressWarnings("unchecked")
 	public StudyManagementPanel() throws IOException {
 
-		DefaultMutableTreeNode studyManagementNode = (DefaultMutableTreeNode) GWASpiExplorerPanel.tree.getLastSelectedPathComponent();
+		DefaultMutableTreeNode studyManagementNode = (DefaultMutableTreeNode) GWASpiExplorerPanel.getSingleton().getTree().getLastSelectedPathComponent();
 		treeChildrenLHM = NodeToPathCorrespondence.buildNodeToPathCorrespondence(studyManagementNode, false);
 
 		pnl_StudyDesc = new JPanel();
@@ -276,9 +276,9 @@ public class StudyManagementPanel extends JPanel {
 					}
 
 					org.gwaspi.database.StudyGenerator.insertNewStudy(study_name, study_description);
-					GWASpiExplorerPanel.pnl_Content = new StudyManagementPanel();
-					GWASpiExplorerPanel.scrl_Content.setViewportView(GWASpiExplorerPanel.pnl_Content);
-					GWASpiExplorerPanel.updateTreePanel(true);
+					GWASpiExplorerPanel.getSingleton().setPnl_Content(new StudyManagementPanel());
+					GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
+					GWASpiExplorerPanel.getSingleton().updateTreePanel(true);
 					//model.GWASpiExplorer.insertLatestStudyNode();
 				} else {
 					Dialogs.showWarningDialogue(Text.Study.warnNoStudyName);
@@ -325,9 +325,9 @@ public class StudyManagementPanel extends JPanel {
 	//							try {
 	//								org.gwaspi.database.StudyGenerator.deleteStudy(studyId, deleteReport);
 	//								try {
-	//									GWASpiExplorerPanel.pnl_Content = new StudyManagementPanel();
-	//									GWASpiExplorerPanel.scrl_Content.setViewportView(GWASpiExplorerPanel.pnl_Content);
-	//									GWASpiExplorerPanel.updateTreePanel(true);
+	//									GWASpiExplorerPanel.getSingleton().pnl_Content = new StudyManagementPanel();
+	//									GWASpiExplorerPanel.getSingleton().scrl_Content.setViewportView(GWASpiExplorerPanel.getSingleton().pnl_Content);
+	//									GWASpiExplorerPanel.getSingleton().updateTreePanel(true);
 	//								} catch (IOException ex) {
 	//									log.error(null, ex);
 	//								}
@@ -341,7 +341,7 @@ public class StudyManagementPanel extends JPanel {
 						}
 					}
 					try {
-						GWASpiExplorerPanel.updateTreePanel(true);
+						GWASpiExplorerPanel.getSingleton().updateTreePanel(true);
 					} catch (IOException ex) {
 						log.error(null, ex);
 					}
@@ -359,9 +359,9 @@ public class StudyManagementPanel extends JPanel {
 
 		@Override
 		public void actionPerformed(ActionEvent evt) {
-			GWASpiExplorerPanel.tree.setSelectionPath(GWASpiExplorerPanel.tree.getSelectionPath().getParentPath());
-			GWASpiExplorerPanel.pnl_Content = new IntroPanel();
-			GWASpiExplorerPanel.scrl_Content.setViewportView(GWASpiExplorerPanel.pnl_Content);
+			GWASpiExplorerPanel.getSingleton().getTree().setSelectionPath(GWASpiExplorerPanel.getSingleton().getTree().getSelectionPath().getParentPath());
+			GWASpiExplorerPanel.getSingleton().setPnl_Content(new IntroPanel());
+			GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
 		}
 	}
 }

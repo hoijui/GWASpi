@@ -37,10 +37,10 @@ import org.slf4j.LoggerFactory;
  */
 public class PreferencesPanel extends JPanel {
 
-	private final static Logger log
+	private static final Logger log
 			= LoggerFactory.getLogger(PreferencesPanel.class);
 
-	protected static Preferences prefs = Preferences.userNodeForPackage(Config.class.getClass());
+	private Preferences prefs = Preferences.userNodeForPackage(Config.class.getClass());
 	// Variables declaration - do not modify
 	private JButton btn_Back;
 	private JButton btn_Reset;
@@ -50,6 +50,7 @@ public class PreferencesPanel extends JPanel {
 	private JScrollPane scrl_PreferencesTable;
 	private JTable tbl_PreferencesTable;
 	private List<String[]> prefBackup;
+	private ResetPreferencesAction resetPreferencesAction = new ResetPreferencesAction(prefBackup, tbl_PreferencesTable, prefs);
 	// End of variables declaration
 
 	/**
@@ -57,7 +58,7 @@ public class PreferencesPanel extends JPanel {
 	 */
 	public PreferencesPanel() {
 		initGui();
-		ResetPreferencesAction.loadPrefs(prefBackup, tbl_PreferencesTable);
+		resetPreferencesAction.loadPrefs(prefBackup, tbl_PreferencesTable);
 	}
 
 	/**
@@ -108,7 +109,7 @@ public class PreferencesPanel extends JPanel {
 
 		btn_Back.setAction(new BackAction());
 
-		Action resetPreferencesAction = new ResetPreferencesAction(prefBackup, tbl_PreferencesTable);
+		resetPreferencesAction = new ResetPreferencesAction(prefBackup, tbl_PreferencesTable, prefs);
 		btn_Reset.setAction(resetPreferencesAction);
 
 		btn_Save.setAction(new SavePreferencesAction(tbl_PreferencesTable, resetPreferencesAction));
@@ -275,15 +276,17 @@ public class PreferencesPanel extends JPanel {
 
 		private List<String[]> prefBackup;
 		private JTable preferencesTable;
+		private Preferences prefs;
 
-		ResetPreferencesAction(List<String[]> prefBackup, JTable preferencesTable) {
+		ResetPreferencesAction(List<String[]> prefBackup, JTable preferencesTable, Preferences prefs) {
 
 			this.prefBackup = prefBackup;
 			this.preferencesTable = preferencesTable;
+			this.prefs = prefs;
 			putValue(NAME, Text.All.reset);
 		}
 
-		public static void loadPrefs(List<String[]> prefBackup, JTable preferencesTable) {
+		public void loadPrefs(List<String[]> prefBackup, JTable preferencesTable) {
 			try {
 				String[] preferences = prefs.keys();
 				prefBackup.clear();
@@ -394,8 +397,8 @@ public class PreferencesPanel extends JPanel {
 						Config.setConfigValue(Config.PROPERTY_LOG_DIR, newFile.getPath() + "/log");
 						Config.setConfigValue(Config.PROPERTY_DATA_DIR, newDataDir.getPath());
 
-						GWASpiExplorerPanel.pnl_Content = new PreferencesPanel();
-						GWASpiExplorerPanel.scrl_Content.setViewportView(GWASpiExplorerPanel.pnl_Content);
+						GWASpiExplorerPanel.getSingleton().setPnl_Content(new PreferencesPanel());
+						GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
 						Dialogs.showInfoDialogue(Text.App.infoDataDirCopyOK);
 					} catch (IOException iOException) {
 						Dialogs.showWarningDialogue(Text.App.warnErrorCopyData);
@@ -415,8 +418,8 @@ public class PreferencesPanel extends JPanel {
 
 		@Override
 		public void actionPerformed(ActionEvent evt) {
-			GWASpiExplorerPanel.pnl_Content = new IntroPanel();
-			GWASpiExplorerPanel.scrl_Content.setViewportView(GWASpiExplorerPanel.pnl_Content);
+			GWASpiExplorerPanel.getSingleton().setPnl_Content(new IntroPanel());
+			GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
 		}
 	}
 }
