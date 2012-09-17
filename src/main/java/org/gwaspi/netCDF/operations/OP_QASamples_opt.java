@@ -25,10 +25,10 @@ public class OP_QASamples_opt {
 
 	private final static Logger log = LoggerFactory.getLogger(OP_QASamples_opt.class);
 
-	private OP_QASamples_opt() {
+	public OP_QASamples_opt() {
 	}
 
-	public static int processMatrix(int rdMatrixId) throws IOException, InvalidRangeException {
+	public int processMatrix(int rdMatrixId) throws IOException, InvalidRangeException {
 		int resultOpId = Integer.MIN_VALUE;
 
 		Map<String, Object> wrSampleSetMissingCountLHM = new LinkedHashMap();

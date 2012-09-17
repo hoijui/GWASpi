@@ -20,7 +20,8 @@ public class Threaded_MatrixQA extends CommonRunnable {
 
 	private int matrixId;
 
-	public Threaded_MatrixQA(String threadName,
+	public Threaded_MatrixQA(
+			String threadName,
 			String timeStamp,
 			int matrixId)
 	{
@@ -44,13 +45,13 @@ public class Threaded_MatrixQA extends CommonRunnable {
 
 		if (missingOPsAL.size() > 0) {
 			if (missingOPsAL.contains(cNetCDF.Defaults.OPType.SAMPLE_QA.toString())) {
-				int sampleQAOpId = OP_QASamples_opt.processMatrix(matrixId);
+				int sampleQAOpId = new OP_QASamples_opt().processMatrix(matrixId);
 				GWASpiExplorerNodes.insertOperationUnderMatrixNode(matrixId, sampleQAOpId);
 				org.gwaspi.reports.OutputQASamples.writeReportsForQASamplesData(sampleQAOpId, true);
 				GWASpiExplorerNodes.insertReportsUnderOperationNode(sampleQAOpId);
 			}
 			if (missingOPsAL.contains(cNetCDF.Defaults.OPType.MARKER_QA.toString())) {
-				int markersQAOpId = OP_QAMarkers_opt.processMatrix(matrixId);
+				int markersQAOpId = new OP_QAMarkers_opt().processMatrix(matrixId);
 				GWASpiExplorerNodes.insertOperationUnderMatrixNode(matrixId, markersQAOpId);
 				org.gwaspi.reports.OutputQAMarkers.writeReportsForQAMarkersData(markersQAOpId);
 				GWASpiExplorerNodes.insertReportsUnderOperationNode(markersQAOpId);

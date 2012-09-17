@@ -36,23 +36,23 @@ public class MatrixMergeAll {
 
 	private final static Logger log = LoggerFactory.getLogger(MatrixMergeAll.class);
 
-	private static int studyId = Integer.MIN_VALUE;
-	private static int rdMatrix1Id = Integer.MIN_VALUE;
-	private static int rdMatrix2Id = Integer.MIN_VALUE;
-	private static int wrMatrixId = Integer.MIN_VALUE;
-	private static NetcdfFile rdNcFile1 = null;
-	private static NetcdfFile rdNcFile2 = null;
-	private static String wrMatrixFriendlyName = "";
-	private static String wrMatrixDescription = "";
-	private static MatrixMetadata rdMatrix1Metadata = null;
-	private static MatrixMetadata rdMatrix2Metadata = null;
-	private static MatrixMetadata wrMatrixMetadata = null;
-	private static MarkerSet_opt rdMarkerSet1 = null;
-	private static MarkerSet_opt rdMarkerSet2 = null;
-	private static MarkerSet_opt wrMarkerSet = null;
-	private static SampleSet rdSampleSet1 = null;
-	private static SampleSet rdSampleSet2 = null;
-	private static SampleSet wrSampleSet = null;
+	private int studyId;
+	private int rdMatrix1Id;
+	private int rdMatrix2Id;
+	private int wrMatrixId;
+	private NetcdfFile rdNcFile1;
+	private NetcdfFile rdNcFile2;
+	private String wrMatrixFriendlyName;
+	private String wrMatrixDescription;
+	private MatrixMetadata rdMatrix1Metadata;
+	private MatrixMetadata rdMatrix2Metadata;
+	private MatrixMetadata wrMatrixMetadata;
+	private MarkerSet_opt rdMarkerSet1;
+	private MarkerSet_opt rdMarkerSet2;
+	private MarkerSet_opt wrMarkerSet;
+	private SampleSet rdSampleSet1;
+	private SampleSet rdSampleSet2;
+	private SampleSet wrSampleSet;
 
 	/**
 	 * This constructor to join 2 Matrices.
@@ -62,48 +62,53 @@ public class MatrixMergeAll {
 	 * and position to the MarkersSet from the 1st Matrix.
 	 * Duplicate Markers from the 2nd Matrix will overwrite Markers in the 1st Matrix
 	 */
-	public MatrixMergeAll(int _studyId,
-			int _rdMatrix1Id,
-			int _rdMatrix2Id,
-			String _wrMatrixFriendlyName,
-			String _wrMatrixDescription) throws IOException, InvalidRangeException {
+	public MatrixMergeAll(
+			int studyId,
+			int rdMatrix1Id,
+			int rdMatrix2Id,
+			String wrMatrixFriendlyName,
+			String wrMatrixDescription)
+			throws IOException, InvalidRangeException
+	{
+		// INIT EXTRACTOR OBJECTS
+		this.wrMatrixId = Integer.MIN_VALUE;
+		this.wrMatrixMetadata = null;
+		this.wrMarkerSet = null;
+		this.wrSampleSet = null;
 
-		/////////// INIT EXTRACTOR OBJECTS //////////
-		studyId = _studyId;
+		this.studyId = studyId;
 
-		rdMatrix1Id = _rdMatrix1Id;
-		rdMatrix2Id = _rdMatrix2Id;
+		this.rdMatrix1Id = rdMatrix1Id;
+		this.rdMatrix2Id = rdMatrix2Id;
 
-		rdMatrix1Metadata = new MatrixMetadata(rdMatrix1Id);
-		rdMatrix2Metadata = new MatrixMetadata(rdMatrix2Id);
+		this.rdMatrix1Metadata = new MatrixMetadata(this.rdMatrix1Id);
+		this.rdMatrix2Metadata = new MatrixMetadata(this.rdMatrix2Id);
 
-		rdMarkerSet1 = new MarkerSet_opt(studyId, rdMatrix1Id);
-		rdMarkerSet2 = new MarkerSet_opt(studyId, rdMatrix2Id);
+		this.rdMarkerSet1 = new MarkerSet_opt(this.studyId, this.rdMatrix1Id);
+		this.rdMarkerSet2 = new MarkerSet_opt(this.studyId, this.rdMatrix2Id);
 
-		rdSampleSet1 = new SampleSet(studyId, rdMatrix1Id);
-		rdSampleSet2 = new SampleSet(studyId, rdMatrix2Id);
+		this.rdSampleSet1 = new SampleSet(this.studyId, this.rdMatrix1Id);
+		this.rdSampleSet2 = new SampleSet(this.studyId, this.rdMatrix2Id);
 
-		wrMatrixFriendlyName = _wrMatrixFriendlyName;
-		wrMatrixDescription = _wrMatrixDescription;
+		this.wrMatrixFriendlyName = wrMatrixFriendlyName;
+		this.wrMatrixDescription = wrMatrixDescription;
 
-		rdNcFile1 = NetcdfFile.open(rdMatrix1Metadata.getPathToMatrix());
-		rdNcFile2 = NetcdfFile.open(rdMatrix2Metadata.getPathToMatrix());
-
+		this.rdNcFile1 = NetcdfFile.open(this.rdMatrix1Metadata.getPathToMatrix());
+		this.rdNcFile2 = NetcdfFile.open(this.rdMatrix2Metadata.getPathToMatrix());
 	}
 
-	public static int mingleMarkersKeepSamplesConstant() throws InvalidRangeException {
+	public int mingleMarkersKeepSamplesConstant() throws InvalidRangeException {
 		int resultMatrixId = Integer.MIN_VALUE;
 
 		Map<String, Object> wrComboSortedMarkerSetLHM = mingleAndSortMarkerSet();
 
-		//RETRIEVE CHROMOSOMES INFO
+		// RETRIEVE CHROMOSOMES INFO
 		Map<String, Object> chrSetLHM = org.gwaspi.netCDF.matrices.Utils.aggregateChromosomeInfo(wrComboSortedMarkerSetLHM, 0, 1);
 
-		//Get combo SampleSet with position[] (wrPos, rdMatrixNb, rdPos)
+		// Get combo SampleSet with position[] (wrPos, rdMatrixNb, rdPos)
 		Map<String, Object> rdSampleSetLHM1 = rdSampleSet1.getSampleIdSetLHM();
 		Map<String, Object> rdSampleSetLHM2 = rdSampleSet2.getSampleIdSetLHM();
 		Map<String, Object> wrComboSampleSetLHM = getComboSampleSetWithIndicesArray(rdSampleSetLHM1, rdSampleSetLHM2);
-
 
 		//<editor-fold defaultstate="collapsed" desc="CREATE MATRIX">
 		try {
@@ -142,17 +147,17 @@ public class MatrixMergeAll {
 			descSB.append(Text.Trafo.mergeMethodMergeAll);
 
 			MatrixFactory wrMatrixHandler = new MatrixFactory(studyId,
-					technology, //technology
+					technology, // technology
 					wrMatrixFriendlyName,
-					wrMatrixDescription + "\n\n" + descSB.toString(), //description
+					wrMatrixDescription + "\n\n" + descSB.toString(), // description
 					rdMatrix1Metadata.getStrand(),
-					hasDictionary, //has dictionary?
-					wrComboSampleSetLHM.size(), //Comboed SampleSet
-					wrComboSortedMarkerSetLHM.size(), //Use comboed wrSortedMingledMarkerLHM as MarkerSet
+					hasDictionary, // has dictionary?
+					wrComboSampleSetLHM.size(), // Comboed SampleSet
+					wrComboSortedMarkerSetLHM.size(), // Use comboed wrSortedMingledMarkerLHM as MarkerSet
 					chrSetLHM.size(),
-					gtEncoding, //GT encoding
-					rdMatrix1Id, //Parent matrixId 1
-					rdMatrix2Id);                     //Parent matrixId 2
+					gtEncoding, // GT encoding
+					rdMatrix1Id, // Parent matrixId 1
+					rdMatrix2Id); // Parent matrixId 2
 
 			resultMatrixId = wrMatrixHandler.getResultMatrixId();
 
@@ -348,7 +353,7 @@ public class MatrixMergeAll {
 		return resultMatrixId;
 	}
 
-	protected static Map<String, Object> mingleAndSortMarkerSet() {
+	private Map<String, Object> mingleAndSortMarkerSet() {
 
 		// GET 1st MATRIX LHM WITH CHR AND POS
 		Map<String, Object> workLHM = new LinkedHashMap();
@@ -421,7 +426,7 @@ public class MatrixMergeAll {
 		return workLHM;
 	}
 
-	protected static Map<String, Object> getSampleSetWithIndicesLHM(Map<String, Object> sampleSetLHM1, Map<String, Object> sampleSetLHM2) {
+	private static Map<String, Object> getSampleSetWithIndicesLHM(Map<String, Object> sampleSetLHM1, Map<String, Object> sampleSetLHM2) {
 		Map<String, Object> resultLHM = new LinkedHashMap<String, Object>();
 
 		int rdPos = 0;
@@ -446,7 +451,7 @@ public class MatrixMergeAll {
 		return resultLHM;
 	}
 
-	protected static Map<String, Object> getComboSampleSetWithIndicesArray(Map<String, Object> sampleSetLHM1, Map<String, Object> sampleSetLHM2) {
+	private static Map<String, Object> getComboSampleSetWithIndicesArray(Map<String, Object> sampleSetLHM1, Map<String, Object> sampleSetLHM2) {
 		Map<String, Object> resultLHM = new LinkedHashMap<String, Object>();
 
 		int wrPos = 0;
@@ -478,7 +483,7 @@ public class MatrixMergeAll {
 		return resultLHM;
 	}
 
-	protected static double[] checkForMismatches(int wrMatrixId) throws IOException, InvalidRangeException {
+	private double[] checkForMismatches(int wrMatrixId) throws IOException, InvalidRangeException {
 		double[] result = new double[2];
 
 		wrMatrixMetadata = new MatrixMetadata(wrMatrixId);

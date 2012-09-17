@@ -22,7 +22,8 @@ public class Threaded_AllelicAssociation extends CommonRunnable {
 	private int hwOpId;
 	private GWASinOneGOParams gwasParams;
 
-	public Threaded_AllelicAssociation(String threadName,
+	public Threaded_AllelicAssociation(
+			String threadName,
 			String timeStamp,
 			int matrixId,
 			int censusOpId,

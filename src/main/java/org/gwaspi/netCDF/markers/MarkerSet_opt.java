@@ -387,23 +387,19 @@ public class MarkerSet_opt {
 		fillWith(markerIdSetLHM, value);
 	}
 
-	public static <K, V> Map<K, V> fillWith(Map<K, V> map, V defaultVal) {
+	public static <K, V> void fillWith(Map<K, V> map, V defaultVal) {
 
 		for (Map.Entry<K, V> entry : map.entrySet()) {
 			entry.setValue(defaultVal);
 		}
-
-		return map;
 	}
 
 	// HELPERS TO TRANSFER VALUES FROM ONE LHM TO ANOTHER
-	public static<K, V> Map<K, V> replaceWithValuesFrom(Map<K, V> toBeModified, Map<K, V> newValuesSource) {
+	public static<K, V> void replaceWithValuesFrom(Map<K, V> toBeModified, Map<K, V> newValuesSource) {
 
 		for (Map.Entry<K, V> entry : toBeModified.entrySet()) {
 			entry.setValue(newValuesSource.get(entry.getKey()));
 		}
-
-		return toBeModified;
 	}
 
 	// HELPER TO APPEND VALUE TO AN EXISTING LHM CHAR VALUE

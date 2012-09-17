@@ -27,10 +27,10 @@ public class OP_AllelicAssociationTests_opt {
 	private final static Logger log
 			= LoggerFactory.getLogger(OP_AllelicAssociationTests_opt.class);
 
-	private OP_AllelicAssociationTests_opt() {
+	public OP_AllelicAssociationTests_opt() {
 	}
 
-	public static int processMatrix(int _rdMatrixId,
+	public int processMatrix(int _rdMatrixId,
 			Operation markerCensusOP,
 			Operation hwOP,
 			double hwThreshold)
@@ -89,7 +89,7 @@ public class OP_AllelicAssociationTests_opt {
 
 			// retrieve chromosome info
 			rdMarkerSet.fillMarkerSetLHMWithChrAndPos();
-			wrMarkerSetLHM = MarkerSet_opt.replaceWithValuesFrom(wrMarkerSetLHM, rdMarkerSet.getMarkerIdSetLHM());
+			MarkerSet_opt.replaceWithValuesFrom(wrMarkerSetLHM, rdMarkerSet.getMarkerIdSetLHM());
 			Map<String, Object> rdChrInfoSetLHM = org.gwaspi.netCDF.matrices.Utils.aggregateChromosomeInfo(wrMarkerSetLHM, 0, 1);
 
 			NetcdfFileWriteable wrOPNcFile = null;
@@ -211,7 +211,7 @@ public class OP_AllelicAssociationTests_opt {
 		return resultAssocId;
 	}
 
-	protected static void performAssociationTests(NetcdfFileWriteable wrNcFile, Map<String, Object> wrCaseMarkerIdSetLHM, Map<String, Object> wrCtrlMarkerSet) {
+	private static void performAssociationTests(NetcdfFileWriteable wrNcFile, Map<String, Object> wrCaseMarkerIdSetLHM, Map<String, Object> wrCtrlMarkerSet) {
 		// Iterate through markerset
 		int markerNb = 0;
 		for (Map.Entry<String, Object> entry : wrCaseMarkerIdSetLHM.entrySet()) {
@@ -254,7 +254,6 @@ public class OP_AllelicAssociationTests_opt {
 					ctrlAA,
 					ctrlAa,
 					ctrlaa);
-
 
 			Double[] store = new Double[3];
 			store[0] = allelicT;

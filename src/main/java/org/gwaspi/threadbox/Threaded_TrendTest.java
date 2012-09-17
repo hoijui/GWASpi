@@ -24,7 +24,8 @@ public class Threaded_TrendTest extends CommonRunnable {
 	private int hwOpId;
 	private GWASinOneGOParams gwasParams;
 
-	public Threaded_TrendTest(String threadName,
+	public Threaded_TrendTest(
+			String threadName,
 			String timeStamp,
 			int matrixId,
 			int censusOpId,

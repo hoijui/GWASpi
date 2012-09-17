@@ -16,7 +16,8 @@ public class Threaded_HardyWeinberg extends CommonRunnable {
 
 	private int censusOpId;
 
-	public Threaded_HardyWeinberg(String threadName,
+	public Threaded_HardyWeinberg(
+			String threadName,
 			String timeStamp,
 			int matrixId,
 			int censusOpId)

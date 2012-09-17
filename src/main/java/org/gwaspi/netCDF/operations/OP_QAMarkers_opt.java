@@ -31,10 +31,10 @@ public class OP_QAMarkers_opt {
 
 	private final static Logger log = LoggerFactory.getLogger(OP_QAMarkers_opt.class);
 
-	private OP_QAMarkers_opt() {
+	public OP_QAMarkers_opt() {
 	}
 
-	public static int processMatrix(int rdMatrixId) throws IOException, InvalidRangeException {
+	public int processMatrix(int rdMatrixId) throws IOException, InvalidRangeException {
 		int resultOpId = Integer.MIN_VALUE;
 
 		Map<String, Object> wrMarkerSetMismatchStateLHM = new LinkedHashMap();

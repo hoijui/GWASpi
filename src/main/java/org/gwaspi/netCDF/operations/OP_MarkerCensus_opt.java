@@ -37,7 +37,7 @@ public class OP_MarkerCensus_opt {
 
 	private final static Logger log = LoggerFactory.getLogger(OP_MarkerCensus_opt.class);
 
-	public static int processMatrix(int _rdMatrixId,
+	public int processMatrix(int _rdMatrixId,
 			String censusName,
 			Operation sampleQAOP,
 			double sampleMissingRatio,
@@ -828,8 +828,5 @@ public class OP_MarkerCensus_opt {
 		}
 
 		return resultOpId;
-	}
-
-	protected void writeLHMToMatrix() {
 	}
 }

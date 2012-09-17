@@ -44,27 +44,27 @@ public class MatrixTranslator_opt {
 	private Map<String, Object> rdSampleSetLHM = null;
 	private Map<String, Object> wrSampleSetLHM = new LinkedHashMap<String, Object>();
 
-	public MatrixTranslator_opt(int _studyId,
-			int _rdMatrixId,
-			String _wrMatrixFriendlyName,
-			String _wrMatrixDescription)
+	public MatrixTranslator_opt(
+			int studyId,
+			int rdMatrixId,
+			String wrMatrixFriendlyName,
+			String wrMatrixDescription)
 			throws IOException, InvalidRangeException
 	{
 		// INIT EXTRACTOR OBJECTS
+		this.rdMatrixId = rdMatrixId;
+		this.rdMatrixMetadata = new MatrixMetadata(this.rdMatrixId);
+		this.studyId = rdMatrixMetadata.getStudyId();
+		this.wrMatrixFriendlyName = wrMatrixFriendlyName;
+		this.wrMatrixDescription = wrMatrixDescription;
 
-		rdMatrixId = _rdMatrixId;
-		rdMatrixMetadata = new MatrixMetadata(rdMatrixId);
-		studyId = rdMatrixMetadata.getStudyId();
-		wrMatrixFriendlyName = _wrMatrixFriendlyName;
-		wrMatrixDescription = _wrMatrixDescription;
+		this.rdMarkerSet = new MarkerSet_opt(this.rdMatrixMetadata.getStudyId(), this.rdMatrixId);
+		this.rdMarkerSet.initFullMarkerIdSetLHM();
 
-		rdMarkerSet = new MarkerSet_opt(rdMatrixMetadata.getStudyId(), rdMatrixId);
-		rdMarkerSet.initFullMarkerIdSetLHM();
+		this.rdChrInfoSetLHM = this.rdMarkerSet.getChrInfoSetLHM();
 
-		rdChrInfoSetLHM = rdMarkerSet.getChrInfoSetLHM();
-
-		rdSampleSet = new SampleSet(rdMatrixMetadata.getStudyId(), rdMatrixId);
-		rdSampleSetLHM = rdSampleSet.getSampleIdSetLHM();
+		this.rdSampleSet = new SampleSet(this.rdMatrixMetadata.getStudyId(), this.rdMatrixId);
+		this.rdSampleSetLHM = this.rdSampleSet.getSampleIdSetLHM();
 	}
 
 	public int translateAB12AllelesToACGT() throws InvalidRangeException, IOException {
@@ -159,7 +159,7 @@ public class MatrixTranslator_opt {
 
 				// MARKERSET DICTIONARY ALLELES
 				rdMarkerSet.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_BASES_DICT);
-				wrMarkerIdSetLHM = MarkerSet_opt.replaceWithValuesFrom(wrMarkerIdSetLHM, rdMarkerSet.getMarkerIdSetLHM());
+				MarkerSet_opt.replaceWithValuesFrom(wrMarkerIdSetLHM, rdMarkerSet.getMarkerIdSetLHM());
 				Utils.saveCharLHMValueToWrMatrix(wrNcFile, wrMarkerIdSetLHM, cNetCDF.Variables.VAR_MARKERS_BASES_DICT, cNetCDF.Strides.STRIDE_GT);
 
 				// GENOTYPE STRAND
@@ -375,7 +375,7 @@ public class MatrixTranslator_opt {
 		return result;
 	}
 
-	protected Map<String, Object> translateCurrentSampleAB12AllelesLHM(Map<String, Object> codedLHM, String rdMatrixType, Map<String, Object> dictionaryLHM) {
+	private Map<String, Object> translateCurrentSampleAB12AllelesLHM(Map<String, Object> codedLHM, String rdMatrixType, Map<String, Object> dictionaryLHM) {
 		byte alleleA;
 		byte alleleB;
 
@@ -446,7 +446,7 @@ public class MatrixTranslator_opt {
 		return codedLHM;
 	}
 
-	protected Map<String, Object> translateCurrentSample1234AllelesLHM(Map<String, Object> codedLHM, Map<String, Object> markerStrandsLHM) {
+	private Map<String, Object> translateCurrentSample1234AllelesLHM(Map<String, Object> codedLHM, Map<String, Object> markerStrandsLHM) {
 
 		Map<Byte, Byte> dictionary = new HashMap<Byte, Byte>();
 		dictionary.put(cNetCDF.Defaults.AlleleBytes._0, cNetCDF.Defaults.AlleleBytes._0);

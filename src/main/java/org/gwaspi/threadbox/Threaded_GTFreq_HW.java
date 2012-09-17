@@ -25,7 +25,8 @@ public class Threaded_GTFreq_HW extends CommonRunnable {
 	private final File phenotypeFile;
 	private final GWASinOneGOParams gwasParams;
 
-	public Threaded_GTFreq_HW(String threadName,
+	public Threaded_GTFreq_HW(
+			String threadName,
 			String timeStamp,
 			int matrixId,
 			File phenotypeFile,

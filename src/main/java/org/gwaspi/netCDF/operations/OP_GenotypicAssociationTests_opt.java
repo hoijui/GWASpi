@@ -26,10 +26,11 @@ public class OP_GenotypicAssociationTests_opt {
 
 	private final static Logger log = LoggerFactory.getLogger(OP_GenotypicAssociationTests_opt.class);
 
-	private OP_GenotypicAssociationTests_opt() {
+	public OP_GenotypicAssociationTests_opt() {
 	}
 
-	public static int processMatrix(int _rdMatrixId,
+	public int processMatrix(
+			int _rdMatrixId,
 			Operation markerCensusOP,
 			Operation hwOP,
 			double hwThreshold)
@@ -88,7 +89,7 @@ public class OP_GenotypicAssociationTests_opt {
 
 			// retrieve chromosome info
 			rdMarkerSet.fillMarkerSetLHMWithChrAndPos();
-			wrMarkerSetLHM = MarkerSet_opt.replaceWithValuesFrom(wrMarkerSetLHM, rdMarkerSet.getMarkerIdSetLHM());
+			MarkerSet_opt.replaceWithValuesFrom(wrMarkerSetLHM, rdMarkerSet.getMarkerIdSetLHM());
 			Map<String, Object> rdChrInfoSetLHM = org.gwaspi.netCDF.matrices.Utils.aggregateChromosomeInfo(wrMarkerSetLHM, 0, 1);
 
 			NetcdfFileWriteable wrOPNcFile = null;
@@ -194,8 +195,8 @@ public class OP_GenotypicAssociationTests_opt {
 				//</editor-fold>
 
 				resultAssocId = wrOPHandler.getResultOPId();
-			} catch (InvalidRangeException invalidRangeException) {
-			} catch (IOException iOException) {
+			} catch (InvalidRangeException ex) {
+			} catch (IOException ex) {
 			} finally {
 				if (null != rdOPNcFile) {
 					try {
@@ -213,7 +214,7 @@ public class OP_GenotypicAssociationTests_opt {
 		return resultAssocId;
 	}
 
-	protected static void performAssociationTests(NetcdfFileWriteable wrNcFile, Map<String, Object> wrCaseMarkerIdSetLHM, Map<String, Object> wrCtrlMarkerSet) {
+	private static void performAssociationTests(NetcdfFileWriteable wrNcFile, Map<String, Object> wrCaseMarkerIdSetLHM, Map<String, Object> wrCtrlMarkerSet) {
 		// Iterate through markerset
 		int markerNb = 0;
 		for (Map.Entry<String, Object> entry : wrCaseMarkerIdSetLHM.entrySet()) {

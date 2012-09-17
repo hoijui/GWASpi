@@ -1,7 +1,9 @@
 package org.gwaspi.threadbox;
 
+import org.gwaspi.global.Config;
 import java.io.IOException;
 import org.gwaspi.model.Operation;
+import org.gwaspi.netCDF.operations.OP_AllelicAssociationTests_opt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.InvalidRangeException;
@@ -14,37 +16,38 @@ import ucar.ma2.InvalidRangeException;
  */
 public class Threaded_OP_AssociationTests implements Runnable {
 
-	private final static Logger log
+	private final Logger log
 			= LoggerFactory.getLogger(Threaded_OP_HardyWeinberg.class);
 
 	private Thread runner;
 	private int resultOpId;
-	private static int matrixId;
-	private static Operation censusOP;
-	private static Operation hwOP;
-	private static double hwThreshold;
+	private int matrixId;
+	private Operation censusOP;
+	private Operation hwOP;
+	private double hwThreshold;
 
-	public Threaded_OP_AssociationTests(String threadName,
-			int _matrixId,
-			Operation _censusOP,
-			Operation _hwOP,
-			double _hwThreshold)
+	public Threaded_OP_AssociationTests(
+			String threadName,
+			int matrixId,
+			Operation censusOP,
+			Operation hwOP,
+			double hwThreshold)
 			throws InterruptedException
 	{
-		org.gwaspi.global.Config.initPreferences(false, null);
-		matrixId = _matrixId;
-		censusOP = _censusOP;
-		hwOP = _hwOP;
-		hwThreshold = _hwThreshold;
+		Config.initPreferences(false, null);
+		this.matrixId = matrixId;
+		this.censusOP = censusOP;
+		this.hwOP = hwOP;
+		this.hwThreshold = hwThreshold;
 
-		runner = new Thread(this, threadName); // (1) Create a new thread.
-		runner.start(); // (2) Start the thread.
-		runner.join();
+		this.runner = new Thread(this, threadName); // (1) Create a new thread.
+		this.runner.start(); // (2) Start the thread.
+		this.runner.join();
 	}
 
 	public void run() {
 		try {
-			resultOpId = org.gwaspi.netCDF.operations.OP_AllelicAssociationTests_opt.processMatrix(matrixId,
+			resultOpId = new OP_AllelicAssociationTests_opt().processMatrix(matrixId,
 					censusOP,
 					hwOP,
 					hwThreshold);

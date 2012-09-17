@@ -56,54 +56,48 @@ public class MatrixGenotypesFlipper {
 	 * This constructor to extract data from Matrix a by passing a variable and
 	 * the criteria to filter items by.
 	 *
-	 * @param _studyId
-	 * @param _rdMatrixId
-	 * @param _wrMatrixFriendlyName
-	 * @param _wrMatrixDescription
-	 * @param _markerPickCase
-	 * @param _samplePickCase
-	 * @param _markerPickerVar
-	 * @param _samplePickerVar
-	 * @param _markerCriteria
-	 * @param _sampleCriteria
-	 * @param _sampleFilterPos
-	 * @param _markerPickerFile
+	 * @param studyId
+	 * @param rdMatrixId
+	 * @param wrMatrixFriendlyName
+	 * @param wrMatrixDescription
+	 * @param markerVariable
 	 * @param flipperFile
 	 * @throws IOException
 	 * @throws InvalidRangeException
 	 */
-	public MatrixGenotypesFlipper(int _studyId,
-			int _rdMatrixId,
-			String _wrMatrixFriendlyName,
-			String _wrMatrixDescription,
-			String _markerVariable,
-			File _flipperFile) throws IOException, InvalidRangeException {
-
+	public MatrixGenotypesFlipper(
+			int studyId,
+			int rdMatrixId,
+			String wrMatrixFriendlyName,
+			String wrMatrixDescription,
+			String markerVariable,
+			File flipperFile)
+			throws IOException, InvalidRangeException
+	{
 		// INIT EXTRACTOR OBJECTS
+		this.rdMatrixId = rdMatrixId;
+		this.rdMatrixMetadata = new MatrixMetadata(this.rdMatrixId);
+		this.studyId = rdMatrixMetadata.getStudyId();
+		this.wrMatrixFriendlyName = wrMatrixFriendlyName;
+		this.wrMatrixDescription = wrMatrixDescription;
+		this.gtEncoding = GenotypeEncoding.compareTo(this.rdMatrixMetadata.getGenotypeEncoding());
+		this.flipperFile = flipperFile;
 
-		rdMatrixId = _rdMatrixId;
-		rdMatrixMetadata = new MatrixMetadata(rdMatrixId);
-		studyId = rdMatrixMetadata.getStudyId();
-		wrMatrixFriendlyName = _wrMatrixFriendlyName;
-		wrMatrixDescription = _wrMatrixDescription;
-		gtEncoding = GenotypeEncoding.compareTo(rdMatrixMetadata.getGenotypeEncoding());
-		flipperFile = _flipperFile;
+		this.rdMarkerSet = new MarkerSet_opt(this.rdMatrixMetadata.getStudyId(), this.rdMatrixId);
+		this.rdMarkerSet.initFullMarkerIdSetLHM();
+		this.rdMarkerIdSetLHM = this.rdMarkerSet.getMarkerIdSetLHM();
 
-		rdMarkerSet = new MarkerSet_opt(rdMatrixMetadata.getStudyId(), rdMatrixId);
-		rdMarkerSet.initFullMarkerIdSetLHM();
-		rdMarkerIdSetLHM = rdMarkerSet.getMarkerIdSetLHM();
+		this.rdChrInfoSetLHM = this.rdMarkerSet.getChrInfoSetLHM();
 
-		rdChrInfoSetLHM = rdMarkerSet.getChrInfoSetLHM();
+		this.rdSampleSet = new SampleSet(this.rdMatrixMetadata.getStudyId(), this.rdMatrixId);
+		this.rdSampleSetLHM = this.rdSampleSet.getSampleIdSetLHM();
 
-		rdSampleSet = new SampleSet(rdMatrixMetadata.getStudyId(), rdMatrixId);
-		rdSampleSetLHM = rdSampleSet.getSampleIdSetLHM();
-
-		if (flipperFile.isFile()) {
-			FileReader fr = new FileReader(flipperFile);
+		if (this.flipperFile.isFile()) {
+			FileReader fr = new FileReader(this.flipperFile);
 			BufferedReader br = new BufferedReader(fr);
 			String l;
 			while ((l = br.readLine()) != null) {
-				markerFlipHS.add(l);
+				this.markerFlipHS.add(l);
 			}
 		}
 	}
@@ -127,17 +121,17 @@ public class MatrixGenotypesFlipper {
 			descSB.append("Markers: ").append(rdMarkerSet.getMarkerSetSize()).append(", Samples: ").append(rdSampleSet.getSampleSetSize());
 
 			MatrixFactory wrMatrixHandler = new MatrixFactory(studyId,
-					rdMatrixMetadata.getTechnology(), //technology
+					rdMatrixMetadata.getTechnology(), // technology
 					wrMatrixFriendlyName,
-					descSB.toString(), //description
+					descSB.toString(), // description
 					"FLP",
-					rdMatrixMetadata.getHasDictionray(), //has dictionary?
+					rdMatrixMetadata.getHasDictionray(), // has dictionary?
 					rdSampleSet.getSampleSetSize(),
 					rdMarkerSet.getMarkerSetSize(),
 					rdChrInfoSetLHM.size(),
-					rdMatrixMetadata.getGenotypeEncoding(), //Matrix genotype encoding from orig matrix genotype encoding
-					rdMatrixId, //Orig matrixId 1
-					Integer.MIN_VALUE);         //Orig matrixId 2
+					rdMatrixMetadata.getGenotypeEncoding(), // Matrix genotype encoding from orig matrix genotype encoding
+					rdMatrixId, // Orig matrixId 1
+					Integer.MIN_VALUE); // Orig matrixId 2
 
 			resultMatrixId = wrMatrixHandler.getResultMatrixId();
 
@@ -179,12 +173,12 @@ public class MatrixGenotypesFlipper {
 
 			// MARKERSET RSID
 			rdMarkerSet.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_RSID);
-			rdMarkerIdSetLHM = MarkerSet_opt.replaceWithValuesFrom(rdMarkerIdSetLHM, rdMarkerSet.getMarkerIdSetLHM());
+			MarkerSet_opt.replaceWithValuesFrom(rdMarkerIdSetLHM, rdMarkerSet.getMarkerIdSetLHM());
 			Utils.saveCharLHMValueToWrMatrix(wrNcFile, rdMarkerIdSetLHM, cNetCDF.Variables.VAR_MARKERS_RSID, cNetCDF.Strides.STRIDE_MARKER_NAME);
 
 			// MARKERSET CHROMOSOME
 			rdMarkerSet.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
-			rdMarkerIdSetLHM = MarkerSet_opt.replaceWithValuesFrom(rdMarkerIdSetLHM, rdMarkerSet.getMarkerIdSetLHM());
+			MarkerSet_opt.replaceWithValuesFrom(rdMarkerIdSetLHM, rdMarkerSet.getMarkerIdSetLHM());
 			Utils.saveCharLHMValueToWrMatrix(wrNcFile, rdMarkerIdSetLHM, cNetCDF.Variables.VAR_MARKERS_CHR, cNetCDF.Strides.STRIDE_CHR);
 
 			// Set of chromosomes found in matrix along with number of markersinfo
@@ -195,13 +189,13 @@ public class MatrixGenotypesFlipper {
 
 			// MARKERSET POSITION
 			rdMarkerSet.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_POS);
-			rdMarkerIdSetLHM = MarkerSet_opt.replaceWithValuesFrom(rdMarkerIdSetLHM, rdMarkerSet.getMarkerIdSetLHM());
+			MarkerSet_opt.replaceWithValuesFrom(rdMarkerIdSetLHM, rdMarkerSet.getMarkerIdSetLHM());
 			//Utils.saveCharLHMValueToWrMatrix(wrNcFile, rdMarkerIdSetLHM, cNetCDF.Variables.VAR_MARKERS_POS, cNetCDF.Strides.STRIDE_POS);
 			Utils.saveIntLHMD1ToWrMatrix(wrNcFile, rdMarkerIdSetLHM, cNetCDF.Variables.VAR_MARKERS_POS);
 
 			// MARKERSET DICTIONARY ALLELES
 			rdMarkerSet.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_BASES_DICT);
-			rdMarkerIdSetLHM = MarkerSet_opt.replaceWithValuesFrom(rdMarkerIdSetLHM, rdMarkerSet.getMarkerIdSetLHM());
+			MarkerSet_opt.replaceWithValuesFrom(rdMarkerIdSetLHM, rdMarkerSet.getMarkerIdSetLHM());
 			for (Map.Entry<String, Object> entry : rdMarkerIdSetLHM.entrySet()) {
 				String markerId = entry.getKey();
 				if (markerFlipHS.contains(markerId)) {
@@ -214,7 +208,7 @@ public class MatrixGenotypesFlipper {
 
 			// GENOTYPE STRAND
 			rdMarkerSet.fillInitLHMWithVariable(cNetCDF.Variables.VAR_GT_STRAND);
-			rdMarkerIdSetLHM = MarkerSet_opt.replaceWithValuesFrom(rdMarkerIdSetLHM, rdMarkerSet.getMarkerIdSetLHM());
+			MarkerSet_opt.replaceWithValuesFrom(rdMarkerIdSetLHM, rdMarkerSet.getMarkerIdSetLHM());
 
 			for (Map.Entry<String, Object> entry : rdMarkerIdSetLHM.entrySet()) {
 				String markerId = entry.getKey();
@@ -285,7 +279,7 @@ public class MatrixGenotypesFlipper {
 		return resultMatrixId;
 	}
 
-	protected static String flipDictionaryAlleles(String alleles) {
+	private static String flipDictionaryAlleles(String alleles) {
 
 		String flippedAlleles = alleles;
 
@@ -298,7 +292,7 @@ public class MatrixGenotypesFlipper {
 		return flippedAlleles;
 	}
 
-	protected static String flipStranding(String strand) {
+	private static String flipStranding(String strand) {
 		if (strand.equals("+")) {
 			return "-";
 		} else if (strand.equals("-")) {
@@ -308,7 +302,7 @@ public class MatrixGenotypesFlipper {
 		}
 	}
 
-	protected static byte[] flipGenotypes(byte[] gt, GenotypeEncoding gtEncoding) {
+	private static byte[] flipGenotypes(byte[] gt, GenotypeEncoding gtEncoding) {
 		byte[] result = gt;
 
 		if (gtEncoding.equals(cNetCDF.Defaults.GenotypeEncoding.ACGT0)) {

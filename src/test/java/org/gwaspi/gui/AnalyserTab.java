@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
  */
 public class AnalyserTab extends JPanel {
 
-	private final static Logger log
+	private final Logger log
 			= LoggerFactory.getLogger(AnalyserTab.class);
 
 	// Variables declaration - do not modify
@@ -39,8 +39,8 @@ public class AnalyserTab extends JPanel {
 	private JLabel label_PathToTped;
 	private JLabel label_commandLine;
 	private JScrollPane scrollPane_cliResult;
-	private static JTextArea textArea_cliResult;
-	private static JTextArea textArea_commandLine;
+	private JTextArea textArea_cliResult;
+	private JTextArea textArea_commandLine;
 	private JTextField textField_PathToTfam;
 	private JTextField textField_PathToTped;
 	private JScrollPane jScrollPane1;

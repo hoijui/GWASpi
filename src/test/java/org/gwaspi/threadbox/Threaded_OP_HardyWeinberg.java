@@ -1,5 +1,6 @@
 package org.gwaspi.threadbox;
 
+import org.gwaspi.global.Config;
 import java.io.IOException;
 import org.gwaspi.model.Operation;
 import org.gwaspi.netCDF.operations.OP_HardyWeinberg;
@@ -15,31 +16,32 @@ import ucar.ma2.InvalidRangeException;
  */
 public class Threaded_OP_HardyWeinberg implements Runnable {
 
-	private final static Logger log
+	private final Logger log
 			= LoggerFactory.getLogger(Threaded_OP_HardyWeinberg.class);
 
 	private Thread runner;
 	private int resultOpId;
-	private static Operation censusOP;
-	private static String hwName;
+	private Operation censusOP;
+	private String hwName;
 
-	public Threaded_OP_HardyWeinberg(String threadName,
-			Operation _censusOP,
-			String _hwName)
+	public Threaded_OP_HardyWeinberg(
+			String threadName,
+			Operation censusOP,
+			String hwName)
 			throws InterruptedException
 	{
-		org.gwaspi.global.Config.initPreferences(false, null);
-		censusOP = _censusOP;
-		hwName = _hwName;
+		Config.initPreferences(false, null);
+		this.censusOP = censusOP;
+		this.hwName = hwName;
 
-		runner = new Thread(this, threadName); // (1) Create a new thread.
-		runner.start(); // (2) Start the thread.
-		runner.join();
+		this.runner = new Thread(this, threadName); // (1) Create a new thread.
+		this.runner.start(); // (2) Start the thread.
+		this.runner.join();
 	}
 
 	public void run() {
 		try {
-			resultOpId = OP_HardyWeinberg.processMatrix(censusOP,
+			resultOpId = new OP_HardyWeinberg().processMatrix(censusOP,
 					hwName);
 		} catch (IOException ex) {
 			log.error(null, ex);

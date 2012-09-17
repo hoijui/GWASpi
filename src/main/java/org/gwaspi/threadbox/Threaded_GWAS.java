@@ -29,7 +29,8 @@ public class Threaded_GWAS extends CommonRunnable {
 	private File phenotypeFile;
 	private GWASinOneGOParams gwasParams;
 
-	public Threaded_GWAS(String threadName,
+	public Threaded_GWAS(
+			String threadName,
 			String timeStamp,
 			int matrixId,
 			File phenotypeFile,

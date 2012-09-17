@@ -19,7 +19,8 @@ public class Threaded_ExportMatrix extends CommonRunnable {
 	private ExportFormat format;
 	private String phenotype;
 
-	public Threaded_ExportMatrix(String threadName,
+	public Threaded_ExportMatrix(
+			String threadName,
 			String timeStamp,
 			int matrixId,
 			ExportFormat format,

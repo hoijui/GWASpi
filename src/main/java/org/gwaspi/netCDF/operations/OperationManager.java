@@ -46,8 +46,7 @@ public class OperationManager {
 		Operation sampleQAOP = new Operation(samplesQAOpId);
 		Operation markerQAOP = new Operation(markersQAOpId);
 
-
-		resultOpId = org.gwaspi.netCDF.operations.OP_MarkerCensus_opt.processMatrix(_rdMatrixId,
+		resultOpId = new OP_MarkerCensus_opt().processMatrix(_rdMatrixId,
 				censusName,
 				sampleQAOP,
 				sampleMissingRatio,
@@ -77,7 +76,8 @@ public class OperationManager {
 		Operation sampleQAOP = new Operation(samplesQAOpId);
 		Operation markerQAOP = new Operation(markersQAOpId);
 
-		resultOpId = org.gwaspi.netCDF.operations.OP_MarkerCensus_opt.processMatrix(_rdMatrixId,
+		resultOpId = new OP_MarkerCensus_opt().processMatrix(
+				_rdMatrixId,
 				censusName,
 				sampleQAOP,
 				sampleMissingRatio,
@@ -96,7 +96,7 @@ public class OperationManager {
 
 		org.gwaspi.global.Utils.sysoutStart("Hardy-Weinberg");
 
-		resultOpId = org.gwaspi.netCDF.operations.OP_HardyWeinberg.processMatrix(censusOP,
+		resultOpId = new OP_HardyWeinberg().processMatrix(censusOP,
 				hwName);
 
 		org.gwaspi.reports.OutputHardyWeinberg.writeReportsForMarkersHWData(resultOpId);
@@ -119,7 +119,7 @@ public class OperationManager {
 		Operation markerCensusOP = new Operation(censusOpId);
 		Operation hwOP = new Operation(hwOpId);
 
-		resultOpId = org.gwaspi.netCDF.operations.OP_AllelicAssociationTests_opt.processMatrix(_rdMatrixId, markerCensusOP, hwOP, hwThreshold);
+		resultOpId = new OP_AllelicAssociationTests_opt().processMatrix(_rdMatrixId, markerCensusOP, hwOP, hwThreshold);
 
 		return resultOpId;
 	}
@@ -137,7 +137,7 @@ public class OperationManager {
 		Operation markerCensusOP = new Operation(censusOpId);
 		Operation hwOP = new Operation(hwOpId);
 
-		resultOpId = org.gwaspi.netCDF.operations.OP_GenotypicAssociationTests_opt.processMatrix(_rdMatrixId, markerCensusOP, hwOP, hwThreshold);
+		resultOpId = new OP_GenotypicAssociationTests_opt().processMatrix(_rdMatrixId, markerCensusOP, hwOP, hwThreshold);
 
 		return resultOpId;
 	}
@@ -155,7 +155,7 @@ public class OperationManager {
 		Operation markerCensusOP = new Operation(censusOpId);
 		Operation hwOP = new Operation(hwOpId);
 
-		resultOpId = org.gwaspi.netCDF.operations.OP_TrendTests_opt.processMatrix(_rdMatrixId, markerCensusOP, hwOP, hwThreshold);
+		resultOpId = new OP_TrendTests_opt().processMatrix(_rdMatrixId, markerCensusOP, hwOP, hwThreshold);
 
 		return resultOpId;
 	}

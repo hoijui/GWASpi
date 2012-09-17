@@ -22,7 +22,8 @@ public class Threaded_GenotypicAssociation extends CommonRunnable {
 	private int hwOpId;
 	private GWASinOneGOParams gwasParams;
 
-	public Threaded_GenotypicAssociation(String threadName,
+	public Threaded_GenotypicAssociation(
+			String threadName,
 			String timeStamp,
 			int matrixId,
 			int censusOpId,

@@ -21,7 +21,8 @@ public class Threaded_MergeMatricesAddSamples extends CommonRunnable {
 	private String newMatrixName;
 	private String description;
 
-	public Threaded_MergeMatricesAddSamples(String threadName,
+	public Threaded_MergeMatricesAddSamples(
+			String threadName,
 			String timeStamp,
 			int studyId,
 			int parentMatrixId1,
@@ -59,7 +60,7 @@ public class Threaded_MergeMatricesAddSamples extends CommonRunnable {
 			if (!thisSwi.getQueueState().equals(QueueStates.PROCESSING)) {
 				return;
 			}
-			int sampleQAOpId = OP_QASamples_opt.processMatrix(resultMatrixId);
+			int sampleQAOpId = new OP_QASamples_opt().processMatrix(resultMatrixId);
 			GWASpiExplorerNodes.insertOperationUnderMatrixNode(resultMatrixId, sampleQAOpId);
 			org.gwaspi.reports.OutputQASamples.writeReportsForQASamplesData(sampleQAOpId, true);
 			GWASpiExplorerNodes.insertReportsUnderOperationNode(sampleQAOpId);
@@ -67,7 +68,7 @@ public class Threaded_MergeMatricesAddSamples extends CommonRunnable {
 			if (!thisSwi.getQueueState().equals(QueueStates.PROCESSING)) {
 				return;
 			}
-			int markersQAOpId = OP_QAMarkers_opt.processMatrix(resultMatrixId);
+			int markersQAOpId = new OP_QAMarkers_opt().processMatrix(resultMatrixId);
 			GWASpiExplorerNodes.insertOperationUnderMatrixNode(resultMatrixId, markersQAOpId);
 			org.gwaspi.reports.OutputQAMarkers.writeReportsForQAMarkersData(markersQAOpId);
 			GWASpiExplorerNodes.insertReportsUnderOperationNode(markersQAOpId);

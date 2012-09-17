@@ -47,7 +47,7 @@ public class MatrixMergeSamples_opt {
 	private SampleSet rdSampleSet1 = null;
 	private SampleSet rdSampleSet2 = null;
 	private SampleSet wrSampleSet = null;
-	private static DbManager dBManager = null;
+	private DbManager dBManager = null;
 
 	/**
 	 * This constructor to join 2 Matrices.
@@ -56,31 +56,33 @@ public class MatrixMergeSamples_opt {
 	 * Samples from the 2nd Matrix will be appended to the end of the SampleSet from the 1st Matrix.
 	 * Duplicate Samples from the 2nd Matrix will overwrite Samples in the 1st Matrix
 	 */
-	public MatrixMergeSamples_opt(int _studyId,
-			int _rdMatrix1Id,
-			int _rdMatrix2Id,
-			String _wrMatrixFriendlyName,
-			String _wrMatrixDescription) throws IOException, InvalidRangeException {
-
+	public MatrixMergeSamples_opt(
+			int studyId,
+			int rdMatrix1Id,
+			int rdMatrix2Id,
+			String wrMatrixFriendlyName,
+			String wrMatrixDescription)
+			throws IOException, InvalidRangeException
+	{
 		// INIT EXTRACTOR OBJECTS
-		rdMatrix1Metadata = new MatrixMetadata(_rdMatrix1Id);
-		rdMatrix2Metadata = new MatrixMetadata(_rdMatrix2Id);
-		studyId = rdMatrix1Metadata.getStudyId();
+		this.rdMatrix1Id = rdMatrix1Id;
+		this.rdMatrix2Id = rdMatrix2Id;
 
-		rdMatrix1Id = _rdMatrix1Id;
-		rdMatrix2Id = _rdMatrix2Id;
+		this.rdMatrix1Metadata = new MatrixMetadata(this.rdMatrix1Id);
+		this.rdMatrix2Metadata = new MatrixMetadata(this.rdMatrix2Id);
+		this.studyId = this.rdMatrix1Metadata.getStudyId();
 
-		rdMatrix1Metadata = new MatrixMetadata(rdMatrix1Id);
-		rdMatrix2Metadata = new MatrixMetadata(rdMatrix2Id);
+		this.rdMatrix1Metadata = new MatrixMetadata(this.rdMatrix1Id);
+		this.rdMatrix2Metadata = new MatrixMetadata(this.rdMatrix2Id);
 
-		rdwrMarkerSet1 = new MarkerSet_opt(rdMatrix1Metadata.getStudyId(), rdMatrix1Id);
-		rdMarkerSet2 = new MarkerSet_opt(rdMatrix2Metadata.getStudyId(), rdMatrix2Id);
+		this.rdwrMarkerSet1 = new MarkerSet_opt(this.rdMatrix1Metadata.getStudyId(), this.rdMatrix1Id);
+		this.rdMarkerSet2 = new MarkerSet_opt(this.rdMatrix2Metadata.getStudyId(), this.rdMatrix2Id);
 
-		rdSampleSet1 = new SampleSet(rdMatrix1Metadata.getStudyId(), rdMatrix1Id);
-		rdSampleSet2 = new SampleSet(rdMatrix2Metadata.getStudyId(), rdMatrix2Id);
+		this.rdSampleSet1 = new SampleSet(this.rdMatrix1Metadata.getStudyId(), this.rdMatrix1Id);
+		this.rdSampleSet2 = new SampleSet(this.rdMatrix2Metadata.getStudyId(), this.rdMatrix2Id);
 
-		wrMatrixFriendlyName = _wrMatrixFriendlyName;
-		wrMatrixDescription = _wrMatrixDescription;
+		this.wrMatrixFriendlyName = wrMatrixFriendlyName;
+		this.wrMatrixDescription = wrMatrixDescription;
 	}
 
 	public int appendSamplesKeepMarkersConstant() throws IOException, InvalidRangeException {
@@ -299,7 +301,7 @@ public class MatrixMergeSamples_opt {
 		return resultMatrixId;
 	}
 
-	protected Map<String, Object> getComboSampleSetwithPosArray(Map<String, Object> sampleSetLHM1, Map<String, Object> sampleSetLHM2) {
+	private Map<String, Object> getComboSampleSetwithPosArray(Map<String, Object> sampleSetLHM1, Map<String, Object> sampleSetLHM2) {
 		Map<String, Object> resultLHM = new LinkedHashMap<String, Object>();
 
 		int wrPos = 0;
@@ -317,10 +319,10 @@ public class MatrixMergeSamples_opt {
 			// IF SAMPLE ALLREADY EXISTS IN MATRIX1 SUBSTITUTE VALUES WITH MATRIX2
 			if (resultLHM.containsKey(key)) {
 				position = (int[]) resultLHM.get(key);
-				position[0] = 2; //rdMatrixNb
-				position[1] = rdPos; //rdPos
+				position[0] = 2; // rdMatrixNb
+				position[1] = rdPos; // rdPos
 			} else {
-				position = new int[]{2, rdPos, wrPos}; //rdMatrixNb, rdPos, wrPos
+				position = new int[]{2, rdPos, wrPos}; // rdMatrixNb, rdPos, wrPos
 			}
 
 			resultLHM.put(key, position);
@@ -331,7 +333,7 @@ public class MatrixMergeSamples_opt {
 		return resultLHM;
 	}
 
-	protected double[] checkForMismatches(int wrMatrixId) throws IOException, InvalidRangeException {
+	private double[] checkForMismatches(int wrMatrixId) throws IOException, InvalidRangeException {
 		double[] result = new double[2];
 
 		wrMatrixMetadata = new MatrixMetadata(wrMatrixId);

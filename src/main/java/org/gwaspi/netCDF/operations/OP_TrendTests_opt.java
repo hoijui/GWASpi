@@ -26,10 +26,11 @@ public class OP_TrendTests_opt {
 
 	private final static Logger log = LoggerFactory.getLogger(OP_TrendTests_opt.class);
 
-	private OP_TrendTests_opt() {
+	public OP_TrendTests_opt() {
 	}
 
-	public static int processMatrix(int _rdMatrixId,
+	public int processMatrix(
+			int _rdMatrixId,
 			Operation markerCensusOP,
 			Operation hwOP,
 			double hwThreshold)
@@ -88,7 +89,7 @@ public class OP_TrendTests_opt {
 
 			// retrieve chromosome info
 			rdMarkerSet.fillMarkerSetLHMWithChrAndPos();
-			wrMarkerSetLHM = MarkerSet_opt.replaceWithValuesFrom(wrMarkerSetLHM, rdMarkerSet.getMarkerIdSetLHM());
+			MarkerSet_opt.replaceWithValuesFrom(wrMarkerSetLHM, rdMarkerSet.getMarkerIdSetLHM());
 			Map<String, Object> rdChrInfoSetLHM = org.gwaspi.netCDF.matrices.Utils.aggregateChromosomeInfo(wrMarkerSetLHM, 0, 1);
 
 			NetcdfFileWriteable wrOPNcFile = null;
@@ -211,7 +212,7 @@ public class OP_TrendTests_opt {
 		return resultAssocId;
 	}
 
-	protected static void performTrendTest(NetcdfFileWriteable wrNcFile, Map<String, Object> wrCaseMarkerIdSetLHM, Map<String, Object> wrCtrlMarkerSet) {
+	private void performTrendTest(NetcdfFileWriteable wrNcFile, Map<String, Object> wrCaseMarkerIdSetLHM, Map<String, Object> wrCtrlMarkerSet) {
 		// Iterate through markerset
 		int markerNb = 0;
 		for (Map.Entry<String, Object> entry : wrCaseMarkerIdSetLHM.entrySet()) {

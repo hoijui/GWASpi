@@ -22,10 +22,10 @@ public class OP_HardyWeinberg {
 
 	private final static Logger log = LoggerFactory.getLogger(OP_HardyWeinberg.class);
 
-	private OP_HardyWeinberg() {
+	public OP_HardyWeinberg() {
 	}
 
-	public static int processMatrix(Operation markerCensusOP, String censusName) throws IOException, InvalidRangeException {
+	public int processMatrix(Operation markerCensusOP, String censusName) throws IOException, InvalidRangeException {
 		int resultOpId = Integer.MIN_VALUE;
 
 		OperationMetadata rdOPMetadata = new OperationMetadata(markerCensusOP.getOperationId());
@@ -130,7 +130,7 @@ public class OP_HardyWeinberg {
 		return resultOpId;
 	}
 
-	protected static void performHardyWeinberg(NetcdfFileWriteable wrNcFile, Map<String, Object> markersContingencyLHM, String category) {
+	private static void performHardyWeinberg(NetcdfFileWriteable wrNcFile, Map<String, Object> markersContingencyLHM, String category) {
 		// Iterate through markerset
 		int markerNb = 0;
 		for (Map.Entry<String, Object> entry : markersContingencyLHM.entrySet()) {

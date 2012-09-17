@@ -22,7 +22,8 @@ public class Threaded_UpdateSampleInfo extends CommonRunnable {
 	private File sampleInfoFile;
 	private int poolId;
 
-	public Threaded_UpdateSampleInfo(String threadName,
+	public Threaded_UpdateSampleInfo(
+			String threadName,
 			String timeStamp,
 			int poolId,
 			File sampleInfoFile)
@@ -79,7 +80,6 @@ public class Threaded_UpdateSampleInfo extends CommonRunnable {
 					new Object[]{description},
 					new String[]{cDBGWASpi.f_ID},
 					new Object[]{studyId});
-
 		} catch (IOException ex) {
 			getLog().error(null, ex);
 		}
