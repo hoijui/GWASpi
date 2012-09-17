@@ -13,6 +13,8 @@ import java.util.regex.Pattern;
  */
 public class ComparatorChrAutPosMarkerIdAsc implements Comparator<String> {
 
+	private static final Pattern SIMPLE_INTEGER = Pattern.compile("[0-9]{1,}");
+
 	@Override
 	public int compare(String a, String b) {
 		// a & b have this format: "chr;[pseudo-autosomal1;pseudo-autosomal2;]pos;markerId"
@@ -23,9 +25,8 @@ public class ComparatorChrAutPosMarkerIdAsc implements Comparator<String> {
 		String chrA = aVals[0];
 		String chrB = bVals[0];
 
-		Pattern p = Pattern.compile("[0-9]{1,}");
-		Matcher mA = p.matcher(chrA);
-		Matcher mB = p.matcher(chrB);
+		Matcher mA = SIMPLE_INTEGER.matcher(chrA);
+		Matcher mB = SIMPLE_INTEGER.matcher(chrB);
 
 
 		// Check if contains pseudo-autosomal info
