@@ -66,7 +66,7 @@ public class LoadGTFromBeagleFiles extends AbstractLoadGTFromFiles {
 		return new MetadataLoaderBeagle(curAnnotationFilePath, chromosome, strand, studyId);
 	}
 
-	public Map<String, Object> loadIndividualFiles(File file,
+	public void loadIndividualFiles(File file,
 			String currSampleId,
 			Map<String, Object> wrMarkerSetLHM) throws IOException, InvalidRangeException {
 
@@ -118,8 +118,6 @@ public class LoadGTFromBeagleFiles extends AbstractLoadGTFromFiles {
 		} else if (guessedGTCode.equals(cNetCDF.Defaults.GenotypeEncoding.O12)) {
 			guessedGTCode = Utils.detectGTEncoding(wrMarkerSetLHM);
 		}
-
-		return wrMarkerSetLHM;
 	}
 	//</editor-fold>
 

@@ -40,10 +40,11 @@ public final class LoadGTFromGWASpiFiles implements GTFilesLoader {
 	private String gwaspiGTFilePath;
 	private String sampleInfoPath;
 	private int studyId;
-	private String format = cImport.ImportFormat.GWASpi.toString();
+	private String format;
 	private String friendlyName;
 	private String description;
 	private String gtCode;
+	private int hasDictionary;
 	private MatrixMetadata importMatrixMetadata;
 	private cNetCDF.Defaults.GenotypeEncoding guessedGTCode = cNetCDF.Defaults.GenotypeEncoding.UNKNOWN;
 
@@ -53,90 +54,96 @@ public final class LoadGTFromGWASpiFiles implements GTFilesLoader {
 			int _studyId,
 			String _friendlyName,
 			String _description,
-			Map<String, Object> _sampleInfoLHM) throws IOException, InvalidRangeException, InterruptedException {
-
+			Map<String, Object> _sampleInfoLHM)
+			throws IOException, InvalidRangeException, InterruptedException
+	{
 		gwaspiGTFilePath = _gwaspiGTFilePath;
 		sampleInfoPath = _sampleInfoPath;
 		studyId = _studyId;
+		format = cImport.ImportFormat.GWASpi.toString();
 		friendlyName = _friendlyName;
+		hasDictionary = 0;
 		description = _description;
 
 		if (new File(gwaspiGTFilePath).exists()) {
-			SampleSet matrixSampleSet = new SampleSet(studyId, "");
-			Map<String, Object> matrixSampleSetLHM = matrixSampleSet.getSampleIdSetLHM(gwaspiGTFilePath);
+		SampleSet matrixSampleSet = new SampleSet(studyId, "");
+		Map<String, Object> matrixSampleSetLHM = matrixSampleSet.getSampleIdSetLHM(gwaspiGTFilePath);
 
-			boolean testExcessSamplesInMatrix = false;
-			boolean testExcessSamplesInFile = false;
-			for (String key : matrixSampleSetLHM.keySet()) {
-				if (!_sampleInfoLHM.containsKey(key)) {
-					testExcessSamplesInMatrix = true;
-					break;
-				}
+		boolean testExcessSamplesInMatrix = false;
+		boolean testExcessSamplesInFile = false;
+		for (String key : matrixSampleSetLHM.keySet()) {
+			if (!_sampleInfoLHM.containsKey(key)) {
+				testExcessSamplesInMatrix = true;
+				break;
 			}
+		}
 
-			for (String key : _sampleInfoLHM.keySet()) {
-				if (!matrixSampleSetLHM.containsKey(key)) {
-					testExcessSamplesInFile = true;
-					break;
-				}
+		for (String key : _sampleInfoLHM.keySet()) {
+			if (!matrixSampleSetLHM.containsKey(key)) {
+				testExcessSamplesInFile = true;
+				break;
 			}
+		}
 
-			if (testExcessSamplesInFile) {
-				System.out.println("There were Samples in the Sample Info file that are not present in the genotypes file.\n" + Text.App.appName + " will attempt to ignore them...");
-			}
-			if (testExcessSamplesInMatrix) {
-				System.out.println("Warning!\nSome Samples in the imported genotypes are not described in the Sample Info file!\nData will not be imported!");
-			}
+		if (testExcessSamplesInFile) {
+			System.out.println("There were Samples in the Sample Info file that are not present in the genotypes file.\n" + Text.App.appName + " will attempt to ignore them...");
+		}
+		if (testExcessSamplesInMatrix) {
+			System.out.println("Warning!\nSome Samples in the imported genotypes are not described in the Sample Info file!\nData will not be imported!");
+		}
 
-			importMatrixMetadata = new MatrixMetadata(gwaspiGTFilePath, _studyId, _friendlyName);
+		importMatrixMetadata = new MatrixMetadata(gwaspiGTFilePath, _studyId, _friendlyName);
 
-			StringBuilder descSB = new StringBuilder(Text.Matrix.descriptionHeader1);
-			descSB.append(org.gwaspi.global.Utils.getShortDateTimeAsString());
-			if (!description.isEmpty()) {
-				descSB.append("\nDescription: ");
-				descSB.append(description);
-				descSB.append("\n");
-			}
-//                descSB.append("\nGenotype encoding: ");
-//                descSB.append(importMatrixMetadata.getGenotypeEncoding());
+		///////////// CREATE netCDF-3 FILE ////////////
+		StringBuilder descSB = new StringBuilder(Text.Matrix.descriptionHeader1);
+		descSB.append(org.gwaspi.global.Utils.getShortDateTimeAsString());
+		if (!description.isEmpty()) {
+			descSB.append("\nDescription: ");
+			descSB.append(description);
 			descSB.append("\n");
-			descSB.append("Technology: ");
-			descSB.append(importMatrixMetadata.getTechnology());
-			descSB.append("\n");
-			descSB.append("Markers: " + importMatrixMetadata.getMarkerSetSize() + ", Samples: " + importMatrixMetadata.getSampleSetSize());
-			descSB.append("\n");
-			descSB.append(Text.Matrix.descriptionHeader2);
-			descSB.append(format);
-			descSB.append("\n");
-			descSB.append(Text.Matrix.descriptionHeader3);
-			descSB.append("\n");
-			descSB.append(gwaspiGTFilePath);
-			descSB.append(" (Matrix file)\n");
-			descSB.append(sampleInfoPath);
-			descSB.append(" (Sample Info file)\n");
+		}
+//		descSB.append("\nStrand: ");
+//		descSB.append(strand);
+//		descSB.append("\nGenotype encoding: ");
+//		descSB.append(importMatrixMetadata.getGenotypeEncoding());
+		descSB.append("\n");
+		descSB.append("Technology: ");
+		descSB.append(importMatrixMetadata.getTechnology());
+		descSB.append("\n");
+		descSB.append("Markers: " + importMatrixMetadata.getMarkerSetSize() + ", Samples: " + importMatrixMetadata.getSampleSetSize());
+		descSB.append("\n");
+		descSB.append(Text.Matrix.descriptionHeader2);
+		descSB.append(format);
+		descSB.append("\n");
+		descSB.append(Text.Matrix.descriptionHeader3);
+		descSB.append("\n");
+		descSB.append(gwaspiGTFilePath);
+		descSB.append(" (Matrix file)\n");
+		descSB.append(sampleInfoPath);
+		descSB.append(" (Sample Info file)\n");
 
-			description = descSB.toString();
+		description = descSB.toString();
 
-			if (importMatrixMetadata.getGwaspiDBVersion().equals(Config.getConfigValue(Config.PROPERTY_CURRENT_GWASPIDB_VERSION, "2.0.2"))) { //COMPARE DATABASE VERSIONS
-				if (!testExcessSamplesInMatrix) {
-					DbManager dBManager = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
-					org.gwaspi.netCDF.matrices.MatrixManager.insertMatrixMetadata(dBManager,
-							studyId,
-							friendlyName,
-							importMatrixMetadata.getMatrixNetCDFName(),
-							importMatrixMetadata.getGenotypeEncoding(),
-							Integer.MIN_VALUE,
-							Integer.MIN_VALUE,
-							"",
-							descSB.toString(), //description
-							0);
-				}
-				copyMatrixToGenotypesFolder(studyId, gwaspiGTFilePath, importMatrixMetadata.getMatrixNetCDFName());
-			} else {
-				generateNewGWASpiDBversionMatrix();
+		if (importMatrixMetadata.getGwaspiDBVersion().equals(Config.getConfigValue(Config.PROPERTY_CURRENT_GWASPIDB_VERSION, "2.0.2"))) { //COMPARE DATABASE VERSIONS
+			if (!testExcessSamplesInMatrix) {
+				DbManager dBManager = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
+				org.gwaspi.netCDF.matrices.MatrixManager.insertMatrixMetadata(dBManager,
+						studyId,
+						friendlyName,
+						importMatrixMetadata.getMatrixNetCDFName(),
+						importMatrixMetadata.getGenotypeEncoding(),
+						Integer.MIN_VALUE,
+						Integer.MIN_VALUE,
+						"",
+						descSB.toString(), //description
+						0);
 			}
+			copyMatrixToGenotypesFolder(studyId, gwaspiGTFilePath, importMatrixMetadata.getMatrixNetCDFName());
+		} else {
+			generateNewGWASpiDBversionMatrix();
+		}
 
-			importMatrixMetadata = new MatrixMetadata(importMatrixMetadata.getMatrixNetCDFName());
+		importMatrixMetadata = new MatrixMetadata(importMatrixMetadata.getMatrixNetCDFName());
 
 		}
 
@@ -170,38 +177,36 @@ public final class LoadGTFromGWASpiFiles implements GTFilesLoader {
 		//RETRIEVE CHROMOSOMES INFO
 		Map<String, Object> chrSetLHM = org.gwaspi.netCDF.matrices.Utils.aggregateChromosomeInfo(rdMarkerSetLHM, 0, 1);
 
-
 		MatrixFactory matrixFactory = new MatrixFactory(studyId,
-				cImport.ImportFormat.GWASpi.toString(),
+				format,
 				friendlyName,
 				importMatrixMetadata.getDescription(), //description
 				importMatrixMetadata.getGenotypeEncoding(),
 				importMatrixMetadata.getStrand(),
-				0,
+				hasDictionary,
 				rdSampleSetLHM.size(),
 				rdMarkerSetLHM.size(),
 				chrSetLHM.size(),
 				gwaspiGTFilePath);
 
-		NetcdfFileWriteable wrNcFile = matrixFactory.getNetCDFHandler();
+		NetcdfFileWriteable ncfile = matrixFactory.getNetCDFHandler();
 
 		// create the file
 		try {
-			wrNcFile.create();
+			ncfile.create();
 		} catch (IOException e) {
-			System.err.println("ERROR creating file " + wrNcFile.getLocation() + "\n" + e);
+			System.err.println("ERROR creating file " + ncfile.getLocation() + "\n" + e);
 		}
 		//System.out.println("Done creating netCDF handle at "+global.Utils.getMediumDateTimeAsString());
 		//</editor-fold>
 
-		// <editor-fold defaultstate="collapsed" desc="WRITE MATRIX METADATA">
-
-		//WRITE SAMPLESET TO MATRIX FROM SAMPLES ARRAYLIST
+		//<editor-fold defaultstate="collapsed" desc="WRITE MATRIX METADATA">
+		// WRITE SAMPLESET TO MATRIX FROM SAMPLES ARRAYLIST
 		ArrayChar.D2 samplesD2 = org.gwaspi.netCDF.operations.Utils.writeLHMKeysToD2ArrayChar(rdSampleSetLHM, cNetCDF.Strides.STRIDE_SAMPLE_NAME);
 
 		int[] sampleOrig = new int[]{0, 0};
 		try {
-			wrNcFile.write(cNetCDF.Variables.VAR_SAMPLESET, sampleOrig, samplesD2);
+			ncfile.write(cNetCDF.Variables.VAR_SAMPLESET, sampleOrig, samplesD2);
 		} catch (IOException e) {
 			System.err.println("ERROR writing file");
 		} catch (InvalidRangeException e) {
@@ -211,12 +216,12 @@ public final class LoadGTFromGWASpiFiles implements GTFilesLoader {
 		System.out.println("Done writing SampleSet to matrix at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
 
 
-		//WRITE CHROMOSOME METADATA FROM ANNOTATION FILE
+		// WRITE CHROMOSOME METADATA FROM ANNOTATION FILE
 		//Chromosome location for each marker
 		ArrayChar.D2 markersD2 = org.gwaspi.netCDF.operations.Utils.writeLHMValueItemToD2ArrayChar(rdMarkerSetLHM, 0, cNetCDF.Strides.STRIDE_CHR);
 		int[] markersOrig = new int[]{0, 0};
 		try {
-			wrNcFile.write(cNetCDF.Variables.VAR_MARKERS_CHR, markersOrig, markersD2);
+			ncfile.write(cNetCDF.Variables.VAR_MARKERS_CHR, markersOrig, markersD2);
 		} catch (IOException e) {
 			System.err.println("ERROR writing file");
 		} catch (InvalidRangeException e) {
@@ -224,20 +229,19 @@ public final class LoadGTFromGWASpiFiles implements GTFilesLoader {
 		}
 		System.out.println("Done writing chromosomes to matrix at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
 
-		//Set of chromosomes found in matrix along with number of markersinfo
-		org.gwaspi.netCDF.operations.Utils.saveCharLHMKeyToWrMatrix(wrNcFile, chrSetLHM, cNetCDF.Variables.VAR_CHR_IN_MATRIX, 8);
+		// Set of chromosomes found in matrix along with number of markersinfo
+		org.gwaspi.netCDF.operations.Utils.saveCharLHMKeyToWrMatrix(ncfile, chrSetLHM, cNetCDF.Variables.VAR_CHR_IN_MATRIX, 8);
 
-		//Number of marker per chromosome & max pos for each chromosome
+		// Number of marker per chromosome & max pos for each chromosome
 		int[] columns = new int[]{0, 1, 2, 3};
-		org.gwaspi.netCDF.operations.Utils.saveIntLHMD2ToWrMatrix(wrNcFile, chrSetLHM, columns, cNetCDF.Variables.VAR_CHR_INFO);
+		org.gwaspi.netCDF.operations.Utils.saveIntLHMD2ToWrMatrix(ncfile, chrSetLHM, columns, cNetCDF.Variables.VAR_CHR_INFO);
 
 
-
-		//WRITE POSITION METADATA FROM ANNOTATION FILE
+		// WRITE POSITION METADATA FROM ANNOTATION FILE
 		ArrayInt.D1 markersPosD1 = org.gwaspi.netCDF.operations.Utils.writeLHMValueItemToD1ArrayInt(rdMarkerSetLHM, 1);
 		int[] posOrig = new int[1];
 		try {
-			wrNcFile.write(cNetCDF.Variables.VAR_MARKERS_POS, posOrig, markersPosD1);
+			ncfile.write(cNetCDF.Variables.VAR_MARKERS_POS, posOrig, markersPosD1);
 		} catch (IOException e) {
 			System.err.println("ERROR writing file");
 		} catch (InvalidRangeException e) {
@@ -250,7 +254,7 @@ public final class LoadGTFromGWASpiFiles implements GTFilesLoader {
 		rdMarkerSet.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_RSID);
 		markersD2 = org.gwaspi.netCDF.operations.Utils.writeLHMKeysToD2ArrayChar(rdMarkerSetLHM, cNetCDF.Strides.STRIDE_MARKER_NAME);
 		try {
-			wrNcFile.write(cNetCDF.Variables.VAR_MARKERSET, markersOrig, markersD2);
+			ncfile.write(cNetCDF.Variables.VAR_MARKERSET, markersOrig, markersD2);
 		} catch (IOException e) {
 			System.err.println("ERROR writing file");
 		} catch (InvalidRangeException e) {
@@ -258,7 +262,7 @@ public final class LoadGTFromGWASpiFiles implements GTFilesLoader {
 		}
 		markersD2 = org.gwaspi.netCDF.operations.Utils.writeLHMValueToD2ArrayChar(rdMarkerSetLHM, cNetCDF.Strides.STRIDE_MARKER_NAME);
 		try {
-			wrNcFile.write(cNetCDF.Variables.VAR_MARKERS_RSID, markersOrig, markersD2);
+			ncfile.write(cNetCDF.Variables.VAR_MARKERS_RSID, markersOrig, markersD2);
 		} catch (IOException e) {
 			System.err.println("ERROR writing file");
 		} catch (InvalidRangeException e) {
@@ -272,7 +276,7 @@ public final class LoadGTFromGWASpiFiles implements GTFilesLoader {
 		markersD2 = org.gwaspi.netCDF.operations.Utils.writeLHMValueToD2ArrayChar(rdMarkerSetLHM, cNetCDF.Strides.STRIDE_STRAND);
 		int[] gtOrig = new int[]{0, 0};
 		try {
-			wrNcFile.write(cNetCDF.Variables.VAR_GT_STRAND, gtOrig, markersD2);
+			ncfile.write(cNetCDF.Variables.VAR_GT_STRAND, gtOrig, markersD2);
 		} catch (IOException e) {
 			System.err.println("ERROR writing file");
 		} catch (InvalidRangeException e) {
@@ -284,7 +288,6 @@ public final class LoadGTFromGWASpiFiles implements GTFilesLoader {
 
 		// </editor-fold>
 
-
 		//<editor-fold defaultstate="collapsed" desc="GENOTYPES WRITER">
 
 		//Iterate through rdSampleSetLHM, use item position to read correct sample GTs into rdMarkerIdSetLHM.
@@ -294,7 +297,7 @@ public final class LoadGTFromGWASpiFiles implements GTFilesLoader {
 			rdMarkerSet.fillGTsForCurrentSampleIntoInitLHM(sampleWrIndex);
 
 			//Write MarkerIdSetLHM to A3 ArrayChar and save to wrMatrix
-			org.gwaspi.netCDF.operations.Utils.saveSingleSampleGTsToMatrix(wrNcFile, rdMarkerSet.getMarkerIdSetLHM(), sampleWrIndex);
+			org.gwaspi.netCDF.operations.Utils.saveSingleSampleGTsToMatrix(ncfile, rdMarkerSet.getMarkerIdSetLHM(), sampleWrIndex);
 			if (sampleWrIndex % 100 == 0) {
 				System.out.println("Samples copied: " + sampleWrIndex);
 			}
@@ -313,12 +316,11 @@ public final class LoadGTFromGWASpiFiles implements GTFilesLoader {
 				guessedGTCode = Utils.detectGTEncoding(rdMarkerSet.getMarkerIdSetLHM());
 			}
 
-
 			ArrayChar.D2 guessedGTCodeAC = new ArrayChar.D2(1, 8);
 			Index index = guessedGTCodeAC.getIndex();
 			guessedGTCodeAC.setString(index.set(0, 0), guessedGTCode.toString().trim());
 			int[] origin = new int[]{0, 0};
-			wrNcFile.write(cNetCDF.Variables.GLOB_GTENCODING, origin, guessedGTCodeAC);
+			ncfile.write(cNetCDF.Variables.GLOB_GTENCODING, origin, guessedGTCodeAC);
 
 			StringBuilder descSB = new StringBuilder(description);
 			descSB.append("Genotype encoding: ");
@@ -332,11 +334,10 @@ public final class LoadGTFromGWASpiFiles implements GTFilesLoader {
 					new Object[]{matrixFactory.getMatrixMetaData().getMatrixId()});
 
 			//CLOSE FILE
-			wrNcFile.close();
+			ncfile.close();
 			result = matrixFactory.getMatrixMetaData().getMatrixId();
 		} catch (IOException e) {
-			System.err.println("ERROR creating file " + wrNcFile.getLocation() + "\n" + e);
-			e.printStackTrace();
+			System.err.println("ERROR creating file " + ncfile.getLocation() + "\n" + e);
 		}
 
 		org.gwaspi.global.Utils.sysoutCompleted("writing Genotypes to Matrix");
