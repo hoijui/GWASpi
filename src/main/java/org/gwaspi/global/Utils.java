@@ -375,8 +375,8 @@ public class Utils {
 	// <editor-fold defaultstate="collapsed" desc="Logging methods">
 	public static String createActualMessage(String message) {
 		return ((message == null) || message.isEmpty())
-				? message
-				: "Operation";
+				? "Operation"
+				: message;
 	}
 
 	public static void sysoutStart(String message) { // FIXME We dont need to add a time manually, as the logging system does that for us (also see other methods below)
