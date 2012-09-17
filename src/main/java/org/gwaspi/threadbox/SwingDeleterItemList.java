@@ -54,7 +54,7 @@ public class SwingDeleterItemList extends SwingWorkerItemList {
 
 		for (SwingDeleterItem currentSdi : swingDeleterItemsAL) {
 			if (currentSdi.queueState.equals(QueueState.QUEUED)) {
-				String deleteTarget = currentSdi.getDeleteTarget();
+				DeleteTarget deleteTarget = currentSdi.getDeleteTarget();
 
 				// DELETE STUDY
 				if (deleteTarget.equals(DeleteTarget.STUDY)) {

@@ -16,14 +16,14 @@ public class SwingDeleterItem {
 	private Integer[] parentStudyIds;
 	private Integer[] parentMatricesIds;
 	private Integer[] parentOperationsIds;
-	private String deleteTarget;
+	private DeleteTarget deleteTarget;
 	private boolean deleteReports;
 	private int studyId;
 	private int matrixId;
 	private int opId;
 	private int rpId;
 
-	SwingDeleterItem(String _deleteTarget,
+	SwingDeleterItem(DeleteTarget _deleteTarget,
 			int _studyId,
 			boolean _deleteReports) {
 
@@ -39,7 +39,7 @@ public class SwingDeleterItem {
 
 	}
 
-	SwingDeleterItem(String _deleteTarget,
+	SwingDeleterItem(DeleteTarget _deleteTarget,
 			int _studyId,
 			int _matrixId,
 			boolean _deleteReports) {
@@ -56,7 +56,7 @@ public class SwingDeleterItem {
 
 	}
 
-	SwingDeleterItem(String _deleteTarget,
+	SwingDeleterItem(DeleteTarget _deleteTarget,
 			int _studyId,
 			int _matrixId,
 			int _opId,
@@ -74,7 +74,7 @@ public class SwingDeleterItem {
 
 	}
 
-	SwingDeleterItem(String _deleteTarget,
+	SwingDeleterItem(DeleteTarget _deleteTarget,
 			int _studyId,
 			int _matrixId,
 			int _opId,
@@ -121,7 +121,7 @@ public class SwingDeleterItem {
 		return parentStudyIds;
 	}
 
-	public String getDeleteTarget() {
+	public DeleteTarget getDeleteTarget() {
 		return deleteTarget;
 	}
 
@@ -183,12 +183,11 @@ public class SwingDeleterItem {
 		this.startTime = startTime;
 	}
 
-	public static class DeleteTarget { // FIXME convert to enum
-
-		public static String STUDY = "STUDY";
-		public static String MATRIX = "MATRIX";
-		public static String REPORTS_BY_MATRIXID = "OPERATION_BY_MATRIXID";
-		public static String OPERATION_BY_OPID = "OPERATION_BY_OPID";
-		public static String REPORT = "REPORT";
+	public static enum DeleteTarget {
+		STUDY,
+		MATRIX,
+		REPORTS_BY_MATRIXID, // had String value: "OPERATION_BY_MATRIXID"
+		OPERATION_BY_OPID,
+		REPORT
 	}
 }
