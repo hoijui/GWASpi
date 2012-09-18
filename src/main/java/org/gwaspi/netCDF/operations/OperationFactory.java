@@ -133,7 +133,7 @@ public class OperationFactory {
 		}
 
 		DbManager dBManager = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
-		org.gwaspi.netCDF.operations.OperationManager.insertOPMetadata(dBManager,
+		OperationManager.insertOPMetadata(dBManager,
 				parentMatrixId,
 				parentOperationId,
 				friendlyName,

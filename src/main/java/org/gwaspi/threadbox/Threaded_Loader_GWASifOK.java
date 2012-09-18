@@ -157,7 +157,7 @@ public class Threaded_Loader_GWASifOK extends CommonRunnable {
 			int hwOpId = Integer.MIN_VALUE;
 			if (thisSwi.getQueueState().equals(QueueState.PROCESSING)
 					&& censusOpId != Integer.MIN_VALUE) {
-				hwOpId = org.gwaspi.netCDF.operations.OperationManager.performHardyWeinberg(censusOpId, cNetCDF.Defaults.DEFAULT_AFFECTION);
+				hwOpId = OperationManager.performHardyWeinberg(censusOpId, cNetCDF.Defaults.DEFAULT_AFFECTION);
 				GWASpiExplorerNodes.insertSubOperationUnderOperationNode(censusOpId, hwOpId);
 			}
 			//</editor-fold>
@@ -173,7 +173,7 @@ public class Threaded_Loader_GWASifOK extends CommonRunnable {
 					gwasParams.setDiscardMarkerHWTreshold((double) 0.05 / markerQAMetadata.getOpSetSize());
 				}
 
-				int assocOpId = org.gwaspi.netCDF.operations.OperationManager.performCleanAllelicTests(resultMatrixId,
+				int assocOpId = OperationManager.performCleanAllelicTests(resultMatrixId,
 						censusOpId,
 						hwOpId, gwasParams.getDiscardMarkerHWTreshold());
 				GWASpiExplorerNodes.insertSubOperationUnderOperationNode(censusOpId, assocOpId);
@@ -198,9 +198,11 @@ public class Threaded_Loader_GWASifOK extends CommonRunnable {
 					gwasParams.setDiscardMarkerHWTreshold((double) 0.05 / markerQAMetadata.getOpSetSize());
 				}
 
-				int assocOpId = org.gwaspi.netCDF.operations.OperationManager.performCleanGenotypicTests(resultMatrixId,
+				int assocOpId = OperationManager.performCleanGenotypicTests(
+						resultMatrixId,
 						censusOpId,
-						hwOpId, gwasParams.getDiscardMarkerHWTreshold());
+						hwOpId,
+						gwasParams.getDiscardMarkerHWTreshold());
 				GWASpiExplorerNodes.insertSubOperationUnderOperationNode(censusOpId, assocOpId);
 
 				//////Make Reports (needs newMatrixId, QAopId, AssocOpId)
@@ -222,7 +224,7 @@ public class Threaded_Loader_GWASifOK extends CommonRunnable {
 					gwasParams.setDiscardMarkerHWTreshold((double) 0.05 / markerQAMetadata.getOpSetSize());
 				}
 
-				int trendOpId = org.gwaspi.netCDF.operations.OperationManager.performCleanTrendTests(resultMatrixId,
+				int trendOpId = OperationManager.performCleanTrendTests(resultMatrixId,
 						censusOpId,
 						hwOpId, gwasParams.getDiscardMarkerHWTreshold());
 				GWASpiExplorerNodes.insertSubOperationUnderOperationNode(censusOpId, trendOpId);

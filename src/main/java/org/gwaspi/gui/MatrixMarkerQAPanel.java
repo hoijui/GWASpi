@@ -188,7 +188,7 @@ public class MatrixMarkerQAPanel extends JPanel {
 								}
 								MultiOperations.deleteOperationsByOpId(parentMatrix.getStudyId(), parentMatrix.getMatrixId(), opId, deleteReport);
 
-								//netCDF.operations.OperationManager.deleteOperationAndChildren(parentMatrix.getStudyId(), opId, deleteReport);
+								//OperationManager.deleteOperationAndChildren(parentMatrix.getStudyId(), opId, deleteReport);
 							}
 							if (currentOP.getOperationId() == opId) {
 								GWASpiExplorerPanel.getSingleton().getTree().setSelectionPath(GWASpiExplorerPanel.getSingleton().getTree().getSelectionPath().getParentPath());

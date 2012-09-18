@@ -561,7 +561,7 @@ public class CurrentMatrixPanel extends JPanel {
 										}
 										MultiOperations.deleteOperationsByOpId(matrix.getStudyId(), matrix.getMatrixId(), opId, deleteReport);
 
-										//netCDF.operations.OperationManager.deleteOperationAndChildren(matrix.getStudyId(), opId, deleteReport);
+										//OperationManager.deleteOperationAndChildren(matrix.getStudyId(), opId, deleteReport);
 									}
 								} else {
 									Dialogs.showWarningDialogue(Text.Processes.cantDeleteRequiredItem);

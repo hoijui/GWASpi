@@ -3,6 +3,7 @@ package org.gwaspi.database;
 import org.gwaspi.constants.cDBGWASpi;
 import org.gwaspi.global.ServiceLocator;
 import java.io.IOException;
+import org.gwaspi.netCDF.operations.OperationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,7 +35,7 @@ public class DatabaseGenerator {
 
 		allResults += org.gwaspi.netCDF.matrices.MatrixManager.createMatricesTable(db);
 
-		allResults += org.gwaspi.netCDF.operations.OperationManager.createOperationsMetadataTable(db);
+		allResults += OperationManager.createOperationsMetadataTable(db);
 
 		allResults += org.gwaspi.reports.ReportManager.createReportsMetadataTable(db);
 

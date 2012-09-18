@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import org.gwaspi.model.GWASpiExplorerNodes;
+import org.gwaspi.netCDF.operations.OperationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.gwaspi.threadbox.SwingDeleterItem.DeleteTarget;
@@ -89,7 +90,7 @@ public class SwingDeleterItemList extends SwingWorkerItemList {
 						currentSdi.setStartTime(org.gwaspi.global.Utils.getShortDateTimeAsString());
 						currentSdi.setQueueState(QueueState.PROCESSING);
 
-						org.gwaspi.netCDF.operations.OperationManager.deleteOperationBranch(currentSdi.getStudyId(), currentSdi.getOpId(), currentSdi.isDeleteReports());
+						OperationManager.deleteOperationBranch(currentSdi.getStudyId(), currentSdi.getOpId(), currentSdi.isDeleteReports());
 						MultiOperations.printCompleted("deleting Operation ID: " + currentSdi.getOpId());
 
 						GWASpiExplorerNodes.deleteOperationNode(currentSdi.getOpId());

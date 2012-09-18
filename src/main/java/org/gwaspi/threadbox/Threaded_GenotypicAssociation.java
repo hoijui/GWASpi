@@ -4,6 +4,7 @@ import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.model.GWASpiExplorerNodes;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.netCDF.operations.GWASinOneGOParams;
+import org.gwaspi.netCDF.operations.OperationManager;
 import org.gwaspi.netCDF.operations.OperationMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,9 +72,11 @@ public class Threaded_GenotypicAssociation extends CommonRunnable {
 		}
 
 		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
-			int assocOpId = org.gwaspi.netCDF.operations.OperationManager.performCleanGenotypicTests(matrixId,
+			int assocOpId = OperationManager.performCleanGenotypicTests(
+					matrixId,
 					censusOpId,
-					hwOpId, gwasParams.getDiscardMarkerHWTreshold());
+					hwOpId,
+					gwasParams.getDiscardMarkerHWTreshold());
 			GWASpiExplorerNodes.insertSubOperationUnderOperationNode(censusOpId, assocOpId);
 
 			// Make Reports (needs newMatrixId, QAopId, AssocOpId)

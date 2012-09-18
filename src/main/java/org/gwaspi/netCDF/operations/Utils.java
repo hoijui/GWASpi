@@ -38,7 +38,7 @@ public class Utils {
 		boolean result = false;
 
 		try {
-			ArrayChar.D2 markersD2 = org.gwaspi.netCDF.operations.Utils.writeLHMKeysToD2ArrayChar(wrLHM, varStride);
+			ArrayChar.D2 markersD2 = writeLHMKeysToD2ArrayChar(wrLHM, varStride);
 
 			int[] markersOrig = new int[]{0, 0};
 			try {
@@ -61,7 +61,7 @@ public class Utils {
 		boolean result = false;
 
 		try {
-			ArrayChar.D2 markersD2 = org.gwaspi.netCDF.operations.Utils.writeLHMValueToD2ArrayChar(wrLHM, varStride);
+			ArrayChar.D2 markersD2 = writeLHMValueToD2ArrayChar(wrLHM, varStride);
 
 			int[] markersOrig = new int[]{0, 0};
 			try {
@@ -105,8 +105,8 @@ public class Utils {
 	//<editor-fold defaultstate="collapsed" desc="GENOTYPE SAVERS">
 	public static boolean saveSingleSampleGTsToMatrix(NetcdfFileWriteable wrNcFile, Map<String, Object> wrLhm, int sampleIndex) {
 		boolean result = false;
-		ArrayByte.D3 genotypes = org.gwaspi.netCDF.operations.Utils.writeLHMToSingleSampleArrayByteD3(wrLhm, cNetCDF.Strides.STRIDE_GT);
-//		ArrayByte.D3 genotypes = org.gwaspi.netCDF.operations.Utils.writeLHMToCurrentSampleArrayByteD3(wrLhm, cNetCDF.Strides.STRIDE_GT);
+		ArrayByte.D3 genotypes = writeLHMToSingleSampleArrayByteD3(wrLhm, cNetCDF.Strides.STRIDE_GT);
+//		ArrayByte.D3 genotypes = writeLHMToCurrentSampleArrayByteD3(wrLhm, cNetCDF.Strides.STRIDE_GT);
 
 		int[] origin = new int[]{sampleIndex, 0, 0};
 		try {
@@ -123,7 +123,7 @@ public class Utils {
 
 	public static boolean saveSingleMarkerGTsToMatrix(NetcdfFileWriteable wrNcFile, Map<String, Object> wrLhm, int markerIndex) {
 		boolean result = false;
-		ArrayByte.D3 genotypes = org.gwaspi.netCDF.operations.Utils.writeLHMToSingleMarkerArrayByteD3(wrLhm, cNetCDF.Strides.STRIDE_GT);
+		ArrayByte.D3 genotypes = writeLHMToSingleMarkerArrayByteD3(wrLhm, cNetCDF.Strides.STRIDE_GT);
 
 		int[] origin = new int[]{0, markerIndex, 0};
 		try {
@@ -285,7 +285,7 @@ public class Utils {
 		boolean result = false;
 
 		try {
-			ArrayChar.D2 markersD2 = org.gwaspi.netCDF.operations.Utils.writeLHMValueToD2ArrayChar(wrLHM, varStride);
+			ArrayChar.D2 markersD2 = writeLHMValueToD2ArrayChar(wrLHM, varStride);
 
 			int[] markersOrig = new int[]{offset, 0}; //first origin is the initial markerset position, second is the original allele position
 			try {
@@ -337,7 +337,7 @@ public class Utils {
 			int samplePos,
 			int offset) throws InvalidRangeException {
 		boolean result = false;
-		ArrayChar.D3 genotypes = org.gwaspi.netCDF.operations.Utils.writeLHMToCurrentSampleArrayCharD3(wrLhm, cNetCDF.Strides.STRIDE_GT);
+		ArrayChar.D3 genotypes = writeLHMToCurrentSampleArrayCharD3(wrLhm, cNetCDF.Strides.STRIDE_GT);
 
 		int[] origin = new int[]{samplePos, offset, 0};
 		try {
@@ -357,7 +357,7 @@ public class Utils {
 			int markerPos,
 			int offset) {
 		boolean result = false;
-		ArrayChar.D3 genotypes = org.gwaspi.netCDF.operations.Utils.writeLHMToCurrentMarkerArrayCharD3(wrLhm, cNetCDF.Strides.STRIDE_GT);
+		ArrayChar.D3 genotypes = writeLHMToCurrentMarkerArrayCharD3(wrLhm, cNetCDF.Strides.STRIDE_GT);
 
 		int[] origin = new int[]{offset, markerPos, 0};
 		try {

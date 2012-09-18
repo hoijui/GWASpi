@@ -6,6 +6,7 @@ import org.gwaspi.model.GWASpiExplorerNodes;
 import org.gwaspi.model.Operation;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.netCDF.operations.GWASinOneGOParams;
+import org.gwaspi.netCDF.operations.OperationManager;
 import org.gwaspi.netCDF.operations.OperationMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,7 +75,7 @@ public class Threaded_TrendTest extends CommonRunnable {
 		}
 
 		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
-			int trendTestOpId = org.gwaspi.netCDF.operations.OperationManager.performCleanTrendTests(matrixId,
+			int trendTestOpId = OperationManager.performCleanTrendTests(matrixId,
 					censusOpId,
 					hwOpId, gwasParams.getDiscardMarkerHWTreshold());
 			GWASpiExplorerNodes.insertSubOperationUnderOperationNode(censusOpId, trendTestOpId);
