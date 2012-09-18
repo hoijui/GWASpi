@@ -48,7 +48,7 @@ public class LoadGTFromBeagleFiles extends AbstractLoadGTFromFiles {
 			cImport.ImportFormat.BEAGLE.toString(),
 			_friendlyName,
 			_gtCode,
-			cNetCDF.Defaults.StrandType.UNKNOWN.toString(), // Affymetrix standard
+			cNetCDF.Defaults.StrandType.UNKNOWN.toString(),
 			0,
 			-1, // disabled, else: 4,
 			null, // disabled, else: cNetCDF.Variables.VAR_MARKERS_BASES_KNOWN,

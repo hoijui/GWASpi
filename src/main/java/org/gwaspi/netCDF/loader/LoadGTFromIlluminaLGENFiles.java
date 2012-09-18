@@ -124,9 +124,9 @@ public class LoadGTFromIlluminaLGENFiles implements GTFilesLoader {
 		MatrixFactory matrixFactory = new MatrixFactory(studyId,
 				format,
 				friendlyName,
-				descSB.toString(), //description
+				descSB.toString(), // description
 				gtCode,
-				matrixStrand, // Affymetrix standard
+				matrixStrand,
 				hasDictionary,
 				sampleInfoAL.size(),
 				markerSetMap.size(),
