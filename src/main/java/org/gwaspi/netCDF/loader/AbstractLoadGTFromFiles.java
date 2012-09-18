@@ -18,7 +18,7 @@ import ucar.ma2.Index;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.NetcdfFileWriteable;
 
-public abstract class AbstractLoadGTFromFiles implements GTFilesLoader {
+public abstract class AbstractLoadGTFromFiles implements GenotypesLoader {
 
 	private String gtFilePath;
 	private String sampleFilePath;

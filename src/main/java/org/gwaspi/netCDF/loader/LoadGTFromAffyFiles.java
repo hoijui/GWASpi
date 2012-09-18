@@ -28,7 +28,7 @@ import ucar.nc2.NetcdfFileWriteable;
  * IBE, Institute of Evolutionary Biology (UPF-CSIC)
  * CEXS-UPF-PRBB
  */
-public class LoadGTFromAffyFiles implements GTFilesLoader {
+public class LoadGTFromAffyFiles implements GenotypesLoader {
 
 	static interface Standard {
 		// ProbesetID, Call, Confidence, Signal A, Signal B, Forced Call

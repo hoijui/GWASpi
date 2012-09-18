@@ -31,7 +31,7 @@ import ucar.nc2.NetcdfFileWriteable;
  * IBE, Institute of Evolutionary Biology (UPF-CSIC)
  * CEXS-UPF-PRBB
  */
-public class LoadGTFromHapmapFiles_sampleSet implements GTFilesLoader {
+public class LoadGTFromHapmapFiles_sampleSet implements GenotypesLoader {
 
 	private String gtFilePath;
 	private String sampleFilePath;

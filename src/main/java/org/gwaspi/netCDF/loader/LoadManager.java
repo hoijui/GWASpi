@@ -33,7 +33,7 @@ public class LoadManager {
 	{
 		int newMatrixId = Integer.MIN_VALUE;
 
-		GTFilesLoader gtFilesLoader;
+		GenotypesLoader gtFilesLoader;
 		switch (cImport.ImportFormat.compareTo(format)) {
 			case Affymetrix_GenomeWide6:
 				InsertSampleInfo.processData(studyId, sampleInfoMap);

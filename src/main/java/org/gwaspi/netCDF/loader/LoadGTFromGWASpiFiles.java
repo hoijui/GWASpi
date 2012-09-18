@@ -35,7 +35,7 @@ import ucar.nc2.NetcdfFileWriteable;
  * IBE, Institute of Evolutionary Biology (UPF-CSIC)
  * CEXS-UPF-PRBB
  */
-public final class LoadGTFromGWASpiFiles implements GTFilesLoader {
+public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 
 	private String gwaspiGTFilePath;
 	private String sampleInfoPath;

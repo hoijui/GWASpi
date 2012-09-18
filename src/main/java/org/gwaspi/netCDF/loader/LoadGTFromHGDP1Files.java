@@ -26,7 +26,7 @@ import ucar.nc2.NetcdfFileWriteable;
  * IBE, Institute of Evolutionary Biology (UPF-CSIC)
  * CEXS-UPF-PRBB
  */
-public class LoadGTFromHGDP1Files implements GTFilesLoader {
+public class LoadGTFromHGDP1Files implements GenotypesLoader {
 
 	private static interface Standard {
 
