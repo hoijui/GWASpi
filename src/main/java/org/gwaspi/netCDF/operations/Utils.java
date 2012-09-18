@@ -34,11 +34,11 @@ public class Utils {
 
 	//////// HELPER METHODS ////////
 	//<editor-fold defaultstate="collapsed" desc="SAVERS">
-	public static boolean saveCharLHMKeyToWrMatrix(NetcdfFileWriteable wrNcFile, Map<String, Object> wrLHM, String variable, int varStride) {
+	public static boolean saveCharMapKeyToWrMatrix(NetcdfFileWriteable wrNcFile, Map<String, Object> wrMap, String variable, int varStride) {
 		boolean result = false;
 
 		try {
-			ArrayChar.D2 markersD2 = writeLHMKeysToD2ArrayChar(wrLHM, varStride);
+			ArrayChar.D2 markersD2 = writeMapKeysToD2ArrayChar(wrMap, varStride);
 
 			int[] markersOrig = new int[]{0, 0};
 			try {
@@ -57,11 +57,11 @@ public class Utils {
 		return result;
 	}
 
-	public static boolean saveCharLHMValueToWrMatrix(NetcdfFileWriteable wrNcFile, Map<String, Object> wrLHM, String variable, int varStride) {
+	public static boolean saveCharMapValueToWrMatrix(NetcdfFileWriteable wrNcFile, Map<String, Object> wrMap, String variable, int varStride) {
 		boolean result = false;
 
 		try {
-			ArrayChar.D2 markersD2 = writeLHMValueToD2ArrayChar(wrLHM, varStride);
+			ArrayChar.D2 markersD2 = writeMapValueToD2ArrayChar(wrMap, varStride);
 
 			int[] markersOrig = new int[]{0, 0};
 			try {
@@ -80,11 +80,11 @@ public class Utils {
 		return result;
 	}
 
-	public static boolean saveCharLHMItemToWrMatrix(NetcdfFileWriteable wrNcFile, Map<String, Object> wrLHM, String variable, int itemIndex, int varStride) {
+	public static boolean saveCharMapItemToWrMatrix(NetcdfFileWriteable wrNcFile, Map<String, Object> wrMap, String variable, int itemIndex, int varStride) {
 		boolean result = false;
 
 		try {
-			ArrayChar.D2 markersD2 = Utils.writeLHMValueItemToD2ArrayChar(wrLHM, itemIndex, varStride);
+			ArrayChar.D2 markersD2 = writeMapValueItemToD2ArrayChar(wrMap, itemIndex, varStride);
 			int[] markersOrig = new int[]{0, 0};
 			try {
 				wrNcFile.write(variable, markersOrig, markersD2);
@@ -103,10 +103,10 @@ public class Utils {
 	}
 
 	//<editor-fold defaultstate="collapsed" desc="GENOTYPE SAVERS">
-	public static boolean saveSingleSampleGTsToMatrix(NetcdfFileWriteable wrNcFile, Map<String, Object> wrLhm, int sampleIndex) {
+	public static boolean saveSingleSampleGTsToMatrix(NetcdfFileWriteable wrNcFile, Map<String, Object> wrMap, int sampleIndex) {
 		boolean result = false;
-		ArrayByte.D3 genotypes = writeLHMToSingleSampleArrayByteD3(wrLhm, cNetCDF.Strides.STRIDE_GT);
-//		ArrayByte.D3 genotypes = writeLHMToCurrentSampleArrayByteD3(wrLhm, cNetCDF.Strides.STRIDE_GT);
+		ArrayByte.D3 genotypes = writeMapToSingleSampleArrayByteD3(wrMap, cNetCDF.Strides.STRIDE_GT);
+//		ArrayByte.D3 genotypes = writeMapToCurrentSampleArrayByteD3(wrMap, cNetCDF.Strides.STRIDE_GT);
 
 		int[] origin = new int[]{sampleIndex, 0, 0};
 		try {
@@ -121,9 +121,9 @@ public class Utils {
 		return result;
 	}
 
-	public static boolean saveSingleMarkerGTsToMatrix(NetcdfFileWriteable wrNcFile, Map<String, Object> wrLhm, int markerIndex) {
+	public static boolean saveSingleMarkerGTsToMatrix(NetcdfFileWriteable wrNcFile, Map<String, Object> wrMap, int markerIndex) {
 		boolean result = false;
-		ArrayByte.D3 genotypes = writeLHMToSingleMarkerArrayByteD3(wrLhm, cNetCDF.Strides.STRIDE_GT);
+		ArrayByte.D3 genotypes = writeMapToSingleMarkerArrayByteD3(wrMap, cNetCDF.Strides.STRIDE_GT);
 
 		int[] origin = new int[]{0, markerIndex, 0};
 		try {
@@ -140,11 +140,11 @@ public class Utils {
 	//</editor-fold>
 
 	//<editor-fold defaultstate="collapsed" desc="D1 SAVERS">
-	public static boolean saveDoubleLHMD1ToWrMatrix(NetcdfFileWriteable wrNcFile, Map<String, Object> wrLHM, String variable) {
+	public static boolean saveDoubleMapD1ToWrMatrix(NetcdfFileWriteable wrNcFile, Map<String, Object> wrMap, String variable) {
 		boolean result = false;
 
 		try {
-			ArrayDouble.D1 arrayDouble = Utils.writeLHMValueToD1ArrayDouble(wrLHM);
+			ArrayDouble.D1 arrayDouble = writeMapValueToD1ArrayDouble(wrMap);
 			int[] origin1 = new int[1];
 			try {
 				wrNcFile.write(variable, origin1, arrayDouble);
@@ -162,11 +162,11 @@ public class Utils {
 		return result;
 	}
 
-	public static boolean saveDoubleLHMItemD1ToWrMatrix(NetcdfFileWriteable wrNcFile, Map<String, Object> wrLHM, int itemNb, String variable) {
+	public static boolean saveDoubleMapItemD1ToWrMatrix(NetcdfFileWriteable wrNcFile, Map<String, Object> wrMap, int itemNb, String variable) {
 		boolean result = false;
 
 		try {
-			ArrayDouble.D1 arrayDouble = Utils.writeLHMValueItemToD1ArrayDouble(wrLHM, itemNb);
+			ArrayDouble.D1 arrayDouble = Utils.writeMapValueItemToD1ArrayDouble(wrMap, itemNb);
 			int[] origin1 = new int[1];
 			try {
 				wrNcFile.write(variable, origin1, arrayDouble);
@@ -184,11 +184,11 @@ public class Utils {
 		return result;
 	}
 
-	public static boolean saveIntLHMD1ToWrMatrix(NetcdfFileWriteable wrNcFile, Map<String, Object> wrLHM, String variable) {
+	public static boolean saveIntMapD1ToWrMatrix(NetcdfFileWriteable wrNcFile, Map<String, Object> wrMap, String variable) {
 		boolean result = false;
 
 		try {
-			ArrayInt.D1 arrayInt = Utils.writeLHMValueToD1ArrayInt(wrLHM);
+			ArrayInt.D1 arrayInt = Utils.writeMapValueToD1ArrayInt(wrMap);
 			int[] origin1 = new int[1];
 			try {
 				wrNcFile.write(variable, origin1, arrayInt);
@@ -206,11 +206,11 @@ public class Utils {
 		return result;
 	}
 
-	public static boolean saveIntLHMItemD1ToWrMatrix(NetcdfFileWriteable wrNcFile, Map<String, Object> wrLHM, int itemNb, String variable) {
+	public static boolean saveIntMapItemD1ToWrMatrix(NetcdfFileWriteable wrNcFile, Map<String, Object> wrMap, int itemNb, String variable) {
 		boolean result = false;
 
 		try {
-			ArrayInt.D1 arrayInt = Utils.writeLHMValueItemToD1ArrayInt(wrLHM, itemNb);
+			ArrayInt.D1 arrayInt = Utils.writeMapValueItemToD1ArrayInt(wrMap, itemNb);
 			int[] origin1 = new int[1];
 			try {
 				wrNcFile.write(variable, origin1, arrayInt);
@@ -230,11 +230,11 @@ public class Utils {
 	//</editor-fold>
 
 	//<editor-fold defaultstate="collapsed" desc="D2 SAVERS">
-	public static boolean saveIntLHMD2ToWrMatrix(NetcdfFileWriteable wrNcFile, Map<String, Object> wrLHM, int[] columns, String variable) {
+	public static boolean saveIntMapD2ToWrMatrix(NetcdfFileWriteable wrNcFile, Map<String, Object> wrMap, int[] columns, String variable) {
 		boolean result = false;
 
 		try {
-			ArrayInt.D2 arrayIntD2 = Utils.writeLHMValueItemToD2ArrayInt(wrLHM, columns);
+			ArrayInt.D2 arrayIntD2 = writeMapValueItemToD2ArrayInt(wrMap, columns);
 			int[] origin1 = new int[2];
 			try {
 				wrNcFile.write(variable, origin1, arrayIntD2);
@@ -252,11 +252,11 @@ public class Utils {
 		return result;
 	}
 
-	public static boolean saveDoubleLHMD2ToWrMatrix(NetcdfFileWriteable wrNcFile, Map<String, Object> wrLHM, int[] columns, String variable) {
+	public static boolean saveDoubleMapD2ToWrMatrix(NetcdfFileWriteable wrNcFile, Map<String, Object> wrMap, int[] columns, String variable) {
 		boolean result = false;
 
 		try {
-			ArrayDouble.D2 arrayDoubleD2 = Utils.writeLHMValueItemToD2ArrayDouble(wrLHM, columns);
+			ArrayDouble.D2 arrayDoubleD2 = writeMapValueItemToD2ArrayDouble(wrMap, columns);
 			int[] origin1 = new int[2];
 			try {
 				wrNcFile.write(variable, origin1, arrayDoubleD2);
@@ -277,15 +277,16 @@ public class Utils {
 	//</editor-fold>
 	//</editor-fold>
 	//<editor-fold defaultstate="collapsed" desc="CHUNKED SAVERS">
-	public static boolean saveCharChunkedLHMToWrMatrix(NetcdfFileWriteable wrNcFile,
-			Map<String, Object> wrLHM,
+	public static boolean saveCharChunkedMapToWrMatrix(NetcdfFileWriteable wrNcFile,
+			Map<String, Object> wrMap,
 			String variable,
 			int varStride,
-			int offset) {
+			int offset)
+	{
 		boolean result = false;
 
 		try {
-			ArrayChar.D2 markersD2 = writeLHMValueToD2ArrayChar(wrLHM, varStride);
+			ArrayChar.D2 markersD2 = writeMapValueToD2ArrayChar(wrMap, varStride);
 
 			int[] markersOrig = new int[]{offset, 0}; //first origin is the initial markerset position, second is the original allele position
 			try {
@@ -304,8 +305,8 @@ public class Utils {
 		return result;
 	}
 
-	public static boolean saveCharChunkedLHMItemToWrMatrix(NetcdfFileWriteable wrNcFile,
-			Map<String, Object> wrLHM,
+	public static boolean saveCharChunkedMapItemToWrMatrix(NetcdfFileWriteable wrNcFile,
+			Map<String, Object> wrMap,
 			String variable,
 			int itemNb,
 			int varStride,
@@ -313,7 +314,7 @@ public class Utils {
 		boolean result = false;
 
 		try {
-			ArrayChar.D2 markersD2 = Utils.writeLHMValueItemToD2ArrayChar(wrLHM, itemNb, varStride);
+			ArrayChar.D2 markersD2 = writeMapValueItemToD2ArrayChar(wrMap, itemNb, varStride);
 			int[] markersOrig = new int[]{offset, 0};
 			try {
 				wrNcFile.write(variable, markersOrig, markersD2);
@@ -333,11 +334,11 @@ public class Utils {
 
 	//<editor-fold defaultstate="collapsed" desc="GENOTYPE SAVERS">
 	public static boolean saveChunkedCurrentSampleGTsToMatrix(NetcdfFileWriteable wrNcFile,
-			Map<String, Object> wrLhm,
+			Map<String, Object> wrMap,
 			int samplePos,
 			int offset) throws InvalidRangeException {
 		boolean result = false;
-		ArrayChar.D3 genotypes = writeLHMToCurrentSampleArrayCharD3(wrLhm, cNetCDF.Strides.STRIDE_GT);
+		ArrayChar.D3 genotypes = writeMapToCurrentSampleArrayCharD3(wrMap, cNetCDF.Strides.STRIDE_GT);
 
 		int[] origin = new int[]{samplePos, offset, 0};
 		try {
@@ -353,11 +354,12 @@ public class Utils {
 	}
 
 	public static boolean saveChunkedCurrentMarkerGTsToMatrix(NetcdfFileWriteable wrNcFile,
-			Map<String, Object> wrLhm,
+			Map<String, Object> wrMap,
 			int markerPos,
-			int offset) {
+			int offset)
+	{
 		boolean result = false;
-		ArrayChar.D3 genotypes = writeLHMToCurrentMarkerArrayCharD3(wrLhm, cNetCDF.Strides.STRIDE_GT);
+		ArrayChar.D3 genotypes = writeMapToCurrentMarkerArrayCharD3(wrMap, cNetCDF.Strides.STRIDE_GT);
 
 		int[] origin = new int[]{offset, markerPos, 0};
 		try {
@@ -374,14 +376,15 @@ public class Utils {
 	//</editor-fold>
 
 	//<editor-fold defaultstate="collapsed" desc="D1 SAVERS">
-	public static boolean saveDoubleChunkedLHMD1ToWrMatrix(NetcdfFileWriteable wrNcFile,
-			Map<String, Object> wrLHM,
+	public static boolean saveDoubleChunkedMapD1ToWrMatrix(NetcdfFileWriteable wrNcFile,
+			Map<String, Object> wrMap,
 			String variable,
-			int offset) {
+			int offset)
+	{
 		boolean result = false;
 
 		try {
-			ArrayDouble.D1 arrayDouble = Utils.writeLHMValueToD1ArrayDouble(wrLHM);
+			ArrayDouble.D1 arrayDouble = Utils.writeMapValueToD1ArrayDouble(wrMap);
 			int[] origin1 = new int[]{offset};
 			try {
 				wrNcFile.write(variable, origin1, arrayDouble);
@@ -399,15 +402,16 @@ public class Utils {
 		return result;
 	}
 
-	public static boolean saveDoubleChunkedLHMItemD1ToWrMatrix(NetcdfFileWriteable wrNcFile,
-			Map<String, Object> wrLHM,
+	public static boolean saveDoubleChunkedMapItemD1ToWrMatrix(NetcdfFileWriteable wrNcFile,
+			Map<String, Object> wrMap,
 			int itemNb,
 			String variable,
-			int offset) {
+			int offset)
+	{
 		boolean result = false;
 
 		try {
-			ArrayDouble.D1 arrayDouble = Utils.writeLHMValueItemToD1ArrayDouble(wrLHM, itemNb);
+			ArrayDouble.D1 arrayDouble = Utils.writeMapValueItemToD1ArrayDouble(wrMap, itemNb);
 			int[] origin1 = new int[]{offset};
 			try {
 				wrNcFile.write(variable, origin1, arrayDouble);
@@ -425,14 +429,15 @@ public class Utils {
 		return result;
 	}
 
-	public static boolean saveIntChunkedLHMD1ToWrMatrix(NetcdfFileWriteable wrNcFile,
-			Map<String, Object> wrLHM,
+	public static boolean saveIntChunkedMapD1ToWrMatrix(NetcdfFileWriteable wrNcFile,
+			Map<String, Object> wrMap,
 			String variable,
-			int offset) {
+			int offset)
+	{
 		boolean result = false;
 
 		try {
-			ArrayInt.D1 arrayInt = Utils.writeLHMValueToD1ArrayInt(wrLHM);
+			ArrayInt.D1 arrayInt = Utils.writeMapValueToD1ArrayInt(wrMap);
 			int[] origin1 = new int[]{offset};
 			try {
 				wrNcFile.write(variable, origin1, arrayInt);
@@ -450,15 +455,15 @@ public class Utils {
 		return result;
 	}
 
-	public static boolean saveIntChunkedLHMItemD1ToWrMatrix(NetcdfFileWriteable wrNcFile,
-			Map<String, Object> wrLHM,
+	public static boolean saveIntChunkedMapItemD1ToWrMatrix(NetcdfFileWriteable wrNcFile,
+			Map<String, Object> wrMap,
 			int itemNb,
 			String variable,
 			int offset) {
 		boolean result = false;
 
 		try {
-			ArrayInt.D1 arrayInt = Utils.writeLHMValueItemToD1ArrayInt(wrLHM, itemNb);
+			ArrayInt.D1 arrayInt = Utils.writeMapValueItemToD1ArrayInt(wrMap, itemNb);
 			int[] origin1 = new int[]{offset};
 			try {
 				wrNcFile.write(variable, origin1, arrayInt);
@@ -478,15 +483,16 @@ public class Utils {
 	//</editor-fold>
 
 	//<editor-fold defaultstate="collapsed" desc="D2 SAVERS">
-	public static boolean saveIntChunkedLHMD2ToWrMatrix(NetcdfFileWriteable wrNcFile,
-			Map<String, Object> wrLHM,
+	public static boolean saveIntChunkedMapD2ToWrMatrix(NetcdfFileWriteable wrNcFile,
+			Map<String, Object> wrMap,
 			int[] columns,
 			String variable,
-			int offset) {
+			int offset)
+	{
 		boolean result = false;
 
 		try {
-			ArrayInt.D2 arrayIntD2 = Utils.writeLHMValueItemToD2ArrayInt(wrLHM, columns);
+			ArrayInt.D2 arrayIntD2 = Utils.writeMapValueItemToD2ArrayInt(wrMap, columns);
 			int[] origin1 = new int[]{offset, 0};
 			try {
 				wrNcFile.write(variable, origin1, arrayIntD2);
@@ -505,14 +511,14 @@ public class Utils {
 	}
 
 	public static boolean saveDoubleChunkedD2ToWrMatrix(NetcdfFileWriteable wrNcFile,
-			Map<String, Object> wrLHM,
+			Map<String, Object> wrMap,
 			int[] columns,
 			String variable,
 			int offset) {
 		boolean result = false;
 
 		try {
-			ArrayDouble.D2 arrayDoubleD2 = Utils.writeLHMValueItemToD2ArrayDouble(wrLHM, columns);
+			ArrayDouble.D2 arrayDoubleD2 = Utils.writeMapValueItemToD2ArrayDouble(wrMap, columns);
 			int[] origin1 = new int[]{offset, 0};
 			try {
 				wrNcFile.write(variable, origin1, arrayDoubleD2);
@@ -534,12 +540,12 @@ public class Utils {
 	//</editor-fold>
 	//<editor-fold defaultstate="collapsed" desc="POJOs TO netCDFJOs">
 	//<editor-fold defaultstate="collapsed" desc="ArrayChar.D3">
-	public static ArrayChar.D3 writeLHMToCurrentSampleArrayCharD3(Map<String, Object> lhm, int stride) {
-		ArrayChar.D3 charArray = new ArrayChar.D3(1, lhm.size(), stride);
+	public static ArrayChar.D3 writeMapToCurrentSampleArrayCharD3(Map<String, Object> map, int stride) {
+		ArrayChar.D3 charArray = new ArrayChar.D3(1, map.size(), stride);
 		Index ima = charArray.getIndex();
 
 		int markerCounter = 0;
-		for (Object value : lhm.values()) {
+		for (Object value : map.values()) {
 			charArray.setString(ima.set(0, markerCounter, 0), value.toString().trim()); //1 Sample at a time, iterating through markers, starting at gtSpan 0
 			markerCounter++;
 		}
@@ -547,12 +553,12 @@ public class Utils {
 		return charArray;
 	}
 
-	public static ArrayChar.D3 writeLHMToCurrentMarkerArrayCharD3(Map<String, Object> lhm, int stride) {
-		ArrayChar.D3 charArray = new ArrayChar.D3(lhm.size(), 1, stride);
+	public static ArrayChar.D3 writeMapToCurrentMarkerArrayCharD3(Map<String, Object> map, int stride) {
+		ArrayChar.D3 charArray = new ArrayChar.D3(map.size(), 1, stride);
 		Index ima = charArray.getIndex();
 
 		int sampleCounter = 0;
-		for (Object value : lhm.values()) {
+		for (Object value : map.values()) {
 			charArray.setString(ima.set(sampleCounter, 0, 0), value.toString().trim()); //1 Marker at a time, iterating through samples, starting at gtSpan 0
 			sampleCounter++;
 		}
@@ -562,24 +568,24 @@ public class Utils {
 	//</editor-fold>
 
 	//<editor-fold defaultstate="collapsed" desc="ArrayChar.D2">
-	public static ArrayChar.D2 writeALToD2ArrayChar(List al, int stride) {
-		ArrayChar.D2 charArray = new ArrayChar.D2(al.size(), stride);
+	public static ArrayChar.D2 writeALToD2ArrayChar(List list, int stride) {
+		ArrayChar.D2 charArray = new ArrayChar.D2(list.size(), stride);
 		Index ima = charArray.getIndex();
 
-		for (int i = 0; i < al.size(); i++) {
-			String value = al.get(i).toString();
+		for (int i = 0; i < list.size(); i++) {
+			String value = list.get(i).toString();
 			charArray.setString(ima.set(i, 0), value.trim());
 		}
 
 		return charArray;
 	}
 
-	public static ArrayChar.D2 writeLHMValueToD2ArrayChar(Map<String, Object> lhm, int stride) {
-		ArrayChar.D2 charArray = new ArrayChar.D2(lhm.size(), stride);
+	public static ArrayChar.D2 writeMapValueToD2ArrayChar(Map<String, Object> map, int stride) {
+		ArrayChar.D2 charArray = new ArrayChar.D2(map.size(), stride);
 		Index ima = charArray.getIndex();
 
 		int count = 0;
-		for (Object value : lhm.values()) {
+		for (Object value : map.values()) {
 			charArray.setString(ima.set(count, 0), value.toString().trim());
 			count++;
 		}
@@ -587,12 +593,12 @@ public class Utils {
 		return charArray;
 	}
 
-	public static ArrayChar.D2 writeLHMKeysToD2ArrayChar(Map<String, Object> lhm, int stride) {
-		ArrayChar.D2 charArray = new ArrayChar.D2(lhm.size(), stride);
+	public static ArrayChar.D2 writeMapKeysToD2ArrayChar(Map<String, Object> map, int stride) {
+		ArrayChar.D2 charArray = new ArrayChar.D2(map.size(), stride);
 		Index ima = charArray.getIndex();
 
 		int count = 0;
-		for (String key : lhm.keySet()) {
+		for (String key : map.keySet()) {
 			charArray.setString(ima.set(count, 0), key.trim());
 			count++;
 		}
@@ -600,12 +606,12 @@ public class Utils {
 		return charArray;
 	}
 
-	public static ArrayChar.D2 writeLHMValueItemToD2ArrayChar(Map<String, Object> lhm, int itemNb, int stride) {
-		ArrayChar.D2 charArray = new ArrayChar.D2(lhm.size(), stride);
+	public static ArrayChar.D2 writeMapValueItemToD2ArrayChar(Map<String, Object> map, int itemNb, int stride) {
+		ArrayChar.D2 charArray = new ArrayChar.D2(map.size(), stride);
 		Index index = charArray.getIndex();
 
 		int count = 0;
-		for (Object value : lhm.values()) {
+		for (Object value : map.values()) {
 			Object[] values = (Object[]) value;
 			String newValue = values[itemNb].toString();
 			charArray.setString(index.set(count, 0), newValue.trim());
@@ -617,12 +623,12 @@ public class Utils {
 	//</editor-fold>
 
 	//<editor-fold defaultstate="collapsed" desc="ArrayDouble.D1 & D2">
-	public static ArrayDouble.D1 writeLHMValueToD1ArrayDouble(Map<String, Object> lhm) {
-		ArrayDouble.D1 doubleArray = new ArrayDouble.D1(lhm.size());
+	public static ArrayDouble.D1 writeMapValueToD1ArrayDouble(Map<String, Object> map) {
+		ArrayDouble.D1 doubleArray = new ArrayDouble.D1(map.size());
 		Index index = doubleArray.getIndex();
 
 		int count = 0;
-		for (Object value : lhm.values()) {
+		for (Object value : map.values()) {
 			doubleArray.setDouble(index.set(count), (Double) value);
 			count++;
 		}
@@ -630,12 +636,12 @@ public class Utils {
 		return doubleArray;
 	}
 
-	private static ArrayDouble.D1 writeLHMValueItemToD1ArrayDouble(Map<String, Object> lhm, int itemNb) {
-		ArrayDouble.D1 doubleArray = new ArrayDouble.D1(lhm.size());
+	private static ArrayDouble.D1 writeMapValueItemToD1ArrayDouble(Map<String, Object> map, int itemNb) {
+		ArrayDouble.D1 doubleArray = new ArrayDouble.D1(map.size());
 		Index index = doubleArray.getIndex();
 
 		int count = 0;
-		for (Object value : lhm.values()) {
+		for (Object value : map.values()) {
 			Object[] values = (Object[]) value;
 			doubleArray.setDouble(index.set(count), (Double) values[itemNb]);
 			count++;
@@ -644,12 +650,12 @@ public class Utils {
 		return doubleArray;
 	}
 
-	private static ArrayDouble.D2 writeLHMValueItemToD2ArrayDouble(Map<String, Object> lhm, int[] columns) {
-		ArrayDouble.D2 doubleArray = new ArrayDouble.D2(lhm.size(), columns.length);
+	private static ArrayDouble.D2 writeMapValueItemToD2ArrayDouble(Map<String, Object> map, int[] columns) {
+		ArrayDouble.D2 doubleArray = new ArrayDouble.D2(map.size(), columns.length);
 		Index ima = doubleArray.getIndex();
 
 		int i = 0;
-		for (Object value : lhm.values()) {
+		for (Object value : map.values()) {
 			Object[] values = (Object[]) value;
 			for (int j = 0; j < columns.length; j++) {
 				doubleArray.setDouble(ima.set(i, j), (Double) values[columns[j]]);
@@ -662,12 +668,12 @@ public class Utils {
 	//</editor-fold>
 
 	//<editor-fold defaultstate="collapsed" desc="ArrayInt.D1 & D2">
-	public static ArrayInt.D1 writeLHMValueToD1ArrayInt(Map<String, Object> lhm) {
-		ArrayInt.D1 intArray = new ArrayInt.D1(lhm.size());
+	public static ArrayInt.D1 writeMapValueToD1ArrayInt(Map<String, Object> map) {
+		ArrayInt.D1 intArray = new ArrayInt.D1(map.size());
 		Index index = intArray.getIndex();
 
 		int count = 0;
-		for (Object value : lhm.values()) {
+		for (Object value : map.values()) {
 			intArray.setInt(index.set(count), (Integer) value);
 			count++;
 		}
@@ -675,12 +681,12 @@ public class Utils {
 		return intArray;
 	}
 
-	public static ArrayInt.D1 writeLHMValueItemToD1ArrayInt(Map<String, Object> lhm, int itemNb) {
-		ArrayInt.D1 intArray = new ArrayInt.D1(lhm.size());
+	public static ArrayInt.D1 writeMapValueItemToD1ArrayInt(Map<String, Object> map, int itemNb) {
+		ArrayInt.D1 intArray = new ArrayInt.D1(map.size());
 		Index index = intArray.getIndex();
 
 		int count = 0;
-		for (Object value : lhm.values()) {
+		for (Object value : map.values()) {
 			Object[] values = (Object[]) value;
 			intArray.setInt(index.set(count), (Integer) values[itemNb]);
 			count++;
@@ -690,12 +696,12 @@ public class Utils {
 	}
 
 	// TODO can be optimized with arraycopy?
-	public static ArrayInt.D2 writeLHMValueItemToD2ArrayInt(Map<String, Object> lhm, int[] columns) {
-		ArrayInt.D2 intArray = new ArrayInt.D2(lhm.size(), columns.length);
+	public static ArrayInt.D2 writeMapValueItemToD2ArrayInt(Map<String, Object> map, int[] columns) {
+		ArrayInt.D2 intArray = new ArrayInt.D2(map.size(), columns.length);
 		Index ima = intArray.getIndex();
 
 		int i = 0;
-		for (Object value : lhm.values()) {
+		for (Object value : map.values()) {
 			int[] values = (int[]) value;
 			for (int j = 0; j < columns.length; j++) {
 				intArray.setInt(ima.set(i, j), values[columns[j]]);
@@ -729,13 +735,13 @@ public class Utils {
 		return byteArray;
 	}
 
-	public static ArrayByte.D3 writeLHMToSingleSampleArrayByteD3(Map<String, Object> lhm, int stride) {
+	public static ArrayByte.D3 writeMapToSingleSampleArrayByteD3(Map<String, Object> map, int stride) {
 		//samplesDim, markersDim, gtStrideDim
-		ArrayByte.D3 byteArray = new ArrayByte.D3(1, lhm.size(), stride);
+		ArrayByte.D3 byteArray = new ArrayByte.D3(1, map.size(), stride);
 		Index ima = byteArray.getIndex();
 
 		int markerCount = 0;
-		for (Object value : lhm.values()) {
+		for (Object value : map.values()) {
 			byte[] values = (byte[]) value;
 			byteArray.setByte(ima.set(0, markerCount, 0), values[0]); //1 Sample at a time, iterating through markers, first byte
 			byteArray.setByte(ima.set(0, markerCount, 1), values[1]); //1 Sample at a time, iterating through markers, second byte
@@ -745,12 +751,12 @@ public class Utils {
 		return byteArray;
 	}
 
-	public static ArrayByte.D3 writeLHMToSingleMarkerArrayByteD3(Map<String, Object> lhm, int stride) {
-		ArrayByte.D3 byteArray = new ArrayByte.D3(lhm.size(), 1, stride);
+	public static ArrayByte.D3 writeMapToSingleMarkerArrayByteD3(Map<String, Object> map, int stride) {
+		ArrayByte.D3 byteArray = new ArrayByte.D3(map.size(), 1, stride);
 		Index ima = byteArray.getIndex();
 
 		int markerCounter = 0;
-		for (Object value : lhm.values()) {
+		for (Object value : map.values()) {
 			byte[] values = (byte[]) value;
 			byteArray.setByte(ima.set(markerCounter, 0, 0), values[0]); //1 Marker at a time, iterating through samples, first byte
 			byteArray.setByte(ima.set(markerCounter, 0, 1), values[1]); //1 Marker at a time, iterating through samples, second byte
@@ -761,17 +767,17 @@ public class Utils {
 	}
 
 	/**
-	 * This writeLHMToCurrentMarkerArrayByteD3 has now been deprecated in favor
-	 * of writeLHMToSingleMarkerArrayByteD3 Method is probably INCORRECT!
+	 * This writeMapToCurrentMarkerArrayByteD3 has now been deprecated in favor
+	 * of writeMapToSingleMarkerArrayByteD3 Method is probably INCORRECT!
 	 *
-	 * @deprecated Use {@link #writeLHMToSingleMarkerArrayByteD3} instead
+	 * @deprecated Use {@link #writeMapToSingleMarkerArrayByteD3} instead
 	 */
-	public static ArrayByte.D3 writeLHMToCurrentMarkerArrayByteD3(Map<String, Object> lhm, int stride) {
-		ArrayByte.D3 byteArray = new ArrayByte.D3(1, lhm.size(), stride);
+	public static ArrayByte.D3 writeMapToCurrentMarkerArrayByteD3(Map<String, Object> map, int stride) {
+		ArrayByte.D3 byteArray = new ArrayByte.D3(1, map.size(), stride);
 		Index ima = byteArray.getIndex();
 
 		int markerCounter = 0;
-		for (Object value : lhm.values()) {
+		for (Object value : map.values()) {
 			byte[] values = (byte[]) value;
 			byteArray.setByte(ima.set(0, markerCounter, 0), values[0]); //1 Marker at a time, iterating through samples, first byte
 			byteArray.setByte(ima.set(0, markerCounter, 1), values[1]); //1 Marker at a time, iterating through samples, second byte
@@ -785,7 +791,7 @@ public class Utils {
 	//</editor-fold>
 	//<editor-fold defaultstate="collapsed" desc="netCDFJOs TO POJOs">
 	//<editor-fold defaultstate="collapsed" desc="ArrayChar.D2">
-	public static Map<String, Object> writeD2ArrayCharToLHMKeys(ArrayChar inputArray) {
+	public static Map<String, Object> writeD2ArrayCharToMapKeys(ArrayChar inputArray) {
 		Map<String, Object> result = new LinkedHashMap<String, Object>();
 //		StringBuilder key = new StringBuilder("");
 
@@ -807,7 +813,7 @@ public class Utils {
 		return result;
 	}
 
-	public static void writeD2ArrayCharToLHMValues(ArrayChar inputArray, Map<String, Object> map) {
+	public static void writeD2ArrayCharToMapValues(ArrayChar inputArray, Map<String, Object> map) {
 
 		int[] shape = inputArray.getShape();
 		Iterator<Entry<String, Object>> it = map.entrySet().iterator();
@@ -819,7 +825,7 @@ public class Utils {
 		}
 	}
 
-	public static List<String> writeD2ArrayCharToAL(ArrayChar inputArray) {
+	public static List<String> writeD2ArrayCharToList(ArrayChar inputArray) {
 		Long expectedSize = inputArray.getSize();
 		List<String> als = new ArrayList(expectedSize.intValue());
 
@@ -837,8 +843,8 @@ public class Utils {
 	//</editor-fold>
 
 	//<editor-fold defaultstate="collapsed" desc="ArrayChar.D1">
-	public static Map<String, Object> writeD1ArrayCharToLHMKeys(ArrayChar inputArray) {
-		Map<String, Object> resultLHM = new LinkedHashMap();
+	public static Map<String, Object> writeD1ArrayCharToMapKeys(ArrayChar inputArray) {
+		Map<String, Object> result = new LinkedHashMap();
 		StringBuilder key = new StringBuilder("");
 		Index index = inputArray.getIndex();
 
@@ -846,31 +852,29 @@ public class Utils {
 		for (int j = 0; j < shape[0]; j++) {
 			key.append(inputArray.getChar(index.set(j)));
 		}
-		resultLHM.put(key.toString().trim(), "");
+		result.put(key.toString().trim(), "");
 
-		return resultLHM;
+		return result;
 
 	}
 
-	public static Map<String, Object> writeD1ArrayCharToLHMValues(ArrayChar inputArray, Map<String, Object> lhm) {
+	public static void writeD1ArrayCharToMapValues(ArrayChar inputArray, Map<String, Object> map) {
 		StringBuilder value = new StringBuilder("");
 		Index index = inputArray.getIndex();
 
 		int[] shape = inputArray.getShape();
-		Iterator<String> it = lhm.keySet().iterator();
+		Iterator<String> it = map.keySet().iterator();
 		String key = it.next();
 
 		for (int j = 0; j < shape[0]; j++) {
 			value.append(inputArray.getChar(index.set(j)));
 		}
-		lhm.put(key, value.toString().trim());
-
-		return lhm;
+		map.put(key, value.toString().trim());
 	}
-
 	//</editor-fold>
+
 	//<editor-fold defaultstate="collapsed" desc="ArrayDouble.D1">
-	public static void writeD1ArrayDoubleToLHMValues(ArrayDouble inputArray, Map<String, Object> map) {
+	public static void writeD1ArrayDoubleToMapValues(ArrayDouble inputArray, Map<String, Object> map) {
 
 		int[] shape = inputArray.getShape();
 		Index index = inputArray.getIndex();
@@ -881,7 +885,7 @@ public class Utils {
 		}
 	}
 
-	public static List<Double> writeD1ArrayDoubleToAL(ArrayDouble.D1 inputArray) {
+	public static List<Double> writeD1ArrayDoubleToList(ArrayDouble.D1 inputArray) {
 		Long expectedSize = inputArray.getSize();
 		List<Double> alf = new ArrayList<Double>(expectedSize.intValue());
 
@@ -894,10 +898,10 @@ public class Utils {
 
 		return alf;
 	}
-
 	//</editor-fold>
+
 	//<editor-fold defaultstate="collapsed" desc="ArrayDouble.D2">
-	public static void writeD2ArrayDoubleToLHMValues(ArrayDouble.D2 inputArray, Map<String, Object> map) {
+	public static void writeD2ArrayDoubleToMapValues(ArrayDouble.D2 inputArray, Map<String, Object> map) {
 		int[] shape = inputArray.getShape();
 		Iterator<Entry<String, Object>> entries = map.entrySet().iterator();
 
@@ -910,7 +914,7 @@ public class Utils {
 		}
 	}
 
-	public static List<double[]> writeD2ArrayDoubleToAL(ArrayDouble.D2 inputArray) {
+	public static List<double[]> writeD2ArrayDoubleToList(ArrayDouble.D2 inputArray) {
 		Long expectedSize = inputArray.getSize();
 		List<double[]> alf = new ArrayList<double[]>(expectedSize.intValue());
 
@@ -927,7 +931,7 @@ public class Utils {
 	//</editor-fold>
 
 	//<editor-fold defaultstate="collapsed" desc="ArrayInt.D1">
-	public static void writeD1ArrayIntToLHMValues(ArrayInt inputArray, Map<String, Object> map) {
+	public static void writeD1ArrayIntToMapValues(ArrayInt inputArray, Map<String, Object> map) {
 
 		int[] shape = inputArray.getShape();
 		Index index = inputArray.getIndex();
@@ -938,7 +942,7 @@ public class Utils {
 		}
 	}
 
-	public static List<Integer> writeD1ArrayIntToAL(ArrayInt.D1 inputArray) {
+	public static List<Integer> writeD1ArrayIntToList(ArrayInt.D1 inputArray) {
 		Long expectedSize = inputArray.getSize();
 		List<Integer> ali = new ArrayList<Integer>(expectedSize.intValue());
 
@@ -951,10 +955,10 @@ public class Utils {
 
 		return ali;
 	}
-
 	//</editor-fold>
+
 	//<editor-fold defaultstate="collapsed" desc="ArrayInt.D2">
-	public static void writeD2ArrayIntToLHMValues(ArrayInt.D2 inputArray, Map<String, Object> map) {
+	public static void writeD2ArrayIntToMapValues(ArrayInt.D2 inputArray, Map<String, Object> map) {
 		int[] shape = inputArray.getShape();
 		Iterator<Entry<String, Object>> entries = map.entrySet().iterator();
 
@@ -966,10 +970,10 @@ public class Utils {
 			entries.next().setValue(values);
 		}
 	}
-
 	//</editor-fold>
+
 	//<editor-fold defaultstate="collapsed" desc="ArrayByte.D2">
-	public static void writeD2ArrayByteToLHMValues(ArrayByte inputArray, Map<String, Object> map) {
+	public static void writeD2ArrayByteToMapValues(ArrayByte inputArray, Map<String, Object> map) {
 
 		int[] shape = inputArray.getShape();
 		Iterator<Entry<String, Object>> entries = map.entrySet().iterator();
@@ -983,7 +987,7 @@ public class Utils {
 		}
 	}
 
-	public static List<byte[]> writeD2ArrayByteToAL(ArrayByte inputArray) {
+	public static List<byte[]> writeD2ArrayByteToList(ArrayByte inputArray) {
 		Long expectedSize = inputArray.getSize();
 		List<byte[]> als = new ArrayList<byte[]>(expectedSize.intValue());
 
@@ -1000,7 +1004,7 @@ public class Utils {
 	//</editor-fold>
 
 	//<editor-fold defaultstate="collapsed" desc="ArrayByte.D1">
-	public static void writeD1ArrayByteToLHMValues(ArrayByte inputArray, Map<String, Object> map) {
+	public static void writeD1ArrayByteToMapValues(ArrayByte inputArray, Map<String, Object> map) {
 		StringBuilder value = new StringBuilder("");
 		Index index = inputArray.getIndex();
 

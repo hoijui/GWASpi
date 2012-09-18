@@ -31,8 +31,8 @@ public class DumpNCMatrix {
 
 	public static void printSystemOutMatrix(String matrixPath) throws IOException, InvalidRangeException {
 		NetcdfFile ncfile = NetcdfFile.open(matrixPath);
-		Map<String, Object> markerIdSetLHM = new LinkedHashMap<String, Object>();
-		Map<String, Object> sampleIdSetLHM = new LinkedHashMap<String, Object>();
+		Map<String, Object> markerIdSetMap = new LinkedHashMap<String, Object>();
+		Map<String, Object> sampleIdSetMap = new LinkedHashMap<String, Object>();
 
 		FileWriter dumpFW = new FileWriter("/media/data/work/GWASpi/export/NCDump.txt"); // XXX system dependent path
 		BufferedWriter dumpBW = new BufferedWriter(dumpFW);
@@ -47,7 +47,7 @@ public class DumpNCMatrix {
 
 			if (dataType == DataType.CHAR) {
 				ArrayChar.D2 markerSetAC = (ArrayChar.D2) var.read("(0:" + (markerSetSize - 1) + ":1, 0:" + (varShape[1] - 1) + ":1)");
-				markerIdSetLHM = org.gwaspi.netCDF.operations.Utils.writeD2ArrayCharToLHMKeys(markerSetAC);
+				markerIdSetMap = org.gwaspi.netCDF.operations.Utils.writeD2ArrayCharToMapKeys(markerSetAC);
 			}
 		} catch (IOException ex) {
 			log.error("Cannot read data", ex);
@@ -64,7 +64,7 @@ public class DumpNCMatrix {
 			int sampleSetSize = markerSetDim.getLength();
 			ArrayChar.D2 sampleSetAC = (ArrayChar.D2) var.read("(0:" + (sampleSetSize - 1) + ":1, 0:" + (varShape[1] - 1) + ":1)");
 
-			sampleIdSetLHM = org.gwaspi.netCDF.operations.Utils.writeD2ArrayCharToLHMKeys(sampleSetAC);
+			sampleIdSetMap = org.gwaspi.netCDF.operations.Utils.writeD2ArrayCharToMapKeys(sampleSetAC);
 		} catch (IOException ex) {
 			log.error("Cannot read data", ex);
 		} catch (InvalidRangeException ex) {
@@ -73,15 +73,15 @@ public class DumpNCMatrix {
 
 		// BUILD MARKERSET HEADER
 		StringBuilder headerSB = new StringBuilder();
-		for (String markerId : markerIdSetLHM.keySet()) {
+		for (String markerId : markerIdSetMap.keySet()) {
 			headerSB.append("\t").append(markerId.toString());
 		}
 		dumpBW.append(headerSB.toString());
 		dumpBW.append("\n");
 
-		// ITERATE READ OF MARKERSETLHM BY SAMPLE
+		// ITERATE READ OF MARKERSETMap BY SAMPLE
 		int sampleNb = 0;
-		for (String sampleId : sampleIdSetLHM.keySet()) {
+		for (String sampleId : sampleIdSetMap.keySet()) {
 			StringBuilder sampleLineSB = new StringBuilder(sampleId.toString());
 
 			Variable genotypes = ncfile.findVariable(cNetCDF.Variables.VAR_GENOTYPES);
@@ -92,9 +92,9 @@ public class DumpNCMatrix {
 				ArrayChar.D3 gt_ACD3 = (ArrayChar.D3) genotypes.read("(" + sampleNb + ":" + sampleNb + ":1, 0:" + (varShape[1] - 1) + ":1, 0:" + (varShape[2] - 1) + ":1)");
 				ArrayChar.D2 gt_ACD2 = (ArrayChar.D2) gt_ACD3.reduce();
 
-				org.gwaspi.netCDF.operations.Utils.writeD2ArrayCharToLHMValues(gt_ACD2, markerIdSetLHM);
+				org.gwaspi.netCDF.operations.Utils.writeD2ArrayCharToMapValues(gt_ACD2, markerIdSetMap);
 
-				for (Object alleles : markerIdSetLHM.values()) {
+				for (Object alleles : markerIdSetMap.values()) {
 					sampleLineSB.append("\t").append(alleles);
 				}
 			} catch (IOException ex) {

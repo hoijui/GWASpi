@@ -71,7 +71,7 @@ public class BenchmarkReadCompareD3Array {
 
 							int[] shape = rdArray.getShape();
 							Index index = rdArray.getIndex();
-							Map<Object, String> stringLHM = new LinkedHashMap<Object, String>();
+							Map<Object, String> stringMap = new LinkedHashMap<Object, String>();
 							for (int i = 0; i < shape[0]; i++) {
 								//ArrayChar wrCharArray = new ArrayChar ( new int[] {1, shape[1]} );
 								//ArrayChar.D2.arraycopy(rdArray, i*shape[1], wrCharArray, 0, shape[1]);
@@ -82,7 +82,7 @@ public class BenchmarkReadCompareD3Array {
 								//byte[] values = (byte[]) rdByteArray.copyTo1DJavaArray();
 								byte[] values = (byte[]) rdByteArray.copyTo1DJavaArray();
 								for (int h = 0; h < values.length; h = h + 2) {
-									stringLHM.put(h / 2, Byte.toString(values[h]) + Byte.toString(values[h + 1]));
+									stringMap.put(h / 2, Byte.toString(values[h]) + Byte.toString(values[h + 1]));
 								}
 							}
 

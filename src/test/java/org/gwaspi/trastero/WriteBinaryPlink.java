@@ -39,14 +39,14 @@ public class WriteBinaryPlink {
 			data_out.write(27);
 			data_out.write(1);
 
-			Map<String, Byte[]> sampleSetLHM = new LinkedHashMap<String, Byte[]>();
-			sampleSetLHM.put("smpl01", new Byte[]{84, 84}); //65,84
-			sampleSetLHM.put("smpl02", new Byte[]{84, 84});
-			sampleSetLHM.put("smpl03", new Byte[]{84, 84});
-			sampleSetLHM.put("smpl04", new Byte[]{84, 84});
+			Map<String, Byte[]> sampleSetMap = new LinkedHashMap<String, Byte[]>();
+			sampleSetMap.put("smpl01", new Byte[]{84, 84}); //65,84
+			sampleSetMap.put("smpl02", new Byte[]{84, 84});
+			sampleSetMap.put("smpl03", new Byte[]{84, 84});
+			sampleSetMap.put("smpl04", new Byte[]{84, 84});
 
 			StringBuilder tetraGTs = new StringBuilder("");
-			for (Map.Entry<String, Byte[]> entry : sampleSetLHM.entrySet()) {
+			for (Map.Entry<String, Byte[]> entry : sampleSetMap.entrySet()) {
 				String key = entry.getKey();
 				Byte[] value = entry.getValue();
 

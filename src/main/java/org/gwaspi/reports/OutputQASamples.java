@@ -78,13 +78,13 @@ public class OutputQASamples {
 		String sep = cExport.separator_REPORTS;
 
 		try {
-			Map<String, Object> unsortedSamplesMissingRatLHM = GatherQASamplesData.loadSamplesQAMissingRatio(opId);
-			Map<String, Object> sortedSamplesMissingRatLHM = ReportManager.getSortedDescendingMarkerSetByDoubleValue(unsortedSamplesMissingRatLHM);
-			if (unsortedSamplesMissingRatLHM != null) {
-				unsortedSamplesMissingRatLHM.clear();
+			Map<String, Object> unsortedSamplesMissingRatMap = GatherQASamplesData.loadSamplesQAMissingRatio(opId);
+			Map<String, Object> sortedSamplesMissingRatMap = ReportManager.getSortedDescendingMarkerSetByDoubleValue(unsortedSamplesMissingRatMap);
+			if (unsortedSamplesMissingRatMap != null) {
+				unsortedSamplesMissingRatMap.clear();
 			}
 
-			Map<String, Object> samplesMissingRatLHM = GatherQASamplesData.loadSamplesQAHetZygRatio(opId);
+			Map<String, Object> samplesMissingRatMap = GatherQASamplesData.loadSamplesQAHetZygRatio(opId);
 
 			//WRITE HEADER OF FILE
 			FileWriter tempFW = new FileWriter(reportPath + samplMissOutName);
@@ -95,7 +95,7 @@ public class OutputQASamples {
 
 
 			//GET SAMPLE INFO FROM DB
-			for (Map.Entry<String, Object> entry : sortedSamplesMissingRatLHM.entrySet()) {
+			for (Map.Entry<String, Object> entry : sortedSamplesMissingRatMap.entrySet()) {
 				String tempSampleId = entry.getKey();
 				Map<String, Object> sampleInfo = org.gwaspi.netCDF.exporter.Utils.getCurrentSampleFormattedInfo(tempSampleId, poolId);
 
@@ -132,7 +132,7 @@ public class OutputQASamples {
 				sb.append(sep);
 				sb.append(entry.getValue().toString());
 				sb.append(sep);
-				sb.append(samplesMissingRatLHM.get(tempSampleId).toString());
+				sb.append(samplesMissingRatMap.get(tempSampleId).toString());
 				sb.append("\n");
 				tempBW.append(sb.toString());
 

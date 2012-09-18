@@ -36,34 +36,34 @@ public class OP_QAMarkers_opt {
 	public int processMatrix(int rdMatrixId) throws IOException, InvalidRangeException {
 		int resultOpId = Integer.MIN_VALUE;
 
-		Map<String, Object> wrMarkerSetMismatchStateLHM = new LinkedHashMap();
-		Map<String, Object> wrMarkerSetCensusLHM = new LinkedHashMap();
-		Map<String, Object> wrMarkerSetMissingRatioLHM = new LinkedHashMap();
-		Map<String, Object> wrMarkerSetKnownAllelesLHM = new LinkedHashMap();
+		Map<String, Object> wrMarkerSetMismatchStateMap = new LinkedHashMap();
+		Map<String, Object> wrMarkerSetCensusMap = new LinkedHashMap();
+		Map<String, Object> wrMarkerSetMissingRatioMap = new LinkedHashMap();
+		Map<String, Object> wrMarkerSetKnownAllelesMap = new LinkedHashMap();
 
 		MatrixMetadata rdMatrixMetadata = new MatrixMetadata(rdMatrixId);
 
 		NetcdfFile rdNcFile = NetcdfFile.open(rdMatrixMetadata.getPathToMatrix());
 
 		MarkerSet_opt rdMarkerSet = new MarkerSet_opt(rdMatrixMetadata.getStudyId(), rdMatrixId);
-		rdMarkerSet.initFullMarkerIdSetLHM();
-		//Map<String, Object> rdMarkerSetLHM = rdMarkerSet.markerIdSetLHM; //This to test heap usage of copying locally the LHM from markerset
+		rdMarkerSet.initFullMarkerIdSetMap();
+		//Map<String, Object> rdMarkerSetMap = rdMarkerSet.markerIdSetMap; //This to test heap usage of copying locally the Map from markerset
 
 		SampleSet rdSampleSet = new SampleSet(rdMatrixMetadata.getStudyId(), rdMatrixId);
-		Map<String, Object> rdSampleSetLHM = rdSampleSet.getSampleIdSetLHM();
+		Map<String, Object> rdSampleSetMap = rdSampleSet.getSampleIdSetMap();
 
 		NetcdfFileWriteable wrNcFile = null;
 		try {
 			// CREATE netCDF-3 FILE
 			String description = "Marker Quality Assurance on "
 					+ rdMatrixMetadata.getMatrixFriendlyName()
-					+ "\nMarkers: " + rdMarkerSet.getMarkerIdSetLHM().size()
+					+ "\nMarkers: " + rdMarkerSet.getMarkerIdSetMap().size()
 					+ "\nStarted at: " + org.gwaspi.global.Utils.getShortDateTimeAsString();
 			OperationFactory wrOPHandler = new OperationFactory(rdMatrixMetadata.getStudyId(),
 					"Marker QA", // friendly name
 					description, // description
-					rdMarkerSet.getMarkerIdSetLHM().size(),
-					rdSampleSetLHM.size(),
+					rdMarkerSet.getMarkerIdSetMap().size(),
+					rdSampleSetMap.size(),
 					0,
 					cNetCDF.Defaults.OPType.MARKER_QA.toString(),
 					rdMatrixMetadata.getMatrixId(), // Parent matrixId
@@ -80,7 +80,7 @@ public class OP_QAMarkers_opt {
 
 			//<editor-fold defaultstate="collapsed" desc="METADATA WRITER">
 			// MARKERSET MARKERID
-			ArrayChar.D2 markersD2 = Utils.writeLHMKeysToD2ArrayChar(rdMarkerSet.getMarkerIdSetLHM(), cNetCDF.Strides.STRIDE_MARKER_NAME);
+			ArrayChar.D2 markersD2 = Utils.writeMapKeysToD2ArrayChar(rdMarkerSet.getMarkerIdSetMap(), cNetCDF.Strides.STRIDE_MARKER_NAME);
 			int[] markersOrig = new int[]{0, 0};
 			try {
 				wrNcFile.write(cNetCDF.Variables.VAR_OPSET, markersOrig, markersD2);
@@ -91,11 +91,11 @@ public class OP_QAMarkers_opt {
 			}
 
 			// MARKERSET RSID
-			rdMarkerSet.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_RSID);
-			Utils.saveCharLHMValueToWrMatrix(wrNcFile, rdMarkerSet.getMarkerIdSetLHM(), cNetCDF.Variables.VAR_MARKERS_RSID, cNetCDF.Strides.STRIDE_MARKER_NAME);
+			rdMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_RSID);
+			Utils.saveCharMapValueToWrMatrix(wrNcFile, rdMarkerSet.getMarkerIdSetMap(), cNetCDF.Variables.VAR_MARKERS_RSID, cNetCDF.Strides.STRIDE_MARKER_NAME);
 
 			// WRITE SAMPLESET TO MATRIX FROM SAMPLES ARRAYLIST
-			ArrayChar.D2 samplesD2 = org.gwaspi.netCDF.operations.Utils.writeLHMKeysToD2ArrayChar(rdSampleSetLHM, cNetCDF.Strides.STRIDE_SAMPLE_NAME);
+			ArrayChar.D2 samplesD2 = org.gwaspi.netCDF.operations.Utils.writeMapKeysToD2ArrayChar(rdSampleSetMap, cNetCDF.Strides.STRIDE_SAMPLE_NAME);
 
 			int[] sampleOrig = new int[]{0, 0};
 			try {
@@ -110,22 +110,22 @@ public class OP_QAMarkers_opt {
 
 			//<editor-fold defaultstate="collapsed" desc="PROCESSOR">
 			// INIT MARKER AND SAMPLE INFO
-			rdMarkerSet.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
+			rdMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
 
 			List<Map<String, Object>> rsSamplesInfo = org.gwaspi.samples.SampleManager.getAllSampleInfoFromDBByPoolID(rdMatrixMetadata.getStudyId());
-			Map<String, Object> samplesInfoLHM = new LinkedHashMap();
+			Map<String, Object> samplesInfoMap = new LinkedHashMap();
 			int count = 0;
 			while (count < rsSamplesInfo.size()) {
 				// PREVENT PHANTOM-DB READS EXCEPTIONS
 				if (!rsSamplesInfo.isEmpty() && rsSamplesInfo.get(count).size() == cDBSamples.T_CREATE_SAMPLES_INFO.length) {
 					String tempSampleId = rsSamplesInfo.get(count).get(cDBSamples.f_SAMPLE_ID).toString();
-					if (rdSampleSetLHM.containsKey(tempSampleId)) {
+					if (rdSampleSetMap.containsKey(tempSampleId)) {
 						String sex = "0";
 						Object tmpSex = rsSamplesInfo.get(count).get(cDBSamples.f_SEX);
 						if (tmpSex != null) {
 							sex = tmpSex.toString();
 						}
-						samplesInfoLHM.put(tempSampleId, sex);
+						samplesInfoMap.put(tempSampleId, sex);
 					}
 				}
 				count++;
@@ -134,7 +134,7 @@ public class OP_QAMarkers_opt {
 
 			// Iterate through markerset, take it marker by marker
 			int markerNb = 0;
-			for (Map.Entry<String, Object> entry : rdMarkerSet.getMarkerIdSetLHM().entrySet()) {
+			for (Map.Entry<String, Object> entry : rdMarkerSet.getMarkerIdSetMap().entrySet()) {
 				String markerId = entry.getKey();
 
 				Map<Object, Object> knownAlleles = new LinkedHashMap();
@@ -143,12 +143,12 @@ public class OP_QAMarkers_opt {
 				Integer missingCount = 0;
 
 				// Get a sampleset-full of GTs
-				rdSampleSetLHM = rdSampleSet.readAllSamplesGTsFromCurrentMarkerToLHM(rdNcFile, rdSampleSetLHM, markerNb);
-				for (Map.Entry<String, Object> sampleEntry : rdSampleSetLHM.entrySet()) {
+				rdSampleSetMap = rdSampleSet.readAllSamplesGTsFromCurrentMarkerToMap(rdNcFile, rdSampleSetMap, markerNb);
+				for (Map.Entry<String, Object> sampleEntry : rdSampleSetMap.entrySet()) {
 					String sampleId = sampleEntry.getKey();
 
 					//<editor-fold defaultstate="expanded" desc="THE DECIDER">
-					CensusDecision decision = CensusDecision.getDecisionByChrAndSex(sampleEntry.getValue().toString(), samplesInfoLHM.get(sampleId).toString());
+					CensusDecision decision = CensusDecision.getDecisionByChrAndSex(sampleEntry.getValue().toString(), samplesInfoMap.get(sampleId).toString());
 					//</editor-fold>
 
 					//<editor-fold defaultstate="collapsed" desc="SUMMING SAMPLESET GENOTYPES">
@@ -326,8 +326,8 @@ public class OP_QAMarkers_opt {
 					census[2] = obsAllaa; // all
 					census[3] = missingCount; // all
 
-					wrMarkerSetCensusLHM.put(markerId, census);
-					wrMarkerSetMismatchStateLHM.put(markerId, cNetCDF.Defaults.DEFAULT_MISMATCH_NO);
+					wrMarkerSetCensusMap.put(markerId, census);
+					wrMarkerSetMismatchStateMap.put(markerId, cNetCDF.Defaults.DEFAULT_MISMATCH_NO);
 
 					if (orderedAlleles[0] == null && orderedAlleles[2] != null) {
 						orderedAlleles[0] = orderedAlleles[2];
@@ -339,21 +339,21 @@ public class OP_QAMarkers_opt {
 						orderedAlleles[0] = '0';
 						orderedAlleles[2] = '0';
 					}
-					wrMarkerSetKnownAllelesLHM.put(markerId, orderedAlleles);
+					wrMarkerSetKnownAllelesMap.put(markerId, orderedAlleles);
 				} else {
 					int[] census = new int[4];
-					wrMarkerSetCensusLHM.put(markerId, census);
-					wrMarkerSetMismatchStateLHM.put(markerId, cNetCDF.Defaults.DEFAULT_MISMATCH_YES);
+					wrMarkerSetCensusMap.put(markerId, census);
+					wrMarkerSetMismatchStateMap.put(markerId, cNetCDF.Defaults.DEFAULT_MISMATCH_YES);
 
 					orderedAlleles[0] = '0';
 					orderedAlleles[1] = 0d;
 					orderedAlleles[2] = '0';
 					orderedAlleles[3] = 0d;
-					wrMarkerSetKnownAllelesLHM.put(markerId, orderedAlleles);
+					wrMarkerSetKnownAllelesMap.put(markerId, orderedAlleles);
 				}
 
 				double missingRatio = (double) missingCount / rdSampleSet.getSampleSetSize();
-				wrMarkerSetMissingRatioLHM.put(markerId, missingRatio);
+				wrMarkerSetMissingRatioMap.put(markerId, missingRatio);
 
 				markerNb++;
 				if (markerNb == 1) {
@@ -366,21 +366,21 @@ public class OP_QAMarkers_opt {
 
 			//<editor-fold defaultstate="collapsed" desc="QA DATA WRITER">
 			// MISSING RATIO
-			Utils.saveDoubleLHMD1ToWrMatrix(wrNcFile, wrMarkerSetMissingRatioLHM, cNetCDF.Census.VAR_OP_MARKERS_MISSINGRAT);
+			Utils.saveDoubleMapD1ToWrMatrix(wrNcFile, wrMarkerSetMissingRatioMap, cNetCDF.Census.VAR_OP_MARKERS_MISSINGRAT);
 
 			// MISMATCH STATE
-			Utils.saveIntLHMD1ToWrMatrix(wrNcFile, wrMarkerSetMismatchStateLHM, cNetCDF.Census.VAR_OP_MARKERS_MISMATCHSTATE);
+			Utils.saveIntMapD1ToWrMatrix(wrNcFile, wrMarkerSetMismatchStateMap, cNetCDF.Census.VAR_OP_MARKERS_MISMATCHSTATE);
 
 			// KNOWN ALLELES
-			//Utils.saveCharLHMValueToWrMatrix(wrNcFile, wrMarkerSetKnownAllelesLHM, cNetCDF.Census.VAR_OP_MARKERS_KNOWNALLELES, cNetCDF.Strides.STRIDE_GT);
-			Utils.saveCharLHMItemToWrMatrix(wrNcFile, wrMarkerSetKnownAllelesLHM, cNetCDF.Census.VAR_OP_MARKERS_MAJALLELES, 0, cNetCDF.Strides.STRIDE_GT / 2);
-			Utils.saveDoubleLHMItemD1ToWrMatrix(wrNcFile, wrMarkerSetKnownAllelesLHM, 1, cNetCDF.Census.VAR_OP_MARKERS_MAJALLELEFRQ);
-			Utils.saveCharLHMItemToWrMatrix(wrNcFile, wrMarkerSetKnownAllelesLHM, cNetCDF.Census.VAR_OP_MARKERS_MINALLELES, 2, cNetCDF.Strides.STRIDE_GT / 2);
-			Utils.saveDoubleLHMItemD1ToWrMatrix(wrNcFile, wrMarkerSetKnownAllelesLHM, 3, cNetCDF.Census.VAR_OP_MARKERS_MINALLELEFRQ);
+			//Utils.saveCharMapValueToWrMatrix(wrNcFile, wrMarkerSetKnownAllelesMap, cNetCDF.Census.VAR_OP_MARKERS_KNOWNALLELES, cNetCDF.Strides.STRIDE_GT);
+			Utils.saveCharMapItemToWrMatrix(wrNcFile, wrMarkerSetKnownAllelesMap, cNetCDF.Census.VAR_OP_MARKERS_MAJALLELES, 0, cNetCDF.Strides.STRIDE_GT / 2);
+			Utils.saveDoubleMapItemD1ToWrMatrix(wrNcFile, wrMarkerSetKnownAllelesMap, 1, cNetCDF.Census.VAR_OP_MARKERS_MAJALLELEFRQ);
+			Utils.saveCharMapItemToWrMatrix(wrNcFile, wrMarkerSetKnownAllelesMap, cNetCDF.Census.VAR_OP_MARKERS_MINALLELES, 2, cNetCDF.Strides.STRIDE_GT / 2);
+			Utils.saveDoubleMapItemD1ToWrMatrix(wrNcFile, wrMarkerSetKnownAllelesMap, 3, cNetCDF.Census.VAR_OP_MARKERS_MINALLELEFRQ);
 
 			// ALL CENSUS
 			int[] columns = new int[]{0, 1, 2, 3};
-			Utils.saveIntLHMD2ToWrMatrix(wrNcFile, wrMarkerSetCensusLHM, columns, cNetCDF.Census.VAR_OP_MARKERS_CENSUSALL);
+			Utils.saveIntMapD2ToWrMatrix(wrNcFile, wrMarkerSetCensusMap, columns, cNetCDF.Census.VAR_OP_MARKERS_CENSUSALL);
 			//</editor-fold>
 
 			resultOpId = wrOPHandler.getResultOPId();

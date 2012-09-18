@@ -133,7 +133,7 @@ public class SwingDeleterItemList extends SwingWorkerItemList {
 		}
 	}
 
-	public static List<SwingDeleterItem> getSwingDeleterItemsAL() {
+	public static List<SwingDeleterItem> getSwingDeleterItems() {
 		return swingDeleterItemsAL;
 	}
 
@@ -176,7 +176,7 @@ public class SwingDeleterItemList extends SwingWorkerItemList {
 
 	public static int getSwingDeleterPendingItemsNb() {
 		int result = 0;
-		for (SwingDeleterItem currentSdi : SwingDeleterItemList.getSwingDeleterItemsAL()) {
+		for (SwingDeleterItem currentSdi : SwingDeleterItemList.getSwingDeleterItems()) {
 			if (currentSdi.queueState.equals(QueueState.PROCESSING)) {
 				result++;
 			}

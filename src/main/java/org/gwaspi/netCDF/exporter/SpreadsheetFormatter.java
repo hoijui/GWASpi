@@ -41,7 +41,7 @@ public class SpreadsheetFormatter implements Formatter {
 		boolean result = false;
 		String sep = cExport.separator_REPORTS;
 		NetcdfFile rdNcFile = NetcdfFile.open(rdMatrixMetadata.getPathToMatrix());
-		rdMarkerSet.initFullMarkerIdSetLHM();
+		rdMarkerSet.initFullMarkerIdSetMap();
 
 		try {
 			//<editor-fold defaultstate="collapsed" desc="SPREADSHEET FILE">
@@ -50,7 +50,7 @@ public class SpreadsheetFormatter implements Formatter {
 
 			// HEADER CONTAINING MARKER IDs
 			StringBuilder line = new StringBuilder();
-			for (String key : rdMarkerSet.getMarkerIdSetLHM().keySet()) {
+			for (String key : rdMarkerSet.getMarkerIdSetMap().keySet()) {
 				line.append(sep);
 				line.append(key);
 			}
@@ -62,9 +62,9 @@ public class SpreadsheetFormatter implements Formatter {
 			int sampleNb = 0;
 			for (String sampleId : rdSampleSetMap.keySet()) {
 				// Iterate through all markers
-				rdMarkerSet.fillGTsForCurrentSampleIntoInitLHM(sampleNb);
+				rdMarkerSet.fillGTsForCurrentSampleIntoInitMap(sampleNb);
 				StringBuilder genotypes = new StringBuilder();
-				for (Object value : rdMarkerSet.getMarkerIdSetLHM().values()) {
+				for (Object value : rdMarkerSet.getMarkerIdSetMap().values()) {
 					byte[] tempGT = (byte[]) value;
 					genotypes.append(sep);
 					genotypes.append(new String(new byte[]{tempGT[0]}));

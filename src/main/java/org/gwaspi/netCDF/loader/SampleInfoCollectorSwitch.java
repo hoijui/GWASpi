@@ -36,22 +36,22 @@ public class SampleInfoCollectorSwitch {
 			String altSampleInfoPath2)
 			throws IOException
 	{
-		Map<String, Object> sampleInfoLHM = new LinkedHashMap<String, Object>();
+		Map<String, Object> sampleInfoMap = new LinkedHashMap<String, Object>();
 		Object[] dummySampleValues = org.gwaspi.samples.DummySampleInfo.createDummySampleValues();
 
 		switch (cImport.ImportFormat.compareTo(format)) {
 			case Affymetrix_GenomeWide6:
 				log.info(Text.Matrix.scanAffectionStandby);
 				if (dummySamples) {
-					sampleInfoLHM = SamplesParser.scanAffymetrixSampleInfo(altSampleInfoPath2);
+					sampleInfoMap = SamplesParser.scanAffymetrixSampleInfo(altSampleInfoPath2);
 				} else {
-					Map<String, Object> dummySamplesInfoLHM = SamplesParser.scanAffymetrixSampleInfo(altSampleInfoPath2);
-					sampleInfoLHM = SamplesParser.scanGwaspiSampleInfo(sampleInfoPath);
+					Map<String, Object> dummySamplesInfoMap = SamplesParser.scanAffymetrixSampleInfo(altSampleInfoPath2);
+					sampleInfoMap = SamplesParser.scanGwaspiSampleInfo(sampleInfoPath);
 
-					for (String sampleId : dummySamplesInfoLHM.keySet()) {
-						if (!sampleInfoLHM.containsKey(sampleId)) {
+					for (String sampleId : dummySamplesInfoMap.keySet()) {
+						if (!sampleInfoMap.containsKey(sampleId)) {
 							dummySampleValues[1] = sampleId.toString();
-							sampleInfoLHM.put(sampleId, dummySampleValues);
+							sampleInfoMap.put(sampleId, dummySampleValues);
 							log.warn(Text.Study.warnMissingSampleInfo);
 							log.warn("SampleID: {}", sampleId.toString());
 						}
@@ -62,14 +62,14 @@ public class SampleInfoCollectorSwitch {
 			case PLINK:
 				log.info(Text.Matrix.scanAffectionStandby);
 				if (dummySamples) {
-					sampleInfoLHM = SamplesParser.scanPlinkStandardSampleInfo(altSampleInfoPath2);
+					sampleInfoMap = SamplesParser.scanPlinkStandardSampleInfo(altSampleInfoPath2);
 				} else {
-					Map<String, Object> dummySamplesInfoLHM = SamplesParser.scanPlinkStandardSampleInfo(altSampleInfoPath2);
-					sampleInfoLHM = SamplesParser.scanGwaspiSampleInfo(sampleInfoPath);
-					for (String sampleId : dummySamplesInfoLHM.keySet()) {
-						if (!sampleInfoLHM.containsKey(sampleId)) {
+					Map<String, Object> dummySamplesInfoMap = SamplesParser.scanPlinkStandardSampleInfo(altSampleInfoPath2);
+					sampleInfoMap = SamplesParser.scanGwaspiSampleInfo(sampleInfoPath);
+					for (String sampleId : dummySamplesInfoMap.keySet()) {
+						if (!sampleInfoMap.containsKey(sampleId)) {
 							dummySampleValues[1] = sampleId.toString();
-							sampleInfoLHM.put(sampleId, dummySampleValues);
+							sampleInfoMap.put(sampleId, dummySampleValues);
 							log.warn(Text.Study.warnMissingSampleInfo);
 							log.warn("SampleID: {}", sampleId.toString());
 						}
@@ -83,23 +83,23 @@ public class SampleInfoCollectorSwitch {
 				String header = inputBufferReader.readLine();
 				String[] cVals = header.split(cImport.Separators.separators_CommaSpaceTab_rgxp);
 				if (cVals.length == 6) { // It's a FAM file
-					sampleInfoLHM = SamplesParser.scanPlinkFAMSampleInfo(sampleInfoPath);
+					sampleInfoMap = SamplesParser.scanPlinkFAMSampleInfo(sampleInfoPath);
 				} else { // It's a SampleInfo file
-					sampleInfoLHM = SamplesParser.scanGwaspiSampleInfo(sampleInfoPath);
+					sampleInfoMap = SamplesParser.scanGwaspiSampleInfo(sampleInfoPath);
 				}
 				break;
 			case HAPMAP:
 				log.info(Text.Matrix.scanAffectionStandby);
 				if (dummySamples) {
-					sampleInfoLHM = SamplesParser.scanHapmapSampleInfo(altSampleInfoPath1);
+					sampleInfoMap = SamplesParser.scanHapmapSampleInfo(altSampleInfoPath1);
 					// NO AFFECTION STATE AVAILABLE
 				} else {
-					Map<String, Object> dummySamplesInfoLHM = SamplesParser.scanHapmapSampleInfo(altSampleInfoPath1);
-					sampleInfoLHM = SamplesParser.scanGwaspiSampleInfo(sampleInfoPath);
-					for (String sampleId : dummySamplesInfoLHM.keySet()) {
-						if (!sampleInfoLHM.containsKey(sampleId)) {
+					Map<String, Object> dummySamplesInfoMap = SamplesParser.scanHapmapSampleInfo(altSampleInfoPath1);
+					sampleInfoMap = SamplesParser.scanGwaspiSampleInfo(sampleInfoPath);
+					for (String sampleId : dummySamplesInfoMap.keySet()) {
+						if (!sampleInfoMap.containsKey(sampleId)) {
 							dummySampleValues[1] = sampleId.toString();
-							sampleInfoLHM.put(sampleId, dummySampleValues);
+							sampleInfoMap.put(sampleId, dummySampleValues);
 							log.warn(Text.Study.warnMissingSampleInfo);
 							log.warn("SampleID: {}", sampleId.toString());
 						}
@@ -109,14 +109,14 @@ public class SampleInfoCollectorSwitch {
 			case BEAGLE:
 				log.info(Text.Matrix.scanAffectionStandby);
 				if (dummySamples) {
-					sampleInfoLHM = SamplesParser.scanBeagleSampleInfo(altSampleInfoPath1);
+					sampleInfoMap = SamplesParser.scanBeagleSampleInfo(altSampleInfoPath1);
 				} else {
-					Map<String, Object> dummySamplesInfoLHM = SamplesParser.scanBeagleSampleInfo(altSampleInfoPath1);
-					sampleInfoLHM = SamplesParser.scanGwaspiSampleInfo(sampleInfoPath);
-					for (String sampleId : dummySamplesInfoLHM.keySet()) {
-						if (!sampleInfoLHM.containsKey(sampleId)) {
+					Map<String, Object> dummySamplesInfoMap = SamplesParser.scanBeagleSampleInfo(altSampleInfoPath1);
+					sampleInfoMap = SamplesParser.scanGwaspiSampleInfo(sampleInfoPath);
+					for (String sampleId : dummySamplesInfoMap.keySet()) {
+						if (!sampleInfoMap.containsKey(sampleId)) {
 							dummySampleValues[1] = sampleId.toString();
-							sampleInfoLHM.put(sampleId, dummySampleValues);
+							sampleInfoMap.put(sampleId, dummySampleValues);
 							log.warn(Text.Study.warnMissingSampleInfo);
 							log.warn("SampleID: {}", sampleId.toString());
 						}
@@ -126,15 +126,15 @@ public class SampleInfoCollectorSwitch {
 			case HGDP1:
 				log.info(Text.Matrix.scanAffectionStandby);
 				if (dummySamples) {
-					sampleInfoLHM = SamplesParser.scanHGDP1SampleInfo(altSampleInfoPath1);
+					sampleInfoMap = SamplesParser.scanHGDP1SampleInfo(altSampleInfoPath1);
 					// NO AFFECTION STATE AVAILABLE
 				} else {
-					Map<String, Object> dummySamplesInfoLHM = SamplesParser.scanHGDP1SampleInfo(altSampleInfoPath1);
-					sampleInfoLHM = SamplesParser.scanGwaspiSampleInfo(sampleInfoPath);
-					for (String sampleId : dummySamplesInfoLHM.keySet()) {
-						if (!sampleInfoLHM.containsKey(sampleId)) {
+					Map<String, Object> dummySamplesInfoMap = SamplesParser.scanHGDP1SampleInfo(altSampleInfoPath1);
+					sampleInfoMap = SamplesParser.scanGwaspiSampleInfo(sampleInfoPath);
+					for (String sampleId : dummySamplesInfoMap.keySet()) {
+						if (!sampleInfoMap.containsKey(sampleId)) {
 							dummySampleValues[1] = sampleId.toString();
-							sampleInfoLHM.put(sampleId, dummySampleValues);
+							sampleInfoMap.put(sampleId, dummySampleValues);
 							log.warn(Text.Study.warnMissingSampleInfo);
 							log.warn("SampleID: {}", sampleId.toString());
 						}
@@ -142,20 +142,20 @@ public class SampleInfoCollectorSwitch {
 				}
 				break;
 			case GWASpi:
-				sampleInfoLHM = SamplesParser.scanGwaspiSampleInfo(sampleInfoPath);
+				sampleInfoMap = SamplesParser.scanGwaspiSampleInfo(sampleInfoPath);
 				break;
 			case Illumina_LGEN:
 				log.info(Text.Matrix.scanAffectionStandby);
 				if (dummySamples) {
 					//gwasParams = MoreLoadInfoByFormat.showMoreInfoByFormat_Modal(cmb_Format.getSelectedItem().toString());
-					sampleInfoLHM = SamplesParser.scanIlluminaLGENSampleInfo(altSampleInfoPath2);
+					sampleInfoMap = SamplesParser.scanIlluminaLGENSampleInfo(altSampleInfoPath2);
 				} else {
-					Map<String, Object> dummySamplesInfoLHM = SamplesParser.scanIlluminaLGENSampleInfo(altSampleInfoPath2);
-					sampleInfoLHM = SamplesParser.scanGwaspiSampleInfo(sampleInfoPath);
-					for (String sampleId : dummySamplesInfoLHM.keySet()) {
-						if (!sampleInfoLHM.containsKey(sampleId)) {
+					Map<String, Object> dummySamplesInfoMap = SamplesParser.scanIlluminaLGENSampleInfo(altSampleInfoPath2);
+					sampleInfoMap = SamplesParser.scanGwaspiSampleInfo(sampleInfoPath);
+					for (String sampleId : dummySamplesInfoMap.keySet()) {
+						if (!sampleInfoMap.containsKey(sampleId)) {
 							dummySampleValues[1] = sampleId.toString();
-							sampleInfoLHM.put(sampleId, dummySampleValues);
+							sampleInfoMap.put(sampleId, dummySampleValues);
 							log.warn(Text.Study.warnMissingSampleInfo);
 							log.warn("SampleID: {}", sampleId.toString());
 						}
@@ -163,17 +163,17 @@ public class SampleInfoCollectorSwitch {
 				}
 				break;
 			case Sequenom:
-				sampleInfoLHM = SamplesParser.scanGwaspiSampleInfo(sampleInfoPath);
+				sampleInfoMap = SamplesParser.scanGwaspiSampleInfo(sampleInfoPath);
 				break;
 			default:
 		}
 
-		return sampleInfoLHM;
+		return sampleInfoMap;
 	}
 
-	public static Set<String> collectAffectionStates(Map<String, Object> sampleInfoLHM) {
+	public static Set<String> collectAffectionStates(Map<String, Object> sampleInfoMap) {
 		Set<String> affectionStates = new HashSet<String>();
-		for (Object value : sampleInfoLHM.values()) {
+		for (Object value : sampleInfoMap.values()) {
 			Object[] values = (Object[]) value;
 			String affection = values[Plink_Standard.ped_affection].toString();
 			if (!affection.equals("1") && !affection.equals("2")) {

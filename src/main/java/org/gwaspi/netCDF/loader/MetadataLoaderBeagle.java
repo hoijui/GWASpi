@@ -40,7 +40,7 @@ public class MetadataLoaderBeagle implements MetadataLoader {
 
 		org.gwaspi.global.Utils.sysoutStart("initilaizing Marker info");
 
-		Map<String, Object> markerMetadataLHM = new LinkedHashMap<String, Object>();
+		Map<String, Object> markerMetadataMap = new LinkedHashMap<String, Object>();
 		for (Map.Entry<String, String> entry : tempTM.entrySet()) {
 			// chr;pos;markerId
 			String[] keyValues = entry.getKey().split(cNetCDF.Defaults.TMP_SEPARATOR);
@@ -61,12 +61,12 @@ public class MetadataLoaderBeagle implements MetadataLoader {
 			markerInfo[3] = pos; // 3 => pos
 			markerInfo[4] = valValues[1]; // 4 => alleles
 
-			markerMetadataLHM.put(keyValues[2], markerInfo);
+			markerMetadataMap.put(keyValues[2], markerInfo);
 		}
 
-		String description = "Generated sorted MarkerIdSet LHM sorted by chromosome and position";
+		String description = "Generated sorted MarkerIdSet Map sorted by chromosome and position";
 		MetadataLoaderPlink.logAsWhole(startTime, markerFilePath, description, studyId);
-		return markerMetadataLHM;
+		return markerMetadataMap;
 	}
 
 	private SortedMap<String, String> parseAndSortMarkerFile(String path) throws IOException {

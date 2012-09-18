@@ -69,7 +69,7 @@ public final class SampleQAHetzygPlotZoom extends JPanel {
 	private int opId;
 	private Operation op;
 	private OperationMetadata rdOPMetadata;
-	private Map<String, Object> labelerLHM;
+	private Map<String, Object> labelerMap;
 	private MatrixMetadata rdMatrixMetadata;
 	private String currentMarkerId;
 	private long centerPhysPos;
@@ -427,12 +427,12 @@ public final class SampleQAHetzygPlotZoom extends JPanel {
 		return chart;
 	}
 
-	public Map<String, Object> getLabelerLHM() {
-		return labelerLHM;
+	public Map<String, Object> getLabelerMap() {
+		return labelerMap;
 	}
 
-	public void setLabelerLHM(Map<String, Object> labelerLHM) {
-		this.labelerLHM = labelerLHM;
+	public void setLabelerMap(Map<String, Object> labelerMap) {
+		this.labelerMap = labelerMap;
 	}
 
 	private class MyXYToolTipGenerator extends StandardXYToolTipGenerator
@@ -455,14 +455,14 @@ public final class SampleQAHetzygPlotZoom extends JPanel {
 				localizer.append(missingRatValue);
 				localizer.append("_");
 				localizer.append(hetzygValue);
-				for (Map.Entry<String, Object> entry : getLabelerLHM().entrySet()) {
+				for (Map.Entry<String, Object> entry : getLabelerMap().entrySet()) {
 					if (entry.getKey().contains(localizer.toString())) {
 						toolTip.append("Sample ID: ").append(entry.getValue().toString());
 						toolTip.append("<br>");
 					}
 				}
-//				if(labelerLHM.containsKey(localizer)){
-//					toolTip.append(labelerLHM.get(localizer));
+//				if(labelerMap.containsKey(localizer)){
+//					toolTip.append(labelerMap.get(localizer));
 //					toolTip.append("<br>");
 //				}
 
@@ -513,7 +513,7 @@ public final class SampleQAHetzygPlotZoom extends JPanel {
 				localizer.append("_");
 				localizer.append(hetzygValue);
 				if (hetzygValue > this.hetzygThreshold || missingRatValue > this.missingThreshold) {
-					for (Map.Entry<String, Object> entry : getLabelerLHM().entrySet()) {
+					for (Map.Entry<String, Object> entry : getLabelerMap().entrySet()) {
 						if (entry.getKey().contains(localizer.toString())) {
 							rsLabel = entry.getValue().toString();
 						}

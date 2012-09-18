@@ -53,7 +53,7 @@ public class CurrentStudyPanel extends JPanel {
 
 	// Variables declaration
 	private Study study;
-	private Map<Integer, Object> treeChildrenLHM = new LinkedHashMap<Integer, Object>();
+	private Map<Integer, Object> treeChildrenMap = new LinkedHashMap<Integer, Object>();
 	private JButton btn_DeleteMatrix;
 	private JButton btn_LoadGenotypes;
 	private JButton btn_UpdateSampleInfo;
@@ -80,7 +80,7 @@ public class CurrentStudyPanel extends JPanel {
 
 		study = new org.gwaspi.model.Study(_studyId);
 		DefaultMutableTreeNode matrixNode = (DefaultMutableTreeNode) GWASpiExplorerPanel.getSingleton().getTree().getLastSelectedPathComponent();
-		treeChildrenLHM = NodeToPathCorrespondence.buildNodeToPathCorrespondence(matrixNode, false);
+		treeChildrenMap = NodeToPathCorrespondence.buildNodeToPathCorrespondence(matrixNode, false);
 
 		pnl_StudyDesc = new JPanel();
 		scrl_Desc = new JScrollPane();

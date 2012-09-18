@@ -31,41 +31,41 @@ public class OP_QASamples_opt {
 	public int processMatrix(int rdMatrixId) throws IOException, InvalidRangeException {
 		int resultOpId = Integer.MIN_VALUE;
 
-		Map<String, Object> wrSampleSetMissingCountLHM = new LinkedHashMap();
-		Map<String, Object> wrSampleSetMissingRatioLHM = new LinkedHashMap();
-		Map<String, Object> wrSampleSetHetzyRatioLHM = new LinkedHashMap();
+		Map<String, Object> wrSampleSetMissingCountMap = new LinkedHashMap();
+		Map<String, Object> wrSampleSetMissingRatioMap = new LinkedHashMap();
+		Map<String, Object> wrSampleSetHetzyRatioMap = new LinkedHashMap();
 
 		MatrixMetadata rdMatrixMetadata = new MatrixMetadata(rdMatrixId);
 
 		NetcdfFile rdNcFile = NetcdfFile.open(rdMatrixMetadata.getPathToMatrix());
 
 		MarkerSet_opt rdMarkerSet = new MarkerSet_opt(rdMatrixMetadata.getStudyId(), rdMatrixId);
-		rdMarkerSet.initFullMarkerIdSetLHM();
+		rdMarkerSet.initFullMarkerIdSetMap();
 
-		Map<String, Object> rdChrSetLHM = rdMarkerSet.getChrInfoSetLHM();
+		Map<String, Object> rdChrSetMap = rdMarkerSet.getChrInfoSetMap();
 
-		//Map<String, Object> rdMarkerSetLHM = rdMarkerSet.markerIdSetLHM; // This to test heap usage of copying locally the LHM from markerset
+		//Map<String, Object> rdMarkerSetMap = rdMarkerSet.markerIdSetMap; // This to test heap usage of copying locally the Map from markerset
 
 		SampleSet rdSampleSet = new SampleSet(rdMatrixMetadata.getStudyId(), rdMatrixId);
-		Map<String, Object> rdSampleSetLHM = rdSampleSet.getSampleIdSetLHM();
+		Map<String, Object> rdSampleSetMap = rdSampleSet.getSampleIdSetMap();
 
 		// Iterate through samples
 		int sampleNb = 0;
-		for (String sampleId : rdSampleSetLHM.keySet()) {
+		for (String sampleId : rdSampleSetMap.keySet()) {
 			Integer missingCount = 0;
 			Integer heterozygCount = 0;
 
 			// Iterate through markerset
-			rdMarkerSet.fillGTsForCurrentSampleIntoInitLHM(sampleNb);
+			rdMarkerSet.fillGTsForCurrentSampleIntoInitMap(sampleNb);
 			int markerIndex = 0;
-			for (Map.Entry<String, Object> entry : rdMarkerSet.getMarkerIdSetLHM().entrySet()) {
+			for (Map.Entry<String, Object> entry : rdMarkerSet.getMarkerIdSetMap().entrySet()) {
 				byte[] tempGT = (byte[]) entry.getValue();
 				if (tempGT[0] == AlleleBytes._0 && tempGT[1] == AlleleBytes._0) {
 					missingCount++;
 				}
 
 				// WE DON'T WANT NON AUTOSOMAL CHR FOR HETZY
-				String currentChr = MarkerSet_opt.getChrByMarkerIndex(rdChrSetLHM, markerIndex);
+				String currentChr = MarkerSet_opt.getChrByMarkerIndex(rdChrSetMap, markerIndex);
 				if (!currentChr.equals("X")
 						&& !currentChr.equals("Y")
 						&& !currentChr.equals("XY")
@@ -77,12 +77,12 @@ public class OP_QASamples_opt {
 				markerIndex++;
 			}
 
-			wrSampleSetMissingCountLHM.put(sampleId, missingCount);
+			wrSampleSetMissingCountMap.put(sampleId, missingCount);
 
-			double missingRatio = (double) missingCount / rdMarkerSet.getMarkerIdSetLHM().size();
-			wrSampleSetMissingRatioLHM.put(sampleId, missingRatio);
-			double heterozygRatio = (double) heterozygCount / (rdMarkerSet.getMarkerIdSetLHM().size() - missingCount);
-			wrSampleSetHetzyRatioLHM.put(sampleId, heterozygRatio);
+			double missingRatio = (double) missingCount / rdMarkerSet.getMarkerIdSetMap().size();
+			wrSampleSetMissingRatioMap.put(sampleId, missingRatio);
+			double heterozygRatio = (double) heterozygCount / (rdMarkerSet.getMarkerIdSetMap().size() - missingCount);
+			wrSampleSetHetzyRatioMap.put(sampleId, heterozygRatio);
 
 			sampleNb++;
 
@@ -98,8 +98,8 @@ public class OP_QASamples_opt {
 
 			OperationFactory wrOPHandler = new OperationFactory(rdMatrixMetadata.getStudyId(),
 					"Sample QA", //friendly name
-					"Sample census on " + rdMatrixMetadata.getMatrixFriendlyName() + "\nSamples: " + wrSampleSetMissingCountLHM.size(), //description
-					wrSampleSetMissingCountLHM.size(),
+					"Sample census on " + rdMatrixMetadata.getMatrixFriendlyName() + "\nSamples: " + wrSampleSetMissingCountMap.size(), //description
+					wrSampleSetMissingCountMap.size(),
 					rdMatrixMetadata.getMarkerSetSize(),
 					0,
 					cNetCDF.Defaults.OPType.SAMPLE_QA.toString(),
@@ -116,7 +116,7 @@ public class OP_QASamples_opt {
 
 			//<editor-fold defaultstate="collapsed" desc="METADATA WRITER">
 			// SAMPLESET
-			ArrayChar.D2 samplesD2 = Utils.writeLHMKeysToD2ArrayChar(rdSampleSetLHM, cNetCDF.Strides.STRIDE_SAMPLE_NAME);
+			ArrayChar.D2 samplesD2 = Utils.writeMapKeysToD2ArrayChar(rdSampleSetMap, cNetCDF.Strides.STRIDE_SAMPLE_NAME);
 
 			int[] sampleOrig = new int[]{0, 0};
 			try {
@@ -129,7 +129,7 @@ public class OP_QASamples_opt {
 			log.info("Done writing SampleSet to matrix at {}", org.gwaspi.global.Utils.getMediumDateTimeAsString()); // FIXME log system already supplies time
 
 			//WRITE MARKERSET TO MATRIX
-			ArrayChar.D2 markersD2 = Utils.writeLHMKeysToD2ArrayChar(rdMarkerSet.getMarkerIdSetLHM(), cNetCDF.Strides.STRIDE_MARKER_NAME);
+			ArrayChar.D2 markersD2 = Utils.writeMapKeysToD2ArrayChar(rdMarkerSet.getMarkerIdSetMap(), cNetCDF.Strides.STRIDE_MARKER_NAME);
 			int[] markersOrig = new int[]{0, 0};
 			try {
 				wrNcFile.write(cNetCDF.Variables.VAR_IMPLICITSET, markersOrig, markersD2);
@@ -143,13 +143,13 @@ public class OP_QASamples_opt {
 
 			//<editor-fold defaultstate="collapsed" desc="CENSUS DATA WRITER">
 			// MISSING RATIO
-			Utils.saveDoubleLHMD1ToWrMatrix(wrNcFile, wrSampleSetMissingRatioLHM, cNetCDF.Census.VAR_OP_SAMPLES_MISSINGRAT);
+			Utils.saveDoubleMapD1ToWrMatrix(wrNcFile, wrSampleSetMissingRatioMap, cNetCDF.Census.VAR_OP_SAMPLES_MISSINGRAT);
 
 			// MISSING COUNT
-			Utils.saveIntLHMD1ToWrMatrix(wrNcFile, wrSampleSetMissingCountLHM, cNetCDF.Census.VAR_OP_SAMPLES_MISSINGCOUNT);
+			Utils.saveIntMapD1ToWrMatrix(wrNcFile, wrSampleSetMissingCountMap, cNetCDF.Census.VAR_OP_SAMPLES_MISSINGCOUNT);
 
 			// HETEROZYGOSITY RATIO
-			Utils.saveDoubleLHMD1ToWrMatrix(wrNcFile, wrSampleSetHetzyRatioLHM, cNetCDF.Census.VAR_OP_SAMPLES_HETZYRAT);
+			Utils.saveDoubleMapD1ToWrMatrix(wrNcFile, wrSampleSetHetzyRatioMap, cNetCDF.Census.VAR_OP_SAMPLES_HETZYRAT);
 			//</editor-fold>
 
 			resultOpId = wrOPHandler.getResultOPId();

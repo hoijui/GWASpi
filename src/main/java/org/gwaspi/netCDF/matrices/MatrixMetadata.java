@@ -182,7 +182,7 @@ public class MatrixMetadata {
 
     /**
 	 * This Method used to import GWASpi matrix from an external file
-	 * The size of this LHM is very small.
+	 * The size of this Map is very small.
 	 */
 	public MatrixMetadata(String netCDFpath, int _studyId, String newMatrixName) throws IOException {
 		matrixId = Integer.MIN_VALUE;

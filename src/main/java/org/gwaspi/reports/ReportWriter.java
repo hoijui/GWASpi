@@ -35,7 +35,7 @@ public class ReportWriter {
 			String reportPath,
 			String reportName,
 			String header,
-			Map<String, Object> lhm,
+			Map<String, Object> map,
 			boolean withKey)
 			throws IOException
 	{
@@ -47,7 +47,7 @@ public class ReportWriter {
 		String sep = cExport.separator_REPORTS;
 		outputBW.append(header);
 
-		for (Map.Entry<String, Object> entry : lhm.entrySet()) {
+		for (Map.Entry<String, Object> entry : map.entrySet()) {
 			StringBuilder sb = new StringBuilder();
 			if (withKey) {
 				sb.append(entry.getKey());
@@ -67,7 +67,7 @@ public class ReportWriter {
 
 	protected static boolean appendColumnToReport(String reportPath,
 			String reportName,
-			Map<String, Object> lhm,
+			Map<String, Object> map,
 			boolean isArray,
 			boolean withKey) throws IOException {
 		boolean appendResult = false;
@@ -84,7 +84,7 @@ public class ReportWriter {
 		String l;
 		int count = 0;
 		String sep = cExport.separator_REPORTS;
-		Iterator<Entry<String, Object>> it = lhm.entrySet().iterator();
+		Iterator<Entry<String, Object>> it = map.entrySet().iterator();
 		while ((l = inputBR.readLine()) != null) {
 			if (count == 0) {
 				tempBW.append(l);

@@ -34,8 +34,8 @@ public class OperationSet {
 	private int opSetSize = 0;
 	private int implicitSetSize = 0;
 	private OperationMetadata opMetadata;
-	private Map<String, Object> opSetLHM = new LinkedHashMap<String, Object>();
-	private Map<String, Object> opRsIdSetLHM = new LinkedHashMap<String, Object>();
+	private Map<String, Object> opSetMap = new LinkedHashMap<String, Object>();
+	private Map<String, Object> opRsIdSetMap = new LinkedHashMap<String, Object>();
 
 	public OperationSet(int studyId, int opId) throws IOException {
 		opMetadata = new OperationMetadata(opId);
@@ -52,7 +52,7 @@ public class OperationSet {
 	}
 
 	//<editor-fold defaultstate="collapsed" desc="OPERATION-SET FETCHERS">
-	public Map<String, Object> getOpSetLHM() {
+	public Map<String, Object> getOpSetMap() {
 		NetcdfFile ncfile = null;
 
 		try {
@@ -71,7 +71,7 @@ public class OperationSet {
 
 				if (dataType == DataType.CHAR) {
 					ArrayChar.D2 markerSetAC = (ArrayChar.D2) var.read("(0:" + (opSetSize - 1) + ":1, 0:" + (varShape[1] - 1) + ":1)");
-					opSetLHM = org.gwaspi.netCDF.operations.Utils.writeD2ArrayCharToLHMKeys(markerSetAC);
+					opSetMap = org.gwaspi.netCDF.operations.Utils.writeD2ArrayCharToMapKeys(markerSetAC);
 				}
 			} catch (IOException ex) {
 				log.error("Cannot read data", ex);
@@ -90,10 +90,10 @@ public class OperationSet {
 			}
 		}
 
-		return opSetLHM;
+		return opSetMap;
 	}
 
-	public Map<String, Object> getMarkerRsIdSetLHM() {
+	public Map<String, Object> getMarkerRsIdSetMap() {
 		NetcdfFile ncfile = null;
 
 		try {
@@ -111,7 +111,7 @@ public class OperationSet {
 				opSetSize = varShape[0];
 				if (dataType == DataType.CHAR) {
 					ArrayChar.D2 markerSetAC = (ArrayChar.D2) var.read("(0:" + (opSetSize - 1) + ":1, 0:" + (varShape[1] - 1) + ":1)");
-					opSetLHM = org.gwaspi.netCDF.operations.Utils.writeD2ArrayCharToLHMKeys(markerSetAC);
+					opSetMap = org.gwaspi.netCDF.operations.Utils.writeD2ArrayCharToMapKeys(markerSetAC);
 				}
 			} catch (IOException ex) {
 				log.error("Cannot read data", ex);
@@ -130,12 +130,12 @@ public class OperationSet {
 			}
 		}
 
-		return opRsIdSetLHM;
+		return opRsIdSetMap;
 	}
 
-	Map<String, Object> getImplicitSetLHM() {
+	Map<String, Object> getImplicitSetMap() {
 		NetcdfFile ncfile = null;
-		Map<String, Object> implicitSetLHM = new LinkedHashMap<String, Object>();
+		Map<String, Object> implicitSetMap = new LinkedHashMap<String, Object>();
 
 		try {
 			ncfile = NetcdfFile.open(opMetadata.getPathToMatrix());
@@ -150,7 +150,7 @@ public class OperationSet {
 				implicitSetSize = varShape[0];
 				ArrayChar.D2 sampleSetAC = (ArrayChar.D2) var.read("(0:" + (implicitSetSize - 1) + ":1, 0:" + (varShape[1] - 1) + ":1)");
 
-				implicitSetLHM = org.gwaspi.netCDF.operations.Utils.writeD2ArrayCharToLHMKeys(sampleSetAC);
+				implicitSetMap = org.gwaspi.netCDF.operations.Utils.writeD2ArrayCharToMapKeys(sampleSetAC);
 
 			} catch (IOException ex) {
 				log.error("Cannot read data", ex);
@@ -169,14 +169,14 @@ public class OperationSet {
 			}
 		}
 
-		return implicitSetLHM;
+		return implicitSetMap;
 	}
 	//</editor-fold>
 
 	//<editor-fold defaultstate="collapsed" desc="CHROMOSOME INFO">
-	public Map<String, Object> getChrInfoSetLHM() {
+	public Map<String, Object> getChrInfoSetMap() {
 		NetcdfFile ncfile = null;
-		Map<String, Object> chrInfoLHM = new LinkedHashMap<String, Object>();
+		Map<String, Object> chrInfoMap = new LinkedHashMap<String, Object>();
 
 		try {
 			ncfile = NetcdfFile.open(opMetadata.getPathToMatrix());
@@ -194,7 +194,7 @@ public class OperationSet {
 			try {
 				if (dataType == DataType.CHAR) {
 					ArrayChar.D2 markerSetAC = (ArrayChar.D2) var.read("(0:" + (varShape[0] - 1) + ":1, 0:7:1)");
-					chrInfoLHM = org.gwaspi.netCDF.operations.Utils.writeD2ArrayCharToLHMKeys(markerSetAC);
+					chrInfoMap = org.gwaspi.netCDF.operations.Utils.writeD2ArrayCharToMapKeys(markerSetAC);
 				}
 			} catch (IOException ex) {
 				log.error("Cannot read data", ex);
@@ -213,7 +213,7 @@ public class OperationSet {
 			try {
 				if (dataType == DataType.INT) {
 					ArrayInt.D2 chrSetAI = (ArrayInt.D2) var.read("(0:" + (varShape[0] - 1) + ":1, 0:3:1)");
-					org.gwaspi.netCDF.operations.Utils.writeD2ArrayIntToLHMValues(chrSetAI, chrInfoLHM);
+					org.gwaspi.netCDF.operations.Utils.writeD2ArrayIntToMapValues(chrSetAI, chrInfoMap);
 				}
 			} catch (IOException ex) {
 				log.error("Cannot read data", ex);
@@ -232,12 +232,12 @@ public class OperationSet {
 			}
 		}
 
-		return chrInfoLHM;
+		return chrInfoMap;
 	}
 	//</editor-fold>
 
 	//<editor-fold defaultstate="collapsed" desc="OPERATION-SET FILLERS">
-	public Map<String, Object> fillOpSetLHMWithVariable(NetcdfFile ncfile, String variable) {
+	public Map<String, Object> fillOpSetMapWithVariable(NetcdfFile ncfile, String variable) {
 
 		Variable var = ncfile.findVariable(variable);
 
@@ -252,27 +252,27 @@ public class OperationSet {
 			if (dataType == DataType.CHAR) {
 				if (varShape.length == 2) {
 					ArrayChar.D2 markerSetAC = (ArrayChar.D2) var.read("(0:" + (opSetSize - 1) + ":1, 0:" + (varShape[1] - 1) + ":1)");
-					org.gwaspi.netCDF.operations.Utils.writeD2ArrayCharToLHMValues(markerSetAC, opSetLHM);
+					org.gwaspi.netCDF.operations.Utils.writeD2ArrayCharToMapValues(markerSetAC, opSetMap);
 				}
 			}
 			if (dataType == DataType.DOUBLE) {
 				if (varShape.length == 1) {
 					ArrayDouble.D1 markerSetAF = (ArrayDouble.D1) var.read("(0:" + (opSetSize - 1) + ":1)");
-					org.gwaspi.netCDF.operations.Utils.writeD1ArrayDoubleToLHMValues(markerSetAF, opSetLHM);
+					org.gwaspi.netCDF.operations.Utils.writeD1ArrayDoubleToMapValues(markerSetAF, opSetMap);
 				}
 				if (varShape.length == 2) {
 					ArrayDouble.D2 markerSetAF = (ArrayDouble.D2) var.read("(0:" + (opSetSize - 1) + ":1, 0:" + (varShape[1] - 1) + ":1))");
-					org.gwaspi.netCDF.operations.Utils.writeD2ArrayDoubleToLHMValues(markerSetAF, opSetLHM);
+					org.gwaspi.netCDF.operations.Utils.writeD2ArrayDoubleToMapValues(markerSetAF, opSetMap);
 				}
 			}
 			if (dataType == DataType.INT) {
 				if (varShape.length == 1) {
 					ArrayInt.D1 markerSetAD = (ArrayInt.D1) var.read("(0:" + (opSetSize - 1) + ":1)");
-					org.gwaspi.netCDF.operations.Utils.writeD1ArrayIntToLHMValues(markerSetAD, opSetLHM);
+					org.gwaspi.netCDF.operations.Utils.writeD1ArrayIntToMapValues(markerSetAD, opSetMap);
 				}
 				if (varShape.length == 2) {
 					ArrayInt.D2 markerSetAD = (ArrayInt.D2) var.read("(0:" + (opSetSize - 1) + ":1, 0:" + (varShape[1] - 1) + ":1))");
-					org.gwaspi.netCDF.operations.Utils.writeD2ArrayIntToLHMValues(markerSetAD, opSetLHM);
+					org.gwaspi.netCDF.operations.Utils.writeD2ArrayIntToMapValues(markerSetAD, opSetMap);
 				}
 			}
 		} catch (IOException ex) {
@@ -281,27 +281,27 @@ public class OperationSet {
 			log.error("Cannot read data", ex);
 		}
 
-		return opSetLHM;
+		return opSetMap;
 	}
 
-	public void fillLHMWithDefaultValue(Map<String, Object> map, Object defaultVal) {
+	public void fillMapWithDefaultValue(Map<String, Object> map, Object defaultVal) {
 		for (Map.Entry<String, Object> entry : map.entrySet()) {
 			entry.setValue(defaultVal);
 		}
 	}
 
-	public Map<String, Object> fillWrLHMWithRdLHMValue(Map<String, Object> wrLHM, Map<String, Object> rdLHM) {
-		for (Map.Entry<String, Object> entry : wrLHM.entrySet()) {
+	public Map<String, Object> fillWrMapWithRdMapValue(Map<String, Object> wrMap, Map<String, Object> rdMap) {
+		for (Map.Entry<String, Object> entry : wrMap.entrySet()) {
 			String key = entry.getKey();
-			Object value = rdLHM.get(key);
+			Object value = rdMap.get(key);
 			entry.setValue(value);
 		}
-		return wrLHM;
+		return wrMap;
 	}
 
 	public List getALWithVariable(NetcdfFile ncfile, String variable) {
 
-		List al = new ArrayList();
+		List list = new ArrayList();
 
 		Variable var = ncfile.findVariable(variable);
 		if (null == var) {
@@ -311,23 +311,23 @@ public class OperationSet {
 		DataType dataType = var.getDataType();
 		int[] varShape = var.getShape();
 		opSetSize = varShape[0];
-		((ArrayList) al).ensureCapacity(opSetSize);
+		((ArrayList) list).ensureCapacity(opSetSize);
 
 		try {
 			if (dataType == DataType.CHAR) {
 				if (varShape.length == 2) {
 					ArrayChar.D2 markerSetAC = (ArrayChar.D2) var.read("(0:" + (opSetSize - 1) + ":1, 0:" + (varShape[1] - 1) + ":1)");
-					al = org.gwaspi.netCDF.operations.Utils.writeD2ArrayCharToAL(markerSetAC);
+					list = org.gwaspi.netCDF.operations.Utils.writeD2ArrayCharToList(markerSetAC);
 				}
 			}
 			if (dataType == DataType.DOUBLE) {
 				if (varShape.length == 1) {
 					ArrayDouble.D1 markerSetAD = (ArrayDouble.D1) var.read("(0:" + (opSetSize - 1) + ":1)");
-					al = org.gwaspi.netCDF.operations.Utils.writeD1ArrayDoubleToAL(markerSetAD);
+					list = org.gwaspi.netCDF.operations.Utils.writeD1ArrayDoubleToList(markerSetAD);
 				}
 				if (varShape.length == 2) {
 					ArrayDouble.D2 markerSetAD = (ArrayDouble.D2) var.read("(0:" + (opSetSize - 1) + ":1, 0:" + (varShape[1] - 1) + ":1)");
-					al = org.gwaspi.netCDF.operations.Utils.writeD2ArrayDoubleToAL(markerSetAD);
+					list = org.gwaspi.netCDF.operations.Utils.writeD2ArrayDoubleToList(markerSetAD);
 				}
 			}
 
@@ -337,10 +337,10 @@ public class OperationSet {
 			log.error("Cannot read data", ex);
 		}
 
-		return al;
+		return list;
 	}
 
-	public Map<String, Object> appendVariableToMarkerSetLHMValue(NetcdfFile ncfile, String variable, String separator) {
+	public Map<String, Object> appendVariableToMarkerSetMapValue(NetcdfFile ncfile, String variable, String separator) {
 
 		Variable var = ncfile.findVariable(variable);
 
@@ -358,10 +358,10 @@ public class OperationSet {
 
 					int[] shape = markerSetAC.getShape();
 					Index index = markerSetAC.getIndex();
-					Iterator<String> it = opSetLHM.keySet().iterator();
+					Iterator<String> it = opSetMap.keySet().iterator();
 					for (int i = 0; i < shape[0]; i++) {
 						String key = it.next();
-						String value = opSetLHM.get(key).toString();
+						String value = opSetMap.get(key).toString();
 						if (!value.isEmpty()) {
 							value += separator;
 						}
@@ -369,7 +369,7 @@ public class OperationSet {
 						for (int j = 0; j < shape[1]; j++) {
 							newValue.append(markerSetAC.getChar(index.set(i, j)));
 						}
-						opSetLHM.put(key, value + newValue.toString().trim());
+						opSetMap.put(key, value + newValue.toString().trim());
 					}
 				}
 			}
@@ -379,15 +379,15 @@ public class OperationSet {
 
 					int[] shape = markerSetAF.getShape();
 					Index index = markerSetAF.getIndex();
-					Iterator<String> it = opSetLHM.keySet().iterator();
+					Iterator<String> it = opSetMap.keySet().iterator();
 					for (int i = 0; i < shape[0]; i++) {
 						String key = it.next();
-						String value = opSetLHM.get(key).toString();
+						String value = opSetMap.get(key).toString();
 						if (!value.isEmpty()) {
 							value += separator;
 						}
 						Float floatValue = markerSetAF.getFloat(index.set(i));
-						opSetLHM.put(key, value + floatValue.toString());
+						opSetMap.put(key, value + floatValue.toString());
 					}
 				}
 			}
@@ -397,15 +397,15 @@ public class OperationSet {
 
 					int[] shape = markerSetAF.getShape();
 					Index index = markerSetAF.getIndex();
-					Iterator<String> it = opSetLHM.keySet().iterator();
+					Iterator<String> it = opSetMap.keySet().iterator();
 					for (int i = 0; i < shape[0]; i++) {
 						String key = it.next();
-						String value = opSetLHM.get(key).toString();
+						String value = opSetMap.get(key).toString();
 						if (!value.isEmpty()) {
 							value += separator;
 						}
 						Integer intValue = markerSetAF.getInt(index.set(i));
-						opSetLHM.put(key, value + intValue.toString());
+						opSetMap.put(key, value + intValue.toString());
 					}
 				}
 			}
@@ -416,58 +416,58 @@ public class OperationSet {
 			log.error("Cannot read data", ex);
 		}
 
-		return opSetLHM;
+		return opSetMap;
 	}
 	//</editor-fold>
 
 	//<editor-fold defaultstate="collapsed" desc="OPERATION-SET PICKERS">
 	public Map<String, Object> pickValidMarkerSetItemsByValue(NetcdfFile ncfile, String variable, Set<Object> criteria, boolean includes) {
-		Map<String, Object> returnLHM = new LinkedHashMap<String, Object>();
-		Map<String, Object> readLhm = fillOpSetLHMWithVariable(ncfile, variable);
+		Map<String, Object> returnMap = new LinkedHashMap<String, Object>();
+		Map<String, Object> readMap = fillOpSetMapWithVariable(ncfile, variable);
 
 		if (includes) {
-			for (Map.Entry<String, Object> entry : readLhm.entrySet()) {
+			for (Map.Entry<String, Object> entry : readMap.entrySet()) {
 				String key = entry.getKey();
 				Object value = entry.getValue();
 				if (criteria.contains(value)) {
-					returnLHM.put(key, value);
+					returnMap.put(key, value);
 				}
 			}
 		} else {
-			for (Map.Entry<String, Object> entry : readLhm.entrySet()) {
+			for (Map.Entry<String, Object> entry : readMap.entrySet()) {
 				String key = entry.getKey();
 				Object value = entry.getValue();
 				if (!criteria.contains(value)) {
-					returnLHM.put(key, value);
+					returnMap.put(key, value);
 				}
 			}
 		}
 
-		return returnLHM;
+		return returnMap;
 	}
 
-	public Map<String, Object> pickValidMarkerSetItemsByKey(Map<String, Object> lhm, Set<Object> criteria, boolean includes) {
-		Map<String, Object> returnLHM = new LinkedHashMap<String, Object>();
+	public Map<String, Object> pickValidMarkerSetItemsByKey(Map<String, Object> map, Set<Object> criteria, boolean includes) {
+		Map<String, Object> returnMap = new LinkedHashMap<String, Object>();
 
 		if (includes) {
-			for (Map.Entry<String, Object> entry : lhm.entrySet()) {
+			for (Map.Entry<String, Object> entry : map.entrySet()) {
 				String key = entry.getKey();
 				Object value = entry.getValue();
 				if (criteria.contains(key)) {
-					returnLHM.put(key, value);
+					returnMap.put(key, value);
 				}
 			}
 		} else {
-			for (Map.Entry<String, Object> entry : lhm.entrySet()) {
+			for (Map.Entry<String, Object> entry : map.entrySet()) {
 				String key = entry.getKey();
 				Object value = entry.getValue();
 				if (!criteria.contains(key)) {
-					returnLHM.put(key, value);
+					returnMap.put(key, value);
 				}
 			}
 		}
 
-		return returnLHM;
+		return returnMap;
 	}
 	//</editor-fold>
 }

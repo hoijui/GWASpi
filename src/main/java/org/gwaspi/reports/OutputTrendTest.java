@@ -160,22 +160,22 @@ public class OutputTrendTest {
 		boolean result;
 
 		try {
-			Map<String, Object> unsortedMarkerIdTrendTestValsLHM = GenericReportGenerator.getAnalysisVarData(opId, cNetCDF.Association.VAR_OP_MARKERS_ASTrendTestTP);
-			Map<String, Object> unsortedMarkerIdPvalLHM = new LinkedHashMap<String, Object>();
-			for (Map.Entry<String, Object> entry : unsortedMarkerIdTrendTestValsLHM.entrySet()) {
+			Map<String, Object> unsortedMarkerIdTrendTestValsMap = GenericReportGenerator.getAnalysisVarData(opId, cNetCDF.Association.VAR_OP_MARKERS_ASTrendTestTP);
+			Map<String, Object> unsortedMarkerIdPvalMap = new LinkedHashMap<String, Object>();
+			for (Map.Entry<String, Object> entry : unsortedMarkerIdTrendTestValsMap.entrySet()) {
 				double[] values = (double[]) entry.getValue();
-				unsortedMarkerIdPvalLHM.put(entry.getKey(), values[1]);
+				unsortedMarkerIdPvalMap.put(entry.getKey(), values[1]);
 			}
 
-			Map<String, Object> sortingMarkerSetLHM = ReportManager.getSortedMarkerSetByDoubleValue(unsortedMarkerIdPvalLHM);
-			if (unsortedMarkerIdPvalLHM != null) {
-				unsortedMarkerIdPvalLHM.clear();
+			Map<String, Object> sortingMarkerSetMap = ReportManager.getSortedMarkerSetByDoubleValue(unsortedMarkerIdPvalMap);
+			if (unsortedMarkerIdPvalMap != null) {
+				unsortedMarkerIdPvalMap.clear();
 			}
 
 			String sep = cExport.separator_REPORTS;
 			OperationMetadata rdOPMetadata = new OperationMetadata(opId);
 			MarkerSet_opt rdInfoMarkerSet = new MarkerSet_opt(rdOPMetadata.getStudyId(), rdOPMetadata.getParentMatrixId());
-			rdInfoMarkerSet.initFullMarkerIdSetLHM();
+			rdInfoMarkerSet.initFullMarkerIdSetMap();
 
 			// WRITE HEADER OF FILE
 			String header = "MarkerID\trsID\tChr\tPosition\tMin. Allele\tMaj. Allele\tTrend-Test\tPval\n";
@@ -183,28 +183,28 @@ public class OutputTrendTest {
 			String reportPath = Config.getConfigValue(Config.PROPERTY_REPORTS_DIR, "") + "/STUDY_" + rdOPMetadata.getStudyId() + "/";
 
 			// WRITE MARKERSET RSID
-			rdInfoMarkerSet.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_RSID);
-			for (Map.Entry<String, Object> entry : sortingMarkerSetLHM.entrySet()) {
-				Object value = rdInfoMarkerSet.getMarkerIdSetLHM().get(entry.getKey());
+			rdInfoMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_RSID);
+			for (Map.Entry<String, Object> entry : sortingMarkerSetMap.entrySet()) {
+				Object value = rdInfoMarkerSet.getMarkerIdSetMap().get(entry.getKey());
 				entry.setValue(value);
 			}
-			ReportWriter.writeFirstColumnToReport(reportPath, reportNameExt, header, sortingMarkerSetLHM, true);
+			ReportWriter.writeFirstColumnToReport(reportPath, reportNameExt, header, sortingMarkerSetMap, true);
 
 			// WRITE MARKERSET CHROMOSOME
-			rdInfoMarkerSet.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
-			for (Map.Entry<String, Object> entry : sortingMarkerSetLHM.entrySet()) {
-				Object value = rdInfoMarkerSet.getMarkerIdSetLHM().get(entry.getKey());
+			rdInfoMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
+			for (Map.Entry<String, Object> entry : sortingMarkerSetMap.entrySet()) {
+				Object value = rdInfoMarkerSet.getMarkerIdSetMap().get(entry.getKey());
 				entry.setValue(value);
 			}
-			ReportWriter.appendColumnToReport(reportPath, reportNameExt, sortingMarkerSetLHM, false, false);
+			ReportWriter.appendColumnToReport(reportPath, reportNameExt, sortingMarkerSetMap, false, false);
 
 			// WRITE MARKERSET POS
-			rdInfoMarkerSet.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_POS);
-			for (Map.Entry<String, Object> entry : sortingMarkerSetLHM.entrySet()) {
-				Object value = rdInfoMarkerSet.getMarkerIdSetLHM().get(entry.getKey());
+			rdInfoMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_POS);
+			for (Map.Entry<String, Object> entry : sortingMarkerSetMap.entrySet()) {
+				Object value = rdInfoMarkerSet.getMarkerIdSetMap().get(entry.getKey());
 				entry.setValue(value);
 			}
-			ReportWriter.appendColumnToReport(reportPath, reportNameExt, sortingMarkerSetLHM, false, false);
+			ReportWriter.appendColumnToReport(reportPath, reportNameExt, sortingMarkerSetMap, false, false);
 
 			// WRITE KNOWN ALLELES FROM QA
 			// get MARKER_QA Operation
@@ -221,35 +221,35 @@ public class OutputTrendTest {
 				NetcdfFile qaNcFile = NetcdfFile.open(qaMetadata.getPathToMatrix());
 
 				OperationSet rdOperationSet = new OperationSet(rdOPMetadata.getStudyId(), markersQAopId);
-				Map<String, Object> opMarkerSetLHM = rdOperationSet.getOpSetLHM();
+				Map<String, Object> opMarkerSetMap = rdOperationSet.getOpSetMap();
 
 				// MINOR ALLELE
-				opMarkerSetLHM = rdOperationSet.fillOpSetLHMWithVariable(qaNcFile, cNetCDF.Census.VAR_OP_MARKERS_MINALLELES);
-				for (Map.Entry<String, Object> entry : rdInfoMarkerSet.getMarkerIdSetLHM().entrySet()) {
-					Object minorAllele = opMarkerSetLHM.get(entry.getKey());
+				opMarkerSetMap = rdOperationSet.fillOpSetMapWithVariable(qaNcFile, cNetCDF.Census.VAR_OP_MARKERS_MINALLELES);
+				for (Map.Entry<String, Object> entry : rdInfoMarkerSet.getMarkerIdSetMap().entrySet()) {
+					Object minorAllele = opMarkerSetMap.get(entry.getKey());
 					entry.setValue(minorAllele);
 				}
 
 				// MAJOR ALLELE
-				rdOperationSet.fillLHMWithDefaultValue(opMarkerSetLHM, "");
-				opMarkerSetLHM = rdOperationSet.fillOpSetLHMWithVariable(qaNcFile, cNetCDF.Census.VAR_OP_MARKERS_MAJALLELES);
-				for (Map.Entry<String, Object> entry : rdInfoMarkerSet.getMarkerIdSetLHM().entrySet()) {
+				rdOperationSet.fillMapWithDefaultValue(opMarkerSetMap, "");
+				opMarkerSetMap = rdOperationSet.fillOpSetMapWithVariable(qaNcFile, cNetCDF.Census.VAR_OP_MARKERS_MAJALLELES);
+				for (Map.Entry<String, Object> entry : rdInfoMarkerSet.getMarkerIdSetMap().entrySet()) {
 					Object minorAllele = entry.getValue();
-					entry.setValue(minorAllele + sep + opMarkerSetLHM.get(entry.getKey()));
+					entry.setValue(minorAllele + sep + opMarkerSetMap.get(entry.getKey()));
 				}
 			}
-			for (Map.Entry<String, Object> entry : sortingMarkerSetLHM.entrySet()) {
-				Object value = rdInfoMarkerSet.getMarkerIdSetLHM().get(entry.getKey());
+			for (Map.Entry<String, Object> entry : sortingMarkerSetMap.entrySet()) {
+				Object value = rdInfoMarkerSet.getMarkerIdSetMap().get(entry.getKey());
 				entry.setValue(value);
 			}
-			ReportWriter.appendColumnToReport(reportPath, reportNameExt, sortingMarkerSetLHM, false, false);
+			ReportWriter.appendColumnToReport(reportPath, reportNameExt, sortingMarkerSetMap, false, false);
 
 			// WRITE TREND TEST VALUES
-			for (Map.Entry<String, Object> entry : sortingMarkerSetLHM.entrySet()) {
-				Object value = unsortedMarkerIdTrendTestValsLHM.get(entry.getKey());
+			for (Map.Entry<String, Object> entry : sortingMarkerSetMap.entrySet()) {
+				Object value = unsortedMarkerIdTrendTestValsMap.get(entry.getKey());
 				entry.setValue(value);
 			}
-			ReportWriter.appendColumnToReport(reportPath, reportNameExt, sortingMarkerSetLHM, true, false);
+			ReportWriter.appendColumnToReport(reportPath, reportNameExt, sortingMarkerSetMap, true, false);
 
 			result = true;
 		} catch (IOException ex) {

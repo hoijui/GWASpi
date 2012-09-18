@@ -19,7 +19,7 @@ public class Threaded_Loader_QA extends CommonRunnable {
 	private int resultMatrixId;
 	private int resultOpId;
 	private String format;
-	private Map<String, Object> sampleInfoLHM;
+	private Map<String, Object> sampleInfoMap;
 	private String newMatrixName;
 	private String newMatrixDescription;
 	private String file1;
@@ -34,7 +34,7 @@ public class Threaded_Loader_QA extends CommonRunnable {
 			String threadName,
 			String timeStamp,
 			String format,
-			Map<String, Object> sampleInfoLHM,
+			Map<String, Object> sampleInfoMap,
 			String newMatrixName,
 			String newMatrixDescription,
 			String file1,
@@ -48,7 +48,7 @@ public class Threaded_Loader_QA extends CommonRunnable {
 		super(threadName, timeStamp, "Loading Genotypes");
 
 		this.format = format;
-		this.sampleInfoLHM = sampleInfoLHM;
+		this.sampleInfoMap = sampleInfoMap;
 		this.newMatrixName = newMatrixName;
 		this.newMatrixDescription = newMatrixDescription;
 		this.file1 = file1;
@@ -70,7 +70,7 @@ public class Threaded_Loader_QA extends CommonRunnable {
 
 		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
 			resultMatrixId = LoadManager.dispatchLoadByFormat(format,
-					sampleInfoLHM,
+					sampleInfoMap,
 					newMatrixName,
 					newMatrixDescription,
 					file1,

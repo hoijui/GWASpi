@@ -31,7 +31,7 @@ public class LoadGTFromBeagleFiles extends AbstractLoadGTFromFiles {
 			String _friendlyName,
 			String _gtCode,
 			String _description,
-			Map<String, Object> _sampleInfoLHM)
+			Map<String, Object> _sampleInfoMap)
 			throws IOException
 	{
 		super(_gtFilePath,
@@ -46,7 +46,7 @@ public class LoadGTFromBeagleFiles extends AbstractLoadGTFromFiles {
 			-1, // disabled, else: 4,
 			null, // disabled, else: cNetCDF.Variables.VAR_MARKERS_BASES_KNOWN,
 			_description,
-			_sampleInfoLHM);
+			_sampleInfoMap);
 
 		annotationFilePath = _annotationFilePath;
 		chromosome = _chromosome;
@@ -68,7 +68,7 @@ public class LoadGTFromBeagleFiles extends AbstractLoadGTFromFiles {
 
 	public void loadIndividualFiles(File file,
 			String currSampleId,
-			Map<String, Object> wrMarkerSetLHM) throws IOException, InvalidRangeException {
+			Map<String, Object> wrMarkerSetMap) throws IOException, InvalidRangeException {
 
 		FileReader inputFileReader = new FileReader(file);
 		BufferedReader inputBufferReader = new BufferedReader(inputFileReader);
@@ -79,8 +79,8 @@ public class LoadGTFromBeagleFiles extends AbstractLoadGTFromFiles {
 			sb.append('0');
 		}
 
-		Map<String, Object> tempMarkerIdLHM = new LinkedHashMap<String, Object>();
-		Map<String, Object> sampleOrderLHM = new LinkedHashMap<String, Object>();
+		Map<String, Object> tempMarkerIdMap = new LinkedHashMap<String, Object>();
+		Map<String, Object> sampleOrderMap = new LinkedHashMap<String, Object>();
 
 		String sampleHeader = null;
 		String l;
@@ -92,7 +92,7 @@ public class LoadGTFromBeagleFiles extends AbstractLoadGTFromFiles {
 				sampleHeader = l;
 				headerFields = sampleHeader.split(cImport.Separators.separators_SpaceTab_rgxp);
 				for (int i = cImport.Genotypes.Beagle_Standard.genotypes; i < headerFields.length; i = i + 2) {
-					sampleOrderLHM.put(headerFields[i], i);
+					sampleOrderMap.put(headerFields[i], i);
 				}
 			}
 			if (l.startsWith("M")) { //Found first marker row!
@@ -101,22 +101,22 @@ public class LoadGTFromBeagleFiles extends AbstractLoadGTFromFiles {
 				String[] cVals = l.split(cImport.Separators.separators_SpaceTab_rgxp);
 				String currMarkerId = cVals[cImport.Genotypes.Beagle_Standard.markerId];
 
-				Object columnNb = sampleOrderLHM.get(currSampleId);
+				Object columnNb = sampleOrderMap.get(currSampleId);
 				if (columnNb != null) {
 					String strAlleles = cVals[(Integer) columnNb] + cVals[((Integer) columnNb) + 1];
 					byte[] tmpAlleles = new byte[]{(byte) strAlleles.toString().charAt(0),
 						(byte) strAlleles.toString().charAt(1)};
-					tempMarkerIdLHM.put(currMarkerId, tmpAlleles);
+					tempMarkerIdMap.put(currMarkerId, tmpAlleles);
 				}
 			}
 		}
 
-		wrMarkerSetLHM.putAll(tempMarkerIdLHM);
+		wrMarkerSetMap.putAll(tempMarkerIdMap);
 
 		if (guessedGTCode.equals(cNetCDF.Defaults.GenotypeEncoding.UNKNOWN)) {
-			guessedGTCode = Utils.detectGTEncoding(wrMarkerSetLHM);
+			guessedGTCode = Utils.detectGTEncoding(wrMarkerSetMap);
 		} else if (guessedGTCode.equals(cNetCDF.Defaults.GenotypeEncoding.O12)) {
-			guessedGTCode = Utils.detectGTEncoding(wrMarkerSetLHM);
+			guessedGTCode = Utils.detectGTEncoding(wrMarkerSetMap);
 		}
 	}
 	//</editor-fold>

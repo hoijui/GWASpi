@@ -65,7 +65,7 @@ public class MatrixAnalysePanel extends JPanel {
 	// Variables declaration - do not modify
 	private Matrix parentMatrix;
 	private final Operation currentOP;
-	private Map<Integer, Object> treeChildrenLHM = new LinkedHashMap<Integer, Object>();
+	private Map<Integer, Object> treeChildrenMap = new LinkedHashMap<Integer, Object>();
 	private JButton btn_1_1;
 	private JButton btn_1_2;
 	private JButton btn_1_3;
@@ -97,7 +97,7 @@ public class MatrixAnalysePanel extends JPanel {
 			currentOP = null;
 		}
 		DefaultMutableTreeNode matrixNode = (DefaultMutableTreeNode) GWASpiExplorerPanel.getSingleton().getTree().getLastSelectedPathComponent();
-		treeChildrenLHM = NodeToPathCorrespondence.buildNodeToPathCorrespondence(matrixNode, true);
+		treeChildrenMap = NodeToPathCorrespondence.buildNodeToPathCorrespondence(matrixNode, true);
 
 		pnl_MatrixDesc = new JPanel();
 		scrl_MatrixDesc = new JScrollPane();

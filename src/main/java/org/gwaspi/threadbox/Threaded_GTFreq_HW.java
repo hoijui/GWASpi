@@ -74,8 +74,8 @@ public class Threaded_GTFreq_HW extends CommonRunnable {
 
 				if (affectionStates.contains("1") && affectionStates.contains("2")) {
 					getLog().info("Updating Sample Info in DB");
-					Map<String, Object> sampleInfoLHM = SamplesParser.scanGwaspiSampleInfo(phenotypeFile.getPath());
-					org.gwaspi.samples.InsertSampleInfo.processData(matrixId, sampleInfoLHM);
+					Map<String, Object> sampleInfoMap = SamplesParser.scanGwaspiSampleInfo(phenotypeFile.getPath());
+					org.gwaspi.samples.InsertSampleInfo.processData(matrixId, sampleInfoMap);
 
 					censusOpId = OperationManager.censusCleanMatrixMarkersByPhenotypeFile(matrixId,
 							sampleQAOpId,

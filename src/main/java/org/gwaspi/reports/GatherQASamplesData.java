@@ -23,13 +23,13 @@ public class GatherQASamplesData {
 		OperationMetadata rdOPMetadata = new OperationMetadata(opId);
 
 		OperationSet rdInfoSampleSet = new OperationSet(rdOPMetadata.getStudyId(), opId);
-		Map<String, Object> rdMatrixSampleSetLHM = rdInfoSampleSet.getOpSetLHM();
+		Map<String, Object> rdMatrixSampleSetMap = rdInfoSampleSet.getOpSetMap();
 
 		NetcdfFile ncFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());
-		rdMatrixSampleSetLHM = rdInfoSampleSet.fillOpSetLHMWithVariable(ncFile, cNetCDF.Census.VAR_OP_SAMPLES_MISSINGRAT);
+		rdMatrixSampleSetMap = rdInfoSampleSet.fillOpSetMapWithVariable(ncFile, cNetCDF.Census.VAR_OP_SAMPLES_MISSINGRAT);
 
 		ncFile.close();
-		return rdMatrixSampleSetLHM;
+		return rdMatrixSampleSetMap;
 	}
 
 	public static Map<String, Object> loadSamplesQAHetZygRatio(int opId) throws IOException {
@@ -37,12 +37,12 @@ public class GatherQASamplesData {
 		OperationMetadata rdOPMetadata = new OperationMetadata(opId);
 
 		OperationSet rdInfoSampleSet = new OperationSet(rdOPMetadata.getStudyId(), opId);
-		Map<String, Object> rdMatrixSampleSetLHM = rdInfoSampleSet.getOpSetLHM();
+		Map<String, Object> rdMatrixSampleSetMap = rdInfoSampleSet.getOpSetMap();
 
 		NetcdfFile ncFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());
-		rdMatrixSampleSetLHM = rdInfoSampleSet.fillOpSetLHMWithVariable(ncFile, cNetCDF.Census.VAR_OP_SAMPLES_HETZYRAT);
+		rdMatrixSampleSetMap = rdInfoSampleSet.fillOpSetMapWithVariable(ncFile, cNetCDF.Census.VAR_OP_SAMPLES_HETZYRAT);
 
 		ncFile.close();
-		return rdMatrixSampleSetLHM;
+		return rdMatrixSampleSetMap;
 	}
 }

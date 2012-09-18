@@ -56,7 +56,7 @@ public class CurrentMatrixPanel extends JPanel {
 
 	// Variables declaration
 	private Matrix matrix;
-	private Map<Integer, Object> treeChildrenLHM;
+	private Map<Integer, Object> treeChildrenMap;
 	private JButton btn_Back;
 	private JButton btn_DeleteMatrix;
 	private JButton btn_DeleteOperation;
@@ -84,7 +84,7 @@ public class CurrentMatrixPanel extends JPanel {
 
 		matrix = new org.gwaspi.model.Matrix(_matrixId);
 		DefaultMutableTreeNode matrixNode = (DefaultMutableTreeNode) GWASpiExplorerPanel.getSingleton().getTree().getLastSelectedPathComponent();
-		treeChildrenLHM = NodeToPathCorrespondence.buildNodeToPathCorrespondence(matrixNode, true);
+		treeChildrenMap = NodeToPathCorrespondence.buildNodeToPathCorrespondence(matrixNode, true);
 
 		pnl_MatrixDesc = new JPanel();
 		scrl_MatrixDesc = new JScrollPane();

@@ -24,13 +24,13 @@ public class GatherHardyWeinbergData {
 		OperationMetadata rdOPMetadata = new OperationMetadata(opId);
 
 		OperationSet rdInfoMarkerSet = new OperationSet(rdOPMetadata.getStudyId(), opId);
-		Map<String, Object> rdMatrixMarkerSetLHM = rdInfoMarkerSet.getOpSetLHM();
+		Map<String, Object> rdMatrixMarkerSetMap = rdInfoMarkerSet.getOpSetMap();
 
 		NetcdfFile assocNcFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());
-		rdMatrixMarkerSetLHM = rdInfoMarkerSet.fillOpSetLHMWithVariable(assocNcFile, cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWPval_ALT);
+		rdMatrixMarkerSetMap = rdInfoMarkerSet.fillOpSetMapWithVariable(assocNcFile, cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWPval_ALT);
 
 		assocNcFile.close();
-		return rdMatrixMarkerSetLHM;
+		return rdMatrixMarkerSetMap;
 	}
 
 	public static Map<String, Object> loadHWPval_ALL(int opId) throws IOException {
@@ -38,13 +38,13 @@ public class GatherHardyWeinbergData {
 		OperationMetadata rdOPMetadata = new OperationMetadata(opId);
 
 		OperationSet rdInfoMarkerSet = new OperationSet(rdOPMetadata.getStudyId(), opId);
-		Map<String, Object> rdMatrixMarkerSetLHM = rdInfoMarkerSet.getOpSetLHM();
+		Map<String, Object> rdMatrixMarkerSetMap = rdInfoMarkerSet.getOpSetMap();
 
 		NetcdfFile assocNcFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());
-		rdMatrixMarkerSetLHM = rdInfoMarkerSet.fillOpSetLHMWithVariable(assocNcFile, cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWPval_ALL);
+		rdMatrixMarkerSetMap = rdInfoMarkerSet.fillOpSetMapWithVariable(assocNcFile, cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWPval_ALL);
 
 		assocNcFile.close();
-		return rdMatrixMarkerSetLHM;
+		return rdMatrixMarkerSetMap;
 	}
 
 	public static Map<String, Object> loadHWPval_CASE(int opId) throws IOException {
@@ -52,13 +52,13 @@ public class GatherHardyWeinbergData {
 		OperationMetadata rdOPMetadata = new OperationMetadata(opId);
 
 		OperationSet rdInfoMarkerSet = new OperationSet(rdOPMetadata.getStudyId(), opId);
-		Map<String, Object> rdMatrixMarkerSetLHM = rdInfoMarkerSet.getOpSetLHM();
+		Map<String, Object> rdMatrixMarkerSetMap = rdInfoMarkerSet.getOpSetMap();
 
 		NetcdfFile assocNcFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());
-		rdMatrixMarkerSetLHM = rdInfoMarkerSet.fillOpSetLHMWithVariable(assocNcFile, cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWPval_CASE);
+		rdMatrixMarkerSetMap = rdInfoMarkerSet.fillOpSetMapWithVariable(assocNcFile, cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWPval_CASE);
 
 		assocNcFile.close();
-		return rdMatrixMarkerSetLHM;
+		return rdMatrixMarkerSetMap;
 	}
 
 	public static Map<String, Object> loadHWPval_CTRL(int opId) throws IOException {
@@ -66,13 +66,13 @@ public class GatherHardyWeinbergData {
 		OperationMetadata rdOPMetadata = new OperationMetadata(opId);
 
 		OperationSet rdInfoMarkerSet = new OperationSet(rdOPMetadata.getStudyId(), opId);
-		Map<String, Object> rdMatrixMarkerSetLHM = rdInfoMarkerSet.getOpSetLHM();
+		Map<String, Object> rdMatrixMarkerSetMap = rdInfoMarkerSet.getOpSetMap();
 
 		NetcdfFile assocNcFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());
-		rdMatrixMarkerSetLHM = rdInfoMarkerSet.fillOpSetLHMWithVariable(assocNcFile, cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWPval_CTRL);
+		rdMatrixMarkerSetMap = rdInfoMarkerSet.fillOpSetMapWithVariable(assocNcFile, cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWPval_CTRL);
 
 		assocNcFile.close();
-		return rdMatrixMarkerSetLHM;
+		return rdMatrixMarkerSetMap;
 	}
 
 	public static Map<String, Object> loadHWHETZY_ALT(int opId) throws IOException {
@@ -80,13 +80,13 @@ public class GatherHardyWeinbergData {
 		OperationMetadata rdOPMetadata = new OperationMetadata(opId);
 
 		OperationSet rdInfoMarkerSet = new OperationSet(rdOPMetadata.getStudyId(), opId);
-		Map<String, Object> rdMatrixMarkerSetLHM = rdInfoMarkerSet.getOpSetLHM();
+		Map<String, Object> rdMatrixMarkerSetMap = rdInfoMarkerSet.getOpSetMap();
 
 		NetcdfFile assocNcFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());
-		rdMatrixMarkerSetLHM = rdInfoMarkerSet.fillOpSetLHMWithVariable(assocNcFile, cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWHETZY_ALT);
+		rdMatrixMarkerSetMap = rdInfoMarkerSet.fillOpSetMapWithVariable(assocNcFile, cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWHETZY_ALT);
 
 		assocNcFile.close();
-		return rdMatrixMarkerSetLHM;
+		return rdMatrixMarkerSetMap;
 	}
 
 	public static Map<String, Object> loadHWHETZY_ALL(int opId) throws IOException {
@@ -94,13 +94,13 @@ public class GatherHardyWeinbergData {
 		OperationMetadata rdOPMetadata = new OperationMetadata(opId);
 
 		OperationSet rdInfoMarkerSet = new OperationSet(rdOPMetadata.getStudyId(), opId);
-		Map<String, Object> rdMatrixMarkerSetLHM = rdInfoMarkerSet.getOpSetLHM();
+		Map<String, Object> rdMatrixMarkerSetMap = rdInfoMarkerSet.getOpSetMap();
 
 		NetcdfFile assocNcFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());
-		rdMatrixMarkerSetLHM = rdInfoMarkerSet.fillOpSetLHMWithVariable(assocNcFile, cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWHETZY_ALL);
+		rdMatrixMarkerSetMap = rdInfoMarkerSet.fillOpSetMapWithVariable(assocNcFile, cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWHETZY_ALL);
 
 		assocNcFile.close();
-		return rdMatrixMarkerSetLHM;
+		return rdMatrixMarkerSetMap;
 	}
 
 	public static Map<String, Object> loadHWHETZY_CASE(int opId) throws IOException {
@@ -108,13 +108,13 @@ public class GatherHardyWeinbergData {
 		OperationMetadata rdOPMetadata = new OperationMetadata(opId);
 
 		OperationSet rdInfoMarkerSet = new OperationSet(rdOPMetadata.getStudyId(), opId);
-		Map<String, Object> rdMatrixMarkerSetLHM = rdInfoMarkerSet.getOpSetLHM();
+		Map<String, Object> rdMatrixMarkerSetMap = rdInfoMarkerSet.getOpSetMap();
 
 		NetcdfFile assocNcFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());
-		rdMatrixMarkerSetLHM = rdInfoMarkerSet.fillOpSetLHMWithVariable(assocNcFile, cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWHETZY_CASE);
+		rdMatrixMarkerSetMap = rdInfoMarkerSet.fillOpSetMapWithVariable(assocNcFile, cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWHETZY_CASE);
 
 		assocNcFile.close();
-		return rdMatrixMarkerSetLHM;
+		return rdMatrixMarkerSetMap;
 	}
 
 	public static Map<String, Object> loadHWHETZY_CTRL(int opId) throws IOException {
@@ -122,13 +122,13 @@ public class GatherHardyWeinbergData {
 		OperationMetadata rdOPMetadata = new OperationMetadata(opId);
 
 		OperationSet rdInfoMarkerSet = new OperationSet(rdOPMetadata.getStudyId(), opId);
-		Map<String, Object> rdMatrixMarkerSetLHM = rdInfoMarkerSet.getOpSetLHM();
+		Map<String, Object> rdMatrixMarkerSetMap = rdInfoMarkerSet.getOpSetMap();
 
 		NetcdfFile assocNcFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());
-		rdMatrixMarkerSetLHM = rdInfoMarkerSet.fillOpSetLHMWithVariable(assocNcFile, cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWHETZY_CTRL);
+		rdMatrixMarkerSetMap = rdInfoMarkerSet.fillOpSetMapWithVariable(assocNcFile, cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWHETZY_CTRL);
 
 		assocNcFile.close();
-		return rdMatrixMarkerSetLHM;
+		return rdMatrixMarkerSetMap;
 	}
 	//</editor-fold>
 }

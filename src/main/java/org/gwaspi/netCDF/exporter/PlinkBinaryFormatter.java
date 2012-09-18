@@ -62,17 +62,17 @@ public class PlinkBinaryFormatter implements Formatter {
 		//     Allele 2
 
 		//PURGE MARKERSET
-		rdMarkerSet.initFullMarkerIdSetLHM();
+		rdMarkerSet.initFullMarkerIdSetMap();
 		rdMarkerSet.fillWith("");
 
 		//MARKERSET CHROMOSOME
-		rdMarkerSet.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
+		rdMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
 
 		//MARKERSET RSID
-		rdMarkerSet.appendVariableToMarkerSetLHMValue(cNetCDF.Variables.VAR_MARKERS_RSID, sep);
+		rdMarkerSet.appendVariableToMarkerSetMapValue(cNetCDF.Variables.VAR_MARKERS_RSID, sep);
 
 		//DEFAULT GENETIC DISTANCE = 0
-		for (Map.Entry<String, Object> entry : rdMarkerSet.getMarkerIdSetLHM().entrySet()) {
+		for (Map.Entry<String, Object> entry : rdMarkerSet.getMarkerIdSetMap().entrySet()) {
 			StringBuilder value = new StringBuilder(entry.getValue().toString());
 			value.append(sep);
 			value.append("0");
@@ -80,28 +80,28 @@ public class PlinkBinaryFormatter implements Formatter {
 		}
 
 		//MARKERSET POSITION
-		rdMarkerSet.appendVariableToMarkerSetLHMValue(cNetCDF.Variables.VAR_MARKERS_POS, sep);
+		rdMarkerSet.appendVariableToMarkerSetMapValue(cNetCDF.Variables.VAR_MARKERS_POS, sep);
 
 		//ALLELES
 		OperationsList opList = new OperationsList(rdMatrixMetadata.getMatrixId());
 		int markersQAOpId = opList.getIdOfLastOperationTypeOccurance(cNetCDF.Defaults.OPType.MARKER_QA);
 
-		Map<String, Object> minorAllelesLHM = GatherQAMarkersData.loadMarkerQAMinorAlleles(markersQAOpId);
-		Map<String, Object> majorAllelesLHM = GatherQAMarkersData.loadMarkerQAMajorAlleles(markersQAOpId);
-		Map<String, Object> minorAlleleFreqLHM = GatherQAMarkersData.loadMarkerQAMinorAlleleFrequency(markersQAOpId);
-		for (Map.Entry<String, Object> entry : rdMarkerSet.getMarkerIdSetLHM().entrySet()) {
+		Map<String, Object> minorAllelesMap = GatherQAMarkersData.loadMarkerQAMinorAlleles(markersQAOpId);
+		Map<String, Object> majorAllelesMap = GatherQAMarkersData.loadMarkerQAMajorAlleles(markersQAOpId);
+		Map<String, Object> minorAlleleFreqMap = GatherQAMarkersData.loadMarkerQAMinorAlleleFrequency(markersQAOpId);
+		for (Map.Entry<String, Object> entry : rdMarkerSet.getMarkerIdSetMap().entrySet()) {
 			String key = entry.getKey();
-			String minorAllele = minorAllelesLHM.get(key).toString();
-			String majorAllele = majorAllelesLHM.get(key).toString();
-			Double minAlleleFreq = (Double) minorAlleleFreqLHM.get(key);
+			String minorAllele = minorAllelesMap.get(key).toString();
+			String majorAllele = majorAllelesMap.get(key).toString();
+			Double minAlleleFreq = (Double) minorAlleleFreqMap.get(key);
 
 			if (minAlleleFreq == 0.5) { // IF BOTH ALLELES ARE EQUALLY COMMON, USE ALPHABETICAL ORDER
 				String tmpMinorAllele = majorAllele;
 				majorAllele = minorAllele;
 				minorAllele = tmpMinorAllele;
 
-				majorAllelesLHM.put(key, majorAllele);
-				minorAllelesLHM.put(key, minorAllele);
+				majorAllelesMap.put(key, majorAllele);
+				minorAllelesMap.put(key, minorAllele);
 			}
 
 			Object values = entry.getValue();
@@ -151,12 +151,12 @@ public class PlinkBinaryFormatter implements Formatter {
 		int byteCount = 0;
 		byte[] wrBytes = new byte[byteChunkSize];
 		// ITERATE THROUGH ALL MARKERS, ONE SAMPLESET AT A TIME
-		for (String markerId : rdMarkerSet.getMarkerIdSetLHM().keySet()) {
-			String tmpMinorAllele = minorAllelesLHM.get(markerId).toString();
-			String tmpMajorAllele = majorAllelesLHM.get(markerId).toString();
+		for (String markerId : rdMarkerSet.getMarkerIdSetMap().keySet()) {
+			String tmpMinorAllele = minorAllelesMap.get(markerId).toString();
+			String tmpMajorAllele = majorAllelesMap.get(markerId).toString();
 
 			// GET SAMPLESET FOR CURRENT MARKER
-			Map<String, Object> remainingSampleSet = rdSampleSet.readAllSamplesGTsFromCurrentMarkerToLHM(rdNcFile, rdSampleSetMap, markerNb);
+			Map<String, Object> remainingSampleSet = rdSampleSet.readAllSamplesGTsFromCurrentMarkerToMap(rdNcFile, rdSampleSetMap, markerNb);
 			rdSampleSetMap = remainingSampleSet; // FIXME This line should most likely be removed, because further down this is used again ... check out!
 
 			for (Iterator<String> rdSampleIds = remainingSampleSet.keySet().iterator(); rdSampleIds.hasNext();) {

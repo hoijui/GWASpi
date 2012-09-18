@@ -54,7 +54,7 @@ public class StudyManagementPanel extends JPanel {
 
 	// Variables declaration
 	private Study study;
-	private Map<Integer, Object> treeChildrenLHM = new LinkedHashMap<Integer, Object>();
+	private Map<Integer, Object> treeChildrenMap = new LinkedHashMap<Integer, Object>();
 	private JButton btn_AddStudy;
 	private JButton btn_DeleteStudy;
 	private JLabel lbl_Desc;
@@ -75,7 +75,7 @@ public class StudyManagementPanel extends JPanel {
 	public StudyManagementPanel() throws IOException {
 
 		DefaultMutableTreeNode studyManagementNode = (DefaultMutableTreeNode) GWASpiExplorerPanel.getSingleton().getTree().getLastSelectedPathComponent();
-		treeChildrenLHM = NodeToPathCorrespondence.buildNodeToPathCorrespondence(studyManagementNode, false);
+		treeChildrenMap = NodeToPathCorrespondence.buildNodeToPathCorrespondence(studyManagementNode, false);
 
 		pnl_StudyDesc = new JPanel();
 		lbl_NewStudyName = new JLabel();

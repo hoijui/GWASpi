@@ -39,58 +39,58 @@ public class OP_GenotypicAssociationTests_opt {
 		int resultAssocId = Integer.MIN_VALUE;
 
 		//<editor-fold defaultstate="collapsed" desc="EXCLUSION MARKERS FROM HW">
-		Map<String, Object> excludeMarkerSetLHM = new LinkedHashMap<String, Object>();
+		Map<String, Object> excludeMarkerSetMap = new LinkedHashMap<String, Object>();
 		int totalMarkerNb = 0;
 
 		if (hwOP != null) {
 			OperationMetadata hwMetadata = new OperationMetadata(hwOP.getOperationId());
 			NetcdfFile rdHWNcFile = NetcdfFile.open(hwMetadata.getPathToMatrix());
 			OperationSet rdHWOperationSet = new OperationSet(hwMetadata.getStudyId(), hwMetadata.getOPId());
-			Map<String, Object> rdHWMarkerSetLHM = rdHWOperationSet.getOpSetLHM();
-			totalMarkerNb = rdHWMarkerSetLHM.size();
+			Map<String, Object> rdHWMarkerSetMap = rdHWOperationSet.getOpSetMap();
+			totalMarkerNb = rdHWMarkerSetMap.size();
 
 			// EXCLUDE MARKER BY HARDY WEINBERG THRESHOLD
-			rdHWMarkerSetLHM = rdHWOperationSet.fillOpSetLHMWithVariable(rdHWNcFile, cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWPval_CTRL);
-			for (Map.Entry<String, Object> entry : rdHWMarkerSetLHM.entrySet()) {
+			rdHWMarkerSetMap = rdHWOperationSet.fillOpSetMapWithVariable(rdHWNcFile, cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWPval_CTRL);
+			for (Map.Entry<String, Object> entry : rdHWMarkerSetMap.entrySet()) {
 				double value = (Double) entry.getValue();
 				if (value < hwThreshold) {
-					excludeMarkerSetLHM.put(entry.getKey(), value);
+					excludeMarkerSetMap.put(entry.getKey(), value);
 				}
 			}
 
-			if (rdHWMarkerSetLHM != null) {
-				rdHWMarkerSetLHM.clear();
+			if (rdHWMarkerSetMap != null) {
+				rdHWMarkerSetMap.clear();
 			}
 			rdHWNcFile.close();
 		}
 		//</editor-fold>
 
-		if (excludeMarkerSetLHM.size() < totalMarkerNb) { // CHECK IF THERE IS ANY DATA LEFT TO PROCESS AFTER PICKING
+		if (excludeMarkerSetMap.size() < totalMarkerNb) { // CHECK IF THERE IS ANY DATA LEFT TO PROCESS AFTER PICKING
 			OperationMetadata rdCensusOPMetadata = new OperationMetadata(markerCensusOP.getOperationId());
 			NetcdfFile rdOPNcFile = NetcdfFile.open(rdCensusOPMetadata.getPathToMatrix());
 
 			OperationSet rdCaseMarkerSet = new OperationSet(rdCensusOPMetadata.getStudyId(), markerCensusOP.getOperationId());
 			OperationSet rdCtrlMarkerSet = new OperationSet(rdCensusOPMetadata.getStudyId(), markerCensusOP.getOperationId());
-			Map<String, Object> rdSampleSetLHM = rdCaseMarkerSet.getImplicitSetLHM();
-			Map<String, Object> rdCaseMarkerIdSetLHM = rdCaseMarkerSet.getOpSetLHM();
-			Map<String, Object> rdCtrlMarkerIdSetLHM = rdCtrlMarkerSet.getOpSetLHM();
+			Map<String, Object> rdSampleSetMap = rdCaseMarkerSet.getImplicitSetMap();
+			Map<String, Object> rdCaseMarkerIdSetMap = rdCaseMarkerSet.getOpSetMap();
+			Map<String, Object> rdCtrlMarkerIdSetMap = rdCtrlMarkerSet.getOpSetMap();
 
-			Map<String, Object> wrMarkerSetLHM = new LinkedHashMap<String, Object>();
-			for (String key : rdCtrlMarkerIdSetLHM.keySet()) {
-				if (!excludeMarkerSetLHM.containsKey(key)) {
-					wrMarkerSetLHM.put(key, "");
+			Map<String, Object> wrMarkerSetMap = new LinkedHashMap<String, Object>();
+			for (String key : rdCtrlMarkerIdSetMap.keySet()) {
+				if (!excludeMarkerSetMap.containsKey(key)) {
+					wrMarkerSetMap.put(key, "");
 				}
 			}
 
 			// GATHER INFO FROM ORIGINAL MATRIX
 			MatrixMetadata parentMatrixMetadata = new MatrixMetadata(markerCensusOP.getParentMatrixId());
 			MarkerSet_opt rdMarkerSet = new MarkerSet_opt(parentMatrixMetadata.getStudyId(), markerCensusOP.getParentMatrixId());
-			rdMarkerSet.initFullMarkerIdSetLHM();
+			rdMarkerSet.initFullMarkerIdSetMap();
 
 			// retrieve chromosome info
-			rdMarkerSet.fillMarkerSetLHMWithChrAndPos();
-			MarkerSet_opt.replaceWithValuesFrom(wrMarkerSetLHM, rdMarkerSet.getMarkerIdSetLHM());
-			Map<String, Object> rdChrInfoSetLHM = org.gwaspi.netCDF.matrices.Utils.aggregateChromosomeInfo(wrMarkerSetLHM, 0, 1);
+			rdMarkerSet.fillMarkerSetMapWithChrAndPos();
+			MarkerSet_opt.replaceWithValuesFrom(wrMarkerSetMap, rdMarkerSet.getMarkerIdSetMap());
+			Map<String, Object> rdChrInfoSetMap = org.gwaspi.netCDF.matrices.Utils.aggregateChromosomeInfo(wrMarkerSetMap, 0, 1);
 
 			NetcdfFileWriteable wrOPNcFile = null;
 			try {
@@ -100,9 +100,9 @@ public class OP_GenotypicAssociationTests_opt {
 				OperationFactory wrOPHandler = new OperationFactory(rdCensusOPMetadata.getStudyId(),
 						"Genotypic Association Test", // friendly name
 						"Genotypic test on " + markerCensusOP.getOperationFriendlyName() + "\n" + rdCensusOPMetadata.getDescription() + "\nHardy-Weinberg threshold: " + dfSci.format(hwThreshold), //description
-						wrMarkerSetLHM.size(),
+						wrMarkerSetMap.size(),
 						rdCensusOPMetadata.getImplicitSetSize(),
-						rdChrInfoSetLHM.size(),
+						rdChrInfoSetMap.size(),
 						cNetCDF.Defaults.OPType.GENOTYPICTEST.toString(),
 						rdCensusOPMetadata.getParentMatrixId(), // Parent matrixId
 						markerCensusOP.getOperationId()); // Parent operationId
@@ -117,7 +117,7 @@ public class OP_GenotypicAssociationTests_opt {
 
 				//<editor-fold defaultstate="collapsed" desc="METADATA WRITER">
 				// MARKERSET MARKERID
-				ArrayChar.D2 markersD2 = Utils.writeLHMKeysToD2ArrayChar(wrMarkerSetLHM, cNetCDF.Strides.STRIDE_MARKER_NAME);
+				ArrayChar.D2 markersD2 = Utils.writeMapKeysToD2ArrayChar(wrMarkerSetMap, cNetCDF.Strides.STRIDE_MARKER_NAME);
 				int[] markersOrig = new int[]{0, 0};
 				try {
 					wrOPNcFile.write(cNetCDF.Variables.VAR_OPSET, markersOrig, markersD2);
@@ -128,16 +128,16 @@ public class OP_GenotypicAssociationTests_opt {
 				}
 
 				// MARKERSET RSID
-				rdCaseMarkerIdSetLHM = rdCaseMarkerSet.fillOpSetLHMWithVariable(rdOPNcFile, cNetCDF.Variables.VAR_MARKERS_RSID);
-				for (Map.Entry<String, Object> entry : wrMarkerSetLHM.entrySet()) {
+				rdCaseMarkerIdSetMap = rdCaseMarkerSet.fillOpSetMapWithVariable(rdOPNcFile, cNetCDF.Variables.VAR_MARKERS_RSID);
+				for (Map.Entry<String, Object> entry : wrMarkerSetMap.entrySet()) {
 					String key = entry.getKey();
-					Object value = rdCaseMarkerIdSetLHM.get(key);
+					Object value = rdCaseMarkerIdSetMap.get(key);
 					entry.setValue(value);
 				}
-				Utils.saveCharLHMValueToWrMatrix(wrOPNcFile, wrMarkerSetLHM, cNetCDF.Variables.VAR_MARKERS_RSID, cNetCDF.Strides.STRIDE_MARKER_NAME);
+				Utils.saveCharMapValueToWrMatrix(wrOPNcFile, wrMarkerSetMap, cNetCDF.Variables.VAR_MARKERS_RSID, cNetCDF.Strides.STRIDE_MARKER_NAME);
 
 				// WRITE SAMPLESET TO MATRIX FROM SAMPLES ARRAYLIST
-				ArrayChar.D2 samplesD2 = org.gwaspi.netCDF.operations.Utils.writeLHMKeysToD2ArrayChar(rdSampleSetLHM, cNetCDF.Strides.STRIDE_SAMPLE_NAME);
+				ArrayChar.D2 samplesD2 = org.gwaspi.netCDF.operations.Utils.writeMapKeysToD2ArrayChar(rdSampleSetMap, cNetCDF.Strides.STRIDE_SAMPLE_NAME);
 
 				int[] sampleOrig = new int[]{0, 0};
 				try {
@@ -151,45 +151,45 @@ public class OP_GenotypicAssociationTests_opt {
 
 				// WRITE CHROMOSOME INFO
 				// Set of chromosomes found in matrix along with number of markersinfo
-				org.gwaspi.netCDF.operations.Utils.saveCharLHMKeyToWrMatrix(wrOPNcFile, rdChrInfoSetLHM, cNetCDF.Variables.VAR_CHR_IN_MATRIX, 8);
+				org.gwaspi.netCDF.operations.Utils.saveCharMapKeyToWrMatrix(wrOPNcFile, rdChrInfoSetMap, cNetCDF.Variables.VAR_CHR_IN_MATRIX, 8);
 				// Number of marker per chromosome & max pos for each chromosome
 				int[] columns = new int[]{0, 1, 2, 3};
-				org.gwaspi.netCDF.operations.Utils.saveIntLHMD2ToWrMatrix(wrOPNcFile, rdChrInfoSetLHM, columns, cNetCDF.Variables.VAR_CHR_INFO);
+				org.gwaspi.netCDF.operations.Utils.saveIntMapD2ToWrMatrix(wrOPNcFile, rdChrInfoSetMap, columns, cNetCDF.Variables.VAR_CHR_INFO);
 				//</editor-fold>
 
 				//<editor-fold defaultstate="collapsed" desc="GET CENSUS & PERFORM GENOTYPIC TESTS">
-				// CLEAN LHMs FROM MARKERS THAT FAILED THE HARDY WEINBERG THRESHOLD
-				Map<String, Object> wrCaseMarkerIdSetLHM = new LinkedHashMap<String, Object>();
-				rdCaseMarkerIdSetLHM = rdCaseMarkerSet.fillOpSetLHMWithVariable(rdOPNcFile, cNetCDF.Census.VAR_OP_MARKERS_CENSUSCASE);
-				if (rdCaseMarkerIdSetLHM != null) {
-					for (Map.Entry<String, Object> entry : rdCaseMarkerIdSetLHM.entrySet()) {
+				// CLEAN Maps FROM MARKERS THAT FAILED THE HARDY WEINBERG THRESHOLD
+				Map<String, Object> wrCaseMarkerIdSetMap = new LinkedHashMap<String, Object>();
+				rdCaseMarkerIdSetMap = rdCaseMarkerSet.fillOpSetMapWithVariable(rdOPNcFile, cNetCDF.Census.VAR_OP_MARKERS_CENSUSCASE);
+				if (rdCaseMarkerIdSetMap != null) {
+					for (Map.Entry<String, Object> entry : rdCaseMarkerIdSetMap.entrySet()) {
 						String key = entry.getKey();
 						Object value = entry.getValue();
 
-						if (!excludeMarkerSetLHM.containsKey(key)) {
-							wrCaseMarkerIdSetLHM.put(key, value);
+						if (!excludeMarkerSetMap.containsKey(key)) {
+							wrCaseMarkerIdSetMap.put(key, value);
 						}
 					}
 
-					rdCaseMarkerIdSetLHM.clear();
+					rdCaseMarkerIdSetMap.clear();
 				}
 
 				Map<String, Object> wrCtrlMarkerSet = new LinkedHashMap<String, Object>();
-				rdCtrlMarkerIdSetLHM = rdCtrlMarkerSet.fillOpSetLHMWithVariable(rdOPNcFile, cNetCDF.Census.VAR_OP_MARKERS_CENSUSCTRL);
-				if (rdCtrlMarkerIdSetLHM != null) {
-					for (Map.Entry<String, Object> entry : rdCtrlMarkerIdSetLHM.entrySet()) {
+				rdCtrlMarkerIdSetMap = rdCtrlMarkerSet.fillOpSetMapWithVariable(rdOPNcFile, cNetCDF.Census.VAR_OP_MARKERS_CENSUSCTRL);
+				if (rdCtrlMarkerIdSetMap != null) {
+					for (Map.Entry<String, Object> entry : rdCtrlMarkerIdSetMap.entrySet()) {
 						String key = entry.getKey();
 
-						if (!excludeMarkerSetLHM.containsKey(key)) {
+						if (!excludeMarkerSetMap.containsKey(key)) {
 							wrCtrlMarkerSet.put(key, entry.getValue());
 						}
 					}
 
-					rdCtrlMarkerIdSetLHM.clear();
+					rdCtrlMarkerIdSetMap.clear();
 				}
 
 				log.info(Text.All.processing);
-				performAssociationTests(wrOPNcFile, wrCaseMarkerIdSetLHM, wrCtrlMarkerSet);
+				performAssociationTests(wrOPNcFile, wrCaseMarkerIdSetMap, wrCtrlMarkerSet);
 
 				org.gwaspi.global.Utils.sysoutCompleted("Genotypic Association Tests");
 				//</editor-fold>
@@ -214,10 +214,10 @@ public class OP_GenotypicAssociationTests_opt {
 		return resultAssocId;
 	}
 
-	private void performAssociationTests(NetcdfFileWriteable wrNcFile, Map<String, Object> wrCaseMarkerIdSetLHM, Map<String, Object> wrCtrlMarkerSet) {
+	private void performAssociationTests(NetcdfFileWriteable wrNcFile, Map<String, Object> wrCaseMarkerIdSetMap, Map<String, Object> wrCtrlMarkerSet) {
 		// Iterate through markerset
 		int markerNb = 0;
-		for (Map.Entry<String, Object> entry : wrCaseMarkerIdSetLHM.entrySet()) {
+		for (Map.Entry<String, Object> entry : wrCaseMarkerIdSetMap.entrySet()) {
 			String markerId = entry.getKey();
 
 			int[] caseCntgTable = (int[]) entry.getValue();
@@ -256,7 +256,7 @@ public class OP_GenotypicAssociationTests_opt {
 			store[1] = gntypPval;
 			store[2] = gntypOR[0];
 			store[3] = gntypOR[1];
-			wrCaseMarkerIdSetLHM.put(markerId, store); // Re-use LHM to store P-value and stuff
+			wrCaseMarkerIdSetMap.put(markerId, store); // Re-use Map to store P-value and stuff
 
 			markerNb++;
 			if (markerNb % 100000 == 0) {
@@ -266,7 +266,7 @@ public class OP_GenotypicAssociationTests_opt {
 
 		//<editor-fold defaultstate="collapsed" desc="ALLELICTEST DATA WRITER">
 		int[] boxes = new int[]{0, 1, 2, 3};
-		Utils.saveDoubleLHMD2ToWrMatrix(wrNcFile, wrCaseMarkerIdSetLHM, boxes, cNetCDF.Association.VAR_OP_MARKERS_ASGenotypicAssociationTP2OR);
+		Utils.saveDoubleMapD2ToWrMatrix(wrNcFile, wrCaseMarkerIdSetMap, boxes, cNetCDF.Association.VAR_OP_MARKERS_ASGenotypicAssociationTP2OR);
 		//</editor-fold>
 	}
 }

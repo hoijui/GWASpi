@@ -80,7 +80,7 @@ public final class ManhattanPlotZoom extends JPanel {
 	private int opId;
 	private Operation op;
 	private OperationMetadata rdOPMetadata;
-	private Map<String, Object> labelerLHM;
+	private Map<String, Object> labelerMap;
 	private MatrixMetadata rdMatrixMetadata;
 	private String origMarkerId;
 	private String origChr;
@@ -165,7 +165,7 @@ public final class ManhattanPlotZoom extends JPanel {
 			this.rdMatrixMetadata = new MatrixMetadata(this.rdOPMetadata.getParentMatrixId());
 
 //			OperationSet rdAssocMarkerSet = new OperationSet(this.rdOPMetadata.getStudyId(), this.opId);
-//			this.labelerLHM = rdAssocMarkerSet.getOpSetLHM();
+//			this.labelerMap = rdAssocMarkerSet.getOpSetMap();
 		} catch (IOException ex) {
 			log.error(null, ex);
 		}
@@ -205,7 +205,7 @@ public final class ManhattanPlotZoom extends JPanel {
 			rdMatrixMetadata = new MatrixMetadata(rdOPMetadata.getParentMatrixId());
 
 //            OperationSet rdAssocMarkerSet = new OperationSet(rdOPMetadata.getStudyId(), opId);
-//            labelerLHM = rdAssocMarkerSet.getOpSetLHM();
+//            labelerMap = rdAssocMarkerSet.getOpSetMap();
 		} catch (IOException ex) {
 			log.error(null, ex);
 		}
@@ -751,12 +751,12 @@ public final class ManhattanPlotZoom extends JPanel {
 		return chart;
 	}
 
-	public Map<String, Object> getLabelerLHM() {
-		return labelerLHM;
+	public Map<String, Object> getLabelerMap() {
+		return labelerMap;
 	}
 
-	public void setLabelerLHM(Map<String, Object> labelerLHM) {
-		this.labelerLHM = labelerLHM;
+	public void setLabelerMap(Map<String, Object> labelerMap) {
+		this.labelerMap = labelerMap;
 	}
 
 	public long getCenterPhysPos() {
@@ -785,8 +785,8 @@ public final class ManhattanPlotZoom extends JPanel {
 			double pValue = dataset.getYValue(series, item);
 
 			String chrPos = chr + "_" + dfInteger.format(position);
-			if (getLabelerLHM().containsKey(chrPos)) {
-				toolTip.append(getLabelerLHM().get(chrPos));
+			if (getLabelerMap().containsKey(chrPos)) {
+				toolTip.append(getLabelerMap().get(chrPos));
 				toolTip.append("<br>");
 			}
 
@@ -836,12 +836,12 @@ public final class ManhattanPlotZoom extends JPanel {
 				chrPos.append(position);
 				if (pV < this.threshold) {
 
-					rsLabel = getLabelerLHM().get(chrPos.toString()).toString();
+					rsLabel = getLabelerMap().get(chrPos.toString()).toString();
 
 					//result = value.toString().substring(0, 4);  // could apply formatting here
 				}
-				if (getLabelerLHM().get(chrPos.toString()).toString().equals(origMarkerId)) {
-					rsLabel = getLabelerLHM().get(chrPos.toString()).toString();
+				if (getLabelerMap().get(chrPos.toString()).toString().equals(origMarkerId)) {
+					rsLabel = getLabelerMap().get(chrPos.toString()).toString();
 					rsLabel = "◄ " + rsLabel + "";
 				}
 			}

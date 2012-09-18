@@ -14,19 +14,19 @@ public class Utils {
 	private Utils() {
 	}
 
-	public static Map<String, Object> aggregateChromosomeInfo(Map<String, Object> wrMarkerSetLHM, int chrIdx, int posIdx) { //LHM to be aggregated, where is the chr, where is the position
+	public static Map<String, Object> aggregateChromosomeInfo(Map<String, Object> wrMarkerSetMap, int chrIdx, int posIdx) { //Map to be aggregated, where is the chr, where is the position
 		// RETRIEVE CHROMOSOMES INFO
-		Map<String, Object> chrSetLHM = new LinkedHashMap<String, Object>();
+		Map<String, Object> chrSetMap = new LinkedHashMap<String, Object>();
 		String tmpChr = "";
 		int firstPos = 0;
 		int markerCount = 0;
 		int idx = 0;
 		int[] chrInfo = new int[4];
-		for (Map.Entry<String, Object> entry : wrMarkerSetLHM.entrySet()) {
+		for (Map.Entry<String, Object> entry : wrMarkerSetMap.entrySet()) {
 			Object[] value = (Object[]) entry.getValue(); // markerid, rsId, chr, pos
 			if (!tmpChr.equals(value[chrIdx])) {
 				if (markerCount != 0) { // Not first time round
-					chrSetLHM.put(tmpChr, chrInfo);
+					chrSetMap.put(tmpChr, chrInfo);
 					chrInfo = new int[4];
 				}
 				firstPos = (Integer) value[posIdx]; // First physical position in chromosome
@@ -41,8 +41,8 @@ public class Utils {
 			markerCount++;
 			idx++;
 		}
-		chrSetLHM.put(tmpChr, chrInfo); // Store last chromosome info
+		chrSetMap.put(tmpChr, chrInfo); // Store last chromosome info
 
-		return chrSetLHM;
+		return chrSetMap;
 	}
 }

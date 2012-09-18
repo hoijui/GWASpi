@@ -140,16 +140,16 @@ class BeagleFormatter implements Formatter {
 			//</editor-fold>
 
 			//<editor-fold defaultstate="collapsed" desc="GENOTYPES">
-			rdMarkerSet.initFullMarkerIdSetLHM();
+			rdMarkerSet.initFullMarkerIdSetMap();
 
 			//Iterate through markerset
 			int markerNb = 0;
-			for (String markerId : rdMarkerSet.getMarkerIdSetLHM().keySet()) {
+			for (String markerId : rdMarkerSet.getMarkerIdSetMap().keySet()) {
 				StringBuilder markerLine = new StringBuilder("M" + sep + markerId.toString());
 
 				// Iterate through sampleset
 				StringBuilder currMarkerGTs = new StringBuilder();
-				Map<String, Object> remainingSampleSet = rdSampleSet.readAllSamplesGTsFromCurrentMarkerToLHM(rdNcFile, rdSampleSetMap, markerNb);
+				Map<String, Object> remainingSampleSet = rdSampleSet.readAllSamplesGTsFromCurrentMarkerToMap(rdNcFile, rdSampleSetMap, markerNb);
 				for (Object value : remainingSampleSet.values()) {
 					byte[] tempGT = (byte[]) value;
 					currMarkerGTs.append(sep);
@@ -185,10 +185,10 @@ class BeagleFormatter implements Formatter {
 			rdMarkerSet.fillWith("");
 
 			// MARKERSET RSID
-			rdMarkerSet.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_RSID);
+			rdMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_RSID);
 
 			// MARKERSET POSITION
-			rdMarkerSet.appendVariableToMarkerSetLHMValue(cNetCDF.Variables.VAR_MARKERS_POS, sep);
+			rdMarkerSet.appendVariableToMarkerSetMapValue(cNetCDF.Variables.VAR_MARKERS_POS, sep);
 
 			// WRITE KNOWN ALLELES FROM QA
 			// get MARKER_QA Operation
@@ -205,13 +205,13 @@ class BeagleFormatter implements Formatter {
 				NetcdfFile qaNcFile = NetcdfFile.open(qaMetadata.getPathToMatrix());
 
 				OperationSet rdOperationSet = new OperationSet(rdMatrixMetadata.getStudyId(), markersQAopId);
-				Map<String, Object> opMarkerSetLHM = rdOperationSet.getOpSetLHM();
+				Map<String, Object> opMarkerSetMap = rdOperationSet.getOpSetMap();
 
 				// MAJOR ALLELE
-				opMarkerSetLHM = rdOperationSet.fillOpSetLHMWithVariable(qaNcFile, cNetCDF.Census.VAR_OP_MARKERS_MAJALLELES);
-				for (Map.Entry<String, Object> entry : rdMarkerSet.getMarkerIdSetLHM().entrySet()) {
+				opMarkerSetMap = rdOperationSet.fillOpSetMapWithVariable(qaNcFile, cNetCDF.Census.VAR_OP_MARKERS_MAJALLELES);
+				for (Map.Entry<String, Object> entry : rdMarkerSet.getMarkerIdSetMap().entrySet()) {
 					String key = entry.getKey();
-					Object allele1Value = opMarkerSetLHM.get(key);
+					Object allele1Value = opMarkerSetMap.get(key);
 					Object infoValue = entry.getValue();
 
 					StringBuilder sb = new StringBuilder();
@@ -219,15 +219,15 @@ class BeagleFormatter implements Formatter {
 					sb.append(sep);
 					sb.append(allele1Value);
 
-					rdMarkerSet.getMarkerIdSetLHM().put(key, sb.toString());
+					rdMarkerSet.getMarkerIdSetMap().put(key, sb.toString());
 				}
 
 				// MINOR ALLELE
-				rdOperationSet.fillLHMWithDefaultValue(opMarkerSetLHM, "");
-				opMarkerSetLHM = rdOperationSet.fillOpSetLHMWithVariable(qaNcFile, cNetCDF.Census.VAR_OP_MARKERS_MINALLELES);
-				for (Map.Entry<String, Object> entry : rdMarkerSet.getMarkerIdSetLHM().entrySet()) {
+				rdOperationSet.fillMapWithDefaultValue(opMarkerSetMap, "");
+				opMarkerSetMap = rdOperationSet.fillOpSetMapWithVariable(qaNcFile, cNetCDF.Census.VAR_OP_MARKERS_MINALLELES);
+				for (Map.Entry<String, Object> entry : rdMarkerSet.getMarkerIdSetMap().entrySet()) {
 					String key = entry.getKey();
-					Object allele2Value = opMarkerSetLHM.get(key);
+					Object allele2Value = opMarkerSetMap.get(key);
 					Object infoValue = entry.getValue();
 
 					StringBuilder sb = new StringBuilder();
@@ -235,13 +235,13 @@ class BeagleFormatter implements Formatter {
 					sb.append(sep);
 					sb.append(allele2Value);
 
-					rdMarkerSet.getMarkerIdSetLHM().put(key, sb.toString());
+					rdMarkerSet.getMarkerIdSetMap().put(key, sb.toString());
 				}
 			}
 
-			// WRITE ALL LHM TO BUFFERWRITER
+			// WRITE ALL Map TO BUFFERWRITER
 			markerNb = 0;
-			for (Object value : rdMarkerSet.getMarkerIdSetLHM().values()) {
+			for (Object value : rdMarkerSet.getMarkerIdSetMap().values()) {
 				markerBW.append(value.toString());
 				markerBW.append("\n");
 				markerNb++;

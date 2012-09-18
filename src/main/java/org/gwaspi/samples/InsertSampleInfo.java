@@ -28,7 +28,7 @@ public class InsertSampleInfo {
 	private InsertSampleInfo() {
 	}
 
-	public static List<String> processData(Integer studyId, Map<String, Object> sampleInfoLHM) throws IOException {
+	public static List<String> processData(Integer studyId, Map<String, Object> sampleInfoMap) throws IOException {
 		/////////////////////////////////////////////////
 		///////// Retrieving Samplelist from DB /////////
 		/////////////////////////////////////////////////
@@ -49,22 +49,22 @@ public class InsertSampleInfo {
 		}
 
 		List<String> result = new ArrayList<String>();
-		if (!sampleInfoLHM.isEmpty()) {
+		if (!sampleInfoMap.isEmpty()) {
 			//FIRST UPDATE SAMPLES ALLREADY IN DB
-			updateSamplesByHashMap(studyId, sampleInfoLHM, samplesAllreadyInDBAL);
+			updateSamplesByHashMap(studyId, sampleInfoMap, samplesAllreadyInDBAL);
 
 			//NEXT INSERT ANY NEW SAMPLES
-			result = insertSamplesByHashMap(studyId, sampleInfoLHM, samplesAllreadyInDBAL);
+			result = insertSamplesByHashMap(studyId, sampleInfoMap, samplesAllreadyInDBAL);
 		}
 		return result;
 	}
 
-	private static List<String> insertSamplesByHashMap(Integer studyId, Map<String, Object> sampleInfoLHM, List<String> samplesAllreadyInDBAL) throws IOException {
+	private static List<String> insertSamplesByHashMap(Integer studyId, Map<String, Object> sampleInfoMap, List<String> samplesAllreadyInDBAL) throws IOException {
 
 		db = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
 
 		List<String> result = new ArrayList<String>();
-		for (Object value : sampleInfoLHM.values()) {
+		for (Object value : sampleInfoMap.values()) {
 			String[] cVals = (String[]) value;
 
 			String sampleId = cVals[GWASpi.sampleId];
@@ -112,12 +112,12 @@ public class InsertSampleInfo {
 		return result;
 	}
 
-	public static int updateSamplesByHashMap(Integer studyId, Map<String, Object> sampleInfoLHM, List<String> samplesAllreadyInDBAL) throws IOException {
+	public static int updateSamplesByHashMap(Integer studyId, Map<String, Object> sampleInfoMap, List<String> samplesAllreadyInDBAL) throws IOException {
 
 		db = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
 		int result = 0;
 
-		for (Object value : sampleInfoLHM.values()) {
+		for (Object value : sampleInfoMap.values()) {
 			String[] cVals = (String[]) value;
 
 			// Standardizing affection to CHAR(1), having 1=Unaffected, 2=Affected

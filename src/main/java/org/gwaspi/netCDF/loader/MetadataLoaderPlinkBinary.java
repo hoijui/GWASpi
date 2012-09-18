@@ -40,7 +40,7 @@ public class MetadataLoaderPlinkBinary implements MetadataLoader {
 		org.gwaspi.global.Utils.sysoutStart("initilaizing marker info");
 		System.out.println(Text.All.processing);
 
-		Map<String, Object> markerMetadataLHM = new LinkedHashMap<String, Object>();
+		Map<String, Object> markerMetadataMap = new LinkedHashMap<String, Object>();
 		for (Map.Entry<String, String> entry : tempTM.entrySet()) {
 			//chr;pos;markerId
 			String[] keyValues = entry.getKey().split(cNetCDF.Defaults.TMP_SEPARATOR);
@@ -66,11 +66,11 @@ public class MetadataLoaderPlinkBinary implements MetadataLoader {
 			markerInfo[3] = pos; // 3 => pos
 			markerInfo[4] = valValues; // 4 => alleles
 
-			markerMetadataLHM.put(keyValues[2], markerInfo);
+			markerMetadataMap.put(keyValues[2], markerInfo);
 		}
 
-		String description = "Generated sorted MarkerIdSet LHM sorted by chromosome and position";
-		return markerMetadataLHM;
+		String description = "Generated sorted MarkerIdSet Map sorted by chromosome and position";
+		return markerMetadataMap;
 	}
 
 	private static SortedMap<String, String> parseAndSortBimFile(String path) throws IOException {
@@ -122,7 +122,7 @@ public class MetadataLoaderPlinkBinary implements MetadataLoader {
 	public Map<String, Object> parseOrigBimFile(String path) throws IOException {
 		FileReader fr = new FileReader(path);
 		BufferedReader inputMapBR = new BufferedReader(fr);
-		Map<String, Object> origMarkerIdSetLHM = new LinkedHashMap<String, Object>();
+		Map<String, Object> origMarkerIdSetMap = new LinkedHashMap<String, Object>();
 
 		String l;
 
@@ -133,11 +133,11 @@ public class MetadataLoaderPlinkBinary implements MetadataLoader {
 			String markerId = mapVals[Plink_Binary.bim_markerId].trim();
 			alleles[0] = mapVals[Plink_Binary.bim_allele1].trim();
 			alleles[1] = mapVals[Plink_Binary.bim_allele2].trim();
-			origMarkerIdSetLHM.put(markerId, alleles);
+			origMarkerIdSetMap.put(markerId, alleles);
 		}
 		inputMapBR.close();
 		fr.close();
-		return origMarkerIdSetLHM;
+		return origMarkerIdSetMap;
 	}
 
 	private static String fixChrData(String chr) {

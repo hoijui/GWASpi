@@ -42,8 +42,8 @@ public class Threaded_UpdateSampleInfo extends CommonRunnable {
 
 	protected void runInternal(SwingWorkerItem thisSwi) throws Exception {
 
-		Map<String, Object> sampleInfoLHM = SamplesParser.scanGwaspiSampleInfo(sampleInfoFile.getPath());
-		List<String> updatedSamplesAL = org.gwaspi.samples.InsertSampleInfo.processData(poolId, sampleInfoLHM);
+		Map<String, Object> sampleInfoMap = SamplesParser.scanGwaspiSampleInfo(sampleInfoFile.getPath());
+		List<String> updatedSamplesAL = org.gwaspi.samples.InsertSampleInfo.processData(poolId, sampleInfoMap);
 
 		// DO NOT! Write new reports of SAMPLE QA
 //		OperationsList opList = new OperationsList(matrix.getMatrixId());

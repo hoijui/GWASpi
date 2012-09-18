@@ -20,23 +20,23 @@ public class NodeToPathCorrespondence {
 
 	public static Map<Integer, Object> buildNodeToPathCorrespondence(DefaultMutableTreeNode currentNode, boolean getSubChildren) {
 
-		Map<Integer, Object> nodeToPathChildrenLHM = getChildren(currentNode);
+		Map<Integer, Object> nodeToPathChildrenMap = getChildren(currentNode);
 
 		if (getSubChildren) {
 			Enumeration enumTN = currentNode.children();
 			while (enumTN.hasMoreElements()) {
 				DefaultMutableTreeNode subNode = (DefaultMutableTreeNode) enumTN.nextElement();
-				Map<Integer, Object> subNodeToPathChildrenLHM = getChildren(subNode);
-				nodeToPathChildrenLHM.putAll(subNodeToPathChildrenLHM);
+				Map<Integer, Object> subNodeToPathChildrenMap = getChildren(subNode);
+				nodeToPathChildrenMap.putAll(subNodeToPathChildrenMap);
 			}
 		}
 
-		return nodeToPathChildrenLHM;
+		return nodeToPathChildrenMap;
 	}
 
 	private static Map<Integer, Object> getChildren(DefaultMutableTreeNode currentNode) {
 
-		Map<Integer, Object> nodeToPathChildrenLHM = new LinkedHashMap<Integer, Object>();
+		Map<Integer, Object> nodeToPathChildrenMap = new LinkedHashMap<Integer, Object>();
 
 		Enumeration enumTN = currentNode.children();
 		while (enumTN.hasMoreElements()) {
@@ -47,7 +47,7 @@ public class NodeToPathCorrespondence {
 
 				for (int i = 0; i < GWASpiExplorerPanel.getSingleton().getTree().getRowCount(); i++) {
 					if (GWASpiExplorerPanel.getSingleton().getTree().getPathForRow(i).getLastPathComponent().toString().equals(currentElementInfo.nodeUniqueName)) {
-						nodeToPathChildrenLHM.put(currentElementInfo.nodeId, GWASpiExplorerPanel.getSingleton().getTree().getPathForRow(i));
+						nodeToPathChildrenMap.put(currentElementInfo.nodeId, GWASpiExplorerPanel.getSingleton().getTree().getPathForRow(i));
 					}
 				}
 
@@ -55,6 +55,6 @@ public class NodeToPathCorrespondence {
 			}
 		}
 
-		return nodeToPathChildrenLHM;
+		return nodeToPathChildrenMap;
 	}
 }

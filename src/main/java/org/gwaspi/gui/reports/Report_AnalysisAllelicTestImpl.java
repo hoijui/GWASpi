@@ -45,7 +45,7 @@ public final class Report_AnalysisAllelicTestImpl extends Report_Analysis {
 				try {
 					int rowIndex = tbl_ReportTable.getSelectedRow();
 					int colIndex = tbl_ReportTable.getSelectedColumn();
-					if (chrSetInfoLHM == null || chrSetInfoLHM.isEmpty()) {
+					if (chrSetInfoMap == null || chrSetInfoMap.isEmpty()) {
 						initChrSetInfo();
 					}
 
@@ -54,7 +54,7 @@ public final class Report_AnalysisAllelicTestImpl extends Report_Analysis {
 						long markerPhysPos = (Long) tbl_ReportTable.getValueAt(rowIndex, 3); //marker physical position in chromosome
 						String chr = tbl_ReportTable.getValueAt(rowIndex, 2).toString(); //Chromosome
 
-						int[] chrInfo = (int[]) chrSetInfoLHM.get(chr); //Nb of markers, first physical position, last physical position, start index number in MarkerSet,
+						int[] chrInfo = (int[]) chrSetInfoMap.get(chr); //Nb of markers, first physical position, last physical position, start index number in MarkerSet,
 						int nbMarkers = (Integer) chrInfo[0];
 						int startPhysPos = (Integer) chrInfo[1];
 						int maxPhysPos = (Integer) chrInfo[2];

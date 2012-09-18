@@ -23,9 +23,9 @@ public class PrototypeReadD4ArrayInt {
 		String filename = "/media/data/work/moapi/genotypes/prototype.nc"; // XXX system dependent path
 		NetcdfFile ncfile = null;
 
-		Map<Object, Object> lhm = new LinkedHashMap<Object, Object>();
+		Map<Object, Object> map = new LinkedHashMap<Object, Object>();
 		for (int i = 0; i < 10; i++) {
-			lhm.put(i, "00");
+			map.put(i, "00");
 		}
 
 		try {
@@ -50,7 +50,7 @@ public class PrototypeReadD4ArrayInt {
 
 				int[] test = (int[]) wrIntArray.copyTo1DJavaArray();
 
-				//Map<Object, Object> filledLhm = fillLinkedHashMap(lhm, gt, gtSpan);
+				//Map<Object, Object> filledMap = fillMap(map, gt, gtSpan);
 
 				int stopme = 0;
 			} catch (IOException ex) {
@@ -71,22 +71,21 @@ public class PrototypeReadD4ArrayInt {
 		}
 	}
 
-	public static Map<Object, Object> fillLinkedHashMap(Map<Object, Object> lhm, Array inputArray, int gtSpan) {
+	public static void fillMap(Map<Object, Object> map, Array inputArray, int gtSpan) {
 		StringBuffer alleles = new StringBuffer("");
-		int lhmIndex = 0;
+		int mapIndex = 0;
 		int alleleCount = 0;
 		for (int i = 0; i < inputArray.getSize(); i++) {
 			if (alleleCount == gtSpan) {
-				lhm.put(lhmIndex, alleles);
+				map.put(mapIndex, alleles);
 				alleles = new StringBuffer("");
 				alleleCount = 0;
-				lhmIndex++;
+				mapIndex++;
 			}
 			char c = inputArray.getChar(i);
 			alleles.append(c);
 			alleleCount++;
 		}
-		lhm.put(lhmIndex, alleles);
-		return lhm;
+		map.put(mapIndex, alleles);
 	}
 }

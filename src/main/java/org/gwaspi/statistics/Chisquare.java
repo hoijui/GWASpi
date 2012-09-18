@@ -59,7 +59,7 @@ public class Chisquare {
 		return chiSQ;
 	}
 
-	public static List<Double> getChiSquareDistributionDf1AL(int size, float C) {
+	public static List<Double> getChiSquareDistributionDf1(int size, float C) {
 		List<Double> chiQuareDist = new ArrayList<Double>();
 		Random generator = new Random();
 		for (int i = 0; i < size; i++) {
@@ -71,7 +71,7 @@ public class Chisquare {
 		return chiQuareDist;
 	}
 
-	public static List<Double> getChiSquareDistributionDf2AL(int size, float C) {
+	public static List<Double> getChiSquareDistributionDf2(int size, float C) {
 		List<Double> chiQuareDist = new ArrayList<Double>();
 		Random generator = new Random();
 		for (int i = 0; i < size; i++) {

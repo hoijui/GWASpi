@@ -35,7 +35,7 @@ public class LoadGTFromPlinkFlatFiles implements GTFilesLoader {
 	private String mapFilePath;
 	private String sampleFilePath;
 	private String pedFilePath;
-	private List<String> sampleInfoLHM = new ArrayList<String>();
+	private List<String> sampleInfoMap = new ArrayList<String>();
 	private int studyId;
 	private String format;
 	private String strand;
@@ -55,7 +55,7 @@ public class LoadGTFromPlinkFlatFiles implements GTFilesLoader {
 			String _friendlyName,
 			String _gtCode,
 			String _description,
-			Map<String, Object> _sampleInfoLHM)
+			Map<String, Object> _sampleInfoMap)
 	{
 		mapFilePath = _mepFilePath;
 		sampleFilePath = _sampleFilePath;
@@ -70,7 +70,7 @@ public class LoadGTFromPlinkFlatFiles implements GTFilesLoader {
 		description = _description;
 
 		// GET SAMPLE LIST FROM INPUT FILE
-		sampleInfoLHM.addAll(_sampleInfoLHM.keySet());
+		sampleInfoMap.addAll(_sampleInfoMap.keySet());
 	}
 	//</editor-fold>
 
@@ -82,9 +82,9 @@ public class LoadGTFromPlinkFlatFiles implements GTFilesLoader {
 
 		//<editor-fold defaultstate="collapsed/expanded" desc="CREATE MARKERSET & NETCDF">
 		MetadataLoaderPlink markerSetLoader = new MetadataLoaderPlink(mapFilePath, pedFilePath, strand, studyId);
-		Map<String, Object> markerSetLHM = markerSetLoader.getSortedMarkerSetWithMetaData(); //markerid, rsId, chr, pos
+		Map<String, Object> markerSetMap = markerSetLoader.getSortedMarkerSetWithMetaData(); //markerid, rsId, chr, pos
 
-		System.out.println("Done initializing sorted MarkerSetLHM at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
+		System.out.println("Done initializing sorted MarkerSetMap at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
 
 		///////////// CREATE netCDF-3 FILE ////////////
 		StringBuilder descSB = new StringBuilder(Text.Matrix.descriptionHeader1);
@@ -97,7 +97,7 @@ public class LoadGTFromPlinkFlatFiles implements GTFilesLoader {
 //		descSB.append("\nStrand: ");
 //		descSB.append(strand);
 		descSB.append("\n");
-		descSB.append("Markers: ").append(markerSetLHM.size()).append(", Samples: ").append(sampleInfoLHM.size());
+		descSB.append("Markers: ").append(markerSetMap.size()).append(", Samples: ").append(sampleInfoMap.size());
 		descSB.append("\n");
 		descSB.append(Text.Matrix.descriptionHeader2);
 		descSB.append(format);
@@ -114,7 +114,7 @@ public class LoadGTFromPlinkFlatFiles implements GTFilesLoader {
 		}
 
 		//RETRIEVE CHROMOSOMES INFO
-		Map<String, Object> chrSetLHM = org.gwaspi.netCDF.matrices.Utils.aggregateChromosomeInfo(markerSetLHM, 2, 3);
+		Map<String, Object> chrSetMap = org.gwaspi.netCDF.matrices.Utils.aggregateChromosomeInfo(markerSetMap, 2, 3);
 
 		MatrixFactory matrixFactory = new MatrixFactory(studyId,
 				format,
@@ -123,9 +123,9 @@ public class LoadGTFromPlinkFlatFiles implements GTFilesLoader {
 				gtCode,
 				matrixStrand, // Affymetrix standard
 				hasDictionary,
-				sampleInfoLHM.size(),
-				markerSetLHM.size(),
-				chrSetLHM.size(),
+				sampleInfoMap.size(),
+				markerSetMap.size(),
+				chrSetMap.size(),
 				mapFilePath);
 
 		NetcdfFileWriteable ncfile = matrixFactory.getNetCDFHandler();
@@ -141,7 +141,7 @@ public class LoadGTFromPlinkFlatFiles implements GTFilesLoader {
 
 		//<editor-fold defaultstate="collapsed" desc="WRITE MATRIX METADATA">
 		// WRITE SAMPLESET TO MATRIX FROM SAMPLES ARRAYLIST
-		ArrayChar.D2 samplesD2 = org.gwaspi.netCDF.operations.Utils.writeALToD2ArrayChar(sampleInfoLHM, cNetCDF.Strides.STRIDE_SAMPLE_NAME);
+		ArrayChar.D2 samplesD2 = org.gwaspi.netCDF.operations.Utils.writeALToD2ArrayChar(sampleInfoMap, cNetCDF.Strides.STRIDE_SAMPLE_NAME);
 
 		int[] sampleOrig = new int[]{0, 0};
 		try {
@@ -154,8 +154,8 @@ public class LoadGTFromPlinkFlatFiles implements GTFilesLoader {
 		samplesD2 = null;
 		System.out.println("Done writing SampleSet to matrix at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
 
-		// WRITE RSID & MARKERID METADATA FROM METADATALHM
-		ArrayChar.D2 markersD2 = org.gwaspi.netCDF.operations.Utils.writeLHMValueItemToD2ArrayChar(markerSetLHM, 0, cNetCDF.Strides.STRIDE_MARKER_NAME);
+		// WRITE RSID & MARKERID METADATA FROM METADATAMap
+		ArrayChar.D2 markersD2 = org.gwaspi.netCDF.operations.Utils.writeMapValueItemToD2ArrayChar(markerSetMap, 0, cNetCDF.Strides.STRIDE_MARKER_NAME);
 
 		int[] markersOrig = new int[]{0, 0};
 		try {
@@ -165,7 +165,7 @@ public class LoadGTFromPlinkFlatFiles implements GTFilesLoader {
 		} catch (InvalidRangeException e) {
 			e.printStackTrace();
 		}
-		markersD2 = org.gwaspi.netCDF.operations.Utils.writeLHMValueItemToD2ArrayChar(markerSetLHM, 0, cNetCDF.Strides.STRIDE_MARKER_NAME);
+		markersD2 = org.gwaspi.netCDF.operations.Utils.writeMapValueItemToD2ArrayChar(markerSetMap, 0, cNetCDF.Strides.STRIDE_MARKER_NAME);
 		try {
 			ncfile.write(cNetCDF.Variables.VAR_MARKERSET, markersOrig, markersD2);
 		} catch (IOException e) {
@@ -177,7 +177,7 @@ public class LoadGTFromPlinkFlatFiles implements GTFilesLoader {
 
 		// WRITE CHROMOSOME METADATA FROM ANNOTATION FILE
 		//Chromosome location for each marker
-		markersD2 = org.gwaspi.netCDF.operations.Utils.writeLHMValueItemToD2ArrayChar(markerSetLHM, 2, cNetCDF.Strides.STRIDE_CHR);
+		markersD2 = org.gwaspi.netCDF.operations.Utils.writeMapValueItemToD2ArrayChar(markerSetMap, 2, cNetCDF.Strides.STRIDE_CHR);
 
 		try {
 			ncfile.write(cNetCDF.Variables.VAR_MARKERS_CHR, markersOrig, markersD2);
@@ -189,16 +189,16 @@ public class LoadGTFromPlinkFlatFiles implements GTFilesLoader {
 		System.out.println("Done writing chromosomes to matrix at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
 
 		// Set of chromosomes found in matrix along with number of markersinfo
-		org.gwaspi.netCDF.operations.Utils.saveCharLHMKeyToWrMatrix(ncfile, chrSetLHM, cNetCDF.Variables.VAR_CHR_IN_MATRIX, 8);
+		org.gwaspi.netCDF.operations.Utils.saveCharMapKeyToWrMatrix(ncfile, chrSetMap, cNetCDF.Variables.VAR_CHR_IN_MATRIX, 8);
 
 		// Number of marker per chromosome & max pos for each chromosome
 		int[] columns = new int[]{0, 1, 2, 3};
-		org.gwaspi.netCDF.operations.Utils.saveIntLHMD2ToWrMatrix(ncfile, chrSetLHM, columns, cNetCDF.Variables.VAR_CHR_INFO);
+		org.gwaspi.netCDF.operations.Utils.saveIntMapD2ToWrMatrix(ncfile, chrSetMap, columns, cNetCDF.Variables.VAR_CHR_INFO);
 
 
 		// WRITE POSITION METADATA FROM ANNOTATION FILE
-		//markersD2 = org.gwaspi.netCDF.operations.Utils.writeLHMValueItemToD2ArrayChar(sortedMarkerSetLHM, 3, cNetCDF.Strides.STRIDE_POS);
-		ArrayInt.D1 markersPosD1 = org.gwaspi.netCDF.operations.Utils.writeLHMValueItemToD1ArrayInt(markerSetLHM, 3);
+		//markersD2 = org.gwaspi.netCDF.operations.Utils.writeMapValueItemToD2ArrayChar(sortedMarkerSetMap, 3, cNetCDF.Strides.STRIDE_POS);
+		ArrayInt.D1 markersPosD1 = org.gwaspi.netCDF.operations.Utils.writeMapValueItemToD1ArrayInt(markerSetMap, 3);
 		int[] posOrig = new int[1];
 		try {
 			ncfile.write(cNetCDF.Variables.VAR_MARKERS_POS, posOrig, markersPosD1);
@@ -230,10 +230,10 @@ public class LoadGTFromPlinkFlatFiles implements GTFilesLoader {
 				strandFlag = cImport.StrandFlags.strandUNK;
 				break;
 		}
-		for (Map.Entry<String, Object> entry : markerSetLHM.entrySet()) {
+		for (Map.Entry<String, Object> entry : markerSetMap.entrySet()) {
 			entry.setValue(strandFlag);
 		}
-		markersD2 = org.gwaspi.netCDF.operations.Utils.writeLHMValueToD2ArrayChar(markerSetLHM, cNetCDF.Strides.STRIDE_STRAND);
+		markersD2 = org.gwaspi.netCDF.operations.Utils.writeMapValueToD2ArrayChar(markerSetMap, cNetCDF.Strides.STRIDE_STRAND);
 
 		try {
 			ncfile.write(cNetCDF.Variables.VAR_GT_STRAND, gtOrig, markersD2);
@@ -250,12 +250,12 @@ public class LoadGTFromPlinkFlatFiles implements GTFilesLoader {
 
 		// <editor-fold defaultstate="collapsed" desc="MATRIX GENOTYPES LOAD ">
 		System.out.println(Text.All.processing);
-		Map<String, Object> mapMarkerSetLHM = markerSetLoader.parseOrigMapFile(mapFilePath);
+		Map<String, Object> mapMarkerSetMap = markerSetLoader.parseOrigMapFile(mapFilePath);
 		loadPedGenotypes(new File(pedFilePath),
 				ncfile,
-				markerSetLHM,
-				mapMarkerSetLHM,
-				sampleInfoLHM);
+				markerSetMap,
+				mapMarkerSetMap,
+				sampleInfoMap);
 
 		System.out.println("Done writing genotypes to matrix at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
 		// </editor-fold>
@@ -294,9 +294,9 @@ public class LoadGTFromPlinkFlatFiles implements GTFilesLoader {
 
 	public void loadPedGenotypes(File file,
 			NetcdfFileWriteable ncfile,
-			Map<String, Object> wrMarkerIdSetLHM,
-			Map<String, Object> mapMarkerSetLHM,
-			List<String> sampleInfoLHM) throws IOException, InvalidRangeException {
+			Map<String, Object> wrMarkerIdSetMap,
+			Map<String, Object> mapMarkerSetMap,
+			List<String> sampleInfoMap) throws IOException, InvalidRangeException {
 
 		FileReader inputFileReader = new FileReader(file);
 		BufferedReader inputBufferReader = new BufferedReader(inputFileReader);
@@ -305,9 +305,9 @@ public class LoadGTFromPlinkFlatFiles implements GTFilesLoader {
 		String l;
 		while ((l = inputBufferReader.readLine()) != null) {
 			//PURGE WRITE MARKER SET
-			for (Iterator<String> it = wrMarkerIdSetLHM.keySet().iterator(); it.hasNext();) {
+			for (Iterator<String> it = wrMarkerIdSetMap.keySet().iterator(); it.hasNext();) {
 				String markerId = it.next();
-				wrMarkerIdSetLHM.put(markerId, cNetCDF.Defaults.DEFAULT_GT);
+				wrMarkerIdSetMap.put(markerId, cNetCDF.Defaults.DEFAULT_GT);
 			}
 
 			StringTokenizer st = new StringTokenizer(l, cImport.Separators.separators_CommaSpaceTab_rgxp);
@@ -325,25 +325,25 @@ public class LoadGTFromPlinkFlatFiles implements GTFilesLoader {
 			}
 
 			//read genotypes from this point on
-			Iterator<String> it = mapMarkerSetLHM.keySet().iterator();
+			Iterator<String> it = mapMarkerSetMap.keySet().iterator();
 			while (st.hasMoreTokens()) {
 				String markerId = it.next();
 				byte[] alleles = new byte[]{(byte) (st.nextToken().charAt(0)),
 					(byte) (st.nextToken().charAt(0))};
-				wrMarkerIdSetLHM.put(markerId, alleles);
+				wrMarkerIdSetMap.put(markerId, alleles);
 			}
 			st = null;
 
 			if (guessedGTCode.equals(cNetCDF.Defaults.GenotypeEncoding.UNKNOWN)) {
-				guessedGTCode = Utils.detectGTEncoding(wrMarkerIdSetLHM);
+				guessedGTCode = Utils.detectGTEncoding(wrMarkerIdSetMap);
 			} else if (guessedGTCode.equals(cNetCDF.Defaults.GenotypeEncoding.O12)) {
-				guessedGTCode = Utils.detectGTEncoding(wrMarkerIdSetLHM);
+				guessedGTCode = Utils.detectGTEncoding(wrMarkerIdSetMap);
 			}
 
 			/////////// WRITING GENOTYPE DATA INTO netCDF FILE ////////////
-			int sampleIndex = sampleInfoLHM.indexOf(sampleId);
+			int sampleIndex = sampleInfoMap.indexOf(sampleId);
 			if (sampleIndex != -1) {  //CHECK IF CURRENT SAMPLE IS KNOWN IN SAMPLEINFO FILE!!
-				org.gwaspi.netCDF.operations.Utils.saveSingleSampleGTsToMatrix(ncfile, wrMarkerIdSetLHM, sampleIndex);
+				org.gwaspi.netCDF.operations.Utils.saveSingleSampleGTsToMatrix(ncfile, wrMarkerIdSetMap, sampleIndex);
 			}
 		}
 	}

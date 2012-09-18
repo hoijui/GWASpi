@@ -85,13 +85,13 @@ public class Threaded_Loader_GWASifOK extends CommonRunnable {
 
 	protected void runInternal(SwingWorkerItem thisSwi) throws Exception {
 
-		Map<String, Object> sampleInfoLHM = SampleInfoCollectorSwitch.collectSampleInfo(format, dummySamples, fileSampleInfo, file1, file2);
-		Set<String> affectionStates = SampleInfoCollectorSwitch.collectAffectionStates(sampleInfoLHM);
+		Map<String, Object> sampleInfoMap = SampleInfoCollectorSwitch.collectSampleInfo(format, dummySamples, fileSampleInfo, file1, file2);
+		Set<String> affectionStates = SampleInfoCollectorSwitch.collectAffectionStates(sampleInfoMap);
 
 		//<editor-fold defaultstate="collapsed" desc="LOAD PROCESS">
 		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
 			resultMatrixId = LoadManager.dispatchLoadByFormat(format,
-					sampleInfoLHM,
+					sampleInfoMap,
 					newMatrixName,
 					newMatrixDescription,
 					file1,
@@ -169,13 +169,15 @@ public class Threaded_Loader_GWASifOK extends CommonRunnable {
 					&& hwOpId != Integer.MIN_VALUE) {
 				OperationMetadata markerQAMetadata = new OperationMetadata(markersQAOpId);
 
-				if (	gwasParams.isDiscardMarkerHWCalc()) {
-					gwasParams.setDiscardMarkerHWTreshold((double) 0.05 / markerQAMetadata.getOpSetSize());
+				if (gwasParams.isDiscardMarkerHWCalc()) {
+					gwasParams.setDiscardMarkerHWTreshold(0.05 / markerQAMetadata.getOpSetSize());
 				}
 
-				int assocOpId = OperationManager.performCleanAllelicTests(resultMatrixId,
+				int assocOpId = OperationManager.performCleanAllelicTests(
+						resultMatrixId,
 						censusOpId,
-						hwOpId, gwasParams.getDiscardMarkerHWTreshold());
+						hwOpId,
+						gwasParams.getDiscardMarkerHWTreshold());
 				GWASpiExplorerNodes.insertSubOperationUnderOperationNode(censusOpId, assocOpId);
 
 				// Make Reports (needs newMatrixId, QAopId, AssocOpId)
@@ -194,8 +196,8 @@ public class Threaded_Loader_GWASifOK extends CommonRunnable {
 
 				OperationMetadata markerQAMetadata = new OperationMetadata(markersQAOpId);
 
-				if (	gwasParams.isDiscardMarkerHWCalc()) {
-					gwasParams.setDiscardMarkerHWTreshold((double) 0.05 / markerQAMetadata.getOpSetSize());
+				if (gwasParams.isDiscardMarkerHWCalc()) {
+					gwasParams.setDiscardMarkerHWTreshold(0.05 / markerQAMetadata.getOpSetSize());
 				}
 
 				int assocOpId = OperationManager.performCleanGenotypicTests(
@@ -205,7 +207,7 @@ public class Threaded_Loader_GWASifOK extends CommonRunnable {
 						gwasParams.getDiscardMarkerHWTreshold());
 				GWASpiExplorerNodes.insertSubOperationUnderOperationNode(censusOpId, assocOpId);
 
-				//////Make Reports (needs newMatrixId, QAopId, AssocOpId)
+				// Make Reports (needs newMatrixId, QAopId, AssocOpId)
 				if (assocOpId != Integer.MIN_VALUE) {
 					OutputGenotypicAssociation.writeReportsForAssociationData(assocOpId);
 					GWASpiExplorerNodes.insertReportsUnderOperationNode(assocOpId);
@@ -220,8 +222,8 @@ public class Threaded_Loader_GWASifOK extends CommonRunnable {
 
 				OperationMetadata markerQAMetadata = new OperationMetadata(markersQAOpId);
 
-				if (	gwasParams.isDiscardMarkerHWCalc()) {
-					gwasParams.setDiscardMarkerHWTreshold((double) 0.05 / markerQAMetadata.getOpSetSize());
+				if (gwasParams.isDiscardMarkerHWCalc()) {
+					gwasParams.setDiscardMarkerHWTreshold(0.05 / markerQAMetadata.getOpSetSize());
 				}
 
 				int trendOpId = OperationManager.performCleanTrendTests(resultMatrixId,

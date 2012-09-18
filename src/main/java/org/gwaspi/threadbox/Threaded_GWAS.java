@@ -79,8 +79,8 @@ public class Threaded_GWAS extends CommonRunnable {
 
 				if (affectionStates.contains("1") && affectionStates.contains("2")) {
 					getLog().info("Updating Sample Info in DB");
-					Map<String, Object> sampleInfoLHM = SamplesParser.scanGwaspiSampleInfo(phenotypeFile.getPath());
-					org.gwaspi.samples.InsertSampleInfo.processData(matrixId, sampleInfoLHM);
+					Map<String, Object> sampleInfoMap = SamplesParser.scanGwaspiSampleInfo(phenotypeFile.getPath());
+					org.gwaspi.samples.InsertSampleInfo.processData(matrixId, sampleInfoMap);
 
 					censusOpId = OperationManager.censusCleanMatrixMarkersByPhenotypeFile(matrixId,
 							sampleQAOpId,
@@ -128,7 +128,7 @@ public class Threaded_GWAS extends CommonRunnable {
 			OperationMetadata markerQAMetadata = new OperationMetadata(markersQAOpId);
 			int qaMarkerSetSize = markerQAMetadata.getOpSetSize();
 
-			if (	gwasParams.isDiscardMarkerHWCalc()) {
+			if (gwasParams.isDiscardMarkerHWCalc()) {
 				gwasParams.setDiscardMarkerHWTreshold(0.05 / qaMarkerSetSize);
 			}
 
@@ -153,7 +153,7 @@ public class Threaded_GWAS extends CommonRunnable {
 			OperationMetadata markerQAMetadata = new OperationMetadata(markersQAOpId);
 			int qaMarkerSetSize = markerQAMetadata.getOpSetSize();
 
-			if (	gwasParams.isDiscardMarkerHWCalc()) {
+			if (gwasParams.isDiscardMarkerHWCalc()) {
 				gwasParams.setDiscardMarkerHWTreshold(0.05 / qaMarkerSetSize);
 			}
 

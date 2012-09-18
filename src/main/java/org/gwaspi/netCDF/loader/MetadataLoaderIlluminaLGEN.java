@@ -38,7 +38,7 @@ public class MetadataLoaderIlluminaLGEN implements MetadataLoader {
 		org.gwaspi.global.Utils.sysoutStart("initilaizing marker info");
 		System.out.println(Text.All.processing);
 
-		Map<String, Object> markerMetadataLHM = new LinkedHashMap<String, Object>();
+		Map<String, Object> markerMetadataMap = new LinkedHashMap<String, Object>();
 		for (Map.Entry<String, String> entry : tempTM.entrySet()) {
 			// chr;pos;markerId
 			String[] keyValues = entry.getKey().split(cNetCDF.Defaults.TMP_SEPARATOR);
@@ -60,12 +60,12 @@ public class MetadataLoaderIlluminaLGEN implements MetadataLoader {
 			markerInfo[2] = fixChrData(keyValues[0]); // 2 => chr
 			markerInfo[3] = pos; // 3 => pos
 
-			markerMetadataLHM.put(keyValues[2], markerInfo);
+			markerMetadataMap.put(keyValues[2], markerInfo);
 		}
 
-		String description = "Generated sorted MarkerIdSet LHM sorted by chromosome and position";
+		String description = "Generated sorted MarkerIdSet Map sorted by chromosome and position";
 		MetadataLoaderPlink.logAsWhole(startTime, mapPath, description, studyId);
-		return markerMetadataLHM;
+		return markerMetadataMap;
 	}
 
 	private static SortedMap<String, String> parseAndSortMapFile(String path) throws IOException {

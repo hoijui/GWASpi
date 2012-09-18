@@ -45,16 +45,16 @@ public class MachFormatter implements Formatter {
 		NetcdfFile rdNcFile = NetcdfFile.open(rdMatrixMetadata.getPathToMatrix());
 
 		try {
-			rdMarkerSet.initFullMarkerIdSetLHM();
+			rdMarkerSet.initFullMarkerIdSetMap();
 
 			//FIND START AND END MARKERS BY CHROMOSOME
-			rdMarkerSet.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
-			Map<String, Object> chrMarkerSetLHM = new LinkedHashMap<String, Object>();
-			chrMarkerSetLHM.putAll(rdMarkerSet.getMarkerIdSetLHM());
+			rdMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
+			Map<String, Object> chrMarkerSetMap = new LinkedHashMap<String, Object>();
+			chrMarkerSetMap.putAll(rdMarkerSet.getMarkerIdSetMap());
 			String tmpChr = "";
 			int start = 0;
 			int end = 0;
-			for (Object value : chrMarkerSetLHM.values()) {
+			for (Object value : chrMarkerSetMap.values()) {
 				String chr = value.toString();
 				if (!chr.equals(tmpChr)) {
 					if (start != end) {
@@ -84,14 +84,14 @@ public class MachFormatter implements Formatter {
 		return result;
 	}
 
-	private void exportChromosomeToMped(File exportDir, MatrixMetadata rdMatrixMetadata, MarkerSet_opt rdMarkerSet, Map<String, Object> rdSampleSetLHM, String chr, int startPos, int endPos) throws IOException {
+	private void exportChromosomeToMped(File exportDir, MatrixMetadata rdMatrixMetadata, MarkerSet_opt rdMarkerSet, Map<String, Object> rdSampleSetMap, String chr, int startPos, int endPos) throws IOException {
 
 		FileWriter pedFW = new FileWriter(exportDir.getPath() + "/" + rdMatrixMetadata.getMatrixFriendlyName() + "_chr" + chr + ".mped");
 		BufferedWriter pedBW = new BufferedWriter(pedFW);
 
 		// Iterate through all samples
 		int sampleNb = 0;
-		for (String sampleId : rdSampleSetLHM.keySet()) {
+		for (String sampleId : rdSampleSetMap.keySet()) {
 			Map<String, Object> sampleInfo = Utils.getCurrentSampleFormattedInfo(sampleId, rdMatrixMetadata.getStudyId());
 			String familyId = sampleInfo.get(cDBSamples.f_FAMILY_ID).toString();
 			String fatherId = sampleInfo.get(cDBSamples.f_FATHER_ID).toString();
@@ -105,11 +105,11 @@ public class MachFormatter implements Formatter {
 			}
 
 			// Iterate through current chrl markers
-			rdMarkerSet.initMarkerIdSetLHM(startPos, endPos);
-			rdMarkerSet.fillGTsForCurrentSampleIntoInitLHM(sampleNb);
+			rdMarkerSet.initMarkerIdSetMap(startPos, endPos);
+			rdMarkerSet.fillGTsForCurrentSampleIntoInitMap(sampleNb);
 			StringBuilder genotypes = new StringBuilder();
 			int markerNb = 0;
-			for (Object value : rdMarkerSet.getMarkerIdSetLHM().values()) {
+			for (Object value : rdMarkerSet.getMarkerIdSetMap().values()) {
 				byte[] tempGT = (byte[]) value;
 				genotypes.append(SEP);
 				genotypes.append(new String(new byte[]{tempGT[0]}));
@@ -158,13 +158,13 @@ public class MachFormatter implements Formatter {
 		//     rs# or marker identifier
 
 		//MARKERSET RSID
-		rdMarkerSet.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_RSID);
+		rdMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_RSID);
 
 		//Iterate through current chr markers
 		//INIT MARKERSET
-		rdMarkerSet.initMarkerIdSetLHM(startPos, endPos);
+		rdMarkerSet.initMarkerIdSetMap(startPos, endPos);
 		int markerNb = 0;
-		for (Map.Entry<String, Object> entry : rdMarkerSet.getMarkerIdSetLHM().entrySet()) {
+		for (Map.Entry<String, Object> entry : rdMarkerSet.getMarkerIdSetMap().entrySet()) {
 			//CHECK IF rsID available
 			String markerId = entry.getKey();
 			String value = entry.getValue().toString();

@@ -42,7 +42,7 @@ public class PlinkFormatter implements Formatter {
 		boolean result = false;
 		String sep = cExport.separator_PLINK;
 		NetcdfFile rdNcFile = NetcdfFile.open(rdMatrixMetadata.getPathToMatrix());
-		rdMarkerSet.initFullMarkerIdSetLHM();
+		rdMarkerSet.initFullMarkerIdSetMap();
 
 		try {
 			//<editor-fold defaultstate="collapsed" desc="PED FILE">
@@ -62,9 +62,9 @@ public class PlinkFormatter implements Formatter {
 
 
 				// Iterate through all markers
-				rdMarkerSet.fillGTsForCurrentSampleIntoInitLHM(sampleNb);
+				rdMarkerSet.fillGTsForCurrentSampleIntoInitMap(sampleNb);
 				StringBuilder genotypes = new StringBuilder();
-				for (Object value : rdMarkerSet.getMarkerIdSetLHM().values()) {
+				for (Object value : rdMarkerSet.getMarkerIdSetMap().values()) {
 					byte[] tempGT = (byte[]) value;
 					genotypes.append(sep);
 					genotypes.append(new String(new byte[]{tempGT[0]}));
@@ -122,13 +122,13 @@ public class PlinkFormatter implements Formatter {
 			rdMarkerSet.fillWith("");
 
 			// MARKERSET CHROMOSOME
-			rdMarkerSet.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
+			rdMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
 
 			// MARKERSET RSID
-			rdMarkerSet.appendVariableToMarkerSetLHMValue(cNetCDF.Variables.VAR_MARKERS_RSID, sep);
+			rdMarkerSet.appendVariableToMarkerSetMapValue(cNetCDF.Variables.VAR_MARKERS_RSID, sep);
 
 			// DEFAULT GENETIC DISTANCE = 0
-			for (Map.Entry<String, Object> entry : rdMarkerSet.getMarkerIdSetLHM().entrySet()) {
+			for (Map.Entry<String, Object> entry : rdMarkerSet.getMarkerIdSetMap().entrySet()) {
 				StringBuilder value = new StringBuilder(entry.getValue().toString());
 				value.append(sep);
 				value.append("0");
@@ -136,9 +136,9 @@ public class PlinkFormatter implements Formatter {
 			}
 
 			// MARKERSET POSITION
-			rdMarkerSet.appendVariableToMarkerSetLHMValue(cNetCDF.Variables.VAR_MARKERS_POS, sep);
+			rdMarkerSet.appendVariableToMarkerSetMapValue(cNetCDF.Variables.VAR_MARKERS_POS, sep);
 			int markerNb = 0;
-			for (Object pos : rdMarkerSet.getMarkerIdSetLHM().values()) {
+			for (Object pos : rdMarkerSet.getMarkerIdSetMap().values()) {
 				mapBW.append(pos.toString());
 				mapBW.append("\n");
 				markerNb++;

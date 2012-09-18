@@ -26,8 +26,8 @@ public class RowRendererDefault extends DefaultTableCellRenderer {
 	private static final URL ICON_PATH_QUERY_DB = RowRendererDefault.class.getResource("/img/icon/arrow_20x20.png");
 	private static final URL ICON_PATH_ABORT    = RowRendererDefault.class.getResource("/img/icon/abort_16x16.png");
 	private static final URL ICON_PATH_NO_ABORT = RowRendererDefault.class.getResource("/img/icon/abort-grey_16x16.png");
-	private static List<SwingWorkerItem> swAL  = SwingWorkerItemList.getSwingWorkerItemsAL();
-	private static List<SwingDeleterItem> sdAL = SwingDeleterItemList.getSwingDeleterItemsAL();
+	private static List<SwingWorkerItem> swAL  = SwingWorkerItemList.getSwingWorkerItems();
+	private static List<SwingDeleterItem> sdAL = SwingDeleterItemList.getSwingDeleterItems();
 
 	@Override
 	public Component getTableCellRendererComponent(JTable table, Object value, boolean selected, boolean focused, int row, int column) {

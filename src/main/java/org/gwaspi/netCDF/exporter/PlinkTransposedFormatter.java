@@ -42,7 +42,7 @@ public class PlinkTransposedFormatter implements Formatter {
 		boolean result = false;
 		String sep = cExport.separator_PLINK;
 		NetcdfFile rdNcFile = NetcdfFile.open(rdMatrixMetadata.getPathToMatrix());
-		rdMarkerSet.initFullMarkerIdSetLHM();
+		rdMarkerSet.initFullMarkerIdSetMap();
 
 		try {
 			//<editor-fold defaultstate="collapsed" desc="TPED FILE">
@@ -60,13 +60,13 @@ public class PlinkTransposedFormatter implements Formatter {
 			rdMarkerSet.fillWith("");
 
 			// MARKERSET CHROMOSOME
-			rdMarkerSet.fillInitLHMWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
+			rdMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
 
 			// MARKERSET RSID
-			rdMarkerSet.appendVariableToMarkerSetLHMValue(cNetCDF.Variables.VAR_MARKERS_RSID, sep);
+			rdMarkerSet.appendVariableToMarkerSetMapValue(cNetCDF.Variables.VAR_MARKERS_RSID, sep);
 
 			// DEFAULT GENETIC DISTANCE = 0
-			for (Map.Entry<String, Object> entry : rdMarkerSet.getMarkerIdSetLHM().entrySet()) {
+			for (Map.Entry<String, Object> entry : rdMarkerSet.getMarkerIdSetMap().entrySet()) {
 				StringBuilder value = new StringBuilder(entry.getValue().toString());
 				value.append(sep);
 				value.append("0");
@@ -74,16 +74,16 @@ public class PlinkTransposedFormatter implements Formatter {
 			}
 
 			// MARKERSET POSITION
-			rdMarkerSet.appendVariableToMarkerSetLHMValue(cNetCDF.Variables.VAR_MARKERS_POS, sep);
+			rdMarkerSet.appendVariableToMarkerSetMapValue(cNetCDF.Variables.VAR_MARKERS_POS, sep);
 
 			// Iterate through markerset
 			int markerNb = 0;
-			for (Object pos : rdMarkerSet.getMarkerIdSetLHM().values()) {
+			for (Object pos : rdMarkerSet.getMarkerIdSetMap().values()) {
 				StringBuilder line = new StringBuilder();
 
 				// Iterate through sampleset
 				StringBuilder genotypes = new StringBuilder();
-				Map<String, Object> remainingSampleSet = rdSampleSet.readAllSamplesGTsFromCurrentMarkerToLHM(rdNcFile, rdSampleSetMap, markerNb);
+				Map<String, Object> remainingSampleSet = rdSampleSet.readAllSamplesGTsFromCurrentMarkerToMap(rdNcFile, rdSampleSetMap, markerNb);
 				rdSampleSetMap = remainingSampleSet; // FIXME This line should most likely be removed, because further down this is used again ... check out!
 				for (Object value : remainingSampleSet.values()) {
 					byte[] tempGT = (byte[]) value;

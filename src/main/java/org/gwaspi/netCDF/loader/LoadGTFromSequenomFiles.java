@@ -31,7 +31,7 @@ public class LoadGTFromSequenomFiles implements GTFilesLoader {
 	private String gtDirPath;
 	private String sampleFilePath;
 	private String annotationFilePath;
-	private Map<String, Object> sampleInfoLHM;
+	private Map<String, Object> sampleInfoMap;
 	private int studyId;
 	private String format;
 	private String friendlyName;
@@ -50,7 +50,7 @@ public class LoadGTFromSequenomFiles implements GTFilesLoader {
 			String _friendlyName,
 			String _gtCode,
 			String _description,
-			Map<String, Object> _sampleInfoLHM)
+			Map<String, Object> _sampleInfoMap)
 	{
 		gtDirPath = _gtDirPath;
 		sampleFilePath = _sampleFilePath;
@@ -62,7 +62,7 @@ public class LoadGTFromSequenomFiles implements GTFilesLoader {
 		matrixStrand = cNetCDF.Defaults.StrandType.PLSMIN.toString();
 		hasDictionary = 0;
 		description = _description;
-		sampleInfoLHM = _sampleInfoLHM;
+		sampleInfoMap = _sampleInfoMap;
 	}
 	//</editor-fold>
 
@@ -76,9 +76,9 @@ public class LoadGTFromSequenomFiles implements GTFilesLoader {
 		//<editor-fold defaultstate="collapsed" desc="CREATE MARKERSET & NETCDF">
 		MetadataLoaderSequenom markerSetLoader = new MetadataLoaderSequenom(annotationFilePath, studyId);
 
-		Map<String, Object> markerSetLHM = markerSetLoader.getSortedMarkerSetWithMetaData();
+		Map<String, Object> markerSetMap = markerSetLoader.getSortedMarkerSetWithMetaData();
 
-		System.out.println("Done initializing sorted MarkerSetLHM at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
+		System.out.println("Done initializing sorted MarkerSetMap at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
 
 		///////////// CREATE netCDF-3 FILE ////////////
 		StringBuilder descSB = new StringBuilder(Text.Matrix.descriptionHeader1);
@@ -91,7 +91,7 @@ public class LoadGTFromSequenomFiles implements GTFilesLoader {
 //		descSB.append("\nGenotype encoding: ");
 //		descSB.append(gtCode);
 		descSB.append("\n");
-		descSB.append("Markers: ").append(markerSetLHM.size()).append(", Samples: ").append(sampleInfoLHM.size());
+		descSB.append("Markers: ").append(markerSetMap.size()).append(", Samples: ").append(sampleInfoMap.size());
 		descSB.append("\n");
 		descSB.append(Text.Matrix.descriptionHeader2);
 		descSB.append(format);
@@ -109,7 +109,7 @@ public class LoadGTFromSequenomFiles implements GTFilesLoader {
 		}
 
 		//RETRIEVE CHROMOSOMES INFO
-		Map<String, Object> chrSetLHM = org.gwaspi.netCDF.matrices.Utils.aggregateChromosomeInfo(markerSetLHM, 2, 3);
+		Map<String, Object> chrSetMap = org.gwaspi.netCDF.matrices.Utils.aggregateChromosomeInfo(markerSetMap, 2, 3);
 
 		MatrixFactory matrixFactory = new MatrixFactory(studyId,
 				format,
@@ -118,9 +118,9 @@ public class LoadGTFromSequenomFiles implements GTFilesLoader {
 				gtCode,
 				matrixStrand, // Affymetrix standard
 				hasDictionary,
-				sampleInfoLHM.size(),
-				markerSetLHM.size(),
-				chrSetLHM.size(),
+				sampleInfoMap.size(),
+				markerSetMap.size(),
+				chrSetMap.size(),
 				gtDirPath);
 
 		NetcdfFileWriteable ncfile = matrixFactory.getNetCDFHandler();
@@ -136,7 +136,7 @@ public class LoadGTFromSequenomFiles implements GTFilesLoader {
 
 		//<editor-fold defaultstate="collapsed" desc="WRITE MATRIX METADATA">
 		// WRITE SAMPLESET TO MATRIX FROM SAMPLES ARRAYLIST
-		ArrayChar.D2 samplesD2 = org.gwaspi.netCDF.operations.Utils.writeLHMKeysToD2ArrayChar(sampleInfoLHM, cNetCDF.Strides.STRIDE_SAMPLE_NAME);
+		ArrayChar.D2 samplesD2 = org.gwaspi.netCDF.operations.Utils.writeMapKeysToD2ArrayChar(sampleInfoMap, cNetCDF.Strides.STRIDE_SAMPLE_NAME);
 
 		int[] sampleOrig = new int[]{0, 0};
 		try {
@@ -149,8 +149,8 @@ public class LoadGTFromSequenomFiles implements GTFilesLoader {
 		samplesD2 = null;
 		System.out.println("Done writing SampleSet to matrix at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
 
-		// WRITE RSID & MARKERID METADATA FROM METADATALHM
-		ArrayChar.D2 markersD2 = org.gwaspi.netCDF.operations.Utils.writeLHMValueItemToD2ArrayChar(markerSetLHM, 1, cNetCDF.Strides.STRIDE_MARKER_NAME);
+		// WRITE RSID & MARKERID METADATA FROM METADATAMap
+		ArrayChar.D2 markersD2 = org.gwaspi.netCDF.operations.Utils.writeMapValueItemToD2ArrayChar(markerSetMap, 1, cNetCDF.Strides.STRIDE_MARKER_NAME);
 
 		int[] markersOrig = new int[]{0, 0};
 		try {
@@ -160,7 +160,7 @@ public class LoadGTFromSequenomFiles implements GTFilesLoader {
 		} catch (InvalidRangeException e) {
 			e.printStackTrace();
 		}
-		markersD2 = org.gwaspi.netCDF.operations.Utils.writeLHMValueItemToD2ArrayChar(markerSetLHM, 0, cNetCDF.Strides.STRIDE_MARKER_NAME);
+		markersD2 = org.gwaspi.netCDF.operations.Utils.writeMapValueItemToD2ArrayChar(markerSetMap, 0, cNetCDF.Strides.STRIDE_MARKER_NAME);
 		try {
 			ncfile.write(cNetCDF.Variables.VAR_MARKERSET, markersOrig, markersD2);
 		} catch (IOException e) {
@@ -172,7 +172,7 @@ public class LoadGTFromSequenomFiles implements GTFilesLoader {
 
 		// WRITE CHROMOSOME METADATA FROM ANNOTATION FILE
 		//Chromosome location for each marker
-		markersD2 = org.gwaspi.netCDF.operations.Utils.writeLHMValueItemToD2ArrayChar(markerSetLHM, 2, cNetCDF.Strides.STRIDE_CHR);
+		markersD2 = org.gwaspi.netCDF.operations.Utils.writeMapValueItemToD2ArrayChar(markerSetMap, 2, cNetCDF.Strides.STRIDE_CHR);
 
 		try {
 			ncfile.write(cNetCDF.Variables.VAR_MARKERS_CHR, markersOrig, markersD2);
@@ -184,16 +184,16 @@ public class LoadGTFromSequenomFiles implements GTFilesLoader {
 		System.out.println("Done writing chromosomes to matrix at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
 
 		// Set of chromosomes found in matrix along with number of markersinfo
-		org.gwaspi.netCDF.operations.Utils.saveCharLHMKeyToWrMatrix(ncfile, chrSetLHM, cNetCDF.Variables.VAR_CHR_IN_MATRIX, 8);
+		org.gwaspi.netCDF.operations.Utils.saveCharMapKeyToWrMatrix(ncfile, chrSetMap, cNetCDF.Variables.VAR_CHR_IN_MATRIX, 8);
 
 		// Number of marker per chromosome & max pos for each chromosome
 		int[] columns = new int[]{0, 1, 2, 3};
-		org.gwaspi.netCDF.operations.Utils.saveIntLHMD2ToWrMatrix(ncfile, chrSetLHM, columns, cNetCDF.Variables.VAR_CHR_INFO);
+		org.gwaspi.netCDF.operations.Utils.saveIntMapD2ToWrMatrix(ncfile, chrSetMap, columns, cNetCDF.Variables.VAR_CHR_INFO);
 
 
 		// WRITE POSITION METADATA FROM ANNOTATION FILE
-		//markersD2 = org.gwaspi.netCDF.operations.Utils.writeLHMValueItemToD2ArrayChar(markerSetLHM, 5, cNetCDF.Strides.STRIDE_POS);
-		ArrayInt.D1 markersPosD1 = org.gwaspi.netCDF.operations.Utils.writeLHMValueItemToD1ArrayInt(markerSetLHM, 3);
+		//markersD2 = org.gwaspi.netCDF.operations.Utils.writeMapValueItemToD2ArrayChar(markerSetMap, 5, cNetCDF.Strides.STRIDE_POS);
+		ArrayInt.D1 markersPosD1 = org.gwaspi.netCDF.operations.Utils.writeMapValueItemToD1ArrayInt(markerSetMap, 3);
 		int[] posOrig = new int[1];
 		try {
 			ncfile.write(cNetCDF.Variables.VAR_MARKERS_POS, posOrig, markersPosD1);
@@ -207,10 +207,10 @@ public class LoadGTFromSequenomFiles implements GTFilesLoader {
 		// WRITE GT STRAND FROM ANNOTATION FILE
 		int[] gtOrig = new int[]{0, 0};
 		String strandFlag = cNetCDF.Defaults.StrandType.FWD.toString();
-		for (Map.Entry<String, Object> entry : markerSetLHM.entrySet()) {
+		for (Map.Entry<String, Object> entry : markerSetMap.entrySet()) {
 			entry.setValue(strandFlag);
 		}
-		markersD2 = org.gwaspi.netCDF.operations.Utils.writeLHMValueToD2ArrayChar(markerSetLHM, cNetCDF.Strides.STRIDE_STRAND);
+		markersD2 = org.gwaspi.netCDF.operations.Utils.writeMapValueToD2ArrayChar(markerSetMap, cNetCDF.Strides.STRIDE_STRAND);
 
 		try {
 			ncfile.write(cNetCDF.Variables.VAR_GT_STRAND, gtOrig, markersD2);
@@ -226,11 +226,11 @@ public class LoadGTFromSequenomFiles implements GTFilesLoader {
 		// </editor-fold>
 
 		// <editor-fold defaultstate="collapsed" desc="MATRIX GENOTYPES LOAD ">
-		// INIT AND PURGE SORTEDMARKERSET LHM
+		// INIT AND PURGE SORTEDMARKERSET Map
 		int sampleIndex = 0;
-		for (String sampleId : sampleInfoLHM.keySet()) {
-			//PURGE MarkerIdLHM on current sample
-			for (Map.Entry<String, Object> entry : markerSetLHM.entrySet()) {
+		for (String sampleId : sampleInfoMap.keySet()) {
+			//PURGE MarkerIdMap on current sample
+			for (Map.Entry<String, Object> entry : markerSetMap.entrySet()) {
 				entry.setValue(cNetCDF.Defaults.DEFAULT_GT);
 			}
 
@@ -239,17 +239,17 @@ public class LoadGTFromSequenomFiles implements GTFilesLoader {
 				//System.out.println("Input file: "+i);
 				loadIndividualFiles(gtFilesToImport[i],
 						sampleId,
-						markerSetLHM);
+						markerSetMap);
 			}
 
 			if (guessedGTCode.equals(cNetCDF.Defaults.GenotypeEncoding.UNKNOWN)) {
-				guessedGTCode = Utils.detectGTEncoding(markerSetLHM);
+				guessedGTCode = Utils.detectGTEncoding(markerSetMap);
 			} else if (guessedGTCode.equals(cNetCDF.Defaults.GenotypeEncoding.O12)) {
-				guessedGTCode = Utils.detectGTEncoding(markerSetLHM);
+				guessedGTCode = Utils.detectGTEncoding(markerSetMap);
 			}
 
 			// WRITING GENOTYPE DATA INTO netCDF FILE
-			ArrayByte.D3 genotypes = org.gwaspi.netCDF.operations.Utils.writeLHMToCurrentMarkerArrayByteD3(markerSetLHM, cNetCDF.Strides.STRIDE_GT);
+			ArrayByte.D3 genotypes = org.gwaspi.netCDF.operations.Utils.writeMapToCurrentMarkerArrayByteD3(markerSetMap, cNetCDF.Strides.STRIDE_GT);
 			int[] origin = new int[]{sampleIndex, 0, 0}; //0,0,0 for 1st Sample ; 1,0,0 for 2nd Sample....
 			try {
 				ncfile.write(cNetCDF.Variables.VAR_GENOTYPES, origin, genotypes);
@@ -302,7 +302,7 @@ public class LoadGTFromSequenomFiles implements GTFilesLoader {
 
 	public void loadIndividualFiles(File file,
 			String currSampleId,
-			Map<String, Object> markerSetLHM)
+			Map<String, Object> markerSetMap)
 			throws IOException, InvalidRangeException
 	{
 		////////////// LOAD INPUT FILE ////////////////
@@ -329,7 +329,7 @@ public class LoadGTFromSequenomFiles implements GTFilesLoader {
 						sAlleles = sAlleles + sAlleles;
 					}
 					byte[] tmpAlleles = new byte[]{(byte) sAlleles.charAt(0), (byte) sAlleles.charAt(1)};
-					markerSetLHM.put(tmpMarkerId, tmpAlleles);
+					markerSetMap.put(tmpMarkerId, tmpAlleles);
 				}
 			}
 		}

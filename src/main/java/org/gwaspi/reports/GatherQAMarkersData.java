@@ -23,13 +23,13 @@ public class GatherQAMarkersData {
 		OperationMetadata rdOPMetadata = new OperationMetadata(opId);
 
 		OperationSet rdInfoMarkerSet = new OperationSet(rdOPMetadata.getStudyId(), opId);
-		Map<String, Object> rdMatrixMarkerSetLHM = rdInfoMarkerSet.getOpSetLHM();
+		Map<String, Object> rdMatrixMarkerSetMap = rdInfoMarkerSet.getOpSetMap();
 
 		NetcdfFile markerQANcFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());
-		rdMatrixMarkerSetLHM = rdInfoMarkerSet.fillOpSetLHMWithVariable(markerQANcFile, cNetCDF.Census.VAR_OP_MARKERS_MISSINGRAT);
+		rdMatrixMarkerSetMap = rdInfoMarkerSet.fillOpSetMapWithVariable(markerQANcFile, cNetCDF.Census.VAR_OP_MARKERS_MISSINGRAT);
 
 		markerQANcFile.close();
-		return rdMatrixMarkerSetLHM;
+		return rdMatrixMarkerSetMap;
 	}
 
 	public static Map<String, Object> loadMarkerQAMismatchState(int opId) throws IOException {
@@ -37,13 +37,13 @@ public class GatherQAMarkersData {
 		OperationMetadata rdOPMetadata = new OperationMetadata(opId);
 
 		OperationSet rdInfoMarkerSet = new OperationSet(rdOPMetadata.getStudyId(), opId);
-		Map<String, Object> rdMatrixMarkerSetLHM = rdInfoMarkerSet.getOpSetLHM();
+		Map<String, Object> rdMatrixMarkerSetMap = rdInfoMarkerSet.getOpSetMap();
 
 		NetcdfFile markerQANcFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());
-		rdMatrixMarkerSetLHM = rdInfoMarkerSet.fillOpSetLHMWithVariable(markerQANcFile, cNetCDF.Census.VAR_OP_MARKERS_MISMATCHSTATE);
+		rdMatrixMarkerSetMap = rdInfoMarkerSet.fillOpSetMapWithVariable(markerQANcFile, cNetCDF.Census.VAR_OP_MARKERS_MISMATCHSTATE);
 
 		markerQANcFile.close();
-		return rdMatrixMarkerSetLHM;
+		return rdMatrixMarkerSetMap;
 	}
 
 	public static Map<String, Object> loadMarkerQAMinorAlleles(int opId) throws IOException {
@@ -51,13 +51,13 @@ public class GatherQAMarkersData {
 		OperationMetadata rdOPMetadata = new OperationMetadata(opId);
 
 		OperationSet rdInfoMarkerSet = new OperationSet(rdOPMetadata.getStudyId(), opId);
-		Map<String, Object> rdMatrixMarkerSetLHM = rdInfoMarkerSet.getOpSetLHM();
+		Map<String, Object> rdMatrixMarkerSetMap = rdInfoMarkerSet.getOpSetMap();
 
 		NetcdfFile markerQANcFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());
-		rdMatrixMarkerSetLHM = rdInfoMarkerSet.fillOpSetLHMWithVariable(markerQANcFile, cNetCDF.Census.VAR_OP_MARKERS_MINALLELES);
+		rdMatrixMarkerSetMap = rdInfoMarkerSet.fillOpSetMapWithVariable(markerQANcFile, cNetCDF.Census.VAR_OP_MARKERS_MINALLELES);
 
 		markerQANcFile.close();
-		return rdMatrixMarkerSetLHM;
+		return rdMatrixMarkerSetMap;
 	}
 
 	public static Map<String, Object> loadMarkerQAMajorAlleles(int opId) throws IOException {
@@ -65,13 +65,13 @@ public class GatherQAMarkersData {
 		OperationMetadata rdOPMetadata = new OperationMetadata(opId);
 
 		OperationSet rdInfoMarkerSet = new OperationSet(rdOPMetadata.getStudyId(), opId);
-		Map<String, Object> rdMatrixMarkerSetLHM = rdInfoMarkerSet.getOpSetLHM();
+		Map<String, Object> rdMatrixMarkerSetMap = rdInfoMarkerSet.getOpSetMap();
 
 		NetcdfFile markerQANcFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());
-		rdMatrixMarkerSetLHM = rdInfoMarkerSet.fillOpSetLHMWithVariable(markerQANcFile, cNetCDF.Census.VAR_OP_MARKERS_MAJALLELES);
+		rdMatrixMarkerSetMap = rdInfoMarkerSet.fillOpSetMapWithVariable(markerQANcFile, cNetCDF.Census.VAR_OP_MARKERS_MAJALLELES);
 
 		markerQANcFile.close();
-		return rdMatrixMarkerSetLHM;
+		return rdMatrixMarkerSetMap;
 	}
 
 	public static Map<String, Object> loadMarkerQAMinorAlleleFrequency(int opId) throws IOException {
@@ -79,13 +79,13 @@ public class GatherQAMarkersData {
 		OperationMetadata rdOPMetadata = new OperationMetadata(opId);
 
 		OperationSet rdInfoMarkerSet = new OperationSet(rdOPMetadata.getStudyId(), opId);
-		Map<String, Object> rdMatrixMarkerSetLHM = rdInfoMarkerSet.getOpSetLHM();
+		Map<String, Object> rdMatrixMarkerSetMap = rdInfoMarkerSet.getOpSetMap();
 
 		NetcdfFile markerQANcFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());
-		rdMatrixMarkerSetLHM = rdInfoMarkerSet.fillOpSetLHMWithVariable(markerQANcFile, cNetCDF.Census.VAR_OP_MARKERS_MINALLELEFRQ);
+		rdMatrixMarkerSetMap = rdInfoMarkerSet.fillOpSetMapWithVariable(markerQANcFile, cNetCDF.Census.VAR_OP_MARKERS_MINALLELEFRQ);
 
 		markerQANcFile.close();
-		return rdMatrixMarkerSetLHM;
+		return rdMatrixMarkerSetMap;
 	}
 
 	public static Map<String, Object> loadMarkerQAMajorAlleleFrequency(int opId) throws IOException {
@@ -93,12 +93,12 @@ public class GatherQAMarkersData {
 		OperationMetadata rdOPMetadata = new OperationMetadata(opId);
 
 		OperationSet rdInfoMarkerSet = new OperationSet(rdOPMetadata.getStudyId(), opId);
-		Map<String, Object> rdMatrixMarkerSetLHM = rdInfoMarkerSet.getOpSetLHM();
+		Map<String, Object> rdMatrixMarkerSetMap = rdInfoMarkerSet.getOpSetMap();
 
 		NetcdfFile markerQANcFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());
-		rdMatrixMarkerSetLHM = rdInfoMarkerSet.fillOpSetLHMWithVariable(markerQANcFile, cNetCDF.Census.VAR_OP_MARKERS_MAJALLELEFRQ);
+		rdMatrixMarkerSetMap = rdInfoMarkerSet.fillOpSetMapWithVariable(markerQANcFile, cNetCDF.Census.VAR_OP_MARKERS_MAJALLELEFRQ);
 
 		markerQANcFile.close();
-		return rdMatrixMarkerSetLHM;
+		return rdMatrixMarkerSetMap;
 	}
 }

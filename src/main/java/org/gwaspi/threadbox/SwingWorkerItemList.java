@@ -13,7 +13,7 @@ import java.util.List;
  */
 public class SwingWorkerItemList {
 
-	private static List<SwingWorkerItem> swingWorkerItemsAL = new ArrayList<SwingWorkerItem>();
+	private static List<SwingWorkerItem> swingWorkerItems = new ArrayList<SwingWorkerItem>();
 	private static List<Integer> parentStudyIds = new ArrayList<Integer>();
 	private static List<Integer> parentMatricesIds = new ArrayList<Integer>();
 	private static List<Integer> parentOperationsIds = new ArrayList<Integer>();
@@ -27,7 +27,7 @@ public class SwingWorkerItemList {
 			Integer[] _parentOperationsIds)
 	{
 		SwingDeleterItemList.purgeDoneDeletes();
-		SwingWorkerItemList.swingWorkerItemsAL.add(swi);
+		SwingWorkerItemList.swingWorkerItems.add(swi);
 
 		// LOCK PARENT ITEMS
 		if (_parentStudyId != null) {
@@ -42,7 +42,7 @@ public class SwingWorkerItemList {
 
 		// CHECK IF ANY ITEM IS ALLREADY RUNNING
 		boolean kickStart = true;
-		for (SwingWorkerItem currentSwi : swingWorkerItemsAL) {
+		for (SwingWorkerItem currentSwi : swingWorkerItems) {
 			if (currentSwi.queueState.equals(QueueState.PROCESSING)) {
 				kickStart = false;
 			}
@@ -58,7 +58,7 @@ public class SwingWorkerItemList {
 
 	public static void startNext() {
 		boolean idle = true;
-		for (SwingWorkerItem currentSwi : swingWorkerItemsAL) {
+		for (SwingWorkerItem currentSwi : swingWorkerItems) {
 			if (idle && currentSwi.getQueueState().equals(QueueState.QUEUED)) {
 				idle = false;
 				currentSwi.swingWorker.start();
@@ -71,12 +71,12 @@ public class SwingWorkerItemList {
 		}
 	}
 
-	public static List<SwingWorkerItem> getSwingWorkerItemsAL() {
-		return swingWorkerItemsAL;
+	public static List<SwingWorkerItem> getSwingWorkerItems() {
+		return swingWorkerItems;
 	}
 
 	public static void flagCurrentItemDone(String timeStamp) {
-		for (SwingWorkerItem currentSwi : swingWorkerItemsAL) {
+		for (SwingWorkerItem currentSwi : swingWorkerItems) {
 			if (currentSwi.getTimeStamp().equals(timeStamp)) {
 				currentSwi.setQueueState(QueueState.DONE);
 				currentSwi.setEndTime(org.gwaspi.global.Utils.getShortDateTimeAsString());
@@ -89,7 +89,7 @@ public class SwingWorkerItemList {
 	}
 
 	public static void flagCurrentItemAborted(String timeStamp) {
-		for (SwingWorkerItem currentSwi : swingWorkerItemsAL) {
+		for (SwingWorkerItem currentSwi : swingWorkerItems) {
 			if (currentSwi.getTimeStamp().equals(timeStamp)) {
 				currentSwi.setQueueState(QueueState.ABORT);
 				currentSwi.setEndTime(org.gwaspi.global.Utils.getShortDateTimeAsString());
@@ -102,10 +102,10 @@ public class SwingWorkerItemList {
 	}
 
 	public static void flagCurrentItemAborted(int rowIdx) {
-		SwingWorkerItem currentSwi = swingWorkerItemsAL.get(rowIdx);
+		SwingWorkerItem currentSwi = swingWorkerItems.get(rowIdx);
 		QueueState queueState = currentSwi.getQueueState();
 		if (queueState.equals(QueueState.PROCESSING) || queueState.equals(QueueState.QUEUED)) {
-			swingWorkerItemsAL.get(rowIdx).setQueueState(QueueState.ABORT);
+			swingWorkerItems.get(rowIdx).setQueueState(QueueState.ABORT);
 			ProcessTab.getSingleton().updateProcessOverview();
 
 			unlockParentItems(currentSwi.parentStudyIds,
@@ -115,7 +115,7 @@ public class SwingWorkerItemList {
 	}
 
 	public static void flagCurrentItemError(String timeStamp) {
-		for (SwingWorkerItem currentSwi : swingWorkerItemsAL) {
+		for (SwingWorkerItem currentSwi : swingWorkerItems) {
 			if (currentSwi.getTimeStamp().equals(timeStamp)) {
 				currentSwi.setQueueState(QueueState.ERROR);
 				currentSwi.setEndTime(org.gwaspi.global.Utils.getShortDateTimeAsString());
@@ -160,12 +160,12 @@ public class SwingWorkerItemList {
 	}
 
 	public static int getSwingWorkerItemsALsize() {
-		return swingWorkerItemsAL.size();
+		return swingWorkerItems.size();
 	}
 
 	public static int getSwingWorkerPendingItemsNb() {
 		int result = 0;
-		for (SwingWorkerItem currentSwi : SwingWorkerItemList.getSwingWorkerItemsAL()) {
+		for (SwingWorkerItem currentSwi : SwingWorkerItemList.getSwingWorkerItems()) {
 			if (currentSwi.queueState.equals(QueueState.PROCESSING)) {
 				result++;
 			}
@@ -178,7 +178,7 @@ public class SwingWorkerItemList {
 
 	public static SwingWorkerItem getSwingWorkerItemByTimeStamp(String timeStamp) {
 		SwingWorkerItem result = null;
-		for (SwingWorkerItem currentSwi : swingWorkerItemsAL) {
+		for (SwingWorkerItem currentSwi : swingWorkerItems) {
 			if (currentSwi.getTimeStamp().equals(timeStamp)) {
 				result = currentSwi;
 			}

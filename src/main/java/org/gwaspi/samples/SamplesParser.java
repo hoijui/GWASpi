@@ -43,8 +43,8 @@ public class SamplesParser {
 					org.gwaspi.global.Utils.getMediumDateTimeAsString());
 //			NetcdfFile rdNcFile = NetcdfFile.open(rdMatrixMetadata.getPathToMatrix());
 			SampleSet rdSampleSet = new SampleSet(rdMatrixMetadata.getStudyId(), matrixId);
-			Map<String, Object> rdSampleSetLHM = rdSampleSet.getSampleIdSetLHM();
-			for (String key : rdSampleSetLHM.keySet()) {
+			Map<String, Object> rdSampleSetMap = rdSampleSet.getSampleIdSetMap();
+			for (String key : rdSampleSetMap.keySet()) {
 				List<Map<String, Object>> rs = SampleManager.getCurrentSampleInfoFromDB(key.toString(), rdMatrixMetadata.getStudyId());
 				if (rs != null) {
 					// PREVENT PHANTOM-DB READS EXCEPTIONS
@@ -64,7 +64,7 @@ public class SamplesParser {
 
 	//<editor-fold defaultstate="collapsed" desc="FILE SAMPLE INFO SCANNERS">
 	public static Map<String, Object> scanGwaspiSampleInfo(String sampleInfoPath) throws IOException {
-		Map<String, Object> sampleInfoLHM = new LinkedHashMap<String, Object>();
+		Map<String, Object> sampleInfoMap = new LinkedHashMap<String, Object>();
 		FileReader inputFileReader;
 		BufferedReader inputBufferReader;
 		File sampleFile = new File(sampleInfoPath);
@@ -82,7 +82,7 @@ public class SamplesParser {
 					cVals[i] = field;
 					i++;
 				}
-				sampleInfoLHM.put(cVals[GWASpi.sampleId], cVals);
+				sampleInfoMap.put(cVals[GWASpi.sampleId], cVals);
 			}
 
 			count++;
@@ -94,11 +94,11 @@ public class SamplesParser {
 		inputBufferReader.close();
 		inputFileReader.close();
 
-		return sampleInfoLHM;
+		return sampleInfoMap;
 	}
 
 	public static Map<String, Object> scanPlinkStandardSampleInfo(String pedPath) throws IOException {
-		Map<String, Object> sampleInfoLHM = new LinkedHashMap<String, Object>();
+		Map<String, Object> sampleInfoMap = new LinkedHashMap<String, Object>();
 		FileReader inputFileReader;
 		BufferedReader inputBufferReader;
 
@@ -130,7 +130,7 @@ public class SamplesParser {
 					cVals[9] = "0"; // AGE
 				}
 
-				sampleInfoLHM.put(cVals[GWASpi.sampleId], cVals);
+				sampleInfoMap.put(cVals[GWASpi.sampleId], cVals);
 
 				count++;
 				if (count % 100 == 0) {
@@ -160,7 +160,7 @@ public class SamplesParser {
 				}
 				inputBufferReader.readLine(); // Read rest of line and discard it...
 
-				sampleInfoLHM.put(cVals[GWASpi.sampleId], cVals);
+				sampleInfoMap.put(cVals[GWASpi.sampleId], cVals);
 
 				count++;
 				if (count % 100 == 0) {
@@ -172,11 +172,11 @@ public class SamplesParser {
 		inputBufferReader.close();
 		inputFileReader.close();
 
-		return sampleInfoLHM;
+		return sampleInfoMap;
 	}
 
 	public static Map<String, Object> scanPlinkLGENSampleInfo(String lgenPath) throws IOException {
-		Map<String, Object> sampleInfoLHM = new LinkedHashMap<String, Object>();
+		Map<String, Object> sampleInfoMap = new LinkedHashMap<String, Object>();
 
 		File sampleFile = new File(lgenPath);
 		FileReader inputFileReader = new FileReader(sampleFile);
@@ -189,19 +189,19 @@ public class SamplesParser {
 				cVals[Plink_LGEN.lgen_sampleId],
 				"0", "0", "0", "0", "0", "0", "0", "0"};
 
-			sampleInfoLHM.put(cVals[Plink_LGEN.lgen_sampleId], infoVals);
+			sampleInfoMap.put(cVals[Plink_LGEN.lgen_sampleId], infoVals);
 		}
 		log.info("Parsed {} Samples in LGEN file {}...",
-				sampleInfoLHM.size(), sampleFile.getName());
+				sampleInfoMap.size(), sampleFile.getName());
 
 		inputBufferReader.close();
 		inputFileReader.close();
 
-		return sampleInfoLHM;
+		return sampleInfoMap;
 	}
 
 	public static Map<String, Object> scanPlinkFAMSampleInfo(String famPath) throws IOException {
-		Map<String, Object> sampleInfoLHM = new LinkedHashMap<String, Object>();
+		Map<String, Object> sampleInfoMap = new LinkedHashMap<String, Object>();
 		FileReader inputFileReader = new FileReader(new File(famPath));
 		BufferedReader inputBufferReader = new BufferedReader(inputFileReader);
 
@@ -225,7 +225,7 @@ public class SamplesParser {
 			cVals[8] = "0";
 			cVals[9] = "0"; // AGE
 
-			sampleInfoLHM.put(cVals[GWASpi.sampleId], cVals);
+			sampleInfoMap.put(cVals[GWASpi.sampleId], cVals);
 
 			count++;
 			if (count % 100 == 0) {
@@ -236,11 +236,11 @@ public class SamplesParser {
 		inputBufferReader.close();
 		inputFileReader.close();
 
-		return sampleInfoLHM;
+		return sampleInfoMap;
 	}
 
 	public static Map<String, Object> scanIlluminaLGENSampleInfo(String lgenDir) throws IOException {
-		Map<String, Object> sampleInfoLHM = new LinkedHashMap<String, Object>();
+		Map<String, Object> sampleInfoMap = new LinkedHashMap<String, Object>();
 
 		File[] gtFilesToImport = org.gwaspi.global.Utils.listFiles(lgenDir, false);
 
@@ -265,24 +265,24 @@ public class SamplesParser {
 					cVals[Plink_LGEN.lgen_sampleId],
 					"0", "0", "0", "0", "0", "0", "0", "0"};
 
-				sampleInfoLHM.put(cVals[Plink_LGEN.lgen_sampleId], infoVals);
+				sampleInfoMap.put(cVals[Plink_LGEN.lgen_sampleId], infoVals);
 
-				if (sampleInfoLHM.size() % 100 == 0) {
-					log.info("Parsed {} Samples...", sampleInfoLHM.size());
+				if (sampleInfoMap.size() % 100 == 0) {
+					log.info("Parsed {} Samples...", sampleInfoMap.size());
 				}
 			}
 			log.info("Parsed {} Samples in LGEN file {}...",
-					sampleInfoLHM.size(), gtFilesToImport[i].getName());
+					sampleInfoMap.size(), gtFilesToImport[i].getName());
 
 			inputBufferReader.close();
 			inputFileReader.close();
 		}
 
-		return sampleInfoLHM;
+		return sampleInfoMap;
 	}
 
 	public static Map<String, Object> scanMultipleIlluminaLGENSampleInfo(String lgenDir) throws IOException {
-		Map<String, Object> sampleInfoLHM = new LinkedHashMap<String, Object>();
+		Map<String, Object> sampleInfoMap = new LinkedHashMap<String, Object>();
 		File[] lgenFilesToScan = org.gwaspi.global.Utils.listFiles(lgenDir, false);
 
 		for (File currentLGENFile : lgenFilesToScan) {
@@ -309,20 +309,20 @@ public class SamplesParser {
 					cVals[Plink_LGEN.lgen_sampleId],
 					"0", "0", "0", "0", "0", "0", "0", "0"};
 
-				sampleInfoLHM.put(cVals[Plink_LGEN.lgen_sampleId], infoVals);
+				sampleInfoMap.put(cVals[Plink_LGEN.lgen_sampleId], infoVals);
 			}
 			log.info("Parsed {} Samples in LGEN file {}...",
-					sampleInfoLHM.size(), currentLGENFile.getName());
+					sampleInfoMap.size(), currentLGENFile.getName());
 
 			inputBufferReader.close();
 			inputFileReader.close();
 		}
 
-		return sampleInfoLHM;
+		return sampleInfoMap;
 	}
 
 	public static Map<String, Object> scanBeagleSampleInfo(String beaglePath) throws IOException {
-		Map<String, Object> sampleInfoLHM = new LinkedHashMap<String, Object>();
+		Map<String, Object> sampleInfoMap = new LinkedHashMap<String, Object>();
 		FileReader inputFileReader;
 		File sampleFile = new File(beaglePath);
 		inputFileReader = new FileReader(sampleFile);
@@ -352,16 +352,16 @@ public class SamplesParser {
 			String[] infoVals = new String[]{"0", "0", "0", "0", "0", "0", "0", "0", "0", "0"};
 			infoVals[GWASpi.sampleId] = sampleIds[i];
 			infoVals[GWASpi.affection] = beagleAffections[i];
-			sampleInfoLHM.put(sampleIds[i], infoVals);
+			sampleInfoMap.put(sampleIds[i], infoVals);
 		}
 
 		inputFileReader.close();
 
-		return sampleInfoLHM;
+		return sampleInfoMap;
 	}
 
 	public static Map<String, Object> scanHapmapSampleInfo(String hapmapPath) throws IOException {
-		Map<String, Object> sampleInfoLHM = new LinkedHashMap<String, Object>();
+		Map<String, Object> sampleInfoMap = new LinkedHashMap<String, Object>();
 		FileReader fr = null;
 		BufferedReader inputAnnotationBr = null;
 		File hapmapGTFile = new File(hapmapPath);
@@ -377,7 +377,7 @@ public class SamplesParser {
 				for (int j = cImport.Genotypes.Hapmap_Standard.sampleId; j < hapmapVals.length; j++) {
 					String[] infoVals = new String[]{"0", "0", "0", "0", "0", "0", "0", "0", "0", "0"};
 					infoVals[GWASpi.sampleId] = hapmapVals[j];
-					sampleInfoLHM.put(hapmapVals[j], infoVals);
+					sampleInfoMap.put(hapmapVals[j], infoVals);
 				}
 			}
 		} else {
@@ -390,18 +390,18 @@ public class SamplesParser {
 			for (int i = cImport.Genotypes.Hapmap_Standard.sampleId; i < hapmapVals.length; i++) {
 				String[] infoVals = new String[]{"0", "0", "0", "0", "0", "0", "0", "0", "0", "0"};
 				infoVals[GWASpi.sampleId] = hapmapVals[i];
-				sampleInfoLHM.put(hapmapVals[i], infoVals);
+				sampleInfoMap.put(hapmapVals[i], infoVals);
 			}
 		}
 
 		inputAnnotationBr.close();
 		fr.close();
 
-		return sampleInfoLHM;
+		return sampleInfoMap;
 	}
 
 	public static Map<String, Object> scanHGDP1SampleInfo(String hgdpPath) throws IOException {
-		Map<String, Object> sampleInfoLHM = new LinkedHashMap<String, Object>();
+		Map<String, Object> sampleInfoMap = new LinkedHashMap<String, Object>();
 		File sampleFile = new File(hgdpPath);
 		FileReader inputFileReader = new FileReader(sampleFile);
 		BufferedReader inputBufferReader = new BufferedReader(inputFileReader);
@@ -413,16 +413,16 @@ public class SamplesParser {
 			String sampleId = sampleIds[i];
 			String[] infoVals = new String[]{"0", "0", "0", "0", "0", "0", "0", "0", "0", "0"};
 			infoVals[GWASpi.sampleId] = sampleId;
-			sampleInfoLHM.put(sampleId, infoVals);
+			sampleInfoMap.put(sampleId, infoVals);
 		}
 
 		inputFileReader.close();
 
-		return sampleInfoLHM;
+		return sampleInfoMap;
 	}
 
 	public static Map<String, Object> scanAffymetrixSampleInfo(String genotypesPath) throws IOException {
-		Map<String, Object> resultLHM = new LinkedHashMap<String, Object>();
+		Map<String, Object> resultMap = new LinkedHashMap<String, Object>();
 		File[] gtFilesToImport = org.gwaspi.global.Utils.listFiles(genotypesPath, false);
 
 		for (int i = 0; i < gtFilesToImport.length; i++) {
@@ -436,13 +436,13 @@ public class SamplesParser {
 			}
 			String[] infoVals = new String[]{"0", "0", "0", "0", "0", "0", "0", "0", "0", "0"};
 			infoVals[GWASpi.sampleId] = sampleId;
-			resultLHM.put(sampleId, infoVals);
+			resultMap.put(sampleId, infoVals);
 		}
-		return resultLHM;
+		return resultMap;
 	}
 
 	public static Map<String, Object> scanSequenomSampleInfo(String genotypePath) throws IOException {
-		Map<String, Object> sampleInfoLHM = new LinkedHashMap<String, Object>();
+		Map<String, Object> sampleInfoMap = new LinkedHashMap<String, Object>();
 
 		File gtFileToImport = new File(genotypePath);
 		FileReader inputFileReader = new FileReader(gtFileToImport);
@@ -453,26 +453,26 @@ public class SamplesParser {
 			l = inputBufferReader.readLine();
 			if (!l.contains("SAMPLE_ID")) { //SKIP ALL HEADER LINES
 				String[] cVals = l.split(cImport.Separators.separators_CommaSpaceTab_rgxp);
-				if (!sampleInfoLHM.containsKey(cVals[Sequenom.sampleId])) {
+				if (!sampleInfoMap.containsKey(cVals[Sequenom.sampleId])) {
 					String[] infoVals = new String[]{"0",
 						cVals[Sequenom.sampleId],
 						"0", "0", "0", "0", "0", "0", "0", "0"};
-					sampleInfoLHM.put(cVals[Sequenom.sampleId], infoVals);
+					sampleInfoMap.put(cVals[Sequenom.sampleId], infoVals);
 				}
 
-				if (sampleInfoLHM.size() % 100 == 0) {
-					log.info("Parsed {} lines...", sampleInfoLHM.size());
+				if (sampleInfoMap.size() % 100 == 0) {
+					log.info("Parsed {} lines...", sampleInfoMap.size());
 				}
 			}
 
 		}
 		log.info("Parsed {} Samples in Sequenom file {}...",
-				sampleInfoLHM.size(), gtFileToImport);
+				sampleInfoMap.size(), gtFileToImport);
 
 		inputBufferReader.close();
 		inputFileReader.close();
 
-		return sampleInfoLHM;
+		return sampleInfoMap;
 	}
 
 	public static Set<String> scanSampleInfoAffectionStates(String sampleInfoPath) throws IOException {

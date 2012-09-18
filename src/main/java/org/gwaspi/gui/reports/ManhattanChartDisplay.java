@@ -51,7 +51,7 @@ public final class ManhattanChartDisplay extends JPanel {
 	private JButton btn_Save;
 	private JButton btn_Back;
 	private int opId;
-	private Map<String, Object> chrSetInfoLHM = new LinkedHashMap<String, Object>();
+	private Map<String, Object> chrSetInfoMap = new LinkedHashMap<String, Object>();
 	private String chr = "";
 	private int chartWidth = 0;
 	private int chrPlotWidth = 0;
@@ -213,11 +213,11 @@ public final class ManhattanChartDisplay extends JPanel {
 
 		try {
 			OperationSet opSet = new OperationSet(studyId, opId);
-			chrSetInfoLHM = opSet.getChrInfoSetLHM();
+			chrSetInfoMap = opSet.getChrInfoSetMap();
 
 			// CHECK HOW MANY CHR HAVE PLOTS (ANY MARKERS?)
 			int chrPlotNb = 0;
-			for (Object value : chrSetInfoLHM.values()) {
+			for (Object value : chrSetInfoMap.values()) {
 				int[] chrInfo = (int[]) value; // Nb of markers, first physical position, last physical position, start index number in MarkerSet,
 				if (chrInfo[0] > 0) {
 					chrPlotNb++;
@@ -278,8 +278,8 @@ public final class ManhattanChartDisplay extends JPanel {
 
 		int[] chrInfo = new int[4];
 		int i = 0;
-		for (Map.Entry<String, Object> entry : chrSetInfoLHM.entrySet()) {
-			if ((i > selectedChrMap) || (i >= chrSetInfoLHM.size())) {
+		for (Map.Entry<String, Object> entry : chrSetInfoMap.entrySet()) {
+			if ((i > selectedChrMap) || (i >= chrSetInfoMap.size())) {
 				break;
 			}
 			chr = entry.getKey();

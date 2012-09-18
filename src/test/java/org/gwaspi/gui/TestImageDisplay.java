@@ -64,7 +64,7 @@ public class TestImageDisplay extends JFrame {
 
 		BufferedImage biScale = new BufferedImage(width, height, bi.getType());
 
-		// Cicla dando un valore medio al pixel corrispondente
+		// Cicla dando un valore medio al pixel corrispondente TODO convert comment to english
 		for (int i = 0; i < width; i++) {
 			for (int j = 0; j < height; j++) {
 				biScale.setRGB(i, j, bi.getRGB(i / scale, j / scale));

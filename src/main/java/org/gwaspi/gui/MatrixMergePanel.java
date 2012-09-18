@@ -82,7 +82,7 @@ public class MatrixMergePanel extends JPanel {
 	public MatrixMergePanel(int _matrixId) throws IOException {
 
 		parentMatrix = new Matrix(_matrixId);
-		matrixItemsAL = getMatrixItemsAL();
+		matrixItemsAL = getMatrixItems();
 
 		mergeMethod = new ButtonGroup();
 		pnl_ParentMatrixDesc = new JPanel();
@@ -452,7 +452,7 @@ public class MatrixMergePanel extends JPanel {
 		return study_name;
 	}
 
-	public static List<Object[]> getMatrixItemsAL() throws IOException {
+	public static List<Object[]> getMatrixItems() throws IOException {
 
 		List<Object[]> resultAL = new ArrayList<Object[]>();
 

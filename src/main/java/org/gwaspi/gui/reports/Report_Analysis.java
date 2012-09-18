@@ -64,7 +64,7 @@ public abstract class Report_Analysis extends JPanel {
 	protected int opId;
 	protected String analysisFileName;
 	protected String NRows;
-	protected Map<String, Object> chrSetInfoLHM = new LinkedHashMap<String, Object>();
+	protected Map<String, Object> chrSetInfoMap = new LinkedHashMap<String, Object>();
 	protected File reportFile;
 	private JButton btn_Get;
 	private JButton btn_Save;
@@ -270,7 +270,7 @@ public abstract class Report_Analysis extends JPanel {
 				.addComponent(scrl_ReportTable, GroupLayout.DEFAULT_SIZE, 238, Short.MAX_VALUE)
 				.addContainerGap()));
 		try {
-			if (chrSetInfoLHM == null) {
+			if (chrSetInfoMap == null) {
 				initChrSetInfo();
 			}
 		} catch (IOException ex) {
@@ -280,7 +280,7 @@ public abstract class Report_Analysis extends JPanel {
 
 	protected void initChrSetInfo() throws IOException {
 		OperationSet opSet = new OperationSet(studyId, opId);
-		chrSetInfoLHM = opSet.getChrInfoSetLHM(); //Nb of markers, first physical position, last physical position, start index number in MarkerSet,
+		chrSetInfoMap = opSet.getChrInfoSetMap(); //Nb of markers, first physical position, last physical position, start index number in MarkerSet,
 	}
 
 	protected abstract void actionLoadReport();

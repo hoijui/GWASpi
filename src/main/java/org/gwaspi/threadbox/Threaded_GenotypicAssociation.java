@@ -68,7 +68,7 @@ public class Threaded_GenotypicAssociation extends CommonRunnable {
 		OperationMetadata markerQAMetadata = new OperationMetadata(markersQAOpId);
 
 		if (gwasParams.isDiscardMarkerHWCalc()) {
-			gwasParams.setDiscardMarkerHWTreshold((double) 0.05 / markerQAMetadata.getOpSetSize());
+			gwasParams.setDiscardMarkerHWTreshold(0.05 / markerQAMetadata.getOpSetSize());
 		}
 
 		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {

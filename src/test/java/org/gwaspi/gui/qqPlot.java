@@ -101,9 +101,9 @@ public class qqPlot implements ActionListener {
 		XYSeries seriesLower = new XYSeries("Lower bound");
 
 		int N = 10000;
-		List<Double> rndChiSqrDist1 = org.gwaspi.statistics.Chisquare.getChiSquareDistributionDf1AL(N, 1.0f);
+		List<Double> rndChiSqrDist1 = org.gwaspi.statistics.Chisquare.getChiSquareDistributionDf1(N, 1.0f);
 		Collections.sort(rndChiSqrDist1);
-		List<Double> rndChiSqrDist2 = org.gwaspi.statistics.Chisquare.getChiSquareDistributionDf1AL(N, 1.0f);
+		List<Double> rndChiSqrDist2 = org.gwaspi.statistics.Chisquare.getChiSquareDistributionDf1(N, 1.0f);
 		Collections.sort(rndChiSqrDist2);
 		for (int i = 0; i < rndChiSqrDist1.size(); i++) {
 			double obsVal = rndChiSqrDist1.get(i) + (generator.nextDouble() * 0.00001);
