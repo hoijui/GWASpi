@@ -30,6 +30,17 @@ import ucar.nc2.NetcdfFileWriteable;
  */
 public class LoadGTFromAffyFiles implements GTFilesLoader {
 
+	static interface Standard {
+		// ProbesetID, Call, Confidence, Signal A, Signal B, Forced Call
+
+		public static final int markerId = 0;
+		public static final int alleles = 1; // Caution, using normal Call, not Forced Call!
+		public static final String missing = "NoCall";
+		public static final int score = 2;
+		public static final int intensity_A = 3;
+		public static final int intensity_B = 4;
+	}
+
 	private String gtDirPath;
 	private String sampleFilePath;
 	private String annotationFilePath;
@@ -367,11 +378,11 @@ public class LoadGTFromAffyFiles implements GTFilesLoader {
 			byte[] alleles;
 			switch (cImport.ImportFormat.compareTo(format)) {
 				case Affymetrix_GenomeWide6:
-					if (cVals[cImport.Genotypes.Affymetrix_GenomeWide6.alleles].equals(cImport.Genotypes.Affymetrix_GenomeWide6.missing)) {
+					if (cVals[Standard.alleles].equals(Standard.missing)) {
 						alleles = cNetCDF.Defaults.DEFAULT_GT;
 					} else {
-						alleles = new byte[]{(byte) (cVals[cImport.Genotypes.Affymetrix_GenomeWide6.alleles].charAt(0)),
-							(byte) (cVals[cImport.Genotypes.Affymetrix_GenomeWide6.alleles].charAt(1))};
+						alleles = new byte[]{(byte) (cVals[Standard.alleles].charAt(0)),
+							(byte) (cVals[Standard.alleles].charAt(1))};
 					}
 					break;
 				default:
@@ -379,7 +390,7 @@ public class LoadGTFromAffyFiles implements GTFilesLoader {
 					break;
 			}
 
-			tempMarkerSet.put(cVals[cImport.Genotypes.Affymetrix_GenomeWide6.markerId], alleles);
+			tempMarkerSet.put(cVals[Standard.markerId], alleles);
 		}
 
 		for (String key : sortedMarkerSetMap.keySet()) {

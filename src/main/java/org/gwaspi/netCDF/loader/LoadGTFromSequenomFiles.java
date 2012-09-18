@@ -28,6 +28,15 @@ import ucar.nc2.NetcdfFileWriteable;
  */
 public class LoadGTFromSequenomFiles implements GTFilesLoader {
 
+	private static interface Standard {
+
+		public static final int sampleId = 0;
+		public static final int alleles = 1;
+		public static final int markerId = 2;
+		public static final int well = 3;
+		public static final int qa_desc = 4;
+	}
+
 	private String gtDirPath;
 	private String sampleFilePath;
 	private String annotationFilePath;
@@ -314,15 +323,15 @@ public class LoadGTFromSequenomFiles implements GTFilesLoader {
 		while ((l = inputBufferReader.readLine()) != null) {
 			if (!l.contains("SAMPLE_ID")) { // SKIP ALL HEADER LINES
 				String[] cVals = l.split(cImport.Separators.separators_Tab_rgxp);
-				if (cVals[cImport.Genotypes.Sequenom.sampleId].equals(currSampleId)) { //ONLY PROCESS CURRENT SAMPLEID DATA
-					String tmpMarkerId = cVals[cImport.Genotypes.Sequenom.markerId].trim();
+				if (cVals[Standard.sampleId].equals(currSampleId)) { //ONLY PROCESS CURRENT SAMPLEID DATA
+					String tmpMarkerId = cVals[Standard.markerId].trim();
 					try {
 						Long.parseLong(tmpMarkerId);
 						tmpMarkerId = "rs" + tmpMarkerId;
 					} catch (Exception ex) {
 					}
 
-					String sAlleles = cVals[cImport.Genotypes.Sequenom.alleles];
+					String sAlleles = cVals[Standard.alleles];
 					if (sAlleles.length() == 0) {
 						sAlleles = "00";
 					} else if (sAlleles.length() == 1) {

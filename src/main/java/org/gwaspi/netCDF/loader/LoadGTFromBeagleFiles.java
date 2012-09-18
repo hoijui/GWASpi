@@ -18,6 +18,13 @@ import ucar.ma2.InvalidRangeException;
  */
 public class LoadGTFromBeagleFiles extends AbstractLoadGTFromFiles {
 
+	private static interface Standard {
+
+		public static final int markerId = 1;
+		public static final int genotypes = 2;
+		public static final String missing = "0";
+	}
+
 	private String annotationFilePath;
 	private String chromosome;
 
@@ -91,7 +98,7 @@ public class LoadGTFromBeagleFiles extends AbstractLoadGTFromFiles {
 			if (l.startsWith("I")) { //Found first marker row!
 				sampleHeader = l;
 				headerFields = sampleHeader.split(cImport.Separators.separators_SpaceTab_rgxp);
-				for (int i = cImport.Genotypes.Beagle_Standard.genotypes; i < headerFields.length; i = i + 2) {
+				for (int i = Standard.genotypes; i < headerFields.length; i = i + 2) {
 					sampleOrderMap.put(headerFields[i], i);
 				}
 			}
@@ -99,7 +106,7 @@ public class LoadGTFromBeagleFiles extends AbstractLoadGTFromFiles {
 
 				//GET ALLELES FROM MARKER ROWS
 				String[] cVals = l.split(cImport.Separators.separators_SpaceTab_rgxp);
-				String currMarkerId = cVals[cImport.Genotypes.Beagle_Standard.markerId];
+				String currMarkerId = cVals[Standard.markerId];
 
 				Object columnNb = sampleOrderMap.get(currSampleId);
 				if (columnNb != null) {

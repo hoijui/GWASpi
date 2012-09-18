@@ -29,6 +29,16 @@ import ucar.nc2.NetcdfFileWriteable;
  */
 public class LoadGTFromIlluminaLGENFiles implements GTFilesLoader {
 
+	private static interface Standard {
+
+		public static final int familyId = 0;
+		public static final int sampleId = 1;
+		public static final int markerId = 2;
+		public static final int allele1 = 3;
+		public static final int allele2 = 4;
+		public static final String missing = "-";
+	}
+
 	private String gtDirPath;
 	private String sampleFilePath;
 	private String annotationFilePath;
@@ -309,9 +319,9 @@ public class LoadGTFromIlluminaLGENFiles implements GTFilesLoader {
 			String[] cVals = l.split(cImport.Separators.separators_CommaTab_rgxp);
 
 			if (cVals[1].equals(currentSampleId)) {
-				byte[] tmpAlleles = new byte[]{(byte) cVals[cImport.Genotypes.Illumina_LGEN.allele1].charAt(0),
-					(byte) cVals[cImport.Genotypes.Illumina_LGEN.allele2].charAt(0)};
-				tempMarkerSet.put(cVals[cImport.Genotypes.Illumina_LGEN.markerId], tmpAlleles);
+				byte[] tmpAlleles = new byte[]{(byte) cVals[Standard.allele1].charAt(0),
+					(byte) cVals[Standard.allele2].charAt(0)};
+				tempMarkerSet.put(cVals[Standard.markerId], tmpAlleles);
 			} else {
 				if (!currentSampleId.equals("")) { //EXCEPT FIRST TIME ROUND
 					//INIT AND PURGE SORTEDMARKERSET Map
@@ -340,14 +350,14 @@ public class LoadGTFromIlluminaLGENFiles implements GTFilesLoader {
 				System.out.println("Loading Sample: " + currentSampleId);
 
 				byte[] tmpAlleles = cNetCDF.Defaults.DEFAULT_GT;
-				if (cVals[cImport.Genotypes.Illumina_LGEN.allele1].equals(cImport.Genotypes.Illumina_LGEN.missing)
-						&& cVals[cImport.Genotypes.Illumina_LGEN.allele2].equals(cImport.Genotypes.Illumina_LGEN.missing)) {
+				if (cVals[Standard.allele1].equals(Standard.missing)
+						&& cVals[Standard.allele2].equals(Standard.missing)) {
 					tmpAlleles = cNetCDF.Defaults.DEFAULT_GT;
 				} else {
-					tmpAlleles = new byte[]{(byte) (cVals[cImport.Genotypes.Illumina_LGEN.allele1].charAt(0)),
-						(byte) (cVals[cImport.Genotypes.Illumina_LGEN.allele2].charAt(0))};
+					tmpAlleles = new byte[]{(byte) (cVals[Standard.allele1].charAt(0)),
+						(byte) (cVals[Standard.allele2].charAt(0))};
 				}
-				tempMarkerSet.put(cVals[cImport.Genotypes.Illumina_LGEN.markerId], tmpAlleles);
+				tempMarkerSet.put(cVals[Standard.markerId], tmpAlleles);
 			}
 		}
 

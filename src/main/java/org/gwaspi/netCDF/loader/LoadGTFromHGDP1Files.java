@@ -28,6 +28,13 @@ import ucar.nc2.NetcdfFileWriteable;
  */
 public class LoadGTFromHGDP1Files implements GTFilesLoader {
 
+	private static interface Standard {
+
+		public static final int markerId = 0;
+		public static final int genotypes = 1;
+		public static final String missing = "--";
+	}
+
 	private String gtFilePath;
 	private String sampleFilePath;
 	private String annotationFilePath;
@@ -344,12 +351,12 @@ public class LoadGTFromHGDP1Files implements GTFilesLoader {
 		while ((l = inputBufferReader.readLine()) != null) {
 			//GET ALLELES FROM MARKER ROWS
 			String[] cVals = l.split(cImport.Separators.separators_SpaceTab_rgxp);
-			String currMarkerId = cVals[cImport.Genotypes.HGDP1_Standard.markerId];
+			String currMarkerId = cVals[Standard.markerId];
 
 			Object columnNb = sampleOrderMap.get(currSampleId);
 			if (!columnNb.equals(null)) { // FIXME use == instead of equals!?
 				String strAlleles = cVals[(Integer) columnNb];
-				if (strAlleles.equals((cImport.Genotypes.HGDP1_Standard.missing))) {
+				if (strAlleles.equals(Standard.missing)) {
 					tempMarkerIdMap.put(currMarkerId, cNetCDF.Defaults.DEFAULT_GT);
 				} else {
 					byte[] tmpAlleles = new byte[]{(byte) strAlleles.charAt(0),

@@ -33,6 +33,19 @@ import ucar.nc2.NetcdfFileWriteable;
  */
 public class LoadGTFromHapmapFiles implements GTFilesLoader {
 
+	public static interface Standard {
+
+		public static final int dataStartRow = 1;
+		public static final int sampleId = 11;
+		public static final int markerId = 0;
+		public static final int alleles = 1;
+		public static final int chr = 2;
+		public static final int pos = 3;
+		public static final int strand = 4;
+		public static final String missing = "NN";
+		public static final int score = 10;
+	}
+
 	private String gtFilePath;
 	private String sampleFilePath;
 	private Map<String, Object> sampleInfoMap = new LinkedHashMap<String, Object>();
@@ -329,7 +342,7 @@ public class LoadGTFromHapmapFiles implements GTFilesLoader {
 			Map<String, Object> markerSetMap)
 			throws IOException, InvalidRangeException
 	{
-		int dataStartRow = cImport.Genotypes.Hapmap_Standard.dataStartRow;
+		int dataStartRow = Standard.dataStartRow;
 		FileReader inputFileReader = new FileReader(file);
 		BufferedReader inputBufferReader = new BufferedReader(inputFileReader);
 
@@ -340,7 +353,7 @@ public class LoadGTFromHapmapFiles implements GTFilesLoader {
 		String[] headerFields = header.split(cImport.Separators.separators_SpaceTab_rgxp);
 
 		Map<String, Object> sampleOrderMap = new LinkedHashMap<String, Object>();
-		for (int i = cImport.Genotypes.Hapmap_Standard.sampleId; i < headerFields.length; i++) {
+		for (int i = Standard.sampleId; i < headerFields.length; i++) {
 			sampleOrderMap.put(headerFields[i], i);
 		}
 		Object sampleColumnNb = sampleOrderMap.get(currSampleId);
@@ -364,7 +377,7 @@ public class LoadGTFromHapmapFiles implements GTFilesLoader {
 					}
 					if (k == (Integer) sampleColumnNb) {
 						String strAlleles = st.nextToken();
-						if (strAlleles.equals((cImport.Genotypes.Hapmap_Standard.missing))) {
+						if (strAlleles.equals(Standard.missing)) {
 							tmpAlleles = cNetCDF.Defaults.DEFAULT_GT;
 						} else {
 							tmpAlleles = new byte[]{(byte) strAlleles.charAt(0), (byte) strAlleles.charAt(1)};
@@ -397,7 +410,7 @@ public class LoadGTFromHapmapFiles implements GTFilesLoader {
 		String l;
 		String[] hapmapVals = header.split(cImport.Separators.separators_SpaceTab_rgxp);
 
-		for (int i = cImport.Genotypes.Hapmap_Standard.sampleId; i < hapmapVals.length; i++) {
+		for (int i = Standard.sampleId; i < hapmapVals.length; i++) {
 			uniqueSamples.put(hapmapVals[i], "");
 		}
 

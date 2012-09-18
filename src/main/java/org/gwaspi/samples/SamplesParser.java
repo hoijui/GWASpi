@@ -14,6 +14,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import org.gwaspi.netCDF.loader.LoadGTFromHapmapFiles;
 import org.gwaspi.netCDF.matrices.MatrixMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -374,7 +375,7 @@ public class SamplesParser {
 				String header = inputAnnotationBr.readLine();
 
 				String[] hapmapVals = header.split(cImport.Separators.separators_SpaceTab_rgxp);
-				for (int j = cImport.Genotypes.Hapmap_Standard.sampleId; j < hapmapVals.length; j++) {
+				for (int j = LoadGTFromHapmapFiles.Standard.sampleId; j < hapmapVals.length; j++) {
 					String[] infoVals = new String[]{"0", "0", "0", "0", "0", "0", "0", "0", "0", "0"};
 					infoVals[GWASpi.sampleId] = hapmapVals[j];
 					sampleInfoMap.put(hapmapVals[j], infoVals);
@@ -387,7 +388,7 @@ public class SamplesParser {
 			String header = inputAnnotationBr.readLine();
 
 			String[] hapmapVals = header.split(cImport.Separators.separators_SpaceTab_rgxp);
-			for (int i = cImport.Genotypes.Hapmap_Standard.sampleId; i < hapmapVals.length; i++) {
+			for (int i = LoadGTFromHapmapFiles.Standard.sampleId; i < hapmapVals.length; i++) {
 				String[] infoVals = new String[]{"0", "0", "0", "0", "0", "0", "0", "0", "0", "0"};
 				infoVals[GWASpi.sampleId] = hapmapVals[i];
 				sampleInfoMap.put(hapmapVals[i], infoVals);

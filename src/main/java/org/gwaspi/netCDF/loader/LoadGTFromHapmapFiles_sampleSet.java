@@ -257,7 +257,7 @@ public class LoadGTFromHapmapFiles_sampleSet implements GTFilesLoader {
 			count++;
 		}
 
-		int dataStartRow = cImport.Genotypes.Hapmap_Standard.dataStartRow;
+		int dataStartRow = LoadGTFromHapmapFiles.Standard.dataStartRow;
 
 		//<editor-fold defaultstate="collapsed" desc="GET CURRENT MARKER SAMPLESET">
 
@@ -271,7 +271,7 @@ public class LoadGTFromHapmapFiles_sampleSet implements GTFilesLoader {
 		String[] headerFields = header.split(cImport.Separators.separators_SpaceTab_rgxp);
 
 		Map<String, Object> sampleOrderMap = new LinkedHashMap<String, Object>();
-		for (int j = cImport.Genotypes.Hapmap_Standard.sampleId; j < headerFields.length; j++) {
+		for (int j = LoadGTFromHapmapFiles.Standard.sampleId; j < headerFields.length; j++) {
 			sampleOrderMap.put(j + "", headerFields[j]);
 		}
 
@@ -295,13 +295,13 @@ public class LoadGTFromHapmapFiles_sampleSet implements GTFilesLoader {
 			//read genotypes from this point on
 			int k = 1;
 			byte[] tmpAlleles = cNetCDF.Defaults.DEFAULT_GT;
-			while (k < (sampleOrderMap.size() + cImport.Genotypes.Hapmap_Standard.sampleId)) {
-				if (k < cImport.Genotypes.Hapmap_Standard.sampleId) {
+			while (k < (sampleOrderMap.size() + LoadGTFromHapmapFiles.Standard.sampleId)) {
+				if (k < LoadGTFromHapmapFiles.Standard.sampleId) {
 					st.nextToken();
 					k++;
 				} else {
 					String strAlleles = st.nextToken();
-					if (strAlleles.equals((cImport.Genotypes.Hapmap_Standard.missing))) {
+					if (strAlleles.equals((LoadGTFromHapmapFiles.Standard.missing))) {
 						tmpAlleles = cNetCDF.Defaults.DEFAULT_GT;
 					} else {
 						tmpAlleles = new byte[]{(byte) strAlleles.charAt(0), (byte) strAlleles.charAt(1)};
@@ -380,7 +380,7 @@ public class LoadGTFromHapmapFiles_sampleSet implements GTFilesLoader {
 		String l;
 		String[] hapmapVals = header.split(cImport.Separators.separators_SpaceTab_rgxp);
 
-		for (int i = cImport.Genotypes.Hapmap_Standard.sampleId; i < hapmapVals.length; i++) {
+		for (int i = LoadGTFromHapmapFiles.Standard.sampleId; i < hapmapVals.length; i++) {
 			uniqueSamples.put(hapmapVals[i], "");
 		}
 

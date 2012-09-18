@@ -4,6 +4,7 @@ import org.gwaspi.constants.cImport;
 import org.gwaspi.constants.cNetCDF;
 import java.io.IOException;
 import java.util.Map;
+import org.gwaspi.samples.InsertSampleInfo;
 import ucar.ma2.InvalidRangeException;
 
 /**
@@ -35,7 +36,7 @@ public class LoadManager {
 		GTFilesLoader gtFilesLoader;
 		switch (cImport.ImportFormat.compareTo(format)) {
 			case Affymetrix_GenomeWide6:
-				org.gwaspi.samples.InsertSampleInfo.processData(studyId, sampleInfoMap);
+				InsertSampleInfo.processData(studyId, sampleInfoMap);
 				gtFilesLoader = new LoadGTFromAffyFiles(txt_File2,
 						txt_FileSampleInfo,
 						txt_File1,
@@ -47,68 +48,68 @@ public class LoadManager {
 						sampleInfoMap);
 				break;
 			case PLINK:
-				org.gwaspi.samples.InsertSampleInfo.processData(studyId, sampleInfoMap);
-				gtFilesLoader = new LoadGTFromPlinkFlatFiles(txt_File1, //MAP file
-						txt_FileSampleInfo, //Sample info file (optional)
-						txt_File2, //PED file
+				InsertSampleInfo.processData(studyId, sampleInfoMap);
+				gtFilesLoader = new LoadGTFromPlinkFlatFiles(txt_File1, // MAP file
+						txt_FileSampleInfo, // Sample info file (optional)
+						txt_File2, // PED file
 						studyId,
-						strandType, //Strand
+						strandType, // Strand
 						txt_NewMatrixName,
-						gtCode, //Genotype encoding
+						gtCode, // Genotype encoding
 						txtA_NewMatrixDescription,
 						sampleInfoMap);
 				break;
 			case PLINK_Binary:
-				org.gwaspi.samples.InsertSampleInfo.processData(studyId, sampleInfoMap);
-				gtFilesLoader = new LoadGTFromPlinkBinaryFiles(txt_File1, //BED file
-						txt_FileSampleInfo, //FAM or Sample info file (optional)
-						txt_File2, //BIM file
+				InsertSampleInfo.processData(studyId, sampleInfoMap);
+				gtFilesLoader = new LoadGTFromPlinkBinaryFiles(txt_File1, // BED file
+						txt_FileSampleInfo, // FAM or Sample info file (optional)
+						txt_File2, // BIM file
 						studyId,
-						strandType, //Strand
+						strandType, // Strand
 						txt_NewMatrixName,
-						gtCode, //Genotype encoding
+						gtCode, // Genotype encoding
 						txtA_NewMatrixDescription,
 						sampleInfoMap);
 				break;
 			case HAPMAP:
-				org.gwaspi.samples.InsertSampleInfo.processData(studyId, sampleInfoMap);
-				gtFilesLoader = new LoadGTFromHapmapFiles(txt_File1, //Genotypes file or folder
-						txt_FileSampleInfo, //Sample info file (optional)
+				InsertSampleInfo.processData(studyId, sampleInfoMap);
+				gtFilesLoader = new LoadGTFromHapmapFiles(txt_File1, // Genotypes file or folder
+						txt_FileSampleInfo, // Sample info file (optional)
 						studyId,
-						strandType, //Strand
+						strandType, // Strand
 						txt_NewMatrixName,
-						gtCode, //Genotype encoding
+						gtCode, // Genotype encoding
 						txtA_NewMatrixDescription,
 						sampleInfoMap);
 				break;
 			case BEAGLE:
-				org.gwaspi.samples.InsertSampleInfo.processData(studyId, sampleInfoMap);
-				gtFilesLoader = new LoadGTFromBeagleFiles(txt_File1, //Genotypes file
-						txt_FileSampleInfo, //Sample info file (optional)
-						txt_File2, //Marker file (markerId, pos, allele1, allele2)
+				InsertSampleInfo.processData(studyId, sampleInfoMap);
+				gtFilesLoader = new LoadGTFromBeagleFiles(txt_File1, // Genotypes file
+						txt_FileSampleInfo, // Sample info file (optional)
+						txt_File2, // Marker file (markerId, pos, allele1, allele2)
 						studyId,
 						chromosome,
-						strandType, //Strand
+						strandType, // Strand
 						txt_NewMatrixName,
-						gtCode, //Genotype encoding
+						gtCode, // Genotype encoding
 						txtA_NewMatrixDescription,
 						sampleInfoMap);
 				break;
 			case HGDP1:
-				org.gwaspi.samples.InsertSampleInfo.processData(studyId, sampleInfoMap);
-				gtFilesLoader = new LoadGTFromHGDP1Files(txt_File1, //Genotypes file
-						txt_FileSampleInfo, //Sample info file (optional)
-						txt_File2, //Marker file (markerId, pos, allele1, allele2)
+				InsertSampleInfo.processData(studyId, sampleInfoMap);
+				gtFilesLoader = new LoadGTFromHGDP1Files(txt_File1, // Genotypes file
+						txt_FileSampleInfo, // Sample info file (optional)
+						txt_File2, // Marker file (markerId, pos, allele1, allele2)
 						studyId,
 						chromosome,
-						strandType, //Strand
+						strandType, // Strand
 						txt_NewMatrixName,
-						gtCode, //Genotype encoding
+						gtCode, // Genotype encoding
 						txtA_NewMatrixDescription,
 						sampleInfoMap);
 				break;
 			case Illumina_LGEN:
-				org.gwaspi.samples.InsertSampleInfo.processData(studyId, sampleInfoMap);
+				InsertSampleInfo.processData(studyId, sampleInfoMap);
 				gtFilesLoader = new LoadGTFromIlluminaLGENFiles(txt_File1,
 						txt_FileSampleInfo,
 						txt_File2,
@@ -120,8 +121,8 @@ public class LoadManager {
 						sampleInfoMap);
 				break;
 			case GWASpi:
-				org.gwaspi.samples.InsertSampleInfo.processData(studyId, sampleInfoMap);
-				gtFilesLoader = new LoadGTFromGWASpiFiles(txt_File1, //netCDF GT file
+				InsertSampleInfo.processData(studyId, sampleInfoMap);
+				gtFilesLoader = new LoadGTFromGWASpiFiles(txt_File1, // netCDF GT file
 						txt_FileSampleInfo,
 						studyId,
 						txt_NewMatrixName,
@@ -129,14 +130,14 @@ public class LoadManager {
 						sampleInfoMap);
 				break;
 			case Sequenom:
-				org.gwaspi.samples.InsertSampleInfo.processData(studyId, sampleInfoMap);
-				gtFilesLoader = new LoadGTFromSequenomFiles(txt_File1, //GT File
-						txt_FileSampleInfo, //Sample info file (optional)
-						txt_File2, //Annotation (MAP) file
+				InsertSampleInfo.processData(studyId, sampleInfoMap);
+				gtFilesLoader = new LoadGTFromSequenomFiles(txt_File1, // GT File
+						txt_FileSampleInfo, // Sample info file (optional)
+						txt_File2, // Annotation (MAP) file
 						studyId,
-						format, //format
+						format, // format
 						txt_NewMatrixName,
-						cNetCDF.Defaults.GenotypeEncoding.ACGT0.toString(), //Genotype encoding
+						cNetCDF.Defaults.GenotypeEncoding.ACGT0.toString(), // Genotype encoding
 						txtA_NewMatrixDescription,
 						sampleInfoMap);
 				break;

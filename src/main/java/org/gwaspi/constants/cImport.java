@@ -8,15 +8,19 @@ package org.gwaspi.constants;
  */
 public class cImport {
 
-	public static String currentAnnotation = "";
-
 	private cImport() {
 	}
 
 	public static enum ImportFormat {
-//        Affymetrix_GenomeWide6, BEAGLE, GWASpi, HAPMAP, HGDP1, Illumina_LGEN, PLINK, PLINK_Binary;
-
-		Affymetrix_GenomeWide6, BEAGLE, GWASpi, HAPMAP, HGDP1, Illumina_LGEN, PLINK, PLINK_Binary, Sequenom;
+		Affymetrix_GenomeWide6,
+		BEAGLE,
+		GWASpi,
+		HAPMAP,
+		HGDP1,
+		Illumina_LGEN,
+		PLINK,
+		PLINK_Binary,
+		Sequenom;
 
 		public static ImportFormat compareTo(String str) {
 			try {
@@ -24,66 +28,6 @@ public class cImport {
 			} catch (Exception ex) {
 				return GWASpi;
 			}
-		}
-	}
-
-	public static class Genotypes {
-
-		public static class Affymetrix_GenomeWide6 {
-			//ProbesetID, Call, Confidence, Signal A, Signal B, Forced Call
-
-			public static final int markerId = 0;
-			public static final int alleles = 1; //Caution, using normal Call, not Forced Call!
-			public static final String missing = "NoCall";
-			public static final int score = 2;
-			public static final int intensity_A = 3;
-			public static final int intensity_B = 4;
-		}
-
-		public static class Beagle_Standard {
-
-			public static final int markerId = 1;
-			public static final int genotypes = 2;
-			public static final String missing = "0";
-		}
-
-		public static class HGDP1_Standard {
-
-			public static final int markerId = 0;
-			public static final int genotypes = 1;
-			public static final String missing = "--";
-		}
-
-		public static class Hapmap_Standard {
-
-			public static final int dataStartRow = 1;
-			public static final int sampleId = 11;
-			public static final int markerId = 0;
-			public static final int alleles = 1;
-			public static final int chr = 2;
-			public static final int pos = 3;
-			public static final int strand = 4;
-			public static final String missing = "NN";
-			public static final int score = 10;
-		}
-
-		public static class Illumina_LGEN {
-
-			public static final int familyId = 0;
-			public static final int sampleId = 1;
-			public static final int markerId = 2;
-			public static final int allele1 = 3;
-			public static final int allele2 = 4;
-			public static final String missing = "-";
-		}
-
-		public static class Sequenom {
-
-			public static final int sampleId = 0;
-			public static final int alleles = 1;
-			public static final int markerId = 2;
-			public static final int well = 3;
-			public static final int qa_desc = 4;
 		}
 	}
 
@@ -148,20 +92,18 @@ public class cImport {
 			//public static int pcGC=25;
 			//public static int OMIM = 26;
 
-			public static void init(String _currentAnnotation) {
-
-				currentAnnotation = _currentAnnotation;
+			public static void init(String currentAnnotation) {
 
 				int versionStart = currentAnnotation.indexOf(".na");
-				int versionEnd = currentAnnotation.indexOf(".", versionStart + 1);
-				int annotationVersion = 30; //Assuming newest annotation version
-				try {    //Find out real annotation version
+				int versionEnd = currentAnnotation.indexOf('.', versionStart + 1);
+				int annotationVersion = 30; // Assuming newest annotation version
+				try { // Find out real annotation version
 					annotationVersion = Integer.parseInt(currentAnnotation.substring(versionStart + 3, versionEnd));
-				} catch (Exception e) {
+				} catch (Exception ex) {
 				}
 
 				if (annotationVersion < 30) {
-					//Format for Annotation releases 26,27,28
+					// Format for Annotation releases 26, 27, 28
 					markerId = 0;
 					rsId = 2;
 					chr = 3;
@@ -193,7 +135,7 @@ public class cImport {
 			}
 		}
 
-		public static class GWASpi {
+		public static interface GWASpi {
 
 			public static final int sampleId = 1;
 			public static final int familyId = 0;
@@ -207,7 +149,7 @@ public class cImport {
 			public static final int age = 9;
 		}
 
-		public static class Plink_Standard {
+		public static interface Plink_Standard {
 
 			public static final int map_chr = 0;
 			public static final int map_markerId = 1;
@@ -222,7 +164,7 @@ public class cImport {
 			public static final int ped_genotypes = 6;
 		}
 
-		public static class Plink_LGEN {
+		public static interface Plink_LGEN {
 
 			public static final int map_chr = 0;
 			public static final int map_markerId = 1;
@@ -235,7 +177,7 @@ public class cImport {
 			public static final int lgen_allele2_fwd = 4;
 		}
 
-		public static class Plink_Binary {
+		public static interface Plink_Binary {
 
 			public static final int bim_chr = 0;
 			public static final int bim_markerId = 1;
@@ -251,7 +193,7 @@ public class cImport {
 			public static final int ped_affection = 5;
 		}
 
-		public static class HapmapGT_Standard {
+		public static interface HapmapGT_Standard {
 
 			public static final int rsId = 0;
 			public static final int alleles = 1;
@@ -263,7 +205,7 @@ public class cImport {
 			public static final int qc_code = 10;
 		}
 
-		public static class Beagle_Standard {
+		public static interface Beagle_Standard {
 
 			public static final int rsId = 0;
 			public static final int pos = 1;
@@ -271,14 +213,14 @@ public class cImport {
 			public static final int allele2 = 3;
 		}
 
-		public static class HGDP1_Standard {
+		public static interface HGDP1_Standard {
 
 			public static final int rsId = 0;
 			public static final int chr = 1;
 			public static final int pos = 2;
 		}
 
-		public static class Sequenom {
+		public static interface Sequenom {
 
 			public static final int sampleId = 0;
 			public static final int alleles = 1;
@@ -292,7 +234,7 @@ public class cImport {
 		}
 	}
 
-	public static class SampleInfo {
+	public static interface SampleInfo {
 
 		public static final int familyId = 0;
 		public static final int sampleId = 1;
@@ -306,7 +248,7 @@ public class cImport {
 		public static final int age = 9;
 	}
 
-	public static class StrandFlags {
+	public static interface StrandFlags {
 
 		public static final String strandPLS = "+";
 		public static final String strandMIN = "-";
@@ -316,7 +258,7 @@ public class cImport {
 		public static final String strandUNK = "unk";
 	}
 
-	public static class Separators {
+	public static interface Separators {
 
 		public static final String separators_Spaces_rgxp = "[ +]";
 		public static final String separators_CommaSpaceTab_rgxp = "[, \t]";
@@ -328,8 +270,5 @@ public class cImport {
 		public static final String separator_PLINK = " ";
 		public static final String separator_BEAGLE = " ";
 		public static final String separator_REPORTS = "\t";
-
-		private Separators() {
-		}
 	}
 }
