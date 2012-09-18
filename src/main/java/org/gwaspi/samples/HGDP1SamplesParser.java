@@ -10,6 +10,9 @@ import java.util.Map;
 
 public class HGDP1SamplesParser implements SamplesParser {
 
+	/**
+	 * NOTE No affection state available
+	 */
 	@Override
 	public Map<String, Object> scanSampleInfo(String sampleInfoPath) throws IOException {
 

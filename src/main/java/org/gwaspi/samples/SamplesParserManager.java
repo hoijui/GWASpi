@@ -70,11 +70,6 @@ public class SamplesParserManager {
 		return plinkStandardSamplesParser.scanSampleInfo(pedPath);
 	}
 
-	private static final SamplesParser plinkLGENSamplesParser = new PlinkLGENSamplesParser();
-	public static Map<String, Object> scanPlinkLGENSampleInfo(String lgenPath) throws IOException {
-		return plinkLGENSamplesParser.scanSampleInfo(lgenPath);
-	}
-
 	private static final SamplesParser plinkFAMSamplesParser = new PlinkFAMSamplesParser();
 	public static Map<String, Object> scanPlinkFAMSampleInfo(String famPath) throws IOException {
 		return plinkFAMSamplesParser.scanSampleInfo(famPath);
@@ -83,11 +78,6 @@ public class SamplesParserManager {
 	private static final SamplesParser illuminaLGENSamplesParser = new IlluminaLGENSamplesParser();
 	public static Map<String, Object> scanIlluminaLGENSampleInfo(String lgenDir) throws IOException {
 		return illuminaLGENSamplesParser.scanSampleInfo(lgenDir);
-	}
-
-	private static final SamplesParser multipleIlluminaLGENSamplesParser = new MultipleIlluminaLGENSamplesParser();
-	public static Map<String, Object> scanMultipleIlluminaLGENSampleInfo(String lgenDir) throws IOException {
-		return multipleIlluminaLGENSamplesParser.scanSampleInfo(lgenDir);
 	}
 
 	private static final SamplesParser beagleSamplesParser = new BeagleSamplesParser();

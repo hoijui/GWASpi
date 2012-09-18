@@ -11,6 +11,9 @@ import org.gwaspi.netCDF.loader.LoadGTFromHapmapFiles;
 
 public class HapmapSamplesParser implements SamplesParser {
 
+	/**
+	 * NOTE No affection state available
+	 */
 	@Override
 	public Map<String, Object> scanSampleInfo(String sampleInfoPath) throws IOException {
 
