@@ -5,7 +5,6 @@ import org.gwaspi.constants.cImport.Annotation.HapmapGT_Standard;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.global.Text;
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.LinkedHashMap;
@@ -26,14 +25,14 @@ import java.util.TreeMap;
 public class MetadataLoaderHapmap implements MetadataLoader {
 
 	private String hapmapPath;
-	private String format;
 	private int studyId;
+	private String format;
 
-	public MetadataLoaderHapmap(String _hapmapPath, String _format, int _studyId) throws FileNotFoundException {
+	public MetadataLoaderHapmap(String hapmapPath, String format, int studyId) {
 
-		hapmapPath = _hapmapPath;
-		studyId = _studyId;
-		format = _format;
+		this.hapmapPath = hapmapPath;
+		this.studyId = studyId;
+		this.format = format;
 	}
 
 	public Map<String, Object> getSortedMarkerSetWithMetaData() throws IOException {

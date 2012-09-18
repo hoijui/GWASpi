@@ -5,7 +5,6 @@ import org.gwaspi.constants.cImport.Annotation.HGDP1_Standard;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.global.Text;
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.LinkedHashMap;
@@ -25,11 +24,11 @@ public class MetadataLoaderHGDP1 implements MetadataLoader {
 	private String strand;
 	private int studyId;
 
-	public MetadataLoaderHGDP1(String _mapPath, String _strand, int _studyId) throws FileNotFoundException {
+	public MetadataLoaderHGDP1(String mapPath, String strand, int studyId) {
 
-		markerFilePath = _mapPath;
-		studyId = _studyId;
-		strand = _strand;
+		this.markerFilePath = mapPath;
+		this.studyId = studyId;
+		this.strand = strand;
 	}
 
 	public Map<String, Object> getSortedMarkerSetWithMetaData() throws IOException {
@@ -125,7 +124,7 @@ public class MetadataLoaderHGDP1 implements MetadataLoader {
 		if (chrFixed.equals("26")) {
 			chrFixed = "MT";
 		}
-		
+
 		return chrFixed;
 	}
 }

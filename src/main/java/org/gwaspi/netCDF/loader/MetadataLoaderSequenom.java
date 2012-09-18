@@ -5,7 +5,6 @@ import org.gwaspi.constants.cImport.Annotation.Sequenom;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.global.Text;
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.LinkedHashMap;
@@ -24,10 +23,10 @@ public class MetadataLoaderSequenom implements MetadataLoader {
 	private String mapPath;
 	private int studyId;
 
-	public MetadataLoaderSequenom(String _mapPath, int _studyId) throws FileNotFoundException {
+	public MetadataLoaderSequenom(String mapPath, int studyId) {
 
-		mapPath = _mapPath;
-		studyId = _studyId;
+		this.mapPath = mapPath;
+		this.studyId = studyId;
 	}
 
 	public Map<String, Object> getSortedMarkerSetWithMetaData() throws IOException {

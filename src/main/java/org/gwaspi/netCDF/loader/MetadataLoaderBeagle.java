@@ -25,12 +25,12 @@ public class MetadataLoaderBeagle implements MetadataLoader {
 	private String strand;
 	private int studyId;
 
-	public MetadataLoaderBeagle(String _mapPath, String _chr, String _strand, int _studyId) {
+	public MetadataLoaderBeagle(String mapPath, String chr, String strand, int studyId) {
 
-		markerFilePath = _mapPath;
-		studyId = _studyId;
-		chr = _chr;
-		strand = _strand;
+		this.markerFilePath = mapPath;
+		this.chr = chr;
+		this.strand = strand;
+		this.studyId = studyId;
 	}
 
 	public Map<String, Object> getSortedMarkerSetWithMetaData() throws IOException {

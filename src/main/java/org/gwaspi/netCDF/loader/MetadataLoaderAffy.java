@@ -4,7 +4,6 @@ import org.gwaspi.constants.cImport.Annotation.Affymetrix_GenomeWide6;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.global.Text;
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.LinkedHashMap;
@@ -20,15 +19,18 @@ import java.util.TreeMap;
  */
 public class MetadataLoaderAffy implements MetadataLoader {
 
+	/** Duplicate SNPs to be removed */
+	private static final SNPBlacklist snpBlackList = new SNPBlacklist();
+
 	private String annotationPath;
-	private String format;
 	private int studyId;
+	private String format;
 
-	public MetadataLoaderAffy(String _annotationPath, String _format, int _studyId) throws FileNotFoundException {
+	public MetadataLoaderAffy(String annotationPath, String format, int studyId) {
 
-		annotationPath = _annotationPath;
-		studyId = _studyId;
-		format = _format;
+		this.annotationPath = annotationPath;
+		this.studyId = studyId;
+		this.format = format;
 	}
 
 	public Map<String, Object> getSortedMarkerSetWithMetaData() throws IOException {
@@ -83,9 +85,6 @@ public class MetadataLoaderAffy implements MetadataLoader {
 			header = inputAnnotationBr.readLine();
 		}
 
-		// Duplicate SNPs to be removed
-		SNPBlacklist SNPblackList = new SNPBlacklist();
-
 		String l;
 		int count = 0;
 		while ((l = inputAnnotationBr.readLine()) != null) {
@@ -96,7 +95,7 @@ public class MetadataLoaderAffy implements MetadataLoader {
 			String chr = affy6Vals[Affymetrix_GenomeWide6.chr].replace("\"", "");
 			String inFinalList = affy6Vals[Affymetrix_GenomeWide6.in_final_list].replace("\"", "");
 
-			if (!affyId.startsWith("AFFX-") && !inFinalList.equals("NO") && !chr.equals("---") && !SNPblackList.getAffyIdBlacklist().contains(affyId)) {
+			if (!affyId.startsWith("AFFX-") && !inFinalList.equals("NO") && !chr.equals("---") && !snpBlackList.getAffyIdBlacklist().contains(affyId)) {
 				// chr;pseudo-autosomal1;pseudo-autosomal2;pos;markerId"
 				StringBuilder sbKey = new StringBuilder(chr); // 0 => chr
 				sbKey.append(cNetCDF.Defaults.TMP_SEPARATOR);

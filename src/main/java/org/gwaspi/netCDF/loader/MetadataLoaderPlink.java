@@ -5,7 +5,6 @@ import org.gwaspi.constants.cImport.Annotation.Plink_Standard;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.global.Text;
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.LinkedHashMap;
@@ -26,12 +25,12 @@ public class MetadataLoaderPlink implements MetadataLoader {
 	private String strand;
 	private int studyId;
 
-	public MetadataLoaderPlink(String _mapPath, String _pedPath, String _strand, int _studyId) throws FileNotFoundException {
+	public MetadataLoaderPlink(String mapPath, String pedPath, String strand, int studyId) {
 
-		mapPath = _mapPath;
-		pedPath = _pedPath;
-		studyId = _studyId;
-		strand = _strand;
+		this.mapPath = mapPath;
+		this.pedPath = pedPath;
+		this.studyId = studyId;
+		this.strand = strand;
 	}
 
 	public Map<String, Object> getSortedMarkerSetWithMetaData() throws IOException {
