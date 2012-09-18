@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.gwaspi.samples.SamplesParser;
+import org.gwaspi.samples.SamplesParserManager;
 
 /**
  *
@@ -42,7 +42,7 @@ public class Threaded_UpdateSampleInfo extends CommonRunnable {
 
 	protected void runInternal(SwingWorkerItem thisSwi) throws Exception {
 
-		Map<String, Object> sampleInfoMap = SamplesParser.scanGwaspiSampleInfo(sampleInfoFile.getPath());
+		Map<String, Object> sampleInfoMap = SamplesParserManager.scanGwaspiSampleInfo(sampleInfoFile.getPath());
 		List<String> updatedSamplesAL = org.gwaspi.samples.InsertSampleInfo.processData(poolId, sampleInfoMap);
 
 		// DO NOT! Write new reports of SAMPLE QA

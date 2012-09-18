@@ -26,12 +26,12 @@ import ucar.ma2.InvalidRangeException;
  * IBE, Institute of Evolutionary Biology (UPF-CSIC)
  * CEXS-UPF-PRBB
  */
-public class SamplesParser {
+public class SamplesParserManager {
 
 	private final static Logger log
-			= LoggerFactory.getLogger(SamplesParser.class);
+			= LoggerFactory.getLogger(SamplesParserManager.class);
 
-	private SamplesParser() {
+	private SamplesParserManager() {
 	}
 
 	//<editor-fold defaultstate="collapsed" desc="DB SAMPLE INFO PROVIDERS">

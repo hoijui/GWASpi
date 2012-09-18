@@ -11,7 +11,7 @@ import org.gwaspi.netCDF.operations.GWASinOneGOParams;
 import org.gwaspi.netCDF.operations.OperationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.gwaspi.samples.SamplesParser;
+import org.gwaspi.samples.SamplesParserManager;
 
 /**
  *
@@ -70,11 +70,11 @@ public class Threaded_GTFreq_HW extends CommonRunnable {
 		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
 			if (phenotypeFile != null && phenotypeFile.exists() && phenotypeFile.isFile()) { //BY EXTERNAL PHENOTYPE FILE
 
-				Set<String> affectionStates = SamplesParser.scanSampleInfoAffectionStates(phenotypeFile.getPath()); //use Sample Info file affection state
+				Set<String> affectionStates = SamplesParserManager.scanSampleInfoAffectionStates(phenotypeFile.getPath()); //use Sample Info file affection state
 
 				if (affectionStates.contains("1") && affectionStates.contains("2")) {
 					getLog().info("Updating Sample Info in DB");
-					Map<String, Object> sampleInfoMap = SamplesParser.scanGwaspiSampleInfo(phenotypeFile.getPath());
+					Map<String, Object> sampleInfoMap = SamplesParserManager.scanGwaspiSampleInfo(phenotypeFile.getPath());
 					org.gwaspi.samples.InsertSampleInfo.processData(matrixId, sampleInfoMap);
 
 					censusOpId = OperationManager.censusCleanMatrixMarkersByPhenotypeFile(matrixId,
@@ -89,7 +89,7 @@ public class Threaded_GTFreq_HW extends CommonRunnable {
 					getLog().info(Text.Operation.warnAffectionMissing);
 				}
 			} else { // BY DB AFFECTION
-				Set<Object> affectionStates = SamplesParser.getDBAffectionStates(matrixId); //use Sample Info file affection state
+				Set<Object> affectionStates = SamplesParserManager.getDBAffectionStates(matrixId); //use Sample Info file affection state
 				if (affectionStates.contains("1") && affectionStates.contains("2")) {
 					censusOpId = OperationManager.censusCleanMatrixMarkers(matrixId,
 							sampleQAOpId,
