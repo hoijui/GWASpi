@@ -30,7 +30,8 @@ public class OperationManager {
 	}
 
 	//<editor-fold defaultstate="collapsed" desc="MATRIX CENSUS">
-	public static int censusCleanMatrixMarkers(int _rdMatrixId,
+	public static int censusCleanMatrixMarkers(
+			int _rdMatrixId,
 			int samplesQAOpId,
 			int markersQAOpId,
 			double markerMissingRatio,
@@ -46,7 +47,8 @@ public class OperationManager {
 		Operation sampleQAOP = new Operation(samplesQAOpId);
 		Operation markerQAOP = new Operation(markersQAOpId);
 
-		resultOpId = new OP_MarkerCensus_opt().processMatrix(_rdMatrixId,
+		resultOpId = new OP_MarkerCensus_opt(
+				_rdMatrixId,
 				censusName,
 				sampleQAOP,
 				sampleMissingRatio,
@@ -54,12 +56,13 @@ public class OperationManager {
 				markerQAOP,
 				discardMismatches,
 				markerMissingRatio,
-				null);
+				null).processMatrix();
 
 		return resultOpId;
 	}
 
-	public static int censusCleanMatrixMarkersByPhenotypeFile(int _rdMatrixId,
+	public static int censusCleanMatrixMarkersByPhenotypeFile(
+			int _rdMatrixId,
 			int samplesQAOpId,
 			int markersQAOpId,
 			double markerMissingRatio,
@@ -76,7 +79,7 @@ public class OperationManager {
 		Operation sampleQAOP = new Operation(samplesQAOpId);
 		Operation markerQAOP = new Operation(markersQAOpId);
 
-		resultOpId = new OP_MarkerCensus_opt().processMatrix(
+		resultOpId = new OP_MarkerCensus_opt(
 				_rdMatrixId,
 				censusName,
 				sampleQAOP,
@@ -85,7 +88,7 @@ public class OperationManager {
 				markerQAOP,
 				discardMismatches,
 				markerMissingRatio,
-				phenoFile);
+				phenoFile).processMatrix();
 
 		return resultOpId;
 	}
@@ -96,8 +99,9 @@ public class OperationManager {
 
 		org.gwaspi.global.Utils.sysoutStart("Hardy-Weinberg");
 
-		resultOpId = new OP_HardyWeinberg().processMatrix(censusOP,
-				hwName);
+		resultOpId = new OP_HardyWeinberg(
+				censusOP,
+				hwName).processMatrix();
 
 		org.gwaspi.reports.OutputHardyWeinberg.writeReportsForMarkersHWData(resultOpId);
 
@@ -106,7 +110,8 @@ public class OperationManager {
 	//</editor-fold>
 
 	//<editor-fold defaultstate="collapsed" desc="ANALYSIS">
-	public static int performCleanAllelicTests(int _rdMatrixId,
+	public static int performCleanAllelicTests(
+			int _rdMatrixId,
 			int censusOpId,
 			int hwOpId,
 			double hwThreshold)
@@ -119,12 +124,17 @@ public class OperationManager {
 		Operation markerCensusOP = new Operation(censusOpId);
 		Operation hwOP = new Operation(hwOpId);
 
-		resultOpId = new OP_AllelicAssociationTests_opt().processMatrix(_rdMatrixId, markerCensusOP, hwOP, hwThreshold);
+		resultOpId = new OP_AllelicAssociationTests_opt(
+				_rdMatrixId,
+				markerCensusOP,
+				hwOP,
+				hwThreshold).processMatrix();
 
 		return resultOpId;
 	}
 
-	public static int performCleanGenotypicTests(int _rdMatrixId,
+	public static int performCleanGenotypicTests(
+			int _rdMatrixId,
 			int censusOpId,
 			int hwOpId,
 			double hwThreshold)
@@ -137,12 +147,17 @@ public class OperationManager {
 		Operation markerCensusOP = new Operation(censusOpId);
 		Operation hwOP = new Operation(hwOpId);
 
-		resultOpId = new OP_GenotypicAssociationTests_opt().processMatrix(_rdMatrixId, markerCensusOP, hwOP, hwThreshold);
+		resultOpId = new OP_GenotypicAssociationTests_opt(
+				_rdMatrixId,
+				markerCensusOP,
+				hwOP,
+				hwThreshold).processMatrix();
 
 		return resultOpId;
 	}
 
-	public static int performCleanTrendTests(int _rdMatrixId,
+	public static int performCleanTrendTests(
+			int _rdMatrixId,
 			int censusOpId,
 			int hwOpId,
 			double hwThreshold)
@@ -155,7 +170,11 @@ public class OperationManager {
 		Operation markerCensusOP = new Operation(censusOpId);
 		Operation hwOP = new Operation(hwOpId);
 
-		resultOpId = new OP_TrendTests_opt().processMatrix(_rdMatrixId, markerCensusOP, hwOP, hwThreshold);
+		resultOpId = new OP_TrendTests_opt(
+				_rdMatrixId,
+				markerCensusOP,
+				hwOP,
+				hwThreshold).processMatrix();
 
 		return resultOpId;
 	}

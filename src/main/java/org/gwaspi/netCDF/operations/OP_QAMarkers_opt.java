@@ -26,14 +26,17 @@ import ucar.nc2.NetcdfFileWriteable;
  * IBE, Institute of Evolutionary Biology (UPF-CSIC)
  * CEXS-UPF-PRBB
  */
-public class OP_QAMarkers_opt {
+public class OP_QAMarkers_opt implements MatrixOperation {
 
 	private final Logger log = LoggerFactory.getLogger(OP_QAMarkers_opt.class);
 
-	public OP_QAMarkers_opt() {
+	private int rdMatrixId;
+
+	public OP_QAMarkers_opt(int rdMatrixId) {
+		this.rdMatrixId = rdMatrixId;
 	}
 
-	public int processMatrix(int rdMatrixId) throws IOException, InvalidRangeException {
+	public int processMatrix() throws IOException, InvalidRangeException {
 		int resultOpId = Integer.MIN_VALUE;
 
 		Map<String, Object> wrMarkerSetMismatchStateMap = new LinkedHashMap();

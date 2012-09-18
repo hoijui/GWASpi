@@ -41,8 +41,9 @@ public class Threaded_OP_HardyWeinberg implements Runnable {
 
 	public void run() {
 		try {
-			resultOpId = new OP_HardyWeinberg().processMatrix(censusOP,
-					hwName);
+			resultOpId = new OP_HardyWeinberg(
+					censusOP,
+					hwName).processMatrix();
 		} catch (IOException ex) {
 			log.error(null, ex);
 		} catch (InvalidRangeException ex) {

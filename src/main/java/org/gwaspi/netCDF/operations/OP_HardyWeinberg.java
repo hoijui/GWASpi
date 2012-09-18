@@ -18,14 +18,20 @@ import ucar.nc2.NetcdfFileWriteable;
  * IBE, Institute of Evolutionary Biology (UPF-CSIC)
  * CEXS-UPF-PRBB
  */
-public class OP_HardyWeinberg {
+public class OP_HardyWeinberg implements MatrixOperation {
 
 	private final Logger log = LoggerFactory.getLogger(OP_HardyWeinberg.class);
 
-	public OP_HardyWeinberg() {
+	private Operation markerCensusOP;
+	private String censusName;
+
+	public OP_HardyWeinberg(Operation markerCensusOP, String censusName) {
+
+		this.markerCensusOP = markerCensusOP;
+		this.censusName = censusName;
 	}
 
-	public int processMatrix(Operation markerCensusOP, String censusName) throws IOException, InvalidRangeException {
+	public int processMatrix() throws IOException, InvalidRangeException {
 		int resultOpId = Integer.MIN_VALUE;
 
 		OperationMetadata rdOPMetadata = new OperationMetadata(markerCensusOP.getOperationId());

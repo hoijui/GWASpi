@@ -47,10 +47,11 @@ public class Threaded_OP_AssociationTests implements Runnable {
 
 	public void run() {
 		try {
-			resultOpId = new OP_AllelicAssociationTests_opt().processMatrix(matrixId,
+			resultOpId = new OP_AllelicAssociationTests_opt(
+					matrixId,
 					censusOP,
 					hwOP,
-					hwThreshold);
+					hwThreshold).processMatrix();
 		} catch (IOException ex) {
 			log.error(null, ex);
 		} catch (InvalidRangeException ex) {

@@ -22,20 +22,29 @@ import ucar.nc2.NetcdfFileWriteable;
  * IBE, Institute of Evolutionary Biology (UPF-CSIC)
  * CEXS-UPF-PRBB
  */
-public class OP_AllelicAssociationTests_opt {
+public class OP_AllelicAssociationTests_opt implements MatrixOperation {
 
 	private final Logger log
 			= LoggerFactory.getLogger(OP_AllelicAssociationTests_opt.class);
 
-	public OP_AllelicAssociationTests_opt() {
-	}
+	private int rdMatrixId;
+	private Operation markerCensusOP;
+	private Operation hwOP;
+	private double hwThreshold;
 
-	public int processMatrix(int _rdMatrixId,
+	public OP_AllelicAssociationTests_opt(
+			int rdMatrixId,
 			Operation markerCensusOP,
 			Operation hwOP,
 			double hwThreshold)
-			throws IOException, InvalidRangeException
 	{
+		this.rdMatrixId = rdMatrixId;
+		this.markerCensusOP = markerCensusOP;
+		this.hwOP = hwOP;
+		this.hwThreshold = hwThreshold;
+	}
+
+	public int processMatrix() throws IOException, InvalidRangeException {
 		int resultAssocId = Integer.MIN_VALUE;
 
 		//<editor-fold defaultstate="collapsed" desc="EXCLUSION MARKERS FROM HW">

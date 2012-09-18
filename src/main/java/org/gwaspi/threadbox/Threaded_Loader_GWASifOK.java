@@ -108,14 +108,14 @@ public class Threaded_Loader_GWASifOK extends CommonRunnable {
 
 		//<editor-fold defaultstate="collapsed" desc="QA PROCESS">
 		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
-			samplesQAOpId = new OP_QASamples_opt().processMatrix(resultMatrixId);
+			samplesQAOpId = new OP_QASamples_opt(resultMatrixId).processMatrix();
 			GWASpiExplorerNodes.insertOperationUnderMatrixNode(resultMatrixId, samplesQAOpId);
 			org.gwaspi.reports.OutputQASamples.writeReportsForQASamplesData(samplesQAOpId, true);
 			GWASpiExplorerNodes.insertReportsUnderOperationNode(samplesQAOpId);
 		}
 
 		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
-			markersQAOpId = new OP_QAMarkers_opt().processMatrix(resultMatrixId);
+			markersQAOpId = new OP_QAMarkers_opt(resultMatrixId).processMatrix();
 			GWASpiExplorerNodes.insertOperationUnderMatrixNode(resultMatrixId, markersQAOpId);
 			org.gwaspi.reports.OutputQAMarkers.writeReportsForQAMarkersData(markersQAOpId);
 			GWASpiExplorerNodes.insertReportsUnderOperationNode(markersQAOpId);

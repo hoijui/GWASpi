@@ -32,11 +32,22 @@ import ucar.nc2.NetcdfFileWriteable;
  * IBE, Institute of Evolutionary Biology (UPF-CSIC)
  * CEXS-UPF-PRBB
  */
-public class OP_MarkerCensus_opt {
+public class OP_MarkerCensus_opt implements MatrixOperation {
 
 	private final Logger log = LoggerFactory.getLogger(OP_MarkerCensus_opt.class);
 
-	public int processMatrix(int _rdMatrixId,
+	private int rdMatrixId;
+	private String censusName;
+	private Operation sampleQAOP;
+	private double sampleMissingRatio;
+	private double sampleHetzygRatio;
+	private Operation markerQAOP;
+	private boolean discardMismatches;
+	private double markerMissingRatio;
+	private File phenoFile;
+
+	public OP_MarkerCensus_opt(
+			int rdMatrixId,
 			String censusName,
 			Operation sampleQAOP,
 			double sampleMissingRatio,
@@ -45,8 +56,19 @@ public class OP_MarkerCensus_opt {
 			boolean discardMismatches,
 			double markerMissingRatio,
 			File phenoFile)
-			throws IOException, InvalidRangeException
 	{
+		this.rdMatrixId = rdMatrixId;
+		this.censusName = censusName;
+		this.sampleQAOP = sampleQAOP;
+		this.sampleMissingRatio = sampleMissingRatio;
+		this.sampleHetzygRatio = sampleHetzygRatio;
+		this.markerQAOP = markerQAOP;
+		this.discardMismatches = discardMismatches;
+		this.markerMissingRatio = markerMissingRatio;
+		this.phenoFile = phenoFile;
+	}
+
+	public int processMatrix() throws IOException, InvalidRangeException {
 		int resultOpId = Integer.MIN_VALUE;
 
 //		Map wrMarkerSetCensusMap = new LinkedHashMap();
@@ -139,7 +161,6 @@ public class OP_MarkerCensus_opt {
 			// CHECK IF THERE IS ANY DATA LEFT TO PROCESS AFTER PICKING
 
 			//<editor-fold defaultstate="collapsed" desc="PURGE Maps">
-			int rdMatrixId = _rdMatrixId;
 			MatrixMetadata rdMatrixMetadata = new MatrixMetadata(rdMatrixId);
 
 			NetcdfFile rdNcFile = NetcdfFile.open(rdMatrixMetadata.getPathToMatrix());

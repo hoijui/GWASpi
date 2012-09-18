@@ -86,14 +86,14 @@ public class Threaded_Loader_QA extends CommonRunnable {
 		}
 
 		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
-			resultOpId = new OP_QASamples_opt().processMatrix(resultMatrixId);
+			resultOpId = new OP_QASamples_opt(resultMatrixId).processMatrix();
 			GWASpiExplorerNodes.insertOperationUnderMatrixNode(resultMatrixId, resultOpId);
 			org.gwaspi.reports.OutputQASamples.writeReportsForQASamplesData(resultOpId, true);
 			GWASpiExplorerNodes.insertReportsUnderOperationNode(resultOpId);
 		}
 
 		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
-			resultOpId = new OP_QAMarkers_opt().processMatrix(resultMatrixId);
+			resultOpId = new OP_QAMarkers_opt(resultMatrixId).processMatrix();
 			GWASpiExplorerNodes.insertOperationUnderMatrixNode(resultMatrixId, resultOpId);
 			org.gwaspi.reports.OutputQAMarkers.writeReportsForQAMarkersData(resultOpId);
 			MultiOperations.printCompleted("Matrix Quality Control");
