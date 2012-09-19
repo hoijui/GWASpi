@@ -12,6 +12,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTree;
 import javax.swing.tree.TreePath;
+import org.gwaspi.model.GWASpiExplorer;
 
 /**
  *
@@ -97,7 +98,7 @@ public class GWASpiPanel extends JPanel {
 		int Y = scrl_Tree.getVerticalScrollBar().getValue();
 		int width = splt_MoapiPanel.getDividerLocation();
 
-		org.gwaspi.model.GWASpiExplorer gwaspiExplorer = new org.gwaspi.model.GWASpiExplorer();
+		GWASpiExplorer gwaspiExplorer = new GWASpiExplorer();
 		tmpTree = gwaspiExplorer.getGWASpiTree();
 		//tmpTree = org.gwaspi.model.GWASpiExplorer.getGWASpiTree();
 
@@ -107,26 +108,26 @@ public class GWASpiPanel extends JPanel {
 		String lastSelectedNode = Config.getConfigValue(Config.PROPERTY_LAST_SELECTED_NODE, "0");
 
 		// Find out what paths are expanded
-		List<TreePath> expandedNodesAL = null;
+		List<TreePath> expandedNodes = null;
 		if (tree != null) {
 			TreePath rootPath = tree.getPathForRow(0);
-			Enumeration e = tree.getExpandedDescendants(rootPath);
+			Enumeration expDescs = tree.getExpandedDescendants(rootPath);
 			List<TreePath> expanded = new ArrayList<TreePath>();
-			if (e != null) {
-				while (e.hasMoreElements()) {
-					expanded.add((TreePath) e.nextElement());
+			if (expDescs != null) {
+				while (expDescs.hasMoreElements()) {
+					expanded.add((TreePath) expDescs.nextElement());
 				}
 			}
-			expandedNodesAL = expanded;
+			expandedNodes = expanded;
 		}
 
 		tree = tmpTree;
 
-		if (expandedNodesAL != null) { //HAPPENS WHEN REFRESHING
+		if (expandedNodes != null) { // HAPPENS WHEN REFRESHING
 			for (int i = 0; i < tmpTree.getRowCount(); i++) {
 				TreePath ntp = tmpTree.getPathForRow(i);
 				Object lastNTP = ntp.getLastPathComponent();
-				for (TreePath tp : expandedNodesAL) {
+				for (TreePath tp : expandedNodes) {
 					Object lastTP = tp.getLastPathComponent();
 					if (lastNTP.toString().equals(lastTP.toString())) {
 						tmpTree.expandRow(i);

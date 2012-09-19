@@ -48,10 +48,10 @@ public class GWASpiExplorer {
 
 	private final static Logger log = LoggerFactory.getLogger(GWASpiExplorer.class);
 
-	private static JTree tree;
+	private JTree tree;
 	// Possible values are "Angled" (the default), "Horizontal", and "None".
-	private static boolean playWithLineStyle = false;
-	private static String lineStyle = "Horizontal";
+	private boolean playWithLineStyle = false;
+	private String lineStyle = "Horizontal";
 	// Optionally set the look and feel.
 	private static Icon customOpenIcon = initIcon("hex_open.png");
 	private static Icon customClosedIcon = initIcon("hex_closed.png");
@@ -85,7 +85,6 @@ public class GWASpiExplorer {
 		// Add pre-expansion event listener
 		tree.addTreeWillExpandListener(new MyTreeWillExpandListener());
 
-
 		if (playWithLineStyle) {
 			tree.putClientProperty("JTree.lineStyle", lineStyle);
 		}
@@ -96,35 +95,33 @@ public class GWASpiExplorer {
 	private static void growTree(DefaultMutableTreeNode top) throws IOException {
 
 		//<editor-fold defaultstate="expanded" desc="STUDY MANAGEMENT">
-
 		DefaultMutableTreeNode category = new DefaultMutableTreeNode(Text.App.treeStudyManagement);
 		top.add(category);
 
-
-		//LOAD ALL STUDIES
+		// LOAD ALL STUDIES
 		org.gwaspi.model.StudyList studiesMod = new org.gwaspi.model.StudyList();
 		for (int i = 0; i < studiesMod.studyList.size(); i++) {
 
-			//LOAD CURRENT STUDY
+			// LOAD CURRENT STUDY
 			DefaultMutableTreeNode studyItem = GWASpiExplorerNodes.createStudyTreeNode(studiesMod.studyList.get(i).getStudyId());
 
-			//LOAD SAMPLE INFO FOR CURRENT STUDY
+			// LOAD SAMPLE INFO FOR CURRENT STUDY
 			DefaultMutableTreeNode sampleInfoItem = GWASpiExplorerNodes.createSampleInfoTreeNode(studiesMod.studyList.get(i).getStudyId());
 			if (sampleInfoItem != null) {
 				studyItem.add(sampleInfoItem);
 			}
 
-			//LOAD MATRICES FOR CURRENT STUDY
+			// LOAD MATRICES FOR CURRENT STUDY
 			org.gwaspi.model.MatricesList matrixMod = new org.gwaspi.model.MatricesList(studiesMod.studyList.get(i).getStudyId());
 			for (int j = 0; j < matrixMod.matrixList.size(); j++) {
 
 				DefaultMutableTreeNode matrixItem = GWASpiExplorerNodes.createMatrixTreeNode(matrixMod.matrixList.get(j).getMatrixId());
 
-				//LOAD Parent OPERATIONS ON CURRENT MATRIX
+				// LOAD Parent OPERATIONS ON CURRENT MATRIX
 				org.gwaspi.model.OperationsList parentOpsMod = new org.gwaspi.model.OperationsList(matrixMod.matrixList.get(j).getMatrixId(), -1);
 				org.gwaspi.model.OperationsList allOpsMod = new org.gwaspi.model.OperationsList(matrixMod.matrixList.get(j).getMatrixId());
 				for (int k = 0; k < parentOpsMod.operationsListAL.size(); k++) {
-					//LOAD SUB OPERATIONS ON CURRENT MATRIX
+					// LOAD SUB OPERATIONS ON CURRENT MATRIX
 					Operation currentOP = parentOpsMod.operationsListAL.get(k);
 					DefaultMutableTreeNode operationItem = GWASpiExplorerNodes.createOperationTreeNode(currentOP.getOperationId());
 
@@ -134,7 +131,7 @@ public class GWASpiExplorer {
 						Operation subOP = childrenOpAL.get(m);
 						DefaultMutableTreeNode subOperationItem = GWASpiExplorerNodes.createSubOperationTreeNode(subOP.getOperationId());
 
-						//LOAD REPORTS ON CURRENT SUB-OPERATION
+						// LOAD REPORTS ON CURRENT SUB-OPERATION
 						if (!subOP.getOperationType().equals(cNetCDF.Defaults.OPType.HARDY_WEINBERG.toString())) { //NOT IF HW
 							org.gwaspi.model.ReportsList reportsMod = new org.gwaspi.model.ReportsList(subOP.getOperationId(), Integer.MIN_VALUE);
 							for (int n = 0; n < reportsMod.reportsListAL.size(); n++) {
@@ -151,10 +148,8 @@ public class GWASpiExplorer {
 						operationItem.add(subOperationItem);
 					}
 
-					/////////////////////////////////////////////////////////////////////////////////////
-					////////////////////////// START TESTING /////////////////////////////
-					////////////////////////////////////////////////////////////////////////////////////
-					//LOAD REPORTS ON CURRENT OPERATION
+					// START TESTING
+					// LOAD REPORTS ON CURRENT OPERATION
 					org.gwaspi.model.ReportsList reportsMod = new org.gwaspi.model.ReportsList(currentOP.getOperationId(), Integer.MIN_VALUE);
 					if (!currentOP.getOperationType().equals(cNetCDF.Defaults.OPType.SAMPLE_QA.toString())) { //SAMPLE_QA MUST BE DEALT DIFFERENTLY
 						for (int n = 0; n < reportsMod.reportsListAL.size(); n++) {
@@ -171,10 +166,7 @@ public class GWASpiExplorer {
 							}
 						}
 					}
-					/////////////////////////////////////////////////////////////////////////////////
-					////////////////////////// END TESTING /////////////////////////////
-					////////////////////////////////////////////////////////////////////////////////
-
+					// END TESTING
 
 					matrixItem.add(operationItem);
 
@@ -188,17 +180,20 @@ public class GWASpiExplorer {
 
 		top.add(category);
 		//</editor-fold>
-
 	}
+
 	//<editor-fold defaultstate="collapsed" desc="LISTENER">
 	// TREE SELECTION LISTENER
 	private static TreeSelectionListener treeListener = new TreeSelectionListener() {
-		public void valueChanged(TreeSelectionEvent arg0) {
+		public void valueChanged(TreeSelectionEvent evt) {
+
+			JTree tree = (JTree) evt.getSource();
+			GWASpiExplorerPanel gwasPiExplorerPanel = GWASpiExplorerPanel.getSingleton();
 
 			tree.setEnabled(false);
 
 			// CHECK IF LISTENER IS ALLOWED TO UPDATE CONTENT PANEL
-			if (!GWASpiExplorerPanel.getSingleton().isRefreshContentPanel()) {
+			if (!gwasPiExplorerPanel.isRefreshContentPanel()) {
 				tree.setEnabled(true);
 				return;
 			}
@@ -211,8 +206,8 @@ public class GWASpiExplorer {
 
 			// Check first if we are at the GWASpi root
 			if (currentNode.isRoot()) { // We are in GWASpi node
-				GWASpiExplorerPanel.getSingleton().setPnl_Content(new IntroPanel());
-				GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
+				gwasPiExplorerPanel.setPnl_Content(new IntroPanel());
+				gwasPiExplorerPanel.getScrl_Content().setViewportView(gwasPiExplorerPanel.getPnl_Content());
 			}
 
 			// Check where we are in tree and show appropiate content panel
@@ -220,11 +215,10 @@ public class GWASpiExplorer {
 			NodeElementInfo currentElementInfo = null;
 			try {
 				currentElementInfo = (NodeElementInfo) currentElement;
-			} catch (Exception e) {
+			} catch (Exception ex) {
 			}
 
-
-			TreePath treePath = arg0.getPath();
+			TreePath treePath = evt.getPath();
 			if (treePath != null && currentElementInfo != null) {
 				try {
 					Config.setConfigValue(Config.PROPERTY_LAST_SELECTED_NODE, currentElementInfo.getNodeUniqueName());
@@ -263,8 +257,8 @@ public class GWASpiExplorer {
 			else if (currentNode.toString().equals(Text.App.treeStudyManagement)) {
 				try {
 					// We are in StudyList node
-					GWASpiExplorerPanel.getSingleton().setPnl_Content(new StudyManagementPanel());
-					GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
+					gwasPiExplorerPanel.setPnl_Content(new StudyManagementPanel());
+					gwasPiExplorerPanel.getScrl_Content().setViewportView(gwasPiExplorerPanel.getPnl_Content());
 				} catch (IOException ex) {
 					log.warn(null, ex);
 				}
@@ -272,16 +266,16 @@ public class GWASpiExplorer {
 			//else if(parentNode!=null && parentNode.toString().equals(Text.App.treeStudyManagement)){
 			else if (currentElementInfo != null && currentElementInfo.getNodeType().toString().equals(Text.App.treeStudy)) {
 				try {
-					GWASpiExplorerPanel.getSingleton().setPnl_Content(new CurrentStudyPanel(currentElementInfo.getNodeId()));
-					GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
+					gwasPiExplorerPanel.setPnl_Content(new CurrentStudyPanel(currentElementInfo.getNodeId()));
+					gwasPiExplorerPanel.getScrl_Content().setViewportView(gwasPiExplorerPanel.getPnl_Content());
 				} catch (IOException ex) {
 					log.warn("StudyID: " + currentElementInfo.getNodeId(), ex);
 				}
 			} // Sample Info Branch
 			else if (currentElementInfo != null && currentElementInfo.getNodeType().toString().equals(Text.App.treeSampleInfo)) {
 				try {
-					GWASpiExplorerPanel.getSingleton().setPnl_Content(new Report_SampleInfoPanel(parentElementInfo.getNodeId()));
-					GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
+					gwasPiExplorerPanel.setPnl_Content(new Report_SampleInfoPanel(parentElementInfo.getNodeId()));
+					gwasPiExplorerPanel.getScrl_Content().setViewportView(gwasPiExplorerPanel.getPnl_Content());
 				} catch (IOException ex) {
 					log.warn(null, ex);
 				}
@@ -290,8 +284,8 @@ public class GWASpiExplorer {
 				try {
 					// We are in MatrixItemAL node
 					tree.expandPath(treePath);
-					GWASpiExplorerPanel.getSingleton().setPnl_Content(new CurrentMatrixPanel(currentElementInfo.getNodeId()));
-					GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
+					gwasPiExplorerPanel.setPnl_Content(new CurrentMatrixPanel(currentElementInfo.getNodeId()));
+					gwasPiExplorerPanel.getScrl_Content().setViewportView(gwasPiExplorerPanel.getPnl_Content());
 				} catch (IOException ex) {
 					log.warn(null, ex);
 				}
@@ -309,25 +303,25 @@ public class GWASpiExplorer {
 							if (reportList.reportsListAL.size() > 0) {
 								Report hwReport = reportList.reportsListAL.get(0);
 								String reportFile = hwReport.getReportFileName();
-								GWASpiExplorerPanel.getSingleton().setPnl_Content(new Report_HardyWeinbergSummary(hwReport.getStudyId(), reportFile, hwReport.getParentOperationId()));
-								GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
+								gwasPiExplorerPanel.setPnl_Content(new Report_HardyWeinbergSummary(hwReport.getStudyId(), reportFile, hwReport.getParentOperationId()));
+								gwasPiExplorerPanel.getScrl_Content().setViewportView(gwasPiExplorerPanel.getPnl_Content());
 							}
 						} else if (currentOP.getOperationType().equals(cNetCDF.Defaults.OPType.ALLELICTEST.toString())) {
 							// Display Association Report
-							GWASpiExplorerPanel.getSingleton().setPnl_Content(new Report_AnalysisPanel(currentOP.getStudyId(), currentOP.getParentMatrixId(), currentOP.getOperationId(), null));
-							GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
+							gwasPiExplorerPanel.setPnl_Content(new Report_AnalysisPanel(currentOP.getStudyId(), currentOP.getParentMatrixId(), currentOP.getOperationId(), null));
+							gwasPiExplorerPanel.getScrl_Content().setViewportView(gwasPiExplorerPanel.getPnl_Content());
 						} else if (currentOP.getOperationType().equals(cNetCDF.Defaults.OPType.GENOTYPICTEST.toString())) {
 							// Display Association Report
-							GWASpiExplorerPanel.getSingleton().setPnl_Content(new Report_AnalysisPanel(currentOP.getStudyId(), currentOP.getParentMatrixId(), currentOP.getOperationId(), null));
-							GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
+							gwasPiExplorerPanel.setPnl_Content(new Report_AnalysisPanel(currentOP.getStudyId(), currentOP.getParentMatrixId(), currentOP.getOperationId(), null));
+							gwasPiExplorerPanel.getScrl_Content().setViewportView(gwasPiExplorerPanel.getPnl_Content());
 						} else if (currentOP.getOperationType().equals(cNetCDF.Defaults.OPType.TRENDTEST.toString())) {
 							// Display Trend Test Report
-							GWASpiExplorerPanel.getSingleton().setPnl_Content(new Report_AnalysisPanel(currentOP.getStudyId(), currentOP.getParentMatrixId(), currentOP.getOperationId(), null));
-							GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
+							gwasPiExplorerPanel.setPnl_Content(new Report_AnalysisPanel(currentOP.getStudyId(), currentOP.getParentMatrixId(), currentOP.getOperationId(), null));
+							gwasPiExplorerPanel.getScrl_Content().setViewportView(gwasPiExplorerPanel.getPnl_Content());
 						} else {
-							//GWASpiExplorerPanel.getSingleton().pnl_Content = new MatrixAnalysePanel(parentOP.getParentMatrixId(), currentElementInfo.parentNodeId);
-							GWASpiExplorerPanel.getSingleton().setPnl_Content(new MatrixAnalysePanel(parentOP.getParentMatrixId(), currentElementInfo.getNodeId()));
-							GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
+							//gwasPiExplorerPanel.pnl_Content = new MatrixAnalysePanel(parentOP.getParentMatrixId(), currentElementInfo.parentNodeId);
+							gwasPiExplorerPanel.setPnl_Content(new MatrixAnalysePanel(parentOP.getParentMatrixId(), currentElementInfo.getNodeId()));
+							gwasPiExplorerPanel.getScrl_Content().setViewportView(gwasPiExplorerPanel.getPnl_Content());
 						}
 					} else {
 						// Display Operation
@@ -335,21 +329,21 @@ public class GWASpiExplorer {
 						Operation currentOP = new Operation(currentElementInfo.getNodeId());
 						if (currentOP.getOperationType().equals(cNetCDF.Defaults.OPType.MARKER_QA.toString())) {
 							// Display MarkerQA panel
-							GWASpiExplorerPanel.getSingleton().setPnl_Content(new MatrixMarkerQAPanel(currentOP.getParentMatrixId(), currentOP.getOperationId()));
-							GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
+							gwasPiExplorerPanel.setPnl_Content(new MatrixMarkerQAPanel(currentOP.getParentMatrixId(), currentOP.getOperationId()));
+							gwasPiExplorerPanel.getScrl_Content().setViewportView(gwasPiExplorerPanel.getPnl_Content());
 						} else if (currentOP.getOperationType().equals(cNetCDF.Defaults.OPType.SAMPLE_QA.toString())) {
 							// Display SampleQA Report
 							ReportsList reportList = new ReportsList(currentOP.getOperationId(), currentOP.getParentMatrixId());
 							if (reportList.reportsListAL.size() > 0) {
 								Report sampleQAReport = reportList.reportsListAL.get(0);
 								String reportFile = sampleQAReport.getReportFileName();
-								GWASpiExplorerPanel.getSingleton().setPnl_Content(new Report_QASamplesSummary(sampleQAReport.getStudyId(), reportFile, sampleQAReport.getParentOperationId()));
-								GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
+								gwasPiExplorerPanel.setPnl_Content(new Report_QASamplesSummary(sampleQAReport.getStudyId(), reportFile, sampleQAReport.getParentOperationId()));
+								gwasPiExplorerPanel.getScrl_Content().setViewportView(gwasPiExplorerPanel.getPnl_Content());
 							}
 						} else {
 							// Display Operation analysis panel
-							GWASpiExplorerPanel.getSingleton().setPnl_Content(new MatrixAnalysePanel(parentElementInfo.getNodeId(), currentElementInfo.getNodeId()));
-							GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
+							gwasPiExplorerPanel.setPnl_Content(new MatrixAnalysePanel(parentElementInfo.getNodeId(), currentElementInfo.getNodeId()));
+							gwasPiExplorerPanel.getScrl_Content().setViewportView(gwasPiExplorerPanel.getPnl_Content());
 						}
 					}
 				} catch (IOException ex) {
@@ -363,43 +357,43 @@ public class GWASpiExplorer {
 					Report rp = new Report(currentElementInfo.getNodeId());
 					String reportFile = rp.getReportFileName();
 					if (rp.getReportType().equals(cNetCDF.Defaults.OPType.SAMPLE_HTZYPLOT.toString())) {
-						GWASpiExplorerPanel.getSingleton().setPnl_Content(new SampleQAHetzygPlotZoom(rp.getParentOperationId()));
-						GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
+						gwasPiExplorerPanel.setPnl_Content(new SampleQAHetzygPlotZoom(rp.getParentOperationId()));
+						gwasPiExplorerPanel.getScrl_Content().setViewportView(gwasPiExplorerPanel.getPnl_Content());
 					}
 					if (rp.getReportType().equals(cNetCDF.Defaults.OPType.ALLELICTEST.toString())) {
-						//GWASpiExplorerPanel.getSingleton().pnl_Content = new Report_AssociationSummary(rp.getStudyId(), reportFile, rp.getParentOperationId(), null);
-						GWASpiExplorerPanel.getSingleton().setPnl_Content(new Report_AnalysisPanel(rp.getStudyId(), rp.getParentMatrixId(), rp.getParentOperationId(), null));
-						GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
+						//gwasPiExplorerPanel.pnl_Content = new Report_AssociationSummary(rp.getStudyId(), reportFile, rp.getParentOperationId(), null);
+						gwasPiExplorerPanel.setPnl_Content(new Report_AnalysisPanel(rp.getStudyId(), rp.getParentMatrixId(), rp.getParentOperationId(), null));
+						gwasPiExplorerPanel.getScrl_Content().setViewportView(gwasPiExplorerPanel.getPnl_Content());
 					}
 					if (rp.getReportType().equals(cNetCDF.Defaults.OPType.QQPLOT.toString())) {
-						GWASpiExplorerPanel.getSingleton().setPnl_Content(new ChartDefaultDisplay(rp.getStudyId(), reportFile, rp.getParentOperationId()));
-						GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
+						gwasPiExplorerPanel.setPnl_Content(new ChartDefaultDisplay(rp.getStudyId(), reportFile, rp.getParentOperationId()));
+						gwasPiExplorerPanel.getScrl_Content().setViewportView(gwasPiExplorerPanel.getPnl_Content());
 					}
 					if (rp.getReportType().equals(cNetCDF.Defaults.OPType.MANHATTANPLOT.toString())) {
-						GWASpiExplorerPanel.getSingleton().setPnl_Content(new ManhattanChartDisplay(rp.getStudyId(), reportFile, rp.getParentOperationId()));
-						GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
+						gwasPiExplorerPanel.setPnl_Content(new ManhattanChartDisplay(rp.getStudyId(), reportFile, rp.getParentOperationId()));
+						gwasPiExplorerPanel.getScrl_Content().setViewportView(gwasPiExplorerPanel.getPnl_Content());
 					}
 					if (rp.getReportType().equals(cNetCDF.Defaults.OPType.MARKER_QA.toString())) {
-						GWASpiExplorerPanel.getSingleton().setPnl_Content(new Report_QAMarkersSummary(rp.getStudyId(), reportFile, rp.getParentOperationId()));
-						GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
+						gwasPiExplorerPanel.setPnl_Content(new Report_QAMarkersSummary(rp.getStudyId(), reportFile, rp.getParentOperationId()));
+						gwasPiExplorerPanel.getScrl_Content().setViewportView(gwasPiExplorerPanel.getPnl_Content());
 					}
 //					if(rp.getReportType().equals(cNetCDF.Defaults.OPType.SAMPLE_QA.toString())){
-//						GWASpiExplorerPanel.getSingleton().pnl_Content = new Report_QASamplesSummary(rp.getStudyId(), reportFile, rp.getParentOperationId());
-//						GWASpiExplorerPanel.getSingleton().scrl_Content.setViewportView(GWASpiExplorerPanel.getSingleton().pnl_Content);
+//						gwasPiExplorerPanel.pnl_Content = new Report_QASamplesSummary(rp.getStudyId(), reportFile, rp.getParentOperationId());
+//						gwasPiExplorerPanel.scrl_Content.setViewportView(gwasPiExplorerPanel.pnl_Content);
 //					}
 					if (rp.getReportType().equals(cNetCDF.Defaults.OPType.HARDY_WEINBERG.toString())) {
-						GWASpiExplorerPanel.getSingleton().setPnl_Content(new Report_HardyWeinbergSummary(rp.getStudyId(), reportFile, rp.getParentOperationId()));
-						GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
+						gwasPiExplorerPanel.setPnl_Content(new Report_HardyWeinbergSummary(rp.getStudyId(), reportFile, rp.getParentOperationId()));
+						gwasPiExplorerPanel.getScrl_Content().setViewportView(gwasPiExplorerPanel.getPnl_Content());
 					}
 				} catch (IOException ex) {
 					log.warn(null, ex);
 				}
 			} else {
-				GWASpiExplorerPanel.getSingleton().setPnl_Content(new IntroPanel());
-				GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
+				gwasPiExplorerPanel.setPnl_Content(new IntroPanel());
+				gwasPiExplorerPanel.getScrl_Content().setViewportView(gwasPiExplorerPanel.getPnl_Content());
 			}
 
-			// THIS TO AVOID RANDOM MONKEY CLICKER BUG
+			// THIS IS TO AVOID RANDOM MONKEY CLICKER BUG
 			try {
 				Thread.sleep(300);
 			} catch (InterruptedException ex) {
@@ -410,7 +404,7 @@ public class GWASpiExplorer {
 	};
 
 	// PRE-EXPANSION/COLLAPSE LISTENER
-	public class MyTreeWillExpandListener implements TreeWillExpandListener {
+	private class MyTreeWillExpandListener implements TreeWillExpandListener {
 
 		public void treeWillExpand(TreeExpansionEvent evt) throws ExpandVetoException {
 			// Get the path that will be expanded
@@ -423,7 +417,7 @@ public class GWASpiExplorer {
 				if (currentNodeInfo.isCollapsable()) {
 					// ALLWAYS ALLOW EXPANSION
 				}
-			} catch (Exception e) {
+			} catch (Exception ex) {
 			}
 		}
 
@@ -445,24 +439,24 @@ public class GWASpiExplorer {
 
 		}
 	}
-
 	//</editor-fold>
+
 	//<editor-fold defaultstate="collapsed" desc="HELPERS">
-	protected static List<Operation> getChildrenOperations(List<Operation> opAL, int parentOpId) {
+	private static List<Operation> getChildrenOperations(List<Operation> operations, int parentOpId) {
 
-		List<Operation> childrednOperationsAL = new ArrayList<Operation>();
+		List<Operation> childrenOperations = new ArrayList<Operation>();
 
-		for (int i = 0; i < opAL.size(); i++) {
-			int currentParentOPId = (Integer) opAL.get(i).getParentOperationId();
+		for (int i = 0; i < operations.size(); i++) {
+			int currentParentOPId = (Integer) operations.get(i).getParentOperationId();
 			if (currentParentOPId == parentOpId) {
-				childrednOperationsAL.add(opAL.get(i));
+				childrenOperations.add(operations.get(i));
 			}
 		}
 
-		return childrednOperationsAL;
+		return childrenOperations;
 	}
 
-	protected static Icon initIcon(String iconName) {
+	private static Icon initIcon(String iconName) {
 		URL logoPath = GWASpiExplorer.class.getClass().getResource("/img/icon/" + iconName);
 		//String logoPath = Config.getConfigValue("ConfigDir", "") + "/" +iconName;
 		Icon logo = new ImageIcon(logoPath);

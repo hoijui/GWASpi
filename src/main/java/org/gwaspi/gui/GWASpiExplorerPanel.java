@@ -13,6 +13,7 @@ import javax.swing.JSplitPane;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
+import org.gwaspi.model.GWASpiExplorer;
 import org.gwaspi.model.GWASpiExplorerNodes.NodeElementInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -118,7 +119,7 @@ public class GWASpiExplorerPanel extends JPanel {
 		int Y = scrl_Tree.getVerticalScrollBar().getValue();
 		int width = splt_MoapiPanel.getDividerLocation();
 
-		org.gwaspi.model.GWASpiExplorer gwaspiExplorer = new org.gwaspi.model.GWASpiExplorer();
+		GWASpiExplorer gwaspiExplorer = new GWASpiExplorer();
 		tmpTree = gwaspiExplorer.getGWASpiTree();
 		//tmpTree = GWASpiExplorer.getGWASpiTree();
 
