@@ -16,6 +16,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.gwaspi.reports.OutputAllelicAssociation;
 import org.gwaspi.reports.OutputGenotypicAssociation;
+import org.gwaspi.reports.OutputQAMarkers;
+import org.gwaspi.reports.OutputQASamples;
 import org.gwaspi.reports.OutputTrendTest;
 
 /**
@@ -110,14 +112,14 @@ public class Threaded_Loader_GWASifOK extends CommonRunnable {
 		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
 			samplesQAOpId = new OP_QASamples_opt(resultMatrixId).processMatrix();
 			GWASpiExplorerNodes.insertOperationUnderMatrixNode(resultMatrixId, samplesQAOpId);
-			org.gwaspi.reports.OutputQASamples.writeReportsForQASamplesData(samplesQAOpId, true);
+			OutputQASamples.writeReportsForQASamplesData(samplesQAOpId, true);
 			GWASpiExplorerNodes.insertReportsUnderOperationNode(samplesQAOpId);
 		}
 
 		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
 			markersQAOpId = new OP_QAMarkers_opt(resultMatrixId).processMatrix();
 			GWASpiExplorerNodes.insertOperationUnderMatrixNode(resultMatrixId, markersQAOpId);
-			org.gwaspi.reports.OutputQAMarkers.writeReportsForQAMarkersData(markersQAOpId);
+			OutputQAMarkers.writeReportsForQAMarkersData(markersQAOpId);
 			GWASpiExplorerNodes.insertReportsUnderOperationNode(markersQAOpId);
 			MultiOperations.printCompleted("Matrix Quality Control");
 		}

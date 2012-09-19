@@ -46,8 +46,8 @@ public class NodeToPathCorrespondence {
 				NodeElementInfo currentElementInfo = (org.gwaspi.model.GWASpiExplorerNodes.NodeElementInfo) tmpElement;
 
 				for (int i = 0; i < GWASpiExplorerPanel.getSingleton().getTree().getRowCount(); i++) {
-					if (GWASpiExplorerPanel.getSingleton().getTree().getPathForRow(i).getLastPathComponent().toString().equals(currentElementInfo.nodeUniqueName)) {
-						nodeToPathChildrenMap.put(currentElementInfo.nodeId, GWASpiExplorerPanel.getSingleton().getTree().getPathForRow(i));
+					if (GWASpiExplorerPanel.getSingleton().getTree().getPathForRow(i).getLastPathComponent().toString().equals(currentElementInfo.getNodeUniqueName())) {
+						nodeToPathChildrenMap.put(currentElementInfo.getNodeId(), GWASpiExplorerPanel.getSingleton().getTree().getPathForRow(i));
 					}
 				}
 

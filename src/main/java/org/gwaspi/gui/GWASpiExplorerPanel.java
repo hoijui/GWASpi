@@ -38,7 +38,6 @@ public class GWASpiExplorerPanel extends JPanel {
 	private static GWASpiExplorerPanel singleton = null;
 	// End of variables declaration
 
-	// <editor-fold defaultstate="expanded" desc="Generated Code">
 	private GWASpiExplorerPanel() throws IOException {
 
 		splt_MoapiPanel = new JSplitPane();
@@ -121,7 +120,7 @@ public class GWASpiExplorerPanel extends JPanel {
 
 		org.gwaspi.model.GWASpiExplorer gwaspiExplorer = new org.gwaspi.model.GWASpiExplorer();
 		tmpTree = gwaspiExplorer.getGWASpiTree();
-		//tmpTree = org.gwaspi.model.GWASpiExplorer.getGWASpiTree();
+		//tmpTree = GWASpiExplorer.getGWASpiTree();
 
 		scrl_Tree.setViewportView(tmpTree);
 		splt_MoapiPanel.setLeftComponent(scrl_Tree);
@@ -144,7 +143,7 @@ public class GWASpiExplorerPanel extends JPanel {
 
 		tree = tmpTree;
 
-		if (expandedNodesAL != null) { //HAPPENS WHEN REFRESHING
+		if (expandedNodesAL != null) { // HAPPENS WHEN REFRESHING
 			for (int i = 0; i < tmpTree.getRowCount(); i++) {
 				TreePath ntp = tmpTree.getPathForRow(i);
 				Object lastNTP = ntp.getLastPathComponent();
@@ -218,7 +217,6 @@ public class GWASpiExplorerPanel extends JPanel {
 		scrl_Content.setViewportView(pnl_Content);
 		splt_MoapiPanel.setRightComponent(scrl_Content);
 	}
-	// </editor-fold>
 
 	public void setAllNodesCollapsable() {
 		if (StartGWASpi.guiMode) {

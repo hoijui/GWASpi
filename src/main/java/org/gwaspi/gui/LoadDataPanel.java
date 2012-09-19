@@ -64,29 +64,24 @@ public class LoadDataPanel extends JPanel {
 	private JLabel lbl_Format;
 	private JLabel lbl_NewMatrixName;
 	private JPanel pnl_Footer;
-	public JPanel pnl_Input;
+	private JPanel pnl_Input;
 	private JPanel pnl_NameAndDesc;
 	private JPanel pnl_Gif;
-	private JPanel pnl_GifCenter;
 	private JPanel pnl_GifLeft;
-	private JPanel pnl_GifRight;
-	private JScrollPane scrl_Gif;
 	private JScrollPane scrl_NewMatrixDescription;
 	private JTextArea txtA_NewMatrixDescription;
 	private JTextField txt_File1;
 	private JTextField txt_File2;
 	private JTextField txt_FileSampleInfo;
 	private JTextField txt_NewMatrixName;
-	// End of variables declaration
 	private boolean dummySamples = true;
 	private int studyId;
 	private boolean[] fieldObligatoryState;
-	public GWASinOneGOParams gwasParams = new GWASinOneGOParams();
+	private GWASinOneGOParams gwasParams = new GWASinOneGOParams();
 	private final Action formatAction;
 	private final Action browseSampleInfoAction;
 	// End of variables declaration
 
-	@SuppressWarnings("unchecked")
 	public LoadDataPanel(int _studyId) {
 
 		studyId = _studyId;
@@ -114,9 +109,6 @@ public class LoadDataPanel extends JPanel {
 		btn_Help = new JButton();
 		pnl_Gif = new JPanel();
 		pnl_GifLeft = new JPanel();
-		pnl_GifCenter = new JPanel();
-		scrl_Gif = new JScrollPane();
-		pnl_GifRight = new JPanel();
 
 		formatAction = new LoadDataPanel.FormatAction();
 		browseSampleInfoAction = new LoadDataPanel.BrowseSampleInfoAction();
@@ -158,7 +150,6 @@ public class LoadDataPanel extends JPanel {
 		});
 		scrl_NewMatrixDescription.setViewportView(txtA_NewMatrixDescription);
 
-
 		//<editor-fold defaultstate="collapsed" desc="LAYOUT NAME & DESC">
 		GroupLayout pnl_NameAndDescLayout = new GroupLayout(pnl_NameAndDesc);
 		pnl_NameAndDesc.setLayout(pnl_NameAndDescLayout);
@@ -184,7 +175,6 @@ public class LoadDataPanel extends JPanel {
 				.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)));
 
 		//</editor-fold>
-
 
 		pnl_Input.setBorder(BorderFactory.createTitledBorder(null, Text.Matrix.input, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("DejaVu Sans", 1, 13))); // NOI18N
 
@@ -641,9 +631,9 @@ public class LoadDataPanel extends JPanel {
 									txtA_NewMatrixDescription.getText(),
 									txt_File1.getText(),
 									txt_FileSampleInfo.getText(),
-									txt_File2.getText(), gwasParams.getChromosome(), //Chr
-									gwasParams.getStrandType().toString(), //strandType
-									gwasParams.getGtCode().toString(), //GtCode
+									txt_File2.getText(), gwasParams.getChromosome(), // Chr
+									gwasParams.getStrandType().toString(), // strandType
+									gwasParams.getGtCode().toString(), // GtCode
 									studyId,
 									gwasParams);
 
@@ -675,7 +665,7 @@ public class LoadDataPanel extends JPanel {
 					log.error(Text.All.warnLoadError, ex);
 					log.error(Text.All.warnWrongFormat);
 
-					//DELETE BROKEN NEW MATRIX AND REPORTS
+					// DELETE BROKEN NEW MATRIX AND REPORTS
 					MatrixMetadata deleteMxMetaData = org.gwaspi.netCDF.matrices.MatrixManager.getLatestMatrixId();
 					if (deleteMxMetaData.getMatrixFriendlyName().equals(txt_NewMatrixName.getText())) {
 						log.info("Deleting orphan files and references");
@@ -881,8 +871,8 @@ public class LoadDataPanel extends JPanel {
 
 		return buttonsOK;
 	}
-
 	//</editor-fold>
+
 	private static class BackAction extends AbstractAction {
 
 		private int studyId;
