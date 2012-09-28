@@ -46,7 +46,8 @@ public class MatrixFactory {
 	{
 		if (samplesDimSize > 0 && markerDimSize > 0) {
 			resultMatrixName = org.gwaspi.netCDF.matrices.MatrixManager.generateMatrixNetCDFNameByDate();
-			netCDFHandler = generateNetcdfHandler(studyId,
+			netCDFHandler = generateNetcdfHandler(
+					studyId,
 					resultMatrixName,
 					technology,
 					description,
@@ -65,7 +66,8 @@ public class MatrixFactory {
 			netCDFHandler.setFill(true);
 
 			DbManager dBManager = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
-			org.gwaspi.netCDF.matrices.MatrixManager.insertMatrixMetadata(dBManager,
+			org.gwaspi.netCDF.matrices.MatrixManager.insertMatrixMetadata(
+					dBManager,
 					studyId,
 					friendlyName,
 					resultMatrixName,
@@ -117,7 +119,8 @@ public class MatrixFactory {
 			netCDFHandler.setFill(true);
 
 			DbManager dBManager = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
-			org.gwaspi.netCDF.matrices.MatrixManager.insertMatrixMetadata(dBManager,
+			org.gwaspi.netCDF.matrices.MatrixManager.insertMatrixMetadata(
+					dBManager,
 					studyId,
 					friendlyName,
 					resultMatrixName,
@@ -151,7 +154,8 @@ public class MatrixFactory {
 		return matrixMetaData;
 	}
 
-	public static NetcdfFileWriteable generateNetcdfHandler(Integer studyId,
+	public static NetcdfFileWriteable generateNetcdfHandler(
+			Integer studyId,
 			String matrixName,
 			String technology,
 			String description,

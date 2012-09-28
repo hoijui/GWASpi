@@ -3,6 +3,7 @@ package org.gwaspi.netCDF.exporter;
 import org.gwaspi.constants.cDBSamples;
 import org.gwaspi.constants.cExport;
 import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -196,7 +197,7 @@ class BeagleFormatter implements Formatter {
 			int markersQAopId = Integer.MIN_VALUE;
 			for (int i = 0; i < operationsAL.size(); i++) {
 				Object[] element = operationsAL.get(i);
-				if (element[1].toString().equals(cNetCDF.Defaults.OPType.MARKER_QA.toString())) {
+				if (element[1].toString().equals(OPType.MARKER_QA.toString())) {
 					markersQAopId = (Integer) element[0];
 				}
 			}

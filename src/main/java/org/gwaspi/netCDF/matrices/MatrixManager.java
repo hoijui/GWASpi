@@ -31,7 +31,8 @@ public class MatrixManager {
 		boolean result = false;
 		try {
 			//CREATE MATRIX_METADATA table in MATRICES SCHEMA
-			db.createTable(cDBGWASpi.SCH_MATRICES,
+			db.createTable(
+					cDBGWASpi.SCH_MATRICES,
 					cDBMatrix.T_MATRICES,
 					cDBMatrix.T_CREATE_MATRICES);
 		} catch (Exception ex) {
@@ -41,7 +42,8 @@ public class MatrixManager {
 		return (result) ? "1" : "0";
 	}
 
-	public static void insertMatrixMetadata(DbManager dBManager,
+	public static void insertMatrixMetadata(
+			DbManager dBManager,
 			int studyId,
 			String matrix_name,
 			String netCDF_name,
@@ -58,7 +60,8 @@ public class MatrixManager {
 			trimmedDescription = trimmedDescription.substring(0, 1999);
 		}
 
-		Object[] matrixMetaData = new Object[]{matrix_name,
+		Object[] matrixMetaData = new Object[] {
+			matrix_name,
 			netCDF_name,
 			matrix_type,
 			parent_matrix1_id,
@@ -69,7 +72,8 @@ public class MatrixManager {
 			studyId
 		};
 
-		dBManager.insertValuesInTable(cDBGWASpi.SCH_MATRICES,
+		dBManager.insertValuesInTable(
+				cDBGWASpi.SCH_MATRICES,
 				cDBMatrix.T_MATRICES,
 				cDBMatrix.F_INSERT_MATRICES,
 				matrixMetaData);
@@ -123,7 +127,7 @@ public class MatrixManager {
 		matrixName = matrixName.replace(":", "");
 		matrixName = matrixName.replace(" ", "");
 		matrixName = matrixName.replace("/", "");
-		matrixName.replaceAll("[a-zA-Z]", "");
+		matrixName.replaceAll("[a-zA-Z]", ""); // FIXME result is unused!
 
 		//matrixName = matrixName.substring(0, matrixName.length()-3); //Remove "CET" from name
 		return matrixName;

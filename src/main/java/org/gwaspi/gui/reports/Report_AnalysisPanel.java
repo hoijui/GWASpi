@@ -1,6 +1,6 @@
 package org.gwaspi.gui.reports;
 
-import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.utils.BrowserHelpUrlAction;
 import org.gwaspi.gui.utils.Dialogs;
@@ -102,11 +102,11 @@ public class Report_AnalysisPanel extends JPanel {
 		ReportsList rpList = new ReportsList(_opId, _matrixId);
 		if (rpList.reportsListAL.size() == 3) {
 			String reportFile = rpList.reportsListAL.get(2).getReportFileName();
-			if (currentOP.getOperationType().equals(cNetCDF.Defaults.OPType.ALLELICTEST.toString())) {
+			if (currentOP.getOperationType().equals(OPType.ALLELICTEST.toString())) {
 				pnl_Report = new Report_AnalysisAllelicTestImpl(_studyId, reportFile, _opId, NRows);
-			} else if (currentOP.getOperationType().equals(cNetCDF.Defaults.OPType.GENOTYPICTEST.toString())) {
+			} else if (currentOP.getOperationType().equals(OPType.GENOTYPICTEST.toString())) {
 				pnl_Report = new Report_AnalysisGenotypicTestImpl(_studyId, reportFile, _opId, NRows);
-			} else if (currentOP.getOperationType().equals(cNetCDF.Defaults.OPType.TRENDTEST.toString())) {
+			} else if (currentOP.getOperationType().equals(OPType.TRENDTEST.toString())) {
 				pnl_Report = new Report_AnalysisTrendTestImpl(_studyId, reportFile, _opId, NRows);
 			}
 		}

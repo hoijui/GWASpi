@@ -609,7 +609,7 @@ public class LoadDataPanel extends JPanel {
 						int decision = Dialogs.showOptionDialogue(Text.Matrix.gwasInOne, Text.Matrix.ifCaseCtrlDetected, Text.All.yes, Text.Matrix.noJustLoad, Text.All.cancel);
 
 						if (decision == JOptionPane.YES_OPTION) {
-							//ASK MORE QUESTIONS
+							// ASK MORE QUESTIONS
 							gwasParams = new MoreGWASinOneGoInfo().showMoreInfo(cmb_Format.getSelectedItem().toString());
 							if (gwasParams.isProceed()) {
 								gwasParams.setFriendlyName(Dialogs.showInputBox(Text.Operation.GTFreqAndHWFriendlyName));

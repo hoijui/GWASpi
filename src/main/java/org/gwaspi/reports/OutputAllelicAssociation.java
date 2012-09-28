@@ -3,6 +3,7 @@ package org.gwaspi.reports;
 import org.gwaspi.constants.cDBGWASpi;
 import org.gwaspi.constants.cExport;
 import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.database.DbManager;
 import org.gwaspi.global.Config;
 import org.gwaspi.global.ServiceLocator;
@@ -55,7 +56,7 @@ public class OutputAllelicAssociation {
 			ReportManager.insertRPMetadata(dBManager,
 					"Allelic assoc. Manhattan Plot",
 					manhattanName + ".png",
-					cNetCDF.Defaults.OPType.MANHATTANPLOT.toString(),
+					OPType.MANHATTANPLOT.toString(),
 					op.getParentMatrixId(),
 					opId,
 					"Allelic Association Manhattan Plot",
@@ -69,7 +70,7 @@ public class OutputAllelicAssociation {
 			ReportManager.insertRPMetadata(dBManager,
 					"Allelic assoc. QQ Plot",
 					qqName + ".png",
-					cNetCDF.Defaults.OPType.QQPLOT.toString(),
+					OPType.QQPLOT.toString(),
 					op.getParentMatrixId(),
 					opId,
 					"Allelic Association QQ Plot",
@@ -84,7 +85,7 @@ public class OutputAllelicAssociation {
 			ReportManager.insertRPMetadata(dBManager,
 					"Allelic Association Tests Values",
 					assocName + ".txt",
-					cNetCDF.Defaults.OPType.ALLELICTEST.toString(),
+					OPType.ALLELICTEST.toString(),
 					op.getParentMatrixId(),
 					opId,
 					"Allelic Association Tests Values",
@@ -217,7 +218,7 @@ public class OutputAllelicAssociation {
 			int markersQAopId = Integer.MIN_VALUE;
 			for (int i = 0; i < operationsAL.size(); i++) {
 				Object[] element = operationsAL.get(i);
-				if (element[1].toString().equals(cNetCDF.Defaults.OPType.MARKER_QA.toString())) {
+				if (element[1].toString().equals(OPType.MARKER_QA.toString())) {
 					markersQAopId = (Integer) element[0];
 				}
 			}

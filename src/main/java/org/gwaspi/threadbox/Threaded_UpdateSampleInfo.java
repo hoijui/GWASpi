@@ -50,7 +50,7 @@ public class Threaded_UpdateSampleInfo extends CommonRunnable {
 //		List<Operation> opAL = opList.operationsListAL;
 //		int qaOpId = Integer.MIN_VALUE;
 //		for (int i = 0; i < opAL.size(); i++) {
-//			if (opAL.get(i).getOperationType().equals(cNetCDF.Defaults.OPType.SAMPLE_QA.toString())) {
+//			if (opAL.get(i).getOperationType().equals(OPType.SAMPLE_QA)) {
 //				qaOpId = opAL.get(i).getOperationId();
 //			}
 //		}

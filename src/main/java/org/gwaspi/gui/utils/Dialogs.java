@@ -388,7 +388,7 @@ public class Dialogs {
 //				File tmpFile = new File(dir);
 //				if(!tmpFile.exists()){
 				dir = Config.getConfigValue(Config.PROPERTY_LAST_OPENED_DIR, cGlobal.HOMEDIR);
-				fc.setCurrentDirectory(new java.io.File(dir));
+				fc.setCurrentDirectory(new File(dir));
 //				}
 			} catch (IOException ex) {
 				log.error(null, ex);

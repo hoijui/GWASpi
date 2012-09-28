@@ -3,6 +3,7 @@ package org.gwaspi.reports;
 import org.gwaspi.constants.cDBGWASpi;
 import org.gwaspi.constants.cDBReports;
 import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.database.DbManager;
 import org.gwaspi.global.Config;
 import org.gwaspi.global.ServiceLocator;
@@ -77,9 +78,9 @@ public class ReportManager {
 
 		//Get Genotype Freq. assigned name. Pry out the part inserted by user only
 		try {
-			if (op.getOperationType().equals(cNetCDF.Defaults.OPType.ALLELICTEST.toString())
-					|| op.getOperationType().equals(cNetCDF.Defaults.OPType.GENOTYPICTEST.toString())
-					|| op.getOperationType().equals(cNetCDF.Defaults.OPType.TRENDTEST.toString())) {
+			if (op.getOperationType().equals(OPType.ALLELICTEST.toString())
+					|| op.getOperationType().equals(OPType.GENOTYPICTEST.toString())
+					|| op.getOperationType().equals(OPType.TRENDTEST.toString())) {
 				Operation parentOp = new Operation(op.getParentOperationId());
 				String[] tmp = parentOp.getOperationFriendlyName().split("-", 2);
 				tmp = tmp[1].split("using");

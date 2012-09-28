@@ -1,6 +1,6 @@
 package org.gwaspi.model;
 
-import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.GWASpiExplorerPanel;
 import org.gwaspi.gui.StartGWASpi;
@@ -235,7 +235,7 @@ public class GWASpiExplorerNodes {
 		if (StartGWASpi.guiMode) {
 			try {
 				// GET STUDY
-				org.gwaspi.model.Study study = new org.gwaspi.model.Study(studyId);
+				Study study = new Study(studyId);
 				TreePath parentPath = GWASpiExplorerPanel.getSingleton().getTree().getNextMatch("SID: " + study.getStudyId() + " - " + study.getStudyName(), 0, Position.Bias.Forward);
 
 				DefaultMutableTreeNode newNode = createMatrixTreeNode(matrixId);
@@ -268,7 +268,7 @@ public class GWASpiExplorerNodes {
 	public static void insertOperationUnderMatrixNode(int matrixId, int opId) throws IOException {
 		try {
 			// GET MATRIX
-			org.gwaspi.model.Matrix matrix = new org.gwaspi.model.Matrix(matrixId);
+			Matrix matrix = new Matrix(matrixId);
 			TreePath parentPath = GWASpiExplorerPanel.getSingleton().getTree().getNextMatch("MX: " + matrixId + " - " + matrix.matrixMetadata.getMatrixFriendlyName(), 0, Position.Bias.Forward);
 
 			DefaultMutableTreeNode newNode = createOperationTreeNode(opId);
@@ -284,7 +284,7 @@ public class GWASpiExplorerNodes {
 	public static void insertSubOperationUnderOperationNode(int parentOpId, int opId) throws IOException {
 		try {
 			// GET MATRIX
-			org.gwaspi.model.Operation parentOP = new org.gwaspi.model.Operation(parentOpId);
+			Operation parentOP = new Operation(parentOpId);
 			TreePath parentPath = GWASpiExplorerPanel.getSingleton().getTree().getNextMatch("OP: " + parentOpId + " - " + parentOP.getOperationFriendlyName(), 0, Position.Bias.Forward);
 
 			DefaultMutableTreeNode newNode = createOperationTreeNode(opId);
@@ -315,18 +315,18 @@ public class GWASpiExplorerNodes {
 	public static void insertReportsUnderOperationNode(int parentOpId) throws IOException {
 		try {
 			// GET OPERATION
-			org.gwaspi.model.Operation parentOP = new org.gwaspi.model.Operation(parentOpId);
+			Operation parentOP = new Operation(parentOpId);
 			TreePath parentPath = GWASpiExplorerPanel.getSingleton().getTree().getNextMatch("OP: " + parentOpId + " - " + parentOP.getOperationFriendlyName(), 0, Position.Bias.Forward);
 			DefaultMutableTreeNode parentNode = (DefaultMutableTreeNode) parentPath.getLastPathComponent();
 
 			// GET ALL REPORTS UNDER THIS OPERATION
-			org.gwaspi.model.ReportsList reportsMod = new org.gwaspi.model.ReportsList(parentOpId, Integer.MIN_VALUE);
+			ReportsList reportsMod = new ReportsList(parentOpId, Integer.MIN_VALUE);
 			for (int n = 0; n < reportsMod.reportsListAL.size(); n++) {
 				Report rp = reportsMod.reportsListAL.get(n);
 
-				if (!parentOP.getOperationType().equals(cNetCDF.Defaults.OPType.HARDY_WEINBERG.toString()) && //DON'T SHOW SUPERFLUOUS OPEARATION INFO
-						!parentOP.getOperationType().equals(cNetCDF.Defaults.OPType.SAMPLE_QA.toString())) {
-					if (!rp.getReportType().equals(cNetCDF.Defaults.OPType.ALLELICTEST.toString())) {
+				if (!parentOP.getOperationType().equals(OPType.HARDY_WEINBERG.toString()) && //DON'T SHOW SUPERFLUOUS OPEARATION INFO
+						!parentOP.getOperationType().equals(OPType.SAMPLE_QA.toString())) {
+					if (!rp.getReportType().equals(OPType.ALLELICTEST.toString())) {
 						DefaultMutableTreeNode newNode = createReportTreeNode(reportsMod.reportsListAL.get(n).getReportId());
 						addNode(parentNode, newNode, true);
 					}

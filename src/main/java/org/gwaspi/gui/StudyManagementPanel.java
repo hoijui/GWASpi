@@ -35,7 +35,9 @@ import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.tree.DefaultMutableTreeNode;
+import org.gwaspi.model.JTextFieldLimited;
 import org.gwaspi.model.Study;
+import org.gwaspi.model.StudyList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.gwaspi.threadbox.MultiOperations;
@@ -80,7 +82,7 @@ public class StudyManagementPanel extends JPanel {
 		pnl_StudyDesc = new JPanel();
 		lbl_NewStudyName = new JLabel();
 		txtF_NewStudyName = new JTextField();
-		txtF_NewStudyName.setDocument(new org.gwaspi.model.JTextFieldLimited(64));
+		txtF_NewStudyName.setDocument(new JTextFieldLimited(64));
 		lbl_Desc = new JLabel();
 		scrl_Desc = new JScrollPane();
 		txtA_Desc = new JTextArea();
@@ -148,7 +150,7 @@ public class StudyManagementPanel extends JPanel {
 
 		pnl_StudiesTable.setBorder(BorderFactory.createTitledBorder(null, Text.Study.availableStudies, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("DejaVu Sans", 1, 13))); // NOI18N
 		tbl_StudiesTable.setModel(new DefaultTableModel(
-				org.gwaspi.model.StudyList.getStudyTable(),
+				StudyList.getStudyTable(),
 				new String[]{
 					Text.Study.studyID, Text.Study.studyName, Text.All.description, Text.All.createDate
 				}));
@@ -279,7 +281,7 @@ public class StudyManagementPanel extends JPanel {
 					GWASpiExplorerPanel.getSingleton().setPnl_Content(new StudyManagementPanel());
 					GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
 					GWASpiExplorerPanel.getSingleton().updateTreePanel(true);
-					//model.GWASpiExplorer.insertLatestStudyNode();
+					//GWASpiExplorer.insertLatestStudyNode();
 				} else {
 					Dialogs.showWarningDialogue(Text.Study.warnNoStudyName);
 					lbl_NewStudyName.setForeground(Color.red);

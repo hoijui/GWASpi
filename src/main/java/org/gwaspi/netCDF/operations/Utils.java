@@ -3,6 +3,7 @@ package org.gwaspi.netCDF.operations;
 import org.gwaspi.constants.cNetCDF;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -568,13 +569,14 @@ public class Utils {
 	//</editor-fold>
 
 	//<editor-fold defaultstate="collapsed" desc="ArrayChar.D2">
-	public static ArrayChar.D2 writeALToD2ArrayChar(List list, int stride) {
-		ArrayChar.D2 charArray = new ArrayChar.D2(list.size(), stride);
+	public static ArrayChar.D2 writeCollectionToD2ArrayChar(Collection<String> values, int stride) {
+		ArrayChar.D2 charArray = new ArrayChar.D2(values.size(), stride);
 		Index ima = charArray.getIndex();
 
-		for (int i = 0; i < list.size(); i++) {
-			String value = list.get(i).toString();
+		int i = 0;
+		for (String value : values) {
 			charArray.setString(ima.set(i, 0), value.trim());
+			i++;
 		}
 
 		return charArray;

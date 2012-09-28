@@ -3,6 +3,7 @@ package org.gwaspi.reports;
 import org.gwaspi.constants.cDBGWASpi;
 import org.gwaspi.constants.cExport;
 import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.database.DbManager;
 import org.gwaspi.global.Config;
 import org.gwaspi.global.ServiceLocator;
@@ -42,7 +43,7 @@ public class OutputQAMarkers {
 			ReportManager.insertRPMetadata(dBManager,
 					"Marker Missingness Table",
 					markMissOutName,
-					cNetCDF.Defaults.OPType.MARKER_QA.toString(),
+					OPType.MARKER_QA.toString(),
 					op.getParentMatrixId(),
 					opId,
 					"Marker Missingness Table",
@@ -57,7 +58,7 @@ public class OutputQAMarkers {
 			ReportManager.insertRPMetadata(dBManager,
 					"Marker Mismatch State Table",
 					markMismatchOutName,
-					cNetCDF.Defaults.OPType.MARKER_QA.toString(),
+					OPType.MARKER_QA.toString(),
 					op.getParentMatrixId(),
 					opId,
 					"Marker Mismatch State Table",
@@ -137,7 +138,7 @@ public class OutputQAMarkers {
 			int markersQAopId = Integer.MIN_VALUE;
 			for (int i = 0; i < operationsAL.size(); i++) {
 				Object[] element = (Object[]) operationsAL.get(i);
-				if (element[1].toString().equals(cNetCDF.Defaults.OPType.MARKER_QA.toString())) {
+				if (element[1].toString().equals(OPType.MARKER_QA.toString())) {
 					markersQAopId = (Integer) element[0];
 				}
 			}
@@ -253,7 +254,7 @@ public class OutputQAMarkers {
 			int markersQAopId = Integer.MIN_VALUE;
 			for (int i = 0; i < operationsAL.size(); i++) {
 				Object[] element = operationsAL.get(i);
-				if (element[1].toString().equals(cNetCDF.Defaults.OPType.MARKER_QA.toString())) {
+				if (element[1].toString().equals(OPType.MARKER_QA.toString())) {
 					markersQAopId = (Integer) element[0];
 				}
 			}

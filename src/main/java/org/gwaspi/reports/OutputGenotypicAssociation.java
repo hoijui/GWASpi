@@ -3,6 +3,7 @@ package org.gwaspi.reports;
 import org.gwaspi.constants.cDBGWASpi;
 import org.gwaspi.constants.cExport;
 import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.database.DbManager;
 import org.gwaspi.global.Config;
 import org.gwaspi.global.ServiceLocator;
@@ -55,7 +56,7 @@ public class OutputGenotypicAssociation {
 			ReportManager.insertRPMetadata(dBManager,
 					"Genotypic assoc. Manhattan Plot",
 					manhattanName + ".png",
-					cNetCDF.Defaults.OPType.MANHATTANPLOT.toString(),
+					OPType.MANHATTANPLOT.toString(),
 					op.getParentMatrixId(),
 					opId,
 					"Genotypic Association Manhattan Plot",
@@ -69,7 +70,7 @@ public class OutputGenotypicAssociation {
 			ReportManager.insertRPMetadata(dBManager,
 					"Genotypic assoc. QQ Plot",
 					qqName + ".png",
-					cNetCDF.Defaults.OPType.QQPLOT.toString(),
+					OPType.QQPLOT.toString(),
 					op.getParentMatrixId(),
 					opId,
 					"Genotypic Association QQ Plot",
@@ -84,7 +85,7 @@ public class OutputGenotypicAssociation {
 			ReportManager.insertRPMetadata(dBManager,
 					"Genotypic Association Tests Values",
 					assocName + ".txt",
-					cNetCDF.Defaults.OPType.GENOTYPICTEST.toString(),
+					OPType.GENOTYPICTEST.toString(),
 					op.getParentMatrixId(),
 					opId,
 					"Genotypic Association Tests Values",
@@ -213,7 +214,7 @@ public class OutputGenotypicAssociation {
 			int markersQAopId = Integer.MIN_VALUE;
 			for (int i = 0; i < operationsAL.size(); i++) {
 				Object[] element = operationsAL.get(i);
-				if (element[1].toString().equals(cNetCDF.Defaults.OPType.MARKER_QA.toString())) {
+				if (element[1].toString().equals(OPType.MARKER_QA.toString())) {
 					markersQAopId = (Integer) element[0];
 				}
 			}

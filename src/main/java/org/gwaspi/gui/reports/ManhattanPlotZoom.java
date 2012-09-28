@@ -1,6 +1,7 @@
 package org.gwaspi.gui.reports;
 
 import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.global.Config;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.GWASpiExplorerPanel;
@@ -531,7 +532,7 @@ public final class ManhattanPlotZoom extends JPanel {
 			long _requestedPosWindow)
 	{
 		XYDataset xyd = null;
-		if (op.getOperationType().equals(cNetCDF.Defaults.OPType.ALLELICTEST.toString())) {
+		if (op.getOperationType().equals(OPType.ALLELICTEST.toString())) {
 			xyd = GenericReportGenerator.getManhattanZoomByChrAndPos(
 					manhattanPlotZoom,
 					_opId,
@@ -540,7 +541,7 @@ public final class ManhattanPlotZoom extends JPanel {
 					null,
 					_startPhysPos,
 					_requestedPosWindow);
-		} else if (op.getOperationType().equals(cNetCDF.Defaults.OPType.GENOTYPICTEST.toString())) {
+		} else if (op.getOperationType().equals(OPType.GENOTYPICTEST.toString())) {
 			xyd = GenericReportGenerator.getManhattanZoomByChrAndPos(
 					manhattanPlotZoom,
 					_opId,
@@ -549,7 +550,7 @@ public final class ManhattanPlotZoom extends JPanel {
 					null,
 					_startPhysPos,
 					_requestedPosWindow);
-		} else if (op.getOperationType().equals(cNetCDF.Defaults.OPType.TRENDTEST.toString())) {
+		} else if (op.getOperationType().equals(OPType.TRENDTEST.toString())) {
 			xyd = GenericReportGenerator.getManhattanZoomByChrAndPos(
 					manhattanPlotZoom,
 					_opId,
@@ -572,7 +573,7 @@ public final class ManhattanPlotZoom extends JPanel {
 			long _requestedPosWindow)
 	{
 		XYDataset xyd = null;
-		if (op.getOperationType().equals(cNetCDF.Defaults.OPType.ALLELICTEST.toString())) {
+		if (op.getOperationType().equals(OPType.ALLELICTEST.toString())) {
 			xyd = GenericReportGenerator.getManhattanZoomByChrAndPos(
 					manhattanPlotZoom,
 					_opId,
@@ -581,7 +582,7 @@ public final class ManhattanPlotZoom extends JPanel {
 					_markerId,
 					_centerPhysPos,
 					_requestedPosWindow);
-		} else if (op.getOperationType().equals(cNetCDF.Defaults.OPType.GENOTYPICTEST.toString())) {
+		} else if (op.getOperationType().equals(OPType.GENOTYPICTEST.toString())) {
 			xyd = GenericReportGenerator.getManhattanZoomByChrAndPos(
 					manhattanPlotZoom,
 					_opId,
@@ -590,7 +591,7 @@ public final class ManhattanPlotZoom extends JPanel {
 					_markerId,
 					_centerPhysPos,
 					_requestedPosWindow);
-		} else if (op.getOperationType().equals(cNetCDF.Defaults.OPType.TRENDTEST.toString())) {
+		} else if (op.getOperationType().equals(OPType.TRENDTEST.toString())) {
 			xyd = GenericReportGenerator.getManhattanZoomByChrAndPos(
 					manhattanPlotZoom,
 					_opId,
@@ -619,7 +620,7 @@ public final class ManhattanPlotZoom extends JPanel {
 			int _requestedSetSize)
 	{
 		XYDataset xyd = null;
-		if (op.getOperationType().equals(cNetCDF.Defaults.OPType.ALLELICTEST.toString())) {
+		if (op.getOperationType().equals(OPType.ALLELICTEST.toString())) {
 			xyd = GenericReportGenerator.getManhattanZoomByMarkerIdOrIdx(
 					manhattanPlotZoom,
 					_opId,
@@ -627,7 +628,7 @@ public final class ManhattanPlotZoom extends JPanel {
 					_markerId,
 					_centerPhysPos,
 					_requestedSetSize);
-		} else if (op.getOperationType().equals(cNetCDF.Defaults.OPType.GENOTYPICTEST.toString())) {
+		} else if (op.getOperationType().equals(OPType.GENOTYPICTEST.toString())) {
 			xyd = GenericReportGenerator.getManhattanZoomByMarkerIdOrIdx(
 					manhattanPlotZoom,
 					_opId,
@@ -635,7 +636,7 @@ public final class ManhattanPlotZoom extends JPanel {
 					_markerId,
 					_centerPhysPos,
 					_requestedSetSize);
-		} else if (op.getOperationType().equals(cNetCDF.Defaults.OPType.TRENDTEST.toString())) {
+		} else if (op.getOperationType().equals(OPType.TRENDTEST.toString())) {
 			xyd = GenericReportGenerator.getManhattanZoomByMarkerIdOrIdx(
 					manhattanPlotZoom,
 					_opId,
@@ -947,7 +948,7 @@ public final class ManhattanPlotZoom extends JPanel {
 				String reportFile = "";
 				for (int i = 0; i < rpList.reportsListAL.size(); i++) {
 					String reportType = rpList.reportsListAL.get(i).getReportType();
-					if (reportType.equals(cNetCDF.Defaults.OPType.MANHATTANPLOT.toString())) {
+					if (reportType.equals(OPType.MANHATTANPLOT.toString())) {
 						reportFile = rpList.reportsListAL.get(i).getReportFileName();
 					}
 				}

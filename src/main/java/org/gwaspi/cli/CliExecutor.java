@@ -588,7 +588,7 @@ public class CliExecutor {
 	//<editor-fold defaultstate="collapsed" desc="STUDY MANAGEMENT">
 	private boolean checkStudy(int studyId) throws IOException {
 		boolean studyExists = false;
-		Object[][] studyTable = org.gwaspi.model.StudyList.getStudyTable();
+		Object[][] studyTable = StudyList.getStudyTable();
 		for (int i = 0; i < studyTable.length; i++) {
 			if ((Integer) studyTable[i][0] == studyId) {
 				studyExists = true;

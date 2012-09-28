@@ -2,7 +2,6 @@ package org.gwaspi.model;
 
 import org.gwaspi.constants.cDBGWASpi;
 import org.gwaspi.constants.cDBOperations;
-import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.database.DbManager;
 import org.gwaspi.global.ServiceLocator;
@@ -24,7 +23,7 @@ public class OperationsList {
 	private final static Logger log
 			= LoggerFactory.getLogger(OperationsList.class);
 
-	public List<model.Operation> operationsListAL = new ArrayList<model.Operation>();
+	public List<Operation> operationsListAL = new ArrayList<Operation>();
 
 	public OperationsList(int matrixId) throws IOException {
 
@@ -161,11 +160,11 @@ public class OperationsList {
 	//</editor-fold>
 
 	//<editor-fold defaultstate="collapsed" desc="HELPERS">
-	public int getIdOfLastOperationTypeOccurance(cNetCDF.Defaults.OPType opType) {
+	public int getIdOfLastOperationTypeOccurance(OPType opType) {
 		int result = Integer.MIN_VALUE;
 		List<Operation> opAL = this.operationsListAL;
 		for (int i = 0; i < opAL.size(); i++) {
-			if (opAL.get(i).getOperationType().equals(cNetCDF.Defaults.OPType.MARKER_QA.toString())) {
+			if (opAL.get(i).getOperationType().equals(OPType.MARKER_QA.toString())) {
 				result = opAL.get(i).getOperationId();
 			}
 		}
