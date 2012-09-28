@@ -99,20 +99,20 @@ public class GWASpiExplorer {
 		top.add(category);
 
 		// LOAD ALL STUDIES
-		org.gwaspi.model.StudyList studiesMod = new org.gwaspi.model.StudyList();
-		for (int i = 0; i < studiesMod.studyList.size(); i++) {
+		List<Study> studyList = StudyList.getStudyList();
+		for (int i = 0; i < studyList.size(); i++) {
 
 			// LOAD CURRENT STUDY
-			DefaultMutableTreeNode studyItem = GWASpiExplorerNodes.createStudyTreeNode(studiesMod.studyList.get(i).getStudyId());
+			DefaultMutableTreeNode studyItem = GWASpiExplorerNodes.createStudyTreeNode(studyList.get(i).getStudyId());
 
 			// LOAD SAMPLE INFO FOR CURRENT STUDY
-			DefaultMutableTreeNode sampleInfoItem = GWASpiExplorerNodes.createSampleInfoTreeNode(studiesMod.studyList.get(i).getStudyId());
+			DefaultMutableTreeNode sampleInfoItem = GWASpiExplorerNodes.createSampleInfoTreeNode(studyList.get(i).getStudyId());
 			if (sampleInfoItem != null) {
 				studyItem.add(sampleInfoItem);
 			}
 
 			// LOAD MATRICES FOR CURRENT STUDY
-			org.gwaspi.model.MatricesList matrixMod = new org.gwaspi.model.MatricesList(studiesMod.studyList.get(i).getStudyId());
+			MatricesList matrixMod = new MatricesList(studyList.get(i).getStudyId());
 			for (int j = 0; j < matrixMod.matrixList.size(); j++) {
 
 				DefaultMutableTreeNode matrixItem = GWASpiExplorerNodes.createMatrixTreeNode(matrixMod.matrixList.get(j).getMatrixId());

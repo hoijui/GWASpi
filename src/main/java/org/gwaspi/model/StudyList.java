@@ -17,17 +17,21 @@ import java.util.Map;
  */
 public class StudyList {
 
-	List<model.Study> studyList = new ArrayList<model.Study>();
+	private StudyList() throws IOException {
+	}
 
-	public StudyList() throws IOException {
+	public static List<Study> getStudyList() throws IOException {
 
-		List<Map<String, Object>> rsStudyList = getStudyList();
+		List<Study> studyList;
+
+		List<Map<String, Object>> rsStudyList = getStudyListRaw();
+		studyList = new ArrayList<Study>(rsStudyList.size());
 
 		int rowcount = rsStudyList.size();
 		if (rowcount > 0) {
-			for (int i = rowcount - 1; i >= 0; i--) // loop through rows of result set
-			{
-				//PREVENT PHANTOM-DB READS EXCEPTIONS
+			// loop through the rows of the result set
+			for (int i = rowcount - 1; i >= 0; i--) {
+				// PREVENT PHANTOM-DB READS EXCEPTIONS
 				if (!rsStudyList.isEmpty() && rsStudyList.get(i).size() == cDBGWASpi.T_CREATE_STUDIES.length) {
 					int currentStudyId = (Integer) rsStudyList.get(i).get(cDBGWASpi.f_ID);
 					Study currentStudy = new Study(currentStudyId);
@@ -35,10 +39,14 @@ public class StudyList {
 				}
 			}
 		}
+
+		return studyList;
 	}
 
-	public List<Map<String, Object>> getStudyList() throws IOException {
+	private static List<Map<String, Object>> getStudyListRaw() throws IOException {
+
 		List<Map<String, Object>> rs = null;
+
 		String dbName = cDBGWASpi.DB_DATACENTER;
 		DbManager studyDbManager = ServiceLocator.getDbManager(dbName);
 		try {
@@ -51,6 +59,7 @@ public class StudyList {
 	}
 
 	public static Object[][] getStudyTable() throws IOException {
+
 		Object[][] studyTable = null;
 
 		String dbName = cDBGWASpi.DB_DATACENTER;
@@ -72,6 +81,7 @@ public class StudyList {
 		} catch (Exception ex) {
 			//log.error(null, ex);
 		}
+
 		return studyTable;
 	}
 }

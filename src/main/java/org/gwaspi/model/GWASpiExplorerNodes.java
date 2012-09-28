@@ -188,10 +188,10 @@ public class GWASpiExplorerNodes {
 	public static void insertLatestStudyNode() throws IOException {
 		try {
 			// GET LATEST ADDED STUDY
-			org.gwaspi.model.StudyList studiesMod = new org.gwaspi.model.StudyList();
+			List<Study> studyList = StudyList.getStudyList();
 			TreePath parentPath = GWASpiExplorerPanel.getSingleton().getTree().getNextMatch(Text.App.treeStudyManagement, 0, Position.Bias.Forward);
 
-			DefaultMutableTreeNode newNode = createStudyTreeNode(studiesMod.studyList.get(studiesMod.studyList.size() - 1).getStudyId());
+			DefaultMutableTreeNode newNode = createStudyTreeNode(studyList.get(studyList.size() - 1).getStudyId());
 
 			if (parentPath != null) {
 				DefaultMutableTreeNode parentNode = (DefaultMutableTreeNode) parentPath.getLastPathComponent();
