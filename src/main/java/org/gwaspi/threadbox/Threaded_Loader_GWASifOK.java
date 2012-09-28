@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Set;
 import javax.swing.JOptionPane;
 import org.gwaspi.model.GWASpiExplorerNodes;
+import org.gwaspi.netCDF.loader.GenotypesLoadDescription;
 import org.gwaspi.netCDF.loader.LoadManager;
 import org.gwaspi.netCDF.loader.SampleInfoCollectorSwitch;
 import org.gwaspi.netCDF.operations.GWASinOneGOParams;
@@ -31,51 +32,24 @@ public class Threaded_Loader_GWASifOK extends CommonRunnable {
 	private int resultMatrixId;
 	private int samplesQAOpId;
 	private int markersQAOpId;
-	private String format;
 	private boolean dummySamples;
 	private int decision;
-	private String newMatrixName;
-	private String newMatrixDescription;
-	private String file1;
-	private String fileSampleInfo;
-	private String file2;
-	private String chromosome;
-	private String strandType;
-	private String gtCode;
-	private int studyId;
+	private GenotypesLoadDescription loadDescription;
 	private GWASinOneGOParams gwasParams;
 
 	public Threaded_Loader_GWASifOK(
 			String threadName,
 			String timeStamp,
-			String format,
+			GenotypesLoadDescription loadDescription,
 			boolean dummySamples,
 			int decision,
-			String newMatrixName,
-			String newMatrixDescription,
-			String file1,
-			String fileSampleInfo,
-			String file2,
-			String chromosome,
-			String strandType,
-			String gtCode,
-			int studyId,
 			GWASinOneGOParams gwasParams)
 	{
 		super(threadName, timeStamp, "Loading Genotypes & Performing GWAS");
 
-		this.format = format;
+		this.loadDescription = loadDescription;
 		this.dummySamples = dummySamples;
 		this.decision = decision;
-		this.newMatrixName = newMatrixName;
-		this.newMatrixDescription = newMatrixDescription;
-		this.file1 = file1;
-		this.fileSampleInfo = fileSampleInfo;
-		this.file2 = file2;
-		this.chromosome = chromosome;
-		this.strandType = strandType;
-		this.gtCode = gtCode;
-		this.studyId = studyId;
 		this.gwasParams = gwasParams;
 
 		startInternal(getTaskDescription());
@@ -87,24 +61,21 @@ public class Threaded_Loader_GWASifOK extends CommonRunnable {
 
 	protected void runInternal(SwingWorkerItem thisSwi) throws Exception {
 
-		Map<String, Object> sampleInfoMap = SampleInfoCollectorSwitch.collectSampleInfo(format, dummySamples, fileSampleInfo, file1, file2);
+		Map<String, Object> sampleInfoMap = SampleInfoCollectorSwitch.collectSampleInfo(
+				loadDescription.getFormat(),
+				dummySamples,
+				loadDescription.getSampleFilePath(),
+				loadDescription.getGtDirPath(),
+				loadDescription.getAnnotationFilePath());
 		Set<String> affectionStates = SampleInfoCollectorSwitch.collectAffectionStates(sampleInfoMap);
 
 		//<editor-fold defaultstate="collapsed" desc="LOAD PROCESS">
 		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
-			resultMatrixId = LoadManager.dispatchLoadByFormat(format,
-					sampleInfoMap,
-					newMatrixName,
-					newMatrixDescription,
-					file1,
-					fileSampleInfo,
-					file2,
-					chromosome,
-					strandType,
-					gtCode,
-					studyId);
+			resultMatrixId = LoadManager.dispatchLoadByFormat(
+					loadDescription,
+					sampleInfoMap);
 			MultiOperations.printCompleted("Loading Genotypes");
-			GWASpiExplorerNodes.insertMatrixNode(studyId, resultMatrixId);
+			GWASpiExplorerNodes.insertMatrixNode(loadDescription.getStudyId(), resultMatrixId);
 		}
 		//</editor-fold>
 

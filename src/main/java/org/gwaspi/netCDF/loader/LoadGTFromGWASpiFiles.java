@@ -3,7 +3,10 @@ package org.gwaspi.netCDF.loader;
 import org.gwaspi.constants.cDBGWASpi;
 import org.gwaspi.constants.cDBMatrix;
 import org.gwaspi.constants.cImport;
+import org.gwaspi.constants.cImport.ImportFormat;
 import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
+import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
 import org.gwaspi.database.DbManager;
 import org.gwaspi.global.Config;
 import org.gwaspi.global.ServiceLocator;
@@ -37,48 +40,54 @@ import ucar.nc2.NetcdfFileWriteable;
  */
 public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 
-	private String gwaspiGTFilePath;
-	private String sampleInfoPath;
-	private int studyId;
-	private String format;
-	private String friendlyName;
-	private String description;
-	private String gtCode;
-	private int hasDictionary;
-	private MatrixMetadata importMatrixMetadata;
-	private cNetCDF.Defaults.GenotypeEncoding guessedGTCode = cNetCDF.Defaults.GenotypeEncoding.UNKNOWN;
+	public LoadGTFromGWASpiFiles() {
+	}
 
-	//<editor-fold defaultstate="collapsed" desc="CONSTRUCTORS">
-	public LoadGTFromGWASpiFiles(String _gwaspiGTFilePath,
-			String _sampleInfoPath,
-			int _studyId,
-			String _friendlyName,
-			String _description,
-			Map<String, Object> _sampleInfoMap)
+	@Override
+	public ImportFormat getFormat() {
+		return ImportFormat.GWASpi;
+	}
+
+	@Override
+	public StrandType getMatrixStrand() {
+		return null; // unused
+	}
+
+	@Override
+	public boolean isHasDictionary() {
+		return false;
+	}
+
+	@Override
+	public int getMarkersD2ItemNb() {
+		throw new UnsupportedOperationException("Not supported yet."); // FIXME
+	}
+
+	@Override
+	public String getMarkersD2Variables() {
+		throw new UnsupportedOperationException("Not supported yet."); // FIXME
+	}
+
+	@Override
+	public int processData(GenotypesLoadDescription loadDescription, Map<String, Object> sampleInfo)
 			throws IOException, InvalidRangeException, InterruptedException
 	{
-		gwaspiGTFilePath = _gwaspiGTFilePath;
-		sampleInfoPath = _sampleInfoPath;
-		studyId = _studyId;
-		format = cImport.ImportFormat.GWASpi.toString();
-		friendlyName = _friendlyName;
-		hasDictionary = 0;
-		description = _description;
+		int result = Integer.MIN_VALUE;
 
-		if (new File(gwaspiGTFilePath).exists()) {
-		SampleSet matrixSampleSet = new SampleSet(studyId, "");
-		Map<String, Object> matrixSampleSetMap = matrixSampleSet.getSampleIdSetMap(gwaspiGTFilePath);
+		if (new File(loadDescription.getGtDirPath()).exists()) {
+		SampleSet matrixSampleSet = new SampleSet(loadDescription.getStudyId(), "");
+		Map<String, Object> matrixSampleSetMap = matrixSampleSet.getSampleIdSetMap(loadDescription.getGtDirPath());
 
 		boolean testExcessSamplesInMatrix = false;
 		boolean testExcessSamplesInFile = false;
 		for (String key : matrixSampleSetMap.keySet()) {
-			if (!_sampleInfoMap.containsKey(key)) {
+			if (!sampleInfo.containsKey(key)) {
 				testExcessSamplesInMatrix = true;
 				break;
 			}
 		}
 
-		for (String key : _sampleInfoMap.keySet()) {
+		for (String key : sampleInfo.keySet()) {
 			if (!matrixSampleSetMap.containsKey(key)) {
 				testExcessSamplesInFile = true;
 				break;
@@ -92,14 +101,14 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 			System.out.println("Warning!\nSome Samples in the imported genotypes are not described in the Sample Info file!\nData will not be imported!");
 		}
 
-		importMatrixMetadata = new MatrixMetadata(gwaspiGTFilePath, _studyId, _friendlyName);
+		MatrixMetadata importMatrixMetadata = new MatrixMetadata(loadDescription.getGtDirPath(), loadDescription.getStudyId(), loadDescription.getFriendlyName());
 
 		///////////// CREATE netCDF-3 FILE ////////////
 		StringBuilder descSB = new StringBuilder(Text.Matrix.descriptionHeader1);
 		descSB.append(org.gwaspi.global.Utils.getShortDateTimeAsString());
-		if (!description.isEmpty()) {
+		if (!loadDescription.getDescription().isEmpty()) {
 			descSB.append("\nDescription: ");
-			descSB.append(description);
+			descSB.append(loadDescription.getDescription());
 			descSB.append("\n");
 		}
 //		descSB.append("\nStrand: ");
@@ -113,81 +122,75 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 		descSB.append("Markers: " + importMatrixMetadata.getMarkerSetSize() + ", Samples: " + importMatrixMetadata.getSampleSetSize());
 		descSB.append("\n");
 		descSB.append(Text.Matrix.descriptionHeader2);
-		descSB.append(format);
+		descSB.append(loadDescription.getFormat());
 		descSB.append("\n");
 		descSB.append(Text.Matrix.descriptionHeader3);
 		descSB.append("\n");
-		descSB.append(gwaspiGTFilePath);
+		descSB.append(loadDescription.getGtDirPath());
 		descSB.append(" (Matrix file)\n");
-		descSB.append(sampleInfoPath);
+		descSB.append(loadDescription.getSampleFilePath());
 		descSB.append(" (Sample Info file)\n");
-
-		description = descSB.toString();
 
 		if (importMatrixMetadata.getGwaspiDBVersion().equals(Config.getConfigValue(Config.PROPERTY_CURRENT_GWASPIDB_VERSION, "2.0.2"))) { //COMPARE DATABASE VERSIONS
 			if (!testExcessSamplesInMatrix) {
 				DbManager dBManager = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
-				org.gwaspi.netCDF.matrices.MatrixManager.insertMatrixMetadata(dBManager,
-						studyId,
-						friendlyName,
+				org.gwaspi.netCDF.matrices.MatrixManager.insertMatrixMetadata(
+						dBManager,
+						loadDescription.getStudyId(),
+						loadDescription.getFriendlyName(),
 						importMatrixMetadata.getMatrixNetCDFName(),
 						importMatrixMetadata.getGenotypeEncoding(),
 						Integer.MIN_VALUE,
 						Integer.MIN_VALUE,
 						"",
-						descSB.toString(), //description
+						descSB.toString(), // description
 						0);
 			}
-			copyMatrixToGenotypesFolder(studyId, gwaspiGTFilePath, importMatrixMetadata.getMatrixNetCDFName());
+			copyMatrixToGenotypesFolder(loadDescription.getStudyId(), loadDescription.getGtDirPath(), importMatrixMetadata.getMatrixNetCDFName());
 		} else {
-			generateNewGWASpiDBversionMatrix();
+			generateNewGWASpiDBversionMatrix(loadDescription, importMatrixMetadata);
 		}
 
 		importMatrixMetadata = new MatrixMetadata(importMatrixMetadata.getMatrixNetCDFName());
 
+		result = importMatrixMetadata.getMatrixId();
 		}
 
+		return result;
 	}
 
-	public int processData() {
-		if (importMatrixMetadata != null) {
-			return importMatrixMetadata.getMatrixId();
-		} else {
-			return Integer.MIN_VALUE;
-		}
-	}
-
-	public int generateNewGWASpiDBversionMatrix() throws IOException, InvalidRangeException, InterruptedException {
+	private int generateNewGWASpiDBversionMatrix(GenotypesLoadDescription loadDescription, MatrixMetadata importMatrixMetadata)
+			throws IOException, InvalidRangeException, InterruptedException
+	{
 		int result = Integer.MIN_VALUE;
 		String startTime = org.gwaspi.global.Utils.getMediumDateTimeAsString();
 
-
 		//<editor-fold defaultstate="collapsed/expanded" desc="CREATE MARKERSET & NETCDF">
-
-		MarkerSet_opt rdMarkerSet = new MarkerSet_opt(importMatrixMetadata.getStudyId(), gwaspiGTFilePath, importMatrixMetadata.getMatrixNetCDFName());
+		MarkerSet_opt rdMarkerSet = new MarkerSet_opt(importMatrixMetadata.getStudyId(), loadDescription.getGtDirPath(), importMatrixMetadata.getMatrixNetCDFName());
 		rdMarkerSet.initFullMarkerIdSetMap();
 		rdMarkerSet.fillMarkerSetMapWithChrAndPos();
 		Map<String, Object> rdMarkerSetMap = rdMarkerSet.getMarkerIdSetMap();
 
-		SampleSet rdSampleSet = new SampleSet(importMatrixMetadata.getStudyId(), gwaspiGTFilePath, importMatrixMetadata.getMatrixNetCDFName());
+		SampleSet rdSampleSet = new SampleSet(importMatrixMetadata.getStudyId(), loadDescription.getGtDirPath(), importMatrixMetadata.getMatrixNetCDFName());
 		Map<String, Object> rdSampleSetMap = rdSampleSet.getSampleIdSetMap();
 
 		System.out.println("Done initializing sorted MarkerSetMap at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
 
-		//RETRIEVE CHROMOSOMES INFO
+		// RETRIEVE CHROMOSOMES INFO
 		Map<String, Object> chrSetMap = org.gwaspi.netCDF.matrices.Utils.aggregateChromosomeInfo(rdMarkerSetMap, 0, 1);
 
-		MatrixFactory matrixFactory = new MatrixFactory(studyId,
-				format,
-				friendlyName,
+		MatrixFactory matrixFactory = new MatrixFactory(
+				loadDescription.getStudyId(),
+				loadDescription.getFormat(),
+				loadDescription.getFriendlyName(),
 				importMatrixMetadata.getDescription(), //description
 				importMatrixMetadata.getGenotypeEncoding(),
 				importMatrixMetadata.getStrand(),
-				hasDictionary,
+				isHasDictionary(),
 				rdSampleSetMap.size(),
 				rdMarkerSetMap.size(),
 				chrSetMap.size(),
-				gwaspiGTFilePath);
+				loadDescription.getGtDirPath());
 
 		NetcdfFileWriteable ncfile = matrixFactory.getNetCDFHandler();
 
@@ -201,7 +204,7 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 		//</editor-fold>
 
 		//<editor-fold defaultstate="collapsed" desc="WRITE MATRIX METADATA">
-		// WRITE SAMPLESET TO MATRIX FROM SAMPLES ARRAYLIST
+		// WRITE SAMPLESET TO MATRIX FROM SAMPLES LIST
 		ArrayChar.D2 samplesD2 = org.gwaspi.netCDF.operations.Utils.writeMapKeysToD2ArrayChar(rdSampleSetMap, cNetCDF.Strides.STRIDE_SAMPLE_NAME);
 
 		int[] sampleOrig = new int[]{0, 0};
@@ -308,6 +311,7 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 
 
 		// CLOSE THE FILE AND BY THIS, MAKE IT READ-ONLY
+		GenotypeEncoding guessedGTCode = GenotypeEncoding.UNKNOWN;
 		try {
 			//GUESS GENOTYPE ENCODING
 			if (guessedGTCode.equals(cNetCDF.Defaults.GenotypeEncoding.UNKNOWN)) {
@@ -322,7 +326,7 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 			int[] origin = new int[]{0, 0};
 			ncfile.write(cNetCDF.Variables.GLOB_GTENCODING, origin, guessedGTCodeAC);
 
-			StringBuilder descSB = new StringBuilder(description);
+			StringBuilder descSB = new StringBuilder(loadDescription.getDescription());
 			descSB.append("Genotype encoding: ");
 			descSB.append(guessedGTCode);
 			DbManager db = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
@@ -343,8 +347,8 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 		org.gwaspi.global.Utils.sysoutCompleted("writing Genotypes to Matrix");
 		return result;
 	}
-
 	//</editor-fold>
+
 	//<editor-fold defaultstate="collapsed" desc="HELPER METHODS">
 	private Map<String, Object> getSampleIds(File hapmapGTFile) throws IOException {
 

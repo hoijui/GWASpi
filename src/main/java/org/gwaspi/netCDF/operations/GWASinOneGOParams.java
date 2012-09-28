@@ -1,6 +1,8 @@
 package org.gwaspi.netCDF.operations;
 
 import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
+import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
 
 /**
  *
@@ -27,8 +29,8 @@ public class GWASinOneGOParams {
 	private boolean discardSampleByHetzyRat = false;
 	private double discardSampleHetzyRatVal = 0;
 	private String chromosome = "";
-	private String strandType = cNetCDF.Defaults.StrandType.UNKNOWN.toString();
-	private String gtCode = cNetCDF.Defaults.GenotypeEncoding.UNKNOWN.toString();
+	private StrandType strandType = StrandType.UNKNOWN;
+	private GenotypeEncoding gtCode = GenotypeEncoding.UNKNOWN;
 	private String friendlyName = "";
 
 	public boolean isProceed() {
@@ -167,19 +169,19 @@ public class GWASinOneGOParams {
 		this.chromosome = chromosome;
 	}
 
-	public String getStrandType() {
+	public StrandType getStrandType() {
 		return strandType;
 	}
 
-	public void setStrandType(String strandType) {
+	public void setStrandType(StrandType strandType) {
 		this.strandType = strandType;
 	}
 
-	public String getGtCode() {
+	public GenotypeEncoding getGtCode() {
 		return gtCode;
 	}
 
-	public void setGtCode(String gtCode) {
+	public void setGtCode(GenotypeEncoding gtCode) {
 		this.gtCode = gtCode;
 	}
 

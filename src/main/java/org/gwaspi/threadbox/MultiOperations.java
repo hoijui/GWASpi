@@ -1,13 +1,17 @@
 package org.gwaspi.threadbox;
 
 import org.gwaspi.constants.cExport.ExportFormat;
+import org.gwaspi.constants.cImport.ImportFormat;
 import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
+import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
 import org.gwaspi.gui.GWASpiExplorerPanel;
 import org.gwaspi.gui.ProcessTab;
 import org.gwaspi.gui.StartGWASpi;
 import java.io.File;
 import java.io.IOException;
 import java.util.Set;
+import org.gwaspi.netCDF.loader.GenotypesLoadDescription;
 import org.gwaspi.netCDF.operations.GWASinOneGOParams;
 
 /**
@@ -51,18 +55,10 @@ public class MultiOperations {
 		ProcessTab.getSingleton().updateProcessOverview();
 	}
 
-	public static void loadMatrixDoGWASifOK(final String format,
+	public static void loadMatrixDoGWASifOK(
+			final GenotypesLoadDescription loadDescription,
 			final boolean dummySamples,
-			final int decision,
-			final String newMatrixName,
-			final String newMatrixDescription,
-			final String file1,
-			final String fileSampleInfo,
-			final String file2,
-			final String chromosome,
-			final String strandType,
-			final String gtCode,
-			final int studyId,
+			final int decision, // FIXME, use boolean instead!
 			final GWASinOneGOParams gwasParams)
 	{
 		// LOAD & GWAS if requested and OK
@@ -70,33 +66,27 @@ public class MultiOperations {
 
 		SwingWorker worker = new SwingWorker() {
 			public Object construct() {
-				Threaded_Loader_GWASifOK thread = new Threaded_Loader_GWASifOK("Genotypes Loader & GWAS if OK",
+				Threaded_Loader_GWASifOK thread = new Threaded_Loader_GWASifOK(
+						"Genotypes Loader & GWAS if OK",
 						timeStamp,
-						format,
+						loadDescription,
 						dummySamples,
 						decision,
-						newMatrixName,
-						newMatrixDescription,
-						file1,
-						fileSampleInfo,
-						file2,
-						chromosome,
-						strandType,
-						gtCode,
-						studyId,
 						gwasParams);
 
 				return thread;
 			}
 		};
 
-		SwingWorkerItem swi = new SwingWorkerItem("Genotypes Loader & GWAS if OK: " + newMatrixName,
+		SwingWorkerItem swi = new SwingWorkerItem(
+				"Genotypes Loader & GWAS if OK: " + loadDescription.getFriendlyName(),
 				worker,
 				timeStamp,
-				new Integer[]{studyId});
+				new Integer[]{loadDescription.getStudyId()});
 
-		swingWorkerItemList.add(swi,
-				new Integer[]{studyId}, // Studies to be put on hold
+		swingWorkerItemList.add(
+				swi,
+				new Integer[]{loadDescription.getStudyId()}, // Studies to be put on hold
 				null, // Matrices to be put on hold
 				null); // Operations to be put on hold
 

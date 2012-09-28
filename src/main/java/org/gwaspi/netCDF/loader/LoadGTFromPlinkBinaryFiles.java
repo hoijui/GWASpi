@@ -3,7 +3,10 @@ package org.gwaspi.netCDF.loader;
 import org.gwaspi.constants.cDBGWASpi;
 import org.gwaspi.constants.cDBMatrix;
 import org.gwaspi.constants.cImport;
+import org.gwaspi.constants.cImport.ImportFormat;
 import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
+import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
 import org.gwaspi.database.DbManager;
 import org.gwaspi.global.ServiceLocator;
 import org.gwaspi.global.Text;
@@ -14,7 +17,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
 import ucar.ma2.ArrayByte;
@@ -32,60 +35,49 @@ import ucar.nc2.NetcdfFileWriteable;
  */
 public class LoadGTFromPlinkBinaryFiles implements GenotypesLoader {
 
-	private String bimFilePath;
-	private String sampleFilePath;
-	private String bedFilePath;
-	private int studyId;
-	private String format;
-	private String strand;
-	private String friendlyName;
-	private String description;
-	private Map<String, Object> sampleInfoMap = new LinkedHashMap<String, Object>();
-	private String gtCode;
-	private String matrixStrand;
-	private int hasDictionary;
-	private String markersD2Variables;
-	private cNetCDF.Defaults.GenotypeEncoding guessedGTCode = cNetCDF.Defaults.GenotypeEncoding.O12;
-	private int hyperSlabRows;
-
-	//<editor-fold defaultstate="collapsed" desc="CONSTRUCTORS">
-	public LoadGTFromPlinkBinaryFiles(String _bedFilePath,
-			String _sampleFilePath,
-			String _bimFilePath,
-			int _studyId,
-			String _strand,
-			String _friendlyName,
-			String _gtCode,
-			String _description,
-			Map<String, Object> _sampleInfoMap)
-	{
-		bimFilePath = _bimFilePath;
-		sampleFilePath = _sampleFilePath;
-		bedFilePath = _bedFilePath;
-		studyId = _studyId;
-		format = cImport.ImportFormat.PLINK_Binary.toString();
-		strand = _strand;
-		friendlyName = _friendlyName;
-		gtCode = _gtCode;
-		matrixStrand = strand;
-		hasDictionary = 1;
-		markersD2Variables = cNetCDF.Variables.VAR_MARKERS_BASES_DICT;
-		description = _description;
-		sampleInfoMap = _sampleInfoMap;
+	public LoadGTFromPlinkBinaryFiles() {
 	}
-	//</editor-fold>
 
-	public int processData() throws IOException, InvalidRangeException, InterruptedException {
+	@Override
+	public ImportFormat getFormat() {
+		return ImportFormat.PLINK_Binary;
+	}
+
+	@Override
+	public StrandType getMatrixStrand() {
+		return null;
+	}
+
+	@Override
+	public boolean isHasDictionary() {
+		return true;
+	}
+
+	@Override
+	public int getMarkersD2ItemNb() {
+		throw new UnsupportedOperationException("Not supported yet."); // FIXME
+	}
+
+	@Override
+	public String getMarkersD2Variables() {
+		return cNetCDF.Variables.VAR_MARKERS_BASES_DICT;
+	}
+
+	@Override
+	public int processData(GenotypesLoadDescription loadDescription, Map<String, Object> sampleInfo) throws IOException, InvalidRangeException, InterruptedException {
 		int result = Integer.MIN_VALUE;
 
 		String startTime = org.gwaspi.global.Utils.getMediumDateTimeAsString();
 
 		//<editor-fold defaultstate="collapsed/expanded" desc="CREATE MARKERSET & NETCDF">
-		MetadataLoaderPlinkBinary markerSetLoader = new MetadataLoaderPlinkBinary(bimFilePath, strand, studyId);
+		MetadataLoaderPlinkBinary markerSetLoader = new MetadataLoaderPlinkBinary(
+				loadDescription.getAnnotationFilePath(),
+				loadDescription.getStrand(),
+				loadDescription.getStudyId());
 		Map<String, Object> sortedMarkerSetMap = markerSetLoader.getSortedMarkerSetWithMetaData(); //markerid, rsId, chr, pos, allele1, allele2
 
-		hyperSlabRows = Math.round(org.gwaspi.gui.StartGWASpi.maxProcessMarkers
-				/ (sampleInfoMap.size() * 2)); //PLAYING IT SAFE WITH HALF THE maxProcessMarkers
+		int hyperSlabRows = Math.round(org.gwaspi.gui.StartGWASpi.maxProcessMarkers
+				/ (sampleInfo.size() * 2)); //PLAYING IT SAFE WITH HALF THE maxProcessMarkers
 		if (sortedMarkerSetMap.size() < hyperSlabRows) {
 			hyperSlabRows = sortedMarkerSetMap.size();
 		}
@@ -95,44 +87,45 @@ public class LoadGTFromPlinkBinaryFiles implements GenotypesLoader {
 		///////////// CREATE netCDF-3 FILE ////////////
 		StringBuilder descSB = new StringBuilder(Text.Matrix.descriptionHeader1);
 		descSB.append(org.gwaspi.global.Utils.getShortDateTimeAsString());
-		if (!description.isEmpty()) {
+		if (!loadDescription.getDescription().isEmpty()) {
 			descSB.append("\nDescription: ");
-			descSB.append(description);
+			descSB.append(loadDescription.getDescription());
 			descSB.append("\n");
 		}
 //		descSB.append("\nStrand: ");
 //		descSB.append(strand);
 		descSB.append("\n");
-		descSB.append("Markers: ").append(sortedMarkerSetMap.size()).append(", Samples: ").append(sampleInfoMap.size());
+		descSB.append("Markers: ").append(sortedMarkerSetMap.size()).append(", Samples: ").append(sampleInfo.size());
 		descSB.append("\n");
 		descSB.append(Text.Matrix.descriptionHeader2);
 		descSB.append(cImport.ImportFormat.PLINK_Binary.toString());
 		descSB.append("\n");
 		descSB.append(Text.Matrix.descriptionHeader3);
 		descSB.append("\n");
-		descSB.append(bimFilePath);
+		descSB.append(loadDescription.getAnnotationFilePath());
 		descSB.append(" (BIM file)\n");
-		descSB.append(bedFilePath);
+		descSB.append(loadDescription.getGtDirPath());
 		descSB.append(" (BED file)\n");
-		if (new File(sampleFilePath).exists()) {
-			descSB.append(sampleFilePath);
+		if (new File(loadDescription.getSampleFilePath()).exists()) {
+			descSB.append(loadDescription.getSampleFilePath());
 			descSB.append(" (FAM/Sample Info file)\n");
 		}
 
 		//RETRIEVE CHROMOSOMES INFO
 		Map<String, Object> chrSetMap = org.gwaspi.netCDF.matrices.Utils.aggregateChromosomeInfo(sortedMarkerSetMap, 2, 3);
 
-		MatrixFactory matrixFactory = new MatrixFactory(studyId,
-				format,
-				friendlyName,
+		MatrixFactory matrixFactory = new MatrixFactory(
+				loadDescription.getStudyId(),
+				loadDescription.getFormat(),
+				loadDescription.getFriendlyName(),
 				descSB.toString(), // description
-				gtCode,
-				matrixStrand,
-				hasDictionary,
-				sampleInfoMap.size(),
+				loadDescription.getGtCode(),
+				(getMatrixStrand() != null) ? getMatrixStrand() : loadDescription.getStrand(),
+				isHasDictionary(),
+				sampleInfo.size(),
 				sortedMarkerSetMap.size(),
 				chrSetMap.size(),
-				bimFilePath);
+				loadDescription.getAnnotationFilePath());
 
 		NetcdfFileWriteable ncfile = matrixFactory.getNetCDFHandler();
 
@@ -147,7 +140,7 @@ public class LoadGTFromPlinkBinaryFiles implements GenotypesLoader {
 
 		//<editor-fold defaultstate="collapsed" desc="WRITE MATRIX METADATA">
 		// WRITE SAMPLESET TO MATRIX FROM SAMPLES ARRAYLIST
-		ArrayChar.D2 samplesD2 = org.gwaspi.netCDF.operations.Utils.writeMapKeysToD2ArrayChar(sampleInfoMap, cNetCDF.Strides.STRIDE_SAMPLE_NAME);
+		ArrayChar.D2 samplesD2 = org.gwaspi.netCDF.operations.Utils.writeMapKeysToD2ArrayChar(sampleInfo, cNetCDF.Strides.STRIDE_SAMPLE_NAME);
 
 		int[] sampleOrig = new int[]{0, 0};
 		try {
@@ -218,7 +211,7 @@ public class LoadGTFromPlinkBinaryFiles implements GenotypesLoader {
 		markersD2 = org.gwaspi.netCDF.operations.Utils.writeMapValueItemToD2ArrayChar(sortedMarkerSetMap, 4, cNetCDF.Strides.STRIDE_GT);
 
 		try {
-			ncfile.write(markersD2Variables, markersOrig, markersD2);
+			ncfile.write(getMarkersD2Variables(), markersOrig, markersD2);
 		} catch (IOException e) {
 			System.err.println("ERROR writing file");
 		} catch (InvalidRangeException e) {
@@ -229,7 +222,7 @@ public class LoadGTFromPlinkBinaryFiles implements GenotypesLoader {
 		// WRITE GT STRAND FROM ANNOTATION FILE
 		int[] gtOrig = new int[]{0, 0};
 		String strandFlag;
-		switch (cNetCDF.Defaults.StrandType.compareTo(strand)) {
+		switch (loadDescription.getStrand()) {
 			case PLUS:
 				strandFlag = cImport.StrandFlags.strandPLS;
 				break;
@@ -265,13 +258,17 @@ public class LoadGTFromPlinkBinaryFiles implements GenotypesLoader {
 		// </editor-fold>
 
 		// <editor-fold defaultstate="collapsed" desc="MATRIX GENOTYPES LOAD ">
+		GenotypeEncoding guessedGTCode = GenotypeEncoding.O12;
 		System.out.println(Text.All.processing);
-		Map<String, Object> bimMarkerSetMap = markerSetLoader.parseOrigBimFile(bimFilePath); //key = markerId, values{allele1 (minor), allele2 (major)}
-		loadBedGenotypes(new File(bedFilePath),
+		Map<String, Object> bimMarkerSetMap = markerSetLoader.parseOrigBimFile(loadDescription.getAnnotationFilePath()); //key = markerId, values{allele1 (minor), allele2 (major)}
+		loadBedGenotypes(
+				new File(loadDescription.getGtDirPath()),
 				ncfile,
 				sortedMarkerSetMap,
 				bimMarkerSetMap,
-				sampleInfoMap);
+				sampleInfo,
+				guessedGTCode,
+				hyperSlabRows);
 
 		System.out.println("Done writing genotypes to matrix at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
 		// </editor-fold>
@@ -307,12 +304,15 @@ public class LoadGTFromPlinkBinaryFiles implements GenotypesLoader {
 		return result;
 	}
 
-	public void loadBedGenotypes(File file,
+	private static void loadBedGenotypes(File file,
 			NetcdfFileWriteable ncfile,
 			Map<String, Object> wrMarkerIdSetMap,
 			Map<String, Object> bimMarkerSetMap,
-			Map<String, Object> sampleSetMap) throws IOException, InvalidRangeException {
-
+			Map<String, Object> sampleSetMap,
+			GenotypeEncoding guessedGTCode,
+			int hyperSlabRows)
+			throws IOException, InvalidRangeException
+	{
 		FileInputStream bedFS = new FileInputStream(file);
 		DataInputStream bedIS = new DataInputStream(bedFS);
 
@@ -325,7 +325,7 @@ public class LoadGTFromPlinkBinaryFiles implements GenotypesLoader {
 			bytesPerSNP = (int) (Math.floor(sampleNb / 4) + 1);
 		}
 
-		Iterator itMarkerSet = bimMarkerSetMap.keySet().iterator();
+		Iterator<String> itMarkerSet = bimMarkerSetMap.keySet().iterator();
 		Iterator<String> itSampleSet = sampleSetMap.keySet().iterator();
 
 		//SKIP HEADER
@@ -344,7 +344,7 @@ public class LoadGTFromPlinkBinaryFiles implements GenotypesLoader {
 		if (mode == 1) {
 			//GET GENOTYPES
 			int rowCounter = 1;
-			ArrayList<byte[]> genotypesAL = new ArrayList();
+			List<byte[]> genotypesAL = new ArrayList<byte[]>();
 			while (itMarkerSet.hasNext()) {
 				try {
 					////////////////// NEW SNP //////////////
@@ -354,7 +354,7 @@ public class LoadGTFromPlinkBinaryFiles implements GenotypesLoader {
 						sampleSetMap.put(key, cNetCDF.Defaults.DEFAULT_GT);
 					}
 
-					Object markerId = itMarkerSet.next();
+					String markerId = itMarkerSet.next();
 					alleles = (String[]) bimMarkerSetMap.get(markerId); //key = markerId, values{allele1 (minor), allele2 (major)}
 
 					//READ ALL SAMPLE GTs FOR CURRENT SNP
@@ -384,9 +384,9 @@ public class LoadGTFromPlinkBinaryFiles implements GenotypesLoader {
 					}
 
 					/////////// WRITING GENOTYPE DATA INTO netCDF FILE ////////////
-					if (guessedGTCode.equals(cNetCDF.Defaults.GenotypeEncoding.UNKNOWN)) {
+					if (guessedGTCode.equals(GenotypeEncoding.UNKNOWN)) {
 						guessedGTCode = Utils.detectGTEncoding(sampleSetMap);
-					} else if (guessedGTCode.equals(cNetCDF.Defaults.GenotypeEncoding.O12)) {
+					} else if (guessedGTCode.equals(GenotypeEncoding.O12)) {
 						guessedGTCode = Utils.detectGTEncoding(sampleSetMap);
 					}
 

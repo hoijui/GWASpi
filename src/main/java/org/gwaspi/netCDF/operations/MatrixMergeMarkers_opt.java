@@ -2,7 +2,9 @@ package org.gwaspi.netCDF.operations;
 
 import org.gwaspi.constants.cDBGWASpi;
 import org.gwaspi.constants.cDBMatrix;
+import org.gwaspi.constants.cImport.ImportFormat;
 import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import org.gwaspi.database.DbManager;
 import org.gwaspi.global.ServiceLocator;
 import org.gwaspi.global.Text;
@@ -108,15 +110,15 @@ public class MatrixMergeMarkers_opt {
 		//<editor-fold defaultstate="collapsed" desc="CREATE MATRIX">
 		try {
 			// CREATE netCDF-3 FILE
-			int hasDictionary = 0;
+			boolean hasDictionary = false;
 			if (rdMatrix1Metadata.getHasDictionray() == rdMatrix2Metadata.getHasDictionray()) {
 				hasDictionary = rdMatrix1Metadata.getHasDictionray();
 			}
-			String gtEncoding = cNetCDF.Defaults.GenotypeEncoding.UNKNOWN.toString();
+			GenotypeEncoding gtEncoding = GenotypeEncoding.UNKNOWN;
 			if (rdMatrix1Metadata.getGenotypeEncoding().equals(rdMatrix2Metadata.getGenotypeEncoding())) {
 				gtEncoding = rdMatrix1Metadata.getGenotypeEncoding();
 			}
-			String technology = cNetCDF.Defaults.GenotypeEncoding.UNKNOWN.toString();
+			ImportFormat technology = ImportFormat.UNKNOWN;
 			if (rdMatrix1Metadata.getTechnology().equals(rdMatrix2Metadata.getTechnology())) {
 				technology = rdMatrix1Metadata.getTechnology();
 			}
@@ -301,7 +303,7 @@ public class MatrixMergeMarkers_opt {
 				// GENOTYPE ENCODING
 				ArrayChar.D2 guessedGTCodeAC = new ArrayChar.D2(1, 8);
 				Index index = guessedGTCodeAC.getIndex();
-				guessedGTCodeAC.setString(index.set(0, 0), rdMatrix1Metadata.getGenotypeEncoding());
+				guessedGTCodeAC.setString(index.set(0, 0), rdMatrix1Metadata.getGenotypeEncoding().toString());
 				int[] origin = new int[]{0, 0};
 				wrNcFile.write(cNetCDF.Variables.GLOB_GTENCODING, origin, guessedGTCodeAC);
 
@@ -320,8 +322,8 @@ public class MatrixMergeMarkers_opt {
 				rdNcFile2.close();
 
 				// CHECK FOR MISMATCHES
-				if (rdMatrix1Metadata.getGenotypeEncoding().equals(cNetCDF.Defaults.GenotypeEncoding.ACGT0.toString())
-						|| rdMatrix1Metadata.getGenotypeEncoding().equals(cNetCDF.Defaults.GenotypeEncoding.O1234.toString()))
+				if (rdMatrix1Metadata.getGenotypeEncoding().equals(GenotypeEncoding.ACGT0)
+						|| rdMatrix1Metadata.getGenotypeEncoding().equals(GenotypeEncoding.O1234))
 				{
 					double[] mismatchState = checkForMismatches(wrMatrixHandler.getResultMatrixId()); //mismatchCount, mismatchRatio
 					if (mismatchState[1] > 0.01) {

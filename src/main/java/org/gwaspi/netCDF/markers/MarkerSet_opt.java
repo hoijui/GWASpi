@@ -1,5 +1,7 @@
 package org.gwaspi.netCDF.markers;
 
+import org.gwaspi.constants.cImport;
+import org.gwaspi.constants.cImport.ImportFormat;
 import org.gwaspi.constants.cNetCDF;
 import java.io.IOException;
 import java.util.Iterator;
@@ -41,7 +43,7 @@ public class MarkerSet_opt {
 			= LoggerFactory.getLogger(MarkerSet_opt.class);
 
 	// MARKERSET_MEATADATA
-	private String technology = ""; // platform
+	private ImportFormat technology = ImportFormat.UNKNOWN; // platform
 	private int markerSetSize = 0; // probe_nb
 	private MatrixMetadata matrixMetadata;
 	private NetcdfFile ncfile = null;
@@ -83,7 +85,7 @@ public class MarkerSet_opt {
 	}
 
 	// ACCESSORS
-	public String getTechnology() {
+	public ImportFormat getTechnology() {
 		return technology;
 	}
 

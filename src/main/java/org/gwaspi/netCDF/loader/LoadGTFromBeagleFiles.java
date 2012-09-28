@@ -1,7 +1,10 @@
 package org.gwaspi.netCDF.loader;
 
 import org.gwaspi.constants.cImport;
+import org.gwaspi.constants.cImport.ImportFormat;
 import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
+import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -25,58 +28,42 @@ public class LoadGTFromBeagleFiles extends AbstractLoadGTFromFiles {
 		public static final String missing = "0";
 	}
 
-	private String annotationFilePath;
-	private String chromosome;
-
 	//<editor-fold defaultstate="collapsed" desc="CONSTRUCTORS">
-	public LoadGTFromBeagleFiles(String _gtFilePath,
-			String _sampleFilePath,
-			String _annotationFilePath,
-			int _studyId,
-			String _chromosome,
-			String _strand,
-			String _friendlyName,
-			String _gtCode,
-			String _description,
-			Map<String, Object> _sampleInfoMap)
-			throws IOException
+	public LoadGTFromBeagleFiles()
 	{
-		super(_gtFilePath,
-			_sampleFilePath,
-			_studyId,
-			_strand,
-			cImport.ImportFormat.BEAGLE.toString(),
-			_friendlyName,
-			_gtCode,
-			cNetCDF.Defaults.StrandType.UNKNOWN.toString(),
-			0,
-			-1, // disabled, else: 4,
-			null, // disabled, else: cNetCDF.Variables.VAR_MARKERS_BASES_KNOWN,
-			_description,
-			_sampleInfoMap);
-
-		annotationFilePath = _annotationFilePath;
-		chromosome = _chromosome;
+		super(
+				ImportFormat.BEAGLE,
+				StrandType.UNKNOWN,
+				false,
+				-1, // disabled, else: 4
+				null); // disabled, else: cNetCDF.Variables.VAR_MARKERS_BASES_KNOWN
 	}
 
 	@Override
-	protected void addAdditionalBigDescriptionProperties(StringBuilder descSB) {
-		super.addAdditionalBigDescriptionProperties(descSB);
+	protected void addAdditionalBigDescriptionProperties(StringBuilder descSB, GenotypesLoadDescription loadDescription) {
+		super.addAdditionalBigDescriptionProperties(descSB, loadDescription);
 
-		descSB.append(annotationFilePath);
+		descSB.append(loadDescription.getAnnotationFilePath());
 		descSB.append(" (Marker file)\n");
 	}
 
-	protected MetadataLoader createMetaDataLoader(String filePath) {
+	@Override
+	protected MetadataLoader createMetaDataLoader(String filePath, GenotypesLoadDescription loadDescription) {
 
 		String curAnnotationFilePath = filePath;
-		return new MetadataLoaderBeagle(curAnnotationFilePath, chromosome, strand, studyId);
+		return new MetadataLoaderBeagle(
+				curAnnotationFilePath,
+				loadDescription.getChromosome(),
+				loadDescription.getStrand(),
+				loadDescription.getStudyId());
 	}
 
-	public void loadIndividualFiles(File file,
+	public void loadIndividualFiles(
+			File file,
 			String currSampleId,
-			Map<String, Object> wrMarkerSetMap) throws IOException, InvalidRangeException {
-
+			Map<String, Object> wrMarkerSetMap)
+			throws IOException, InvalidRangeException
+	{
 		FileReader inputFileReader = new FileReader(file);
 		BufferedReader inputBufferReader = new BufferedReader(inputFileReader);
 
@@ -89,22 +76,17 @@ public class LoadGTFromBeagleFiles extends AbstractLoadGTFromFiles {
 		Map<String, Object> tempMarkerIdMap = new LinkedHashMap<String, Object>();
 		Map<String, Object> sampleOrderMap = new LinkedHashMap<String, Object>();
 
-		String sampleHeader = null;
 		String l;
 		while ((l = inputBufferReader.readLine()) != null) {
-
-			String[] headerFields = null;
-
-			if (l.startsWith("I")) { //Found first marker row!
-				sampleHeader = l;
-				headerFields = sampleHeader.split(cImport.Separators.separators_SpaceTab_rgxp);
+			if (l.startsWith("I")) { // Found first marker row!
+				String sampleHeader = l;
+				String[] headerFields = sampleHeader.split(cImport.Separators.separators_SpaceTab_rgxp);
 				for (int i = Standard.genotypes; i < headerFields.length; i = i + 2) {
 					sampleOrderMap.put(headerFields[i], i);
 				}
 			}
-			if (l.startsWith("M")) { //Found first marker row!
-
-				//GET ALLELES FROM MARKER ROWS
+			if (l.startsWith("M")) { // Found first marker row!
+				// GET ALLELES FROM MARKER ROWS
 				String[] cVals = l.split(cImport.Separators.separators_SpaceTab_rgxp);
 				String currMarkerId = cVals[Standard.markerId];
 
@@ -120,9 +102,10 @@ public class LoadGTFromBeagleFiles extends AbstractLoadGTFromFiles {
 
 		wrMarkerSetMap.putAll(tempMarkerIdMap);
 
-		if (guessedGTCode.equals(cNetCDF.Defaults.GenotypeEncoding.UNKNOWN)) {
+		GenotypeEncoding guessedGTCode = GenotypeEncoding.UNKNOWN;
+		if (guessedGTCode.equals(GenotypeEncoding.UNKNOWN)) {
 			guessedGTCode = Utils.detectGTEncoding(wrMarkerSetMap);
-		} else if (guessedGTCode.equals(cNetCDF.Defaults.GenotypeEncoding.O12)) {
+		} else if (guessedGTCode.equals(GenotypeEncoding.O12)) {
 			guessedGTCode = Utils.detectGTEncoding(wrMarkerSetMap);
 		}
 	}

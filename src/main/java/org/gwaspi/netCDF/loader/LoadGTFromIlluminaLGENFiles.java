@@ -3,7 +3,10 @@ package org.gwaspi.netCDF.loader;
 import org.gwaspi.constants.cDBGWASpi;
 import org.gwaspi.constants.cDBMatrix;
 import org.gwaspi.constants.cImport;
+import org.gwaspi.constants.cImport.ImportFormat;
 import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
+import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
 import org.gwaspi.database.DbManager;
 import org.gwaspi.global.ServiceLocator;
 import org.gwaspi.global.Text;
@@ -13,6 +16,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
 import ucar.ma2.ArrayChar;
@@ -39,53 +43,47 @@ public class LoadGTFromIlluminaLGENFiles implements GenotypesLoader {
 		public static final String missing = "-";
 	}
 
-	private String gtDirPath;
-	private String sampleFilePath;
-	private String annotationFilePath;
-	private ArrayList sampleInfoAL = new ArrayList();
-	private int studyId;
-	private String format;
-	private String friendlyName;
-	private String description;
-	private String gtCode;
-	private String matrixStrand;
-	private int hasDictionary;
-	private cNetCDF.Defaults.GenotypeEncoding guessedGTCode = cNetCDF.Defaults.GenotypeEncoding.UNKNOWN;
-
-	//<editor-fold defaultstate="collapsed" desc="CONSTRUCTORS">
-	public LoadGTFromIlluminaLGENFiles(String _annotationFilePath,
-			String _sampleFilePath,
-			String _gtDirPath,
-			int _studyId,
-			String _format,
-			String _friendlyName,
-			String _gtCode,
-			String _description,
-			Map<String, Object> _sampleInfoMap)
-	{
-		gtDirPath = _gtDirPath;
-		sampleFilePath = _sampleFilePath;
-		annotationFilePath = _annotationFilePath;
-		studyId = _studyId;
-		format = _format;
-		friendlyName = _friendlyName;
-		gtCode = _gtCode;
-		matrixStrand = cNetCDF.Defaults.StrandType.PLSMIN.toString();
-		hasDictionary = 0;
-		description = _description;
-
-		sampleInfoAL.addAll(_sampleInfoMap.keySet());
+	public LoadGTFromIlluminaLGENFiles() {
 	}
-	//</editor-fold>
 
-	public int processData() throws IOException, InvalidRangeException, InterruptedException {
+	@Override
+	public ImportFormat getFormat() {
+		return ImportFormat.Illumina_LGEN;
+	}
+
+	@Override
+	public StrandType getMatrixStrand() {
+		return StrandType.PLSMIN;
+	}
+
+	@Override
+	public boolean isHasDictionary() {
+		return false;
+	}
+
+	@Override
+	public int getMarkersD2ItemNb() {
+		throw new UnsupportedOperationException("Not supported yet."); // FIXME
+	}
+
+	@Override
+	public String getMarkersD2Variables() {
+		throw new UnsupportedOperationException("Not supported yet."); // FIXME
+	}
+
+	@Override
+	public int processData(GenotypesLoadDescription loadDescription, Map<String, Object> sampleInfo) throws IOException, InvalidRangeException, InterruptedException {
 		int result = Integer.MIN_VALUE;
 
 		String startTime = org.gwaspi.global.Utils.getMediumDateTimeAsString();
-		File[] gtFilesToImport = org.gwaspi.global.Utils.listFiles(gtDirPath, false);
+
+		List<String> sampleInfoList = new ArrayList<String>();
+		sampleInfoList.addAll(sampleInfo.keySet());
+
+		File[] gtFilesToImport = org.gwaspi.global.Utils.listFiles(loadDescription.getGtDirPath(), false);
 
 		//<editor-fold defaultstate="collapsed" desc="CREATE MARKERSET & NETCDF">
-		MetadataLoaderIlluminaLGEN markerSetLoader = new MetadataLoaderIlluminaLGEN(annotationFilePath, studyId);
+		MetadataLoaderIlluminaLGEN markerSetLoader = new MetadataLoaderIlluminaLGEN(loadDescription.getAnnotationFilePath(), loadDescription.getStudyId());
 		Map<String, Object> markerSetMap = markerSetLoader.getSortedMarkerSetWithMetaData();
 
 		System.out.println("Done initializing sorted MarkerSetMap at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
@@ -93,45 +91,46 @@ public class LoadGTFromIlluminaLGENFiles implements GenotypesLoader {
 		///////////// CREATE netCDF-3 FILE ////////////
 		StringBuilder descSB = new StringBuilder(Text.Matrix.descriptionHeader1);
 		descSB.append(org.gwaspi.global.Utils.getShortDateTimeAsString());
-		if (!description.isEmpty()) {
+		if (!loadDescription.getDescription().isEmpty()) {
 			descSB.append("\nDescription: ");
-			descSB.append(description);
+			descSB.append(loadDescription.getDescription());
 			descSB.append("\n");
 		}
 //		descSB.append("\nGenotype encoding: ");
 //		descSB.append(gtCode);
 		descSB.append("\n");
-		descSB.append("Markers: ").append(markerSetMap.size()).append(", Samples: ").append(sampleInfoAL.size());
+		descSB.append("Markers: ").append(markerSetMap.size()).append(", Samples: ").append(sampleInfoList.size());
 		descSB.append("\n");
 		descSB.append(Text.Matrix.descriptionHeader2);
-		descSB.append(format);
+		descSB.append(loadDescription.getFormat());
 		descSB.append("\n");
 		descSB.append(Text.Matrix.descriptionHeader3);
 		descSB.append("\n");
-		descSB.append(gtDirPath);
+		descSB.append(loadDescription.getGtDirPath());
 		descSB.append(" (Genotype files)\n");
 		descSB.append("\n");
-		descSB.append(annotationFilePath);
+		descSB.append(loadDescription.getAnnotationFilePath());
 		descSB.append(" (Annotation file)\n");
-		if (new File(sampleFilePath).exists()) {
-			descSB.append(sampleFilePath);
+		if (new File(loadDescription.getSampleFilePath()).exists()) {
+			descSB.append(loadDescription.getSampleFilePath());
 			descSB.append(" (Sample Info file)\n");
 		}
 
 		//RETRIEVE CHROMOSOMES INFO
 		Map<String, Object> chrSetMap = org.gwaspi.netCDF.matrices.Utils.aggregateChromosomeInfo(markerSetMap, 2, 3);
 
-		MatrixFactory matrixFactory = new MatrixFactory(studyId,
-				format,
-				friendlyName,
+		MatrixFactory matrixFactory = new MatrixFactory(
+				loadDescription.getStudyId(),
+				loadDescription.getFormat(),
+				loadDescription.getFriendlyName(),
 				descSB.toString(), // description
-				gtCode,
-				matrixStrand,
-				hasDictionary,
-				sampleInfoAL.size(),
+				loadDescription.getGtCode(),
+				(getMatrixStrand() != null) ? getMatrixStrand() : loadDescription.getStrand(),
+				isHasDictionary(),
+				sampleInfo.size(),
 				markerSetMap.size(),
 				chrSetMap.size(),
-				gtDirPath);
+				loadDescription.getGtDirPath());
 
 		NetcdfFileWriteable ncfile = matrixFactory.getNetCDFHandler();
 
@@ -146,7 +145,9 @@ public class LoadGTFromIlluminaLGENFiles implements GenotypesLoader {
 
 		//<editor-fold defaultstate="collapsed" desc="WRITE MATRIX METADATA">
 		// WRITE SAMPLESET TO MATRIX FROM SAMPLES ARRAYLIST
-		ArrayChar.D2 samplesD2 = org.gwaspi.netCDF.operations.Utils.writeALToD2ArrayChar(sampleInfoAL, cNetCDF.Strides.STRIDE_SAMPLE_NAME);
+		ArrayChar.D2 samplesD2 = org.gwaspi.netCDF.operations.Utils.writeCollectionToD2ArrayChar(
+				sampleInfoList,
+				cNetCDF.Strides.STRIDE_SAMPLE_NAME);
 
 		int[] sampleOrig = new int[]{0, 0};
 		try {
@@ -237,13 +238,16 @@ public class LoadGTFromIlluminaLGENFiles implements GenotypesLoader {
 
 		// <editor-fold defaultstate="collapsed" desc="MATRIX GENOTYPES LOAD ">
 		//START PROCESS OF LOADING GENOTYPES
+		GenotypeEncoding guessedGTCode = GenotypeEncoding.UNKNOWN;
 		System.out.println(Text.All.processing);
 		for (int i = 0; i < gtFilesToImport.length; i++) {
 			//System.out.println("Input file: "+i);
-			loadIndividualFiles(gtFilesToImport[i],
+			loadIndividualFiles(
+					gtFilesToImport[i],
 					ncfile,
 					markerSetMap,
-					sampleInfoAL);
+					sampleInfoList,
+					guessedGTCode);
 
 			if (i % 10 == 0) {
 				System.out.println("Done processing file " + i + " at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
@@ -279,17 +283,20 @@ public class LoadGTFromIlluminaLGENFiles implements GenotypesLoader {
 			System.err.println("ERROR creating file " + ncfile.getLocation() + "\n" + e);
 		}
 
-		AbstractLoadGTFromFiles.logAsWhole(startTime, studyId, gtDirPath, format, friendlyName, description);
+		AbstractLoadGTFromFiles.logAsWhole(startTime, loadDescription.getStudyId(), loadDescription.getGtDirPath(), loadDescription.getFormat(), loadDescription.getFriendlyName(), loadDescription.getDescription());
 
 		org.gwaspi.global.Utils.sysoutCompleted("writing Genotypes to Matrix");
 		return result;
 	}
 
-	public void loadIndividualFiles(File file,
+	public void loadIndividualFiles(
+			File file,
 			NetcdfFileWriteable ncfile,
 			Map<String, Object> sortedMarkerSetMap,
-			ArrayList samplesAL) throws IOException, InvalidRangeException {
-
+			List<String> samplesAL,
+			GenotypeEncoding guessedGTCode)
+			throws IOException, InvalidRangeException
+	{
 		////////////// LOAD INPUT FILE ////////////////
 		FileReader inputFileReader = new FileReader(file);
 		BufferedReader inputBufferReader = new BufferedReader(inputFileReader);

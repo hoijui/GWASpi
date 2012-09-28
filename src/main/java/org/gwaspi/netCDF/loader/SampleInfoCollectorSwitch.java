@@ -2,6 +2,7 @@ package org.gwaspi.netCDF.loader;
 
 import org.gwaspi.constants.cImport;
 import org.gwaspi.constants.cImport.Annotation.Plink_Standard;
+import org.gwaspi.constants.cImport.ImportFormat;
 import org.gwaspi.global.Text;
 import java.io.BufferedReader;
 import java.io.File;
@@ -56,7 +57,7 @@ public class SampleInfoCollectorSwitch {
 	}
 
 	public static Map<String, Object> collectSampleInfo(
-			String format,
+			ImportFormat format,
 			boolean dummySamples,
 			String sampleInfoPath,
 			String altSampleInfoPath1,
@@ -65,7 +66,7 @@ public class SampleInfoCollectorSwitch {
 	{
 		Map<String, Object> sampleInfoMap;
 
-		switch (cImport.ImportFormat.compareTo(format)) {
+		switch (format) {
 			case Affymetrix_GenomeWide6:
 				log.info(Text.Matrix.scanAffectionStandby);
 				if (dummySamples) {

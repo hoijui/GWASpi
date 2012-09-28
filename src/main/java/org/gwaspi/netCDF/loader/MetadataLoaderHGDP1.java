@@ -3,6 +3,7 @@ package org.gwaspi.netCDF.loader;
 import org.gwaspi.constants.cImport;
 import org.gwaspi.constants.cImport.Annotation.HGDP1_Standard;
 import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
 import org.gwaspi.global.Text;
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -21,10 +22,10 @@ import java.util.TreeMap;
 public class MetadataLoaderHGDP1 implements MetadataLoader {
 
 	private String markerFilePath;
-	private String strand;
+	private StrandType strand;
 	private int studyId;
 
-	public MetadataLoaderHGDP1(String mapPath, String strand, int studyId) {
+	public MetadataLoaderHGDP1(String mapPath, StrandType strand, int studyId) {
 
 		this.markerFilePath = mapPath;
 		this.studyId = studyId;

@@ -4,6 +4,7 @@ import org.gwaspi.constants.cDBGWASpi;
 import org.gwaspi.constants.cDBMatrix;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
+import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
 import org.gwaspi.database.DbManager;
 import org.gwaspi.global.ServiceLocator;
 import org.gwaspi.global.Text;
@@ -80,7 +81,7 @@ public class MatrixGenotypesFlipper {
 		this.studyId = rdMatrixMetadata.getStudyId();
 		this.wrMatrixFriendlyName = wrMatrixFriendlyName;
 		this.wrMatrixDescription = wrMatrixDescription;
-		this.gtEncoding = GenotypeEncoding.compareTo(this.rdMatrixMetadata.getGenotypeEncoding());
+		this.gtEncoding = this.rdMatrixMetadata.getGenotypeEncoding();
 		this.flipperFile = flipperFile;
 
 		this.rdMarkerSet = new MarkerSet_opt(this.rdMatrixMetadata.getStudyId(), this.rdMatrixId);
@@ -120,11 +121,12 @@ public class MatrixGenotypesFlipper {
 			descSB.append("\n");
 			descSB.append("Markers: ").append(rdMarkerSet.getMarkerSetSize()).append(", Samples: ").append(rdSampleSet.getSampleSetSize());
 
-			MatrixFactory wrMatrixHandler = new MatrixFactory(studyId,
+			MatrixFactory wrMatrixHandler = new MatrixFactory(
+					studyId,
 					rdMatrixMetadata.getTechnology(), // technology
 					wrMatrixFriendlyName,
 					descSB.toString(), // description
-					"FLP",
+					StrandType.valueOf("FLP"), // FIXME this will fail at runtime
 					rdMatrixMetadata.getHasDictionray(), // has dictionary?
 					rdSampleSet.getSampleSetSize(),
 					rdMarkerSet.getMarkerSetSize(),
@@ -250,7 +252,7 @@ public class MatrixGenotypesFlipper {
 				// GENOTYPE ENCODING
 				ArrayChar.D2 guessedGTCodeAC = new ArrayChar.D2(1, 8);
 				Index index = guessedGTCodeAC.getIndex();
-				guessedGTCodeAC.setString(index.set(0, 0), rdMatrixMetadata.getGenotypeEncoding());
+				guessedGTCodeAC.setString(index.set(0, 0), rdMatrixMetadata.getGenotypeEncoding().toString());
 				int[] origin = new int[]{0, 0};
 				wrNcFile.write(cNetCDF.Variables.GLOB_GTENCODING, origin, guessedGTCodeAC);
 

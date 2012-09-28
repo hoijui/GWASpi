@@ -1,6 +1,7 @@
 package org.gwaspi.netCDF.loader;
 
 import org.gwaspi.constants.cImport.Annotation.Affymetrix_GenomeWide6;
+import org.gwaspi.constants.cImport.ImportFormat;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.global.Text;
 import java.io.BufferedReader;
@@ -24,9 +25,9 @@ public class MetadataLoaderAffy implements MetadataLoader {
 
 	private String annotationPath;
 	private int studyId;
-	private String format;
+	private ImportFormat format;
 
-	public MetadataLoaderAffy(String annotationPath, String format, int studyId) {
+	public MetadataLoaderAffy(String annotationPath, ImportFormat format, int studyId) {
 
 		this.annotationPath = annotationPath;
 		this.studyId = studyId;

@@ -2,6 +2,8 @@ package org.gwaspi.gui.utils;
 
 import org.gwaspi.constants.cImport;
 import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
+import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
 import org.gwaspi.global.Config;
 import org.gwaspi.global.Text;
 import java.awt.Container;
@@ -162,9 +164,9 @@ public class MoreGWASinOneGoInfo extends JFrame {
 		cmb_Strand = new JComboBox();
 		cmb_GTCode = new JComboBox();
 
-
 		GridBagConstraints c = new GridBagConstraints();
 		int rowNb = 0;
+
 		//<editor-fold defaultstate="collapsed" desc="FORMAT DEPENDENT">
 		lbl_Chromosome.setText("  " + Text.Dialog.chromosome);
 		lbl_Strand.setText("  " + Text.Dialog.strand);
@@ -360,10 +362,10 @@ public class MoreGWASinOneGoInfo extends JFrame {
 						gwasParams.setChromosome(cmb_Chromosome.getSelectedItem().toString());
 					}
 					if (cmb_Strand.getSelectedItem() != null) {
-						gwasParams.setStrandType(cmb_Strand.getSelectedItem().toString());
+						gwasParams.setStrandType((StrandType) cmb_Strand.getSelectedItem());
 					}
 					if (cmb_GTCode.getSelectedItem() != null) {
-						gwasParams.setGtCode(cmb_GTCode.getSelectedItem().toString());
+						gwasParams.setGtCode((GenotypeEncoding) cmb_GTCode.getSelectedItem());
 					}
 
 					gwasParams.setDiscardGTMismatches(chkB_MMM.isSelected());

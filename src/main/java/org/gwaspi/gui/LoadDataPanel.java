@@ -1,6 +1,7 @@
 package org.gwaspi.gui;
 
 import org.gwaspi.constants.cImport;
+import org.gwaspi.constants.cImport.ImportFormat;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.utils.BrowserHelpUrlAction;
 import org.gwaspi.gui.utils.CursorUtils;
@@ -17,6 +18,9 @@ import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Vector;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.BorderFactory;
@@ -34,6 +38,7 @@ import javax.swing.LayoutStyle;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.border.TitledBorder;
+import org.gwaspi.netCDF.loader.GenotypesLoadDescription;
 import org.gwaspi.netCDF.matrices.MatrixMetadata;
 import org.gwaspi.netCDF.operations.GWASinOneGOParams;
 import org.slf4j.Logger;
@@ -180,7 +185,11 @@ public class LoadDataPanel extends JPanel {
 
 		lbl_Format.setText(Text.Matrix.format);
 
-		cmb_Format.setModel(new DefaultComboBoxModel(cImport.ImportFormat.values()));
+		Vector<ImportFormat> vecImportFormats = new Vector<ImportFormat>();
+		vecImportFormats.addAll(Arrays.asList(ImportFormat.values()));
+		vecImportFormats.remove(ImportFormat.UNKNOWN);
+
+		cmb_Format.setModel(new DefaultComboBoxModel(vecImportFormats));
 		cmb_Format.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
 				formatAction.actionPerformed(evt);
@@ -417,15 +426,15 @@ public class LoadDataPanel extends JPanel {
 			lbl_File2.setForeground(Color.black);
 			lbl_FileSampleInfo.setForeground(Color.black);
 
-			switch (cImport.ImportFormat.compareTo(cmb_Format.getSelectedItem().toString())) {
+			switch ((ImportFormat) cmb_Format.getSelectedItem()) {
 				case Affymetrix_GenomeWide6:
 					fieldObligatoryState = new boolean[]{true, true, false};
 					lbl_File1.setEnabled(true);
 					lbl_File2.setEnabled(true);
 					lbl_FileSampleInfo.setEnabled(true);
-					lbl_File1.setText(Text.Matrix.annotationFile);
+					lbl_File2.setText(Text.Matrix.annotationFile);
 					lbl_FileSampleInfo.setText(Text.Matrix.sampleInfo);
-					lbl_File2.setText(Text.Matrix.genotypes + " " + Text.All.folder);
+					lbl_File1.setText(Text.Matrix.genotypes + " " + Text.All.folder);
 					txt_File1.setEnabled(true);
 					txt_File2.setEnabled(true);
 					txt_FileSampleInfo.setEnabled(true);
@@ -624,17 +633,22 @@ public class LoadDataPanel extends JPanel {
 						}
 						if (gwasParams.isProceed()) {
 							// DO LOAD & GWAS
-							MultiOperations.loadMatrixDoGWASifOK(cmb_Format.getSelectedItem().toString(),
-									dummySamples,
-									decision,
-									newMatrixName,
-									txtA_NewMatrixDescription.getText(),
+							GenotypesLoadDescription loadDescription = new GenotypesLoadDescription(
 									txt_File1.getText(),
 									txt_FileSampleInfo.getText(),
-									txt_File2.getText(), gwasParams.getChromosome(), // Chr
-									gwasParams.getStrandType().toString(), // strandType
-									gwasParams.getGtCode().toString(), // GtCode
+									txt_File2.getText(),
 									studyId,
+									(ImportFormat) cmb_Format.getSelectedItem(),
+									newMatrixName,
+									txtA_NewMatrixDescription.getText(),
+									gwasParams.getChromosome(),
+									gwasParams.getStrandType(),
+									gwasParams.getGtCode()
+									);
+							MultiOperations.loadMatrixDoGWASifOK(
+									loadDescription,
+									dummySamples,
+									decision,
 									gwasParams);
 
 							ProcessTab.getSingleton().showTab();

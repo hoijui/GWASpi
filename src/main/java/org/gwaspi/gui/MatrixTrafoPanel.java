@@ -1,6 +1,7 @@
 package org.gwaspi.gui;
 
 import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.utils.BrowserHelpUrlAction;
 import org.gwaspi.gui.utils.Dialogs;
@@ -311,11 +312,10 @@ public class MatrixTrafoPanel extends JPanel {
 						description = "";
 					}
 
-					if (parentMatrixMetadata.getGenotypeEncoding().equals(cNetCDF.Defaults.GenotypeEncoding.AB0.toString())
-							|| parentMatrixMetadata.getGenotypeEncoding().equals(cNetCDF.Defaults.GenotypeEncoding.O12.toString()))
+					if (parentMatrixMetadata.getGenotypeEncoding().equals(GenotypeEncoding.AB0)
+							|| parentMatrixMetadata.getGenotypeEncoding().equals(GenotypeEncoding.O12))
 					{
-						if (parentMatrixMetadata.getHasDictionray() == 1) {
-
+						if (parentMatrixMetadata.getHasDictionray()) {
 							MultiOperations.doTranslateAB12ToACGT(parentMatrix.getStudyId(),
 									parentMatrix.getMatrixId(),
 									cNetCDF.Defaults.GenotypeEncoding.AB0, //No matter if AB or 12, works the same here
@@ -355,7 +355,7 @@ public class MatrixTrafoPanel extends JPanel {
 						description = "";
 					}
 
-					if (parentMatrixMetadata.getGenotypeEncoding().equals(cNetCDF.Defaults.GenotypeEncoding.O1234.toString())) {
+					if (parentMatrixMetadata.getGenotypeEncoding().equals(GenotypeEncoding.O1234)) {
 
 						MultiOperations.doTranslateAB12ToACGT(parentMatrix.getStudyId(),
 								parentMatrix.getMatrixId(),
@@ -393,8 +393,8 @@ public class MatrixTrafoPanel extends JPanel {
 						description = "";
 					}
 
-					if (parentMatrixMetadata.getGenotypeEncoding().equals(cNetCDF.Defaults.GenotypeEncoding.O1234.toString())
-							|| parentMatrixMetadata.getGenotypeEncoding().equals(cNetCDF.Defaults.GenotypeEncoding.ACGT0.toString())) {
+					if (parentMatrixMetadata.getGenotypeEncoding().equals(GenotypeEncoding.O1234)
+							|| parentMatrixMetadata.getGenotypeEncoding().equals(GenotypeEncoding.ACGT0)) {
 
 						File flipMarkersFile = Dialogs.selectFilesAndDirectoriesDialog(JOptionPane.OK_OPTION);
 						MultiOperations.doStrandFlipMatrix(parentMatrix.getStudyId(),

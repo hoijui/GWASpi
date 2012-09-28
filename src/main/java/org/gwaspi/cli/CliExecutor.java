@@ -2,6 +2,7 @@ package org.gwaspi.cli;
 
 import org.gwaspi.constants.cDBSamples;
 import org.gwaspi.constants.cExport.ExportFormat;
+import org.gwaspi.constants.cImport.ImportFormat;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.StartGWASpi;
@@ -11,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JOptionPane;
 import org.gwaspi.model.StudyList;
+import org.gwaspi.netCDF.loader.GenotypesLoadDescription;
 import org.gwaspi.netCDF.operations.GWASinOneGOParams;
 import org.gwaspi.netCDF.operations.OperationManager;
 import org.gwaspi.threadbox.MultiOperations;
@@ -65,19 +67,26 @@ public class CliExecutor {
 				}
 				boolean studyExists = checkStudy(studyId);
 
-				String format = args.get(2);
+				ImportFormat format = ImportFormat.compareTo(args.get(2));
 				String newMatrixName = args.get(4);
 				String description = args.get(5);
 
-				MultiOperations.loadMatrixDoGWASifOK(format, // Format
-						Boolean.parseBoolean(args.get(3)), // Dummy samples
-						JOptionPane.NO_OPTION, // Do GWAS
-						newMatrixName, // New Matrix name
-						description, // Description
+				GenotypesLoadDescription loadDescription = new GenotypesLoadDescription(
 						args.get(6), // File 1
 						args.get(8), // Sample Info file
-						args.get(7), gwasParams.getChromosome(), gwasParams.getStrandType(), gwasParams.getGtCode(), //Gt code (deprecated)
+						args.get(7), // File 2
 						studyId, // StudyId
+						format, // Format
+						newMatrixName, // New Matrix name
+						description, // Description
+						gwasParams.getChromosome(),
+						gwasParams.getStrandType(),
+						gwasParams.getGtCode() // Gt code (deprecated)
+						);
+				MultiOperations.loadMatrixDoGWASifOK(
+						loadDescription, // Format
+						Boolean.parseBoolean(args.get(3)), // Dummy samples
+						JOptionPane.NO_OPTION, // Do GWAS
 						gwasParams); // gwasParams (dummy)
 				success = true;
 			}
@@ -128,7 +137,7 @@ public class CliExecutor {
 				}
 				boolean studyExists = checkStudy(studyId);
 
-				String format = args.get(2);
+				ImportFormat format = ImportFormat.compareTo(args.get(2));
 				String newMatrixName = args.get(4);
 				String description = args.get(5);
 
@@ -148,15 +157,22 @@ public class CliExecutor {
 				gwasParams.setFriendlyName(newMatrixName);
 				gwasParams.setProceed(true);
 
-				MultiOperations.loadMatrixDoGWASifOK(format, // Format
-						Boolean.parseBoolean(args.get(3)), // Dummy samples
-						JOptionPane.YES_OPTION, // Do GWAS
-						newMatrixName, // New Matrix name
-						description, // Description
+				GenotypesLoadDescription loadDescription = new GenotypesLoadDescription(
 						args.get(6), // File 1
 						args.get(8), // Sample Info file
-						args.get(7), gwasParams.getChromosome(), gwasParams.getStrandType(), gwasParams.getGtCode(), // Gt code (deprecated)
+						args.get(7), // File 2
 						studyId, // StudyId
+						format, // Format
+						newMatrixName, // New Matrix name
+						description, // Description
+						gwasParams.getChromosome(),
+						gwasParams.getStrandType(),
+						gwasParams.getGtCode() // Gt code (deprecated)
+						);
+				MultiOperations.loadMatrixDoGWASifOK(
+						loadDescription, // Format
+						Boolean.parseBoolean(args.get(3)), // Dummy samples
+						JOptionPane.YES_OPTION, // Do GWAS
 						gwasParams); // gwasParams (dummy)
 				success = true;
 			}

@@ -2,6 +2,7 @@ package org.gwaspi.netCDF.loader;
 
 import org.gwaspi.constants.cImport;
 import org.gwaspi.constants.cImport.Annotation.HapmapGT_Standard;
+import org.gwaspi.constants.cImport.ImportFormat;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.global.Text;
 import java.io.BufferedReader;
@@ -26,9 +27,9 @@ public class MetadataLoaderHapmap implements MetadataLoader {
 
 	private String hapmapPath;
 	private int studyId;
-	private String format;
+	private ImportFormat format;
 
-	public MetadataLoaderHapmap(String hapmapPath, String format, int studyId) {
+	public MetadataLoaderHapmap(String hapmapPath, ImportFormat format, int studyId) {
 
 		this.hapmapPath = hapmapPath;
 		this.studyId = studyId;

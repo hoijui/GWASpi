@@ -3,6 +3,7 @@ package org.gwaspi.netCDF.loader;
 import org.gwaspi.constants.cImport;
 import org.gwaspi.constants.cImport.Annotation.Plink_Standard;
 import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
 import org.gwaspi.global.Text;
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -22,10 +23,10 @@ public class MetadataLoaderPlink implements MetadataLoader {
 
 	private String mapPath;
 	private String pedPath;
-	private String strand;
+	private StrandType strand;
 	private int studyId;
 
-	public MetadataLoaderPlink(String mapPath, String pedPath, String strand, int studyId) {
+	public MetadataLoaderPlink(String mapPath, String pedPath, StrandType strand, int studyId) {
 
 		this.mapPath = mapPath;
 		this.pedPath = pedPath;

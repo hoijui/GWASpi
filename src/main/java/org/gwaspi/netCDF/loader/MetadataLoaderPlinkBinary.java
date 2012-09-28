@@ -3,6 +3,7 @@ package org.gwaspi.netCDF.loader;
 import org.gwaspi.constants.cImport;
 import org.gwaspi.constants.cImport.Annotation.Plink_Binary;
 import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
 import org.gwaspi.global.Text;
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -21,10 +22,10 @@ import java.util.TreeMap;
 public class MetadataLoaderPlinkBinary implements MetadataLoader {
 
 	private String bimPath;
-	private String strand;
+	private StrandType strand;
 	private int studyId;
 
-	public MetadataLoaderPlinkBinary(String bimPath, String strand, int studyId) {
+	public MetadataLoaderPlinkBinary(String bimPath, StrandType strand, int studyId) {
 
 		this.bimPath = bimPath;
 		this.studyId = studyId;

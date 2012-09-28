@@ -2,6 +2,7 @@ package org.gwaspi.gui;
 
 import org.gwaspi.constants.cDBMatrix;
 import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.utils.BrowserHelpUrlAction;
 import org.gwaspi.gui.utils.Dialogs;
@@ -372,7 +373,7 @@ public class MatrixMergePanel extends JPanel {
 				MatrixMetadata parentMatrixMetadata = new MatrixMetadata(parentMatrix.getMatrixId());
 				MatrixMetadata addMatrixMetadata = new MatrixMetadata(addMatrixId);
 				if (parentMatrixMetadata.getGenotypeEncoding().equals(addMatrixMetadata.getGenotypeEncoding())) {
-					if (parentMatrixMetadata.getGenotypeEncoding().equals(cNetCDF.Defaults.GenotypeEncoding.UNKNOWN.toString())) {
+					if (parentMatrixMetadata.getGenotypeEncoding().equals(GenotypeEncoding.UNKNOWN)) {
 						// UNKOWN ENCODING, PROBABLY NOT A GOOD IDEA TO PROCEED
 						Dialogs.showWarningDialogue(Text.Trafo.warnMatrixEncUnknown);
 					} else {

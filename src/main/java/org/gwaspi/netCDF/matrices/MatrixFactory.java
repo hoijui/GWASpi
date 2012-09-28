@@ -1,7 +1,10 @@
 package org.gwaspi.netCDF.matrices;
 
 import org.gwaspi.constants.cDBGWASpi;
+import org.gwaspi.constants.cImport.ImportFormat;
 import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
+import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
 import org.gwaspi.database.DbManager;
 import org.gwaspi.global.Config;
 import org.gwaspi.global.ServiceLocator;
@@ -30,16 +33,17 @@ public class MatrixFactory {
 	/**
 	 * Constructor to use with matrix input
 	 */
-	public MatrixFactory(int studyId,
-			String technology,
+	public MatrixFactory(
+			int studyId,
+			ImportFormat technology,
 			String friendlyName,
 			String description,
-			String strand,
-			int hasDictionary,
+			StrandType strand,
+			boolean hasDictionary,
 			int samplesDimSize,
 			int markerDimSize,
 			int chrDimSize,
-			String gtCode,
+			GenotypeEncoding gtCode,
 			int origMatrix1Id,
 			int origMatrix2Id)
 			throws InvalidRangeException, IOException
@@ -85,13 +89,14 @@ public class MatrixFactory {
 	}
 
 	// Costructor to use with file input
-	public MatrixFactory(Integer studyId,
-			String technology,
+	public MatrixFactory(
+			Integer studyId,
+			ImportFormat technology,
 			String friendlyName,
 			String description,
-			String matrixType,
-			String strand,
-			int hasDictionary,
+			GenotypeEncoding matrixType,
+			StrandType strand,
+			boolean hasDictionary,
 			int samplesDimSize,
 			int markerDimSize,
 			int chrDimSize,
@@ -157,11 +162,11 @@ public class MatrixFactory {
 	public static NetcdfFileWriteable generateNetcdfHandler(
 			Integer studyId,
 			String matrixName,
-			String technology,
+			ImportFormat technology,
 			String description,
-			String matrixType,
-			String strand,
-			int hasDictionary,
+			GenotypeEncoding matrixType,
+			StrandType strand,
+			boolean hasDictionary,
 			int sampleSetSize,
 			int markerSetSize,
 			int chrSetSize)
@@ -184,12 +189,12 @@ public class MatrixFactory {
 
 		// global attributes
 		ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_STUDY, studyId);
-		ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_TECHNOLOGY, technology);
+		ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_TECHNOLOGY, technology.toString());
 		String versionNb = Config.getConfigValue(Config.PROPERTY_CURRENT_GWASPIDB_VERSION, "2.0.2");
 		ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_GWASPIDB_VERSION, versionNb);
 		ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_DESCRIPTION, description);
-		ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_STRAND, strand);
-		ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_HAS_DICTIONARY, hasDictionary);
+		ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_STRAND, strand.toString());
+		ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_HAS_DICTIONARY, hasDictionary ? 1 : 0);
 
 		// dimensions
 		Dimension samplesDim = ncfile.addDimension(cNetCDF.Dimensions.DIM_SAMPLESET, 0, true, true, false);

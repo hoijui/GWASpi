@@ -1,8 +1,8 @@
 package org.gwaspi.netCDF.loader;
 
-import org.gwaspi.constants.cImport;
-import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.constants.cImport.ImportFormat;
 import java.io.IOException;
+import java.util.EnumMap;
 import java.util.Map;
 import org.gwaspi.samples.InsertSampleInfo;
 import ucar.ma2.InvalidRangeException;
@@ -15,138 +15,35 @@ import ucar.ma2.InvalidRangeException;
  */
 public class LoadManager {
 
+	private static final Map<ImportFormat, GenotypesLoader> genotypesLoaders;
+
+	static {
+		genotypesLoaders = new EnumMap<ImportFormat, GenotypesLoader>(ImportFormat.class);
+		genotypesLoaders.put(ImportFormat.Affymetrix_GenomeWide6, new LoadGTFromAffyFiles());
+		genotypesLoaders.put(ImportFormat.PLINK, new LoadGTFromPlinkFlatFiles());
+		genotypesLoaders.put(ImportFormat.PLINK_Binary, new LoadGTFromPlinkBinaryFiles());
+		genotypesLoaders.put(ImportFormat.HAPMAP, new LoadGTFromHapmapFiles());
+		genotypesLoaders.put(ImportFormat.BEAGLE, new LoadGTFromBeagleFiles());
+		genotypesLoaders.put(ImportFormat.HGDP1, new LoadGTFromHGDP1Files());
+		genotypesLoaders.put(ImportFormat.Illumina_LGEN, new LoadGTFromIlluminaLGENFiles());
+		genotypesLoaders.put(ImportFormat.GWASpi, new LoadGTFromGWASpiFiles());
+		genotypesLoaders.put(ImportFormat.Sequenom, new LoadGTFromSequenomFiles());
+	}
+
 	private LoadManager() {
 	}
 
-	public static int dispatchLoadByFormat(String format,
-			Map<String, Object> sampleInfoMap,
-			String txt_NewMatrixName,
-			String txtA_NewMatrixDescription,
-			String txt_File1,
-			String txt_FileSampleInfo,
-			String txt_File2,
-			String chromosome,
-			String strandType,
-			String gtCode,
-			int studyId)
+	public static int dispatchLoadByFormat(
+			GenotypesLoadDescription loadDescription,
+			Map<String, Object> sampleInfoMap)
 			throws IOException, InvalidRangeException, InterruptedException
 	{
 		int newMatrixId = Integer.MIN_VALUE;
 
-		GenotypesLoader gtFilesLoader;
-		switch (cImport.ImportFormat.compareTo(format)) {
-			case Affymetrix_GenomeWide6:
-				InsertSampleInfo.processData(studyId, sampleInfoMap);
-				gtFilesLoader = new LoadGTFromAffyFiles(txt_File2,
-						txt_FileSampleInfo,
-						txt_File1,
-						studyId,
-						format,
-						txt_NewMatrixName,
-						org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding.AB0.toString(),
-						txtA_NewMatrixDescription,
-						sampleInfoMap);
-				break;
-			case PLINK:
-				InsertSampleInfo.processData(studyId, sampleInfoMap);
-				gtFilesLoader = new LoadGTFromPlinkFlatFiles(txt_File1, // MAP file
-						txt_FileSampleInfo, // Sample info file (optional)
-						txt_File2, // PED file
-						studyId,
-						strandType, // Strand
-						txt_NewMatrixName,
-						gtCode, // Genotype encoding
-						txtA_NewMatrixDescription,
-						sampleInfoMap);
-				break;
-			case PLINK_Binary:
-				InsertSampleInfo.processData(studyId, sampleInfoMap);
-				gtFilesLoader = new LoadGTFromPlinkBinaryFiles(txt_File1, // BED file
-						txt_FileSampleInfo, // FAM or Sample info file (optional)
-						txt_File2, // BIM file
-						studyId,
-						strandType, // Strand
-						txt_NewMatrixName,
-						gtCode, // Genotype encoding
-						txtA_NewMatrixDescription,
-						sampleInfoMap);
-				break;
-			case HAPMAP:
-				InsertSampleInfo.processData(studyId, sampleInfoMap);
-				gtFilesLoader = new LoadGTFromHapmapFiles(txt_File1, // Genotypes file or folder
-						txt_FileSampleInfo, // Sample info file (optional)
-						studyId,
-						strandType, // Strand
-						txt_NewMatrixName,
-						gtCode, // Genotype encoding
-						txtA_NewMatrixDescription,
-						sampleInfoMap);
-				break;
-			case BEAGLE:
-				InsertSampleInfo.processData(studyId, sampleInfoMap);
-				gtFilesLoader = new LoadGTFromBeagleFiles(txt_File1, // Genotypes file
-						txt_FileSampleInfo, // Sample info file (optional)
-						txt_File2, // Marker file (markerId, pos, allele1, allele2)
-						studyId,
-						chromosome,
-						strandType, // Strand
-						txt_NewMatrixName,
-						gtCode, // Genotype encoding
-						txtA_NewMatrixDescription,
-						sampleInfoMap);
-				break;
-			case HGDP1:
-				InsertSampleInfo.processData(studyId, sampleInfoMap);
-				gtFilesLoader = new LoadGTFromHGDP1Files(txt_File1, // Genotypes file
-						txt_FileSampleInfo, // Sample info file (optional)
-						txt_File2, // Marker file (markerId, pos, allele1, allele2)
-						studyId,
-						chromosome,
-						strandType, // Strand
-						txt_NewMatrixName,
-						gtCode, // Genotype encoding
-						txtA_NewMatrixDescription,
-						sampleInfoMap);
-				break;
-			case Illumina_LGEN:
-				InsertSampleInfo.processData(studyId, sampleInfoMap);
-				gtFilesLoader = new LoadGTFromIlluminaLGENFiles(txt_File1,
-						txt_FileSampleInfo,
-						txt_File2,
-						studyId,
-						format,
-						txt_NewMatrixName,
-						cNetCDF.Defaults.GenotypeEncoding.ACGT0.toString(),
-						txtA_NewMatrixDescription,
-						sampleInfoMap);
-				break;
-			case GWASpi:
-				InsertSampleInfo.processData(studyId, sampleInfoMap);
-				gtFilesLoader = new LoadGTFromGWASpiFiles(txt_File1, // netCDF GT file
-						txt_FileSampleInfo,
-						studyId,
-						txt_NewMatrixName,
-						txtA_NewMatrixDescription,
-						sampleInfoMap);
-				break;
-			case Sequenom:
-				InsertSampleInfo.processData(studyId, sampleInfoMap);
-				gtFilesLoader = new LoadGTFromSequenomFiles(txt_File1, // GT File
-						txt_FileSampleInfo, // Sample info file (optional)
-						txt_File2, // Annotation (MAP) file
-						studyId,
-						format, // format
-						txt_NewMatrixName,
-						cNetCDF.Defaults.GenotypeEncoding.ACGT0.toString(), // Genotype encoding
-						txtA_NewMatrixDescription,
-						sampleInfoMap);
-				break;
-			default:
-				gtFilesLoader = null;
-		}
-
-		if (gtFilesLoader != null) {
-			newMatrixId = gtFilesLoader.processData();
+		GenotypesLoader genotypesLoader = genotypesLoaders.get(loadDescription.getFormat());
+		if (genotypesLoader != null) {
+				InsertSampleInfo.processData(loadDescription.getStudyId(), sampleInfoMap);
+				genotypesLoader.processData(loadDescription, sampleInfoMap);
 		}
 
 		return newMatrixId;

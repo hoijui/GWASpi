@@ -2,6 +2,7 @@ package org.gwaspi.netCDF.matrices;
 
 import org.gwaspi.constants.cDBGWASpi;
 import org.gwaspi.constants.cDBMatrix;
+import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import org.gwaspi.database.DbManager;
 import org.gwaspi.global.Config;
 import org.gwaspi.global.ServiceLocator;
@@ -47,7 +48,7 @@ public class MatrixManager {
 			int studyId,
 			String matrix_name,
 			String netCDF_name,
-			String matrix_type,
+			GenotypeEncoding matrix_type,
 			int parent_matrix1_id,
 			int parent_matrix2_id,
 			String input_location,
@@ -63,7 +64,7 @@ public class MatrixManager {
 		Object[] matrixMetaData = new Object[] {
 			matrix_name,
 			netCDF_name,
-			matrix_type,
+			matrix_type.toString(),
 			parent_matrix1_id,
 			parent_matrix2_id,
 			input_location,

@@ -1,6 +1,7 @@
 package org.gwaspi.netCDF.operations;
 
 import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import org.gwaspi.global.Text;
 import java.io.IOException;
 import java.util.HashMap;
@@ -71,9 +72,9 @@ public class MatrixTranslator_opt {
 		int result = Integer.MIN_VALUE;
 
 		NetcdfFile rdNcFile = NetcdfFile.open(rdMatrixMetadata.getPathToMatrix());
-		String rdMatrixGtCode = rdMatrixMetadata.getGenotypeEncoding();
+		GenotypeEncoding rdMatrixGtCode = rdMatrixMetadata.getGenotypeEncoding();
 
-		if (!rdMatrixGtCode.equals(cNetCDF.Defaults.GenotypeEncoding.ACGT0.toString())) { //Has not allready been translated
+		if (!rdMatrixGtCode.equals(GenotypeEncoding.ACGT0)) { //Has not allready been translated
 
 			try {
 				// CREATE netCDF-3 FILE
@@ -89,20 +90,21 @@ public class MatrixTranslator_opt {
 				descSB.append("\n");
 				descSB.append("Markers: ").append(rdMatrixMetadata.getMarkerSetSize()).append(", Samples: ").append(rdMatrixMetadata.getSampleSetSize());
 				descSB.append("\nGenotype encoding: ");
-				descSB.append(cNetCDF.Defaults.GenotypeEncoding.ACGT0.toString());
+				descSB.append(GenotypeEncoding.ACGT0.toString());
 
-				MatrixFactory wrMatrixHandler = new MatrixFactory(studyId,
-						rdMatrixMetadata.getTechnology(), //technology
+				MatrixFactory wrMatrixHandler = new MatrixFactory(
+						studyId,
+						rdMatrixMetadata.getTechnology(), // technology
 						wrMatrixFriendlyName,
-						descSB.toString(), //description
+						descSB.toString(), // description
 						rdMatrixMetadata.getStrand(),
-						rdMatrixMetadata.getHasDictionray(), //has dictionary?
+						rdMatrixMetadata.getHasDictionray(), // has dictionary?
 						rdSampleSet.getSampleSetSize(),
 						rdMarkerSet.getMarkerSetSize(),
 						rdChrInfoSetMap.size(),
-						cNetCDF.Defaults.GenotypeEncoding.ACGT0.toString(), //New matrix genotype encoding
-						rdMatrixId, //Orig matrixId 1
-						Integer.MIN_VALUE);         //Orig matrixId 2
+						GenotypeEncoding.ACGT0, // New matrix genotype encoding
+						rdMatrixId, // Orig matrixId 1
+						Integer.MIN_VALUE); // Orig matrixId 2
 
 				NetcdfFileWriteable wrNcFile = wrMatrixHandler.getNetCDFHandler();
 				try {
@@ -228,9 +230,9 @@ public class MatrixTranslator_opt {
 		int result = Integer.MIN_VALUE;
 
 		NetcdfFile rdNcFile = NetcdfFile.open(rdMatrixMetadata.getPathToMatrix());
-		String rdMatrixGTCode = rdMatrixMetadata.getGenotypeEncoding();
+		GenotypeEncoding rdMatrixGTCode = rdMatrixMetadata.getGenotypeEncoding();
 
-		if (!rdMatrixGTCode.equals(cNetCDF.Defaults.GenotypeEncoding.ACGT0.toString())) { // Has not yet been translated
+		if (!rdMatrixGTCode.equals(GenotypeEncoding.ACGT0)) { // Has not yet been translated
 			try {
 				// CREATE netCDF-3 FILE
 				StringBuilder descSB = new StringBuilder(Text.Matrix.descriptionHeader1);
@@ -243,11 +245,12 @@ public class MatrixTranslator_opt {
 					descSB.append("\n");
 				}
 				descSB.append("\nGenotype encoding: ");
-				descSB.append(cNetCDF.Defaults.GenotypeEncoding.ACGT0.toString());
+				descSB.append(GenotypeEncoding.ACGT0.toString());
 				descSB.append("\n");
 				descSB.append("Markers: ").append(rdMatrixMetadata.getMarkerSetSize()).append(", Samples: ").append(rdMatrixMetadata.getSampleSetSize());
 
-				MatrixFactory wrMatrixHandler = new MatrixFactory(studyId,
+				MatrixFactory wrMatrixHandler = new MatrixFactory(
+						studyId,
 						rdMatrixMetadata.getTechnology(), // technology
 						wrMatrixFriendlyName,
 						descSB.toString(), // description
@@ -256,7 +259,7 @@ public class MatrixTranslator_opt {
 						rdSampleSet.getSampleSetSize(),
 						rdMarkerSet.getMarkerSetSize(),
 						rdChrInfoSetMap.size(),
-						cNetCDF.Defaults.GenotypeEncoding.ACGT0.toString(), // New matrix genotype encoding
+						GenotypeEncoding.ACGT0, // New matrix genotype encoding
 						rdMatrixId, // Orig matrixId 1
 						Integer.MIN_VALUE); // Orig matrixId 2
 
@@ -375,11 +378,11 @@ public class MatrixTranslator_opt {
 		return result;
 	}
 
-	private Map<String, Object> translateCurrentSampleAB12AllelesMap(Map<String, Object> codedMap, String rdMatrixType, Map<String, Object> dictionaryMap) {
+	private Map<String, Object> translateCurrentSampleAB12AllelesMap(Map<String, Object> codedMap, GenotypeEncoding rdMatrixType, Map<String, Object> dictionaryMap) {
 		byte alleleA;
 		byte alleleB;
 
-		switch (cNetCDF.Defaults.GenotypeEncoding.compareTo(rdMatrixType)) {
+		switch (rdMatrixType) {
 			case AB0:
 				alleleA = cNetCDF.Defaults.AlleleBytes.A;
 				alleleB = cNetCDF.Defaults.AlleleBytes.B;

@@ -3,6 +3,7 @@ package org.gwaspi.netCDF.loader;
 import org.gwaspi.constants.cImport;
 import org.gwaspi.constants.cImport.Annotation.Beagle_Standard;
 import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
 import org.gwaspi.global.Text;
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -22,10 +23,10 @@ public class MetadataLoaderBeagle implements MetadataLoader {
 
 	private String markerFilePath;
 	private String chr;
-	private String strand;
+	private StrandType strand;
 	private int studyId;
 
-	public MetadataLoaderBeagle(String mapPath, String chr, String strand, int studyId) {
+	public MetadataLoaderBeagle(String mapPath, String chr, StrandType strand, int studyId) {
 
 		this.markerFilePath = mapPath;
 		this.chr = chr;

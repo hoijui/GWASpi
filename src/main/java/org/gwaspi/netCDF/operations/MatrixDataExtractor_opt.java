@@ -408,7 +408,7 @@ public class MatrixDataExtractor_opt {
 					// GENOTYPE ENCODING
 					ArrayChar.D2 guessedGTCodeAC = new ArrayChar.D2(1, 8);
 					Index index = guessedGTCodeAC.getIndex();
-					guessedGTCodeAC.setString(index.set(0, 0), rdMatrixMetadata.getGenotypeEncoding());
+					guessedGTCodeAC.setString(index.set(0, 0), rdMatrixMetadata.getGenotypeEncoding().toString());
 					int[] origin = new int[]{0, 0};
 					wrNcFile.write(cNetCDF.Variables.GLOB_GTENCODING, origin, guessedGTCodeAC);
 

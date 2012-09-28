@@ -20,7 +20,8 @@ public class cImport {
 		Illumina_LGEN,
 		PLINK,
 		PLINK_Binary,
-		Sequenom;
+		Sequenom,
+		UNKNOWN;
 
 		public static ImportFormat compareTo(String str) {
 			try {

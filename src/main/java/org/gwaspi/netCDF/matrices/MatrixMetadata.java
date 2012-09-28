@@ -2,7 +2,10 @@ package org.gwaspi.netCDF.matrices;
 
 import org.gwaspi.constants.cDBGWASpi;
 import org.gwaspi.constants.cDBMatrix;
+import org.gwaspi.constants.cImport.ImportFormat;
 import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
+import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
 import org.gwaspi.database.DbManager;
 import org.gwaspi.global.Config;
 import org.gwaspi.global.ServiceLocator;
@@ -32,12 +35,12 @@ public class MatrixMetadata {
 	private String matrixFriendlyName = "";
 	private String matrixNetCDFName = "";
 	private String pathToMatrix = "";
-	private String technology = "";
+	private ImportFormat technology = ImportFormat.UNKNOWN;
 	private String gwaspiDBVersion = "";
 	private String description = "";
-	private String gtEncoding = "";
-	private String strand = "";
-	private int hasDictionray = -1;
+	private GenotypeEncoding gtEncoding = null;
+	private StrandType strand = null;
+	private boolean hasDictionray = false;
 	private int markerSetSize = Integer.MIN_VALUE;
 	private int sampleSetSize = Integer.MIN_VALUE;
 	private int studyId = Integer.MIN_VALUE;
@@ -75,7 +78,7 @@ public class MatrixMetadata {
 			try {
 				ncfile = NetcdfFile.open(pathToMatrix);
 
-				technology = ncfile.findGlobalAttribute(cNetCDF.Attributes.GLOB_TECHNOLOGY).getStringValue();
+				technology = ImportFormat.compareTo(ncfile.findGlobalAttribute(cNetCDF.Attributes.GLOB_TECHNOLOGY).getStringValue());
 				try {
 					gwaspiDBVersion = ncfile.findGlobalAttribute(cNetCDF.Attributes.GLOB_GWASPIDB_VERSION).getStringValue();
 				} catch (Exception e) {
@@ -86,14 +89,15 @@ public class MatrixMetadata {
 				if (var != null) {
 					try {
 						ArrayChar.D2 gtCodeAC = (ArrayChar.D2) var.read("(0:0:1, 0:7:1)");
-						gtEncoding = gtCodeAC.getString(0);
+//						gtEncoding = GenotypeEncoding.valueOf(gtCodeAC.getString(0));
+						gtEncoding = GenotypeEncoding.compareTo(gtCodeAC.getString(0)); // HACK, the above was used before
 					} catch (InvalidRangeException ex) {
 						log.error(null, ex);
 					}
 				}
 
-				strand = ncfile.findGlobalAttribute(cNetCDF.Attributes.GLOB_STRAND).getStringValue();
-				hasDictionray = (Integer) ncfile.findGlobalAttribute(cNetCDF.Attributes.GLOB_HAS_DICTIONARY).getNumericValue();
+				strand = StrandType.valueOf(ncfile.findGlobalAttribute(cNetCDF.Attributes.GLOB_STRAND).getStringValue());
+				hasDictionray = ((Integer) ncfile.findGlobalAttribute(cNetCDF.Attributes.GLOB_HAS_DICTIONARY).getNumericValue() != 0);
 
 				Dimension markerSetDim = ncfile.findDimension(cNetCDF.Dimensions.DIM_MARKERSET);
 				markerSetSize = markerSetDim.getLength();
@@ -142,7 +146,7 @@ public class MatrixMetadata {
 			try {
 				ncfile = NetcdfFile.open(pathToMatrix);
 
-				technology = ncfile.findGlobalAttribute(cNetCDF.Attributes.GLOB_TECHNOLOGY).getStringValue();
+				technology = ImportFormat.compareTo(ncfile.findGlobalAttribute(cNetCDF.Attributes.GLOB_TECHNOLOGY).getStringValue());
 				try {
 					gwaspiDBVersion = ncfile.findGlobalAttribute(cNetCDF.Attributes.GLOB_GWASPIDB_VERSION).getStringValue();
 				} catch (Exception e) {
@@ -152,14 +156,14 @@ public class MatrixMetadata {
 				if (var != null) {
 					try {
 						ArrayChar.D2 gtCodeAC = (ArrayChar.D2) var.read("(0:0:1, 0:7:1)");
-						gtEncoding = gtCodeAC.getString(0);
+						gtEncoding = GenotypeEncoding.valueOf(gtCodeAC.getString(0));
 					} catch (InvalidRangeException ex) {
 						log.error(null, ex);
 					}
 				}
 
-				strand = ncfile.findGlobalAttribute(cNetCDF.Attributes.GLOB_STRAND).getStringValue();
-				hasDictionray = (Integer) ncfile.findGlobalAttribute(cNetCDF.Attributes.GLOB_HAS_DICTIONARY).getNumericValue();
+				strand = StrandType.valueOf(ncfile.findGlobalAttribute(cNetCDF.Attributes.GLOB_STRAND).getStringValue());
+				hasDictionray = ((Integer) ncfile.findGlobalAttribute(cNetCDF.Attributes.GLOB_HAS_DICTIONARY).getNumericValue() != 0);
 
 				Dimension markerSetDim = ncfile.findDimension(cNetCDF.Dimensions.DIM_MARKERSET);
 				markerSetSize = markerSetDim.getLength();
@@ -196,7 +200,7 @@ public class MatrixMetadata {
 			try {
 				ncfile = NetcdfFile.open(pathToMatrix);
 
-				technology = ncfile.findGlobalAttribute(cNetCDF.Attributes.GLOB_TECHNOLOGY).getStringValue();
+				technology = ImportFormat.compareTo(ncfile.findGlobalAttribute(cNetCDF.Attributes.GLOB_TECHNOLOGY).getStringValue());
 				try {
 					gwaspiDBVersion = ncfile.findGlobalAttribute(cNetCDF.Attributes.GLOB_GWASPIDB_VERSION).getStringValue();
 				} catch (Exception e) {
@@ -206,14 +210,14 @@ public class MatrixMetadata {
 				if (var != null) {
 					try {
 						ArrayChar.D2 gtCodeAC = (ArrayChar.D2) var.read("(0:0:1, 0:7:1)");
-						gtEncoding = gtCodeAC.getString(0);
+						gtEncoding = GenotypeEncoding.valueOf(gtCodeAC.getString(0));
 					} catch (InvalidRangeException ex) {
 						log.error(null, ex);
 					}
 				}
 
-				strand = ncfile.findGlobalAttribute(cNetCDF.Attributes.GLOB_STRAND).getStringValue();
-				hasDictionray = (Integer) ncfile.findGlobalAttribute(cNetCDF.Attributes.GLOB_HAS_DICTIONARY).getNumericValue();
+				strand = StrandType.valueOf(ncfile.findGlobalAttribute(cNetCDF.Attributes.GLOB_STRAND).getStringValue());
+				hasDictionray = ((Integer) ncfile.findGlobalAttribute(cNetCDF.Attributes.GLOB_HAS_DICTIONARY).getNumericValue() != 0);
 
 				Dimension markerSetDim = ncfile.findDimension(cNetCDF.Dimensions.DIM_MARKERSET);
 				markerSetSize = markerSetDim.getLength();
@@ -234,7 +238,7 @@ public class MatrixMetadata {
 		}
 	}
 
-	public int getHasDictionray() {
+	public boolean getHasDictionray() {
 		return hasDictionray;
 	}
 
@@ -250,7 +254,7 @@ public class MatrixMetadata {
 		return matrixFriendlyName;
 	}
 
-	public String getTechnology() {
+	public ImportFormat getTechnology() {
 		return technology;
 	}
 
@@ -258,7 +262,7 @@ public class MatrixMetadata {
 		return gwaspiDBVersion;
 	}
 
-	public String getGenotypeEncoding() {
+	public GenotypeEncoding getGenotypeEncoding() {
 		return gtEncoding;
 	}
 
@@ -274,7 +278,7 @@ public class MatrixMetadata {
 		return pathToMatrix;
 	}
 
-	public String getStrand() {
+	public StrandType getStrand() {
 		return strand;
 	}
 

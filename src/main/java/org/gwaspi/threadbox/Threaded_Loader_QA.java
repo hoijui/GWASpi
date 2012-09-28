@@ -2,6 +2,7 @@ package org.gwaspi.threadbox;
 
 import java.util.Map;
 import org.gwaspi.model.GWASpiExplorerNodes;
+import org.gwaspi.netCDF.loader.GenotypesLoadDescription;
 import org.gwaspi.netCDF.loader.LoadManager;
 import org.gwaspi.netCDF.operations.OP_QAMarkers_opt;
 import org.gwaspi.netCDF.operations.OP_QASamples_opt;
@@ -18,46 +19,19 @@ public class Threaded_Loader_QA extends CommonRunnable {
 
 	private int resultMatrixId;
 	private int resultOpId;
-	private String format;
+	private GenotypesLoadDescription loadDescription;
 	private Map<String, Object> sampleInfoMap;
-	private String newMatrixName;
-	private String newMatrixDescription;
-	private String file1;
-	private String fileSampleInfo;
-	private String file2;
-	private String chromosome;
-	private String strandType;
-	private String gtCode;
-	private int studyId;
 
 	public Threaded_Loader_QA(
 			String threadName,
 			String timeStamp,
-			String format,
-			Map<String, Object> sampleInfoMap,
-			String newMatrixName,
-			String newMatrixDescription,
-			String file1,
-			String fileSampleInfo,
-			String file2,
-			String chromosome,
-			String strandType,
-			String gtCode,
-			int studyId)
+			GenotypesLoadDescription loadDescription,
+			Map<String, Object> sampleInfoMap)
 	{
 		super(threadName, timeStamp, "Loading Genotypes");
 
-		this.format = format;
+		this.loadDescription = loadDescription;
 		this.sampleInfoMap = sampleInfoMap;
-		this.newMatrixName = newMatrixName;
-		this.newMatrixDescription = newMatrixDescription;
-		this.file1 = file1;
-		this.fileSampleInfo = fileSampleInfo;
-		this.file2 = file2;
-		this.chromosome = chromosome;
-		this.strandType = strandType;
-		this.gtCode = gtCode;
-		this.studyId = studyId;
 
 		startInternal(getTaskDescription());
 	}
@@ -69,20 +43,12 @@ public class Threaded_Loader_QA extends CommonRunnable {
 	protected void runInternal(SwingWorkerItem thisSwi) throws Exception {
 
 		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
-			resultMatrixId = LoadManager.dispatchLoadByFormat(format,
-					sampleInfoMap,
-					newMatrixName,
-					newMatrixDescription,
-					file1,
-					fileSampleInfo,
-					file2,
-					chromosome,
-					strandType,
-					gtCode,
-					studyId);
+			resultMatrixId = LoadManager.dispatchLoadByFormat(
+					loadDescription,
+					sampleInfoMap);
 
 			MultiOperations.printCompleted("Loading Genotypes");
-			GWASpiExplorerNodes.insertMatrixNode(studyId, resultMatrixId);
+			GWASpiExplorerNodes.insertMatrixNode(loadDescription.getStudyId(), resultMatrixId);
 		}
 
 		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
