@@ -49,7 +49,7 @@ public class MatrixMarkerQAPanel extends JPanel {
 	private JPanel pnl_MatrixDesc;
 	private JScrollPane scrl_MatrixDesc;
 	private JTextArea txtA_Description;
-	public GWASinOneGOParams gwasParams = new GWASinOneGOParams();
+	private GWASinOneGOParams gwasParams = new GWASinOneGOParams();
 	// End of variables declaration
 
 	@SuppressWarnings("unchecked")
@@ -81,8 +81,8 @@ public class MatrixMarkerQAPanel extends JPanel {
 			pnl_MatrixDesc.setBorder(BorderFactory.createTitledBorder(null, Text.Operation.operationId + ": " + currentOP.getOperationId(), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("DejaVu Sans", 1, 13))); // NOI18N
 			txtA_Description.setText(currentOP.getDescription().toString());
 		} else {
-			pnl_MatrixDesc.setBorder(BorderFactory.createTitledBorder(null, Text.Matrix.matrix + ": " + parentMatrix.matrixMetadata.getMatrixFriendlyName(), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("DejaVu Sans", 1, 13))); // NOI18N
-			txtA_Description.setText(parentMatrix.matrixMetadata.getDescription().toString());
+			pnl_MatrixDesc.setBorder(BorderFactory.createTitledBorder(null, Text.Matrix.matrix + ": " + parentMatrix.getMatrixMetadata().getMatrixFriendlyName(), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("DejaVu Sans", 1, 13))); // NOI18N
+			txtA_Description.setText(parentMatrix.getMatrixMetadata().getDescription().toString());
 		}
 		scrl_MatrixDesc.setViewportView(txtA_Description);
 

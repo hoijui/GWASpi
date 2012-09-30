@@ -88,8 +88,9 @@ public class MatrixManager {
 			genotypesFolder += "/STUDY_" + matrixMetadata.getStudyId() + "/";
 
 			// DELETE OPERATION netCDFs FROM THIS MATRIX
-			org.gwaspi.model.OperationsList opList = new OperationsList(matrixId);
-			for (Operation op : opList.operationsListAL) {
+
+			List<Operation> operations = OperationsList.getOperationsList(matrixId);
+			for (Operation op : operations) {
 				File opFile = new File(genotypesFolder + op.getOperationNetCDFName() + ".nc");
 				if (opFile.exists()) {
 					if (!opFile.canWrite()) {

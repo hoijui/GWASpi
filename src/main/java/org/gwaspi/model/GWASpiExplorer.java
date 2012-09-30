@@ -112,21 +112,21 @@ public class GWASpiExplorer {
 			}
 
 			// LOAD MATRICES FOR CURRENT STUDY
-			MatricesList matrixMod = new MatricesList(studyList.get(i).getStudyId());
-			for (int j = 0; j < matrixMod.matrixList.size(); j++) {
+			List<Matrix> matrixList = MatricesList.getMatrixList(studyList.get(i).getStudyId());
+			for (int j = 0; j < matrixList.size(); j++) {
 
-				DefaultMutableTreeNode matrixItem = GWASpiExplorerNodes.createMatrixTreeNode(matrixMod.matrixList.get(j).getMatrixId());
+				DefaultMutableTreeNode matrixItem = GWASpiExplorerNodes.createMatrixTreeNode(matrixList.get(j).getMatrixId());
 
 				// LOAD Parent OPERATIONS ON CURRENT MATRIX
-				OperationsList parentOpsMod = new OperationsList(matrixMod.matrixList.get(j).getMatrixId(), -1);
-				OperationsList allOpsMod = new OperationsList(matrixMod.matrixList.get(j).getMatrixId());
-				for (int k = 0; k < parentOpsMod.operationsListAL.size(); k++) {
+				List<Operation> parentOperations = OperationsList.getOperationsList(matrixList.get(j).getMatrixId(), -1);
+				List<Operation> allOperations = OperationsList.getOperationsList(matrixList.get(j).getMatrixId());
+				for (int k = 0; k < parentOperations.size(); k++) {
 					// LOAD SUB OPERATIONS ON CURRENT MATRIX
-					Operation currentOP = parentOpsMod.operationsListAL.get(k);
+					Operation currentOP = parentOperations.get(k);
 					DefaultMutableTreeNode operationItem = GWASpiExplorerNodes.createOperationTreeNode(currentOP.getOperationId());
 
 
-					List<Operation> childrenOpAL = getChildrenOperations(allOpsMod.operationsListAL, currentOP.getOperationId());
+					List<Operation> childrenOpAL = getChildrenOperations(allOperations, currentOP.getOperationId());
 					for (int m = 0; m < childrenOpAL.size(); m++) {
 						Operation subOP = childrenOpAL.get(m);
 						DefaultMutableTreeNode subOperationItem = GWASpiExplorerNodes.createSubOperationTreeNode(subOP.getOperationId());

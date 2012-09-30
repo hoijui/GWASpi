@@ -23,9 +23,12 @@ public class OperationsList {
 	private final static Logger log
 			= LoggerFactory.getLogger(OperationsList.class);
 
-	public List<Operation> operationsListAL = new ArrayList<Operation>();
+	private OperationsList() {
+	}
 
-	public OperationsList(int matrixId) throws IOException {
+	public static List<Operation> getOperationsList(int matrixId) throws IOException {
+
+		List<Operation> operationsList = new ArrayList<Operation>();
 
 		List<Map<String, Object>> rsOperations = getOperationsListByMatrixId(matrixId);
 
@@ -37,13 +40,17 @@ public class OperationsList {
 				if (!rsOperations.isEmpty() && rsOperations.get(i).size() == cDBOperations.T_CREATE_OPERATIONS.length) {
 					int currentOPId = (Integer) rsOperations.get(i).get(cDBOperations.f_ID);
 					Operation currentOP = new Operation(currentOPId);
-					operationsListAL.add(currentOP);
+					operationsList.add(currentOP);
 				}
 			}
 		}
+
+		return operationsList;
 	}
 
-	public OperationsList(int matrixId, int parentOpId) throws IOException {
+	public static List<Operation> getOperationsList(int matrixId, int parentOpId) throws IOException {
+
+		List<Operation> operationsList = new ArrayList<Operation>();
 
 		List<Map<String, Object>> rsOperations = getOperationsListByMatrixId(matrixId);
 
@@ -57,14 +64,18 @@ public class OperationsList {
 					int currentOpId = (Integer) rsOperations.get(i).get(cDBOperations.f_ID);
 					if (currentParentOPId == parentOpId) {
 						Operation currentOP = new Operation(currentOpId);
-						operationsListAL.add(currentOP);
+						operationsList.add(currentOP);
 					}
 				}
 			}
 		}
+
+		return operationsList;
 	}
 
-	public OperationsList(int matrixId, int parentOpId, OPType opType) throws IOException {
+	public static List<Operation> getOperationsList(int matrixId, int parentOpId, OPType opType) throws IOException {
+
+		List<Operation> operationsList = new ArrayList<Operation>();
 
 		List<Map<String, Object>> rsOperations = getOperationsListByMatrixId(matrixId);
 
@@ -79,14 +90,16 @@ public class OperationsList {
 					String currentOpType = rsOperations.get(i).get(cDBOperations.f_OP_TYPE).toString();
 					if (currentParentOPId == parentOpId && currentOpType.equals(opType.toString())) {
 						Operation currentOP = new Operation(currentOpId);
-						operationsListAL.add(currentOP);
+						operationsList.add(currentOP);
 					}
 				}
 			}
 		}
+
+		return operationsList;
 	}
 
-	protected List<Map<String, Object>> getOperationsListByMatrixId(int matrixId) throws IOException {
+	private static List<Map<String, Object>> getOperationsListByMatrixId(int matrixId) throws IOException {
 		List<Map<String, Object>> rs = null;
 		String dbName = cDBGWASpi.DB_DATACENTER;
 		DbManager studyDbManager = ServiceLocator.getDbManager(dbName);
@@ -160,12 +173,11 @@ public class OperationsList {
 	//</editor-fold>
 
 	//<editor-fold defaultstate="collapsed" desc="HELPERS">
-	public int getIdOfLastOperationTypeOccurance(OPType opType) {
+	public static int getIdOfLastOperationTypeOccurance(List<Operation> operationsList, OPType opType) {
 		int result = Integer.MIN_VALUE;
-		List<Operation> opAL = this.operationsListAL;
-		for (int i = 0; i < opAL.size(); i++) {
-			if (opAL.get(i).getOperationType().equals(OPType.MARKER_QA.toString())) {
-				result = opAL.get(i).getOperationId();
+		for (int i = 0; i < operationsList.size(); i++) {
+			if (operationsList.get(i).getOperationType().equals(OPType.MARKER_QA.toString())) {
+				result = operationsList.get(i).getOperationId();
 			}
 		}
 		return result;

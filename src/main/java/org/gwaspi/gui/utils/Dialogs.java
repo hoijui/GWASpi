@@ -25,6 +25,7 @@ import javax.swing.filechooser.FileFilter;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.Matrix;
 import org.gwaspi.model.Operation;
+import org.gwaspi.model.OperationsList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,13 +48,13 @@ public class Dialogs {
 	//<editor-fold defaultstate="collapsed" desc="DIALOG BOXES">
 	public static Operation showOperationCombo(int matrixId, OPType filterOpType) throws IOException {
 		Operation selectedOP = null;
-		org.gwaspi.model.OperationsList operations = new org.gwaspi.model.OperationsList(matrixId);
+		List<Operation> operationsList = OperationsList.getOperationsList(matrixId);
 
-		if (!operations.operationsListAL.isEmpty()) {
+		if (!operationsList.isEmpty()) {
 			List<String> operationsNames = new ArrayList<String>();
 			List<Operation> operationAL = new ArrayList<Operation>();
-			for (int i = 0; i < operations.operationsListAL.size(); i++) {
-				Operation op = operations.operationsListAL.get(i);
+			for (int i = 0; i < operationsList.size(); i++) {
+				Operation op = operationsList.get(i);
 				if (op.getOperationType().equals(filterOpType.toString())) {
 					StringBuilder sb = new StringBuilder();
 					sb.append("OP: ");
@@ -84,13 +85,13 @@ public class Dialogs {
 
 	public static Operation showOperationCombo(int matrixId, List<String> filterOpTypeAL, String title) throws IOException {
 		Operation selectedOP = null;
-		org.gwaspi.model.OperationsList operations = new org.gwaspi.model.OperationsList(matrixId);
+		List<Operation> operationsList = OperationsList.getOperationsList(matrixId);
 
-		if (!operations.operationsListAL.isEmpty()) {
+		if (!operationsList.isEmpty()) {
 			List<String> operationsNames = new ArrayList<String>();
 			List<Operation> operationAL = new ArrayList<Operation>();
-			for (int i = 0; i < operations.operationsListAL.size(); i++) {
-				Operation op = operations.operationsListAL.get(i);
+			for (int i = 0; i < operationsList.size(); i++) {
+				Operation op = operationsList.get(i);
 				if (filterOpTypeAL.contains(op.getOperationType())) {
 					StringBuilder sb = new StringBuilder();
 					sb.append("OP: ");
@@ -123,13 +124,13 @@ public class Dialogs {
 
 	public static Operation showOperationSubOperationsCombo(int matrixId, int parentOpId, OPType filterOpType, String title) throws IOException {
 		Operation selectedSubOp = null;
-		org.gwaspi.model.OperationsList operations = new org.gwaspi.model.OperationsList(matrixId, parentOpId);
+		List<Operation> operationsList = OperationsList.getOperationsList(matrixId, parentOpId);
 
-		if (!operations.operationsListAL.isEmpty()) {
+		if (!operationsList.isEmpty()) {
 			List<String> operationsNames = new ArrayList<String>();
 			List<Operation> operationAL = new ArrayList<Operation>();
-			for (int i = 0; i < operations.operationsListAL.size(); i++) {
-				Operation op = operations.operationsListAL.get(i);
+			for (int i = 0; i < operationsList.size(); i++) {
+				Operation op = operationsList.get(i);
 				if (op.getOperationType().equals(filterOpType.toString())) {
 					StringBuilder sb = new StringBuilder();
 					sb.append("OP: ");
@@ -250,17 +251,17 @@ public class Dialogs {
 	}
 
 	public static int showMatrixSelectCombo() throws IOException {
-		MatricesList matrices = new MatricesList();
+		List<Matrix> matrixList = MatricesList.getMatrixList();
 		//String[] matrixNames = new String[matrices.matrixList.size()];
 		List<String> matrixNames = new ArrayList<String>();
 		List<Integer> matrixIDs = new ArrayList<Integer>();
-		for (int i = 0; i < matrices.matrixList.size(); i++) {
-			Matrix mx = matrices.matrixList.get(i);
+		for (int i = 0; i < matrixList.size(); i++) {
+			Matrix mx = matrixList.get(i);
 			StringBuilder mn = new StringBuilder();
 			mn.append("SID: ");
 			mn.append(mx.getStudyId());
 			mn.append(" - MX: ");
-			mn.append(mx.matrixMetadata.getMatrixFriendlyName());
+			mn.append(mx.getMatrixMetadata().getMatrixFriendlyName());
 			//matrixNames[i]=mn.toString();
 			matrixNames.add(mn.toString());
 			matrixIDs.add(mx.getMatrixId());
@@ -334,8 +335,8 @@ public class Dialogs {
 		try {
 //			File tmpFile = new File(dir);
 //			if(!tmpFile.exists()){
-			dir = Config.getConfigValue(Config.PROPERTY_LAST_OPENED_DIR, cGlobal.HOMEDIR);
-			fc.setCurrentDirectory(new java.io.File(dir));
+			String tmpDir = Config.getConfigValue(Config.PROPERTY_LAST_OPENED_DIR, cGlobal.HOMEDIR);
+			fc.setCurrentDirectory(new File(tmpDir));
 //			}
 		} catch (IOException ex) {
 			log.error(null, ex);
@@ -387,8 +388,8 @@ public class Dialogs {
 			try {
 //				File tmpFile = new File(dir);
 //				if(!tmpFile.exists()){
-				dir = Config.getConfigValue(Config.PROPERTY_LAST_OPENED_DIR, cGlobal.HOMEDIR);
-				fc.setCurrentDirectory(new File(dir));
+				String tmpDir = Config.getConfigValue(Config.PROPERTY_LAST_OPENED_DIR, cGlobal.HOMEDIR);
+				fc.setCurrentDirectory(new File(tmpDir));
 //				}
 			} catch (IOException ex) {
 				log.error(null, ex);

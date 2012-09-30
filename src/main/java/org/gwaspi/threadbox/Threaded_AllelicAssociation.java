@@ -1,7 +1,9 @@
 package org.gwaspi.threadbox;
 
-import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.constants.cNetCDF.Defaults.OPType;
+import java.util.List;
 import org.gwaspi.model.GWASpiExplorerNodes;
+import org.gwaspi.model.Operation;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.netCDF.operations.GWASinOneGOParams;
 import org.gwaspi.netCDF.operations.OperationManager;
@@ -47,8 +49,8 @@ public class Threaded_AllelicAssociation extends CommonRunnable {
 
 	protected void runInternal(SwingWorkerItem thisSwi) throws Exception {
 
-		OperationsList opList = new OperationsList(matrixId);
-		int markersQAOpId = opList.getIdOfLastOperationTypeOccurance(cNetCDF.Defaults.OPType.MARKER_QA);
+		List<Operation> operations = OperationsList.getOperationsList(matrixId);
+		int markersQAOpId = OperationsList.getIdOfLastOperationTypeOccurance(operations, OPType.MARKER_QA);
 
 		if (!gwasParams.isDiscardMarkerByMisRat()) {
 			gwasParams.setDiscardMarkerMisRatVal(1);

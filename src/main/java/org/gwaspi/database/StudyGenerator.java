@@ -7,6 +7,9 @@ import org.gwaspi.gui.GWASpiExplorerPanel;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.List;
+import org.gwaspi.model.MatricesList;
+import org.gwaspi.model.Matrix;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,11 +64,11 @@ public class StudyGenerator {
 
 	public static void deleteStudy(int studyId, boolean deleteReports) throws IOException {
 
-		org.gwaspi.model.MatricesList matrixMod = new org.gwaspi.model.MatricesList(studyId);
+		List<Matrix> matrixList = MatricesList.getMatrixList(studyId);
 
-		for (int i = 0; i < matrixMod.matrixList.size(); i++) {
+		for (int i = 0; i < matrixList.size(); i++) {
 			try {
-				org.gwaspi.netCDF.matrices.MatrixManager.deleteMatrix(matrixMod.matrixList.get(i).getMatrixId(), deleteReports);
+				org.gwaspi.netCDF.matrices.MatrixManager.deleteMatrix(matrixList.get(i).getMatrixId(), deleteReports);
 				GWASpiExplorerPanel.getSingleton().updateTreePanel(true);
 			} catch (IOException ex) {
 			}

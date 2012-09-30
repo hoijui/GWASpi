@@ -58,8 +58,8 @@ public class MatrixExtractPanel extends JPanel {
 	}
 	// Variables declaration - do not modify
 	private Matrix parentMatrix;
-	public List<Object[]> markerPickerTable = new ArrayList<Object[]>();
-	public List<Object[]> samplePickerTable = new ArrayList<Object[]>();
+	private List<Object[]> markerPickerTable = new ArrayList<Object[]>();
+	private List<Object[]> samplePickerTable = new ArrayList<Object[]>();
 	private JButton btn_Back;
 	private JButton btn_Go;
 	private JButton btn_Help;
@@ -166,7 +166,7 @@ public class MatrixExtractPanel extends JPanel {
 		pnl_SampleZone.setBorder(BorderFactory.createTitledBorder(null, Text.Trafo.sampleSelectZone, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("DejaVu Sans", 1, 13))); // NOI18N
 
 		lbl_ParentMatrix.setText(Text.Matrix.parentMatrix);
-		lbl_ParentMatrixName.setText(parentMatrix.matrixMetadata.getMatrixFriendlyName());
+		lbl_ParentMatrixName.setText(parentMatrix.getMatrixMetadata().getMatrixFriendlyName());
 		lbl_NewMatrixName.setText(Text.Matrix.newMatrixName);
 		txt_NewMatrixName.setDocument(new JTextFieldLimit(63));
 		txtA_NewMatrixDescription.setColumns(20);

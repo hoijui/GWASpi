@@ -23,9 +23,12 @@ public final class MatricesList {
 	private final static Logger log
 			= LoggerFactory.getLogger(MatricesList.class);
 
-	public List<model.Matrix> matrixList = new ArrayList<model.Matrix>();
+	private MatricesList() {
+	}
 
-	public MatricesList(int studyId) throws IOException {
+	public static List<Matrix> getMatrixList(int studyId) throws IOException {
+
+		List<Matrix> matrixList = new ArrayList<Matrix>();
 
 		List<Map<String, Object>> rsMatricesList = getMatrixListByStudyId(studyId);
 
@@ -41,9 +44,13 @@ public final class MatricesList {
 				}
 			}
 		}
+
+		return matrixList;
 	}
 
-	public MatricesList() throws IOException {
+	public static List<Matrix> getMatrixList() throws IOException {
+
+		List<Matrix> matrixList = new ArrayList<Matrix>();
 
 		List<Map<String, Object>> rsMatricesList = getAllMatricesList();
 
@@ -59,9 +66,11 @@ public final class MatricesList {
 				}
 			}
 		}
+
+		return matrixList;
 	}
 
-	public List<Map<String, Object>> getMatrixListByStudyId(int studyId) throws IOException {
+	private static List<Map<String, Object>> getMatrixListByStudyId(int studyId) throws IOException {
 		List<Map<String, Object>> rs = null;
 		String dbName = cDBGWASpi.DB_DATACENTER;
 		DbManager studyDbManager = ServiceLocator.getDbManager(dbName);

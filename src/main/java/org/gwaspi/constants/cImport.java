@@ -27,7 +27,7 @@ public class cImport {
 			try {
 				return valueOf(str);
 			} catch (Exception ex) {
-				return GWASpi;
+				return GWASpi; // XXX maybe should be UNKNOWN?
 			}
 		}
 	}

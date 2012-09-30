@@ -83,7 +83,7 @@ public class MatrixAnalysePanel extends JPanel {
 	private JScrollPane scrl_MatrixOperations;
 	private JTable tbl_MatrixOperations;
 	private JTextArea txtA_Description;
-	public GWASinOneGOParams gwasParams = new GWASinOneGOParams();
+	private GWASinOneGOParams gwasParams = new GWASinOneGOParams();
 	private final Action gwasInOneGoAction;
 	// End of variables declaration
 
@@ -147,17 +147,17 @@ public class MatrixAnalysePanel extends JPanel {
 			pnl_MatrixDesc.setBorder(BorderFactory.createTitledBorder(null, Text.Operation.operation + ": " + currentOP.getOperationFriendlyName() + ", " + Text.Operation.operationId + ": " + currentOP.getOperationId(), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("DejaVu Sans", 1, 13))); // NOI18N
 			txtA_Description.setText(currentOP.getDescription().toString());
 		} else {
-			pnl_MatrixDesc.setBorder(BorderFactory.createTitledBorder(null, Text.Matrix.matrix + ": " + parentMatrix.matrixMetadata.getMatrixFriendlyName(), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("DejaVu Sans", 1, 13))); // NOI18N
-			txtA_Description.setText(parentMatrix.matrixMetadata.getDescription().toString());
+			pnl_MatrixDesc.setBorder(BorderFactory.createTitledBorder(null, Text.Matrix.matrix + ": " + parentMatrix.getMatrixMetadata().getMatrixFriendlyName(), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("DejaVu Sans", 1, 13))); // NOI18N
+			txtA_Description.setText(parentMatrix.getMatrixMetadata().getDescription().toString());
 		}
 
 		scrl_MatrixDesc.setViewportView(txtA_Description);
 
 		Object[][] tableMatrix;
 		if (currentOP != null) {
-			tableMatrix = org.gwaspi.model.OperationsList.getOperationsTable(_matrixId, currentOP.getOperationId());
+			tableMatrix = OperationsList.getOperationsTable(_matrixId, currentOP.getOperationId());
 		} else {
-			tableMatrix = org.gwaspi.model.OperationsList.getOperationsTable(_matrixId);
+			tableMatrix = OperationsList.getOperationsTable(_matrixId);
 		}
 
 		tbl_MatrixOperations.setModel(new DefaultTableModel(
@@ -411,8 +411,8 @@ public class MatrixAnalysePanel extends JPanel {
 						if (gwasParams.isProceed()) {
 							ProcessTab.getSingleton().showTab();
 							// GET HW OPERATION
-							OperationsList hwOPList = new OperationsList(parentMatrix.getMatrixId(), censusOPId, OPType.HARDY_WEINBERG);
-							for (Operation currentHWop : hwOPList.operationsListAL) {
+							List<Operation> hwOperations = OperationsList.getOperationsList(parentMatrix.getMatrixId(), censusOPId, OPType.HARDY_WEINBERG);
+							for (Operation currentHWop : hwOperations) {
 								// REQUEST WHICH HW TO USE
 								if (currentHWop != null) {
 									hwOPId = currentHWop.getOperationId();
@@ -514,8 +514,8 @@ public class MatrixAnalysePanel extends JPanel {
 						if (gwasParams.isProceed()) {
 							ProcessTab.getSingleton().showTab();
 							// GET HW OPERATION
-							OperationsList hwOPList = new OperationsList(parentMatrix.getMatrixId(), censusOPId, OPType.HARDY_WEINBERG);
-							for (Operation currentHWop : hwOPList.operationsListAL) {
+							List<Operation> hwOperations = OperationsList.getOperationsList(parentMatrix.getMatrixId(), censusOPId, OPType.HARDY_WEINBERG);
+							for (Operation currentHWop : hwOperations) {
 								// REQUEST WHICH HW TO USE
 								if (currentHWop != null) {
 									hwOPId = currentHWop.getOperationId();
@@ -620,8 +620,8 @@ public class MatrixAnalysePanel extends JPanel {
 						if (gwasParams.isProceed()) {
 							ProcessTab.getSingleton().showTab();
 							//GET HW OPERATION
-							OperationsList hwOPList = new OperationsList(parentMatrix.getMatrixId(), censusOPId, OPType.HARDY_WEINBERG);
-							for (Operation currentHWop : hwOPList.operationsListAL) {
+							List<Operation> hwOperations = OperationsList.getOperationsList(parentMatrix.getMatrixId(), censusOPId, OPType.HARDY_WEINBERG);
+							for (Operation currentHWop : hwOperations) {
 								//REQUEST WHICH HW TO USE
 								if (currentHWop != null) {
 									hwOPId = currentHWop.getOperationId();

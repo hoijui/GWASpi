@@ -35,7 +35,7 @@ import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.tree.DefaultMutableTreeNode;
-import org.gwaspi.model.JTextFieldLimited;
+import org.gwaspi.model.LimitedLengthDocument;
 import org.gwaspi.model.Study;
 import org.gwaspi.model.StudyList;
 import org.slf4j.Logger;
@@ -82,7 +82,7 @@ public class StudyManagementPanel extends JPanel {
 		pnl_StudyDesc = new JPanel();
 		lbl_NewStudyName = new JLabel();
 		txtF_NewStudyName = new JTextField();
-		txtF_NewStudyName.setDocument(new JTextFieldLimited(64));
+		txtF_NewStudyName.setDocument(new LimitedLengthDocument(64));
 		lbl_Desc = new JLabel();
 		scrl_Desc = new JScrollPane();
 		txtA_Desc = new JTextArea();

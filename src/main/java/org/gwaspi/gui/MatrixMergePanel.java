@@ -1,7 +1,6 @@
 package org.gwaspi.gui;
 
 import org.gwaspi.constants.cDBMatrix;
-import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.utils.BrowserHelpUrlAction;
@@ -109,11 +108,11 @@ public class MatrixMergePanel extends JPanel {
 
 		setBorder(BorderFactory.createTitledBorder(null, Text.Trafo.mergeMatrices, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("FreeSans", 1, 18))); // NOI18N
 
-		pnl_ParentMatrixDesc.setBorder(BorderFactory.createTitledBorder(null, Text.Matrix.parentMatrix + " " + parentMatrix.matrixMetadata.getMatrixFriendlyName(), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("DejaVu Sans", 1, 13))); // NOI18N
+		pnl_ParentMatrixDesc.setBorder(BorderFactory.createTitledBorder(null, Text.Matrix.parentMatrix + " " + parentMatrix.getMatrixMetadata().getMatrixFriendlyName(), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("DejaVu Sans", 1, 13))); // NOI18N
 		txtA_ParentMatrixDesc.setColumns(20);
 		txtA_ParentMatrixDesc.setRows(5);
 		txtA_ParentMatrixDesc.setBorder(BorderFactory.createTitledBorder(Text.All.description));
-		txtA_ParentMatrixDesc.setText(parentMatrix.matrixMetadata.getDescription());
+		txtA_ParentMatrixDesc.setText(parentMatrix.getMatrixMetadata().getDescription());
 		txtA_ParentMatrixDesc.setEditable(false);
 		scrl_ParentMatrixDesc.setViewportView(txtA_ParentMatrixDesc);
 
@@ -472,7 +471,7 @@ public class MatrixMergePanel extends JPanel {
 					sb.append(" - MX: ");
 					sb.append(currentMatrix.getMatrixId());
 					sb.append(" - ");
-					sb.append(currentMatrix.matrixMetadata.getMatrixFriendlyName());
+					sb.append(currentMatrix.getMatrixMetadata().getMatrixFriendlyName());
 
 					Object[] matrixItem = new Object[2];
 					matrixItem[0] = currentMatrix.getMatrixId();

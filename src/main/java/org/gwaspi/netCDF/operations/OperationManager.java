@@ -180,9 +180,6 @@ public class OperationManager {
 	}
 	//</editor-fold>
 
-	//<editor-fold defaultstate="collapsed" desc="TRAFO">
-	//</editor-fold>
-
 	//<editor-fold defaultstate="collapsed" desc="OPERATIONS METADATA">
 	public static String createOperationsMetadataTable(DbManager db) {
 		boolean result = false;
@@ -199,7 +196,8 @@ public class OperationManager {
 		return (result) ? "1" : "0";
 	}
 
-	static void insertOPMetadata(DbManager dBManager,
+	static void insertOPMetadata(
+			DbManager dBManager,
 			int parentMatrixId,
 			int parentOperationId,
 			String friendlyName,
@@ -207,8 +205,8 @@ public class OperationManager {
 			String OPType,
 			String command,
 			String description,
-			Integer studyId) {
-
+			Integer studyId)
+	{
 		Object[] opMetaData = new Object[]{parentMatrixId,
 			parentOperationId,
 			friendlyName,
@@ -222,7 +220,6 @@ public class OperationManager {
 				cDBOperations.T_OPERATIONS,
 				cDBOperations.F_INSERT_OPERATION,
 				opMetaData);
-
 	}
 
 	public static List<Object[]> getMatrixOperations(int matrixId) throws IOException {
@@ -232,7 +229,7 @@ public class OperationManager {
 		List<Map<String, Object>> rs = dBManager.executeSelectStatement("SELECT * FROM " + cDBGWASpi.SCH_MATRICES + "." + cDBOperations.T_OPERATIONS + " WHERE " + cDBOperations.f_PARENT_MATRIXID + "=" + matrixId + "  WITH RR");
 
 		for (int rowcount = 0; rowcount < rs.size(); rowcount++) {
-			//PREVENT PHANTOM-DB READS EXCEPTIONS
+			// PREVENT PHANTOM-DB READS EXCEPTIONS
 			if (!rs.isEmpty() && rs.get(rowcount).size() == cDBOperations.T_CREATE_OPERATIONS.length) {
 				Object[] element = new Object[2];
 				element[0] = (Integer) rs.get(rowcount).get(cDBOperations.f_ID);
@@ -250,12 +247,11 @@ public class OperationManager {
 			Operation op = new Operation(opId);
 			String genotypesFolder = Config.getConfigValue(Config.PROPERTY_GENOTYPES_DIR, "");
 
-			OperationsList opList = new OperationsList(op.getParentMatrixId(), opId);
-			List<Operation> opAL = opList.operationsListAL;
-			if (!opAL.isEmpty()) {
-				opAL.add(op);
-				for (int i = 0; i < opAL.size(); i++) {
-					File matrixOPFile = new File(genotypesFolder + "/STUDY_" + studyId + "/" + opAL.get(i).getOperationNetCDFName() + ".nc");
+			List<Operation> operations = OperationsList.getOperationsList(op.getParentMatrixId(), opId);
+			if (!operations.isEmpty()) {
+				operations.add(op);
+				for (int i = 0; i < operations.size(); i++) {
+					File matrixOPFile = new File(genotypesFolder + "/STUDY_" + studyId + "/" + operations.get(i).getOperationNetCDFName() + ".nc");
 					if (matrixOPFile.exists()) {
 						if (!matrixOPFile.canWrite()) {
 							throw new IllegalArgumentException("Delete: write protected: " + matrixOPFile.getPath());
@@ -263,11 +259,11 @@ public class OperationManager {
 						boolean success = matrixOPFile.delete();
 					}
 					if (deleteReports) {
-						org.gwaspi.reports.ReportManager.deleteReportByOperationId(opAL.get(i).getOperationId());
+						org.gwaspi.reports.ReportManager.deleteReportByOperationId(operations.get(i).getOperationId());
 					}
 
 					DbManager dBManager = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
-					String statement = "DELETE FROM " + cDBGWASpi.SCH_MATRICES + "." + cDBOperations.T_OPERATIONS + " WHERE " + cDBOperations.f_ID + "=" + opAL.get(i).getOperationId();
+					String statement = "DELETE FROM " + cDBGWASpi.SCH_MATRICES + "." + cDBOperations.T_OPERATIONS + " WHERE " + cDBOperations.f_ID + "=" + operations.get(i).getOperationId();
 					dBManager.executeStatement(statement);
 				}
 			} else {
@@ -286,24 +282,22 @@ public class OperationManager {
 				String statement = "DELETE FROM " + cDBGWASpi.SCH_MATRICES + "." + cDBOperations.T_OPERATIONS + " WHERE " + cDBOperations.f_ID + "=" + opId;
 				dBManager.executeStatement(statement);
 			}
-		} catch (IOException iOException) {
-			//PURGE INEXISTING OPERATIONS FROM DB
+		} catch (IOException ex) {
+			// PURGE INEXISTING OPERATIONS FROM DB
 			DbManager dBManager = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
 			String statement = "DELETE FROM " + cDBGWASpi.SCH_MATRICES + "." + cDBOperations.T_OPERATIONS + " WHERE " + cDBOperations.f_ID + "=" + opId;
 			dBManager.executeStatement(statement);
-		} catch (IllegalArgumentException illegalArgumentException) {
-			//PURGE INEXISTING OPERATIONS FROM DB
+		} catch (IllegalArgumentException ex) {
+			// PURGE INEXISTING OPERATIONS FROM DB
 			DbManager dBManager = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
 			String statement = "DELETE FROM " + cDBGWASpi.SCH_MATRICES + "." + cDBOperations.T_OPERATIONS + " WHERE " + cDBOperations.f_ID + "=" + opId;
 			dBManager.executeStatement(statement);
 		}
-
 	}
 
 	public static List<String> checkForNecessaryOperations(List<String> necessaryOPs, int matrixId) {
 		try {
-			OperationsList chkList = new OperationsList(matrixId);
-			List<Operation> chkOpAL = chkList.operationsListAL;
+			List<Operation> chkOpAL = OperationsList.getOperationsList(matrixId);
 
 			for (int i = 0; i < chkOpAL.size(); i++) {
 				if (necessaryOPs.contains(chkOpAL.get(i).getOperationType())) {
@@ -318,11 +312,10 @@ public class OperationManager {
 
 	public static List<String> checkForNecessaryOperations(List<String> necessaryOPs, int matrixId, int opId) {
 		try {
-			OperationsList chkMatrixList = new OperationsList(matrixId);
-			List<Operation> chkMatrixAL = chkMatrixList.operationsListAL;
+			List<Operation> chkMatrixAL = OperationsList.getOperationsList(matrixId);
 
 			for (int i = 0; i < chkMatrixAL.size(); i++) {
-				//Check if current operation is from parent matrix or parent operation
+				// Check if current operation is from parent matrix or parent operation
 				if (chkMatrixAL.get(i).getParentOperationId() == -1 || chkMatrixAL.get(i).getParentOperationId() == opId) {
 					if (necessaryOPs.contains(chkMatrixAL.get(i).getOperationType())) {
 						necessaryOPs.remove(chkMatrixAL.get(i).getOperationType());
@@ -338,8 +331,7 @@ public class OperationManager {
 	public static List<String> checkForBlackListedOperations(List<String> blackListOPs, int matrixId) {
 		List<String> nonoOPs = new ArrayList<String>();
 		try {
-			OperationsList chkList = new OperationsList(matrixId);
-			List<Operation> chkOpAL = chkList.operationsListAL;
+			List<Operation> chkOpAL = OperationsList.getOperationsList(matrixId);
 
 			for (int i = 0; i < chkOpAL.size(); i++) {
 				if (blackListOPs.contains(chkOpAL.get(i).getOperationType())) {
@@ -355,8 +347,7 @@ public class OperationManager {
 	public static List<String> checkForBlackListedOperations(List<String> blackListOPs, int matrixId, int opId) {
 		List<String> nonoOPs = new ArrayList<String>();
 		try {
-			OperationsList chkList = new OperationsList(matrixId, opId);
-			List<Operation> chkOpAL = chkList.operationsListAL;
+			List<Operation> chkOpAL = OperationsList.getOperationsList(matrixId, opId);
 
 			for (int i = 0; i < chkOpAL.size(); i++) {
 				if (blackListOPs.contains(chkOpAL.get(i).getOperationType())) {

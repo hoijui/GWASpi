@@ -19,6 +19,7 @@ import java.awt.Component;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
@@ -37,6 +38,7 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.tree.DefaultMutableTreeNode;
 import org.gwaspi.model.Matrix;
+import org.gwaspi.model.Operation;
 import org.gwaspi.model.OperationsList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -82,7 +84,7 @@ public class CurrentMatrixPanel extends JPanel {
 	@SuppressWarnings("unchecked")
 	public CurrentMatrixPanel(int _matrixId) throws IOException {
 
-		matrix = new org.gwaspi.model.Matrix(_matrixId);
+		matrix = new Matrix(_matrixId);
 		DefaultMutableTreeNode matrixNode = (DefaultMutableTreeNode) GWASpiExplorerPanel.getSingleton().getTree().getLastSelectedPathComponent();
 		treeChildrenMap = NodeToPathCorrespondence.buildNodeToPathCorrespondence(matrixNode, true);
 
@@ -127,18 +129,18 @@ public class CurrentMatrixPanel extends JPanel {
 		setBorder(BorderFactory.createTitledBorder(null, Text.Matrix.matrix, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("FreeSans", 1, 18))); // NOI18N
 
 
-		pnl_MatrixDesc.setBorder(BorderFactory.createTitledBorder(null, Text.Matrix.currentMatrix + " " + matrix.matrixMetadata.getMatrixFriendlyName() + ", " + Text.Matrix.matrixID + ": mx" + matrix.getMatrixId(), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("DejaVu Sans", 1, 13))); // NOI18N
+		pnl_MatrixDesc.setBorder(BorderFactory.createTitledBorder(null, Text.Matrix.currentMatrix + " " + matrix.getMatrixMetadata().getMatrixFriendlyName() + ", " + Text.Matrix.matrixID + ": mx" + matrix.getMatrixId(), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("DejaVu Sans", 1, 13))); // NOI18N
 		txtA_MatrixDesc.setColumns(20);
 		txtA_MatrixDesc.setRows(5);
 		txtA_MatrixDesc.setBorder(BorderFactory.createTitledBorder(null, Text.All.description, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("DejaVu Sans", 1, 13))); // NOI18N
 		txtA_MatrixDesc.setDocument(new JTextFieldLimit(1999));
-		txtA_MatrixDesc.setText(matrix.matrixMetadata.getDescription());
+		txtA_MatrixDesc.setText(matrix.getMatrixMetadata().getDescription());
 		scrl_MatrixDesc.setViewportView(txtA_MatrixDesc);
 		btn_DeleteMatrix.setAction(new DeleteMatrixAction(matrix, this));
 		btn_SaveDesc.setAction(new SaveDescriptionAction(matrix, txtA_MatrixDesc));
 
 		tbl_MatrixOperations.setModel(new DefaultTableModel(
-				org.gwaspi.model.OperationsList.getOperationsTable(_matrixId),
+				OperationsList.getOperationsTable(_matrixId),
 				new String[]{
 					Text.Operation.operationId, Text.Operation.operationName, Text.All.description, Text.All.createDate
 				}));
@@ -398,21 +400,20 @@ public class CurrentMatrixPanel extends JPanel {
 				String expPhenotype = cDBSamples.f_AFFECTION;
 				if (format.equals(cExport.ExportFormat.PLINK_Binary) || format.equals(cExport.ExportFormat.Eigensoft_Eigenstrat)) {
 					try {
-						//SELECT PHENOTYPE COLUMN TO USE
+						// SELECT PHENOTYPE COLUMN TO USE
 
 						if (format.equals(cExport.ExportFormat.Eigensoft_Eigenstrat)) {
 							expPhenotype = Dialogs.showPhenotypeColumnsSelectCombo();
 						}
 
-						//CHECK IF MARKER QA EXISTS FOR EXPORT TO BE PERMITTED
-						OperationsList opList = new OperationsList(matrix.getMatrixId());
-						int markersQAOpId = opList.getIdOfLastOperationTypeOccurance(OPType.MARKER_QA);
+						// CHECK IF MARKER QA EXISTS FOR EXPORT TO BE PERMITTED
+						List<Operation> operations = OperationsList.getOperationsList(matrix.getMatrixId());
+						int markersQAOpId = OperationsList.getIdOfLastOperationTypeOccurance(operations, OPType.MARKER_QA);
 						if (markersQAOpId != Integer.MIN_VALUE) {
 							MultiOperations.doExportMatrix(matrix.getStudyId(), matrix.getMatrixId(), format, expPhenotype);
 						} else {
 							Dialogs.showWarningDialogue(Text.Operation.warnOperationsMissing + " Marker QA");
 						}
-
 					} catch (IOException ex) {
 						log.error(null, ex);
 					}

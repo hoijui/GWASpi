@@ -3,6 +3,7 @@ package org.gwaspi.netCDF.exporter;
 import org.gwaspi.constants.cDBSamples;
 import org.gwaspi.constants.cExport;
 import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import java.io.BufferedWriter;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -10,7 +11,9 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import org.gwaspi.model.Operation;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.netCDF.markers.MarkerSet_opt;
 import org.gwaspi.netCDF.matrices.MatrixMetadata;
@@ -83,8 +86,8 @@ public class EigensoftFormatter implements Formatter {
 		rdMarkerSet.appendVariableToMarkerSetMapValue(cNetCDF.Variables.VAR_MARKERS_POS, sep);
 
 		// ALLELES
-		OperationsList opList = new OperationsList(rdMatrixMetadata.getMatrixId());
-		int markersQAOpId = opList.getIdOfLastOperationTypeOccurance(cNetCDF.Defaults.OPType.MARKER_QA);
+		List<Operation> operations = OperationsList.getOperationsList(rdMatrixMetadata.getMatrixId());
+		int markersQAOpId = OperationsList.getIdOfLastOperationTypeOccurance(operations, OPType.MARKER_QA);
 
 		Map<String, Object> minorAllelesMap = GatherQAMarkersData.loadMarkerQAMinorAlleles(markersQAOpId);
 		Map<String, Object> majorAllelesMap = GatherQAMarkersData.loadMarkerQAMajorAlleles(markersQAOpId);
