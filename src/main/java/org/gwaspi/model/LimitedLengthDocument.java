@@ -10,21 +10,14 @@ import javax.swing.text.PlainDocument;
  * IBE, Institute of Evolutionary Biology (UPF-CSIC)
  * CEXS-UPF-PRBB
  */
-public class JTextFieldLimited extends PlainDocument {
+public class LimitedLengthDocument extends PlainDocument {
 
 	private int limit;
 
-	public JTextFieldLimited(int limit) {
+	public LimitedLengthDocument(int limit) {
 		this.limit = limit;
 	}
 
-	/**
-	 *
-	 * @param offs
-	 * @param str
-	 * @param a
-	 * @throws BadLocationException
-	 */
 	@Override
 	public void insertString(int offs, String str, AttributeSet a)
 			throws BadLocationException {
