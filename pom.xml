@@ -119,7 +119,7 @@
 		<dependency>
 			<groupId>edu.ucar</groupId>
 			<artifactId>netcdf</artifactId>
-			<version>4.2</version>
+			<version>4.2-min</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.derby</groupId>
