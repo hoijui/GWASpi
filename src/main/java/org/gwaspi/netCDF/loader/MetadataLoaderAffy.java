@@ -11,6 +11,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -19,6 +21,9 @@ import java.util.TreeMap;
  * CEXS-UPF-PRBB
  */
 public class MetadataLoaderAffy implements MetadataLoader {
+
+	private final Logger log
+			= LoggerFactory.getLogger(MetadataLoaderAffy.class);
 
 	/** Duplicate SNPs to be removed */
 	private static final SNPBlacklist snpBlackList = new SNPBlacklist();
@@ -37,10 +42,10 @@ public class MetadataLoaderAffy implements MetadataLoader {
 	public Map<String, Object> getSortedMarkerSetWithMetaData() throws IOException {
 		String startTime = org.gwaspi.global.Utils.getMediumDateTimeAsString();
 
-		SortedMap<String, String> tempTM = parseAnnotationBRFile(annotationPath); // affyId, rsId,chr,pseudo-autosomal,pos, strand, alleles, plus-alleles
+		SortedMap<String, String> tempTM = parseAnnotationBRFile(); // affyId, rsId,chr,pseudo-autosomal,pos, strand, alleles, plus-alleles
 
 		org.gwaspi.global.Utils.sysoutStart("initilaizing marker info");
-		System.out.println(Text.All.processing);
+		log.info(Text.All.processing);
 
 		Map<String, Object> markerMetadataMap = new LinkedHashMap<String, Object>();
 		for (Map.Entry<String, String> entry : tempTM.entrySet()) {
@@ -76,8 +81,8 @@ public class MetadataLoaderAffy implements MetadataLoader {
 		return markerMetadataMap;
 	}
 
-	private static SortedMap<String, String> parseAnnotationBRFile(String path) throws IOException {
-		FileReader fr = new FileReader(path);
+	private SortedMap<String, String> parseAnnotationBRFile() throws IOException {
+		FileReader fr = new FileReader(annotationPath);
 		BufferedReader inputAnnotationBr = new BufferedReader(fr);
 		SortedMap<String, String> sortedMetadataTM = new TreeMap<String, String>(new ComparatorChrAutPosMarkerIdAsc());
 
@@ -91,7 +96,7 @@ public class MetadataLoaderAffy implements MetadataLoader {
 		while ((l = inputAnnotationBr.readLine()) != null) {
 
 			String[] affy6Vals = l.split("\",\"");
-			Affymetrix_GenomeWide6.init(path);
+			Affymetrix_GenomeWide6.init(annotationPath);
 			String affyId = affy6Vals[Affymetrix_GenomeWide6.markerId].replace("\"", "");
 			String chr = affy6Vals[Affymetrix_GenomeWide6.chr].replace("\"", "");
 			String inFinalList = affy6Vals[Affymetrix_GenomeWide6.in_final_list].replace("\"", "");
@@ -119,12 +124,12 @@ public class MetadataLoaderAffy implements MetadataLoader {
 			}
 			count++;
 			if (count == 1) {
-				System.out.println(Text.All.processing);
+				log.info(Text.All.processing);
 			} else if (count % 100000 == 0) {
-				System.out.println("Parsed annotation lines: " + count);
+				log.info("Parsed annotation lines: " + count);
 			}
 		}
-		System.out.println("Parsed annotation lines: " + count);
+		log.info("Parsed annotation lines: " + count);
 		return sortedMetadataTM;
 	}
 

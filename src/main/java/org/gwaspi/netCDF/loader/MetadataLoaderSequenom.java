@@ -11,6 +11,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -19,6 +21,9 @@ import java.util.TreeMap;
  * CEXS-UPF-PRBB
  */
 public class MetadataLoaderSequenom implements MetadataLoader {
+
+	private final Logger log
+			= LoggerFactory.getLogger(MetadataLoaderSequenom.class);
 
 	private String mapPath;
 	private int studyId;
@@ -32,10 +37,10 @@ public class MetadataLoaderSequenom implements MetadataLoader {
 	public Map<String, Object> getSortedMarkerSetWithMetaData() throws IOException {
 		String startTime = org.gwaspi.global.Utils.getMediumDateTimeAsString();
 
-		SortedMap<String, String> tempTM = parseAndSortMapFile(mapPath); // chr, markerId, genetic distance, position
+		SortedMap<String, String> tempTM = parseAndSortMapFile(); // chr, markerId, genetic distance, position
 
 		org.gwaspi.global.Utils.sysoutStart("initilaizing marker info");
-		System.out.println(Text.All.processing);
+		log.info(Text.All.processing);
 
 		Map<String, Object> markerMetadataMap = new LinkedHashMap<String, Object>();
 		for (Map.Entry<String, String> entry : tempTM.entrySet()) {
@@ -65,9 +70,9 @@ public class MetadataLoaderSequenom implements MetadataLoader {
 		return markerMetadataMap;
 	}
 
-	private static SortedMap<String, String> parseAndSortMapFile(String path) throws IOException {
+	private SortedMap<String, String> parseAndSortMapFile() throws IOException {
 
-		FileReader fr = new FileReader(path);
+		FileReader fr = new FileReader(mapPath);
 		BufferedReader inputMapBR = new BufferedReader(fr);
 		SortedMap<String, String> sortedMetadataTM = new TreeMap<String, String>(new ComparatorChrAutPosMarkerIdAsc());
 
@@ -107,12 +112,12 @@ public class MetadataLoaderSequenom implements MetadataLoader {
 			count++;
 
 			if (count == 1) {
-				System.out.println(Text.All.processing);
+				log.info(Text.All.processing);
 			} else if (count % 100000 == 0) {
-				System.out.println("Parsed annotation lines: " + count);
+				log.info("Parsed annotation lines: {}", count);
 			}
 		}
-		System.out.println("Parsed annotation lines: " + count);
+		log.info("Parsed annotation lines: {}", count);
 		inputMapBR.close();
 		fr.close();
 		return sortedMetadataTM;
