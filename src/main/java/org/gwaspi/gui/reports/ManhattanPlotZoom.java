@@ -99,10 +99,10 @@ public final class ManhattanPlotZoom extends JPanel {
 	private XYDataset initXYDataset;
 	private JFreeChart zoomChart;
 	private ChartPanel zoomPanel;
-	protected double threshold = 5E-7;
-	protected Color manhattan_back = Color.getHSBColor(0.1f, 0.0f, 0.9f);
-	protected Color manhattan_backalt = Color.getHSBColor(0.1f, 0.0f, 0.85f);
-	protected Color manhattan_dot = Color.blue;
+	private double threshold = 5E-7;
+	private Color manhattan_back = Color.getHSBColor(0.1f, 0.0f, 0.9f);
+	private Color manhattan_backalt = Color.getHSBColor(0.1f, 0.0f, 0.85f);
+	private Color manhattan_dot = Color.blue;
 	// Variables declaration - do not modify
 	private JButton btn_Back;
 	private JButton btn_Back2;
@@ -139,12 +139,12 @@ public final class ManhattanPlotZoom extends JPanel {
 //		long start = new Date().getTime();
 
 		this.parent = parent;
-		opId = opId;
-		currentChr = chr;
-		origChr = chr;
-		txt_NRows = txt_NRows;
-		startPhysPos = startPhysPos;
-		requestedPosWindow = requestedPosWindow;
+		this.opId = opId;
+		this.currentChr = chr;
+		this.origChr = chr;
+		this.txt_NRows = txt_NRows;
+		this.startPhysPos = startPhysPos;
+		this.requestedPosWindow = requestedPosWindow;
 
 		//<editor-fold defaultstate="collapsed" desc="PLOT DEFAULTS">
 		try {
