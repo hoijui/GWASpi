@@ -40,14 +40,14 @@ public class MetadataLoaderHGDP1 implements MetadataLoader {
 	public Map<String, Object> getSortedMarkerSetWithMetaData() throws IOException {
 		String startTime = org.gwaspi.global.Utils.getMediumDateTimeAsString();
 
-		SortedMap<String, String> tempTM = parseAndSortMarkerFile(); //chr, markerId, genetic distance, position
+		SortedMap<String, String> tempTM = parseAndSortMarkerFile(); // chr, markerId, genetic distance, position
 
-		org.gwaspi.global.Utils.sysoutStart("initilaizing marker info");
+		org.gwaspi.global.Utils.sysoutStart("initilaizing Marker info");
 		log.info(Text.All.processing);
 
 		Map<String, Object> markerMetadataMap = new LinkedHashMap<String, Object>();
 		for (Map.Entry<String, String> entry : tempTM.entrySet()) {
-			//chr;pos;markerId
+			// chr;pos;markerId
 			String[] keyValues = entry.getKey().split(cNetCDF.Defaults.TMP_SEPARATOR);
 			int pos;
 			try {
@@ -61,7 +61,7 @@ public class MetadataLoaderHGDP1 implements MetadataLoader {
 			Object[] markerInfo = new Object[4];
 			markerInfo[0] = keyValues[2]; // 0 => markerid
 			markerInfo[1] = valValues; // 1 => rsId
-			markerInfo[2] = fixChrData(keyValues[0]); // 2 => chr
+			markerInfo[2] = MetadataLoaderBeagle.fixChrData(keyValues[0]); // 2 => chr
 			markerInfo[3] = pos; // 3 => pos
 
 			markerMetadataMap.put(keyValues[2], markerInfo);
@@ -80,7 +80,6 @@ public class MetadataLoaderHGDP1 implements MetadataLoader {
 		String l;
 		int count = 0;
 		while ((l = inputMapBR.readLine()) != null) {
-
 			String[]markerVals = l.split(cImport.Separators.separators_SpaceTab_rgxp);
 			String markerId = markerVals[HGDP1_Standard.rsId].trim();
 			String rsId = "";
@@ -105,32 +104,13 @@ public class MetadataLoaderHGDP1 implements MetadataLoader {
 			if (count == 1) {
 				log.info(Text.All.processing);
 			} else if (count % 100000 == 0) {
-				log.info("Parsed annotation lines: " + count);
+				log.info("Parsed annotation lines: {}", count);
 			}
 		}
-		log.info("Parsed annotation lines: " + count);
+		log.info("Parsed annotation lines: {}", count);
+
 		inputMapBR.close();
-		fr.close();
+
 		return sortedMetadataTM;
-	}
-
-	private static String fixChrData(String chr) {
-
-		String chrFixed = chr;
-
-		if (chrFixed.equals("23")) {
-			chrFixed = "X";
-		}
-		if (chrFixed.equals("24")) {
-			chrFixed = "Y";
-		}
-		if (chrFixed.equals("25")) {
-			chrFixed = "XY";
-		}
-		if (chrFixed.equals("26")) {
-			chrFixed = "MT";
-		}
-
-		return chrFixed;
 	}
 }

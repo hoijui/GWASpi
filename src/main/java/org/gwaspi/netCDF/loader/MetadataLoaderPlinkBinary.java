@@ -42,12 +42,12 @@ public class MetadataLoaderPlinkBinary implements MetadataLoader {
 
 		SortedMap<String, String> tempTM = parseAndSortBimFile(); // chr, markerId, genetic distance, position
 
-		org.gwaspi.global.Utils.sysoutStart("initilaizing marker info");
+		org.gwaspi.global.Utils.sysoutStart("initilaizing Marker info");
 		log.info(Text.All.processing);
 
 		Map<String, Object> markerMetadataMap = new LinkedHashMap<String, Object>();
 		for (Map.Entry<String, String> entry : tempTM.entrySet()) {
-			//chr;pos;markerId
+			// chr;pos;markerId
 			String[] keyValues = entry.getKey().split(cNetCDF.Defaults.TMP_SEPARATOR);
 			int pos;
 			try {
@@ -56,7 +56,7 @@ public class MetadataLoaderPlinkBinary implements MetadataLoader {
 				pos = 0;
 			}
 
-			//rsId
+			// rsId
 			String valValues = entry.getValue();
 //			values = fixPlusAlleles(values);
 
@@ -67,7 +67,7 @@ public class MetadataLoaderPlinkBinary implements MetadataLoader {
 				rsId = keyValues[2];
 			}
 			markerInfo[1] = rsId; // 1 => rsId
-			markerInfo[2] = fixChrData(keyValues[0]); // 2 => chr
+			markerInfo[2] = MetadataLoaderBeagle.fixChrData(keyValues[0]); // 2 => chr
 			markerInfo[3] = pos; // 3 => pos
 			markerInfo[4] = valValues; // 4 => alleles
 
@@ -87,7 +87,6 @@ public class MetadataLoaderPlinkBinary implements MetadataLoader {
 		String l;
 		int count = 0;
 		while ((l = inputMapBR.readLine()) != null) {
-
 			String[] bimVals = l.split(cImport.Separators.separators_SpaceTab_rgxp);
 			String markerId = bimVals[Plink_Binary.bim_markerId].trim();
 			String rsId = "";
@@ -104,7 +103,7 @@ public class MetadataLoaderPlinkBinary implements MetadataLoader {
 			sbKey.append(markerId);
 
 			// rsId
-			StringBuilder sbVal = new StringBuilder(); //0 => markerid
+			StringBuilder sbVal = new StringBuilder(); // 0 => markerid
 			sbVal.append(bimVals[Plink_Binary.bim_allele1].trim());
 			sbVal.append(bimVals[Plink_Binary.bim_allele2].trim());
 
@@ -115,12 +114,13 @@ public class MetadataLoaderPlinkBinary implements MetadataLoader {
 			if (count == 1) {
 				log.info(Text.All.processing);
 			} else if (count % 100000 == 0) {
-				log.info("Parsed annotation lines: " + count);
+				log.info("Parsed annotation lines: {}", count);
 			}
 		}
-		log.info("Parsed annotation lines: " + count);
+		log.info("Parsed annotation lines: {}", count);
+
 		inputMapBR.close();
-		fr.close();
+
 		return sortedMetadataTM;
 	}
 
@@ -130,8 +130,6 @@ public class MetadataLoaderPlinkBinary implements MetadataLoader {
 		Map<String, Object> origMarkerIdSetMap = new LinkedHashMap<String, Object>();
 
 		String l;
-
-
 		while ((l = inputMapBR.readLine()) != null) {
 			String[] alleles = new String[2];
 			String[] mapVals = l.split(cImport.Separators.separators_SpaceTab_rgxp);
@@ -140,28 +138,9 @@ public class MetadataLoaderPlinkBinary implements MetadataLoader {
 			alleles[1] = mapVals[Plink_Binary.bim_allele2].trim();
 			origMarkerIdSetMap.put(markerId, alleles);
 		}
+
 		inputMapBR.close();
-		fr.close();
+
 		return origMarkerIdSetMap;
-	}
-
-	private static String fixChrData(String chr) {
-
-		String chrFixed = chr;
-
-		if (chrFixed.equals("23")) {
-			chrFixed = "X";
-		}
-		if (chrFixed.equals("24")) {
-			chrFixed = "Y";
-		}
-		if (chrFixed.equals("25")) {
-			chrFixed = "XY";
-		}
-		if (chrFixed.equals("26")) {
-			chrFixed = "MT";
-		}
-
-		return chrFixed;
 	}
 }

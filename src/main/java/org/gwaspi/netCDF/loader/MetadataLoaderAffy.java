@@ -44,7 +44,7 @@ public class MetadataLoaderAffy implements MetadataLoader {
 
 		SortedMap<String, String> tempTM = parseAnnotationBRFile(); // affyId, rsId,chr,pseudo-autosomal,pos, strand, alleles, plus-alleles
 
-		org.gwaspi.global.Utils.sysoutStart("initilaizing marker info");
+		org.gwaspi.global.Utils.sysoutStart("initilaizing Marker info");
 		log.info(Text.All.processing);
 
 		Map<String, Object> markerMetadataMap = new LinkedHashMap<String, Object>();
@@ -58,7 +58,7 @@ public class MetadataLoaderAffy implements MetadataLoader {
 				pos = 0;
 			}
 
-			//valValues = rsId;strand;alleles
+			// valValues = rsId;strand;alleles
 			String[] valValues = entry.getValue().split(cNetCDF.Defaults.TMP_SEPARATOR);
 			valValues = fixRsId(keyValues, valValues);
 			keyValues = fixChrData(keyValues);
@@ -94,7 +94,6 @@ public class MetadataLoaderAffy implements MetadataLoader {
 		String l;
 		int count = 0;
 		while ((l = inputAnnotationBr.readLine()) != null) {
-
 			String[] affy6Vals = l.split("\",\"");
 			Affymetrix_GenomeWide6.init(annotationPath);
 			String affyId = affy6Vals[Affymetrix_GenomeWide6.markerId].replace("\"", "");
@@ -123,13 +122,17 @@ public class MetadataLoaderAffy implements MetadataLoader {
 				sortedMetadataTM.put(sbKey.toString(), sbVal.toString());
 			}
 			count++;
+
 			if (count == 1) {
 				log.info(Text.All.processing);
 			} else if (count % 100000 == 0) {
-				log.info("Parsed annotation lines: " + count);
+				log.info("Parsed annotation lines: {}", count);
 			}
 		}
-		log.info("Parsed annotation lines: " + count);
+		log.info("Parsed annotation lines: {}", count);
+
+		inputAnnotationBr.close();
+
 		return sortedMetadataTM;
 	}
 

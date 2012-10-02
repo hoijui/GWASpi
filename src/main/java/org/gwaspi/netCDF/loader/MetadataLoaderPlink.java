@@ -44,7 +44,7 @@ public class MetadataLoaderPlink implements MetadataLoader {
 
 		SortedMap<String, String> tempTM = parseAndSortMapFile(); // chr, markerId, genetic distance, position
 
-		org.gwaspi.global.Utils.sysoutStart("initilaizing marker info");
+		org.gwaspi.global.Utils.sysoutStart("initilaizing Marker info");
 		log.info(Text.All.processing);
 
 		Map<String, Object> markerMetadataMap = new LinkedHashMap<String, Object>();
@@ -66,7 +66,7 @@ public class MetadataLoaderPlink implements MetadataLoader {
 			Object[] markerInfo = new Object[4];
 			markerInfo[0] = keyValues[2]; // 0 => markerid
 			markerInfo[1] = valValues[0]; // 1 => rsId
-			markerInfo[2] = fixChrData(keyValues[0]);  // 2 => chr
+			markerInfo[2] = MetadataLoaderBeagle.fixChrData(keyValues[0]); // 2 => chr
 			markerInfo[3] = pos; // 3 => pos
 
 			markerMetadataMap.put(keyValues[2], markerInfo);
@@ -86,7 +86,6 @@ public class MetadataLoaderPlink implements MetadataLoader {
 		String l;
 		int count = 0;
 		while ((l = inputMapBR.readLine()) != null) {
-
 			String[] mapVals = l.split(cImport.Separators.separators_SpaceTab_rgxp);
 			String markerId = mapVals[Plink_Standard.map_markerId].trim();
 			String rsId = "";
@@ -95,15 +94,15 @@ public class MetadataLoaderPlink implements MetadataLoader {
 			}
 			String chr = mapVals[Plink_Standard.map_chr].trim();
 
-			//chr;pos;markerId
+			// chr;pos;markerId
 			StringBuilder sbKey = new StringBuilder(chr);
 			sbKey.append(cNetCDF.Defaults.TMP_SEPARATOR);
 			sbKey.append(mapVals[Plink_Standard.map_pos].trim());
 			sbKey.append(cNetCDF.Defaults.TMP_SEPARATOR);
 			sbKey.append(markerId);
 
-			//rsId
-			StringBuilder sbVal = new StringBuilder(rsId); //0 => markerid
+			// rsId
+			StringBuilder sbVal = new StringBuilder(rsId); // 0 => markerid
 
 			sortedMetadataTM.put(sbKey.toString(), sbVal.toString());
 
@@ -112,12 +111,13 @@ public class MetadataLoaderPlink implements MetadataLoader {
 			if (count == 1) {
 				log.info(Text.All.processing);
 			} else if (count % 100000 == 0) {
-				log.info("Parsed annotation lines: " + count);
+				log.info("Parsed annotation lines: {}", count);
 			}
 		}
-		log.info("Parsed annotation lines: " + count);
+		log.info("Parsed annotation lines: {}", count);
+
 		inputMapBR.close();
-		fr.close();
+
 		return sortedMetadataTM;
 	}
 
@@ -128,34 +128,14 @@ public class MetadataLoaderPlink implements MetadataLoader {
 
 		String l;
 		while ((l = inputMapBR.readLine()) != null) {
-
 			String[] mapVals = l.split(cImport.Separators.separators_SpaceTab_rgxp);
 			String markerId = mapVals[Plink_Standard.map_markerId].trim();
 			origMarkerIdSetMap.put(markerId, cNetCDF.Defaults.DEFAULT_GT);
 		}
+
 		inputMapBR.close();
-		fr.close();
+
 		return origMarkerIdSetMap;
-	}
-
-	private static String fixChrData(String chr) {
-
-		String chrFixed = chr;
-
-		if (chrFixed.equals("23")) {
-			chrFixed = "X";
-		}
-		if (chrFixed.equals("24")) {
-			chrFixed = "Y";
-		}
-		if (chrFixed.equals("25")) {
-			chrFixed = "XY";
-		}
-		if (chrFixed.equals("26")) {
-			chrFixed = "MT";
-		}
-
-		return chrFixed;
 	}
 
 	static void logAsWhole(String startTime, String dirPath, String description, int studyId) throws IOException {

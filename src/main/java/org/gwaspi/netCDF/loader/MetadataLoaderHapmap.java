@@ -46,13 +46,13 @@ public class MetadataLoaderHapmap implements MetadataLoader {
 
 		SortedMap<String, String> tempTM = parseAnnotationBRFile(); // rsId, alleles [A/T], chr, pos, strand, genome_build, center, protLSID, assayLSID, panelLSID, QC_code, ensue GTs by SampleId
 
-		org.gwaspi.global.Utils.sysoutStart("initilaizing marker info");
+		org.gwaspi.global.Utils.sysoutStart("initilaizing Marker info");
 		log.info(Text.All.processing);
 
 		Map<String, Object> markerMetadataMap = new LinkedHashMap<String, Object>();
 		for (Map.Entry<String, String> entry : tempTM.entrySet()) {
 			String[] keyValues = entry.getKey().split(cNetCDF.Defaults.TMP_SEPARATOR); // chr;pos;markerId
-			String[] valValues = entry.getValue().split(cNetCDF.Defaults.TMP_SEPARATOR);  //rsId;strand;alleles
+			String[] valValues = entry.getValue().split(cNetCDF.Defaults.TMP_SEPARATOR);  // rsId;strand;alleles
 			int pos;
 			try {
 				pos = Integer.parseInt(keyValues[1]);
@@ -63,7 +63,7 @@ public class MetadataLoaderHapmap implements MetadataLoader {
 			Object[] markerInfo = new Object[6];
 			markerInfo[0] = keyValues[2]; // 0 => markerid
 			markerInfo[1] = valValues[0]; // 1 => rsId
-			markerInfo[2] = fixChrData(keyValues[0]); // 2 => chr
+			markerInfo[2] = MetadataLoaderBeagle.fixChrData(keyValues[0]); // 2 => chr
 			markerInfo[3] = pos; // 3 => pos
 			markerInfo[4] = valValues[1]; // 4 => strand
 			markerInfo[5] = valValues[2]; // 5 => alleles
@@ -86,7 +86,6 @@ public class MetadataLoaderHapmap implements MetadataLoader {
 		String l;
 		int count = 0;
 		while ((l = inputAnnotationBr.readLine()) != null) {
-
 			String[] hapmapVals = l.split(cImport.Separators.separators_SpaceTab_rgxp);
 			String alleles = hapmapVals[HapmapGT_Standard.alleles].replace("/", "");
 
@@ -101,7 +100,7 @@ public class MetadataLoaderHapmap implements MetadataLoader {
 			sbKey.append(cNetCDF.Defaults.TMP_SEPARATOR);
 			sbKey.append(hapmapVals[HapmapGT_Standard.rsId]); // 2 => markerId
 
-			//rsId;strand;alleles
+			// rsId;strand;alleles
 			StringBuilder sbVal = new StringBuilder(hapmapVals[HapmapGT_Standard.rsId]); // 0 => markerId = rsId
 			sbVal.append(cNetCDF.Defaults.TMP_SEPARATOR);
 			sbVal.append(hapmapVals[HapmapGT_Standard.strand]); // 1 => strand
@@ -112,33 +111,17 @@ public class MetadataLoaderHapmap implements MetadataLoader {
 			sortedMetadataTM.put(sbKey.toString(), sbVal.toString());
 
 			count++;
+
 			if (count == 1) {
 				log.info(Text.All.processing);
 			} else if (count % 100000 == 0) {
-				log.info("Parsed annotation lines: " + count);
+				log.info("Parsed annotation lines: {}", count);
 			}
 		}
-		log.info("Parsed annotation lines: " + count);
+		log.info("Parsed annotation lines: {}", count);
+
+		inputAnnotationBr.close();
+
 		return sortedMetadataTM;
-	}
-
-	private static String fixChrData(String chr) {
-
-		String chrFixed = chr;
-
-		if (chrFixed.equals("23")) {
-			chrFixed = "X";
-		}
-		if (chrFixed.equals("24")) {
-			chrFixed = "Y";
-		}
-		if (chrFixed.equals("25")) {
-			chrFixed = "XY";
-		}
-		if (chrFixed.equals("26")) {
-			chrFixed = "MT";
-		}
-
-		return chrFixed;
 	}
 }

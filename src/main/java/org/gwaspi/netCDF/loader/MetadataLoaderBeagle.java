@@ -45,6 +45,7 @@ public class MetadataLoaderBeagle implements MetadataLoader {
 		SortedMap<String, String> tempTM = parseAndSortMarkerFile(); // chr, markerId, genetic distance, position
 
 		org.gwaspi.global.Utils.sysoutStart("initilaizing Marker info");
+		log.info(Text.All.processing);
 
 		Map<String, Object> markerMetadataMap = new LinkedHashMap<String, Object>();
 		for (Map.Entry<String, String> entry : tempTM.entrySet()) {
@@ -83,7 +84,6 @@ public class MetadataLoaderBeagle implements MetadataLoader {
 		String l;
 		int count = 0;
 		while ((l = inputMapBR.readLine()) != null) {
-
 			String[] markerVals = l.split(cImport.Separators.separators_SpaceTab_rgxp);
 			String markerId = markerVals[Beagle_Standard.rsId].trim();
 			String rsId = "";
@@ -91,15 +91,15 @@ public class MetadataLoaderBeagle implements MetadataLoader {
 				rsId = markerId;
 			}
 
-			//chr;pos;markerId
+			// chr;pos;markerId
 			StringBuilder sbKey = new StringBuilder(chr);
 			sbKey.append(cNetCDF.Defaults.TMP_SEPARATOR);
 			sbKey.append(markerVals[Beagle_Standard.pos].trim());
 			sbKey.append(cNetCDF.Defaults.TMP_SEPARATOR);
 			sbKey.append(markerId);
 
-			//rsId;alleles
-			StringBuilder sbVal = new StringBuilder(rsId); //0 => rsId
+			// rsId;alleles
+			StringBuilder sbVal = new StringBuilder(rsId); // 0 => rsId
 			sbVal.append(cNetCDF.Defaults.TMP_SEPARATOR);
 			sbVal.append(markerVals[Beagle_Standard.allele1].trim()).append(markerVals[Beagle_Standard.allele2].trim()); //1 => alleles
 
@@ -110,16 +110,17 @@ public class MetadataLoaderBeagle implements MetadataLoader {
 			if (count == 1) {
 				log.info(Text.All.processing);
 			} else if (count % 100000 == 0) {
-				log.info("Parsed annotation lines: " + count);
+				log.info("Parsed annotation lines: {}", count);
 			}
 		}
-		log.info("Parsed annotation lines: " + count);
+		log.info("Parsed annotation lines: {}", count);
+
 		inputMapBR.close();
-		fr.close();
+
 		return sortedMetadataTM;
 	}
 
-	private static String fixChrData(String chr) {
+	static String fixChrData(String chr) {
 
 		String chrFixed = chr;
 
