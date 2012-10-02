@@ -21,8 +21,6 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.GroupLayout;
@@ -38,6 +36,8 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 import org.gwaspi.model.Operation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.gwaspi.samples.SampleManager;
 
 /**
@@ -47,6 +47,9 @@ import org.gwaspi.samples.SampleManager;
  * CEXS-UPF-PRBB
  */
 public class Report_SampleInfoPanel extends JPanel {
+
+	private static final Logger log
+			= LoggerFactory.getLogger(Report_SampleInfoPanel.class);
 
 	// Variables declaration - do not modify
 	private File missingFile;
@@ -254,13 +257,13 @@ public class Report_SampleInfoPanel extends JPanel {
 			}
 		} catch (IOException ex) {
 			Dialogs.showWarningDialogue("A table saving error has occurred");
-			Logger.getLogger(ChartDefaultDisplay.class.getName()).log(Level.SEVERE, null, ex);
+			log.error("A table saving error has occurred", ex);
 		} catch (NullPointerException ex) {
 			//Dialogs.showWarningDialogue("A table saving error has occurred");
-			//Logger.getLogger(ChartDefaultDisplay.class.getName()).log(Level.SEVERE, null, ex);
+			log.error("A table saving error has occurred", ex);
 		} catch (Exception ex) {
 			Dialogs.showWarningDialogue("A table saving error has occurred");
-			Logger.getLogger(ChartDefaultDisplay.class.getName()).log(Level.SEVERE, null, ex);
+			log.error("A table saving error has occurred", ex);
 		}
 	}
 
@@ -317,9 +320,9 @@ public class Report_SampleInfoPanel extends JPanel {
 			} catch (NullPointerException ex) {
 				//Dialogs.showWarningDialogue("A table saving error has occurred");
 				//Logger.getLogger(ChartDefaultDisplay.class.getName()).log(Level.SEVERE, null, ex);
-			} catch (IOException e) {
+			} catch (IOException ex) {
 				Dialogs.showWarningDialogue("A table saving error has occurred");
-				Logger.getLogger(ChartDefaultDisplay.class.getName()).log(Level.SEVERE, null, e);
+				log.error("A table saving error has occurred", ex);
 			}
 		}
 	}
@@ -342,7 +345,7 @@ public class Report_SampleInfoPanel extends JPanel {
 				GWASpiExplorerPanel.getSingleton().setPnl_Content(new CurrentStudyPanel(studyId));
 				GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
 			} catch (IOException ex) {
-				Logger.getLogger(Report_SampleInfoPanel.class.getName()).log(Level.SEVERE, null, ex);
+				log.error(null, ex);
 			}
 		}
 	}

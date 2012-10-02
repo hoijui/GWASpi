@@ -26,8 +26,6 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.BorderFactory;
@@ -47,6 +45,8 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 import org.gwaspi.model.Operation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -55,6 +55,9 @@ import org.gwaspi.model.Operation;
  * CEXS-UPF-PRBB
  */
 public class Report_QASamplesSummary extends JPanel {
+
+	private static final Logger log
+			= LoggerFactory.getLogger(Report_QASamplesSummary.class);
 
 	// Variables declaration - do not modify
 	private File reportFile;
@@ -79,7 +82,7 @@ public class Report_QASamplesSummary extends JPanel {
 		try {
 			reportPath = Config.getConfigValue(Config.PROPERTY_REPORTS_DIR, "") + "/STUDY_" + _studyId + "/";
 		} catch (IOException ex) {
-			Logger.getLogger(Report_QASamplesSummary.class.getName()).log(Level.SEVERE, null, ex);
+			log.error(null, ex);
 		}
 		reportFile = new File(reportPath + _qaFileName);
 
@@ -298,7 +301,8 @@ public class Report_QASamplesSummary extends JPanel {
 						tableMatrix[i] = tableRowAL.get(i);
 					}
 
-					String[] columns = new String[]{Text.Reports.familyId,
+					String[] columns = new String[]{
+						Text.Reports.familyId,
 						Text.Reports.sampleId,
 						Text.Reports.fatherId,
 						Text.Reports.motherId,
@@ -352,14 +356,14 @@ public class Report_QASamplesSummary extends JPanel {
 					//</editor-fold>
 				}
 			} catch (IOException ex) {
-				Logger.getLogger(Report_QASamplesSummary.class.getName()).log(Level.SEVERE, null, ex);
+				log.error(null, ex);
 			} catch (Exception ex) {
 				//Logger.getLogger(Report_QAMarkersSummary.class.getName()).log(Level.SEVERE, null, ex);
 			} finally {
 				try {
 					inputFileReader.close();
 				} catch (Exception ex) {
-					//Logger.getLogger(Report_QASamplesSummary.class.getName()).log(Level.SEVERE, null, ex);
+					log.warn(null, ex);
 				}
 			}
 		}
@@ -437,16 +441,16 @@ public class Report_QASamplesSummary extends JPanel {
 				writer.flush();
 			} catch (NullPointerException ex) {
 				//Dialogs.showWarningDialogue("A table saving error has occurred");
-				//Logger.getLogger(ChartDefaultDisplay.class.getName()).log(Level.SEVERE, null, ex);
-			} catch (IOException e) {
+				log.error("A table saving error has occurred", ex);
+			} catch (IOException ex) {
 				Dialogs.showWarningDialogue("A table saving error has occurred");
-				Logger.getLogger(ChartDefaultDisplay.class.getName()).log(Level.SEVERE, null, e);
+				log.error("A table saving error has occurred", ex);
 			} finally {
 				if (writer != null) {
 					try {
 						writer.close();
 					} catch (IOException ex) {
-						ex.printStackTrace();
+						log.warn(null, ex);
 					}
 				}
 			}
@@ -462,13 +466,13 @@ public class Report_QASamplesSummary extends JPanel {
 				}
 			} catch (IOException ex) {
 				Dialogs.showWarningDialogue("A table saving error has occurred");
-				Logger.getLogger(ChartDefaultDisplay.class.getName()).log(Level.SEVERE, null, ex);
+				log.error("A table saving error has occurred", ex);
 			} catch (NullPointerException ex) {
 				//Dialogs.showWarningDialogue("A table saving error has occurred");
-				//Logger.getLogger(ChartDefaultDisplay.class.getName()).log(Level.SEVERE, null, ex);
+				log.error("A table saving error has occurred", ex);
 			} catch (Exception ex) {
 				Dialogs.showWarningDialogue("A table saving error has occurred");
-				Logger.getLogger(ChartDefaultDisplay.class.getName()).log(Level.SEVERE, null, ex);
+				log.error("A table saving error has occurred", ex);
 			}
 		}
 	}
@@ -491,7 +495,7 @@ public class Report_QASamplesSummary extends JPanel {
 				GWASpiExplorerPanel.getSingleton().setPnl_Content(new MatrixAnalysePanel(op.getParentMatrixId(), opId));
 				GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
 			} catch (IOException ex) {
-				Logger.getLogger(Report_SampleInfoPanel.class.getName()).log(Level.SEVERE, null, ex);
+				log.error(null, ex);
 			}
 		}
 	}

@@ -18,11 +18,11 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -31,6 +31,9 @@ import javax.swing.table.TableRowSorter;
  * CEXS-UPF-PRBB
  */
 public final class Report_AnalysisGenotypicTestImpl extends Report_Analysis {
+
+	private static final Logger log
+			= LoggerFactory.getLogger(Report_AnalysisGenotypicTestImpl.class);
 
 	public Report_AnalysisGenotypicTestImpl(final int _studyId, final String _analysisFileName, final int _opId, String _NRows) {
 		studyId = _studyId;
@@ -77,7 +80,7 @@ public final class Report_AnalysisGenotypicTestImpl extends Report_Analysis {
 								);
 					}
 				} catch (IOException ex) {
-					Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
+					log.error(null, ex);
 				}
 			}
 		});
@@ -88,7 +91,7 @@ public final class Report_AnalysisGenotypicTestImpl extends Report_Analysis {
 		try {
 			reportPath = Config.getConfigValue(Config.PROPERTY_REPORTS_DIR, "") + "/STUDY_" + studyId + "/";
 		} catch (IOException ex) {
-			Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
+			log.error(null, ex);
 		}
 		reportFile = new File(reportPath + analysisFileName);
 
