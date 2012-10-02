@@ -1,5 +1,8 @@
 package org.gwaspi.gui;
 
+import ch.qos.logback.classic.LoggerContext;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.FileAppender;
 import org.gwaspi.cli.CliExecutor;
 import org.gwaspi.constants.cDBGWASpi;
 import org.gwaspi.constants.cGlobal;
@@ -11,12 +14,9 @@ import org.gwaspi.gui.utils.Dialogs;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.sql.SQLException;
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.prefs.Preferences;
@@ -189,14 +189,15 @@ public class StartGWASpi extends JFrame {
 				exit();
 			} else {
 				if (logToFile) {
-					//LOGGING OF SYSTEM OUTPUT
+					// LOGGING OF SYSTEM OUTPUT
 					if (logPath == null) {
 						logPath = Config.getConfigValue(Config.PROPERTY_REPORTS_DIR, "") + "/cli.log";
 					}
-					FileOutputStream fos = new FileOutputStream(logPath);
-					PrintStream ps = new PrintStream(fos);
-					System.setErr(ps);
-					System.setOut(ps);
+					FileAppender<ILoggingEvent> fileAppender = new FileAppender<ILoggingEvent>();
+					fileAppender.setFile(logPath);
+					fileAppender.start();
+					LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
+					lc.getLogger(Logger.ROOT_LOGGER_NAME).addAppender(fileAppender);
 				}
 			}
 		}
