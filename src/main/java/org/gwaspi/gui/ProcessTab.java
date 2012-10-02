@@ -2,6 +2,7 @@ package org.gwaspi.gui;
 
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.utils.Dialogs;
+import org.gwaspi.gui.utils.LogDocument;
 import org.gwaspi.gui.utils.RowRendererProcessOverviewWithAbortIcon;
 import java.awt.Component;
 import java.awt.Cursor;
@@ -15,8 +16,6 @@ import java.awt.event.MouseMotionAdapter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PrintStream;
 import java.net.URL;
 import java.util.List;
 import javax.swing.AbstractAction;
@@ -62,19 +61,6 @@ public class ProcessTab extends JPanel {
 	private JScrollPane scrl_ProcessLog;
 	private JTextArea txtA_ProcessLog;
 	private JButton btn_Save;
-	private OutputStream sysOutPS = new OutputStream() {
-		@Override
-		public void write(int b) throws IOException {
-			txtA_ProcessLog.append(String.valueOf((char) b));
-			txtA_ProcessLog.setCaretPosition(txtA_ProcessLog.getDocument().getLength());
-		}
-
-		@Override
-		public void write(byte[] b, int off, int len) {
-			txtA_ProcessLog.append(new String(b, off, len));
-			txtA_ProcessLog.setCaretPosition(txtA_ProcessLog.getDocument().getLength());
-		}
-	};
 	private static ProcessTab singleton = null;
 	// End of variables declaration
 
@@ -178,13 +164,7 @@ public class ProcessTab extends JPanel {
 		//</editor-fold>
 
 		if (!StartGWASpi.logOff) {
-			PrintStream printStream = new PrintStream(System.out) {
-				@Override
-				public void println(String x) {
-					txtA_ProcessLog.append(x + "\n");
-				}
-			};
-			System.setOut(new PrintStream(sysOutPS, true));
+			txtA_ProcessLog.setDocument(new LogDocument());
 		}
 	}
 
