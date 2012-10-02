@@ -1,6 +1,8 @@
 package org.gwaspi.netCDF;
 
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.slf4j.Logger;
@@ -8,7 +10,7 @@ import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
 import ucar.ma2.ArrayChar;
 import ucar.ma2.InvalidRangeException;
-import ucar.nc2.NCdump;
+import ucar.nc2.NCdumpW;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 
@@ -38,7 +40,9 @@ public class PrototypeReadNetcdf {
 			try {
 				//Array gt = genotypes.read("0:0:1, 0:9:1, 0:1:1"); // sample 1, snp 0 - 10, alleles 0+1
 				ArrayChar.D3 gt = (ArrayChar.D3) genotypes.read("0:0:1, 0:9:1, 0:1:1");
-				NCdump.printArray(gt, varName, System.out, null);
+				StringWriter arrStr = new StringWriter();
+				NCdumpW.printArray(gt, varName, new PrintWriter(arrStr), null);
+				log.info(arrStr.getBuffer().toString());
 
 				Map<Object, Object> filledMap = fillLinkedHashMap(map, gt, gtSpan);
 

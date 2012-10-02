@@ -1,6 +1,8 @@
 package org.gwaspi.netCDF;
 
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,7 +12,7 @@ import ucar.ma2.Array;
 import ucar.ma2.ArrayInt;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.Dimension;
-import ucar.nc2.NCdump;
+import ucar.nc2.NCdumpW;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 
@@ -40,13 +42,17 @@ public class PrototypeReadD4ArrayInt {
 				return;
 			}
 			try {
+				StringWriter arrStr = new StringWriter();
 				//Array gt = genotypes.read("0:0:1, 0:9:1, 0:1:1"); //sample 1, snp 0 - 10, alleles 0+1
 				ArrayInt.D2 rdIntArray = (ArrayInt.D2) contingencies.read("0:" + (markersDim.getLength() - 1) + ":1, 0:" + (boxesDim.getLength() - 1) + ":1");
-				NCdump.printArray(rdIntArray, varName, System.out, null);
+				NCdumpW.printArray(rdIntArray, varName, new PrintWriter(arrStr), null);
+				log.info(arrStr.getBuffer().toString());
 
 				ArrayInt wrIntArray = new ArrayInt(new int[]{1, boxesDim.getLength()});
 				ArrayInt.D2.arraycopy(rdIntArray, 0, wrIntArray, 0, boxesDim.getLength());
-				NCdump.printArray(wrIntArray, varName, System.out, null);
+				arrStr = new StringWriter();
+				NCdumpW.printArray(wrIntArray, varName, new PrintWriter(arrStr), null);
+				log.info(arrStr.getBuffer().toString());
 
 				int[] test = (int[]) wrIntArray.copyTo1DJavaArray();
 
