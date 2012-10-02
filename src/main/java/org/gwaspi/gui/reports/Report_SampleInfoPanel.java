@@ -219,12 +219,14 @@ public class Report_SampleInfoPanel extends JPanel {
 						Double d1 = Double.parseDouble(o1.toString());
 						Double d2 = Double.parseDouble(o2.toString());
 						return d1.compareTo(d2);
-					} catch (NumberFormatException numberFormatException) {
+					} catch (NumberFormatException ex) {
+						log.warn(null, ex);
 						try {
 							Integer i1 = Integer.parseInt(o1.toString());
 							Integer i2 = Integer.parseInt(o2.toString());
 							return i1.compareTo(i2);
-						} catch (Exception e) {
+						} catch (Exception ex1) {
+							log.warn(null, ex1);
 							return o1.toString().compareTo(o2.toString());
 						}
 					}
@@ -316,10 +318,9 @@ public class Report_SampleInfoPanel extends JPanel {
 
 				writer.flush();
 				writer.close();
-
 			} catch (NullPointerException ex) {
 				//Dialogs.showWarningDialogue("A table saving error has occurred");
-				//Logger.getLogger(ChartDefaultDisplay.class.getName()).log(Level.SEVERE, null, ex);
+				log.error("A table saving error has occurred", ex);
 			} catch (IOException ex) {
 				Dialogs.showWarningDialogue("A table saving error has occurred");
 				log.error("A table saving error has occurred", ex);

@@ -23,7 +23,7 @@ public class ReportsList {
 	private final static Logger log
 			= LoggerFactory.getLogger(ReportsList.class);
 
-	public List<model.Report> reportsListAL = new ArrayList<model.Report>();
+	public List<Report> reportsListAL = new ArrayList<Report>();
 
 	public ReportsList(int opId, int matrixId) throws IOException {
 
@@ -93,7 +93,7 @@ public class ReportsList {
 				}
 			}
 		} catch (Exception ex) {
-			//log.error(null, ex);
+			log.error(null, ex);
 		}
 		return reportsTable;
 	}

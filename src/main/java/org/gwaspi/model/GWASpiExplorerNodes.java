@@ -198,6 +198,7 @@ public class GWASpiExplorerNodes {
 				addNode(parentNode, newNode, true);
 			}
 		} catch (Exception ex) {
+			log.error(null, ex);
 		}
 	}
 
@@ -213,6 +214,7 @@ public class GWASpiExplorerNodes {
 				addNode(parentNode, newNode, true);
 			}
 		} catch (Exception ex) {
+			log.error(null, ex);
 		}
 	}
 
@@ -226,6 +228,7 @@ public class GWASpiExplorerNodes {
 				deleteNode(deleteNode);
 			}
 		} catch (Exception ex) {
+			log.error(null, ex);
 		}
 	}
 	//</editor-fold>
@@ -245,8 +248,8 @@ public class GWASpiExplorerNodes {
 					addNode(parentNode, newNode, true);
 				}
 			} catch (IOException ex) {
+				log.error(null, ex);
 			}
-		} else {
 		}
 	}
 
@@ -260,6 +263,7 @@ public class GWASpiExplorerNodes {
 				deleteNode(deleteNode);
 			}
 		} catch (Exception ex) {
+			log.error(null, ex);
 		}
 	}
 	//</editor-fold>
@@ -278,6 +282,7 @@ public class GWASpiExplorerNodes {
 				addNode(parentNode, newNode, true);
 			}
 		} catch (Exception ex) {
+			log.error(null, ex);
 		}
 	}
 
@@ -294,6 +299,7 @@ public class GWASpiExplorerNodes {
 				addNode(parentNode, newNode, true);
 			}
 		} catch (Exception ex) {
+			log.error(null, ex);
 		}
 	}
 
@@ -307,6 +313,7 @@ public class GWASpiExplorerNodes {
 				deleteNode(deleteNode);
 			}
 		} catch (Exception ex) {
+			log.error(null, ex);
 		}
 	}
 	//</editor-fold>
@@ -333,14 +340,16 @@ public class GWASpiExplorerNodes {
 				}
 			}
 		} catch (Exception ex) {
+			log.error(null, ex);
 		}
 	}
 	//</editor-fold>
 
-	public static DefaultMutableTreeNode addNode(DefaultMutableTreeNode parentNode,
+	public static DefaultMutableTreeNode addNode(
+			DefaultMutableTreeNode parentNode,
 			DefaultMutableTreeNode child,
-			boolean shouldBeVisible) {
-
+			boolean shouldBeVisible)
+	{
 		DefaultTreeModel treeModel = (DefaultTreeModel) GWASpiExplorerPanel.getSingleton().getTree().getModel();
 		treeModel.insertNodeInto(child, parentNode, parentNode.getChildCount());
 

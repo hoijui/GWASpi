@@ -267,7 +267,7 @@ class BeagleFormatter implements Formatter {
 				try {
 					rdNcFile.close();
 				} catch (IOException ex) {
-					log.error("Cannot close file: " + rdNcFile, ex);
+					log.warn("Cannot close file: " + rdNcFile, ex);
 				}
 			}
 		}

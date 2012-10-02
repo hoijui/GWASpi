@@ -95,7 +95,7 @@ public abstract class SwingWorker {
 			}
 			try {
 				t.join();
-			} catch (InterruptedException e) {
+			} catch (InterruptedException ex) {
 				Thread.currentThread().interrupt(); // propagate
 				return null;
 			}

@@ -102,6 +102,7 @@ public class GWASpiExplorerPanel extends JPanel {
 				tree.setSelectionPath(tp);
 			}
 		} catch (IOException ex) {
+			log.warn(null, ex);
 		}
 	}
 
@@ -231,6 +232,7 @@ public class GWASpiExplorerPanel extends JPanel {
 						currentNodeInfo.setCollapsable(true);
 					}
 				} catch (Exception ex) {
+					log.warn(null, ex);
 				}
 			}
 		}

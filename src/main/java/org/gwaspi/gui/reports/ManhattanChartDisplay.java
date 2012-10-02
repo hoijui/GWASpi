@@ -102,7 +102,8 @@ public final class ManhattanChartDisplay extends JPanel {
 						} else {
 						}
 					}
-				} catch (NumberFormatException numberFormatException) {
+				} catch (NumberFormatException ex) {
+					log.warn(null, ex);
 				}
 			}
 		});
@@ -207,7 +208,8 @@ public final class ManhattanChartDisplay extends JPanel {
 				pnl_Chart.doLayout();
 
 			}
-		} catch (IOException iOException) {
+		} catch (IOException ex) {
+			log.warn(Text.Reports.warnCantOpenFile, ex);
 			Dialogs.showWarningDialogue(Text.Reports.warnCantOpenFile);
 		}
 
@@ -322,7 +324,7 @@ public final class ManhattanChartDisplay extends JPanel {
 			} catch (IOException ex) {
 				log.error(null, ex);
 			} catch (Exception ex) {
-				//log.error(null, ex);
+				log.error(null, ex);
 			}
 		}
 	}

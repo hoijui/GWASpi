@@ -127,13 +127,14 @@ public class GWASpiFormatter implements Formatter {
 			//</editor-fold>
 
 			result = true;
-		} catch (IOException iOException) {
+		} catch (IOException ex) {
+			log.error(null, ex);
 		} finally {
 			if (null != rdNcFile) {
 				try {
 					rdNcFile.close();
 				} catch (IOException ex) {
-					log.error("Cannot close file: " + rdNcFile, ex);
+					log.warn("Cannot close file: " + rdNcFile, ex);
 				}
 			}
 		}

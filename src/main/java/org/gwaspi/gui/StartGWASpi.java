@@ -122,13 +122,13 @@ public class StartGWASpi extends JFrame {
 				// Set System L&F
 				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 			} catch (UnsupportedLookAndFeelException ex) {
-				// TODO handle exception
+				log.warn(null, ex);
 			} catch (ClassNotFoundException ex) {
-				// TODO handle exception
+				log.warn(null, ex);
 			} catch (InstantiationException ex) {
-				// TODO handle exception
+				log.warn(null, ex);
 			} catch (IllegalAccessException ex) {
-				// TODO handle exception
+				log.warn(null, ex);
 			}
 
 			try {

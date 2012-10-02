@@ -16,6 +16,8 @@ import org.gwaspi.netCDF.markers.MarkerSet_opt;
 import org.gwaspi.netCDF.operations.OperationManager;
 import org.gwaspi.netCDF.operations.OperationMetadata;
 import org.gwaspi.netCDF.operations.OperationSet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.nc2.NetcdfFile;
 
 /**
@@ -25,6 +27,9 @@ import ucar.nc2.NetcdfFile;
  * CEXS-UPF-PRBB
  */
 public class OutputQAMarkers {
+
+	private final static Logger log
+			= LoggerFactory.getLogger(OutputQAMarkers.class);
 
 	private OutputQAMarkers() {
 	}
@@ -137,7 +142,7 @@ public class OutputQAMarkers {
 			List<Object[]> operationsAL = OperationManager.getMatrixOperations(rdOPMetadata.getParentMatrixId());
 			int markersQAopId = Integer.MIN_VALUE;
 			for (int i = 0; i < operationsAL.size(); i++) {
-				Object[] element = (Object[]) operationsAL.get(i);
+				Object[] element = operationsAL.get(i);
 				if (element[1].toString().equals(OPType.MARKER_QA.toString())) {
 					markersQAopId = (Integer) element[0];
 				}
@@ -181,8 +186,9 @@ public class OutputQAMarkers {
 			}
 
 			result = true;
-		} catch (IOException iOException) {
+		} catch (IOException ex) {
 			result = false;
+			log.warn(null, ex);
 		}
 
 		return result;
@@ -293,8 +299,9 @@ public class OutputQAMarkers {
 			}
 
 			result = true;
-		} catch (IOException iOException) {
+		} catch (IOException ex) {
 			result = false;
+			log.warn(null, ex);
 		}
 
 		return result;

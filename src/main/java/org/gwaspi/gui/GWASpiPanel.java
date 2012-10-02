@@ -13,6 +13,8 @@ import javax.swing.JSplitPane;
 import javax.swing.JTree;
 import javax.swing.tree.TreePath;
 import org.gwaspi.model.GWASpiExplorer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -21,6 +23,9 @@ import org.gwaspi.model.GWASpiExplorer;
  * CEXS-UPF-PRBB
  */
 public class GWASpiPanel extends JPanel {
+
+	private final Logger log
+			= LoggerFactory.getLogger(GWASpiPanel.class);
 
 	// Variables declaration - do not modify
 	private JTree tree;
@@ -81,6 +86,7 @@ public class GWASpiPanel extends JPanel {
 				tree.setSelectionPath(tp);
 			}
 		} catch (IOException ex) {
+			log.warn(null, ex);
 		}
 	}
 

@@ -58,6 +58,7 @@ public class MetadataLoaderHapmap implements MetadataLoader {
 				pos = Integer.parseInt(keyValues[1]);
 			} catch (Exception ex) {
 				pos = 0;
+				log.warn(null, ex);
 			}
 
 			Object[] markerInfo = new Object[6];

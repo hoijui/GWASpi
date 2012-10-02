@@ -5,6 +5,8 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.MediaTracker;
 import javax.swing.JComponent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Component for viewing an Image. Simplified version of Symantec ImageViewer
@@ -14,6 +16,9 @@ import javax.swing.JComponent;
  * @author Roedy Green
  */
 public class ImageViewerSwing extends JComponent {
+
+	private final static Logger log
+			= LoggerFactory.getLogger(ImageViewerSwing.class);
 
 	/**
 	 * default Constructor
@@ -59,7 +64,8 @@ public class ImageViewerSwing extends JComponent {
 				tracker = new MediaTracker(this);
 				tracker.addImage(image, 0);
 				tracker.waitForID(0);
-			} catch (InterruptedException e) {
+			} catch (InterruptedException ex) {
+				log.error(null, ex);
 			}
 		}
 		// image is now ready, let's paint it

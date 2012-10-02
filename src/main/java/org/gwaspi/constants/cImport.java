@@ -1,5 +1,8 @@
 package org.gwaspi.constants;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  *
  * @author Fernando Muñiz Fernandez
@@ -7,6 +10,8 @@ package org.gwaspi.constants;
  * CEXS-UPF-PRBB
  */
 public class cImport {
+
+	private static final Logger log = LoggerFactory.getLogger(cImport.class);
 
 	private cImport() {
 	}
@@ -98,9 +103,10 @@ public class cImport {
 				int versionStart = currentAnnotation.indexOf(".na");
 				int versionEnd = currentAnnotation.indexOf('.', versionStart + 1);
 				int annotationVersion = 30; // Assuming newest annotation version
-				try { // Find out real annotation version
+				try { // Find out the real annotation version
 					annotationVersion = Integer.parseInt(currentAnnotation.substring(versionStart + 3, versionEnd));
 				} catch (Exception ex) {
+					log.warn(null, ex);
 				}
 
 				if (annotationVersion < 30) {

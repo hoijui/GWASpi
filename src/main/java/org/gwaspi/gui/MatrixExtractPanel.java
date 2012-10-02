@@ -614,6 +614,7 @@ public class MatrixExtractPanel extends JPanel {
 					Dialogs.showWarningDialogue(Text.Matrix.pleaseInsertMatrixName);
 				}
 			} catch (Exception ex) {
+				log.error(null, ex);
 				Dialogs.showWarningDialogue(ex.getMessage());
 			}
 		}

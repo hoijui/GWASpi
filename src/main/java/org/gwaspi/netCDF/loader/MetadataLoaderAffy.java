@@ -56,6 +56,7 @@ public class MetadataLoaderAffy implements MetadataLoader {
 				pos = Integer.parseInt(keyValues[3]);
 			} catch (Exception ex) {
 				pos = 0;
+				log.warn(null, ex);
 			}
 
 			// valValues = rsId;strand;alleles

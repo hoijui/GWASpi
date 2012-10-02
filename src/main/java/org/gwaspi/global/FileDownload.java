@@ -52,7 +52,8 @@ public class FileDownload {
 				if (out != null) {
 					out.close();
 				}
-			} catch (IOException ioe) {
+			} catch (IOException ex) {
+				log.warn(null, ex);
 			}
 		}
 		return result;

@@ -836,7 +836,7 @@ public class OP_MarkerCensus_opt implements MatrixOperation {
 						rdNcFile.close();
 						wrNcFile.close();
 					} catch (IOException ex) {
-						log.error("Cannot close file", ex);
+						log.warn("Cannot close file", ex);
 					}
 				}
 

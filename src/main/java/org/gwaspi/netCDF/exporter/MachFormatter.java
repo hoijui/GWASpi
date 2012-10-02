@@ -70,13 +70,14 @@ public class MachFormatter implements Formatter {
 			exportChromosomeToDat(exportDir, rdMatrixMetadata, rdMarkerSet, tmpChr, start, end - 1);
 
 			result = true;
-		} catch (IOException iOException) {
+		} catch (IOException ex) {
+			log.error(null, ex);
 		} finally {
 			if (null != rdNcFile) {
 				try {
 					rdNcFile.close();
 				} catch (IOException ex) {
-					log.error("Cannot close file: " + rdNcFile, ex);
+					log.warn("Cannot close file: " + rdNcFile, ex);
 				}
 			}
 		}

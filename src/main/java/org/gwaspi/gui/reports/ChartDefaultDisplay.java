@@ -159,7 +159,7 @@ public class ChartDefaultDisplay extends JPanel {
 			} catch (IOException ex) {
 				log.error(null, ex);
 			} catch (Exception ex) {
-				//log.error(null, ex);
+				log.error(null, ex);
 			}
 		}
 	}

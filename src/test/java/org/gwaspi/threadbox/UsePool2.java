@@ -33,7 +33,8 @@ public class UsePool2 {
 //			executor.shutdown();
 //			executor.awaitTermination(waitTime, TimeUnit.MILLISECONDS);
 //			log.info("Executed OperationId: {}", qa.getResult());
-//		} catch (InterruptedException ignored) {
+//		} catch (InterruptedException ex) {
+//			log.warn(null, ex);
 //		}
 //		System.exit(0);
 	}

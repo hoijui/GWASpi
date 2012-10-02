@@ -146,13 +146,15 @@ public final class Report_AnalysisGenotypicTestImpl extends Report_Analysis {
 					Double pVal_f;
 					try {
 						chiSqr_f = Double.parseDouble(dfRound.format(chiSqr));
-					} catch (NumberFormatException numberFormatException) {
+					} catch (NumberFormatException ex) {
 						chiSqr_f = chiSqr;
+						log.warn(null, ex);
 					}
 					try {
 						pVal_f = Double.parseDouble(dfSci.format(pVal));
-					} catch (NumberFormatException numberFormatException) {
+					} catch (NumberFormatException ex) {
 						pVal_f = pVal;
+						log.warn(null, ex);
 					}
 
 					row[6] = chiSqr_f;
@@ -199,12 +201,14 @@ public final class Report_AnalysisGenotypicTestImpl extends Report_Analysis {
 								Double d1 = Double.parseDouble(o1.toString());
 								Double d2 = Double.parseDouble(o2.toString());
 								return d1.compareTo(d2);
-							} catch (NumberFormatException numberFormatException) {
+							} catch (NumberFormatException ex) {
+								log.warn(null, ex);
 								try {
 									Integer i1 = Integer.parseInt(o1.toString());
 									Integer i2 = Integer.parseInt(o2.toString());
 									return i1.compareTo(i2);
-								} catch (Exception e) {
+								} catch (Exception ex1) {
+									log.warn(null, ex1);
 									return o1.toString().compareTo(o2.toString());
 								}
 							}
@@ -229,9 +233,9 @@ public final class Report_AnalysisGenotypicTestImpl extends Report_Analysis {
 			}
 			inputFileReader.close();
 		} catch (IOException ex) {
-			//Logger.getLogger(Report_AnalysisAllelicTestImpl.class.getName()).log(Level.SEVERE, null, ex);
+			log.error(null, ex);
 		} catch (Exception ex) {
-			//Logger.getLogger(Report_QAMarkersSummary.class.getName()).log(Level.SEVERE, null, ex);
+			log.error(null, ex);
 		}
 	}
 }

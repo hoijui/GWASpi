@@ -76,7 +76,7 @@ public class OperationMetadata {
 						try {
 							ncfile.close();
 						} catch (IOException ex) {
-							log.error("Cannot close file: " + ncfile.getLocation(), ex);
+							log.warn("Cannot close file: " + ncfile.getLocation(), ex);
 						}
 					}
 				}
@@ -124,7 +124,7 @@ public class OperationMetadata {
 					try {
 						ncfile.close();
 					} catch (IOException ex) {
-						log.error("Cannot close file: " + ncfile.getLocation(), ex);
+						log.warn("Cannot close file: " + ncfile.getLocation(), ex);
 					}
 				}
 			}

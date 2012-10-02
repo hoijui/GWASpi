@@ -17,6 +17,8 @@ import org.gwaspi.netCDF.markers.MarkerSet_opt;
 import org.gwaspi.netCDF.operations.OperationManager;
 import org.gwaspi.netCDF.operations.OperationMetadata;
 import org.gwaspi.netCDF.operations.OperationSet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.nc2.NetcdfFile;
 
 /**
@@ -26,6 +28,9 @@ import ucar.nc2.NetcdfFile;
  * CEXS-UPF-PRBB
  */
 public class OutputHardyWeinberg {
+
+	private final static Logger log
+			= LoggerFactory.getLogger(OutputHardyWeinberg.class);
 
 	private OutputHardyWeinberg() {
 	}
@@ -66,23 +71,21 @@ public class OutputHardyWeinberg {
 				unsortedMarkerIdHWPval_ALTMap.clear();
 			}
 
-			//STORE HW VALUES FOR LATER
+			// STORE HW VALUES FOR LATER
 			Map<String, Object> storeHWPval_ALTMap = new LinkedHashMap<String, Object>();
 			storeHWPval_ALTMap.putAll(sortingMarkerSetMap);
 
-			//GET MARKER INFO
+			// GET MARKER INFO
 			String sep = cExport.separator_REPORTS;
 			OperationMetadata rdOPMetadata = new OperationMetadata(opId);
 			MarkerSet_opt rdInfoMarkerSet = new MarkerSet_opt(rdOPMetadata.getStudyId(), rdOPMetadata.getParentMatrixId());
 			rdInfoMarkerSet.initFullMarkerIdSetMap();
 
-			//WRITE HEADER OF FILE
+			// WRITE HEADER OF FILE
 			String header = "MarkerID\trsID\tChr\tPosition\tMin_Allele\tMaj_Allele\t" + Text.Reports.hwPval + Text.Reports.CTRL + "\t" + Text.Reports.hwObsHetzy + Text.Reports.CTRL + "\t" + Text.Reports.hwExpHetzy + Text.Reports.CTRL + "\n";
 			String reportPath = Config.getConfigValue(Config.PROPERTY_REPORTS_DIR, "") + "/STUDY_" + rdOPMetadata.getStudyId() + "/";
 
-
-
-			//WRITE MARKERSET RSID
+			// WRITE MARKERSET RSID
 			rdInfoMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_RSID);
 			for (Map.Entry<String, Object> entry : sortingMarkerSetMap.entrySet()) {
 				Object value = rdInfoMarkerSet.getMarkerIdSetMap().get(entry.getKey());
@@ -90,8 +93,7 @@ public class OutputHardyWeinberg {
 			}
 			ReportWriter.writeFirstColumnToReport(reportPath, reportName, header, sortingMarkerSetMap, true);
 
-
-			//WRITE MARKERSET CHROMOSOME
+			// WRITE MARKERSET CHROMOSOME
 			rdInfoMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
 			for (Map.Entry<String, Object> entry : sortingMarkerSetMap.entrySet()) {
 				Object value = rdInfoMarkerSet.getMarkerIdSetMap().get(entry.getKey());
@@ -99,7 +101,7 @@ public class OutputHardyWeinberg {
 			}
 			ReportWriter.appendColumnToReport(reportPath, reportName, sortingMarkerSetMap, false, false);
 
-			//WRITE MARKERSET POS
+			// WRITE MARKERSET POS
 			rdInfoMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_POS);
 			for (Map.Entry<String, Object> entry : sortingMarkerSetMap.entrySet()) {
 				Object value = rdInfoMarkerSet.getMarkerIdSetMap().get(entry.getKey());
@@ -107,8 +109,8 @@ public class OutputHardyWeinberg {
 			}
 			ReportWriter.appendColumnToReport(reportPath, reportName, sortingMarkerSetMap, false, false);
 
-			//WRITE KNOWN ALLELES FROM QA
-			//get MARKER_QA Operation
+			// WRITE KNOWN ALLELES FROM QA
+			// get MARKER_QA Operation
 			List<Object[]> operationsAL = OperationManager.getMatrixOperations(rdOPMetadata.getParentMatrixId());
 			int markersQAopId = Integer.MIN_VALUE;
 			for (int i = 0; i < operationsAL.size(); i++) {
@@ -124,22 +126,20 @@ public class OutputHardyWeinberg {
 				OperationSet rdOperationSet = new OperationSet(rdOPMetadata.getStudyId(), markersQAopId);
 				Map<String, Object> opMarkerSetMap = rdOperationSet.getOpSetMap();
 
-				//MINOR ALLELE
+				// MINOR ALLELE
 				opMarkerSetMap = rdOperationSet.fillOpSetMapWithVariable(qaNcFile, cNetCDF.Census.VAR_OP_MARKERS_MINALLELES);
 				for (Map.Entry<String, Object> entry : rdInfoMarkerSet.getMarkerIdSetMap().entrySet()) {
 					Object minorAllele = opMarkerSetMap.get(entry.getKey());
 					entry.setValue(minorAllele);
 				}
 
-				//MAJOR ALLELE
+				// MAJOR ALLELE
 				rdOperationSet.fillMapWithDefaultValue(opMarkerSetMap, "");
 				opMarkerSetMap = rdOperationSet.fillOpSetMapWithVariable(qaNcFile, cNetCDF.Census.VAR_OP_MARKERS_MAJALLELES);
 				for (Map.Entry<String, Object> entry : rdInfoMarkerSet.getMarkerIdSetMap().entrySet()) {
 					Object minorAllele = entry.getValue();
 					entry.setValue(minorAllele + sep + opMarkerSetMap.get(entry.getKey()));
 				}
-
-
 			}
 			for (Map.Entry<String, Object> entry : sortingMarkerSetMap.entrySet()) {
 				Object value = rdInfoMarkerSet.getMarkerIdSetMap().get(entry.getKey());
@@ -163,8 +163,9 @@ public class OutputHardyWeinberg {
 			ReportWriter.appendColumnToReport(reportPath, reportName, sortingMarkerSetMap, true, false);
 
 			result = true;
-		} catch (IOException iOException) {
+		} catch (IOException ex) {
 			result = false;
+			log.warn(null, ex);
 		}
 
 		return result;

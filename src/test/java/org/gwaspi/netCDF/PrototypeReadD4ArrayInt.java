@@ -71,7 +71,7 @@ public class PrototypeReadD4ArrayInt {
 				try {
 					ncfile.close();
 				} catch (IOException ex) {
-					log.error("Cannot close file", ex);
+					log.warn("Cannot close file", ex);
 				}
 			}
 		}

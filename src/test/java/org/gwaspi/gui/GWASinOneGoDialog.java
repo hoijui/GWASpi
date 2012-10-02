@@ -274,7 +274,8 @@ public class GWASinOneGoDialog extends JFrame {
 //            parent.discardMarkerHWTreshold = Integer.parseInt(txtF_2.getText());
 //            parent.discardSampleByMisRat = chkB_3.isSelected();
 //            parent.discardSampleMisRatVal = Integer.parseInt(txtF_3.getText());
-		} catch (NumberFormatException numberFormatException) {
+		} catch (NumberFormatException ex) {
+			log.warn(null, ex);
 		}
 		myFrame.setVisible(false);
 	}

@@ -96,7 +96,6 @@ public class SwingDeleterItemList extends SwingWorkerItemList {
 						GWASpiExplorerNodes.deleteOperationNode(currentSdi.getOpId());
 						flagCurrentItemDeleted();
 					} catch (IOException ex) {
-
 						log.error(null, ex);
 					}
 				}

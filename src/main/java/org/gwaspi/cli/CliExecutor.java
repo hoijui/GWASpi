@@ -59,8 +59,8 @@ public class CliExecutor {
 				// CHECKING STUDY
 				int studyId = Integer.MIN_VALUE;
 				try {
-					studyId = Integer.parseInt(args.get(1)); //Study Id
-				} catch (Exception e) {
+					studyId = Integer.parseInt(args.get(1)); // Study Id
+				} catch (Exception ex) {
 					if (args.get(1).contains("New Study")) {
 						studyId = addStudy(args.get(1), "Study created by command-line interface");
 					}
@@ -130,7 +130,7 @@ public class CliExecutor {
 				int studyId = Integer.MIN_VALUE;
 				try {
 					studyId = Integer.parseInt(args.get(1)); // Study Id
-				} catch (Exception e) {
+				} catch (Exception ex) {
 					if (args.get(1).contains("New Study")) {
 						studyId = addStudy(args.get(1), "Study created by command-line interface");
 					}
@@ -215,7 +215,7 @@ public class CliExecutor {
 				int studyId = Integer.MIN_VALUE;
 				try {
 					studyId = Integer.parseInt(args.get(1)); // Study Id
-				} catch (Exception e) {
+				} catch (Exception ex) {
 					System.out.println("The Study-id must be an integer value of an existing Study!");
 				}
 				boolean studyExists = checkStudy(studyId);
@@ -296,8 +296,8 @@ public class CliExecutor {
 				// CHECKING STUDY
 				int studyId = Integer.MIN_VALUE;
 				try {
-					studyId = Integer.parseInt(args.get(1)); //Study Id
-				} catch (Exception e) {
+					studyId = Integer.parseInt(args.get(1)); // Study Id
+				} catch (Exception ex) {
 					System.out.println("The Study-id must be an integer value of an existing Study!");
 				}
 				boolean studyExists = checkStudy(studyId);
@@ -370,7 +370,7 @@ public class CliExecutor {
 				int studyId = Integer.MIN_VALUE;
 				try {
 					studyId = Integer.parseInt(args.get(1)); //Study Id
-				} catch (Exception e) {
+				} catch (Exception ex) {
 					System.out.println("The Study-id must be an integer value of an existing Study!");
 				}
 				boolean studyExists = checkStudy(studyId);
@@ -441,7 +441,7 @@ public class CliExecutor {
 				int studyId = Integer.MIN_VALUE;
 				try {
 					studyId = Integer.parseInt(args.get(1)); // Study Id
-				} catch (Exception e) {
+				} catch (Exception ex) {
 					System.out.println("The Study-id must be an integer value of an existing Study!");
 				}
 				boolean studyExists = checkStudy(studyId);
@@ -512,7 +512,7 @@ public class CliExecutor {
 				int studyId = Integer.MIN_VALUE;
 				try {
 					studyId = Integer.parseInt(args.get(1)); // Study Id
-				} catch (Exception e) {
+				} catch (Exception ex) {
 					System.out.println("The Study-id must be an integer value of an existing Study!");
 				}
 				boolean studyExists = checkStudy(studyId);
@@ -581,7 +581,7 @@ public class CliExecutor {
 				int studyId = Integer.MIN_VALUE;
 				try {
 					studyId = Integer.parseInt(args.get(1)); // Study Id
-				} catch (Exception e) {
+				} catch (Exception ex) {
 					if (args.get(1).contains("New Study")) {
 						studyId = addStudy(args.get(1).substring(10), "Study created by command-line interface");
 					}

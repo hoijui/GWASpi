@@ -45,7 +45,7 @@ public class DoubleInputVerifier extends InputVerifier {
 	private boolean isDoubleOrFloat(String text) {
 		try {
 			Double.parseDouble(text);
-		} catch (NumberFormatException nfe) {
+		} catch (NumberFormatException ex) {
 			return false;
 		}
 		return true;

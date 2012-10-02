@@ -133,7 +133,7 @@ public class OperationsList {
 				}
 			}
 		} catch (Exception ex) {
-			//log.error(null, ex);
+			log.error(null, ex);
 		}
 		return table;
 	}
@@ -166,7 +166,7 @@ public class OperationsList {
 				}
 			}
 		} catch (Exception ex) {
-//			log.error(null, ex);
+			log.error(null, ex);
 		}
 		return table;
 	}

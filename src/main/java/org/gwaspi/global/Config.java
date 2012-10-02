@@ -150,7 +150,7 @@ public class Config {
 		return prop;
 	}
 
-//	public static int getConfigValue(String key, int defaultV) throws IOException{
+//	public static int getConfigValue(String key, int defaultV) throws IOException {
 //		int prop = prefs.getInt(key, defaultV);
 //		return prop;
 //	}
@@ -223,9 +223,7 @@ public class Config {
 
 					isInitiated = true;
 				}
-
 			} else { // CLI & THREAD MODE
-
 				if (dirToData.getPath().equals("")) {
 					if (scriptFile != null) {
 						// Use path from script file
@@ -256,10 +254,10 @@ public class Config {
 
 			// ALTER EXISTING DERBY DB TABLES TO SUIT CURRENT GWASPI VERSION
 			DerbyDBReshaper.alterTableUpdates();
-
-		} catch (Exception e) {
-			// Handle exception as needed
+		} catch (Exception ex) {
+			log.error("Failed initializing the configuration", ex);
 		}
+
 		return isInitiated;
 	}
 

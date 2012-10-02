@@ -205,8 +205,8 @@ public final class ManhattanPlotZoom extends JPanel {
 			rdOPMetadata = new OperationMetadata(opId);
 			rdMatrixMetadata = new MatrixMetadata(rdOPMetadata.getParentMatrixId());
 
-//            OperationSet rdAssocMarkerSet = new OperationSet(rdOPMetadata.getStudyId(), opId);
-//            labelerMap = rdAssocMarkerSet.getOpSetMap();
+//			OperationSet rdAssocMarkerSet = new OperationSet(rdOPMetadata.getStudyId(), opId);
+//			labelerMap = rdAssocMarkerSet.getOpSetMap();
 		} catch (IOException ex) {
 			log.error(null, ex);
 		}
@@ -907,7 +907,7 @@ public final class ManhattanPlotZoom extends JPanel {
 				log.error(null, ex);
 			} catch (NullPointerException ex) {
 				//Dialogs.showWarningDialogue("A table saving error has occurred");
-				//log.error(null, ex);
+				log.error(null, ex);
 			} catch (Exception ex) {
 				log.error(null, ex);
 			}

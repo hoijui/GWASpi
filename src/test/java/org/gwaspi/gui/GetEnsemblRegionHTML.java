@@ -14,8 +14,13 @@ import javax.swing.WindowConstants;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 import javax.swing.text.html.HTMLEditorKit;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class GetEnsemblRegionHTML extends JFrame {
+
+	private final static Logger log
+			= LoggerFactory.getLogger(GetEnsemblRegionHTML.class);
 
 	public static void main(String[] args) throws MalformedURLException, IOException {
 
@@ -80,8 +85,8 @@ public class GetEnsemblRegionHTML extends JFrame {
 				if (ev.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
 					try {
 						URLInDefaultBrowser.browseGenericURL("http://www.ensembl.org/Homo_sapiens/Location/Overview?" + u.getQuery());
-					} catch (IOException ioe) {
-						// Some warning to user
+					} catch (IOException ex) {
+						log.warn(null, ex);
 					}
 				}
 			}
@@ -92,7 +97,7 @@ public class GetEnsemblRegionHTML extends JFrame {
 //				try {
 //					URLInDefaultBrowser.browseGenericURL(e.getURL().getPath());
 //				} catch (IOException ex) {
-//					Logger.getLogger(GetEnsemblRegionHTML.class.getName()).log(Level.SEVERE, null, ex);
+//					log.warn(null, ex);
 //				}
 //			}
 //		});

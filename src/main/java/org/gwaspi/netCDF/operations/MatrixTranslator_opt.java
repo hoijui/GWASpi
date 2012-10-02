@@ -216,7 +216,7 @@ public class MatrixTranslator_opt {
 					try {
 						rdNcFile.close();
 					} catch (IOException ex) {
-						log.error("Failed to close file " + rdNcFile.getLocation(), ex);
+						log.warn("Failed to close file " + rdNcFile.getLocation(), ex);
 					}
 				}
 			}
@@ -369,7 +369,7 @@ public class MatrixTranslator_opt {
 					try {
 						rdNcFile.close();
 					} catch (IOException ex) {
-						log.error("Failed close file " + rdNcFile.getLocation(), ex);
+						log.warn("Failed close file " + rdNcFile.getLocation(), ex);
 					}
 				}
 			}

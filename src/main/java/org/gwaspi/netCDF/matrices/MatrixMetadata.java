@@ -81,9 +81,9 @@ public class MatrixMetadata {
 				technology = ImportFormat.compareTo(ncfile.findGlobalAttribute(cNetCDF.Attributes.GLOB_TECHNOLOGY).getStringValue());
 				try {
 					gwaspiDBVersion = ncfile.findGlobalAttribute(cNetCDF.Attributes.GLOB_GWASPIDB_VERSION).getStringValue();
-				} catch (Exception e) {
+				} catch (Exception ex) {
+					log.error(null, ex);
 				}
-
 
 				Variable var = ncfile.findVariable(cNetCDF.Variables.GLOB_GTENCODING);
 				if (var != null) {
@@ -111,7 +111,7 @@ public class MatrixMetadata {
 					try {
 						ncfile.close();
 					} catch (IOException ex) {
-						log.error("Cannot close file: " + ncfile, ex);
+						log.warn("Cannot close file: " + ncfile, ex);
 					}
 				}
 			}
@@ -149,7 +149,8 @@ public class MatrixMetadata {
 				technology = ImportFormat.compareTo(ncfile.findGlobalAttribute(cNetCDF.Attributes.GLOB_TECHNOLOGY).getStringValue());
 				try {
 					gwaspiDBVersion = ncfile.findGlobalAttribute(cNetCDF.Attributes.GLOB_GWASPIDB_VERSION).getStringValue();
-				} catch (Exception e) {
+				} catch (Exception ex) {
+					log.error(null, ex);
 				}
 
 				Variable var = ncfile.findVariable(cNetCDF.Variables.GLOB_GTENCODING);
@@ -177,7 +178,7 @@ public class MatrixMetadata {
 					try {
 						ncfile.close();
 					} catch (IOException ex) {
-						log.error("Cannot close file: " + ncfile, ex);
+						log.warn("Cannot close file: " + ncfile, ex);
 					}
 				}
 			}
@@ -203,7 +204,8 @@ public class MatrixMetadata {
 				technology = ImportFormat.compareTo(ncfile.findGlobalAttribute(cNetCDF.Attributes.GLOB_TECHNOLOGY).getStringValue());
 				try {
 					gwaspiDBVersion = ncfile.findGlobalAttribute(cNetCDF.Attributes.GLOB_GWASPIDB_VERSION).getStringValue();
-				} catch (Exception e) {
+				} catch (Exception ex) {
+					log.error(null, ex);
 				}
 
 				Variable var = ncfile.findVariable(cNetCDF.Variables.GLOB_GTENCODING);
@@ -231,7 +233,7 @@ public class MatrixMetadata {
 					try {
 						ncfile.close();
 					} catch (IOException ex) {
-						log.error("Cannot close file: " + ncfile, ex);
+						log.warn("Cannot close file: " + ncfile, ex);
 					}
 				}
 			}

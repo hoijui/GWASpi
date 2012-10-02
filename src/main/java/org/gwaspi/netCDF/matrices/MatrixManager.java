@@ -117,7 +117,6 @@ public class MatrixManager {
 			DbManager dBManager = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
 			String statement = "DELETE FROM " + cDBGWASpi.SCH_MATRICES + "." + cDBMatrix.T_MATRICES + " WHERE ID=" + matrixMetadata.getMatrixId();
 			dBManager.executeStatement(statement);
-
 		} catch (Exception ex) {
 			log.error("Failed deleteing Matrix", ex);
 		}

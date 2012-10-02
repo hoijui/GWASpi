@@ -545,7 +545,8 @@ public final class SampleQAHetzygPlotZoom extends JPanel {
 				Config.setConfigValue("CHART_SAMPLEQA_MISSING_THRESHOLD", missingThreshold.toString());
 				GWASpiExplorerPanel.getSingleton().setPnl_Content(new SampleQAHetzygPlotZoom(opId));
 				GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
-			} catch (Exception e) {
+			} catch (Exception ex) {
+				log.warn(Text.App.warnMustBeNumeric, ex);
 				Dialogs.showWarningDialogue(Text.App.warnMustBeNumeric);
 			}
 		}
@@ -585,7 +586,7 @@ public final class SampleQAHetzygPlotZoom extends JPanel {
 				log.error(null, ex);
 			} catch (NullPointerException ex) {
 				//Dialogs.showWarningDialogue("A table saving error has occurred");
-				//log.error(null, ex);
+				log.error(null, ex);
 			} catch (Exception ex) {
 				log.error(null, ex);
 			}

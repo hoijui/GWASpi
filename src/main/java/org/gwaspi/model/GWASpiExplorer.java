@@ -216,6 +216,7 @@ public class GWASpiExplorer {
 			try {
 				currentElementInfo = (NodeElementInfo) currentElement;
 			} catch (Exception ex) {
+				log.error(null, ex);
 			}
 
 			TreePath treePath = evt.getPath();
@@ -246,7 +247,8 @@ public class GWASpiExplorer {
 				Object parentElement = parentNode.getUserObject();
 				try {
 					parentElementInfo = (NodeElementInfo) parentElement;
-				} catch (Exception e) {
+				} catch (Exception ex) {
+					log.warn(null, ex);
 				}
 			}
 
@@ -397,6 +399,7 @@ public class GWASpiExplorer {
 			try {
 				Thread.sleep(300);
 			} catch (InterruptedException ex) {
+				log.warn(null, ex);
 			}
 
 			tree.setEnabled(true);
@@ -418,6 +421,7 @@ public class GWASpiExplorer {
 					// ALLWAYS ALLOW EXPANSION
 				}
 			} catch (Exception ex) {
+				log.warn(null, ex);
 			}
 		}
 
@@ -430,13 +434,13 @@ public class GWASpiExplorer {
 			NodeElementInfo currentNodeInfo = null;
 			try {
 				currentNodeInfo = (NodeElementInfo) currentElement;
-			} catch (Exception e) {
+			} catch (Exception ex) {
+				log.warn(null, ex);
 			}
 			if (currentNodeInfo != null && !currentNodeInfo.isCollapsable()) {
 				// VETO EXPANSION
 				throw new ExpandVetoException(evt);
 			}
-
 		}
 	}
 	//</editor-fold>

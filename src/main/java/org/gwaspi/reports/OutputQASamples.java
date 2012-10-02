@@ -12,6 +12,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Map;
 import org.gwaspi.model.Operation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -21,8 +23,11 @@ import org.gwaspi.model.Operation;
  */
 public class OutputQASamples {
 
-	protected static String reportPath;
-	protected static String samplMissOutName;
+	private final static Logger log
+			= LoggerFactory.getLogger(OutputQASamples.class);
+
+	private static String reportPath;
+	private static String samplMissOutName;
 
 	private OutputQASamples() {
 	}
@@ -144,6 +149,7 @@ public class OutputQASamples {
 			result = true;
 		} catch (IOException ex) {
 			result = false;
+			log.warn(null, ex);
 		}
 
 		return result;

@@ -18,6 +18,8 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 import org.gwaspi.netCDF.operations.GWASinOneGOParams;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -26,6 +28,8 @@ import org.gwaspi.netCDF.operations.GWASinOneGOParams;
  * CEXS-UPF-PRBB
  */
 public class MoreAssocInfo extends JFrame {
+
+	private final Logger log = LoggerFactory.getLogger(MoreAssocInfo.class);
 
 	// Variables declaration - do not modify
 	private JButton btn_Go;
@@ -160,7 +164,8 @@ public class MoreAssocInfo extends JFrame {
 					gwasParams.setDiscardMarkerHWFree(rdioB_2.isSelected());
 					gwasParams.setDiscardMarkerHWTreshold(Double.parseDouble(txtF_2.getText()));
 					gwasParams.setProceed(true);
-				} catch (NumberFormatException numberFormatException) {
+				} catch (NumberFormatException ex) {
+					log.warn(null, ex);
 				}
 				dialog.dispose();
 			} else {

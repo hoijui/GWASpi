@@ -283,11 +283,13 @@ public class OperationManager {
 				dBManager.executeStatement(statement);
 			}
 		} catch (IOException ex) {
+			log.warn(null, ex);
 			// PURGE INEXISTING OPERATIONS FROM DB
 			DbManager dBManager = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
 			String statement = "DELETE FROM " + cDBGWASpi.SCH_MATRICES + "." + cDBOperations.T_OPERATIONS + " WHERE " + cDBOperations.f_ID + "=" + opId;
 			dBManager.executeStatement(statement);
 		} catch (IllegalArgumentException ex) {
+			log.warn(null, ex);
 			// PURGE INEXISTING OPERATIONS FROM DB
 			DbManager dBManager = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
 			String statement = "DELETE FROM " + cDBGWASpi.SCH_MATRICES + "." + cDBOperations.T_OPERATIONS + " WHERE " + cDBOperations.f_ID + "=" + opId;

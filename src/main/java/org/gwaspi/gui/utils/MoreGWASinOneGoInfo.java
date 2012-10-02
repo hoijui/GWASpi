@@ -28,6 +28,8 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 import org.gwaspi.netCDF.operations.GWASinOneGOParams;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -36,6 +38,8 @@ import org.gwaspi.netCDF.operations.GWASinOneGOParams;
  * CEXS-UPF-PRBB
  */
 public class MoreGWASinOneGoInfo extends JFrame {
+
+	private final Logger log = LoggerFactory.getLogger(MoreGWASinOneGoInfo.class);
 
 	// Variables declaration - do not modify
 	private JButton btn_Go;
@@ -381,7 +385,8 @@ public class MoreGWASinOneGoInfo extends JFrame {
 					gwasParams.setDiscardSampleByHetzyRat(chkB_SHZ.isSelected());
 					gwasParams.setDiscardSampleHetzyRatVal(Double.parseDouble(txtF_SHZ.getText()));
 					gwasParams.setProceed(true);
-				} catch (NumberFormatException numberFormatException) {
+				} catch (NumberFormatException ex) {
+					log.warn(null, ex);
 				}
 				dialog.dispose();
 			} else {

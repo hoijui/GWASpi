@@ -211,7 +211,7 @@ public class OP_GenotypicAssociationTests_opt implements MatrixOperation {
 						rdOPNcFile.close();
 						wrOPNcFile.close();
 					} catch (IOException ex) {
-						log.error("Cannot close file", ex);
+						log.warn("Cannot close file", ex);
 					}
 				}
 			}

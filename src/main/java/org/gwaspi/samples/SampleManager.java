@@ -45,8 +45,8 @@ public class SampleManager {
 			DbManager dBManager = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
 			String sql = "SELECT " + cDBSamples.f_SAMPLE_ID + " FROM " + cDBGWASpi.SCH_SAMPLES + "." + cDBSamples.T_SAMPLES_INFO + " WHERE " + cDBSamples.f_POOL_ID + "='" + poolId + "' ORDER BY order_id  WITH RR";
 			return dBManager.executeSelectStatement(sql);
-		} catch (Exception e) {
-			throw new RuntimeException(e);
+		} catch (Exception ex) {
+			throw new RuntimeException(ex);
 		}
 	}
 

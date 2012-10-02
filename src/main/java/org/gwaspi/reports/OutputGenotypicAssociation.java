@@ -257,6 +257,7 @@ public class OutputGenotypicAssociation {
 			result = true;
 		} catch (IOException ex) {
 			result = false;
+			log.warn(null, ex);
 		}
 
 		return result;

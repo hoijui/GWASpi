@@ -274,9 +274,9 @@ public class Utils {
 
 		return result;
 	}
+	//</editor-fold>
+	//</editor-fold>
 
-	//</editor-fold>
-	//</editor-fold>
 	//<editor-fold defaultstate="collapsed" desc="CHUNKED SAVERS">
 	public static boolean saveCharChunkedMapToWrMatrix(NetcdfFileWriteable wrNcFile,
 			Map<String, Object> wrMap,
@@ -536,9 +536,9 @@ public class Utils {
 
 		return result;
 	}
+	//</editor-fold>
+	//</editor-fold>
 
-	//</editor-fold>
-	//</editor-fold>
 	//<editor-fold defaultstate="collapsed" desc="POJOs TO netCDFJOs">
 	//<editor-fold defaultstate="collapsed" desc="ArrayChar.D3">
 	public static ArrayChar.D3 writeMapToCurrentSampleArrayCharD3(Map<String, Object> map, int stride) {
@@ -715,6 +715,7 @@ public class Utils {
 	}
 
 	//</editor-fold>
+
 	//<editor-fold defaultstate="collapsed" desc="ArrayByte.D3">
 	public static ArrayByte.D3 writeALValuesToSamplesHyperSlabArrayByteD3(List<byte[]> genotypesAL, int sampleNb, int stride) {
 		int markerNb = genotypesAL.size() / sampleNb;
@@ -789,8 +790,8 @@ public class Utils {
 		return byteArray;
 	}
 	//</editor-fold>
-
 	//</editor-fold>
+
 	//<editor-fold defaultstate="collapsed" desc="netCDFJOs TO POJOs">
 	//<editor-fold defaultstate="collapsed" desc="ArrayChar.D2">
 	public static Map<String, Object> writeD2ArrayCharToMapKeys(ArrayChar inputArray) {

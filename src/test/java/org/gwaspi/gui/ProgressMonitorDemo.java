@@ -35,10 +35,13 @@ import java.awt.event.*;
 import java.beans.*;
 import java.util.Random;
 import javax.swing.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class ProgressMonitorDemo extends JPanel
-		implements ActionListener,
-		PropertyChangeListener {
+public class ProgressMonitorDemo extends JPanel implements ActionListener, PropertyChangeListener {
+
+	private final static Logger log
+			= LoggerFactory.getLogger(ProgressMonitorDemo.class);
 
 	private ProgressMonitor progressMonitor;
 	private JButton startButton;
@@ -61,7 +64,8 @@ public class ProgressMonitorDemo extends JPanel
 					progress += random.nextInt(10);
 					setProgress(Math.min(progress, 100));
 				}
-			} catch (InterruptedException ignore) {
+			} catch (InterruptedException ex) {
+				log.warn(null, ex);
 			}
 			return null;
 		}

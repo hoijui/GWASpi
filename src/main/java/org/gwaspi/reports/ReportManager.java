@@ -76,7 +76,7 @@ public class ReportManager {
 		prefix.append("_").append(op.getOperationType().toString()).append("-");
 		prefix.append(op.getOperationId());
 
-		//Get Genotype Freq. assigned name. Pry out the part inserted by user only
+		// Get Genotype Freq. assigned name. Pry out the part inserted by user only
 		try {
 			if (op.getOperationType().equals(OPType.ALLELICTEST.toString())
 					|| op.getOperationType().equals(OPType.GENOTYPICTEST.toString())
@@ -90,6 +90,7 @@ public class ReportManager {
 			}
 
 		} catch (IOException ex) {
+			log.error(null, ex);
 		}
 
 		return prefix.toString();

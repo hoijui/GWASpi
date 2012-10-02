@@ -149,7 +149,8 @@ public abstract class Report_Analysis extends JPanel {
 		try {
 			Integer.parseInt(NRows);
 			txt_NRows.setText(NRows);
-		} catch (NumberFormatException numberFormatException) {
+		} catch (NumberFormatException ex) {
+			log.warn(null, ex);
 			txt_NRows.setText("100");
 		}
 
@@ -388,10 +389,10 @@ public abstract class Report_Analysis extends JPanel {
 				writer.close();
 			} catch (NullPointerException ex) {
 				//Dialogs.showWarningDialogue("A table saving error has occurred");
-				//Logger.getLogger(ChartDefaultDisplay.class.getName()).log(Level.SEVERE, null, ex);
-			} catch (IOException e) {
+				log.error("A table saving error has occurred", ex);
+			} catch (IOException ex) {
 				Dialogs.showWarningDialogue("A table saving error has occurred");
-				//Logger.getLogger(ChartDefaultDisplay.class.getName()).log(Level.SEVERE, null, e);
+				log.error("A table saving error has occurred", ex);
 			}
 		}
 

@@ -85,7 +85,7 @@ public class OperationSet {
 				try {
 					ncfile.close();
 				} catch (IOException ex) {
-					log.error("Cannot close file", ex);
+					log.warn("Cannot close file", ex);
 				}
 			}
 		}
@@ -125,7 +125,7 @@ public class OperationSet {
 				try {
 					ncfile.close();
 				} catch (IOException ex) {
-					log.error("Cannot close file", ex);
+					log.warn("Cannot close file", ex);
 				}
 			}
 		}
@@ -164,7 +164,7 @@ public class OperationSet {
 				try {
 					ncfile.close();
 				} catch (IOException ex) {
-					log.error("Cannot close file", ex);
+					log.warn("Cannot close file", ex);
 				}
 			}
 		}
@@ -227,7 +227,7 @@ public class OperationSet {
 				try {
 					ncfile.close();
 				} catch (IOException ex) {
-					log.error("Cannot close file", ex);
+					log.warn("Cannot close file", ex);
 				}
 			}
 		}
@@ -330,7 +330,6 @@ public class OperationSet {
 					list = org.gwaspi.netCDF.operations.Utils.writeD2ArrayDoubleToList(markerSetAD);
 				}
 			}
-
 		} catch (IOException ex) {
 			log.error("Cannot read data", ex);
 		} catch (InvalidRangeException ex) {

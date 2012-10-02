@@ -109,8 +109,8 @@ public class Utils {
 		FileChannel outChannel = new FileOutputStream(out).getChannel();
 		try {
 			inChannel.transferTo(0, inChannel.size(), outChannel);
-		} catch (IOException e) {
-			throw e;
+		} catch (IOException ex) {
+			throw ex;
 		} finally {
 			if (inChannel != null) {
 				inChannel.close();
@@ -170,11 +170,11 @@ public class Utils {
 				while ((bytesRead = fin.read(buffer)) >= 0) {
 					fout.write(buffer, 0, bytesRead);
 				}
-			} catch (IOException e) { // Error copying file...
+			} catch (IOException ex) { // Error copying file...
 				IOException wrapper = new IOException("copyFiles: Unable to copy file: "
 						+ src.getAbsolutePath() + "to" + dest.getAbsolutePath() + ".");
-				wrapper.initCause(e);
-				wrapper.setStackTrace(e.getStackTrace());
+				wrapper.initCause(ex);
+				wrapper.setStackTrace(ex.getStackTrace());
 				throw wrapper;
 			} finally { // Ensure that the files are closed (if they were open).
 				if (fin != null) {
@@ -354,6 +354,7 @@ public class Utils {
 				}
 			}
 		} catch (SocketException ex) {
+			log.warn(null, ex);
 		}
 
 //		try {
@@ -361,10 +362,9 @@ public class Utils {
 //			if(address != null){
 //				isConnected = true;
 //			}
-//		} catch (UnknownHostException e) {
+//		} catch (UnknownHostException ex) {
 //			isConnected = false;
-//		}
-//		catch (IOException e) {
+//		} catch (IOException ex) {
 //			isConnected = false;
 //		}
 
@@ -431,7 +431,7 @@ public class Utils {
 //
 //			result = description;
 //		} catch (IOException ex) {
-//			Logger.getLogger(Utils.class.getName()).log(Level.SEVERE, null, ex);
+//			log.error(null, ex);
 //		}
 //
 //		//gui.LogTab_old.refreshLogInfo();
@@ -468,7 +468,7 @@ public class Utils {
 //
 //			result = description;
 //		} catch (IOException ex) {
-//			Logger.getLogger(Utils.class.getName()).log(Level.SEVERE, null, ex);
+//			log.error(null, ex);
 //		}
 	}
 
@@ -498,7 +498,7 @@ public class Utils {
 //
 //			result = description;
 //		} catch (IOException ex) {
-//			Logger.getLogger(Utils.class.getName()).log(Level.SEVERE, null, ex);
+//			log.error(null, ex);
 //		}
 //
 //		//gui.LogTab_old.refreshLogInfo();

@@ -116,7 +116,7 @@ public final class MatricesList {
 				}
 			}
 		} catch (Exception ex) {
-//			log.error(null, ex);
+			log.error(null, ex);
 		}
 		return table;
 	}

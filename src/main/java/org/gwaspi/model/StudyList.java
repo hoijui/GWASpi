@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -16,6 +18,9 @@ import java.util.Map;
  * CEXS-UPF-PRBB
  */
 public class StudyList {
+
+	private final static Logger log
+			= LoggerFactory.getLogger(StudyList.class);
 
 	private StudyList() throws IOException {
 	}
@@ -51,8 +56,8 @@ public class StudyList {
 		DbManager studyDbManager = ServiceLocator.getDbManager(dbName);
 		try {
 			rs = studyDbManager.executeSelectStatement("SELECT * FROM " + cDBGWASpi.SCH_APP + "." + cDBGWASpi.T_STUDIES + " ORDER BY " + cDBGWASpi.f_ID + " DESC WITH RR");
-		} catch (Exception e) {
-			throw new RuntimeException(e);
+		} catch (Exception ex) {
+			throw new RuntimeException(ex);
 		}
 
 		return rs;
@@ -79,7 +84,7 @@ public class StudyList {
 				}
 			}
 		} catch (Exception ex) {
-			//log.error(null, ex);
+			log.error(null, ex);
 		}
 
 		return studyTable;

@@ -78,6 +78,7 @@ public abstract class CommonRunnable implements Runnable {
 				MultiOperations.updateTree();
 				MultiOperations.updateProcessOverviewStartNext();
 			} catch (Exception ex1) {
+				getLog().warn(null, ex1);
 			}
 		}
 	}

@@ -21,6 +21,8 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import org.gwaspi.netCDF.operations.GWASinOneGOParams;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -29,6 +31,8 @@ import org.gwaspi.netCDF.operations.GWASinOneGOParams;
  * CEXS-UPF-PRBB
  */
 public class MoreLoadInfoByFormat {
+
+	private final Logger log = LoggerFactory.getLogger(MoreLoadInfoByFormat.class);
 
 	// Variables declaration - do not modify
 	private JButton btn_Go;
@@ -195,8 +199,8 @@ public class MoreLoadInfoByFormat {
 					gwasParams.setGtCode((GenotypeEncoding) cmb_GTCode.getSelectedItem());
 				}
 				gwasParams.setProceed(true);
-
-			} catch (NumberFormatException numberFormatException) {
+			} catch (NumberFormatException ex) {
+				log.warn(null, ex);
 			}
 			dialog.dispose();
 		}

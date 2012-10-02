@@ -436,7 +436,7 @@ public class MatrixAnalysePanel extends JPanel {
 					Dialogs.showInfoDialogue(Text.Operation.warnAffectionMissing);
 				}
 			} catch (Exception ex) {
-				//Logger.getLogger(MatrixAnalysePanel.class.getName()).log(Level.SEVERE, null, ex);
+				log.error(Text.Operation.warnOperationError, ex);
 				Dialogs.showWarningDialogue(Text.Operation.warnOperationError);
 			}
 		}
@@ -539,7 +539,7 @@ public class MatrixAnalysePanel extends JPanel {
 					Dialogs.showInfoDialogue(Text.Operation.warnAffectionMissing);
 				}
 			} catch (Exception ex) {
-				//Logger.getLogger(MatrixAnalysePanel.class.getName()).log(Level.SEVERE, null, ex);
+				log.error(Text.Operation.warnOperationError, ex);
 				Dialogs.showWarningDialogue(Text.Operation.warnOperationError);
 			}
 		}
@@ -645,7 +645,7 @@ public class MatrixAnalysePanel extends JPanel {
 					Dialogs.showInfoDialogue(Text.Operation.warnAffectionMissing);
 				}
 			} catch (Exception ex) {
-				//Logger.getLogger(MatrixAnalysePanel.class.getName()).log(Level.SEVERE, null, ex);
+				log.error(Text.Operation.warnOperationError, ex);
 				Dialogs.showWarningDialogue(Text.Operation.warnOperationError);
 			}
 		}

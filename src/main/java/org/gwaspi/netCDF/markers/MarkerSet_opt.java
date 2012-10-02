@@ -76,7 +76,7 @@ public class MarkerSet_opt {
 				try {
 					ncfile.close();
 				} catch (IOException ex) {
-					log.error("Cannot close netCDF file: " + ncfile.getLocation(), ex);
+					log.warn("Cannot close netCDF file: " + ncfile.getLocation(), ex);
 				}
 			}
 		} finally {

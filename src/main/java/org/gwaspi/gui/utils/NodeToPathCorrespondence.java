@@ -6,6 +6,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import javax.swing.tree.DefaultMutableTreeNode;
 import org.gwaspi.model.GWASpiExplorerNodes.NodeElementInfo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -14,6 +16,8 @@ import org.gwaspi.model.GWASpiExplorerNodes.NodeElementInfo;
  * CEXS-UPF-PRBB
  */
 public class NodeToPathCorrespondence {
+
+	private static final Logger log = LoggerFactory.getLogger(NodeToPathCorrespondence.class);
 
 	private NodeToPathCorrespondence() {
 	}
@@ -50,8 +54,8 @@ public class NodeToPathCorrespondence {
 						nodeToPathChildrenMap.put(currentElementInfo.getNodeId(), GWASpiExplorerPanel.getSingleton().getTree().getPathForRow(i));
 					}
 				}
-
 			} catch (Exception ex) {
+				log.error(null, ex);
 			}
 		}
 

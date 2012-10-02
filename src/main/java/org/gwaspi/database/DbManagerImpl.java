@@ -1,5 +1,6 @@
 package org.gwaspi.database;
 
+import org.gwaspi.constants.cImport;
 import org.gwaspi.framework.error.GeneralApplicationException;
 import org.gwaspi.framework.jdbc.connection.ConnectionProvider;
 import org.gwaspi.framework.jdbc.query.QueryExecutor;
@@ -10,8 +11,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class DbManagerImpl implements DbManager {
+
+	private final Logger log = LoggerFactory.getLogger(DbManagerImpl.class);
 
 	private QueryExecutor qex;
 	private ConnectionProvider connectionProvider;
@@ -34,8 +39,8 @@ public class DbManagerImpl implements DbManager {
 		try {
 			int affectedRows = qex.executeUpdate(statement);
 			return affectedRows;
-		} catch (GeneralApplicationException ee) {
-			throw new RuntimeException(ee);
+		} catch (GeneralApplicationException ex) {
+			throw new RuntimeException(ex);
 		}
 	}
 
@@ -64,8 +69,8 @@ public class DbManagerImpl implements DbManager {
 			qex.executeQuery(sql.toString(), clauseValues,
 					new RowMappingResultSetHandler());
 			return qex.getResults();
-		} catch (GeneralApplicationException e) {
-			throw new RuntimeException(e);
+		} catch (GeneralApplicationException ex) {
+			throw new RuntimeException(ex);
 		}
 	}
 
@@ -73,8 +78,8 @@ public class DbManagerImpl implements DbManager {
 		try {
 			qex.executeQuery(statement, new RowMappingResultSetHandler());
 			return qex.getResults();
-		} catch (GeneralApplicationException e) {
-			throw new RuntimeException(e);
+		} catch (GeneralApplicationException ex) {
+			throw new RuntimeException(ex);
 		}
 	}
 
@@ -113,8 +118,8 @@ public class DbManagerImpl implements DbManager {
 		try {
 			int affectedRows = qex.executeUpdate(sql.toString(), values);
 			return affectedRows == 1;
-		} catch (GeneralApplicationException e) {
-			throw new RuntimeException(e);
+		} catch (GeneralApplicationException ex) {
+			throw new RuntimeException(ex);
 		}
 	}
 
@@ -143,8 +148,8 @@ public class DbManagerImpl implements DbManager {
 		try {
 			int affectedRows = qex.executeUpdate(sql.toString(), params.toArray());
 			return affectedRows > 0;
-		} catch (GeneralApplicationException e) {
-			throw new RuntimeException(e);
+		} catch (GeneralApplicationException ex) {
+			throw new RuntimeException(ex);
 		}
 	}
 
@@ -153,8 +158,8 @@ public class DbManagerImpl implements DbManager {
 			qex.executeUpdate("DROP TABLE " + schema + "." + table);
 
 			return true;
-		} catch (GeneralApplicationException e) {
-			throw new RuntimeException(e);
+		} catch (GeneralApplicationException ex) {
+			throw new RuntimeException(ex);
 		}
 	}
 
@@ -176,8 +181,8 @@ public class DbManagerImpl implements DbManager {
 			qex.executeUpdate(sql.toString());
 
 			return true;
-		} catch (GeneralApplicationException e) {
-			throw new RuntimeException(e);
+		} catch (GeneralApplicationException ex) {
+			throw new RuntimeException(ex);
 		}
 	}
 
@@ -190,8 +195,8 @@ public class DbManagerImpl implements DbManager {
 			qex.executeUpdate(sql.toString());
 
 			return true;
-		} catch (GeneralApplicationException e) {
-			throw new RuntimeException(e);
+		} catch (GeneralApplicationException ex) {
+			throw new RuntimeException(ex);
 		}
 	}
 
@@ -199,7 +204,7 @@ public class DbManagerImpl implements DbManager {
 		try {
 			DriverManager.getConnection("jdbc:derby:;shutdown=true");
 		} catch (SQLException ex) {
-//			Logger.getLogger(DbManagerImpl.class.getName()).log(Level.SEVERE, null, ex);
+			log.error(null, ex);
 		}
 	}
 }

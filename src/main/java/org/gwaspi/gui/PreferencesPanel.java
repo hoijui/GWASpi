@@ -222,8 +222,10 @@ public class PreferencesPanel extends JPanel {
 							if (blueInt < 0 || blueInt > 255) {
 								blueInt = blueInt % 255;
 							}
-						} catch (Exception e) {
-							Dialogs.showWarningDialogue(Text.App.warnPropertyRGB + "\nField: " + preferencesTable.getValueAt(i, 0).toString());
+						} catch (Exception ex) {
+							String warningText = Text.App.warnPropertyRGB + "\nField: " + preferencesTable.getValueAt(i, 0).toString();
+							log.warn(warningText, ex);
+							Dialogs.showWarningDialogue(warningText);
 							proceed = false;
 						}
 					} else {
@@ -233,22 +235,28 @@ public class PreferencesPanel extends JPanel {
 				} else if (preferencesTable.getValueAt(i, 0).toString().equals("CHART_MANHATTAN_PLOT_THRESHOLD")) {    //Check if it's a number
 					try {
 						double tmpNb = Double.parseDouble(preferencesTable.getValueAt(i, 1).toString());
-					} catch (Exception e) {
-						Dialogs.showWarningDialogue(Text.App.warnMustBeNumeric + "\nField: " + preferencesTable.getValueAt(i, 0).toString());
+					} catch (Exception ex) {
+						String warningText = Text.App.warnMustBeNumeric + "\nField: " + preferencesTable.getValueAt(i, 0).toString();
+						log.warn(warningText, ex);
+						Dialogs.showWarningDialogue(warningText);
 						proceed = false;
 					}
 				} else if (preferencesTable.getValueAt(i, 0).toString().equals("CHART_SAMPLEQA_HETZYG_THRESHOLD")) {    //Check if it's a number
 					try {
 						double tmpNb = Double.parseDouble(preferencesTable.getValueAt(i, 1).toString());
-					} catch (Exception e) {
-						Dialogs.showWarningDialogue(Text.App.warnMustBeNumeric + "\nField: " + preferencesTable.getValueAt(i, 0).toString());
+					} catch (Exception ex) {
+						String warningText = Text.App.warnMustBeNumeric + "\nField: " + preferencesTable.getValueAt(i, 0).toString();
+						log.warn(warningText, ex);
+						Dialogs.showWarningDialogue(warningText);
 						proceed = false;
 					}
 				} else if (preferencesTable.getValueAt(i, 0).toString().equals("CHART_SAMPLEQA_MISSING_THRESHOLD")) {    //Check if it's a number
 					try {
 						double tmpNb = Double.parseDouble(preferencesTable.getValueAt(i, 1).toString());
-					} catch (Exception e) {
-						Dialogs.showWarningDialogue(Text.App.warnMustBeNumeric + "\nField: " + preferencesTable.getValueAt(i, 0).toString());
+					} catch (Exception ex) {
+						String warningText = Text.App.warnMustBeNumeric + "\nField: " + preferencesTable.getValueAt(i, 0).toString();
+						log.warn(warningText, ex);
+						Dialogs.showWarningDialogue(warningText);
 						proceed = false;
 					}
 				}
@@ -400,7 +408,8 @@ public class PreferencesPanel extends JPanel {
 						GWASpiExplorerPanel.getSingleton().setPnl_Content(new PreferencesPanel());
 						GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
 						Dialogs.showInfoDialogue(Text.App.infoDataDirCopyOK);
-					} catch (IOException iOException) {
+					} catch (IOException ex) {
+						log.warn(Text.App.warnErrorCopyData, ex);
 						Dialogs.showWarningDialogue(Text.App.warnErrorCopyData);
 						resetPreferencesAction.actionPerformed(null);
 					}

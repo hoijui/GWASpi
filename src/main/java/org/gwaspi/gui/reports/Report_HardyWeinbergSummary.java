@@ -171,7 +171,7 @@ public class Report_HardyWeinbergSummary extends JPanel {
 //					int colIndex = tbl_ReportTable.getSelectedColumn();
 //					URLInDefaultBrowser.browseGenericURL(EnsemblUrl.getHomoSapiensLink(tbl_ReportTable.getModel().getValueAt(rowIndex, 0).toString(), (Integer) tbl_ReportTable.getModel().getValueAt(rowIndex, 8)));
 //				} catch (IOException ex) {
-//					Logger.getLogger(Report_HardyWeinbergSummary.class.getName()).log(Level.SEVERE, null, ex);
+//					log.error(null, ex);
 //				}
 //			}
 //		});
@@ -294,18 +294,21 @@ public class Report_HardyWeinbergSummary extends JPanel {
 						Double expHetzyCtrl_f;
 						try {
 							hwPvalCtrl_f = Double.parseDouble(dfSci.format(hwPvalCtrl));
-						} catch (NumberFormatException numberFormatException) {
+						} catch (NumberFormatException ex) {
 							hwPvalCtrl_f = hwPvalCtrl;
+							log.warn(null, ex);
 						}
 						try {
 							obsHetzyCtrl_f = Double.parseDouble(dfRound.format(obsHetzyCtrl));
-						} catch (NumberFormatException numberFormatException) {
+						} catch (NumberFormatException ex) {
 							obsHetzyCtrl_f = obsHetzyCtrl;
+							log.warn(null, ex);
 						}
 						try {
 							expHetzyCtrl_f = Double.parseDouble(dfRound.format(expHetzyCtrl));
-						} catch (NumberFormatException numberFormatException) {
+						} catch (NumberFormatException ex) {
 							expHetzyCtrl_f = expHetzyCtrl;
+							log.warn(null, ex);
 						}
 						row[6] = hwPvalCtrl_f;
 						row[7] = obsHetzyCtrl_f;
@@ -349,12 +352,14 @@ public class Report_HardyWeinbergSummary extends JPanel {
 									Double d1 = Double.parseDouble(o1.toString());
 									Double d2 = Double.parseDouble(o2.toString());
 									return d1.compareTo(d2);
-								} catch (NumberFormatException numberFormatException) {
+								} catch (NumberFormatException ex) {
+										log.warn(null, ex);
 									try {
 										Integer i1 = Integer.parseInt(o1.toString());
 										Integer i2 = Integer.parseInt(o2.toString());
 										return i1.compareTo(i2);
-									} catch (Exception e) {
+									} catch (Exception ex1) {
+										log.warn(null, ex1);
 										return o1.toString().compareTo(o2.toString());
 									}
 								}

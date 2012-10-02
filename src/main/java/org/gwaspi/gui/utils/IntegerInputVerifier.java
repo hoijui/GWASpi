@@ -45,7 +45,7 @@ public class IntegerInputVerifier extends InputVerifier {
 	private boolean isInteger(String text) {
 		try {
 			Integer.parseInt(text);
-		} catch (NumberFormatException nfe) {
+		} catch (NumberFormatException ex) {
 			return false;
 		}
 		return true;

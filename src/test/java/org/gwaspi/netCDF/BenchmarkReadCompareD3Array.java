@@ -131,7 +131,7 @@ public class BenchmarkReadCompareD3Array {
 				try {
 					ncfile.close();
 				} catch (IOException ex) {
-					log.error("Cannot close file", ex);
+					log.warn("Cannot close file", ex);
 				}
 			}
 		}
