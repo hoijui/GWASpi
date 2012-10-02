@@ -35,7 +35,6 @@ import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.tree.DefaultMutableTreeNode;
-import org.gwaspi.model.LimitedLengthDocument;
 import org.gwaspi.model.Study;
 import org.gwaspi.model.StudyList;
 import org.slf4j.Logger;
@@ -73,7 +72,6 @@ public class StudyManagementPanel extends JPanel {
 	private JTextField txtF_NewStudyName;
 	// End of variables declaration
 
-	@SuppressWarnings("unchecked")
 	public StudyManagementPanel() throws IOException {
 
 		DefaultMutableTreeNode studyManagementNode = (DefaultMutableTreeNode) GWASpiExplorerPanel.getSingleton().getTree().getLastSelectedPathComponent();
