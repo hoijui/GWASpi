@@ -4,7 +4,7 @@ import org.gwaspi.global.Text;
 import org.gwaspi.gui.utils.BrowserHelpUrlAction;
 import org.gwaspi.gui.utils.Dialogs;
 import org.gwaspi.gui.utils.HelpURLs;
-import org.gwaspi.gui.utils.JTextFieldLimit;
+import org.gwaspi.gui.utils.LimitedLengthDocument;
 import org.gwaspi.gui.utils.NodeToPathCorrespondence;
 import org.gwaspi.gui.utils.RowRendererDefault;
 import java.awt.Color;
@@ -115,7 +115,7 @@ public class StudyManagementPanel extends JPanel {
 
 		pnl_StudyDesc.setBorder(BorderFactory.createTitledBorder(null, Text.Study.createNewStudy, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("DejaVu Sans", 1, 13))); // NOI18N
 		lbl_NewStudyName.setText(Text.Study.studyName);
-		txtF_NewStudyName.setDocument(new JTextFieldLimit(63));
+		txtF_NewStudyName.setDocument(new LimitedLengthDocument(63));
 
 		lbl_Desc.setText(Text.All.description);
 		txtA_Desc.setColumns(20);

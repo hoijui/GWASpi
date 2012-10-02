@@ -12,7 +12,7 @@ import org.gwaspi.global.Text;
 import org.gwaspi.gui.utils.BrowserHelpUrlAction;
 import org.gwaspi.gui.utils.Dialogs;
 import org.gwaspi.gui.utils.HelpURLs;
-import org.gwaspi.gui.utils.JTextFieldLimit;
+import org.gwaspi.gui.utils.LimitedLengthDocument;
 import org.gwaspi.gui.utils.NodeToPathCorrespondence;
 import org.gwaspi.gui.utils.RowRendererDefault;
 import java.awt.Component;
@@ -133,7 +133,7 @@ public class CurrentMatrixPanel extends JPanel {
 		txtA_MatrixDesc.setColumns(20);
 		txtA_MatrixDesc.setRows(5);
 		txtA_MatrixDesc.setBorder(BorderFactory.createTitledBorder(null, Text.All.description, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("DejaVu Sans", 1, 13))); // NOI18N
-		txtA_MatrixDesc.setDocument(new JTextFieldLimit(1999));
+		txtA_MatrixDesc.setDocument(new LimitedLengthDocument(1999));
 		txtA_MatrixDesc.setText(matrix.getMatrixMetadata().getDescription());
 		scrl_MatrixDesc.setViewportView(txtA_MatrixDesc);
 		btn_DeleteMatrix.setAction(new DeleteMatrixAction(matrix, this));

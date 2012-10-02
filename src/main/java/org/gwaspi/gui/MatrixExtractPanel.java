@@ -7,7 +7,7 @@ import org.gwaspi.global.Text;
 import org.gwaspi.gui.utils.BrowserHelpUrlAction;
 import org.gwaspi.gui.utils.Dialogs;
 import org.gwaspi.gui.utils.HelpURLs;
-import org.gwaspi.gui.utils.JTextFieldLimit;
+import org.gwaspi.gui.utils.LimitedLengthDocument;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
@@ -168,12 +168,12 @@ public class MatrixExtractPanel extends JPanel {
 		lbl_ParentMatrix.setText(Text.Matrix.parentMatrix);
 		lbl_ParentMatrixName.setText(parentMatrix.getMatrixMetadata().getMatrixFriendlyName());
 		lbl_NewMatrixName.setText(Text.Matrix.newMatrixName);
-		txt_NewMatrixName.setDocument(new JTextFieldLimit(63));
+		txt_NewMatrixName.setDocument(new LimitedLengthDocument(63));
 		txtA_NewMatrixDescription.setColumns(20);
 		txtA_NewMatrixDescription.setLineWrap(true);
 		txtA_NewMatrixDescription.setRows(5);
 		txtA_NewMatrixDescription.setBorder(BorderFactory.createTitledBorder(Text.All.description));
-		txtA_NewMatrixDescription.setDocument(new JTextFieldLimit(1999));
+		txtA_NewMatrixDescription.setDocument(new LimitedLengthDocument(1999));
 		txtA_NewMatrixDescription.setText(Text.All.optional);
 		txtA_NewMatrixDescription.addFocusListener(new FocusAdapter() {
 			@Override
@@ -250,7 +250,7 @@ public class MatrixExtractPanel extends JPanel {
 		txtA_MarkersCriteria.setColumns(20);
 		txtA_MarkersCriteria.setRows(5);
 		txtA_MarkersCriteria.setText(Text.All.optional);
-		txtA_MarkersCriteria.setDocument(new JTextFieldLimit(999));
+		txtA_MarkersCriteria.setDocument(new LimitedLengthDocument(999));
 		txtA_MarkersCriteria.addFocusListener(new FocusAdapter() {
 			@Override
 			public void focusGained(FocusEvent evt) {
@@ -369,7 +369,7 @@ public class MatrixExtractPanel extends JPanel {
 		txtA_SamplesCriteria.setColumns(20);
 		txtA_SamplesCriteria.setRows(5);
 		txtA_SamplesCriteria.setText(Text.All.optional);
-		txtA_SamplesCriteria.setDocument(new JTextFieldLimit(999));
+		txtA_SamplesCriteria.setDocument(new LimitedLengthDocument(999));
 		txtA_SamplesCriteria.addFocusListener(new FocusAdapter() {
 			@Override
 			public void focusGained(FocusEvent evt) {

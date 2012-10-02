@@ -10,15 +10,15 @@ import javax.swing.text.PlainDocument;
  * IBE, Institute of Evolutionary Biology (UPF-CSIC)
  * CEXS-UPF-PRBB
  */
-public class JTextFieldLimit extends PlainDocument {
+public class LimitedLengthDocument extends PlainDocument {
 
 	private int limit;
 
-	public JTextFieldLimit(int limit) {
+	public LimitedLengthDocument(int limit) {
 		this.limit = limit;
 	}
 
-	JTextFieldLimit(int limit, boolean upper) {
+	LimitedLengthDocument(int limit, boolean upper) {
 		this.limit = limit;
 	}
 

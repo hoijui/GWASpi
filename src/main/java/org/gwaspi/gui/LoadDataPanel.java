@@ -7,7 +7,7 @@ import org.gwaspi.gui.utils.BrowserHelpUrlAction;
 import org.gwaspi.gui.utils.CursorUtils;
 import org.gwaspi.gui.utils.Dialogs;
 import org.gwaspi.gui.utils.HelpURLs;
-import org.gwaspi.gui.utils.JTextFieldLimit;
+import org.gwaspi.gui.utils.LimitedLengthDocument;
 import org.gwaspi.gui.utils.MoreGWASinOneGoInfo;
 import java.awt.Color;
 import java.awt.Component;
@@ -122,13 +122,13 @@ public class LoadDataPanel extends JPanel {
 
 		pnl_NameAndDesc.setBorder(BorderFactory.createTitledBorder(null, Text.All.nameAndDescription, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("DejaVu Sans", 1, 13))); // NOI18N
 		lbl_NewMatrixName.setText(Text.Matrix.newMatrixName);
-		txt_NewMatrixName.setDocument(new JTextFieldLimit(63));
+		txt_NewMatrixName.setDocument(new LimitedLengthDocument(63));
 		txt_NewMatrixName.requestFocus();
 		txtA_NewMatrixDescription.setColumns(20);
 		txtA_NewMatrixDescription.setLineWrap(true);
 		txtA_NewMatrixDescription.setRows(5);
 		txtA_NewMatrixDescription.setBorder(BorderFactory.createTitledBorder(Text.All.description));
-		txtA_NewMatrixDescription.setDocument(new JTextFieldLimit(1999));
+		txtA_NewMatrixDescription.setDocument(new LimitedLengthDocument(1999));
 		txtA_NewMatrixDescription.setText(Text.All.optional);
 		txtA_NewMatrixDescription.addFocusListener(new FocusAdapter() {
 			@Override
