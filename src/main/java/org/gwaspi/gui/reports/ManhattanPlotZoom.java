@@ -22,6 +22,7 @@ import java.awt.geom.Rectangle2D;
 import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
+import java.util.List;
 import java.util.Map;
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
@@ -36,6 +37,7 @@ import javax.swing.LayoutStyle;
 import javax.swing.SwingConstants;
 import javax.swing.border.TitledBorder;
 import org.gwaspi.model.Operation;
+import org.gwaspi.model.Report;
 import org.gwaspi.model.ReportsList;
 import org.gwaspi.netCDF.matrices.MatrixMetadata;
 import org.gwaspi.netCDF.operations.OperationMetadata;
@@ -924,7 +926,7 @@ public final class ManhattanPlotZoom extends JPanel {
 		@Override
 		public void actionPerformed(ActionEvent evt) {
 			try {
-				ReportsList rpList = new ReportsList(rdOPMetadata.getOPId(), rdOPMetadata.getParentMatrixId());
+				List<Report> reportsList = ReportsList.getReportsList(rdOPMetadata.getOPId(), rdOPMetadata.getParentMatrixId());
 				GWASpiExplorerPanel.getSingleton().setPnl_Content(new Report_AnalysisPanel(rdOPMetadata.getStudyId(), rdOPMetadata.getParentMatrixId(), rdOPMetadata.getOPId(), txt_NRows));
 				GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
 			} catch (IOException ex) {
@@ -944,12 +946,12 @@ public final class ManhattanPlotZoom extends JPanel {
 		public void actionPerformed(ActionEvent evt) {
 			try {
 				parent.setFired(false);
-				ReportsList rpList = new ReportsList(rdOPMetadata.getOPId(), rdOPMetadata.getParentMatrixId());
+				List<Report> reportsList = ReportsList.getReportsList(rdOPMetadata.getOPId(), rdOPMetadata.getParentMatrixId());
 				String reportFile = "";
-				for (int i = 0; i < rpList.reportsListAL.size(); i++) {
-					String reportType = rpList.reportsListAL.get(i).getReportType();
+				for (int i = 0; i < reportsList.size(); i++) {
+					String reportType = reportsList.get(i).getReportType();
 					if (reportType.equals(OPType.MANHATTANPLOT.toString())) {
-						reportFile = rpList.reportsListAL.get(i).getReportFileName();
+						reportFile = reportsList.get(i).getReportFileName();
 					}
 				}
 				GWASpiExplorerPanel.getSingleton().setPnl_Content(new ManhattanChartDisplay(rdOPMetadata.getStudyId(), reportFile, rdOPMetadata.getOPId()));

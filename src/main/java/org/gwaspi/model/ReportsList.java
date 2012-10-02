@@ -23,11 +23,14 @@ public class ReportsList {
 	private final static Logger log
 			= LoggerFactory.getLogger(ReportsList.class);
 
-	public List<Report> reportsListAL = new ArrayList<Report>();
+	private ReportsList() {
+	}
 
-	public ReportsList(int opId, int matrixId) throws IOException {
+	public static List<Report> getReportsList(int opId, int matrixId) throws IOException {
 
-		List<Map<String, Object>> rs = null;
+		List<Report> reportsList = new ArrayList<Report>();
+
+		List<Map<String, Object>> rs;
 
 		if (opId != Integer.MIN_VALUE) {
 			rs = getReportListByOperationId(opId);
@@ -39,17 +42,19 @@ public class ReportsList {
 		if (rowcount > 0) {
 			for (int i = rowcount - 1; i >= 0; i--) // loop through rows of result set
 			{
-				//PREVENT PHANTOM-DB READS EXCEPTIONS
+				// PREVENT PHANTOM-DB READS EXCEPTIONS
 				if (!rs.isEmpty() && rs.get(i).size() == cDBReports.T_CREATE_REPORTS.length) {
 					int currentRPId = (Integer) rs.get(i).get(cDBMatrix.f_ID);
 					Report currentRP = new Report(currentRPId);
-					reportsListAL.add(currentRP);
+					reportsList.add(currentRP);
 				}
 			}
 		}
+
+		return reportsList;
 	}
 
-	public List<Map<String, Object>> getReportListByOperationId(int opId) throws IOException {
+	private static List<Map<String, Object>> getReportListByOperationId(int opId) throws IOException {
 		List<Map<String, Object>> rs = null;
 		String dbName = cDBGWASpi.DB_DATACENTER;
 		DbManager studyDbManager = ServiceLocator.getDbManager(dbName);
@@ -62,7 +67,7 @@ public class ReportsList {
 		return rs;
 	}
 
-	public List<Map<String, Object>> getReportListByMatrixId(int matrixId) throws IOException {
+	private static List<Map<String, Object>> getReportListByMatrixId(int matrixId) throws IOException {
 		List<Map<String, Object>> rs = null;
 		String dbName = cDBGWASpi.DB_DATACENTER;
 		DbManager studyDbManager = ServiceLocator.getDbManager(dbName);
@@ -75,7 +80,7 @@ public class ReportsList {
 		return rs;
 	}
 
-	public static Object[][] getReportsTable(int opId) throws IOException {
+	private static Object[][] getReportsTable(int opId) throws IOException {
 		Object[][] reportsTable = null;
 
 		String dbName = cDBGWASpi.DB_DATACENTER;

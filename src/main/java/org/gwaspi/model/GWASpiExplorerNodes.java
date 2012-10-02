@@ -327,14 +327,14 @@ public class GWASpiExplorerNodes {
 			DefaultMutableTreeNode parentNode = (DefaultMutableTreeNode) parentPath.getLastPathComponent();
 
 			// GET ALL REPORTS UNDER THIS OPERATION
-			ReportsList reportsMod = new ReportsList(parentOpId, Integer.MIN_VALUE);
-			for (int n = 0; n < reportsMod.reportsListAL.size(); n++) {
-				Report rp = reportsMod.reportsListAL.get(n);
+			List<Report> reportsList = ReportsList.getReportsList(parentOpId, Integer.MIN_VALUE);
+			for (int n = 0; n < reportsList.size(); n++) {
+				Report rp = reportsList.get(n);
 
 				if (!parentOP.getOperationType().equals(OPType.HARDY_WEINBERG.toString()) && //DON'T SHOW SUPERFLUOUS OPEARATION INFO
 						!parentOP.getOperationType().equals(OPType.SAMPLE_QA.toString())) {
 					if (!rp.getReportType().equals(OPType.ALLELICTEST.toString())) {
-						DefaultMutableTreeNode newNode = createReportTreeNode(reportsMod.reportsListAL.get(n).getReportId());
+						DefaultMutableTreeNode newNode = createReportTreeNode(reportsList.get(n).getReportId());
 						addNode(parentNode, newNode, true);
 					}
 				}

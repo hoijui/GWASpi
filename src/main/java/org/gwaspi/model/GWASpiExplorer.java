@@ -133,13 +133,13 @@ public class GWASpiExplorer {
 
 						// LOAD REPORTS ON CURRENT SUB-OPERATION
 						if (!subOP.getOperationType().equals(OPType.HARDY_WEINBERG.toString())) { //NOT IF HW
-							ReportsList reportsMod = new ReportsList(subOP.getOperationId(), Integer.MIN_VALUE);
-							for (int n = 0; n < reportsMod.reportsListAL.size(); n++) {
-								Report rp = reportsMod.reportsListAL.get(n);
+							List<Report> reportsList = ReportsList.getReportsList(subOP.getOperationId(), Integer.MIN_VALUE);
+							for (int n = 0; n < reportsList.size(); n++) {
+								Report rp = reportsList.get(n);
 								if (!rp.getReportType().equals(OPType.ALLELICTEST.toString())
 										&& !rp.getReportType().equals(OPType.GENOTYPICTEST.toString())
 										&& !rp.getReportType().equals(OPType.TRENDTEST.toString())) {
-									DefaultMutableTreeNode reportItem = GWASpiExplorerNodes.createReportTreeNode(reportsMod.reportsListAL.get(n).getReportId());
+									DefaultMutableTreeNode reportItem = GWASpiExplorerNodes.createReportTreeNode(reportsList.get(n).getReportId());
 									subOperationItem.add(reportItem);
 								}
 
@@ -150,18 +150,18 @@ public class GWASpiExplorer {
 
 					// START TESTING
 					// LOAD REPORTS ON CURRENT OPERATION
-					ReportsList reportsMod = new ReportsList(currentOP.getOperationId(), Integer.MIN_VALUE);
+					List<Report> reportsList = ReportsList.getReportsList(currentOP.getOperationId(), Integer.MIN_VALUE);
 					if (!currentOP.getOperationType().equals(OPType.SAMPLE_QA.toString())) { //SAMPLE_QA MUST BE DEALT DIFFERENTLY
-						for (int n = 0; n < reportsMod.reportsListAL.size(); n++) {
-							DefaultMutableTreeNode reportItem = GWASpiExplorerNodes.createReportTreeNode(reportsMod.reportsListAL.get(n).getReportId());
+						for (int n = 0; n < reportsList.size(); n++) {
+							DefaultMutableTreeNode reportItem = GWASpiExplorerNodes.createReportTreeNode(reportsList.get(n).getReportId());
 							operationItem.add(reportItem);
 						}
 					} else {
 						// DEAL WITH SAMPLE_HTZYPLOT
-						for (int n = 0; n < reportsMod.reportsListAL.size(); n++) {
-							Report rp = reportsMod.reportsListAL.get(n);
+						for (int n = 0; n < reportsList.size(); n++) {
+							Report rp = reportsList.get(n);
 							if (rp.getReportType().equals(OPType.SAMPLE_HTZYPLOT.toString())) {
-								DefaultMutableTreeNode reportItem = GWASpiExplorerNodes.createReportTreeNode(reportsMod.reportsListAL.get(n).getReportId());
+								DefaultMutableTreeNode reportItem = GWASpiExplorerNodes.createReportTreeNode(reportsList.get(n).getReportId());
 								operationItem.add(reportItem);
 							}
 						}
@@ -301,9 +301,9 @@ public class GWASpiExplorer {
 						Operation parentOP = new Operation(parentElementInfo.getNodeId());
 						if (currentOP.getOperationType().equals(OPType.HARDY_WEINBERG.toString())) {
 							// Display HW Report
-							ReportsList reportList = new ReportsList(currentOP.getOperationId(), currentOP.getParentMatrixId());
-							if (reportList.reportsListAL.size() > 0) {
-								Report hwReport = reportList.reportsListAL.get(0);
+							List<Report> reportsList = ReportsList.getReportsList(currentOP.getOperationId(), currentOP.getParentMatrixId());
+							if (reportsList.size() > 0) {
+								Report hwReport = reportsList.get(0);
 								String reportFile = hwReport.getReportFileName();
 								gwasPiExplorerPanel.setPnl_Content(new Report_HardyWeinbergSummary(hwReport.getStudyId(), reportFile, hwReport.getParentOperationId()));
 								gwasPiExplorerPanel.getScrl_Content().setViewportView(gwasPiExplorerPanel.getPnl_Content());
@@ -335,9 +335,9 @@ public class GWASpiExplorer {
 							gwasPiExplorerPanel.getScrl_Content().setViewportView(gwasPiExplorerPanel.getPnl_Content());
 						} else if (currentOP.getOperationType().equals(OPType.SAMPLE_QA.toString())) {
 							// Display SampleQA Report
-							ReportsList reportList = new ReportsList(currentOP.getOperationId(), currentOP.getParentMatrixId());
-							if (reportList.reportsListAL.size() > 0) {
-								Report sampleQAReport = reportList.reportsListAL.get(0);
+							List<Report> reportsList = ReportsList.getReportsList(currentOP.getOperationId(), currentOP.getParentMatrixId());
+							if (reportsList.size() > 0) {
+								Report sampleQAReport = reportsList.get(0);
 								String reportFile = sampleQAReport.getReportFileName();
 								gwasPiExplorerPanel.setPnl_Content(new Report_QASamplesSummary(sampleQAReport.getStudyId(), reportFile, sampleQAReport.getParentOperationId()));
 								gwasPiExplorerPanel.getScrl_Content().setViewportView(gwasPiExplorerPanel.getPnl_Content());

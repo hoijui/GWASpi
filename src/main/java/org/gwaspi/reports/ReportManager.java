@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import org.gwaspi.model.Operation;
 import org.gwaspi.model.Report;
+import org.gwaspi.model.ReportsList;
 import org.gwaspi.netCDF.matrices.MatrixMetadata;
 import org.gwaspi.netCDF.operations.OperationMetadata;
 import org.slf4j.Logger;
@@ -136,10 +137,10 @@ public class ReportManager {
 
 	public static void deleteReportByMatrixId(int matrixId) throws IOException {
 		MatrixMetadata matrixMetadata = new MatrixMetadata(matrixId);
-		org.gwaspi.model.ReportsList reportsList = new org.gwaspi.model.ReportsList(Integer.MIN_VALUE, matrixId);
+		List<Report> reportsList = ReportsList.getReportsList(Integer.MIN_VALUE, matrixId);
 		String reportsFolder = Config.getConfigValue(Config.PROPERTY_REPORTS_DIR, "");
 
-		for (Report rp : reportsList.reportsListAL) {
+		for (Report rp : reportsList) {
 			File reportFile = new File(reportsFolder + "/STUDY_" + matrixMetadata.getStudyId() + "/" + rp.getReportFileName());
 
 			if (reportFile.exists()) {
@@ -157,10 +158,10 @@ public class ReportManager {
 
 	public static void deleteReportByOperationId(int opId) throws IOException {
 		OperationMetadata operationMetadata = new OperationMetadata(opId);
-		org.gwaspi.model.ReportsList reportsList = new org.gwaspi.model.ReportsList(opId, operationMetadata.getParentMatrixId());
+		List<Report> reportsList = ReportsList.getReportsList(opId, operationMetadata.getParentMatrixId());
 		String reportsFolder = Config.getConfigValue(Config.PROPERTY_REPORTS_DIR, "");
 
-		for (Report rp : reportsList.reportsListAL) {
+		for (Report rp : reportsList) {
 			File reportFile = new File(reportsFolder + "/STUDY_" + operationMetadata.getStudyId() + "/" + rp.getReportFileName());
 
 			if (reportFile.exists()) {

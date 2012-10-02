@@ -8,6 +8,7 @@ import java.awt.Component;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
+import java.util.List;
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.GroupLayout;
@@ -20,6 +21,7 @@ import javax.swing.LayoutStyle;
 import javax.swing.border.TitledBorder;
 import org.gwaspi.model.Matrix;
 import org.gwaspi.model.Operation;
+import org.gwaspi.model.Report;
 import org.gwaspi.model.ReportsList;
 import org.gwaspi.threadbox.MultiOperations;
 import org.gwaspi.threadbox.SwingWorkerItemList;
@@ -99,9 +101,9 @@ public class Report_AnalysisPanel extends JPanel {
 				.addContainerGap(6, Short.MAX_VALUE)));
 		//</editor-fold>
 
-		ReportsList rpList = new ReportsList(_opId, _matrixId);
-		if (rpList.reportsListAL.size() == 3) {
-			String reportFile = rpList.reportsListAL.get(2).getReportFileName();
+		List<Report> reportsList = ReportsList.getReportsList(_opId, _matrixId);
+		if (reportsList.size() == 3) {
+			String reportFile = reportsList.get(2).getReportFileName();
 			if (currentOP.getOperationType().equals(OPType.ALLELICTEST.toString())) {
 				pnl_Report = new Report_AnalysisAllelicTestImpl(_studyId, reportFile, _opId, NRows);
 			} else if (currentOP.getOperationType().equals(OPType.GENOTYPICTEST.toString())) {
