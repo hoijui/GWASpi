@@ -26,10 +26,11 @@ import javax.swing.WindowConstants;
 /**
  * http://tanksoftware.com/juk/developer/src/com/tanksoftware/util/RedirectedFrame.java
  * A Java Swing class that captures
- * output from the command line * (eg, System.out.println) RedirectedFrame
+ * output from the command line (System.out.println(...))
  * <p/>
- * This class was downloaded from: Java CodeGuru
- * (http://codeguru.earthweb.com/java/articles/382.shtml) <br/>
+ * This class was downloaded from:
+ * http://sourceforge.net/projects/juk/<br/>
+ * and is licensed under the GPL
  *
  * The original author was Real Gagnon (real.gagnon@tactika.com);
  * William Denniss has edited the code, improving its customizability
