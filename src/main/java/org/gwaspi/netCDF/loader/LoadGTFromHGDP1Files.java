@@ -273,9 +273,9 @@ public class LoadGTFromHGDP1Files implements GenotypesLoader {
 				// WRITING GENOTYPE DATA INTO netCDF FILE
 				org.gwaspi.netCDF.operations.Utils.saveSingleSampleGTsToMatrix(ncfile, markerSetMap, sampleIndex);
 			} catch (IOException ex) {
-				//NOTHING
+				log.warn(null, ex);
 			} catch (InvalidRangeException ex) {
-				//NOTHING
+				log.warn(null, ex);
 			}
 
 			sampleIndex++;

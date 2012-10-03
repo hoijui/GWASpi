@@ -331,6 +331,7 @@ public class LoadGTFromSequenomFiles implements GenotypesLoader {
 						Long.parseLong(tmpMarkerId);
 						tmpMarkerId = "rs" + tmpMarkerId;
 					} catch (Exception ex) {
+						log.warn(null, ex);
 					}
 
 					String sAlleles = cVals[Standard.alleles];
