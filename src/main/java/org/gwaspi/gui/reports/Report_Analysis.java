@@ -401,13 +401,13 @@ public abstract class Report_Analysis extends JPanel {
 			int decision = Dialogs.showOptionDialogue(Text.All.save, Text.Reports.selectSaveMode, Text.Reports.currentReportView, Text.Reports.completeReport, Text.All.cancel);
 
 			switch (decision) {
-				case 0:
+				case JOptionPane.YES_OPTION:
 					actionSaveReportViewAs(studyId, reportFileName);
 					break;
-				case 1:
+				case JOptionPane.NO_OPTION:
 					actionSaveCompleteReportAs(studyId, reportFileName);
 					break;
-				default:
+				default: // JOptionPane.CANCEL_OPTION
 					break;
 			}
 		}

@@ -86,7 +86,7 @@ public class CliExecutor {
 				MultiOperations.loadMatrixDoGWASifOK(
 						loadDescription, // Format
 						Boolean.parseBoolean(args.get(3)), // Dummy samples
-						JOptionPane.NO_OPTION, // Do GWAS
+						false, // Do GWAS
 						gwasParams); // gwasParams (dummy)
 				success = true;
 			}
@@ -172,7 +172,7 @@ public class CliExecutor {
 				MultiOperations.loadMatrixDoGWASifOK(
 						loadDescription, // Format
 						Boolean.parseBoolean(args.get(3)), // Dummy samples
-						JOptionPane.YES_OPTION, // Do GWAS
+						true, // Do GWAS
 						gwasParams); // gwasParams (dummy)
 				success = true;
 			}

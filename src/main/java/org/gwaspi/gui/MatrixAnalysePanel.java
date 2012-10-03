@@ -374,17 +374,17 @@ public class MatrixAnalysePanel extends JPanel {
 					List<String> missingOPsAL = OperationManager.checkForNecessaryOperations(necessaryOPsAL, parentMatrix.getMatrixId());
 
 					// WHAT TO DO IF OPs ARE MISSING
-					int decision = JOptionPane.YES_OPTION;
+					boolean perfromAllelicTest = true;
 					if (missingOPsAL.size() > 0) {
 						if (missingOPsAL.contains(OPType.SAMPLE_QA.toString())
 								|| missingOPsAL.contains(OPType.MARKER_QA.toString())) {
 							Dialogs.showWarningDialogue("Before performing an " + Text.Operation.allelicAssocTest + " you must launch\n a '" + Text.Operation.GTFreqAndHW + "' first or perform a '" + Text.Operation.gwasInOneGo + "' instead.");
 							MultiOperations.doMatrixQAs(parentMatrix.getStudyId(), parentMatrix.getMatrixId());
-							decision = JOptionPane.NO_OPTION;
+							perfromAllelicTest = false;
 						} else if (missingOPsAL.contains(OPType.MARKER_CENSUS_BY_AFFECTION.toString())
 								&& missingOPsAL.contains(OPType.MARKER_CENSUS_BY_PHENOTYPE.toString())) {
 							Dialogs.showWarningDialogue("Before performing an " + Text.Operation.allelicAssocTest + " you must launch\n a '" + Text.Operation.GTFreqAndHW + "' first or perform a '" + Text.Operation.gwasInOneGo + "' instead.");
-							decision = JOptionPane.NO_OPTION;
+							perfromAllelicTest = false;
 						} else if (missingOPsAL.contains(OPType.HARDY_WEINBERG.toString())
 								&& !(missingOPsAL.contains(OPType.MARKER_CENSUS_BY_AFFECTION.toString())
 								&& missingOPsAL.contains(OPType.MARKER_CENSUS_BY_PHENOTYPE.toString()))) {
@@ -392,13 +392,12 @@ public class MatrixAnalysePanel extends JPanel {
 							MultiOperations.doHardyWeinberg(parentMatrix.getStudyId(),
 									parentMatrix.getMatrixId(),
 									censusOPId);
-							decision = JOptionPane.NO_OPTION;
+							perfromAllelicTest = false;
 						}
 					}
 
 					// DO ALLELIC TEST
-					if (decision == JOptionPane.YES_OPTION) {
-
+					if (perfromAllelicTest) {
 						boolean reProceed = true;
 						if (censusOPId == Integer.MIN_VALUE) {
 							reProceed = false;
@@ -477,17 +476,17 @@ public class MatrixAnalysePanel extends JPanel {
 					List<String> missingOPsAL = OperationManager.checkForNecessaryOperations(necessaryOPsAL, parentMatrix.getMatrixId());
 
 					// WHAT TO DO IF OPs ARE MISSING
-					int decision = JOptionPane.YES_OPTION;
+					boolean performTest = true;
 					if (missingOPsAL.size() > 0) {
 						if (missingOPsAL.contains(OPType.SAMPLE_QA.toString())
 								|| missingOPsAL.contains(OPType.MARKER_QA.toString())) {
 							Dialogs.showWarningDialogue("Before performing a " + Text.Operation.genoAssocTest + " you must launch\n a '" + Text.Operation.GTFreqAndHW + "' first or perform a '" + Text.Operation.gwasInOneGo + "' instead.");
 							MultiOperations.doMatrixQAs(parentMatrix.getStudyId(), parentMatrix.getMatrixId());
-							decision = JOptionPane.NO_OPTION;
+							performTest = false;
 						} else if (missingOPsAL.contains(OPType.MARKER_CENSUS_BY_AFFECTION.toString())
 								&& missingOPsAL.contains(OPType.MARKER_CENSUS_BY_PHENOTYPE.toString())) {
 							Dialogs.showWarningDialogue("Before performing a " + Text.Operation.genoAssocTest + " you must launch\n a '" + Text.Operation.GTFreqAndHW + "' first or perform a '" + Text.Operation.gwasInOneGo + "' instead.");
-							decision = JOptionPane.NO_OPTION;
+							performTest = false;
 						} else if (missingOPsAL.contains(OPType.HARDY_WEINBERG.toString())
 								&& !(missingOPsAL.contains(OPType.MARKER_CENSUS_BY_AFFECTION.toString())
 								&& missingOPsAL.contains(OPType.MARKER_CENSUS_BY_PHENOTYPE.toString()))) {
@@ -495,13 +494,12 @@ public class MatrixAnalysePanel extends JPanel {
 							MultiOperations.doHardyWeinberg(parentMatrix.getStudyId(),
 									parentMatrix.getMatrixId(),
 									censusOPId);
-							decision = JOptionPane.NO_OPTION;
+							performTest = false;
 						}
 					}
 
 					// DO TEST
-					if (decision == JOptionPane.YES_OPTION) {
-
+					if (performTest) {
 						boolean reProceed = true;
 						if (censusOPId == Integer.MIN_VALUE) {
 							reProceed = false;
@@ -580,19 +578,19 @@ public class MatrixAnalysePanel extends JPanel {
 					List<String> missingOPsAL = OperationManager.checkForNecessaryOperations(necessaryOPsAL, parentMatrix.getMatrixId());
 
 					// WHAT TO DO IF OPs ARE MISSING
-					int decision = JOptionPane.YES_OPTION;
+					boolean performTest = true;
 					if (missingOPsAL.size() > 0) {
 						if (missingOPsAL.contains(OPType.SAMPLE_QA.toString())
 								|| missingOPsAL.contains(OPType.MARKER_QA.toString()))
 						{
 							Dialogs.showWarningDialogue("Before performing a " + Text.Operation.trendTest + " you must launch\n a '" + Text.Operation.GTFreqAndHW + "' first or perform a '" + Text.Operation.gwasInOneGo + "' instead.");
 							MultiOperations.doMatrixQAs(parentMatrix.getStudyId(), parentMatrix.getMatrixId());
-							decision = JOptionPane.NO_OPTION;
+							performTest = false;
 						} else if (missingOPsAL.contains(OPType.MARKER_CENSUS_BY_AFFECTION.toString())
 								&& missingOPsAL.contains(OPType.MARKER_CENSUS_BY_PHENOTYPE.toString()))
 						{
 							Dialogs.showWarningDialogue("Before performing a " + Text.Operation.trendTest + " you must launch\n a '" + Text.Operation.GTFreqAndHW + "' first or perform a '" + Text.Operation.gwasInOneGo + "' instead.");
-							decision = JOptionPane.NO_OPTION;
+							performTest = false;
 						} else if (missingOPsAL.contains(OPType.HARDY_WEINBERG.toString())
 								&& !(missingOPsAL.contains(OPType.MARKER_CENSUS_BY_AFFECTION.toString())
 								&& missingOPsAL.contains(OPType.MARKER_CENSUS_BY_PHENOTYPE.toString())))
@@ -601,13 +599,12 @@ public class MatrixAnalysePanel extends JPanel {
 							MultiOperations.doHardyWeinberg(parentMatrix.getStudyId(),
 									parentMatrix.getMatrixId(),
 									censusOPId);
-							decision = JOptionPane.NO_OPTION;
+							performTest = false;
 						}
 					}
 
 					// DO TEST
-					if (decision == JOptionPane.YES_OPTION) {
-
+					if (performTest) {
 						boolean reProceed = true;
 						if (censusOPId == Integer.MIN_VALUE) {
 							reProceed = false;

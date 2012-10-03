@@ -3,7 +3,6 @@ package org.gwaspi.threadbox;
 import org.gwaspi.constants.cNetCDF;
 import java.util.Map;
 import java.util.Set;
-import javax.swing.JOptionPane;
 import org.gwaspi.model.GWASpiExplorerNodes;
 import org.gwaspi.netCDF.loader.GenotypesLoadDescription;
 import org.gwaspi.netCDF.loader.LoadManager;
@@ -33,7 +32,7 @@ public class Threaded_Loader_GWASifOK extends CommonRunnable {
 	private int samplesQAOpId;
 	private int markersQAOpId;
 	private boolean dummySamples;
-	private int decision;
+	private boolean performGwas;
 	private GenotypesLoadDescription loadDescription;
 	private GWASinOneGOParams gwasParams;
 
@@ -42,14 +41,14 @@ public class Threaded_Loader_GWASifOK extends CommonRunnable {
 			String timeStamp,
 			GenotypesLoadDescription loadDescription,
 			boolean dummySamples,
-			int decision,
+			boolean performGwas,
 			GWASinOneGOParams gwasParams)
 	{
 		super(threadName, timeStamp, "Loading Genotypes & Performing GWAS");
 
 		this.loadDescription = loadDescription;
 		this.dummySamples = dummySamples;
-		this.decision = decision;
+		this.performGwas = performGwas;
 		this.gwasParams = gwasParams;
 
 		startInternal(getTaskDescription());
@@ -96,7 +95,7 @@ public class Threaded_Loader_GWASifOK extends CommonRunnable {
 		}
 		//</editor-fold>
 
-		if (decision == JOptionPane.YES_OPTION
+		if (performGwas
 				&& affectionStates.contains("1")
 				&& affectionStates.contains("2"))
 		{

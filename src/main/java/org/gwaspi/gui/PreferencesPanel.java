@@ -353,7 +353,6 @@ public class PreferencesPanel extends JPanel {
 		public void actionPerformed(ActionEvent evt) {
 			int decision = Dialogs.showConfirmDialogue(Text.App.confirmCopyDataDir);
 			if (decision == JOptionPane.YES_OPTION) {
-
 				TableModel tm = preferencesTable.getModel();
 				String currentDataDirPath = null;
 				for (int i = 0; i < tm.getRowCount(); i++) {
@@ -382,12 +381,12 @@ public class PreferencesPanel extends JPanel {
 						}
 						Config.setConfigValue(Config.PROPERTY_GENOTYPES_DIR, newFile.getPath());
 
-	//					origFile = new File(currentDataDirPath + "/help");
-	//					newFile = new File(newDataDir.getPath() + "/help");
-	//					if (origFile.exists()) {
-	//						org.gwaspi.global.Utils.copyFileRecursive(origFile, newFile);
-	//					}
-	//					Config.setConfigValue("OfflineHelpDir", newFile.getPath());
+//						origFile = new File(currentDataDirPath + "/help");
+//						newFile = new File(newDataDir.getPath() + "/help");
+//						if (origFile.exists()) {
+//							org.gwaspi.global.Utils.copyFileRecursive(origFile, newFile);
+//						}
+//						Config.setConfigValue("OfflineHelpDir", newFile.getPath());
 
 						origFile = new File(currentDataDirPath + "/export");
 						newFile = new File(newDataDir.getPath() + "/export");

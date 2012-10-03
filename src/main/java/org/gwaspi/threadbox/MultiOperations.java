@@ -1,10 +1,9 @@
 package org.gwaspi.threadbox;
 
 import org.gwaspi.constants.cExport.ExportFormat;
-import org.gwaspi.constants.cImport.ImportFormat;
-import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
-import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
+import org.gwaspi.constants.cNetCDF.Defaults.SetMarkerPickCase;
+import org.gwaspi.constants.cNetCDF.Defaults.SetSamplePickCase;
 import org.gwaspi.gui.GWASpiExplorerPanel;
 import org.gwaspi.gui.ProcessTab;
 import org.gwaspi.gui.StartGWASpi;
@@ -58,7 +57,7 @@ public class MultiOperations {
 	public static void loadMatrixDoGWASifOK(
 			final GenotypesLoadDescription loadDescription,
 			final boolean dummySamples,
-			final int decision, // FIXME, use boolean instead!
+			final boolean performGwas,
 			final GWASinOneGOParams gwasParams)
 	{
 		// LOAD & GWAS if requested and OK
@@ -71,7 +70,7 @@ public class MultiOperations {
 						timeStamp,
 						loadDescription,
 						dummySamples,
-						decision,
+						performGwas,
 						gwasParams);
 
 				return thread;
@@ -308,12 +307,13 @@ public class MultiOperations {
 	//</editor-fold>
 
 	//<editor-fold defaultstate="collapsed/expanded" desc="DATA MANAGEMENT">
-	public static void doExtractData(final int studyId,
+	public static void doExtractData(
+			final int studyId,
 			final int parentMatrixId,
 			final String newMatrixName,
 			final String description,
-			final cNetCDF.Defaults.SetMarkerPickCase markerPickCase,
-			final cNetCDF.Defaults.SetSamplePickCase samplePickCase,
+			final SetMarkerPickCase markerPickCase,
+			final SetSamplePickCase samplePickCase,
 			final String markerPickVar,
 			final String samplePickVar,
 			final Set<Object> markerCriteria,
@@ -359,7 +359,7 @@ public class MultiOperations {
 
 	public static void doTranslateAB12ToACGT(final int studyId,
 			final int parentMatrixId,
-			final cNetCDF.Defaults.GenotypeEncoding gtEncoding,
+			final GenotypeEncoding gtEncoding,
 			final String newMatrixName,
 			final String description)
 	{

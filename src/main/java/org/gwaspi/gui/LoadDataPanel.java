@@ -615,15 +615,15 @@ public class LoadDataPanel extends JPanel {
 							dummySamples = false;
 						}
 
-						int decision = Dialogs.showOptionDialogue(Text.Matrix.gwasInOne, Text.Matrix.ifCaseCtrlDetected, Text.All.yes, Text.Matrix.noJustLoad, Text.All.cancel);
+						int performGwasInOneGo = Dialogs.showOptionDialogue(Text.Matrix.gwasInOne, Text.Matrix.ifCaseCtrlDetected, Text.All.yes, Text.Matrix.noJustLoad, Text.All.cancel);
 
-						if (decision == JOptionPane.YES_OPTION) {
+						if (performGwasInOneGo == JOptionPane.YES_OPTION) {
 							// ASK MORE QUESTIONS
 							gwasParams = new MoreGWASinOneGoInfo().showMoreInfo(cmb_Format.getSelectedItem().toString());
 							if (gwasParams.isProceed()) {
 								gwasParams.setFriendlyName(Dialogs.showInputBox(Text.Operation.GTFreqAndHWFriendlyName));
 							}
-						} else if (decision != JOptionPane.CANCEL_OPTION) {
+						} else if (performGwasInOneGo == JOptionPane.NO_OPTION) {
 							gwasParams.setProceed(true);
 						}
 
@@ -648,7 +648,7 @@ public class LoadDataPanel extends JPanel {
 							MultiOperations.loadMatrixDoGWASifOK(
 									loadDescription,
 									dummySamples,
-									decision,
+									performGwasInOneGo == JOptionPane.YES_OPTION,
 									gwasParams);
 
 							ProcessTab.getSingleton().showTab();

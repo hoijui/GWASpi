@@ -392,13 +392,13 @@ public class Report_QASamplesSummary extends JPanel {
 			int decision = Dialogs.showOptionDialogue(Text.All.save, Text.Reports.selectSaveMode, Text.Reports.currentReportView, Text.Reports.completeReport, Text.All.cancel);
 
 			switch (decision) {
-				case 0:
+				case JOptionPane.YES_OPTION:
 					actionSaveReportViewAs();
 					break;
-				case 1:
+				case JOptionPane.NO_OPTION:
 					actionSaveCompleteReportAs();
 					break;
-				default:
+				default: // JOptionPane.CANCEL_OPTION
 					break;
 			}
 		}
