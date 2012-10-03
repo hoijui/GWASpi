@@ -128,9 +128,9 @@ public class MatrixManager {
 		matrixName = matrixName.replace(":", "");
 		matrixName = matrixName.replace(" ", "");
 		matrixName = matrixName.replace("/", "");
-		matrixName.replaceAll("[a-zA-Z]", ""); // FIXME result is unused!
+//		matrixName = matrixName.replaceAll("[a-zA-Z]", "");
 
-		//matrixName = matrixName.substring(0, matrixName.length()-3); //Remove "CET" from name
+//		matrixName = matrixName.substring(0, matrixName.length() - 3); // Remove "CET" from name
 		return matrixName;
 	}
 

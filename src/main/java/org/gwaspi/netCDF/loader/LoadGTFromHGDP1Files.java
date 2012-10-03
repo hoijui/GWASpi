@@ -356,7 +356,7 @@ public class LoadGTFromHGDP1Files implements GenotypesLoader {
 			String currMarkerId = cVals[Standard.markerId];
 
 			Object columnNb = sampleOrderMap.get(currSampleId);
-			if (!columnNb.equals(null)) { // FIXME use == instead of equals!?
+			if (columnNb != null) {
 				String strAlleles = cVals[(Integer) columnNb];
 				if (strAlleles.equals(Standard.missing)) {
 					tempMarkerIdMap.put(currMarkerId, cNetCDF.Defaults.DEFAULT_GT);

@@ -242,18 +242,6 @@ public class Utils {
 		return dateOut;
 	}
 
-	public static String getURIDate() {
-		String matrixName = Utils.getMediumDateTimeAsString();
-		matrixName = matrixName.replace(",", "");
-		matrixName = matrixName.replace(":", "-");
-		matrixName = matrixName.replace(" ", "_");
-		matrixName = matrixName.replace("/", "-");
-		matrixName.replaceAll("[a-zA-Z]", ""); // FIXME result is unused!
-
-		//matrixName = matrixName.substring(0, matrixName.length()-3); //Remove "CET" from name
-		return matrixName;
-	}
-
 	public static String getSQLDateAsString() {
 		Date today = new Date();
 		java.sql.Date jsqlD = new java.sql.Date(today.getTime());

@@ -18,7 +18,6 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
-import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.filechooser.FileFilter;
@@ -66,8 +65,8 @@ public class Dialogs {
 				}
 			}
 
-			JFrame frame = new JFrame("Census Combo Dialog");
-			String selectedRow = (String) JOptionPane.showInputDialog(frame,
+			String selectedRow = (String) JOptionPane.showInputDialog(
+					null,
 					"Choose Operation to use...",
 					"Available Census",
 					JOptionPane.QUESTION_MESSAGE,
@@ -104,8 +103,8 @@ public class Dialogs {
 			}
 
 			if (!operationAL.isEmpty()) {
-				JFrame frame = new JFrame(title);
-				String selectedRow = (String) JOptionPane.showInputDialog(frame,
+				String selectedRow = (String) JOptionPane.showInputDialog(
+						null,
 						"Choose " + title + " to use...",
 						"Available Operations",
 						JOptionPane.QUESTION_MESSAGE,
@@ -142,8 +141,8 @@ public class Dialogs {
 				}
 			}
 
-			JFrame frame = new JFrame(title);
-			String selectedRow = (String) JOptionPane.showInputDialog(frame,
+			String selectedRow = (String) JOptionPane.showInputDialog(
+					null,
 					"Choose " + title + " to use...",
 					"Available Operations",
 					JOptionPane.QUESTION_MESSAGE,
@@ -162,8 +161,8 @@ public class Dialogs {
 	public static ImportFormat showTechnologySelectCombo() {
 		ImportFormat[] formats = cImport.ImportFormat.values();
 
-		JFrame frame = new JFrame("Format Combo Dialog");
-		ImportFormat technology = (ImportFormat) JOptionPane.showInputDialog(frame,
+		ImportFormat technology = (ImportFormat) JOptionPane.showInputDialog(
+				null,
 				"What format?",
 				"Platform, Format or Technology",
 				JOptionPane.QUESTION_MESSAGE,
@@ -177,8 +176,8 @@ public class Dialogs {
 	public static ExportFormat showExportFormatsSelectCombo() {
 		ExportFormat[] formats = cExport.ExportFormat.values();
 
-		JFrame frame = new JFrame("Format Combo Dialog");
-		ExportFormat expFormat = (ExportFormat) JOptionPane.showInputDialog(frame,
+		ExportFormat expFormat = (ExportFormat) JOptionPane.showInputDialog(
+				null,
 				"What format?",
 				"Export Format",
 				JOptionPane.QUESTION_MESSAGE,
@@ -192,8 +191,8 @@ public class Dialogs {
 	public static String showPhenotypeColumnsSelectCombo() {
 		String[] phenotype = cDBSamples.f_PHENOTYPES_COLUMNS;
 
-		JFrame frame = new JFrame("Phenotype Combo Dialog");
-		String expPhenotype = (String) JOptionPane.showInputDialog(frame,
+		String expPhenotype = (String) JOptionPane.showInputDialog(
+				null,
 				"What phenotype?",
 				"Phenotype column to use",
 				JOptionPane.QUESTION_MESSAGE,
@@ -207,8 +206,8 @@ public class Dialogs {
 	public static StrandType showStrandSelectCombo() {
 		StrandType[] strandFlags = cNetCDF.Defaults.StrandType.values();
 
-		JFrame frame = new JFrame("Strand Combo Dialog");
-		StrandType strandType = (StrandType) JOptionPane.showInputDialog(frame,
+		StrandType strandType = (StrandType) JOptionPane.showInputDialog(
+				null,
 				"What strand are the genotypes located on?",
 				"Genotypes Strand",
 				JOptionPane.QUESTION_MESSAGE,
@@ -223,8 +222,8 @@ public class Dialogs {
 	public static String showChromosomeSelectCombo() {
 		String[] chroms = cNetCDF.Defaults.Chromosomes;
 
-		JFrame frame = new JFrame("Chromosomes Combo Dialog");
-		String chr = (String) JOptionPane.showInputDialog(frame,
+		String chr = (String) JOptionPane.showInputDialog(
+				null,
 				"What chromosome are the genotypes placed at?",
 				"Chromosome",
 				JOptionPane.QUESTION_MESSAGE,
@@ -238,8 +237,8 @@ public class Dialogs {
 	public static GenotypeEncoding showGenotypeCodeSelectCombo() {
 		GenotypeEncoding[] gtCode = cNetCDF.Defaults.GenotypeEncoding.values();
 
-		JFrame frame = new JFrame("Genotype Encoding Combo Dialog");
-		GenotypeEncoding strandType = (GenotypeEncoding) JOptionPane.showInputDialog(frame,
+		GenotypeEncoding strandType = (GenotypeEncoding) JOptionPane.showInputDialog(
+				null,
 				"What code are the genotypes noted in?",
 				"Genotype Encoding",
 				JOptionPane.QUESTION_MESSAGE,
@@ -267,8 +266,8 @@ public class Dialogs {
 			matrixIDs.add(mx.getMatrixId());
 		}
 
-		JFrame frame = new JFrame("Genotype Encoding Combo Dialog");
-		String selectedRow = (String) JOptionPane.showInputDialog(frame,
+		String selectedRow = (String) JOptionPane.showInputDialog(
+				null,
 				"What code are the genotypes noted in?",
 				"Genotype Encoding",
 				JOptionPane.QUESTION_MESSAGE,
@@ -284,28 +283,23 @@ public class Dialogs {
 	}
 
 	public static Integer showConfirmDialogue(String message) {
-		JFrame frame = new JFrame("Confirm?");
-		return JOptionPane.showConfirmDialog(frame, message);
+		return JOptionPane.showConfirmDialog(null, message, "Confirm?", JOptionPane.QUESTION_MESSAGE);
 	}
 
 	public static void showWarningDialogue(String message) {
-		JFrame frame = new JFrame("Warning!");
-		JOptionPane.showMessageDialog(frame, message);
+		JOptionPane.showMessageDialog(null, message, "Warning!", JOptionPane.WARNING_MESSAGE);
 	}
 
 	public static void showInfoDialogue(String message) {
-		JFrame frame = new JFrame("Information"); // FIXME would we not rather use this string in a title, isnted of in an invisible parent frame? :/ same above
-		JOptionPane.showMessageDialog(frame, message);
-
-		frame.setVisible(false);
+		JOptionPane.showMessageDialog(null, message, "Information", JOptionPane.INFORMATION_MESSAGE);
 	}
 
 	public static int showOptionDialogue(String title, String message, String button1, String button2, String button3) {
-		JFrame frame = new JFrame("Proceed with...");
 		Object[] options = {button1,
 			button2,
 			button3};
-		return JOptionPane.showOptionDialog(frame,
+		return JOptionPane.showOptionDialog(
+				null,
 				message,
 				title,
 				JOptionPane.YES_NO_CANCEL_OPTION,
@@ -316,8 +310,7 @@ public class Dialogs {
 	}
 
 	public static String showInputBox(String message) {
-		JFrame frame = new JFrame("Input text...");
-		return JOptionPane.showInputDialog(frame, message);
+		return JOptionPane.showInputDialog(null, message, "Input text...", JOptionPane.PLAIN_MESSAGE);
 	}
 	//</editor-fold>
 

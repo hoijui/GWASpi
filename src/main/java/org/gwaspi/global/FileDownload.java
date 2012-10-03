@@ -13,8 +13,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Download data from URLs and save it to local files.
  * @author Marco Schmidt
- * modified by me
- * FIXME Who is me?
+ * @author Fernando Muñiz Fernandez
  */
 public class FileDownload {
 

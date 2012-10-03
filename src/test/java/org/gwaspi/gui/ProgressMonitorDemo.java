@@ -114,7 +114,7 @@ public class ProgressMonitorDemo extends JPanel implements ActionListener, Prope
 	 * Invoked when task's progress property changes.
 	 */
 	public void propertyChange(PropertyChangeEvent evt) {
-		if ("progress" == evt.getPropertyName()) { // FIXME use equals()
+		if ("progress".equals(evt.getPropertyName())) {
 			int progress = (Integer) evt.getNewValue();
 			progressMonitor.setProgress(progress);
 			String message =
