@@ -21,6 +21,8 @@ import java.util.Map;
 import org.gwaspi.netCDF.markers.MarkerSet_opt;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.gwaspi.netCDF.matrices.MatrixMetadata;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.gwaspi.samples.SampleSet;
 import ucar.ma2.ArrayChar;
 import ucar.ma2.ArrayInt;
@@ -39,6 +41,9 @@ import ucar.nc2.NetcdfFileWriteable;
  * CEXS-UPF-PRBB
  */
 public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
+
+	private final Logger log
+			= LoggerFactory.getLogger(LoadGTFromGWASpiFiles.class);
 
 	public LoadGTFromGWASpiFiles() {
 	}
@@ -95,10 +100,10 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 		}
 
 		if (testExcessSamplesInFile) {
-			System.out.println("There were Samples in the Sample Info file that are not present in the genotypes file.\n" + Text.App.appName + " will attempt to ignore them...");
+			log.info("There were Samples in the Sample Info file that are not present in the genotypes file.\n" + Text.App.appName + " will attempt to ignore them...");
 		}
 		if (testExcessSamplesInMatrix) {
-			System.out.println("Warning!\nSome Samples in the imported genotypes are not described in the Sample Info file!\nData will not be imported!");
+			log.info("Warning!\nSome Samples in the imported genotypes are not described in the Sample Info file!\nData will not be imported!");
 		}
 
 		MatrixMetadata importMatrixMetadata = new MatrixMetadata(loadDescription.getGtDirPath(), loadDescription.getStudyId(), loadDescription.getFriendlyName());
@@ -174,7 +179,7 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 		SampleSet rdSampleSet = new SampleSet(importMatrixMetadata.getStudyId(), loadDescription.getGtDirPath(), importMatrixMetadata.getMatrixNetCDFName());
 		Map<String, Object> rdSampleSetMap = rdSampleSet.getSampleIdSetMap();
 
-		System.out.println("Done initializing sorted MarkerSetMap at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
+		log.info("Done initializing sorted MarkerSetMap at {}", org.gwaspi.global.Utils.getMediumDateTimeAsString());
 
 		// RETRIEVE CHROMOSOMES INFO
 		Map<String, Object> chrSetMap = org.gwaspi.netCDF.matrices.Utils.aggregateChromosomeInfo(rdMarkerSetMap, 0, 1);
@@ -197,10 +202,10 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 		// create the file
 		try {
 			ncfile.create();
-		} catch (IOException e) {
-			System.err.println("ERROR creating file " + ncfile.getLocation() + "\n" + e);
+		} catch (IOException ex) {
+			log.error("Failed creating file " + ncfile.getLocation(), ex);
 		}
-		//System.out.println("Done creating netCDF handle at "+global.Utils.getMediumDateTimeAsString());
+		//log.info("Done creating netCDF handle at "+global.Utils.getMediumDateTimeAsString());
 		//</editor-fold>
 
 		//<editor-fold defaultstate="collapsed" desc="WRITE MATRIX METADATA">
@@ -210,13 +215,13 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 		int[] sampleOrig = new int[]{0, 0};
 		try {
 			ncfile.write(cNetCDF.Variables.VAR_SAMPLESET, sampleOrig, samplesD2);
-		} catch (IOException e) {
-			System.err.println("ERROR writing file");
-		} catch (InvalidRangeException e) {
-			e.printStackTrace();
+		} catch (IOException ex) {
+			log.error("Failed writing file", ex);
+		} catch (InvalidRangeException ex) {
+			log.error(null, ex);
 		}
 		samplesD2 = null;
-		System.out.println("Done writing SampleSet to matrix at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
+		log.info("Done writing SampleSet to matrix at {}", org.gwaspi.global.Utils.getMediumDateTimeAsString());
 
 
 		// WRITE CHROMOSOME METADATA FROM ANNOTATION FILE
@@ -225,12 +230,12 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 		int[] markersOrig = new int[]{0, 0};
 		try {
 			ncfile.write(cNetCDF.Variables.VAR_MARKERS_CHR, markersOrig, markersD2);
-		} catch (IOException e) {
-			System.err.println("ERROR writing file");
-		} catch (InvalidRangeException e) {
-			e.printStackTrace();
+		} catch (IOException ex) {
+			log.error("Failed writing file", ex);
+		} catch (InvalidRangeException ex) {
+			log.error(null, ex);
 		}
-		System.out.println("Done writing chromosomes to matrix at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
+		log.info("Done writing chromosomes to matrix at {}", org.gwaspi.global.Utils.getMediumDateTimeAsString());
 
 		// Set of chromosomes found in matrix along with number of markersinfo
 		org.gwaspi.netCDF.operations.Utils.saveCharMapKeyToWrMatrix(ncfile, chrSetMap, cNetCDF.Variables.VAR_CHR_IN_MATRIX, 8);
@@ -245,12 +250,12 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 		int[] posOrig = new int[1];
 		try {
 			ncfile.write(cNetCDF.Variables.VAR_MARKERS_POS, posOrig, markersPosD1);
-		} catch (IOException e) {
-			System.err.println("ERROR writing file");
-		} catch (InvalidRangeException e) {
-			e.printStackTrace();
+		} catch (IOException ex) {
+			log.error("Failed writing file", ex);
+		} catch (InvalidRangeException ex) {
+			log.error(null, ex);
 		}
-		System.out.println("Done writing positions to matrix at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
+		log.info("Done writing positions to matrix at {}", org.gwaspi.global.Utils.getMediumDateTimeAsString());
 
 
 		//WRITE RSID & MARKERID METADATA FROM METADATAMap
@@ -258,20 +263,20 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 		markersD2 = org.gwaspi.netCDF.operations.Utils.writeMapKeysToD2ArrayChar(rdMarkerSetMap, cNetCDF.Strides.STRIDE_MARKER_NAME);
 		try {
 			ncfile.write(cNetCDF.Variables.VAR_MARKERSET, markersOrig, markersD2);
-		} catch (IOException e) {
-			System.err.println("ERROR writing file");
-		} catch (InvalidRangeException e) {
-			e.printStackTrace();
+		} catch (IOException ex) {
+			log.error("Failed writing file", ex);
+		} catch (InvalidRangeException ex) {
+			log.error(null, ex);
 		}
 		markersD2 = org.gwaspi.netCDF.operations.Utils.writeMapValueToD2ArrayChar(rdMarkerSetMap, cNetCDF.Strides.STRIDE_MARKER_NAME);
 		try {
 			ncfile.write(cNetCDF.Variables.VAR_MARKERS_RSID, markersOrig, markersD2);
-		} catch (IOException e) {
-			System.err.println("ERROR writing file");
-		} catch (InvalidRangeException e) {
-			e.printStackTrace();
+		} catch (IOException ex) {
+			log.error("Failed writing file", ex);
+		} catch (InvalidRangeException ex) {
+			log.error(null, ex);
 		}
-		System.out.println("Done writing MarkerId and RsId to matrix at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
+		log.info("Done writing MarkerId and RsId to matrix at {}", org.gwaspi.global.Utils.getMediumDateTimeAsString());
 
 
 		//WRITE GT STRAND FROM ANNOTATION FILE
@@ -280,13 +285,13 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 		int[] gtOrig = new int[]{0, 0};
 		try {
 			ncfile.write(cNetCDF.Variables.VAR_GT_STRAND, gtOrig, markersD2);
-		} catch (IOException e) {
-			System.err.println("ERROR writing file");
-		} catch (InvalidRangeException e) {
-			e.printStackTrace();
+		} catch (IOException ex) {
+			log.error("Failed writing file", ex);
+		} catch (InvalidRangeException ex) {
+			log.error(null, ex);
 		}
 		markersD2 = null;
-		System.out.println("Done writing strand info to matrix at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
+		log.info("Done writing strand info to matrix at {}", org.gwaspi.global.Utils.getMediumDateTimeAsString());
 
 
 		// </editor-fold>
@@ -294,7 +299,7 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 		//<editor-fold defaultstate="collapsed" desc="GENOTYPES WRITER">
 
 		//Iterate through rdSampleSetMap, use item position to read correct sample GTs into rdMarkerIdSetMap.
-		System.out.println(Text.All.processing);
+		log.info(Text.All.processing);
 		int sampleWrIndex = 0;
 		for (int i = 0; i < rdSampleSetMap.size(); i++) {
 			rdMarkerSet.fillGTsForCurrentSampleIntoInitMap(sampleWrIndex);
@@ -302,7 +307,7 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 			//Write MarkerIdSetMap to A3 ArrayChar and save to wrMatrix
 			org.gwaspi.netCDF.operations.Utils.saveSingleSampleGTsToMatrix(ncfile, rdMarkerSet.getMarkerIdSetMap(), sampleWrIndex);
 			if (sampleWrIndex % 100 == 0) {
-				System.out.println("Samples copied: " + sampleWrIndex);
+				log.info("Samples copied: " + sampleWrIndex);
 			}
 			sampleWrIndex++;
 		}
@@ -340,8 +345,8 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 			//CLOSE FILE
 			ncfile.close();
 			result = matrixFactory.getMatrixMetaData().getMatrixId();
-		} catch (IOException e) {
-			System.err.println("ERROR creating file " + ncfile.getLocation() + "\n" + e);
+		} catch (IOException ex) {
+			log.error("Failed creating file " + ncfile.getLocation(), ex);
 		}
 
 		org.gwaspi.global.Utils.sysoutCompleted("writing Genotypes to Matrix");
@@ -383,10 +388,10 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 			}
 		} catch (IOException ex) {
 			Dialogs.showWarningDialogue("A table saving error has occurred");
-			ex.printStackTrace();
+			log.error("A table saving error has occurred", ex);
 		} catch (Exception ex) {
 			Dialogs.showWarningDialogue("A table saving error has occurred");
-			ex.printStackTrace();
+			log.error("A table saving error has occurred", ex);
 		}
 	}
 	//</editor-fold>

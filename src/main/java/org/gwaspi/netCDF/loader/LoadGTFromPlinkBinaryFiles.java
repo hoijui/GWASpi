@@ -20,6 +20,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.ma2.ArrayByte;
 import ucar.ma2.ArrayChar;
 import ucar.ma2.ArrayInt;
@@ -34,6 +36,9 @@ import ucar.nc2.NetcdfFileWriteable;
  * CEXS-UPF-PRBB
  */
 public class LoadGTFromPlinkBinaryFiles implements GenotypesLoader {
+
+	private final Logger log
+			= LoggerFactory.getLogger(LoadGTFromPlinkBinaryFiles.class);
 
 	public LoadGTFromPlinkBinaryFiles() {
 	}
@@ -82,7 +87,7 @@ public class LoadGTFromPlinkBinaryFiles implements GenotypesLoader {
 			hyperSlabRows = sortedMarkerSetMap.size();
 		}
 
-		System.out.println("Done initializing sorted MarkerSetMap at " + startTime);
+		log.info("Done initializing sorted MarkerSetMap at " + startTime);
 
 		///////////// CREATE netCDF-3 FILE ////////////
 		StringBuilder descSB = new StringBuilder(Text.Matrix.descriptionHeader1);
@@ -132,10 +137,10 @@ public class LoadGTFromPlinkBinaryFiles implements GenotypesLoader {
 		// create the file
 		try {
 			ncfile.create();
-		} catch (IOException e) {
-			System.err.println("ERROR creating file " + ncfile.getLocation() + "\n" + e);
+		} catch (IOException ex) {
+			log.error("Failed creating file " + ncfile.getLocation(), ex);
 		}
-		//System.out.println("Done creating netCDF handle at "+global.Utils.getMediumDateTimeAsString());
+		//log.info("Done creating netCDF handle at "+global.Utils.getMediumDateTimeAsString());
 		//</editor-fold>
 
 		//<editor-fold defaultstate="collapsed" desc="WRITE MATRIX METADATA">
@@ -145,13 +150,13 @@ public class LoadGTFromPlinkBinaryFiles implements GenotypesLoader {
 		int[] sampleOrig = new int[]{0, 0};
 		try {
 			ncfile.write(cNetCDF.Variables.VAR_SAMPLESET, sampleOrig, samplesD2);
-		} catch (IOException e) {
-			System.err.println("ERROR writing file");
-		} catch (InvalidRangeException e) {
-			e.printStackTrace();
+		} catch (IOException ex) {
+			log.error("Failed writing file", ex);
+		} catch (InvalidRangeException ex) {
+			log.error(null, ex);
 		}
 		samplesD2 = null;
-		System.out.println("Done writing SampleSet to matrix at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
+		log.info("Done writing SampleSet to matrix at {}", org.gwaspi.global.Utils.getMediumDateTimeAsString());
 
 		// WRITE RSID & MARKERID METADATA FROM METADATAMap
 		ArrayChar.D2 markersD2 = org.gwaspi.netCDF.operations.Utils.writeMapValueItemToD2ArrayChar(sortedMarkerSetMap, 0, cNetCDF.Strides.STRIDE_MARKER_NAME);
@@ -159,20 +164,20 @@ public class LoadGTFromPlinkBinaryFiles implements GenotypesLoader {
 		int[] markersOrig = new int[]{0, 0};
 		try {
 			ncfile.write(cNetCDF.Variables.VAR_MARKERS_RSID, markersOrig, markersD2);
-		} catch (IOException e) {
-			System.err.println("ERROR writing file");
-		} catch (InvalidRangeException e) {
-			e.printStackTrace();
+		} catch (IOException ex) {
+			log.error("Failed writing file", ex);
+		} catch (InvalidRangeException ex) {
+			log.error(null, ex);
 		}
 		markersD2 = org.gwaspi.netCDF.operations.Utils.writeMapValueItemToD2ArrayChar(sortedMarkerSetMap, 0, cNetCDF.Strides.STRIDE_MARKER_NAME);
 		try {
 			ncfile.write(cNetCDF.Variables.VAR_MARKERSET, markersOrig, markersD2);
-		} catch (IOException e) {
-			System.err.println("ERROR writing file");
-		} catch (InvalidRangeException e) {
-			e.printStackTrace();
+		} catch (IOException ex) {
+			log.error("Failed writing file", ex);
+		} catch (InvalidRangeException ex) {
+			log.error(null, ex);
 		}
-		System.out.println("Done writing MarkerId and RsId to matrix at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
+		log.info("Done writing MarkerId and RsId to matrix at {}", org.gwaspi.global.Utils.getMediumDateTimeAsString());
 
 		// WRITE CHROMOSOME METADATA FROM ANNOTATION FILE
 		//Chromosome location for each marker
@@ -180,12 +185,12 @@ public class LoadGTFromPlinkBinaryFiles implements GenotypesLoader {
 
 		try {
 			ncfile.write(cNetCDF.Variables.VAR_MARKERS_CHR, markersOrig, markersD2);
-		} catch (IOException e) {
-			System.err.println("ERROR writing file");
-		} catch (InvalidRangeException e) {
-			e.printStackTrace();
+		} catch (IOException ex) {
+			log.error("Failed writing file", ex);
+		} catch (InvalidRangeException ex) {
+			log.error(null, ex);
 		}
-		System.out.println("Done writing chromosomes to matrix at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
+		log.info("Done writing chromosomes to matrix at {}", org.gwaspi.global.Utils.getMediumDateTimeAsString());
 
 		// Set of chromosomes found in matrix along with number of markersinfo
 		org.gwaspi.netCDF.operations.Utils.saveCharMapKeyToWrMatrix(ncfile, chrSetMap, cNetCDF.Variables.VAR_CHR_IN_MATRIX, 8);
@@ -200,24 +205,24 @@ public class LoadGTFromPlinkBinaryFiles implements GenotypesLoader {
 		int[] posOrig = new int[1];
 		try {
 			ncfile.write(cNetCDF.Variables.VAR_MARKERS_POS, posOrig, markersPosD1);
-		} catch (IOException e) {
-			System.err.println("ERROR writing file");
-		} catch (InvalidRangeException e) {
-			e.printStackTrace();
+		} catch (IOException ex) {
+			log.error("Failed writing file", ex);
+		} catch (InvalidRangeException ex) {
+			log.error(null, ex);
 		}
-		System.out.println("Done writing positions to matrix at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
+		log.info("Done writing positions to matrix at {}", org.gwaspi.global.Utils.getMediumDateTimeAsString());
 
 		//WRITE ALLELE DICTIONARY METADATA FROM ANNOTATION FILE
 		markersD2 = org.gwaspi.netCDF.operations.Utils.writeMapValueItemToD2ArrayChar(sortedMarkerSetMap, 4, cNetCDF.Strides.STRIDE_GT);
 
 		try {
 			ncfile.write(getMarkersD2Variables(), markersOrig, markersD2);
-		} catch (IOException e) {
-			System.err.println("ERROR writing file");
-		} catch (InvalidRangeException e) {
-			e.printStackTrace();
+		} catch (IOException ex) {
+			log.error("Failed writing file", ex);
+		} catch (InvalidRangeException ex) {
+			log.error(null, ex);
 		}
-		System.out.println("Done writing forward alleles to matrix at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
+		log.info("Done writing forward alleles to matrix at {}", org.gwaspi.global.Utils.getMediumDateTimeAsString());
 
 		// WRITE GT STRAND FROM ANNOTATION FILE
 		int[] gtOrig = new int[]{0, 0};
@@ -246,20 +251,20 @@ public class LoadGTFromPlinkBinaryFiles implements GenotypesLoader {
 
 		try {
 			ncfile.write(cNetCDF.Variables.VAR_GT_STRAND, gtOrig, markersD2);
-		} catch (IOException e) {
-			System.err.println("ERROR writing file");
-		} catch (InvalidRangeException e) {
-			e.printStackTrace();
+		} catch (IOException ex) {
+			log.error("Failed writing file", ex);
+		} catch (InvalidRangeException ex) {
+			log.error(null, ex);
 		}
 		markersD2 = null;
-		System.out.println("Done writing strand info to matrix at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
+		log.info("Done writing strand info to matrix at {}", org.gwaspi.global.Utils.getMediumDateTimeAsString());
 
 
 		// </editor-fold>
 
 		// <editor-fold defaultstate="collapsed" desc="MATRIX GENOTYPES LOAD ">
 		GenotypeEncoding guessedGTCode = GenotypeEncoding.O12;
-		System.out.println(Text.All.processing);
+		log.info(Text.All.processing);
 		Map<String, Object> bimMarkerSetMap = markerSetLoader.parseOrigBimFile(loadDescription.getAnnotationFilePath()); //key = markerId, values{allele1 (minor), allele2 (major)}
 		loadBedGenotypes(
 				new File(loadDescription.getGtDirPath()),
@@ -270,7 +275,7 @@ public class LoadGTFromPlinkBinaryFiles implements GenotypesLoader {
 				guessedGTCode,
 				hyperSlabRows);
 
-		System.out.println("Done writing genotypes to matrix at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
+		log.info("Done writing genotypes to matrix at {}", org.gwaspi.global.Utils.getMediumDateTimeAsString());
 		// </editor-fold>
 
 		// CLOSE THE FILE AND BY THIS, MAKE IT READ-ONLY
@@ -295,8 +300,8 @@ public class LoadGTFromPlinkBinaryFiles implements GenotypesLoader {
 			//CLOSE FILE
 			ncfile.close();
 			result = matrixFactory.getMatrixMetaData().getMatrixId();
-		} catch (IOException e) {
-			System.err.println("ERROR creating file " + ncfile.getLocation() + "\n" + e);
+		} catch (IOException ex) {
+			log.error("Failed creating file " + ncfile.getLocation(), ex);
 		}
 
 
@@ -304,7 +309,8 @@ public class LoadGTFromPlinkBinaryFiles implements GenotypesLoader {
 		return result;
 	}
 
-	private static void loadBedGenotypes(File file,
+	private void loadBedGenotypes(
+			File file,
 			NetcdfFileWriteable ncfile,
 			Map<String, Object> wrMarkerIdSetMap,
 			Map<String, Object> bimMarkerSetMap,
@@ -401,25 +407,23 @@ public class LoadGTFromPlinkBinaryFiles implements GenotypesLoader {
 					if (rowCounter != 1 && rowCounter % (hyperSlabRows) == 0) {
 						ArrayByte.D3 genotypes = org.gwaspi.netCDF.operations.Utils.writeALValuesToSamplesHyperSlabArrayByteD3(genotypesAL, sampleSetMap.size(), cNetCDF.Strides.STRIDE_GT);
 						int[] origin = new int[]{0, (rowCounter - hyperSlabRows), 0}; //0,0,0 for 1st marker ; 0,1,0 for 2nd marker....
-//                        System.out.println("Origin at rowCount "+rowCounter+": "+origin[0]+"|"+origin[1]+"|"+origin[2]);
+//                        log.info("Origin at rowCount "+rowCounter+": "+origin[0]+"|"+origin[1]+"|"+origin[2]);
 						try {
 							ncfile.write(cNetCDF.Variables.VAR_GENOTYPES, origin, genotypes);
-						} catch (IOException e) {
-							System.err.println("ERROR writing file");
-						} catch (InvalidRangeException e) {
-							System.out.println("Error in origin at rowCount " + rowCounter + ": " + origin[0] + "|" + origin[1] + "|" + origin[2]);
-							e.printStackTrace();
+						} catch (IOException ex) {
+							log.error("Failed writing file", ex);
+						} catch (InvalidRangeException ex) {
+							log.error("Bad origin at rowCount " + rowCounter + ": " + origin[0] + "|" + origin[1] + "|" + origin[2], ex);
 						}
 
 						genotypesAL = new ArrayList();
 					}
-
-				} catch (EOFException eof) {
-					System.out.println("End of File");
+				} catch (EOFException ex) {
+					log.info("End of File", ex);
 					break;
 				}
 				if (rowCounter % 10000 == 0) {
-					System.out.println("Processed markers: " + rowCounter);
+					log.info("Processed markers: " + rowCounter);
 				}
 				rowCounter++;
 			}
@@ -428,19 +432,18 @@ public class LoadGTFromPlinkBinaryFiles implements GenotypesLoader {
 			int lastHyperSlabRows = markerNb - (genotypesAL.size() / sampleNb);
 			ArrayByte.D3 genotypes = org.gwaspi.netCDF.operations.Utils.writeALValuesToSamplesHyperSlabArrayByteD3(genotypesAL, sampleSetMap.size(), cNetCDF.Strides.STRIDE_GT);
 			int[] origin = new int[]{0, lastHyperSlabRows, 0}; //0,0,0 for 1st marker ; 0,1,0 for 2nd marker....
-//            System.out.println("Last origin at rowCount "+rowCounter+": "+origin[0]+"|"+origin[1]+"|"+origin[2]);
+//            log.info("Last origin at rowCount "+rowCounter+": "+origin[0]+"|"+origin[1]+"|"+origin[2]);
 			try {
 				ncfile.write(cNetCDF.Variables.VAR_GENOTYPES, origin, genotypes);
-				System.out.println("Processed markers: " + rowCounter);
-			} catch (IOException e) {
-				System.err.println("ERROR writing file");
-			} catch (InvalidRangeException e) {
-				System.out.println("Error in origin at rowCount " + rowCounter + ": " + origin[0] + "|" + origin[1] + "|" + origin[2]);
-				e.printStackTrace();
+				log.info("Processed markers: " + rowCounter);
+			} catch (IOException ex) {
+				log.error("Failed writing file", ex);
+			} catch (InvalidRangeException ex) {
+				log.error("Bad origin at rowCount " + rowCounter + ": " + origin[0] + "|" + origin[1] + "|" + origin[2], ex);
 			}
 
 		} else {
-			System.out.println("Binary PLINK file must be in SNP-major mode!");
+			log.info("Binary PLINK file must be in SNP-major mode!");
 		}
 
 

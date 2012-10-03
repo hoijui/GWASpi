@@ -19,6 +19,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.ma2.ArrayChar;
 import ucar.ma2.ArrayInt;
 import ucar.ma2.Index;
@@ -32,6 +34,9 @@ import ucar.nc2.NetcdfFileWriteable;
  * CEXS-UPF-PRBB
  */
 public class LoadGTFromAffyFiles implements GenotypesLoader {
+
+	private final Logger log
+			= LoggerFactory.getLogger(LoadGTFromAffyFiles.class);
 
 	static interface Standard {
 		// ProbesetID, Call, Confidence, Signal A, Signal B, Forced Call
@@ -109,7 +114,7 @@ public class LoadGTFromAffyFiles implements GenotypesLoader {
 				loadDescription.getStudyId());
 		Map<String, Object> markerSetMap = markerSetLoader.getSortedMarkerSetWithMetaData();
 
-		System.out.println("Done initializing sorted MarkerSetMap at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
+		log.info("Done initializing sorted MarkerSetMap at {}", org.gwaspi.global.Utils.getMediumDateTimeAsString());
 
 		///////////// CREATE netCDF-3 FILE ////////////
 		StringBuilder descSB = new StringBuilder(Text.Matrix.descriptionHeader1);
@@ -160,10 +165,10 @@ public class LoadGTFromAffyFiles implements GenotypesLoader {
 		// create the file
 		try {
 			ncfile.create();
-		} catch (IOException e) {
-			System.err.println("ERROR creating file " + ncfile.getLocation() + "\n" + e);
+		} catch (IOException ex) {
+			log.error("Failed creating file " + ncfile.getLocation(), ex);
 		}
-		//System.out.println("Done creating netCDF handle at "+global.Utils.getMediumDateTimeAsString());
+		//log.info("Done creating netCDF handle at "+global.Utils.getMediumDateTimeAsString());
 		//</editor-fold>
 
 		//<editor-fold defaultstate="collapsed" desc="WRITE MATRIX METADATA">
@@ -173,13 +178,13 @@ public class LoadGTFromAffyFiles implements GenotypesLoader {
 		int[] sampleOrig = new int[]{0, 0};
 		try {
 			ncfile.write(cNetCDF.Variables.VAR_SAMPLESET, sampleOrig, samplesD2);
-		} catch (IOException e) {
-			System.err.println("ERROR writing file");
-		} catch (InvalidRangeException e) {
-			e.printStackTrace();
+		} catch (IOException ex) {
+			log.error("Failed writing file", ex);
+		} catch (InvalidRangeException ex) {
+			log.error(null, ex);
 		}
 		samplesD2 = null;
-		System.out.println("Done writing SampleSet to matrix at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
+		log.info("Done writing SampleSet to matrix at {}", org.gwaspi.global.Utils.getMediumDateTimeAsString());
 
 		// WRITE RSID & MARKERID METADATA FROM METADATAMap
 		ArrayChar.D2 markersD2 = org.gwaspi.netCDF.operations.Utils.writeMapValueItemToD2ArrayChar(markerSetMap, 1, cNetCDF.Strides.STRIDE_MARKER_NAME);
@@ -187,20 +192,20 @@ public class LoadGTFromAffyFiles implements GenotypesLoader {
 		int[] markersOrig = new int[]{0, 0};
 		try {
 			ncfile.write(cNetCDF.Variables.VAR_MARKERS_RSID, markersOrig, markersD2);
-		} catch (IOException e) {
-			System.err.println("ERROR writing file");
-		} catch (InvalidRangeException e) {
-			e.printStackTrace();
+		} catch (IOException ex) {
+			log.error("Failed writing file", ex);
+		} catch (InvalidRangeException ex) {
+			log.error(null, ex);
 		}
 		markersD2 = org.gwaspi.netCDF.operations.Utils.writeMapValueItemToD2ArrayChar(markerSetMap, 0, cNetCDF.Strides.STRIDE_MARKER_NAME);
 		try {
 			ncfile.write(cNetCDF.Variables.VAR_MARKERSET, markersOrig, markersD2);
-		} catch (IOException e) {
-			System.err.println("ERROR writing file");
-		} catch (InvalidRangeException e) {
-			e.printStackTrace();
+		} catch (IOException ex) {
+			log.error("Failed writing file", ex);
+		} catch (InvalidRangeException ex) {
+			log.error(null, ex);
 		}
-		System.out.println("Done writing MarkerId and RsId to matrix at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
+		log.info("Done writing MarkerId and RsId to matrix at {}", org.gwaspi.global.Utils.getMediumDateTimeAsString());
 
 		// WRITE CHROMOSOME METADATA FROM ANNOTATION FILE
 		//Chromosome location for each marker
@@ -208,12 +213,12 @@ public class LoadGTFromAffyFiles implements GenotypesLoader {
 
 		try {
 			ncfile.write(cNetCDF.Variables.VAR_MARKERS_CHR, markersOrig, markersD2);
-		} catch (IOException e) {
-			System.err.println("ERROR writing file");
-		} catch (InvalidRangeException e) {
-			e.printStackTrace();
+		} catch (IOException ex) {
+			log.error("Failed writing file", ex);
+		} catch (InvalidRangeException ex) {
+			log.error(null, ex);
 		}
-		System.out.println("Done writing chromosomes to matrix at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
+		log.info("Done writing chromosomes to matrix at {}", org.gwaspi.global.Utils.getMediumDateTimeAsString());
 
 		// Set of chromosomes found in matrix along with number of markersinfo
 		org.gwaspi.netCDF.operations.Utils.saveCharMapKeyToWrMatrix(ncfile, chrSetMap, cNetCDF.Variables.VAR_CHR_IN_MATRIX, 8);
@@ -229,24 +234,24 @@ public class LoadGTFromAffyFiles implements GenotypesLoader {
 		int[] posOrig = new int[1];
 		try {
 			ncfile.write(cNetCDF.Variables.VAR_MARKERS_POS, posOrig, markersPosD1);
-		} catch (IOException e) {
-			System.err.println("ERROR writing file");
-		} catch (InvalidRangeException e) {
-			e.printStackTrace();
+		} catch (IOException ex) {
+			log.error("Failed writing file", ex);
+		} catch (InvalidRangeException ex) {
+			log.error(null, ex);
 		}
-		System.out.println("Done writing positions to matrix at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
+		log.info("Done writing positions to matrix at {}", org.gwaspi.global.Utils.getMediumDateTimeAsString());
 
 		//WRITE FORWARD STRAND ALLELE DICTIONARY METADATA FROM ANNOTATION FILE
 		markersD2 = org.gwaspi.netCDF.operations.Utils.writeMapValueItemToD2ArrayChar(markerSetMap, 7, cNetCDF.Strides.STRIDE_GT);
 
 		try {
 			ncfile.write(cNetCDF.Variables.VAR_MARKERS_BASES_DICT, markersOrig, markersD2);
-		} catch (IOException e) {
-			System.err.println("ERROR writing file");
-		} catch (InvalidRangeException e) {
-			e.printStackTrace();
+		} catch (IOException ex) {
+			log.error("Failed writing file", ex);
+		} catch (InvalidRangeException ex) {
+			log.error(null, ex);
 		}
-		System.out.println("Done writing forward alleles to matrix at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
+		log.info("Done writing forward alleles to matrix at {}", org.gwaspi.global.Utils.getMediumDateTimeAsString());
 
 		//GENERATE PLUS STRAND ALLELES METADATA FROM ANNOTATION FILE
 //        for (Iterator it=markerSetMap.keySet().iterator(); it.hasNext();) {
@@ -261,12 +266,12 @@ public class LoadGTFromAffyFiles implements GenotypesLoader {
 //
 //        try {
 //            ncfile.write(cNetCDF.Variables.VAR_MARKERS_PLS_BASES, markersOrig, markersD2);
-//        } catch (IOException e) {
-//            System.err.println("ERROR writing file");
-//        } catch (InvalidRangeException e) {
-//            e.printStackTrace();
+//        } catch (IOException ex) {
+//            log.error("Failed writing file", ex);
+//        } catch (InvalidRangeException ex) {
+//            log.error(null, ex);
 //        }
-//        System.out.println("Done writing plus alleles to matrix at "+global.Utils.getMediumDateTimeAsString());
+//        log.info("Done writing plus alleles to matrix at "+global.Utils.getMediumDateTimeAsString());
 
 		// WRITE GT STRAND FROM ANNOTATION FILE
 		int[] gtOrig = new int[]{0, 0};
@@ -274,13 +279,13 @@ public class LoadGTFromAffyFiles implements GenotypesLoader {
 
 		try {
 			ncfile.write(cNetCDF.Variables.VAR_GT_STRAND, gtOrig, markersD2);
-		} catch (IOException e) {
-			System.err.println("ERROR writing file");
-		} catch (InvalidRangeException e) {
-			e.printStackTrace();
+		} catch (IOException ex) {
+			log.error("Failed writing file", ex);
+		} catch (InvalidRangeException ex) {
+			log.error(null, ex);
 		}
 		markersD2 = null;
-		System.out.println("Done writing strand info to matrix at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
+		log.info("Done writing strand info to matrix at {}", org.gwaspi.global.Utils.getMediumDateTimeAsString());
 
 
 		// </editor-fold>
@@ -293,7 +298,7 @@ public class LoadGTFromAffyFiles implements GenotypesLoader {
 
 		//START PROCESS OF LOADING GENOTYPES
 		for (int i = 0; i < gtFilesToImport.length; i++) {
-			//System.out.println("Input file: "+i);
+			//log.info("Input file: "+i);
 			loadIndividualFiles(
 					loadDescription,
 					guessedGTCode,
@@ -303,13 +308,13 @@ public class LoadGTFromAffyFiles implements GenotypesLoader {
 					samples);
 
 			if (i == 0) {
-				System.out.println(Text.All.processing);
+				log.info(Text.All.processing);
 			} else if (i % 10 == 0) {
-				System.out.println("Done processing sample Nº" + i + " at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
+				log.info("Done processing sample Nº" + i + " at {}", org.gwaspi.global.Utils.getMediumDateTimeAsString());
 			}
 		}
 
-		System.out.println("Done writing genotypes to matrix at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
+		log.info("Done writing genotypes to matrix at {}", org.gwaspi.global.Utils.getMediumDateTimeAsString());
 		// </editor-fold>
 
 		// CLOSE THE FILE AND BY THIS, MAKE IT READ-ONLY
@@ -334,8 +339,8 @@ public class LoadGTFromAffyFiles implements GenotypesLoader {
 			//CLOSE FILE
 			ncfile.close();
 			result = matrixFactory.getMatrixMetaData().getMatrixId();
-		} catch (IOException e) {
-			System.err.println("ERROR creating file " + ncfile.getLocation() + "\n" + e);
+		} catch (IOException ex) {
+			log.error("Failed creating file " + ncfile.getLocation(), ex);
 		}
 
 		org.gwaspi.global.Utils.sysoutCompleted("writing Genotypes to Matrix");
