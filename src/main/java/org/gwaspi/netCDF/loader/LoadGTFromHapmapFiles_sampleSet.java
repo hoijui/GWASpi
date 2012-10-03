@@ -297,7 +297,7 @@ public class LoadGTFromHapmapFiles_sampleSet extends LoadGTFromHapmapFiles imple
 			}
 
 			/////////// WRITING GENOTYPE DATA INTO netCDF FILE ////////////
-			//TODO: BEST TO USE HYPERSLAB
+			// TODO BEST TO USE HYPERSLAB
 			org.gwaspi.netCDF.operations.Utils.saveSingleMarkerGTsToMatrix(ncfile, markerSetMap, markerIdIndex);
 
 			rowCount++;

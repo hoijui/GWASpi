@@ -307,8 +307,8 @@ public abstract class AbstractLoadGTFromFiles implements GenotypesLoader {
 			} catch (InvalidRangeException ex) {
 				log.warn(null, ex);
 			} catch (InterruptedException ex) {
-				//TODO: Write some cleanup code for when thread has been interrupted
 				log.warn(null, ex);
+				// TODO Write some cleanup code for when thread has been interrupted
 			}
 			}
 

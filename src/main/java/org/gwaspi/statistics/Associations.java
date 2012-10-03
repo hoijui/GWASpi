@@ -145,7 +145,8 @@ public class Associations {
 		return oddsRatio;
 	}
 
-	public static float calculateGenotypicFisherExactTest(int sampleNb,
+	public static float calculateGenotypicFisherExactTest(
+			int sampleNb,
 			int obsCaseAA,
 			int obsCaseAa,
 			int obsCaseaa,

@@ -697,7 +697,6 @@ public class Utils {
 		return intArray;
 	}
 
-	// TODO can be optimized with arraycopy?
 	public static ArrayInt.D2 writeMapValueItemToD2ArrayInt(Map<String, Object> map, int[] columns) {
 		ArrayInt.D2 intArray = new ArrayInt.D2(map.size(), columns.length);
 		Index ima = intArray.getIndex();

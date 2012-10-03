@@ -302,15 +302,14 @@ public class CliExecutor {
 				}
 				boolean studyExists = checkStudy(studyId);
 
-				int matrixId = Integer.parseInt(args.get(2)); //Parent Matrix Id
+				int matrixId = Integer.parseInt(args.get(2)); // Parent Matrix Id
 				String gtFrqName = args.get(3);
-				boolean useExternalPhenoFile = Boolean.parseBoolean(args.get(4)); //Use external phenotype file?
+				boolean useExternalPhenoFile = Boolean.parseBoolean(args.get(4)); // Use external phenotype file?
 				File phenoFile = null;
 				if (useExternalPhenoFile) {
 					phenoFile = new File(args.get(5));
 				}
 
-				// TODO This looks like to much thresholds for the task
 				gwasParams.setDiscardGTMismatches(true);
 				gwasParams.setDiscardMarkerByMisRat(Boolean.parseBoolean(args.get(6)));
 				gwasParams.setDiscardMarkerMisRatVal(Double.parseDouble(args.get(7)));
