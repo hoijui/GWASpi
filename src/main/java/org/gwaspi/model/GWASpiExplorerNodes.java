@@ -32,6 +32,8 @@ public class GWASpiExplorerNodes {
 	//<editor-fold defaultstate="collapsed" desc="NODE DEFINITION">
 	public static class NodeElementInfo {
 
+		public static final int NODE_ID_NONE = 0;
+
 		private int nodeId;
 		private int parentNodeId;
 		private String nodeType;
@@ -81,6 +83,23 @@ public class GWASpiExplorerNodes {
 		}
 	}
 
+	public static class UncollapsableNodeElementInfo extends NodeElementInfo {
+
+		public UncollapsableNodeElementInfo(
+				int parentNodeId,
+				int nodeId,
+				String nodeType,
+				String nodeName)
+		{
+			super(parentNodeId, nodeId, nodeType, nodeName);
+		}
+
+		@Override
+		public boolean isCollapsable() {
+			return false;
+		}
+	}
+
 	protected static DefaultMutableTreeNode createStudyTreeNode(int studyId) {
 		DefaultMutableTreeNode tn = null;
 		try {
@@ -92,7 +111,8 @@ public class GWASpiExplorerNodes {
 //			nodeUniqueName => will be rsult of toString() call of DefaultMutableTreeNode
 //			friendlyName
 
-			tn = new DefaultMutableTreeNode(new NodeElementInfo(0,
+			tn = new DefaultMutableTreeNode(new NodeElementInfo(
+					NodeElementInfo.NODE_ID_NONE,
 					study.getStudyId(),
 					Text.App.treeStudy,
 					"SID: " + study.getStudyId() + " - " + study.getStudyName()));

@@ -46,16 +46,12 @@ public class NodeToPathCorrespondence {
 		while (enumTN.hasMoreElements()) {
 			DefaultMutableTreeNode tmpNode = (DefaultMutableTreeNode) enumTN.nextElement();
 			Object tmpElement = tmpNode.getUserObject();
-			try {
-				NodeElementInfo currentElementInfo = (org.gwaspi.model.GWASpiExplorerNodes.NodeElementInfo) tmpElement;
+			NodeElementInfo currentElementInfo = (NodeElementInfo) tmpElement;
 
-				for (int i = 0; i < GWASpiExplorerPanel.getSingleton().getTree().getRowCount(); i++) {
-					if (GWASpiExplorerPanel.getSingleton().getTree().getPathForRow(i).getLastPathComponent().toString().equals(currentElementInfo.getNodeUniqueName())) {
-						nodeToPathChildrenMap.put(currentElementInfo.getNodeId(), GWASpiExplorerPanel.getSingleton().getTree().getPathForRow(i));
-					}
+			for (int i = 0; i < GWASpiExplorerPanel.getSingleton().getTree().getRowCount(); i++) {
+				if (GWASpiExplorerPanel.getSingleton().getTree().getPathForRow(i).getLastPathComponent().toString().equals(currentElementInfo.getNodeUniqueName())) {
+					nodeToPathChildrenMap.put(currentElementInfo.getNodeId(), GWASpiExplorerPanel.getSingleton().getTree().getPathForRow(i));
 				}
-			} catch (Exception ex) {
-				log.error(null, ex);
 			}
 		}
 

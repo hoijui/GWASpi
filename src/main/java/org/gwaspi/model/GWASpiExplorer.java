@@ -35,6 +35,7 @@ import javax.swing.tree.ExpandVetoException;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 import org.gwaspi.model.GWASpiExplorerNodes.NodeElementInfo;
+import org.gwaspi.model.GWASpiExplorerNodes.UncollapsableNodeElementInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,7 +64,11 @@ public class GWASpiExplorer {
 	public JTree getGWASpiTree() throws IOException {
 
 		// Create the nodes.
-		DefaultMutableTreeNode top = new DefaultMutableTreeNode(Text.App.appName);
+		DefaultMutableTreeNode top = new DefaultMutableTreeNode(new UncollapsableNodeElementInfo(
+				NodeElementInfo.NODE_ID_NONE,
+				NodeElementInfo.NODE_ID_NONE,
+				Text.App.treeParent,
+				Text.App.appName));
 		growTree(top);
 
 		// Create a tree that allows one selection at a time.
@@ -95,7 +100,11 @@ public class GWASpiExplorer {
 	private static void growTree(DefaultMutableTreeNode top) throws IOException {
 
 		//<editor-fold defaultstate="expanded" desc="STUDY MANAGEMENT">
-		DefaultMutableTreeNode category = new DefaultMutableTreeNode(Text.App.treeStudyManagement);
+		DefaultMutableTreeNode category = new DefaultMutableTreeNode(new UncollapsableNodeElementInfo(
+				NodeElementInfo.NODE_ID_NONE,
+				NodeElementInfo.NODE_ID_NONE,
+				Text.App.treeParent,
+				Text.App.treeStudyManagement));
 		top.add(category);
 
 		// LOAD ALL STUDIES
@@ -212,15 +221,10 @@ public class GWASpiExplorer {
 
 			// Check where we are in tree and show appropiate content panel
 			Object currentElement = currentNode.getUserObject();
-			NodeElementInfo currentElementInfo = null;
-			try {
-				currentElementInfo = (NodeElementInfo) currentElement;
-			} catch (Exception ex) {
-				log.error(null, ex);
-			}
+			NodeElementInfo currentElementInfo = (NodeElementInfo) currentElement;
 
 			TreePath treePath = evt.getPath();
-			if (treePath != null && currentElementInfo != null) {
+			if (treePath != null && !currentElementInfo.getNodeType().equals(Text.App.treeParent)) {
 				try {
 					Config.setConfigValue(Config.PROPERTY_LAST_SELECTED_NODE, currentElementInfo.getNodeUniqueName());
 				} catch (IOException ex) {
@@ -245,18 +249,14 @@ public class GWASpiExplorer {
 			if (treePath.getParentPath() != null) {
 				DefaultMutableTreeNode parentNode = (DefaultMutableTreeNode) treePath.getParentPath().getLastPathComponent();
 				Object parentElement = parentNode.getUserObject();
-				try {
-					parentElementInfo = (NodeElementInfo) parentElement;
-				} catch (Exception ex) {
-					log.warn(null, ex);
-				}
+				parentElementInfo = (NodeElementInfo) parentElement;
 			}
 
 			// Reference Databse Branch
-			if (currentNode.toString().equals(Text.App.treeReferenceDBs)) {
+			if (currentElementInfo.getNodeUniqueName().equals(Text.App.treeReferenceDBs)) {
 			} // Study Management Branch
-			//else if(currentElementInfo != null && currentElementInfo.nodeType.toString().equals(Text.App.treeStudyManagement)){
-			else if (currentNode.toString().equals(Text.App.treeStudyManagement)) {
+			//else if(currentElementInfo.getNodeType().equals(Text.App.treeStudyManagement)) { // XXX
+			else if (currentElementInfo.getNodeUniqueName().equals(Text.App.treeStudyManagement)) {
 				try {
 					// We are in StudyList node
 					gwasPiExplorerPanel.setPnl_Content(new StudyManagementPanel());
@@ -265,8 +265,8 @@ public class GWASpiExplorer {
 					log.warn(null, ex);
 				}
 			} // Study Branch
-			//else if(parentNode!=null && parentNode.toString().equals(Text.App.treeStudyManagement)){
-			else if (currentElementInfo != null && currentElementInfo.getNodeType().toString().equals(Text.App.treeStudy)) {
+			//else if(parentNode != null && parentNode.toString().equals(Text.App.treeStudyManagement)){
+			else if (currentElementInfo.getNodeType().equals(Text.App.treeStudy)) {
 				try {
 					gwasPiExplorerPanel.setPnl_Content(new CurrentStudyPanel(currentElementInfo.getNodeId()));
 					gwasPiExplorerPanel.getScrl_Content().setViewportView(gwasPiExplorerPanel.getPnl_Content());
@@ -274,7 +274,7 @@ public class GWASpiExplorer {
 					log.warn("StudyID: " + currentElementInfo.getNodeId(), ex);
 				}
 			} // Sample Info Branch
-			else if (currentElementInfo != null && currentElementInfo.getNodeType().toString().equals(Text.App.treeSampleInfo)) {
+			else if (currentElementInfo.getNodeType().equals(Text.App.treeSampleInfo)) {
 				try {
 					gwasPiExplorerPanel.setPnl_Content(new Report_SampleInfoPanel(parentElementInfo.getNodeId()));
 					gwasPiExplorerPanel.getScrl_Content().setViewportView(gwasPiExplorerPanel.getPnl_Content());
@@ -282,7 +282,7 @@ public class GWASpiExplorer {
 					log.warn(null, ex);
 				}
 			} // Matrix Branch
-			else if (currentElementInfo != null && currentElementInfo.getNodeType().toString().equals(Text.App.treeMatrix)) {
+			else if (currentElementInfo.getNodeType().equals(Text.App.treeMatrix)) {
 				try {
 					// We are in MatrixItemAL node
 					tree.expandPath(treePath);
@@ -292,7 +292,7 @@ public class GWASpiExplorer {
 					log.warn(null, ex);
 				}
 			} // Operations Branch
-			else if (currentElementInfo != null && currentElementInfo.getNodeType().toString().equals(Text.App.treeOperation)) {
+			else if (currentElementInfo.getNodeType().equals(Text.App.treeOperation)) {
 				try {
 					if (parentElementInfo.getNodeType().toString().equals(Text.App.treeOperation)) {
 						// Display SubOperation analysis panel
@@ -352,7 +352,7 @@ public class GWASpiExplorer {
 					log.warn(null, ex);
 				}
 			} // Reports Branch
-			else if (currentElementInfo != null && currentElementInfo.getNodeType().toString().equals(Text.App.treeReport)) {
+			else if (currentElementInfo.getNodeType().equals(Text.App.treeReport)) {
 				try {
 					// Display report summary
 					tree.expandPath(treePath);
@@ -415,13 +415,9 @@ public class GWASpiExplorer {
 
 			DefaultMutableTreeNode currentNode = (DefaultMutableTreeNode) treePath.getLastPathComponent();
 			Object currentElement = currentNode.getUserObject();
-			try {
-				NodeElementInfo currentNodeInfo = (NodeElementInfo) currentElement;
-				if (currentNodeInfo.isCollapsable()) {
-					// ALLWAYS ALLOW EXPANSION
-				}
-			} catch (Exception ex) {
-				log.warn(null, ex);
+			NodeElementInfo currentNodeInfo = (NodeElementInfo) currentElement;
+			if (currentNodeInfo.isCollapsable()) {
+				// ALLWAYS ALLOW EXPANSION
 			}
 		}
 
@@ -431,13 +427,8 @@ public class GWASpiExplorer {
 
 			DefaultMutableTreeNode currentNode = (DefaultMutableTreeNode) treePath.getLastPathComponent();
 			Object currentElement = currentNode.getUserObject();
-			NodeElementInfo currentNodeInfo = null;
-			try {
-				currentNodeInfo = (NodeElementInfo) currentElement;
-			} catch (Exception ex) {
-				log.warn(null, ex);
-			}
-			if (currentNodeInfo != null && !currentNodeInfo.isCollapsable()) {
+			NodeElementInfo currentNodeInfo = (NodeElementInfo) currentElement;
+			if (!currentNodeInfo.isCollapsable()) {
 				// VETO EXPANSION
 				throw new ExpandVetoException(evt);
 			}

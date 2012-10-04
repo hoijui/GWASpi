@@ -226,13 +226,9 @@ public class GWASpiExplorerPanel extends JPanel {
 				TreePath treePath = getTree().getPathForRow(i);
 				DefaultMutableTreeNode currentNode = (DefaultMutableTreeNode) treePath.getLastPathComponent();
 				Object currentElement = currentNode.getUserObject();
-				try {
-					NodeElementInfo currentNodeInfo = (NodeElementInfo) currentElement;
-					if (!currentNodeInfo.isCollapsable()) {
-						currentNodeInfo.setCollapsable(true);
-					}
-				} catch (Exception ex) {
-					log.warn(null, ex);
+				NodeElementInfo currentNodeInfo = (NodeElementInfo) currentElement;
+				if (!currentNodeInfo.isCollapsable()) {
+					currentNodeInfo.setCollapsable(true);
 				}
 			}
 		}
