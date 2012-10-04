@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
  */
 public class SingeFileSort {
 
-	private final static Logger log = LoggerFactory.getLogger(SingeFileSort.class);
+	private static final Logger log = LoggerFactory.getLogger(SingeFileSort.class);
 
 	private SingeFileSort() {
 	}

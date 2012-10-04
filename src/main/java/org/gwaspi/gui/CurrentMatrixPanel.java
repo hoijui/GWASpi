@@ -53,7 +53,7 @@ import org.gwaspi.threadbox.SwingWorkerItemList;
  */
 public class CurrentMatrixPanel extends JPanel {
 
-	private final static Logger log
+	private static final Logger log
 			= LoggerFactory.getLogger(CurrentMatrixPanel.class);
 
 	// Variables declaration

@@ -40,7 +40,7 @@ import org.slf4j.LoggerFactory;
  */
 public class IntroPanel extends JPanel {
 
-	private final static Logger log
+	private static final Logger log
 			= LoggerFactory.getLogger(IntroPanel.class);
 
 	// Variables declaration - do not modify

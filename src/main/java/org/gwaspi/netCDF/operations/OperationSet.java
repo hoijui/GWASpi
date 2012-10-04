@@ -28,7 +28,7 @@ import ucar.nc2.Variable;
  */
 public class OperationSet {
 
-	private final static Logger log = LoggerFactory.getLogger(OperationSet.class);
+	private static final Logger log = LoggerFactory.getLogger(OperationSet.class);
 
 	// MARKERSET_MEATADATA
 	private int opSetSize = 0;

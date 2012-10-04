@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
 
 public class PlinkLGENSamplesParser implements SamplesParser {
 
-	private final static Logger log
+	private static final Logger log
 			= LoggerFactory.getLogger(PlinkLGENSamplesParser.class);
 
 	@Override

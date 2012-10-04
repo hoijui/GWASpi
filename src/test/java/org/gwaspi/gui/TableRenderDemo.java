@@ -57,7 +57,7 @@ import org.slf4j.LoggerFactory;
  */
 public class TableRenderDemo extends JPanel {
 
-	private final static Logger log
+	private static final Logger log
 			= LoggerFactory.getLogger(TableRenderDemo.class);
 
 	public TableRenderDemo() {

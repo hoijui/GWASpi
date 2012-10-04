@@ -16,7 +16,7 @@ import ucar.nc2.Variable;
 
 public class PrototypeReadNetcdf {
 
-	private final static Logger log = LoggerFactory.getLogger(PrototypeReadNetcdf.class);
+	private static final Logger log = LoggerFactory.getLogger(PrototypeReadNetcdf.class);
 
 	public static void main(String[] arg) throws InvalidRangeException, IOException {
 

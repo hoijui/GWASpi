@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
 public class MouseListenerDemo4 extends ApplicationFrame
 		implements ChartMouseListener
 {
-	private final static Logger log
+	private static final Logger log
 			= LoggerFactory.getLogger(TableRenderDemo.class);
 
 	private JFreeChart chart;

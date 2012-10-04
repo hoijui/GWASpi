@@ -49,7 +49,7 @@ import ucar.nc2.NetcdfFile;
  */
 public class GenericReportGenerator {
 
-	private final static Logger log
+	private static final Logger log
 			= LoggerFactory.getLogger(GenericReportGenerator.class);
 
 	private static Map<String, Object> labelerHM = new LinkedHashMap<String, Object>();

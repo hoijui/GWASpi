@@ -18,7 +18,7 @@ import ucar.nc2.Variable;
 
 public class PrototypeReadD4ArrayInt {
 
-	private final static Logger log = LoggerFactory.getLogger(PrototypeReadD4ArrayInt.class);
+	private static final Logger log = LoggerFactory.getLogger(PrototypeReadD4ArrayInt.class);
 
 	public static void main(String[] arg) throws InvalidRangeException, IOException {
 

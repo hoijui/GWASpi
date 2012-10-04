@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
  */
 public class DateToTimestamp {
 
-	private final static Logger log = LoggerFactory.getLogger(DateToTimestamp.class);
+	private static final Logger log = LoggerFactory.getLogger(DateToTimestamp.class);
 
 	public static void main(String[] args) {
 		try {

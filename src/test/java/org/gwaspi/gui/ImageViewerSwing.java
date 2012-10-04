@@ -17,7 +17,7 @@ import org.slf4j.LoggerFactory;
  */
 public class ImageViewerSwing extends JComponent {
 
-	private final static Logger log
+	private static final Logger log
 			= LoggerFactory.getLogger(ImageViewerSwing.class);
 
 	/**

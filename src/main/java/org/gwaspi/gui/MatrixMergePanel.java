@@ -49,7 +49,7 @@ import org.gwaspi.threadbox.MultiOperations;
  */
 public class MatrixMergePanel extends JPanel {
 
-	private final static Logger log
+	private static final Logger log
 			= LoggerFactory.getLogger(MatrixMergePanel.class);
 
 	// Variables declaration - do not modify

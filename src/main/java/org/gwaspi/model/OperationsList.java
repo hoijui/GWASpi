@@ -20,7 +20,7 @@ import org.slf4j.LoggerFactory;
  */
 public class OperationsList {
 
-	private final static Logger log
+	private static final Logger log
 			= LoggerFactory.getLogger(OperationsList.class);
 
 	private OperationsList() {

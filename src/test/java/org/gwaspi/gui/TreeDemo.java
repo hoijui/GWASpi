@@ -62,7 +62,7 @@ import org.slf4j.LoggerFactory;
  */
 public class TreeDemo extends JPanel implements TreeSelectionListener {
 
-	private final static Logger log = LoggerFactory.getLogger(TreeDemo.class);
+	private static final Logger log = LoggerFactory.getLogger(TreeDemo.class);
 
 	private JEditorPane htmlPane;
 	private JTree tree;

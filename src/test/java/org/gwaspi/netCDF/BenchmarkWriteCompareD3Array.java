@@ -17,7 +17,7 @@ import ucar.nc2.NetcdfFileWriteable;
 
 public class BenchmarkWriteCompareD3Array {
 
-	private final static Logger log = LoggerFactory.getLogger(BenchmarkWriteCompareD3Array.class);
+	private static final Logger log = LoggerFactory.getLogger(BenchmarkWriteCompareD3Array.class);
 
 	public static void main(String[] arg) throws InvalidRangeException, IOException {
 

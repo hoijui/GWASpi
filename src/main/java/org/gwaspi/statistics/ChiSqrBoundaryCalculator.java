@@ -33,7 +33,7 @@ import ucar.nc2.Variable;
  */
 public class ChiSqrBoundaryCalculator {
 
-	private final static Logger log = LoggerFactory.getLogger(ChiSqrBoundaryCalculator.class);
+	private static final Logger log = LoggerFactory.getLogger(ChiSqrBoundaryCalculator.class);
 
 	protected static int df = 2;
 	protected static String method = "2stDev"; // variance, 2stDev, samplingCI, calculatedCI

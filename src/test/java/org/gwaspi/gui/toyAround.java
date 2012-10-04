@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
  */
 public class toyAround {
 
-	private final static Logger log = LoggerFactory.getLogger(toyAround.class);
+	private static final Logger log = LoggerFactory.getLogger(toyAround.class);
 
 	protected static String mumbo = "This is  a,test	stringg";
 

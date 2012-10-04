@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
 
 public class GwaspiSamplesParser implements SamplesParser {
 
-	private final static Logger log
+	private static final Logger log
 			= LoggerFactory.getLogger(GwaspiSamplesParser.class);
 
 	@Override

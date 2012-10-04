@@ -20,7 +20,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Vector;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.BorderFactory;
@@ -185,11 +184,10 @@ public class LoadDataPanel extends JPanel {
 
 		lbl_Format.setText(Text.Matrix.format);
 
-		Vector<ImportFormat> vecImportFormats = new Vector<ImportFormat>();
-		vecImportFormats.addAll(Arrays.asList(ImportFormat.values()));
-		vecImportFormats.remove(ImportFormat.UNKNOWN);
+		List<ImportFormat> importFormatsList = Arrays.asList(ImportFormat.values());
+		importFormatsList.remove(ImportFormat.UNKNOWN);
 
-		cmb_Format.setModel(new DefaultComboBoxModel(vecImportFormats));
+		cmb_Format.setModel(new DefaultComboBoxModel(importFormatsList.toArray()));
 		cmb_Format.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
 				formatAction.actionPerformed(evt);

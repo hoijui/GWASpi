@@ -69,7 +69,7 @@ import org.slf4j.LoggerFactory;
  */
 public class qqPlot implements ActionListener {
 
-	private final static Logger log
+	private static final Logger log
 			= LoggerFactory.getLogger(qqPlot.class);
 
 	/**

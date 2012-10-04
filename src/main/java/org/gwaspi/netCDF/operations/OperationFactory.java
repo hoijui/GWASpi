@@ -24,7 +24,7 @@ import ucar.nc2.NetcdfFileWriteable;
  */
 public class OperationFactory {
 
-	private final static Logger log = LoggerFactory.getLogger(OperationFactory.class);
+	private static final Logger log = LoggerFactory.getLogger(OperationFactory.class);
 
 	private NetcdfFileWriteable netCDFHandler = null;
 	private String resultOPnetCDFName = "";

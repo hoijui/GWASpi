@@ -23,7 +23,7 @@ import ucar.nc2.NetcdfFile;
  */
 public class OperationMetadata {
 
-	private final static Logger log = LoggerFactory.getLogger(OperationMetadata.class);
+	private static final Logger log = LoggerFactory.getLogger(OperationMetadata.class);
 
 	private int op_id = Integer.MIN_VALUE;
 	private int parentMatrixId = Integer.MIN_VALUE;

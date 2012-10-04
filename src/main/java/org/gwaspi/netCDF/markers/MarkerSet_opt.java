@@ -1,6 +1,5 @@
 package org.gwaspi.netCDF.markers;
 
-import org.gwaspi.constants.cImport;
 import org.gwaspi.constants.cImport.ImportFormat;
 import org.gwaspi.constants.cNetCDF;
 import java.io.IOException;
@@ -39,7 +38,7 @@ import ucar.nc2.Variable;
  */
 public class MarkerSet_opt {
 
-	private final static Logger log
+	private static final Logger log
 			= LoggerFactory.getLogger(MarkerSet_opt.class);
 
 	// MARKERSET_MEATADATA
@@ -397,7 +396,7 @@ public class MarkerSet_opt {
 	}
 
 	// HELPERS TO TRANSFER VALUES FROM ONE Map TO ANOTHER
-	public static<K, V> void replaceWithValuesFrom(Map<K, V> toBeModified, Map<K, V> newValuesSource) {
+	public static <K, V> void replaceWithValuesFrom(Map<K, V> toBeModified, Map<K, V> newValuesSource) {
 
 		for (Map.Entry<K, V> entry : toBeModified.entrySet()) {
 			entry.setValue(newValuesSource.get(entry.getKey()));

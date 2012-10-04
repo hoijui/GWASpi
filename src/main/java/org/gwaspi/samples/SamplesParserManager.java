@@ -24,7 +24,7 @@ import ucar.ma2.InvalidRangeException;
  */
 public class SamplesParserManager {
 
-	private final static Logger log
+	private static final Logger log
 			= LoggerFactory.getLogger(SamplesParserManager.class);
 
 	private SamplesParserManager() {

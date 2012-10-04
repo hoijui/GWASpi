@@ -20,7 +20,7 @@ import org.slf4j.LoggerFactory;
  */
 public class InsertSampleInfo {
 
-	private final static Logger log = LoggerFactory.getLogger(InsertSampleInfo.class);
+	private static final Logger log = LoggerFactory.getLogger(InsertSampleInfo.class);
 
 	private static String processStartTime = org.gwaspi.global.Utils.getMediumDateTimeAsString();
 	private static DbManager db = null;

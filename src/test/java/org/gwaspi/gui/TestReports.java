@@ -16,7 +16,7 @@ import org.slf4j.LoggerFactory;
  */
 public class TestReports extends javax.swing.JPanel {
 
-	private final static Logger log = LoggerFactory.getLogger(TestReports.class);
+	private static final Logger log = LoggerFactory.getLogger(TestReports.class);
 
 	public static void main(final String[] args) throws InterruptedException, FileNotFoundException, IOException {
 

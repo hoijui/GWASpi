@@ -20,7 +20,7 @@ import org.slf4j.LoggerFactory;
  */
 public final class MatricesList {
 
-	private final static Logger log
+	private static final Logger log
 			= LoggerFactory.getLogger(MatricesList.class);
 
 	private MatricesList() {

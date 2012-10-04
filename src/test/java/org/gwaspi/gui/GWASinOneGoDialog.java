@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
  */
 public class GWASinOneGoDialog extends JFrame {
 
-	private final static Logger log
+	private static final Logger log
 			= LoggerFactory.getLogger(GWASinOneGoDialog.class);
 
 	// Variables declaration - do not modify

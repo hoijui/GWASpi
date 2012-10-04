@@ -18,7 +18,7 @@ import ucar.nc2.Variable;
 
 public class BenchmarkReadCompareD3Array {
 
-	private final static Logger log = LoggerFactory.getLogger(BenchmarkReadCompareD3Array.class);
+	private static final Logger log = LoggerFactory.getLogger(BenchmarkReadCompareD3Array.class);
 
 	public static void main(String[] arg) throws InvalidRangeException, IOException {
 		int method = 2; // 1=int, 2=byte, 3=char

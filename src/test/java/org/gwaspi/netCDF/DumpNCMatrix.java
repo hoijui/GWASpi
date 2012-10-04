@@ -23,7 +23,7 @@ import ucar.nc2.Variable;
  */
 public class DumpNCMatrix {
 
-	private final static Logger log = LoggerFactory.getLogger(DumpNCMatrix.class);
+	private static final Logger log = LoggerFactory.getLogger(DumpNCMatrix.class);
 
 	public static void main(String[] args) throws Exception {
 		printSystemOutMatrix("/media/data/work/GWASpi/genotypes/STUDY_8/GT_51310170721CEST.nc"); // XXX system dependent path

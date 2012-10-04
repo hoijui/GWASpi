@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
  */
 public class MatrixManager {
 
-	private final static Logger log = LoggerFactory.getLogger(MatrixManager.class);
+	private static final Logger log = LoggerFactory.getLogger(MatrixManager.class);
 
 	private MatrixManager() {
 	}

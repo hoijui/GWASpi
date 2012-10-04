@@ -40,7 +40,7 @@ import org.slf4j.LoggerFactory;
 
 public class ProgressMonitorDemo extends JPanel implements ActionListener, PropertyChangeListener {
 
-	private final static Logger log
+	private static final Logger log
 			= LoggerFactory.getLogger(ProgressMonitorDemo.class);
 
 	private ProgressMonitor progressMonitor;

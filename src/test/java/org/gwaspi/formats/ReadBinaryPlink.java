@@ -16,7 +16,7 @@ import org.slf4j.LoggerFactory;
  */
 public class ReadBinaryPlink {
 
-	private final static Logger log
+	private static final Logger log
 			= LoggerFactory.getLogger(ReadBinaryPlink.class);
 
 	private static final String inputBed = "/media/data/work/GWASpi/input/Plink/mi_input.bed"; // XXX system dependent path

@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory;
  */
 public class WriteBinaryPlink {
 
-	private final static Logger log = LoggerFactory.getLogger(WriteBinaryPlink.class);
+	private static final Logger log = LoggerFactory.getLogger(WriteBinaryPlink.class);
 
 	private static final byte[] allBytes = new byte[64];
 	private static final byte[] gtBytes = new byte[1];

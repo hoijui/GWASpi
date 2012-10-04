@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
  */
 public class ReportWriter {
 
-	private final static Logger log = LoggerFactory.getLogger(ReportWriter.class);
+	private static final Logger log = LoggerFactory.getLogger(ReportWriter.class);
 
 	private ReportWriter() {
 	}

@@ -24,7 +24,7 @@ import ucar.ma2.InvalidRangeException;
  */
 public class OperationManager {
 
-	private final static Logger log = LoggerFactory.getLogger(OperationManager.class);
+	private static final Logger log = LoggerFactory.getLogger(OperationManager.class);
 
 	private OperationManager() {
 	}

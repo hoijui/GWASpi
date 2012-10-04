@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
 
 public class MultipleIlluminaLGENSamplesParser implements SamplesParser {
 
-	private final static Logger log
+	private static final Logger log
 			= LoggerFactory.getLogger(MultipleIlluminaLGENSamplesParser.class);
 
 	@Override

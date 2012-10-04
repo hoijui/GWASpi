@@ -12,7 +12,7 @@ import ucar.nc2.NetcdfFileWriteable;
 
 public class PrototypeWriteNetcdf {
 
-	private final static Logger log = LoggerFactory.getLogger(PrototypeWriteNetcdf.class);
+	private static final Logger log = LoggerFactory.getLogger(PrototypeWriteNetcdf.class);
 
 	public static void main(String[] arg) throws InvalidRangeException, IOException {
 

@@ -35,7 +35,7 @@ import ucar.nc2.NetcdfFile;
  */
 public class OutputGenotypicAssociation {
 
-	private final static Logger log = LoggerFactory.getLogger(OutputGenotypicAssociation.class);
+	private static final Logger log = LoggerFactory.getLogger(OutputGenotypicAssociation.class);
 
 	private OutputGenotypicAssociation() {
 	}

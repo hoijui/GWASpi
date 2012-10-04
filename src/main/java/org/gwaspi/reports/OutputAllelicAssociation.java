@@ -35,7 +35,7 @@ import ucar.nc2.NetcdfFile;
  */
 public class OutputAllelicAssociation {
 
-	private final static Logger log = LoggerFactory.getLogger(OperationSet.class);
+	private static final Logger log = LoggerFactory.getLogger(OperationSet.class);
 
 	private OutputAllelicAssociation() {
 	}

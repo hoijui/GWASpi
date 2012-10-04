@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
 
 public class SequenomSamplesParser implements SamplesParser {
 
-	private final static Logger log
+	private static final Logger log
 			= LoggerFactory.getLogger(SequenomSamplesParser.class);
 
 	@Override

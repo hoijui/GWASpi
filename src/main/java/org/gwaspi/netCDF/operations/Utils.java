@@ -27,7 +27,7 @@ import ucar.nc2.NetcdfFileWriteable;
  */
 public class Utils {
 
-	private final static Logger log
+	private static final Logger log
 			= LoggerFactory.getLogger(Utils.class);
 
 	private Utils() {

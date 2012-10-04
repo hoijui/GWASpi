@@ -35,7 +35,7 @@ import ucar.nc2.NetcdfFile;
  */
 public class OutputTrendTest {
 
-	private final static Logger log = LoggerFactory.getLogger(OutputTrendTest.class);
+	private static final Logger log = LoggerFactory.getLogger(OutputTrendTest.class);
 
 	private OutputTrendTest() {
 	}

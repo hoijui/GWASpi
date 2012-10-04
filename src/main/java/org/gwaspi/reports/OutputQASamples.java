@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
  */
 public class OutputQASamples {
 
-	private final static Logger log
+	private static final Logger log
 			= LoggerFactory.getLogger(OutputQASamples.class);
 
 	private static String reportPath;

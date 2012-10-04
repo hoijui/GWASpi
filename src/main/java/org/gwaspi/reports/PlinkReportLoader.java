@@ -49,7 +49,7 @@ import org.slf4j.LoggerFactory;
  */
 public class PlinkReportLoader {
 
-	private final static Logger log = LoggerFactory.getLogger(PlinkReportLoader.class);
+	private static final Logger log = LoggerFactory.getLogger(PlinkReportLoader.class);
 
 	private static Map<String, String> labelerHM = new HashMap<String, String>();
 

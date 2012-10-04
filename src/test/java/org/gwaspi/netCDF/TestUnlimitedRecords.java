@@ -20,7 +20,7 @@ import ucar.nc2.NetcdfFileWriteable;
  */
 public class TestUnlimitedRecords {
 
-	private final static Logger log = LoggerFactory.getLogger(TestUnlimitedRecords.class);
+	private static final Logger log = LoggerFactory.getLogger(TestUnlimitedRecords.class);
 
 	public static void main(final String[] args) throws InterruptedException, IOException, InvalidRangeException {
 

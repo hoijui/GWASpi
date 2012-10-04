@@ -50,7 +50,7 @@ import org.gwaspi.threadbox.MultiOperations;
  */
 public class MatrixExtractPanel extends JPanel {
 
-	private final static Logger log
+	private static final Logger log
 			= LoggerFactory.getLogger(MatrixExtractPanel.class);
 
 	public MatrixExtractPanel(int _matrixId, String newMatrixName, String newMatrixDesc) throws IOException {

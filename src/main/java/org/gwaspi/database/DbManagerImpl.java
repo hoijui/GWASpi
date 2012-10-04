@@ -1,6 +1,5 @@
 package org.gwaspi.database;
 
-import org.gwaspi.constants.cImport;
 import org.gwaspi.framework.error.GeneralApplicationException;
 import org.gwaspi.framework.jdbc.connection.ConnectionProvider;
 import org.gwaspi.framework.jdbc.query.QueryExecutor;

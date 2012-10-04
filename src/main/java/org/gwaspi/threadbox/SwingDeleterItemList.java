@@ -22,7 +22,7 @@ import org.gwaspi.threadbox.SwingDeleterItem.DeleteTarget;
  */
 public class SwingDeleterItemList extends SwingWorkerItemList {
 
-	private final static Logger log = LoggerFactory.getLogger(SwingDeleterItemList.class);
+	private static final Logger log = LoggerFactory.getLogger(SwingDeleterItemList.class);
 	protected static List<SwingDeleterItem> swingDeleterItemsAL = new ArrayList<SwingDeleterItem>();
 
 	SwingDeleterItemList() {

@@ -2,7 +2,6 @@ package org.gwaspi.reports;
 
 import org.gwaspi.constants.cDBGWASpi;
 import org.gwaspi.constants.cDBReports;
-import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.database.DbManager;
 import org.gwaspi.global.Config;
@@ -31,7 +30,7 @@ import org.slf4j.LoggerFactory;
  */
 public class ReportManager {
 
-	private final static Logger log = LoggerFactory.getLogger(ReportManager.class);
+	private static final Logger log = LoggerFactory.getLogger(ReportManager.class);
 
 	private ReportManager() {
 	}

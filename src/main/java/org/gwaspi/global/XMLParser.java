@@ -22,8 +22,11 @@ import org.w3c.dom.NodeList;
  */
 public class XMLParser {
 
-	private final static Logger log
+	private static final Logger log
 			= LoggerFactory.getLogger(XMLParser.class);
+
+	private XMLParser() {
+	}
 
 	public static Document parseXmlFile(String XMLurl) {
 		Document dom = null;

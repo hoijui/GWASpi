@@ -1,7 +1,6 @@
 package org.gwaspi.threadbox;
 
 import org.gwaspi.constants.cNetCDF;
-import java.io.File;
 import org.gwaspi.model.GWASpiExplorerNodes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

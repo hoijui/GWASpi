@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory;
  */
 public class SampleManager {
 
-	private final static Logger log = LoggerFactory.getLogger(SampleManager.class);
+	private static final Logger log = LoggerFactory.getLogger(SampleManager.class);
 
 	private SampleManager() {
 	}

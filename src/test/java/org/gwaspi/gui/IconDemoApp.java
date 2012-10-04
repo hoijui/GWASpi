@@ -74,7 +74,7 @@ import org.slf4j.LoggerFactory;
  */
 public class IconDemoApp extends JFrame {
 
-	private final static Logger log
+	private static final Logger log
 			= LoggerFactory.getLogger(IconDemoApp.class);
 
 	private JLabel photographLabel = new JLabel();

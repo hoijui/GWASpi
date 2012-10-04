@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
 
 public class GetEnsemblRegionHTML extends JFrame {
 
-	private final static Logger log
+	private static final Logger log
 			= LoggerFactory.getLogger(GetEnsemblRegionHTML.class);
 
 	public static void main(String[] args) throws MalformedURLException, IOException {

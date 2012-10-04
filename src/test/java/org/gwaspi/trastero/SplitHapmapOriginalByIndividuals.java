@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory;
  */
 public class SplitHapmapOriginalByIndividuals {
 
-	private final static Logger log = LoggerFactory.getLogger(WriteBinaryPlink.class);
+	private static final Logger log = LoggerFactory.getLogger(WriteBinaryPlink.class);
 	private static final String hapmapBigFile = "/media/disk/Fernando/hapmap_orig/hapmapGenotypes_orden_OK_SORTED.txt";
 
 	public static void main(String[] args) throws FileNotFoundException, IOException, ClassNotFoundException, InstantiationException, IllegalAccessException {

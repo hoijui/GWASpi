@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
  */
 public class BrowserHelpUrlAction extends AbstractAction {
 
-	private final static Logger log
+	private static final Logger log
 			= LoggerFactory.getLogger(BrowserHelpUrlAction.class);
 
 	private String helpUrlPostfix;

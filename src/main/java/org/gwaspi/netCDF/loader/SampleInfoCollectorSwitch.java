@@ -25,7 +25,7 @@ import org.gwaspi.samples.SamplesParserManager;
  */
 public class SampleInfoCollectorSwitch {
 
-	private final static Logger log = LoggerFactory.getLogger(SampleInfoCollectorSwitch.class);
+	private static final Logger log = LoggerFactory.getLogger(SampleInfoCollectorSwitch.class);
 
 	private SampleInfoCollectorSwitch() {
 	}

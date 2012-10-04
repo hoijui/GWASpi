@@ -14,7 +14,7 @@ import ucar.nc2.NetcdfFileWriteable;
 
 public class PrototypeWriteD4ArrayInt {
 
-	private final static Logger log = LoggerFactory.getLogger(PrototypeWriteD4ArrayInt.class);
+	private static final Logger log = LoggerFactory.getLogger(PrototypeWriteD4ArrayInt.class);
 
 	public static void main(String[] arg) throws InvalidRangeException, IOException {
 

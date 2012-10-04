@@ -23,7 +23,7 @@ import org.gwaspi.samples.SampleManager;
  */
 public class GWASpiExplorerNodes {
 
-	private final static Logger log
+	private static final Logger log
 			= LoggerFactory.getLogger(GWASpiExplorerNodes.class);
 
 	private GWASpiExplorerNodes() {

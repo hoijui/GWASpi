@@ -28,7 +28,7 @@ import ucar.nc2.NetcdfFile;
  */
 public class OutputQAMarkers {
 
-	private final static Logger log
+	private static final Logger log
 			= LoggerFactory.getLogger(OutputQAMarkers.class);
 
 	private OutputQAMarkers() {
