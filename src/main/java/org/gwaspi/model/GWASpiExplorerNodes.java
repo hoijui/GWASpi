@@ -38,7 +38,7 @@ public class GWASpiExplorerNodes {
 		private int parentNodeId;
 		private String nodeType;
 		private String nodeUniqueName;
-		private boolean collapsable = true;
+		private boolean collapsable;
 
 		public NodeElementInfo(
 				int parentNodeId,

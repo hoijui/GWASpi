@@ -50,18 +50,31 @@ public class GWASpiExplorer {
 	private final static Logger log = LoggerFactory.getLogger(GWASpiExplorer.class);
 
 	private JTree tree;
-	// Possible values are "Angled" (the default), "Horizontal", and "None".
-	private boolean playWithLineStyle = false;
-	private String lineStyle = "Horizontal";
+	private boolean playWithLineStyle;
+	/** Possible values are "Angled" (the default), "Horizontal", and "None". */
+	private String lineStyle;
 	// Optionally set the look and feel.
 	private static Icon customOpenIcon = initIcon("hex_open.png");
 	private static Icon customClosedIcon = initIcon("hex_closed.png");
 	private static Icon customLeafIcon = initIcon("leaf_sepia.png");
 
 	public GWASpiExplorer() {
+
+		this.tree = null;
+		this.playWithLineStyle = false;
+		this.lineStyle = "Horizontal";
 	}
 
 	public JTree getGWASpiTree() throws IOException {
+
+		if (tree == null) {
+			createGWASpiTree();
+		}
+
+		return tree;
+	}
+
+	private void createGWASpiTree() throws IOException {
 
 		// Create the nodes.
 		DefaultMutableTreeNode top = new DefaultMutableTreeNode(new UncollapsableNodeElementInfo(
@@ -93,8 +106,6 @@ public class GWASpiExplorer {
 		if (playWithLineStyle) {
 			tree.putClientProperty("JTree.lineStyle", lineStyle);
 		}
-
-		return tree;
 	}
 
 	private static void growTree(DefaultMutableTreeNode top) throws IOException {

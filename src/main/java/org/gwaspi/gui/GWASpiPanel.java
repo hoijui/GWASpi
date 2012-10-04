@@ -97,16 +97,12 @@ public class GWASpiPanel extends JPanel {
 			refreshContentPanel = !refreshContentPanel;
 		}
 
-		JTree tmpTree = new JTree();
-		tmpTree.setEnabled(false);
-
 		int X = scrl_Tree.getHorizontalScrollBar().getValue();
 		int Y = scrl_Tree.getVerticalScrollBar().getValue();
 		int width = splt_MoapiPanel.getDividerLocation();
 
 		GWASpiExplorer gwaspiExplorer = new GWASpiExplorer();
-		tmpTree = gwaspiExplorer.getGWASpiTree();
-		//tmpTree = org.gwaspi.model.GWASpiExplorer.getGWASpiTree();
+		JTree tmpTree = gwaspiExplorer.getGWASpiTree();
 
 		scrl_Tree.setViewportView(tmpTree);
 		splt_MoapiPanel.setLeftComponent(scrl_Tree);
