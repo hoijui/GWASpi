@@ -127,18 +127,16 @@ public class SwingWorkerItemList {
 		}
 	}
 
-	public static boolean permitsDeletion(Integer studyId, Integer matrixId, Integer opId) {
-		boolean result = true;
-		if (studyId != null && parentStudyIds.contains(studyId)) {
-			result = false;
-		}
-		if (matrixId != null && parentMatricesIds.contains(matrixId)) {
-			result = false;
-		}
-		if (opId != null && parentOperationsIds.contains(opId)) {
-			result = false;
-		}
-		return result;
+	public static boolean permitsDeletionOfStudyId(int studyId) {
+		return !parentStudyIds.contains(studyId);
+	}
+
+	public static boolean permitsDeletionOfMatrixId(int matrixId) {
+		return !parentMatricesIds.contains(matrixId);
+	}
+
+	public static boolean permitsDeletionOfOperationId(int opId) {
+		return !parentOperationsIds.contains(opId);
 	}
 
 	public static void unlockParentItems(Integer[] studyIds, Integer[] matrixIds, Integer[] opIds) {

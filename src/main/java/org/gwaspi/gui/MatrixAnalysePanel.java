@@ -758,7 +758,7 @@ public class MatrixAnalysePanel extends JPanel {
 								int tmpOPRow = selectedOPs[i];
 								opId = (Integer) table.getModel().getValueAt(tmpOPRow, 0);
 								//TEST IF THE DELETED ITEM IS REQUIRED FOR A QUED WORKER
-								if (SwingWorkerItemList.permitsDeletion(null, null, opId)) {
+								if (SwingWorkerItemList.permitsDeletionOfOperationId(opId)) {
 									if (option == JOptionPane.YES_OPTION) {
 										boolean deleteReport = false;
 										if (deleteReportOption == JOptionPane.YES_OPTION) {

@@ -313,7 +313,7 @@ public class StudyManagementPanel extends JPanel {
 					for (int i = 0; i < selectedStudyIds.length; i++) {
 						int studyId = selectedStudyIds[i];
 						//TEST IF THE DELETED ITEM IS REQUIRED FOR A QUED WORKER
-						if (SwingWorkerItemList.permitsDeletion(studyId, null, null)) {
+						if (SwingWorkerItemList.permitsDeletionOfStudyId(studyId)) {
 							if (option == JOptionPane.YES_OPTION && deleteReportOption != JOptionPane.CANCEL_OPTION) {
 
 								boolean deleteReport = false;

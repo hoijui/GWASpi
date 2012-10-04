@@ -46,7 +46,6 @@ public class Report_AnalysisPanel extends JPanel {
 	private JTextArea txtA_OpDesc;
 	// End of variables declaration
 
-	@SuppressWarnings("unchecked")
 	public Report_AnalysisPanel(final int _studyId, final int _matrixId, final int _opId, String NRows) throws IOException {
 
 		parentMatrix = new Matrix(_matrixId);
@@ -160,7 +159,7 @@ public class Report_AnalysisPanel extends JPanel {
 		@Override
 		public void actionPerformed(ActionEvent evt) {
 			// TEST IF THE DELETED ITEM IS REQUIRED FOR A QUED WORKER
-			if (SwingWorkerItemList.permitsDeletion(null, currentOP.getOperationId(), null)) {
+			if (SwingWorkerItemList.permitsDeletionOfMatrixId(currentOP.getOperationId())) { // XXX FIXME? should it be permitsDeletionOfOperationId
 				int option = JOptionPane.showConfirmDialog(dialogParent, Text.Operation.confirmDelete1);
 				if (option == JOptionPane.YES_OPTION) {
 					int deleteReportOption = JOptionPane.showConfirmDialog(dialogParent, Text.Reports.confirmDelete);

@@ -507,8 +507,8 @@ public class CurrentMatrixPanel extends JPanel {
 
 		@Override
 		public void actionPerformed(ActionEvent evt) {
-			// TODO TEST IF THE DELETED ITEM IS REQUIRED FOR A QUED WORKER
-			if (SwingWorkerItemList.permitsDeletion(null, matrix.getMatrixId(), null)) {
+			// TODO TEST IF THE DELETED ITEM IS REQUIRED FOR A QUEUED WORKER
+			if (SwingWorkerItemList.permitsDeletionOfMatrixId(matrix.getMatrixId())) {
 				int option = JOptionPane.showConfirmDialog(dialogParent, Text.Matrix.confirmDelete1 + Text.Matrix.confirmDelete2);
 				if (option == JOptionPane.YES_OPTION) {
 					int deleteReportOption = JOptionPane.showConfirmDialog(dialogParent, Text.Reports.confirmDelete);
@@ -554,7 +554,7 @@ public class CurrentMatrixPanel extends JPanel {
 								int tmpOPRow = selectedOPs[i];
 								int opId = (Integer) matrixOperationsTable.getModel().getValueAt(tmpOPRow, 0);
 								//TEST IF THE DELETED ITEM IS REQUIRED FOR A QUED WORKER
-								if (SwingWorkerItemList.permitsDeletion(null, null, opId)) {
+								if (SwingWorkerItemList.permitsDeletionOfOperationId(opId)) {
 									if (option == JOptionPane.YES_OPTION) {
 										boolean deleteReport = false;
 										if (deleteReportOption == JOptionPane.YES_OPTION) {

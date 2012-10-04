@@ -350,7 +350,7 @@ public class CurrentStudyPanel extends JPanel {
 							int tmpMatrixRow = selectedMatrices[i];
 							int matrixId = (Integer) table.getModel().getValueAt(tmpMatrixRow, 0);
 							//TEST IF THE DELETED ITEM IS REQUIRED FOR A QUED WORKER
-							if (SwingWorkerItemList.permitsDeletion(null, matrixId, null)) {
+							if (SwingWorkerItemList.permitsDeletionOfMatrixId(matrixId)) {
 								boolean deleteReport = false;
 								if (deleteReportOption == JOptionPane.YES_OPTION) {
 									deleteReport = true;
@@ -383,7 +383,7 @@ public class CurrentStudyPanel extends JPanel {
 		@Override
 		public void actionPerformed(ActionEvent evt) {
 			// TODO TEST IF THE DELETED ITEM IS REQUIRED FOR A QUED WORKER
-			if (SwingWorkerItemList.permitsDeletion(study.getStudyId(), null, null)) {
+			if (SwingWorkerItemList.permitsDeletionOfStudyId(study.getStudyId())) {
 				int option = JOptionPane.showConfirmDialog(dialogParent, Text.Study.confirmDelete1 + Text.Study.confirmDelete2);
 				if (option == JOptionPane.YES_OPTION) {
 					int deleteReportOption = JOptionPane.showConfirmDialog(dialogParent, Text.Reports.confirmDelete);

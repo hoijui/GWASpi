@@ -176,7 +176,7 @@ public class MatrixMarkerQAPanel extends JPanel {
 			try {
 				int opId = currentOP.getOperationId();
 				// TEST IF THE DELETED ITEM IS REQUIRED FOR A QUED WORKER
-				if (SwingWorkerItemList.permitsDeletion(null, null, opId)) {
+				if (SwingWorkerItemList.permitsDeletionOfOperationId(opId)) {
 					int option = JOptionPane.showConfirmDialog(dialogParent, Text.Operation.confirmDelete1);
 					if (option == JOptionPane.YES_OPTION) {
 						int deleteReportOption = JOptionPane.showConfirmDialog(dialogParent, Text.Reports.confirmDelete);
