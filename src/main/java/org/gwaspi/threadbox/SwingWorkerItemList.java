@@ -21,7 +21,8 @@ public class SwingWorkerItemList {
 	SwingWorkerItemList() {
 	}
 
-	public void add(SwingWorkerItem swi,
+	public void add(
+			SwingWorkerItem swi,
 			Integer[] _parentStudyId,
 			Integer[] _parentMatricesIds,
 			Integer[] _parentOperationsIds)
@@ -43,7 +44,7 @@ public class SwingWorkerItemList {
 		// CHECK IF ANY ITEM IS ALLREADY RUNNING
 		boolean kickStart = true;
 		for (SwingWorkerItem currentSwi : swingWorkerItems) {
-			if (currentSwi.queueState.equals(QueueState.PROCESSING)) {
+			if (currentSwi.getQueueState().equals(QueueState.PROCESSING)) {
 				kickStart = false;
 			}
 		}
@@ -61,7 +62,7 @@ public class SwingWorkerItemList {
 		for (SwingWorkerItem currentSwi : swingWorkerItems) {
 			if (idle && currentSwi.getQueueState().equals(QueueState.QUEUED)) {
 				idle = false;
-				currentSwi.swingWorker.start();
+				currentSwi.getSwingWorker().start();
 				currentSwi.setStartTime(org.gwaspi.global.Utils.getShortDateTimeAsString());
 				currentSwi.setQueueState(QueueState.PROCESSING);
 			}
@@ -81,9 +82,10 @@ public class SwingWorkerItemList {
 				currentSwi.setQueueState(QueueState.DONE);
 				currentSwi.setEndTime(org.gwaspi.global.Utils.getShortDateTimeAsString());
 
-				unlockParentItems(currentSwi.parentStudyIds,
-						currentSwi.parentMatricesIds,
-						currentSwi.parentOperationsIds);
+				unlockParentItems(
+						currentSwi.getParentStudyIds(),
+						currentSwi.getParentMatricesIds(),
+						currentSwi.getParentOperationsIds());
 			}
 		}
 	}
@@ -94,9 +96,10 @@ public class SwingWorkerItemList {
 				currentSwi.setQueueState(QueueState.ABORT);
 				currentSwi.setEndTime(org.gwaspi.global.Utils.getShortDateTimeAsString());
 
-				unlockParentItems(currentSwi.parentStudyIds,
-						currentSwi.parentMatricesIds,
-						currentSwi.parentOperationsIds);
+				unlockParentItems(
+						currentSwi.getParentStudyIds(),
+						currentSwi.getParentMatricesIds(),
+						currentSwi.getParentOperationsIds());
 			}
 		}
 	}
@@ -108,9 +111,10 @@ public class SwingWorkerItemList {
 			swingWorkerItems.get(rowIdx).setQueueState(QueueState.ABORT);
 			ProcessTab.getSingleton().updateProcessOverview();
 
-			unlockParentItems(currentSwi.parentStudyIds,
-					currentSwi.parentMatricesIds,
-					currentSwi.parentOperationsIds);
+			unlockParentItems(
+					currentSwi.getParentStudyIds(),
+					currentSwi.getParentMatricesIds(),
+					currentSwi.getParentOperationsIds());
 		}
 	}
 
@@ -120,9 +124,10 @@ public class SwingWorkerItemList {
 				currentSwi.setQueueState(QueueState.ERROR);
 				currentSwi.setEndTime(org.gwaspi.global.Utils.getShortDateTimeAsString());
 
-				unlockParentItems(currentSwi.parentStudyIds,
-						currentSwi.parentMatricesIds,
-						currentSwi.parentOperationsIds);
+				unlockParentItems(
+						currentSwi.getParentStudyIds(),
+						currentSwi.getParentMatricesIds(),
+						currentSwi.getParentOperationsIds());
 			}
 		}
 	}
@@ -164,10 +169,10 @@ public class SwingWorkerItemList {
 	public static int getSwingWorkerPendingItemsNb() {
 		int result = 0;
 		for (SwingWorkerItem currentSwi : SwingWorkerItemList.getSwingWorkerItems()) {
-			if (currentSwi.queueState.equals(QueueState.PROCESSING)) {
+			if (currentSwi.getQueueState().equals(QueueState.PROCESSING)) {
 				result++;
 			}
-			if (currentSwi.queueState.equals(QueueState.QUEUED)) {
+			if (currentSwi.getQueueState().equals(QueueState.QUEUED)) {
 				result++;
 			}
 		}

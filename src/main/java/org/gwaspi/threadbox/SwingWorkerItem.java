@@ -8,54 +8,46 @@ package org.gwaspi.threadbox;
  */
 public class SwingWorkerItem {
 
-	private String swingWorkerName;
-	protected SwingWorker swingWorker = null;
-	private String timeStamp = "";
-	private String launchTime;
+	private final String swingWorkerName;
+	private final SwingWorker swingWorker;
+	private final String timeStamp;
+	private final String launchTime;
 	private String startTime;
 	private String endTime;
-	protected QueueState queueState;
-	protected Integer[] parentStudyIds;
-	protected Integer[] parentMatricesIds;
-	protected Integer[] parentOperationsIds;
+	private QueueState queueState;
+	private final Integer[] parentStudyIds;
+	private final Integer[] parentMatricesIds;
+	private final Integer[] parentOperationsIds;
 
-	SwingWorkerItem(String swingWorkerName,
+	SwingWorkerItem(
+			String swingWorkerName,
 			SwingWorker swingWorker,
 			String timeStamp,
 			Integer[] parentStudyId)
 	{
-		this.launchTime = org.gwaspi.global.Utils.getShortDateTimeAsString();
-		this.timeStamp = timeStamp;
-		this.swingWorkerName = swingWorkerName;
-		this.swingWorker = swingWorker;
-		this.queueState = QueueState.QUEUED;
-		this.parentStudyIds = parentStudyId;
+		this(swingWorkerName, swingWorker, timeStamp, parentStudyId, new Integer[] {});
 	}
 
-	SwingWorkerItem(String swingWorkerName,
+	SwingWorkerItem(
+			String swingWorkerName,
 			SwingWorker swingWorker,
 			String timeStamp,
 			Integer[] parentStudyId,
 			Integer[] parentMatricesIds)
 	{
-		this.launchTime = org.gwaspi.global.Utils.getShortDateTimeAsString();
-		this.timeStamp = timeStamp;
-		this.swingWorkerName = swingWorkerName;
-		this.swingWorker = swingWorker;
-		this.queueState = QueueState.QUEUED;
-		this.parentStudyIds = parentStudyId;
-		this.parentMatricesIds = parentMatricesIds;
+		this(swingWorkerName, swingWorker, timeStamp, parentStudyId, parentMatricesIds, new Integer[] {});
 	}
 
-	SwingWorkerItem(String swingWorkerName,
+	SwingWorkerItem(
+			String swingWorkerName,
 			SwingWorker swingWorker,
-			String _timeStamp,
+			String timeStamp,
 			Integer[] parentStudyId,
 			Integer[] parentMatricesIds,
 			Integer[] parentOperationsIds)
 	{
 		this.launchTime = org.gwaspi.global.Utils.getShortDateTimeAsString();
-		this.timeStamp = _timeStamp;
+		this.timeStamp = timeStamp;
 		this.swingWorkerName = swingWorkerName;
 		this.swingWorker = swingWorker;
 		this.queueState = QueueState.QUEUED;

@@ -11,86 +11,58 @@ public class SwingDeleterItem {
 	private String launchTime;
 	private String startTime;
 	private String endTime;
-	protected QueueState queueState;
+	private QueueState queueState;
 	private String description;
-	private Integer[] parentStudyIds;
-	private Integer[] parentMatricesIds;
-	private Integer[] parentOperationsIds;
-	private DeleteTarget deleteTarget;
-	private boolean deleteReports;
-	private int studyId;
-	private int matrixId;
-	private int opId;
-	private int rpId;
+	private final DeleteTarget deleteTarget;
+	private final boolean deleteReports;
+	private final int studyId;
+	private final int matrixId;
+	private final int opId;
+	private final int rpId;
 
-	SwingDeleterItem(DeleteTarget _deleteTarget,
-			int _studyId,
-			boolean _deleteReports) {
-
-		launchTime = org.gwaspi.global.Utils.getShortDateTimeAsString();
-		queueState = QueueState.QUEUED;
-
-		deleteTarget = _deleteTarget;
-		deleteReports = _deleteReports;
-		studyId = _studyId;
-		matrixId = Integer.MIN_VALUE;
-		opId = Integer.MIN_VALUE;
-		rpId = Integer.MIN_VALUE;
-
+	SwingDeleterItem(
+			DeleteTarget deleteTarget,
+			int studyId,
+			boolean deleteReports)
+	{
+		this(deleteTarget, studyId, Integer.MIN_VALUE, deleteReports);
 	}
 
-	SwingDeleterItem(DeleteTarget _deleteTarget,
-			int _studyId,
-			int _matrixId,
-			boolean _deleteReports) {
-
-		launchTime = org.gwaspi.global.Utils.getShortDateTimeAsString();
-		queueState = QueueState.QUEUED;
-
-		deleteTarget = _deleteTarget;
-		deleteReports = _deleteReports;
-		studyId = _studyId;
-		matrixId = _matrixId;
-		opId = Integer.MIN_VALUE;
-		rpId = Integer.MIN_VALUE;
-
+	SwingDeleterItem(
+			DeleteTarget deleteTarget,
+			int studyId,
+			int matrixId,
+			boolean deleteReports)
+	{
+		this(deleteTarget, studyId, matrixId, Integer.MIN_VALUE, deleteReports);
 	}
 
-	SwingDeleterItem(DeleteTarget _deleteTarget,
-			int _studyId,
-			int _matrixId,
-			int _opId,
-			boolean _deleteReports) {
-
-		launchTime = org.gwaspi.global.Utils.getShortDateTimeAsString();
-		queueState = QueueState.QUEUED;
-
-		deleteTarget = _deleteTarget;
-		deleteReports = _deleteReports;
-		studyId = _studyId;
-		matrixId = _matrixId;
-		opId = _opId;
-		rpId = Integer.MIN_VALUE;
-
+	SwingDeleterItem(
+			DeleteTarget deleteTarget,
+			int studyId,
+			int matrixId,
+			int opId,
+			boolean deleteReports)
+	{
+		this(deleteTarget, studyId, matrixId, opId, Integer.MIN_VALUE, deleteReports);
 	}
 
-	SwingDeleterItem(DeleteTarget _deleteTarget,
-			int _studyId,
-			int _matrixId,
-			int _opId,
-			int _rpId,
-			boolean _deleteReports) {
-
-		launchTime = org.gwaspi.global.Utils.getShortDateTimeAsString();
-		queueState = QueueState.QUEUED;
-
-		deleteTarget = _deleteTarget;
-		deleteReports = _deleteReports;
-		studyId = _studyId;
-		matrixId = _matrixId;
-		opId = _opId;
-		rpId = _rpId;
-
+	SwingDeleterItem(
+			DeleteTarget deleteTarget,
+			int studyId,
+			int matrixId,
+			int opId,
+			int rpId,
+			boolean deleteReports)
+	{
+		this.launchTime = org.gwaspi.global.Utils.getShortDateTimeAsString();
+		this.queueState = QueueState.QUEUED;
+		this.deleteTarget = deleteTarget;
+		this.deleteReports = deleteReports;
+		this.studyId = studyId;
+		this.matrixId = matrixId;
+		this.opId = opId;
+		this.rpId = rpId;
 	}
 
 	public QueueState getQueueState() {
@@ -107,18 +79,6 @@ public class SwingDeleterItem {
 
 	public String getEndTime() {
 		return endTime;
-	}
-
-	public Integer[] getParentMatricesIds() {
-		return parentMatricesIds;
-	}
-
-	public Integer[] getParentOperationsIds() {
-		return parentOperationsIds;
-	}
-
-	public Integer[] getParentStudyIds() {
-		return parentStudyIds;
 	}
 
 	public DeleteTarget getDeleteTarget() {
@@ -148,21 +108,21 @@ public class SwingDeleterItem {
 	public String getDescription() {
 		if (this.description == null) {
 			StringBuilder sb = new StringBuilder();
-			//DELETE STUDY
-			if (this.deleteTarget.equals(DeleteTarget.STUDY)) {
-				sb.append("Delete Study ID: " + this.getStudyId());
+			// DELETE STUDY
+			if (getDeleteTarget().equals(DeleteTarget.STUDY)) {
+				sb.append("Delete Study ID: ").append(this.getStudyId());
 			}
-			//DELETE MATRIX
-			if (this.deleteTarget.equals(DeleteTarget.MATRIX)) {
-				sb.append("Delete Matrix ID: " + this.getMatrixId());
+			// DELETE MATRIX
+			if (getDeleteTarget().equals(DeleteTarget.MATRIX)) {
+				sb.append("Delete Matrix ID: ").append(this.getMatrixId());
 			}
-			//DELETE OPERATION BY MATRIXID
-			if (this.deleteTarget.equals(DeleteTarget.REPORTS_BY_MATRIXID)) {
-				sb.append("Delete Operations from Matrix ID: " + this.getMatrixId());
+			// DELETE OPERATION BY MATRIXID
+			if (getDeleteTarget().equals(DeleteTarget.REPORTS_BY_MATRIXID)) {
+				sb.append("Delete Operations from Matrix ID: ").append(this.getMatrixId());
 			}
-			//DELETE OPERATION BY OPID
-			if (this.deleteTarget.equals(DeleteTarget.OPERATION_BY_OPID)) {
-				sb.append("Delete Operation ID: " + this.getOpId());
+			// DELETE OPERATION BY OPID
+			if (getDeleteTarget().equals(DeleteTarget.OPERATION_BY_OPID)) {
+				sb.append("Delete Operation ID: ").append(this.getOpId());
 			}
 			description = sb.toString();
 		}
@@ -186,7 +146,7 @@ public class SwingDeleterItem {
 	public static enum DeleteTarget {
 		STUDY,
 		MATRIX,
-		REPORTS_BY_MATRIXID, // had String value: "OPERATION_BY_MATRIXID"
+		REPORTS_BY_MATRIXID, // NOTE had String value: "OPERATION_BY_MATRIXID"
 		OPERATION_BY_OPID,
 		REPORT
 	}
