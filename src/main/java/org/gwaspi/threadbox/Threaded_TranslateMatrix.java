@@ -1,6 +1,6 @@
 package org.gwaspi.threadbox;
 
-import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import org.gwaspi.model.GWASpiExplorerNodes;
 import org.gwaspi.netCDF.operations.MatrixTranslator_opt;
 import org.gwaspi.netCDF.operations.OP_QAMarkers_opt;
@@ -18,28 +18,25 @@ public class Threaded_TranslateMatrix extends CommonRunnable {
 
 	private int studyId;
 	private int parentMatrixId;
-	private cNetCDF.Defaults.GenotypeEncoding gtEncoding;
+	private GenotypeEncoding gtEncoding;
 	private String newMatrixName;
 	private String description;
 
 	public Threaded_TranslateMatrix(
-			String threadName,
 			String timeStamp,
 			int studyId,
 			int parentMatrixId,
-			cNetCDF.Defaults.GenotypeEncoding gtEncoding,
+			GenotypeEncoding gtEncoding,
 			String newMatrixName,
 			String description)
 	{
-		super(threadName, timeStamp, "Translating Matrix");
+		super("Translate Matrix", timeStamp, "Translating Matrix", "Translating Matrix");
 
 		this.studyId = studyId;
 		this.parentMatrixId = parentMatrixId;
 		this.gtEncoding = gtEncoding;
 		this.newMatrixName = newMatrixName;
 		this.description = description;
-
-		startInternal(getTaskDescription());
 	}
 
 	protected Logger createLog() {
@@ -55,11 +52,11 @@ public class Threaded_TranslateMatrix extends CommonRunnable {
 					description);
 
 			int resultMatrixId;
-			if (gtEncoding.equals(cNetCDF.Defaults.GenotypeEncoding.AB0)
-					|| gtEncoding.equals(cNetCDF.Defaults.GenotypeEncoding.O12))
+			if (gtEncoding.equals(GenotypeEncoding.AB0)
+					|| gtEncoding.equals(GenotypeEncoding.O12))
 			{
 				resultMatrixId = matrixTransformer.translateAB12AllelesToACGT();
-			} else if (gtEncoding.equals(cNetCDF.Defaults.GenotypeEncoding.O1234))
+			} else if (gtEncoding.equals(GenotypeEncoding.O1234))
 			{
 				resultMatrixId = matrixTransformer.translate1234AllelesToACGT();
 			} else {

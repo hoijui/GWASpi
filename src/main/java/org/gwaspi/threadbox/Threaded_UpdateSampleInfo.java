@@ -23,17 +23,14 @@ public class Threaded_UpdateSampleInfo extends CommonRunnable {
 	private int poolId;
 
 	public Threaded_UpdateSampleInfo(
-			String threadName,
 			String timeStamp,
 			int poolId,
 			File sampleInfoFile)
 	{
-		super(threadName, timeStamp, "Sample Info Update");
+		super("Update Sample Info", timeStamp, "Sample Info Update", "Sample Info Update");
 
 		this.poolId = poolId;
 		this.sampleInfoFile = sampleInfoFile;
-
-		startInternal(getTaskDescription());
 	}
 
 	protected Logger createLog() {

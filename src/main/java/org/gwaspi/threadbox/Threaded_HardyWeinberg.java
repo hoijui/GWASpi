@@ -16,16 +16,13 @@ public class Threaded_HardyWeinberg extends CommonRunnable {
 	private int censusOpId;
 
 	public Threaded_HardyWeinberg(
-			String threadName,
 			String timeStamp,
 			int matrixId,
 			int censusOpId)
 	{
-		super(threadName, timeStamp, "Hardy-Weinberg test");
+		super("Hardy-Weinberg", timeStamp, "Hardy-Weinberg test", "Hardy-Weinberg");
 
 		this.censusOpId = censusOpId;
-
-		startInternal("Hardy-Weinberg");
 	}
 
 	protected Logger createLog() {

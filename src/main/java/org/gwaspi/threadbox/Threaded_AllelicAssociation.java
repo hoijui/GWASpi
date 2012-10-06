@@ -26,21 +26,18 @@ public class Threaded_AllelicAssociation extends CommonRunnable {
 	private GWASinOneGOParams gwasParams;
 
 	public Threaded_AllelicAssociation(
-			String threadName,
 			String timeStamp,
 			int matrixId,
 			int censusOpId,
 			int hwOpId,
 			GWASinOneGOParams gwasParams)
 	{
-		super(threadName, timeStamp, "Allelic Association Study");
+		super("Allelic Association Test", timeStamp, "Allelic Association Study", "Allelic Association Test");
 
 		this.matrixId = matrixId;
 		this.censusOpId = censusOpId;
 		this.hwOpId = hwOpId;
 		this.gwasParams = gwasParams;
-
-		startInternal("Allelic Association Test");
 	}
 
 	protected Logger createLog() {
@@ -70,7 +67,7 @@ public class Threaded_AllelicAssociation extends CommonRunnable {
 		OperationMetadata markerQAMetadata = new OperationMetadata(markersQAOpId);
 
 		if (gwasParams.isDiscardMarkerHWCalc()) {
-			gwasParams.setDiscardMarkerHWTreshold((double) 0.05 / markerQAMetadata.getOpSetSize());
+			gwasParams.setDiscardMarkerHWTreshold(0.05 / markerQAMetadata.getOpSetSize());
 		}
 
 		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {

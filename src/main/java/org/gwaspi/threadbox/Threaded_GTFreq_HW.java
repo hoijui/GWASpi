@@ -29,19 +29,16 @@ public class Threaded_GTFreq_HW extends CommonRunnable {
 	private final GWASinOneGOParams gwasParams;
 
 	public Threaded_GTFreq_HW(
-			String threadName,
 			String timeStamp,
 			int matrixId,
 			File phenotypeFile,
 			GWASinOneGOParams gwasParams)
 	{
-		super(threadName, timeStamp, "Genotype Frequency count & Hardy-Weinberg test");
+		super("GT Freq. & HW", timeStamp, "Genotype Frequency count & Hardy-Weinberg test", "Genotype Frequency count & Hardy-Weinberg test");
 
 		this.matrixId = matrixId;
 		this.phenotypeFile = phenotypeFile;
 		this.gwasParams = gwasParams;
-
-		startInternal(getTaskDescription());
 	}
 
 	protected Logger createLog() {

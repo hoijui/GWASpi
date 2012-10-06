@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  *
+ * @deprecated unused class!
  * @author Fernando Muñiz Fernandez
  * IBE, Institute of Evolutionary Biology (UPF-CSIC)
  * CEXS-UPF-PRBB
@@ -23,17 +24,14 @@ public class Threaded_Loader_QA extends CommonRunnable {
 	private Map<String, Object> sampleInfoMap;
 
 	public Threaded_Loader_QA(
-			String threadName,
 			String timeStamp,
 			GenotypesLoadDescription loadDescription,
 			Map<String, Object> sampleInfoMap)
 	{
-		super(threadName, timeStamp, "Loading Genotypes");
+		super("Loading Genotypes", timeStamp, "Loading Genotypes", "Loading Genotypes");
 
 		this.loadDescription = loadDescription;
 		this.sampleInfoMap = sampleInfoMap;
-
-		startInternal(getTaskDescription());
 	}
 
 	protected Logger createLog() {

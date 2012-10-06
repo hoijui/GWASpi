@@ -15,17 +15,19 @@ public abstract class CommonRunnable implements Runnable {
 	private final String timeStamp;
 	private final String threadName;
 	private final String taskDescription;
+	private final String startDescription;
 	private Thread runner;
 
-	public CommonRunnable(String threadName, String timeStamp, String taskDescription) {
+	public CommonRunnable(String threadName, String timeStamp, String taskDescription, String startDescription) {
 		this.log = createLog();
 		this.timeStamp = timeStamp;
 		this.threadName = threadName;
 		this.taskDescription = taskDescription;
+		this.startDescription = startDescription;
 		this.runner = null;
 	}
 
-	protected final void startInternal(String startDescription) {
+	public final void startThreaded() {
 
 		try {
 			org.gwaspi.global.Utils.sysoutStart(startDescription);
@@ -47,6 +49,7 @@ public abstract class CommonRunnable implements Runnable {
 
 	protected abstract void runInternal(SwingWorkerItem thisSwi) throws Exception;
 
+	@Override
 	public void run() {
 		SwingWorkerItem thisSwi = SwingWorkerItemList.getSwingWorkerItemByTimeStamp(timeStamp);
 

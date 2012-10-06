@@ -21,15 +21,12 @@ public class Threaded_MatrixQA extends CommonRunnable {
 	private int matrixId;
 
 	public Threaded_MatrixQA(
-			String threadName,
 			String timeStamp,
 			int matrixId)
 	{
-		super(threadName, timeStamp, "Matrix Quality Control");
+		super("Matrix QA & Reports", timeStamp, "Matrix Quality Control", "Matrix Quality Control");
 
 		this.matrixId = matrixId;
-
-		startInternal(getTaskDescription());
 	}
 
 	protected Logger createLog() {

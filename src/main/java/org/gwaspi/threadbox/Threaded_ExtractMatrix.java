@@ -1,6 +1,7 @@
 package org.gwaspi.threadbox;
 
-import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.constants.cNetCDF.Defaults.SetMarkerPickCase;
+import org.gwaspi.constants.cNetCDF.Defaults.SetSamplePickCase;
 import java.io.File;
 import java.util.Set;
 import org.gwaspi.model.GWASpiExplorerNodes;
@@ -23,8 +24,8 @@ public class Threaded_ExtractMatrix extends CommonRunnable {
 	private int parentMatrixId;
 	private String newMatrixName;
 	private String description;
-	private cNetCDF.Defaults.SetMarkerPickCase markerPickCase;
-	private cNetCDF.Defaults.SetSamplePickCase samplePickCase;
+	private SetMarkerPickCase markerPickCase;
+	private SetSamplePickCase samplePickCase;
 	private String markerPickVar;
 	private String samplePickVar;
 	private Set<Object> markerCriteria;
@@ -33,14 +34,13 @@ public class Threaded_ExtractMatrix extends CommonRunnable {
 	private File sampleCriteriaFile;
 
 	public Threaded_ExtractMatrix(
-			String threadName,
 			String timeStamp,
 			int studyId,
 			int parentMatrixId,
 			String newMatrixName,
 			String description,
-			cNetCDF.Defaults.SetMarkerPickCase markerPickCase,
-			cNetCDF.Defaults.SetSamplePickCase samplePickCase,
+			SetMarkerPickCase markerPickCase,
+			SetSamplePickCase samplePickCase,
 			String markerPickVar,
 			String samplePickVar,
 			Set<Object> markerCriteria,
@@ -48,7 +48,7 @@ public class Threaded_ExtractMatrix extends CommonRunnable {
 			File markerCriteriaFile,
 			File sampleCriteriaFile)
 	{
-		super(threadName, timeStamp, "Extracting Data");
+		super("Data Extract", timeStamp, "Extracting Data", "Extracting");
 
 		this.studyId = studyId;
 		this.parentMatrixId = parentMatrixId;
@@ -62,8 +62,6 @@ public class Threaded_ExtractMatrix extends CommonRunnable {
 		this.sampleCriteria = sampleCriteria;
 		this.markerCriteriaFile = markerCriteriaFile;
 		this.sampleCriteriaFile = sampleCriteriaFile;
-
-		startInternal("Extracting");
 	}
 
 	protected Logger createLog() {

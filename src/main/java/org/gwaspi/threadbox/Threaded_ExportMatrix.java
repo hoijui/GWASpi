@@ -21,19 +21,16 @@ public class Threaded_ExportMatrix extends CommonRunnable {
 	private String phenotype;
 
 	public Threaded_ExportMatrix(
-			String threadName,
 			String timeStamp,
 			int matrixId,
 			ExportFormat format,
 			String phenotype)
 	{
-		super(threadName, timeStamp, "Exporting Matrix");
+		super("Export Matrix", timeStamp, "Exporting Matrix", "Exporting Matrix");
 
 		this.matrixId = matrixId;
 		this.format = format;
 		this.phenotype = phenotype;
-
-		startInternal(getTaskDescription());
 	}
 
 	protected Logger createLog() {

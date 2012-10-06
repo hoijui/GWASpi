@@ -33,19 +33,16 @@ public class Threaded_GWAS extends CommonRunnable {
 	private GWASinOneGOParams gwasParams;
 
 	public Threaded_GWAS(
-			String threadName,
 			String timeStamp,
 			int matrixId,
 			File phenotypeFile,
 			GWASinOneGOParams gwasParams)
 	{
-		super(threadName, timeStamp, "GWAS");
+		super("GWAS", timeStamp, "GWAS", "GWAS");
 
 		this.matrixId = matrixId;
 		this.phenotypeFile = phenotypeFile;
 		this.gwasParams = gwasParams;
-
-		startInternal(getTaskDescription());
 	}
 
 	protected Logger createLog() {

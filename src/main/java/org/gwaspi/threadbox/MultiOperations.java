@@ -34,14 +34,17 @@ public class MultiOperations {
 		final String timeStamp = org.gwaspi.global.Utils.getTimeStamp();
 		SwingWorker worker = new SwingWorker() {
 			public Object construct() {
-				Threaded_MatrixQA sampleQA = new Threaded_MatrixQA("Matrix QA & Reports",
+				Threaded_MatrixQA thread = new Threaded_MatrixQA(
 						timeStamp,
 						matrixId);
-				return sampleQA;
+				thread.startThreaded();
+
+				return thread;
 			}
 		};
 
-		SwingWorkerItem swi = new SwingWorkerItem("Matrix QA & Reports on Matrix ID: " + matrixId,
+		SwingWorkerItem swi = new SwingWorkerItem(
+				"Matrix QA & Reports on Matrix ID: " + matrixId,
 				worker,
 				timeStamp,
 				new Integer[]{studyId},
@@ -66,12 +69,12 @@ public class MultiOperations {
 		SwingWorker worker = new SwingWorker() {
 			public Object construct() {
 				Threaded_Loader_GWASifOK thread = new Threaded_Loader_GWASifOK(
-						"Genotypes Loader & GWAS if OK",
 						timeStamp,
 						loadDescription,
 						dummySamples,
 						performGwas,
 						gwasParams);
+				thread.startThreaded();
 
 				return thread;
 			}
@@ -94,7 +97,8 @@ public class MultiOperations {
 	//</editor-fold>
 
 	//<editor-fold defaultstate="collapsed" desc="ANALYSIS">
-	public static void doGWASwithAlterPhenotype(final int studyId,
+	public static void doGWASwithAlterPhenotype(
+			final int studyId,
 			final int matrixId,
 			final File phenofile,
 			final GWASinOneGOParams gwasParams)
@@ -103,22 +107,25 @@ public class MultiOperations {
 		final String timeStamp = org.gwaspi.global.Utils.getTimeStamp();
 		SwingWorker worker = new SwingWorker() {
 			public Object construct() {
-				Threaded_GWAS thread = new Threaded_GWAS("GWAS",
+				Threaded_GWAS thread = new Threaded_GWAS(
 						timeStamp,
 						matrixId,
 						phenofile,
 						gwasParams);
+				thread.startThreaded();
 
 				return thread;
 			}
 		};
 
-		SwingWorkerItem swi = new SwingWorkerItem("GWAS on Matrix ID: " + matrixId,
+		SwingWorkerItem swi = new SwingWorkerItem(
+				"GWAS on Matrix ID: " + matrixId,
 				worker,
 				timeStamp,
 				new Integer[]{studyId},
 				new Integer[]{matrixId});
-		swingWorkerItemList.add(swi,
+		swingWorkerItemList.add(
+				swi,
 				new Integer[]{studyId}, // Studies to be put on hold
 				new Integer[]{matrixId}, // Matrices to be put on hold
 				null); // Operations to be put on hold
@@ -126,7 +133,8 @@ public class MultiOperations {
 		ProcessTab.getSingleton().updateProcessOverview();
 	}
 
-	public static void doHardyWeinberg(final int studyId,
+	public static void doHardyWeinberg(
+			final int studyId,
 			final int matrixId,
 			final int censusOpId)
 	{
@@ -134,21 +142,24 @@ public class MultiOperations {
 		final String timeStamp = org.gwaspi.global.Utils.getTimeStamp();
 		SwingWorker worker = new SwingWorker() {
 			public Object construct() {
-				Threaded_HardyWeinberg thread = new Threaded_HardyWeinberg("Hardy-Weinberg",
+				Threaded_HardyWeinberg thread = new Threaded_HardyWeinberg(
 						timeStamp,
 						matrixId,
 						censusOpId);
+				thread.startThreaded();
 
 				return thread;
 			}
 		};
 
-		SwingWorkerItem swi = new SwingWorkerItem("Hardy-Weinberg on Matrix ID: " + matrixId,
+		SwingWorkerItem swi = new SwingWorkerItem(
+				"Hardy-Weinberg on Matrix ID: " + matrixId,
 				worker,
 				timeStamp,
 				new Integer[]{studyId},
 				new Integer[]{matrixId});
-		swingWorkerItemList.add(swi,
+		swingWorkerItemList.add(
+				swi,
 				new Integer[]{studyId}, // Studies to be put on hold
 				new Integer[]{matrixId}, // Matrices to be put on hold
 				null); // Operations to be put on hold
@@ -156,7 +167,8 @@ public class MultiOperations {
 		ProcessTab.getSingleton().updateProcessOverview();
 	}
 
-	public static void doGTFreqDoHW(final int studyId,
+	public static void doGTFreqDoHW(
+			final int studyId,
 			final int matrixId,
 			final File phenoFile,
 			final GWASinOneGOParams gwasParams)
@@ -165,22 +177,25 @@ public class MultiOperations {
 		final String timeStamp = org.gwaspi.global.Utils.getTimeStamp();
 		SwingWorker worker = new SwingWorker() {
 			public Object construct() {
-				Threaded_GTFreq_HW thread = new Threaded_GTFreq_HW("GT Freq. & HW",
+				Threaded_GTFreq_HW thread = new Threaded_GTFreq_HW(
 						timeStamp,
 						matrixId,
 						phenoFile,
 						gwasParams);
+				thread.startThreaded();
 
 				return thread;
 			}
 		};
 
-		SwingWorkerItem swi = new SwingWorkerItem("Genotypes Freq. & HW on Matrix ID: " + matrixId,
+		SwingWorkerItem swi = new SwingWorkerItem(
+				"Genotypes Freq. & HW on Matrix ID: " + matrixId,
 				worker,
 				timeStamp,
 				new Integer[]{studyId},
 				new Integer[]{matrixId});
-		swingWorkerItemList.add(swi,
+		swingWorkerItemList.add(
+				swi,
 				new Integer[]{studyId}, // Studies to be put on hold
 				new Integer[]{matrixId}, // Matrices to be put on hold
 				null); // Operations to be put on hold
@@ -188,7 +203,8 @@ public class MultiOperations {
 		ProcessTab.getSingleton().updateProcessOverview();
 	}
 
-	public static void doAllelicAssociationTest(final int studyId,
+	public static void doAllelicAssociationTest(
+			final int studyId,
 			final int matrixId,
 			final int censusOPId,
 			final int hwOPId,
@@ -198,12 +214,13 @@ public class MultiOperations {
 		final String timeStamp = org.gwaspi.global.Utils.getTimeStamp();
 		SwingWorker worker = new SwingWorker() {
 			public Object construct() {
-				Threaded_AllelicAssociation thread = new Threaded_AllelicAssociation("Allelic Association Test",
+				Threaded_AllelicAssociation thread = new Threaded_AllelicAssociation(
 						timeStamp,
 						matrixId,
 						censusOPId,
 						hwOPId,
 						gwasParams);
+				thread.startThreaded();
 
 				return thread;
 			}
@@ -213,13 +230,15 @@ public class MultiOperations {
 //		holdOpIds.add(censusOPId);
 //		holdOpIds.add(hwOPId);
 
-		SwingWorkerItem swi = new SwingWorkerItem("Allelic Association Test on Matrix ID: " + matrixId,
+		SwingWorkerItem swi = new SwingWorkerItem(
+				"Allelic Association Test on Matrix ID: " + matrixId,
 				worker,
 				timeStamp,
 				new Integer[]{studyId},
 				new Integer[]{matrixId},
 				new Integer[]{censusOPId, hwOPId});
-		swingWorkerItemList.add(swi,
+		swingWorkerItemList.add(
+				swi,
 				new Integer[]{studyId}, // Studies to be put on hold
 				new Integer[]{matrixId}, // Matrices to be put on hold
 				new Integer[]{censusOPId, hwOPId}); // Operations to be put on hold
@@ -227,7 +246,8 @@ public class MultiOperations {
 		ProcessTab.getSingleton().updateProcessOverview();
 	}
 
-	public static void doGenotypicAssociationTest(final int studyId,
+	public static void doGenotypicAssociationTest(
+			final int studyId,
 			final int matrixId,
 			final int censusOPId,
 			final int hwOPId,
@@ -237,12 +257,13 @@ public class MultiOperations {
 		final String timeStamp = org.gwaspi.global.Utils.getTimeStamp();
 		SwingWorker worker = new SwingWorker() {
 			public Object construct() {
-				Threaded_GenotypicAssociation thread = new Threaded_GenotypicAssociation("Genotypic Association Test",
+				Threaded_GenotypicAssociation thread = new Threaded_GenotypicAssociation(
 						timeStamp,
 						matrixId,
 						censusOPId,
 						hwOPId,
 						gwasParams);
+				thread.startThreaded();
 
 				return thread;
 			}
@@ -252,13 +273,15 @@ public class MultiOperations {
 //		holdOpIds.add(censusOPId);
 //		holdOpIds.add(hwOPId);
 
-		SwingWorkerItem swi = new SwingWorkerItem("Genotypic Association Test on Matrix ID: " + matrixId,
+		SwingWorkerItem swi = new SwingWorkerItem(
+				"Genotypic Association Test on Matrix ID: " + matrixId,
 				worker,
 				timeStamp,
 				new Integer[]{studyId},
 				new Integer[]{matrixId},
 				new Integer[]{censusOPId, hwOPId});
-		swingWorkerItemList.add(swi,
+		swingWorkerItemList.add(
+				swi,
 				new Integer[]{studyId}, // Studies to be put on hold
 				new Integer[]{matrixId}, // Matrices to be put on hold
 				new Integer[]{censusOPId, hwOPId}); // Operations to be put on hold
@@ -266,7 +289,8 @@ public class MultiOperations {
 		ProcessTab.getSingleton().updateProcessOverview();
 	}
 
-	public static void doTrendTest(final int studyId,
+	public static void doTrendTest(
+			final int studyId,
 			final int matrixId,
 			final int censusOPId,
 			final int hwOPId,
@@ -276,12 +300,13 @@ public class MultiOperations {
 		final String timeStamp = org.gwaspi.global.Utils.getTimeStamp();
 		SwingWorker worker = new SwingWorker() {
 			public Object construct() {
-				Threaded_TrendTest thread = new Threaded_TrendTest("Cochran-Armitage Trend Test",
+				Threaded_TrendTest thread = new Threaded_TrendTest(
 						timeStamp,
 						matrixId,
 						censusOPId,
 						hwOPId,
 						gwasParams);
+				thread.startThreaded();
 
 				return thread;
 			}
@@ -291,13 +316,15 @@ public class MultiOperations {
 //		holdOpIds.add(censusOPId);
 //		holdOpIds.add(hwOPId);
 
-		SwingWorkerItem swi = new SwingWorkerItem("Cochran-Armitage Trend Test on Matrix ID: " + matrixId,
+		SwingWorkerItem swi = new SwingWorkerItem(
+				"Cochran-Armitage Trend Test on Matrix ID: " + matrixId,
 				worker,
 				timeStamp,
 				new Integer[]{studyId},
 				new Integer[]{matrixId},
 				new Integer[]{censusOPId, hwOPId});
-		swingWorkerItemList.add(swi,
+		swingWorkerItemList.add(
+				swi,
 				new Integer[]{studyId}, // Studies to be put on hold
 				new Integer[]{matrixId}, // Matrices to be put on hold
 				new Integer[]{censusOPId, hwOPId}); // Operations to be put on hold
@@ -325,7 +352,7 @@ public class MultiOperations {
 		SwingWorker worker = new SwingWorker() {
 			public Object construct() {
 
-				Threaded_ExtractMatrix thread = new Threaded_ExtractMatrix("Data Extract",
+				Threaded_ExtractMatrix thread = new Threaded_ExtractMatrix(
 						timeStamp,
 						studyId,
 						parentMatrixId,
@@ -339,17 +366,20 @@ public class MultiOperations {
 						sampleCriteria,
 						markerCriteriaFile,
 						sampleCriteriaFile);
+				thread.startThreaded();
 
 				return thread;
 			}
 		};
 
-		SwingWorkerItem swi = new SwingWorkerItem("Data Extract: " + newMatrixName,
+		SwingWorkerItem swi = new SwingWorkerItem(
+				"Data Extract: " + newMatrixName,
 				worker,
 				timeStamp,
 				new Integer[]{studyId},
 				new Integer[]{parentMatrixId});
-		swingWorkerItemList.add(swi,
+		swingWorkerItemList.add(
+				swi,
 				new Integer[]{studyId}, // Studies to be put on hold
 				new Integer[]{parentMatrixId}, // Matrices to be put on hold
 				null); // Operations to be put on hold
@@ -357,7 +387,8 @@ public class MultiOperations {
 		ProcessTab.getSingleton().updateProcessOverview();
 	}
 
-	public static void doTranslateAB12ToACGT(final int studyId,
+	public static void doTranslateAB12ToACGT(
+			final int studyId,
 			final int parentMatrixId,
 			final GenotypeEncoding gtEncoding,
 			final String newMatrixName,
@@ -367,24 +398,27 @@ public class MultiOperations {
 		SwingWorker worker = new SwingWorker() {
 			public Object construct() {
 
-				Threaded_TranslateMatrix thread = new Threaded_TranslateMatrix("Translate Matrix",
+				Threaded_TranslateMatrix thread = new Threaded_TranslateMatrix(
 						timeStamp,
 						studyId,
 						parentMatrixId,
 						gtEncoding,
 						newMatrixName,
 						description);
+				thread.startThreaded();
 
 				return thread;
 			}
 		};
 
-		SwingWorkerItem swi = new SwingWorkerItem("Translate Matrix: " + newMatrixName,
+		SwingWorkerItem swi = new SwingWorkerItem(
+				"Translate Matrix: " + newMatrixName,
 				worker,
 				timeStamp,
 				new Integer[]{studyId},
 				new Integer[]{parentMatrixId});
-		swingWorkerItemList.add(swi,
+		swingWorkerItemList.add(
+				swi,
 				new Integer[]{studyId}, // Studies to be put on hold
 				new Integer[]{parentMatrixId}, // Matrices to be put on hold
 				null); // Operations to be put on hold
@@ -392,7 +426,8 @@ public class MultiOperations {
 		ProcessTab.getSingleton().updateProcessOverview();
 	}
 
-	public static void doExportMatrix(final int studyId,
+	public static void doExportMatrix(
+			final int studyId,
 			final int matrixId,
 			final ExportFormat format,
 			final String phenotype)
@@ -401,22 +436,25 @@ public class MultiOperations {
 		SwingWorker worker = new SwingWorker() {
 			public Object construct() {
 
-				Threaded_ExportMatrix thread = new Threaded_ExportMatrix("Export Matrix",
+				Threaded_ExportMatrix thread = new Threaded_ExportMatrix(
 						timeStamp,
 						matrixId,
 						format,
 						phenotype);
+				thread.startThreaded();
 
 				return thread;
 			}
 		};
 
-		SwingWorkerItem swi = new SwingWorkerItem("Export Matrix ID: " + matrixId,
+		SwingWorkerItem swi = new SwingWorkerItem(
+				"Export Matrix ID: " + matrixId,
 				worker,
 				timeStamp,
 				new Integer[]{studyId},
 				new Integer[]{matrixId});
-		swingWorkerItemList.add(swi,
+		swingWorkerItemList.add(
+				swi,
 				new Integer[]{studyId}, // Studies to be put on hold
 				new Integer[]{matrixId}, // Matrices to be put on hold
 				null); // Operations to be put on hold
@@ -424,7 +462,8 @@ public class MultiOperations {
 		ProcessTab.getSingleton().updateProcessOverview();
 	}
 
-	public static void doMergeMatrixAddMarkers(final int studyId,
+	public static void doMergeMatrixAddMarkers(
+			final int studyId,
 			final int parentMatrixId1,
 			final int parentMatrixId2,
 			final String newMatrixName,
@@ -434,24 +473,27 @@ public class MultiOperations {
 		SwingWorker worker = new SwingWorker() {
 			public Object construct() {
 
-				Threaded_MergeMatricesAddMarkers thread = new Threaded_MergeMatricesAddMarkers("Merge Matrices",
+				Threaded_MergeMatricesAddMarkers thread = new Threaded_MergeMatricesAddMarkers(
 						timeStamp,
 						studyId,
 						parentMatrixId1,
 						parentMatrixId2,
 						newMatrixName,
 						description);
+				thread.startThreaded();
 
 				return thread;
 			}
 		};
 
-		SwingWorkerItem swi = new SwingWorkerItem("Merge Matrices: " + newMatrixName,
+		SwingWorkerItem swi = new SwingWorkerItem(
+				"Merge Matrices: " + newMatrixName,
 				worker,
 				timeStamp,
 				new Integer[]{studyId},
 				new Integer[]{parentMatrixId1, parentMatrixId2});
-		swingWorkerItemList.add(swi,
+		swingWorkerItemList.add(
+				swi,
 				new Integer[]{studyId}, // Studies to be put on hold
 				new Integer[]{parentMatrixId1, parentMatrixId2}, // Matrices to be put on hold
 				null); // Operations to be put on hold
@@ -459,7 +501,8 @@ public class MultiOperations {
 		ProcessTab.getSingleton().updateProcessOverview();
 	}
 
-	public static void doMergeMatrixAddSamples(final int studyId,
+	public static void doMergeMatrixAddSamples(
+			final int studyId,
 			final int parentMatrixId1,
 			final int parentMatrixId2,
 			final String newMatrixName,
@@ -469,24 +512,27 @@ public class MultiOperations {
 		SwingWorker worker = new SwingWorker() {
 			public Object construct() {
 
-				Threaded_MergeMatricesAddSamples thread = new Threaded_MergeMatricesAddSamples("Merge Matrices",
+				Threaded_MergeMatricesAddSamples thread = new Threaded_MergeMatricesAddSamples(
 						timeStamp,
 						studyId,
 						parentMatrixId1,
 						parentMatrixId2,
 						newMatrixName,
 						description);
+				thread.startThreaded();
 
 				return thread;
 			}
 		};
 
-		SwingWorkerItem swi = new SwingWorkerItem("Merge Matrices: " + newMatrixName,
+		SwingWorkerItem swi = new SwingWorkerItem(
+				"Merge Matrices: " + newMatrixName,
 				worker,
 				timeStamp,
 				new Integer[]{studyId},
 				new Integer[]{parentMatrixId1, parentMatrixId2});
-		swingWorkerItemList.add(swi,
+		swingWorkerItemList.add(
+				swi,
 				new Integer[]{studyId}, // Studies to be put on hold
 				new Integer[]{parentMatrixId1, parentMatrixId2}, // Matrices to be put on hold
 				null); // Operations to be put on hold
@@ -504,24 +550,27 @@ public class MultiOperations {
 		SwingWorker worker = new SwingWorker() {
 			public Object construct() {
 
-				Threaded_MergeMatricesAddAll thread = new Threaded_MergeMatricesAddAll("Merge Matrices",
+				Threaded_MergeMatricesAddAll thread = new Threaded_MergeMatricesAddAll(
 						timeStamp,
 						studyId,
 						parentMatrixId1,
 						parentMatrixId2,
 						newMatrixName,
 						description);
+				thread.startThreaded();
 
 				return thread;
 			}
 		};
 
-		SwingWorkerItem swi = new SwingWorkerItem("Merge Matrices: " + newMatrixName,
+		SwingWorkerItem swi = new SwingWorkerItem(
+				"Merge Matrices: " + newMatrixName,
 				worker,
 				timeStamp,
 				new Integer[]{studyId},
 				new Integer[]{parentMatrixId1, parentMatrixId2});
-		swingWorkerItemList.add(swi,
+		swingWorkerItemList.add(
+				swi,
 				new Integer[]{studyId}, // Studies to be put on hold
 				new Integer[]{parentMatrixId1, parentMatrixId2}, // Matrices to be put on hold
 				null); // Operations to be put on hold
@@ -529,7 +578,8 @@ public class MultiOperations {
 		ProcessTab.getSingleton().updateProcessOverview();
 	}
 
-	public static void doStrandFlipMatrix(final int studyId,
+	public static void doStrandFlipMatrix(
+			final int studyId,
 			final int parentMatrixId,
 			final String markerIdentifyer,
 			final File markerFlipFile,
@@ -540,7 +590,7 @@ public class MultiOperations {
 		SwingWorker worker = new SwingWorker() {
 			public Object construct() {
 
-				Threaded_FlipStrandMatrix thread = new Threaded_FlipStrandMatrix("Flip Strand Matrix",
+				Threaded_FlipStrandMatrix thread = new Threaded_FlipStrandMatrix(
 						timeStamp,
 						studyId,
 						parentMatrixId,
@@ -548,17 +598,20 @@ public class MultiOperations {
 						description,
 						markerIdentifyer,
 						markerFlipFile);
+				thread.startThreaded();
 
 				return thread;
 			}
 		};
 
-		SwingWorkerItem swi = new SwingWorkerItem("Flip Strand Matrix ID: " + parentMatrixId,
+		SwingWorkerItem swi = new SwingWorkerItem(
+				"Flip Strand Matrix ID: " + parentMatrixId,
 				worker,
 				timeStamp,
 				new Integer[]{studyId},
 				new Integer[]{parentMatrixId});
-		swingWorkerItemList.add(swi,
+		swingWorkerItemList.add(
+				swi,
 				new Integer[]{studyId}, // Studies to be put on hold
 				new Integer[]{parentMatrixId}, // Matrices to be put on hold
 				null); // Operations to be put on hold
@@ -566,27 +619,31 @@ public class MultiOperations {
 		ProcessTab.getSingleton().updateProcessOverview();
 	}
 
-	public static void updateSampleInfo(final int studyId,
+	public static void updateSampleInfo(
+			final int studyId,
 			final File sampleInfoFile)
 	{
 		final String timeStamp = org.gwaspi.global.Utils.getTimeStamp();
 		SwingWorker worker = new SwingWorker() {
 			public Object construct() {
 
-				Threaded_UpdateSampleInfo thread = new Threaded_UpdateSampleInfo("Update Sample Info",
+				Threaded_UpdateSampleInfo thread = new Threaded_UpdateSampleInfo(
 						timeStamp,
 						studyId,
 						sampleInfoFile);
+				thread.startThreaded();
 
 				return thread;
 			}
 		};
 
-		SwingWorkerItem swi = new SwingWorkerItem("Update Sample Info on Study ID: " + studyId,
+		SwingWorkerItem swi = new SwingWorkerItem(
+				"Update Sample Info on Study ID: " + studyId,
 				worker,
 				timeStamp,
 				new Integer[]{studyId});
-		swingWorkerItemList.add(swi,
+		swingWorkerItemList.add(
+				swi,
 				new Integer[]{studyId}, // Studies to be put on hold
 				null, // Matrices to be put on hold
 				null); // Operations to be put on hold

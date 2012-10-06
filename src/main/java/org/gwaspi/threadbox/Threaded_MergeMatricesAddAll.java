@@ -22,7 +22,6 @@ public class Threaded_MergeMatricesAddAll extends CommonRunnable {
 	private String description;
 
 	public Threaded_MergeMatricesAddAll(
-			String threadName,
 			String timeStamp,
 			int studyId,
 			int parentMatrixId1,
@@ -30,15 +29,13 @@ public class Threaded_MergeMatricesAddAll extends CommonRunnable {
 			String newMatrixName,
 			String description)
 	{
-		super(threadName, timeStamp, "Merging Data");
+		super("Merge Matrices", timeStamp, "Merging Data", "Merging Matrices");
 
 		this.studyId = studyId;
 		this.parentMatrixId1 = parentMatrixId1;
 		this.parentMatrixId2 = parentMatrixId2;
 		this.newMatrixName = newMatrixName;
 		this.description = description;
-
-		startInternal("Merging Matrices");
 	}
 
 	protected Logger createLog() {
