@@ -30,9 +30,6 @@ public abstract class CommonRunnable implements Runnable {
 	public final void startThreaded() {
 
 		try {
-			org.gwaspi.global.Utils.sysoutStart(startDescription);
-			org.gwaspi.global.Config.initPreferences(false, null);
-
 			runner = new Thread(this, threadName); // (1) Create a new thread.
 			runner.start(); // (2) Start the thread.
 			runner.join();
@@ -51,6 +48,10 @@ public abstract class CommonRunnable implements Runnable {
 
 	@Override
 	public void run() {
+
+		org.gwaspi.global.Utils.sysoutStart(startDescription);
+		org.gwaspi.global.Config.initPreferences(false, null);
+
 		SwingWorkerItem thisSwi = SwingWorkerItemList.getSwingWorkerItemByTimeStamp(timeStamp);
 
 		try {
