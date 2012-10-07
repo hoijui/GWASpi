@@ -2,7 +2,6 @@ package org.gwaspi.threadbox;
 
 import org.gwaspi.gui.ProcessTab;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -21,25 +20,15 @@ public class SwingWorkerItemList {
 	private SwingWorkerItemList() {
 	}
 
-	public static void add(
-			SwingWorkerItem swi,
-			Integer[] _parentStudyId,
-			Integer[] _parentMatricesIds,
-			Integer[] _parentOperationsIds)
+	public static void add(SwingWorkerItem swi)
 	{
 		SwingDeleterItemList.purgeDoneDeletes();
 		SwingWorkerItemList.swingWorkerItems.add(swi);
 
 		// LOCK PARENT ITEMS
-		if (_parentStudyId != null) {
-			parentStudyIds.addAll(Arrays.asList(_parentStudyId));
-		}
-		if (_parentMatricesIds != null) {
-			parentMatricesIds.addAll(Arrays.asList(_parentMatricesIds));
-		}
-		if (_parentOperationsIds != null) {
-			parentOperationsIds.addAll(Arrays.asList(_parentOperationsIds));
-		}
+		parentStudyIds.addAll(swi.getParentStudyIds());
+		parentMatricesIds.addAll(swi.getParentMatricesIds());
+		parentOperationsIds.addAll(swi.getParentOperationsIds());
 
 		// CHECK IF ANY ITEM IS ALLREADY RUNNING
 		boolean kickStart = true;
@@ -82,10 +71,7 @@ public class SwingWorkerItemList {
 				currentSwi.setQueueState(QueueState.DONE);
 				currentSwi.setEndTime(org.gwaspi.global.Utils.getShortDateTimeAsString());
 
-				unlockParentItems(
-						currentSwi.getParentStudyIds(),
-						currentSwi.getParentMatricesIds(),
-						currentSwi.getParentOperationsIds());
+				unlockParentItems(currentSwi);
 			}
 		}
 	}
@@ -96,10 +82,7 @@ public class SwingWorkerItemList {
 				currentSwi.setQueueState(QueueState.ABORT);
 				currentSwi.setEndTime(org.gwaspi.global.Utils.getShortDateTimeAsString());
 
-				unlockParentItems(
-						currentSwi.getParentStudyIds(),
-						currentSwi.getParentMatricesIds(),
-						currentSwi.getParentOperationsIds());
+				unlockParentItems(currentSwi);
 			}
 		}
 	}
@@ -111,10 +94,7 @@ public class SwingWorkerItemList {
 			swingWorkerItems.get(rowIdx).setQueueState(QueueState.ABORT);
 			ProcessTab.getSingleton().updateProcessOverview();
 
-			unlockParentItems(
-					currentSwi.getParentStudyIds(),
-					currentSwi.getParentMatricesIds(),
-					currentSwi.getParentOperationsIds());
+			unlockParentItems(currentSwi);
 		}
 	}
 
@@ -124,10 +104,7 @@ public class SwingWorkerItemList {
 				currentSwi.setQueueState(QueueState.ERROR);
 				currentSwi.setEndTime(org.gwaspi.global.Utils.getShortDateTimeAsString());
 
-				unlockParentItems(
-						currentSwi.getParentStudyIds(),
-						currentSwi.getParentMatricesIds(),
-						currentSwi.getParentOperationsIds());
+				unlockParentItems(currentSwi);
 			}
 		}
 	}
@@ -144,21 +121,18 @@ public class SwingWorkerItemList {
 		return !parentOperationsIds.contains(opId);
 	}
 
-	public static void unlockParentItems(Integer[] studyIds, Integer[] matrixIds, Integer[] opIds) {
-		if (studyIds != null) {
-			for (Integer id : studyIds) {
-				parentStudyIds.remove(id);
-			}
+	public static void unlockParentItems(SwingWorkerItem swi) {
+
+		// NOTE We can not use removeAll, because we only want to remove each ID once.
+		// It might still be locked a second time by an other thread.
+		for (Integer studyId : swi.getParentStudyIds()) {
+			parentStudyIds.remove(studyId);
 		}
-		if (matrixIds != null) {
-			for (Integer id : matrixIds) {
-				parentMatricesIds.remove(id);
-			}
+		for (Integer matrixId : swi.getParentMatricesIds()) {
+			parentMatricesIds.remove(matrixId);
 		}
-		if (opIds != null) {
-			for (Integer id : opIds) {
-				parentOperationsIds.remove(id);
-			}
+		for (Integer operationId : swi.getParentOperationsIds()) {
+			parentOperationsIds.remove(operationId);
 		}
 	}
 

@@ -1,5 +1,10 @@
 package org.gwaspi.threadbox;
 
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+
 /**
  *
  * @author Fernando Muñiz Fernandez
@@ -15,34 +20,34 @@ public class SwingWorkerItem {
 	private String startTime;
 	private String endTime;
 	private QueueState queueState;
-	private final Integer[] parentStudyIds;
-	private final Integer[] parentMatricesIds;
-	private final Integer[] parentOperationsIds;
+	private final Collection<Integer> parentStudyIds;
+	private final Collection<Integer> parentMatricesIds;
+	private final Collection<Integer> parentOperationsIds;
 
 	SwingWorkerItem(
 			String swingWorkerName,
 			SwingWorker swingWorker,
 			String timeStamp,
-			Integer[] parentStudyId)
+			Integer[] parentStudyIds)
 	{
-		this(swingWorkerName, swingWorker, timeStamp, parentStudyId, new Integer[] {});
+		this(swingWorkerName, swingWorker, timeStamp, parentStudyIds, new Integer[] {});
 	}
 
 	SwingWorkerItem(
 			String swingWorkerName,
 			SwingWorker swingWorker,
 			String timeStamp,
-			Integer[] parentStudyId,
+			Integer[] parentStudyIds,
 			Integer[] parentMatricesIds)
 	{
-		this(swingWorkerName, swingWorker, timeStamp, parentStudyId, parentMatricesIds, new Integer[] {});
+		this(swingWorkerName, swingWorker, timeStamp, parentStudyIds, parentMatricesIds, new Integer[] {});
 	}
 
 	SwingWorkerItem(
 			String swingWorkerName,
 			SwingWorker swingWorker,
 			String timeStamp,
-			Integer[] parentStudyId,
+			Integer[] parentStudyIds,
 			Integer[] parentMatricesIds,
 			Integer[] parentOperationsIds)
 	{
@@ -51,9 +56,9 @@ public class SwingWorkerItem {
 		this.swingWorkerName = swingWorkerName;
 		this.swingWorker = swingWorker;
 		this.queueState = QueueState.QUEUED;
-		this.parentStudyIds = parentStudyId;
-		this.parentMatricesIds = parentMatricesIds;
-		this.parentOperationsIds = parentOperationsIds;
+		this.parentStudyIds = Collections.unmodifiableCollection(Arrays.asList(parentStudyIds));
+		this.parentMatricesIds = Collections.unmodifiableCollection(Arrays.asList(parentMatricesIds));
+		this.parentOperationsIds = Collections.unmodifiableCollection(Arrays.asList(parentOperationsIds));
 	}
 
 	public QueueState getQueueState() {
@@ -80,15 +85,15 @@ public class SwingWorkerItem {
 		return swingWorkerName;
 	}
 
-	public Integer[] getParentMatricesIds() {
+	public Collection<Integer> getParentMatricesIds() {
 		return parentMatricesIds;
 	}
 
-	public Integer[] getParentOperationsIds() {
+	public Collection<Integer> getParentOperationsIds() {
 		return parentOperationsIds;
 	}
 
-	public Integer[] getParentStudyIds() {
+	public Collection<Integer> getParentStudyIds() {
 		return parentStudyIds;
 	}
 

@@ -46,10 +46,7 @@ public class MultiOperations {
 				timeStamp,
 				new Integer[]{studyId},
 				new Integer[]{matrixId});
-		SwingWorkerItemList.add(swi,
-				new Integer[]{studyId}, // Studies to be put on hold
-				new Integer[]{matrixId}, // Matrices to be put on hold
-				null); // Operations to be put on hold
+		SwingWorkerItemList.add(swi);
 
 		ProcessTab.getSingleton().updateProcessOverview();
 	}
@@ -82,12 +79,7 @@ public class MultiOperations {
 				worker,
 				timeStamp,
 				new Integer[]{loadDescription.getStudyId()});
-
-		SwingWorkerItemList.add(
-				swi,
-				new Integer[]{loadDescription.getStudyId()}, // Studies to be put on hold
-				null, // Matrices to be put on hold
-				null); // Operations to be put on hold
+		SwingWorkerItemList.add(swi);
 
 		ProcessTab.getSingleton().updateProcessOverview();
 	}
@@ -121,11 +113,7 @@ public class MultiOperations {
 				timeStamp,
 				new Integer[]{studyId},
 				new Integer[]{matrixId});
-		SwingWorkerItemList.add(
-				swi,
-				new Integer[]{studyId}, // Studies to be put on hold
-				new Integer[]{matrixId}, // Matrices to be put on hold
-				null); // Operations to be put on hold
+		SwingWorkerItemList.add(swi);
 
 		ProcessTab.getSingleton().updateProcessOverview();
 	}
@@ -155,11 +143,7 @@ public class MultiOperations {
 				timeStamp,
 				new Integer[]{studyId},
 				new Integer[]{matrixId});
-		SwingWorkerItemList.add(
-				swi,
-				new Integer[]{studyId}, // Studies to be put on hold
-				new Integer[]{matrixId}, // Matrices to be put on hold
-				null); // Operations to be put on hold
+		SwingWorkerItemList.add(swi);
 
 		ProcessTab.getSingleton().updateProcessOverview();
 	}
@@ -191,11 +175,7 @@ public class MultiOperations {
 				timeStamp,
 				new Integer[]{studyId},
 				new Integer[]{matrixId});
-		SwingWorkerItemList.add(
-				swi,
-				new Integer[]{studyId}, // Studies to be put on hold
-				new Integer[]{matrixId}, // Matrices to be put on hold
-				null); // Operations to be put on hold
+		SwingWorkerItemList.add(swi);
 
 		ProcessTab.getSingleton().updateProcessOverview();
 	}
@@ -234,11 +214,7 @@ public class MultiOperations {
 				new Integer[]{studyId},
 				new Integer[]{matrixId},
 				new Integer[]{censusOPId, hwOPId});
-		SwingWorkerItemList.add(
-				swi,
-				new Integer[]{studyId}, // Studies to be put on hold
-				new Integer[]{matrixId}, // Matrices to be put on hold
-				new Integer[]{censusOPId, hwOPId}); // Operations to be put on hold
+		SwingWorkerItemList.add(swi);
 
 		ProcessTab.getSingleton().updateProcessOverview();
 	}
@@ -277,11 +253,7 @@ public class MultiOperations {
 				new Integer[]{studyId},
 				new Integer[]{matrixId},
 				new Integer[]{censusOPId, hwOPId});
-		SwingWorkerItemList.add(
-				swi,
-				new Integer[]{studyId}, // Studies to be put on hold
-				new Integer[]{matrixId}, // Matrices to be put on hold
-				new Integer[]{censusOPId, hwOPId}); // Operations to be put on hold
+		SwingWorkerItemList.add(swi);
 
 		ProcessTab.getSingleton().updateProcessOverview();
 	}
@@ -320,11 +292,7 @@ public class MultiOperations {
 				new Integer[]{studyId},
 				new Integer[]{matrixId},
 				new Integer[]{censusOPId, hwOPId});
-		SwingWorkerItemList.add(
-				swi,
-				new Integer[]{studyId}, // Studies to be put on hold
-				new Integer[]{matrixId}, // Matrices to be put on hold
-				new Integer[]{censusOPId, hwOPId}); // Operations to be put on hold
+		SwingWorkerItemList.add(swi);
 
 		ProcessTab.getSingleton().updateProcessOverview();
 	}
@@ -375,11 +343,7 @@ public class MultiOperations {
 				timeStamp,
 				new Integer[]{studyId},
 				new Integer[]{parentMatrixId});
-		SwingWorkerItemList.add(
-				swi,
-				new Integer[]{studyId}, // Studies to be put on hold
-				new Integer[]{parentMatrixId}, // Matrices to be put on hold
-				null); // Operations to be put on hold
+		SwingWorkerItemList.add(swi);
 
 		ProcessTab.getSingleton().updateProcessOverview();
 	}
@@ -414,11 +378,7 @@ public class MultiOperations {
 				timeStamp,
 				new Integer[]{studyId},
 				new Integer[]{parentMatrixId});
-		SwingWorkerItemList.add(
-				swi,
-				new Integer[]{studyId}, // Studies to be put on hold
-				new Integer[]{parentMatrixId}, // Matrices to be put on hold
-				null); // Operations to be put on hold
+		SwingWorkerItemList.add(swi);
 
 		ProcessTab.getSingleton().updateProcessOverview();
 	}
@@ -450,11 +410,7 @@ public class MultiOperations {
 				timeStamp,
 				new Integer[]{studyId},
 				new Integer[]{matrixId});
-		SwingWorkerItemList.add(
-				swi,
-				new Integer[]{studyId}, // Studies to be put on hold
-				new Integer[]{matrixId}, // Matrices to be put on hold
-				null); // Operations to be put on hold
+		SwingWorkerItemList.add(swi);
 
 		ProcessTab.getSingleton().updateProcessOverview();
 	}
@@ -489,11 +445,7 @@ public class MultiOperations {
 				timeStamp,
 				new Integer[]{studyId},
 				new Integer[]{parentMatrixId1, parentMatrixId2});
-		SwingWorkerItemList.add(
-				swi,
-				new Integer[]{studyId}, // Studies to be put on hold
-				new Integer[]{parentMatrixId1, parentMatrixId2}, // Matrices to be put on hold
-				null); // Operations to be put on hold
+		SwingWorkerItemList.add(swi);
 
 		ProcessTab.getSingleton().updateProcessOverview();
 	}
@@ -528,11 +480,7 @@ public class MultiOperations {
 				timeStamp,
 				new Integer[]{studyId},
 				new Integer[]{parentMatrixId1, parentMatrixId2});
-		SwingWorkerItemList.add(
-				swi,
-				new Integer[]{studyId}, // Studies to be put on hold
-				new Integer[]{parentMatrixId1, parentMatrixId2}, // Matrices to be put on hold
-				null); // Operations to be put on hold
+		SwingWorkerItemList.add(swi);
 
 		ProcessTab.getSingleton().updateProcessOverview();
 	}
@@ -566,11 +514,7 @@ public class MultiOperations {
 				timeStamp,
 				new Integer[]{studyId},
 				new Integer[]{parentMatrixId1, parentMatrixId2});
-		SwingWorkerItemList.add(
-				swi,
-				new Integer[]{studyId}, // Studies to be put on hold
-				new Integer[]{parentMatrixId1, parentMatrixId2}, // Matrices to be put on hold
-				null); // Operations to be put on hold
+		SwingWorkerItemList.add(swi);
 
 		ProcessTab.getSingleton().updateProcessOverview();
 	}
@@ -607,11 +551,7 @@ public class MultiOperations {
 				timeStamp,
 				new Integer[]{studyId},
 				new Integer[]{parentMatrixId});
-		SwingWorkerItemList.add(
-				swi,
-				new Integer[]{studyId}, // Studies to be put on hold
-				new Integer[]{parentMatrixId}, // Matrices to be put on hold
-				null); // Operations to be put on hold
+		SwingWorkerItemList.add(swi);
 
 		ProcessTab.getSingleton().updateProcessOverview();
 	}
@@ -639,11 +579,7 @@ public class MultiOperations {
 				worker,
 				timeStamp,
 				new Integer[]{studyId});
-		SwingWorkerItemList.add(
-				swi,
-				new Integer[]{studyId}, // Studies to be put on hold
-				null, // Matrices to be put on hold
-				null); // Operations to be put on hold
+		SwingWorkerItemList.add(swi);
 
 		ProcessTab.getSingleton().updateProcessOverview();
 	}

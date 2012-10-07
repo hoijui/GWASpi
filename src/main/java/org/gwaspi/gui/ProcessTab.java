@@ -236,15 +236,15 @@ public class ProcessTab extends JPanel {
 		Object[][] spreadSheet = new Object[swingWorkerItemsAL.size() + swingDeleterItemsAL.size()][8];
 		int count = 0;
 		for (int i = count; i < swingWorkerItemsAL.size(); i++) {
-			Integer[] studyIds = swingWorkerItemsAL.get(i).getParentStudyIds();
-			StringBuilder sb = new StringBuilder(studyIds[0].toString());
-			for (int j = 1; j < studyIds.length; j++) {
-				sb.append(", ");
-				sb.append(studyIds[j].toString());
+			StringBuilder studyIdsStr = new StringBuilder();
+			for (Integer studyId : swingWorkerItemsAL.get(i).getParentStudyIds()) {
+				studyIdsStr.append(", ");
+				studyIdsStr.append(studyId.toString());
 			}
+			studyIdsStr.delete(0, 2); // delete the first ", "
 
 			spreadSheet[i][0] = i;
-			spreadSheet[i][1] = sb != null ? sb.toString() : " - ";
+			spreadSheet[i][1] = studyIdsStr != null ? studyIdsStr.toString() : " - ";
 			spreadSheet[i][2] = swingWorkerItemsAL.get(i).getSwingWorkerName() != null ? swingWorkerItemsAL.get(i).getSwingWorkerName() : " - ";
 			spreadSheet[i][3] = swingWorkerItemsAL.get(i).getLaunchTime() != null ? swingWorkerItemsAL.get(i).getLaunchTime() : " - ";
 			spreadSheet[i][4] = swingWorkerItemsAL.get(i).getStartTime() != null ? swingWorkerItemsAL.get(i).getStartTime() : " - ";
