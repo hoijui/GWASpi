@@ -34,7 +34,7 @@ public class CreateNetcdf {
 			int sampleSetSize,
 			int markerSetSize) throws InvalidRangeException, IOException {
 
-		///////////// CREATE netCDF-3 FILE ////////////
+		// CREATE netCDF-3 FILE
 		String genotypesFolder = "/media/data/work/GWASpi/genotypes";
 		File pathToStudy = new File(genotypesFolder + "/STUDY_1");
 		int gtSpan = cNetCDF.Strides.STRIDE_GT;

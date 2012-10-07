@@ -32,7 +32,7 @@ public class MatrixExporter {
 
 	public MatrixExporter(int _rdMatrixId) throws IOException, InvalidRangeException {
 
-		/////////// INIT EXTRACTOR OBJECTS //////////
+		// INIT EXTRACTOR OBJECTS
 
 		rdMatrixId = _rdMatrixId;
 		rdMatrixMetadata = new MatrixMetadata(rdMatrixId);

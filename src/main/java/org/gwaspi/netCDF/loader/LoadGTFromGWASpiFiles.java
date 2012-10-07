@@ -108,7 +108,7 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 
 		MatrixMetadata importMatrixMetadata = new MatrixMetadata(loadDescription.getGtDirPath(), loadDescription.getStudyId(), loadDescription.getFriendlyName());
 
-		///////////// CREATE netCDF-3 FILE ////////////
+		// CREATE netCDF-3 FILE
 		StringBuilder descSB = new StringBuilder(Text.Matrix.descriptionHeader1);
 		descSB.append(org.gwaspi.global.Utils.getShortDateTimeAsString());
 		if (!loadDescription.getDescription().isEmpty()) {

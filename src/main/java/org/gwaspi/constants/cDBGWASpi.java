@@ -22,7 +22,7 @@ public class cDBGWASpi {
 	/* ************************
 	 * TABLE DEFINITION BLOCK
 	 * ************************ */
-	/////////////* MANAGEMENT TABLES *//////////////
+	// * MANAGEMENT TABLES *
     /* STUDIES */
 	public static final String STUDY_PREFIX = "STUDY_";
 	public static final String f_ID = "id";

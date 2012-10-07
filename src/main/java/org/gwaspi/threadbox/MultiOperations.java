@@ -298,7 +298,7 @@ public class MultiOperations {
 	}
 	//</editor-fold>
 
-	//<editor-fold defaultstate="collapsed/expanded" desc="DATA MANAGEMENT">
+	//<editor-fold defaultstate="collapsed" desc="DATA MANAGEMENT">
 	public static void doExtractData(
 			final int studyId,
 			final int parentMatrixId,

@@ -89,7 +89,7 @@ public class LoadGTFromPlinkBinaryFiles implements GenotypesLoader {
 
 		log.info("Done initializing sorted MarkerSetMap at " + startTime);
 
-		///////////// CREATE netCDF-3 FILE ////////////
+		// CREATE netCDF-3 FILE
 		StringBuilder descSB = new StringBuilder(Text.Matrix.descriptionHeader1);
 		descSB.append(org.gwaspi.global.Utils.getShortDateTimeAsString());
 		if (!loadDescription.getDescription().isEmpty()) {
@@ -353,7 +353,7 @@ public class LoadGTFromPlinkBinaryFiles implements GenotypesLoader {
 			List<byte[]> genotypesAL = new ArrayList<byte[]>();
 			while (itMarkerSet.hasNext()) {
 				try {
-					////////////////// NEW SNP //////////////
+					// NEW SNP
 					//PURGE Map
 					while (itSampleSet.hasNext()) {
 						String key = itSampleSet.next();
@@ -389,7 +389,7 @@ public class LoadGTFromPlinkBinaryFiles implements GenotypesLoader {
 						}
 					}
 
-					/////////// WRITING GENOTYPE DATA INTO netCDF FILE ////////////
+					// WRITING GENOTYPE DATA INTO netCDF FILE
 					if (guessedGTCode.equals(GenotypeEncoding.UNKNOWN)) {
 						guessedGTCode = Utils.detectGTEncoding(sampleSetMap);
 					} else if (guessedGTCode.equals(GenotypeEncoding.O12)) {

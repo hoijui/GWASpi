@@ -103,7 +103,7 @@ public abstract class AbstractLoadGTFromFiles implements GenotypesLoader {
 
 		log.info("Done initializing sorted MarkerSetMap at {}", org.gwaspi.global.Utils.getMediumDateTimeAsString());
 
-		///////////// CREATE netCDF-3 FILE ////////////
+		// CREATE netCDF-3 FILE
 		StringBuilder descSB = new StringBuilder(Text.Matrix.descriptionHeader1);
 		descSB.append(org.gwaspi.global.Utils.getShortDateTimeAsString());
 		if (!loadDescription.getDescription().isEmpty()) {

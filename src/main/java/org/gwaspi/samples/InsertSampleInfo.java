@@ -29,9 +29,7 @@ public class InsertSampleInfo {
 	}
 
 	public static List<String> processData(Integer studyId, Map<String, Object> sampleInfoMap) throws IOException {
-		/////////////////////////////////////////////////
-		///////// Retrieving Samplelist from DB /////////
-		/////////////////////////////////////////////////
+		// Retrieving Samplelist from DB
 		List<String> samplesAllreadyInDBAL = new ArrayList<String>();
 		String dbName = cDBGWASpi.DB_DATACENTER;
 		db = ServiceLocator.getDbManager(dbName);
@@ -39,7 +37,7 @@ public class InsertSampleInfo {
 			List<Map<String, Object>> rs = SampleManager.selectSampleIDList(studyId);
 			for (int i = 0; i < rs.size(); i++) // loop through rows of result set
 			{
-				//PREVENT PHANTOM-DB READS EXCEPTIONS
+				// PREVENT PHANTOM-DB READS EXCEPTIONS
 				if (!rs.isEmpty() && rs.get(i).size() == 1) {
 					samplesAllreadyInDBAL.add(rs.get(i).get(cDBSamples.f_SAMPLE_ID).toString());
 				}
@@ -50,10 +48,10 @@ public class InsertSampleInfo {
 
 		List<String> result = new ArrayList<String>();
 		if (!sampleInfoMap.isEmpty()) {
-			//FIRST UPDATE SAMPLES ALLREADY IN DB
+			// FIRST UPDATE SAMPLES ALLREADY IN DB
 			updateSamplesByHashMap(studyId, sampleInfoMap, samplesAllreadyInDBAL);
 
-			//NEXT INSERT ANY NEW SAMPLES
+			// NEXT INSERT ANY NEW SAMPLES
 			result = insertSamplesByHashMap(studyId, sampleInfoMap, samplesAllreadyInDBAL);
 		}
 		return result;
@@ -82,17 +80,17 @@ public class InsertSampleInfo {
 				db.insertValuesInTable(cDBGWASpi.SCH_SAMPLES,
 						cDBSamples.T_SAMPLES_INFO,
 						cDBSamples.F_INSERT_SAMPLES_ALLINFO,
-						new Object[]{sampleId, //SampleID (max 32 chars, null=unknown)
-							cVals[GWASpi.familyId], //FamilyID (max 32 chars, null=unknown)
-							cVals[GWASpi.fatherId], //FatherID (max 32 chars, null=unknown)
-							cVals[GWASpi.motherId], //MotherID (max 32 chars, null=unknown)
-							cVals[GWASpi.sex], //Sex (1=male,2=female,0=unknown)
-							affection, //Affection (1=unaffected,2=affected,0=unknown)
-							cVals[GWASpi.category], //category
-							cVals[GWASpi.disease], //disease
-							cVals[GWASpi.population], //population
-							cVals[GWASpi.age], //age
-							studyId});  //POOL ID
+						new Object[]{sampleId, // SampleID (max 32 chars, null=unknown)
+							cVals[GWASpi.familyId], // FamilyID (max 32 chars, null=unknown)
+							cVals[GWASpi.fatherId], // FatherID (max 32 chars, null=unknown)
+							cVals[GWASpi.motherId], // MotherID (max 32 chars, null=unknown)
+							cVals[GWASpi.sex], // Sex (1=male,2=female,0=unknown)
+							affection, // Affection (1=unaffected,2=affected,0=unknown)
+							cVals[GWASpi.category], // category
+							cVals[GWASpi.disease], // disease
+							cVals[GWASpi.population], // population
+							cVals[GWASpi.age], // age
+							studyId});  // POOL ID
 			}
 		}
 
@@ -131,17 +129,17 @@ public class InsertSampleInfo {
 				db.updateTable(cDBGWASpi.SCH_SAMPLES,
 						cDBSamples.T_SAMPLES_INFO,
 						cDBSamples.F_UPDATE_SAMPLES_ALLINFO,
-						new Object[]{cVals[0], //FamilyID (max 32 chars, null=unknown)
-							cVals[2], //FatherID (max 32 chars, null=unknown)
-							cVals[3], //MotherID (max 32 chars, null=unknown)
-							cVals[4], //Sex (1=male,2=female,0=unknown)
-							affection, //Affection (1=unaffected,2=affected,0=unknown)
-							cVals[6], //category
-							cVals[7], //disease
-							cVals[8], //population
-							Integer.parseInt(cVals[9]), //age
+						new Object[]{cVals[0], // FamilyID (max 32 chars, null=unknown)
+							cVals[2], // FatherID (max 32 chars, null=unknown)
+							cVals[3], // MotherID (max 32 chars, null=unknown)
+							cVals[4], // Sex (1=male,2=female,0=unknown)
+							affection, // Affection (1=unaffected,2=affected,0=unknown)
+							cVals[6], // category
+							cVals[7], // disease
+							cVals[8], // population
+							Integer.parseInt(cVals[9]), // age
 							studyId.toString(),
-							100}, //status_id_fk = 100 (OK)
+							100}, // status_id_fk = 100 (OK)
 						new String[]{cDBSamples.f_SAMPLE_ID, cDBSamples.f_POOL_ID},
 						new String[]{cVals[1].toString(), studyId.toString()});
 				result++;

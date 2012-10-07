@@ -93,7 +93,7 @@ public class LoadGTFromIlluminaLGENFiles implements GenotypesLoader {
 
 		log.info("Done initializing sorted MarkerSetMap at {}", org.gwaspi.global.Utils.getMediumDateTimeAsString());
 
-		///////////// CREATE netCDF-3 FILE ////////////
+		// CREATE netCDF-3 FILE
 		StringBuilder descSB = new StringBuilder(Text.Matrix.descriptionHeader1);
 		descSB.append(org.gwaspi.global.Utils.getShortDateTimeAsString());
 		if (!loadDescription.getDescription().isEmpty()) {
@@ -302,7 +302,7 @@ public class LoadGTFromIlluminaLGENFiles implements GenotypesLoader {
 			GenotypeEncoding guessedGTCode)
 			throws IOException, InvalidRangeException
 	{
-		////////////// LOAD INPUT FILE ////////////////
+		// LOAD INPUT FILE
 		FileReader inputFileReader = new FileReader(file);
 		BufferedReader inputBufferReader = new BufferedReader(inputFileReader);
 
@@ -351,7 +351,7 @@ public class LoadGTFromIlluminaLGENFiles implements GenotypesLoader {
 						tempMarkerSet.clear();
 					}
 
-					/////////// WRITING GENOTYPE DATA INTO netCDF FILE ////////////
+					// WRITING GENOTYPE DATA INTO netCDF FILE
 					int sampleIndex = samplesAL.indexOf(currentSampleId);
 					if (sampleIndex != -1) {  //CHECK IF CURRENT FILE IS NOT PRESENT IN SAMPLEINFO FILE!!
 						org.gwaspi.netCDF.operations.Utils.saveSingleSampleGTsToMatrix(ncfile, sortedMarkerSetMap, sampleIndex);
@@ -393,7 +393,7 @@ public class LoadGTFromIlluminaLGENFiles implements GenotypesLoader {
 			guessedGTCode = Utils.detectGTEncoding(sortedMarkerSetMap);
 		}
 
-		/////////// WRITING GENOTYPE DATA INTO netCDF FILE ////////////
+		// WRITING GENOTYPE DATA INTO netCDF FILE
 		int sampleIndex = samplesAL.indexOf(currentSampleId);
 		if (sampleIndex != -1) {  //CHECK IF CURRENT FILE IS NOT PRESENT IN SAMPLEINFO FILE!!
 			org.gwaspi.netCDF.operations.Utils.saveSingleSampleGTsToMatrix(ncfile, sortedMarkerSetMap, sampleIndex);

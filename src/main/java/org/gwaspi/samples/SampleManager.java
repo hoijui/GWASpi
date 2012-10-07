@@ -23,13 +23,10 @@ public class SampleManager {
 	private SampleManager() {
 	}
 
-	///////////////////////////////////////////
-	//////////// SAMPLE INFO TABLE ////////////
-	//////////////////////////////////////////
 	public static String createSamplesInfoTable(DbManager db) {
 		boolean result = false;
 		try {
-			//CREATE SAMPLE table in given SCHEMA
+			// CREATE SAMPLE table in given SCHEMA
 			db.createTable(cDBGWASpi.SCH_SAMPLES,
 					cDBSamples.T_SAMPLES_INFO,
 					cDBSamples.T_CREATE_SAMPLES_INFO);

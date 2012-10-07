@@ -8,9 +8,7 @@ package org.gwaspi.constants;
  */
 public class cDBMatrix {
 
-	///////////////////////////////////////////////////
-	/////////////////* MATRIX METADATA *///////////////
-	///////////////////////////////////////////////////
+	// * MATRIX METADATA *
 	public static final String f_ID = "id";
 	public static final String f_MATRIX_NAME = "matrix_name";
 	public static final String f_NETCDF_NAME = "netcdf_name";

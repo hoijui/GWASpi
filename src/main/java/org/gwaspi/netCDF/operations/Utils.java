@@ -33,7 +33,6 @@ public class Utils {
 	private Utils() {
 	}
 
-	//////// HELPER METHODS ////////
 	//<editor-fold defaultstate="collapsed" desc="SAVERS">
 	public static boolean saveCharMapKeyToWrMatrix(NetcdfFileWriteable wrNcFile, Map<String, Object> wrMap, String variable, int varStride) {
 		boolean result = false;

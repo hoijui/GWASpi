@@ -11,9 +11,7 @@ package org.gwaspi.constants;
 public class cDBMarkers {
 
 	// <editor-fold defaultstate="collapsed" desc="MARKER-SET METADATA">
-	///////////////////////////////////////////////////
-	////////////////* MARKER-SET METADATA */////////////////
-	///////////////////////////////////////////////////
+	// * MARKER-SET METADATA *
 	// This table contains info about Common marker Arrays or Subset Arrays
 	public static final String T_MARKERSET_METADATA = "MARKERSET_METADATA";
 	public static final String[] T_CREATE_MARKERSET_METADATA = new String[] {

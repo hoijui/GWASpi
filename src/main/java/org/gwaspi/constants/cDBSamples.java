@@ -9,9 +9,7 @@ package org.gwaspi.constants;
 public class cDBSamples {
 
 	// <editor-fold defaultstate="collapsed" desc="ALL SAMPLES INFO">
-	//////////////////////////////////////////////////////
-	//////////////////* ALL SAMPLES INFO *////////////////
-	//////////////////////////////////////////////////////
+	// * ALL SAMPLES INFO *
 	public static final int STATUS_DUMMY = 11;
 	public static final String f_ID = "order_id";
 	public static final String f_SAMPLE_ID = "sample_id";

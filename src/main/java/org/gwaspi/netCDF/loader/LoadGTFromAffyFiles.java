@@ -116,7 +116,7 @@ public class LoadGTFromAffyFiles implements GenotypesLoader {
 
 		log.info("Done initializing sorted MarkerSetMap at {}", org.gwaspi.global.Utils.getMediumDateTimeAsString());
 
-		///////////// CREATE netCDF-3 FILE ////////////
+		// CREATE netCDF-3 FILE
 		StringBuilder descSB = new StringBuilder(Text.Matrix.descriptionHeader1);
 		descSB.append(org.gwaspi.global.Utils.getShortDateTimeAsString());
 		if (!loadDescription.getDescription().isEmpty()) {
@@ -361,7 +361,7 @@ public class LoadGTFromAffyFiles implements GenotypesLoader {
 			sortedMarkerSetMap.put(markerId, cNetCDF.Defaults.DEFAULT_GT);
 		}
 
-		////////////// LOAD INPUT FILE ////////////////
+		// LOAD INPUT FILE
 		//GET SAMPLEID
 		String sampleId = getAffySampleId(file);
 
@@ -416,7 +416,7 @@ public class LoadGTFromAffyFiles implements GenotypesLoader {
 			guessedGTCode = Utils.detectGTEncoding(sortedMarkerSetMap);
 		}
 
-		/////////// WRITING GENOTYPE DATA INTO netCDF FILE ////////////
+		// WRITING GENOTYPE DATA INTO netCDF FILE
 		int sampleIndex = samplesAL.indexOf(sampleId);
 		if (sampleIndex != -1) { // CHECK IF CURRENT FILE IS NOT PRESENT IN SAMPLEINFO FILE!!
 			org.gwaspi.netCDF.operations.Utils.saveSingleSampleGTsToMatrix(ncfile, sortedMarkerSetMap, sampleIndex);

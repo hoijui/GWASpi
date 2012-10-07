@@ -71,7 +71,7 @@ public class LoadGTFromHapmapFiles_sampleSet extends LoadGTFromHapmapFiles imple
 
 		log.info("Done initializing sorted MarkerSetMap at {}", org.gwaspi.global.Utils.getMediumDateTimeAsString());
 
-		///////////// CREATE netCDF-3 FILE ////////////
+		// CREATE netCDF-3 FILE
 		StringBuilder descSB = new StringBuilder(Text.Matrix.descriptionHeader1);
 		descSB.append(org.gwaspi.global.Utils.getShortDateTimeAsString());
 		if (!loadDescription.getDescription().isEmpty()) {
@@ -296,7 +296,7 @@ public class LoadGTFromHapmapFiles_sampleSet extends LoadGTFromHapmapFiles imple
 				guessedGTCode = Utils.detectGTEncoding(sampleInfo);
 			}
 
-			/////////// WRITING GENOTYPE DATA INTO netCDF FILE ////////////
+			// WRITING GENOTYPE DATA INTO netCDF FILE
 			// TODO BEST TO USE HYPERSLAB
 			org.gwaspi.netCDF.operations.Utils.saveSingleMarkerGTsToMatrix(ncfile, markerSetMap, markerIdIndex);
 
