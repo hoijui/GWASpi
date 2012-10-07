@@ -23,16 +23,16 @@ import org.gwaspi.threadbox.SwingDeleterItem.DeleteTarget;
 public class SwingDeleterItemList {
 
 	private static final Logger log = LoggerFactory.getLogger(SwingDeleterItemList.class);
-	protected static List<SwingDeleterItem> swingDeleterItemsAL = new ArrayList<SwingDeleterItem>();
+	private static List<SwingDeleterItem> swingDeleterItems = new ArrayList<SwingDeleterItem>();
 
-	SwingDeleterItemList() {
+	private SwingDeleterItemList() {
 	}
 
 	public static void add(SwingDeleterItem sdi) {
 
 		//SwingDeleterItemList.purgeDoneDeletes();
 		boolean addMe = true;
-		for (SwingDeleterItem allreadySdi : swingDeleterItemsAL) {
+		for (SwingDeleterItem allreadySdi : swingDeleterItems) {
 			if (allreadySdi.getStudyId() == sdi.getStudyId()
 					&& allreadySdi.getMatrixId() == sdi.getMatrixId()
 					&& allreadySdi.getOpId() == sdi.getOpId()) {
@@ -41,7 +41,7 @@ public class SwingDeleterItemList {
 		}
 		if (addMe) {
 			// Add at start of list
-			SwingDeleterItemList.swingDeleterItemsAL.add(SwingDeleterItemList.swingDeleterItemsAL.size(), sdi);
+			swingDeleterItems.add(swingDeleterItems.size(), sdi);
 		}
 
 		// CHECK IF ANY ITEM IS RUNNING, START PROCESSING NEWLY ADDED SwingDeleter
@@ -55,7 +55,7 @@ public class SwingDeleterItemList {
 			StartGWASpi.mainGUIFrame.setCursor(CursorUtils.waitCursor);
 		}
 
-		for (SwingDeleterItem currentSdi : swingDeleterItemsAL) {
+		for (SwingDeleterItem currentSdi : swingDeleterItems) {
 			if (currentSdi.getQueueState().equals(QueueState.QUEUED)) {
 				DeleteTarget deleteTarget = currentSdi.getDeleteTarget();
 
@@ -134,12 +134,12 @@ public class SwingDeleterItemList {
 	}
 
 	public static List<SwingDeleterItem> getSwingDeleterItems() {
-		return swingDeleterItemsAL;
+		return swingDeleterItems;
 	}
 
 	public static void flagCurrentItemAborted() {
 		boolean idle = false;
-		for (SwingDeleterItem currentSdi : swingDeleterItemsAL) {
+		for (SwingDeleterItem currentSdi : swingDeleterItems) {
 			if (!idle && currentSdi.getQueueState().equals(QueueState.PROCESSING)) {
 				idle = true;
 				currentSdi.setQueueState(QueueState.ABORT);
@@ -150,7 +150,7 @@ public class SwingDeleterItemList {
 
 	public static void flagCurrentItemError() {
 		boolean idle = false;
-		for (SwingDeleterItem currentSdi : swingDeleterItemsAL) {
+		for (SwingDeleterItem currentSdi : swingDeleterItems) {
 			if (!idle && currentSdi.getQueueState().equals(QueueState.PROCESSING)) {
 				idle = true;
 				currentSdi.setQueueState(QueueState.ERROR);
@@ -161,7 +161,7 @@ public class SwingDeleterItemList {
 
 	public static void flagCurrentItemDeleted() {
 		boolean idle = false;
-		for (SwingDeleterItem currentSdi : swingDeleterItemsAL) {
+		for (SwingDeleterItem currentSdi : swingDeleterItems) {
 			if (!idle && currentSdi.getQueueState().equals(QueueState.PROCESSING)) {
 				idle = true;
 				currentSdi.setQueueState(QueueState.DELETED);
@@ -171,12 +171,12 @@ public class SwingDeleterItemList {
 	}
 
 	public static int getSwingDeleterItemsALsize() {
-		return swingDeleterItemsAL.size();
+		return swingDeleterItems.size();
 	}
 
 	public static int getSwingDeleterPendingItemsNb() {
 		int result = 0;
-		for (SwingDeleterItem currentSdi : SwingDeleterItemList.getSwingDeleterItems()) {
+		for (SwingDeleterItem currentSdi : getSwingDeleterItems()) {
 			if (currentSdi.getQueueState().equals(QueueState.PROCESSING)) {
 				result++;
 			}
@@ -188,22 +188,22 @@ public class SwingDeleterItemList {
 	}
 
 	public static void purgeDoneDeletes() {
-		for (int i = swingDeleterItemsAL.size(); i > 0; i--) {
-			if (swingDeleterItemsAL.get(i - 1).getQueueState().equals(QueueState.DELETED)) {
-				swingDeleterItemsAL.remove(i - 1);
+		for (int i = swingDeleterItems.size(); i > 0; i--) {
+			if (swingDeleterItems.get(i - 1).getQueueState().equals(QueueState.DELETED)) {
+				swingDeleterItems.remove(i - 1);
 			}
 		}
 	}
 
 	public static void abortSwingWorker(int idx) {
-		QueueState queueState = swingDeleterItemsAL.get(idx).getQueueState();
+		QueueState queueState = swingDeleterItems.get(idx).getQueueState();
 		if (queueState.equals(QueueState.PROCESSING) || queueState.equals(QueueState.QUEUED)) {
-			swingDeleterItemsAL.get(idx).setQueueState(QueueState.ABORT);
+			swingDeleterItems.get(idx).setQueueState(QueueState.ABORT);
 
 			log.info("");
 			log.info(Text.Processes.abortingProcess);
-			log.info(swingDeleterItemsAL.get(idx).getDescription());
-			log.info("Delete Launch Time: {}", swingDeleterItemsAL.get(idx).getLaunchTime());
+			log.info(swingDeleterItems.get(idx).getDescription());
+			log.info("Delete Launch Time: {}", swingDeleterItems.get(idx).getLaunchTime());
 			log.info("");
 			ProcessTab.getSingleton().updateProcessOverview();
 		}

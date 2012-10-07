@@ -18,10 +18,10 @@ public class SwingWorkerItemList {
 	private static List<Integer> parentMatricesIds = new ArrayList<Integer>();
 	private static List<Integer> parentOperationsIds = new ArrayList<Integer>();
 
-	SwingWorkerItemList() {
+	private SwingWorkerItemList() {
 	}
 
-	public void add(
+	public static void add(
 			SwingWorkerItem swi,
 			Integer[] _parentStudyId,
 			Integer[] _parentMatricesIds,
@@ -68,7 +68,7 @@ public class SwingWorkerItemList {
 			}
 		}
 		if (idle) {
-			SwingDeleterItemList.deleteAllListed(); //This will also update the tree
+			SwingDeleterItemList.deleteAllListed(); // This will also update the tree
 		}
 	}
 

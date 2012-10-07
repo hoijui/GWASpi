@@ -21,9 +21,6 @@ import org.gwaspi.netCDF.operations.GWASinOneGOParams;
  */
 public class MultiOperations {
 
-	private static SwingWorkerItemList swingWorkerItemList = new SwingWorkerItemList();
-	private static SwingDeleterItemList swingDeleterItemList = new SwingDeleterItemList();
-
 	private MultiOperations() {
 	}
 
@@ -49,7 +46,7 @@ public class MultiOperations {
 				timeStamp,
 				new Integer[]{studyId},
 				new Integer[]{matrixId});
-		swingWorkerItemList.add(swi,
+		SwingWorkerItemList.add(swi,
 				new Integer[]{studyId}, // Studies to be put on hold
 				new Integer[]{matrixId}, // Matrices to be put on hold
 				null); // Operations to be put on hold
@@ -86,7 +83,7 @@ public class MultiOperations {
 				timeStamp,
 				new Integer[]{loadDescription.getStudyId()});
 
-		swingWorkerItemList.add(
+		SwingWorkerItemList.add(
 				swi,
 				new Integer[]{loadDescription.getStudyId()}, // Studies to be put on hold
 				null, // Matrices to be put on hold
@@ -124,7 +121,7 @@ public class MultiOperations {
 				timeStamp,
 				new Integer[]{studyId},
 				new Integer[]{matrixId});
-		swingWorkerItemList.add(
+		SwingWorkerItemList.add(
 				swi,
 				new Integer[]{studyId}, // Studies to be put on hold
 				new Integer[]{matrixId}, // Matrices to be put on hold
@@ -158,7 +155,7 @@ public class MultiOperations {
 				timeStamp,
 				new Integer[]{studyId},
 				new Integer[]{matrixId});
-		swingWorkerItemList.add(
+		SwingWorkerItemList.add(
 				swi,
 				new Integer[]{studyId}, // Studies to be put on hold
 				new Integer[]{matrixId}, // Matrices to be put on hold
@@ -194,7 +191,7 @@ public class MultiOperations {
 				timeStamp,
 				new Integer[]{studyId},
 				new Integer[]{matrixId});
-		swingWorkerItemList.add(
+		SwingWorkerItemList.add(
 				swi,
 				new Integer[]{studyId}, // Studies to be put on hold
 				new Integer[]{matrixId}, // Matrices to be put on hold
@@ -237,7 +234,7 @@ public class MultiOperations {
 				new Integer[]{studyId},
 				new Integer[]{matrixId},
 				new Integer[]{censusOPId, hwOPId});
-		swingWorkerItemList.add(
+		SwingWorkerItemList.add(
 				swi,
 				new Integer[]{studyId}, // Studies to be put on hold
 				new Integer[]{matrixId}, // Matrices to be put on hold
@@ -280,7 +277,7 @@ public class MultiOperations {
 				new Integer[]{studyId},
 				new Integer[]{matrixId},
 				new Integer[]{censusOPId, hwOPId});
-		swingWorkerItemList.add(
+		SwingWorkerItemList.add(
 				swi,
 				new Integer[]{studyId}, // Studies to be put on hold
 				new Integer[]{matrixId}, // Matrices to be put on hold
@@ -323,7 +320,7 @@ public class MultiOperations {
 				new Integer[]{studyId},
 				new Integer[]{matrixId},
 				new Integer[]{censusOPId, hwOPId});
-		swingWorkerItemList.add(
+		SwingWorkerItemList.add(
 				swi,
 				new Integer[]{studyId}, // Studies to be put on hold
 				new Integer[]{matrixId}, // Matrices to be put on hold
@@ -378,7 +375,7 @@ public class MultiOperations {
 				timeStamp,
 				new Integer[]{studyId},
 				new Integer[]{parentMatrixId});
-		swingWorkerItemList.add(
+		SwingWorkerItemList.add(
 				swi,
 				new Integer[]{studyId}, // Studies to be put on hold
 				new Integer[]{parentMatrixId}, // Matrices to be put on hold
@@ -417,7 +414,7 @@ public class MultiOperations {
 				timeStamp,
 				new Integer[]{studyId},
 				new Integer[]{parentMatrixId});
-		swingWorkerItemList.add(
+		SwingWorkerItemList.add(
 				swi,
 				new Integer[]{studyId}, // Studies to be put on hold
 				new Integer[]{parentMatrixId}, // Matrices to be put on hold
@@ -453,7 +450,7 @@ public class MultiOperations {
 				timeStamp,
 				new Integer[]{studyId},
 				new Integer[]{matrixId});
-		swingWorkerItemList.add(
+		SwingWorkerItemList.add(
 				swi,
 				new Integer[]{studyId}, // Studies to be put on hold
 				new Integer[]{matrixId}, // Matrices to be put on hold
@@ -492,7 +489,7 @@ public class MultiOperations {
 				timeStamp,
 				new Integer[]{studyId},
 				new Integer[]{parentMatrixId1, parentMatrixId2});
-		swingWorkerItemList.add(
+		SwingWorkerItemList.add(
 				swi,
 				new Integer[]{studyId}, // Studies to be put on hold
 				new Integer[]{parentMatrixId1, parentMatrixId2}, // Matrices to be put on hold
@@ -531,7 +528,7 @@ public class MultiOperations {
 				timeStamp,
 				new Integer[]{studyId},
 				new Integer[]{parentMatrixId1, parentMatrixId2});
-		swingWorkerItemList.add(
+		SwingWorkerItemList.add(
 				swi,
 				new Integer[]{studyId}, // Studies to be put on hold
 				new Integer[]{parentMatrixId1, parentMatrixId2}, // Matrices to be put on hold
@@ -569,7 +566,7 @@ public class MultiOperations {
 				timeStamp,
 				new Integer[]{studyId},
 				new Integer[]{parentMatrixId1, parentMatrixId2});
-		swingWorkerItemList.add(
+		SwingWorkerItemList.add(
 				swi,
 				new Integer[]{studyId}, // Studies to be put on hold
 				new Integer[]{parentMatrixId1, parentMatrixId2}, // Matrices to be put on hold
@@ -610,7 +607,7 @@ public class MultiOperations {
 				timeStamp,
 				new Integer[]{studyId},
 				new Integer[]{parentMatrixId});
-		swingWorkerItemList.add(
+		SwingWorkerItemList.add(
 				swi,
 				new Integer[]{studyId}, // Studies to be put on hold
 				new Integer[]{parentMatrixId}, // Matrices to be put on hold
@@ -642,7 +639,7 @@ public class MultiOperations {
 				worker,
 				timeStamp,
 				new Integer[]{studyId});
-		swingWorkerItemList.add(
+		SwingWorkerItemList.add(
 				swi,
 				new Integer[]{studyId}, // Studies to be put on hold
 				null, // Matrices to be put on hold
@@ -658,7 +655,7 @@ public class MultiOperations {
 		SwingDeleterItem sdi = new SwingDeleterItem(SwingDeleterItem.DeleteTarget.STUDY,
 				studyId,
 				deleteReports);
-		swingDeleterItemList.add(sdi);
+		SwingDeleterItemList.add(sdi);
 
 		ProcessTab.getSingleton().updateProcessOverview();
 	}
@@ -669,7 +666,7 @@ public class MultiOperations {
 				studyId,
 				matrixId,
 				deleteReports);
-		swingDeleterItemList.add(sdi);
+		SwingDeleterItemList.add(sdi);
 
 		ProcessTab.getSingleton().updateProcessOverview();
 	}
@@ -681,7 +678,7 @@ public class MultiOperations {
 				matrixId,
 				opId,
 				deleteReports);
-		swingDeleterItemList.add(sdi);
+		SwingDeleterItemList.add(sdi);
 
 		ProcessTab.getSingleton().updateProcessOverview();
 	}
