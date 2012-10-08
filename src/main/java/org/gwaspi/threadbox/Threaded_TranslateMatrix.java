@@ -23,14 +23,17 @@ public class Threaded_TranslateMatrix extends CommonRunnable {
 	private String description;
 
 	public Threaded_TranslateMatrix(
-			String timeStamp,
 			int studyId,
 			int parentMatrixId,
 			GenotypeEncoding gtEncoding,
 			String newMatrixName,
 			String description)
 	{
-		super("Translate Matrix", timeStamp, "Translating Matrix", "Translating Matrix");
+		super(
+				"Translate Matrix",
+				"Translating Matrix",
+				"Translate Matrix: " + newMatrixName,
+				"Translating Matrix");
 
 		this.studyId = studyId;
 		this.parentMatrixId = parentMatrixId;

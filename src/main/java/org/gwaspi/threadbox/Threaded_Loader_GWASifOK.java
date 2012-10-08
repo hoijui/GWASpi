@@ -37,13 +37,16 @@ public class Threaded_Loader_GWASifOK extends CommonRunnable {
 	private GWASinOneGOParams gwasParams;
 
 	public Threaded_Loader_GWASifOK(
-			String timeStamp,
 			GenotypesLoadDescription loadDescription,
 			boolean dummySamples,
 			boolean performGwas,
 			GWASinOneGOParams gwasParams)
 	{
-		super("Genotypes Loader & GWAS if OK", timeStamp, "Loading Genotypes & Performing GWAS", "Loading Genotypes & Performing GWAS");
+		super(
+				"Genotypes Loader & GWAS if OK",
+				"Loading Genotypes & Performing GWAS",
+				"Genotypes Loader & GWAS if OK: " + loadDescription.getFriendlyName(),
+				"Loading Genotypes & Performing GWAS");
 
 		this.loadDescription = loadDescription;
 		this.dummySamples = dummySamples;

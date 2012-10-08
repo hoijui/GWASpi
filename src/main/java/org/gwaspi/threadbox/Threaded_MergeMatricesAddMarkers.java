@@ -22,14 +22,17 @@ public class Threaded_MergeMatricesAddMarkers extends CommonRunnable {
 	private String description;
 
 	public Threaded_MergeMatricesAddMarkers(
-			String timeStamp,
 			int studyId,
 			int parentMatrixId1,
 			int parentMatrixId2,
 			String newMatrixName,
 			String description)
 	{
-		super("Merge Matrices", timeStamp, "Merging Data", "Merging Matrices");
+		super(
+				"Merge Matrices",
+				"Merging Data",
+				"Merge Matrices: " + newMatrixName,
+				"Merging Matrices");
 
 		this.studyId = studyId;
 		this.parentMatrixId1 = parentMatrixId1;

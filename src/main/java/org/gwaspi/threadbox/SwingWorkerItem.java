@@ -13,9 +13,7 @@ import java.util.Collections;
  */
 public class SwingWorkerItem {
 
-	private final String swingWorkerName;
-	private final SwingWorker swingWorker;
-	private final String timeStamp;
+	private final CommonRunnable task;
 	private final String launchTime;
 	private String startTime;
 	private String endTime;
@@ -25,36 +23,28 @@ public class SwingWorkerItem {
 	private final Collection<Integer> parentOperationsIds;
 
 	SwingWorkerItem(
-			String swingWorkerName,
-			SwingWorker swingWorker,
-			String timeStamp,
+			CommonRunnable swingWorker,
 			Integer[] parentStudyIds)
 	{
-		this(swingWorkerName, swingWorker, timeStamp, parentStudyIds, new Integer[] {});
+		this(swingWorker, parentStudyIds, new Integer[] {});
 	}
 
 	SwingWorkerItem(
-			String swingWorkerName,
-			SwingWorker swingWorker,
-			String timeStamp,
+			CommonRunnable swingWorker,
 			Integer[] parentStudyIds,
 			Integer[] parentMatricesIds)
 	{
-		this(swingWorkerName, swingWorker, timeStamp, parentStudyIds, parentMatricesIds, new Integer[] {});
+		this(swingWorker, parentStudyIds, parentMatricesIds, new Integer[] {});
 	}
 
 	SwingWorkerItem(
-			String swingWorkerName,
-			SwingWorker swingWorker,
-			String timeStamp,
+			CommonRunnable task,
 			Integer[] parentStudyIds,
 			Integer[] parentMatricesIds,
 			Integer[] parentOperationsIds)
 	{
 		this.launchTime = org.gwaspi.global.Utils.getShortDateTimeAsString();
-		this.timeStamp = timeStamp;
-		this.swingWorkerName = swingWorkerName;
-		this.swingWorker = swingWorker;
+		this.task = task;
 		this.queueState = QueueState.QUEUED;
 		this.parentStudyIds = Collections.unmodifiableCollection(Arrays.asList(parentStudyIds));
 		this.parentMatricesIds = Collections.unmodifiableCollection(Arrays.asList(parentMatricesIds));
@@ -81,12 +71,8 @@ public class SwingWorkerItem {
 		return endTime;
 	}
 
-	public SwingWorker getSwingWorker() {
-		return swingWorker;
-	}
-
-	public String getSwingWorkerName() {
-		return swingWorkerName;
+	public CommonRunnable getTask() {
+		return task;
 	}
 
 	public Collection<Integer> getParentMatricesIds() {
@@ -102,7 +88,7 @@ public class SwingWorkerItem {
 	}
 
 	public String getTimeStamp() {
-		return timeStamp;
+		return task.getTimeStamp();
 	}
 
 	public void setQueueState(QueueState queueState) {

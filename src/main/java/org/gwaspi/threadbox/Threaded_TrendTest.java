@@ -26,13 +26,16 @@ public class Threaded_TrendTest extends CommonRunnable {
 	private GWASinOneGOParams gwasParams;
 
 	public Threaded_TrendTest(
-			String timeStamp,
 			int matrixId,
 			int censusOpId,
 			int hwOpId,
 			GWASinOneGOParams gwasParams)
 	{
-		super("Cochran-Armitage Trend Test", timeStamp, "Cochran-Armitage Trend Test", "Cochran-Armitage Trend Test");
+		super(
+				"Cochran-Armitage Trend Test",
+				"Cochran-Armitage Trend Test",
+				"Cochran-Armitage Trend Test on Matrix ID: " + matrixId,
+				"Cochran-Armitage Trend Test");
 
 		this.matrixId = matrixId;
 		this.censusOpId = censusOpId;

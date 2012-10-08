@@ -28,22 +28,10 @@ public class MultiOperations {
 	public static void doMatrixQAs(final int studyId, final int matrixId) {
 
 		// SAMPLES QA
-		final String timeStamp = org.gwaspi.global.Utils.getTimeStamp();
-		SwingWorker worker = new SwingWorker() {
-			public Object construct() {
-				Threaded_MatrixQA thread = new Threaded_MatrixQA(
-						timeStamp,
-						matrixId);
-				thread.startThreaded();
-
-				return thread;
-			}
-		};
+		CommonRunnable task = new Threaded_MatrixQA(matrixId);
 
 		SwingWorkerItem swi = new SwingWorkerItem(
-				"Matrix QA & Reports on Matrix ID: " + matrixId,
-				worker,
-				timeStamp,
+				task,
 				new Integer[]{studyId},
 				new Integer[]{matrixId});
 		SwingWorkerItemList.add(swi);
@@ -58,26 +46,14 @@ public class MultiOperations {
 			final GWASinOneGOParams gwasParams)
 	{
 		// LOAD & GWAS if requested and OK
-		final String timeStamp = org.gwaspi.global.Utils.getTimeStamp();
-
-		SwingWorker worker = new SwingWorker() {
-			public Object construct() {
-				Threaded_Loader_GWASifOK thread = new Threaded_Loader_GWASifOK(
-						timeStamp,
-						loadDescription,
-						dummySamples,
-						performGwas,
-						gwasParams);
-				thread.startThreaded();
-
-				return thread;
-			}
-		};
+		CommonRunnable task = new Threaded_Loader_GWASifOK(
+				loadDescription,
+				dummySamples,
+				performGwas,
+				gwasParams);
 
 		SwingWorkerItem swi = new SwingWorkerItem(
-				"Genotypes Loader & GWAS if OK: " + loadDescription.getFriendlyName(),
-				worker,
-				timeStamp,
+				task,
 				new Integer[]{loadDescription.getStudyId()});
 		SwingWorkerItemList.add(swi);
 
@@ -93,24 +69,13 @@ public class MultiOperations {
 			final GWASinOneGOParams gwasParams)
 	{
 		// LOAD & GWAS
-		final String timeStamp = org.gwaspi.global.Utils.getTimeStamp();
-		SwingWorker worker = new SwingWorker() {
-			public Object construct() {
-				Threaded_GWAS thread = new Threaded_GWAS(
-						timeStamp,
-						matrixId,
-						phenofile,
-						gwasParams);
-				thread.startThreaded();
-
-				return thread;
-			}
-		};
+		CommonRunnable task = new Threaded_GWAS(
+				matrixId,
+				phenofile,
+				gwasParams);
 
 		SwingWorkerItem swi = new SwingWorkerItem(
-				"GWAS on Matrix ID: " + matrixId,
-				worker,
-				timeStamp,
+				task,
 				new Integer[]{studyId},
 				new Integer[]{matrixId});
 		SwingWorkerItemList.add(swi);
@@ -124,23 +89,12 @@ public class MultiOperations {
 			final int censusOpId)
 	{
 		// LOAD & GWAS
-		final String timeStamp = org.gwaspi.global.Utils.getTimeStamp();
-		SwingWorker worker = new SwingWorker() {
-			public Object construct() {
-				Threaded_HardyWeinberg thread = new Threaded_HardyWeinberg(
-						timeStamp,
-						matrixId,
-						censusOpId);
-				thread.startThreaded();
-
-				return thread;
-			}
-		};
+		CommonRunnable task = new Threaded_HardyWeinberg(
+				matrixId,
+				censusOpId);
 
 		SwingWorkerItem swi = new SwingWorkerItem(
-				"Hardy-Weinberg on Matrix ID: " + matrixId,
-				worker,
-				timeStamp,
+				task,
 				new Integer[]{studyId},
 				new Integer[]{matrixId});
 		SwingWorkerItemList.add(swi);
@@ -155,24 +109,13 @@ public class MultiOperations {
 			final GWASinOneGOParams gwasParams)
 	{
 		// LOAD & GWAS
-		final String timeStamp = org.gwaspi.global.Utils.getTimeStamp();
-		SwingWorker worker = new SwingWorker() {
-			public Object construct() {
-				Threaded_GTFreq_HW thread = new Threaded_GTFreq_HW(
-						timeStamp,
-						matrixId,
-						phenoFile,
-						gwasParams);
-				thread.startThreaded();
-
-				return thread;
-			}
-		};
+		CommonRunnable task = new Threaded_GTFreq_HW(
+				matrixId,
+				phenoFile,
+				gwasParams);
 
 		SwingWorkerItem swi = new SwingWorkerItem(
-				"Genotypes Freq. & HW on Matrix ID: " + matrixId,
-				worker,
-				timeStamp,
+				task,
 				new Integer[]{studyId},
 				new Integer[]{matrixId});
 		SwingWorkerItemList.add(swi);
@@ -188,29 +131,18 @@ public class MultiOperations {
 			final GWASinOneGOParams gwasParams)
 	{
 		// LOAD & GWAS
-		final String timeStamp = org.gwaspi.global.Utils.getTimeStamp();
-		SwingWorker worker = new SwingWorker() {
-			public Object construct() {
-				Threaded_AllelicAssociation thread = new Threaded_AllelicAssociation(
-						timeStamp,
-						matrixId,
-						censusOPId,
-						hwOPId,
-						gwasParams);
-				thread.startThreaded();
-
-				return thread;
-			}
-		};
+		CommonRunnable task = new Threaded_AllelicAssociation(
+				matrixId,
+				censusOPId,
+				hwOPId,
+				gwasParams);
 
 //		List<Integer> holdOpIds = new ArrayList<Integer>();
 //		holdOpIds.add(censusOPId);
 //		holdOpIds.add(hwOPId);
 
 		SwingWorkerItem swi = new SwingWorkerItem(
-				"Allelic Association Test on Matrix ID: " + matrixId,
-				worker,
-				timeStamp,
+				task,
 				new Integer[]{studyId},
 				new Integer[]{matrixId},
 				new Integer[]{censusOPId, hwOPId});
@@ -227,29 +159,18 @@ public class MultiOperations {
 			final GWASinOneGOParams gwasParams)
 	{
 		// LOAD & GWAS
-		final String timeStamp = org.gwaspi.global.Utils.getTimeStamp();
-		SwingWorker worker = new SwingWorker() {
-			public Object construct() {
-				Threaded_GenotypicAssociation thread = new Threaded_GenotypicAssociation(
-						timeStamp,
-						matrixId,
-						censusOPId,
-						hwOPId,
-						gwasParams);
-				thread.startThreaded();
-
-				return thread;
-			}
-		};
+		CommonRunnable task = new Threaded_GenotypicAssociation(
+				matrixId,
+				censusOPId,
+				hwOPId,
+				gwasParams);
 
 //		List<Integer> holdOpIds = new ArrayList<Integer>();
 //		holdOpIds.add(censusOPId);
 //		holdOpIds.add(hwOPId);
 
 		SwingWorkerItem swi = new SwingWorkerItem(
-				"Genotypic Association Test on Matrix ID: " + matrixId,
-				worker,
-				timeStamp,
+				task,
 				new Integer[]{studyId},
 				new Integer[]{matrixId},
 				new Integer[]{censusOPId, hwOPId});
@@ -266,29 +187,18 @@ public class MultiOperations {
 			final GWASinOneGOParams gwasParams)
 	{
 		// LOAD & GWAS
-		final String timeStamp = org.gwaspi.global.Utils.getTimeStamp();
-		SwingWorker worker = new SwingWorker() {
-			public Object construct() {
-				Threaded_TrendTest thread = new Threaded_TrendTest(
-						timeStamp,
-						matrixId,
-						censusOPId,
-						hwOPId,
-						gwasParams);
-				thread.startThreaded();
-
-				return thread;
-			}
-		};
+		CommonRunnable task = new Threaded_TrendTest(
+				matrixId,
+				censusOPId,
+				hwOPId,
+				gwasParams);
 
 //		List<Integer> holdOpIds = new ArrayList<Integer>();
 //		holdOpIds.add(censusOPId);
 //		holdOpIds.add(hwOPId);
 
 		SwingWorkerItem swi = new SwingWorkerItem(
-				"Cochran-Armitage Trend Test on Matrix ID: " + matrixId,
-				worker,
-				timeStamp,
+				task,
 				new Integer[]{studyId},
 				new Integer[]{matrixId},
 				new Integer[]{censusOPId, hwOPId});
@@ -313,34 +223,22 @@ public class MultiOperations {
 			final File markerCriteriaFile,
 			final File sampleCriteriaFile)
 	{
-		final String timeStamp = org.gwaspi.global.Utils.getTimeStamp();
-		SwingWorker worker = new SwingWorker() {
-			public Object construct() {
-
-				Threaded_ExtractMatrix thread = new Threaded_ExtractMatrix(
-						timeStamp,
-						studyId,
-						parentMatrixId,
-						newMatrixName,
-						description,
-						markerPickCase,
-						samplePickCase,
-						markerPickVar,
-						samplePickVar,
-						markerCriteria,
-						sampleCriteria,
-						markerCriteriaFile,
-						sampleCriteriaFile);
-				thread.startThreaded();
-
-				return thread;
-			}
-		};
+		CommonRunnable task = new Threaded_ExtractMatrix(
+				studyId,
+				parentMatrixId,
+				newMatrixName,
+				description,
+				markerPickCase,
+				samplePickCase,
+				markerPickVar,
+				samplePickVar,
+				markerCriteria,
+				sampleCriteria,
+				markerCriteriaFile,
+				sampleCriteriaFile);
 
 		SwingWorkerItem swi = new SwingWorkerItem(
-				"Data Extract: " + newMatrixName,
-				worker,
-				timeStamp,
+				task,
 				new Integer[]{studyId},
 				new Integer[]{parentMatrixId});
 		SwingWorkerItemList.add(swi);
@@ -355,27 +253,15 @@ public class MultiOperations {
 			final String newMatrixName,
 			final String description)
 	{
-		final String timeStamp = org.gwaspi.global.Utils.getTimeStamp();
-		SwingWorker worker = new SwingWorker() {
-			public Object construct() {
-
-				Threaded_TranslateMatrix thread = new Threaded_TranslateMatrix(
-						timeStamp,
-						studyId,
-						parentMatrixId,
-						gtEncoding,
-						newMatrixName,
-						description);
-				thread.startThreaded();
-
-				return thread;
-			}
-		};
+		CommonRunnable task = new Threaded_TranslateMatrix(
+				studyId,
+				parentMatrixId,
+				gtEncoding,
+				newMatrixName,
+				description);
 
 		SwingWorkerItem swi = new SwingWorkerItem(
-				"Translate Matrix: " + newMatrixName,
-				worker,
-				timeStamp,
+				task,
 				new Integer[]{studyId},
 				new Integer[]{parentMatrixId});
 		SwingWorkerItemList.add(swi);
@@ -389,25 +275,13 @@ public class MultiOperations {
 			final ExportFormat format,
 			final String phenotype)
 	{
-		final String timeStamp = org.gwaspi.global.Utils.getTimeStamp();
-		SwingWorker worker = new SwingWorker() {
-			public Object construct() {
-
-				Threaded_ExportMatrix thread = new Threaded_ExportMatrix(
-						timeStamp,
-						matrixId,
-						format,
-						phenotype);
-				thread.startThreaded();
-
-				return thread;
-			}
-		};
+		CommonRunnable task = new Threaded_ExportMatrix(
+				matrixId,
+				format,
+				phenotype);
 
 		SwingWorkerItem swi = new SwingWorkerItem(
-				"Export Matrix ID: " + matrixId,
-				worker,
-				timeStamp,
+				task,
 				new Integer[]{studyId},
 				new Integer[]{matrixId});
 		SwingWorkerItemList.add(swi);
@@ -422,27 +296,15 @@ public class MultiOperations {
 			final String newMatrixName,
 			final String description)
 	{
-		final String timeStamp = org.gwaspi.global.Utils.getTimeStamp();
-		SwingWorker worker = new SwingWorker() {
-			public Object construct() {
-
-				Threaded_MergeMatricesAddMarkers thread = new Threaded_MergeMatricesAddMarkers(
-						timeStamp,
-						studyId,
-						parentMatrixId1,
-						parentMatrixId2,
-						newMatrixName,
-						description);
-				thread.startThreaded();
-
-				return thread;
-			}
-		};
+		CommonRunnable task = new Threaded_MergeMatricesAddMarkers(
+				studyId,
+				parentMatrixId1,
+				parentMatrixId2,
+				newMatrixName,
+				description);
 
 		SwingWorkerItem swi = new SwingWorkerItem(
-				"Merge Matrices: " + newMatrixName,
-				worker,
-				timeStamp,
+				task,
 				new Integer[]{studyId},
 				new Integer[]{parentMatrixId1, parentMatrixId2});
 		SwingWorkerItemList.add(swi);
@@ -457,27 +319,15 @@ public class MultiOperations {
 			final String newMatrixName,
 			final String description)
 	{
-		final String timeStamp = org.gwaspi.global.Utils.getTimeStamp();
-		SwingWorker worker = new SwingWorker() {
-			public Object construct() {
-
-				Threaded_MergeMatricesAddSamples thread = new Threaded_MergeMatricesAddSamples(
-						timeStamp,
-						studyId,
-						parentMatrixId1,
-						parentMatrixId2,
-						newMatrixName,
-						description);
-				thread.startThreaded();
-
-				return thread;
-			}
-		};
+		CommonRunnable task = new Threaded_MergeMatricesAddSamples(
+				studyId,
+				parentMatrixId1,
+				parentMatrixId2,
+				newMatrixName,
+				description);
 
 		SwingWorkerItem swi = new SwingWorkerItem(
-				"Merge Matrices: " + newMatrixName,
-				worker,
-				timeStamp,
+				task,
 				new Integer[]{studyId},
 				new Integer[]{parentMatrixId1, parentMatrixId2});
 		SwingWorkerItemList.add(swi);
@@ -491,27 +341,15 @@ public class MultiOperations {
 			final String newMatrixName,
 			final String description)
 	{
-		final String timeStamp = org.gwaspi.global.Utils.getTimeStamp();
-		SwingWorker worker = new SwingWorker() {
-			public Object construct() {
-
-				Threaded_MergeMatricesAddAll thread = new Threaded_MergeMatricesAddAll(
-						timeStamp,
-						studyId,
-						parentMatrixId1,
-						parentMatrixId2,
-						newMatrixName,
-						description);
-				thread.startThreaded();
-
-				return thread;
-			}
-		};
+		CommonRunnable task = new Threaded_MergeMatricesAddAll(
+				studyId,
+				parentMatrixId1,
+				parentMatrixId2,
+				newMatrixName,
+				description);
 
 		SwingWorkerItem swi = new SwingWorkerItem(
-				"Merge Matrices: " + newMatrixName,
-				worker,
-				timeStamp,
+				task,
 				new Integer[]{studyId},
 				new Integer[]{parentMatrixId1, parentMatrixId2});
 		SwingWorkerItemList.add(swi);
@@ -527,28 +365,16 @@ public class MultiOperations {
 			final String newMatrixName,
 			final String description)
 	{
-		final String timeStamp = org.gwaspi.global.Utils.getTimeStamp();
-		SwingWorker worker = new SwingWorker() {
-			public Object construct() {
-
-				Threaded_FlipStrandMatrix thread = new Threaded_FlipStrandMatrix(
-						timeStamp,
-						studyId,
-						parentMatrixId,
-						newMatrixName,
-						description,
-						markerIdentifyer,
-						markerFlipFile);
-				thread.startThreaded();
-
-				return thread;
-			}
-		};
+		CommonRunnable task = new Threaded_FlipStrandMatrix(
+				studyId,
+				parentMatrixId,
+				newMatrixName,
+				description,
+				markerIdentifyer,
+				markerFlipFile);
 
 		SwingWorkerItem swi = new SwingWorkerItem(
-				"Flip Strand Matrix ID: " + parentMatrixId,
-				worker,
-				timeStamp,
+				task,
 				new Integer[]{studyId},
 				new Integer[]{parentMatrixId});
 		SwingWorkerItemList.add(swi);
@@ -560,24 +386,12 @@ public class MultiOperations {
 			final int studyId,
 			final File sampleInfoFile)
 	{
-		final String timeStamp = org.gwaspi.global.Utils.getTimeStamp();
-		SwingWorker worker = new SwingWorker() {
-			public Object construct() {
-
-				Threaded_UpdateSampleInfo thread = new Threaded_UpdateSampleInfo(
-						timeStamp,
-						studyId,
-						sampleInfoFile);
-				thread.startThreaded();
-
-				return thread;
-			}
-		};
+		CommonRunnable task = new Threaded_UpdateSampleInfo(
+				studyId,
+				sampleInfoFile);
 
 		SwingWorkerItem swi = new SwingWorkerItem(
-				"Update Sample Info on Study ID: " + studyId,
-				worker,
-				timeStamp,
+				task,
 				new Integer[]{studyId});
 		SwingWorkerItemList.add(swi);
 
@@ -649,7 +463,7 @@ public class MultiOperations {
 		}
 	}
 
-	public static void refreshPanel() {
+	private static void refreshPanel() {
 		if (StartGWASpi.guiMode) {
 			GWASpiExplorerPanel.getSingleton().refreshContentPanel();
 		}

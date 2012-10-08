@@ -26,13 +26,16 @@ public class Threaded_AllelicAssociation extends CommonRunnable {
 	private GWASinOneGOParams gwasParams;
 
 	public Threaded_AllelicAssociation(
-			String timeStamp,
 			int matrixId,
 			int censusOpId,
 			int hwOpId,
 			GWASinOneGOParams gwasParams)
 	{
-		super("Allelic Association Test", timeStamp, "Allelic Association Study", "Allelic Association Test");
+		super(
+				"Allelic Association Test",
+				"Allelic Association Study",
+				"Allelic Association Test on Matrix ID: " + matrixId,
+				"Allelic Association Test");
 
 		this.matrixId = matrixId;
 		this.censusOpId = censusOpId;

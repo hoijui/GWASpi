@@ -25,7 +25,6 @@ public class Threaded_FlipStrandMatrix extends CommonRunnable {
 	private File markerFlipFile;
 
 	public Threaded_FlipStrandMatrix(
-			String timeStamp,
 			int studyId,
 			int parentMatrixId,
 			String newMatrixName,
@@ -33,7 +32,11 @@ public class Threaded_FlipStrandMatrix extends CommonRunnable {
 			String markerIdentifyer,
 			File markerFlipFile)
 	{
-		super("Flip Strand Matrix", timeStamp, "Flipping Genotypes", "Extracting");
+		super(
+				"Flip Strand Matrix",
+				"Flipping Genotypes",
+				"Flip Strand Matrix ID: " + parentMatrixId,
+				"Extracting");
 
 		this.studyId = studyId;
 		this.parentMatrixId = parentMatrixId;

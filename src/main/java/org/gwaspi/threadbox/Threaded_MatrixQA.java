@@ -20,11 +20,13 @@ public class Threaded_MatrixQA extends CommonRunnable {
 
 	private int matrixId;
 
-	public Threaded_MatrixQA(
-			String timeStamp,
-			int matrixId)
+	public Threaded_MatrixQA(int matrixId)
 	{
-		super("Matrix QA & Reports", timeStamp, "Matrix Quality Control", "Matrix Quality Control");
+		super(
+				"Matrix QA & Reports",
+				"Matrix Quality Control",
+				"Matrix QA & Reports on Matrix ID: " + matrixId,
+				"Matrix Quality Control");
 
 		this.matrixId = matrixId;
 	}

@@ -40,7 +40,8 @@ public class SwingWorkerItemList {
 
 		// START PROCESSING NEWLY ADDED SwingWorker
 		if (kickStart) {
-			swi.getSwingWorker().start();
+			Thread thread = new Thread(swi.getTask(), swi.getTask().getThreadName());
+			thread.start();
 			swi.setStartTime(org.gwaspi.global.Utils.getShortDateTimeAsString());
 			swi.setQueueState(QueueState.PROCESSING);
 		}
@@ -50,7 +51,8 @@ public class SwingWorkerItemList {
 		boolean started = false;
 		for (SwingWorkerItem currentSwi : swingWorkerItems) {
 			if (currentSwi.getQueueState().equals(QueueState.QUEUED)) {
-				currentSwi.getSwingWorker().start();
+				Thread thread = new Thread(currentSwi.getTask(), currentSwi.getTask().getThreadName());
+				thread.start();
 				currentSwi.setStartTime(org.gwaspi.global.Utils.getShortDateTimeAsString());
 				currentSwi.setQueueState(QueueState.PROCESSING);
 				started = true;

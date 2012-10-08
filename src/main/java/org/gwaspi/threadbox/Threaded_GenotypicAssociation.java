@@ -26,13 +26,16 @@ public class Threaded_GenotypicAssociation extends CommonRunnable {
 	private GWASinOneGOParams gwasParams;
 
 	public Threaded_GenotypicAssociation(
-			String timeStamp,
 			int matrixId,
 			int censusOpId,
 			int hwOpId,
 			GWASinOneGOParams gwasParams)
 	{
-		super("Genotypic Association Test", timeStamp, "Genotypic Association Study", "Genotypic Association Test");
+		super(
+				"Genotypic Association Test",
+				"Genotypic Association Study",
+				"Genotypic Association Test on Matrix ID: " + matrixId,
+				"Genotypic Association Test");
 
 		this.matrixId = matrixId;
 		this.censusOpId = censusOpId;

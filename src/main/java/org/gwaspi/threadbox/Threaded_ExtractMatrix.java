@@ -34,7 +34,6 @@ public class Threaded_ExtractMatrix extends CommonRunnable {
 	private File sampleCriteriaFile;
 
 	public Threaded_ExtractMatrix(
-			String timeStamp,
 			int studyId,
 			int parentMatrixId,
 			String newMatrixName,
@@ -48,7 +47,11 @@ public class Threaded_ExtractMatrix extends CommonRunnable {
 			File markerCriteriaFile,
 			File sampleCriteriaFile)
 	{
-		super("Data Extract", timeStamp, "Extracting Data", "Extracting");
+		super(
+				"Data Extract",
+				"Extracting Data",
+				"Data Extract: " + newMatrixName,
+				"Extracting");
 
 		this.studyId = studyId;
 		this.parentMatrixId = parentMatrixId;

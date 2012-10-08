@@ -24,11 +24,14 @@ public class Threaded_Loader_QA extends CommonRunnable {
 	private Map<String, Object> sampleInfoMap;
 
 	public Threaded_Loader_QA(
-			String timeStamp,
 			GenotypesLoadDescription loadDescription,
 			Map<String, Object> sampleInfoMap)
 	{
-		super("Loading Genotypes", timeStamp, "Loading Genotypes", "Loading Genotypes");
+		super(
+				"Loading Genotypes",
+				"Loading Genotypes",
+				"Loading Genotypes: " + loadDescription.getStudyId(),
+				"Loading Genotypes");
 
 		this.loadDescription = loadDescription;
 		this.sampleInfoMap = sampleInfoMap;

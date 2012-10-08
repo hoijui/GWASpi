@@ -13,29 +13,25 @@ public abstract class CommonRunnable implements Runnable {
 
 	private final Logger log;
 	private final String timeStamp;
+	/** This is visible in OS tools that list threads */
 	private final String threadName;
+	/** This is visible to the user in the GUI */
+	private final String taskName;
+	/** This is visible in the log */
 	private final String taskDescription;
+	/**
+	 * This is visible in the log too.
+	 * @deprecated Should probably be replaced by taskDescription
+	 */
 	private final String startDescription;
-	private Thread runner;
 
-	public CommonRunnable(String threadName, String timeStamp, String taskDescription, String startDescription) {
+	public CommonRunnable(String threadName, String taskDescription, String taskName, String startDescription) {
 		this.log = createLog();
-		this.timeStamp = timeStamp;
+		this.timeStamp = org.gwaspi.global.Utils.getTimeStamp();
 		this.threadName = threadName;
+		this.taskName = taskName;
 		this.taskDescription = taskDescription;
 		this.startDescription = startDescription;
-		this.runner = null;
-	}
-
-	public final void startThreaded() {
-
-		try {
-			runner = new Thread(this, threadName); // (1) Create a new thread.
-			runner.start(); // (2) Start the thread.
-			runner.join();
-		} catch (InterruptedException ex) {
-			getLog().error(null, ex);
-		}
 	}
 
 	protected abstract Logger createLog();
@@ -64,7 +60,7 @@ public abstract class CommonRunnable implements Runnable {
 			} else {
 				getLog().info("");
 				getLog().info(Text.Processes.abortingProcess);
-				getLog().info("Process Name: " + thisSwi.getSwingWorkerName());
+				getLog().info("Process Name: " + thisSwi.getTask().getTaskName());
 				getLog().info("Process Launch Time: " + thisSwi.getLaunchTime());
 				getLog().info("");
 				getLog().info("");
@@ -85,6 +81,14 @@ public abstract class CommonRunnable implements Runnable {
 				getLog().warn(null, ex1);
 			}
 		}
+	}
+
+	public String getThreadName() {
+		return threadName;
+	}
+
+	public String getTaskName() {
+		return taskName;
 	}
 
 	public String getTaskDescription() {
