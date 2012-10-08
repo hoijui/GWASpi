@@ -197,10 +197,10 @@ public class ProcessTab extends JPanel {
 					int rowIndex = tmpTable.getSelectedRow();
 					int colIndex = tmpTable.getSelectedColumn();
 					if (colIndex == 7) {    //Abort
-						if (rowIndex < SwingWorkerItemList.getSwingWorkerItemsALsize()) {
+						if (rowIndex < SwingWorkerItemList.size()) {
 							SwingWorkerItemList.flagCurrentItemAborted(rowIndex);
 						} else {
-							SwingDeleterItemList.abortSwingWorker(rowIndex - SwingWorkerItemList.getSwingWorkerItemsALsize());
+							SwingDeleterItemList.abortSwingWorker(rowIndex - SwingWorkerItemList.size());
 						}
 					}
 				}

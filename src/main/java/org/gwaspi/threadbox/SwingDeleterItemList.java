@@ -45,7 +45,7 @@ public class SwingDeleterItemList {
 		}
 
 		// CHECK IF ANY ITEM IS RUNNING, START PROCESSING NEWLY ADDED SwingDeleter
-		if (SwingWorkerItemList.getSwingWorkerPendingItemsNb() == 0) {
+		if (SwingWorkerItemList.sizePending() == 0) {
 			deleteAllListed();
 		}
 	}
@@ -137,73 +137,64 @@ public class SwingDeleterItemList {
 		return swingDeleterItems;
 	}
 
-	public static void flagCurrentItemAborted() {
-		boolean idle = false;
+	/** @deprecated unused! */
+	private static void flagCurrentItemAborted() {
+		flagCurrentItemEnd(QueueState.ABORT);
+	}
+
+	/** @deprecated unused! */
+	private static void flagCurrentItemError() {
+		flagCurrentItemEnd(QueueState.ERROR);
+	}
+
+	private static void flagCurrentItemDeleted() {
+		flagCurrentItemEnd(QueueState.DELETED);
+	}
+
+	private static void flagCurrentItemEnd(QueueState endQueueState) {
 		for (SwingDeleterItem currentSdi : swingDeleterItems) {
-			if (!idle && currentSdi.getQueueState().equals(QueueState.PROCESSING)) {
-				idle = true;
-				currentSdi.setQueueState(QueueState.ABORT);
+			if (currentSdi.getQueueState().equals(QueueState.PROCESSING)) {
+				currentSdi.setQueueState(endQueueState);
 				currentSdi.setEndTime(org.gwaspi.global.Utils.getShortDateTimeAsString());
+				break;
 			}
 		}
 	}
 
-	public static void flagCurrentItemError() {
-		boolean idle = false;
-		for (SwingDeleterItem currentSdi : swingDeleterItems) {
-			if (!idle && currentSdi.getQueueState().equals(QueueState.PROCESSING)) {
-				idle = true;
-				currentSdi.setQueueState(QueueState.ERROR);
-				currentSdi.setEndTime(org.gwaspi.global.Utils.getShortDateTimeAsString());
-			}
-		}
-	}
-
-	public static void flagCurrentItemDeleted() {
-		boolean idle = false;
-		for (SwingDeleterItem currentSdi : swingDeleterItems) {
-			if (!idle && currentSdi.getQueueState().equals(QueueState.PROCESSING)) {
-				idle = true;
-				currentSdi.setQueueState(QueueState.DELETED);
-				currentSdi.setEndTime(org.gwaspi.global.Utils.getShortDateTimeAsString());
-			}
-		}
-	}
-
-	public static int getSwingDeleterItemsALsize() {
+	public static int size() {
 		return swingDeleterItems.size();
 	}
 
-	public static int getSwingDeleterPendingItemsNb() {
-		int result = 0;
+	public static int sizePending() {
+
+		int numPending = 0;
+
 		for (SwingDeleterItem currentSdi : getSwingDeleterItems()) {
-			if (currentSdi.getQueueState().equals(QueueState.PROCESSING)) {
-				result++;
-			}
-			if (currentSdi.getQueueState().equals(QueueState.QUEUED)) {
-				result++;
+			if (currentSdi.isCurrent()) {
+				numPending++;
 			}
 		}
-		return result;
+
+		return numPending;
 	}
 
 	public static void purgeDoneDeletes() {
-		for (int i = swingDeleterItems.size(); i > 0; i--) {
-			if (swingDeleterItems.get(i - 1).getQueueState().equals(QueueState.DELETED)) {
-				swingDeleterItems.remove(i - 1);
+		for (int i = swingDeleterItems.size() - 1; i >= 0; i--) {
+			if (swingDeleterItems.get(i).getQueueState() == QueueState.DELETED) {
+				swingDeleterItems.remove(i);
 			}
 		}
 	}
 
 	public static void abortSwingWorker(int idx) {
-		QueueState queueState = swingDeleterItems.get(idx).getQueueState();
-		if (queueState.equals(QueueState.PROCESSING) || queueState.equals(QueueState.QUEUED)) {
-			swingDeleterItems.get(idx).setQueueState(QueueState.ABORT);
+		SwingDeleterItem sdi = swingDeleterItems.get(idx);
+		if (sdi.isCurrent()) {
+			sdi.setQueueState(QueueState.ABORT);
 
 			log.info("");
 			log.info(Text.Processes.abortingProcess);
-			log.info(swingDeleterItems.get(idx).getDescription());
-			log.info("Delete Launch Time: {}", swingDeleterItems.get(idx).getLaunchTime());
+			log.info(sdi.getDescription());
+			log.info("Delete Launch Time: {}", sdi.getLaunchTime());
 			log.info("");
 			ProcessTab.getSingleton().updateProcessOverview();
 		}

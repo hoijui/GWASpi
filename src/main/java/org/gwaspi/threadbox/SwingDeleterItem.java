@@ -69,6 +69,10 @@ public class SwingDeleterItem {
 		return queueState;
 	}
 
+	public boolean isCurrent() {
+		return ((queueState == QueueState.QUEUED) || (queueState == QueueState.PROCESSING));
+	}
+
 	public String getLaunchTime() {
 		return launchTime;
 	}

@@ -104,7 +104,7 @@ public class StartGWASpi extends JFrame {
 			mainGUIFrame.addWindowListener(new WindowAdapter() {
 				@Override
 				public void windowClosing(WindowEvent we) {
-					int jobsPending = SwingWorkerItemList.getSwingWorkerPendingItemsNb() + SwingDeleterItemList.getSwingDeleterPendingItemsNb();
+					int jobsPending = SwingWorkerItemList.sizePending() + SwingDeleterItemList.sizePending();
 					if (jobsPending == 0) {
 						exit();
 					} else {

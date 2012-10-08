@@ -47,16 +47,17 @@ public class SwingWorkerItemList {
 	}
 
 	public static void startNext() {
-		boolean idle = true;
+		boolean started = false;
 		for (SwingWorkerItem currentSwi : swingWorkerItems) {
-			if (idle && currentSwi.getQueueState().equals(QueueState.QUEUED)) {
-				idle = false;
+			if (currentSwi.getQueueState().equals(QueueState.QUEUED)) {
 				currentSwi.getSwingWorker().start();
 				currentSwi.setStartTime(org.gwaspi.global.Utils.getShortDateTimeAsString());
 				currentSwi.setQueueState(QueueState.PROCESSING);
+				started = true;
+				break;
 			}
 		}
-		if (idle) {
+		if (!started) {
 			SwingDeleterItemList.deleteAllListed(); // This will also update the tree
 		}
 	}
@@ -65,33 +66,54 @@ public class SwingWorkerItemList {
 		return swingWorkerItems;
 	}
 
-	public static void flagCurrentItemDone(String timeStamp) {
-		for (SwingWorkerItem currentSwi : swingWorkerItems) {
-			if (currentSwi.getTimeStamp().equals(timeStamp)) {
-				currentSwi.setQueueState(QueueState.DONE);
-				currentSwi.setEndTime(org.gwaspi.global.Utils.getShortDateTimeAsString());
+	private static SwingWorkerItem getCurrentItemByTimeStamp(String timeStamp) {
 
-				unlockParentItems(currentSwi);
-			}
+		SwingWorkerItem swi = null;
+
+		SwingWorkerItem swiTmp = getSwingWorkerItemByTimeStamp(timeStamp);
+		if ((swiTmp != null) && swiTmp.isCurrent()) {
+			swi = swiTmp;
+		}
+
+		return swi;
+	}
+
+	private static SwingWorkerItem getCurrentItemByIndex(int rowIdx) {
+
+		SwingWorkerItem swi = null;
+
+		SwingWorkerItem currentSwi = swingWorkerItems.get(rowIdx);
+		if (currentSwi.isCurrent()) {
+			swi = currentSwi;
+		}
+
+		return swi;
+	}
+
+	public static void flagCurrentItemDone(String timeStamp) {
+		SwingWorkerItem currentSwi = getCurrentItemByTimeStamp(timeStamp);
+		if (currentSwi != null) {
+			currentSwi.setQueueState(QueueState.DONE);
+			currentSwi.setEndTime(org.gwaspi.global.Utils.getShortDateTimeAsString());
+
+			unlockParentItems(currentSwi);
 		}
 	}
 
 	public static void flagCurrentItemAborted(String timeStamp) {
-		for (SwingWorkerItem currentSwi : swingWorkerItems) {
-			if (currentSwi.getTimeStamp().equals(timeStamp)) {
-				currentSwi.setQueueState(QueueState.ABORT);
-				currentSwi.setEndTime(org.gwaspi.global.Utils.getShortDateTimeAsString());
+		SwingWorkerItem currentSwi = getCurrentItemByTimeStamp(timeStamp);
+		if (currentSwi != null) {
+			currentSwi.setQueueState(QueueState.ABORT);
+			currentSwi.setEndTime(org.gwaspi.global.Utils.getShortDateTimeAsString());
 
-				unlockParentItems(currentSwi);
-			}
+			unlockParentItems(currentSwi);
 		}
 	}
 
 	public static void flagCurrentItemAborted(int rowIdx) {
-		SwingWorkerItem currentSwi = swingWorkerItems.get(rowIdx);
-		QueueState queueState = currentSwi.getQueueState();
-		if (queueState.equals(QueueState.PROCESSING) || queueState.equals(QueueState.QUEUED)) {
-			swingWorkerItems.get(rowIdx).setQueueState(QueueState.ABORT);
+		SwingWorkerItem currentSwi = getCurrentItemByIndex(rowIdx);
+		if (currentSwi != null) {
+			currentSwi.setQueueState(QueueState.ABORT);
 			ProcessTab.getSingleton().updateProcessOverview();
 
 			unlockParentItems(currentSwi);
@@ -99,13 +121,12 @@ public class SwingWorkerItemList {
 	}
 
 	public static void flagCurrentItemError(String timeStamp) {
-		for (SwingWorkerItem currentSwi : swingWorkerItems) {
-			if (currentSwi.getTimeStamp().equals(timeStamp)) {
-				currentSwi.setQueueState(QueueState.ERROR);
-				currentSwi.setEndTime(org.gwaspi.global.Utils.getShortDateTimeAsString());
+		SwingWorkerItem currentSwi = getCurrentItemByTimeStamp(timeStamp);
+		if (currentSwi != null) {
+			currentSwi.setQueueState(QueueState.ERROR);
+			currentSwi.setEndTime(org.gwaspi.global.Utils.getShortDateTimeAsString());
 
-				unlockParentItems(currentSwi);
-			}
+			unlockParentItems(currentSwi);
 		}
 	}
 
@@ -136,30 +157,33 @@ public class SwingWorkerItemList {
 		}
 	}
 
-	public static int getSwingWorkerItemsALsize() {
+	public static int size() {
 		return swingWorkerItems.size();
 	}
 
-	public static int getSwingWorkerPendingItemsNb() {
-		int result = 0;
-		for (SwingWorkerItem currentSwi : SwingWorkerItemList.getSwingWorkerItems()) {
-			if (currentSwi.getQueueState().equals(QueueState.PROCESSING)) {
-				result++;
-			}
-			if (currentSwi.getQueueState().equals(QueueState.QUEUED)) {
-				result++;
+	public static int sizePending() {
+
+		int numPending = 0;
+
+		for (SwingWorkerItem swi : SwingWorkerItemList.getSwingWorkerItems()) {
+			if (swi.isCurrent()) {
+				numPending++;
 			}
 		}
-		return result;
+
+		return numPending;
 	}
 
 	public static SwingWorkerItem getSwingWorkerItemByTimeStamp(String timeStamp) {
+
 		SwingWorkerItem result = null;
+
 		for (SwingWorkerItem currentSwi : swingWorkerItems) {
 			if (currentSwi.getTimeStamp().equals(timeStamp)) {
 				result = currentSwi;
 			}
 		}
+
 		return result;
 	}
 }
