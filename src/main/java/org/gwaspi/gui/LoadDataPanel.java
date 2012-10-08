@@ -18,6 +18,7 @@ import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import javax.swing.AbstractAction;
@@ -184,7 +185,7 @@ public class LoadDataPanel extends JPanel {
 
 		lbl_Format.setText(Text.Matrix.format);
 
-		List<ImportFormat> importFormatsList = Arrays.asList(ImportFormat.values());
+		List<ImportFormat> importFormatsList = new ArrayList<ImportFormat>(Arrays.asList(ImportFormat.values()));
 		importFormatsList.remove(ImportFormat.UNKNOWN);
 
 		cmb_Format.setModel(new DefaultComboBoxModel(importFormatsList.toArray()));
