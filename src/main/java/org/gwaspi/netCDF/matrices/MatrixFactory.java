@@ -30,67 +30,8 @@ public class MatrixFactory {
 	private int resultMatrixId = Integer.MIN_VALUE;
 	private MatrixMetadata matrixMetaData = null;
 
-	/**
-	 * Constructor to use with matrix input
-	 */
-	public MatrixFactory(
+	private MatrixFactory(
 			int studyId,
-			ImportFormat technology,
-			String friendlyName,
-			String description,
-			StrandType strand,
-			boolean hasDictionary,
-			int samplesDimSize,
-			int markerDimSize,
-			int chrDimSize,
-			GenotypeEncoding gtCode,
-			int origMatrix1Id,
-			int origMatrix2Id)
-			throws InvalidRangeException, IOException
-	{
-		if (samplesDimSize > 0 && markerDimSize > 0) {
-			resultMatrixName = org.gwaspi.netCDF.matrices.MatrixManager.generateMatrixNetCDFNameByDate();
-			netCDFHandler = generateNetcdfHandler(
-					studyId,
-					resultMatrixName,
-					technology,
-					description,
-					gtCode,
-					strand,
-					hasDictionary,
-					samplesDimSize,
-					markerDimSize,
-					chrDimSize);
-
-			// CHECK IF JVM IS 32/64 bits to use LFS or not
-			int JVMbits = Integer.parseInt(System.getProperty("sun.arch.data.model", "32"));
-			if (JVMbits == 64) {
-				netCDFHandler.setLargeFile(true);
-			}
-			netCDFHandler.setFill(true);
-
-			DbManager dBManager = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
-			org.gwaspi.netCDF.matrices.MatrixManager.insertMatrixMetadata(
-					dBManager,
-					studyId,
-					friendlyName,
-					resultMatrixName,
-					gtCode,
-					origMatrix1Id,
-					origMatrix2Id,
-					"Matrix is result of " + origMatrix1Id,
-					description,
-					0);
-
-			matrixMetaData = new MatrixMetadata(resultMatrixName);
-
-			resultMatrixId = matrixMetaData.getMatrixId();
-		}
-	}
-
-	// Costructor to use with file input
-	public MatrixFactory(
-			Integer studyId,
 			ImportFormat technology,
 			String friendlyName,
 			String description,
@@ -100,12 +41,15 @@ public class MatrixFactory {
 			int samplesDimSize,
 			int markerDimSize,
 			int chrDimSize,
-			String data_location)
+			int origMatrix1Id,
+			int origMatrix2Id,
+			String inputLocation)
 			throws InvalidRangeException, IOException
 	{
 		if (samplesDimSize > 0 && markerDimSize > 0) {
-			resultMatrixName = org.gwaspi.netCDF.matrices.MatrixManager.generateMatrixNetCDFNameByDate();
-			netCDFHandler = generateNetcdfHandler(studyId,
+			resultMatrixName = MatrixManager.generateMatrixNetCDFNameByDate();
+			netCDFHandler = generateNetcdfHandler(
+					studyId,
 					resultMatrixName,
 					technology,
 					description,
@@ -124,15 +68,15 @@ public class MatrixFactory {
 			netCDFHandler.setFill(true);
 
 			DbManager dBManager = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
-			org.gwaspi.netCDF.matrices.MatrixManager.insertMatrixMetadata(
+			MatrixManager.insertMatrixMetadata(
 					dBManager,
 					studyId,
 					friendlyName,
 					resultMatrixName,
 					matrixType,
-					-1,
-					-1,
-					data_location,
+					origMatrix1Id,
+					origMatrix2Id,
+					inputLocation,
 					description,
 					0);
 
@@ -140,6 +84,73 @@ public class MatrixFactory {
 
 			resultMatrixId = matrixMetaData.getMatrixId();
 		}
+	}
+
+	/**
+	 * Constructor to use with matrix input
+	 */
+	public MatrixFactory(
+			int studyId,
+			ImportFormat technology,
+			String friendlyName,
+			String description,
+			GenotypeEncoding matrixType,
+			StrandType strand,
+			boolean hasDictionary,
+			int samplesDimSize,
+			int markerDimSize,
+			int chrDimSize,
+			int origMatrix1Id,
+			int origMatrix2Id)
+			throws InvalidRangeException, IOException
+	{
+		this(
+				studyId,
+				technology,
+				friendlyName,
+				description,
+				matrixType,
+				strand,
+				hasDictionary,
+				samplesDimSize,
+				markerDimSize,
+				chrDimSize,
+				origMatrix1Id,
+				origMatrix2Id,
+				"Matrix is result of " + origMatrix1Id);
+	}
+
+	/**
+	 * Constructor to use with file input
+	 */
+	public MatrixFactory(
+			int studyId,
+			ImportFormat technology,
+			String friendlyName,
+			String description,
+			GenotypeEncoding matrixType,
+			StrandType strand,
+			boolean hasDictionary,
+			int samplesDimSize,
+			int markerDimSize,
+			int chrDimSize,
+			String dataLocation)
+			throws InvalidRangeException, IOException
+	{
+		this(
+				studyId,
+				technology,
+				friendlyName,
+				description,
+				matrixType,
+				strand,
+				hasDictionary,
+				samplesDimSize,
+				markerDimSize,
+				chrDimSize,
+				-1,
+				-1,
+				dataLocation);
 	}
 
 	// ACCESSORS

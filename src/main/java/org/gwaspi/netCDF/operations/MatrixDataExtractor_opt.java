@@ -298,16 +298,17 @@ public class MatrixDataExtractor_opt {
 				descSB.append("\n");
 				descSB.append("Markers: ").append(wrMarkerIdSetMap.size()).append(", Samples: ").append(wrSampleSetMap.size());
 
-				MatrixFactory wrMatrixHandler = new MatrixFactory(studyId,
+				MatrixFactory wrMatrixHandler = new MatrixFactory(
+						studyId,
 						rdMatrixMetadata.getTechnology(), // technology
 						wrMatrixFriendlyName,
 						descSB.toString(), // description
+						rdMatrixMetadata.getGenotypeEncoding(), // Matrix genotype encoding from orig matrix genotype encoding
 						rdMatrixMetadata.getStrand(),
 						rdMatrixMetadata.getHasDictionray(), // has dictionary?
 						wrSampleSetMap.size(),
 						wrMarkerIdSetMap.size(),
 						rdChrInfoSetMap.size(),
-						rdMatrixMetadata.getGenotypeEncoding(), // Matrix genotype encoding from orig matrix genotype encoding
 						rdMatrixId, // Orig matrixId 1
 						Integer.MIN_VALUE); // Orig matrixId 2
 

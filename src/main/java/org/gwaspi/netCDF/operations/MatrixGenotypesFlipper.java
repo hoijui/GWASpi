@@ -126,12 +126,12 @@ public class MatrixGenotypesFlipper {
 					rdMatrixMetadata.getTechnology(), // technology
 					wrMatrixFriendlyName,
 					descSB.toString(), // description
+					rdMatrixMetadata.getGenotypeEncoding(), // Matrix genotype encoding from orig matrix genotype encoding
 					StrandType.valueOf("FLP"), // FIXME this will fail at runtime
 					rdMatrixMetadata.getHasDictionray(), // has dictionary?
 					rdSampleSet.getSampleSetSize(),
 					rdMarkerSet.getMarkerSetSize(),
 					rdChrInfoSetMap.size(),
-					rdMatrixMetadata.getGenotypeEncoding(), // Matrix genotype encoding from orig matrix genotype encoding
 					rdMatrixId, // Orig matrixId 1
 					Integer.MIN_VALUE); // Orig matrixId 2
 

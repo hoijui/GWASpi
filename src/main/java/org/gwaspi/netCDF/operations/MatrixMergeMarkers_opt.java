@@ -143,16 +143,17 @@ public class MatrixMergeMarkers_opt {
 			descSB.append(":\n");
 			descSB.append(Text.Trafo.mergeMethodMarkerJoin);
 
-			MatrixFactory wrMatrixHandler = new MatrixFactory(studyId,
+			MatrixFactory wrMatrixHandler = new MatrixFactory(
+					studyId,
 					technology, // technology
 					wrMatrixFriendlyName,
 					wrMatrixDescription + "\n\n" + descSB.toString(), // description
+					gtEncoding, // GT encoding
 					rdMatrix1Metadata.getStrand(),
 					hasDictionary, // has dictionary?
 					rdMatrix1Metadata.getSampleSetSize(), // Keep rdMatrix1Metadata from Matrix1. SampleSet is constant
 					wrComboSortedMarkerSetMap.size(), // Use comboed wrSortedMingledMarkerMap as MarkerSet
 					chrSetMap.size(),
-					gtEncoding, // GT encoding
 					rdMatrix1Id, // Parent matrixId 1
 					rdMatrix2Id); // Parent matrixId 2
 

@@ -97,12 +97,12 @@ public class MatrixTranslator_opt {
 						rdMatrixMetadata.getTechnology(), // technology
 						wrMatrixFriendlyName,
 						descSB.toString(), // description
+						GenotypeEncoding.ACGT0, // New matrix genotype encoding
 						rdMatrixMetadata.getStrand(),
 						rdMatrixMetadata.getHasDictionray(), // has dictionary?
 						rdSampleSet.getSampleSetSize(),
 						rdMarkerSet.getMarkerSetSize(),
 						rdChrInfoSetMap.size(),
-						GenotypeEncoding.ACGT0, // New matrix genotype encoding
 						rdMatrixId, // Orig matrixId 1
 						Integer.MIN_VALUE); // Orig matrixId 2
 
@@ -254,12 +254,12 @@ public class MatrixTranslator_opt {
 						rdMatrixMetadata.getTechnology(), // technology
 						wrMatrixFriendlyName,
 						descSB.toString(), // description
+						GenotypeEncoding.ACGT0, // New matrix genotype encoding
 						rdMatrixMetadata.getStrand(),
 						rdMatrixMetadata.getHasDictionray(), // has dictionary?
 						rdSampleSet.getSampleSetSize(),
 						rdMarkerSet.getMarkerSetSize(),
 						rdChrInfoSetMap.size(),
-						GenotypeEncoding.ACGT0, // New matrix genotype encoding
 						rdMatrixId, // Orig matrixId 1
 						Integer.MIN_VALUE); // Orig matrixId 2
 

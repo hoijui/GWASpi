@@ -149,12 +149,12 @@ public class MatrixMergeSamples_opt {
 					technology, // technology
 					wrMatrixFriendlyName,
 					wrMatrixDescription + "\n\n" + descSB.toString(), // description
+					gtEncoding,
 					rdMatrix1Metadata.getStrand(),
 					hasDictionary, // has dictionary?
 					wrComboSampleSetMap.size(), // Use comboed wrComboSampleSetMap as SampleSet
 					rdwrMarkerSet1.getMarkerSetSize(), // Keep rdwrMarkerIdSetMap1 from Matrix1. MarkerSet is constant
 					rdChrInfoSetMap.size(),
-					gtEncoding,
 					rdMatrix1Id, // Parent matrixId 1
 					rdMatrix2Id); // Parent matrixId 2
 
