@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import org.gwaspi.model.GWASpiExplorerNodes;
+import org.gwaspi.netCDF.matrices.MatrixManager;
 import org.gwaspi.netCDF.operations.OperationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -79,7 +80,7 @@ public class SwingDeleterItemList {
 					currentSdi.setStartTime(org.gwaspi.global.Utils.getShortDateTimeAsString());
 					currentSdi.setQueueState(QueueState.PROCESSING);
 
-					org.gwaspi.netCDF.matrices.MatrixManager.deleteMatrix(currentSdi.getMatrixId(), currentSdi.isDeleteReports());
+					MatrixManager.deleteMatrix(currentSdi.getMatrixId(), currentSdi.isDeleteReports());
 					MultiOperations.printCompleted("deleting Matrix ID:" + currentSdi.getMatrixId());
 
 					GWASpiExplorerNodes.deleteMatrixNode(currentSdi.getMatrixId());
@@ -100,7 +101,7 @@ public class SwingDeleterItemList {
 						log.error(null, ex);
 					}
 				}
-				// DELETE REPORTS BY MATRIXID -- NOT IN USAGE???
+				// DELETE REPORTS BY MATRIX-ID -- NOT IN USE!
 				if (deleteTarget.equals(DeleteTarget.REPORTS_BY_MATRIXID)) {
 					try {
 						currentSdi.setStartTime(org.gwaspi.global.Utils.getShortDateTimeAsString());

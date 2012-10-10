@@ -110,23 +110,24 @@ public class SwingDeleterItem {
 	}
 
 	public String getDescription() {
-		if (this.description == null) {
+
+		if (description == null) {
 			StringBuilder sb = new StringBuilder();
 			// DELETE STUDY
 			if (getDeleteTarget().equals(DeleteTarget.STUDY)) {
-				sb.append("Delete Study ID: ").append(this.getStudyId());
+				sb.append("Delete Study (ID): ").append(getStudyId());
 			}
 			// DELETE MATRIX
 			if (getDeleteTarget().equals(DeleteTarget.MATRIX)) {
-				sb.append("Delete Matrix ID: ").append(this.getMatrixId());
+				sb.append("Delete Matrix (ID): ").append(getMatrixId());
 			}
-			// DELETE OPERATION BY MATRIXID
+			// DELETE OPERATION BY MATRIX-ID
 			if (getDeleteTarget().equals(DeleteTarget.REPORTS_BY_MATRIXID)) {
-				sb.append("Delete Operations from Matrix ID: ").append(this.getMatrixId());
+				sb.append("Delete Operations from Matrix (ID): ").append(getMatrixId());
 			}
-			// DELETE OPERATION BY OPID
+			// DELETE OPERATION BY OPERATION-ID
 			if (getDeleteTarget().equals(DeleteTarget.OPERATION_BY_OPID)) {
-				sb.append("Delete Operation ID: ").append(this.getOpId());
+				sb.append("Delete Operation (ID): ").append(getOpId());
 			}
 			description = sb.toString();
 		}
@@ -150,8 +151,13 @@ public class SwingDeleterItem {
 	public static enum DeleteTarget {
 		STUDY,
 		MATRIX,
-		REPORTS_BY_MATRIXID, // NOTE had String value: "OPERATION_BY_MATRIXID"
+		/**
+		 * NOTE had String value: "OPERATION_BY_MATRIXID"
+		 * @deprecated unused!
+		 */
+		REPORTS_BY_MATRIXID,
 		OPERATION_BY_OPID,
+		/** @deprecated unused! */
 		REPORT
 	}
 }
