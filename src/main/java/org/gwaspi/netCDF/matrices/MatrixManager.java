@@ -25,13 +25,18 @@ public class MatrixManager {
 
 	private static final Logger log = LoggerFactory.getLogger(MatrixManager.class);
 
+	private static final String SQL_STATEMENT_SELECT_LATEST_MATRIX
+			= "SELECT " + cDBMatrix.f_ID + " FROM " + cDBGWASpi.SCH_MATRICES + "." + cDBMatrix.T_MATRICES + " ORDER BY " + cDBMatrix.f_ID + " DESC  WITH RR";
+	private static final String SQL_STATEMENT_DELETE_REPORT_BY_MATRIX_ID
+			= "DELETE FROM " + cDBGWASpi.SCH_MATRICES + "." + cDBMatrix.T_MATRICES + " WHERE ID=%d";
+
 	private MatrixManager() {
 	}
 
 	public static String createMatricesTable(DbManager db) {
 		boolean result = false;
 		try {
-			//CREATE MATRIX_METADATA table in MATRICES SCHEMA
+			// CREATE MATRIX_METADATA table in MATRICES SCHEMA
 			db.createTable(
 					cDBGWASpi.SCH_MATRICES,
 					cDBMatrix.T_MATRICES,
@@ -88,37 +93,38 @@ public class MatrixManager {
 			genotypesFolder += "/STUDY_" + matrixMetadata.getStudyId() + "/";
 
 			// DELETE OPERATION netCDFs FROM THIS MATRIX
-
 			List<Operation> operations = OperationsList.getOperationsList(matrixId);
 			for (Operation op : operations) {
 				File opFile = new File(genotypesFolder + op.getOperationNetCDFName() + ".nc");
-				if (opFile.exists()) {
-					if (!opFile.canWrite()) {
-						throw new IllegalArgumentException("Delete: write protected: " + opFile.getPath());
-					}
-
-					boolean success = opFile.delete();
-				}
+				tryToDeleteFile(opFile);
 			}
 
 			org.gwaspi.reports.ReportManager.deleteReportByMatrixId(matrixId);
 
 			// DELETE MATRIX NETCDF FILE
 			File matrixFile = new File(genotypesFolder + matrixMetadata.getMatrixNetCDFName() + ".nc");
-			if (matrixFile.exists()) {
-				if (!matrixFile.canWrite()) {
-					throw new IllegalArgumentException("Delete: write protected: " + matrixFile.getPath());
-				}
-
-				boolean success = matrixFile.delete();
-			}
+			tryToDeleteFile(matrixFile);
 
 			// DELETE METADATA INFO FROM DB
 			DbManager dBManager = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
-			String statement = "DELETE FROM " + cDBGWASpi.SCH_MATRICES + "." + cDBMatrix.T_MATRICES + " WHERE ID=" + matrixMetadata.getMatrixId();
+			String statement = String.format(SQL_STATEMENT_DELETE_REPORT_BY_MATRIX_ID, matrixMetadata.getMatrixId());
 			dBManager.executeStatement(statement);
 		} catch (Exception ex) {
-			log.error("Failed deleteing Matrix", ex);
+			log.error("Failed deleting Matrix", ex);
+		}
+	}
+
+	public static void tryToDeleteFile(File toDelete) throws IOException {
+
+		if (toDelete.exists()) {
+			if (!toDelete.canWrite()) {
+				throw new IOException("Failed to delete file; write protected: " + toDelete.getPath());
+			}
+
+			boolean success = toDelete.delete();
+			if (!success) {
+				throw new IOException("Failed to delete file; reason unknown: " + toDelete.getPath());
+			}
 		}
 	}
 
@@ -136,16 +142,16 @@ public class MatrixManager {
 
 	public static MatrixMetadata getLatestMatrixId() throws IOException {
 
-		List<Map<String, Object>> rs = null;
+		MatrixMetadata mxMetaData = null;
+
 		String dbName = cDBGWASpi.DB_DATACENTER;
 		DbManager studyDbManager = ServiceLocator.getDbManager(dbName);
 		try {
-			rs = studyDbManager.executeSelectStatement("SELECT " + cDBMatrix.f_ID + " FROM " + cDBGWASpi.SCH_MATRICES + "." + cDBMatrix.T_MATRICES + " ORDER BY " + cDBMatrix.f_ID + " DESC  WITH RR");
+			List<Map<String, Object>> rs = studyDbManager.executeSelectStatement(SQL_STATEMENT_SELECT_LATEST_MATRIX);
+			mxMetaData = new MatrixMetadata((Integer) rs.get(0).get(cDBMatrix.f_ID));
 		} catch (Exception ex) {
 			log.error("Failed retreiving latest Matrix", ex);
 		}
-
-		MatrixMetadata mxMetaData = new MatrixMetadata((Integer) rs.get(0).get(cDBMatrix.f_ID));
 
 		return mxMetaData;
 	}
