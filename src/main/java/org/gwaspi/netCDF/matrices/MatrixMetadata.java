@@ -49,10 +49,6 @@ public class MatrixMetadata {
 	private int sampleSetSize = Integer.MIN_VALUE;
 	private int studyId = Integer.MIN_VALUE;
 	private String matrixType = ""; // matrix_type VARCHAR(32) NOT NULL
-	private int parentMatrixId1 = Integer.MIN_VALUE; // parent_matrix1_id INTEGER
-	private int parentMatrixId2 = Integer.MIN_VALUE; // parent_matrix2_id INTEGER
-	private String input_location = ""; // input_location VARCHAR(1000)
-	private String loaded = ""; // loaded CHAR(1)
 
 	public MatrixMetadata(int matrixId) throws IOException {
 
@@ -101,11 +97,11 @@ public class MatrixMetadata {
 			matrixFriendlyName = (rs.get(0).get(cDBMatrix.f_MATRIX_NAME) != null) ? rs.get(0).get(cDBMatrix.f_MATRIX_NAME).toString() : ""; // matrix_name VARCHAR(64) NOT NULL
 			matrixNetCDFName = (rs.get(0).get(cDBMatrix.f_NETCDF_NAME) != null) ? rs.get(0).get(cDBMatrix.f_NETCDF_NAME).toString() : ""; // netcdf_name VARCHAR(64) NOT NULL
 			matrixType = (rs.get(0).get(cDBMatrix.f_MATRIX_TYPE) != null) ? rs.get(0).get(cDBMatrix.f_MATRIX_TYPE).toString() : ""; // matrix_type VARCHAR(32) NOT NULL
-			parentMatrixId1 = (rs.get(0).get(cDBMatrix.f_PARENT_MATRIX1_ID) != null) ? Integer.parseInt(rs.get(0).get(cDBMatrix.f_PARENT_MATRIX1_ID).toString()) : -1; // parent_matrix1_id INTEGER
-			parentMatrixId2 = (rs.get(0).get(cDBMatrix.f_PARENT_MATRIX2_ID) != null) ? Integer.parseInt(rs.get(0).get(cDBMatrix.f_PARENT_MATRIX2_ID).toString()) : -1; // parent_matrix2_id INTEGER
-			input_location = (rs.get(0).get(cDBMatrix.f_INPUT_LOCATION) != null) ? rs.get(0).get(cDBMatrix.f_INPUT_LOCATION).toString() : ""; // input_location VARCHAR(1000)
+//			parentMatrixId1 = (rs.get(0).get(cDBMatrix.f_PARENT_MATRIX1_ID) != null) ? Integer.parseInt(rs.get(0).get(cDBMatrix.f_PARENT_MATRIX1_ID).toString()) : -1; // parent_matrix1_id INTEGER
+//			parentMatrixId2 = (rs.get(0).get(cDBMatrix.f_PARENT_MATRIX2_ID) != null) ? Integer.parseInt(rs.get(0).get(cDBMatrix.f_PARENT_MATRIX2_ID).toString()) : -1; // parent_matrix2_id INTEGER
+//			input_location = (rs.get(0).get(cDBMatrix.f_INPUT_LOCATION) != null) ? rs.get(0).get(cDBMatrix.f_INPUT_LOCATION).toString() : ""; // input_location VARCHAR(1000)
 			description = (rs.get(0).get(cDBMatrix.f_DESCRIPTION) != null) ? rs.get(0).get(cDBMatrix.f_DESCRIPTION).toString() : ""; // description VARCHAR(2000)
-			loaded = (rs.get(0).get(cDBMatrix.f_LOADED) != null) ? rs.get(0).get(cDBMatrix.f_LOADED).toString() : "0"; // loaded CHAR(1)
+//			loaded = (rs.get(0).get(cDBMatrix.f_LOADED) != null) ? rs.get(0).get(cDBMatrix.f_LOADED).toString() : "0"; // loaded CHAR(1)
 			studyId = (rs.get(0).get(cDBMatrix.f_STUDYID) != null) ? Integer.parseInt(rs.get(0).get(cDBMatrix.f_STUDYID).toString()) : 0;
 		}
 
@@ -213,27 +209,11 @@ public class MatrixMetadata {
 		return description;
 	}
 
-	public String getInput_location() {
-		return input_location;
-	}
-
-	public String getLoaded() {
-		return loaded;
-	}
-
 	public String getMatrixNetCDFName() {
 		return matrixNetCDFName;
 	}
 
 	public String getMatrixType() {
 		return matrixType;
-	}
-
-	public int getParentMatrixId1() {
-		return parentMatrixId1;
-	}
-
-	public int getParentMatrixId2() {
-		return parentMatrixId2;
 	}
 }
