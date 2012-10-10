@@ -252,12 +252,7 @@ public class OperationManager {
 				operations.add(op);
 				for (int i = 0; i < operations.size(); i++) {
 					File matrixOPFile = new File(genotypesFolder + "/STUDY_" + studyId + "/" + operations.get(i).getOperationNetCDFName() + ".nc");
-					if (matrixOPFile.exists()) {
-						if (!matrixOPFile.canWrite()) {
-							throw new IllegalArgumentException("Delete: write protected: " + matrixOPFile.getPath());
-						}
-						boolean success = matrixOPFile.delete();
-					}
+					org.gwaspi.global.Utils.tryToDeleteFile(matrixOPFile);
 					if (deleteReports) {
 						org.gwaspi.reports.ReportManager.deleteReportByOperationId(operations.get(i).getOperationId());
 					}
@@ -268,12 +263,7 @@ public class OperationManager {
 				}
 			} else {
 				File matrixOPFile = new File(genotypesFolder + "/STUDY_" + studyId + "/" + op.getOperationNetCDFName() + ".nc");
-				if (matrixOPFile.exists()) {
-					if (!matrixOPFile.canWrite()) {
-						throw new IllegalArgumentException("Delete: write protected: " + matrixOPFile.getPath());
-					}
-					boolean success = matrixOPFile.delete();
-				}
+				org.gwaspi.global.Utils.tryToDeleteFile(matrixOPFile);
 				if (deleteReports) {
 					org.gwaspi.reports.ReportManager.deleteReportByOperationId(opId);
 				}
