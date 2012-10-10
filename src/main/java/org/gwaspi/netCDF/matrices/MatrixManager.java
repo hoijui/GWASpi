@@ -96,14 +96,14 @@ public class MatrixManager {
 			List<Operation> operations = OperationsList.getOperationsList(matrixId);
 			for (Operation op : operations) {
 				File opFile = new File(genotypesFolder + op.getOperationNetCDFName() + ".nc");
-				tryToDeleteFile(opFile);
+				org.gwaspi.global.Utils.tryToDeleteFile(opFile);
 			}
 
 			org.gwaspi.reports.ReportManager.deleteReportByMatrixId(matrixId);
 
 			// DELETE MATRIX NETCDF FILE
 			File matrixFile = new File(genotypesFolder + matrixMetadata.getMatrixNetCDFName() + ".nc");
-			tryToDeleteFile(matrixFile);
+			org.gwaspi.global.Utils.tryToDeleteFile(matrixFile);
 
 			// DELETE METADATA INFO FROM DB
 			DbManager dBManager = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
@@ -111,20 +111,6 @@ public class MatrixManager {
 			dBManager.executeStatement(statement);
 		} catch (Exception ex) {
 			log.error("Failed deleting Matrix", ex);
-		}
-	}
-
-	public static void tryToDeleteFile(File toDelete) throws IOException {
-
-		if (toDelete.exists()) {
-			if (!toDelete.canWrite()) {
-				throw new IOException("Failed to delete file; write protected: " + toDelete.getPath());
-			}
-
-			boolean success = toDelete.delete();
-			if (!success) {
-				throw new IOException("Failed to delete file; reason unknown: " + toDelete.getPath());
-			}
 		}
 	}
 

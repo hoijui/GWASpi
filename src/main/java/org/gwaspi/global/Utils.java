@@ -187,6 +187,19 @@ public class Utils {
 		}
 	}
 
+	public static void tryToDeleteFile(File toDelete) throws IOException {
+
+		if (toDelete.exists()) {
+			if (!toDelete.canWrite()) {
+				throw new IOException("Failed to delete file; write protected: " + toDelete.getPath());
+			}
+
+			boolean success = toDelete.delete();
+			if (!success) {
+				throw new IOException("Failed to delete file; reason unknown: " + toDelete.getPath());
+			}
+		}
+	}
 	// </editor-fold>
 
 	// <editor-fold defaultstate="collapsed" desc="Date Time methods">
