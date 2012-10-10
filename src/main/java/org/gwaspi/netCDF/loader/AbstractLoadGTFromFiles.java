@@ -97,11 +97,9 @@ public abstract class AbstractLoadGTFromFiles implements GenotypesLoader {
 		Map<String, Object> markerSetMap = new LinkedHashMap<String, Object>();
 
 		//<editor-fold defaultstate="collapsed/expanded" desc="CREATE MARKERSET & NETCDF">
-		for (int i = 0; i < gtFilesToImport.length; i++) {
-			MetadataLoader markerSetLoader = createMetaDataLoader(gtFilesToImport[i].getPath(), loadDescription);
-			Map<String, Object> tmpMarkerMap = markerSetLoader.getSortedMarkerSetWithMetaData();
-			markerSetMap.putAll(tmpMarkerMap);
-		}
+		MetadataLoader markerSetLoader = createMetaDataLoader(loadDescription.getAnnotationFilePath(), loadDescription);
+		Map<String, Object> tmpMarkerMap = markerSetLoader.getSortedMarkerSetWithMetaData();
+		markerSetMap.putAll(tmpMarkerMap);
 
 		log.info("Done initializing sorted MarkerSetMap at {}", org.gwaspi.global.Utils.getMediumDateTimeAsString());
 
