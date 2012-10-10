@@ -24,105 +24,108 @@ public class MultiOperations {
 	private MultiOperations() {
 	}
 
-	//<editor-fold defaultstate="collapsed" desc="LOADERS">
-	public static void doMatrixQAs(final int studyId, final int matrixId) {
-
-		// SAMPLES QA
-		CommonRunnable task = new Threaded_MatrixQA(matrixId);
+	private static void queueTask(CommonRunnable task, TaskLockProperties lockProperties) {
 
 		SwingWorkerItem swi = new SwingWorkerItem(
 				task,
-				new Integer[]{studyId},
-				new Integer[]{matrixId});
+				lockProperties.getStudyIds().toArray(new Integer[] {}),
+				lockProperties.getMatricesIds().toArray(new Integer[] {}),
+				lockProperties.getOperationsIds().toArray(new Integer[] {}));
 		SwingWorkerItemList.add(swi);
 
 		ProcessTab.getSingleton().updateProcessOverview();
 	}
 
+	//<editor-fold defaultstate="collapsed" desc="LOADERS">
+	/** SAMPLES QA */
+	public static void doMatrixQAs(final int studyId, final int matrixId) {
+
+		CommonRunnable task = new Threaded_MatrixQA(matrixId);
+
+		TaskLockProperties lockProperties = new TaskLockProperties();
+		lockProperties.getStudyIds().add(studyId);
+		lockProperties.getMatricesIds().add(matrixId);
+
+		queueTask(task, lockProperties);
+	}
+
+	/** LOAD & GWAS if requested and OK */
 	public static void loadMatrixDoGWASifOK(
 			final GenotypesLoadDescription loadDescription,
 			final boolean dummySamples,
 			final boolean performGwas,
 			final GWASinOneGOParams gwasParams)
 	{
-		// LOAD & GWAS if requested and OK
 		CommonRunnable task = new Threaded_Loader_GWASifOK(
 				loadDescription,
 				dummySamples,
 				performGwas,
 				gwasParams);
 
-		SwingWorkerItem swi = new SwingWorkerItem(
-				task,
-				new Integer[]{loadDescription.getStudyId()});
-		SwingWorkerItemList.add(swi);
+		TaskLockProperties lockProperties = new TaskLockProperties();
+		lockProperties.getStudyIds().add(loadDescription.getStudyId());
 
-		ProcessTab.getSingleton().updateProcessOverview();
+		queueTask(task, lockProperties);
 	}
 	//</editor-fold>
 
 	//<editor-fold defaultstate="collapsed" desc="ANALYSIS">
+	/** LOAD & GWAS */
 	public static void doGWASwithAlterPhenotype(
 			final int studyId,
 			final int matrixId,
 			final File phenofile,
 			final GWASinOneGOParams gwasParams)
 	{
-		// LOAD & GWAS
 		CommonRunnable task = new Threaded_GWAS(
 				matrixId,
 				phenofile,
 				gwasParams);
 
-		SwingWorkerItem swi = new SwingWorkerItem(
-				task,
-				new Integer[]{studyId},
-				new Integer[]{matrixId});
-		SwingWorkerItemList.add(swi);
+		TaskLockProperties lockProperties = new TaskLockProperties();
+		lockProperties.getStudyIds().add(studyId);
+		lockProperties.getMatricesIds().add(matrixId);
 
-		ProcessTab.getSingleton().updateProcessOverview();
+		queueTask(task, lockProperties);
 	}
 
+	/** LOAD & GWAS */
 	public static void doHardyWeinberg(
 			final int studyId,
 			final int matrixId,
 			final int censusOpId)
 	{
-		// LOAD & GWAS
 		CommonRunnable task = new Threaded_HardyWeinberg(
 				matrixId,
 				censusOpId);
 
-		SwingWorkerItem swi = new SwingWorkerItem(
-				task,
-				new Integer[]{studyId},
-				new Integer[]{matrixId});
-		SwingWorkerItemList.add(swi);
+		TaskLockProperties lockProperties = new TaskLockProperties();
+		lockProperties.getStudyIds().add(studyId);
+		lockProperties.getMatricesIds().add(matrixId);
 
-		ProcessTab.getSingleton().updateProcessOverview();
+		queueTask(task, lockProperties);
 	}
 
+	/** LOAD & GWAS */
 	public static void doGTFreqDoHW(
 			final int studyId,
 			final int matrixId,
 			final File phenoFile,
 			final GWASinOneGOParams gwasParams)
 	{
-		// LOAD & GWAS
 		CommonRunnable task = new Threaded_GTFreq_HW(
 				matrixId,
 				phenoFile,
 				gwasParams);
 
-		SwingWorkerItem swi = new SwingWorkerItem(
-				task,
-				new Integer[]{studyId},
-				new Integer[]{matrixId});
-		SwingWorkerItemList.add(swi);
+		TaskLockProperties lockProperties = new TaskLockProperties();
+		lockProperties.getStudyIds().add(studyId);
+		lockProperties.getMatricesIds().add(matrixId);
 
-		ProcessTab.getSingleton().updateProcessOverview();
+		queueTask(task, lockProperties);
 	}
 
+	/** LOAD & GWAS */
 	public static void doAllelicAssociationTest(
 			final int studyId,
 			final int matrixId,
@@ -130,27 +133,22 @@ public class MultiOperations {
 			final int hwOPId,
 			final GWASinOneGOParams gwasParams)
 	{
-		// LOAD & GWAS
 		CommonRunnable task = new Threaded_AllelicAssociation(
 				matrixId,
 				censusOPId,
 				hwOPId,
 				gwasParams);
 
-//		List<Integer> holdOpIds = new ArrayList<Integer>();
-//		holdOpIds.add(censusOPId);
-//		holdOpIds.add(hwOPId);
+		TaskLockProperties lockProperties = new TaskLockProperties();
+		lockProperties.getStudyIds().add(studyId);
+		lockProperties.getMatricesIds().add(matrixId);
+		lockProperties.getOperationsIds().add(censusOPId);
+		lockProperties.getOperationsIds().add(hwOPId);
 
-		SwingWorkerItem swi = new SwingWorkerItem(
-				task,
-				new Integer[]{studyId},
-				new Integer[]{matrixId},
-				new Integer[]{censusOPId, hwOPId});
-		SwingWorkerItemList.add(swi);
-
-		ProcessTab.getSingleton().updateProcessOverview();
+		queueTask(task, lockProperties);
 	}
 
+	/** LOAD & GWAS */
 	public static void doGenotypicAssociationTest(
 			final int studyId,
 			final int matrixId,
@@ -158,27 +156,22 @@ public class MultiOperations {
 			final int hwOPId,
 			final GWASinOneGOParams gwasParams)
 	{
-		// LOAD & GWAS
 		CommonRunnable task = new Threaded_GenotypicAssociation(
 				matrixId,
 				censusOPId,
 				hwOPId,
 				gwasParams);
 
-//		List<Integer> holdOpIds = new ArrayList<Integer>();
-//		holdOpIds.add(censusOPId);
-//		holdOpIds.add(hwOPId);
+		TaskLockProperties lockProperties = new TaskLockProperties();
+		lockProperties.getStudyIds().add(studyId);
+		lockProperties.getMatricesIds().add(matrixId);
+		lockProperties.getOperationsIds().add(censusOPId);
+		lockProperties.getOperationsIds().add(hwOPId);
 
-		SwingWorkerItem swi = new SwingWorkerItem(
-				task,
-				new Integer[]{studyId},
-				new Integer[]{matrixId},
-				new Integer[]{censusOPId, hwOPId});
-		SwingWorkerItemList.add(swi);
-
-		ProcessTab.getSingleton().updateProcessOverview();
+		queueTask(task, lockProperties);
 	}
 
+	/** LOAD & GWAS */
 	public static void doTrendTest(
 			final int studyId,
 			final int matrixId,
@@ -186,25 +179,19 @@ public class MultiOperations {
 			final int hwOPId,
 			final GWASinOneGOParams gwasParams)
 	{
-		// LOAD & GWAS
 		CommonRunnable task = new Threaded_TrendTest(
 				matrixId,
 				censusOPId,
 				hwOPId,
 				gwasParams);
 
-//		List<Integer> holdOpIds = new ArrayList<Integer>();
-//		holdOpIds.add(censusOPId);
-//		holdOpIds.add(hwOPId);
+		TaskLockProperties lockProperties = new TaskLockProperties();
+		lockProperties.getStudyIds().add(studyId);
+		lockProperties.getMatricesIds().add(matrixId);
+		lockProperties.getOperationsIds().add(censusOPId);
+		lockProperties.getOperationsIds().add(hwOPId);
 
-		SwingWorkerItem swi = new SwingWorkerItem(
-				task,
-				new Integer[]{studyId},
-				new Integer[]{matrixId},
-				new Integer[]{censusOPId, hwOPId});
-		SwingWorkerItemList.add(swi);
-
-		ProcessTab.getSingleton().updateProcessOverview();
+		queueTask(task, lockProperties);
 	}
 	//</editor-fold>
 
@@ -237,13 +224,11 @@ public class MultiOperations {
 				markerCriteriaFile,
 				sampleCriteriaFile);
 
-		SwingWorkerItem swi = new SwingWorkerItem(
-				task,
-				new Integer[]{studyId},
-				new Integer[]{parentMatrixId});
-		SwingWorkerItemList.add(swi);
+		TaskLockProperties lockProperties = new TaskLockProperties();
+		lockProperties.getStudyIds().add(studyId);
+		lockProperties.getMatricesIds().add(parentMatrixId);
 
-		ProcessTab.getSingleton().updateProcessOverview();
+		queueTask(task, lockProperties);
 	}
 
 	public static void doTranslateAB12ToACGT(
@@ -260,13 +245,11 @@ public class MultiOperations {
 				newMatrixName,
 				description);
 
-		SwingWorkerItem swi = new SwingWorkerItem(
-				task,
-				new Integer[]{studyId},
-				new Integer[]{parentMatrixId});
-		SwingWorkerItemList.add(swi);
+		TaskLockProperties lockProperties = new TaskLockProperties();
+		lockProperties.getStudyIds().add(studyId);
+		lockProperties.getMatricesIds().add(parentMatrixId);
 
-		ProcessTab.getSingleton().updateProcessOverview();
+		queueTask(task, lockProperties);
 	}
 
 	public static void doExportMatrix(
@@ -280,13 +263,11 @@ public class MultiOperations {
 				format,
 				phenotype);
 
-		SwingWorkerItem swi = new SwingWorkerItem(
-				task,
-				new Integer[]{studyId},
-				new Integer[]{matrixId});
-		SwingWorkerItemList.add(swi);
+		TaskLockProperties lockProperties = new TaskLockProperties();
+		lockProperties.getStudyIds().add(studyId);
+		lockProperties.getMatricesIds().add(matrixId);
 
-		ProcessTab.getSingleton().updateProcessOverview();
+		queueTask(task, lockProperties);
 	}
 
 	public static void doMergeMatrixAddMarkers(
@@ -303,13 +284,12 @@ public class MultiOperations {
 				newMatrixName,
 				description);
 
-		SwingWorkerItem swi = new SwingWorkerItem(
-				task,
-				new Integer[]{studyId},
-				new Integer[]{parentMatrixId1, parentMatrixId2});
-		SwingWorkerItemList.add(swi);
+		TaskLockProperties lockProperties = new TaskLockProperties();
+		lockProperties.getStudyIds().add(studyId);
+		lockProperties.getMatricesIds().add(parentMatrixId1);
+		lockProperties.getMatricesIds().add(parentMatrixId2);
 
-		ProcessTab.getSingleton().updateProcessOverview();
+		queueTask(task, lockProperties);
 	}
 
 	public static void doMergeMatrixAddSamples(
@@ -326,13 +306,12 @@ public class MultiOperations {
 				newMatrixName,
 				description);
 
-		SwingWorkerItem swi = new SwingWorkerItem(
-				task,
-				new Integer[]{studyId},
-				new Integer[]{parentMatrixId1, parentMatrixId2});
-		SwingWorkerItemList.add(swi);
+		TaskLockProperties lockProperties = new TaskLockProperties();
+		lockProperties.getStudyIds().add(studyId);
+		lockProperties.getMatricesIds().add(parentMatrixId1);
+		lockProperties.getMatricesIds().add(parentMatrixId2);
 
-		ProcessTab.getSingleton().updateProcessOverview();
+		queueTask(task, lockProperties);
 	}
 
 	public static void doMergeMatrixAll(final int studyId,
@@ -348,13 +327,12 @@ public class MultiOperations {
 				newMatrixName,
 				description);
 
-		SwingWorkerItem swi = new SwingWorkerItem(
-				task,
-				new Integer[]{studyId},
-				new Integer[]{parentMatrixId1, parentMatrixId2});
-		SwingWorkerItemList.add(swi);
+		TaskLockProperties lockProperties = new TaskLockProperties();
+		lockProperties.getStudyIds().add(studyId);
+		lockProperties.getMatricesIds().add(parentMatrixId1);
+		lockProperties.getMatricesIds().add(parentMatrixId2);
 
-		ProcessTab.getSingleton().updateProcessOverview();
+		queueTask(task, lockProperties);
 	}
 
 	public static void doStrandFlipMatrix(
@@ -373,13 +351,11 @@ public class MultiOperations {
 				markerIdentifyer,
 				markerFlipFile);
 
-		SwingWorkerItem swi = new SwingWorkerItem(
-				task,
-				new Integer[]{studyId},
-				new Integer[]{parentMatrixId});
-		SwingWorkerItemList.add(swi);
+		TaskLockProperties lockProperties = new TaskLockProperties();
+		lockProperties.getStudyIds().add(studyId);
+		lockProperties.getMatricesIds().add(parentMatrixId);
 
-		ProcessTab.getSingleton().updateProcessOverview();
+		queueTask(task, lockProperties);
 	}
 
 	public static void updateSampleInfo(
@@ -390,47 +366,49 @@ public class MultiOperations {
 				studyId,
 				sampleInfoFile);
 
-		SwingWorkerItem swi = new SwingWorkerItem(
-				task,
-				new Integer[]{studyId});
-		SwingWorkerItemList.add(swi);
+		TaskLockProperties lockProperties = new TaskLockProperties();
+		lockProperties.getStudyIds().add(studyId);
 
-		ProcessTab.getSingleton().updateProcessOverview();
+		queueTask(task, lockProperties);
 	}
 	//</editor-fold>
 
 	//<editor-fold defaultstate="collapsed" desc="DELETERS">
-	public static void deleteStudy(final int studyId, final boolean deleteReports) {
+	private static void queueDeleteTask(SwingDeleterItem sdi) {
 
-		SwingDeleterItem sdi = new SwingDeleterItem(SwingDeleterItem.DeleteTarget.STUDY,
-				studyId,
-				deleteReports);
 		SwingDeleterItemList.add(sdi);
 
 		ProcessTab.getSingleton().updateProcessOverview();
+	}
+
+	public static void deleteStudy(final int studyId, final boolean deleteReports) {
+
+		SwingDeleterItem sdi = new SwingDeleterItem(
+				SwingDeleterItem.DeleteTarget.STUDY,
+				studyId,
+				deleteReports);
+		queueDeleteTask(sdi);
 	}
 
 	public static void deleteMatrix(final int studyId, final int matrixId, final boolean deleteReports) {
 
-		SwingDeleterItem sdi = new SwingDeleterItem(SwingDeleterItem.DeleteTarget.MATRIX,
+		SwingDeleterItem sdi = new SwingDeleterItem(
+				SwingDeleterItem.DeleteTarget.MATRIX,
 				studyId,
 				matrixId,
 				deleteReports);
-		SwingDeleterItemList.add(sdi);
-
-		ProcessTab.getSingleton().updateProcessOverview();
+		queueDeleteTask(sdi);
 	}
 
 	public static void deleteOperationsByOpId(final int studyId, final int matrixId, final int opId, final boolean deleteReports) {
 
-		SwingDeleterItem sdi = new SwingDeleterItem(SwingDeleterItem.DeleteTarget.OPERATION_BY_OPID,
+		SwingDeleterItem sdi = new SwingDeleterItem(
+				SwingDeleterItem.DeleteTarget.OPERATION_BY_OPID,
 				studyId,
 				matrixId,
 				opId,
 				deleteReports);
-		SwingDeleterItemList.add(sdi);
-
-		ProcessTab.getSingleton().updateProcessOverview();
+		queueDeleteTask(sdi);
 	}
 	//</editor-fold>
 
