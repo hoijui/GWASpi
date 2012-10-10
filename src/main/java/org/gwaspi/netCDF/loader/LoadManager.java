@@ -41,9 +41,11 @@ public class LoadManager {
 		int newMatrixId = Integer.MIN_VALUE;
 
 		GenotypesLoader genotypesLoader = genotypesLoaders.get(loadDescription.getFormat());
-		if (genotypesLoader != null) {
-				InsertSampleInfo.processData(loadDescription.getStudyId(), sampleInfoMap);
-				genotypesLoader.processData(loadDescription, sampleInfoMap);
+		if (genotypesLoader == null) {
+			throw new IOException("No Genotypes-Loader found for format " + loadDescription.getFormat());
+		} else {
+			InsertSampleInfo.processData(loadDescription.getStudyId(), sampleInfoMap);
+			newMatrixId = genotypesLoader.processData(loadDescription, sampleInfoMap);
 		}
 
 		return newMatrixId;
