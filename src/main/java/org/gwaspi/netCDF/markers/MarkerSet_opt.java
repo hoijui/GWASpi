@@ -56,7 +56,6 @@ public class MarkerSet_opt {
 		technology = matrixMetadata.getTechnology();
 		markerSetSize = matrixMetadata.getMarkerSetSize();
 
-
 		ncfile = NetcdfFile.open(matrixMetadata.getPathToMatrix());
 	}
 

@@ -308,10 +308,9 @@ public class OperationManager {
 
 			for (int i = 0; i < chkMatrixAL.size(); i++) {
 				// Check if current operation is from parent matrix or parent operation
-				if (chkMatrixAL.get(i).getParentOperationId() == -1 || chkMatrixAL.get(i).getParentOperationId() == opId) {
-					if (necessaryOPs.contains(chkMatrixAL.get(i).getOperationType())) {
-						necessaryOPs.remove(chkMatrixAL.get(i).getOperationType());
-					}
+				int parentOperationId = chkMatrixAL.get(i).getParentOperationId();
+				if ((parentOperationId == -1) || (parentOperationId == opId)) {
+					necessaryOPs.remove(chkMatrixAL.get(i).getOperationType());
 				}
 			}
 		} catch (IOException ex) {
