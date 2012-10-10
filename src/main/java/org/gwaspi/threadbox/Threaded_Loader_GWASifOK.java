@@ -28,9 +28,6 @@ import org.gwaspi.reports.OutputTrendTest;
  */
 public class Threaded_Loader_GWASifOK extends CommonRunnable {
 
-	private int resultMatrixId;
-	private int samplesQAOpId;
-	private int markersQAOpId;
 	private boolean dummySamples;
 	private boolean performGwas;
 	private GenotypesLoadDescription loadDescription;
@@ -69,6 +66,7 @@ public class Threaded_Loader_GWASifOK extends CommonRunnable {
 		Set<String> affectionStates = SampleInfoCollectorSwitch.collectAffectionStates(sampleInfoMap);
 
 		//<editor-fold defaultstate="collapsed" desc="LOAD PROCESS">
+		int resultMatrixId = Integer.MIN_VALUE;
 		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
 			resultMatrixId = LoadManager.dispatchLoadByFormat(
 					loadDescription,
@@ -79,6 +77,7 @@ public class Threaded_Loader_GWASifOK extends CommonRunnable {
 		//</editor-fold>
 
 		//<editor-fold defaultstate="collapsed" desc="QA PROCESS">
+		int samplesQAOpId = Integer.MIN_VALUE;
 		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
 			samplesQAOpId = new OP_QASamples_opt(resultMatrixId).processMatrix();
 			GWASpiExplorerNodes.insertOperationUnderMatrixNode(resultMatrixId, samplesQAOpId);
@@ -86,6 +85,7 @@ public class Threaded_Loader_GWASifOK extends CommonRunnable {
 			GWASpiExplorerNodes.insertReportsUnderOperationNode(samplesQAOpId);
 		}
 
+		int markersQAOpId = Integer.MIN_VALUE;
 		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
 			markersQAOpId = new OP_QAMarkers_opt(resultMatrixId).processMatrix();
 			GWASpiExplorerNodes.insertOperationUnderMatrixNode(resultMatrixId, markersQAOpId);
