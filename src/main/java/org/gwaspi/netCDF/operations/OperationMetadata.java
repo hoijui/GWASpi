@@ -70,7 +70,7 @@ public class OperationMetadata {
 					Dimension implicitDim = ncfile.findDimension(cNetCDF.Dimensions.DIM_IMPLICITSET);
 					implicitSetSize = implicitDim.getLength();
 				} catch (IOException ex) {
-					log.error("Cannot open file: " + ncfile.getLocation(), ex);
+					log.error("Cannot open file: " + pathToMatrix, ex);
 				} finally {
 					if (null != ncfile) {
 						try {
@@ -118,7 +118,7 @@ public class OperationMetadata {
 				implicitSetSize = implicitDim.getLength();
 
 			} catch (IOException ex) {
-				log.error("Cannot open file: " + ncfile.getLocation(), ex);
+				log.error("Cannot open file: " + pathToMatrix, ex);
 			} finally {
 				if (null != ncfile) {
 					try {
