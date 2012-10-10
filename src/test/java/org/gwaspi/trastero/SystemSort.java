@@ -19,10 +19,10 @@ public class SystemSort {
 	}
 
 	public static void processData(File dir, String format, JProgressBar progressBar) throws IOException {
-		File[] filesToImport = org.gwaspi.global.Utils.listFiles(dir.toString(), false);
+		File[] filesToImport = org.gwaspi.global.Utils.listFiles(dir.toString());
 		File formatFolder = org.gwaspi.global.Utils.createFolder(org.gwaspi.global.Config.getConfigValue("ESdir", cGlobal.USERDIR), format);
 		String processingDir = formatFolder.getPath() + "/";
-		File[] alreadySortedFiles = org.gwaspi.global.Utils.listFiles(processingDir, false);
+		File[] alreadySortedFiles = org.gwaspi.global.Utils.listFiles(processingDir);
 		numFiles = alreadySortedFiles.length;
 
 		for (int i = 0; i < filesToImport.length; i++) {

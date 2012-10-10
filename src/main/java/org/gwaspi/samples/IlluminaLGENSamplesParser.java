@@ -20,7 +20,7 @@ public class IlluminaLGENSamplesParser implements SamplesParser {
 
 		Map<String, Object> sampleInfoMap = new LinkedHashMap<String, Object>();
 
-		File[] gtFilesToImport = org.gwaspi.global.Utils.listFiles(sampleInfoPath, false);
+		File[] gtFilesToImport = org.gwaspi.global.Utils.listFiles(sampleInfoPath);
 
 		for (int i = 0; i < gtFilesToImport.length; i++) {
 			FileReader inputFileReader = new FileReader(gtFilesToImport[i]);

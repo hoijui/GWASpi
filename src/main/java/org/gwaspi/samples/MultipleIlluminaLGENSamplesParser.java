@@ -19,7 +19,7 @@ public class MultipleIlluminaLGENSamplesParser implements SamplesParser {
 	public Map<String, Object> scanSampleInfo(String sampleInfoPath) throws IOException {
 
 		Map<String, Object> sampleInfoMap = new LinkedHashMap<String, Object>();
-		File[] lgenFilesToScan = org.gwaspi.global.Utils.listFiles(sampleInfoPath, false);
+		File[] lgenFilesToScan = org.gwaspi.global.Utils.listFiles(sampleInfoPath);
 
 		for (File currentLGENFile : lgenFilesToScan) {
 			FileReader inputFileReader = new FileReader(currentLGENFile);

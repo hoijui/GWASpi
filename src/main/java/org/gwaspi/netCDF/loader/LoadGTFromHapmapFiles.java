@@ -89,7 +89,7 @@ public class LoadGTFromHapmapFiles implements GenotypesLoader {
 		// TODO check if real samplefiles coincides with sampleInfoFile
 		File hapmapGTFile = new File(loadDescription.getGtDirPath());
 		if (hapmapGTFile.isDirectory()) {
-			File[] gtFilesToImport = org.gwaspi.global.Utils.listFiles(loadDescription.getGtDirPath(), false);
+			File[] gtFilesToImport = org.gwaspi.global.Utils.listFiles(loadDescription.getGtDirPath());
 			for (int i = 0; i < gtFilesToImport.length; i++) {
 				Map<String, Object> tempSamplesMap = getHapmapSampleIds(gtFilesToImport[i]);
 				sampleInfo.putAll(tempSamplesMap);
@@ -108,7 +108,7 @@ public class LoadGTFromHapmapFiles implements GenotypesLoader {
 
 		File[] gtFilesToImport;
 		if (hasManyFiles) {
-			gtFilesToImport = org.gwaspi.global.Utils.listFiles(loadDescription.getGtDirPath(), false);
+			gtFilesToImport = org.gwaspi.global.Utils.listFiles(loadDescription.getGtDirPath());
 		} else {
 			gtFilesToImport = new File[]{new File(loadDescription.getGtDirPath())};
 		}

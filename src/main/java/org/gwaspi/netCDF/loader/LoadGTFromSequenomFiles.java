@@ -78,7 +78,7 @@ public class LoadGTFromSequenomFiles implements GenotypesLoader {
 		int result = Integer.MIN_VALUE;
 
 		String startTime = org.gwaspi.global.Utils.getMediumDateTimeAsString();
-		File[] gtFilesToImport = org.gwaspi.global.Utils.listFiles(loadDescription.getGtDirPath(), false);
+		File[] gtFilesToImport = org.gwaspi.global.Utils.listFiles(loadDescription.getGtDirPath());
 //		File gtFileToImport = new File(gtDirPath);
 
 		//<editor-fold defaultstate="collapsed" desc="CREATE MARKERSET & NETCDF">

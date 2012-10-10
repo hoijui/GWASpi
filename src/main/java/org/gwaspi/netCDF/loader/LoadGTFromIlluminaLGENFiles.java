@@ -85,7 +85,7 @@ public class LoadGTFromIlluminaLGENFiles implements GenotypesLoader {
 		List<String> sampleInfoList = new ArrayList<String>();
 		sampleInfoList.addAll(sampleInfo.keySet());
 
-		File[] gtFilesToImport = org.gwaspi.global.Utils.listFiles(loadDescription.getGtDirPath(), false);
+		File[] gtFilesToImport = org.gwaspi.global.Utils.listFiles(loadDescription.getGtDirPath());
 
 		//<editor-fold defaultstate="collapsed" desc="CREATE MARKERSET & NETCDF">
 		MetadataLoaderIlluminaLGEN markerSetLoader = new MetadataLoaderIlluminaLGEN(loadDescription.getAnnotationFilePath(), loadDescription.getStudyId());

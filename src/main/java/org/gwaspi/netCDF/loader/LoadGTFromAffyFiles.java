@@ -83,7 +83,7 @@ public class LoadGTFromAffyFiles implements GenotypesLoader {
 
 		String startTime = org.gwaspi.global.Utils.getMediumDateTimeAsString();
 
-		File[] gtFilesToImport = org.gwaspi.global.Utils.listFiles(loadDescription.getGtDirPath(), false);
+		File[] gtFilesToImport = org.gwaspi.global.Utils.listFiles(loadDescription.getGtDirPath());
 
 		GenotypeEncoding guessedGTCode = GenotypeEncoding.UNKNOWN;
 

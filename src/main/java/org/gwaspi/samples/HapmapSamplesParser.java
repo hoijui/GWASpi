@@ -22,7 +22,7 @@ public class HapmapSamplesParser implements SamplesParser {
 		BufferedReader inputAnnotationBr = null;
 		File hapmapGTFile = new File(sampleInfoPath);
 		if (hapmapGTFile.isDirectory()) {
-			File[] gtFilesToImport = org.gwaspi.global.Utils.listFiles(sampleInfoPath, false);
+			File[] gtFilesToImport = org.gwaspi.global.Utils.listFiles(sampleInfoPath);
 			for (int i = 0; i < gtFilesToImport.length; i++) {
 				fr = new FileReader(gtFilesToImport[i]);
 				inputAnnotationBr = new BufferedReader(fr);

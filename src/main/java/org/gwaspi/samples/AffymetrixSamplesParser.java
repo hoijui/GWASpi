@@ -12,7 +12,7 @@ public class AffymetrixSamplesParser implements SamplesParser {
 	public Map<String, Object> scanSampleInfo(String sampleInfoPath) throws IOException {
 
 		Map<String, Object> resultMap = new LinkedHashMap<String, Object>();
-		File[] gtFilesToImport = org.gwaspi.global.Utils.listFiles(sampleInfoPath, false);
+		File[] gtFilesToImport = org.gwaspi.global.Utils.listFiles(sampleInfoPath);
 
 		for (int i = 0; i < gtFilesToImport.length; i++) {
 			String l = gtFilesToImport[i].getName();

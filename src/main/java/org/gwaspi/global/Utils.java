@@ -2,6 +2,7 @@ package org.gwaspi.global;
 
 import org.gwaspi.constants.cGlobal;
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -15,7 +16,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Locale;
-import javax.swing.JFileChooser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,24 +29,33 @@ public class Utils {
 
 	private static final Logger log = LoggerFactory.getLogger(Utils.class);
 
+	/**
+	 * This filter only returns files, not directories
+	 */
+	private static final FileFilter FILES_ONLY_FILTER = new FileFilter() {
+		@Override
+		public boolean accept(File file) {
+			return !file.isDirectory();
+		}
+	};
+
 	private Utils() {
 	}
 
 	// <editor-fold defaultstate="collapsed" desc="File and directory methods">
 	private static String currentAppPath = "";
-	private static JFileChooser fc;
 
-	public static String GetAppPath() {
+	public static String getAppPath() {
 		currentAppPath = cGlobal.USERDIR;
 		//JOptionPane.showMessageDialog(base.ApipelineGUI.getFrames()[0], currentAppPath);
 		return currentAppPath;
 	}
 
-	public static File createFolder(String path, String folderName) {
+	public static File createFolder(String path, String folderName) throws IOException {
 		String spoonFeeding = path + "/" + folderName;
 		File f = new File(spoonFeeding);
-		if (!f.exists()) {
-			f.mkdir();
+		if (!f.exists() && !f.mkdir()) {
+			throw new IOException("Failed to create directory " + f.getPath());
 		}
 		return f;
 	}
@@ -74,32 +83,25 @@ public class Utils {
 	public static File createFile(String path, String fileName) throws IOException {
 		String spoonFeeding = path + "/" + fileName;
 		File f = new File(spoonFeeding);
-		f.createNewFile();
+		if (!f.exists() && !f.createNewFile()) {
+			throw new IOException("Failed to create file " + f.getPath());
+		}
 		return f;
 	}
 
-	public static File[] listFiles(String path, final boolean foldersToo) {
-		File dir = new File(path);
+	public static File[] listFiles(String path) {
+
 		File[] files;
 
+		File dir = new File(path);
 		if (dir.isDirectory()) {
-			// This filter only returns files, not directories
-			java.io.FileFilter fileFilter = new java.io.FileFilter() {
-				public boolean accept(File file) {
-					if (foldersToo) {
-						return file.isDirectory();
-					} else {
-						return !file.isDirectory();
-					}
-				}
-			};
-
-			files = dir.listFiles(fileFilter);
+			files = dir.listFiles(FILES_ONLY_FILTER);
 		} else {
 			File[] tmpF = new File[1];
 			tmpF[0] = dir;
 			files = tmpF;
 		}
+
 		return files;
 	}
 
@@ -142,11 +144,11 @@ public class Utils {
 		}
 		// is this a directory copy?
 		if (src.isDirectory()) {
-			if (!dest.exists()) { // does the destination already exist?
-				// if not we need to make it exist if possible (note this is mkdirs not mkdir)
-				if (!dest.mkdirs()) {
-					throw new IOException("copyFiles: Could not create direcotry: " + dest.getAbsolutePath() + ".");
-				}
+			// does the destination already exist?
+			// if not we need to make it exist if possible
+			// (NOTE this is mkdirs not mkdir)
+			if (!dest.exists() && !dest.mkdirs()) {
+				throw new IOException("copyFiles: Could not create direcotry: " + dest.getAbsolutePath() + ".");
 			}
 			// get a listing of files...
 			String[] list = src.list();
@@ -304,25 +306,29 @@ public class Utils {
 	public static String stripNonAlphaNumeric(String s) {
 		String good =
 				"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-		String result = "";
+
+		StringBuilder result = new StringBuilder();
 		for (int i = 0; i < s.length(); i++) {
 			if (good.indexOf(s.charAt(i)) >= 0) {
-				result += s.charAt(i);
+				result.append(s.charAt(i));
 			}
 		}
-		return result;
+
+		return result.toString();
 	}
 
 	public static String stripNonAlphaNumericDashUndscr(String s) {
 		String good =
 				"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_";
-		String result = "";
+
+		StringBuilder result = new StringBuilder();
 		for (int i = 0; i < s.length(); i++) {
 			if (good.indexOf(s.charAt(i)) >= 0) {
-				result += s.charAt(i);
+				result.append(s.charAt(i));
 			}
 		}
-		return result;
+
+		return result.toString();
 	}
 	// </editor-fold>
 
