@@ -28,6 +28,14 @@ import org.slf4j.LoggerFactory;
 public class Utils {
 
 	private static final Logger log = LoggerFactory.getLogger(Utils.class);
+	private static final Locale timeLocale = new Locale("es", "ES");
+	private static final Locale dateLocale = new Locale("en", "US");
+	private static final DateFormat mediumTimeFormatter = DateFormat.getTimeInstance(DateFormat.MEDIUM, timeLocale);
+	private static final DateFormat longTimeFormatter = DateFormat.getTimeInstance(DateFormat.LONG, timeLocale);
+	private static final DateFormat shortDateFormatter = DateFormat.getDateInstance(DateFormat.SHORT, dateLocale);
+	private static final DateFormat mediumDateFormatter = DateFormat.getDateInstance(DateFormat.MEDIUM, dateLocale);
+	private static final DateFormat timeStampFormat = new SimpleDateFormat("ddMMyyyyhhmmssSSSS");
+	private static final DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
 
 	/**
 	 * This filter only returns files, not directories
@@ -206,100 +214,90 @@ public class Utils {
 
 	// <editor-fold defaultstate="collapsed" desc="Date Time methods">
 	public static String getShortDateTimeForFileName() {
-		Date today;
-		String dateOut;
 
-		DateFormat timeFormatter = DateFormat.getTimeInstance(DateFormat.LONG, new Locale("es", "ES"));
-		DateFormat dateFormatter = DateFormat.getDateInstance(DateFormat.SHORT, new Locale("en", "US"));
+		Date now = new Date();
+		String dateOut = shortDateFormatter.format(now);
+		dateOut = dateOut + longTimeFormatter.format(now);
 
-		today = new Date();
-		dateOut = dateFormatter.format(today);
-		dateOut = dateOut + timeFormatter.format(today);
 		return dateOut;
 	}
 
 	public static String getShortDateTimeAsString() {
-		Date today;
-		String dateOut;
 
-		DateFormat timeFormatter = DateFormat.getTimeInstance(DateFormat.LONG, new Locale("es", "ES"));
-		DateFormat dateFormatter = DateFormat.getDateInstance(DateFormat.MEDIUM, new Locale("en", "ES"));
+		Date now = new Date();
+		String dateOut = mediumDateFormatter.format(now);
+		dateOut = dateOut + " - " + longTimeFormatter.format(now);
 
-		today = new Date();
-		dateOut = dateFormatter.format(today);
-		dateOut = dateOut + " - " + timeFormatter.format(today);
 		return dateOut;
 	}
 
 	public static String getMediumDateTimeAsString() {
-		Date today;
-		String dateOut;
 
-		DateFormat timeFormatter = DateFormat.getTimeInstance(DateFormat.MEDIUM, new Locale("es", "ES"));
-		DateFormat dateFormatter = DateFormat.getDateInstance(DateFormat.MEDIUM, new Locale("en", "US"));
-
-
-		today = new Date();
-		dateOut = dateFormatter.format(today);
-		dateOut = dateOut + " " + timeFormatter.format(today);
+		Date now = new Date();
+		String dateOut = mediumDateFormatter.format(now);
+		dateOut = dateOut + " " + mediumTimeFormatter.format(now);
 //		dateOut = dateOut.replace(":", "-");
 //		dateOut = dateOut.replace(" ", "-");
 //		dateOut = dateOut.replace(",", "");
+
 		return dateOut;
 	}
 
 	public static String getMediumDateAsString() {
-		Date today;
-		String dateOut;
-		DateFormat dateFormatter = DateFormat.getDateInstance(DateFormat.MEDIUM, new Locale("en", "US"));
-		today = new Date();
-		dateOut = dateFormatter.format(today);
+
+		Date now = new Date();
+		String dateOut = mediumDateFormatter.format(now);
+
 		return dateOut;
 	}
 
 	public static String getSQLDateAsString() {
-		Date today = new Date();
-		java.sql.Date jsqlD = new java.sql.Date(today.getTime());
+
+		Date now = new Date();
+		java.sql.Date jsqlD = new java.sql.Date(now.getTime());
+
 		return jsqlD.toString();
 	}
 
 	public static String getTimeStamp() {
-		Calendar cal = Calendar.getInstance();
-		SimpleDateFormat sdf = new SimpleDateFormat("ddMMyyyyhhmmssSSSS");
-		return sdf.format(cal.getTime());
+
+		Calendar now = Calendar.getInstance();
+		return timeStampFormat.format(now.getTime());
 	}
 
 	public static String dateToString(Date date) {
-		DateFormat formatter;
-		formatter = new SimpleDateFormat("dd-MM-yyyy");
-		String s = formatter.format(date);
-		return s;
+
+		String dateStr = dateFormat.format(date);
+
+		return dateStr;
 	}
 
 	public static Date stringToDate(String txtDate) throws ParseException {
-		Date date;
-		DateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
-		date = formatter.parse(txtDate);
+
+		Date date = dateFormat.parse(txtDate);
+
 		return date;
 	}
 
 	public static Date stringToDate(String txtDate, String format) {
+
 		Date dateDate = null;
+
 		DateFormat df = new SimpleDateFormat(format);
 		try {
 			dateDate = df.parse(txtDate);
 		} catch (ParseException ex) {
 			log.error("Failed to convert to a dat: " + txtDate, ex);
 		}
+
 		return dateDate;
 	}
 
 	public static String now(String dateFormat) {
-		Calendar cal = Calendar.getInstance();
+		Calendar now = Calendar.getInstance();
 		SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
-		return sdf.format(cal.getTime());
+		return sdf.format(now.getTime());
 	}
-
 	// </editor-fold>
 
 	// <editor-fold defaultstate="collapsed" desc="String manipulation methods">
@@ -334,7 +332,7 @@ public class Utils {
 
 	//<editor-fold defaultstate="collapsed" desc="SYSTEM MANAGEMENT">
 	public static void takeOutTheGarbage() {
-		collectGarbageWithThreadSleep(0);    //Poke system to try to Garbage Collect!
+		collectGarbageWithThreadSleep(0); // Poke system to try to Garbage Collect!
 	}
 
 	public static void collectGarbageWithThreadSleep(int millisecs) {
