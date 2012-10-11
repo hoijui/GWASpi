@@ -101,7 +101,7 @@ public abstract class AbstractLoadGTFromFiles implements GenotypesLoader {
 		Map<String, Object> tmpMarkerMap = markerSetLoader.getSortedMarkerSetWithMetaData();
 		markerSetMap.putAll(tmpMarkerMap);
 
-		log.info("Done initializing sorted MarkerSetMap at {}", org.gwaspi.global.Utils.getMediumDateTimeAsString());
+		log.info("Done initializing sorted MarkerSetMap");
 
 		// CREATE netCDF-3 FILE
 		StringBuilder descSB = new StringBuilder(Text.Matrix.descriptionHeader1);
@@ -155,7 +155,7 @@ public abstract class AbstractLoadGTFromFiles implements GenotypesLoader {
 		} catch (IOException ex) {
 			log.error("Failed creating file " + ncfile.getLocation(), ex);
 		}
-		//log.info("Done creating netCDF handle at "+global.Utils.getMediumDateTimeAsString());
+		//log.info("Done creating netCDF handle");
 		//</editor-fold>
 
 		//<editor-fold defaultstate="collapsed" desc="WRITE MATRIX METADATA">
@@ -171,7 +171,7 @@ public abstract class AbstractLoadGTFromFiles implements GenotypesLoader {
 			log.error(null, ex);
 		}
 		samplesD2 = null;
-		log.info("Done writing SampleSet to matrix at {}", org.gwaspi.global.Utils.getMediumDateTimeAsString());
+		log.info("Done writing SampleSet to matrix");
 
 		// WRITE RSID & MARKERID METADATA FROM METADATAMap
 		ArrayChar.D2 markersD2 = org.gwaspi.netCDF.operations.Utils.writeMapValueItemToD2ArrayChar(markerSetMap, 1, cNetCDF.Strides.STRIDE_MARKER_NAME);
@@ -192,7 +192,7 @@ public abstract class AbstractLoadGTFromFiles implements GenotypesLoader {
 		} catch (InvalidRangeException ex) {
 			log.error(null, ex);
 		}
-		log.info("Done writing MarkerId and RsId to matrix at {}", org.gwaspi.global.Utils.getMediumDateTimeAsString());
+		log.info("Done writing MarkerId and RsId to matrix");
 
 		// WRITE CHROMOSOME METADATA FROM ANNOTATION FILE
 		//Chromosome location for each marker
@@ -205,7 +205,7 @@ public abstract class AbstractLoadGTFromFiles implements GenotypesLoader {
 		} catch (InvalidRangeException ex) {
 			log.error(null, ex);
 		}
-		log.info("Done writing chromosomes to matrix at {}", org.gwaspi.global.Utils.getMediumDateTimeAsString());
+		log.info("Done writing chromosomes to matrix");
 
 		// Set of chromosomes found in matrix along with number of markersinfo
 		org.gwaspi.netCDF.operations.Utils.saveCharMapKeyToWrMatrix(ncfile, chrSetMap, cNetCDF.Variables.VAR_CHR_IN_MATRIX, 8);
@@ -226,7 +226,7 @@ public abstract class AbstractLoadGTFromFiles implements GenotypesLoader {
 		} catch (InvalidRangeException ex) {
 			log.error(null, ex);
 		}
-		log.info("Done writing positions to matrix at {}", org.gwaspi.global.Utils.getMediumDateTimeAsString());
+		log.info("Done writing positions to matrix");
 
 		//WRITE CUSTOM ALLELES METADATA FROM ANNOTATION FILE
 		if (markersD2ItemNb != -1) {
@@ -238,7 +238,7 @@ public abstract class AbstractLoadGTFromFiles implements GenotypesLoader {
 		} catch (InvalidRangeException ex) {
 			log.error(null, ex);
 		}
-		log.info("Done writing forward alleles to matrix at {}", org.gwaspi.global.Utils.getMediumDateTimeAsString());
+		log.info("Done writing forward alleles to matrix");
 		}
 
 		// WRITE GT STRAND FROM ANNOTATION FILE
@@ -274,7 +274,7 @@ public abstract class AbstractLoadGTFromFiles implements GenotypesLoader {
 			log.error(null, ex);
 		}
 		markersD2 = null;
-		log.info("Done writing strand info to matrix at {}", org.gwaspi.global.Utils.getMediumDateTimeAsString());
+		log.info("Done writing strand info to matrix");
 
 
 		// </editor-fold>
@@ -315,11 +315,11 @@ public abstract class AbstractLoadGTFromFiles implements GenotypesLoader {
 			if (sampleIndex == 1) {
 				log.info(Text.All.processing);
 			} else if (sampleIndex % 100 == 0) {
-				log.info("Done processing sample Nº{} at {}", sampleIndex, org.gwaspi.global.Utils.getMediumDateTimeAsString());
+				log.info("Done processing sample Nº{}", sampleIndex);
 			}
 		}
 
-		log.info("Done writing genotypes to matrix at {}", org.gwaspi.global.Utils.getMediumDateTimeAsString());
+		log.info("Done writing genotypes to matrix");
 		// </editor-fold>
 
 		// CLOSE THE FILE AND BY THIS, MAKE IT READ-ONLY

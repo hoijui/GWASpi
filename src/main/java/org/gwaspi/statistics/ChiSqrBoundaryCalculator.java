@@ -112,7 +112,7 @@ public class ChiSqrBoundaryCalculator {
 				ncfile.write("distributions", offsetOrigin, chiArray);
 
 				if (i % 100 == 0) {
-					log.info("{} X² simulations of {} run at {}", new Object[] {i, simNb, org.gwaspi.global.Utils.getMediumDateTimeAsString()}); // FIXME log system already supplies time
+					log.info("{} X² simulations of {} run", i, simNb);
 				}
 			} catch (InvalidRangeException ex) {
 				log.error(null, ex);
@@ -195,7 +195,7 @@ public class ChiSqrBoundaryCalculator {
 		repBW.close();
 		repFW.close();
 
-		log.info("Confidence boundary created for {} points at {}", N, org.gwaspi.global.Utils.getMediumDateTimeAsString()); // FIXME log system already supplies time
+		log.info("Confidence boundary created for {} points", N);
 	}
 
 	protected static void calculateChisqrBoundaryByFormula() throws IOException, MathException {
@@ -267,7 +267,7 @@ public class ChiSqrBoundaryCalculator {
 		repBW.close();
 		repFW.close();
 
-		log.info("Confidence boundary created for {} points at {}", N, org.gwaspi.global.Utils.getMediumDateTimeAsString()); // FIXME log system already supplies time
+		log.info("Confidence boundary created for {} points", N);
 	}
 
 	protected static void calculateChisqrBoundaryByStDev() throws IOException, MathException {
@@ -323,7 +323,7 @@ public class ChiSqrBoundaryCalculator {
 		repBW.close();
 		repFW.close();
 
-		log.info("Confidence boundary created for {} points at {}", N, org.gwaspi.global.Utils.getMediumDateTimeAsString()); // FIXME log system already supplies time
+		log.info("Confidence boundary created for {} points", N);
 	}
 
 	protected static void calculateChisqrBoundaryByVariance() throws IOException, MathException {
@@ -379,6 +379,6 @@ public class ChiSqrBoundaryCalculator {
 		repBW.close();
 		repFW.close();
 
-		log.info("Confidence boundary created for {} points at {}", N, org.gwaspi.global.Utils.getMediumDateTimeAsString()); // FIXME log system already supplies time
+		log.info("Confidence boundary created for {} points", N);
 	}
 }

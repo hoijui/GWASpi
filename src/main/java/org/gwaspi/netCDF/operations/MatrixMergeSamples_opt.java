@@ -178,7 +178,7 @@ public class MatrixMergeSamples_opt {
 			} catch (InvalidRangeException ex) {
 				log.error(null, ex);
 			}
-			log.info("Done writing SampleSet to matrix at {}", org.gwaspi.global.Utils.getMediumDateTimeAsString()); // FIXME log system already adds time
+			log.info("Done writing SampleSet to matrix"); // FIXME log system already adds time
 
 			// Keep rdwrMarkerIdSetMap1 from Matrix1 constant
 			// MARKERSET MARKERID
@@ -385,7 +385,7 @@ public class MatrixMergeSamples_opt {
 
 			markerNb++;
 			if (markerNb % 100000 == 0) {
-				log.info("Checking markers for mismatches: {} at {}", markerNb, org.gwaspi.global.Utils.getMediumDateTimeAsString()); // FIXME log system already adds time
+				log.info("Checking markers for mismatches: {}", markerNb);
 			}
 		}
 

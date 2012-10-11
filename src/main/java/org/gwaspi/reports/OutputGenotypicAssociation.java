@@ -61,7 +61,7 @@ public class OutputGenotypicAssociation {
 					opId,
 					"Genotypic Association Manhattan Plot",
 					op.getStudyId());
-			log.info("Saved Genotypic Association Manhattan Plot in reports folder at {}", org.gwaspi.global.Utils.getMediumDateTimeAsString()); // FIXME log system already supplies time
+			log.info("Saved Genotypic Association Manhattan Plot in reports folder");
 		}
 		//String qqName = "qq_"+outName;
 		String qqName = prefix + "qq";
@@ -76,7 +76,7 @@ public class OutputGenotypicAssociation {
 					"Genotypic Association QQ Plot",
 					op.getStudyId());
 
-			log.info("Saved Genotypic Association QQ Plot in reports folder at {}", org.gwaspi.global.Utils.getMediumDateTimeAsString()); // FIXME log system already supplies time
+			log.info("Saved Genotypic Association QQ Plot in reports folder");
 		}
 		//String assocName = "assoc_"+outName;
 		String assocName = prefix;

@@ -35,9 +35,8 @@ public class SamplesParserManager {
 		Set<Object> resultHS = new HashSet<Object>();
 		try {
 			MatrixMetadata rdMatrixMetadata = new MatrixMetadata(matrixId);
-			log.info("Getting Sample Affection info for: {} at {}",
-					rdMatrixMetadata.getMatrixFriendlyName(),
-					org.gwaspi.global.Utils.getMediumDateTimeAsString());
+			log.info("Getting Sample Affection info for: {}",
+					rdMatrixMetadata.getMatrixFriendlyName());
 //			NetcdfFile rdNcFile = NetcdfFile.open(rdMatrixMetadata.getPathToMatrix());
 			SampleSet rdSampleSet = new SampleSet(rdMatrixMetadata.getStudyId(), matrixId);
 			Map<String, Object> rdSampleSetMap = rdSampleSet.getSampleIdSetMap();

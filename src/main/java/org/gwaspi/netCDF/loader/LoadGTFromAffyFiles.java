@@ -114,7 +114,7 @@ public class LoadGTFromAffyFiles implements GenotypesLoader {
 				loadDescription.getStudyId());
 		Map<String, Object> markerSetMap = markerSetLoader.getSortedMarkerSetWithMetaData();
 
-		log.info("Done initializing sorted MarkerSetMap at {}", org.gwaspi.global.Utils.getMediumDateTimeAsString());
+		log.info("Done initializing sorted MarkerSetMap");
 
 		// CREATE netCDF-3 FILE
 		StringBuilder descSB = new StringBuilder(Text.Matrix.descriptionHeader1);
@@ -168,7 +168,7 @@ public class LoadGTFromAffyFiles implements GenotypesLoader {
 		} catch (IOException ex) {
 			log.error("Failed creating file " + ncfile.getLocation(), ex);
 		}
-		//log.info("Done creating netCDF handle at "+global.Utils.getMediumDateTimeAsString());
+		//log.info("Done creating netCDF handle ");
 		//</editor-fold>
 
 		//<editor-fold defaultstate="collapsed" desc="WRITE MATRIX METADATA">
@@ -184,7 +184,7 @@ public class LoadGTFromAffyFiles implements GenotypesLoader {
 			log.error(null, ex);
 		}
 		samplesD2 = null;
-		log.info("Done writing SampleSet to matrix at {}", org.gwaspi.global.Utils.getMediumDateTimeAsString());
+		log.info("Done writing SampleSet to matrix");
 
 		// WRITE RSID & MARKERID METADATA FROM METADATAMap
 		ArrayChar.D2 markersD2 = org.gwaspi.netCDF.operations.Utils.writeMapValueItemToD2ArrayChar(markerSetMap, 1, cNetCDF.Strides.STRIDE_MARKER_NAME);
@@ -205,7 +205,7 @@ public class LoadGTFromAffyFiles implements GenotypesLoader {
 		} catch (InvalidRangeException ex) {
 			log.error(null, ex);
 		}
-		log.info("Done writing MarkerId and RsId to matrix at {}", org.gwaspi.global.Utils.getMediumDateTimeAsString());
+		log.info("Done writing MarkerId and RsId to matrix");
 
 		// WRITE CHROMOSOME METADATA FROM ANNOTATION FILE
 		//Chromosome location for each marker
@@ -218,7 +218,7 @@ public class LoadGTFromAffyFiles implements GenotypesLoader {
 		} catch (InvalidRangeException ex) {
 			log.error(null, ex);
 		}
-		log.info("Done writing chromosomes to matrix at {}", org.gwaspi.global.Utils.getMediumDateTimeAsString());
+		log.info("Done writing chromosomes to matrix");
 
 		// Set of chromosomes found in matrix along with number of markersinfo
 		org.gwaspi.netCDF.operations.Utils.saveCharMapKeyToWrMatrix(ncfile, chrSetMap, cNetCDF.Variables.VAR_CHR_IN_MATRIX, 8);
@@ -239,7 +239,7 @@ public class LoadGTFromAffyFiles implements GenotypesLoader {
 		} catch (InvalidRangeException ex) {
 			log.error(null, ex);
 		}
-		log.info("Done writing positions to matrix at {}", org.gwaspi.global.Utils.getMediumDateTimeAsString());
+		log.info("Done writing positions to matrix");
 
 		//WRITE FORWARD STRAND ALLELE DICTIONARY METADATA FROM ANNOTATION FILE
 		markersD2 = org.gwaspi.netCDF.operations.Utils.writeMapValueItemToD2ArrayChar(markerSetMap, 7, cNetCDF.Strides.STRIDE_GT);
@@ -251,7 +251,7 @@ public class LoadGTFromAffyFiles implements GenotypesLoader {
 		} catch (InvalidRangeException ex) {
 			log.error(null, ex);
 		}
-		log.info("Done writing forward alleles to matrix at {}", org.gwaspi.global.Utils.getMediumDateTimeAsString());
+		log.info("Done writing forward alleles to matrix");
 
 		//GENERATE PLUS STRAND ALLELES METADATA FROM ANNOTATION FILE
 //        for (Iterator it=markerSetMap.keySet().iterator(); it.hasNext();) {
@@ -271,7 +271,7 @@ public class LoadGTFromAffyFiles implements GenotypesLoader {
 //        } catch (InvalidRangeException ex) {
 //            log.error(null, ex);
 //        }
-//        log.info("Done writing plus alleles to matrix at "+global.Utils.getMediumDateTimeAsString());
+//        log.info("Done writing plus alleles to matrix ");
 
 		// WRITE GT STRAND FROM ANNOTATION FILE
 		int[] gtOrig = new int[]{0, 0};
@@ -285,7 +285,7 @@ public class LoadGTFromAffyFiles implements GenotypesLoader {
 			log.error(null, ex);
 		}
 		markersD2 = null;
-		log.info("Done writing strand info to matrix at {}", org.gwaspi.global.Utils.getMediumDateTimeAsString());
+		log.info("Done writing strand info to matrix");
 
 
 		// </editor-fold>
@@ -310,11 +310,11 @@ public class LoadGTFromAffyFiles implements GenotypesLoader {
 			if (i == 0) {
 				log.info(Text.All.processing);
 			} else if (i % 10 == 0) {
-				log.info("Done processing sample Nº" + i + " at {}", org.gwaspi.global.Utils.getMediumDateTimeAsString());
+				log.info("Done processing sample Nº" + i);
 			}
 		}
 
-		log.info("Done writing genotypes to matrix at {}", org.gwaspi.global.Utils.getMediumDateTimeAsString());
+		log.info("Done writing genotypes to matrix");
 		// </editor-fold>
 
 		// CLOSE THE FILE AND BY THIS, MAKE IT READ-ONLY

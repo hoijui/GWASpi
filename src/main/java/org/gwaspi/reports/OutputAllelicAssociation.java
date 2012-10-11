@@ -61,7 +61,7 @@ public class OutputAllelicAssociation {
 					opId,
 					"Allelic Association Manhattan Plot",
 					op.getStudyId());
-			log.info("Saved Allelic Association Manhattan Plot in reports folder at {}", org.gwaspi.global.Utils.getMediumDateTimeAsString()); // FIXME log system already adds time
+			log.info("Saved Allelic Association Manhattan Plot in reports folder"); // FIXME log system already adds time
 		}
 		//String qqName = "qq_"+outName;
 		String qqName = prefix + "qq";
@@ -76,7 +76,7 @@ public class OutputAllelicAssociation {
 					"Allelic Association QQ Plot",
 					op.getStudyId());
 
-			log.info("Saved Allelic Association QQ Plot in reports folder at {}", org.gwaspi.global.Utils.getMediumDateTimeAsString()); // FIXME log system already adds time
+			log.info("Saved Allelic Association QQ Plot in reports folder"); // FIXME log system already adds time
 		}
 		//String assocName = "assoc_"+outName;
 		String assocName = prefix;

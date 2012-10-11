@@ -43,7 +43,7 @@ public class Utils {
 			int[] markersOrig = new int[]{0, 0};
 			try {
 				wrNcFile.write(variable, markersOrig, markersD2);
-				log.info("Done writing {} at {}", variable, org.gwaspi.global.Utils.getMediumDateTimeAsString());
+				log.info("Done writing {}", variable);
 				result = true;
 			} catch (IOException ex) {
 				log.error("Failed writing file", ex);
@@ -51,7 +51,7 @@ public class Utils {
 				log.error("Failed writing file", ex);
 			}
 		} catch (Exception ex) {
-			log.error("Failed writing " + variable + " at " + org.gwaspi.global.Utils.getMediumDateTimeAsString(), ex);
+			log.error("Failed writing " + variable, ex);
 		}
 
 		return result;
@@ -66,7 +66,7 @@ public class Utils {
 			int[] markersOrig = new int[]{0, 0};
 			try {
 				wrNcFile.write(variable, markersOrig, markersD2);
-				log.info("Done writing {} at {}", variable, org.gwaspi.global.Utils.getMediumDateTimeAsString());
+				log.info("Done writing {}", variable);
 				result = true;
 			} catch (IOException ex) {
 				log.error("Failed writing file", ex);
@@ -74,7 +74,7 @@ public class Utils {
 				log.error("Failed writing file", ex);
 			}
 		} catch (Exception ex) {
-			log.error("Failed writing " + variable + " at " + org.gwaspi.global.Utils.getMediumDateTimeAsString(), ex);
+			log.error("Failed writing " + variable, ex);
 		}
 
 		return result;
@@ -88,7 +88,7 @@ public class Utils {
 			int[] markersOrig = new int[]{0, 0};
 			try {
 				wrNcFile.write(variable, markersOrig, markersD2);
-				log.info("Done writing {} at {}", variable, org.gwaspi.global.Utils.getMediumDateTimeAsString());
+				log.info("Done writing {}", variable);
 				result = true;
 			} catch (IOException ex) {
 				log.error("Failed writing file", ex);
@@ -96,7 +96,7 @@ public class Utils {
 				log.error("Failed writing file", ex);
 			}
 		} catch (Exception ex) {
-			log.error("Failed writing " + variable + " at " + org.gwaspi.global.Utils.getMediumDateTimeAsString(), ex);
+			log.error("Failed writing " + variable, ex);
 		}
 
 		return result;
@@ -111,7 +111,7 @@ public class Utils {
 		int[] origin = new int[]{sampleIndex, 0, 0};
 		try {
 			wrNcFile.write(cNetCDF.Variables.VAR_GENOTYPES, origin, genotypes);
-//			log.info("Done writing Sample {} genotypes at {}", samplePos, org.gwaspi.global.Utils.getMediumDateTimeAsString());
+//			log.info("Done writing Sample {} genotypes", samplePos);
 			result = true;
 		} catch (IOException ex) {
 			log.error("Failed writing genotypes to netCDF in MatrixDataExtractor", ex);
@@ -128,7 +128,7 @@ public class Utils {
 		int[] origin = new int[]{0, markerIndex, 0};
 		try {
 			wrNcFile.write(cNetCDF.Variables.VAR_GENOTYPES, origin, genotypes);
-//			log.info("Done writing genotypes at {}", org.gwaspi.global.Utils.getMediumDateTimeAsString());
+//			log.info("Done writing genotypes");
 			result = true;
 		} catch (IOException ex) {
 			log.error("Failed writing genotypes to netCDF in MatrixDataExtractor", ex);
@@ -148,7 +148,7 @@ public class Utils {
 			int[] origin1 = new int[1];
 			try {
 				wrNcFile.write(variable, origin1, arrayDouble);
-				log.info("Done writing {} at {}", variable, org.gwaspi.global.Utils.getMediumDateTimeAsString());
+				log.info("Done writing {}", variable);
 				result = true;
 			} catch (IOException ex) {
 				log.error("Failed writing " + variable + " to netCDF", ex);
@@ -156,7 +156,7 @@ public class Utils {
 				log.error("Failed writing " + variable + " to netCDF", ex);
 			}
 		} catch (Exception ex) {
-			log.error("Failed writing " + variable + " at " + org.gwaspi.global.Utils.getMediumDateTimeAsString(), ex);
+			log.error("Failed writing " + variable, ex);
 		}
 
 		return result;
@@ -170,7 +170,7 @@ public class Utils {
 			int[] origin1 = new int[1];
 			try {
 				wrNcFile.write(variable, origin1, arrayDouble);
-				log.info("Done writing {} at {}", variable, org.gwaspi.global.Utils.getMediumDateTimeAsString());
+				log.info("Done writing {}", variable);
 				result = true;
 			} catch (IOException ex) {
 				log.error("Failed writing " + variable + " to netCDF", ex);
@@ -178,7 +178,7 @@ public class Utils {
 				log.error("Failed writing " + variable + " to netCDF", ex);
 			}
 		} catch (Exception ex) {
-			log.error("Failed writing " + variable + " at " + org.gwaspi.global.Utils.getMediumDateTimeAsString(), ex);
+			log.error("Failed writing " + variable, ex);
 		}
 
 		return result;
@@ -192,7 +192,7 @@ public class Utils {
 			int[] origin1 = new int[1];
 			try {
 				wrNcFile.write(variable, origin1, arrayInt);
-				log.info("Done writing {} at {}", variable, org.gwaspi.global.Utils.getMediumDateTimeAsString());
+				log.info("Done writing {}", variable);
 				result = true;
 			} catch (IOException ex) {
 				log.error("Failed writing " + variable + " to netCDF", ex);
@@ -200,7 +200,7 @@ public class Utils {
 				log.error("Failed writing " + variable + " to netCDF", ex);
 			}
 		} catch (Exception ex) {
-			log.error("Failed writing " + variable + " at " + org.gwaspi.global.Utils.getMediumDateTimeAsString(), ex);
+			log.error("Failed writing " + variable, ex);
 		}
 
 		return result;
@@ -214,7 +214,7 @@ public class Utils {
 			int[] origin1 = new int[1];
 			try {
 				wrNcFile.write(variable, origin1, arrayInt);
-				log.info("Done writing {} at {}", variable, org.gwaspi.global.Utils.getMediumDateTimeAsString());
+				log.info("Done writing {}", variable);
 				result = true;
 			} catch (IOException ex) {
 				log.error("Failed writing " + variable + " to netCDF", ex);
@@ -222,7 +222,7 @@ public class Utils {
 				log.error("Failed writing " + variable + " to netCDF", ex);
 			}
 		} catch (Exception ex) {
-			log.error("Failed writing " + variable + " at " + org.gwaspi.global.Utils.getMediumDateTimeAsString(), ex);
+			log.error("Failed writing " + variable, ex);
 		}
 
 		return result;
@@ -238,7 +238,7 @@ public class Utils {
 			int[] origin1 = new int[2];
 			try {
 				wrNcFile.write(variable, origin1, arrayIntD2);
-				log.info("Done writing {} at {}", variable, org.gwaspi.global.Utils.getMediumDateTimeAsString());
+				log.info("Done writing {}", variable);
 				result = true;
 			} catch (IOException ex) {
 				log.error("Failed writing " + variable + " to netCDF", ex);
@@ -246,7 +246,7 @@ public class Utils {
 				log.error("Failed writing " + variable + " to netCDF", ex);
 			}
 		} catch (Exception ex) {
-			log.error("Failed writing " + variable + " at " + org.gwaspi.global.Utils.getMediumDateTimeAsString(), ex);
+			log.error("Failed writing " + variable, ex);
 		}
 
 		return result;
@@ -260,7 +260,7 @@ public class Utils {
 			int[] origin1 = new int[2];
 			try {
 				wrNcFile.write(variable, origin1, arrayDoubleD2);
-				log.info("Done writing {} at {}", variable, org.gwaspi.global.Utils.getMediumDateTimeAsString());
+				log.info("Done writing {}", variable);
 				result = true;
 			} catch (IOException ex) {
 				log.error("Failed writing " + variable + " to netCDF", ex);
@@ -268,7 +268,7 @@ public class Utils {
 				log.error("Failed writing " + variable + " to netCDF", ex);
 			}
 		} catch (Exception ex) {
-			log.error("Failed writing " + variable + " at " + org.gwaspi.global.Utils.getMediumDateTimeAsString(), ex);
+			log.error("Failed writing " + variable, ex);
 		}
 
 		return result;
@@ -291,7 +291,7 @@ public class Utils {
 			int[] markersOrig = new int[]{offset, 0}; //first origin is the initial markerset position, second is the original allele position
 			try {
 				wrNcFile.write(variable, markersOrig, markersD2);
-				log.info("Done writing {} at {}", variable, org.gwaspi.global.Utils.getMediumDateTimeAsString());
+				log.info("Done writing {}", variable);
 				result = true;
 			} catch (IOException ex) {
 				log.error("Failed writing file", ex);
@@ -299,7 +299,7 @@ public class Utils {
 				log.error("Failed writing file", ex);
 			}
 		} catch (Exception ex) {
-			log.error("Failed writing " + variable + " at " + org.gwaspi.global.Utils.getMediumDateTimeAsString(), ex);
+			log.error("Failed writing " + variable, ex);
 		}
 
 		return result;
@@ -318,7 +318,7 @@ public class Utils {
 			int[] markersOrig = new int[]{offset, 0};
 			try {
 				wrNcFile.write(variable, markersOrig, markersD2);
-				log.info("Done writing {} at {}", variable, org.gwaspi.global.Utils.getMediumDateTimeAsString());
+				log.info("Done writing {}", variable);
 				result = true;
 			} catch (IOException ex) {
 				log.error("Failed writing file", ex);
@@ -326,7 +326,7 @@ public class Utils {
 				log.error("Failed writing file", ex);
 			}
 		} catch (Exception ex) {
-			log.error("Failed writing " + variable + " at " + org.gwaspi.global.Utils.getMediumDateTimeAsString(), ex);
+			log.error("Failed writing " + variable, ex);
 		}
 
 		return result;
@@ -343,7 +343,7 @@ public class Utils {
 		int[] origin = new int[]{samplePos, offset, 0};
 		try {
 			wrNcFile.write(cNetCDF.Variables.VAR_GENOTYPES, origin, genotypes);
-			log.info("Done writing Sample {} genotypes at {}", samplePos, org.gwaspi.global.Utils.getMediumDateTimeAsString());
+			log.info("Done writing Sample {} genotypes", samplePos);
 			result = true;
 		} catch (IOException ex) {
 			log.error("Failed writing genotypes to netCDF in MatrixDataExtractor", ex);
@@ -364,7 +364,7 @@ public class Utils {
 		int[] origin = new int[]{offset, markerPos, 0};
 		try {
 			wrNcFile.write(cNetCDF.Variables.VAR_GENOTYPES, origin, genotypes);
-			log.info("Done writing genotypes at {}", org.gwaspi.global.Utils.getMediumDateTimeAsString());
+			log.info("Done writing genotypes");
 			result = true;
 		} catch (IOException ex) {
 			log.error("Failed writing genotypes to netCDF in MatrixDataExtractor", ex);
@@ -388,7 +388,7 @@ public class Utils {
 			int[] origin1 = new int[]{offset};
 			try {
 				wrNcFile.write(variable, origin1, arrayDouble);
-				log.info("Done writing {} at {}", variable, org.gwaspi.global.Utils.getMediumDateTimeAsString());
+				log.info("Done writing {}", variable);
 				result = true;
 			} catch (IOException ex) {
 				log.error("Failed writing " + variable + " to netCDF", ex);
@@ -396,7 +396,7 @@ public class Utils {
 				log.error("Failed writing " + variable + " to netCDF", ex);
 			}
 		} catch (Exception ex) {
-			log.error("Failed writing " + variable + " at " + org.gwaspi.global.Utils.getMediumDateTimeAsString(), ex);
+			log.error("Failed writing " + variable, ex);
 		}
 
 		return result;
@@ -415,7 +415,7 @@ public class Utils {
 			int[] origin1 = new int[]{offset};
 			try {
 				wrNcFile.write(variable, origin1, arrayDouble);
-				log.info("Done writing {} at {}", variable, org.gwaspi.global.Utils.getMediumDateTimeAsString());
+				log.info("Done writing {}", variable);
 				result = true;
 			} catch (IOException ex) {
 				log.error("Failed writing " + variable + " to netCDF", ex);
@@ -423,7 +423,7 @@ public class Utils {
 				log.error("Failed writing " + variable + " to netCDF", ex);
 			}
 		} catch (Exception ex) {
-			log.error("Failed writing " + variable + " at " + org.gwaspi.global.Utils.getMediumDateTimeAsString(), ex);
+			log.error("Failed writing " + variable, ex);
 		}
 
 		return result;
@@ -441,7 +441,7 @@ public class Utils {
 			int[] origin1 = new int[]{offset};
 			try {
 				wrNcFile.write(variable, origin1, arrayInt);
-				log.info("Done writing {} at {}", variable, org.gwaspi.global.Utils.getMediumDateTimeAsString());
+				log.info("Done writing {}", variable);
 				result = true;
 			} catch (IOException ex) {
 				log.error("Failed writing " + variable + " to netCDF", ex);
@@ -449,7 +449,7 @@ public class Utils {
 				log.error("Failed writing " + variable + " to netCDF", ex);
 			}
 		} catch (Exception ex) {
-			log.error("Failed writing " + variable + " at " + org.gwaspi.global.Utils.getMediumDateTimeAsString(), ex);
+			log.error("Failed writing " + variable, ex);
 		}
 
 		return result;
@@ -467,7 +467,7 @@ public class Utils {
 			int[] origin1 = new int[]{offset};
 			try {
 				wrNcFile.write(variable, origin1, arrayInt);
-				log.info("Done writing {} at {}", variable, org.gwaspi.global.Utils.getMediumDateTimeAsString());
+				log.info("Done writing {}", variable);
 				result = true;
 			} catch (IOException ex) {
 				log.error("Failed writing " + variable + " to netCDF", ex);
@@ -475,7 +475,7 @@ public class Utils {
 				log.error("Failed writing " + variable + " to netCDF", ex);
 			}
 		} catch (Exception ex) {
-			log.error("Failed writing " + variable + " at " + org.gwaspi.global.Utils.getMediumDateTimeAsString(), ex);
+			log.error("Failed writing " + variable, ex);
 		}
 
 		return result;
@@ -496,7 +496,7 @@ public class Utils {
 			int[] origin1 = new int[]{offset, 0};
 			try {
 				wrNcFile.write(variable, origin1, arrayIntD2);
-				log.info("Done writing {} at {}", variable, org.gwaspi.global.Utils.getMediumDateTimeAsString());
+				log.info("Done writing {}", variable);
 				result = true;
 			} catch (IOException ex) {
 				log.error("Failed writing " + variable + " to netCDF", ex);
@@ -504,7 +504,7 @@ public class Utils {
 				log.error("Failed writing " + variable + " to netCDF", ex);
 			}
 		} catch (Exception ex) {
-			log.error("Failed writing " + variable + " at " + org.gwaspi.global.Utils.getMediumDateTimeAsString(), ex);
+			log.error("Failed writing " + variable, ex);
 		}
 
 		return result;
@@ -522,7 +522,7 @@ public class Utils {
 			int[] origin1 = new int[]{offset, 0};
 			try {
 				wrNcFile.write(variable, origin1, arrayDoubleD2);
-				log.info("Done writing {} at {}", variable, org.gwaspi.global.Utils.getMediumDateTimeAsString());
+				log.info("Done writing {}", variable);
 				result = true;
 			} catch (IOException ex) {
 				log.error("Failed writing " + variable + " to netCDF", ex);
@@ -530,7 +530,7 @@ public class Utils {
 				log.error("Failed writing " + variable + " to netCDF", ex);
 			}
 		} catch (Exception ex) {
-			log.error("Failed writing " + variable + " at " + org.gwaspi.global.Utils.getMediumDateTimeAsString(), ex);
+			log.error("Failed writing " + variable, ex);
 		}
 
 		return result;

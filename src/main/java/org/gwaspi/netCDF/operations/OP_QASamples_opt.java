@@ -90,7 +90,7 @@ public class OP_QASamples_opt implements MatrixOperation {
 			sampleNb++;
 
 			if (sampleNb % 100 == 0) {
-				log.info("Processed samples: {} at {}", sampleNb, org.gwaspi.global.Utils.getMediumDateTimeAsString()); // FIXME log system already supplies time
+				log.info("Processed samples: {}", sampleNb);
 			}
 		}
 
@@ -129,7 +129,7 @@ public class OP_QASamples_opt implements MatrixOperation {
 			} catch (InvalidRangeException ex) {
 				log.error(null, ex);
 			}
-			log.info("Done writing SampleSet to matrix at {}", org.gwaspi.global.Utils.getMediumDateTimeAsString()); // FIXME log system already supplies time
+			log.info("Done writing SampleSet to matrix");
 
 			//WRITE MARKERSET TO MATRIX
 			ArrayChar.D2 markersD2 = Utils.writeMapKeysToD2ArrayChar(rdMarkerSet.getMarkerIdSetMap(), cNetCDF.Strides.STRIDE_MARKER_NAME);
@@ -141,7 +141,7 @@ public class OP_QASamples_opt implements MatrixOperation {
 			} catch (InvalidRangeException ex) {
 				log.error(null, ex);
 			}
-			log.info("Done writing MarkerSet to matrix at {}", org.gwaspi.global.Utils.getMediumDateTimeAsString()); // FIXME log system already supplies time
+			log.info("Done writing MarkerSet to matrix");
 			//</editor-fold>
 
 			//<editor-fold defaultstate="collapsed" desc="CENSUS DATA WRITER">

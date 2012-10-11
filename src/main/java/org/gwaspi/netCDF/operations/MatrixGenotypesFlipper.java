@@ -160,7 +160,7 @@ public class MatrixGenotypesFlipper {
 			} catch (InvalidRangeException ex) {
 				log.error(null, ex);
 			}
-			log.info("Done writing SampleSet to matrix at " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
+			log.info("Done writing SampleSet to matrix");
 
 			// MARKERSET MARKERID
 			ArrayChar.D2 markersD2 = Utils.writeMapKeysToD2ArrayChar(rdMarkerIdSetMap, cNetCDF.Strides.STRIDE_MARKER_NAME);

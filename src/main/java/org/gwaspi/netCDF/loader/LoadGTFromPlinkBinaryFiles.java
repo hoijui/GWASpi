@@ -72,8 +72,6 @@ public class LoadGTFromPlinkBinaryFiles implements GenotypesLoader {
 	public int processData(GenotypesLoadDescription loadDescription, Map<String, Object> sampleInfo) throws IOException, InvalidRangeException, InterruptedException {
 		int result = Integer.MIN_VALUE;
 
-		String startTime = org.gwaspi.global.Utils.getMediumDateTimeAsString();
-
 		//<editor-fold defaultstate="collapsed/expanded" desc="CREATE MARKERSET & NETCDF">
 		MetadataLoaderPlinkBinary markerSetLoader = new MetadataLoaderPlinkBinary(
 				loadDescription.getAnnotationFilePath(),
@@ -87,7 +85,7 @@ public class LoadGTFromPlinkBinaryFiles implements GenotypesLoader {
 			hyperSlabRows = sortedMarkerSetMap.size();
 		}
 
-		log.info("Done initializing sorted MarkerSetMap at " + startTime);
+		log.info("Done initializing sorted MarkerSetMap");
 
 		// CREATE netCDF-3 FILE
 		StringBuilder descSB = new StringBuilder(Text.Matrix.descriptionHeader1);
@@ -140,7 +138,7 @@ public class LoadGTFromPlinkBinaryFiles implements GenotypesLoader {
 		} catch (IOException ex) {
 			log.error("Failed creating file " + ncfile.getLocation(), ex);
 		}
-		//log.info("Done creating netCDF handle at "+global.Utils.getMediumDateTimeAsString());
+		//log.info("Done creating netCDF handle ");
 		//</editor-fold>
 
 		//<editor-fold defaultstate="collapsed" desc="WRITE MATRIX METADATA">
@@ -156,7 +154,7 @@ public class LoadGTFromPlinkBinaryFiles implements GenotypesLoader {
 			log.error(null, ex);
 		}
 		samplesD2 = null;
-		log.info("Done writing SampleSet to matrix at {}", org.gwaspi.global.Utils.getMediumDateTimeAsString());
+		log.info("Done writing SampleSet to matrix");
 
 		// WRITE RSID & MARKERID METADATA FROM METADATAMap
 		ArrayChar.D2 markersD2 = org.gwaspi.netCDF.operations.Utils.writeMapValueItemToD2ArrayChar(sortedMarkerSetMap, 0, cNetCDF.Strides.STRIDE_MARKER_NAME);
@@ -177,7 +175,7 @@ public class LoadGTFromPlinkBinaryFiles implements GenotypesLoader {
 		} catch (InvalidRangeException ex) {
 			log.error(null, ex);
 		}
-		log.info("Done writing MarkerId and RsId to matrix at {}", org.gwaspi.global.Utils.getMediumDateTimeAsString());
+		log.info("Done writing MarkerId and RsId to matrix");
 
 		// WRITE CHROMOSOME METADATA FROM ANNOTATION FILE
 		//Chromosome location for each marker
@@ -190,7 +188,7 @@ public class LoadGTFromPlinkBinaryFiles implements GenotypesLoader {
 		} catch (InvalidRangeException ex) {
 			log.error(null, ex);
 		}
-		log.info("Done writing chromosomes to matrix at {}", org.gwaspi.global.Utils.getMediumDateTimeAsString());
+		log.info("Done writing chromosomes to matrix");
 
 		// Set of chromosomes found in matrix along with number of markersinfo
 		org.gwaspi.netCDF.operations.Utils.saveCharMapKeyToWrMatrix(ncfile, chrSetMap, cNetCDF.Variables.VAR_CHR_IN_MATRIX, 8);
@@ -210,7 +208,7 @@ public class LoadGTFromPlinkBinaryFiles implements GenotypesLoader {
 		} catch (InvalidRangeException ex) {
 			log.error(null, ex);
 		}
-		log.info("Done writing positions to matrix at {}", org.gwaspi.global.Utils.getMediumDateTimeAsString());
+		log.info("Done writing positions to matrix");
 
 		//WRITE ALLELE DICTIONARY METADATA FROM ANNOTATION FILE
 		markersD2 = org.gwaspi.netCDF.operations.Utils.writeMapValueItemToD2ArrayChar(sortedMarkerSetMap, 4, cNetCDF.Strides.STRIDE_GT);
@@ -222,7 +220,7 @@ public class LoadGTFromPlinkBinaryFiles implements GenotypesLoader {
 		} catch (InvalidRangeException ex) {
 			log.error(null, ex);
 		}
-		log.info("Done writing forward alleles to matrix at {}", org.gwaspi.global.Utils.getMediumDateTimeAsString());
+		log.info("Done writing forward alleles to matrix");
 
 		// WRITE GT STRAND FROM ANNOTATION FILE
 		int[] gtOrig = new int[]{0, 0};
@@ -257,7 +255,7 @@ public class LoadGTFromPlinkBinaryFiles implements GenotypesLoader {
 			log.error(null, ex);
 		}
 		markersD2 = null;
-		log.info("Done writing strand info to matrix at {}", org.gwaspi.global.Utils.getMediumDateTimeAsString());
+		log.info("Done writing strand info to matrix");
 
 
 		// </editor-fold>
@@ -275,7 +273,7 @@ public class LoadGTFromPlinkBinaryFiles implements GenotypesLoader {
 				guessedGTCode,
 				hyperSlabRows);
 
-		log.info("Done writing genotypes to matrix at {}", org.gwaspi.global.Utils.getMediumDateTimeAsString());
+		log.info("Done writing genotypes to matrix");
 		// </editor-fold>
 
 		// CLOSE THE FILE AND BY THIS, MAKE IT READ-ONLY

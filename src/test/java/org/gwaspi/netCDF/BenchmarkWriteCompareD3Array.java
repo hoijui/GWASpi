@@ -79,7 +79,7 @@ public class BenchmarkWriteCompareD3Array {
 					long tmpTime = end.getTime() - start.getTime();
 					timeAverage = ((timeAverage * k) + tmpTime) / (k + 1);
 					if (k % 10 == 0) {
-						log.info("Processing {} at {}", k, org.gwaspi.global.Utils.getMediumDateTimeAsString());
+						log.info("Processing {}", k);
 					}
 				}
 				log.info("Time average with int: {}", timeAverage);
@@ -120,7 +120,7 @@ public class BenchmarkWriteCompareD3Array {
 					long tmpTime = end.getTime() - start.getTime();
 					timeAverage = ((timeAverage * k) + tmpTime) / (k + 1);
 					if (k % 10 == 0) {
-						log.info("Processing {} at {}", k, org.gwaspi.global.Utils.getMediumDateTimeAsString());
+						log.info("Processing {}", k);
 					}
 				}
 				log.info("Time average with int: {}", timeAverage);
@@ -158,7 +158,7 @@ public class BenchmarkWriteCompareD3Array {
 					long tmpTime = end.getTime() - start.getTime();
 					timeAverage = ((timeAverage * k) + tmpTime) / (k + 1);
 					if (k % 10 == 0) {
-						log.info("Processing {} at {}", k, org.gwaspi.global.Utils.getMediumDateTimeAsString());
+						log.info("Processing {}", k);
 					}
 				}
 				log.info("Time average with int: {}", timeAverage);

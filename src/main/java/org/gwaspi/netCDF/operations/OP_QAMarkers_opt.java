@@ -108,7 +108,7 @@ public class OP_QAMarkers_opt implements MatrixOperation {
 			} catch (InvalidRangeException ex) {
 				log.error(null, ex);
 			}
-			log.info("Done writing SampleSet to matrix at {}", org.gwaspi.global.Utils.getMediumDateTimeAsString()); // FIXME log system already supplies time
+			log.info("Done writing SampleSet to matrix");
 			//</editor-fold>
 
 			//<editor-fold defaultstate="collapsed" desc="PROCESSOR">
@@ -362,7 +362,7 @@ public class OP_QAMarkers_opt implements MatrixOperation {
 				if (markerNb == 1) {
 					log.info(Text.All.processing);
 				} else if (markerNb % 100000 == 0) {
-					log.info("Processed markers: {} at {}", markerNb, org.gwaspi.global.Utils.getMediumDateTimeAsString()); // FIXME log system already supplies time
+					log.info("Processed markers: {}", markerNb);
 				}
 			}
 			//</editor-fold>

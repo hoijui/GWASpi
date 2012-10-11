@@ -337,7 +337,7 @@ public class MatrixDataExtractor_opt {
 				} catch (InvalidRangeException ex) {
 					log.error(null, ex);
 				}
-				log.info("Done writing SampleSet to matrix at {}", org.gwaspi.global.Utils.getMediumDateTimeAsString()); // FIXME log system already adds timestamp
+				log.info("Done writing SampleSet to matrix"); // FIXME log system already adds timestamp
 
 
 				// MARKERSET MARKERID

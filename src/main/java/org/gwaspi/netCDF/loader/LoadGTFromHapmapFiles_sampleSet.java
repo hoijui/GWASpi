@@ -69,7 +69,7 @@ public class LoadGTFromHapmapFiles_sampleSet extends LoadGTFromHapmapFiles imple
 				loadDescription.getStudyId());
 		Map<String, Object> markerSetMap = markerSetLoader.getSortedMarkerSetWithMetaData();
 
-		log.info("Done initializing sorted MarkerSetMap at {}", org.gwaspi.global.Utils.getMediumDateTimeAsString());
+		log.info("Done initializing sorted MarkerSetMap");
 
 		// CREATE netCDF-3 FILE
 		StringBuilder descSB = new StringBuilder(Text.Matrix.descriptionHeader1);
@@ -122,7 +122,7 @@ public class LoadGTFromHapmapFiles_sampleSet extends LoadGTFromHapmapFiles imple
 		} catch (IOException ex) {
 			log.error("Failed creating file " + ncfile.getLocation(), ex);
 		}
-		//log.info("Done creating netCDF handle at "+global.Utils.getMediumDateTimeAsString());
+		//log.info("Done creating netCDF handle ");
 		//</editor-fold>
 
 		//<editor-fold defaultstate="collapsed" desc="WRITE MATRIX METADATA">
@@ -138,7 +138,7 @@ public class LoadGTFromHapmapFiles_sampleSet extends LoadGTFromHapmapFiles imple
 			log.error(null, ex);
 		}
 		samplesD2 = null;
-		log.info("Done writing SampleSet to matrix at {}", org.gwaspi.global.Utils.getMediumDateTimeAsString());
+		log.info("Done writing SampleSet to matrix");
 
 		// WRITE RSID & MARKERID METADATA FROM METADATAMap
 		ArrayChar.D2 markersD2 = org.gwaspi.netCDF.operations.Utils.writeMapValueItemToD2ArrayChar(markerSetMap, 1, cNetCDF.Strides.STRIDE_MARKER_NAME);
@@ -159,7 +159,7 @@ public class LoadGTFromHapmapFiles_sampleSet extends LoadGTFromHapmapFiles imple
 		} catch (InvalidRangeException ex) {
 			log.error(null, ex);
 		}
-		log.info("Done writing MarkerId and RsId to matrix at {}", org.gwaspi.global.Utils.getMediumDateTimeAsString());
+		log.info("Done writing MarkerId and RsId to matrix");
 
 		// WRITE CHROMOSOME METADATA FROM ANNOTATION FILE
 		//Chromosome location for each marker
@@ -172,7 +172,7 @@ public class LoadGTFromHapmapFiles_sampleSet extends LoadGTFromHapmapFiles imple
 		} catch (InvalidRangeException ex) {
 			log.error(null, ex);
 		}
-		log.info("Done writing chromosomes to matrix at {}", org.gwaspi.global.Utils.getMediumDateTimeAsString());
+		log.info("Done writing chromosomes to matrix");
 
 		// Set of chromosomes found in matrix along with number of markersinfo
 		org.gwaspi.netCDF.operations.Utils.saveCharMapKeyToWrMatrix(ncfile, chrSetMap, cNetCDF.Variables.VAR_CHR_IN_MATRIX, 8);
@@ -193,7 +193,7 @@ public class LoadGTFromHapmapFiles_sampleSet extends LoadGTFromHapmapFiles imple
 		} catch (InvalidRangeException ex) {
 			log.error(null, ex);
 		}
-		log.info("Done writing positions to matrix at {}", org.gwaspi.global.Utils.getMediumDateTimeAsString());
+		log.info("Done writing positions to matrix");
 
 		//WRITE FWD STRAND DICTIONARY ALLELES METADATA FROM ANNOTATION FILE
 		markersD2 = org.gwaspi.netCDF.operations.Utils.writeMapValueItemToD2ArrayChar(markerSetMap, 5, cNetCDF.Strides.STRIDE_GT);
@@ -205,7 +205,7 @@ public class LoadGTFromHapmapFiles_sampleSet extends LoadGTFromHapmapFiles imple
 		} catch (InvalidRangeException ex) {
 			log.error(null, ex);
 		}
-		log.info("Done writing forward alleles to matrix at {}", org.gwaspi.global.Utils.getMediumDateTimeAsString());
+		log.info("Done writing forward alleles to matrix");
 
 		// WRITE GT STRAND FROM ANNOTATION FILE
 		// TODO Strand info is buggy in Hapmap bulk download!
@@ -220,7 +220,7 @@ public class LoadGTFromHapmapFiles_sampleSet extends LoadGTFromHapmapFiles imple
 			log.error(null, ex);
 		}
 		markersD2 = null;
-		log.info("Done writing strand info to matrix at {}", org.gwaspi.global.Utils.getMediumDateTimeAsString());
+		log.info("Done writing strand info to matrix");
 
 
 		// </editor-fold>
@@ -249,7 +249,7 @@ public class LoadGTFromHapmapFiles_sampleSet extends LoadGTFromHapmapFiles imple
 
 		Map<String, Object> sampleOrderMap = new LinkedHashMap<String, Object>();
 		for (int j = LoadGTFromHapmapFiles.Standard.sampleId; j < headerFields.length; j++) {
-			sampleOrderMap.put(j + "", headerFields[j]);
+			sampleOrderMap.put(String.valueOf(j), headerFields[j]);
 		}
 
 		int gtStride = cNetCDF.Strides.STRIDE_GT;
@@ -304,12 +304,12 @@ public class LoadGTFromHapmapFiles_sampleSet extends LoadGTFromHapmapFiles imple
 			if (rowCount == 1) {
 				log.info(Text.All.processing);
 			} else if (rowCount % 100000 == 0) {
-				log.info("Done processing " + rowCount + " markers at {}", org.gwaspi.global.Utils.getMediumDateTimeAsString());
+				log.info("Done processing " + rowCount + " markers");
 			}
 		}
 		//</editor-fold>
 
-		log.info("Done writing genotypes to matrix at {}", org.gwaspi.global.Utils.getMediumDateTimeAsString());
+		log.info("Done writing genotypes to matrix");
 		// </editor-fold>
 
 		// CLOSE THE FILE AND BY THIS, MAKE IT READ-ONLY

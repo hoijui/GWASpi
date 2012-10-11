@@ -61,7 +61,7 @@ public class OutputTrendTest {
 					opId,
 					"Trend Test Manhattan Plot",
 					op.getStudyId());
-			log.info("Saved Manhattan Plot in reports folder at {}", org.gwaspi.global.Utils.getMediumDateTimeAsString()); // FIXME log system already supplies time
+			log.info("Saved Manhattan Plot in reports folder");
 		}
 		//String qqName = "qq_"+outName;
 		String qqName = prefix + "qq";
@@ -76,7 +76,7 @@ public class OutputTrendTest {
 					"Trend Test QQ Plot",
 					op.getStudyId());
 
-			log.info("Saved Trend Test QQ Plot in reports folder at {}", org.gwaspi.global.Utils.getMediumDateTimeAsString()); // FIXME log system already supplies time
+			log.info("Saved Trend Test QQ Plot in reports folder");
 		}
 		//String assocName = "assoc_"+outName;
 		String assocName = prefix;

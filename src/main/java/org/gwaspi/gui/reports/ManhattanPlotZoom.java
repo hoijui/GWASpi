@@ -845,7 +845,7 @@ public final class ManhattanPlotZoom extends JPanel {
 				}
 				if (getLabelerMap().get(chrPos.toString()).toString().equals(origMarkerId)) {
 					rsLabel = getLabelerMap().get(chrPos.toString()).toString();
-					rsLabel = "◄ " + rsLabel + "";
+					rsLabel = "◄ " + rsLabel;
 				}
 			}
 			return rsLabel;

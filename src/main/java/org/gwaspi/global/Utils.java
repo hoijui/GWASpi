@@ -344,7 +344,7 @@ public class Utils {
 //				Thread.sleep(millisecs);
 //				System.gc(); //Poke system to try to Garbage Collect!
 //			}
-//			log.info("Garbage collected at " + Utils.getMediumDateTimeAsString());
+//			log.info("Garbage collected");
 //		} catch (InterruptedException ex) {
 //			log.error(null, ex);
 //		}
@@ -387,15 +387,15 @@ public class Utils {
 	}
 
 	public static void sysoutStart(String message) { // FIXME We dont need to add a time manually, as the logging system does that for us (also see other methods below)
-		log.info("******* Started {} at {} *******", createActualMessage(message), Utils.getMediumDateTimeAsString());
+		log.info("******* Started {} *******", createActualMessage(message));
 	}
 
 	public static void sysoutCompleted(String message) {
-		log.info("===> Completed {} at {} <===", createActualMessage(message), Utils.getMediumDateTimeAsString());
+		log.info("===> Completed {} <===", createActualMessage(message));
 	}
 
 	public static void sysoutFinish(String message) {
-		log.info("################# Finished {} at {} #################", createActualMessage(message), Utils.getMediumDateTimeAsString());
+		log.info("################# Finished {} #################", createActualMessage(message));
 		log.info("");
 		log.info("");
 	}
@@ -404,7 +404,7 @@ public class Utils {
 		String actualMessage = ((message == null) || message.isEmpty())
 				? " perfoming "  + message
 				: "";
-		log.info("!!!!! Error encountered{} at {} !!!!!", actualMessage, Utils.getMediumDateTimeAsString());
+		log.info("!!!!! Error encountered{} !!!!!", actualMessage);
 	}
 
 	/**

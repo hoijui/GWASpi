@@ -89,7 +89,7 @@ public class OP_HardyWeinberg implements MatrixOperation {
 			} catch (InvalidRangeException ex) {
 				log.error(null, ex);
 			}
-			log.info("Done writing SampleSet to matrix at {}", org.gwaspi.global.Utils.getMediumDateTimeAsString()); // FIXME log system already supplies time
+			log.info("Done writing SampleSet to matrix");
 			//</editor-fold>
 
 			//<editor-fold defaultstate="collapsed" desc="GET CENSUS & PERFORM HW">
@@ -171,12 +171,10 @@ public class OP_HardyWeinberg implements MatrixOperation {
 
 			markerNb++;
 			if (markerNb % 100000 == 0) {
-				log.info("Processed {} markers on category {} at {}",
-						new Object[] {markerNb, category, org.gwaspi.global.Utils.getMediumDateTimeAsString()}); // FIXME log system already supplies time
+				log.info("Processed {} markers on category {}", markerNb, category);
 			}
 		}
-		log.info("Processed {} markers on category: {} at {}",
-				new Object[] {markerNb, category, org.gwaspi.global.Utils.getMediumDateTimeAsString()}); // FIXME log system already supplies time
+		log.info("Processed {} markers on category: {}", markerNb, category);
 
 		//<editor-fold defaultstate="collapsed" desc="HARDY-WEINBERG DATA WRITER">
 //		// ALL SAMPLES

@@ -181,7 +181,7 @@ public class MatrixMergeMarkers_opt {
 			} catch (InvalidRangeException ex) {
 				log.error(null, ex);
 			}
-			log.info("Done writing SampleSet to matrix at {}", org.gwaspi.global.Utils.getMediumDateTimeAsString()); // FIXME log system already adds time
+			log.info("Done writing SampleSet to matrix"); // FIXME log system already adds time
 
 			// MARKERSET MARKERID
 			ArrayChar.D2 markersD2 = Utils.writeMapKeysToD2ArrayChar(wrComboSortedMarkerSetMap, cNetCDF.Strides.STRIDE_MARKER_NAME);
@@ -204,7 +204,7 @@ public class MatrixMergeMarkers_opt {
 			} catch (InvalidRangeException ex) {
 				log.error(null, ex);
 			}
-			log.info("Done writing chromosomes to matrix at {}", org.gwaspi.global.Utils.getMediumDateTimeAsString()); // FIXME log system already adds time
+			log.info("Done writing chromosomes to matrix"); // FIXME log system already adds time
 
 			// Set of chromosomes found in matrix along with number of markersinfo
 			org.gwaspi.netCDF.operations.Utils.saveCharMapKeyToWrMatrix(wrNcFile, chrSetMap, cNetCDF.Variables.VAR_CHR_IN_MATRIX, 8);
@@ -222,7 +222,7 @@ public class MatrixMergeMarkers_opt {
 			} catch (InvalidRangeException ex) {
 				log.error(null, ex);
 			}
-			log.info("Done writing positions to matrix at {}", org.gwaspi.global.Utils.getMediumDateTimeAsString()); // FIXME log system already adds time
+			log.info("Done writing positions to matrix"); // FIXME log system already adds time
 
 			//<editor-fold defaultstate="collapsed" desc="GATHER METADATA FROM BOTH MATRICES">
 			rdMarkerSet1.initFullMarkerIdSetMap();
@@ -500,7 +500,7 @@ public class MatrixMergeMarkers_opt {
 
 			markerNb++;
 			if (markerNb % 100000 == 0) {
-				log.info("Checking markers for mismatches: {} at {}", markerNb, org.gwaspi.global.Utils.getMediumDateTimeAsString()); // FIXME log system already adds time
+				log.info("Checking markers for mismatches: {}", markerNb);
 			}
 		}
 

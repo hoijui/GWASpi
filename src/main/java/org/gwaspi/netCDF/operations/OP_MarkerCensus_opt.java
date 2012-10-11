@@ -241,7 +241,7 @@ public class OP_MarkerCensus_opt implements MatrixOperation {
 				} catch (InvalidRangeException ex) {
 					log.error(null, ex);
 				}
-				log.info("Done writing Sample Set to operation at {}", org.gwaspi.global.Utils.getMediumDateTimeAsString()); // FIXME log system already supplies time
+				log.info("Done writing Sample Set to operation");
 				//</editor-fold>
 
 				//<editor-fold defaultstate="collapsed" desc="PROCESSOR">
@@ -779,7 +779,7 @@ public class OP_MarkerCensus_opt implements MatrixOperation {
 					}
 
 					if (markerNb != 0 && markerNb % 100000 == 0) {
-						log.info("Processed markers: {} at {}", markerNb, org.gwaspi.global.Utils.getMediumDateTimeAsString()); // FIXME log system already supplies time
+						log.info("Processed markers: {}", markerNb);
 					}
 				}
 				//</editor-fold>

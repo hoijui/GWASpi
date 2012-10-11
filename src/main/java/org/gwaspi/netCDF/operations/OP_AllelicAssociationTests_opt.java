@@ -154,7 +154,7 @@ public class OP_AllelicAssociationTests_opt implements MatrixOperation {
 				} catch (InvalidRangeException ex) {
 					log.error("Failed writing file", ex);
 				}
-				log.info("Done writing SampleSet to matrix at {}", org.gwaspi.global.Utils.getMediumDateTimeAsString());
+				log.info("Done writing SampleSet to matrix");
 
 				// WRITE CHROMOSOME INFO
 				// Set of chromosomes found in matrix along with number of markersinfo
@@ -272,7 +272,7 @@ public class OP_AllelicAssociationTests_opt implements MatrixOperation {
 
 			markerNb++;
 			if (markerNb % 100000 == 0) {
-				log.info("Processed {} markers at {}", markerNb, org.gwaspi.global.Utils.getMediumDateTimeAsString());
+				log.info("Processed {} markers", markerNb);
 			}
 		}
 
