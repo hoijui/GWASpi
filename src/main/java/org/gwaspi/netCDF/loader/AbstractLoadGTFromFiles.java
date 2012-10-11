@@ -42,6 +42,7 @@ public abstract class AbstractLoadGTFromFiles implements GenotypesLoader {
 			String markersD2Variables
 			)
 	{
+		this.format = format;
 		this.matrixStrand = matrixStrand;
 		this.hasDictionary = hasDictionary;
 		this.markersD2ItemNb = markersD2ItemNb;
