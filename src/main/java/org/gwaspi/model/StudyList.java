@@ -22,7 +22,7 @@ public class StudyList {
 	private static final Logger log
 			= LoggerFactory.getLogger(StudyList.class);
 
-	private StudyList() throws IOException {
+	private StudyList() {
 	}
 
 	public static List<Study> getStudyList() throws IOException {
@@ -74,7 +74,7 @@ public class StudyList {
 
 			studyTable = new Object[rs.size()][4];
 			for (int i = 0; i < rs.size(); i++) {
-				//PREVENT PHANTOM-DB READS EXCEPTIONS
+				// PREVENT PHANTOM-DB READS EXCEPTIONS
 				if (!rs.isEmpty() && rs.get(i).size() == cDBGWASpi.T_CREATE_STUDIES.length) {
 					studyTable[i][0] = (Integer) rs.get(i).get(cDBGWASpi.f_ID);
 					studyTable[i][1] = rs.get(i).get(cDBGWASpi.f_NAME).toString();

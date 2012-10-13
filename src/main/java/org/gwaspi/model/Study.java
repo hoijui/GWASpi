@@ -32,7 +32,6 @@ public class Study {
 	private String studyType = ""; // study_type VARCHAR(255)
 	private String validity = ""; // validity SMALLINT
 	private Date creationDate; // creation_date TIMESTAMP (2009-05-13 17:22:10.984)
-	private StringBuffer studyLog = new StringBuffer();
 	private List<Integer> studyMatrices = new ArrayList<Integer>();
 
 	/**
@@ -108,12 +107,5 @@ public class Study {
 		}
 
 		return studyMatricesList;
-	}
-
-	public StringBuffer getStudyLog() throws IOException {
-		String history_path = Config.getConfigValue(Config.PROPERTY_LOG_DIR, "") + "/STUDY_" + this.studyId + ".log";
-		File input = new File(history_path);
-		studyLog = new StringBuffer(org.gwaspi.framework.util.IOUtils.readFile(new FileReader(input)));
-		return studyLog;
 	}
 }
