@@ -36,8 +36,10 @@ public class SysCommandExecutor {
 		}
 	}
 
-	public static StringBuffer sysCommandExecute(String cmd) {
-		StringBuffer result = new StringBuffer();
+	public static String sysCommandExecute(String cmd) {
+
+		StringBuilder result = new StringBuilder();
+
 		try {
 			Runtime rt = Runtime.getRuntime();
 
@@ -45,9 +47,10 @@ public class SysCommandExecutor {
 				pr = rt.exec(cmd);
 			} else if (cGlobal.OSNAME.contains("Windows")) {
 				pr = rt.exec("cmd /c " + cmd);
-			} else {
-				//JOptionPane.showMessageDialog(org.gwaspi.gui.StartGUI.getFrames()[0], "Sorry, your Operating System is not supported by our software.\nSupported platforms include Windows and Linux.");
 			}
+//			else { // TODO implement for at least OS X
+//				JOptionPane.showMessageDialog(org.gwaspi.gui.StartGUI.getFrames()[0], "Sorry, your Operating System is not supported by our software.\nSupported platforms include Windows and Linux.");
+//			}
 
 			BufferedReader input = new BufferedReader(new InputStreamReader(pr.getInputStream()));
 			String line;
@@ -60,6 +63,7 @@ public class SysCommandExecutor {
 		} catch (Exception ex) {
 			log.error("Failed to execute command: " + cmd, ex);
 		}
-		return result;
+
+		return result.toString();
 	}
 }
