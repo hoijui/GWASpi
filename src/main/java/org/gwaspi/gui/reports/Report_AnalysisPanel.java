@@ -64,7 +64,7 @@ public class Report_AnalysisPanel extends JPanel {
 		btn_Help = new JButton();
 
 		if (currentOP != null) {
-			setBorder(BorderFactory.createTitledBorder(null, Text.Reports.report + ": " + currentOP.getOperationFriendlyName() + ", OperationID: " + currentOP.getOperationId(), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("FreeSans", 1, 18))); // NOI18N
+			setBorder(BorderFactory.createTitledBorder(null, Text.Reports.report + ": " + currentOP.getFriendlyName() + ", OperationID: " + currentOP.getId(), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("FreeSans", 1, 18))); // NOI18N
 		} else {
 			setBorder(BorderFactory.createTitledBorder(null, Text.Operation.allelicAssocTest, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("FreeSans", 1, 18))); // NOI18N
 		}
@@ -102,7 +102,7 @@ public class Report_AnalysisPanel extends JPanel {
 
 		List<Report> reportsList = ReportsList.getReportsList(_opId, _matrixId);
 		if (reportsList.size() == 3) {
-			String reportFile = reportsList.get(2).getReportFileName();
+			String reportFile = reportsList.get(2).getFileName();
 			if (currentOP.getOperationType().equals(OPType.ALLELICTEST.toString())) {
 				pnl_Report = new Report_AnalysisAllelicTestImpl(_studyId, reportFile, _opId, NRows);
 			} else if (currentOP.getOperationType().equals(OPType.GENOTYPICTEST.toString())) {
@@ -159,7 +159,7 @@ public class Report_AnalysisPanel extends JPanel {
 		@Override
 		public void actionPerformed(ActionEvent evt) {
 			// TEST IF THE DELETED ITEM IS REQUIRED FOR A QUED WORKER
-			if (SwingWorkerItemList.permitsDeletionOfMatrixId(currentOP.getOperationId())) { // XXX FIXME? should it be permitsDeletionOfOperationId
+			if (SwingWorkerItemList.permitsDeletionOfMatrixId(currentOP.getId())) { // XXX FIXME? should it be permitsDeletionOfOperationId
 				int option = JOptionPane.showConfirmDialog(dialogParent, Text.Operation.confirmDelete1);
 				if (option == JOptionPane.YES_OPTION) {
 					int deleteReportOption = JOptionPane.showConfirmDialog(dialogParent, Text.Reports.confirmDelete);
@@ -169,7 +169,7 @@ public class Report_AnalysisPanel extends JPanel {
 							if (deleteReportOption == JOptionPane.YES_OPTION) {
 								deleteReport = true;
 							}
-							MultiOperations.deleteOperationsByOpId(parentMatrix.getStudyId(), parentMatrix.getMatrixId(), currentOP.getOperationId(), deleteReport);
+							MultiOperations.deleteOperationsByOpId(parentMatrix.getStudyId(), parentMatrix.getId(), currentOP.getId(), deleteReport);
 						}
 					}
 				}

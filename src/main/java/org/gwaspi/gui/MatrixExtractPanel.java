@@ -599,7 +599,7 @@ public class MatrixExtractPanel extends JPanel {
 					}
 
 					MultiOperations.doExtractData(parentMatrix.getStudyId(),
-							parentMatrix.getMatrixId(),
+							parentMatrix.getId(),
 							newMatrixName,
 							description,
 							markerPickCase,
@@ -692,7 +692,7 @@ public class MatrixExtractPanel extends JPanel {
 		@Override
 		public void actionPerformed(ActionEvent evt) {
 			try {
-				GWASpiExplorerPanel.getSingleton().setPnl_Content(new CurrentMatrixPanel(parentMatrix.getMatrixId()));
+				GWASpiExplorerPanel.getSingleton().setPnl_Content(new CurrentMatrixPanel(parentMatrix.getId()));
 				GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
 			} catch (IOException ex) {
 				log.error(null, ex);

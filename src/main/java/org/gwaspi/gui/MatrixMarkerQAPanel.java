@@ -71,14 +71,14 @@ public class MatrixMarkerQAPanel extends JPanel {
 		btn_Back = new JButton();
 		btn_Help = new JButton();
 
-		setBorder(BorderFactory.createTitledBorder(null, Text.Operation.operation + ": " + currentOP.getOperationFriendlyName(), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("FreeSans", 1, 18))); // NOI18N
+		setBorder(BorderFactory.createTitledBorder(null, Text.Operation.operation + ": " + currentOP.getFriendlyName(), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("FreeSans", 1, 18))); // NOI18N
 
 		txtA_Description.setColumns(20);
 		txtA_Description.setRows(5);
 		txtA_Description.setEditable(false);
 		txtA_Description.setBorder(BorderFactory.createTitledBorder(null, Text.All.description, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("DejaVu Sans", 1, 13))); // NOI18N
 		if (_opId != Integer.MIN_VALUE) {
-			pnl_MatrixDesc.setBorder(BorderFactory.createTitledBorder(null, Text.Operation.operationId + ": " + currentOP.getOperationId(), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("DejaVu Sans", 1, 13))); // NOI18N
+			pnl_MatrixDesc.setBorder(BorderFactory.createTitledBorder(null, Text.Operation.operationId + ": " + currentOP.getId(), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("DejaVu Sans", 1, 13))); // NOI18N
 			txtA_Description.setText(currentOP.getDescription().toString());
 		} else {
 			pnl_MatrixDesc.setBorder(BorderFactory.createTitledBorder(null, Text.Matrix.matrix + ": " + parentMatrix.getMatrixMetadata().getMatrixFriendlyName(), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("DejaVu Sans", 1, 13))); // NOI18N
@@ -174,7 +174,7 @@ public class MatrixMarkerQAPanel extends JPanel {
 		@Override
 		public void actionPerformed(ActionEvent evt) {
 			try {
-				int opId = currentOP.getOperationId();
+				int opId = currentOP.getId();
 				// TEST IF THE DELETED ITEM IS REQUIRED FOR A QUED WORKER
 				if (SwingWorkerItemList.permitsDeletionOfOperationId(opId)) {
 					int option = JOptionPane.showConfirmDialog(dialogParent, Text.Operation.confirmDelete1);
@@ -186,11 +186,11 @@ public class MatrixMarkerQAPanel extends JPanel {
 								if (deleteReportOption == JOptionPane.YES_OPTION) {
 									deleteReport = true;
 								}
-								MultiOperations.deleteOperationsByOpId(parentMatrix.getStudyId(), parentMatrix.getMatrixId(), opId, deleteReport);
+								MultiOperations.deleteOperationsByOpId(parentMatrix.getStudyId(), parentMatrix.getId(), opId, deleteReport);
 
 								//OperationManager.deleteOperationAndChildren(parentMatrix.getStudyId(), opId, deleteReport);
 							}
-							if (currentOP.getOperationId() == opId) {
+							if (currentOP.getId() == opId) {
 								GWASpiExplorerPanel.getSingleton().getTree().setSelectionPath(GWASpiExplorerPanel.getSingleton().getTree().getSelectionPath().getParentPath());
 							}
 							GWASpiExplorerPanel.getSingleton().updateTreePanel(true);
@@ -219,7 +219,7 @@ public class MatrixMarkerQAPanel extends JPanel {
 		public void actionPerformed(ActionEvent evt) {
 			try {
 				GWASpiExplorerPanel.getSingleton().getTree().setSelectionPath(GWASpiExplorerPanel.getSingleton().getTree().getSelectionPath().getParentPath());
-				GWASpiExplorerPanel.getSingleton().setPnl_Content(new CurrentMatrixPanel(parentMatrix.getMatrixId()));
+				GWASpiExplorerPanel.getSingleton().setPnl_Content(new CurrentMatrixPanel(parentMatrix.getId()));
 				GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
 			} catch (IOException ex) {
 				log.error(null, ex);

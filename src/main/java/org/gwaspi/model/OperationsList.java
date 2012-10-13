@@ -177,7 +177,7 @@ public class OperationsList {
 		int result = Integer.MIN_VALUE;
 		for (int i = 0; i < operationsList.size(); i++) {
 			if (operationsList.get(i).getOperationType().equals(OPType.MARKER_QA.toString())) {
-				result = operationsList.get(i).getOperationId();
+				result = operationsList.get(i).getId();
 			}
 		}
 		return result;

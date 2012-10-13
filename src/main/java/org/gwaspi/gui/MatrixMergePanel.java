@@ -369,7 +369,7 @@ public class MatrixMergePanel extends JPanel {
 			try {
 				int addMatrixId = (Integer) matrixItemsAL.get(selectMatrix.getSelectedIndex())[0];
 
-				MatrixMetadata parentMatrixMetadata = new MatrixMetadata(parentMatrix.getMatrixId());
+				MatrixMetadata parentMatrixMetadata = new MatrixMetadata(parentMatrix.getId());
 				MatrixMetadata addMatrixMetadata = new MatrixMetadata(addMatrixId);
 				if (parentMatrixMetadata.getGenotypeEncoding().equals(addMatrixMetadata.getGenotypeEncoding())) {
 					if (parentMatrixMetadata.getGenotypeEncoding().equals(GenotypeEncoding.UNKNOWN)) {
@@ -386,7 +386,7 @@ public class MatrixMergePanel extends JPanel {
 
 						if (mergeMarkers.isSelected()) {
 							MultiOperations.doMergeMatrixAddMarkers(parentMatrix.getStudyId(),
-									parentMatrix.getMatrixId(),
+									parentMatrix.getId(),
 									addMatrixId,
 									newMatrixName.getText(),
 									description);
@@ -394,7 +394,7 @@ public class MatrixMergePanel extends JPanel {
 
 						if (mergeSamples.isSelected()) {
 							MultiOperations.doMergeMatrixAddSamples(parentMatrix.getStudyId(),
-									parentMatrix.getMatrixId(),
+									parentMatrix.getId(),
 									addMatrixId,
 									newMatrixName.getText(),
 									description);
@@ -402,7 +402,7 @@ public class MatrixMergePanel extends JPanel {
 
 						if (mergeAll.isSelected()) {
 							MultiOperations.doMergeMatrixAll(parentMatrix.getStudyId(),
-									parentMatrix.getMatrixId(),
+									parentMatrix.getId(),
 									addMatrixId,
 									newMatrixName.getText(),
 									description);
@@ -432,7 +432,7 @@ public class MatrixMergePanel extends JPanel {
 		@Override
 		public void actionPerformed(ActionEvent evt) {
 			try {
-				GWASpiExplorerPanel.getSingleton().setPnl_Content(new CurrentMatrixPanel(parentMatrix.getMatrixId()));
+				GWASpiExplorerPanel.getSingleton().setPnl_Content(new CurrentMatrixPanel(parentMatrix.getId()));
 				GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
 			} catch (IOException ex) {
 				log.error(null, ex);
@@ -469,12 +469,12 @@ public class MatrixMergePanel extends JPanel {
 					sb.append("SID: ");
 					sb.append(currentMatrix.getStudyId());
 					sb.append(" - MX: ");
-					sb.append(currentMatrix.getMatrixId());
+					sb.append(currentMatrix.getId());
 					sb.append(" - ");
 					sb.append(currentMatrix.getMatrixMetadata().getMatrixFriendlyName());
 
 					Object[] matrixItem = new Object[2];
-					matrixItem[0] = currentMatrix.getMatrixId();
+					matrixItem[0] = currentMatrix.getId();
 					matrixItem[1] = sb.toString();
 
 					resultAL.add(matrixItem);

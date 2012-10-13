@@ -52,7 +52,7 @@ public class OP_AllelicAssociationTests_opt implements MatrixOperation {
 		int totalMarkerNb = 0;
 
 		if (hwOP != null) {
-			OperationMetadata hwMetadata = new OperationMetadata(hwOP.getOperationId());
+			OperationMetadata hwMetadata = new OperationMetadata(hwOP.getId());
 			NetcdfFile rdHWNcFile = NetcdfFile.open(hwMetadata.getPathToMatrix());
 			OperationSet rdHWOperationSet = new OperationSet(hwMetadata.getStudyId(), hwMetadata.getOPId());
 			Map<String, Object> rdHWMarkerSetMap = rdHWOperationSet.getOpSetMap();
@@ -75,11 +75,11 @@ public class OP_AllelicAssociationTests_opt implements MatrixOperation {
 		//</editor-fold>
 
 		if (excludeMarkerSetMap.size() < totalMarkerNb) { // CHECK IF THERE IS ANY DATA LEFT TO PROCESS AFTER PICKING
-			OperationMetadata rdCensusOPMetadata = new OperationMetadata(markerCensusOP.getOperationId());
+			OperationMetadata rdCensusOPMetadata = new OperationMetadata(markerCensusOP.getId());
 			NetcdfFile rdOPNcFile = NetcdfFile.open(rdCensusOPMetadata.getPathToMatrix());
 
-			OperationSet rdCaseMarkerSet = new OperationSet(rdCensusOPMetadata.getStudyId(), markerCensusOP.getOperationId());
-			OperationSet rdCtrlMarkerSet = new OperationSet(rdCensusOPMetadata.getStudyId(), markerCensusOP.getOperationId());
+			OperationSet rdCaseMarkerSet = new OperationSet(rdCensusOPMetadata.getStudyId(), markerCensusOP.getId());
+			OperationSet rdCtrlMarkerSet = new OperationSet(rdCensusOPMetadata.getStudyId(), markerCensusOP.getId());
 			Map<String, Object> rdSampleSetMap = rdCaseMarkerSet.getImplicitSetMap();
 			Map<String, Object> rdCaseMarkerIdSetMap = rdCaseMarkerSet.getOpSetMap();
 			Map<String, Object> rdCtrlMarkerIdSetMap = rdCtrlMarkerSet.getOpSetMap();
@@ -107,13 +107,13 @@ public class OP_AllelicAssociationTests_opt implements MatrixOperation {
 				DecimalFormat dfSci = new DecimalFormat("0.##E0#");
 				OperationFactory wrOPHandler = new OperationFactory(rdCensusOPMetadata.getStudyId(),
 						"Allelic Association Test", // friendly name
-						"Allelic test on " + markerCensusOP.getOperationFriendlyName() + "\n" + rdCensusOPMetadata.getDescription() + "\nHardy-Weinberg threshold: " + dfSci.format(hwThreshold), //description
+						"Allelic test on " + markerCensusOP.getFriendlyName() + "\n" + rdCensusOPMetadata.getDescription() + "\nHardy-Weinberg threshold: " + dfSci.format(hwThreshold), //description
 						wrMarkerSetMap.size(),
 						rdCensusOPMetadata.getImplicitSetSize(),
 						rdChrInfoSetMap.size(),
 						cNetCDF.Defaults.OPType.ALLELICTEST.toString(),
 						rdCensusOPMetadata.getParentMatrixId(), // Parent matrixId
-						markerCensusOP.getOperationId()); // Parent operationId
+						markerCensusOP.getId()); // Parent operationId
 				wrOPNcFile = wrOPHandler.getNetCDFHandler();
 
 				try {

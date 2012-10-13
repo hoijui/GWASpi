@@ -157,7 +157,7 @@ public class GWASpiExplorerNodes {
 			tn = new DefaultMutableTreeNode(new NodeElementInfo(op.getParentMatrixId(),
 					opId,
 					Text.App.treeOperation,
-					"OP: " + opId + " - " + op.getOperationFriendlyName()));
+					"OP: " + opId + " - " + op.getFriendlyName()));
 		} catch (IOException ex) {
 			log.error(null, ex);
 		}
@@ -180,7 +180,7 @@ public class GWASpiExplorerNodes {
 			tn = new DefaultMutableTreeNode(new NodeElementInfo(op.getParentOperationId(),
 					opId,
 					Text.App.treeOperation,
-					"OP: " + opId + " - " + op.getOperationFriendlyName()));
+					"OP: " + opId + " - " + op.getFriendlyName()));
 		} catch (IOException ex) {
 			log.error(null, ex);
 		}
@@ -195,7 +195,7 @@ public class GWASpiExplorerNodes {
 			tn = new DefaultMutableTreeNode(new NodeElementInfo(rpId,
 					rpId,
 					Text.App.treeReport,
-					"RP: " + rpId + " - " + rp.getReportFriendlyName()));
+					"RP: " + rpId + " - " + rp.getFriendlyName()));
 		} catch (IOException ex) {
 			log.error(null, ex);
 		}
@@ -310,7 +310,7 @@ public class GWASpiExplorerNodes {
 		try {
 			// GET MATRIX
 			Operation parentOP = new Operation(parentOpId);
-			TreePath parentPath = GWASpiExplorerPanel.getSingleton().getTree().getNextMatch("OP: " + parentOpId + " - " + parentOP.getOperationFriendlyName(), 0, Position.Bias.Forward);
+			TreePath parentPath = GWASpiExplorerPanel.getSingleton().getTree().getNextMatch("OP: " + parentOpId + " - " + parentOP.getFriendlyName(), 0, Position.Bias.Forward);
 
 			DefaultMutableTreeNode newNode = createOperationTreeNode(opId);
 
@@ -343,7 +343,7 @@ public class GWASpiExplorerNodes {
 		try {
 			// GET OPERATION
 			Operation parentOP = new Operation(parentOpId);
-			TreePath parentPath = GWASpiExplorerPanel.getSingleton().getTree().getNextMatch("OP: " + parentOpId + " - " + parentOP.getOperationFriendlyName(), 0, Position.Bias.Forward);
+			TreePath parentPath = GWASpiExplorerPanel.getSingleton().getTree().getNextMatch("OP: " + parentOpId + " - " + parentOP.getFriendlyName(), 0, Position.Bias.Forward);
 			DefaultMutableTreeNode parentNode = (DefaultMutableTreeNode) parentPath.getLastPathComponent();
 
 			// GET ALL REPORTS UNDER THIS OPERATION
@@ -354,7 +354,7 @@ public class GWASpiExplorerNodes {
 				if (!parentOP.getOperationType().equals(OPType.HARDY_WEINBERG.toString()) && //DON'T SHOW SUPERFLUOUS OPEARATION INFO
 						!parentOP.getOperationType().equals(OPType.SAMPLE_QA.toString())) {
 					if (!rp.getReportType().equals(OPType.ALLELICTEST.toString())) {
-						DefaultMutableTreeNode newNode = createReportTreeNode(reportsList.get(n).getReportId());
+						DefaultMutableTreeNode newNode = createReportTreeNode(reportsList.get(n).getId());
 						addNode(parentNode, newNode, true);
 					}
 				}

@@ -74,7 +74,7 @@ public class ReportManager {
 		prefix.append(op.getParentMatrixId());
 
 		prefix.append("_").append(op.getOperationType().toString()).append("-");
-		prefix.append(op.getOperationId());
+		prefix.append(op.getId());
 
 		// Get Genotype Freq. assigned name. Pry out the part inserted by user only
 		try {
@@ -82,7 +82,7 @@ public class ReportManager {
 					|| op.getOperationType().equals(OPType.GENOTYPICTEST.toString())
 					|| op.getOperationType().equals(OPType.TRENDTEST.toString())) {
 				Operation parentOp = new Operation(op.getParentOperationId());
-				String[] tmp = parentOp.getOperationFriendlyName().split("-", 2);
+				String[] tmp = parentOp.getFriendlyName().split("-", 2);
 				tmp = tmp[1].split("using");
 				prefix.append("_");
 				prefix.append(org.gwaspi.global.Utils.stripNonAlphaNumericDashUndscr(tmp[0].trim()));
@@ -140,7 +140,7 @@ public class ReportManager {
 		String reportsFolder = Config.getConfigValue(Config.PROPERTY_REPORTS_DIR, "");
 
 		for (Report rp : reportsList) {
-			File reportFile = new File(reportsFolder + "/STUDY_" + matrixMetadata.getStudyId() + "/" + rp.getReportFileName());
+			File reportFile = new File(reportsFolder + "/STUDY_" + matrixMetadata.getStudyId() + "/" + rp.getFileName());
 
 			if (reportFile.exists()) {
 				if (!reportFile.canWrite()) {
@@ -161,7 +161,7 @@ public class ReportManager {
 		String reportsFolder = Config.getConfigValue(Config.PROPERTY_REPORTS_DIR, "");
 
 		for (Report rp : reportsList) {
-			File reportFile = new File(reportsFolder + "/STUDY_" + operationMetadata.getStudyId() + "/" + rp.getReportFileName());
+			File reportFile = new File(reportsFolder + "/STUDY_" + operationMetadata.getStudyId() + "/" + rp.getFileName());
 
 			if (reportFile.exists()) {
 				if (!reportFile.canWrite()) {

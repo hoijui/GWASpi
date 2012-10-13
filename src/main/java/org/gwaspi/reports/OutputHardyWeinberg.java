@@ -39,7 +39,7 @@ public class OutputHardyWeinberg {
 		Operation op = new Operation(opId);
 		DbManager dBManager = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
 
-		//String hwOutName = "hw_"+op.getOperationId()+"_"+op.getOperationFriendlyName()+".hw";
+		//String hwOutName = "hw_"+op.getId()+"_"+op.getFriendlyName()+".hw";
 		String prefix = org.gwaspi.reports.ReportManager.getreportNamePrefix(op);
 		String hwOutName = prefix + "hardy-weinberg.txt";
 

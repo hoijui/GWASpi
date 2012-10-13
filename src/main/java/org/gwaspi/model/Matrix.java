@@ -25,7 +25,7 @@ public class Matrix {
 		studyId = matrixMetadata.getStudyId();
 	}
 
-	public int getMatrixId() {
+	public int getId() {
 		return matrixId;
 	}
 
@@ -33,7 +33,7 @@ public class Matrix {
 		return studyId;
 	}
 
-	public MatrixMetadata getMatrixMetadata() throws IOException {
+	public MatrixMetadata getMatrixMetadata() {
 		return matrixMetadata;
 	}
 }

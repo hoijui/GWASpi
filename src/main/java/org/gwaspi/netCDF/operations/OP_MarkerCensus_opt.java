@@ -75,10 +75,10 @@ public class OP_MarkerCensus_opt implements MatrixOperation {
 //		Map wrMarkerSetKnownAllelesMap = new LinkedHashMap();
 
 		//<editor-fold defaultstate="collapsed" desc="PICKING CLEAN MARKERS AND SAMPLES FROM QA">
-		OperationMetadata markerQAMetadata = new OperationMetadata(markerQAOP.getOperationId());
+		OperationMetadata markerQAMetadata = new OperationMetadata(markerQAOP.getId());
 		NetcdfFile rdMarkerQANcFile = NetcdfFile.open(markerQAMetadata.getPathToMatrix());
 
-		OperationMetadata sampleQAMetadata = new OperationMetadata(sampleQAOP.getOperationId());
+		OperationMetadata sampleQAMetadata = new OperationMetadata(sampleQAOP.getId());
 		NetcdfFile rdSampleQANcFile = NetcdfFile.open(sampleQAMetadata.getPathToMatrix());
 
 		OperationSet rdQAMarkerSet = new OperationSet(markerQAMetadata.getStudyId(), markerQAMetadata.getOPId());

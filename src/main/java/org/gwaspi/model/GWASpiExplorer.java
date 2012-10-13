@@ -135,31 +135,31 @@ public class GWASpiExplorer {
 			List<Matrix> matrixList = MatricesList.getMatrixList(studyList.get(i).getId());
 			for (int j = 0; j < matrixList.size(); j++) {
 
-				DefaultMutableTreeNode matrixItem = GWASpiExplorerNodes.createMatrixTreeNode(matrixList.get(j).getMatrixId());
+				DefaultMutableTreeNode matrixItem = GWASpiExplorerNodes.createMatrixTreeNode(matrixList.get(j).getId());
 
 				// LOAD Parent OPERATIONS ON CURRENT MATRIX
-				List<Operation> parentOperations = OperationsList.getOperationsList(matrixList.get(j).getMatrixId(), -1);
-				List<Operation> allOperations = OperationsList.getOperationsList(matrixList.get(j).getMatrixId());
+				List<Operation> parentOperations = OperationsList.getOperationsList(matrixList.get(j).getId(), -1);
+				List<Operation> allOperations = OperationsList.getOperationsList(matrixList.get(j).getId());
 				for (int k = 0; k < parentOperations.size(); k++) {
 					// LOAD SUB OPERATIONS ON CURRENT MATRIX
 					Operation currentOP = parentOperations.get(k);
-					DefaultMutableTreeNode operationItem = GWASpiExplorerNodes.createOperationTreeNode(currentOP.getOperationId());
+					DefaultMutableTreeNode operationItem = GWASpiExplorerNodes.createOperationTreeNode(currentOP.getId());
 
 
-					List<Operation> childrenOpAL = getChildrenOperations(allOperations, currentOP.getOperationId());
+					List<Operation> childrenOpAL = getChildrenOperations(allOperations, currentOP.getId());
 					for (int m = 0; m < childrenOpAL.size(); m++) {
 						Operation subOP = childrenOpAL.get(m);
-						DefaultMutableTreeNode subOperationItem = GWASpiExplorerNodes.createSubOperationTreeNode(subOP.getOperationId());
+						DefaultMutableTreeNode subOperationItem = GWASpiExplorerNodes.createSubOperationTreeNode(subOP.getId());
 
 						// LOAD REPORTS ON CURRENT SUB-OPERATION
 						if (!subOP.getOperationType().equals(OPType.HARDY_WEINBERG.toString())) { //NOT IF HW
-							List<Report> reportsList = ReportsList.getReportsList(subOP.getOperationId(), Integer.MIN_VALUE);
+							List<Report> reportsList = ReportsList.getReportsList(subOP.getId(), Integer.MIN_VALUE);
 							for (int n = 0; n < reportsList.size(); n++) {
 								Report rp = reportsList.get(n);
 								if (!rp.getReportType().equals(OPType.ALLELICTEST.toString())
 										&& !rp.getReportType().equals(OPType.GENOTYPICTEST.toString())
 										&& !rp.getReportType().equals(OPType.TRENDTEST.toString())) {
-									DefaultMutableTreeNode reportItem = GWASpiExplorerNodes.createReportTreeNode(reportsList.get(n).getReportId());
+									DefaultMutableTreeNode reportItem = GWASpiExplorerNodes.createReportTreeNode(reportsList.get(n).getId());
 									subOperationItem.add(reportItem);
 								}
 
@@ -170,10 +170,10 @@ public class GWASpiExplorer {
 
 					// START TESTING
 					// LOAD REPORTS ON CURRENT OPERATION
-					List<Report> reportsList = ReportsList.getReportsList(currentOP.getOperationId(), Integer.MIN_VALUE);
+					List<Report> reportsList = ReportsList.getReportsList(currentOP.getId(), Integer.MIN_VALUE);
 					if (!currentOP.getOperationType().equals(OPType.SAMPLE_QA.toString())) { //SAMPLE_QA MUST BE DEALT DIFFERENTLY
 						for (int n = 0; n < reportsList.size(); n++) {
-							DefaultMutableTreeNode reportItem = GWASpiExplorerNodes.createReportTreeNode(reportsList.get(n).getReportId());
+							DefaultMutableTreeNode reportItem = GWASpiExplorerNodes.createReportTreeNode(reportsList.get(n).getId());
 							operationItem.add(reportItem);
 						}
 					} else {
@@ -181,7 +181,7 @@ public class GWASpiExplorer {
 						for (int n = 0; n < reportsList.size(); n++) {
 							Report rp = reportsList.get(n);
 							if (rp.getReportType().equals(OPType.SAMPLE_HTZYPLOT.toString())) {
-								DefaultMutableTreeNode reportItem = GWASpiExplorerNodes.createReportTreeNode(reportsList.get(n).getReportId());
+								DefaultMutableTreeNode reportItem = GWASpiExplorerNodes.createReportTreeNode(reportsList.get(n).getId());
 								operationItem.add(reportItem);
 							}
 						}
@@ -312,24 +312,24 @@ public class GWASpiExplorer {
 						Operation parentOP = new Operation(parentElementInfo.getNodeId());
 						if (currentOP.getOperationType().equals(OPType.HARDY_WEINBERG.toString())) {
 							// Display HW Report
-							List<Report> reportsList = ReportsList.getReportsList(currentOP.getOperationId(), currentOP.getParentMatrixId());
+							List<Report> reportsList = ReportsList.getReportsList(currentOP.getId(), currentOP.getParentMatrixId());
 							if (reportsList.size() > 0) {
 								Report hwReport = reportsList.get(0);
-								String reportFile = hwReport.getReportFileName();
+								String reportFile = hwReport.getFileName();
 								gwasPiExplorerPanel.setPnl_Content(new Report_HardyWeinbergSummary(hwReport.getStudyId(), reportFile, hwReport.getParentOperationId()));
 								gwasPiExplorerPanel.getScrl_Content().setViewportView(gwasPiExplorerPanel.getPnl_Content());
 							}
 						} else if (currentOP.getOperationType().equals(OPType.ALLELICTEST.toString())) {
 							// Display Association Report
-							gwasPiExplorerPanel.setPnl_Content(new Report_AnalysisPanel(currentOP.getStudyId(), currentOP.getParentMatrixId(), currentOP.getOperationId(), null));
+							gwasPiExplorerPanel.setPnl_Content(new Report_AnalysisPanel(currentOP.getStudyId(), currentOP.getParentMatrixId(), currentOP.getId(), null));
 							gwasPiExplorerPanel.getScrl_Content().setViewportView(gwasPiExplorerPanel.getPnl_Content());
 						} else if (currentOP.getOperationType().equals(OPType.GENOTYPICTEST.toString())) {
 							// Display Association Report
-							gwasPiExplorerPanel.setPnl_Content(new Report_AnalysisPanel(currentOP.getStudyId(), currentOP.getParentMatrixId(), currentOP.getOperationId(), null));
+							gwasPiExplorerPanel.setPnl_Content(new Report_AnalysisPanel(currentOP.getStudyId(), currentOP.getParentMatrixId(), currentOP.getId(), null));
 							gwasPiExplorerPanel.getScrl_Content().setViewportView(gwasPiExplorerPanel.getPnl_Content());
 						} else if (currentOP.getOperationType().equals(OPType.TRENDTEST.toString())) {
 							// Display Trend Test Report
-							gwasPiExplorerPanel.setPnl_Content(new Report_AnalysisPanel(currentOP.getStudyId(), currentOP.getParentMatrixId(), currentOP.getOperationId(), null));
+							gwasPiExplorerPanel.setPnl_Content(new Report_AnalysisPanel(currentOP.getStudyId(), currentOP.getParentMatrixId(), currentOP.getId(), null));
 							gwasPiExplorerPanel.getScrl_Content().setViewportView(gwasPiExplorerPanel.getPnl_Content());
 						} else {
 							//gwasPiExplorerPanel.pnl_Content = new MatrixAnalysePanel(parentOP.getParentMatrixId(), currentElementInfo.parentNodeId);
@@ -342,14 +342,14 @@ public class GWASpiExplorer {
 						Operation currentOP = new Operation(currentElementInfo.getNodeId());
 						if (currentOP.getOperationType().equals(OPType.MARKER_QA.toString())) {
 							// Display MarkerQA panel
-							gwasPiExplorerPanel.setPnl_Content(new MatrixMarkerQAPanel(currentOP.getParentMatrixId(), currentOP.getOperationId()));
+							gwasPiExplorerPanel.setPnl_Content(new MatrixMarkerQAPanel(currentOP.getParentMatrixId(), currentOP.getId()));
 							gwasPiExplorerPanel.getScrl_Content().setViewportView(gwasPiExplorerPanel.getPnl_Content());
 						} else if (currentOP.getOperationType().equals(OPType.SAMPLE_QA.toString())) {
 							// Display SampleQA Report
-							List<Report> reportsList = ReportsList.getReportsList(currentOP.getOperationId(), currentOP.getParentMatrixId());
+							List<Report> reportsList = ReportsList.getReportsList(currentOP.getId(), currentOP.getParentMatrixId());
 							if (reportsList.size() > 0) {
 								Report sampleQAReport = reportsList.get(0);
-								String reportFile = sampleQAReport.getReportFileName();
+								String reportFile = sampleQAReport.getFileName();
 								gwasPiExplorerPanel.setPnl_Content(new Report_QASamplesSummary(sampleQAReport.getStudyId(), reportFile, sampleQAReport.getParentOperationId()));
 								gwasPiExplorerPanel.getScrl_Content().setViewportView(gwasPiExplorerPanel.getPnl_Content());
 							}
@@ -368,7 +368,7 @@ public class GWASpiExplorer {
 					// Display report summary
 					tree.expandPath(treePath);
 					Report rp = new Report(currentElementInfo.getNodeId());
-					String reportFile = rp.getReportFileName();
+					String reportFile = rp.getFileName();
 					if (rp.getReportType().equals(OPType.SAMPLE_HTZYPLOT.toString())) {
 						gwasPiExplorerPanel.setPnl_Content(new SampleQAHetzygPlotZoom(rp.getParentOperationId()));
 						gwasPiExplorerPanel.getScrl_Content().setViewportView(gwasPiExplorerPanel.getPnl_Content());

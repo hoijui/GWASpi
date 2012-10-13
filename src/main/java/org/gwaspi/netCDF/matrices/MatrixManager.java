@@ -95,7 +95,7 @@ public class MatrixManager {
 			// DELETE OPERATION netCDFs FROM THIS MATRIX
 			List<Operation> operations = OperationsList.getOperationsList(matrixId);
 			for (Operation op : operations) {
-				File opFile = new File(genotypesFolder + op.getOperationNetCDFName() + ".nc");
+				File opFile = new File(genotypesFolder + op.getNetCDFName() + ".nc");
 				org.gwaspi.global.Utils.tryToDeleteFile(opFile);
 			}
 

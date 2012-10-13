@@ -129,7 +129,7 @@ public class CurrentMatrixPanel extends JPanel {
 		setBorder(BorderFactory.createTitledBorder(null, Text.Matrix.matrix, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("FreeSans", 1, 18))); // NOI18N
 
 
-		pnl_MatrixDesc.setBorder(BorderFactory.createTitledBorder(null, Text.Matrix.currentMatrix + " " + matrix.getMatrixMetadata().getMatrixFriendlyName() + ", " + Text.Matrix.matrixID + ": mx" + matrix.getMatrixId(), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("DejaVu Sans", 1, 13))); // NOI18N
+		pnl_MatrixDesc.setBorder(BorderFactory.createTitledBorder(null, Text.Matrix.currentMatrix + " " + matrix.getMatrixMetadata().getMatrixFriendlyName() + ", " + Text.Matrix.matrixID + ": mx" + matrix.getId(), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("DejaVu Sans", 1, 13))); // NOI18N
 		txtA_MatrixDesc.setColumns(20);
 		txtA_MatrixDesc.setRows(5);
 		txtA_MatrixDesc.setBorder(BorderFactory.createTitledBorder(null, Text.All.description, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("DejaVu Sans", 1, 13))); // NOI18N
@@ -329,7 +329,7 @@ public class CurrentMatrixPanel extends JPanel {
 		@Override
 		public void actionPerformed(ActionEvent evt) {
 			try {
-				GWASpiExplorerPanel.getSingleton().setPnl_Content(new MatrixExtractPanel(matrix.getMatrixId(), "", ""));
+				GWASpiExplorerPanel.getSingleton().setPnl_Content(new MatrixExtractPanel(matrix.getId(), "", ""));
 				GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
 			} catch (IOException ex) {
 				log.error(null, ex);
@@ -351,7 +351,7 @@ public class CurrentMatrixPanel extends JPanel {
 		public void actionPerformed(ActionEvent evt) {
 			// Goto Trafo Pane
 			try {
-				GWASpiExplorerPanel.getSingleton().setPnl_Content(new MatrixTrafoPanel(matrix.getMatrixId()));
+				GWASpiExplorerPanel.getSingleton().setPnl_Content(new MatrixTrafoPanel(matrix.getId()));
 				GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
 			} catch (IOException ex) {
 				log.error(null, ex);
@@ -373,7 +373,7 @@ public class CurrentMatrixPanel extends JPanel {
 		public void actionPerformed(ActionEvent evt) {
 			// Goto Matrix Analysis Panel
 			try {
-				GWASpiExplorerPanel.getSingleton().setPnl_Content(new MatrixAnalysePanel(matrix.getMatrixId(), Integer.MIN_VALUE));
+				GWASpiExplorerPanel.getSingleton().setPnl_Content(new MatrixAnalysePanel(matrix.getId(), Integer.MIN_VALUE));
 				GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
 			} catch (IOException ex) {
 				log.error(null, ex);
@@ -407,10 +407,10 @@ public class CurrentMatrixPanel extends JPanel {
 						}
 
 						// CHECK IF MARKER QA EXISTS FOR EXPORT TO BE PERMITTED
-						List<Operation> operations = OperationsList.getOperationsList(matrix.getMatrixId());
+						List<Operation> operations = OperationsList.getOperationsList(matrix.getId());
 						int markersQAOpId = OperationsList.getIdOfLastOperationTypeOccurance(operations, OPType.MARKER_QA);
 						if (markersQAOpId != Integer.MIN_VALUE) {
-							MultiOperations.doExportMatrix(matrix.getStudyId(), matrix.getMatrixId(), format, expPhenotype);
+							MultiOperations.doExportMatrix(matrix.getStudyId(), matrix.getId(), format, expPhenotype);
 						} else {
 							Dialogs.showWarningDialogue(Text.Operation.warnOperationsMissing + " Marker QA");
 						}
@@ -418,7 +418,7 @@ public class CurrentMatrixPanel extends JPanel {
 						log.error(null, ex);
 					}
 				} else {
-					MultiOperations.doExportMatrix(matrix.getStudyId(), matrix.getMatrixId(), format, expPhenotype);
+					MultiOperations.doExportMatrix(matrix.getStudyId(), matrix.getId(), format, expPhenotype);
 				}
 			}
 		}
@@ -437,7 +437,7 @@ public class CurrentMatrixPanel extends JPanel {
 		@Override
 		public void actionPerformed(ActionEvent evt) {
 			try {
-				GWASpiExplorerPanel.getSingleton().setPnl_Content(new MatrixMergePanel(matrix.getMatrixId()));
+				GWASpiExplorerPanel.getSingleton().setPnl_Content(new MatrixMergePanel(matrix.getId()));
 				GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
 			} catch (IOException ex) {
 				log.error(null, ex);
@@ -486,7 +486,7 @@ public class CurrentMatrixPanel extends JPanel {
 						new String[]{cDBMatrix.f_DESCRIPTION},
 						new Object[]{matrixDesc.getText()},
 						new String[]{cDBMatrix.f_ID},
-						new Object[]{matrix.getMatrixId()});
+						new Object[]{matrix.getId()});
 			} catch (IOException ex) {
 				log.error(null, ex);
 			}
@@ -508,7 +508,7 @@ public class CurrentMatrixPanel extends JPanel {
 		@Override
 		public void actionPerformed(ActionEvent evt) {
 			// TODO TEST IF THE DELETED ITEM IS REQUIRED FOR A QUEUED WORKER
-			if (SwingWorkerItemList.permitsDeletionOfMatrixId(matrix.getMatrixId())) {
+			if (SwingWorkerItemList.permitsDeletionOfMatrixId(matrix.getId())) {
 				int option = JOptionPane.showConfirmDialog(dialogParent, Text.Matrix.confirmDelete1 + Text.Matrix.confirmDelete2);
 				if (option == JOptionPane.YES_OPTION) {
 					int deleteReportOption = JOptionPane.showConfirmDialog(dialogParent, Text.Reports.confirmDelete);
@@ -518,7 +518,7 @@ public class CurrentMatrixPanel extends JPanel {
 						if (deleteReportOption == JOptionPane.YES_OPTION) {
 							deleteReport = true;
 						}
-						MultiOperations.deleteMatrix(matrix.getStudyId(), matrix.getMatrixId(), deleteReport);
+						MultiOperations.deleteMatrix(matrix.getStudyId(), matrix.getId(), deleteReport);
 					}
 				}
 			} else {
@@ -560,7 +560,7 @@ public class CurrentMatrixPanel extends JPanel {
 										if (deleteReportOption == JOptionPane.YES_OPTION) {
 											deleteReport = true;
 										}
-										MultiOperations.deleteOperationsByOpId(matrix.getStudyId(), matrix.getMatrixId(), opId, deleteReport);
+										MultiOperations.deleteOperationsByOpId(matrix.getStudyId(), matrix.getId(), opId, deleteReport);
 
 										//OperationManager.deleteOperationAndChildren(matrix.getStudyId(), opId, deleteReport);
 									}

@@ -306,7 +306,7 @@ public class MatrixTrafoPanel extends JPanel {
 			String newMatrixName = checkNewMatrixData();
 			if (!newMatrixName.isEmpty()) {
 				try {
-					MatrixMetadata parentMatrixMetadata = new MatrixMetadata(parentMatrix.getMatrixId());
+					MatrixMetadata parentMatrixMetadata = new MatrixMetadata(parentMatrix.getId());
 					String description = txtA_NewMatrixDescription.getText();
 					if (txtA_NewMatrixDescription.getText().equals(Text.All.optional)) {
 						description = "";
@@ -317,7 +317,7 @@ public class MatrixTrafoPanel extends JPanel {
 					{
 						if (parentMatrixMetadata.getHasDictionray()) {
 							MultiOperations.doTranslateAB12ToACGT(parentMatrix.getStudyId(),
-									parentMatrix.getMatrixId(),
+									parentMatrix.getId(),
 									cNetCDF.Defaults.GenotypeEncoding.AB0, //No matter if AB or 12, works the same here
 									newMatrixName,
 									description);
@@ -348,7 +348,7 @@ public class MatrixTrafoPanel extends JPanel {
 			String newMatrixName = checkNewMatrixData();
 			if (!newMatrixName.isEmpty()) {
 				try {
-					MatrixMetadata parentMatrixMetadata = new MatrixMetadata(parentMatrix.getMatrixId());
+					MatrixMetadata parentMatrixMetadata = new MatrixMetadata(parentMatrix.getId());
 
 					String description = txtA_NewMatrixDescription.getText();
 					if (txtA_NewMatrixDescription.getText().equals(Text.All.optional)) {
@@ -358,7 +358,7 @@ public class MatrixTrafoPanel extends JPanel {
 					if (parentMatrixMetadata.getGenotypeEncoding().equals(GenotypeEncoding.O1234)) {
 
 						MultiOperations.doTranslateAB12ToACGT(parentMatrix.getStudyId(),
-								parentMatrix.getMatrixId(),
+								parentMatrix.getId(),
 								cNetCDF.Defaults.GenotypeEncoding.O1234,
 								newMatrixName,
 								description);
@@ -386,7 +386,7 @@ public class MatrixTrafoPanel extends JPanel {
 			String newMatrixName = checkNewMatrixData();
 			if (!newMatrixName.isEmpty()) {
 				try {
-					MatrixMetadata parentMatrixMetadata = new MatrixMetadata(parentMatrix.getMatrixId());
+					MatrixMetadata parentMatrixMetadata = new MatrixMetadata(parentMatrix.getId());
 
 					String description = txtA_NewMatrixDescription.getText();
 					if (txtA_NewMatrixDescription.getText().equals(Text.All.optional)) {
@@ -398,7 +398,7 @@ public class MatrixTrafoPanel extends JPanel {
 
 						File flipMarkersFile = Dialogs.selectFilesAndDirectoriesDialog(JOptionPane.OK_OPTION);
 						MultiOperations.doStrandFlipMatrix(parentMatrix.getStudyId(),
-								parentMatrix.getMatrixId(),
+								parentMatrix.getId(),
 								cNetCDF.Variables.VAR_MARKERSET,
 								flipMarkersFile,
 								newMatrixName,
@@ -430,7 +430,7 @@ public class MatrixTrafoPanel extends JPanel {
 		@Override
 		public void actionPerformed(ActionEvent evt) {
 			try {
-				GWASpiExplorerPanel.getSingleton().setPnl_Content(new CurrentMatrixPanel(parentMatrix.getMatrixId()));
+				GWASpiExplorerPanel.getSingleton().setPnl_Content(new CurrentMatrixPanel(parentMatrix.getId()));
 				GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
 			} catch (IOException ex) {
 				log.error(null, ex);

@@ -951,7 +951,7 @@ public final class ManhattanPlotZoom extends JPanel {
 				for (int i = 0; i < reportsList.size(); i++) {
 					String reportType = reportsList.get(i).getReportType();
 					if (reportType.equals(OPType.MANHATTANPLOT.toString())) {
-						reportFile = reportsList.get(i).getReportFileName();
+						reportFile = reportsList.get(i).getFileName();
 					}
 				}
 				GWASpiExplorerPanel.getSingleton().setPnl_Content(new ManhattanChartDisplay(rdOPMetadata.getStudyId(), reportFile, rdOPMetadata.getOPId()));

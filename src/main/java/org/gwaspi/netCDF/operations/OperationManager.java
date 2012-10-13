@@ -251,18 +251,18 @@ public class OperationManager {
 			if (!operations.isEmpty()) {
 				operations.add(op);
 				for (int i = 0; i < operations.size(); i++) {
-					File matrixOPFile = new File(genotypesFolder + "/STUDY_" + studyId + "/" + operations.get(i).getOperationNetCDFName() + ".nc");
+					File matrixOPFile = new File(genotypesFolder + "/STUDY_" + studyId + "/" + operations.get(i).getNetCDFName() + ".nc");
 					org.gwaspi.global.Utils.tryToDeleteFile(matrixOPFile);
 					if (deleteReports) {
-						org.gwaspi.reports.ReportManager.deleteReportByOperationId(operations.get(i).getOperationId());
+						org.gwaspi.reports.ReportManager.deleteReportByOperationId(operations.get(i).getId());
 					}
 
 					DbManager dBManager = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
-					String statement = "DELETE FROM " + cDBGWASpi.SCH_MATRICES + "." + cDBOperations.T_OPERATIONS + " WHERE " + cDBOperations.f_ID + "=" + operations.get(i).getOperationId();
+					String statement = "DELETE FROM " + cDBGWASpi.SCH_MATRICES + "." + cDBOperations.T_OPERATIONS + " WHERE " + cDBOperations.f_ID + "=" + operations.get(i).getId();
 					dBManager.executeStatement(statement);
 				}
 			} else {
-				File matrixOPFile = new File(genotypesFolder + "/STUDY_" + studyId + "/" + op.getOperationNetCDFName() + ".nc");
+				File matrixOPFile = new File(genotypesFolder + "/STUDY_" + studyId + "/" + op.getNetCDFName() + ".nc");
 				org.gwaspi.global.Utils.tryToDeleteFile(matrixOPFile);
 				if (deleteReports) {
 					org.gwaspi.reports.ReportManager.deleteReportByOperationId(opId);

@@ -69,7 +69,7 @@ public class StudyGenerator {
 
 		for (int i = 0; i < matrixList.size(); i++) {
 			try {
-				MatrixManager.deleteMatrix(matrixList.get(i).getMatrixId(), deleteReports);
+				MatrixManager.deleteMatrix(matrixList.get(i).getId(), deleteReports);
 				GWASpiExplorerPanel.getSingleton().updateTreePanel(true);
 			} catch (IOException ex) {
 				log.warn(null, ex);

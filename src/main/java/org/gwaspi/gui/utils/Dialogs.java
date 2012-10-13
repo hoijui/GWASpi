@@ -57,9 +57,9 @@ public class Dialogs {
 				if (op.getOperationType().equals(filterOpType.toString())) {
 					StringBuilder sb = new StringBuilder();
 					sb.append("OP: ");
-					sb.append(op.getOperationId());
+					sb.append(op.getId());
 					sb.append(" - ");
-					sb.append(op.getOperationFriendlyName());
+					sb.append(op.getFriendlyName());
 					operationsNames.add(sb.toString());
 					operationAL.add(op);
 				}
@@ -94,9 +94,9 @@ public class Dialogs {
 				if (filterOpTypeAL.contains(op.getOperationType())) {
 					StringBuilder sb = new StringBuilder();
 					sb.append("OP: ");
-					sb.append(op.getOperationId());
+					sb.append(op.getId());
 					sb.append(" - ");
-					sb.append(op.getOperationFriendlyName());
+					sb.append(op.getFriendlyName());
 					operationsNames.add(sb.toString());
 					operationAL.add(op);
 				}
@@ -133,9 +133,9 @@ public class Dialogs {
 				if (op.getOperationType().equals(filterOpType.toString())) {
 					StringBuilder sb = new StringBuilder();
 					sb.append("OP: ");
-					sb.append(op.getOperationId());
+					sb.append(op.getId());
 					sb.append(" - ");
-					sb.append(op.getOperationFriendlyName());
+					sb.append(op.getFriendlyName());
 					operationsNames.add(sb.toString());
 					operationAL.add(op);
 				}
@@ -263,7 +263,7 @@ public class Dialogs {
 			mn.append(mx.getMatrixMetadata().getMatrixFriendlyName());
 			//matrixNames[i]=mn.toString();
 			matrixNames.add(mn.toString());
-			matrixIDs.add(mx.getMatrixId());
+			matrixIDs.add(mx.getId());
 		}
 
 		String selectedRow = (String) JOptionPane.showInputDialog(

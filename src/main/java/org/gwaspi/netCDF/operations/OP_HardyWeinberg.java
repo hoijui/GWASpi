@@ -34,10 +34,10 @@ public class OP_HardyWeinberg implements MatrixOperation {
 	public int processMatrix() throws IOException, InvalidRangeException {
 		int resultOpId = Integer.MIN_VALUE;
 
-		OperationMetadata rdOPMetadata = new OperationMetadata(markerCensusOP.getOperationId());
+		OperationMetadata rdOPMetadata = new OperationMetadata(markerCensusOP.getId());
 		NetcdfFile rdNcFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());
 
-		OperationSet rdOperationSet = new OperationSet(rdOPMetadata.getStudyId(), markerCensusOP.getOperationId());
+		OperationSet rdOperationSet = new OperationSet(rdOPMetadata.getStudyId(), markerCensusOP.getId());
 		Map<String, Object> rdMarkerSetMap = rdOperationSet.getOpSetMap();
 		Map<String, Object> rdSampleSetMap = rdOperationSet.getImplicitSetMap();
 
@@ -53,7 +53,7 @@ public class OP_HardyWeinberg implements MatrixOperation {
 					0,
 					cNetCDF.Defaults.OPType.HARDY_WEINBERG.toString(),
 					rdOPMetadata.getParentMatrixId(), // Parent matrixId
-					markerCensusOP.getOperationId()); // Parent operationId
+					markerCensusOP.getId()); // Parent operationId
 			wrNcFile = wrOPHandler.getNetCDFHandler();
 
 			try {
