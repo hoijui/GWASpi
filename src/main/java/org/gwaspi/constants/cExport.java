@@ -16,7 +16,14 @@ public class cExport {
 
 	public static enum ExportFormat {
 
-		BEAGLE, Eigensoft_Eigenstrat, GWASpi, MACH, PLINK, PLINK_Binary, PLINK_Transposed, Spreadsheet;
+		BEAGLE,
+		Eigensoft_Eigenstrat,
+		GWASpi,
+		MACH,
+		PLINK,
+		PLINK_Binary,
+		PLINK_Transposed,
+		Spreadsheet;
 
 		public static ExportFormat compareTo(String str) {
 			try {

@@ -138,7 +138,6 @@ public class cImport {
 					//minor_allele_freq=25;
 					//pcGC=26;
 				}
-
 			}
 		}
 
@@ -234,7 +233,7 @@ public class cImport {
 			public static final int markerId = 2;
 			public static final int well = 3;
 			public static final int qa_desc = 4;
-			//Annotation same as PLINK MAP file
+			// Annotation same as PLINK MAP file
 			public static final int annot_chr = 0;
 			public static final int annot_markerId = 1;
 			public static final int annot_pos = 3;
@@ -273,7 +272,7 @@ public class cImport {
 		public static final String separators_CommaTab_rgxp = "[,\t]";
 		public static final String separators_SpaceTab_rgxp = "[ \t]";
 		public static final String separators_Tab_rgxp = "[\t]";
-		public static final String ops = " "; //separator used in output file
+		public static final String ops = " "; // separator used in output file
 		public static final String separator_PLINK = " ";
 		public static final String separator_BEAGLE = " ";
 		public static final String separator_REPORTS = "\t";

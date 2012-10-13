@@ -8,7 +8,6 @@ package org.gwaspi.constants;
  */
 public class cDBSamples {
 
-	// <editor-fold defaultstate="collapsed" desc="ALL SAMPLES INFO">
 	// * ALL SAMPLES INFO *
 	public static final int STATUS_DUMMY = 11;
 	public static final String f_ID = "order_id";
@@ -44,8 +43,8 @@ public class cDBSamples {
 		f_FAMILY_ID + " VARCHAR(32) DEFAULT '0'",
 		f_FATHER_ID + " VARCHAR(64) DEFAULT '0'",
 		f_MOTHER_ID + " VARCHAR(64) DEFAULT '0'",
-		f_SEX + " CHAR(1)", //0 Undefined, 1 Male, 2 Female
-		f_AFFECTION + " CHAR(1)", //0 Undefined, 1 Control, 2 Case
+		f_SEX + " CHAR(1)", // 0 Undefined, 1 Male, 2 Female
+		f_AFFECTION + " CHAR(1)", // 0 Undefined, 1 Control, 2 Case
 		f_CATEGORY + " VARCHAR(32)",
 		f_DISEASE + " VARCHAR(64)",
 		f_POPULATION + " VARCHAR(32)",
@@ -76,8 +75,8 @@ public class cDBSamples {
 		f_FAMILY_ID,
 		f_FATHER_ID,
 		f_MOTHER_ID,
-		f_SEX, //0 Undefined, 1 Male, 2 Female
-		f_AFFECTION, //0 Undefined, 1 Control, 2 Case
+		f_SEX, // 0 Undefined, 1 Male, 2 Female
+		f_AFFECTION, // 0 Undefined, 1 Control, 2 Case
 		f_CATEGORY,
 		f_DISEASE,
 		f_POPULATION,
@@ -85,7 +84,6 @@ public class cDBSamples {
 		f_POOL_ID,
 		f_STATUS_ID_FK
 	};
-	// </editor-fold>
 
 	private cDBSamples() {
 	}

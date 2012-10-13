@@ -102,11 +102,9 @@ public class cNetCDF {
 
 		private Census() {
 		}
-
-
 	}
 
-        public static class HardyWeinberg {
+	public static class HardyWeinberg {
 
 		public static final String VAR_OP_MARKERS_HWPval_ALL = "OP_markers_hwpval_all";
 		public static final String VAR_OP_MARKERS_HWPval_CASE = "OP_markers_hwpval_case";
@@ -130,8 +128,8 @@ public class cNetCDF {
 		private Association() {
 		}
 	}
-
 	//</editor-fold>
+
 	public static class Strides {
 
 		public static final int STRIDE_GT = 2;
@@ -208,8 +206,9 @@ public class cNetCDF {
 				}
 			}
 		}
-		public static final String[] Chromosomes = new String[]{"1", "2", "3", "4", "5", "6", "7", "8", "9",
-			"10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20",
+		public static final String[] Chromosomes = new String[]{
+			"1", "2", "3", "4", "5", "6", "7", "8", "9", "10",
+			"11", "12", "13", "14", "15", "16", "17", "18", "19", "20",
 			"21", "22", "X", "Y", "XY", "MT"};
 
 		public static enum OPType {
