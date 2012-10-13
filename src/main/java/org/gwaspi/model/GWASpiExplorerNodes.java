@@ -103,7 +103,7 @@ public class GWASpiExplorerNodes {
 	protected static DefaultMutableTreeNode createStudyTreeNode(int studyId) {
 		DefaultMutableTreeNode tn = null;
 		try {
-			Study study = new Study(studyId);
+			Study study = StudyList.getStudy(studyId);
 
 //			parentNodeId
 //			nodeId
@@ -258,7 +258,7 @@ public class GWASpiExplorerNodes {
 		if (StartGWASpi.guiMode) {
 			try {
 				// GET STUDY
-				Study study = new Study(studyId);
+				Study study = StudyList.getStudy(studyId);
 				TreePath parentPath = GWASpiExplorerPanel.getSingleton().getTree().getNextMatch("SID: " + study.getId() + " - " + study.getName(), 0, Position.Bias.Forward);
 
 				DefaultMutableTreeNode newNode = createMatrixTreeNode(matrixId);

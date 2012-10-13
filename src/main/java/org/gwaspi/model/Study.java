@@ -1,14 +1,6 @@
 package org.gwaspi.model;
 
-import org.gwaspi.constants.cDBGWASpi;
-import org.gwaspi.constants.cDBMatrix;
-import org.gwaspi.database.DbManager;
-import org.gwaspi.global.ServiceLocator;
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
-import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,25 +21,28 @@ public class Study {
 	private String studyType = ""; // study_type VARCHAR(255)
 	private String validity = ""; // validity SMALLINT
 	private Date creationDate; // creation_date TIMESTAMP (2009-05-13 17:22:10.984)
-	private List<Integer> studyMatrices = new ArrayList<Integer>();
+//	private List<Integer> studyMatrices = new ArrayList<Integer>();
 
-	/**
-	 * This will init the Study object requested from the DB
-	 */
-	public Study(int _studyId) throws IOException {
-		List<Map<String, Object>> rs = getStudy(_studyId);
+//	public Study() {
+//
+//		this.id = Integer.MIN_VALUE;
+//		this.name = "";
+//		this.description = "";
+//		this.studyType = "";
+//		this.validity = "";
+//		this.creationDate = new Date();
+////		this.studyMatrices = new ArrayList<Integer>();
+//	}
 
-		// PREVENT PHANTOM-DB READS EXCEPTIONS
-		if (!rs.isEmpty() && rs.get(0).size() == cDBGWASpi.T_CREATE_STUDIES.length) {
-			id = Integer.parseInt(rs.get(0).get("id").toString());
-			name = rs.get(0).get("name").toString();
-			description = rs.get(0).get("study_description").toString();
-			studyType = rs.get(0).get("study_type").toString();
-			validity = rs.get(0).get("validity").toString();
-			creationDate = org.gwaspi.global.Utils.stringToDate(rs.get(0).get("creation_date").toString(), "yyyy-MM-dd hh:mm:ss.SSS");
+	public Study(int id, String name, String description, String studyType, String validity, Date creationDate) {
 
-			studyMatrices = getStudyMatricesId(_studyId);
-		}
+		this.id = id;
+		this.name = name;
+		this.description = description;
+		this.studyType = studyType;
+		this.validity = validity;
+		this.creationDate = (Date) creationDate.clone();
+//		this.studyMatrices = new ArrayList<Integer>();
 	}
 
 	public int getId() {
@@ -58,6 +53,10 @@ public class Study {
 		return name;
 	}
 
+	public String getDescription() {
+		return description;
+	}
+
 	public String getStudyType() {
 		return studyType;
 	}
@@ -66,43 +65,7 @@ public class Study {
 		return validity;
 	}
 
-	public String getDescription() {
-		return description;
-	}
-
-	private static List<Map<String, Object>> getStudy(int studyId) throws IOException {
-		List<Map<String, Object>> rs = null;
-		String dbName = cDBGWASpi.DB_DATACENTER;
-		DbManager studyDbManager = ServiceLocator.getDbManager(dbName);
-		try {
-			rs = studyDbManager.executeSelectStatement("SELECT * FROM " + cDBGWASpi.SCH_APP + "." + cDBGWASpi.T_STUDIES + " WHERE id=" + studyId + "  WITH RR");
-		} catch (Exception ex) {
-			log.error(null, ex);
-		}
-
-		return rs;
-	}
-
-	private static List<Integer> getStudyMatricesId(int studyId) throws IOException {
-		List<Integer> studyMatricesList = new ArrayList<Integer>();
-		List<Map<String, Object>> rs = null;
-		String dbName = cDBGWASpi.DB_DATACENTER;
-		DbManager studyDbManager = ServiceLocator.getDbManager(dbName);
-		try {
-			rs = studyDbManager.executeSelectStatement("SELECT * FROM " + cDBGWASpi.SCH_MATRICES + "." + cDBMatrix.T_MATRICES + " WHERE " + cDBMatrix.f_STUDYID + "=" + studyId + "  WITH RR");
-		} catch (Exception ex) {
-			log.error(null, ex);
-		}
-
-		int rowcount = rs.size();
-		if (rowcount > 0) {
-			for (int i = rowcount - 1; i >= 0; i--) // loop through rows of result set
-			{
-				int currentMatrixId = (Integer) rs.get(i).get(cDBMatrix.f_ID);
-				studyMatricesList.add(currentMatrixId);
-			}
-		}
-
-		return studyMatricesList;
+	public Date getCreationDate() {
+		return creationDate;
 	}
 }

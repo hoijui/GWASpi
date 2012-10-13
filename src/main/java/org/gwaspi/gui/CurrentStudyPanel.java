@@ -35,7 +35,9 @@ import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.tree.DefaultMutableTreeNode;
+import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.Study;
+import org.gwaspi.model.StudyList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.gwaspi.threadbox.MultiOperations;
@@ -72,13 +74,12 @@ public class CurrentStudyPanel extends JPanel {
 
 	/**
 	 *
-	 * @param _studyId
+	 * @param studyId
 	 * @throws IOException
 	 */
-	@SuppressWarnings("unchecked")
-	public CurrentStudyPanel(int _studyId) throws IOException {
+	public CurrentStudyPanel(int studyId) throws IOException {
 
-		study = new org.gwaspi.model.Study(_studyId);
+		study = StudyList.getStudy(studyId);
 		DefaultMutableTreeNode matrixNode = (DefaultMutableTreeNode) GWASpiExplorerPanel.getSingleton().getTree().getLastSelectedPathComponent();
 		treeChildrenMap = NodeToPathCorrespondence.buildNodeToPathCorrespondence(matrixNode, false);
 
@@ -133,7 +134,7 @@ public class CurrentStudyPanel extends JPanel {
 
 		pnl_MatrixTable.setBorder(BorderFactory.createTitledBorder(null, Text.Matrix.matrices, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("DejaVu Sans", 1, 13))); // NOI18N
 		tbl_MatrixTable.setModel(new DefaultTableModel(
-				org.gwaspi.model.MatricesList.getMatricesTable(study.getId()),
+				MatricesList.getMatricesTable(study.getId()),
 				new String[]{
 					Text.Matrix.matrixID, Text.Matrix.matrix, Text.All.description, Text.All.createDate
 				}));

@@ -7,6 +7,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import org.gwaspi.model.Study;
+import org.gwaspi.model.StudyList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.gwaspi.samples.SamplesParserManager;
@@ -58,7 +60,7 @@ public class Threaded_UpdateSampleInfo extends CommonRunnable {
 //			org.gwaspi.reports.OutputQASamples.writeReportsForQASamplesData(qaOpId, false);
 //		}
 
-		org.gwaspi.model.Study study = new org.gwaspi.model.Study(poolId);
+		Study study = StudyList.getStudy(poolId);
 
 		StringBuilder oldDesc = new StringBuilder(study.getDescription());
 		oldDesc.append("\n* Sample Info updated from: ");
