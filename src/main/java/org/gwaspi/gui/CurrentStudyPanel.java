@@ -116,11 +116,11 @@ public class CurrentStudyPanel extends JPanel {
 
 		setBorder(BorderFactory.createTitledBorder(null, Text.Study.study, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("FreeSans", 1, 18))); // NOI18N
 
-		pnl_StudyDesc.setBorder(BorderFactory.createTitledBorder(null, Text.Study.currentStudy + " " + study.getStudyName() + ", StudyID: STUDY_" + study.getStudyId(), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("DejaVu Sans", 1, 13))); // NOI18N
+		pnl_StudyDesc.setBorder(BorderFactory.createTitledBorder(null, Text.Study.currentStudy + " " + study.getName() + ", StudyID: STUDY_" + study.getId(), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("DejaVu Sans", 1, 13))); // NOI18N
 		txtA_StudyDesc.setBorder(BorderFactory.createTitledBorder(null, Text.All.description, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("DejaVu Sans", 1, 13))); // NOI18N
 		txtA_StudyDesc.setColumns(20);
 		txtA_StudyDesc.setRows(5);
-		txtA_StudyDesc.setText(study.getStudyDescription().toString());
+		txtA_StudyDesc.setText(study.getDescription().toString());
 		scrl_Desc.setViewportView(txtA_StudyDesc);
 
 		btn_SaveDesc.setAction(new SaveDescriptionAction(study, txtA_StudyDesc));
@@ -133,7 +133,7 @@ public class CurrentStudyPanel extends JPanel {
 
 		pnl_MatrixTable.setBorder(BorderFactory.createTitledBorder(null, Text.Matrix.matrices, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("DejaVu Sans", 1, 13))); // NOI18N
 		tbl_MatrixTable.setModel(new DefaultTableModel(
-				org.gwaspi.model.MatricesList.getMatricesTable(study.getStudyId()),
+				org.gwaspi.model.MatricesList.getMatricesTable(study.getId()),
 				new String[]{
 					Text.Matrix.matrixID, Text.Matrix.matrix, Text.All.description, Text.All.createDate
 				}));
@@ -260,7 +260,7 @@ public class CurrentStudyPanel extends JPanel {
 		@Override
 		public void actionPerformed(ActionEvent evt) {
 			try {
-				Utils.logBlockInStudyDesc(descriptionSource.getText(), study.getStudyId());
+				Utils.logBlockInStudyDesc(descriptionSource.getText(), study.getId());
 
 				DbManager db = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
 				db.updateTable(cDBGWASpi.SCH_APP,
@@ -268,7 +268,7 @@ public class CurrentStudyPanel extends JPanel {
 						new String[]{cDBGWASpi.f_STUDY_DESCRIPTION},
 						new Object[]{descriptionSource.getText()},
 						new String[]{cDBGWASpi.f_ID},
-						new Object[]{study.getStudyId()});
+						new Object[]{study.getId()});
 			} catch (IOException ex) {
 				log.error(null, ex);
 			}
@@ -287,8 +287,8 @@ public class CurrentStudyPanel extends JPanel {
 
 		@Override
 		public void actionPerformed(ActionEvent evt) {
-			//GWASpiExplorerPanel.getSingleton().pnl_Content = new LoadDataPanel(study.getStudyId());
-			GWASpiExplorerPanel.getSingleton().setPnl_Content(new LoadDataPanel(study.getStudyId()));
+			//GWASpiExplorerPanel.getSingleton().pnl_Content = new LoadDataPanel(study.getId());
+			GWASpiExplorerPanel.getSingleton().setPnl_Content(new LoadDataPanel(study.getId()));
 			GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
 		}
 	}
@@ -311,7 +311,7 @@ public class CurrentStudyPanel extends JPanel {
 				if (sampleInfoFile != null && sampleInfoFile.exists()) {
 					ProcessTab.getSingleton().showTab();
 
-					MultiOperations.updateSampleInfo(study.getStudyId(),
+					MultiOperations.updateSampleInfo(study.getId(),
 							sampleInfoFile);
 				}
 			} catch (Exception ex) {
@@ -355,7 +355,7 @@ public class CurrentStudyPanel extends JPanel {
 								if (deleteReportOption == JOptionPane.YES_OPTION) {
 									deleteReport = true;
 								}
-								MultiOperations.deleteMatrix(study.getStudyId(), matrixId, deleteReport);
+								MultiOperations.deleteMatrix(study.getId(), matrixId, deleteReport);
 								//netCDF.matrices.MatrixManager.deleteMatrix(matrixId, deleteReport);
 							} else {
 								Dialogs.showWarningDialogue(Text.Processes.cantDeleteRequiredItem);
@@ -383,7 +383,7 @@ public class CurrentStudyPanel extends JPanel {
 		@Override
 		public void actionPerformed(ActionEvent evt) {
 			// TODO TEST IF THE DELETED ITEM IS REQUIRED FOR A QUED WORKER
-			if (SwingWorkerItemList.permitsDeletionOfStudyId(study.getStudyId())) {
+			if (SwingWorkerItemList.permitsDeletionOfStudyId(study.getId())) {
 				int option = JOptionPane.showConfirmDialog(dialogParent, Text.Study.confirmDelete1 + Text.Study.confirmDelete2);
 				if (option == JOptionPane.YES_OPTION) {
 					int deleteReportOption = JOptionPane.showConfirmDialog(dialogParent, Text.Reports.confirmDelete);
@@ -393,7 +393,7 @@ public class CurrentStudyPanel extends JPanel {
 						if (deleteReportOption == JOptionPane.YES_OPTION) {
 							deleteReport = true;
 						}
-						MultiOperations.deleteStudy(study.getStudyId(), deleteReport);
+						MultiOperations.deleteStudy(study.getId(), deleteReport);
 					}
 				}
 			} else {

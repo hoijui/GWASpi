@@ -113,9 +113,9 @@ public class GWASpiExplorerNodes {
 
 			tn = new DefaultMutableTreeNode(new NodeElementInfo(
 					NodeElementInfo.NODE_ID_NONE,
-					study.getStudyId(),
+					study.getId(),
 					Text.App.treeStudy,
-					"SID: " + study.getStudyId() + " - " + study.getStudyName()));
+					"SID: " + study.getId() + " - " + study.getName()));
 		} catch (IOException ex) {
 			log.error(null, ex);
 		}
@@ -176,7 +176,7 @@ public class GWASpiExplorerNodes {
 //			nodeUniqueName
 
 			Operation op = new Operation(opId);
-//			int[] pathIds = new int[]{0, op.getStudyId(), op.getParentMatrixId(), op.getParentOperationId(), opId};
+//			int[] pathIds = new int[]{0, op.getId(), op.getParentMatrixId(), op.getParentOperationId(), opId};
 			tn = new DefaultMutableTreeNode(new NodeElementInfo(op.getParentOperationId(),
 					opId,
 					Text.App.treeOperation,
@@ -191,7 +191,7 @@ public class GWASpiExplorerNodes {
 		DefaultMutableTreeNode tn = null;
 		try {
 			Report rp = new Report(rpId);
-//			int[] pathIds = new int[]{0, rp.getStudyId(), rp.getParentMatrixId(), rp.getParentOperationId(), rpId};
+//			int[] pathIds = new int[]{0, rp.getId(), rp.getParentMatrixId(), rp.getParentOperationId(), rpId};
 			tn = new DefaultMutableTreeNode(new NodeElementInfo(rpId,
 					rpId,
 					Text.App.treeReport,
@@ -211,7 +211,7 @@ public class GWASpiExplorerNodes {
 			List<Study> studyList = StudyList.getStudyList();
 			TreePath parentPath = GWASpiExplorerPanel.getSingleton().getTree().getNextMatch(Text.App.treeStudyManagement, 0, Position.Bias.Forward);
 
-			DefaultMutableTreeNode newNode = createStudyTreeNode(studyList.get(studyList.size() - 1).getStudyId());
+			DefaultMutableTreeNode newNode = createStudyTreeNode(studyList.get(studyList.size() - 1).getId());
 
 			if (parentPath != null) {
 				DefaultMutableTreeNode parentNode = (DefaultMutableTreeNode) parentPath.getLastPathComponent();
@@ -259,7 +259,7 @@ public class GWASpiExplorerNodes {
 			try {
 				// GET STUDY
 				Study study = new Study(studyId);
-				TreePath parentPath = GWASpiExplorerPanel.getSingleton().getTree().getNextMatch("SID: " + study.getStudyId() + " - " + study.getStudyName(), 0, Position.Bias.Forward);
+				TreePath parentPath = GWASpiExplorerPanel.getSingleton().getTree().getNextMatch("SID: " + study.getId() + " - " + study.getName(), 0, Position.Bias.Forward);
 
 				DefaultMutableTreeNode newNode = createMatrixTreeNode(matrixId);
 

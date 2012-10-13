@@ -60,7 +60,7 @@ public class Threaded_UpdateSampleInfo extends CommonRunnable {
 
 		org.gwaspi.model.Study study = new org.gwaspi.model.Study(poolId);
 
-		StringBuilder oldDesc = new StringBuilder(study.getStudyDescription());
+		StringBuilder oldDesc = new StringBuilder(study.getDescription());
 		oldDesc.append("\n* Sample Info updated from: ");
 		oldDesc.append(sampleInfoFile.getPath());
 		oldDesc.append(" (");

@@ -123,16 +123,16 @@ public class GWASpiExplorer {
 		for (int i = 0; i < studyList.size(); i++) {
 
 			// LOAD CURRENT STUDY
-			DefaultMutableTreeNode studyItem = GWASpiExplorerNodes.createStudyTreeNode(studyList.get(i).getStudyId());
+			DefaultMutableTreeNode studyItem = GWASpiExplorerNodes.createStudyTreeNode(studyList.get(i).getId());
 
 			// LOAD SAMPLE INFO FOR CURRENT STUDY
-			DefaultMutableTreeNode sampleInfoItem = GWASpiExplorerNodes.createSampleInfoTreeNode(studyList.get(i).getStudyId());
+			DefaultMutableTreeNode sampleInfoItem = GWASpiExplorerNodes.createSampleInfoTreeNode(studyList.get(i).getId());
 			if (sampleInfoItem != null) {
 				studyItem.add(sampleInfoItem);
 			}
 
 			// LOAD MATRICES FOR CURRENT STUDY
-			List<Matrix> matrixList = MatricesList.getMatrixList(studyList.get(i).getStudyId());
+			List<Matrix> matrixList = MatricesList.getMatrixList(studyList.get(i).getId());
 			for (int j = 0; j < matrixList.size(); j++) {
 
 				DefaultMutableTreeNode matrixItem = GWASpiExplorerNodes.createMatrixTreeNode(matrixList.get(j).getMatrixId());
@@ -374,7 +374,7 @@ public class GWASpiExplorer {
 						gwasPiExplorerPanel.getScrl_Content().setViewportView(gwasPiExplorerPanel.getPnl_Content());
 					}
 					if (rp.getReportType().equals(OPType.ALLELICTEST.toString())) {
-						//gwasPiExplorerPanel.pnl_Content = new Report_AssociationSummary(rp.getStudyId(), reportFile, rp.getParentOperationId(), null);
+						//gwasPiExplorerPanel.pnl_Content = new Report_AssociationSummary(rp.getId(), reportFile, rp.getParentOperationId(), null);
 						gwasPiExplorerPanel.setPnl_Content(new Report_AnalysisPanel(rp.getStudyId(), rp.getParentMatrixId(), rp.getParentOperationId(), null));
 						gwasPiExplorerPanel.getScrl_Content().setViewportView(gwasPiExplorerPanel.getPnl_Content());
 					}
@@ -391,7 +391,7 @@ public class GWASpiExplorer {
 						gwasPiExplorerPanel.getScrl_Content().setViewportView(gwasPiExplorerPanel.getPnl_Content());
 					}
 //					if(rp.getReportType().equals(OPType.SAMPLE_QA.toString())){
-//						gwasPiExplorerPanel.pnl_Content = new Report_QASamplesSummary(rp.getStudyId(), reportFile, rp.getParentOperationId());
+//						gwasPiExplorerPanel.pnl_Content = new Report_QASamplesSummary(rp.getId(), reportFile, rp.getParentOperationId());
 //						gwasPiExplorerPanel.scrl_Content.setViewportView(gwasPiExplorerPanel.pnl_Content);
 //					}
 					if (rp.getReportType().equals(OPType.HARDY_WEINBERG.toString())) {
