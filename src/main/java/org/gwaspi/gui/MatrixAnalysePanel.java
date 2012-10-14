@@ -92,7 +92,7 @@ public class MatrixAnalysePanel extends JPanel {
 
 		parentMatrix = new Matrix(_matrixId);
 		if (_opId != Integer.MIN_VALUE) {
-			currentOP = new Operation(_opId);
+			currentOP = OperationsList.getById(_opId);
 		} else {
 			currentOP = null;
 		}

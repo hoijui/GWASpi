@@ -15,6 +15,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import org.gwaspi.model.Operation;
+import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.Report;
 import org.gwaspi.model.ReportsList;
 import org.gwaspi.netCDF.matrices.MatrixMetadata;
@@ -81,14 +82,13 @@ public class ReportManager {
 			if (op.getOperationType().equals(OPType.ALLELICTEST.toString())
 					|| op.getOperationType().equals(OPType.GENOTYPICTEST.toString())
 					|| op.getOperationType().equals(OPType.TRENDTEST.toString())) {
-				Operation parentOp = new Operation(op.getParentOperationId());
+				Operation parentOp = OperationsList.getById(op.getParentOperationId());
 				String[] tmp = parentOp.getFriendlyName().split("-", 2);
 				tmp = tmp[1].split("using");
 				prefix.append("_");
 				prefix.append(org.gwaspi.global.Utils.stripNonAlphaNumericDashUndscr(tmp[0].trim()));
 				prefix.append("_");
 			}
-
 		} catch (IOException ex) {
 			log.error(null, ex);
 		}

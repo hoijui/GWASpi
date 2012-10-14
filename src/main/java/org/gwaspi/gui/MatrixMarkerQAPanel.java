@@ -22,6 +22,7 @@ import javax.swing.SwingConstants;
 import javax.swing.border.TitledBorder;
 import org.gwaspi.model.Matrix;
 import org.gwaspi.model.Operation;
+import org.gwaspi.model.OperationsList;
 import org.gwaspi.netCDF.operations.GWASinOneGOParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,7 +58,7 @@ public class MatrixMarkerQAPanel extends JPanel {
 
 		parentMatrix = new Matrix(_matrixId);
 		if (_opId != Integer.MIN_VALUE) {
-			currentOP = new Operation(_opId);
+			currentOP = OperationsList.getById(_opId);
 		} else {
 			currentOP = null;
 		}

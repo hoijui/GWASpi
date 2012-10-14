@@ -44,8 +44,8 @@ public class OperationManager {
 		org.gwaspi.global.Utils.sysoutStart("Genotypes Frequency Count by Affection");
 
 		int resultOpId; // Integer.MIN_VALUE
-		Operation sampleQAOP = new Operation(samplesQAOpId);
-		Operation markerQAOP = new Operation(markersQAOpId);
+		Operation sampleQAOP = OperationsList.getById(samplesQAOpId);
+		Operation markerQAOP = OperationsList.getById(markersQAOpId);
 
 		resultOpId = new OP_MarkerCensus_opt(
 				_rdMatrixId,
@@ -76,8 +76,8 @@ public class OperationManager {
 		org.gwaspi.global.Utils.sysoutStart("Genotypes Frequency Count using " + phenoFile.getName());
 
 		int resultOpId; // Integer.MIN_VALUE
-		Operation sampleQAOP = new Operation(samplesQAOpId);
-		Operation markerQAOP = new Operation(markersQAOpId);
+		Operation sampleQAOP = OperationsList.getById(samplesQAOpId);
+		Operation markerQAOP = OperationsList.getById(markersQAOpId);
 
 		resultOpId = new OP_MarkerCensus_opt(
 				_rdMatrixId,
@@ -95,7 +95,7 @@ public class OperationManager {
 
 	public static int performHardyWeinberg(int censusOpId, String hwName) throws IOException, InvalidRangeException {
 		int resultOpId; // Integer.MIN_VALUE
-		Operation censusOP = new Operation(censusOpId);
+		Operation censusOP = OperationsList.getById(censusOpId);
 
 		org.gwaspi.global.Utils.sysoutStart("Hardy-Weinberg");
 
@@ -121,8 +121,8 @@ public class OperationManager {
 
 		org.gwaspi.global.Utils.sysoutStart(" Allelic Association Test using QA and HW thresholds");
 
-		Operation markerCensusOP = new Operation(censusOpId);
-		Operation hwOP = new Operation(hwOpId);
+		Operation markerCensusOP = OperationsList.getById(censusOpId);
+		Operation hwOP = OperationsList.getById(hwOpId);
 
 		resultOpId = new OP_AllelicAssociationTests_opt(
 				_rdMatrixId,
@@ -144,8 +144,8 @@ public class OperationManager {
 
 		org.gwaspi.global.Utils.sysoutStart(" Genotypic Association Test using QA and HW thresholds");
 
-		Operation markerCensusOP = new Operation(censusOpId);
-		Operation hwOP = new Operation(hwOpId);
+		Operation markerCensusOP = OperationsList.getById(censusOpId);
+		Operation hwOP = OperationsList.getById(hwOpId);
 
 		resultOpId = new OP_GenotypicAssociationTests_opt(
 				_rdMatrixId,
@@ -167,8 +167,8 @@ public class OperationManager {
 
 		org.gwaspi.global.Utils.sysoutStart("Cochran-Armitage Trend Test using QA and HW thresholds");
 
-		Operation markerCensusOP = new Operation(censusOpId);
-		Operation hwOP = new Operation(hwOpId);
+		Operation markerCensusOP = OperationsList.getById(censusOpId);
+		Operation hwOP = OperationsList.getById(hwOpId);
 
 		resultOpId = new OP_TrendTests_opt(
 				_rdMatrixId,
@@ -244,7 +244,7 @@ public class OperationManager {
 	public static void deleteOperationBranch(int studyId, int opId, boolean deleteReports) throws IOException {
 
 		try {
-			Operation op = new Operation(opId);
+			Operation op = OperationsList.getById(opId);
 			String genotypesFolder = Config.getConfigValue(Config.PROPERTY_GENOTYPES_DIR, "");
 
 			List<Operation> operations = OperationsList.getOperationsList(op.getParentMatrixId(), opId);

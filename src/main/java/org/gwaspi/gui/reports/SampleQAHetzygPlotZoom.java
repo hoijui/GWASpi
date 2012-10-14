@@ -31,6 +31,7 @@ import javax.swing.LayoutStyle;
 import javax.swing.SwingConstants;
 import javax.swing.border.TitledBorder;
 import org.gwaspi.model.Operation;
+import org.gwaspi.model.OperationsList;
 import org.gwaspi.netCDF.matrices.MatrixMetadata;
 import org.gwaspi.netCDF.operations.OperationMetadata;
 import org.jfree.chart.ChartFactory;
@@ -113,7 +114,7 @@ public final class SampleQAHetzygPlotZoom extends JPanel {
 		opId = _opId;
 
 		try {
-			op = new Operation(opId);
+			op = OperationsList.getById(opId);
 			rdOPMetadata = new OperationMetadata(opId);
 			rdMatrixMetadata = new MatrixMetadata(rdOPMetadata.getParentMatrixId());
 		} catch (IOException ex) {

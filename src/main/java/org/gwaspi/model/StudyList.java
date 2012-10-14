@@ -16,9 +16,6 @@ public class StudyList {
 
 	private static final StudyService studyService = new StudyServiceImpl();
 
-	private static final Logger log
-			= LoggerFactory.getLogger(StudyList.class);
-
 	private StudyList() {
 	}
 

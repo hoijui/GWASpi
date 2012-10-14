@@ -37,6 +37,7 @@ import javax.swing.LayoutStyle;
 import javax.swing.SwingConstants;
 import javax.swing.border.TitledBorder;
 import org.gwaspi.model.Operation;
+import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.Report;
 import org.gwaspi.model.ReportsList;
 import org.gwaspi.netCDF.matrices.MatrixMetadata;
@@ -163,7 +164,7 @@ public final class ManhattanPlotZoom extends JPanel {
 		//</editor-fold>
 
 		try {
-			this.op = new Operation(this.opId);
+			this.op = OperationsList.getById(this.opId);
 			this.rdOPMetadata = new OperationMetadata(this.opId);
 			this.rdMatrixMetadata = new MatrixMetadata(this.rdOPMetadata.getParentMatrixId());
 
@@ -203,7 +204,7 @@ public final class ManhattanPlotZoom extends JPanel {
 		requestedSetSize = _requestedSetSize;
 
 		try {
-			op = new Operation(opId);
+			op = OperationsList.getById(opId);
 			rdOPMetadata = new OperationMetadata(opId);
 			rdMatrixMetadata = new MatrixMetadata(rdOPMetadata.getParentMatrixId());
 

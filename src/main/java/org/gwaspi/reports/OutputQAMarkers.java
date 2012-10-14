@@ -12,6 +12,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import org.gwaspi.model.Operation;
+import org.gwaspi.model.OperationsList;
 import org.gwaspi.netCDF.markers.MarkerSet_opt;
 import org.gwaspi.netCDF.operations.OperationManager;
 import org.gwaspi.netCDF.operations.OperationMetadata;
@@ -35,7 +36,7 @@ public class OutputQAMarkers {
 	}
 
 	public static boolean writeReportsForQAMarkersData(int opId) throws IOException {
-		Operation op = new Operation(opId);
+		Operation op = OperationsList.getById(opId);
 		DbManager dBManager = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
 
 		String prefix = org.gwaspi.reports.ReportManager.getreportNamePrefix(op);

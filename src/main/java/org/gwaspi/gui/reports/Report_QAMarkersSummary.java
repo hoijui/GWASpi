@@ -42,6 +42,7 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 import org.gwaspi.model.Operation;
+import org.gwaspi.model.OperationsList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -380,7 +381,7 @@ public class Report_QAMarkersSummary extends JPanel {
 		BackAction(int opId) throws IOException {
 
 			this.opId = opId;
-			this.op = new Operation(opId);
+			this.op = OperationsList.getById(opId);
 			putValue(NAME, Text.All.Back);
 		}
 

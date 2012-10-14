@@ -153,7 +153,7 @@ public class GWASpiExplorerNodes {
 	protected static DefaultMutableTreeNode createOperationTreeNode(int opId) {
 		DefaultMutableTreeNode tn = null;
 		try {
-			Operation op = new Operation(opId);
+			Operation op = OperationsList.getById(opId);
 			tn = new DefaultMutableTreeNode(new NodeElementInfo(op.getParentMatrixId(),
 					opId,
 					Text.App.treeOperation,
@@ -175,7 +175,7 @@ public class GWASpiExplorerNodes {
 //			studyNodeName
 //			nodeUniqueName
 
-			Operation op = new Operation(opId);
+			Operation op = OperationsList.getById(opId);
 //			int[] pathIds = new int[]{0, op.getId(), op.getParentMatrixId(), op.getParentOperationId(), opId};
 			tn = new DefaultMutableTreeNode(new NodeElementInfo(op.getParentOperationId(),
 					opId,
@@ -309,7 +309,7 @@ public class GWASpiExplorerNodes {
 	public static void insertSubOperationUnderOperationNode(int parentOpId, int opId) throws IOException {
 		try {
 			// GET MATRIX
-			Operation parentOP = new Operation(parentOpId);
+			Operation parentOP = OperationsList.getById(parentOpId);
 			TreePath parentPath = GWASpiExplorerPanel.getSingleton().getTree().getNextMatch("OP: " + parentOpId + " - " + parentOP.getFriendlyName(), 0, Position.Bias.Forward);
 
 			DefaultMutableTreeNode newNode = createOperationTreeNode(opId);
@@ -342,7 +342,7 @@ public class GWASpiExplorerNodes {
 	public static void insertReportsUnderOperationNode(int parentOpId) throws IOException {
 		try {
 			// GET OPERATION
-			Operation parentOP = new Operation(parentOpId);
+			Operation parentOP = OperationsList.getById(parentOpId);
 			TreePath parentPath = GWASpiExplorerPanel.getSingleton().getTree().getNextMatch("OP: " + parentOpId + " - " + parentOP.getFriendlyName(), 0, Position.Bias.Forward);
 			DefaultMutableTreeNode parentNode = (DefaultMutableTreeNode) parentPath.getLastPathComponent();
 

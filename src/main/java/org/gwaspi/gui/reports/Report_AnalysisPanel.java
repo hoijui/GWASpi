@@ -21,6 +21,7 @@ import javax.swing.LayoutStyle;
 import javax.swing.border.TitledBorder;
 import org.gwaspi.model.Matrix;
 import org.gwaspi.model.Operation;
+import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.Report;
 import org.gwaspi.model.ReportsList;
 import org.gwaspi.threadbox.MultiOperations;
@@ -50,7 +51,7 @@ public class Report_AnalysisPanel extends JPanel {
 
 		parentMatrix = new Matrix(_matrixId);
 		if (_opId != Integer.MIN_VALUE) {
-			currentOP = new Operation(_opId);
+			currentOP = OperationsList.getById(_opId);
 		} else {
 			currentOP = null;
 		}

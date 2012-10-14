@@ -308,8 +308,8 @@ public class GWASpiExplorer {
 					if (parentElementInfo.getNodeType().toString().equals(Text.App.treeOperation)) {
 						// Display SubOperation analysis panel
 						tree.expandPath(treePath);
-						Operation currentOP = new Operation(currentElementInfo.getNodeId());
-						Operation parentOP = new Operation(parentElementInfo.getNodeId());
+						Operation currentOP = OperationsList.getById(currentElementInfo.getNodeId());
+						Operation parentOP = OperationsList.getById(parentElementInfo.getNodeId());
 						if (currentOP.getOperationType().equals(OPType.HARDY_WEINBERG.toString())) {
 							// Display HW Report
 							List<Report> reportsList = ReportsList.getReportsList(currentOP.getId(), currentOP.getParentMatrixId());
@@ -339,7 +339,7 @@ public class GWASpiExplorer {
 					} else {
 						// Display Operation
 						tree.expandPath(treePath);
-						Operation currentOP = new Operation(currentElementInfo.getNodeId());
+						Operation currentOP = OperationsList.getById(currentElementInfo.getNodeId());
 						if (currentOP.getOperationType().equals(OPType.MARKER_QA.toString())) {
 							// Display MarkerQA panel
 							gwasPiExplorerPanel.setPnl_Content(new MatrixMarkerQAPanel(currentOP.getParentMatrixId(), currentOP.getId()));
