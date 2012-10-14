@@ -190,7 +190,7 @@ public class GWASpiExplorerNodes {
 	protected static DefaultMutableTreeNode createReportTreeNode(int rpId) {
 		DefaultMutableTreeNode tn = null;
 		try {
-			Report rp = new Report(rpId);
+			Report rp = ReportsList.getById(rpId);
 //			int[] pathIds = new int[]{0, rp.getId(), rp.getParentMatrixId(), rp.getParentOperationId(), rpId};
 			tn = new DefaultMutableTreeNode(new NodeElementInfo(rpId,
 					rpId,

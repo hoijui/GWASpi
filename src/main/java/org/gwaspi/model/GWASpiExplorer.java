@@ -367,7 +367,7 @@ public class GWASpiExplorer {
 				try {
 					// Display report summary
 					tree.expandPath(treePath);
-					Report rp = new Report(currentElementInfo.getNodeId());
+					Report rp = ReportsList.getById(currentElementInfo.getNodeId());
 					String reportFile = rp.getFileName();
 					if (rp.getReportType().equals(OPType.SAMPLE_HTZYPLOT.toString())) {
 						gwasPiExplorerPanel.setPnl_Content(new SampleQAHetzygPlotZoom(rp.getParentOperationId()));
