@@ -141,13 +141,7 @@ public class ReportManager {
 
 		for (Report rp : reportsList) {
 			File reportFile = new File(reportsFolder + "/STUDY_" + matrixMetadata.getStudyId() + "/" + rp.getFileName());
-
-			if (reportFile.exists()) {
-				if (!reportFile.canWrite()) {
-					throw new IllegalArgumentException("Delete: write protected: " + reportFile.getPath());
-				}
-				boolean success = reportFile.delete();
-			}
+			org.gwaspi.global.Utils.tryToDeleteFile(reportFile);
 		}
 
 		DbManager dBManager = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
@@ -162,13 +156,7 @@ public class ReportManager {
 
 		for (Report rp : reportsList) {
 			File reportFile = new File(reportsFolder + "/STUDY_" + operationMetadata.getStudyId() + "/" + rp.getFileName());
-
-			if (reportFile.exists()) {
-				if (!reportFile.canWrite()) {
-					throw new IllegalArgumentException("Delete: write protected: " + reportFile.getPath());
-				}
-				boolean success = reportFile.delete();
-			}
+			org.gwaspi.global.Utils.tryToDeleteFile(reportFile);
 		}
 
 		DbManager dBManager = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);

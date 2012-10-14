@@ -167,7 +167,7 @@ public class ReportWriter {
 		}
 	}
 
-	private static void deleteFile(String tempFile) {
+	private static void deleteFile(String tempFile) { // TODO merge with org.gwaspi.global.Utils.tryToDeleteFile()
 		File f = new File(tempFile);
 
 		// Make sure the file or directory exists and isn't write protected
@@ -179,14 +179,12 @@ public class ReportWriter {
 			throw new IllegalArgumentException("Delete: write protected: " + tempFile);
 		}
 
-
 		// If it is a directory, make sure it is empty
 		if (f.isDirectory()) {
 			String[] files = f.list();
 			if (files.length > 0) {
 				throw new IllegalArgumentException("Delete: directory not empty: " + tempFile);
 			}
-
 		}
 
 		// Attempt to delete it
