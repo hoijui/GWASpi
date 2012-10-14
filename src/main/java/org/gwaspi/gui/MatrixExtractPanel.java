@@ -36,6 +36,7 @@ import javax.swing.LayoutStyle;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.border.TitledBorder;
+import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.Matrix;
 import org.gwaspi.netCDF.markers.MarkerSet_opt;
 import org.slf4j.Logger;
@@ -93,7 +94,7 @@ public class MatrixExtractPanel extends JPanel {
 
 	@SuppressWarnings("unchecked")
 	private void initComponents(int _matrixId, String newMatrixName, String newMatrixDesc) throws IOException {
-		parentMatrix = new Matrix(_matrixId);
+		parentMatrix = MatricesList.getById(_matrixId);
 
 		pnl_NameAndDesc = new JPanel();
 		lbl_ParentMatrix = new JLabel();

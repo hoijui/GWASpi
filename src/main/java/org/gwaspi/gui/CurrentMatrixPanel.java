@@ -37,6 +37,7 @@ import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.tree.DefaultMutableTreeNode;
+import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.Matrix;
 import org.gwaspi.model.Operation;
 import org.gwaspi.model.OperationsList;
@@ -84,7 +85,7 @@ public class CurrentMatrixPanel extends JPanel {
 	@SuppressWarnings("unchecked")
 	public CurrentMatrixPanel(int _matrixId) throws IOException {
 
-		matrix = new Matrix(_matrixId);
+		matrix = MatricesList.getById(_matrixId);
 		DefaultMutableTreeNode matrixNode = (DefaultMutableTreeNode) GWASpiExplorerPanel.getSingleton().getTree().getLastSelectedPathComponent();
 		treeChildrenMap = NodeToPathCorrespondence.buildNodeToPathCorrespondence(matrixNode, true);
 

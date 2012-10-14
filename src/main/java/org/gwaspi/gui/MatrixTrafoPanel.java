@@ -30,6 +30,7 @@ import javax.swing.LayoutStyle;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.border.TitledBorder;
+import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.Matrix;
 import org.gwaspi.netCDF.matrices.MatrixMetadata;
 import org.slf4j.Logger;
@@ -71,7 +72,7 @@ public class MatrixTrafoPanel extends JPanel {
 	@SuppressWarnings("unchecked")
 	public MatrixTrafoPanel(int _matrixId) throws IOException {
 
-		parentMatrix = new org.gwaspi.model.Matrix(_matrixId);
+		parentMatrix = MatricesList.getById(_matrixId);
 
 		pnl_ParentMatrixDesc = new JPanel();
 		scrl_ParentMatrixDesc = new JScrollPane();

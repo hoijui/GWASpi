@@ -20,6 +20,7 @@ import javax.swing.JTextArea;
 import javax.swing.LayoutStyle;
 import javax.swing.SwingConstants;
 import javax.swing.border.TitledBorder;
+import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.Matrix;
 import org.gwaspi.model.Operation;
 import org.gwaspi.model.OperationsList;
@@ -56,7 +57,7 @@ public class MatrixMarkerQAPanel extends JPanel {
 	@SuppressWarnings("unchecked")
 	public MatrixMarkerQAPanel(int _matrixId, int _opId) throws IOException {
 
-		parentMatrix = new Matrix(_matrixId);
+		parentMatrix = MatricesList.getById(_matrixId);
 		if (_opId != Integer.MIN_VALUE) {
 			currentOP = OperationsList.getById(_opId);
 		} else {

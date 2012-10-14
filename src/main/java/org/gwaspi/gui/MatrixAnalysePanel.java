@@ -40,6 +40,7 @@ import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.tree.DefaultMutableTreeNode;
+import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.Matrix;
 import org.gwaspi.model.Operation;
 import org.gwaspi.model.OperationsList;
@@ -90,7 +91,7 @@ public class MatrixAnalysePanel extends JPanel {
 	@SuppressWarnings("unchecked")
 	public MatrixAnalysePanel(int _matrixId, int _opId) throws IOException {
 
-		parentMatrix = new Matrix(_matrixId);
+		parentMatrix = MatricesList.getById(_matrixId);
 		if (_opId != Integer.MIN_VALUE) {
 			currentOP = OperationsList.getById(_opId);
 		} else {

@@ -81,7 +81,7 @@ public class MatrixMergePanel extends JPanel {
 	@SuppressWarnings("unchecked")
 	public MatrixMergePanel(int _matrixId) throws IOException {
 
-		parentMatrix = new Matrix(_matrixId);
+		parentMatrix = MatricesList.getById(_matrixId);
 		matrixItemsAL = getMatrixItems();
 
 		mergeMethod = new ButtonGroup();
@@ -464,7 +464,7 @@ public class MatrixMergePanel extends JPanel {
 				// PREVENT PHANTOM-DB READS EXCEPTIONS
 				if (!rsMatrices.isEmpty() && rsMatrices.get(i).size() == cDBMatrix.T_CREATE_MATRICES.length) {
 					int currentMatrixId = (Integer) rsMatrices.get(i).get(cDBMatrix.f_ID);
-					Matrix currentMatrix = new Matrix(currentMatrixId);
+					Matrix currentMatrix = MatricesList.getById(currentMatrixId);
 					StringBuilder sb = new StringBuilder();
 					sb.append("SID: ");
 					sb.append(currentMatrix.getStudyId());

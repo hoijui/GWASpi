@@ -19,6 +19,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.LayoutStyle;
 import javax.swing.border.TitledBorder;
+import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.Matrix;
 import org.gwaspi.model.Operation;
 import org.gwaspi.model.OperationsList;
@@ -49,7 +50,7 @@ public class Report_AnalysisPanel extends JPanel {
 
 	public Report_AnalysisPanel(final int _studyId, final int _matrixId, final int _opId, String NRows) throws IOException {
 
-		parentMatrix = new Matrix(_matrixId);
+		parentMatrix = MatricesList.getById(_matrixId);
 		if (_opId != Integer.MIN_VALUE) {
 			currentOP = OperationsList.getById(_opId);
 		} else {
