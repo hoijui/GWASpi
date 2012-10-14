@@ -22,7 +22,7 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 
 /**
- *
+ * TODO move this over to package mode, and split of the storage logic into a Service & ServiceImpl, or merge into MatrixServiceImpl
  * @author Fernando Muñiz Fernandez
  * IBE, Institute of Evolutionary Biology (UPF-CSIC)
  * CEXS-UPF-PRBB

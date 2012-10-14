@@ -17,7 +17,7 @@ import org.slf4j.LoggerFactory;
 import ucar.ma2.InvalidRangeException;
 
 /**
- *
+ * TODO merge some of this into OperationService & OperationServiceImpl
  * @author Fernando Muñiz Fernandez
  * IBE, Institute of Evolutionary Biology (UPF-CSIC)
  * CEXS-UPF-PRBB
