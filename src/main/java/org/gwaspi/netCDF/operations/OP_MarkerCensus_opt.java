@@ -15,9 +15,10 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import org.gwaspi.model.MatricesList;
+import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.Operation;
 import org.gwaspi.netCDF.markers.MarkerSet_opt;
-import org.gwaspi.model.MatrixMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.gwaspi.samples.SampleSet;
@@ -161,7 +162,7 @@ public class OP_MarkerCensus_opt implements MatrixOperation {
 			// CHECK IF THERE IS ANY DATA LEFT TO PROCESS AFTER PICKING
 
 			//<editor-fold defaultstate="collapsed" desc="PURGE Maps">
-			MatrixMetadata rdMatrixMetadata = new MatrixMetadata(rdMatrixId);
+			MatrixMetadata rdMatrixMetadata = MatricesList.getMatrixMetadataById(rdMatrixId);
 
 			NetcdfFile rdNcFile = NetcdfFile.open(rdMatrixMetadata.getPathToMatrix());
 

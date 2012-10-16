@@ -811,7 +811,7 @@ public class MatrixAnalysePanel extends JPanel {
 				necessaryOPsAL.add(cNetCDF.Defaults.OPType.MARKER_QA.toString());
 				List<String> missingOPsAL = OperationManager.checkForNecessaryOperations(necessaryOPsAL, parentMatrix.getId());
 
-				MatrixMetadata matrixMetadata = new MatrixMetadata(parentMatrix.getId());
+				MatrixMetadata matrixMetadata = MatricesList.getMatrixMetadataById(parentMatrix.getId());
 
 				int choice = Dialogs.showOptionDialogue(Text.Operation.chosePhenotype, Text.Operation.genotypeFreqAndHW, Text.Operation.htmlCurrentAffectionFromDB, Text.Operation.htmlAffectionFromFile, Text.All.cancel);
 				File phenotypeFile = null;

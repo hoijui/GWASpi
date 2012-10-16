@@ -7,6 +7,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,7 +21,7 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 
 /**
- *
+ * TODO move to package org.gwaspi.model and create a SampleService
  * @author Fernando Muñiz Fernandez
  * IBE, Institute of Evolutionary Biology (UPF-CSIC)
  * CEXS-UPF-PRBB
@@ -37,19 +38,19 @@ public class SampleSet {
 	private Map<String, Object> sampleIdSetMap = new LinkedHashMap<String, Object>();
 
 	public SampleSet(int studyId, int matrixId) throws IOException {
-		matrixMetadata = new MatrixMetadata(matrixId);
+		matrixMetadata = MatricesList.getMatrixMetadataById(matrixId);
 		sampleSetSize = matrixMetadata.getMarkerSetSize();
 
 	}
 
 	public SampleSet(int studyId, String netCDFName) throws IOException {
-		matrixMetadata = new MatrixMetadata(netCDFName);
+		matrixMetadata = MatricesList.getMatrixMetadataByNetCDFname(netCDFName);
 		sampleSetSize = matrixMetadata.getMarkerSetSize();
 
 	}
 
 	public SampleSet(int studyId, String netCDFPath, String netCDFName) throws IOException {
-		matrixMetadata = new MatrixMetadata(netCDFPath, studyId, netCDFName);
+		matrixMetadata = MatricesList.getMatrixMetadata(netCDFPath, studyId, netCDFName);
 		sampleSetSize = matrixMetadata.getMarkerSetSize();
 
 	}

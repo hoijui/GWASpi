@@ -83,4 +83,16 @@ public final class MatricesList {
 	public static MatrixMetadata getLatestMatrixId() throws IOException {
 		return matrixService.getLatestMatrixId();
 	}
+
+	public static MatrixMetadata getMatrixMetadataById(int matrixId) throws IOException {
+		return matrixService.getMatrixMetadataById(matrixId);
+	}
+
+	public static MatrixMetadata getMatrixMetadataByNetCDFname(String netCDFname) throws IOException {
+		return matrixService.getMatrixMetadataByNetCDFname(netCDFname);
+	}
+
+	public static MatrixMetadata getMatrixMetadata(String netCDFpath, int studyId, String newMatrixName) throws IOException {
+		return matrixService.getMatrixMetadata(netCDFpath, studyId, newMatrixName);
+	}
 }

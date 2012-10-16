@@ -307,7 +307,7 @@ public class MatrixTrafoPanel extends JPanel {
 			String newMatrixName = checkNewMatrixData();
 			if (!newMatrixName.isEmpty()) {
 				try {
-					MatrixMetadata parentMatrixMetadata = new MatrixMetadata(parentMatrix.getId());
+					MatrixMetadata parentMatrixMetadata = MatricesList.getMatrixMetadataById(parentMatrix.getId());
 					String description = txtA_NewMatrixDescription.getText();
 					if (txtA_NewMatrixDescription.getText().equals(Text.All.optional)) {
 						description = "";
@@ -349,7 +349,7 @@ public class MatrixTrafoPanel extends JPanel {
 			String newMatrixName = checkNewMatrixData();
 			if (!newMatrixName.isEmpty()) {
 				try {
-					MatrixMetadata parentMatrixMetadata = new MatrixMetadata(parentMatrix.getId());
+					MatrixMetadata parentMatrixMetadata = MatricesList.getMatrixMetadataById(parentMatrix.getId());
 
 					String description = txtA_NewMatrixDescription.getText();
 					if (txtA_NewMatrixDescription.getText().equals(Text.All.optional)) {
@@ -387,7 +387,7 @@ public class MatrixTrafoPanel extends JPanel {
 			String newMatrixName = checkNewMatrixData();
 			if (!newMatrixName.isEmpty()) {
 				try {
-					MatrixMetadata parentMatrixMetadata = new MatrixMetadata(parentMatrix.getId());
+					MatrixMetadata parentMatrixMetadata = MatricesList.getMatrixMetadataById(parentMatrix.getId());
 
 					String description = txtA_NewMatrixDescription.getText();
 					if (txtA_NewMatrixDescription.getText().equals(Text.All.optional)) {

@@ -16,9 +16,10 @@ import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
+import org.gwaspi.model.MatricesList;
+import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.netCDF.markers.MarkerSet_opt;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
-import org.gwaspi.model.MatrixMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.gwaspi.samples.SampleSet;
@@ -107,7 +108,7 @@ public class MatrixDataExtractor_opt {
 		this.sampleCriteriaFile = samplePickerFile;
 
 		this.rdMatrixId = rdMatrixId;
-		this.rdMatrixMetadata = new MatrixMetadata(this.rdMatrixId);
+		this.rdMatrixMetadata = MatricesList.getMatrixMetadataById(this.rdMatrixId);
 		this.studyId = rdMatrixMetadata.getStudyId();
 		this.wrMatrixFriendlyName = wrMatrixFriendlyName;
 		this.wrMatrixDescription = wrMatrixDescription;

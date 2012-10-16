@@ -6,8 +6,9 @@ import org.gwaspi.global.Text;
 import java.io.IOException;
 import java.util.EnumMap;
 import java.util.Map;
-import org.gwaspi.netCDF.markers.MarkerSet_opt;
+import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixMetadata;
+import org.gwaspi.netCDF.markers.MarkerSet_opt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.gwaspi.samples.SampleSet;
@@ -35,7 +36,7 @@ public class MatrixExporter {
 		// INIT EXTRACTOR OBJECTS
 
 		rdMatrixId = _rdMatrixId;
-		rdMatrixMetadata = new MatrixMetadata(rdMatrixId);
+		rdMatrixMetadata = MatricesList.getMatrixMetadataById(rdMatrixId);
 
 		rdMarkerSet = new MarkerSet_opt(rdMatrixMetadata.getStudyId(), rdMatrixId);
 

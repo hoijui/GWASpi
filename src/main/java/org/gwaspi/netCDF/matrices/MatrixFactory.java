@@ -82,7 +82,7 @@ public class MatrixFactory {
 					description,
 					0);
 
-			matrixMetaData = new MatrixMetadata(resultMatrixName);
+			matrixMetaData = MatricesList.getMatrixMetadataByNetCDFname(resultMatrixName);
 
 			resultMatrixId = matrixMetaData.getMatrixId();
 		}

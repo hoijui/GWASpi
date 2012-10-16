@@ -369,8 +369,8 @@ public class MatrixMergePanel extends JPanel {
 			try {
 				int addMatrixId = (Integer) matrixItemsAL.get(selectMatrix.getSelectedIndex())[0];
 
-				MatrixMetadata parentMatrixMetadata = new MatrixMetadata(parentMatrix.getId());
-				MatrixMetadata addMatrixMetadata = new MatrixMetadata(addMatrixId);
+				MatrixMetadata parentMatrixMetadata = MatricesList.getMatrixMetadataById(parentMatrix.getId());
+				MatrixMetadata addMatrixMetadata = MatricesList.getMatrixMetadataById(addMatrixId);
 				if (parentMatrixMetadata.getGenotypeEncoding().equals(addMatrixMetadata.getGenotypeEncoding())) {
 					if (parentMatrixMetadata.getGenotypeEncoding().equals(GenotypeEncoding.UNKNOWN)) {
 						// UNKOWN ENCODING, PROBABLY NOT A GOOD IDEA TO PROCEED

@@ -13,10 +13,11 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import org.gwaspi.model.MatricesList;
+import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.netCDF.loader.ComparatorChrAutPosMarkerIdAsc;
 import org.gwaspi.netCDF.markers.MarkerSet_opt;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
-import org.gwaspi.model.MatrixMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.gwaspi.samples.SampleSet;
@@ -83,8 +84,8 @@ public class MatrixMergeMarkers_opt {
 		this.rdMatrix1Id = rdMatrix1Id;
 		this.rdMatrix2Id = rdMatrix2Id;
 
-		this.rdMatrix1Metadata = new MatrixMetadata(this.rdMatrix1Id);
-		this.rdMatrix2Metadata = new MatrixMetadata(this.rdMatrix2Id);
+		this.rdMatrix1Metadata = MatricesList.getMatrixMetadataById(this.rdMatrix1Id);
+		this.rdMatrix2Metadata = MatricesList.getMatrixMetadataById(this.rdMatrix2Id);
 
 		this.rdMarkerSet1 = new MarkerSet_opt(this.studyId, this.rdMatrix1Id);
 		this.rdMarkerSet2 = new MarkerSet_opt(this.studyId, this.rdMatrix2Id);
@@ -454,7 +455,7 @@ public class MatrixMergeMarkers_opt {
 	private double[] checkForMismatches(int wrMatrixId) throws IOException, InvalidRangeException {
 		double[] result = new double[2];
 
-		wrMatrixMetadata = new MatrixMetadata(wrMatrixId);
+		wrMatrixMetadata = MatricesList.getMatrixMetadataById(wrMatrixId);
 		wrSampleSet = new SampleSet(wrMatrixMetadata.getStudyId(), wrMatrixId);
 		wrMarkerSet = new MarkerSet_opt(wrMatrixMetadata.getStudyId(), wrMatrixId);
 		wrMarkerSet.initFullMarkerIdSetMap();

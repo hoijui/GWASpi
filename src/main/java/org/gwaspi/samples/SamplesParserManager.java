@@ -11,6 +11,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,7 +35,7 @@ public class SamplesParserManager {
 	public static Set<Object> getDBAffectionStates(int matrixId) {
 		Set<Object> resultHS = new HashSet<Object>();
 		try {
-			MatrixMetadata rdMatrixMetadata = new MatrixMetadata(matrixId);
+			MatrixMetadata rdMatrixMetadata = MatricesList.getMatrixMetadataById(matrixId);
 			log.info("Getting Sample Affection info for: {}",
 					rdMatrixMetadata.getMatrixFriendlyName());
 //			NetcdfFile rdNcFile = NetcdfFile.open(rdMatrixMetadata.getPathToMatrix());

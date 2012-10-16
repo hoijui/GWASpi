@@ -36,6 +36,7 @@ import javax.swing.JScrollPane;
 import javax.swing.LayoutStyle;
 import javax.swing.SwingConstants;
 import javax.swing.border.TitledBorder;
+import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.Operation;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.Report;
@@ -166,7 +167,7 @@ public final class ManhattanPlotZoom extends JPanel {
 		try {
 			this.op = OperationsList.getById(this.opId);
 			this.rdOPMetadata = new OperationMetadata(this.opId);
-			this.rdMatrixMetadata = new MatrixMetadata(this.rdOPMetadata.getParentMatrixId());
+			this.rdMatrixMetadata = MatricesList.getMatrixMetadataById(this.rdOPMetadata.getParentMatrixId());
 
 //			OperationSet rdAssocMarkerSet = new OperationSet(this.rdOPMetadata.getStudyId(), this.opId);
 //			this.labelerMap = rdAssocMarkerSet.getOpSetMap();
@@ -206,7 +207,7 @@ public final class ManhattanPlotZoom extends JPanel {
 		try {
 			op = OperationsList.getById(opId);
 			rdOPMetadata = new OperationMetadata(opId);
-			rdMatrixMetadata = new MatrixMetadata(rdOPMetadata.getParentMatrixId());
+			rdMatrixMetadata = MatricesList.getMatrixMetadataById(rdOPMetadata.getParentMatrixId());
 
 //			OperationSet rdAssocMarkerSet = new OperationSet(rdOPMetadata.getStudyId(), opId);
 //			labelerMap = rdAssocMarkerSet.getOpSetMap();

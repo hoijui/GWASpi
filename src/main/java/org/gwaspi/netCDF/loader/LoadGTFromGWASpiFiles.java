@@ -107,7 +107,7 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 			log.info("Warning!\nSome Samples in the imported genotypes are not described in the Sample Info file!\nData will not be imported!");
 		}
 
-		MatrixMetadata importMatrixMetadata = new MatrixMetadata(loadDescription.getGtDirPath(), loadDescription.getStudyId(), loadDescription.getFriendlyName());
+		MatrixMetadata importMatrixMetadata = MatricesList.getMatrixMetadata(loadDescription.getGtDirPath(), loadDescription.getStudyId(), loadDescription.getFriendlyName());
 
 		// CREATE netCDF-3 FILE
 		StringBuilder descSB = new StringBuilder(Text.Matrix.descriptionHeader1);
@@ -157,7 +157,7 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 			generateNewGWASpiDBversionMatrix(loadDescription, importMatrixMetadata);
 		}
 
-		importMatrixMetadata = new MatrixMetadata(importMatrixMetadata.getMatrixNetCDFName());
+		importMatrixMetadata = MatricesList.getMatrixMetadataByNetCDFname(importMatrixMetadata.getMatrixNetCDFName());
 
 		result = importMatrixMetadata.getMatrixId();
 		}

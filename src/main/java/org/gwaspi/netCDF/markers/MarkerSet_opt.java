@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
+import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,7 +53,7 @@ public class MarkerSet_opt {
 	private Map<String, Object> markerRsIdSetMap = new LinkedHashMap<String, Object>();
 
 	public MarkerSet_opt(int studyId, int matrixId) throws IOException {
-		matrixMetadata = new MatrixMetadata(matrixId);
+		matrixMetadata = MatricesList.getMatrixMetadataById(matrixId);
 		technology = matrixMetadata.getTechnology();
 		markerSetSize = matrixMetadata.getMarkerSetSize();
 
@@ -60,7 +61,7 @@ public class MarkerSet_opt {
 	}
 
 	public MarkerSet_opt(int studyId, String netCDFPath, String netCDFName) throws IOException {
-		matrixMetadata = new MatrixMetadata(netCDFPath, studyId, netCDFName);
+		matrixMetadata = MatricesList.getMatrixMetadata(netCDFPath, studyId, netCDFName);
 		technology = matrixMetadata.getTechnology();
 		markerSetSize = matrixMetadata.getMarkerSetSize();
 

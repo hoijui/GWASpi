@@ -5,8 +5,9 @@ import org.gwaspi.constants.cNetCDF.Defaults.AlleleBytes;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import org.gwaspi.netCDF.markers.MarkerSet_opt;
+import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixMetadata;
+import org.gwaspi.netCDF.markers.MarkerSet_opt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.gwaspi.samples.SampleSet;
@@ -38,7 +39,7 @@ public class OP_QASamples_opt implements MatrixOperation {
 		Map<String, Object> wrSampleSetMissingRatioMap = new LinkedHashMap();
 		Map<String, Object> wrSampleSetHetzyRatioMap = new LinkedHashMap();
 
-		MatrixMetadata rdMatrixMetadata = new MatrixMetadata(rdMatrixId);
+		MatrixMetadata rdMatrixMetadata = MatricesList.getMatrixMetadataById(rdMatrixId);
 
 		NetcdfFile rdNcFile = NetcdfFile.open(rdMatrixMetadata.getPathToMatrix());
 

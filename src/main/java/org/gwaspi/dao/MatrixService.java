@@ -40,4 +40,14 @@ public interface MatrixService {
 	String generateMatrixNetCDFNameByDate();
 
 	MatrixMetadata getLatestMatrixId() throws IOException;
+
+	MatrixMetadata getMatrixMetadataById(int matrixId) throws IOException;
+
+	MatrixMetadata getMatrixMetadataByNetCDFname(String netCDFname) throws IOException;
+
+    /**
+	 * This Method used to import GWASpi matrix from an external file
+	 * The size of this Map is very small.
+	 */
+	MatrixMetadata getMatrixMetadata(String netCDFpath, int studyId, String newMatrixName) throws IOException;
 }

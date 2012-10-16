@@ -17,11 +17,12 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import org.gwaspi.model.MatricesList;
+import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.Operation;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.Report;
 import org.gwaspi.model.ReportsList;
-import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.netCDF.operations.OperationMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -262,7 +263,7 @@ public class ReportServiceImpl implements ReportService {
 
 	@Override
 	public void deleteReportByMatrixId(int matrixId) throws IOException {
-		MatrixMetadata matrixMetadata = new MatrixMetadata(matrixId);
+		MatrixMetadata matrixMetadata = MatricesList.getMatrixMetadataById(matrixId);
 		List<Report> reportsList = ReportsList.getReportsList(Integer.MIN_VALUE, matrixId);
 		String reportsFolder = Config.getConfigValue(Config.PROPERTY_REPORTS_DIR, "");
 

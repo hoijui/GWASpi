@@ -30,6 +30,7 @@ import javax.swing.JTextField;
 import javax.swing.LayoutStyle;
 import javax.swing.SwingConstants;
 import javax.swing.border.TitledBorder;
+import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.Operation;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.MatrixMetadata;
@@ -116,7 +117,7 @@ public final class SampleQAHetzygPlotZoom extends JPanel {
 		try {
 			op = OperationsList.getById(opId);
 			rdOPMetadata = new OperationMetadata(opId);
-			rdMatrixMetadata = new MatrixMetadata(rdOPMetadata.getParentMatrixId());
+			rdMatrixMetadata = MatricesList.getMatrixMetadataById(rdOPMetadata.getParentMatrixId());
 		} catch (IOException ex) {
 			log.error(null, ex);
 		}
