@@ -17,7 +17,7 @@ import org.gwaspi.model.Matrix;
 import org.gwaspi.model.Operation;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.ReportsList;
-import org.gwaspi.netCDF.matrices.MatrixMetadata;
+import org.gwaspi.model.MatrixMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

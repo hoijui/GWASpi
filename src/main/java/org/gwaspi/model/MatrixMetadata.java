@@ -1,4 +1,4 @@
-package org.gwaspi.netCDF.matrices;
+package org.gwaspi.model;
 
 import org.gwaspi.constants.cDBGWASpi;
 import org.gwaspi.constants.cDBMatrix;

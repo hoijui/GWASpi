@@ -1,5 +1,6 @@
 package org.gwaspi.netCDF.matrices;
 
+import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.constants.cDBGWASpi;
 import org.gwaspi.constants.cImport.ImportFormat;
 import org.gwaspi.constants.cNetCDF;

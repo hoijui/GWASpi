@@ -40,7 +40,7 @@ import org.gwaspi.model.Operation;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.Report;
 import org.gwaspi.model.ReportsList;
-import org.gwaspi.netCDF.matrices.MatrixMetadata;
+import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.netCDF.operations.OperationMetadata;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartMouseEvent;

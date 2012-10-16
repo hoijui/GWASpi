@@ -3,7 +3,7 @@ package org.gwaspi.netCDF.exporter;
 import java.io.IOException;
 import java.util.Map;
 import org.gwaspi.netCDF.markers.MarkerSet_opt;
-import org.gwaspi.netCDF.matrices.MatrixMetadata;
+import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.samples.SampleSet;
 
 /**

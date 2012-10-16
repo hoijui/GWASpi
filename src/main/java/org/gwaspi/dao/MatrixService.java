@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import org.gwaspi.model.Matrix;
-import org.gwaspi.netCDF.matrices.MatrixMetadata;
+import org.gwaspi.model.MatrixMetadata;
 
 public interface MatrixService {
 

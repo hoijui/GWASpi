@@ -1,7 +1,6 @@
 package org.gwaspi.model;
 
 import java.io.IOException;
-import org.gwaspi.netCDF.matrices.MatrixMetadata;
 
 /**
  *

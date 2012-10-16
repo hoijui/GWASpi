@@ -40,7 +40,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.border.TitledBorder;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.netCDF.loader.GenotypesLoadDescription;
-import org.gwaspi.netCDF.matrices.MatrixMetadata;
+import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.netCDF.operations.GWASinOneGOParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -7,7 +7,6 @@ import org.gwaspi.database.DbManager;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import org.gwaspi.netCDF.matrices.MatrixMetadata;
 
 /**
  *
