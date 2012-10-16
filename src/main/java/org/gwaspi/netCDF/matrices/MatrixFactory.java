@@ -12,6 +12,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import org.gwaspi.model.MatricesList;
 import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.Dimension;
@@ -47,7 +48,7 @@ public class MatrixFactory {
 			throws InvalidRangeException, IOException
 	{
 		if (samplesDimSize > 0 && markerDimSize > 0) {
-			resultMatrixName = MatrixManager.generateMatrixNetCDFNameByDate();
+			resultMatrixName = MatricesList.generateMatrixNetCDFNameByDate();
 			netCDFHandler = generateNetcdfHandler(
 					studyId,
 					resultMatrixName,
@@ -68,7 +69,7 @@ public class MatrixFactory {
 			netCDFHandler.setFill(true);
 
 			DbManager dBManager = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
-			MatrixManager.insertMatrixMetadata(
+			MatricesList.insertMatrixMetadata(
 					dBManager,
 					studyId,
 					friendlyName,

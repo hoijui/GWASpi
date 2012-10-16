@@ -3,9 +3,12 @@ package org.gwaspi.database;
 import org.gwaspi.constants.cDBGWASpi;
 import org.gwaspi.global.ServiceLocator;
 import java.io.IOException;
+import org.gwaspi.model.MatricesList;
 import org.gwaspi.netCDF.operations.OperationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.gwaspi.reports.ReportManager;
+import org.gwaspi.samples.SampleManager;
 
 /**
  *
@@ -20,7 +23,6 @@ public class DatabaseGenerator {
 	private DatabaseGenerator() {
 	}
 
-	//private static DbManager db;
 	public static String initDataCenter() throws IOException {
 		String allResults = "";
 		DbManager db = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
@@ -31,16 +33,17 @@ public class DatabaseGenerator {
 		// MOAPI GENERIC TABLES
 		allResults += createStatusTypes(db);
 
-		allResults += org.gwaspi.samples.SampleManager.createSamplesInfoTable(db);
+		allResults += SampleManager.createSamplesInfoTable(db);
 
-		allResults += org.gwaspi.netCDF.matrices.MatrixManager.createMatricesTable(db);
+		allResults += MatricesList.createMatricesTable(db);
 
 		allResults += OperationManager.createOperationsMetadataTable(db);
 
-		allResults += org.gwaspi.reports.ReportManager.createReportsMetadataTable(db);
+		allResults += ReportManager.createReportsMetadataTable(db);
 
 		// STUDY_0 SPECIFIC DATA
-		Object[] testStudy = new Object[]{"Study 1",
+		Object[] testStudy = new Object[]{
+			"Study 1",
 			"",
 			"",
 			"0"};
@@ -58,10 +61,11 @@ public class DatabaseGenerator {
 					cDBGWASpi.T_CREATE_STATUS_TYPES);
 
 			db.executeStatement(cDBGWASpi.IE_STATUS_TYPES_INIT);
+			result = true;
 		} catch (Exception ex) {
 			log.error("Error creating management database", ex);
 		}
 
-		return (result) ? "1" : "0";
+		return (result ? "1" : "0");
 	}
 }

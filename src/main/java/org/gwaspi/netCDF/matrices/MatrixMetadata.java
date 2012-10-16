@@ -13,6 +13,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import org.gwaspi.model.MatricesList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.ArrayChar;
@@ -29,7 +30,7 @@ import ucar.nc2.Variable;
  */
 public class MatrixMetadata {
 
-	private final Logger log = LoggerFactory.getLogger(MatrixManager.class);
+	private final Logger log = LoggerFactory.getLogger(MatrixMetadata.class);
 
 	private static final String SQL_STATEMENT_SELECT_MATRIX_BY_ID
 			= "SELECT * FROM " + cDBGWASpi.SCH_MATRICES + "." + cDBMatrix.T_MATRICES + " WHERE " + cDBMatrix.f_ID + "=%d  WITH RR";
@@ -82,7 +83,7 @@ public class MatrixMetadata {
 
 		this.matrixId = Integer.MIN_VALUE;
 		this.matrixFriendlyName = newMatrixName;
-		this.matrixNetCDFName = org.gwaspi.netCDF.matrices.MatrixManager.generateMatrixNetCDFNameByDate();
+		this.matrixNetCDFName = MatricesList.generateMatrixNetCDFNameByDate();
 		this.studyId = studyId;
 
 		this.pathToMatrix = netCDFpath;

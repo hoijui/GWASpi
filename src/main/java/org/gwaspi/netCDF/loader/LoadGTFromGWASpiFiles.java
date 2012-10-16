@@ -18,6 +18,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import org.gwaspi.model.MatricesList;
 import org.gwaspi.netCDF.markers.MarkerSet_opt;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.gwaspi.netCDF.matrices.MatrixMetadata;
@@ -139,7 +140,7 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 		if (importMatrixMetadata.getGwaspiDBVersion().equals(Config.getConfigValue(Config.PROPERTY_CURRENT_GWASPIDB_VERSION, "2.0.2"))) { //COMPARE DATABASE VERSIONS
 			if (!testExcessSamplesInMatrix) {
 				DbManager dBManager = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
-				org.gwaspi.netCDF.matrices.MatrixManager.insertMatrixMetadata(
+				MatricesList.insertMatrixMetadata(
 						dBManager,
 						loadDescription.getStudyId(),
 						loadDescription.getFriendlyName(),

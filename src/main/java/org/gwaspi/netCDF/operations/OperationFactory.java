@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import org.gwaspi.model.MatricesList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.DataType;
@@ -47,7 +48,7 @@ public class OperationFactory {
 			throws InvalidRangeException, IOException
 	{
 		// OPERATION CASE SELECTOR
-		resultOPnetCDFName = OPType + "_" + org.gwaspi.netCDF.matrices.MatrixManager.generateMatrixNetCDFNameByDate();
+		resultOPnetCDFName = OPType + "_" + MatricesList.generateMatrixNetCDFNameByDate();
 		switch (cNetCDF.Defaults.OPType.compareTo(OPType)) {
 			case MARKER_QA:
 				//resultOPnetCDFName = OPType + "_" + rdMatrixMetadata.getMatrixCDFName();
@@ -68,7 +69,7 @@ public class OperationFactory {
 						implicitSetSize);
 				break;
 			case MARKER_CENSUS_BY_AFFECTION:
-				//resultOPnetCDFName = OPType + "_" + org.gwaspi.netCDF.matrices.MatrixManager.generateMatrixNetCDFNameByDate();
+				//resultOPnetCDFName = OPType + "_" + MatrixManager.generateMatrixNetCDFNameByDate();
 				netCDFHandler = generateNetcdfCensusHandler(studyId,
 						resultOPnetCDFName,
 						description,
@@ -77,7 +78,7 @@ public class OperationFactory {
 						implicitSetSize);
 				break;
 			case MARKER_CENSUS_BY_PHENOTYPE:
-				//resultOPnetCDFName = OPType + "_" + org.gwaspi.netCDF.matrices.MatrixManager.generateMatrixNetCDFNameByDate();
+				//resultOPnetCDFName = OPType + "_" + MatrixManager.generateMatrixNetCDFNameByDate();
 				netCDFHandler = generateNetcdfCensusHandler(studyId,
 						resultOPnetCDFName,
 						description,

@@ -38,6 +38,7 @@ import javax.swing.LayoutStyle;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.border.TitledBorder;
+import org.gwaspi.model.MatricesList;
 import org.gwaspi.netCDF.loader.GenotypesLoadDescription;
 import org.gwaspi.netCDF.matrices.MatrixMetadata;
 import org.gwaspi.netCDF.operations.GWASinOneGOParams;
@@ -328,7 +329,7 @@ public class LoadDataPanel extends JPanel {
 		//</editor-fold>
 
 		//<editor-fold defaultstate="collapsed" desc="LAYOUT GIF">
-		GroupLayout pnl_GifLeftLayout = new GroupLayout(pnl_GifLeft);
+//		GroupLayout pnl_GifLeftLayout = new GroupLayout(pnl_GifLeft);
 //		pnl_GifLeft.setLayout(pnl_GifLeftLayout);
 //		pnl_GifLeftLayout.setHorizontalGroup(
 //				pnl_GifLeftLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
@@ -679,10 +680,10 @@ public class LoadDataPanel extends JPanel {
 					log.error(Text.All.warnWrongFormat);
 
 					// DELETE BROKEN NEW MATRIX AND REPORTS
-					MatrixMetadata deleteMxMetaData = org.gwaspi.netCDF.matrices.MatrixManager.getLatestMatrixId();
+					MatrixMetadata deleteMxMetaData = MatricesList.getLatestMatrixId();
 					if (deleteMxMetaData.getMatrixFriendlyName().equals(txt_NewMatrixName.getText())) {
 						log.info("Deleting orphan files and references");
-						org.gwaspi.netCDF.matrices.MatrixManager.deleteMatrix(deleteMxMetaData.getMatrixId(), true);
+						MatricesList.deleteMatrix(deleteMxMetaData.getMatrixId(), true);
 					}
 
 					GWASpiExplorerPanel.getSingleton().updateTreePanel(true);
