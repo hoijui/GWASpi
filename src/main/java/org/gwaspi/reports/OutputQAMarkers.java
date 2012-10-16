@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import org.gwaspi.model.Operation;
 import org.gwaspi.model.OperationsList;
+import org.gwaspi.model.ReportsList;
 import org.gwaspi.netCDF.markers.MarkerSet_opt;
 import org.gwaspi.netCDF.operations.OperationManager;
 import org.gwaspi.netCDF.operations.OperationMetadata;
@@ -39,14 +40,14 @@ public class OutputQAMarkers {
 		Operation op = OperationsList.getById(opId);
 		DbManager dBManager = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
 
-		String prefix = org.gwaspi.reports.ReportManager.getReportNamePrefix(op);
+		String prefix = ReportsList.getReportNamePrefix(op);
 		String markMissOutName = prefix + "markmissing.txt";
 
 
 		org.gwaspi.global.Utils.createFolder(Config.getConfigValue(Config.PROPERTY_REPORTS_DIR, ""), "STUDY_" + op.getStudyId());
 
 		if (createSortedMarkerMissingnessReport(opId, markMissOutName)) {
-			ReportManager.insertRPMetadata(dBManager,
+			ReportsList.insertRPMetadata(dBManager,
 					"Marker Missingness Table",
 					markMissOutName,
 					OPType.MARKER_QA.toString(),
@@ -61,7 +62,7 @@ public class OutputQAMarkers {
 
 		String markMismatchOutName = prefix + "markmismatch.txt";
 		if (createMarkerMismatchReport(opId, markMismatchOutName)) {
-			ReportManager.insertRPMetadata(dBManager,
+			ReportsList.insertRPMetadata(dBManager,
 					"Marker Mismatch State Table",
 					markMismatchOutName,
 					OPType.MARKER_QA.toString(),
@@ -81,7 +82,7 @@ public class OutputQAMarkers {
 
 		try {
 			Map<String, Object> unsortedMarkerIdMissingRatMap = GatherQAMarkersData.loadMarkerQAMissingRatio(opId);
-			Map<String, Object> sortedMarkerIdMissingRatMap = ReportManager.getSortedDescendingMarkerSetByDoubleValue(unsortedMarkerIdMissingRatMap);
+			Map<String, Object> sortedMarkerIdMissingRatMap = ReportsList.getSortedDescendingMarkerSetByDoubleValue(unsortedMarkerIdMissingRatMap);
 			if (unsortedMarkerIdMissingRatMap != null) {
 				unsortedMarkerIdMissingRatMap.clear();
 			}

@@ -1,8 +1,10 @@
 package org.gwaspi.dao;
 
+import org.gwaspi.database.DbManager;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import org.gwaspi.model.Operation;
 import org.gwaspi.model.Report;
 
 /**
@@ -22,4 +24,26 @@ public interface ReportService {
 	List<Map<String, Object>> getReportListByMatrixId(int matrixId) throws IOException;
 
 	Object[][] getReportsTable(int opId) throws IOException;
+
+	Map<String, Object> getSortedMarkerSetByDoubleValue(Map<String, Object> map);
+
+	Map<String, Object> getSortedDescendingMarkerSetByDoubleValue(Map<String, Object> map);
+
+	String getReportNamePrefix(Operation op);
+
+	String createReportsMetadataTable(DbManager db);
+
+	void insertRPMetadata(
+			DbManager dBManager,
+			String reportName,
+			String fileName,
+			String RPType,
+			int parentMatrixId,
+			int parentOPId,
+			String description,
+			int studyId);
+
+	void deleteReportByMatrixId(int matrixId) throws IOException;
+
+	void deleteReportByOperationId(int opId) throws IOException;
 }

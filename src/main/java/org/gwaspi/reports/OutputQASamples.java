@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.util.Map;
 import org.gwaspi.model.Operation;
 import org.gwaspi.model.OperationsList;
+import org.gwaspi.model.ReportsList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,13 +41,13 @@ public class OutputQASamples {
 		org.gwaspi.global.Utils.createFolder(Config.getConfigValue(Config.PROPERTY_REPORTS_DIR, ""), "STUDY_" + op.getStudyId());
 		reportPath = Config.getConfigValue(Config.PROPERTY_REPORTS_DIR, "") + "/" + "STUDY_" + op.getStudyId() + "/";
 
-		String prefix = org.gwaspi.reports.ReportManager.getReportNamePrefix(op);
+		String prefix = ReportsList.getReportNamePrefix(op);
 		samplMissOutName = prefix + "samplmissing.txt";
 
 
 		if (createSortedSampleMissingnessReport(opId, samplMissOutName, op.getStudyId())) {
 			if (newReport) {
-				ReportManager.insertRPMetadata(dBManager,
+				ReportsList.insertRPMetadata(dBManager,
 						"Sample Missingness Table",
 						samplMissOutName,
 						cNetCDF.Defaults.OPType.SAMPLE_QA.toString(),
@@ -62,7 +63,7 @@ public class OutputQASamples {
 		samplMissOutName = prefix + "hetzyg-missing";
 //        if(createSampleHetzygPlot(opId, samplMissOutName, 500, 500)){
 //            if(newReport){
-		ReportManager.insertRPMetadata(dBManager,
+		ReportsList.insertRPMetadata(dBManager,
 				"Sample Heterozygosity vs Missingness Plot",
 				samplMissOutName,
 				cNetCDF.Defaults.OPType.SAMPLE_HTZYPLOT.toString(),
@@ -85,7 +86,7 @@ public class OutputQASamples {
 
 		try {
 			Map<String, Object> unsortedSamplesMissingRatMap = GatherQASamplesData.loadSamplesQAMissingRatio(opId);
-			Map<String, Object> sortedSamplesMissingRatMap = ReportManager.getSortedDescendingMarkerSetByDoubleValue(unsortedSamplesMissingRatMap);
+			Map<String, Object> sortedSamplesMissingRatMap = ReportsList.getSortedDescendingMarkerSetByDoubleValue(unsortedSamplesMissingRatMap);
 			if (unsortedSamplesMissingRatMap != null) {
 				unsortedSamplesMissingRatMap.clear();
 			}

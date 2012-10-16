@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import org.gwaspi.model.Operation;
 import org.gwaspi.model.OperationsList;
+import org.gwaspi.model.ReportsList;
 import org.gwaspi.netCDF.markers.MarkerSet_opt;
 import org.gwaspi.netCDF.operations.OperationManager;
 import org.gwaspi.netCDF.operations.OperationMetadata;
@@ -48,13 +49,13 @@ public class OutputAllelicAssociation {
 
 		org.gwaspi.global.Utils.createFolder(Config.getConfigValue(Config.PROPERTY_REPORTS_DIR, ""), "STUDY_" + op.getStudyId());
 		//String manhattanName = "mnhtt_"+outName;
-		String prefix = org.gwaspi.reports.ReportManager.getReportNamePrefix(op);
+		String prefix = ReportsList.getReportNamePrefix(op);
 		String manhattanName = prefix + "manhtt";
 
 		log.info(Text.All.processing);
 		if (writeManhattanPlotFromAssociationData(opId, manhattanName, 4000, 500)) {
 			result = true;
-			ReportManager.insertRPMetadata(dBManager,
+			ReportsList.insertRPMetadata(dBManager,
 					"Allelic assoc. Manhattan Plot",
 					manhattanName + ".png",
 					OPType.MANHATTANPLOT.toString(),
@@ -68,7 +69,7 @@ public class OutputAllelicAssociation {
 		String qqName = prefix + "qq";
 		if (result && writeQQPlotFromAssociationData(opId, qqName, 500, 500)) {
 			result = true;
-			ReportManager.insertRPMetadata(dBManager,
+			ReportsList.insertRPMetadata(dBManager,
 					"Allelic assoc. QQ Plot",
 					qqName + ".png",
 					OPType.QQPLOT.toString(),
@@ -83,7 +84,7 @@ public class OutputAllelicAssociation {
 		String assocName = prefix;
 		if (result && createSortedAssociationReport(opId, assocName)) {
 			result = true;
-			ReportManager.insertRPMetadata(dBManager,
+			ReportsList.insertRPMetadata(dBManager,
 					"Allelic Association Tests Values",
 					assocName + ".txt",
 					OPType.ALLELICTEST.toString(),
@@ -169,7 +170,7 @@ public class OutputAllelicAssociation {
 				unsortedMarkerIdPvalMap.put(key, values[1]);
 			}
 
-			Map<String, Object> sortingMarkerSetMap = ReportManager.getSortedMarkerSetByDoubleValue(unsortedMarkerIdPvalMap);
+			Map<String, Object> sortingMarkerSetMap = ReportsList.getSortedMarkerSetByDoubleValue(unsortedMarkerIdPvalMap);
 			if (unsortedMarkerIdPvalMap != null) {
 				unsortedMarkerIdPvalMap.clear();
 			}

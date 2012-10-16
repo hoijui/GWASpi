@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.gwaspi.model.GWASpiExplorerNodes;
 import org.gwaspi.model.MatricesList;
+import org.gwaspi.model.ReportsList;
 import org.gwaspi.netCDF.operations.OperationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -107,7 +108,7 @@ public class SwingDeleterItemList {
 						currentSdi.setStartTime(org.gwaspi.global.Utils.getShortDateTimeAsString());
 						currentSdi.setQueueState(QueueState.PROCESSING);
 
-						org.gwaspi.reports.ReportManager.deleteReportByMatrixId(currentSdi.getMatrixId());
+						ReportsList.deleteReportByMatrixId(currentSdi.getMatrixId());
 						MultiOperations.printCompleted("deleting Reports from Matrix ID: " + currentSdi.getMatrixId());
 
 						flagCurrentItemDeleted();

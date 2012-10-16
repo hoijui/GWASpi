@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import org.gwaspi.model.Operation;
 import org.gwaspi.model.OperationsList;
+import org.gwaspi.model.ReportsList;
 import org.gwaspi.netCDF.markers.MarkerSet_opt;
 import org.gwaspi.netCDF.operations.OperationManager;
 import org.gwaspi.netCDF.operations.OperationMetadata;
@@ -41,13 +42,13 @@ public class OutputHardyWeinberg {
 		DbManager dBManager = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
 
 		//String hwOutName = "hw_"+op.getId()+"_"+op.getFriendlyName()+".hw";
-		String prefix = org.gwaspi.reports.ReportManager.getReportNamePrefix(op);
+		String prefix = ReportsList.getReportNamePrefix(op);
 		String hwOutName = prefix + "hardy-weinberg.txt";
 
 		org.gwaspi.global.Utils.createFolder(Config.getConfigValue(Config.PROPERTY_REPORTS_DIR, ""), "STUDY_" + op.getStudyId());
 
 		if (processSortedHardyWeinbergReport(opId, hwOutName)) {
-			ReportManager.insertRPMetadata(dBManager,
+			ReportsList.insertRPMetadata(dBManager,
 					"Hardy Weinberg Table",
 					hwOutName,
 					OPType.HARDY_WEINBERG.toString(),
@@ -67,7 +68,7 @@ public class OutputHardyWeinberg {
 
 		try {
 			Map<String, Object> unsortedMarkerIdHWPval_ALTMap = GatherHardyWeinbergData.loadHWPval_ALT(opId);
-			Map<String, Object> sortingMarkerSetMap = ReportManager.getSortedMarkerSetByDoubleValue(unsortedMarkerIdHWPval_ALTMap);
+			Map<String, Object> sortingMarkerSetMap = ReportsList.getSortedMarkerSetByDoubleValue(unsortedMarkerIdHWPval_ALTMap);
 			if (unsortedMarkerIdHWPval_ALTMap != null) {
 				unsortedMarkerIdHWPval_ALTMap.clear();
 			}

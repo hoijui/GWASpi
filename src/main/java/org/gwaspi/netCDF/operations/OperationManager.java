@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import org.gwaspi.model.Operation;
 import org.gwaspi.model.OperationsList;
+import org.gwaspi.model.ReportsList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.InvalidRangeException;
@@ -254,7 +255,7 @@ public class OperationManager {
 					File matrixOPFile = new File(genotypesFolder + "/STUDY_" + studyId + "/" + operations.get(i).getNetCDFName() + ".nc");
 					org.gwaspi.global.Utils.tryToDeleteFile(matrixOPFile);
 					if (deleteReports) {
-						org.gwaspi.reports.ReportManager.deleteReportByOperationId(operations.get(i).getId());
+						ReportsList.deleteReportByOperationId(operations.get(i).getId());
 					}
 
 					DbManager dBManager = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
@@ -265,7 +266,7 @@ public class OperationManager {
 				File matrixOPFile = new File(genotypesFolder + "/STUDY_" + studyId + "/" + op.getNetCDFName() + ".nc");
 				org.gwaspi.global.Utils.tryToDeleteFile(matrixOPFile);
 				if (deleteReports) {
-					org.gwaspi.reports.ReportManager.deleteReportByOperationId(opId);
+					ReportsList.deleteReportByOperationId(opId);
 				}
 
 				DbManager dBManager = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);

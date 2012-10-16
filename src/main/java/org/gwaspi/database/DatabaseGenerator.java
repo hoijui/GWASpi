@@ -4,10 +4,10 @@ import org.gwaspi.constants.cDBGWASpi;
 import org.gwaspi.global.ServiceLocator;
 import java.io.IOException;
 import org.gwaspi.model.MatricesList;
+import org.gwaspi.model.ReportsList;
 import org.gwaspi.netCDF.operations.OperationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.gwaspi.reports.ReportManager;
 import org.gwaspi.samples.SampleManager;
 
 /**
@@ -39,7 +39,7 @@ public class DatabaseGenerator {
 
 		allResults += OperationManager.createOperationsMetadataTable(db);
 
-		allResults += ReportManager.createReportsMetadataTable(db);
+		allResults += ReportsList.createReportsMetadataTable(db);
 
 		// STUDY_0 SPECIFIC DATA
 		Object[] testStudy = new Object[]{

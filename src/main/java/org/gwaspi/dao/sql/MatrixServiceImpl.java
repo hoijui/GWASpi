@@ -16,6 +16,7 @@ import java.util.Map;
 import org.gwaspi.model.Matrix;
 import org.gwaspi.model.Operation;
 import org.gwaspi.model.OperationsList;
+import org.gwaspi.model.ReportsList;
 import org.gwaspi.netCDF.matrices.MatrixMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -211,7 +212,7 @@ public class MatrixServiceImpl implements MatrixService {
 				org.gwaspi.global.Utils.tryToDeleteFile(opFile);
 			}
 
-			org.gwaspi.reports.ReportManager.deleteReportByMatrixId(matrixId);
+			ReportsList.deleteReportByMatrixId(matrixId);
 
 			// DELETE MATRIX NETCDF FILE
 			File matrixFile = new File(genotypesFolder + matrixMetadata.getMatrixNetCDFName() + ".nc");
