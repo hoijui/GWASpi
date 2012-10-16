@@ -10,9 +10,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import org.gwaspi.netCDF.markers.MarkerSet_opt;
 import org.gwaspi.model.MatrixMetadata;
-import org.gwaspi.netCDF.operations.OperationManager;
+import org.gwaspi.model.OperationsList;
+import org.gwaspi.netCDF.markers.MarkerSet_opt;
 import org.gwaspi.netCDF.operations.OperationMetadata;
 import org.gwaspi.netCDF.operations.OperationSet;
 import org.slf4j.Logger;
@@ -193,7 +193,7 @@ class BeagleFormatter implements Formatter {
 
 			// WRITE KNOWN ALLELES FROM QA
 			// get MARKER_QA Operation
-			List<Object[]> operationsAL = OperationManager.getMatrixOperations(rdMatrixMetadata.getMatrixId());
+			List<Object[]> operationsAL = OperationsList.getMatrixOperations(rdMatrixMetadata.getMatrixId());
 			int markersQAopId = Integer.MIN_VALUE;
 			for (int i = 0; i < operationsAL.size(); i++) {
 				Object[] element = operationsAL.get(i);

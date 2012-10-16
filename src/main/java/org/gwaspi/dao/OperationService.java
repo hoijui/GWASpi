@@ -1,6 +1,7 @@
 package org.gwaspi.dao;
 
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
+import org.gwaspi.database.DbManager;
 import java.io.IOException;
 import java.util.List;
 import org.gwaspi.model.Operation;
@@ -20,4 +21,21 @@ public interface OperationService {
 	Object[][] getOperationsTable(int matrixId, int opId) throws IOException;
 
 	int getIdOfLastOperationTypeOccurance(List<Operation> operationsList, OPType opType);
+
+	String createOperationsMetadataTable(DbManager db);
+
+	void insertOPMetadata(
+			DbManager dBManager,
+			int parentMatrixId,
+			int parentOperationId,
+			String friendlyName,
+			String resultOPName,
+			String type,
+			String command,
+			String description,
+			Integer studyId);
+
+	List<Object[]> getMatrixOperations(int matrixId) throws IOException;
+
+	void deleteOperationBranch(int studyId, int opId, boolean deleteReports) throws IOException;
 }

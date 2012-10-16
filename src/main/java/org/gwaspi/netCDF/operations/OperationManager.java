@@ -1,24 +1,17 @@
 package org.gwaspi.netCDF.operations;
 
-import org.gwaspi.constants.cDBGWASpi;
-import org.gwaspi.constants.cDBOperations;
-import org.gwaspi.database.DbManager;
-import org.gwaspi.global.Config;
-import org.gwaspi.global.ServiceLocator;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import org.gwaspi.model.Operation;
 import org.gwaspi.model.OperationsList;
-import org.gwaspi.model.ReportsList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.InvalidRangeException;
 
 /**
- * TODO merge some of this into OperationService & OperationServiceImpl
+ *
  * @author Fernando Muñiz Fernandez
  * IBE, Institute of Evolutionary Biology (UPF-CSIC)
  * CEXS-UPF-PRBB
@@ -182,112 +175,6 @@ public class OperationManager {
 	//</editor-fold>
 
 	//<editor-fold defaultstate="collapsed" desc="OPERATIONS METADATA">
-	public static String createOperationsMetadataTable(DbManager db) {
-		boolean result = false;
-		try {
-			// CREATE SAMPLESET_METADATA table in given SCHEMA
-			db.createTable(cDBGWASpi.SCH_MATRICES,
-					cDBOperations.T_OPERATIONS,
-					cDBOperations.T_CREATE_OPERATIONS);
-
-		} catch (Exception ex) {
-			log.error("Failed creating management database", ex);
-		}
-
-		return (result ? "1" : "0");
-	}
-
-	static void insertOPMetadata(
-			DbManager dBManager,
-			int parentMatrixId,
-			int parentOperationId,
-			String friendlyName,
-			String resultOPName,
-			String OPType,
-			String command,
-			String description,
-			Integer studyId)
-	{
-		Object[] opMetaData = new Object[]{parentMatrixId,
-			parentOperationId,
-			friendlyName,
-			resultOPName,
-			OPType,
-			command,
-			description,
-			studyId};
-
-		dBManager.insertValuesInTable(cDBGWASpi.SCH_MATRICES,
-				cDBOperations.T_OPERATIONS,
-				cDBOperations.F_INSERT_OPERATION,
-				opMetaData);
-	}
-
-	public static List<Object[]> getMatrixOperations(int matrixId) throws IOException {
-		List<Object[]> result = new ArrayList<Object[]>();
-
-		DbManager dBManager = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
-		List<Map<String, Object>> rs = dBManager.executeSelectStatement("SELECT * FROM " + cDBGWASpi.SCH_MATRICES + "." + cDBOperations.T_OPERATIONS + " WHERE " + cDBOperations.f_PARENT_MATRIXID + "=" + matrixId + "  WITH RR");
-
-		for (int rowcount = 0; rowcount < rs.size(); rowcount++) {
-			// PREVENT PHANTOM-DB READS EXCEPTIONS
-			if (!rs.isEmpty() && rs.get(rowcount).size() == cDBOperations.T_CREATE_OPERATIONS.length) {
-				Object[] element = new Object[2];
-				element[0] = (Integer) rs.get(rowcount).get(cDBOperations.f_ID);
-				element[1] = rs.get(rowcount).get(cDBOperations.f_OP_TYPE).toString();
-				result.add(element);
-			}
-		}
-
-		return result;
-	}
-
-	public static void deleteOperationBranch(int studyId, int opId, boolean deleteReports) throws IOException {
-
-		try {
-			Operation op = OperationsList.getById(opId);
-			String genotypesFolder = Config.getConfigValue(Config.PROPERTY_GENOTYPES_DIR, "");
-
-			List<Operation> operations = OperationsList.getOperationsList(op.getParentMatrixId(), opId);
-			if (!operations.isEmpty()) {
-				operations.add(op);
-				for (int i = 0; i < operations.size(); i++) {
-					File matrixOPFile = new File(genotypesFolder + "/STUDY_" + studyId + "/" + operations.get(i).getNetCDFName() + ".nc");
-					org.gwaspi.global.Utils.tryToDeleteFile(matrixOPFile);
-					if (deleteReports) {
-						ReportsList.deleteReportByOperationId(operations.get(i).getId());
-					}
-
-					DbManager dBManager = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
-					String statement = "DELETE FROM " + cDBGWASpi.SCH_MATRICES + "." + cDBOperations.T_OPERATIONS + " WHERE " + cDBOperations.f_ID + "=" + operations.get(i).getId();
-					dBManager.executeStatement(statement);
-				}
-			} else {
-				File matrixOPFile = new File(genotypesFolder + "/STUDY_" + studyId + "/" + op.getNetCDFName() + ".nc");
-				org.gwaspi.global.Utils.tryToDeleteFile(matrixOPFile);
-				if (deleteReports) {
-					ReportsList.deleteReportByOperationId(opId);
-				}
-
-				DbManager dBManager = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
-				String statement = "DELETE FROM " + cDBGWASpi.SCH_MATRICES + "." + cDBOperations.T_OPERATIONS + " WHERE " + cDBOperations.f_ID + "=" + opId;
-				dBManager.executeStatement(statement);
-			}
-		} catch (IOException ex) {
-			log.warn(null, ex);
-			// PURGE INEXISTING OPERATIONS FROM DB
-			DbManager dBManager = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
-			String statement = "DELETE FROM " + cDBGWASpi.SCH_MATRICES + "." + cDBOperations.T_OPERATIONS + " WHERE " + cDBOperations.f_ID + "=" + opId;
-			dBManager.executeStatement(statement);
-		} catch (IllegalArgumentException ex) {
-			log.warn(null, ex);
-			// PURGE INEXISTING OPERATIONS FROM DB
-			DbManager dBManager = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
-			String statement = "DELETE FROM " + cDBGWASpi.SCH_MATRICES + "." + cDBOperations.T_OPERATIONS + " WHERE " + cDBOperations.f_ID + "=" + opId;
-			dBManager.executeStatement(statement);
-		}
-	}
-
 	public static List<String> checkForNecessaryOperations(List<String> necessaryOPs, int matrixId) {
 		try {
 			List<Operation> chkOpAL = OperationsList.getOperationsList(matrixId);

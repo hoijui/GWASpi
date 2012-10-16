@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import org.gwaspi.model.MatricesList;
+import org.gwaspi.model.OperationsList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.DataType;
@@ -134,7 +135,8 @@ public class OperationFactory {
 		}
 
 		DbManager dBManager = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
-		OperationManager.insertOPMetadata(dBManager,
+		OperationsList.insertOPMetadata(
+				dBManager,
 				parentMatrixId,
 				parentOperationId,
 				friendlyName,

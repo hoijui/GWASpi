@@ -3,6 +3,7 @@ package org.gwaspi.model;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.dao.OperationService;
 import org.gwaspi.dao.sql.OperationServiceImpl;
+import org.gwaspi.database.DbManager;
 import java.io.IOException;
 import java.util.List;
 
@@ -46,5 +47,40 @@ public class OperationsList {
 
 	public static int getIdOfLastOperationTypeOccurance(List<Operation> operationsList, OPType opType) {
 		return operationService.getIdOfLastOperationTypeOccurance(operationsList, opType);
+	}
+
+	public static String createOperationsMetadataTable(DbManager db) {
+		return operationService.createOperationsMetadataTable(db);
+	}
+
+	public static void insertOPMetadata(
+			DbManager dBManager,
+			int parentMatrixId,
+			int parentOperationId,
+			String friendlyName,
+			String resultOPName,
+			String type,
+			String command,
+			String description,
+			Integer studyId)
+	{
+		operationService.insertOPMetadata(
+				dBManager,
+				parentMatrixId,
+				parentOperationId,
+				friendlyName,
+				resultOPName,
+				type,
+				command,
+				description,
+				studyId);
+	}
+
+	public static List<Object[]> getMatrixOperations(int matrixId) throws IOException {
+		return operationService.getMatrixOperations(matrixId);
+	}
+
+	public static void deleteOperationBranch(int studyId, int opId, boolean deleteReports) throws IOException {
+		operationService.deleteOperationBranch(studyId, opId, deleteReports);
 	}
 }
