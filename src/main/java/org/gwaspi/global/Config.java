@@ -17,6 +17,7 @@ import java.util.prefs.Preferences;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.xml.parsers.ParserConfigurationException;
+import org.gwaspi.model.StudyList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -298,7 +299,7 @@ public class Config {
 		List<Element> localElements = XMLParser.parseDocument(localDom, "GWASpi");
 		setConfigValue(PROPERTY_CURRENT_GWASPIDB_VERSION, XMLParser.getTextValue(localElements.get(0), "GWASpi_DB_Version"));
 
-		org.gwaspi.database.StudyGenerator.createStudyLogFile(0);
+		StudyList.createStudyLogFile(0);
 	}
 
 	protected static void updateConfigDataDirs(File dataDir) throws IOException, BackingStoreException, URISyntaxException {

@@ -6,6 +6,7 @@ import java.io.IOException;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.ReportsList;
+import org.gwaspi.model.StudyList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.gwaspi.samples.SampleManager;
@@ -47,7 +48,7 @@ public class DatabaseGenerator {
 			"",
 			"",
 			"0"};
-		allResults += StudyGenerator.createStudyManagementTable(db, testStudy);
+		allResults += StudyList.createStudyManagementTable(db, testStudy);
 
 		return allResults;
 	}

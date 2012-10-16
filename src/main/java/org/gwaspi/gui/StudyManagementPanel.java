@@ -275,7 +275,7 @@ public class StudyManagementPanel extends JPanel {
 						study_description = "";
 					}
 
-					org.gwaspi.database.StudyGenerator.insertNewStudy(study_name, study_description);
+					StudyList.insertNewStudy(study_name, study_description);
 					GWASpiExplorerPanel.getSingleton().setPnl_Content(new StudyManagementPanel());
 					GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
 					GWASpiExplorerPanel.getSingleton().updateTreePanel(true);
@@ -323,7 +323,7 @@ public class StudyManagementPanel extends JPanel {
 								MultiOperations.deleteStudy(studyId, deleteReport);
 
 	//							try {
-	//								org.gwaspi.database.StudyGenerator.deleteStudy(studyId, deleteReport);
+	//								StudyList.deleteStudy(studyId, deleteReport);
 	//								try {
 	//									GWASpiExplorerPanel.getSingleton().pnl_Content = new StudyManagementPanel();
 	//									GWASpiExplorerPanel.getSingleton().scrl_Content.setViewportView(GWASpiExplorerPanel.getSingleton().pnl_Content);

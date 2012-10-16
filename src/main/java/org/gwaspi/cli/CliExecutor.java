@@ -628,7 +628,7 @@ public class CliExecutor {
 	private int addStudy(String newStudyName, String description) throws IOException {
 		int newStudyId;
 
-		org.gwaspi.database.StudyGenerator.insertNewStudy(newStudyName, description);
+		StudyList.insertNewStudy(newStudyName, description);
 
 		Object[][] studyTable = StudyList.getStudyTable();
 

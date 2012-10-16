@@ -2,6 +2,7 @@ package org.gwaspi.model;
 
 import org.gwaspi.dao.StudyService;
 import org.gwaspi.dao.sql.StudyServiceImpl;
+import org.gwaspi.database.DbManager;
 import java.io.IOException;
 import java.util.List;
 
@@ -29,5 +30,21 @@ public class StudyList {
 
 	public static Object[][] getStudyTable() throws IOException {
 		return studyService.getAllAsTable();
+	}
+
+	public static String createStudyManagementTable(DbManager db, Object[] insertValues) {
+		return studyService.createStudyManagementTable(db, insertValues);
+	}
+
+	public static void insertNewStudy(String studyName, String description) {
+		studyService.insertNewStudy(studyName, description);
+	}
+
+	public static void deleteStudy(int studyId, boolean deleteReports) throws IOException {
+		studyService.deleteStudy(studyId, deleteReports);
+	}
+
+	public static String createStudyLogFile(Integer studyId) throws IOException {
+		return studyService.createStudyLogFile(studyId);
 	}
 }

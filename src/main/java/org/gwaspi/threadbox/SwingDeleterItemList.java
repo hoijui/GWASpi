@@ -12,6 +12,7 @@ import org.gwaspi.model.GWASpiExplorerNodes;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.ReportsList;
+import org.gwaspi.model.StudyList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.gwaspi.threadbox.SwingDeleterItem.DeleteTarget;
@@ -67,7 +68,7 @@ public class SwingDeleterItemList {
 						currentSdi.setStartTime(org.gwaspi.global.Utils.getShortDateTimeAsString());
 						currentSdi.setQueueState(QueueState.PROCESSING);
 
-						org.gwaspi.database.StudyGenerator.deleteStudy(currentSdi.getStudyId(), currentSdi.isDeleteReports());
+						StudyList.deleteStudy(currentSdi.getStudyId(), currentSdi.isDeleteReports());
 						MultiOperations.printCompleted("deleting Study ID: " + currentSdi.getStudyId());
 
 						GWASpiExplorerNodes.deleteStudyNode(currentSdi.getStudyId());
