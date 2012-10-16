@@ -69,7 +69,7 @@ public class ReportManager {
 	//</editor-fold>
 
 	//<editor-fold defaultstate="collapsed" desc="OPERATIONS METADATA">
-	public static String getreportNamePrefix(Operation op) {
+	public static String getReportNamePrefix(Operation op) {
 		StringBuilder prefix = new StringBuilder();
 		prefix.append("mx-");
 		prefix.append(op.getParentMatrixId());

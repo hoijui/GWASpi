@@ -193,7 +193,7 @@ public class OperationManager {
 			log.error("Failed creating management database", ex);
 		}
 
-		return (result) ? "1" : "0";
+		return (result ? "1" : "0");
 	}
 
 	static void insertOPMetadata(

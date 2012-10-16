@@ -41,7 +41,7 @@ public class OutputHardyWeinberg {
 		DbManager dBManager = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
 
 		//String hwOutName = "hw_"+op.getId()+"_"+op.getFriendlyName()+".hw";
-		String prefix = org.gwaspi.reports.ReportManager.getreportNamePrefix(op);
+		String prefix = org.gwaspi.reports.ReportManager.getReportNamePrefix(op);
 		String hwOutName = prefix + "hardy-weinberg.txt";
 
 		org.gwaspi.global.Utils.createFolder(Config.getConfigValue(Config.PROPERTY_REPORTS_DIR, ""), "STUDY_" + op.getStudyId());

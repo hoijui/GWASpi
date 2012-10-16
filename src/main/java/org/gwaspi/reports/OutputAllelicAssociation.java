@@ -48,7 +48,7 @@ public class OutputAllelicAssociation {
 
 		org.gwaspi.global.Utils.createFolder(Config.getConfigValue(Config.PROPERTY_REPORTS_DIR, ""), "STUDY_" + op.getStudyId());
 		//String manhattanName = "mnhtt_"+outName;
-		String prefix = org.gwaspi.reports.ReportManager.getreportNamePrefix(op);
+		String prefix = org.gwaspi.reports.ReportManager.getReportNamePrefix(op);
 		String manhattanName = prefix + "manhtt";
 
 		log.info(Text.All.processing);

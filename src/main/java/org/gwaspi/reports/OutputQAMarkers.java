@@ -39,7 +39,7 @@ public class OutputQAMarkers {
 		Operation op = OperationsList.getById(opId);
 		DbManager dBManager = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
 
-		String prefix = org.gwaspi.reports.ReportManager.getreportNamePrefix(op);
+		String prefix = org.gwaspi.reports.ReportManager.getReportNamePrefix(op);
 		String markMissOutName = prefix + "markmissing.txt";
 
 

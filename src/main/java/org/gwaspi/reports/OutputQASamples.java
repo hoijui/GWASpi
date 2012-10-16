@@ -40,7 +40,7 @@ public class OutputQASamples {
 		org.gwaspi.global.Utils.createFolder(Config.getConfigValue(Config.PROPERTY_REPORTS_DIR, ""), "STUDY_" + op.getStudyId());
 		reportPath = Config.getConfigValue(Config.PROPERTY_REPORTS_DIR, "") + "/" + "STUDY_" + op.getStudyId() + "/";
 
-		String prefix = org.gwaspi.reports.ReportManager.getreportNamePrefix(op);
+		String prefix = org.gwaspi.reports.ReportManager.getReportNamePrefix(op);
 		samplMissOutName = prefix + "samplmissing.txt";
 
 
