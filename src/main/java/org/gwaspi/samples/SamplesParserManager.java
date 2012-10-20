@@ -13,6 +13,8 @@ import java.util.Map;
 import java.util.Set;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixMetadata;
+import org.gwaspi.model.SampleInfo;
+import org.gwaspi.model.SampleInfoList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.InvalidRangeException;
@@ -42,12 +44,9 @@ public class SamplesParserManager {
 			SampleSet rdSampleSet = new SampleSet(rdMatrixMetadata.getStudyId(), matrixId);
 			Map<String, Object> rdSampleSetMap = rdSampleSet.getSampleIdSetMap();
 			for (String key : rdSampleSetMap.keySet()) {
-				List<Map<String, Object>> rs = SampleManager.getCurrentSampleInfoFromDB(key.toString(), rdMatrixMetadata.getStudyId());
-				if (rs != null) {
-					// PREVENT PHANTOM-DB READS EXCEPTIONS
-					if (!rs.isEmpty() && rs.get(0).size() == cDBSamples.T_CREATE_SAMPLES_INFO.length) {
-						resultHS.add(rs.get(0).get(cDBSamples.f_AFFECTION));
-					}
+				List<SampleInfo> sampleInfos = SampleInfoList.getCurrentSampleInfoFromDB(key.toString(), rdMatrixMetadata.getStudyId());
+				if (sampleInfos != null) {
+					resultHS.add(sampleInfos.get(0).getAffection());
 				}
 			}
 		} catch (InvalidRangeException ex) {

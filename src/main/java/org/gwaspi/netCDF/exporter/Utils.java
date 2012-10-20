@@ -5,7 +5,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.gwaspi.samples.SampleManager;
+import org.gwaspi.model.SampleInfo;
+import org.gwaspi.model.SampleInfoList;
 
 /**
  *
@@ -18,67 +19,76 @@ public class Utils {
 	private Utils() {
 	}
 
-	public static Map<String, Object> getCurrentSampleFormattedInfo(String sampleId, Object poolId) throws IOException {
-		Map<String, Object> sampleInfo = new HashMap<String, Object>();
+	public static SampleInfo getCurrentSampleFormattedInfo(String sampleId, Object poolId) throws IOException {
 
-		List<Map<String, Object>> rs = SampleManager.getCurrentSampleInfoFromDB(sampleId, poolId);
+		SampleInfo sampleInfo = null;
+
+		List<SampleInfo> sampleInfos = SampleInfoList.getCurrentSampleInfoFromDB(sampleId, poolId);
 
 		// PREVENT PHANTOM-DB READS EXCEPTIONS
-		if (!rs.isEmpty() && rs.get(0).size() == cDBSamples.T_CREATE_SAMPLES_INFO.length) {
-			Object familyId = rs.get(0).get(cDBSamples.f_FAMILY_ID);
+		if (!sampleInfos.isEmpty()) {
+			SampleInfo baseSampleInfo = sampleInfos.get(0);
+			String familyId = baseSampleInfo.getFamilyId();
 			if (familyId == null) {
 				familyId = "0";
 			}
-			sampleInfo.put(cDBSamples.f_FAMILY_ID, familyId);
 
-
-			Object fatherId = rs.get(0).get(cDBSamples.f_FATHER_ID);
+			String fatherId = baseSampleInfo.getFatherId();
 			if (fatherId == null) {
 				fatherId = "0";
 			}
-			sampleInfo.put(cDBSamples.f_FATHER_ID, fatherId);
 
-			Object motherId = rs.get(0).get(cDBSamples.f_MOTHER_ID);
+			String motherId = baseSampleInfo.getMotherId();
 			if (motherId == null) {
 				motherId = "0";
 			}
-			sampleInfo.put(cDBSamples.f_MOTHER_ID, motherId);
 
-			Object sex = rs.get(0).get(cDBSamples.f_SEX);
+			SampleInfo.Sex sex = baseSampleInfo.getSex();
 			if (sex == null) {
-				sex = "0";
+				sex = SampleInfo.Sex.UNKNOWN;
 			}
-			sampleInfo.put(cDBSamples.f_SEX, sex);
 
-			Object affection = rs.get(0).get(cDBSamples.f_AFFECTION);
+			SampleInfo.Affection affection = baseSampleInfo.getAffection();
 			if (affection == null) {
-				affection = "0";
+				affection = SampleInfo.Affection.UNKNOWN;
 			}
-			sampleInfo.put(cDBSamples.f_AFFECTION, affection);
 
-			Object disease = rs.get(0).get(cDBSamples.f_DISEASE);
+			String disease = baseSampleInfo.getDisease();
 			if (disease == null) {
 				disease = "0";
 			}
-			sampleInfo.put(cDBSamples.f_DISEASE, disease);
 
-			Object category = rs.get(0).get(cDBSamples.f_CATEGORY);
+			String category = baseSampleInfo.getCategory();
 			if (category == null) {
 				category = "0";
 			}
-			sampleInfo.put(cDBSamples.f_CATEGORY, category);
 
-			Object population = rs.get(0).get(cDBSamples.f_POPULATION);
+			String population = baseSampleInfo.getPopulation();
 			if (population == null) {
 				population = "0";
 			}
-			sampleInfo.put(cDBSamples.f_POPULATION, population);
 
-			Object age = rs.get(0).get(cDBSamples.f_AGE);
-			if (age == null || age.equals("-1")) {
-				age = "0";
+			int age = baseSampleInfo.getAge();
+			if (age == -1) {
+				age = 0;
 			}
-			sampleInfo.put(cDBSamples.f_AGE, age);
+
+			sampleInfo = new SampleInfo(
+					baseSampleInfo.getOrderId(),
+					sampleId,
+					familyId,
+					fatherId,
+					motherId,
+					sex,
+					affection,
+					category,
+					disease,
+					population,
+					age,
+					baseSampleInfo.getFilter(),
+					baseSampleInfo.getPoolId(),
+					baseSampleInfo.getApproved(),
+					baseSampleInfo.getStatus());
 		}
 
 		return sampleInfo;

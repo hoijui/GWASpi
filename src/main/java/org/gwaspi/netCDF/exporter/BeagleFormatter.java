@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.OperationsList;
+import org.gwaspi.model.SampleInfo;
 import org.gwaspi.netCDF.markers.MarkerSet_opt;
 import org.gwaspi.netCDF.operations.OperationMetadata;
 import org.gwaspi.netCDF.operations.OperationSet;
@@ -80,49 +81,42 @@ class BeagleFormatter implements Formatter {
 			StringBuilder affectionLine = new StringBuilder("A" + sep + "affection");
 
 			for (String sampleId : rdSampleSetMap.keySet()) {
-				Map<String, Object> sampleInfo = Utils.getCurrentSampleFormattedInfo(sampleId, rdMatrixMetadata.getStudyId());
-
-				String category = sampleInfo.get(cDBSamples.f_CATEGORY).toString();
-				String population = sampleInfo.get(cDBSamples.f_POPULATION).toString();
-				String disease = sampleInfo.get(cDBSamples.f_DISEASE).toString();
-				String sex = sampleInfo.get(cDBSamples.f_SEX).toString();
-				String affection = sampleInfo.get(cDBSamples.f_AFFECTION).toString();
-				String age = sampleInfo.get(cDBSamples.f_AGE).toString();
+				SampleInfo sampleInfo = Utils.getCurrentSampleFormattedInfo(sampleId, rdMatrixMetadata.getStudyId());
 
 				sampleLine.append(sep);
-				sampleLine.append(sampleId);
+				sampleLine.append(sampleInfo.getSampleId());
 				sampleLine.append(sep);
-				sampleLine.append(sampleId);
+				sampleLine.append(sampleInfo.getSampleId());
 
 				sexLine.append(sep);
-				sexLine.append(sex);
+				sexLine.append(sampleInfo.getSexStr());
 				sexLine.append(sep);
-				sexLine.append(sex);
+				sexLine.append(sampleInfo.getSexStr());
 
 				categoryLine.append(sep);
-				categoryLine.append(category);
+				categoryLine.append(sampleInfo.getCategory());
 				categoryLine.append(sep);
-				categoryLine.append(category);
+				categoryLine.append(sampleInfo.getCategory());
 
 				popLine.append(sep);
-				popLine.append(population);
+				popLine.append(sampleInfo.getPopulation());
 				popLine.append(sep);
-				popLine.append(population);
+				popLine.append(sampleInfo.getPopulation());
 
 //				diseaseLine.append(sep);
-//				diseaseLine.append(disease);
+//				diseaseLine.append(sampleInfo.getDisease());
 //				diseaseLine.append(sep);
-//				diseaseLine.append(disease);
+//				diseaseLine.append(sampleInfo.getDisease());
 
 				ageLine.append(sep);
-				ageLine.append(age);
+				ageLine.append(sampleInfo.getAge());
 				ageLine.append(sep);
-				ageLine.append(age);
+				ageLine.append(sampleInfo.getAge());
 
 				affectionLine.append(sep);
-				affectionLine.append(affection);
+				affectionLine.append(sampleInfo.getAffectionStr());
 				affectionLine.append(sep);
-				affectionLine.append(affection);
+				affectionLine.append(sampleInfo.getAffectionStr());
 			}
 			beagleBW.append(sampleLine);
 			beagleBW.append("\n");

@@ -37,9 +37,10 @@ import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 import org.gwaspi.model.Operation;
 import org.gwaspi.model.OperationsList;
+import org.gwaspi.model.SampleInfo;
+import org.gwaspi.model.SampleInfoList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.gwaspi.samples.SampleManager;
 
 /**
  *
@@ -147,46 +148,43 @@ public class Report_SampleInfoPanel extends JPanel {
 	//private void actionLoadReport(ActionEvent evt) {
 	private void actionLoadReport() throws IOException {
 
-		List<Map<String, Object>> rsAllSamplesFromPool = SampleManager.getAllSampleInfoFromDBByPoolID(studyId);
+		List<SampleInfo> allSamplesFromPool = SampleInfoList.getAllSampleInfoFromDBByPoolID(studyId);
 
 		DecimalFormat dfSci = new DecimalFormat("0.##E0#");
 		DecimalFormat dfRound = new DecimalFormat("0.#####");
 
 		// Getting data from file and subdividing to series all points by chromosome
-		int count = 0;
 		List<Object[]> tableRowAL = new ArrayList<Object[]>();
-		while (count < rsAllSamplesFromPool.size()) {
-			// PREVENT PHANTOM-DB READS EXCEPTIONS
-			if (!rsAllSamplesFromPool.isEmpty() && rsAllSamplesFromPool.get(count).size() == cDBSamples.T_CREATE_SAMPLES_INFO.length) {
-				Object[] row = new Object[11];
+		int id = 1;
+		for (SampleInfo sampleInfo : allSamplesFromPool) {
+			Object[] row = new Object[11];
 
-				String familyId = rsAllSamplesFromPool.get(count).get(cDBSamples.f_FAMILY_ID).toString();
-				String sampleId = rsAllSamplesFromPool.get(count).get(cDBSamples.f_SAMPLE_ID).toString();
-				String fatherId = rsAllSamplesFromPool.get(count).get(cDBSamples.f_FATHER_ID).toString();
-				String motherId = rsAllSamplesFromPool.get(count).get(cDBSamples.f_MOTHER_ID).toString();
-				String sex = rsAllSamplesFromPool.get(count).get(cDBSamples.f_SEX).toString();
-				String affection = rsAllSamplesFromPool.get(count).get(cDBSamples.f_AFFECTION).toString();
-				String age = rsAllSamplesFromPool.get(count).get(cDBSamples.f_AGE).toString();
-				String category = rsAllSamplesFromPool.get(count).get(cDBSamples.f_CATEGORY).toString();
-				String disease = rsAllSamplesFromPool.get(count).get(cDBSamples.f_DISEASE).toString();
-				String population = rsAllSamplesFromPool.get(count).get(cDBSamples.f_POPULATION).toString();
+			String familyId = sampleInfo.getFamilyId();
+			String sampleId = sampleInfo.getSampleId();
+			String fatherId = sampleInfo.getFatherId();
+			String motherId = sampleInfo.getMotherId();
+			String sex = sampleInfo.getSexStr();
+			String affection = sampleInfo.getAffectionStr();
+			String age = String.valueOf(sampleInfo.getAge());
+			String category = sampleInfo.getCategory();
+			String disease = sampleInfo.getDisease();
+			String population = sampleInfo.getPopulation();
 
-				row[0] = count + 1;
-				row[1] = familyId;
-				row[2] = sampleId;
-				row[3] = fatherId;
-				row[4] = motherId;
-				row[5] = sex;
-				row[6] = affection;
-				row[7] = age;
-				row[8] = category;
-				row[9] = disease;
-				row[10] = population;
+			row[0] = id;
+			row[1] = familyId;
+			row[2] = sampleId;
+			row[3] = fatherId;
+			row[4] = motherId;
+			row[5] = sex;
+			row[6] = affection;
+			row[7] = age;
+			row[8] = category;
+			row[9] = disease;
+			row[10] = population;
 
-				tableRowAL.add(row);
-			}
+			tableRowAL.add(row);
 
-			count++;
+			id++;
 		}
 
 		Object[][] tableMatrix = new Object[tableRowAL.size()][10];

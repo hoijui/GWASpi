@@ -6,10 +6,10 @@ import java.io.IOException;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.ReportsList;
+import org.gwaspi.model.SampleInfoList;
 import org.gwaspi.model.StudyList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.gwaspi.samples.SampleManager;
 
 /**
  *
@@ -34,7 +34,7 @@ public class DatabaseGenerator {
 		// MOAPI GENERIC TABLES
 		allResults += createStatusTypes(db);
 
-		allResults += SampleManager.createSamplesInfoTable(db);
+		allResults += SampleInfoList.createSamplesInfoTable(db);
 
 		allResults += MatricesList.createMatricesTable(db);
 

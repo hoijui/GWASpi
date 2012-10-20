@@ -6,14 +6,12 @@ import org.gwaspi.gui.GWASpiExplorerPanel;
 import org.gwaspi.gui.StartGWASpi;
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 import javax.swing.text.Position;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.gwaspi.samples.SampleManager;
 
 /**
  *
@@ -140,8 +138,8 @@ public class GWASpiExplorerNodes {
 	protected static DefaultMutableTreeNode createSampleInfoTreeNode(int studyId) throws IOException {
 		DefaultMutableTreeNode tn = null;
 		// CHECK IF STUDY EXISTS
-		List<Map<String, Object>> rs = SampleManager.getAllSampleInfoFromDBByPoolID(studyId);
-		if (!rs.isEmpty()) {
+		List<SampleInfo> sampleInfos = SampleInfoList.getAllSampleInfoFromDBByPoolID(studyId);
+		if (!sampleInfos.isEmpty()) {
 			tn = new DefaultMutableTreeNode(new NodeElementInfo(studyId, // parentNodeId
 					studyId, // nodeId
 					Text.App.treeSampleInfo, // nodeType

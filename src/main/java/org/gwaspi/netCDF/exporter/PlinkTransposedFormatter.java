@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.util.Map;
 import org.gwaspi.netCDF.markers.MarkerSet_opt;
 import org.gwaspi.model.MatrixMetadata;
+import org.gwaspi.model.SampleInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.gwaspi.samples.SampleSet;
@@ -114,13 +115,13 @@ public class PlinkTransposedFormatter implements Formatter {
 			// Iterate through all samples
 			int sampleNb = 0;
 			for (String sampleId : rdSampleSetMap.keySet()) {
-				Map<String, Object> sampleInfo = Utils.getCurrentSampleFormattedInfo(sampleId, rdMatrixMetadata.getStudyId());
+				SampleInfo sampleInfo = Utils.getCurrentSampleFormattedInfo(sampleId, rdMatrixMetadata.getStudyId());
 
-				String familyId = sampleInfo.get(cDBSamples.f_FAMILY_ID).toString();
-				String fatherId = sampleInfo.get(cDBSamples.f_FATHER_ID).toString();
-				String motherId = sampleInfo.get(cDBSamples.f_MOTHER_ID).toString();
-				String sex = sampleInfo.get(cDBSamples.f_SEX).toString();
-				String affection = sampleInfo.get(cDBSamples.f_AFFECTION).toString();
+				String familyId = sampleInfo.getFamilyId();
+				String fatherId = sampleInfo.getFatherId();
+				String motherId = sampleInfo.getMotherId();
+				String sex = sampleInfo.getSexStr();
+				String affection = sampleInfo.getAffectionStr();
 
 				// TFAM files
 				// Family ID

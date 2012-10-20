@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.Map;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixMetadata;
+import org.gwaspi.model.SampleInfo;
+import org.gwaspi.model.SampleInfoList;
 import org.gwaspi.netCDF.markers.MarkerSet_opt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -116,25 +118,16 @@ public class OP_QAMarkers_opt implements MatrixOperation {
 			// INIT MARKER AND SAMPLE INFO
 			rdMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
 
-			List<Map<String, Object>> rsSamplesInfo = org.gwaspi.samples.SampleManager.getAllSampleInfoFromDBByPoolID(rdMatrixMetadata.getStudyId());
+			List<SampleInfo> sampleInfos = SampleInfoList.getAllSampleInfoFromDBByPoolID(rdMatrixMetadata.getStudyId());
 			Map<String, Object> samplesInfoMap = new LinkedHashMap();
-			int count = 0;
-			while (count < rsSamplesInfo.size()) {
-				// PREVENT PHANTOM-DB READS EXCEPTIONS
-				if (!rsSamplesInfo.isEmpty() && rsSamplesInfo.get(count).size() == cDBSamples.T_CREATE_SAMPLES_INFO.length) {
-					String tempSampleId = rsSamplesInfo.get(count).get(cDBSamples.f_SAMPLE_ID).toString();
-					if (rdSampleSetMap.containsKey(tempSampleId)) {
-						String sex = "0";
-						Object tmpSex = rsSamplesInfo.get(count).get(cDBSamples.f_SEX);
-						if (tmpSex != null) {
-							sex = tmpSex.toString();
-						}
-						samplesInfoMap.put(tempSampleId, sex);
-					}
+			for (SampleInfo sampleInfo : sampleInfos) {
+				String tempSampleId = sampleInfo.getSampleId();
+				if (rdSampleSetMap.containsKey(tempSampleId)) {
+					String sex = sampleInfo.getSexStr();
+					samplesInfoMap.put(tempSampleId, sex);
 				}
-				count++;
 			}
-			rsSamplesInfo.clear();
+			sampleInfos.clear();
 
 			// Iterate through markerset, take it marker by marker
 			int markerNb = 0;

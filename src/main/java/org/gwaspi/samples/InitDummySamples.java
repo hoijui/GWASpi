@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import org.gwaspi.model.SampleInfoList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,17 +36,10 @@ public class InitDummySamples {
 	private static boolean initSamples(ArrayList samplesFromFileAL, int studyId) throws IOException {
 
 		db = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
-		ArrayList samplesAllreadyInDBAL = new ArrayList();
+		List<String> samplesAllreadyInDBAL = new ArrayList<String>(0);
 
 		try {
-			List<Map<String, Object>> rs = SampleManager.selectSampleIDList(studyId);
-			for (int i = 0; i < rs.size(); i++) // loop through rows of result set
-			{
-				// PREVENT PHANTOM-DB READS EXCEPTIONS
-				if (!rs.isEmpty() && rs.get(i).size() == 1) {
-					samplesAllreadyInDBAL.add(rs.get(i).get(cDBSamples.f_SAMPLE_ID).toString());
-				}
-			}
+			samplesAllreadyInDBAL = SampleInfoList.selectSampleIDList(studyId);
 		} catch (Exception ex) {
 			log.error(null, ex);
 		}

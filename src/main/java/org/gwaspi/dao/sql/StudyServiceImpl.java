@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.Matrix;
+import org.gwaspi.model.SampleInfoList;
 import org.gwaspi.model.Study;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -225,7 +226,7 @@ public class StudyServiceImpl implements StudyService {
 		}
 
 		// DELETE STUDY POOL SAMPLES
-		org.gwaspi.samples.SampleManager.deleteSamplesByPoolId(studyId);
+		SampleInfoList.deleteSamplesByPoolId(studyId);
 	}
 
 	@Override

@@ -14,6 +14,7 @@ import java.util.Map;
 import org.gwaspi.model.Operation;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.ReportsList;
+import org.gwaspi.model.SampleInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -104,45 +105,44 @@ public class OutputQASamples {
 			//GET SAMPLE INFO FROM DB
 			for (Map.Entry<String, Object> entry : sortedSamplesMissingRatMap.entrySet()) {
 				String tempSampleId = entry.getKey();
-				Map<String, Object> sampleInfo = org.gwaspi.netCDF.exporter.Utils.getCurrentSampleFormattedInfo(tempSampleId, poolId);
+				SampleInfo sampleInfo = org.gwaspi.netCDF.exporter.Utils.getCurrentSampleFormattedInfo(tempSampleId, poolId);
 
-				String tmpFamId = (sampleInfo.get(cDBSamples.f_FAMILY_ID) != null) ? sampleInfo.get(cDBSamples.f_FAMILY_ID).toString() : "0";
-				String tmpSex = (sampleInfo.get(cDBSamples.f_SEX) != null) ? sampleInfo.get(cDBSamples.f_SEX).toString() : "0";
-				String tmpAffection = (sampleInfo.get(cDBSamples.f_AFFECTION) != null) ? sampleInfo.get(cDBSamples.f_AFFECTION).toString() : "0";
-				String tmpAge = (sampleInfo.get(cDBSamples.f_AGE) != null) ? sampleInfo.get(cDBSamples.f_AGE).toString() : "-1";
-				String tmpCategory = (sampleInfo.get(cDBSamples.f_CATEGORY) != null) ? sampleInfo.get(cDBSamples.f_CATEGORY).toString() : "0";
-				String tmpDisease = (sampleInfo.get(cDBSamples.f_DISEASE) != null) ? sampleInfo.get(cDBSamples.f_DISEASE).toString() : "0";
-				String tmpPopulation = (sampleInfo.get(cDBSamples.f_POPULATION) != null) ? sampleInfo.get(cDBSamples.f_POPULATION).toString() : "0";
-				String tmpFatherId = (sampleInfo.get(cDBSamples.f_FATHER_ID) != null) ? sampleInfo.get(cDBSamples.f_FATHER_ID).toString() : "0";
-				String tmpMotherId = (sampleInfo.get(cDBSamples.f_MOTHER_ID) != null) ? sampleInfo.get(cDBSamples.f_MOTHER_ID).toString() : "0";
+				String familyId = sampleInfo.getFamilyId();
+				String fatherId = sampleInfo.getFatherId();
+				String motherId = sampleInfo.getMotherId();
+				String sex = sampleInfo.getSexStr();
+				String affection = sampleInfo.getAffectionStr();
+				String category = sampleInfo.getCategory();
+				String desease = sampleInfo.getDisease();
+				String population = sampleInfo.getPopulation();
+				String age = String.valueOf((sampleInfo.getAge() == 0) ? -1 : sampleInfo.getAge());
 
 				StringBuilder sb = new StringBuilder();
-				sb.append(tmpFamId);
+				sb.append(familyId);
 				sb.append(sep);
 				sb.append(tempSampleId);
 				sb.append(sep);
-				sb.append(tmpFatherId);
+				sb.append(fatherId);
 				sb.append(sep);
-				sb.append(tmpMotherId);
+				sb.append(motherId);
 				sb.append(sep);
-				sb.append(tmpSex);
+				sb.append(sex);
 				sb.append(sep);
-				sb.append(tmpAffection);
+				sb.append(affection);
 				sb.append(sep);
-				sb.append(tmpAge);
+				sb.append(age);
 				sb.append(sep);
-				sb.append(tmpCategory);
+				sb.append(category);
 				sb.append(sep);
-				sb.append(tmpDisease);
+				sb.append(desease);
 				sb.append(sep);
-				sb.append(tmpPopulation);
+				sb.append(population);
 				sb.append(sep);
 				sb.append(entry.getValue().toString());
 				sb.append(sep);
 				sb.append(samplesMissingRatMap.get(tempSampleId).toString());
 				sb.append("\n");
 				tempBW.append(sb.toString());
-
 			}
 
 			tempBW.close();

@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import org.gwaspi.model.SampleInfoList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,18 +31,11 @@ public class InsertSampleInfo {
 
 	public static List<String> processData(Integer studyId, Map<String, Object> sampleInfoMap) throws IOException {
 		// Retrieving Samplelist from DB
-		List<String> samplesAllreadyInDBAL = new ArrayList<String>();
+		List<String> samplesAllreadyInDBAL = new ArrayList<String>(0);
 		String dbName = cDBGWASpi.DB_DATACENTER;
 		db = ServiceLocator.getDbManager(dbName);
 		try {
-			List<Map<String, Object>> rs = SampleManager.selectSampleIDList(studyId);
-			for (int i = 0; i < rs.size(); i++) // loop through rows of result set
-			{
-				// PREVENT PHANTOM-DB READS EXCEPTIONS
-				if (!rs.isEmpty() && rs.get(i).size() == 1) {
-					samplesAllreadyInDBAL.add(rs.get(i).get(cDBSamples.f_SAMPLE_ID).toString());
-				}
-			}
+			samplesAllreadyInDBAL = SampleInfoList.selectSampleIDList(studyId);
 		} catch (Exception ex) {
 			log.error(null, ex);
 		}

@@ -11,6 +11,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import org.gwaspi.netCDF.markers.MarkerSet_opt;
 import org.gwaspi.model.MatrixMetadata;
+import org.gwaspi.model.SampleInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.gwaspi.samples.SampleSet;
@@ -93,16 +94,16 @@ public class MachFormatter implements Formatter {
 		// Iterate through all samples
 		int sampleNb = 0;
 		for (String sampleId : rdSampleSetMap.keySet()) {
-			Map<String, Object> sampleInfo = Utils.getCurrentSampleFormattedInfo(sampleId, rdMatrixMetadata.getStudyId());
-			String familyId = sampleInfo.get(cDBSamples.f_FAMILY_ID).toString();
-			String fatherId = sampleInfo.get(cDBSamples.f_FATHER_ID).toString();
-			String motherId = sampleInfo.get(cDBSamples.f_MOTHER_ID).toString();
-			String sex = sampleInfo.get(cDBSamples.f_SEX).toString();
-			if (sex.equals("1")) {
-				sex = "M";
-			}
-			if (sex.equals("2")) {
-				sex = "F";
+			SampleInfo sampleInfo = Utils.getCurrentSampleFormattedInfo(sampleId, rdMatrixMetadata.getStudyId());
+			String sexStr = "0";
+			String familyId = sampleInfo.getFamilyId();
+			String fatherId = sampleInfo.getFatherId();
+			String motherId = sampleInfo.getMotherId();
+			SampleInfo.Sex sex = sampleInfo.getSex();
+			if (sex == SampleInfo.Sex.MALE) {
+				sexStr = "M";
+			} else if (sex == SampleInfo.Sex.FEMALE) {
+				sexStr = "F";
 			}
 
 			// Iterate through current chrl markers
@@ -135,7 +136,7 @@ public class MachFormatter implements Formatter {
 			line.append(SEP);
 			line.append(motherId);
 			line.append(SEP);
-			line.append(sex);
+			line.append(sexStr);
 			line.append(genotypes);
 
 			pedBW.append(line);

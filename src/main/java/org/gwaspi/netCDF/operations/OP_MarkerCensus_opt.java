@@ -18,6 +18,8 @@ import java.util.Map;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.Operation;
+import org.gwaspi.model.SampleInfo;
+import org.gwaspi.model.SampleInfoList;
 import org.gwaspi.netCDF.markers.MarkerSet_opt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -248,32 +250,19 @@ public class OP_MarkerCensus_opt implements MatrixOperation {
 				//<editor-fold defaultstate="collapsed" desc="PROCESSOR">
 				//<editor-fold defaultstate="collapsed" desc="GET SAMPLES INFO">
 				Map<String, Object> samplesInfoMap;
-				List<Map<String, Object>> rsSamplesInfo = org.gwaspi.samples.SampleManager.getAllSampleInfoFromDBByPoolID(rdMatrixMetadata.getStudyId());
+				List<SampleInfo> sampleInfos = SampleInfoList.getAllSampleInfoFromDBByPoolID(rdMatrixMetadata.getStudyId());
 				if (phenoFile == null) {
 					samplesInfoMap = new LinkedHashMap<String, Object>();
-					int count = 0;
-					while (count < rsSamplesInfo.size()) {
-						// PREVENT PHANTOM-DB READS EXCEPTIONS
-						if (!rsSamplesInfo.isEmpty() && rsSamplesInfo.get(count).size() == cDBSamples.T_CREATE_SAMPLES_INFO.length) {
-							String tempSampleId = rsSamplesInfo.get(count).get(cDBSamples.f_SAMPLE_ID).toString();
-							if (wrSampleSetMap.containsKey(tempSampleId)) {
-								String sex = "0";
-								String affection = "0";
-								Object tmpSex = rsSamplesInfo.get(count).get(cDBSamples.f_SEX);
-								Object tmpAffection = rsSamplesInfo.get(count).get(cDBSamples.f_AFFECTION);
-								if (tmpSex != null) {
-									sex = tmpSex.toString();
-								}
-								if (tmpAffection != null) {
-									affection = tmpAffection.toString();
-								}
-								String[] info = new String[]{sex, affection};
-								samplesInfoMap.put(tempSampleId, info);
+					for (SampleInfo sampleInfo : sampleInfos) {
+						String tempSampleId = sampleInfo.getSampleId();
+						if (wrSampleSetMap.containsKey(tempSampleId)) {
+							String sex = sampleInfo.getSexStr();
+							String affection = sampleInfo.getAffectionStr();
+							String[] info = new String[]{sex, affection};
+							samplesInfoMap.put(tempSampleId, info);
 
-								//samplesInfoMap.put(tempSampleId, affection);
-							}
+							//samplesInfoMap.put(tempSampleId, affection);
 						}
-						count++;
 					}
 				} else {
 					FileReader phenotypeFR = new FileReader(phenoFile); // Pheno file has SampleInfo format!
@@ -296,21 +285,13 @@ public class OP_MarkerCensus_opt implements MatrixOperation {
 							String sex = "0";
 							String affection = "0";
 							int count = 0;
-							boolean seeking = true;
-							while (count < rsSamplesInfo.size() && seeking) {
-								Object tmpSampleId = rsSamplesInfo.get(count).get(cDBSamples.f_SAMPLE_ID);
+							for (SampleInfo sampleInfo : sampleInfos) {
+								String tmpSampleId = sampleInfo.getSampleId();
 								if (tmpSampleId.equals(sampleId)) {
-									Object tmpSex = rsSamplesInfo.get(count).get(cDBSamples.f_SEX);
-									Object tmpAffection = rsSamplesInfo.get(count).get(cDBSamples.f_AFFECTION);
-									if (tmpSex != null) {
-										sex = tmpSex.toString();
-									}
-									if (tmpAffection != null) {
-										affection = tmpAffection.toString();
-									}
-									seeking = false;
+									sex = sampleInfo.getSexStr();
+									affection = sampleInfo.getAffectionStr();
+									break;
 								}
-								count++;
 							}
 							String[] info = new String[]{sex, affection};
 							samplesInfoMap.put(sampleId, info);

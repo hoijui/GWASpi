@@ -9,6 +9,8 @@ import java.util.Map;
 import java.util.Set;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixMetadata;
+import org.gwaspi.model.SampleInfo;
+import org.gwaspi.model.SampleInfoList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.ArrayByte;
@@ -32,7 +34,7 @@ public class SampleSet {
 			= LoggerFactory.getLogger(SampleSet.class);
 
 	// SAMPLESET_MEATADATA
-	private int sampleset_id = Integer.MIN_VALUE;   //id
+	private int sampleset_id = Integer.MIN_VALUE; // id
 	private int sampleSetSize = 0;
 	private MatrixMetadata matrixMetadata;
 	private Map<String, Object> sampleIdSetMap = new LinkedHashMap<String, Object>();
@@ -150,8 +152,8 @@ public class SampleSet {
 
 		return sampleIdSetMap;
 	}
-
 	//</editor-fold>
+
 	//<editor-fold defaultstate="collapsed" desc="SAMPLESET FILLERS">
 	public Map<String, Object> readAllSamplesGTsFromCurrentMarkerToMap(NetcdfFile rdNcFile, Map<String, Object> rdMap, int markerNb) throws IOException {
 
@@ -345,19 +347,16 @@ public class SampleSet {
 	//<editor-fold defaultstate="collapsed" desc="SAMPLESET PICKERS">
 	public Map<String, Object> pickValidSampleSetItemsByDBField(Object poolId, Map<String, Object> map, String dbField, Set<Object> criteria, boolean include) throws IOException {
 		Map<String, Object> returnMap = new LinkedHashMap<String, Object>();
-		List<Map<String, Object>> rs = org.gwaspi.samples.SampleManager.getAllSampleInfoFromDBByPoolID(poolId);
+		List<SampleInfo> sampleInfos = SampleInfoList.getAllSampleInfoFromDBByPoolID(poolId);
 
 		int pickCounter = 0;
 		if (include) {
 			for (String key : map.keySet()) {
-				for (int i = 0; i < rs.size(); i++) // loop through rows of result set
-				{
-					//PREVENT PHANTOM-DB READS EXCEPTIONS - CAUTION!!
-					if (!rs.isEmpty() && rs.get(i).size() == cDBSamples.T_CREATE_SAMPLES_INFO.length) {
-						if (rs.get(i).get(cDBSamples.f_SAMPLE_ID).toString().equals(key.toString())) {
-							if (criteria.contains(rs.get(i).get(dbField).toString())) {
-								returnMap.put(key, pickCounter);
-							}
+				// loop through rows of result set
+				for (SampleInfo sampleInfo : sampleInfos) {
+					if (sampleInfo.getSampleId().equals(key.toString())) {
+						if (criteria.contains(sampleInfo.getField(dbField).toString())) {
+							returnMap.put(key, pickCounter);
 						}
 					}
 				}
@@ -365,14 +364,11 @@ public class SampleSet {
 			}
 		} else {
 			for (String key : map.keySet()) {
-				for (int i = 0; i < rs.size(); i++) // loop through rows of result set
-				{
-					//PREVENT PHANTOM-DB READS EXCEPTIONS - CAUTION!!
-					if (!rs.isEmpty() && rs.get(i).size() == cDBSamples.T_CREATE_SAMPLES_INFO.length) {
-						if (rs.get(i).get(cDBSamples.f_SAMPLE_ID).toString().equals(key.toString())) {
-							if (!criteria.contains(rs.get(i).get(dbField).toString())) {
-								returnMap.put(key, pickCounter);
-							}
+				// loop through rows of result set
+				for (SampleInfo sampleInfo : sampleInfos) {
+					if (sampleInfo.getSampleId().equals(key.toString())) {
+						if (!criteria.contains(sampleInfo.getField(dbField).toString())) {
+							returnMap.put(key, pickCounter);
 						}
 					}
 				}
