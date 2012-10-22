@@ -4,9 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import org.gwaspi.constants.cDBGWASpi;
-import org.gwaspi.database.DbManager;
-import org.gwaspi.global.ServiceLocator;
+import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.Study;
 import org.gwaspi.model.StudyList;
 import org.gwaspi.samples.SamplesParserManager;
@@ -74,14 +72,9 @@ public class Threaded_UpdateSampleInfo extends CommonRunnable {
 	private void saveDescription(String description, int studyId) {
 		try {
 			org.gwaspi.global.Utils.logBlockInStudyDesc(description, studyId);
-
-			DbManager db = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
-			db.updateTable(cDBGWASpi.SCH_APP,
-					cDBGWASpi.T_STUDIES,
-					new String[]{cDBGWASpi.f_STUDY_DESCRIPTION},
-					new Object[]{description},
-					new String[]{cDBGWASpi.f_ID},
-					new Object[]{studyId});
+			MatricesList.saveMatrixDescription(
+					studyId,
+					description);
 		} catch (IOException ex) {
 			getLog().error(null, ex);
 		}

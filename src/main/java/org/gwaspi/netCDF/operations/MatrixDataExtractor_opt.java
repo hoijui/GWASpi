@@ -7,13 +7,9 @@ import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
-import org.gwaspi.constants.cDBGWASpi;
-import org.gwaspi.constants.cDBMatrix;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.SetMarkerPickCase;
 import org.gwaspi.constants.cNetCDF.Defaults.SetSamplePickCase;
-import org.gwaspi.database.DbManager;
-import org.gwaspi.global.ServiceLocator;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.utils.Dialogs;
 import org.gwaspi.model.MatricesList;
@@ -416,13 +412,7 @@ public class MatrixDataExtractor_opt {
 
 					descSB.append("\nGenotype encoding: ");
 					descSB.append(rdMatrixMetadata.getGenotypeEncoding());
-					DbManager db = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
-					db.updateTable(cDBGWASpi.SCH_MATRICES,
-							cDBMatrix.T_MATRICES,
-							new String[]{cDBMatrix.f_DESCRIPTION},
-							new Object[]{descSB.toString()},
-							new String[]{cDBMatrix.f_ID},
-							new Object[]{resultMatrixId});
+					MatricesList.saveMatrixDescription(resultMatrixId, descSB.toString());
 
 					wrNcFile.close();
 				} catch (IOException ex) {

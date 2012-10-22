@@ -3,13 +3,9 @@ package org.gwaspi.netCDF.operations;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import org.gwaspi.constants.cDBGWASpi;
-import org.gwaspi.constants.cDBMatrix;
 import org.gwaspi.constants.cImport.ImportFormat;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
-import org.gwaspi.database.DbManager;
-import org.gwaspi.global.ServiceLocator;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixMetadata;
@@ -50,7 +46,6 @@ public class MatrixMergeSamples_opt {
 	private SampleSet rdSampleSet1 = null;
 	private SampleSet rdSampleSet2 = null;
 	private SampleSet wrSampleSet = null;
-	private DbManager dBManager = null;
 
 	/**
 	 * This constructor to join 2 Matrices.
@@ -265,13 +260,9 @@ public class MatrixMergeSamples_opt {
 
 				descSB.append("\nGenotype encoding: ");
 				descSB.append(rdMatrix1Metadata.getGenotypeEncoding());
-				DbManager db = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
-				db.updateTable(cDBGWASpi.SCH_MATRICES,
-						cDBMatrix.T_MATRICES,
-						new String[]{cDBMatrix.f_DESCRIPTION},
-						new Object[]{descSB.toString()},
-						new String[]{cDBMatrix.f_ID},
-						new Object[]{resultMatrixId});
+				MatricesList.saveMatrixDescription(
+						resultMatrixId,
+						descSB.toString());
 
 				resultMatrixId = wrMatrixHandler.getResultMatrixId();
 

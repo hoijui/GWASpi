@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.gwaspi.constants.cDBGWASpi;
-import org.gwaspi.constants.cDBMatrix;
 import org.gwaspi.constants.cImport;
 import org.gwaspi.constants.cImport.ImportFormat;
 import org.gwaspi.constants.cNetCDF;
@@ -335,13 +334,9 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 			StringBuilder descSB = new StringBuilder(loadDescription.getDescription());
 			descSB.append("Genotype encoding: ");
 			descSB.append(guessedGTCode);
-			DbManager db = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
-			db.updateTable(cDBGWASpi.SCH_MATRICES,
-					cDBMatrix.T_MATRICES,
-					new String[]{cDBMatrix.f_DESCRIPTION},
-					new Object[]{descSB.toString()},
-					new String[]{cDBMatrix.f_ID},
-					new Object[]{matrixFactory.getMatrixMetaData().getMatrixId()});
+			MatricesList.saveMatrixDescription(
+					matrixFactory.getMatrixMetaData().getMatrixId(),
+					descSB.toString());
 
 			//CLOSE FILE
 			ncfile.close();

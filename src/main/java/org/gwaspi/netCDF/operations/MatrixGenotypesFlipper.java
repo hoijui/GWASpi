@@ -8,13 +8,9 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
-import org.gwaspi.constants.cDBGWASpi;
-import org.gwaspi.constants.cDBMatrix;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
-import org.gwaspi.database.DbManager;
-import org.gwaspi.global.ServiceLocator;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixMetadata;
@@ -259,13 +255,7 @@ public class MatrixGenotypesFlipper {
 
 				descSB.append("\nGenotype encoding: ");
 				descSB.append(rdMatrixMetadata.getGenotypeEncoding());
-				DbManager db = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
-				db.updateTable(cDBGWASpi.SCH_MATRICES,
-						cDBMatrix.T_MATRICES,
-						new String[]{cDBMatrix.f_DESCRIPTION},
-						new Object[]{descSB.toString()},
-						new String[]{cDBMatrix.f_ID},
-						new Object[]{resultMatrixId});
+				MatricesList.saveMatrixDescription(resultMatrixId, descSB.toString());
 
 				wrNcFile.close();
 			} catch (IOException ex) {

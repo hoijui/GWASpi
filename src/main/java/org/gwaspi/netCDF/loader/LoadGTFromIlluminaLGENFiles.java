@@ -8,16 +8,13 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import org.gwaspi.constants.cDBGWASpi;
-import org.gwaspi.constants.cDBMatrix;
 import org.gwaspi.constants.cImport;
 import org.gwaspi.constants.cImport.ImportFormat;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
-import org.gwaspi.database.DbManager;
-import org.gwaspi.global.ServiceLocator;
 import org.gwaspi.global.Text;
+import org.gwaspi.model.MatricesList;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -273,13 +270,9 @@ public class LoadGTFromIlluminaLGENFiles implements GenotypesLoader {
 
 			descSB.append("Genotype encoding: ");
 			descSB.append(guessedGTCode);
-			DbManager db = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
-			db.updateTable(cDBGWASpi.SCH_MATRICES,
-					cDBMatrix.T_MATRICES,
-					new String[]{cDBMatrix.f_DESCRIPTION},
-					new Object[]{descSB.toString()},
-					new String[]{cDBMatrix.f_ID},
-					new Object[]{matrixFactory.getMatrixMetaData().getMatrixId()});
+			MatricesList.saveMatrixDescription(
+					matrixFactory.getMatrixMetaData().getMatrixId(),
+					descSB.toString());
 
 			//CLOSE FILE
 			ncfile.close();

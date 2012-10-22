@@ -80,6 +80,10 @@ public final class MatricesList {
 		return matrixService.generateMatrixNetCDFNameByDate();
 	}
 
+	public static void saveMatrixDescription(int matrixId, String description) throws IOException {
+		matrixService.saveMatrixDescription(matrixId, description);
+	}
+
 	public static MatrixMetadata getLatestMatrixId() throws IOException {
 		return matrixService.getLatestMatrixId();
 	}

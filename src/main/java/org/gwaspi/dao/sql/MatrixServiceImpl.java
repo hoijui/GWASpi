@@ -253,6 +253,18 @@ public class MatrixServiceImpl implements MatrixService {
 	}
 
 	@Override
+	public void saveMatrixDescription(int matrixId, String description) throws IOException {
+
+		DbManager db = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
+		db.updateTable(cDBGWASpi.SCH_MATRICES,
+				cDBMatrix.T_MATRICES,
+				new String[]{cDBMatrix.f_DESCRIPTION},
+				new Object[]{description},
+				new String[]{cDBMatrix.f_ID},
+				new Object[]{matrixId});
+	}
+
+	@Override
 	public MatrixMetadata getLatestMatrixId() throws IOException {
 
 		MatrixMetadata mxMetaData = null;

@@ -5,13 +5,9 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
-import org.gwaspi.constants.cDBGWASpi;
-import org.gwaspi.constants.cDBMatrix;
 import org.gwaspi.constants.cImport.ImportFormat;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
-import org.gwaspi.database.DbManager;
-import org.gwaspi.global.ServiceLocator;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixMetadata;
@@ -311,13 +307,9 @@ public class MatrixMergeMarkers_opt {
 
 				descSB.append("\nGenotype encoding: ");
 				descSB.append(rdMatrix1Metadata.getGenotypeEncoding());
-				DbManager db = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
-				db.updateTable(cDBGWASpi.SCH_MATRICES,
-						cDBMatrix.T_MATRICES,
-						new String[]{cDBMatrix.f_DESCRIPTION},
-						new Object[]{descSB.toString()},
-						new String[]{cDBMatrix.f_ID},
-						new Object[]{resultMatrixId});
+				MatricesList.saveMatrixDescription(
+						resultMatrixId,
+						descSB.toString());
 
 				wrNcFile.close();
 				rdNcFile1.close();

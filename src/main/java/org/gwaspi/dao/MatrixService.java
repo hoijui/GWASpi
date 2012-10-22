@@ -39,6 +39,8 @@ public interface MatrixService {
 
 	String generateMatrixNetCDFNameByDate();
 
+	void saveMatrixDescription(int matrixId, String description) throws IOException;
+
 	MatrixMetadata getLatestMatrixId() throws IOException;
 
 	MatrixMetadata getMatrixMetadataById(int matrixId) throws IOException;
