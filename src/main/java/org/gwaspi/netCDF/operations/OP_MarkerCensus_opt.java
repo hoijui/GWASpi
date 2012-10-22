@@ -1,5 +1,6 @@
 package org.gwaspi.netCDF.operations;
 
+import org.gwaspi.model.OperationMetadata;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;

@@ -13,7 +13,7 @@ import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.netCDF.markers.MarkerSet_opt;
-import org.gwaspi.netCDF.operations.OperationMetadata;
+import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.netCDF.operations.OperationSet;
 import org.gwaspi.samples.SampleSet;
 import org.slf4j.Logger;

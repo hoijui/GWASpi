@@ -34,7 +34,7 @@ import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.Operation;
 import org.gwaspi.model.OperationsList;
-import org.gwaspi.netCDF.operations.OperationMetadata;
+import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.reports.GenericReportGenerator;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;

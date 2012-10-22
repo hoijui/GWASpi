@@ -1,5 +1,6 @@
 package org.gwaspi.netCDF.operations;
 
+import org.gwaspi.model.OperationMetadata;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.LinkedHashMap;

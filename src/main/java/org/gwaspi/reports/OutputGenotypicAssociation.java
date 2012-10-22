@@ -18,7 +18,7 @@ import org.gwaspi.model.Operation;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.ReportsList;
 import org.gwaspi.netCDF.markers.MarkerSet_opt;
-import org.gwaspi.netCDF.operations.OperationMetadata;
+import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.netCDF.operations.OperationSet;
 import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;

@@ -17,7 +17,7 @@ import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.gui.reports.ManhattanPlotZoom;
 import org.gwaspi.gui.reports.SampleQAHetzygPlotZoom;
 import org.gwaspi.netCDF.markers.MarkerSet_opt;
-import org.gwaspi.netCDF.operations.OperationMetadata;
+import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.netCDF.operations.OperationSet;
 import org.gwaspi.statistics.Chisquare;
 import org.jfree.chart.ChartFactory;

@@ -11,7 +11,7 @@ import org.gwaspi.netCDF.operations.GWASinOneGOParams;
 import org.gwaspi.netCDF.operations.OP_QAMarkers_opt;
 import org.gwaspi.netCDF.operations.OP_QASamples_opt;
 import org.gwaspi.netCDF.operations.OperationManager;
-import org.gwaspi.netCDF.operations.OperationMetadata;
+import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.reports.OutputAllelicAssociation;
 import org.gwaspi.reports.OutputGenotypicAssociation;
 import org.gwaspi.reports.OutputQAMarkers;

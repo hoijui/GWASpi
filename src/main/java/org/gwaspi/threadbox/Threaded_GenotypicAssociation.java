@@ -7,7 +7,7 @@ import org.gwaspi.model.Operation;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.netCDF.operations.GWASinOneGOParams;
 import org.gwaspi.netCDF.operations.OperationManager;
-import org.gwaspi.netCDF.operations.OperationMetadata;
+import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.reports.OutputGenotypicAssociation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

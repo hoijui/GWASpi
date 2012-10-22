@@ -1,4 +1,4 @@
-package org.gwaspi.netCDF.operations;
+package org.gwaspi.model;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,7 +16,7 @@ import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
 
 /**
- * TODO move this over to package mode, and split of the storage logic into a Service & ServiceImpl, or merge into OperationServiceImpl
+ * TODO split off the storage logic into a Service & ServiceImpl, or merge into OperationServiceImpl
  * @author Fernando Muñiz Fernandez
  * IBE, Institute of Evolutionary Biology (UPF-CSIC)
  * CEXS-UPF-PRBB
