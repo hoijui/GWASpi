@@ -427,4 +427,11 @@ public class MatrixServiceImpl implements MatrixService {
 
 		return matrixMetadata;
 	}
+
+	@Override
+	public void shutdownBackend() throws IOException {
+
+		DbManager db = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
+		db.shutdownConnection();
+	}
 }

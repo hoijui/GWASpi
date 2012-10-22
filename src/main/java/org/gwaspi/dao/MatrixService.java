@@ -50,4 +50,6 @@ public interface MatrixService {
 	 * The size of this Map is very small.
 	 */
 	MatrixMetadata getMatrixMetadata(String netCDFpath, int studyId, String newMatrixName) throws IOException;
+
+	void shutdownBackend() throws IOException;
 }

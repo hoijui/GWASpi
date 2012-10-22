@@ -96,4 +96,8 @@ public final class MatricesList {
 	public static MatrixMetadata getMatrixMetadata(String netCDFpath, int studyId, String newMatrixName) throws IOException {
 		return matrixService.getMatrixMetadata(netCDFpath, studyId, newMatrixName);
 	}
+
+	public static void shutdownBackend() throws IOException {
+		matrixService.shutdownBackend();
+	}
 }

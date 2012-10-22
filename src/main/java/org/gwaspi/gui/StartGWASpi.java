@@ -19,13 +19,11 @@ import javax.swing.JTabbedPane;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import org.gwaspi.cli.CliExecutor;
-import org.gwaspi.constants.cDBGWASpi;
 import org.gwaspi.constants.cGlobal;
-import org.gwaspi.database.DbManager;
 import org.gwaspi.global.Config;
-import org.gwaspi.global.ServiceLocator;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.utils.Dialogs;
+import org.gwaspi.model.MatricesList;
 import org.gwaspi.threadbox.SwingDeleterItemList;
 import org.gwaspi.threadbox.SwingWorkerItemList;
 import org.slf4j.Logger;
@@ -205,8 +203,7 @@ public class StartGWASpi extends JFrame {
 
 	public static void exit() {
 		try {
-			DbManager db = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
-			db.shutdownConnection();
+			MatricesList.shutdownBackend();
 		} catch (IOException ex) {
 			log.error(null, ex);
 		}
