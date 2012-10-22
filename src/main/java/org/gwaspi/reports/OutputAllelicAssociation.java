@@ -6,13 +6,10 @@ import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import org.gwaspi.constants.cDBGWASpi;
 import org.gwaspi.constants.cExport;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
-import org.gwaspi.database.DbManager;
 import org.gwaspi.global.Config;
-import org.gwaspi.global.ServiceLocator;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.Operation;
 import org.gwaspi.model.OperationMetadata;
@@ -44,7 +41,6 @@ public class OutputAllelicAssociation {
 	public static boolean writeReportsForAssociationData(int opId) throws IOException {
 		boolean result = false;
 		Operation op = OperationsList.getById(opId);
-		DbManager dBManager = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
 
 		org.gwaspi.global.Utils.createFolder(Config.getConfigValue(Config.PROPERTY_REPORTS_DIR, ""), "STUDY_" + op.getStudyId());
 		//String manhattanName = "mnhtt_"+outName;
@@ -54,7 +50,7 @@ public class OutputAllelicAssociation {
 		log.info(Text.All.processing);
 		if (writeManhattanPlotFromAssociationData(opId, manhattanName, 4000, 500)) {
 			result = true;
-			ReportsList.insertRPMetadata(dBManager,
+			ReportsList.insertRPMetadata(
 					"Allelic assoc. Manhattan Plot",
 					manhattanName + ".png",
 					OPType.MANHATTANPLOT.toString(),
@@ -68,7 +64,7 @@ public class OutputAllelicAssociation {
 		String qqName = prefix + "qq";
 		if (result && writeQQPlotFromAssociationData(opId, qqName, 500, 500)) {
 			result = true;
-			ReportsList.insertRPMetadata(dBManager,
+			ReportsList.insertRPMetadata(
 					"Allelic assoc. QQ Plot",
 					qqName + ".png",
 					OPType.QQPLOT.toString(),
@@ -83,7 +79,7 @@ public class OutputAllelicAssociation {
 		String assocName = prefix;
 		if (result && createSortedAssociationReport(opId, assocName)) {
 			result = true;
-			ReportsList.insertRPMetadata(dBManager,
+			ReportsList.insertRPMetadata(
 					"Allelic Association Tests Values",
 					assocName + ".txt",
 					OPType.ALLELICTEST.toString(),

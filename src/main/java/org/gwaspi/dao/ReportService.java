@@ -34,14 +34,14 @@ public interface ReportService {
 	String createReportsMetadataTable(DbManager db);
 
 	void insertRPMetadata(
-			DbManager dBManager,
 			String reportName,
 			String fileName,
 			String RPType,
 			int parentMatrixId,
 			int parentOPId,
 			String description,
-			int studyId);
+			int studyId)
+			throws IOException;
 
 	void deleteReportByMatrixId(int matrixId) throws IOException;
 

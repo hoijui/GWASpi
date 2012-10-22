@@ -4,13 +4,10 @@ import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import org.gwaspi.constants.cDBGWASpi;
 import org.gwaspi.constants.cExport;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
-import org.gwaspi.database.DbManager;
 import org.gwaspi.global.Config;
-import org.gwaspi.global.ServiceLocator;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.Operation;
 import org.gwaspi.model.OperationMetadata;
@@ -38,7 +35,6 @@ public class OutputHardyWeinberg {
 
 	public static boolean writeReportsForMarkersHWData(int opId) throws IOException {
 		Operation op = OperationsList.getById(opId);
-		DbManager dBManager = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
 
 		//String hwOutName = "hw_"+op.getId()+"_"+op.getFriendlyName()+".hw";
 		String prefix = ReportsList.getReportNamePrefix(op);
@@ -47,7 +43,7 @@ public class OutputHardyWeinberg {
 		org.gwaspi.global.Utils.createFolder(Config.getConfigValue(Config.PROPERTY_REPORTS_DIR, ""), "STUDY_" + op.getStudyId());
 
 		if (processSortedHardyWeinbergReport(opId, hwOutName)) {
-			ReportsList.insertRPMetadata(dBManager,
+			ReportsList.insertRPMetadata(
 					"Hardy Weinberg Table",
 					hwOutName,
 					OPType.HARDY_WEINBERG.toString(),

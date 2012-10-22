@@ -238,7 +238,6 @@ public class ReportServiceImpl implements ReportService {
 
 	@Override
 	public void insertRPMetadata(
-			DbManager dBManager,
 			String reportName,
 			String fileName,
 			String RPType,
@@ -246,7 +245,10 @@ public class ReportServiceImpl implements ReportService {
 			int parentOPId,
 			String description,
 			int studyId)
+			throws IOException
 	{
+		DbManager dBManager = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
+
 		Object[] rpMetaData = new Object[]{reportName,
 			description,
 			fileName,

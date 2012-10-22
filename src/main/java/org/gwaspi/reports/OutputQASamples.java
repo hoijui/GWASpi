@@ -4,12 +4,9 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Map;
-import org.gwaspi.constants.cDBGWASpi;
 import org.gwaspi.constants.cExport;
 import org.gwaspi.constants.cNetCDF;
-import org.gwaspi.database.DbManager;
 import org.gwaspi.global.Config;
-import org.gwaspi.global.ServiceLocator;
 import org.gwaspi.model.Operation;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.ReportsList;
@@ -36,7 +33,6 @@ public class OutputQASamples {
 
 	public static boolean writeReportsForQASamplesData(int opId, boolean newReport) throws IOException {
 		Operation op = OperationsList.getById(opId);
-		DbManager dBManager = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
 
 		org.gwaspi.global.Utils.createFolder(Config.getConfigValue(Config.PROPERTY_REPORTS_DIR, ""), "STUDY_" + op.getStudyId());
 		reportPath = Config.getConfigValue(Config.PROPERTY_REPORTS_DIR, "") + "/" + "STUDY_" + op.getStudyId() + "/";
@@ -47,7 +43,7 @@ public class OutputQASamples {
 
 		if (createSortedSampleMissingnessReport(opId, samplMissOutName, op.getStudyId())) {
 			if (newReport) {
-				ReportsList.insertRPMetadata(dBManager,
+				ReportsList.insertRPMetadata(
 						"Sample Missingness Table",
 						samplMissOutName,
 						cNetCDF.Defaults.OPType.SAMPLE_QA.toString(),
@@ -61,9 +57,9 @@ public class OutputQASamples {
 		}
 
 		samplMissOutName = prefix + "hetzyg-missing";
-//        if(createSampleHetzygPlot(opId, samplMissOutName, 500, 500)){
-//            if(newReport){
-		ReportsList.insertRPMetadata(dBManager,
+//		if(createSampleHetzygPlot(opId, samplMissOutName, 500, 500)){
+//			if(newReport){
+		ReportsList.insertRPMetadata(
 				"Sample Heterozygosity vs Missingness Plot",
 				samplMissOutName,
 				cNetCDF.Defaults.OPType.SAMPLE_HTZYPLOT.toString(),

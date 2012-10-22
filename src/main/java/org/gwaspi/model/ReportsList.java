@@ -46,7 +46,6 @@ public class ReportsList {
 	}
 
 	public static void insertRPMetadata(
-			DbManager dBManager,
 			String reportName,
 			String fileName,
 			String RPType,
@@ -54,9 +53,9 @@ public class ReportsList {
 			int parentOPId,
 			String description,
 			int studyId)
+			throws IOException
 	{
 		reportService.insertRPMetadata(
-				dBManager,
 				reportName,
 				fileName,
 				RPType,

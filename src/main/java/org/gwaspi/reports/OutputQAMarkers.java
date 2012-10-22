@@ -4,13 +4,10 @@ import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import org.gwaspi.constants.cDBGWASpi;
 import org.gwaspi.constants.cExport;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
-import org.gwaspi.database.DbManager;
 import org.gwaspi.global.Config;
-import org.gwaspi.global.ServiceLocator;
 import org.gwaspi.model.Operation;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
@@ -37,7 +34,6 @@ public class OutputQAMarkers {
 
 	public static boolean writeReportsForQAMarkersData(int opId) throws IOException {
 		Operation op = OperationsList.getById(opId);
-		DbManager dBManager = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
 
 		String prefix = ReportsList.getReportNamePrefix(op);
 		String markMissOutName = prefix + "markmissing.txt";
@@ -46,7 +42,7 @@ public class OutputQAMarkers {
 		org.gwaspi.global.Utils.createFolder(Config.getConfigValue(Config.PROPERTY_REPORTS_DIR, ""), "STUDY_" + op.getStudyId());
 
 		if (createSortedMarkerMissingnessReport(opId, markMissOutName)) {
-			ReportsList.insertRPMetadata(dBManager,
+			ReportsList.insertRPMetadata(
 					"Marker Missingness Table",
 					markMissOutName,
 					OPType.MARKER_QA.toString(),
@@ -61,7 +57,7 @@ public class OutputQAMarkers {
 
 		String markMismatchOutName = prefix + "markmismatch.txt";
 		if (createMarkerMismatchReport(opId, markMismatchOutName)) {
-			ReportsList.insertRPMetadata(dBManager,
+			ReportsList.insertRPMetadata(
 					"Marker Mismatch State Table",
 					markMismatchOutName,
 					OPType.MARKER_QA.toString(),
