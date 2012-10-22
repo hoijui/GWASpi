@@ -3,7 +3,6 @@ package org.gwaspi.dao;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import org.gwaspi.database.DbManager;
 import org.gwaspi.model.Operation;
 import org.gwaspi.model.Report;
 
@@ -31,7 +30,7 @@ public interface ReportService {
 
 	String getReportNamePrefix(Operation op);
 
-	String createReportsMetadataTable(DbManager db);
+	String createReportsMetadataTable();
 
 	void insertRPMetadata(
 			String reportName,

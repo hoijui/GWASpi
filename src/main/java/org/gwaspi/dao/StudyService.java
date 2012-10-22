@@ -2,7 +2,6 @@ package org.gwaspi.dao;
 
 import java.io.IOException;
 import java.util.List;
-import org.gwaspi.database.DbManager;
 import org.gwaspi.model.Study;
 
 public interface StudyService {
@@ -13,7 +12,7 @@ public interface StudyService {
 
 	Object[][] getAllAsTable() throws IOException;
 
-	String createStudyManagementTable(DbManager db, Object[] insertValues);
+	String createStudyManagementTable(Object[] insertValues);
 
 	void insertNewStudy(String studyName, String description);
 

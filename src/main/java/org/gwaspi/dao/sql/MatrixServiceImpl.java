@@ -156,9 +156,10 @@ public class MatrixServiceImpl implements MatrixService {
 	}
 
 	@Override
-	public String createMatricesTable(DbManager db) {
+	public String createMatricesTable() {
 		boolean result = false;
 		try {
+			DbManager db = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
 			// CREATE MATRIX_METADATA table in MATRICES SCHEMA
 			db.createTable(
 					cDBGWASpi.SCH_MATRICES,
@@ -173,7 +174,6 @@ public class MatrixServiceImpl implements MatrixService {
 
 	@Override
 	public void insertMatrixMetadata(
-			DbManager dBManager,
 			int studyId,
 			String matrix_name,
 			String netCDF_name,
@@ -202,7 +202,8 @@ public class MatrixServiceImpl implements MatrixService {
 			studyId
 		};
 
-		dBManager.insertValuesInTable(
+		DbManager dbManager = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
+		dbManager.insertValuesInTable(
 				cDBGWASpi.SCH_MATRICES,
 				cDBMatrix.T_MATRICES,
 				cDBMatrix.F_INSERT_MATRICES,

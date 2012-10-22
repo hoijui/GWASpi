@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 import org.gwaspi.dao.SampleInfoService;
 import org.gwaspi.dao.sql.SampleInfoServiceImpl;
-import org.gwaspi.database.DbManager;
 
 /**
  *
@@ -21,8 +20,8 @@ public class SampleInfoList {
 	private SampleInfoList() {
 	}
 
-	public static String createSamplesInfoTable(DbManager db) {
-		return sampleInfoService.createSamplesInfoTable(db);
+	public static String createSamplesInfoTable() {
+		return sampleInfoService.createSamplesInfoTable();
 	}
 
 	public static List<String> selectSampleIDList(Object poolId) {

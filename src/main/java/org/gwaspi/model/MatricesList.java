@@ -6,7 +6,6 @@ import java.util.Map;
 import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import org.gwaspi.dao.MatrixService;
 import org.gwaspi.dao.sql.MatrixServiceImpl;
-import org.gwaspi.database.DbManager;
 
 /**
  *
@@ -42,12 +41,11 @@ public final class MatricesList {
 		return matrixService.getMatricesTable(studyId);
 	}
 
-	public static String createMatricesTable(DbManager db) {
-		return matrixService.createMatricesTable(db);
+	public static String createMatricesTable() {
+		return matrixService.createMatricesTable();
 	}
 
 	public static void insertMatrixMetadata(
-			DbManager dBManager,
 			int studyId,
 			String matrix_name,
 			String netCDF_name,
@@ -60,7 +58,6 @@ public final class MatricesList {
 			throws IOException
 	{
 		matrixService.insertMatrixMetadata(
-				dBManager,
 				studyId,
 				matrix_name,
 				netCDF_name,

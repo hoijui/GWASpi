@@ -4,14 +4,11 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import org.gwaspi.constants.cDBGWASpi;
 import org.gwaspi.constants.cImport.ImportFormat;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
-import org.gwaspi.database.DbManager;
 import org.gwaspi.global.Config;
-import org.gwaspi.global.ServiceLocator;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixMetadata;
 import ucar.ma2.DataType;
@@ -69,9 +66,7 @@ public class MatrixFactory {
 			}
 			netCDFHandler.setFill(true);
 
-			DbManager dBManager = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
 			MatricesList.insertMatrixMetadata(
-					dBManager,
 					studyId,
 					friendlyName,
 					resultMatrixName,

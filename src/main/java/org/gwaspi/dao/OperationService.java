@@ -3,7 +3,6 @@ package org.gwaspi.dao;
 import java.io.IOException;
 import java.util.List;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
-import org.gwaspi.database.DbManager;
 import org.gwaspi.model.Operation;
 import org.gwaspi.model.OperationMetadata;
 
@@ -23,10 +22,9 @@ public interface OperationService {
 
 	int getIdOfLastOperationTypeOccurance(List<Operation> operationsList, OPType opType);
 
-	String createOperationsMetadataTable(DbManager db);
+	String createOperationsMetadataTable();
 
 	void insertOPMetadata(
-			DbManager dBManager,
 			int parentMatrixId,
 			int parentOperationId,
 			String friendlyName,
@@ -34,7 +32,8 @@ public interface OperationService {
 			String type,
 			String command,
 			String description,
-			Integer studyId);
+			Integer studyId)
+			throws IOException;
 
 	List<Object[]> getMatrixOperations(int matrixId) throws IOException;
 

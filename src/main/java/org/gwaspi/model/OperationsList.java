@@ -5,7 +5,6 @@ import java.util.List;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.dao.OperationService;
 import org.gwaspi.dao.sql.OperationServiceImpl;
-import org.gwaspi.database.DbManager;
 
 /**
  *
@@ -49,12 +48,11 @@ public class OperationsList {
 		return operationService.getIdOfLastOperationTypeOccurance(operationsList, opType);
 	}
 
-	public static String createOperationsMetadataTable(DbManager db) {
-		return operationService.createOperationsMetadataTable(db);
+	public static String createOperationsMetadataTable() {
+		return operationService.createOperationsMetadataTable();
 	}
 
 	public static void insertOPMetadata(
-			DbManager dBManager,
 			int parentMatrixId,
 			int parentOperationId,
 			String friendlyName,
@@ -63,9 +61,9 @@ public class OperationsList {
 			String command,
 			String description,
 			Integer studyId)
+			throws IOException
 	{
 		operationService.insertOPMetadata(
-				dBManager,
 				parentMatrixId,
 				parentOperationId,
 				friendlyName,

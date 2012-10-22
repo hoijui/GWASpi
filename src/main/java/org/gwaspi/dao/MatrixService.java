@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
-import org.gwaspi.database.DbManager;
 import org.gwaspi.model.Matrix;
 import org.gwaspi.model.MatrixMetadata;
 
@@ -20,10 +19,9 @@ public interface MatrixService {
 
 	Object[][] getMatricesTable(int studyId) throws IOException;
 
-	String createMatricesTable(DbManager db);
+	String createMatricesTable();
 
 	void insertMatrixMetadata(
-			DbManager dBManager,
 			int studyId,
 			String matrix_name,
 			String netCDF_name,

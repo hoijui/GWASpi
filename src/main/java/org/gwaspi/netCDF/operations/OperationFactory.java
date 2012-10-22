@@ -4,11 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import org.gwaspi.constants.cDBGWASpi;
 import org.gwaspi.constants.cNetCDF;
-import org.gwaspi.database.DbManager;
 import org.gwaspi.global.Config;
-import org.gwaspi.global.ServiceLocator;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
@@ -135,9 +132,7 @@ public class OperationFactory {
 				throw new IllegalArgumentException("invalid OPType: " + OPType);
 		}
 
-		DbManager dBManager = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
 		OperationsList.insertOPMetadata(
-				dBManager,
 				parentMatrixId,
 				parentOperationId,
 				friendlyName,

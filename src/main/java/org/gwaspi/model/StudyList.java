@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.List;
 import org.gwaspi.dao.StudyService;
 import org.gwaspi.dao.sql.StudyServiceImpl;
-import org.gwaspi.database.DbManager;
 
 /**
  *
@@ -32,8 +31,8 @@ public class StudyList {
 		return studyService.getAllAsTable();
 	}
 
-	public static String createStudyManagementTable(DbManager db, Object[] insertValues) {
-		return studyService.createStudyManagementTable(db, insertValues);
+	public static String createStudyManagementTable(Object[] insertValues) {
+		return studyService.createStudyManagementTable(insertValues);
 	}
 
 	public static void insertNewStudy(String studyName, String description) {

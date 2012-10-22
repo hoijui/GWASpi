@@ -34,13 +34,13 @@ public class DatabaseGenerator {
 		// MOAPI GENERIC TABLES
 		allResults += createStatusTypes(db);
 
-		allResults += SampleInfoList.createSamplesInfoTable(db);
+		allResults += SampleInfoList.createSamplesInfoTable();
 
-		allResults += MatricesList.createMatricesTable(db);
+		allResults += MatricesList.createMatricesTable();
 
-		allResults += OperationsList.createOperationsMetadataTable(db);
+		allResults += OperationsList.createOperationsMetadataTable();
 
-		allResults += ReportsList.createReportsMetadataTable(db);
+		allResults += ReportsList.createReportsMetadataTable();
 
 		// STUDY_0 SPECIFIC DATA
 		Object[] testStudy = new Object[]{
@@ -48,12 +48,12 @@ public class DatabaseGenerator {
 			"",
 			"",
 			"0"};
-		allResults += StudyList.createStudyManagementTable(db, testStudy);
+		allResults += StudyList.createStudyManagementTable(testStudy);
 
 		return allResults;
 	}
 
-	public static String createStatusTypes(DbManager db) {
+	private static String createStatusTypes(DbManager db) {
 		boolean result = false;
 		try {
 			// CREATE STATUS_TYPES table in APP SCHEMA and fill with init data

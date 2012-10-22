@@ -28,9 +28,10 @@ public class SampleInfoServiceImpl implements SampleInfoService {
 	}
 
 	@Override
-	public String createSamplesInfoTable(DbManager db) {
+	public String createSamplesInfoTable() {
 		boolean result = false;
 		try {
+			DbManager db = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
 			// CREATE SAMPLE table in given SCHEMA
 			db.createTable(cDBGWASpi.SCH_SAMPLES,
 					cDBSamples.T_SAMPLES_INFO,

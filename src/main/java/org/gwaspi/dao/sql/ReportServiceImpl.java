@@ -222,9 +222,10 @@ public class ReportServiceImpl implements ReportService {
 	}
 
 	@Override
-	public String createReportsMetadataTable(DbManager db) {
+	public String createReportsMetadataTable() {
 		boolean result = false;
 		try {
+			DbManager db = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
 			// CREATE SAMPLESET_METADATA table in given SCHEMA
 			db.createTable(cDBGWASpi.SCH_MATRICES,
 					cDBReports.T_REPORTS,

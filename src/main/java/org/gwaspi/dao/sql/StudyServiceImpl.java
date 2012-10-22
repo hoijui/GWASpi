@@ -158,9 +158,10 @@ public class StudyServiceImpl implements StudyService {
 	}
 
 	@Override
-	public String createStudyManagementTable(DbManager db, Object[] insertValues) {
+	public String createStudyManagementTable(Object[] insertValues) {
 		boolean result = false;
 		try {
+			DbManager db = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
 			// CREATE STUDIES table in APP SCHEMA and fill with data
 			db.createTable(cDBGWASpi.SCH_APP,
 					cDBGWASpi.T_STUDIES,

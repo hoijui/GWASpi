@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 import org.gwaspi.dao.ReportService;
 import org.gwaspi.dao.sql.ReportServiceImpl;
-import org.gwaspi.database.DbManager;
 
 /**
  *
@@ -41,8 +40,8 @@ public class ReportsList {
 		return reportService.getReportNamePrefix(op);
 	}
 
-	public static String createReportsMetadataTable(DbManager db) {
-		return reportService.createReportsMetadataTable(db);
+	public static String createReportsMetadataTable() {
+		return reportService.createReportsMetadataTable();
 	}
 
 	public static void insertRPMetadata(

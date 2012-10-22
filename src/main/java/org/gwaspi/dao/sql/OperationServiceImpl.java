@@ -241,9 +241,10 @@ public class OperationServiceImpl implements OperationService {
 	//</editor-fold>
 
 	@Override
-	public String createOperationsMetadataTable(DbManager db) {
+	public String createOperationsMetadataTable() {
 		boolean result = false;
 		try {
+			DbManager db = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
 			// CREATE SAMPLESET_METADATA table in given SCHEMA
 			db.createTable(cDBGWASpi.SCH_MATRICES,
 					cDBOperations.T_OPERATIONS,
@@ -258,7 +259,6 @@ public class OperationServiceImpl implements OperationService {
 
 	@Override
 	public void insertOPMetadata(
-			DbManager dBManager,
 			int parentMatrixId,
 			int parentOperationId,
 			String friendlyName,
@@ -267,6 +267,7 @@ public class OperationServiceImpl implements OperationService {
 			String command,
 			String description,
 			Integer studyId)
+			throws IOException
 	{
 		Object[] opMetaData = new Object[]{parentMatrixId,
 			parentOperationId,
@@ -277,6 +278,7 @@ public class OperationServiceImpl implements OperationService {
 			description,
 			studyId};
 
+		DbManager dBManager = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
 		dBManager.insertValuesInTable(cDBGWASpi.SCH_MATRICES,
 				cDBOperations.T_OPERATIONS,
 				cDBOperations.F_INSERT_OPERATION,
