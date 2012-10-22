@@ -11,6 +11,7 @@ import org.gwaspi.model.GWASpiExplorerNodes;
 import org.gwaspi.model.Operation;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
+import org.gwaspi.model.SampleInfoList;
 import org.gwaspi.netCDF.operations.GWASinOneGOParams;
 import org.gwaspi.netCDF.operations.OperationManager;
 import org.gwaspi.reports.OutputAllelicAssociation;
@@ -79,7 +80,7 @@ public class Threaded_GWAS extends CommonRunnable {
 				if (affectionStates.contains("1") && affectionStates.contains("2")) {
 					getLog().info("Updating Sample Info in DB");
 					Map<String, Object> sampleInfoMap = SamplesParserManager.scanGwaspiSampleInfo(phenotypeFile.getPath());
-					org.gwaspi.samples.InsertSampleInfo.processData(matrixId, sampleInfoMap);
+					SampleInfoList.insertSampleInfo(matrixId, sampleInfoMap);
 
 					censusOpId = OperationManager.censusCleanMatrixMarkersByPhenotypeFile(matrixId,
 							sampleQAOpId,

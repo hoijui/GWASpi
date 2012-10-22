@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.EnumMap;
 import java.util.Map;
 import org.gwaspi.constants.cImport.ImportFormat;
-import org.gwaspi.samples.InsertSampleInfo;
+import org.gwaspi.model.SampleInfoList;
 import ucar.ma2.InvalidRangeException;
 
 /**
@@ -44,7 +44,7 @@ public class LoadManager {
 		if (genotypesLoader == null) {
 			throw new IOException("No Genotypes-Loader found for format " + loadDescription.getFormat());
 		} else {
-			InsertSampleInfo.processData(loadDescription.getStudyId(), sampleInfoMap);
+			SampleInfoList.insertSampleInfo(loadDescription.getStudyId(), sampleInfoMap);
 			newMatrixId = genotypesLoader.processData(loadDescription, sampleInfoMap);
 		}
 

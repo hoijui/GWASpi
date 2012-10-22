@@ -2,6 +2,7 @@ package org.gwaspi.model;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import org.gwaspi.dao.SampleInfoService;
 import org.gwaspi.dao.sql.SampleInfoServiceImpl;
 import org.gwaspi.database.DbManager;
@@ -42,5 +43,9 @@ public class SampleInfoList {
 
 	public static void deleteSamplesByPoolId(Object poolId) throws IOException {
 		sampleInfoService.deleteSamplesByPoolId(poolId);
+	}
+
+	public static List<String> insertSampleInfo(Integer studyId, Map<String, Object> sampleInfoMap) throws IOException {
+		return sampleInfoService.insertSampleInfo(studyId, sampleInfoMap);
 	}
 }
