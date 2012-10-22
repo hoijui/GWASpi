@@ -1,6 +1,5 @@
 package org.gwaspi.netCDF.operations;
 
-import org.gwaspi.model.OperationMetadata;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -18,6 +17,8 @@ import org.gwaspi.global.Text;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.Operation;
+import org.gwaspi.model.OperationMetadata;
+import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleInfoList;
 import org.gwaspi.netCDF.markers.MarkerSet_opt;
@@ -78,10 +79,10 @@ public class OP_MarkerCensus_opt implements MatrixOperation {
 //		Map wrMarkerSetKnownAllelesMap = new LinkedHashMap();
 
 		//<editor-fold defaultstate="collapsed" desc="PICKING CLEAN MARKERS AND SAMPLES FROM QA">
-		OperationMetadata markerQAMetadata = new OperationMetadata(markerQAOP.getId());
+		OperationMetadata markerQAMetadata = OperationsList.getOperationMetadata(markerQAOP.getId());
 		NetcdfFile rdMarkerQANcFile = NetcdfFile.open(markerQAMetadata.getPathToMatrix());
 
-		OperationMetadata sampleQAMetadata = new OperationMetadata(sampleQAOP.getId());
+		OperationMetadata sampleQAMetadata = OperationsList.getOperationMetadata(sampleQAOP.getId());
 		NetcdfFile rdSampleQANcFile = NetcdfFile.open(sampleQAMetadata.getPathToMatrix());
 
 		OperationSet rdQAMarkerSet = new OperationSet(markerQAMetadata.getStudyId(), markerQAMetadata.getOPId());

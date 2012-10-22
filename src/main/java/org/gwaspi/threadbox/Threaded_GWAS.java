@@ -9,10 +9,10 @@ import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.GWASpiExplorerNodes;
 import org.gwaspi.model.Operation;
+import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.netCDF.operations.GWASinOneGOParams;
 import org.gwaspi.netCDF.operations.OperationManager;
-import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.reports.OutputAllelicAssociation;
 import org.gwaspi.reports.OutputGenotypicAssociation;
 import org.gwaspi.reports.OutputTrendTest;
@@ -124,7 +124,7 @@ public class Threaded_GWAS extends CommonRunnable {
 				&& censusOpId != Integer.MIN_VALUE
 				&& hwOpId != Integer.MIN_VALUE) {
 
-			OperationMetadata markerQAMetadata = new OperationMetadata(markersQAOpId);
+			OperationMetadata markerQAMetadata = OperationsList.getOperationMetadata(markersQAOpId);
 			int qaMarkerSetSize = markerQAMetadata.getOpSetSize();
 
 			if (gwasParams.isDiscardMarkerHWCalc()) {
@@ -149,7 +149,7 @@ public class Threaded_GWAS extends CommonRunnable {
 				&& censusOpId != Integer.MIN_VALUE
 				&& hwOpId != Integer.MIN_VALUE) {
 
-			OperationMetadata markerQAMetadata = new OperationMetadata(markersQAOpId);
+			OperationMetadata markerQAMetadata = OperationsList.getOperationMetadata(markersQAOpId);
 			int qaMarkerSetSize = markerQAMetadata.getOpSetSize();
 
 			if (gwasParams.isDiscardMarkerHWCalc()) {
@@ -176,7 +176,7 @@ public class Threaded_GWAS extends CommonRunnable {
 				&& censusOpId != Integer.MIN_VALUE
 				&& hwOpId != Integer.MIN_VALUE) {
 
-			OperationMetadata markerQAMetadata = new OperationMetadata(markersQAOpId);
+			OperationMetadata markerQAMetadata = OperationsList.getOperationMetadata(markersQAOpId);
 			int qaMarkerSetSize = markerQAMetadata.getOpSetSize();
 
 			if (gwasParams.isDiscardMarkerHWCalc()) {

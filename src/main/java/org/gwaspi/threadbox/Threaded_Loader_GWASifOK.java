@@ -4,6 +4,8 @@ import java.util.Map;
 import java.util.Set;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.model.GWASpiExplorerNodes;
+import org.gwaspi.model.OperationMetadata;
+import org.gwaspi.model.OperationsList;
 import org.gwaspi.netCDF.loader.GenotypesLoadDescription;
 import org.gwaspi.netCDF.loader.LoadManager;
 import org.gwaspi.netCDF.loader.SampleInfoCollectorSwitch;
@@ -11,7 +13,6 @@ import org.gwaspi.netCDF.operations.GWASinOneGOParams;
 import org.gwaspi.netCDF.operations.OP_QAMarkers_opt;
 import org.gwaspi.netCDF.operations.OP_QASamples_opt;
 import org.gwaspi.netCDF.operations.OperationManager;
-import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.reports.OutputAllelicAssociation;
 import org.gwaspi.reports.OutputGenotypicAssociation;
 import org.gwaspi.reports.OutputQAMarkers;
@@ -139,7 +140,7 @@ public class Threaded_Loader_GWASifOK extends CommonRunnable {
 			if (thisSwi.getQueueState().equals(QueueState.PROCESSING)
 					&& censusOpId != Integer.MIN_VALUE
 					&& hwOpId != Integer.MIN_VALUE) {
-				OperationMetadata markerQAMetadata = new OperationMetadata(markersQAOpId);
+				OperationMetadata markerQAMetadata = OperationsList.getOperationMetadata(markersQAOpId);
 
 				if (gwasParams.isDiscardMarkerHWCalc()) {
 					gwasParams.setDiscardMarkerHWTreshold(0.05 / markerQAMetadata.getOpSetSize());
@@ -166,7 +167,7 @@ public class Threaded_Loader_GWASifOK extends CommonRunnable {
 					&& censusOpId != Integer.MIN_VALUE
 					&& hwOpId != Integer.MIN_VALUE) {
 
-				OperationMetadata markerQAMetadata = new OperationMetadata(markersQAOpId);
+				OperationMetadata markerQAMetadata = OperationsList.getOperationMetadata(markersQAOpId);
 
 				if (gwasParams.isDiscardMarkerHWCalc()) {
 					gwasParams.setDiscardMarkerHWTreshold(0.05 / markerQAMetadata.getOpSetSize());
@@ -192,7 +193,7 @@ public class Threaded_Loader_GWASifOK extends CommonRunnable {
 					&& censusOpId != Integer.MIN_VALUE
 					&& hwOpId != Integer.MIN_VALUE) {
 
-				OperationMetadata markerQAMetadata = new OperationMetadata(markersQAOpId);
+				OperationMetadata markerQAMetadata = OperationsList.getOperationMetadata(markersQAOpId);
 
 				if (gwasParams.isDiscardMarkerHWCalc()) {
 					gwasParams.setDiscardMarkerHWTreshold(0.05 / markerQAMetadata.getOpSetSize());

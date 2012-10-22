@@ -10,10 +10,10 @@ import org.gwaspi.constants.cExport;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.model.MatrixMetadata;
+import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.netCDF.markers.MarkerSet_opt;
-import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.netCDF.operations.OperationSet;
 import org.gwaspi.samples.SampleSet;
 import org.slf4j.Logger;
@@ -195,7 +195,7 @@ class BeagleFormatter implements Formatter {
 				}
 			}
 			if (markersQAopId != Integer.MIN_VALUE) {
-				OperationMetadata qaMetadata = new OperationMetadata(markersQAopId);
+				OperationMetadata qaMetadata = OperationsList.getOperationMetadata(markersQAopId);
 				NetcdfFile qaNcFile = NetcdfFile.open(qaMetadata.getPathToMatrix());
 
 				OperationSet rdOperationSet = new OperationSet(rdMatrixMetadata.getStudyId(), markersQAopId);

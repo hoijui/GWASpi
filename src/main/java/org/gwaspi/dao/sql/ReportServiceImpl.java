@@ -20,10 +20,10 @@ import org.gwaspi.global.ServiceLocator;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.Operation;
+import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.Report;
 import org.gwaspi.model.ReportsList;
-import org.gwaspi.model.OperationMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -279,7 +279,7 @@ public class ReportServiceImpl implements ReportService {
 
 	@Override
 	public void deleteReportByOperationId(int opId) throws IOException {
-		OperationMetadata operationMetadata = new OperationMetadata(opId);
+		OperationMetadata operationMetadata = OperationsList.getOperationMetadata(opId);
 		List<Report> reportsList = ReportsList.getReportsList(opId, operationMetadata.getParentMatrixId());
 		String reportsFolder = Config.getConfigValue(Config.PROPERTY_REPORTS_DIR, "");
 

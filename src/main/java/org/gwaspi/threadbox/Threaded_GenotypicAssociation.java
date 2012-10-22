@@ -4,10 +4,10 @@ import java.util.List;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.model.GWASpiExplorerNodes;
 import org.gwaspi.model.Operation;
+import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.netCDF.operations.GWASinOneGOParams;
 import org.gwaspi.netCDF.operations.OperationManager;
-import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.reports.OutputGenotypicAssociation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,7 +67,7 @@ public class Threaded_GenotypicAssociation extends CommonRunnable {
 
 		// GENOTYPIC TEST (needs newMatrixId, censusOpId, pickedMarkerSet, pickedSampleSet)
 
-		OperationMetadata markerQAMetadata = new OperationMetadata(markersQAOpId);
+		OperationMetadata markerQAMetadata = OperationsList.getOperationMetadata(markersQAOpId);
 
 		if (gwasParams.isDiscardMarkerHWCalc()) {
 			gwasParams.setDiscardMarkerHWTreshold(0.05 / markerQAMetadata.getOpSetSize());

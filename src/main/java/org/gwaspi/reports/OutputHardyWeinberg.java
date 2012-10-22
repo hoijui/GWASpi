@@ -13,10 +13,10 @@ import org.gwaspi.global.Config;
 import org.gwaspi.global.ServiceLocator;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.Operation;
+import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.ReportsList;
 import org.gwaspi.netCDF.markers.MarkerSet_opt;
-import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.netCDF.operations.OperationSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -78,7 +78,7 @@ public class OutputHardyWeinberg {
 
 			// GET MARKER INFO
 			String sep = cExport.separator_REPORTS;
-			OperationMetadata rdOPMetadata = new OperationMetadata(opId);
+			OperationMetadata rdOPMetadata = OperationsList.getOperationMetadata(opId);
 			MarkerSet_opt rdInfoMarkerSet = new MarkerSet_opt(rdOPMetadata.getStudyId(), rdOPMetadata.getParentMatrixId());
 			rdInfoMarkerSet.initFullMarkerIdSetMap();
 
@@ -121,7 +121,7 @@ public class OutputHardyWeinberg {
 				}
 			}
 			if (markersQAopId != Integer.MIN_VALUE) {
-				OperationMetadata qaMetadata = new OperationMetadata(markersQAopId);
+				OperationMetadata qaMetadata = OperationsList.getOperationMetadata(markersQAopId);
 				NetcdfFile qaNcFile = NetcdfFile.open(qaMetadata.getPathToMatrix());
 
 				OperationSet rdOperationSet = new OperationSet(rdOPMetadata.getStudyId(), markersQAopId);

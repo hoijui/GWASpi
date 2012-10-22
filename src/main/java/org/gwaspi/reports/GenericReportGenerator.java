@@ -16,8 +16,9 @@ import java.util.Map;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.gui.reports.ManhattanPlotZoom;
 import org.gwaspi.gui.reports.SampleQAHetzygPlotZoom;
-import org.gwaspi.netCDF.markers.MarkerSet_opt;
 import org.gwaspi.model.OperationMetadata;
+import org.gwaspi.model.OperationsList;
+import org.gwaspi.netCDF.markers.MarkerSet_opt;
 import org.gwaspi.netCDF.operations.OperationSet;
 import org.gwaspi.statistics.Chisquare;
 import org.jfree.chart.ChartFactory;
@@ -85,7 +86,7 @@ public class GenericReportGenerator {
 		//</editor-fold>
 
 		Map<String, Object> dataSetMap = new LinkedHashMap<String, Object>();
-		OperationMetadata rdOPMetadata = new OperationMetadata(opId);
+		OperationMetadata rdOPMetadata = OperationsList.getOperationMetadata(opId);
 
 		//<editor-fold defaultstate="collapsed" desc="GET POSITION DATA">
 		MarkerSet_opt rdInfoMarkerSet = new MarkerSet_opt(rdOPMetadata.getStudyId(), rdOPMetadata.getParentMatrixId());
@@ -288,7 +289,7 @@ public class GenericReportGenerator {
 		qq_ci = Color.getHSBColor(hsbTmp[0], hsbTmp[1], hsbTmp[2]);
 		//</editor-fold>
 
-		OperationMetadata rdOPMetadata = new OperationMetadata(opId);
+		OperationMetadata rdOPMetadata = OperationsList.getOperationMetadata(opId);
 
 		//<editor-fold defaultstate="collapsed" desc="GET X²">
 		NetcdfFile assocNcFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());
@@ -411,7 +412,7 @@ public class GenericReportGenerator {
 
 		try {
 			Map<String, Object> dataSetMap = new LinkedHashMap<String, Object>();
-			OperationMetadata rdOPMetadata = new OperationMetadata(opId);
+			OperationMetadata rdOPMetadata = OperationsList.getOperationMetadata(opId);
 
 			NetcdfFile assocNcFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());
 			OperationSet rdAssocMarkerSet = new OperationSet(rdOPMetadata.getStudyId(), opId);
@@ -519,7 +520,7 @@ public class GenericReportGenerator {
 
 		try {
 			Map<String, Object> dataSetMap = new LinkedHashMap<String, Object>();
-			OperationMetadata rdOPMetadata = new OperationMetadata(opId);
+			OperationMetadata rdOPMetadata = OperationsList.getOperationMetadata(opId);
 
 			NetcdfFile assocNcFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());
 			OperationSet rdAssocMarkerSet = new OperationSet(rdOPMetadata.getStudyId(), opId);
@@ -675,7 +676,7 @@ public class GenericReportGenerator {
 	//<editor-fold defaultstate="collapsed/expanded" desc="SAMPLE-QA PLOTS">
 	public static XYDataset getSampleHetzygDataset(SampleQAHetzygPlotZoom sampleQAHetzygPlotZoom, int opId) throws IOException {
 		XYDataset resultXYDataset;
-		OperationMetadata rdOPMetadata = new OperationMetadata(opId);
+		OperationMetadata rdOPMetadata = OperationsList.getOperationMetadata(opId);
 		NetcdfFile sampleQANcFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());
 		OperationSet rdSampleQAOPSet = new OperationSet(rdOPMetadata.getStudyId(), opId);
 
@@ -717,7 +718,7 @@ public class GenericReportGenerator {
 	//<editor-fold defaultstate="collapsed" desc="HELPERS">
 	public static Map<String, Object> getAnalysisVarData(int opId, String netCDFVar) throws IOException {
 
-		OperationMetadata rdOPMetadata = new OperationMetadata(opId);
+		OperationMetadata rdOPMetadata = OperationsList.getOperationMetadata(opId);
 
 
 		NetcdfFile assocNcFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());
@@ -731,7 +732,7 @@ public class GenericReportGenerator {
 
 	public static Map<String, Object> getMarkerSetChrAndPos(int opId) throws IOException {
 		Map<String, Object> dataSetMap = new LinkedHashMap<String, Object>();
-		OperationMetadata rdOPMetadata = new OperationMetadata(opId);
+		OperationMetadata rdOPMetadata = OperationsList.getOperationMetadata(opId);
 
 		//<editor-fold defaultstate="collapsed" desc="GET POSITION DATA">
 		MarkerSet_opt rdInfoMarkerSet = new MarkerSet_opt(rdOPMetadata.getStudyId(), rdOPMetadata.getParentMatrixId());

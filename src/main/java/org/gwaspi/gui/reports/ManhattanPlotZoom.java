@@ -39,10 +39,10 @@ import org.gwaspi.gui.utils.URLInDefaultBrowser;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.Operation;
+import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.Report;
 import org.gwaspi.model.ReportsList;
-import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.reports.GenericReportGenerator;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartMouseEvent;
@@ -166,7 +166,7 @@ public final class ManhattanPlotZoom extends JPanel {
 
 		try {
 			this.op = OperationsList.getById(this.opId);
-			this.rdOPMetadata = new OperationMetadata(this.opId);
+			this.rdOPMetadata = OperationsList.getOperationMetadata(this.opId);
 			this.rdMatrixMetadata = MatricesList.getMatrixMetadataById(this.rdOPMetadata.getParentMatrixId());
 
 //			OperationSet rdAssocMarkerSet = new OperationSet(this.rdOPMetadata.getStudyId(), this.opId);
@@ -206,7 +206,7 @@ public final class ManhattanPlotZoom extends JPanel {
 
 		try {
 			op = OperationsList.getById(opId);
-			rdOPMetadata = new OperationMetadata(opId);
+			rdOPMetadata = OperationsList.getOperationMetadata(opId);
 			rdMatrixMetadata = MatricesList.getMatrixMetadataById(rdOPMetadata.getParentMatrixId());
 
 //			OperationSet rdAssocMarkerSet = new OperationSet(rdOPMetadata.getStudyId(), opId);

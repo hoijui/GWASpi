@@ -1,6 +1,5 @@
 package org.gwaspi.netCDF.operations;
 
-import org.gwaspi.model.OperationMetadata;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.LinkedHashMap;
@@ -10,6 +9,8 @@ import org.gwaspi.global.Text;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.Operation;
+import org.gwaspi.model.OperationMetadata;
+import org.gwaspi.model.OperationsList;
 import org.gwaspi.netCDF.markers.MarkerSet_opt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,7 +54,7 @@ public class OP_TrendTests_opt implements MatrixOperation {
 		int totalMarkerNb = 0;
 
 		if (hwOP != null) {
-			OperationMetadata hwMetadata = new OperationMetadata(hwOP.getId());
+			OperationMetadata hwMetadata = OperationsList.getOperationMetadata(hwOP.getId());
 			NetcdfFile rdHWNcFile = NetcdfFile.open(hwMetadata.getPathToMatrix());
 			OperationSet rdHWOperationSet = new OperationSet(hwMetadata.getStudyId(), hwMetadata.getOPId());
 			Map<String, Object> rdHWMarkerSetMap = rdHWOperationSet.getOpSetMap();
@@ -76,7 +77,7 @@ public class OP_TrendTests_opt implements MatrixOperation {
 		//</editor-fold>
 
 		if (excludeMarkerSetMap.size() < totalMarkerNb) { // CHECK IF THERE IS ANY DATA LEFT TO PROCESS AFTER PICKING
-			OperationMetadata rdCensusOPMetadata = new OperationMetadata(markerCensusOP.getId());
+			OperationMetadata rdCensusOPMetadata = OperationsList.getOperationMetadata(markerCensusOP.getId());
 			NetcdfFile rdOPNcFile = NetcdfFile.open(rdCensusOPMetadata.getPathToMatrix());
 
 			OperationSet rdCaseMarkerSet = new OperationSet(rdCensusOPMetadata.getStudyId(), markerCensusOP.getId());

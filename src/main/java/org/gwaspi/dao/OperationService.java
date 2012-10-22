@@ -5,6 +5,7 @@ import java.util.List;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.database.DbManager;
 import org.gwaspi.model.Operation;
+import org.gwaspi.model.OperationMetadata;
 
 public interface OperationService {
 
@@ -38,4 +39,8 @@ public interface OperationService {
 	List<Object[]> getMatrixOperations(int matrixId) throws IOException;
 
 	void deleteOperationBranch(int studyId, int opId, boolean deleteReports) throws IOException;
+
+	OperationMetadata getOperationMetadata(int opId) throws IOException;
+
+	OperationMetadata getOperationMetadata(String netCDFname) throws IOException;
 }

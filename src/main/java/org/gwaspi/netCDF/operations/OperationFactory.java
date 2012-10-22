@@ -1,6 +1,5 @@
 package org.gwaspi.netCDF.operations;
 
-import org.gwaspi.model.OperationMetadata;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -11,6 +10,7 @@ import org.gwaspi.database.DbManager;
 import org.gwaspi.global.Config;
 import org.gwaspi.global.ServiceLocator;
 import org.gwaspi.model.MatricesList;
+import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -89,7 +89,7 @@ public class OperationFactory {
 						implicitSetSize);
 				break;
 			case HARDY_WEINBERG:
-				OperationMetadata rdOPMetadata = new OperationMetadata(parentOperationId);
+				OperationMetadata rdOPMetadata = OperationsList.getOperationMetadata(parentOperationId);
 				//resultOPnetCDFName = OPType + "_" + rdOPMetadata.getMatrixCDFName();
 				netCDFHandler = generateNetcdfHardyWeinbergHandler(studyId,
 						resultOPnetCDFName,
@@ -99,7 +99,7 @@ public class OperationFactory {
 						implicitSetSize);
 				break;
 			case ALLELICTEST:
-				rdOPMetadata = new OperationMetadata(parentOperationId);
+				rdOPMetadata = OperationsList.getOperationMetadata(parentOperationId);
 				//resultOPnetCDFName = OPType + "_" + rdOPMetadata.getMatrixCDFName();
 				netCDFHandler = generateNetcdfAllelicAssociationHandler(studyId,
 						resultOPnetCDFName,
@@ -110,7 +110,7 @@ public class OperationFactory {
 						chrSetSize);
 				break;
 			case GENOTYPICTEST:
-				rdOPMetadata = new OperationMetadata(parentOperationId);
+				rdOPMetadata = OperationsList.getOperationMetadata(parentOperationId);
 				//resultOPnetCDFName = OPType + "_" + rdOPMetadata.getMatrixCDFName();
 				netCDFHandler = generateNetcdfGenotypicAssociationHandler(studyId,
 						resultOPnetCDFName,
@@ -121,7 +121,7 @@ public class OperationFactory {
 						chrSetSize);
 				break;
 			case TRENDTEST:
-				rdOPMetadata = new OperationMetadata(parentOperationId);
+				rdOPMetadata = OperationsList.getOperationMetadata(parentOperationId);
 				//resultOPnetCDFName = OPType + "_" + rdOPMetadata.getMatrixCDFName();
 				netCDFHandler = generateNetcdfTrendTestHandler(studyId,
 						resultOPnetCDFName,
@@ -147,7 +147,7 @@ public class OperationFactory {
 				description,
 				studyId);
 
-		opMetaData = new OperationMetadata(resultOPnetCDFName);
+		opMetaData = OperationsList.getOperationMetadata(resultOPnetCDFName);
 
 		resultOPId = opMetaData.getOPId();
 	}

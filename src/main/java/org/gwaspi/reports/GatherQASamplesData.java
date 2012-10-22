@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Map;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.model.OperationMetadata;
+import org.gwaspi.model.OperationsList;
 import org.gwaspi.netCDF.operations.OperationSet;
 import ucar.nc2.NetcdfFile;
 
@@ -20,7 +21,7 @@ public class GatherQASamplesData {
 
 	public static Map<String, Object> loadSamplesQAMissingRatio(int opId) throws IOException {
 
-		OperationMetadata rdOPMetadata = new OperationMetadata(opId);
+		OperationMetadata rdOPMetadata = OperationsList.getOperationMetadata(opId);
 
 		OperationSet rdInfoSampleSet = new OperationSet(rdOPMetadata.getStudyId(), opId);
 		Map<String, Object> rdMatrixSampleSetMap = rdInfoSampleSet.getOpSetMap();
@@ -34,7 +35,7 @@ public class GatherQASamplesData {
 
 	public static Map<String, Object> loadSamplesQAHetZygRatio(int opId) throws IOException {
 
-		OperationMetadata rdOPMetadata = new OperationMetadata(opId);
+		OperationMetadata rdOPMetadata = OperationsList.getOperationMetadata(opId);
 
 		OperationSet rdInfoSampleSet = new OperationSet(rdOPMetadata.getStudyId(), opId);
 		Map<String, Object> rdMatrixSampleSetMap = rdInfoSampleSet.getOpSetMap();

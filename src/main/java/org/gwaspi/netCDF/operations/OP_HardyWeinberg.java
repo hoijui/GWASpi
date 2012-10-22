@@ -1,11 +1,12 @@
 package org.gwaspi.netCDF.operations;
 
-import org.gwaspi.model.OperationMetadata;
 import java.io.IOException;
 import java.util.Map;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.Operation;
+import org.gwaspi.model.OperationMetadata;
+import org.gwaspi.model.OperationsList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.ArrayChar;
@@ -35,7 +36,7 @@ public class OP_HardyWeinberg implements MatrixOperation {
 	public int processMatrix() throws IOException, InvalidRangeException {
 		int resultOpId = Integer.MIN_VALUE;
 
-		OperationMetadata rdOPMetadata = new OperationMetadata(markerCensusOP.getId());
+		OperationMetadata rdOPMetadata = OperationsList.getOperationMetadata(markerCensusOP.getId());
 		NetcdfFile rdNcFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());
 
 		OperationSet rdOperationSet = new OperationSet(rdOPMetadata.getStudyId(), markerCensusOP.getId());

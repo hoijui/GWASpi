@@ -33,8 +33,8 @@ import org.gwaspi.gui.utils.Dialogs;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.Operation;
-import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.OperationMetadata;
+import org.gwaspi.model.OperationsList;
 import org.gwaspi.reports.GenericReportGenerator;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
@@ -116,7 +116,7 @@ public final class SampleQAHetzygPlotZoom extends JPanel {
 
 		try {
 			op = OperationsList.getById(opId);
-			rdOPMetadata = new OperationMetadata(opId);
+			rdOPMetadata = OperationsList.getOperationMetadata(opId);
 			rdMatrixMetadata = MatricesList.getMatrixMetadataById(rdOPMetadata.getParentMatrixId());
 		} catch (IOException ex) {
 			log.error(null, ex);

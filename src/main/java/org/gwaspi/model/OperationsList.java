@@ -83,4 +83,11 @@ public class OperationsList {
 	public static void deleteOperationBranch(int studyId, int opId, boolean deleteReports) throws IOException {
 		operationService.deleteOperationBranch(studyId, opId, deleteReports);
 	}
+
+	public static OperationMetadata getOperationMetadata(int opId) throws IOException {
+		return operationService.getOperationMetadata(opId);
+	}
+	public static OperationMetadata getOperationMetadata(String netCDFname) throws IOException {
+		return operationService.getOperationMetadata(netCDFname);
+	}
 }

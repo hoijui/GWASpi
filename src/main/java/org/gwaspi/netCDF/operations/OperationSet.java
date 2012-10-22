@@ -1,6 +1,5 @@
 package org.gwaspi.netCDF.operations;
 
-import org.gwaspi.model.OperationMetadata;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -9,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.model.OperationMetadata;
+import org.gwaspi.model.OperationsList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.ArrayChar;
@@ -39,7 +40,7 @@ public class OperationSet {
 	private Map<String, Object> opRsIdSetMap = new LinkedHashMap<String, Object>();
 
 	public OperationSet(int studyId, int opId) throws IOException {
-		opMetadata = new OperationMetadata(opId);
+		opMetadata = OperationsList.getOperationMetadata(opId);
 		opSetSize = opMetadata.getOpSetSize();
 	}
 

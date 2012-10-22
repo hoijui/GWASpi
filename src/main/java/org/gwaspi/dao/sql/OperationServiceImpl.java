@@ -7,16 +7,20 @@ import java.util.List;
 import java.util.Map;
 import org.gwaspi.constants.cDBGWASpi;
 import org.gwaspi.constants.cDBOperations;
+import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.dao.OperationService;
 import org.gwaspi.database.DbManager;
 import org.gwaspi.global.Config;
 import org.gwaspi.global.ServiceLocator;
 import org.gwaspi.model.Operation;
+import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.ReportsList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ucar.nc2.Dimension;
+import ucar.nc2.NetcdfFile;
 
 public class OperationServiceImpl implements OperationService {
 
@@ -31,7 +35,7 @@ public class OperationServiceImpl implements OperationService {
 
 		Operation operation = null;
 
-		List<Map<String, Object>> rs = getOperationMetadata(operationId);
+		List<Map<String, Object>> rs = getOperationMetadataRS(operationId);
 
 		// PREVENT PHANTOM-DB READS EXCEPTIONS
 		if (!rs.isEmpty() && rs.get(0).size() == cDBOperations.T_CREATE_OPERATIONS.length) {
@@ -59,7 +63,7 @@ public class OperationServiceImpl implements OperationService {
 		return operation;
 	}
 
-	private static List<Map<String, Object>> getOperationMetadata(int opId) throws IOException {
+	private static List<Map<String, Object>> getOperationMetadataRS(int opId) throws IOException {
 		List<Map<String, Object>> rs = null;
 		String dbName = cDBGWASpi.DB_DATACENTER;
 		DbManager studyDbManager = ServiceLocator.getDbManager(dbName);
@@ -344,5 +348,155 @@ public class OperationServiceImpl implements OperationService {
 			String statement = "DELETE FROM " + cDBGWASpi.SCH_MATRICES + "." + cDBOperations.T_OPERATIONS + " WHERE " + cDBOperations.f_ID + "=" + opId;
 			dBManager.executeStatement(statement);
 		}
+	}
+
+	@Override
+	public OperationMetadata getOperationMetadata(int opId) throws IOException {
+
+		OperationMetadata operationMetadata = null;
+
+		DbManager dBManager = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
+		List<Map<String, Object>> rs = dBManager.executeSelectStatement(
+				"SELECT * FROM " + cDBGWASpi.SCH_MATRICES + "." + cDBOperations.T_OPERATIONS + " WHERE " + cDBOperations.f_ID + "=" + opId + "  WITH RR");
+		if (!rs.isEmpty()) {
+			int parentMatrixId = Integer.MIN_VALUE;
+			int parentOperationId = Integer.MIN_VALUE;
+			String op_name = "";
+			String netCDF_name = "";
+			String description = "";
+			String gtCode = "";
+			int studyId = Integer.MIN_VALUE;
+			int opSetSize = Integer.MIN_VALUE;
+			int implicitSetSize = Integer.MIN_VALUE;
+
+			// PREVENT PHANTOM-DB READS EXCEPTIONS
+			if (!rs.isEmpty() && rs.get(0).size() == cDBOperations.T_CREATE_OPERATIONS.length) {
+				parentMatrixId = Integer.parseInt(rs.get(0).get(cDBOperations.f_PARENT_MATRIXID).toString());
+				parentOperationId = Integer.parseInt(rs.get(0).get(cDBOperations.f_PARENT_OPID).toString());
+				op_name = rs.get(0).get(cDBOperations.f_OP_NAME).toString();
+				netCDF_name = rs.get(0).get(cDBOperations.f_OP_NETCDF_NAME).toString();
+				description = rs.get(0).get(cDBOperations.f_DESCRIPTION).toString();
+				studyId = (Integer) rs.get(0).get(cDBOperations.f_STUDYID);
+			}
+
+			String genotypesFolder = Config.getConfigValue(Config.PROPERTY_GENOTYPES_DIR, "");
+			String pathToStudy = genotypesFolder + "/STUDY_" + studyId + "/";
+			String pathToMatrix = pathToStudy + netCDF_name + ".nc";
+			NetcdfFile ncfile = null;
+			if (new File(pathToMatrix).exists()) {
+				try {
+					ncfile = NetcdfFile.open(pathToMatrix);
+//					gtCode = ncfile.findGlobalAttribute(cNetCDF.Attributes.GLOB_GTCODE).getStringValue();
+
+					Dimension setDim = ncfile.findDimension(cNetCDF.Dimensions.DIM_OPSET);
+					opSetSize = setDim.getLength();
+
+					Dimension implicitDim = ncfile.findDimension(cNetCDF.Dimensions.DIM_IMPLICITSET);
+					implicitSetSize = implicitDim.getLength();
+				} catch (IOException ex) {
+					log.error("Cannot open file: " + pathToMatrix, ex);
+				} finally {
+					if (null != ncfile) {
+						try {
+							ncfile.close();
+						} catch (IOException ex) {
+							log.warn("Cannot close file: " + ncfile.getLocation(), ex);
+						}
+					}
+				}
+			}
+
+			operationMetadata = new OperationMetadata(
+					opId,
+					parentMatrixId,
+					parentOperationId,
+					op_name,
+					netCDF_name,
+					description,
+					pathToMatrix,
+					gtCode,
+					opSetSize,
+					implicitSetSize,
+					studyId);
+		}
+
+		return operationMetadata;
+	}
+
+	@Override
+	public OperationMetadata getOperationMetadata(String netCDFname) throws IOException {
+
+		OperationMetadata operationMetadata;
+
+		DbManager dBManager = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
+
+		String sql = "SELECT * FROM " + cDBGWASpi.SCH_MATRICES + "." + cDBOperations.T_OPERATIONS + " WHERE " + cDBOperations.f_OP_NETCDF_NAME + "='" + netCDFname + "' ORDER BY " + cDBOperations.f_ID + " DESC  WITH RR";
+		List<Map<String, Object>> rs = dBManager.executeSelectStatement(sql);
+
+		int opId = Integer.MIN_VALUE;
+		int parentMatrixId = Integer.MIN_VALUE;
+		int parentOperationId = Integer.MIN_VALUE;
+		String opName = "";
+		String netCDF_name = "";
+		String description = "";
+		String gtCode = "";
+		int studyId = Integer.MIN_VALUE;
+		int opSetSize = Integer.MIN_VALUE;
+		int implicitSetSize = Integer.MIN_VALUE;
+
+		// PREVENT PHANTOM-DB READS EXCEPTIONS
+		if (!rs.isEmpty() && rs.get(0).size() == cDBOperations.T_CREATE_OPERATIONS.length) {
+			opId = Integer.parseInt(rs.get(0).get(cDBOperations.f_ID).toString());
+			parentMatrixId = Integer.parseInt(rs.get(0).get(cDBOperations.f_PARENT_MATRIXID).toString());
+			parentOperationId = Integer.parseInt(rs.get(0).get(cDBOperations.f_PARENT_OPID).toString());
+			opName = rs.get(0).get(cDBOperations.f_OP_NAME).toString();
+			netCDF_name = netCDFname;
+			description = rs.get(0).get(cDBOperations.f_DESCRIPTION).toString();
+			studyId = (Integer) rs.get(0).get(cDBOperations.f_STUDYID);
+		}
+
+		String genotypesFolder = Config.getConfigValue(Config.PROPERTY_GENOTYPES_DIR, "");
+		String pathToStudy = genotypesFolder + "/STUDY_" + studyId + "/";
+		String pathToMatrix = pathToStudy + netCDF_name + ".nc";
+		NetcdfFile ncfile = null;
+		if (new File(pathToMatrix).exists()) {
+			try {
+				ncfile = NetcdfFile.open(pathToMatrix);
+
+//				gtCode = ncfile.findGlobalAttribute(cNetCDF.Attributes.GLOB_GTCODE).getStringValue();
+
+				Dimension markerSetDim = ncfile.findDimension(cNetCDF.Dimensions.DIM_OPSET);
+				opSetSize = markerSetDim.getLength();
+
+				Dimension implicitDim = ncfile.findDimension(cNetCDF.Dimensions.DIM_IMPLICITSET);
+				implicitSetSize = implicitDim.getLength();
+
+			} catch (IOException ex) {
+				log.error("Cannot open file: " + pathToMatrix, ex);
+			} finally {
+				if (null != ncfile) {
+					try {
+						ncfile.close();
+					} catch (IOException ex) {
+						log.warn("Cannot close file: " + ncfile.getLocation(), ex);
+					}
+				}
+			}
+		}
+
+		operationMetadata = new OperationMetadata(
+				opId,
+				parentMatrixId,
+				parentOperationId,
+				opName,
+				netCDF_name,
+				description,
+				pathToMatrix,
+				gtCode,
+				opSetSize,
+				implicitSetSize,
+				studyId);
+
+		return operationMetadata;
 	}
 }

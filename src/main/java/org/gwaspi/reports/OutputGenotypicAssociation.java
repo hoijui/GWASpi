@@ -15,10 +15,10 @@ import org.gwaspi.global.Config;
 import org.gwaspi.global.ServiceLocator;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.Operation;
+import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.ReportsList;
 import org.gwaspi.netCDF.markers.MarkerSet_opt;
-import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.netCDF.operations.OperationSet;
 import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
@@ -108,7 +108,7 @@ public class OutputGenotypicAssociation {
 		//CHART BACKGROUD COLOR
 		chart.setBackgroundPaint(Color.getHSBColor(0.1f, 0.1f, 1.0f)); //Hue, saturation, brightness
 
-		OperationMetadata rdOPMetadata = new OperationMetadata(opId);
+		OperationMetadata rdOPMetadata = OperationsList.getOperationMetadata(opId);
 		int pointNb = rdOPMetadata.getOpSetSize();
 		int picWidth = 4000;
 		if (pointNb < 1000) {
@@ -142,7 +142,7 @@ public class OutputGenotypicAssociation {
 
 		JFreeChart chart = new JFreeChart("X² QQ", JFreeChart.DEFAULT_TITLE_FONT, qqPlot, true);
 
-		OperationMetadata rdOPMetadata = new OperationMetadata(opId);
+		OperationMetadata rdOPMetadata = OperationsList.getOperationMetadata(opId);
 		String imagePath = Config.getConfigValue(Config.PROPERTY_REPORTS_DIR, "") + "/STUDY_" + rdOPMetadata.getStudyId() + "/" + outName + ".png";
 		try {
 			ChartUtilities.saveChartAsPNG(new File(imagePath),
@@ -174,7 +174,7 @@ public class OutputGenotypicAssociation {
 			}
 
 			String sep = cExport.separator_REPORTS;
-			OperationMetadata rdOPMetadata = new OperationMetadata(opId);
+			OperationMetadata rdOPMetadata = OperationsList.getOperationMetadata(opId);
 			MarkerSet_opt rdInfoMarkerSet = new MarkerSet_opt(rdOPMetadata.getStudyId(), rdOPMetadata.getParentMatrixId());
 			rdInfoMarkerSet.initFullMarkerIdSetMap();
 
@@ -220,7 +220,7 @@ public class OutputGenotypicAssociation {
 				}
 			}
 			if (markersQAopId != Integer.MIN_VALUE) {
-				OperationMetadata qaMetadata = new OperationMetadata(markersQAopId);
+				OperationMetadata qaMetadata = OperationsList.getOperationMetadata(markersQAopId);
 				NetcdfFile qaNcFile = NetcdfFile.open(qaMetadata.getPathToMatrix());
 
 				OperationSet rdOperationSet = new OperationSet(rdOPMetadata.getStudyId(), markersQAopId);

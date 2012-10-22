@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Map;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.model.OperationMetadata;
+import org.gwaspi.model.OperationsList;
 import org.gwaspi.netCDF.operations.OperationSet;
 import ucar.nc2.NetcdfFile;
 
@@ -20,7 +21,7 @@ public class GatherQAMarkersData {
 
 	public static Map<String, Object> loadMarkerQAMissingRatio(int opId) throws IOException {
 
-		OperationMetadata rdOPMetadata = new OperationMetadata(opId);
+		OperationMetadata rdOPMetadata = OperationsList.getOperationMetadata(opId);
 
 		OperationSet rdInfoMarkerSet = new OperationSet(rdOPMetadata.getStudyId(), opId);
 		Map<String, Object> rdMatrixMarkerSetMap = rdInfoMarkerSet.getOpSetMap();
@@ -34,7 +35,7 @@ public class GatherQAMarkersData {
 
 	public static Map<String, Object> loadMarkerQAMismatchState(int opId) throws IOException {
 
-		OperationMetadata rdOPMetadata = new OperationMetadata(opId);
+		OperationMetadata rdOPMetadata = OperationsList.getOperationMetadata(opId);
 
 		OperationSet rdInfoMarkerSet = new OperationSet(rdOPMetadata.getStudyId(), opId);
 		Map<String, Object> rdMatrixMarkerSetMap = rdInfoMarkerSet.getOpSetMap();
@@ -48,7 +49,7 @@ public class GatherQAMarkersData {
 
 	public static Map<String, Object> loadMarkerQAMinorAlleles(int opId) throws IOException {
 
-		OperationMetadata rdOPMetadata = new OperationMetadata(opId);
+		OperationMetadata rdOPMetadata = OperationsList.getOperationMetadata(opId);
 
 		OperationSet rdInfoMarkerSet = new OperationSet(rdOPMetadata.getStudyId(), opId);
 		Map<String, Object> rdMatrixMarkerSetMap = rdInfoMarkerSet.getOpSetMap();
@@ -62,7 +63,7 @@ public class GatherQAMarkersData {
 
 	public static Map<String, Object> loadMarkerQAMajorAlleles(int opId) throws IOException {
 
-		OperationMetadata rdOPMetadata = new OperationMetadata(opId);
+		OperationMetadata rdOPMetadata = OperationsList.getOperationMetadata(opId);
 
 		OperationSet rdInfoMarkerSet = new OperationSet(rdOPMetadata.getStudyId(), opId);
 		Map<String, Object> rdMatrixMarkerSetMap = rdInfoMarkerSet.getOpSetMap();
@@ -76,7 +77,7 @@ public class GatherQAMarkersData {
 
 	public static Map<String, Object> loadMarkerQAMinorAlleleFrequency(int opId) throws IOException {
 
-		OperationMetadata rdOPMetadata = new OperationMetadata(opId);
+		OperationMetadata rdOPMetadata = OperationsList.getOperationMetadata(opId);
 
 		OperationSet rdInfoMarkerSet = new OperationSet(rdOPMetadata.getStudyId(), opId);
 		Map<String, Object> rdMatrixMarkerSetMap = rdInfoMarkerSet.getOpSetMap();
@@ -90,7 +91,7 @@ public class GatherQAMarkersData {
 
 	public static Map<String, Object> loadMarkerQAMajorAlleleFrequency(int opId) throws IOException {
 
-		OperationMetadata rdOPMetadata = new OperationMetadata(opId);
+		OperationMetadata rdOPMetadata = OperationsList.getOperationMetadata(opId);
 
 		OperationSet rdInfoMarkerSet = new OperationSet(rdOPMetadata.getStudyId(), opId);
 		Map<String, Object> rdMatrixMarkerSetMap = rdInfoMarkerSet.getOpSetMap();
