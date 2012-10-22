@@ -22,14 +22,10 @@ import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.tree.DefaultMutableTreeNode;
-import org.gwaspi.constants.cDBGWASpi;
-import org.gwaspi.constants.cDBMatrix;
 import org.gwaspi.constants.cDBSamples;
 import org.gwaspi.constants.cExport;
 import org.gwaspi.constants.cExport.ExportFormat;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
-import org.gwaspi.database.DbManager;
-import org.gwaspi.global.ServiceLocator;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.utils.BrowserHelpUrlAction;
 import org.gwaspi.gui.utils.Dialogs;
@@ -481,13 +477,7 @@ public class CurrentMatrixPanel extends JPanel {
 		@Override
 		public void actionPerformed(ActionEvent evt) {
 			try {
-				DbManager db = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
-				db.updateTable(cDBGWASpi.SCH_MATRICES,
-						cDBMatrix.T_MATRICES,
-						new String[]{cDBMatrix.f_DESCRIPTION},
-						new Object[]{matrixDesc.getText()},
-						new String[]{cDBMatrix.f_ID},
-						new Object[]{matrix.getId()});
+				MatricesList.saveMatrixDescription(matrix.getId(), matrixDesc.getText());
 			} catch (IOException ex) {
 				log.error(null, ex);
 			}

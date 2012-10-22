@@ -24,9 +24,6 @@ import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.tree.DefaultMutableTreeNode;
-import org.gwaspi.constants.cDBGWASpi;
-import org.gwaspi.database.DbManager;
-import org.gwaspi.global.ServiceLocator;
 import org.gwaspi.global.Text;
 import org.gwaspi.global.Utils;
 import org.gwaspi.gui.utils.BrowserHelpUrlAction;
@@ -263,13 +260,7 @@ public class CurrentStudyPanel extends JPanel {
 			try {
 				Utils.logBlockInStudyDesc(descriptionSource.getText(), study.getId());
 
-				DbManager db = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
-				db.updateTable(cDBGWASpi.SCH_APP,
-						cDBGWASpi.T_STUDIES,
-						new String[]{cDBGWASpi.f_STUDY_DESCRIPTION},
-						new Object[]{descriptionSource.getText()},
-						new String[]{cDBGWASpi.f_ID},
-						new Object[]{study.getId()});
+				MatricesList.saveMatrixDescription(study.getId(), descriptionSource.getText());
 			} catch (IOException ex) {
 				log.error(null, ex);
 			}
