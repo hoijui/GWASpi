@@ -1,8 +1,8 @@
 package org.gwaspi.gui.utils;
 
-import org.gwaspi.global.Text;
 import java.awt.event.ActionEvent;
 import javax.swing.AbstractAction;
+import org.gwaspi.global.Text;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

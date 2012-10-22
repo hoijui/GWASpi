@@ -1,6 +1,5 @@
 package org.gwaspi.gui;
 
-import org.gwaspi.global.Config;
 import java.awt.Dimension;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -12,6 +11,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTree;
 import javax.swing.tree.TreePath;
+import org.gwaspi.global.Config;
 import org.gwaspi.model.GWASpiExplorer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

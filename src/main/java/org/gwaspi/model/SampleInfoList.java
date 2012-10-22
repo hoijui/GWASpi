@@ -1,12 +1,10 @@
 package org.gwaspi.model;
 
-import org.gwaspi.dao.StudyService;
-import org.gwaspi.dao.sql.StudyServiceImpl;
-import org.gwaspi.database.DbManager;
 import java.io.IOException;
 import java.util.List;
 import org.gwaspi.dao.SampleInfoService;
 import org.gwaspi.dao.sql.SampleInfoServiceImpl;
+import org.gwaspi.database.DbManager;
 
 /**
  *

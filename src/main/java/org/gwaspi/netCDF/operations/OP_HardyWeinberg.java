@@ -1,9 +1,9 @@
 package org.gwaspi.netCDF.operations;
 
-import org.gwaspi.constants.cNetCDF;
-import org.gwaspi.global.Text;
 import java.io.IOException;
 import java.util.Map;
+import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.global.Text;
 import org.gwaspi.model.Operation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

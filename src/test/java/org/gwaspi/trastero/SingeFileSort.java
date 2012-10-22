@@ -1,7 +1,5 @@
 package org.gwaspi.trastero;
 
-import org.gwaspi.constants.cGlobal;
-import org.gwaspi.constants.cImport;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -11,6 +9,8 @@ import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Random;
+import org.gwaspi.constants.cGlobal;
+import org.gwaspi.constants.cImport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

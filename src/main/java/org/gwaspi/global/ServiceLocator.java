@@ -1,14 +1,14 @@
 package org.gwaspi.global;
 
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
 import org.gwaspi.database.DbManager;
 import org.gwaspi.database.DbManagerImpl;
 import org.gwaspi.framework.jdbc.connection.ConnectionProvider;
 import org.gwaspi.framework.jdbc.connection.JavaDBConnectionProvider;
 import org.gwaspi.framework.jdbc.connection.JdbcConnectionProvider;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
 
 public class ServiceLocator {
 

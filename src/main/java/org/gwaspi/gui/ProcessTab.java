@@ -1,9 +1,5 @@
 package org.gwaspi.gui;
 
-import org.gwaspi.global.Text;
-import org.gwaspi.gui.utils.Dialogs;
-import org.gwaspi.gui.utils.LogDocument;
-import org.gwaspi.gui.utils.RowRendererProcessOverviewWithAbortIcon;
 import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
@@ -34,13 +30,17 @@ import javax.swing.LayoutStyle;
 import javax.swing.SwingConstants;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.gwaspi.global.Text;
+import org.gwaspi.gui.utils.Dialogs;
+import org.gwaspi.gui.utils.LogDocument;
+import org.gwaspi.gui.utils.RowRendererProcessOverviewWithAbortIcon;
 import org.gwaspi.threadbox.QueueState;
 import org.gwaspi.threadbox.SwingDeleterItem;
 import org.gwaspi.threadbox.SwingDeleterItemList;
 import org.gwaspi.threadbox.SwingWorkerItem;
 import org.gwaspi.threadbox.SwingWorkerItemList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *

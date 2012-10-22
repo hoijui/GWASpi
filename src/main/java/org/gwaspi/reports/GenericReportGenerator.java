@@ -1,8 +1,5 @@
 package org.gwaspi.reports;
 
-import org.gwaspi.constants.cNetCDF;
-import org.gwaspi.gui.reports.ManhattanPlotZoom;
-import org.gwaspi.gui.reports.SampleQAHetzygPlotZoom;
 import java.awt.Color;
 import java.awt.geom.Rectangle2D;
 import java.io.BufferedReader;
@@ -16,9 +13,13 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.gui.reports.ManhattanPlotZoom;
+import org.gwaspi.gui.reports.SampleQAHetzygPlotZoom;
 import org.gwaspi.netCDF.markers.MarkerSet_opt;
 import org.gwaspi.netCDF.operations.OperationMetadata;
 import org.gwaspi.netCDF.operations.OperationSet;
+import org.gwaspi.statistics.Chisquare;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.LegendItemCollection;
@@ -38,7 +39,6 @@ import org.jfree.ui.RectangleAnchor;
 import org.jfree.ui.TextAnchor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.gwaspi.statistics.Chisquare;
 import ucar.nc2.NetcdfFile;
 
 /**

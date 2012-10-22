@@ -1,14 +1,5 @@
 package org.gwaspi.gui;
 
-import org.gwaspi.constants.cImport;
-import org.gwaspi.constants.cImport.ImportFormat;
-import org.gwaspi.global.Text;
-import org.gwaspi.gui.utils.BrowserHelpUrlAction;
-import org.gwaspi.gui.utils.CursorUtils;
-import org.gwaspi.gui.utils.Dialogs;
-import org.gwaspi.gui.utils.HelpURLs;
-import org.gwaspi.gui.utils.LimitedLengthDocument;
-import org.gwaspi.gui.utils.MoreGWASinOneGoInfo;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
@@ -38,13 +29,22 @@ import javax.swing.LayoutStyle;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.border.TitledBorder;
+import org.gwaspi.constants.cImport;
+import org.gwaspi.constants.cImport.ImportFormat;
+import org.gwaspi.global.Text;
+import org.gwaspi.gui.utils.BrowserHelpUrlAction;
+import org.gwaspi.gui.utils.CursorUtils;
+import org.gwaspi.gui.utils.Dialogs;
+import org.gwaspi.gui.utils.HelpURLs;
+import org.gwaspi.gui.utils.LimitedLengthDocument;
+import org.gwaspi.gui.utils.MoreGWASinOneGoInfo;
 import org.gwaspi.model.MatricesList;
-import org.gwaspi.netCDF.loader.GenotypesLoadDescription;
 import org.gwaspi.model.MatrixMetadata;
+import org.gwaspi.netCDF.loader.GenotypesLoadDescription;
 import org.gwaspi.netCDF.operations.GWASinOneGOParams;
+import org.gwaspi.threadbox.MultiOperations;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.gwaspi.threadbox.MultiOperations;
 
 /**
  *

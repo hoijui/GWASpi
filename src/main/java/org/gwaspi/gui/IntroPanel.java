@@ -1,8 +1,5 @@
 package org.gwaspi.gui;
 
-import org.gwaspi.global.Text;
-import org.gwaspi.gui.utils.HelpURLs;
-import org.gwaspi.gui.utils.URLInDefaultBrowser;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Cursor;
@@ -29,6 +26,9 @@ import javax.swing.JTextPane;
 import javax.swing.LayoutStyle;
 import javax.swing.SwingConstants;
 import javax.swing.border.TitledBorder;
+import org.gwaspi.global.Text;
+import org.gwaspi.gui.utils.HelpURLs;
+import org.gwaspi.gui.utils.URLInDefaultBrowser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

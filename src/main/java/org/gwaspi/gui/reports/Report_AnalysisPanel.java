@@ -1,9 +1,5 @@
 package org.gwaspi.gui.reports;
 
-import org.gwaspi.constants.cNetCDF.Defaults.OPType;
-import org.gwaspi.global.Text;
-import org.gwaspi.gui.utils.BrowserHelpUrlAction;
-import org.gwaspi.gui.utils.Dialogs;
 import java.awt.Component;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -19,6 +15,10 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.LayoutStyle;
 import javax.swing.border.TitledBorder;
+import org.gwaspi.constants.cNetCDF.Defaults.OPType;
+import org.gwaspi.global.Text;
+import org.gwaspi.gui.utils.BrowserHelpUrlAction;
+import org.gwaspi.gui.utils.Dialogs;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.Matrix;
 import org.gwaspi.model.Operation;

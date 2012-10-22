@@ -1,6 +1,5 @@
 package org.gwaspi.gui.utils;
 
-import org.gwaspi.constants.cGlobal;
 import java.awt.Color;
 import java.awt.Component;
 import java.net.URL;
@@ -10,6 +9,7 @@ import javax.swing.JTable;
 import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
+import org.gwaspi.constants.cGlobal;
 import org.gwaspi.threadbox.QueueState;
 import org.gwaspi.threadbox.SwingDeleterItem;
 import org.gwaspi.threadbox.SwingDeleterItemList;

@@ -1,9 +1,9 @@
 package org.gwaspi.netCDF.loader;
 
-import org.gwaspi.constants.cImport.ImportFormat;
 import java.io.IOException;
 import java.util.EnumMap;
 import java.util.Map;
+import org.gwaspi.constants.cImport.ImportFormat;
 import org.gwaspi.samples.InsertSampleInfo;
 import ucar.ma2.InvalidRangeException;
 

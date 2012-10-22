@@ -1,10 +1,10 @@
 package org.gwaspi.samples;
 
-import org.gwaspi.constants.cImport;
 import java.io.File;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import org.gwaspi.constants.cImport;
 
 public class AffymetrixSamplesParser implements SamplesParser {
 

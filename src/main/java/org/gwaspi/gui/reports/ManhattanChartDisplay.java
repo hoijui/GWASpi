@@ -1,12 +1,5 @@
 package org.gwaspi.gui.reports;
 
-import org.gwaspi.global.Config;
-import org.gwaspi.global.Text;
-import org.gwaspi.global.Utils;
-import org.gwaspi.gui.GWASpiExplorerPanel;
-import org.gwaspi.gui.MatrixAnalysePanel;
-import org.gwaspi.gui.utils.CursorUtils;
-import org.gwaspi.gui.utils.Dialogs;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
@@ -25,6 +18,13 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.LayoutStyle;
+import org.gwaspi.global.Config;
+import org.gwaspi.global.Text;
+import org.gwaspi.global.Utils;
+import org.gwaspi.gui.GWASpiExplorerPanel;
+import org.gwaspi.gui.MatrixAnalysePanel;
+import org.gwaspi.gui.utils.CursorUtils;
+import org.gwaspi.gui.utils.Dialogs;
 import org.gwaspi.model.Operation;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.netCDF.operations.OperationSet;

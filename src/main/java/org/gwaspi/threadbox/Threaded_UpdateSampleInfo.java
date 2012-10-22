@@ -1,17 +1,17 @@
 package org.gwaspi.threadbox;
 
-import org.gwaspi.constants.cDBGWASpi;
-import org.gwaspi.database.DbManager;
-import org.gwaspi.global.ServiceLocator;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import org.gwaspi.constants.cDBGWASpi;
+import org.gwaspi.database.DbManager;
+import org.gwaspi.global.ServiceLocator;
 import org.gwaspi.model.Study;
 import org.gwaspi.model.StudyList;
+import org.gwaspi.samples.SamplesParserManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.gwaspi.samples.SamplesParserManager;
 
 /**
  *

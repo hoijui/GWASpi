@@ -1,15 +1,15 @@
 package org.gwaspi.netCDF.operations;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 import org.gwaspi.constants.cDBGWASpi;
 import org.gwaspi.constants.cDBOperations;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.database.DbManager;
 import org.gwaspi.global.Config;
 import org.gwaspi.global.ServiceLocator;
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.Dimension;

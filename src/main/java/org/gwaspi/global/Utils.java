@@ -1,6 +1,5 @@
 package org.gwaspi.global;
 
-import org.gwaspi.constants.cGlobal;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
@@ -16,6 +15,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Locale;
+import org.gwaspi.constants.cGlobal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -1,17 +1,5 @@
 package org.gwaspi.gui;
 
-import org.gwaspi.constants.cNetCDF;
-import org.gwaspi.constants.cNetCDF.Defaults.OPType;
-import org.gwaspi.global.Text;
-import org.gwaspi.gui.utils.BrowserHelpUrlAction;
-import org.gwaspi.gui.utils.CursorUtils;
-import org.gwaspi.gui.utils.Dialogs;
-import org.gwaspi.gui.utils.HelpURLs;
-import org.gwaspi.gui.utils.MoreAssocInfo;
-import org.gwaspi.gui.utils.MoreGWASinOneGoInfo;
-import org.gwaspi.gui.utils.MoreInfoForGtFreq;
-import org.gwaspi.gui.utils.NodeToPathCorrespondence;
-import org.gwaspi.gui.utils.RowRendererDefault;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -40,18 +28,30 @@ import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.tree.DefaultMutableTreeNode;
+import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.constants.cNetCDF.Defaults.OPType;
+import org.gwaspi.global.Text;
+import org.gwaspi.gui.utils.BrowserHelpUrlAction;
+import org.gwaspi.gui.utils.CursorUtils;
+import org.gwaspi.gui.utils.Dialogs;
+import org.gwaspi.gui.utils.HelpURLs;
+import org.gwaspi.gui.utils.MoreAssocInfo;
+import org.gwaspi.gui.utils.MoreGWASinOneGoInfo;
+import org.gwaspi.gui.utils.MoreInfoForGtFreq;
+import org.gwaspi.gui.utils.NodeToPathCorrespondence;
+import org.gwaspi.gui.utils.RowRendererDefault;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.Matrix;
+import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.Operation;
 import org.gwaspi.model.OperationsList;
-import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.netCDF.operations.GWASinOneGOParams;
 import org.gwaspi.netCDF.operations.OperationManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.gwaspi.samples.SamplesParserManager;
 import org.gwaspi.threadbox.MultiOperations;
 import org.gwaspi.threadbox.SwingWorkerItemList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *

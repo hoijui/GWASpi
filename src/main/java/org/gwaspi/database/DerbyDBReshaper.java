@@ -1,16 +1,16 @@
 package org.gwaspi.database;
 
-import org.gwaspi.constants.cDBGWASpi;
-import org.gwaspi.constants.cDBSamples;
-import org.gwaspi.constants.cGlobal;
-import org.gwaspi.global.ServiceLocator;
-import org.gwaspi.global.XMLParser;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
+import org.gwaspi.constants.cDBGWASpi;
+import org.gwaspi.constants.cDBSamples;
+import org.gwaspi.constants.cGlobal;
+import org.gwaspi.global.ServiceLocator;
+import org.gwaspi.global.XMLParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;

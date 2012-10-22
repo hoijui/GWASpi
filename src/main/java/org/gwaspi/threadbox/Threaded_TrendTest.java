@@ -1,16 +1,16 @@
 package org.gwaspi.threadbox;
 
-import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import java.util.List;
+import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.model.GWASpiExplorerNodes;
 import org.gwaspi.model.Operation;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.netCDF.operations.GWASinOneGOParams;
 import org.gwaspi.netCDF.operations.OperationManager;
 import org.gwaspi.netCDF.operations.OperationMetadata;
+import org.gwaspi.reports.OutputTrendTest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.gwaspi.reports.OutputTrendTest;
 
 /**
  *

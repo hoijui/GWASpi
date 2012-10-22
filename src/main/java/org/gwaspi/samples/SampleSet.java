@@ -1,12 +1,11 @@
 package org.gwaspi.samples;
 
-import org.gwaspi.constants.cDBSamples;
-import org.gwaspi.constants.cNetCDF;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleInfo;

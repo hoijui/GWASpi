@@ -1,8 +1,8 @@
 package org.gwaspi.threadbox;
 
-import org.gwaspi.constants.cNetCDF;
 import java.util.ArrayList;
 import java.util.List;
+import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.model.GWASpiExplorerNodes;
 import org.gwaspi.netCDF.operations.OP_QAMarkers_opt;
 import org.gwaspi.netCDF.operations.OP_QASamples_opt;

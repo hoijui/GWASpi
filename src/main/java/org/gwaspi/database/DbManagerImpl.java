@@ -1,15 +1,15 @@
 package org.gwaspi.database;
 
-import org.gwaspi.framework.error.GeneralApplicationException;
-import org.gwaspi.framework.jdbc.connection.ConnectionProvider;
-import org.gwaspi.framework.jdbc.query.QueryExecutor;
-import org.gwaspi.framework.jdbc.resultset.RowMappingResultSetHandler;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import org.gwaspi.framework.error.GeneralApplicationException;
+import org.gwaspi.framework.jdbc.connection.ConnectionProvider;
+import org.gwaspi.framework.jdbc.query.QueryExecutor;
+import org.gwaspi.framework.jdbc.resultset.RowMappingResultSetHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

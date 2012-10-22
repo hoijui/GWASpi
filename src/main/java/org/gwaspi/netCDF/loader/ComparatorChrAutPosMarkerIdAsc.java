@@ -1,9 +1,9 @@
 package org.gwaspi.netCDF.loader;
 
-import org.gwaspi.constants.cNetCDF;
 import java.util.Comparator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.gwaspi.constants.cNetCDF;
 
 /**
  *

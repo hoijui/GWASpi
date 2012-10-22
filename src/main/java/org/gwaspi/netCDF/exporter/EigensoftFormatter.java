@@ -1,9 +1,5 @@
 package org.gwaspi.netCDF.exporter;
 
-import org.gwaspi.constants.cDBSamples;
-import org.gwaspi.constants.cExport;
-import org.gwaspi.constants.cNetCDF;
-import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import java.io.BufferedWriter;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -13,15 +9,18 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import org.gwaspi.constants.cExport;
+import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.constants.cNetCDF.Defaults.OPType;
+import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.Operation;
 import org.gwaspi.model.OperationsList;
-import org.gwaspi.netCDF.markers.MarkerSet_opt;
-import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleInfo;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.gwaspi.netCDF.markers.MarkerSet_opt;
 import org.gwaspi.reports.GatherQAMarkersData;
 import org.gwaspi.samples.SampleSet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.nc2.NetcdfFile;
 
 /**

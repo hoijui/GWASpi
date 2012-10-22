@@ -1,9 +1,5 @@
 package org.gwaspi.netCDF.loader;
 
-import org.gwaspi.constants.cImport;
-import org.gwaspi.constants.cImport.Annotation.Sequenom;
-import org.gwaspi.constants.cNetCDF;
-import org.gwaspi.global.Text;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -11,6 +7,10 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import org.gwaspi.constants.cImport;
+import org.gwaspi.constants.cImport.Annotation.Sequenom;
+import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.global.Text;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -1,9 +1,9 @@
 package org.gwaspi.dao;
 
-import org.gwaspi.database.DbManager;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import org.gwaspi.database.DbManager;
 import org.gwaspi.model.Operation;
 import org.gwaspi.model.Report;
 

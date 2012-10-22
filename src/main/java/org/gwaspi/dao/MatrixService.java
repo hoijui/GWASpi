@@ -1,10 +1,10 @@
 package org.gwaspi.dao;
 
-import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
-import org.gwaspi.database.DbManager;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
+import org.gwaspi.database.DbManager;
 import org.gwaspi.model.Matrix;
 import org.gwaspi.model.MatrixMetadata;
 

@@ -1,8 +1,8 @@
 package org.gwaspi.database;
 
+import java.io.IOException;
 import org.gwaspi.constants.cDBGWASpi;
 import org.gwaspi.global.ServiceLocator;
-import java.io.IOException;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.ReportsList;

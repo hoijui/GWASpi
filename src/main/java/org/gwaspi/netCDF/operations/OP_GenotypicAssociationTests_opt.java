@@ -1,11 +1,11 @@
 package org.gwaspi.netCDF.operations;
 
-import org.gwaspi.constants.cNetCDF;
-import org.gwaspi.global.Text;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.global.Text;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.Operation;

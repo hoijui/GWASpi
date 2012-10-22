@@ -1,9 +1,9 @@
 package org.gwaspi.netCDF;
 
-import org.gwaspi.constants.cNetCDF;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import org.gwaspi.constants.cNetCDF;
 import ucar.ma2.*;
 import ucar.nc2.*;
 

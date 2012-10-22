@@ -1,7 +1,5 @@
 package org.gwaspi.model;
 
-import java.io.IOException;
-
 /**
  *
  * @author Fernando Muñiz Fernandez

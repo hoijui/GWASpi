@@ -1,10 +1,5 @@
 package org.gwaspi.gui;
 
-import org.gwaspi.constants.cImport;
-import org.gwaspi.constants.cNetCDF;
-import org.gwaspi.global.Text;
-import org.gwaspi.gui.utils.HelpURLs;
-import org.gwaspi.gui.utils.URLInDefaultBrowser;
 import java.awt.Container;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -23,6 +18,11 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
+import org.gwaspi.constants.cImport;
+import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.global.Text;
+import org.gwaspi.gui.utils.HelpURLs;
+import org.gwaspi.gui.utils.URLInDefaultBrowser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

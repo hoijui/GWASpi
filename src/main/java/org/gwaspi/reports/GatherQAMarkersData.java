@@ -1,8 +1,8 @@
 package org.gwaspi.reports;
 
-import org.gwaspi.constants.cNetCDF;
 import java.io.IOException;
 import java.util.Map;
+import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.netCDF.operations.OperationMetadata;
 import org.gwaspi.netCDF.operations.OperationSet;
 import ucar.nc2.NetcdfFile;

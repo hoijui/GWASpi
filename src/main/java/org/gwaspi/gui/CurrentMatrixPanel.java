@@ -1,20 +1,5 @@
 package org.gwaspi.gui;
 
-import org.gwaspi.constants.cDBGWASpi;
-import org.gwaspi.constants.cDBMatrix;
-import org.gwaspi.constants.cDBSamples;
-import org.gwaspi.constants.cExport;
-import org.gwaspi.constants.cExport.ExportFormat;
-import org.gwaspi.constants.cNetCDF.Defaults.OPType;
-import org.gwaspi.database.DbManager;
-import org.gwaspi.global.ServiceLocator;
-import org.gwaspi.global.Text;
-import org.gwaspi.gui.utils.BrowserHelpUrlAction;
-import org.gwaspi.gui.utils.Dialogs;
-import org.gwaspi.gui.utils.HelpURLs;
-import org.gwaspi.gui.utils.LimitedLengthDocument;
-import org.gwaspi.gui.utils.NodeToPathCorrespondence;
-import org.gwaspi.gui.utils.RowRendererDefault;
 import java.awt.Component;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -37,14 +22,29 @@ import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.tree.DefaultMutableTreeNode;
+import org.gwaspi.constants.cDBGWASpi;
+import org.gwaspi.constants.cDBMatrix;
+import org.gwaspi.constants.cDBSamples;
+import org.gwaspi.constants.cExport;
+import org.gwaspi.constants.cExport.ExportFormat;
+import org.gwaspi.constants.cNetCDF.Defaults.OPType;
+import org.gwaspi.database.DbManager;
+import org.gwaspi.global.ServiceLocator;
+import org.gwaspi.global.Text;
+import org.gwaspi.gui.utils.BrowserHelpUrlAction;
+import org.gwaspi.gui.utils.Dialogs;
+import org.gwaspi.gui.utils.HelpURLs;
+import org.gwaspi.gui.utils.LimitedLengthDocument;
+import org.gwaspi.gui.utils.NodeToPathCorrespondence;
+import org.gwaspi.gui.utils.RowRendererDefault;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.Matrix;
 import org.gwaspi.model.Operation;
 import org.gwaspi.model.OperationsList;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.gwaspi.threadbox.MultiOperations;
 import org.gwaspi.threadbox.SwingWorkerItemList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *

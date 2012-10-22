@@ -1,8 +1,8 @@
 package org.gwaspi.threadbox;
 
-import org.gwaspi.gui.ProcessTab;
 import java.util.ArrayList;
 import java.util.List;
+import org.gwaspi.gui.ProcessTab;
 
 /**
  *

@@ -1,15 +1,5 @@
 package org.gwaspi.gui.reports;
 
-import org.gwaspi.constants.cNetCDF;
-import org.gwaspi.constants.cNetCDF.Defaults.OPType;
-import org.gwaspi.global.Config;
-import org.gwaspi.global.Text;
-import org.gwaspi.gui.GWASpiExplorerPanel;
-import org.gwaspi.gui.StartGWASpi;
-import org.gwaspi.gui.utils.CursorUtils;
-import org.gwaspi.gui.utils.Dialogs;
-import org.gwaspi.gui.utils.LinksExternalResouces;
-import org.gwaspi.gui.utils.URLInDefaultBrowser;
 import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -36,13 +26,24 @@ import javax.swing.JScrollPane;
 import javax.swing.LayoutStyle;
 import javax.swing.SwingConstants;
 import javax.swing.border.TitledBorder;
+import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.constants.cNetCDF.Defaults.OPType;
+import org.gwaspi.global.Config;
+import org.gwaspi.global.Text;
+import org.gwaspi.gui.GWASpiExplorerPanel;
+import org.gwaspi.gui.StartGWASpi;
+import org.gwaspi.gui.utils.CursorUtils;
+import org.gwaspi.gui.utils.Dialogs;
+import org.gwaspi.gui.utils.LinksExternalResouces;
+import org.gwaspi.gui.utils.URLInDefaultBrowser;
 import org.gwaspi.model.MatricesList;
+import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.Operation;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.Report;
 import org.gwaspi.model.ReportsList;
-import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.netCDF.operations.OperationMetadata;
+import org.gwaspi.reports.GenericReportGenerator;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartMouseEvent;
 import org.jfree.chart.ChartMouseListener;
@@ -72,7 +73,6 @@ import org.jfree.ui.RectangleEdge;
 import org.jfree.ui.TextAnchor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.gwaspi.reports.GenericReportGenerator;
 
 /**
  *

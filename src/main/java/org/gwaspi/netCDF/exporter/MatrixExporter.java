@@ -1,17 +1,17 @@
 package org.gwaspi.netCDF.exporter;
 
-import org.gwaspi.constants.cExport.ExportFormat;
-import org.gwaspi.global.Config;
-import org.gwaspi.global.Text;
 import java.io.IOException;
 import java.util.EnumMap;
 import java.util.Map;
+import org.gwaspi.constants.cExport.ExportFormat;
+import org.gwaspi.global.Config;
+import org.gwaspi.global.Text;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.netCDF.markers.MarkerSet_opt;
+import org.gwaspi.samples.SampleSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.gwaspi.samples.SampleSet;
 import ucar.ma2.InvalidRangeException;
 
 /**

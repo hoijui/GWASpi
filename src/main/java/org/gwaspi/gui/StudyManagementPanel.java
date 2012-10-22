@@ -1,12 +1,5 @@
 package org.gwaspi.gui;
 
-import org.gwaspi.global.Text;
-import org.gwaspi.gui.utils.BrowserHelpUrlAction;
-import org.gwaspi.gui.utils.Dialogs;
-import org.gwaspi.gui.utils.HelpURLs;
-import org.gwaspi.gui.utils.LimitedLengthDocument;
-import org.gwaspi.gui.utils.NodeToPathCorrespondence;
-import org.gwaspi.gui.utils.RowRendererDefault;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
@@ -35,12 +28,19 @@ import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.tree.DefaultMutableTreeNode;
+import org.gwaspi.global.Text;
+import org.gwaspi.gui.utils.BrowserHelpUrlAction;
+import org.gwaspi.gui.utils.Dialogs;
+import org.gwaspi.gui.utils.HelpURLs;
+import org.gwaspi.gui.utils.LimitedLengthDocument;
+import org.gwaspi.gui.utils.NodeToPathCorrespondence;
+import org.gwaspi.gui.utils.RowRendererDefault;
 import org.gwaspi.model.Study;
 import org.gwaspi.model.StudyList;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.gwaspi.threadbox.MultiOperations;
 import org.gwaspi.threadbox.SwingWorkerItemList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *

@@ -1,9 +1,9 @@
 package org.gwaspi.trastero;
 
-import org.gwaspi.constants.cGlobal;
 import java.io.File;
 import java.io.IOException;
 import javax.swing.JProgressBar;
+import org.gwaspi.constants.cGlobal;
 
 /**
  *

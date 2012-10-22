@@ -1,6 +1,5 @@
 package org.gwaspi.reports;
 
-import org.gwaspi.constants.cExport;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -15,6 +14,7 @@ import java.io.OutputStream;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
+import org.gwaspi.constants.cExport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

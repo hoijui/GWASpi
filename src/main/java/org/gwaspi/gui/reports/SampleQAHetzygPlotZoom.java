@@ -1,12 +1,5 @@
 package org.gwaspi.gui.reports;
 
-import org.gwaspi.global.Config;
-import org.gwaspi.global.Text;
-import org.gwaspi.global.Utils;
-import org.gwaspi.gui.GWASpiExplorerPanel;
-import org.gwaspi.gui.StartGWASpi;
-import org.gwaspi.gui.utils.CursorUtils;
-import org.gwaspi.gui.utils.Dialogs;
 import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -30,11 +23,19 @@ import javax.swing.JTextField;
 import javax.swing.LayoutStyle;
 import javax.swing.SwingConstants;
 import javax.swing.border.TitledBorder;
+import org.gwaspi.global.Config;
+import org.gwaspi.global.Text;
+import org.gwaspi.global.Utils;
+import org.gwaspi.gui.GWASpiExplorerPanel;
+import org.gwaspi.gui.StartGWASpi;
+import org.gwaspi.gui.utils.CursorUtils;
+import org.gwaspi.gui.utils.Dialogs;
 import org.gwaspi.model.MatricesList;
+import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.Operation;
 import org.gwaspi.model.OperationsList;
-import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.netCDF.operations.OperationMetadata;
+import org.gwaspi.reports.GenericReportGenerator;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.ChartUtilities;
@@ -57,7 +58,6 @@ import org.jfree.ui.RectangleAnchor;
 import org.jfree.ui.TextAnchor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.gwaspi.reports.GenericReportGenerator;
 
 /**
  *

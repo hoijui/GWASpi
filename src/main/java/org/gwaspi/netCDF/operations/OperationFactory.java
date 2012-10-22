@@ -1,14 +1,14 @@
 package org.gwaspi.netCDF.operations;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import org.gwaspi.constants.cDBGWASpi;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.database.DbManager;
 import org.gwaspi.global.Config;
 import org.gwaspi.global.ServiceLocator;
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.OperationsList;
 import org.slf4j.Logger;

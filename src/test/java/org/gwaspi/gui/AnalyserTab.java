@@ -1,9 +1,5 @@
 package org.gwaspi.gui;
 
-import org.gwaspi.constants.cGlobal;
-import org.gwaspi.global.Config;
-import org.gwaspi.global.SysCommandExecutor;
-import org.gwaspi.gui.utils.Dialogs;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
@@ -16,6 +12,10 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.LayoutStyle;
+import org.gwaspi.constants.cGlobal;
+import org.gwaspi.global.Config;
+import org.gwaspi.global.SysCommandExecutor;
+import org.gwaspi.gui.utils.Dialogs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

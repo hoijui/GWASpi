@@ -1,9 +1,9 @@
 package org.gwaspi.threadbox;
 
-import org.gwaspi.constants.cNetCDF.Defaults.SetMarkerPickCase;
-import org.gwaspi.constants.cNetCDF.Defaults.SetSamplePickCase;
 import java.io.File;
 import java.util.Set;
+import org.gwaspi.constants.cNetCDF.Defaults.SetMarkerPickCase;
+import org.gwaspi.constants.cNetCDF.Defaults.SetSamplePickCase;
 import org.gwaspi.model.GWASpiExplorerNodes;
 import org.gwaspi.netCDF.operations.MatrixDataExtractor_opt;
 import org.gwaspi.netCDF.operations.OP_QAMarkers_opt;

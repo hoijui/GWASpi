@@ -1,8 +1,8 @@
 package org.gwaspi.threadbox;
 
-import org.gwaspi.constants.cNetCDF;
 import java.util.Map;
 import java.util.Set;
+import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.model.GWASpiExplorerNodes;
 import org.gwaspi.netCDF.loader.GenotypesLoadDescription;
 import org.gwaspi.netCDF.loader.LoadManager;
@@ -12,13 +12,13 @@ import org.gwaspi.netCDF.operations.OP_QAMarkers_opt;
 import org.gwaspi.netCDF.operations.OP_QASamples_opt;
 import org.gwaspi.netCDF.operations.OperationManager;
 import org.gwaspi.netCDF.operations.OperationMetadata;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.gwaspi.reports.OutputAllelicAssociation;
 import org.gwaspi.reports.OutputGenotypicAssociation;
 import org.gwaspi.reports.OutputQAMarkers;
 import org.gwaspi.reports.OutputQASamples;
 import org.gwaspi.reports.OutputTrendTest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *

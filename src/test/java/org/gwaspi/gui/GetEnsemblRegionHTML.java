@@ -1,6 +1,5 @@
 package org.gwaspi.gui;
 
-import org.gwaspi.gui.utils.URLInDefaultBrowser;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -14,6 +13,7 @@ import javax.swing.WindowConstants;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 import javax.swing.text.html.HTMLEditorKit;
+import org.gwaspi.gui.utils.URLInDefaultBrowser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

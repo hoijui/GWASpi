@@ -1,11 +1,11 @@
 package org.gwaspi.model;
 
+import java.io.IOException;
+import java.util.List;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.dao.OperationService;
 import org.gwaspi.dao.sql.OperationServiceImpl;
 import org.gwaspi.database.DbManager;
-import java.io.IOException;
-import java.util.List;
 
 /**
  *

@@ -1,9 +1,5 @@
 package org.gwaspi.netCDF.loader;
 
-import org.gwaspi.constants.cImport;
-import org.gwaspi.constants.cImport.Annotation.Plink_Standard;
-import org.gwaspi.constants.cImport.ImportFormat;
-import org.gwaspi.global.Text;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -12,10 +8,14 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.gwaspi.constants.cImport;
+import org.gwaspi.constants.cImport.Annotation.Plink_Standard;
+import org.gwaspi.constants.cImport.ImportFormat;
+import org.gwaspi.global.Text;
 import org.gwaspi.samples.DummySampleInfo;
 import org.gwaspi.samples.SamplesParserManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *

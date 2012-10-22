@@ -1,8 +1,5 @@
 package org.gwaspi.samples;
 
-import org.gwaspi.constants.cDBSamples;
-import org.gwaspi.constants.cImport;
-import org.gwaspi.constants.cImport.Annotation.GWASpi;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -11,6 +8,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import org.gwaspi.constants.cImport;
+import org.gwaspi.constants.cImport.Annotation.GWASpi;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleInfo;

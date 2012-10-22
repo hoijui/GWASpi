@@ -1,16 +1,16 @@
 package org.gwaspi.netCDF.loader;
 
-import org.gwaspi.constants.cImport;
-import org.gwaspi.constants.cImport.ImportFormat;
-import org.gwaspi.constants.cNetCDF;
-import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
-import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import org.gwaspi.constants.cImport;
+import org.gwaspi.constants.cImport.ImportFormat;
+import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
+import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
 import ucar.ma2.InvalidRangeException;
 
 /**

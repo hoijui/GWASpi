@@ -1,13 +1,5 @@
 package org.gwaspi.gui.reports;
 
-import org.gwaspi.constants.cImport;
-import org.gwaspi.global.Config;
-import org.gwaspi.global.Text;
-import org.gwaspi.gui.GWASpiExplorerPanel;
-import org.gwaspi.gui.utils.CursorUtils;
-import org.gwaspi.gui.utils.LinksExternalResouces;
-import org.gwaspi.gui.utils.RowRendererGenotypicAssocWithZoomQueryDB;
-import org.gwaspi.gui.utils.URLInDefaultBrowser;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.BufferedReader;
@@ -21,6 +13,14 @@ import java.util.List;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
+import org.gwaspi.constants.cImport;
+import org.gwaspi.global.Config;
+import org.gwaspi.global.Text;
+import org.gwaspi.gui.GWASpiExplorerPanel;
+import org.gwaspi.gui.utils.CursorUtils;
+import org.gwaspi.gui.utils.LinksExternalResouces;
+import org.gwaspi.gui.utils.RowRendererGenotypicAssocWithZoomQueryDB;
+import org.gwaspi.gui.utils.URLInDefaultBrowser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -1,10 +1,10 @@
 package org.gwaspi.gui.utils;
 
-import org.gwaspi.gui.GWASpiExplorerPanel;
 import java.util.Enumeration;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import javax.swing.tree.DefaultMutableTreeNode;
+import org.gwaspi.gui.GWASpiExplorerPanel;
 import org.gwaspi.model.GWASpiExplorerNodes.NodeElementInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

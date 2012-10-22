@@ -1,9 +1,9 @@
 package org.gwaspi.netCDF.loader;
 
-import org.gwaspi.constants.cImport.ImportFormat;
-import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
 import java.io.IOException;
 import java.util.Map;
+import org.gwaspi.constants.cImport.ImportFormat;
+import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
 import ucar.ma2.InvalidRangeException;
 
 public interface GenotypesLoader {

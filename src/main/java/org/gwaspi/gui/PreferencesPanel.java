@@ -1,9 +1,5 @@
 package org.gwaspi.gui;
 
-import org.gwaspi.global.Config;
-import org.gwaspi.global.Text;
-import org.gwaspi.gui.utils.Dialogs;
-import org.gwaspi.gui.utils.RowRendererDefault;
 import java.awt.Component;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -26,6 +22,10 @@ import javax.swing.SwingConstants;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
+import org.gwaspi.global.Config;
+import org.gwaspi.global.Text;
+import org.gwaspi.gui.utils.Dialogs;
+import org.gwaspi.gui.utils.RowRendererDefault;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

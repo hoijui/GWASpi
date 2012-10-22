@@ -1,12 +1,12 @@
 package org.gwaspi.netCDF.markers;
 
-import org.gwaspi.constants.cImport.ImportFormat;
-import org.gwaspi.constants.cNetCDF;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
+import org.gwaspi.constants.cImport.ImportFormat;
+import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixMetadata;
 import org.slf4j.Logger;

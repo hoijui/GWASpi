@@ -1,8 +1,8 @@
 package org.gwaspi.global;
 
-import org.gwaspi.constants.cGlobal;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import org.gwaspi.constants.cGlobal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -1,5 +1,8 @@
 package org.gwaspi.threadbox;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.Set;
 import org.gwaspi.constants.cExport.ExportFormat;
 import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import org.gwaspi.constants.cNetCDF.Defaults.SetMarkerPickCase;
@@ -7,9 +10,6 @@ import org.gwaspi.constants.cNetCDF.Defaults.SetSamplePickCase;
 import org.gwaspi.gui.GWASpiExplorerPanel;
 import org.gwaspi.gui.ProcessTab;
 import org.gwaspi.gui.StartGWASpi;
-import java.io.File;
-import java.io.IOException;
-import java.util.Set;
 import org.gwaspi.netCDF.loader.GenotypesLoadDescription;
 import org.gwaspi.netCDF.operations.GWASinOneGOParams;
 

@@ -1,13 +1,12 @@
 package org.gwaspi.samples;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import org.gwaspi.constants.cDBGWASpi;
 import org.gwaspi.constants.cDBSamples;
 import org.gwaspi.database.DbManager;
 import org.gwaspi.global.ServiceLocator;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 import org.gwaspi.model.SampleInfoList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

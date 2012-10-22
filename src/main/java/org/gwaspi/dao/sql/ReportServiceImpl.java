@@ -1,13 +1,5 @@
 package org.gwaspi.dao.sql;
 
-import org.gwaspi.constants.cDBGWASpi;
-import org.gwaspi.constants.cDBMatrix;
-import org.gwaspi.constants.cDBReports;
-import org.gwaspi.constants.cNetCDF;
-import org.gwaspi.dao.ReportService;
-import org.gwaspi.database.DbManager;
-import org.gwaspi.global.Config;
-import org.gwaspi.global.ServiceLocator;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -17,6 +9,14 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import org.gwaspi.constants.cDBGWASpi;
+import org.gwaspi.constants.cDBMatrix;
+import org.gwaspi.constants.cDBReports;
+import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.dao.ReportService;
+import org.gwaspi.database.DbManager;
+import org.gwaspi.global.Config;
+import org.gwaspi.global.ServiceLocator;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.Operation;

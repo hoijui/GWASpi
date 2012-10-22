@@ -1,21 +1,21 @@
 package org.gwaspi.threadbox;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.GWASpiExplorerPanel;
 import org.gwaspi.gui.ProcessTab;
 import org.gwaspi.gui.StartGWASpi;
 import org.gwaspi.gui.utils.CursorUtils;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import org.gwaspi.model.GWASpiExplorerNodes;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.ReportsList;
 import org.gwaspi.model.StudyList;
+import org.gwaspi.threadbox.SwingDeleterItem.DeleteTarget;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.gwaspi.threadbox.SwingDeleterItem.DeleteTarget;
 
 /**
  *

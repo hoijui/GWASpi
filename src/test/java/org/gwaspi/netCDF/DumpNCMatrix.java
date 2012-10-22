@@ -1,11 +1,11 @@
 package org.gwaspi.netCDF;
 
-import org.gwaspi.constants.cNetCDF;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import org.gwaspi.constants.cNetCDF;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.ArrayChar;

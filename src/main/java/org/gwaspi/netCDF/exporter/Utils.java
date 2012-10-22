@@ -1,10 +1,7 @@
 package org.gwaspi.netCDF.exporter;
 
-import org.gwaspi.constants.cDBSamples;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleInfoList;
 

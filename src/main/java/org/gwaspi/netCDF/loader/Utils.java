@@ -1,12 +1,12 @@
 package org.gwaspi.netCDF.loader;
 
-import org.gwaspi.constants.cImport;
-import org.gwaspi.constants.cNetCDF.Defaults.AlleleBytes;
-import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import org.gwaspi.constants.cImport;
+import org.gwaspi.constants.cNetCDF.Defaults.AlleleBytes;
+import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 
 /**
  *

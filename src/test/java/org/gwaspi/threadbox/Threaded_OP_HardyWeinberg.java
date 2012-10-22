@@ -1,7 +1,7 @@
 package org.gwaspi.threadbox;
 
-import org.gwaspi.global.Config;
 import java.io.IOException;
+import org.gwaspi.global.Config;
 import org.gwaspi.model.Operation;
 import org.gwaspi.netCDF.operations.OP_HardyWeinberg;
 import org.slf4j.Logger;

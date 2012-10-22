@@ -1,9 +1,5 @@
 package org.gwaspi.global;
 
-import org.gwaspi.constants.cGlobal;
-import org.gwaspi.database.DerbyDBReshaper;
-import org.gwaspi.gui.StartGWASpi;
-import org.gwaspi.gui.utils.Dialogs;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -17,6 +13,10 @@ import java.util.prefs.Preferences;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.xml.parsers.ParserConfigurationException;
+import org.gwaspi.constants.cGlobal;
+import org.gwaspi.database.DerbyDBReshaper;
+import org.gwaspi.gui.StartGWASpi;
+import org.gwaspi.gui.utils.Dialogs;
 import org.gwaspi.model.StudyList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
