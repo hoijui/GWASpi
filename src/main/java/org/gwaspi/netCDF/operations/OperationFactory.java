@@ -132,15 +132,20 @@ public class OperationFactory {
 				throw new IllegalArgumentException("invalid OPType: " + OPType);
 		}
 
-		OperationsList.insertOPMetadata(
+		OperationsList.insertOPMetadata(new OperationMetadata(
+				Integer.MIN_VALUE,
 				parentMatrixId,
 				parentOperationId,
 				friendlyName,
 				resultOPnetCDFName,
-				OPType,
-				"",
 				description,
-				studyId);
+				"",
+				OPType,
+				Integer.MIN_VALUE,
+				Integer.MIN_VALUE,
+				studyId,
+				Long.MIN_VALUE
+				));
 
 		opMetaData = OperationsList.getOperationMetadata(resultOPnetCDFName);
 

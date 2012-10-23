@@ -249,25 +249,18 @@ public class OperationServiceImpl implements OperationService {
 	}
 
 	@Override
-	public void insertOPMetadata(
-			int parentMatrixId,
-			int parentOperationId,
-			String friendlyName,
-			String resultOPName,
-			String type,
-			String command,
-			String description,
-			Integer studyId)
-			throws IOException
-	{
-		Object[] opMetaData = new Object[]{parentMatrixId,
-			parentOperationId,
-			friendlyName,
-			resultOPName,
-			type,
-			command,
-			description,
-			studyId};
+	public void insertOPMetadata(OperationMetadata operationMetadata) throws IOException {
+
+		Object[] opMetaData = new Object[] {
+			operationMetadata.getParentMatrixId(),
+			operationMetadata.getParentOperationId(),
+			operationMetadata.getOPName(),
+			operationMetadata.getMatrixCDFName(),
+			operationMetadata.getGenotypeCode(),
+			"", // command
+			operationMetadata.getDescription(),
+			operationMetadata.getStudyId()
+		};
 
 		DbManager dBManager = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
 		dBManager.insertValuesInTable(cDBGWASpi.SCH_MATRICES,

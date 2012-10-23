@@ -52,26 +52,8 @@ public class OperationsList {
 		return operationService.createOperationsMetadataTable();
 	}
 
-	public static void insertOPMetadata(
-			int parentMatrixId,
-			int parentOperationId,
-			String friendlyName,
-			String resultOPName,
-			String type,
-			String command,
-			String description,
-			Integer studyId)
-			throws IOException
-	{
-		operationService.insertOPMetadata(
-				parentMatrixId,
-				parentOperationId,
-				friendlyName,
-				resultOPName,
-				type,
-				command,
-				description,
-				studyId);
+	public static void insertOPMetadata(OperationMetadata operationMetadata) throws IOException {
+		operationService.insertOPMetadata(operationMetadata);
 	}
 
 	public static List<Object[]> getMatrixOperations(int matrixId) throws IOException {

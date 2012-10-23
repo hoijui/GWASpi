@@ -24,16 +24,7 @@ public interface OperationService {
 
 	String createOperationsMetadataTable();
 
-	void insertOPMetadata(
-			int parentMatrixId,
-			int parentOperationId,
-			String friendlyName,
-			String resultOPName,
-			String type,
-			String command,
-			String description,
-			Integer studyId)
-			throws IOException;
+	void insertOPMetadata(OperationMetadata operationMetadata) throws IOException;
 
 	List<Object[]> getMatrixOperations(int matrixId) throws IOException;
 
