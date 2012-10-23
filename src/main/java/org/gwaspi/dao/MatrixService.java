@@ -29,8 +29,7 @@ public interface MatrixService {
 			int parent_matrix1_id,
 			int parent_matrix2_id,
 			String input_location,
-			String description,
-			int loaded)
+			String description)
 			throws IOException;
 
 	void deleteMatrix(int matrixId, boolean deleteReports);

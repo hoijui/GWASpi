@@ -53,8 +53,7 @@ public final class MatricesList {
 			int parent_matrix1_id,
 			int parent_matrix2_id,
 			String input_location,
-			String description,
-			int loaded)
+			String description)
 			throws IOException
 	{
 		matrixService.insertMatrixMetadata(
@@ -65,8 +64,7 @@ public final class MatricesList {
 				parent_matrix1_id,
 				parent_matrix2_id,
 				input_location,
-				description,
-				loaded);
+				description);
 	}
 
 	public static void deleteMatrix(int matrixId, boolean deleteReports) {

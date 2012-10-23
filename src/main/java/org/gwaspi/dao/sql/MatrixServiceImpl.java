@@ -181,8 +181,7 @@ public class MatrixServiceImpl implements MatrixService {
 			int parent_matrix1_id,
 			int parent_matrix2_id,
 			String input_location,
-			String description,
-			int loaded)
+			String description)
 			throws IOException
 	{
 		String trimmedDescription = description;
@@ -198,7 +197,7 @@ public class MatrixServiceImpl implements MatrixService {
 			parent_matrix2_id,
 			input_location,
 			trimmedDescription,
-			loaded,
+			0,
 			studyId
 		};
 

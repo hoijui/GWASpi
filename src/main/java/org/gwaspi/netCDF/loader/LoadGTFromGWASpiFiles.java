@@ -143,8 +143,8 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 						Integer.MIN_VALUE,
 						Integer.MIN_VALUE,
 						"",
-						descSB.toString(), // description
-						0);
+						descSB.toString() // description
+						);
 			}
 			copyMatrixToGenotypesFolder(loadDescription.getStudyId(), loadDescription.getGtDirPath(), importMatrixMetadata.getMatrixNetCDFName());
 		} else {

@@ -74,8 +74,7 @@ public class MatrixFactory {
 					origMatrix1Id,
 					origMatrix2Id,
 					inputLocation,
-					description,
-					0);
+					description);
 
 			matrixMetaData = MatricesList.getMatrixMetadataByNetCDFname(resultMatrixName);
 
