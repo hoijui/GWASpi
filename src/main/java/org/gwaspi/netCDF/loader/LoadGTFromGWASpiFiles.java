@@ -135,16 +135,16 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 
 		if (importMatrixMetadata.getGwaspiDBVersion().equals(Config.getConfigValue(Config.PROPERTY_CURRENT_GWASPIDB_VERSION, "2.0.2"))) { //COMPARE DATABASE VERSIONS
 			if (!testExcessSamplesInMatrix) {
-				MatricesList.insertMatrixMetadata(
-						loadDescription.getStudyId(),
+				MatricesList.insertMatrixMetadata(new MatrixMetadata(
 						loadDescription.getFriendlyName(),
 						importMatrixMetadata.getMatrixNetCDFName(),
+						descSB.toString(), // description
 						importMatrixMetadata.getGenotypeEncoding(),
+						loadDescription.getStudyId(),
 						Integer.MIN_VALUE,
 						Integer.MIN_VALUE,
-						"",
-						descSB.toString() // description
-						);
+						""
+						));
 			}
 			copyMatrixToGenotypesFolder(loadDescription.getStudyId(), loadDescription.getGtDirPath(), importMatrixMetadata.getMatrixNetCDFName());
 		} else {

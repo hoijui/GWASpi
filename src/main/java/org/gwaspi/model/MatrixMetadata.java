@@ -26,6 +26,9 @@ public class MatrixMetadata {
 	private int sampleSetSize;
 	private int studyId;
 	private String matrixType; // matrix_type VARCHAR(32) NOT NULL
+	private int parent1MatrixId;
+	private int parent2MatrixId;
+	private String inputLocation;
 
 //	public MatrixMetadata() {
 //
@@ -43,7 +46,40 @@ public class MatrixMetadata {
 //		this.sampleSetSize = Integer.MIN_VALUE;
 //		this.studyId = Integer.MIN_VALUE;
 //		this.matrixType = "";
+//		this.parent1MatrixId = -1;
+//		this.parent2MatrixId = -1;
+//		this.inputLocation = "";
 //	}
+
+	public MatrixMetadata(
+			String matrixFriendlyName,
+			String matrixNetCDFName,
+			String description,
+			GenotypeEncoding gtEncoding,
+			int studyId,
+			int parent1MatrixId,
+			int parent2MatrixId,
+			String inputLocation
+			)
+	{
+		this.matrixId = Integer.MIN_VALUE;
+		this.matrixFriendlyName = matrixFriendlyName;
+		this.matrixNetCDFName = matrixNetCDFName;
+		this.pathToMatrix = "";
+		this.technology = ImportFormat.UNKNOWN;
+		this.gwaspiDBVersion = "";
+		this.description = description;
+		this.gtEncoding = gtEncoding;
+		this.strand = null;
+		this.hasDictionray = false;
+		this.markerSetSize = Integer.MIN_VALUE;
+		this.sampleSetSize = Integer.MIN_VALUE;
+		this.studyId = studyId;
+		this.matrixType = "";
+		this.parent1MatrixId = parent1MatrixId;
+		this.parent2MatrixId = parent2MatrixId;
+		this.inputLocation = inputLocation;
+	}
 
 	public MatrixMetadata(
 			int matrixId,
@@ -75,6 +111,9 @@ public class MatrixMetadata {
 		this.sampleSetSize = sampleSetSize;
 		this.studyId = studyId;
 		this.matrixType = matrixType;
+		this.parent1MatrixId = -1;
+		this.parent2MatrixId = -1;
+		this.inputLocation = "";
 	}
 
 	public boolean getHasDictionray() {
@@ -131,5 +170,17 @@ public class MatrixMetadata {
 
 	public String getMatrixType() {
 		return matrixType;
+	}
+
+	public int getParent1MatrixId() {
+		return parent1MatrixId;
+	}
+
+	public int getParent2MatrixId() {
+		return parent2MatrixId;
+	}
+
+	public String getInputLocation() {
+		return inputLocation;
 	}
 }

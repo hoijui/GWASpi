@@ -173,32 +173,23 @@ public class MatrixServiceImpl implements MatrixService {
 	}
 
 	@Override
-	public void insertMatrixMetadata(
-			int studyId,
-			String matrix_name,
-			String netCDF_name,
-			GenotypeEncoding matrix_type,
-			int parent_matrix1_id,
-			int parent_matrix2_id,
-			String input_location,
-			String description)
-			throws IOException
-	{
-		String trimmedDescription = description;
+	public void insertMatrixMetadata(MatrixMetadata matrixMetadata) throws IOException {
+
+		String trimmedDescription = matrixMetadata.getDescription();
 		if (trimmedDescription.length() > 1999) {
 			trimmedDescription = trimmedDescription.substring(0, 1999);
 		}
 
 		Object[] matrixMetaData = new Object[] {
-			matrix_name,
-			netCDF_name,
-			matrix_type.toString(),
-			parent_matrix1_id,
-			parent_matrix2_id,
-			input_location,
+			matrixMetadata.getMatrixFriendlyName(),
+			matrixMetadata.getMatrixNetCDFName(),
+			matrixMetadata.getGenotypeEncoding().toString(),
+			matrixMetadata.getParent1MatrixId(),
+			matrixMetadata.getParent2MatrixId(),
+			matrixMetadata.getInputLocation(),
 			trimmedDescription,
 			0,
-			studyId
+			matrixMetadata.getStudyId()
 		};
 
 		DbManager dbManager = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);

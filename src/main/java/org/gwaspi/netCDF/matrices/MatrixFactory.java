@@ -66,15 +66,15 @@ public class MatrixFactory {
 			}
 			netCDFHandler.setFill(true);
 
-			MatricesList.insertMatrixMetadata(
-					studyId,
+			MatricesList.insertMatrixMetadata(new MatrixMetadata(
 					friendlyName,
 					resultMatrixName,
+					description,
 					matrixType,
+					studyId,
 					origMatrix1Id,
 					origMatrix2Id,
-					inputLocation,
-					description);
+					inputLocation));
 
 			matrixMetaData = MatricesList.getMatrixMetadataByNetCDFname(resultMatrixName);
 

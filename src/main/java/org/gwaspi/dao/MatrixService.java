@@ -3,7 +3,6 @@ package org.gwaspi.dao;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import org.gwaspi.model.Matrix;
 import org.gwaspi.model.MatrixMetadata;
 
@@ -21,16 +20,7 @@ public interface MatrixService {
 
 	String createMatricesTable();
 
-	void insertMatrixMetadata(
-			int studyId,
-			String matrix_name,
-			String netCDF_name,
-			GenotypeEncoding matrix_type,
-			int parent_matrix1_id,
-			int parent_matrix2_id,
-			String input_location,
-			String description)
-			throws IOException;
+	void insertMatrixMetadata(MatrixMetadata matrixMetadata) throws IOException;
 
 	void deleteMatrix(int matrixId, boolean deleteReports);
 
