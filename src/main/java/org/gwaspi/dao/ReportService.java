@@ -18,12 +18,6 @@ public interface ReportService {
 
 	List<Report> getReportsList(int opId, int matrixId) throws IOException;
 
-	List<Map<String, Object>> getReportListByOperationId(int opId) throws IOException;
-
-	List<Map<String, Object>> getReportListByMatrixId(int matrixId) throws IOException;
-
-	Object[][] getReportsTable(int opId) throws IOException;
-
 	Map<String, Object> getSortedMarkerSetByDoubleValue(Map<String, Object> map);
 
 	Map<String, Object> getSortedDescendingMarkerSetByDoubleValue(Map<String, Object> map);

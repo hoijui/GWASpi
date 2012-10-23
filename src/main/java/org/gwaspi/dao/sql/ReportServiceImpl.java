@@ -105,8 +105,7 @@ public class ReportServiceImpl implements ReportService {
 		return reportsList;
 	}
 
-	@Override
-	public List<Map<String, Object>> getReportListByOperationId(int opId) throws IOException {
+	private List<Map<String, Object>> getReportListByOperationId(int opId) throws IOException {
 		List<Map<String, Object>> rs = null;
 		String dbName = cDBGWASpi.DB_DATACENTER;
 		DbManager studyDbManager = ServiceLocator.getDbManager(dbName);
@@ -119,8 +118,7 @@ public class ReportServiceImpl implements ReportService {
 		return rs;
 	}
 
-	@Override
-	public List<Map<String, Object>> getReportListByMatrixId(int matrixId) throws IOException {
+	private List<Map<String, Object>> getReportListByMatrixId(int matrixId) throws IOException {
 		List<Map<String, Object>> rs = null;
 		String dbName = cDBGWASpi.DB_DATACENTER;
 		DbManager studyDbManager = ServiceLocator.getDbManager(dbName);
@@ -131,30 +129,6 @@ public class ReportServiceImpl implements ReportService {
 		}
 
 		return rs;
-	}
-
-	@Override
-	public Object[][] getReportsTable(int opId) throws IOException {
-		Object[][] reportsTable = null;
-
-		String dbName = cDBGWASpi.DB_DATACENTER;
-		DbManager dbManager = ServiceLocator.getDbManager(dbName);
-		try {
-			List<Map<String, Object>> rs = dbManager.executeSelectStatement("SELECT * FROM " + cDBGWASpi.SCH_MATRICES + "." + cDBReports.T_REPORTS + " WHERE " + cDBReports.f_ID + "=" + opId + "  WITH RR");
-
-			reportsTable = new Object[rs.size()][3];
-			for (int i = 0; i < rs.size(); i++) {
-				//PREVENT PHANTOM-DB READS EXCEPTIONS
-				if (!rs.isEmpty() && rs.get(i).size() == cDBReports.T_CREATE_REPORTS.length) {
-					reportsTable[i][0] = (Integer) rs.get(i).get(cDBReports.f_ID);
-					reportsTable[i][1] = rs.get(i).get(cDBReports.f_RP_NAME).toString();
-					reportsTable[i][2] = rs.get(i).get(cDBReports.f_DESCRIPTION).toString();
-				}
-			}
-		} catch (Exception ex) {
-			log.error(null, ex);
-		}
-		return reportsTable;
 	}
 
 	//<editor-fold defaultstate="collapsed" desc="UTILS">
