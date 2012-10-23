@@ -129,29 +129,30 @@ public class MatrixServiceImpl implements MatrixService {
 	}
 
 	@Override
-	public Object[][] getMatricesTable(int studyId) throws IOException {
-		Object[][] table = null;
+	public List<MatrixMetadata> getMatricesTable(int studyId) throws IOException {
+
+		List<MatrixMetadata> matrices = new ArrayList<MatrixMetadata>();
 
 		String dbName = cDBGWASpi.DB_DATACENTER;
 		DbManager dbManager = ServiceLocator.getDbManager(dbName);
 		try {
 			List<Map<String, Object>> rs = dbManager.executeSelectStatement("SELECT * FROM " + cDBGWASpi.SCH_MATRICES + "." + cDBMatrix.T_MATRICES + " WHERE " + cDBMatrix.f_STUDYID + "=" + studyId + "  WITH RR");
 
-			table = new Object[rs.size()][4];
 			for (int i = 0; i < rs.size(); i++) {
-				// PREVENT PHANTOM-DB READS EXCEPTIONS
-				if (!rs.isEmpty() && rs.get(i).size() == cDBMatrix.T_CREATE_MATRICES.length) {
-					table[i][0] = (Integer) rs.get(i).get(cDBMatrix.f_ID);
-					table[i][1] = rs.get(i).get(cDBMatrix.f_MATRIX_NAME).toString();
-					table[i][2] = rs.get(i).get(cDBMatrix.f_DESCRIPTION).toString();
-					String timestamp = rs.get(i).get(cDBOperations.f_CREATION_DATE).toString();
-					table[i][3] = timestamp.substring(0, timestamp.lastIndexOf('.'));
+				int matrixId = Integer.MIN_VALUE;
+				if (rs.get(i).size() == cDBMatrix.T_CREATE_MATRICES.length) {
+					matrixId = Integer.parseInt(rs.get(i).get(cDBMatrix.f_ID).toString());
+				}
+				MatrixMetadata matrixMetadata = loadMatrixMetadataFromResultRest(matrixId, rs.get(i));
+				if (matrixMetadata != null) {
+					matrices.add(matrixMetadata);
 				}
 			}
 		} catch (Exception ex) {
 			log.error(null, ex);
 		}
-		return table;
+
+		return matrices;
 	}
 
 	@Override
@@ -274,26 +275,34 @@ public class MatrixServiceImpl implements MatrixService {
 	@Override
 	public MatrixMetadata getMatrixMetadataById(int matrixId) throws IOException {
 
+		MatrixMetadata matrixMetadata = null;
+
 		DbManager dBManager = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
 		String statement = String.format(SQL_STATEMENT_SELECT_MATRIX_BY_ID, matrixId);
 		List<Map<String, Object>> rs = dBManager.executeSelectStatement(statement);
 
-		return loadMatrixMetadataFromResultRest(matrixId, rs);
+		if (!rs.isEmpty()) {
+			matrixMetadata = loadMatrixMetadataFromResultRest(matrixId, rs.get(0));
+		}
+
+		return matrixMetadata;
 	}
 
 	@Override
 	public MatrixMetadata getMatrixMetadataByNetCDFname(String netCDFname) throws IOException {
 
+		MatrixMetadata matrixMetadata = null;
+
 		DbManager dBManager = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
 		String statement = String.format(SQL_STATEMENT_SELECT_MATRIX_BY_NAME, netCDFname);
 		List<Map<String, Object>> rs = dBManager.executeSelectStatement(statement);
 
-		int matrixId = Integer.MIN_VALUE;
-		if (!rs.isEmpty() && rs.get(0).size() == cDBMatrix.T_CREATE_MATRICES.length) {
-			matrixId = Integer.parseInt(rs.get(0).get(cDBMatrix.f_ID).toString());
+		if (!rs.isEmpty()) {
+			int matrixId = Integer.parseInt(rs.get(0).get(cDBMatrix.f_ID).toString());
+			matrixMetadata = loadMatrixMetadataFromResultRest(matrixId, rs.get(0));
 		}
 
-		return loadMatrixMetadataFromResultRest(matrixId, rs);
+		return matrixMetadata;
 	}
 
     /**
@@ -308,40 +317,45 @@ public class MatrixServiceImpl implements MatrixService {
 		String matrixNetCDFName = generateMatrixNetCDFNameByDate();
 		String description = "";
 		String matrixType = "";
+		long creationDate = Long.MIN_VALUE;
 
 		String pathToMatrix = netCDFpath;
-		return loadMatrixMetadataFromFile(matrixId, matrixFriendlyName, matrixNetCDFName, studyId, pathToMatrix, description, matrixType);
+		return loadMatrixMetadataFromFile(matrixId, matrixFriendlyName, matrixNetCDFName, studyId, pathToMatrix, description, matrixType, creationDate);
 	}
 
-	private MatrixMetadata loadMatrixMetadataFromResultRest(int matrixId, List<Map<String, Object>> rs) throws IOException {
+	private MatrixMetadata loadMatrixMetadataFromResultRest(int matrixId, Map<String, Object> dbProperties) throws IOException {
 
 		String matrixFriendlyName = "";
 		String matrixNetCDFName = "";
 		String description = "";
 		String matrixType = "";
 		int studyId = Integer.MIN_VALUE;
+		long creationDate = Long.MIN_VALUE;
 
 		// PREVENT PHANTOM-DB READS EXCEPTIONS
-		if (!rs.isEmpty() && rs.get(0).size() == cDBMatrix.T_CREATE_MATRICES.length) {
-//			matrixId = Integer.parseInt(rs.get(0).get(cDBMatrix.f_ID).toString());
-			matrixFriendlyName = (rs.get(0).get(cDBMatrix.f_MATRIX_NAME) != null) ? rs.get(0).get(cDBMatrix.f_MATRIX_NAME).toString() : ""; // matrix_name VARCHAR(64) NOT NULL
-			matrixNetCDFName = (rs.get(0).get(cDBMatrix.f_NETCDF_NAME) != null) ? rs.get(0).get(cDBMatrix.f_NETCDF_NAME).toString() : ""; // netcdf_name VARCHAR(64) NOT NULL
-			matrixType = (rs.get(0).get(cDBMatrix.f_MATRIX_TYPE) != null) ? rs.get(0).get(cDBMatrix.f_MATRIX_TYPE).toString() : ""; // matrix_type VARCHAR(32) NOT NULL
-//			parentMatrixId1 = (rs.get(0).get(cDBMatrix.f_PARENT_MATRIX1_ID) != null) ? Integer.parseInt(rs.get(0).get(cDBMatrix.f_PARENT_MATRIX1_ID).toString()) : -1; // parent_matrix1_id INTEGER
-//			parentMatrixId2 = (rs.get(0).get(cDBMatrix.f_PARENT_MATRIX2_ID) != null) ? Integer.parseInt(rs.get(0).get(cDBMatrix.f_PARENT_MATRIX2_ID).toString()) : -1; // parent_matrix2_id INTEGER
-//			input_location = (rs.get(0).get(cDBMatrix.f_INPUT_LOCATION) != null) ? rs.get(0).get(cDBMatrix.f_INPUT_LOCATION).toString() : ""; // input_location VARCHAR(1000)
-			description = (rs.get(0).get(cDBMatrix.f_DESCRIPTION) != null) ? rs.get(0).get(cDBMatrix.f_DESCRIPTION).toString() : ""; // description VARCHAR(2000)
-//			loaded = (rs.get(0).get(cDBMatrix.f_LOADED) != null) ? rs.get(0).get(cDBMatrix.f_LOADED).toString() : "0"; // loaded CHAR(1)
-			studyId = (rs.get(0).get(cDBMatrix.f_STUDYID) != null) ? Integer.parseInt(rs.get(0).get(cDBMatrix.f_STUDYID).toString()) : 0;
+		if (dbProperties.size() == cDBMatrix.T_CREATE_MATRICES.length) {
+//			matrixId = Integer.parseInt(dbProperties.get(cDBMatrix.f_ID).toString());
+			matrixFriendlyName = (dbProperties.get(cDBMatrix.f_MATRIX_NAME) != null) ? dbProperties.get(cDBMatrix.f_MATRIX_NAME).toString() : ""; // matrix_name VARCHAR(64) NOT NULL
+			matrixNetCDFName = (dbProperties.get(cDBMatrix.f_NETCDF_NAME) != null) ? dbProperties.get(cDBMatrix.f_NETCDF_NAME).toString() : ""; // netcdf_name VARCHAR(64) NOT NULL
+			matrixType = (dbProperties.get(cDBMatrix.f_MATRIX_TYPE) != null) ? dbProperties.get(cDBMatrix.f_MATRIX_TYPE).toString() : ""; // matrix_type VARCHAR(32) NOT NULL
+//			parentMatrixId1 = (dbProperties.get(cDBMatrix.f_PARENT_MATRIX1_ID) != null) ? Integer.parseInt(dbProperties.get(cDBMatrix.f_PARENT_MATRIX1_ID).toString()) : -1; // parent_matrix1_id INTEGER
+//			parentMatrixId2 = (dbProperties.get(cDBMatrix.f_PARENT_MATRIX2_ID) != null) ? Integer.parseInt(dbProperties.get(cDBMatrix.f_PARENT_MATRIX2_ID).toString()) : -1; // parent_matrix2_id INTEGER
+//			input_location = (dbProperties.get(cDBMatrix.f_INPUT_LOCATION) != null) ? dbProperties.get(cDBMatrix.f_INPUT_LOCATION).toString() : ""; // input_location VARCHAR(1000)
+			description = (dbProperties.get(cDBMatrix.f_DESCRIPTION) != null) ? dbProperties.get(cDBMatrix.f_DESCRIPTION).toString() : ""; // description VARCHAR(2000)
+//			loaded = (dbProperties.get(cDBMatrix.f_LOADED) != null) ? dbProperties.get(cDBMatrix.f_LOADED).toString() : "0"; // loaded CHAR(1)
+			studyId = (dbProperties.get(cDBMatrix.f_STUDYID) != null) ? Integer.parseInt(dbProperties.get(cDBMatrix.f_STUDYID).toString()) : 0;
+			String timestamp = dbProperties.get(cDBMatrix.f_CREATION_DATE).toString();
+			timestamp = timestamp.substring(0, timestamp.lastIndexOf('.'));
+			creationDate = Long.parseLong(timestamp);
 		}
 
 		String genotypesFolder = Config.getConfigValue(Config.PROPERTY_GENOTYPES_DIR, "");
 		String pathToStudy = genotypesFolder + "/STUDY_" + studyId + "/";
 		String pathToMatrix = pathToStudy + matrixNetCDFName + ".nc";
-		return loadMatrixMetadataFromFile(matrixId, matrixFriendlyName, matrixNetCDFName, studyId, pathToMatrix, description, matrixType);
+		return loadMatrixMetadataFromFile(matrixId, matrixFriendlyName, matrixNetCDFName, studyId, pathToMatrix, description, matrixType, creationDate);
 	}
 
-	private MatrixMetadata loadMatrixMetadataFromFile(int matrixId, String matrixFriendlyName, String matrixNetCDFName, int studyId, String pathToMatrix, String description, String matrixType) throws IOException {
+	private MatrixMetadata loadMatrixMetadataFromFile(int matrixId, String matrixFriendlyName, String matrixNetCDFName, int studyId, String pathToMatrix, String description, String matrixType, long creationDate) throws IOException {
 
 		String gwaspiDBVersion = "";
 		ImportFormat technology = ImportFormat.UNKNOWN;
@@ -412,7 +426,8 @@ public class MatrixServiceImpl implements MatrixService {
 				markerSetSize,
 				sampleSetSize,
 				studyId,
-				matrixType);
+				matrixType,
+				creationDate);
 
 		return matrixMetadata;
 	}

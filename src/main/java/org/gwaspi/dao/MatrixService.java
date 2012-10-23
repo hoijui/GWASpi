@@ -16,7 +16,7 @@ public interface MatrixService {
 
 	List<Map<String, Object>> getAllMatricesList() throws IOException;
 
-	Object[][] getMatricesTable(int studyId) throws IOException;
+	List<MatrixMetadata> getMatricesTable(int studyId) throws IOException;
 
 	String createMatricesTable();
 

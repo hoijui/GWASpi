@@ -36,7 +36,7 @@ public final class MatricesList {
 		return matrixService.getAllMatricesList();
 	}
 
-	public static Object[][] getMatricesTable(int studyId) throws IOException {
+	public static List<MatrixMetadata> getMatricesTable(int studyId) throws IOException {
 		return matrixService.getMatricesTable(studyId);
 	}
 

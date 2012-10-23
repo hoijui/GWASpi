@@ -29,6 +29,7 @@ public class MatrixMetadata {
 	private int parent1MatrixId;
 	private int parent2MatrixId;
 	private String inputLocation;
+	private long creationDate;
 
 //	public MatrixMetadata() {
 //
@@ -49,6 +50,7 @@ public class MatrixMetadata {
 //		this.parent1MatrixId = -1;
 //		this.parent2MatrixId = -1;
 //		this.inputLocation = "";
+//		this.creationDate = Long.MIN_VALUE;
 //	}
 
 	public MatrixMetadata(
@@ -79,6 +81,7 @@ public class MatrixMetadata {
 		this.parent1MatrixId = parent1MatrixId;
 		this.parent2MatrixId = parent2MatrixId;
 		this.inputLocation = inputLocation;
+		this.creationDate = Long.MIN_VALUE;
 	}
 
 	public MatrixMetadata(
@@ -95,7 +98,8 @@ public class MatrixMetadata {
 			int markerSetSize,
 			int sampleSetSize,
 			int studyId,
-			String matrixType)
+			String matrixType,
+			long creationDate)
 	{
 		this.matrixId = matrixId;
 		this.matrixFriendlyName = matrixFriendlyName;
@@ -182,5 +186,9 @@ public class MatrixMetadata {
 
 	public String getInputLocation() {
 		return inputLocation;
+	}
+
+	public long getCreationDate() {
+		return creationDate;
 	}
 }

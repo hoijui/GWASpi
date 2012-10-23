@@ -21,7 +21,6 @@ import javax.swing.JTextArea;
 import javax.swing.LayoutStyle;
 import javax.swing.SwingConstants;
 import javax.swing.border.TitledBorder;
-import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.tree.DefaultMutableTreeNode;
 import org.gwaspi.global.Text;
@@ -30,6 +29,7 @@ import org.gwaspi.gui.utils.BrowserHelpUrlAction;
 import org.gwaspi.gui.utils.CursorUtils;
 import org.gwaspi.gui.utils.Dialogs;
 import org.gwaspi.gui.utils.HelpURLs;
+import org.gwaspi.gui.utils.MatricesTableModel;
 import org.gwaspi.gui.utils.NodeToPathCorrespondence;
 import org.gwaspi.gui.utils.RowRendererDefault;
 import org.gwaspi.model.MatricesList;
@@ -130,11 +130,7 @@ public class CurrentStudyPanel extends JPanel {
 		btn_LoadGenotypes.setAction(new LoadGenotypesAction(study));
 
 		pnl_MatrixTable.setBorder(BorderFactory.createTitledBorder(null, Text.Matrix.matrices, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("DejaVu Sans", 1, 13))); // NOI18N
-		tbl_MatrixTable.setModel(new DefaultTableModel(
-				MatricesList.getMatricesTable(study.getId()),
-				new String[]{
-					Text.Matrix.matrixID, Text.Matrix.matrix, Text.All.description, Text.All.createDate
-				}));
+		tbl_MatrixTable.setModel(new MatricesTableModel(MatricesList.getMatricesTable(study.getId())));
 		scrl_MatrixTable.setViewportView(tbl_MatrixTable);
 
 		btn_DeleteMatrix.setAction(new DeleteMatrixAction(study, this, tbl_MatrixTable));
