@@ -15,7 +15,6 @@ import org.gwaspi.global.Config;
 import org.gwaspi.global.ServiceLocator;
 import org.gwaspi.model.Operation;
 import org.gwaspi.model.OperationMetadata;
-import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.ReportsList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -309,10 +308,10 @@ public class OperationServiceImpl implements OperationService {
 	public void deleteOperationBranch(int studyId, int opId, boolean deleteReports) throws IOException {
 
 		try {
-			Operation op = OperationsList.getById(opId);
+			Operation op = getById(opId);
 			String genotypesFolder = Config.getConfigValue(Config.PROPERTY_GENOTYPES_DIR, "");
 
-			List<Operation> operations = OperationsList.getOperationsList(op.getParentMatrixId(), opId);
+			List<Operation> operations = getOperationsList(op.getParentMatrixId(), opId);
 			if (!operations.isEmpty()) {
 				operations.add(op);
 				for (int i = 0; i < operations.size(); i++) {

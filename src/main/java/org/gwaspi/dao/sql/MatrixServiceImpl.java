@@ -16,7 +16,6 @@ import org.gwaspi.dao.MatrixService;
 import org.gwaspi.database.DbManager;
 import org.gwaspi.global.Config;
 import org.gwaspi.global.ServiceLocator;
-import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.Matrix;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.Operation;
@@ -306,7 +305,7 @@ public class MatrixServiceImpl implements MatrixService {
 
 		int matrixId = Integer.MIN_VALUE;
 		String matrixFriendlyName = newMatrixName;
-		String matrixNetCDFName = MatricesList.generateMatrixNetCDFNameByDate();
+		String matrixNetCDFName = generateMatrixNetCDFNameByDate();
 		String description = "";
 		String matrixType = "";
 

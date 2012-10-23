@@ -23,7 +23,6 @@ import org.gwaspi.model.Operation;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.Report;
-import org.gwaspi.model.ReportsList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -267,7 +266,7 @@ public class ReportServiceImpl implements ReportService {
 	@Override
 	public void deleteReportByMatrixId(int matrixId) throws IOException {
 		MatrixMetadata matrixMetadata = MatricesList.getMatrixMetadataById(matrixId);
-		List<Report> reportsList = ReportsList.getReportsList(Integer.MIN_VALUE, matrixId);
+		List<Report> reportsList = getReportsList(Integer.MIN_VALUE, matrixId);
 		String reportsFolder = Config.getConfigValue(Config.PROPERTY_REPORTS_DIR, "");
 
 		for (Report rp : reportsList) {
@@ -283,7 +282,7 @@ public class ReportServiceImpl implements ReportService {
 	@Override
 	public void deleteReportByOperationId(int opId) throws IOException {
 		OperationMetadata operationMetadata = OperationsList.getOperationMetadata(opId);
-		List<Report> reportsList = ReportsList.getReportsList(opId, operationMetadata.getParentMatrixId());
+		List<Report> reportsList = getReportsList(opId, operationMetadata.getParentMatrixId());
 		String reportsFolder = Config.getConfigValue(Config.PROPERTY_REPORTS_DIR, "");
 
 		for (Report rp : reportsList) {
