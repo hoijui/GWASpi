@@ -166,63 +166,55 @@ public class OperationServiceImpl implements OperationService {
 
 	//<editor-fold defaultstate="collapsed" desc="OPERATIONS TABLES">
 	@Override
-	public Object[][] getOperationsTable(int matrixId) throws IOException {
-		Object[][] table = null;
+	public List<OperationMetadata> getOperationsTable(int matrixId) throws IOException {
+
+		List<OperationMetadata> operations = new ArrayList<OperationMetadata>();
 
 		String dbName = cDBGWASpi.DB_DATACENTER;
 		DbManager dbManager = ServiceLocator.getDbManager(dbName);
 		try {
 			List<Map<String, Object>>  rs = dbManager.executeSelectStatement("SELECT * FROM " + cDBGWASpi.SCH_MATRICES + "." + cDBOperations.T_OPERATIONS + " WHERE " + cDBOperations.f_PARENT_MATRIXID + "=" + matrixId + " AND " + cDBOperations.f_PARENT_OPID + " = -1" + "  WITH RR");
 
-			table = new Object[rs.size()][4];
-			for (int i = 0; i < rs.size(); i++) {
-				// PREVENT PHANTOM-DB READS EXCEPTIONS
-				if (!rs.isEmpty() && rs.get(i).size() == cDBOperations.T_CREATE_OPERATIONS.length) {
-					table[i][0] = (Integer) rs.get(i).get(cDBOperations.f_ID);
-					table[i][1] = rs.get(i).get(cDBOperations.f_OP_NAME).toString();
-					table[i][2] = rs.get(i).get(cDBOperations.f_DESCRIPTION).toString();
-					String timestamp = rs.get(i).get(cDBOperations.f_CREATION_DATE).toString();
-					table[i][3] = timestamp.substring(0, timestamp.lastIndexOf('.'));
+			for (Map<String, Object> dbProps : rs) {
+				OperationMetadata operationMetadata = getOperationMetadata(dbProps);
+				if (operationMetadata != null) {
+					operations.add(operationMetadata);
 				}
 			}
 		} catch (Exception ex) {
 			log.error(null, ex);
 		}
-		return table;
+
+		return operations;
 	}
 
 	@Override
-	public Object[][] getOperationsTable(int matrixId, int opId) throws IOException {
-		Object[][] table = null;
+	public List<OperationMetadata> getOperationsTable(int matrixId, int opId) throws IOException {
+
+		List<OperationMetadata> operations = new ArrayList<OperationMetadata>();
 
 		String dbName = cDBGWASpi.DB_DATACENTER;
 		DbManager dbManager = ServiceLocator.getDbManager(dbName);
 		try {
 			List<Map<String, Object>> rs = dbManager.executeSelectStatement("SELECT * FROM " + cDBGWASpi.SCH_MATRICES + "." + cDBOperations.T_OPERATIONS + " WHERE " + cDBOperations.f_PARENT_MATRIXID + "=" + matrixId + " AND " + cDBOperations.f_PARENT_OPID + "=" + opId + "  WITH RR");
 
-			table = new Object[rs.size() + 1][4];
 			List<Map<String, Object>> rsSelf = dbManager.executeSelectStatement("SELECT * FROM " + cDBGWASpi.SCH_MATRICES + "." + cDBOperations.T_OPERATIONS + " WHERE " + cDBOperations.f_PARENT_MATRIXID + "=" + matrixId + " AND " + cDBOperations.f_ID + "=" + opId + "  WITH RR");
 
-			table[0][0] = (Integer) rsSelf.get(0).get(cDBOperations.f_ID);
-			table[0][1] = rsSelf.get(0).get(cDBOperations.f_OP_NAME).toString();
-			table[0][2] = rsSelf.get(0).get(cDBOperations.f_DESCRIPTION).toString();
-			String timestamp = rsSelf.get(0).get(cDBOperations.f_CREATION_DATE).toString();
-			table[0][3] = timestamp.substring(0, timestamp.lastIndexOf('.'));
+			if (!rs.isEmpty()) {
+				operations.add(getOperationMetadata(rsSelf.get(0)));
+			}
 
-			for (int i = 0; i < rs.size(); i++) {
-				// PREVENT PHANTOM-DB READS EXCEPTIONS
-				if (!rs.isEmpty() && rs.get(i).size() == cDBOperations.T_CREATE_OPERATIONS.length) {
-					table[i + 1][0] = (Integer) rs.get(i).get(cDBOperations.f_ID);
-					table[i + 1][1] = rs.get(i).get(cDBOperations.f_OP_NAME).toString();
-					table[i + 1][2] = rs.get(i).get(cDBOperations.f_DESCRIPTION).toString();
-					timestamp = rs.get(i).get(cDBOperations.f_CREATION_DATE).toString();
-					table[i + 1][3] = timestamp.substring(0, timestamp.lastIndexOf('.'));
+			for (Map<String, Object> dbProps : rsSelf) {
+				OperationMetadata operationMetadata = getOperationMetadata(dbProps);
+				if (operationMetadata != null) {
+					operations.add(operationMetadata);
 				}
 			}
 		} catch (Exception ex) {
 			log.error(null, ex);
 		}
-		return table;
+
+		return operations;
 	}
 	//</editor-fold>
 
@@ -359,66 +351,9 @@ public class OperationServiceImpl implements OperationService {
 		DbManager dBManager = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
 		List<Map<String, Object>> rs = dBManager.executeSelectStatement(
 				"SELECT * FROM " + cDBGWASpi.SCH_MATRICES + "." + cDBOperations.T_OPERATIONS + " WHERE " + cDBOperations.f_ID + "=" + opId + "  WITH RR");
+
 		if (!rs.isEmpty()) {
-			int parentMatrixId = Integer.MIN_VALUE;
-			int parentOperationId = Integer.MIN_VALUE;
-			String op_name = "";
-			String netCDF_name = "";
-			String description = "";
-			String gtCode = "";
-			int studyId = Integer.MIN_VALUE;
-			int opSetSize = Integer.MIN_VALUE;
-			int implicitSetSize = Integer.MIN_VALUE;
-
-			// PREVENT PHANTOM-DB READS EXCEPTIONS
-			if (!rs.isEmpty() && rs.get(0).size() == cDBOperations.T_CREATE_OPERATIONS.length) {
-				parentMatrixId = Integer.parseInt(rs.get(0).get(cDBOperations.f_PARENT_MATRIXID).toString());
-				parentOperationId = Integer.parseInt(rs.get(0).get(cDBOperations.f_PARENT_OPID).toString());
-				op_name = rs.get(0).get(cDBOperations.f_OP_NAME).toString();
-				netCDF_name = rs.get(0).get(cDBOperations.f_OP_NETCDF_NAME).toString();
-				description = rs.get(0).get(cDBOperations.f_DESCRIPTION).toString();
-				studyId = (Integer) rs.get(0).get(cDBOperations.f_STUDYID);
-			}
-
-			String genotypesFolder = Config.getConfigValue(Config.PROPERTY_GENOTYPES_DIR, "");
-			String pathToStudy = genotypesFolder + "/STUDY_" + studyId + "/";
-			String pathToMatrix = pathToStudy + netCDF_name + ".nc";
-			NetcdfFile ncfile = null;
-			if (new File(pathToMatrix).exists()) {
-				try {
-					ncfile = NetcdfFile.open(pathToMatrix);
-//					gtCode = ncfile.findGlobalAttribute(cNetCDF.Attributes.GLOB_GTCODE).getStringValue();
-
-					Dimension setDim = ncfile.findDimension(cNetCDF.Dimensions.DIM_OPSET);
-					opSetSize = setDim.getLength();
-
-					Dimension implicitDim = ncfile.findDimension(cNetCDF.Dimensions.DIM_IMPLICITSET);
-					implicitSetSize = implicitDim.getLength();
-				} catch (IOException ex) {
-					log.error("Cannot open file: " + pathToMatrix, ex);
-				} finally {
-					if (null != ncfile) {
-						try {
-							ncfile.close();
-						} catch (IOException ex) {
-							log.warn("Cannot close file: " + ncfile.getLocation(), ex);
-						}
-					}
-				}
-			}
-
-			operationMetadata = new OperationMetadata(
-					opId,
-					parentMatrixId,
-					parentOperationId,
-					op_name,
-					netCDF_name,
-					description,
-					pathToMatrix,
-					gtCode,
-					opSetSize,
-					implicitSetSize,
-					studyId);
+			operationMetadata = getOperationMetadata(rs.get(0));
 		}
 
 		return operationMetadata;
@@ -427,12 +362,23 @@ public class OperationServiceImpl implements OperationService {
 	@Override
 	public OperationMetadata getOperationMetadata(String netCDFname) throws IOException {
 
-		OperationMetadata operationMetadata;
+		OperationMetadata operationMetadata = null;
 
 		DbManager dBManager = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
 
 		String sql = "SELECT * FROM " + cDBGWASpi.SCH_MATRICES + "." + cDBOperations.T_OPERATIONS + " WHERE " + cDBOperations.f_OP_NETCDF_NAME + "='" + netCDFname + "' ORDER BY " + cDBOperations.f_ID + " DESC  WITH RR";
 		List<Map<String, Object>> rs = dBManager.executeSelectStatement(sql);
+
+		if (!rs.isEmpty()) {
+			operationMetadata = getOperationMetadata(rs.get(0));
+		}
+
+		return operationMetadata;
+	}
+
+	private OperationMetadata getOperationMetadata(Map<String, Object> dbProperties) throws IOException {
+
+		OperationMetadata operationMetadata = null;
 
 		int opId = Integer.MIN_VALUE;
 		int parentMatrixId = Integer.MIN_VALUE;
@@ -444,16 +390,20 @@ public class OperationServiceImpl implements OperationService {
 		int studyId = Integer.MIN_VALUE;
 		int opSetSize = Integer.MIN_VALUE;
 		int implicitSetSize = Integer.MIN_VALUE;
+		long creationDate = Long.MIN_VALUE;
 
 		// PREVENT PHANTOM-DB READS EXCEPTIONS
-		if (!rs.isEmpty() && rs.get(0).size() == cDBOperations.T_CREATE_OPERATIONS.length) {
-			opId = Integer.parseInt(rs.get(0).get(cDBOperations.f_ID).toString());
-			parentMatrixId = Integer.parseInt(rs.get(0).get(cDBOperations.f_PARENT_MATRIXID).toString());
-			parentOperationId = Integer.parseInt(rs.get(0).get(cDBOperations.f_PARENT_OPID).toString());
-			opName = rs.get(0).get(cDBOperations.f_OP_NAME).toString();
-			netCDF_name = netCDFname;
-			description = rs.get(0).get(cDBOperations.f_DESCRIPTION).toString();
-			studyId = (Integer) rs.get(0).get(cDBOperations.f_STUDYID);
+		if (dbProperties.size() == cDBOperations.T_CREATE_OPERATIONS.length) {
+			opId = Integer.parseInt(dbProperties.get(cDBOperations.f_ID).toString());
+			parentMatrixId = Integer.parseInt(dbProperties.get(cDBOperations.f_PARENT_MATRIXID).toString());
+			parentOperationId = Integer.parseInt(dbProperties.get(cDBOperations.f_PARENT_OPID).toString());
+			opName = dbProperties.get(cDBOperations.f_OP_NAME).toString();
+			netCDF_name = dbProperties.get(cDBOperations.f_OP_NETCDF_NAME).toString();
+			description = dbProperties.get(cDBOperations.f_DESCRIPTION).toString();
+			studyId = (Integer) dbProperties.get(cDBOperations.f_STUDYID);
+			String timestamp = dbProperties.get(cDBOperations.f_CREATION_DATE).toString();
+			timestamp = timestamp.substring(0, timestamp.lastIndexOf('.'));
+			creationDate = Long.parseLong(timestamp);
 		}
 
 		String genotypesFolder = Config.getConfigValue(Config.PROPERTY_GENOTYPES_DIR, "");
@@ -463,7 +413,6 @@ public class OperationServiceImpl implements OperationService {
 		if (new File(pathToMatrix).exists()) {
 			try {
 				ncfile = NetcdfFile.open(pathToMatrix);
-
 //				gtCode = ncfile.findGlobalAttribute(cNetCDF.Attributes.GLOB_GTCODE).getStringValue();
 
 				Dimension markerSetDim = ncfile.findDimension(cNetCDF.Dimensions.DIM_OPSET);
@@ -471,7 +420,6 @@ public class OperationServiceImpl implements OperationService {
 
 				Dimension implicitDim = ncfile.findDimension(cNetCDF.Dimensions.DIM_IMPLICITSET);
 				implicitSetSize = implicitDim.getLength();
-
 			} catch (IOException ex) {
 				log.error("Cannot open file: " + pathToMatrix, ex);
 			} finally {
@@ -496,7 +444,8 @@ public class OperationServiceImpl implements OperationService {
 				gtCode,
 				opSetSize,
 				implicitSetSize,
-				studyId);
+				studyId,
+				creationDate);
 
 		return operationMetadata;
 	}

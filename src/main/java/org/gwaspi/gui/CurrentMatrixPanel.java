@@ -19,7 +19,6 @@ import javax.swing.JTextArea;
 import javax.swing.LayoutStyle;
 import javax.swing.SwingConstants;
 import javax.swing.border.TitledBorder;
-import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.tree.DefaultMutableTreeNode;
 import org.gwaspi.constants.cDBSamples;
@@ -32,6 +31,7 @@ import org.gwaspi.gui.utils.Dialogs;
 import org.gwaspi.gui.utils.HelpURLs;
 import org.gwaspi.gui.utils.LimitedLengthDocument;
 import org.gwaspi.gui.utils.NodeToPathCorrespondence;
+import org.gwaspi.gui.utils.OperationsTableModel;
 import org.gwaspi.gui.utils.RowRendererDefault;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.Matrix;
@@ -136,11 +136,7 @@ public class CurrentMatrixPanel extends JPanel {
 		btn_DeleteMatrix.setAction(new DeleteMatrixAction(matrix, this));
 		btn_SaveDesc.setAction(new SaveDescriptionAction(matrix, txtA_MatrixDesc));
 
-		tbl_MatrixOperations.setModel(new DefaultTableModel(
-				OperationsList.getOperationsTable(_matrixId),
-				new String[]{
-					Text.Operation.operationId, Text.Operation.operationName, Text.All.description, Text.All.createDate
-				}));
+		tbl_MatrixOperations.setModel(new OperationsTableModel(OperationsList.getOperationsTable(_matrixId)));
 		scrl_MatrixOperations.setViewportView(tbl_MatrixOperations);
 		btn_DeleteOperation.setAction(new DeleteOperationAction(matrix, this, tbl_MatrixOperations));
 

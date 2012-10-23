@@ -19,6 +19,7 @@ public class OperationMetadata {
 	private int opSetSize;
 	private int implicitSetSize;
 	private int studyId;
+	private long creationDate;
 
 //	public OperationMetadata() {
 //
@@ -33,6 +34,7 @@ public class OperationMetadata {
 //		this.opSetSize = Integer.MIN_VALUE;
 //		this.implicitSetSize = Integer.MIN_VALUE;
 //		this.studyId = Integer.MIN_VALUE;
+//		this.creationDate = Long.MIN_VALUE;
 //	}
 
 	public OperationMetadata(
@@ -46,7 +48,8 @@ public class OperationMetadata {
 			String gtCode,
 			int opSetSize,
 			int implicitSetSize,
-			int studyId
+			int studyId,
+			long creationDate
 			)
 	{
 		this.id = id;
@@ -60,6 +63,7 @@ public class OperationMetadata {
 		this.opSetSize = opSetSize;
 		this.implicitSetSize = implicitSetSize;
 		this.studyId = studyId;
+		this.creationDate = creationDate;
 	}
 
 	public int getOPId() {
@@ -104,5 +108,9 @@ public class OperationMetadata {
 
 	public int getImplicitSetSize() {
 		return implicitSetSize;
+	}
+
+	public long getCreationDate() {
+		return creationDate;
 	}
 }

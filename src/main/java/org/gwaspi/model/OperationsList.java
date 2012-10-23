@@ -36,11 +36,11 @@ public class OperationsList {
 		return operationService.getOperationsList(matrixId, parentOpId, opType);
 	}
 
-	public static Object[][] getOperationsTable(int matrixId) throws IOException {
+	public static List<OperationMetadata> getOperationsTable(int matrixId) throws IOException {
 		return operationService.getOperationsTable(matrixId);
 	}
 
-	public static Object[][] getOperationsTable(int matrixId, int opId) throws IOException {
+	public static List<OperationMetadata> getOperationsTable(int matrixId, int opId) throws IOException {
 		return operationService.getOperationsTable(matrixId, opId);
 	}
 

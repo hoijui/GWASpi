@@ -7,6 +7,7 @@ import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,7 +26,6 @@ import javax.swing.JTextArea;
 import javax.swing.LayoutStyle;
 import javax.swing.SwingConstants;
 import javax.swing.border.TitledBorder;
-import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.tree.DefaultMutableTreeNode;
 import org.gwaspi.constants.cNetCDF;
@@ -39,11 +39,13 @@ import org.gwaspi.gui.utils.MoreAssocInfo;
 import org.gwaspi.gui.utils.MoreGWASinOneGoInfo;
 import org.gwaspi.gui.utils.MoreInfoForGtFreq;
 import org.gwaspi.gui.utils.NodeToPathCorrespondence;
+import org.gwaspi.gui.utils.OperationsTableModel;
 import org.gwaspi.gui.utils.RowRendererDefault;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.Matrix;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.Operation;
+import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.netCDF.operations.GWASinOneGOParams;
 import org.gwaspi.netCDF.operations.OperationManager;
@@ -154,18 +156,14 @@ public class MatrixAnalysePanel extends JPanel {
 
 		scrl_MatrixDesc.setViewportView(txtA_Description);
 
-		Object[][] tableMatrix;
+		Collection<OperationMetadata> tableMatrix;
 		if (currentOP != null) {
 			tableMatrix = OperationsList.getOperationsTable(_matrixId, currentOP.getId());
 		} else {
 			tableMatrix = OperationsList.getOperationsTable(_matrixId);
 		}
 
-		tbl_MatrixOperations.setModel(new DefaultTableModel(
-				tableMatrix,
-				new String[]{
-					Text.Operation.operationId, Text.Operation.operationName, Text.All.description, Text.All.createDate
-				}));
+		tbl_MatrixOperations.setModel(new OperationsTableModel(tableMatrix));
 		scrl_MatrixOperations.setViewportView(tbl_MatrixOperations);
 		btn_DeleteOperation.setAction(new DeleteOperationAction(currentOP, this, parentMatrix, tbl_MatrixOperations));
 

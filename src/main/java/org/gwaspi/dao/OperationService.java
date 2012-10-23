@@ -16,9 +16,9 @@ public interface OperationService {
 
 	List<Operation> getOperationsList(int matrixId, int parentOpId, OPType opType) throws IOException;
 
-	Object[][] getOperationsTable(int matrixId) throws IOException;
+	List<OperationMetadata> getOperationsTable(int matrixId) throws IOException;
 
-	Object[][] getOperationsTable(int matrixId, int opId) throws IOException;
+	List<OperationMetadata> getOperationsTable(int matrixId, int opId) throws IOException;
 
 	int getIdOfLastOperationTypeOccurance(List<Operation> operationsList, OPType opType);
 
