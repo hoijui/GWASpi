@@ -12,20 +12,20 @@ import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
  */
 public class MatrixMetadata {
 
-	private int matrixId = Integer.MIN_VALUE;
-	private String matrixFriendlyName = "";
-	private String matrixNetCDFName = "";
-	private String pathToMatrix = "";
-	private ImportFormat technology = ImportFormat.UNKNOWN;
-	private String gwaspiDBVersion = "";
-	private String description = "";
-	private GenotypeEncoding gtEncoding = null;
-	private StrandType strand = null;
-	private boolean hasDictionray = false;
-	private int markerSetSize = Integer.MIN_VALUE;
-	private int sampleSetSize = Integer.MIN_VALUE;
-	private int studyId = Integer.MIN_VALUE;
-	private String matrixType = ""; // matrix_type VARCHAR(32) NOT NULL
+	private int matrixId;
+	private String matrixFriendlyName;
+	private String matrixNetCDFName;
+	private String pathToMatrix;
+	private ImportFormat technology;
+	private String gwaspiDBVersion;
+	private String description;
+	private GenotypeEncoding gtEncoding;
+	private StrandType strand;
+	private boolean hasDictionray;
+	private int markerSetSize;
+	private int sampleSetSize;
+	private int studyId;
+	private String matrixType; // matrix_type VARCHAR(32) NOT NULL
 
 //	public MatrixMetadata() {
 //
