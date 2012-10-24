@@ -14,6 +14,7 @@ import org.gwaspi.global.Text;
 import org.gwaspi.model.Operation;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
+import org.gwaspi.model.Report;
 import org.gwaspi.model.ReportsList;
 import org.gwaspi.netCDF.markers.MarkerSet_opt;
 import org.gwaspi.netCDF.operations.OperationSet;
@@ -50,28 +51,30 @@ public class OutputGenotypicAssociation {
 		log.info(Text.All.processing);
 		if (writeManhattanPlotFromAssociationData(opId, manhattanName, 4000, 500)) {
 			result = true;
-			ReportsList.insertRPMetadata(
+			ReportsList.insertRPMetadata(new Report(
+					Integer.MIN_VALUE,
 					"Genotypic assoc. Manhattan Plot",
 					manhattanName + ".png",
 					OPType.MANHATTANPLOT.toString(),
 					op.getParentMatrixId(),
 					opId,
 					"Genotypic Association Manhattan Plot",
-					op.getStudyId());
+					op.getStudyId()));
 			log.info("Saved Genotypic Association Manhattan Plot in reports folder");
 		}
 		//String qqName = "qq_"+outName;
 		String qqName = prefix + "qq";
 		if (result && writeQQPlotFromAssociationData(opId, qqName, 500, 500)) {
 			result = true;
-			ReportsList.insertRPMetadata(
+			ReportsList.insertRPMetadata(new Report(
+					Integer.MIN_VALUE,
 					"Genotypic assoc. QQ Plot",
 					qqName + ".png",
 					OPType.QQPLOT.toString(),
 					op.getParentMatrixId(),
 					opId,
 					"Genotypic Association QQ Plot",
-					op.getStudyId());
+					op.getStudyId()));
 
 			log.info("Saved Genotypic Association QQ Plot in reports folder");
 		}
@@ -79,14 +82,15 @@ public class OutputGenotypicAssociation {
 		String assocName = prefix;
 		if (result && createSortedAssociationReport(opId, assocName)) {
 			result = true;
-			ReportsList.insertRPMetadata(
+			ReportsList.insertRPMetadata(new Report(
+					Integer.MIN_VALUE,
 					"Genotypic Association Tests Values",
 					assocName + ".txt",
 					OPType.GENOTYPICTEST.toString(),
 					op.getParentMatrixId(),
 					opId,
 					"Genotypic Association Tests Values",
-					op.getStudyId());
+					op.getStudyId()));
 
 			org.gwaspi.global.Utils.sysoutCompleted("Genotypic Association Reports & Charts");
 		}

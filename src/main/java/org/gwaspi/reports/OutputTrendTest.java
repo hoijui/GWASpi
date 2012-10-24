@@ -14,6 +14,7 @@ import org.gwaspi.global.Text;
 import org.gwaspi.model.Operation;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
+import org.gwaspi.model.Report;
 import org.gwaspi.model.ReportsList;
 import org.gwaspi.netCDF.markers.MarkerSet_opt;
 import org.gwaspi.netCDF.operations.OperationSet;
@@ -50,28 +51,30 @@ public class OutputTrendTest {
 		log.info(Text.All.processing);
 		if (writeManhattanPlotFromTrendTestData(opId, manhattanName, 4000, 500)) {
 			result = true;
-			ReportsList.insertRPMetadata(
+			ReportsList.insertRPMetadata(new Report(
+					Integer.MIN_VALUE,
 					"Trend Test Manhattan Plot",
 					manhattanName + ".png",
 					OPType.MANHATTANPLOT.toString(),
 					op.getParentMatrixId(),
 					opId,
 					"Trend Test Manhattan Plot",
-					op.getStudyId());
+					op.getStudyId()));
 			log.info("Saved Manhattan Plot in reports folder");
 		}
 		//String qqName = "qq_"+outName;
 		String qqName = prefix + "qq";
 		if (result && writeQQPlotFromTrendTestData(opId, qqName, 500, 500)) {
 			result = true;
-			ReportsList.insertRPMetadata(
+			ReportsList.insertRPMetadata(new Report(
+					Integer.MIN_VALUE,
 					"Trend Test QQ Plot",
 					qqName + ".png",
 					OPType.QQPLOT.toString(),
 					op.getParentMatrixId(),
 					opId,
 					"Trend Test QQ Plot",
-					op.getStudyId());
+					op.getStudyId()));
 
 			log.info("Saved Trend Test QQ Plot in reports folder");
 		}
@@ -79,14 +82,15 @@ public class OutputTrendTest {
 		String assocName = prefix;
 		if (result && createSortedTrendTestReport(opId, assocName)) {
 			result = true;
-			ReportsList.insertRPMetadata(
+			ReportsList.insertRPMetadata(new Report(
+					Integer.MIN_VALUE,
 					"Trend Tests Values",
 					assocName + ".txt",
 					OPType.TRENDTEST.toString(),
 					op.getParentMatrixId(),
 					opId,
 					"Trend Tests Values",
-					op.getStudyId());
+					op.getStudyId()));
 
 			org.gwaspi.global.Utils.sysoutCompleted("Trend Test Reports & Charts");
 		}

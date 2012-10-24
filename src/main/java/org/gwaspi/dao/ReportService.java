@@ -26,15 +26,7 @@ public interface ReportService {
 
 	String createReportsMetadataTable();
 
-	void insertRPMetadata(
-			String reportName,
-			String fileName,
-			String RPType,
-			int parentMatrixId,
-			int parentOPId,
-			String description,
-			int studyId)
-			throws IOException;
+	void insertRPMetadata(Report report) throws IOException;
 
 	void deleteReportByMatrixId(int matrixId) throws IOException;
 

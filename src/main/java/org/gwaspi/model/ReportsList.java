@@ -44,24 +44,8 @@ public class ReportsList {
 		return reportService.createReportsMetadataTable();
 	}
 
-	public static void insertRPMetadata(
-			String reportName,
-			String fileName,
-			String RPType,
-			int parentMatrixId,
-			int parentOPId,
-			String description,
-			int studyId)
-			throws IOException
-	{
-		reportService.insertRPMetadata(
-				reportName,
-				fileName,
-				RPType,
-				parentMatrixId,
-				parentOPId,
-				description,
-				studyId);
+	public static void insertRPMetadata(Report report) throws IOException {
+		reportService.insertRPMetadata(report);
 	}
 
 	public static void deleteReportByMatrixId(int matrixId) throws IOException {

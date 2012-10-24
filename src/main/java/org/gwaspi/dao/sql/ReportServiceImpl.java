@@ -211,25 +211,17 @@ public class ReportServiceImpl implements ReportService {
 	}
 
 	@Override
-	public void insertRPMetadata(
-			String reportName,
-			String fileName,
-			String RPType,
-			int parentMatrixId,
-			int parentOPId,
-			String description,
-			int studyId)
-			throws IOException
-	{
+	public void insertRPMetadata(Report report) throws IOException {
 		DbManager dBManager = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
 
-		Object[] rpMetaData = new Object[]{reportName,
-			description,
-			fileName,
-			RPType,
-			parentMatrixId,
-			parentOPId,
-			studyId};
+		Object[] rpMetaData = new Object[]{
+			report.getFriendlyName(),
+			report.getDescription(),
+			report.getFileName(),
+			report.getReportType(),
+			report.getParentMatrixId(),
+			report.getParentOperationId(),
+			report.getStudyId()};
 
 		dBManager.insertValuesInTable(cDBGWASpi.SCH_MATRICES,
 				cDBReports.T_REPORTS,

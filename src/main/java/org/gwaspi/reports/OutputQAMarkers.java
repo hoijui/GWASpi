@@ -11,6 +11,7 @@ import org.gwaspi.global.Config;
 import org.gwaspi.model.Operation;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
+import org.gwaspi.model.Report;
 import org.gwaspi.model.ReportsList;
 import org.gwaspi.netCDF.markers.MarkerSet_opt;
 import org.gwaspi.netCDF.operations.OperationSet;
@@ -42,14 +43,15 @@ public class OutputQAMarkers {
 		org.gwaspi.global.Utils.createFolder(Config.getConfigValue(Config.PROPERTY_REPORTS_DIR, ""), "STUDY_" + op.getStudyId());
 
 		if (createSortedMarkerMissingnessReport(opId, markMissOutName)) {
-			ReportsList.insertRPMetadata(
+			ReportsList.insertRPMetadata(new Report(
+					Integer.MIN_VALUE,
 					"Marker Missingness Table",
 					markMissOutName,
 					OPType.MARKER_QA.toString(),
 					op.getParentMatrixId(),
 					opId,
 					"Marker Missingness Table",
-					op.getStudyId());
+					op.getStudyId()));
 
 			org.gwaspi.global.Utils.sysoutCompleted("Marker Missingness QA Report");
 		}
@@ -57,14 +59,15 @@ public class OutputQAMarkers {
 
 		String markMismatchOutName = prefix + "markmismatch.txt";
 		if (createMarkerMismatchReport(opId, markMismatchOutName)) {
-			ReportsList.insertRPMetadata(
+			ReportsList.insertRPMetadata(new Report(
+					Integer.MIN_VALUE,
 					"Marker Mismatch State Table",
 					markMismatchOutName,
 					OPType.MARKER_QA.toString(),
 					op.getParentMatrixId(),
 					opId,
 					"Marker Mismatch State Table",
-					op.getStudyId());
+					op.getStudyId()));
 
 			org.gwaspi.global.Utils.sysoutCompleted("Marker Mismatch QA Report");
 		}

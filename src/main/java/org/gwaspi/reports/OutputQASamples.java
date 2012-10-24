@@ -9,6 +9,7 @@ import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.global.Config;
 import org.gwaspi.model.Operation;
 import org.gwaspi.model.OperationsList;
+import org.gwaspi.model.Report;
 import org.gwaspi.model.ReportsList;
 import org.gwaspi.model.SampleInfo;
 import org.slf4j.Logger;
@@ -43,14 +44,15 @@ public class OutputQASamples {
 
 		if (createSortedSampleMissingnessReport(opId, samplMissOutName, op.getStudyId())) {
 			if (newReport) {
-				ReportsList.insertRPMetadata(
+				ReportsList.insertRPMetadata(new Report(
+						Integer.MIN_VALUE,
 						"Sample Missingness Table",
 						samplMissOutName,
 						cNetCDF.Defaults.OPType.SAMPLE_QA.toString(),
 						op.getParentMatrixId(),
 						opId,
 						"Sample Missingness Table",
-						op.getStudyId());
+						op.getStudyId()));
 
 				org.gwaspi.global.Utils.sysoutCompleted("Sample Missingness QA Report");
 			}
@@ -59,14 +61,15 @@ public class OutputQASamples {
 		samplMissOutName = prefix + "hetzyg-missing";
 //		if(createSampleHetzygPlot(opId, samplMissOutName, 500, 500)){
 //			if(newReport){
-		ReportsList.insertRPMetadata(
+		ReportsList.insertRPMetadata(new Report(
+				Integer.MIN_VALUE,
 				"Sample Heterozygosity vs Missingness Plot",
 				samplMissOutName,
 				cNetCDF.Defaults.OPType.SAMPLE_HTZYPLOT.toString(),
 				op.getParentMatrixId(),
 				opId,
 				"Sample Heterozygosity vs Missingness Plot",
-				op.getStudyId());
+				op.getStudyId()));
 
 		org.gwaspi.global.Utils.sysoutCompleted("Sample Missingness QA Report");
 //            }
