@@ -277,7 +277,8 @@ public class Utils {
 	//</editor-fold>
 
 	//<editor-fold defaultstate="collapsed" desc="CHUNKED SAVERS">
-	public static boolean saveCharChunkedMapToWrMatrix(NetcdfFileWriteable wrNcFile,
+	public static boolean saveCharChunkedMapToWrMatrix(
+			NetcdfFileWriteable wrNcFile,
 			Map<String, Object> wrMap,
 			String variable,
 			int varStride,
@@ -288,7 +289,8 @@ public class Utils {
 		try {
 			ArrayChar.D2 markersD2 = writeMapValueToD2ArrayChar(wrMap, varStride);
 
-			int[] markersOrig = new int[]{offset, 0}; //first origin is the initial markerset position, second is the original allele position
+			// first origin is the initial markerset position, second is the original allele position
+			int[] markersOrig = new int[] {offset, 0};
 			try {
 				wrNcFile.write(variable, markersOrig, markersD2);
 				log.info("Done writing {}", variable);
@@ -305,12 +307,14 @@ public class Utils {
 		return result;
 	}
 
-	public static boolean saveCharChunkedMapItemToWrMatrix(NetcdfFileWriteable wrNcFile,
+	public static boolean saveCharChunkedMapItemToWrMatrix(
+			NetcdfFileWriteable wrNcFile,
 			Map<String, Object> wrMap,
 			String variable,
 			int itemNb,
 			int varStride,
-			int offset) {
+			int offset)
+	{
 		boolean result = false;
 
 		try {
@@ -333,10 +337,13 @@ public class Utils {
 	}
 
 	//<editor-fold defaultstate="collapsed" desc="GENOTYPE SAVERS">
-	public static boolean saveChunkedCurrentSampleGTsToMatrix(NetcdfFileWriteable wrNcFile,
+	public static boolean saveChunkedCurrentSampleGTsToMatrix(
+			NetcdfFileWriteable wrNcFile,
 			Map<String, Object> wrMap,
 			int samplePos,
-			int offset) throws InvalidRangeException {
+			int offset)
+			throws InvalidRangeException
+	{
 		boolean result = false;
 		ArrayChar.D3 genotypes = writeMapToCurrentSampleArrayCharD3(wrMap, cNetCDF.Strides.STRIDE_GT);
 
@@ -353,7 +360,8 @@ public class Utils {
 		return result;
 	}
 
-	public static boolean saveChunkedCurrentMarkerGTsToMatrix(NetcdfFileWriteable wrNcFile,
+	public static boolean saveChunkedCurrentMarkerGTsToMatrix(
+			NetcdfFileWriteable wrNcFile,
 			Map<String, Object> wrMap,
 			int markerPos,
 			int offset)
@@ -376,7 +384,8 @@ public class Utils {
 	//</editor-fold>
 
 	//<editor-fold defaultstate="collapsed" desc="D1 SAVERS">
-	public static boolean saveDoubleChunkedMapD1ToWrMatrix(NetcdfFileWriteable wrNcFile,
+	public static boolean saveDoubleChunkedMapD1ToWrMatrix(
+			NetcdfFileWriteable wrNcFile,
 			Map<String, Object> wrMap,
 			String variable,
 			int offset)
@@ -402,7 +411,8 @@ public class Utils {
 		return result;
 	}
 
-	public static boolean saveDoubleChunkedMapItemD1ToWrMatrix(NetcdfFileWriteable wrNcFile,
+	public static boolean saveDoubleChunkedMapItemD1ToWrMatrix(
+			NetcdfFileWriteable wrNcFile,
 			Map<String, Object> wrMap,
 			int itemNb,
 			String variable,
@@ -429,7 +439,8 @@ public class Utils {
 		return result;
 	}
 
-	public static boolean saveIntChunkedMapD1ToWrMatrix(NetcdfFileWriteable wrNcFile,
+	public static boolean saveIntChunkedMapD1ToWrMatrix(
+			NetcdfFileWriteable wrNcFile,
 			Map<String, Object> wrMap,
 			String variable,
 			int offset)
@@ -455,11 +466,13 @@ public class Utils {
 		return result;
 	}
 
-	public static boolean saveIntChunkedMapItemD1ToWrMatrix(NetcdfFileWriteable wrNcFile,
+	public static boolean saveIntChunkedMapItemD1ToWrMatrix(
+			NetcdfFileWriteable wrNcFile,
 			Map<String, Object> wrMap,
 			int itemNb,
 			String variable,
-			int offset) {
+			int offset)
+	{
 		boolean result = false;
 
 		try {
@@ -483,7 +496,8 @@ public class Utils {
 	//</editor-fold>
 
 	//<editor-fold defaultstate="collapsed" desc="D2 SAVERS">
-	public static boolean saveIntChunkedMapD2ToWrMatrix(NetcdfFileWriteable wrNcFile,
+	public static boolean saveIntChunkedMapD2ToWrMatrix(
+			NetcdfFileWriteable wrNcFile,
 			Map<String, Object> wrMap,
 			int[] columns,
 			String variable,
@@ -510,7 +524,8 @@ public class Utils {
 		return result;
 	}
 
-	public static boolean saveDoubleChunkedD2ToWrMatrix(NetcdfFileWriteable wrNcFile,
+	public static boolean saveDoubleChunkedD2ToWrMatrix(
+			NetcdfFileWriteable wrNcFile,
 			Map<String, Object> wrMap,
 			int[] columns,
 			String variable,
@@ -546,7 +561,8 @@ public class Utils {
 
 		int markerCounter = 0;
 		for (Object value : map.values()) {
-			charArray.setString(ima.set(0, markerCounter, 0), value.toString().trim()); //1 Sample at a time, iterating through markers, starting at gtSpan 0
+			// 1 Sample at a time, iterating through markers, starting at gtSpan 0
+			charArray.setString(ima.set(0, markerCounter, 0), value.toString().trim());
 			markerCounter++;
 		}
 
@@ -559,7 +575,8 @@ public class Utils {
 
 		int sampleCounter = 0;
 		for (Object value : map.values()) {
-			charArray.setString(ima.set(sampleCounter, 0, 0), value.toString().trim()); //1 Marker at a time, iterating through samples, starting at gtSpan 0
+			// 1 Marker at a time, iterating through samples, starting at gtSpan 0
+			charArray.setString(ima.set(sampleCounter, 0, 0), value.toString().trim());
 			sampleCounter++;
 		}
 
@@ -568,13 +585,13 @@ public class Utils {
 	//</editor-fold>
 
 	//<editor-fold defaultstate="collapsed" desc="ArrayChar.D2">
-	public static ArrayChar.D2 writeCollectionToD2ArrayChar(Collection<String> values, int stride) {
+	public static ArrayChar.D2 writeCollectionToD2ArrayChar(Collection<?> values, int stride) {
 		ArrayChar.D2 charArray = new ArrayChar.D2(values.size(), stride);
 		Index ima = charArray.getIndex();
 
 		int i = 0;
-		for (String value : values) {
-			charArray.setString(ima.set(i, 0), value.trim());
+		for (Object value : values) {
+			charArray.setString(ima.set(i, 0), value.toString().trim());
 			i++;
 		}
 
@@ -582,29 +599,11 @@ public class Utils {
 	}
 
 	public static ArrayChar.D2 writeMapValueToD2ArrayChar(Map<String, Object> map, int stride) {
-		ArrayChar.D2 charArray = new ArrayChar.D2(map.size(), stride);
-		Index ima = charArray.getIndex();
-
-		int count = 0;
-		for (Object value : map.values()) {
-			charArray.setString(ima.set(count, 0), value.toString().trim());
-			count++;
-		}
-
-		return charArray;
+		return writeCollectionToD2ArrayChar(map.values(), stride);
 	}
 
 	public static ArrayChar.D2 writeMapKeysToD2ArrayChar(Map<String, Object> map, int stride) {
-		ArrayChar.D2 charArray = new ArrayChar.D2(map.size(), stride);
-		Index ima = charArray.getIndex();
-
-		int count = 0;
-		for (String key : map.keySet()) {
-			charArray.setString(ima.set(count, 0), key.trim());
-			count++;
-		}
-
-		return charArray;
+		return writeCollectionToD2ArrayChar(map.keySet(), stride);
 	}
 
 	public static ArrayChar.D2 writeMapValueItemToD2ArrayChar(Map<String, Object> map, int itemNb, int stride) {
@@ -719,7 +718,7 @@ public class Utils {
 		int markerNb = genotypesAL.size() / sampleNb;
 		int alCounter = 0;
 
-		//samplesDim, markersDim, gtStrideDim
+		// samplesDim, markersDim, gtStrideDim
 		ArrayByte.D3 byteArray = new ArrayByte.D3(sampleNb, markerNb, stride);
 		Index ima = byteArray.getIndex();
 
@@ -727,8 +726,9 @@ public class Utils {
 			for (int sampleCounter = 0; sampleCounter < sampleNb; sampleCounter++) {
 
 				byte[] value = genotypesAL.get(alCounter);
-				byteArray.setByte(ima.set(sampleCounter, markerCounter, 0), value[0]); //1 Sample at a time, iterating through markers, first byte
-				byteArray.setByte(ima.set(sampleCounter, markerCounter, 1), value[1]); //1 Sample at a time, iterating through markers, second byte
+				// 1 Sample at a time, iterating through markers
+				byteArray.setByte(ima.set(sampleCounter, markerCounter, 0), value[0]); // first byte
+				byteArray.setByte(ima.set(sampleCounter, markerCounter, 1), value[1]); // second byte
 				alCounter++;
 			}
 		}
@@ -737,15 +737,16 @@ public class Utils {
 	}
 
 	public static ArrayByte.D3 writeMapToSingleSampleArrayByteD3(Map<String, Object> map, int stride) {
-		//samplesDim, markersDim, gtStrideDim
+		// samplesDim, markersDim, gtStrideDim
 		ArrayByte.D3 byteArray = new ArrayByte.D3(1, map.size(), stride);
 		Index ima = byteArray.getIndex();
 
 		int markerCount = 0;
 		for (Object value : map.values()) {
 			byte[] values = (byte[]) value;
-			byteArray.setByte(ima.set(0, markerCount, 0), values[0]); //1 Sample at a time, iterating through markers, first byte
-			byteArray.setByte(ima.set(0, markerCount, 1), values[1]); //1 Sample at a time, iterating through markers, second byte
+			// 1 Sample at a time, iterating through markers
+			byteArray.setByte(ima.set(0, markerCount, 0), values[0]); // first byte
+			byteArray.setByte(ima.set(0, markerCount, 1), values[1]); // second byte
 			markerCount++;
 		}
 
@@ -759,8 +760,9 @@ public class Utils {
 		int markerCounter = 0;
 		for (Object value : map.values()) {
 			byte[] values = (byte[]) value;
-			byteArray.setByte(ima.set(markerCounter, 0, 0), values[0]); //1 Marker at a time, iterating through samples, first byte
-			byteArray.setByte(ima.set(markerCounter, 0, 1), values[1]); //1 Marker at a time, iterating through samples, second byte
+			// 1 Marker at a time, iterating through samples
+			byteArray.setByte(ima.set(markerCounter, 0, 0), values[0]); // first byte
+			byteArray.setByte(ima.set(markerCounter, 0, 1), values[1]); // second byte
 			markerCounter++;
 		}
 
@@ -780,8 +782,9 @@ public class Utils {
 		int markerCounter = 0;
 		for (Object value : map.values()) {
 			byte[] values = (byte[]) value;
-			byteArray.setByte(ima.set(0, markerCounter, 0), values[0]); //1 Marker at a time, iterating through samples, first byte
-			byteArray.setByte(ima.set(0, markerCounter, 1), values[1]); //1 Marker at a time, iterating through samples, second byte
+			// 1 Marker at a time, iterating through samples
+			byteArray.setByte(ima.set(0, markerCounter, 0), values[0]); // first byte
+			byteArray.setByte(ima.set(0, markerCounter, 1), values[1]); // second byte
 			markerCounter++;
 		}
 
