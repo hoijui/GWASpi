@@ -161,9 +161,15 @@ public class OP_QASamples_opt implements MatrixOperation {
 			if (null != rdNcFile) {
 				try {
 					rdNcFile.close();
+				} catch (IOException ex) {
+					log.warn("Cannot close file " + rdNcFile, ex);
+				}
+			}
+			if (null != wrNcFile) {
+				try {
 					wrNcFile.close();
 				} catch (IOException ex) {
-					log.warn("Cannot close file", ex);
+					log.warn("Cannot close file " + wrNcFile, ex);
 				}
 			}
 
