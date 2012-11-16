@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import org.gwaspi.constants.cDBGWASpi;
 import org.gwaspi.constants.cDBMatrix;
-import org.gwaspi.constants.cDBOperations;
 import org.gwaspi.constants.cImport.ImportFormat;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
@@ -344,9 +343,9 @@ public class MatrixServiceImpl implements MatrixService {
 			description = (dbProperties.get(cDBMatrix.f_DESCRIPTION) != null) ? dbProperties.get(cDBMatrix.f_DESCRIPTION).toString() : ""; // description VARCHAR(2000)
 //			loaded = (dbProperties.get(cDBMatrix.f_LOADED) != null) ? dbProperties.get(cDBMatrix.f_LOADED).toString() : "0"; // loaded CHAR(1)
 			studyId = (dbProperties.get(cDBMatrix.f_STUDYID) != null) ? Integer.parseInt(dbProperties.get(cDBMatrix.f_STUDYID).toString()) : 0;
-			String timestamp = dbProperties.get(cDBMatrix.f_CREATION_DATE).toString();
-			timestamp = timestamp.substring(0, timestamp.lastIndexOf('.'));
-			creationDate = Long.parseLong(timestamp);
+			String dateTime = dbProperties.get(cDBMatrix.f_CREATION_DATE).toString();
+			dateTime = dateTime.substring(0, dateTime.lastIndexOf('.'));
+			creationDate = org.gwaspi.global.Utils.stringToDate(dateTime, "yyyy-MM-dd HH:mm:ss").getTime();
 		}
 
 		String genotypesFolder = Config.getConfigValue(Config.PROPERTY_GENOTYPES_DIR, "");

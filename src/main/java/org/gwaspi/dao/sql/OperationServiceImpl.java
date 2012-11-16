@@ -394,9 +394,9 @@ public class OperationServiceImpl implements OperationService {
 			netCDF_name = dbProperties.get(cDBOperations.f_OP_NETCDF_NAME).toString();
 			description = dbProperties.get(cDBOperations.f_DESCRIPTION).toString();
 			studyId = (Integer) dbProperties.get(cDBOperations.f_STUDYID);
-			String timestamp = dbProperties.get(cDBOperations.f_CREATION_DATE).toString();
-			timestamp = timestamp.substring(0, timestamp.lastIndexOf('.'));
-			creationDate = Long.parseLong(timestamp);
+			String dateTime = dbProperties.get(cDBOperations.f_CREATION_DATE).toString();
+			dateTime = dateTime.substring(0, dateTime.lastIndexOf('.'));
+			creationDate = org.gwaspi.global.Utils.stringToDate(dateTime, "yyyy-MM-dd HH:mm:ss").getTime();
 		}
 
 		String genotypesFolder = Config.getConfigValue(Config.PROPERTY_GENOTYPES_DIR, "");
