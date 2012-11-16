@@ -90,7 +90,7 @@ public class Threaded_GTFreq_HW extends CommonRunnable {
 					org.gwaspi.global.Utils.sysoutCompleted("Genotype Frequency Count");
 					//MultiOperations.updateTree();
 				} else {
-					getLog().info(Text.Operation.warnAffectionMissing);
+					getLog().warn(Text.Operation.warnAffectionMissing);
 				}
 			} else { // BY DB AFFECTION
 				Set<Object> affectionStates = SamplesParserManager.getDBAffectionStates(matrixId); //use Sample Info file affection state
@@ -104,7 +104,7 @@ public class Threaded_GTFreq_HW extends CommonRunnable {
 					org.gwaspi.global.Utils.sysoutCompleted("Genotype Frequency Count");
 					//MultiOperations.updateTree();
 				} else {
-					getLog().info(Text.Operation.warnAffectionMissing);
+					getLog().warn(Text.Operation.warnAffectionMissing);
 				}
 			}
 			GWASpiExplorerNodes.insertOperationUnderMatrixNode(matrixId, censusOpId);

@@ -90,7 +90,7 @@ public class Threaded_GWAS extends CommonRunnable {
 
 					org.gwaspi.global.Utils.sysoutCompleted("Genotype Frequency Count");
 				} else {
-					getLog().info(Text.Operation.warnAffectionMissing);
+					getLog().warn(Text.Operation.warnAffectionMissing);
 				}
 			} else { // BY DB AFFECTION
 				Set<Object> affectionStates = SamplesParserManager.getDBAffectionStates(matrixId); //use Sample Info file affection state
@@ -102,7 +102,7 @@ public class Threaded_GWAS extends CommonRunnable {
 
 					org.gwaspi.global.Utils.sysoutCompleted("Genotype Frequency Count");
 				} else {
-					getLog().info(Text.Operation.warnAffectionMissing);
+					getLog().warn(Text.Operation.warnAffectionMissing);
 				}
 			}
 

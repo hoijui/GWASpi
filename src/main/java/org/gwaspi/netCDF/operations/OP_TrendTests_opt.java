@@ -217,7 +217,7 @@ public class OP_TrendTests_opt implements MatrixOperation {
 				}
 			}
 		} else { // NO DATA LEFT AFTER THRESHOLD FILTER PICKING
-			log.info(Text.Operation.warnNoDataLeftAfterPicking);
+			log.warn(Text.Operation.warnNoDataLeftAfterPicking);
 		}
 
 		return resultAssocId;
