@@ -191,12 +191,12 @@ public class cImport {
 			public static final int bim_pos = 3;
 			public static final int bim_allele1 = 4;
 			public static final int bim_allele2 = 5;
-			public static final int ped_familyId = 0;
-			public static final int ped_sampleId = 1;
-			public static final int ped_fatherId = 2;
-			public static final int ped_motherId = 3;
-			public static final int ped_sex = 4;
-			public static final int ped_affection = 5;
+			public static final int ped_familyId = Plink_Standard.ped_familyId;
+			public static final int ped_sampleId = Plink_Standard.ped_sampleId;
+			public static final int ped_fatherId = Plink_Standard.ped_fatherId;
+			public static final int ped_motherId = Plink_Standard.ped_motherId;
+			public static final int ped_sex = Plink_Standard.ped_sex;
+			public static final int ped_affection = Plink_Standard.ped_affection;
 		}
 
 		public static interface HapmapGT_Standard {
