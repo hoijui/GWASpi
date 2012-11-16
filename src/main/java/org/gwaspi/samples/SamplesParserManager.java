@@ -34,8 +34,8 @@ public class SamplesParserManager {
 	}
 
 	//<editor-fold defaultstate="collapsed" desc="DB SAMPLE INFO PROVIDERS">
-	public static Set<Object> getDBAffectionStates(int matrixId) {
-		Set<Object> resultHS = new HashSet<Object>();
+	public static Set<SampleInfo.Affection> getDBAffectionStates(int matrixId) {
+		Set<SampleInfo.Affection> resultHS = new HashSet<SampleInfo.Affection>();
 		try {
 			MatrixMetadata rdMatrixMetadata = MatricesList.getMatrixMetadataById(matrixId);
 			log.info("Getting Sample Affection info for: {}",
@@ -104,8 +104,8 @@ public class SamplesParserManager {
 		return sequenomSamplesParser.scanSampleInfo(genotypePath);
 	}
 
-	public static Set<String> scanSampleInfoAffectionStates(String sampleInfoPath) throws IOException {
-		Set<String> resultHS = new HashSet<String>();
+	public static Set<SampleInfo.Affection> scanSampleInfoAffectionStates(String sampleInfoPath) throws IOException {
+		Set<SampleInfo.Affection> resultHS = new HashSet<SampleInfo.Affection>();
 
 		File sampleFile = new File(sampleInfoPath);
 		FileReader inputFileReader = new FileReader(sampleFile);
@@ -115,7 +115,7 @@ public class SamplesParserManager {
 		String l;
 		while ((l = inputBufferReader.readLine()) != null) {
 			String[] cVals = l.split(cImport.Separators.separators_CommaSpaceTab_rgxp);
-			resultHS.add(cVals[GWASpi.affection]);
+			resultHS.add(SampleInfo.Affection.values()[Integer.parseInt(cVals[GWASpi.affection])]);
 		}
 
 		inputFileReader.close();

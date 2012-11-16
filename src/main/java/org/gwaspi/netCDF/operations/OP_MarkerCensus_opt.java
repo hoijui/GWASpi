@@ -250,7 +250,7 @@ public class OP_MarkerCensus_opt implements MatrixOperation {
 
 				//<editor-fold defaultstate="collapsed" desc="PROCESSOR">
 				//<editor-fold defaultstate="collapsed" desc="GET SAMPLES INFO">
-				Map<String, Object> samplesInfoMap;
+				Map<String, Object> samplesInfoMap; // XXX change to Collection<SampleInfo>?
 				List<SampleInfo> sampleInfos = SampleInfoList.getAllSampleInfoFromDBByPoolID(rdMatrixMetadata.getStudyId());
 				if (phenoFile == null) {
 					samplesInfoMap = new LinkedHashMap<String, Object>();

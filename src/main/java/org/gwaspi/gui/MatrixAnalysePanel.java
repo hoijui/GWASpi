@@ -47,6 +47,7 @@ import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.Operation;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
+import org.gwaspi.model.SampleInfo;
 import org.gwaspi.netCDF.operations.GWASinOneGOParams;
 import org.gwaspi.netCDF.operations.OperationManager;
 import org.gwaspi.samples.SamplesParserManager;
@@ -359,11 +360,12 @@ public class MatrixAnalysePanel extends JPanel {
 				int hwOPId = Integer.MIN_VALUE;
 
 				StartGWASpi.mainGUIFrame.setCursor(CursorUtils.waitCursor);
-				Set<Object> affectionStates = org.gwaspi.samples.SamplesParserManager.getDBAffectionStates(parentMatrix.getId());
+				Set<SampleInfo.Affection> affectionStates = SamplesParserManager.getDBAffectionStates(parentMatrix.getId());
 				StartGWASpi.mainGUIFrame.setCursor(CursorUtils.defaultCursor);
 
-				if (affectionStates.contains("1") && affectionStates.contains("2")) {
-
+				if (affectionStates.contains(SampleInfo.Affection.UNAFFECTED)
+						&& affectionStates.contains(SampleInfo.Affection.AFFECTED))
+				{
 					List<String> necessaryOPsAL = new ArrayList<String>();
 					necessaryOPsAL.add(cNetCDF.Defaults.OPType.SAMPLE_QA.toString());
 					necessaryOPsAL.add(cNetCDF.Defaults.OPType.MARKER_QA.toString());
@@ -461,11 +463,12 @@ public class MatrixAnalysePanel extends JPanel {
 				int hwOPId = Integer.MIN_VALUE;
 
 				StartGWASpi.mainGUIFrame.setCursor(CursorUtils.waitCursor);
-				Set<Object> affectionStates = org.gwaspi.samples.SamplesParserManager.getDBAffectionStates(parentMatrix.getId());
+				Set<SampleInfo.Affection> affectionStates = SamplesParserManager.getDBAffectionStates(parentMatrix.getId());
 				StartGWASpi.mainGUIFrame.setCursor(CursorUtils.defaultCursor);
 
-				if (affectionStates.contains("1") && affectionStates.contains("2")) {
-
+				if (affectionStates.contains(SampleInfo.Affection.UNAFFECTED)
+						&& affectionStates.contains(SampleInfo.Affection.AFFECTED))
+				{
 					List<String> necessaryOPsAL = new ArrayList<String>();
 					necessaryOPsAL.add(cNetCDF.Defaults.OPType.SAMPLE_QA.toString());
 					necessaryOPsAL.add(cNetCDF.Defaults.OPType.MARKER_QA.toString());
@@ -563,11 +566,12 @@ public class MatrixAnalysePanel extends JPanel {
 				int hwOPId = Integer.MIN_VALUE;
 
 				StartGWASpi.mainGUIFrame.setCursor(CursorUtils.waitCursor);
-				Set<Object> affectionStates = org.gwaspi.samples.SamplesParserManager.getDBAffectionStates(parentMatrix.getId());
+				Set<SampleInfo.Affection> affectionStates = SamplesParserManager.getDBAffectionStates(parentMatrix.getId());
 				StartGWASpi.mainGUIFrame.setCursor(CursorUtils.defaultCursor);
 
-				if (affectionStates.contains("1") && affectionStates.contains("2")) {
-
+				if (affectionStates.contains(SampleInfo.Affection.UNAFFECTED)
+						&& affectionStates.contains(SampleInfo.Affection.AFFECTED))
+				{
 					List<String> necessaryOPsAL = new ArrayList<String>();
 					necessaryOPsAL.add(cNetCDF.Defaults.OPType.SAMPLE_QA.toString());
 					necessaryOPsAL.add(cNetCDF.Defaults.OPType.MARKER_QA.toString());
@@ -845,9 +849,11 @@ public class MatrixAnalysePanel extends JPanel {
 						&& (gwasParams.isPerformAllelicTests() || gwasParams.isPerformTrendTests())) { //At least one test has been picked
 					log.info(Text.All.processing);
 					StartGWASpi.mainGUIFrame.setCursor(CursorUtils.waitCursor);
-					Set<Object> affectionStates = SamplesParserManager.getDBAffectionStates(parentMatrix.getId()); //use Sample Info file affection state
+					Set<SampleInfo.Affection> affectionStates = SamplesParserManager.getDBAffectionStates(parentMatrix.getId()); //use Sample Info file affection state
 					StartGWASpi.mainGUIFrame.setCursor(CursorUtils.defaultCursor);
-					if (affectionStates.contains("1") && affectionStates.contains("2")) {
+					if (affectionStates.contains(SampleInfo.Affection.UNAFFECTED)
+							&& affectionStates.contains(SampleInfo.Affection.AFFECTED))
+					{
 						MultiOperations.doGWASwithAlterPhenotype(parentMatrix.getStudyId(),
 								parentMatrix.getId(),
 								phenotypeFile,

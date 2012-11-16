@@ -147,16 +147,12 @@ public class SampleInfoCollectorSwitch {
 		return sampleInfos;
 	}
 
-	public static Set<String> collectAffectionStates(Collection<SampleInfo> sampleInfos) {
+	public static Set<SampleInfo.Affection> collectAffectionStates(Collection<SampleInfo> sampleInfos) {
 
-		Set<String> affectionStates = new HashSet<String>();
+		Set<SampleInfo.Affection> affectionStates = new HashSet<SampleInfo.Affection>();
 
 		for (SampleInfo sampleInfo : sampleInfos) {
-			String affection = sampleInfo.getAffectionStr();
-			if (!affection.equals("1") && !affection.equals("2")) {
-				affection = "0";
-			}
-			affectionStates.add(affection);
+			affectionStates.add(sampleInfo.getAffection());
 		}
 
 		return affectionStates;

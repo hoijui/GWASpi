@@ -65,7 +65,7 @@ public class Threaded_Loader_GWASifOK extends CommonRunnable {
 				loadDescription.getSampleFilePath(),
 				loadDescription.getGtDirPath(),
 				loadDescription.getAnnotationFilePath());
-		Set<String> affectionStates = SampleInfoCollectorSwitch.collectAffectionStates(sampleInfos);
+		Set<SampleInfo.Affection> affectionStates = SampleInfoCollectorSwitch.collectAffectionStates(sampleInfos);
 
 		//<editor-fold defaultstate="collapsed" desc="LOAD PROCESS">
 		int resultMatrixId = Integer.MIN_VALUE;
@@ -98,8 +98,8 @@ public class Threaded_Loader_GWASifOK extends CommonRunnable {
 		//</editor-fold>
 
 		if (performGwas
-				&& affectionStates.contains("1")
-				&& affectionStates.contains("2"))
+				&& affectionStates.contains(SampleInfo.Affection.UNAFFECTED)
+				&& affectionStates.contains(SampleInfo.Affection.AFFECTED))
 		{
 			// CHECK IF GWAS WAS REQUIRED AND IF AFFECTIONS AVAILABLE
 

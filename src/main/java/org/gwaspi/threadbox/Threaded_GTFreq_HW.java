@@ -75,9 +75,11 @@ public class Threaded_GTFreq_HW extends CommonRunnable {
 		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
 			if (phenotypeFile != null && phenotypeFile.exists() && phenotypeFile.isFile()) { //BY EXTERNAL PHENOTYPE FILE
 
-				Set<String> affectionStates = SamplesParserManager.scanSampleInfoAffectionStates(phenotypeFile.getPath()); //use Sample Info file affection state
+				Set<SampleInfo.Affection> affectionStates = SamplesParserManager.scanSampleInfoAffectionStates(phenotypeFile.getPath()); //use Sample Info file affection state
 
-				if (affectionStates.contains("1") && affectionStates.contains("2")) {
+				if (affectionStates.contains(SampleInfo.Affection.UNAFFECTED)
+						&& affectionStates.contains(SampleInfo.Affection.AFFECTED))
+				{
 					getLog().info("Updating Sample Info in DB");
 					Collection<SampleInfo> sampleInfos = SamplesParserManager.scanGwaspiSampleInfo(phenotypeFile.getPath());
 					SampleInfoList.insertSampleInfos(matrixId, sampleInfos);
@@ -94,13 +96,14 @@ public class Threaded_GTFreq_HW extends CommonRunnable {
 					getLog().warn(Text.Operation.warnAffectionMissing);
 				}
 			} else { // BY DB AFFECTION
-				Set<Object> affectionStates = SamplesParserManager.getDBAffectionStates(matrixId); //use Sample Info file affection state
-				if (affectionStates.contains("1") && affectionStates.contains("2")) {
+				Set<SampleInfo.Affection> affectionStates = SamplesParserManager.getDBAffectionStates(matrixId); //use Sample Info file affection state
+				if (affectionStates.contains(SampleInfo.Affection.UNAFFECTED)
+						&& affectionStates.contains(SampleInfo.Affection.AFFECTED))
+				{
 					censusOpId = OperationManager.censusCleanMatrixMarkers(matrixId,
 							sampleQAOpId,
 							markersQAOpId, gwasParams.getDiscardMarkerMisRatVal(), gwasParams.isDiscardGTMismatches(), gwasParams.getDiscardSampleMisRatVal(), gwasParams.getDiscardSampleHetzyRatVal(),
 							new StringBuilder().append(gwasParams.getFriendlyName()).append(" using ").append(cNetCDF.Defaults.DEFAULT_AFFECTION).toString());
-
 
 					org.gwaspi.global.Utils.sysoutCompleted("Genotype Frequency Count");
 					//MultiOperations.updateTree();
