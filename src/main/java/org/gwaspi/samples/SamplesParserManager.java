@@ -118,7 +118,7 @@ public class SamplesParserManager {
 			resultHS.add(SampleInfo.Affection.values()[Integer.parseInt(cVals[GWASpi.affection])]);
 		}
 
-		inputFileReader.close();
+		inputBufferReader.close();
 
 		return resultHS;
 	}
