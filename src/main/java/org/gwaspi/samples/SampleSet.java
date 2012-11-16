@@ -41,19 +41,16 @@ public class SampleSet {
 	public SampleSet(int studyId, int matrixId) throws IOException {
 		matrixMetadata = MatricesList.getMatrixMetadataById(matrixId);
 		sampleSetSize = matrixMetadata.getMarkerSetSize();
-
 	}
 
 	public SampleSet(int studyId, String netCDFName) throws IOException {
 		matrixMetadata = MatricesList.getMatrixMetadataByNetCDFname(netCDFName);
 		sampleSetSize = matrixMetadata.getMarkerSetSize();
-
 	}
 
 	public SampleSet(int studyId, String netCDFPath, String netCDFName) throws IOException {
 		matrixMetadata = MatricesList.getMatrixMetadata(netCDFPath, studyId, netCDFName);
 		sampleSetSize = matrixMetadata.getMarkerSetSize();
-
 	}
 
 	// ACCESSORS

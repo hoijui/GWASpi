@@ -88,7 +88,7 @@ public class Utils {
 	}
 
 	public static GenotypeEncoding detectGTEncoding(Map<String, Object> map) {
-		GenotypeEncoding gtEcoding; // GenotypeEncoding.UNKNOWN
+		GenotypeEncoding gtEcoding;
 
 		Set<Byte> allAlleles = new HashSet<Byte>();
 		for (Object value : map.values()) {
@@ -101,10 +101,12 @@ public class Utils {
 			gtEcoding = GenotypeEncoding.AB0;
 		} else if (allAlleles.contains(AlleleBytes.C)
 				|| allAlleles.contains(AlleleBytes.G)
-				|| allAlleles.contains(AlleleBytes.T)) {
+				|| allAlleles.contains(AlleleBytes.T))
+		{
 			gtEcoding = GenotypeEncoding.ACGT0;
 		} else if (allAlleles.contains(AlleleBytes._3)
-				|| allAlleles.contains(AlleleBytes._4)) {
+				|| allAlleles.contains(AlleleBytes._4))
+		{
 			gtEcoding = GenotypeEncoding.O1234;
 		} else { // ONLY CONTAINS 1, 2
 			gtEcoding = GenotypeEncoding.O12;
