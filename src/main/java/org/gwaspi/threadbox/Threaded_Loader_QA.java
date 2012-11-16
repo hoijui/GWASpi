@@ -1,7 +1,8 @@
 package org.gwaspi.threadbox;
 
-import java.util.Map;
+import java.util.Collection;
 import org.gwaspi.model.GWASpiExplorerNodes;
+import org.gwaspi.model.SampleInfo;
 import org.gwaspi.netCDF.loader.GenotypesLoadDescription;
 import org.gwaspi.netCDF.loader.LoadManager;
 import org.gwaspi.netCDF.operations.OP_QAMarkers_opt;
@@ -21,11 +22,11 @@ public class Threaded_Loader_QA extends CommonRunnable {
 	private int resultMatrixId;
 	private int resultOpId;
 	private GenotypesLoadDescription loadDescription;
-	private Map<String, Object> sampleInfoMap;
+	private Collection<SampleInfo> sampleInfos;
 
 	public Threaded_Loader_QA(
 			GenotypesLoadDescription loadDescription,
-			Map<String, Object> sampleInfoMap)
+			Collection<SampleInfo> sampleInfoMap)
 	{
 		super(
 				"Loading Genotypes",
@@ -34,7 +35,7 @@ public class Threaded_Loader_QA extends CommonRunnable {
 				"Loading Genotypes");
 
 		this.loadDescription = loadDescription;
-		this.sampleInfoMap = sampleInfoMap;
+		this.sampleInfos = sampleInfoMap;
 	}
 
 	protected Logger createLog() {
@@ -46,7 +47,7 @@ public class Threaded_Loader_QA extends CommonRunnable {
 		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
 			resultMatrixId = LoadManager.dispatchLoadByFormat(
 					loadDescription,
-					sampleInfoMap);
+					sampleInfos);
 
 			MultiOperations.printCompleted("Loading Genotypes");
 			GWASpiExplorerNodes.insertMatrixNode(loadDescription.getStudyId(), resultMatrixId);

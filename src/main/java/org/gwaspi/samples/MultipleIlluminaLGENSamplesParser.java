@@ -4,9 +4,10 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.Collection;
+import java.util.LinkedList;
 import org.gwaspi.constants.cImport;
+import org.gwaspi.model.SampleInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,9 +17,9 @@ public class MultipleIlluminaLGENSamplesParser implements SamplesParser {
 			= LoggerFactory.getLogger(MultipleIlluminaLGENSamplesParser.class);
 
 	@Override
-	public Map<String, Object> scanSampleInfo(String sampleInfoPath) throws IOException {
+	public Collection<SampleInfo> scanSampleInfo(String sampleInfoPath) throws IOException {
 
-		Map<String, Object> sampleInfoMap = new LinkedHashMap<String, Object>();
+		Collection<SampleInfo> sampleInfos = new LinkedList<SampleInfo>();
 		File[] lgenFilesToScan = org.gwaspi.global.Utils.listFiles(sampleInfoPath);
 
 		for (File currentLGENFile : lgenFilesToScan) {
@@ -41,19 +42,28 @@ public class MultipleIlluminaLGENSamplesParser implements SamplesParser {
 			while (inputBufferReader.ready()) {
 				l = inputBufferReader.readLine();
 				String[] cVals = l.split(cImport.Separators.separators_CommaSpaceTab_rgxp);
-				String[] infoVals = new String[]{cVals[cImport.Annotation.Plink_LGEN.lgen_familyId],
-					cVals[cImport.Annotation.Plink_LGEN.lgen_sampleId],
-					"0", "0", "0", "0", "0", "0", "0", "0"};
+				SampleInfo sampleInfo = new SampleInfo(
+						cVals[cImport.Annotation.Plink_LGEN.lgen_sampleId],
+						cVals[cImport.Annotation.Plink_LGEN.lgen_familyId],
+						"0",
+						"0",
+						SampleInfo.Sex.UNKNOWN,
+						SampleInfo.Affection.UNKNOWN,
+						"0",
+						"0",
+						"0",
+						0
+						);
 
-				sampleInfoMap.put(cVals[cImport.Annotation.Plink_LGEN.lgen_sampleId], infoVals);
+				sampleInfos.add(sampleInfo);
 			}
 			log.info("Parsed {} Samples in LGEN file {}...",
-					sampleInfoMap.size(), currentLGENFile.getName());
+					sampleInfos.size(), currentLGENFile.getName());
 
 			inputBufferReader.close();
 			inputFileReader.close();
 		}
 
-		return sampleInfoMap;
+		return sampleInfos;
 	}
 }

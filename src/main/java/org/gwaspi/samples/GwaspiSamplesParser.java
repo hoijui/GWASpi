@@ -4,9 +4,10 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.Collection;
+import java.util.LinkedList;
 import org.gwaspi.constants.cImport;
+import org.gwaspi.model.SampleInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,9 +17,9 @@ public class GwaspiSamplesParser implements SamplesParser {
 			= LoggerFactory.getLogger(GwaspiSamplesParser.class);
 
 	@Override
-	public Map<String, Object> scanSampleInfo(String sampleInfoPath) throws IOException {
+	public Collection<SampleInfo> scanSampleInfo(String sampleInfoPath) throws IOException {
 
-		Map<String, Object> sampleInfoMap = new LinkedHashMap<String, Object>();
+		Collection<SampleInfo> sampleInfos = new LinkedList<SampleInfo>();
 		FileReader inputFileReader;
 		BufferedReader inputBufferReader;
 		File sampleFile = new File(sampleInfoPath);
@@ -36,7 +37,23 @@ public class GwaspiSamplesParser implements SamplesParser {
 					cVals[i] = field;
 					i++;
 				}
-				sampleInfoMap.put(cVals[cImport.Annotation.GWASpi.sampleId], cVals);
+				sampleInfos.add(new SampleInfo(
+						Integer.MIN_VALUE,
+						cVals[cImport.Annotation.GWASpi.sampleId],
+						cVals[cImport.Annotation.GWASpi.familyId],
+						cVals[cImport.Annotation.GWASpi.fatherId],
+						cVals[cImport.Annotation.GWASpi.motherId],
+						SampleInfo.Sex.values()[Integer.parseInt(cVals[cImport.Annotation.GWASpi.sex])],
+						SampleInfo.Affection.values()[Integer.parseInt(cVals[cImport.Annotation.GWASpi.affection])],
+						cVals[cImport.Annotation.GWASpi.category],
+						cVals[cImport.Annotation.GWASpi.disease],
+						cVals[cImport.Annotation.GWASpi.population],
+						Integer.parseInt(cVals[cImport.Annotation.GWASpi.age]),
+						"",
+						"",
+						Integer.MIN_VALUE,
+						Integer.MIN_VALUE
+						));
 			}
 
 			count++;
@@ -48,6 +65,6 @@ public class GwaspiSamplesParser implements SamplesParser {
 		inputBufferReader.close();
 		inputFileReader.close();
 
-		return sampleInfoMap;
+		return sampleInfos;
 	}
 }

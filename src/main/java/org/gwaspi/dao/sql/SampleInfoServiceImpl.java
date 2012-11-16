@@ -2,11 +2,11 @@ package org.gwaspi.dao.sql;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import org.gwaspi.constants.cDBGWASpi;
 import org.gwaspi.constants.cDBSamples;
-import org.gwaspi.constants.cImport;
 import org.gwaspi.dao.SampleInfoService;
 import org.gwaspi.database.DbManager;
 import org.gwaspi.global.ServiceLocator;
@@ -109,9 +109,14 @@ public class SampleInfoServiceImpl implements SampleInfoService {
 		int id = 1;
 		for (Map<String, Object> sampleProperties : rs) {
 			// PREVENT PHANTOM-DB READS EXCEPTIONS - CAUTION!!
-			if (!rs.isEmpty() && (rs.size() == cDBSamples.T_CREATE_SAMPLES_INFO.length)) {
+			if (sampleProperties.size() == cDBSamples.T_CREATE_SAMPLES_INFO.length) {
 				sampleInfos.add(parseSampleInfo(id, sampleProperties));
 				id++;
+			} else {
+				log.warn(
+						"Bad SampleInfo read from DB; properties size {} instead of {}",
+						sampleProperties.size(),
+						cDBSamples.T_CREATE_SAMPLES_INFO.length);
 			}
 		}
 
@@ -121,26 +126,26 @@ public class SampleInfoServiceImpl implements SampleInfoService {
 	private static SampleInfo parseSampleInfo(int id, Map<String, Object> properties) {
 
 		// TODO this can be improved, performance wise (or maybe better replace with JPA directy!)
-		Object familyId = properties.get(cDBSamples.f_FAMILY_ID).toString();
-		Object sampleId = properties.get(cDBSamples.f_SAMPLE_ID).toString();
-		Object fatherId = properties.get(cDBSamples.f_FATHER_ID).toString();
-		Object motherId = properties.get(cDBSamples.f_MOTHER_ID).toString();
-		Object sexStr = properties.get(cDBSamples.f_SEX).toString();
-		Object affectionStr = properties.get(cDBSamples.f_AFFECTION).toString();
-		Object ageStr = properties.get(cDBSamples.f_AGE).toString();
-		Object category = properties.get(cDBSamples.f_CATEGORY).toString();
-		Object disease = properties.get(cDBSamples.f_DISEASE).toString();
-		Object population = properties.get(cDBSamples.f_POPULATION).toString();
-		Object filter = properties.get(cDBSamples.f_FILTER).toString();
-		Object poolId = properties.get(cDBSamples.f_POOL_ID).toString();
-		Object approvedStr = properties.get(cDBSamples.f_APPROVED).toString();
-		Object statusStr = properties.get(cDBSamples.f_STATUS_ID_FK).toString();
+		Object familyId = properties.get(cDBSamples.f_FAMILY_ID);
+		Object sampleId = properties.get(cDBSamples.f_SAMPLE_ID);
+		Object fatherId = properties.get(cDBSamples.f_FATHER_ID);
+		Object motherId = properties.get(cDBSamples.f_MOTHER_ID);
+		Object sexStr = properties.get(cDBSamples.f_SEX);
+		Object affectionStr = properties.get(cDBSamples.f_AFFECTION);
+		Object ageStr = properties.get(cDBSamples.f_AGE);
+		Object category = properties.get(cDBSamples.f_CATEGORY);
+		Object disease = properties.get(cDBSamples.f_DISEASE);
+		Object population = properties.get(cDBSamples.f_POPULATION);
+		Object filter = properties.get(cDBSamples.f_FILTER);
+		Object poolId = properties.get(cDBSamples.f_POOL_ID);
+		Object approvedStr = properties.get(cDBSamples.f_APPROVED);
+		Object statusStr = properties.get(cDBSamples.f_STATUS_ID_FK);
 
 		SampleInfo.Sex sex = SampleInfo.Sex.values()[Integer.parseInt(sexStr.toString())];
 		SampleInfo.Affection affection = SampleInfo.Affection.values()[Integer.parseInt(affectionStr.toString())];
 		int age = Integer.parseInt(ageStr.toString());
-		int approved = Integer.parseInt(approvedStr.toString());
-		int status = Integer.parseInt(statusStr.toString());
+		int approved = (approvedStr == null) ? 0 : Integer.parseInt(approvedStr.toString());
+		int status = (statusStr == null) ? 0 : Integer.parseInt(statusStr.toString());
 
 		SampleInfo sampleInfo = new SampleInfo(
 				id,
@@ -154,8 +159,8 @@ public class SampleInfoServiceImpl implements SampleInfoService {
 				disease.toString(),
 				population.toString(),
 				age,
-				filter.toString(),
-				poolId.toString(),
+				(filter == null) ? "" : filter.toString(),
+				(poolId == null) ? "" : poolId.toString(),
 				approved,
 				status
 				);
@@ -164,7 +169,7 @@ public class SampleInfoServiceImpl implements SampleInfoService {
 	}
 
 	@Override
-	public List<String> insertSampleInfo(Integer studyId, Map<String, Object> sampleInfoMap) throws IOException {
+	public List<String> insertSampleInfos(Integer studyId, Collection<SampleInfo> sampleInfos) throws IOException {
 		// Retrieving Samplelist from DB
 		List<String> samplesAllreadyInDBAL = new ArrayList<String>(0);
 		DbManager db = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
@@ -175,30 +180,28 @@ public class SampleInfoServiceImpl implements SampleInfoService {
 		}
 
 		List<String> result = new ArrayList<String>();
-		if (!sampleInfoMap.isEmpty()) {
+		if (!sampleInfos.isEmpty()) {
 			// FIRST UPDATE SAMPLES ALLREADY IN DB
-			updateSamplesByHashMap(db, studyId, sampleInfoMap, samplesAllreadyInDBAL);
+			updateSamplesByHashMap(db, studyId, sampleInfos, samplesAllreadyInDBAL);
 
 			// NEXT INSERT ANY NEW SAMPLES
-			result = insertSamplesByHashMap(db, studyId, sampleInfoMap, samplesAllreadyInDBAL);
+			result = insertSamplesByHashMap(db, studyId, sampleInfos, samplesAllreadyInDBAL);
 		}
 		return result;
 	}
 
-	private static List<String> insertSamplesByHashMap(DbManager db, Integer studyId, Map<String, Object> sampleInfoMap, List<String> samplesAllreadyInDBAL) throws IOException {
+	private static List<String> insertSamplesByHashMap(DbManager db, Integer studyId, Collection<SampleInfo> sampleInfos, List<String> samplesAllreadyInDBAL) throws IOException {
 
 		String processStartTime = org.gwaspi.global.Utils.getMediumDateTimeAsString();
 
 		List<String> result = new ArrayList<String>();
-		for (Object value : sampleInfoMap.values()) {
-			String[] cVals = (String[]) value;
-
-			String sampleId = cVals[cImport.Annotation.GWASpi.sampleId];
+		for (SampleInfo sampleInfo : sampleInfos) {
+			String sampleId = sampleInfo.getSampleId();
 			result.add(sampleId);
 
 			// Standardizing affection to CHAR(1), having 1=Unaffected, 2=Affected
 			// HACK TODO someday this should allow other affection values
-			String affection = cVals[cImport.Annotation.GWASpi.affection];
+			String affection = sampleInfo.getAffectionStr();
 			if (!affection.equals("1") && !affection.equals("2")) {
 				affection = "0";
 			}
@@ -207,16 +210,17 @@ public class SampleInfoServiceImpl implements SampleInfoService {
 				db.insertValuesInTable(cDBGWASpi.SCH_SAMPLES,
 						cDBSamples.T_SAMPLES_INFO,
 						cDBSamples.F_INSERT_SAMPLES_ALLINFO,
-						new Object[]{sampleId, // SampleID (max 32 chars, null=unknown)
-							cVals[cImport.Annotation.GWASpi.familyId], // FamilyID (max 32 chars, null=unknown)
-							cVals[cImport.Annotation.GWASpi.fatherId], // FatherID (max 32 chars, null=unknown)
-							cVals[cImport.Annotation.GWASpi.motherId], // MotherID (max 32 chars, null=unknown)
-							cVals[cImport.Annotation.GWASpi.sex], // Sex (1=male,2=female,0=unknown)
+						new Object[]{
+							sampleId, // SampleID (max 32 chars, null=unknown)
+							sampleInfo.getFamilyId(), // FamilyID (max 32 chars, null=unknown)
+							sampleInfo.getFatherId(), // FatherID (max 32 chars, null=unknown)
+							sampleInfo.getMotherId(), // MotherID (max 32 chars, null=unknown)
+							sampleInfo.getSexStr(), // Sex (1=male,2=female,0=unknown)
 							affection, // Affection (1=unaffected,2=affected,0=unknown)
-							cVals[cImport.Annotation.GWASpi.category], // category
-							cVals[cImport.Annotation.GWASpi.disease], // disease
-							cVals[cImport.Annotation.GWASpi.population], // population
-							cVals[cImport.Annotation.GWASpi.age], // age
+							sampleInfo.getCategory(), // category
+							sampleInfo.getDisease(), // disease
+							sampleInfo.getPopulation(), // population
+							sampleInfo.getAge(), // age
 							studyId});  // POOL ID
 			}
 		}
@@ -236,39 +240,38 @@ public class SampleInfoServiceImpl implements SampleInfoService {
 		return result;
 	}
 
-	private static int updateSamplesByHashMap(DbManager db, Integer studyId, Map<String, Object> sampleInfoMap, List<String> samplesAllreadyInDBAL) throws IOException {
+	private static int updateSamplesByHashMap(DbManager db, Integer studyId, Collection<SampleInfo> sampleInfos, List<String> samplesAllreadyInDBAL) throws IOException {
 
 		String processStartTime = org.gwaspi.global.Utils.getMediumDateTimeAsString();
 
 		int result = 0;
 
-		for (Object value : sampleInfoMap.values()) {
-			String[] cVals = (String[]) value;
-
+		for (SampleInfo sampleInfo : sampleInfos) {
 			// Standardizing affection to CHAR(1), having 1=Unaffected, 2=Affected
 			// HACK TODO someday this should allow other affection values
-			String affection = cVals[cImport.Annotation.GWASpi.affection];
+			String affection = sampleInfo.getAffectionStr();
 			if (!affection.equals("1") && !affection.equals("2")) {
 				affection = "0";
 			}
 
-			if (samplesAllreadyInDBAL.contains(cVals[1].toString())) {
+			if (samplesAllreadyInDBAL.contains(sampleInfo.getSampleId())) {
 				db.updateTable(cDBGWASpi.SCH_SAMPLES,
 						cDBSamples.T_SAMPLES_INFO,
 						cDBSamples.F_UPDATE_SAMPLES_ALLINFO,
-						new Object[]{cVals[0], // FamilyID (max 32 chars, null=unknown)
-							cVals[2], // FatherID (max 32 chars, null=unknown)
-							cVals[3], // MotherID (max 32 chars, null=unknown)
-							cVals[4], // Sex (1=male,2=female,0=unknown)
+						new Object[]{
+							sampleInfo.getFamilyId(), // FamilyID (max 32 chars, null=unknown)
+							sampleInfo.getFatherId(), // FatherID (max 32 chars, null=unknown)
+							sampleInfo.getMotherId(), // MotherID (max 32 chars, null=unknown)
+							sampleInfo.getSexStr(), // Sex (1=male,2=female,0=unknown)
 							affection, // Affection (1=unaffected,2=affected,0=unknown)
-							cVals[6], // category
-							cVals[7], // disease
-							cVals[8], // population
-							Integer.parseInt(cVals[9]), // age
+							sampleInfo.getCategory(), // category
+							sampleInfo.getDisease(), // disease
+							sampleInfo.getPopulation(), // population
+							sampleInfo.getAge(), // age
 							studyId.toString(),
 							100}, // status_id_fk = 100 (OK)
 						new String[]{cDBSamples.f_SAMPLE_ID, cDBSamples.f_POOL_ID},
-						new String[]{cVals[1].toString(), studyId.toString()});
+						new String[]{sampleInfo.getSampleId(), studyId.toString()});
 				result++;
 			}
 

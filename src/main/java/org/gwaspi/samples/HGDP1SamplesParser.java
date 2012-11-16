@@ -4,9 +4,10 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.Collection;
+import java.util.LinkedList;
 import org.gwaspi.constants.cImport;
+import org.gwaspi.model.SampleInfo;
 
 public class HGDP1SamplesParser implements SamplesParser {
 
@@ -14,9 +15,9 @@ public class HGDP1SamplesParser implements SamplesParser {
 	 * NOTE No affection state available
 	 */
 	@Override
-	public Map<String, Object> scanSampleInfo(String sampleInfoPath) throws IOException {
+	public Collection<SampleInfo> scanSampleInfo(String sampleInfoPath) throws IOException {
 
-		Map<String, Object> sampleInfoMap = new LinkedHashMap<String, Object>();
+		Collection<SampleInfo> sampleInfos = new LinkedList<SampleInfo>();
 		File sampleFile = new File(sampleInfoPath);
 		FileReader inputFileReader = new FileReader(sampleFile);
 		BufferedReader inputBufferReader = new BufferedReader(inputFileReader);
@@ -26,13 +27,27 @@ public class HGDP1SamplesParser implements SamplesParser {
 		String[] sampleIds = sampleIdHeader.split(cImport.Separators.separators_SpaceTab_rgxp);
 		for (int i = 1; i < sampleIds.length; i++) {
 			String sampleId = sampleIds[i];
-			String[] infoVals = new String[]{"0", "0", "0", "0", "0", "0", "0", "0", "0", "0"};
-			infoVals[cImport.Annotation.GWASpi.sampleId] = sampleId;
-			sampleInfoMap.put(sampleId, infoVals);
+			sampleInfos.add(new SampleInfo(
+					Integer.MIN_VALUE,
+					sampleId,
+					"0",
+					"0",
+					"0",
+					SampleInfo.Sex.UNKNOWN,
+					SampleInfo.Affection.UNKNOWN,
+					"0",
+					"0",
+					"0",
+					0,
+					"",
+					"",
+					Integer.MIN_VALUE,
+					Integer.MIN_VALUE
+					));
 		}
 
 		inputFileReader.close();
 
-		return sampleInfoMap;
+		return sampleInfos;
 	}
 }

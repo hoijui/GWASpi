@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.gwaspi.constants.cImport;
@@ -16,6 +17,7 @@ import org.gwaspi.global.Text;
 import org.gwaspi.gui.utils.Dialogs;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixMetadata;
+import org.gwaspi.model.SampleInfo;
 import org.gwaspi.netCDF.markers.MarkerSet_opt;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.gwaspi.samples.SampleSet;
@@ -71,7 +73,7 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 	}
 
 	@Override
-	public int processData(GenotypesLoadDescription loadDescription, Map<String, Object> sampleInfo)
+	public int processData(GenotypesLoadDescription loadDescription, Collection<SampleInfo> sampleInfos)
 			throws IOException, InvalidRangeException, InterruptedException
 	{
 		int result = Integer.MIN_VALUE;
@@ -82,15 +84,16 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 
 		boolean testExcessSamplesInMatrix = false;
 		boolean testExcessSamplesInFile = false;
-		for (String key : matrixSampleSetMap.keySet()) {
-			if (!sampleInfo.containsKey(key)) {
+		Collection<String> sampleIds = AbstractLoadGTFromFiles.extractSampleIds(sampleInfos);
+		for (String markerSampleId : matrixSampleSetMap.keySet()) {
+			if (!sampleIds.contains(markerSampleId)) {
 				testExcessSamplesInMatrix = true;
 				break;
 			}
 		}
 
-		for (String key : sampleInfo.keySet()) {
-			if (!matrixSampleSetMap.containsKey(key)) {
+		for (SampleInfo sampleInfo : sampleInfos) {
+			if (!matrixSampleSetMap.containsKey(sampleInfo.getSampleId())) {
 				testExcessSamplesInFile = true;
 				break;
 			}

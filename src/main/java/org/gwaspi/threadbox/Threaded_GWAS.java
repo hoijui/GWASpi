@@ -1,8 +1,8 @@
 package org.gwaspi.threadbox;
 
 import java.io.File;
+import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
@@ -11,6 +11,7 @@ import org.gwaspi.model.GWASpiExplorerNodes;
 import org.gwaspi.model.Operation;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
+import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleInfoList;
 import org.gwaspi.netCDF.operations.GWASinOneGOParams;
 import org.gwaspi.netCDF.operations.OperationManager;
@@ -79,8 +80,8 @@ public class Threaded_GWAS extends CommonRunnable {
 
 				if (affectionStates.contains("1") && affectionStates.contains("2")) {
 					getLog().info("Updating Sample Info in DB");
-					Map<String, Object> sampleInfoMap = SamplesParserManager.scanGwaspiSampleInfo(phenotypeFile.getPath());
-					SampleInfoList.insertSampleInfo(matrixId, sampleInfoMap);
+					Collection<SampleInfo> sampleInfos = SamplesParserManager.scanGwaspiSampleInfo(phenotypeFile.getPath());
+					SampleInfoList.insertSampleInfos(matrixId, sampleInfos);
 
 					censusOpId = OperationManager.censusCleanMatrixMarkersByPhenotypeFile(matrixId,
 							sampleQAOpId,

@@ -4,9 +4,10 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.Collection;
+import java.util.LinkedList;
 import org.gwaspi.constants.cImport;
+import org.gwaspi.model.SampleInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,33 +17,37 @@ public class PlinkFAMSamplesParser implements SamplesParser {
 			= LoggerFactory.getLogger(PlinkFAMSamplesParser.class);
 
 	@Override
-	public Map<String, Object> scanSampleInfo(String sampleInfoPath) throws IOException {
+	public Collection<SampleInfo> scanSampleInfo(String sampleInfoPath) throws IOException {
 
-		Map<String, Object> sampleInfoMap = new LinkedHashMap<String, Object>();
+		Collection<SampleInfo> sampleInfos = new LinkedList<SampleInfo>();
 		FileReader inputFileReader = new FileReader(new File(sampleInfoPath));
 		BufferedReader inputBufferReader = new BufferedReader(inputFileReader);
 
 		int count = 0;
 		while (inputBufferReader.ready()) {
 			String l = inputBufferReader.readLine();
-			String[] cVals = new String[10];
-			String[] sampleInfoVals = l.split(cImport.Separators.separators_CommaSpaceTab_rgxp);
+			String[] cVals = l.split(cImport.Separators.separators_CommaSpaceTab_rgxp);
 
-			String sex = (sampleInfoVals[4].equals("-9")) ? "0" : sampleInfoVals[4];
-			String affection = (sampleInfoVals[5].equals("-9")) ? "0" : sampleInfoVals[5];
+			String sexStr = cVals[cImport.Annotation.Plink_Binary.ped_sex];
+			sexStr = sexStr.equals("-9") ? "0" : sexStr;
+			String affectionStr = cVals[cImport.Annotation.Plink_Binary.ped_affection];
+			affectionStr = affectionStr.equals("-9") ? "0" : affectionStr;
+			SampleInfo.Sex sex = SampleInfo.Sex.values()[Integer.parseInt(sexStr)];
+			SampleInfo.Affection affection = SampleInfo.Affection.values()[Integer.parseInt(affectionStr)];
+			SampleInfo sampleInfo = new SampleInfo(
+					cVals[cImport.Annotation.Plink_Binary.ped_sampleId],
+					cVals[cImport.Annotation.Plink_Binary.ped_familyId],
+					cVals[cImport.Annotation.Plink_Binary.ped_fatherId],
+					cVals[cImport.Annotation.Plink_Binary.ped_motherId],
+					sex,
+					affection,
+					"0",
+					"0",
+					"0",
+					0
+					);
 
-			cVals[0] = sampleInfoVals[0]; //
-			cVals[1] = sampleInfoVals[1]; //
-			cVals[2] = sampleInfoVals[2]; //
-			cVals[3] = sampleInfoVals[3]; //
-			cVals[4] = sex; //
-			cVals[5] = affection; //
-			cVals[6] = "0"; //
-			cVals[7] = "0";
-			cVals[8] = "0";
-			cVals[9] = "0"; // AGE
-
-			sampleInfoMap.put(cVals[cImport.Annotation.GWASpi.sampleId], cVals);
+			sampleInfos.add(sampleInfo);
 
 			count++;
 			if (count % 100 == 0) {
@@ -53,6 +58,6 @@ public class PlinkFAMSamplesParser implements SamplesParser {
 		inputBufferReader.close();
 		inputFileReader.close();
 
-		return sampleInfoMap;
+		return sampleInfos;
 	}
 }

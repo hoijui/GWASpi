@@ -1,9 +1,11 @@
 package org.gwaspi.netCDF.loader;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.EnumMap;
 import java.util.Map;
 import org.gwaspi.constants.cImport.ImportFormat;
+import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleInfoList;
 import ucar.ma2.InvalidRangeException;
 
@@ -35,7 +37,7 @@ public class LoadManager {
 
 	public static int dispatchLoadByFormat(
 			GenotypesLoadDescription loadDescription,
-			Map<String, Object> sampleInfoMap)
+			Collection<SampleInfo> sampleInfos)
 			throws IOException, InvalidRangeException, InterruptedException
 	{
 		int newMatrixId = Integer.MIN_VALUE;
@@ -44,8 +46,8 @@ public class LoadManager {
 		if (genotypesLoader == null) {
 			throw new IOException("No Genotypes-Loader found for format " + loadDescription.getFormat());
 		} else {
-			SampleInfoList.insertSampleInfo(loadDescription.getStudyId(), sampleInfoMap);
-			newMatrixId = genotypesLoader.processData(loadDescription, sampleInfoMap);
+			SampleInfoList.insertSampleInfos(loadDescription.getStudyId(), sampleInfos);
+			newMatrixId = genotypesLoader.processData(loadDescription, sampleInfos);
 		}
 
 		return newMatrixId;

@@ -2,7 +2,7 @@ package org.gwaspi.model;
 
 import org.gwaspi.constants.cDBSamples;
 
-public class SampleInfo {
+public class SampleInfo implements Comparable<SampleInfo> {
 
 	public static enum Sex {
 		UNKNOWN,
@@ -31,6 +31,60 @@ public class SampleInfo {
 	private String poolId;
 	private int approved;
 	private int status;
+
+	public SampleInfo() {
+		this.orderId = Integer.MIN_VALUE;
+		this.sampleId = "0";
+		this.familyId = "0";
+		this.fatherId = "0";
+		this.motherId = "0";
+		this.sex = Sex.UNKNOWN;
+		this.affection = Affection.UNKNOWN;
+		this.category = "0";
+		this.disease = "0";
+		this.population = "0";
+		this.age = 0;
+		this.filter = "";
+		this.poolId = "";
+		this.approved = 0;
+		this.status = 0;
+	}
+
+	public SampleInfo(String sampleId) {
+		this();
+
+		this.sampleId = sampleId;
+	}
+
+	public SampleInfo(
+			String sampleId,
+			String familyId,
+			String fatherId,
+			String motherId,
+			Sex sex,
+			Affection affection,
+			String category,
+			String disease,
+			String population,
+			int age)
+	{
+		this.orderId = Integer.MIN_VALUE;
+		this.sampleId = sampleId;
+		this.familyId = familyId;
+		this.fatherId = fatherId;
+		this.motherId = motherId;
+		this.sex = sex;
+		this.affection = affection;
+		this.category = category;
+		this.disease = disease;
+		this.population = population;
+		this.age = age;
+		this.filter = "";
+		this.poolId = "";
+		this.approved = 0;
+		this.status = 0;
+	}
+
 
 	public SampleInfo(
 			int orderId,
@@ -64,6 +118,11 @@ public class SampleInfo {
 		this.poolId = poolId;
 		this.approved = approved;
 		this.status = status;
+	}
+
+	@Override
+	public int compareTo(SampleInfo other) {
+		return getSampleId().compareTo(other.getSampleId());
 	}
 
 	public int getOrderId() {

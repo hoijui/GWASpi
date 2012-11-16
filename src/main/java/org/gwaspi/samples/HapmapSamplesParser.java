@@ -4,9 +4,10 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.Collection;
+import java.util.LinkedList;
 import org.gwaspi.constants.cImport;
+import org.gwaspi.model.SampleInfo;
 import org.gwaspi.netCDF.loader.LoadGTFromHapmapFiles;
 
 public class HapmapSamplesParser implements SamplesParser {
@@ -15,9 +16,9 @@ public class HapmapSamplesParser implements SamplesParser {
 	 * NOTE No affection state available
 	 */
 	@Override
-	public Map<String, Object> scanSampleInfo(String sampleInfoPath) throws IOException {
+	public Collection<SampleInfo> scanSampleInfo(String sampleInfoPath) throws IOException {
 
-		Map<String, Object> sampleInfoMap = new LinkedHashMap<String, Object>();
+		Collection<SampleInfo> sampleInfos = new LinkedList<SampleInfo>();
 		FileReader fr = null;
 		BufferedReader inputAnnotationBr = null;
 		File hapmapGTFile = new File(sampleInfoPath);
@@ -31,9 +32,8 @@ public class HapmapSamplesParser implements SamplesParser {
 
 				String[] hapmapVals = header.split(cImport.Separators.separators_SpaceTab_rgxp);
 				for (int j = LoadGTFromHapmapFiles.Standard.sampleId; j < hapmapVals.length; j++) {
-					String[] infoVals = new String[]{"0", "0", "0", "0", "0", "0", "0", "0", "0", "0"};
-					infoVals[cImport.Annotation.GWASpi.sampleId] = hapmapVals[j];
-					sampleInfoMap.put(hapmapVals[j], infoVals);
+					SampleInfo sampleInfo = new SampleInfo(hapmapVals[j]);
+					sampleInfos.add(sampleInfo);
 				}
 			}
 		} else {
@@ -44,15 +44,14 @@ public class HapmapSamplesParser implements SamplesParser {
 
 			String[] hapmapVals = header.split(cImport.Separators.separators_SpaceTab_rgxp);
 			for (int i = LoadGTFromHapmapFiles.Standard.sampleId; i < hapmapVals.length; i++) {
-				String[] infoVals = new String[]{"0", "0", "0", "0", "0", "0", "0", "0", "0", "0"};
-				infoVals[cImport.Annotation.GWASpi.sampleId] = hapmapVals[i];
-				sampleInfoMap.put(hapmapVals[i], infoVals);
+				SampleInfo sampleInfo = new SampleInfo(hapmapVals[i]);
+				sampleInfos.add(sampleInfo);
 			}
 		}
 
 		inputAnnotationBr.close();
 		fr.close();
 
-		return sampleInfoMap;
+		return sampleInfos;
 	}
 }

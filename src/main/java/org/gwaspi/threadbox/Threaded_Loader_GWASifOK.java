@@ -1,11 +1,12 @@
 package org.gwaspi.threadbox;
 
-import java.util.Map;
+import java.util.Collection;
 import java.util.Set;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.model.GWASpiExplorerNodes;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
+import org.gwaspi.model.SampleInfo;
 import org.gwaspi.netCDF.loader.GenotypesLoadDescription;
 import org.gwaspi.netCDF.loader.LoadManager;
 import org.gwaspi.netCDF.loader.SampleInfoCollectorSwitch;
@@ -58,20 +59,20 @@ public class Threaded_Loader_GWASifOK extends CommonRunnable {
 
 	protected void runInternal(SwingWorkerItem thisSwi) throws Exception {
 
-		Map<String, Object> sampleInfoMap = SampleInfoCollectorSwitch.collectSampleInfo(
+		Collection<SampleInfo> sampleInfos = SampleInfoCollectorSwitch.collectSampleInfo(
 				loadDescription.getFormat(),
 				dummySamples,
 				loadDescription.getSampleFilePath(),
 				loadDescription.getGtDirPath(),
 				loadDescription.getAnnotationFilePath());
-		Set<String> affectionStates = SampleInfoCollectorSwitch.collectAffectionStates(sampleInfoMap);
+		Set<String> affectionStates = SampleInfoCollectorSwitch.collectAffectionStates(sampleInfos);
 
 		//<editor-fold defaultstate="collapsed" desc="LOAD PROCESS">
 		int resultMatrixId = Integer.MIN_VALUE;
 		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
 			resultMatrixId = LoadManager.dispatchLoadByFormat(
 					loadDescription,
-					sampleInfoMap);
+					sampleInfos);
 			MultiOperations.printCompleted("Loading Genotypes");
 			GWASpiExplorerNodes.insertMatrixNode(loadDescription.getStudyId(), resultMatrixId);
 		}

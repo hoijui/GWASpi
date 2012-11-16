@@ -1,9 +1,10 @@
 package org.gwaspi.netCDF.loader;
 
 import java.io.IOException;
-import java.util.Map;
+import java.util.Collection;
 import org.gwaspi.constants.cImport.ImportFormat;
 import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
+import org.gwaspi.model.SampleInfo;
 import ucar.ma2.InvalidRangeException;
 
 public interface GenotypesLoader {
@@ -11,7 +12,7 @@ public interface GenotypesLoader {
 	/**
 	 * Process Genotypes
 	 */
-	int processData(GenotypesLoadDescription loadDescription, Map<String, Object> sampleInfo) throws IOException, InvalidRangeException, InterruptedException;
+	int processData(GenotypesLoadDescription loadDescription, Collection<SampleInfo> sampleInfo) throws IOException, InvalidRangeException, InterruptedException;
 
 	ImportFormat getFormat();
 

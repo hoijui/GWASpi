@@ -4,7 +4,9 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.StringTokenizer;
 import org.gwaspi.constants.cImport;
@@ -12,6 +14,7 @@ import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.MatricesList;
+import org.gwaspi.model.SampleInfo;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +33,7 @@ import ucar.nc2.NetcdfFileWriteable;
  * @author Fernando Muñiz Fernandez
  * IBE, Institute of Evolutionary Biology (UPF-CSIC)
  * CEXS-UPF-PRBB
+ * @deprecated this class is unused and out of date!
  */
 public class LoadGTFromHapmapFiles_sampleSet extends LoadGTFromHapmapFiles implements GenotypesLoader {
 
@@ -41,7 +45,7 @@ public class LoadGTFromHapmapFiles_sampleSet extends LoadGTFromHapmapFiles imple
 
 	//<editor-fold defaultstate="collapsed" desc="PROCESS GENOTYPES">
 	@Override
-	public int processData(GenotypesLoadDescription loadDescription, Map<String, Object> sampleInfo) throws IOException, InvalidRangeException {
+	public int processData(GenotypesLoadDescription loadDescription, Collection<SampleInfo> sampleInfos) throws IOException, InvalidRangeException, InterruptedException {
 		int result = Integer.MIN_VALUE;
 
 		// TODO check if real samplefiles coincides with sampleInfoFile
@@ -49,11 +53,11 @@ public class LoadGTFromHapmapFiles_sampleSet extends LoadGTFromHapmapFiles imple
 		if (hapmapGTFile.isDirectory()) {
 			File[] gtFilesToImport = org.gwaspi.global.Utils.listFiles(loadDescription.getGtDirPath());
 			for (int i = 0; i < gtFilesToImport.length; i++) {
-				Map<String, Object> tempSamplesMap = getHapmapSampleIds(gtFilesToImport[i]);
-				sampleInfo.putAll(tempSamplesMap);
+				Collection<SampleInfo> tempSamples = getHapmapSampleIds(gtFilesToImport[i]);
+				sampleInfos.addAll(tempSamples);
 			}
 		} else {
-			sampleInfo.putAll(getHapmapSampleIds(hapmapGTFile));
+			sampleInfos.addAll(getHapmapSampleIds(hapmapGTFile));
 		}
 
 		String startTime = org.gwaspi.global.Utils.getMediumDateTimeAsString();
@@ -81,7 +85,7 @@ public class LoadGTFromHapmapFiles_sampleSet extends LoadGTFromHapmapFiles imple
 //		descSB.append("\nGenotype encoding: ");
 //		descSB.append(gtCode);
 		descSB.append("\n");
-		descSB.append("Markers: ").append(markerSetMap.size()).append(", Samples: ").append(sampleInfo.size());
+		descSB.append("Markers: ").append(markerSetMap.size()).append(", Samples: ").append(sampleInfos.size());
 		descSB.append("\n");
 		descSB.append(Text.Matrix.descriptionHeader2);
 		descSB.append(loadDescription.getFormat());
@@ -106,7 +110,7 @@ public class LoadGTFromHapmapFiles_sampleSet extends LoadGTFromHapmapFiles imple
 				loadDescription.getGtCode(),
 				(getMatrixStrand() != null) ? getMatrixStrand() : loadDescription.getStrand(),
 				isHasDictionary(),
-				sampleInfo.size(),
+				sampleInfos.size(),
 				markerSetMap.size(),
 				chrSetMap.size(),
 				loadDescription.getGtDirPath());
@@ -124,7 +128,7 @@ public class LoadGTFromHapmapFiles_sampleSet extends LoadGTFromHapmapFiles imple
 
 		//<editor-fold defaultstate="collapsed" desc="WRITE MATRIX METADATA">
 		// WRITE SAMPLESET TO MATRIX FROM SAMPLES ARRAYLIST
-		ArrayChar.D2 samplesD2 = org.gwaspi.netCDF.operations.Utils.writeMapKeysToD2ArrayChar(sampleInfo, cNetCDF.Strides.STRIDE_SAMPLE_NAME);
+		ArrayChar.D2 samplesD2 = org.gwaspi.netCDF.operations.Utils.writeCollectionToD2ArrayChar(AbstractLoadGTFromFiles.extractSampleIds(sampleInfos), cNetCDF.Strides.STRIDE_SAMPLE_NAME);
 
 		int[] sampleOrig = new int[]{0, 0};
 		try {
@@ -287,11 +291,11 @@ public class LoadGTFromHapmapFiles_sampleSet extends LoadGTFromHapmapFiles imple
 
 			st = null;
 
-			if (guessedGTCode.equals(GenotypeEncoding.UNKNOWN)) {
-				guessedGTCode = Utils.detectGTEncoding(sampleInfo);
-			} else if (guessedGTCode.equals(GenotypeEncoding.O12)) {
-				guessedGTCode = Utils.detectGTEncoding(sampleInfo);
-			}
+//			if (guessedGTCode.equals(GenotypeEncoding.UNKNOWN)
+//					|| guessedGTCode.equals(GenotypeEncoding.O12))
+//			{
+//				guessedGTCode = Utils.detectGTEncoding(sampleInfos); // FIXME This line .. seems not to make sense.. or is undecypherable due to this class beeing unused/untested since too long already
+//			}
 
 			// WRITING GENOTYPE DATA INTO netCDF FILE
 			// TODO BEST TO USE HYPERSLAB
@@ -345,19 +349,19 @@ public class LoadGTFromHapmapFiles_sampleSet extends LoadGTFromHapmapFiles imple
 	//</editor-fold>
 
 	//<editor-fold defaultstate="collapsed" desc="HELPER METHODS">
-	private Map<String, Object> getHapmapSampleIds(File hapmapGTFile) throws IOException {
+	private Collection<SampleInfo> getHapmapSampleIds(File hapmapGTFile) throws IOException {
 
-		Map<String, Object> uniqueSamples = new LinkedHashMap<String, Object>();
+		Collection<SampleInfo> uniqueSamples = new LinkedList<SampleInfo>();
 
 		FileReader fr = new FileReader(hapmapGTFile.getPath());
 		BufferedReader inputAnnotationBr = new BufferedReader(fr);
 		String header = inputAnnotationBr.readLine();
 
-		String l;
 		String[] hapmapVals = header.split(cImport.Separators.separators_SpaceTab_rgxp);
 
 		for (int i = LoadGTFromHapmapFiles.Standard.sampleId; i < hapmapVals.length; i++) {
-			uniqueSamples.put(hapmapVals[i], "");
+			SampleInfo sampleInfo = new SampleInfo(hapmapVals[i]);
+			uniqueSamples.add(sampleInfo);
 		}
 
 		return uniqueSamples;

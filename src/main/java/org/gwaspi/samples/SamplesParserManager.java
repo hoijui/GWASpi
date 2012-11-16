@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -59,47 +60,47 @@ public class SamplesParserManager {
 
 	//<editor-fold defaultstate="collapsed" desc="FILE SAMPLE INFO SCANNERS">
 	private static final SamplesParser gwaspiSamplesParser = new GwaspiSamplesParser();
-	public static Map<String, Object> scanGwaspiSampleInfo(String sampleInfoPath) throws IOException {
+	public static Collection<SampleInfo> scanGwaspiSampleInfo(String sampleInfoPath) throws IOException {
 		return gwaspiSamplesParser.scanSampleInfo(sampleInfoPath);
 	}
 
 	private static final SamplesParser plinkStandardSamplesParser = new PlinkStandardSamplesParser();
-	public static Map<String, Object> scanPlinkStandardSampleInfo(String pedPath) throws IOException {
+	public static Collection<SampleInfo> scanPlinkStandardSampleInfo(String pedPath) throws IOException {
 		return plinkStandardSamplesParser.scanSampleInfo(pedPath);
 	}
 
 	private static final SamplesParser plinkFAMSamplesParser = new PlinkFAMSamplesParser();
-	public static Map<String, Object> scanPlinkFAMSampleInfo(String famPath) throws IOException {
+	public static Collection<SampleInfo> scanPlinkFAMSampleInfo(String famPath) throws IOException {
 		return plinkFAMSamplesParser.scanSampleInfo(famPath);
 	}
 
 	private static final SamplesParser illuminaLGENSamplesParser = new IlluminaLGENSamplesParser();
-	public static Map<String, Object> scanIlluminaLGENSampleInfo(String lgenDir) throws IOException {
+	public static Collection<SampleInfo> scanIlluminaLGENSampleInfo(String lgenDir) throws IOException {
 		return illuminaLGENSamplesParser.scanSampleInfo(lgenDir);
 	}
 
 	private static final SamplesParser beagleSamplesParser = new BeagleSamplesParser();
-	public static Map<String, Object> scanBeagleSampleInfo(String beaglePath) throws IOException {
+	public static Collection<SampleInfo> scanBeagleSampleInfo(String beaglePath) throws IOException {
 		return beagleSamplesParser.scanSampleInfo(beaglePath);
 	}
 
 	private static final SamplesParser hapmapSamplesParser = new HapmapSamplesParser();
-	public static Map<String, Object> scanHapmapSampleInfo(String hapmapPath) throws IOException {
+	public static Collection<SampleInfo> scanHapmapSampleInfo(String hapmapPath) throws IOException {
 		return hapmapSamplesParser.scanSampleInfo(hapmapPath);
 	}
 
 	private static final SamplesParser hgdp1SamplesParser = new HGDP1SamplesParser();
-	public static Map<String, Object> scanHGDP1SampleInfo(String hgdpPath) throws IOException {
+	public static Collection<SampleInfo> scanHGDP1SampleInfo(String hgdpPath) throws IOException {
 		return hgdp1SamplesParser.scanSampleInfo(hgdpPath);
 	}
 
 	private static final SamplesParser affymetrixSamplesParser = new AffymetrixSamplesParser();
-	public static Map<String, Object> scanAffymetrixSampleInfo(String genotypesPath) throws IOException {
+	public static Collection<SampleInfo> scanAffymetrixSampleInfo(String genotypesPath) throws IOException {
 		return affymetrixSamplesParser.scanSampleInfo(genotypesPath);
 	}
 
 	private static final SamplesParser sequenomSamplesParser = new SequenomSamplesParser();
-	public static Map<String, Object> scanSequenomSampleInfo(String genotypePath) throws IOException {
+	public static Collection<SampleInfo> scanSequenomSampleInfo(String genotypePath) throws IOException {
 		return sequenomSamplesParser.scanSampleInfo(genotypePath);
 	}
 

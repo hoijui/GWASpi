@@ -4,9 +4,10 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.Collection;
+import java.util.LinkedList;
 import org.gwaspi.constants.cImport;
+import org.gwaspi.model.SampleInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,8 +17,9 @@ public class SequenomSamplesParser implements SamplesParser {
 			= LoggerFactory.getLogger(SequenomSamplesParser.class);
 
 	@Override
-	public Map<String, Object> scanSampleInfo(String sampleInfoPath) throws IOException {
-		Map<String, Object> sampleInfoMap = new LinkedHashMap<String, Object>();
+	public Collection<SampleInfo> scanSampleInfo(String sampleInfoPath) throws IOException {
+
+		Collection<SampleInfo> sampleInfos = new LinkedList<SampleInfo>();
 
 		File gtFileToImport = new File(sampleInfoPath);
 		FileReader inputFileReader = new FileReader(gtFileToImport);
@@ -26,27 +28,26 @@ public class SequenomSamplesParser implements SamplesParser {
 		String l;
 		while (inputBufferReader.ready()) {
 			l = inputBufferReader.readLine();
-			if (!l.contains("SAMPLE_ID")) { //SKIP ALL HEADER LINES
+			if (!l.contains("SAMPLE_ID")) { // SKIP ALL HEADER LINES
 				String[] cVals = l.split(cImport.Separators.separators_CommaSpaceTab_rgxp);
-				if (!sampleInfoMap.containsKey(cVals[cImport.Annotation.Sequenom.sampleId])) {
-					String[] infoVals = new String[]{"0",
-						cVals[cImport.Annotation.Sequenom.sampleId],
-						"0", "0", "0", "0", "0", "0", "0", "0"};
-					sampleInfoMap.put(cVals[cImport.Annotation.Sequenom.sampleId], infoVals);
+				// TODO maybe use more then just the sampleId read from the Sequenom file?
+				SampleInfo sampleInfo = new SampleInfo(cVals[cImport.Annotation.Sequenom.sampleId]);
+				if (!sampleInfos.contains(sampleInfo)) {
+					sampleInfos.add(sampleInfo);
 				}
 
-				if (sampleInfoMap.size() % 100 == 0) {
-					log.info("Parsed {} lines...", sampleInfoMap.size());
+				if (sampleInfos.size() % 100 == 0) {
+					log.info("Parsed {} lines...", sampleInfos.size());
 				}
 			}
 
 		}
 		log.info("Parsed {} Samples in Sequenom file {}...",
-				sampleInfoMap.size(), gtFileToImport);
+				sampleInfos.size(), gtFileToImport);
 
 		inputBufferReader.close();
 		inputFileReader.close();
 
-		return sampleInfoMap;
+		return sampleInfos;
 	}
 }

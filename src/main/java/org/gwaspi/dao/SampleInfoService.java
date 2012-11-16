@@ -1,8 +1,8 @@
 package org.gwaspi.dao;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import org.gwaspi.model.SampleInfo;
 
 public interface SampleInfoService {
@@ -19,6 +19,5 @@ public interface SampleInfoService {
 
 	void deleteSamplesByPoolId(Object poolId) throws IOException;
 
-	// TODO replace Map<String, Object> with SampleInfo
-	List<String> insertSampleInfo(Integer studyId, Map<String, Object> sampleInfoMap) throws IOException;
+	List<String> insertSampleInfos(Integer studyId, Collection<SampleInfo> sampleInfos) throws IOException;
 }

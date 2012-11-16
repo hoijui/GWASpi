@@ -1,9 +1,10 @@
 package org.gwaspi.samples;
 
 import java.io.IOException;
-import java.util.Map;
+import java.util.Collection;
+import org.gwaspi.model.SampleInfo;
 
 public interface SamplesParser {
 
-	Map<String, Object> scanSampleInfo(String sampleInfoPath) throws IOException;
+	Collection<SampleInfo> scanSampleInfo(String sampleInfoPath) throws IOException;
 }

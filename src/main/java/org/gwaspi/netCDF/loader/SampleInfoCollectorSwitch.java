@@ -4,15 +4,14 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Set;
 import org.gwaspi.constants.cImport;
-import org.gwaspi.constants.cImport.Annotation.Plink_Standard;
 import org.gwaspi.constants.cImport.ImportFormat;
 import org.gwaspi.global.Text;
-import org.gwaspi.samples.DummySampleInfo;
+import org.gwaspi.model.SampleInfo;
 import org.gwaspi.samples.SamplesParserManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,16 +30,15 @@ public class SampleInfoCollectorSwitch {
 	}
 
 	private static void checkMissingSampleInfo(
-			Map<String, Object> dummySampleInfo,
-			Map<String, Object> sampleInfo)
+			Collection<SampleInfo> dummySampleInfos,
+			Collection<SampleInfo> sampleInfos)
 	{
-		for (String sampleId : dummySampleInfo.keySet()) {
-			if (!sampleInfo.containsKey(sampleId)) {
-				Object[] dummySampleValues = DummySampleInfo.createDummySampleValues();
-				dummySampleValues[1] = sampleId.toString();
-				sampleInfo.put(sampleId, dummySampleValues);
+		for (SampleInfo dummySampleInfo : dummySampleInfos) {
+			if (!sampleInfos.contains(dummySampleInfo)) {
+				SampleInfo dummySampleInfoCopy = new SampleInfo(dummySampleInfo.getSampleId());
+				sampleInfos.add(dummySampleInfoCopy);
 				log.warn(Text.Study.warnMissingSampleInfo);
-				log.warn("SampleID: {}", sampleId.toString());
+				log.warn("SampleID: {}", dummySampleInfo.getSampleId());
 			}
 		}
 	}
@@ -56,7 +54,7 @@ public class SampleInfoCollectorSwitch {
 		return (cVals.length == 6);
 	}
 
-	public static Map<String, Object> collectSampleInfo(
+	public static Collection<SampleInfo> collectSampleInfo(
 			ImportFormat format,
 			boolean dummySamples,
 			String sampleInfoPath,
@@ -64,101 +62,103 @@ public class SampleInfoCollectorSwitch {
 			String altSampleInfoPath2)
 			throws IOException
 	{
-		Map<String, Object> sampleInfoMap;
+		Collection<SampleInfo> sampleInfos;
 
 		switch (format) {
 			case Affymetrix_GenomeWide6:
 				log.info(Text.Matrix.scanAffectionStandby);
 				if (dummySamples) {
-					sampleInfoMap = SamplesParserManager.scanAffymetrixSampleInfo(altSampleInfoPath2);
+					sampleInfos = SamplesParserManager.scanAffymetrixSampleInfo(altSampleInfoPath2);
 				} else {
-					Map<String, Object> dummySamplesInfoMap = SamplesParserManager.scanAffymetrixSampleInfo(altSampleInfoPath2);
-					sampleInfoMap = SamplesParserManager.scanGwaspiSampleInfo(sampleInfoPath);
-					checkMissingSampleInfo(dummySamplesInfoMap, sampleInfoMap);
+					Collection<SampleInfo> dummySamplesInfos = SamplesParserManager.scanAffymetrixSampleInfo(altSampleInfoPath2);
+					sampleInfos = SamplesParserManager.scanGwaspiSampleInfo(sampleInfoPath);
+					checkMissingSampleInfo(dummySamplesInfos, sampleInfos);
 				}
 				break;
 			case PLINK:
 				log.info(Text.Matrix.scanAffectionStandby);
 				if (dummySamples) {
-					sampleInfoMap = SamplesParserManager.scanPlinkStandardSampleInfo(altSampleInfoPath2);
+					sampleInfos = SamplesParserManager.scanPlinkStandardSampleInfo(altSampleInfoPath2);
 				} else {
-					Map<String, Object> dummySamplesInfoMap = SamplesParserManager.scanPlinkStandardSampleInfo(altSampleInfoPath2);
-					sampleInfoMap = SamplesParserManager.scanGwaspiSampleInfo(sampleInfoPath);
-					checkMissingSampleInfo(dummySamplesInfoMap, sampleInfoMap);
+					Collection<SampleInfo> dummySamplesInfos = SamplesParserManager.scanPlinkStandardSampleInfo(altSampleInfoPath2);
+					sampleInfos = SamplesParserManager.scanGwaspiSampleInfo(sampleInfoPath);
+					checkMissingSampleInfo(dummySamplesInfos, sampleInfos);
 				}
 				break;
 			case PLINK_Binary:
 				log.info(Text.Matrix.scanAffectionStandby);
 				if (checkIsPlinkFAMFile(sampleInfoPath)) {
-					sampleInfoMap = SamplesParserManager.scanPlinkFAMSampleInfo(sampleInfoPath);
+					sampleInfos = SamplesParserManager.scanPlinkFAMSampleInfo(sampleInfoPath);
 				} else {
 					// It is a SampleInfo file
-					sampleInfoMap = SamplesParserManager.scanGwaspiSampleInfo(sampleInfoPath);
+					sampleInfos = SamplesParserManager.scanGwaspiSampleInfo(sampleInfoPath);
 				}
 				break;
 			case HAPMAP:
 				log.info(Text.Matrix.scanAffectionStandby);
 				if (dummySamples) {
-					sampleInfoMap = SamplesParserManager.scanHapmapSampleInfo(altSampleInfoPath1);
+					sampleInfos = SamplesParserManager.scanHapmapSampleInfo(altSampleInfoPath1);
 				} else {
-					Map<String, Object> dummySamplesInfoMap = SamplesParserManager.scanHapmapSampleInfo(altSampleInfoPath1);
-					sampleInfoMap = SamplesParserManager.scanGwaspiSampleInfo(sampleInfoPath);
-					checkMissingSampleInfo(dummySamplesInfoMap, sampleInfoMap);
+					Collection<SampleInfo> dummySamplesInfos = SamplesParserManager.scanHapmapSampleInfo(altSampleInfoPath1);
+					sampleInfos = SamplesParserManager.scanGwaspiSampleInfo(sampleInfoPath);
+					checkMissingSampleInfo(dummySamplesInfos, sampleInfos);
 				}
 				break;
 			case BEAGLE:
 				log.info(Text.Matrix.scanAffectionStandby);
 				if (dummySamples) {
-					sampleInfoMap = SamplesParserManager.scanBeagleSampleInfo(altSampleInfoPath1);
+					sampleInfos = SamplesParserManager.scanBeagleSampleInfo(altSampleInfoPath1);
 				} else {
-					Map<String, Object> dummySamplesInfoMap = SamplesParserManager.scanBeagleSampleInfo(altSampleInfoPath1);
-					sampleInfoMap = SamplesParserManager.scanGwaspiSampleInfo(sampleInfoPath);
-					checkMissingSampleInfo(dummySamplesInfoMap, sampleInfoMap);
+					Collection<SampleInfo> dummySamplesInfos = SamplesParserManager.scanBeagleSampleInfo(altSampleInfoPath1);
+					sampleInfos = SamplesParserManager.scanGwaspiSampleInfo(sampleInfoPath);
+					checkMissingSampleInfo(dummySamplesInfos, sampleInfos);
 				}
 				break;
 			case HGDP1:
 				log.info(Text.Matrix.scanAffectionStandby);
 				if (dummySamples) {
-					sampleInfoMap = SamplesParserManager.scanHGDP1SampleInfo(altSampleInfoPath1);
+					sampleInfos = SamplesParserManager.scanHGDP1SampleInfo(altSampleInfoPath1);
 				} else {
-					Map<String, Object> dummySamplesInfoMap = SamplesParserManager.scanHGDP1SampleInfo(altSampleInfoPath1);
-					sampleInfoMap = SamplesParserManager.scanGwaspiSampleInfo(sampleInfoPath);
-					checkMissingSampleInfo(dummySamplesInfoMap, sampleInfoMap);
+					Collection<SampleInfo> dummySamplesInfos = SamplesParserManager.scanHGDP1SampleInfo(altSampleInfoPath1);
+					sampleInfos = SamplesParserManager.scanGwaspiSampleInfo(sampleInfoPath);
+					checkMissingSampleInfo(dummySamplesInfos, sampleInfos);
 				}
 				break;
 			case GWASpi:
-				sampleInfoMap = SamplesParserManager.scanGwaspiSampleInfo(sampleInfoPath);
+				sampleInfos = SamplesParserManager.scanGwaspiSampleInfo(sampleInfoPath);
 				break;
 			case Illumina_LGEN:
 				log.info(Text.Matrix.scanAffectionStandby);
 				if (dummySamples) {
-					sampleInfoMap = SamplesParserManager.scanIlluminaLGENSampleInfo(altSampleInfoPath2);
+					sampleInfos = SamplesParserManager.scanIlluminaLGENSampleInfo(altSampleInfoPath2);
 				} else {
-					Map<String, Object> dummySamplesInfoMap = SamplesParserManager.scanIlluminaLGENSampleInfo(altSampleInfoPath2);
-					sampleInfoMap = SamplesParserManager.scanGwaspiSampleInfo(sampleInfoPath);
-					checkMissingSampleInfo(dummySamplesInfoMap, sampleInfoMap);
+					Collection<SampleInfo> dummySamplesInfos = SamplesParserManager.scanIlluminaLGENSampleInfo(altSampleInfoPath2);
+					sampleInfos = SamplesParserManager.scanGwaspiSampleInfo(sampleInfoPath);
+					checkMissingSampleInfo(dummySamplesInfos, sampleInfos);
 				}
 				break;
 			case Sequenom:
-				sampleInfoMap = SamplesParserManager.scanGwaspiSampleInfo(sampleInfoPath);
+				sampleInfos = SamplesParserManager.scanGwaspiSampleInfo(sampleInfoPath);
 				break;
 			default:
-				sampleInfoMap = new LinkedHashMap<String, Object>();
+				sampleInfos = new ArrayList<SampleInfo>();
 		}
 
-		return sampleInfoMap;
+		return sampleInfos;
 	}
 
-	public static Set<String> collectAffectionStates(Map<String, Object> sampleInfoMap) {
+	public static Set<String> collectAffectionStates(Collection<SampleInfo> sampleInfos) {
+
 		Set<String> affectionStates = new HashSet<String>();
-		for (Object value : sampleInfoMap.values()) {
-			Object[] values = (Object[]) value;
-			String affection = values[Plink_Standard.ped_affection].toString();
+
+		for (SampleInfo sampleInfo : sampleInfos) {
+			String affection = sampleInfo.getAffectionStr();
 			if (!affection.equals("1") && !affection.equals("2")) {
 				affection = "0";
 			}
 			affectionStates.add(affection);
 		}
+
 		return affectionStates;
 	}
 }

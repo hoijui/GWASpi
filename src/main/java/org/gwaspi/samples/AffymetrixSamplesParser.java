@@ -2,16 +2,17 @@ package org.gwaspi.samples;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import org.gwaspi.constants.cImport;
+import java.util.Collection;
+import java.util.LinkedList;
+import org.gwaspi.model.SampleInfo;
 
 public class AffymetrixSamplesParser implements SamplesParser {
 
 	@Override
-	public Map<String, Object> scanSampleInfo(String sampleInfoPath) throws IOException {
+	public Collection<SampleInfo> scanSampleInfo(String sampleInfoPath) throws IOException {
 
-		Map<String, Object> resultMap = new LinkedHashMap<String, Object>();
+		Collection<SampleInfo> sampleInfos = new LinkedList<SampleInfo>();
+
 		File[] gtFilesToImport = org.gwaspi.global.Utils.listFiles(sampleInfoPath);
 
 		for (int i = 0; i < gtFilesToImport.length; i++) {
@@ -23,11 +24,10 @@ public class AffymetrixSamplesParser implements SamplesParser {
 			} else {
 				sampleId = l.substring(0, l.lastIndexOf('.'));
 			}
-			String[] infoVals = new String[]{"0", "0", "0", "0", "0", "0", "0", "0", "0", "0"};
-			infoVals[cImport.Annotation.GWASpi.sampleId] = sampleId;
-			resultMap.put(sampleId, infoVals);
+			SampleInfo sampleInfo = new SampleInfo(sampleId);
+			sampleInfos.add(sampleInfo);
 		}
 
-		return resultMap;
+		return sampleInfos;
 	}
 }
