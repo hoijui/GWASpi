@@ -251,6 +251,9 @@ public class Utils {
 		return dateOut;
 	}
 
+	/**
+	 * @deprecated unused!
+	 */
 	public static String getSQLDateAsString() {
 
 		Date now = new Date();
@@ -265,6 +268,9 @@ public class Utils {
 		return timeStampFormat.format(now.getTime());
 	}
 
+	/**
+	 * @deprecated unused!
+	 */
 	public static String dateToString(Date date) {
 
 		String dateStr = dateFormat.format(date);
@@ -272,6 +278,9 @@ public class Utils {
 		return dateStr;
 	}
 
+	/**
+	 * @deprecated unused!
+	 */
 	public static Date stringToDate(String txtDate) throws ParseException {
 
 		Date date = dateFormat.parse(txtDate);
