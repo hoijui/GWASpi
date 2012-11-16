@@ -434,7 +434,7 @@ public class LoadGTFromPlinkBinaryFiles implements GenotypesLoader {
 			}
 
 		} else {
-			log.info("Binary PLINK file must be in SNP-major mode!");
+			log.warn("Binary PLINK file must be in SNP-major mode!");
 		}
 
 
