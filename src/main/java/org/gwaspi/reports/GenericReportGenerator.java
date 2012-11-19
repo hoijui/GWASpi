@@ -185,10 +185,12 @@ public class GenericReportGenerator {
 					}
 				}
 			}
-
 		}
-		currChrSC.addSeries(currChrS);
-		appendToCombinedRangeManhattanPlot(combinedPlot, currChr, currChrSC, true); //ADD LAST CHR TO PLOT
+		if (currChrS != null) {
+			currChrSC.addSeries(currChrS);
+			// ADD LAST CHR TO PLOT
+			appendToCombinedRangeManhattanPlot(combinedPlot, currChr, currChrSC, true);
+		}
 
 		// Remove Legend from the bottom of the chart
 		combinedPlot.setFixedLegendItems(new LegendItemCollection());
