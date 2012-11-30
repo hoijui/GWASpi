@@ -58,10 +58,10 @@ public class StartGWASpi extends JFrame {
 	public static String config_OfflineHelpDir;
 	public static String config_LogDir;
 
-	private StartGWASpi() {
+	public StartGWASpi() {
 	}
 
-	private void start(List<String> args) throws IOException, SQLException, ParseException, UnsupportedLookAndFeelException {
+	public void start(List<String> args) throws IOException, SQLException, ParseException, UnsupportedLookAndFeelException {
 
 		// Get current size of heap in bytes
 		maxHeapSize = Math.round(Runtime.getRuntime().totalMemory() / 1048576); // heapSize in MB
