@@ -99,7 +99,7 @@ public class Text {
 
 	public static class Cli {
 
-		public static final String wrongScriptFilePath = "Unable to read start-up file!\nMake sure the specified file exists and try again.";
+		public static final String wrongScriptFilePath = "Unable to read start-up file \"{}\"!\nMake sure the specified file exists and try again.";
 		public static final String studyNotExist = "Provided Study Id does not exist!";
 		public static final String availableStudies = "Available Studies:\n";
 		public static final String doneExiting = "\n" + Text.App.appName + " has finished processing your script.\nExiting....\nGood-bye!\n########################";

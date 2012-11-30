@@ -91,7 +91,7 @@ public class StartGWASpi extends JFrame {
 				CliExecutor cliExecutor = new CliExecutor(scriptFile);
 				cliExecutor.execute();
 			} else {
-				log.error(Text.Cli.wrongScriptFilePath);
+				log.error(Text.Cli.wrongScriptFilePath, scriptFile);
 				exit();
 			}
 		} else {
