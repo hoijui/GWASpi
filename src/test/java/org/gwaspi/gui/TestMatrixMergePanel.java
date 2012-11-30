@@ -9,12 +9,12 @@ package org.gwaspi.gui;
  *
  * @author u56124
  */
-public class MatrixMergePanel extends javax.swing.JPanel {
+public class TestMatrixMergePanel extends javax.swing.JPanel {
 
 	/**
 	 * Creates new form MatrixTrafoPanel
 	 */
-	public MatrixMergePanel() {
+	public TestMatrixMergePanel() {
 		initComponents();
 	}
 
@@ -68,7 +68,7 @@ public class MatrixMergePanel extends javax.swing.JPanel {
         pnl_ParentMatrixDescLayout.setVerticalGroup(
             pnl_ParentMatrixDescLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnl_ParentMatrixDescLayout.createSequentialGroup()
-                .addComponent(scrl_ParentMatrixDesc, javax.swing.GroupLayout.DEFAULT_SIZE, 54, Short.MAX_VALUE)
+                .addComponent(scrl_ParentMatrixDesc, javax.swing.GroupLayout.DEFAULT_SIZE, 55, Short.MAX_VALUE)
                 .addContainerGap())
         );
 

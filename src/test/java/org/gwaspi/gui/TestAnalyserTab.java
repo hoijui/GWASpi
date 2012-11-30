@@ -23,10 +23,10 @@ import org.slf4j.LoggerFactory;
  *
  * @author u56124
  */
-public class AnalyserTab extends JPanel {
+public class TestAnalyserTab extends JPanel {
 
 	private final Logger log
-			= LoggerFactory.getLogger(AnalyserTab.class);
+			= LoggerFactory.getLogger(TestAnalyserTab.class);
 
 	// Variables declaration - do not modify
 	private JPanel panel_Analysis;
@@ -47,7 +47,7 @@ public class AnalyserTab extends JPanel {
 	// End of variables declaration
 
 	// <editor-fold defaultstate="expanded" desc="Init">
-	public AnalyserTab() {
+	public TestAnalyserTab() {
 
 		panel_Analysis = new JPanel();
 		combo_Analysis = new JComboBox();

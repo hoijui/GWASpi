@@ -9,12 +9,12 @@ package org.gwaspi.gui;
  *
  * @author u56124
  */
-public class MatrixMarkerQAPanel extends javax.swing.JPanel {
+public class TestMatrixMarkerQAPanel extends javax.swing.JPanel {
 
 	/**
 	 * Creates new form MatrixAnalysePanel
 	 */
-	public MatrixMarkerQAPanel() {
+	public TestMatrixMarkerQAPanel() {
 		initComponents();
 	}
 
@@ -115,7 +115,7 @@ public class MatrixMarkerQAPanel extends javax.swing.JPanel {
                 .addComponent(pnl_MatrixDesc, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(pnl_Footer, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(13, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 

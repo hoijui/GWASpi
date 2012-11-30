@@ -1,5 +1,5 @@
 /*
- * CurrentStudyPanel.java
+ * TestCurrentStudyPanel.java
  *
  * Created on Nov 12, 2009, 10:04:17 AM
  */
@@ -9,12 +9,12 @@ package org.gwaspi.gui;
  *
  * @author fernando
  */
-public class CurrentStudyPanel extends javax.swing.JPanel {
+public class TestCurrentStudyPanel extends javax.swing.JPanel {
 
 	/**
-	 * Creates new form CurrentStudyPanel
+	 * Creates new form TestCurrentStudyPanel
 	 */
-	public CurrentStudyPanel() {
+	public TestCurrentStudyPanel() {
 		initComponents();
 	}
 
@@ -81,14 +81,14 @@ public class CurrentStudyPanel extends javax.swing.JPanel {
         pnl_StudyDescLayout.setVerticalGroup(
             pnl_StudyDescLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnl_StudyDescLayout.createSequentialGroup()
-                .addComponent(scrl_Desc, javax.swing.GroupLayout.DEFAULT_SIZE, 147, Short.MAX_VALUE)
+                .addComponent(scrl_Desc, javax.swing.GroupLayout.DEFAULT_SIZE, 153, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(pnl_StudyDescLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btn_DeleteStudy)
                     .addComponent(btn_SaveDesc)
                     .addComponent(btn_UpdateSampleInfo, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btn_LoadGenotypes, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(18, Short.MAX_VALUE))
         );
 
         pnl_StudyDescLayout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {btn_LoadGenotypes, btn_SaveDesc, btn_UpdateSampleInfo});
@@ -177,7 +177,7 @@ public class CurrentStudyPanel extends javax.swing.JPanel {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(pnl_StudyDesc, javax.swing.GroupLayout.PREFERRED_SIZE, 243, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(pnl_StudyDesc, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(pnl_MatrixTable, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
