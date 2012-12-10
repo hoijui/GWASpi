@@ -32,8 +32,8 @@ public class PlinkFAMSamplesParser implements SamplesParser {
 			sexStr = sexStr.equals("-9") ? "0" : sexStr;
 			String affectionStr = cVals[cImport.Annotation.Plink_Binary.ped_affection];
 			affectionStr = affectionStr.equals("-9") ? "0" : affectionStr;
-			SampleInfo.Sex sex = SampleInfo.Sex.values()[Integer.parseInt(sexStr)];
-			SampleInfo.Affection affection = SampleInfo.Affection.values()[Integer.parseInt(affectionStr)];
+			SampleInfo.Sex sex = SampleInfo.Sex.parse(sexStr);
+			SampleInfo.Affection affection = SampleInfo.Affection.parse(affectionStr);
 			SampleInfo sampleInfo = new SampleInfo(
 					cVals[cImport.Annotation.Plink_Binary.ped_sampleId],
 					cVals[cImport.Annotation.Plink_Binary.ped_familyId],

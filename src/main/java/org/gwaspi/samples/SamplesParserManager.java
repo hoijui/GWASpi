@@ -115,7 +115,7 @@ public class SamplesParserManager {
 		String l;
 		while ((l = inputBufferReader.readLine()) != null) {
 			String[] cVals = l.split(cImport.Separators.separators_CommaSpaceTab_rgxp);
-			resultHS.add(SampleInfo.Affection.values()[Integer.parseInt(cVals[GWASpi.affection])]);
+			resultHS.add(SampleInfo.Affection.parse(cVals[GWASpi.affection]));
 		}
 
 		inputBufferReader.close();

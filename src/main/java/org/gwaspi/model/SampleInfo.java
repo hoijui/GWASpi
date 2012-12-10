@@ -8,12 +8,156 @@ public class SampleInfo implements Comparable<SampleInfo> {
 		UNKNOWN,
 		MALE,
 		FEMALE;
+
+		/**
+		 * Parse by the PLINK standard
+		 */
+		public static Sex parse(String sexStr) {
+
+			try {
+				return Sex.values()[Integer.parseInt(sexStr)];
+			} catch (NumberFormatException ex) {
+				throw new ParseException(sexStr + " is not a valid sex value", ex);
+			}
+		}
+
+		/**
+		 * Encode with the PLINK standard,
+		 * optionally using the alternative long-encoding
+		 */
+		public static int toNumber(Sex sex) {
+			return sex.ordinal();
+		}
 	}
 
+	/**
+	 * PLINK standards:
+	 *
+	 * default:
+	 *   -9 missing
+	 *   0 missing
+	 *   1 unaffected
+	 *   2 affected
+	 *
+	 * alternative:
+	 *   -9 missing
+	 *   0 unaffected
+	 *   1 affected
+	 */
 	public static enum Affection {
-		/** Undefined */ UNKNOWN,
-		/** Control */ UNAFFECTED,
-		/** Case */ AFFECTED;
+		/** Undefined / Missing */
+		UNKNOWN,
+		/** Control */
+		UNAFFECTED,
+		/** Case */
+		AFFECTED;
+
+		/** Parse by the PLINK standard */
+		public static Affection parse(String affectionStr) {
+			return parse(affectionStr, false);
+		}
+
+		/**
+		 * Parse by the PLINK standard,
+		 * optionally using the alternative encoding.
+		 * @param altEnc use the alternative encoding (@{see #Affection})
+		 */
+		public static Affection parse(String affectionStr, boolean altEnc) {
+
+			Affection result = Affection.UNKNOWN;
+
+			try {
+				int affectionInt = Integer.parseInt(affectionStr);
+
+				if (altEnc) {
+					switch (affectionInt) {
+						case 0:
+							result = UNAFFECTED;
+							break;
+						case 1:
+							result = AFFECTED;
+							break;
+						case -9:
+							result = UNKNOWN;
+							break;
+						default:
+							throw new ParseException(affectionInt + " is not a valid affection value");
+					}
+				} else {
+					// default
+					switch (affectionInt) {
+						case 0:
+							result = UNKNOWN;
+							break;
+						case 1:
+							result = UNAFFECTED;
+							break;
+						case 2:
+							result = AFFECTED;
+							break;
+						case -9:
+							result = UNKNOWN;
+							break;
+						default:
+							throw new ParseException(affectionInt + " is not a valid affection value (alternative standard)");
+					}
+				}
+			} catch (NumberFormatException ex) {
+				throw new ParseException("\"" + affectionStr + "\" is not a valid affection value", ex);
+			}
+
+			return result;
+		}
+
+		/**
+		 * Encode with the PLINK standard,
+		 * optionally using the alternative long-encoding
+		 */
+		public static int toNumber(Affection affection) {
+			return toNumber(affection, false);
+		}
+
+		/**
+		 * Encode with the PLINK standard.
+		 * @param altEnc use the alternative encoding (@{see #Affection})
+		 */
+		public static int toNumber(Affection affection, boolean altEnc) {
+
+			int result = -9;
+
+			if (altEnc) {
+				switch (affection) {
+					case UNKNOWN:
+						result = -9;
+						break;
+					case AFFECTED:
+						result = 0;
+						break;
+					case UNAFFECTED:
+						result = 1;
+						break;
+					default:
+						throw new ParseException(affection + " is not a valid affection value; can not be converted to a number");
+				}
+			} else {
+				// default
+				switch (affection) {
+					case UNKNOWN:
+						result = 0;
+						break;
+					case AFFECTED:
+						result = 1;
+						break;
+					case UNAFFECTED:
+						result = 2;
+						break;
+					default:
+						throw new ParseException(affection + " is not a valid affection value; can not be converted to a number (alternative standard)");
+				}
+			}
+
+			return result;
+		}
 	}
 
 	private int orderId;

@@ -141,8 +141,8 @@ public class SampleInfoServiceImpl implements SampleInfoService {
 		Object approvedStr = properties.get(cDBSamples.f_APPROVED);
 		Object statusStr = properties.get(cDBSamples.f_STATUS_ID_FK);
 
-		SampleInfo.Sex sex = SampleInfo.Sex.values()[Integer.parseInt(sexStr.toString())];
-		SampleInfo.Affection affection = SampleInfo.Affection.values()[Integer.parseInt(affectionStr.toString())];
+		SampleInfo.Sex sex = SampleInfo.Sex.parse(sexStr.toString());
+		SampleInfo.Affection affection = SampleInfo.Affection.parse(affectionStr.toString());
 		int age = Integer.parseInt(ageStr.toString());
 		int approved = (approvedStr == null) ? 0 : Integer.parseInt(approvedStr.toString());
 		int status = (statusStr == null) ? 0 : Integer.parseInt(statusStr.toString());
