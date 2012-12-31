@@ -9,6 +9,7 @@ package org.gwaspi.constants;
 public class cExport {
 
 	public static final String separator_PLINK = " ";
+	public static final String separator_PLINK_big = "\t";
 	public static final String separator_BEAGLE = " ";
 	public static final String separator_MACH = " ";
 	public static final String separator_REPORTS = "\t";

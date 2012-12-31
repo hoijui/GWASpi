@@ -41,6 +41,7 @@ public class PlinkFormatter implements Formatter {
 
 		boolean result = false;
 		String sep = cExport.separator_PLINK;
+		String sepBig = cExport.separator_PLINK_big;
 		NetcdfFile rdNcFile = NetcdfFile.open(rdMatrixMetadata.getPathToMatrix());
 		rdMarkerSet.initFullMarkerIdSetMap();
 
@@ -65,7 +66,7 @@ public class PlinkFormatter implements Formatter {
 				StringBuilder genotypes = new StringBuilder();
 				for (Object value : rdMarkerSet.getMarkerIdSetMap().values()) {
 					byte[] tempGT = (byte[]) value;
-					genotypes.append(sep);
+					genotypes.append(sepBig);
 					genotypes.append(new String(new byte[]{tempGT[0]}));
 					genotypes.append(sep);
 					genotypes.append(new String(new byte[]{tempGT[1]}));
@@ -81,7 +82,8 @@ public class PlinkFormatter implements Formatter {
 
 				StringBuilder line = new StringBuilder();
 				line.append(familyId);
-				line.append(sep);
+				line.append(sepBig);
+
 				line.append(sampleId);
 				line.append(sep);
 				line.append(fatherId);
@@ -91,6 +93,7 @@ public class PlinkFormatter implements Formatter {
 				line.append(sex);
 				line.append(sep);
 				line.append(affection);
+
 				line.append(genotypes);
 
 				pedBW.append(line);
