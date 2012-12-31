@@ -41,17 +41,17 @@ public class PlinkStandardSamplesParser implements SamplesParser {
 				SampleInfo sampleInfo;
 				if (chunker.length > 0) {
 					String[] cVals = l.split(cImport.Separators.separators_CommaSpaceTab_rgxp, 10);
-					String sexStr = cVals[cImport.Annotation.Plink_Binary.ped_sex];
+					String sexStr = cVals[cImport.Annotation.Plink_Standard.ped_sex];
 					sexStr = sexStr.equals("-9") ? "0" : sexStr;
-					String affectionStr = cVals[cImport.Annotation.Plink_Binary.ped_affection];
+					String affectionStr = cVals[cImport.Annotation.Plink_Standard.ped_affection];
 					affectionStr = affectionStr.equals("-9") ? "0" : affectionStr;
 					SampleInfo.Sex sex = SampleInfo.Sex.parse(sexStr);
 					SampleInfo.Affection affection = SampleInfo.Affection.parse(affectionStr);
 					sampleInfo = new SampleInfo(
-							cVals[cImport.Annotation.Plink_Binary.ped_sampleId],
-							cVals[cImport.Annotation.Plink_Binary.ped_familyId],
-							cVals[cImport.Annotation.Plink_Binary.ped_fatherId],
-							cVals[cImport.Annotation.Plink_Binary.ped_motherId],
+							cVals[cImport.Annotation.Plink_Standard.ped_sampleId],
+							cVals[cImport.Annotation.Plink_Standard.ped_familyId],
+							cVals[cImport.Annotation.Plink_Standard.ped_fatherId],
+							cVals[cImport.Annotation.Plink_Standard.ped_motherId],
 							sex,
 							affection,
 							"0",
@@ -82,17 +82,17 @@ public class PlinkStandardSamplesParser implements SamplesParser {
 				SampleInfo sampleInfo;
 				if (chunker.length > 0) {
 					String[] cVals = String.valueOf(chunker).split(cImport.Separators.separators_CommaSpaceTab_rgxp, 10);
-					String sexStr = cVals[cImport.Annotation.Plink_Binary.ped_sex];
+					String sexStr = cVals[cImport.Annotation.Plink_Standard.ped_sex];
 					sexStr = sexStr.equals("-9") ? "0" : sexStr;
-					String affectionStr = cVals[cImport.Annotation.Plink_Binary.ped_affection];
+					String affectionStr = cVals[cImport.Annotation.Plink_Standard.ped_affection];
 					affectionStr = affectionStr.equals("-9") ? "0" : affectionStr;
 					SampleInfo.Sex sex = SampleInfo.Sex.parse(sexStr);
 					SampleInfo.Affection affection = SampleInfo.Affection.parse(affectionStr);
 					sampleInfo = new SampleInfo(
-							cVals[cImport.Annotation.Plink_Binary.ped_sampleId],
-							cVals[cImport.Annotation.Plink_Binary.ped_familyId],
-							cVals[cImport.Annotation.Plink_Binary.ped_fatherId],
-							cVals[cImport.Annotation.Plink_Binary.ped_motherId],
+							cVals[cImport.Annotation.Plink_Standard.ped_sampleId],
+							cVals[cImport.Annotation.Plink_Standard.ped_familyId],
+							cVals[cImport.Annotation.Plink_Standard.ped_fatherId],
+							cVals[cImport.Annotation.Plink_Standard.ped_motherId],
 							sex,
 							affection,
 							"0",
