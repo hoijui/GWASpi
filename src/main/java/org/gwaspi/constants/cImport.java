@@ -267,11 +267,11 @@ public class cImport {
 	public static interface Separators {
 
 		public static final String separators_Spaces_rgxp = "[ +]";
-		public static final String separators_CommaSpaceTab_rgxp = "[, \t]";
-		public static final String separators_CommaSpaceTabLf_rgxp = "[\n, \t]";
-		public static final String separators_CommaTab_rgxp = "[,\t]";
-		public static final String separators_SpaceTab_rgxp = "[ \t]";
-		public static final String separators_Tab_rgxp = "[\t]";
+		public static final String separators_CommaSpaceTab_rgxp = "[, \t]+";
+		public static final String separators_CommaSpaceTabLf_rgxp = "[\n, \t]+";
+		public static final String separators_CommaTab_rgxp = "[,\t]+";
+		public static final String separators_SpaceTab_rgxp = "[ \t]+";
+		public static final String separators_Tab_rgxp = "[\t]+";
 		public static final String ops = " "; // separator used in output file
 		public static final String separator_PLINK = " ";
 		public static final String separator_BEAGLE = " ";
