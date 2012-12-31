@@ -78,7 +78,7 @@ public class MatrixExporter {
 			rdMarkerSet.getMarkerIdSetMap().clear();
 		}
 
-		org.gwaspi.global.Utils.sysoutCompleted("exporting Matrix" + exportPath);
+		org.gwaspi.global.Utils.sysoutCompleted("exporting Matrix to \"" + exportPath + "\"");
 		return result;
 	}
 }
