@@ -20,18 +20,11 @@ class UpdateSampleInfoScriptCommand extends AbstractScriptCommand {
 	public boolean execute(List<String> args) throws IOException {
 
 		// checking study
-		int studyId = Integer.MIN_VALUE;
-		try {
-			studyId = Integer.parseInt(args.get(1)); // Study Id
-		} catch (Exception ex) {
-			if (args.get(1).contains("New Study")) {
-				studyId = addStudy(args.get(1).substring(10), "Study created by command-line interface");
-			}
-		}
+		int studyId = prepareStudy(args.get(1), true);
 		boolean studyExists = checkStudy(studyId);
 
 		File sampleInfoFile = new File(args.get(2));
-		if (sampleInfoFile != null && sampleInfoFile.exists()) {
+		if (studyExists && (sampleInfoFile != null) && sampleInfoFile.exists()) {
 			MultiOperations.updateSampleInfo(studyId,
 					sampleInfoFile);
 			return true;

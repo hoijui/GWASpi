@@ -55,58 +55,55 @@ class GwasInOneGoScriptCommand extends AbstractScriptCommand {
 		GWASinOneGOParams gwasParams = new GWASinOneGOParams();
 
 		// checking study
-		int studyId = Integer.MIN_VALUE;
-		try {
-			studyId = Integer.parseInt(args.get(1)); // Study Id
-		} catch (Exception ex) {
-			System.out.println("The Study-id must be an integer value of an existing Study!");
-		}
+		int studyId = prepareStudy(args.get(1), false);
 		boolean studyExists = checkStudy(studyId);
 
-		int matrixId = Integer.parseInt(args.get(2)); // Parent Matrix Id
-		String gwasName = args.get(3);
-		boolean useExternalPhenoFile = Boolean.parseBoolean(args.get(4));
-		File phenoFile = null;
-		if (useExternalPhenoFile) {
-			phenoFile = new File(args.get(5));
-		}
+		if (studyExists) {
+			int matrixId = Integer.parseInt(args.get(2)); // Parent Matrix Id
+			String gwasName = args.get(3);
+			boolean useExternalPhenoFile = Boolean.parseBoolean(args.get(4));
+			File phenoFile = null;
+			if (useExternalPhenoFile) {
+				phenoFile = new File(args.get(5));
+			}
 
-		gwasParams.setDiscardGTMismatches(true);
-		gwasParams.setDiscardMarkerByMisRat(Boolean.parseBoolean(args.get(6)));
-		gwasParams.setDiscardMarkerMisRatVal(Double.parseDouble(args.get(7)));
-		gwasParams.setDiscardMarkerHWCalc(Boolean.parseBoolean(args.get(8)));
-		gwasParams.setDiscardMarkerHWFree(Boolean.parseBoolean(args.get(9)));
-		gwasParams.setDiscardMarkerHWTreshold(Double.parseDouble(args.get(10)));
-		gwasParams.setDiscardSampleByMisRat(Boolean.parseBoolean(args.get(11)));
-		gwasParams.setDiscardSampleMisRatVal(Double.parseDouble(args.get(12)));
-		gwasParams.setDiscardSampleByHetzyRat(Boolean.parseBoolean(args.get(13)));
-		gwasParams.setDiscardSampleHetzyRatVal(Double.parseDouble(args.get(14)));
-		gwasParams.setPerformAllelicTests(Boolean.parseBoolean(args.get(15)));
-		gwasParams.setPerformGenotypicTests(Boolean.parseBoolean(args.get(16)));
-		gwasParams.setPerformTrendTests(Boolean.parseBoolean(args.get(17)));
-		gwasParams.setFriendlyName(gwasName);
-		gwasParams.setProceed(true);
+			gwasParams.setDiscardGTMismatches(true);
+			gwasParams.setDiscardMarkerByMisRat(Boolean.parseBoolean(args.get(6)));
+			gwasParams.setDiscardMarkerMisRatVal(Double.parseDouble(args.get(7)));
+			gwasParams.setDiscardMarkerHWCalc(Boolean.parseBoolean(args.get(8)));
+			gwasParams.setDiscardMarkerHWFree(Boolean.parseBoolean(args.get(9)));
+			gwasParams.setDiscardMarkerHWTreshold(Double.parseDouble(args.get(10)));
+			gwasParams.setDiscardSampleByMisRat(Boolean.parseBoolean(args.get(11)));
+			gwasParams.setDiscardSampleMisRatVal(Double.parseDouble(args.get(12)));
+			gwasParams.setDiscardSampleByHetzyRat(Boolean.parseBoolean(args.get(13)));
+			gwasParams.setDiscardSampleHetzyRatVal(Double.parseDouble(args.get(14)));
+			gwasParams.setPerformAllelicTests(Boolean.parseBoolean(args.get(15)));
+			gwasParams.setPerformGenotypicTests(Boolean.parseBoolean(args.get(16)));
+			gwasParams.setPerformTrendTests(Boolean.parseBoolean(args.get(17)));
+			gwasParams.setFriendlyName(gwasName);
+			gwasParams.setProceed(true);
 
-		List<String> necessaryOPsAL = new ArrayList<String>();
-		necessaryOPsAL.add(cNetCDF.Defaults.OPType.SAMPLE_QA.toString());
-		necessaryOPsAL.add(cNetCDF.Defaults.OPType.MARKER_QA.toString());
-		List missingOPsAL = OperationManager.checkForNecessaryOperations(necessaryOPsAL, matrixId);
+			List<String> necessaryOPsAL = new ArrayList<String>();
+			necessaryOPsAL.add(cNetCDF.Defaults.OPType.SAMPLE_QA.toString());
+			necessaryOPsAL.add(cNetCDF.Defaults.OPType.MARKER_QA.toString());
+			List missingOPsAL = OperationManager.checkForNecessaryOperations(necessaryOPsAL, matrixId);
 
-		// QA block
-		if (gwasParams.isProceed() && missingOPsAL.size() > 0) {
-			gwasParams.setProceed(false);
-			System.out.println(Text.Operation.warnQABeforeAnything + "\n" + Text.Operation.willPerformOperation);
-			MultiOperations.doMatrixQAs(studyId, matrixId);
-		}
+			// QA block
+			if (gwasParams.isProceed() && missingOPsAL.size() > 0) {
+				gwasParams.setProceed(false);
+				System.out.println(Text.Operation.warnQABeforeAnything + "\n" + Text.Operation.willPerformOperation);
+				MultiOperations.doMatrixQAs(studyId, matrixId);
+			}
 
-		// GWAS block
-		if (gwasParams.isProceed()) {
-			System.out.println(Text.All.processing);
-			MultiOperations.doGWASwithAlterPhenotype(studyId,
-					matrixId,
-					phenoFile,
-					gwasParams);
-			return true;
+			// GWAS block
+			if (gwasParams.isProceed()) {
+				System.out.println(Text.All.processing);
+				MultiOperations.doGWASwithAlterPhenotype(studyId,
+						matrixId,
+						phenoFile,
+						gwasParams);
+				return true;
+			}
 		}
 
 		return false;

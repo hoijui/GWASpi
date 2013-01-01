@@ -25,12 +25,43 @@ abstract class AbstractScriptCommand implements ScriptCommand {
 		return commandName;
 	}
 
+	/**
+	 * parses the study ID, and eventually creates a new study, if requested.
+	 * @param studyIdStr the study ID parameter as given on the command-line
+	 * @param allowNew if true, then we create a new study,
+	 *   if <code>studyIdStr.contains("New Study")</code>
+	 * @return the study ID or Integer.MIN_VALUE, in case of a problem.
+	 */
+	protected static int prepareStudy(String studyIdStr, boolean allowNew) throws IOException {
+
+		int studyId = Integer.MIN_VALUE;
+
+		try {
+			studyId = Integer.parseInt(studyIdStr); // Study Id
+		} catch (Exception ex) {
+			if (allowNew) {
+				if (studyIdStr.contains("New Study")) {
+					studyId = addStudy(studyIdStr/*.substring(10)*/,
+							"Study created by command-line interface");
+				}
+			} else {
+				System.out.println("The Study-id must be an integer value of an existing Study, \""+studyIdStr+"\" is not so!");
+			}
+		}
+
+		return studyId;
+	}
+
 	protected static boolean checkStudy(int studyId) throws IOException {
+
 		boolean studyExists = false;
+
 		Object[][] studyTable = StudyList.getStudyTable();
-		for (int i = 0; i < studyTable.length; i++) {
-			if ((Integer) studyTable[i][0] == studyId) {
-				studyExists = true;
+		if (studyId != Integer.MIN_VALUE) {
+			for (int i = 0; i < studyTable.length; i++) {
+				if ((Integer) studyTable[i][0] == studyId) {
+					studyExists = true;
+				}
 			}
 		}
 
@@ -44,7 +75,7 @@ abstract class AbstractScriptCommand implements ScriptCommand {
 				System.out.println("\n");
 			}
 
-			StartGWASpi.exit();
+			StartGWASpi.exit(); // FIXME remove this!
 		}
 
 		return studyExists;

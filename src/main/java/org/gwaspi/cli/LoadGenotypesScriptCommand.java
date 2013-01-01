@@ -2,7 +2,7 @@ package org.gwaspi.cli;
 
 import java.io.IOException;
 import java.util.List;
-import org.gwaspi.constants.cImport;
+import org.gwaspi.constants.cImport.ImportFormat;
 import org.gwaspi.netCDF.loader.GenotypesLoadDescription;
 import org.gwaspi.netCDF.operations.GWASinOneGOParams;
 import org.gwaspi.threadbox.MultiOperations;
@@ -24,38 +24,35 @@ class LoadGenotypesScriptCommand extends AbstractScriptCommand {
 		GWASinOneGOParams gwasParams = new GWASinOneGOParams();
 
 		// checking study
-		int studyId = Integer.MIN_VALUE;
-		try {
-			studyId = Integer.parseInt(args.get(1)); // Study Id
-		} catch (Exception ex) {
-			if (args.get(1).contains("New Study")) {
-				studyId = addStudy(args.get(1), "Study created by command-line interface");
-			}
-		}
+		int studyId = prepareStudy(args.get(1), true);
 		boolean studyExists = checkStudy(studyId);
 
-		cImport.ImportFormat format = cImport.ImportFormat.compareTo(args.get(2));
-		String newMatrixName = args.get(4);
-		String description = args.get(5);
+		if (studyExists) {
+			ImportFormat format = ImportFormat.compareTo(args.get(2));
+			String newMatrixName = args.get(4);
+			String description = args.get(5);
 
-		GenotypesLoadDescription loadDescription = new GenotypesLoadDescription(
-				args.get(6), // File 1
-				args.get(8), // Sample Info file
-				args.get(7), // File 2
-				studyId, // StudyId
-				format, // Format
-				newMatrixName, // New Matrix name
-				description, // Description
-				gwasParams.getChromosome(),
-				gwasParams.getStrandType(),
-				gwasParams.getGtCode() // Gt code (deprecated)
-				);
-		MultiOperations.loadMatrixDoGWASifOK(
-				loadDescription, // Format
-				Boolean.parseBoolean(args.get(3)), // Dummy samples
-				false, // Do GWAS
-				gwasParams); // gwasParams (dummy)
+			GenotypesLoadDescription loadDescription = new GenotypesLoadDescription(
+					args.get(6), // File 1
+					args.get(8), // Sample Info file
+					args.get(7), // File 2
+					studyId, // StudyId
+					format, // Format
+					newMatrixName, // New Matrix name
+					description, // Description
+					gwasParams.getChromosome(),
+					gwasParams.getStrandType(),
+					gwasParams.getGtCode() // Gt code (deprecated)
+					);
+			MultiOperations.loadMatrixDoGWASifOK(
+					loadDescription, // Format
+					Boolean.parseBoolean(args.get(3)), // Dummy samples
+					false, // Do GWAS
+					gwasParams); // gwasParams (dummy)
 
-		return true;
+			return true;
+		}
+
+		return false;
 	}
 }

@@ -44,49 +44,46 @@ class AllelicAssociationScriptCommand extends AbstractScriptCommand {
 		GWASinOneGOParams gwasParams = new GWASinOneGOParams();
 
 		// checking study
-		int studyId = Integer.MIN_VALUE;
-		try {
-			studyId = Integer.parseInt(args.get(1)); // Study Id
-		} catch (Exception ex) {
-			System.out.println("The Study-id must be an integer value of an existing Study!");
-		}
+		int studyId = prepareStudy(args.get(1), false);
 		boolean studyExists = checkStudy(studyId);
 
-		int matrixId = Integer.parseInt(args.get(2)); // Parent Matrix Id
-		int gtFreqId = Integer.parseInt(args.get(3)); // Parent GtFreq Id
-		int hwId = Integer.parseInt(args.get(4)); // Parent GtFreq Id
+		if (studyExists) {
+			int matrixId = Integer.parseInt(args.get(2)); // Parent Matrix Id
+			int gtFreqId = Integer.parseInt(args.get(3)); // Parent GtFreq Id
+			int hwId = Integer.parseInt(args.get(4)); // Parent GtFreq Id
 
-		gwasParams.setPerformAllelicTests(true);
-		gwasParams.setPerformGenotypicTests(false);
-		gwasParams.setPerformTrendTests(false);
+			gwasParams.setPerformAllelicTests(true);
+			gwasParams.setPerformGenotypicTests(false);
+			gwasParams.setPerformTrendTests(false);
 
-		gwasParams.setDiscardGTMismatches(true);
-		gwasParams.setDiscardMarkerHWCalc(Boolean.parseBoolean(args.get(5)));
-		gwasParams.setDiscardMarkerHWFree(Boolean.parseBoolean(args.get(6)));
-		gwasParams.setDiscardMarkerHWTreshold(Double.parseDouble(args.get(7)));
-		gwasParams.setProceed(true);
+			gwasParams.setDiscardGTMismatches(true);
+			gwasParams.setDiscardMarkerHWCalc(Boolean.parseBoolean(args.get(5)));
+			gwasParams.setDiscardMarkerHWFree(Boolean.parseBoolean(args.get(6)));
+			gwasParams.setDiscardMarkerHWTreshold(Double.parseDouble(args.get(7)));
+			gwasParams.setProceed(true);
 
-		List<String> necessaryOPsAL = new ArrayList<String>();
-		necessaryOPsAL.add(cNetCDF.Defaults.OPType.SAMPLE_QA.toString());
-		necessaryOPsAL.add(cNetCDF.Defaults.OPType.MARKER_QA.toString());
-		List<String> missingOPsAL = OperationManager.checkForNecessaryOperations(necessaryOPsAL, matrixId);
+			List<String> necessaryOPsAL = new ArrayList<String>();
+			necessaryOPsAL.add(cNetCDF.Defaults.OPType.SAMPLE_QA.toString());
+			necessaryOPsAL.add(cNetCDF.Defaults.OPType.MARKER_QA.toString());
+			List<String> missingOPsAL = OperationManager.checkForNecessaryOperations(necessaryOPsAL, matrixId);
 
-		// QA BLOCK
-		if (gwasParams.isProceed() && missingOPsAL.size() > 0) {
-			gwasParams.setProceed(false);
-			System.out.println(Text.Operation.warnQABeforeAnything + "\n" + Text.Operation.willPerformOperation);
-			MultiOperations.doMatrixQAs(studyId, matrixId);
-		}
+			// QA BLOCK
+			if (gwasParams.isProceed() && missingOPsAL.size() > 0) {
+				gwasParams.setProceed(false);
+				System.out.println(Text.Operation.warnQABeforeAnything + "\n" + Text.Operation.willPerformOperation);
+				MultiOperations.doMatrixQAs(studyId, matrixId);
+			}
 
-		// ALLELIC ALLELICTEST BLOCK
-		if (gwasParams.isProceed()) {
-			System.out.println(Text.All.processing);
-			MultiOperations.doAllelicAssociationTest(studyId,
-					matrixId,
-					gtFreqId,
-					hwId,
-					gwasParams);
-			return true;
+			// ALLELIC ALLELICTEST BLOCK
+			if (gwasParams.isProceed()) {
+				System.out.println(Text.All.processing);
+				MultiOperations.doAllelicAssociationTest(studyId,
+						matrixId,
+						gtFreqId,
+						hwId,
+						gwasParams);
+				return true;
+			}
 		}
 
 		return false;

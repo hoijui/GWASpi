@@ -21,7 +21,7 @@ class ExportMatrixScriptCommand extends AbstractScriptCommand {
 	public boolean execute(List<String> args) throws IOException {
 
 		// checking study
-		int studyId = Integer.parseInt(args.get(1)); // Study Id
+		int studyId = prepareStudy(args.get(1), false);
 		int matrixId = Integer.parseInt(args.get(2)); // Study Id
 		boolean studyExists = checkStudy(studyId);
 
