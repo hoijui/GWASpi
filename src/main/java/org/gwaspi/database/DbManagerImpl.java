@@ -203,7 +203,12 @@ public class DbManagerImpl implements DbManager {
 		try {
 			DriverManager.getConnection("jdbc:derby:;shutdown=true");
 		} catch (SQLException ex) {
-			log.error(null, ex);
+			if (ex.getErrorCode() == 50000) {
+				// Showdown was successfull
+				log.info("the Derby DB connection was shut down");
+			} else {
+				log.error(null, ex);
+			}
 		}
 	}
 }
