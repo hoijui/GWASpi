@@ -74,8 +74,6 @@ abstract class AbstractScriptCommand implements ScriptCommand {
 				System.out.println("Description: " + studyTable[i][2]);
 				System.out.println("\n");
 			}
-
-			StartGWASpi.exit(); // FIXME remove this!
 		}
 
 		return studyExists;
