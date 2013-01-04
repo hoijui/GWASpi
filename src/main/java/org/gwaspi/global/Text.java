@@ -103,6 +103,7 @@ public class Text {
 		public static final String studyNotExist = "Provided Study Id does not exist!";
 		public static final String availableStudies = "Available Studies:\n";
 		public static final String doneExiting = "\n" + Text.App.appName + " has finished processing your script.\nExiting....\nGood-bye!\n########################";
+		public static final String done = "\n" + Text.App.appName + " has finished processing your script.\n########################";
 
 		private Cli() {
 		}

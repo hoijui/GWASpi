@@ -131,8 +131,7 @@ public class SwingDeleterItemList {
 			}
 			GWASpiExplorerPanel.getSingleton().setAllNodesCollapsable();
 		} else {
-			log.info(Text.Cli.doneExiting);
-			StartGWASpi.exit();
+			log.info(Text.Cli.done);
 		}
 	}
 

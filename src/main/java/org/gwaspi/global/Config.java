@@ -172,6 +172,7 @@ public class Config {
 	}
 
 	public static boolean initPreferences(boolean _startWithGUI, File scriptFile) {
+
 		boolean isInitiated = false;
 		//startWithGUI = _startWithGUI;
 		try {
@@ -210,7 +211,7 @@ public class Config {
 							createDataStructure(dirToData);
 							JOptionPane.showMessageDialog(StartGWASpi.mainGUIFrame, "Databases and working folders initialized successfully!");
 						} else if (recreateDataFolder == JOptionPane.CANCEL_OPTION) {
-							System.exit(0);
+							throw new RuntimeException("The data folder is unreachable, and the user chose not to create it");
 						}
 					}
 
@@ -248,12 +249,12 @@ public class Config {
 					}
 					isInitiated = true;
 				}
-
 			}
 
 			// ALTER EXISTING DERBY DB TABLES TO SUIT CURRENT GWASPI VERSION
 			DerbyDBReshaper.alterTableUpdates();
 		} catch (Exception ex) {
+			isInitiated = false;
 			log.error("Failed initializing the configuration", ex);
 		}
 

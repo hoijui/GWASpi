@@ -39,6 +39,16 @@ public class StartGWASpi extends JFrame {
 
 	private static final Logger log = LoggerFactory.getLogger(StartGWASpi.class);
 
+	static {
+		Thread shutdownDerby = new Thread() {
+			@Override
+			public void run() {
+				StartGWASpi.shutdownBackend();
+			}
+		};
+		Runtime.getRuntime().addShutdownHook(shutdownDerby);
+	}
+
 	// create a JFrame to hold everything
 	// TODO convert all this to non-static, and make configuration in general more modular (eg, use swing preferences for everything?
 	public static boolean guiMode = true;
@@ -92,7 +102,6 @@ public class StartGWASpi extends JFrame {
 				cliExecutor.execute();
 			} else {
 				log.error(Text.Cli.wrongScriptFilePath, scriptFile);
-				exit();
 			}
 		} else {
 			if (args.contains("nolog")) {
@@ -104,11 +113,11 @@ public class StartGWASpi extends JFrame {
 				public void windowClosing(WindowEvent we) {
 					int jobsPending = SwingWorkerItemList.sizePending() + SwingDeleterItemList.sizePending();
 					if (jobsPending == 0) {
-						exit();
+						we.getWindow().setVisible(false);
 					} else {
 						int decision = Dialogs.showConfirmDialogue(Text.App.jobsStillPending);
 						if (decision == JOptionPane.YES_OPTION) {
-							exit();
+							we.getWindow().setVisible(false);
 						}
 					}
 				}
@@ -143,7 +152,7 @@ public class StartGWASpi extends JFrame {
 			} catch (RuntimeException ex) {
 				log.error(Text.App.warnOnlyOneInstance, ex);
 				Dialogs.showWarningDialogue(Text.App.warnOnlyOneInstance);
-				exit();
+				return;
 			} catch (OutOfMemoryError ex) {
 				log.error(Text.App.outOfMemoryError, ex);
 			} catch (Exception ex) {
@@ -159,8 +168,8 @@ public class StartGWASpi extends JFrame {
 		// initialize configuration of moapi
 		boolean isInitiated = Config.initPreferences(startWithGUI, scriptFile);
 
-		if (startWithGUI) {
-			if (isInitiated) {
+		if (isInitiated) {
+			if (startWithGUI) {
 				mainGUIFrame.setSize(1100, 800);
 				mainGUIFrame.setResizable(true);
 
@@ -179,12 +188,7 @@ public class StartGWASpi extends JFrame {
 
 				mainGUIFrame.getContentPane().add(allTabs);
 				mainGUIFrame.setVisible(true);
-			} else {
-				exit();
-			}
-		} else {
-			if (!isInitiated) {
-				exit();
+				mainGUIFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 			} else {
 				if (logToFile) {
 					// LOGGING OF SYSTEM OUTPUT
@@ -201,12 +205,16 @@ public class StartGWASpi extends JFrame {
 		}
 	}
 
-	public static void exit() {
+	private static void shutdownBackend() {
+
 		try {
 			MatricesList.shutdownBackend();
 		} catch (IOException ex) {
 			log.error(null, ex);
 		}
+	}
+
+	public static void exit() {
 		System.exit(0);
 	}
 
