@@ -338,27 +338,29 @@ public class GWASpiExplorerNodes {
 
 	//<editor-fold defaultstate="collapsed" desc="REPORT NODES">
 	public static void insertReportsUnderOperationNode(int parentOpId) throws IOException {
-		try {
-			// GET OPERATION
-			Operation parentOP = OperationsList.getById(parentOpId);
-			TreePath parentPath = GWASpiExplorerPanel.getSingleton().getTree().getNextMatch("OP: " + parentOpId + " - " + parentOP.getFriendlyName(), 0, Position.Bias.Forward);
-			DefaultMutableTreeNode parentNode = (DefaultMutableTreeNode) parentPath.getLastPathComponent();
+		if (StartGWASpi.guiMode) {
+			try {
+				// GET OPERATION
+				Operation parentOP = OperationsList.getById(parentOpId);
+				TreePath parentPath = GWASpiExplorerPanel.getSingleton().getTree().getNextMatch("OP: " + parentOpId + " - " + parentOP.getFriendlyName(), 0, Position.Bias.Forward);
+				DefaultMutableTreeNode parentNode = (DefaultMutableTreeNode) parentPath.getLastPathComponent();
 
-			// GET ALL REPORTS UNDER THIS OPERATION
-			List<Report> reportsList = ReportsList.getReportsList(parentOpId, Integer.MIN_VALUE);
-			for (int n = 0; n < reportsList.size(); n++) {
-				Report rp = reportsList.get(n);
+				// GET ALL REPORTS UNDER THIS OPERATION
+				List<Report> reportsList = ReportsList.getReportsList(parentOpId, Integer.MIN_VALUE);
+				for (int n = 0; n < reportsList.size(); n++) {
+					Report rp = reportsList.get(n);
 
-				if (!parentOP.getOperationType().equals(OPType.HARDY_WEINBERG.toString()) && //DON'T SHOW SUPERFLUOUS OPEARATION INFO
-						!parentOP.getOperationType().equals(OPType.SAMPLE_QA.toString())) {
-					if (!rp.getReportType().equals(OPType.ALLELICTEST.toString())) {
-						DefaultMutableTreeNode newNode = createReportTreeNode(reportsList.get(n).getId());
-						addNode(parentNode, newNode, true);
+					if (!parentOP.getOperationType().equals(OPType.HARDY_WEINBERG.toString()) && //DON'T SHOW SUPERFLUOUS OPEARATION INFO
+							!parentOP.getOperationType().equals(OPType.SAMPLE_QA.toString())) {
+						if (!rp.getReportType().equals(OPType.ALLELICTEST.toString())) {
+							DefaultMutableTreeNode newNode = createReportTreeNode(reportsList.get(n).getId());
+							addNode(parentNode, newNode, true);
+						}
 					}
 				}
+			} catch (Exception ex) {
+				log.error(null, ex);
 			}
-		} catch (Exception ex) {
-			log.error(null, ex);
 		}
 	}
 	//</editor-fold>
