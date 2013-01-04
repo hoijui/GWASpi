@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * Parses command line parameters and executes them.
+ *
  * @author Fernando Muñiz Fernandez
  * IBE, Institute of Evolutionary Biology (UPF-CSIC)
  * CEXS-UPF-PRBB
@@ -42,6 +44,7 @@ public class CliExecutor {
 	}
 
 	public boolean execute() throws IOException {
+
 		boolean success = false;
 
 		// GET ALL SCRIPTS CONTAINED IN FILE

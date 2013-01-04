@@ -95,11 +95,12 @@ public class StartGWASpi extends JFrame {
 							+ Text.App.memoryAvailable4);
 				}
 
-				initGWASpi(false, scriptFile);
+				boolean initialized = initGWASpi(false, scriptFile);
 
-				// BIT THAT READS COMMAND LINES AND EXECUTES THEM
-				CliExecutor cliExecutor = new CliExecutor(scriptFile);
-				cliExecutor.execute();
+				if (initialized) {
+					CliExecutor cliExecutor = new CliExecutor(scriptFile);
+					boolean success = cliExecutor.execute();
+				}
 			} else {
 				log.error(Text.Cli.wrongScriptFilePath, scriptFile);
 			}
@@ -163,7 +164,7 @@ public class StartGWASpi extends JFrame {
 		}
 	}
 
-	private void initGWASpi(boolean startWithGUI, File scriptFile) throws IOException, SQLException {
+	private boolean initGWASpi(boolean startWithGUI, File scriptFile) throws IOException, SQLException {
 
 		// initialize configuration of moapi
 		boolean isInitiated = Config.initPreferences(startWithGUI, scriptFile);
@@ -203,6 +204,8 @@ public class StartGWASpi extends JFrame {
 				}
 			}
 		}
+
+		return isInitiated;
 	}
 
 	private static void shutdownBackend() {
