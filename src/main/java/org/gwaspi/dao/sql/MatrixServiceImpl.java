@@ -282,6 +282,10 @@ public class MatrixServiceImpl implements MatrixService {
 
 		if (!rs.isEmpty()) {
 			matrixMetadata = loadMatrixMetadataFromResultRest(matrixId, rs.get(0));
+		} else {
+			throw new IOException(
+					"Failed to fetch matrix meta-data for matrix with ID "
+					+ matrixId + ". This Matrix may not exist.");
 		}
 
 		return matrixMetadata;
