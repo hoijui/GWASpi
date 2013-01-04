@@ -433,8 +433,6 @@ public class MatrixServiceImpl implements MatrixService {
 
 	@Override
 	public void shutdownBackend() throws IOException {
-
-		DbManager db = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
-		db.shutdownConnection();
+		ServiceLocator.shutdownConnection(cDBGWASpi.DB_DATACENTER);
 	}
 }

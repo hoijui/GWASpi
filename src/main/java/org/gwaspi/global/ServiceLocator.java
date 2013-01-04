@@ -30,6 +30,21 @@ public class ServiceLocator {
 		return dbManager;
 	}
 
+	public static void shutdownConnection(String dbName) throws IOException {
+
+		if (dbManagers == null) {
+			return;
+		}
+
+		DbManager dbManager = dbManagers.get(dbName);
+		if (dbManager == null) {
+			return;
+		}
+
+		dbManagers.remove(dbName);
+		dbManager.shutdownConnection();
+	}
+
 	public static ConnectionProvider getConnectionProvider(String dbName) throws IOException {
 		if (connectionProviders == null) {
 			connectionProviders = new HashMap<String, ConnectionProvider>();
