@@ -100,6 +100,9 @@ public class StartGWASpi extends JFrame {
 				if (initialized) {
 					CliExecutor cliExecutor = new CliExecutor(scriptFile);
 					boolean success = cliExecutor.execute();
+					if (!success) {
+						throw new IOException("Failed to execute script '" + scriptFile + "'");
+					}
 				}
 			} else {
 				log.error(Text.Cli.wrongScriptFilePath, scriptFile);
