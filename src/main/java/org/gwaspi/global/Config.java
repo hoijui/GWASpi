@@ -189,10 +189,8 @@ public class Config {
 
 					if (dataDir != null) {
 						try {
-							if (dataDir != null) {
-								createDataStructure(dataDir);
-								JOptionPane.showMessageDialog(StartGWASpi.mainGUIFrame, "Databases and working folders initialized successfully!");
-							}
+							createDataStructure(dataDir);
+							JOptionPane.showMessageDialog(StartGWASpi.mainGUIFrame, "Databases and working folders initialized successfully!");
 							isInitiated = true;
 						} catch (Exception ex) {
 							JOptionPane.showMessageDialog(StartGWASpi.mainGUIFrame, Text.App.warnUnableToInitForFirstTime);
@@ -228,11 +226,12 @@ public class Config {
 					if (scriptFile != null) {
 						// Use path from script file
 						File dataDir = new File(org.gwaspi.cli.Utils.readDataDirFromScript(scriptFile)); //1st line contains data path
-						if (!dataDir.exists()) {
-							dataDir = null;
-						}
-
-						if (dataDir != null) {
+						if (dataDir.exists()) {
+							// assume the existing dir contains a database
+							// with valid sturcutre already
+							initDataBaseVars(dataDir);
+							isInitiated = true;
+						} else {
 							try {
 								createDataStructure(dataDir);
 								isInitiated = true;
@@ -240,8 +239,9 @@ public class Config {
 								log.error(Text.App.warnUnableToInitForFirstTime, ex);
 							}
 						}
-						log.info("Databases and working folders initialized successfully!");
-						isInitiated = true;
+						if (isInitiated) {
+							log.info("Databases and working folders initialized successfully!");
+						}
 					}
 				} else {
 					if (getConfigValue(PROPERTY_GENOTYPES_DIR, "").equals("")) {
@@ -261,11 +261,19 @@ public class Config {
 		return isInitiated;
 	}
 
-	protected static void createDataStructure(File dataDir) throws IOException, BackingStoreException, URISyntaxException {
+	protected static File initDataBaseVars(File dataDir) throws IOException, BackingStoreException, URISyntaxException {
+
 		clearConfigFile();
 		setConfigValue(PROPERTY_DATA_DIR, dataDir.getPath());
 		File derbyCenter = new File(dataDir.getPath() + "/datacenter");
 		setDBSystemDir(derbyCenter.getPath());
+
+		return derbyCenter;
+	}
+
+	protected static void createDataStructure(File dataDir) throws IOException, BackingStoreException, URISyntaxException {
+
+		File derbyCenter = initDataBaseVars(dataDir);
 
 		if (!derbyCenter.exists()) {
 			org.gwaspi.database.DatabaseGenerator.initDataCenter();
