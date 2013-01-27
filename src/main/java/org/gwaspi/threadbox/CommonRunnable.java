@@ -71,7 +71,7 @@ public abstract class CommonRunnable implements Runnable {
 		} catch (OutOfMemoryError ex) {
 			getLog().error(Text.App.outOfMemoryError, ex);
 		} catch (Exception ex) {
-			MultiOperations.printError("Performing " + taskDescription);
+			MultiOperations.printError(taskDescription);
 			getLog().error("Failed performing " + taskDescription, ex);
 			try {
 				SwingWorkerItemList.flagCurrentItemError(timeStamp);
