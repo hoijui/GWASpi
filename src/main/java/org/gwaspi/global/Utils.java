@@ -409,9 +409,9 @@ public class Utils {
 
 	public static void sysoutError(String message) {
 		String actualMessage = ((message == null) || message.isEmpty())
-				? " perfoming "  + message
-				: "";
-		log.info("!!!!! Error encountered{} !!!!!", actualMessage);
+				? ""
+				: " perfoming " + message;
+		log.error("!!!!! Error encountered{} !!!!!", actualMessage);
 	}
 
 	/**
