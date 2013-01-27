@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import org.gwaspi.constants.cImport.ImportFormat;
 import org.gwaspi.constants.cNetCDF;
@@ -367,13 +368,13 @@ public class MarkerSet_opt {
 
 					int[] shape = markerSetAI.getShape();
 					Index index = markerSetAI.getIndex();
-					Iterator<String> it = markerIdSetMap.keySet().iterator();
+					Iterator<Entry<String, Object>> it = markerIdSetMap.entrySet().iterator();
 					for (int i = 0; i < shape[0]; i++) {
-						String key = it.next();
+						Entry<String, Object> entry = it.next();
 						Object[] chrInfo = new Object[2];
-						chrInfo[0] = markerIdSetMap.get(key);   //CHR
-						chrInfo[1] = markerSetAI.getInt(index.set(i)); //POS
-						markerIdSetMap.put(key, chrInfo);
+						chrInfo[0] = entry.getValue(); // CHR
+						chrInfo[1] = markerSetAI.getInt(index.set(i)); // POS
+						entry.setValue(chrInfo);
 					}
 				}
 			} catch (IOException ex) {
@@ -417,10 +418,10 @@ public class MarkerSet_opt {
 
 						int[] shape = markerSetAC.getShape();
 						Index index = markerSetAC.getIndex();
-						Iterator<String> it = markerIdSetMap.keySet().iterator();
+						Iterator<Entry<String, Object>> it = markerIdSetMap.entrySet().iterator();
 						for (int i = 0; i < shape[0]; i++) {
-							String key = it.next();
-							String value = markerIdSetMap.get(key).toString();
+							Entry<String, Object> entry = it.next();
+							String value = entry.getValue().toString();
 							if (!value.isEmpty()) {
 								value += separator;
 							}
@@ -428,7 +429,7 @@ public class MarkerSet_opt {
 							for (int j = 0; j < shape[1]; j++) {
 								newValue.append(markerSetAC.getChar(index.set(i, j)));
 							}
-							markerIdSetMap.put(key, value + newValue.toString().trim());
+							entry.setValue(value + newValue.toString().trim());
 						}
 					}
 				}
@@ -438,15 +439,15 @@ public class MarkerSet_opt {
 
 						int[] shape = markerSetAF.getShape();
 						Index index = markerSetAF.getIndex();
-						Iterator<String> it = markerIdSetMap.keySet().iterator();
+						Iterator<Entry<String, Object>> it = markerIdSetMap.entrySet().iterator();
 						for (int i = 0; i < shape[0]; i++) {
-							String key = it.next();
-							String value = markerIdSetMap.get(key).toString();
+							Entry<String, Object> entry = it.next();
+							String value = entry.getValue().toString();
 							if (!value.isEmpty()) {
 								value += separator;
 							}
 							Float floatValue = markerSetAF.getFloat(index.set(i));
-							markerIdSetMap.put(key, value + floatValue.toString());
+							entry.setValue(value + floatValue.toString());
 						}
 					}
 				}
@@ -456,15 +457,15 @@ public class MarkerSet_opt {
 
 						int[] shape = markerSetAF.getShape();
 						Index index = markerSetAF.getIndex();
-						Iterator<String> it = markerIdSetMap.keySet().iterator();
+						Iterator<Entry<String, Object>> it = markerIdSetMap.entrySet().iterator();
 						for (int i = 0; i < shape[0]; i++) {
-							String key = it.next();
-							String value = markerIdSetMap.get(key).toString();
+							Entry<String, Object> entry = it.next();
+							String value = entry.getValue().toString();
 							if (!value.isEmpty()) {
 								value += separator;
 							}
 							Integer intValue = markerSetAF.getInt(index.set(i));
-							markerIdSetMap.put(key, value + intValue.toString());
+							entry.setValue(value + intValue.toString());
 						}
 					}
 				}
