@@ -225,7 +225,9 @@ public class Config {
 				if (dirToData.getPath().equals("")) {
 					if (scriptFile != null) {
 						// Use path from script file
-						File dataDir = new File(org.gwaspi.cli.Utils.readDataDirFromScript(scriptFile)); //1st line contains data path
+						// 1st line contains data path
+						File dataDir = new File(org.gwaspi.cli.Utils.readDataDirFromScript(scriptFile));
+						log.info("Using database path: {}", dataDir.getAbsolutePath());
 						if (dataDir.exists()) {
 							// assume the existing dir contains a database
 							// with valid sturcutre already
