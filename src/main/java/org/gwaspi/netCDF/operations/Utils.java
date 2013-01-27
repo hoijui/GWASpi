@@ -977,6 +977,20 @@ public class Utils {
 	//</editor-fold>
 
 	//<editor-fold defaultstate="collapsed" desc="ArrayByte.D2">
+	public static Map<String, Object> writeD2ArrayByteToMapKeys(ArrayByte inputArray) {
+		Map<String, Object> result = new LinkedHashMap<String, Object>();
+
+		int[] shape = inputArray.getShape();
+		for (int i = 0; i < shape[0]; i++) {
+			ArrayByte wrByteArray = new ArrayByte(new int[]{1, shape[1]});
+			ArrayByte.D2.arraycopy(inputArray, i * shape[1], wrByteArray, 0, shape[1]);
+			byte[] values = (byte[]) wrByteArray.copyTo1DJavaArray();
+			result.put(String.valueOf(values).trim(), "");
+		}
+
+		return result;
+	}
+
 	public static void writeD2ArrayByteToMapValues(ArrayByte inputArray, Map<String, Object> map) {
 
 		int[] shape = inputArray.getShape();
