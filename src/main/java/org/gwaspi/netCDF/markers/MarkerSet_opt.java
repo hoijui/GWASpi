@@ -124,8 +124,8 @@ public class MarkerSet_opt {
 					markerIdSetMap = org.gwaspi.netCDF.operations.Utils.writeD2ArrayCharToMapKeys(markerSetAC);
 				}
 				if (dataType == DataType.BYTE) {
-					ArrayChar.D2 markerSetAC = (ArrayChar.D2) var.read("(" + startMkIdx + ":" + endMkIdx + ":1, 0:" + (varShape[1] - 1) + ":1)");
-					markerIdSetMap = org.gwaspi.netCDF.operations.Utils.writeD2ArrayCharToMapKeys(markerSetAC);
+					ArrayByte.D2 markerSetAC = (ArrayByte.D2) var.read("(" + startMkIdx + ":" + endMkIdx + ":1, 0:" + (varShape[1] - 1) + ":1)");
+					markerIdSetMap = org.gwaspi.netCDF.operations.Utils.writeD2ArrayByteToMapKeys(markerSetAC);
 				}
 			} catch (IOException ex) {
 				log.error("Cannot read data", ex);
@@ -167,8 +167,8 @@ public class MarkerSet_opt {
 					markerRsIdSetMap = org.gwaspi.netCDF.operations.Utils.writeD2ArrayCharToMapKeys(markerSetAC);
 				}
 				if (dataType == DataType.BYTE) {
-					ArrayChar.D2 markerSetAC = (ArrayChar.D2) var.read("(" + startMkIdx + ":" + endMkIdx + ":1, 0:" + (varShape[1] - 1) + ":1)");
-					markerRsIdSetMap = org.gwaspi.netCDF.operations.Utils.writeD2ArrayCharToMapKeys(markerSetAC);
+					ArrayByte.D2 markerSetAC = (ArrayByte.D2) var.read("(" + startMkIdx + ":" + endMkIdx + ":1, 0:" + (varShape[1] - 1) + ":1)");
+					markerRsIdSetMap = org.gwaspi.netCDF.operations.Utils.writeD2ArrayByteToMapKeys(markersAC);
 				}
 			} catch (IOException ex) {
 				log.error("Cannot read data", ex);
