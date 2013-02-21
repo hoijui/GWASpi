@@ -395,6 +395,7 @@ public class LoadGTFromHapmapFiles implements GenotypesLoader {
 			}
 
 		}
+		inputBufferReader.close();
 
 		if (guessedGTCode.equals(cNetCDF.Defaults.GenotypeEncoding.UNKNOWN)) {
 			guessedGTCode = Utils.detectGTEncoding(markerSetMap);
@@ -412,6 +413,7 @@ public class LoadGTFromHapmapFiles implements GenotypesLoader {
 		FileReader fr = new FileReader(hapmapGTFile.getPath());
 		BufferedReader inputAnnotationBr = new BufferedReader(fr);
 		String header = inputAnnotationBr.readLine();
+		inputAnnotationBr.close();
 
 		String[] hapmapVals = header.split(cImport.Separators.separators_SpaceTab_rgxp);
 

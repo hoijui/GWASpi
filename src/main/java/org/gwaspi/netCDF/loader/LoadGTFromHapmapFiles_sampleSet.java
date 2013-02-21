@@ -357,6 +357,7 @@ public class LoadGTFromHapmapFiles_sampleSet extends LoadGTFromHapmapFiles imple
 		FileReader fr = new FileReader(hapmapGTFile.getPath());
 		BufferedReader inputAnnotationBr = new BufferedReader(fr);
 		String header = inputAnnotationBr.readLine();
+		inputAnnotationBr.close();
 
 		String[] hapmapVals = header.split(cImport.Separators.separators_SpaceTab_rgxp);
 

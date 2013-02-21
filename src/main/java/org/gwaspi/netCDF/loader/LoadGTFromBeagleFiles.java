@@ -100,6 +100,7 @@ public class LoadGTFromBeagleFiles extends AbstractLoadGTFromFiles {
 				}
 			}
 		}
+		inputBufferReader.close();
 
 		wrMarkerSetMap.putAll(tempMarkerIdMap);
 
@@ -132,6 +133,7 @@ public class LoadGTFromBeagleFiles extends AbstractLoadGTFromFiles {
 				gotSamples = true;
 			}
 		}
+		inputBeagleBr.close();
 
 		String[] beagleSamples = sampleHeader.split(cImport.Separators.separators_SpaceTab_rgxp);
 

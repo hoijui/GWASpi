@@ -168,6 +168,7 @@ public final class Report_AnalysisGenotypicTestImpl extends Report_Analysis {
 					tableRowAL.add(row);
 					count++;
 				}
+				inputFileReader.close();
 
 				Object[][] tableMatrix = new Object[tableRowAL.size()][11];
 				for (int i = 0; i < tableRowAL.size(); i++) {
@@ -231,7 +232,6 @@ public final class Report_AnalysisGenotypicTestImpl extends Report_Analysis {
 				//</editor-fold>
 
 			}
-			inputFileReader.close();
 		} catch (IOException ex) {
 			log.error(null, ex);
 		} catch (Exception ex) {

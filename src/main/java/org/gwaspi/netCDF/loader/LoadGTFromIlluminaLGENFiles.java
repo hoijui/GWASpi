@@ -370,6 +370,7 @@ public class LoadGTFromIlluminaLGENFiles implements GenotypesLoader {
 				tempMarkerSet.put(cVals[Standard.markerId], tmpAlleles);
 			}
 		}
+		inputBufferReader.close();
 
 		//WRITE LAST SAMPLE Map TO MATRIX
 		//INIT AND PURGE SORTEDMARKERSET Map

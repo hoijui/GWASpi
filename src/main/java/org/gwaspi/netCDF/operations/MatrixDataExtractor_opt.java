@@ -133,6 +133,7 @@ public class MatrixDataExtractor_opt {
 				this.markerPickerCriteria.append(l);
 				this.markerPickerCriteria.append(",");
 			}
+			br.close();
 		}
 
 		this.wrMarkerIdSetMap = new LinkedHashMap<String, Object>();
@@ -190,6 +191,7 @@ public class MatrixDataExtractor_opt {
 				this.samplePickerCriteria.append(l);
 				this.samplePickerCriteria.append(",");
 			}
+			br.close();
 		}
 
 		this.wrSampleSetMap = new LinkedHashMap<String, Object>();

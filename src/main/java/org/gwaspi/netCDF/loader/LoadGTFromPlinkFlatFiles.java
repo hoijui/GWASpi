@@ -356,5 +356,6 @@ public class LoadGTFromPlinkFlatFiles implements GenotypesLoader {
 				org.gwaspi.netCDF.operations.Utils.saveSingleSampleGTsToMatrix(ncfile, wrMarkerIdSetMap, sampleIndex);
 			}
 		}
+		inputBufferReader.close();
 	}
 }

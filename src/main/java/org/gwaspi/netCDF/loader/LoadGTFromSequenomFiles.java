@@ -341,5 +341,6 @@ public class LoadGTFromSequenomFiles implements GenotypesLoader {
 				}
 			}
 		}
+		inputBufferReader.close();
 	}
 }

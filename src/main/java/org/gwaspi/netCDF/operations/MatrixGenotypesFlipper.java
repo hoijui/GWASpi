@@ -97,6 +97,7 @@ public class MatrixGenotypesFlipper {
 			while ((l = br.readLine()) != null) {
 				this.markerFlipHS.add(l);
 			}
+			br.close();
 		}
 	}
 

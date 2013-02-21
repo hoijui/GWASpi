@@ -364,6 +364,7 @@ public class LoadGTFromHGDP1Files implements GenotypesLoader {
 				}
 			}
 		}
+		inputBufferReader.close();
 
 		markerSetMap.putAll(tempMarkerIdMap);
 

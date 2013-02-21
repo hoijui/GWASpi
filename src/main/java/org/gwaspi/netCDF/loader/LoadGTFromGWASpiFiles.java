@@ -355,6 +355,7 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 		FileReader fr = new FileReader(hapmapGTFile.getPath());
 		BufferedReader inputAnnotationBr = new BufferedReader(fr);
 		String header = inputAnnotationBr.readLine();
+		inputAnnotationBr.close();
 
 		String l;
 		String[] hapmapVals = header.split(cImport.Separators.separators_SpaceTab_rgxp);
