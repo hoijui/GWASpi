@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -35,7 +36,7 @@ public class SamplesParserManager {
 
 	//<editor-fold defaultstate="collapsed" desc="DB SAMPLE INFO PROVIDERS">
 	public static Set<SampleInfo.Affection> getDBAffectionStates(int matrixId) {
-		Set<SampleInfo.Affection> resultHS = new HashSet<SampleInfo.Affection>();
+		Set<SampleInfo.Affection> resultHS = EnumSet.noneOf(SampleInfo.Affection.class);
 		try {
 			MatrixMetadata rdMatrixMetadata = MatricesList.getMatrixMetadataById(matrixId);
 			log.info("Getting Sample Affection info for: {}",
