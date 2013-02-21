@@ -375,35 +375,4 @@ public class LoadGTFromHGDP1Files implements GenotypesLoader {
 		}
 	}
 	//</editor-fold>
-
-	//<editor-fold defaultstate="collapsed" desc="HELPER METHODS">
-	private Map<String, Object> getBeagleSampleIds(File hapmapGTFile) throws IOException {
-
-		Map<String, Object> uniqueSamples = new LinkedHashMap<String, Object>();
-
-		FileReader fr = new FileReader(hapmapGTFile.getPath());
-		BufferedReader inputBeagleBr = new BufferedReader(fr);
-
-		String sampleHeader = "";
-		boolean gotSamples = false;
-		while (!gotSamples) {
-			String l = inputBeagleBr.readLine();
-			if (l == null) {
-				break;
-			}
-			if (l.startsWith("I")) {
-				sampleHeader = l;
-				gotSamples = true;
-			}
-		}
-
-		String[] beagleSamples = sampleHeader.split(cImport.Separators.separators_SpaceTab_rgxp);
-
-		for (int i = 2; i < beagleSamples.length; i++) {
-			uniqueSamples.put(beagleSamples[i], "");
-		}
-
-		return uniqueSamples;
-	}
-	//</editor-fold>
 }
