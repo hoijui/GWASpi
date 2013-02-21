@@ -4,9 +4,11 @@ import java.io.IOException;
 import java.util.Map;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.global.Text;
+import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.Operation;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
+import org.gwaspi.model.SampleKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.ArrayChar;
@@ -39,9 +41,9 @@ public class OP_HardyWeinberg implements MatrixOperation {
 		OperationMetadata rdOPMetadata = OperationsList.getOperationMetadata(markerCensusOP.getId());
 		NetcdfFile rdNcFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());
 
-		OperationSet rdOperationSet = new OperationSet(rdOPMetadata.getStudyId(), markerCensusOP.getId());
-		Map<String, Object> rdMarkerSetMap = rdOperationSet.getOpSetMap();
-		Map<String, Object> rdSampleSetMap = rdOperationSet.getImplicitSetMap();
+		MarkerOperationSet rdOperationSet = new MarkerOperationSet(rdOPMetadata.getStudyId(), markerCensusOP.getId());
+		Map<MarkerKey, Object> rdMarkerSetMap = rdOperationSet.getOpSetMap();
+		Map<SampleKey, Object> rdSampleSetMap = rdOperationSet.getImplicitSetMap();
 
 		NetcdfFileWriteable wrNcFile = null;
 		try {
@@ -138,10 +140,10 @@ public class OP_HardyWeinberg implements MatrixOperation {
 		return resultOpId;
 	}
 
-	private void performHardyWeinberg(NetcdfFileWriteable wrNcFile, Map<String, Object> markersContingencyMap, String category) {
+	private void performHardyWeinberg(NetcdfFileWriteable wrNcFile, Map<MarkerKey, Object> markersContingencyMap, String category) {
 		// Iterate through markerset
 		int markerNb = 0;
-		for (Map.Entry<String, Object> entry : markersContingencyMap.entrySet()) {
+		for (Map.Entry<MarkerKey, Object> entry : markersContingencyMap.entrySet()) {
 			// HARDY-WEINBERG
 			int[] contingencyTable = (int[]) entry.getValue();
 			int obsAA = contingencyTable[0];

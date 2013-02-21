@@ -133,32 +133,32 @@ public class ReportServiceImpl implements ReportService {
 
 	//<editor-fold defaultstate="collapsed" desc="UTILS">
 	@Override
-	public Map<String, Object> getSortedMarkerSetByDoubleValue(Map<String, Object> map) {
-		List<Map.Entry<String, Object>> list = new LinkedList<Map.Entry<String, Object>>(map.entrySet());
-		Collections.sort(list, new Comparator<Map.Entry<String, Object>>() {
-			public int compare(Map.Entry<String, Object> o1, Map.Entry<String, Object> o2) {
+	public <K> Map<K, Object> getSortedMarkerSetByDoubleValue(Map<K, Object> map) {
+		List<Map.Entry<K, Object>> list = new LinkedList<Map.Entry<K, Object>>(map.entrySet());
+		Collections.sort(list, new Comparator<Map.Entry<K, Object>>() {
+			public int compare(Map.Entry<K, Object> o1, Map.Entry<K, Object> o2) {
 				return ((Comparable) o1.getValue()).compareTo(o2.getValue());
 			}
 		});
 		// logger.info(list);
-		Map<String, Object> result = new LinkedHashMap<String, Object>();
-		for (Map.Entry<String, Object> entry : list) {
+		Map<K, Object> result = new LinkedHashMap<K, Object>();
+		for (Map.Entry<K, Object> entry : list) {
 			result.put(entry.getKey(), entry.getValue());
 		}
 		return result;
 	}
 
 	@Override
-	public Map<String, Object> getSortedDescendingMarkerSetByDoubleValue(Map<String, Object> map) {
-		List<Map.Entry<String, Object>> list = new LinkedList<Map.Entry<String, Object>>(map.entrySet());
-		Collections.sort(list, new Comparator<Map.Entry<String, Object>>() {
-			public int compare(Map.Entry<String, Object> o1, Map.Entry<String, Object> o2) {
+	public <K> Map<K, Object> getSortedDescendingMarkerSetByDoubleValue(Map<K, Object> map) {
+		List<Map.Entry<K, Object>> list = new LinkedList<Map.Entry<K, Object>>(map.entrySet());
+		Collections.sort(list, new Comparator<Map.Entry<K, Object>>() {
+			public int compare(Map.Entry<K, Object> o1, Map.Entry<K, Object> o2) {
 				return -1 * ((Comparable) o1.getValue()).compareTo(o2.getValue());
 			}
 		});
 		// logger.info(list);
-		Map<String, Object> result = new LinkedHashMap<String, Object>();
-		for (Map.Entry<String, Object> entry : list) {
+		Map<K, Object> result = new LinkedHashMap<K, Object>();
+		for (Map.Entry<K, Object> entry : list) {
 			result.put(entry.getKey(), entry.getValue());
 		}
 		return result;

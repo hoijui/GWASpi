@@ -8,13 +8,14 @@ import org.gwaspi.constants.cExport;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.global.Config;
+import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.Operation;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.Report;
 import org.gwaspi.model.ReportsList;
 import org.gwaspi.netCDF.markers.MarkerSet_opt;
-import org.gwaspi.netCDF.operations.OperationSet;
+import org.gwaspi.netCDF.operations.MarkerOperationSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.NetcdfFile;
@@ -79,18 +80,18 @@ public class OutputQAMarkers {
 		boolean result;
 
 		try {
-			Map<String, Object> unsortedMarkerIdMissingRatMap = GatherQAMarkersData.loadMarkerQAMissingRatio(opId);
-			Map<String, Object> sortedMarkerIdMissingRatMap = ReportsList.getSortedDescendingMarkerSetByDoubleValue(unsortedMarkerIdMissingRatMap);
+			Map<MarkerKey, Object> unsortedMarkerIdMissingRatMap = GatherQAMarkersData.loadMarkerQAMissingRatio(opId);
+			Map<MarkerKey, Object> sortedMarkerIdMissingRatMap = ReportsList.getSortedDescendingMarkerSetByDoubleValue(unsortedMarkerIdMissingRatMap);
 			if (unsortedMarkerIdMissingRatMap != null) {
 				unsortedMarkerIdMissingRatMap.clear();
 			}
 
 			//PREPARE SORTING Map & STORE QA VALUES FOR LATER
-			Map<String, Object> sortingMarkerSetMap = new LinkedHashMap<String, Object>();
-			Map<String, Object> storedMissingRatMap = new LinkedHashMap<String, Object>();
+			Map<MarkerKey, Object> sortingMarkerSetMap = new LinkedHashMap<MarkerKey, Object>();
+			Map<MarkerKey, Object> storedMissingRatMap = new LinkedHashMap<MarkerKey, Object>();
 			if (sortedMarkerIdMissingRatMap != null) {
-				for (Map.Entry<String, Object> entry : sortedMarkerIdMissingRatMap.entrySet()) {
-					String key = entry.getKey();
+				for (Map.Entry<MarkerKey, Object> entry : sortedMarkerIdMissingRatMap.entrySet()) {
+					MarkerKey key = entry.getKey();
 					double missingValue = (Double) entry.getValue();
 					if (missingValue > 0) {
 						storedMissingRatMap.put(key, missingValue);
@@ -114,7 +115,7 @@ public class OutputQAMarkers {
 
 			//WRITE MARKERSET RSID
 			rdInfoMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_RSID);
-			for (Map.Entry<String, Object> entry : sortingMarkerSetMap.entrySet()) {
+			for (Map.Entry<MarkerKey, Object> entry : sortingMarkerSetMap.entrySet()) {
 				Object value = rdInfoMarkerSet.getMarkerIdSetMap().get(entry.getKey());
 				entry.setValue(value);
 			}
@@ -122,7 +123,7 @@ public class OutputQAMarkers {
 
 			//WRITE MARKERSET CHROMOSOME
 			rdInfoMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
-			for (Map.Entry<String, Object> entry : sortingMarkerSetMap.entrySet()) {
+			for (Map.Entry<MarkerKey, Object> entry : sortingMarkerSetMap.entrySet()) {
 				Object value = rdInfoMarkerSet.getMarkerIdSetMap().get(entry.getKey());
 				entry.setValue(value);
 			}
@@ -131,7 +132,7 @@ public class OutputQAMarkers {
 			//WRITE MARKERSET POS
 			//infoMatrixMarkerSetMap = rdInfoMarkerSet.appendVariableToMarkerSetMapValue(matrixNcFile, cNetCDF.Variables.VAR_MARKERS_POS, sep);
 			rdInfoMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_POS);
-			for (Map.Entry<String, Object> entry : sortingMarkerSetMap.entrySet()) {
+			for (Map.Entry<MarkerKey, Object> entry : sortingMarkerSetMap.entrySet()) {
 				Object value = rdInfoMarkerSet.getMarkerIdSetMap().get(entry.getKey());
 				entry.setValue(value);
 			}
@@ -151,12 +152,12 @@ public class OutputQAMarkers {
 				OperationMetadata qaMetadata = OperationsList.getOperationMetadata(markersQAopId);
 				NetcdfFile qaNcFile = NetcdfFile.open(qaMetadata.getPathToMatrix());
 
-				OperationSet rdOperationSet = new OperationSet(rdOPMetadata.getStudyId(), markersQAopId);
-				Map<String, Object> opMarkerSetMap = rdOperationSet.getOpSetMap();
+				MarkerOperationSet rdOperationSet = new MarkerOperationSet(rdOPMetadata.getStudyId(), markersQAopId);
+				Map<MarkerKey, Object> opMarkerSetMap = rdOperationSet.getOpSetMap();
 
 				// MINOR ALLELE
 				opMarkerSetMap = rdOperationSet.fillOpSetMapWithVariable(qaNcFile, cNetCDF.Census.VAR_OP_MARKERS_MINALLELES);
-				for (Map.Entry<String, Object> entry : rdInfoMarkerSet.getMarkerIdSetMap().entrySet()) {
+				for (Map.Entry<MarkerKey, Object> entry : rdInfoMarkerSet.getMarkerIdSetMap().entrySet()) {
 					Object minorAllele = opMarkerSetMap.get(entry.getKey());
 					entry.setValue(minorAllele);
 				}
@@ -164,12 +165,12 @@ public class OutputQAMarkers {
 				// MAJOR ALLELE
 				rdOperationSet.fillMapWithDefaultValue(opMarkerSetMap, "");
 				opMarkerSetMap = rdOperationSet.fillOpSetMapWithVariable(qaNcFile, cNetCDF.Census.VAR_OP_MARKERS_MAJALLELES);
-				for (Map.Entry<String, Object> entry : rdInfoMarkerSet.getMarkerIdSetMap().entrySet()) {
+				for (Map.Entry<MarkerKey, Object> entry : rdInfoMarkerSet.getMarkerIdSetMap().entrySet()) {
 					Object minorAllele = entry.getValue();
 					entry.setValue(minorAllele + sep + opMarkerSetMap.get(entry.getKey()));
 				}
 			}
-			for (Map.Entry<String, Object> entry : sortingMarkerSetMap.entrySet()) {
+			for (Map.Entry<MarkerKey, Object> entry : sortingMarkerSetMap.entrySet()) {
 				Object value = rdInfoMarkerSet.getMarkerIdSetMap().get(entry.getKey());
 				entry.setValue(value);
 			}
@@ -198,11 +199,11 @@ public class OutputQAMarkers {
 		boolean result;
 
 		try {
-			Map<String, Object> unsortedMarkerIdMismatchStateMap = GatherQAMarkersData.loadMarkerQAMismatchState(opId);
-			Map<String, Object> sortingMarkerSetMap = new LinkedHashMap<String, Object>();
+			Map<MarkerKey, Object> unsortedMarkerIdMismatchStateMap = GatherQAMarkersData.loadMarkerQAMismatchState(opId);
+			Map<MarkerKey, Object> sortingMarkerSetMap = new LinkedHashMap<MarkerKey, Object>();
 			if (unsortedMarkerIdMismatchStateMap != null) {
-				for (Map.Entry<String, Object> entry : unsortedMarkerIdMismatchStateMap.entrySet()) {
-					String key = entry.getKey();
+				for (Map.Entry<MarkerKey, Object> entry : unsortedMarkerIdMismatchStateMap.entrySet()) {
+					MarkerKey key = entry.getKey();
 					int mismatchState = (Integer) entry.getValue();
 					if (mismatchState > 0) {
 						sortingMarkerSetMap.put(key, mismatchState);
@@ -213,7 +214,7 @@ public class OutputQAMarkers {
 			}
 
 			//STORE MISMATCH STATE FOR LATER
-			Map<String, Object> storedMismatchStateMap = new LinkedHashMap<String, Object>();
+			Map<MarkerKey, Object> storedMismatchStateMap = new LinkedHashMap<MarkerKey, Object>();
 			storedMismatchStateMap.putAll(sortingMarkerSetMap);
 
 
@@ -229,7 +230,7 @@ public class OutputQAMarkers {
 
 			//WRITE MARKERSET RSID
 			rdInfoMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_RSID);
-			for (Map.Entry<String, Object> entry : sortingMarkerSetMap.entrySet()) {
+			for (Map.Entry<MarkerKey, Object> entry : sortingMarkerSetMap.entrySet()) {
 				Object value = rdInfoMarkerSet.getMarkerIdSetMap().get(entry.getKey());
 				entry.setValue(value);
 			}
@@ -238,7 +239,7 @@ public class OutputQAMarkers {
 
 			//WRITE MARKERSET CHROMOSOME
 			rdInfoMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
-			for (Map.Entry<String, Object> entry : sortingMarkerSetMap.entrySet()) {
+			for (Map.Entry<MarkerKey, Object> entry : sortingMarkerSetMap.entrySet()) {
 				Object value = rdInfoMarkerSet.getMarkerIdSetMap().get(entry.getKey());
 				entry.setValue(value);
 			}
@@ -248,7 +249,7 @@ public class OutputQAMarkers {
 			//WRITE MARKERSET POS
 			//infoMatrixMarkerSetMap = rdInfoMarkerSet.appendVariableToMarkerSetMapValue(matrixNcFile, cNetCDF.Variables.VAR_MARKERS_POS, sep);
 			rdInfoMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_POS);
-			for (Map.Entry<String, Object> entry : sortingMarkerSetMap.entrySet()) {
+			for (Map.Entry<MarkerKey, Object> entry : sortingMarkerSetMap.entrySet()) {
 				Object value = rdInfoMarkerSet.getMarkerIdSetMap().get(entry.getKey());
 				entry.setValue(value);
 			}
@@ -268,12 +269,12 @@ public class OutputQAMarkers {
 				OperationMetadata qaMetadata = OperationsList.getOperationMetadata(markersQAopId);
 				NetcdfFile qaNcFile = NetcdfFile.open(qaMetadata.getPathToMatrix());
 
-				OperationSet rdOperationSet = new OperationSet(rdOPMetadata.getStudyId(), markersQAopId);
-				Map<String, Object> opMarkerSetMap = rdOperationSet.getOpSetMap();
+				MarkerOperationSet rdOperationSet = new MarkerOperationSet(rdOPMetadata.getStudyId(), markersQAopId);
+				Map<MarkerKey, Object> opMarkerSetMap = rdOperationSet.getOpSetMap();
 
 				// MINOR ALLELE
 				opMarkerSetMap = rdOperationSet.fillOpSetMapWithVariable(qaNcFile, cNetCDF.Census.VAR_OP_MARKERS_MINALLELES);
-				for (Map.Entry<String, Object> entry : rdInfoMarkerSet.getMarkerIdSetMap().entrySet()) {
+				for (Map.Entry<MarkerKey, Object> entry : rdInfoMarkerSet.getMarkerIdSetMap().entrySet()) {
 					Object minorAllele = opMarkerSetMap.get(entry.getKey());
 					entry.setValue(minorAllele);
 				}
@@ -281,12 +282,12 @@ public class OutputQAMarkers {
 				// MAJOR ALLELE
 				rdOperationSet.fillMapWithDefaultValue(opMarkerSetMap, "");
 				opMarkerSetMap = rdOperationSet.fillOpSetMapWithVariable(qaNcFile, cNetCDF.Census.VAR_OP_MARKERS_MAJALLELES);
-				for (Map.Entry<String, Object> entry : rdInfoMarkerSet.getMarkerIdSetMap().entrySet()) {
+				for (Map.Entry<MarkerKey, Object> entry : rdInfoMarkerSet.getMarkerIdSetMap().entrySet()) {
 					Object minorAllele = entry.getValue();
 					entry.setValue(minorAllele + sep + opMarkerSetMap.get(entry.getKey()));
 				}
 			}
-			for (Map.Entry<String, Object> entry : sortingMarkerSetMap.entrySet()) {
+			for (Map.Entry<MarkerKey, Object> entry : sortingMarkerSetMap.entrySet()) {
 				Object value = rdInfoMarkerSet.getMarkerIdSetMap().get(entry.getKey());
 				entry.setValue(value);
 			}

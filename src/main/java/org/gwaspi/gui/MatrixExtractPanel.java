@@ -36,6 +36,7 @@ import org.gwaspi.gui.utils.BrowserHelpUrlAction;
 import org.gwaspi.gui.utils.Dialogs;
 import org.gwaspi.gui.utils.HelpURLs;
 import org.gwaspi.gui.utils.LimitedLengthDocument;
+import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.Matrix;
 import org.gwaspi.netCDF.markers.MarkerSet_opt;
@@ -654,7 +655,7 @@ public class MatrixExtractPanel extends JPanel {
 
 	private class MarkersVariableAction extends AbstractAction { // FIXME make static
 
-		private final Map<String, Object> rdChrInfoSetMap;
+		private final Map<MarkerKey, Object> rdChrInfoSetMap;
 
 		MarkersVariableAction(int matrixId) throws IOException {
 
@@ -669,8 +670,8 @@ public class MatrixExtractPanel extends JPanel {
 				if (cmb_MarkersVariable.getSelectedIndex() == 1 || cmb_MarkersVariable.getSelectedIndex() == 4) { //Chromosome variables
 
 				StringBuilder sb = new StringBuilder();
-				for (String key : rdChrInfoSetMap.keySet()) {
-					sb.append(key.toString());
+				for (MarkerKey key : rdChrInfoSetMap.keySet()) {
+					sb.append(key.getMarkerId());
 					sb.append(",");
 				}
 				sb.deleteCharAt(sb.length() - 1);

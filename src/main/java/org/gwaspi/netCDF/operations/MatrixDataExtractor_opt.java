@@ -12,8 +12,10 @@ import org.gwaspi.constants.cNetCDF.Defaults.SetMarkerPickCase;
 import org.gwaspi.constants.cNetCDF.Defaults.SetSamplePickCase;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.utils.Dialogs;
+import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixMetadata;
+import org.gwaspi.model.SampleKey;
 import org.gwaspi.netCDF.markers.MarkerSet_opt;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.gwaspi.samples.SampleSet;
@@ -54,10 +56,10 @@ public class MatrixDataExtractor_opt {
 	private MarkerSet_opt wrMarkerSet = null;
 	private SampleSet rdSampleSet;
 	private SampleSet wrSampleSet = null;
-	private Map<String, Object> wrMarkerIdSetMap;
-	private Map<String, Object> rdSampleSetMap;
-	private Map<String, Object> wrSampleSetMap;
-	private Map<String, Object> rdChrInfoSetMap;
+	private Map<MarkerKey, Object> wrMarkerIdSetMap;
+	private Map<SampleKey, Object> rdSampleSetMap;
+	private Map<SampleKey, Object> wrSampleSetMap;
+	private Map<MarkerKey, Object> rdChrInfoSetMap;
 
 	/**
 	 * This constructor to extract data from Matrix a by passing a variable and
@@ -136,7 +138,7 @@ public class MatrixDataExtractor_opt {
 			br.close();
 		}
 
-		this.wrMarkerIdSetMap = new LinkedHashMap<String, Object>();
+		this.wrMarkerIdSetMap = new LinkedHashMap<MarkerKey, Object>();
 		switch (markerPickCase) {
 			case ALL_MARKERS:
 				// Get all markers
@@ -194,13 +196,13 @@ public class MatrixDataExtractor_opt {
 			br.close();
 		}
 
-		this.wrSampleSetMap = new LinkedHashMap<String, Object>();
+		this.wrSampleSetMap = new LinkedHashMap<SampleKey, Object>();
 		switch (samplePickCase) {
 			case ALL_SAMPLES:
 				// Get all samples
 				this.wrSampleSetMap.putAll(this.rdSampleSetMap);
 				int i = 0;
-				for (Map.Entry<String, Object> entry : this.wrSampleSetMap.entrySet()) {
+				for (Map.Entry<SampleKey, Object> entry : this.wrSampleSetMap.entrySet()) {
 					entry.setValue(i);
 					i++;
 				}
@@ -237,7 +239,7 @@ public class MatrixDataExtractor_opt {
 				break;
 			default:
 				int j = 0;
-				for (Map.Entry<String, Object> entry : this.wrSampleSetMap.entrySet()) {
+				for (Map.Entry<SampleKey, Object> entry : this.wrSampleSetMap.entrySet()) {
 					entry.setValue(j);
 					j++;
 				}

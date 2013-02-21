@@ -6,7 +6,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Map;
 import org.gwaspi.constants.cExport;
+import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MatrixMetadata;
+import org.gwaspi.model.SampleKey;
 import org.gwaspi.netCDF.markers.MarkerSet_opt;
 import org.gwaspi.samples.SampleSet;
 import org.slf4j.Logger;
@@ -23,12 +25,13 @@ public class SpreadsheetFormatter implements Formatter {
 
 	private final Logger log = LoggerFactory.getLogger(SpreadsheetFormatter.class);
 
+	@Override
 	public boolean export(
 			String exportPath,
 			MatrixMetadata rdMatrixMetadata,
 			MarkerSet_opt rdMarkerSet,
 			SampleSet rdSampleSet,
-			Map<String, Object> rdSampleSetMap,
+			Map<SampleKey, Object> rdSampleSetMap,
 			String phenotype)
 			throws IOException
 	{
@@ -50,9 +53,9 @@ public class SpreadsheetFormatter implements Formatter {
 
 			// HEADER CONTAINING MARKER IDs
 			StringBuilder line = new StringBuilder();
-			for (String key : rdMarkerSet.getMarkerIdSetMap().keySet()) {
+			for (MarkerKey key : rdMarkerSet.getMarkerIdSetMap().keySet()) {
 				line.append(sep);
-				line.append(key);
+				line.append(key.getMarkerId());
 			}
 			pedBW.append(line);
 			pedBW.append("\n");
@@ -60,7 +63,7 @@ public class SpreadsheetFormatter implements Formatter {
 
 			// Iterate through all samples
 			int sampleNb = 0;
-			for (String sampleId : rdSampleSetMap.keySet()) {
+			for (SampleKey sampleKey : rdSampleSetMap.keySet()) {
 				// Iterate through all markers
 				rdMarkerSet.fillGTsForCurrentSampleIntoInitMap(sampleNb);
 				StringBuilder genotypes = new StringBuilder();
@@ -74,7 +77,7 @@ public class SpreadsheetFormatter implements Formatter {
 				// Individual ID
 				// Genotypes
 				line = new StringBuilder();
-				line.append(sampleId);
+				line.append(sampleKey.getSampleId());
 				line.append(genotypes);
 
 				pedBW.append(line);

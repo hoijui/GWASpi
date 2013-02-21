@@ -8,6 +8,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import org.gwaspi.constants.cImport.ImportFormat;
 import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixMetadata;
 import org.slf4j.Logger;
@@ -48,8 +49,8 @@ public class MarkerSet_opt {
 	private NetcdfFile ncfile = null;
 	private int startMkIdx = 0;
 	private int endMkIdx = Integer.MIN_VALUE;
-	private Map<String, Object> markerIdSetMap = new LinkedHashMap<String, Object>();
-	private Map<String, Object> markerRsIdSetMap = new LinkedHashMap<String, Object>();
+	private Map<MarkerKey, Object> markerIdSetMap = new LinkedHashMap<MarkerKey, Object>();
+	private Map<MarkerKey, Object> markerRsIdSetMap = new LinkedHashMap<MarkerKey, Object>();
 
 	public MarkerSet_opt(int studyId, int matrixId) throws IOException {
 		matrixMetadata = MatricesList.getMatrixMetadataById(matrixId);
@@ -99,6 +100,24 @@ public class MarkerSet_opt {
 		initMarkerIdSetMap(startMkIdx, endMkIdx);
 	}
 
+	private static Map<MarkerKey, Object> wrapToMarkerKeyMap(Map<String, Object> markerIdAlleles) {
+		Map<MarkerKey, Object> reparsedData = new LinkedHashMap<MarkerKey, Object>();
+		for (Map.Entry<String, Object> entry : markerIdAlleles.entrySet()) {
+			reparsedData.put(MarkerKey.valueOf(entry.getKey()), entry.getValue());
+		}
+		return reparsedData;
+	}
+
+	private static Map<MarkerKey, Object> wrapToMarkerKeyMap(ArrayByte.D2 markersAC) {
+		Map<String, Object> markerIdAlleles = org.gwaspi.netCDF.operations.Utils.writeD2ArrayByteToMapKeys(markersAC);
+		return wrapToMarkerKeyMap(markerIdAlleles);
+	}
+
+	private static Map<MarkerKey, Object> wrapToMarkerKeyMap(ArrayChar.D2 markersAC) {
+		Map<String, Object> markerIdAlleles = org.gwaspi.netCDF.operations.Utils.writeD2ArrayCharToMapKeys(markersAC);
+		return wrapToMarkerKeyMap(markerIdAlleles);
+	}
+
 	public void initMarkerIdSetMap(int _startMkInd, int _endMkIdx) {
 		startMkIdx = _startMkInd;
 		endMkIdx = _endMkIdx;
@@ -121,11 +140,11 @@ public class MarkerSet_opt {
 
 				if (dataType == DataType.CHAR) {
 					ArrayChar.D2 markerSetAC = (ArrayChar.D2) var.read("(" + startMkIdx + ":" + endMkIdx + ":1, 0:" + (varShape[1] - 1) + ":1)");
-					markerIdSetMap = org.gwaspi.netCDF.operations.Utils.writeD2ArrayCharToMapKeys(markerSetAC);
+					markerIdSetMap = wrapToMarkerKeyMap(markerSetAC);
 				}
 				if (dataType == DataType.BYTE) {
 					ArrayByte.D2 markerSetAC = (ArrayByte.D2) var.read("(" + startMkIdx + ":" + endMkIdx + ":1, 0:" + (varShape[1] - 1) + ":1)");
-					markerIdSetMap = org.gwaspi.netCDF.operations.Utils.writeD2ArrayByteToMapKeys(markerSetAC);
+					markerIdSetMap = wrapToMarkerKeyMap(markerSetAC);
 				}
 			} catch (IOException ex) {
 				log.error("Cannot read data", ex);
@@ -164,11 +183,11 @@ public class MarkerSet_opt {
 
 				if (dataType == DataType.CHAR) {
 					ArrayChar.D2 markerSetAC = (ArrayChar.D2) var.read("(" + startMkIdx + ":" + endMkIdx + ":1, 0:" + (varShape[1] - 1) + ":1)");
-					markerRsIdSetMap = org.gwaspi.netCDF.operations.Utils.writeD2ArrayCharToMapKeys(markerSetAC);
+					markerRsIdSetMap = wrapToMarkerKeyMap(markerSetAC);
 				}
 				if (dataType == DataType.BYTE) {
 					ArrayByte.D2 markerSetAC = (ArrayByte.D2) var.read("(" + startMkIdx + ":" + endMkIdx + ":1, 0:" + (varShape[1] - 1) + ":1)");
-					markerRsIdSetMap = org.gwaspi.netCDF.operations.Utils.writeD2ArrayByteToMapKeys(markersAC);
+					markerRsIdSetMap = wrapToMarkerKeyMap(markerSetAC);
 				}
 			} catch (IOException ex) {
 				log.error("Cannot read data", ex);
@@ -176,7 +195,6 @@ public class MarkerSet_opt {
 				log.error("Cannot read data", ex);
 			}
 		}
-
 	}
 	//</editor-fold>
 
@@ -185,9 +203,9 @@ public class MarkerSet_opt {
      * This Method is safe to return an independent Map.
 	 * The size of this Map is very small.
 	 */
-	public Map<String, Object> getChrInfoSetMap() {
+	public Map<MarkerKey, Object> getChrInfoSetMap() {
 
-		Map<String, Object> chrInfoMap = new LinkedHashMap<String, Object>();
+		Map<MarkerKey, Object> chrInfoMap = new LinkedHashMap<MarkerKey, Object>();
 
 		// GET NAMES OF CHROMOSOMES
 		Variable var = ncfile.findVariable(cNetCDF.Variables.VAR_CHR_IN_MATRIX);
@@ -197,7 +215,7 @@ public class MarkerSet_opt {
 			try {
 				if (dataType == DataType.CHAR) {
 					ArrayChar.D2 markerSetAC = (ArrayChar.D2) var.read("(0:" + (varShape[0] - 1) + ":1, 0:7:1)");
-					chrInfoMap = org.gwaspi.netCDF.operations.Utils.writeD2ArrayCharToMapKeys(markerSetAC);
+					chrInfoMap = wrapToMarkerKeyMap(markerSetAC);
 				}
 			} catch (IOException ex) {
 				log.error("Cannot read data", ex);
@@ -230,13 +248,13 @@ public class MarkerSet_opt {
 		return chrInfoMap;
 	}
 
-	public static String getChrByMarkerIndex(Map<String, Object> chrInfoMap, int markerIndex) {
+	public static String getChrByMarkerIndex(Map<MarkerKey, Object> chrInfoMap, int markerIndex) {
 		String result = null;
-		for (Map.Entry<String, Object> entry : chrInfoMap.entrySet()) {
-			String chr = entry.getKey();
+		for (Map.Entry<MarkerKey, Object> entry : chrInfoMap.entrySet()) {
+			MarkerKey markerKey = entry.getKey();
 			int[] value = (int[]) entry.getValue();
-			if (markerIndex <= value[3] && result == null) {
-				result = chr.toString();
+			if ((markerIndex <= value[3]) && (result == null)) {
+				result = markerKey.getMarkerId();
 			}
 		}
 		return result;
@@ -366,9 +384,9 @@ public class MarkerSet_opt {
 
 					int[] shape = markerSetAI.getShape();
 					Index index = markerSetAI.getIndex();
-					Iterator<Entry<String, Object>> it = markerIdSetMap.entrySet().iterator();
+					Iterator<Entry<MarkerKey, Object>> it = markerIdSetMap.entrySet().iterator();
 					for (int i = 0; i < shape[0]; i++) {
-						Entry<String, Object> entry = it.next();
+						Entry<MarkerKey, Object> entry = it.next();
 						Object[] chrInfo = new Object[2];
 						chrInfo[0] = entry.getValue(); // CHR
 						chrInfo[1] = markerSetAI.getInt(index.set(i)); // POS
@@ -416,9 +434,9 @@ public class MarkerSet_opt {
 
 						int[] shape = markerSetAC.getShape();
 						Index index = markerSetAC.getIndex();
-						Iterator<Entry<String, Object>> it = markerIdSetMap.entrySet().iterator();
+						Iterator<Entry<MarkerKey, Object>> it = markerIdSetMap.entrySet().iterator();
 						for (int i = 0; i < shape[0]; i++) {
-							Entry<String, Object> entry = it.next();
+							Entry<MarkerKey, Object> entry = it.next();
 							String value = entry.getValue().toString();
 							if (!value.isEmpty()) {
 								value += separator;
@@ -437,9 +455,9 @@ public class MarkerSet_opt {
 
 						int[] shape = markerSetAF.getShape();
 						Index index = markerSetAF.getIndex();
-						Iterator<Entry<String, Object>> it = markerIdSetMap.entrySet().iterator();
+						Iterator<Entry<MarkerKey, Object>> it = markerIdSetMap.entrySet().iterator();
 						for (int i = 0; i < shape[0]; i++) {
-							Entry<String, Object> entry = it.next();
+							Entry<MarkerKey, Object> entry = it.next();
 							String value = entry.getValue().toString();
 							if (!value.isEmpty()) {
 								value += separator;
@@ -455,9 +473,9 @@ public class MarkerSet_opt {
 
 						int[] shape = markerSetAF.getShape();
 						Index index = markerSetAF.getIndex();
-						Iterator<Entry<String, Object>> it = markerIdSetMap.entrySet().iterator();
+						Iterator<Entry<MarkerKey, Object>> it = markerIdSetMap.entrySet().iterator();
 						for (int i = 0; i < shape[0]; i++) {
-							Entry<String, Object> entry = it.next();
+							Entry<MarkerKey, Object> entry = it.next();
 							String value = entry.getValue().toString();
 							if (!value.isEmpty()) {
 								value += separator;
@@ -478,8 +496,8 @@ public class MarkerSet_opt {
 	/**
 	 * HELPER GETS DICTIONARY OF CURRENT MATRIX. IS CONCURRENT TO INSTANTIATED Map
 	 */
-	public Map<String, Object> getDictionaryBases() throws IOException {
-		Map<String, Object> dictionnary = new LinkedHashMap<String, Object>();
+	public Map<MarkerKey, Object> getDictionaryBases() throws IOException {
+		Map<MarkerKey, Object> dictionnary = new LinkedHashMap<MarkerKey, Object>();
 		try {
 			Variable varBasesDict = ncfile.findVariable(cNetCDF.Variables.VAR_MARKERS_BASES_DICT);
 			if (null != varBasesDict) {
@@ -488,9 +506,9 @@ public class MarkerSet_opt {
 				ArrayChar.D2 dictAlleles_ACD2 = (ArrayChar.D2) varBasesDict.read("(" + startMkIdx + ":" + endMkIdx + ":1, 0:" + (dictShape[1] - 1) + ":1)");
 
 				Index index = dictAlleles_ACD2.getIndex();
-				Iterator<String> it = markerIdSetMap.keySet().iterator();
+				Iterator<MarkerKey> it = markerIdSetMap.keySet().iterator();
 				for (int i = 0; i < dictShape[0]; i++) {
-					String key = it.next();
+					MarkerKey key = it.next();
 					StringBuilder alleles = new StringBuilder("");
 					// Get Alleles
 					for (int j = 0; j < dictShape[1]; j++) {
@@ -511,21 +529,21 @@ public class MarkerSet_opt {
 	 * THESE Maps DO NOT CONTAIN SAME ITEMS AS INIT Map.
 	 * RETURN Map OK
 	 */
-	public Map<String, Object> pickValidMarkerSetItemsByValue(String variable, Set<Object> criteria, boolean includes) {
-		Map<String, Object> returnMap = new LinkedHashMap<String, Object>();
+	public Map<MarkerKey, Object> pickValidMarkerSetItemsByValue(String variable, Set<Object> criteria, boolean includes) {
+		Map<MarkerKey, Object> returnMap = new LinkedHashMap<MarkerKey, Object>();
 		this.fillInitMapWithVariable(variable);
 
 		if (includes) {
-			for (Map.Entry<String, Object> entry : markerIdSetMap.entrySet()) {
-				String key = entry.getKey();
+			for (Map.Entry<MarkerKey, Object> entry : markerIdSetMap.entrySet()) {
+				MarkerKey key = entry.getKey();
 				Object value = entry.getValue();
 				if (criteria.contains(value)) {
 					returnMap.put(key, value);
 				}
 			}
 		} else {
-			for (Map.Entry<String, Object> entry : markerIdSetMap.entrySet()) {
-				String key = entry.getKey();
+			for (Map.Entry<MarkerKey, Object> entry : markerIdSetMap.entrySet()) {
+				MarkerKey key = entry.getKey();
 				Object value = entry.getValue();
 				if (!criteria.contains(value)) {
 					returnMap.put(key, value);
@@ -536,20 +554,20 @@ public class MarkerSet_opt {
 		return returnMap;
 	}
 
-	public Map<String, Object> pickValidMarkerSetItemsByKey(Set<Object> criteria, boolean includes) {
-		Map<String, Object> returnMap = new LinkedHashMap<String, Object>();
+	public Map<MarkerKey, Object> pickValidMarkerSetItemsByKey(Set<Object> criteria, boolean includes) {
+		Map<MarkerKey, Object> returnMap = new LinkedHashMap<MarkerKey, Object>();
 
 		if (includes) {
-			for (Map.Entry<String, Object> entry : markerIdSetMap.entrySet()) {
-				String key = entry.getKey();
+			for (Map.Entry<MarkerKey, Object> entry : markerIdSetMap.entrySet()) {
+				MarkerKey key = entry.getKey();
 				Object value = entry.getValue();
 				if (criteria.contains(key)) {
 					returnMap.put(key, value);
 				}
 			}
 		} else {
-			for (Map.Entry<String, Object> entry : markerIdSetMap.entrySet()) {
-				String key = entry.getKey();
+			for (Map.Entry<MarkerKey, Object> entry : markerIdSetMap.entrySet()) {
+				MarkerKey key = entry.getKey();
 				Object value = entry.getValue();
 				if (!criteria.contains(key)) {
 					returnMap.put(key, value);
@@ -561,11 +579,11 @@ public class MarkerSet_opt {
 	}
 	//</editor-fold>
 
-	public Map<String, Object> getMarkerIdSetMap() {
+	public Map<MarkerKey, Object> getMarkerIdSetMap() {
 		return markerIdSetMap;
 	}
 
-	public Map<String, Object> getMarkerRsIdSetMap() {
+	public Map<MarkerKey, Object> getMarkerRsIdSetMap() {
 		return markerRsIdSetMap;
 	}
 }

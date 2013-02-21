@@ -9,10 +9,12 @@ import java.util.Map;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.AlleleBytes;
 import org.gwaspi.global.Text;
+import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleInfoList;
+import org.gwaspi.model.SampleKey;
 import org.gwaspi.netCDF.markers.MarkerSet_opt;
 import org.gwaspi.samples.SampleSet;
 import org.slf4j.Logger;
@@ -41,10 +43,10 @@ public class OP_QAMarkers_opt implements MatrixOperation {
 	public int processMatrix() throws IOException, InvalidRangeException {
 		int resultOpId = Integer.MIN_VALUE;
 
-		Map<String, Object> wrMarkerSetMismatchStateMap = new LinkedHashMap();
-		Map<String, Object> wrMarkerSetCensusMap = new LinkedHashMap();
-		Map<String, Object> wrMarkerSetMissingRatioMap = new LinkedHashMap();
-		Map<String, Object> wrMarkerSetKnownAllelesMap = new LinkedHashMap();
+		Map<MarkerKey, Object> wrMarkerSetMismatchStateMap = new LinkedHashMap<MarkerKey, Object>();
+		Map<MarkerKey, Object> wrMarkerSetCensusMap = new LinkedHashMap<MarkerKey, Object>();
+		Map<MarkerKey, Object> wrMarkerSetMissingRatioMap = new LinkedHashMap<MarkerKey, Object>();
+		Map<MarkerKey, Object> wrMarkerSetKnownAllelesMap = new LinkedHashMap<MarkerKey, Object>();
 
 		MatrixMetadata rdMatrixMetadata = MatricesList.getMatrixMetadataById(rdMatrixId);
 
@@ -55,7 +57,7 @@ public class OP_QAMarkers_opt implements MatrixOperation {
 		//Map<String, Object> rdMarkerSetMap = rdMarkerSet.markerIdSetMap; //This to test heap usage of copying locally the Map from markerset
 
 		SampleSet rdSampleSet = new SampleSet(rdMatrixMetadata.getStudyId(), rdMatrixId);
-		Map<String, Object> rdSampleSetMap = rdSampleSet.getSampleIdSetMap();
+		Map<SampleKey, Object> rdSampleSetMap = rdSampleSet.getSampleIdSetMap();
 
 		NetcdfFileWriteable wrNcFile = null;
 		try {
@@ -118,9 +120,9 @@ public class OP_QAMarkers_opt implements MatrixOperation {
 			rdMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
 
 			List<SampleInfo> sampleInfos = SampleInfoList.getAllSampleInfoFromDBByPoolID(rdMatrixMetadata.getStudyId());
-			Map<String, Object> samplesInfoMap = new LinkedHashMap();
+			Map<SampleKey, Object> samplesInfoMap = new LinkedHashMap<SampleKey, Object>();
 			for (SampleInfo sampleInfo : sampleInfos) {
-				String tempSampleId = sampleInfo.getSampleId();
+				SampleKey tempSampleId = sampleInfo.getKey();
 				if (rdSampleSetMap.containsKey(tempSampleId)) {
 					String sex = sampleInfo.getSexStr();
 					samplesInfoMap.put(tempSampleId, sex);
@@ -130,21 +132,21 @@ public class OP_QAMarkers_opt implements MatrixOperation {
 
 			// Iterate through markerset, take it marker by marker
 			int markerNb = 0;
-			for (Map.Entry<String, Object> entry : rdMarkerSet.getMarkerIdSetMap().entrySet()) {
-				String markerId = entry.getKey();
+			for (Map.Entry<MarkerKey, Object> entry : rdMarkerSet.getMarkerIdSetMap().entrySet()) {
+				MarkerKey markerKey = entry.getKey();
 
-				Map<Object, Object> knownAlleles = new LinkedHashMap();
-				Map<Object, Object> allSamplesGTsTable = new LinkedHashMap();
-				Map<Object, Object> allSamplesContingencyTable = new LinkedHashMap();
+				Map<Byte, Float> knownAlleles = new LinkedHashMap<Byte, Float>();
+				Map<Short, Float> allSamplesGTsTable = new LinkedHashMap<Short, Float>();
+				Map<String, Integer> allSamplesContingencyTable = new LinkedHashMap<String, Integer>();
 				Integer missingCount = 0;
 
 				// Get a sampleset-full of GTs
 				rdSampleSetMap = rdSampleSet.readAllSamplesGTsFromCurrentMarkerToMap(rdNcFile, rdSampleSetMap, markerNb);
-				for (Map.Entry<String, Object> sampleEntry : rdSampleSetMap.entrySet()) {
-					String sampleId = sampleEntry.getKey();
+				for (Map.Entry<SampleKey, Object> sampleEntry : rdSampleSetMap.entrySet()) {
+					SampleKey sampleKey = sampleEntry.getKey();
 
 					//<editor-fold defaultstate="expanded" desc="THE DECIDER">
-					CensusDecision decision = CensusDecision.getDecisionByChrAndSex(sampleEntry.getValue().toString(), samplesInfoMap.get(sampleId).toString());
+					CensusDecision decision = CensusDecision.getDecisionByChrAndSex(sampleEntry.getValue().toString(), samplesInfoMap.get(sampleKey).toString());
 					//</editor-fold>
 
 					//<editor-fold defaultstate="collapsed" desc="SUMMING SAMPLESET GENOTYPES">
@@ -160,14 +162,14 @@ public class OP_QAMarkers_opt implements MatrixOperation {
 					if (tempGT[0] != AlleleBytes._0) {
 						float tempCount = 0;
 						if (knownAlleles.containsKey(tempGT[0])) {
-							tempCount = (Float) knownAlleles.get(tempGT[0]);
+							tempCount = knownAlleles.get(tempGT[0]);
 						}
 						knownAlleles.put(tempGT[0], tempCount + counter);
 					}
-					if (tempGT[1] != AlleleBytes._0) { //48 is byte for 0
+					if (tempGT[1] != AlleleBytes._0) {
 						float tempCount = 0;
 						if (knownAlleles.containsKey(tempGT[1])) {
-							tempCount = (Float) knownAlleles.get(tempGT[1]);
+							tempCount = knownAlleles.get(tempGT[1]);
 						}
 						knownAlleles.put(tempGT[1], tempCount + counter);
 					}
@@ -177,12 +179,11 @@ public class OP_QAMarkers_opt implements MatrixOperation {
 						}
 					}
 
-
-					Integer intAlleleSum = tempGT[0] + tempGT[1]; //2 alleles per GT
+					Short intAlleleSum = (short)((short)tempGT[0] + (short)tempGT[1]); // 2 alleles per GT
 
 					float tempCount = 0;
 					if (allSamplesGTsTable.containsKey(intAlleleSum)) {
-						tempCount = (Float) allSamplesGTsTable.get(intAlleleSum);
+						tempCount = allSamplesGTsTable.get(intAlleleSum);
 					}
 					allSamplesGTsTable.put(intAlleleSum, tempCount + counter);
 					//</editor-fold>
@@ -198,7 +199,7 @@ public class OP_QAMarkers_opt implements MatrixOperation {
 					List<Integer> intAa = new ArrayList<Integer>();
 					List<Integer> intaa = new ArrayList<Integer>();
 
-					Iterator<Object> itKnAll = knownAlleles.keySet().iterator();
+					Iterator<Byte> itKnAll = knownAlleles.keySet().iterator();
 					if (knownAlleles.isEmpty()) {
 						// Completely missing (00)
 						orderedAlleles[0] = '0';
@@ -208,7 +209,7 @@ public class OP_QAMarkers_opt implements MatrixOperation {
 					}
 					if (knownAlleles.size() == 1) {
 						// Homozygote (AA or aa)
-						byte byteAllele1 = (Byte) itKnAll.next();
+						byte byteAllele1 = itKnAll.next();
 						byte byteAllele2 = '0';
 						int intAllele1 = byteAllele1;
 						intAA.add(intAllele1);
@@ -221,11 +222,11 @@ public class OP_QAMarkers_opt implements MatrixOperation {
 					}
 					if (knownAlleles.size() == 2) {
 						// Heterezygote (contains mix of AA, Aa or aa)
-						byte byteAllele1 = (Byte) itKnAll.next();
-						int countAllele1 = Math.round((Float) knownAlleles.get(byteAllele1));
+						byte byteAllele1 = itKnAll.next();
+						int countAllele1 = Math.round(knownAlleles.get(byteAllele1));
 						int intAllele1 = byteAllele1;
-						byte byteAllele2 = (Byte) itKnAll.next();
-						int countAllele2 = Math.round((Float) knownAlleles.get(byteAllele2));
+						byte byteAllele2 = itKnAll.next();
+						int countAllele2 = Math.round(knownAlleles.get(byteAllele2));
 						int intAllele2 = byteAllele2;
 						int totAlleles = countAllele1 + countAllele2;
 
@@ -261,16 +262,15 @@ public class OP_QAMarkers_opt implements MatrixOperation {
 					//</editor-fold>
 
 					//<editor-fold defaultstate="collapsed" desc="CONTINGENCY ALL SAMPLES">
-					for (Map.Entry<Object, Object> sampleEntry : allSamplesGTsTable.entrySet()) {
-						Object key = sampleEntry.getKey();
-						Integer value = Math.round((Float) sampleEntry.getValue());
+					for (Map.Entry<Short, Float> sampleEntry : allSamplesGTsTable.entrySet()) {
+						Integer value = Math.round(sampleEntry.getValue());
 
 						if (intAA.contains(value)) {
 							// compare to all possible character values of AA
 							// ALL CENSUS
 							int tempCount = 0;
 							if (allSamplesContingencyTable.containsKey("AA")) {
-								tempCount = (Integer) allSamplesContingencyTable.get("AA");
+								tempCount = allSamplesContingencyTable.get("AA");
 							}
 							allSamplesContingencyTable.put("AA", tempCount + value);
 						}
@@ -279,7 +279,7 @@ public class OP_QAMarkers_opt implements MatrixOperation {
 							// ALL CENSUS
 							int tempCount = 0;
 							if (allSamplesContingencyTable.containsKey("Aa")) {
-								tempCount = (Integer) allSamplesContingencyTable.get("Aa");
+								tempCount = allSamplesContingencyTable.get("Aa");
 							}
 							allSamplesContingencyTable.put("Aa", tempCount + value);
 						}
@@ -288,7 +288,7 @@ public class OP_QAMarkers_opt implements MatrixOperation {
 							// ALL CENSUS
 							int tempCount = 0;
 							if (allSamplesContingencyTable.containsKey("aa")) {
-								tempCount = (Integer) allSamplesContingencyTable.get("aa");
+								tempCount = allSamplesContingencyTable.get("aa");
 							}
 							allSamplesContingencyTable.put("aa", tempCount + value);
 						}
@@ -306,13 +306,13 @@ public class OP_QAMarkers_opt implements MatrixOperation {
 					int obsCntrlAa = 0;
 					int obsCntrlaa = 0;
 					if (allSamplesContingencyTable.containsKey("AA")) {
-						obsAllAA = (Integer) allSamplesContingencyTable.get("AA");
+						obsAllAA = allSamplesContingencyTable.get("AA");
 					}
 					if (allSamplesContingencyTable.containsKey("Aa")) {
-						obsAllAa = (Integer) allSamplesContingencyTable.get("Aa");
+						obsAllAa = allSamplesContingencyTable.get("Aa");
 					}
 					if (allSamplesContingencyTable.containsKey("aa")) {
-						obsAllaa = (Integer) allSamplesContingencyTable.get("aa");
+						obsAllaa = allSamplesContingencyTable.get("aa");
 					}
 
 					int[] census = new int[4];
@@ -322,8 +322,8 @@ public class OP_QAMarkers_opt implements MatrixOperation {
 					census[2] = obsAllaa; // all
 					census[3] = missingCount; // all
 
-					wrMarkerSetCensusMap.put(markerId, census);
-					wrMarkerSetMismatchStateMap.put(markerId, cNetCDF.Defaults.DEFAULT_MISMATCH_NO);
+					wrMarkerSetCensusMap.put(markerKey, census);
+					wrMarkerSetMismatchStateMap.put(markerKey, cNetCDF.Defaults.DEFAULT_MISMATCH_NO);
 
 					if (orderedAlleles[0] == null && orderedAlleles[2] != null) {
 						orderedAlleles[0] = orderedAlleles[2];
@@ -335,21 +335,21 @@ public class OP_QAMarkers_opt implements MatrixOperation {
 						orderedAlleles[0] = '0';
 						orderedAlleles[2] = '0';
 					}
-					wrMarkerSetKnownAllelesMap.put(markerId, orderedAlleles);
+					wrMarkerSetKnownAllelesMap.put(markerKey, orderedAlleles);
 				} else {
 					int[] census = new int[4];
-					wrMarkerSetCensusMap.put(markerId, census);
-					wrMarkerSetMismatchStateMap.put(markerId, cNetCDF.Defaults.DEFAULT_MISMATCH_YES);
+					wrMarkerSetCensusMap.put(markerKey, census);
+					wrMarkerSetMismatchStateMap.put(markerKey, cNetCDF.Defaults.DEFAULT_MISMATCH_YES);
 
 					orderedAlleles[0] = '0';
 					orderedAlleles[1] = 0d;
 					orderedAlleles[2] = '0';
 					orderedAlleles[3] = 0d;
-					wrMarkerSetKnownAllelesMap.put(markerId, orderedAlleles);
+					wrMarkerSetKnownAllelesMap.put(markerKey, orderedAlleles);
 				}
 
 				double missingRatio = (double) missingCount / rdSampleSet.getSampleSetSize();
-				wrMarkerSetMissingRatioMap.put(markerId, missingRatio);
+				wrMarkerSetMissingRatioMap.put(markerKey, missingRatio);
 
 				markerNb++;
 				if (markerNb == 1) {

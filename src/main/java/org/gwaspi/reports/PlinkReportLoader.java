@@ -51,7 +51,7 @@ public class PlinkReportLoader {
 
 	private static final Logger log = LoggerFactory.getLogger(PlinkReportLoader.class);
 
-	private static Map<String, String> labelerHM = new HashMap<String, String>();
+	private static Map<String, String> labeler = new HashMap<String, String>();
 
 	private PlinkReportLoader() {
 	}
@@ -100,7 +100,7 @@ public class PlinkReportLoader {
 					} else {
 						series1.add(position, logPValue);
 					}
-					labelerHM.put(tempChr + "_" + position, markerId);
+					labeler.put(tempChr + "_" + position, markerId);
 				} else {
 					if (!tempChr.equals("")) { //SKIP FIRST TIME (NO DATA YET!)
 						chrData.addSeries(series1);
@@ -110,7 +110,7 @@ public class PlinkReportLoader {
 					tempChr = cVals[0];
 					series1 = new XYSeries("Imputed");
 					series2 = new XYSeries("Observed");
-					labelerHM.put(tempChr + "_" + position, markerId);
+					labeler.put(tempChr + "_" + position, markerId);
 
 					if (redMarkersHS.contains(markerId)) {
 						series2.add(position, logPValue);
@@ -220,7 +220,7 @@ public class PlinkReportLoader {
 					StringBuilder chrPos = new StringBuilder(chr);
 					chrPos.append("_");
 					chrPos.append(position);
-					result = labelerHM.get(chrPos.toString()).toString();
+					result = labeler.get(chrPos.toString()).toString();
 
 					//result = value.toString().substring(0, 4);  // could apply formatting here
 				}

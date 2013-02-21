@@ -3,6 +3,7 @@ package org.gwaspi.netCDF.exporter;
 import java.io.IOException;
 import java.util.Map;
 import org.gwaspi.model.MatrixMetadata;
+import org.gwaspi.model.SampleKey;
 import org.gwaspi.netCDF.markers.MarkerSet_opt;
 import org.gwaspi.samples.SampleSet;
 
@@ -19,7 +20,7 @@ interface Formatter {
 			MatrixMetadata rdMatrixMetadata,
 			MarkerSet_opt rdMarkerSet,
 			SampleSet rdSampleSet,
-			Map<String, Object> rdSampleSetMap,
+			Map<SampleKey, Object> rdSampleSetMap,
 			String phenotype)
 			throws IOException;
 }

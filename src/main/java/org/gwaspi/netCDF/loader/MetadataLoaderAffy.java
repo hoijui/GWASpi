@@ -11,6 +11,7 @@ import org.gwaspi.constants.cImport.Annotation.Affymetrix_GenomeWide6;
 import org.gwaspi.constants.cImport.ImportFormat;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.global.Text;
+import org.gwaspi.model.MarkerKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,7 +40,8 @@ public class MetadataLoaderAffy implements MetadataLoader {
 		this.format = format;
 	}
 
-	public Map<String, Object> getSortedMarkerSetWithMetaData() throws IOException {
+	@Override
+	public Map<MarkerKey, Object> getSortedMarkerSetWithMetaData() throws IOException {
 		String startTime = org.gwaspi.global.Utils.getMediumDateTimeAsString();
 
 		SortedMap<String, String> tempTM = parseAnnotationBRFile(); // affyId, rsId,chr,pseudo-autosomal,pos, strand, alleles, plus-alleles
@@ -47,7 +49,7 @@ public class MetadataLoaderAffy implements MetadataLoader {
 		org.gwaspi.global.Utils.sysoutStart("initilaizing Marker info");
 		log.info(Text.All.processing);
 
-		Map<String, Object> markerMetadataMap = new LinkedHashMap<String, Object>();
+		Map<MarkerKey, Object> markerMetadataMap = new LinkedHashMap<MarkerKey, Object>();
 		for (Map.Entry<String, String> entry : tempTM.entrySet()) {
 			// keyValues = chr;pseudo-autosomal1;pseudo-autosomal2;pos;markerId"
 			String[] keyValues = entry.getKey().split(cNetCDF.Defaults.TMP_SEPARATOR);
@@ -74,7 +76,7 @@ public class MetadataLoaderAffy implements MetadataLoader {
 			markerInfo[6] = valValues[1]; // 6 => strand
 			markerInfo[7] = valValues[2]; // 7 => alleles
 
-			markerMetadataMap.put(keyValues[4], markerInfo);
+			markerMetadataMap.put(MarkerKey.valueOf(keyValues[4]), markerInfo);
 		}
 
 		String description = "Generated sorted MarkerIdSet Map sorted by chromosome and position";

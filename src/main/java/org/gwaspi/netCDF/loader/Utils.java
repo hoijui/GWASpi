@@ -87,7 +87,7 @@ public class Utils {
 		return values;
 	}
 
-	public static GenotypeEncoding detectGTEncoding(Map<String, Object> map) {
+	public static GenotypeEncoding detectGTEncoding(Map<?, Object> map) {
 		GenotypeEncoding gtEcoding;
 
 		Set<Byte> allAlleles = new HashSet<Byte>();

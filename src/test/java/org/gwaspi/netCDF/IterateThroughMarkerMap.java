@@ -3,6 +3,8 @@ package org.gwaspi.netCDF;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import org.gwaspi.model.MarkerKey;
+import org.gwaspi.model.SampleKey;
 import org.gwaspi.samples.SampleSet;
 import ucar.nc2.NetcdfFile;
 
@@ -14,17 +16,17 @@ import ucar.nc2.NetcdfFile;
  */
 public class IterateThroughMarkerMap {
 
-	private Map<String, Object> basesMap = new LinkedHashMap<String, Object>();
-	private Map<String, Object> rdSampleSetMap = new LinkedHashMap<String, Object>();
-	private Map<String, Object> wrSampleSetMap = new LinkedHashMap<String, Object>();
+	private Map<MarkerKey, Object> basesMap = new LinkedHashMap<MarkerKey, Object>();
+	private Map<SampleKey, Object> rdSampleSetMap = new LinkedHashMap<SampleKey, Object>();
+	private Map<SampleKey, Object> wrSampleSetMap = new LinkedHashMap<SampleKey, Object>();
 	private SampleSet rdSampleSet = null;
 
 	public IterateThroughMarkerMap() throws IOException {
 		// Iterate through pmAllelesAndStrandsMap, use marker item position to read correct GTs from all Samples into rdMarkerIdSetMap.
 		int markerNb = 0;
 		NetcdfFile rdNcFile = NetcdfFile.open("pathToMatrix");
-		for (Map.Entry<String, Object> entry : basesMap.entrySet()) {
-			String markerId = entry.getKey();
+		for (Map.Entry<MarkerKey, Object> entry : basesMap.entrySet()) {
+			MarkerKey markerKey = entry.getKey();
 			String bases = entry.getValue().toString();
 
 			// Get alleles from read matrix

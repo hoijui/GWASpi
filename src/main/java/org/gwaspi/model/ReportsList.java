@@ -28,11 +28,11 @@ public class ReportsList {
 		return reportService.getReportsList(opId, matrixId);
 	}
 
-	public static Map<String, Object> getSortedMarkerSetByDoubleValue(Map<String, Object> map) {
+	public static <K> Map<K, Object> getSortedMarkerSetByDoubleValue(Map<K, Object> map) {
 		return reportService.getSortedMarkerSetByDoubleValue(map);
 	}
 
-	public static Map<String, Object> getSortedDescendingMarkerSetByDoubleValue(Map<String, Object> map) {
+	public static <K> Map<K, Object> getSortedDescendingMarkerSetByDoubleValue(Map<K, Object> map) {
 		return reportService.getSortedDescendingMarkerSetByDoubleValue(map);
 	}
 

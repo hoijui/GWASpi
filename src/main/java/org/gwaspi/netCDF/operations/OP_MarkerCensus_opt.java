@@ -14,6 +14,7 @@ import org.gwaspi.constants.cImport.Annotation.GWASpi;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.AlleleBytes;
 import org.gwaspi.global.Text;
+import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.Operation;
@@ -21,6 +22,7 @@ import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleInfoList;
+import org.gwaspi.model.SampleKey;
 import org.gwaspi.netCDF.markers.MarkerSet_opt;
 import org.gwaspi.samples.SampleSet;
 import org.slf4j.Logger;
@@ -85,12 +87,12 @@ public class OP_MarkerCensus_opt implements MatrixOperation {
 		OperationMetadata sampleQAMetadata = OperationsList.getOperationMetadata(sampleQAOP.getId());
 		NetcdfFile rdSampleQANcFile = NetcdfFile.open(sampleQAMetadata.getPathToMatrix());
 
-		OperationSet rdQAMarkerSet = new OperationSet(markerQAMetadata.getStudyId(), markerQAMetadata.getOPId());
-		OperationSet rdQASampleSet = new OperationSet(sampleQAMetadata.getStudyId(), sampleQAMetadata.getOPId());
-		Map<String, Object> rdQAMarkerSetMap = rdQAMarkerSet.getOpSetMap();
-		Map<String, Object> rdQASampleSetMap = rdQASampleSet.getOpSetMap();
-		Map<String, Object> excludeMarkerSetMap = new LinkedHashMap();
-		Map<String, Object> excludeSampleSetMap = new LinkedHashMap();
+		MarkerOperationSet rdQAMarkerSet = new MarkerOperationSet(markerQAMetadata.getStudyId(), markerQAMetadata.getOPId());
+		SampleOperationSet rdQASampleSet = new SampleOperationSet(sampleQAMetadata.getStudyId(), sampleQAMetadata.getOPId());
+		Map<MarkerKey, Object> rdQAMarkerSetMap = rdQAMarkerSet.getOpSetMap();
+		Map<SampleKey, Object> rdQASampleSetMap = rdQASampleSet.getOpSetMap();
+		Map<MarkerKey, Object> excludeMarkerSetMap = new LinkedHashMap<MarkerKey, Object>();
+		Map<SampleKey, Object> excludeSampleSetMap = new LinkedHashMap<SampleKey, Object>();
 
 		int totalSampleNb = rdQASampleSetMap.size();
 		int totalMarkerNb = rdQAMarkerSetMap.size();
@@ -99,8 +101,8 @@ public class OP_MarkerCensus_opt implements MatrixOperation {
 		if (discardMismatches) {
 			rdQAMarkerSetMap = rdQAMarkerSet.fillOpSetMapWithVariable(rdMarkerQANcFile, cNetCDF.Census.VAR_OP_MARKERS_MISMATCHSTATE);
 
-			for (Map.Entry<String, Object> entry : rdQAMarkerSetMap.entrySet()) {
-				String key = entry.getKey();
+			for (Map.Entry<MarkerKey, Object> entry : rdQAMarkerSetMap.entrySet()) {
+				MarkerKey key = entry.getKey();
 				Object value = entry.getValue();
 				if (value.equals(cNetCDF.Defaults.DEFAULT_MISMATCH_YES)) {
 					excludeMarkerSetMap.put(key, value);
@@ -111,8 +113,8 @@ public class OP_MarkerCensus_opt implements MatrixOperation {
 		// EXCLUDE MARKER BY MISSING RATIO
 		rdQAMarkerSetMap = rdQAMarkerSet.fillOpSetMapWithVariable(rdMarkerQANcFile, cNetCDF.Census.VAR_OP_MARKERS_MISSINGRAT);
 
-		for (Map.Entry<String, Object> entry : rdQAMarkerSetMap.entrySet()) {
-			String key = entry.getKey();
+		for (Map.Entry<MarkerKey, Object> entry : rdQAMarkerSetMap.entrySet()) {
+			MarkerKey key = entry.getKey();
 			double value = (Double) entry.getValue();
 			if (value > markerMissingRatio) {
 				excludeMarkerSetMap.put(key, value);
@@ -124,8 +126,8 @@ public class OP_MarkerCensus_opt implements MatrixOperation {
 
 		if (rdQASampleSetMap != null) {
 			int brgl = 0;
-			for (Map.Entry<String, Object> entry : rdQASampleSetMap.entrySet()) {
-				String key = entry.getKey();
+			for (Map.Entry<SampleKey, Object> entry : rdQASampleSetMap.entrySet()) {
+				SampleKey key = entry.getKey();
 				double value = (Double) entry.getValue();
 				if (value > sampleMissingRatio) {
 					excludeSampleSetMap.put(key, value);
@@ -139,8 +141,8 @@ public class OP_MarkerCensus_opt implements MatrixOperation {
 
 		if (rdQASampleSetMap != null) {
 			int brgl = 0;
-			for (Map.Entry<String, Object> entry : rdQASampleSetMap.entrySet()) {
-				String key = entry.getKey();
+			for (Map.Entry<SampleKey, Object> entry : rdQASampleSetMap.entrySet()) {
+				SampleKey key = entry.getKey();
 				double value = (Double) entry.getValue();
 				if (value > sampleHetzygRatio) {
 					excludeSampleSetMap.put(key, value);
@@ -173,13 +175,13 @@ public class OP_MarkerCensus_opt implements MatrixOperation {
 			rdMarkerSet.initFullMarkerIdSetMap();
 			rdMarkerSet.fillWith(cNetCDF.Defaults.DEFAULT_GT);
 
-			Map<String, Object> wrMarkerSetMap = new LinkedHashMap();
+			Map<MarkerKey, Object> wrMarkerSetMap = new LinkedHashMap<MarkerKey, Object>();
 			wrMarkerSetMap.putAll(rdMarkerSet.getMarkerIdSetMap());
 
 			SampleSet rdSampleSet = new SampleSet(rdMatrixMetadata.getStudyId(), rdMatrixId);
-			Map<String, Object> rdSampleSetMap = rdSampleSet.getSampleIdSetMap();
-			Map<String, Object> wrSampleSetMap = new LinkedHashMap();
-			for (String key : rdSampleSetMap.keySet()) {
+			Map<SampleKey, Object> rdSampleSetMap = rdSampleSet.getSampleIdSetMap();
+			Map<SampleKey, Object> wrSampleSetMap = new LinkedHashMap<SampleKey, Object>();
+			for (SampleKey key : rdSampleSetMap.keySet()) {
 				if (!excludeSampleSetMap.containsKey(key)) {
 					wrSampleSetMap.put(key, cNetCDF.Defaults.DEFAULT_GT);
 				}
@@ -227,8 +229,8 @@ public class OP_MarkerCensus_opt implements MatrixOperation {
 
 				// MARKERSET RSID
 				rdMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_RSID);
-				for (Map.Entry<String, Object> entry : wrMarkerSetMap.entrySet()) {
-					String key = entry.getKey();
+				for (Map.Entry<MarkerKey, Object> entry : wrMarkerSetMap.entrySet()) {
+					MarkerKey key = entry.getKey();
 					Object value = rdMarkerSet.getMarkerIdSetMap().get(key);
 					entry.setValue(value);
 				}
@@ -250,17 +252,17 @@ public class OP_MarkerCensus_opt implements MatrixOperation {
 
 				//<editor-fold defaultstate="collapsed" desc="PROCESSOR">
 				//<editor-fold defaultstate="collapsed" desc="GET SAMPLES INFO">
-				Map<String, Object> samplesInfoMap; // XXX change to Collection<SampleInfo>?
+				Map<SampleKey, Object> samplesInfoMap; // XXX change to Collection<SampleInfo>?
 				List<SampleInfo> sampleInfos = SampleInfoList.getAllSampleInfoFromDBByPoolID(rdMatrixMetadata.getStudyId());
 				if (phenoFile == null) {
-					samplesInfoMap = new LinkedHashMap<String, Object>();
+					samplesInfoMap = new LinkedHashMap<SampleKey, Object>();
 					for (SampleInfo sampleInfo : sampleInfos) {
-						String tempSampleId = sampleInfo.getSampleId();
-						if (wrSampleSetMap.containsKey(tempSampleId)) {
+						SampleKey tempSampleKey = sampleInfo.getKey();
+						if (wrSampleSetMap.containsKey(tempSampleKey)) {
 							String sex = sampleInfo.getSexStr();
 							String affection = sampleInfo.getAffectionStr();
 							String[] info = new String[]{sex, affection};
-							samplesInfoMap.put(tempSampleId, info);
+							samplesInfoMap.put(tempSampleKey, info);
 
 							//samplesInfoMap.put(tempSampleId, affection);
 						}
@@ -268,7 +270,7 @@ public class OP_MarkerCensus_opt implements MatrixOperation {
 				} else {
 					FileReader phenotypeFR = new FileReader(phenoFile); // Pheno file has SampleInfo format!
 					BufferedReader phenotypeBR = new BufferedReader(phenotypeFR);
-					samplesInfoMap = new LinkedHashMap<String, Object>();
+					samplesInfoMap = new LinkedHashMap<SampleKey, Object>();
 
 					String header = phenotypeBR.readLine(); // ignore header block
 					String l;
@@ -276,26 +278,26 @@ public class OP_MarkerCensus_opt implements MatrixOperation {
 
 						String[] cVals = l.split(cImport.Separators.separators_CommaSpaceTab_rgxp);
 						String[] info = new String[]{cVals[GWASpi.sex], cVals[GWASpi.affection]};
-						samplesInfoMap.put(cVals[1], info);
+						samplesInfoMap.put(new SampleKey(cVals[GWASpi.sampleId], cVals[GWASpi.familyId]), info);
 
 						//samplesInfoMap.put(cVals[0], cVals[1]);
 					}
 					// CHECK IF THERE ARE MISSING SAMPLES IN THE PHENO PHILE
-					for (String sampleId : wrSampleSetMap.keySet()) {
-						if (!samplesInfoMap.containsKey(sampleId)) {
+					for (SampleKey sampleKey : wrSampleSetMap.keySet()) {
+						if (!samplesInfoMap.containsKey(sampleKey)) {
 							String sex = "0";
 							String affection = "0";
 							int count = 0;
 							for (SampleInfo sampleInfo : sampleInfos) {
-								String tmpSampleId = sampleInfo.getSampleId();
-								if (tmpSampleId.equals(sampleId)) {
+								SampleKey tmpSampleKey = sampleInfo.getKey();
+								if (tmpSampleKey.equals(sampleKey)) {
 									sex = sampleInfo.getSexStr();
 									affection = sampleInfo.getAffectionStr();
 									break;
 								}
 							}
 							String[] info = new String[]{sex, affection};
-							samplesInfoMap.put(sampleId, info);
+							samplesInfoMap.put(sampleKey, info);
 						}
 					}
 
@@ -307,8 +309,8 @@ public class OP_MarkerCensus_opt implements MatrixOperation {
 				// INIT wrSampleSetMap with indexing order and chromosome info
 				if (rdMarkerSet.getMarkerIdSetMap() != null) {
 					int idx = 0;
-					for (Map.Entry<String, Object> entry : rdMarkerSet.getMarkerIdSetMap().entrySet()) {
-						String key = entry.getKey();
+					for (Map.Entry<MarkerKey, Object> entry : rdMarkerSet.getMarkerIdSetMap().entrySet()) {
+						MarkerKey key = entry.getKey();
 						if (wrMarkerSetMap.containsKey(key)) {
 							String chr = entry.getValue().toString();
 							Object[] markerInfo = new Object[]{idx, chr};
@@ -333,10 +335,10 @@ public class OP_MarkerCensus_opt implements MatrixOperation {
 				}
 				int countChunks = 0;
 
-				Map<String, Object> wrChunkedMarkerCensusMap = new LinkedHashMap<String, Object>();
-				Map<String, Object> wrChunkedKnownAllelesMap = new LinkedHashMap<String, Object>();
-				for (Map.Entry<String, Object> entry : wrMarkerSetMap.entrySet()) {
-					String markerId = entry.getKey();
+				Map<MarkerKey, Object> wrChunkedMarkerCensusMap = new LinkedHashMap<MarkerKey, Object>();
+				Map<MarkerKey, Object> wrChunkedKnownAllelesMap = new LinkedHashMap<MarkerKey, Object>();
+				for (Map.Entry<MarkerKey, Object> entry : wrMarkerSetMap.entrySet()) {
+					MarkerKey markerKey = entry.getKey();
 					if (countMarkers % chunkSize == 0) {
 
 						if (countMarkers > 0) {
@@ -384,33 +386,33 @@ public class OP_MarkerCensus_opt implements MatrixOperation {
 
 							countChunks++;
 						}
-						wrChunkedMarkerCensusMap = new LinkedHashMap<String, Object>();
-						wrChunkedKnownAllelesMap = new LinkedHashMap<String, Object>();
+						wrChunkedMarkerCensusMap = new LinkedHashMap<MarkerKey, Object>();
+						wrChunkedKnownAllelesMap = new LinkedHashMap<MarkerKey, Object>();
 						System.gc(); // Try to garbage collect here
 					}
-					wrChunkedMarkerCensusMap.put(markerId, "");
+					wrChunkedMarkerCensusMap.put(markerKey, "");
 					countMarkers++;
 
-					Map<Byte, Object> knownAlleles = new LinkedHashMap<Byte, Object>();
-					Map<Integer, Object> allSamplesGTsTable = new LinkedHashMap<Integer, Object>();
-					Map<Integer, Object> caseSamplesGTsTable = new LinkedHashMap<Integer, Object>();
-					Map<Integer, Object> ctrlSamplesGTsTable = new LinkedHashMap<Integer, Object>();
-					Map<Integer, Object> hwSamplesGTsTable = new LinkedHashMap<Integer, Object>();
-					Map<String, Object> allSamplesContingencyTable = new LinkedHashMap<String, Object>();
-					Map<String, Object> caseSamplesContingencyTable = new LinkedHashMap<String, Object>();
-					Map<String, Object> ctrlSamplesContingencyTable = new LinkedHashMap<String, Object>();
-					Map<String, Object> hwSamplesContingencyTable = new LinkedHashMap<String, Object>();
+					Map<Byte, Float> knownAlleles = new LinkedHashMap<Byte, Float>();
+					Map<Integer, Float> allSamplesGTsTable = new LinkedHashMap<Integer, Float>();
+					Map<Integer, Float> caseSamplesGTsTable = new LinkedHashMap<Integer, Float>();
+					Map<Integer, Float> ctrlSamplesGTsTable = new LinkedHashMap<Integer, Float>();
+					Map<Integer, Float> hwSamplesGTsTable = new LinkedHashMap<Integer, Float>();
+					Map<String, Integer> allSamplesContingencyTable = new LinkedHashMap<String, Integer>();
+					Map<String, Integer> caseSamplesContingencyTable = new LinkedHashMap<String, Integer>();
+					Map<String, Integer> ctrlSamplesContingencyTable = new LinkedHashMap<String, Integer>();
+					Map<String, Integer> hwSamplesContingencyTable = new LinkedHashMap<String, Integer>();
 					Integer missingCount = 0;
 
 					// Get a sampleset-full of GTs
-					//int markerNb = (Integer) rdMarkerIdSetIndex.get(markerId);
+					//int markerNb = rdMarkerIdSetIndex.get(markerId);
 					Object[] markerInfo = (Object[]) entry.getValue();
 					int markerNb = Integer.parseInt(markerInfo[0].toString());
 					String markerChr = markerInfo[1].toString();
 
 					rdSampleSetMap = rdSampleSet.readAllSamplesGTsFromCurrentMarkerToMap(rdNcFile, rdSampleSetMap, markerNb);
-					for (String sampleId : wrSampleSetMap.keySet()) {
-						String[] sampleInfo = (String[]) samplesInfoMap.get(sampleId);
+					for (SampleKey sampleKey : wrSampleSetMap.keySet()) {
+						String[] sampleInfo = (String[]) samplesInfoMap.get(sampleKey);
 
 						//<editor-fold defaultstate="collapsed" desc="THE DECIDER">
 						CensusDecision decision = CensusDecision.getDecisionByChrAndSex(markerChr, sampleInfo[0]);
@@ -422,19 +424,19 @@ public class OP_MarkerCensus_opt implements MatrixOperation {
 						//</editor-fold>
 
 						//<editor-fold defaultstate="collapsed" desc="SUMMING SAMPLESET GENOTYPES">
-						byte[] tempGT = (byte[]) rdSampleSetMap.get(sampleId);
+						byte[] tempGT = (byte[]) rdSampleSetMap.get(sampleKey);
 						// Gather alleles different from 0 into a list of known alleles and count the number of appearences
 						if (tempGT[0] != AlleleBytes._0) {
 							float tempCount = 0;
 							if (knownAlleles.containsKey(tempGT[0])) {
-								tempCount = (Float) knownAlleles.get(tempGT[0]);
+								tempCount = knownAlleles.get(tempGT[0]);
 							}
 							knownAlleles.put(tempGT[0], tempCount + counter);
 						}
 						if (tempGT[1] != AlleleBytes._0) {
 							float tempCount = 0;
 							if (knownAlleles.containsKey(tempGT[1])) {
-								tempCount = (Float) knownAlleles.get(tempGT[1]);
+								tempCount = knownAlleles.get(tempGT[1]);
 							}
 							knownAlleles.put(tempGT[1], tempCount + counter);
 						}
@@ -449,7 +451,7 @@ public class OP_MarkerCensus_opt implements MatrixOperation {
 						// CASE/CONTROL CENSUS
 						float tempCount = 0;
 						if (allSamplesGTsTable.containsKey(intAlleleSum)) {
-							tempCount = (Float) allSamplesGTsTable.get(intAlleleSum);
+							tempCount = allSamplesGTsTable.get(intAlleleSum);
 						}
 						allSamplesGTsTable.put(intAlleleSum, tempCount + counter);
 
@@ -457,19 +459,19 @@ public class OP_MarkerCensus_opt implements MatrixOperation {
 						if (sampleInfo[1].equals("2")) { // CASE
 							tempCount = 0;
 							if (caseSamplesGTsTable.containsKey(intAlleleSum)) {
-								tempCount = (Float) caseSamplesGTsTable.get(intAlleleSum);
+								tempCount = caseSamplesGTsTable.get(intAlleleSum);
 							}
 							caseSamplesGTsTable.put(intAlleleSum, tempCount + counter);
 						} else if (sampleInfo[1].equals("1")) { // CONTROL
 							tempCount = 0;
 							if (ctrlSamplesGTsTable.containsKey(intAlleleSum)) {
-								tempCount = (Float) ctrlSamplesGTsTable.get(intAlleleSum);
+								tempCount = ctrlSamplesGTsTable.get(intAlleleSum);
 							}
 							ctrlSamplesGTsTable.put(intAlleleSum, tempCount + counter);
 
 							// HARDY WEINBERG COUNTER
 							if (hwSamplesGTsTable.containsKey(intAlleleSum)) {
-								tempCount = (Float) hwSamplesGTsTable.get(intAlleleSum);
+								tempCount = hwSamplesGTsTable.get(intAlleleSum);
 							}
 							if (decision == CensusDecision.CountMalesNonAutosomally) {
 								hwSamplesGTsTable.put(intAlleleSum, tempCount);
@@ -504,10 +506,10 @@ public class OP_MarkerCensus_opt implements MatrixOperation {
 						if (knownAlleles.size() == 2) {
 							// Heterezygote (AA, Aa or aa)
 							byte key = itKnAll.next();
-							int countA = Math.round((Float) knownAlleles.get(key));
+							int countA = Math.round(knownAlleles.get(key));
 							int intAllele1 = (int) key;
 							key = itKnAll.next();
-							int countB = Math.round((Float) knownAlleles.get(key));
+							int countB = Math.round(knownAlleles.get(key));
 							int intAllele2 = (int) key;
 
 							if (countA >= countB) {
@@ -532,16 +534,16 @@ public class OP_MarkerCensus_opt implements MatrixOperation {
 						//</editor-fold>
 
 						//<editor-fold defaultstate="collapsed" desc="CONTINGENCY ALL SAMPLES">
-						for (Map.Entry<Integer, Object> samplesEntry : allSamplesGTsTable.entrySet()) {
+						for (Map.Entry<Integer, Float> samplesEntry : allSamplesGTsTable.entrySet()) {
 							Integer key = samplesEntry.getKey();
-							Integer value = Math.round((Float) samplesEntry.getValue());
+							Integer value = Math.round(samplesEntry.getValue());
 
 							if (AAnumValsAL.contains(key)) {
 								// compare to all possible character values of AA
 								// ALL CENSUS
 								int tempCount = 0;
 								if (allSamplesContingencyTable.containsKey("AA")) {
-									tempCount = (Integer) allSamplesContingencyTable.get("AA");
+									tempCount = allSamplesContingencyTable.get("AA");
 								}
 								allSamplesContingencyTable.put("AA", tempCount + value);
 							}
@@ -550,7 +552,7 @@ public class OP_MarkerCensus_opt implements MatrixOperation {
 								// ALL CENSUS
 								int tempCount = 0;
 								if (allSamplesContingencyTable.containsKey("Aa")) {
-									tempCount = (Integer) allSamplesContingencyTable.get("Aa");
+									tempCount = allSamplesContingencyTable.get("Aa");
 								}
 								allSamplesContingencyTable.put("Aa", tempCount + value);
 							}
@@ -559,7 +561,7 @@ public class OP_MarkerCensus_opt implements MatrixOperation {
 								// ALL CENSUS
 								int tempCount = 0;
 								if (allSamplesContingencyTable.containsKey("aa")) {
-									tempCount = (Integer) allSamplesContingencyTable.get("aa");
+									tempCount = allSamplesContingencyTable.get("aa");
 								}
 								allSamplesContingencyTable.put("aa", tempCount + value);
 							}
@@ -567,16 +569,16 @@ public class OP_MarkerCensus_opt implements MatrixOperation {
 						//</editor-fold>
 
 						//<editor-fold defaultstate="collapsed" desc="CONTINGENCY CASE SAMPLES">
-						for (Map.Entry<Integer, Object> samplesEntry : caseSamplesGTsTable.entrySet()) {
+						for (Map.Entry<Integer, Float> samplesEntry : caseSamplesGTsTable.entrySet()) {
 							Integer key = samplesEntry.getKey();
-							Integer value = Math.round((Float) samplesEntry.getValue());
+							Integer value = Math.round(samplesEntry.getValue());
 
 							if (AAnumValsAL.contains(key)) {
 								// compare to all possible character values of AA
 								// ALL CENSUS
 								int tempCount = 0;
 								if (caseSamplesContingencyTable.containsKey("AA")) {
-									tempCount = (Integer) caseSamplesContingencyTable.get("AA");
+									tempCount = caseSamplesContingencyTable.get("AA");
 								}
 								caseSamplesContingencyTable.put("AA", tempCount + value);
 							}
@@ -585,7 +587,7 @@ public class OP_MarkerCensus_opt implements MatrixOperation {
 								// ALL CENSUS
 								int tempCount = 0;
 								if (caseSamplesContingencyTable.containsKey("Aa")) {
-									tempCount = (Integer) caseSamplesContingencyTable.get("Aa");
+									tempCount = caseSamplesContingencyTable.get("Aa");
 								}
 								caseSamplesContingencyTable.put("Aa", tempCount + value);
 							}
@@ -594,7 +596,7 @@ public class OP_MarkerCensus_opt implements MatrixOperation {
 								// ALL CENSUS
 								int tempCount = 0;
 								if (caseSamplesContingencyTable.containsKey("aa")) {
-									tempCount = (Integer) caseSamplesContingencyTable.get("aa");
+									tempCount = caseSamplesContingencyTable.get("aa");
 								}
 								caseSamplesContingencyTable.put("aa", tempCount + value);
 							}
@@ -602,16 +604,16 @@ public class OP_MarkerCensus_opt implements MatrixOperation {
 						//</editor-fold>
 
 						//<editor-fold defaultstate="collapsed" desc="CONTINGENCY CTRL SAMPLES">
-						for (Map.Entry<Integer, Object> samplesEntry : ctrlSamplesGTsTable.entrySet()) {
+						for (Map.Entry<Integer, Float> samplesEntry : ctrlSamplesGTsTable.entrySet()) {
 							Integer key = samplesEntry.getKey();
-							Integer value = Math.round((Float) samplesEntry.getValue());
+							Integer value = Math.round(samplesEntry.getValue());
 
 							if (AAnumValsAL.contains(key)) {
 								// compare to all possible character values of AA
 								// ALL CENSUS
 								int tempCount = 0;
 								if (ctrlSamplesContingencyTable.containsKey("AA")) {
-									tempCount = (Integer) ctrlSamplesContingencyTable.get("AA");
+									tempCount = ctrlSamplesContingencyTable.get("AA");
 								}
 								ctrlSamplesContingencyTable.put("AA", tempCount + value);
 							}
@@ -620,7 +622,7 @@ public class OP_MarkerCensus_opt implements MatrixOperation {
 								// ALL CENSUS
 								int tempCount = 0;
 								if (ctrlSamplesContingencyTable.containsKey("Aa")) {
-									tempCount = (Integer) ctrlSamplesContingencyTable.get("Aa");
+									tempCount = ctrlSamplesContingencyTable.get("Aa");
 								}
 								ctrlSamplesContingencyTable.put("Aa", tempCount + value);
 							}
@@ -629,7 +631,7 @@ public class OP_MarkerCensus_opt implements MatrixOperation {
 								// ALL CENSUS
 								int tempCount = 0;
 								if (ctrlSamplesContingencyTable.containsKey("aa")) {
-									tempCount = (Integer) ctrlSamplesContingencyTable.get("aa");
+									tempCount = ctrlSamplesContingencyTable.get("aa");
 								}
 								ctrlSamplesContingencyTable.put("aa", tempCount + value);
 							}
@@ -637,16 +639,16 @@ public class OP_MarkerCensus_opt implements MatrixOperation {
 						//</editor-fold>
 
 						//<editor-fold defaultstate="collapsed" desc="CONTINGENCY HW SAMPLES">
-						for (Map.Entry<Integer, Object> samplesEntry : hwSamplesGTsTable.entrySet()) {
+						for (Map.Entry<Integer, Float> samplesEntry : hwSamplesGTsTable.entrySet()) {
 							Integer key = samplesEntry.getKey();
-							Integer value = Math.round((Float) samplesEntry.getValue());
+							Integer value = Math.round(samplesEntry.getValue());
 
 							if (AAnumValsAL.contains(key)) {
 								// compare to all possible character values of AA
 								// HW CENSUS
 								int tempCount = 0;
 								if (hwSamplesContingencyTable.containsKey("AA")) {
-									tempCount = (Integer) hwSamplesContingencyTable.get("AA");
+									tempCount = hwSamplesContingencyTable.get("AA");
 								}
 								hwSamplesContingencyTable.put("AA", tempCount + value);
 							}
@@ -655,7 +657,7 @@ public class OP_MarkerCensus_opt implements MatrixOperation {
 								// HW CENSUS
 								int tempCount = 0;
 								if (hwSamplesContingencyTable.containsKey("Aa")) {
-									tempCount = (Integer) hwSamplesContingencyTable.get("Aa");
+									tempCount = hwSamplesContingencyTable.get("Aa");
 								}
 								hwSamplesContingencyTable.put("Aa", tempCount + value);
 							}
@@ -664,7 +666,7 @@ public class OP_MarkerCensus_opt implements MatrixOperation {
 								// HW CENSUS
 								int tempCount = 0;
 								if (hwSamplesContingencyTable.containsKey("aa")) {
-									tempCount = (Integer) hwSamplesContingencyTable.get("aa");
+									tempCount = hwSamplesContingencyTable.get("aa");
 								}
 								hwSamplesContingencyTable.put("aa", tempCount + value);
 							}
@@ -685,40 +687,40 @@ public class OP_MarkerCensus_opt implements MatrixOperation {
 						int obsHwAa = 0;
 						int obsHwaa = 0;
 						if (allSamplesContingencyTable.containsKey("AA")) {
-							obsAllAA = (Integer) allSamplesContingencyTable.get("AA");
+							obsAllAA = allSamplesContingencyTable.get("AA");
 						}
 						if (allSamplesContingencyTable.containsKey("Aa")) {
-							obsAllAa = (Integer) allSamplesContingencyTable.get("Aa");
+							obsAllAa = allSamplesContingencyTable.get("Aa");
 						}
 						if (allSamplesContingencyTable.containsKey("aa")) {
-							obsAllaa = (Integer) allSamplesContingencyTable.get("aa");
+							obsAllaa = allSamplesContingencyTable.get("aa");
 						}
 						if (caseSamplesContingencyTable.containsKey("AA")) {
-							obsCaseAA = (Integer) caseSamplesContingencyTable.get("AA");
+							obsCaseAA = caseSamplesContingencyTable.get("AA");
 						}
 						if (caseSamplesContingencyTable.containsKey("Aa")) {
-							obsCaseAa = (Integer) caseSamplesContingencyTable.get("Aa");
+							obsCaseAa = caseSamplesContingencyTable.get("Aa");
 						}
 						if (caseSamplesContingencyTable.containsKey("aa")) {
-							obsCaseaa = (Integer) caseSamplesContingencyTable.get("aa");
+							obsCaseaa = caseSamplesContingencyTable.get("aa");
 						}
 						if (ctrlSamplesContingencyTable.containsKey("AA")) {
-							obsCntrlAA = (Integer) ctrlSamplesContingencyTable.get("AA");
+							obsCntrlAA = ctrlSamplesContingencyTable.get("AA");
 						}
 						if (ctrlSamplesContingencyTable.containsKey("Aa")) {
-							obsCntrlAa = (Integer) ctrlSamplesContingencyTable.get("Aa");
+							obsCntrlAa = ctrlSamplesContingencyTable.get("Aa");
 						}
 						if (ctrlSamplesContingencyTable.containsKey("aa")) {
-							obsCntrlaa = (Integer) ctrlSamplesContingencyTable.get("aa");
+							obsCntrlaa = ctrlSamplesContingencyTable.get("aa");
 						}
 						if (hwSamplesContingencyTable.containsKey("AA")) {
-							obsHwAA = (Integer) hwSamplesContingencyTable.get("AA");
+							obsHwAA = hwSamplesContingencyTable.get("AA");
 						}
 						if (hwSamplesContingencyTable.containsKey("Aa")) {
-							obsHwAa = (Integer) hwSamplesContingencyTable.get("Aa");
+							obsHwAa = hwSamplesContingencyTable.get("Aa");
 						}
 						if (hwSamplesContingencyTable.containsKey("aa")) {
-							obsHwaa = (Integer) hwSamplesContingencyTable.get("aa");
+							obsHwaa = hwSamplesContingencyTable.get("aa");
 						}
 
 						int[] census = new int[13];
@@ -737,7 +739,7 @@ public class OP_MarkerCensus_opt implements MatrixOperation {
 						census[11] = obsHwAa; // HW samples
 						census[12] = obsHwaa; // HW samples
 
-						wrChunkedMarkerCensusMap.put(markerId, census);
+						wrChunkedMarkerCensusMap.put(markerKey, census);
 
 						StringBuilder sb = new StringBuilder();
 						byte[] alleles = cNetCDF.Defaults.DEFAULT_GT;
@@ -753,12 +755,12 @@ public class OP_MarkerCensus_opt implements MatrixOperation {
 						}
 						sb.append(new String(alleles));
 
-						wrChunkedKnownAllelesMap.put(markerId, sb.toString());
+						wrChunkedKnownAllelesMap.put(markerKey, sb.toString());
 					} else {
 						// MISMATCHES FOUND
 						int[] census = new int[10];
-						wrChunkedMarkerCensusMap.put(markerId, census);
-						wrChunkedKnownAllelesMap.put(markerId, "00");
+						wrChunkedMarkerCensusMap.put(markerKey, census);
+						wrChunkedKnownAllelesMap.put(markerKey, "00");
 					}
 
 					if (markerNb != 0 && markerNb % 100000 == 0) {

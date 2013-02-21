@@ -11,6 +11,7 @@ import org.gwaspi.dao.SampleInfoService;
 import org.gwaspi.database.DbManager;
 import org.gwaspi.global.ServiceLocator;
 import org.gwaspi.model.SampleInfo;
+import org.gwaspi.model.SampleKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -85,11 +86,11 @@ public class SampleInfoServiceImpl implements SampleInfoService {
 	}
 
 	@Override
-	public List<SampleInfo> getCurrentSampleInfoFromDB(String sampleId, Object poolId) throws IOException {
+	public List<SampleInfo> getCurrentSampleInfoFromDB(SampleKey key, Object poolId) throws IOException {
 
 		DbManager dBManager = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
 
-		String sql = "SELECT * FROM " + cDBGWASpi.SCH_SAMPLES + "." + cDBSamples.T_SAMPLES_INFO + " WHERE " + cDBSamples.f_SAMPLE_ID + "='" + sampleId + "' AND " + cDBSamples.f_POOL_ID + "='" + poolId + "'  WITH RR";
+		String sql = "SELECT * FROM " + cDBGWASpi.SCH_SAMPLES + "." + cDBSamples.T_SAMPLES_INFO + " WHERE " + cDBSamples.f_SAMPLE_ID + "='" + key.getSampleId() + "' AND " + cDBSamples.f_FAMILY_ID + "='" + key.getFamilyId() + "' AND " + cDBSamples.f_POOL_ID + "='" + poolId + "'  WITH RR";
 		List<Map<String, Object>> rs = dBManager.executeSelectStatement(sql);
 
 		return parseSampleInfos(rs);

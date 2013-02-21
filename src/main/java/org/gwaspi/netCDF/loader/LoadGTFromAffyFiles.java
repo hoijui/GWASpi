@@ -15,8 +15,10 @@ import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
 import org.gwaspi.global.Text;
+import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.SampleInfo;
+import org.gwaspi.model.SampleKey;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -88,7 +90,7 @@ public class LoadGTFromAffyFiles implements GenotypesLoader {
 
 		//<editor-fold defaultstate="collapsed" desc="SAMPLES GATHERING">
 		// GET SAMPLES FROM FILES
-		List<String> samples = new ArrayList<String>();
+		List<SampleKey> samples = new ArrayList<SampleKey>();
 		for (int i = 0; i < gtFilesToImport.length; i++) {
 			String sampleId;
 			switch (loadDescription.getFormat()) {
@@ -99,7 +101,8 @@ public class LoadGTFromAffyFiles implements GenotypesLoader {
 					sampleId = "";
 					break;
 			}
-			samples.add(sampleId);
+			// NOTE The Beagle format does not have a family-ID
+			samples.add(new SampleKey(sampleId, SampleKey.FAMILY_ID_NONE));
 		}
 
 		// COMPARE SAMPLE INFO LIST TO AVAILABLE FILES
@@ -111,7 +114,7 @@ public class LoadGTFromAffyFiles implements GenotypesLoader {
 				loadDescription.getAnnotationFilePath(),
 				loadDescription.getFormat(),
 				loadDescription.getStudyId());
-		Map<String, Object> markerSetMap = markerSetLoader.getSortedMarkerSetWithMetaData();
+		Map<MarkerKey, Object> markerSetMap = markerSetLoader.getSortedMarkerSetWithMetaData();
 
 		log.info("Done initializing sorted MarkerSetMap");
 
@@ -144,7 +147,7 @@ public class LoadGTFromAffyFiles implements GenotypesLoader {
 		}
 
 		//RETRIEVE CHROMOSOMES INFO
-		Map<String, Object> chrSetMap = org.gwaspi.netCDF.matrices.Utils.aggregateChromosomeInfo(markerSetMap, 2, 5);
+		Map<MarkerKey, Object> chrSetMap = org.gwaspi.netCDF.matrices.Utils.aggregateChromosomeInfo(markerSetMap, 2, 5);
 
 		MatrixFactory matrixFactory = new MatrixFactory(
 				loadDescription.getStudyId(),
@@ -291,7 +294,7 @@ public class LoadGTFromAffyFiles implements GenotypesLoader {
 
 		// <editor-fold defaultstate="collapsed" desc="MATRIX GENOTYPES LOAD ">
 		//PURGE markerSetMap
-		for (Map.Entry<String, Object> entry : markerSetMap.entrySet()) {
+		for (Map.Entry<?, Object> entry : markerSetMap.entrySet()) {
 			entry.setValue(cNetCDF.Defaults.DEFAULT_GT);
 		}
 
@@ -342,22 +345,25 @@ public class LoadGTFromAffyFiles implements GenotypesLoader {
 		return result;
 	}
 
+	/**
+	 * @see AbstractLoadGTFromFiles#loadIndividualFiles
+	 */
 	private void loadIndividualFiles(
 			GenotypesLoadDescription loadDescription,
 			GenotypeEncoding guessedGTCode,
 			File file,
 			NetcdfFileWriteable ncfile,
-			Map<String, Object> sortedMarkerSetMap,
-			List<String> samplesAL)
+			Map<MarkerKey, Object> sortedAlleles,
+			List<SampleKey> samples)
 			throws IOException, InvalidRangeException
 	{
-		//INIT Maps
-		for (String markerId : sortedMarkerSetMap.keySet()) {
-			sortedMarkerSetMap.put(markerId, cNetCDF.Defaults.DEFAULT_GT);
+		// INIT Maps
+		for (Map.Entry<?, Object> alleleEntry : sortedAlleles.entrySet()) {
+			alleleEntry.setValue(cNetCDF.Defaults.DEFAULT_GT);
 		}
 
 		// LOAD INPUT FILE
-		//GET SAMPLEID
+		// GET SAMPLEID
 		String sampleId = getAffySampleId(file);
 
 		FileReader inputFileReader = new FileReader(file);
@@ -373,8 +379,8 @@ public class LoadGTFromAffyFiles implements GenotypesLoader {
 		}
 
 
-		//GET ALLELES
-		Map<String, byte[]> tempMarkerSet = new HashMap<String, byte[]>();
+		// GET ALLELES
+		Map<MarkerKey, byte[]> tempMarkerSet = new HashMap<MarkerKey, byte[]>();
 		String l;
 		while ((l = inputBufferReader.readLine()) != null) {
 			String[] cVals = l.split(cImport.Separators.separators_CommaTab_rgxp);
@@ -395,27 +401,27 @@ public class LoadGTFromAffyFiles implements GenotypesLoader {
 					break;
 			}
 
-			tempMarkerSet.put(cVals[Standard.markerId], alleles);
+			tempMarkerSet.put(MarkerKey.valueOf(cVals[Standard.markerId]), alleles);
 		}
 
-		for (String key : sortedMarkerSetMap.keySet()) {
+		for (MarkerKey key : sortedAlleles.keySet()) {
 			byte[] value = tempMarkerSet.containsKey(key) ? tempMarkerSet.get(key) : cNetCDF.Defaults.DEFAULT_GT;
-			sortedMarkerSetMap.put(key, value);
+			sortedAlleles.put(key, value);
 		}
 		if (tempMarkerSet != null) {
 			tempMarkerSet.clear();
 		}
 
 		if (guessedGTCode.equals(GenotypeEncoding.UNKNOWN)) {
-			guessedGTCode = Utils.detectGTEncoding(sortedMarkerSetMap);
+			guessedGTCode = Utils.detectGTEncoding(sortedAlleles);
 		} else if (guessedGTCode.equals(GenotypeEncoding.O12)) {
-			guessedGTCode = Utils.detectGTEncoding(sortedMarkerSetMap);
+			guessedGTCode = Utils.detectGTEncoding(sortedAlleles);
 		}
 
 		// WRITING GENOTYPE DATA INTO netCDF FILE
-		int sampleIndex = samplesAL.indexOf(sampleId);
+		int sampleIndex = samples.indexOf(sampleId);
 		if (sampleIndex != -1) { // CHECK IF CURRENT FILE IS NOT PRESENT IN SAMPLEINFO FILE!!
-			org.gwaspi.netCDF.operations.Utils.saveSingleSampleGTsToMatrix(ncfile, sortedMarkerSetMap, sampleIndex);
+			org.gwaspi.netCDF.operations.Utils.saveSingleSampleGTsToMatrix(ncfile, sortedAlleles, sampleIndex);
 		}
 	}
 

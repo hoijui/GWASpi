@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.List;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleInfoList;
+import org.gwaspi.model.SampleKey;
 
 /**
  *
@@ -16,15 +17,17 @@ public class Utils {
 	private Utils() {
 	}
 
-	public static SampleInfo getCurrentSampleFormattedInfo(String sampleId, Object poolId) throws IOException {
+	public static SampleInfo getCurrentSampleFormattedInfo(SampleKey key, Object poolId) throws IOException {
 
 		SampleInfo sampleInfo = null;
 
-		List<SampleInfo> sampleInfos = SampleInfoList.getCurrentSampleInfoFromDB(sampleId, poolId);
+		List<SampleInfo> sampleInfos = SampleInfoList.getCurrentSampleInfoFromDB(key, poolId);
 
 		// PREVENT PHANTOM-DB READS EXCEPTIONS
 		if (!sampleInfos.isEmpty()) {
 			SampleInfo baseSampleInfo = sampleInfos.get(0);
+
+			// XXX maybe we should make use of the familyId in key instead (or at least aswell, checking this value against it)
 			String familyId = baseSampleInfo.getFamilyId();
 			if (familyId == null) {
 				familyId = "0";
@@ -72,7 +75,7 @@ public class Utils {
 
 			sampleInfo = new SampleInfo(
 					baseSampleInfo.getOrderId(),
-					sampleId,
+					key.getSampleId(),
 					familyId,
 					fatherId,
 					motherId,

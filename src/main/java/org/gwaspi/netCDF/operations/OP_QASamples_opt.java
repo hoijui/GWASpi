@@ -5,8 +5,10 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.AlleleBytes;
+import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixMetadata;
+import org.gwaspi.model.SampleKey;
 import org.gwaspi.netCDF.markers.MarkerSet_opt;
 import org.gwaspi.samples.SampleSet;
 import org.slf4j.Logger;
@@ -35,9 +37,9 @@ public class OP_QASamples_opt implements MatrixOperation {
 	public int processMatrix() throws IOException, InvalidRangeException {
 		int resultOpId = Integer.MIN_VALUE;
 
-		Map<String, Object> wrSampleSetMissingCountMap = new LinkedHashMap();
-		Map<String, Object> wrSampleSetMissingRatioMap = new LinkedHashMap();
-		Map<String, Object> wrSampleSetHetzyRatioMap = new LinkedHashMap();
+		Map<SampleKey, Object> wrSampleSetMissingCountMap = new LinkedHashMap<SampleKey, Object>();
+		Map<SampleKey, Object> wrSampleSetMissingRatioMap = new LinkedHashMap<SampleKey, Object>();
+		Map<SampleKey, Object> wrSampleSetHetzyRatioMap = new LinkedHashMap<SampleKey, Object>();
 
 		MatrixMetadata rdMatrixMetadata = MatricesList.getMatrixMetadataById(rdMatrixId);
 
@@ -46,23 +48,23 @@ public class OP_QASamples_opt implements MatrixOperation {
 		MarkerSet_opt rdMarkerSet = new MarkerSet_opt(rdMatrixMetadata.getStudyId(), rdMatrixId);
 		rdMarkerSet.initFullMarkerIdSetMap();
 
-		Map<String, Object> rdChrSetMap = rdMarkerSet.getChrInfoSetMap();
+		Map<MarkerKey, Object> rdChrSetMap = rdMarkerSet.getChrInfoSetMap();
 
 		//Map<String, Object> rdMarkerSetMap = rdMarkerSet.markerIdSetMap; // This to test heap usage of copying locally the Map from markerset
 
 		SampleSet rdSampleSet = new SampleSet(rdMatrixMetadata.getStudyId(), rdMatrixId);
-		Map<String, Object> rdSampleSetMap = rdSampleSet.getSampleIdSetMap();
+		Map<SampleKey, Object> rdSampleSetMap = rdSampleSet.getSampleIdSetMap();
 
 		// Iterate through samples
 		int sampleNb = 0;
-		for (String sampleId : rdSampleSetMap.keySet()) {
+		for (SampleKey sampleKey : rdSampleSetMap.keySet()) {
 			Integer missingCount = 0;
 			Integer heterozygCount = 0;
 
 			// Iterate through markerset
 			rdMarkerSet.fillGTsForCurrentSampleIntoInitMap(sampleNb);
 			int markerIndex = 0;
-			for (Map.Entry<String, Object> entry : rdMarkerSet.getMarkerIdSetMap().entrySet()) {
+			for (Map.Entry<?, Object> entry : rdMarkerSet.getMarkerIdSetMap().entrySet()) {
 				byte[] tempGT = (byte[]) entry.getValue();
 				if (tempGT[0] == AlleleBytes._0 && tempGT[1] == AlleleBytes._0) {
 					missingCount++;
@@ -81,12 +83,12 @@ public class OP_QASamples_opt implements MatrixOperation {
 				markerIndex++;
 			}
 
-			wrSampleSetMissingCountMap.put(sampleId, missingCount);
+			wrSampleSetMissingCountMap.put(sampleKey, missingCount);
 
 			double missingRatio = (double) missingCount / rdMarkerSet.getMarkerIdSetMap().size();
-			wrSampleSetMissingRatioMap.put(sampleId, missingRatio);
+			wrSampleSetMissingRatioMap.put(sampleKey, missingRatio);
 			double heterozygRatio = (double) heterozygCount / (rdMarkerSet.getMarkerIdSetMap().size() - missingCount);
-			wrSampleSetHetzyRatioMap.put(sampleId, heterozygRatio);
+			wrSampleSetHetzyRatioMap.put(sampleKey, heterozygRatio);
 
 			sampleNb++;
 

@@ -7,8 +7,10 @@ import java.util.Map;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import org.gwaspi.global.Text;
+import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixMetadata;
+import org.gwaspi.model.SampleKey;
 import org.gwaspi.netCDF.markers.MarkerSet_opt;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.gwaspi.samples.SampleSet;
@@ -41,10 +43,10 @@ public class MatrixTranslator_opt {
 	private MarkerSet_opt wrMarkerSet = null;
 	private SampleSet rdSampleSet = null;
 	private SampleSet wrSampleSet = null;
-	private Map<String, Object> wrMarkerIdSetMap = new LinkedHashMap<String, Object>();
-	private Map<String, Object> rdChrInfoSetMap = null;
-	private Map<String, Object> rdSampleSetMap = null;
-	private Map<String, Object> wrSampleSetMap = new LinkedHashMap<String, Object>();
+	private Map<MarkerKey, Object> wrMarkerIdSetMap = new LinkedHashMap<MarkerKey, Object>();
+	private Map<MarkerKey, Object> rdChrInfoSetMap = null;
+	private Map<SampleKey, Object> rdSampleSetMap = null;
+	private Map<SampleKey, Object> wrSampleSetMap = new LinkedHashMap<SampleKey, Object>();
 
 	public MatrixTranslator_opt(
 			int studyId,
@@ -172,7 +174,7 @@ public class MatrixTranslator_opt {
 
 				//<editor-fold defaultstate="collapsed" desc="GENOTYPES WRITER">
 				// Get correct bases dictionary for translation
-				Map<String, Object> dictionnaryMap = rdMarkerSet.getDictionaryBases();
+				Map<MarkerKey, Object> dictionnaryMap = rdMarkerSet.getDictionaryBases();
 
 				// Iterate through Samples, use Sample item position to read all Markers GTs from rdMarkerIdSetMap.
 				int sampleIndex = 0;
@@ -323,8 +325,8 @@ public class MatrixTranslator_opt {
 
 				//<editor-fold defaultstate="collapsed" desc="GENOTYPES WRITER">
 				// Get correct strand of each marker for newStrand translation
-				Map<String, Object> markerStrandsMap = new LinkedHashMap<String, Object>();
-				markerStrandsMap.putAll(rdSampleSetMap);
+				Map<MarkerKey, Object> markerStrandsMap = new LinkedHashMap<MarkerKey, Object>();
+				markerStrandsMap.putAll(rdChrInfoSetMap); // XXX was rdSampleSetMap instead of rdChrInfoSetMap before; but that one had the wrong type -> bug; but is this the right set (with MarkerKey's as keys)?
 
 				// Iterate through pmAllelesAndStrandsMap, use Sample item position to read all Markers GTs from rdMarkerIdSetMap.
 				int sampleNb = 0;
@@ -379,7 +381,7 @@ public class MatrixTranslator_opt {
 		return result;
 	}
 
-	private Map<String, Object> translateCurrentSampleAB12AllelesMap(Map<String, Object> codedMap, GenotypeEncoding rdMatrixType, Map<String, Object> dictionaryMap) {
+	private Map<MarkerKey, Object> translateCurrentSampleAB12AllelesMap(Map<MarkerKey, Object> codedMap, GenotypeEncoding rdMatrixType, Map<MarkerKey, Object> dictionaryMap) {
 		byte alleleA;
 		byte alleleB;
 
@@ -388,9 +390,9 @@ public class MatrixTranslator_opt {
 				alleleA = cNetCDF.Defaults.AlleleBytes.A;
 				alleleB = cNetCDF.Defaults.AlleleBytes.B;
 				// Iterate through all markers
-				for (Map.Entry<String, Object> entry : codedMap.entrySet()) {
-					String markerId = entry.getKey();
-					char[] basesDict = dictionaryMap.get(markerId).toString().toCharArray();
+				for (Map.Entry<MarkerKey, Object> entry : codedMap.entrySet()) {
+					MarkerKey markerKey = entry.getKey();
+					char[] basesDict = dictionaryMap.get(markerKey).toString().toCharArray();
 					byte[] codedAlleles = (byte[]) entry.getValue();
 					byte[] transAlleles = new byte[2];
 
@@ -418,9 +420,9 @@ public class MatrixTranslator_opt {
 				alleleB = cNetCDF.Defaults.AlleleBytes._2;
 
 				// Iterate through all markers
-				for (Map.Entry<String, Object> entry : codedMap.entrySet()) {
-					String markerId = entry.getKey();
-					char[] basesDict = dictionaryMap.get(markerId).toString().toCharArray();
+				for (Map.Entry<MarkerKey, Object> entry : codedMap.entrySet()) {
+					MarkerKey markerKey = entry.getKey();
+					char[] basesDict = dictionaryMap.get(markerKey).toString().toCharArray();
 					byte[] codedAlleles = (byte[]) entry.getValue();
 					byte[] transAlleles = new byte[2];
 
@@ -450,7 +452,7 @@ public class MatrixTranslator_opt {
 		return codedMap;
 	}
 
-	private Map<String, Object> translateCurrentSample1234AllelesMap(Map<String, Object> codedMap, Map<String, Object> markerStrandsMap) {
+	private Map<MarkerKey, Object> translateCurrentSample1234AllelesMap(Map<MarkerKey, Object> codedMap, Map<MarkerKey, Object> markerStrandsMap) {
 
 		Map<Byte, Byte> dictionary = new HashMap<Byte, Byte>();
 		dictionary.put(cNetCDF.Defaults.AlleleBytes._0, cNetCDF.Defaults.AlleleBytes._0);
@@ -460,14 +462,14 @@ public class MatrixTranslator_opt {
 		dictionary.put(cNetCDF.Defaults.AlleleBytes._4, cNetCDF.Defaults.AlleleBytes.T);
 
 		// Iterate through all markers
-		for (String markerId : markerStrandsMap.keySet()) {
-			byte[] codedAlleles = (byte[]) codedMap.get(markerId);
+		for (MarkerKey markerKey : markerStrandsMap.keySet()) {
+			byte[] codedAlleles = (byte[]) codedMap.get(markerKey);
 
 			byte[] transAlleles = new byte[2];
 			transAlleles[0] = dictionary.get(codedAlleles[0]);
 			transAlleles[1] = dictionary.get(codedAlleles[1]);
 
-			codedMap.put(markerId, transAlleles);
+			codedMap.put(markerKey, transAlleles);
 		}
 		return codedMap;
 	}

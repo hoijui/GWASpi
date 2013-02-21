@@ -12,8 +12,10 @@ import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
 import org.gwaspi.global.Text;
+import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.SampleInfo;
+import org.gwaspi.model.SampleKey;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -83,7 +85,7 @@ public class LoadGTFromSequenomFiles implements GenotypesLoader {
 		//<editor-fold defaultstate="collapsed" desc="CREATE MARKERSET & NETCDF">
 		MetadataLoaderSequenom markerSetLoader = new MetadataLoaderSequenom(loadDescription.getAnnotationFilePath(), loadDescription.getStudyId());
 
-		Map<String, Object> markerSetMap = markerSetLoader.getSortedMarkerSetWithMetaData();
+		Map<MarkerKey, Object> markerSetMap = markerSetLoader.getSortedMarkerSetWithMetaData();
 
 		log.info("Done initializing sorted MarkerSetMap");
 
@@ -116,7 +118,7 @@ public class LoadGTFromSequenomFiles implements GenotypesLoader {
 		}
 
 		//RETRIEVE CHROMOSOMES INFO
-		Map<String, Object> chrSetMap = org.gwaspi.netCDF.matrices.Utils.aggregateChromosomeInfo(markerSetMap, 2, 3);
+		Map<MarkerKey, Object> chrSetMap = org.gwaspi.netCDF.matrices.Utils.aggregateChromosomeInfo(markerSetMap, 2, 3);
 
 
 		MatrixFactory matrixFactory = new MatrixFactory(
@@ -145,7 +147,7 @@ public class LoadGTFromSequenomFiles implements GenotypesLoader {
 
 		//<editor-fold defaultstate="collapsed" desc="WRITE MATRIX METADATA">
 		// WRITE SAMPLESET TO MATRIX FROM SAMPLES LIST
-		ArrayChar.D2 samplesD2 = org.gwaspi.netCDF.operations.Utils.writeCollectionToD2ArrayChar(AbstractLoadGTFromFiles.extractSampleIds(sampleInfos), cNetCDF.Strides.STRIDE_SAMPLE_NAME);
+		ArrayChar.D2 samplesD2 = org.gwaspi.netCDF.operations.Utils.writeCollectionToD2ArrayChar(AbstractLoadGTFromFiles.extractKeys(sampleInfos), cNetCDF.Strides.STRIDE_SAMPLE_NAME);
 
 		int[] sampleOrig = new int[]{0, 0};
 		try {
@@ -216,7 +218,7 @@ public class LoadGTFromSequenomFiles implements GenotypesLoader {
 		// WRITE GT STRAND FROM ANNOTATION FILE
 		int[] gtOrig = new int[]{0, 0};
 		String strandFlag = cNetCDF.Defaults.StrandType.FWD.toString();
-		for (Map.Entry<String, Object> entry : markerSetMap.entrySet()) {
+		for (Map.Entry<?, Object> entry : markerSetMap.entrySet()) {
 			entry.setValue(strandFlag);
 		}
 		markersD2 = org.gwaspi.netCDF.operations.Utils.writeMapValueToD2ArrayChar(markerSetMap, cNetCDF.Strides.STRIDE_STRAND);
@@ -230,8 +232,6 @@ public class LoadGTFromSequenomFiles implements GenotypesLoader {
 		}
 		markersD2 = null;
 		log.info("Done writing strand info to matrix");
-
-
 		// </editor-fold>
 
 		// <editor-fold defaultstate="collapsed" desc="MATRIX GENOTYPES LOAD ">
@@ -239,9 +239,8 @@ public class LoadGTFromSequenomFiles implements GenotypesLoader {
 		// INIT AND PURGE SORTEDMARKERSET Map
 		int sampleIndex = 0;
 		for (SampleInfo sampleInfo : sampleInfos) {
-			String sampleId = sampleInfo.getSampleId();
 			// PURGE MarkerIdMap on current sample
-			for (Map.Entry<String, Object> entry : markerSetMap.entrySet()) {
+			for (Map.Entry<?, Object> entry : markerSetMap.entrySet()) {
 				entry.setValue(cNetCDF.Defaults.DEFAULT_GT);
 			}
 
@@ -249,7 +248,7 @@ public class LoadGTFromSequenomFiles implements GenotypesLoader {
 			for (int i = 0; i < gtFilesToImport.length; i++) {
 				//log.info("Input file: "+i);
 				loadIndividualFiles(gtFilesToImport[i],
-						sampleId,
+						sampleInfo.getKey(),
 						markerSetMap);
 			}
 
@@ -307,9 +306,12 @@ public class LoadGTFromSequenomFiles implements GenotypesLoader {
 		return result;
 	}
 
+	/**
+	 * @see AbstractLoadGTFromFiles#loadIndividualFiles
+	 */
 	public void loadIndividualFiles(File file,
-			String currSampleId,
-			Map<String, Object> markerSetMap)
+			SampleKey sampleKey,
+			Map<MarkerKey, Object> alleles)
 			throws IOException, InvalidRangeException
 	{
 		// LOAD INPUT FILE
@@ -321,13 +323,17 @@ public class LoadGTFromSequenomFiles implements GenotypesLoader {
 		while ((l = inputBufferReader.readLine()) != null) {
 			if (!l.contains("SAMPLE_ID")) { // SKIP ALL HEADER LINES
 				String[] cVals = l.split(cImport.Separators.separators_Tab_rgxp);
-				if (cVals[Standard.sampleId].equals(currSampleId)) { //ONLY PROCESS CURRENT SAMPLEID DATA
-					String tmpMarkerId = cVals[Standard.markerId].trim();
+				String currSampleId = cVals[Standard.sampleId];
+				// NOTE The Sequenom format does not have a family-ID
+				SampleKey currSampleKey = new SampleKey(currSampleId, SampleKey.FAMILY_ID_NONE);
+				if (currSampleKey.equals(sampleKey)) {
+					// ONLY PROCESS CURRENT SAMPLEID DATA
+					String markerId = cVals[Standard.markerId].trim();
 					try {
-						Long.parseLong(tmpMarkerId);
-						tmpMarkerId = "rs" + tmpMarkerId;
+						Long.parseLong(markerId);
+						markerId = "rs" + markerId;
 					} catch (Exception ex) {
-						log.warn(null, ex);
+						log.warn(null, ex); // XXX maybe this is not a problem, but an OK thing?
 					}
 
 					String sAlleles = cVals[Standard.alleles];
@@ -337,7 +343,7 @@ public class LoadGTFromSequenomFiles implements GenotypesLoader {
 						sAlleles = sAlleles + sAlleles;
 					}
 					byte[] tmpAlleles = new byte[]{(byte) sAlleles.charAt(0), (byte) sAlleles.charAt(1)};
-					markerSetMap.put(tmpMarkerId, tmpAlleles);
+					alleles.put(MarkerKey.valueOf(markerId), tmpAlleles);
 				}
 			}
 		}

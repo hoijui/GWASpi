@@ -35,6 +35,7 @@ import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.Operation;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
+import org.gwaspi.model.SampleKey;
 import org.gwaspi.reports.GenericReportGenerator;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
@@ -71,7 +72,7 @@ public final class SampleQAHetzygPlotZoom extends JPanel {
 	private int opId;
 	private Operation op;
 	private OperationMetadata rdOPMetadata;
-	private Map<String, Object> labelerMap;
+	private Map<String, SampleKey> labeler;
 	private MatrixMetadata rdMatrixMetadata;
 	private String currentMarkerId;
 	private long centerPhysPos;
@@ -429,12 +430,12 @@ public final class SampleQAHetzygPlotZoom extends JPanel {
 		return chart;
 	}
 
-	public Map<String, Object> getLabelerMap() {
-		return labelerMap;
+	private Map<String, SampleKey> getLabelerMap() {
+		return labeler;
 	}
 
-	public void setLabelerMap(Map<String, Object> labelerMap) {
-		this.labelerMap = labelerMap;
+	public void setLabelerMap(Map<String, SampleKey> labelerMap) {
+		this.labeler = labelerMap;
 	}
 
 	private class MyXYToolTipGenerator extends StandardXYToolTipGenerator
@@ -457,9 +458,10 @@ public final class SampleQAHetzygPlotZoom extends JPanel {
 				localizer.append(missingRatValue);
 				localizer.append("_");
 				localizer.append(hetzygValue);
-				for (Map.Entry<String, Object> entry : getLabelerMap().entrySet()) {
+				for (Map.Entry<String, SampleKey> entry : getLabelerMap().entrySet()) {
 					if (entry.getKey().contains(localizer.toString())) {
-						toolTip.append("Sample ID: ").append(entry.getValue().toString());
+						toolTip.append("Sample ID: ").append(entry.getValue().getSampleId());
+						toolTip.append(" / Family ID: ").append(entry.getValue().getFamilyId());
 						toolTip.append("<br>");
 					}
 				}
@@ -515,9 +517,9 @@ public final class SampleQAHetzygPlotZoom extends JPanel {
 				localizer.append("_");
 				localizer.append(hetzygValue);
 				if (hetzygValue > this.hetzygThreshold || missingRatValue > this.missingThreshold) {
-					for (Map.Entry<String, Object> entry : getLabelerMap().entrySet()) {
+					for (Map.Entry<String, SampleKey> entry : getLabelerMap().entrySet()) {
 						if (entry.getKey().contains(localizer.toString())) {
-							rsLabel = entry.getValue().toString();
+							rsLabel = entry.getValue().getSampleId();
 						}
 					}
 				}

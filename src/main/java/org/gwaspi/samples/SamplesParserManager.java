@@ -16,6 +16,7 @@ import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleInfoList;
+import org.gwaspi.model.SampleKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.InvalidRangeException;
@@ -43,9 +44,9 @@ public class SamplesParserManager {
 					rdMatrixMetadata.getMatrixFriendlyName());
 //			NetcdfFile rdNcFile = NetcdfFile.open(rdMatrixMetadata.getPathToMatrix());
 			SampleSet rdSampleSet = new SampleSet(rdMatrixMetadata.getStudyId(), matrixId);
-			Map<String, Object> rdSampleSetMap = rdSampleSet.getSampleIdSetMap();
-			for (String key : rdSampleSetMap.keySet()) {
-				List<SampleInfo> sampleInfos = SampleInfoList.getCurrentSampleInfoFromDB(key.toString(), rdMatrixMetadata.getStudyId());
+			Map<SampleKey, Object> rdSampleSetMap = rdSampleSet.getSampleIdSetMap();
+			for (SampleKey key : rdSampleSetMap.keySet()) {
+				List<SampleInfo> sampleInfos = SampleInfoList.getCurrentSampleInfoFromDB(key, rdMatrixMetadata.getStudyId());
 				if (sampleInfos != null) {
 					resultHS.add(sampleInfos.get(0).getAffection());
 				}

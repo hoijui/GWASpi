@@ -36,6 +36,7 @@ import org.gwaspi.gui.utils.CursorUtils;
 import org.gwaspi.gui.utils.Dialogs;
 import org.gwaspi.gui.utils.LinksExternalResouces;
 import org.gwaspi.gui.utils.URLInDefaultBrowser;
+import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.Operation;
@@ -85,7 +86,7 @@ public final class ManhattanPlotZoom extends JPanel {
 	private int opId;
 	private Operation op;
 	private OperationMetadata rdOPMetadata;
-	private Map<String, Object> labelerMap;
+	private Map<String, MarkerKey> labeler;
 	private MatrixMetadata rdMatrixMetadata;
 	private String origMarkerId;
 	private String origChr;
@@ -619,7 +620,7 @@ public final class ManhattanPlotZoom extends JPanel {
 			ManhattanPlotZoom manhattanPlotZoom,
 			int _opId,
 			String _origChr,
-			String _markerId,
+			MarkerKey _markerKey,
 			int _centerPhysPos,
 			int _requestedSetSize)
 	{
@@ -629,7 +630,7 @@ public final class ManhattanPlotZoom extends JPanel {
 					manhattanPlotZoom,
 					_opId,
 					cNetCDF.Association.VAR_OP_MARKERS_ASAllelicAssociationTPOR,
-					_markerId,
+					_markerKey,
 					_centerPhysPos,
 					_requestedSetSize);
 		} else if (op.getOperationType().equals(OPType.GENOTYPICTEST.toString())) {
@@ -637,7 +638,7 @@ public final class ManhattanPlotZoom extends JPanel {
 					manhattanPlotZoom,
 					_opId,
 					cNetCDF.Association.VAR_OP_MARKERS_ASGenotypicAssociationTP2OR,
-					_markerId,
+					_markerKey,
 					_centerPhysPos,
 					_requestedSetSize);
 		} else if (op.getOperationType().equals(OPType.TRENDTEST.toString())) {
@@ -645,7 +646,7 @@ public final class ManhattanPlotZoom extends JPanel {
 					manhattanPlotZoom,
 					_opId,
 					cNetCDF.Association.VAR_OP_MARKERS_ASTrendTestTP,
-					_markerId,
+					_markerKey,
 					_centerPhysPos,
 					_requestedSetSize);
 		}
@@ -756,12 +757,12 @@ public final class ManhattanPlotZoom extends JPanel {
 		return chart;
 	}
 
-	public Map<String, Object> getLabelerMap() {
-		return labelerMap;
+	public Map<String, MarkerKey> getLabelerMap() {
+		return labeler;
 	}
 
-	public void setLabelerMap(Map<String, Object> labelerMap) {
-		this.labelerMap = labelerMap;
+	public void setLabelerMap(Map<String, MarkerKey> labelerMap) {
+		this.labeler = labelerMap;
 	}
 
 	public long getCenterPhysPos() {

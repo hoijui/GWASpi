@@ -27,7 +27,7 @@ import org.gwaspi.gui.utils.CursorUtils;
 import org.gwaspi.gui.utils.Dialogs;
 import org.gwaspi.model.Operation;
 import org.gwaspi.model.OperationsList;
-import org.gwaspi.netCDF.operations.OperationSet;
+import org.gwaspi.netCDF.operations.MarkerOperationSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -215,7 +215,7 @@ public final class ManhattanChartDisplay extends JPanel {
 		}
 
 		try {
-			OperationSet opSet = new OperationSet(studyId, opId);
+			MarkerOperationSet opSet = new MarkerOperationSet(studyId, opId);
 			chrSetInfoMap = opSet.getChrInfoSetMap();
 
 			// CHECK HOW MANY CHR HAVE PLOTS (ANY MARKERS?)

@@ -11,13 +11,14 @@ import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.global.Config;
 import org.gwaspi.global.Text;
+import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.Operation;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.Report;
 import org.gwaspi.model.ReportsList;
 import org.gwaspi.netCDF.markers.MarkerSet_opt;
-import org.gwaspi.netCDF.operations.OperationSet;
+import org.gwaspi.netCDF.operations.MarkerOperationSet;
 import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.CombinedRangeXYPlot;
@@ -162,14 +163,14 @@ public class OutputTrendTest {
 		boolean result;
 
 		try {
-			Map<String, Object> unsortedMarkerIdTrendTestValsMap = GenericReportGenerator.getAnalysisVarData(opId, cNetCDF.Association.VAR_OP_MARKERS_ASTrendTestTP);
-			Map<String, Object> unsortedMarkerIdPvalMap = new LinkedHashMap<String, Object>();
-			for (Map.Entry<String, Object> entry : unsortedMarkerIdTrendTestValsMap.entrySet()) {
+			Map<MarkerKey, Object> unsortedMarkerIdTrendTestValsMap = GenericReportGenerator.getAnalysisVarData(opId, cNetCDF.Association.VAR_OP_MARKERS_ASTrendTestTP);
+			Map<MarkerKey, Object> unsortedMarkerIdPvalMap = new LinkedHashMap<MarkerKey, Object>();
+			for (Map.Entry<MarkerKey, Object> entry : unsortedMarkerIdTrendTestValsMap.entrySet()) {
 				double[] values = (double[]) entry.getValue();
 				unsortedMarkerIdPvalMap.put(entry.getKey(), values[1]);
 			}
 
-			Map<String, Object> sortingMarkerSetMap = ReportsList.getSortedMarkerSetByDoubleValue(unsortedMarkerIdPvalMap);
+			Map<MarkerKey, Object> sortingMarkerSetMap = ReportsList.getSortedMarkerSetByDoubleValue(unsortedMarkerIdPvalMap);
 			if (unsortedMarkerIdPvalMap != null) {
 				unsortedMarkerIdPvalMap.clear();
 			}
@@ -186,7 +187,7 @@ public class OutputTrendTest {
 
 			// WRITE MARKERSET RSID
 			rdInfoMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_RSID);
-			for (Map.Entry<String, Object> entry : sortingMarkerSetMap.entrySet()) {
+			for (Map.Entry<MarkerKey, Object> entry : sortingMarkerSetMap.entrySet()) {
 				Object value = rdInfoMarkerSet.getMarkerIdSetMap().get(entry.getKey());
 				entry.setValue(value);
 			}
@@ -194,7 +195,7 @@ public class OutputTrendTest {
 
 			// WRITE MARKERSET CHROMOSOME
 			rdInfoMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
-			for (Map.Entry<String, Object> entry : sortingMarkerSetMap.entrySet()) {
+			for (Map.Entry<MarkerKey, Object> entry : sortingMarkerSetMap.entrySet()) {
 				Object value = rdInfoMarkerSet.getMarkerIdSetMap().get(entry.getKey());
 				entry.setValue(value);
 			}
@@ -202,7 +203,7 @@ public class OutputTrendTest {
 
 			// WRITE MARKERSET POS
 			rdInfoMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_POS);
-			for (Map.Entry<String, Object> entry : sortingMarkerSetMap.entrySet()) {
+			for (Map.Entry<MarkerKey, Object> entry : sortingMarkerSetMap.entrySet()) {
 				Object value = rdInfoMarkerSet.getMarkerIdSetMap().get(entry.getKey());
 				entry.setValue(value);
 			}
@@ -222,12 +223,12 @@ public class OutputTrendTest {
 				OperationMetadata qaMetadata = OperationsList.getOperationMetadata(markersQAopId);
 				NetcdfFile qaNcFile = NetcdfFile.open(qaMetadata.getPathToMatrix());
 
-				OperationSet rdOperationSet = new OperationSet(rdOPMetadata.getStudyId(), markersQAopId);
-				Map<String, Object> opMarkerSetMap = rdOperationSet.getOpSetMap();
+				MarkerOperationSet rdOperationSet = new MarkerOperationSet(rdOPMetadata.getStudyId(), markersQAopId);
+				Map<MarkerKey, Object> opMarkerSetMap = rdOperationSet.getOpSetMap();
 
 				// MINOR ALLELE
 				opMarkerSetMap = rdOperationSet.fillOpSetMapWithVariable(qaNcFile, cNetCDF.Census.VAR_OP_MARKERS_MINALLELES);
-				for (Map.Entry<String, Object> entry : rdInfoMarkerSet.getMarkerIdSetMap().entrySet()) {
+				for (Map.Entry<MarkerKey, Object> entry : rdInfoMarkerSet.getMarkerIdSetMap().entrySet()) {
 					Object minorAllele = opMarkerSetMap.get(entry.getKey());
 					entry.setValue(minorAllele);
 				}
@@ -235,19 +236,19 @@ public class OutputTrendTest {
 				// MAJOR ALLELE
 				rdOperationSet.fillMapWithDefaultValue(opMarkerSetMap, "");
 				opMarkerSetMap = rdOperationSet.fillOpSetMapWithVariable(qaNcFile, cNetCDF.Census.VAR_OP_MARKERS_MAJALLELES);
-				for (Map.Entry<String, Object> entry : rdInfoMarkerSet.getMarkerIdSetMap().entrySet()) {
+				for (Map.Entry<MarkerKey, Object> entry : rdInfoMarkerSet.getMarkerIdSetMap().entrySet()) {
 					Object minorAllele = entry.getValue();
 					entry.setValue(minorAllele + sep + opMarkerSetMap.get(entry.getKey()));
 				}
 			}
-			for (Map.Entry<String, Object> entry : sortingMarkerSetMap.entrySet()) {
+			for (Map.Entry<MarkerKey, Object> entry : sortingMarkerSetMap.entrySet()) {
 				Object value = rdInfoMarkerSet.getMarkerIdSetMap().get(entry.getKey());
 				entry.setValue(value);
 			}
 			ReportWriter.appendColumnToReport(reportPath, reportNameExt, sortingMarkerSetMap, false, false);
 
 			// WRITE TREND TEST VALUES
-			for (Map.Entry<String, Object> entry : sortingMarkerSetMap.entrySet()) {
+			for (Map.Entry<MarkerKey, Object> entry : sortingMarkerSetMap.entrySet()) {
 				Object value = unsortedMarkerIdTrendTestValsMap.get(entry.getKey());
 				entry.setValue(value);
 			}

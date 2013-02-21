@@ -13,6 +13,7 @@ import org.gwaspi.constants.cImport;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import org.gwaspi.global.Text;
+import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
@@ -68,7 +69,7 @@ public class LoadGTFromHapmapFiles_sampleSet extends LoadGTFromHapmapFiles imple
 				loadDescription.getGtDirPath(),
 				loadDescription.getFormat(),
 				loadDescription.getStudyId());
-		Map<String, Object> markerSetMap = markerSetLoader.getSortedMarkerSetWithMetaData();
+		Map<MarkerKey, Object> markerSetMap = markerSetLoader.getSortedMarkerSetWithMetaData();
 
 		log.info("Done initializing sorted MarkerSetMap");
 
@@ -99,8 +100,8 @@ public class LoadGTFromHapmapFiles_sampleSet extends LoadGTFromHapmapFiles imple
 			descSB.append(" (Sample Info file)\n");
 		}
 
-		//RETRIEVE CHROMOSOMES INFO
-		Map<String, Object> chrSetMap = org.gwaspi.netCDF.matrices.Utils.aggregateChromosomeInfo(markerSetMap, 2, 3);
+		// RETRIEVE CHROMOSOMES INFO
+		Map<MarkerKey, Object> chrSetMap = org.gwaspi.netCDF.matrices.Utils.aggregateChromosomeInfo(markerSetMap, 2, 3);
 
 		MatrixFactory matrixFactory = new MatrixFactory(
 				loadDescription.getStudyId(),
@@ -128,7 +129,7 @@ public class LoadGTFromHapmapFiles_sampleSet extends LoadGTFromHapmapFiles imple
 
 		//<editor-fold defaultstate="collapsed" desc="WRITE MATRIX METADATA">
 		// WRITE SAMPLESET TO MATRIX FROM SAMPLES ARRAYLIST
-		ArrayChar.D2 samplesD2 = org.gwaspi.netCDF.operations.Utils.writeCollectionToD2ArrayChar(AbstractLoadGTFromFiles.extractSampleIds(sampleInfos), cNetCDF.Strides.STRIDE_SAMPLE_NAME);
+		ArrayChar.D2 samplesD2 = org.gwaspi.netCDF.operations.Utils.writeCollectionToD2ArrayChar(AbstractLoadGTFromFiles.extractKeys(sampleInfos), cNetCDF.Strides.STRIDE_SAMPLE_NAME);
 
 		int[] sampleOrig = new int[]{0, 0};
 		try {
@@ -229,7 +230,7 @@ public class LoadGTFromHapmapFiles_sampleSet extends LoadGTFromHapmapFiles imple
 		// <editor-fold defaultstate="collapsed" desc="MATRIX GENOTYPES LOAD ">
 		// Index MarkerIdMap
 		int count = 0;
-		for (Map.Entry<String, Object> entry : markerSetMap.entrySet()) {
+		for (Map.Entry<?, Object> entry : markerSetMap.entrySet()) {
 			entry.setValue(count);
 			count++;
 		}
@@ -237,7 +238,6 @@ public class LoadGTFromHapmapFiles_sampleSet extends LoadGTFromHapmapFiles imple
 		int dataStartRow = LoadGTFromHapmapFiles.Standard.dataStartRow;
 
 		//<editor-fold defaultstate="collapsed" desc="GET CURRENT MARKER SAMPLESET">
-
 		FileReader inputFileReader = new FileReader(loadDescription.getGtDirPath());
 		BufferedReader inputBufferReader = new BufferedReader(inputFileReader);
 
@@ -266,8 +266,8 @@ public class LoadGTFromHapmapFiles_sampleSet extends LoadGTFromHapmapFiles imple
 
 			//MEMORY LEAN METHOD
 			StringTokenizer st = new StringTokenizer(l, cImport.Separators.separators_SpaceTab_rgxp);
-			String currentMarkerId = st.nextToken();
-			int markerIdIndex = (Integer) markerSetMap.get(currentMarkerId);
+			MarkerKey currentMarkerKey = MarkerKey.valueOf(st.nextToken());
+			int markerIdIndex = (Integer) markerSetMap.get(currentMarkerKey);
 
 
 			//read genotypes from this point on

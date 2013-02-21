@@ -12,6 +12,7 @@ import org.gwaspi.constants.cImport.Annotation.HapmapGT_Standard;
 import org.gwaspi.constants.cImport.ImportFormat;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.global.Text;
+import org.gwaspi.model.MarkerKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,7 +42,8 @@ public class MetadataLoaderHapmap implements MetadataLoader {
 		this.format = format;
 	}
 
-	public Map<String, Object> getSortedMarkerSetWithMetaData() throws IOException {
+	@Override
+	public Map<MarkerKey, Object> getSortedMarkerSetWithMetaData() throws IOException {
 		String startTime = org.gwaspi.global.Utils.getMediumDateTimeAsString();
 
 		SortedMap<String, String> tempTM = parseAnnotationBRFile(); // rsId, alleles [A/T], chr, pos, strand, genome_build, center, protLSID, assayLSID, panelLSID, QC_code, ensue GTs by SampleId
@@ -49,7 +51,7 @@ public class MetadataLoaderHapmap implements MetadataLoader {
 		org.gwaspi.global.Utils.sysoutStart("initilaizing Marker info");
 		log.info(Text.All.processing);
 
-		Map<String, Object> markerMetadataMap = new LinkedHashMap<String, Object>();
+		Map<MarkerKey, Object> markerMetadataMap = new LinkedHashMap<MarkerKey, Object>();
 		for (Map.Entry<String, String> entry : tempTM.entrySet()) {
 			String[] keyValues = entry.getKey().split(cNetCDF.Defaults.TMP_SEPARATOR); // chr;pos;markerId
 			String[] valValues = entry.getValue().split(cNetCDF.Defaults.TMP_SEPARATOR);  // rsId;strand;alleles
@@ -69,7 +71,7 @@ public class MetadataLoaderHapmap implements MetadataLoader {
 			markerInfo[4] = valValues[1]; // 4 => strand
 			markerInfo[5] = valValues[2]; // 5 => alleles
 
-			markerMetadataMap.put(keyValues[2], markerInfo);
+			markerMetadataMap.put(MarkerKey.valueOf(keyValues[2]), markerInfo);
 		}
 
 		String description = "Generated sorted MarkerIdSet Map sorted by chromosome and position";

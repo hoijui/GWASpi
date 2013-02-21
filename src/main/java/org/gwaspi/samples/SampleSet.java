@@ -10,6 +10,7 @@ import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleInfoList;
+import org.gwaspi.model.SampleKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.ArrayByte;
@@ -36,7 +37,7 @@ public class SampleSet {
 	private int sampleset_id = Integer.MIN_VALUE; // id
 	private int sampleSetSize = 0;
 	private MatrixMetadata matrixMetadata;
-	private Map<String, Object> sampleIdSetMap = new LinkedHashMap<String, Object>();
+	private Map<SampleKey, Object> sampleIdSetMap = new LinkedHashMap<SampleKey, Object>();
 
 	public SampleSet(int studyId, int matrixId) throws IOException {
 		matrixMetadata = MatricesList.getMatrixMetadataById(matrixId);
@@ -67,7 +68,7 @@ public class SampleSet {
 	}
 
 	//<editor-fold defaultstate="collapsed" desc="SAMPLESET FETCHERS">
-	public Map<String, Object> getSampleIdSetMap() throws InvalidRangeException {
+	public Map<SampleKey, Object> getSampleIdSetMap() throws InvalidRangeException {
 		NetcdfFile ncfile = null;
 
 		try {
@@ -85,8 +86,7 @@ public class SampleSet {
 				sampleSetSize = markerSetDim.getLength();
 				ArrayChar.D2 sampleSetAC = (ArrayChar.D2) var.read("(0:" + (sampleSetSize - 1) + ":1, 0:" + (varShape[1] - 1) + ":1)");
 
-				sampleIdSetMap = org.gwaspi.netCDF.operations.Utils.writeD2ArrayCharToMapKeys(sampleSetAC);
-
+				sampleIdSetMap = org.gwaspi.netCDF.operations.Utils.writeD2ArrayCharToMapSampleKeys(sampleSetAC);
 			} catch (IOException ex) {
 				log.error("Cannot read data", ex);
 			} catch (InvalidRangeException ex) {
@@ -108,7 +108,7 @@ public class SampleSet {
 		return sampleIdSetMap;
 	}
 
-	public Map<String, Object> getSampleIdSetMap(String matrixImportPath) throws InvalidRangeException {
+	public Map<SampleKey, Object> getSampleIdSetMap(String matrixImportPath) throws InvalidRangeException {
 		NetcdfFile ncfile = null;
 
 		try {
@@ -126,8 +126,7 @@ public class SampleSet {
 				sampleSetSize = markerSetDim.getLength();
 				ArrayChar.D2 sampleSetAC = (ArrayChar.D2) var.read("(0:" + (sampleSetSize - 1) + ":1, 0:" + (varShape[1] - 1) + ":1)");
 
-				sampleIdSetMap = org.gwaspi.netCDF.operations.Utils.writeD2ArrayCharToMapKeys(sampleSetAC);
-
+				sampleIdSetMap = org.gwaspi.netCDF.operations.Utils.writeD2ArrayCharToMapSampleKeys(sampleSetAC);
 			} catch (IOException ex) {
 				log.error("Cannot read data", ex);
 			} catch (InvalidRangeException ex) {
@@ -151,7 +150,7 @@ public class SampleSet {
 	//</editor-fold>
 
 	//<editor-fold defaultstate="collapsed" desc="SAMPLESET FILLERS">
-	public Map<String, Object> readAllSamplesGTsFromCurrentMarkerToMap(NetcdfFile rdNcFile, Map<String, Object> rdMap, int markerNb) throws IOException {
+	public Map<SampleKey, Object> readAllSamplesGTsFromCurrentMarkerToMap(NetcdfFile rdNcFile, Map<SampleKey, Object> rdMap, int markerNb) throws IOException {
 
 		try {
 			Variable genotypes = rdNcFile.findVariable(cNetCDF.Variables.VAR_GENOTYPES);
@@ -210,7 +209,7 @@ public class SampleSet {
 		return rdMap;
 	}
 
-	public Map<String, Object> fillSampleIdSetMapWithVariable(NetcdfFile ncfile, String variable) {
+	public Map<SampleKey, Object> fillSampleIdSetMapWithVariable(NetcdfFile ncfile, String variable) {
 		try {
 			Variable var = ncfile.findVariable(variable);
 
@@ -247,7 +246,7 @@ public class SampleSet {
 		return sampleIdSetMap;
 	}
 
-	private void fillSampleIdSetMapWithVariable(Map<String, Object> map, String variable) {
+	private void fillSampleIdSetMapWithVariable(Map<SampleKey, Object> map, String variable) {
 		NetcdfFile ncfile = null;
 
 		try {
@@ -292,7 +291,7 @@ public class SampleSet {
 		}
 	}
 
-	private void fillSampleIdSetMapWithFilterVariable(Map<String, Object> map, String variable, int filterPos) {
+	private void fillSampleIdSetMapWithFilterVariable(Map<SampleKey, Object> map, String variable, int filterPos) {
 		NetcdfFile ncfile = null;
 
 		try {
@@ -341,16 +340,16 @@ public class SampleSet {
 	//</editor-fold>
 
 	//<editor-fold defaultstate="collapsed" desc="SAMPLESET PICKERS">
-	public Map<String, Object> pickValidSampleSetItemsByDBField(Object poolId, Map<String, Object> map, String dbField, Set<Object> criteria, boolean include) throws IOException {
-		Map<String, Object> returnMap = new LinkedHashMap<String, Object>();
+	public Map<SampleKey, Object> pickValidSampleSetItemsByDBField(Object poolId, Map<SampleKey, Object> map, String dbField, Set<Object> criteria, boolean include) throws IOException {
+		Map<SampleKey, Object> returnMap = new LinkedHashMap<SampleKey, Object>();
 		List<SampleInfo> sampleInfos = SampleInfoList.getAllSampleInfoFromDBByPoolID(poolId);
 
 		int pickCounter = 0;
 		if (include) {
-			for (String key : map.keySet()) {
+			for (SampleKey key : map.keySet()) {
 				// loop through rows of result set
 				for (SampleInfo sampleInfo : sampleInfos) {
-					if (sampleInfo.getSampleId().equals(key.toString())) {
+					if (sampleInfo.getKey().equals(key)) {
 						if (criteria.contains(sampleInfo.getField(dbField).toString())) {
 							returnMap.put(key, pickCounter);
 						}
@@ -359,10 +358,10 @@ public class SampleSet {
 				pickCounter++;
 			}
 		} else {
-			for (String key : map.keySet()) {
+			for (SampleKey key : map.keySet()) {
 				// loop through rows of result set
 				for (SampleInfo sampleInfo : sampleInfos) {
-					if (sampleInfo.getSampleId().equals(key.toString())) {
+					if (sampleInfo.getKey().equals(key)) {
 						if (!criteria.contains(sampleInfo.getField(dbField).toString())) {
 							returnMap.put(key, pickCounter);
 						}
@@ -375,20 +374,20 @@ public class SampleSet {
 		return returnMap;
 	}
 
-	public Map<String, Object> pickValidSampleSetItemsByNetCDFValue(Map<String, Object> map, String variable, Set<Object> criteria, boolean include) {
-		Map<String, Object> returnMap = new LinkedHashMap<String, Object>();
+	public Map<SampleKey, Object> pickValidSampleSetItemsByNetCDFValue(Map<SampleKey, Object> map, String variable, Set<Object> criteria, boolean include) {
+		Map<SampleKey, Object> returnMap = new LinkedHashMap<SampleKey, Object>();
 		fillSampleIdSetMapWithVariable(map, variable);
 
 		int pickCounter = 0;
 		if (include) {
-			for (Map.Entry<String, Object> entry : sampleIdSetMap.entrySet()) {
+			for (Map.Entry<SampleKey, Object> entry : sampleIdSetMap.entrySet()) {
 				if (criteria.contains(entry.getValue())) {
 					returnMap.put(entry.getKey(), pickCounter);
 				}
 				pickCounter++;
 			}
 		} else {
-			for (Map.Entry<String, Object> entry : sampleIdSetMap.entrySet()) {
+			for (Map.Entry<SampleKey, Object> entry : sampleIdSetMap.entrySet()) {
 				if (!criteria.contains(entry.getValue())) {
 					returnMap.put(entry.getKey(), pickCounter);
 				}
@@ -399,20 +398,20 @@ public class SampleSet {
 		return returnMap;
 	}
 
-	public Map<String, Object> pickValidSampleSetItemsByNetCDFFilter(Map<String, Object> map, String variable, int fiterPos, Set<Object> criteria, boolean include) {
-		Map<String, Object> returnMap = new LinkedHashMap<String, Object>();
+	public Map<SampleKey, Object> pickValidSampleSetItemsByNetCDFFilter(Map<SampleKey, Object> map, String variable, int fiterPos, Set<Object> criteria, boolean include) {
+		Map<SampleKey, Object> returnMap = new LinkedHashMap<SampleKey, Object>();
 		fillSampleIdSetMapWithFilterVariable(map, variable, fiterPos);
 
 		int pickCounter = 0;
 		if (include) {
-			for (Map.Entry<String, Object> entry : sampleIdSetMap.entrySet()) {
+			for (Map.Entry<SampleKey, Object> entry : sampleIdSetMap.entrySet()) {
 				if (criteria.contains(entry.getValue())) {
 					returnMap.put(entry.getKey(), pickCounter);
 				}
 				pickCounter++;
 			}
 		} else {
-			for (Map.Entry<String, Object> entry : sampleIdSetMap.entrySet()) {
+			for (Map.Entry<SampleKey, Object> entry : sampleIdSetMap.entrySet()) {
 				if (!criteria.contains(entry.getValue())) {
 					returnMap.put(entry.getKey(), pickCounter);
 				}
@@ -423,19 +422,19 @@ public class SampleSet {
 		return returnMap;
 	}
 
-	public Map<String, Object> pickValidSampleSetItemsByNetCDFKey(Map<String, Object> map, Set<Object> criteria, boolean include) throws IOException {
-		Map<String, Object> returnMap = new LinkedHashMap<String, Object>();
+	public Map<SampleKey, Object> pickValidSampleSetItemsByNetCDFKey(Map<SampleKey, Object> map, Set<Object> criteria, boolean include) throws IOException {
+		Map<SampleKey, Object> returnMap = new LinkedHashMap<SampleKey, Object>();
 
 		int pickCounter = 0;
 		if (include) {
-			for (String key : map.keySet()) {
+			for (SampleKey key : map.keySet()) {
 				if (criteria.contains(key)) {
 					returnMap.put(key, pickCounter);
 				}
 				pickCounter++;
 			}
 		} else {
-			for (String key : map.keySet()) {
+			for (SampleKey key : map.keySet()) {
 				if (!criteria.contains(key)) {
 					returnMap.put(key, pickCounter);
 				}

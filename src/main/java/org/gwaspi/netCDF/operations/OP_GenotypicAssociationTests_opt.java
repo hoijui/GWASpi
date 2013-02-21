@@ -6,11 +6,13 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.global.Text;
+import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.Operation;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
+import org.gwaspi.model.SampleKey;
 import org.gwaspi.netCDF.markers.MarkerSet_opt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,19 +52,19 @@ public class OP_GenotypicAssociationTests_opt implements MatrixOperation {
 		int resultAssocId = Integer.MIN_VALUE;
 
 		//<editor-fold defaultstate="collapsed" desc="EXCLUSION MARKERS FROM HW">
-		Map<String, Object> excludeMarkerSetMap = new LinkedHashMap<String, Object>();
+		Map<MarkerKey, Object> excludeMarkerSetMap = new LinkedHashMap<MarkerKey, Object>();
 		int totalMarkerNb = 0;
 
 		if (hwOP != null) {
 			OperationMetadata hwMetadata = OperationsList.getOperationMetadata(hwOP.getId());
 			NetcdfFile rdHWNcFile = NetcdfFile.open(hwMetadata.getPathToMatrix());
-			OperationSet rdHWOperationSet = new OperationSet(hwMetadata.getStudyId(), hwMetadata.getOPId());
-			Map<String, Object> rdHWMarkerSetMap = rdHWOperationSet.getOpSetMap();
+			MarkerOperationSet rdHWOperationSet = new MarkerOperationSet(hwMetadata.getStudyId(), hwMetadata.getOPId());
+			Map<MarkerKey, Object> rdHWMarkerSetMap = rdHWOperationSet.getOpSetMap();
 			totalMarkerNb = rdHWMarkerSetMap.size();
 
 			// EXCLUDE MARKER BY HARDY WEINBERG THRESHOLD
 			rdHWMarkerSetMap = rdHWOperationSet.fillOpSetMapWithVariable(rdHWNcFile, cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWPval_CTRL);
-			for (Map.Entry<String, Object> entry : rdHWMarkerSetMap.entrySet()) {
+			for (Map.Entry<MarkerKey, Object> entry : rdHWMarkerSetMap.entrySet()) {
 				double value = (Double) entry.getValue();
 				if (value < hwThreshold) {
 					excludeMarkerSetMap.put(entry.getKey(), value);
@@ -80,14 +82,14 @@ public class OP_GenotypicAssociationTests_opt implements MatrixOperation {
 			OperationMetadata rdCensusOPMetadata = OperationsList.getOperationMetadata(markerCensusOP.getId());
 			NetcdfFile rdOPNcFile = NetcdfFile.open(rdCensusOPMetadata.getPathToMatrix());
 
-			OperationSet rdCaseMarkerSet = new OperationSet(rdCensusOPMetadata.getStudyId(), markerCensusOP.getId());
-			OperationSet rdCtrlMarkerSet = new OperationSet(rdCensusOPMetadata.getStudyId(), markerCensusOP.getId());
-			Map<String, Object> rdSampleSetMap = rdCaseMarkerSet.getImplicitSetMap();
-			Map<String, Object> rdCaseMarkerIdSetMap = rdCaseMarkerSet.getOpSetMap();
-			Map<String, Object> rdCtrlMarkerIdSetMap = rdCtrlMarkerSet.getOpSetMap();
+			MarkerOperationSet rdCaseMarkerSet = new MarkerOperationSet(rdCensusOPMetadata.getStudyId(), markerCensusOP.getId());
+			MarkerOperationSet rdCtrlMarkerSet = new MarkerOperationSet(rdCensusOPMetadata.getStudyId(), markerCensusOP.getId());
+			Map<SampleKey, Object> rdSampleSetMap = rdCaseMarkerSet.getImplicitSetMap();
+			Map<MarkerKey, Object> rdCaseMarkerIdSetMap = rdCaseMarkerSet.getOpSetMap();
+			Map<MarkerKey, Object> rdCtrlMarkerIdSetMap = rdCtrlMarkerSet.getOpSetMap();
 
-			Map<String, Object> wrMarkerSetMap = new LinkedHashMap<String, Object>();
-			for (String key : rdCtrlMarkerIdSetMap.keySet()) {
+			Map<MarkerKey, Object> wrMarkerSetMap = new LinkedHashMap<MarkerKey, Object>();
+			for (MarkerKey key : rdCtrlMarkerIdSetMap.keySet()) {
 				if (!excludeMarkerSetMap.containsKey(key)) {
 					wrMarkerSetMap.put(key, "");
 				}
@@ -101,7 +103,7 @@ public class OP_GenotypicAssociationTests_opt implements MatrixOperation {
 			// retrieve chromosome info
 			rdMarkerSet.fillMarkerSetMapWithChrAndPos();
 			MarkerSet_opt.replaceWithValuesFrom(wrMarkerSetMap, rdMarkerSet.getMarkerIdSetMap());
-			Map<String, Object> rdChrInfoSetMap = org.gwaspi.netCDF.matrices.Utils.aggregateChromosomeInfo(wrMarkerSetMap, 0, 1);
+			Map<MarkerKey, Object> rdChrInfoSetMap = org.gwaspi.netCDF.matrices.Utils.aggregateChromosomeInfo(wrMarkerSetMap, 0, 1);
 
 			NetcdfFileWriteable wrOPNcFile = null;
 			try {
@@ -140,8 +142,8 @@ public class OP_GenotypicAssociationTests_opt implements MatrixOperation {
 
 				// MARKERSET RSID
 				rdCaseMarkerIdSetMap = rdCaseMarkerSet.fillOpSetMapWithVariable(rdOPNcFile, cNetCDF.Variables.VAR_MARKERS_RSID);
-				for (Map.Entry<String, Object> entry : wrMarkerSetMap.entrySet()) {
-					String key = entry.getKey();
+				for (Map.Entry<MarkerKey, Object> entry : wrMarkerSetMap.entrySet()) {
+					MarkerKey key = entry.getKey();
 					Object value = rdCaseMarkerIdSetMap.get(key);
 					entry.setValue(value);
 				}
@@ -170,11 +172,11 @@ public class OP_GenotypicAssociationTests_opt implements MatrixOperation {
 
 				//<editor-fold defaultstate="collapsed" desc="GET CENSUS & PERFORM GENOTYPIC TESTS">
 				// CLEAN Maps FROM MARKERS THAT FAILED THE HARDY WEINBERG THRESHOLD
-				Map<String, Object> wrCaseMarkerIdSetMap = new LinkedHashMap<String, Object>();
+				Map<MarkerKey, Object> wrCaseMarkerIdSetMap = new LinkedHashMap<MarkerKey, Object>();
 				rdCaseMarkerIdSetMap = rdCaseMarkerSet.fillOpSetMapWithVariable(rdOPNcFile, cNetCDF.Census.VAR_OP_MARKERS_CENSUSCASE);
 				if (rdCaseMarkerIdSetMap != null) {
-					for (Map.Entry<String, Object> entry : rdCaseMarkerIdSetMap.entrySet()) {
-						String key = entry.getKey();
+					for (Map.Entry<MarkerKey, Object> entry : rdCaseMarkerIdSetMap.entrySet()) {
+						MarkerKey key = entry.getKey();
 						Object value = entry.getValue();
 
 						if (!excludeMarkerSetMap.containsKey(key)) {
@@ -185,11 +187,11 @@ public class OP_GenotypicAssociationTests_opt implements MatrixOperation {
 					rdCaseMarkerIdSetMap.clear();
 				}
 
-				Map<String, Object> wrCtrlMarkerSet = new LinkedHashMap<String, Object>();
+				Map<MarkerKey, Object> wrCtrlMarkerSet = new LinkedHashMap<MarkerKey, Object>();
 				rdCtrlMarkerIdSetMap = rdCtrlMarkerSet.fillOpSetMapWithVariable(rdOPNcFile, cNetCDF.Census.VAR_OP_MARKERS_CENSUSCTRL);
 				if (rdCtrlMarkerIdSetMap != null) {
-					for (Map.Entry<String, Object> entry : rdCtrlMarkerIdSetMap.entrySet()) {
-						String key = entry.getKey();
+					for (Map.Entry<MarkerKey, Object> entry : rdCtrlMarkerIdSetMap.entrySet()) {
+						MarkerKey key = entry.getKey();
 
 						if (!excludeMarkerSetMap.containsKey(key)) {
 							wrCtrlMarkerSet.put(key, entry.getValue());
@@ -225,14 +227,14 @@ public class OP_GenotypicAssociationTests_opt implements MatrixOperation {
 		return resultAssocId;
 	}
 
-	private void performAssociationTests(NetcdfFileWriteable wrNcFile, Map<String, Object> wrCaseMarkerIdSetMap, Map<String, Object> wrCtrlMarkerSet) {
+	private void performAssociationTests(NetcdfFileWriteable wrNcFile, Map<MarkerKey, Object> wrCaseMarkerIdSetMap, Map<MarkerKey, Object> wrCtrlMarkerSet) {
 		// Iterate through markerset
 		int markerNb = 0;
-		for (Map.Entry<String, Object> entry : wrCaseMarkerIdSetMap.entrySet()) {
-			String markerId = entry.getKey();
+		for (Map.Entry<MarkerKey, Object> entry : wrCaseMarkerIdSetMap.entrySet()) {
+			MarkerKey markerKey = entry.getKey();
 
 			int[] caseCntgTable = (int[]) entry.getValue();
-			int[] ctrlCntgTable = (int[]) wrCtrlMarkerSet.get(markerId);
+			int[] ctrlCntgTable = (int[]) wrCtrlMarkerSet.get(markerKey);
 
 			// INIT VALUES
 			int caseAA = caseCntgTable[0];
@@ -267,7 +269,7 @@ public class OP_GenotypicAssociationTests_opt implements MatrixOperation {
 			store[1] = gntypPval;
 			store[2] = gntypOR[0];
 			store[3] = gntypOR[1];
-			wrCaseMarkerIdSetMap.put(markerId, store); // Re-use Map to store P-value and stuff
+			wrCaseMarkerIdSetMap.put(markerKey, store); // Re-use Map to store P-value and stuff
 
 			markerNb++;
 			if (markerNb % 100000 == 0) {

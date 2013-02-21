@@ -160,6 +160,8 @@ public class SampleInfo implements Comparable<SampleInfo> {
 		}
 	}
 
+	// TODO get rid of double-info in sampleKey vs sampleId & familyId
+	private SampleKey key;
 	private int orderId;
 	private String sampleId;
 	private String familyId;
@@ -177,6 +179,7 @@ public class SampleInfo implements Comparable<SampleInfo> {
 	private int status;
 
 	public SampleInfo() {
+
 		this.orderId = Integer.MIN_VALUE;
 		this.sampleId = "0";
 		this.familyId = "0";
@@ -192,12 +195,14 @@ public class SampleInfo implements Comparable<SampleInfo> {
 		this.poolId = "";
 		this.approved = 0;
 		this.status = 0;
+		this.key = new SampleKey(this.sampleId, this.familyId);
 	}
 
 	public SampleInfo(String sampleId) {
 		this();
 
 		this.sampleId = sampleId;
+		this.key = new SampleKey(this.sampleId, this.familyId);
 	}
 
 	public SampleInfo(
@@ -227,6 +232,7 @@ public class SampleInfo implements Comparable<SampleInfo> {
 		this.poolId = "";
 		this.approved = 0;
 		this.status = 0;
+		this.key = new SampleKey(this.sampleId, this.familyId);
 	}
 
 
@@ -262,11 +268,42 @@ public class SampleInfo implements Comparable<SampleInfo> {
 		this.poolId = poolId;
 		this.approved = approved;
 		this.status = status;
+		this.key = new SampleKey(this.sampleId, this.familyId);
 	}
 
 	@Override
 	public int compareTo(SampleInfo other) {
-		return getSampleId().compareTo(other.getSampleId());
+		return hashCode() - other.hashCode();
+	}
+
+	@Override
+	public boolean equals(Object other) {
+
+		boolean equal = false;
+
+		if (other instanceof SampleInfo) {
+			SampleInfo otherSampleInfo = (SampleInfo) other;
+			equal = getFamilyId().equals(otherSampleInfo.getFamilyId());
+			equal = equal && getSampleId().equals(otherSampleInfo.getSampleId());
+		}
+
+		return equal;
+	}
+
+	@Override
+	public int hashCode() {
+
+		int hash = 7;
+		hash = 31 * hash + (this.sampleId != null ? this.sampleId.hashCode() : 0);
+		hash = 31 * hash + (this.familyId != null ? this.familyId.hashCode() : 0);
+		return hash;
+	}
+
+	/**
+	 * Returns a unique identifier for this specific sample.
+	 */
+	public SampleKey getKey() {
+		return key;
 	}
 
 	public int getOrderId() {

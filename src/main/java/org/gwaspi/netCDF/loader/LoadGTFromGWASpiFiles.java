@@ -15,9 +15,11 @@ import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
 import org.gwaspi.global.Config;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.utils.Dialogs;
+import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleInfo;
+import org.gwaspi.model.SampleKey;
 import org.gwaspi.netCDF.markers.MarkerSet_opt;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.gwaspi.samples.SampleSet;
@@ -79,20 +81,20 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 
 		if (new File(loadDescription.getGtDirPath()).exists()) {
 		SampleSet matrixSampleSet = new SampleSet(loadDescription.getStudyId(), "");
-		Map<String, Object> matrixSampleSetMap = matrixSampleSet.getSampleIdSetMap(loadDescription.getGtDirPath());
+		Map<SampleKey, Object> matrixSampleSetMap = matrixSampleSet.getSampleIdSetMap(loadDescription.getGtDirPath());
 
 		boolean testExcessSamplesInMatrix = false;
 		boolean testExcessSamplesInFile = false;
-		Collection<String> sampleIds = AbstractLoadGTFromFiles.extractSampleIds(sampleInfos);
-		for (String markerSampleId : matrixSampleSetMap.keySet()) {
-			if (!sampleIds.contains(markerSampleId)) {
+		Collection<SampleKey> sampleKeys = AbstractLoadGTFromFiles.extractKeys(sampleInfos);
+		for (SampleKey key : matrixSampleSetMap.keySet()) {
+			if (!sampleKeys.contains(key)) {
 				testExcessSamplesInMatrix = true;
 				break;
 			}
 		}
 
 		for (SampleInfo sampleInfo : sampleInfos) {
-			if (!matrixSampleSetMap.containsKey(sampleInfo.getSampleId())) {
+			if (!matrixSampleSetMap.containsKey(sampleInfo.getKey())) {
 				testExcessSamplesInFile = true;
 				break;
 			}
@@ -171,15 +173,15 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 		MarkerSet_opt rdMarkerSet = new MarkerSet_opt(importMatrixMetadata.getStudyId(), loadDescription.getGtDirPath(), importMatrixMetadata.getMatrixNetCDFName());
 		rdMarkerSet.initFullMarkerIdSetMap();
 		rdMarkerSet.fillMarkerSetMapWithChrAndPos();
-		Map<String, Object> rdMarkerSetMap = rdMarkerSet.getMarkerIdSetMap();
+		Map<MarkerKey, Object> rdMarkerSetMap = rdMarkerSet.getMarkerIdSetMap();
 
 		SampleSet rdSampleSet = new SampleSet(importMatrixMetadata.getStudyId(), loadDescription.getGtDirPath(), importMatrixMetadata.getMatrixNetCDFName());
-		Map<String, Object> rdSampleSetMap = rdSampleSet.getSampleIdSetMap();
+		Map<SampleKey, Object> rdSampleSetMap = rdSampleSet.getSampleIdSetMap();
 
 		log.info("Done initializing sorted MarkerSetMap");
 
 		// RETRIEVE CHROMOSOMES INFO
-		Map<String, Object> chrSetMap = org.gwaspi.netCDF.matrices.Utils.aggregateChromosomeInfo(rdMarkerSetMap, 0, 1);
+		Map<MarkerKey, Object> chrSetMap = org.gwaspi.netCDF.matrices.Utils.aggregateChromosomeInfo(rdMarkerSetMap, 0, 1);
 
 		MatrixFactory matrixFactory = new MatrixFactory(
 				loadDescription.getStudyId(),

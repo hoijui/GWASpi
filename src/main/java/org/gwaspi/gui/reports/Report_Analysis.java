@@ -48,7 +48,7 @@ import org.gwaspi.gui.utils.IntegerInputVerifier;
 import org.gwaspi.gui.utils.LinksExternalResouces;
 import org.gwaspi.model.Operation;
 import org.gwaspi.model.OperationsList;
-import org.gwaspi.netCDF.operations.OperationSet;
+import org.gwaspi.netCDF.operations.MarkerOperationSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -284,7 +284,7 @@ public abstract class Report_Analysis extends JPanel {
 	}
 
 	protected void initChrSetInfo() throws IOException {
-		OperationSet opSet = new OperationSet(studyId, opId);
+		MarkerOperationSet opSet = new MarkerOperationSet(studyId, opId);
 		chrSetInfoMap = opSet.getChrInfoSetMap(); //Nb of markers, first physical position, last physical position, start index number in MarkerSet,
 	}
 

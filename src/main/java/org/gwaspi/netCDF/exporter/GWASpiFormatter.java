@@ -9,6 +9,7 @@ import org.gwaspi.constants.cExport;
 import org.gwaspi.gui.utils.Dialogs;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleInfo;
+import org.gwaspi.model.SampleKey;
 import org.gwaspi.netCDF.markers.MarkerSet_opt;
 import org.gwaspi.samples.SampleSet;
 import org.slf4j.Logger;
@@ -25,12 +26,13 @@ public class GWASpiFormatter implements Formatter {
 
 	private final Logger log = LoggerFactory.getLogger(GWASpiFormatter.class);
 
+	@Override
 	public boolean export(
 			String exportPath,
 			MatrixMetadata rdMatrixMetadata,
 			MarkerSet_opt rdMarkerSet,
 			SampleSet rdSampleSet,
-			Map<String, Object> rdSampleSetMap,
+			Map<SampleKey, Object> rdSampleSetMap,
 			String phenotype)
 			throws IOException
 	{
@@ -53,7 +55,7 @@ public class GWASpiFormatter implements Formatter {
 
 			//Iterate through all samples
 			int sampleNb = 0;
-			for (String sampleId : rdSampleSetMap.keySet()) {
+			for (SampleKey sampleKey : rdSampleSetMap.keySet()) {
 //				FamilyID
 //				SampleID
 //				FatherID
@@ -65,7 +67,7 @@ public class GWASpiFormatter implements Formatter {
 //				Population
 //				Age
 
-				SampleInfo sampleInfo = Utils.getCurrentSampleFormattedInfo(sampleId, rdMatrixMetadata.getStudyId());
+				SampleInfo sampleInfo = Utils.getCurrentSampleFormattedInfo(sampleKey, rdMatrixMetadata.getStudyId());
 
 				String familyId = sampleInfo.getFamilyId();
 				String fatherId = sampleInfo.getFatherId();
@@ -80,7 +82,7 @@ public class GWASpiFormatter implements Formatter {
 				StringBuilder line = new StringBuilder();
 				line.append(familyId);
 				line.append(sep);
-				line.append(sampleId);
+				line.append(sampleKey.getSampleId());
 				line.append(sep);
 				line.append(fatherId);
 				line.append(sep);

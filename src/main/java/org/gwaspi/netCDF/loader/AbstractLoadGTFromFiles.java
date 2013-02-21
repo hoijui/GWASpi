@@ -12,8 +12,10 @@ import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
 import org.gwaspi.global.Text;
+import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.SampleInfo;
+import org.gwaspi.model.SampleKey;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -94,11 +96,11 @@ public abstract class AbstractLoadGTFromFiles implements GenotypesLoader {
 			gtFilesToImport = new File[]{new File(loadDescription.getGtDirPath())};
 		}
 
-		Map<String, Object> markerSetMap = new LinkedHashMap<String, Object>();
+		Map<MarkerKey, Object> markerSetMap = new LinkedHashMap<MarkerKey, Object>();
 
 		//<editor-fold defaultstate="collapsed/expanded" desc="CREATE MARKERSET & NETCDF">
 		MetadataLoader markerSetLoader = createMetaDataLoader(loadDescription.getAnnotationFilePath(), loadDescription);
-		Map<String, Object> tmpMarkerMap = markerSetLoader.getSortedMarkerSetWithMetaData();
+		Map<MarkerKey, Object> tmpMarkerMap = markerSetLoader.getSortedMarkerSetWithMetaData();
 		markerSetMap.putAll(tmpMarkerMap);
 
 		log.info("Done initializing sorted MarkerSetMap");
@@ -131,8 +133,8 @@ public abstract class AbstractLoadGTFromFiles implements GenotypesLoader {
 			descSB.append(" (Sample Info file)\n");
 		}
 
-		//RETRIEVE CHROMOSOMES INFO
-		Map<String, Object> chrSetMap = org.gwaspi.netCDF.matrices.Utils.aggregateChromosomeInfo(markerSetMap, 2, 3);
+		// RETRIEVE CHROMOSOMES INFO
+		Map<MarkerKey, Object> chrSetMap = org.gwaspi.netCDF.matrices.Utils.aggregateChromosomeInfo(markerSetMap, 2, 3);
 
 		MatrixFactory matrixFactory = new MatrixFactory(
 				loadDescription.getStudyId(),
@@ -160,7 +162,7 @@ public abstract class AbstractLoadGTFromFiles implements GenotypesLoader {
 
 		//<editor-fold defaultstate="collapsed" desc="WRITE MATRIX METADATA">
 		// WRITE SAMPLESET TO MATRIX FROM SAMPLES ARRAYLIST
-		ArrayChar.D2 samplesD2 = org.gwaspi.netCDF.operations.Utils.writeCollectionToD2ArrayChar(extractSampleIds(sampleInfos), cNetCDF.Strides.STRIDE_SAMPLE_NAME);
+		ArrayChar.D2 samplesD2 = org.gwaspi.netCDF.operations.Utils.writeCollectionToD2ArrayChar(extractKeys(sampleInfos), cNetCDF.Strides.STRIDE_SAMPLE_NAME);
 
 		int[] sampleOrig = new int[]{0, 0};
 		try {
@@ -261,7 +263,7 @@ public abstract class AbstractLoadGTFromFiles implements GenotypesLoader {
 				strandFlag = StrandFlags.strandUNK;
 				break;
 		}
-		for (Map.Entry<String, Object> entry : markerSetMap.entrySet()) {
+		for (Map.Entry<?, Object> entry : markerSetMap.entrySet()) {
 			entry.setValue(strandFlag);
 		}
 		markersD2 = org.gwaspi.netCDF.operations.Utils.writeMapValueToD2ArrayChar(markerSetMap, cNetCDF.Strides.STRIDE_STRAND);
@@ -275,17 +277,13 @@ public abstract class AbstractLoadGTFromFiles implements GenotypesLoader {
 		}
 		markersD2 = null;
 		log.info("Done writing strand info to matrix");
-
-
 		// </editor-fold>
 
 		// <editor-fold defaultstate="collapsed" desc="MATRIX GENOTYPES LOAD ">
-
 		int sampleIndex = 0;
 		for (SampleInfo sampleInfo : sampleInfos) {
-			String sampleId = sampleInfo.getSampleId();
 			// PURGE MarkerIdMap
-			for (Map.Entry<String, Object> entry : markerSetMap.entrySet()) {
+			for (Map.Entry<?, Object> entry : markerSetMap.entrySet()) {
 				entry.setValue(cNetCDF.Defaults.DEFAULT_GT);
 			}
 
@@ -293,7 +291,7 @@ public abstract class AbstractLoadGTFromFiles implements GenotypesLoader {
 			try {
 				loadIndividualFiles(
 						new File(loadDescription.getGtDirPath()),
-						sampleId,
+						sampleInfo.getKey(),
 						markerSetMap);
 
 				// WRITING GENOTYPE DATA INTO netCDF FILE
@@ -326,7 +324,7 @@ public abstract class AbstractLoadGTFromFiles implements GenotypesLoader {
 		// CLOSE THE FILE AND BY THIS, MAKE IT READ-ONLY
 		GenotypeEncoding guessedGTCode = GenotypeEncoding.UNKNOWN;
 		try {
-			//GUESS GENOTYPE ENCODING
+			// GUESS GENOTYPE ENCODING
 			ArrayChar.D2 guessedGTCodeAC = new ArrayChar.D2(1, 8);
 			Index index = guessedGTCodeAC.getIndex();
 			guessedGTCodeAC.setString(index.set(0, 0), guessedGTCode.toString().trim());
@@ -339,7 +337,7 @@ public abstract class AbstractLoadGTFromFiles implements GenotypesLoader {
 					matrixFactory.getMatrixMetaData().getMatrixId(),
 					descSB.toString());
 
-			//CLOSE FILE
+			// CLOSE FILE
 			ncfile.close();
 			result = matrixFactory.getMatrixMetaData().getMatrixId();
 		} catch (IOException ex) {
@@ -352,11 +350,18 @@ public abstract class AbstractLoadGTFromFiles implements GenotypesLoader {
 		return result;
 	}
 
+	/**
+	 * Loads all the alleles from a single sample.
+	 * @param file to load the sample from
+	 * @param sampleKey uniquely specifies the sample to be loaded
+	 *   (in the containing set)
+	 * @param alleles maps marker-keys to an allele pairs;
+	 *   the values are usually of type byte[2]
+	 */
 	public abstract void loadIndividualFiles(File file,
-			String currSampleId,
-			Map<String, Object> markerSetMap)
+			SampleKey sampleKey,
+			Map<MarkerKey, Object> alleles)
 			throws IOException, InvalidRangeException;
-
 	//</editor-fold>
 
 	static void logAsWhole(String startTime, int studyId, String dirPath, ImportFormat format, String matrixName, String description) throws IOException {
@@ -369,14 +374,14 @@ public abstract class AbstractLoadGTFromFiles implements GenotypesLoader {
 		org.gwaspi.global.Utils.logOperationInStudyDesc(operation.toString(), studyId);
 	}
 
-	static Collection<String> extractSampleIds(Collection<SampleInfo> sampleInfos) {
+	static Collection<SampleKey> extractKeys(Collection<SampleInfo> sampleInfos) {
 
-		Collection<String> sampleIds = new ArrayList<String>(sampleInfos.size());
+		Collection<SampleKey> sampleKeys = new ArrayList<SampleKey>(sampleInfos.size());
 
 		for (SampleInfo sampleInfo : sampleInfos) {
-			sampleIds.add(sampleInfo.getSampleId());
+			sampleKeys.add(sampleInfo.getKey());
 		}
 
-		return sampleIds;
+		return sampleKeys;
 	}
 }

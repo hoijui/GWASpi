@@ -11,6 +11,8 @@ import org.gwaspi.constants.cImport.ImportFormat;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
+import org.gwaspi.model.MarkerKey;
+import org.gwaspi.model.SampleKey;
 import ucar.ma2.InvalidRangeException;
 
 /**
@@ -58,10 +60,11 @@ public class LoadGTFromBeagleFiles extends AbstractLoadGTFromFiles {
 				loadDescription.getStudyId());
 	}
 
+	@Override
 	public void loadIndividualFiles(
 			File file,
-			String currSampleId,
-			Map<String, Object> wrMarkerSetMap)
+			SampleKey sampleKey,
+			Map<MarkerKey, Object> wrMarkerSetMap)
 			throws IOException, InvalidRangeException
 	{
 		FileReader inputFileReader = new FileReader(file);
@@ -73,8 +76,8 @@ public class LoadGTFromBeagleFiles extends AbstractLoadGTFromFiles {
 			sb.append('0');
 		}
 
-		Map<String, Object> tempMarkerIdMap = new LinkedHashMap<String, Object>();
-		Map<String, Object> sampleOrderMap = new LinkedHashMap<String, Object>();
+		Map<MarkerKey, Object> tempMarkerIdMap = new LinkedHashMap<MarkerKey, Object>();
+		Map<SampleKey, Object> sampleOrderMap = new LinkedHashMap<SampleKey, Object>();
 
 		String l;
 		while ((l = inputBufferReader.readLine()) != null) {
@@ -82,21 +85,23 @@ public class LoadGTFromBeagleFiles extends AbstractLoadGTFromFiles {
 				String sampleHeader = l;
 				String[] headerFields = sampleHeader.split(cImport.Separators.separators_SpaceTab_rgxp);
 				for (int i = Standard.genotypes; i < headerFields.length; i = i + 2) {
-					sampleOrderMap.put(headerFields[i], i);
+					String sampleId = headerFields[i];
+					// NOTE The Beagle format does not have a family-ID
+					sampleOrderMap.put(new SampleKey(sampleId, SampleKey.FAMILY_ID_NONE), i);
 				}
 			}
 			if (l.startsWith("M")) { // Found first marker row!
 				// GET ALLELES FROM MARKER ROWS
 				String[] cVals = l.split(cImport.Separators.separators_SpaceTab_rgxp);
-				String currMarkerId = cVals[Standard.markerId];
+				MarkerKey markerKey = MarkerKey.valueOf(cVals[Standard.markerId]);
 
-				Object columnNb = sampleOrderMap.get(currSampleId);
+				Object columnNb = sampleOrderMap.get(sampleKey);
 				if (columnNb != null) {
 					String strAlleles = cVals[(Integer) columnNb] + cVals[((Integer) columnNb) + 1];
 					byte[] tmpAlleles = new byte[]{
 						(byte) strAlleles.toString().charAt(0),
 						(byte) strAlleles.toString().charAt(1)};
-					tempMarkerIdMap.put(currMarkerId, tmpAlleles);
+					tempMarkerIdMap.put(markerKey, tmpAlleles);
 				}
 			}
 		}

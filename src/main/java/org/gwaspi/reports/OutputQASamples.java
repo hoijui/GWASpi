@@ -12,6 +12,7 @@ import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.Report;
 import org.gwaspi.model.ReportsList;
 import org.gwaspi.model.SampleInfo;
+import org.gwaspi.model.SampleKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -84,13 +85,13 @@ public class OutputQASamples {
 		String sep = cExport.separator_REPORTS;
 
 		try {
-			Map<String, Object> unsortedSamplesMissingRatMap = GatherQASamplesData.loadSamplesQAMissingRatio(opId);
-			Map<String, Object> sortedSamplesMissingRatMap = ReportsList.getSortedDescendingMarkerSetByDoubleValue(unsortedSamplesMissingRatMap);
+			Map<SampleKey, Object> unsortedSamplesMissingRatMap = GatherQASamplesData.loadSamplesQAMissingRatio(opId);
+			Map<SampleKey, Object> sortedSamplesMissingRatMap = ReportsList.getSortedDescendingMarkerSetByDoubleValue(unsortedSamplesMissingRatMap);
 			if (unsortedSamplesMissingRatMap != null) {
 				unsortedSamplesMissingRatMap.clear();
 			}
 
-			Map<String, Object> samplesMissingRatMap = GatherQASamplesData.loadSamplesQAHetZygRatio(opId);
+			Map<SampleKey, Object> samplesMissingRatMap = GatherQASamplesData.loadSamplesQAHetZygRatio(opId);
 
 			//WRITE HEADER OF FILE
 			FileWriter tempFW = new FileWriter(reportPath + samplMissOutName);
@@ -101,9 +102,9 @@ public class OutputQASamples {
 
 
 			//GET SAMPLE INFO FROM DB
-			for (Map.Entry<String, Object> entry : sortedSamplesMissingRatMap.entrySet()) {
-				String tempSampleId = entry.getKey();
-				SampleInfo sampleInfo = org.gwaspi.netCDF.exporter.Utils.getCurrentSampleFormattedInfo(tempSampleId, poolId);
+			for (Map.Entry<SampleKey, Object> entry : sortedSamplesMissingRatMap.entrySet()) {
+				SampleKey tempSampleKey = entry.getKey();
+				SampleInfo sampleInfo = org.gwaspi.netCDF.exporter.Utils.getCurrentSampleFormattedInfo(tempSampleKey, poolId);
 
 				String familyId = sampleInfo.getFamilyId();
 				String fatherId = sampleInfo.getFatherId();
@@ -118,7 +119,7 @@ public class OutputQASamples {
 				StringBuilder sb = new StringBuilder();
 				sb.append(familyId);
 				sb.append(sep);
-				sb.append(tempSampleId);
+				sb.append(tempSampleKey.getSampleId());
 				sb.append(sep);
 				sb.append(fatherId);
 				sb.append(sep);
@@ -138,7 +139,7 @@ public class OutputQASamples {
 				sb.append(sep);
 				sb.append(entry.getValue().toString());
 				sb.append(sep);
-				sb.append(samplesMissingRatMap.get(tempSampleId).toString());
+				sb.append(samplesMissingRatMap.get(tempSampleKey).toString());
 				sb.append("\n");
 				tempBW.append(sb.toString());
 			}

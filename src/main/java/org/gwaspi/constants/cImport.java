@@ -168,6 +168,8 @@ public class cImport {
 			public static final int ped_sex = 4;
 			public static final int ped_affection = 5;
 			public static final int ped_genotypes = 6;
+			public static final int[] ped_key_parts
+					= { ped_familyId, ped_sampleId };
 		}
 
 		public static interface Plink_LGEN {

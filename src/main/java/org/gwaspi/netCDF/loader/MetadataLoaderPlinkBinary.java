@@ -12,6 +12,8 @@ import org.gwaspi.constants.cImport.Annotation.Plink_Binary;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
 import org.gwaspi.global.Text;
+import org.gwaspi.model.MarkerKey;
+import org.gwaspi.model.SampleKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,7 +39,8 @@ public class MetadataLoaderPlinkBinary implements MetadataLoader {
 		this.strand = strand;
 	}
 
-	public Map<String, Object> getSortedMarkerSetWithMetaData() throws IOException {
+	@Override
+	public Map<MarkerKey, Object> getSortedMarkerSetWithMetaData() throws IOException {
 		String startTime = org.gwaspi.global.Utils.getMediumDateTimeAsString();
 
 		SortedMap<String, String> tempTM = parseAndSortBimFile(); // chr, markerId, genetic distance, position
@@ -45,7 +48,7 @@ public class MetadataLoaderPlinkBinary implements MetadataLoader {
 		org.gwaspi.global.Utils.sysoutStart("initilaizing Marker info");
 		log.info(Text.All.processing);
 
-		Map<String, Object> markerMetadataMap = new LinkedHashMap<String, Object>();
+		Map<MarkerKey, Object> markerMetadataMap = new LinkedHashMap<MarkerKey, Object>();
 		for (Map.Entry<String, String> entry : tempTM.entrySet()) {
 			// chr;pos;markerId
 			String[] keyValues = entry.getKey().split(cNetCDF.Defaults.TMP_SEPARATOR);
@@ -72,7 +75,7 @@ public class MetadataLoaderPlinkBinary implements MetadataLoader {
 			markerInfo[3] = pos; // 3 => pos
 			markerInfo[4] = valValues; // 4 => alleles
 
-			markerMetadataMap.put(keyValues[2], markerInfo);
+			markerMetadataMap.put(MarkerKey.valueOf(keyValues[2]), markerInfo);
 		}
 
 		String description = "Generated sorted MarkerIdSet Map sorted by chromosome and position";
@@ -125,10 +128,10 @@ public class MetadataLoaderPlinkBinary implements MetadataLoader {
 		return sortedMetadataTM;
 	}
 
-	public Map<String, Object> parseOrigBimFile(String path) throws IOException {
+	public Map<SampleKey, Object> parseOrigBimFile(String path) throws IOException {
 		FileReader fr = new FileReader(path);
 		BufferedReader inputMapBR = new BufferedReader(fr);
-		Map<String, Object> origMarkerIdSetMap = new LinkedHashMap<String, Object>();
+		Map<SampleKey, Object> origMarkerIdSetMap = new LinkedHashMap<SampleKey, Object>();
 
 		String l;
 		while ((l = inputMapBR.readLine()) != null) {
@@ -137,7 +140,7 @@ public class MetadataLoaderPlinkBinary implements MetadataLoader {
 			String markerId = mapVals[Plink_Binary.bim_markerId].trim();
 			alleles[0] = mapVals[Plink_Binary.bim_allele1].trim();
 			alleles[1] = mapVals[Plink_Binary.bim_allele2].trim();
-			origMarkerIdSetMap.put(markerId, alleles);
+			origMarkerIdSetMap.put(SampleKey.valueOf(markerId), alleles);
 		}
 
 		inputMapBR.close();

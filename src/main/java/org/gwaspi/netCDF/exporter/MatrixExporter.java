@@ -8,6 +8,7 @@ import org.gwaspi.global.Config;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixMetadata;
+import org.gwaspi.model.SampleKey;
 import org.gwaspi.netCDF.markers.MarkerSet_opt;
 import org.gwaspi.samples.SampleSet;
 import org.slf4j.Logger;
@@ -28,7 +29,7 @@ public class MatrixExporter {
 	private MatrixMetadata rdMatrixMetadata = null;
 	private MarkerSet_opt rdMarkerSet = null;
 	private SampleSet rdSampleSet = null;
-	private Map<String, Object> rdSampleSetMap = null;
+	private Map<SampleKey, Object> rdSampleSetMap = null;
 	private Map<ExportFormat, Formatter> formatters;
 
 	public MatrixExporter(int _rdMatrixId) throws IOException, InvalidRangeException {

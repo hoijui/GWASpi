@@ -36,8 +36,8 @@ public class SampleInfoList {
 		return sampleInfoService.getAllSampleInfoFromDBByPoolID(poolId);
 	}
 
-	public static List<SampleInfo> getCurrentSampleInfoFromDB(String sampleId, Object poolId) throws IOException {
-		return sampleInfoService.getCurrentSampleInfoFromDB(sampleId, poolId);
+	public static List<SampleInfo> getCurrentSampleInfoFromDB(SampleKey key, Object poolId) throws IOException {
+		return sampleInfoService.getCurrentSampleInfoFromDB(key, poolId);
 	}
 
 	public static void deleteSamplesByPoolId(Object poolId) throws IOException {

@@ -12,8 +12,10 @@ import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
 import org.gwaspi.global.Text;
+import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixMetadata;
+import org.gwaspi.model.SampleKey;
 import org.gwaspi.netCDF.markers.MarkerSet_opt;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.gwaspi.samples.SampleSet;
@@ -44,11 +46,11 @@ public class MatrixGenotypesFlipper {
 	private MatrixMetadata rdMatrixMetadata = null;
 	private GenotypeEncoding gtEncoding = GenotypeEncoding.UNKNOWN;
 	private MarkerSet_opt rdMarkerSet = null;
-	private Set<String> markerFlipHS = new HashSet<String>();
+	private Set<MarkerKey> markerFlipHS = new HashSet<MarkerKey>();
 	private SampleSet rdSampleSet = null;
-	private Map<String, Object> rdMarkerIdSetMap = new LinkedHashMap<String, Object>();
-	private Map<String, Object> rdSampleSetMap = new LinkedHashMap<String, Object>();
-	private Map<String, Object> rdChrInfoSetMap = new LinkedHashMap<String, Object>();
+	private Map<MarkerKey, Object> rdMarkerIdSetMap = new LinkedHashMap<MarkerKey, Object>();
+	private Map<SampleKey, Object> rdSampleSetMap = new LinkedHashMap<SampleKey, Object>();
+	private Map<MarkerKey, Object> rdChrInfoSetMap = new LinkedHashMap<MarkerKey, Object>();
 
 	/**
 	 * This constructor to extract data from Matrix a by passing a variable and
@@ -93,9 +95,9 @@ public class MatrixGenotypesFlipper {
 		if (this.flipperFile.isFile()) {
 			FileReader fr = new FileReader(this.flipperFile);
 			BufferedReader br = new BufferedReader(fr);
-			String l;
-			while ((l = br.readLine()) != null) {
-				this.markerFlipHS.add(l);
+			String line;
+			while ((line = br.readLine()) != null) {
+				this.markerFlipHS.add(MarkerKey.valueOf(line));
 			}
 			br.close();
 		}
@@ -196,9 +198,9 @@ public class MatrixGenotypesFlipper {
 			// MARKERSET DICTIONARY ALLELES
 			rdMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_BASES_DICT);
 			MarkerSet_opt.replaceWithValuesFrom(rdMarkerIdSetMap, rdMarkerSet.getMarkerIdSetMap());
-			for (Map.Entry<String, Object> entry : rdMarkerIdSetMap.entrySet()) {
-				String markerId = entry.getKey();
-				if (markerFlipHS.contains(markerId)) {
+			for (Map.Entry<MarkerKey, Object> entry : rdMarkerIdSetMap.entrySet()) {
+				MarkerKey markerKey = entry.getKey();
+				if (markerFlipHS.contains(markerKey)) {
 					String alleles = entry.getValue().toString();
 					alleles = flipDictionaryAlleles(alleles);
 					entry.setValue(alleles);
@@ -210,9 +212,9 @@ public class MatrixGenotypesFlipper {
 			rdMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_GT_STRAND);
 			MarkerSet_opt.replaceWithValuesFrom(rdMarkerIdSetMap, rdMarkerSet.getMarkerIdSetMap());
 
-			for (Map.Entry<String, Object> entry : rdMarkerIdSetMap.entrySet()) {
-				String markerId = entry.getKey();
-				if (markerFlipHS.contains(markerId)) {
+			for (Map.Entry<MarkerKey, Object> entry : rdMarkerIdSetMap.entrySet()) {
+				MarkerKey markerKey = entry.getKey();
+				if (markerFlipHS.contains(markerKey)) {
 					String strand = entry.getValue().toString();
 					strand = flipStranding(strand);
 					entry.setValue(strand);
@@ -224,12 +226,12 @@ public class MatrixGenotypesFlipper {
 			//<editor-fold defaultstate="collapsed" desc="GENOTYPES WRITER">
 			log.info(Text.All.processing);
 			int markerIndex = 0;
-			for (Map.Entry<String, Object> entry : rdMarkerIdSetMap.entrySet()) {
-				String markerId = entry.getKey();
+			for (Map.Entry<MarkerKey, Object> entry : rdMarkerIdSetMap.entrySet()) {
+				MarkerKey markerKey = entry.getKey();
 				rdSampleSetMap = rdSampleSet.readAllSamplesGTsFromCurrentMarkerToMap(rdNcFile, rdSampleSetMap, markerIndex);
 
-				if (markerFlipHS.contains(markerId)) {
-					for (Map.Entry<String, Object> sampleEntry : rdSampleSetMap.entrySet()) {
+				if (markerFlipHS.contains(markerKey)) {
+					for (Map.Entry<SampleKey, Object> sampleEntry : rdSampleSetMap.entrySet()) {
 						byte[] gt = (byte[]) sampleEntry.getValue();
 						gt = flipGenotypes(gt, gtEncoding);
 						sampleEntry.setValue(new byte[]{gt[0], gt[1]});

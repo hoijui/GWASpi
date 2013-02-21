@@ -12,10 +12,12 @@ import java.util.Map;
 import org.gwaspi.constants.cExport;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
+import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.Operation;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.SampleInfo;
+import org.gwaspi.model.SampleKey;
 import org.gwaspi.netCDF.markers.MarkerSet_opt;
 import org.gwaspi.reports.GatherQAMarkersData;
 import org.gwaspi.samples.SampleSet;
@@ -33,12 +35,13 @@ public class EigensoftFormatter implements Formatter {
 
 	private final Logger log = LoggerFactory.getLogger(EigensoftFormatter.class);
 
+	@Override
 	public boolean export(
 			String exportPath,
 			MatrixMetadata rdMatrixMetadata,
 			MarkerSet_opt rdMarkerSet,
 			SampleSet rdSampleSet,
-			Map<String, Object> rdSampleSetMap,
+			Map<SampleKey, Object> rdSampleSetMap,
 			String phenotype)
 			throws IOException
 	{
@@ -75,11 +78,11 @@ public class EigensoftFormatter implements Formatter {
 		rdMarkerSet.appendVariableToMarkerSetMapValue(cNetCDF.Variables.VAR_MARKERS_RSID, sep);
 
 		// DEFAULT GENETIC DISTANCE = 0
-		for (Map.Entry<String, Object> entry : rdMarkerSet.getMarkerIdSetMap().entrySet()) {
+		for (Map.Entry<?, Object> entry : rdMarkerSet.getMarkerIdSetMap().entrySet()) {
 			StringBuilder value = new StringBuilder(entry.getValue().toString());
 			value.append(sep);
 			value.append("0");
-			rdMarkerSet.getMarkerIdSetMap().put(entry.getKey(), value.toString());
+			entry.setValue(value.toString());
 		}
 
 		// MARKERSET POSITION
@@ -89,10 +92,10 @@ public class EigensoftFormatter implements Formatter {
 		List<Operation> operations = OperationsList.getOperationsList(rdMatrixMetadata.getMatrixId());
 		int markersQAOpId = OperationsList.getIdOfLastOperationTypeOccurance(operations, OPType.MARKER_QA);
 
-		Map<String, Object> minorAllelesMap = GatherQAMarkersData.loadMarkerQAMinorAlleles(markersQAOpId);
-		Map<String, Object> majorAllelesMap = GatherQAMarkersData.loadMarkerQAMajorAlleles(markersQAOpId);
-		Map<String, Object> minorAlleleFreqMap = GatherQAMarkersData.loadMarkerQAMinorAlleleFrequency(markersQAOpId);
-		for (String key : rdMarkerSet.getMarkerIdSetMap().keySet()) {
+		Map<MarkerKey, Object> minorAllelesMap = GatherQAMarkersData.loadMarkerQAMinorAlleles(markersQAOpId);
+		Map<MarkerKey, Object> majorAllelesMap = GatherQAMarkersData.loadMarkerQAMajorAlleles(markersQAOpId);
+		Map<MarkerKey, Object> minorAlleleFreqMap = GatherQAMarkersData.loadMarkerQAMinorAlleleFrequency(markersQAOpId);
+		for (MarkerKey key : rdMarkerSet.getMarkerIdSetMap().keySet()) {
 			String minorAllele = minorAllelesMap.get(key).toString();
 			String majorAllele = majorAllelesMap.get(key).toString();
 			Double minAlleleFreq = (Double) minorAlleleFreqMap.get(key);
@@ -149,21 +152,20 @@ public class EigensoftFormatter implements Formatter {
 		int byteCount = 0;
 		byte[] wrBytes = new byte[byteChunkSize];
 		// ITERATE THROUGH ALL MARKERS, ONE SAMPLESET AT A TIME
-		for (String markerId : rdMarkerSet.getMarkerIdSetMap().keySet()) {
-			String tmpMinorAllele = minorAllelesMap.get(markerId).toString();
-			String tmpMajorAllele = majorAllelesMap.get(markerId).toString();
+		for (MarkerKey markerKey : rdMarkerSet.getMarkerIdSetMap().keySet()) {
+			String tmpMinorAllele = minorAllelesMap.get(markerKey).toString();
+			String tmpMajorAllele = majorAllelesMap.get(markerKey).toString();
 
 			// GET SAMPLESET FOR CURRENT MARKER
-			Map<String, Object> remainingSampleSet = rdSampleSet.readAllSamplesGTsFromCurrentMarkerToMap(rdNcFile, rdSampleSetMap, markerNb);
+			Map<SampleKey, Object> remainingSampleSet = rdSampleSet.readAllSamplesGTsFromCurrentMarkerToMap(rdNcFile, rdSampleSetMap, markerNb);
 			rdSampleSetMap = remainingSampleSet; // FIXME This line should most likely be removed, because further down this is used again ... check out!
 
-			for (Iterator<String> rdSampleIds = remainingSampleSet.keySet().iterator(); rdSampleIds.hasNext();) {
+			for (Iterator<Object> rdSampleGts = remainingSampleSet.values().iterator(); rdSampleGts.hasNext();) {
 				// ONE BYTE AT A TIME (4 SAMPLES)
 				StringBuilder tetraGTs = new StringBuilder("");
 				for (int i = 0; i < 4; i++) {
-					if (rdSampleIds.hasNext()) {
-						String sampleId = rdSampleIds.next();
-						byte[] tempGT = (byte[]) remainingSampleSet.get(sampleId);
+					if (rdSampleGts.hasNext()) {
+						byte[] tempGT = (byte[]) rdSampleGts.next();
 						byte[] translatedByte = translateTo00011011Byte(tempGT, tmpMinorAllele, tmpMajorAllele);
 						tetraGTs.insert(0, translatedByte[0]); // REVERSE ORDER, AS PER PLINK SPECS http://pngu.mgh.harvard.edu/~purcell/plink/binary.shtml
 						tetraGTs.insert(0, translatedByte[1]);
@@ -209,8 +211,8 @@ public class EigensoftFormatter implements Formatter {
 
 		// Iterate through all samples
 		int sampleNb = 0;
-		for (String sampleId : rdSampleSetMap.keySet()) {
-			SampleInfo sampleInfo = Utils.getCurrentSampleFormattedInfo(sampleId, rdMatrixMetadata.getStudyId());
+		for (SampleKey sampleKey : rdSampleSetMap.keySet()) {
+			SampleInfo sampleInfo = Utils.getCurrentSampleFormattedInfo(sampleKey, rdMatrixMetadata.getStudyId());
 
 			String familyId = sampleInfo.getFamilyId();
 			String fatherId = sampleInfo.getFatherId();
@@ -229,7 +231,7 @@ public class EigensoftFormatter implements Formatter {
 			StringBuilder line = new StringBuilder();
 			line.append(familyId);
 			line.append(sep);
-			line.append(sampleId);
+			line.append(sampleKey.getSampleId());
 			line.append(sep);
 			line.append(fatherId);
 			line.append(sep);

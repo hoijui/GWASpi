@@ -9,12 +9,14 @@ import java.util.Map;
 import org.gwaspi.constants.cExport;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
+import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.SampleInfo;
+import org.gwaspi.model.SampleKey;
 import org.gwaspi.netCDF.markers.MarkerSet_opt;
-import org.gwaspi.netCDF.operations.OperationSet;
+import org.gwaspi.netCDF.operations.MarkerOperationSet;
 import org.gwaspi.samples.SampleSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,12 +32,13 @@ class BeagleFormatter implements Formatter {
 
 	private final Logger log = LoggerFactory.getLogger(BeagleFormatter.class);
 
+	@Override
 	public boolean export(
 			String exportPath,
 			MatrixMetadata rdMatrixMetadata,
 			MarkerSet_opt rdMarkerSet,
 			SampleSet rdSampleSet,
-			Map<String, Object> rdSampleSetMap,
+			Map<SampleKey, Object> rdSampleSetMap,
 			String phenotype)
 			throws IOException
 	{
@@ -79,8 +82,8 @@ class BeagleFormatter implements Formatter {
 			StringBuilder ageLine = new StringBuilder("#" + sep + "age");
 			StringBuilder affectionLine = new StringBuilder("A" + sep + "affection");
 
-			for (String sampleId : rdSampleSetMap.keySet()) {
-				SampleInfo sampleInfo = Utils.getCurrentSampleFormattedInfo(sampleId, rdMatrixMetadata.getStudyId());
+			for (SampleKey sampleKey : rdSampleSetMap.keySet()) {
+				SampleInfo sampleInfo = Utils.getCurrentSampleFormattedInfo(sampleKey, rdMatrixMetadata.getStudyId());
 
 				sampleLine.append(sep);
 				sampleLine.append(sampleInfo.getSampleId());
@@ -138,12 +141,12 @@ class BeagleFormatter implements Formatter {
 
 			//Iterate through markerset
 			int markerNb = 0;
-			for (String markerId : rdMarkerSet.getMarkerIdSetMap().keySet()) {
-				StringBuilder markerLine = new StringBuilder("M" + sep + markerId.toString());
+			for (MarkerKey markerKey : rdMarkerSet.getMarkerIdSetMap().keySet()) {
+				StringBuilder markerLine = new StringBuilder("M" + sep + markerKey.toString());
 
 				// Iterate through sampleset
 				StringBuilder currMarkerGTs = new StringBuilder();
-				Map<String, Object> remainingSampleSet = rdSampleSet.readAllSamplesGTsFromCurrentMarkerToMap(rdNcFile, rdSampleSetMap, markerNb);
+				Map<SampleKey, Object> remainingSampleSet = rdSampleSet.readAllSamplesGTsFromCurrentMarkerToMap(rdNcFile, rdSampleSetMap, markerNb);
 				for (Object value : remainingSampleSet.values()) {
 					byte[] tempGT = (byte[]) value;
 					currMarkerGTs.append(sep);
@@ -198,13 +201,13 @@ class BeagleFormatter implements Formatter {
 				OperationMetadata qaMetadata = OperationsList.getOperationMetadata(markersQAopId);
 				NetcdfFile qaNcFile = NetcdfFile.open(qaMetadata.getPathToMatrix());
 
-				OperationSet rdOperationSet = new OperationSet(rdMatrixMetadata.getStudyId(), markersQAopId);
-				Map<String, Object> opMarkerSetMap = rdOperationSet.getOpSetMap();
+				MarkerOperationSet rdOperationSet = new MarkerOperationSet(rdMatrixMetadata.getStudyId(), markersQAopId);
+				Map<MarkerKey, Object> opMarkerSetMap = rdOperationSet.getOpSetMap();
 
 				// MAJOR ALLELE
 				opMarkerSetMap = rdOperationSet.fillOpSetMapWithVariable(qaNcFile, cNetCDF.Census.VAR_OP_MARKERS_MAJALLELES);
-				for (Map.Entry<String, Object> entry : rdMarkerSet.getMarkerIdSetMap().entrySet()) {
-					String key = entry.getKey();
+				for (Map.Entry<MarkerKey, Object> entry : rdMarkerSet.getMarkerIdSetMap().entrySet()) {
+					MarkerKey key = entry.getKey();
 					Object allele1Value = opMarkerSetMap.get(key);
 					Object infoValue = entry.getValue();
 
@@ -213,14 +216,14 @@ class BeagleFormatter implements Formatter {
 					sb.append(sep);
 					sb.append(allele1Value);
 
-					rdMarkerSet.getMarkerIdSetMap().put(key, sb.toString());
+					entry.setValue(sb.toString());
 				}
 
 				// MINOR ALLELE
 				rdOperationSet.fillMapWithDefaultValue(opMarkerSetMap, "");
 				opMarkerSetMap = rdOperationSet.fillOpSetMapWithVariable(qaNcFile, cNetCDF.Census.VAR_OP_MARKERS_MINALLELES);
-				for (Map.Entry<String, Object> entry : rdMarkerSet.getMarkerIdSetMap().entrySet()) {
-					String key = entry.getKey();
+				for (Map.Entry<MarkerKey, Object> entry : rdMarkerSet.getMarkerIdSetMap().entrySet()) {
+					MarkerKey key = entry.getKey();
 					Object allele2Value = opMarkerSetMap.get(key);
 					Object infoValue = entry.getValue();
 
@@ -229,7 +232,7 @@ class BeagleFormatter implements Formatter {
 					sb.append(sep);
 					sb.append(allele2Value);
 
-					rdMarkerSet.getMarkerIdSetMap().put(key, sb.toString());
+					entry.setValue(sb.toString());
 				}
 			}
 
