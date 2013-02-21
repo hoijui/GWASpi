@@ -365,7 +365,7 @@ public final class ManhattanPlotZoom extends JPanel {
 		if (centerPhysPos != Integer.MIN_VALUE) {
 			currPos = centerPhysPos;
 		} else {
-			currPos = (long) Math.round(defaultMarkerNb / 2);
+			currPos = Math.round((double)defaultMarkerNb / 2);
 		}
 
 		//<editor-fold defaultstate="collapsed" desc="TRACKER">

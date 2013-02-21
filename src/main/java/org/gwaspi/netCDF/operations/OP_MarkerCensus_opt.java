@@ -324,7 +324,7 @@ public class OP_MarkerCensus_opt implements MatrixOperation {
 				log.info(Text.All.processing);
 
 				int countMarkers = 0;
-				int chunkSize = Math.round(org.gwaspi.gui.StartGWASpi.maxProcessMarkers / 4);
+				int chunkSize = Math.round((float)org.gwaspi.gui.StartGWASpi.maxProcessMarkers / 4);
 				if (chunkSize > 500000) {
 					chunkSize = 500000; // We want to keep things manageable for RAM
 				}

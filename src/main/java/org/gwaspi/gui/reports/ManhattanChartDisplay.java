@@ -227,10 +227,10 @@ public final class ManhattanChartDisplay extends JPanel {
 				}
 			}
 
+			// CALCULATE THE WIDTH OF 1 CHR PLOT
 			chrPlotWidth = Math.round(
-					(chartWidth
-					- ((chrPlotNb - 1) * padGap))
-					/ chrPlotNb); // CALCULATE THE WIDTH OF 1 CHR PLOT
+					(float) (chartWidth - ((chrPlotNb - 1) * padGap))
+					/ chrPlotNb);
 
 			chrPlotWidthPad = chrPlotWidth + padGap;
 		} catch (IOException ex) {
@@ -244,10 +244,10 @@ public final class ManhattanChartDisplay extends JPanel {
 
 		int[] chrInfo = getChrInfo(pxXposNoLeftPad);  // Nb of markers, first physical position, last physical position, start index number in MarkerSet, placeholder
 
-		int nbMarkers = (Integer) chrInfo[0];
-		int startPhysPos = (Integer) chrInfo[1];
-		int maxPhysPos = (Integer) chrInfo[2];
-		int startIdx = (Integer) chrInfo[3];
+		int nbMarkers = chrInfo[0];
+		int startPhysPos = chrInfo[1];
+		int maxPhysPos = chrInfo[2];
+		int startIdx = chrInfo[3];
 
 		double avgMarkersPerPx = (double) nbMarkers / chrPlotWidth;
 		double avgSlotsPerPx = (double) (maxPhysPos - startPhysPos) / chrPlotWidth;
@@ -261,7 +261,7 @@ public final class ManhattanChartDisplay extends JPanel {
 		}
 		long defaultSlotsNb = Math.round(defaultSliceWidth * avgSlotsPerPx); //Nb of physical slots per slice
 
-		int chrNb = Math.round(pxXposNoLeftPad / chrPlotWidthPad);
+		int chrNb = Math.round((float) pxXposNoLeftPad / chrPlotWidthPad);
 		int pxXRest = pxXposNoLeftPad - (chrNb * chrPlotWidthPad);
 		int sliceNb = Math.round(pxXRest / defaultSliceWidth);
 		long longStartPhysPos = startPhysPos + (sliceNb * defaultSlotsNb);
@@ -278,7 +278,7 @@ public final class ManhattanChartDisplay extends JPanel {
 
 	private int[] getChrInfo(int pxXposNoLeftPad) {
 
-		int selectedChrMap = Math.round(pxXposNoLeftPad / chrPlotWidthPad);
+		int selectedChrMap = Math.round((float) pxXposNoLeftPad / chrPlotWidthPad);
 
 		int[] chrInfo = new int[4];
 		int i = 0;

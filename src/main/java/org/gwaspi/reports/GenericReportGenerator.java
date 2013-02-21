@@ -539,7 +539,7 @@ public class GenericReportGenerator {
 			Integer maxPosition = requestedSetSize;
 
 			minPosition = startIdxPos;
-			middlePosition = Math.round(minPosition + requestedSetSize / 2);
+			middlePosition = Math.round((float) (minPosition + requestedSetSize) / 2);
 			maxPosition = minPosition + requestedSetSize;
 
 

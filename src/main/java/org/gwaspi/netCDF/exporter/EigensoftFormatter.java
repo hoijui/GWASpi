@@ -125,7 +125,7 @@ public class EigensoftFormatter implements Formatter {
 		int nbOfSamples = rdSampleSet.getSampleSetSize();
 		int bytesPerSampleSet = ((int) Math.ceil((double) nbOfSamples / 8)) * 2;
 		int nbOfMarkers = rdMarkerSet.getMarkerSetSize();
-		int nbRowsPerChunk = Math.round(org.gwaspi.gui.StartGWASpi.maxProcessMarkers / nbOfSamples);
+		int nbRowsPerChunk = Math.round((float) org.gwaspi.gui.StartGWASpi.maxProcessMarkers / nbOfSamples);
 		if (nbRowsPerChunk > nbOfMarkers) {
 			nbRowsPerChunk = nbOfMarkers;
 		}
@@ -197,7 +197,7 @@ public class EigensoftFormatter implements Formatter {
 		data_out.write(wrBytes, 0, byteCount);
 
 		// Close file when finished with it..
-		file_output.close();
+		data_out.close();
 
 		org.gwaspi.global.Utils.sysoutCompleted("Completed exporting BED file to " + filePath);
 		//</editor-fold>

@@ -324,7 +324,7 @@ public class LoadGTFromPlinkBinaryFiles implements GenotypesLoader {
 		if (sampleNb % 4 == 0) {  //Nb OF BYTES IN EACH ROW
 			bytesPerSNP = sampleNb / 4;
 		} else {
-			bytesPerSNP = (int) (Math.floor(sampleNb / 4) + 1);
+			bytesPerSNP = (sampleNb / 4) + 1;
 		}
 
 		Iterator<String> itMarkerSet = bimMarkerSetMap.keySet().iterator();

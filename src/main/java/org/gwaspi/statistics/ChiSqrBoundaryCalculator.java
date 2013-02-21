@@ -99,7 +99,7 @@ public class ChiSqrBoundaryCalculator {
 
 				Collections.sort(expChiSqrDist);
 
-				int offset = Math.round(N / pointsNb);
+				int offset = Math.round((float) N / pointsNb);
 
 				ArrayDouble chiArray = new ArrayDouble.D2(pointsNb, 1);
 				Index ima = chiArray.getIndex();
