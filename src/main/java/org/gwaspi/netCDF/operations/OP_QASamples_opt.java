@@ -73,10 +73,10 @@ public class OP_QASamples_opt implements MatrixOperation {
 				if (!currentChr.equals("X")
 						&& !currentChr.equals("Y")
 						&& !currentChr.equals("XY")
-						&& !currentChr.equals("MT")) {
-					if (tempGT[0] != tempGT[1]) {
-						heterozygCount++;
-					}
+						&& !currentChr.equals("MT")
+						&& (tempGT[0] != tempGT[1]))
+				{
+					heterozygCount++;
 				}
 				markerIndex++;
 			}
