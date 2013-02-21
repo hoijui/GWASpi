@@ -357,7 +357,6 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 		String header = inputAnnotationBr.readLine();
 		inputAnnotationBr.close();
 
-		String l;
 		String[] hapmapVals = header.split(cImport.Separators.separators_SpaceTab_rgxp);
 
 		for (int i = cImport.SampleInfo.sampleId; i < hapmapVals.length; i++) {
