@@ -61,7 +61,7 @@ public class LoadGTFromPlinkBinaryFiles implements GenotypesLoader {
 
 	@Override
 	public int getMarkersD2ItemNb() {
-		throw new UnsupportedOperationException("Not supported yet."); // FIXME
+		throw new UnsupportedOperationException("Not supported yet."); // FIXME implement me!
 	}
 
 	@Override
@@ -330,7 +330,7 @@ public class LoadGTFromPlinkBinaryFiles implements GenotypesLoader {
 		Iterator<String> itMarkerSet = bimMarkerSetMap.keySet().iterator();
 		Iterator<SampleInfo> itSampleSet = sampleInfos.iterator();
 
-		//SKIP HEADER
+		// SKIP HEADER
 		bedIS.readByte();
 		bedIS.readByte();
 		byte mode = bedIS.readByte();
@@ -371,11 +371,17 @@ public class LoadGTFromPlinkBinaryFiles implements GenotypesLoader {
 								allele2 = getBit(byteData, i + 1);
 								String sampleId = itSampleSet.next().getSampleId();
 								if (!allele1 && !allele2) { // 00 Homozygote "1"/"1" - Minor allele
-									mappedGenotypes.put(sampleId, new byte[]{(byte) alleles[0].charAt(0), (byte) alleles[0].charAt(0)});
+									mappedGenotypes.put(sampleId, new byte[] {
+											(byte) alleles[0].charAt(0),
+											(byte) alleles[0].charAt(0)});
 								} else if (allele1 && allele2) { // 11 Homozygote "2"/"2" - Major allele
-									mappedGenotypes.put(sampleId, new byte[]{(byte) alleles[1].charAt(0), (byte) alleles[1].charAt(0)});
+									mappedGenotypes.put(sampleId, new byte[] {
+											(byte) alleles[1].charAt(0),
+											(byte) alleles[1].charAt(0)});
 								} else if (!allele1 && allele2) { // 01 Heterozygote
-									mappedGenotypes.put(sampleId, new byte[]{(byte) alleles[0].charAt(0), (byte) alleles[1].charAt(0)});
+									mappedGenotypes.put(sampleId, new byte[] {
+											(byte) alleles[0].charAt(0),
+											(byte) alleles[1].charAt(0)});
 								} else if (allele1 && !allele2) { // 10 Missing genotype
 									mappedGenotypes.put(sampleId, cNetCDF.Defaults.DEFAULT_GT);
 								}

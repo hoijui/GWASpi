@@ -67,12 +67,12 @@ public class LoadGTFromIlluminaLGENFiles implements GenotypesLoader {
 
 	@Override
 	public int getMarkersD2ItemNb() {
-		throw new UnsupportedOperationException("Not supported yet."); // FIXME
+		throw new UnsupportedOperationException("Not supported yet."); // FIXME implement me!
 	}
 
 	@Override
 	public String getMarkersD2Variables() {
-		throw new UnsupportedOperationException("Not supported yet."); // FIXME
+		throw new UnsupportedOperationException("Not supported yet."); // FIXME implement me!
 	}
 
 	@Override
@@ -243,7 +243,7 @@ public class LoadGTFromIlluminaLGENFiles implements GenotypesLoader {
 		// </editor-fold>
 
 		// <editor-fold defaultstate="collapsed" desc="MATRIX GENOTYPES LOAD ">
-		//START PROCESS OF LOADING GENOTYPES
+		// START PROCESS OF LOADING GENOTYPES
 		GenotypeEncoding guessedGTCode = GenotypeEncoding.UNKNOWN;
 		log.info(Text.All.processing);
 		for (int i = 0; i < gtFilesToImport.length; i++) {
@@ -309,7 +309,7 @@ public class LoadGTFromIlluminaLGENFiles implements GenotypesLoader {
 		while (!gotHeader && inputBufferReader.ready()) {
 			header = inputBufferReader.readLine();
 			if (header.startsWith("[Data]")) {
-				header = inputBufferReader.readLine(); //Get next line which is real header
+				header = inputBufferReader.readLine(); // Get next line which is real header
 				gotHeader = true;
 			}
 		}
@@ -363,8 +363,9 @@ public class LoadGTFromIlluminaLGENFiles implements GenotypesLoader {
 						&& cVals[Standard.allele2].equals(Standard.missing)) {
 					tmpAlleles = cNetCDF.Defaults.DEFAULT_GT;
 				} else {
-					tmpAlleles = new byte[]{(byte) (cVals[Standard.allele1].charAt(0)),
-						(byte) (cVals[Standard.allele2].charAt(0))};
+					tmpAlleles = new byte[] {
+							(byte) (cVals[Standard.allele1].charAt(0)),
+							(byte) (cVals[Standard.allele2].charAt(0))};
 				}
 				tempMarkerSet.put(cVals[Standard.markerId], tmpAlleles);
 			}
@@ -410,9 +411,8 @@ public class LoadGTFromIlluminaLGENFiles implements GenotypesLoader {
 			sampleId = l.substring(0, l.indexOf("."));
 		}
 
-
-//        String[] cVals = l.split("_");
-//        String sampleId = cVals[preprocessing.cFormats.sampleId];
+//		String[] cVals = l.split("_");
+//		String sampleId = cVals[preprocessing.cFormats.sampleId];
 
 		return sampleId;
 	}

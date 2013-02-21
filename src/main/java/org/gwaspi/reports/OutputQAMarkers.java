@@ -154,14 +154,14 @@ public class OutputQAMarkers {
 				OperationSet rdOperationSet = new OperationSet(rdOPMetadata.getStudyId(), markersQAopId);
 				Map<String, Object> opMarkerSetMap = rdOperationSet.getOpSetMap();
 
-				//MINOR ALLELE
+				// MINOR ALLELE
 				opMarkerSetMap = rdOperationSet.fillOpSetMapWithVariable(qaNcFile, cNetCDF.Census.VAR_OP_MARKERS_MINALLELES);
 				for (Map.Entry<String, Object> entry : rdInfoMarkerSet.getMarkerIdSetMap().entrySet()) {
 					Object minorAllele = opMarkerSetMap.get(entry.getKey());
 					entry.setValue(minorAllele);
 				}
 
-				//MAJOR ALLELE
+				// MAJOR ALLELE
 				rdOperationSet.fillMapWithDefaultValue(opMarkerSetMap, "");
 				opMarkerSetMap = rdOperationSet.fillOpSetMapWithVariable(qaNcFile, cNetCDF.Census.VAR_OP_MARKERS_MAJALLELES);
 				for (Map.Entry<String, Object> entry : rdInfoMarkerSet.getMarkerIdSetMap().entrySet()) {
@@ -179,7 +179,7 @@ public class OutputQAMarkers {
 			ReportWriter.appendColumnToReport(reportPath, reportName, sortingMarkerSetMap, false, false);
 
 
-			//WRITE QA MISSINGNESS RATIO
+			// WRITE QA MISSINGNESS RATIO
 			ReportWriter.appendColumnToReport(reportPath, reportName, storedMissingRatMap, false, false);
 			if (storedMissingRatMap != null) {
 				storedMissingRatMap.clear();
@@ -254,8 +254,8 @@ public class OutputQAMarkers {
 			}
 			ReportWriter.appendColumnToReport(reportPath, reportName, sortingMarkerSetMap, false, false);
 
-			//WRITE KNOWN ALLELES FROM QA
-			//get MARKER_QA Operation
+			// WRITE KNOWN ALLELES FROM QA
+			// get MARKER_QA Operation
 			List<Object[]> operationsAL = OperationsList.getMatrixOperations(rdOPMetadata.getParentMatrixId());
 			int markersQAopId = Integer.MIN_VALUE;
 			for (int i = 0; i < operationsAL.size(); i++) {
@@ -271,14 +271,14 @@ public class OutputQAMarkers {
 				OperationSet rdOperationSet = new OperationSet(rdOPMetadata.getStudyId(), markersQAopId);
 				Map<String, Object> opMarkerSetMap = rdOperationSet.getOpSetMap();
 
-				//MINOR ALLELE
+				// MINOR ALLELE
 				opMarkerSetMap = rdOperationSet.fillOpSetMapWithVariable(qaNcFile, cNetCDF.Census.VAR_OP_MARKERS_MINALLELES);
 				for (Map.Entry<String, Object> entry : rdInfoMarkerSet.getMarkerIdSetMap().entrySet()) {
 					Object minorAllele = opMarkerSetMap.get(entry.getKey());
 					entry.setValue(minorAllele);
 				}
 
-				//MAJOR ALLELE
+				// MAJOR ALLELE
 				rdOperationSet.fillMapWithDefaultValue(opMarkerSetMap, "");
 				opMarkerSetMap = rdOperationSet.fillOpSetMapWithVariable(qaNcFile, cNetCDF.Census.VAR_OP_MARKERS_MAJALLELES);
 				for (Map.Entry<String, Object> entry : rdInfoMarkerSet.getMarkerIdSetMap().entrySet()) {
@@ -292,7 +292,7 @@ public class OutputQAMarkers {
 			}
 			ReportWriter.appendColumnToReport(reportPath, reportName, sortingMarkerSetMap, false, false);
 
-			//WRITE QA MISMATCH STATE
+			// WRITE QA MISMATCH STATE
 			ReportWriter.appendColumnToReport(reportPath, reportName, storedMismatchStateMap, false, false);
 			if (storedMismatchStateMap != null) {
 				storedMismatchStateMap.clear();

@@ -88,7 +88,7 @@ public class MetadataLoaderAffy implements MetadataLoader {
 		SortedMap<String, String> sortedMetadataTM = new TreeMap<String, String>(new ComparatorChrAutPosMarkerIdAsc());
 
 		String header = "";
-		while (!header.startsWith("\"Probe Set ID") && header != null) {
+		while (!header.startsWith("\"Probe Set ID") && header != null) { // FIXME change order (do null-check first!)
 			header = inputAnnotationBr.readLine();
 		}
 

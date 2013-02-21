@@ -108,11 +108,11 @@ public class ChiSqrBoundaryCalculator {
 					chiArray.setDouble(ima.set(k, 0), expChiSqrDist.get(j));
 					k++;
 				}
-				int[] offsetOrigin = new int[]{0, i}; //0,0
+				int[] offsetOrigin = new int[]{0, i}; // 0, 0
 				ncfile.write("distributions", offsetOrigin, chiArray);
 
 				if (i % 100 == 0) {
-					log.info("{} X² simulations of {} run", i, simNb);
+					log.info("{} X^2 simulations of {} run", i, simNb);
 				}
 			} catch (InvalidRangeException ex) {
 				log.error(null, ex);

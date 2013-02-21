@@ -69,7 +69,7 @@ public class OP_GenotypicAssociationTests_opt implements MatrixOperation {
 				}
 			}
 
-			if (rdHWMarkerSetMap != null) {
+			if (rdHWMarkerSetMap != null) { // FIXME this check does nto make sense here
 				rdHWMarkerSetMap.clear();
 			}
 			rdHWNcFile.close();

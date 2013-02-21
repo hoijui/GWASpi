@@ -136,7 +136,7 @@ public class GenericReportGenerator {
 				Object[] data = (Object[]) dataSetMap.get(key); //CHR, POS, PVAL
 
 				double[] value = (double[]) entry.getValue();
-				Double pval = (Double) value[1];  //PVAL
+				Double pval = (Double) value[1];  // PVAL
 				if (!pval.equals(Double.NaN) && !pval.equals(Double.POSITIVE_INFINITY) && !pval.equals(Double.NEGATIVE_INFINITY)) { //Ignore NaN Pvalues
 					data[2] = pval;
 					dataSetMap.put(key, data);
@@ -293,7 +293,7 @@ public class GenericReportGenerator {
 
 		OperationMetadata rdOPMetadata = OperationsList.getOperationMetadata(opId);
 
-		//<editor-fold defaultstate="collapsed" desc="GET X²">
+		//<editor-fold defaultstate="collapsed" desc="GET X^2">
 		NetcdfFile assocNcFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());
 		OperationSet rdAssocMarkerSet = new OperationSet(rdOPMetadata.getStudyId(), opId);
 
@@ -314,7 +314,7 @@ public class GenericReportGenerator {
 		} else if (df == 2) {
 			expChiSqrDist = Chisquare.getChiSquareDistributionDf2(N, 1.0f);
 		}
-		Collections.sort(expChiSqrDist);
+		Collections.sort(expChiSqrDist); // FIXME might be null -> NPE
 
 		assocNcFile.close();
 		//</editor-fold>
@@ -462,7 +462,7 @@ public class GenericReportGenerator {
 					double[] value = (double[]) rdAssocMarkerSetMap.get(key);
 					Double pval = (Double) value[1]; //PVAL
 					if (!pval.equals(Double.NaN) && !pval.equals(Double.POSITIVE_INFINITY) && !pval.equals(Double.NEGATIVE_INFINITY)) {
-						//Ignore NaN Pvalues
+						// Ignore NaN Pvalues
 						data[2] = pval;
 						entry.setValue(data);
 					}
@@ -482,7 +482,7 @@ public class GenericReportGenerator {
 				int position = (Integer) data[1];
 				double pVal = 1;
 				if (data[2] != null) {
-					pVal = (Double) data[2]; //Is allready free of NaN
+					pVal = (Double) data[2]; // Is allready free of NaN
 				}
 
 				if (pVal < 1 && pVal != Double.POSITIVE_INFINITY && pVal != Double.NEGATIVE_INFINITY) {
@@ -550,7 +550,7 @@ public class GenericReportGenerator {
 				maxPosition = requestedSetSize;
 			} else {
 				Iterator it = rdAssocMarkerSetMap.keySet().iterator();
-				if (startIdxPos == Integer.MIN_VALUE) { //USE MARKERID TO LOCATE CENTER
+				if (startIdxPos == Integer.MIN_VALUE) { // USE MARKERID TO LOCATE CENTER
 					boolean goOn = true;
 					int i = 0;
 					while (goOn && i < rdAssocMarkerSetMap.size()) {
@@ -651,8 +651,8 @@ public class GenericReportGenerator {
 				String chr = data[0].toString();
 				int position = (Integer) data[1];
 
-				if (data[2] != null && validateChr.equals(chr)) { //Check for same chromosome data before adding
-					double pVal = (Double) data[2]; //Is allready free of NaN
+				if (data[2] != null && validateChr.equals(chr)) { // Check for same chromosome data before adding
+					double pVal = (Double) data[2]; // Is allready free of NaN
 					if (pVal < 1 && pVal != Double.POSITIVE_INFINITY && pVal != Double.NEGATIVE_INFINITY) {
 						dataSeries.add(position, pVal);
 						labelerHM.put(chr + "_" + position, tmpMarker);

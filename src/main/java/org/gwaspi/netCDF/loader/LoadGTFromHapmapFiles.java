@@ -27,7 +27,7 @@ import ucar.ma2.InvalidRangeException;
 import ucar.nc2.NetcdfFileWriteable;
 
 /**
- * Hapmap genotypes loader
+ * HapMap genotypes loader.
  * Can load a single file or multiple files, as long as they belong to a single population (CEU, YRI, JPT...)
  * Imports Hapmap genotype files as found on
  * http://hapmap.ncbi.nlm.nih.gov/downloads/genotypes/?N=D
@@ -74,19 +74,19 @@ public class LoadGTFromHapmapFiles implements GenotypesLoader {
 
 	@Override
 	public int getMarkersD2ItemNb() {
-		throw new UnsupportedOperationException("Not supported yet."); // FIXME
+		throw new UnsupportedOperationException("Not supported yet."); // FIXME implement me!
 	}
 
 	@Override
 	public String getMarkersD2Variables() {
-		throw new UnsupportedOperationException("Not supported yet."); // FIXME
+		throw new UnsupportedOperationException("Not supported yet."); // FIXME implement me!
 	}
 
 	//<editor-fold defaultstate="collapsed" desc="PROCESS GENOTYPES">
 	@Override
 	public int processData(GenotypesLoadDescription loadDescription, Collection<SampleInfo> sampleInfos) throws IOException, InvalidRangeException, InterruptedException {
 
-		// TODO check if real samplefiles coincides with sampleInfoFile
+		// TODO check if real sample files coincides with sampleInfoFile
 		File hapmapGTFile = new File(loadDescription.getGtDirPath());
 		if (hapmapGTFile.isDirectory()) {
 			File[] gtFilesToImport = org.gwaspi.global.Utils.listFiles(loadDescription.getGtDirPath());
@@ -362,11 +362,11 @@ public class LoadGTFromHapmapFiles implements GenotypesLoader {
 		}
 		Object sampleColumnNb = sampleOrderMap.get(currSampleId);
 
-		//GET ALLELES
+		// GET ALLELES
 		String l;
 		while ((l = inputBufferReader.readLine()) != null) {
 
-			//MEMORY LEAN METHOD
+			// MEMORY LEAN METHOD
 			if (sampleColumnNb != null) {
 				StringTokenizer st = new StringTokenizer(l, cImport.Separators.separators_SpaceTab_rgxp);
 				String markerId = st.nextToken();
@@ -384,7 +384,9 @@ public class LoadGTFromHapmapFiles implements GenotypesLoader {
 						if (strAlleles.equals(Standard.missing)) {
 							tmpAlleles = cNetCDF.Defaults.DEFAULT_GT;
 						} else {
-							tmpAlleles = new byte[]{(byte) strAlleles.charAt(0), (byte) strAlleles.charAt(1)};
+							tmpAlleles = new byte[] {
+								(byte) strAlleles.charAt(0),
+								(byte) strAlleles.charAt(1)};
 						}
 						k++;
 					}

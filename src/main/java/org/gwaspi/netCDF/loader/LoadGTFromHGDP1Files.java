@@ -63,12 +63,12 @@ public class LoadGTFromHGDP1Files implements GenotypesLoader {
 
 	@Override
 	public int getMarkersD2ItemNb() {
-		throw new UnsupportedOperationException("Not supported yet."); // FIXME
+		throw new UnsupportedOperationException("Not supported yet."); // FIXME implement me!
 	}
 
 	@Override
 	public String getMarkersD2Variables() {
-		throw new UnsupportedOperationException("Not supported yet."); // FIXME
+		throw new UnsupportedOperationException("Not supported yet."); // FIXME implement me!
 	}
 
 	//<editor-fold defaultstate="collapsed" desc="PROCESS GENOTYPES">
@@ -357,8 +357,9 @@ public class LoadGTFromHGDP1Files implements GenotypesLoader {
 				if (strAlleles.equals(Standard.missing)) {
 					tempMarkerIdMap.put(currMarkerId, cNetCDF.Defaults.DEFAULT_GT);
 				} else {
-					byte[] tmpAlleles = new byte[]{(byte) strAlleles.charAt(0),
-						(byte) strAlleles.charAt(0)};
+					byte[] tmpAlleles = new byte[] {
+							(byte) strAlleles.charAt(0),
+							(byte) strAlleles.charAt(0)}; // FIXME this should probably be 1, not 0
 					tempMarkerIdMap.put(currMarkerId, tmpAlleles);
 				}
 			}

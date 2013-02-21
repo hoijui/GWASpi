@@ -24,12 +24,10 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 
 /**
- * This modification of the MarkerSet can create instances of the MarkerSetMap
- * The markerSet Object has several methods to initialize it's Map, which can later
- * be filled with it's corresponding values.
+ * This modification of the MarkerSet can create instances of the MarkerSetMap.
+ * The markerSet object has several methods to initialize it's Map,
+ * which can later be filled with it's corresponding values.
  * The Map is not copied or passed as a parameter to the fillers.
- * The Maps are made public so that they can be referenced from other classes,
- * avoiding duplication of large Map datasets in memory.
  *
  * The matrix netCDF file is opened at creation of the MarkerSet and closed
  * at finalization of the class. No need to pass a netCDF handler anymore.
@@ -94,7 +92,7 @@ public class MarkerSet_opt {
 	}
 
 	//<editor-fold defaultstate="collapsed" desc="MARKERSET INITILAIZERS">
-	//USE MARKERID AS KEYS
+	// USE MARKERID AS KEYS
 	public void initFullMarkerIdSetMap() {
 		startMkIdx = 0;
 		endMkIdx = Integer.MIN_VALUE;

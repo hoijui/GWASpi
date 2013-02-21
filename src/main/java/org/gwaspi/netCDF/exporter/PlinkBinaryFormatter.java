@@ -145,10 +145,9 @@ public class PlinkBinaryFormatter implements Formatter {
 //          01101100 00011011   00000001   11011100 00001111 11100111
 //                                              (SNP-major)
 
-		data_out.writeByte(108);      //magic number
-		data_out.writeByte(27);        //magic number
-		data_out.writeByte(1);          //mode SNP-major
-
+		data_out.writeByte(108); // magic number
+		data_out.writeByte(27); // magic number
+		data_out.writeByte(1); // mode SNP-major
 
 		int markerNb = 0;
 		int byteCount = 0;
@@ -253,7 +252,6 @@ public class PlinkBinaryFormatter implements Formatter {
 			if (sampleNb % 100 == 0) {
 				log.info("Samples exported: {}", sampleNb);
 			}
-
 		}
 		tfamBW.close();
 		tfamFW.close();

@@ -93,7 +93,8 @@ public class LoadGTFromBeagleFiles extends AbstractLoadGTFromFiles {
 				Object columnNb = sampleOrderMap.get(currSampleId);
 				if (columnNb != null) {
 					String strAlleles = cVals[(Integer) columnNb] + cVals[((Integer) columnNb) + 1];
-					byte[] tmpAlleles = new byte[]{(byte) strAlleles.toString().charAt(0),
+					byte[] tmpAlleles = new byte[]{
+						(byte) strAlleles.toString().charAt(0),
 						(byte) strAlleles.toString().charAt(1)};
 					tempMarkerIdMap.put(currMarkerId, tmpAlleles);
 				}

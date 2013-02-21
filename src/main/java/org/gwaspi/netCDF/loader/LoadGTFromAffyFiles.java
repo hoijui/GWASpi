@@ -68,12 +68,12 @@ public class LoadGTFromAffyFiles implements GenotypesLoader {
 
 	@Override
 	public int getMarkersD2ItemNb() {
-		throw new UnsupportedOperationException("Not supported yet."); // FIXME
+		throw new UnsupportedOperationException("Not supported yet."); // FIXME implement me!
 	}
 
 	@Override
 	public String getMarkersD2Variables() {
-		throw new UnsupportedOperationException("Not supported yet."); // FIXME
+		throw new UnsupportedOperationException("Not supported yet."); // FIXME implement me!
 	}
 
 	@Override
@@ -385,7 +385,8 @@ public class LoadGTFromAffyFiles implements GenotypesLoader {
 					if (cVals[Standard.alleles].equals(Standard.missing)) {
 						alleles = cNetCDF.Defaults.DEFAULT_GT;
 					} else {
-						alleles = new byte[]{(byte) (cVals[Standard.alleles].charAt(0)),
+						alleles = new byte[] {
+							(byte) (cVals[Standard.alleles].charAt(0)),
 							(byte) (cVals[Standard.alleles].charAt(1))};
 					}
 					break;

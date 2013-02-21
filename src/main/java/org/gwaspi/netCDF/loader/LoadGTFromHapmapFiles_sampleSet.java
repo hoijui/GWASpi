@@ -25,7 +25,7 @@ import ucar.ma2.InvalidRangeException;
 import ucar.nc2.NetcdfFileWriteable;
 
 /**
- * Hapmap genotypes loader
+ * HapMap genotypes loader.
  * Can load a single file or multiple files, as long as they belong to a single population (CEU, YRI, JPT...)
  * Imports Hapmap genotype files as found on
  * http://hapmap.ncbi.nlm.nih.gov/downloads/genotypes/?N=D
@@ -48,7 +48,7 @@ public class LoadGTFromHapmapFiles_sampleSet extends LoadGTFromHapmapFiles imple
 	public int processData(GenotypesLoadDescription loadDescription, Collection<SampleInfo> sampleInfos) throws IOException, InvalidRangeException, InterruptedException {
 		int result = Integer.MIN_VALUE;
 
-		// TODO check if real samplefiles coincides with sampleInfoFile
+		// TODO check if real sample files coincides with sampleInfoFile
 		File hapmapGTFile = new File(loadDescription.getGtDirPath());
 		if (hapmapGTFile.isDirectory()) {
 			File[] gtFilesToImport = org.gwaspi.global.Utils.listFiles(loadDescription.getGtDirPath());
@@ -227,8 +227,7 @@ public class LoadGTFromHapmapFiles_sampleSet extends LoadGTFromHapmapFiles imple
 		// </editor-fold>
 
 		// <editor-fold defaultstate="collapsed" desc="MATRIX GENOTYPES LOAD ">
-
-		//Index MarkerIdMap
+		// Index MarkerIdMap
 		int count = 0;
 		for (Map.Entry<String, Object> entry : markerSetMap.entrySet()) {
 			entry.setValue(count);
@@ -283,7 +282,9 @@ public class LoadGTFromHapmapFiles_sampleSet extends LoadGTFromHapmapFiles imple
 					if (strAlleles.equals((LoadGTFromHapmapFiles.Standard.missing))) {
 						tmpAlleles = cNetCDF.Defaults.DEFAULT_GT;
 					} else {
-						tmpAlleles = new byte[]{(byte) strAlleles.charAt(0), (byte) strAlleles.charAt(1)};
+						tmpAlleles = new byte[] {
+								(byte) strAlleles.charAt(0),
+								(byte) strAlleles.charAt(1)};
 					}
 					k++;
 				}

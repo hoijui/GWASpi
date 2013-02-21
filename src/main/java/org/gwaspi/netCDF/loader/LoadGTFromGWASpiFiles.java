@@ -30,10 +30,9 @@ import ucar.ma2.InvalidRangeException;
 import ucar.nc2.NetcdfFileWriteable;
 
 /**
- * Hapmap genotypes loader
- * Can load a single file or multiple files, as long as they belong to a single population (CEU, YRI, JPT...)
- * Imports Hapmap genotype files as found on
- * http://hapmap.ncbi.nlm.nih.gov/downloads/genotypes/?N=D
+ * Loads genotypes from GWASpi's own file format.
+ * Can load a single file or multiple files, as long as they belong to
+ * a single population (CEU, YRI, JPT...).
  *
  * @author Fernando Muñiz Fernandez
  * IBE, Institute of Evolutionary Biology (UPF-CSIC)
@@ -64,12 +63,12 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 
 	@Override
 	public int getMarkersD2ItemNb() {
-		throw new UnsupportedOperationException("Not supported yet."); // FIXME
+		throw new UnsupportedOperationException("Not supported yet."); // FIXME implement me!
 	}
 
 	@Override
 	public String getMarkersD2Variables() {
-		throw new UnsupportedOperationException("Not supported yet."); // FIXME
+		throw new UnsupportedOperationException("Not supported yet."); // FIXME implement me!
 	}
 
 	@Override
