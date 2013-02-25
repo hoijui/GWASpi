@@ -24,6 +24,7 @@ public abstract class CommonRunnable implements Runnable {
 	 * @deprecated Should probably be replaced by taskDescription
 	 */
 	private final String startDescription;
+	private Throwable runException;
 
 	public CommonRunnable(String threadName, String taskDescription, String taskName, String startDescription) {
 		this.log = createLog();
@@ -32,6 +33,7 @@ public abstract class CommonRunnable implements Runnable {
 		this.taskName = taskName;
 		this.taskDescription = taskDescription;
 		this.startDescription = startDescription;
+		this.runException = null;
 	}
 
 	protected abstract Logger createLog();
@@ -69,8 +71,10 @@ public abstract class CommonRunnable implements Runnable {
 			MultiOperations.updateTree(); // XXX Threaded_ExportMatrix also had this here, others not
 			MultiOperations.updateProcessOverviewStartNext();
 		} catch (OutOfMemoryError ex) {
+			runException = ex;
 			getLog().error(Text.App.outOfMemoryError, ex);
 		} catch (Exception ex) {
+			runException = ex;
 			MultiOperations.printError(taskDescription);
 			getLog().error("Failed performing " + taskDescription, ex);
 			try {
@@ -97,5 +101,9 @@ public abstract class CommonRunnable implements Runnable {
 
 	public String getTimeStamp() {
 		return timeStamp;
+	}
+
+	public Throwable getRunException() {
+		return runException;
 	}
 }
