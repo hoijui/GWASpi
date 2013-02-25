@@ -202,6 +202,58 @@ public class TestScripts {
 		return args;
 	}
 
+	private void testLoadPlinkBinary(String name) throws Exception {
+
+		String matrixName = cImport.ImportFormat.PLINK_Binary.name() + "." + name;
+
+		String bedFileName = name + ".bed";
+		String bimFileName = name + ".bim";
+		String famFileName = name + ".fam";
+
+		log.info("Load from PLINK Binary ({}, {}, {}) ...", bedFileName, famFileName, bimFileName);
+
+		String resBasePath = "/samples/";
+		String scriptFileName = "gwaspiScript_loadPlink.txt";
+
+		// original resource files used during the test run
+		String formatBasePath = resBasePath + "plink/binary/";
+		URL plinkBinaryBed = TestScripts.class.getResource(formatBasePath + bedFileName);
+		URL plinkBinaryBim = TestScripts.class.getResource(formatBasePath + bimFileName);
+		URL plinkBinaryFam = TestScripts.class.getResource(formatBasePath + famFileName);
+		URL plinkLoadScript = TestScripts.class.getResource(resBasePath + scriptFileName);
+
+		// paths of the temporary file copies
+		File bedFile = new File(setup.getScriptsDir(), bedFileName);
+		File bimFile = new File(setup.getScriptsDir(), bimFileName);
+		File famFile = new File(setup.getScriptsDir(), famFileName);
+		File scriptFile = new File(setup.getScriptsDir(), scriptFileName);
+
+		// copy all the files used during the run to a temp dir
+		// so we are independent of the storage type of these files
+		// for example, in case they are packaged in a jar, originally
+		Map<String, String> substitutions = new HashMap<String, String>();
+		copyFile(plinkBinaryBed, bedFile, substitutions);
+		copyFile(plinkBinaryBim, bimFile, substitutions);
+		copyFile(plinkBinaryFam, famFile, substitutions);
+		substitutions.put("\\$\\{DATA_DIR\\}", setup.dbDataDir.getAbsolutePath());
+		substitutions.put("\\$\\{IN_FILE_1\\}", bedFile.getAbsolutePath());
+		substitutions.put("\\$\\{IN_FILE_2\\}", bimFile.getAbsolutePath());
+		substitutions.put("\\$\\{SAMPLE_INFO_FILE\\}", famFile.getAbsolutePath());
+		substitutions.put("\\$\\{MATRIX_NAME\\}", matrixName);
+		substitutions.put("\\$\\{FORMAT\\}", cImport.ImportFormat.PLINK_Binary.name());
+		copyFile(plinkLoadScript, scriptFile, substitutions);
+
+		File logFile = new File(setup.getTmpDir(), "log_test_loadPlinkFlat_" + bedFileName + "_" + famFileName + "_" + bimFileName + ".txt");
+
+		startGWASpi(createArgs(scriptFile.getAbsolutePath(), logFile.getAbsolutePath()));
+
+		if (fileNameLoadedMatrixId.get(matrixName) == null) {
+			fileNameLoadedMatrixId.put(matrixName, ++lastLoadedMatrixId + 1);
+		}
+
+		log.info("Load from PLINK Binary DONE.");
+	}
+
 	private void testLoadPlinkFlat(String name) throws Exception {
 
 		String matrixName = cImport.ImportFormat.PLINK.name() + "." + name;
@@ -333,5 +385,16 @@ public class TestScripts {
 	public void testLoadPlinkFlatMinimalPlink() throws Exception {
 
 		testLoadPlinkFlat("minimalPlink");
+	}
+
+	/**
+	 * Tests loading of the (minimal) Plink samples
+	 * from the Plink home-page, converted from Flat to Binary format.
+	 */
+	@org.junit.Ignore
+	@Test
+	public void testLoadPlinkBinaryMinimalPlink() throws Exception {
+
+		testLoadPlinkBinary("minimalPlink");
 	}
 }
