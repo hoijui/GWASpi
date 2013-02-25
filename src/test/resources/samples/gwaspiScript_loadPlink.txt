@@ -1,0 +1,12 @@
+data-dir=${DATA_DIR}
+[script]
+0.command=load_genotypes
+1.study-id=1
+2.format=${FORMAT}
+3.use-dummy-samples=true
+4.new-matrix-name=${MATRIX_NAME}
+5.description=Load genotypes of batch 42
+6.file1-path=${IN_FILE_1}
+7.file2-path=${IN_FILE_2}
+8.sample-info-path=${SAMPLE_INFO_FILE}
+[/script]
