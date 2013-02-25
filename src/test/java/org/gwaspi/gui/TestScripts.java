@@ -355,6 +355,54 @@ public class TestScripts {
 		log.info("Export into PLINK Flat DONE.");
 	}
 
+	private void testLoadHGDP1(String name) throws Exception {
+
+		String matrixName = cImport.ImportFormat.HGDP1.name() + "." + name;
+
+		String markersFileName = name + ".markers.txt";
+		String samplesFileName = name + ".samples.txt";
+
+		log.info("Load from HGDP1 ({}, {}) ...", markersFileName, samplesFileName);
+
+		String resBasePath = "/samples/";
+		String scriptFileName = "gwaspiScript_loadPlink.txt";
+
+		// original resource files used during the test run
+		String formatBasePath = resBasePath + "hgdp1/";
+		URL plinkFlatMap = TestScripts.class.getResource(formatBasePath + markersFileName);
+		URL plinkFlatPed = TestScripts.class.getResource(formatBasePath + samplesFileName);
+		URL plinkLoadScript = TestScripts.class.getResource(resBasePath + scriptFileName);
+
+		// paths of the temporary file copies
+		File markersFile = new File(setup.getScriptsDir(), markersFileName);
+		File samplesFile = new File(setup.getScriptsDir(), samplesFileName);
+		File scriptFile = new File(setup.getScriptsDir(), scriptFileName);
+
+		// copy all the files used during the run to a temp dir
+		// so we are independent of the storage type of these files
+		// for example, in case they are packaged in a jar, originally
+		Map<String, String> substitutions = new HashMap<String, String>();
+		copyFile(plinkFlatMap, markersFile, substitutions);
+		copyFile(plinkFlatPed, samplesFile, substitutions);
+		substitutions.put("\\$\\{DATA_DIR\\}", setup.dbDataDir.getAbsolutePath());
+		substitutions.put("\\$\\{IN_FILE_1\\}", markersFile.getAbsolutePath());
+		substitutions.put("\\$\\{IN_FILE_2\\}", samplesFile.getAbsolutePath());
+		substitutions.put("\\$\\{MATRIX_NAME\\}", matrixName);
+		substitutions.put("\\$\\{FORMAT\\}", cImport.ImportFormat.HGDP1.name());
+		substitutions.put("\\$\\{SAMPLE_INFO_FILE\\}", "no info file");
+		copyFile(plinkLoadScript, scriptFile, substitutions);
+
+		File logFile = new File(setup.getTmpDir(), "log_test_loadPlinkFlat_" + markersFileName + "_" + samplesFileName + ".txt");
+
+		startGWASpi(createArgs(scriptFile.getAbsolutePath(), logFile.getAbsolutePath()));
+
+		if (fileNameLoadedMatrixId.get(matrixName) == null) {
+			fileNameLoadedMatrixId.put(matrixName, ++lastLoadedMatrixId + 1);
+		}
+
+		log.info("Load from HGDP1 DONE.");
+	}
+
 	@Test
 	public void testExportPlinkFlatGwaspi() throws Exception {
 
@@ -396,5 +444,16 @@ public class TestScripts {
 	public void testLoadPlinkBinaryMinimalPlink() throws Exception {
 
 		testLoadPlinkBinary("minimalPlink");
+	}
+
+	/**
+	 * Tests loading of the (minimal) HGDP1 samples
+	 * from the GWASpi home-page.
+	 */
+	@org.junit.Ignore
+	@Test
+	public void testLoadHGDP1MinimalGwaspi() throws Exception {
+
+		testLoadHGDP1("minimalGwaspi");
 	}
 }
