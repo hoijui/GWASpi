@@ -135,7 +135,7 @@ public class SwingDeleterItemList {
 		}
 	}
 
-	public static List<SwingDeleterItem> getSwingDeleterItems() {
+	public static List<SwingDeleterItem> getItems() {
 		return swingDeleterItems;
 	}
 
@@ -171,7 +171,7 @@ public class SwingDeleterItemList {
 
 		int numPending = 0;
 
-		for (SwingDeleterItem currentSdi : getSwingDeleterItems()) {
+		for (SwingDeleterItem currentSdi : getItems()) {
 			if (currentSdi.isCurrent()) {
 				numPending++;
 			}

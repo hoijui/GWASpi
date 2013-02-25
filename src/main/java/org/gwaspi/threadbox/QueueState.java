@@ -12,5 +12,12 @@ public enum QueueState {
 	DONE,
 	ABORT,
 	ERROR,
-	DELETED
+	DELETED;
+
+	public static boolean isFinalizingState(QueueState queueState) {
+
+		return ((queueState == QueueState.DONE)
+				|| (queueState == QueueState.ABORT)
+				|| (queueState == QueueState.ERROR));
+	}
 }

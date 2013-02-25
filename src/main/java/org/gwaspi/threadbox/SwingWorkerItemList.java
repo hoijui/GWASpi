@@ -64,15 +64,28 @@ public class SwingWorkerItemList {
 		}
 	}
 
-	public static List<SwingWorkerItem> getSwingWorkerItems() {
+	public static List<SwingWorkerItem> getItems() {
 		return swingWorkerItems;
+	}
+
+	public static SwingWorkerItem getItemByTimeStamp(String timeStamp) {
+
+		SwingWorkerItem result = null;
+
+		for (SwingWorkerItem currentSwi : swingWorkerItems) {
+			if (currentSwi.getTimeStamp().equals(timeStamp)) {
+				result = currentSwi;
+			}
+		}
+
+		return result;
 	}
 
 	private static SwingWorkerItem getCurrentItemByTimeStamp(String timeStamp) {
 
 		SwingWorkerItem swi = null;
 
-		SwingWorkerItem swiTmp = getSwingWorkerItemByTimeStamp(timeStamp);
+		SwingWorkerItem swiTmp = getItemByTimeStamp(timeStamp);
 		if ((swiTmp != null) && swiTmp.isCurrent()) {
 			swi = swiTmp;
 		}
@@ -92,24 +105,27 @@ public class SwingWorkerItemList {
 		return swi;
 	}
 
-	public static void flagCurrentItemDone(String timeStamp) {
+	private static void flagCurrentItem(String timeStamp, QueueState newState) {
+
+		if (QueueState.isFinalizingState(newState)) {
+			throw new RuntimeException("Can not flag as " + newState.name());
+		}
+
 		SwingWorkerItem currentSwi = getCurrentItemByTimeStamp(timeStamp);
 		if (currentSwi != null) {
-			currentSwi.setQueueState(QueueState.DONE);
+			currentSwi.setQueueState(newState);
 			currentSwi.setEndTime(org.gwaspi.global.Utils.getShortDateTimeAsString());
 
 			unlockParentItems(currentSwi);
 		}
 	}
 
-	public static void flagCurrentItemAborted(String timeStamp) {
-		SwingWorkerItem currentSwi = getCurrentItemByTimeStamp(timeStamp);
-		if (currentSwi != null) {
-			currentSwi.setQueueState(QueueState.ABORT);
-			currentSwi.setEndTime(org.gwaspi.global.Utils.getShortDateTimeAsString());
+	public static void flagCurrentItemDone(String timeStamp) {
+		flagCurrentItem(timeStamp, QueueState.DONE);
+	}
 
-			unlockParentItems(currentSwi);
-		}
+	public static void flagCurrentItemError(String timeStamp) {
+		flagCurrentItem(timeStamp, QueueState.ERROR);
 	}
 
 	public static void flagCurrentItemAborted(int rowIdx) {
@@ -117,16 +133,6 @@ public class SwingWorkerItemList {
 		if (currentSwi != null) {
 			currentSwi.setQueueState(QueueState.ABORT);
 			ProcessTab.getSingleton().updateProcessOverview();
-
-			unlockParentItems(currentSwi);
-		}
-	}
-
-	public static void flagCurrentItemError(String timeStamp) {
-		SwingWorkerItem currentSwi = getCurrentItemByTimeStamp(timeStamp);
-		if (currentSwi != null) {
-			currentSwi.setQueueState(QueueState.ERROR);
-			currentSwi.setEndTime(org.gwaspi.global.Utils.getShortDateTimeAsString());
 
 			unlockParentItems(currentSwi);
 		}
@@ -167,25 +173,12 @@ public class SwingWorkerItemList {
 
 		int numPending = 0;
 
-		for (SwingWorkerItem swi : SwingWorkerItemList.getSwingWorkerItems()) {
+		for (SwingWorkerItem swi : SwingWorkerItemList.getItems()) {
 			if (swi.isCurrent()) {
 				numPending++;
 			}
 		}
 
 		return numPending;
-	}
-
-	public static SwingWorkerItem getSwingWorkerItemByTimeStamp(String timeStamp) {
-
-		SwingWorkerItem result = null;
-
-		for (SwingWorkerItem currentSwi : swingWorkerItems) {
-			if (currentSwi.getTimeStamp().equals(timeStamp)) {
-				result = currentSwi;
-			}
-		}
-
-		return result;
 	}
 }

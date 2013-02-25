@@ -230,8 +230,8 @@ public class ProcessTab extends JPanel {
 	}
 
 	protected Object[][] buildProcessTableModel() {
-		List<SwingWorkerItem> swingWorkerItemsAL = SwingWorkerItemList.getSwingWorkerItems();
-		List<SwingDeleterItem> swingDeleterItemsAL = SwingDeleterItemList.getSwingDeleterItems();
+		List<SwingWorkerItem> swingWorkerItemsAL = SwingWorkerItemList.getItems();
+		List<SwingDeleterItem> swingDeleterItemsAL = SwingDeleterItemList.getItems();
 
 		Object[][] spreadSheet = new Object[swingWorkerItemsAL.size() + swingDeleterItemsAL.size()][8];
 		int count = 0;
@@ -281,7 +281,7 @@ public class ProcessTab extends JPanel {
 	}
 
 	public void toggleBusyLogo() {
-		List<SwingWorkerItem> swingWorkerItemsAL = SwingWorkerItemList.getSwingWorkerItems();
+		List<SwingWorkerItem> swingWorkerItemsAL = SwingWorkerItemList.getItems();
 		int count = 0;
 		boolean idle = true;
 		while (count < swingWorkerItemsAL.size()) {
