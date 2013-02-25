@@ -26,12 +26,9 @@ import org.slf4j.LoggerFactory;
 public class SwingDeleterItemList {
 
 	private static final Logger log = LoggerFactory.getLogger(SwingDeleterItemList.class);
-	private static List<SwingDeleterItem> swingDeleterItems = new ArrayList<SwingDeleterItem>();
+	private List<SwingDeleterItem> swingDeleterItems = new ArrayList<SwingDeleterItem>();
 
-	private SwingDeleterItemList() {
-	}
-
-	public static void add(SwingDeleterItem sdi) {
+	public void add(SwingDeleterItem sdi) {
 
 		//SwingDeleterItemList.purgeDoneDeletes();
 		boolean addMe = true;
@@ -53,7 +50,7 @@ public class SwingDeleterItemList {
 		}
 	}
 
-	public static void deleteAllListed() {
+	public void deleteAllListed() {
 		if (StartGWASpi.guiMode) {
 			StartGWASpi.mainGUIFrame.setCursor(CursorUtils.waitCursor);
 		}
@@ -135,25 +132,25 @@ public class SwingDeleterItemList {
 		}
 	}
 
-	public static List<SwingDeleterItem> getItems() {
+	public List<SwingDeleterItem> getItems() {
 		return swingDeleterItems;
 	}
 
 	/** @deprecated unused! */
-	private static void flagCurrentItemAborted() {
+	private void flagCurrentItemAborted() {
 		flagCurrentItemEnd(QueueState.ABORT);
 	}
 
 	/** @deprecated unused! */
-	private static void flagCurrentItemError() {
+	private void flagCurrentItemError() {
 		flagCurrentItemEnd(QueueState.ERROR);
 	}
 
-	private static void flagCurrentItemDeleted() {
+	private void flagCurrentItemDeleted() {
 		flagCurrentItemEnd(QueueState.DELETED);
 	}
 
-	private static void flagCurrentItemEnd(QueueState endQueueState) {
+	private void flagCurrentItemEnd(QueueState endQueueState) {
 		for (SwingDeleterItem currentSdi : swingDeleterItems) {
 			if (currentSdi.getQueueState().equals(QueueState.PROCESSING)) {
 				currentSdi.setQueueState(endQueueState);
@@ -163,11 +160,11 @@ public class SwingDeleterItemList {
 		}
 	}
 
-	public static int size() {
+	public int size() {
 		return swingDeleterItems.size();
 	}
 
-	public static int sizePending() {
+	public int sizePending() {
 
 		int numPending = 0;
 
@@ -180,7 +177,7 @@ public class SwingDeleterItemList {
 		return numPending;
 	}
 
-	public static void purgeDoneDeletes() {
+	public void purgeDoneDeletes() {
 		for (int i = swingDeleterItems.size() - 1; i >= 0; i--) {
 			if (swingDeleterItems.get(i).getQueueState() == QueueState.DELETED) {
 				swingDeleterItems.remove(i);
@@ -188,7 +185,7 @@ public class SwingDeleterItemList {
 		}
 	}
 
-	public static void abortSwingWorker(int idx) {
+	public void abortSwingWorker(int idx) {
 		SwingDeleterItem sdi = swingDeleterItems.get(idx);
 		if (sdi.isCurrent()) {
 			sdi.setQueueState(QueueState.ABORT);

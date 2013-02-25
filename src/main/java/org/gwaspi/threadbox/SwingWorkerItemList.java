@@ -12,18 +12,15 @@ import org.gwaspi.gui.ProcessTab;
  */
 public class SwingWorkerItemList {
 
-	private static List<SwingWorkerItem> swingWorkerItems = new ArrayList<SwingWorkerItem>();
-	private static List<Integer> parentStudyIds = new ArrayList<Integer>();
-	private static List<Integer> parentMatricesIds = new ArrayList<Integer>();
-	private static List<Integer> parentOperationsIds = new ArrayList<Integer>();
+	private List<SwingWorkerItem> swingWorkerItems = new ArrayList<SwingWorkerItem>();
+	private List<Integer> parentStudyIds = new ArrayList<Integer>();
+	private List<Integer> parentMatricesIds = new ArrayList<Integer>();
+	private List<Integer> parentOperationsIds = new ArrayList<Integer>();
 
-	private SwingWorkerItemList() {
-	}
-
-	public static void add(SwingWorkerItem swi)
+	public void add(SwingWorkerItem swi)
 	{
 		SwingDeleterItemList.purgeDoneDeletes();
-		SwingWorkerItemList.swingWorkerItems.add(swi);
+		swingWorkerItems.add(swi);
 
 		// LOCK PARENT ITEMS
 		parentStudyIds.addAll(swi.getParentStudyIds());
@@ -47,7 +44,7 @@ public class SwingWorkerItemList {
 		}
 	}
 
-	public static void startNext() {
+	public void startNext() {
 		boolean started = false;
 		for (SwingWorkerItem currentSwi : swingWorkerItems) {
 			if (currentSwi.getQueueState().equals(QueueState.QUEUED)) {
@@ -64,11 +61,11 @@ public class SwingWorkerItemList {
 		}
 	}
 
-	public static List<SwingWorkerItem> getItems() {
+	public List<SwingWorkerItem> getItems() {
 		return swingWorkerItems;
 	}
 
-	public static SwingWorkerItem getItemByTimeStamp(String timeStamp) {
+	public SwingWorkerItem getItemByTimeStamp(String timeStamp) {
 
 		SwingWorkerItem result = null;
 
@@ -81,7 +78,7 @@ public class SwingWorkerItemList {
 		return result;
 	}
 
-	private static SwingWorkerItem getCurrentItemByTimeStamp(String timeStamp) {
+	private SwingWorkerItem getCurrentItemByTimeStamp(String timeStamp) {
 
 		SwingWorkerItem swi = null;
 
@@ -93,7 +90,7 @@ public class SwingWorkerItemList {
 		return swi;
 	}
 
-	private static SwingWorkerItem getCurrentItemByIndex(int rowIdx) {
+	private SwingWorkerItem getCurrentItemByIndex(int rowIdx) {
 
 		SwingWorkerItem swi = null;
 
@@ -105,7 +102,7 @@ public class SwingWorkerItemList {
 		return swi;
 	}
 
-	private static void flagCurrentItem(String timeStamp, QueueState newState) {
+	private void flagCurrentItem(String timeStamp, QueueState newState) {
 
 		if (QueueState.isFinalizingState(newState)) {
 			throw new RuntimeException("Can not flag as " + newState.name());
@@ -120,15 +117,15 @@ public class SwingWorkerItemList {
 		}
 	}
 
-	public static void flagCurrentItemDone(String timeStamp) {
+	public void flagCurrentItemDone(String timeStamp) {
 		flagCurrentItem(timeStamp, QueueState.DONE);
 	}
 
-	public static void flagCurrentItemError(String timeStamp) {
+	public void flagCurrentItemError(String timeStamp) {
 		flagCurrentItem(timeStamp, QueueState.ERROR);
 	}
 
-	public static void flagCurrentItemAborted(int rowIdx) {
+	public void flagCurrentItemAborted(int rowIdx) {
 		SwingWorkerItem currentSwi = getCurrentItemByIndex(rowIdx);
 		if (currentSwi != null) {
 			currentSwi.setQueueState(QueueState.ABORT);
@@ -138,19 +135,19 @@ public class SwingWorkerItemList {
 		}
 	}
 
-	public static boolean permitsDeletionOfStudyId(int studyId) {
+	public boolean permitsDeletionOfStudyId(int studyId) {
 		return !parentStudyIds.contains(studyId);
 	}
 
-	public static boolean permitsDeletionOfMatrixId(int matrixId) {
+	public boolean permitsDeletionOfMatrixId(int matrixId) {
 		return !parentMatricesIds.contains(matrixId);
 	}
 
-	public static boolean permitsDeletionOfOperationId(int opId) {
+	public boolean permitsDeletionOfOperationId(int opId) {
 		return !parentOperationsIds.contains(opId);
 	}
 
-	public static void unlockParentItems(SwingWorkerItem swi) {
+	public void unlockParentItems(SwingWorkerItem swi) {
 
 		// NOTE We can not use removeAll, because we only want to remove each ID once.
 		// It might still be locked a second time by an other thread.
@@ -165,15 +162,15 @@ public class SwingWorkerItemList {
 		}
 	}
 
-	public static int size() {
+	public int size() {
 		return swingWorkerItems.size();
 	}
 
-	public static int sizePending() {
+	public int sizePending() {
 
 		int numPending = 0;
 
-		for (SwingWorkerItem swi : SwingWorkerItemList.getItems()) {
+		for (SwingWorkerItem swi : getItems()) {
 			if (swi.isCurrent()) {
 				numPending++;
 			}
