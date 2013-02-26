@@ -29,6 +29,7 @@ import javax.swing.LayoutStyle;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.border.TitledBorder;
+import org.apache.felix.scr.annotations.Reference;
 import org.gwaspi.constants.cImport;
 import org.gwaspi.constants.cImport.ImportFormat;
 import org.gwaspi.global.Text;
@@ -591,7 +592,22 @@ public class LoadDataPanel extends JPanel {
 	}
 
 	//</editor-fold>
+	@org.apache.felix.scr.annotations.Component
 	private class LoadGenotypesAction extends AbstractAction { // FIXME make static
+
+		@Reference
+		private MultiOperations multiOperations;
+
+		protected void bindMultiOperations(MultiOperations multiOperations) {
+			this.multiOperations = multiOperations;
+		}
+
+		protected void unbindMultiOperations(MultiOperations multiOperations) {
+
+			if (this.multiOperations == multiOperations) {
+				this.multiOperations = null;
+			}
+		}
 
 		LoadGenotypesAction() {
 
@@ -645,7 +661,7 @@ public class LoadDataPanel extends JPanel {
 									gwasParams.getStrandType(),
 									gwasParams.getGtCode()
 									);
-							MultiOperations.loadMatrixDoGWASifOK(
+							multiOperations.loadMatrixDoGWASifOK(
 									loadDescription,
 									dummySamples,
 									performGwasInOneGo == JOptionPane.YES_OPTION,

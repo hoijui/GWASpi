@@ -23,6 +23,7 @@ import javax.swing.SwingConstants;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.tree.DefaultMutableTreeNode;
+import org.apache.felix.scr.annotations.Reference;
 import org.gwaspi.global.Text;
 import org.gwaspi.global.Utils;
 import org.gwaspi.gui.utils.BrowserHelpUrlAction;
@@ -281,7 +282,22 @@ public class CurrentStudyPanel extends JPanel {
 		}
 	}
 
+	@org.apache.felix.scr.annotations.Component
 	private static class LoadSampleInfoAction extends AbstractAction {
+
+		@Reference
+		private MultiOperations multiOperations;
+
+		protected void bindMultiOperations(MultiOperations multiOperations) {
+			this.multiOperations = multiOperations;
+		}
+
+		protected void unbindMultiOperations(MultiOperations multiOperations) {
+
+			if (this.multiOperations == multiOperations) {
+				this.multiOperations = null;
+			}
+		}
 
 		private Study study;
 
@@ -299,7 +315,7 @@ public class CurrentStudyPanel extends JPanel {
 				if (sampleInfoFile != null && sampleInfoFile.exists()) {
 					ProcessTab.getSingleton().showTab();
 
-					MultiOperations.updateSampleInfo(study.getId(),
+					multiOperations.updateSampleInfo(study.getId(),
 							sampleInfoFile);
 				}
 			} catch (Exception ex) {
@@ -311,11 +327,38 @@ public class CurrentStudyPanel extends JPanel {
 		}
 	}
 
+	@org.apache.felix.scr.annotations.Component
 	private static class DeleteMatrixAction extends AbstractAction {
 
 		private Study study;
 		private Component dialogParent;
 		private JTable table;
+		@Reference
+		private SwingWorkerItemList swingWorkerItemList;
+		@Reference
+		private MultiOperations multiOperations;
+
+		protected void bindSwingWorkerItemList(SwingWorkerItemList swingWorkerItemList) {
+			this.swingWorkerItemList = swingWorkerItemList;
+		}
+
+		protected void unbindSwingWorkerItemList(SwingWorkerItemList swingWorkerItemList) {
+
+			if (this.swingWorkerItemList == swingWorkerItemList) {
+				this.swingWorkerItemList = null;
+			}
+		}
+
+		protected void bindMultiOperations(MultiOperations multiOperations) {
+			this.multiOperations = multiOperations;
+		}
+
+		protected void unbindMultiOperations(MultiOperations multiOperations) {
+
+			if (this.multiOperations == multiOperations) {
+				this.multiOperations = null;
+			}
+		}
 
 		DeleteMatrixAction(Study study, Component dialogParent, JTable table) {
 
@@ -337,13 +380,13 @@ public class CurrentStudyPanel extends JPanel {
 						for (int i = 0; i < selectedMatrices.length; i++) {
 							int tmpMatrixRow = selectedMatrices[i];
 							int matrixId = (Integer) table.getModel().getValueAt(tmpMatrixRow, 0);
-							//TEST IF THE DELETED ITEM IS REQUIRED FOR A QUED WORKER
-							if (SwingWorkerItemList.permitsDeletionOfMatrixId(matrixId)) {
+							// TEST IF THE DELETED ITEM IS REQUIRED FOR A QUEUED WORKER
+							if (swingWorkerItemList.permitsDeletionOfMatrixId(matrixId)) {
 								boolean deleteReport = false;
 								if (deleteReportOption == JOptionPane.YES_OPTION) {
 									deleteReport = true;
 								}
-								MultiOperations.deleteMatrix(study.getId(), matrixId, deleteReport);
+								multiOperations.deleteMatrix(study.getId(), matrixId, deleteReport);
 								//netCDF.matrices.MatrixManager.deleteMatrix(matrixId, deleteReport);
 							} else {
 								Dialogs.showWarningDialogue(Text.Processes.cantDeleteRequiredItem);
@@ -356,10 +399,37 @@ public class CurrentStudyPanel extends JPanel {
 		}
 	}
 
+	@org.apache.felix.scr.annotations.Component
 	private static class DeleteStudyAction extends AbstractAction {
 
 		private Study study;
 		private Component dialogParent;
+		@Reference
+		private SwingWorkerItemList swingWorkerItemList;
+		@Reference
+		private MultiOperations multiOperations;
+
+		protected void bindSwingWorkerItemList(SwingWorkerItemList swingWorkerItemList) {
+			this.swingWorkerItemList = swingWorkerItemList;
+		}
+
+		protected void unbindSwingWorkerItemList(SwingWorkerItemList swingWorkerItemList) {
+
+			if (this.swingWorkerItemList == swingWorkerItemList) {
+				this.swingWorkerItemList = null;
+			}
+		}
+
+		protected void bindMultiOperations(MultiOperations multiOperations) {
+			this.multiOperations = multiOperations;
+		}
+
+		protected void unbindMultiOperations(MultiOperations multiOperations) {
+
+			if (this.multiOperations == multiOperations) {
+				this.multiOperations = null;
+			}
+		}
 
 		DeleteStudyAction(Study study, Component dialogParent) {
 
@@ -371,7 +441,7 @@ public class CurrentStudyPanel extends JPanel {
 		@Override
 		public void actionPerformed(ActionEvent evt) {
 			// TODO TEST IF THE DELETED ITEM IS REQUIRED FOR A QUED WORKER
-			if (SwingWorkerItemList.permitsDeletionOfStudyId(study.getId())) {
+			if (swingWorkerItemList.permitsDeletionOfStudyId(study.getId())) {
 				int option = JOptionPane.showConfirmDialog(dialogParent, Text.Study.confirmDelete1 + Text.Study.confirmDelete2);
 				if (option == JOptionPane.YES_OPTION) {
 					int deleteReportOption = JOptionPane.showConfirmDialog(dialogParent, Text.Reports.confirmDelete);
@@ -381,7 +451,7 @@ public class CurrentStudyPanel extends JPanel {
 						if (deleteReportOption == JOptionPane.YES_OPTION) {
 							deleteReport = true;
 						}
-						MultiOperations.deleteStudy(study.getId(), deleteReport);
+						multiOperations.deleteStudy(study.getId(), deleteReport);
 					}
 				}
 			} else {

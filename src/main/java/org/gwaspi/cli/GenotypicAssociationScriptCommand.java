@@ -3,6 +3,8 @@ package org.gwaspi.cli;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.felix.scr.annotations.Component;
+import org.apache.felix.scr.annotations.Reference;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.global.Text;
 import org.gwaspi.netCDF.operations.GWASinOneGOParams;
@@ -14,7 +16,22 @@ import org.gwaspi.threadbox.MultiOperations;
  * IBE, Institute of Evolutionary Biology (UPF-CSIC)
  * CEXS-UPF-PRBB
  */
+@Component
 class GenotypicAssociationScriptCommand extends AbstractScriptCommand {
+
+	@Reference
+	private MultiOperations multiOperations;
+
+	protected void bindMultiOperations(MultiOperations multiOperations) {
+		this.multiOperations = multiOperations;
+	}
+
+	protected void unbindMultiOperations(MultiOperations multiOperations) {
+
+		if (this.multiOperations == multiOperations) {
+			this.multiOperations = null;
+		}
+	}
 
 	GenotypicAssociationScriptCommand() {
 		super("genotypic_association");
@@ -71,13 +88,13 @@ class GenotypicAssociationScriptCommand extends AbstractScriptCommand {
 			if (gwasParams.isProceed() && missingOPsAL.size() > 0) {
 				gwasParams.setProceed(false);
 				System.out.println(Text.Operation.warnQABeforeAnything + "\n" + Text.Operation.willPerformOperation);
-				MultiOperations.doMatrixQAs(studyId, matrixId);
+				multiOperations.doMatrixQAs(studyId, matrixId);
 			}
 
 			// genotypic test block
 			if (gwasParams.isProceed()) {
 				System.out.println(Text.All.processing);
-				MultiOperations.doGenotypicAssociationTest(studyId,
+				multiOperations.doGenotypicAssociationTest(studyId,
 						matrixId,
 						gtFreqId,
 						hwId,

@@ -28,6 +28,7 @@ import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.tree.DefaultMutableTreeNode;
+import org.apache.felix.scr.annotations.Reference;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.utils.BrowserHelpUrlAction;
 import org.gwaspi.gui.utils.Dialogs;
@@ -290,7 +291,35 @@ public class StudyManagementPanel extends JPanel {
 		}
 	}
 
+	@org.apache.felix.scr.annotations.Component
 	private class DeleteStudyAction extends AbstractAction { // FIXME make static
+
+		@Reference
+		private SwingWorkerItemList swingWorkerItemList;
+		@Reference
+		private MultiOperations multiOperations;
+
+		protected void bindSwingWorkerItemList(SwingWorkerItemList swingWorkerItemList) {
+			this.swingWorkerItemList = swingWorkerItemList;
+		}
+
+		protected void unbindSwingWorkerItemList(SwingWorkerItemList swingWorkerItemList) {
+
+			if (this.swingWorkerItemList == swingWorkerItemList) {
+				this.swingWorkerItemList = null;
+			}
+		}
+
+		protected void bindMultiOperations(MultiOperations multiOperations) {
+			this.multiOperations = multiOperations;
+		}
+
+		protected void unbindMultiOperations(MultiOperations multiOperations) {
+
+			if (this.multiOperations == multiOperations) {
+				this.multiOperations = null;
+			}
+		}
 
 		DeleteStudyAction() {
 
@@ -312,15 +341,15 @@ public class StudyManagementPanel extends JPanel {
 					int deleteReportOption = JOptionPane.showConfirmDialog(StudyManagementPanel.this, Text.Reports.confirmDelete);
 					for (int i = 0; i < selectedStudyIds.length; i++) {
 						int studyId = selectedStudyIds[i];
-						//TEST IF THE DELETED ITEM IS REQUIRED FOR A QUED WORKER
-						if (SwingWorkerItemList.permitsDeletionOfStudyId(studyId)) {
+						// TEST IF THE DELETED ITEM IS REQUIRED FOR A QUEUED WORKER
+						if (swingWorkerItemList.permitsDeletionOfStudyId(studyId)) {
 							if (option == JOptionPane.YES_OPTION && deleteReportOption != JOptionPane.CANCEL_OPTION) {
 
 								boolean deleteReport = false;
 								if (deleteReportOption == JOptionPane.YES_OPTION) {
 									deleteReport = true;
 								}
-								MultiOperations.deleteStudy(studyId, deleteReport);
+								multiOperations.deleteStudy(studyId, deleteReport);
 
 	//							try {
 	//								StudyList.deleteStudy(studyId, deleteReport);

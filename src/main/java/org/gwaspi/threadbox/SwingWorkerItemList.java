@@ -2,6 +2,9 @@ package org.gwaspi.threadbox;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.felix.scr.annotations.Component;
+import org.apache.felix.scr.annotations.Reference;
+import org.apache.felix.scr.annotations.Service;
 import org.gwaspi.gui.ProcessTab;
 
 /**
@@ -10,16 +13,39 @@ import org.gwaspi.gui.ProcessTab;
  * IBE, Institute of Evolutionary Biology (UPF-CSIC)
  * CEXS-UPF-PRBB
  */
+@Component
+@Service(SwingWorkerItemList.class)
+//@References({
+//	@Reference(
+//			name = "canvas",
+//			policy = ReferencePolicy.DYNAMIC,
+//			referenceInterface = Canvas.class,
+////			cardinality = ReferenceCardinality.MANDATORY_UNARY)//,
+//			cardinality = ReferenceCardinality.OPTIONAL_MULTIPLE)//,
+//})
 public class SwingWorkerItemList {
 
 	private List<SwingWorkerItem> swingWorkerItems = new ArrayList<SwingWorkerItem>();
 	private List<Integer> parentStudyIds = new ArrayList<Integer>();
 	private List<Integer> parentMatricesIds = new ArrayList<Integer>();
 	private List<Integer> parentOperationsIds = new ArrayList<Integer>();
+	@Reference
+	private SwingDeleterItemList swingDeleterItemList;
+
+	protected void bindSwingDeleterItemList(SwingDeleterItemList swingDeleterItemList) {
+		this.swingDeleterItemList = swingDeleterItemList;
+	}
+
+	protected void unbindSwingDeleterItemList(SwingDeleterItemList swingDeleterItemList) {
+
+		if (this.swingDeleterItemList == swingDeleterItemList) {
+			this.swingDeleterItemList = null;
+		}
+	}
 
 	public void add(SwingWorkerItem swi)
 	{
-		SwingDeleterItemList.purgeDoneDeletes();
+		swingDeleterItemList.purgeDoneDeletes();
 		swingWorkerItems.add(swi);
 
 		// LOCK PARENT ITEMS
@@ -57,7 +83,7 @@ public class SwingWorkerItemList {
 			}
 		}
 		if (!started) {
-			SwingDeleterItemList.deleteAllListed(); // This will also update the tree
+			swingDeleterItemList.deleteAllListed(); // This will also update the tree
 		}
 	}
 

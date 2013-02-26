@@ -18,6 +18,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JTabbedPane;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
+import org.apache.felix.scr.annotations.Component;
+import org.apache.felix.scr.annotations.Reference;
 import org.gwaspi.cli.CliExecutor;
 import org.gwaspi.constants.cGlobal;
 import org.gwaspi.global.Config;
@@ -35,6 +37,7 @@ import org.slf4j.LoggerFactory;
  * IBE, Institute of Evolutionary Biology (UPF-CSIC)
  * CEXS-UPF-PRBB
  */
+@Component
 public class StartGWASpi extends JFrame {
 
 	private static final Logger log = LoggerFactory.getLogger(StartGWASpi.class);
@@ -67,6 +70,32 @@ public class StartGWASpi extends JFrame {
 	public static String config_ReportsDir;
 	public static String config_OfflineHelpDir;
 	public static String config_LogDir;
+	@Reference
+	private SwingWorkerItemList swingWorkerItemList;
+	@Reference
+	private SwingDeleterItemList swingDeleterItemList;
+
+	protected void bindSwingWorkerItemList(SwingWorkerItemList swingWorkerItemList) {
+		this.swingWorkerItemList = swingWorkerItemList;
+	}
+
+	protected void unbindSwingWorkerItemList(SwingWorkerItemList swingWorkerItemList) {
+
+		if (this.swingWorkerItemList == swingWorkerItemList) {
+			this.swingWorkerItemList = null;
+		}
+	}
+
+	protected void bindSwingDeleterItemList(SwingDeleterItemList swingDeleterItemList) {
+		this.swingDeleterItemList = swingDeleterItemList;
+	}
+
+	protected void unbindSwingDeleterItemList(SwingDeleterItemList swingDeleterItemList) {
+
+		if (this.swingDeleterItemList == swingDeleterItemList) {
+			this.swingDeleterItemList = null;
+		}
+	}
 
 	public StartGWASpi() {
 	}
@@ -115,7 +144,7 @@ public class StartGWASpi extends JFrame {
 			mainGUIFrame.addWindowListener(new WindowAdapter() {
 				@Override
 				public void windowClosing(WindowEvent we) {
-					int jobsPending = SwingWorkerItemList.sizePending() + SwingDeleterItemList.sizePending();
+					int jobsPending = swingWorkerItemList.sizePending() + swingDeleterItemList.sizePending();
 					if (jobsPending == 0) {
 						we.getWindow().setVisible(false);
 					} else {

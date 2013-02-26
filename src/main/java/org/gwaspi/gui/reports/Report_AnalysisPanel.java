@@ -15,6 +15,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.LayoutStyle;
 import javax.swing.border.TitledBorder;
+import org.apache.felix.scr.annotations.Reference;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.utils.BrowserHelpUrlAction;
@@ -34,6 +35,7 @@ import org.gwaspi.threadbox.SwingWorkerItemList;
  * IBE, Institute of Evolutionary Biology (UPF-CSIC)
  * CEXS-UPF-PRBB
  */
+@org.apache.felix.scr.annotations.Component
 public class Report_AnalysisPanel extends JPanel {
 
 	private Matrix parentMatrix;
@@ -149,6 +151,32 @@ public class Report_AnalysisPanel extends JPanel {
 		private Matrix parentMatrix;
 		private Component dialogParent;
 		private Operation currentOP;
+		@Reference
+		private SwingWorkerItemList swingWorkerItemList;
+		@Reference
+		private MultiOperations multiOperations;
+
+		protected void bindSwingWorkerItemList(SwingWorkerItemList swingWorkerItemList) {
+			this.swingWorkerItemList = swingWorkerItemList;
+		}
+
+		protected void unbindSwingWorkerItemList(SwingWorkerItemList swingWorkerItemList) {
+
+			if (this.swingWorkerItemList == swingWorkerItemList) {
+				this.swingWorkerItemList = null;
+			}
+		}
+
+		protected void bindMultiOperations(MultiOperations multiOperations) {
+			this.multiOperations = multiOperations;
+		}
+
+		protected void unbindMultiOperations(MultiOperations multiOperations) {
+
+			if (this.multiOperations == multiOperations) {
+				this.multiOperations = null;
+			}
+		}
 
 		DeleteOperationAction(Matrix parentMatrix, Component dialogParent, Operation currentOP) {
 
@@ -160,8 +188,8 @@ public class Report_AnalysisPanel extends JPanel {
 
 		@Override
 		public void actionPerformed(ActionEvent evt) {
-			// TEST IF THE DELETED ITEM IS REQUIRED FOR A QUED WORKER
-			if (SwingWorkerItemList.permitsDeletionOfMatrixId(currentOP.getId())) { // XXX FIXME? should it be permitsDeletionOfOperationId
+			// TEST IF THE DELETED ITEM IS REQUIRED FOR A QUEUED WORKER
+			if (swingWorkerItemList.permitsDeletionOfMatrixId(currentOP.getId())) { // XXX FIXME? should it be permitsDeletionOfOperationId
 				int option = JOptionPane.showConfirmDialog(dialogParent, Text.Operation.confirmDelete1);
 				if (option == JOptionPane.YES_OPTION) {
 					int deleteReportOption = JOptionPane.showConfirmDialog(dialogParent, Text.Reports.confirmDelete);
@@ -171,7 +199,7 @@ public class Report_AnalysisPanel extends JPanel {
 							if (deleteReportOption == JOptionPane.YES_OPTION) {
 								deleteReport = true;
 							}
-							MultiOperations.deleteOperationsByOpId(parentMatrix.getStudyId(), parentMatrix.getId(), currentOP.getId(), deleteReport);
+							multiOperations.deleteOperationsByOpId(parentMatrix.getStudyId(), parentMatrix.getId(), currentOP.getId(), deleteReport);
 						}
 					}
 				}

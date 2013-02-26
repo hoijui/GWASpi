@@ -9,6 +9,7 @@ import javax.swing.JTable;
 import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
+import org.apache.felix.scr.annotations.Reference;
 import org.gwaspi.constants.cGlobal;
 import org.gwaspi.threadbox.QueueState;
 import org.gwaspi.threadbox.SwingDeleterItem;
@@ -26,8 +27,32 @@ public class RowRendererDefault extends DefaultTableCellRenderer {
 	private static final URL ICON_PATH_QUERY_DB = RowRendererDefault.class.getResource("/img/icon/arrow_20x20.png");
 	private static final URL ICON_PATH_ABORT    = RowRendererDefault.class.getResource("/img/icon/abort_16x16.png");
 	private static final URL ICON_PATH_NO_ABORT = RowRendererDefault.class.getResource("/img/icon/abort-grey_16x16.png");
-	private static List<SwingWorkerItem> swAL  = SwingWorkerItemList.getItems();
-	private static List<SwingDeleterItem> sdAL = SwingDeleterItemList.getItems();
+	@Reference
+	private SwingWorkerItemList swingWorkerItemList;
+	@Reference
+	private SwingDeleterItemList swingDeleterItemList;
+
+	protected void bindSwingWorkerItemList(SwingWorkerItemList swingWorkerItemList) {
+		this.swingWorkerItemList = swingWorkerItemList;
+	}
+
+	protected void unbindSwingWorkerItemList(SwingWorkerItemList swingWorkerItemList) {
+
+		if (this.swingWorkerItemList == swingWorkerItemList) {
+			this.swingWorkerItemList = null;
+		}
+	}
+
+	protected void bindSwingDeleterItemList(SwingDeleterItemList swingDeleterItemList) {
+		this.swingDeleterItemList = swingDeleterItemList;
+	}
+
+	protected void unbindSwingDeleterItemList(SwingDeleterItemList swingDeleterItemList) {
+
+		if (this.swingDeleterItemList == swingDeleterItemList) {
+			this.swingDeleterItemList = null;
+		}
+	}
 
 	@Override
 	public Component getTableCellRendererComponent(JTable table, Object value, boolean selected, boolean focused, int row, int column) {
@@ -58,15 +83,18 @@ public class RowRendererDefault extends DefaultTableCellRenderer {
 		tableCellRenderer.setIcon(ico);
 	}
 
-	protected static void setAbortIcon(DefaultTableCellRenderer tableCellRenderer, JTable table, int row, int column) {
+	protected void setAbortIcon(DefaultTableCellRenderer tableCellRenderer, JTable table, int row, int column) {
+
+		List<SwingWorkerItem> swingWorkers  = swingWorkerItemList.getItems();
+		List<SwingDeleterItem> swingDeleters = swingDeleterItemList.getItems();
 
 		if (table.getColumnModel().getColumnCount() == 8) {
 			ImageIcon ico;
 			QueueState queueState;
-			if (swAL.size() > row) {
-				queueState = swAL.get(row).getQueueState();
+			if (swingWorkers.size() > row) {
+				queueState = swingWorkers.get(row).getQueueState();
 			} else {
-				queueState = sdAL.get(row - swAL.size()).getQueueState();
+				queueState = swingDeleters.get(row - swingWorkers.size()).getQueueState();
 			}
 
 			if (column == 0 || column == 1) {

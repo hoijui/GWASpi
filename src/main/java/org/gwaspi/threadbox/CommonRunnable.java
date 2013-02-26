@@ -1,5 +1,6 @@
 package org.gwaspi.threadbox;
 
+import org.apache.felix.scr.annotations.Reference;
 import org.gwaspi.global.Text;
 import org.slf4j.Logger;
 
@@ -25,6 +26,32 @@ public abstract class CommonRunnable implements Runnable {
 	 */
 	private final String startDescription;
 	private Throwable runException;
+	@Reference
+	private SwingWorkerItemList swingWorkerItemList;
+	@Reference
+	private MultiOperations multiOperations;
+
+	protected void bindSwingWorkerItemList(SwingWorkerItemList swingWorkerItemList) {
+		this.swingWorkerItemList = swingWorkerItemList;
+	}
+
+	protected void unbindSwingWorkerItemList(SwingWorkerItemList swingWorkerItemList) {
+
+		if (this.swingWorkerItemList == swingWorkerItemList) {
+			this.swingWorkerItemList = null;
+		}
+	}
+
+	protected void bindMultiOperations(MultiOperations multiOperations) {
+		this.multiOperations = multiOperations;
+	}
+
+	protected void unbindMultiOperations(MultiOperations multiOperations) {
+
+		if (this.multiOperations == multiOperations) {
+			this.multiOperations = null;
+		}
+	}
 
 	public CommonRunnable(String threadName, String taskDescription, String taskName, String startDescription) {
 		this.log = createLog();
@@ -50,7 +77,7 @@ public abstract class CommonRunnable implements Runnable {
 		org.gwaspi.global.Utils.sysoutStart(startDescription);
 		org.gwaspi.global.Config.initPreferences(false, null);
 
-		SwingWorkerItem thisSwi = SwingWorkerItemList.getItemByTimeStamp(timeStamp);
+		SwingWorkerItem thisSwi = swingWorkerItemList.getItemByTimeStamp(timeStamp);
 
 		try {
 			runInternal(thisSwi);
@@ -58,7 +85,7 @@ public abstract class CommonRunnable implements Runnable {
 			// FINISH OFF
 			if (!thisSwi.getQueueState().equals(QueueState.ABORT)) {
 				MultiOperations.printFinished("Performing " + taskDescription);
-				SwingWorkerItemList.flagCurrentItemDone(timeStamp);
+				swingWorkerItemList.flagCurrentItemDone(timeStamp);
 			} else {
 				getLog().info("");
 				getLog().info(Text.Processes.abortingProcess);
@@ -68,8 +95,8 @@ public abstract class CommonRunnable implements Runnable {
 				getLog().info("");
 			}
 
-			MultiOperations.updateTree(); // XXX Threaded_ExportMatrix also had this here, others not
-			MultiOperations.updateProcessOverviewStartNext();
+			multiOperations.updateTree(); // XXX Threaded_ExportMatrix also had this here, others not
+			multiOperations.updateProcessOverviewStartNext();
 		} catch (OutOfMemoryError ex) {
 			runException = ex;
 			getLog().error(Text.App.outOfMemoryError, ex);
@@ -78,9 +105,9 @@ public abstract class CommonRunnable implements Runnable {
 			MultiOperations.printError(taskDescription);
 			getLog().error("Failed performing " + taskDescription, ex);
 			try {
-				SwingWorkerItemList.flagCurrentItemError(timeStamp);
-				MultiOperations.updateTree();
-				MultiOperations.updateProcessOverviewStartNext();
+				swingWorkerItemList.flagCurrentItemError(timeStamp);
+				multiOperations.updateTree();
+				multiOperations.updateProcessOverviewStartNext();
 			} catch (Exception ex1) {
 				getLog().warn(null, ex1);
 			}

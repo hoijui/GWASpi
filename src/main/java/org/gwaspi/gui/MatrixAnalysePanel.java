@@ -28,6 +28,7 @@ import javax.swing.SwingConstants;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.tree.DefaultMutableTreeNode;
+import org.apache.felix.scr.annotations.Reference;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.global.Text;
@@ -319,11 +320,25 @@ public class MatrixAnalysePanel extends JPanel {
 	}
 
 	//<editor-fold defaultstate="collapsed" desc="ANALYSIS">
+	@org.apache.felix.scr.annotations.Component
 	private static class AllelicTestsAction extends AbstractAction {
 
 		private Matrix parentMatrix;
 		private GWASinOneGOParams gwasParams;
 		private final Operation currentOP;
+		@Reference
+		private MultiOperations multiOperations;
+
+		protected void bindMultiOperations(MultiOperations multiOperations) {
+			this.multiOperations = multiOperations;
+		}
+
+		protected void unbindMultiOperations(MultiOperations multiOperations) {
+
+			if (this.multiOperations == multiOperations) {
+				this.multiOperations = null;
+			}
+		}
 
 		AllelicTestsAction(Matrix parentMatrix, GWASinOneGOParams gwasParams, Operation currentOP) {
 
@@ -380,7 +395,7 @@ public class MatrixAnalysePanel extends JPanel {
 						if (missingOPsAL.contains(OPType.SAMPLE_QA.toString())
 								|| missingOPsAL.contains(OPType.MARKER_QA.toString())) {
 							Dialogs.showWarningDialogue("Before performing an " + Text.Operation.allelicAssocTest + " you must launch\n a '" + Text.Operation.GTFreqAndHW + "' first or perform a '" + Text.Operation.gwasInOneGo + "' instead.");
-							MultiOperations.doMatrixQAs(parentMatrix.getStudyId(), parentMatrix.getId());
+							multiOperations.doMatrixQAs(parentMatrix.getStudyId(), parentMatrix.getId());
 							perfromAllelicTest = false;
 						} else if (missingOPsAL.contains(OPType.MARKER_CENSUS_BY_AFFECTION.toString())
 								&& missingOPsAL.contains(OPType.MARKER_CENSUS_BY_PHENOTYPE.toString())) {
@@ -390,7 +405,7 @@ public class MatrixAnalysePanel extends JPanel {
 								&& !(missingOPsAL.contains(OPType.MARKER_CENSUS_BY_AFFECTION.toString())
 								&& missingOPsAL.contains(OPType.MARKER_CENSUS_BY_PHENOTYPE.toString()))) {
 							Dialogs.showWarningDialogue("Before performing an " + Text.Operation.allelicAssocTest + " you must launch\n a '" + Text.Operation.hardyWeiberg + "' first or perform a '" + Text.Operation.gwasInOneGo + "' instead.");
-							MultiOperations.doHardyWeinberg(parentMatrix.getStudyId(),
+							multiOperations.doHardyWeinberg(parentMatrix.getStudyId(),
 									parentMatrix.getId(),
 									censusOPId);
 							perfromAllelicTest = false;
@@ -424,7 +439,7 @@ public class MatrixAnalysePanel extends JPanel {
 							if (reProceed && censusOPId != Integer.MIN_VALUE && hwOPId != Integer.MIN_VALUE) {
 
 								//>>>>>> START THREADING HERE <<<<<<<
-								MultiOperations.doAllelicAssociationTest(parentMatrix.getStudyId(),
+								multiOperations.doAllelicAssociationTest(parentMatrix.getStudyId(),
 										parentMatrix.getId(),
 										censusOPId,
 										hwOPId,
@@ -442,11 +457,25 @@ public class MatrixAnalysePanel extends JPanel {
 		}
 	}
 
+	@org.apache.felix.scr.annotations.Component
 	private static class GenotypicTestsAction extends AbstractAction {
 
 		private Matrix parentMatrix;
 		private GWASinOneGOParams gwasParams;
 		private final Operation currentOP;
+		@Reference
+		private MultiOperations multiOperations;
+
+		protected void bindMultiOperations(MultiOperations multiOperations) {
+			this.multiOperations = multiOperations;
+		}
+
+		protected void unbindMultiOperations(MultiOperations multiOperations) {
+
+			if (this.multiOperations == multiOperations) {
+				this.multiOperations = null;
+			}
+		}
 
 		GenotypicTestsAction(Matrix parentMatrix, GWASinOneGOParams gwasParams, Operation currentOP) {
 
@@ -483,7 +512,7 @@ public class MatrixAnalysePanel extends JPanel {
 						if (missingOPsAL.contains(OPType.SAMPLE_QA.toString())
 								|| missingOPsAL.contains(OPType.MARKER_QA.toString())) {
 							Dialogs.showWarningDialogue("Before performing a " + Text.Operation.genoAssocTest + " you must launch\n a '" + Text.Operation.GTFreqAndHW + "' first or perform a '" + Text.Operation.gwasInOneGo + "' instead.");
-							MultiOperations.doMatrixQAs(parentMatrix.getStudyId(), parentMatrix.getId());
+							multiOperations.doMatrixQAs(parentMatrix.getStudyId(), parentMatrix.getId());
 							performTest = false;
 						} else if (missingOPsAL.contains(OPType.MARKER_CENSUS_BY_AFFECTION.toString())
 								&& missingOPsAL.contains(OPType.MARKER_CENSUS_BY_PHENOTYPE.toString())) {
@@ -493,7 +522,7 @@ public class MatrixAnalysePanel extends JPanel {
 								&& !(missingOPsAL.contains(OPType.MARKER_CENSUS_BY_AFFECTION.toString())
 								&& missingOPsAL.contains(OPType.MARKER_CENSUS_BY_PHENOTYPE.toString()))) {
 							Dialogs.showWarningDialogue("Before performing a " + Text.Operation.genoAssocTest + " you must launch\n a '" + Text.Operation.hardyWeiberg + "' first or perform a '" + Text.Operation.gwasInOneGo + "' instead.");
-							MultiOperations.doHardyWeinberg(parentMatrix.getStudyId(),
+							multiOperations.doHardyWeinberg(parentMatrix.getStudyId(),
 									parentMatrix.getId(),
 									censusOPId);
 							performTest = false;
@@ -527,7 +556,7 @@ public class MatrixAnalysePanel extends JPanel {
 							if (reProceed && censusOPId != Integer.MIN_VALUE && hwOPId != Integer.MIN_VALUE) {
 
 								//>>>>>> START THREADING HERE <<<<<<<
-								MultiOperations.doGenotypicAssociationTest(parentMatrix.getStudyId(),
+								multiOperations.doGenotypicAssociationTest(parentMatrix.getStudyId(),
 										parentMatrix.getId(),
 										censusOPId,
 										hwOPId,
@@ -545,11 +574,25 @@ public class MatrixAnalysePanel extends JPanel {
 		}
 	}
 
+	@org.apache.felix.scr.annotations.Component
 	private static class TrendTestsAction extends AbstractAction {
 
 		private Matrix parentMatrix;
 		private GWASinOneGOParams gwasParams;
 		private final Operation currentOP;
+		@Reference
+		private MultiOperations multiOperations;
+
+		protected void bindMultiOperations(MultiOperations multiOperations) {
+			this.multiOperations = multiOperations;
+		}
+
+		protected void unbindMultiOperations(MultiOperations multiOperations) {
+
+			if (this.multiOperations == multiOperations) {
+				this.multiOperations = null;
+			}
+		}
 
 		TrendTestsAction(Matrix parentMatrix, GWASinOneGOParams gwasParams, Operation currentOP) {
 
@@ -587,7 +630,7 @@ public class MatrixAnalysePanel extends JPanel {
 								|| missingOPsAL.contains(OPType.MARKER_QA.toString()))
 						{
 							Dialogs.showWarningDialogue("Before performing a " + Text.Operation.trendTest + " you must launch\n a '" + Text.Operation.GTFreqAndHW + "' first or perform a '" + Text.Operation.gwasInOneGo + "' instead.");
-							MultiOperations.doMatrixQAs(parentMatrix.getStudyId(), parentMatrix.getId());
+							multiOperations.doMatrixQAs(parentMatrix.getStudyId(), parentMatrix.getId());
 							performTest = false;
 						} else if (missingOPsAL.contains(OPType.MARKER_CENSUS_BY_AFFECTION.toString())
 								&& missingOPsAL.contains(OPType.MARKER_CENSUS_BY_PHENOTYPE.toString()))
@@ -599,7 +642,7 @@ public class MatrixAnalysePanel extends JPanel {
 								&& missingOPsAL.contains(OPType.MARKER_CENSUS_BY_PHENOTYPE.toString())))
 						{
 							Dialogs.showWarningDialogue("Before performing a " + Text.Operation.trendTest + " you must launch\n a '" + Text.Operation.hardyWeiberg + "' first or perform a '" + Text.Operation.gwasInOneGo + "' instead.");
-							MultiOperations.doHardyWeinberg(parentMatrix.getStudyId(),
+							multiOperations.doHardyWeinberg(parentMatrix.getStudyId(),
 									parentMatrix.getId(),
 									censusOPId);
 							performTest = false;
@@ -633,7 +676,7 @@ public class MatrixAnalysePanel extends JPanel {
 							if (reProceed && censusOPId != Integer.MIN_VALUE && hwOPId != Integer.MIN_VALUE) {
 
 								//>>>>>> START THREADING HERE <<<<<<<
-								MultiOperations.doTrendTest(parentMatrix.getStudyId(),
+								multiOperations.doTrendTest(parentMatrix.getStudyId(),
 										parentMatrix.getId(),
 										censusOPId,
 										hwOPId,
@@ -651,10 +694,24 @@ public class MatrixAnalysePanel extends JPanel {
 		}
 	}
 
+	@org.apache.felix.scr.annotations.Component
 	private static class GenFreqAndHWAction extends AbstractAction {
 
 		private Matrix parentMatrix;
 		private GWASinOneGOParams gwasParams;
+		@Reference
+		private MultiOperations multiOperations;
+
+		protected void bindMultiOperations(MultiOperations multiOperations) {
+			this.multiOperations = multiOperations;
+		}
+
+		protected void unbindMultiOperations(MultiOperations multiOperations) {
+
+			if (this.multiOperations == multiOperations) {
+				this.multiOperations = null;
+			}
+		}
 
 		GenFreqAndHWAction(Matrix parentMatrix, GWASinOneGOParams gwasParams) {
 
@@ -710,13 +767,13 @@ public class MatrixAnalysePanel extends JPanel {
 					gwasParams.setProceed(false);
 					gwasParams.setProceed(false);
 					Dialogs.showWarningDialogue(Text.Operation.warnQABeforeAnything + "\n" + Text.Operation.willPerformOperation);
-					MultiOperations.doMatrixQAs(parentMatrix.getStudyId(), parentMatrix.getId());
+					multiOperations.doMatrixQAs(parentMatrix.getStudyId(), parentMatrix.getId());
 				}
 				// </editor-fold>
 
 				// <editor-fold defaultstate="collapsed" desc="GENOTYPE FREQ. & HW BLOCK">
 			if (gwasParams.isProceed()) {
-				MultiOperations.doGTFreqDoHW(parentMatrix.getStudyId(),
+				multiOperations.doGTFreqDoHW(parentMatrix.getStudyId(),
 						parentMatrix.getId(),
 						phenotypeFile,
 						gwasParams);
@@ -731,12 +788,39 @@ public class MatrixAnalysePanel extends JPanel {
 	//</editor-fold>
 
 	//<editor-fold defaultstate="collapsed" desc="HELPERS">
+	@org.apache.felix.scr.annotations.Component
 	private static class DeleteOperationAction extends AbstractAction {
 
 		private Operation currentOP;
 		private Component dialogParent;
 		private Matrix parentMatrix;
 		private JTable table;
+		@Reference
+		private SwingWorkerItemList swingWorkerItemList;
+		@Reference
+		private MultiOperations multiOperations;
+
+		protected void bindSwingWorkerItemList(SwingWorkerItemList swingWorkerItemList) {
+			this.swingWorkerItemList = swingWorkerItemList;
+		}
+
+		protected void unbindSwingWorkerItemList(SwingWorkerItemList swingWorkerItemList) {
+
+			if (this.swingWorkerItemList == swingWorkerItemList) {
+				this.swingWorkerItemList = null;
+			}
+		}
+
+		protected void bindMultiOperations(MultiOperations multiOperations) {
+			this.multiOperations = multiOperations;
+		}
+
+		protected void unbindMultiOperations(MultiOperations multiOperations) {
+
+			if (this.multiOperations == multiOperations) {
+				this.multiOperations = null;
+			}
+		}
 
 		DeleteOperationAction(Operation currentOP, Component dialogParent, Matrix parentMatrix, JTable table) {
 
@@ -760,14 +844,14 @@ public class MatrixAnalysePanel extends JPanel {
 							for (int i = selectedOPs.length - 1; i >= 0; i--) {
 								int tmpOPRow = selectedOPs[i];
 								opId = (Integer) table.getModel().getValueAt(tmpOPRow, 0);
-								//TEST IF THE DELETED ITEM IS REQUIRED FOR A QUED WORKER
-								if (SwingWorkerItemList.permitsDeletionOfOperationId(opId)) {
+								// TEST IF THE DELETED ITEM IS REQUIRED FOR A QUEUED WORKER
+								if (swingWorkerItemList.permitsDeletionOfOperationId(opId)) {
 									if (option == JOptionPane.YES_OPTION) {
 										boolean deleteReport = false;
 										if (deleteReportOption == JOptionPane.YES_OPTION) {
 											deleteReport = true;
 										}
-										MultiOperations.deleteOperationsByOpId(parentMatrix.getStudyId(), parentMatrix.getId(), opId, deleteReport);
+										multiOperations.deleteOperationsByOpId(parentMatrix.getStudyId(), parentMatrix.getId(), opId, deleteReport);
 
 										//OperationManager.deleteOperationBranch(parentMatrix.getStudyId(), opId, deleteReport);
 									}
@@ -789,10 +873,24 @@ public class MatrixAnalysePanel extends JPanel {
 		}
 	}
 
+	@org.apache.felix.scr.annotations.Component
 	private static class GwasInOneGoAction extends AbstractAction {
 
 		private Matrix parentMatrix;
 		private GWASinOneGOParams gwasParams;
+		@Reference
+		private MultiOperations multiOperations;
+
+		protected void bindMultiOperations(MultiOperations multiOperations) {
+			this.multiOperations = multiOperations;
+		}
+
+		protected void unbindMultiOperations(MultiOperations multiOperations) {
+
+			if (this.multiOperations == multiOperations) {
+				this.multiOperations = null;
+			}
+		}
 
 		GwasInOneGoAction(Matrix parentMatrix, GWASinOneGOParams gwasParams) {
 
@@ -840,7 +938,7 @@ public class MatrixAnalysePanel extends JPanel {
 				if (gwasParams.isProceed() && missingOPsAL.size() > 0) {
 					gwasParams.setProceed(false);
 					Dialogs.showWarningDialogue(Text.Operation.warnQABeforeAnything + "\n" + Text.Operation.willPerformOperation);
-					MultiOperations.doMatrixQAs(parentMatrix.getStudyId(), parentMatrix.getId());
+					multiOperations.doMatrixQAs(parentMatrix.getStudyId(), parentMatrix.getId());
 				}
 
 				//GWAS BLOCK
@@ -854,13 +952,13 @@ public class MatrixAnalysePanel extends JPanel {
 					if (affectionStates.contains(SampleInfo.Affection.UNAFFECTED)
 							&& affectionStates.contains(SampleInfo.Affection.AFFECTED))
 					{
-						MultiOperations.doGWASwithAlterPhenotype(parentMatrix.getStudyId(),
+						multiOperations.doGWASwithAlterPhenotype(parentMatrix.getStudyId(),
 								parentMatrix.getId(),
 								phenotypeFile,
 								gwasParams);
 					} else {
 						Dialogs.showWarningDialogue(Text.Operation.warnAffectionMissing);
-						MultiOperations.updateProcessOverviewStartNext();
+						multiOperations.updateProcessOverviewStartNext();
 					}
 				}
 			} catch (IOException ex) {

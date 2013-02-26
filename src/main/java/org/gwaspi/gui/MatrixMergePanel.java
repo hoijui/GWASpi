@@ -27,6 +27,7 @@ import javax.swing.LayoutStyle;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.border.TitledBorder;
+import org.apache.felix.scr.annotations.Reference;
 import org.gwaspi.constants.cDBMatrix;
 import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import org.gwaspi.global.Text;
@@ -332,6 +333,7 @@ public class MatrixMergePanel extends JPanel {
 	}
 
 	//<editor-fold defaultstate="collapsed" desc="MERGE">
+	@org.apache.felix.scr.annotations.Component
 	private static class MergeAction extends AbstractAction {
 
 		private Matrix parentMatrix;
@@ -342,6 +344,19 @@ public class MatrixMergePanel extends JPanel {
 		private JRadioButton mergeMarkers;
 		private JRadioButton mergeSamples;
 		private JRadioButton mergeAll;
+		@Reference
+		private MultiOperations multiOperations;
+
+		protected void bindMultiOperations(MultiOperations multiOperations) {
+			this.multiOperations = multiOperations;
+		}
+
+		protected void unbindMultiOperations(MultiOperations multiOperations) {
+
+			if (this.multiOperations == multiOperations) {
+				this.multiOperations = null;
+			}
+		}
 
 		MergeAction(
 				Matrix parentMatrix,
@@ -385,7 +400,7 @@ public class MatrixMergePanel extends JPanel {
 						}
 
 						if (mergeMarkers.isSelected()) {
-							MultiOperations.doMergeMatrixAddMarkers(parentMatrix.getStudyId(),
+							multiOperations.doMergeMatrixAddMarkers(parentMatrix.getStudyId(),
 									parentMatrix.getId(),
 									addMatrixId,
 									newMatrixName.getText(),
@@ -393,7 +408,7 @@ public class MatrixMergePanel extends JPanel {
 						}
 
 						if (mergeSamples.isSelected()) {
-							MultiOperations.doMergeMatrixAddSamples(parentMatrix.getStudyId(),
+							multiOperations.doMergeMatrixAddSamples(parentMatrix.getStudyId(),
 									parentMatrix.getId(),
 									addMatrixId,
 									newMatrixName.getText(),
@@ -401,7 +416,7 @@ public class MatrixMergePanel extends JPanel {
 						}
 
 						if (mergeAll.isSelected()) {
-							MultiOperations.doMergeMatrixAll(parentMatrix.getStudyId(),
+							multiOperations.doMergeMatrixAll(parentMatrix.getStudyId(),
 									parentMatrix.getId(),
 									addMatrixId,
 									newMatrixName.getText(),

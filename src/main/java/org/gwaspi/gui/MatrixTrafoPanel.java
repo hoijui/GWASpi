@@ -23,6 +23,7 @@ import javax.swing.LayoutStyle;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.border.TitledBorder;
+import org.apache.felix.scr.annotations.Reference;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import org.gwaspi.global.Text;
@@ -297,6 +298,9 @@ public class MatrixTrafoPanel extends JPanel {
 	//<editor-fold defaultstate="collapsed" desc="TRAFO">
 	private class TranslateAB12ToACGTAction extends AbstractAction { // FIXME make static
 
+		@Reference
+		private MultiOperations multiOperations;
+
 		TranslateAB12ToACGTAction() {
 
 			putValue(NAME, Text.Trafo.htmlTranslate1);
@@ -317,7 +321,7 @@ public class MatrixTrafoPanel extends JPanel {
 							|| parentMatrixMetadata.getGenotypeEncoding().equals(GenotypeEncoding.O12))
 					{
 						if (parentMatrixMetadata.getHasDictionray()) {
-							MultiOperations.doTranslateAB12ToACGT(parentMatrix.getStudyId(),
+							multiOperations.doTranslateAB12ToACGT(parentMatrix.getStudyId(),
 									parentMatrix.getId(),
 									cNetCDF.Defaults.GenotypeEncoding.AB0, //No matter if AB or 12, works the same here
 									newMatrixName,
@@ -337,7 +341,22 @@ public class MatrixTrafoPanel extends JPanel {
 		}
 	}
 
+	@org.apache.felix.scr.annotations.Component
 	private class Translate1234ToACGTAction extends AbstractAction { // FIXME make static
+
+		@Reference
+		private MultiOperations multiOperations;
+
+		protected void bindMultiOperations(MultiOperations multiOperations) {
+			this.multiOperations = multiOperations;
+		}
+
+		protected void unbindMultiOperations(MultiOperations multiOperations) {
+
+			if (this.multiOperations == multiOperations) {
+				this.multiOperations = null;
+			}
+		}
 
 		Translate1234ToACGTAction() {
 
@@ -358,7 +377,7 @@ public class MatrixTrafoPanel extends JPanel {
 
 					if (parentMatrixMetadata.getGenotypeEncoding().equals(GenotypeEncoding.O1234)) {
 
-						MultiOperations.doTranslateAB12ToACGT(parentMatrix.getStudyId(),
+						multiOperations.doTranslateAB12ToACGT(parentMatrix.getStudyId(),
 								parentMatrix.getId(),
 								cNetCDF.Defaults.GenotypeEncoding.O1234,
 								newMatrixName,
@@ -375,7 +394,22 @@ public class MatrixTrafoPanel extends JPanel {
 		}
 	}
 
+	@org.apache.felix.scr.annotations.Component
 	private class MatrixStrandFlipAction extends AbstractAction { // FIXME make static
+
+		@Reference
+		private MultiOperations multiOperations;
+
+		protected void bindMultiOperations(MultiOperations multiOperations) {
+			this.multiOperations = multiOperations;
+		}
+
+		protected void unbindMultiOperations(MultiOperations multiOperations) {
+
+			if (this.multiOperations == multiOperations) {
+				this.multiOperations = null;
+			}
+		}
 
 		MatrixStrandFlipAction() {
 
@@ -398,7 +432,7 @@ public class MatrixTrafoPanel extends JPanel {
 							|| parentMatrixMetadata.getGenotypeEncoding().equals(GenotypeEncoding.ACGT0)) {
 
 						File flipMarkersFile = Dialogs.selectFilesAndDirectoriesDialog(JOptionPane.OK_OPTION);
-						MultiOperations.doStrandFlipMatrix(parentMatrix.getStudyId(),
+						multiOperations.doStrandFlipMatrix(parentMatrix.getStudyId(),
 								parentMatrix.getId(),
 								cNetCDF.Variables.VAR_MARKERSET,
 								flipMarkersFile,

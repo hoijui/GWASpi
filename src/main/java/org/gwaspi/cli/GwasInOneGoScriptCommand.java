@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.felix.scr.annotations.Component;
+import org.apache.felix.scr.annotations.Reference;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.global.Text;
 import org.gwaspi.netCDF.operations.GWASinOneGOParams;
@@ -15,7 +17,22 @@ import org.gwaspi.threadbox.MultiOperations;
  * IBE, Institute of Evolutionary Biology (UPF-CSIC)
  * CEXS-UPF-PRBB
  */
+@Component
 class GwasInOneGoScriptCommand extends AbstractScriptCommand {
+
+	@Reference
+	private MultiOperations multiOperations;
+
+	protected void bindMultiOperations(MultiOperations multiOperations) {
+		this.multiOperations = multiOperations;
+	}
+
+	protected void unbindMultiOperations(MultiOperations multiOperations) {
+
+		if (this.multiOperations == multiOperations) {
+			this.multiOperations = null;
+		}
+	}
 
 	GwasInOneGoScriptCommand() {
 		super("gwas_in_one_go");
@@ -92,13 +109,13 @@ class GwasInOneGoScriptCommand extends AbstractScriptCommand {
 			if (gwasParams.isProceed() && missingOPsAL.size() > 0) {
 				gwasParams.setProceed(false);
 				System.out.println(Text.Operation.warnQABeforeAnything + "\n" + Text.Operation.willPerformOperation);
-				MultiOperations.doMatrixQAs(studyId, matrixId);
+				multiOperations.doMatrixQAs(studyId, matrixId);
 			}
 
 			// GWAS block
 			if (gwasParams.isProceed()) {
 				System.out.println(Text.All.processing);
-				MultiOperations.doGWASwithAlterPhenotype(studyId,
+				multiOperations.doGWASwithAlterPhenotype(studyId,
 						matrixId,
 						phenoFile,
 						gwasParams);

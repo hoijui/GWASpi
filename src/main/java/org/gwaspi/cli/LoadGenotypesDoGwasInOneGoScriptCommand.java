@@ -2,6 +2,8 @@ package org.gwaspi.cli;
 
 import java.io.IOException;
 import java.util.List;
+import org.apache.felix.scr.annotations.Component;
+import org.apache.felix.scr.annotations.Reference;
 import org.gwaspi.constants.cImport.ImportFormat;
 import org.gwaspi.netCDF.loader.GenotypesLoadDescription;
 import org.gwaspi.netCDF.operations.GWASinOneGOParams;
@@ -12,7 +14,22 @@ import org.gwaspi.threadbox.MultiOperations;
  * IBE, Institute of Evolutionary Biology (UPF-CSIC)
  * CEXS-UPF-PRBB
  */
+@Component
 class LoadGenotypesDoGwasInOneGoScriptCommand extends AbstractScriptCommand {
+
+	@Reference
+	private MultiOperations multiOperations;
+
+	protected void bindMultiOperations(MultiOperations multiOperations) {
+		this.multiOperations = multiOperations;
+	}
+
+	protected void unbindMultiOperations(MultiOperations multiOperations) {
+
+		if (this.multiOperations == multiOperations) {
+			this.multiOperations = null;
+		}
+	}
 
 	LoadGenotypesDoGwasInOneGoScriptCommand() {
 		super("load_genotypes_do_gwas_in_one_go");
@@ -91,7 +108,7 @@ class LoadGenotypesDoGwasInOneGoScriptCommand extends AbstractScriptCommand {
 					gwasParams.getStrandType(),
 					gwasParams.getGtCode() // Gt code (deprecated)
 					);
-			MultiOperations.loadMatrixDoGWASifOK(
+			multiOperations.loadMatrixDoGWASifOK(
 					loadDescription, // Format
 					Boolean.parseBoolean(args.get(3)), // Dummy samples
 					true, // Do GWAS

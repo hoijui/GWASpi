@@ -3,6 +3,7 @@ package org.gwaspi.threadbox;
 import java.io.File;
 import java.io.IOException;
 import java.util.Set;
+import org.apache.felix.scr.annotations.Reference;
 import org.gwaspi.constants.cExport.ExportFormat;
 import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import org.gwaspi.constants.cNetCDF.Defaults.SetMarkerPickCase;
@@ -21,24 +22,51 @@ import org.gwaspi.netCDF.operations.GWASinOneGOParams;
  */
 public class MultiOperations {
 
+	@Reference
+	private SwingWorkerItemList swingWorkerItemList;
+	@Reference
+	private SwingDeleterItemList swingDeleterItemList;
+
+	protected void bindSwingWorkerItemList(SwingWorkerItemList swingWorkerItemList) {
+		this.swingWorkerItemList = swingWorkerItemList;
+	}
+
+	protected void unbindSwingWorkerItemList(SwingWorkerItemList swingWorkerItemList) {
+
+		if (this.swingWorkerItemList == swingWorkerItemList) {
+			this.swingWorkerItemList = null;
+		}
+	}
+
+	protected void bindSwingDeleterItemList(SwingDeleterItemList swingDeleterItemList) {
+		this.swingDeleterItemList = swingDeleterItemList;
+	}
+
+	protected void unbindSwingDeleterItemList(SwingDeleterItemList swingDeleterItemList) {
+
+		if (this.swingDeleterItemList == swingDeleterItemList) {
+			this.swingDeleterItemList = null;
+		}
+	}
+
 	private MultiOperations() {
 	}
 
-	private static void queueTask(CommonRunnable task, TaskLockProperties lockProperties) {
+	private void queueTask(CommonRunnable task, TaskLockProperties lockProperties) {
 
 		SwingWorkerItem swi = new SwingWorkerItem(
 				task,
 				lockProperties.getStudyIds().toArray(new Integer[] {}),
 				lockProperties.getMatricesIds().toArray(new Integer[] {}),
 				lockProperties.getOperationsIds().toArray(new Integer[] {}));
-		SwingWorkerItemList.add(swi);
+		swingWorkerItemList.add(swi);
 
 		ProcessTab.getSingleton().updateProcessOverview();
 	}
 
 	//<editor-fold defaultstate="collapsed" desc="LOADERS">
 	/** SAMPLES QA */
-	public static void doMatrixQAs(final int studyId, final int matrixId) {
+	public void doMatrixQAs(final int studyId, final int matrixId) {
 
 		CommonRunnable task = new Threaded_MatrixQA(matrixId);
 
@@ -50,7 +78,7 @@ public class MultiOperations {
 	}
 
 	/** LOAD & GWAS if requested and OK */
-	public static void loadMatrixDoGWASifOK(
+	public void loadMatrixDoGWASifOK(
 			final GenotypesLoadDescription loadDescription,
 			final boolean dummySamples,
 			final boolean performGwas,
@@ -71,7 +99,7 @@ public class MultiOperations {
 
 	//<editor-fold defaultstate="collapsed" desc="ANALYSIS">
 	/** LOAD & GWAS */
-	public static void doGWASwithAlterPhenotype(
+	public void doGWASwithAlterPhenotype(
 			final int studyId,
 			final int matrixId,
 			final File phenofile,
@@ -90,7 +118,7 @@ public class MultiOperations {
 	}
 
 	/** LOAD & GWAS */
-	public static void doHardyWeinberg(
+	public void doHardyWeinberg(
 			final int studyId,
 			final int matrixId,
 			final int censusOpId)
@@ -107,7 +135,7 @@ public class MultiOperations {
 	}
 
 	/** LOAD & GWAS */
-	public static void doGTFreqDoHW(
+	public void doGTFreqDoHW(
 			final int studyId,
 			final int matrixId,
 			final File phenoFile,
@@ -126,7 +154,7 @@ public class MultiOperations {
 	}
 
 	/** LOAD & GWAS */
-	public static void doAllelicAssociationTest(
+	public void doAllelicAssociationTest(
 			final int studyId,
 			final int matrixId,
 			final int censusOPId,
@@ -149,7 +177,7 @@ public class MultiOperations {
 	}
 
 	/** LOAD & GWAS */
-	public static void doGenotypicAssociationTest(
+	public void doGenotypicAssociationTest(
 			final int studyId,
 			final int matrixId,
 			final int censusOPId,
@@ -172,7 +200,7 @@ public class MultiOperations {
 	}
 
 	/** LOAD & GWAS */
-	public static void doTrendTest(
+	public void doTrendTest(
 			final int studyId,
 			final int matrixId,
 			final int censusOPId,
@@ -196,7 +224,7 @@ public class MultiOperations {
 	//</editor-fold>
 
 	//<editor-fold defaultstate="collapsed" desc="DATA MANAGEMENT">
-	public static void doExtractData(
+	public void doExtractData(
 			final int studyId,
 			final int parentMatrixId,
 			final String newMatrixName,
@@ -231,7 +259,7 @@ public class MultiOperations {
 		queueTask(task, lockProperties);
 	}
 
-	public static void doTranslateAB12ToACGT(
+	public void doTranslateAB12ToACGT(
 			final int studyId,
 			final int parentMatrixId,
 			final GenotypeEncoding gtEncoding,
@@ -252,7 +280,7 @@ public class MultiOperations {
 		queueTask(task, lockProperties);
 	}
 
-	public static void doExportMatrix(
+	public void doExportMatrix(
 			final int studyId,
 			final int matrixId,
 			final ExportFormat format,
@@ -270,7 +298,7 @@ public class MultiOperations {
 		queueTask(task, lockProperties);
 	}
 
-	public static void doMergeMatrixAddMarkers(
+	public void doMergeMatrixAddMarkers(
 			final int studyId,
 			final int parentMatrixId1,
 			final int parentMatrixId2,
@@ -292,7 +320,7 @@ public class MultiOperations {
 		queueTask(task, lockProperties);
 	}
 
-	public static void doMergeMatrixAddSamples(
+	public void doMergeMatrixAddSamples(
 			final int studyId,
 			final int parentMatrixId1,
 			final int parentMatrixId2,
@@ -314,7 +342,7 @@ public class MultiOperations {
 		queueTask(task, lockProperties);
 	}
 
-	public static void doMergeMatrixAll(final int studyId,
+	public void doMergeMatrixAll(final int studyId,
 			final int parentMatrixId1,
 			final int parentMatrixId2,
 			final String newMatrixName,
@@ -335,7 +363,7 @@ public class MultiOperations {
 		queueTask(task, lockProperties);
 	}
 
-	public static void doStrandFlipMatrix(
+	public void doStrandFlipMatrix(
 			final int studyId,
 			final int parentMatrixId,
 			final String markerIdentifyer,
@@ -358,7 +386,7 @@ public class MultiOperations {
 		queueTask(task, lockProperties);
 	}
 
-	public static void updateSampleInfo(
+	public void updateSampleInfo(
 			final int studyId,
 			final File sampleInfoFile)
 	{
@@ -374,14 +402,14 @@ public class MultiOperations {
 	//</editor-fold>
 
 	//<editor-fold defaultstate="collapsed" desc="DELETERS">
-	private static void queueDeleteTask(SwingDeleterItem sdi) {
+	private void queueDeleteTask(SwingDeleterItem sdi) {
 
-		SwingDeleterItemList.add(sdi);
+		swingDeleterItemList.add(sdi);
 
 		ProcessTab.getSingleton().updateProcessOverview();
 	}
 
-	public static void deleteStudy(final int studyId, final boolean deleteReports) {
+	public void deleteStudy(final int studyId, final boolean deleteReports) {
 
 		SwingDeleterItem sdi = new SwingDeleterItem(
 				SwingDeleterItem.DeleteTarget.STUDY,
@@ -390,7 +418,7 @@ public class MultiOperations {
 		queueDeleteTask(sdi);
 	}
 
-	public static void deleteMatrix(final int studyId, final int matrixId, final boolean deleteReports) {
+	public void deleteMatrix(final int studyId, final int matrixId, final boolean deleteReports) {
 
 		SwingDeleterItem sdi = new SwingDeleterItem(
 				SwingDeleterItem.DeleteTarget.MATRIX,
@@ -400,7 +428,7 @@ public class MultiOperations {
 		queueDeleteTask(sdi);
 	}
 
-	public static void deleteOperationsByOpId(final int studyId, final int matrixId, final int opId, final boolean deleteReports) {
+	public void deleteOperationsByOpId(final int studyId, final int matrixId, final int opId, final boolean deleteReports) {
 
 		SwingDeleterItem sdi = new SwingDeleterItem(
 				SwingDeleterItem.DeleteTarget.OPERATION_BY_OPID,
@@ -425,7 +453,7 @@ public class MultiOperations {
 		org.gwaspi.global.Utils.sysoutError(text);
 	}
 
-	public static void updateTree() throws IOException {
+	public void updateTree() throws IOException {
 		if (StartGWASpi.guiMode) {
 			GWASpiExplorerPanel.getSingleton().getTree().setEnabled(false);
 			GWASpiExplorerPanel.getSingleton().updateTreePanel(false);
@@ -433,7 +461,7 @@ public class MultiOperations {
 		}
 	}
 
-	public static void updateTreeAndPanel() throws IOException {
+	public void updateTreeAndPanel() throws IOException {
 		if (StartGWASpi.guiMode) {
 			GWASpiExplorerPanel.getSingleton().getTree().setEnabled(false);
 			GWASpiExplorerPanel.getSingleton().updateTreePanel(true);
@@ -441,22 +469,22 @@ public class MultiOperations {
 		}
 	}
 
-	private static void refreshPanel() {
+	private void refreshPanel() {
 		if (StartGWASpi.guiMode) {
 			GWASpiExplorerPanel.getSingleton().refreshContentPanel();
 		}
 	}
 
-	public static void updateProcessOverviewStartNext() throws IOException {
-		SwingWorkerItemList.startNext();
+	public void updateProcessOverviewStartNext() throws IOException {
+		swingWorkerItemList.startNext();
 		if (StartGWASpi.guiMode) {
 			ProcessTab.getSingleton().updateProcessOverview();
 			ProcessTab.getSingleton().toggleBusyLogo();
 		}
 	}
 
-	public static void updateProcessOverviewDeleteNext() throws IOException {
-		SwingDeleterItemList.deleteAllListed();
+	public void updateProcessOverviewDeleteNext() throws IOException {
+		swingDeleterItemList.deleteAllListed();
 		if (StartGWASpi.guiMode) {
 			ProcessTab.getSingleton().updateProcessOverview();
 			ProcessTab.getSingleton().toggleBusyLogo();

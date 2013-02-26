@@ -16,6 +16,7 @@ import javax.swing.JTextArea;
 import javax.swing.LayoutStyle;
 import javax.swing.SwingConstants;
 import javax.swing.border.TitledBorder;
+import org.apache.felix.scr.annotations.Reference;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.utils.BrowserHelpUrlAction;
 import org.gwaspi.gui.utils.Dialogs;
@@ -159,11 +160,38 @@ public class MatrixMarkerQAPanel extends JPanel {
 		//</editor-fold>
 	}
 
+	@org.apache.felix.scr.annotations.Component
 	private static class DeleteOperationAction extends AbstractAction {
 
 		private Operation currentOP;
 		private Component dialogParent;
 		private Matrix parentMatrix;
+		@Reference
+		private SwingWorkerItemList swingWorkerItemList;
+		@Reference
+		private MultiOperations multiOperations;
+
+		protected void bindSwingWorkerItemList(SwingWorkerItemList swingWorkerItemList) {
+			this.swingWorkerItemList = swingWorkerItemList;
+		}
+
+		protected void unbindSwingWorkerItemList(SwingWorkerItemList swingWorkerItemList) {
+
+			if (this.swingWorkerItemList == swingWorkerItemList) {
+				this.swingWorkerItemList = null;
+			}
+		}
+
+		protected void bindMultiOperations(MultiOperations multiOperations) {
+			this.multiOperations = multiOperations;
+		}
+
+		protected void unbindMultiOperations(MultiOperations multiOperations) {
+
+			if (this.multiOperations == multiOperations) {
+				this.multiOperations = null;
+			}
+		}
 
 		DeleteOperationAction(Operation currentOP, Component dialogParent, Matrix parentMatrix) {
 
@@ -177,8 +205,8 @@ public class MatrixMarkerQAPanel extends JPanel {
 		public void actionPerformed(ActionEvent evt) {
 			try {
 				int opId = currentOP.getId();
-				// TEST IF THE DELETED ITEM IS REQUIRED FOR A QUED WORKER
-				if (SwingWorkerItemList.permitsDeletionOfOperationId(opId)) {
+				// TEST IF THE DELETED ITEM IS REQUIRED FOR A QUEUED WORKER
+				if (swingWorkerItemList.permitsDeletionOfOperationId(opId)) {
 					int option = JOptionPane.showConfirmDialog(dialogParent, Text.Operation.confirmDelete1);
 					if (option == JOptionPane.YES_OPTION) {
 						int deleteReportOption = JOptionPane.showConfirmDialog(dialogParent, Text.Reports.confirmDelete);
@@ -188,7 +216,7 @@ public class MatrixMarkerQAPanel extends JPanel {
 								if (deleteReportOption == JOptionPane.YES_OPTION) {
 									deleteReport = true;
 								}
-								MultiOperations.deleteOperationsByOpId(parentMatrix.getStudyId(), parentMatrix.getId(), opId, deleteReport);
+								multiOperations.deleteOperationsByOpId(parentMatrix.getStudyId(), parentMatrix.getId(), opId, deleteReport);
 
 								//OperationManager.deleteOperationAndChildren(parentMatrix.getStudyId(), opId, deleteReport);
 							}

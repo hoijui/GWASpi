@@ -21,6 +21,7 @@ import javax.swing.SwingConstants;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.tree.DefaultMutableTreeNode;
+import org.apache.felix.scr.annotations.Reference;
 import org.gwaspi.constants.cDBSamples;
 import org.gwaspi.constants.cExport;
 import org.gwaspi.constants.cExport.ExportFormat;
@@ -374,9 +375,23 @@ public class CurrentMatrixPanel extends JPanel {
 		}
 	}
 
+	@org.apache.felix.scr.annotations.Component
 	private static class ExportMatrixAction extends AbstractAction {
 
 		private Matrix matrix;
+		@Reference
+		private MultiOperations multiOperations;
+
+		protected void bindMultiOperations(MultiOperations multiOperations) {
+			this.multiOperations = multiOperations;
+		}
+
+		protected void unbindMultiOperations(MultiOperations multiOperations) {
+
+			if (this.multiOperations == multiOperations) {
+				this.multiOperations = null;
+			}
+		}
 
 		ExportMatrixAction(Matrix matrix) {
 
@@ -403,7 +418,7 @@ public class CurrentMatrixPanel extends JPanel {
 						List<Operation> operations = OperationsList.getOperationsList(matrix.getId());
 						int markersQAOpId = OperationsList.getIdOfLastOperationTypeOccurance(operations, OPType.MARKER_QA);
 						if (markersQAOpId != Integer.MIN_VALUE) {
-							MultiOperations.doExportMatrix(matrix.getStudyId(), matrix.getId(), format, expPhenotype);
+							multiOperations.doExportMatrix(matrix.getStudyId(), matrix.getId(), format, expPhenotype);
 						} else {
 							Dialogs.showWarningDialogue(Text.Operation.warnOperationsMissing + " Marker QA");
 						}
@@ -411,7 +426,7 @@ public class CurrentMatrixPanel extends JPanel {
 						log.error(null, ex);
 					}
 				} else {
-					MultiOperations.doExportMatrix(matrix.getStudyId(), matrix.getId(), format, expPhenotype);
+					multiOperations.doExportMatrix(matrix.getStudyId(), matrix.getId(), format, expPhenotype);
 				}
 			}
 		}
@@ -480,10 +495,37 @@ public class CurrentMatrixPanel extends JPanel {
 		}
 	}
 
+	@org.apache.felix.scr.annotations.Component
 	private static class DeleteMatrixAction extends AbstractAction {
 
 		private Matrix matrix;
 		private Component dialogParent;
+		@Reference
+		private SwingWorkerItemList swingWorkerItemList;
+		@Reference
+		private MultiOperations multiOperations;
+
+		protected void bindSwingWorkerItemList(SwingWorkerItemList swingWorkerItemList) {
+			this.swingWorkerItemList = swingWorkerItemList;
+		}
+
+		protected void unbindSwingWorkerItemList(SwingWorkerItemList swingWorkerItemList) {
+
+			if (this.swingWorkerItemList == swingWorkerItemList) {
+				this.swingWorkerItemList = null;
+			}
+		}
+
+		protected void bindMultiOperations(MultiOperations multiOperations) {
+			this.multiOperations = multiOperations;
+		}
+
+		protected void unbindMultiOperations(MultiOperations multiOperations) {
+
+			if (this.multiOperations == multiOperations) {
+				this.multiOperations = null;
+			}
+		}
 
 		DeleteMatrixAction(Matrix matrix, Component dialogParent) {
 
@@ -495,7 +537,7 @@ public class CurrentMatrixPanel extends JPanel {
 		@Override
 		public void actionPerformed(ActionEvent evt) {
 			// TODO TEST IF THE DELETED ITEM IS REQUIRED FOR A QUEUED WORKER
-			if (SwingWorkerItemList.permitsDeletionOfMatrixId(matrix.getId())) {
+			if (swingWorkerItemList.permitsDeletionOfMatrixId(matrix.getId())) {
 				int option = JOptionPane.showConfirmDialog(dialogParent, Text.Matrix.confirmDelete1 + Text.Matrix.confirmDelete2);
 				if (option == JOptionPane.YES_OPTION) {
 					int deleteReportOption = JOptionPane.showConfirmDialog(dialogParent, Text.Reports.confirmDelete);
@@ -505,7 +547,7 @@ public class CurrentMatrixPanel extends JPanel {
 						if (deleteReportOption == JOptionPane.YES_OPTION) {
 							deleteReport = true;
 						}
-						MultiOperations.deleteMatrix(matrix.getStudyId(), matrix.getId(), deleteReport);
+						multiOperations.deleteMatrix(matrix.getStudyId(), matrix.getId(), deleteReport);
 					}
 				}
 			} else {
@@ -514,11 +556,38 @@ public class CurrentMatrixPanel extends JPanel {
 		}
 	}
 
+	@org.apache.felix.scr.annotations.Component
 	private static class DeleteOperationAction extends AbstractAction {
 
 		private Matrix matrix;
 		private JTable matrixOperationsTable;
 		private Component dialogParent;
+		@Reference
+		private SwingWorkerItemList swingWorkerItemList;
+		@Reference
+		private MultiOperations multiOperations;
+
+		protected void bindSwingWorkerItemList(SwingWorkerItemList swingWorkerItemList) {
+			this.swingWorkerItemList = swingWorkerItemList;
+		}
+
+		protected void unbindSwingWorkerItemList(SwingWorkerItemList swingWorkerItemList) {
+
+			if (this.swingWorkerItemList == swingWorkerItemList) {
+				this.swingWorkerItemList = null;
+			}
+		}
+
+		protected void bindMultiOperations(MultiOperations multiOperations) {
+			this.multiOperations = multiOperations;
+		}
+
+		protected void unbindMultiOperations(MultiOperations multiOperations) {
+
+			if (this.multiOperations == multiOperations) {
+				this.multiOperations = null;
+			}
+		}
 
 		DeleteOperationAction(Matrix matrix, Component dialogParent, JTable matrixOperationsTable) {
 
@@ -540,14 +609,14 @@ public class CurrentMatrixPanel extends JPanel {
 							for (int i = 0; i < selectedOPs.length; i++) {
 								int tmpOPRow = selectedOPs[i];
 								int opId = (Integer) matrixOperationsTable.getModel().getValueAt(tmpOPRow, 0);
-								//TEST IF THE DELETED ITEM IS REQUIRED FOR A QUED WORKER
-								if (SwingWorkerItemList.permitsDeletionOfOperationId(opId)) {
+								// TEST IF THE DELETED ITEM IS REQUIRED FOR A QUEUED WORKER
+								if (swingWorkerItemList.permitsDeletionOfOperationId(opId)) {
 									if (option == JOptionPane.YES_OPTION) {
 										boolean deleteReport = false;
 										if (deleteReportOption == JOptionPane.YES_OPTION) {
 											deleteReport = true;
 										}
-										MultiOperations.deleteOperationsByOpId(matrix.getStudyId(), matrix.getId(), opId, deleteReport);
+										multiOperations.deleteOperationsByOpId(matrix.getStudyId(), matrix.getId(), opId, deleteReport);
 
 										//OperationManager.deleteOperationAndChildren(matrix.getStudyId(), opId, deleteReport);
 									}

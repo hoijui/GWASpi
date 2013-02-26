@@ -3,6 +3,9 @@ package org.gwaspi.threadbox;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.felix.scr.annotations.Component;
+import org.apache.felix.scr.annotations.Reference;
+import org.apache.felix.scr.annotations.Service;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.GWASpiExplorerPanel;
 import org.gwaspi.gui.ProcessTab;
@@ -23,14 +26,43 @@ import org.slf4j.LoggerFactory;
  * IBE, Institute of Evolutionary Biology (UPF-CSIC)
  * CEXS-UPF-PRBB
  */
+@Component
+@Service(SwingDeleterItemList.class)
 public class SwingDeleterItemList {
 
 	private static final Logger log = LoggerFactory.getLogger(SwingDeleterItemList.class);
+
 	private List<SwingDeleterItem> swingDeleterItems = new ArrayList<SwingDeleterItem>();
+	@Reference
+	private SwingWorkerItemList swingWorkerItemList;
+	@Reference
+	private MultiOperations multiOperations;
+
+	protected void bindSwingWorkerItemList(SwingWorkerItemList swingWorkerItemList) {
+		this.swingWorkerItemList = swingWorkerItemList;
+	}
+
+	protected void unbindSwingWorkerItemList(SwingWorkerItemList swingWorkerItemList) {
+
+		if (this.swingWorkerItemList == swingWorkerItemList) {
+			this.swingWorkerItemList = null;
+		}
+	}
+
+	protected void bindMultiOperations(MultiOperations multiOperations) {
+		this.multiOperations = multiOperations;
+	}
+
+	protected void unbindMultiOperations(MultiOperations multiOperations) {
+
+		if (this.multiOperations == multiOperations) {
+			this.multiOperations = null;
+		}
+	}
 
 	public void add(SwingDeleterItem sdi) {
 
-		//SwingDeleterItemList.purgeDoneDeletes();
+		//purgeDoneDeletes();
 		boolean addMe = true;
 		for (SwingDeleterItem allreadySdi : swingDeleterItems) {
 			if (allreadySdi.getStudyId() == sdi.getStudyId()
@@ -45,7 +77,7 @@ public class SwingDeleterItemList {
 		}
 
 		// CHECK IF ANY ITEM IS RUNNING, START PROCESSING NEWLY ADDED SwingDeleter
-		if (SwingWorkerItemList.sizePending() == 0) {
+		if (swingWorkerItemList.sizePending() == 0) {
 			deleteAllListed();
 		}
 	}
@@ -122,7 +154,7 @@ public class SwingDeleterItemList {
 			StartGWASpi.mainGUIFrame.setCursor(CursorUtils.defaultCursor);
 			ProcessTab.getSingleton().updateProcessOverview();
 			try {
-				MultiOperations.updateTreeAndPanel();
+				multiOperations.updateTreeAndPanel();
 			} catch (IOException ex) {
 				log.warn(null, ex);
 			}

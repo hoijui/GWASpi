@@ -30,6 +30,7 @@ import javax.swing.LayoutStyle;
 import javax.swing.SwingConstants;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
+import org.apache.felix.scr.annotations.Reference;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.utils.Dialogs;
 import org.gwaspi.gui.utils.LogDocument;
@@ -48,6 +49,7 @@ import org.slf4j.LoggerFactory;
  * IBE, Institute of Evolutionary Biology (UPF-CSIC)
  * CEXS-UPF-PRBB
  */
+@org.apache.felix.scr.annotations.Component
 public class ProcessTab extends JPanel {
 
 	private static final Logger log = LoggerFactory.getLogger(MatrixAnalysePanel.class);
@@ -62,7 +64,33 @@ public class ProcessTab extends JPanel {
 	private JTextArea txtA_ProcessLog;
 	private JButton btn_Save;
 	private static ProcessTab singleton = null;
+	@Reference
+	private SwingWorkerItemList swingWorkerItemList;
+	@Reference
+	private SwingDeleterItemList swingDeleterItemList;
 	// End of variables declaration
+
+	protected void bindSwingWorkerItemList(SwingWorkerItemList swingWorkerItemList) {
+		this.swingWorkerItemList = swingWorkerItemList;
+	}
+
+	protected void unbindSwingWorkerItemList(SwingWorkerItemList swingWorkerItemList) {
+
+		if (this.swingWorkerItemList == swingWorkerItemList) {
+			this.swingWorkerItemList = null;
+		}
+	}
+
+	protected void bindSwingDeleterItemList(SwingDeleterItemList swingDeleterItemList) {
+		this.swingDeleterItemList = swingDeleterItemList;
+	}
+
+	protected void unbindSwingDeleterItemList(SwingDeleterItemList swingDeleterItemList) {
+
+		if (this.swingDeleterItemList == swingDeleterItemList) {
+			this.swingDeleterItemList = null;
+		}
+	}
 
 	private ProcessTab() {
 		pnl_Orverview = new JPanel();
@@ -197,10 +225,10 @@ public class ProcessTab extends JPanel {
 					int rowIndex = tmpTable.getSelectedRow();
 					int colIndex = tmpTable.getSelectedColumn();
 					if (colIndex == 7) {    //Abort
-						if (rowIndex < SwingWorkerItemList.size()) {
-							SwingWorkerItemList.flagCurrentItemAborted(rowIndex);
+						if (rowIndex < swingWorkerItemList.size()) {
+							swingWorkerItemList.flagCurrentItemAborted(rowIndex);
 						} else {
-							SwingDeleterItemList.abortSwingWorker(rowIndex - SwingWorkerItemList.size());
+							swingDeleterItemList.abortSwingWorker(rowIndex - swingWorkerItemList.size());
 						}
 					}
 				}
@@ -230,14 +258,14 @@ public class ProcessTab extends JPanel {
 	}
 
 	protected Object[][] buildProcessTableModel() {
-		List<SwingWorkerItem> swingWorkerItemsAL = SwingWorkerItemList.getItems();
-		List<SwingDeleterItem> swingDeleterItemsAL = SwingDeleterItemList.getItems();
+		List<SwingWorkerItem> swingWorkerItems = swingWorkerItemList.getItems();
+		List<SwingDeleterItem> swingDeleterItems = swingDeleterItemList.getItems();
 
-		Object[][] spreadSheet = new Object[swingWorkerItemsAL.size() + swingDeleterItemsAL.size()][8];
+		Object[][] spreadSheet = new Object[swingWorkerItems.size() + swingDeleterItems.size()][8];
 		int count = 0;
-		for (int i = count; i < swingWorkerItemsAL.size(); i++) {
+		for (int i = count; i < swingWorkerItems.size(); i++) {
 			StringBuilder studyIdsStr = new StringBuilder();
-			for (Integer studyId : swingWorkerItemsAL.get(i).getParentStudyIds()) {
+			for (Integer studyId : swingWorkerItems.get(i).getParentStudyIds()) {
 				studyIdsStr.append(", ");
 				studyIdsStr.append(studyId.toString());
 			}
@@ -245,25 +273,25 @@ public class ProcessTab extends JPanel {
 
 			spreadSheet[i][0] = i;
 			spreadSheet[i][1] = studyIdsStr != null ? studyIdsStr.toString() : " - ";
-			spreadSheet[i][2] = swingWorkerItemsAL.get(i).getTask().getTaskName() != null ? swingWorkerItemsAL.get(i).getTask().getTaskName() : " - ";
-			spreadSheet[i][3] = swingWorkerItemsAL.get(i).getLaunchTime() != null ? swingWorkerItemsAL.get(i).getLaunchTime() : " - ";
-			spreadSheet[i][4] = swingWorkerItemsAL.get(i).getStartTime() != null ? swingWorkerItemsAL.get(i).getStartTime() : " - ";
-			spreadSheet[i][5] = swingWorkerItemsAL.get(i).getEndTime() != null ? swingWorkerItemsAL.get(i).getEndTime() : " - ";
-			spreadSheet[i][6] = swingWorkerItemsAL.get(i).getQueueState() != null ? swingWorkerItemsAL.get(i).getQueueState() : " - ";
+			spreadSheet[i][2] = swingWorkerItems.get(i).getTask().getTaskName() != null ? swingWorkerItems.get(i).getTask().getTaskName() : " - ";
+			spreadSheet[i][3] = swingWorkerItems.get(i).getLaunchTime() != null ? swingWorkerItems.get(i).getLaunchTime() : " - ";
+			spreadSheet[i][4] = swingWorkerItems.get(i).getStartTime() != null ? swingWorkerItems.get(i).getStartTime() : " - ";
+			spreadSheet[i][5] = swingWorkerItems.get(i).getEndTime() != null ? swingWorkerItems.get(i).getEndTime() : " - ";
+			spreadSheet[i][6] = swingWorkerItems.get(i).getQueueState() != null ? swingWorkerItems.get(i).getQueueState() : " - ";
 			spreadSheet[i][7] = " ";
 
 			count++;
 		}
 
-		for (int i = 0; i < swingDeleterItemsAL.size(); i++) {
+		for (int i = 0; i < swingDeleterItems.size(); i++) {
 
 			spreadSheet[count][0] = "Del_" + i;
-			spreadSheet[count][1] = swingDeleterItemsAL.get(i).getStudyId();
-			spreadSheet[count][2] = swingDeleterItemsAL.get(i).getDescription() != null ? swingDeleterItemsAL.get(i).getDescription() : " - ";
-			spreadSheet[count][3] = swingDeleterItemsAL.get(i).getLaunchTime() != null ? swingDeleterItemsAL.get(i).getLaunchTime() : " - ";
-			spreadSheet[count][4] = swingDeleterItemsAL.get(i).getStartTime() != null ? swingDeleterItemsAL.get(i).getStartTime() : " - ";
-			spreadSheet[count][5] = swingDeleterItemsAL.get(i).getEndTime() != null ? swingDeleterItemsAL.get(i).getEndTime() : " - ";
-			spreadSheet[count][6] = swingDeleterItemsAL.get(i).getQueueState() != null ? swingDeleterItemsAL.get(i).getQueueState() : " - ";
+			spreadSheet[count][1] = swingDeleterItems.get(i).getStudyId();
+			spreadSheet[count][2] = swingDeleterItems.get(i).getDescription() != null ? swingDeleterItems.get(i).getDescription() : " - ";
+			spreadSheet[count][3] = swingDeleterItems.get(i).getLaunchTime() != null ? swingDeleterItems.get(i).getLaunchTime() : " - ";
+			spreadSheet[count][4] = swingDeleterItems.get(i).getStartTime() != null ? swingDeleterItems.get(i).getStartTime() : " - ";
+			spreadSheet[count][5] = swingDeleterItems.get(i).getEndTime() != null ? swingDeleterItems.get(i).getEndTime() : " - ";
+			spreadSheet[count][6] = swingDeleterItems.get(i).getQueueState() != null ? swingDeleterItems.get(i).getQueueState() : " - ";
 			spreadSheet[count][7] = " ";
 
 			count++;
@@ -281,11 +309,11 @@ public class ProcessTab extends JPanel {
 	}
 
 	public void toggleBusyLogo() {
-		List<SwingWorkerItem> swingWorkerItemsAL = SwingWorkerItemList.getItems();
+		List<SwingWorkerItem> swingWorkerItems = swingWorkerItemList.getItems();
 		int count = 0;
 		boolean idle = true;
-		while (count < swingWorkerItemsAL.size()) {
-			QueueState queueState = swingWorkerItemsAL.get(count).getQueueState();
+		while (count < swingWorkerItems.size()) {
+			QueueState queueState = swingWorkerItems.get(count).getQueueState();
 			if (!queueState.equals(QueueState.DONE)
 					&& !queueState.equals(QueueState.ABORT)
 					&& !queueState.equals(QueueState.ERROR)) {

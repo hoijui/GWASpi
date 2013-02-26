@@ -2,6 +2,8 @@ package org.gwaspi.cli;
 
 import java.io.IOException;
 import java.util.List;
+import org.apache.felix.scr.annotations.Component;
+import org.apache.felix.scr.annotations.Reference;
 import org.gwaspi.constants.cDBSamples;
 import org.gwaspi.constants.cExport;
 import org.gwaspi.threadbox.MultiOperations;
@@ -11,7 +13,22 @@ import org.gwaspi.threadbox.MultiOperations;
  * IBE, Institute of Evolutionary Biology (UPF-CSIC)
  * CEXS-UPF-PRBB
  */
+@Component
 class ExportMatrixScriptCommand extends AbstractScriptCommand {
+
+	@Reference
+	private MultiOperations multiOperations;
+
+	protected void bindMultiOperations(MultiOperations multiOperations) {
+		this.multiOperations = multiOperations;
+	}
+
+	protected void unbindMultiOperations(MultiOperations multiOperations) {
+
+		if (this.multiOperations == multiOperations) {
+			this.multiOperations = null;
+		}
+	}
 
 	ExportMatrixScriptCommand() {
 		super("export_matrix");
@@ -28,7 +45,7 @@ class ExportMatrixScriptCommand extends AbstractScriptCommand {
 		String format = args.get(3);
 
 		if (studyExists) {
-			MultiOperations.doExportMatrix(studyId, matrixId, cExport.ExportFormat.valueOf(format), cDBSamples.f_AFFECTION);
+			multiOperations.doExportMatrix(studyId, matrixId, cExport.ExportFormat.valueOf(format), cDBSamples.f_AFFECTION);
 			return true;
 		}
 

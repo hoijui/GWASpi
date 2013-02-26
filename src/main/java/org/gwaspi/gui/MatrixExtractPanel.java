@@ -28,6 +28,7 @@ import javax.swing.LayoutStyle;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.border.TitledBorder;
+import org.apache.felix.scr.annotations.Reference;
 import org.gwaspi.constants.cDBSamples;
 import org.gwaspi.constants.cImport;
 import org.gwaspi.constants.cNetCDF;
@@ -518,7 +519,22 @@ public class MatrixExtractPanel extends JPanel {
 		//</editor-fold>
 	}
 
+	@org.apache.felix.scr.annotations.Component
 	private class ExtractAction extends AbstractAction { // FIXME make static
+
+		@Reference
+		private MultiOperations multiOperations;
+
+		protected void bindMultiOperations(MultiOperations multiOperations) {
+			this.multiOperations = multiOperations;
+		}
+
+		protected void unbindMultiOperations(MultiOperations multiOperations) {
+
+			if (this.multiOperations == multiOperations) {
+				this.multiOperations = null;
+			}
+		}
 
 		ExtractAction() {
 
@@ -599,7 +615,7 @@ public class MatrixExtractPanel extends JPanel {
 						description = "";
 					}
 
-					MultiOperations.doExtractData(parentMatrix.getStudyId(),
+					multiOperations.doExtractData(parentMatrix.getStudyId(),
 							parentMatrix.getId(),
 							newMatrixName,
 							description,
