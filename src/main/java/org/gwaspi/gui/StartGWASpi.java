@@ -3,31 +3,17 @@ package org.gwaspi.gui;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.FileAppender;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.Arrays;
 import java.util.List;
-import java.util.prefs.Preferences;
-import javax.swing.GroupLayout;
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.swing.JTabbedPane;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
-import org.apache.felix.scr.annotations.Component;
-import org.apache.felix.scr.annotations.Reference;
 import org.gwaspi.cli.CliExecutor;
-import org.gwaspi.constants.cGlobal;
 import org.gwaspi.global.Config;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.utils.Dialogs;
 import org.gwaspi.model.MatricesList;
-import org.gwaspi.threadbox.SwingDeleterItemList;
-import org.gwaspi.threadbox.SwingWorkerItemList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,8 +23,7 @@ import org.slf4j.LoggerFactory;
  * IBE, Institute of Evolutionary Biology (UPF-CSIC)
  * CEXS-UPF-PRBB
  */
-@Component
-public class StartGWASpi extends JFrame {
+public class StartGWASpi {
 
 	private static final Logger log = LoggerFactory.getLogger(StartGWASpi.class);
 
@@ -58,9 +43,6 @@ public class StartGWASpi extends JFrame {
 	public static boolean logToFile = false;
 	public static boolean logOff = false;
 	public static String logPath;
-	public static JFrame mainGUIFrame = new JFrame(cGlobal.APP_NAME);
-	public static JTabbedPane allTabs = new JTabbedPane();
-	private Preferences prefs;
 	public static long maxHeapSize = 0;
 	public static long maxProcessMarkers = 0;
 	// THIS TO WORK IN CLI MODE
@@ -70,37 +52,11 @@ public class StartGWASpi extends JFrame {
 	public static String config_ReportsDir;
 	public static String config_OfflineHelpDir;
 	public static String config_LogDir;
-	@Reference
-	private SwingWorkerItemList swingWorkerItemList;
-	@Reference
-	private SwingDeleterItemList swingDeleterItemList;
-
-	protected void bindSwingWorkerItemList(SwingWorkerItemList swingWorkerItemList) {
-		this.swingWorkerItemList = swingWorkerItemList;
-	}
-
-	protected void unbindSwingWorkerItemList(SwingWorkerItemList swingWorkerItemList) {
-
-		if (this.swingWorkerItemList == swingWorkerItemList) {
-			this.swingWorkerItemList = null;
-		}
-	}
-
-	protected void bindSwingDeleterItemList(SwingDeleterItemList swingDeleterItemList) {
-		this.swingDeleterItemList = swingDeleterItemList;
-	}
-
-	protected void unbindSwingDeleterItemList(SwingDeleterItemList swingDeleterItemList) {
-
-		if (this.swingDeleterItemList == swingDeleterItemList) {
-			this.swingDeleterItemList = null;
-		}
-	}
 
 	public StartGWASpi() {
 	}
 
-	public void start(List<String> args) throws IOException, SQLException, ParseException, UnsupportedLookAndFeelException {
+	public void start(List<String> args) throws IOException, SQLException, ParseException {
 
 		// Get current size of heap in bytes
 		maxHeapSize = Math.round(Runtime.getRuntime().totalMemory() / 1048576); // heapSize in MB
@@ -141,36 +97,6 @@ public class StartGWASpi extends JFrame {
 				logOff = true;
 			}
 
-			mainGUIFrame.addWindowListener(new WindowAdapter() {
-				@Override
-				public void windowClosing(WindowEvent we) {
-					int jobsPending = swingWorkerItemList.sizePending() + swingDeleterItemList.sizePending();
-					if (jobsPending == 0) {
-						we.getWindow().setVisible(false);
-					} else {
-						int decision = Dialogs.showConfirmDialogue(Text.App.jobsStillPending);
-						if (decision == JOptionPane.YES_OPTION) {
-							we.getWindow().setVisible(false);
-						}
-					}
-				}
-			});
-
-			try {
-				// Set cross-platform Java L&F (also called "Metal")
-				//UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
-				// Set System L&F
-				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-			} catch (UnsupportedLookAndFeelException ex) {
-				log.warn(null, ex);
-			} catch (ClassNotFoundException ex) {
-				log.warn(null, ex);
-			} catch (InstantiationException ex) {
-				log.warn(null, ex);
-			} catch (IllegalAccessException ex) {
-				log.warn(null, ex);
-			}
-
 			try {
 				initGWASpi(true, null);
 
@@ -191,37 +117,17 @@ public class StartGWASpi extends JFrame {
 			} catch (Exception ex) {
 				log.error(null, ex);
 			}
-
-			mainGUIFrame.setExtendedState(MAXIMIZED_BOTH);
 		}
 	}
 
 	private boolean initGWASpi(boolean startWithGUI, File scriptFile) throws IOException, SQLException {
 
 		// initialize configuration of moapi
-		boolean isInitiated = Config.initPreferences(startWithGUI, scriptFile);
+		boolean isInitiated = Config.initPreferences(startWithGUI, scriptFile, null);
 
 		if (isInitiated) {
 			if (startWithGUI) {
-				mainGUIFrame.setSize(1100, 800);
-				mainGUIFrame.setResizable(true);
-
-				GWASpiExplorerPanel panel0 = GWASpiExplorerPanel.getSingleton();
-				ProcessTab panel1 = ProcessTab.getSingleton();
-
-				allTabs.addTab(Text.App.Tab0, panel0);
-				allTabs.addTab(Text.App.Tab1, panel1);
-
-				GroupLayout layout = new GroupLayout(getContentPane());
-				getContentPane().setLayout(layout);
-				layout.setHorizontalGroup(
-						layout.createParallelGroup(GroupLayout.Alignment.LEADING).addComponent(allTabs, GroupLayout.DEFAULT_SIZE, 1000, Short.MAX_VALUE));
-				layout.setVerticalGroup(
-						layout.createParallelGroup(GroupLayout.Alignment.LEADING).addComponent(allTabs, GroupLayout.DEFAULT_SIZE, 750, Short.MAX_VALUE));
-
-				mainGUIFrame.getContentPane().add(allTabs);
-				mainGUIFrame.setVisible(true);
-				mainGUIFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+				new MainGUI();
 			} else {
 				if (logToFile) {
 					// LOGGING OF SYSTEM OUTPUT
@@ -253,7 +159,7 @@ public class StartGWASpi extends JFrame {
 		System.exit(0);
 	}
 
-	public static void main(String[] args) throws IOException, SQLException, ParseException, UnsupportedLookAndFeelException {
+	public static void main(String[] args) throws IOException, SQLException, ParseException {
 		StartGWASpi startGWASpi = new StartGWASpi();
 		startGWASpi.start(Arrays.asList(args));
 	}

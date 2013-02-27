@@ -21,6 +21,7 @@ import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
 import org.gwaspi.global.Config;
+import org.gwaspi.gui.MainGUI;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.Matrix;
 import org.gwaspi.model.Operation;
@@ -41,6 +42,13 @@ public class Dialogs {
 
 	private static JFileChooser fc;
 
+	protected void bindMainGUIFrame(MainGUI mainGUIFrame) {
+		this.mainGUIFrame = mainGUIFrame;
+	}
+
+	protected void unbindMainGUIFrame(MainGUI mainGUIFrame) {
+		this.mainGUIFrame = null;
+	}
 	private Dialogs() {
 	}
 

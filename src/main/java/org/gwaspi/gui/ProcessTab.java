@@ -68,6 +68,8 @@ public class ProcessTab extends JPanel {
 	private SwingWorkerItemList swingWorkerItemList;
 	@Reference
 	private SwingDeleterItemList swingDeleterItemList;
+	@Reference
+	private MainGUI mainGUIFrame;
 	// End of variables declaration
 
 	protected void bindSwingWorkerItemList(SwingWorkerItemList swingWorkerItemList) {
@@ -75,10 +77,7 @@ public class ProcessTab extends JPanel {
 	}
 
 	protected void unbindSwingWorkerItemList(SwingWorkerItemList swingWorkerItemList) {
-
-		if (this.swingWorkerItemList == swingWorkerItemList) {
-			this.swingWorkerItemList = null;
-		}
+		this.swingWorkerItemList = null;
 	}
 
 	protected void bindSwingDeleterItemList(SwingDeleterItemList swingDeleterItemList) {
@@ -86,10 +85,15 @@ public class ProcessTab extends JPanel {
 	}
 
 	protected void unbindSwingDeleterItemList(SwingDeleterItemList swingDeleterItemList) {
+		this.swingDeleterItemList = null;
+	}
 
-		if (this.swingDeleterItemList == swingDeleterItemList) {
-			this.swingDeleterItemList = null;
-		}
+	protected void bindMainGUIFrame(MainGUI mainGUIFrame) {
+		this.mainGUIFrame = mainGUIFrame;
+	}
+
+	protected void unbindMainGUIFrame(MainGUI mainGUIFrame) {
+		this.mainGUIFrame = null;
 	}
 
 	private ProcessTab() {
@@ -335,7 +339,7 @@ public class ProcessTab extends JPanel {
 	}
 
 	public void showTab() {
-		StartGWASpi.allTabs.setSelectedIndex(StartGWASpi.allTabs.getTabCount() - 1);
+		mainGUIFrame.allTabs.setSelectedIndex(mainGUIFrame.allTabs.getTabCount() - 1);
 		startBusyLogo();
 	}
 

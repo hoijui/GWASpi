@@ -30,7 +30,7 @@ public class Threaded_OP_HardyWeinberg implements Runnable {
 			String hwName)
 			throws InterruptedException
 	{
-		Config.initPreferences(false, null);
+		Config.initPreferences(false, null, null);
 		this.censusOP = censusOP;
 		this.hwName = hwName;
 

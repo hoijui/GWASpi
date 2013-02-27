@@ -34,7 +34,7 @@ public class Threaded_OP_AssociationTests implements Runnable {
 			double hwThreshold)
 			throws InterruptedException
 	{
-		Config.initPreferences(false, null);
+		Config.initPreferences(false, null, null);
 		this.matrixId = matrixId;
 		this.censusOP = censusOP;
 		this.hwOP = hwOP;

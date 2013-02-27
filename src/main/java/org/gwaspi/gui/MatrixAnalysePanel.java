@@ -328,16 +328,23 @@ public class MatrixAnalysePanel extends JPanel {
 		private final Operation currentOP;
 		@Reference
 		private MultiOperations multiOperations;
+		@Reference
+		private Component mainGUIFrame;
 
 		protected void bindMultiOperations(MultiOperations multiOperations) {
 			this.multiOperations = multiOperations;
 		}
 
 		protected void unbindMultiOperations(MultiOperations multiOperations) {
+			this.multiOperations = null;
+		}
 
-			if (this.multiOperations == multiOperations) {
-				this.multiOperations = null;
-			}
+		protected void bindMainGUIFrame(Component mainGUIFrame) {
+			this.mainGUIFrame = mainGUIFrame;
+		}
+
+		protected void unbindMainGUIFrame(Component mainGUIFrame) {
+			this.mainGUIFrame = null;
 		}
 
 		AllelicTestsAction(Matrix parentMatrix, GWASinOneGOParams gwasParams, Operation currentOP) {
@@ -374,9 +381,9 @@ public class MatrixAnalysePanel extends JPanel {
 				int censusOPId = evaluateCensusOPId(currentOP, parentMatrix);
 				int hwOPId = Integer.MIN_VALUE;
 
-				StartGWASpi.mainGUIFrame.setCursor(CursorUtils.waitCursor);
+				mainGUIFrame.setCursor(CursorUtils.waitCursor);
 				Set<SampleInfo.Affection> affectionStates = SamplesParserManager.getDBAffectionStates(parentMatrix.getId());
-				StartGWASpi.mainGUIFrame.setCursor(CursorUtils.defaultCursor);
+				mainGUIFrame.setCursor(CursorUtils.defaultCursor);
 
 				if (affectionStates.contains(SampleInfo.Affection.UNAFFECTED)
 						&& affectionStates.contains(SampleInfo.Affection.AFFECTED))
@@ -465,16 +472,23 @@ public class MatrixAnalysePanel extends JPanel {
 		private final Operation currentOP;
 		@Reference
 		private MultiOperations multiOperations;
+		@Reference
+		private Component mainGUIFrame;
 
 		protected void bindMultiOperations(MultiOperations multiOperations) {
 			this.multiOperations = multiOperations;
 		}
 
 		protected void unbindMultiOperations(MultiOperations multiOperations) {
+			this.multiOperations = null;
+		}
 
-			if (this.multiOperations == multiOperations) {
-				this.multiOperations = null;
-			}
+		protected void bindMainGUIFrame(Component mainGUIFrame) {
+			this.mainGUIFrame = mainGUIFrame;
+		}
+
+		protected void unbindMainGUIFrame(Component mainGUIFrame) {
+			this.mainGUIFrame = null;
 		}
 
 		GenotypicTestsAction(Matrix parentMatrix, GWASinOneGOParams gwasParams, Operation currentOP) {
@@ -491,9 +505,9 @@ public class MatrixAnalysePanel extends JPanel {
 				int censusOPId = AllelicTestsAction.evaluateCensusOPId(currentOP, parentMatrix);
 				int hwOPId = Integer.MIN_VALUE;
 
-				StartGWASpi.mainGUIFrame.setCursor(CursorUtils.waitCursor);
+				mainGUIFrame.setCursor(CursorUtils.waitCursor);
 				Set<SampleInfo.Affection> affectionStates = SamplesParserManager.getDBAffectionStates(parentMatrix.getId());
-				StartGWASpi.mainGUIFrame.setCursor(CursorUtils.defaultCursor);
+				mainGUIFrame.setCursor(CursorUtils.defaultCursor);
 
 				if (affectionStates.contains(SampleInfo.Affection.UNAFFECTED)
 						&& affectionStates.contains(SampleInfo.Affection.AFFECTED))
@@ -582,16 +596,23 @@ public class MatrixAnalysePanel extends JPanel {
 		private final Operation currentOP;
 		@Reference
 		private MultiOperations multiOperations;
+		@Reference
+		private Component mainGUIFrame;
 
 		protected void bindMultiOperations(MultiOperations multiOperations) {
 			this.multiOperations = multiOperations;
 		}
 
 		protected void unbindMultiOperations(MultiOperations multiOperations) {
+			this.multiOperations = null;
+		}
 
-			if (this.multiOperations == multiOperations) {
-				this.multiOperations = null;
-			}
+		protected void bindMainGUIFrame(Component mainGUIFrame) {
+			this.mainGUIFrame = mainGUIFrame;
+		}
+
+		protected void unbindMainGUIFrame(Component mainGUIFrame) {
+			this.mainGUIFrame = null;
 		}
 
 		TrendTestsAction(Matrix parentMatrix, GWASinOneGOParams gwasParams, Operation currentOP) {
@@ -608,9 +629,9 @@ public class MatrixAnalysePanel extends JPanel {
 				int censusOPId = AllelicTestsAction.evaluateCensusOPId(currentOP, parentMatrix);
 				int hwOPId = Integer.MIN_VALUE;
 
-				StartGWASpi.mainGUIFrame.setCursor(CursorUtils.waitCursor);
+				mainGUIFrame.setCursor(CursorUtils.waitCursor);
 				Set<SampleInfo.Affection> affectionStates = SamplesParserManager.getDBAffectionStates(parentMatrix.getId());
-				StartGWASpi.mainGUIFrame.setCursor(CursorUtils.defaultCursor);
+				mainGUIFrame.setCursor(CursorUtils.defaultCursor);
 
 				if (affectionStates.contains(SampleInfo.Affection.UNAFFECTED)
 						&& affectionStates.contains(SampleInfo.Affection.AFFECTED))
@@ -880,16 +901,23 @@ public class MatrixAnalysePanel extends JPanel {
 		private GWASinOneGOParams gwasParams;
 		@Reference
 		private MultiOperations multiOperations;
+		@Reference
+		private Component mainGUIFrame;
 
 		protected void bindMultiOperations(MultiOperations multiOperations) {
 			this.multiOperations = multiOperations;
 		}
 
 		protected void unbindMultiOperations(MultiOperations multiOperations) {
+			this.multiOperations = null;
+		}
 
-			if (this.multiOperations == multiOperations) {
-				this.multiOperations = null;
-			}
+		protected void bindMainGUIFrame(Component mainGUIFrame) {
+			this.mainGUIFrame = mainGUIFrame;
+		}
+
+		protected void unbindMainGUIFrame(Component mainGUIFrame) {
+			this.mainGUIFrame = null;
 		}
 
 		GwasInOneGoAction(Matrix parentMatrix, GWASinOneGOParams gwasParams) {
@@ -946,9 +974,9 @@ public class MatrixAnalysePanel extends JPanel {
 						&& choice != JOptionPane.CANCEL_OPTION
 						&& (gwasParams.isPerformAllelicTests() || gwasParams.isPerformTrendTests())) { //At least one test has been picked
 					log.info(Text.All.processing);
-					StartGWASpi.mainGUIFrame.setCursor(CursorUtils.waitCursor);
+					mainGUIFrame.setCursor(CursorUtils.waitCursor);
 					Set<SampleInfo.Affection> affectionStates = SamplesParserManager.getDBAffectionStates(parentMatrix.getId()); //use Sample Info file affection state
-					StartGWASpi.mainGUIFrame.setCursor(CursorUtils.defaultCursor);
+					mainGUIFrame.setCursor(CursorUtils.defaultCursor);
 					if (affectionStates.contains(SampleInfo.Affection.UNAFFECTED)
 							&& affectionStates.contains(SampleInfo.Affection.AFFECTED))
 					{

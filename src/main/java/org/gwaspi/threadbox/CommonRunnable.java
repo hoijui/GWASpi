@@ -75,7 +75,7 @@ public abstract class CommonRunnable implements Runnable {
 	public void run() {
 
 		org.gwaspi.global.Utils.sysoutStart(startDescription);
-		org.gwaspi.global.Config.initPreferences(false, null);
+		org.gwaspi.global.Config.initPreferences(false, null, null);
 
 		SwingWorkerItem thisSwi = swingWorkerItemList.getItemByTimeStamp(timeStamp);
 
