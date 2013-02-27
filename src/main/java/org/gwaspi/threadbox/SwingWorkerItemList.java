@@ -64,15 +64,28 @@ public class SwingWorkerItemList {
 		}
 	}
 
-	public static List<SwingWorkerItem> getSwingWorkerItems() {
+	public static List<SwingWorkerItem> getItems() {
 		return swingWorkerItems;
+	}
+
+	public static SwingWorkerItem getItemByTimeStamp(String timeStamp) {
+
+		SwingWorkerItem result = null;
+
+		for (SwingWorkerItem currentSwi : swingWorkerItems) {
+			if (currentSwi.getTimeStamp().equals(timeStamp)) {
+				result = currentSwi;
+			}
+		}
+
+		return result;
 	}
 
 	private static SwingWorkerItem getCurrentItemByTimeStamp(String timeStamp) {
 
 		SwingWorkerItem swi = null;
 
-		SwingWorkerItem swiTmp = getSwingWorkerItemByTimeStamp(timeStamp);
+		SwingWorkerItem swiTmp = getItemByTimeStamp(timeStamp);
 		if ((swiTmp != null) && swiTmp.isCurrent()) {
 			swi = swiTmp;
 		}
@@ -167,25 +180,12 @@ public class SwingWorkerItemList {
 
 		int numPending = 0;
 
-		for (SwingWorkerItem swi : SwingWorkerItemList.getSwingWorkerItems()) {
+		for (SwingWorkerItem swi : SwingWorkerItemList.getItems()) {
 			if (swi.isCurrent()) {
 				numPending++;
 			}
 		}
 
 		return numPending;
-	}
-
-	public static SwingWorkerItem getSwingWorkerItemByTimeStamp(String timeStamp) {
-
-		SwingWorkerItem result = null;
-
-		for (SwingWorkerItem currentSwi : swingWorkerItems) {
-			if (currentSwi.getTimeStamp().equals(timeStamp)) {
-				result = currentSwi;
-			}
-		}
-
-		return result;
 	}
 }
