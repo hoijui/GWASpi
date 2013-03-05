@@ -51,7 +51,6 @@ public class Chisquare {
 		double expCtrlA = 2 * expCntgTable[0][1] + expCntgTable[1][1];
 		double expCtrla = 2 * expCntgTable[2][1] + expCntgTable[1][1];
 
-
 		double chiSQ = (Math.pow(obsCaseA - expCaseA, 2) / expCaseA)
 				+ (Math.pow(obsCasea - expCasea, 2) / expCasea)
 				+ (Math.pow(obsCtrlA - expCtrlA, 2) / expCtrlA)

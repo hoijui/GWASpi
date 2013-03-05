@@ -26,7 +26,7 @@ public class Pvalue {
 	}
 
 	//<editor-fold defaultstate="collapsed" desc="HELPER METHODS">
-	private static double calculatePvalueFromChiSqrPep(double chiSqr, int df) {    //OK
+	private static double calculatePvalueFromChiSqrPep(double chiSqr, int df) {
 		double q;
 		double p;
 
@@ -63,7 +63,7 @@ public class Pvalue {
 		return (1 - p);
 	}
 
-	private static double calculatePvalueFromChiSqrBelen(double inputChiSqr, int df) {    //OK
+	private static double calculatePvalueFromChiSqrBelen(double inputChiSqr, int df) {
 		double result = 0;
 		if (df == 1) {
 			double chiSqr = inputChiSqr;
@@ -114,7 +114,7 @@ public class Pvalue {
 		return result;
 	}
 
-	private static double calculateNormal(double z) { //OK
+	private static double calculateNormal(double z) {
 		double q = Math.pow(z, 2);
 
 		if (Math.abs(z) > 7) {
@@ -124,7 +124,7 @@ public class Pvalue {
 		return calculatePvalueFromChiSqr(q, 1);
 	}
 
-	private static double dBelen(double x) {     //OK
+	private static double dBelen(double x) {
 		double fx = (double) 1
 				/ Math.sqrt(x
 				* Math.exp(x)

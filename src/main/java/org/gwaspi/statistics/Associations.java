@@ -192,8 +192,8 @@ public class Associations {
 			int obsCtrlaa,
 			int ctrlTot)
 	{
-		int[][] obsCntgTable = new int[3][2]; //3 columns: AA Aa aa, 2 rows: case, ctrl
-		double[][] expCntgTable = new double[3][2]; //3 columns: AA Aa aa, 2 rows: case, ctrl
+		int[][] obsCntgTable = new int[3][2]; // 3 columns: AA Aa aa, 2 rows: case, ctrl
+		double[][] expCntgTable = new double[3][2]; // 3 columns: AA Aa aa, 2 rows: case, ctrl
 
 		obsCntgTable[0][0] = obsCaseAA;
 		obsCntgTable[1][0] = obsCaseAa;
