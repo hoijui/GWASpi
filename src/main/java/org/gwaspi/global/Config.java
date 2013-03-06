@@ -333,7 +333,7 @@ public class Config {
 		String lastQQCi = getConfigValue("CHART_QQ_PLOT_2SIGMA", "170,170,170");
 		String lastSampleQAHetzyg = getConfigValue("CHART_SAMPLEQA_HETZYG_THRESHOLD", "0.5");
 		String lastSampleQAMissingratio = getConfigValue("CHART_SAMPLEQA_MISSING_THRESHOLD", "0.5");
-		String lastVersionNb = getConfigValue(PROPERTY_CURRENT_GWASPIDB_VERSION, "2.0.1");
+		String lastVersionNb = getConfigValue(PROPERTY_CURRENT_GWASPIDB_VERSION, "2.0.1"); // FIXME update this!
 
 		clearConfigFile();
 		setConfigValue(PROPERTY_DATA_DIR, dataDir.getPath());

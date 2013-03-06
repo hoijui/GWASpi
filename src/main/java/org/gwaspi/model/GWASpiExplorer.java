@@ -462,6 +462,7 @@ public class GWASpiExplorer {
 		return childrenOperations;
 	}
 
+	// XXX this function could be used in other classes too!
 	private static Icon initIcon(String iconName) {
 		URL logoPath = GWASpiExplorer.class.getResource("/img/icon/" + iconName);
 		//String logoPath = Config.getConfigValue("ConfigDir", "") + "/" +iconName;
