@@ -249,9 +249,8 @@ public class Associations {
 		double numerator = ((2 * caseaa) + caseAa) * ((2 * ctrlAA) + ctrlAa);
 		double denominator = ((2 * caseAA) + caseAa) * ((2 * ctrlaa) + ctrlAa);
 
-		if (denominator != 0) {
-
-			oddsRatio = (double) numerator / denominator;
+		if (denominator != 0.0) {
+			oddsRatio = numerator / denominator;
 		}
 
 		return oddsRatio;
