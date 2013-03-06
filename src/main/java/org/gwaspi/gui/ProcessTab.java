@@ -273,7 +273,7 @@ public class ProcessTab extends JPanel {
 	}
 
 	public void startBusyLogo() {
-		URL logoPath = ProcessTab.class.getClass().getResource("/img/logo/logo_busy.gif");
+		URL logoPath = ProcessTab.class.getResource("/img/logo/logo_busy.gif");
 		Icon logo = new ImageIcon(logoPath);
 
 		lbl_Logo.setIcon(logo);
@@ -296,9 +296,9 @@ public class ProcessTab extends JPanel {
 			count++;
 		}
 
-		URL logoPath = ProcessTab.class.getClass().getResource("/img/logo/logo_busy.gif");
+		URL logoPath = ProcessTab.class.getResource("/img/logo/logo_busy.gif");
 		if (idle) {
-			logoPath = ProcessTab.class.getClass().getResource("/img/logo/logo_stopped.png");
+			logoPath = ProcessTab.class.getResource("/img/logo/logo_stopped.png");
 		}
 		Icon logo = new ImageIcon(logoPath);
 

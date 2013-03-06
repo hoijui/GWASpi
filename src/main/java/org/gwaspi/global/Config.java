@@ -45,7 +45,7 @@ public class Config {
 
 	private static Properties properties = new Properties();
 	private static JFileChooser fc;
-	private static Preferences prefs = Preferences.userNodeForPackage(Config.class.getClass());
+	private static Preferences prefs = Preferences.userNodeForPackage(Config.class);
 	private static int JVMbits = Integer.parseInt(System.getProperty("sun.arch.data.model", "32"));
 	private static boolean startWithGUI = true;
 
@@ -275,7 +275,7 @@ public class Config {
 
 	public static Document getLocalVersionDom() throws URISyntaxException {
 
-		URL localVersionPath = Config.class.getClass().getResource(cGlobal.LOCAL_VERSION_XML); // FIXME remove the getClass() (we already get the class through .class)
+		URL localVersionPath = Config.class.getResource(cGlobal.LOCAL_VERSION_XML); // FIXME remove the getClass() (we already get the class through .class)
 		Document localDom = XMLParser.parseXmlFile(localVersionPath.toURI().toString());
 
 		return localDom;

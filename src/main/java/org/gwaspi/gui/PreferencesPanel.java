@@ -40,7 +40,7 @@ public class PreferencesPanel extends JPanel {
 	private static final Logger log
 			= LoggerFactory.getLogger(PreferencesPanel.class);
 
-	private Preferences prefs = Preferences.userNodeForPackage(Config.class.getClass());
+	private Preferences prefs = Preferences.userNodeForPackage(Config.class);
 	// Variables declaration - do not modify
 	private JButton btn_Back;
 	private JButton btn_Reset;
