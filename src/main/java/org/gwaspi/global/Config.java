@@ -273,6 +273,14 @@ public class Config {
 		return derbyCenter;
 	}
 
+	public static Document getLocalVersionDom() throws URISyntaxException {
+
+		URL localVersionPath = Config.class.getClass().getResource(cGlobal.LOCAL_VERSION_XML); // FIXME remove the getClass() (we already get the class through .class)
+		Document localDom = XMLParser.parseXmlFile(localVersionPath.toURI().toString());
+
+		return localDom;
+	}
+
 	protected static void createDataStructure(File dataDir) throws IOException, BackingStoreException, URISyntaxException {
 
 		File derbyCenter = initDataBaseVars(dataDir);
@@ -305,8 +313,7 @@ public class Config {
 		setConfigValue("CHART_SAMPLEQA_HETZYG_THRESHOLD", "0.5");
 		setConfigValue("CHART_SAMPLEQA_MISSING_THRESHOLD", "0.5");
 
-		URL localVersionPath = Config.class.getClass().getResource(cGlobal.LOCAL_VERSION_XML);
-		Document localDom = XMLParser.parseXmlFile(localVersionPath.toURI().toString());
+		Document localDom = getLocalVersionDom();
 		List<Element> localElements = XMLParser.parseDocument(localDom, "GWASpi");
 		setConfigValue(PROPERTY_CURRENT_GWASPIDB_VERSION, XMLParser.getTextValue(localElements.get(0), "GWASpi_DB_Version"));
 
@@ -352,8 +359,7 @@ public class Config {
 		setConfigValue("CHART_SAMPLEQA_HETZYG_THRESHOLD", lastSampleQAHetzyg);
 		setConfigValue("CHART_SAMPLEQA_MISSING_THRESHOLD", lastSampleQAMissingratio);
 
-		URL localVersionPath = Config.class.getClass().getResource(cGlobal.LOCAL_VERSION_XML);
-		Document localDom = XMLParser.parseXmlFile(localVersionPath.toURI().toString());
+		Document localDom = getLocalVersionDom();
 		List<Element> localElements = XMLParser.parseDocument(localDom, "GWASpi");
 		setConfigValue(PROPERTY_CURRENT_GWASPIDB_VERSION, XMLParser.getTextValue(localElements.get(0), "GWASpi_DB_Version"));
 
@@ -362,8 +368,7 @@ public class Config {
 
 	public static void checkUpdates() throws IOException, ParseException, ParserConfigurationException, SAXException, URISyntaxException {
 		if (Utils.checkInternetConnection()) {
-			URL localVersionPath = Config.class.getClass().getResource(cGlobal.LOCAL_VERSION_XML);
-			Document localDom = XMLParser.parseXmlFile(localVersionPath.toURI().toString());
+			Document localDom = getLocalVersionDom();
 
 			if (localDom != null) { // Found local version info
 				System.setProperty("java.net.useSystemProxies", "true");

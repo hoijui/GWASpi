@@ -9,6 +9,7 @@ import java.util.List;
 import org.gwaspi.constants.cDBGWASpi;
 import org.gwaspi.constants.cDBSamples;
 import org.gwaspi.constants.cGlobal;
+import org.gwaspi.global.Config;
 import org.gwaspi.global.ServiceLocator;
 import org.gwaspi.global.XMLParser;
 import org.slf4j.Logger;
@@ -31,8 +32,7 @@ public class DerbyDBReshaper {
 
 		DbManager db = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
 
-		URL localVersionPath = DerbyDBReshaper.class.getClass().getResource(cGlobal.LOCAL_VERSION_XML);
-		Document localDom = XMLParser.parseXmlFile(localVersionPath.toURI().toString());
+		Document localDom = Config.getLocalVersionDom();
 
 		if (localDom != null) { // Found local version info
 			// Retrieve data from XML files
