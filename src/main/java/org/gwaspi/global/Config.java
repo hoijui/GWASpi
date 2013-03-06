@@ -1,5 +1,6 @@
 package org.gwaspi.global;
 
+import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -72,6 +73,25 @@ public class Config {
 		if (key.equals(PROPERTY_LOG_DIR)) {
 			StartGWASpi.config_LogDir = (String) value;
 		}
+	}
+
+	public static void setConfigColor(String key, Color value) throws IOException {
+		setConfigValue(key, colorToString(value));
+	}
+
+	public static String colorToString(Color value) {
+		return value.getRed() + "," + value.getGreen() + "," + value.getBlue();
+	}
+
+	public static Color stringToColor(String value) throws IOException {
+
+		String[] split = value.split(",");
+		float[] hsbVals = Color.RGBtoHSB(
+				Integer.parseInt(split[0]),
+				Integer.parseInt(split[1]),
+				Integer.parseInt(split[2]),
+				null);
+		return Color.getHSBColor(hsbVals[0], hsbVals[1], hsbVals[2]);
 	}
 
 	public static String getConfigValue(String key, String defaultV) throws IOException {
@@ -149,6 +169,10 @@ public class Config {
 		}
 
 		return prop;
+	}
+
+	public static Color getConfigColor(String key, Color defaultV) throws IOException {
+		return stringToColor(getConfigValue(key, colorToString(defaultV)));
 	}
 
 //	public static int getConfigValue(String key, int defaultV) throws IOException {

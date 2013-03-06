@@ -14,6 +14,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.global.Config;
 import org.gwaspi.gui.reports.ManhattanPlotZoom;
 import org.gwaspi.gui.reports.SampleQAHetzygPlotZoom;
 import org.gwaspi.model.MarkerKey;
@@ -56,15 +57,13 @@ public class GenericReportGenerator {
 	private static final Logger log
 			= LoggerFactory.getLogger(GenericReportGenerator.class);
 
-	private static Map<String, MarkerKey> labeler = new LinkedHashMap<String, MarkerKey>();
-	private static long snpNumber = 1000000;
-	private static double threshold = 0.5 / snpNumber;  //(0.05/10⁶ SNPs => 5*10-⁷)
-	private static Color manhattan_back = Color.getHSBColor(0.1f, 0.0f, 0.9f);
-	private static Color manhattan_backalt = Color.getHSBColor(0.1f, 0.0f, 0.85f);
-	private static Color manhattan_dot = Color.blue;
-	private static Color qq_back = Color.getHSBColor(0.1f, 0.0f, 0.9f);
-	private static Color qq_dot = Color.blue;
-	private static Color qq_ci = Color.lightGray;
+	private static final Color COLOR_MANHATTEN_BACKGROUND = new Color(200, 200, 200);
+	private static final Color COLOR_MANHATTEN_BACKGROUND_ALT = new Color(230, 230, 230);
+	private static final Color COLOR_MANHATTEN_MAIN = Color.BLUE;
+	private static final Color COLOR_QQ_BACKGROUND = new Color(230, 230, 230);
+	private static final Color COLOR_QQ_ACTUAL = Color.BLUE;
+	private static final Color COLOR_QQ_MU = Color.GRAY;
+	private static final Color COLOR_QQ_SIGMA = Color.LIGHT_GRAY;
 
 	private GenericReportGenerator() {
 	}
@@ -73,19 +72,10 @@ public class GenericReportGenerator {
 	public static CombinedRangeXYPlot buildManhattanPlot(int opId, String netCDFVar) throws IOException {
 
 		//<editor-fold defaultstate="collapsed" desc="PLOT DEFAULTS">
-		threshold = Double.parseDouble(org.gwaspi.global.Config.getConfigValue("CHART_MANHATTAN_PLOT_THRESHOLD", "5E-7"));
-
-		String[] tmp = org.gwaspi.global.Config.getConfigValue("CHART_MANHATTAN_PLOT_BCKG", "200,200,200").split(",");
-		float[] hsbTmp = Color.RGBtoHSB(Integer.parseInt(tmp[0]), Integer.parseInt(tmp[1]), Integer.parseInt(tmp[2]), null);
-		manhattan_back = Color.getHSBColor(hsbTmp[0], hsbTmp[1], hsbTmp[2]);
-
-		tmp = org.gwaspi.global.Config.getConfigValue("CHART_MANHATTAN_PLOT_BCKG_ALT", "230,230,230").split(",");
-		hsbTmp = Color.RGBtoHSB(Integer.parseInt(tmp[0]), Integer.parseInt(tmp[1]), Integer.parseInt(tmp[2]), null);
-		manhattan_backalt = Color.getHSBColor(hsbTmp[0], hsbTmp[1], hsbTmp[2]);
-
-		tmp = org.gwaspi.global.Config.getConfigValue("CHART_MANHATTAN_PLOT_DOT", "0,0,255").split(",");
-		hsbTmp = Color.RGBtoHSB(Integer.parseInt(tmp[0]), Integer.parseInt(tmp[1]), Integer.parseInt(tmp[2]), null);
-		manhattan_dot = Color.getHSBColor(hsbTmp[0], hsbTmp[1], hsbTmp[2]);
+		double threshold = Double.parseDouble(Config.getConfigValue("CHART_MANHATTAN_PLOT_THRESHOLD", "5E-7"));
+		Color background = Config.getConfigColor("CHART_MANHATTAN_PLOT_BCKG", COLOR_MANHATTEN_BACKGROUND);
+		Color backgroundAlternative = Config.getConfigColor("CHART_MANHATTAN_PLOT_BCKG_ALT", COLOR_MANHATTEN_BACKGROUND_ALT);
+		Color main = Config.getConfigColor("CHART_MANHATTAN_PLOT_DOT", COLOR_MANHATTEN_MAIN);
 		//</editor-fold>
 
 		Map<MarkerKey, Object> dataSetMap = new LinkedHashMap<MarkerKey, Object>();
@@ -95,12 +85,10 @@ public class GenericReportGenerator {
 		MarkerSet_opt rdInfoMarkerSet = new MarkerSet_opt(rdOPMetadata.getStudyId(), rdOPMetadata.getParentMatrixId());
 		rdInfoMarkerSet.initFullMarkerIdSetMap();
 
-		snpNumber = rdInfoMarkerSet.getMarkerSetSize();
-//		if(snpNumber<250000){
-//			hetzyThreshold = 0.5/snpNumber;  //(0.05/10⁶ SNPs => 5*10-⁷)
+//		long snpNumber = rdInfoMarkerSet.getMarkerSetSize();
+//		if (snpNumber < 250000) {
+//			hetzyThreshold = 0.5 / snpNumber;  // (0.05 / 10^6 SNPs => 5*10^(-7))
 //		}
-		threshold = Double.parseDouble(org.gwaspi.global.Config.getConfigValue("CHART_MANHATTAN_PLOT_THRESHOLD", "5E-7"));
-
 
 		rdInfoMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
 		for (Map.Entry<MarkerKey, Object> entry : rdInfoMarkerSet.getMarkerIdSetMap().entrySet()) {
@@ -161,6 +149,7 @@ public class GenericReportGenerator {
 
 		// Subdividing points into sub-XYSeries, per chromosome
 		String currChr = "";
+		Map<String, MarkerKey> labeler = new LinkedHashMap<String, MarkerKey>(); // FIXME This is unused, was a global static var before (also private though), was the data added here actually used somewhere? (i think not)
 		for (Map.Entry<MarkerKey, Object> entry : dataSetMap.entrySet()) {
 			MarkerKey markerKey = entry.getKey();
 			Object[] data = (Object[]) entry.getValue(); //CHR, POS, PVAL
@@ -177,7 +166,7 @@ public class GenericReportGenerator {
 					} else {
 						if (!currChr.equals("")) { // SKIP FIRST TIME (NO DATA YET!)
 							currChrSC.addSeries(currChrS);
-							appendToCombinedRangeManhattanPlot(combinedPlot, currChr, currChrSC, false);
+							appendToCombinedRangeManhattanPlot(combinedPlot, currChr, currChrSC, false, threshold, background, backgroundAlternative, main);
 						}
 						currChr = data[0].toString();
 						currChrSC = new XYSeriesCollection();
@@ -192,7 +181,7 @@ public class GenericReportGenerator {
 		if (currChrS != null) {
 			currChrSC.addSeries(currChrS);
 			// ADD LAST CHR TO PLOT
-			appendToCombinedRangeManhattanPlot(combinedPlot, currChr, currChrSC, true);
+			appendToCombinedRangeManhattanPlot(combinedPlot, currChr, currChrSC, true, threshold, background, backgroundAlternative, main);
 		}
 
 		// Remove Legend from the bottom of the chart
@@ -201,11 +190,11 @@ public class GenericReportGenerator {
 		return combinedPlot;
 	}
 
-	private static void appendToCombinedRangeManhattanPlot(CombinedRangeXYPlot combinedPlot, String chromosome, XYSeriesCollection currChrSC, boolean showlables) {
+	private static void appendToCombinedRangeManhattanPlot(CombinedRangeXYPlot combinedPlot, String chromosome, XYSeriesCollection currChrSC, boolean showlables, double threshold, Color background, Color backgroundAlternative, Color main) {
 		XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer(false, true);
 
 		// Set dot shape of the currently appended Series
-		renderer.setSeriesPaint(currChrSC.getSeriesCount() - 1, manhattan_dot);
+		renderer.setSeriesPaint(currChrSC.getSeriesCount() - 1, main);
 		renderer.setSeriesVisibleInLegend(currChrSC.getSeriesCount() - 1, showlables);
 		renderer.setSeriesShape(currChrSC.getSeriesCount() - 1, new Rectangle2D.Double(-1.0, -1.0, 2.0, 2.0));
 
@@ -245,9 +234,9 @@ public class GenericReportGenerator {
 
 		// CHART BACKGROUD COLOR
 		if (combinedPlot.getSubplots().size() % 2 == 0) {
-			subplot.setBackgroundPaint(manhattan_back); //Hue, saturation, brightness
+			subplot.setBackgroundPaint(background); // Hue, saturation, brightness
 		} else {
-			subplot.setBackgroundPaint(manhattan_backalt); //Hue, saturation, brightness
+			subplot.setBackgroundPaint(backgroundAlternative); // Hue, saturation, brightness
 		}
 
 		// Add significance Threshold to subplot
@@ -281,17 +270,10 @@ public class GenericReportGenerator {
 	public static XYPlot buildQQPlot(int opId, String netCDFVar, int df) throws IOException {
 
 		//<editor-fold defaultstate="collapsed" desc="PLOT DEFAULTS">
-		String[] tmp = org.gwaspi.global.Config.getConfigValue("CHART_QQ_PLOT_BCKG", "230,230,230").split(",");
-		float[] hsbTmp = Color.RGBtoHSB(Integer.parseInt(tmp[0]), Integer.parseInt(tmp[1]), Integer.parseInt(tmp[2]), null);
-		qq_back = Color.getHSBColor(hsbTmp[0], hsbTmp[1], hsbTmp[2]);
-
-		tmp = org.gwaspi.global.Config.getConfigValue("CHART_QQ_PLOT_DOT", "0,0,255").split(",");
-		hsbTmp = Color.RGBtoHSB(Integer.parseInt(tmp[0]), Integer.parseInt(tmp[1]), Integer.parseInt(tmp[2]), null);
-		qq_dot = Color.getHSBColor(hsbTmp[0], hsbTmp[1], hsbTmp[2]);
-
-		tmp = org.gwaspi.global.Config.getConfigValue("CHART_QQ_PLOT_2SIGMA", "195,195,195").split(",");
-		hsbTmp = Color.RGBtoHSB(Integer.parseInt(tmp[0]), Integer.parseInt(tmp[1]), Integer.parseInt(tmp[2]), null);
-		qq_ci = Color.getHSBColor(hsbTmp[0], hsbTmp[1], hsbTmp[2]);
+		Color background = Config.getConfigColor("CHART_QQ_PLOT_BCKG", COLOR_QQ_BACKGROUND);
+		Color actual = Config.getConfigColor("CHART_QQ_PLOT_DOT", COLOR_QQ_ACTUAL);
+		Color sigma = Config.getConfigColor("CHART_QQ_PLOT_2SIGMA", COLOR_QQ_SIGMA);
+		Color mu = Config.getConfigColor("CHART_QQ_PLOT_MU", COLOR_QQ_MU);
 		//</editor-fold>
 
 		OperationMetadata rdOPMetadata = OperationsList.getOperationMetadata(opId);
@@ -343,6 +325,7 @@ public class GenericReportGenerator {
 			currentValue = slice[1];
 			boundaryAL.add(slice);
 		}
+		inputBufferReader.close();
 		//</editor-fold>
 
 		XYSeriesCollection dataSeries = new XYSeriesCollection();
@@ -384,10 +367,10 @@ public class GenericReportGenerator {
 
 		final XYPlot plot = chart.getXYPlot();
 		XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer(false, true);
-		renderer.setSeriesPaint(0, qq_dot);
-		renderer.setSeriesPaint(1, qq_ci); //light gray
-		renderer.setSeriesPaint(2, qq_ci);
-		renderer.setSeriesPaint(3, qq_ci);
+		renderer.setSeriesPaint(0, actual);
+		renderer.setSeriesPaint(1, mu);
+		renderer.setSeriesPaint(2, sigma);
+		renderer.setSeriesPaint(3, sigma);
 
 		renderer.setBaseShapesVisible(true);
 		renderer.setBaseShapesFilled(true);
@@ -399,7 +382,7 @@ public class GenericReportGenerator {
 		plot.setRenderer(renderer);
 
 		// PLOT BACKGROUND COLOR
-		plot.setBackgroundPaint(qq_back); //Hue, saturation, brightness
+		plot.setBackgroundPaint(background); // Hue, saturation, brightness
 
 		return plot;
 	}
@@ -446,12 +429,13 @@ public class GenericReportGenerator {
 				MarkerKey key = entry.getKey();
 				Object[] chrInfo = (Object[]) rdInfoMarkerSet.getMarkerIdSetMap().get(key);
 				Object[] plotInfo = new Object[3];
-				if (chrInfo[0].toString().equals(chr)) {
-					if ((Integer) chrInfo[1] >= minPosition && (Integer) chrInfo[1] <= maxPosition) {
-						plotInfo[0] = chrInfo[0];
-						plotInfo[1] = chrInfo[1];
-						dataSetMap.put(key, plotInfo);
-					}
+				if (chrInfo[0].toString().equals(chr)
+						&& ((Integer) chrInfo[1] >= minPosition)
+						&& ((Integer) chrInfo[1] <= maxPosition))
+				{
+					plotInfo[0] = chrInfo[0];
+					plotInfo[1] = chrInfo[1];
+					dataSetMap.put(key, plotInfo);
 				}
 			}
 
@@ -478,6 +462,7 @@ public class GenericReportGenerator {
 			//<editor-fold defaultstate="collapsed" desc="BUILD XYDataset">
 			XYSeries dataSeries = new XYSeries("");
 
+			Map<String, MarkerKey> labeler = new LinkedHashMap<String, MarkerKey>();
 			for (Map.Entry<MarkerKey, Object> entry : dataSetMap.entrySet()) {
 				MarkerKey tmpMarker = entry.getKey();
 				Object[] data = (Object[]) entry.getValue(); // CHR, POS, PVAL
@@ -494,7 +479,6 @@ public class GenericReportGenerator {
 					//labeler.put(key, "");
 				}
 			}
-			snpNumber = labeler.size();
 			manhattanPlotZoom.setLabelerMap(labeler);
 
 			dataSeries.setDescription("Zoom chr " + chr + " from position " + minPosition + " to " + maxPosition);
@@ -579,7 +563,6 @@ public class GenericReportGenerator {
 			}
 
 			// CUT READ-Map TO SIZE
-
 			boolean goOn = true;
 			int i = 0;
 			Iterator<MarkerKey> it = rdAssocMarkerSetMap.keySet().iterator();
@@ -629,11 +612,11 @@ public class GenericReportGenerator {
 			rdAssocMarkerSetMap = rdAssocMarkerSet.fillOpSetMapWithVariable(assocNcFile, netCDFVar);
 			for (Map.Entry<MarkerKey, Object> entry : dataSetMap.entrySet()) {
 				MarkerKey key = entry.getKey();
-				Object[] data = (Object[]) entry.getValue(); //CHR, POS, PVAL
+				Object[] data = (Object[]) entry.getValue(); // CHR, POS, PVAL
 				double[] value = (double[]) rdAssocMarkerSetMap.get(key);
-				Double pval = (Double) value[1]; //PVAL
-				if (!pval.equals(Double.NaN) && !pval.equals(Double.POSITIVE_INFINITY) && !pval.equals(Double.NEGATIVE_INFINITY)) {
-					//Ignore NaN Pvalues
+				Double pval = (Double) value[1]; // PVAL
+				if (!pval.equals(Double.NaN) && !pval.equals(Double.POSITIVE_INFINITY) && !pval.equals(Double.NEGATIVE_INFINITY)) { // FIXME use better NaN & co tests
+					// Ignore NaN Pvalues
 					data[2] = pval;
 					entry.setValue(data);
 				}
@@ -647,6 +630,7 @@ public class GenericReportGenerator {
 			//<editor-fold defaultstate="collapsed" desc="BUILD XYDataset">
 			XYSeries dataSeries = new XYSeries("");
 
+			Map<String, MarkerKey> labeler = new LinkedHashMap<String, MarkerKey>();
 			for (Map.Entry<MarkerKey, Object> entry : dataSetMap.entrySet()) {
 				MarkerKey tmpMarker = entry.getKey();
 				Object[] data = (Object[]) entry.getValue(); //CHR, POS, PVAL
@@ -663,7 +647,7 @@ public class GenericReportGenerator {
 					}
 				}
 			}
-			snpNumber = labeler.size();
+			long snpNumber = labeler.size();
 			manhattanPlotZoom.setLabelerMap(labeler);
 
 			dataSeries.setDescription("Zoom on " + origMarkerKey + ", window size: " + snpNumber);
@@ -698,10 +682,10 @@ public class GenericReportGenerator {
 			SampleKey tmpSampleKey = entry.getKey();
 			double tmpHetzyVal = hetzygVals.get(count);
 			double tmpMissratVal = missingratVals.get(count);
-			if (tmpHetzyVal == Double.NaN || tmpHetzyVal == Double.NEGATIVE_INFINITY || tmpHetzyVal == Double.POSITIVE_INFINITY) {
+			if (tmpHetzyVal == Double.NaN || tmpHetzyVal == Double.NEGATIVE_INFINITY || tmpHetzyVal == Double.POSITIVE_INFINITY) { // FIXME bad NaN test
 				tmpHetzyVal = 0;
 			}
-			if (tmpMissratVal == Double.NaN || tmpMissratVal == Double.NEGATIVE_INFINITY || tmpMissratVal == Double.POSITIVE_INFINITY) {
+			if (tmpMissratVal == Double.NaN || tmpMissratVal == Double.NEGATIVE_INFINITY || tmpMissratVal == Double.POSITIVE_INFINITY) { // FIXME bad NaN test
 				tmpMissratVal = 0;
 			}
 
@@ -709,7 +693,6 @@ public class GenericReportGenerator {
 			samplesLabeler.put(count + "_" + tmpMissratVal + "_" + tmpHetzyVal, tmpSampleKey);
 			count++;
 		}
-		snpNumber = samplesLabeler.size();
 		sampleQAHetzygPlotZoom.setLabelerMap(samplesLabeler);
 
 		dataSeries.setDescription(rdOPMetadata.getDescription());
@@ -743,7 +726,6 @@ public class GenericReportGenerator {
 		//<editor-fold defaultstate="collapsed" desc="GET POSITION DATA">
 		MarkerSet_opt rdInfoMarkerSet = new MarkerSet_opt(rdOPMetadata.getStudyId(), rdOPMetadata.getParentMatrixId());
 		rdInfoMarkerSet.initFullMarkerIdSetMap();
-		snpNumber = rdInfoMarkerSet.getMarkerSetSize();
 		rdInfoMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
 		if (rdInfoMarkerSet.getMarkerIdSetMap() != null) {
 			for (Map.Entry<MarkerKey, Object> entry : rdInfoMarkerSet.getMarkerIdSetMap().entrySet()) {
