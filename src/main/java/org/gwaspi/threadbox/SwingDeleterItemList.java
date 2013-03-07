@@ -55,7 +55,7 @@ public class SwingDeleterItemList {
 
 	public static void deleteAllListed() {
 		if (StartGWASpi.guiMode) {
-			StartGWASpi.mainGUIFrame.setCursor(CursorUtils.waitCursor);
+			StartGWASpi.mainGUIFrame.setCursor(CursorUtils.WAIT_CURSOR);
 		}
 
 		for (SwingDeleterItem currentSdi : swingDeleterItems) {
@@ -122,7 +122,7 @@ public class SwingDeleterItemList {
 
 		// IF WE ARE IN GUI MODE, UPDATE TREE. ELSE EXIT PROGRAM
 		if (StartGWASpi.guiMode) {
-			StartGWASpi.mainGUIFrame.setCursor(CursorUtils.defaultCursor);
+			StartGWASpi.mainGUIFrame.setCursor(CursorUtils.DEFAULT_CURSOR);
 			ProcessTab.getSingleton().updateProcessOverview();
 			try {
 				MultiOperations.updateTreeAndPanel();

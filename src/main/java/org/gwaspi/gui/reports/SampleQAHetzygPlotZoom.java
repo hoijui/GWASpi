@@ -69,6 +69,11 @@ public final class SampleQAHetzygPlotZoom extends JPanel {
 	private final Logger log
 			= LoggerFactory.getLogger(SampleQAHetzygPlotZoom.class);
 
+	public static final String PLOT_SAMPLEQA_HETZYG_THRESHOLD_CONFIG = "CHART_SAMPLEQA_HETZYG_THRESHOLD";
+	public static final double PLOT_SAMPLEQA_HETZYG_THRESHOLD_DEFAULT = 0.5;
+	public static final String PLOT_SAMPLEQA_MISSING_THRESHOLD_CONFIG = "CHART_SAMPLEQA_MISSING_THRESHOLD";
+	public static final double PLOT_SAMPLEQA_MISSING_THRESHOLD_DEFAULT = 0.5;
+
 	private int opId;
 	private Operation op;
 	private OperationMetadata rdOPMetadata;
@@ -125,13 +130,17 @@ public final class SampleQAHetzygPlotZoom extends JPanel {
 
 		initChart();
 
-		setCursor(CursorUtils.defaultCursor);
+		setCursor(CursorUtils.DEFAULT_CURSOR);
 	}
 
 	public void initChart() throws IOException {
 
-		hetzyThreshold = Double.parseDouble(Config.getConfigValue("CHART_SAMPLEQA_HETZYG_THRESHOLD", "0.5"));
-		missingThreshold = Double.parseDouble(Config.getConfigValue("CHART_SAMPLEQA_MISSING_THRESHOLD", "0.5"));
+		hetzyThreshold = Double.parseDouble(Config.getConfigValue(
+				PLOT_SAMPLEQA_HETZYG_THRESHOLD_CONFIG,
+				String.valueOf(PLOT_SAMPLEQA_HETZYG_THRESHOLD_DEFAULT)));
+		missingThreshold = Double.parseDouble(Config.getConfigValue(
+				PLOT_SAMPLEQA_MISSING_THRESHOLD_CONFIG,
+				String.valueOf(PLOT_SAMPLEQA_MISSING_THRESHOLD_DEFAULT)));
 
 		initXYDataset = getSampleHetzygDataset(opId);
 
@@ -145,7 +154,7 @@ public final class SampleQAHetzygPlotZoom extends JPanel {
 
 	private void initGUI() {
 
-//        setCursor(CursorUtils.waitCursor);
+//        setCursor(CursorUtils.WAIT_CURSOR);
 
 		pnl_ChartNavigator = new JPanel();
 		pnl_Chart = new JPanel();
@@ -310,7 +319,7 @@ public final class SampleQAHetzygPlotZoom extends JPanel {
 
 		// </editor-fold>
 
-//		setCursor(CursorUtils.defaultCursor);
+//		setCursor(CursorUtils.DEFAULT_CURSOR);
 	}
 
 	// <editor-fold defaultstate="expanded" desc="CHART GENERATOR">

@@ -54,7 +54,7 @@ public class Utils {
 	private static String currentAppPath = "";
 
 	public static String getAppPath() {
-		currentAppPath = cGlobal.USERDIR;
+		currentAppPath = cGlobal.USER_DIR_DEFAULT;
 		//JOptionPane.showMessageDialog(base.ApipelineGUI.getFrames()[0], currentAppPath);
 		return currentAppPath;
 	}

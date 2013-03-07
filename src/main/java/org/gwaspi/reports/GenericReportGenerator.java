@@ -57,13 +57,22 @@ public class GenericReportGenerator {
 	private static final Logger log
 			= LoggerFactory.getLogger(GenericReportGenerator.class);
 
-	private static final Color COLOR_MANHATTEN_BACKGROUND = new Color(200, 200, 200);
-	private static final Color COLOR_MANHATTEN_BACKGROUND_ALT = new Color(230, 230, 230);
-	private static final Color COLOR_MANHATTEN_MAIN = Color.BLUE;
-	private static final Color COLOR_QQ_BACKGROUND = new Color(230, 230, 230);
-	private static final Color COLOR_QQ_ACTUAL = Color.BLUE;
-	private static final Color COLOR_QQ_MU = Color.GRAY;
-	private static final Color COLOR_QQ_SIGMA = Color.LIGHT_GRAY;
+	public static final String PLOT_MANHATTAN_THRESHOLD_CONFIG = "CHART_MANHATTAN_PLOT_THRESHOLD";
+	public static final double PLOT_MANHATTAN_THRESHOLD_DEFAULT = 5E-7;
+	public static final String PLOT_MANHATTAN_BACKGROUND_CONFIG = "CHART_MANHATTAN_PLOT_BACKGROUND";
+	public static final Color PLOT_MANHATTAN_BACKGROUND_DEFAULT = new Color(200, 200, 200);
+	public static final String PLOT_MANHATTAN_BACKGROUND_ALTERNATIVE_CONFIG = "CHART_MANHATTAN_PLOT_BACKGROUND_ALTERNATIVE";
+	public static final Color PLOT_MANHATTAN_BACKGROUND_ALTERNATIVE_DEFAULT = new Color(230, 230, 230);
+	public static final String PLOT_MANHATTAN_MAIN_CONFIG = "CHART_MANHATTAN_PLOT_MAIN";
+	public static final Color PLOT_MANHATTAN_MAIN_DEFAULT = Color.BLUE;
+	public static final String PLOT_QQ_BACKGROUND_CONFIG = "CHART_MANHATTAN_PLOT_MAIN";
+	public static final Color PLOT_QQ_BACKGROUND_DEFAULT = new Color(230, 230, 230);
+	public static final String PLOT_QQ_ACTUAL_CONFIG = "CHART_MANHATTAN_PLOT_MAIN";
+	public static final Color PLOT_QQ_ACTUAL_DEFAULT = Color.BLUE;
+	public static final String PLOT_QQ_MU_CONFIG = "CHART_MANHATTAN_PLOT_MAIN";
+	public static final Color PLOT_QQ_MU_DEFAULT = Color.GRAY;
+	public static final String PLOT_QQ_SIGMA_CONFIG = "CHART_MANHATTAN_PLOT_MAIN";
+	public static final Color PLOT_QQ_SIGMA_DEFAULT = Color.LIGHT_GRAY;
 
 	private GenericReportGenerator() {
 	}
@@ -72,10 +81,18 @@ public class GenericReportGenerator {
 	public static CombinedRangeXYPlot buildManhattanPlot(int opId, String netCDFVar) throws IOException {
 
 		//<editor-fold defaultstate="expanded" desc="PLOT DEFAULTS">
-		double threshold = Double.parseDouble(Config.getConfigValue("CHART_MANHATTAN_PLOT_THRESHOLD", "5E-7"));
-		Color background = Config.getConfigColor("CHART_MANHATTAN_PLOT_BCKG", COLOR_MANHATTEN_BACKGROUND);
-		Color backgroundAlternative = Config.getConfigColor("CHART_MANHATTAN_PLOT_BCKG_ALT", COLOR_MANHATTEN_BACKGROUND_ALT);
-		Color main = Config.getConfigColor("CHART_MANHATTAN_PLOT_DOT", COLOR_MANHATTEN_MAIN);
+		double threshold = Double.parseDouble(Config.getConfigValue(
+				PLOT_MANHATTAN_THRESHOLD_CONFIG,
+				String.valueOf(PLOT_MANHATTAN_THRESHOLD_DEFAULT)));
+		Color background = Config.getConfigColor(
+				PLOT_MANHATTAN_BACKGROUND_CONFIG,
+				PLOT_MANHATTAN_BACKGROUND_DEFAULT);
+		Color backgroundAlternative = Config.getConfigColor(
+				PLOT_MANHATTAN_BACKGROUND_ALTERNATIVE_CONFIG,
+				PLOT_MANHATTAN_BACKGROUND_ALTERNATIVE_DEFAULT);
+		Color main = Config.getConfigColor(
+				PLOT_MANHATTAN_MAIN_CONFIG,
+				PLOT_MANHATTAN_MAIN_DEFAULT);
 		//</editor-fold>
 
 		Map<MarkerKey, Object> dataSetMap = new LinkedHashMap<MarkerKey, Object>();
@@ -270,10 +287,18 @@ public class GenericReportGenerator {
 	public static XYPlot buildQQPlot(int opId, String netCDFVar, int df) throws IOException {
 
 		//<editor-fold defaultstate="expanded" desc="PLOT DEFAULTS">
-		Color background = Config.getConfigColor("CHART_QQ_PLOT_BCKG", COLOR_QQ_BACKGROUND);
-		Color actual = Config.getConfigColor("CHART_QQ_PLOT_DOT", COLOR_QQ_ACTUAL);
-		Color sigma = Config.getConfigColor("CHART_QQ_PLOT_2SIGMA", COLOR_QQ_SIGMA);
-		Color mu = Config.getConfigColor("CHART_QQ_PLOT_MU", COLOR_QQ_MU);
+		Color background = Config.getConfigColor(
+				PLOT_QQ_BACKGROUND_CONFIG,
+				PLOT_QQ_BACKGROUND_DEFAULT);
+		Color actual = Config.getConfigColor(
+				PLOT_QQ_ACTUAL_CONFIG,
+				PLOT_QQ_ACTUAL_DEFAULT);
+		Color sigma = Config.getConfigColor(
+				PLOT_QQ_SIGMA_CONFIG,
+				PLOT_QQ_SIGMA_DEFAULT);
+		Color mu = Config.getConfigColor(
+				PLOT_QQ_MU_CONFIG,
+				PLOT_QQ_MU_DEFAULT);
 		//</editor-fold>
 
 		OperationMetadata rdOPMetadata = OperationsList.getOperationMetadata(opId);

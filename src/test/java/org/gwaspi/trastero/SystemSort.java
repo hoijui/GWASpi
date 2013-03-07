@@ -20,7 +20,9 @@ public class SystemSort {
 
 	public static void processData(File dir, String format, JProgressBar progressBar) throws IOException {
 		File[] filesToImport = org.gwaspi.global.Utils.listFiles(dir.toString());
-		File formatFolder = org.gwaspi.global.Utils.createFolder(org.gwaspi.global.Config.getConfigValue("ESdir", cGlobal.USERDIR), format);
+		File formatFolder = org.gwaspi.global.Utils.createFolder(org.gwaspi.global.Config.getConfigValue(
+				cGlobal.SORT_EXEC_DIR_CONFIG,
+				cGlobal.USER_DIR_DEFAULT), format);
 		String processingDir = formatFolder.getPath() + "/";
 		File[] alreadySortedFiles = org.gwaspi.global.Utils.listFiles(processingDir);
 		numFiles = alreadySortedFiles.length;
@@ -36,7 +38,10 @@ public class SystemSort {
 	public static String getCommandLine(String pathToFile, String format) throws IOException {
 		String executable;
 		String commandLine = "";
-		String outputPath = org.gwaspi.global.Config.getConfigValue("ESdir", cGlobal.USERDIR).toString() + "/" + format + "/" + (numFiles - 1) + ".csv";
+		String outputPath = org.gwaspi.global.Config.getConfigValue(
+				cGlobal.SORT_EXEC_DIR_CONFIG,
+				cGlobal.USER_DIR_DEFAULT).toString()
+				+ "/" + format + "/" + (numFiles - 1) + ".csv";
 		numFiles++;
 
 		if (cGlobal.OSNAME.equals("Linux")) {

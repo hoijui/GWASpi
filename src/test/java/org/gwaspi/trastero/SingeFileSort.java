@@ -36,7 +36,10 @@ public class SingeFileSort {
 			ArrayList<String[]> filerows = new ArrayList<String[]>();
 			Random generator = new Random();
 			int rnd = Math.abs(generator.nextInt());
-			tempSorted = new File(org.gwaspi.global.Config.getConfigValue("SSdir", cGlobal.USERDIR).toString() + "/" + rnd + ".csv");
+			tempSorted = new File(org.gwaspi.global.Config.getConfigValue(
+					cGlobal.SORT_SINGLE_DIR_CONFIG,
+					cGlobal.USER_DIR_DEFAULT).toString()
+					+ "/" + rnd + ".csv");
 			FileWriter fw = new FileWriter(tempSorted);
 			BufferedWriter bw = new BufferedWriter(fw);
 			String[] header;

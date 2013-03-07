@@ -53,7 +53,7 @@ public final class Report_AnalysisTrendTestImpl extends Report_Analysis {
 					}
 
 					if (colIndex == 8) {    //Zoom
-						setCursor(CursorUtils.waitCursor);
+						setCursor(CursorUtils.WAIT_CURSOR);
 						long markerPhysPos = (Long) tbl_ReportTable.getValueAt(rowIndex, 3); //marker physical position in chromosome
 						String chr = tbl_ReportTable.getValueAt(rowIndex, 2).toString(); //Chromosome
 
@@ -62,7 +62,7 @@ public final class Report_AnalysisTrendTestImpl extends Report_Analysis {
 						int startPhysPos = (Integer) chrInfo[1];
 						int maxPhysPos = (Integer) chrInfo[2];
 						double avgMarkersPerPhysPos = (double) nbMarkers / (maxPhysPos - startPhysPos);
-						int requestedWindowSize = Math.abs((int) Math.round(ManhattanPlotZoom.defaultMarkerNb / avgMarkersPerPhysPos));
+						int requestedWindowSize = Math.abs((int) Math.round(ManhattanPlotZoom.MARKERS_NUM_DEFAULT / avgMarkersPerPhysPos));
 
 						GWASpiExplorerPanel.getSingleton().setPnl_Content(new ManhattanPlotZoom(opId,
 								 chr,

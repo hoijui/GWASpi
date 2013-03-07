@@ -670,7 +670,7 @@ public class LoadDataPanel extends JPanel {
 					}
 				} else {
 					lbl_NewMatrixName.setForeground(Color.red);
-					setCursor(CursorUtils.defaultCursor);
+					setCursor(CursorUtils.DEFAULT_CURSOR);
 					Dialogs.showWarningDialogue(Text.Matrix.warnInputNewMatrixName);
 				}
 			} catch (Exception ex) {

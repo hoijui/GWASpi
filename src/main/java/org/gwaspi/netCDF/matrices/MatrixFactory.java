@@ -197,7 +197,7 @@ public class MatrixFactory {
 		// global attributes
 		ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_STUDY, studyId);
 		ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_TECHNOLOGY, technology.toString());
-		String versionNb = Config.getConfigValue(Config.PROPERTY_CURRENT_GWASPIDB_VERSION, "2.0.2");
+		String versionNb = Config.getConfigValue(Config.PROPERTY_CURRENT_GWASPIDB_VERSION, "2.0.2"); // FIXME use global default value
 		ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_GWASPIDB_VERSION, versionNb);
 		ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_DESCRIPTION, description);
 		ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_STRAND, strand.toString());

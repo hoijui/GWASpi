@@ -445,11 +445,11 @@ public abstract class Report_Analysis extends JPanel {
 		int column = tbl_ReportTable.columnAtPoint(p);
 		int row = tbl_ReportTable.rowAtPoint(p);
 		String columnName = tbl_ReportTable.getColumnName(column);
-		if (!getCursor().equals(CursorUtils.waitCursor)) {
+		if (!getCursor().equals(CursorUtils.WAIT_CURSOR)) {
 			if (columnName.equals(Text.Reports.zoom)) {
-				setCursor(CursorUtils.handCursor);
+				setCursor(CursorUtils.HAND_CURSOR);
 			} else if (columnName.equals(Text.Reports.externalResource)) {
-				setCursor(CursorUtils.handCursor);
+				setCursor(CursorUtils.HAND_CURSOR);
 			} else {
 				setCursor(Cursor.getDefaultCursor());
 			}

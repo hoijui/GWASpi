@@ -359,9 +359,9 @@ public class MatrixAnalysePanel extends JPanel {
 				int censusOPId = evaluateCensusOPId(currentOP, parentMatrix);
 				int hwOPId = Integer.MIN_VALUE;
 
-				StartGWASpi.mainGUIFrame.setCursor(CursorUtils.waitCursor);
+				StartGWASpi.mainGUIFrame.setCursor(CursorUtils.WAIT_CURSOR);
 				Set<SampleInfo.Affection> affectionStates = SamplesParserManager.getDBAffectionStates(parentMatrix.getId());
-				StartGWASpi.mainGUIFrame.setCursor(CursorUtils.defaultCursor);
+				StartGWASpi.mainGUIFrame.setCursor(CursorUtils.DEFAULT_CURSOR);
 
 				if (affectionStates.contains(SampleInfo.Affection.UNAFFECTED)
 						&& affectionStates.contains(SampleInfo.Affection.AFFECTED))
@@ -462,9 +462,9 @@ public class MatrixAnalysePanel extends JPanel {
 				int censusOPId = AllelicTestsAction.evaluateCensusOPId(currentOP, parentMatrix);
 				int hwOPId = Integer.MIN_VALUE;
 
-				StartGWASpi.mainGUIFrame.setCursor(CursorUtils.waitCursor);
+				StartGWASpi.mainGUIFrame.setCursor(CursorUtils.WAIT_CURSOR);
 				Set<SampleInfo.Affection> affectionStates = SamplesParserManager.getDBAffectionStates(parentMatrix.getId());
-				StartGWASpi.mainGUIFrame.setCursor(CursorUtils.defaultCursor);
+				StartGWASpi.mainGUIFrame.setCursor(CursorUtils.DEFAULT_CURSOR);
 
 				if (affectionStates.contains(SampleInfo.Affection.UNAFFECTED)
 						&& affectionStates.contains(SampleInfo.Affection.AFFECTED))
@@ -565,9 +565,9 @@ public class MatrixAnalysePanel extends JPanel {
 				int censusOPId = AllelicTestsAction.evaluateCensusOPId(currentOP, parentMatrix);
 				int hwOPId = Integer.MIN_VALUE;
 
-				StartGWASpi.mainGUIFrame.setCursor(CursorUtils.waitCursor);
+				StartGWASpi.mainGUIFrame.setCursor(CursorUtils.WAIT_CURSOR);
 				Set<SampleInfo.Affection> affectionStates = SamplesParserManager.getDBAffectionStates(parentMatrix.getId());
-				StartGWASpi.mainGUIFrame.setCursor(CursorUtils.defaultCursor);
+				StartGWASpi.mainGUIFrame.setCursor(CursorUtils.DEFAULT_CURSOR);
 
 				if (affectionStates.contains(SampleInfo.Affection.UNAFFECTED)
 						&& affectionStates.contains(SampleInfo.Affection.AFFECTED))
@@ -848,9 +848,9 @@ public class MatrixAnalysePanel extends JPanel {
 						&& choice != JOptionPane.CANCEL_OPTION
 						&& (gwasParams.isPerformAllelicTests() || gwasParams.isPerformTrendTests())) { //At least one test has been picked
 					log.info(Text.All.processing);
-					StartGWASpi.mainGUIFrame.setCursor(CursorUtils.waitCursor);
+					StartGWASpi.mainGUIFrame.setCursor(CursorUtils.WAIT_CURSOR);
 					Set<SampleInfo.Affection> affectionStates = SamplesParserManager.getDBAffectionStates(parentMatrix.getId()); //use Sample Info file affection state
-					StartGWASpi.mainGUIFrame.setCursor(CursorUtils.defaultCursor);
+					StartGWASpi.mainGUIFrame.setCursor(CursorUtils.DEFAULT_CURSOR);
 					if (affectionStates.contains(SampleInfo.Affection.UNAFFECTED)
 							&& affectionStates.contains(SampleInfo.Affection.AFFECTED))
 					{

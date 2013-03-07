@@ -18,6 +18,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import org.gwaspi.global.Config;
 import org.gwaspi.global.Text;
+import org.gwaspi.gui.reports.SampleQAHetzygPlotZoom;
 import org.gwaspi.netCDF.operations.GWASinOneGOParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -106,21 +107,29 @@ public class MoreInfoForGtFreq extends JFrame {
 		chkB_1.setEnabled(false);
 
 		chkB_2.setText(Text.Operation.discardMarkerMissing);
-		txtF_1.setText("0.050");
+		txtF_1.setText("0.05");
 
 		chkB_SMS.setText(Text.Operation.discardSampleMissing);
+		double missingThreshold;
 		try {
-			txtF_SMS.setText(Config.getConfigValue("CHART_SAMPLEQA_MISSING_THRESHOLD", "0.500"));
+			missingThreshold = Double.parseDouble(Config.getConfigValue(
+					SampleQAHetzygPlotZoom.PLOT_SAMPLEQA_MISSING_THRESHOLD_CONFIG,
+					String.valueOf(SampleQAHetzygPlotZoom.PLOT_SAMPLEQA_MISSING_THRESHOLD_DEFAULT)));
 		} catch (IOException ex) {
-			txtF_SMS.setText("0.050");
+			missingThreshold = 0.05; // XXX Why not SampleQAHetzygPlotZoom.PLOT_SAMPLEQA_MISSING_THRESHOLD_DEFAULT?
 		}
+		txtF_SMS.setText(String.valueOf(missingThreshold));
 
 		chkB_SHZ.setText(Text.Operation.discardSampleHetzy);
+		double hetzygThreshold;
 		try {
-			txtF_SHZ.setText(Config.getConfigValue("CHART_SAMPLEQA_HETZYG_THRESHOLD", "0.5"));
+			hetzygThreshold = Double.parseDouble(Config.getConfigValue(
+					SampleQAHetzygPlotZoom.PLOT_SAMPLEQA_HETZYG_THRESHOLD_CONFIG,
+					String.valueOf(SampleQAHetzygPlotZoom.PLOT_SAMPLEQA_HETZYG_THRESHOLD_DEFAULT)));
 		} catch (IOException ex) {
-			txtF_SHZ.setText("1.000");
+			hetzygThreshold = 1.0; // XXX Why not SampleQAHetzygPlotZoom.PLOT_SAMPLEQA_HETZYG_THRESHOLD_DEFAULT?
 		}
+		txtF_SHZ.setText(String.valueOf(hetzygThreshold));
 		chkB_SHZ.setEnabled(true);
 
 		setConstraints(c, 0, rowNb, GridBagConstraints.LINE_START);

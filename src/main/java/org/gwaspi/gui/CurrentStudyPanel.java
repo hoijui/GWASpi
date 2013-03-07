@@ -333,7 +333,7 @@ public class CurrentStudyPanel extends JPanel {
 				if (option == JOptionPane.YES_OPTION) {
 					int deleteReportOption = JOptionPane.showConfirmDialog(dialogParent, Text.Reports.confirmDelete);
 					if (option == JOptionPane.YES_OPTION && deleteReportOption != JOptionPane.CANCEL_OPTION) {
-						dialogParent.setCursor(CursorUtils.waitCursor);
+						dialogParent.setCursor(CursorUtils.WAIT_CURSOR);
 						for (int i = 0; i < selectedMatrices.length; i++) {
 							int tmpMatrixRow = selectedMatrices[i];
 							int matrixId = (Integer) table.getModel().getValueAt(tmpMatrixRow, 0);
@@ -352,7 +352,7 @@ public class CurrentStudyPanel extends JPanel {
 					}
 				}
 			}
-			dialogParent.setCursor(CursorUtils.defaultCursor);
+			dialogParent.setCursor(CursorUtils.DEFAULT_CURSOR);
 		}
 	}
 

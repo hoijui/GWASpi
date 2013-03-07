@@ -73,7 +73,7 @@ public final class ManhattanChartDisplay extends JPanel {
 
 		scrl_Chart = new JScrollPane();
 		pnl_Chart = new JPanel();
-		pnl_Chart.setCursor(CursorUtils.handCursor);
+		pnl_Chart.setCursor(CursorUtils.HAND_CURSOR);
 
 		label.addMouseListener(new MouseAdapter() {
 			@Override
@@ -83,7 +83,7 @@ public final class ManhattanChartDisplay extends JPanel {
 						setFired(true);
 						int mouseX = e.getX();
 						if (mouseX > padLeft) {
-							pnl_Chart.setCursor(CursorUtils.waitCursor);
+							pnl_Chart.setCursor(CursorUtils.WAIT_CURSOR);
 
 							Object[] selectedSliceInfo = getChrSliceInfo(mouseX);
 //							sliceInfo[0] = chrNb;
@@ -255,9 +255,9 @@ public final class ManhattanChartDisplay extends JPanel {
 		int defaultSliceWidth;
 		// FIXME the following if statement does not make sense (two times hte smae code)
 		if (avgMarkersPerPx < 0) {
-			defaultSliceWidth = (int) Math.round(ManhattanPlotZoom.defaultMarkerNb / avgMarkersPerPx); //width of a slice inside current chr
+			defaultSliceWidth = (int) Math.round(ManhattanPlotZoom.MARKERS_NUM_DEFAULT / avgMarkersPerPx); //width of a slice inside current chr
 		} else {
-			defaultSliceWidth = (int) Math.round(ManhattanPlotZoom.defaultMarkerNb / avgMarkersPerPx); //width of a slice inside current chr
+			defaultSliceWidth = (int) Math.round(ManhattanPlotZoom.MARKERS_NUM_DEFAULT / avgMarkersPerPx); //width of a slice inside current chr
 		}
 		long defaultSlotsNb = Math.round(defaultSliceWidth * avgSlotsPerPx); //Nb of physical slots per slice
 
