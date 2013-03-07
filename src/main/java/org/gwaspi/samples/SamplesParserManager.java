@@ -35,7 +35,7 @@ public class SamplesParserManager {
 	private SamplesParserManager() {
 	}
 
-	//<editor-fold defaultstate="collapsed" desc="DB SAMPLE INFO PROVIDERS">
+	//<editor-fold defaultstate="expanded" desc="DB SAMPLE INFO PROVIDERS">
 	public static Set<SampleInfo.Affection> getDBAffectionStates(int matrixId) {
 		Set<SampleInfo.Affection> resultHS = EnumSet.noneOf(SampleInfo.Affection.class);
 		try {
@@ -60,7 +60,7 @@ public class SamplesParserManager {
 	}
 	//</editor-fold>
 
-	//<editor-fold defaultstate="collapsed" desc="FILE SAMPLE INFO SCANNERS">
+	//<editor-fold defaultstate="expanded" desc="FILE SAMPLE INFO SCANNERS">
 	private static final SamplesParser gwaspiSamplesParser = new GwaspiSamplesParser();
 	public static Collection<SampleInfo> scanGwaspiSampleInfo(String sampleInfoPath) throws IOException {
 		return gwaspiSamplesParser.scanSampleInfo(sampleInfoPath);

@@ -101,7 +101,7 @@ public class MoreLoadInfoByFormat {
 		GridBagConstraints c = new GridBagConstraints();
 		int rowNb = 0;
 
-		//<editor-fold defaultstate="collapsed" desc="FORMAT DEPENDENT">
+		//<editor-fold defaultstate="expanded" desc="FORMAT DEPENDENT">
 		lbl_Chromosome.setText("  " + Text.Dialog.chromosome + "  ");
 		lbl_Strand.setText("  " + Text.Dialog.strand + "  ");
 		lbl_GTCode.setText("  " + Text.Dialog.genotypeEncoding + "  ");

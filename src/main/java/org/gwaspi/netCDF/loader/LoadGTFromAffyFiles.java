@@ -88,7 +88,7 @@ public class LoadGTFromAffyFiles implements GenotypesLoader {
 
 		GenotypeEncoding guessedGTCode = GenotypeEncoding.UNKNOWN;
 
-		//<editor-fold defaultstate="collapsed" desc="SAMPLES GATHERING">
+		//<editor-fold defaultstate="expanded" desc="SAMPLES GATHERING">
 		// GET SAMPLES FROM FILES
 		List<SampleKey> samples = new ArrayList<SampleKey>();
 		for (int i = 0; i < gtFilesToImport.length; i++) {
@@ -109,7 +109,7 @@ public class LoadGTFromAffyFiles implements GenotypesLoader {
 //		samples.containsAll(loadDescription.getSampleInfo().keySet());
 		//</editor-fold>
 
-		//<editor-fold defaultstate="collapsed/expanded" desc="CREATE MARKERSET & NETCDF">
+		//<editor-fold defaultstate="expanded" desc="CREATE MARKERSET & NETCDF">
 		MetadataLoaderAffy markerSetLoader = new MetadataLoaderAffy(
 				loadDescription.getAnnotationFilePath(),
 				loadDescription.getFormat(),
@@ -173,7 +173,7 @@ public class LoadGTFromAffyFiles implements GenotypesLoader {
 		//log.info("Done creating netCDF handle ");
 		//</editor-fold>
 
-		//<editor-fold defaultstate="collapsed" desc="WRITE MATRIX METADATA">
+		//<editor-fold defaultstate="expanded" desc="WRITE MATRIX METADATA">
 		// WRITE SAMPLESET TO MATRIX FROM SAMPLES ARRAYLIST
 		ArrayChar.D2 samplesD2 = org.gwaspi.netCDF.operations.Utils.writeCollectionToD2ArrayChar(samples, cNetCDF.Strides.STRIDE_SAMPLE_NAME);
 
@@ -292,7 +292,7 @@ public class LoadGTFromAffyFiles implements GenotypesLoader {
 
 		// </editor-fold>
 
-		// <editor-fold defaultstate="collapsed" desc="MATRIX GENOTYPES LOAD ">
+		// <editor-fold defaultstate="expanded" desc="MATRIX GENOTYPES LOAD ">
 		//PURGE markerSetMap
 		for (Map.Entry<?, Object> entry : markerSetMap.entrySet()) {
 			entry.setValue(cNetCDF.Defaults.DEFAULT_GT);

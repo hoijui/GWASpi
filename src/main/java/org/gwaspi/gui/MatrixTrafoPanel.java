@@ -102,7 +102,7 @@ public class MatrixTrafoPanel extends JPanel {
 		txtA_ParentMatrixDesc.setEditable(false);
 		scrl_ParentMatrixDesc.setViewportView(txtA_ParentMatrixDesc);
 
-		//<editor-fold defaultstate="collapsed" desc="LAYOUT PARENT MATRIX DESC">
+		//<editor-fold defaultstate="expanded" desc="LAYOUT PARENT MATRIX DESC">
 		GroupLayout pnl_ParentMatrixDescLayout = new GroupLayout(pnl_ParentMatrixDesc);
 		pnl_ParentMatrixDesc.setLayout(pnl_ParentMatrixDescLayout);
 		pnl_ParentMatrixDescLayout.setHorizontalGroup(
@@ -153,7 +153,7 @@ public class MatrixTrafoPanel extends JPanel {
 		});
 		scroll_TrafoMatrixDescription.setViewportView(txtA_NewMatrixDescription);
 
-		//<editor-fold defaultstate="collapsed" desc="LAYOUT NEW MATRIX DESC">
+		//<editor-fold defaultstate="expanded" desc="LAYOUT NEW MATRIX DESC">
 		GroupLayout pnl_TrafoMatrixDescLayout = new GroupLayout(pnl_TrafoMatrixDesc);
 		pnl_TrafoMatrixDesc.setLayout(pnl_TrafoMatrixDescLayout);
 		pnl_TrafoMatrixDescLayout.setHorizontalGroup(
@@ -186,7 +186,7 @@ public class MatrixTrafoPanel extends JPanel {
 
 		btn_2_1.setAction(new MatrixStrandFlipAction());
 
-		//<editor-fold defaultstate="collapsed" desc="LAYOUT BUTTONS">
+		//<editor-fold defaultstate="expanded" desc="LAYOUT BUTTONS">
 		GroupLayout pnl_ButtonsLayout = new GroupLayout(pnl_Buttons);
 		pnl_Buttons.setLayout(pnl_ButtonsLayout);
 		pnl_ButtonsLayout.setHorizontalGroup(
@@ -238,7 +238,7 @@ public class MatrixTrafoPanel extends JPanel {
 		btn_Back.setAction(new BackAction(parentMatrix));
 		btn_Help.setAction(new BrowserHelpUrlAction(HelpURLs.QryURL.matrixTranslate));
 
-		//<editor-fold defaultstate="collapsed" desc="FOOTER">
+		//<editor-fold defaultstate="expanded" desc="FOOTER">
 		GroupLayout pnl_FooterLayout = new GroupLayout(pnl_Footer);
 		pnl_Footer.setLayout(pnl_FooterLayout);
 		pnl_FooterLayout.setHorizontalGroup(
@@ -262,7 +262,7 @@ public class MatrixTrafoPanel extends JPanel {
 				.addComponent(btn_Help))));
 		//</editor-fold>
 
-		//<editor-fold defaultstate="collapsed" desc="LAYOUT">
+		//<editor-fold defaultstate="expanded" desc="LAYOUT">
 		GroupLayout layout = new GroupLayout(this);
 		this.setLayout(layout);
 		layout.setHorizontalGroup(
@@ -294,7 +294,7 @@ public class MatrixTrafoPanel extends JPanel {
 		//</editor-fold>
 	}
 
-	//<editor-fold defaultstate="collapsed" desc="TRAFO">
+	//<editor-fold defaultstate="expanded" desc="TRAFO">
 	private class TranslateAB12ToACGTAction extends AbstractAction { // FIXME make static
 
 		TranslateAB12ToACGTAction() {
@@ -417,7 +417,7 @@ public class MatrixTrafoPanel extends JPanel {
 	}
 	//</editor-fold>
 
-	//<editor-fold defaultstate="collapsed" desc="HELPERS">
+	//<editor-fold defaultstate="expanded" desc="HELPERS">
 	private static class BackAction extends AbstractAction {
 
 		private Matrix parentMatrix;

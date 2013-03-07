@@ -145,7 +145,7 @@ public class Report_QAMarkersSummary extends JPanel {
 
 		btn_Get.setAction(loadReportAction);
 
-		//<editor-fold defaultstate="collapsed" desc="LAYOUT1">
+		//<editor-fold defaultstate="expanded" desc="LAYOUT1">
 		GroupLayout pnl_SummaryLayout = new GroupLayout(pnl_Summary);
 		pnl_Summary.setLayout(pnl_SummaryLayout);
 		pnl_SummaryLayout.setHorizontalGroup(
@@ -175,7 +175,7 @@ public class Report_QAMarkersSummary extends JPanel {
 				new String[]{"", "", "", ""}));
 		scrl_ReportTable.setViewportView(tbl_ReportTable);
 
-		//<editor-fold defaultstate="collapsed" desc="FOOTER">
+		//<editor-fold defaultstate="expanded" desc="FOOTER">
 		btn_Save.setAction(new Report_Analysis.SaveAsAction(_studyId, _qaFileName, tbl_ReportTable, txt_NRows));
 
 		btn_Back.setAction(new BackAction(opId));
@@ -205,7 +205,7 @@ public class Report_QAMarkersSummary extends JPanel {
 				.addComponent(btn_Help)));
 		//</editor-fold>
 
-		//<editor-fold defaultstate="collapsed" desc="LAYOUT">
+		//<editor-fold defaultstate="expanded" desc="LAYOUT">
 		GroupLayout layout = new GroupLayout(this);
 		this.setLayout(layout);
 		layout.setHorizontalGroup(
@@ -320,7 +320,7 @@ public class Report_QAMarkersSummary extends JPanel {
 					TableModel model = new DefaultTableModel(tableMatrix, columns);
 					reportTable.setModel(model);
 
-					//<editor-fold defaultstate="collapsed" desc="Linux Sorter">
+					//<editor-fold defaultstate="expanded" desc="Linux Sorter">
 	//				if (!cOSNAME.contains("Windows")){
 	//					RowSorter<TableModel> sorter = new TableRowSorter<TableModel>(model);
 					TableRowSorter sorter = new TableRowSorter(model) {

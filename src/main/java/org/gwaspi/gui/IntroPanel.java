@@ -81,7 +81,7 @@ public class IntroPanel extends JPanel {
 		setBorder(BorderFactory.createTitledBorder(""));
 
 
-		//<editor-fold defaultstate="collapsed" desc="LOGO LAYOUT">
+		//<editor-fold defaultstate="expanded" desc="LOGO LAYOUT">
 		scrl_Logo.setMaximumSize(new Dimension(190, 151));
 		scrl_Logo.setPreferredSize(new Dimension(190, 151));
 
@@ -149,7 +149,7 @@ public class IntroPanel extends JPanel {
 		});
 		scroll_Help.setViewportView(list_Help);
 
-		//<editor-fold defaultstate="collapsed" desc="CONTACT + IBE">
+		//<editor-fold defaultstate="expanded" desc="CONTACT + IBE">
 		txtP_Contact.setText(Text.App.cite + "\n" + Text.App.contact + "\n" + Text.App.author + "\n" + Text.App.license);
 		scroll_Contact.setViewportView(txtP_Contact);
 
@@ -173,7 +173,7 @@ public class IntroPanel extends JPanel {
 
 		btn_start.setAction(new StartAction());
 
-		// <editor-fold defaultstate="collapsed" desc="LAYOUT">
+		// <editor-fold defaultstate="expanded" desc="LAYOUT">
 		GroupLayout layout = new GroupLayout(this);
 		this.setLayout(layout);
 		layout.setHorizontalGroup(

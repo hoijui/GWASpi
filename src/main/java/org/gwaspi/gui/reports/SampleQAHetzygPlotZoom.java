@@ -172,7 +172,7 @@ public final class SampleQAHetzygPlotZoom extends JPanel {
 		scrl_Chart.getViewport().add(zoomPanel);
 		pnl_Chart.add(scrl_Chart, BorderLayout.CENTER);
 
-		// <editor-fold defaultstate="collapsed" desc="LAYOUT1">
+		// <editor-fold defaultstate="expanded" desc="LAYOUT1">
 		GroupLayout pnl_ChartLayout = new GroupLayout(pnl_Chart);
 		pnl_Chart.setLayout(pnl_ChartLayout);
 		pnl_ChartLayout.setHorizontalGroup(
@@ -212,7 +212,7 @@ public final class SampleQAHetzygPlotZoom extends JPanel {
 
 		btn_Reset.setAction(new ResetAction());
 
-		// <editor-fold defaultstate="collapsed" desc="FOOTER">
+		// <editor-fold defaultstate="expanded" desc="FOOTER">
 		GroupLayout pnl_FooterGroup0Layout = new GroupLayout(pnl_FooterGroup0);
 		pnl_FooterGroup0.setLayout(pnl_FooterGroup0Layout);
 		pnl_FooterGroup0Layout.setHorizontalGroup(
@@ -289,7 +289,7 @@ public final class SampleQAHetzygPlotZoom extends JPanel {
 				.addContainerGap()));
 		// </editor-fold>
 
-		// <editor-fold defaultstate="collapsed" desc="LAYOUT">
+		// <editor-fold defaultstate="expanded" desc="LAYOUT">
 		GroupLayout layout = new GroupLayout(this);
 		this.setLayout(layout);
 		layout.setHorizontalGroup(
@@ -313,7 +313,7 @@ public final class SampleQAHetzygPlotZoom extends JPanel {
 //		setCursor(CursorUtils.defaultCursor);
 	}
 
-	// <editor-fold defaultstate="collapsed" desc="CHART GENERATOR">
+	// <editor-fold defaultstate="expanded" desc="CHART GENERATOR">
 	XYDataset getSampleHetzygDataset(int _opId) throws IOException {
 
 		XYDataset xyd = GenericReportGenerator.getSampleHetzygDataset(this, opId);
@@ -529,7 +529,7 @@ public final class SampleQAHetzygPlotZoom extends JPanel {
 	}
 	// </editor-fold>
 
-	//<editor-fold defaultstate="collapsed" desc="HELPERS">
+	//<editor-fold defaultstate="expanded" desc="HELPERS">
 	/**
 	 * Validates the threshold and redraws
 	 */

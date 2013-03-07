@@ -52,7 +52,7 @@ public class OP_AllelicAssociationTests_opt implements MatrixOperation {
 	public int processMatrix() throws IOException, InvalidRangeException {
 		int resultAssocId = Integer.MIN_VALUE;
 
-		//<editor-fold defaultstate="collapsed" desc="EXCLUSION MARKERS FROM HW">
+		//<editor-fold defaultstate="expanded" desc="EXCLUSION MARKERS FROM HW">
 		Map<MarkerKey, Object> excludeMarkerSetMap = new LinkedHashMap<MarkerKey, Object>();
 		int totalMarkerNb = 0;
 
@@ -128,7 +128,7 @@ public class OP_AllelicAssociationTests_opt implements MatrixOperation {
 				}
 				//log.info("Done creating netCDF handle: {}", org.gwaspi.global.Utils.getMediumDateTimeAsString());
 
-				//<editor-fold defaultstate="collapsed" desc="METADATA WRITER">
+				//<editor-fold defaultstate="expanded" desc="METADATA WRITER">
 				// MARKERSET MARKERID
 				ArrayChar.D2 markersD2 = Utils.writeMapKeysToD2ArrayChar(wrMarkerSetMap, cNetCDF.Strides.STRIDE_MARKER_NAME);
 				int[] markersOrig = new int[]{0, 0};
@@ -169,7 +169,7 @@ public class OP_AllelicAssociationTests_opt implements MatrixOperation {
 				org.gwaspi.netCDF.operations.Utils.saveIntMapD2ToWrMatrix(wrOPNcFile, rdChrInfoSetMap, columns, cNetCDF.Variables.VAR_CHR_INFO);
 				//</editor-fold>
 
-				//<editor-fold defaultstate="collapsed" desc="GET CENSUS & PERFORM ALLELICTEST TESTS">
+				//<editor-fold defaultstate="expanded" desc="GET CENSUS & PERFORM ALLELICTEST TESTS">
 				// CLEAN Maps FROM MARKERS THAT FAILED THE HARDY WEINBERG THRESHOLD
 				Map<MarkerKey, Object> wrCaseMarkerIdSetMap = new LinkedHashMap<MarkerKey, Object>();
 				rdCaseMarkerIdSetMap = rdCaseMarkerSet.fillOpSetMapWithVariable(rdOPNcFile, cNetCDF.Census.VAR_OP_MARKERS_CENSUSCASE);
@@ -281,7 +281,7 @@ public class OP_AllelicAssociationTests_opt implements MatrixOperation {
 			}
 		}
 
-		//<editor-fold defaultstate="collapsed" desc="ALLELICTEST DATA WRITER">
+		//<editor-fold defaultstate="expanded" desc="ALLELICTEST DATA WRITER">
 		int[] boxes = new int[]{0, 1, 2};
 		Utils.saveDoubleMapD2ToWrMatrix(wrNcFile, wrCaseMarkerIdSetMap, boxes, cNetCDF.Association.VAR_OP_MARKERS_ASAllelicAssociationTPOR);
 		//</editor-fold>

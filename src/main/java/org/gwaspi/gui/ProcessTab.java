@@ -81,7 +81,7 @@ public class ProcessTab extends JPanel {
 		pnl_Logo.setMaximumSize(new Dimension(100, 100));
 		pnl_Logo.setPreferredSize(new Dimension(100, 100));
 
-		//<editor-fold defaultstate="collapsed" desc="PROCESS OVERVIEW LAYOUT">
+		//<editor-fold defaultstate="expanded" desc="PROCESS OVERVIEW LAYOUT">
 		GroupLayout pnl_LogoLayout = new GroupLayout(pnl_Logo);
 		pnl_Logo.setLayout(pnl_LogoLayout);
 		pnl_LogoLayout.setHorizontalGroup(
@@ -121,7 +121,7 @@ public class ProcessTab extends JPanel {
 		scrl_ProcessLog.setViewportView(txtA_ProcessLog);
 		btn_Save.setAction(new SaveAsAction(txtA_ProcessLog));
 
-		//<editor-fold defaultstate="collapsed" desc="PROCESS LOG LAYOUT">
+		//<editor-fold defaultstate="expanded" desc="PROCESS LOG LAYOUT">
 		GroupLayout pnl_ProcessLogLayout = new GroupLayout(pnl_ProcessLog);
 		pnl_ProcessLog.setLayout(pnl_ProcessLogLayout);
 		pnl_ProcessLogLayout.setHorizontalGroup(
@@ -142,7 +142,7 @@ public class ProcessTab extends JPanel {
 				.addContainerGap()));
 		//</editor-fold>
 
-		//<editor-fold defaultstate="collapsed" desc="LAYOUT">
+		//<editor-fold defaultstate="expanded" desc="LAYOUT">
 		GroupLayout layout = new GroupLayout(this);
 		this.setLayout(layout);
 		layout.setHorizontalGroup(

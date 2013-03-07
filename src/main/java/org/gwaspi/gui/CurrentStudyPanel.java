@@ -136,7 +136,7 @@ public class CurrentStudyPanel extends JPanel {
 		btn_DeleteMatrix.setAction(new DeleteMatrixAction(study, this, tbl_MatrixTable));
 		btn_DeleteMatrix.setBackground(new Color(242, 138, 121));
 
-		//<editor-fold defaultstate="collapsed" desc="LAYOUT STUDY">
+		//<editor-fold defaultstate="expanded" desc="LAYOUT STUDY">
 		GroupLayout pnl_StudyDescLayout = new GroupLayout(pnl_StudyDesc);
 		pnl_StudyDesc.setLayout(pnl_StudyDescLayout);
 		pnl_StudyDescLayout.setHorizontalGroup(
@@ -172,7 +172,7 @@ public class CurrentStudyPanel extends JPanel {
 		pnl_StudyDescLayout.linkSize(SwingConstants.VERTICAL, new Component[]{btn_LoadGenotypes, btn_SaveDesc, btn_UpdateSampleInfo});
 		//</editor-fold>
 
-		//<editor-fold defaultstate="collapsed" desc="LAYOUT MATRICES">
+		//<editor-fold defaultstate="expanded" desc="LAYOUT MATRICES">
 		GroupLayout pnl_MatrixTableLayout = new GroupLayout(pnl_MatrixTable);
 		pnl_MatrixTable.setLayout(pnl_MatrixTableLayout);
 		pnl_MatrixTableLayout.setHorizontalGroup(
@@ -192,7 +192,7 @@ public class CurrentStudyPanel extends JPanel {
 				.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)));
 		//</editor-fold>
 
-		//<editor-fold defaultstate="collapsed" desc="FOOTER">
+		//<editor-fold defaultstate="expanded" desc="FOOTER">
 		btn_Back.setAction(new BackAction());
 		btn_Help.setAction(new BrowserHelpUrlAction(HelpURLs.QryURL.currentStudy));
 		GroupLayout pnl_FooterLayout = new GroupLayout(pnl_Footer);
@@ -214,7 +214,7 @@ public class CurrentStudyPanel extends JPanel {
 				.addComponent(btn_Help))));
 		//</editor-fold>
 
-		// <editor-fold defaultstate="collapsed/expanded" desc="LAYOUT">
+		// <editor-fold defaultstate="expanded" desc="LAYOUT">
 		GroupLayout layout = new GroupLayout(this);
 		this.setLayout(layout);
 		layout.setHorizontalGroup(

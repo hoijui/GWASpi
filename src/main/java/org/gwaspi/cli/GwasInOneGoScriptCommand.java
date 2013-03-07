@@ -24,7 +24,7 @@ class GwasInOneGoScriptCommand extends AbstractScriptCommand {
 	@Override
 	public boolean execute(List<String> args) throws IOException {
 
-		//<editor-fold defaultstate="collapsed" desc="SCRIPT EXAMPLE">
+		//<editor-fold defaultstate="expanded" desc="SCRIPT EXAMPLE">
 		/*
 		#This is a demo file
 		#Usage: java -Xms1500m -Xmx2500m -jar GWASpi.jar script scriptFile [log org.gwaspi.cli.log]

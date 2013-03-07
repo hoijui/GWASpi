@@ -82,7 +82,7 @@ public class cNetCDF {
 		}
 	}
 
-	//<editor-fold defaultstate="collapsed" desc="OPERATION & ANALYSIS VARS">
+	//<editor-fold defaultstate="expanded" desc="OPERATION & ANALYSIS VARS">
 	public static class Census {
 
 		public static final String VAR_OP_MARKERS_CENSUSALL = "OP_markers_censusall";

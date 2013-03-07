@@ -46,7 +46,7 @@ public class GWASpiFormatter implements Formatter {
 		NetcdfFile rdNcFile = NetcdfFile.open(rdMatrixMetadata.getPathToMatrix());
 		try {
 
-			//<editor-fold defaultstate="collapsed" desc="SAMPLE INFO FILE">
+			//<editor-fold defaultstate="expanded" desc="SAMPLE INFO FILE">
 			FileWriter sampleInfoFW = new FileWriter(exportDir.getPath() + "/SampleInfo_" + rdMatrixMetadata.getMatrixFriendlyName() + ".txt");
 			BufferedWriter sampleInfoBW = new BufferedWriter(sampleInfoFW);
 
@@ -113,7 +113,7 @@ public class GWASpiFormatter implements Formatter {
 			sampleInfoFW.close();
 			//</editor-fold>
 
-			//<editor-fold defaultstate="collapsed" desc="GWASpi netCDF MATRIX">
+			//<editor-fold defaultstate="expanded" desc="GWASpi netCDF MATRIX">
 			try {
 				File origFile = new File(rdMatrixMetadata.getPathToMatrix());
 				File newFile = new File(exportDir.getPath() + "/" + rdMatrixMetadata.getMatrixFriendlyName() + ".nc");

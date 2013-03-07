@@ -164,7 +164,7 @@ public class MatrixMergeSamples_opt {
 			}
 			//log.trace("Done creating netCDF handle in MatrixSampleJoin_opt: " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
 
-			//<editor-fold defaultstate="collapsed" desc="METADATA WRITER">
+			//<editor-fold defaultstate="expanded" desc="METADATA WRITER">
 			// SAMPLESET
 			ArrayChar.D2 samplesD2 = Utils.writeMapKeysToD2ArrayChar(wrComboSampleSetMap, cNetCDF.Strides.STRIDE_SAMPLE_NAME);
 
@@ -221,7 +221,7 @@ public class MatrixMergeSamples_opt {
 			Utils.saveCharMapValueToWrMatrix(wrNcFile, rdwrMarkerSet1.getMarkerIdSetMap(), cNetCDF.Variables.VAR_GT_STRAND, 3);
 			//</editor-fold>
 
-			//<editor-fold defaultstate="collapsed" desc="GENOTYPES WRITER">
+			//<editor-fold defaultstate="expanded" desc="GENOTYPES WRITER">
 			rdMarkerSet2.initFullMarkerIdSetMap();
 
 			// Iterate through wrSampleSetMap, use item position to read correct sample GTs into rdMarkerIdSetMap.

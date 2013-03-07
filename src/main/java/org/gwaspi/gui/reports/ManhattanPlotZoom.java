@@ -149,7 +149,7 @@ public final class ManhattanPlotZoom extends JPanel {
 		this.startPhysPos = startPhysPos;
 		this.requestedPosWindow = requestedPosWindow;
 
-		//<editor-fold defaultstate="collapsed" desc="PLOT DEFAULTS">
+		//<editor-fold defaultstate="expanded" desc="PLOT DEFAULTS">
 		try {
 			threshold = Double.parseDouble(Config.getConfigValue("CHART_MANHATTAN_PLOT_THRESHOLD", "5E-7"));
 
@@ -333,7 +333,7 @@ public final class ManhattanPlotZoom extends JPanel {
 		scrl_Chart.getViewport().add(zoomPanel);
 		pnl_Chart.add(scrl_Chart, BorderLayout.CENTER);
 
-		// <editor-fold defaultstate="collapsed" desc="LAYOUT1">
+		// <editor-fold defaultstate="expanded" desc="LAYOUT1">
 		GroupLayout pnl_ChartLayout = new GroupLayout(pnl_Chart);
 		pnl_Chart.setLayout(pnl_ChartLayout);
 		pnl_ChartLayout.setHorizontalGroup(
@@ -369,7 +369,7 @@ public final class ManhattanPlotZoom extends JPanel {
 			currPos = Math.round((double)defaultMarkerNb / 2);
 		}
 
-		//<editor-fold defaultstate="collapsed" desc="TRACKER">
+		//<editor-fold defaultstate="expanded" desc="TRACKER">
 //		pnl_Tracker.setBorder(BorderFactory.createTitledBorder("Marker Nº on "+lblChr));
 //
 //
@@ -399,7 +399,7 @@ public final class ManhattanPlotZoom extends JPanel {
 //				);
 		//</editor-fold>
 
-		//<editor-fold defaultstate="collapsed" desc="EXTERNAL RESOURCE DBs">
+		//<editor-fold defaultstate="expanded" desc="EXTERNAL RESOURCE DBs">
 		pnl_SearchDB = new JPanel();
 		pnl_SearchDB.setBorder(BorderFactory.createTitledBorder(Text.Reports.externalResourceDB));
 		cmb_SearchDB = new JComboBox();
@@ -428,7 +428,7 @@ public final class ManhattanPlotZoom extends JPanel {
 
 		btn_Back2.setAction(new BackToManhattanPlotAction());
 
-		// <editor-fold defaultstate="collapsed" desc="FOOTER">
+		// <editor-fold defaultstate="expanded" desc="FOOTER">
 		GroupLayout pnl_FooterGroup1Layout = new GroupLayout(pnl_FooterGroup1);
 		pnl_FooterGroup1.setLayout(pnl_FooterGroup1Layout);
 		pnl_FooterGroup1Layout.setHorizontalGroup(
@@ -479,7 +479,7 @@ public final class ManhattanPlotZoom extends JPanel {
 				.addGap(55, 55, 55)))));
 		// </editor-fold>
 
-		// <editor-fold defaultstate="collapsed" desc="LAYOUT">
+		// <editor-fold defaultstate="expanded" desc="LAYOUT">
 //		GroupLayout layout = new GroupLayout(this);
 //		this.setLayout(layout);
 //		layout.setHorizontalGroup(
@@ -528,7 +528,7 @@ public final class ManhattanPlotZoom extends JPanel {
 		setCursor(CursorUtils.defaultCursor);
 	}
 
-	// <editor-fold defaultstate="collapsed" desc="CHART GENERATOR">
+	// <editor-fold defaultstate="expanded" desc="CHART GENERATOR">
 	private XYDataset getXYDataSetByPhysPos(
 			ManhattanPlotZoom manhattanPlotZoom,
 			int _opId,
@@ -856,7 +856,7 @@ public final class ManhattanPlotZoom extends JPanel {
 	}
 	// </editor-fold>
 
-	//<editor-fold defaultstate="collapsed" desc="HELPERS">
+	//<editor-fold defaultstate="expanded" desc="HELPERS">
 	private void actionSlide() {
 //		if (slid_Tracker.getValue()>=(rdOPMetadata.getOpSetSize()-defaultMarkerNb)){
 //			indexPosition=sliderSize-defaultMarkerNb;

@@ -117,7 +117,7 @@ public class MatrixDataExtractor_opt {
 		this.rdSampleSet = new SampleSet(this.rdMatrixMetadata.getStudyId(), this.rdMatrixId);
 		this.rdSampleSetMap = this.rdSampleSet.getSampleIdSetMap();
 
-		//<editor-fold defaultstate="collapsed" desc="MARKERSET PICKING">
+		//<editor-fold defaultstate="expanded" desc="MARKERSET PICKING">
 		this.markerPickerCriteria = new StringBuilder();
 		for (Object value : markerCriteria) {
 			this.markerPickerCriteria.append(value.toString());
@@ -175,7 +175,7 @@ public class MatrixDataExtractor_opt {
 		this.rdChrInfoSetMap = org.gwaspi.netCDF.matrices.Utils.aggregateChromosomeInfo(this.wrMarkerIdSetMap, 0, 1);
 		//</editor-fold>
 
-		//<editor-fold defaultstate="collapsed" desc="SAMPLESET PICKING">
+		//<editor-fold defaultstate="expanded" desc="SAMPLESET PICKING">
 		this.samplePickerCriteria = new StringBuilder();
 		for (Object value : sampleCriteria) {
 			this.samplePickerCriteria.append(value.toString());
@@ -324,7 +324,7 @@ public class MatrixDataExtractor_opt {
 				}
 				//log.trace("Done creating netCDF handle in MatrixataExtractor: " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
 
-				//<editor-fold defaultstate="collapsed" desc="METADATA WRITER">
+				//<editor-fold defaultstate="expanded" desc="METADATA WRITER">
 				// WRITING METADATA TO MATRIX
 
 				// SAMPLESET
@@ -385,7 +385,7 @@ public class MatrixDataExtractor_opt {
 				Utils.saveCharMapValueToWrMatrix(wrNcFile, wrMarkerIdSetMap, cNetCDF.Variables.VAR_GT_STRAND, 3);
 				//</editor-fold>
 
-				//<editor-fold defaultstate="collapsed" desc="GENOTYPES WRITER">
+				//<editor-fold defaultstate="expanded" desc="GENOTYPES WRITER">
 				// Iterate through wrSampleSetMap, use item position to read correct sample GTs into rdMarkerIdSetMap.
 				log.info(Text.All.processing);
 				int sampleWrIndex = 0;

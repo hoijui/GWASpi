@@ -47,7 +47,7 @@ public class SpreadsheetFormatter implements Formatter {
 		rdMarkerSet.initFullMarkerIdSetMap();
 
 		try {
-			//<editor-fold defaultstate="collapsed" desc="SPREADSHEET FILE">
+			//<editor-fold defaultstate="expanded" desc="SPREADSHEET FILE">
 			FileWriter pedFW = new FileWriter(exportDir.getPath() + "/" + rdMatrixMetadata.getMatrixFriendlyName() + ".csv");
 			BufferedWriter pedBW = new BufferedWriter(pedFW);
 

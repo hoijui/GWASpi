@@ -171,7 +171,7 @@ public class MoreGWASinOneGoInfo extends JFrame {
 		GridBagConstraints c = new GridBagConstraints();
 		int rowNb = 0;
 
-		//<editor-fold defaultstate="collapsed" desc="FORMAT DEPENDENT">
+		//<editor-fold defaultstate="expanded" desc="FORMAT DEPENDENT">
 		lbl_Chromosome.setText("  " + Text.Dialog.chromosome);
 		lbl_Strand.setText("  " + Text.Dialog.strand);
 		lbl_GTCode.setText("  " + Text.Dialog.genotypeEncoding);
@@ -215,7 +215,7 @@ public class MoreGWASinOneGoInfo extends JFrame {
 		}
 		//</editor-fold>
 
-		//<editor-fold defaultstate="collapsed" desc="FORMAT INDEPENDENT">
+		//<editor-fold defaultstate="expanded" desc="FORMAT INDEPENDENT">
 		chkB_MMM.setSelected(true);
 		chkB_MMS.setSelected(true);
 		chkB_MHZ.setSelected(false);

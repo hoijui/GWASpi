@@ -117,7 +117,7 @@ public class MatrixTranslator_opt {
 				}
 				//log.trace("Done creating netCDF handle in MatrixataTransform: " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
 
-				//<editor-fold defaultstate="collapsed" desc="METADATA WRITER">
+				//<editor-fold defaultstate="expanded" desc="METADATA WRITER">
 				// WRITING METADATA TO MATRIX
 
 				// SAMPLESET
@@ -172,7 +172,7 @@ public class MatrixTranslator_opt {
 				Utils.saveCharMapValueToWrMatrix(wrNcFile, rdMarkerSet.getMarkerIdSetMap(), cNetCDF.Variables.VAR_GT_STRAND, cNetCDF.Strides.STRIDE_STRAND);
 				//</editor-fold>
 
-				//<editor-fold defaultstate="collapsed" desc="GENOTYPES WRITER">
+				//<editor-fold defaultstate="expanded" desc="GENOTYPES WRITER">
 				// Get correct bases dictionary for translation
 				Map<MarkerKey, Object> dictionnaryMap = rdMarkerSet.getDictionaryBases();
 
@@ -274,7 +274,7 @@ public class MatrixTranslator_opt {
 				}
 				//log.trace("Done creating netCDF handle in MatrixataTransform: " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
 
-				//<editor-fold defaultstate="collapsed" desc="METADATA WRITER">
+				//<editor-fold defaultstate="expanded" desc="METADATA WRITER">
 				// WRITING METADATA TO MATRIX
 
 				// SAMPLESET
@@ -323,7 +323,7 @@ public class MatrixTranslator_opt {
 				Utils.saveCharMapValueToWrMatrix(wrNcFile, rdMarkerSet.getMarkerIdSetMap(), cNetCDF.Variables.VAR_GT_STRAND, cNetCDF.Strides.STRIDE_STRAND);
 				//</editor-fold>
 
-				//<editor-fold defaultstate="collapsed" desc="GENOTYPES WRITER">
+				//<editor-fold defaultstate="expanded" desc="GENOTYPES WRITER">
 				// Get correct strand of each marker for newStrand translation
 				Map<MarkerKey, Object> markerStrandsMap = new LinkedHashMap<MarkerKey, Object>();
 				markerStrandsMap.putAll(rdChrInfoSetMap); // XXX was rdSampleSetMap instead of rdChrInfoSetMap before; but that one had the wrong type -> bug; but is this the right set (with MarkerKey's as keys)?
@@ -474,7 +474,7 @@ public class MatrixTranslator_opt {
 		return codedMap;
 	}
 
-	//<editor-fold defaultstate="collapsed" desc="ACCESSORS">
+	//<editor-fold defaultstate="expanded" desc="ACCESSORS">
 	public int getRdMatrixId() {
 		return rdMatrixId;
 	}

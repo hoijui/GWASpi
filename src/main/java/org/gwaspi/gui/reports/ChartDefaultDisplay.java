@@ -55,7 +55,7 @@ public class ChartDefaultDisplay extends JPanel {
 		btn_Save = new JButton();
 		btn_Back = new JButton();
 
-		//<editor-fold defaultstate="collapsed/expanded" desc="">
+		//<editor-fold defaultstate="expanded" desc="">
 		btn_Save.setAction(new SaveAsAction(studyId, chartPath));
 
 		btn_Back.setAction(new BackAction(opId));
@@ -77,7 +77,7 @@ public class ChartDefaultDisplay extends JPanel {
 				.addComponent(btn_Back)));
 		//</editor-fold>
 
-		//<editor-fold defaultstate="collapsed" desc="LAYOUT">
+		//<editor-fold defaultstate="expanded" desc="LAYOUT">
 		GroupLayout pnl_ChartLayout = new GroupLayout(pnl_Chart);
 		pnl_Chart.setLayout(pnl_ChartLayout);
 		pnl_ChartLayout.setHorizontalGroup(

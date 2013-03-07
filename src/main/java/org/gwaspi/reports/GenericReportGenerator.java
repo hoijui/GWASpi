@@ -68,10 +68,10 @@ public class GenericReportGenerator {
 	private GenericReportGenerator() {
 	}
 
-	//<editor-fold defaultstate="collapsed" desc="ASSOCIATION CHARTS">
+	//<editor-fold defaultstate="expanded" desc="ASSOCIATION CHARTS">
 	public static CombinedRangeXYPlot buildManhattanPlot(int opId, String netCDFVar) throws IOException {
 
-		//<editor-fold defaultstate="collapsed" desc="PLOT DEFAULTS">
+		//<editor-fold defaultstate="expanded" desc="PLOT DEFAULTS">
 		double threshold = Double.parseDouble(Config.getConfigValue("CHART_MANHATTAN_PLOT_THRESHOLD", "5E-7"));
 		Color background = Config.getConfigColor("CHART_MANHATTAN_PLOT_BCKG", COLOR_MANHATTEN_BACKGROUND);
 		Color backgroundAlternative = Config.getConfigColor("CHART_MANHATTAN_PLOT_BCKG_ALT", COLOR_MANHATTEN_BACKGROUND_ALT);
@@ -81,7 +81,7 @@ public class GenericReportGenerator {
 		Map<MarkerKey, Object> dataSetMap = new LinkedHashMap<MarkerKey, Object>();
 		OperationMetadata rdOPMetadata = OperationsList.getOperationMetadata(opId);
 
-		//<editor-fold defaultstate="collapsed" desc="GET POSITION DATA">
+		//<editor-fold defaultstate="expanded" desc="GET POSITION DATA">
 		MarkerSet_opt rdInfoMarkerSet = new MarkerSet_opt(rdOPMetadata.getStudyId(), rdOPMetadata.getParentMatrixId());
 		rdInfoMarkerSet.initFullMarkerIdSetMap();
 
@@ -114,7 +114,7 @@ public class GenericReportGenerator {
 		}
 		//</editor-fold>
 
-		//<editor-fold defaultstate="collapsed" desc="GET Pval">
+		//<editor-fold defaultstate="expanded" desc="GET Pval">
 		NetcdfFile assocNcFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());
 		MarkerOperationSet rdAssocMarkerSet = new MarkerOperationSet(rdOPMetadata.getStudyId(), opId);
 		Map<MarkerKey, Object> rdAssocMarkerSetMap = rdAssocMarkerSet.getOpSetMap();
@@ -269,7 +269,7 @@ public class GenericReportGenerator {
 
 	public static XYPlot buildQQPlot(int opId, String netCDFVar, int df) throws IOException {
 
-		//<editor-fold defaultstate="collapsed" desc="PLOT DEFAULTS">
+		//<editor-fold defaultstate="expanded" desc="PLOT DEFAULTS">
 		Color background = Config.getConfigColor("CHART_QQ_PLOT_BCKG", COLOR_QQ_BACKGROUND);
 		Color actual = Config.getConfigColor("CHART_QQ_PLOT_DOT", COLOR_QQ_ACTUAL);
 		Color sigma = Config.getConfigColor("CHART_QQ_PLOT_2SIGMA", COLOR_QQ_SIGMA);
@@ -278,7 +278,7 @@ public class GenericReportGenerator {
 
 		OperationMetadata rdOPMetadata = OperationsList.getOperationMetadata(opId);
 
-		//<editor-fold defaultstate="collapsed" desc="GET X^2">
+		//<editor-fold defaultstate="expanded" desc="GET X^2">
 		NetcdfFile assocNcFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());
 		MarkerOperationSet rdAssocMarkerSet = new MarkerOperationSet(rdOPMetadata.getStudyId(), opId);
 
@@ -304,7 +304,7 @@ public class GenericReportGenerator {
 		assocNcFile.close();
 		//</editor-fold>
 
-		//<editor-fold defaultstate="collapsed" desc="GET CONFIDENCE BOUNDARY">
+		//<editor-fold defaultstate="expanded" desc="GET CONFIDENCE BOUNDARY">
 		InputStream boundaryStream = GenericReportGenerator.class.getResourceAsStream("/samples/chisqrboundary-df" + df + ".txt");
 		InputStreamReader isr = new InputStreamReader(boundaryStream);
 		BufferedReader inputBufferReader = new BufferedReader(isr);
@@ -439,7 +439,7 @@ public class GenericReportGenerator {
 				}
 			}
 
-			//<editor-fold defaultstate="collapsed" desc="GET Pval">
+			//<editor-fold defaultstate="expanded" desc="GET Pval">
 			rdAssocMarkerSetMap = rdAssocMarkerSet.fillOpSetMapWithVariable(assocNcFile, netCDFVar);
 			assocNcFile.close();
 			if (rdAssocMarkerSetMap != null) {
@@ -459,7 +459,7 @@ public class GenericReportGenerator {
 			}
 			//</editor-fold>
 
-			//<editor-fold defaultstate="collapsed" desc="BUILD XYDataset">
+			//<editor-fold defaultstate="expanded" desc="BUILD XYDataset">
 			XYSeries dataSeries = new XYSeries("");
 
 			Map<String, MarkerKey> labeler = new LinkedHashMap<String, MarkerKey>();
@@ -515,7 +515,7 @@ public class GenericReportGenerator {
 			MarkerOperationSet rdAssocMarkerSet = new MarkerOperationSet(rdOPMetadata.getStudyId(), opId);
 			Map<MarkerKey, Object> rdAssocMarkerSetMap = rdAssocMarkerSet.getOpSetMap();
 
-			//<editor-fold defaultstate="collapsed" desc="GET POSITION DATA">
+			//<editor-fold defaultstate="expanded" desc="GET POSITION DATA">
 			MarkerSet_opt rdInfoMarkerSet = new MarkerSet_opt(rdOPMetadata.getStudyId(), rdOPMetadata.getParentMatrixId());
 			rdInfoMarkerSet.initFullMarkerIdSetMap();
 
@@ -608,7 +608,7 @@ public class GenericReportGenerator {
 			}
 			//</editor-fold>
 
-			//<editor-fold defaultstate="collapsed" desc="GET Pval">
+			//<editor-fold defaultstate="expanded" desc="GET Pval">
 			rdAssocMarkerSetMap = rdAssocMarkerSet.fillOpSetMapWithVariable(assocNcFile, netCDFVar);
 			for (Map.Entry<MarkerKey, Object> entry : dataSetMap.entrySet()) {
 				MarkerKey key = entry.getKey();
@@ -627,7 +627,7 @@ public class GenericReportGenerator {
 			}
 			//</editor-fold>
 
-			//<editor-fold defaultstate="collapsed" desc="BUILD XYDataset">
+			//<editor-fold defaultstate="expanded" desc="BUILD XYDataset">
 			XYSeries dataSeries = new XYSeries("");
 
 			Map<String, MarkerKey> labeler = new LinkedHashMap<String, MarkerKey>();
@@ -662,7 +662,7 @@ public class GenericReportGenerator {
 	}
 	//</editor-fold>
 
-	//<editor-fold defaultstate="collapsed/expanded" desc="SAMPLE-QA PLOTS">
+	//<editor-fold defaultstate="expanded" desc="SAMPLE-QA PLOTS">
 	public static XYDataset getSampleHetzygDataset(SampleQAHetzygPlotZoom sampleQAHetzygPlotZoom, int opId) throws IOException {
 		XYDataset resultXYDataset;
 		OperationMetadata rdOPMetadata = OperationsList.getOperationMetadata(opId);
@@ -673,7 +673,7 @@ public class GenericReportGenerator {
 		List<Double> hetzygVals = rdSampleQAOPSet.getListWithVariable(sampleQANcFile, cNetCDF.Census.VAR_OP_SAMPLES_HETZYRAT);
 		List<Double> missingratVals = rdSampleQAOPSet.getListWithVariable(sampleQANcFile, cNetCDF.Census.VAR_OP_SAMPLES_MISSINGRAT);
 
-		//<editor-fold defaultstate="collapsed" desc="BUILD XYDataset">
+		//<editor-fold defaultstate="expanded" desc="BUILD XYDataset">
 		XYSeries dataSeries = new XYSeries("");
 
 		int count = 0;
@@ -704,7 +704,7 @@ public class GenericReportGenerator {
 	}
 	//</editor-fold>
 
-	//<editor-fold defaultstate="collapsed" desc="HELPERS">
+	//<editor-fold defaultstate="expanded" desc="HELPERS">
 	public static Map<MarkerKey, Object> getAnalysisVarData(int opId, String netCDFVar) throws IOException {
 
 		OperationMetadata rdOPMetadata = OperationsList.getOperationMetadata(opId);
@@ -723,7 +723,7 @@ public class GenericReportGenerator {
 		Map<MarkerKey, Object> dataSetMap = new LinkedHashMap<MarkerKey, Object>();
 		OperationMetadata rdOPMetadata = OperationsList.getOperationMetadata(opId);
 
-		//<editor-fold defaultstate="collapsed" desc="GET POSITION DATA">
+		//<editor-fold defaultstate="expanded" desc="GET POSITION DATA">
 		MarkerSet_opt rdInfoMarkerSet = new MarkerSet_opt(rdOPMetadata.getStudyId(), rdOPMetadata.getParentMatrixId());
 		rdInfoMarkerSet.initFullMarkerIdSetMap();
 		rdInfoMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);

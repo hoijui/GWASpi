@@ -116,7 +116,7 @@ public class PreferencesPanel extends JPanel {
 
 		btn_ChangeDataDir.setAction(new ChangeDataDirAction(tbl_PreferencesTable, resetPreferencesAction));
 
-		//<editor-fold defaultstate="collapsed" desc="LAYOUT FOOTER">
+		//<editor-fold defaultstate="expanded" desc="LAYOUT FOOTER">
 		GroupLayout pnl_FooterLayout = new GroupLayout(pnl_Footer);
 		pnl_Footer.setLayout(pnl_FooterLayout);
 		pnl_FooterLayout.setHorizontalGroup(
@@ -188,7 +188,7 @@ public class PreferencesPanel extends JPanel {
 			boolean proceed = true;
 			preferencesTable.editCellAt(0, 0); //commit edited changes by chnaging the focus of table
 
-			//<editor-fold defaultstate="collapsed" desc="VALIDATION">
+			//<editor-fold defaultstate="expanded" desc="VALIDATION">
 			for (int i = 0; i < preferencesTable.getRowCount(); i++) {
 				if (preferencesTable.getValueAt(i, 0).toString().toLowerCase().contains("dir")) {
 					File path = new File(preferencesTable.getValueAt(i, 1).toString());

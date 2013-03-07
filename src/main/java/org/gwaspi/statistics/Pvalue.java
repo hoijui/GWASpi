@@ -25,7 +25,7 @@ public class Pvalue {
 		}
 	}
 
-	//<editor-fold defaultstate="collapsed" desc="HELPER METHODS">
+	//<editor-fold defaultstate="expanded" desc="HELPER METHODS">
 	private static double calculatePvalueFromChiSqrPep(double chiSqr, int df) {
 		double q;
 		double p;

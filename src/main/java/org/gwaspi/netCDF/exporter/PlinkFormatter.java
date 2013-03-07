@@ -48,7 +48,7 @@ public class PlinkFormatter implements Formatter {
 		rdMarkerSet.initFullMarkerIdSetMap();
 
 		try {
-			//<editor-fold defaultstate="collapsed" desc="PED FILE">
+			//<editor-fold defaultstate="expanded" desc="PED FILE">
 			FileWriter pedFW = new FileWriter(exportDir.getPath() + "/" + rdMatrixMetadata.getMatrixFriendlyName() + ".ped");
 			BufferedWriter pedBW = new BufferedWriter(pedFW);
 
@@ -112,7 +112,7 @@ public class PlinkFormatter implements Formatter {
 			pedFW.close();
 			//</editor-fold>
 
-			//<editor-fold defaultstate="collapsed" desc="MAP FILE">
+			//<editor-fold defaultstate="expanded" desc="MAP FILE">
 			FileWriter mapFW = new FileWriter(exportDir.getPath() + "/" + rdMatrixMetadata.getMatrixFriendlyName() + ".map");
 			BufferedWriter mapBW = new BufferedWriter(mapFW);
 

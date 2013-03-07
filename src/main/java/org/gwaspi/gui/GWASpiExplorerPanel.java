@@ -52,7 +52,7 @@ public class GWASpiExplorerPanel extends JPanel {
 
 		initContentPanel();
 
-		//<editor-fold defaultstate="collapsed/expanded" desc="LAYOUT">
+		//<editor-fold defaultstate="expanded" desc="LAYOUT">
 		GroupLayout layout = new GroupLayout(this);
 		this.setLayout(layout);
 		layout.setHorizontalGroup(

@@ -44,7 +44,7 @@ public class Dialogs {
 	private Dialogs() {
 	}
 
-	//<editor-fold defaultstate="collapsed" desc="DIALOG BOXES">
+	//<editor-fold defaultstate="expanded" desc="DIALOG BOXES">
 	public static Operation showOperationCombo(int matrixId, OPType filterOpType) throws IOException {
 		Operation selectedOP = null;
 		List<Operation> operationsList = OperationsList.getOperationsList(matrixId);

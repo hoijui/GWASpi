@@ -156,7 +156,7 @@ public class LoadDataPanel extends JPanel {
 		});
 		scrl_NewMatrixDescription.setViewportView(txtA_NewMatrixDescription);
 
-		//<editor-fold defaultstate="collapsed" desc="LAYOUT NAME & DESC">
+		//<editor-fold defaultstate="expanded" desc="LAYOUT NAME & DESC">
 		GroupLayout pnl_NameAndDescLayout = new GroupLayout(pnl_NameAndDesc);
 		pnl_NameAndDesc.setLayout(pnl_NameAndDescLayout);
 		pnl_NameAndDescLayout.setHorizontalGroup(
@@ -243,7 +243,7 @@ public class LoadDataPanel extends JPanel {
 
 		btn_FileSampleInfo.setAction(browseSampleInfoAction);
 
-		//<editor-fold defaultstate="collapsed" desc="LAYOUT InputLayout">
+		//<editor-fold defaultstate="expanded" desc="LAYOUT InputLayout">
 		GroupLayout pnl_InputLayout = new GroupLayout(pnl_Input);
 		pnl_Input.setLayout(pnl_InputLayout);
 		pnl_InputLayout.setHorizontalGroup(
@@ -303,7 +303,7 @@ public class LoadDataPanel extends JPanel {
 
 		btn_Help.setAction(new BrowserHelpUrlAction(HelpURLs.QryURL.loadGts));
 
-		//<editor-fold defaultstate="collapsed" desc="LAYOUT FOOTER">
+		//<editor-fold defaultstate="expanded" desc="LAYOUT FOOTER">
 		GroupLayout pnl_FooterLayout = new GroupLayout(pnl_Footer);
 		pnl_Footer.setLayout(pnl_FooterLayout);
 		pnl_FooterLayout.setHorizontalGroup(
@@ -328,7 +328,7 @@ public class LoadDataPanel extends JPanel {
 				.addComponent(btn_Help))));
 		//</editor-fold>
 
-		//<editor-fold defaultstate="collapsed" desc="LAYOUT GIF">
+		//<editor-fold defaultstate="expanded" desc="LAYOUT GIF">
 //		GroupLayout pnl_GifLeftLayout = new GroupLayout(pnl_GifLeft);
 //		pnl_GifLeft.setLayout(pnl_GifLeftLayout);
 //		pnl_GifLeftLayout.setHorizontalGroup(
@@ -384,7 +384,7 @@ public class LoadDataPanel extends JPanel {
 //				);
 		//</editor-fold>
 
-		//<editor-fold defaultstate="collapsed" desc="LAYOUT">
+		//<editor-fold defaultstate="expanded" desc="LAYOUT">
 		GroupLayout layout = new GroupLayout(this);
 		this.setLayout(layout);
 		layout.setHorizontalGroup(
@@ -414,7 +414,7 @@ public class LoadDataPanel extends JPanel {
 		formatAction.actionPerformed(null);
 	}
 
-	//<editor-fold defaultstate="collapsed" desc="SET FIELD NAMES & DEFAULTS">
+	//<editor-fold defaultstate="expanded" desc="SET FIELD NAMES & DEFAULTS">
 	private class FormatAction extends AbstractAction { // FIXME make static
 
 		FormatAction() {
@@ -627,7 +627,7 @@ public class LoadDataPanel extends JPanel {
 							gwasParams.setProceed(true);
 						}
 
-						//<editor-fold defaultstate="collapsed" desc="DATA LOAD">
+						//<editor-fold defaultstate="expanded" desc="DATA LOAD">
 						if (txtA_NewMatrixDescription.getText().equals(Text.All.optional)) {
 							txtA_NewMatrixDescription.setText("");
 						}
@@ -695,7 +695,7 @@ public class LoadDataPanel extends JPanel {
 		}
 	}
 
-	//<editor-fold defaultstate="collapsed" desc="HELPER METHODS">
+	//<editor-fold defaultstate="expanded" desc="HELPER METHODS">
 	private class Browse1Action extends AbstractAction { // FIXME make static
 
 		Browse1Action() {

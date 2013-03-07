@@ -88,7 +88,7 @@ public class Report_SampleInfoPanel extends JPanel {
 		tbl_ReportTable.setDefaultRenderer(Object.class, new RowRendererDefault());
 		scrl_ReportTable.setViewportView(tbl_ReportTable);
 
-		//<editor-fold defaultstate="collapsed" desc="FOOTER">
+		//<editor-fold defaultstate="expanded" desc="FOOTER">
 
 		btn_Save.setAction(new SaveReportViewAsAction(tbl_ReportTable));
 
@@ -120,7 +120,7 @@ public class Report_SampleInfoPanel extends JPanel {
 
 		//</editor-fold>
 
-		//<editor-fold defaultstate="collapsed" desc="LAYOUT">
+		//<editor-fold defaultstate="expanded" desc="LAYOUT">
 		GroupLayout layout = new GroupLayout(this);
 		this.setLayout(layout);
 		layout.setHorizontalGroup(
@@ -206,7 +206,7 @@ public class Report_SampleInfoPanel extends JPanel {
 		TableModel model = new DefaultTableModel(tableMatrix, columns);
 		tbl_ReportTable.setModel(model);
 
-		//<editor-fold defaultstate="collapsed" desc="Linux Sorter">
+		//<editor-fold defaultstate="expanded" desc="Linux Sorter">
 //		if (!cGlobal.OSNAME.contains("Windows")) {
 //			RowSorter<TableModel> sorter = new TableRowSorter<TableModel>(model);
 		TableRowSorter sorter = new TableRowSorter(model) {

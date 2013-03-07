@@ -120,7 +120,7 @@ public class OP_QASamples_opt implements MatrixOperation {
 			}
 			//log.trace("Done creating netCDF handle: " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
 
-			//<editor-fold defaultstate="collapsed" desc="METADATA WRITER">
+			//<editor-fold defaultstate="expanded" desc="METADATA WRITER">
 			// SAMPLESET
 			ArrayChar.D2 samplesD2 = Utils.writeMapKeysToD2ArrayChar(rdSampleSetMap, cNetCDF.Strides.STRIDE_SAMPLE_NAME);
 
@@ -147,7 +147,7 @@ public class OP_QASamples_opt implements MatrixOperation {
 			log.info("Done writing MarkerSet to matrix");
 			//</editor-fold>
 
-			//<editor-fold defaultstate="collapsed" desc="CENSUS DATA WRITER">
+			//<editor-fold defaultstate="expanded" desc="CENSUS DATA WRITER">
 			// MISSING RATIO
 			Utils.saveDoubleMapD1ToWrMatrix(wrNcFile, wrSampleSetMissingRatioMap, cNetCDF.Census.VAR_OP_SAMPLES_MISSINGRAT);
 

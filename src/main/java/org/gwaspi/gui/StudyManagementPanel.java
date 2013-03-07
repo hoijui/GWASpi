@@ -155,7 +155,7 @@ public class StudyManagementPanel extends JPanel {
 		scrl_StudiesTable.setViewportView(tbl_StudiesTable);
 		btn_DeleteStudy.setAction(new DeleteStudyAction());
 
-		//<editor-fold defaultstate="collapsed" desc="LAYOUT STUDY TABLE">
+		//<editor-fold defaultstate="expanded" desc="LAYOUT STUDY TABLE">
 		GroupLayout pnl_StudiesTableLayout = new GroupLayout(pnl_StudiesTable);
 		pnl_StudiesTable.setLayout(pnl_StudiesTableLayout);
 		pnl_StudiesTableLayout.setHorizontalGroup(
@@ -175,7 +175,7 @@ public class StudyManagementPanel extends JPanel {
 				.addContainerGap()));
 		//</editor-fold>
 
-		// <editor-fold defaultstate="collapsed" desc="LAYOUT DESCRIPTION">
+		// <editor-fold defaultstate="expanded" desc="LAYOUT DESCRIPTION">
 		GroupLayout pnl_StudyDescLayout = new GroupLayout(pnl_StudyDesc);
 		pnl_StudyDesc.setLayout(pnl_StudyDescLayout);
 		pnl_StudyDescLayout.setHorizontalGroup(
@@ -210,7 +210,7 @@ public class StudyManagementPanel extends JPanel {
 				.addComponent(btn_AddStudy)));
 		// </editor-fold>
 
-		//<editor-fold defaultstate="collapsed" desc="FOOTER">
+		//<editor-fold defaultstate="expanded" desc="FOOTER">
 		btn_Back.setAction(new BackAction());
 		btn_Help.setAction(new BrowserHelpUrlAction(HelpURLs.QryURL.createStudy));
 		GroupLayout pnl_FooterLayout = new GroupLayout(pnl_Footer);
@@ -232,7 +232,7 @@ public class StudyManagementPanel extends JPanel {
 				.addComponent(btn_Help))));
 		//</editor-fold>
 
-		//<editor-fold defaultstate="collapsed" desc="LAYOUT">
+		//<editor-fold defaultstate="expanded" desc="LAYOUT">
 		GroupLayout layout = new GroupLayout(this);
 		this.setLayout(layout);
 		layout.setHorizontalGroup(

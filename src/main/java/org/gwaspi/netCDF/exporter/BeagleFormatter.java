@@ -71,9 +71,9 @@ class BeagleFormatter implements Formatter {
 			// A affection (0=NA, 1=unaffected, 2=affected)
 			// M markerId & genotypes
 
-			//<editor-fold defaultstate="collapsed" desc="BEAGLE GENOTYPE FILE">
+			//<editor-fold defaultstate="expanded" desc="BEAGLE GENOTYPE FILE">
 
-			//<editor-fold defaultstate="collapsed" desc="HEADER">
+			//<editor-fold defaultstate="expanded" desc="HEADER">
 			StringBuilder sampleLine = new StringBuilder("I" + sep + "Id");
 			StringBuilder sexLine = new StringBuilder("#" + sep + "sex");
 			StringBuilder categoryLine = new StringBuilder("#" + sep + "category");
@@ -136,7 +136,7 @@ class BeagleFormatter implements Formatter {
 			beagleBW.append("\n");
 			//</editor-fold>
 
-			//<editor-fold defaultstate="collapsed" desc="GENOTYPES">
+			//<editor-fold defaultstate="expanded" desc="GENOTYPES">
 			rdMarkerSet.initFullMarkerIdSetMap();
 
 			//Iterate through markerset
@@ -168,7 +168,7 @@ class BeagleFormatter implements Formatter {
 			//</editor-fold>
 			//</editor-fold>
 
-			//<editor-fold defaultstate="collapsed" desc="BEAGLE MARKER FILE">
+			//<editor-fold defaultstate="expanded" desc="BEAGLE MARKER FILE">
 			FileWriter markerFW = new FileWriter(exportDir.getPath() + "/" + rdMatrixMetadata.getMatrixFriendlyName() + ".markers");
 			BufferedWriter markerBW = new BufferedWriter(markerFW);
 

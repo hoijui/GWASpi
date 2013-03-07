@@ -13,7 +13,7 @@ public class Associations {
 	private Associations() {
 	}
 
-	//<editor-fold defaultstate="collapsed" desc="GENOTYPIC TESTS">
+	//<editor-fold defaultstate="expanded" desc="GENOTYPIC TESTS">
 	public static double calculateChocranArmitageTrendTest(int caseAA,
 			int caseAa,
 			int caseaa,
@@ -181,7 +181,7 @@ public class Associations {
 	}
 	//</editor-fold>
 
-	//<editor-fold defaultstate="collapsed" desc="ALLELIC TESTS">
+	//<editor-fold defaultstate="expanded" desc="ALLELIC TESTS">
 	public static double calculateAllelicAssociationChiSquare(int sampleNb,
 			int obsCaseAA,
 			int obsCaseAa,

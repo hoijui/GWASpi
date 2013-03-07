@@ -200,7 +200,7 @@ public final class Report_AnalysisAllelicTestImpl extends Report_Analysis {
 				TableModel model = new DefaultTableModel(tableMatrix, columns);
 				tbl_ReportTable.setModel(model);
 
-				//<editor-fold defaultstate="collapsed" desc="Linux Sorter">
+				//<editor-fold defaultstate="expanded" desc="Linux Sorter">
 //				if (!cGlobal.OSNAME.contains("Windows")){
 //					RowSorter<TableModel> sorter = new TableRowSorter<TableModel>(model);
 				TableRowSorter sorter = new TableRowSorter(model) {

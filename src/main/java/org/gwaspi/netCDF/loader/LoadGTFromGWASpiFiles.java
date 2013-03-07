@@ -169,7 +169,7 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 		int result = Integer.MIN_VALUE;
 		String startTime = org.gwaspi.global.Utils.getMediumDateTimeAsString();
 
-		//<editor-fold defaultstate="collapsed/expanded" desc="CREATE MARKERSET & NETCDF">
+		//<editor-fold defaultstate="expanded" desc="CREATE MARKERSET & NETCDF">
 		MarkerSet_opt rdMarkerSet = new MarkerSet_opt(importMatrixMetadata.getStudyId(), loadDescription.getGtDirPath(), importMatrixMetadata.getMatrixNetCDFName());
 		rdMarkerSet.initFullMarkerIdSetMap();
 		rdMarkerSet.fillMarkerSetMapWithChrAndPos();
@@ -207,7 +207,7 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 		//log.info("Done creating netCDF handle ");
 		//</editor-fold>
 
-		//<editor-fold defaultstate="collapsed" desc="WRITE MATRIX METADATA">
+		//<editor-fold defaultstate="expanded" desc="WRITE MATRIX METADATA">
 		// WRITE SAMPLESET TO MATRIX FROM SAMPLES LIST
 		ArrayChar.D2 samplesD2 = org.gwaspi.netCDF.operations.Utils.writeMapKeysToD2ArrayChar(rdSampleSetMap, cNetCDF.Strides.STRIDE_SAMPLE_NAME);
 
@@ -295,7 +295,7 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 
 		// </editor-fold>
 
-		//<editor-fold defaultstate="collapsed" desc="GENOTYPES WRITER">
+		//<editor-fold defaultstate="expanded" desc="GENOTYPES WRITER">
 
 		//Iterate through rdSampleSetMap, use item position to read correct sample GTs into rdMarkerIdSetMap.
 		log.info(Text.All.processing);
@@ -349,7 +349,7 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 	}
 	//</editor-fold>
 
-	//<editor-fold defaultstate="collapsed" desc="HELPER METHODS">
+	//<editor-fold defaultstate="expanded" desc="HELPER METHODS">
 	private Map<String, Object> getSampleIds(File hapmapGTFile) throws IOException {
 
 		Map<String, Object> uniqueSamples = new LinkedHashMap<String, Object>();

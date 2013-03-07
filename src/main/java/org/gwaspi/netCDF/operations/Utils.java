@@ -34,7 +34,7 @@ public class Utils {
 	private Utils() {
 	}
 
-	//<editor-fold defaultstate="collapsed" desc="SAVERS">
+	//<editor-fold defaultstate="expanded" desc="SAVERS">
 	public static <K> boolean saveCharMapKeyToWrMatrix(NetcdfFileWriteable wrNcFile, Map<K, Object> wrMap, String variable, int varStride) {
 		boolean result = false;
 
@@ -103,7 +103,7 @@ public class Utils {
 		return result;
 	}
 
-	//<editor-fold defaultstate="collapsed" desc="GENOTYPE SAVERS">
+	//<editor-fold defaultstate="expanded" desc="GENOTYPE SAVERS">
 	public static boolean saveSingleSampleGTsToMatrix(NetcdfFileWriteable wrNcFile, Map<?, Object> wrMap, int sampleIndex) {
 		boolean result = false;
 		ArrayByte.D3 genotypes = writeMapToSingleSampleArrayByteD3(wrMap, cNetCDF.Strides.STRIDE_GT);
@@ -140,7 +140,7 @@ public class Utils {
 	}
 	//</editor-fold>
 
-	//<editor-fold defaultstate="collapsed" desc="D1 SAVERS">
+	//<editor-fold defaultstate="expanded" desc="D1 SAVERS">
 	public static boolean saveDoubleMapD1ToWrMatrix(NetcdfFileWriteable wrNcFile, Map<?, Object> wrMap, String variable) {
 		boolean result = false;
 
@@ -230,7 +230,7 @@ public class Utils {
 	}
 	//</editor-fold>
 
-	//<editor-fold defaultstate="collapsed" desc="D2 SAVERS">
+	//<editor-fold defaultstate="expanded" desc="D2 SAVERS">
 	public static boolean saveIntMapD2ToWrMatrix(NetcdfFileWriteable wrNcFile, Map<?, Object> wrMap, int[] columns, String variable) {
 		boolean result = false;
 
@@ -277,7 +277,7 @@ public class Utils {
 	//</editor-fold>
 	//</editor-fold>
 
-	//<editor-fold defaultstate="collapsed" desc="CHUNKED SAVERS">
+	//<editor-fold defaultstate="expanded" desc="CHUNKED SAVERS">
 	public static boolean saveCharChunkedMapToWrMatrix(
 			NetcdfFileWriteable wrNcFile,
 			Map<?, Object> wrMap,
@@ -337,7 +337,7 @@ public class Utils {
 		return result;
 	}
 
-	//<editor-fold defaultstate="collapsed" desc="GENOTYPE SAVERS">
+	//<editor-fold defaultstate="expanded" desc="GENOTYPE SAVERS">
 	public static boolean saveChunkedCurrentSampleGTsToMatrix(
 			NetcdfFileWriteable wrNcFile,
 			Map<String, Object> wrMap,
@@ -384,7 +384,7 @@ public class Utils {
 	}
 	//</editor-fold>
 
-	//<editor-fold defaultstate="collapsed" desc="D1 SAVERS">
+	//<editor-fold defaultstate="expanded" desc="D1 SAVERS">
 	public static boolean saveDoubleChunkedMapD1ToWrMatrix(
 			NetcdfFileWriteable wrNcFile,
 			Map<String, Object> wrMap,
@@ -496,7 +496,7 @@ public class Utils {
 	}
 	//</editor-fold>
 
-	//<editor-fold defaultstate="collapsed" desc="D2 SAVERS">
+	//<editor-fold defaultstate="expanded" desc="D2 SAVERS">
 	public static boolean saveIntChunkedMapD2ToWrMatrix(
 			NetcdfFileWriteable wrNcFile,
 			Map<?, Object> wrMap,
@@ -554,8 +554,8 @@ public class Utils {
 	//</editor-fold>
 	//</editor-fold>
 
-	//<editor-fold defaultstate="collapsed" desc="POJOs TO netCDFJOs">
-	//<editor-fold defaultstate="collapsed" desc="ArrayChar.D3">
+	//<editor-fold defaultstate="expanded" desc="POJOs TO netCDFJOs">
+	//<editor-fold defaultstate="expanded" desc="ArrayChar.D3">
 	public static ArrayChar.D3 writeMapToCurrentSampleArrayCharD3(Map<String, Object> map, int stride) {
 		ArrayChar.D3 charArray = new ArrayChar.D3(1, map.size(), stride);
 		Index ima = charArray.getIndex();
@@ -585,7 +585,7 @@ public class Utils {
 	}
 	//</editor-fold>
 
-	//<editor-fold defaultstate="collapsed" desc="ArrayChar.D2">
+	//<editor-fold defaultstate="expanded" desc="ArrayChar.D2">
 	public static ArrayChar.D2 writeCollectionToD2ArrayChar(Collection<?> values, int stride) {
 		ArrayChar.D2 charArray = new ArrayChar.D2(values.size(), stride);
 		Index ima = charArray.getIndex();
@@ -623,7 +623,7 @@ public class Utils {
 	}
 	//</editor-fold>
 
-	//<editor-fold defaultstate="collapsed" desc="ArrayDouble.D1 & D2">
+	//<editor-fold defaultstate="expanded" desc="ArrayDouble.D1 & D2">
 	public static ArrayDouble.D1 writeMapValueToD1ArrayDouble(Map<?, Object> map) {
 		ArrayDouble.D1 doubleArray = new ArrayDouble.D1(map.size());
 		Index index = doubleArray.getIndex();
@@ -668,7 +668,7 @@ public class Utils {
 	}
 	//</editor-fold>
 
-	//<editor-fold defaultstate="collapsed" desc="ArrayInt.D1 & D2">
+	//<editor-fold defaultstate="expanded" desc="ArrayInt.D1 & D2">
 	public static ArrayInt.D1 writeMapValueToD1ArrayInt(Map<?, Object> map) {
 		ArrayInt.D1 intArray = new ArrayInt.D1(map.size());
 		Index index = intArray.getIndex();
@@ -714,7 +714,7 @@ public class Utils {
 
 	//</editor-fold>
 
-	//<editor-fold defaultstate="collapsed" desc="ArrayByte.D3">
+	//<editor-fold defaultstate="expanded" desc="ArrayByte.D3">
 	public static ArrayByte.D3 writeALValuesToSamplesHyperSlabArrayByteD3(List<byte[]> genotypesAL, int sampleNb, int stride) {
 		int markerNb = genotypesAL.size() / sampleNb;
 		int alCounter = 0;
@@ -794,8 +794,8 @@ public class Utils {
 	//</editor-fold>
 	//</editor-fold>
 
-	//<editor-fold defaultstate="collapsed" desc="netCDFJOs TO POJOs">
-	//<editor-fold defaultstate="collapsed" desc="ArrayChar.D2">
+	//<editor-fold defaultstate="expanded" desc="netCDFJOs TO POJOs">
+	//<editor-fold defaultstate="expanded" desc="ArrayChar.D2">
 	public static Map<String, Object> writeD2ArrayCharToMapKeys(ArrayChar inputArray) {
 		Map<String, Object> result = new LinkedHashMap<String, Object>();
 //		StringBuilder key = new StringBuilder("");
@@ -864,7 +864,7 @@ public class Utils {
 	}
 	//</editor-fold>
 
-	//<editor-fold defaultstate="collapsed" desc="ArrayChar.D1">
+	//<editor-fold defaultstate="expanded" desc="ArrayChar.D1">
 	public static Map<String, Object> writeD1ArrayCharToMapKeys(ArrayChar inputArray) {
 		Map<String, Object> result = new LinkedHashMap();
 		StringBuilder key = new StringBuilder("");
@@ -895,7 +895,7 @@ public class Utils {
 	}
 	//</editor-fold>
 
-	//<editor-fold defaultstate="collapsed" desc="ArrayDouble.D1">
+	//<editor-fold defaultstate="expanded" desc="ArrayDouble.D1">
 	public static <K> void writeD1ArrayDoubleToMapValues(ArrayDouble inputArray, Map<K, Object> map) {
 
 		int[] shape = inputArray.getShape();
@@ -922,7 +922,7 @@ public class Utils {
 	}
 	//</editor-fold>
 
-	//<editor-fold defaultstate="collapsed" desc="ArrayDouble.D2">
+	//<editor-fold defaultstate="expanded" desc="ArrayDouble.D2">
 	public static <K> void writeD2ArrayDoubleToMapValues(ArrayDouble.D2 inputArray, Map<K, Object> map) {
 		int[] shape = inputArray.getShape();
 		Iterator<Entry<K, Object>> entries = map.entrySet().iterator();
@@ -952,7 +952,7 @@ public class Utils {
 	}
 	//</editor-fold>
 
-	//<editor-fold defaultstate="collapsed" desc="ArrayInt.D1">
+	//<editor-fold defaultstate="expanded" desc="ArrayInt.D1">
 	public static <K> void writeD1ArrayIntToMapValues(ArrayInt inputArray, Map<K, Object> map) {
 
 		int[] shape = inputArray.getShape();
@@ -979,7 +979,7 @@ public class Utils {
 	}
 	//</editor-fold>
 
-	//<editor-fold defaultstate="collapsed" desc="ArrayInt.D2">
+	//<editor-fold defaultstate="expanded" desc="ArrayInt.D2">
 	public static <K> void writeD2ArrayIntToMapValues(ArrayInt.D2 inputArray, Map<K, Object> map) {
 		int[] shape = inputArray.getShape();
 		Iterator<Entry<K, Object>> entries = map.entrySet().iterator();
@@ -994,7 +994,7 @@ public class Utils {
 	}
 	//</editor-fold>
 
-	//<editor-fold defaultstate="collapsed" desc="ArrayByte.D2">
+	//<editor-fold defaultstate="expanded" desc="ArrayByte.D2">
 	public static Map<String, Object> writeD2ArrayByteToMapKeys(ArrayByte inputArray) {
 		Map<String, Object> result = new LinkedHashMap<String, Object>();
 
@@ -1039,7 +1039,7 @@ public class Utils {
 	}
 	//</editor-fold>
 
-	//<editor-fold defaultstate="collapsed" desc="ArrayByte.D1">
+	//<editor-fold defaultstate="expanded" desc="ArrayByte.D1">
 	public static <K> void writeD1ArrayByteToMapValues(ArrayByte inputArray, Map<K, Object> map) {
 		StringBuilder value = new StringBuilder("");
 		Index index = inputArray.getIndex();

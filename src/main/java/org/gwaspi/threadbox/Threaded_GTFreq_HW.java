@@ -56,7 +56,7 @@ public class Threaded_GTFreq_HW extends CommonRunnable {
 		int sampleQAOpId = OperationsList.getIdOfLastOperationTypeOccurance(operations, OPType.SAMPLE_QA);
 		int markersQAOpId = OperationsList.getIdOfLastOperationTypeOccurance(operations, OPType.MARKER_QA);
 
-		//<editor-fold defaultstate="collapsed" desc="GT FREQ. & HW PROCESS">
+		//<editor-fold defaultstate="expanded" desc="GT FREQ. & HW PROCESS">
 		if (!gwasParams.isDiscardMarkerByMisRat()) {
 			gwasParams.setDiscardMarkerMisRatVal(1);
 		}

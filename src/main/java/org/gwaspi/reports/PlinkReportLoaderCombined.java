@@ -170,7 +170,7 @@ public class PlinkReportLoaderCombined {
 		//combinedPlot.setGap(0);
 		combinedPlot.add(subplot, 1);
 	}
-// <editor-fold defaultstate="collapsed" desc="Deprecated">
+// <editor-fold defaultstate="expanded" desc="Deprecated">
 //    public static List<IdChrPosValuePoint> loadUnadjAssoReportFromFile(File reportFile, int valueColumn) throws FileNotFoundException, IOException {
 //        int idColumn=1;
 //        int chrColumn=0;

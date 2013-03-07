@@ -54,7 +54,7 @@ public class PlinkBinaryFormatter implements Formatter {
 		NetcdfFile rdNcFile = NetcdfFile.open(rdMatrixMetadata.getPathToMatrix());
 		String sep = cExport.separator_PLINK;
 
-		//<editor-fold defaultstate="collapsed" desc="BIM FILE">
+		//<editor-fold defaultstate="expanded" desc="BIM FILE">
 		String filePath = exportDir.getPath() + "/" + rdMatrixMetadata.getMatrixFriendlyName() + ".bim";
 		FileWriter mapFW = new FileWriter(filePath);
 		BufferedWriter mapBW = new BufferedWriter(mapFW);
@@ -126,7 +126,7 @@ public class PlinkBinaryFormatter implements Formatter {
 
 		//</editor-fold>
 
-		//<editor-fold defaultstate="collapsed/expanded" desc="BED FILE">
+		//<editor-fold defaultstate="expanded" desc="BED FILE">
 
 		// THIS SHOULD BE MULTIPLE OF SAMPLE SET LENGTH
 		int nbOfSamples = rdSampleSet.getSampleSetSize();
@@ -208,7 +208,7 @@ public class PlinkBinaryFormatter implements Formatter {
 		org.gwaspi.global.Utils.sysoutCompleted("Completed exporting BED file to " + filePath);
 		//</editor-fold>
 
-		//<editor-fold defaultstate="collapsed" desc="FAM FILE">
+		//<editor-fold defaultstate="expanded" desc="FAM FILE">
 		filePath = exportDir.getPath() + "/" + rdMatrixMetadata.getMatrixFriendlyName() + ".fam";
 		FileWriter tfamFW = new FileWriter(filePath);
 		BufferedWriter tfamBW = new BufferedWriter(tfamFW);

@@ -41,7 +41,7 @@ public class DerbyDBReshaper {
 			String localVersionNumber = XMLParser.getTextValue(localElements.get(0), "Number");
 			// MAKE VERSION CHECKS
 
-			//<editor-fold defaultstate="collapsed" desc="IF < 2.0.1">
+			//<editor-fold defaultstate="expanded" desc="IF < 2.0.1">
 			if (localVersionNumber.compareTo("2.0.1") < 0) { // Remote version is still compatible with local version
 				log.info("Updating Sample ID field size");
 				StringBuilder alterSQLprefix = new StringBuilder("ALTER TABLE ");

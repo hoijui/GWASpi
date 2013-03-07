@@ -82,7 +82,7 @@ public class LoadGTFromSequenomFiles implements GenotypesLoader {
 		File[] gtFilesToImport = org.gwaspi.global.Utils.listFiles(loadDescription.getGtDirPath());
 //		File gtFileToImport = new File(gtDirPath);
 
-		//<editor-fold defaultstate="collapsed" desc="CREATE MARKERSET & NETCDF">
+		//<editor-fold defaultstate="expanded" desc="CREATE MARKERSET & NETCDF">
 		MetadataLoaderSequenom markerSetLoader = new MetadataLoaderSequenom(loadDescription.getAnnotationFilePath(), loadDescription.getStudyId());
 
 		Map<MarkerKey, Object> markerSetMap = markerSetLoader.getSortedMarkerSetWithMetaData();
@@ -145,7 +145,7 @@ public class LoadGTFromSequenomFiles implements GenotypesLoader {
 		//log.info("Done creating netCDF handle ");
 		//</editor-fold>
 
-		//<editor-fold defaultstate="collapsed" desc="WRITE MATRIX METADATA">
+		//<editor-fold defaultstate="expanded" desc="WRITE MATRIX METADATA">
 		// WRITE SAMPLESET TO MATRIX FROM SAMPLES LIST
 		ArrayChar.D2 samplesD2 = org.gwaspi.netCDF.operations.Utils.writeCollectionToD2ArrayChar(AbstractLoadGTFromFiles.extractKeys(sampleInfos), cNetCDF.Strides.STRIDE_SAMPLE_NAME);
 
@@ -234,7 +234,7 @@ public class LoadGTFromSequenomFiles implements GenotypesLoader {
 		log.info("Done writing strand info to matrix");
 		// </editor-fold>
 
-		// <editor-fold defaultstate="collapsed" desc="MATRIX GENOTYPES LOAD ">
+		// <editor-fold defaultstate="expanded" desc="MATRIX GENOTYPES LOAD ">
 		GenotypeEncoding guessedGTCode = GenotypeEncoding.UNKNOWN;
 		// INIT AND PURGE SORTEDMARKERSET Map
 		int sampleIndex = 0;

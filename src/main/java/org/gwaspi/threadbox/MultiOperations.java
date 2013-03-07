@@ -36,7 +36,7 @@ public class MultiOperations {
 		ProcessTab.getSingleton().updateProcessOverview();
 	}
 
-	//<editor-fold defaultstate="collapsed" desc="LOADERS">
+	//<editor-fold defaultstate="expanded" desc="LOADERS">
 	/** SAMPLES QA */
 	public static void doMatrixQAs(final int studyId, final int matrixId) {
 
@@ -69,7 +69,7 @@ public class MultiOperations {
 	}
 	//</editor-fold>
 
-	//<editor-fold defaultstate="collapsed" desc="ANALYSIS">
+	//<editor-fold defaultstate="expanded" desc="ANALYSIS">
 	/** LOAD & GWAS */
 	public static void doGWASwithAlterPhenotype(
 			final int studyId,
@@ -195,7 +195,7 @@ public class MultiOperations {
 	}
 	//</editor-fold>
 
-	//<editor-fold defaultstate="collapsed" desc="DATA MANAGEMENT">
+	//<editor-fold defaultstate="expanded" desc="DATA MANAGEMENT">
 	public static void doExtractData(
 			final int studyId,
 			final int parentMatrixId,
@@ -373,7 +373,7 @@ public class MultiOperations {
 	}
 	//</editor-fold>
 
-	//<editor-fold defaultstate="collapsed" desc="DELETERS">
+	//<editor-fold defaultstate="expanded" desc="DELETERS">
 	private static void queueDeleteTask(SwingDeleterItem sdi) {
 
 		SwingDeleterItemList.add(sdi);
@@ -412,7 +412,7 @@ public class MultiOperations {
 	}
 	//</editor-fold>
 
-	//<editor-fold defaultstate="collapsed" desc="HELPERS">
+	//<editor-fold defaultstate="expanded" desc="HELPERS">
 	public static void printFinished(String text) {
 		org.gwaspi.global.Utils.sysoutFinish(text);
 	}

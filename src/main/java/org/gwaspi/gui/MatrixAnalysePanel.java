@@ -168,7 +168,7 @@ public class MatrixAnalysePanel extends JPanel {
 		scrl_MatrixOperations.setViewportView(tbl_MatrixOperations);
 		btn_DeleteOperation.setAction(new DeleteOperationAction(currentOP, this, parentMatrix, tbl_MatrixOperations));
 
-		//<editor-fold defaultstate="collapsed" desc="LAYOUT MATRIX DESC">
+		//<editor-fold defaultstate="expanded" desc="LAYOUT MATRIX DESC">
 		GroupLayout pnl_MatrixDescLayout = new GroupLayout(pnl_MatrixDesc);
 		pnl_MatrixDesc.setLayout(pnl_MatrixDescLayout);
 		pnl_MatrixDescLayout.setHorizontalGroup(
@@ -207,7 +207,7 @@ public class MatrixAnalysePanel extends JPanel {
 
 		btn_1_5.setAction(new TrendTestsAction(parentMatrix, gwasParams, currentOP));
 
-		//<editor-fold defaultstate="collapsed" desc="LAYOUT BUTTONS">
+		//<editor-fold defaultstate="expanded" desc="LAYOUT BUTTONS">
 		GroupLayout pnl_SpacerLayout = new GroupLayout(pnl_Spacer);
 		pnl_Spacer.setLayout(pnl_SpacerLayout);
 		pnl_SpacerLayout.setHorizontalGroup(
@@ -271,7 +271,7 @@ public class MatrixAnalysePanel extends JPanel {
 		btn_Back.setAction(new BackAction(parentMatrix, currentOP));
 		btn_Help.setAction(new BrowserHelpUrlAction(HelpURLs.QryURL.matrixAnalyse));
 
-		//<editor-fold defaultstate="collapsed" desc="LAYOUT FOOTER">
+		//<editor-fold defaultstate="expanded" desc="LAYOUT FOOTER">
 		GroupLayout pnl_FooterLayout = new GroupLayout(pnl_Footer);
 		pnl_Footer.setLayout(pnl_FooterLayout);
 		pnl_FooterLayout.setHorizontalGroup(
@@ -294,7 +294,7 @@ public class MatrixAnalysePanel extends JPanel {
 				.addComponent(btn_Help))));
 		//</editor-fold>
 
-		//<editor-fold defaultstate="collapsed" desc="LAYOUT">
+		//<editor-fold defaultstate="expanded" desc="LAYOUT">
 		GroupLayout layout = new GroupLayout(this);
 		this.setLayout(layout);
 		layout.setHorizontalGroup(
@@ -318,7 +318,7 @@ public class MatrixAnalysePanel extends JPanel {
 		//</editor-fold>
 	}
 
-	//<editor-fold defaultstate="collapsed" desc="ANALYSIS">
+	//<editor-fold defaultstate="expanded" desc="ANALYSIS">
 	private static class AllelicTestsAction extends AbstractAction {
 
 		private Matrix parentMatrix;
@@ -705,7 +705,7 @@ public class MatrixAnalysePanel extends JPanel {
 					ProcessTab.getSingleton().showTab();
 				}
 
-				// <editor-fold defaultstate="collapsed" desc="QA BLOCK">
+				// <editor-fold defaultstate="expanded" desc="QA BLOCK">
 				if (gwasParams.isProceed() && missingOPsAL.size() > 0) {
 					gwasParams.setProceed(false);
 					gwasParams.setProceed(false);
@@ -714,7 +714,7 @@ public class MatrixAnalysePanel extends JPanel {
 				}
 				// </editor-fold>
 
-				// <editor-fold defaultstate="collapsed" desc="GENOTYPE FREQ. & HW BLOCK">
+				// <editor-fold defaultstate="expanded" desc="GENOTYPE FREQ. & HW BLOCK">
 			if (gwasParams.isProceed()) {
 				MultiOperations.doGTFreqDoHW(parentMatrix.getStudyId(),
 						parentMatrix.getId(),
@@ -730,7 +730,7 @@ public class MatrixAnalysePanel extends JPanel {
 	}
 	//</editor-fold>
 
-	//<editor-fold defaultstate="collapsed" desc="HELPERS">
+	//<editor-fold defaultstate="expanded" desc="HELPERS">
 	private static class DeleteOperationAction extends AbstractAction {
 
 		private Operation currentOP;

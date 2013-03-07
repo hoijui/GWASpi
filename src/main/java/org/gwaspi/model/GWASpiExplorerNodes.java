@@ -27,7 +27,7 @@ public class GWASpiExplorerNodes {
 	private GWASpiExplorerNodes() {
 	}
 
-	//<editor-fold defaultstate="collapsed" desc="NODE DEFINITION">
+	//<editor-fold defaultstate="expanded" desc="NODE DEFINITION">
 	public static class NodeElementInfo {
 
 		public static final int NODE_ID_NONE = 0;
@@ -202,7 +202,7 @@ public class GWASpiExplorerNodes {
 	//</editor-fold>
 
 	//<editor-fold defaultstate="expanded" desc="NODE MANAGEMENT">
-	//<editor-fold defaultstate="collapsed" desc="STUDY NODES">
+	//<editor-fold defaultstate="expanded" desc="STUDY NODES">
 	public static void insertLatestStudyNode() throws IOException {
 		try {
 			// GET LATEST ADDED STUDY
@@ -251,7 +251,7 @@ public class GWASpiExplorerNodes {
 	}
 	//</editor-fold>
 
-	//<editor-fold defaultstate="collapsed" desc="MATRIX NODES">
+	//<editor-fold defaultstate="expanded" desc="MATRIX NODES">
 	public static void insertMatrixNode(int studyId, int matrixId) throws IOException {
 		if (StartGWASpi.guiMode) {
 			try {
@@ -286,7 +286,7 @@ public class GWASpiExplorerNodes {
 	}
 	//</editor-fold>
 
-	//<editor-fold defaultstate="collapsed" desc="OPERATION NODES">
+	//<editor-fold defaultstate="expanded" desc="OPERATION NODES">
 	public static void insertOperationUnderMatrixNode(int matrixId, int opId) throws IOException {
 		try {
 			// GET MATRIX
@@ -336,7 +336,7 @@ public class GWASpiExplorerNodes {
 	}
 	//</editor-fold>
 
-	//<editor-fold defaultstate="collapsed" desc="REPORT NODES">
+	//<editor-fold defaultstate="expanded" desc="REPORT NODES">
 	public static void insertReportsUnderOperationNode(int parentOpId) throws IOException {
 		if (StartGWASpi.guiMode) {
 			try {

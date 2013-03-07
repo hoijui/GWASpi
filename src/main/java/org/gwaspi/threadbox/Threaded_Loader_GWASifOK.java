@@ -67,7 +67,7 @@ public class Threaded_Loader_GWASifOK extends CommonRunnable {
 				loadDescription.getAnnotationFilePath());
 		Set<SampleInfo.Affection> affectionStates = SampleInfoCollectorSwitch.collectAffectionStates(sampleInfos);
 
-		//<editor-fold defaultstate="collapsed" desc="LOAD PROCESS">
+		//<editor-fold defaultstate="expanded" desc="LOAD PROCESS">
 		int resultMatrixId = Integer.MIN_VALUE;
 		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
 			resultMatrixId = LoadManager.dispatchLoadByFormat(
@@ -78,7 +78,7 @@ public class Threaded_Loader_GWASifOK extends CommonRunnable {
 		}
 		//</editor-fold>
 
-		//<editor-fold defaultstate="collapsed" desc="QA PROCESS">
+		//<editor-fold defaultstate="expanded" desc="QA PROCESS">
 		int samplesQAOpId = Integer.MIN_VALUE;
 		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
 			samplesQAOpId = new OP_QASamples_opt(resultMatrixId).processMatrix();
@@ -116,7 +116,7 @@ public class Threaded_Loader_GWASifOK extends CommonRunnable {
 				gwasParams.setDiscardSampleHetzyRatVal(1);
 			}
 
-			//<editor-fold defaultstate="collapsed" desc="PRE-GWAS PROCESS">
+			//<editor-fold defaultstate="expanded" desc="PRE-GWAS PROCESS">
 			// GENOTYPE FREQ.
 			int censusOpId = Integer.MIN_VALUE;
 			if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
@@ -136,7 +136,7 @@ public class Threaded_Loader_GWASifOK extends CommonRunnable {
 			}
 			//</editor-fold>
 
-			//<editor-fold defaultstate="collapsed" desc="GWAS TESTS & REPORTS">
+			//<editor-fold defaultstate="expanded" desc="GWAS TESTS & REPORTS">
 			// ALLELIC ASSOCIATION (needs newMatrixId, censusOpId, pickedMarkerSet, pickedSampleSet)
 			if (thisSwi.getQueueState().equals(QueueState.PROCESSING)
 					&& censusOpId != Integer.MIN_VALUE

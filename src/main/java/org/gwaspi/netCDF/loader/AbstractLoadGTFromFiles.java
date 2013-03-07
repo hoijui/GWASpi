@@ -81,7 +81,7 @@ public abstract class AbstractLoadGTFromFiles implements GenotypesLoader {
 
 	protected abstract MetadataLoader createMetaDataLoader(String filePath, GenotypesLoadDescription loadDescription);
 
-	//<editor-fold defaultstate="collapsed" desc="PROCESS GENOTYPES">
+	//<editor-fold defaultstate="expanded" desc="PROCESS GENOTYPES">
 	@Override
 	public int processData(GenotypesLoadDescription loadDescription, Collection<SampleInfo> sampleInfos) throws IOException, InvalidRangeException, InterruptedException {
 		int result = Integer.MIN_VALUE;
@@ -98,7 +98,7 @@ public abstract class AbstractLoadGTFromFiles implements GenotypesLoader {
 
 		Map<MarkerKey, Object> markerSetMap = new LinkedHashMap<MarkerKey, Object>();
 
-		//<editor-fold defaultstate="collapsed/expanded" desc="CREATE MARKERSET & NETCDF">
+		//<editor-fold defaultstate="expanded" desc="CREATE MARKERSET & NETCDF">
 		MetadataLoader markerSetLoader = createMetaDataLoader(loadDescription.getAnnotationFilePath(), loadDescription);
 		Map<MarkerKey, Object> tmpMarkerMap = markerSetLoader.getSortedMarkerSetWithMetaData();
 		markerSetMap.putAll(tmpMarkerMap);
@@ -160,7 +160,7 @@ public abstract class AbstractLoadGTFromFiles implements GenotypesLoader {
 		//log.info("Done creating netCDF handle");
 		//</editor-fold>
 
-		//<editor-fold defaultstate="collapsed" desc="WRITE MATRIX METADATA">
+		//<editor-fold defaultstate="expanded" desc="WRITE MATRIX METADATA">
 		// WRITE SAMPLESET TO MATRIX FROM SAMPLES ARRAYLIST
 		ArrayChar.D2 samplesD2 = org.gwaspi.netCDF.operations.Utils.writeCollectionToD2ArrayChar(extractKeys(sampleInfos), cNetCDF.Strides.STRIDE_SAMPLE_NAME);
 
@@ -279,7 +279,7 @@ public abstract class AbstractLoadGTFromFiles implements GenotypesLoader {
 		log.info("Done writing strand info to matrix");
 		// </editor-fold>
 
-		// <editor-fold defaultstate="collapsed" desc="MATRIX GENOTYPES LOAD ">
+		// <editor-fold defaultstate="expanded" desc="MATRIX GENOTYPES LOAD ">
 		int sampleIndex = 0;
 		for (SampleInfo sampleInfo : sampleInfos) {
 			// PURGE MarkerIdMap

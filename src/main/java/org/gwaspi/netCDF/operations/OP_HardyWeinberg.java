@@ -66,7 +66,7 @@ public class OP_HardyWeinberg implements MatrixOperation {
 				log.error("Failed creating file: " + wrNcFile.getLocation(), ex);
 			}
 
-			//<editor-fold defaultstate="collapsed" desc="METADATA WRITER">
+			//<editor-fold defaultstate="expanded" desc="METADATA WRITER">
 			// MARKERSET MARKERID
 			ArrayChar.D2 markersD2 = Utils.writeMapKeysToD2ArrayChar(rdMarkerSetMap, cNetCDF.Strides.STRIDE_MARKER_NAME);
 			int[] markersOrig = new int[]{0, 0};
@@ -96,7 +96,7 @@ public class OP_HardyWeinberg implements MatrixOperation {
 			log.info("Done writing SampleSet to matrix");
 			//</editor-fold>
 
-			//<editor-fold defaultstate="collapsed" desc="GET CENSUS & PERFORM HW">
+			//<editor-fold defaultstate="expanded" desc="GET CENSUS & PERFORM HW">
 //			// PROCESS ALL SAMPLES
 //			rdMarkerSetMap = rdOperationSet.fillMapWithDefaultValue(rdMarkerSetMap, 0); //PURGE
 //			rdMarkerSetMap = rdOperationSet.fillOpSetMapWithVariable(rdNcFile, cNetCDF.Census.VAR_OP_MARKERS_CENSUSALL);
@@ -180,7 +180,7 @@ public class OP_HardyWeinberg implements MatrixOperation {
 		}
 		log.info("Processed {} markers on category: {}", markerNb, category);
 
-		//<editor-fold defaultstate="collapsed" desc="HARDY-WEINBERG DATA WRITER">
+		//<editor-fold defaultstate="expanded" desc="HARDY-WEINBERG DATA WRITER">
 //		// ALL SAMPLES
 //		if(category.equals("ALL")){
 //			Utils.saveArrayDoubleItemD1ToWrMatrix(wrNcFile, markersContingencyMap, 0, cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWPval_ALL);

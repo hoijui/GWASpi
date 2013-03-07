@@ -90,7 +90,7 @@ public class MatrixMarkerQAPanel extends JPanel {
 
 		btn_DeleteOperation.setAction(new DeleteOperationAction(currentOP, this, parentMatrix));
 
-		//<editor-fold defaultstate="collapsed" desc="LAYOUT MATRIX DESC">
+		//<editor-fold defaultstate="expanded" desc="LAYOUT MATRIX DESC">
 		GroupLayout pnl_MatrixDescLayout = new GroupLayout(pnl_MatrixDesc);
 		pnl_MatrixDesc.setLayout(pnl_MatrixDescLayout);
 		pnl_MatrixDescLayout.setHorizontalGroup(
@@ -116,7 +116,7 @@ public class MatrixMarkerQAPanel extends JPanel {
 		btn_Back.setAction(backAction);
 		btn_Help.setAction(new BrowserHelpUrlAction(HelpURLs.QryURL.markerQAreport));
 
-		//<editor-fold defaultstate="collapsed" desc="LAYOUT FOOTER">
+		//<editor-fold defaultstate="expanded" desc="LAYOUT FOOTER">
 		GroupLayout pnl_FooterLayout = new GroupLayout(pnl_Footer);
 		pnl_Footer.setLayout(pnl_FooterLayout);
 		pnl_FooterLayout.setHorizontalGroup(
@@ -139,7 +139,7 @@ public class MatrixMarkerQAPanel extends JPanel {
 				.addComponent(btn_Help))));
 		//</editor-fold>
 
-		//<editor-fold defaultstate="collapsed" desc="LAYOUT">
+		//<editor-fold defaultstate="expanded" desc="LAYOUT">
 		GroupLayout layout = new GroupLayout(this);
 		this.setLayout(layout);
 		layout.setHorizontalGroup(

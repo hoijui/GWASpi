@@ -82,7 +82,7 @@ public class Report_AnalysisPanel extends JPanel {
 
 		btn_DeleteOperation.setAction(new DeleteOperationAction(parentMatrix, this, currentOP));
 
-		//<editor-fold defaultstate="collapsed" desc="LAYOUT OPERATION DESC">
+		//<editor-fold defaultstate="expanded" desc="LAYOUT OPERATION DESC">
 		GroupLayout pnl_OperationDescLayout = new GroupLayout(pnl_OperationDesc);
 		pnl_OperationDesc.setLayout(pnl_OperationDescLayout);
 		pnl_OperationDescLayout.setHorizontalGroup(
@@ -119,7 +119,7 @@ public class Report_AnalysisPanel extends JPanel {
 
 		btn_Help.setAction(new BrowserHelpUrlAction(null)); // FIXME no help implemented yet
 
-		//<editor-fold defaultstate="collapsed" desc="LAYOUT">
+		//<editor-fold defaultstate="expanded" desc="LAYOUT">
 		GroupLayout layout = new GroupLayout(this);
 		this.setLayout(layout);
 		layout.setHorizontalGroup(
@@ -143,7 +143,7 @@ public class Report_AnalysisPanel extends JPanel {
 		//</editor-fold>
 	}
 
-	//<editor-fold defaultstate="collapsed" desc="METHODS">
+	//<editor-fold defaultstate="expanded" desc="METHODS">
 	private static class DeleteOperationAction extends AbstractAction {
 
 		private Matrix parentMatrix;

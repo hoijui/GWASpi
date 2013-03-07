@@ -92,7 +92,7 @@ public class MarkerSet_opt {
 		return markerSetSize;
 	}
 
-	//<editor-fold defaultstate="collapsed" desc="MARKERSET INITILAIZERS">
+	//<editor-fold defaultstate="expanded" desc="MARKERSET INITILAIZERS">
 	// USE MARKERID AS KEYS
 	public void initFullMarkerIdSetMap() {
 		startMkIdx = 0;
@@ -198,7 +198,7 @@ public class MarkerSet_opt {
 	}
 	//</editor-fold>
 
-	//<editor-fold defaultstate="collapsed" desc="CHROMOSOME INFO">
+	//<editor-fold defaultstate="expanded" desc="CHROMOSOME INFO">
 	/**
      * This Method is safe to return an independent Map.
 	 * The size of this Map is very small.
@@ -261,7 +261,7 @@ public class MarkerSet_opt {
 	}
 	//</editor-fold>
 
-	//<editor-fold defaultstate="collapsed" desc="MARKERSET FILLERS">
+	//<editor-fold defaultstate="expanded" desc="MARKERSET FILLERS">
 	public void fillGTsForCurrentSampleIntoInitMap(int sampleNb) throws IOException {
 
 		Variable var = ncfile.findVariable(cNetCDF.Variables.VAR_GENOTYPES);
@@ -524,7 +524,7 @@ public class MarkerSet_opt {
 	}
 	//</editor-fold>
 
-	//<editor-fold defaultstate="collapsed" desc="MARKERSET PICKERS">
+	//<editor-fold defaultstate="expanded" desc="MARKERSET PICKERS">
 	/**
 	 * THESE Maps DO NOT CONTAIN SAME ITEMS AS INIT Map.
 	 * RETURN Map OK

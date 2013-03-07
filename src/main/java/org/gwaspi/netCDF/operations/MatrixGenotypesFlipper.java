@@ -146,7 +146,7 @@ public class MatrixGenotypesFlipper {
 			}
 			//log.trace("Done creating netCDF handle in MatrixataExtractor: " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
 
-			//<editor-fold defaultstate="collapsed" desc="METADATA WRITER">
+			//<editor-fold defaultstate="expanded" desc="METADATA WRITER">
 			// WRITING METADATA TO MATRIX
 
 			// SAMPLESET
@@ -223,7 +223,7 @@ public class MatrixGenotypesFlipper {
 			Utils.saveCharMapValueToWrMatrix(wrNcFile, rdMarkerIdSetMap, cNetCDF.Variables.VAR_GT_STRAND, 3);
 			//</editor-fold>
 
-			//<editor-fold defaultstate="collapsed" desc="GENOTYPES WRITER">
+			//<editor-fold defaultstate="expanded" desc="GENOTYPES WRITER">
 			log.info(Text.All.processing);
 			int markerIndex = 0;
 			for (Map.Entry<MarkerKey, Object> entry : rdMarkerIdSetMap.entrySet()) {

@@ -116,7 +116,7 @@ public class MatrixMergePanel extends JPanel {
 		txtA_ParentMatrixDesc.setEditable(false);
 		scrl_ParentMatrixDesc.setViewportView(txtA_ParentMatrixDesc);
 
-		//<editor-fold defaultstate="collapsed" desc="LAYOUT PARENT MATRIX DESC">
+		//<editor-fold defaultstate="expanded" desc="LAYOUT PARENT MATRIX DESC">
 		GroupLayout pnl_ParentMatrixDescLayout = new GroupLayout(pnl_ParentMatrixDesc);
 		pnl_ParentMatrixDesc.setLayout(pnl_ParentMatrixDescLayout);
 		pnl_ParentMatrixDescLayout.setHorizontalGroup(
@@ -166,7 +166,7 @@ public class MatrixMergePanel extends JPanel {
 		txtA_Notes.setEditable(false);
 		scrl_Notes.setViewportView(txtA_Notes);
 
-		//<editor-fold defaultstate="collapsed" desc="LAYOUT ADD MATRIX">
+		//<editor-fold defaultstate="expanded" desc="LAYOUT ADD MATRIX">
 		GroupLayout pnl_addedMatrixLayout = new GroupLayout(pnl_addedMatrix);
 		pnl_addedMatrix.setLayout(pnl_addedMatrixLayout);
 		pnl_addedMatrixLayout.setHorizontalGroup(
@@ -242,7 +242,7 @@ public class MatrixMergePanel extends JPanel {
 		scroll_TrafoMatrixDescription.setViewportView(txtA_NewMatrixDescription);
 		btn_Merge.setAction(new MergeAction(parentMatrix, txtA_NewMatrixDescription, txt_NewMatrixName, matrixItemsAL, cmb_SelectMatrix, rdio_MergeMarkers, rdio_MergeSamples, rdio_MergeAll));
 
-		//<editor-fold defaultstate="collapsed" desc="LAYOUT NEW MATRIX DESC">
+		//<editor-fold defaultstate="expanded" desc="LAYOUT NEW MATRIX DESC">
 		GroupLayout pnl_TrafoMatrixDescLayout = new GroupLayout(pnl_TrafoMatrixDesc);
 		pnl_TrafoMatrixDesc.setLayout(pnl_TrafoMatrixDescLayout);
 		pnl_TrafoMatrixDescLayout.setHorizontalGroup(
@@ -273,7 +273,7 @@ public class MatrixMergePanel extends JPanel {
 		btn_Back.setAction(new BackAction(parentMatrix));
 		btn_Help.setAction(new BrowserHelpUrlAction(HelpURLs.QryURL.matrixMerge));
 
-		//<editor-fold defaultstate="collapsed" desc="LAYOUT FOOTER">
+		//<editor-fold defaultstate="expanded" desc="LAYOUT FOOTER">
 		GroupLayout pnl_FooterLayout = new GroupLayout(pnl_Footer);
 		pnl_Footer.setLayout(pnl_FooterLayout);
 		pnl_FooterLayout.setHorizontalGroup(
@@ -296,7 +296,7 @@ public class MatrixMergePanel extends JPanel {
 				.addComponent(btn_Help))));
 		//</editor-fold>
 
-		//<editor-fold defaultstate="collapsed" desc="LAYOUT">
+		//<editor-fold defaultstate="expanded" desc="LAYOUT">
 		GroupLayout layout = new GroupLayout(this);
 		this.setLayout(layout);
 		layout.setHorizontalGroup(
@@ -331,7 +331,7 @@ public class MatrixMergePanel extends JPanel {
 		//</editor-fold>
 	}
 
-	//<editor-fold defaultstate="collapsed" desc="MERGE">
+	//<editor-fold defaultstate="expanded" desc="MERGE">
 	private static class MergeAction extends AbstractAction {
 
 		private Matrix parentMatrix;
@@ -418,7 +418,7 @@ public class MatrixMergePanel extends JPanel {
 	}
 	//</editor-fold>
 
-	//<editor-fold defaultstate="collapsed" desc="HELPERS">
+	//<editor-fold defaultstate="expanded" desc="HELPERS">
 	private static class BackAction extends AbstractAction {
 
 		private Matrix parentMatrix;

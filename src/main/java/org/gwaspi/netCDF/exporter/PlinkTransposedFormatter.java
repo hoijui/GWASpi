@@ -47,7 +47,7 @@ public class PlinkTransposedFormatter implements Formatter {
 		rdMarkerSet.initFullMarkerIdSetMap();
 
 		try {
-			//<editor-fold defaultstate="collapsed" desc="TPED FILE">
+			//<editor-fold defaultstate="expanded" desc="TPED FILE">
 			FileWriter tpedFW = new FileWriter(exportDir.getPath() + "/" + rdMatrixMetadata.getMatrixFriendlyName() + ".tped");
 			BufferedWriter tpedBW = new BufferedWriter(tpedFW);
 
@@ -109,7 +109,7 @@ public class PlinkTransposedFormatter implements Formatter {
 			tpedFW.close();
 			//</editor-fold>
 
-			//<editor-fold defaultstate="collapsed" desc="TFAM FILE">
+			//<editor-fold defaultstate="expanded" desc="TFAM FILE">
 			FileWriter tfamFW = new FileWriter(exportDir.getPath() + "/" + rdMatrixMetadata.getMatrixFriendlyName() + ".tfam");
 			BufferedWriter tfamBW = new BufferedWriter(tfamFW);
 

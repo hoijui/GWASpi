@@ -202,7 +202,7 @@ public class GWASpiExplorer {
 		//</editor-fold>
 	}
 
-	//<editor-fold defaultstate="collapsed" desc="LISTENER">
+	//<editor-fold defaultstate="expanded" desc="LISTENER">
 	// TREE SELECTION LISTENER
 	private static TreeSelectionListener treeListener = new TreeSelectionListener() {
 		public void valueChanged(TreeSelectionEvent evt) {
@@ -447,7 +447,7 @@ public class GWASpiExplorer {
 	}
 	//</editor-fold>
 
-	//<editor-fold defaultstate="collapsed" desc="HELPERS">
+	//<editor-fold defaultstate="expanded" desc="HELPERS">
 	private static List<Operation> getChildrenOperations(List<Operation> operations, int parentOpId) {
 
 		List<Operation> childrenOperations = new ArrayList<Operation>();

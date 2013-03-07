@@ -69,7 +69,7 @@ public class Threaded_GWAS extends CommonRunnable {
 			gwasParams.setDiscardSampleHetzyRatVal(1);
 		}
 
-		//<editor-fold defaultstate="collapsed" desc="PRE-GWAS PROCESS">
+		//<editor-fold defaultstate="expanded" desc="PRE-GWAS PROCESS">
 		// GENOTYPE FREQ.
 		int censusOpId = Integer.MIN_VALUE;
 		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
@@ -123,7 +123,7 @@ public class Threaded_GWAS extends CommonRunnable {
 		}
 		//</editor-fold>
 
-		//<editor-fold defaultstate="collapsed" desc="GWAS TESTS & REPORTS">
+		//<editor-fold defaultstate="expanded" desc="GWAS TESTS & REPORTS">
 		// ALLELIC TEST (needs newMatrixId, censusOpId, pickedMarkerSet, pickedSampleSet)
 		if (gwasParams.isPerformAllelicTests()
 				&& thisSwi.getQueueState().equals(QueueState.PROCESSING)

@@ -175,7 +175,7 @@ public abstract class Report_Analysis extends JPanel {
 
 		btn_Get.setAction(new LoadReportAction());
 
-		//<editor-fold defaultstate="collapsed" desc="LAYOUT SUMMARY">
+		//<editor-fold defaultstate="expanded" desc="LAYOUT SUMMARY">
 		GroupLayout pnl_SearchDBLayout = new GroupLayout(pnl_SearchDB);
 		pnl_SearchDB.setLayout(pnl_SearchDBLayout);
 		pnl_SearchDBLayout.setHorizontalGroup(
@@ -220,7 +220,7 @@ public abstract class Report_Analysis extends JPanel {
 
 		scrl_ReportTable.setViewportView(tbl_ReportTable);
 
-		//<editor-fold defaultstate="collapsed" desc="FOOTER">
+		//<editor-fold defaultstate="expanded" desc="FOOTER">
 		btn_Save.setAction(new SaveAsAction(studyId, analysisFileName, tbl_ReportTable, txt_NRows, 3));
 
 		btn_Back.setAction(new BackAction(opId));
@@ -250,7 +250,7 @@ public abstract class Report_Analysis extends JPanel {
 				.addComponent(btn_Help)));
 		//</editor-fold>
 
-		//<editor-fold defaultstate="collapsed" desc="LAYOUT">
+		//<editor-fold defaultstate="expanded" desc="LAYOUT">
 		GroupLayout layout = new GroupLayout(this);
 		this.setLayout(layout);
 		layout.setHorizontalGroup(

@@ -83,7 +83,7 @@ public class Chisquare {
 		return chiQuareDist;
 	}
 
-	//<editor-fold defaultstate="collapsed" desc="HELPER METHODS">
+	//<editor-fold defaultstate="expanded" desc="HELPER METHODS">
 	private static List sortAscendingDistAL(List distArray) {
 		Collections.sort(distArray);
 		return distArray;

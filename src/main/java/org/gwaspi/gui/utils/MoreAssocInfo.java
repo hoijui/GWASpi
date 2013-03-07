@@ -91,7 +91,7 @@ public class MoreAssocInfo extends JFrame {
 		GridBagConstraints c = new GridBagConstraints();
 		int rowNb = 0;
 
-		//<editor-fold defaultstate="collapsed" desc="FORMAT INDEPENDENT">
+		//<editor-fold defaultstate="expanded" desc="FORMAT INDEPENDENT">
 		rdioB_1.setSelected(true);
 		rdiogrp_HW.add(rdioB_1);
 		rdioB_1.setText(Text.Operation.discardMarkerHWCalc1);

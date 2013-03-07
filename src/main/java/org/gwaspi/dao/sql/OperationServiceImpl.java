@@ -164,7 +164,7 @@ public class OperationServiceImpl implements OperationService {
 		return rs;
 	}
 
-	//<editor-fold defaultstate="collapsed" desc="OPERATIONS TABLES">
+	//<editor-fold defaultstate="expanded" desc="OPERATIONS TABLES">
 	@Override
 	public List<OperationMetadata> getOperationsTable(int matrixId) throws IOException {
 
@@ -218,7 +218,7 @@ public class OperationServiceImpl implements OperationService {
 	}
 	//</editor-fold>
 
-	//<editor-fold defaultstate="collapsed" desc="HELPERS">
+	//<editor-fold defaultstate="expanded" desc="HELPERS">
 	@Override
 	public int getIdOfLastOperationTypeOccurance(List<Operation> operationsList, OPType opType) {
 		int result = Integer.MIN_VALUE;

@@ -30,7 +30,7 @@ public class LoadGTFromBeagleFiles extends AbstractLoadGTFromFiles {
 		public static final String missing = "0";
 	}
 
-	//<editor-fold defaultstate="collapsed" desc="CONSTRUCTORS">
+	//<editor-fold defaultstate="expanded" desc="CONSTRUCTORS">
 	public LoadGTFromBeagleFiles()
 	{
 		super(
@@ -118,7 +118,7 @@ public class LoadGTFromBeagleFiles extends AbstractLoadGTFromFiles {
 	}
 	//</editor-fold>
 
-	//<editor-fold defaultstate="collapsed" desc="HELPER METHODS">
+	//<editor-fold defaultstate="expanded" desc="HELPER METHODS">
 	private Map<String, Object> getBeagleSampleIds(File hapmapGTFile) throws IOException {
 
 		Map<String, Object> uniqueSamples = new LinkedHashMap<String, Object>();

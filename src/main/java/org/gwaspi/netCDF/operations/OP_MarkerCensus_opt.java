@@ -80,7 +80,7 @@ public class OP_MarkerCensus_opt implements MatrixOperation {
 //		Map wrMarkerSetCensusMap = new LinkedHashMap();
 //		Map wrMarkerSetKnownAllelesMap = new LinkedHashMap();
 
-		//<editor-fold defaultstate="collapsed" desc="PICKING CLEAN MARKERS AND SAMPLES FROM QA">
+		//<editor-fold defaultstate="expanded" desc="PICKING CLEAN MARKERS AND SAMPLES FROM QA">
 		OperationMetadata markerQAMetadata = OperationsList.getOperationMetadata(markerQAOP.getId());
 		NetcdfFile rdMarkerQANcFile = NetcdfFile.open(markerQAMetadata.getPathToMatrix());
 
@@ -166,7 +166,7 @@ public class OP_MarkerCensus_opt implements MatrixOperation {
 		{
 			// CHECK IF THERE IS ANY DATA LEFT TO PROCESS AFTER PICKING
 
-			//<editor-fold defaultstate="collapsed" desc="PURGE Maps">
+			//<editor-fold defaultstate="expanded" desc="PURGE Maps">
 			MatrixMetadata rdMatrixMetadata = MatricesList.getMatrixMetadataById(rdMatrixId);
 
 			NetcdfFile rdNcFile = NetcdfFile.open(rdMatrixMetadata.getPathToMatrix());
@@ -215,7 +215,7 @@ public class OP_MarkerCensus_opt implements MatrixOperation {
 					log.error("Failed creating file: " + wrNcFile.getLocation(), ex);
 				}
 
-				//<editor-fold defaultstate="collapsed" desc="METADATA WRITER">
+				//<editor-fold defaultstate="expanded" desc="METADATA WRITER">
 				// MARKERSET MARKERID
 				ArrayChar.D2 markersD2 = Utils.writeMapKeysToD2ArrayChar(wrMarkerSetMap, cNetCDF.Strides.STRIDE_MARKER_NAME);
 				int[] markersOrig = new int[]{0, 0};
@@ -250,8 +250,8 @@ public class OP_MarkerCensus_opt implements MatrixOperation {
 				log.info("Done writing Sample Set to operation");
 				//</editor-fold>
 
-				//<editor-fold defaultstate="collapsed" desc="PROCESSOR">
-				//<editor-fold defaultstate="collapsed" desc="GET SAMPLES INFO">
+				//<editor-fold defaultstate="expanded" desc="PROCESSOR">
+				//<editor-fold defaultstate="expanded" desc="GET SAMPLES INFO">
 				Map<SampleKey, Object> samplesInfoMap; // XXX change to Collection<SampleInfo>?
 				List<SampleInfo> sampleInfos = SampleInfoList.getAllSampleInfoFromDBByPoolID(rdMatrixMetadata.getStudyId());
 				if (phenoFile == null) {
@@ -343,7 +343,7 @@ public class OP_MarkerCensus_opt implements MatrixOperation {
 
 						if (countMarkers > 0) {
 
-							//<editor-fold defaultstate="collapsed" desc="CENSUS DATA WRITER">
+							//<editor-fold defaultstate="expanded" desc="CENSUS DATA WRITER">
 							// KNOWN ALLELES
 							Utils.saveCharChunkedMapToWrMatrix(wrNcFile,
 									wrChunkedKnownAllelesMap,
@@ -414,7 +414,7 @@ public class OP_MarkerCensus_opt implements MatrixOperation {
 					for (SampleKey sampleKey : wrSampleSetMap.keySet()) {
 						String[] sampleInfo = (String[]) samplesInfoMap.get(sampleKey);
 
-						//<editor-fold defaultstate="collapsed" desc="THE DECIDER">
+						//<editor-fold defaultstate="expanded" desc="THE DECIDER">
 						CensusDecision decision = CensusDecision.getDecisionByChrAndSex(markerChr, sampleInfo[0]);
 
 						float counter = 1;
@@ -423,7 +423,7 @@ public class OP_MarkerCensus_opt implements MatrixOperation {
 //						}
 						//</editor-fold>
 
-						//<editor-fold defaultstate="collapsed" desc="SUMMING SAMPLESET GENOTYPES">
+						//<editor-fold defaultstate="expanded" desc="SUMMING SAMPLESET GENOTYPES">
 						byte[] tempGT = (byte[]) rdSampleSetMap.get(sampleKey);
 						// Gather alleles different from 0 into a list of known alleles and count the number of appearences
 						if (tempGT[0] != AlleleBytes._0) {
@@ -490,7 +490,7 @@ public class OP_MarkerCensus_opt implements MatrixOperation {
 					if (knownAlleles.size() <= 2) {
 						// Check if there are mismatches in alleles
 
-						//<editor-fold defaultstate="collapsed" desc="KNOW YOUR ALLELES">
+						//<editor-fold defaultstate="expanded" desc="KNOW YOUR ALLELES">
 						List<Integer> AAnumValsAL = new ArrayList<Integer>();
 						List<Integer> AanumValsAL = new ArrayList<Integer>();
 						List<Integer> aanumValsAL = new ArrayList<Integer>();
@@ -533,7 +533,7 @@ public class OP_MarkerCensus_opt implements MatrixOperation {
 						}
 						//</editor-fold>
 
-						//<editor-fold defaultstate="collapsed" desc="CONTINGENCY ALL SAMPLES">
+						//<editor-fold defaultstate="expanded" desc="CONTINGENCY ALL SAMPLES">
 						for (Map.Entry<Integer, Float> samplesEntry : allSamplesGTsTable.entrySet()) {
 							Integer key = samplesEntry.getKey();
 							Integer value = Math.round(samplesEntry.getValue());
@@ -568,7 +568,7 @@ public class OP_MarkerCensus_opt implements MatrixOperation {
 						}
 						//</editor-fold>
 
-						//<editor-fold defaultstate="collapsed" desc="CONTINGENCY CASE SAMPLES">
+						//<editor-fold defaultstate="expanded" desc="CONTINGENCY CASE SAMPLES">
 						for (Map.Entry<Integer, Float> samplesEntry : caseSamplesGTsTable.entrySet()) {
 							Integer key = samplesEntry.getKey();
 							Integer value = Math.round(samplesEntry.getValue());
@@ -603,7 +603,7 @@ public class OP_MarkerCensus_opt implements MatrixOperation {
 						}
 						//</editor-fold>
 
-						//<editor-fold defaultstate="collapsed" desc="CONTINGENCY CTRL SAMPLES">
+						//<editor-fold defaultstate="expanded" desc="CONTINGENCY CTRL SAMPLES">
 						for (Map.Entry<Integer, Float> samplesEntry : ctrlSamplesGTsTable.entrySet()) {
 							Integer key = samplesEntry.getKey();
 							Integer value = Math.round(samplesEntry.getValue());
@@ -638,7 +638,7 @@ public class OP_MarkerCensus_opt implements MatrixOperation {
 						}
 						//</editor-fold>
 
-						//<editor-fold defaultstate="collapsed" desc="CONTINGENCY HW SAMPLES">
+						//<editor-fold defaultstate="expanded" desc="CONTINGENCY HW SAMPLES">
 						for (Map.Entry<Integer, Float> samplesEntry : hwSamplesGTsTable.entrySet()) {
 							Integer key = samplesEntry.getKey();
 							Integer value = Math.round(samplesEntry.getValue());
@@ -769,7 +769,7 @@ public class OP_MarkerCensus_opt implements MatrixOperation {
 				}
 				//</editor-fold>
 
-				//<editor-fold defaultstate="collapsed" desc="LAST CENSUS DATA WRITER">
+				//<editor-fold defaultstate="expanded" desc="LAST CENSUS DATA WRITER">
 				// KNOWN ALLELES
 				Utils.saveCharChunkedMapToWrMatrix(wrNcFile,
 						wrChunkedKnownAllelesMap,

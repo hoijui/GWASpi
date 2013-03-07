@@ -50,7 +50,7 @@ public class Utils {
 	private Utils() {
 	}
 
-	// <editor-fold defaultstate="collapsed" desc="File and directory methods">
+	// <editor-fold defaultstate="expanded" desc="File and directory methods">
 	private static String currentAppPath = "";
 
 	public static String getAppPath() {
@@ -212,7 +212,7 @@ public class Utils {
 	}
 	// </editor-fold>
 
-	// <editor-fold defaultstate="collapsed" desc="Date Time methods">
+	// <editor-fold defaultstate="expanded" desc="Date Time methods">
 	public static String getShortDateTimeForFileName() {
 
 		Date now = new Date();
@@ -309,7 +309,7 @@ public class Utils {
 	}
 	// </editor-fold>
 
-	// <editor-fold defaultstate="collapsed" desc="String manipulation methods">
+	// <editor-fold defaultstate="expanded" desc="String manipulation methods">
 	public static String stripNonAlphaNumeric(String s) {
 		String good =
 				"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -339,7 +339,7 @@ public class Utils {
 	}
 	// </editor-fold>
 
-	//<editor-fold defaultstate="collapsed" desc="SYSTEM MANAGEMENT">
+	//<editor-fold defaultstate="expanded" desc="SYSTEM MANAGEMENT">
 	public static void takeOutTheGarbage() {
 		collectGarbageWithThreadSleep(0); // Poke system to try to Garbage Collect!
 	}
@@ -386,7 +386,7 @@ public class Utils {
 	}
 	//</editor-fold>
 
-	// <editor-fold defaultstate="collapsed" desc="Logging methods">
+	// <editor-fold defaultstate="expanded" desc="Logging methods">
 	public static String createActualMessage(String message) {
 		return ((message == null) || message.isEmpty())
 				? "Operation"

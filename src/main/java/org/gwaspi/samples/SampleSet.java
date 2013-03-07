@@ -67,7 +67,7 @@ public class SampleSet {
 		return matrixMetadata;
 	}
 
-	//<editor-fold defaultstate="collapsed" desc="SAMPLESET FETCHERS">
+	//<editor-fold defaultstate="expanded" desc="SAMPLESET FETCHERS">
 	public Map<SampleKey, Object> getSampleIdSetMap() throws InvalidRangeException {
 		NetcdfFile ncfile = null;
 
@@ -149,7 +149,7 @@ public class SampleSet {
 	}
 	//</editor-fold>
 
-	//<editor-fold defaultstate="collapsed" desc="SAMPLESET FILLERS">
+	//<editor-fold defaultstate="expanded" desc="SAMPLESET FILLERS">
 	public Map<SampleKey, Object> readAllSamplesGTsFromCurrentMarkerToMap(NetcdfFile rdNcFile, Map<SampleKey, Object> rdMap, int markerNb) throws IOException {
 
 		try {
@@ -339,7 +339,7 @@ public class SampleSet {
 	}
 	//</editor-fold>
 
-	//<editor-fold defaultstate="collapsed" desc="SAMPLESET PICKERS">
+	//<editor-fold defaultstate="expanded" desc="SAMPLESET PICKERS">
 	public Map<SampleKey, Object> pickValidSampleSetItemsByDBField(Object poolId, Map<SampleKey, Object> map, String dbField, Set<Object> criteria, boolean include) throws IOException {
 		Map<SampleKey, Object> returnMap = new LinkedHashMap<SampleKey, Object>();
 		List<SampleInfo> sampleInfos = SampleInfoList.getAllSampleInfoFromDBByPoolID(poolId);

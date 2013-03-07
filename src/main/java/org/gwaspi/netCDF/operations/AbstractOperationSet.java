@@ -58,7 +58,7 @@ public class AbstractOperationSet<K> {
 		return opMetadata;
 	}
 
-	//<editor-fold defaultstate="collapsed" desc="OPERATION-SET FETCHERS">
+	//<editor-fold defaultstate="expanded" desc="OPERATION-SET FETCHERS">
 	private static <T> Map<T, Object> wrapToKeyMap(ArrayChar.D2 markersOrSamplesAC, KeyFactory<T> keyFactory) {
 		Map<String, Object> keyStrs = org.gwaspi.netCDF.operations.Utils.writeD2ArrayCharToMapKeys(markersOrSamplesAC);
 		Map<T, Object> reparsedData = new LinkedHashMap<T, Object>();
@@ -188,7 +188,7 @@ public class AbstractOperationSet<K> {
 	}
 	//</editor-fold>
 
-	//<editor-fold defaultstate="collapsed" desc="OPERATION-SET FILLERS">
+	//<editor-fold defaultstate="expanded" desc="OPERATION-SET FILLERS">
 	public Map<K, Object> fillOpSetMapWithVariable(NetcdfFile ncfile, String variable) {
 
 		Variable var = ncfile.findVariable(variable);

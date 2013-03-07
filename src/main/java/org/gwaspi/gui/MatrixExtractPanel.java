@@ -202,7 +202,7 @@ public class MatrixExtractPanel extends JPanel {
 		});
 		scrl_NewMatrixDescription.setViewportView(txtA_NewMatrixDescription);
 
-		//<editor-fold defaultstate="collapsed" desc="LAYOUT NAME&DESC">
+		//<editor-fold defaultstate="expanded" desc="LAYOUT NAME&DESC">
 		GroupLayout pnl_NameAndDescLayout = new GroupLayout(pnl_NameAndDesc);
 		pnl_NameAndDesc.setLayout(pnl_NameAndDescLayout);
 		pnl_NameAndDescLayout.setHorizontalGroup(
@@ -306,7 +306,7 @@ public class MatrixExtractPanel extends JPanel {
 
 		btn_Help.setAction(new BrowserHelpUrlAction(HelpURLs.QryURL.matrixExtract));
 
-		//<editor-fold defaultstate="collapsed" desc="LAYOUT MARKERZONE">
+		//<editor-fold defaultstate="expanded" desc="LAYOUT MARKERZONE">
 		GroupLayout pnl_MarkerZoneLayout = new GroupLayout(pnl_MarkerZone);
 		pnl_MarkerZone.setLayout(pnl_MarkerZoneLayout);
 		pnl_MarkerZoneLayout.setHorizontalGroup(
@@ -423,7 +423,7 @@ public class MatrixExtractPanel extends JPanel {
 
 		btn_SamplesCriteriaBrowse.setAction(new SamplesCriteriaBrowseAction());
 
-		//<editor-fold defaultstate="collapsed" desc="LAYOUT SAMPLEZONE">
+		//<editor-fold defaultstate="expanded" desc="LAYOUT SAMPLEZONE">
 		GroupLayout pnl_SampleZoneLayout = new GroupLayout(pnl_SampleZone);
 		pnl_SampleZone.setLayout(pnl_SampleZoneLayout);
 		pnl_SampleZoneLayout.setHorizontalGroup(
@@ -467,7 +467,7 @@ public class MatrixExtractPanel extends JPanel {
 
 		btn_Go.setAction(new ExtractAction());
 
-		//<editor-fold defaultstate="collapsed" desc="FOOTER">
+		//<editor-fold defaultstate="expanded" desc="FOOTER">
 		GroupLayout pnl_FooterLayout = new GroupLayout(pnl_Footer);
 		pnl_Footer.setLayout(pnl_FooterLayout);
 		pnl_FooterLayout.setHorizontalGroup(
@@ -489,7 +489,7 @@ public class MatrixExtractPanel extends JPanel {
 				.addComponent(btn_Help))));
 		//</editor-fold>
 
-		//<editor-fold defaultstate="collapsed" desc="LAYOUT">
+		//<editor-fold defaultstate="expanded" desc="LAYOUT">
 		GroupLayout layout = new GroupLayout(this);
 		this.setLayout(layout);
 		layout.setHorizontalGroup(
@@ -622,7 +622,7 @@ public class MatrixExtractPanel extends JPanel {
 		}
 	}
 
-	//<editor-fold defaultstate="collapsed" desc="HELPERS">
+	//<editor-fold defaultstate="expanded" desc="HELPERS">
 	private class MarkersCriteriaBrowseAction extends AbstractAction { // FIXME make static
 
 		MarkersCriteriaBrowseAction() {

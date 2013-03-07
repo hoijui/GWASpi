@@ -154,7 +154,7 @@ public class CurrentMatrixPanel extends JPanel {
 
 		btn_Operation1_6.setAction(new TranslateMatricesAction(matrix));
 
-		// <editor-fold defaultstate="collapsed" desc="LAYOUT MATRIX DESCRIPTION">
+		// <editor-fold defaultstate="expanded" desc="LAYOUT MATRIX DESCRIPTION">
 		GroupLayout pnl_MatrixDescLayout = new GroupLayout(pnl_MatrixDesc);
 		pnl_MatrixDesc.setLayout(pnl_MatrixDescLayout);
 		pnl_MatrixDescLayout.setHorizontalGroup(
@@ -189,7 +189,7 @@ public class CurrentMatrixPanel extends JPanel {
 				.addContainerGap()));
 		//</editor-fold>
 
-		//<editor-fold defaultstate="collapsed" desc="LAYOUT BUTTONS">
+		//<editor-fold defaultstate="expanded" desc="LAYOUT BUTTONS">
 		GroupLayout pnl_ButtonsLayout = new GroupLayout(pnl_Buttons);
 		pnl_Buttons.setLayout(pnl_ButtonsLayout);
 		pnl_ButtonsLayout.setHorizontalGroup(
@@ -236,7 +236,7 @@ public class CurrentMatrixPanel extends JPanel {
 				.addGap(0, 77, Short.MAX_VALUE));
 		//</editor-fold>
 
-		//<editor-fold defaultstate="collapsed" desc="LAYOUT NEW OPERATION">
+		//<editor-fold defaultstate="expanded" desc="LAYOUT NEW OPERATION">
 		GroupLayout pnl_NewOperationLayout = new GroupLayout(pnl_NewOperation);
 		pnl_NewOperation.setLayout(pnl_NewOperationLayout);
 		pnl_NewOperationLayout.setHorizontalGroup(
@@ -256,7 +256,7 @@ public class CurrentMatrixPanel extends JPanel {
 				.addContainerGap()));
 		//</editor-fold>
 
-		//<editor-fold defaultstate="collapsed" desc="FOOTER">
+		//<editor-fold defaultstate="expanded" desc="FOOTER">
 		btn_Back.setAction(new BackAction(matrix));
 		btn_Help.setAction(new BrowserHelpUrlAction(HelpURLs.QryURL.currentMatrix));
 
@@ -308,7 +308,7 @@ public class CurrentMatrixPanel extends JPanel {
 		// </editor-fold>
 	}
 
-	//<editor-fold defaultstate="collapsed" desc="HELPERS">
+	//<editor-fold defaultstate="expanded" desc="HELPERS">
 	private static class ExtractMatrixAction extends AbstractAction {
 
 		private Matrix matrix;

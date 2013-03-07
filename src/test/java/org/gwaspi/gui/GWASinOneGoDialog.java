@@ -119,7 +119,7 @@ public class GWASinOneGoDialog extends JFrame {
 
 		GridBagConstraints c = new GridBagConstraints();
 		int rowNb = 0;
-		//<editor-fold defaultstate="collapsed" desc="FORMAT DEPENDANT">
+		//<editor-fold defaultstate="expanded" desc="FORMAT DEPENDANT">
 		lbl_Chromosome.setText("  " + Text.Dialog.chromosome);
 		cmb_Chromosome.setModel(new DefaultComboBoxModel(cNetCDF.Defaults.Chromosomes));
 		cmb_Chromosome.setSelectedIndex(0);
@@ -165,7 +165,7 @@ public class GWASinOneGoDialog extends JFrame {
 		}
 		//</editor-fold>
 
-		//<editor-fold defaultstate="collapsed" desc="FORMAT INDEPENDENT">
+		//<editor-fold defaultstate="expanded" desc="FORMAT INDEPENDENT">
 		chkB_1.setSelected(true);
 		chkB_2.setSelected(true);
 		chkB_3.setSelected(true);

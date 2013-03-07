@@ -80,7 +80,7 @@ public class LoadGTFromPlinkFlatFiles implements GenotypesLoader {
 			sampleKeys.add(sampleInfo.getKey());
 		}
 
-		//<editor-fold defaultstate="collapsed/expanded" desc="CREATE MARKERSET & NETCDF">
+		//<editor-fold defaultstate="expanded" desc="CREATE MARKERSET & NETCDF">
 		MetadataLoaderPlink markerSetLoader = new MetadataLoaderPlink(
 				loadDescription.getGtDirPath(),
 				loadDescription.getAnnotationFilePath(),
@@ -144,7 +144,7 @@ public class LoadGTFromPlinkFlatFiles implements GenotypesLoader {
 		//log.info("Done creating netCDF handle ");
 		//</editor-fold>
 
-		//<editor-fold defaultstate="collapsed" desc="WRITE MATRIX METADATA">
+		//<editor-fold defaultstate="expanded" desc="WRITE MATRIX METADATA">
 		// WRITE SAMPLESET TO MATRIX FROM SAMPLES LIST
 		ArrayChar.D2 samplesD2 = org.gwaspi.netCDF.operations.Utils.writeCollectionToD2ArrayChar(sampleKeys, cNetCDF.Strides.STRIDE_SAMPLE_NAME);
 
@@ -253,7 +253,7 @@ public class LoadGTFromPlinkFlatFiles implements GenotypesLoader {
 
 		// </editor-fold>
 
-		// <editor-fold defaultstate="collapsed" desc="MATRIX GENOTYPES LOAD ">
+		// <editor-fold defaultstate="expanded" desc="MATRIX GENOTYPES LOAD ">
 		GenotypeEncoding guessedGTCode = GenotypeEncoding.UNKNOWN;
 		log.info(Text.All.processing);
 		Map<MarkerKey, Object> mapMarkerSetMap = markerSetLoader.parseOrigMapFile(loadDescription.getGtDirPath());

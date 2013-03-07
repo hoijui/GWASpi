@@ -89,7 +89,7 @@ public class LoadGTFromIlluminaLGENFiles implements GenotypesLoader {
 
 		File[] gtFilesToImport = org.gwaspi.global.Utils.listFiles(loadDescription.getGtDirPath());
 
-		//<editor-fold defaultstate="collapsed" desc="CREATE MARKERSET & NETCDF">
+		//<editor-fold defaultstate="expanded" desc="CREATE MARKERSET & NETCDF">
 		MetadataLoaderIlluminaLGEN markerSetLoader = new MetadataLoaderIlluminaLGEN(loadDescription.getAnnotationFilePath(), loadDescription.getStudyId());
 		Map<MarkerKey, Object> sortedAlleles = markerSetLoader.getSortedMarkerSetWithMetaData();
 
@@ -150,7 +150,7 @@ public class LoadGTFromIlluminaLGENFiles implements GenotypesLoader {
 		//log.info("Done creating netCDF handle ");
 		//</editor-fold>
 
-		//<editor-fold defaultstate="collapsed" desc="WRITE MATRIX METADATA">
+		//<editor-fold defaultstate="expanded" desc="WRITE MATRIX METADATA">
 		// WRITE SAMPLESET TO MATRIX FROM SAMPLES ARRAYLIST
 		ArrayChar.D2 samplesD2 = org.gwaspi.netCDF.operations.Utils.writeCollectionToD2ArrayChar(
 				sampleIds,
@@ -241,7 +241,7 @@ public class LoadGTFromIlluminaLGENFiles implements GenotypesLoader {
 		log.info("Done writing strand info to matrix");
 		// </editor-fold>
 
-		// <editor-fold defaultstate="collapsed" desc="MATRIX GENOTYPES LOAD ">
+		// <editor-fold defaultstate="expanded" desc="MATRIX GENOTYPES LOAD ">
 		// START PROCESS OF LOADING GENOTYPES
 		GenotypeEncoding guessedGTCode = GenotypeEncoding.UNKNOWN;
 		log.info(Text.All.processing);

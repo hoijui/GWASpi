@@ -84,7 +84,7 @@ public class LoadGTFromHapmapFiles implements GenotypesLoader {
 		throw new UnsupportedOperationException("Not supported yet."); // FIXME implement me!
 	}
 
-	//<editor-fold defaultstate="collapsed" desc="PROCESS GENOTYPES">
+	//<editor-fold defaultstate="expanded" desc="PROCESS GENOTYPES">
 	@Override
 	public int processData(GenotypesLoadDescription loadDescription, Collection<SampleInfo> sampleInfos) throws IOException, InvalidRangeException, InterruptedException {
 
@@ -117,7 +117,7 @@ public class LoadGTFromHapmapFiles implements GenotypesLoader {
 
 		Map<MarkerKey, Object> alleles = new LinkedHashMap<MarkerKey, Object>();
 
-		//<editor-fold defaultstate="collapsed/expanded" desc="CREATE MARKERSET & NETCDF">
+		//<editor-fold defaultstate="expanded" desc="CREATE MARKERSET & NETCDF">
 		for (int i = 0; i < gtFilesToImport.length; i++) {
 			MetadataLoaderHapmap markerSetLoader = new MetadataLoaderHapmap(
 					gtFilesToImport[i].getPath(),
@@ -183,7 +183,7 @@ public class LoadGTFromHapmapFiles implements GenotypesLoader {
 		//log.info("Done creating netCDF handle ");
 		//</editor-fold>
 
-		//<editor-fold defaultstate="collapsed" desc="WRITE MATRIX METADATA">
+		//<editor-fold defaultstate="expanded" desc="WRITE MATRIX METADATA">
 		// WRITE SAMPLESET TO MATRIX FROM SAMPLES ARRAYLIST
 		ArrayChar.D2 samplesD2 = org.gwaspi.netCDF.operations.Utils.writeCollectionToD2ArrayChar(AbstractLoadGTFromFiles.extractKeys(sampleInfos), cNetCDF.Strides.STRIDE_SAMPLE_NAME);
 
@@ -283,7 +283,7 @@ public class LoadGTFromHapmapFiles implements GenotypesLoader {
 
 		// </editor-fold>
 
-		// <editor-fold defaultstate="collapsed" desc="MATRIX GENOTYPES LOAD ">
+		// <editor-fold defaultstate="expanded" desc="MATRIX GENOTYPES LOAD ">
 
 		GenotypeEncoding guessedGTCode = GenotypeEncoding.UNKNOWN;
 		int sampleIndex = 0;
@@ -409,7 +409,7 @@ public class LoadGTFromHapmapFiles implements GenotypesLoader {
 	}
 	//</editor-fold>
 
-	//<editor-fold defaultstate="collapsed" desc="HELPER METHODS">
+	//<editor-fold defaultstate="expanded" desc="HELPER METHODS">
 	private Collection<SampleInfo> getHapmapSampleIds(File hapmapGTFile) throws IOException {
 
 		Collection<SampleInfo> uniqueSamples = new LinkedList<SampleInfo>();

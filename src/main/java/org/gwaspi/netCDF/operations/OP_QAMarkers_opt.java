@@ -85,7 +85,7 @@ public class OP_QAMarkers_opt implements MatrixOperation {
 			//log.trace("Done creating netCDF handle: " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
 
 
-			//<editor-fold defaultstate="collapsed" desc="METADATA WRITER">
+			//<editor-fold defaultstate="expanded" desc="METADATA WRITER">
 			// MARKERSET MARKERID
 			ArrayChar.D2 markersD2 = Utils.writeMapKeysToD2ArrayChar(rdMarkerSet.getMarkerIdSetMap(), cNetCDF.Strides.STRIDE_MARKER_NAME);
 			int[] markersOrig = new int[]{0, 0};
@@ -115,7 +115,7 @@ public class OP_QAMarkers_opt implements MatrixOperation {
 			log.info("Done writing SampleSet to matrix");
 			//</editor-fold>
 
-			//<editor-fold defaultstate="collapsed" desc="PROCESSOR">
+			//<editor-fold defaultstate="expanded" desc="PROCESSOR">
 			// INIT MARKER AND SAMPLE INFO
 			rdMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
 
@@ -149,7 +149,7 @@ public class OP_QAMarkers_opt implements MatrixOperation {
 					CensusDecision decision = CensusDecision.getDecisionByChrAndSex(sampleEntry.getValue().toString(), samplesInfoMap.get(sampleKey).toString());
 					//</editor-fold>
 
-					//<editor-fold defaultstate="collapsed" desc="SUMMING SAMPLESET GENOTYPES">
+					//<editor-fold defaultstate="expanded" desc="SUMMING SAMPLESET GENOTYPES">
 					float counter = 1;
 					byte[] tempGT = (byte[]) sampleEntry.getValue();
 					// Gather alleles different from 0 into a list of known alleles and count the number of appearences
@@ -194,7 +194,7 @@ public class OP_QAMarkers_opt implements MatrixOperation {
 				Object[] orderedAlleles = new Object[4];
 				if (knownAlleles.size() <= 2) { // Check if there are mismatches in alleles
 
-					//<editor-fold defaultstate="collapsed" desc="KNOW YOUR ALLELES">
+					//<editor-fold defaultstate="expanded" desc="KNOW YOUR ALLELES">
 					List<Integer> intAA = new ArrayList<Integer>();
 					List<Integer> intAa = new ArrayList<Integer>();
 					List<Integer> intaa = new ArrayList<Integer>();
@@ -261,7 +261,7 @@ public class OP_QAMarkers_opt implements MatrixOperation {
 					}
 					//</editor-fold>
 
-					//<editor-fold defaultstate="collapsed" desc="CONTINGENCY ALL SAMPLES">
+					//<editor-fold defaultstate="expanded" desc="CONTINGENCY ALL SAMPLES">
 					for (Map.Entry<Short, Float> sampleEntry : allSamplesGTsTable.entrySet()) {
 						Integer value = Math.round(sampleEntry.getValue());
 
@@ -360,7 +360,7 @@ public class OP_QAMarkers_opt implements MatrixOperation {
 			}
 			//</editor-fold>
 
-			//<editor-fold defaultstate="collapsed" desc="QA DATA WRITER">
+			//<editor-fold defaultstate="expanded" desc="QA DATA WRITER">
 			// MISSING RATIO
 			Utils.saveDoubleMapD1ToWrMatrix(wrNcFile, wrMarkerSetMissingRatioMap, cNetCDF.Census.VAR_OP_MARKERS_MISSINGRAT);
 

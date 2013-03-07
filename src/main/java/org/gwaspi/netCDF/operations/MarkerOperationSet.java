@@ -29,7 +29,7 @@ public class MarkerOperationSet extends AbstractOperationSet<MarkerKey> {
 		super(studyId, opId, MarkerKey.KEY_FACTORY);
 	}
 
-	//<editor-fold defaultstate="collapsed" desc="CHROMOSOME INFO">
+	//<editor-fold defaultstate="expanded" desc="CHROMOSOME INFO">
 	public Map<String, Object> getChrInfoSetMap() {
 		NetcdfFile ncfile = null;
 		Map<String, Object> chrInfoMap = new LinkedHashMap<String, Object>();
@@ -92,7 +92,7 @@ public class MarkerOperationSet extends AbstractOperationSet<MarkerKey> {
 	}
 	//</editor-fold>
 
-	//<editor-fold defaultstate="collapsed" desc="OPERATION-SET PICKERS">
+	//<editor-fold defaultstate="expanded" desc="OPERATION-SET PICKERS">
 	public Map<MarkerKey, Object> pickValidMarkerSetItemsByValue(NetcdfFile ncfile, String variable, Set<Object> criteria, boolean includes) {
 		Map<MarkerKey, Object> returnMap = new LinkedHashMap<MarkerKey, Object>();
 		Map<MarkerKey, Object> readMap = fillOpSetMapWithVariable(ncfile, variable);

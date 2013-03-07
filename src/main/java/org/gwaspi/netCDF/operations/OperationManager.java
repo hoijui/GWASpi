@@ -23,7 +23,7 @@ public class OperationManager {
 	private OperationManager() {
 	}
 
-	//<editor-fold defaultstate="collapsed" desc="MATRIX CENSUS">
+	//<editor-fold defaultstate="expanded" desc="MATRIX CENSUS">
 	public static int censusCleanMatrixMarkers(
 			int _rdMatrixId,
 			int samplesQAOpId,
@@ -103,7 +103,7 @@ public class OperationManager {
 	}
 	//</editor-fold>
 
-	//<editor-fold defaultstate="collapsed" desc="ANALYSIS">
+	//<editor-fold defaultstate="expanded" desc="ANALYSIS">
 	public static int performCleanAllelicTests(
 			int _rdMatrixId,
 			int censusOpId,
@@ -174,7 +174,7 @@ public class OperationManager {
 	}
 	//</editor-fold>
 
-	//<editor-fold defaultstate="collapsed" desc="OPERATIONS METADATA">
+	//<editor-fold defaultstate="expanded" desc="OPERATIONS METADATA">
 	public static List<String> checkForNecessaryOperations(List<String> necessaryOPs, int matrixId) {
 		try {
 			List<Operation> chkOpAL = OperationsList.getOperationsList(matrixId);

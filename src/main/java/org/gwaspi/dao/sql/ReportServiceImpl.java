@@ -131,7 +131,7 @@ public class ReportServiceImpl implements ReportService {
 		return rs;
 	}
 
-	//<editor-fold defaultstate="collapsed" desc="UTILS">
+	//<editor-fold defaultstate="expanded" desc="UTILS">
 	@Override
 	public <K> Map<K, Object> getSortedMarkerSetByDoubleValue(Map<K, Object> map) {
 		List<Map.Entry<K, Object>> list = new LinkedList<Map.Entry<K, Object>>(map.entrySet());
@@ -165,7 +165,7 @@ public class ReportServiceImpl implements ReportService {
 	}
 	//</editor-fold>
 
-	//<editor-fold defaultstate="collapsed" desc="OPERATIONS METADATA">
+	//<editor-fold defaultstate="expanded" desc="OPERATIONS METADATA">
 	@Override
 	public String getReportNamePrefix(Operation op) {
 		StringBuilder prefix = new StringBuilder();

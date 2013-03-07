@@ -96,7 +96,7 @@ public class MoreInfoForGtFreq extends JFrame {
 		GridBagConstraints c = new GridBagConstraints();
 		int rowNb = 0;
 
-		//<editor-fold defaultstate="collapsed" desc="FORMAT INDEPENDENT">
+		//<editor-fold defaultstate="expanded" desc="FORMAT INDEPENDENT">
 		chkB_1.setSelected(true);
 		chkB_2.setSelected(true);
 		chkB_SMS.setSelected(true);

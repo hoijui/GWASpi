@@ -111,7 +111,7 @@ public class MatrixMergeAll {
 		Map<SampleKey, Object> rdSampleSetMap2 = rdSampleSet2.getSampleIdSetMap();
 		Map<SampleKey, Object> wrComboSampleSetMap = getComboSampleSetWithIndicesArray(rdSampleSetMap1, rdSampleSetMap2);
 
-		//<editor-fold defaultstate="collapsed" desc="CREATE MATRIX">
+		//<editor-fold defaultstate="expanded" desc="CREATE MATRIX">
 		try {
 			// CREATE netCDF-3 FILE
 			boolean hasDictionary = false;
@@ -171,7 +171,7 @@ public class MatrixMergeAll {
 			}
 			//log.trace("Done creating netCDF handle in MatrixSampleJoin: " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
 
-			//<editor-fold defaultstate="collapsed" desc="METADATA WRITER">
+			//<editor-fold defaultstate="expanded" desc="METADATA WRITER">
 			// SAMPLESET
 			ArrayChar.D2 samplesD2 = Utils.writeMapKeysToD2ArrayChar(wrComboSampleSetMap, cNetCDF.Strides.STRIDE_SAMPLE_NAME);
 
@@ -226,11 +226,11 @@ public class MatrixMergeAll {
 			}
 			log.info("Done writing positions to matrix"); // FIXME log system already adds time
 
-			//<editor-fold defaultstate="collapsed" desc="GATHER METADATA FROM BOTH MATRICES">
+			//<editor-fold defaultstate="expanded" desc="GATHER METADATA FROM BOTH MATRICES">
 			rdMarkerSet1.initFullMarkerIdSetMap();
 			rdMarkerSet2.initFullMarkerIdSetMap();
 
-			//<editor-fold defaultstate="collapsed" desc="MARKERSET RSID">
+			//<editor-fold defaultstate="expanded" desc="MARKERSET RSID">
 			rdMarkerSet1.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_RSID);
 			wrComboSortedMarkerSetMap.putAll(rdMarkerSet1.getMarkerIdSetMap());
 			rdMarkerSet2.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_RSID);
@@ -239,7 +239,7 @@ public class MatrixMergeAll {
 			Utils.saveCharMapValueToWrMatrix(wrNcFile, wrComboSortedMarkerSetMap, cNetCDF.Variables.VAR_MARKERS_RSID, cNetCDF.Strides.STRIDE_MARKER_NAME);
 			//</editor-fold>
 
-			//<editor-fold defaultstate="collapsed" desc="MARKERSET DICTIONARY ALLELES">
+			//<editor-fold defaultstate="expanded" desc="MARKERSET DICTIONARY ALLELES">
 			Attribute hasDictionary1 = rdNcFile1.findGlobalAttribute(cNetCDF.Attributes.GLOB_HAS_DICTIONARY);
 			Attribute hasDictionary2 = rdNcFile2.findGlobalAttribute(cNetCDF.Attributes.GLOB_HAS_DICTIONARY);
 			if ((Integer) hasDictionary1.getNumericValue() == 1
@@ -253,7 +253,7 @@ public class MatrixMergeAll {
 			}
 			//</editor-fold>
 
-			//<editor-fold defaultstate="collapsed/expanded" desc="GENOTYPE STRAND">
+			//<editor-fold defaultstate="expanded" desc="GENOTYPE STRAND">
 			rdMarkerSet1.fillInitMapWithVariable(cNetCDF.Variables.VAR_GT_STRAND);
 			wrComboSortedMarkerSetMap.putAll(rdMarkerSet1.getMarkerIdSetMap());
 			rdMarkerSet2.fillInitMapWithVariable(cNetCDF.Variables.VAR_GT_STRAND);
@@ -264,7 +264,7 @@ public class MatrixMergeAll {
 			//</editor-fold>
 			//</editor-fold>
 
-			//<editor-fold defaultstate="collapsed" desc="GENOTYPES WRITER">
+			//<editor-fold defaultstate="expanded" desc="GENOTYPES WRITER">
 			// Get SampleId index from each Matrix
 			// Iterate through wrSampleSetMap
 			int wrSampleIndex = 0;
