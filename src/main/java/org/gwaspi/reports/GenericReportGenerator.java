@@ -145,7 +145,7 @@ public class GenericReportGenerator {
 
 				double[] value = (double[]) entry.getValue();
 				Double pval = (Double) value[1];  // PVAL
-				if (!pval.equals(Double.NaN) && !pval.equals(Double.POSITIVE_INFINITY) && !pval.equals(Double.NEGATIVE_INFINITY)) { //Ignore NaN Pvalues
+				if (!Double.isNaN(pval) && !Double.isInfinite(pval)) { // Ignore NaN Pvalues
 					data[2] = pval;
 					dataSetMap.put(key, data);
 				}
@@ -311,7 +311,7 @@ public class GenericReportGenerator {
 		List<Double> obsChiSqrVals = new ArrayList<Double>();
 		for (double[] vals : gntypAssocChiSqrVals) {
 			Double chiSqr = (Double) vals[0];
-			if (!chiSqr.equals(Double.NaN) && !chiSqr.equals(Double.POSITIVE_INFINITY) && !chiSqr.equals(Double.NEGATIVE_INFINITY)) {
+			if (!Double.isNaN(chiSqr) && !Double.isInfinite(chiSqr)) {
 				obsChiSqrVals.add(chiSqr);
 			}
 		}
@@ -472,9 +472,8 @@ public class GenericReportGenerator {
 					MarkerKey key = entry.getKey();
 					Object[] data = (Object[]) entry.getValue(); //CHR, POS, PVAL
 					double[] value = (double[]) rdAssocMarkerSetMap.get(key);
-					Double pval = (Double) value[1]; //PVAL
-					if (!pval.equals(Double.NaN) && !pval.equals(Double.POSITIVE_INFINITY) && !pval.equals(Double.NEGATIVE_INFINITY)) {
-						// Ignore NaN Pvalues
+					Double pval = (Double) value[1]; // PVAL
+					if (!Double.isNaN(pval) && !Double.isInfinite(pval)) { // Ignore NaN Pvalues
 						data[2] = pval;
 						entry.setValue(data);
 					}
@@ -498,7 +497,7 @@ public class GenericReportGenerator {
 					pVal = (Double) data[2]; // Is allready free of NaN
 				}
 
-				if (pVal < 1 && pVal != Double.POSITIVE_INFINITY && pVal != Double.NEGATIVE_INFINITY) {
+				if (pVal < 1 && !Double.isInfinite(pVal)) {
 					dataSeries.add(position, pVal);
 					labeler.put(chr + "_" + position, tmpMarker);
 					//labeler.put(key, "");
@@ -641,8 +640,7 @@ public class GenericReportGenerator {
 				Object[] data = (Object[]) entry.getValue(); // CHR, POS, PVAL
 				double[] value = (double[]) rdAssocMarkerSetMap.get(key);
 				Double pval = (Double) value[1]; // PVAL
-				if (!pval.equals(Double.NaN) && !pval.equals(Double.POSITIVE_INFINITY) && !pval.equals(Double.NEGATIVE_INFINITY)) { // FIXME use better NaN & co tests
-					// Ignore NaN Pvalues
+				if (!Double.isNaN(pval) && !Double.isInfinite(pval)) { // Ignore NaN Pvalues
 					data[2] = pval;
 					entry.setValue(data);
 				}
@@ -708,10 +706,10 @@ public class GenericReportGenerator {
 			SampleKey tmpSampleKey = entry.getKey();
 			double tmpHetzyVal = hetzygVals.get(count);
 			double tmpMissratVal = missingratVals.get(count);
-			if (tmpHetzyVal == Double.NaN || tmpHetzyVal == Double.NEGATIVE_INFINITY || tmpHetzyVal == Double.POSITIVE_INFINITY) { // FIXME bad NaN test
+			if (Double.isNaN(tmpHetzyVal) || Double.isInfinite(tmpHetzyVal)) {
 				tmpHetzyVal = 0;
 			}
-			if (tmpMissratVal == Double.NaN || tmpMissratVal == Double.NEGATIVE_INFINITY || tmpMissratVal == Double.POSITIVE_INFINITY) { // FIXME bad NaN test
+			if (Double.isNaN(tmpMissratVal) || Double.isInfinite(tmpMissratVal)) {
 				tmpMissratVal = 0;
 			}
 

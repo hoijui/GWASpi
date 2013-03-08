@@ -462,7 +462,7 @@ public final class SampleQAHetzygPlotZoom extends JPanel {
 			double hetzygValue = dataset.getXValue(series, item);
 			double missingRatValue = dataset.getYValue(series, item);
 
-			if (hetzygValue != Double.NaN && missingRatValue != Double.NaN) {
+			if (!Double.isNaN(hetzygValue) && !Double.isNaN(missingRatValue)) {
 				StringBuilder localizer = new StringBuilder();
 				localizer.append(missingRatValue);
 				localizer.append("_");
@@ -520,7 +520,7 @@ public final class SampleQAHetzygPlotZoom extends JPanel {
 			String rsLabel = null;
 			double hetzygValue = dataset.getXValue(series, item);
 			double missingRatValue = dataset.getYValue(series, item);
-			if (hetzygValue != Double.NaN && missingRatValue != Double.NaN) {
+			if (!Double.isNaN(hetzygValue) && !Double.isNaN(missingRatValue)) {
 				StringBuilder localizer = new StringBuilder();
 				localizer.append(missingRatValue);
 				localizer.append("_");
