@@ -6,7 +6,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.EnumSet;
 import java.util.Set;
 import org.gwaspi.constants.cImport;
 import org.gwaspi.constants.cImport.ImportFormat;
@@ -49,6 +49,7 @@ public class SampleInfoCollectorSwitch {
 		FileReader inputFileReader = new FileReader(new File(sampleInfoPath));
 		BufferedReader inputBufferReader = new BufferedReader(inputFileReader);
 		String header = inputBufferReader.readLine();
+		inputBufferReader.close();
 		String[] cVals = header.split(cImport.Separators.separators_CommaSpaceTab_rgxp);
 
 		return (cVals.length == 6);
@@ -149,7 +150,7 @@ public class SampleInfoCollectorSwitch {
 
 	public static Set<SampleInfo.Affection> collectAffectionStates(Collection<SampleInfo> sampleInfos) {
 
-		Set<SampleInfo.Affection> affectionStates = new HashSet<SampleInfo.Affection>();
+		Set<SampleInfo.Affection> affectionStates = EnumSet.noneOf(SampleInfo.Affection.class);
 
 		for (SampleInfo sampleInfo : sampleInfos) {
 			affectionStates.add(sampleInfo.getAffection());
