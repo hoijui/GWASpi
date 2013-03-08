@@ -7,11 +7,11 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.text.ParseException;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Properties;
+import java.util.Map;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
-import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.xml.parsers.ParserConfigurationException;
 import org.gwaspi.constants.cGlobal;
@@ -46,10 +46,14 @@ public class Config {
 	public static final String PROPERTY_LOG_DIR = "LogDir";
 	public static final String PROPERTY_CURRENT_GWASPIDB_VERSION = "CURRENT_GWASPIDB_VERSION";
 
-	private static Properties properties = new Properties();
-	private static JFileChooser fc;
+	/** System wide preferences. */
 	private static Preferences prefs = Preferences.userNodeForPackage(Config.class);
-	private static int JVMbits = Integer.parseInt(System.getProperty("sun.arch.data.model", "32"));
+	/**
+	 * Per software (runtime-)instance preferences.
+	 * XXX We may want to use one map per Thread in the future,
+	 *   possibly by using thread-local variables.
+	 */
+	private static Map<String, Object> instancePrefs = new HashMap<String, Object>();
 	private static boolean startWithGUI = true;
 
 	private Config() {
@@ -60,21 +64,7 @@ public class Config {
 		prefs.put(key, value.toString());
 
 		// CLI & THREAD PREFS
-		if (key.equals(PROPERTY_DATA_DIR)) {
-			StartGWASpi.config_DataDir = (String) value;
-		}
-		if (key.equals(PROPERTY_GENOTYPES_DIR)) {
-			StartGWASpi.config_GTdir = (String) value;
-		}
-		if (key.equals(PROPERTY_EXPORT_DIR)) {
-			StartGWASpi.config_ExportDir = (String) value;
-		}
-		if (key.equals(PROPERTY_REPORTS_DIR)) {
-			StartGWASpi.config_ReportsDir = (String) value;
-		}
-		if (key.equals(PROPERTY_LOG_DIR)) {
-			StartGWASpi.config_LogDir = (String) value;
-		}
+		instancePrefs.put(key, value);
 	}
 
 	public static void setConfigColor(String key, Color value) throws IOException {
@@ -97,76 +87,17 @@ public class Config {
 	}
 
 	public static String getConfigValue(String key, String defaultV) throws IOException {
-		String prop = "";
+
+		String prop = defaultV;
+
 		if (StartGWASpi.guiMode) {
 			// GUI MODE
 			prop = prefs.get(key, defaultV);
 		} else {
-			// CLI MODE
-			if (key.equals(PROPERTY_DATA_DIR)) {
-				if (StartGWASpi.config_DataDir != null) {
-					prop = StartGWASpi.config_DataDir;
-				} else {
-					prop = defaultV;
-				}
-			}
-			if (key.equals(PROPERTY_GENOTYPES_DIR)) {
-				if (StartGWASpi.config_GTdir != null) {
-					prop = StartGWASpi.config_GTdir;
-				} else {
-					prop = defaultV;
-				}
-			}
-			if (key.equals(PROPERTY_EXPORT_DIR)) {
-				if (StartGWASpi.config_ExportDir != null) {
-					prop = StartGWASpi.config_ExportDir;
-				} else {
-					prop = defaultV;
-				}
-			}
-			if (key.equals(PROPERTY_REPORTS_DIR)) {
-				if (StartGWASpi.config_ReportsDir != null) {
-					prop = StartGWASpi.config_ReportsDir;
-				} else {
-					prop = defaultV;
-				}
-			}
-			if (key.equals("CHART_MANHATTAN_PLOT_THRESHOLD")) {
-				prop = defaultV;
-			}
-			if (key.equals("CHART_MANHATTAN_PLOT_BCKG")) {
-				prop = defaultV;
-			}
-			if (key.equals("CHART_MANHATTAN_PLOT_BCKG_ALT")) {
-				prop = defaultV;
-			}
-			if (key.equals("CHART_MANHATTAN_PLOT_DOT")) {
-				prop = defaultV;
-			}
-			if (key.equals("CHART_QQ_PLOT_BCKG")) {
-				prop = defaultV;
-			}
-			if (key.equals("CHART_QQ_PLOT_DOT")) {
-				prop = defaultV;
-			}
-			if (key.equals("CHART_QQ_PLOT_2SIGMA")) {
-				prop = defaultV;
-			}
-			if (key.equals("CHART_SAMPLEQA_HETZYG_THRESHOLD")) {
-				prop = defaultV;
-			}
-			if (key.equals("CHART_SAMPLEQA_MISSING_THRESHOLD")) {
-				prop = defaultV;
-			}
-			if (key.equals(PROPERTY_CURRENT_GWASPIDB_VERSION)) {
-				prop = "2.0.2";
-			}
-			if (key.equals(PROPERTY_LOG_DIR)) {
-				if (StartGWASpi.config_LogDir != null) {
-					prop = StartGWASpi.config_LogDir;
-				} else {
-					prop = defaultV;
-				}
+			if (instancePrefs.containsKey(key)) {
+				prop = instancePrefs.get(key).toString();
+			} else {
+				setConfigValue(key, defaultV);
 			}
 		}
 
@@ -188,12 +119,7 @@ public class Config {
 			prefs.clear();
 		} else {
 			// CLI MODE
-			StartGWASpi.config_DataDir = null;
-			StartGWASpi.config_GTdir = null;
-			StartGWASpi.config_ExportDir = null;
-			StartGWASpi.config_ReportsDir = null;
-			StartGWASpi.config_OfflineHelpDir = null;
-			StartGWASpi.config_LogDir = null;
+			instancePrefs.clear();
 		}
 	}
 

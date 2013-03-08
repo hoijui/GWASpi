@@ -11,7 +11,6 @@ import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.Arrays;
 import java.util.List;
-import java.util.prefs.Preferences;
 import javax.swing.GroupLayout;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -52,21 +51,13 @@ public class StartGWASpi extends JFrame {
 	// create a JFrame to hold everything
 	// TODO convert all this to non-static, and make configuration in general more modular (eg, use swing preferences for everything?
 	public static boolean guiMode = true;
-	public static boolean logToFile = false;
+	private static boolean logToFile = false;
 	public static boolean logOff = false;
-	public static String logPath;
+	private static String logPath;
 	public static JFrame mainGUIFrame = new JFrame(cGlobal.APP_NAME);
 	public static JTabbedPane allTabs = new JTabbedPane();
-	private Preferences prefs;
 	public static long maxHeapSize = 0;
 	public static long maxProcessMarkers = 0;
-	// THIS TO WORK IN CLI MODE
-	public static String config_DataDir;
-	public static String config_GTdir;
-	public static String config_ExportDir;
-	public static String config_ReportsDir;
-	public static String config_OfflineHelpDir;
-	public static String config_LogDir;
 
 	public StartGWASpi() {
 	}
