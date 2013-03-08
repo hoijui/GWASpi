@@ -529,7 +529,8 @@ public class GenericReportGenerator {
 			String netCDFVar,
 			MarkerKey origMarkerKey,
 			int startIdxPos,
-			int requestedSetSize) {
+			int requestedSetSize)
+	{
 		XYDataset resultXYDataset = null;
 
 		try {

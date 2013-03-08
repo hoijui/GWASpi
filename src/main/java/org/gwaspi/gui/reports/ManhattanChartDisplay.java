@@ -253,7 +253,7 @@ public final class ManhattanChartDisplay extends JPanel {
 		double avgSlotsPerPx = (double) (maxPhysPos - startPhysPos) / chrPlotWidth;
 
 		int defaultSliceWidth;
-		// FIXME the following if statement does not make sense (two times hte smae code)
+		// FIXME the following if statement does not make sense (two times the smae code)
 		if (avgMarkersPerPx < 0) {
 			defaultSliceWidth = (int) Math.round(ManhattanPlotZoom.MARKERS_NUM_DEFAULT / avgMarkersPerPx); //width of a slice inside current chr
 		} else {

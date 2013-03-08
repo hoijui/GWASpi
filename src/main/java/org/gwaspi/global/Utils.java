@@ -393,7 +393,7 @@ public class Utils {
 				: message;
 	}
 
-	public static void sysoutStart(String message) { // FIXME We dont need to add a time manually, as the logging system does that for us (also see other methods below)
+	public static void sysoutStart(String message) {
 		log.info("******* Started {} *******", createActualMessage(message));
 	}
 

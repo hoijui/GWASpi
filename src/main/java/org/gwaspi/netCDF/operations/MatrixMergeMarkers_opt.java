@@ -180,7 +180,7 @@ public class MatrixMergeMarkers_opt {
 			} catch (InvalidRangeException ex) {
 				log.error(null, ex);
 			}
-			log.info("Done writing SampleSet to matrix"); // FIXME log system already adds time
+			log.info("Done writing SampleSet to matrix");
 
 			// MARKERSET MARKERID
 			ArrayChar.D2 markersD2 = Utils.writeMapKeysToD2ArrayChar(wrComboSortedMarkerSetMap, cNetCDF.Strides.STRIDE_MARKER_NAME);
@@ -203,7 +203,7 @@ public class MatrixMergeMarkers_opt {
 			} catch (InvalidRangeException ex) {
 				log.error(null, ex);
 			}
-			log.info("Done writing chromosomes to matrix"); // FIXME log system already adds time
+			log.info("Done writing chromosomes to matrix");
 
 			// Set of chromosomes found in matrix along with number of markersinfo
 			org.gwaspi.netCDF.operations.Utils.saveCharMapKeyToWrMatrix(wrNcFile, chrSetMap, cNetCDF.Variables.VAR_CHR_IN_MATRIX, 8);
@@ -221,7 +221,7 @@ public class MatrixMergeMarkers_opt {
 			} catch (InvalidRangeException ex) {
 				log.error(null, ex);
 			}
-			log.info("Done writing positions to matrix"); // FIXME log system already adds time
+			log.info("Done writing positions to matrix");
 
 			//<editor-fold defaultstate="expanded" desc="GATHER METADATA FROM BOTH MATRICES">
 			rdMarkerSet1.initFullMarkerIdSetMap();

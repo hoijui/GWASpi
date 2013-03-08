@@ -338,8 +338,7 @@ public class MatrixDataExtractor_opt {
 				} catch (InvalidRangeException ex) {
 					log.error(null, ex);
 				}
-				log.info("Done writing SampleSet to matrix"); // FIXME log system already adds timestamp
-
+				log.info("Done writing SampleSet to matrix");
 
 				// MARKERSET MARKERID
 				ArrayChar.D2 markersD2 = Utils.writeMapKeysToD2ArrayChar(wrMarkerIdSetMap, cNetCDF.Strides.STRIDE_MARKER_NAME);

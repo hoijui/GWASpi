@@ -131,7 +131,7 @@ public class MatrixTranslator_opt {
 				} catch (InvalidRangeException ex) {
 					log.error(null, ex);
 				}
-				log.info("Done writing SampleSet to matrix"); // FIXME log system already adds time
+				log.info("Done writing SampleSet to matrix");
 
 				// MARKERSET MARKERID
 				ArrayChar.D2 markersD2 = Utils.writeMapKeysToD2ArrayChar(rdMarkerSet.getMarkerIdSetMap(), cNetCDF.Strides.STRIDE_MARKER_NAME);
@@ -288,7 +288,7 @@ public class MatrixTranslator_opt {
 				} catch (InvalidRangeException ex) {
 					log.error(null, ex);
 				}
-				log.info("Done writing SampleSet to matrix"); // FIXME log system already adds time
+				log.info("Done writing SampleSet to matrix");
 
 				// MARKERSET MARKERID
 				ArrayChar.D2 markersD2 = Utils.writeMapKeysToD2ArrayChar(rdMarkerSet.getMarkerIdSetMap(), cNetCDF.Strides.STRIDE_MARKER_NAME);
