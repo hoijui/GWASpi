@@ -286,6 +286,10 @@ public class GenericReportGenerator {
 
 	public static XYPlot buildQQPlot(int opId, String netCDFVar, int df) throws IOException {
 
+		if (df != 1 && df != 2) {
+			throw new IllegalArgumentException("Only df = 1 or 2 is supported; it is " + df);
+		}
+
 		//<editor-fold defaultstate="expanded" desc="PLOT DEFAULTS">
 		Color background = Config.getConfigColor(
 				PLOT_QQ_BACKGROUND_CONFIG,
@@ -318,13 +322,13 @@ public class GenericReportGenerator {
 		Collections.sort(obsChiSqrVals);
 
 		int N = obsChiSqrVals.size();
-		List<Double> expChiSqrDist = null;
+		List<Double> expChiSqrDist;
 		if (df == 1) {
 			expChiSqrDist = Chisquare.getChiSquareDistributionDf1(N, 1.0f);
-		} else if (df == 2) {
+		} else { // df == 2
 			expChiSqrDist = Chisquare.getChiSquareDistributionDf2(N, 1.0f);
 		}
-		Collections.sort(expChiSqrDist); // FIXME might be null -> NPE
+		Collections.sort(expChiSqrDist);
 
 		assocNcFile.close();
 		//</editor-fold>

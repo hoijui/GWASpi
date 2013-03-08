@@ -59,13 +59,13 @@ public class MarkerOperationSet extends AbstractOperationSet<MarkerKey> {
 			}
 
 			// GET INFO FOR EACH CHROMOSOME
-			var = ncfile.findVariable(cNetCDF.Variables.VAR_CHR_INFO); //Nb of markers, first physical position, last physical position, start index number in MarkerSet
+			var = ncfile.findVariable(cNetCDF.Variables.VAR_CHR_INFO); // Nb of markers, first physical position, last physical position, start index number in MarkerSet
+			if (var == null) {
+				return null;
+			}
 			dataType = var.getDataType();
 			varShape = var.getShape();
 
-			if (null == var) { // FIXME this does not make sense here
-				return null;
-			}
 			try {
 				if (dataType == DataType.INT) {
 					ArrayInt.D2 chrSetAI = (ArrayInt.D2) var.read("(0:" + (varShape[0] - 1) + ":1, 0:3:1)");
