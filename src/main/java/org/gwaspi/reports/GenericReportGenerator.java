@@ -441,11 +441,11 @@ public class GenericReportGenerator {
 			Long maxPosition;
 			if (markerId == null) {
 				minPosition = requestedPhysPos;
-				middlePosition = Math.round((double) minPosition + requestedPosWindow / 2);
+				middlePosition = Math.round(minPosition + (double) requestedPosWindow / 2);
 				maxPosition = minPosition + requestedPosWindow;
 			} else {
 				middlePosition = requestedPhysPos;
-				minPosition = Math.round((double) middlePosition - requestedPosWindow / 2);
+				minPosition = Math.round(middlePosition - (double) requestedPosWindow / 2);
 				maxPosition = minPosition + requestedPosWindow;
 			}
 
@@ -558,7 +558,7 @@ public class GenericReportGenerator {
 			if (rdAssocMarkerSetMap.size() < maxPosition) {
 				requestedSetSize = rdAssocMarkerSetMap.size();
 				minPosition = 0;
-				middlePosition = Math.round(requestedSetSize / 2);
+				middlePosition = Math.round((float) requestedSetSize / 2);
 				maxPosition = requestedSetSize;
 			} else {
 				Iterator it = rdAssocMarkerSetMap.keySet().iterator();
