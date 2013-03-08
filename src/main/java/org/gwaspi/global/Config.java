@@ -17,8 +17,10 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.gwaspi.constants.cGlobal;
 import org.gwaspi.database.DerbyDBReshaper;
 import org.gwaspi.gui.StartGWASpi;
+import org.gwaspi.gui.reports.SampleQAHetzygPlotZoom;
 import org.gwaspi.gui.utils.Dialogs;
 import org.gwaspi.model.StudyList;
+import org.gwaspi.reports.GenericReportGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -299,7 +301,7 @@ public class Config {
 
 	public static Document getLocalVersionDom() throws URISyntaxException {
 
-		URL localVersionPath = Config.class.getResource(cGlobal.LOCAL_VERSION_XML); // FIXME remove the getClass() (we already get the class through .class)
+		URL localVersionPath = Config.class.getResource(cGlobal.LOCAL_VERSION_XML);
 		Document localDom = XMLParser.parseXmlFile(localVersionPath.toURI().toString());
 
 		return localDom;
@@ -324,19 +326,6 @@ public class Config {
 		setConfigValue(PROPERTY_REPORTS_DIR, dataDir.getPath() + "/reports");
 		setConfigValue(PROPERTY_LOG_DIR, dataDir.getPath() + "/reports/log");
 
-		// SET CHART PREFERENCES
-		setConfigValue("CHART_MANHATTAN_PLOT_BCKG", "200,200,200");
-		setConfigValue("CHART_MANHATTAN_PLOT_BCKG_ALT", "230,230,230");
-		setConfigValue("CHART_MANHATTAN_PLOT_DOT", "0,0,255");
-		setConfigValue("CHART_MANHATTAN_PLOT_THRESHOLD", "5E-7");
-
-		setConfigValue("CHART_QQ_PLOT_BCKG", "230,230,230");
-		setConfigValue("CHART_QQ_PLOT_DOT", "0,0,255");
-		setConfigValue("CHART_QQ_PLOT_2SIGMA", "170,170,170");
-
-		setConfigValue("CHART_SAMPLEQA_HETZYG_THRESHOLD", "0.5");
-		setConfigValue("CHART_SAMPLEQA_MISSING_THRESHOLD", "0.5");
-
 		Document localDom = getLocalVersionDom();
 		List<Element> localElements = XMLParser.parseDocument(localDom, "GWASpi");
 		setConfigValue(PROPERTY_CURRENT_GWASPIDB_VERSION, XMLParser.getTextValue(localElements.get(0), "GWASpi_DB_Version"));
@@ -348,15 +337,38 @@ public class Config {
 		String lastOpenedDir = getConfigValue(PROPERTY_LAST_OPENED_DIR, cGlobal.HOMEDIR);
 		String lastSelectedNode = getConfigValue(PROPERTY_LAST_SELECTED_NODE, Text.App.appName);
 
-		String lastMnhttBack = getConfigValue("CHART_MANHATTAN_PLOT_BCKG", "200,200,200");
-		String lastMnhttBackAlt = getConfigValue("CHART_MANHATTAN_PLOT_BCKG_ALT", "230,230,230");
-		String lastMnhttDot = getConfigValue("CHART_MANHATTAN_PLOT_DOT", "0,0,255");
-		String lastMnhttThreshold = getConfigValue("CHART_MANHATTAN_PLOT_THRESHOLD", "5E-7");
-		String lastQQBack = getConfigValue("CHART_QQ_PLOT_BCKG", "230,230,230");
-		String lastQQDot = getConfigValue("CHART_QQ_PLOT_DOT", "0,0,255");
-		String lastQQCi = getConfigValue("CHART_QQ_PLOT_2SIGMA", "170,170,170");
-		String lastSampleQAHetzyg = getConfigValue("CHART_SAMPLEQA_HETZYG_THRESHOLD", "0.5");
-		String lastSampleQAMissingratio = getConfigValue("CHART_SAMPLEQA_MISSING_THRESHOLD", "0.5");
+		String lastMnhttThreshold = Config.getConfigValue(
+					GenericReportGenerator.PLOT_MANHATTAN_THRESHOLD_CONFIG,
+					String.valueOf(GenericReportGenerator.PLOT_MANHATTAN_THRESHOLD_DEFAULT));
+		Color lastMnhttBack = Config.getConfigColor(
+					GenericReportGenerator.PLOT_MANHATTAN_BACKGROUND_CONFIG,
+					GenericReportGenerator.PLOT_MANHATTAN_BACKGROUND_DEFAULT);
+		Color lastMnhttBackAlt = Config.getConfigColor(
+					GenericReportGenerator.PLOT_MANHATTAN_BACKGROUND_ALTERNATIVE_CONFIG,
+					GenericReportGenerator.PLOT_MANHATTAN_BACKGROUND_ALTERNATIVE_DEFAULT);
+		Color lastMnhttMain = Config.getConfigColor(
+					GenericReportGenerator.PLOT_MANHATTAN_MAIN_CONFIG,
+					GenericReportGenerator.PLOT_MANHATTAN_MAIN_DEFAULT);
+
+		Color lastQQBack = Config.getConfigColor(
+					GenericReportGenerator.PLOT_QQ_BACKGROUND_CONFIG,
+					GenericReportGenerator.PLOT_QQ_BACKGROUND_DEFAULT);
+		Color lastQQActual = Config.getConfigColor(
+					GenericReportGenerator.PLOT_QQ_ACTUAL_CONFIG,
+					GenericReportGenerator.PLOT_QQ_ACTUAL_DEFAULT);
+		Color lastQQMu = Config.getConfigColor(
+					GenericReportGenerator.PLOT_QQ_MU_CONFIG,
+					GenericReportGenerator.PLOT_QQ_MU_DEFAULT);
+		Color lastQQSigma = Config.getConfigColor(
+					GenericReportGenerator.PLOT_QQ_SIGMA_CONFIG,
+					GenericReportGenerator.PLOT_QQ_SIGMA_DEFAULT);
+
+		String lastSampleQAHetzyg = getConfigValue(
+				SampleQAHetzygPlotZoom.PLOT_SAMPLEQA_HETZYG_THRESHOLD_CONFIG,
+				String.valueOf(SampleQAHetzygPlotZoom.PLOT_SAMPLEQA_HETZYG_THRESHOLD_DEFAULT));
+		String lastSampleQAMissingratio = getConfigValue(
+				SampleQAHetzygPlotZoom.PLOT_SAMPLEQA_MISSING_THRESHOLD_CONFIG,
+				String.valueOf(SampleQAHetzygPlotZoom.PLOT_SAMPLEQA_MISSING_THRESHOLD_DEFAULT));
 
 		clearConfigFile();
 		setConfigValue(PROPERTY_DATA_DIR, dataDir.getPath());
@@ -370,17 +382,18 @@ public class Config {
 		setConfigValue(PROPERTY_LAST_SELECTED_NODE, lastSelectedNode);
 
 		// SET CHART PREFERENCES
-		setConfigValue("CHART_MANHATTAN_PLOT_BCKG", lastMnhttBack);
-		setConfigValue("CHART_MANHATTAN_PLOT_BCKG_ALT", lastMnhttBackAlt);
-		setConfigValue("CHART_MANHATTAN_PLOT_DOT", lastMnhttDot);
-		setConfigValue("CHART_MANHATTAN_PLOT_THRESHOLD", lastMnhttThreshold);
+		setConfigValue(GenericReportGenerator.PLOT_MANHATTAN_THRESHOLD_CONFIG, lastMnhttThreshold);
+		setConfigColor(GenericReportGenerator.PLOT_MANHATTAN_BACKGROUND_CONFIG, lastMnhttBack);
+		setConfigColor(GenericReportGenerator.PLOT_MANHATTAN_BACKGROUND_ALTERNATIVE_CONFIG, lastMnhttBackAlt);
+		setConfigColor(GenericReportGenerator.PLOT_MANHATTAN_MAIN_CONFIG, lastMnhttMain);
 
-		setConfigValue("CHART_QQ_PLOT_BCKG", lastQQBack);
-		setConfigValue("CHART_QQ_PLOT_DOT", lastQQDot);
-		setConfigValue("CHART_QQ_PLOT_2SIGMA", lastQQCi);
+		setConfigColor(GenericReportGenerator.PLOT_QQ_BACKGROUND_CONFIG, lastQQBack);
+		setConfigColor(GenericReportGenerator.PLOT_QQ_ACTUAL_CONFIG, lastQQActual);
+		setConfigColor(GenericReportGenerator.PLOT_QQ_MU_CONFIG, lastQQMu);
+		setConfigColor(GenericReportGenerator.PLOT_QQ_SIGMA_CONFIG, lastQQSigma);
 
-		setConfigValue("CHART_SAMPLEQA_HETZYG_THRESHOLD", lastSampleQAHetzyg);
-		setConfigValue("CHART_SAMPLEQA_MISSING_THRESHOLD", lastSampleQAMissingratio);
+		setConfigValue(SampleQAHetzygPlotZoom.PLOT_SAMPLEQA_HETZYG_THRESHOLD_CONFIG, lastSampleQAHetzyg);
+		setConfigValue(SampleQAHetzygPlotZoom.PLOT_SAMPLEQA_MISSING_THRESHOLD_CONFIG, lastSampleQAMissingratio);
 
 		Document localDom = getLocalVersionDom();
 		List<Element> localElements = XMLParser.parseDocument(localDom, "GWASpi");
