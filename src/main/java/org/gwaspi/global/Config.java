@@ -157,7 +157,7 @@ public class Config {
 				prop = defaultV;
 			}
 			if (key.equals(PROPERTY_CURRENT_GWASPIDB_VERSION)) {
-				prop = defaultV;
+				prop = "2.0.2";
 			}
 			if (key.equals(PROPERTY_LOG_DIR)) {
 				if (StartGWASpi.config_LogDir != null) {
@@ -357,7 +357,6 @@ public class Config {
 		String lastQQCi = getConfigValue("CHART_QQ_PLOT_2SIGMA", "170,170,170");
 		String lastSampleQAHetzyg = getConfigValue("CHART_SAMPLEQA_HETZYG_THRESHOLD", "0.5");
 		String lastSampleQAMissingratio = getConfigValue("CHART_SAMPLEQA_MISSING_THRESHOLD", "0.5");
-		String lastVersionNb = getConfigValue(PROPERTY_CURRENT_GWASPIDB_VERSION, "2.0.1"); // FIXME update this!
 
 		clearConfigFile();
 		setConfigValue(PROPERTY_DATA_DIR, dataDir.getPath());

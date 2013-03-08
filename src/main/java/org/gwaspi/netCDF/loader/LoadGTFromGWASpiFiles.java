@@ -137,7 +137,7 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 		descSB.append(loadDescription.getSampleFilePath());
 		descSB.append(" (Sample Info file)\n");
 
-		if (importMatrixMetadata.getGwaspiDBVersion().equals(Config.getConfigValue(Config.PROPERTY_CURRENT_GWASPIDB_VERSION, "2.0.2"))) { // FIXME use global default value
+		if (importMatrixMetadata.getGwaspiDBVersion().equals(Config.getConfigValue(Config.PROPERTY_CURRENT_GWASPIDB_VERSION, null))) {
 			// COMPARE DATABASE VERSIONS
 			if (!testExcessSamplesInMatrix) {
 				MatricesList.insertMatrixMetadata(new MatrixMetadata(
