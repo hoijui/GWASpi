@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+import org.gwaspi.constants.cImport.ImportFormat;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.global.Text;
@@ -82,7 +83,7 @@ public class Threaded_GWAS extends CommonRunnable {
 						&& affectionStates.contains(SampleInfo.Affection.AFFECTED))
 				{
 					getLog().info("Updating Sample Info in DB");
-					Collection<SampleInfo> sampleInfos = SamplesParserManager.scanGwaspiSampleInfo(phenotypeFile.getPath());
+					Collection<SampleInfo> sampleInfos = SamplesParserManager.scanSampleInfo(ImportFormat.GWASpi, phenotypeFile.getPath());
 					SampleInfoList.insertSampleInfos(matrixId, sampleInfos);
 
 					censusOpId = OperationManager.censusCleanMatrixMarkersByPhenotypeFile(matrixId,

@@ -5,13 +5,14 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.EnumMap;
 import java.util.EnumSet;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.gwaspi.constants.cImport;
 import org.gwaspi.constants.cImport.Annotation.GWASpi;
+import org.gwaspi.constants.cImport.ImportFormat;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleInfo;
@@ -31,6 +32,21 @@ public class SamplesParserManager {
 
 	private static final Logger log
 			= LoggerFactory.getLogger(SamplesParserManager.class);
+
+	private static final Map<ImportFormat, SamplesParser> sampleParsers;
+
+	static {
+		sampleParsers = new EnumMap<ImportFormat, SamplesParser>(ImportFormat.class);
+		sampleParsers.put(ImportFormat.Affymetrix_GenomeWide6, new AffymetrixSamplesParser());
+		sampleParsers.put(ImportFormat.PLINK, new PlinkStandardSamplesParser());
+		sampleParsers.put(ImportFormat.PLINK_Binary, new PlinkFAMSamplesParser());
+		sampleParsers.put(ImportFormat.HAPMAP, new HapmapSamplesParser());
+		sampleParsers.put(ImportFormat.BEAGLE, new BeagleSamplesParser());
+		sampleParsers.put(ImportFormat.HGDP1, new HGDP1SamplesParser());
+		sampleParsers.put(ImportFormat.Illumina_LGEN, new IlluminaLGENSamplesParser());
+		sampleParsers.put(ImportFormat.GWASpi, new GwaspiSamplesParser());
+		sampleParsers.put(ImportFormat.Sequenom, new SequenomSamplesParser());
+	}
 
 	private SamplesParserManager() {
 	}
@@ -60,54 +76,12 @@ public class SamplesParserManager {
 	}
 	//</editor-fold>
 
-	//<editor-fold defaultstate="expanded" desc="FILE SAMPLE INFO SCANNERS">
-	private static final SamplesParser gwaspiSamplesParser = new GwaspiSamplesParser();
-	public static Collection<SampleInfo> scanGwaspiSampleInfo(String sampleInfoPath) throws IOException {
-		return gwaspiSamplesParser.scanSampleInfo(sampleInfoPath);
-	}
-
-	private static final SamplesParser plinkStandardSamplesParser = new PlinkStandardSamplesParser();
-	public static Collection<SampleInfo> scanPlinkStandardSampleInfo(String pedPath) throws IOException {
-		return plinkStandardSamplesParser.scanSampleInfo(pedPath);
-	}
-
-	private static final SamplesParser plinkFAMSamplesParser = new PlinkFAMSamplesParser();
-	public static Collection<SampleInfo> scanPlinkFAMSampleInfo(String famPath) throws IOException {
-		return plinkFAMSamplesParser.scanSampleInfo(famPath);
-	}
-
-	private static final SamplesParser illuminaLGENSamplesParser = new IlluminaLGENSamplesParser();
-	public static Collection<SampleInfo> scanIlluminaLGENSampleInfo(String lgenDir) throws IOException {
-		return illuminaLGENSamplesParser.scanSampleInfo(lgenDir);
-	}
-
-	private static final SamplesParser beagleSamplesParser = new BeagleSamplesParser();
-	public static Collection<SampleInfo> scanBeagleSampleInfo(String beaglePath) throws IOException {
-		return beagleSamplesParser.scanSampleInfo(beaglePath);
-	}
-
-	private static final SamplesParser hapmapSamplesParser = new HapmapSamplesParser();
-	public static Collection<SampleInfo> scanHapmapSampleInfo(String hapmapPath) throws IOException {
-		return hapmapSamplesParser.scanSampleInfo(hapmapPath);
-	}
-
-	private static final SamplesParser hgdp1SamplesParser = new HGDP1SamplesParser();
-	public static Collection<SampleInfo> scanHGDP1SampleInfo(String hgdpPath) throws IOException {
-		return hgdp1SamplesParser.scanSampleInfo(hgdpPath);
-	}
-
-	private static final SamplesParser affymetrixSamplesParser = new AffymetrixSamplesParser();
-	public static Collection<SampleInfo> scanAffymetrixSampleInfo(String genotypesPath) throws IOException {
-		return affymetrixSamplesParser.scanSampleInfo(genotypesPath);
-	}
-
-	private static final SamplesParser sequenomSamplesParser = new SequenomSamplesParser();
-	public static Collection<SampleInfo> scanSequenomSampleInfo(String genotypePath) throws IOException {
-		return sequenomSamplesParser.scanSampleInfo(genotypePath);
+	public static Collection<SampleInfo> scanSampleInfo(ImportFormat importFormat, String genotypePath) throws IOException {
+		return sampleParsers.get(importFormat).scanSampleInfo(genotypePath);
 	}
 
 	public static Set<SampleInfo.Affection> scanSampleInfoAffectionStates(String sampleInfoPath) throws IOException {
-		Set<SampleInfo.Affection> resultHS = new HashSet<SampleInfo.Affection>();
+		Set<SampleInfo.Affection> resultHS = EnumSet.noneOf(SampleInfo.Affection.class);
 
 		File sampleFile = new File(sampleInfoPath);
 		FileReader inputFileReader = new FileReader(sampleFile);
@@ -124,5 +98,4 @@ public class SamplesParserManager {
 
 		return resultHS;
 	}
-	//</editor-fold>
 }

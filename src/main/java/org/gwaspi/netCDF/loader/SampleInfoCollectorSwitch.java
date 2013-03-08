@@ -67,79 +67,43 @@ public class SampleInfoCollectorSwitch {
 
 		switch (format) {
 			case Affymetrix_GenomeWide6:
-				log.info(Text.Matrix.scanAffectionStandby);
-				if (dummySamples) {
-					sampleInfos = SamplesParserManager.scanAffymetrixSampleInfo(altSampleInfoPath2);
-				} else {
-					Collection<SampleInfo> dummySamplesInfos = SamplesParserManager.scanAffymetrixSampleInfo(altSampleInfoPath2);
-					sampleInfos = SamplesParserManager.scanGwaspiSampleInfo(sampleInfoPath);
-					checkMissingSampleInfo(dummySamplesInfos, sampleInfos);
-				}
-				break;
 			case PLINK:
+			case Illumina_LGEN:
 				log.info(Text.Matrix.scanAffectionStandby);
 				if (dummySamples) {
-					sampleInfos = SamplesParserManager.scanPlinkStandardSampleInfo(altSampleInfoPath2);
+					sampleInfos = SamplesParserManager.scanSampleInfo(format, altSampleInfoPath2);
 				} else {
-					Collection<SampleInfo> dummySamplesInfos = SamplesParserManager.scanPlinkStandardSampleInfo(altSampleInfoPath2);
-					sampleInfos = SamplesParserManager.scanGwaspiSampleInfo(sampleInfoPath);
+					Collection<SampleInfo> dummySamplesInfos = SamplesParserManager.scanSampleInfo(format, altSampleInfoPath2);
+					sampleInfos = SamplesParserManager.scanSampleInfo(ImportFormat.GWASpi, sampleInfoPath);
 					checkMissingSampleInfo(dummySamplesInfos, sampleInfos);
 				}
 				break;
 			case PLINK_Binary:
 				log.info(Text.Matrix.scanAffectionStandby);
 				if (checkIsPlinkFAMFile(sampleInfoPath)) {
-					sampleInfos = SamplesParserManager.scanPlinkFAMSampleInfo(sampleInfoPath);
+					sampleInfos = SamplesParserManager.scanSampleInfo(format, sampleInfoPath);
 				} else {
 					// It is a SampleInfo file
-					sampleInfos = SamplesParserManager.scanGwaspiSampleInfo(sampleInfoPath);
+					sampleInfos = SamplesParserManager.scanSampleInfo(ImportFormat.GWASpi, sampleInfoPath);
 				}
 				break;
 			case HAPMAP:
-				log.info(Text.Matrix.scanAffectionStandby);
-				if (dummySamples) {
-					sampleInfos = SamplesParserManager.scanHapmapSampleInfo(altSampleInfoPath1);
-				} else {
-					Collection<SampleInfo> dummySamplesInfos = SamplesParserManager.scanHapmapSampleInfo(altSampleInfoPath1);
-					sampleInfos = SamplesParserManager.scanGwaspiSampleInfo(sampleInfoPath);
-					checkMissingSampleInfo(dummySamplesInfos, sampleInfos);
-				}
-				break;
 			case BEAGLE:
-				log.info(Text.Matrix.scanAffectionStandby);
-				if (dummySamples) {
-					sampleInfos = SamplesParserManager.scanBeagleSampleInfo(altSampleInfoPath1);
-				} else {
-					Collection<SampleInfo> dummySamplesInfos = SamplesParserManager.scanBeagleSampleInfo(altSampleInfoPath1);
-					sampleInfos = SamplesParserManager.scanGwaspiSampleInfo(sampleInfoPath);
-					checkMissingSampleInfo(dummySamplesInfos, sampleInfos);
-				}
-				break;
 			case HGDP1:
 				log.info(Text.Matrix.scanAffectionStandby);
 				if (dummySamples) {
-					sampleInfos = SamplesParserManager.scanHGDP1SampleInfo(altSampleInfoPath1);
+					sampleInfos = SamplesParserManager.scanSampleInfo(format, altSampleInfoPath1);
 				} else {
-					Collection<SampleInfo> dummySamplesInfos = SamplesParserManager.scanHGDP1SampleInfo(altSampleInfoPath1);
-					sampleInfos = SamplesParserManager.scanGwaspiSampleInfo(sampleInfoPath);
+					Collection<SampleInfo> dummySamplesInfos = SamplesParserManager.scanSampleInfo(format, altSampleInfoPath1);
+					sampleInfos = SamplesParserManager.scanSampleInfo(ImportFormat.GWASpi, sampleInfoPath);
 					checkMissingSampleInfo(dummySamplesInfos, sampleInfos);
 				}
 				break;
 			case GWASpi:
-				sampleInfos = SamplesParserManager.scanGwaspiSampleInfo(sampleInfoPath);
-				break;
-			case Illumina_LGEN:
-				log.info(Text.Matrix.scanAffectionStandby);
-				if (dummySamples) {
-					sampleInfos = SamplesParserManager.scanIlluminaLGENSampleInfo(altSampleInfoPath2);
-				} else {
-					Collection<SampleInfo> dummySamplesInfos = SamplesParserManager.scanIlluminaLGENSampleInfo(altSampleInfoPath2);
-					sampleInfos = SamplesParserManager.scanGwaspiSampleInfo(sampleInfoPath);
-					checkMissingSampleInfo(dummySamplesInfos, sampleInfos);
-				}
+				sampleInfos = SamplesParserManager.scanSampleInfo(format, sampleInfoPath);
 				break;
 			case Sequenom:
-				sampleInfos = SamplesParserManager.scanGwaspiSampleInfo(sampleInfoPath);
+				sampleInfos = SamplesParserManager.scanSampleInfo(ImportFormat.GWASpi, sampleInfoPath); // FIXME why not format instead of ImportFormat.GWASpi?
 				break;
 			default:
 				sampleInfos = new ArrayList<SampleInfo>();

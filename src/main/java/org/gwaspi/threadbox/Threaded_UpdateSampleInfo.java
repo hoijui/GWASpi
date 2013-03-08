@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
+import org.gwaspi.constants.cImport.ImportFormat;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleInfoList;
@@ -44,7 +45,7 @@ public class Threaded_UpdateSampleInfo extends CommonRunnable {
 
 	protected void runInternal(SwingWorkerItem thisSwi) throws Exception {
 
-		Collection<SampleInfo> sampleInfos = SamplesParserManager.scanGwaspiSampleInfo(sampleInfoFile.getPath());
+		Collection<SampleInfo> sampleInfos = SamplesParserManager.scanSampleInfo(ImportFormat.GWASpi, sampleInfoFile.getPath());
 		List<String> updatedSamples = SampleInfoList.insertSampleInfos(poolId, sampleInfos);
 
 		// DO NOT! Write new reports of SAMPLE QA
