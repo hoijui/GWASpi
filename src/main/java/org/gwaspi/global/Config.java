@@ -50,10 +50,31 @@ public class Config {
 	private static Preferences prefs = Preferences.userNodeForPackage(Config.class);
 	/**
 	 * Per software (runtime-)instance preferences.
-	 * XXX We may want to use one map per Thread in the future,
-	 *   possibly by using thread-local variables.
+	 * We use per-thread prefs, initialized with the values from the main thread
+	 * (so they use at least the same data-dir, for example).
 	 */
-	private static Map<String, Object> instancePrefs = new HashMap<String, Object>();
+	private static final ThreadLocal<Map<String, Object>> instancePrefs =
+			new ThreadLocal<Map<String, Object>>() {
+
+				private Map<String, Object> mainPrefs = null;
+
+				@Override
+				protected Map<String, Object> initialValue() {
+
+					Map<String, Object> prefs;
+
+					if (mainPrefs == null) {
+						// this will be calle for the main thread,
+						// initilaizing the prefs
+						prefs = new HashMap<String, Object>();
+						mainPrefs = prefs;
+					} else {
+						prefs = new HashMap<String, Object>(mainPrefs);
+					}
+
+					return prefs;
+				}
+			};
 	private static boolean startWithGUI = true;
 
 	private Config() {
@@ -64,7 +85,7 @@ public class Config {
 		prefs.put(key, value.toString());
 
 		// CLI & THREAD PREFS
-		instancePrefs.put(key, value);
+		instancePrefs.get().put(key, value);
 	}
 
 	public static void setConfigColor(String key, Color value) throws IOException {
@@ -94,8 +115,8 @@ public class Config {
 			// GUI MODE
 			prop = prefs.get(key, defaultV);
 		} else {
-			if (instancePrefs.containsKey(key)) {
-				prop = instancePrefs.get(key).toString();
+			if (instancePrefs.get().containsKey(key)) {
+				prop = instancePrefs.get().get(key).toString();
 			} else {
 				setConfigValue(key, defaultV);
 			}
@@ -119,7 +140,7 @@ public class Config {
 			prefs.clear();
 		} else {
 			// CLI MODE
-			instancePrefs.clear();
+			instancePrefs.get().clear();
 		}
 	}
 
@@ -259,7 +280,7 @@ public class Config {
 		StudyList.createStudyLogFile(0);
 	}
 
-	protected static void updateConfigDataDirs(File dataDir) throws IOException, BackingStoreException, URISyntaxException {
+	private static void updateConfigDataDirs(File dataDir) throws IOException, BackingStoreException, URISyntaxException {
 		String lastOpenedDir = getConfigValue(PROPERTY_LAST_OPENED_DIR, cGlobal.HOMEDIR);
 		String lastSelectedNode = getConfigValue(PROPERTY_LAST_SELECTED_NODE, Text.App.appName);
 
