@@ -88,6 +88,7 @@ public class Report_HardyWeinbergSummary extends JPanel {
 
 		pnl_Summary = new JPanel();
 		txt_NRows = new JTextField();
+		txt_NRows.setInputVerifier(new IntegerInputVerifier());
 		txt_NRows.addFocusListener(new FocusAdapter() {
 			@Override
 			public void focusGained(FocusEvent evt) {
@@ -269,8 +270,8 @@ public class Report_HardyWeinbergSummary extends JPanel {
 						if (l == null) {
 							break;
 						}
-						Object[] row = new Object[9];
 						String[] cVals = l.split(cImport.Separators.separators_SpaceTab_rgxp);
+						Object[] row = new Object[9]; // FIXME use a constant
 
 						String markerId = cVals[0];
 						String rsId = cVals[1];
@@ -289,7 +290,7 @@ public class Report_HardyWeinbergSummary extends JPanel {
 						row[4] = minAllele;
 						row[5] = majAllele;
 
-	//					if (!cOSNAME.contains("Windows")){
+	//					if (!cGlobal.OSNAME.contains("Windows")){
 						Double hwPvalCtrl_f;
 						Double obsHetzyCtrl_f;
 						Double expHetzyCtrl_f;
@@ -324,12 +325,13 @@ public class Report_HardyWeinbergSummary extends JPanel {
 						count++;
 					}
 
-					Object[][] tableMatrix = new Object[tableRowAL.size()][9];
+					Object[][] tableMatrix = new Object[tableRowAL.size()][9]; // FIXME use constant
 					for (int i = 0; i < tableRowAL.size(); i++) {
 						tableMatrix[i] = tableRowAL.get(i);
 					}
 
-					String[] columns = new String[]{Text.Reports.markerId,
+					String[] columns = new String[]{
+						Text.Reports.markerId,
 						Text.Reports.rsId,
 						Text.Reports.chr,
 						Text.Reports.pos,
@@ -344,7 +346,7 @@ public class Report_HardyWeinbergSummary extends JPanel {
 					reportTable.setModel(model);
 
 					//<editor-fold defaultstate="expanded" desc="Linux Sorter">
-	//				if (!cOSNAME.contains("Windows")){
+	//				if (!cGlobal.OSNAME.contains("Windows")) {
 	//					RowSorter<TableModel> sorter = new TableRowSorter<TableModel>(model);
 					TableRowSorter sorter = new TableRowSorter(model) {
 						Comparator<Object> comparator = new Comparator<Object>() {
@@ -354,7 +356,7 @@ public class Report_HardyWeinbergSummary extends JPanel {
 									Double d2 = Double.parseDouble(o2.toString());
 									return d1.compareTo(d2);
 								} catch (NumberFormatException ex) {
-										log.warn(null, ex);
+									log.warn(null, ex);
 									try {
 										Integer i1 = Integer.parseInt(o1.toString());
 										Integer i2 = Integer.parseInt(o2.toString());

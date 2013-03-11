@@ -168,9 +168,7 @@ public class Report_QASamplesSummary extends JPanel {
 				new String[]{"", "", "", ""}));
 		scrl_ReportTable.setViewportView(tbl_ReportTable);
 
-
 		//<editor-fold defaultstate="expanded" desc="FOOTER">
-
 		btn_Save.setAction(new SaveAsAction(_studyId, _qaFileName, tbl_ReportTable, txt_NRows));
 
 		btn_Back.setAction(new BackAction(opId));
@@ -297,7 +295,7 @@ public class Report_QASamplesSummary extends JPanel {
 						count++;
 					}
 
-					Object[][] tableMatrix = new Object[tableRowAL.size()][12];
+					Object[][] tableMatrix = new Object[tableRowAL.size()][12]; // FIXME use constant
 					for (int i = 0; i < tableRowAL.size(); i++) {
 						tableMatrix[i] = tableRowAL.get(i);
 					}
@@ -355,7 +353,7 @@ public class Report_QASamplesSummary extends JPanel {
 					};
 
 					reportTable.setRowSorter(sorter);
-	//                }
+	//				}
 					//</editor-fold>
 				}
 			} catch (IOException ex) {

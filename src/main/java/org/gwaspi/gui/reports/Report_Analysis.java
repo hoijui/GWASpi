@@ -283,7 +283,7 @@ public abstract class Report_Analysis extends JPanel {
 		}
 	}
 
-	protected void initChrSetInfo() throws IOException {
+	protected final void initChrSetInfo() throws IOException {
 		MarkerOperationSet opSet = new MarkerOperationSet(studyId, opId);
 		chrSetInfoMap = opSet.getChrInfoSetMap(); //Nb of markers, first physical position, last physical position, start index number in MarkerSet,
 	}

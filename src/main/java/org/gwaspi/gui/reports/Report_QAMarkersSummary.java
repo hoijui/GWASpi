@@ -268,8 +268,8 @@ public class Report_QAMarkersSummary extends JPanel {
 						if (l == null) {
 							break;
 						}
-						Object[] row = new Object[7];
 						String[] cVals = l.split(cImport.Separators.separators_SpaceTab_rgxp);
+						Object[] row = new Object[7]; // FIXME use constant
 
 						String markerId = cVals[0];
 						String rsId = cVals[1];
@@ -303,7 +303,7 @@ public class Report_QAMarkersSummary extends JPanel {
 						count++;
 					}
 
-					Object[][] tableMatrix = new Object[tableRowAL.size()][7];
+					Object[][] tableMatrix = new Object[tableRowAL.size()][7]; // FIXME use constant
 					for (int i = 0; i < tableRowAL.size(); i++) {
 						tableMatrix[i] = tableRowAL.get(i);
 					}
@@ -321,7 +321,7 @@ public class Report_QAMarkersSummary extends JPanel {
 					reportTable.setModel(model);
 
 					//<editor-fold defaultstate="expanded" desc="Linux Sorter">
-	//				if (!cOSNAME.contains("Windows")){
+	//				if (!cGlobal.OSNAME.contains("Windows")) {
 	//					RowSorter<TableModel> sorter = new TableRowSorter<TableModel>(model);
 					TableRowSorter sorter = new TableRowSorter(model) {
 						Comparator<Object> comparator = new Comparator<Object>() {
