@@ -454,7 +454,7 @@ public class MatrixMergeAll {
 		return resultMap;
 	}
 
-	private static Map<SampleKey, Object> getComboSampleSetWithIndicesArray(Map<SampleKey, Object> sampleSetMap1, Map<SampleKey, Object> sampleSetMap2) {
+	static Map<SampleKey, Object> getComboSampleSetWithIndicesArray(Map<SampleKey, Object> sampleSetMap1, Map<SampleKey, Object> sampleSetMap2) {
 		Map<SampleKey, Object> resultMap = new LinkedHashMap<SampleKey, Object>();
 
 		int wrPos = 0;

@@ -94,7 +94,7 @@ public class MatrixMergeSamples_opt {
 		// Get combo SampleSet with position[] (wrPos, rdMatrixNb, rdPos)
 		Map<SampleKey, Object> rdSampleSetMap1 = rdSampleSet1.getSampleIdSetMap();
 		Map<SampleKey, Object> rdSampleSetMap2 = rdSampleSet2.getSampleIdSetMap();
-		Map<SampleKey, Object> wrComboSampleSetMap = getComboSampleSetwithPosArray(rdSampleSetMap1, rdSampleSetMap2);
+		Map<SampleKey, Object> wrComboSampleSetMap = MatrixMergeAll.getComboSampleSetWithIndicesArray(rdSampleSetMap1, rdSampleSetMap2);
 
 		rdwrMarkerSet1.initFullMarkerIdSetMap();
 		rdMarkerSet2.initFullMarkerIdSetMap();
@@ -297,38 +297,6 @@ public class MatrixMergeSamples_opt {
 		}
 
 		return resultMatrixId;
-	}
-
-	private static Map<SampleKey, Object> getComboSampleSetwithPosArray(Map<SampleKey, Object> sampleSetMap1, Map<SampleKey, Object> sampleSetMap2) {
-		Map<SampleKey, Object> resultMap = new LinkedHashMap<SampleKey, Object>();
-
-		int wrPos = 0;
-		int rdPos = 0;
-		for (SampleKey key : sampleSetMap1.keySet()) {
-			int[] position = new int[]{1, rdPos, wrPos}; // rdMatrixNb, rdPos, wrPos
-			resultMap.put(key, position);
-			wrPos++;
-			rdPos++;
-		}
-
-		rdPos = 0;
-		for (SampleKey key : sampleSetMap2.keySet()) {
-			int[] position;
-			// IF SAMPLE ALLREADY EXISTS IN MATRIX1 SUBSTITUTE VALUES WITH MATRIX2
-			if (resultMap.containsKey(key)) {
-				position = (int[]) resultMap.get(key);
-				position[0] = 2; // rdMatrixNb
-				position[1] = rdPos; // rdPos
-			} else {
-				position = new int[]{2, rdPos, wrPos}; // rdMatrixNb, rdPos, wrPos
-			}
-
-			resultMap.put(key, position);
-			wrPos++;
-			rdPos++;
-		}
-
-		return resultMap;
 	}
 
 	private double[] checkForMismatches(int wrMatrixId) throws IOException, InvalidRangeException {
