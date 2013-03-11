@@ -35,6 +35,27 @@ public class PlinkBinaryFormatter implements Formatter {
 
 	private final Logger log = LoggerFactory.getLogger(PlinkBinaryFormatter.class);
 
+	/**
+	 * If true, then we write the Eigensoft format, else PLink Binary.
+	 */
+	private final boolean eigensoft;
+
+	/**
+	 * Creates a new PLink Binary or Eigensoft formatter.
+	 * @param eigensoft if true, then we write the Eigensoft format,
+	 *   else PLink Binary.
+	 */
+	public PlinkBinaryFormatter(boolean eigensoft) {
+		this.eigensoft = eigensoft;
+	}
+
+	/**
+	 * Creates a new PLink Binary formatter.
+	 */
+	public PlinkBinaryFormatter() {
+		this(false);
+	}
+
 	@Override
 	public boolean export(
 			String exportPath,
@@ -59,7 +80,7 @@ public class PlinkBinaryFormatter implements Formatter {
 		FileWriter mapFW = new FileWriter(filePath);
 		BufferedWriter mapBW = new BufferedWriter(mapFW);
 
-		//BIM files
+		// BIM files
 		//     chromosome (1-22, X(23), Y(24), XY(25), MT(26) or 0 if unplaced)
 		//     rs# or snp identifier
 		//     Genetic distance (morgans)
@@ -67,17 +88,17 @@ public class PlinkBinaryFormatter implements Formatter {
 		//     Allele 1
 		//     Allele 2
 
-		//PURGE MARKERSET
+		// PURGE MARKERSET
 		rdMarkerSet.initFullMarkerIdSetMap();
 		rdMarkerSet.fillWith("");
 
-		//MARKERSET CHROMOSOME
+		// MARKERSET CHROMOSOME
 		rdMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
 
-		//MARKERSET RSID
+		// MARKERSET RSID
 		rdMarkerSet.appendVariableToMarkerSetMapValue(cNetCDF.Variables.VAR_MARKERS_RSID, sep);
 
-		//DEFAULT GENETIC DISTANCE = 0
+		// DEFAULT GENETIC DISTANCE = 0
 		for (Map.Entry<?, Object> entry : rdMarkerSet.getMarkerIdSetMap().entrySet()) {
 			StringBuilder value = new StringBuilder(entry.getValue().toString());
 			value.append(sep);
@@ -85,10 +106,10 @@ public class PlinkBinaryFormatter implements Formatter {
 			entry.setValue(value.toString());
 		}
 
-		//MARKERSET POSITION
+		// MARKERSET POSITION
 		rdMarkerSet.appendVariableToMarkerSetMapValue(cNetCDF.Variables.VAR_MARKERS_POS, sep);
 
-		//ALLELES
+		// ALLELES
 		List<Operation> operations = OperationsList.getOperationsList(rdMatrixMetadata.getMatrixId());
 		int markersQAOpId = OperationsList.getIdOfLastOperationTypeOccurance(operations, OPType.MARKER_QA);
 
@@ -119,20 +140,17 @@ public class PlinkBinaryFormatter implements Formatter {
 			mapBW.append("\n");
 		}
 
-
 		mapBW.close();
 		mapFW.close();
 		org.gwaspi.global.Utils.sysoutCompleted("Completed exporting BIM file to " + filePath);
-
 		//</editor-fold>
 
 		//<editor-fold defaultstate="expanded" desc="BED FILE">
-
 		// THIS SHOULD BE MULTIPLE OF SAMPLE SET LENGTH
 		int nbOfSamples = rdSampleSet.getSampleSetSize();
 		int bytesPerSampleSet = ((int) Math.ceil((double) nbOfSamples / 8)) * 2;
 		int nbOfMarkers = rdMarkerSet.getMarkerSetSize();
-		int nbRowsPerChunk = Math.round((float)org.gwaspi.gui.StartGWASpi.maxProcessMarkers / nbOfSamples);
+		int nbRowsPerChunk = Math.round((float) org.gwaspi.gui.StartGWASpi.maxProcessMarkers / nbOfSamples);
 		if (nbRowsPerChunk > nbOfMarkers) {
 			nbRowsPerChunk = nbOfMarkers;
 		}
@@ -148,8 +166,8 @@ public class PlinkBinaryFormatter implements Formatter {
 //          01101100 00011011   00000001   11011100 00001111 11100111
 //                                              (SNP-major)
 
-		data_out.writeByte(108); // magic number
-		data_out.writeByte(27); // magic number
+		data_out.writeByte(108); // TODO document magic number
+		data_out.writeByte(27); // TODO document magic number
 		data_out.writeByte(1); // mode SNP-major
 
 		int markerNb = 0;
@@ -171,7 +189,7 @@ public class PlinkBinaryFormatter implements Formatter {
 					if (rdSampleGts.hasNext()) {
 						byte[] tempGT = (byte[]) rdSampleGts.next();
 						byte[] translatedByte = translateTo00011011Byte(tempGT, tmpMinorAllele, tmpMajorAllele);
-						tetraGTs.insert(0, translatedByte[0]); //REVERSE ORDER, AS PER PLINK SPECS http://pngu.mgh.harvard.edu/~purcell/plink/binary.shtml
+						tetraGTs.insert(0, translatedByte[0]); // REVERSE ORDER, AS PER PLINK SPECS http://pngu.mgh.harvard.edu/~purcell/plink/binary.shtml
 						tetraGTs.insert(0, translatedByte[1]);
 					}
 				}
@@ -222,7 +240,12 @@ public class PlinkBinaryFormatter implements Formatter {
 			String fatherId = sampleInfo.getFatherId();
 			String motherId = sampleInfo.getMotherId();
 			String sex = sampleInfo.getSexStr();
-			String affection = sampleInfo.getAffectionStr();
+			String affectionOrExpPhenotype;
+			if (eigensoft) {
+				affectionOrExpPhenotype = sampleInfo.getField(phenotype).toString();
+			} else {
+				affectionOrExpPhenotype = sampleInfo.getAffectionStr();
+			}
 
 			// FAM files
 			// Family ID
@@ -230,7 +253,7 @@ public class PlinkBinaryFormatter implements Formatter {
 			// Paternal ID
 			// Maternal ID
 			// Sex (1=male; 2=female; other=unknown)
-			// Affection
+			// Affection (PLink Binary) / Phenotype (Eigensoft)
 
 			StringBuilder line = new StringBuilder();
 			line.append(familyId);
@@ -243,8 +266,7 @@ public class PlinkBinaryFormatter implements Formatter {
 			line.append(sep);
 			line.append(sex);
 			line.append(sep);
-			line.append(affection);
-
+			line.append(affectionOrExpPhenotype);
 
 			tfamBW.append(line);
 			tfamBW.append("\n");

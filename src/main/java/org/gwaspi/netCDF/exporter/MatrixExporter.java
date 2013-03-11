@@ -48,7 +48,7 @@ public class MatrixExporter {
 		formatters.put(ExportFormat.PLINK, new PlinkFormatter());
 		formatters.put(ExportFormat.PLINK_Transposed, new PlinkTransposedFormatter());
 		formatters.put(ExportFormat.PLINK_Binary, new PlinkBinaryFormatter());
-		formatters.put(ExportFormat.Eigensoft_Eigenstrat, new EigensoftFormatter());
+		formatters.put(ExportFormat.Eigensoft_Eigenstrat, new PlinkBinaryFormatter(true));
 		formatters.put(ExportFormat.BEAGLE, new BeagleFormatter());
 		formatters.put(ExportFormat.GWASpi, new GWASpiFormatter());
 		formatters.put(ExportFormat.Spreadsheet, new SpreadsheetFormatter());
