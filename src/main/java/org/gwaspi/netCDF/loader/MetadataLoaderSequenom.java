@@ -70,6 +70,8 @@ public class MetadataLoaderSequenom implements MetadataLoader {
 			markerMetadataMap.put(MarkerKey.valueOf(keyValues[2]), markerInfo);
 		}
 
+		String description = "Generated sorted MarkerIdSet Map sorted by chromosome and position";
+		MetadataLoaderPlink.logAsWhole(startTime, mapPath, description, studyId);
 		return markerMetadataMap;
 	}
 
