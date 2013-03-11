@@ -414,20 +414,30 @@ public abstract class Report_Analysis extends JPanel {
 		}
 	}
 
-	private static class BackAction extends AbstractAction {
+	static class BackAction extends AbstractAction {
 
-		private int opId;
+		private final int opId;
+		private final Operation op;
 
 		BackAction(int opId) {
 
 			this.opId = opId;
+			Operation operation = null;
+			try {
+				operation = OperationsList.getById(opId);
+			} catch (IOException ex) {
+				setEnabled(false);
+				putValue(SHORT_DESCRIPTION,
+						"Failed to fetch operation for ID " + this.opId);
+				log.warn("Failed to fetch operation for the Back action", ex);
+			}
+			this.op = operation;
 			putValue(NAME, Text.All.Back);
 		}
 
 		@Override
 		public void actionPerformed(ActionEvent evt) {
 			try {
-				Operation op = OperationsList.getById(opId);
 				GWASpiExplorerPanel.getSingleton().getTree().setSelectionPath(GWASpiExplorerPanel.getSingleton().getTree().getSelectionPath().getParentPath());
 				GWASpiExplorerPanel.getSingleton().setPnl_Content(new MatrixAnalysePanel(op.getParentMatrixId(), opId));
 				GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());

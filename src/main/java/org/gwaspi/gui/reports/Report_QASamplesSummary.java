@@ -37,15 +37,11 @@ import javax.swing.table.TableRowSorter;
 import org.gwaspi.constants.cImport;
 import org.gwaspi.global.Config;
 import org.gwaspi.global.Text;
-import org.gwaspi.gui.GWASpiExplorerPanel;
-import org.gwaspi.gui.MatrixAnalysePanel;
 import org.gwaspi.gui.utils.BrowserHelpUrlAction;
 import org.gwaspi.gui.utils.Dialogs;
 import org.gwaspi.gui.utils.HelpURLs;
 import org.gwaspi.gui.utils.IntegerInputVerifier;
 import org.gwaspi.gui.utils.RowRendererDefault;
-import org.gwaspi.model.Operation;
-import org.gwaspi.model.OperationsList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -171,7 +167,7 @@ public class Report_QASamplesSummary extends JPanel {
 		//<editor-fold defaultstate="expanded" desc="FOOTER">
 		btn_Save.setAction(new SaveAsAction(_studyId, _qaFileName, tbl_ReportTable, txt_NRows));
 
-		btn_Back.setAction(new BackAction(opId));
+		btn_Back.setAction(new Report_Analysis.BackAction(opId));
 
 		btn_Help.setAction(new BrowserHelpUrlAction(HelpURLs.QryURL.sampleQAreport));
 
@@ -474,29 +470,6 @@ public class Report_QASamplesSummary extends JPanel {
 			} catch (Exception ex) {
 				Dialogs.showWarningDialogue("A table saving error has occurred");
 				log.error("A table saving error has occurred", ex);
-			}
-		}
-	}
-
-	private static class BackAction extends AbstractAction {
-
-		private int opId;
-
-		BackAction(int opId) {
-
-			this.opId = opId;
-			putValue(NAME, Text.All.Back);
-		}
-
-		@Override
-		public void actionPerformed(ActionEvent evt) {
-			try {
-				Operation op = OperationsList.getById(opId);
-				GWASpiExplorerPanel.getSingleton().getTree().setSelectionPath(GWASpiExplorerPanel.getSingleton().getTree().getSelectionPath().getParentPath());
-				GWASpiExplorerPanel.getSingleton().setPnl_Content(new MatrixAnalysePanel(op.getParentMatrixId(), opId));
-				GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
-			} catch (IOException ex) {
-				log.error(null, ex);
 			}
 		}
 	}
