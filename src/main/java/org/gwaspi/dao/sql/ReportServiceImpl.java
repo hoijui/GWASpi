@@ -13,6 +13,7 @@ import org.gwaspi.constants.cDBGWASpi;
 import org.gwaspi.constants.cDBMatrix;
 import org.gwaspi.constants.cDBReports;
 import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.dao.ReportService;
 import org.gwaspi.database.DbManager;
 import org.gwaspi.global.Config;
@@ -42,7 +43,8 @@ public class ReportServiceImpl implements ReportService {
 		if (!rs.isEmpty() && rs.get(0).size() == cDBReports.T_CREATE_REPORTS.length) {
 			String friendlyName = (rs.get(0).get(cDBReports.f_RP_NAME) != null) ? rs.get(0).get(cDBReports.f_RP_NAME).toString() : "";
 			String fileName = (rs.get(0).get(cDBReports.f_RP_FILE_NAME) != null) ? rs.get(0).get(cDBReports.f_RP_FILE_NAME).toString() : "";
-			String type = (rs.get(0).get(cDBReports.f_RP_TYPE) != null) ? rs.get(0).get(cDBReports.f_RP_TYPE).toString() : "";
+			String typeStr = (rs.get(0).get(cDBReports.f_RP_TYPE) != null) ? rs.get(0).get(cDBReports.f_RP_TYPE).toString() : "";
+			OPType type = OPType.valueOf(typeStr);
 			int parentMatrixId = (rs.get(0).get(cDBReports.f_PARENT_MATRIXID) != null) ? Integer.parseInt(rs.get(0).get(cDBReports.f_PARENT_MATRIXID).toString()) : -1;
 			int parentOpId = (rs.get(0).get(cDBReports.f_PARENT_OPID) != null) ? Integer.parseInt(rs.get(0).get(cDBReports.f_PARENT_OPID).toString()) : -1;
 			String description = (rs.get(0).get(cDBReports.f_DESCRIPTION) != null) ? rs.get(0).get(cDBReports.f_DESCRIPTION).toString() : "";
@@ -218,7 +220,7 @@ public class ReportServiceImpl implements ReportService {
 			report.getFriendlyName(),
 			report.getDescription(),
 			report.getFileName(),
-			report.getReportType(),
+			report.getReportType().toString(),
 			report.getParentMatrixId(),
 			report.getParentOperationId(),
 			report.getStudyId()};

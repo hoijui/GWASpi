@@ -924,8 +924,8 @@ public final class ManhattanPlotZoom extends JPanel {
 				List<Report> reportsList = ReportsList.getReportsList(rdOPMetadata.getOPId(), rdOPMetadata.getParentMatrixId());
 				String reportFile = "";
 				for (int i = 0; i < reportsList.size(); i++) {
-					String reportType = reportsList.get(i).getReportType();
-					if (reportType.equals(OPType.MANHATTANPLOT.toString())) {
+					OPType reportType = reportsList.get(i).getReportType();
+					if (reportType.equals(OPType.MANHATTANPLOT)) {
 						reportFile = reportsList.get(i).getFileName();
 					}
 				}

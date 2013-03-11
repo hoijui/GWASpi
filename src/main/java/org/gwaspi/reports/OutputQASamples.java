@@ -5,7 +5,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Map;
 import org.gwaspi.constants.cExport;
-import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.global.Config;
 import org.gwaspi.model.Operation;
 import org.gwaspi.model.OperationsList;
@@ -49,7 +49,7 @@ public class OutputQASamples {
 						Integer.MIN_VALUE,
 						"Sample Missingness Table",
 						samplMissOutName,
-						cNetCDF.Defaults.OPType.SAMPLE_QA.toString(),
+						OPType.SAMPLE_QA,
 						op.getParentMatrixId(),
 						opId,
 						"Sample Missingness Table",
@@ -66,7 +66,7 @@ public class OutputQASamples {
 				Integer.MIN_VALUE,
 				"Sample Heterozygosity vs Missingness Plot",
 				samplMissOutName,
-				cNetCDF.Defaults.OPType.SAMPLE_HTZYPLOT.toString(),
+				OPType.SAMPLE_HTZYPLOT,
 				op.getParentMatrixId(),
 				opId,
 				"Sample Heterozygosity vs Missingness Plot",

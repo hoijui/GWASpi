@@ -49,7 +49,7 @@ public class OutputHardyWeinberg {
 					Integer.MIN_VALUE,
 					"Hardy Weinberg Table",
 					hwOutName,
-					OPType.HARDY_WEINBERG.toString(),
+					OPType.HARDY_WEINBERG,
 					op.getParentMatrixId(),
 					opId,
 					"Hardy Weinberg Table",
