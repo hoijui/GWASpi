@@ -243,7 +243,8 @@ public class MatrixMergeAll {
 			Attribute hasDictionary1 = rdNcFile1.findGlobalAttribute(cNetCDF.Attributes.GLOB_HAS_DICTIONARY);
 			Attribute hasDictionary2 = rdNcFile2.findGlobalAttribute(cNetCDF.Attributes.GLOB_HAS_DICTIONARY);
 			if ((Integer) hasDictionary1.getNumericValue() == 1
-					&& (Integer) hasDictionary2.getNumericValue() == 1) {
+					&& (Integer) hasDictionary2.getNumericValue() == 1)
+			{
 				rdMarkerSet1.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_BASES_DICT);
 				wrComboSortedMarkerSetMap.putAll(rdMarkerSet1.getMarkerIdSetMap());
 				rdMarkerSet2.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_BASES_DICT);
@@ -270,7 +271,7 @@ public class MatrixMergeAll {
 			int wrSampleIndex = 0;
 			for (Map.Entry<SampleKey, Object> entry : wrComboSampleSetMap.entrySet()) {
 				SampleKey sampleKey = entry.getKey();
-				int[] rdSampleIndices = (int[]) entry.getValue(); //Next position[rdPos matrix 1, rdPos matrix 2]
+				int[] rdSampleIndices = (int[]) entry.getValue(); // Next position[rdPos matrix 1, rdPos matrix 2]
 
 				// Read from Matrix1
 				rdMarkerSet1.fillWith(cNetCDF.Defaults.DEFAULT_GT);
@@ -326,7 +327,8 @@ public class MatrixMergeAll {
 
 				// CHECK FOR MISMATCHES
 				if (rdMatrix1Metadata.getGenotypeEncoding().equals(GenotypeEncoding.ACGT0)
-						|| rdMatrix1Metadata.getGenotypeEncoding().equals(GenotypeEncoding.O1234)) {
+						|| rdMatrix1Metadata.getGenotypeEncoding().equals(GenotypeEncoding.O1234))
+				{
 					double[] mismatchState = checkForMismatches(wrMatrixHandler.getResultMatrixId()); //mismatchCount, mismatchRatio
 					if (mismatchState[1] > 0.01) {
 						log.warn("");
@@ -404,7 +406,9 @@ public class MatrixMergeAll {
 		// SORT MERGED Map
 		SortedMap<String, MarkerKey> sortedMetadataTM = new TreeMap<String, MarkerKey>(new ComparatorChrAutPosMarkerIdAsc());
 		for (Map.Entry<MarkerKey, Object> entry : workMap.entrySet()) {
-			sortedMetadataTM.put((String)entry.getValue(), entry.getKey());
+			MarkerKey key = entry.getKey();
+			String value = entry.getValue().toString();
+			sortedMetadataTM.put(value, key);
 		}
 		if (workMap != null) {
 			workMap.clear();
@@ -412,7 +416,8 @@ public class MatrixMergeAll {
 
 		// PACKAGE IN AN Map
 		for (Map.Entry<String, MarkerKey> entry : sortedMetadataTM.entrySet()) {
-			String[] keyValues = entry.getKey().split(cNetCDF.Defaults.TMP_SEPARATOR);
+			String key = entry.getKey();
+			String[] keyValues = key.split(cNetCDF.Defaults.TMP_SEPARATOR);
 			Object[] markerInfo = new Object[2];
 			markerInfo[0] = keyValues[0]; // => chr
 			markerInfo[1] = Integer.parseInt(keyValues[1]); // => pos
@@ -467,8 +472,8 @@ public class MatrixMergeAll {
 			// IF SAMPLE ALLREADY EXISTS IN MATRIX1 SUBSTITUTE VALUES WITH MATRIX2
 			if (resultMap.containsKey(key)) {
 				position = (int[]) resultMap.get(key);
-				position[0] = 2; //rdMatrixNb
-				position[1] = rdPos; //rdPos
+				position[0] = 2; // rdMatrixNb
+				position[1] = rdPos; // rdPos
 			} else {
 				position = new int[]{2, rdPos, wrPos}; // rdMatrixNb, rdPos, wrPos
 			}
@@ -507,7 +512,7 @@ public class MatrixMergeAll {
 			for (Object value : wrSampleSetMap.values()) {
 				char[] tempGT = value.toString().toCharArray();
 
-				//Gather alleles different from 0 into a list of known alleles and count the number of appearences
+				// Gather alleles different from 0 into a list of known alleles and count the number of appearences
 				if (tempGT[0] != '0') {
 					int tempCount = 0;
 					if (knownAlleles.containsKey(tempGT[0])) {

@@ -106,7 +106,6 @@ public class MatrixMergeSamples_opt {
 
 		Map<MarkerKey, Object> rdChrInfoSetMap = rdwrMarkerSet1.getChrInfoSetMap();
 
-
 		try {
 			// CREATE netCDF-3 FILE
 			boolean hasDictionary = false;
@@ -162,7 +161,7 @@ public class MatrixMergeSamples_opt {
 			} catch (IOException ex) {
 				log.error("Failed creating file " + wrNcFile.getLocation(), ex);
 			}
-			//log.trace("Done creating netCDF handle in MatrixSampleJoin_opt: " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
+			//log.trace("Done creating netCDF handle in MatrixSampleJoin: " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
 
 			//<editor-fold defaultstate="expanded" desc="METADATA WRITER">
 			// SAMPLESET
@@ -216,9 +215,10 @@ public class MatrixMergeSamples_opt {
 				Utils.saveCharMapValueToWrMatrix(wrNcFile, rdwrMarkerSet1.getMarkerIdSetMap(), cNetCDF.Variables.VAR_MARKERS_BASES_DICT, cNetCDF.Strides.STRIDE_GT);
 			}
 
-			// GENOTYPE STRAND
+			//<editor-fold defaultstate="expanded" desc="GENOTYPE STRAND">
 			rdwrMarkerSet1.fillInitMapWithVariable(cNetCDF.Variables.VAR_GT_STRAND);
 			Utils.saveCharMapValueToWrMatrix(wrNcFile, rdwrMarkerSet1.getMarkerIdSetMap(), cNetCDF.Variables.VAR_GT_STRAND, 3);
+			//</editor-fold>
 			//</editor-fold>
 
 			//<editor-fold defaultstate="expanded" desc="GENOTYPES WRITER">
@@ -274,7 +274,8 @@ public class MatrixMergeSamples_opt {
 
 				// CHECK FOR MISMATCHES
 				if (rdMatrix1Metadata.getGenotypeEncoding().equals(GenotypeEncoding.ACGT0)
-						|| rdMatrix1Metadata.getGenotypeEncoding().equals(GenotypeEncoding.O1234)) {
+						|| rdMatrix1Metadata.getGenotypeEncoding().equals(GenotypeEncoding.O1234))
+				{
 					double[] mismatchState = checkForMismatches(wrMatrixHandler.getResultMatrixId()); //mismatchCount, mismatchRatio
 					if (mismatchState[1] > 0.01) {
 						log.warn("");
@@ -298,7 +299,7 @@ public class MatrixMergeSamples_opt {
 		return resultMatrixId;
 	}
 
-	private Map<SampleKey, Object> getComboSampleSetwithPosArray(Map<SampleKey, Object> sampleSetMap1, Map<SampleKey, Object> sampleSetMap2) {
+	private static Map<SampleKey, Object> getComboSampleSetwithPosArray(Map<SampleKey, Object> sampleSetMap1, Map<SampleKey, Object> sampleSetMap2) {
 		Map<SampleKey, Object> resultMap = new LinkedHashMap<SampleKey, Object>();
 
 		int wrPos = 0;

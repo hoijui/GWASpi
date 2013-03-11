@@ -10,7 +10,6 @@ import java.util.TreeMap;
 import org.gwaspi.constants.cImport;
 import org.gwaspi.constants.cImport.Annotation.Plink_Standard;
 import org.gwaspi.constants.cNetCDF;
-import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.MarkerKey;
 import org.slf4j.Logger;
@@ -28,18 +27,15 @@ public class MetadataLoaderPlink implements MetadataLoader {
 			= LoggerFactory.getLogger(MetadataLoaderPlink.class);
 
 	private String mapPath;
-	private String pedPath;
-	private StrandType strand;
 	private int studyId;
 
-	public MetadataLoaderPlink(String mapPath, String pedPath, StrandType strand, int studyId) {
+	public MetadataLoaderPlink(String mapPath, int studyId) {
 
 		this.mapPath = mapPath;
-		this.pedPath = pedPath;
 		this.studyId = studyId;
-		this.strand = strand;
 	}
 
+	@Override
 	public Map<MarkerKey, Object> getSortedMarkerSetWithMetaData() throws IOException {
 		String startTime = org.gwaspi.global.Utils.getMediumDateTimeAsString();
 

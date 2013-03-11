@@ -185,7 +185,6 @@ public class OutputGenotypicAssociation {
 			String reportPath = Config.getConfigValue(Config.PROPERTY_REPORTS_DIR, "") + "/STUDY_" + rdOPMetadata.getStudyId() + "/";
 
 			// WRITE MARKERSET RSID
-			//infoMatrixMarkerSetMap = rdInfoMarkerSet.appendVariableToMarkerSetMapValue(matrixNcFile, cNetCDF.Variables.VAR_MARKERS_RSID, sep);
 			rdInfoMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_RSID);
 			for (Map.Entry<MarkerKey, Object> entry : sortingMarkerSetMap.entrySet()) {
 				Object value = rdInfoMarkerSet.getMarkerIdSetMap().get(entry.getKey());
@@ -202,7 +201,6 @@ public class OutputGenotypicAssociation {
 			ReportWriter.appendColumnToReport(reportPath, reportNameExt, sortingMarkerSetMap, false, false);
 
 			// WRITE MARKERSET POS
-			//infoMatrixMarkerSetMap = rdInfoMarkerSet.appendVariableToMarkerSetMapValue(matrixNcFile, cNetCDF.Variables.VAR_MARKERS_POS, sep);
 			rdInfoMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_POS);
 			for (Map.Entry<MarkerKey, Object> entry : sortingMarkerSetMap.entrySet()) {
 				Object value = rdInfoMarkerSet.getMarkerIdSetMap().get(entry.getKey());
@@ -211,7 +209,7 @@ public class OutputGenotypicAssociation {
 			ReportWriter.appendColumnToReport(reportPath, reportNameExt, sortingMarkerSetMap, false, false);
 
 			// WRITE KNOWN ALLELES FROM QA
-			//get MARKER_QA Operation
+			// get MARKER_QA Operation
 			List<Object[]> operationsAL = OperationsList.getMatrixOperations(rdOPMetadata.getParentMatrixId());
 			int markersQAopId = Integer.MIN_VALUE;
 			for (int i = 0; i < operationsAL.size(); i++) {
@@ -241,7 +239,6 @@ public class OutputGenotypicAssociation {
 					Object minorAllele = entry.getValue();
 					entry.setValue(minorAllele + sep + opMarkerSetMap.get(entry.getKey()));
 				}
-
 			}
 			for (Map.Entry<MarkerKey, Object> entry : sortingMarkerSetMap.entrySet()) {
 				Object value = rdInfoMarkerSet.getMarkerIdSetMap().get(entry.getKey());

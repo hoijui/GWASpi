@@ -82,8 +82,6 @@ public class LoadGTFromPlinkFlatFiles implements GenotypesLoader {
 		//<editor-fold defaultstate="expanded" desc="CREATE MARKERSET & NETCDF">
 		MetadataLoaderPlink markerSetLoader = new MetadataLoaderPlink(
 				loadDescription.getGtDirPath(),
-				loadDescription.getAnnotationFilePath(),
-				loadDescription.getStrand(),
 				loadDescription.getStudyId());
 		Map<MarkerKey, Object> markerSetMap = markerSetLoader.getSortedMarkerSetWithMetaData(); //markerid, rsId, chr, pos
 

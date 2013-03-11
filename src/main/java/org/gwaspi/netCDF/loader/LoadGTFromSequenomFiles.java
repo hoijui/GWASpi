@@ -83,7 +83,7 @@ public class LoadGTFromSequenomFiles implements GenotypesLoader {
 //		File gtFileToImport = new File(gtDirPath);
 
 		//<editor-fold defaultstate="expanded" desc="CREATE MARKERSET & NETCDF">
-		MetadataLoaderSequenom markerSetLoader = new MetadataLoaderSequenom(loadDescription.getAnnotationFilePath(), loadDescription.getStudyId());
+		MetadataLoader markerSetLoader = new MetadataLoaderSequenom(loadDescription.getAnnotationFilePath(), loadDescription.getStudyId());
 
 		Map<MarkerKey, Object> markerSetMap = markerSetLoader.getSortedMarkerSetWithMetaData();
 

@@ -147,14 +147,13 @@ public class OutputHardyWeinberg {
 			}
 			ReportWriter.appendColumnToReport(reportPath, reportName, sortingMarkerSetMap, false, false);
 
-
-			//WRITE HW PVAL
+			// WRITE HW PVAL
 			ReportWriter.appendColumnToReport(reportPath, reportName, storeHWPval_ALTMap, false, false);
 			if (storeHWPval_ALTMap != null) {
 				storeHWPval_ALTMap.clear();
 			}
 
-			//WRITE HW HETZY ARRAY
+			// WRITE HW HETZY ARRAY
 			Map<MarkerKey, Object> markerIdHWHETZY_CTRLMap = GatherHardyWeinbergData.loadHWHETZY_ALT(opId);
 			for (Map.Entry<MarkerKey, Object> entry : sortingMarkerSetMap.entrySet()) {
 				Object value = markerIdHWHETZY_CTRLMap.get(entry.getKey());

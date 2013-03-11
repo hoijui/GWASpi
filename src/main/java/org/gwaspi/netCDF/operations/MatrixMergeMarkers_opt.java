@@ -280,8 +280,8 @@ public class MatrixMergeMarkers_opt {
 				rdMarkerSet2.fillGTsForCurrentSampleIntoInitMap(sampleIndices[1]);
 
 				// Fill wrSortedMingledMarkerMap with matrix 1+2 Genotypes
-				for (Map.Entry<MarkerKey, Object> entry : wrComboSortedMarkerSetMap.entrySet()) {
-					MarkerKey markerKey = entry.getKey();
+				for (Map.Entry<MarkerKey, Object> markerEntry : wrComboSortedMarkerSetMap.entrySet()) {
+					MarkerKey markerKey = markerEntry.getKey();
 					byte[] genotype = cNetCDF.Defaults.DEFAULT_GT;
 					if (rdMarkerSet1.getMarkerIdSetMap().containsKey(markerKey)) {
 						genotype = (byte[]) rdMarkerSet1.getMarkerIdSetMap().get(markerKey);
@@ -290,7 +290,7 @@ public class MatrixMergeMarkers_opt {
 						genotype = (byte[]) rdMarkerSet2.getMarkerIdSetMap().get(markerKey);
 					}
 
-					entry.setValue(genotype);
+					markerEntry.setValue(genotype);
 				}
 
 				// Write wrMarkerIdSetMap to A3 ArrayChar and save to wrMatrix
@@ -399,8 +399,8 @@ public class MatrixMergeMarkers_opt {
 		SortedMap<String, MarkerKey> sortedMetadataTM = new TreeMap<String, MarkerKey>(new ComparatorChrAutPosMarkerIdAsc());
 		for (Map.Entry<MarkerKey, Object> entry : workMap.entrySet()) {
 			MarkerKey key = entry.getKey();
-			Object value = entry.getValue().toString();
-			sortedMetadataTM.put((String)value, key);
+			String value = entry.getValue().toString();
+			sortedMetadataTM.put(value, key);
 		}
 		if (workMap != null) {
 			workMap.clear();
@@ -411,8 +411,8 @@ public class MatrixMergeMarkers_opt {
 			String key = entry.getKey();
 			String[] keyValues = key.split(cNetCDF.Defaults.TMP_SEPARATOR);
 			Object[] markerInfo = new Object[2];
-			markerInfo[0] = keyValues[0];  //=> chr
-			markerInfo[1] = Integer.parseInt(keyValues[1]);  // => pos
+			markerInfo[0] = keyValues[0]; // => chr
+			markerInfo[1] = Integer.parseInt(keyValues[1]); // => pos
 
 			MarkerKey markerKey = entry.getValue();
 			workMap.put(markerKey, markerInfo);
@@ -436,7 +436,7 @@ public class MatrixMergeMarkers_opt {
 			// IF SAMPLE ALLREADY EXISTS IN MATRIX1 SUBSTITUTE VALUES WITH MATRIX2
 			if (resultMap.containsKey(key)) {
 				int[] position = (int[]) resultMap.get(key);
-				position[1] = rdPos; //rdPos matrix 2
+				position[1] = rdPos; // rdPos matrix 2
 				resultMap.put(key, position);
 			}
 

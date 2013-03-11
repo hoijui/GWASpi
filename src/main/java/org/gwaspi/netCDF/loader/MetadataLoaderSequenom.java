@@ -80,14 +80,11 @@ public class MetadataLoaderSequenom implements MetadataLoader {
 		SortedMap<String, String> sortedMetadataTM = new TreeMap<String, String>(new ComparatorChrAutPosMarkerIdAsc());
 
 		String l;
-		String[] mapVals = null;
-		String markerId = "";
-
 		int count = 0;
 		while ((l = inputMapBR.readLine()) != null) {
 
-			mapVals = l.split(cImport.Separators.separators_Tab_rgxp);
-			markerId = mapVals[Sequenom.annot_markerId].trim();
+			String[] mapVals = l.split(cImport.Separators.separators_Tab_rgxp);
+			String markerId = mapVals[Sequenom.annot_markerId].trim();
 			String rsId = "";
 			try {
 				Long.parseLong(markerId);
