@@ -178,7 +178,7 @@ public final class Report_AnalysisAllelicTestImpl extends Report_Analysis {
 					tableRowAL.add(row);
 					count++;
 				}
-				inputFileReader.close();
+				inputBufferReader.close();
 
 				Object[][] tableMatrix = new Object[tableRowAL.size()][11];
 				for (int i = 0; i < tableRowAL.size(); i++) {
