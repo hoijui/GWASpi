@@ -2,7 +2,6 @@ package org.gwaspi.cli;
 
 import java.io.IOException;
 import org.gwaspi.global.Text;
-import org.gwaspi.gui.StartGWASpi;
 import org.gwaspi.model.StudyList;
 
 /**

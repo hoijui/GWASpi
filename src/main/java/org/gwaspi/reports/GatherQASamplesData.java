@@ -6,7 +6,6 @@ import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.SampleKey;
-import org.gwaspi.netCDF.operations.MarkerOperationSet;
 import org.gwaspi.netCDF.operations.SampleOperationSet;
 import ucar.nc2.NetcdfFile;
 

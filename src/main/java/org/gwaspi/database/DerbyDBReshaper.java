@@ -2,13 +2,11 @@ package org.gwaspi.database;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
 import org.gwaspi.constants.cDBGWASpi;
 import org.gwaspi.constants.cDBSamples;
-import org.gwaspi.constants.cGlobal;
 import org.gwaspi.global.Config;
 import org.gwaspi.global.ServiceLocator;
 import org.gwaspi.global.XMLParser;
