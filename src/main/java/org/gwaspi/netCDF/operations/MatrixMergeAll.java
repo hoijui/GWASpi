@@ -429,31 +429,6 @@ public class MatrixMergeAll {
 		return workMap;
 	}
 
-	private static Map<String, Object> getSampleSetWithIndicesMap(Map<String, Object> sampleSetMap1, Map<String, Object> sampleSetMap2) {
-		Map<String, Object> resultMap = new LinkedHashMap<String, Object>();
-
-		int rdPos = 0;
-		for (String key : sampleSetMap1.keySet()) {
-			int[] position = new int[]{rdPos, 0}; // rdPos matrix 1
-			resultMap.put(key, position);
-			rdPos++;
-		}
-
-		rdPos = 0;
-		for (String key : sampleSetMap2.keySet()) {
-			// IF SAMPLE ALLREADY EXISTS IN MATRIX1 SUBSTITUTE VALUES WITH MATRIX2
-			if (resultMap.containsKey(key)) {
-				int[] position = (int[]) resultMap.get(key);
-				position[1] = rdPos; // rdPos matrix 2
-				resultMap.put(key, position);
-			}
-
-			rdPos++;
-		}
-
-		return resultMap;
-	}
-
 	static Map<SampleKey, Object> getComboSampleSetWithIndicesArray(Map<SampleKey, Object> sampleSetMap1, Map<SampleKey, Object> sampleSetMap2) {
 		Map<SampleKey, Object> resultMap = new LinkedHashMap<SampleKey, Object>();
 
