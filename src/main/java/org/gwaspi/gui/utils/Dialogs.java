@@ -71,7 +71,7 @@ public class Dialogs {
 					"Available Census",
 					JOptionPane.QUESTION_MESSAGE,
 					null,
-					operationsNames.toArray(),
+					operationsNames.toArray(new Object[operationsNames.size()]),
 					0);
 
 			if (selectedRow != null) {
@@ -109,7 +109,7 @@ public class Dialogs {
 						"Available Operations",
 						JOptionPane.QUESTION_MESSAGE,
 						null,
-						operationsNames.toArray(),
+						operationsNames.toArray(new Object[operationsNames.size()]),
 						0);
 
 				if (selectedRow != null) {
@@ -147,7 +147,7 @@ public class Dialogs {
 					"Available Operations",
 					JOptionPane.QUESTION_MESSAGE,
 					null,
-					operationsNames.toArray(),
+					operationsNames.toArray(new Object[operationsNames.size()]),
 					0);
 
 			if (selectedRow != null) {
@@ -272,7 +272,7 @@ public class Dialogs {
 				"Genotype Encoding",
 				JOptionPane.QUESTION_MESSAGE,
 				null,
-				matrixNames.toArray(),
+				matrixNames.toArray(new Object[matrixNames.size()]),
 				0);
 
 		int selectedMatrix = Integer.MIN_VALUE;
