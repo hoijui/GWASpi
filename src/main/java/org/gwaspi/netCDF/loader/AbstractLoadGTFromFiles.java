@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import org.gwaspi.constants.cImport.ImportFormat;
 import org.gwaspi.constants.cImport.StrandFlags;
@@ -374,9 +375,9 @@ public abstract class AbstractLoadGTFromFiles implements GenotypesLoader {
 		org.gwaspi.global.Utils.logOperationInStudyDesc(operation.toString(), studyId);
 	}
 
-	static Collection<SampleKey> extractKeys(Collection<SampleInfo> sampleInfos) {
+	static List<SampleKey> extractKeys(Collection<SampleInfo> sampleInfos) {
 
-		Collection<SampleKey> sampleKeys = new ArrayList<SampleKey>(sampleInfos.size());
+		List<SampleKey> sampleKeys = new ArrayList<SampleKey>(sampleInfos.size());
 
 		for (SampleInfo sampleInfo : sampleInfos) {
 			sampleKeys.add(sampleInfo.getKey());

@@ -74,16 +74,13 @@ public class LoadGTFromPlinkFlatFiles implements GenotypesLoader {
 
 		String startTime = org.gwaspi.global.Utils.getMediumDateTimeAsString();
 
-		List<SampleKey> sampleKeys = new ArrayList<SampleKey>(sampleInfos.size());
-		for (SampleInfo sampleInfo : sampleInfos) {
-			sampleKeys.add(sampleInfo.getKey());
-		}
+		List<SampleKey> sampleKeys = AbstractLoadGTFromFiles.extractKeys(sampleInfos);
 
 		//<editor-fold defaultstate="expanded" desc="CREATE MARKERSET & NETCDF">
 		MetadataLoaderPlink markerSetLoader = new MetadataLoaderPlink(
 				loadDescription.getGtDirPath(),
 				loadDescription.getStudyId());
-		Map<MarkerKey, Object> markerSetMap = markerSetLoader.getSortedMarkerSetWithMetaData(); //markerid, rsId, chr, pos
+		Map<MarkerKey, Object> markerSetMap = markerSetLoader.getSortedMarkerSetWithMetaData(); // markerid, rsId, chr, pos
 
 		log.info("Done initializing sorted MarkerSetMap");
 
@@ -211,7 +208,6 @@ public class LoadGTFromPlinkFlatFiles implements GenotypesLoader {
 		}
 		log.info("Done writing positions to matrix");
 
-
 		// WRITE GT STRAND FROM ANNOTATION FILE
 		int[] gtOrig = new int[]{0, 0};
 		String strandFlag;
@@ -246,8 +242,6 @@ public class LoadGTFromPlinkFlatFiles implements GenotypesLoader {
 		}
 		markersD2 = null;
 		log.info("Done writing strand info to matrix");
-
-
 		// </editor-fold>
 
 		// <editor-fold defaultstate="expanded" desc="MATRIX GENOTYPES LOAD ">
@@ -310,17 +304,17 @@ public class LoadGTFromPlinkFlatFiles implements GenotypesLoader {
 		FileReader inputFileReader = new FileReader(file);
 		BufferedReader inputBufferReader = new BufferedReader(inputFileReader);
 
-		//GET ALLELES
+		// GET ALLELES
 		String l;
 		while ((l = inputBufferReader.readLine()) != null) {
-			//PURGE WRITE MARKER SET
+			// PURGE WRITE MARKER SET
 			for (Map.Entry<?, Object> entry : wrMarkerIdSetMap.entrySet()) {
 				entry.setValue(cNetCDF.Defaults.DEFAULT_GT);
 			}
 
 			StringTokenizer st = new StringTokenizer(l, cImport.Separators.separators_CommaSpaceTab_rgxp);
 
-			//skip to genotype data
+			// skip to genotype data
 			String familyId = "";
 			String sampleId = "";
 			int i = 0;
@@ -335,7 +329,7 @@ public class LoadGTFromPlinkFlatFiles implements GenotypesLoader {
 				i++;
 			}
 
-			//read genotypes from this point on
+			// read genotypes from this point on
 			for (MarkerKey markerKey : mapMarkerSetMap.keySet()) {
 				byte[] alleles = new byte[] {
 						(byte) (st.nextToken().charAt(0)),

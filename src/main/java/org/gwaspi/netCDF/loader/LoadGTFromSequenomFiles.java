@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import org.gwaspi.constants.cImport;
 import org.gwaspi.constants.cImport.ImportFormat;
@@ -79,6 +80,9 @@ public class LoadGTFromSequenomFiles implements GenotypesLoader {
 		int result = Integer.MIN_VALUE;
 
 		String startTime = org.gwaspi.global.Utils.getMediumDateTimeAsString();
+
+		List<SampleKey> sampleKeys = AbstractLoadGTFromFiles.extractKeys(sampleInfos);
+
 		File[] gtFilesToImport = org.gwaspi.global.Utils.listFiles(loadDescription.getGtDirPath());
 //		File gtFileToImport = new File(gtDirPath);
 
@@ -120,7 +124,6 @@ public class LoadGTFromSequenomFiles implements GenotypesLoader {
 		//RETRIEVE CHROMOSOMES INFO
 		Map<MarkerKey, Object> chrSetMap = org.gwaspi.netCDF.matrices.Utils.aggregateChromosomeInfo(markerSetMap, 2, 3);
 
-
 		MatrixFactory matrixFactory = new MatrixFactory(
 				loadDescription.getStudyId(),
 				loadDescription.getFormat(),
@@ -147,7 +150,7 @@ public class LoadGTFromSequenomFiles implements GenotypesLoader {
 
 		//<editor-fold defaultstate="expanded" desc="WRITE MATRIX METADATA">
 		// WRITE SAMPLESET TO MATRIX FROM SAMPLES LIST
-		ArrayChar.D2 samplesD2 = org.gwaspi.netCDF.operations.Utils.writeCollectionToD2ArrayChar(AbstractLoadGTFromFiles.extractKeys(sampleInfos), cNetCDF.Strides.STRIDE_SAMPLE_NAME);
+		ArrayChar.D2 samplesD2 = org.gwaspi.netCDF.operations.Utils.writeCollectionToD2ArrayChar(sampleKeys, cNetCDF.Strides.STRIDE_SAMPLE_NAME);
 
 		int[] sampleOrig = new int[]{0, 0};
 		try {
@@ -314,7 +317,6 @@ public class LoadGTFromSequenomFiles implements GenotypesLoader {
 			Map<MarkerKey, Object> alleles)
 			throws IOException, InvalidRangeException
 	{
-		// LOAD INPUT FILE
 		FileReader inputFileReader = new FileReader(file);
 		BufferedReader inputBufferReader = new BufferedReader(inputFileReader);
 
