@@ -14,13 +14,15 @@ public class Associations {
 	}
 
 	//<editor-fold defaultstate="expanded" desc="GENOTYPIC TESTS">
-	public static double calculateChocranArmitageTrendTest(int caseAA,
+	public static double calculateChocranArmitageTrendTest(
+			int caseAA,
 			int caseAa,
 			int caseaa,
 			int ctrlAA,
 			int ctrlAa,
 			int ctrlaa,
-			int model) {
+			int model)
+	{
 		double caseTot = caseAA + caseAa + caseaa;
 		double ctrlTot = ctrlAA + ctrlAa + ctrlaa;
 		double AATot = caseAA + ctrlAA;
@@ -28,20 +30,20 @@ public class Associations {
 		double aaTot = caseaa + ctrlaa;
 		double N = caseTot + ctrlTot;
 
-		//INIT MODEL WEIGHTS
+		// INIT MODEL WEIGHTS
 		int[] weights = new int[3];
 		switch (model) {
-			case 0: //DOMINANT
+			case 0: // DOMINANT
 				weights[0] = 1;
 				weights[1] = 1;
 				weights[2] = 0;
 				break;
-			case 1: //RECESSIVE
+			case 1: // RECESSIVE
 				weights[0] = 0;
 				weights[1] = 1;
 				weights[2] = 1;
 				break;
-			case 2: //CODOMINANT (ADDITIVE)
+			case 2: // CODOMINANT (ADDITIVE)
 				weights[0] = 0;
 				weights[1] = 1;
 				weights[2] = 2;
@@ -50,7 +52,7 @@ public class Associations {
 				throw new IllegalArgumentException("model may only be in range [0, 2]");
 		}
 
-		//CALCULATE TREND TEST
+		// CALCULATE TREND TEST
 		double trendTest = weights[0] * ((ctrlTot / N) * caseAA
 				- (caseTot / N) * ctrlAA)
 				+ weights[1] * ((ctrlTot / N) * caseAa
@@ -59,7 +61,7 @@ public class Associations {
 				- (caseTot / N) * ctrlaa);
 
 
-		//CALCULATE VARIANCE
+		// CALCULATE VARIANCE
 		double trendTestVar = caseTot
 				* ctrlTot
 				* ((((Math.pow(weights[0], 2) * (AATot * (N - AATot)))
@@ -70,23 +72,24 @@ public class Associations {
 				/ Math.pow(N, 3));
 
 
-		//CALCULATE TREND TEST CHI-SQR
+		// CALCULATE TREND TEST CHI-SQR
 		double trendTestChiSqr = Math.pow(trendTest, 2) / trendTestVar;
 
 		return trendTestChiSqr;
 	}
 
-	public static double calculateGenotypicAssociationChiSquare(int obsCaseAA,
+	public static double calculateGenotypicAssociationChiSquare(
+			int obsCaseAA,
 			int obsCaseAa,
 			int obsCaseaa,
 			int caseTot,
 			int obsCtrlAA,
 			int obsCtrlAa,
 			int obsCtrlaa,
-			int ctrlTot) {
-
-		int[][] obsCntgTable = new int[3][2]; //3 columns: AA Aa aa, 2 rows: case, ctrl
-		double[][] expCntgTable = new double[3][2]; //3 columns: AA Aa aa, 2 rows: case, ctrl
+			int ctrlTot)
+	{
+		int[][] obsCntgTable = new int[3][2]; // 3 columns: AA Aa aa, 2 rows: case, ctrl
+		double[][] expCntgTable = new double[3][2]; // 3 columns: AA Aa aa, 2 rows: case, ctrl
 
 		obsCntgTable[0][0] = obsCaseAA;
 		obsCntgTable[1][0] = obsCaseAa;
@@ -118,30 +121,32 @@ public class Associations {
 		return chiSQ;
 	}
 
-	public static double[] calculateGenotypicAssociationOR(int caseAA,
+	public static double[] calculateGenotypicAssociationOR(
+			int caseAA,
 			int caseAa,
 			int caseaa,
 			int ctrlAA,
 			int ctrlAa,
-			int ctrlaa) {
-//            Genotypes
-//            AA        Aa       aa
-//Cases       caseAA    caseAa   caseaa
-//Controls    ctrlAA    ctrlAa   ctrlaa
+			int ctrlaa)
+	{
+//					Genotypes
+//					AA        Aa       aa
+//		Cases       caseAA    caseAa   caseaa
+//		Controls    ctrlAA    ctrlAa   ctrlaa
 //
-//There are three sets of odds.
-//The odds of being a case, given the genotype AA are a/d, for Aa they are b/e, and for aa, they are c/f.
-//These odds can be compared to one another. So the odds ratio comparing Aa to aa is,
+//		There are three sets of odds.
+//		The odds of being a case, given the genotype AA are a/d, for Aa they are b/e, and for aa, they are c/f.
+//		These odds can be compared to one another. So the odds ratio comparing Aa to aa is,
 //
-//OR10 = (caseAa/ctrlAa) / (caseaa/ctrlaa) = caseAa*ctrlaa/caseaa*ctrlAa,
+//		OR10 = (caseAa/ctrlAa) / (caseaa/ctrlaa) = caseAa*ctrlaa/caseaa*ctrlAa,
 //
-//and that comparing AA to aa is,
+//		and that comparing AA to aa is,
 //
-//OR20 = (caseAA/ctrlAA) / (caseaa/ctrlaa) = caseAA*ctrlaa/caseaa*ctrlAA.
+//		OR20 = (caseAA/ctrlAA) / (caseaa/ctrlaa) = caseAA*ctrlaa/caseaa*ctrlAA.
 
-		double[] oddsRatio = new double[2]; //ORAAaa, ORAaaa
-		oddsRatio[0] = (double) (caseAa * ctrlaa) / (caseaa * ctrlAa);  //ORAAaa
-		oddsRatio[1] = (double) (caseAA * ctrlaa) / (caseaa * ctrlAA);  //ORAaaa
+		double[] oddsRatio = new double[2]; // ORAAaa, ORAaaa
+		oddsRatio[0] = (double) (caseAa * ctrlaa) / (caseaa * ctrlAa);  // ORAAaa
+		oddsRatio[1] = (double) (caseAA * ctrlaa) / (caseaa * ctrlAA);  // ORAaaa
 		return oddsRatio;
 	}
 
@@ -164,7 +169,6 @@ public class Associations {
 		int obsaaColTot = obsCaseaa + obsCtrlaa;
 		int totGT = obsCaseRowTot + obsCtrlRowTot;
 
-
 		BigInteger rowBang = org.gwaspi.statistics.Utils.factorial(BigInteger.valueOf(obsCaseRowTot)).multiply(org.gwaspi.statistics.Utils.factorial(BigInteger.valueOf(obsCtrlRowTot)));
 		BigInteger colBang = org.gwaspi.statistics.Utils.factorial(BigInteger.valueOf(obsAAColTot)).multiply(org.gwaspi.statistics.Utils.factorial(BigInteger.valueOf(obsAaColTot))).multiply(org.gwaspi.statistics.Utils.factorial(BigInteger.valueOf(obsaaColTot)));
 		BigInteger denomBang = org.gwaspi.statistics.Utils.factorial(BigInteger.valueOf(totGT)).multiply(org.gwaspi.statistics.Utils.factorial(BigInteger.valueOf(obsCaseAA)));
@@ -182,7 +186,8 @@ public class Associations {
 	//</editor-fold>
 
 	//<editor-fold defaultstate="expanded" desc="ALLELIC TESTS">
-	public static double calculateAllelicAssociationChiSquare(int sampleNb,
+	public static double calculateAllelicAssociationChiSquare(
+			int sampleNb,
 			int obsCaseAA,
 			int obsCaseAa,
 			int obsCaseaa,
@@ -226,23 +231,25 @@ public class Associations {
 		return chiSQ;
 	}
 
-	public static double calculateAllelicAssociationOR(int caseAA,
+	public static double calculateAllelicAssociationOR(
+			int caseAA,
 			int caseAa,
 			int caseaa,
 			int ctrlAA,
 			int ctrlAa,
-			int ctrlaa) {
-//        1) Check if any value is 0
-//            => YES: OR = NaN
-//            => NO
-//                          A           a
-//              Cases       caseA	casea
-//              Controls    ctrlA	ctrla
+			int ctrlaa)
+	{
+//		1) Check if any value is 0
+//			=> YES: OR = NaN
+//			=> NO
+//						  A           a
+//			  Cases       caseA	casea
+//			  Controls    ctrlA	ctrla
 //
-//              OR=caseA*ctrla/casea*ctrlA,
-
-//        2) If OR is < 1
-//            => OR = 1/OR
+//			  OR=caseA*ctrla/casea*ctrlA,
+//
+//		2) If OR is < 1
+//			=> OR = 1/OR
 
 		double oddsRatio = Double.NaN;
 

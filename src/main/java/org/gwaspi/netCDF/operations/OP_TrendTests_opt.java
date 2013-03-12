@@ -248,7 +248,7 @@ public class OP_TrendTests_opt implements MatrixOperation {
 
 			// COCHRAN ARMITAGE TREND TEST
 			double armitageT = org.gwaspi.statistics.Associations.calculateChocranArmitageTrendTest(caseAA, caseAa, caseaa, ctrlAA, ctrlAa, ctrlaa, 2); //Model 2, codominant
-			double armitagePval = org.gwaspi.statistics.Pvalue.calculatePvalueFromChiSqr(armitageT, 1);  //1 Degree of freedom
+			double armitagePval = org.gwaspi.statistics.Pvalue.calculatePvalueFromChiSqr(armitageT, 1);  // 1 Degree of freedom
 
 			Double[] store = new Double[7];
 			store[0] = armitageT;

@@ -24,8 +24,7 @@ public class StandardDeviation {
 		double mean = findMean(array);
 		log.info("Mean is: {}", mean);
 		double d1 = 0;
-		double d2 = 0;
-		double sum = 0;
+		double d2;
 		for (int i = 0; i < array.length; i++) {
 			d2 = (mean - array[i]) * (mean - array[i]);
 			d1 = d2 + d1;

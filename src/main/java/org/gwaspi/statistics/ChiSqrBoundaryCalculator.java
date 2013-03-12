@@ -71,7 +71,7 @@ public class ChiSqrBoundaryCalculator {
 
 		// add dimensions
 		Dimension sizeDim = ncfile.addDimension("size", 0, true, true, false);
-		Dimension simsDim = ncfile.addDimension("sims", simNb); //0=>AA, 1=>Aa, 2=>aa, 3=>00
+		Dimension simsDim = ncfile.addDimension("sims", simNb); // 0=>AA, 1=>Aa, 2=>aa, 3=>00
 		List<Dimension> distSpace = new ArrayList<Dimension>();
 		distSpace.add(sizeDim);
 		distSpace.add(simsDim);
@@ -235,13 +235,7 @@ public class ChiSqrBoundaryCalculator {
 				double tInvCumulProb = tDistImpl.inverseCumulativeProbability(0.05d);
 				double tCumulProb = tDistImpl.cumulativeProbability(0.05d);
 
-//                confidenceInterval = (
-//                                        STDEV(Ys)
-//                                        /
-//                                        SQRT(COUNT(Ys))
-//                                     )
-//                                     *
-//                                     TINV(0.05, COUNT(Ys)-1)
+//				confidenceInterval = (STDEV(Ys) / SQRT(COUNT(Ys))) * TINV(0.05, COUNT(Ys) - 1)
 
 				double confidenceInterval = (stdDevValue
 						/ Math.sqrt(sampleSize))
@@ -303,8 +297,8 @@ public class ChiSqrBoundaryCalculator {
 
 				double currentAvg = currentTot / simNb;
 
-				double low95 = currentAvg - (2 * stdDevValue); //Display 2 standard deviations
-				double top95 = currentAvg + (2 * stdDevValue); //Display 2 standard deviations
+				double low95 = currentAvg - (2 * stdDevValue); // Display 2 standard deviations
+				double top95 = currentAvg + (2 * stdDevValue); // Display 2 standard deviations
 
 				StringBuilder sb = new StringBuilder();
 				sb.append(top95);
@@ -341,7 +335,7 @@ public class ChiSqrBoundaryCalculator {
 
 		try {
 			for (int i = 0; i < pointsNb; i++) {
-				//distributions(i:i:1, 0:simsNb:1)
+				// distributions(i:i:1, 0:simsNb:1)
 				ArrayDouble.D2 rdDoubleArrayD2 = (ArrayDouble.D2) distributions.read(i + ":" + i + ":1, 0:" + (simsDim.getLength() - 1) + ":1");
 				ArrayDouble.D1 rdDoubleArrayD1 = (D1) rdDoubleArrayD2.reduce();
 

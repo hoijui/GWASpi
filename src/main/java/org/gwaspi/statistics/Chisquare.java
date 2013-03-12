@@ -1,7 +1,6 @@
 package org.gwaspi.statistics;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
@@ -82,17 +81,4 @@ public class Chisquare {
 
 		return chiQuareDist;
 	}
-
-	//<editor-fold defaultstate="expanded" desc="HELPER METHODS">
-	private static List sortAscendingDistAL(List distArray) {
-		Collections.sort(distArray);
-		return distArray;
-	}
-
-	private static List sortDescendingDistAL(List distArray) {
-		Collections.sort(distArray);
-		Collections.reverse(distArray);
-		return distArray;
-	}
-	//</editor-fold>
 }
