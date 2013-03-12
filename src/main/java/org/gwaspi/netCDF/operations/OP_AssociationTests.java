@@ -15,6 +15,8 @@ import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.netCDF.markers.MarkerSet_opt;
+import org.gwaspi.statistics.Associations;
+import org.gwaspi.statistics.Pvalue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.ArrayChar;
@@ -92,7 +94,6 @@ public class OP_AssociationTests implements MatrixOperation {
 			MarkerOperationSet rdCaseMarkerSet = new MarkerOperationSet(rdCensusOPMetadata.getStudyId(), markerCensusOP.getId());
 			MarkerOperationSet rdCtrlMarkerSet = new MarkerOperationSet(rdCensusOPMetadata.getStudyId(), markerCensusOP.getId());
 			Map<SampleKey, Object> rdSampleSetMap = rdCaseMarkerSet.getImplicitSetMap();
-			Map<MarkerKey, Object> rdCaseMarkerIdSetMap = rdCaseMarkerSet.getOpSetMap();
 			Map<MarkerKey, Object> rdCtrlMarkerIdSetMap = rdCtrlMarkerSet.getOpSetMap();
 
 			Map<MarkerKey, Object> wrMarkerSetMap = new LinkedHashMap<MarkerKey, Object>();
@@ -149,7 +150,7 @@ public class OP_AssociationTests implements MatrixOperation {
 				}
 
 				// MARKERSET RSID
-				rdCaseMarkerIdSetMap = rdCaseMarkerSet.fillOpSetMapWithVariable(rdOPNcFile, cNetCDF.Variables.VAR_MARKERS_RSID);
+				Map<MarkerKey, Object> rdCaseMarkerIdSetMap = rdCaseMarkerSet.fillOpSetMapWithVariable(rdOPNcFile, cNetCDF.Variables.VAR_MARKERS_RSID);
 				for (Map.Entry<MarkerKey, Object> entry : wrMarkerSetMap.entrySet()) {
 					Object value = rdCaseMarkerIdSetMap.get(entry.getKey());
 					entry.setValue(value);
@@ -256,13 +257,10 @@ public class OP_AssociationTests implements MatrixOperation {
 			Double[] store;
 			if (allelic) {
 				// allelic test
-				int AAtot = caseAA + ctrlAA;
-				int Aatot = caseAa + ctrlAa;
-				int aatot = caseaa + ctrlaa;
-
 				int sampleNb = caseTot + ctrlTot;
 
-				double allelicT = org.gwaspi.statistics.Associations.calculateAllelicAssociationChiSquare(sampleNb,
+				double allelicT = Associations.calculateAllelicAssociationChiSquare(
+						sampleNb,
 						caseAA,
 						caseAa,
 						caseaa,
@@ -271,9 +269,10 @@ public class OP_AssociationTests implements MatrixOperation {
 						ctrlAa,
 						ctrlaa,
 						ctrlTot);
-				double allelicPval = org.gwaspi.statistics.Pvalue.calculatePvalueFromChiSqr(allelicT, 1);
+				double allelicPval = Pvalue.calculatePvalueFromChiSqr(allelicT, 1);
 
-				double allelicOR = org.gwaspi.statistics.Associations.calculateAllelicAssociationOR(caseAA,
+				double allelicOR = Associations.calculateAllelicAssociationOR(
+						caseAA,
 						caseAa,
 						caseaa,
 						ctrlAA,
@@ -286,7 +285,8 @@ public class OP_AssociationTests implements MatrixOperation {
 				store[2] = allelicOR;
 			} else {
 				// genotypic test
-				double gntypT = org.gwaspi.statistics.Associations.calculateGenotypicAssociationChiSquare(caseAA,
+				double gntypT = Associations.calculateGenotypicAssociationChiSquare(
+						caseAA,
 						caseAa,
 						caseaa,
 						caseTot,
@@ -294,8 +294,9 @@ public class OP_AssociationTests implements MatrixOperation {
 						ctrlAa,
 						ctrlaa,
 						ctrlTot);
-				double gntypPval = org.gwaspi.statistics.Pvalue.calculatePvalueFromChiSqr(gntypT, 2);
-				double[] gntypOR = org.gwaspi.statistics.Associations.calculateGenotypicAssociationOR(caseAA,
+				double gntypPval = Pvalue.calculatePvalueFromChiSqr(gntypT, 2);
+				double[] gntypOR = Associations.calculateGenotypicAssociationOR(
+						caseAA,
 						caseAa,
 						caseaa,
 						ctrlAA,
