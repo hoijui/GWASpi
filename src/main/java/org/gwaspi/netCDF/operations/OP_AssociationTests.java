@@ -121,13 +121,14 @@ public class OP_AssociationTests implements MatrixOperation {
 				// CREATE netCDF-3 FILE
 				DecimalFormat dfSci = new DecimalFormat("0.##E0#");
 				OPType testType = allelic ? OPType.ALLELICTEST : OPType.GENOTYPICTEST;
-				OperationFactory wrOPHandler = new OperationFactory(rdCensusOPMetadata.getStudyId(),
+				OperationFactory wrOPHandler = new OperationFactory(
+						rdCensusOPMetadata.getStudyId(),
 						testName + " Association Test", // friendly name
 						testName + " test on " + markerCensusOP.getFriendlyName() + "\n" + rdCensusOPMetadata.getDescription() + "\nHardy-Weinberg threshold: " + dfSci.format(hwThreshold), // description
 						wrMarkerSetMap.size(),
 						rdCensusOPMetadata.getImplicitSetSize(),
 						rdChrInfoSetMap.size(),
-						testType.toString(),
+						testType,
 						rdCensusOPMetadata.getParentMatrixId(), // Parent matrixId
 						markerCensusOP.getId()); // Parent operationId
 				wrOPNcFile = wrOPHandler.getNetCDFHandler();

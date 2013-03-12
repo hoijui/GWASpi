@@ -5,6 +5,7 @@ import java.text.DecimalFormat;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MatricesList;
@@ -110,13 +111,14 @@ public class OP_TrendTests_opt implements MatrixOperation {
 				// CREATE netCDF-3 FILE
 
 				DecimalFormat dfSci = new DecimalFormat("0.##E0#");
-				OperationFactory wrOPHandler = new OperationFactory(rdCensusOPMetadata.getStudyId(),
+				OperationFactory wrOPHandler = new OperationFactory(
+						rdCensusOPMetadata.getStudyId(),
 						"Cochran-Armitage Trend Test", // friendly name
 						"Cochran-Armitage Trend Test on " + markerCensusOP.getFriendlyName() + "\n" + rdCensusOPMetadata.getDescription() + "\nHardy-Weinberg threshold: " + dfSci.format(hwThreshold), //description
 						wrMarkerSetMap.size(),
 						rdCensusOPMetadata.getImplicitSetSize(),
 						rdChrInfoSetMap.size(),
-						cNetCDF.Defaults.OPType.TRENDTEST.toString(),
+						OPType.TRENDTEST,
 						rdCensusOPMetadata.getParentMatrixId(), // Parent matrixId
 						markerCensusOP.getId());       // Parent operationId
 				wrOPNcFile = wrOPHandler.getNetCDFHandler();

@@ -5,6 +5,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.AlleleBytes;
+import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixMetadata;
@@ -102,13 +103,14 @@ public class OP_QASamples_opt implements MatrixOperation {
 		try {
 			// CREATE netCDF-3 FILE
 
-			OperationFactory wrOPHandler = new OperationFactory(rdMatrixMetadata.getStudyId(),
+			OperationFactory wrOPHandler = new OperationFactory(
+					rdMatrixMetadata.getStudyId(),
 					"Sample QA", //friendly name
 					"Sample census on " + rdMatrixMetadata.getMatrixFriendlyName() + "\nSamples: " + wrSampleSetMissingCountMap.size(), //description
 					wrSampleSetMissingCountMap.size(),
 					rdMatrixMetadata.getMarkerSetSize(),
 					0,
-					cNetCDF.Defaults.OPType.SAMPLE_QA.toString(),
+					OPType.SAMPLE_QA,
 					rdMatrixMetadata.getMatrixId(), // Parent matrixId
 					-1);                            // Parent operationId
 

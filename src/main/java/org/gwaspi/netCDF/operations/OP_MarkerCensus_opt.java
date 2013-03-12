@@ -198,13 +198,14 @@ public class OP_MarkerCensus_opt implements MatrixOperation {
 					description += "\nCase/Control status read from file: " + phenoFile.getPath();
 					opType = cNetCDF.Defaults.OPType.MARKER_CENSUS_BY_PHENOTYPE;
 				}
-				OperationFactory wrOPHandler = new OperationFactory(rdMatrixMetadata.getStudyId(),
+				OperationFactory wrOPHandler = new OperationFactory(
+						rdMatrixMetadata.getStudyId(),
 						"Genotypes freq. - " + censusName, // friendly name
 						description + "\nSample missing ratio threshold: " + sampleMissingRatio + "\nSample heterozygosity ratio threshold: " + sampleHetzygRatio + "\nMarker missing ratio threshold: " + markerMissingRatio + "\nDiscard mismatching Markers: " + discardMismatches + "\nMarkers: " + wrMarkerSetMap.size() + "\nSamples: " + wrSampleSetMap.size(), // description
 						wrMarkerSetMap.size(),
 						wrSampleSetMap.size(),
 						0,
-						opType.toString(),
+						opType,
 						rdMatrixMetadata.getMatrixId(), // Parent matrixId
 						-1); // Parent operationId
 

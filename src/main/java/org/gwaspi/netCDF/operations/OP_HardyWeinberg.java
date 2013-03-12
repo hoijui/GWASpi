@@ -3,6 +3,7 @@ package org.gwaspi.netCDF.operations;
 import java.io.IOException;
 import java.util.Map;
 import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.Operation;
@@ -49,13 +50,14 @@ public class OP_HardyWeinberg implements MatrixOperation {
 		try {
 			// CREATE netCDF-3 FILE
 
-			OperationFactory wrOPHandler = new OperationFactory(rdOPMetadata.getStudyId(),
+			OperationFactory wrOPHandler = new OperationFactory(
+					rdOPMetadata.getStudyId(),
 					"Hardy-Weinberg_" + censusName, // friendly name
 					"Hardy-Weinberg test on Samples marked as controls (only females for the X chromosome)\nMarkers: " + rdMarkerSetMap.size() + "\nSamples: " + rdSampleSetMap.size(), //description
 					rdMarkerSetMap.size(),
 					rdSampleSetMap.size(),
 					0,
-					cNetCDF.Defaults.OPType.HARDY_WEINBERG.toString(),
+					OPType.HARDY_WEINBERG,
 					rdOPMetadata.getParentMatrixId(), // Parent matrixId
 					markerCensusOP.getId()); // Parent operationId
 			wrNcFile = wrOPHandler.getNetCDFHandler();

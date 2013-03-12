@@ -256,7 +256,8 @@ public class OperationServiceImpl implements OperationService {
 			operationMetadata.getParentOperationId(),
 			operationMetadata.getOPName(),
 			operationMetadata.getMatrixCDFName(),
-			operationMetadata.getGenotypeCode(),
+			(operationMetadata.getGenotypeCode() == null) ? ""
+				: operationMetadata.getGenotypeCode().name(),
 			"", // command
 			operationMetadata.getDescription(),
 			operationMetadata.getStudyId()
@@ -371,15 +372,13 @@ public class OperationServiceImpl implements OperationService {
 
 	private OperationMetadata getOperationMetadata(Map<String, Object> dbProperties) throws IOException {
 
-		OperationMetadata operationMetadata = null;
-
 		int opId = Integer.MIN_VALUE;
 		int parentMatrixId = Integer.MIN_VALUE;
 		int parentOperationId = Integer.MIN_VALUE;
 		String opName = "";
 		String netCDF_name = "";
 		String description = "";
-		String gtCode = "";
+		OPType gtCode = null;
 		int studyId = Integer.MIN_VALUE;
 		int opSetSize = Integer.MIN_VALUE;
 		int implicitSetSize = Integer.MIN_VALUE;
@@ -393,6 +392,7 @@ public class OperationServiceImpl implements OperationService {
 			opName = dbProperties.get(cDBOperations.f_OP_NAME).toString();
 			netCDF_name = dbProperties.get(cDBOperations.f_OP_NETCDF_NAME).toString();
 			description = dbProperties.get(cDBOperations.f_DESCRIPTION).toString();
+			// FIXME fill gtCode with value from f_OP_TYPE
 			studyId = (Integer) dbProperties.get(cDBOperations.f_STUDYID);
 			String dateTime = dbProperties.get(cDBOperations.f_CREATION_DATE).toString();
 			dateTime = dateTime.substring(0, dateTime.lastIndexOf('.'));
@@ -426,7 +426,7 @@ public class OperationServiceImpl implements OperationService {
 			}
 		}
 
-		operationMetadata = new OperationMetadata(
+		OperationMetadata operationMetadata = new OperationMetadata(
 				opId,
 				parentMatrixId,
 				parentOperationId,

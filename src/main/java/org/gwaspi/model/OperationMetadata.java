@@ -1,5 +1,8 @@
 package org.gwaspi.model;
 
+
+import org.gwaspi.constants.cNetCDF.Defaults.OPType;
+
 /**
  *
  * @author Fernando Muñiz Fernandez
@@ -15,7 +18,7 @@ public class OperationMetadata {
 	private String netCDFName;
 	private String description;
 	private String pathToMatrix;
-	private String gtCode;
+	private OPType gtCode;
 	private int opSetSize;
 	private int implicitSetSize;
 	private int studyId;
@@ -45,7 +48,7 @@ public class OperationMetadata {
 			String netCDFName,
 			String description,
 			String pathToMatrix,
-			String gtCode,
+			OPType gtCode,
 			int opSetSize,
 			int implicitSetSize,
 			int studyId,
@@ -86,7 +89,7 @@ public class OperationMetadata {
 		return netCDFName;
 	}
 
-	public String getGenotypeCode() {
+	public OPType getGenotypeCode() {
 		return gtCode;
 	}
 

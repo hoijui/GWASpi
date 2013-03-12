@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.AlleleBytes;
+import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MatricesList;
@@ -66,13 +67,14 @@ public class OP_QAMarkers_opt implements MatrixOperation {
 					+ rdMatrixMetadata.getMatrixFriendlyName()
 					+ "\nMarkers: " + rdMarkerSet.getMarkerIdSetMap().size()
 					+ "\nStarted at: " + org.gwaspi.global.Utils.getShortDateTimeAsString();
-			OperationFactory wrOPHandler = new OperationFactory(rdMatrixMetadata.getStudyId(),
+			OperationFactory wrOPHandler = new OperationFactory(
+					rdMatrixMetadata.getStudyId(),
 					"Marker QA", // friendly name
 					description, // description
 					rdMarkerSet.getMarkerIdSetMap().size(),
 					rdSampleSetMap.size(),
 					0,
-					cNetCDF.Defaults.OPType.MARKER_QA.toString(),
+					OPType.MARKER_QA,
 					rdMatrixMetadata.getMatrixId(), // Parent matrixId
 					-1); // Parent operationId
 

@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.global.Config;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.OperationMetadata;
@@ -35,26 +36,27 @@ public class OperationFactory {
 	/**
 	 * To use with matrix input.
 	 */
-	public OperationFactory(Integer studyId,
+	public OperationFactory(
+			Integer studyId,
 			String friendlyName,
 			String description,
 			int opSetSize,
 			int implicitSetSize,
 			int chrSetSize,
-			String OPType,
+			OPType opType,
 			int parentMatrixId,
 			int parentOperationId)
 			throws InvalidRangeException, IOException
 	{
 		// OPERATION CASE SELECTOR
-		resultOPnetCDFName = OPType + "_" + MatricesList.generateMatrixNetCDFNameByDate();
-		switch (cNetCDF.Defaults.OPType.compareTo(OPType)) {
+		resultOPnetCDFName = opType.name() + "_" + MatricesList.generateMatrixNetCDFNameByDate();
+		switch (opType) {
 			case MARKER_QA:
 				//resultOPnetCDFName = OPType + "_" + rdMatrixMetadata.getMatrixCDFName();
 				netCDFHandler = generateNetcdfMarkerQAHandler(studyId,
 						resultOPnetCDFName,
 						description,
-						OPType,
+						opType,
 						opSetSize,
 						implicitSetSize);
 				break;
@@ -63,7 +65,7 @@ public class OperationFactory {
 				netCDFHandler = generateNetcdfSampleQAHandler(studyId,
 						resultOPnetCDFName,
 						description,
-						OPType,
+						opType,
 						opSetSize,
 						implicitSetSize);
 				break;
@@ -72,7 +74,7 @@ public class OperationFactory {
 				netCDFHandler = generateNetcdfCensusHandler(studyId,
 						resultOPnetCDFName,
 						description,
-						OPType,
+						opType,
 						opSetSize,
 						implicitSetSize);
 				break;
@@ -81,7 +83,7 @@ public class OperationFactory {
 				netCDFHandler = generateNetcdfCensusHandler(studyId,
 						resultOPnetCDFName,
 						description,
-						OPType,
+						opType,
 						opSetSize,
 						implicitSetSize);
 				break;
@@ -91,7 +93,7 @@ public class OperationFactory {
 				netCDFHandler = generateNetcdfHardyWeinbergHandler(studyId,
 						resultOPnetCDFName,
 						description,
-						OPType,
+						opType,
 						opSetSize,
 						implicitSetSize);
 				break;
@@ -101,7 +103,7 @@ public class OperationFactory {
 				netCDFHandler = generateNetcdfAllelicAssociationHandler(studyId,
 						resultOPnetCDFName,
 						description,
-						OPType,
+						opType,
 						opSetSize,
 						implicitSetSize,
 						chrSetSize);
@@ -112,7 +114,7 @@ public class OperationFactory {
 				netCDFHandler = generateNetcdfGenotypicAssociationHandler(studyId,
 						resultOPnetCDFName,
 						description,
-						OPType,
+						opType,
 						opSetSize,
 						implicitSetSize,
 						chrSetSize);
@@ -123,13 +125,13 @@ public class OperationFactory {
 				netCDFHandler = generateNetcdfTrendTestHandler(studyId,
 						resultOPnetCDFName,
 						description,
-						OPType,
+						opType,
 						opSetSize,
 						implicitSetSize,
 						chrSetSize);
 				break;
 			default:
-				throw new IllegalArgumentException("invalid OPType: " + OPType);
+				throw new IllegalArgumentException("invalid OPType: " + opType);
 		}
 
 		OperationsList.insertOPMetadata(new OperationMetadata(
@@ -140,7 +142,7 @@ public class OperationFactory {
 				resultOPnetCDFName,
 				description,
 				"",
-				OPType,
+				opType,
 				Integer.MIN_VALUE,
 				Integer.MIN_VALUE,
 				studyId,
@@ -177,7 +179,7 @@ public class OperationFactory {
 			Integer studyId,
 			String resultOPName,
 			String description,
-			String OPType,
+			OPType opType,
 			int markerSetSize,
 			int sampleSetSize)
 	{
@@ -263,7 +265,7 @@ public class OperationFactory {
 	public static NetcdfFileWriteable generateNetcdfSampleQAHandler(Integer studyId,
 			String matrixName,
 			String description,
-			String OPType,
+			OPType opType,
 			int sampleSetSize,
 			int markerSetSize)
 			throws InvalidRangeException, IOException
@@ -325,7 +327,7 @@ public class OperationFactory {
 	public static NetcdfFileWriteable generateNetcdfCensusHandler(Integer studyId,
 			String matrixName,
 			String description,
-			String OPType,
+			OPType opType,
 			int markerSetSize,
 			int sampleSetSize)
 			throws InvalidRangeException, IOException
@@ -414,7 +416,7 @@ public class OperationFactory {
 	public static NetcdfFileWriteable generateNetcdfHardyWeinbergHandler(Integer studyId,
 			String matrixName,
 			String description,
-			String OPType,
+			OPType opType,
 			int markerSetSize,
 			int sampleSetSize)
 			throws InvalidRangeException, IOException
@@ -489,7 +491,7 @@ public class OperationFactory {
 	public static NetcdfFileWriteable generateNetcdfAllelicAssociationHandler(Integer studyId,
 			String matrixName,
 			String description,
-			String OPType,
+			OPType opType,
 			int markerSetSize,
 			int sampleSetSize,
 			int chrSetSize)
@@ -576,7 +578,7 @@ public class OperationFactory {
 	public static NetcdfFileWriteable generateNetcdfGenotypicAssociationHandler(Integer studyId,
 			String matrixName,
 			String description,
-			String OPType,
+			OPType opType,
 			int markerSetSize,
 			int sampleSetSize,
 			int chrSetSize)
@@ -657,7 +659,7 @@ public class OperationFactory {
 	public static NetcdfFileWriteable generateNetcdfTrendTestHandler(Integer studyId,
 			String matrixName,
 			String description,
-			String OPType,
+			OPType opType,
 			int markerSetSize,
 			int sampleSetSize,
 			int chrSetSize)
