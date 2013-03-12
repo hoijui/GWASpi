@@ -392,7 +392,8 @@ public class OperationServiceImpl implements OperationService {
 			opName = dbProperties.get(cDBOperations.f_OP_NAME).toString();
 			netCDF_name = dbProperties.get(cDBOperations.f_OP_NETCDF_NAME).toString();
 			description = dbProperties.get(cDBOperations.f_DESCRIPTION).toString();
-			// FIXME fill gtCode with value from f_OP_TYPE
+			String gtCodeStr = dbProperties.get(cDBOperations.f_OP_TYPE).toString();
+			gtCode = OPType.valueOf(gtCodeStr);
 			studyId = (Integer) dbProperties.get(cDBOperations.f_STUDYID);
 			String dateTime = dbProperties.get(cDBOperations.f_CREATION_DATE).toString();
 			dateTime = dateTime.substring(0, dateTime.lastIndexOf('.'));
