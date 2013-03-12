@@ -201,18 +201,15 @@ public class AbstractOperationSet<K> {
 		int[] varShape = var.getShape();
 		try {
 			opSetSize = varShape[0];
-			if (dataType == DataType.CHAR) {
-				if (varShape.length == 2) {
-					ArrayChar.D2 markerSetAC = (ArrayChar.D2) var.read("(0:" + (opSetSize - 1) + ":1, 0:" + (varShape[1] - 1) + ":1)");
-					org.gwaspi.netCDF.operations.Utils.writeD2ArrayCharToMapValues(markerSetAC, opSetMap);
-				}
+			if ((dataType == DataType.CHAR) && (varShape.length == 2)) {
+				ArrayChar.D2 markerSetAC = (ArrayChar.D2) var.read("(0:" + (opSetSize - 1) + ":1, 0:" + (varShape[1] - 1) + ":1)");
+				org.gwaspi.netCDF.operations.Utils.writeD2ArrayCharToMapValues(markerSetAC, opSetMap);
 			}
 			if (dataType == DataType.DOUBLE) {
 				if (varShape.length == 1) {
 					ArrayDouble.D1 markerSetAF = (ArrayDouble.D1) var.read("(0:" + (opSetSize - 1) + ":1)");
 					org.gwaspi.netCDF.operations.Utils.writeD1ArrayDoubleToMapValues(markerSetAF, opSetMap);
-				}
-				if (varShape.length == 2) {
+				} else if (varShape.length == 2) {
 					ArrayDouble.D2 markerSetAF = (ArrayDouble.D2) var.read("(0:" + (opSetSize - 1) + ":1, 0:" + (varShape[1] - 1) + ":1))");
 					org.gwaspi.netCDF.operations.Utils.writeD2ArrayDoubleToMapValues(markerSetAF, opSetMap);
 				}
@@ -221,8 +218,7 @@ public class AbstractOperationSet<K> {
 				if (varShape.length == 1) {
 					ArrayInt.D1 markerSetAD = (ArrayInt.D1) var.read("(0:" + (opSetSize - 1) + ":1)");
 					org.gwaspi.netCDF.operations.Utils.writeD1ArrayIntToMapValues(markerSetAD, opSetMap);
-				}
-				if (varShape.length == 2) {
+				} else if (varShape.length == 2) {
 					ArrayInt.D2 markerSetAD = (ArrayInt.D2) var.read("(0:" + (opSetSize - 1) + ":1, 0:" + (varShape[1] - 1) + ":1))");
 					org.gwaspi.netCDF.operations.Utils.writeD2ArrayIntToMapValues(markerSetAD, opSetMap);
 				}
@@ -266,18 +262,15 @@ public class AbstractOperationSet<K> {
 		((ArrayList) list).ensureCapacity(opSetSize);
 
 		try {
-			if (dataType == DataType.CHAR) {
-				if (varShape.length == 2) {
-					ArrayChar.D2 markerSetAC = (ArrayChar.D2) var.read("(0:" + (opSetSize - 1) + ":1, 0:" + (varShape[1] - 1) + ":1)");
-					list = org.gwaspi.netCDF.operations.Utils.writeD2ArrayCharToList(markerSetAC);
-				}
+			if ((dataType == DataType.CHAR) && (varShape.length == 2)) {
+				ArrayChar.D2 markerSetAC = (ArrayChar.D2) var.read("(0:" + (opSetSize - 1) + ":1, 0:" + (varShape[1] - 1) + ":1)");
+				list = org.gwaspi.netCDF.operations.Utils.writeD2ArrayCharToList(markerSetAC);
 			}
 			if (dataType == DataType.DOUBLE) {
 				if (varShape.length == 1) {
 					ArrayDouble.D1 markerSetAD = (ArrayDouble.D1) var.read("(0:" + (opSetSize - 1) + ":1)");
 					list = org.gwaspi.netCDF.operations.Utils.writeD1ArrayDoubleToList(markerSetAD);
-				}
-				if (varShape.length == 2) {
+				} else if (varShape.length == 2) {
 					ArrayDouble.D2 markerSetAD = (ArrayDouble.D2) var.read("(0:" + (opSetSize - 1) + ":1, 0:" + (varShape[1] - 1) + ":1)");
 					list = org.gwaspi.netCDF.operations.Utils.writeD2ArrayDoubleToList(markerSetAD);
 				}
@@ -303,64 +296,57 @@ public class AbstractOperationSet<K> {
 
 		try {
 			opSetSize = varShape[0];
-			if (dataType == DataType.CHAR) {
-				if (varShape.length == 2) {
-					ArrayChar.D2 markerSetAC = (ArrayChar.D2) var.read("(0:" + (opSetSize - 1) + ":1, 0:" + (varShape[1] - 1) + ":1)");
+			if ((dataType == DataType.CHAR) && (varShape.length == 2)) {
+				ArrayChar.D2 markerSetAC = (ArrayChar.D2) var.read("(0:" + (opSetSize - 1) + ":1, 0:" + (varShape[1] - 1) + ":1)");
 
-					int[] shape = markerSetAC.getShape();
-					Index index = markerSetAC.getIndex();
-					Iterator<? extends Map.Entry<?, Object>> it = opSetMap.entrySet().iterator();
-					for (int i = 0; i < shape[0]; i++) {
-						Map.Entry<?, Object> entry = it.next();
-						String value = entry.getValue().toString();
-						if (!value.isEmpty()) {
-							value += separator;
-						}
-						StringBuilder newValue = new StringBuilder();
-						for (int j = 0; j < shape[1]; j++) {
-							newValue.append(markerSetAC.getChar(index.set(i, j)));
-						}
-						entry.setValue(value + newValue.toString().trim());
+				int[] shape = markerSetAC.getShape();
+				Index index = markerSetAC.getIndex();
+				Iterator<? extends Map.Entry<?, Object>> it = opSetMap.entrySet().iterator();
+				for (int i = 0; i < shape[0]; i++) {
+					Map.Entry<?, Object> entry = it.next();
+					String value = entry.getValue().toString();
+					if (!value.isEmpty()) {
+						value += separator;
 					}
+					StringBuilder newValue = new StringBuilder();
+					for (int j = 0; j < shape[1]; j++) {
+						newValue.append(markerSetAC.getChar(index.set(i, j)));
+					}
+					entry.setValue(value + newValue.toString().trim());
 				}
 			}
-			if (dataType == DataType.FLOAT) {
-				if (varShape.length == 1) {
-					ArrayFloat.D1 markerSetAF = (ArrayFloat.D1) var.read("(0:" + (opSetSize - 1) + ":1)");
+			if ((dataType == DataType.FLOAT) && (varShape.length == 1)) {
+				ArrayFloat.D1 markerSetAF = (ArrayFloat.D1) var.read("(0:" + (opSetSize - 1) + ":1)");
 
-					int[] shape = markerSetAF.getShape();
-					Index index = markerSetAF.getIndex();
-					Iterator<? extends Map.Entry<?, Object>> it = opSetMap.entrySet().iterator();
-					for (int i = 0; i < shape[0]; i++) {
-						Map.Entry<?, Object> entry = it.next();
-						String value = entry.getValue().toString();
-						if (!value.isEmpty()) {
-							value += separator;
-						}
-						Float floatValue = markerSetAF.getFloat(index.set(i));
-						entry.setValue(value + floatValue.toString());
+				int[] shape = markerSetAF.getShape();
+				Index index = markerSetAF.getIndex();
+				Iterator<? extends Map.Entry<?, Object>> it = opSetMap.entrySet().iterator();
+				for (int i = 0; i < shape[0]; i++) {
+					Map.Entry<?, Object> entry = it.next();
+					String value = entry.getValue().toString();
+					if (!value.isEmpty()) {
+						value += separator;
 					}
+					Float floatValue = markerSetAF.getFloat(index.set(i));
+					entry.setValue(value + floatValue.toString());
 				}
 			}
-			if (dataType == DataType.INT) {
-				if (varShape.length == 1) {
-					ArrayInt.D1 markerSetAF = (ArrayInt.D1) var.read("(0:" + (opSetSize - 1) + ":1)");
+			if ((dataType == DataType.INT) && (varShape.length == 1)) {
+				ArrayInt.D1 markerSetAF = (ArrayInt.D1) var.read("(0:" + (opSetSize - 1) + ":1)");
 
-					int[] shape = markerSetAF.getShape();
-					Index index = markerSetAF.getIndex();
-					Iterator<? extends Map.Entry<?, Object>> it = opSetMap.entrySet().iterator();
-					for (int i = 0; i < shape[0]; i++) {
-						Map.Entry<?, Object> entry = it.next();
-						String value = entry.getValue().toString();
-						if (!value.isEmpty()) {
-							value += separator;
-						}
-						Integer intValue = markerSetAF.getInt(index.set(i));
-						entry.setValue(value + intValue.toString());
+				int[] shape = markerSetAF.getShape();
+				Index index = markerSetAF.getIndex();
+				Iterator<? extends Map.Entry<?, Object>> it = opSetMap.entrySet().iterator();
+				for (int i = 0; i < shape[0]; i++) {
+					Map.Entry<?, Object> entry = it.next();
+					String value = entry.getValue().toString();
+					if (!value.isEmpty()) {
+						value += separator;
 					}
+					Integer intValue = markerSetAF.getInt(index.set(i));
+					entry.setValue(value + intValue.toString());
 				}
 			}
-
 		} catch (IOException ex) {
 			log.error("Cannot read data", ex);
 		} catch (InvalidRangeException ex) {

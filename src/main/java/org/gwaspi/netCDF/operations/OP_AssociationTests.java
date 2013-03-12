@@ -81,10 +81,6 @@ public class OP_AssociationTests implements MatrixOperation {
 					excludeMarkerSetMap.put(entry.getKey(), value);
 				}
 			}
-
-			if (rdHWMarkerSetMap != null) { // FIXME this check does not make sense here
-				rdHWMarkerSetMap.clear();
-			}
 			rdHWNcFile.close();
 		}
 		//</editor-fold>
