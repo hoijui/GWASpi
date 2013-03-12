@@ -118,11 +118,12 @@ public class OperationManager {
 		Operation markerCensusOP = OperationsList.getById(censusOpId);
 		Operation hwOP = OperationsList.getById(hwOpId);
 
-		resultOpId = new OP_AllelicAssociationTests_opt(
+		resultOpId = new OP_AssociationTests(
 				_rdMatrixId,
 				markerCensusOP,
 				hwOP,
-				hwThreshold).processMatrix();
+				hwThreshold,
+				true).processMatrix();
 
 		return resultOpId;
 	}
@@ -141,11 +142,12 @@ public class OperationManager {
 		Operation markerCensusOP = OperationsList.getById(censusOpId);
 		Operation hwOP = OperationsList.getById(hwOpId);
 
-		resultOpId = new OP_GenotypicAssociationTests_opt(
+		resultOpId = new OP_AssociationTests(
 				_rdMatrixId,
 				markerCensusOP,
 				hwOP,
-				hwThreshold).processMatrix();
+				hwThreshold,
+				false).processMatrix();
 
 		return resultOpId;
 	}

@@ -3,7 +3,7 @@ package org.gwaspi.threadbox;
 import java.io.IOException;
 import org.gwaspi.global.Config;
 import org.gwaspi.model.Operation;
-import org.gwaspi.netCDF.operations.OP_AllelicAssociationTests_opt;
+import org.gwaspi.netCDF.operations.OP_AssociationTests;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.InvalidRangeException;
@@ -47,11 +47,12 @@ public class Threaded_OP_AssociationTests implements Runnable {
 
 	public void run() {
 		try {
-			resultOpId = new OP_AllelicAssociationTests_opt(
+			resultOpId = new OP_AssociationTests(
 					matrixId,
 					censusOP,
 					hwOP,
-					hwThreshold).processMatrix();
+					hwThreshold,
+					true).processMatrix();
 		} catch (IOException ex) {
 			log.error(null, ex);
 		} catch (InvalidRangeException ex) {

@@ -5,6 +5,7 @@ import java.text.DecimalFormat;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MatricesList;
@@ -27,29 +28,39 @@ import ucar.nc2.NetcdfFileWriteable;
  * IBE, Institute of Evolutionary Biology (UPF-CSIC)
  * CEXS-UPF-PRBB
  */
-public class OP_GenotypicAssociationTests_opt implements MatrixOperation {
+public class OP_AssociationTests implements MatrixOperation {
 
-	private final Logger log = LoggerFactory.getLogger(OP_GenotypicAssociationTests_opt.class);
+	private final Logger log
+			= LoggerFactory.getLogger(OP_AssociationTests.class);
 
 	private int rdMatrixId;
 	private Operation markerCensusOP;
 	private Operation hwOP;
 	private double hwThreshold;
+	/**
+	 * Whether we are to perform allelic or genotypic association tests.
+	 */
+	private final boolean allelic;
 
-	public OP_GenotypicAssociationTests_opt(
+	public OP_AssociationTests(
 			int rdMatrixId,
 			Operation markerCensusOP,
 			Operation hwOP,
-			double hwThreshold)
+			double hwThreshold,
+			boolean allelic)
 	{
 		this.rdMatrixId = rdMatrixId;
 		this.markerCensusOP = markerCensusOP;
 		this.hwOP = hwOP;
 		this.hwThreshold = hwThreshold;
+		this.allelic = allelic;
 	}
 
+	@Override
 	public int processMatrix() throws IOException, InvalidRangeException {
 		int resultAssocId = Integer.MIN_VALUE;
+
+		String testName = allelic ? "Allelic" : "Genotypic";
 
 		//<editor-fold defaultstate="expanded" desc="EXCLUSION MARKERS FROM HW">
 		Map<MarkerKey, Object> excludeMarkerSetMap = new LinkedHashMap<MarkerKey, Object>();
@@ -71,7 +82,7 @@ public class OP_GenotypicAssociationTests_opt implements MatrixOperation {
 				}
 			}
 
-			if (rdHWMarkerSetMap != null) { // FIXME this check does nto make sense here
+			if (rdHWMarkerSetMap != null) { // FIXME this check does not make sense here
 				rdHWMarkerSetMap.clear();
 			}
 			rdHWNcFile.close();
@@ -108,15 +119,15 @@ public class OP_GenotypicAssociationTests_opt implements MatrixOperation {
 			NetcdfFileWriteable wrOPNcFile = null;
 			try {
 				// CREATE netCDF-3 FILE
-
 				DecimalFormat dfSci = new DecimalFormat("0.##E0#");
+				OPType testType = allelic ? OPType.ALLELICTEST : OPType.GENOTYPICTEST;
 				OperationFactory wrOPHandler = new OperationFactory(rdCensusOPMetadata.getStudyId(),
-						"Genotypic Association Test", // friendly name
-						"Genotypic test on " + markerCensusOP.getFriendlyName() + "\n" + rdCensusOPMetadata.getDescription() + "\nHardy-Weinberg threshold: " + dfSci.format(hwThreshold), //description
+						testName + " Association Test", // friendly name
+						testName + " test on " + markerCensusOP.getFriendlyName() + "\n" + rdCensusOPMetadata.getDescription() + "\nHardy-Weinberg threshold: " + dfSci.format(hwThreshold), // description
 						wrMarkerSetMap.size(),
 						rdCensusOPMetadata.getImplicitSetSize(),
 						rdChrInfoSetMap.size(),
-						cNetCDF.Defaults.OPType.GENOTYPICTEST.toString(),
+						testType.toString(),
 						rdCensusOPMetadata.getParentMatrixId(), // Parent matrixId
 						markerCensusOP.getId()); // Parent operationId
 				wrOPNcFile = wrOPHandler.getNetCDFHandler();
@@ -137,14 +148,13 @@ public class OP_GenotypicAssociationTests_opt implements MatrixOperation {
 				} catch (IOException ex) {
 					log.error("Failed writing file", ex);
 				} catch (InvalidRangeException ex) {
-					log.error(null, ex);
+					log.error("Failed writing file", ex);
 				}
 
 				// MARKERSET RSID
 				rdCaseMarkerIdSetMap = rdCaseMarkerSet.fillOpSetMapWithVariable(rdOPNcFile, cNetCDF.Variables.VAR_MARKERS_RSID);
 				for (Map.Entry<MarkerKey, Object> entry : wrMarkerSetMap.entrySet()) {
-					MarkerKey key = entry.getKey();
-					Object value = rdCaseMarkerIdSetMap.get(key);
+					Object value = rdCaseMarkerIdSetMap.get(entry.getKey());
 					entry.setValue(value);
 				}
 				Utils.saveCharMapValueToWrMatrix(wrOPNcFile, wrMarkerSetMap, cNetCDF.Variables.VAR_MARKERS_RSID, cNetCDF.Strides.STRIDE_MARKER_NAME);
@@ -158,7 +168,7 @@ public class OP_GenotypicAssociationTests_opt implements MatrixOperation {
 				} catch (IOException ex) {
 					log.error("Failed writing file", ex);
 				} catch (InvalidRangeException ex) {
-					log.error(null, ex);
+					log.error("Failed writing file", ex);
 				}
 				log.info("Done writing SampleSet to matrix");
 
@@ -170,20 +180,18 @@ public class OP_GenotypicAssociationTests_opt implements MatrixOperation {
 				org.gwaspi.netCDF.operations.Utils.saveIntMapD2ToWrMatrix(wrOPNcFile, rdChrInfoSetMap, columns, cNetCDF.Variables.VAR_CHR_INFO);
 				//</editor-fold>
 
-				//<editor-fold defaultstate="expanded" desc="GET CENSUS & PERFORM GENOTYPIC TESTS">
+				//<editor-fold defaultstate="expanded" desc="GET CENSUS & PERFORM TESTS">
 				// CLEAN Maps FROM MARKERS THAT FAILED THE HARDY WEINBERG THRESHOLD
 				Map<MarkerKey, Object> wrCaseMarkerIdSetMap = new LinkedHashMap<MarkerKey, Object>();
 				rdCaseMarkerIdSetMap = rdCaseMarkerSet.fillOpSetMapWithVariable(rdOPNcFile, cNetCDF.Census.VAR_OP_MARKERS_CENSUSCASE);
 				if (rdCaseMarkerIdSetMap != null) {
 					for (Map.Entry<MarkerKey, Object> entry : rdCaseMarkerIdSetMap.entrySet()) {
 						MarkerKey key = entry.getKey();
-						Object value = entry.getValue();
 
 						if (!excludeMarkerSetMap.containsKey(key)) {
-							wrCaseMarkerIdSetMap.put(key, value);
+							wrCaseMarkerIdSetMap.put(key, entry.getValue());
 						}
 					}
-
 					rdCaseMarkerIdSetMap.clear();
 				}
 
@@ -197,19 +205,20 @@ public class OP_GenotypicAssociationTests_opt implements MatrixOperation {
 							wrCtrlMarkerSet.put(key, entry.getValue());
 						}
 					}
-
 					rdCtrlMarkerIdSetMap.clear();
 				}
 
 				log.info(Text.All.processing);
 				performAssociationTests(wrOPNcFile, wrCaseMarkerIdSetMap, wrCtrlMarkerSet);
 
-				org.gwaspi.global.Utils.sysoutCompleted("Genotypic Association Tests");
+				org.gwaspi.global.Utils.sysoutCompleted(testName + " Association Tests");
 				//</editor-fold>
 
 				resultAssocId = wrOPHandler.getResultOPId();
 			} catch (InvalidRangeException ex) {
+				log.error(null, ex);
 			} catch (IOException ex) {
+				log.error(null, ex);
 			} finally {
 				if (null != rdOPNcFile) {
 					try {
@@ -247,28 +256,61 @@ public class OP_GenotypicAssociationTests_opt implements MatrixOperation {
 			int ctrlaa = ctrlCntgTable[2];
 			int ctrlTot = ctrlAA + ctrlaa + ctrlAa;
 
-			// GENOTYPIC TEST
-			double gntypT = org.gwaspi.statistics.Associations.calculateGenotypicAssociationChiSquare(caseAA,
-					caseAa,
-					caseaa,
-					caseTot,
-					ctrlAA,
-					ctrlAa,
-					ctrlaa,
-					ctrlTot);
-			double gntypPval = org.gwaspi.statistics.Pvalue.calculatePvalueFromChiSqr(gntypT, 2);
-			double[] gntypOR = org.gwaspi.statistics.Associations.calculateGenotypicAssociationOR(caseAA,
-					caseAa,
-					caseaa,
-					ctrlAA,
-					ctrlAa,
-					ctrlaa);
+			Double[] store;
+			if (allelic) {
+				// allelic test
+				int AAtot = caseAA + ctrlAA;
+				int Aatot = caseAa + ctrlAa;
+				int aatot = caseaa + ctrlaa;
 
-			Double[] store = new Double[4];
-			store[0] = gntypT;
-			store[1] = gntypPval;
-			store[2] = gntypOR[0];
-			store[3] = gntypOR[1];
+				int sampleNb = caseTot + ctrlTot;
+
+				double allelicT = org.gwaspi.statistics.Associations.calculateAllelicAssociationChiSquare(sampleNb,
+						caseAA,
+						caseAa,
+						caseaa,
+						caseTot,
+						ctrlAA,
+						ctrlAa,
+						ctrlaa,
+						ctrlTot);
+				double allelicPval = org.gwaspi.statistics.Pvalue.calculatePvalueFromChiSqr(allelicT, 1);
+
+				double allelicOR = org.gwaspi.statistics.Associations.calculateAllelicAssociationOR(caseAA,
+						caseAa,
+						caseaa,
+						ctrlAA,
+						ctrlAa,
+						ctrlaa);
+
+				store = new Double[3];
+				store[0] = allelicT;
+				store[1] = allelicPval;
+				store[2] = allelicOR;
+			} else {
+				// genotypic test
+				double gntypT = org.gwaspi.statistics.Associations.calculateGenotypicAssociationChiSquare(caseAA,
+						caseAa,
+						caseaa,
+						caseTot,
+						ctrlAA,
+						ctrlAa,
+						ctrlaa,
+						ctrlTot);
+				double gntypPval = org.gwaspi.statistics.Pvalue.calculatePvalueFromChiSqr(gntypT, 2);
+				double[] gntypOR = org.gwaspi.statistics.Associations.calculateGenotypicAssociationOR(caseAA,
+						caseAa,
+						caseaa,
+						ctrlAA,
+						ctrlAa,
+						ctrlaa);
+
+				store = new Double[4];
+				store[0] = gntypT;
+				store[1] = gntypPval;
+				store[2] = gntypOR[0];
+				store[3] = gntypOR[1];
+			}
 			wrCaseMarkerIdSetMap.put(markerKey, store); // Re-use Map to store P-value and stuff
 
 			markerNb++;
@@ -278,8 +320,16 @@ public class OP_GenotypicAssociationTests_opt implements MatrixOperation {
 		}
 
 		//<editor-fold defaultstate="expanded" desc="ALLELICTEST DATA WRITER">
-		int[] boxes = new int[]{0, 1, 2, 3};
-		Utils.saveDoubleMapD2ToWrMatrix(wrNcFile, wrCaseMarkerIdSetMap, boxes, cNetCDF.Association.VAR_OP_MARKERS_ASGenotypicAssociationTP2OR);
+		int[] boxes;
+		String variableName;
+		if (allelic) {
+			boxes = new int[] {0, 1, 2};
+			variableName = cNetCDF.Association.VAR_OP_MARKERS_ASAllelicAssociationTPOR;
+		} else {
+			boxes = new int[] {0, 1, 2, 3};
+			variableName = cNetCDF.Association.VAR_OP_MARKERS_ASGenotypicAssociationTP2OR;
+		}
+		Utils.saveDoubleMapD2ToWrMatrix(wrNcFile, wrCaseMarkerIdSetMap, boxes, variableName);
 		//</editor-fold>
 	}
 }
