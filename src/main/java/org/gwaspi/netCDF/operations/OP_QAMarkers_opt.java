@@ -54,7 +54,7 @@ public class OP_QAMarkers_opt implements MatrixOperation {
 
 		MarkerSet_opt rdMarkerSet = new MarkerSet_opt(rdMatrixMetadata.getStudyId(), rdMatrixId);
 		rdMarkerSet.initFullMarkerIdSetMap();
-		//Map<String, Object> rdMarkerSetMap = rdMarkerSet.markerIdSetMap; //This to test heap usage of copying locally the Map from markerset
+		//Map<String, Object> rdMarkerSetMap = rdMarkerSet.markerIdSetMap; // This to test heap usage of copying locally the Map from markerset
 
 		SampleSet rdSampleSet = new SampleSet(rdMatrixMetadata.getStudyId(), rdMatrixId);
 		Map<SampleKey, Object> rdSampleSetMap = rdSampleSet.getSampleIdSetMap();
@@ -83,7 +83,6 @@ public class OP_QAMarkers_opt implements MatrixOperation {
 				log.error("Failed creating file: " + wrNcFile.getLocation(), ex);
 			}
 			//log.trace("Done creating netCDF handle: " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
-
 
 			//<editor-fold defaultstate="expanded" desc="METADATA WRITER">
 			// MARKERSET MARKERID
@@ -384,9 +383,15 @@ public class OP_QAMarkers_opt implements MatrixOperation {
 			if (null != rdNcFile) {
 				try {
 					rdNcFile.close();
+				} catch (IOException ex) {
+					log.warn("Cannot close file " + rdNcFile, ex);
+				}
+			}
+			if (null != wrNcFile) {
+				try {
 					wrNcFile.close();
 				} catch (IOException ex) {
-					log.warn("Cannot close file", ex);
+					log.warn("Cannot close file " + wrNcFile, ex);
 				}
 			}
 

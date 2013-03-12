@@ -134,7 +134,7 @@ public class OP_QASamples_opt implements MatrixOperation {
 			}
 			log.info("Done writing SampleSet to matrix");
 
-			//WRITE MARKERSET TO MATRIX
+			// WRITE MARKERSET TO MATRIX
 			ArrayChar.D2 markersD2 = Utils.writeMapKeysToD2ArrayChar(rdMarkerSet.getMarkerIdSetMap(), cNetCDF.Strides.STRIDE_MARKER_NAME);
 			int[] markersOrig = new int[]{0, 0};
 			try {
