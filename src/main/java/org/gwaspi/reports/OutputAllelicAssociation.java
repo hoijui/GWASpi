@@ -99,7 +99,7 @@ public class OutputAllelicAssociation {
 		return result;
 	}
 
-	public static boolean writeManhattanPlotFromAssociationData(int opId, String outName, int width, int height) throws IOException {
+	private static boolean writeManhattanPlotFromAssociationData(int opId, String outName, int width, int height) throws IOException {
 		boolean result = false;
 		//Generating XY scatter plot with loaded data
 		CombinedRangeXYPlot combinedPlot = GenericReportGenerator.buildManhattanPlot(opId, cNetCDF.Association.VAR_OP_MARKERS_ASAllelicAssociationTPOR);
@@ -136,7 +136,7 @@ public class OutputAllelicAssociation {
 		return result;
 	}
 
-	public static boolean writeQQPlotFromAssociationData(int opId, String outName, int width, int height) throws IOException {
+	private static boolean writeQQPlotFromAssociationData(int opId, String outName, int width, int height) throws IOException {
 		boolean result = false;
 		//Generating XY scatter plot with loaded data
 		XYPlot qqPlot = GenericReportGenerator.buildQQPlot(opId, cNetCDF.Association.VAR_OP_MARKERS_ASAllelicAssociationTPOR, 1);
