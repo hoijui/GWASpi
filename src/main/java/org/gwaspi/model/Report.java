@@ -1,6 +1,5 @@
 package org.gwaspi.model;
 
-import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 
 /**
