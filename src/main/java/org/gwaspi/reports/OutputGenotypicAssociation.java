@@ -45,7 +45,7 @@ public class OutputGenotypicAssociation {
 		Operation op = OperationsList.getById(opId);
 
 		org.gwaspi.global.Utils.createFolder(Config.getConfigValue(Config.PROPERTY_REPORTS_DIR, ""), "STUDY_" + op.getStudyId());
-		//String manhattanName = "mnhtt_"+outName;
+		//String manhattanName = "mnhtt_" + outName;
 		String prefix = ReportsList.getReportNamePrefix(op);
 		String manhattanName = prefix + "manhtt";
 
@@ -63,7 +63,7 @@ public class OutputGenotypicAssociation {
 					op.getStudyId()));
 			log.info("Saved Genotypic Association Manhattan Plot in reports folder");
 		}
-		//String qqName = "qq_"+outName;
+		//String qqName = "qq_" + outName;
 		String qqName = prefix + "qq";
 		if (result && writeQQPlotFromAssociationData(opId, qqName, 500, 500)) {
 			result = true;
@@ -99,7 +99,7 @@ public class OutputGenotypicAssociation {
 		return result;
 	}
 
-	public static boolean writeManhattanPlotFromAssociationData(int opId, String outName, int width, int height) throws IOException {
+	private static boolean writeManhattanPlotFromAssociationData(int opId, String outName, int width, int height) throws IOException {
 		boolean result = false;
 		//Generating XY scatter plot with loaded data
 		CombinedRangeXYPlot combinedPlot = GenericReportGenerator.buildManhattanPlot(opId, cNetCDF.Association.VAR_OP_MARKERS_ASGenotypicAssociationTP2OR);
@@ -136,7 +136,7 @@ public class OutputGenotypicAssociation {
 		return result;
 	}
 
-	public static boolean writeQQPlotFromAssociationData(int opId, String outName, int width, int height) throws IOException {
+	private static boolean writeQQPlotFromAssociationData(int opId, String outName, int width, int height) throws IOException {
 		boolean result = false;
 		//Generating XY scatter plot with loaded data
 		XYPlot qqPlot = GenericReportGenerator.buildQQPlot(opId, cNetCDF.Association.VAR_OP_MARKERS_ASGenotypicAssociationTP2OR, 2);

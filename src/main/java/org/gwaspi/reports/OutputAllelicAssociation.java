@@ -45,7 +45,7 @@ public class OutputAllelicAssociation {
 		Operation op = OperationsList.getById(opId);
 
 		org.gwaspi.global.Utils.createFolder(Config.getConfigValue(Config.PROPERTY_REPORTS_DIR, ""), "STUDY_" + op.getStudyId());
-		//String manhattanName = "mnhtt_"+outName;
+		//String manhattanName = "mnhtt_" + outName;
 		String prefix = ReportsList.getReportNamePrefix(op);
 		String manhattanName = prefix + "manhtt";
 
@@ -63,7 +63,7 @@ public class OutputAllelicAssociation {
 					op.getStudyId()));
 			log.info("Saved Allelic Association Manhattan Plot in reports folder");
 		}
-		//String qqName = "qq_"+outName;
+		//String qqName = "qq_" + outName;
 		String qqName = prefix + "qq";
 		if (result && writeQQPlotFromAssociationData(opId, qqName, 500, 500)) {
 			result = true;
@@ -165,9 +165,8 @@ public class OutputAllelicAssociation {
 			Map<MarkerKey, Object> unsortedMarkerIdAssocValsMap = GenericReportGenerator.getAnalysisVarData(opId, cNetCDF.Association.VAR_OP_MARKERS_ASAllelicAssociationTPOR);
 			Map<MarkerKey, Object> unsortedMarkerIdPvalMap = new LinkedHashMap<MarkerKey, Object>();
 			for (Map.Entry<MarkerKey, Object> entry : unsortedMarkerIdAssocValsMap.entrySet()) {
-				MarkerKey key = entry.getKey();
 				double[] values = (double[]) entry.getValue();
-				unsortedMarkerIdPvalMap.put(key, values[1]);
+				unsortedMarkerIdPvalMap.put(entry.getKey(), values[1]);
 			}
 
 			Map<MarkerKey, Object> sortingMarkerSetMap = ReportsList.getSortedMarkerSetByDoubleValue(unsortedMarkerIdPvalMap);
@@ -180,17 +179,15 @@ public class OutputAllelicAssociation {
 			MarkerSet_opt rdInfoMarkerSet = new MarkerSet_opt(rdOPMetadata.getStudyId(), rdOPMetadata.getParentMatrixId());
 			rdInfoMarkerSet.initFullMarkerIdSetMap();
 
-			//WRITE HEADER OF FILE
+			// WRITE HEADER OF FILE
 			String header = "MarkerID\trsID\tChr\tPosition\tMin. Allele\tMaj. Allele\tX²\tPval\tOR\n";
 			String reportNameExt = reportName + ".txt";
 			String reportPath = Config.getConfigValue(Config.PROPERTY_REPORTS_DIR, "") + "/STUDY_" + rdOPMetadata.getStudyId() + "/";
 
 			// WRITE MARKERSET RSID
-			//infoMatrixMarkerSetMap = rdInfoMarkerSet.appendVariableToMarkerSetMapValue(matrixNcFile, cNetCDF.Variables.VAR_MARKERS_RSID, sep);
 			rdInfoMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_RSID);
 			for (Map.Entry<MarkerKey, Object> entry : sortingMarkerSetMap.entrySet()) {
-				MarkerKey key = entry.getKey();
-				Object value = rdInfoMarkerSet.getMarkerIdSetMap().get(key);
+				Object value = rdInfoMarkerSet.getMarkerIdSetMap().get(entry.getKey());
 				entry.setValue(value);
 			}
 			ReportWriter.writeFirstColumnToReport(reportPath, reportNameExt, header, sortingMarkerSetMap, true);
@@ -198,18 +195,15 @@ public class OutputAllelicAssociation {
 			// WRITE MARKERSET CHROMOSOME
 			rdInfoMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
 			for (Map.Entry<MarkerKey, Object> entry : sortingMarkerSetMap.entrySet()) {
-				MarkerKey key = entry.getKey();
-				Object value = rdInfoMarkerSet.getMarkerIdSetMap().get(key);
+				Object value = rdInfoMarkerSet.getMarkerIdSetMap().get(entry.getKey());
 				entry.setValue(value);
 			}
 			ReportWriter.appendColumnToReport(reportPath, reportNameExt, sortingMarkerSetMap, false, false);
 
 			// WRITE MARKERSET POS
-			//infoMatrixMarkerSetMap = rdInfoMarkerSet.appendVariableToMarkerSetMapValue(matrixNcFile, cNetCDF.Variables.VAR_MARKERS_POS, sep);
 			rdInfoMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_POS);
 			for (Map.Entry<MarkerKey, Object> entry : sortingMarkerSetMap.entrySet()) {
-				MarkerKey key = entry.getKey();
-				Object value = rdInfoMarkerSet.getMarkerIdSetMap().get(key);
+				Object value = rdInfoMarkerSet.getMarkerIdSetMap().get(entry.getKey());
 				entry.setValue(value);
 			}
 			ReportWriter.appendColumnToReport(reportPath, reportNameExt, sortingMarkerSetMap, false, false);
@@ -234,8 +228,7 @@ public class OutputAllelicAssociation {
 				// MINOR ALLELE
 				opMarkerSetMap = rdOperationSet.fillOpSetMapWithVariable(qaNcFile, cNetCDF.Census.VAR_OP_MARKERS_MINALLELES);
 				for (Map.Entry<MarkerKey, Object> entry : rdInfoMarkerSet.getMarkerIdSetMap().entrySet()) {
-					MarkerKey key = entry.getKey();
-					Object minorAllele = opMarkerSetMap.get(key);
+					Object minorAllele = opMarkerSetMap.get(entry.getKey());
 					entry.setValue(minorAllele);
 				}
 
@@ -243,22 +236,19 @@ public class OutputAllelicAssociation {
 				rdOperationSet.fillMapWithDefaultValue(opMarkerSetMap, "");
 				opMarkerSetMap = rdOperationSet.fillOpSetMapWithVariable(qaNcFile, cNetCDF.Census.VAR_OP_MARKERS_MAJALLELES);
 				for (Map.Entry<MarkerKey, Object> entry : rdInfoMarkerSet.getMarkerIdSetMap().entrySet()) {
-					MarkerKey key = entry.getKey();
 					Object minorAllele = entry.getValue();
-					entry.setValue(minorAllele + sep + opMarkerSetMap.get(key));
+					entry.setValue(minorAllele + sep + opMarkerSetMap.get(entry.getKey()));
 				}
 			}
 			for (Map.Entry<MarkerKey, Object> entry : sortingMarkerSetMap.entrySet()) {
-				MarkerKey key = entry.getKey();
-				Object value = rdInfoMarkerSet.getMarkerIdSetMap().get(key);
+				Object value = rdInfoMarkerSet.getMarkerIdSetMap().get(entry.getKey());
 				entry.setValue(value);
 			}
 			ReportWriter.appendColumnToReport(reportPath, reportNameExt, sortingMarkerSetMap, false, false);
 
 			// WRITE DATA TO REPORT
 			for (Map.Entry<MarkerKey, Object> entry : sortingMarkerSetMap.entrySet()) {
-				MarkerKey key = entry.getKey();
-				Object value = unsortedMarkerIdAssocValsMap.get(key);
+				Object value = unsortedMarkerIdAssocValsMap.get(entry.getKey());
 				entry.setValue(value);
 			}
 			ReportWriter.appendColumnToReport(reportPath, reportNameExt, sortingMarkerSetMap, true, false);
