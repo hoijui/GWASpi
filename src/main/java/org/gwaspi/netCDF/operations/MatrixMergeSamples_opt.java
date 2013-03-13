@@ -94,7 +94,7 @@ public class MatrixMergeSamples_opt {
 		// Get combo SampleSet with position[] (wrPos, rdMatrixNb, rdPos)
 		Map<SampleKey, Object> rdSampleSetMap1 = rdSampleSet1.getSampleIdSetMap();
 		Map<SampleKey, Object> rdSampleSetMap2 = rdSampleSet2.getSampleIdSetMap();
-		Map<SampleKey, Object> wrComboSampleSetMap = MatrixMergeAll.getComboSampleSetWithIndicesArray(rdSampleSetMap1, rdSampleSetMap2);
+		Map<SampleKey, Object> wrComboSampleSetMap = MatrixMerge.getComboSampleSetWithIndicesArray(rdSampleSetMap1, rdSampleSetMap2);
 
 		rdwrMarkerSet1.initFullMarkerIdSetMap();
 		rdMarkerSet2.initFullMarkerIdSetMap();

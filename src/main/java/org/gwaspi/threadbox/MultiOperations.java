@@ -249,19 +249,21 @@ public class MultiOperations {
 		queueTask(task, lockProperties);
 	}
 
-	public static void doMergeMatrixAddMarkers(
+	public static void doMergeMatrix(
 			final int studyId,
 			final int parentMatrixId1,
 			final int parentMatrixId2,
 			final String newMatrixName,
-			final String description)
+			final String description,
+			final boolean all)
 	{
-		CommonRunnable task = new Threaded_MergeMatricesAddMarkers(
+		CommonRunnable task = new Threaded_MergeMatrices(
 				studyId,
 				parentMatrixId1,
 				parentMatrixId2,
 				newMatrixName,
-				description);
+				description,
+				all);
 
 		TaskLockProperties lockProperties = new TaskLockProperties();
 		lockProperties.getStudyIds().add(studyId);
@@ -279,27 +281,6 @@ public class MultiOperations {
 			final String description)
 	{
 		CommonRunnable task = new Threaded_MergeMatricesAddSamples(
-				studyId,
-				parentMatrixId1,
-				parentMatrixId2,
-				newMatrixName,
-				description);
-
-		TaskLockProperties lockProperties = new TaskLockProperties();
-		lockProperties.getStudyIds().add(studyId);
-		lockProperties.getMatricesIds().add(parentMatrixId1);
-		lockProperties.getMatricesIds().add(parentMatrixId2);
-
-		queueTask(task, lockProperties);
-	}
-
-	public static void doMergeMatrixAll(final int studyId,
-			final int parentMatrixId1,
-			final int parentMatrixId2,
-			final String newMatrixName,
-			final String description)
-	{
-		CommonRunnable task = new Threaded_MergeMatricesAddAll(
 				studyId,
 				parentMatrixId1,
 				parentMatrixId2,

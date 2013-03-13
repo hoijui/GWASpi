@@ -385,11 +385,12 @@ public class MatrixMergePanel extends JPanel {
 						}
 
 						if (mergeMarkers.isSelected()) {
-							MultiOperations.doMergeMatrixAddMarkers(parentMatrix.getStudyId(),
+							MultiOperations.doMergeMatrix(parentMatrix.getStudyId(),
 									parentMatrix.getId(),
 									addMatrixId,
 									newMatrixName.getText(),
-									description);
+									description,
+									false);
 						}
 
 						if (mergeSamples.isSelected()) {
@@ -401,11 +402,12 @@ public class MatrixMergePanel extends JPanel {
 						}
 
 						if (mergeAll.isSelected()) {
-							MultiOperations.doMergeMatrixAll(parentMatrix.getStudyId(),
+							MultiOperations.doMergeMatrix(parentMatrix.getStudyId(),
 									parentMatrix.getId(),
 									addMatrixId,
 									newMatrixName.getText(),
-									description);
+									description,
+									true);
 						}
 					}
 				} else { // GENOTYPE ENCODING IS NOT EQUAL!! CAN'T PERFORM MERGER
