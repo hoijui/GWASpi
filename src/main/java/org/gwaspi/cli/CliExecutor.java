@@ -23,8 +23,8 @@ public class CliExecutor {
 		addScriptCommand(tmpScriptCommands, new LoadGenotypesScriptCommand());
 		addScriptCommand(tmpScriptCommands, new LoadGenotypesDoGwasInOneGoScriptCommand());
 		addScriptCommand(tmpScriptCommands, new GwasInOneGoScriptCommand());
-		addScriptCommand(tmpScriptCommands, new AllelicAssociationScriptCommand());
-		addScriptCommand(tmpScriptCommands, new GenotypicAssociationScriptCommand());
+		addScriptCommand(tmpScriptCommands, new AssociationScriptCommand(true));
+		addScriptCommand(tmpScriptCommands, new AssociationScriptCommand(false));
 		addScriptCommand(tmpScriptCommands, new GenotypeFrequencyHardyWeinbergScriptCommand());
 		addScriptCommand(tmpScriptCommands, new ExportMatrixScriptCommand());
 		addScriptCommand(tmpScriptCommands, new TrendTestScriptCommand());

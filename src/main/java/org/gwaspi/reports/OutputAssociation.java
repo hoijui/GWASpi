@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import org.gwaspi.constants.cExport;
 import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.constants.cNetCDF.Association;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.global.Config;
 import org.gwaspi.global.Text;
@@ -33,14 +34,28 @@ import ucar.nc2.NetcdfFile;
  * IBE, Institute of Evolutionary Biology (UPF-CSIC)
  * CEXS-UPF-PRBB
  */
-public class OutputAllelicAssociation {
+public class OutputAssociation {
 
-	private static final Logger log = LoggerFactory.getLogger(OutputAllelicAssociation.class);
+	private static final Logger log = LoggerFactory.getLogger(OutputAssociation.class);
 
-	private OutputAllelicAssociation() {
+	private final OPType testType;
+	private final String testName;
+	private final String variableName;
+	private final int qqPlotDof;
+	private final String header;
+
+	public OutputAssociation(boolean allelic) {
+
+		this.testType = allelic ? OPType.ALLELICTEST : OPType.GENOTYPICTEST;
+		this.testName = allelic ? "Allelic" : "Genotypic";
+		this.variableName = allelic
+				? Association.VAR_OP_MARKERS_ASAllelicAssociationTPOR
+				: Association.VAR_OP_MARKERS_ASGenotypicAssociationTP2OR;
+		this.qqPlotDof = allelic ? 1 : 2;
+		this.header = "MarkerID\trsID\tChr\tPosition\tMin. Allele\tMaj. Allele\tX²\tPval\t" + (allelic ? "OR" : "OR-AA/aa\tOR-Aa/aa") + "\n";
 	}
 
-	public static boolean writeReportsForAssociationData(int opId) throws IOException {
+	public boolean writeReportsForAssociationData(int opId) throws IOException {
 		boolean result = false;
 		Operation op = OperationsList.getById(opId);
 
@@ -54,14 +69,14 @@ public class OutputAllelicAssociation {
 			result = true;
 			ReportsList.insertRPMetadata(new Report(
 					Integer.MIN_VALUE,
-					"Allelic assoc. Manhattan Plot",
+					testName + " assoc. Manhattan Plot",
 					manhattanName + ".png",
 					OPType.MANHATTANPLOT,
 					op.getParentMatrixId(),
 					opId,
-					"Allelic Association Manhattan Plot",
+					testName + " Association Manhattan Plot",
 					op.getStudyId()));
-			log.info("Saved Allelic Association Manhattan Plot in reports folder");
+			log.info("Saved " + testName + " Association Manhattan Plot in reports folder");
 		}
 		//String qqName = "qq_" + outName;
 		String qqName = prefix + "qq";
@@ -69,15 +84,15 @@ public class OutputAllelicAssociation {
 			result = true;
 			ReportsList.insertRPMetadata(new Report(
 					Integer.MIN_VALUE,
-					"Allelic assoc. QQ Plot",
+					testName + " assoc. QQ Plot",
 					qqName + ".png",
 					OPType.QQPLOT,
 					op.getParentMatrixId(),
 					opId,
-					"Allelic Association QQ Plot",
+					testName + " Association QQ Plot",
 					op.getStudyId()));
 
-			log.info("Saved Allelic Association QQ Plot in reports folder");
+			log.info("Saved " + testName + " Association QQ Plot in reports folder");
 		}
 		//String assocName = "assoc_"+outName;
 		String assocName = prefix;
@@ -85,29 +100,29 @@ public class OutputAllelicAssociation {
 			result = true;
 			ReportsList.insertRPMetadata(new Report(
 					Integer.MIN_VALUE,
-					"Allelic Association Tests Values",
+					testName + " Association Tests Values",
 					assocName + ".txt",
-					OPType.ALLELICTEST,
+					testType,
 					op.getParentMatrixId(),
 					opId,
-					"Allelic Association Tests Values",
+					testName + " Association Tests Values",
 					op.getStudyId()));
 
-			org.gwaspi.global.Utils.sysoutCompleted("Allelic Association Reports & Charts");
+			org.gwaspi.global.Utils.sysoutCompleted(testName + " Association Reports & Charts");
 		}
 
 		return result;
 	}
 
-	private static boolean writeManhattanPlotFromAssociationData(int opId, String outName, int width, int height) throws IOException {
+	private boolean writeManhattanPlotFromAssociationData(int opId, String outName, int width, int height) throws IOException {
 		boolean result = false;
-		//Generating XY scatter plot with loaded data
-		CombinedRangeXYPlot combinedPlot = GenericReportGenerator.buildManhattanPlot(opId, cNetCDF.Association.VAR_OP_MARKERS_ASAllelicAssociationTPOR);
+		// Generating XY scatter plot with loaded data
+		CombinedRangeXYPlot combinedPlot = GenericReportGenerator.buildManhattanPlot(opId, variableName);
 
 		JFreeChart chart = new JFreeChart("P value", JFreeChart.DEFAULT_TITLE_FONT, combinedPlot, true);
 
-		//CHART BACKGROUD COLOR
-		chart.setBackgroundPaint(Color.getHSBColor(0.1f, 0.1f, 1.0f)); //Hue, saturation, brightness
+		// CHART BACKGROUD COLOR
+		chart.setBackgroundPaint(Color.getHSBColor(0.1f, 0.1f, 1.0f)); // Hue, saturation, brightness
 
 		OperationMetadata rdOPMetadata = OperationsList.getOperationMetadata(opId);
 		int pointNb = rdOPMetadata.getOpSetSize();
@@ -136,10 +151,10 @@ public class OutputAllelicAssociation {
 		return result;
 	}
 
-	private static boolean writeQQPlotFromAssociationData(int opId, String outName, int width, int height) throws IOException {
+	private boolean writeQQPlotFromAssociationData(int opId, String outName, int width, int height) throws IOException {
 		boolean result = false;
-		//Generating XY scatter plot with loaded data
-		XYPlot qqPlot = GenericReportGenerator.buildQQPlot(opId, cNetCDF.Association.VAR_OP_MARKERS_ASAllelicAssociationTPOR, 1);
+		// Generating XY scatter plot with loaded data
+		XYPlot qqPlot = GenericReportGenerator.buildQQPlot(opId, variableName, qqPlotDof);
 
 		JFreeChart chart = new JFreeChart("X² QQ", JFreeChart.DEFAULT_TITLE_FONT, qqPlot, true);
 
@@ -158,11 +173,11 @@ public class OutputAllelicAssociation {
 		return result;
 	}
 
-	public static boolean createSortedAssociationReport(int opId, String reportName) throws IOException {
+	public boolean createSortedAssociationReport(int opId, String reportName) throws IOException {
 		boolean result;
 
 		try {
-			Map<MarkerKey, Object> unsortedMarkerIdAssocValsMap = GenericReportGenerator.getAnalysisVarData(opId, cNetCDF.Association.VAR_OP_MARKERS_ASAllelicAssociationTPOR);
+			Map<MarkerKey, Object> unsortedMarkerIdAssocValsMap = GenericReportGenerator.getAnalysisVarData(opId, variableName);
 			Map<MarkerKey, Object> unsortedMarkerIdPvalMap = new LinkedHashMap<MarkerKey, Object>();
 			for (Map.Entry<MarkerKey, Object> entry : unsortedMarkerIdAssocValsMap.entrySet()) {
 				double[] values = (double[]) entry.getValue();
@@ -180,7 +195,6 @@ public class OutputAllelicAssociation {
 			rdInfoMarkerSet.initFullMarkerIdSetMap();
 
 			// WRITE HEADER OF FILE
-			String header = "MarkerID\trsID\tChr\tPosition\tMin. Allele\tMaj. Allele\tX²\tPval\tOR\n";
 			String reportNameExt = reportName + ".txt";
 			String reportPath = Config.getConfigValue(Config.PROPERTY_REPORTS_DIR, "") + "/STUDY_" + rdOPMetadata.getStudyId() + "/";
 

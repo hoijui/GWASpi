@@ -424,11 +424,13 @@ public class MatrixAnalysePanel extends JPanel {
 							if (reProceed && censusOPId != Integer.MIN_VALUE && hwOPId != Integer.MIN_VALUE) {
 
 								//>>>>>> START THREADING HERE <<<<<<<
-								MultiOperations.doAllelicAssociationTest(parentMatrix.getStudyId(),
+								MultiOperations.doAssociationTest(
+										parentMatrix.getStudyId(),
 										parentMatrix.getId(),
 										censusOPId,
 										hwOPId,
-										gwasParams);
+										gwasParams,
+										true);
 							}
 						}
 					}
@@ -527,11 +529,13 @@ public class MatrixAnalysePanel extends JPanel {
 							if (reProceed && censusOPId != Integer.MIN_VALUE && hwOPId != Integer.MIN_VALUE) {
 
 								//>>>>>> START THREADING HERE <<<<<<<
-								MultiOperations.doGenotypicAssociationTest(parentMatrix.getStudyId(),
+								MultiOperations.doAssociationTest(
+										parentMatrix.getStudyId(),
 										parentMatrix.getId(),
 										censusOPId,
 										hwOPId,
-										gwasParams);
+										gwasParams,
+										false);
 							}
 						}
 					}

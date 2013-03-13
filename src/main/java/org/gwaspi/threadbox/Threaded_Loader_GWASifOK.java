@@ -14,8 +14,7 @@ import org.gwaspi.netCDF.operations.GWASinOneGOParams;
 import org.gwaspi.netCDF.operations.OP_QAMarkers_opt;
 import org.gwaspi.netCDF.operations.OP_QASamples_opt;
 import org.gwaspi.netCDF.operations.OperationManager;
-import org.gwaspi.reports.OutputAllelicAssociation;
-import org.gwaspi.reports.OutputGenotypicAssociation;
+import org.gwaspi.reports.OutputAssociation;
 import org.gwaspi.reports.OutputQAMarkers;
 import org.gwaspi.reports.OutputQASamples;
 import org.gwaspi.reports.OutputTrendTest;
@@ -137,36 +136,13 @@ public class Threaded_Loader_GWASifOK extends CommonRunnable {
 			//</editor-fold>
 
 			//<editor-fold defaultstate="expanded" desc="GWAS TESTS & REPORTS">
-			// ALLELIC ASSOCIATION (needs newMatrixId, censusOpId, pickedMarkerSet, pickedSampleSet)
-			if (thisSwi.getQueueState().equals(QueueState.PROCESSING)
-					&& censusOpId != Integer.MIN_VALUE
-					&& hwOpId != Integer.MIN_VALUE) {
-				OperationMetadata markerQAMetadata = OperationsList.getOperationMetadata(markersQAOpId);
-
-				if (gwasParams.isDiscardMarkerHWCalc()) {
-					gwasParams.setDiscardMarkerHWTreshold(0.05 / markerQAMetadata.getOpSetSize());
-				}
-
-				int assocOpId = OperationManager.performCleanAllelicTests(
-						resultMatrixId,
-						censusOpId,
-						hwOpId,
-						gwasParams.getDiscardMarkerHWTreshold());
-				GWASpiExplorerNodes.insertSubOperationUnderOperationNode(censusOpId, assocOpId);
-
-				// Make Reports (needs newMatrixId, QAopId, AssocOpId)
-				if (assocOpId != Integer.MIN_VALUE) {
-					OutputAllelicAssociation.writeReportsForAssociationData(assocOpId);
-					GWASpiExplorerNodes.insertReportsUnderOperationNode(assocOpId);
-				}
-
-			}
-
-			// GENOTYPIC TEST (needs newMatrixId, censusOpId, pickedMarkerSet, pickedSampleSet)
-			if (gwasParams.isPerformGenotypicTests()
+			// ASSOCIATION TEST (needs newMatrixId, censusOpId, pickedMarkerSet, pickedSampleSet)
+			if (gwasParams.isPerformAssociationTests()
 					&& thisSwi.getQueueState().equals(QueueState.PROCESSING)
 					&& censusOpId != Integer.MIN_VALUE
-					&& hwOpId != Integer.MIN_VALUE) {
+					&& hwOpId != Integer.MIN_VALUE)
+			{
+				boolean allelic = gwasParams.isPerformAllelicTests();
 
 				OperationMetadata markerQAMetadata = OperationsList.getOperationMetadata(markersQAOpId);
 
@@ -174,16 +150,17 @@ public class Threaded_Loader_GWASifOK extends CommonRunnable {
 					gwasParams.setDiscardMarkerHWTreshold(0.05 / markerQAMetadata.getOpSetSize());
 				}
 
-				int assocOpId = OperationManager.performCleanGenotypicTests(
+				int assocOpId = OperationManager.performCleanAssociationTests(
 						resultMatrixId,
 						censusOpId,
 						hwOpId,
-						gwasParams.getDiscardMarkerHWTreshold());
+						gwasParams.getDiscardMarkerHWTreshold(),
+						allelic);
 				GWASpiExplorerNodes.insertSubOperationUnderOperationNode(censusOpId, assocOpId);
 
 				// Make Reports (needs newMatrixId, QAopId, AssocOpId)
 				if (assocOpId != Integer.MIN_VALUE) {
-					OutputGenotypicAssociation.writeReportsForAssociationData(assocOpId);
+					new OutputAssociation(allelic).writeReportsForAssociationData(assocOpId);
 					GWASpiExplorerNodes.insertReportsUnderOperationNode(assocOpId);
 				}
 			}

@@ -8,7 +8,7 @@ import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.netCDF.operations.GWASinOneGOParams;
 import org.gwaspi.netCDF.operations.OperationManager;
-import org.gwaspi.reports.OutputAllelicAssociation;
+import org.gwaspi.reports.OutputAssociation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,33 +18,36 @@ import org.slf4j.LoggerFactory;
  * IBE, Institute of Evolutionary Biology (UPF-CSIC)
  * CEXS-UPF-PRBB
  */
-public class Threaded_AllelicAssociation extends CommonRunnable {
+public class Threaded_Association extends CommonRunnable {
 
-	private int matrixId;
-	private int censusOpId;
-	private int hwOpId;
-	private GWASinOneGOParams gwasParams;
+	private final int matrixId;
+	private final int censusOpId;
+	private final int hwOpId;
+	private final GWASinOneGOParams gwasParams;
+	private final boolean allelic;
 
-	public Threaded_AllelicAssociation(
+	public Threaded_Association(
 			int matrixId,
 			int censusOpId,
 			int hwOpId,
-			GWASinOneGOParams gwasParams)
+			GWASinOneGOParams gwasParams,
+			boolean allelic)
 	{
 		super(
-				"Allelic Association Test",
-				"Allelic Association Study",
-				"Allelic Association Test on Matrix ID: " + matrixId,
-				"Allelic Association Test");
+				(allelic ? "Allelic" : "Genotypic") + " Association Test",
+				(allelic ? "Allelic" : "Genotypic") + " Association Study",
+				(allelic ? "Allelic" : "Genotypic") + " Association Test on Matrix ID: " + matrixId,
+				(allelic ? "Allelic" : "Genotypic") + " Association Test");
 
 		this.matrixId = matrixId;
 		this.censusOpId = censusOpId;
 		this.hwOpId = hwOpId;
 		this.gwasParams = gwasParams;
+		this.allelic = allelic;
 	}
 
 	protected Logger createLog() {
-		return LoggerFactory.getLogger(Threaded_AllelicAssociation.class);
+		return LoggerFactory.getLogger(Threaded_Association.class);
 	}
 
 	protected void runInternal(SwingWorkerItem thisSwi) throws Exception {
@@ -66,7 +69,6 @@ public class Threaded_AllelicAssociation extends CommonRunnable {
 		}
 
 		// TEST (needs newMatrixId, censusOpId, pickedMarkerSet, pickedSampleSet)
-
 		OperationMetadata markerQAMetadata = OperationsList.getOperationMetadata(markersQAOpId);
 
 		if (gwasParams.isDiscardMarkerHWCalc()) {
@@ -74,16 +76,17 @@ public class Threaded_AllelicAssociation extends CommonRunnable {
 		}
 
 		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
-			int assocOpId = OperationManager.performCleanAllelicTests(
+			int assocOpId = OperationManager.performCleanAssociationTests(
 					matrixId,
 					censusOpId,
 					hwOpId,
-					gwasParams.getDiscardMarkerHWTreshold());
+					gwasParams.getDiscardMarkerHWTreshold(),
+					allelic);
 			GWASpiExplorerNodes.insertSubOperationUnderOperationNode(censusOpId, assocOpId);
 
 			// Make Reports (needs newMatrixId, QAopId, AssocOpId)
 			if (assocOpId != Integer.MIN_VALUE) {
-				OutputAllelicAssociation.writeReportsForAssociationData(assocOpId);
+				new OutputAssociation(allelic).writeReportsForAssociationData(assocOpId);
 				GWASpiExplorerNodes.insertReportsUnderOperationNode(assocOpId);
 			}
 		}

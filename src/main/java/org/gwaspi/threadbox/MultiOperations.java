@@ -126,41 +126,20 @@ public class MultiOperations {
 	}
 
 	/** LOAD & GWAS */
-	public static void doAllelicAssociationTest(
+	public static void doAssociationTest(
 			final int studyId,
 			final int matrixId,
 			final int censusOPId,
 			final int hwOPId,
-			final GWASinOneGOParams gwasParams)
+			final GWASinOneGOParams gwasParams,
+			final boolean allelic)
 	{
-		CommonRunnable task = new Threaded_AllelicAssociation(
+		CommonRunnable task = new Threaded_Association(
 				matrixId,
 				censusOPId,
 				hwOPId,
-				gwasParams);
-
-		TaskLockProperties lockProperties = new TaskLockProperties();
-		lockProperties.getStudyIds().add(studyId);
-		lockProperties.getMatricesIds().add(matrixId);
-		lockProperties.getOperationsIds().add(censusOPId);
-		lockProperties.getOperationsIds().add(hwOPId);
-
-		queueTask(task, lockProperties);
-	}
-
-	/** LOAD & GWAS */
-	public static void doGenotypicAssociationTest(
-			final int studyId,
-			final int matrixId,
-			final int censusOPId,
-			final int hwOPId,
-			final GWASinOneGOParams gwasParams)
-	{
-		CommonRunnable task = new Threaded_GenotypicAssociation(
-				matrixId,
-				censusOPId,
-				hwOPId,
-				gwasParams);
+				gwasParams,
+				allelic);
 
 		TaskLockProperties lockProperties = new TaskLockProperties();
 		lockProperties.getStudyIds().add(studyId);

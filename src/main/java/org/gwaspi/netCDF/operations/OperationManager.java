@@ -104,50 +104,27 @@ public class OperationManager {
 	//</editor-fold>
 
 	//<editor-fold defaultstate="expanded" desc="ANALYSIS">
-	public static int performCleanAllelicTests(
-			int _rdMatrixId,
+	public static int performCleanAssociationTests(
+			int rdMatrixId,
 			int censusOpId,
 			int hwOpId,
-			double hwThreshold)
+			double hwThreshold,
+			boolean allelic)
 			throws IOException, InvalidRangeException
 	{
 		int resultOpId; // Integer.MIN_VALUE
 
-		org.gwaspi.global.Utils.sysoutStart(" Allelic Association Test using QA and HW thresholds");
+		org.gwaspi.global.Utils.sysoutStart(" " + (allelic ? "Allelic" : "Genotypic") + " Association Test using QA and HW thresholds");
 
 		Operation markerCensusOP = OperationsList.getById(censusOpId);
 		Operation hwOP = OperationsList.getById(hwOpId);
 
 		resultOpId = new OP_AssociationTests(
-				_rdMatrixId,
+				rdMatrixId,
 				markerCensusOP,
 				hwOP,
 				hwThreshold,
-				true).processMatrix();
-
-		return resultOpId;
-	}
-
-	public static int performCleanGenotypicTests(
-			int _rdMatrixId,
-			int censusOpId,
-			int hwOpId,
-			double hwThreshold)
-			throws IOException, InvalidRangeException
-	{
-		int resultOpId; // Integer.MIN_VALUE
-
-		org.gwaspi.global.Utils.sysoutStart(" Genotypic Association Test using QA and HW thresholds");
-
-		Operation markerCensusOP = OperationsList.getById(censusOpId);
-		Operation hwOP = OperationsList.getById(hwOpId);
-
-		resultOpId = new OP_AssociationTests(
-				_rdMatrixId,
-				markerCensusOP,
-				hwOP,
-				hwThreshold,
-				false).processMatrix();
+				allelic).processMatrix();
 
 		return resultOpId;
 	}

@@ -14,10 +14,14 @@ import org.gwaspi.threadbox.MultiOperations;
  * IBE, Institute of Evolutionary Biology (UPF-CSIC)
  * CEXS-UPF-PRBB
  */
-class GenotypicAssociationScriptCommand extends AbstractScriptCommand {
+class AssociationScriptCommand extends AbstractScriptCommand {
 
-	GenotypicAssociationScriptCommand() {
-		super("genotypic_association");
+	private final boolean allelic;
+
+	AssociationScriptCommand(boolean allelic) {
+		super((allelic ? "allelic" : "genotypic") + "_association");
+
+		this.allelic = allelic;
 	}
 
 	@Override
@@ -29,7 +33,7 @@ class GenotypicAssociationScriptCommand extends AbstractScriptCommand {
 		#Usage: java -Xms1500m -Xmx2500m -jar GWASpi.jar script scriptFile [log org.gwaspi.cli.log]
 		data-dir=/media/data/GWASpi
 		[script]
-		0.command=genotypic_association
+		0.command=allelic_association # or "genotypic_association"
 		1.study-id=1
 		2.matrix-id=8
 		3.gtfreq-id=46
@@ -52,8 +56,8 @@ class GenotypicAssociationScriptCommand extends AbstractScriptCommand {
 			int gtFreqId = Integer.parseInt(args.get(3)); // Parent GtFreq Id
 			int hwId = Integer.parseInt(args.get(4)); // Parent GtFreq Id
 
-			gwasParams.setPerformAllelicTests(false);
-			gwasParams.setPerformGenotypicTests(true);
+			gwasParams.setPerformAllelicTests(allelic);
+			gwasParams.setPerformGenotypicTests(!allelic);
 			gwasParams.setPerformTrendTests(false);
 
 			gwasParams.setDiscardGTMismatches(true);
@@ -74,14 +78,15 @@ class GenotypicAssociationScriptCommand extends AbstractScriptCommand {
 				MultiOperations.doMatrixQAs(studyId, matrixId);
 			}
 
-			// genotypic test block
+			// test block
 			if (gwasParams.isProceed()) {
 				System.out.println(Text.All.processing);
-				MultiOperations.doGenotypicAssociationTest(studyId,
+				MultiOperations.doAssociationTest(studyId,
 						matrixId,
 						gtFreqId,
 						hwId,
-						gwasParams);
+						gwasParams,
+						allelic);
 				return true;
 			}
 		}
