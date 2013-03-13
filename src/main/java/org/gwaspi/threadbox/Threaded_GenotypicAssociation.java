@@ -1,7 +1,7 @@
 package org.gwaspi.threadbox;
 
 import java.util.List;
-import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.model.GWASpiExplorerNodes;
 import org.gwaspi.model.Operation;
 import org.gwaspi.model.OperationMetadata;
@@ -50,7 +50,7 @@ public class Threaded_GenotypicAssociation extends CommonRunnable {
 	protected void runInternal(SwingWorkerItem thisSwi) throws Exception {
 
 		List<Operation> operations = OperationsList.getOperationsList(matrixId);
-		int markersQAOpId = OperationsList.getIdOfLastOperationTypeOccurance(operations, cNetCDF.Defaults.OPType.MARKER_QA);
+		int markersQAOpId = OperationsList.getIdOfLastOperationTypeOccurance(operations, OPType.MARKER_QA);
 
 		if (!gwasParams.isDiscardMarkerByMisRat()) {
 			gwasParams.setDiscardMarkerMisRatVal(1);
@@ -65,7 +65,7 @@ public class Threaded_GenotypicAssociation extends CommonRunnable {
 			gwasParams.setDiscardSampleHetzyRatVal(1);
 		}
 
-		// GENOTYPIC TEST (needs newMatrixId, censusOpId, pickedMarkerSet, pickedSampleSet)
+		// TEST (needs newMatrixId, censusOpId, pickedMarkerSet, pickedSampleSet)
 
 		OperationMetadata markerQAMetadata = OperationsList.getOperationMetadata(markersQAOpId);
 

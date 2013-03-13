@@ -65,7 +65,7 @@ public class Threaded_AllelicAssociation extends CommonRunnable {
 			gwasParams.setDiscardSampleHetzyRatVal(1);
 		}
 
-		// ALLELIC ALLELICTEST (needs newMatrixId, censusOpId, pickedMarkerSet, pickedSampleSet)
+		// TEST (needs newMatrixId, censusOpId, pickedMarkerSet, pickedSampleSet)
 
 		OperationMetadata markerQAMetadata = OperationsList.getOperationMetadata(markersQAOpId);
 
@@ -74,9 +74,11 @@ public class Threaded_AllelicAssociation extends CommonRunnable {
 		}
 
 		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
-			int assocOpId = OperationManager.performCleanAllelicTests(matrixId,
+			int assocOpId = OperationManager.performCleanAllelicTests(
+					matrixId,
 					censusOpId,
-					hwOpId, gwasParams.getDiscardMarkerHWTreshold());
+					hwOpId,
+					gwasParams.getDiscardMarkerHWTreshold());
 			GWASpiExplorerNodes.insertSubOperationUnderOperationNode(censusOpId, assocOpId);
 
 			// Make Reports (needs newMatrixId, QAopId, AssocOpId)
