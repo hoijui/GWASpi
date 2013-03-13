@@ -41,8 +41,6 @@ public class MatrixMerge {
 	private int rdMatrix1Id;
 	private int rdMatrix2Id;
 	private int wrMatrixId;
-	private NetcdfFile rdNcFile1;
-	private NetcdfFile rdNcFile2;
 	private String wrMatrixFriendlyName;
 	private String wrMatrixDescription;
 	private MatrixMetadata rdMatrix1Metadata;
@@ -100,14 +98,14 @@ public class MatrixMerge {
 		this.wrMatrixFriendlyName = wrMatrixFriendlyName;
 		this.wrMatrixDescription = wrMatrixDescription;
 
-		this.rdNcFile1 = NetcdfFile.open(this.rdMatrix1Metadata.getPathToMatrix());
-		this.rdNcFile2 = NetcdfFile.open(this.rdMatrix2Metadata.getPathToMatrix());
-
 		this.all = all;
 	}
 
-	public int mingleMarkersKeepSamplesConstant() throws InvalidRangeException {
+	public int mingleMarkersKeepSamplesConstant() throws IOException, InvalidRangeException {
 		int resultMatrixId = Integer.MIN_VALUE;
+
+		NetcdfFile rdNcFile1 = NetcdfFile.open(rdMatrix1Metadata.getPathToMatrix());
+		NetcdfFile rdNcFile2 = NetcdfFile.open(rdMatrix2Metadata.getPathToMatrix());
 
 		Map<MarkerKey, Object> wrComboSortedMarkerSetMap = mingleAndSortMarkerSet();
 
@@ -177,8 +175,6 @@ public class MatrixMerge {
 					chrSetMap.size(),
 					rdMatrix1Id, // Parent matrixId 1
 					rdMatrix2Id); // Parent matrixId 2
-
-			resultMatrixId = wrMatrixHandler.getResultMatrixId();
 
 			NetcdfFileWriteable wrNcFile = wrMatrixHandler.getNetCDFHandler();
 			try {
@@ -370,6 +366,8 @@ public class MatrixMerge {
 				MatricesList.saveMatrixDescription(
 						resultMatrixId,
 						descSB.toString());
+
+				resultMatrixId = wrMatrixHandler.getResultMatrixId();
 
 				wrNcFile.close();
 				rdNcFile1.close();

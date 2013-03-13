@@ -33,21 +33,21 @@ public class MatrixMergeSamples_opt {
 
 	private final Logger log = LoggerFactory.getLogger(MatrixMergeSamples_opt.class);
 
-	private int studyId = Integer.MIN_VALUE;
-	private int rdMatrix1Id = Integer.MIN_VALUE;
-	private int rdMatrix2Id = Integer.MIN_VALUE;
-	private int wrMatrixId = Integer.MIN_VALUE;
-	private String wrMatrixFriendlyName = "";
-	private String wrMatrixDescription = "";
-	private MatrixMetadata rdMatrix1Metadata = null;
-	private MatrixMetadata rdMatrix2Metadata = null;
-	private MatrixMetadata wrMatrixMetadata = null;
-	private MarkerSet_opt rdwrMarkerSet1 = null;
-	private MarkerSet_opt rdMarkerSet2 = null;
-	private MarkerSet_opt wrMarkerSet = null;
-	private SampleSet rdSampleSet1 = null;
-	private SampleSet rdSampleSet2 = null;
-	private SampleSet wrSampleSet = null;
+	private int studyId;
+	private int rdMatrix1Id;
+	private int rdMatrix2Id;
+	private int wrMatrixId;
+	private String wrMatrixFriendlyName;
+	private String wrMatrixDescription;
+	private MatrixMetadata rdMatrix1Metadata;
+	private MatrixMetadata rdMatrix2Metadata;
+	private MatrixMetadata wrMatrixMetadata;
+	private MarkerSet_opt rdwrMarkerSet1;
+	private MarkerSet_opt rdMarkerSet2;
+	private MarkerSet_opt wrMarkerSet;
+	private SampleSet rdSampleSet1;
+	private SampleSet rdSampleSet2;
+	private SampleSet wrSampleSet;
 
 	/**
 	 * This constructor to join 2 Matrices.
@@ -57,7 +57,7 @@ public class MatrixMergeSamples_opt {
 	 * Duplicate Samples from the 2nd Matrix will overwrite Samples in the 1st Matrix
 	 */
 	public MatrixMergeSamples_opt(
-			int studyId,
+			int studyId, // XXX this is unused, confusing!
 			int rdMatrix1Id,
 			int rdMatrix2Id,
 			String wrMatrixFriendlyName,
@@ -95,6 +95,12 @@ public class MatrixMergeSamples_opt {
 		Map<SampleKey, Object> rdSampleSetMap1 = rdSampleSet1.getSampleIdSetMap();
 		Map<SampleKey, Object> rdSampleSetMap2 = rdSampleSet2.getSampleIdSetMap();
 		Map<SampleKey, Object> wrComboSampleSetMap = MatrixMerge.getComboSampleSetWithIndicesArray(rdSampleSetMap1, rdSampleSetMap2);
+		Map<SampleKey, Object> theSamples = wrComboSampleSetMap;
+
+		// Use comboed wrComboSampleSetMap as SampleSet
+		final int numSamples = theSamples.size();
+		final String humanReadableMethodName = Text.Trafo.mergeSamplesOnly;
+		final String methodDescription = Text.Trafo.mergeMethodSampleJoin;
 
 		rdwrMarkerSet1.initFullMarkerIdSetMap();
 		rdMarkerSet2.initFullMarkerIdSetMap();
@@ -124,7 +130,7 @@ public class MatrixMergeSamples_opt {
 			StringBuilder descSB = new StringBuilder(Text.Matrix.descriptionHeader1);
 			descSB.append(org.gwaspi.global.Utils.getShortDateTimeAsString());
 			descSB.append("\n");
-			descSB.append("Markers: ").append(rdSampleSetMap1.size()).append(", Samples: ").append(wrComboSampleSetMap.size());
+			descSB.append("Markers: ").append(rdSampleSetMap1.size()).append(", Samples: ").append(numSamples);
 			descSB.append("\n");
 			descSB.append(Text.Trafo.mergedFrom);
 			descSB.append("\nMX-");
@@ -137,19 +143,19 @@ public class MatrixMergeSamples_opt {
 			descSB.append(rdMatrix2Metadata.getMatrixFriendlyName());
 			descSB.append("\n\n");
 			descSB.append("Merge Method - ");
-			descSB.append(Text.Trafo.mergeSamplesOnly);
+			descSB.append(humanReadableMethodName);
 			descSB.append(":\n");
-			descSB.append(Text.Trafo.mergeMethodSampleJoin);
+			descSB.append(methodDescription);
 
 			MatrixFactory wrMatrixHandler = new MatrixFactory(
 					studyId,
 					technology, // technology
 					wrMatrixFriendlyName,
 					wrMatrixDescription + "\n\n" + descSB.toString(), // description
-					gtEncoding,
+					gtEncoding, // GT encoding
 					rdMatrix1Metadata.getStrand(),
 					hasDictionary, // has dictionary?
-					wrComboSampleSetMap.size(), // Use comboed wrComboSampleSetMap as SampleSet
+					numSamples,
 					rdwrMarkerSet1.getMarkerSetSize(), // Keep rdwrMarkerIdSetMap1 from Matrix1. MarkerSet is constant
 					rdChrInfoSetMap.size(),
 					rdMatrix1Id, // Parent matrixId 1
@@ -165,7 +171,7 @@ public class MatrixMergeSamples_opt {
 
 			//<editor-fold defaultstate="expanded" desc="METADATA WRITER">
 			// SAMPLESET
-			ArrayChar.D2 samplesD2 = Utils.writeMapKeysToD2ArrayChar(wrComboSampleSetMap, cNetCDF.Strides.STRIDE_SAMPLE_NAME);
+			ArrayChar.D2 samplesD2 = Utils.writeMapKeysToD2ArrayChar(theSamples, cNetCDF.Strides.STRIDE_SAMPLE_NAME);
 
 			int[] sampleOrig = new int[]{0, 0};
 			try {

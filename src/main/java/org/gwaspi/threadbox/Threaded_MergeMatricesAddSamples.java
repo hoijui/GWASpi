@@ -32,7 +32,7 @@ public class Threaded_MergeMatricesAddSamples extends CommonRunnable {
 				"Merge Matrices",
 				"Merging Data",
 				"Merge Matrices: " + newMatrixName,
-				"Merge Matrices");
+				"Merging Matrices");
 
 		this.studyId = studyId;
 		this.parentMatrixId1 = parentMatrixId1;
