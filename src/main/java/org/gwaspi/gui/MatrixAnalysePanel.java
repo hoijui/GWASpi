@@ -443,7 +443,7 @@ public class MatrixAnalysePanel extends JPanel {
 				} else {
 					Dialogs.showInfoDialogue(Text.Operation.warnAffectionMissing);
 				}
-			} catch (Exception ex) {
+			} catch (IOException ex) {
 				log.error(Text.Operation.warnOperationError, ex);
 				Dialogs.showWarningDialogue(Text.Operation.warnOperationError);
 			}
