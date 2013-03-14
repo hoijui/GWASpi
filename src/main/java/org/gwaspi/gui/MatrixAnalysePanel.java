@@ -201,9 +201,9 @@ public class MatrixAnalysePanel extends JPanel {
 		genFreqAndHWAction.setEnabled(currentOP == null);
 		btn_1_2.setAction(genFreqAndHWAction);
 
-		btn_1_3.setAction(new AllelicTestsAction(parentMatrix, gwasParams, currentOP));
+		btn_1_3.setAction(new AssociationTestsAction(parentMatrix, gwasParams, currentOP, true));
 
-		btn_1_4.setAction(new GenotypicTestsAction(parentMatrix, gwasParams, currentOP));
+		btn_1_4.setAction(new AssociationTestsAction(parentMatrix, gwasParams, currentOP, false));
 
 		btn_1_5.setAction(new TrendTestsAction(parentMatrix, gwasParams, currentOP));
 
@@ -319,18 +319,24 @@ public class MatrixAnalysePanel extends JPanel {
 	}
 
 	//<editor-fold defaultstate="expanded" desc="ANALYSIS">
-	private static class AllelicTestsAction extends AbstractAction {
+	private static class AssociationTestsAction extends AbstractAction {
 
 		private Matrix parentMatrix;
 		private GWASinOneGOParams gwasParams;
 		private final Operation currentOP;
+		private final boolean allelic;
+		private final String testName;
+		private final String testNameHtml;
 
-		AllelicTestsAction(Matrix parentMatrix, GWASinOneGOParams gwasParams, Operation currentOP) {
+		AssociationTestsAction(Matrix parentMatrix, GWASinOneGOParams gwasParams, Operation currentOP, boolean allelic) {
 
 			this.parentMatrix = parentMatrix;
 			this.gwasParams = gwasParams;
 			this.currentOP = currentOP;
-			putValue(NAME, Text.Operation.htmlAllelicAssocTest);
+			this.allelic = allelic;
+			this.testName = (allelic ?  Text.Operation.allelicAssocTest : Text.Operation.genoAssocTest);
+			this.testNameHtml = (allelic ? Text.Operation.htmlAllelicAssocTest : Text.Operation.htmlGenotypicTest);
+			putValue(NAME, testNameHtml);
 		}
 
 		public static int evaluateCensusOPId(Operation currentOP, Matrix parentMatrix) throws IOException {
@@ -375,126 +381,21 @@ public class MatrixAnalysePanel extends JPanel {
 					List<String> missingOPsAL = OperationManager.checkForNecessaryOperations(necessaryOPsAL, parentMatrix.getId());
 
 					// WHAT TO DO IF OPs ARE MISSING
-					boolean perfromAllelicTest = true;
-					if (missingOPsAL.size() > 0) {
-						if (missingOPsAL.contains(OPType.SAMPLE_QA.toString())
-								|| missingOPsAL.contains(OPType.MARKER_QA.toString())) {
-							Dialogs.showWarningDialogue("Before performing an " + Text.Operation.allelicAssocTest + " you must launch\n a '" + Text.Operation.GTFreqAndHW + "' first or perform a '" + Text.Operation.gwasInOneGo + "' instead.");
-							MultiOperations.doMatrixQAs(parentMatrix.getStudyId(), parentMatrix.getId());
-							perfromAllelicTest = false;
-						} else if (missingOPsAL.contains(OPType.MARKER_CENSUS_BY_AFFECTION.toString())
-								&& missingOPsAL.contains(OPType.MARKER_CENSUS_BY_PHENOTYPE.toString())) {
-							Dialogs.showWarningDialogue("Before performing an " + Text.Operation.allelicAssocTest + " you must launch\n a '" + Text.Operation.GTFreqAndHW + "' first or perform a '" + Text.Operation.gwasInOneGo + "' instead.");
-							perfromAllelicTest = false;
-						} else if (missingOPsAL.contains(OPType.HARDY_WEINBERG.toString())
-								&& !(missingOPsAL.contains(OPType.MARKER_CENSUS_BY_AFFECTION.toString())
-								&& missingOPsAL.contains(OPType.MARKER_CENSUS_BY_PHENOTYPE.toString()))) {
-							Dialogs.showWarningDialogue("Before performing an " + Text.Operation.allelicAssocTest + " you must launch\n a '" + Text.Operation.hardyWeiberg + "' first or perform a '" + Text.Operation.gwasInOneGo + "' instead.");
-							MultiOperations.doHardyWeinberg(parentMatrix.getStudyId(),
-									parentMatrix.getId(),
-									censusOPId);
-							perfromAllelicTest = false;
-						}
-					}
-
-					// DO ALLELIC TEST
-					if (perfromAllelicTest) {
-						boolean reProceed = true;
-						if (censusOPId == Integer.MIN_VALUE) {
-							reProceed = false;
-						}
-
-						if (reProceed) {
-							gwasParams = new MoreAssocInfo().showMoreInfo();
-						}
-
-						if (gwasParams.isProceed()) {
-							ProcessTab.getSingleton().showTab();
-							// GET HW OPERATION
-							List<Operation> hwOperations = OperationsList.getOperationsList(parentMatrix.getId(), censusOPId, OPType.HARDY_WEINBERG);
-							for (Operation currentHWop : hwOperations) {
-								// REQUEST WHICH HW TO USE
-								if (currentHWop != null) {
-									hwOPId = currentHWop.getId();
-								} else {
-									reProceed = false;
-								}
-							}
-
-							if (reProceed && censusOPId != Integer.MIN_VALUE && hwOPId != Integer.MIN_VALUE) {
-
-								//>>>>>> START THREADING HERE <<<<<<<
-								MultiOperations.doAssociationTest(
-										parentMatrix.getStudyId(),
-										parentMatrix.getId(),
-										censusOPId,
-										hwOPId,
-										gwasParams,
-										true);
-							}
-						}
-					}
-				} else {
-					Dialogs.showInfoDialogue(Text.Operation.warnAffectionMissing);
-				}
-			} catch (Exception ex) {
-				log.error(Text.Operation.warnOperationError, ex);
-				Dialogs.showWarningDialogue(Text.Operation.warnOperationError);
-			}
-		}
-	}
-
-	private static class GenotypicTestsAction extends AbstractAction {
-
-		private Matrix parentMatrix;
-		private GWASinOneGOParams gwasParams;
-		private final Operation currentOP;
-
-		GenotypicTestsAction(Matrix parentMatrix, GWASinOneGOParams gwasParams, Operation currentOP) {
-
-			this.parentMatrix = parentMatrix;
-			this.gwasParams = gwasParams;
-			this.currentOP = currentOP;
-			putValue(NAME, Text.Operation.htmlGenotypicTest);
-		}
-
-		@Override
-		public void actionPerformed(ActionEvent evt) {
-			try {
-				int censusOPId = AllelicTestsAction.evaluateCensusOPId(currentOP, parentMatrix);
-				int hwOPId = Integer.MIN_VALUE;
-
-				StartGWASpi.mainGUIFrame.setCursor(CursorUtils.WAIT_CURSOR);
-				Set<SampleInfo.Affection> affectionStates = SamplesParserManager.getDBAffectionStates(parentMatrix.getId());
-				StartGWASpi.mainGUIFrame.setCursor(CursorUtils.DEFAULT_CURSOR);
-
-				if (affectionStates.contains(SampleInfo.Affection.UNAFFECTED)
-						&& affectionStates.contains(SampleInfo.Affection.AFFECTED))
-				{
-					List<String> necessaryOPsAL = new ArrayList<String>();
-					necessaryOPsAL.add(cNetCDF.Defaults.OPType.SAMPLE_QA.toString());
-					necessaryOPsAL.add(cNetCDF.Defaults.OPType.MARKER_QA.toString());
-					necessaryOPsAL.add(cNetCDF.Defaults.OPType.MARKER_CENSUS_BY_PHENOTYPE.toString());
-					necessaryOPsAL.add(cNetCDF.Defaults.OPType.MARKER_CENSUS_BY_AFFECTION.toString());
-					necessaryOPsAL.add(cNetCDF.Defaults.OPType.HARDY_WEINBERG.toString());
-					List<String> missingOPsAL = OperationManager.checkForNecessaryOperations(necessaryOPsAL, parentMatrix.getId());
-
-					// WHAT TO DO IF OPs ARE MISSING
 					boolean performTest = true;
 					if (missingOPsAL.size() > 0) {
 						if (missingOPsAL.contains(OPType.SAMPLE_QA.toString())
 								|| missingOPsAL.contains(OPType.MARKER_QA.toString())) {
-							Dialogs.showWarningDialogue("Before performing a " + Text.Operation.genoAssocTest + " you must launch\n a '" + Text.Operation.GTFreqAndHW + "' first or perform a '" + Text.Operation.gwasInOneGo + "' instead.");
+							Dialogs.showWarningDialogue("Before performing the " + testName + " you must launch\n a '" + Text.Operation.GTFreqAndHW + "' first or perform a '" + Text.Operation.gwasInOneGo + "' instead.");
 							MultiOperations.doMatrixQAs(parentMatrix.getStudyId(), parentMatrix.getId());
 							performTest = false;
 						} else if (missingOPsAL.contains(OPType.MARKER_CENSUS_BY_AFFECTION.toString())
 								&& missingOPsAL.contains(OPType.MARKER_CENSUS_BY_PHENOTYPE.toString())) {
-							Dialogs.showWarningDialogue("Before performing a " + Text.Operation.genoAssocTest + " you must launch\n a '" + Text.Operation.GTFreqAndHW + "' first or perform a '" + Text.Operation.gwasInOneGo + "' instead.");
+							Dialogs.showWarningDialogue("Before performing the " + testName + " you must launch\n a '" + Text.Operation.GTFreqAndHW + "' first or perform a '" + Text.Operation.gwasInOneGo + "' instead.");
 							performTest = false;
 						} else if (missingOPsAL.contains(OPType.HARDY_WEINBERG.toString())
 								&& !(missingOPsAL.contains(OPType.MARKER_CENSUS_BY_AFFECTION.toString())
 								&& missingOPsAL.contains(OPType.MARKER_CENSUS_BY_PHENOTYPE.toString()))) {
-							Dialogs.showWarningDialogue("Before performing a " + Text.Operation.genoAssocTest + " you must launch\n a '" + Text.Operation.hardyWeiberg + "' first or perform a '" + Text.Operation.gwasInOneGo + "' instead.");
+							Dialogs.showWarningDialogue("Before performing the " + testName + " you must launch\n a '" + Text.Operation.hardyWeiberg + "' first or perform a '" + Text.Operation.gwasInOneGo + "' instead.");
 							MultiOperations.doHardyWeinberg(parentMatrix.getStudyId(),
 									parentMatrix.getId(),
 									censusOPId);
@@ -528,14 +429,14 @@ public class MatrixAnalysePanel extends JPanel {
 
 							if (reProceed && censusOPId != Integer.MIN_VALUE && hwOPId != Integer.MIN_VALUE) {
 
-								//>>>>>> START THREADING HERE <<<<<<<
+								// >>>>>> START THREADING HERE <<<<<<<
 								MultiOperations.doAssociationTest(
 										parentMatrix.getStudyId(),
 										parentMatrix.getId(),
 										censusOPId,
 										hwOPId,
 										gwasParams,
-										false);
+										allelic);
 							}
 						}
 					}
@@ -566,7 +467,7 @@ public class MatrixAnalysePanel extends JPanel {
 		@Override
 		public void actionPerformed(ActionEvent evt) {
 			try {
-				int censusOPId = AllelicTestsAction.evaluateCensusOPId(currentOP, parentMatrix);
+				int censusOPId = AssociationTestsAction.evaluateCensusOPId(currentOP, parentMatrix);
 				int hwOPId = Integer.MIN_VALUE;
 
 				StartGWASpi.mainGUIFrame.setCursor(CursorUtils.WAIT_CURSOR);
