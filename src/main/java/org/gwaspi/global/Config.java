@@ -173,7 +173,7 @@ public class Config {
 				} else {
 					File derbyCenter = new File(dirToData.getPath() + "/datacenter");
 					if (!derbyCenter.exists()) {
-						int recreateDataFolder = Dialogs.showOptionDialogue("Data folder unreachable", "The data folder is unreachable (deleted?).\nShould GWASpi recreate it or do you want to provide a new path?", "Recreate", "New Path", "Cancel");
+						int recreateDataFolder = Dialogs.showOptionDialogue("Data folder unreachable", "The data folder (\"" + dirToData.getAbsolutePath() + "\") is unreachable (deleted?).\nShould GWASpi recreate it or do you want to provide a new path?", "Recreate", "New Path", "Cancel");
 						if (recreateDataFolder == JOptionPane.OK_OPTION) {
 							createDataStructure(dirToData);
 							JOptionPane.showMessageDialog(StartGWASpi.mainGUIFrame, "Databases and working folders initialized successfully!");
@@ -182,7 +182,7 @@ public class Config {
 							createDataStructure(dirToData);
 							JOptionPane.showMessageDialog(StartGWASpi.mainGUIFrame, "Databases and working folders initialized successfully!");
 						} else if (recreateDataFolder == JOptionPane.CANCEL_OPTION) {
-							throw new RuntimeException("The data folder is unreachable, and the user chose not to create it");
+							throw new RuntimeException("The data folder (\"" + dirToData.getAbsolutePath() + "\") is unreachable, and the user chose not to create it");
 						}
 					}
 
