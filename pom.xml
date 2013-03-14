@@ -6,7 +6,7 @@
 		<project.build.sourceEncoding>${project.build.encoding}</project.build.sourceEncoding>
 		<project.build.resourceEncoding>${project.build.encoding}</project.build.resourceEncoding>
 
-		<project.mainClass>gui.StartGWASpi</project.mainClass>
+		<project.mainClass>org.gwaspi.gui.StartGWASpi</project.mainClass>
 	</properties>
 
 	<groupId>org.gwaspi</groupId>
