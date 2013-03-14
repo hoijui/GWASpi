@@ -75,17 +75,18 @@ public class Config {
 					return prefs;
 				}
 			};
-	private static boolean startWithGUI = true;
 
 	private Config() {
 	}
 
 	public static void setConfigValue(String key, Object value) throws IOException {
-		// GUI PREFS
-		prefs.put(key, value.toString());
-
-		// CLI & THREAD PREFS
-		instancePrefs.get().put(key, value);
+		if (StartGWASpi.guiMode) {
+			// GUI PREFS
+			prefs.put(key, value.toString());
+		} else {
+			// CLI & THREAD PREFS
+			instancePrefs.get().put(key, value);
+		}
 	}
 
 	public static void setConfigColor(String key, Color value) throws IOException {
@@ -135,7 +136,7 @@ public class Config {
 //	}
 
 	public static void clearConfigFile() throws IOException, BackingStoreException {
-		if (startWithGUI) {
+		if (StartGWASpi.guiMode) {
 			// GUI MODE
 			prefs.clear();
 		} else {
