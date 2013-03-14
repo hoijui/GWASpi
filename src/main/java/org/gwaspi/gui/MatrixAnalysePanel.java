@@ -3,6 +3,7 @@ package org.gwaspi.gui;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
@@ -217,37 +218,12 @@ public class MatrixAnalysePanel extends JPanel {
 				pnl_SpacerLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
 				.addGap(0, 124, Short.MAX_VALUE));
 
-		GroupLayout pnl_ButtonsLayout = new GroupLayout(pnl_Buttons);
-		pnl_Buttons.setLayout(pnl_ButtonsLayout);
-		pnl_ButtonsLayout.setHorizontalGroup(
-				pnl_ButtonsLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-				.addGroup(pnl_ButtonsLayout.createSequentialGroup()
-				.addContainerGap()
-				.addGroup(pnl_ButtonsLayout.createParallelGroup(GroupLayout.Alignment.CENTER)
-				.addComponent(btn_1_2, GroupLayout.PREFERRED_SIZE, 167, GroupLayout.PREFERRED_SIZE)
-				.addComponent(btn_1_1, GroupLayout.PREFERRED_SIZE, 162, GroupLayout.PREFERRED_SIZE))
-				.addGap(18, 18, 18)
-				.addGroup(pnl_ButtonsLayout.createParallelGroup(GroupLayout.Alignment.CENTER)
-				.addComponent(btn_1_3, GroupLayout.PREFERRED_SIZE, 163, GroupLayout.PREFERRED_SIZE)
-				.addComponent(btn_1_4, GroupLayout.PREFERRED_SIZE, 163, GroupLayout.PREFERRED_SIZE))
-				.addGap(18, 18, 18)
-				.addComponent(btn_1_5, GroupLayout.PREFERRED_SIZE, 163, GroupLayout.PREFERRED_SIZE)
-				.addGap(108, 108, 108)));
-
-		pnl_ButtonsLayout.linkSize(SwingConstants.HORIZONTAL, new Component[]{btn_1_1, btn_1_2, btn_1_3, btn_1_4});
-
-		pnl_ButtonsLayout.setVerticalGroup(
-				pnl_ButtonsLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-				.addGroup(pnl_ButtonsLayout.createSequentialGroup()
-				.addGroup(pnl_ButtonsLayout.createParallelGroup(GroupLayout.Alignment.CENTER)
-				.addComponent(btn_1_1, GroupLayout.PREFERRED_SIZE, 50, GroupLayout.PREFERRED_SIZE)
-				.addComponent(btn_1_3, GroupLayout.PREFERRED_SIZE, 50, GroupLayout.PREFERRED_SIZE)
-				.addComponent(btn_1_5, GroupLayout.PREFERRED_SIZE, 50, GroupLayout.PREFERRED_SIZE))
-				.addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
-				.addGroup(pnl_ButtonsLayout.createParallelGroup(GroupLayout.Alignment.CENTER)
-				.addComponent(btn_1_2, GroupLayout.PREFERRED_SIZE, 50, GroupLayout.PREFERRED_SIZE)
-				.addComponent(btn_1_4, GroupLayout.PREFERRED_SIZE, 50, GroupLayout.PREFERRED_SIZE))
-				.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)));
+		pnl_Buttons.setLayout(new GridLayout(0, 3, 18, 18));
+		pnl_Buttons.add(btn_1_1);
+		pnl_Buttons.add(btn_1_3);
+		pnl_Buttons.add(btn_1_5);
+		pnl_Buttons.add(btn_1_2);
+		pnl_Buttons.add(btn_1_4);
 
 		GroupLayout pnl_NewOperationLayout = new GroupLayout(pnl_NewOperation);
 		pnl_NewOperation.setLayout(pnl_NewOperationLayout);
