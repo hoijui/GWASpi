@@ -100,24 +100,28 @@ public class OperationFactory {
 			case ALLELICTEST:
 				rdOPMetadata = OperationsList.getOperationMetadata(parentOperationId);
 				//resultOPnetCDFName = OPType + "_" + rdOPMetadata.getMatrixCDFName();
-				netCDFHandler = generateNetcdfAllelicAssociationHandler(studyId,
+				netCDFHandler = generateNetcdfAssociationHandler(
+						studyId,
 						resultOPnetCDFName,
 						description,
 						opType,
 						opSetSize,
 						implicitSetSize,
-						chrSetSize);
+						chrSetSize,
+						true);
 				break;
 			case GENOTYPICTEST:
 				rdOPMetadata = OperationsList.getOperationMetadata(parentOperationId);
 				//resultOPnetCDFName = OPType + "_" + rdOPMetadata.getMatrixCDFName();
-				netCDFHandler = generateNetcdfGenotypicAssociationHandler(studyId,
+				netCDFHandler = generateNetcdfAssociationHandler(
+						studyId,
 						resultOPnetCDFName,
 						description,
 						opType,
 						opSetSize,
 						implicitSetSize,
-						chrSetSize);
+						chrSetSize,
+						false);
 				break;
 			case TRENDTEST:
 				rdOPMetadata = OperationsList.getOperationMetadata(parentOperationId);
@@ -488,102 +492,31 @@ public class OperationFactory {
 		return ncfile;
 	}
 
-	public static NetcdfFileWriteable generateNetcdfAllelicAssociationHandler(Integer studyId,
+	public static NetcdfFileWriteable generateNetcdfAssociationHandler(
+			Integer studyId,
 			String matrixName,
 			String description,
 			OPType opType,
 			int markerSetSize,
 			int sampleSetSize,
-			int chrSetSize)
+			int chrSetSize,
+			boolean allelic)
 			throws InvalidRangeException, IOException
 	{
-		NetcdfFileWriteable ncfile = null;
-		try {
-			// CREATE netCDF-3 FILE
-			String genotypesFolder = Config.getConfigValue(Config.PROPERTY_GENOTYPES_DIR, "");
-			File pathToStudy = new File(genotypesFolder + "/STUDY_" + studyId);
-			if (!pathToStudy.exists()) {
-				org.gwaspi.global.Utils.createFolder(genotypesFolder, "/STUDY_" + studyId);
-			}
 
-			int markerStride = cNetCDF.Strides.STRIDE_MARKER_NAME;
-			int sampleStride = cNetCDF.Strides.STRIDE_SAMPLE_NAME;
-
-			String writeFileName = pathToStudy + "/" + matrixName + ".nc";
-			ncfile = NetcdfFileWriteable.createNew(writeFileName, false);
-
-			// global attributes
-			ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_STUDY, studyId);
-			ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_DESCRIPTION, description);
-
-			// dimensions
-			Dimension setDim = ncfile.addDimension(cNetCDF.Dimensions.DIM_OPSET, markerSetSize);
-			Dimension implicitSetDim = ncfile.addDimension(cNetCDF.Dimensions.DIM_IMPLICITSET, sampleSetSize);
-			Dimension chrSetDim = ncfile.addDimension(cNetCDF.Dimensions.DIM_CHRSET, chrSetSize);
-			Dimension markerStrideDim = ncfile.addDimension(cNetCDF.Dimensions.DIM_MARKERSTRIDE, markerStride);
-			Dimension sampleStrideDim = ncfile.addDimension(cNetCDF.Dimensions.DIM_SAMPLESTRIDE, sampleStride);
-			Dimension box2Dim = ncfile.addDimension(cNetCDF.Dimensions.DIM_2BOXES, 2);
-			Dimension box3Dim = ncfile.addDimension(cNetCDF.Dimensions.DIM_3BOXES, 3);
-			Dimension dim8 = ncfile.addDimension(cNetCDF.Dimensions.DIM_8, 8);
-			Dimension dim4 = ncfile.addDimension(cNetCDF.Dimensions.DIM_4, 4);
-
-			// OP SPACES
-//			List<Dimension> OP2Space = new ArrayList<Dimension>();
-//			OP2Space.add(setDim);
-//			OP2Space.add(box2Dim);
-
-			List<Dimension> OP3Space = new ArrayList<Dimension>();
-			OP3Space.add(setDim);
-			OP3Space.add(box3Dim);
-
-			// MARKER SPACES
-			List<Dimension> markerNameSpace = new ArrayList<Dimension>();
-			markerNameSpace.add(setDim);
-			markerNameSpace.add(markerStrideDim);
-
-			// CHROMOSOME SPACES
-			List<Dimension> chrSetSpace = new ArrayList<Dimension>();
-			chrSetSpace.add(chrSetDim);
-			chrSetSpace.add(dim8);
-
-			List<Dimension> chrInfoSpace = new ArrayList<Dimension>();
-			chrInfoSpace.add(chrSetDim);
-			chrInfoSpace.add(dim4);
-
-			// SAMPLE SPACES
-			List<Dimension> sampleSetSpace = new ArrayList<Dimension>();
-			sampleSetSpace.add(implicitSetDim);
-			sampleSetSpace.add(sampleStrideDim);
-
-			// Define OP Variables
-			ncfile.addVariable(cNetCDF.Variables.VAR_OPSET, DataType.CHAR, markerNameSpace);
-			ncfile.addVariable(cNetCDF.Variables.VAR_MARKERS_RSID, DataType.CHAR, markerNameSpace);
-			ncfile.addVariable(cNetCDF.Variables.VAR_IMPLICITSET, DataType.CHAR, sampleSetSpace);
-
-			// Define Chromosome Variables
-			ncfile.addVariable(cNetCDF.Variables.VAR_CHR_IN_MATRIX, DataType.CHAR, chrSetSpace);
-			ncfile.addVariable(cNetCDF.Variables.VAR_CHR_INFO, DataType.INT, chrInfoSpace);
-
-			//ncfile.addVariable(cNetCDF.Association.VAR_OP_MARKERS_ASGenotypicAssociationTP2OR, DataType.DOUBLE, OP2Space);
-			ncfile.addVariable(cNetCDF.Association.VAR_OP_MARKERS_ASAllelicAssociationTPOR, DataType.DOUBLE, OP3Space);
-
-			ncfile.addVariableAttribute(cNetCDF.Variables.VAR_OPSET, cNetCDF.Attributes.LENGTH, markerSetSize);
-		} catch (IOException ex) {
-			log.error(null, ex);
+		final int boxDimensions;
+		final String boxDimensionsName;
+		final String ncVariableName;
+		if (allelic) {
+			boxDimensions = 3;
+			boxDimensionsName = cNetCDF.Dimensions.DIM_3BOXES;
+			ncVariableName = cNetCDF.Association.VAR_OP_MARKERS_ASAllelicAssociationTPOR;
+		} else {
+			boxDimensions = 4;
+			boxDimensionsName = cNetCDF.Dimensions.DIM_4BOXES;
+			ncVariableName = cNetCDF.Association.VAR_OP_MARKERS_ASGenotypicAssociationTP2OR;
 		}
 
-		return ncfile;
-	}
-
-	public static NetcdfFileWriteable generateNetcdfGenotypicAssociationHandler(Integer studyId,
-			String matrixName,
-			String description,
-			OPType opType,
-			int markerSetSize,
-			int sampleSetSize,
-			int chrSetSize)
-			throws InvalidRangeException, IOException
-	{
 		NetcdfFileWriteable ncfile = null;
 		try {
 			// CREATE netCDF-3 FILE
@@ -609,14 +542,14 @@ public class OperationFactory {
 			Dimension chrSetDim = ncfile.addDimension(cNetCDF.Dimensions.DIM_CHRSET, chrSetSize);
 			Dimension markerStrideDim = ncfile.addDimension(cNetCDF.Dimensions.DIM_MARKERSTRIDE, markerStride);
 			Dimension sampleStrideDim = ncfile.addDimension(cNetCDF.Dimensions.DIM_SAMPLESTRIDE, sampleStride);
-			Dimension box4Dim = ncfile.addDimension(cNetCDF.Dimensions.DIM_4BOXES, 4);
+			Dimension boxDim = ncfile.addDimension(boxDimensionsName, boxDimensions);
 			Dimension dim8 = ncfile.addDimension(cNetCDF.Dimensions.DIM_8, 8);
 			Dimension dim4 = ncfile.addDimension(cNetCDF.Dimensions.DIM_4, 4);
 
 			// OP SPACES
-			List<Dimension> OP4Space = new ArrayList<Dimension>();
-			OP4Space.add(setDim);
-			OP4Space.add(box4Dim);
+			List<Dimension> opSpace = new ArrayList<Dimension>();
+			opSpace.add(setDim);
+			opSpace.add(boxDim);
 
 			// MARKER SPACES
 			List<Dimension> markerNameSpace = new ArrayList<Dimension>();
@@ -646,7 +579,7 @@ public class OperationFactory {
 			ncfile.addVariable(cNetCDF.Variables.VAR_CHR_IN_MATRIX, DataType.CHAR, chrSetSpace);
 			ncfile.addVariable(cNetCDF.Variables.VAR_CHR_INFO, DataType.INT, chrInfoSpace);
 
-			ncfile.addVariable(cNetCDF.Association.VAR_OP_MARKERS_ASGenotypicAssociationTP2OR, DataType.DOUBLE, OP4Space);
+			ncfile.addVariable(ncVariableName, DataType.DOUBLE, opSpace);
 
 			ncfile.addVariableAttribute(cNetCDF.Variables.VAR_OPSET, cNetCDF.Attributes.LENGTH, markerSetSize);
 		} catch (IOException ex) {
