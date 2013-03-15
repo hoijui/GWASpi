@@ -11,5 +11,5 @@ import ucar.ma2.InvalidRangeException;
  */
 public interface MatrixOperation {
 
-	public int processMatrix() throws IOException, InvalidRangeException;
+	int processMatrix() throws IOException, InvalidRangeException;
 }
