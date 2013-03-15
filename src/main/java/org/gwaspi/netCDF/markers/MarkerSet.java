@@ -37,10 +37,10 @@ import ucar.nc2.Variable;
  * IBE, Institute of Evolutionary Biology (UPF-CSIC)
  * CEXS-UPF-PRBB
  */
-public class MarkerSet_opt {
+public class MarkerSet {
 
 	private static final Logger log
-			= LoggerFactory.getLogger(MarkerSet_opt.class);
+			= LoggerFactory.getLogger(MarkerSet.class);
 
 	// MARKERSET_MEATADATA
 	private ImportFormat technology = ImportFormat.UNKNOWN; // platform
@@ -52,7 +52,7 @@ public class MarkerSet_opt {
 	private Map<MarkerKey, Object> markerIdSetMap = new LinkedHashMap<MarkerKey, Object>();
 	private Map<MarkerKey, Object> markerRsIdSetMap = new LinkedHashMap<MarkerKey, Object>();
 
-	public MarkerSet_opt(int studyId, int matrixId) throws IOException {
+	public MarkerSet(int studyId, int matrixId) throws IOException {
 		matrixMetadata = MatricesList.getMatrixMetadataById(matrixId);
 		technology = matrixMetadata.getTechnology();
 		markerSetSize = matrixMetadata.getMarkerSetSize();
@@ -60,7 +60,7 @@ public class MarkerSet_opt {
 		ncfile = NetcdfFile.open(matrixMetadata.getPathToMatrix());
 	}
 
-	public MarkerSet_opt(int studyId, String netCDFPath, String netCDFName) throws IOException {
+	public MarkerSet(int studyId, String netCDFPath, String netCDFName) throws IOException {
 		matrixMetadata = MatricesList.getMatrixMetadata(netCDFPath, studyId, netCDFName);
 		technology = matrixMetadata.getTechnology();
 		markerSetSize = matrixMetadata.getMarkerSetSize();

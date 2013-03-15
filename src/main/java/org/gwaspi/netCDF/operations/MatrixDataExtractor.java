@@ -16,7 +16,7 @@ import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleKey;
-import org.gwaspi.netCDF.markers.MarkerSet_opt;
+import org.gwaspi.netCDF.markers.MarkerSet;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.gwaspi.samples.SampleSet;
 import org.slf4j.Logger;
@@ -33,9 +33,9 @@ import ucar.nc2.NetcdfFileWriteable;
  * IBE, Institute of Evolutionary Biology (UPF-CSIC)
  * CEXS-UPF-PRBB
  */
-public class MatrixDataExtractor_opt {
+public class MatrixDataExtractor {
 
-	private final Logger log = LoggerFactory.getLogger(MatrixDataExtractor_opt.class);
+	private final Logger log = LoggerFactory.getLogger(MatrixDataExtractor.class);
 
 	private int studyId;
 	private int rdMatrixId;
@@ -52,8 +52,8 @@ public class MatrixDataExtractor_opt {
 	private StringBuilder samplePickerCriteria;
 	private MatrixMetadata rdMatrixMetadata;
 	private MatrixMetadata wrMatrixMetadata = null;
-	private MarkerSet_opt rdMarkerSet;
-	private MarkerSet_opt wrMarkerSet = null;
+	private MarkerSet rdMarkerSet;
+	private MarkerSet wrMarkerSet = null;
 	private SampleSet rdSampleSet;
 	private SampleSet wrSampleSet = null;
 	private Map<MarkerKey, Object> wrMarkerIdSetMap;
@@ -81,7 +81,7 @@ public class MatrixDataExtractor_opt {
 	 * @throws IOException
 	 * @throws InvalidRangeException
 	 */
-	public MatrixDataExtractor_opt(
+	public MatrixDataExtractor(
 			int studyId,
 			int rdMatrixId,
 			String wrMatrixFriendlyName,
@@ -111,7 +111,7 @@ public class MatrixDataExtractor_opt {
 		this.wrMatrixFriendlyName = wrMatrixFriendlyName;
 		this.wrMatrixDescription = wrMatrixDescription;
 
-		this.rdMarkerSet = new MarkerSet_opt(this.rdMatrixMetadata.getStudyId(), this.rdMatrixId);
+		this.rdMarkerSet = new MarkerSet(this.rdMatrixMetadata.getStudyId(), this.rdMatrixId);
 		this.rdMarkerSet.initFullMarkerIdSetMap();
 
 		this.rdSampleSet = new SampleSet(this.rdMatrixMetadata.getStudyId(), this.rdMatrixId);
@@ -143,35 +143,35 @@ public class MatrixDataExtractor_opt {
 			case ALL_MARKERS:
 				// Get all markers
 				this.wrMarkerIdSetMap.putAll(this.rdMarkerSet.getMarkerIdSetMap());
-				MarkerSet_opt.fillWith(wrMarkerIdSetMap, cNetCDF.Defaults.DEFAULT_GT);
+				MarkerSet.fillWith(wrMarkerIdSetMap, cNetCDF.Defaults.DEFAULT_GT);
 				break;
 			case MARKERS_INCLUDE_BY_NETCDF_CRITERIA:
 				// Pick by netCDF field value and criteria
 				this.wrMarkerIdSetMap = this.rdMarkerSet.pickValidMarkerSetItemsByValue(markerPickerVar, markerCriteria, true);
-				MarkerSet_opt.fillWith(this.wrMarkerIdSetMap, cNetCDF.Defaults.DEFAULT_GT);
+				MarkerSet.fillWith(this.wrMarkerIdSetMap, cNetCDF.Defaults.DEFAULT_GT);
 				break;
 			case MARKERS_EXCLUDE_BY_NETCDF_CRITERIA:
 				// Exclude by netCDF field value and criteria
 				this.wrMarkerIdSetMap = this.rdMarkerSet.pickValidMarkerSetItemsByValue(markerPickerVar, markerCriteria, false);
-				MarkerSet_opt.fillWith(this.wrMarkerIdSetMap, cNetCDF.Defaults.DEFAULT_GT);
+				MarkerSet.fillWith(this.wrMarkerIdSetMap, cNetCDF.Defaults.DEFAULT_GT);
 				break;
 			case MARKERS_INCLUDE_BY_ID:
 				this.wrMarkerIdSetMap = this.rdMarkerSet.pickValidMarkerSetItemsByKey(markerCriteria, true);
-				MarkerSet_opt.fillWith(this.wrMarkerIdSetMap, cNetCDF.Defaults.DEFAULT_GT);
+				MarkerSet.fillWith(this.wrMarkerIdSetMap, cNetCDF.Defaults.DEFAULT_GT);
 				break;
 			case MARKERS_EXCLUDE_BY_ID:
 				this.wrMarkerIdSetMap = this.rdMarkerSet.pickValidMarkerSetItemsByKey(markerCriteria, false);
-				MarkerSet_opt.fillWith(this.wrMarkerIdSetMap, cNetCDF.Defaults.DEFAULT_GT);
+				MarkerSet.fillWith(this.wrMarkerIdSetMap, cNetCDF.Defaults.DEFAULT_GT);
 				break;
 			default:
 				// Get all markers
 				this.wrMarkerIdSetMap.putAll(this.rdMarkerSet.getMarkerIdSetMap());
-				MarkerSet_opt.fillWith(this.wrMarkerIdSetMap, cNetCDF.Defaults.DEFAULT_GT);
+				MarkerSet.fillWith(this.wrMarkerIdSetMap, cNetCDF.Defaults.DEFAULT_GT);
 		}
 
 		// RETRIEVE CHROMOSOMES INFO
 		this.rdMarkerSet.fillMarkerSetMapWithChrAndPos();
-		MarkerSet_opt.replaceWithValuesFrom(this.wrMarkerIdSetMap, this.rdMarkerSet.getMarkerIdSetMap());
+		MarkerSet.replaceWithValuesFrom(this.wrMarkerIdSetMap, this.rdMarkerSet.getMarkerIdSetMap());
 		this.rdChrInfoSetMap = org.gwaspi.netCDF.matrices.Utils.aggregateChromosomeInfo(this.wrMarkerIdSetMap, 0, 1);
 		//</editor-fold>
 
@@ -353,12 +353,12 @@ public class MatrixDataExtractor_opt {
 
 				// MARKERSET RSID
 				rdMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_RSID);
-				MarkerSet_opt.replaceWithValuesFrom(wrMarkerIdSetMap, rdMarkerSet.getMarkerIdSetMap());
+				MarkerSet.replaceWithValuesFrom(wrMarkerIdSetMap, rdMarkerSet.getMarkerIdSetMap());
 				Utils.saveCharMapValueToWrMatrix(wrNcFile, wrMarkerIdSetMap, cNetCDF.Variables.VAR_MARKERS_RSID, cNetCDF.Strides.STRIDE_MARKER_NAME);
 
 				// MARKERSET CHROMOSOME
 				rdMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
-				MarkerSet_opt.replaceWithValuesFrom(wrMarkerIdSetMap, rdMarkerSet.getMarkerIdSetMap());
+				MarkerSet.replaceWithValuesFrom(wrMarkerIdSetMap, rdMarkerSet.getMarkerIdSetMap());
 				Utils.saveCharMapValueToWrMatrix(wrNcFile, wrMarkerIdSetMap, cNetCDF.Variables.VAR_MARKERS_CHR, cNetCDF.Strides.STRIDE_CHR);
 
 				// Set of chromosomes found in matrix along with number of markersinfo
@@ -369,18 +369,18 @@ public class MatrixDataExtractor_opt {
 
 				// MARKERSET POSITION
 				rdMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_POS);
-				MarkerSet_opt.replaceWithValuesFrom(wrMarkerIdSetMap, rdMarkerSet.getMarkerIdSetMap());
+				MarkerSet.replaceWithValuesFrom(wrMarkerIdSetMap, rdMarkerSet.getMarkerIdSetMap());
 				//Utils.saveCharMapValueToWrMatrix(wrNcFile, wrMarkerIdSetMap, cNetCDF.Variables.VAR_MARKERS_POS, cNetCDF.Strides.STRIDE_POS);
 				Utils.saveIntMapD1ToWrMatrix(wrNcFile, wrMarkerIdSetMap, cNetCDF.Variables.VAR_MARKERS_POS);
 
 				// MARKERSET DICTIONARY ALLELES
 				rdMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_BASES_DICT);
-				MarkerSet_opt.replaceWithValuesFrom(wrMarkerIdSetMap, rdMarkerSet.getMarkerIdSetMap());
+				MarkerSet.replaceWithValuesFrom(wrMarkerIdSetMap, rdMarkerSet.getMarkerIdSetMap());
 				Utils.saveCharMapValueToWrMatrix(wrNcFile, wrMarkerIdSetMap, cNetCDF.Variables.VAR_MARKERS_BASES_DICT, cNetCDF.Strides.STRIDE_GT);
 
 				// GENOTYPE STRAND
 				rdMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_GT_STRAND);
-				MarkerSet_opt.replaceWithValuesFrom(wrMarkerIdSetMap, rdMarkerSet.getMarkerIdSetMap());
+				MarkerSet.replaceWithValuesFrom(wrMarkerIdSetMap, rdMarkerSet.getMarkerIdSetMap());
 				Utils.saveCharMapValueToWrMatrix(wrNcFile, wrMarkerIdSetMap, cNetCDF.Variables.VAR_GT_STRAND, 3);
 				//</editor-fold>
 
@@ -393,7 +393,7 @@ public class MatrixDataExtractor_opt {
 					Integer rdPos = (Integer) value;
 					rdMarkerSet.fillGTsForCurrentSampleIntoInitMap(rdPos);
 //					rdMarkerSet.fillGTsForCurrentSampleIntoInitMap(sampleWrPos);
-					MarkerSet_opt.replaceWithValuesFrom(wrMarkerIdSetMap, rdMarkerSet.getMarkerIdSetMap());
+					MarkerSet.replaceWithValuesFrom(wrMarkerIdSetMap, rdMarkerSet.getMarkerIdSetMap());
 
 					//Write wrMarkerIdSetMap to A3 ArrayChar and save to wrMatrix
 					Utils.saveSingleSampleGTsToMatrix(wrNcFile, wrMarkerIdSetMap, sampleWrIndex);

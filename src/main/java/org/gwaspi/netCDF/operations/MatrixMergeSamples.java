@@ -11,7 +11,7 @@ import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleKey;
-import org.gwaspi.netCDF.markers.MarkerSet_opt;
+import org.gwaspi.netCDF.markers.MarkerSet;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.gwaspi.samples.SampleSet;
 import org.slf4j.Logger;
@@ -29,9 +29,9 @@ import ucar.nc2.NetcdfFileWriteable;
  * IBE, Institute of Evolutionary Biology (UPF-CSIC)
  * CEXS-UPF-PRBB
  */
-public class MatrixMergeSamples_opt {
+public class MatrixMergeSamples {
 
-	private final Logger log = LoggerFactory.getLogger(MatrixMergeSamples_opt.class);
+	private final Logger log = LoggerFactory.getLogger(MatrixMergeSamples.class);
 
 	private int studyId;
 	private int rdMatrix1Id;
@@ -42,9 +42,9 @@ public class MatrixMergeSamples_opt {
 	private MatrixMetadata rdMatrix1Metadata;
 	private MatrixMetadata rdMatrix2Metadata;
 	private MatrixMetadata wrMatrixMetadata;
-	private MarkerSet_opt rdwrMarkerSet1;
-	private MarkerSet_opt rdMarkerSet2;
-	private MarkerSet_opt wrMarkerSet;
+	private MarkerSet rdwrMarkerSet1;
+	private MarkerSet rdMarkerSet2;
+	private MarkerSet wrMarkerSet;
 	private SampleSet rdSampleSet1;
 	private SampleSet rdSampleSet2;
 	private SampleSet wrSampleSet;
@@ -56,7 +56,7 @@ public class MatrixMergeSamples_opt {
 	 * Samples from the 2nd Matrix will be appended to the end of the SampleSet from the 1st Matrix.
 	 * Duplicate Samples from the 2nd Matrix will overwrite Samples in the 1st Matrix
 	 */
-	public MatrixMergeSamples_opt(
+	public MatrixMergeSamples(
 			int studyId, // XXX this is unused, confusing!
 			int rdMatrix1Id,
 			int rdMatrix2Id,
@@ -75,8 +75,8 @@ public class MatrixMergeSamples_opt {
 		this.rdMatrix1Metadata = MatricesList.getMatrixMetadataById(this.rdMatrix1Id);
 		this.rdMatrix2Metadata = MatricesList.getMatrixMetadataById(this.rdMatrix2Id);
 
-		this.rdwrMarkerSet1 = new MarkerSet_opt(this.rdMatrix1Metadata.getStudyId(), this.rdMatrix1Id);
-		this.rdMarkerSet2 = new MarkerSet_opt(this.rdMatrix2Metadata.getStudyId(), this.rdMatrix2Id);
+		this.rdwrMarkerSet1 = new MarkerSet(this.rdMatrix1Metadata.getStudyId(), this.rdMatrix1Id);
+		this.rdMarkerSet2 = new MarkerSet(this.rdMatrix2Metadata.getStudyId(), this.rdMatrix2Id);
 
 		this.rdSampleSet1 = new SampleSet(this.rdMatrix1Metadata.getStudyId(), this.rdMatrix1Id);
 		this.rdSampleSet2 = new SampleSet(this.rdMatrix2Metadata.getStudyId(), this.rdMatrix2Id);
@@ -310,7 +310,7 @@ public class MatrixMergeSamples_opt {
 
 		wrMatrixMetadata = MatricesList.getMatrixMetadataById(wrMatrixId);
 		wrSampleSet = new SampleSet(wrMatrixMetadata.getStudyId(), wrMatrixId);
-		wrMarkerSet = new MarkerSet_opt(wrMatrixMetadata.getStudyId(), wrMatrixId);
+		wrMarkerSet = new MarkerSet(wrMatrixMetadata.getStudyId(), wrMatrixId);
 		wrMarkerSet.initFullMarkerIdSetMap();
 		Map<SampleKey, Object> wrSampleSetMap = wrSampleSet.getSampleIdSetMap();
 

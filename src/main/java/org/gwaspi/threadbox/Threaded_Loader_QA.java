@@ -5,8 +5,8 @@ import org.gwaspi.model.GWASpiExplorerNodes;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.netCDF.loader.GenotypesLoadDescription;
 import org.gwaspi.netCDF.loader.LoadManager;
-import org.gwaspi.netCDF.operations.OP_QAMarkers_opt;
-import org.gwaspi.netCDF.operations.OP_QASamples_opt;
+import org.gwaspi.netCDF.operations.OP_QAMarkers;
+import org.gwaspi.netCDF.operations.OP_QASamples;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,14 +54,14 @@ public class Threaded_Loader_QA extends CommonRunnable {
 		}
 
 		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
-			resultOpId = new OP_QASamples_opt(resultMatrixId).processMatrix();
+			resultOpId = new OP_QASamples(resultMatrixId).processMatrix();
 			GWASpiExplorerNodes.insertOperationUnderMatrixNode(resultMatrixId, resultOpId);
 			org.gwaspi.reports.OutputQASamples.writeReportsForQASamplesData(resultOpId, true);
 			GWASpiExplorerNodes.insertReportsUnderOperationNode(resultOpId);
 		}
 
 		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
-			resultOpId = new OP_QAMarkers_opt(resultMatrixId).processMatrix();
+			resultOpId = new OP_QAMarkers(resultMatrixId).processMatrix();
 			GWASpiExplorerNodes.insertOperationUnderMatrixNode(resultMatrixId, resultOpId);
 			org.gwaspi.reports.OutputQAMarkers.writeReportsForQAMarkersData(resultOpId);
 			MultiOperations.printCompleted("Matrix Quality Control");

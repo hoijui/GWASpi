@@ -12,7 +12,7 @@ import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleKey;
-import org.gwaspi.netCDF.markers.MarkerSet_opt;
+import org.gwaspi.netCDF.markers.MarkerSet;
 import org.gwaspi.samples.SampleSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,7 +33,7 @@ public class MachFormatter implements Formatter {
 	public boolean export(
 			String exportPath,
 			MatrixMetadata rdMatrixMetadata,
-			MarkerSet_opt rdMarkerSet,
+			MarkerSet rdMarkerSet,
 			SampleSet rdSampleSet,
 			Map<SampleKey, Object> rdSampleSetMap,
 			String phenotype)
@@ -88,7 +88,7 @@ public class MachFormatter implements Formatter {
 		return result;
 	}
 
-	private void exportChromosomeToMped(File exportDir, MatrixMetadata rdMatrixMetadata, MarkerSet_opt rdMarkerSet, Map<SampleKey, Object> rdSampleSetMap, String chr, int startPos, int endPos) throws IOException {
+	private void exportChromosomeToMped(File exportDir, MatrixMetadata rdMatrixMetadata, MarkerSet rdMarkerSet, Map<SampleKey, Object> rdSampleSetMap, String chr, int startPos, int endPos) throws IOException {
 
 		FileWriter pedFW = new FileWriter(exportDir.getPath() + "/" + rdMatrixMetadata.getMatrixFriendlyName() + "_chr" + chr + ".mped");
 		BufferedWriter pedBW = new BufferedWriter(pedFW);
@@ -152,7 +152,7 @@ public class MachFormatter implements Formatter {
 		pedFW.close();
 	}
 
-	public void exportChromosomeToDat(File exportDir, MatrixMetadata rdMatrixMetadata, MarkerSet_opt rdMarkerSet, String chr, int startPos, int endPos) throws IOException {
+	public void exportChromosomeToDat(File exportDir, MatrixMetadata rdMatrixMetadata, MarkerSet rdMarkerSet, String chr, int startPos, int endPos) throws IOException {
 
 		FileWriter datFW = new FileWriter(exportDir.getPath() + "/" + rdMatrixMetadata.getMatrixFriendlyName() + "_chr" + chr + ".dat");
 		BufferedWriter datBW = new BufferedWriter(datFW);

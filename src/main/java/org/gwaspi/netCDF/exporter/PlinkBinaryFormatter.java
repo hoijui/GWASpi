@@ -18,7 +18,7 @@ import org.gwaspi.model.Operation;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleKey;
-import org.gwaspi.netCDF.markers.MarkerSet_opt;
+import org.gwaspi.netCDF.markers.MarkerSet;
 import org.gwaspi.reports.GatherQAMarkersData;
 import org.gwaspi.samples.SampleSet;
 import org.slf4j.Logger;
@@ -60,7 +60,7 @@ public class PlinkBinaryFormatter implements Formatter {
 	public boolean export(
 			String exportPath,
 			MatrixMetadata rdMatrixMetadata,
-			MarkerSet_opt rdMarkerSet,
+			MarkerSet rdMarkerSet,
 			SampleSet rdSampleSet,
 			Map<SampleKey, Object> rdSampleSetMap,
 			String phenotype)

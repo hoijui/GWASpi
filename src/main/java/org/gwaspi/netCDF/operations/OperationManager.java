@@ -41,7 +41,7 @@ public class OperationManager {
 		Operation sampleQAOP = OperationsList.getById(samplesQAOpId);
 		Operation markerQAOP = OperationsList.getById(markersQAOpId);
 
-		resultOpId = new OP_MarkerCensus_opt(
+		resultOpId = new OP_MarkerCensus(
 				_rdMatrixId,
 				censusName,
 				sampleQAOP,
@@ -73,7 +73,7 @@ public class OperationManager {
 		Operation sampleQAOP = OperationsList.getById(samplesQAOpId);
 		Operation markerQAOP = OperationsList.getById(markersQAOpId);
 
-		resultOpId = new OP_MarkerCensus_opt(
+		resultOpId = new OP_MarkerCensus(
 				_rdMatrixId,
 				censusName,
 				sampleQAOP,
@@ -143,7 +143,7 @@ public class OperationManager {
 		Operation markerCensusOP = OperationsList.getById(censusOpId);
 		Operation hwOP = OperationsList.getById(hwOpId);
 
-		resultOpId = new OP_TrendTests_opt(
+		resultOpId = new OP_TrendTests(
 				_rdMatrixId,
 				markerCensusOP,
 				hwOP,

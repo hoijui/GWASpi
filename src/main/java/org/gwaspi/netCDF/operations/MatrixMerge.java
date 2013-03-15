@@ -14,7 +14,7 @@ import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.netCDF.loader.ComparatorChrAutPosMarkerIdAsc;
-import org.gwaspi.netCDF.markers.MarkerSet_opt;
+import org.gwaspi.netCDF.markers.MarkerSet;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.gwaspi.samples.SampleSet;
 import org.slf4j.Logger;
@@ -46,9 +46,9 @@ public class MatrixMerge {
 	private MatrixMetadata rdMatrix1Metadata;
 	private MatrixMetadata rdMatrix2Metadata;
 	private MatrixMetadata wrMatrixMetadata;
-	private MarkerSet_opt rdMarkerSet1;
-	private MarkerSet_opt rdMarkerSet2;
-	private MarkerSet_opt wrMarkerSet;
+	private MarkerSet rdMarkerSet1;
+	private MarkerSet rdMarkerSet2;
+	private MarkerSet wrMarkerSet;
 	private SampleSet rdSampleSet1;
 	private SampleSet rdSampleSet2;
 	private SampleSet wrSampleSet;
@@ -89,8 +89,8 @@ public class MatrixMerge {
 		this.rdMatrix1Metadata = MatricesList.getMatrixMetadataById(this.rdMatrix1Id);
 		this.rdMatrix2Metadata = MatricesList.getMatrixMetadataById(this.rdMatrix2Id);
 
-		this.rdMarkerSet1 = new MarkerSet_opt(this.studyId, this.rdMatrix1Id);
-		this.rdMarkerSet2 = new MarkerSet_opt(this.studyId, this.rdMatrix2Id);
+		this.rdMarkerSet1 = new MarkerSet(this.studyId, this.rdMatrix1Id);
+		this.rdMarkerSet2 = new MarkerSet(this.studyId, this.rdMatrix2Id);
 
 		this.rdSampleSet1 = new SampleSet(this.studyId, this.rdMatrix1Id);
 		this.rdSampleSet2 = new SampleSet(this.studyId, this.rdMatrix2Id);
@@ -539,7 +539,7 @@ public class MatrixMerge {
 
 		wrMatrixMetadata = MatricesList.getMatrixMetadataById(wrMatrixId);
 		wrSampleSet = new SampleSet(wrMatrixMetadata.getStudyId(), wrMatrixId);
-		wrMarkerSet = new MarkerSet_opt(wrMatrixMetadata.getStudyId(), wrMatrixId);
+		wrMarkerSet = new MarkerSet(wrMatrixMetadata.getStudyId(), wrMatrixId);
 		wrMarkerSet.initFullMarkerIdSetMap();
 		Map<SampleKey, Object> wrSampleSetMap = wrSampleSet.getSampleIdSetMap();
 

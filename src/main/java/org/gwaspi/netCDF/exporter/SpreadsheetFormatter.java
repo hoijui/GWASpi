@@ -9,7 +9,7 @@ import org.gwaspi.constants.cExport;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleKey;
-import org.gwaspi.netCDF.markers.MarkerSet_opt;
+import org.gwaspi.netCDF.markers.MarkerSet;
 import org.gwaspi.samples.SampleSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +29,7 @@ public class SpreadsheetFormatter implements Formatter {
 	public boolean export(
 			String exportPath,
 			MatrixMetadata rdMatrixMetadata,
-			MarkerSet_opt rdMarkerSet,
+			MarkerSet rdMarkerSet,
 			SampleSet rdSampleSet,
 			Map<SampleKey, Object> rdSampleSetMap,
 			String phenotype)

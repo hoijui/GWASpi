@@ -9,7 +9,7 @@ import org.gwaspi.global.Text;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleKey;
-import org.gwaspi.netCDF.markers.MarkerSet_opt;
+import org.gwaspi.netCDF.markers.MarkerSet;
 import org.gwaspi.samples.SampleSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +27,7 @@ public class MatrixExporter {
 
 	private int rdMatrixId = Integer.MIN_VALUE;
 	private MatrixMetadata rdMatrixMetadata = null;
-	private MarkerSet_opt rdMarkerSet = null;
+	private MarkerSet rdMarkerSet = null;
 	private SampleSet rdSampleSet = null;
 	private Map<SampleKey, Object> rdSampleSetMap = null;
 	private Map<ExportFormat, Formatter> formatters;
@@ -39,7 +39,7 @@ public class MatrixExporter {
 		rdMatrixId = _rdMatrixId;
 		rdMatrixMetadata = MatricesList.getMatrixMetadataById(rdMatrixId);
 
-		rdMarkerSet = new MarkerSet_opt(rdMatrixMetadata.getStudyId(), rdMatrixId);
+		rdMarkerSet = new MarkerSet(rdMatrixMetadata.getStudyId(), rdMatrixId);
 
 		rdSampleSet = new SampleSet(rdMatrixMetadata.getStudyId(), rdMatrixId);
 		rdSampleSetMap = rdSampleSet.getSampleIdSetMap();
@@ -64,7 +64,7 @@ public class MatrixExporter {
 		Formatter formatter = formatters.get(exportFormat);
 
 		if (exportFormat == ExportFormat.BEAGLE) {
-			rdMarkerSet = new MarkerSet_opt(rdMatrixMetadata.getStudyId(), rdMatrixId);
+			rdMarkerSet = new MarkerSet(rdMatrixMetadata.getStudyId(), rdMatrixId);
 		}
 		boolean result = formatter.export(
 				exportPath,

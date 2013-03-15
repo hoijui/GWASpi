@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.model.GWASpiExplorerNodes;
-import org.gwaspi.netCDF.operations.OP_QAMarkers_opt;
-import org.gwaspi.netCDF.operations.OP_QASamples_opt;
+import org.gwaspi.netCDF.operations.OP_QAMarkers;
+import org.gwaspi.netCDF.operations.OP_QASamples;
 import org.gwaspi.netCDF.operations.OperationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,13 +44,13 @@ public class Threaded_MatrixQA extends CommonRunnable {
 
 		if (missingOPsAL.size() > 0) {
 			if (missingOPsAL.contains(cNetCDF.Defaults.OPType.SAMPLE_QA.toString())) {
-				int sampleQAOpId = new OP_QASamples_opt(matrixId).processMatrix();
+				int sampleQAOpId = new OP_QASamples(matrixId).processMatrix();
 				GWASpiExplorerNodes.insertOperationUnderMatrixNode(matrixId, sampleQAOpId);
 				org.gwaspi.reports.OutputQASamples.writeReportsForQASamplesData(sampleQAOpId, true);
 				GWASpiExplorerNodes.insertReportsUnderOperationNode(sampleQAOpId);
 			}
 			if (missingOPsAL.contains(cNetCDF.Defaults.OPType.MARKER_QA.toString())) {
-				int markersQAOpId = new OP_QAMarkers_opt(matrixId).processMatrix();
+				int markersQAOpId = new OP_QAMarkers(matrixId).processMatrix();
 				GWASpiExplorerNodes.insertOperationUnderMatrixNode(matrixId, markersQAOpId);
 				org.gwaspi.reports.OutputQAMarkers.writeReportsForQAMarkersData(markersQAOpId);
 				GWASpiExplorerNodes.insertReportsUnderOperationNode(markersQAOpId);

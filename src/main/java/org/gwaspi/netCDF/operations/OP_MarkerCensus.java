@@ -23,7 +23,7 @@ import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleInfoList;
 import org.gwaspi.model.SampleKey;
-import org.gwaspi.netCDF.markers.MarkerSet_opt;
+import org.gwaspi.netCDF.markers.MarkerSet;
 import org.gwaspi.samples.SampleSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,9 +38,9 @@ import ucar.nc2.NetcdfFileWriteable;
  * IBE, Institute of Evolutionary Biology (UPF-CSIC)
  * CEXS-UPF-PRBB
  */
-public class OP_MarkerCensus_opt implements MatrixOperation {
+public class OP_MarkerCensus implements MatrixOperation {
 
-	private final Logger log = LoggerFactory.getLogger(OP_MarkerCensus_opt.class);
+	private final Logger log = LoggerFactory.getLogger(OP_MarkerCensus.class);
 
 	private int rdMatrixId;
 	private String censusName;
@@ -52,7 +52,7 @@ public class OP_MarkerCensus_opt implements MatrixOperation {
 	private double markerMissingRatio;
 	private File phenoFile;
 
-	public OP_MarkerCensus_opt(
+	public OP_MarkerCensus(
 			int rdMatrixId,
 			String censusName,
 			Operation sampleQAOP,
@@ -88,7 +88,7 @@ public class OP_MarkerCensus_opt implements MatrixOperation {
 
 			NetcdfFile rdNcFile = NetcdfFile.open(rdMatrixMetadata.getPathToMatrix());
 
-			MarkerSet_opt rdMarkerSet = new MarkerSet_opt(rdMatrixMetadata.getStudyId(), rdMatrixId);
+			MarkerSet rdMarkerSet = new MarkerSet(rdMatrixMetadata.getStudyId(), rdMatrixId);
 			rdMarkerSet.initFullMarkerIdSetMap();
 			rdMarkerSet.fillWith(cNetCDF.Defaults.DEFAULT_GT);
 
@@ -818,7 +818,7 @@ public class OP_MarkerCensus_opt implements MatrixOperation {
 
 	private void writeMetadata(
 			NetcdfFileWriteable wrNcFile,
-			MarkerSet_opt rdMarkerSet,
+			MarkerSet rdMarkerSet,
 			Map<MarkerKey, Object> wrMarkerSetMap,
 			Map<SampleKey, Object> wrSampleSetMap)
 	{

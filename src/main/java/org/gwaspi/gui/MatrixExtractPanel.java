@@ -39,7 +39,7 @@ import org.gwaspi.gui.utils.LimitedLengthDocument;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.Matrix;
-import org.gwaspi.netCDF.markers.MarkerSet_opt;
+import org.gwaspi.netCDF.markers.MarkerSet;
 import org.gwaspi.threadbox.MultiOperations;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -659,7 +659,7 @@ public class MatrixExtractPanel extends JPanel {
 
 		MarkersVariableAction(int matrixId) throws IOException {
 
-			MarkerSet_opt parentMarkerSet = new MarkerSet_opt(parentMatrix.getStudyId(), matrixId);
+			MarkerSet parentMarkerSet = new MarkerSet(parentMatrix.getStudyId(), matrixId);
 			rdChrInfoSetMap = parentMarkerSet.getChrInfoSetMap();
 
 			putValue(NAME, Text.Trafo.variable);

@@ -11,7 +11,7 @@ import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleKey;
-import org.gwaspi.netCDF.markers.MarkerSet_opt;
+import org.gwaspi.netCDF.markers.MarkerSet;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.gwaspi.samples.SampleSet;
 import org.slf4j.Logger;
@@ -28,9 +28,9 @@ import ucar.nc2.NetcdfFileWriteable;
  * IBE, Institute of Evolutionary Biology (UPF-CSIC)
  * CEXS-UPF-PRBB
  */
-public class MatrixTranslator_opt {
+public class MatrixTranslator {
 
-	private final Logger log = LoggerFactory.getLogger(MatrixTranslator_opt.class);
+	private final Logger log = LoggerFactory.getLogger(MatrixTranslator.class);
 
 	private int studyId = Integer.MIN_VALUE;
 	private int rdMatrixId = Integer.MIN_VALUE;
@@ -39,8 +39,8 @@ public class MatrixTranslator_opt {
 	private String wrMatrixDescription = "";
 	private MatrixMetadata rdMatrixMetadata = null;
 	private MatrixMetadata wrMatrixMetadata = null;
-	private MarkerSet_opt rdMarkerSet = null;
-	private MarkerSet_opt wrMarkerSet = null;
+	private MarkerSet rdMarkerSet = null;
+	private MarkerSet wrMarkerSet = null;
 	private SampleSet rdSampleSet = null;
 	private SampleSet wrSampleSet = null;
 	private Map<MarkerKey, Object> wrMarkerIdSetMap = new LinkedHashMap<MarkerKey, Object>();
@@ -48,7 +48,7 @@ public class MatrixTranslator_opt {
 	private Map<SampleKey, Object> rdSampleSetMap = null;
 	private Map<SampleKey, Object> wrSampleSetMap = new LinkedHashMap<SampleKey, Object>();
 
-	public MatrixTranslator_opt(
+	public MatrixTranslator(
 			int studyId,
 			int rdMatrixId,
 			String wrMatrixFriendlyName,
@@ -62,7 +62,7 @@ public class MatrixTranslator_opt {
 		this.wrMatrixFriendlyName = wrMatrixFriendlyName;
 		this.wrMatrixDescription = wrMatrixDescription;
 
-		this.rdMarkerSet = new MarkerSet_opt(this.rdMatrixMetadata.getStudyId(), this.rdMatrixId);
+		this.rdMarkerSet = new MarkerSet(this.rdMatrixMetadata.getStudyId(), this.rdMatrixId);
 		this.rdMarkerSet.initFullMarkerIdSetMap();
 
 		this.rdChrInfoSetMap = this.rdMarkerSet.getChrInfoSetMap();
@@ -164,7 +164,7 @@ public class MatrixTranslator_opt {
 
 				// MARKERSET DICTIONARY ALLELES
 				rdMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_BASES_DICT);
-				MarkerSet_opt.replaceWithValuesFrom(wrMarkerIdSetMap, rdMarkerSet.getMarkerIdSetMap());
+				MarkerSet.replaceWithValuesFrom(wrMarkerIdSetMap, rdMarkerSet.getMarkerIdSetMap());
 				Utils.saveCharMapValueToWrMatrix(wrNcFile, wrMarkerIdSetMap, cNetCDF.Variables.VAR_MARKERS_BASES_DICT, cNetCDF.Strides.STRIDE_GT);
 
 				// GENOTYPE STRAND

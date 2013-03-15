@@ -10,7 +10,7 @@ import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleKey;
-import org.gwaspi.netCDF.markers.MarkerSet_opt;
+import org.gwaspi.netCDF.markers.MarkerSet;
 import org.gwaspi.samples.SampleSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,13 +25,13 @@ import ucar.nc2.NetcdfFileWriteable;
  * IBE, Institute of Evolutionary Biology (UPF-CSIC)
  * CEXS-UPF-PRBB
  */
-public class OP_QASamples_opt implements MatrixOperation {
+public class OP_QASamples implements MatrixOperation {
 
-	private final Logger log = LoggerFactory.getLogger(OP_QASamples_opt.class);
+	private final Logger log = LoggerFactory.getLogger(OP_QASamples.class);
 
 	private int rdMatrixId;
 
-	public OP_QASamples_opt(int rdMatrixId) {
+	public OP_QASamples(int rdMatrixId) {
 		this.rdMatrixId = rdMatrixId;
 	}
 
@@ -46,7 +46,7 @@ public class OP_QASamples_opt implements MatrixOperation {
 
 		NetcdfFile rdNcFile = NetcdfFile.open(rdMatrixMetadata.getPathToMatrix());
 
-		MarkerSet_opt rdMarkerSet = new MarkerSet_opt(rdMatrixMetadata.getStudyId(), rdMatrixId);
+		MarkerSet rdMarkerSet = new MarkerSet(rdMatrixMetadata.getStudyId(), rdMatrixId);
 		rdMarkerSet.initFullMarkerIdSetMap();
 
 		Map<MarkerKey, Object> rdChrSetMap = rdMarkerSet.getChrInfoSetMap();
@@ -72,7 +72,7 @@ public class OP_QASamples_opt implements MatrixOperation {
 				}
 
 				// WE DON'T WANT NON AUTOSOMAL CHR FOR HETZY
-				String currentChr = MarkerSet_opt.getChrByMarkerIndex(rdChrSetMap, markerIndex);
+				String currentChr = MarkerSet.getChrByMarkerIndex(rdChrSetMap, markerIndex);
 				if (!currentChr.equals("X")
 						&& !currentChr.equals("Y")
 						&& !currentChr.equals("XY")

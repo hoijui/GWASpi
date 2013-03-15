@@ -1,9 +1,9 @@
 package org.gwaspi.threadbox;
 
 import org.gwaspi.model.GWASpiExplorerNodes;
-import org.gwaspi.netCDF.operations.MatrixMergeSamples_opt;
-import org.gwaspi.netCDF.operations.OP_QAMarkers_opt;
-import org.gwaspi.netCDF.operations.OP_QASamples_opt;
+import org.gwaspi.netCDF.operations.MatrixMergeSamples;
+import org.gwaspi.netCDF.operations.OP_QAMarkers;
+import org.gwaspi.netCDF.operations.OP_QASamples;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,7 +48,7 @@ public class Threaded_MergeMatricesAddSamples extends CommonRunnable {
 	protected void runInternal(SwingWorkerItem thisSwi) throws Exception {
 
 		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
-			MatrixMergeSamples_opt jointedMatrix = new MatrixMergeSamples_opt(studyId,
+			MatrixMergeSamples jointedMatrix = new MatrixMergeSamples(studyId,
 					parentMatrixId1,
 					parentMatrixId2,
 					newMatrixName,
@@ -60,7 +60,7 @@ public class Threaded_MergeMatricesAddSamples extends CommonRunnable {
 			if (!thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
 				return;
 			}
-			int sampleQAOpId = new OP_QASamples_opt(resultMatrixId).processMatrix();
+			int sampleQAOpId = new OP_QASamples(resultMatrixId).processMatrix();
 			GWASpiExplorerNodes.insertOperationUnderMatrixNode(resultMatrixId, sampleQAOpId);
 			org.gwaspi.reports.OutputQASamples.writeReportsForQASamplesData(sampleQAOpId, true);
 			GWASpiExplorerNodes.insertReportsUnderOperationNode(sampleQAOpId);
@@ -68,7 +68,7 @@ public class Threaded_MergeMatricesAddSamples extends CommonRunnable {
 			if (!thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
 				return;
 			}
-			int markersQAOpId = new OP_QAMarkers_opt(resultMatrixId).processMatrix();
+			int markersQAOpId = new OP_QAMarkers(resultMatrixId).processMatrix();
 			GWASpiExplorerNodes.insertOperationUnderMatrixNode(resultMatrixId, markersQAOpId);
 			org.gwaspi.reports.OutputQAMarkers.writeReportsForQAMarkersData(markersQAOpId);
 			GWASpiExplorerNodes.insertReportsUnderOperationNode(markersQAOpId);

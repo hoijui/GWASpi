@@ -16,7 +16,7 @@ import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleInfoList;
 import org.gwaspi.model.SampleKey;
-import org.gwaspi.netCDF.markers.MarkerSet_opt;
+import org.gwaspi.netCDF.markers.MarkerSet;
 import org.gwaspi.samples.SampleSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,13 +31,13 @@ import ucar.nc2.NetcdfFileWriteable;
  * IBE, Institute of Evolutionary Biology (UPF-CSIC)
  * CEXS-UPF-PRBB
  */
-public class OP_QAMarkers_opt implements MatrixOperation {
+public class OP_QAMarkers implements MatrixOperation {
 
-	private final Logger log = LoggerFactory.getLogger(OP_QAMarkers_opt.class);
+	private final Logger log = LoggerFactory.getLogger(OP_QAMarkers.class);
 
 	private int rdMatrixId;
 
-	public OP_QAMarkers_opt(int rdMatrixId) {
+	public OP_QAMarkers(int rdMatrixId) {
 		this.rdMatrixId = rdMatrixId;
 	}
 
@@ -53,7 +53,7 @@ public class OP_QAMarkers_opt implements MatrixOperation {
 
 		NetcdfFile rdNcFile = NetcdfFile.open(rdMatrixMetadata.getPathToMatrix());
 
-		MarkerSet_opt rdMarkerSet = new MarkerSet_opt(rdMatrixMetadata.getStudyId(), rdMatrixId);
+		MarkerSet rdMarkerSet = new MarkerSet(rdMatrixMetadata.getStudyId(), rdMatrixId);
 		rdMarkerSet.initFullMarkerIdSetMap();
 		//Map<String, Object> rdMarkerSetMap = rdMarkerSet.markerIdSetMap; // This to test heap usage of copying locally the Map from markerset
 

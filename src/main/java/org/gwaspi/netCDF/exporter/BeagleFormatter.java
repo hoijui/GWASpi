@@ -15,7 +15,7 @@ import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleKey;
-import org.gwaspi.netCDF.markers.MarkerSet_opt;
+import org.gwaspi.netCDF.markers.MarkerSet;
 import org.gwaspi.netCDF.operations.MarkerOperationSet;
 import org.gwaspi.samples.SampleSet;
 import org.slf4j.Logger;
@@ -36,7 +36,7 @@ class BeagleFormatter implements Formatter {
 	public boolean export(
 			String exportPath,
 			MatrixMetadata rdMatrixMetadata,
-			MarkerSet_opt rdMarkerSet,
+			MarkerSet rdMarkerSet,
 			SampleSet rdSampleSet,
 			Map<SampleKey, Object> rdSampleSetMap,
 			String phenotype)
