@@ -2,6 +2,8 @@ package org.gwaspi.netCDF.operations;
 
 import java.io.IOException;
 import java.text.DecimalFormat;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.gwaspi.constants.cNetCDF;
@@ -60,8 +62,8 @@ public abstract class AbstractTestMatrixOperation implements MatrixOperation {
 	public int processMatrix() throws IOException, InvalidRangeException {
 		int resultAssocId = Integer.MIN_VALUE;
 
-		Map<MarkerKey, Object> excludeMarkerSetMap = new LinkedHashMap<MarkerKey, Object>();
-		boolean dataLeft = excludeMarkersByHW(hwOP, hwThreshold, excludeMarkerSetMap);
+		Collection<MarkerKey> toBeExcluded = new HashSet<MarkerKey>();
+		boolean dataLeft = excludeMarkersByHW(hwOP, hwThreshold, toBeExcluded);
 
 		if (dataLeft) { // CHECK IF THERE IS ANY DATA LEFT TO PROCESS AFTER PICKING
 			OperationMetadata rdCensusOPMetadata = OperationsList.getOperationMetadata(markerCensusOP.getId());
@@ -75,7 +77,7 @@ public abstract class AbstractTestMatrixOperation implements MatrixOperation {
 
 			Map<MarkerKey, Object> wrMarkerSetMap = new LinkedHashMap<MarkerKey, Object>();
 			for (MarkerKey key : rdCtrlMarkerIdSetMap.keySet()) {
-				if (!excludeMarkerSetMap.containsKey(key)) {
+				if (!toBeExcluded.contains(key)) {
 					wrMarkerSetMap.put(key, "");
 				}
 			}
@@ -111,7 +113,6 @@ public abstract class AbstractTestMatrixOperation implements MatrixOperation {
 				} catch (IOException ex) {
 					log.error("Failed creating file: " + wrOPNcFile.getLocation(), ex);
 				}
-				//log.info("Done creating netCDF handle: {}", org.gwaspi.global.Utils.getMediumDateTimeAsString());
 
 				//<editor-fold defaultstate="expanded" desc="METADATA WRITER">
 				// MARKERSET MARKERID
@@ -136,7 +137,7 @@ public abstract class AbstractTestMatrixOperation implements MatrixOperation {
 				// WRITE SAMPLESET TO MATRIX FROM SAMPLES ARRAYLIST
 				ArrayChar.D2 samplesD2 = org.gwaspi.netCDF.operations.Utils.writeMapKeysToD2ArrayChar(rdSampleSetMap, cNetCDF.Strides.STRIDE_SAMPLE_NAME);
 
-				int[] sampleOrig = new int[]{0, 0};
+				int[] sampleOrig = new int[] {0, 0};
 				try {
 					wrOPNcFile.write(cNetCDF.Variables.VAR_IMPLICITSET, sampleOrig, samplesD2);
 				} catch (IOException ex) {
@@ -150,37 +151,17 @@ public abstract class AbstractTestMatrixOperation implements MatrixOperation {
 				// Set of chromosomes found in matrix along with number of markersinfo
 				org.gwaspi.netCDF.operations.Utils.saveCharMapKeyToWrMatrix(wrOPNcFile, rdChrInfoSetMap, cNetCDF.Variables.VAR_CHR_IN_MATRIX, 8);
 				// Number of marker per chromosome & max pos for each chromosome
-				int[] columns = new int[]{0, 1, 2, 3};
+				int[] columns = new int[] {0, 1, 2, 3};
 				org.gwaspi.netCDF.operations.Utils.saveIntMapD2ToWrMatrix(wrOPNcFile, rdChrInfoSetMap, columns, cNetCDF.Variables.VAR_CHR_INFO);
 				//</editor-fold>
 
 				//<editor-fold defaultstate="expanded" desc="GET CENSUS & PERFORM TESTS">
 				// CLEAN Maps FROM MARKERS THAT FAILED THE HARDY WEINBERG THRESHOLD
-				Map<MarkerKey, Object> wrCaseMarkerIdSetMap = new LinkedHashMap<MarkerKey, Object>();
 				rdCaseMarkerIdSetMap = rdCaseMarkerSet.fillOpSetMapWithVariable(rdOPNcFile, cNetCDF.Census.VAR_OP_MARKERS_CENSUSCASE);
-				if (rdCaseMarkerIdSetMap != null) {
-					for (Map.Entry<MarkerKey, Object> entry : rdCaseMarkerIdSetMap.entrySet()) {
-						MarkerKey key = entry.getKey();
+				Map<MarkerKey, Object> wrCaseMarkerIdSetMap = filter(rdCaseMarkerIdSetMap, toBeExcluded);
 
-						if (!excludeMarkerSetMap.containsKey(key)) {
-							wrCaseMarkerIdSetMap.put(key, entry.getValue());
-						}
-					}
-					rdCaseMarkerIdSetMap.clear();
-				}
-
-				Map<MarkerKey, Object> wrCtrlMarkerSet = new LinkedHashMap<MarkerKey, Object>();
 				rdCtrlMarkerIdSetMap = rdCtrlMarkerSet.fillOpSetMapWithVariable(rdOPNcFile, cNetCDF.Census.VAR_OP_MARKERS_CENSUSCTRL);
-				if (rdCtrlMarkerIdSetMap != null) {
-					for (Map.Entry<MarkerKey, Object> entry : rdCtrlMarkerIdSetMap.entrySet()) {
-						MarkerKey key = entry.getKey();
-
-						if (!excludeMarkerSetMap.containsKey(key)) {
-							wrCtrlMarkerSet.put(key, entry.getValue());
-						}
-					}
-					rdCtrlMarkerIdSetMap.clear();
-				}
+				Map<MarkerKey, Object> wrCtrlMarkerSet = filter(rdCtrlMarkerIdSetMap, toBeExcluded);
 
 				log.info(Text.All.processing);
 				performTest(wrOPNcFile, wrCaseMarkerIdSetMap, wrCtrlMarkerSet);
@@ -210,7 +191,23 @@ public abstract class AbstractTestMatrixOperation implements MatrixOperation {
 		return resultAssocId;
 	}
 
-	static boolean excludeMarkersByHW(Operation hwOP, double hwThreshold, Map<MarkerKey, Object> excludeMarkerSetMap) throws IOException {
+	private static <K, V> Map<K, V> filter(Map<K, V> toBeFiltered, Collection<K> toBeExcluded) {
+
+		Map<K, V> filtered = new LinkedHashMap<K, V>();
+		if (toBeFiltered != null) {
+			for (Map.Entry<K, V> entry : toBeFiltered.entrySet()) {
+				K key = entry.getKey();
+
+				if (!toBeExcluded.contains(key)) {
+					filtered.put(key, entry.getValue());
+				}
+			}
+		}
+
+		return filtered;
+	}
+
+	static boolean excludeMarkersByHW(Operation hwOP, double hwThreshold, Collection<MarkerKey> excludeMarkerSetMap) throws IOException {
 
 		excludeMarkerSetMap.clear();
 		int totalMarkerNb = 0;
@@ -227,7 +224,7 @@ public abstract class AbstractTestMatrixOperation implements MatrixOperation {
 			for (Map.Entry<MarkerKey, Object> entry : rdHWMarkerSetMap.entrySet()) {
 				double value = (Double) entry.getValue();
 				if (value < hwThreshold) {
-					excludeMarkerSetMap.put(entry.getKey(), value);
+					excludeMarkerSetMap.add(entry.getKey());
 				}
 			}
 			rdHWNcFile.close();
