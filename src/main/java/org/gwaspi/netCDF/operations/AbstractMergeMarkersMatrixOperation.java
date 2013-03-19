@@ -13,6 +13,7 @@ import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.ArrayChar;
+import ucar.ma2.ArrayInt;
 import ucar.ma2.Index;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.Attribute;
@@ -25,19 +26,12 @@ import ucar.nc2.NetcdfFileWriteable;
  * IBE, Institute of Evolutionary Biology (UPF-CSIC)
  * CEXS-UPF-PRBB
  */
-public class MatrixMergeSamples extends AbstractMergeMatrixOperation {
+public abstract class AbstractMergeMarkersMatrixOperation extends AbstractMergeMatrixOperation {
 
-	private final Logger log = LoggerFactory.getLogger(MatrixMergeSamples.class);
+	private final Logger log = LoggerFactory.getLogger(AbstractMergeMarkersMatrixOperation.class);
 
-	/**
-	 * This constructor to join 2 Matrices.
-	 * The MarkerSet from the 1st Matrix will be used in the result Matrix.
-	 * No new Markers from the 2nd Matrix will be added.
-	 * Samples from the 2nd Matrix will be appended to the end of the SampleSet from the 1st Matrix.
-	 * Duplicate Samples from the 2nd Matrix will overwrite Samples in the 1st Matrix
-	 */
-	public MatrixMergeSamples(
-			int studyId, // XXX this is unused, confusing!
+	public AbstractMergeMarkersMatrixOperation(
+			int studyId,
 			int rdMatrix1Id,
 			int rdMatrix2Id,
 			String wrMatrixFriendlyName,
@@ -45,6 +39,7 @@ public class MatrixMergeSamples extends AbstractMergeMatrixOperation {
 			throws IOException, InvalidRangeException
 	{
 		super(
+				studyId,
 				rdMatrix1Id,
 				rdMatrix2Id,
 				wrMatrixFriendlyName,
@@ -52,31 +47,27 @@ public class MatrixMergeSamples extends AbstractMergeMatrixOperation {
 	}
 
 	/**
-	 * Appends samples and keeps markers constant.
+	 * Mingles markers and keeps samples constant.
 	 */
-	@Override
-	public int processMatrix() throws IOException, InvalidRangeException {
+	protected int mergeMatrices(
+			Map<SampleKey, Object> rdSampleSetMap1,
+			Map<SampleKey, Object> rdSampleSetMap2,
+			Map<SampleKey, Object> wrSampleSetMap,
+			Map<SampleKey, Object> theSamples,
+			final int numSamples,
+			final String humanReadableMethodName,
+			final String methodDescription)
+			throws IOException, InvalidRangeException
+	{
 		int resultMatrixId = Integer.MIN_VALUE;
 
 		NetcdfFile rdNcFile1 = NetcdfFile.open(rdMatrix1Metadata.getPathToMatrix());
 		NetcdfFile rdNcFile2 = NetcdfFile.open(rdMatrix2Metadata.getPathToMatrix());
 
-		// Get combo SampleSet with position[] (wrPos, rdMatrixNb, rdPos)
-		Map<SampleKey, Object> rdSampleSetMap1 = rdSampleSet1.getSampleIdSetMap();
-		Map<SampleKey, Object> rdSampleSetMap2 = rdSampleSet2.getSampleIdSetMap();
-		Map<SampleKey, Object> wrComboSampleSetMap = getComboSampleSetWithIndicesArray(rdSampleSetMap1, rdSampleSetMap2);
-		Map<SampleKey, Object> theSamples = wrComboSampleSetMap;
-
-		// Use comboed wrComboSampleSetMap as SampleSet
-		final int numSamples = theSamples.size();
-		final String humanReadableMethodName = Text.Trafo.mergeSamplesOnly;
-		final String methodDescription = Text.Trafo.mergeMethodSampleJoin;
-
-		rdMarkerSet1.initFullMarkerIdSetMap();
-		rdMarkerSet2.initFullMarkerIdSetMap();
+		Map<MarkerKey, Object> wrComboSortedMarkerSetMap = mingleAndSortMarkerSet();
 
 		// RETRIEVE CHROMOSOMES INFO
-		Map<MarkerKey, Object> chrInfo = rdMarkerSet1.getChrInfoSetMap();
+		Map<MarkerKey, Object> chrInfo = org.gwaspi.netCDF.matrices.Utils.aggregateChromosomeInfo(wrComboSortedMarkerSetMap, 0, 1);
 
 		//<editor-fold defaultstate="expanded" desc="CREATE MATRIX">
 		try {
@@ -97,7 +88,7 @@ public class MatrixMergeSamples extends AbstractMergeMatrixOperation {
 			StringBuilder descSB = new StringBuilder(Text.Matrix.descriptionHeader1);
 			descSB.append(org.gwaspi.global.Utils.getShortDateTimeAsString());
 			descSB.append("\n");
-			descSB.append("Markers: ").append(rdSampleSetMap1.size()).append(", Samples: ").append(numSamples);
+			descSB.append("Markers: ").append(wrComboSortedMarkerSetMap.size()).append(", Samples: ").append(numSamples);
 			descSB.append("\n");
 			descSB.append(Text.Trafo.mergedFrom);
 			descSB.append("\nMX-");
@@ -123,7 +114,7 @@ public class MatrixMergeSamples extends AbstractMergeMatrixOperation {
 					rdMatrix1Metadata.getStrand(),
 					hasDictionary, // has dictionary?
 					numSamples,
-					rdMarkerSet1.getMarkerSetSize(), // Keep rdwrMarkerIdSetMap1 from Matrix1. MarkerSet is constant
+					wrComboSortedMarkerSetMap.size(), // Use comboed wrSortedMingledMarkerMap as MarkerSet
 					chrInfo.size(),
 					rdMatrix1Id, // Parent matrixId 1
 					rdMatrix2Id); // Parent matrixId 2
@@ -150,9 +141,8 @@ public class MatrixMergeSamples extends AbstractMergeMatrixOperation {
 			}
 			log.info("Done writing SampleSet to matrix");
 
-			// Keep rdwrMarkerIdSetMap1 from Matrix1 constant
 			// MARKERSET MARKERID
-			ArrayChar.D2 markersD2 = Utils.writeMapKeysToD2ArrayChar(rdMarkerSet1.getMarkerIdSetMap(), cNetCDF.Strides.STRIDE_MARKER_NAME);
+			ArrayChar.D2 markersD2 = Utils.writeMapKeysToD2ArrayChar(wrComboSortedMarkerSetMap, cNetCDF.Strides.STRIDE_MARKER_NAME);
 			int[] markersOrig = new int[] {0, 0};
 			try {
 				wrNcFile.write(cNetCDF.Variables.VAR_MARKERSET, markersOrig, markersD2);
@@ -162,13 +152,17 @@ public class MatrixMergeSamples extends AbstractMergeMatrixOperation {
 				log.error(null, ex);
 			}
 
-			// MARKERSET RSID
-			rdMarkerSet1.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_RSID);
-			Utils.saveCharMapValueToWrMatrix(wrNcFile, rdMarkerSet1.getMarkerIdSetMap(), cNetCDF.Variables.VAR_MARKERS_RSID, cNetCDF.Strides.STRIDE_MARKER_NAME);
+			// WRITE CHROMOSOME METADATA FROM ANNOTATION FILE
+			markersD2 = org.gwaspi.netCDF.operations.Utils.writeMapValueItemToD2ArrayChar(wrComboSortedMarkerSetMap, 0, cNetCDF.Strides.STRIDE_CHR);
 
-			// MARKERSET CHROMOSOME
-			rdMarkerSet1.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
-			Utils.saveCharMapValueToWrMatrix(wrNcFile, rdMarkerSet1.getMarkerIdSetMap(), cNetCDF.Variables.VAR_MARKERS_CHR, cNetCDF.Strides.STRIDE_CHR);
+			try {
+				wrNcFile.write(cNetCDF.Variables.VAR_MARKERS_CHR, markersOrig, markersD2);
+			} catch (IOException ex) {
+				log.error("Failed writing file", ex);
+			} catch (InvalidRangeException ex) {
+				log.error(null, ex);
+			}
+			log.info("Done writing chromosomes to matrix");
 
 			// Set of chromosomes found in matrix along with number of markersinfo
 			org.gwaspi.netCDF.operations.Utils.saveCharMapKeyToWrMatrix(wrNcFile, chrInfo, cNetCDF.Variables.VAR_CHR_IN_MATRIX, 8);
@@ -176,25 +170,58 @@ public class MatrixMergeSamples extends AbstractMergeMatrixOperation {
 			int[] columns = new int[] {0, 1, 2, 3};
 			org.gwaspi.netCDF.operations.Utils.saveIntMapD2ToWrMatrix(wrNcFile, chrInfo, columns, cNetCDF.Variables.VAR_CHR_INFO);
 
-			// MARKERSET POSITION
-			rdMarkerSet1.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_POS);
-			//Utils.saveCharMapValueToWrMatrix(wrNcFile, rdwrMarkerIdSetMap1, cNetCDF.Variables.VAR_MARKERS_POS, cNetCDF.Strides.STRIDE_POS);
-			Utils.saveIntMapD1ToWrMatrix(wrNcFile, rdMarkerSet1.getMarkerIdSetMap(), cNetCDF.Variables.VAR_MARKERS_POS);
-
-			// MARKERSET DICTIONARY ALLELES
-			Attribute hasDictionary1 = rdNcFile1.findGlobalAttribute(cNetCDF.Attributes.GLOB_HAS_DICTIONARY);
-			if ((Integer) hasDictionary1.getNumericValue() == 1) {
-				rdMarkerSet1.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_BASES_DICT);
-				Utils.saveCharMapValueToWrMatrix(wrNcFile, rdMarkerSet1.getMarkerIdSetMap(), cNetCDF.Variables.VAR_MARKERS_BASES_DICT, cNetCDF.Strides.STRIDE_GT);
+			// WRITE POSITION METADATA FROM ANNOTATION FILE
+			ArrayInt.D1 markersPosD1 = org.gwaspi.netCDF.operations.Utils.writeMapValueItemToD1ArrayInt(wrComboSortedMarkerSetMap, 1);
+			int[] posOrig = new int[1];
+			try {
+				wrNcFile.write(cNetCDF.Variables.VAR_MARKERS_POS, posOrig, markersPosD1);
+			} catch (IOException ex) {
+				log.error("Failed writing file", ex);
+			} catch (InvalidRangeException ex) {
+				log.error(null, ex);
 			}
+			log.info("Done writing positions to matrix");
+
+			//<editor-fold defaultstate="expanded" desc="GATHER METADATA FROM BOTH MATRICES">
+			rdMarkerSet1.initFullMarkerIdSetMap();
+			rdMarkerSet2.initFullMarkerIdSetMap();
+
+			//<editor-fold defaultstate="expanded" desc="MARKERSET RSID">
+			rdMarkerSet1.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_RSID);
+			wrComboSortedMarkerSetMap.putAll(rdMarkerSet1.getMarkerIdSetMap());
+			rdMarkerSet2.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_RSID);
+			wrComboSortedMarkerSetMap.putAll(rdMarkerSet2.getMarkerIdSetMap());
+
+			Utils.saveCharMapValueToWrMatrix(wrNcFile, wrComboSortedMarkerSetMap, cNetCDF.Variables.VAR_MARKERS_RSID, cNetCDF.Strides.STRIDE_MARKER_NAME);
+			//</editor-fold>
+
+			//<editor-fold defaultstate="expanded" desc="MARKERSET DICTIONARY ALLELES">
+			Attribute hasDictionary1 = rdNcFile1.findGlobalAttribute(cNetCDF.Attributes.GLOB_HAS_DICTIONARY);
+			Attribute hasDictionary2 = rdNcFile2.findGlobalAttribute(cNetCDF.Attributes.GLOB_HAS_DICTIONARY);
+			if ((Integer) hasDictionary1.getNumericValue() == 1
+					&& (Integer) hasDictionary2.getNumericValue() == 1)
+			{
+				rdMarkerSet1.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_BASES_DICT);
+				wrComboSortedMarkerSetMap.putAll(rdMarkerSet1.getMarkerIdSetMap());
+				rdMarkerSet2.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_BASES_DICT);
+				wrComboSortedMarkerSetMap.putAll(rdMarkerSet2.getMarkerIdSetMap());
+
+				Utils.saveCharMapValueToWrMatrix(wrNcFile, wrComboSortedMarkerSetMap, cNetCDF.Variables.VAR_MARKERS_BASES_DICT, cNetCDF.Strides.STRIDE_GT);
+			}
+			//</editor-fold>
 
 			//<editor-fold defaultstate="expanded" desc="GENOTYPE STRAND">
 			rdMarkerSet1.fillInitMapWithVariable(cNetCDF.Variables.VAR_GT_STRAND);
-			Utils.saveCharMapValueToWrMatrix(wrNcFile, rdMarkerSet1.getMarkerIdSetMap(), cNetCDF.Variables.VAR_GT_STRAND, 3);
+			wrComboSortedMarkerSetMap.putAll(rdMarkerSet1.getMarkerIdSetMap());
+			rdMarkerSet2.fillInitMapWithVariable(cNetCDF.Variables.VAR_GT_STRAND);
+			wrComboSortedMarkerSetMap.putAll(rdMarkerSet2.getMarkerIdSetMap());
+
+			Utils.saveCharMapValueToWrMatrix(wrNcFile, wrComboSortedMarkerSetMap, cNetCDF.Variables.VAR_GT_STRAND, 3);
+			//</editor-fold>
 			//</editor-fold>
 			//</editor-fold>
 
-			writeGenotypes(wrNcFile, wrComboSampleSetMap);
+			writeGenotypes(wrNcFile, wrSampleSetMap, wrComboSortedMarkerSetMap, rdSampleSetMap1, rdSampleSetMap2);
 
 			// CLOSE THE FILE AND BY THIS, MAKE IT READ-ONLY
 			try {
@@ -245,37 +272,11 @@ public class MatrixMergeSamples extends AbstractMergeMatrixOperation {
 		return resultMatrixId;
 	}
 
-	protected void writeGenotypes(
+	protected abstract void writeGenotypes(
 			NetcdfFileWriteable wrNcFile,
-			Map<?, Object> wrComboSampleSetMap)
-			throws InvalidRangeException, IOException
-	{
-		rdMarkerSet2.initFullMarkerIdSetMap();
-
-		// Iterate through wrSampleSetMap, use item position to read correct sample GTs into rdMarkerIdSetMap.
-		for (Object value : wrComboSampleSetMap.values()) { // Next SampleId
-			int[] sampleIndices = (int[]) value; //Next position[rdMatrixNb, rdPos, wrPos] to read/write
-
-			// Iterate through wrMarkerIdSetMap, get the correct GT from rdMarkerIdSetMap
-			if (sampleIndices[0] == 1) { // Read from Matrix1
-				rdMarkerSet1.fillWith(cNetCDF.Defaults.DEFAULT_GT);
-				rdMarkerSet1.fillGTsForCurrentSampleIntoInitMap(sampleIndices[1]);
-			}
-			if (sampleIndices[0] == 2) { // Read from Matrix2
-				rdMarkerSet1.fillWith(cNetCDF.Defaults.DEFAULT_GT);
-				rdMarkerSet2.fillGTsForCurrentSampleIntoInitMap(sampleIndices[1]);
-				for (Map.Entry<MarkerKey, Object> entry : rdMarkerSet1.getMarkerIdSetMap().entrySet()) {
-					MarkerKey key = entry.getKey();
-					if (rdMarkerSet2.getMarkerIdSetMap().containsKey(key)) {
-						Object markerValue = rdMarkerSet2.getMarkerIdSetMap().get(key);
-						entry.setValue(markerValue);
-					}
-				}
-				//rdwrMarkerIdSetMap1 = rdMarkerSet2.replaceWithValuesFrom(rdwrMarkerIdSetMap1, rdMarkerIdSetMap2);
-			}
-
-			// Write wrMarkerIdSetMap to A3 ArrayChar and save to wrMatrix
-			Utils.saveSingleSampleGTsToMatrix(wrNcFile, rdMarkerSet1.getMarkerIdSetMap(), sampleIndices[2]);
-		}
-	}
+			Map<SampleKey, Object> wrSampleSetMap,
+			Map<MarkerKey, Object> wrComboSortedMarkerSetMap,
+			Map<SampleKey, Object> rdSampleSetMap1,
+			Map<SampleKey, Object> rdSampleSetMap2)
+			throws InvalidRangeException, IOException;
 }
