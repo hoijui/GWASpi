@@ -1003,7 +1003,7 @@ public class Utils {
 			ArrayByte wrByteArray = new ArrayByte(new int[]{1, shape[1]});
 			ArrayByte.D2.arraycopy(inputArray, i * shape[1], wrByteArray, 0, shape[1]);
 			byte[] values = (byte[]) wrByteArray.copyTo1DJavaArray();
-			result.put(String.valueOf(values).trim(), "");
+			result.put(new String(values).trim(), "");
 		}
 
 		return result;
