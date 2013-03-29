@@ -72,7 +72,6 @@ public class cDBSamples {
 		f_POOL_ID
 	};
 	public static final String[] F_UPDATE_SAMPLES_ALLINFO = new String[] {
-		f_FAMILY_ID,
 		f_FATHER_ID,
 		f_MOTHER_ID,
 		f_SEX, // 0 Undefined, 1 Male, 2 Female

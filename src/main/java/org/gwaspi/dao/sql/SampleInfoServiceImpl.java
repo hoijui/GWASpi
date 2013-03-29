@@ -256,11 +256,11 @@ public class SampleInfoServiceImpl implements SampleInfoService {
 			}
 
 			if (samplesAllreadyInDBAL.contains(sampleInfo.getSampleId())) {
-				db.updateTable(cDBGWASpi.SCH_SAMPLES,
+				db.updateTable(
+						cDBGWASpi.SCH_SAMPLES,
 						cDBSamples.T_SAMPLES_INFO,
 						cDBSamples.F_UPDATE_SAMPLES_ALLINFO,
-						new Object[]{
-							sampleInfo.getFamilyId(), // FamilyID (max 32 chars, null=unknown)
+						new Object[] {
 							sampleInfo.getFatherId(), // FatherID (max 32 chars, null=unknown)
 							sampleInfo.getMotherId(), // MotherID (max 32 chars, null=unknown)
 							sampleInfo.getSexStr(), // Sex (1=male,2=female,0=unknown)
@@ -271,8 +271,8 @@ public class SampleInfoServiceImpl implements SampleInfoService {
 							sampleInfo.getAge(), // age
 							studyId.toString(),
 							100}, // status_id_fk = 100 (OK)
-						new String[]{cDBSamples.f_SAMPLE_ID, cDBSamples.f_POOL_ID},
-						new String[]{sampleInfo.getSampleId(), studyId.toString()});
+						new String[] {cDBSamples.f_SAMPLE_ID, cDBSamples.f_FAMILY_ID, cDBSamples.f_POOL_ID},
+						new String[] {sampleInfo.getSampleId(), sampleInfo.getFamilyId(), studyId.toString()});
 				result++;
 			}
 
