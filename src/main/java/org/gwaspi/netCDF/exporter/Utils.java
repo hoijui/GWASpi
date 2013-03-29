@@ -17,7 +17,7 @@ public class Utils {
 	private Utils() {
 	}
 
-	public static SampleInfo getCurrentSampleFormattedInfo(SampleKey key, Object poolId) throws IOException {
+	public static SampleInfo getCurrentSampleFormattedInfo(SampleKey key, Integer poolId) throws IOException {
 
 		SampleInfo sampleInfo = null;
 

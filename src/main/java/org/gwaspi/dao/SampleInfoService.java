@@ -10,15 +10,15 @@ public interface SampleInfoService {
 
 	String createSamplesInfoTable();
 
-	List<String> selectSampleIDList(Object poolId);
+	List<String> selectSampleIDList(Integer poolId);
 
 	List<SampleInfo> getAllSampleInfoFromDB() throws IOException;
 
-	List<SampleInfo> getAllSampleInfoFromDBByPoolID(Object poolId) throws IOException;
+	List<SampleInfo> getAllSampleInfoFromDBByPoolID(Integer poolId) throws IOException;
 
-	List<SampleInfo> getCurrentSampleInfoFromDB(SampleKey key, Object poolId) throws IOException;
+	List<SampleInfo> getCurrentSampleInfoFromDB(SampleKey key, Integer poolId) throws IOException;
 
-	void deleteSamplesByPoolId(Object poolId) throws IOException;
+	void deleteSamplesByPoolId(Integer poolId) throws IOException;
 
 	List<String> insertSampleInfos(Integer studyId, Collection<SampleInfo> sampleInfos) throws IOException;
 }

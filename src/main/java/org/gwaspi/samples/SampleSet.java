@@ -339,7 +339,7 @@ public class SampleSet {
 	//</editor-fold>
 
 	//<editor-fold defaultstate="expanded" desc="SAMPLESET PICKERS">
-	public Map<SampleKey, Object> pickValidSampleSetItemsByDBField(Object poolId, Map<SampleKey, Object> map, String dbField, Set<Object> criteria, boolean include) throws IOException {
+	public Map<SampleKey, Object> pickValidSampleSetItemsByDBField(Integer poolId, Map<SampleKey, Object> map, String dbField, Set<Object> criteria, boolean include) throws IOException {
 		Map<SampleKey, Object> returnMap = new LinkedHashMap<SampleKey, Object>();
 		List<SampleInfo> sampleInfos = SampleInfoList.getAllSampleInfoFromDBByPoolID(poolId);
 

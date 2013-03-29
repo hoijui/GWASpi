@@ -45,7 +45,7 @@ public class SampleInfoServiceImpl implements SampleInfoService {
 	}
 
 	@Override
-	public List<String> selectSampleIDList(Object poolId) {
+	public List<String> selectSampleIDList(Integer poolId) {
 		try {
 			DbManager dBManager = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
 			String sql = "SELECT " + cDBSamples.f_SAMPLE_ID + " FROM " + cDBGWASpi.SCH_SAMPLES + "." + cDBSamples.T_SAMPLES_INFO + " WHERE " + cDBSamples.f_POOL_ID + "='" + poolId + "' ORDER BY order_id  WITH RR";
@@ -76,7 +76,7 @@ public class SampleInfoServiceImpl implements SampleInfoService {
 	}
 
 	@Override
-	public List<SampleInfo> getAllSampleInfoFromDBByPoolID(Object poolId) throws IOException {
+	public List<SampleInfo> getAllSampleInfoFromDBByPoolID(Integer poolId) throws IOException {
 		DbManager dBManager = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
 
 		String sql = "SELECT * FROM " + cDBGWASpi.SCH_SAMPLES + "." + cDBSamples.T_SAMPLES_INFO + " WHERE " + cDBSamples.f_POOL_ID + "='" + poolId + "'" + " ORDER BY order_id  WITH RR";
@@ -86,7 +86,7 @@ public class SampleInfoServiceImpl implements SampleInfoService {
 	}
 
 	@Override
-	public List<SampleInfo> getCurrentSampleInfoFromDB(SampleKey key, Object poolId) throws IOException {
+	public List<SampleInfo> getCurrentSampleInfoFromDB(SampleKey key, Integer poolId) throws IOException {
 
 		DbManager dBManager = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
 
@@ -97,7 +97,7 @@ public class SampleInfoServiceImpl implements SampleInfoService {
 	}
 
 	@Override
-	public void deleteSamplesByPoolId(Object poolId) throws IOException {
+	public void deleteSamplesByPoolId(Integer poolId) throws IOException {
 		DbManager dBManager = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
 
 		String sql = "DELETE FROM " + cDBGWASpi.SCH_SAMPLES + "." + cDBSamples.T_SAMPLES_INFO + " WHERE " + cDBSamples.f_POOL_ID + "='" + poolId + "'";
@@ -211,7 +211,7 @@ public class SampleInfoServiceImpl implements SampleInfoService {
 				db.insertValuesInTable(cDBGWASpi.SCH_SAMPLES,
 						cDBSamples.T_SAMPLES_INFO,
 						cDBSamples.F_INSERT_SAMPLES_ALLINFO,
-						new Object[]{
+						new Object[] {
 							sampleId, // SampleID (max 32 chars, null=unknown)
 							sampleInfo.getFamilyId(), // FamilyID (max 32 chars, null=unknown)
 							sampleInfo.getFatherId(), // FatherID (max 32 chars, null=unknown)

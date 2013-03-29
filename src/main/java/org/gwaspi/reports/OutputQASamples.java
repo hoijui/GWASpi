@@ -80,7 +80,7 @@ public class OutputQASamples {
 		return true;
 	}
 
-	public static boolean createSortedSampleMissingnessReport(int opId, String reportName, Object poolId) throws IOException {
+	public static boolean createSortedSampleMissingnessReport(int opId, String reportName, Integer poolId) throws IOException {
 		boolean result;
 		String sep = cExport.separator_REPORTS;
 

@@ -24,7 +24,7 @@ public class SampleInfoList {
 		return sampleInfoService.createSamplesInfoTable();
 	}
 
-	public static List<String> selectSampleIDList(Object poolId) {
+	public static List<String> selectSampleIDList(Integer poolId) {
 		return sampleInfoService.selectSampleIDList(poolId);
 	}
 
@@ -32,15 +32,15 @@ public class SampleInfoList {
 		return sampleInfoService.getAllSampleInfoFromDB();
 	}
 
-	public static List<SampleInfo> getAllSampleInfoFromDBByPoolID(Object poolId) throws IOException {
+	public static List<SampleInfo> getAllSampleInfoFromDBByPoolID(Integer poolId) throws IOException {
 		return sampleInfoService.getAllSampleInfoFromDBByPoolID(poolId);
 	}
 
-	public static List<SampleInfo> getCurrentSampleInfoFromDB(SampleKey key, Object poolId) throws IOException {
+	public static List<SampleInfo> getCurrentSampleInfoFromDB(SampleKey key, Integer poolId) throws IOException {
 		return sampleInfoService.getCurrentSampleInfoFromDB(key, poolId);
 	}
 
-	public static void deleteSamplesByPoolId(Object poolId) throws IOException {
+	public static void deleteSamplesByPoolId(Integer poolId) throws IOException {
 		sampleInfoService.deleteSamplesByPoolId(poolId);
 	}
 
