@@ -1,5 +1,8 @@
 package org.gwaspi.database;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.PrintStream;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -25,15 +28,18 @@ public class DbManagerImpl implements DbManager {
 		connectionProvider = cp;
 	}
 
+	@Override
 	public ConnectionProvider getConnectionProvider() {
 		return connectionProvider;
 	}
 
+	@Override
 	public void setConnectionProvider(ConnectionProvider connectionProvider) {
 		this.connectionProvider = connectionProvider;
 		qex = new QueryExecutor(connectionProvider);
 	}
 
+	@Override
 	public int executeStatement(String statement) {
 		try {
 			int affectedRows = qex.executeUpdate(statement);
@@ -43,6 +49,7 @@ public class DbManagerImpl implements DbManager {
 		}
 	}
 
+	@Override
 	public List<Map<String, Object>> selectMutipleClauses(String schema, String table,
 			String[] fields, String[] clauseFields, Object[] clauseValues)
 	{
@@ -73,6 +80,7 @@ public class DbManagerImpl implements DbManager {
 		}
 	}
 
+	@Override
 	public List<Map<String, Object>> executeSelectStatement(String statement) {
 		try {
 			qex.executeQuery(statement, new RowMappingResultSetHandler());
@@ -91,6 +99,7 @@ public class DbManagerImpl implements DbManager {
 		}
 	}
 
+	@Override
 	public boolean insertValuesInTable(String schema, String table, String[] fields, Object[] values) {
 		StringBuilder sql = new StringBuilder();
 		sql.append("INSERT INTO ");
@@ -122,8 +131,15 @@ public class DbManagerImpl implements DbManager {
 		}
 	}
 
-	public boolean updateTable(String schema, String table, String[] updateFields, Object[] updateValues,
-			String[] clauseFields, Object[] clauseValues) {
+	@Override
+	public boolean updateTable(
+			String schema,
+			String table,
+			String[] updateFields,
+			Object[] updateValues,
+			String[] clauseFields,
+			Object[] clauseValues)
+	{
 		StringBuilder sql = new StringBuilder();
 		sql.append("UPDATE ");
 				sql.append(schema).append(".").append(table);
@@ -152,6 +168,7 @@ public class DbManagerImpl implements DbManager {
 		}
 	}
 
+	@Override
 	public boolean dropTable(String schema, String table) {
 		try {
 			qex.executeUpdate("DROP TABLE " + schema + "." + table);
@@ -162,6 +179,7 @@ public class DbManagerImpl implements DbManager {
 		}
 	}
 
+	@Override
 	public boolean createTable(String schema, String table, String[] fieldStatements) {
 		StringBuilder sql = new StringBuilder();
 		sql.append("CREATE TABLE ");
@@ -185,6 +203,7 @@ public class DbManagerImpl implements DbManager {
 		}
 	}
 
+	@Override
 	public boolean createSchema(String schema) {
 		StringBuilder sql = new StringBuilder();
 		sql.append("CREATE SCHEMA ");
@@ -199,6 +218,7 @@ public class DbManagerImpl implements DbManager {
 		}
 	}
 
+	@Override
 	public void shutdownConnection() {
 		try {
 			DriverManager.getConnection("jdbc:derby:;shutdown=true");

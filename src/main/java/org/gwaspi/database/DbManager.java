@@ -19,8 +19,13 @@ public interface DbManager {
 
 	boolean insertValuesInTable(String schema, String table, String[] fields, Object[] values);
 
-	boolean updateTable(String schema, String table, String[] fields, Object[] values,
-			String[] clauseFields, Object[] clauseValues);
+	boolean updateTable(
+			String schema,
+			String table,
+			String[] fields,
+			Object[] values,
+			String[] clauseFields,
+			Object[] clauseValues);
 
 	boolean dropTable(String schema, String table);
 
