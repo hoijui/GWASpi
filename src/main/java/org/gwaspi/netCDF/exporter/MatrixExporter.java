@@ -1,5 +1,6 @@
 package org.gwaspi.netCDF.exporter;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.EnumMap;
 import java.util.Map;
@@ -59,8 +60,8 @@ public class MatrixExporter {
 		log.info(Text.All.processing);
 
 		String exportPath = Config.getConfigValue(Config.PROPERTY_EXPORT_DIR, "");
-		org.gwaspi.global.Utils.createFolder(exportPath, "STUDY_" + rdMatrixMetadata.getStudyId());
 		exportPath = exportPath + "/STUDY_" + rdMatrixMetadata.getStudyId();
+		org.gwaspi.global.Utils.createFolder(new File(exportPath));
 		Formatter formatter = formatters.get(exportFormat);
 
 		if (exportFormat == ExportFormat.BEAGLE) {

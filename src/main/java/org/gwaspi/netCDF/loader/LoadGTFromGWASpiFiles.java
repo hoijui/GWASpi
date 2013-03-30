@@ -372,9 +372,9 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 	private void copyMatrixToGenotypesFolder(int studyId, String importMatrixPath, String newMatrixCDFName) {
 		try {
 			String genotypesFolder = Config.getConfigValue(Config.PROPERTY_GENOTYPES_DIR, "");
-			File pathToStudy = new File(genotypesFolder + "/STUDY_" + studyId);
+			File pathToStudy = new File(genotypesFolder, "STUDY_" + studyId);
 			if (!pathToStudy.exists()) {
-				org.gwaspi.global.Utils.createFolder(genotypesFolder, "/STUDY_" + studyId);
+				org.gwaspi.global.Utils.createFolder(pathToStudy);
 			}
 
 			File origFile = new File(importMatrixPath);

@@ -59,13 +59,15 @@ public class Utils {
 		return currentAppPath;
 	}
 
-	public static File createFolder(String path, String folderName) throws IOException {
-		String spoonFeeding = path + "/" + folderName;
-		File f = new File(spoonFeeding);
-		if (!f.exists() && !f.mkdir()) {
-			throw new IOException("Failed to create directory " + f.getPath());
+	public static File createFolder(File folder) throws IOException {
+		if (!folder.exists() && !folder.mkdir()) {
+			throw new IOException("Failed to create directory " + folder.getPath());
 		}
-		return f;
+		return folder;
+	}
+
+	public static File createFolder(String path, String folderName) throws IOException {
+		return createFolder(new File(path, folderName));
 	}
 
 	/**
