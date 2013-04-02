@@ -76,7 +76,7 @@ public class OutputQAMarkers {
 		return true;
 	}
 
-	public static boolean createSortedMarkerMissingnessReport(int opId, String reportName) throws IOException {
+	private static boolean createSortedMarkerMissingnessReport(int opId, String reportName) throws IOException {
 		boolean result;
 
 		try {
@@ -192,7 +192,7 @@ public class OutputQAMarkers {
 		return result;
 	}
 
-	public static boolean createMarkerMismatchReport(int opId, String reportName) throws IOException {
+	private static boolean createMarkerMismatchReport(int opId, String reportName) throws IOException {
 		boolean result;
 
 		try {
