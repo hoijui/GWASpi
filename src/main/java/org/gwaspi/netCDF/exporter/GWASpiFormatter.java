@@ -32,7 +32,7 @@ public class GWASpiFormatter implements Formatter {
 			MatrixMetadata rdMatrixMetadata,
 			MarkerSet rdMarkerSet,
 			SampleSet rdSampleSet,
-			Map<SampleKey, Object> rdSampleSetMap,
+			Map<SampleKey, byte[]> rdSampleSetMap,
 			String phenotype)
 			throws IOException
 	{

@@ -35,7 +35,7 @@ public class MachFormatter implements Formatter {
 			MatrixMetadata rdMatrixMetadata,
 			MarkerSet rdMarkerSet,
 			SampleSet rdSampleSet,
-			Map<SampleKey, Object> rdSampleSetMap,
+			Map<SampleKey, byte[]> rdSampleSetMap,
 			String phenotype)
 			throws IOException
 	{
@@ -52,13 +52,13 @@ public class MachFormatter implements Formatter {
 
 			// FIND START AND END MARKERS BY CHROMOSOME
 			rdMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
-			Map<MarkerKey, Object> chrMarkerSetMap = new LinkedHashMap<MarkerKey, Object>();
-			chrMarkerSetMap.putAll(rdMarkerSet.getMarkerIdSetMap());
+			Map<MarkerKey, char[]> chrMarkerSetMap = new LinkedHashMap<MarkerKey, char[]>();
+			chrMarkerSetMap.putAll(rdMarkerSet.getMarkerIdSetMapCharArray());
 			String tmpChr = "";
 			int start = 0;
 			int end = 0;
-			for (Object value : chrMarkerSetMap.values()) {
-				String chr = value.toString();
+			for (char[] value : chrMarkerSetMap.values()) {
+				String chr = new String(value);
 				if (!chr.equals(tmpChr)) {
 					if (start != end) {
 						exportChromosomeToMped(exportDir, rdMatrixMetadata, rdMarkerSet, rdSampleSetMap, tmpChr, start, end - 1);
@@ -88,7 +88,7 @@ public class MachFormatter implements Formatter {
 		return result;
 	}
 
-	private void exportChromosomeToMped(File exportDir, MatrixMetadata rdMatrixMetadata, MarkerSet rdMarkerSet, Map<SampleKey, Object> rdSampleSetMap, String chr, int startPos, int endPos) throws IOException {
+	private void exportChromosomeToMped(File exportDir, MatrixMetadata rdMatrixMetadata, MarkerSet rdMarkerSet, Map<SampleKey, ?> rdSampleSetMap, String chr, int startPos, int endPos) throws IOException {
 
 		FileWriter pedFW = new FileWriter(exportDir.getPath() + "/" + rdMatrixMetadata.getMatrixFriendlyName() + "_chr" + chr + ".mped");
 		BufferedWriter pedBW = new BufferedWriter(pedFW);
@@ -113,12 +113,11 @@ public class MachFormatter implements Formatter {
 			rdMarkerSet.fillGTsForCurrentSampleIntoInitMap(sampleNb);
 			StringBuilder genotypes = new StringBuilder();
 			int markerNb = 0;
-			for (Object value : rdMarkerSet.getMarkerIdSetMap().values()) {
-				byte[] tempGT = (byte[]) value;
+			for (byte[] tempGT : rdMarkerSet.getMarkerIdSetMapByteArray().values()) {
 				genotypes.append(SEP);
-				genotypes.append(new String(new byte[]{tempGT[0]}));
+				genotypes.append(new String(tempGT, 0, 1));
 				genotypes.append(SEP);
-				genotypes.append(new String(new byte[]{tempGT[1]}));
+				genotypes.append(new String(tempGT, 1, 1));
 				markerNb++;
 			}
 
@@ -168,10 +167,10 @@ public class MachFormatter implements Formatter {
 		// INIT MARKERSET
 		rdMarkerSet.initMarkerIdSetMap(startPos, endPos);
 		int markerNb = 0;
-		for (Map.Entry<MarkerKey, Object> entry : rdMarkerSet.getMarkerIdSetMap().entrySet()) {
-			//CHECK IF rsID available
+		for (Map.Entry<MarkerKey, char[]> entry : rdMarkerSet.getMarkerIdSetMapCharArray().entrySet()) {
+			// CHECK IF rsID is available
 			String markerId = entry.getKey().getMarkerId();
-			String value = entry.getValue().toString();
+			String value = new String(entry.getValue());
 			if (!value.isEmpty()) {
 				markerId = value;
 			}

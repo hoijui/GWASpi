@@ -14,7 +14,9 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.LinkedHashMap;
 import java.util.Locale;
+import java.util.Map;
 import org.gwaspi.constants.cGlobal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -518,6 +520,25 @@ public class Utils {
 //		}
 //
 //		//gui.LogTab_old.refreshLogInfo();
+	}
+	// </editor-fold>
+
+
+	//<editor-fold defaultstate="expanded" desc="Collections methods">
+	/**
+	 * Creates a new map, with the order of entries equal to the order
+	 * of entries in the Map order (regarding the keys),
+	 * and the values copied from the Map values.
+	 */
+	public static <K, V> Map<K, V> createOrderedMap(final Map<K, ?> order, final Map<K, V> values) {
+
+		Map<K, V> result = new LinkedHashMap<K, V>(order.size());
+
+		for (Map.Entry<K, ?> entry : order.entrySet()) {
+			result.put(entry.getKey(), values.get(entry.getKey()));
+		}
+
+		return result;
 	}
 	// </editor-fold>
 }

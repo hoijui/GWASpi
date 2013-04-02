@@ -37,7 +37,6 @@ public class LoadGTFromBeagleFiles extends AbstractLoadGTFromFiles {
 				ImportFormat.BEAGLE,
 				StrandType.UNKNOWN,
 				false,
-				-1, // disabled, else: 4
 				null); // disabled, else: cNetCDF.Variables.VAR_MARKERS_BASES_KNOWN
 	}
 
@@ -64,7 +63,7 @@ public class LoadGTFromBeagleFiles extends AbstractLoadGTFromFiles {
 	public void loadIndividualFiles(
 			File file,
 			SampleKey sampleKey,
-			Map<MarkerKey, Object> wrMarkerSetMap)
+			Map<MarkerKey, byte[]> wrMarkerSetMap)
 			throws IOException, InvalidRangeException
 	{
 		FileReader inputFileReader = new FileReader(file);
@@ -76,8 +75,8 @@ public class LoadGTFromBeagleFiles extends AbstractLoadGTFromFiles {
 			sb.append('0');
 		}
 
-		Map<MarkerKey, Object> tempMarkerIdMap = new LinkedHashMap<MarkerKey, Object>();
-		Map<SampleKey, Object> sampleOrderMap = new LinkedHashMap<SampleKey, Object>();
+		Map<MarkerKey, byte[]> tempMarkerIdMap = new LinkedHashMap<MarkerKey, byte[]>();
+		Map<SampleKey, Integer> sampleOrderMap = new LinkedHashMap<SampleKey, Integer>();
 
 		String l;
 		while ((l = inputBufferReader.readLine()) != null) {
@@ -95,10 +94,10 @@ public class LoadGTFromBeagleFiles extends AbstractLoadGTFromFiles {
 				String[] cVals = l.split(cImport.Separators.separators_SpaceTab_rgxp);
 				MarkerKey markerKey = MarkerKey.valueOf(cVals[Standard.markerId]);
 
-				Object columnNb = sampleOrderMap.get(sampleKey);
+				Integer columnNb = sampleOrderMap.get(sampleKey);
 				if (columnNb != null) {
-					String strAlleles = cVals[(Integer) columnNb] + cVals[((Integer) columnNb) + 1];
-					byte[] tmpAlleles = new byte[]{
+					String strAlleles = cVals[columnNb] + cVals[columnNb + 1];
+					byte[] tmpAlleles = new byte[] {
 						(byte) strAlleles.toString().charAt(0),
 						(byte) strAlleles.toString().charAt(1)};
 					tempMarkerIdMap.put(markerKey, tmpAlleles);

@@ -24,7 +24,9 @@ public class Utils {
 		List<SampleInfo> sampleInfos = SampleInfoList.getCurrentSampleInfoFromDB(key, poolId);
 
 		// PREVENT PHANTOM-DB READS EXCEPTIONS
-		if (!sampleInfos.isEmpty()) {
+		if (sampleInfos.isEmpty()) {
+			throw new IOException("No sample-info found in the DB for sample-key: " + key.toString());
+		} else {
 			SampleInfo baseSampleInfo = sampleInfos.get(0);
 
 			// XXX maybe we should make use of the familyId in key instead (or at least aswell, checking this value against it)

@@ -15,6 +15,7 @@ import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.MarkerKey;
+import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleKey;
@@ -64,11 +65,6 @@ public class LoadGTFromHGDP1Files implements GenotypesLoader {
 	}
 
 	@Override
-	public int getMarkersD2ItemNb() {
-		throw new UnsupportedOperationException("Not supported yet."); // FIXME implement me!
-	}
-
-	@Override
 	public String getMarkersD2Variables() {
 		throw new UnsupportedOperationException("Not supported yet."); // FIXME implement me!
 	}
@@ -86,7 +82,7 @@ public class LoadGTFromHGDP1Files implements GenotypesLoader {
 				loadDescription.getAnnotationFilePath(),
 				loadDescription.getStrand(),
 				loadDescription.getStudyId());
-		Map<MarkerKey, Object> markerSetMap = markerSetLoader.getSortedMarkerSetWithMetaData();
+		Map<MarkerKey, MarkerMetadata> markerSetMap = markerSetLoader.getSortedMarkerSetWithMetaData();
 
 		log.info("Done initializing sorted MarkerSetMap");
 
@@ -120,7 +116,7 @@ public class LoadGTFromHGDP1Files implements GenotypesLoader {
 		}
 
 		//RETRIEVE CHROMOSOMES INFO
-		Map<MarkerKey, Object> chrSetMap = org.gwaspi.netCDF.matrices.Utils.aggregateChromosomeInfo(markerSetMap, 2, 3);
+		Map<MarkerKey, int[]> chrSetMap = org.gwaspi.netCDF.matrices.Utils.aggregateChromosomeInfo(markerSetMap, 2, 3);
 
 		MatrixFactory matrixFactory = new MatrixFactory(
 				loadDescription.getStudyId(),
@@ -162,7 +158,7 @@ public class LoadGTFromHGDP1Files implements GenotypesLoader {
 		log.info("Done writing SampleSet to matrix");
 
 		// WRITE RSID & MARKERID METADATA FROM METADATAMap
-		ArrayChar.D2 markersD2 = org.gwaspi.netCDF.operations.Utils.writeMapValueItemToD2ArrayChar(markerSetMap, 1, cNetCDF.Strides.STRIDE_MARKER_NAME);
+		ArrayChar.D2 markersD2 = org.gwaspi.netCDF.operations.Utils.writeMapValueItemToD2ArrayChar(markerSetMap, MarkerMetadata.TO_RS_ID, cNetCDF.Strides.STRIDE_MARKER_NAME);
 
 		int[] markersOrig = new int[]{0, 0};
 		try {
@@ -172,7 +168,7 @@ public class LoadGTFromHGDP1Files implements GenotypesLoader {
 		} catch (InvalidRangeException ex) {
 			log.error(null, ex);
 		}
-		markersD2 = org.gwaspi.netCDF.operations.Utils.writeMapValueItemToD2ArrayChar(markerSetMap, 0, cNetCDF.Strides.STRIDE_MARKER_NAME);
+		markersD2 = org.gwaspi.netCDF.operations.Utils.writeMapValueItemToD2ArrayChar(markerSetMap, MarkerMetadata.TO_MARKER_ID, cNetCDF.Strides.STRIDE_MARKER_NAME);
 		try {
 			ncfile.write(cNetCDF.Variables.VAR_MARKERSET, markersOrig, markersD2);
 		} catch (IOException ex) {
@@ -183,8 +179,8 @@ public class LoadGTFromHGDP1Files implements GenotypesLoader {
 		log.info("Done writing MarkerId and RsId to matrix");
 
 		// WRITE CHROMOSOME METADATA FROM ANNOTATION FILE
-		//Chromosome location for each marker
-		markersD2 = org.gwaspi.netCDF.operations.Utils.writeMapValueItemToD2ArrayChar(markerSetMap, 2, cNetCDF.Strides.STRIDE_CHR);
+		// Chromosome location for each marker
+		markersD2 = org.gwaspi.netCDF.operations.Utils.writeMapValueItemToD2ArrayChar(markerSetMap, MarkerMetadata.TO_CHR, cNetCDF.Strides.STRIDE_CHR);
 
 		try {
 			ncfile.write(cNetCDF.Variables.VAR_MARKERS_CHR, markersOrig, markersD2);
@@ -205,7 +201,7 @@ public class LoadGTFromHGDP1Files implements GenotypesLoader {
 
 		// WRITE POSITION METADATA FROM ANNOTATION FILE
 		//markersD2 = org.gwaspi.netCDF.operations.Utils.writeMapValueItemToD2ArrayChar(wrMarkerSetMap, 3, cNetCDF.Strides.STRIDE_POS);
-		ArrayInt.D1 markersPosD1 = org.gwaspi.netCDF.operations.Utils.writeMapValueItemToD1ArrayInt(markerSetMap, 3);
+		ArrayInt.D1 markersPosD1 = org.gwaspi.netCDF.operations.Utils.writeMapValueItemToD1ArrayInt(markerSetMap, MarkerMetadata.TO_POS);
 		int[] posOrig = new int[1];
 		try {
 			ncfile.write(cNetCDF.Variables.VAR_MARKERS_POS, posOrig, markersPosD1);
@@ -218,7 +214,7 @@ public class LoadGTFromHGDP1Files implements GenotypesLoader {
 
 
 		// WRITE GT STRAND FROM ANNOTATION FILE
-		int[] gtOrig = new int[]{0, 0};
+		int[] gtOrig = new int[] {0, 0};
 		String strandFlag;
 		switch (loadDescription.getStrand()) {
 			case PLUS:
@@ -237,10 +233,7 @@ public class LoadGTFromHGDP1Files implements GenotypesLoader {
 				strandFlag = cImport.StrandFlags.strandUNK;
 				break;
 		}
-		for (Map.Entry<?, Object> entry : markerSetMap.entrySet()) {
-			entry.setValue(strandFlag);
-		}
-		markersD2 = org.gwaspi.netCDF.operations.Utils.writeMapValueToD2ArrayChar(markerSetMap, cNetCDF.Strides.STRIDE_STRAND);
+		markersD2 = org.gwaspi.netCDF.operations.Utils.writeSingleValueToD2ArrayChar(strandFlag, cNetCDF.Strides.STRIDE_STRAND, markerSetMap.size());
 
 		try {
 			ncfile.write(cNetCDF.Variables.VAR_GT_STRAND, gtOrig, markersD2);
@@ -260,18 +253,17 @@ public class LoadGTFromHGDP1Files implements GenotypesLoader {
 		int sampleIndex = 0;
 		for (SampleInfo sampleInfo : sampleInfos) {
 			// PURGE MarkerIdMap
-			for (Map.Entry<?, Object> entry : markerSetMap.entrySet()) {
-				entry.setValue(cNetCDF.Defaults.DEFAULT_GT);
-			}
+			Map<MarkerKey, byte[]> alleles = AbstractLoadGTFromFiles.fillMap(markerSetMap.keySet(), cNetCDF.Defaults.DEFAULT_GT);
 
 			try {
-				loadIndividualFiles(new File(loadDescription.getGtDirPath()),
+				loadIndividualFiles(
+						new File(loadDescription.getGtDirPath()),
 						sampleInfo.getKey(),
-						markerSetMap,
+						alleles,
 						guessedGTCode);
 
 				// WRITING GENOTYPE DATA INTO netCDF FILE
-				org.gwaspi.netCDF.operations.Utils.saveSingleSampleGTsToMatrix(ncfile, markerSetMap, sampleIndex);
+				org.gwaspi.netCDF.operations.Utils.saveSingleSampleGTsToMatrix(ncfile, alleles, sampleIndex);
 			} catch (IOException ex) {
 				log.warn(null, ex);
 			} catch (InvalidRangeException ex) {
@@ -323,7 +315,7 @@ public class LoadGTFromHGDP1Files implements GenotypesLoader {
 	public void loadIndividualFiles(
 			File file,
 			SampleKey sampleKey,
-			Map<MarkerKey, Object> alleles,
+			Map<MarkerKey, byte[]> alleles,
 			GenotypeEncoding guessedGTCode)
 			throws IOException, InvalidRangeException
 	{
@@ -336,8 +328,8 @@ public class LoadGTFromHGDP1Files implements GenotypesLoader {
 			sb.append('0');
 		}
 
-		Map<MarkerKey, Object> tempMarkerIdMap = new LinkedHashMap<MarkerKey, Object>();
-		Map<SampleKey, Object> sampleOrderMap = new LinkedHashMap<SampleKey, Object>();
+		Map<MarkerKey, byte[]> tempMarkerIdMap = new LinkedHashMap<MarkerKey, byte[]>();
+		Map<SampleKey, Integer> sampleOrderMap = new LinkedHashMap<SampleKey, Integer>();
 
 		String sampleHeader = inputBufferReader.readLine();
 		String[] headerFields = null;
@@ -356,9 +348,9 @@ public class LoadGTFromHGDP1Files implements GenotypesLoader {
 			String[] cVals = l.split(cImport.Separators.separators_SpaceTab_rgxp);
 			MarkerKey currMarkerId = MarkerKey.valueOf(cVals[Standard.markerId]);
 
-			Object columnNb = sampleOrderMap.get(sampleKey);
+			Integer columnNb = sampleOrderMap.get(sampleKey);
 			if (columnNb != null) {
-				String strAlleles = cVals[(Integer) columnNb];
+				String strAlleles = cVals[columnNb];
 				if (strAlleles.equals(Standard.missing)) {
 					tempMarkerIdMap.put(currMarkerId, cNetCDF.Defaults.DEFAULT_GT);
 				} else {

@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
@@ -13,6 +14,7 @@ import org.gwaspi.constants.cNetCDF.Defaults.SetSamplePickCase;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.utils.Dialogs;
 import org.gwaspi.model.MarkerKey;
+import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleKey;
@@ -39,7 +41,6 @@ public class MatrixDataExtractor {
 
 	private int studyId;
 	private int rdMatrixId;
-	private int wrMatrixId = Integer.MIN_VALUE;
 	private String wrMatrixFriendlyName;
 	private String wrMatrixDescription;
 	private File markerCriteriaFile;
@@ -51,15 +52,12 @@ public class MatrixDataExtractor {
 	private String samplePickerVar;
 	private StringBuilder samplePickerCriteria;
 	private MatrixMetadata rdMatrixMetadata;
-	private MatrixMetadata wrMatrixMetadata = null;
 	private MarkerSet rdMarkerSet;
-	private MarkerSet wrMarkerSet = null;
 	private SampleSet rdSampleSet;
-	private SampleSet wrSampleSet = null;
-	private Map<MarkerKey, Object> wrMarkerIdSetMap;
-	private Map<SampleKey, Object> rdSampleSetMap;
-	private Map<SampleKey, Object> wrSampleSetMap;
-	private Map<MarkerKey, Object> rdChrInfoSetMap;
+	private Map<MarkerKey, byte[]> wrMarkerIdSetMap;
+	private Map<SampleKey, char[]> rdSampleSetMap;
+	private Map<SampleKey, Integer> wrSampleSetMap;
+	private Map<MarkerKey, int[]> rdChrInfoSetMap;
 
 	/**
 	 * This constructor to extract data from Matrix a by passing a variable and
@@ -90,8 +88,8 @@ public class MatrixDataExtractor {
 			SetSamplePickCase samplePickCase,
 			String markerPickerVar,
 			String samplePickerVar,
-			Set<Object> markerCriteria,
-			Set<Object> sampleCriteria,
+			Set<?> markerCriteria,
+			Set<?> sampleCriteria,
 			int sampleFilterPos,
 			File markerPickerFile,
 			File samplePickerFile)
@@ -115,7 +113,7 @@ public class MatrixDataExtractor {
 		this.rdMarkerSet.initFullMarkerIdSetMap();
 
 		this.rdSampleSet = new SampleSet(this.rdMatrixMetadata.getStudyId(), this.rdMatrixId);
-		this.rdSampleSetMap = this.rdSampleSet.getSampleIdSetMap();
+		this.rdSampleSetMap = this.rdSampleSet.getSampleIdSetMapCharArray();
 
 		//<editor-fold defaultstate="expanded" desc="MARKERSET PICKING">
 		this.markerPickerCriteria = new StringBuilder();
@@ -131,48 +129,51 @@ public class MatrixDataExtractor {
 			String l;
 			markerCriteria.clear();
 			while ((l = br.readLine()) != null) {
-				markerCriteria.add(l);
+				if ((markerPickCase == SetMarkerPickCase.MARKERS_INCLUDE_BY_ID)
+						|| (markerPickCase == SetMarkerPickCase.MARKERS_EXCLUDE_BY_ID))
+				{
+					((Set<MarkerKey>) markerCriteria).add(MarkerKey.valueOf(l));
+				} else {
+					((Set<char[]>) markerCriteria).add(l.toCharArray());
+				}
 				this.markerPickerCriteria.append(l);
 				this.markerPickerCriteria.append(",");
 			}
 			br.close();
 		}
 
-		this.wrMarkerIdSetMap = new LinkedHashMap<MarkerKey, Object>();
+		Collection<MarkerKey> wrMarkerKeys;
+		wrMarkerIdSetMap = new LinkedHashMap<MarkerKey, byte[]>();
+		this.wrMarkerIdSetMap = new LinkedHashMap<MarkerKey, byte[]>();
 		switch (markerPickCase) {
 			case ALL_MARKERS:
 				// Get all markers
-				this.wrMarkerIdSetMap.putAll(this.rdMarkerSet.getMarkerIdSetMap());
-				MarkerSet.fillWith(wrMarkerIdSetMap, cNetCDF.Defaults.DEFAULT_GT);
+				wrMarkerKeys = this.rdMarkerSet.getMarkerKeys();
 				break;
 			case MARKERS_INCLUDE_BY_NETCDF_CRITERIA:
 				// Pick by netCDF field value and criteria
-				this.wrMarkerIdSetMap = this.rdMarkerSet.pickValidMarkerSetItemsByValue(markerPickerVar, markerCriteria, true);
-				MarkerSet.fillWith(this.wrMarkerIdSetMap, cNetCDF.Defaults.DEFAULT_GT);
+				wrMarkerKeys = this.rdMarkerSet.pickValidMarkerSetItemsByValue(markerPickerVar, (Set<byte[]>) markerCriteria, true).keySet();
 				break;
 			case MARKERS_EXCLUDE_BY_NETCDF_CRITERIA:
 				// Exclude by netCDF field value and criteria
-				this.wrMarkerIdSetMap = this.rdMarkerSet.pickValidMarkerSetItemsByValue(markerPickerVar, markerCriteria, false);
-				MarkerSet.fillWith(this.wrMarkerIdSetMap, cNetCDF.Defaults.DEFAULT_GT);
+				wrMarkerKeys = this.rdMarkerSet.pickValidMarkerSetItemsByValue(markerPickerVar, (Set<byte[]>) markerCriteria, false).keySet();
 				break;
 			case MARKERS_INCLUDE_BY_ID:
-				this.wrMarkerIdSetMap = this.rdMarkerSet.pickValidMarkerSetItemsByKey(markerCriteria, true);
-				MarkerSet.fillWith(this.wrMarkerIdSetMap, cNetCDF.Defaults.DEFAULT_GT);
+				wrMarkerKeys = this.rdMarkerSet.pickValidMarkerSetItemsByKey((Set<MarkerKey>) markerCriteria, true).keySet();
 				break;
 			case MARKERS_EXCLUDE_BY_ID:
-				this.wrMarkerIdSetMap = this.rdMarkerSet.pickValidMarkerSetItemsByKey(markerCriteria, false);
-				MarkerSet.fillWith(this.wrMarkerIdSetMap, cNetCDF.Defaults.DEFAULT_GT);
+				wrMarkerKeys = this.rdMarkerSet.pickValidMarkerSetItemsByKey((Set<MarkerKey>) markerCriteria, false).keySet();
 				break;
 			default:
 				// Get all markers
-				this.wrMarkerIdSetMap.putAll(this.rdMarkerSet.getMarkerIdSetMap());
-				MarkerSet.fillWith(this.wrMarkerIdSetMap, cNetCDF.Defaults.DEFAULT_GT);
+				wrMarkerKeys = this.rdMarkerSet.getMarkerKeys();
 		}
+		this.wrMarkerIdSetMap = AbstractOperationSet.fillMapWithKeyAndDefaultValue(wrMarkerKeys, cNetCDF.Defaults.DEFAULT_GT);
 
 		// RETRIEVE CHROMOSOMES INFO
 		this.rdMarkerSet.fillMarkerSetMapWithChrAndPos();
-		MarkerSet.replaceWithValuesFrom(this.wrMarkerIdSetMap, this.rdMarkerSet.getMarkerIdSetMap());
-		this.rdChrInfoSetMap = org.gwaspi.netCDF.matrices.Utils.aggregateChromosomeInfo(this.wrMarkerIdSetMap, 0, 1);
+		Map<MarkerKey, MarkerMetadata> sortedChrAndPos = org.gwaspi.global.Utils.createOrderedMap(this.wrMarkerIdSetMap, this.rdMarkerSet.getMarkerMetadata());
+		this.rdChrInfoSetMap = org.gwaspi.netCDF.matrices.Utils.aggregateChromosomeInfo(sortedChrAndPos, 0, 1);
 		//</editor-fold>
 
 		//<editor-fold defaultstate="expanded" desc="SAMPLESET PICKING">
@@ -189,57 +190,62 @@ public class MatrixDataExtractor {
 			String l;
 			sampleCriteria.clear();
 			while ((l = br.readLine()) != null) {
-				sampleCriteria.add(l);
+				if ((samplePickCase == SetSamplePickCase.SAMPLES_INCLUDE_BY_ID)
+						|| (samplePickCase == SetSamplePickCase.SAMPLES_EXCLUDE_BY_ID))
+				{
+					((Set<SampleKey>) sampleCriteria).add(SampleKey.valueOf(l));
+				} else {
+					((Set<char[]>) sampleCriteria).add(l.toCharArray());
+				}
 				this.samplePickerCriteria.append(l);
 				this.samplePickerCriteria.append(",");
 			}
 			br.close();
 		}
 
-		this.wrSampleSetMap = new LinkedHashMap<SampleKey, Object>();
+		this.wrSampleSetMap = new LinkedHashMap<SampleKey, Integer>(this.rdSampleSetMap.size());
 		switch (samplePickCase) {
 			case ALL_SAMPLES:
 				// Get all samples
-				this.wrSampleSetMap.putAll(this.rdSampleSetMap);
 				int i = 0;
-				for (Map.Entry<SampleKey, Object> entry : this.wrSampleSetMap.entrySet()) {
-					entry.setValue(i);
+				for (SampleKey key : this.rdSampleSetMap.keySet()) {
+					this.wrSampleSetMap.put(key, i);
 					i++;
 				}
 				break;
 			case SAMPLES_INCLUDE_BY_NETCDF_FILTER:
 				// USE cNetCDF Filter Data and criteria
-				this.wrSampleSetMap = this.rdSampleSet.pickValidSampleSetItemsByNetCDFFilter(this.rdSampleSetMap, samplePickerVar, sampleFilterPos, sampleCriteria, true);
+				this.wrSampleSetMap = this.rdSampleSet.pickValidSampleSetItemsByNetCDFFilter(this.rdSampleSetMap, samplePickerVar, sampleFilterPos, (Set<char[]>) sampleCriteria, true);
 				break;
 			case SAMPLES_EXCLUDE_BY_NETCDF_FILTER:
 				// USE cNetCDF Filter Data and criteria
-				this.wrSampleSetMap = this.rdSampleSet.pickValidSampleSetItemsByNetCDFFilter(this.rdSampleSetMap, samplePickerVar, sampleFilterPos, sampleCriteria, false);
+				this.wrSampleSetMap = this.rdSampleSet.pickValidSampleSetItemsByNetCDFFilter(this.rdSampleSetMap, samplePickerVar, sampleFilterPos, (Set<char[]>) sampleCriteria, false);
 				break;
 			case SAMPLES_INCLUDE_BY_NETCDF_CRITERIA:
 				// USE cNetCDF Value and criteria
-				this.wrSampleSetMap = this.rdSampleSet.pickValidSampleSetItemsByNetCDFValue(this.rdSampleSetMap, samplePickerVar, sampleCriteria, true);
+				this.wrSampleSetMap = this.rdSampleSet.pickValidSampleSetItemsByNetCDFValue(this.rdSampleSetMap, samplePickerVar, (Set<char[]>) sampleCriteria, true);
 				break;
 			case SAMPLES_EXCLUDE_BY_NETCDF_CRITERIA:
 				// USE cNetCDF Value and criteria
-				this.wrSampleSetMap = this.rdSampleSet.pickValidSampleSetItemsByNetCDFValue(this.rdSampleSetMap, samplePickerVar, sampleCriteria, false);
+				this.wrSampleSetMap = this.rdSampleSet.pickValidSampleSetItemsByNetCDFValue(this.rdSampleSetMap, samplePickerVar, (Set<char[]>) sampleCriteria, false);
 				break;
 			case SAMPLES_INCLUDE_BY_ID:
-				this.wrSampleSetMap = this.rdSampleSet.pickValidSampleSetItemsByNetCDFKey(this.rdSampleSetMap, sampleCriteria, true);
+				this.wrSampleSetMap = this.rdSampleSet.pickValidSampleSetItemsByNetCDFKey(this.rdSampleSetMap.keySet(), (Set<SampleKey>) sampleCriteria, true);
 				break;
 			case SAMPLES_EXCLUDE_BY_ID:
-				this.wrSampleSetMap = this.rdSampleSet.pickValidSampleSetItemsByNetCDFKey(this.rdSampleSetMap, sampleCriteria, false);
+				this.wrSampleSetMap = this.rdSampleSet.pickValidSampleSetItemsByNetCDFKey(this.rdSampleSetMap.keySet(), (Set<SampleKey>) sampleCriteria, false);
 				break;
 			case SAMPLES_INCLUDE_BY_DB_FIELD:
 				// USE DB DATA
-				this.wrSampleSetMap = this.rdSampleSet.pickValidSampleSetItemsByDBField(studyId, this.rdSampleSetMap, samplePickerVar, sampleCriteria, true);
+				this.wrSampleSetMap = this.rdSampleSet.pickValidSampleSetItemsByDBField(studyId, this.rdSampleSetMap.keySet(), samplePickerVar, sampleCriteria, true);
 				break;
 			case SAMPLES_EXCLUDE_BY_DB_FIELD:
 				// USE DB DATA
-				this.wrSampleSetMap = this.rdSampleSet.pickValidSampleSetItemsByDBField(studyId, this.rdSampleSetMap, samplePickerVar, sampleCriteria, false);
+				this.wrSampleSetMap = this.rdSampleSet.pickValidSampleSetItemsByDBField(studyId, this.rdSampleSetMap.keySet(), samplePickerVar, sampleCriteria, false);
 				break;
 			default:
 				int j = 0;
-				for (Map.Entry<SampleKey, Object> entry : this.wrSampleSetMap.entrySet()) {
+				for (Map.Entry<SampleKey, Integer> entry : this.wrSampleSetMap.entrySet()) {
 					entry.setValue(j);
 					j++;
 				}
@@ -353,13 +359,13 @@ public class MatrixDataExtractor {
 
 				// MARKERSET RSID
 				rdMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_RSID);
-				MarkerSet.replaceWithValuesFrom(wrMarkerIdSetMap, rdMarkerSet.getMarkerIdSetMap());
-				Utils.saveCharMapValueToWrMatrix(wrNcFile, wrMarkerIdSetMap, cNetCDF.Variables.VAR_MARKERS_RSID, cNetCDF.Strides.STRIDE_MARKER_NAME);
+				Map<MarkerKey, char[]> sortedMarkerRSIDs = org.gwaspi.global.Utils.createOrderedMap(wrMarkerIdSetMap, rdMarkerSet.getMarkerIdSetMapCharArray());
+				Utils.saveCharMapValueToWrMatrix(wrNcFile, sortedMarkerRSIDs, cNetCDF.Variables.VAR_MARKERS_RSID, cNetCDF.Strides.STRIDE_MARKER_NAME);
 
 				// MARKERSET CHROMOSOME
 				rdMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
-				MarkerSet.replaceWithValuesFrom(wrMarkerIdSetMap, rdMarkerSet.getMarkerIdSetMap());
-				Utils.saveCharMapValueToWrMatrix(wrNcFile, wrMarkerIdSetMap, cNetCDF.Variables.VAR_MARKERS_CHR, cNetCDF.Strides.STRIDE_CHR);
+				Map<MarkerKey, char[]> sortedMarkerChrs = org.gwaspi.global.Utils.createOrderedMap(wrMarkerIdSetMap, rdMarkerSet.getMarkerIdSetMapCharArray());
+				Utils.saveCharMapValueToWrMatrix(wrNcFile, sortedMarkerChrs, cNetCDF.Variables.VAR_MARKERS_CHR, cNetCDF.Strides.STRIDE_CHR);
 
 				// Set of chromosomes found in matrix along with number of markersinfo
 				org.gwaspi.netCDF.operations.Utils.saveCharMapKeyToWrMatrix(wrNcFile, rdChrInfoSetMap, cNetCDF.Variables.VAR_CHR_IN_MATRIX, 8);
@@ -369,34 +375,33 @@ public class MatrixDataExtractor {
 
 				// MARKERSET POSITION
 				rdMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_POS);
-				MarkerSet.replaceWithValuesFrom(wrMarkerIdSetMap, rdMarkerSet.getMarkerIdSetMap());
+				Map<MarkerKey, Integer> sortedMarkerPos = org.gwaspi.global.Utils.createOrderedMap(wrMarkerIdSetMap, rdMarkerSet.getMarkerIdSetMapInteger());
 				//Utils.saveCharMapValueToWrMatrix(wrNcFile, wrMarkerIdSetMap, cNetCDF.Variables.VAR_MARKERS_POS, cNetCDF.Strides.STRIDE_POS);
-				Utils.saveIntMapD1ToWrMatrix(wrNcFile, wrMarkerIdSetMap, cNetCDF.Variables.VAR_MARKERS_POS);
+				Utils.saveIntMapD1ToWrMatrix(wrNcFile, sortedMarkerPos, cNetCDF.Variables.VAR_MARKERS_POS);
 
 				// MARKERSET DICTIONARY ALLELES
 				rdMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_BASES_DICT);
-				MarkerSet.replaceWithValuesFrom(wrMarkerIdSetMap, rdMarkerSet.getMarkerIdSetMap());
-				Utils.saveCharMapValueToWrMatrix(wrNcFile, wrMarkerIdSetMap, cNetCDF.Variables.VAR_MARKERS_BASES_DICT, cNetCDF.Strides.STRIDE_GT);
+				Map<MarkerKey, char[]> sortedMarkerBasesDicts = org.gwaspi.global.Utils.createOrderedMap(wrMarkerIdSetMap, rdMarkerSet.getMarkerIdSetMapCharArray());
+				Utils.saveCharMapValueToWrMatrix(wrNcFile, sortedMarkerBasesDicts, cNetCDF.Variables.VAR_MARKERS_BASES_DICT, cNetCDF.Strides.STRIDE_GT);
 
 				// GENOTYPE STRAND
 				rdMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_GT_STRAND);
-				MarkerSet.replaceWithValuesFrom(wrMarkerIdSetMap, rdMarkerSet.getMarkerIdSetMap());
-				Utils.saveCharMapValueToWrMatrix(wrNcFile, wrMarkerIdSetMap, cNetCDF.Variables.VAR_GT_STRAND, 3);
+				Map<MarkerKey, char[]> sortedMarkerGTStrands = org.gwaspi.global.Utils.createOrderedMap(wrMarkerIdSetMap, rdMarkerSet.getMarkerIdSetMapCharArray());
+				Utils.saveCharMapValueToWrMatrix(wrNcFile, sortedMarkerGTStrands, cNetCDF.Variables.VAR_GT_STRAND, 3);
 				//</editor-fold>
 
 				//<editor-fold defaultstate="expanded" desc="GENOTYPES WRITER">
 				// Iterate through wrSampleSetMap, use item position to read correct sample GTs into rdMarkerIdSetMap.
 				log.info(Text.All.processing);
 				int sampleWrIndex = 0;
-				for (Object value : wrSampleSetMap.values()) {
+				for (Integer rdPos : wrSampleSetMap.values()) {
 					// Iterate through wrMarkerIdSetMap, get the correct GT from rdMarkerIdSetMap
-					Integer rdPos = (Integer) value;
 					rdMarkerSet.fillGTsForCurrentSampleIntoInitMap(rdPos);
 //					rdMarkerSet.fillGTsForCurrentSampleIntoInitMap(sampleWrPos);
-					MarkerSet.replaceWithValuesFrom(wrMarkerIdSetMap, rdMarkerSet.getMarkerIdSetMap());
+					Map<MarkerKey, byte[]> sortedRdPos = org.gwaspi.global.Utils.createOrderedMap(wrMarkerIdSetMap, rdMarkerSet.getMarkerIdSetMapByteArray());
 
-					//Write wrMarkerIdSetMap to A3 ArrayChar and save to wrMatrix
-					Utils.saveSingleSampleGTsToMatrix(wrNcFile, wrMarkerIdSetMap, sampleWrIndex);
+					// Write wrMarkerIdSetMap to A3 ArrayChar and save to wrMatrix
+					Utils.saveSingleSampleGTsToMatrix(wrNcFile, sortedRdPos, sampleWrIndex);
 					if (sampleWrIndex % 100 == 0) {
 						log.info("Samples copied: {}", sampleWrIndex);
 					}

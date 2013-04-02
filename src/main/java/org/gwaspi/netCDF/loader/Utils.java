@@ -87,12 +87,11 @@ public class Utils {
 		return values;
 	}
 
-	public static GenotypeEncoding detectGTEncoding(Map<?, Object> map) {
+	public static GenotypeEncoding detectGTEncoding(Map<?, byte[]> map) {
 		GenotypeEncoding gtEcoding;
 
 		Set<Byte> allAlleles = new HashSet<Byte>();
-		for (Object value : map.values()) {
-			byte[] values = (byte[]) value;
+		for (byte[] values : map.values()) {
 			allAlleles.add(values[0]);
 			allAlleles.add(values[1]);
 		}

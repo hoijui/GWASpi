@@ -37,7 +37,7 @@ public class SampleSet {
 	private int sampleset_id = Integer.MIN_VALUE; // id
 	private int sampleSetSize = 0;
 	private MatrixMetadata matrixMetadata;
-	private Map<SampleKey, Object> sampleIdSetMap = new LinkedHashMap<SampleKey, Object>();
+	private Map<SampleKey, ?> sampleIdSetMap = new LinkedHashMap<SampleKey, Object>();
 
 	public SampleSet(int studyId, int matrixId) throws IOException {
 		matrixMetadata = MatricesList.getMatrixMetadataById(matrixId);
@@ -68,7 +68,7 @@ public class SampleSet {
 	}
 
 	//<editor-fold defaultstate="expanded" desc="SAMPLESET FETCHERS">
-	public Map<SampleKey, Object> getSampleIdSetMap() throws InvalidRangeException {
+	private Map<SampleKey, ?> getSampleIdSetMap() throws InvalidRangeException {
 		NetcdfFile ncfile = null;
 
 		try {
@@ -86,7 +86,7 @@ public class SampleSet {
 				sampleSetSize = markerSetDim.getLength();
 				ArrayChar.D2 sampleSetAC = (ArrayChar.D2) var.read("(0:" + (sampleSetSize - 1) + ":1, 0:" + (varShape[1] - 1) + ":1)");
 
-				sampleIdSetMap = org.gwaspi.netCDF.operations.Utils.writeD2ArrayCharToMapSampleKeys(sampleSetAC);
+				sampleIdSetMap = org.gwaspi.netCDF.operations.Utils.writeD2ArrayCharToMapSampleKeys(sampleSetAC, null);
 			} catch (IOException ex) {
 				log.error("Cannot read data", ex);
 			} catch (InvalidRangeException ex) {
@@ -108,7 +108,19 @@ public class SampleSet {
 		return sampleIdSetMap;
 	}
 
-	public Map<SampleKey, Object> getSampleIdSetMap(String matrixImportPath) throws InvalidRangeException {
+	public Map<SampleKey, char[]> getSampleIdSetMapCharArray() throws InvalidRangeException {
+		return (Map<SampleKey, char[]>) getSampleIdSetMap();
+	}
+
+	public Map<SampleKey, byte[]> getSampleIdSetMapByteArray() throws InvalidRangeException {
+		return (Map<SampleKey, byte[]>) getSampleIdSetMap();
+	}
+
+	public Set<SampleKey> getSampleKeys() throws InvalidRangeException {
+		return getSampleIdSetMap().keySet();
+	}
+
+	private Map<SampleKey, ?> getSampleIdSetMap(String matrixImportPath) throws InvalidRangeException {
 		NetcdfFile ncfile = null;
 
 		try {
@@ -126,7 +138,7 @@ public class SampleSet {
 				sampleSetSize = markerSetDim.getLength();
 				ArrayChar.D2 sampleSetAC = (ArrayChar.D2) var.read("(0:" + (sampleSetSize - 1) + ":1, 0:" + (varShape[1] - 1) + ":1)");
 
-				sampleIdSetMap = org.gwaspi.netCDF.operations.Utils.writeD2ArrayCharToMapSampleKeys(sampleSetAC);
+				sampleIdSetMap = org.gwaspi.netCDF.operations.Utils.writeD2ArrayCharToMapSampleKeys(sampleSetAC, null);
 			} catch (IOException ex) {
 				log.error("Cannot read data", ex);
 			} catch (InvalidRangeException ex) {
@@ -147,10 +159,14 @@ public class SampleSet {
 
 		return sampleIdSetMap;
 	}
+
+	public Map<SampleKey, byte[]> getSampleIdSetMapByteArray(String matrixImportPath) throws InvalidRangeException {
+		return (Map<SampleKey, byte[]>) getSampleIdSetMap(matrixImportPath);
+	}
 	//</editor-fold>
 
 	//<editor-fold defaultstate="expanded" desc="SAMPLESET FILLERS">
-	public void readAllSamplesGTsFromCurrentMarkerToMap(NetcdfFile rdNcFile, Map<SampleKey, Object> rdMap, int markerNb) throws IOException {
+	public void readAllSamplesGTsFromCurrentMarkerToMap(NetcdfFile rdNcFile, Map<SampleKey, byte[]> rdBytes, Map<SampleKey, char[]> rdChar, int markerNb) throws IOException {
 
 		try {
 			Variable genotypes = rdNcFile.findVariable(cNetCDF.Variables.VAR_GENOTYPES);
@@ -160,17 +176,8 @@ public class SampleSet {
 			}
 			try {
 				int[] varShape = genotypes.getShape();
-//				Dimension markerSetDim = ncfile.findDimension(cNetCDF.DIM_MARKERSET);
-//				ArrayChar.D3 gt_ACD3 = (ArrayChar.D3) genotypes.read(
-//						"(" + markerNb + ":" + markerNb + ":1, 0:"
-//						+ (markerSetDim.getLength() - 1) + ":1, 0:"
-//						+ (varShape[2] - 1) + ":1)");
 
 				Dimension sampleSetDim = rdNcFile.findDimension(cNetCDF.Dimensions.DIM_SAMPLESET);
-//				ArrayChar.D3 gt_ACD3 = (ArrayChar.D3) genotypes.read(
-//						"(0:" + (sampleSetDim.getLength() - 1) + ":1, "
-//						 + markerNb + ":" + markerNb + ":1, "
-//						 + "0:" + (varShape[2] - 1) + ":1)");
 
 				ArrayByte.D3 gt_ACD3 = (ArrayByte.D3) genotypes.read(
 						"(0:" + (sampleSetDim.getLength() - 1) + ":1, "
@@ -190,63 +197,76 @@ public class SampleSet {
 				}
 
 				if (reducer == 1) {
+					if ((rdBytes == null) || rdChar != null) {
+						throw new IOException("Tried to read byte[] values, but found String ones");
+					}
 					ArrayByte.D2 gt_ACD2 = (ArrayByte.D2) gt_ACD3.reduce();
-					org.gwaspi.netCDF.operations.Utils.writeD2ArrayByteToMapValues(gt_ACD2, rdMap);
+					org.gwaspi.netCDF.operations.Utils.writeD2ArrayByteToMapValues(gt_ACD2, rdBytes);
 				} else if (reducer == 2) {
+					if ((rdChar == null) || rdBytes != null) {
+						throw new IOException("Tried to read String values, but found byte[] ones");
+					}
 					ArrayByte.D1 gt_ACD1 = (ArrayByte.D1) gt_ACD3.reduce();
-					org.gwaspi.netCDF.operations.Utils.writeD1ArrayByteToMapValues(gt_ACD1, rdMap);
+					org.gwaspi.netCDF.operations.Utils.writeD1ArrayByteToMapValues(gt_ACD1, rdChar);
 				}
-
-//				ArrayChar.D2 gt_ACD2 = (ArrayChar.D2) gt_ACD3.reduce();
-//				rdMap = org.gwaspi.netCDF.operations.Utils.writeD2ArrayCharToMapValues(gt_ACD2, rdMap);
 			} catch (InvalidRangeException ex) {
 				log.error("Cannot read data", ex);
 			}
 		} catch (IOException ex) {
 			log.error("Cannot open file", ex);
 		}
-
-		return;
 	}
 
-	public Map<SampleKey, Object> fillSampleIdSetMapWithVariable(NetcdfFile ncfile, String variable) {
-		try {
-			Variable var = ncfile.findVariable(variable);
+	public void readAllSamplesGTsFromCurrentMarkerToMap(NetcdfFile rdNcFile, Map<SampleKey, byte[]> rdMap, int markerNb) throws IOException {
+		readAllSamplesGTsFromCurrentMarkerToMap(rdNcFile, rdMap, null, markerNb);
+	}
 
-			if (null == var) {
-				return null;
-			}
+	public void readAllSamplesGTsFromCurrentMarkerToStringMap(NetcdfFile rdNcFile, Map<SampleKey, char[]> rdMap, int markerNb) throws IOException {
+		readAllSamplesGTsFromCurrentMarkerToMap(rdNcFile, null, rdMap, markerNb);
+	}
 
-			DataType dataType = var.getDataType();
-			int[] varShape = var.getShape();
+	/**
+	 * @deprecated unused
+	 */
+	public Map<SampleKey, ?> fillSampleIdSetMapWithVariable(NetcdfFile ncfile, String variable) {
 
-			sampleSetSize = varShape[0];
-			if (dataType == DataType.CHAR) {
-				ArrayChar.D2 sampleSetAC = (ArrayChar.D2) var.read("(0:" + (sampleSetSize - 1) + ":1, 0:" + (varShape[1] - 1) + ":1)");
-				org.gwaspi.netCDF.operations.Utils.writeD2ArrayCharToMapValues(sampleSetAC, sampleIdSetMap);
-			}
-			if (dataType == DataType.DOUBLE) {
-				ArrayDouble.D1 sampleSetAF = (ArrayDouble.D1) var.read("(0:" + (sampleSetSize - 1) + ":1");
-				org.gwaspi.netCDF.operations.Utils.writeD1ArrayDoubleToMapValues(sampleSetAF, sampleIdSetMap);
-			}
-		} catch (IOException ex) {
-			log.error("Cannot open file", ex);
-		} catch (InvalidRangeException ex) {
-			log.error("Cannot read data", ex);
-		} finally {
-			if (null != ncfile) {
-				try {
-					ncfile.close();
-				} catch (IOException ex) {
-					log.warn("Cannot close file", ex);
-				}
-			}
-		}
+//		try {
+//			Variable var = ncfile.findVariable(variable);
+//
+//			if (null == var) {
+//				return null;
+//			}
+//
+//			DataType dataType = var.getDataType();
+//			int[] varShape = var.getShape();
+//
+//			sampleSetSize = varShape[0];
+//			if (dataType == DataType.CHAR) {
+//				ArrayChar.D2 sampleSetAC = (ArrayChar.D2) var.read("(0:" + (sampleSetSize - 1) + ":1, 0:" + (varShape[1] - 1) + ":1)");
+//				org.gwaspi.netCDF.operations.Utils.writeD2ArrayCharToMapValues(sampleSetAC, sampleIdSetMap);
+//			}
+//			if (dataType == DataType.DOUBLE) {
+//				ArrayDouble.D1 sampleSetAF = (ArrayDouble.D1) var.read("(0:" + (sampleSetSize - 1) + ":1");
+//				org.gwaspi.netCDF.operations.Utils.writeD1ArrayDoubleToMapValues(sampleSetAF, sampleIdSetMap);
+//			}
+//		} catch (IOException ex) {
+//			log.error("Cannot open file", ex);
+//		} catch (InvalidRangeException ex) {
+//			log.error("Cannot read data", ex);
+//		} finally {
+//			if (null != ncfile) {
+//				try {
+//					ncfile.close();
+//				} catch (IOException ex) {
+//					log.warn("Cannot close file", ex);
+//				}
+//			}
+//		}
 
 		return sampleIdSetMap;
 	}
 
-	private void fillSampleIdSetMapWithVariable(Map<SampleKey, Object> map, String variable) {
+	private void fillSampleIdSetMapWithVariable(Map<SampleKey, ?> map, String variable) {
 		NetcdfFile ncfile = null;
 
 		try {
@@ -265,12 +285,12 @@ public class SampleSet {
 				sampleSetSize = sampleSetDim.getLength();
 				if (dataType == DataType.CHAR) {
 					ArrayChar.D2 sampleSetAC = (ArrayChar.D2) var.read("(0:" + (sampleSetSize - 1) + ":1, 0:" + (varShape[1] - 1) + ":1)");
-					org.gwaspi.netCDF.operations.Utils.writeD2ArrayCharToMapValues(sampleSetAC, map);
+					org.gwaspi.netCDF.operations.Utils.writeD2ArrayCharToMapValues(sampleSetAC, (Map<SampleKey, char[]>) map);
 					sampleIdSetMap = map;
 				}
 				if (dataType == DataType.DOUBLE) {
 					ArrayDouble.D1 sampleSetAF = (ArrayDouble.D1) var.read("(0:" + (sampleSetSize - 1) + ":1");
-					org.gwaspi.netCDF.operations.Utils.writeD1ArrayDoubleToMapValues(sampleSetAF, map);
+					org.gwaspi.netCDF.operations.Utils.writeD1ArrayDoubleToMapValues(sampleSetAF, (Map<SampleKey, Double>) map);
 					sampleIdSetMap = map;
 				}
 			} catch (IOException ex) {
@@ -291,7 +311,7 @@ public class SampleSet {
 		}
 	}
 
-	private void fillSampleIdSetMapWithFilterVariable(Map<SampleKey, Object> map, String variable, int filterPos) {
+	private void fillSampleIdSetMapWithFilterVariable(Map<SampleKey, char[]> map, String variable, int filterPos) {
 		NetcdfFile ncfile = null;
 
 		try {
@@ -339,31 +359,31 @@ public class SampleSet {
 	//</editor-fold>
 
 	//<editor-fold defaultstate="expanded" desc="SAMPLESET PICKERS">
-	public Map<SampleKey, Object> pickValidSampleSetItemsByDBField(Integer poolId, Map<SampleKey, Object> map, String dbField, Set<Object> criteria, boolean include) throws IOException {
-		Map<SampleKey, Object> returnMap = new LinkedHashMap<SampleKey, Object>();
+	public Map<SampleKey, Integer> pickValidSampleSetItemsByDBField(Integer poolId, Set<SampleKey> sampleKeys, String dbField, Set<?> criteria, boolean include) throws IOException {
+		Map<SampleKey, Integer> returnMap = new LinkedHashMap<SampleKey, Integer>();
 		List<SampleInfo> sampleInfos = SampleInfoList.getAllSampleInfoFromDBByPoolID(poolId);
 
 		int pickCounter = 0;
 		if (include) {
-			for (SampleKey key : map.keySet()) {
+			for (SampleKey key : sampleKeys) {
 				// loop through rows of result set
 				for (SampleInfo sampleInfo : sampleInfos) {
-					if (sampleInfo.getKey().equals(key)) {
-						if (criteria.contains(sampleInfo.getField(dbField).toString())) {
-							returnMap.put(key, pickCounter);
-						}
+					if (sampleInfo.getKey().equals(key)
+							&& criteria.contains(sampleInfo.getField(dbField).toString()))
+					{
+						returnMap.put(key, pickCounter);
 					}
 				}
 				pickCounter++;
 			}
 		} else {
-			for (SampleKey key : map.keySet()) {
+			for (SampleKey key : sampleKeys) {
 				// loop through rows of result set
 				for (SampleInfo sampleInfo : sampleInfos) {
-					if (sampleInfo.getKey().equals(key)) {
-						if (!criteria.contains(sampleInfo.getField(dbField).toString())) {
-							returnMap.put(key, pickCounter);
-						}
+					if (sampleInfo.getKey().equals(key)
+							&& !criteria.contains(sampleInfo.getField(dbField).toString()))
+					{
+						returnMap.put(key, pickCounter);
 					}
 				}
 				pickCounter++;
@@ -373,20 +393,20 @@ public class SampleSet {
 		return returnMap;
 	}
 
-	public Map<SampleKey, Object> pickValidSampleSetItemsByNetCDFValue(Map<SampleKey, Object> map, String variable, Set<Object> criteria, boolean include) {
-		Map<SampleKey, Object> returnMap = new LinkedHashMap<SampleKey, Object>();
+	public <V> Map<SampleKey, Integer> pickValidSampleSetItemsByNetCDFValue(Map<SampleKey, V> map, String variable, Set<V> criteria, boolean include) {
+		Map<SampleKey, Integer> returnMap = new LinkedHashMap<SampleKey, Integer>();
 		fillSampleIdSetMapWithVariable(map, variable);
 
 		int pickCounter = 0;
 		if (include) {
-			for (Map.Entry<SampleKey, Object> entry : sampleIdSetMap.entrySet()) {
+			for (Map.Entry<SampleKey, V> entry : map.entrySet()) {
 				if (criteria.contains(entry.getValue())) {
 					returnMap.put(entry.getKey(), pickCounter);
 				}
 				pickCounter++;
 			}
 		} else {
-			for (Map.Entry<SampleKey, Object> entry : sampleIdSetMap.entrySet()) {
+			for (Map.Entry<SampleKey, V> entry : map.entrySet()) {
 				if (!criteria.contains(entry.getValue())) {
 					returnMap.put(entry.getKey(), pickCounter);
 				}
@@ -397,20 +417,20 @@ public class SampleSet {
 		return returnMap;
 	}
 
-	public Map<SampleKey, Object> pickValidSampleSetItemsByNetCDFFilter(Map<SampleKey, Object> map, String variable, int fiterPos, Set<Object> criteria, boolean include) {
-		Map<SampleKey, Object> returnMap = new LinkedHashMap<SampleKey, Object>();
+	public Map<SampleKey, Integer> pickValidSampleSetItemsByNetCDFFilter(Map<SampleKey, char[]> map, String variable, int fiterPos, Set<char[]> criteria, boolean include) {
+		Map<SampleKey, Integer> returnMap = new LinkedHashMap<SampleKey, Integer>();
 		fillSampleIdSetMapWithFilterVariable(map, variable, fiterPos);
 
 		int pickCounter = 0;
 		if (include) {
-			for (Map.Entry<SampleKey, Object> entry : sampleIdSetMap.entrySet()) {
+			for (Map.Entry<SampleKey, char[]> entry : map.entrySet()) {
 				if (criteria.contains(entry.getValue())) {
 					returnMap.put(entry.getKey(), pickCounter);
 				}
 				pickCounter++;
 			}
 		} else {
-			for (Map.Entry<SampleKey, Object> entry : sampleIdSetMap.entrySet()) {
+			for (Map.Entry<SampleKey, char[]> entry : map.entrySet()) {
 				if (!criteria.contains(entry.getValue())) {
 					returnMap.put(entry.getKey(), pickCounter);
 				}
@@ -421,19 +441,19 @@ public class SampleSet {
 		return returnMap;
 	}
 
-	public Map<SampleKey, Object> pickValidSampleSetItemsByNetCDFKey(Map<SampleKey, Object> map, Set<Object> criteria, boolean include) throws IOException {
-		Map<SampleKey, Object> returnMap = new LinkedHashMap<SampleKey, Object>();
+	public Map<SampleKey, Integer> pickValidSampleSetItemsByNetCDFKey(Set<SampleKey> sampleKeys, Set<SampleKey> criteria, boolean include) throws IOException {
+		Map<SampleKey, Integer> returnMap = new LinkedHashMap<SampleKey, Integer>();
 
 		int pickCounter = 0;
 		if (include) {
-			for (SampleKey key : map.keySet()) {
+			for (SampleKey key : sampleKeys) {
 				if (criteria.contains(key)) {
 					returnMap.put(key, pickCounter);
 				}
 				pickCounter++;
 			}
 		} else {
-			for (SampleKey key : map.keySet()) {
+			for (SampleKey key : sampleKeys) {
 				if (!criteria.contains(key)) {
 					returnMap.put(key, pickCounter);
 				}

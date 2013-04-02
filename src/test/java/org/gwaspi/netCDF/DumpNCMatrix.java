@@ -31,7 +31,7 @@ public class DumpNCMatrix {
 
 	public static void printSystemOutMatrix(String matrixPath) throws IOException, InvalidRangeException {
 		NetcdfFile ncfile = NetcdfFile.open(matrixPath);
-		Map<String, Object> markerIdSetMap = new LinkedHashMap<String, Object>();
+		Map<String, char[]> markerIdSetMap = new LinkedHashMap<String, char[]>();
 		Map<String, Object> sampleIdSetMap = new LinkedHashMap<String, Object>();
 
 		FileWriter dumpFW = new FileWriter("/media/data/work/GWASpi/export/NCDump.txt"); // XXX system dependent path
@@ -47,7 +47,7 @@ public class DumpNCMatrix {
 
 			if (dataType == DataType.CHAR) {
 				ArrayChar.D2 markerSetAC = (ArrayChar.D2) var.read("(0:" + (markerSetSize - 1) + ":1, 0:" + (varShape[1] - 1) + ":1)");
-				markerIdSetMap = org.gwaspi.netCDF.operations.Utils.writeD2ArrayCharToMapKeys(markerSetAC);
+				markerIdSetMap = org.gwaspi.netCDF.operations.Utils.writeD2ArrayCharToMapKeys(markerSetAC, null);
 			}
 		} catch (IOException ex) {
 			log.error("Cannot read data", ex);
@@ -64,7 +64,7 @@ public class DumpNCMatrix {
 			int sampleSetSize = markerSetDim.getLength();
 			ArrayChar.D2 sampleSetAC = (ArrayChar.D2) var.read("(0:" + (sampleSetSize - 1) + ":1, 0:" + (varShape[1] - 1) + ":1)");
 
-			sampleIdSetMap = org.gwaspi.netCDF.operations.Utils.writeD2ArrayCharToMapKeys(sampleSetAC);
+			sampleIdSetMap = org.gwaspi.netCDF.operations.Utils.writeD2ArrayCharToMapKeys(sampleSetAC, null);
 		} catch (IOException ex) {
 			log.error("Cannot read data", ex);
 		} catch (InvalidRangeException ex) {

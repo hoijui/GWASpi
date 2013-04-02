@@ -134,34 +134,40 @@ public class ReportServiceImpl implements ReportService {
 
 	//<editor-fold defaultstate="expanded" desc="UTILS">
 	@Override
-	public <K> Map<K, Object> getSortedMarkerSetByDoubleValue(Map<K, Object> map) {
-		List<Map.Entry<K, Object>> list = new LinkedList<Map.Entry<K, Object>>(map.entrySet());
-		Collections.sort(list, new Comparator<Map.Entry<K, Object>>() {
-			public int compare(Map.Entry<K, Object> o1, Map.Entry<K, Object> o2) {
-				return ((Comparable) o1.getValue()).compareTo(o2.getValue());
-			}
-		});
-		// logger.info(list);
-		Map<K, Object> result = new LinkedHashMap<K, Object>();
-		for (Map.Entry<K, Object> entry : list) {
-			result.put(entry.getKey(), entry.getValue());
-		}
-		return result;
+	public <K, V> Map<K, V> createMapSortedByValue(Map<K, V> map) {
+		return createSortedMap(map, new MapValueComparator<K, V>(true));
 	}
 
 	@Override
-	public <K> Map<K, Object> getSortedDescendingMarkerSetByDoubleValue(Map<K, Object> map) {
-		List<Map.Entry<K, Object>> list = new LinkedList<Map.Entry<K, Object>>(map.entrySet());
-		Collections.sort(list, new Comparator<Map.Entry<K, Object>>() {
-			public int compare(Map.Entry<K, Object> o1, Map.Entry<K, Object> o2) {
-				return -1 * ((Comparable) o1.getValue()).compareTo(o2.getValue());
-			}
-		});
-		// logger.info(list);
-		Map<K, Object> result = new LinkedHashMap<K, Object>();
-		for (Map.Entry<K, Object> entry : list) {
+	public <K, V> Map<K, V> createMapSortedByValueDescending(Map<K, V> map) {
+		return createSortedMap(map, new MapValueComparator<K, V>(false));
+	}
+
+	private static class MapValueComparator<K, V> implements Comparator<Map.Entry<K, V>> {
+
+		private final int multiplier;
+
+		MapValueComparator(boolean ascending) {
+			this.multiplier = ascending ? 1 : -1;
+		}
+
+		@Override
+		public int compare(Map.Entry<K, V> o1, Map.Entry<K, V> o2) {
+			return multiplier * ((Comparable) o1.getValue()).compareTo(o2.getValue());
+		}
+	}
+
+	private static <K, V> Map<K, V> createSortedMap(Map<K, V> map, Comparator<Map.Entry<K, V>> comparator) {
+
+		Map<K, V> result = new LinkedHashMap<K, V>(map.size());
+
+		List<Map.Entry<K, V>> list = new LinkedList<Map.Entry<K, V>>(map.entrySet());
+		Collections.sort(list, comparator);
+
+		for (Map.Entry<K, V> entry : list) {
 			result.put(entry.getKey(), entry.getValue());
 		}
+
 		return result;
 	}
 	//</editor-fold>

@@ -5,6 +5,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -92,15 +94,15 @@ public class OP_MarkerCensus implements MatrixOperation {
 			rdMarkerSet.initFullMarkerIdSetMap();
 			rdMarkerSet.fillWith(cNetCDF.Defaults.DEFAULT_GT);
 
-			Map<MarkerKey, Object> wrMarkerSetMap = new LinkedHashMap<MarkerKey, Object>();
-			wrMarkerSetMap.putAll(rdMarkerSet.getMarkerIdSetMap());
+			Map<MarkerKey, byte[]> wrMarkerSetMap = new LinkedHashMap<MarkerKey, byte[]>();
+			wrMarkerSetMap.putAll(rdMarkerSet.getMarkerIdSetMapByteArray());
 
 			SampleSet rdSampleSet = new SampleSet(rdMatrixMetadata.getStudyId(), rdMatrixId);
-			Map<SampleKey, Object> rdSampleSetMap = rdSampleSet.getSampleIdSetMap();
-			Map<SampleKey, Object> wrSampleSetMap = new LinkedHashMap<SampleKey, Object>();
+			Map<SampleKey, byte[]> rdSampleSetMap = rdSampleSet.getSampleIdSetMapByteArray();
+			Collection<SampleKey> wrSampleKeys = new HashSet<SampleKey>(); // XXX Should this be a List instead, to preserve order?
 			for (SampleKey key : rdSampleSetMap.keySet()) {
 				if (!excludeSampleSetMap.containsKey(key)) {
-					wrSampleSetMap.put(key, cNetCDF.Defaults.DEFAULT_GT);
+					wrSampleKeys.add(key);
 				}
 			}
 			//</editor-fold>
@@ -118,9 +120,9 @@ public class OP_MarkerCensus implements MatrixOperation {
 				OperationFactory wrOPHandler = new OperationFactory(
 						rdMatrixMetadata.getStudyId(),
 						"Genotypes freq. - " + censusName, // friendly name
-						description + "\nSample missing ratio threshold: " + sampleMissingRatio + "\nSample heterozygosity ratio threshold: " + sampleHetzygRatio + "\nMarker missing ratio threshold: " + markerMissingRatio + "\nDiscard mismatching Markers: " + discardMismatches + "\nMarkers: " + wrMarkerSetMap.size() + "\nSamples: " + wrSampleSetMap.size(), // description
+						description + "\nSample missing ratio threshold: " + sampleMissingRatio + "\nSample heterozygosity ratio threshold: " + sampleHetzygRatio + "\nMarker missing ratio threshold: " + markerMissingRatio + "\nDiscard mismatching Markers: " + discardMismatches + "\nMarkers: " + wrMarkerSetMap.size() + "\nSamples: " + wrSampleKeys.size(), // description
 						wrMarkerSetMap.size(),
-						wrSampleSetMap.size(),
+						wrSampleKeys.size(),
 						0,
 						opType,
 						rdMatrixMetadata.getMatrixId(), // Parent matrixId
@@ -133,27 +135,28 @@ public class OP_MarkerCensus implements MatrixOperation {
 					log.error("Failed creating file: " + wrNcFile.getLocation(), ex);
 				}
 
-				writeMetadata(wrNcFile, rdMarkerSet, wrMarkerSetMap, wrSampleSetMap);
+				writeMetadata(wrNcFile, rdMarkerSet, wrMarkerSetMap, wrSampleKeys);
 
 				//<editor-fold defaultstate="expanded" desc="PROCESSOR">
-				Map<SampleKey, String[]> samplesInfoMap = fetchSampleInfo(rdMatrixMetadata, wrSampleSetMap);
+				Map<SampleKey, String[]> samplesInfoMap = fetchSampleInfo(rdMatrixMetadata, wrSampleKeys);
 
 				// Iterate through markerset, take it marker by marker
 				rdMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
 				// INIT wrSampleSetMap with indexing order and chromosome info
-				if (rdMarkerSet.getMarkerIdSetMap() != null) {
+				Map<MarkerKey, Object[]> wrMarkerInfos = new LinkedHashMap<MarkerKey, Object[]>();
+				if (rdMarkerSet.getMarkerIdSetMapCharArray() != null) {
 					int idx = 0;
-					for (Map.Entry<MarkerKey, Object> entry : rdMarkerSet.getMarkerIdSetMap().entrySet()) {
+					for (Map.Entry<MarkerKey, char[]> entry : rdMarkerSet.getMarkerIdSetMapCharArray().entrySet()) {
 						MarkerKey key = entry.getKey();
 						if (wrMarkerSetMap.containsKey(key)) {
-							String chr = entry.getValue().toString();
-							Object[] markerInfo = new Object[]{idx, chr};
-							wrMarkerSetMap.put(key, markerInfo);
+							String chr = new String(entry.getValue());
+							Object[] markerInfo = new Object[] {idx, chr};
+							wrMarkerInfos.put(key, markerInfo); // NOTE This value is never used!
 						}
 						idx++;
 					}
 
-					rdMarkerSet.getMarkerIdSetMap().clear();
+					rdMarkerSet.getMarkerIdSetMapCharArray().clear();
 				}
 
 				log.info(Text.All.processing);
@@ -168,9 +171,9 @@ public class OP_MarkerCensus implements MatrixOperation {
 				}
 				int countChunks = 0;
 
-				Map<MarkerKey, Object> wrChunkedMarkerCensusMap = new LinkedHashMap<MarkerKey, Object>();
-				Map<MarkerKey, Object> wrChunkedKnownAllelesMap = new LinkedHashMap<MarkerKey, Object>();
-				for (Map.Entry<MarkerKey, Object> entry : wrMarkerSetMap.entrySet()) {
+				Map<MarkerKey, int[]> wrChunkedMarkerCensusMap = new LinkedHashMap<MarkerKey, int[]>();
+				Map<MarkerKey, char[]> wrChunkedKnownAllelesMap = new LinkedHashMap<MarkerKey, char[]>();
+				for (Map.Entry<MarkerKey, ?> entry : wrMarkerInfos.entrySet()) {
 					MarkerKey markerKey = entry.getKey();
 					if (countMarkers % chunkSize == 0) {
 						if (countMarkers > 0) {
@@ -184,11 +187,11 @@ public class OP_MarkerCensus implements MatrixOperation {
 
 							countChunks++;
 						}
-						wrChunkedMarkerCensusMap = new LinkedHashMap<MarkerKey, Object>();
-						wrChunkedKnownAllelesMap = new LinkedHashMap<MarkerKey, Object>();
+						wrChunkedMarkerCensusMap = new LinkedHashMap<MarkerKey, int[]>();
+						wrChunkedKnownAllelesMap = new LinkedHashMap<MarkerKey, char[]>();
 						System.gc(); // Try to garbage collect here
 					}
-					wrChunkedMarkerCensusMap.put(markerKey, "");
+					wrChunkedMarkerCensusMap.put(markerKey, new int[0]);
 					countMarkers++;
 
 					Map<Byte, Float> knownAlleles = new LinkedHashMap<Byte, Float>();
@@ -208,7 +211,7 @@ public class OP_MarkerCensus implements MatrixOperation {
 					String markerChr = markerInfo[1].toString();
 
 					rdSampleSet.readAllSamplesGTsFromCurrentMarkerToMap(rdNcFile, rdSampleSetMap, markerNb);
-					for (SampleKey sampleKey : wrSampleSetMap.keySet()) {
+					for (SampleKey sampleKey : wrSampleKeys) {
 						String[] sampleInfo = samplesInfoMap.get(sampleKey);
 
 						//<editor-fold defaultstate="expanded" desc="THE DECIDER">
@@ -221,7 +224,7 @@ public class OP_MarkerCensus implements MatrixOperation {
 						//</editor-fold>
 
 						// SUMMING SAMPLESET GENOTYPES
-						byte[] tempGT = (byte[]) rdSampleSetMap.get(sampleKey);
+						byte[] tempGT = rdSampleSetMap.get(sampleKey);
 						missingCount = summingSampleSetGenotypes(
 								tempGT,
 								decision,
@@ -351,20 +354,20 @@ public class OP_MarkerCensus implements MatrixOperation {
 						if (knownAlleles.size() == 2) {
 							Byte allele1 = knit.next();
 							Byte allele2 = knit.next();
-							alleles = new byte[]{allele1, allele2};
+							alleles = new byte[] {allele1, allele2};
 						}
 						if (knownAlleles.size() == 1) {
 							Byte allele1 = knit.next();
-							alleles = new byte[]{allele1, allele1};
+							alleles = new byte[] {allele1, allele1};
 						}
 						sb.append(new String(alleles));
 
-						wrChunkedKnownAllelesMap.put(markerKey, sb.toString());
+						wrChunkedKnownAllelesMap.put(markerKey, sb.toString().toCharArray());
 					} else {
 						// MISMATCHES FOUND
 						int[] census = new int[10];
 						wrChunkedMarkerCensusMap.put(markerKey, census);
-						wrChunkedKnownAllelesMap.put(markerKey, "00");
+						wrChunkedKnownAllelesMap.put(markerKey, "00".toCharArray());
 					}
 
 					if (markerNb != 0 && markerNb % 100000 == 0) {
@@ -640,8 +643,8 @@ public class OP_MarkerCensus implements MatrixOperation {
 
 		// EXCLUDE MARKER BY MISMATCH STATE
 		if (discardMismatches) {
-			rdQAMarkerSetMap = rdQAMarkerSet.fillOpSetMapWithVariable(rdMarkerQANcFile, cNetCDF.Census.VAR_OP_MARKERS_MISMATCHSTATE);
-			for (Map.Entry<MarkerKey, Object> entry : rdQAMarkerSetMap.entrySet()) {
+			Map<MarkerKey, Integer> rdQAMarkerSetMapMismatchStates = rdQAMarkerSet.fillOpSetMapWithVariable(rdMarkerQANcFile, cNetCDF.Census.VAR_OP_MARKERS_MISMATCHSTATE);
+			for (Map.Entry<MarkerKey, Integer> entry : rdQAMarkerSetMapMismatchStates.entrySet()) {
 				MarkerKey key = entry.getKey();
 				Object value = entry.getValue();
 				if (value.equals(cNetCDF.Defaults.DEFAULT_MISMATCH_YES)) {
@@ -651,21 +654,21 @@ public class OP_MarkerCensus implements MatrixOperation {
 		}
 
 		// EXCLUDE MARKER BY MISSING RATIO
-		rdQAMarkerSetMap = rdQAMarkerSet.fillOpSetMapWithVariable(rdMarkerQANcFile, cNetCDF.Census.VAR_OP_MARKERS_MISSINGRAT);
-		for (Map.Entry<MarkerKey, Object> entry : rdQAMarkerSetMap.entrySet()) {
+		Map<MarkerKey, Double> rdQAMarkerSetMapMissingRat = rdQAMarkerSet.fillOpSetMapWithVariable(rdMarkerQANcFile, cNetCDF.Census.VAR_OP_MARKERS_MISSINGRAT);
+		for (Map.Entry<MarkerKey, Double> entry : rdQAMarkerSetMapMissingRat.entrySet()) {
 			MarkerKey key = entry.getKey();
-			double value = (Double) entry.getValue();
+			double value = entry.getValue();
 			if (value > markerMissingRatio) {
 				excludeMarkerSetMap.put(key, value);
 			}
 		}
 
 		// EXCLUDE SAMPLE BY MISSING RATIO
-		rdQASampleSetMap = rdQASampleSet.fillOpSetMapWithVariable(rdSampleQANcFile, cNetCDF.Census.VAR_OP_SAMPLES_MISSINGRAT);
+		Map<SampleKey, Double> rdQASampleSetMapMissingRat = rdQASampleSet.fillOpSetMapWithVariable(rdSampleQANcFile, cNetCDF.Census.VAR_OP_SAMPLES_MISSINGRAT);
 		if (rdQASampleSetMap != null) {
-			for (Map.Entry<SampleKey, Object> entry : rdQASampleSetMap.entrySet()) {
+			for (Map.Entry<SampleKey, Double> entry : rdQASampleSetMapMissingRat.entrySet()) {
 				SampleKey key = entry.getKey();
-				double value = (Double) entry.getValue();
+				double value = entry.getValue();
 				if (value > sampleMissingRatio) {
 					excludeSampleSetMap.put(key, value);
 				}
@@ -673,11 +676,11 @@ public class OP_MarkerCensus implements MatrixOperation {
 		}
 
 		// EXCLUDE SAMPLE BY HETEROZYGOSITY RATIO
-		rdQASampleSetMap = rdQASampleSet.fillOpSetMapWithVariable(rdSampleQANcFile, cNetCDF.Census.VAR_OP_SAMPLES_HETZYRAT);
+		Map<SampleKey, Double> rdQASampleSetMapHetzyRat = rdQASampleSet.fillOpSetMapWithVariable(rdSampleQANcFile, cNetCDF.Census.VAR_OP_SAMPLES_HETZYRAT);
 		if (rdQASampleSetMap != null) {
-			for (Map.Entry<SampleKey, Object> entry : rdQASampleSetMap.entrySet()) {
+			for (Map.Entry<SampleKey, Double> entry : rdQASampleSetMapHetzyRat.entrySet()) {
 				SampleKey key = entry.getKey();
-				double value = (Double) entry.getValue();
+				double value = entry.getValue();
 				if (value > sampleHetzygRatio) {
 					excludeSampleSetMap.put(key, value);
 				}
@@ -691,7 +694,7 @@ public class OP_MarkerCensus implements MatrixOperation {
 				&& (excludeMarkerSetMap.size() < totalMarkerNb));
 	}
 
-	private int summingSampleSetGenotypes(
+	static int summingSampleSetGenotypes(
 			byte[] tempGT,
 			CensusDecision decision,
 			Map<Byte, Float> knownAlleles,
@@ -767,7 +770,7 @@ public class OP_MarkerCensus implements MatrixOperation {
 
 	private Map<SampleKey, String[]> fetchSampleInfo(
 			MatrixMetadata rdMatrixMetadata,
-			Map<SampleKey, Object> wrSampleSetMap)
+			Collection<SampleKey> wrSampleKeys)
 			throws IOException
 	{
 		Map<SampleKey, String[]> samplesInfoMap = new LinkedHashMap<SampleKey, String[]>(); // XXX change to Collection<SampleInfo>?
@@ -775,7 +778,7 @@ public class OP_MarkerCensus implements MatrixOperation {
 		if (phenoFile == null) {
 			for (SampleInfo sampleInfo : sampleInfos) {
 				SampleKey tempSampleKey = sampleInfo.getKey();
-				if (wrSampleSetMap.containsKey(tempSampleKey)) {
+				if (wrSampleKeys.contains(tempSampleKey)) {
 					String sex = sampleInfo.getSexStr();
 					String affection = sampleInfo.getAffectionStr();
 					String[] info = new String[]{sex, affection};
@@ -795,7 +798,7 @@ public class OP_MarkerCensus implements MatrixOperation {
 			}
 			phenotypeBR.close();
 			// CHECK IF THERE ARE MISSING SAMPLES IN THE PHENO PHILE
-			for (SampleKey sampleKey : wrSampleSetMap.keySet()) {
+			for (SampleKey sampleKey : wrSampleKeys) {
 				if (!samplesInfoMap.containsKey(sampleKey)) {
 					String sex = "0";
 					String affection = "0";
@@ -819,8 +822,8 @@ public class OP_MarkerCensus implements MatrixOperation {
 	private void writeMetadata(
 			NetcdfFileWriteable wrNcFile,
 			MarkerSet rdMarkerSet,
-			Map<MarkerKey, Object> wrMarkerSetMap,
-			Map<SampleKey, Object> wrSampleSetMap)
+			Map<MarkerKey, byte[]> wrMarkerSetMap,
+			Collection<SampleKey> wrSampleKeys)
 	{
 		// MARKERSET MARKERID
 		ArrayChar.D2 markersD2 = Utils.writeMapKeysToD2ArrayChar(wrMarkerSetMap, cNetCDF.Strides.STRIDE_MARKER_NAME);
@@ -835,15 +838,11 @@ public class OP_MarkerCensus implements MatrixOperation {
 
 		// MARKERSET RSID
 		rdMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_RSID);
-		for (Map.Entry<MarkerKey, Object> entry : wrMarkerSetMap.entrySet()) {
-			MarkerKey key = entry.getKey();
-			Object value = rdMarkerSet.getMarkerIdSetMap().get(key);
-			entry.setValue(value);
-		}
-		Utils.saveCharMapValueToWrMatrix(wrNcFile, wrMarkerSetMap, cNetCDF.Variables.VAR_MARKERS_RSID, cNetCDF.Strides.STRIDE_MARKER_NAME);
+		Map<MarkerKey, char[]> wrSortedMarkerRsIds = org.gwaspi.global.Utils.createOrderedMap(wrMarkerSetMap, rdMarkerSet.getMarkerIdSetMapCharArray());
+		Utils.saveCharMapValueToWrMatrix(wrNcFile, wrSortedMarkerRsIds, cNetCDF.Variables.VAR_MARKERS_RSID, cNetCDF.Strides.STRIDE_MARKER_NAME);
 
 		// WRITE SAMPLESET TO MATRIX FROM SAMPLES ARRAYLIST
-		ArrayChar.D2 samplesD2 = org.gwaspi.netCDF.operations.Utils.writeMapKeysToD2ArrayChar(wrSampleSetMap, cNetCDF.Strides.STRIDE_SAMPLE_NAME);
+		ArrayChar.D2 samplesD2 = org.gwaspi.netCDF.operations.Utils.writeCollectionToD2ArrayChar(wrSampleKeys, cNetCDF.Strides.STRIDE_SAMPLE_NAME);
 
 		int[] sampleOrig = new int[]{0, 0};
 		try {
@@ -858,8 +857,8 @@ public class OP_MarkerCensus implements MatrixOperation {
 
 	private static void censusDataWriter(
 			NetcdfFileWriteable wrNcFile,
-			Map<MarkerKey, Object> wrChunkedMarkerCensusMap,
-			Map<MarkerKey, Object> wrChunkedKnownAllelesMap,
+			Map<MarkerKey, int[]> wrChunkedMarkerCensusMap,
+			Map<MarkerKey, char[]> wrChunkedKnownAllelesMap,
 			int countChunks,
 			int chunkSize)
 	{
@@ -872,7 +871,7 @@ public class OP_MarkerCensus implements MatrixOperation {
 				countChunks * chunkSize);
 
 		// ALL CENSUS
-		int[] columns = new int[]{0, 1, 2, 3};
+		int[] columns = new int[] {0, 1, 2, 3};
 		Utils.saveIntChunkedMapD2ToWrMatrix(
 				wrNcFile,
 				wrChunkedMarkerCensusMap,

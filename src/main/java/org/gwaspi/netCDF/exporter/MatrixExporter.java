@@ -30,7 +30,7 @@ public class MatrixExporter {
 	private MatrixMetadata rdMatrixMetadata = null;
 	private MarkerSet rdMarkerSet = null;
 	private SampleSet rdSampleSet = null;
-	private Map<SampleKey, Object> rdSampleSetMap = null;
+	private Map<SampleKey, byte[]> rdSampleSetMap = null;
 	private Map<ExportFormat, Formatter> formatters;
 
 	public MatrixExporter(int _rdMatrixId) throws IOException, InvalidRangeException {
@@ -43,7 +43,7 @@ public class MatrixExporter {
 		rdMarkerSet = new MarkerSet(rdMatrixMetadata.getStudyId(), rdMatrixId);
 
 		rdSampleSet = new SampleSet(rdMatrixMetadata.getStudyId(), rdMatrixId);
-		rdSampleSetMap = rdSampleSet.getSampleIdSetMap();
+		rdSampleSetMap = rdSampleSet.getSampleIdSetMapByteArray();
 
 		formatters = new EnumMap<ExportFormat, Formatter>(ExportFormat.class);
 		formatters.put(ExportFormat.PLINK, new PlinkFormatter());
@@ -75,8 +75,8 @@ public class MatrixExporter {
 				rdSampleSetMap,
 				phenotype);
 
-		if (rdMarkerSet.getMarkerIdSetMap() != null) {
-			rdMarkerSet.getMarkerIdSetMap().clear();
+		if (rdMarkerSet.getMarkerIdSetMapCharArray() != null) {
+			rdMarkerSet.getMarkerIdSetMapCharArray().clear();
 		}
 
 		org.gwaspi.global.Utils.sysoutCompleted("exporting Matrix to \"" + exportPath + "\"");

@@ -24,7 +24,5 @@ public interface GenotypesLoader {
 
 	boolean isHasDictionary();
 
-	int getMarkersD2ItemNb();
-
 	String getMarkersD2Variables();
 }

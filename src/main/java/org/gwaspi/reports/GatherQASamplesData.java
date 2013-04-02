@@ -20,12 +20,12 @@ public class GatherQASamplesData {
 	private GatherQASamplesData() {
 	}
 
-	public static Map<SampleKey, Object> loadSamplesQAMissingRatio(int opId) throws IOException {
+	public static Map<SampleKey, Double> loadSamplesQAMissingRatio(int opId) throws IOException {
 
 		OperationMetadata rdOPMetadata = OperationsList.getOperationMetadata(opId);
 
 		SampleOperationSet rdInfoSampleSet = new SampleOperationSet(rdOPMetadata.getStudyId(), opId);
-		Map<SampleKey, Object> rdMatrixSampleSetMap = rdInfoSampleSet.getOpSetMap();
+		Map<SampleKey, Double> rdMatrixSampleSetMap = rdInfoSampleSet.getOpSetMap();
 
 		NetcdfFile ncFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());
 		rdMatrixSampleSetMap = rdInfoSampleSet.fillOpSetMapWithVariable(ncFile, cNetCDF.Census.VAR_OP_SAMPLES_MISSINGRAT);
@@ -34,12 +34,12 @@ public class GatherQASamplesData {
 		return rdMatrixSampleSetMap;
 	}
 
-	public static Map<SampleKey, Object> loadSamplesQAHetZygRatio(int opId) throws IOException {
+	public static Map<SampleKey, Double> loadSamplesQAHetZygRatio(int opId) throws IOException {
 
 		OperationMetadata rdOPMetadata = OperationsList.getOperationMetadata(opId);
 
 		SampleOperationSet rdInfoSampleSet = new SampleOperationSet(rdOPMetadata.getStudyId(), opId);
-		Map<SampleKey, Object> rdMatrixSampleSetMap = rdInfoSampleSet.getOpSetMap();
+		Map<SampleKey, Double> rdMatrixSampleSetMap = rdInfoSampleSet.getOpSetMap();
 
 		NetcdfFile ncFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());
 		rdMatrixSampleSetMap = rdInfoSampleSet.fillOpSetMapWithVariable(ncFile, cNetCDF.Census.VAR_OP_SAMPLES_HETZYRAT);

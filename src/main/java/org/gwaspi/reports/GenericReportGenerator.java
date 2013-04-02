@@ -18,6 +18,7 @@ import org.gwaspi.global.Config;
 import org.gwaspi.gui.reports.ManhattanPlotZoom;
 import org.gwaspi.gui.reports.SampleQAHetzygPlotZoom;
 import org.gwaspi.model.MarkerKey;
+import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.SampleKey;
@@ -95,7 +96,7 @@ public class GenericReportGenerator {
 				PLOT_MANHATTAN_MAIN_DEFAULT);
 		//</editor-fold>
 
-		Map<MarkerKey, Object> dataSetMap = new LinkedHashMap<MarkerKey, Object>();
+		Map<MarkerKey, Object[]> dataSetMap = new LinkedHashMap<MarkerKey, Object[]>();
 		OperationMetadata rdOPMetadata = OperationsList.getOperationMetadata(opId);
 
 		//<editor-fold defaultstate="expanded" desc="GET POSITION DATA">
@@ -108,42 +109,42 @@ public class GenericReportGenerator {
 //		}
 
 		rdInfoMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
-		for (Map.Entry<MarkerKey, Object> entry : rdInfoMarkerSet.getMarkerIdSetMap().entrySet()) {
+		for (Map.Entry<MarkerKey, char[]> entry : rdInfoMarkerSet.getMarkerIdSetMapCharArray().entrySet()) {
 			MarkerKey key = entry.getKey();
-			String chr = entry.getValue().toString();
-			Object[] data = new Object[3]; //CHR, POS, PVAL
+			String chr = new String(entry.getValue());
+			Object[] data = new Object[3]; // CHR, POS, PVAL
 			data[0] = chr;
 			dataSetMap.put(key, data);
 		}
 
 		rdInfoMarkerSet.fillWith(0);
 		rdInfoMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_POS);
-		if (rdInfoMarkerSet.getMarkerIdSetMap() != null) {
-			for (Map.Entry<MarkerKey, Object> entry : rdInfoMarkerSet.getMarkerIdSetMap().entrySet()) {
+		if (rdInfoMarkerSet.getMarkerIdSetMapInteger() != null) {
+			for (Map.Entry<MarkerKey, Integer> entry : rdInfoMarkerSet.getMarkerIdSetMapInteger().entrySet()) {
 				MarkerKey key = entry.getKey();
-				Object[] data = (Object[]) dataSetMap.get(key); //CHR, POS, PVAL
-				int pos = (Integer) entry.getValue();
+				Object[] data = dataSetMap.get(key); // CHR, POS, PVAL
+				int pos = entry.getValue();
 				data[1] = pos;
 				dataSetMap.put(key, data);
 			}
 
-			rdInfoMarkerSet.getMarkerIdSetMap().clear();
+			rdInfoMarkerSet.getMarkerIdSetMapInteger().clear();
 		}
 		//</editor-fold>
 
 		//<editor-fold defaultstate="expanded" desc="GET Pval">
 		NetcdfFile assocNcFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());
 		MarkerOperationSet rdAssocMarkerSet = new MarkerOperationSet(rdOPMetadata.getStudyId(), opId);
-		Map<MarkerKey, Object> rdAssocMarkerSetMap = rdAssocMarkerSet.getOpSetMap();
+		Map<MarkerKey, double[]> rdAssocMarkerSetMap = rdAssocMarkerSet.getOpSetMap();
 		rdAssocMarkerSetMap = rdAssocMarkerSet.fillOpSetMapWithVariable(assocNcFile, netCDFVar);
 		assocNcFile.close();
 
 		if (rdAssocMarkerSetMap != null) {
-			for (Map.Entry<MarkerKey, Object> entry : rdAssocMarkerSetMap.entrySet()) {
+			for (Map.Entry<MarkerKey, double[]> entry : rdAssocMarkerSetMap.entrySet()) {
 				MarkerKey key = entry.getKey();
-				Object[] data = (Object[]) dataSetMap.get(key); // CHR, POS, PVAL
+				Object[] data = dataSetMap.get(key); // CHR, POS, PVAL
 
-				double[] value = (double[]) entry.getValue();
+				double[] value = entry.getValue();
 				Double pval = (Double) value[1];  // PVAL
 				if (!Double.isNaN(pval) && !Double.isInfinite(pval)) { // Ignore NaN Pvalues
 					data[2] = pval;
@@ -167,11 +168,11 @@ public class GenericReportGenerator {
 		// Subdividing points into sub-XYSeries, per chromosome
 		String currChr = "";
 		Map<String, MarkerKey> labeler = new LinkedHashMap<String, MarkerKey>(); // FIXME This is unused, was a global static var before (also private though), was the data added here actually used somewhere? (i think not)
-		for (Map.Entry<MarkerKey, Object> entry : dataSetMap.entrySet()) {
+		for (Map.Entry<MarkerKey, Object[]> entry : dataSetMap.entrySet()) {
 			MarkerKey markerKey = entry.getKey();
-			Object[] data = (Object[]) entry.getValue(); //CHR, POS, PVAL
+			Object[] data = entry.getValue(); //CHR, POS, PVAL
 
-			String chr = data[0].toString();
+			String chr = (String) data[0];
 			int position = (Integer) data[1];
 
 			if (data[2] != null) {
@@ -185,7 +186,7 @@ public class GenericReportGenerator {
 							currChrSC.addSeries(currChrS);
 							appendToCombinedRangeManhattanPlot(combinedPlot, currChr, currChrSC, false, threshold, background, backgroundAlternative, main);
 						}
-						currChr = data[0].toString();
+						currChr = (String) data[0];
 						currChrSC = new XYSeriesCollection();
 						currChrS = new XYSeries(currChr);
 						labeler.put(currChr + "_" + position, markerKey);
@@ -456,14 +457,14 @@ public class GenericReportGenerator {
 			// CUT READ-Map TO SIZE
 			for (Map.Entry<MarkerKey, Object> entry : rdAssocMarkerSetMap.entrySet()) {
 				MarkerKey key = entry.getKey();
-				Object[] chrInfo = (Object[]) rdInfoMarkerSet.getMarkerIdSetMap().get(key);
+				MarkerMetadata chrInfo = rdInfoMarkerSet.getMarkerMetadata().get(key);
 				Object[] plotInfo = new Object[3];
-				if (chrInfo[0].toString().equals(chr)
-						&& ((Integer) chrInfo[1] >= minPosition)
-						&& ((Integer) chrInfo[1] <= maxPosition))
+				if (chrInfo.getChr().equals(chr)
+						&& (chrInfo.getPos() >= minPosition)
+						&& (chrInfo.getPos() <= maxPosition))
 				{
-					plotInfo[0] = chrInfo[0];
-					plotInfo[1] = chrInfo[1];
+					plotInfo[0] = chrInfo.getChr();
+					plotInfo[1] = chrInfo.getPos();
 					dataSetMap.put(key, plotInfo);
 				}
 			}
@@ -537,12 +538,12 @@ public class GenericReportGenerator {
 		XYDataset resultXYDataset = null;
 
 		try {
-			Map<MarkerKey, Object> dataSetMap = new LinkedHashMap<MarkerKey, Object>();
+			Map<MarkerKey, Object[]> dataSetMap = new LinkedHashMap<MarkerKey, Object[]>();
 			OperationMetadata rdOPMetadata = OperationsList.getOperationMetadata(opId);
 
 			NetcdfFile assocNcFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());
 			MarkerOperationSet rdAssocMarkerSet = new MarkerOperationSet(rdOPMetadata.getStudyId(), opId);
-			Map<MarkerKey, Object> rdAssocMarkerSetMap = rdAssocMarkerSet.getOpSetMap();
+			Map<MarkerKey, double[]> rdAssocMarkerSetMap = rdAssocMarkerSet.getOpSetMap();
 
 			//<editor-fold defaultstate="expanded" desc="GET POSITION DATA">
 			MarkerSet rdInfoMarkerSet = new MarkerSet(rdOPMetadata.getStudyId(), rdOPMetadata.getParentMatrixId());
@@ -598,7 +599,7 @@ public class GenericReportGenerator {
 			while (goOn && i < rdAssocMarkerSetMap.size()) {
 				MarkerKey key = it.next();
 				if (i >= minPosition && i <= maxPosition) {
-					dataSetMap.put(key, "");
+					dataSetMap.put(key, null);
 					if (i == middlePosition) { // MAKE SURE WE KNOW WHAT MARKERID IS IN THE MIDDLE
 						origMarkerKey = key;
 					}
@@ -612,12 +613,12 @@ public class GenericReportGenerator {
 			// GET MARKER CHR & POS INFO
 			rdInfoMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
 			// First check for same chromosome data
-			String validateChr = rdInfoMarkerSet.getMarkerIdSetMap().get(origMarkerKey).toString();
+			String validateChr = new String(rdInfoMarkerSet.getMarkerIdSetMapCharArray().get(origMarkerKey));
 			manhattanPlotZoom.setCenterPhysPos((long) minPosition);
 
-			for (Map.Entry<MarkerKey, Object> entry : dataSetMap.entrySet()) {
+			for (Map.Entry<MarkerKey, Object[]> entry : dataSetMap.entrySet()) {
 				MarkerKey key = entry.getKey();
-				String chr = rdInfoMarkerSet.getMarkerIdSetMap().get(key).toString();
+				String chr = new String(rdInfoMarkerSet.getMarkerIdSetMapCharArray().get(key));
 				Object[] data = new Object[3]; // CHR, POS, PVAL
 				data[0] = chr;
 				entry.setValue(data);
@@ -625,24 +626,24 @@ public class GenericReportGenerator {
 
 			rdInfoMarkerSet.fillWith(0);
 			rdInfoMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_POS);
-			for (Map.Entry<MarkerKey, Object> entry : dataSetMap.entrySet()) {
+			for (Map.Entry<MarkerKey, Object[]> entry : dataSetMap.entrySet()) {
 				MarkerKey key = entry.getKey();
-				Object[] data = (Object[]) entry.getValue(); // CHR, POS, PVAL
-				int pos = (Integer) rdInfoMarkerSet.getMarkerIdSetMap().get(key);
+				Object[] data = entry.getValue(); // CHR, POS, PVAL
+				int pos = rdInfoMarkerSet.getMarkerIdSetMapInteger().get(key);
 				data[1] = pos;
 				entry.setValue(data);
 			}
-			if (rdInfoMarkerSet.getMarkerIdSetMap() != null) {
-				rdInfoMarkerSet.getMarkerIdSetMap().clear();
+			if (rdInfoMarkerSet.getMarkerIdSetMapInteger() != null) {
+				rdInfoMarkerSet.getMarkerIdSetMapInteger().clear();
 			}
 			//</editor-fold>
 
 			//<editor-fold defaultstate="expanded" desc="GET Pval">
 			rdAssocMarkerSetMap = rdAssocMarkerSet.fillOpSetMapWithVariable(assocNcFile, netCDFVar);
-			for (Map.Entry<MarkerKey, Object> entry : dataSetMap.entrySet()) {
+			for (Map.Entry<MarkerKey, Object[]> entry : dataSetMap.entrySet()) {
 				MarkerKey key = entry.getKey();
-				Object[] data = (Object[]) entry.getValue(); // CHR, POS, PVAL
-				double[] value = (double[]) rdAssocMarkerSetMap.get(key);
+				Object[] data = entry.getValue(); // CHR, POS, PVAL
+				double[] value = rdAssocMarkerSetMap.get(key);
 				Double pval = (Double) value[1]; // PVAL
 				if (!Double.isNaN(pval) && !Double.isInfinite(pval)) { // Ignore NaN Pvalues
 					data[2] = pval;
@@ -659,9 +660,9 @@ public class GenericReportGenerator {
 			XYSeries dataSeries = new XYSeries("");
 
 			Map<String, MarkerKey> labeler = new LinkedHashMap<String, MarkerKey>();
-			for (Map.Entry<MarkerKey, Object> entry : dataSetMap.entrySet()) {
+			for (Map.Entry<MarkerKey, Object[]> entry : dataSetMap.entrySet()) {
 				MarkerKey tmpMarker = entry.getKey();
-				Object[] data = (Object[]) entry.getValue(); //CHR, POS, PVAL
+				Object[] data = entry.getValue(); //CHR, POS, PVAL
 
 				String chr = data[0].toString();
 				int position = (Integer) data[1];
@@ -733,48 +734,48 @@ public class GenericReportGenerator {
 	//</editor-fold>
 
 	//<editor-fold defaultstate="expanded" desc="HELPERS">
-	public static Map<MarkerKey, Object> getAnalysisVarData(int opId, String netCDFVar) throws IOException {
+	public static Map<MarkerKey, double[]> getAnalysisVarData(int opId, String netCDFVar) throws IOException {
 
 		OperationMetadata rdOPMetadata = OperationsList.getOperationMetadata(opId);
 
 
 		NetcdfFile assocNcFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());
 		MarkerOperationSet rdAssocMarkerSet = new MarkerOperationSet(rdOPMetadata.getStudyId(), opId);
-		Map<MarkerKey, Object> rdAssocMarkerSetMap = rdAssocMarkerSet.getOpSetMap();
+		Map<MarkerKey, double[]> rdAssocMarkerSetMap = rdAssocMarkerSet.getOpSetMap();
 		rdAssocMarkerSetMap = rdAssocMarkerSet.fillOpSetMapWithVariable(assocNcFile, netCDFVar);
 
 		assocNcFile.close();
 		return rdAssocMarkerSetMap;
 	}
 
-	public static Map<MarkerKey, Object> getMarkerSetChrAndPos(int opId) throws IOException {
-		Map<MarkerKey, Object> dataSetMap = new LinkedHashMap<MarkerKey, Object>();
+	public static Map<MarkerKey, Object[]> getMarkerSetChrAndPos(int opId) throws IOException {
+		Map<MarkerKey, Object[]> dataSetMap = new LinkedHashMap<MarkerKey, Object[]>();
 		OperationMetadata rdOPMetadata = OperationsList.getOperationMetadata(opId);
 
 		//<editor-fold defaultstate="expanded" desc="GET POSITION DATA">
 		MarkerSet rdInfoMarkerSet = new MarkerSet(rdOPMetadata.getStudyId(), rdOPMetadata.getParentMatrixId());
 		rdInfoMarkerSet.initFullMarkerIdSetMap();
 		rdInfoMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
-		if (rdInfoMarkerSet.getMarkerIdSetMap() != null) {
-			for (Map.Entry<MarkerKey, Object> entry : rdInfoMarkerSet.getMarkerIdSetMap().entrySet()) {
+		if (rdInfoMarkerSet.getMarkerIdSetMapCharArray() != null) {
+			for (Map.Entry<MarkerKey, char[]> entry : rdInfoMarkerSet.getMarkerIdSetMapCharArray().entrySet()) {
 				MarkerKey key = entry.getKey();
-				String chr = entry.getValue().toString();
-				Object[] data = new Object[2]; //CHR, POS
+				String chr = new String(entry.getValue());
+				Object[] data = new Object[2]; // CHR, POS
 				data[0] = chr;
 				dataSetMap.put(key, data);
 			}
 
 			rdInfoMarkerSet.fillWith(0);
 			rdInfoMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_POS);
-			for (Map.Entry<MarkerKey, Object> entry : rdInfoMarkerSet.getMarkerIdSetMap().entrySet()) {
+			for (Map.Entry<MarkerKey, Integer> entry : rdInfoMarkerSet.getMarkerIdSetMapInteger().entrySet()) {
 				MarkerKey key = entry.getKey();
-				Object[] data = (Object[]) dataSetMap.get(key); //CHR, POS
-				int pos = (Integer) entry.getValue();
+				Object[] data = dataSetMap.get(key); //CHR, POS
+				int pos = entry.getValue();
 				data[1] = pos;
 				dataSetMap.put(key, data);
 			}
 
-			rdInfoMarkerSet.getMarkerIdSetMap().clear();
+			rdInfoMarkerSet.getMarkerIdSetMapInteger().clear();
 		}
 		//</editor-fold>
 

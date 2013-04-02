@@ -17,7 +17,7 @@ import ucar.nc2.NetcdfFile;
 public class IterateThroughMarkerMap {
 
 	private Map<MarkerKey, Object> basesMap = new LinkedHashMap<MarkerKey, Object>();
-	private Map<SampleKey, Object> rdSampleSetMap = new LinkedHashMap<SampleKey, Object>();
+	private Map<SampleKey, byte[]> rdSampleSetMap = new LinkedHashMap<SampleKey, byte[]>();
 	private Map<SampleKey, Object> wrSampleSetMap = new LinkedHashMap<SampleKey, Object>();
 	private SampleSet rdSampleSet = null;
 

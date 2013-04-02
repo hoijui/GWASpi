@@ -7,6 +7,7 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.model.MarkerKey;
+import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleKey;
@@ -109,89 +110,70 @@ public abstract class AbstractMergeMatrixOperation implements MatrixOperation {
 		this.rdSampleSet2 = new SampleSet(this.rdMatrix2Metadata.getStudyId(), this.rdMatrix2Id);
 	}
 
-	protected Map<MarkerKey, Object> mingleAndSortMarkerSet() {
+	private static Map<MarkerKey, char[]> getMatrixMapWithChrAndPos(MarkerSet rdMarkerSet) {
 
-		// GET 1st MATRIX Map WITH CHR AND POS
-		Map<MarkerKey, Object> workMap = new LinkedHashMap<MarkerKey, Object>();
-		rdMarkerSet1.initFullMarkerIdSetMap();
-		rdMarkerSet2.initFullMarkerIdSetMap();
-		rdMarkerSet1.fillWith("");
-		rdMarkerSet1.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
-		workMap.putAll(rdMarkerSet1.getMarkerIdSetMap());
-		rdMarkerSet1.fillWith("");
-		rdMarkerSet1.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_POS);
-		for (Map.Entry<MarkerKey, Object> entry : workMap.entrySet()) {
+		rdMarkerSet.initFullMarkerIdSetMap();
+
+		rdMarkerSet.fillWith(new char[0]);
+		rdMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
+		Map<MarkerKey, char[]> chrMap = new LinkedHashMap<MarkerKey, char[]>(rdMarkerSet.getMarkerIdSetMapCharArray());
+		Map<MarkerKey, char[]> workMap = new LinkedHashMap<MarkerKey, char[]>(chrMap.size());
+		rdMarkerSet.fillWith(new char[0]);
+		rdMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_POS);
+		for (Map.Entry<MarkerKey, char[]> entry : chrMap.entrySet()) {
 			MarkerKey markerKey = entry.getKey();
-			String chr = entry.getValue().toString();
-			String pos = rdMarkerSet1.getMarkerIdSetMap().get(markerKey).toString();
-			StringBuilder sbKey = new StringBuilder(chr);
+			char[] chr = entry.getValue();
+			Integer pos = rdMarkerSet.getMarkerIdSetMapInteger().get(markerKey);
+			StringBuilder sbKey = new StringBuilder(new String(chr));
 			sbKey.append(cNetCDF.Defaults.TMP_SEPARATOR);
-			sbKey.append(pos);
+			sbKey.append(pos.toString());
 			sbKey.append(cNetCDF.Defaults.TMP_SEPARATOR);
 			sbKey.append(markerKey.getMarkerId());
-			entry.setValue(sbKey.toString());
+			workMap.put(markerKey, sbKey.toString().toCharArray());
 		}
-		if (rdMarkerSet1.getMarkerIdSetMap() != null) {
-			rdMarkerSet1.getMarkerIdSetMap().clear();
-		}
-
-		// GET 2nd MATRIX Map WITH CHR AND POS
-		Map<MarkerKey, Object> workMap2 = new LinkedHashMap<MarkerKey, Object>();
-		rdMarkerSet2.fillWith("");
-		rdMarkerSet2.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
-		workMap2.putAll(rdMarkerSet2.getMarkerIdSetMap());
-		rdMarkerSet2.fillWith("");
-		rdMarkerSet2.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_POS);
-		for (Map.Entry<MarkerKey, Object> entry : workMap2.entrySet()) {
-			MarkerKey markerKey = entry.getKey();
-			String chr = entry.getValue().toString();
-			String pos = rdMarkerSet2.getMarkerIdSetMap().get(markerKey).toString();
-			StringBuilder sbKey = new StringBuilder(chr);
-			sbKey.append(cNetCDF.Defaults.TMP_SEPARATOR);
-			sbKey.append(pos);
-			sbKey.append(cNetCDF.Defaults.TMP_SEPARATOR);
-			sbKey.append(markerKey.getMarkerId());
-			entry.setValue(sbKey.toString());
-		}
-		if (rdMarkerSet2.getMarkerIdSetMap() != null) {
-			rdMarkerSet2.getMarkerIdSetMap().clear();
-		}
-
-		workMap.putAll(workMap2);
-
-		// SORT MERGED Map
-		SortedMap<String, MarkerKey> sortedMetadataTM = new TreeMap<String, MarkerKey>(new ComparatorChrAutPosMarkerIdAsc());
-		for (Map.Entry<MarkerKey, Object> entry : workMap.entrySet()) {
-			MarkerKey key = entry.getKey();
-			String value = entry.getValue().toString();
-			sortedMetadataTM.put(value, key);
-		}
-		if (workMap != null) {
-			workMap.clear();
-		}
-
-		// PACKAGE IN AN Map
-		for (Map.Entry<String, MarkerKey> entry : sortedMetadataTM.entrySet()) {
-			String key = entry.getKey();
-			String[] keyValues = key.split(cNetCDF.Defaults.TMP_SEPARATOR);
-			Object[] markerInfo = new Object[2];
-			markerInfo[0] = keyValues[0]; // => chr
-			markerInfo[1] = Integer.parseInt(keyValues[1]); // => pos
-
-			MarkerKey markerKey = entry.getValue();
-			workMap.put(markerKey, markerInfo);
+		if (rdMarkerSet.getMarkerIdSetMapInteger() != null) {
+			rdMarkerSet.getMarkerIdSetMapInteger().clear();
 		}
 
 		return workMap;
 	}
 
-	protected static Map<SampleKey, Object> getComboSampleSetWithIndicesArray(Map<SampleKey, Object> sampleSetMap1, Map<SampleKey, Object> sampleSetMap2) {
-		Map<SampleKey, Object> resultMap = new LinkedHashMap<SampleKey, Object>();
+	protected Map<MarkerKey, MarkerMetadata> mingleAndSortMarkerSet() {
+
+		Map<MarkerKey, char[]> workMap = getMatrixMapWithChrAndPos(rdMarkerSet1);
+		workMap.putAll(getMatrixMapWithChrAndPos(rdMarkerSet2));
+
+		// SORT MERGED Map
+		SortedMap<String, MarkerKey> sortedMetadataTM = new TreeMap<String, MarkerKey>(new ComparatorChrAutPosMarkerIdAsc());
+		for (Map.Entry<MarkerKey, char[]> entry : workMap.entrySet()) {
+			MarkerKey key = entry.getKey();
+			String value = new String(entry.getValue());
+			sortedMetadataTM.put(value, key);
+		}
+
+		// PACKAGE IN A Map
+		Map<MarkerKey, MarkerMetadata> result = new LinkedHashMap<MarkerKey, MarkerMetadata>();
+		for (Map.Entry<String, MarkerKey> entry : sortedMetadataTM.entrySet()) {
+			String key = entry.getKey();
+			String[] keyValues = key.split(cNetCDF.Defaults.TMP_SEPARATOR);
+			MarkerMetadata markerInfo = new MarkerMetadata(
+					keyValues[0], // chr
+					Integer.parseInt(keyValues[1])); // pos
+
+			MarkerKey markerKey = entry.getValue();
+			result.put(markerKey, markerInfo);
+		}
+
+		return result;
+	}
+
+	protected static Map<SampleKey, int[]> getComboSampleSetWithIndicesArray(Map<SampleKey, ?> sampleSetMap1, Map<SampleKey, ?> sampleSetMap2) {
+		Map<SampleKey, int[]> resultMap = new LinkedHashMap<SampleKey, int[]>();
 
 		int wrPos = 0;
 		int rdPos = 0;
 		for (SampleKey key : sampleSetMap1.keySet()) {
-			int[] position = new int[]{1, rdPos, wrPos}; // rdMatrixNb, rdPos, wrPos
+			int[] position = new int[] {1, rdPos, wrPos}; // rdMatrixNb, rdPos, wrPos
 			resultMap.put(key, position);
 			wrPos++;
 			rdPos++;
@@ -202,7 +184,7 @@ public abstract class AbstractMergeMatrixOperation implements MatrixOperation {
 			int[] position;
 			// IF SAMPLE ALLREADY EXISTS IN MATRIX1 SUBSTITUTE VALUES WITH MATRIX2
 			if (resultMap.containsKey(key)) {
-				position = (int[]) resultMap.get(key);
+				position = resultMap.get(key);
 				position[0] = 2; // rdMatrixNb
 				position[1] = rdPos; // rdPos
 			} else {
@@ -224,7 +206,7 @@ public abstract class AbstractMergeMatrixOperation implements MatrixOperation {
 		wrSampleSet = new SampleSet(wrMatrixMetadata.getStudyId(), wrMatrixId);
 		wrMarkerSet = new MarkerSet(wrMatrixMetadata.getStudyId(), wrMatrixId);
 		wrMarkerSet.initFullMarkerIdSetMap();
-		Map<SampleKey, Object> wrSampleSetMap = wrSampleSet.getSampleIdSetMap();
+		Map<SampleKey, char[]> wrSampleSetMap = wrSampleSet.getSampleIdSetMapCharArray();
 
 		NetcdfFile rdNcFile = NetcdfFile.open(wrMatrixMetadata.getPathToMatrix());
 
@@ -233,28 +215,26 @@ public abstract class AbstractMergeMatrixOperation implements MatrixOperation {
 		double mismatchCount = 0;
 
 		// Iterate through markerSet
-		for (MarkerKey markerKey : wrMarkerSet.getMarkerIdSetMap().keySet()) {
-			Map<Character, Object> knownAlleles = new LinkedHashMap<Character, Object>();
+		for (MarkerKey markerKey : wrMarkerSet.getMarkerKeys()) {
+			Map<Character, Integer> knownAlleles = new LinkedHashMap<Character, Integer>();
 
 			// Get a sampleset-full of GTs
-			wrSampleSet.readAllSamplesGTsFromCurrentMarkerToMap(rdNcFile, wrSampleSetMap, markerNb);
+			wrSampleSet.readAllSamplesGTsFromCurrentMarkerToStringMap(rdNcFile, wrSampleSetMap, markerNb);
 
 			// Iterate through sampleSet
-			for (Object value : wrSampleSetMap.values()) {
-				char[] tempGT = value.toString().toCharArray();
-
+			for (char[] tempGT : wrSampleSetMap.values()) {
 				// Gather alleles different from 0 into a list of known alleles and count the number of appearences
 				if (tempGT[0] != '0') {
 					int tempCount = 0;
 					if (knownAlleles.containsKey(tempGT[0])) {
-						tempCount = (Integer) knownAlleles.get(tempGT[0]);
+						tempCount = knownAlleles.get(tempGT[0]);
 					}
 					knownAlleles.put(tempGT[0], tempCount + 1);
 				}
 				if (tempGT[1] != '0') {
 					int tempCount = 0;
 					if (knownAlleles.containsKey(tempGT[1])) {
-						tempCount = (Integer) knownAlleles.get(tempGT[1]);
+						tempCount = knownAlleles.get(tempGT[1]);
 					}
 					knownAlleles.put(tempGT[1], tempCount + 1);
 				}

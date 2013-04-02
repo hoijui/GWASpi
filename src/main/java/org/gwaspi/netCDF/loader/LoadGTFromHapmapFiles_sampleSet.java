@@ -14,6 +14,7 @@ import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.MarkerKey;
+import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
@@ -69,7 +70,7 @@ public class LoadGTFromHapmapFiles_sampleSet extends LoadGTFromHapmapFiles imple
 				loadDescription.getGtDirPath(),
 				loadDescription.getFormat(),
 				loadDescription.getStudyId());
-		Map<MarkerKey, Object> markerSetMap = markerSetLoader.getSortedMarkerSetWithMetaData();
+		Map<MarkerKey, MarkerMetadata> markerSetMap = markerSetLoader.getSortedMarkerSetWithMetaData();
 
 		log.info("Done initializing sorted MarkerSetMap");
 
@@ -101,7 +102,7 @@ public class LoadGTFromHapmapFiles_sampleSet extends LoadGTFromHapmapFiles imple
 		}
 
 		// RETRIEVE CHROMOSOMES INFO
-		Map<MarkerKey, Object> chrSetMap = org.gwaspi.netCDF.matrices.Utils.aggregateChromosomeInfo(markerSetMap, 2, 3);
+		Map<MarkerKey, int[]> chrSetMap = org.gwaspi.netCDF.matrices.Utils.aggregateChromosomeInfo(markerSetMap, 2, 3);
 
 		MatrixFactory matrixFactory = new MatrixFactory(
 				loadDescription.getStudyId(),
@@ -143,7 +144,7 @@ public class LoadGTFromHapmapFiles_sampleSet extends LoadGTFromHapmapFiles imple
 		log.info("Done writing SampleSet to matrix");
 
 		// WRITE RSID & MARKERID METADATA FROM METADATAMap
-		ArrayChar.D2 markersD2 = org.gwaspi.netCDF.operations.Utils.writeMapValueItemToD2ArrayChar(markerSetMap, 1, cNetCDF.Strides.STRIDE_MARKER_NAME);
+		ArrayChar.D2 markersD2 = org.gwaspi.netCDF.operations.Utils.writeMapValueItemToD2ArrayChar(markerSetMap, MarkerMetadata.TO_RS_ID, cNetCDF.Strides.STRIDE_MARKER_NAME);
 
 		int[] markersOrig = new int[]{0, 0};
 		try {
@@ -153,7 +154,7 @@ public class LoadGTFromHapmapFiles_sampleSet extends LoadGTFromHapmapFiles imple
 		} catch (InvalidRangeException ex) {
 			log.error(null, ex);
 		}
-		markersD2 = org.gwaspi.netCDF.operations.Utils.writeMapValueItemToD2ArrayChar(markerSetMap, 0, cNetCDF.Strides.STRIDE_MARKER_NAME);
+		markersD2 = org.gwaspi.netCDF.operations.Utils.writeMapValueItemToD2ArrayChar(markerSetMap, MarkerMetadata.TO_MARKER_ID, cNetCDF.Strides.STRIDE_MARKER_NAME);
 		try {
 			ncfile.write(cNetCDF.Variables.VAR_MARKERSET, markersOrig, markersD2);
 		} catch (IOException ex) {
@@ -164,8 +165,8 @@ public class LoadGTFromHapmapFiles_sampleSet extends LoadGTFromHapmapFiles imple
 		log.info("Done writing MarkerId and RsId to matrix");
 
 		// WRITE CHROMOSOME METADATA FROM ANNOTATION FILE
-		//Chromosome location for each marker
-		markersD2 = org.gwaspi.netCDF.operations.Utils.writeMapValueItemToD2ArrayChar(markerSetMap, 2, cNetCDF.Strides.STRIDE_CHR);
+		// Chromosome location for each marker
+		markersD2 = org.gwaspi.netCDF.operations.Utils.writeMapValueItemToD2ArrayChar(markerSetMap, MarkerMetadata.TO_CHR, cNetCDF.Strides.STRIDE_CHR);
 
 		try {
 			ncfile.write(cNetCDF.Variables.VAR_MARKERS_CHR, markersOrig, markersD2);
@@ -186,7 +187,7 @@ public class LoadGTFromHapmapFiles_sampleSet extends LoadGTFromHapmapFiles imple
 
 		// WRITE POSITION METADATA FROM ANNOTATION FILE
 		//markersD2 = org.gwaspi.netCDF.operations.Utils.writeMapValueItemToD2ArrayChar(wrMarkerSetMap, 3, cNetCDF.Strides.STRIDE_POS);
-		ArrayInt.D1 markersPosD1 = org.gwaspi.netCDF.operations.Utils.writeMapValueItemToD1ArrayInt(markerSetMap, 3);
+		ArrayInt.D1 markersPosD1 = org.gwaspi.netCDF.operations.Utils.writeMapValueItemToD1ArrayInt(markerSetMap, MarkerMetadata.TO_POS);
 		int[] posOrig = new int[1];
 		try {
 			ncfile.write(cNetCDF.Variables.VAR_MARKERS_POS, posOrig, markersPosD1);
@@ -197,8 +198,8 @@ public class LoadGTFromHapmapFiles_sampleSet extends LoadGTFromHapmapFiles imple
 		}
 		log.info("Done writing positions to matrix");
 
-		//WRITE FWD STRAND DICTIONARY ALLELES METADATA FROM ANNOTATION FILE
-		markersD2 = org.gwaspi.netCDF.operations.Utils.writeMapValueItemToD2ArrayChar(markerSetMap, 5, cNetCDF.Strides.STRIDE_GT);
+		// WRITE FWD STRAND DICTIONARY ALLELES METADATA FROM ANNOTATION FILE
+		markersD2 = org.gwaspi.netCDF.operations.Utils.writeMapValueItemToD2ArrayChar(markerSetMap, MarkerMetadata.TO_ALLELES, cNetCDF.Strides.STRIDE_GT);
 
 		try {
 			ncfile.write(cNetCDF.Variables.VAR_MARKERS_BASES_DICT, markersOrig, markersD2);
@@ -212,7 +213,7 @@ public class LoadGTFromHapmapFiles_sampleSet extends LoadGTFromHapmapFiles imple
 		// WRITE GT STRAND FROM ANNOTATION FILE
 		// TODO Strand info is buggy in Hapmap bulk download!
 		int[] gtOrig = new int[]{0, 0};
-		markersD2 = org.gwaspi.netCDF.operations.Utils.writeMapValueItemToD2ArrayChar(markerSetMap, 4, cNetCDF.Strides.STRIDE_STRAND);
+		markersD2 = org.gwaspi.netCDF.operations.Utils.writeMapValueItemToD2ArrayChar(markerSetMap, MarkerMetadata.TO_STRAND, cNetCDF.Strides.STRIDE_STRAND);
 
 		try {
 			ncfile.write(cNetCDF.Variables.VAR_GT_STRAND, gtOrig, markersD2);
@@ -230,8 +231,9 @@ public class LoadGTFromHapmapFiles_sampleSet extends LoadGTFromHapmapFiles imple
 		// <editor-fold defaultstate="expanded" desc="MATRIX GENOTYPES LOAD ">
 		// Index MarkerIdMap
 		int count = 0;
-		for (Map.Entry<?, Object> entry : markerSetMap.entrySet()) {
-			entry.setValue(count);
+		Map<MarkerKey, Integer> markerIdIndices = new LinkedHashMap<MarkerKey, Integer>();
+		for (MarkerKey key : markerSetMap.keySet()) {
+			markerIdIndices.put(key, count);
 			count++;
 		}
 
@@ -264,13 +266,13 @@ public class LoadGTFromHapmapFiles_sampleSet extends LoadGTFromHapmapFiles imple
 		int rowCount = 0;
 		while ((l = inputBufferReader.readLine()) != null) {
 
-			//MEMORY LEAN METHOD
+			// MEMORY LEAN METHOD
 			StringTokenizer st = new StringTokenizer(l, cImport.Separators.separators_SpaceTab_rgxp);
 			MarkerKey currentMarkerKey = MarkerKey.valueOf(st.nextToken());
-			int markerIdIndex = (Integer) markerSetMap.get(currentMarkerKey);
+			int markerIdIndex = markerIdIndices.get(currentMarkerKey);
 
-
-			//read genotypes from this point on
+			// read genotypes from this point on
+			Map<MarkerKey, byte[]> alleles = null; // FIXME this can not work! maybe the whole class is deprecated?
 			int k = 1;
 			byte[] tmpAlleles = cNetCDF.Defaults.DEFAULT_GT;
 			while (k < (sampleOrderMap.size() + LoadGTFromHapmapFiles.Standard.sampleId)) {
@@ -300,7 +302,7 @@ public class LoadGTFromHapmapFiles_sampleSet extends LoadGTFromHapmapFiles imple
 
 			// WRITING GENOTYPE DATA INTO netCDF FILE
 			// TODO BEST TO USE HYPERSLAB
-			org.gwaspi.netCDF.operations.Utils.saveSingleMarkerGTsToMatrix(ncfile, markerSetMap, markerIdIndex);
+			org.gwaspi.netCDF.operations.Utils.saveSingleMarkerGTsToMatrix(ncfile, alleles, markerIdIndex);
 
 			rowCount++;
 			if (rowCount == 1) {

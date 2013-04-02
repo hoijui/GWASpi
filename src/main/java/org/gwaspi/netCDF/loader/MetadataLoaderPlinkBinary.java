@@ -13,6 +13,7 @@ import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.MarkerKey;
+import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.SampleKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,7 +41,7 @@ public class MetadataLoaderPlinkBinary implements MetadataLoader {
 	}
 
 	@Override
-	public Map<MarkerKey, Object> getSortedMarkerSetWithMetaData() throws IOException {
+	public Map<MarkerKey, MarkerMetadata> getSortedMarkerSetWithMetaData() throws IOException {
 		String startTime = org.gwaspi.global.Utils.getMediumDateTimeAsString();
 
 		SortedMap<String, String> tempTM = parseAndSortBimFile(); // chr, markerId, genetic distance, position
@@ -48,7 +49,7 @@ public class MetadataLoaderPlinkBinary implements MetadataLoader {
 		org.gwaspi.global.Utils.sysoutStart("initilaizing Marker info");
 		log.info(Text.All.processing);
 
-		Map<MarkerKey, Object> markerMetadataMap = new LinkedHashMap<MarkerKey, Object>();
+		Map<MarkerKey, MarkerMetadata> markerMetadata = new LinkedHashMap<MarkerKey, MarkerMetadata>();
 		for (Map.Entry<String, String> entry : tempTM.entrySet()) {
 			// chr;pos;markerId
 			String[] keyValues = entry.getKey().split(cNetCDF.Defaults.TMP_SEPARATOR);
@@ -64,22 +65,22 @@ public class MetadataLoaderPlinkBinary implements MetadataLoader {
 			String valValues = entry.getValue();
 //			values = fixPlusAlleles(values);
 
-			Object[] markerInfo = new Object[5];
-			markerInfo[0] = keyValues[2]; // 0 => markerid
 			String rsId = "";
 			if (keyValues[2].startsWith("rs")) {
 				rsId = keyValues[2];
 			}
-			markerInfo[1] = rsId; // 1 => rsId
-			markerInfo[2] = MetadataLoaderBeagle.fixChrData(keyValues[0]); // 2 => chr
-			markerInfo[3] = pos; // 3 => pos
-			markerInfo[4] = valValues; // 4 => alleles
+			MarkerMetadata markerInfo = new MarkerMetadata(
+					keyValues[2], // markerid
+					rsId, // rsId
+					MetadataLoaderBeagle.fixChrData(keyValues[0]), // chr
+					pos, // pos
+					valValues); // alleles
 
-			markerMetadataMap.put(MarkerKey.valueOf(keyValues[2]), markerInfo);
+			markerMetadata.put(MarkerKey.valueOf(keyValues[2]), markerInfo);
 		}
 
 		String description = "Generated sorted MarkerIdSet Map sorted by chromosome and position";
-		return markerMetadataMap;
+		return markerMetadata;
 	}
 
 	private SortedMap<String, String> parseAndSortBimFile() throws IOException {

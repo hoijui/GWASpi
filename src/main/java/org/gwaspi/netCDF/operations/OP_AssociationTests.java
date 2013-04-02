@@ -1,5 +1,6 @@
 package org.gwaspi.netCDF.operations;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
@@ -52,14 +53,15 @@ public class OP_AssociationTests extends AbstractTestMatrixOperation {
 	 * @param wrCtrlMarkerSet
 	 */
 	@Override
-	protected void performTest(NetcdfFileWriteable wrNcFile, Map<MarkerKey, Object> wrCaseMarkerIdSetMap, Map<MarkerKey, Object> wrCtrlMarkerSet) {
+	protected void performTest(NetcdfFileWriteable wrNcFile, Map<MarkerKey, int[]> wrCaseMarkerIdSetMap, Map<MarkerKey, int[]> wrCtrlMarkerSet) {
 		// Iterate through markerset
 		int markerNb = 0;
-		for (Map.Entry<MarkerKey, Object> entry : wrCaseMarkerIdSetMap.entrySet()) {
+		Map<MarkerKey, Double[]> result = new LinkedHashMap<MarkerKey, Double[]>(wrCaseMarkerIdSetMap.size());
+		for (Map.Entry<MarkerKey, int[]> entry : wrCaseMarkerIdSetMap.entrySet()) {
 			MarkerKey markerKey = entry.getKey();
 
-			int[] caseCntgTable = (int[]) entry.getValue();
-			int[] ctrlCntgTable = (int[]) wrCtrlMarkerSet.get(markerKey);
+			int[] caseCntgTable = entry.getValue();
+			int[] ctrlCntgTable = wrCtrlMarkerSet.get(markerKey);
 
 			// INIT VALUES
 			int caseAA = caseCntgTable[0];
@@ -127,7 +129,7 @@ public class OP_AssociationTests extends AbstractTestMatrixOperation {
 				store[2] = gntypOR[0];
 				store[3] = gntypOR[1];
 			}
-			wrCaseMarkerIdSetMap.put(markerKey, store); // Re-use Map to store P-value and stuff
+			result.put(markerKey, store); // store P-value and stuff
 
 			markerNb++;
 			if (markerNb % 100000 == 0) {
@@ -145,7 +147,7 @@ public class OP_AssociationTests extends AbstractTestMatrixOperation {
 			boxes = new int[] {0, 1, 2, 3};
 			variableName = cNetCDF.Association.VAR_OP_MARKERS_ASGenotypicAssociationTP2OR;
 		}
-		Utils.saveDoubleMapD2ToWrMatrix(wrNcFile, wrCaseMarkerIdSetMap, boxes, variableName);
+		Utils.saveDoubleMapD2ToWrMatrix(wrNcFile, result, boxes, variableName);
 		//</editor-fold>
 	}
 }

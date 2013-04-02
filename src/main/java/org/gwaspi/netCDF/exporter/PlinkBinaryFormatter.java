@@ -62,7 +62,7 @@ public class PlinkBinaryFormatter implements Formatter {
 			MatrixMetadata rdMatrixMetadata,
 			MarkerSet rdMarkerSet,
 			SampleSet rdSampleSet,
-			Map<SampleKey, Object> rdSampleSetMap,
+			Map<SampleKey, byte[]> rdSampleSetMap,
 			String phenotype)
 			throws IOException
 	{
@@ -90,7 +90,7 @@ public class PlinkBinaryFormatter implements Formatter {
 
 		// PURGE MARKERSET
 		rdMarkerSet.initFullMarkerIdSetMap();
-		rdMarkerSet.fillWith("");
+		rdMarkerSet.fillWith(new char[0]);
 
 		// MARKERSET CHROMOSOME
 		rdMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
@@ -99,11 +99,11 @@ public class PlinkBinaryFormatter implements Formatter {
 		rdMarkerSet.appendVariableToMarkerSetMapValue(cNetCDF.Variables.VAR_MARKERS_RSID, sep);
 
 		// DEFAULT GENETIC DISTANCE = 0
-		for (Map.Entry<?, Object> entry : rdMarkerSet.getMarkerIdSetMap().entrySet()) {
-			StringBuilder value = new StringBuilder(entry.getValue().toString());
+		for (Map.Entry<?, char[]> entry : rdMarkerSet.getMarkerIdSetMapCharArray().entrySet()) {
+			StringBuilder value = new StringBuilder(new String(entry.getValue()));
 			value.append(sep);
 			value.append("0");
-			entry.setValue(value.toString());
+			entry.setValue(value.toString().toCharArray());
 		}
 
 		// MARKERSET POSITION
@@ -113,26 +113,26 @@ public class PlinkBinaryFormatter implements Formatter {
 		List<Operation> operations = OperationsList.getOperationsList(rdMatrixMetadata.getMatrixId());
 		int markersQAOpId = OperationsList.getIdOfLastOperationTypeOccurance(operations, OPType.MARKER_QA);
 
-		Map<MarkerKey, Object> minorAllelesMap = GatherQAMarkersData.loadMarkerQAMinorAlleles(markersQAOpId);
-		Map<MarkerKey, Object> majorAllelesMap = GatherQAMarkersData.loadMarkerQAMajorAlleles(markersQAOpId);
-		Map<MarkerKey, Object> minorAlleleFreqMap = GatherQAMarkersData.loadMarkerQAMinorAlleleFrequency(markersQAOpId);
-		for (Map.Entry<MarkerKey, Object> entry : rdMarkerSet.getMarkerIdSetMap().entrySet()) {
+		Map<MarkerKey, char[]> minorAllelesMap = GatherQAMarkersData.loadMarkerQAMinorAlleles(markersQAOpId);
+		Map<MarkerKey, char[]> majorAllelesMap = GatherQAMarkersData.loadMarkerQAMajorAlleles(markersQAOpId);
+		Map<MarkerKey, Double> minorAlleleFreqMap = GatherQAMarkersData.loadMarkerQAMinorAlleleFrequency(markersQAOpId);
+		for (Map.Entry<MarkerKey, char[]> entry : rdMarkerSet.getMarkerIdSetMapCharArray().entrySet()) {
 			MarkerKey key = entry.getKey();
-			String minorAllele = minorAllelesMap.get(key).toString();
-			String majorAllele = majorAllelesMap.get(key).toString();
-			Double minAlleleFreq = (Double) minorAlleleFreqMap.get(key);
+			String minorAllele = new String(minorAllelesMap.get(key));
+			String majorAllele = new String(majorAllelesMap.get(key));
+			Double minAlleleFreq = minorAlleleFreqMap.get(key);
 
 			if (minAlleleFreq == 0.5) { // IF BOTH ALLELES ARE EQUALLY COMMON, USE ALPHABETICAL ORDER
 				String tmpMinorAllele = majorAllele;
 				majorAllele = minorAllele;
 				minorAllele = tmpMinorAllele;
 
-				majorAllelesMap.put(key, majorAllele);
-				minorAllelesMap.put(key, minorAllele);
+				majorAllelesMap.put(key, majorAllele.toCharArray());
+				minorAllelesMap.put(key, minorAllele.toCharArray());
 			}
 
-			Object values = entry.getValue();
-			mapBW.append(values.toString());
+			char[] values = entry.getValue();
+			mapBW.append(new String(values));
 			mapBW.append(sep);
 			mapBW.append(minorAllele);
 			mapBW.append(sep);
@@ -174,19 +174,19 @@ public class PlinkBinaryFormatter implements Formatter {
 		int byteCount = 0;
 		byte[] wrBytes = new byte[byteChunkSize];
 		// ITERATE THROUGH ALL MARKERS, ONE SAMPLESET AT A TIME
-		for (MarkerKey markerKey : rdMarkerSet.getMarkerIdSetMap().keySet()) {
-			String tmpMinorAllele = minorAllelesMap.get(markerKey).toString();
-			String tmpMajorAllele = majorAllelesMap.get(markerKey).toString();
+		for (MarkerKey markerKey : rdMarkerSet.getMarkerKeys()) {
+			String tmpMinorAllele = new String(minorAllelesMap.get(markerKey));
+			String tmpMajorAllele = new String(majorAllelesMap.get(markerKey));
 
 			// GET SAMPLESET FOR CURRENT MARKER
 			rdSampleSet.readAllSamplesGTsFromCurrentMarkerToMap(rdNcFile, rdSampleSetMap, markerNb);
 
-			for (Iterator<Object> rdSampleGts = rdSampleSetMap.values().iterator(); rdSampleGts.hasNext();) {
+			for (Iterator<byte[]> rdSampleGts = rdSampleSetMap.values().iterator(); rdSampleGts.hasNext();) {
 				// ONE BYTE AT A TIME (4 SAMPLES)
 				StringBuilder tetraGTs = new StringBuilder("");
 				for (int i = 0; i < 4; i++) {
 					if (rdSampleGts.hasNext()) {
-						byte[] tempGT = (byte[]) rdSampleGts.next();
+						byte[] tempGT = rdSampleGts.next();
 						byte[] translatedByte = translateTo00011011Byte(tempGT, tmpMinorAllele, tmpMajorAllele);
 						tetraGTs.insert(0, translatedByte[0]); // REVERSE ORDER, AS PER PLINK SPECS http://pngu.mgh.harvard.edu/~purcell/plink/binary.shtml
 						tetraGTs.insert(0, translatedByte[1]);
@@ -194,7 +194,7 @@ public class PlinkBinaryFormatter implements Formatter {
 				}
 
 				int number = Integer.parseInt(tetraGTs.toString(), 2);
-				byte[] tetraGT = new byte[]{(byte) number};
+				byte[] tetraGT = new byte[] {(byte) number};
 
 				System.arraycopy(tetraGT,
 						0,
@@ -291,8 +291,8 @@ public class PlinkBinaryFormatter implements Formatter {
 			// SOME MISSING ALLELES => SET ALL TO MISSING
 			result = new byte[]{1, 0};
 		} else {
-			String allele1 = new String(new byte[]{tempGT[0]});
-			String allele2 = new String(new byte[]{tempGT[1]});
+			String allele1 = new String(tempGT, 0, 1);
+			String allele2 = new String(tempGT, 1, 1);
 
 			if (allele1.equals(tmpMinorAllele)) {
 				if (allele2.equals(tmpMinorAllele)) {

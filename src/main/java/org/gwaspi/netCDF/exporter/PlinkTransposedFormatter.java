@@ -32,7 +32,7 @@ public class PlinkTransposedFormatter implements Formatter {
 			MatrixMetadata rdMatrixMetadata,
 			MarkerSet rdMarkerSet,
 			SampleSet rdSampleSet,
-			Map<SampleKey, Object> rdSampleSetMap,
+			Map<SampleKey, byte[]> rdSampleSetMap,
 			String phenotype)
 			throws IOException
 	{
@@ -59,7 +59,7 @@ public class PlinkTransposedFormatter implements Formatter {
 			// Genotypes
 
 			// PURGE MARKERSET
-			rdMarkerSet.fillWith("");
+			rdMarkerSet.fillWith(new char[0]);
 
 			// MARKERSET CHROMOSOME
 			rdMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
@@ -68,11 +68,11 @@ public class PlinkTransposedFormatter implements Formatter {
 			rdMarkerSet.appendVariableToMarkerSetMapValue(cNetCDF.Variables.VAR_MARKERS_RSID, sep);
 
 			// DEFAULT GENETIC DISTANCE = 0
-			for (Map.Entry<?, Object> entry : rdMarkerSet.getMarkerIdSetMap().entrySet()) {
-				StringBuilder value = new StringBuilder(entry.getValue().toString());
+			for (Map.Entry<?, char[]> entry : rdMarkerSet.getMarkerIdSetMapCharArray().entrySet()) {
+				StringBuilder value = new StringBuilder(new String(entry.getValue()));
 				value.append(sep);
 				value.append("0");
-				entry.setValue(value.toString());
+				entry.setValue(value.toString().toCharArray());
 			}
 
 			// MARKERSET POSITION
@@ -80,21 +80,20 @@ public class PlinkTransposedFormatter implements Formatter {
 
 			// Iterate through markerset
 			int markerNb = 0;
-			for (Object pos : rdMarkerSet.getMarkerIdSetMap().values()) {
+			for (char[] pos : rdMarkerSet.getMarkerIdSetMapCharArray().values()) {
 				StringBuilder line = new StringBuilder();
 
 				// Iterate through sampleset
 				StringBuilder genotypes = new StringBuilder();
 				rdSampleSet.readAllSamplesGTsFromCurrentMarkerToMap(rdNcFile, rdSampleSetMap, markerNb);
-				for (Object value : rdSampleSetMap.values()) {
-					byte[] tempGT = (byte[]) value;
+				for (byte[] tempGT : rdSampleSetMap.values()) {
 					genotypes.append(sep);
-					genotypes.append(new String(new byte[]{tempGT[0]}));
+					genotypes.append(new String(tempGT, 0, 1));
 					genotypes.append(sep);
-					genotypes.append(new String(new byte[]{tempGT[1]}));
+					genotypes.append(new String(tempGT, 1, 1));
 				}
 
-				line.append(pos.toString());
+				line.append(new String(pos));
 				line.append(genotypes);
 
 				tpedBW.append(line);

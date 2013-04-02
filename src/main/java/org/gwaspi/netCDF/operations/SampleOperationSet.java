@@ -2,8 +2,6 @@ package org.gwaspi.netCDF.operations;
 
 import java.io.IOException;
 import org.gwaspi.model.SampleKey;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -11,9 +9,7 @@ import org.slf4j.LoggerFactory;
  * IBE, Institute of Evolutionary Biology (UPF-CSIC)
  * CEXS-UPF-PRBB
  */
-public class SampleOperationSet extends AbstractOperationSet<SampleKey> {
-
-	private static final Logger log = LoggerFactory.getLogger(SampleOperationSet.class);
+public class SampleOperationSet<V> extends AbstractOperationSet<SampleKey, V> {
 
 	public SampleOperationSet(int studyId, int opId) throws IOException {
 		super(studyId, opId, SampleKey.KEY_FACTORY);

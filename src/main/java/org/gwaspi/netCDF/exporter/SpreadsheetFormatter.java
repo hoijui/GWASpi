@@ -31,7 +31,7 @@ public class SpreadsheetFormatter implements Formatter {
 			MatrixMetadata rdMatrixMetadata,
 			MarkerSet rdMarkerSet,
 			SampleSet rdSampleSet,
-			Map<SampleKey, Object> rdSampleSetMap,
+			Map<SampleKey, byte[]> rdSampleSetMap,
 			String phenotype)
 			throws IOException
 	{
@@ -53,7 +53,7 @@ public class SpreadsheetFormatter implements Formatter {
 
 			// HEADER CONTAINING MARKER IDs
 			StringBuilder line = new StringBuilder();
-			for (MarkerKey key : rdMarkerSet.getMarkerIdSetMap().keySet()) {
+			for (MarkerKey key : rdMarkerSet.getMarkerKeys()) {
 				line.append(sep);
 				line.append(key.getMarkerId());
 			}
@@ -67,11 +67,10 @@ public class SpreadsheetFormatter implements Formatter {
 				// Iterate through all markers
 				rdMarkerSet.fillGTsForCurrentSampleIntoInitMap(sampleNb);
 				StringBuilder genotypes = new StringBuilder();
-				for (Object value : rdMarkerSet.getMarkerIdSetMap().values()) {
-					byte[] tempGT = (byte[]) value;
+				for (byte[] tempGT : rdMarkerSet.getMarkerIdSetMapByteArray().values()) {
 					genotypes.append(sep);
-					genotypes.append(new String(new byte[]{tempGT[0]}));
-					genotypes.append(new String(new byte[]{tempGT[1]}));
+					genotypes.append(new String(tempGT, 0, 1));
+					genotypes.append(new String(tempGT, 1, 1));
 				}
 
 				// Individual ID

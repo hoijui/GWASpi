@@ -16,6 +16,7 @@ import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.MarkerKey;
+import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleKey;
@@ -75,11 +76,6 @@ public class LoadGTFromHapmapFiles implements GenotypesLoader {
 	}
 
 	@Override
-	public int getMarkersD2ItemNb() {
-		throw new UnsupportedOperationException("Not supported yet."); // FIXME implement me!
-	}
-
-	@Override
 	public String getMarkersD2Variables() {
 		throw new UnsupportedOperationException("Not supported yet."); // FIXME implement me!
 	}
@@ -115,7 +111,7 @@ public class LoadGTFromHapmapFiles implements GenotypesLoader {
 			gtFilesToImport = new File[]{new File(loadDescription.getGtDirPath())};
 		}
 
-		Map<MarkerKey, Object> alleles = new LinkedHashMap<MarkerKey, Object>();
+		Map<MarkerKey, MarkerMetadata> markerSetMap = new LinkedHashMap<MarkerKey, MarkerMetadata>();
 
 		//<editor-fold defaultstate="expanded" desc="CREATE MARKERSET & NETCDF">
 		for (int i = 0; i < gtFilesToImport.length; i++) {
@@ -123,8 +119,8 @@ public class LoadGTFromHapmapFiles implements GenotypesLoader {
 					gtFilesToImport[i].getPath(),
 					loadDescription.getFormat(),
 					loadDescription.getStudyId());
-			Map<MarkerKey, Object> tmpMarkerMap = markerSetLoader.getSortedMarkerSetWithMetaData();
-			alleles.putAll(tmpMarkerMap);
+			Map<MarkerKey, MarkerMetadata> tmpMarkerMap = markerSetLoader.getSortedMarkerSetWithMetaData();
+			markerSetMap.putAll(tmpMarkerMap);
 		}
 
 		log.info("Done initializing sorted MarkerSetMap");
@@ -142,7 +138,7 @@ public class LoadGTFromHapmapFiles implements GenotypesLoader {
 //		descSB.append("\nGenotype encoding: ");
 //		descSB.append(gtCode);
 		descSB.append("\n");
-		descSB.append("Markers: ").append(alleles.size()).append(", Samples: ").append(sampleInfos.size());
+		descSB.append("Markers: ").append(markerSetMap.size()).append(", Samples: ").append(sampleInfos.size());
 		descSB.append("\n");
 		descSB.append(Text.Matrix.descriptionHeader2);
 		descSB.append(loadDescription.getFormat());
@@ -157,7 +153,7 @@ public class LoadGTFromHapmapFiles implements GenotypesLoader {
 		}
 
 		//RETRIEVE CHROMOSOMES INFO
-		Map<MarkerKey, Object> chrSetMap = org.gwaspi.netCDF.matrices.Utils.aggregateChromosomeInfo(alleles, 2, 3);
+		Map<MarkerKey, int[]> chrSetMap = org.gwaspi.netCDF.matrices.Utils.aggregateChromosomeInfo(markerSetMap, 2, 3);
 
 		MatrixFactory matrixFactory = new MatrixFactory(
 				loadDescription.getStudyId(),
@@ -168,7 +164,7 @@ public class LoadGTFromHapmapFiles implements GenotypesLoader {
 				(getMatrixStrand() != null) ? getMatrixStrand() : loadDescription.getStrand(),
 				isHasDictionary(),
 				sampleInfos.size(),
-				alleles.size(),
+				markerSetMap.size(),
 				chrSetMap.size(),
 				loadDescription.getGtDirPath());
 
@@ -199,7 +195,7 @@ public class LoadGTFromHapmapFiles implements GenotypesLoader {
 		log.info("Done writing SampleSet to matrix");
 
 		// WRITE RSID & MARKERID METADATA FROM METADATAMap
-		ArrayChar.D2 markersD2 = org.gwaspi.netCDF.operations.Utils.writeMapValueItemToD2ArrayChar(alleles, 1, cNetCDF.Strides.STRIDE_MARKER_NAME);
+		ArrayChar.D2 markersD2 = org.gwaspi.netCDF.operations.Utils.writeMapValueItemToD2ArrayChar(markerSetMap, MarkerMetadata.TO_RS_ID, cNetCDF.Strides.STRIDE_MARKER_NAME);
 
 		int[] markersOrig = new int[]{0, 0};
 		try {
@@ -209,7 +205,7 @@ public class LoadGTFromHapmapFiles implements GenotypesLoader {
 		} catch (InvalidRangeException ex) {
 			log.error(null, ex);
 		}
-		markersD2 = org.gwaspi.netCDF.operations.Utils.writeMapValueItemToD2ArrayChar(alleles, 0, cNetCDF.Strides.STRIDE_MARKER_NAME);
+		markersD2 = org.gwaspi.netCDF.operations.Utils.writeMapValueItemToD2ArrayChar(markerSetMap, MarkerMetadata.TO_MARKER_ID, cNetCDF.Strides.STRIDE_MARKER_NAME);
 		try {
 			ncfile.write(cNetCDF.Variables.VAR_MARKERSET, markersOrig, markersD2);
 		} catch (IOException ex) {
@@ -220,8 +216,8 @@ public class LoadGTFromHapmapFiles implements GenotypesLoader {
 		log.info("Done writing MarkerId and RsId to matrix");
 
 		// WRITE CHROMOSOME METADATA FROM ANNOTATION FILE
-		//Chromosome location for each marker
-		markersD2 = org.gwaspi.netCDF.operations.Utils.writeMapValueItemToD2ArrayChar(alleles, 2, cNetCDF.Strides.STRIDE_CHR);
+		// Chromosome location for each marker
+		markersD2 = org.gwaspi.netCDF.operations.Utils.writeMapValueItemToD2ArrayChar(markerSetMap, MarkerMetadata.TO_CHR, cNetCDF.Strides.STRIDE_CHR);
 
 		try {
 			ncfile.write(cNetCDF.Variables.VAR_MARKERS_CHR, markersOrig, markersD2);
@@ -242,7 +238,7 @@ public class LoadGTFromHapmapFiles implements GenotypesLoader {
 
 		// WRITE POSITION METADATA FROM ANNOTATION FILE
 		//markersD2 = org.gwaspi.netCDF.operations.Utils.writeMapValueItemToD2ArrayChar(wrMarkerSetMap, 3, cNetCDF.Strides.STRIDE_POS);
-		ArrayInt.D1 markersPosD1 = org.gwaspi.netCDF.operations.Utils.writeMapValueItemToD1ArrayInt(alleles, 3);
+		ArrayInt.D1 markersPosD1 = org.gwaspi.netCDF.operations.Utils.writeMapValueItemToD1ArrayInt(markerSetMap, MarkerMetadata.TO_POS);
 		int[] posOrig = new int[1];
 		try {
 			ncfile.write(cNetCDF.Variables.VAR_MARKERS_POS, posOrig, markersPosD1);
@@ -253,8 +249,8 @@ public class LoadGTFromHapmapFiles implements GenotypesLoader {
 		}
 		log.info("Done writing positions to matrix");
 
-		//WRITE FWD STRAND DICTIONARY ALLELES METADATA FROM ANNOTATION FILE
-		markersD2 = org.gwaspi.netCDF.operations.Utils.writeMapValueItemToD2ArrayChar(alleles, 5, cNetCDF.Strides.STRIDE_GT);
+		// WRITE FWD STRAND DICTIONARY ALLELES METADATA FROM ANNOTATION FILE
+		markersD2 = org.gwaspi.netCDF.operations.Utils.writeMapValueItemToD2ArrayChar(markerSetMap, MarkerMetadata.TO_ALLELES, cNetCDF.Strides.STRIDE_GT);
 
 		try {
 			ncfile.write(cNetCDF.Variables.VAR_MARKERS_BASES_DICT, markersOrig, markersD2);
@@ -267,8 +263,8 @@ public class LoadGTFromHapmapFiles implements GenotypesLoader {
 
 		// WRITE GT STRAND FROM ANNOTATION FILE
 		// TODO Strand info is buggy in Hapmap bulk download!
-		int[] gtOrig = new int[]{0, 0};
-		markersD2 = org.gwaspi.netCDF.operations.Utils.writeMapValueItemToD2ArrayChar(alleles, 4, cNetCDF.Strides.STRIDE_STRAND);
+		int[] gtOrig = new int[] {0, 0};
+		markersD2 = org.gwaspi.netCDF.operations.Utils.writeMapValueItemToD2ArrayChar(markerSetMap, MarkerMetadata.TO_STRAND, cNetCDF.Strides.STRIDE_STRAND);
 
 		try {
 			ncfile.write(cNetCDF.Variables.VAR_GT_STRAND, gtOrig, markersD2);
@@ -288,10 +284,8 @@ public class LoadGTFromHapmapFiles implements GenotypesLoader {
 		GenotypeEncoding guessedGTCode = GenotypeEncoding.UNKNOWN;
 		int sampleIndex = 0;
 		for (SampleInfo sampleInfo : sampleInfos) {
-			//PURGE MarkerIdMap
-			for (Map.Entry<?, Object> entry : alleles.entrySet()) {
-				entry.setValue(cNetCDF.Defaults.DEFAULT_GT);
-			}
+			// PURGE MarkerIdMap
+			Map<MarkerKey, byte[]> alleles = AbstractLoadGTFromFiles.fillMap(markerSetMap.keySet(), cNetCDF.Defaults.DEFAULT_GT);
 
 			for (int i = 0; i < gtFilesToImport.length; i++) {
 				loadIndividualFiles(
@@ -347,7 +341,7 @@ public class LoadGTFromHapmapFiles implements GenotypesLoader {
 	 */
 	private void loadIndividualFiles(File file,
 			SampleKey sampleKey,
-			Map<MarkerKey, Object> alleles,
+			Map<MarkerKey, byte[]> alleles,
 			GenotypeEncoding guessedGTCode)
 			throws IOException, InvalidRangeException
 	{

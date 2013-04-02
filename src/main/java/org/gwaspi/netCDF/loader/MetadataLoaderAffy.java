@@ -12,6 +12,7 @@ import org.gwaspi.constants.cImport.ImportFormat;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.MarkerKey;
+import org.gwaspi.model.MarkerMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,7 +42,7 @@ public class MetadataLoaderAffy implements MetadataLoader {
 	}
 
 	@Override
-	public Map<MarkerKey, Object> getSortedMarkerSetWithMetaData() throws IOException {
+	public Map<MarkerKey, MarkerMetadata> getSortedMarkerSetWithMetaData() throws IOException {
 		String startTime = org.gwaspi.global.Utils.getMediumDateTimeAsString();
 
 		SortedMap<String, String> tempTM = parseAnnotationBRFile(); // affyId, rsId,chr,pseudo-autosomal,pos, strand, alleles, plus-alleles
@@ -49,7 +50,7 @@ public class MetadataLoaderAffy implements MetadataLoader {
 		org.gwaspi.global.Utils.sysoutStart("initilaizing Marker info");
 		log.info(Text.All.processing);
 
-		Map<MarkerKey, Object> markerMetadataMap = new LinkedHashMap<MarkerKey, Object>();
+		Map<MarkerKey, MarkerMetadata> markerMetadata = new LinkedHashMap<MarkerKey, MarkerMetadata>();
 		for (Map.Entry<String, String> entry : tempTM.entrySet()) {
 			// keyValues = chr;pseudo-autosomal1;pseudo-autosomal2;pos;markerId"
 			String[] keyValues = entry.getKey().split(cNetCDF.Defaults.TMP_SEPARATOR);
@@ -66,22 +67,22 @@ public class MetadataLoaderAffy implements MetadataLoader {
 			valValues = fixRsId(keyValues, valValues);
 			keyValues = fixChrData(keyValues);
 
-			Object[] markerInfo = new Object[8];
-			markerInfo[0] = keyValues[4]; // 0 => affyid
-			markerInfo[1] = valValues[0]; // 1 => rsId
-			markerInfo[2] = keyValues[0]; // 2 => chr
-			markerInfo[3] = keyValues[1]; // 3 => pseudo-autosomal1
-			markerInfo[4] = keyValues[2]; // 4 => pseudo-autosomal2
-			markerInfo[5] = pos; // 5 => pos
-			markerInfo[6] = valValues[1]; // 6 => strand
-			markerInfo[7] = valValues[2]; // 7 => alleles
+			MarkerMetadata markerInfo = new MarkerMetadata(
+					keyValues[4], // affyid
+					valValues[0], // rsId
+					keyValues[0], // chr
+					pos, // pos
+					valValues[2], // alleles
+					valValues[1]); // strand
+//					keyValues[1], // pseudo-autosomal1
+//					keyValues[2], // pseudo-autosomal2
 
-			markerMetadataMap.put(MarkerKey.valueOf(keyValues[4]), markerInfo);
+			markerMetadata.put(MarkerKey.valueOf(keyValues[4]), markerInfo);
 		}
 
 		String description = "Generated sorted MarkerIdSet Map sorted by chromosome and position";
 		MetadataLoaderPlink.logAsWhole(startTime, annotationPath, description, studyId);
-		return markerMetadataMap;
+		return markerMetadata;
 	}
 
 	private SortedMap<String, String> parseAnnotationBRFile() throws IOException {

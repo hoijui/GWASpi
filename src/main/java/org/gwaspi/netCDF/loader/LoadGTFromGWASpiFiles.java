@@ -16,6 +16,7 @@ import org.gwaspi.global.Config;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.utils.Dialogs;
 import org.gwaspi.model.MarkerKey;
+import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleInfo;
@@ -64,11 +65,6 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 	}
 
 	@Override
-	public int getMarkersD2ItemNb() {
-		throw new UnsupportedOperationException("Not supported yet."); // FIXME implement me!
-	}
-
-	@Override
 	public String getMarkersD2Variables() {
 		throw new UnsupportedOperationException("Not supported yet."); // FIXME implement me!
 	}
@@ -81,7 +77,7 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 
 		if (new File(loadDescription.getGtDirPath()).exists()) {
 		SampleSet matrixSampleSet = new SampleSet(loadDescription.getStudyId(), "");
-		Map<SampleKey, Object> matrixSampleSetMap = matrixSampleSet.getSampleIdSetMap(loadDescription.getGtDirPath());
+		Map<SampleKey, byte[]> matrixSampleSetMap = matrixSampleSet.getSampleIdSetMapByteArray(loadDescription.getGtDirPath());
 
 		boolean testExcessSamplesInMatrix = false;
 		boolean testExcessSamplesInFile = false;
@@ -174,15 +170,15 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 		MarkerSet rdMarkerSet = new MarkerSet(importMatrixMetadata.getStudyId(), loadDescription.getGtDirPath(), importMatrixMetadata.getMatrixNetCDFName());
 		rdMarkerSet.initFullMarkerIdSetMap();
 		rdMarkerSet.fillMarkerSetMapWithChrAndPos();
-		Map<MarkerKey, Object> rdMarkerSetMap = rdMarkerSet.getMarkerIdSetMap();
+		Map<MarkerKey, MarkerMetadata> rdMarkerSetMap = rdMarkerSet.getMarkerMetadata();
 
 		SampleSet rdSampleSet = new SampleSet(importMatrixMetadata.getStudyId(), loadDescription.getGtDirPath(), importMatrixMetadata.getMatrixNetCDFName());
-		Map<SampleKey, Object> rdSampleSetMap = rdSampleSet.getSampleIdSetMap();
+		Map<SampleKey, byte[]> rdSampleSetMap = rdSampleSet.getSampleIdSetMapByteArray();
 
 		log.info("Done initializing sorted MarkerSetMap");
 
 		// RETRIEVE CHROMOSOMES INFO
-		Map<MarkerKey, Object> chrSetMap = org.gwaspi.netCDF.matrices.Utils.aggregateChromosomeInfo(rdMarkerSetMap, 0, 1);
+		Map<MarkerKey, int[]> chrSetMap = org.gwaspi.netCDF.matrices.Utils.aggregateChromosomeInfo(rdMarkerSetMap, 0, 1);
 
 		MatrixFactory matrixFactory = new MatrixFactory(
 				loadDescription.getStudyId(),
@@ -225,9 +221,9 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 
 
 		// WRITE CHROMOSOME METADATA FROM ANNOTATION FILE
-		//Chromosome location for each marker
-		ArrayChar.D2 markersD2 = org.gwaspi.netCDF.operations.Utils.writeMapValueItemToD2ArrayChar(rdMarkerSetMap, 0, cNetCDF.Strides.STRIDE_CHR);
-		int[] markersOrig = new int[]{0, 0};
+		// Chromosome location for each marker
+		ArrayChar.D2 markersD2 = org.gwaspi.netCDF.operations.Utils.writeMapValueItemToD2ArrayChar(rdMarkerSetMap, MarkerMetadata.TO_CHR, cNetCDF.Strides.STRIDE_CHR);
+		int[] markersOrig = new int[] {0, 0};
 		try {
 			ncfile.write(cNetCDF.Variables.VAR_MARKERS_CHR, markersOrig, markersD2);
 		} catch (IOException ex) {
@@ -246,7 +242,7 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 
 
 		// WRITE POSITION METADATA FROM ANNOTATION FILE
-		ArrayInt.D1 markersPosD1 = org.gwaspi.netCDF.operations.Utils.writeMapValueItemToD1ArrayInt(rdMarkerSetMap, 1);
+		ArrayInt.D1 markersPosD1 = org.gwaspi.netCDF.operations.Utils.writeMapValueItemToD1ArrayInt(rdMarkerSetMap, MarkerMetadata.TO_POS);
 		int[] posOrig = new int[1];
 		try {
 			ncfile.write(cNetCDF.Variables.VAR_MARKERS_POS, posOrig, markersPosD1);
@@ -258,9 +254,9 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 		log.info("Done writing positions to matrix");
 
 
-		//WRITE RSID & MARKERID METADATA FROM METADATAMap
+		// WRITE RSID & MARKERID METADATA FROM METADATAMap
 		rdMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_RSID);
-		markersD2 = org.gwaspi.netCDF.operations.Utils.writeMapKeysToD2ArrayChar(rdMarkerSetMap, cNetCDF.Strides.STRIDE_MARKER_NAME);
+		markersD2 = org.gwaspi.netCDF.operations.Utils.writeMapKeysToD2ArrayChar(rdMarkerSet.getMarkerIdSetMapCharArray(), cNetCDF.Strides.STRIDE_MARKER_NAME);
 		try {
 			ncfile.write(cNetCDF.Variables.VAR_MARKERSET, markersOrig, markersD2);
 		} catch (IOException ex) {
@@ -268,7 +264,7 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 		} catch (InvalidRangeException ex) {
 			log.error(null, ex);
 		}
-		markersD2 = org.gwaspi.netCDF.operations.Utils.writeMapValueToD2ArrayChar(rdMarkerSetMap, cNetCDF.Strides.STRIDE_MARKER_NAME);
+		markersD2 = org.gwaspi.netCDF.operations.Utils.writeMapValueToD2ArrayChar(rdMarkerSet.getMarkerIdSetMapCharArray(), cNetCDF.Strides.STRIDE_MARKER_NAME);
 		try {
 			ncfile.write(cNetCDF.Variables.VAR_MARKERS_RSID, markersOrig, markersD2);
 		} catch (IOException ex) {
@@ -279,10 +275,10 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 		log.info("Done writing MarkerId and RsId to matrix");
 
 
-		//WRITE GT STRAND FROM ANNOTATION FILE
+		// WRITE GT STRAND FROM ANNOTATION FILE
 		rdMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_GT_STRAND);
-		markersD2 = org.gwaspi.netCDF.operations.Utils.writeMapValueToD2ArrayChar(rdMarkerSetMap, cNetCDF.Strides.STRIDE_STRAND);
-		int[] gtOrig = new int[]{0, 0};
+		markersD2 = org.gwaspi.netCDF.operations.Utils.writeMapValueToD2ArrayChar(rdMarkerSet.getMarkerIdSetMapCharArray(), cNetCDF.Strides.STRIDE_STRAND);
+		int[] gtOrig = new int[] {0, 0};
 		try {
 			ncfile.write(cNetCDF.Variables.VAR_GT_STRAND, gtOrig, markersD2);
 		} catch (IOException ex) {
@@ -305,7 +301,7 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 			rdMarkerSet.fillGTsForCurrentSampleIntoInitMap(sampleWrIndex);
 
 			//Write MarkerIdSetMap to A3 ArrayChar and save to wrMatrix
-			org.gwaspi.netCDF.operations.Utils.saveSingleSampleGTsToMatrix(ncfile, rdMarkerSet.getMarkerIdSetMap(), sampleWrIndex);
+			org.gwaspi.netCDF.operations.Utils.saveSingleSampleGTsToMatrix(ncfile, rdMarkerSet.getMarkerIdSetMapByteArray(), sampleWrIndex);
 			if (sampleWrIndex % 100 == 0) {
 				log.info("Samples copied: " + sampleWrIndex);
 			}
@@ -320,9 +316,9 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 		try {
 			//GUESS GENOTYPE ENCODING
 			if (guessedGTCode.equals(cNetCDF.Defaults.GenotypeEncoding.UNKNOWN)) {
-				guessedGTCode = Utils.detectGTEncoding(rdMarkerSet.getMarkerIdSetMap());
+				guessedGTCode = Utils.detectGTEncoding(rdMarkerSet.getMarkerIdSetMapByteArray());
 			} else if (guessedGTCode.equals(cNetCDF.Defaults.GenotypeEncoding.O12)) {
-				guessedGTCode = Utils.detectGTEncoding(rdMarkerSet.getMarkerIdSetMap());
+				guessedGTCode = Utils.detectGTEncoding(rdMarkerSet.getMarkerIdSetMapByteArray());
 			}
 
 			ArrayChar.D2 guessedGTCodeAC = new ArrayChar.D2(1, 8);

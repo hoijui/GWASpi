@@ -38,10 +38,10 @@ public class MergeMarkersMatrixOperation extends AbstractMergeMarkersMatrixOpera
 	public int processMatrix() throws IOException, InvalidRangeException {
 
 		// Get combo SampleSet with position[] (wrPos, rdMatrixNb, rdPos)
-		Map<SampleKey, Object> rdSampleSetMap1 = rdSampleSet1.getSampleIdSetMap();
-		Map<SampleKey, Object> rdSampleSetMap2 = rdSampleSet2.getSampleIdSetMap();
-		Map<SampleKey, Object> wrSampleSetMap = getSampleSetWithIndicesMap(rdSampleSetMap1, rdSampleSetMap2);
-		Map<SampleKey, Object> theSamples = rdSampleSetMap1;
+		Map<SampleKey, byte[]> rdSampleSetMap1 = rdSampleSet1.getSampleIdSetMapByteArray();
+		Map<SampleKey, byte[]> rdSampleSetMap2 = rdSampleSet2.getSampleIdSetMapByteArray();
+		Map<SampleKey, int[]> wrSampleSetMap = getSampleSetWithIndicesMap(rdSampleSetMap1, rdSampleSetMap2);
+		Map<SampleKey, byte[]> theSamples = rdSampleSetMap1;
 
 		final int numSamples = rdMatrix1Metadata.getSampleSetSize(); // Keep rdMatrix1Metadata from Matrix1. SampleSet is constant
 		final String humanReadableMethodName = Text.Trafo.mergeMarkersOnly;
@@ -60,10 +60,10 @@ public class MergeMarkersMatrixOperation extends AbstractMergeMarkersMatrixOpera
 	@Override
 	protected void writeGenotypes(
 			NetcdfFileWriteable wrNcFile,
-			Map<SampleKey, Object> wrSampleSetMap,
-			Map<MarkerKey, Object> wrComboSortedMarkerSetMap,
-			Map<SampleKey, Object> rdSampleSetMap1,
-			Map<SampleKey, Object> rdSampleSetMap2)
+			Map<SampleKey, int[]> wrSampleSetMap,
+			Map<MarkerKey, ?> wrComboSortedMarkerSetMap,
+			Map<SampleKey, byte[]> rdSampleSetMap1,
+			Map<SampleKey, byte[]> rdSampleSetMap2)
 			throws InvalidRangeException, IOException
 	{
 		// Get SampleId index from each Matrix
@@ -80,30 +80,31 @@ public class MergeMarkersMatrixOperation extends AbstractMergeMarkersMatrixOpera
 			rdMarkerSet2.fillGTsForCurrentSampleIntoInitMap(sampleIndices[1]);
 
 			// Fill wrSortedMingledMarkerMap with matrix 1+2 Genotypes
-			for (Map.Entry<MarkerKey, Object> markerEntry : wrComboSortedMarkerSetMap.entrySet()) {
+			Map<MarkerKey, byte[]> wrComboSortedMarkerGTs = new LinkedHashMap<MarkerKey, byte[]>(wrComboSortedMarkerSetMap.size());
+			for (Map.Entry<MarkerKey, ?> markerEntry : wrComboSortedMarkerSetMap.entrySet()) {
 				MarkerKey markerKey = markerEntry.getKey();
 				byte[] genotype = cNetCDF.Defaults.DEFAULT_GT;
-				if (rdMarkerSet1.getMarkerIdSetMap().containsKey(markerKey)) {
-					genotype = (byte[]) rdMarkerSet1.getMarkerIdSetMap().get(markerKey);
+				if (rdMarkerSet1.getMarkerIdSetMapByteArray().containsKey(markerKey)) {
+					genotype = rdMarkerSet1.getMarkerIdSetMapByteArray().get(markerKey);
 				}
-				if (rdMarkerSet2.getMarkerIdSetMap().containsKey(markerKey)) {
-					genotype = (byte[]) rdMarkerSet2.getMarkerIdSetMap().get(markerKey);
+				if (rdMarkerSet2.getMarkerIdSetMapByteArray().containsKey(markerKey)) {
+					genotype = rdMarkerSet2.getMarkerIdSetMapByteArray().get(markerKey);
 				}
 
-				markerEntry.setValue(genotype);
+				wrComboSortedMarkerGTs.put(markerKey, genotype);
 			}
 
 			// Write wrMarkerIdSetMap to A3 ArrayChar and save to wrMatrix
-			Utils.saveSingleSampleGTsToMatrix(wrNcFile, wrComboSortedMarkerSetMap, sampleIndices[0]);
+			Utils.saveSingleSampleGTsToMatrix(wrNcFile, wrComboSortedMarkerGTs, sampleIndices[0]);
 		}
 	}
 
-	private static Map<SampleKey, Object> getSampleSetWithIndicesMap(Map<SampleKey, Object> sampleSetMap1, Map<SampleKey, Object> sampleSetMap2) {
-		Map<SampleKey, Object> resultMap = new LinkedHashMap<SampleKey, Object>();
+	private static Map<SampleKey, int[]> getSampleSetWithIndicesMap(Map<SampleKey, ?> sampleSetMap1, Map<SampleKey, ?> sampleSetMap2) {
+		Map<SampleKey, int[]> resultMap = new LinkedHashMap<SampleKey, int[]>();
 
 		int rdPos = 0;
 		for (SampleKey key : sampleSetMap1.keySet()) {
-			int[] position = new int[]{rdPos, 0}; // rdPos matrix 1
+			int[] position = new int[] {rdPos, 0}; // rdPos matrix 1
 			resultMap.put(key, position);
 			rdPos++;
 		}
@@ -112,7 +113,7 @@ public class MergeMarkersMatrixOperation extends AbstractMergeMarkersMatrixOpera
 		for (SampleKey key : sampleSetMap2.keySet()) {
 			// IF SAMPLE ALLREADY EXISTS IN MATRIX1 SUBSTITUTE VALUES WITH MATRIX2
 			if (resultMap.containsKey(key)) {
-				int[] position = (int[]) resultMap.get(key);
+				int[] position = resultMap.get(key);
 				position[1] = rdPos; // rdPos matrix 2
 				resultMap.put(key, position);
 			}

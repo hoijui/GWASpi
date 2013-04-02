@@ -21,7 +21,7 @@ import ucar.nc2.Variable;
  * IBE, Institute of Evolutionary Biology (UPF-CSIC)
  * CEXS-UPF-PRBB
  */
-public class MarkerOperationSet extends AbstractOperationSet<MarkerKey> {
+public class MarkerOperationSet<V> extends AbstractOperationSet<MarkerKey, V> {
 
 	private static final Logger log = LoggerFactory.getLogger(MarkerOperationSet.class);
 
@@ -30,9 +30,9 @@ public class MarkerOperationSet extends AbstractOperationSet<MarkerKey> {
 	}
 
 	//<editor-fold defaultstate="expanded" desc="CHROMOSOME INFO">
-	public Map<String, Object> getChrInfoSetMap() {
+	public Map<String, int[]> getChrInfoSetMap() {
 		NetcdfFile ncfile = null;
-		Map<String, Object> chrInfoMap = new LinkedHashMap<String, Object>();
+		Map<String, int[]> chrInfoMap = new LinkedHashMap<String, int[]>();
 
 		try {
 			ncfile = NetcdfFile.open(getOperationMetadata().getPathToMatrix());
@@ -50,7 +50,7 @@ public class MarkerOperationSet extends AbstractOperationSet<MarkerKey> {
 			try {
 				if (dataType == DataType.CHAR) {
 					ArrayChar.D2 markerSetAC = (ArrayChar.D2) var.read("(0:" + (varShape[0] - 1) + ":1, 0:7:1)");
-					chrInfoMap = org.gwaspi.netCDF.operations.Utils.writeD2ArrayCharToMapKeys(markerSetAC);
+					chrInfoMap = org.gwaspi.netCDF.operations.Utils.writeD2ArrayCharToMapKeys(markerSetAC, null);
 				}
 			} catch (IOException ex) {
 				log.error("Cannot read data", ex);
@@ -93,22 +93,22 @@ public class MarkerOperationSet extends AbstractOperationSet<MarkerKey> {
 	//</editor-fold>
 
 	//<editor-fold defaultstate="expanded" desc="OPERATION-SET PICKERS">
-	public Map<MarkerKey, Object> pickValidMarkerSetItemsByValue(NetcdfFile ncfile, String variable, Set<Object> criteria, boolean includes) {
-		Map<MarkerKey, Object> returnMap = new LinkedHashMap<MarkerKey, Object>();
-		Map<MarkerKey, Object> readMap = fillOpSetMapWithVariable(ncfile, variable);
+	public Map<MarkerKey, V> pickValidMarkerSetItemsByValue(NetcdfFile ncfile, String variable, Set<Object> criteria, boolean includes) {
+		Map<MarkerKey, V> returnMap = new LinkedHashMap<MarkerKey, V>();
+		Map<MarkerKey, V> readMap = fillOpSetMapWithVariable(ncfile, variable);
 
 		if (includes) {
-			for (Map.Entry<MarkerKey, Object> entry : readMap.entrySet()) {
+			for (Map.Entry<MarkerKey, V> entry : readMap.entrySet()) {
 				MarkerKey key = entry.getKey();
-				Object value = entry.getValue();
+				V value = entry.getValue();
 				if (criteria.contains(value)) {
 					returnMap.put(key, value);
 				}
 			}
 		} else {
-			for (Map.Entry<MarkerKey, Object> entry : readMap.entrySet()) {
+			for (Map.Entry<MarkerKey, V> entry : readMap.entrySet()) {
 				MarkerKey key = entry.getKey();
-				Object value = entry.getValue();
+				V value = entry.getValue();
 				if (!criteria.contains(value)) {
 					returnMap.put(key, value);
 				}

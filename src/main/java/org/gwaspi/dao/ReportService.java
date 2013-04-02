@@ -18,9 +18,9 @@ public interface ReportService {
 
 	List<Report> getReportsList(int opId, int matrixId) throws IOException;
 
-	<K> Map<K, Object> getSortedMarkerSetByDoubleValue(Map<K, Object> map);
+	<K, V> Map<K, V> createMapSortedByValue(Map<K, V> map);
 
-	<K> Map<K, Object> getSortedDescendingMarkerSetByDoubleValue(Map<K, Object> map);
+	<K, V> Map<K, V> createMapSortedByValueDescending(Map<K, V> map);
 
 	String getReportNamePrefix(Operation op);
 

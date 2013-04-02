@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.global.TypeConverter;
+import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.SampleKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,13 +37,13 @@ public class Utils {
 	}
 
 	//<editor-fold defaultstate="expanded" desc="SAVERS">
-	public static <K> boolean saveCharMapKeyToWrMatrix(NetcdfFileWriteable wrNcFile, Map<K, Object> wrMap, String variable, int varStride) {
+	public static <K> boolean saveCharMapKeyToWrMatrix(NetcdfFileWriteable wrNcFile, Map<K, ?> wrMap, String variable, int varStride) {
 		boolean result = false;
 
 		try {
 			ArrayChar.D2 markersD2 = writeMapKeysToD2ArrayChar(wrMap, varStride);
 
-			int[] markersOrig = new int[]{0, 0};
+			int[] markersOrig = new int[] {0, 0};
 			try {
 				wrNcFile.write(variable, markersOrig, markersD2);
 				log.info("Done writing {}", variable);
@@ -58,13 +60,13 @@ public class Utils {
 		return result;
 	}
 
-	public static boolean saveCharMapValueToWrMatrix(NetcdfFileWriteable wrNcFile, Map<?, Object> wrMap, String variable, int varStride) {
+	public static boolean saveCharMapValueToWrMatrix(NetcdfFileWriteable wrNcFile, Map<?, char[]> wrMap, String variable, int varStride) {
 		boolean result = false;
 
 		try {
 			ArrayChar.D2 markersD2 = writeMapValueToD2ArrayChar(wrMap, varStride);
 
-			int[] markersOrig = new int[]{0, 0};
+			int[] markersOrig = new int[] {0, 0};
 			try {
 				wrNcFile.write(variable, markersOrig, markersD2);
 				log.info("Done writing {}", variable);
@@ -81,12 +83,12 @@ public class Utils {
 		return result;
 	}
 
-	public static boolean saveCharMapItemToWrMatrix(NetcdfFileWriteable wrNcFile, Map<?, Object> wrMap, String variable, int itemIndex, int varStride) {
+	public static <V> boolean saveCharMapItemToWrMatrix(NetcdfFileWriteable wrNcFile, Map<?, V> wrMap, String variable, TypeConverter<V, String> typeConverter, int varStride) {
 		boolean result = false;
 
 		try {
-			ArrayChar.D2 markersD2 = writeMapValueItemToD2ArrayChar(wrMap, itemIndex, varStride);
-			int[] markersOrig = new int[]{0, 0};
+			ArrayChar.D2 markersD2 = writeMapValueItemToD2ArrayChar(wrMap, typeConverter, varStride);
+			int[] markersOrig = new int[] {0, 0};
 			try {
 				wrNcFile.write(variable, markersOrig, markersD2);
 				log.info("Done writing {}", variable);
@@ -104,12 +106,12 @@ public class Utils {
 	}
 
 	//<editor-fold defaultstate="expanded" desc="GENOTYPE SAVERS">
-	public static boolean saveSingleSampleGTsToMatrix(NetcdfFileWriteable wrNcFile, Map<?, Object> wrMap, int sampleIndex) {
+	public static boolean saveSingleSampleGTsToMatrix(NetcdfFileWriteable wrNcFile, Map<?, byte[]> wrMap, int sampleIndex) {
 		boolean result = false;
 		ArrayByte.D3 genotypes = writeMapToSingleSampleArrayByteD3(wrMap, cNetCDF.Strides.STRIDE_GT);
 //		ArrayByte.D3 genotypes = writeMapToCurrentSampleArrayByteD3(wrMap, cNetCDF.Strides.STRIDE_GT);
 
-		int[] origin = new int[]{sampleIndex, 0, 0};
+		int[] origin = new int[] {sampleIndex, 0, 0};
 		try {
 			wrNcFile.write(cNetCDF.Variables.VAR_GENOTYPES, origin, genotypes);
 //			log.info("Done writing Sample {} genotypes", samplePos);
@@ -122,11 +124,11 @@ public class Utils {
 		return result;
 	}
 
-	public static boolean saveSingleMarkerGTsToMatrix(NetcdfFileWriteable wrNcFile, Map<?, Object> wrMap, int markerIndex) {
+	public static boolean saveSingleMarkerGTsToMatrix(NetcdfFileWriteable wrNcFile, Map<?, byte[]> wrMap, int markerIndex) {
 		boolean result = false;
 		ArrayByte.D3 genotypes = writeMapToSingleMarkerArrayByteD3(wrMap, cNetCDF.Strides.STRIDE_GT);
 
-		int[] origin = new int[]{0, markerIndex, 0};
+		int[] origin = new int[] {0, markerIndex, 0};
 		try {
 			wrNcFile.write(cNetCDF.Variables.VAR_GENOTYPES, origin, genotypes);
 //			log.info("Done writing genotypes");
@@ -141,7 +143,7 @@ public class Utils {
 	//</editor-fold>
 
 	//<editor-fold defaultstate="expanded" desc="D1 SAVERS">
-	public static boolean saveDoubleMapD1ToWrMatrix(NetcdfFileWriteable wrNcFile, Map<?, Object> wrMap, String variable) {
+	public static boolean saveDoubleMapD1ToWrMatrix(NetcdfFileWriteable wrNcFile, Map<?, Double> wrMap, String variable) {
 		boolean result = false;
 
 		try {
@@ -163,11 +165,23 @@ public class Utils {
 		return result;
 	}
 
-	public static boolean saveDoubleMapItemD1ToWrMatrix(NetcdfFileWriteable wrNcFile, Map<?, Object> wrMap, int itemNb, String variable) {
+	public static boolean saveDoubleMapItemD1ToWrMatrix(NetcdfFileWriteable wrNcFile, Map<?, Double[]> wrMap, final int itemNb, String variable) {
+
+		TypeConverter<Double[], Double> typeConverter = new TypeConverter<Double[], Double>() {
+			@Override
+			public Double convert(Double[] from) {
+				return from[itemNb];
+			}
+		};
+
+		return saveDoubleMapItemD1ToWrMatrix(wrNcFile, wrMap, typeConverter, variable);
+	}
+
+	public static <V> boolean saveDoubleMapItemD1ToWrMatrix(NetcdfFileWriteable wrNcFile, Map<?, V> wrMap, TypeConverter<V, Double> typeConverter, String variable) {
 		boolean result = false;
 
 		try {
-			ArrayDouble.D1 arrayDouble = Utils.writeMapValueItemToD1ArrayDouble(wrMap, itemNb);
+			ArrayDouble.D1 arrayDouble = Utils.writeMapValueItemToD1ArrayDouble(wrMap, typeConverter);
 			int[] origin1 = new int[1];
 			try {
 				wrNcFile.write(variable, origin1, arrayDouble);
@@ -185,7 +199,7 @@ public class Utils {
 		return result;
 	}
 
-	public static boolean saveIntMapD1ToWrMatrix(NetcdfFileWriteable wrNcFile, Map<?, Object> wrMap, String variable) {
+	public static boolean saveIntMapD1ToWrMatrix(NetcdfFileWriteable wrNcFile, Map<?, Integer> wrMap, String variable) {
 		boolean result = false;
 
 		try {
@@ -207,7 +221,10 @@ public class Utils {
 		return result;
 	}
 
-	public static boolean saveIntMapItemD1ToWrMatrix(NetcdfFileWriteable wrNcFile, Map<String, Object> wrMap, int itemNb, String variable) {
+	/**
+	 * @deprecated unused
+	 */
+	public static boolean saveIntMapItemD1ToWrMatrix(NetcdfFileWriteable wrNcFile, Map<String, Object[]> wrMap, int itemNb, String variable) {
 		boolean result = false;
 
 		try {
@@ -231,7 +248,7 @@ public class Utils {
 	//</editor-fold>
 
 	//<editor-fold defaultstate="expanded" desc="D2 SAVERS">
-	public static boolean saveIntMapD2ToWrMatrix(NetcdfFileWriteable wrNcFile, Map<?, Object> wrMap, int[] columns, String variable) {
+	public static boolean saveIntMapD2ToWrMatrix(NetcdfFileWriteable wrNcFile, Map<?, int[]> wrMap, int[] columns, String variable) {
 		boolean result = false;
 
 		try {
@@ -253,7 +270,7 @@ public class Utils {
 		return result;
 	}
 
-	public static boolean saveDoubleMapD2ToWrMatrix(NetcdfFileWriteable wrNcFile, Map<?, Object> wrMap, int[] columns, String variable) {
+	public static boolean saveDoubleMapD2ToWrMatrix(NetcdfFileWriteable wrNcFile, Map<?, Double[]> wrMap, int[] columns, String variable) {
 		boolean result = false;
 
 		try {
@@ -280,7 +297,7 @@ public class Utils {
 	//<editor-fold defaultstate="expanded" desc="CHUNKED SAVERS">
 	public static boolean saveCharChunkedMapToWrMatrix(
 			NetcdfFileWriteable wrNcFile,
-			Map<?, Object> wrMap,
+			Map<?, char[]> wrMap,
 			String variable,
 			int varStride,
 			int offset)
@@ -308,9 +325,12 @@ public class Utils {
 		return result;
 	}
 
+	/**
+	 * @deprecated unused
+	 */
 	public static boolean saveCharChunkedMapItemToWrMatrix(
 			NetcdfFileWriteable wrNcFile,
-			Map<String, Object> wrMap,
+			Map<String, MarkerMetadata> wrMap,
 			String variable,
 			int itemNb,
 			int varStride,
@@ -319,8 +339,8 @@ public class Utils {
 		boolean result = false;
 
 		try {
-			ArrayChar.D2 markersD2 = writeMapValueItemToD2ArrayChar(wrMap, itemNb, varStride);
-			int[] markersOrig = new int[]{offset, 0};
+			ArrayChar.D2 markersD2 = null; //writeMapValueItemToD2ArrayChar(wrMap, itemNb, varStride);
+			int[] markersOrig = new int[] {offset, 0};
 			try {
 				wrNcFile.write(variable, markersOrig, markersD2);
 				log.info("Done writing {}", variable);
@@ -387,7 +407,7 @@ public class Utils {
 	//<editor-fold defaultstate="expanded" desc="D1 SAVERS">
 	public static boolean saveDoubleChunkedMapD1ToWrMatrix(
 			NetcdfFileWriteable wrNcFile,
-			Map<String, Object> wrMap,
+			Map<?, Double> wrMap,
 			String variable,
 			int offset)
 	{
@@ -412,9 +432,12 @@ public class Utils {
 		return result;
 	}
 
+	/**
+	 * @deprecated unused
+	 */
 	public static boolean saveDoubleChunkedMapItemD1ToWrMatrix(
 			NetcdfFileWriteable wrNcFile,
-			Map<String, Object> wrMap,
+			Map<?, Object[]> wrMap,
 			int itemNb,
 			String variable,
 			int offset)
@@ -422,8 +445,8 @@ public class Utils {
 		boolean result = false;
 
 		try {
-			ArrayDouble.D1 arrayDouble = Utils.writeMapValueItemToD1ArrayDouble(wrMap, itemNb);
-			int[] origin1 = new int[]{offset};
+			ArrayDouble.D1 arrayDouble = null; //Utils.writeMapValueItemToD1ArrayDouble(wrMap, itemNb);
+			int[] origin1 = new int[] {offset};
 			try {
 				wrNcFile.write(variable, origin1, arrayDouble);
 				log.info("Done writing {}", variable);
@@ -442,7 +465,7 @@ public class Utils {
 
 	public static boolean saveIntChunkedMapD1ToWrMatrix(
 			NetcdfFileWriteable wrNcFile,
-			Map<String, Object> wrMap,
+			Map<?, Integer> wrMap,
 			String variable,
 			int offset)
 	{
@@ -467,9 +490,12 @@ public class Utils {
 		return result;
 	}
 
+	/**
+	 * @deprecated unused
+	 */
 	public static boolean saveIntChunkedMapItemD1ToWrMatrix(
 			NetcdfFileWriteable wrNcFile,
-			Map<String, Object> wrMap,
+			Map<String, Object[]> wrMap,
 			int itemNb,
 			String variable,
 			int offset)
@@ -499,7 +525,7 @@ public class Utils {
 	//<editor-fold defaultstate="expanded" desc="D2 SAVERS">
 	public static boolean saveIntChunkedMapD2ToWrMatrix(
 			NetcdfFileWriteable wrNcFile,
-			Map<?, Object> wrMap,
+			Map<?, int[]> wrMap,
 			int[] columns,
 			String variable,
 			int offset)
@@ -527,7 +553,7 @@ public class Utils {
 
 	public static boolean saveDoubleChunkedD2ToWrMatrix(
 			NetcdfFileWriteable wrNcFile,
-			Map<String, Object> wrMap,
+			Map<String, Double[]> wrMap,
 			int[] columns,
 			String variable,
 			int offset) {
@@ -535,7 +561,7 @@ public class Utils {
 
 		try {
 			ArrayDouble.D2 arrayDoubleD2 = Utils.writeMapValueItemToD2ArrayDouble(wrMap, columns);
-			int[] origin1 = new int[]{offset, 0};
+			int[] origin1 = new int[] {offset, 0};
 			try {
 				wrNcFile.write(variable, origin1, arrayDoubleD2);
 				log.info("Done writing {}", variable);
@@ -563,7 +589,7 @@ public class Utils {
 		int markerCounter = 0;
 		for (Object value : map.values()) {
 			// 1 Sample at a time, iterating through markers, starting at gtSpan 0
-			charArray.setString(ima.set(0, markerCounter, 0), value.toString().trim());
+			charArray.setString(ima.set(0, markerCounter, 0), value.toString().trim()); // XXX This is currently unused, but one might have to use org.gwaspi.global.Utils.toMeaningfullRep() instead of toString() here
 			markerCounter++;
 		}
 
@@ -577,7 +603,7 @@ public class Utils {
 		int sampleCounter = 0;
 		for (Object value : map.values()) {
 			// 1 Marker at a time, iterating through samples, starting at gtSpan 0
-			charArray.setString(ima.set(sampleCounter, 0, 0), value.toString().trim());
+			charArray.setString(ima.set(sampleCounter, 0, 0), value.toString().trim()); // XXX This is currently unused, but one might have to use org.gwaspi.global.Utils.toMeaningfullRep() instead of toString() here
 			sampleCounter++;
 		}
 
@@ -586,6 +612,18 @@ public class Utils {
 	//</editor-fold>
 
 	//<editor-fold defaultstate="expanded" desc="ArrayChar.D2">
+	public static ArrayChar.D2 writeSingleValueToD2ArrayChar(String value, int stride, int num) {
+		ArrayChar.D2 charArray = new ArrayChar.D2(num, stride);
+		Index ima = charArray.getIndex();
+
+		final String valueStr = value.trim();
+		for (int i = 0; i < num; i++) {
+			charArray.setString(ima.set(i, 0), valueStr);
+		}
+
+		return charArray;
+	}
+
 	public static ArrayChar.D2 writeCollectionToD2ArrayChar(Collection<?> values, int stride) {
 		ArrayChar.D2 charArray = new ArrayChar.D2(values.size(), stride);
 		Index ima = charArray.getIndex();
@@ -599,23 +637,22 @@ public class Utils {
 		return charArray;
 	}
 
-	public static ArrayChar.D2 writeMapValueToD2ArrayChar(Map<?, Object> map, int stride) {
+	public static ArrayChar.D2 writeMapValueToD2ArrayChar(Map<?, char[]> map, int stride) {
 		return writeCollectionToD2ArrayChar(map.values(), stride);
 	}
 
-	public static <K> ArrayChar.D2 writeMapKeysToD2ArrayChar(Map<K, Object> map, int stride) {
+	public static <K> ArrayChar.D2 writeMapKeysToD2ArrayChar(Map<K, ?> map, int stride) {
 		return writeCollectionToD2ArrayChar(map.keySet(), stride);
 	}
 
-	public static ArrayChar.D2 writeMapValueItemToD2ArrayChar(Map<?, Object> map, int itemNb, int stride) {
+	public static <V> ArrayChar.D2 writeMapValueItemToD2ArrayChar(Map<?, V> map, TypeConverter<V, String> valueToStringConverter, int stride) {
 		ArrayChar.D2 charArray = new ArrayChar.D2(map.size(), stride);
 		Index index = charArray.getIndex();
 
 		int count = 0;
-		for (Object value : map.values()) {
-			Object[] values = (Object[]) value;
-			String newValue = values[itemNb].toString();
-			charArray.setString(index.set(count, 0), newValue.trim());
+		for (V value : map.values()) {
+			String strValue = valueToStringConverter.convert(value);
+			charArray.setString(index.set(count, 0), strValue.trim());
 			count++;
 		}
 
@@ -624,42 +661,40 @@ public class Utils {
 	//</editor-fold>
 
 	//<editor-fold defaultstate="expanded" desc="ArrayDouble.D1 & D2">
-	public static ArrayDouble.D1 writeMapValueToD1ArrayDouble(Map<?, Object> map) {
+	public static ArrayDouble.D1 writeMapValueToD1ArrayDouble(Map<?, Double> map) {
 		ArrayDouble.D1 doubleArray = new ArrayDouble.D1(map.size());
 		Index index = doubleArray.getIndex();
 
 		int count = 0;
-		for (Object value : map.values()) {
-			doubleArray.setDouble(index.set(count), (Double) value);
+		for (Double value : map.values()) {
+			doubleArray.setDouble(index.set(count), value);
 			count++;
 		}
 
 		return doubleArray;
 	}
 
-	private static ArrayDouble.D1 writeMapValueItemToD1ArrayDouble(Map<?, Object> map, int itemNb) {
+	private static <V> ArrayDouble.D1 writeMapValueItemToD1ArrayDouble(Map<?, V> map, TypeConverter<V, Double> typeConverter) {
 		ArrayDouble.D1 doubleArray = new ArrayDouble.D1(map.size());
 		Index index = doubleArray.getIndex();
 
 		int count = 0;
-		for (Object value : map.values()) {
-			Object[] values = (Object[]) value;
-			doubleArray.setDouble(index.set(count), (Double) values[itemNb]);
+		for (V value : map.values()) {
+			doubleArray.setDouble(index.set(count), typeConverter.convert(value));
 			count++;
 		}
 
 		return doubleArray;
 	}
 
-	private static ArrayDouble.D2 writeMapValueItemToD2ArrayDouble(Map<?, Object> map, int[] columns) {
+	private static ArrayDouble.D2 writeMapValueItemToD2ArrayDouble(Map<?, Double[]> map, int[] columns) {
 		ArrayDouble.D2 doubleArray = new ArrayDouble.D2(map.size(), columns.length);
 		Index ima = doubleArray.getIndex();
 
 		int i = 0;
-		for (Object value : map.values()) {
-			Object[] values = (Object[]) value;
+		for (Double[] values : map.values()) {
 			for (int j = 0; j < columns.length; j++) {
-				doubleArray.setDouble(ima.set(i, j), (Double) values[columns[j]]);
+				doubleArray.setDouble(ima.set(i, j), values[columns[j]]);
 			}
 			i++;
 		}
@@ -669,40 +704,53 @@ public class Utils {
 	//</editor-fold>
 
 	//<editor-fold defaultstate="expanded" desc="ArrayInt.D1 & D2">
-	public static ArrayInt.D1 writeMapValueToD1ArrayInt(Map<?, Object> map) {
+	public static ArrayInt.D1 writeMapValueToD1ArrayInt(Map<?, Integer> map) {
 		ArrayInt.D1 intArray = new ArrayInt.D1(map.size());
 		Index index = intArray.getIndex();
 
 		int count = 0;
-		for (Object value : map.values()) {
-			intArray.setInt(index.set(count), (Integer) value);
+		for (Integer value : map.values()) {
+			intArray.setInt(index.set(count), value);
 			count++;
 		}
 
 		return intArray;
 	}
 
-	public static ArrayInt.D1 writeMapValueItemToD1ArrayInt(Map<?, Object> map, int itemNb) {
+	/**
+	 * @deprecated unused
+	 */
+	public static ArrayInt.D1 writeMapValueItemToD1ArrayInt(Map<?, Object[]> map, int itemNb) {
 		ArrayInt.D1 intArray = new ArrayInt.D1(map.size());
 		Index index = intArray.getIndex();
 
 		int count = 0;
-		for (Object value : map.values()) {
-			Object[] values = (Object[]) value;
+		for (Object[] values : map.values()) {
 			intArray.setInt(index.set(count), (Integer) values[itemNb]);
 			count++;
 		}
 
 		return intArray;
 	}
+	public static <V> ArrayInt.D1 writeMapValueItemToD1ArrayInt(Map<?, V> map, TypeConverter<V, Integer> valueToIntegerConverter) {
+		ArrayInt.D1 intArray = new ArrayInt.D1(map.size());
+		Index index = intArray.getIndex();
 
-	public static ArrayInt.D2 writeMapValueItemToD2ArrayInt(Map<?, Object> map, int[] columns) {
+		int count = 0;
+		for (V value : map.values()) {
+			intArray.setInt(index.set(count), valueToIntegerConverter.convert(value));
+			count++;
+		}
+
+		return intArray;
+	}
+
+	public static ArrayInt.D2 writeMapValueItemToD2ArrayInt(Map<?, int[]> map, int[] columns) {
 		ArrayInt.D2 intArray = new ArrayInt.D2(map.size(), columns.length);
 		Index ima = intArray.getIndex();
 
 		int i = 0;
-		for (Object value : map.values()) {
-			int[] values = (int[]) value;
+		for (int[] values : map.values()) {
 			for (int j = 0; j < columns.length; j++) {
 				intArray.setInt(ima.set(i, j), values[columns[j]]);
 			}
@@ -737,14 +785,13 @@ public class Utils {
 		return byteArray;
 	}
 
-	public static ArrayByte.D3 writeMapToSingleSampleArrayByteD3(Map<?, Object> map, int stride) {
+	public static ArrayByte.D3 writeMapToSingleSampleArrayByteD3(Map<?, byte[]> map, int stride) {
 		// samplesDim, markersDim, gtStrideDim
 		ArrayByte.D3 byteArray = new ArrayByte.D3(1, map.size(), stride);
 		Index ima = byteArray.getIndex();
 
 		int markerCount = 0;
-		for (Object value : map.values()) {
-			byte[] values = (byte[]) value;
+		for (byte[] values : map.values()) {
 			// 1 Sample at a time, iterating through markers
 			byteArray.setByte(ima.set(0, markerCount, 0), values[0]); // first byte
 			byteArray.setByte(ima.set(0, markerCount, 1), values[1]); // second byte
@@ -754,16 +801,15 @@ public class Utils {
 		return byteArray;
 	}
 
-	public static ArrayByte.D3 writeMapToSingleMarkerArrayByteD3(Map<?, Object> map, int stride) {
+	public static ArrayByte.D3 writeMapToSingleMarkerArrayByteD3(Map<?, byte[]> map, int stride) {
 		ArrayByte.D3 byteArray = new ArrayByte.D3(map.size(), 1, stride);
 		Index ima = byteArray.getIndex();
 
 		int markerCounter = 0;
-		for (Object value : map.values()) {
-			byte[] values = (byte[]) value;
+		for (byte[] gts : map.values()) {
 			// 1 Marker at a time, iterating through samples
-			byteArray.setByte(ima.set(markerCounter, 0, 0), values[0]); // first byte
-			byteArray.setByte(ima.set(markerCounter, 0, 1), values[1]); // second byte
+			byteArray.setByte(ima.set(markerCounter, 0, 0), gts[0]); // first byte
+			byteArray.setByte(ima.set(markerCounter, 0, 1), gts[1]); // second byte
 			markerCounter++;
 		}
 
@@ -776,13 +822,12 @@ public class Utils {
 	 *
 	 * @deprecated Use {@link #writeMapToSingleMarkerArrayByteD3} instead
 	 */
-	public static ArrayByte.D3 writeMapToCurrentMarkerArrayByteD3(Map<?, Object> map, int stride) {
+	public static ArrayByte.D3 writeMapToCurrentMarkerArrayByteD3(Map<?, byte[]> map, int stride) {
 		ArrayByte.D3 byteArray = new ArrayByte.D3(1, map.size(), stride);
 		Index ima = byteArray.getIndex();
 
 		int markerCounter = 0;
-		for (Object value : map.values()) {
-			byte[] values = (byte[]) value;
+		for (byte[] values : map.values()) {
 			// 1 Marker at a time, iterating through samples
 			byteArray.setByte(ima.set(0, markerCounter, 0), values[0]); // first byte
 			byteArray.setByte(ima.set(0, markerCounter, 1), values[1]); // second byte
@@ -796,23 +841,23 @@ public class Utils {
 
 	//<editor-fold defaultstate="expanded" desc="netCDFJOs TO POJOs">
 	//<editor-fold defaultstate="expanded" desc="ArrayChar.D2">
-	public static Map<String, Object> writeD2ArrayCharToMapKeys(ArrayChar inputArray) {
-		Map<String, Object> result = new LinkedHashMap<String, Object>();
+	public static <V> Map<String, V> writeD2ArrayCharToMapKeys(ArrayChar inputArray, V commonValue) {
+		Map<String, V> result = new LinkedHashMap<String, V>();
 //		StringBuilder key = new StringBuilder("");
 
 		int[] shape = inputArray.getShape();
 //		Index index = inputArray.getIndex();
 		for (int i = 0; i < shape[0]; i++) {
-			ArrayChar wrCharArray = new ArrayChar(new int[]{1, shape[1]});
+			ArrayChar wrCharArray = new ArrayChar(new int[] {1, shape[1]});
 			ArrayChar.D2.arraycopy(inputArray, i * shape[1], wrCharArray, 0, shape[1]);
 			char[] values = (char[]) wrCharArray.copyTo1DJavaArray();
-			result.put(String.valueOf(values).trim(), "");
+			result.put(new String(values).trim(), commonValue);
 
 //			key = new StringBuilder("");
-//			for (int j=0; j<shape[1]; j++) {
+//			for (int j = 0; j < shape[1]; j++) {
 //				key.append(inputArray.getChar(index.set(i,j)));
 //			}
-//			result.put(key.toString().trim(), "");
+//			result.put(key.toString().trim(), commonValue);
 		}
 
 		return result;
@@ -821,29 +866,29 @@ public class Utils {
 	/**
 	 * @deprecated just remove, as it was wrong anyway (we need MarkerKey, not SampleKey)
 	 */
-	public static Map<SampleKey, Object> writeD2ArrayCharToMapSampleKeys(ArrayChar inputArray) {
-		Map<SampleKey, Object> result = new LinkedHashMap<SampleKey, Object>();
+	public static <V> Map<SampleKey, V> writeD2ArrayCharToMapSampleKeys(ArrayChar inputArray, V commonValue) {
+		Map<SampleKey, V> result = new LinkedHashMap<SampleKey, V>();
 
 		int[] shape = inputArray.getShape();
 		for (int i = 0; i < shape[0]; i++) {
-			ArrayChar wrCharArray = new ArrayChar(new int[]{1, shape[1]});
+			ArrayChar wrCharArray = new ArrayChar(new int[] {1, shape[1]});
 			ArrayChar.D2.arraycopy(inputArray, i * shape[1], wrCharArray, 0, shape[1]);
 			char[] values = (char[]) wrCharArray.copyTo1DJavaArray();
-			result.put(SampleKey.valueOf(String.valueOf(values).trim()), "");
+			result.put(SampleKey.valueOf(String.valueOf(values).trim()), commonValue);
 		}
 
 		return result;
 	}
 
-	public static <K> void writeD2ArrayCharToMapValues(ArrayChar inputArray, Map<K, Object> map) {
+	public static <K> void writeD2ArrayCharToMapValues(ArrayChar inputArray, Map<K, char[]> map) {
 
 		int[] shape = inputArray.getShape();
-		Iterator<Entry<K, Object>> it = map.entrySet().iterator();
+		Iterator<Entry<K, char[]>> it = map.entrySet().iterator();
 		for (int i = 0; i < shape[0]; i++) {
-			ArrayChar wrCharArray = new ArrayChar(new int[]{1, shape[1]});
+			ArrayChar wrCharArray = new ArrayChar(new int[] {1, shape[1]});
 			ArrayChar.D2.arraycopy(inputArray, i * shape[1], wrCharArray, 0, shape[1]);
 			char[] values = (char[]) wrCharArray.copyTo1DJavaArray();
-			it.next().setValue(String.valueOf(values).trim());
+			it.next().setValue(String.valueOf(values).trim().toCharArray());
 		}
 	}
 
@@ -853,7 +898,7 @@ public class Utils {
 
 		int[] shape = inputArray.getShape();
 		for (int i = 0; i < shape[0]; i++) {
-			ArrayChar wrCharArray = new ArrayChar(new int[]{1, shape[1]});
+			ArrayChar wrCharArray = new ArrayChar(new int[] {1, shape[1]});
 			ArrayChar.D2.arraycopy(inputArray, i * shape[1], wrCharArray, 0, shape[1]);
 			char[] values = (char[]) wrCharArray.copyTo1DJavaArray();
 			als.add(String.valueOf(values).trim());
@@ -896,11 +941,11 @@ public class Utils {
 	//</editor-fold>
 
 	//<editor-fold defaultstate="expanded" desc="ArrayDouble.D1">
-	public static <K> void writeD1ArrayDoubleToMapValues(ArrayDouble inputArray, Map<K, Object> map) {
+	public static <K> void writeD1ArrayDoubleToMapValues(ArrayDouble inputArray, Map<K, Double> map) {
 
 		int[] shape = inputArray.getShape();
 		Index index = inputArray.getIndex();
-		Iterator<Entry<K, Object>> entries = map.entrySet().iterator();
+		Iterator<Entry<K, Double>> entries = map.entrySet().iterator();
 		for (int i = 0; i < shape[0]; i++) {
 			Double value = inputArray.getDouble(index.set(i));
 			entries.next().setValue(value);
@@ -923,9 +968,9 @@ public class Utils {
 	//</editor-fold>
 
 	//<editor-fold defaultstate="expanded" desc="ArrayDouble.D2">
-	public static <K> void writeD2ArrayDoubleToMapValues(ArrayDouble.D2 inputArray, Map<K, Object> map) {
+	public static <K> void writeD2ArrayDoubleToMapValues(ArrayDouble.D2 inputArray, Map<K, double[]> map) {
 		int[] shape = inputArray.getShape();
-		Iterator<Entry<K, Object>> entries = map.entrySet().iterator();
+		Iterator<Entry<K, double[]>> entries = map.entrySet().iterator();
 
 		for (int i = 0; i < (shape[0] * shape[1]); i = i + shape[1]) {
 			ArrayDouble wrDoubleArray = new ArrayDouble(new int[]{1, shape[1]});
@@ -953,11 +998,11 @@ public class Utils {
 	//</editor-fold>
 
 	//<editor-fold defaultstate="expanded" desc="ArrayInt.D1">
-	public static <K> void writeD1ArrayIntToMapValues(ArrayInt inputArray, Map<K, Object> map) {
+	public static <K> void writeD1ArrayIntToMapValues(ArrayInt inputArray, Map<K, Integer> map) {
 
 		int[] shape = inputArray.getShape();
 		Index index = inputArray.getIndex();
-		Iterator<Entry<K, Object>> entries = map.entrySet().iterator();
+		Iterator<Entry<K, Integer>> entries = map.entrySet().iterator();
 		for (int i = 0; i < shape[0]; i++) {
 			Integer value = inputArray.getInt(index.set(i));
 			entries.next().setValue(value);
@@ -980,12 +1025,12 @@ public class Utils {
 	//</editor-fold>
 
 	//<editor-fold defaultstate="expanded" desc="ArrayInt.D2">
-	public static <K> void writeD2ArrayIntToMapValues(ArrayInt.D2 inputArray, Map<K, Object> map) {
+	public static <K> void writeD2ArrayIntToMapValues(ArrayInt.D2 inputArray, Map<K, int[]> map) {
 		int[] shape = inputArray.getShape();
-		Iterator<Entry<K, Object>> entries = map.entrySet().iterator();
+		Iterator<Entry<K, int[]>> entries = map.entrySet().iterator();
 
 		for (int i = 0; i < (shape[0] * shape[1]); i = i + shape[1]) {
-			ArrayInt wrIntArray = new ArrayInt(new int[]{1, shape[1]});
+			ArrayInt wrIntArray = new ArrayInt(new int[] {1, shape[1]});
 			ArrayInt.D2.arraycopy(inputArray, i, wrIntArray, 0, shape[1]);
 			int[] values = (int[]) wrIntArray.copyTo1DJavaArray();
 
@@ -995,28 +1040,28 @@ public class Utils {
 	//</editor-fold>
 
 	//<editor-fold defaultstate="expanded" desc="ArrayByte.D2">
-	public static Map<String, Object> writeD2ArrayByteToMapKeys(ArrayByte inputArray) {
-		Map<String, Object> result = new LinkedHashMap<String, Object>();
+	public static <V> Map<String, V> writeD2ArrayByteToMapKeys(ArrayByte inputArray) {
+		Map<String, V> result = new LinkedHashMap<String, V>();
 
 		int[] shape = inputArray.getShape();
 		for (int i = 0; i < shape[0]; i++) {
-			ArrayByte wrByteArray = new ArrayByte(new int[]{1, shape[1]});
+			ArrayByte wrByteArray = new ArrayByte(new int[] {1, shape[1]});
 			ArrayByte.D2.arraycopy(inputArray, i * shape[1], wrByteArray, 0, shape[1]);
 			byte[] values = (byte[]) wrByteArray.copyTo1DJavaArray();
-			result.put(new String(values).trim(), "");
+			result.put(new String(values).trim(), null);
 		}
 
 		return result;
 	}
 
-	public static <K> void writeD2ArrayByteToMapValues(ArrayByte inputArray, Map<K, Object> map) {
+	public static <K> void writeD2ArrayByteToMapValues(ArrayByte inputArray, Map<K, byte[]> map) {
 
 		int[] shape = inputArray.getShape();
-		Iterator<Entry<K, Object>> entries = map.entrySet().iterator();
+		Iterator<Entry<K, byte[]>> entries = map.entrySet().iterator();
 		for (int i = 0; i < shape[0]; i++) {
-			Entry<K, Object> entry = entries.next();
+			Entry<K, byte[]> entry = entries.next();
 
-			ArrayByte wrArray = new ArrayByte(new int[]{1, shape[1]});
+			ArrayByte wrArray = new ArrayByte(new int[] {1, shape[1]});
 			ArrayByte.D2.arraycopy(inputArray, i * shape[1], wrArray, 0, shape[1]);
 			byte[] values = (byte[]) wrArray.copyTo1DJavaArray();
 			entry.setValue(values);
@@ -1029,7 +1074,7 @@ public class Utils {
 
 		int[] shape = inputArray.getShape();
 		for (int i = 0; i < shape[0]; i++) {
-			ArrayByte wrArray = new ArrayByte(new int[]{1, shape[1]});
+			ArrayByte wrArray = new ArrayByte(new int[] {1, shape[1]});
 			ArrayByte.D2.arraycopy(inputArray, i * shape[1], wrArray, 0, shape[1]);
 			byte[] values = (byte[]) wrArray.copyTo1DJavaArray();
 			als.add(values);
@@ -1040,7 +1085,7 @@ public class Utils {
 	//</editor-fold>
 
 	//<editor-fold defaultstate="expanded" desc="ArrayByte.D1">
-	public static <K> void writeD1ArrayByteToMapValues(ArrayByte inputArray, Map<K, Object> map) {
+	public static <K> void writeD1ArrayByteToMapValues(ArrayByte inputArray, Map<K, char[]> map) {
 		StringBuilder value = new StringBuilder("");
 		Index index = inputArray.getIndex();
 
@@ -1050,7 +1095,7 @@ public class Utils {
 		for (int j = 0; j < shape[0]; j++) {
 			value.append(inputArray.getChar(index.set(j)));
 		}
-		map.put(key, value.toString().trim());
+		map.put(key, value.toString().trim().toCharArray());
 	}
 	//</editor-fold>
 	//</editor-fold>

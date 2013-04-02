@@ -32,7 +32,7 @@ public class PlinkFormatter implements Formatter {
 			MatrixMetadata rdMatrixMetadata,
 			MarkerSet rdMarkerSet,
 			SampleSet rdSampleSet,
-			Map<SampleKey, Object> rdSampleSetMap,
+			Map<SampleKey, byte[]> rdSampleSetMap,
 			String phenotype)
 			throws IOException
 	{
@@ -66,12 +66,11 @@ public class PlinkFormatter implements Formatter {
 				// Iterate through all markers
 				rdMarkerSet.fillGTsForCurrentSampleIntoInitMap(sampleNb);
 				StringBuilder genotypes = new StringBuilder();
-				for (Object value : rdMarkerSet.getMarkerIdSetMap().values()) {
-					byte[] tempGT = (byte[]) value;
+				for (byte[] tempGT : rdMarkerSet.getMarkerIdSetMapByteArray().values()) {
 					genotypes.append(sepBig);
-					genotypes.append(new String(new byte[]{tempGT[0]}));
+					genotypes.append(new String(tempGT, 0, 1));
 					genotypes.append(sep);
-					genotypes.append(new String(new byte[]{tempGT[1]}));
+					genotypes.append(new String(tempGT, 1, 1));
 				}
 
 				// Family ID
@@ -123,7 +122,7 @@ public class PlinkFormatter implements Formatter {
 			//     Base-pair position (bp units)
 
 			// PURGE MARKERSET
-			rdMarkerSet.fillWith("");
+			rdMarkerSet.fillWith(new char[0]);
 
 			// MARKERSET CHROMOSOME
 			rdMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
@@ -132,18 +131,18 @@ public class PlinkFormatter implements Formatter {
 			rdMarkerSet.appendVariableToMarkerSetMapValue(cNetCDF.Variables.VAR_MARKERS_RSID, sep);
 
 			// DEFAULT GENETIC DISTANCE = 0
-			for (Map.Entry<?, Object> entry : rdMarkerSet.getMarkerIdSetMap().entrySet()) {
-				StringBuilder value = new StringBuilder(entry.getValue().toString());
+			for (Map.Entry<?, char[]> entry : rdMarkerSet.getMarkerIdSetMapCharArray().entrySet()) {
+				StringBuilder value = new StringBuilder(new String(entry.getValue()));
 				value.append(sep);
 				value.append("0");
-				entry.setValue(value.toString());
+				entry.setValue(value.toString().toCharArray());
 			}
 
 			// MARKERSET POSITION
 			rdMarkerSet.appendVariableToMarkerSetMapValue(cNetCDF.Variables.VAR_MARKERS_POS, sep);
 			int markerNb = 0;
-			for (Object pos : rdMarkerSet.getMarkerIdSetMap().values()) {
-				mapBW.append(pos.toString());
+			for (char[] pos : rdMarkerSet.getMarkerIdSetMapCharArray().values()) {
+				mapBW.append(new String(pos));
 				mapBW.append("\n");
 				markerNb++;
 			}

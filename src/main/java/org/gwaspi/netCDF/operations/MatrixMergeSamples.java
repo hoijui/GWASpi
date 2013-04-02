@@ -62,10 +62,10 @@ public class MatrixMergeSamples extends AbstractMergeMatrixOperation {
 		NetcdfFile rdNcFile2 = NetcdfFile.open(rdMatrix2Metadata.getPathToMatrix());
 
 		// Get combo SampleSet with position[] (wrPos, rdMatrixNb, rdPos)
-		Map<SampleKey, Object> rdSampleSetMap1 = rdSampleSet1.getSampleIdSetMap();
-		Map<SampleKey, Object> rdSampleSetMap2 = rdSampleSet2.getSampleIdSetMap();
-		Map<SampleKey, Object> wrComboSampleSetMap = getComboSampleSetWithIndicesArray(rdSampleSetMap1, rdSampleSetMap2);
-		Map<SampleKey, Object> theSamples = wrComboSampleSetMap;
+		Map<SampleKey, byte[]> rdSampleSetMap1 = rdSampleSet1.getSampleIdSetMapByteArray();
+		Map<SampleKey, byte[]> rdSampleSetMap2 = rdSampleSet2.getSampleIdSetMapByteArray();
+		Map<SampleKey, int[]> wrComboSampleSetMap = getComboSampleSetWithIndicesArray(rdSampleSetMap1, rdSampleSetMap2);
+		Map<SampleKey, ?> theSamples = wrComboSampleSetMap;
 
 		// Use comboed wrComboSampleSetMap as SampleSet
 		final int numSamples = theSamples.size();
@@ -76,7 +76,7 @@ public class MatrixMergeSamples extends AbstractMergeMatrixOperation {
 		rdMarkerSet2.initFullMarkerIdSetMap();
 
 		// RETRIEVE CHROMOSOMES INFO
-		Map<MarkerKey, Object> chrInfo = rdMarkerSet1.getChrInfoSetMap();
+		Map<MarkerKey, int[]> chrInfo = rdMarkerSet1.getChrInfoSetMap();
 
 		//<editor-fold defaultstate="expanded" desc="CREATE MATRIX">
 		try {
@@ -152,7 +152,7 @@ public class MatrixMergeSamples extends AbstractMergeMatrixOperation {
 
 			// Keep rdwrMarkerIdSetMap1 from Matrix1 constant
 			// MARKERSET MARKERID
-			ArrayChar.D2 markersD2 = Utils.writeMapKeysToD2ArrayChar(rdMarkerSet1.getMarkerIdSetMap(), cNetCDF.Strides.STRIDE_MARKER_NAME);
+			ArrayChar.D2 markersD2 = Utils.writeCollectionToD2ArrayChar(rdMarkerSet1.getMarkerKeys(), cNetCDF.Strides.STRIDE_MARKER_NAME);
 			int[] markersOrig = new int[] {0, 0};
 			try {
 				wrNcFile.write(cNetCDF.Variables.VAR_MARKERSET, markersOrig, markersD2);
@@ -164,11 +164,11 @@ public class MatrixMergeSamples extends AbstractMergeMatrixOperation {
 
 			// MARKERSET RSID
 			rdMarkerSet1.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_RSID);
-			Utils.saveCharMapValueToWrMatrix(wrNcFile, rdMarkerSet1.getMarkerIdSetMap(), cNetCDF.Variables.VAR_MARKERS_RSID, cNetCDF.Strides.STRIDE_MARKER_NAME);
+			Utils.saveCharMapValueToWrMatrix(wrNcFile, rdMarkerSet1.getMarkerIdSetMapCharArray(), cNetCDF.Variables.VAR_MARKERS_RSID, cNetCDF.Strides.STRIDE_MARKER_NAME);
 
 			// MARKERSET CHROMOSOME
 			rdMarkerSet1.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
-			Utils.saveCharMapValueToWrMatrix(wrNcFile, rdMarkerSet1.getMarkerIdSetMap(), cNetCDF.Variables.VAR_MARKERS_CHR, cNetCDF.Strides.STRIDE_CHR);
+			Utils.saveCharMapValueToWrMatrix(wrNcFile, rdMarkerSet1.getMarkerIdSetMapCharArray(), cNetCDF.Variables.VAR_MARKERS_CHR, cNetCDF.Strides.STRIDE_CHR);
 
 			// Set of chromosomes found in matrix along with number of markersinfo
 			org.gwaspi.netCDF.operations.Utils.saveCharMapKeyToWrMatrix(wrNcFile, chrInfo, cNetCDF.Variables.VAR_CHR_IN_MATRIX, 8);
@@ -179,18 +179,18 @@ public class MatrixMergeSamples extends AbstractMergeMatrixOperation {
 			// MARKERSET POSITION
 			rdMarkerSet1.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_POS);
 			//Utils.saveCharMapValueToWrMatrix(wrNcFile, rdwrMarkerIdSetMap1, cNetCDF.Variables.VAR_MARKERS_POS, cNetCDF.Strides.STRIDE_POS);
-			Utils.saveIntMapD1ToWrMatrix(wrNcFile, rdMarkerSet1.getMarkerIdSetMap(), cNetCDF.Variables.VAR_MARKERS_POS);
+			Utils.saveIntMapD1ToWrMatrix(wrNcFile, rdMarkerSet1.getMarkerIdSetMapInteger(), cNetCDF.Variables.VAR_MARKERS_POS);
 
 			// MARKERSET DICTIONARY ALLELES
 			Attribute hasDictionary1 = rdNcFile1.findGlobalAttribute(cNetCDF.Attributes.GLOB_HAS_DICTIONARY);
 			if ((Integer) hasDictionary1.getNumericValue() == 1) {
 				rdMarkerSet1.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_BASES_DICT);
-				Utils.saveCharMapValueToWrMatrix(wrNcFile, rdMarkerSet1.getMarkerIdSetMap(), cNetCDF.Variables.VAR_MARKERS_BASES_DICT, cNetCDF.Strides.STRIDE_GT);
+				Utils.saveCharMapValueToWrMatrix(wrNcFile, rdMarkerSet1.getMarkerIdSetMapCharArray(), cNetCDF.Variables.VAR_MARKERS_BASES_DICT, cNetCDF.Strides.STRIDE_GT);
 			}
 
 			//<editor-fold defaultstate="expanded" desc="GENOTYPE STRAND">
 			rdMarkerSet1.fillInitMapWithVariable(cNetCDF.Variables.VAR_GT_STRAND);
-			Utils.saveCharMapValueToWrMatrix(wrNcFile, rdMarkerSet1.getMarkerIdSetMap(), cNetCDF.Variables.VAR_GT_STRAND, 3);
+			Utils.saveCharMapValueToWrMatrix(wrNcFile, rdMarkerSet1.getMarkerIdSetMapCharArray(), cNetCDF.Variables.VAR_GT_STRAND, 3);
 			//</editor-fold>
 			//</editor-fold>
 
@@ -247,14 +247,14 @@ public class MatrixMergeSamples extends AbstractMergeMatrixOperation {
 
 	protected void writeGenotypes(
 			NetcdfFileWriteable wrNcFile,
-			Map<?, Object> wrComboSampleSetMap)
+			Map<?, int[]> wrComboSampleSetMap)
 			throws InvalidRangeException, IOException
 	{
 		rdMarkerSet2.initFullMarkerIdSetMap();
 
 		// Iterate through wrSampleSetMap, use item position to read correct sample GTs into rdMarkerIdSetMap.
-		for (Object value : wrComboSampleSetMap.values()) { // Next SampleId
-			int[] sampleIndices = (int[]) value; //Next position[rdMatrixNb, rdPos, wrPos] to read/write
+		for (int[] sampleIndices : wrComboSampleSetMap.values()) { // Next SampleId
+			// sampleIndices: Next position[rdMatrixNb, rdPos, wrPos] to read/write
 
 			// Iterate through wrMarkerIdSetMap, get the correct GT from rdMarkerIdSetMap
 			if (sampleIndices[0] == 1) { // Read from Matrix1
@@ -264,10 +264,10 @@ public class MatrixMergeSamples extends AbstractMergeMatrixOperation {
 			if (sampleIndices[0] == 2) { // Read from Matrix2
 				rdMarkerSet1.fillWith(cNetCDF.Defaults.DEFAULT_GT);
 				rdMarkerSet2.fillGTsForCurrentSampleIntoInitMap(sampleIndices[1]);
-				for (Map.Entry<MarkerKey, Object> entry : rdMarkerSet1.getMarkerIdSetMap().entrySet()) {
+				for (Map.Entry<MarkerKey, byte[]> entry : rdMarkerSet1.getMarkerIdSetMapByteArray().entrySet()) {
 					MarkerKey key = entry.getKey();
-					if (rdMarkerSet2.getMarkerIdSetMap().containsKey(key)) {
-						Object markerValue = rdMarkerSet2.getMarkerIdSetMap().get(key);
+					if (rdMarkerSet2.getMarkerIdSetMapByteArray().containsKey(key)) {
+						byte[] markerValue = rdMarkerSet2.getMarkerIdSetMapByteArray().get(key);
 						entry.setValue(markerValue);
 					}
 				}
@@ -275,7 +275,7 @@ public class MatrixMergeSamples extends AbstractMergeMatrixOperation {
 			}
 
 			// Write wrMarkerIdSetMap to A3 ArrayChar and save to wrMatrix
-			Utils.saveSingleSampleGTsToMatrix(wrNcFile, rdMarkerSet1.getMarkerIdSetMap(), sampleIndices[2]);
+			Utils.saveSingleSampleGTsToMatrix(wrNcFile, rdMarkerSet1.getMarkerIdSetMapByteArray(), sampleIndices[2]);
 		}
 	}
 }

@@ -60,8 +60,7 @@ public class SamplesParserManager {
 					rdMatrixMetadata.getMatrixFriendlyName());
 //			NetcdfFile rdNcFile = NetcdfFile.open(rdMatrixMetadata.getPathToMatrix());
 			SampleSet rdSampleSet = new SampleSet(rdMatrixMetadata.getStudyId(), matrixId);
-			Map<SampleKey, Object> rdSampleSetMap = rdSampleSet.getSampleIdSetMap();
-			for (SampleKey key : rdSampleSetMap.keySet()) {
+			for (SampleKey key : rdSampleSet.getSampleKeys()) {
 				List<SampleInfo> sampleInfos = SampleInfoList.getCurrentSampleInfoFromDB(key, rdMatrixMetadata.getStudyId());
 				if (sampleInfos != null) {
 					resultHS.add(sampleInfos.get(0).getAffection());
