@@ -5,6 +5,7 @@ import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
@@ -49,16 +50,17 @@ public class PreferencesPanel extends JPanel {
 	private JPanel pnl_Footer;
 	private JScrollPane scrl_PreferencesTable;
 	private JTable tbl_PreferencesTable;
-	private List<String[]> prefBackup;
-	private ResetPreferencesAction resetPreferencesAction = new ResetPreferencesAction(prefBackup, tbl_PreferencesTable, prefs);
+	private final List<String[]> prefBackup;
+	private ResetPreferencesAction resetPreferencesAction;
 	// End of variables declaration
 
 	/**
 	 * Creates new form IntroPanel
 	 */
 	public PreferencesPanel() {
+
+		prefBackup = new LinkedList<String[]>();
 		initGui();
-		resetPreferencesAction.loadPrefs(prefBackup, tbl_PreferencesTable);
 	}
 
 	/**
@@ -111,6 +113,7 @@ public class PreferencesPanel extends JPanel {
 
 		resetPreferencesAction = new ResetPreferencesAction(prefBackup, tbl_PreferencesTable, prefs);
 		btn_Reset.setAction(resetPreferencesAction);
+		resetPreferencesAction.loadPrefs();
 
 		btn_Save.setAction(new SavePreferencesAction(tbl_PreferencesTable, resetPreferencesAction));
 
@@ -294,7 +297,7 @@ public class PreferencesPanel extends JPanel {
 			putValue(NAME, Text.All.reset);
 		}
 
-		public void loadPrefs(List<String[]> prefBackup, JTable preferencesTable) {
+		public void loadPrefs() {
 			try {
 				String[] preferences = prefs.keys();
 				prefBackup.clear();
@@ -331,7 +334,7 @@ public class PreferencesPanel extends JPanel {
 			}
 
 			if (result) {
-				loadPrefs(prefBackup, preferencesTable);
+				loadPrefs();
 				Dialogs.showInfoDialogue("Preferences & Paths reset to previous values.");
 			}
 		}
