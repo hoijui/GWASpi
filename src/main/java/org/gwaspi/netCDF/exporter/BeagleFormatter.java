@@ -146,8 +146,8 @@ class BeagleFormatter implements Formatter {
 
 				// Iterate through sampleset
 				StringBuilder currMarkerGTs = new StringBuilder();
-				Map<SampleKey, Object> remainingSampleSet = rdSampleSet.readAllSamplesGTsFromCurrentMarkerToMap(rdNcFile, rdSampleSetMap, markerNb);
-				for (Object value : remainingSampleSet.values()) {
+				rdSampleSet.readAllSamplesGTsFromCurrentMarkerToMap(rdNcFile, rdSampleSetMap, markerNb);
+				for (Object value : rdSampleSetMap.values()) {
 					byte[] tempGT = (byte[]) value;
 					currMarkerGTs.append(sep);
 					currMarkerGTs.append(new String(new byte[]{tempGT[0]}));

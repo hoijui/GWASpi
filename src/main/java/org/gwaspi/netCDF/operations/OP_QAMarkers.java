@@ -142,7 +142,7 @@ public class OP_QAMarkers implements MatrixOperation {
 				Integer missingCount = 0;
 
 				// Get a sampleset-full of GTs
-				rdSampleSetMap = rdSampleSet.readAllSamplesGTsFromCurrentMarkerToMap(rdNcFile, rdSampleSetMap, markerNb);
+				rdSampleSet.readAllSamplesGTsFromCurrentMarkerToMap(rdNcFile, rdSampleSetMap, markerNb);
 				for (Map.Entry<SampleKey, Object> sampleEntry : rdSampleSetMap.entrySet()) {
 					SampleKey sampleKey = sampleEntry.getKey();
 

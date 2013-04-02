@@ -85,9 +85,8 @@ public class PlinkTransposedFormatter implements Formatter {
 
 				// Iterate through sampleset
 				StringBuilder genotypes = new StringBuilder();
-				Map<SampleKey, Object> remainingSampleSet = rdSampleSet.readAllSamplesGTsFromCurrentMarkerToMap(rdNcFile, rdSampleSetMap, markerNb);
-				rdSampleSetMap = remainingSampleSet; // FIXME This line should most likely be removed, because further down this is used again ... check out!
-				for (Object value : remainingSampleSet.values()) {
+				rdSampleSet.readAllSamplesGTsFromCurrentMarkerToMap(rdNcFile, rdSampleSetMap, markerNb);
+				for (Object value : rdSampleSetMap.values()) {
 					byte[] tempGT = (byte[]) value;
 					genotypes.append(sep);
 					genotypes.append(new String(new byte[]{tempGT[0]}));

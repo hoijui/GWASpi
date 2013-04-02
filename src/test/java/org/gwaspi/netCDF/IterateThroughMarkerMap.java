@@ -30,7 +30,7 @@ public class IterateThroughMarkerMap {
 			String bases = entry.getValue().toString();
 
 			// Get alleles from read matrix
-			rdSampleSetMap = rdSampleSet.readAllSamplesGTsFromCurrentMarkerToMap(rdNcFile, rdSampleSetMap, markerNb);
+			rdSampleSet.readAllSamplesGTsFromCurrentMarkerToMap(rdNcFile, rdSampleSetMap, markerNb);
 
 			markerNb++;
 		}

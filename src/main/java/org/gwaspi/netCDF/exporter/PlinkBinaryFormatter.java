@@ -179,10 +179,9 @@ public class PlinkBinaryFormatter implements Formatter {
 			String tmpMajorAllele = majorAllelesMap.get(markerKey).toString();
 
 			// GET SAMPLESET FOR CURRENT MARKER
-			Map<SampleKey, Object> remainingSampleSet = rdSampleSet.readAllSamplesGTsFromCurrentMarkerToMap(rdNcFile, rdSampleSetMap, markerNb);
-			rdSampleSetMap = remainingSampleSet; // FIXME This line should most likely be removed, because further down this is used again ... check out!
+			rdSampleSet.readAllSamplesGTsFromCurrentMarkerToMap(rdNcFile, rdSampleSetMap, markerNb);
 
-			for (Iterator<Object> rdSampleGts = remainingSampleSet.values().iterator(); rdSampleGts.hasNext();) {
+			for (Iterator<Object> rdSampleGts = rdSampleSetMap.values().iterator(); rdSampleGts.hasNext();) {
 				// ONE BYTE AT A TIME (4 SAMPLES)
 				StringBuilder tetraGTs = new StringBuilder("");
 				for (int i = 0; i < 4; i++) {

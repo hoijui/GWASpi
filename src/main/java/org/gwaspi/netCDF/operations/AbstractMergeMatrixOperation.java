@@ -237,7 +237,7 @@ public abstract class AbstractMergeMatrixOperation implements MatrixOperation {
 			Map<Character, Object> knownAlleles = new LinkedHashMap<Character, Object>();
 
 			// Get a sampleset-full of GTs
-			wrSampleSetMap = wrSampleSet.readAllSamplesGTsFromCurrentMarkerToMap(rdNcFile, wrSampleSetMap, markerNb);
+			wrSampleSet.readAllSamplesGTsFromCurrentMarkerToMap(rdNcFile, wrSampleSetMap, markerNb);
 
 			// Iterate through sampleSet
 			for (Object value : wrSampleSetMap.values()) {

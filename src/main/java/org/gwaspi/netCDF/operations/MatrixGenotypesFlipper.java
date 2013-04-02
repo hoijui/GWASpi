@@ -228,7 +228,7 @@ public class MatrixGenotypesFlipper {
 			int markerIndex = 0;
 			for (Map.Entry<MarkerKey, Object> entry : rdMarkerIdSetMap.entrySet()) {
 				MarkerKey markerKey = entry.getKey();
-				rdSampleSetMap = rdSampleSet.readAllSamplesGTsFromCurrentMarkerToMap(rdNcFile, rdSampleSetMap, markerIndex);
+				rdSampleSet.readAllSamplesGTsFromCurrentMarkerToMap(rdNcFile, rdSampleSetMap, markerIndex);
 
 				if (markerFlipHS.contains(markerKey)) {
 					for (Map.Entry<SampleKey, Object> sampleEntry : rdSampleSetMap.entrySet()) {

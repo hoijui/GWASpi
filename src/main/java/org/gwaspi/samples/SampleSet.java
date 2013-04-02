@@ -150,13 +150,13 @@ public class SampleSet {
 	//</editor-fold>
 
 	//<editor-fold defaultstate="expanded" desc="SAMPLESET FILLERS">
-	public Map<SampleKey, Object> readAllSamplesGTsFromCurrentMarkerToMap(NetcdfFile rdNcFile, Map<SampleKey, Object> rdMap, int markerNb) throws IOException {
+	public void readAllSamplesGTsFromCurrentMarkerToMap(NetcdfFile rdNcFile, Map<SampleKey, Object> rdMap, int markerNb) throws IOException {
 
 		try {
 			Variable genotypes = rdNcFile.findVariable(cNetCDF.Variables.VAR_GENOTYPES);
 
 			if (null == genotypes) {
-				return rdMap;
+				return;
 			}
 			try {
 				int[] varShape = genotypes.getShape();
@@ -206,7 +206,7 @@ public class SampleSet {
 			log.error("Cannot open file", ex);
 		}
 
-		return rdMap;
+		return;
 	}
 
 	public Map<SampleKey, Object> fillSampleIdSetMapWithVariable(NetcdfFile ncfile, String variable) {
@@ -331,11 +331,10 @@ public class SampleSet {
 		}
 	}
 
-	public Map<String, Object> fillMapWithDefaultValue(Map<String, Object> map, Object defaultVal) {
+	public void fillMapWithDefaultValue(Map<String, Object> map, Object defaultVal) {
 		for (Map.Entry<String, Object> entry : map.entrySet()) {
 			entry.setValue(defaultVal);
 		}
-		return map;
 	}
 	//</editor-fold>
 

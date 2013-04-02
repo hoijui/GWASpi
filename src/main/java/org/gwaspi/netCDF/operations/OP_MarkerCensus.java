@@ -207,7 +207,7 @@ public class OP_MarkerCensus implements MatrixOperation {
 					int markerNb = Integer.parseInt(markerInfo[0].toString());
 					String markerChr = markerInfo[1].toString();
 
-					rdSampleSetMap = rdSampleSet.readAllSamplesGTsFromCurrentMarkerToMap(rdNcFile, rdSampleSetMap, markerNb);
+					rdSampleSet.readAllSamplesGTsFromCurrentMarkerToMap(rdNcFile, rdSampleSetMap, markerNb);
 					for (SampleKey sampleKey : wrSampleSetMap.keySet()) {
 						String[] sampleInfo = samplesInfoMap.get(sampleKey);
 
