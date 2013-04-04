@@ -352,7 +352,7 @@ public class GWASpiExplorerNodes {
 
 					if (!parentOP.getOperationType().equals(OPType.HARDY_WEINBERG.toString()) && //DON'T SHOW SUPERFLUOUS OPEARATION INFO
 							!parentOP.getOperationType().equals(OPType.SAMPLE_QA.toString())) {
-						if (!rp.getReportType().equals(OPType.ALLELICTEST.toString())) {
+						if (!rp.getReportType().equals(OPType.ALLELICTEST)) {
 							DefaultMutableTreeNode newNode = createReportTreeNode(reportsList.get(n).getId());
 							addNode(parentNode, newNode, true);
 						}
