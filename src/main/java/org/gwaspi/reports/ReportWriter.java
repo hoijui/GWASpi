@@ -142,15 +142,9 @@ public class ReportWriter {
 
 	private static void copyFile(String srFile, String dtFile) {
 		try {
-			File f1 = new File(srFile);
-			File f2 = new File(dtFile);
-			InputStream in = new FileInputStream(f1);
-
-			//For Append the file.
-			//      OutputStream out = new FileOutputStream(f2,true);
-
-			//For Overwrite the file.
-			OutputStream out = new FileOutputStream(f2);
+			InputStream in = new FileInputStream(new File(srFile));
+			final boolean append = false;
+			OutputStream out = new FileOutputStream(new File(dtFile), append);
 
 			byte[] buf = new byte[1024];
 			int len;
