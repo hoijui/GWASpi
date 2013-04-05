@@ -52,6 +52,26 @@ public class Utils {
 	private Utils() {
 	}
 
+	/**
+	 * Tries to convert an Object to a meaningful String representation.
+	 * We primarily use this to not convert char[] or byte[]
+	 * to something like "C[@g63dfg" or "B[@g63dfg".
+	 */
+	public static String toMeaningfullRep(Object obj) {
+
+		String rep;
+
+		if (obj instanceof char[]) {
+			rep = new String((char[]) obj);
+		} else if (obj instanceof byte[]) {
+			rep = new String((byte[]) obj);
+		} else {
+			rep = obj.toString();
+		}
+
+		return rep;
+	}
+
 	// <editor-fold defaultstate="expanded" desc="File and directory methods">
 	private static String currentAppPath = "";
 

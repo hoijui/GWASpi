@@ -53,7 +53,7 @@ public class ReportWriter {
 				sb.append(entry.getKey().toString());
 				sb.append(sep);
 			}
-			sb.append(entry.getValue().toString());
+			sb.append(org.gwaspi.global.Utils.toMeaningfullRep(entry.getValue()));
 
 			sb.append("\n");
 			outputBW.append(sb);
@@ -101,14 +101,14 @@ public class ReportWriter {
 						sb.append(key);
 					}
 
-					if (entry.getValue().getClass().getName().equals("[D")) {
+					if (entry.getValue() instanceof double[]) {
 						double[] value = (double[]) entry.getValue();
 						for (Double v : value) {
 							sb.append(sep);
 							sb.append(v.toString());
 						}
 					}
-					if (entry.getValue().getClass().getName().equals("[I")) {
+					if (entry.getValue() instanceof int[]) {
 						int[] value = (int[]) entry.getValue();
 						for (Integer v : value) {
 							sb.append(sep);
@@ -121,7 +121,7 @@ public class ReportWriter {
 						sb.append(key.toString());
 					}
 					sb.append(sep);
-					sb.append(entry.getValue().toString());
+					sb.append(org.gwaspi.global.Utils.toMeaningfullRep(entry.getValue()));
 				}
 
 				sb.append("\n");
