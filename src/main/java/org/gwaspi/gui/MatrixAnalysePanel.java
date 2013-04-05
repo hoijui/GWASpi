@@ -698,7 +698,7 @@ public class MatrixAnalysePanel extends JPanel {
 
 				int choice = Dialogs.showOptionDialogue(Text.Operation.chosePhenotype, Text.Operation.genotypeFreqAndHW, Text.Operation.htmlCurrentAffectionFromDB, Text.Operation.htmlAffectionFromFile, Text.All.cancel);
 				File phenotypeFile = null;
-				if (choice == JOptionPane.NO_OPTION) { //BY EXTERNAL PHENOTYPE FILE
+				if (choice == JOptionPane.NO_OPTION) { // BY EXTERNAL PHENOTYPE FILE
 					phenotypeFile = Dialogs.selectFilesAndDirectoriesDialog(JOptionPane.OK_OPTION);
 					if (phenotypeFile != null) {
 						gwasParams = new MoreGWASinOneGoInfo().showMoreInfo(matrixMetadata.getTechnology().toString());

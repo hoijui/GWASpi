@@ -202,7 +202,8 @@ public class ReportServiceImpl implements ReportService {
 		try {
 			DbManager db = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
 			// CREATE SAMPLESET_METADATA table in given SCHEMA
-			db.createTable(cDBGWASpi.SCH_MATRICES,
+			db.createTable(
+					cDBGWASpi.SCH_MATRICES,
 					cDBReports.T_REPORTS,
 					cDBReports.T_CREATE_REPORTS);
 		} catch (Exception ex) {
@@ -216,7 +217,7 @@ public class ReportServiceImpl implements ReportService {
 	public void insertRPMetadata(Report report) throws IOException {
 		DbManager dBManager = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
 
-		Object[] rpMetaData = new Object[]{
+		Object[] rpMetaData = new Object[] {
 			report.getFriendlyName(),
 			report.getDescription(),
 			report.getFileName(),

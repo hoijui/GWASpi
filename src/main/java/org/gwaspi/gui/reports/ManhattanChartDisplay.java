@@ -93,14 +93,13 @@ public final class ManhattanChartDisplay extends JPanel {
 //							sliceInfo[4] = defaultSlotsNb;
 
 							GWASpiExplorerPanel.getSingleton().setPnl_Content(new ManhattanPlotZoom(
-									 ManhattanChartDisplay.this,
-									 opId,
-									 selectedSliceInfo[1].toString(),
-									 (Long) selectedSliceInfo[3], //startPhysPos
-									 (Long) selectedSliceInfo[4], //physPos window
-									 "100"));
+									ManhattanChartDisplay.this,
+									opId,
+									selectedSliceInfo[1].toString(),
+									(Long) selectedSliceInfo[3], // startPhysPos
+									(Long) selectedSliceInfo[4], // physPos window
+									"100"));
 							GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
-						} else {
 						}
 					}
 				} catch (NumberFormatException ex) {
@@ -201,7 +200,7 @@ public final class ManhattanChartDisplay extends JPanel {
 				label.setIcon(image);
 				//label.setHorizontalAlignment(SwingConstants.CENTER);
 
-				chartWidth = image.getIconWidth() - padLeft; //Get width of loaded manhattan plot and remove 62 pixels for Y axis labels
+				chartWidth = image.getIconWidth() - padLeft; // Get width of loaded manhattan plot and remove 62 pixels for Y axis labels
 
 				// Creating a Scroll pane component
 				scrl_Chart.getViewport().add(label);

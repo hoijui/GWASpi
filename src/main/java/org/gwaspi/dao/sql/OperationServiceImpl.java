@@ -264,7 +264,8 @@ public class OperationServiceImpl implements OperationService {
 		};
 
 		DbManager dBManager = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
-		dBManager.insertValuesInTable(cDBGWASpi.SCH_MATRICES,
+		dBManager.insertValuesInTable(
+				cDBGWASpi.SCH_MATRICES,
 				cDBOperations.T_OPERATIONS,
 				cDBOperations.F_INSERT_OPERATION,
 				opMetaData);
