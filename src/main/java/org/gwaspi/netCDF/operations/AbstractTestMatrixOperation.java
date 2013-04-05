@@ -70,6 +70,7 @@ public abstract class AbstractTestMatrixOperation implements MatrixOperation {
 			MarkerOperationSet rdCaseMarkerSet = new MarkerOperationSet(rdCensusOPMetadata.getStudyId(), markerCensusOP.getId());
 			MarkerOperationSet rdCtrlMarkerSet = new MarkerOperationSet(rdCensusOPMetadata.getStudyId(), markerCensusOP.getId());
 			Map<SampleKey, Object> rdSampleSetMap = rdCaseMarkerSet.getImplicitSetMap();
+			rdCaseMarkerSet.getOpSetMap(); // without this, we get an NPE later on
 			Map<MarkerKey, Object> rdCtrlMarkerIdSetMap = rdCtrlMarkerSet.getOpSetMap();
 
 			Map<MarkerKey, Object> wrMarkerSetMap = new LinkedHashMap<MarkerKey, Object>();
