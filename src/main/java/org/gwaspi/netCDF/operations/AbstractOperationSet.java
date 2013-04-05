@@ -31,15 +31,19 @@ public class AbstractOperationSet<K, V> {
 
 	private static final Logger log = LoggerFactory.getLogger(AbstractOperationSet.class);
 
-	private int opSetSize = 0;
-	private int implicitSetSize = 0;
+	private int opSetSize;
+	private int implicitSetSize;
 	private OperationMetadata opMetadata;
-	private Map<K, V> opSetMap = null;
+	private Map<K, V> opSetMap;
 	private final KeyFactory<K> keyFactory;
 
 	public AbstractOperationSet(int studyId, int opId, KeyFactory<K> keyFactory) throws IOException {
+
+		this.opSetSize = 0;
+		this.implicitSetSize = 0;
 		this.opMetadata = OperationsList.getOperationMetadata(opId);
 		this.opSetSize = opMetadata.getOpSetSize();
+		this.opSetMap = null;
 		this.keyFactory = keyFactory;
 	}
 
