@@ -146,7 +146,7 @@ public class StudyServiceImpl implements StudyService {
 					studyTable[i][0] = (Integer) rs.get(i).get(cDBGWASpi.f_ID);
 					studyTable[i][1] = rs.get(i).get(cDBGWASpi.f_NAME).toString();
 					studyTable[i][2] = rs.get(i).get(cDBGWASpi.f_STUDY_DESCRIPTION).toString();
-					String timestamp = rs.get(i).get(cDBOperations.f_CREATION_DATE).toString();
+					String timestamp = rs.get(i).get(cDBOperations.f_CREATION_DATE).toString(); // FIXME this creates a large number, but we'd rather have Date or a human readable Stirng of a date
 					studyTable[i][3] = timestamp.substring(0, timestamp.lastIndexOf('.'));
 				}
 			}
