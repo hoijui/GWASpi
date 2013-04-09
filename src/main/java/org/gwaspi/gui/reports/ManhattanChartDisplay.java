@@ -67,7 +67,7 @@ public final class ManhattanChartDisplay extends JPanel {
 		initChromosmesMap(studyId, chartPath);
 	}
 
-	public void initManhattanChartDisplay(final int studyId, final String chartPath, int _opId) {
+	private void initManhattanChartDisplay(final int studyId, final String chartPath, int _opId) {
 
 		opId = _opId;
 
