@@ -640,18 +640,18 @@ public final class ManhattanPlotZoom extends JPanel {
 		plot.setRangeZeroBaselineVisible(true);
 
 		// CHART BACKGROUD COLOR
-		chart.setBackgroundPaint(Color.getHSBColor(0.1f, 0.1f, 1.0f)); //Hue, saturation, brightness
-		plot.setBackgroundPaint(manhattan_back); //Hue, saturation, brightness 9
+		chart.setBackgroundPaint(Color.getHSBColor(0.1f, 0.1f, 1.0f)); // Hue, saturation, brightness
+		plot.setBackgroundPaint(manhattan_back); // Hue, saturation, brightness 9
 
 		// GRIDLINES
 		plot.setDomainGridlineStroke(new BasicStroke(0.0f));
 		plot.setDomainMinorGridlineStroke(new BasicStroke(0.0f));
-		plot.setDomainGridlinePaint(manhattan_back.darker().darker()); //Hue, saturation, brightness 7
-		plot.setDomainMinorGridlinePaint(manhattan_back); //Hue, saturation, brightness 9
+		plot.setDomainGridlinePaint(manhattan_back.darker().darker()); // Hue, saturation, brightness 7
+		plot.setDomainMinorGridlinePaint(manhattan_back); // Hue, saturation, brightness 9
 		plot.setRangeGridlineStroke(new BasicStroke(0.0f));
 		plot.setRangeMinorGridlineStroke(new BasicStroke(0.0f));
-		plot.setRangeGridlinePaint(manhattan_back.darker().darker()); //Hue, saturation, brightness 7
-		plot.setRangeMinorGridlinePaint(manhattan_back.darker());  //Hue, saturation, brightness 8
+		plot.setRangeGridlinePaint(manhattan_back.darker().darker()); // Hue, saturation, brightness 7
+		plot.setRangeMinorGridlinePaint(manhattan_back.darker());  // Hue, saturation, brightness 8
 
 		plot.setDomainMinorGridlinesVisible(true);
 		plot.setRangeMinorGridlinesVisible(true);
@@ -697,7 +697,7 @@ public final class ManhattanPlotZoom extends JPanel {
 		plot.setRangeAxis(0, logPAxis);
 
 		// Add significance Threshold to subplot
-		//threshold = 0.5/rdMatrixMetadata.getMarkerSetSize();  //(0.05/10⁶ SNPs => 5*10-⁷)
+		//threshold = 0.5/rdMatrixMetadata.getMarkerSetSize();  // (0.05/10⁶ SNPs => 5*10-⁷)
 		final Marker thresholdLine = new ValueMarker(threshold);
 		thresholdLine.setPaint(Color.red);
 		DecimalFormat df1 = new DecimalFormat("0.#E0#");
