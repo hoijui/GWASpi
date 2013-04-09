@@ -445,6 +445,9 @@ public class Utils {
 
 		int i = 0;
 		for (Object value : values) {
+			if (value.toString().length() >= 2 && value.toString().charAt(1) == '[') {
+				throw new RuntimeException(".. this means, we should use org.gwaspi.global.Utils.toMeaningfullRep() in the line below, instead of toString()");
+			}
 			charArray.setString(ima.set(i, 0), value.toString().trim());
 			i++;
 		}
