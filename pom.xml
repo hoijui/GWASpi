@@ -31,18 +31,30 @@
 		<developer>
 			<name>Fernando Muñiz Fernandez</name>
 			<email>fernando.muniz@upf.edu</email>
+			<roles>
+				<role>retired developer</role>
+			</roles>
 		</developer>
 		<developer>
-			<name>Angel Carreño</name>
-			<email>angel.carreno@upf.edu</email>
+			<name>Robin Vobruba</name>
+			<email>hoijui.quaero@gmail.com</email>
+			<roles>
+				<role>developer</role>
+			</roles>
 		</developer>
 		<developer>
 			<name>Carlos Morcillo</name>
 			<email>carlos.morcillo@upf.edu</email>
+			<roles>
+				<role>developer</role>
+			</roles>
 		</developer>
 		<developer>
-			<name>Arcadi Navarro</name>
-			<email>arcadi.navarro@upf.edu</email>
+			<name>Jordi Rambla</name>
+			<email>jordi.rambla@upf.edu</email>
+			<roles>
+				<role>superviser</role>
+			</roles>
 		</developer>
 	</developers>
 
