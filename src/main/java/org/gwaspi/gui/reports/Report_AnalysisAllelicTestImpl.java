@@ -80,19 +80,16 @@ public final class Report_AnalysisAllelicTestImpl extends Report_Analysis {
 			chiSqr_f = Double.parseDouble(FORMAT_ROUND.format(chiSqr));
 		} catch (NumberFormatException ex) {
 			chiSqr_f = chiSqr;
-			log.warn(null, ex);
 		}
 		try {
 			pVal_f = Double.parseDouble(FORMAT_SCIENTIFIC.format(pVal));
 		} catch (NumberFormatException ex) {
 			pVal_f = pVal;
-			log.warn(null, ex);
 		}
 		try {
 			or_f = Double.parseDouble(FORMAT_ROUND.format(or));
 		} catch (NumberFormatException ex) {
 			or_f = or;
-			log.warn(null, ex);
 		}
 		row[col++] = chiSqr_f;
 		row[col++] = pVal_f;
