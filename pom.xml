@@ -30,6 +30,14 @@
 	</organization>
 	<url>http://www.gwaspi.org</url>
 
+	<licenses>
+		<license>
+			<name>GNU General Public License (GPL), version 3 or later</name>
+			<url>http://www.gnu.org/licenses/gpl-3.0.html</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+
 	<developers>
 		<developer>
 			<name>Fernando Muñiz Fernandez</name>
