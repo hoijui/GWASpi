@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.List;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.dao.OperationService;
+import org.gwaspi.dao.OperationService.MatrixOperationSpec;
 import org.gwaspi.dao.sql.OperationServiceImpl;
 
 /**
@@ -56,7 +57,7 @@ public class OperationsList {
 		operationService.insertOPMetadata(operationMetadata);
 	}
 
-	public static List<Object[]> getMatrixOperations(int matrixId) throws IOException {
+	public static List<MatrixOperationSpec> getMatrixOperations(int matrixId) throws IOException {
 		return operationService.getMatrixOperations(matrixId);
 	}
 

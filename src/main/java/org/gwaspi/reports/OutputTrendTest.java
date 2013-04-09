@@ -9,6 +9,7 @@ import java.util.Map;
 import org.gwaspi.constants.cExport;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
+import org.gwaspi.dao.OperationService.MatrixOperationSpec;
 import org.gwaspi.global.Config;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.MarkerKey;
@@ -202,12 +203,12 @@ public class OutputTrendTest {
 
 			// WRITE KNOWN ALLELES FROM QA
 			// get MARKER_QA Operation
-			List<Object[]> operationsAL = OperationsList.getMatrixOperations(rdOPMetadata.getParentMatrixId());
+			List<MatrixOperationSpec> operations = OperationsList.getMatrixOperations(rdOPMetadata.getParentMatrixId());
 			int markersQAopId = Integer.MIN_VALUE;
-			for (int i = 0; i < operationsAL.size(); i++) {
-				Object[] element = operationsAL.get(i);
-				if (element[1].toString().equals(OPType.MARKER_QA.toString())) {
-					markersQAopId = (Integer) element[0];
+			for (int i = 0; i < operations.size(); i++) {
+				MatrixOperationSpec op = operations.get(i);
+				if (op.geType().equals(OPType.MARKER_QA)) {
+					markersQAopId = op.getId();
 				}
 			}
 			Map<MarkerKey, String> sortedMarkerAlleles = new LinkedHashMap<MarkerKey, String>(sortingMarkerSetMap.size());

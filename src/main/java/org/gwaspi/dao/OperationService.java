@@ -8,6 +8,26 @@ import org.gwaspi.model.OperationMetadata;
 
 public interface OperationService {
 
+	public static class MatrixOperationSpec {
+
+		private final Integer id;
+		private final OPType type;
+
+		public MatrixOperationSpec(Integer id, OPType type) {
+
+			this.id = id;
+			this.type = type;
+		}
+
+		public Integer getId() {
+			return id;
+		}
+
+		public OPType geType() {
+			return type;
+		}
+	}
+
 	Operation getById(int operationId) throws IOException;
 
 	List<Operation> getOperationsList(int matrixId) throws IOException;
@@ -26,7 +46,7 @@ public interface OperationService {
 
 	void insertOPMetadata(OperationMetadata operationMetadata) throws IOException;
 
-	List<Object[]> getMatrixOperations(int matrixId) throws IOException;
+	List<MatrixOperationSpec> getMatrixOperations(int matrixId) throws IOException;
 
 	void deleteOperationBranch(int studyId, int opId, boolean deleteReports) throws IOException;
 

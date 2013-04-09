@@ -273,8 +273,8 @@ public class OperationServiceImpl implements OperationService {
 	}
 
 	@Override
-	public List<Object[]> getMatrixOperations(int matrixId) throws IOException {
-		List<Object[]> result = new ArrayList<Object[]>();
+	public List<MatrixOperationSpec> getMatrixOperations(int matrixId) throws IOException {
+		List<MatrixOperationSpec> result = new ArrayList<MatrixOperationSpec>();
 
 		DbManager dBManager = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
 		List<Map<String, Object>> rs = dBManager.executeSelectStatement("SELECT * FROM " + cDBGWASpi.SCH_MATRICES + "." + cDBOperations.T_OPERATIONS + " WHERE " + cDBOperations.f_PARENT_MATRIXID + "=" + matrixId + "  WITH RR");
@@ -282,10 +282,9 @@ public class OperationServiceImpl implements OperationService {
 		for (int rowcount = 0; rowcount < rs.size(); rowcount++) {
 			// PREVENT PHANTOM-DB READS EXCEPTIONS
 			if (!rs.isEmpty() && rs.get(rowcount).size() == cDBOperations.T_CREATE_OPERATIONS.length) {
-				Object[] element = new Object[2];
-				element[0] = (Integer) rs.get(rowcount).get(cDBOperations.f_ID);
-				element[1] = rs.get(rowcount).get(cDBOperations.f_OP_TYPE).toString();
-				result.add(element);
+				Integer id = (Integer) rs.get(rowcount).get(cDBOperations.f_ID);
+				OPType type = OPType.valueOf((String) rs.get(rowcount).get(cDBOperations.f_OP_TYPE));
+				result.add(new MatrixOperationSpec(id, type));
 			}
 		}
 

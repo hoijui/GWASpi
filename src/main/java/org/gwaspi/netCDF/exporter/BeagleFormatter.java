@@ -9,6 +9,7 @@ import java.util.Map;
 import org.gwaspi.constants.cExport;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
+import org.gwaspi.dao.OperationService.MatrixOperationSpec;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.OperationMetadata;
@@ -189,12 +190,12 @@ class BeagleFormatter implements Formatter {
 
 			// WRITE KNOWN ALLELES FROM QA
 			// get MARKER_QA Operation
-			List<Object[]> operationsAL = OperationsList.getMatrixOperations(rdMatrixMetadata.getMatrixId());
+			List<MatrixOperationSpec> operations = OperationsList.getMatrixOperations(rdMatrixMetadata.getMatrixId());
 			int markersQAopId = Integer.MIN_VALUE;
-			for (int i = 0; i < operationsAL.size(); i++) {
-				Object[] element = operationsAL.get(i);
-				if (element[1].toString().equals(OPType.MARKER_QA.toString())) {
-					markersQAopId = (Integer) element[0];
+			for (int i = 0; i < operations.size(); i++) {
+				MatrixOperationSpec op = operations.get(i);
+				if (op.geType().equals(OPType.MARKER_QA)) {
+					markersQAopId = op.getId();
 				}
 			}
 			if (markersQAopId != Integer.MIN_VALUE) {
