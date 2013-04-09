@@ -509,7 +509,7 @@ public final class ManhattanPlotZoom extends JPanel {
 			long _requestedPosWindow)
 	{
 		XYDataset xyd = null;
-		if (op.getOperationType().equals(OPType.ALLELICTEST.toString())) {
+		if (op.getOperationType().equals(OPType.ALLELICTEST)) {
 			xyd = GenericReportGenerator.getManhattanZoomByChrAndPos(
 					manhattanPlotZoom,
 					_opId,
@@ -518,7 +518,7 @@ public final class ManhattanPlotZoom extends JPanel {
 					null,
 					_startPhysPos,
 					_requestedPosWindow);
-		} else if (op.getOperationType().equals(OPType.GENOTYPICTEST.toString())) {
+		} else if (op.getOperationType().equals(OPType.GENOTYPICTEST)) {
 			xyd = GenericReportGenerator.getManhattanZoomByChrAndPos(
 					manhattanPlotZoom,
 					_opId,
@@ -527,7 +527,7 @@ public final class ManhattanPlotZoom extends JPanel {
 					null,
 					_startPhysPos,
 					_requestedPosWindow);
-		} else if (op.getOperationType().equals(OPType.TRENDTEST.toString())) {
+		} else if (op.getOperationType().equals(OPType.TRENDTEST)) {
 			xyd = GenericReportGenerator.getManhattanZoomByChrAndPos(
 					manhattanPlotZoom,
 					_opId,
@@ -550,7 +550,7 @@ public final class ManhattanPlotZoom extends JPanel {
 			long _requestedPosWindow)
 	{
 		XYDataset xyd = null;
-		if (op.getOperationType().equals(OPType.ALLELICTEST.toString())) {
+		if (op.getOperationType().equals(OPType.ALLELICTEST)) {
 			xyd = GenericReportGenerator.getManhattanZoomByChrAndPos(
 					manhattanPlotZoom,
 					_opId,
@@ -559,7 +559,7 @@ public final class ManhattanPlotZoom extends JPanel {
 					_markerId,
 					_centerPhysPos,
 					_requestedPosWindow);
-		} else if (op.getOperationType().equals(OPType.GENOTYPICTEST.toString())) {
+		} else if (op.getOperationType().equals(OPType.GENOTYPICTEST)) {
 			xyd = GenericReportGenerator.getManhattanZoomByChrAndPos(
 					manhattanPlotZoom,
 					_opId,
@@ -568,7 +568,7 @@ public final class ManhattanPlotZoom extends JPanel {
 					_markerId,
 					_centerPhysPos,
 					_requestedPosWindow);
-		} else if (op.getOperationType().equals(OPType.TRENDTEST.toString())) {
+		} else if (op.getOperationType().equals(OPType.TRENDTEST)) {
 			xyd = GenericReportGenerator.getManhattanZoomByChrAndPos(
 					manhattanPlotZoom,
 					_opId,
@@ -597,7 +597,7 @@ public final class ManhattanPlotZoom extends JPanel {
 			int _requestedSetSize)
 	{
 		XYDataset xyd = null;
-		if (op.getOperationType().equals(OPType.ALLELICTEST.toString())) {
+		if (op.getOperationType().equals(OPType.ALLELICTEST)) {
 			xyd = GenericReportGenerator.getManhattanZoomByMarkerIdOrIdx(
 					manhattanPlotZoom,
 					_opId,
@@ -605,7 +605,7 @@ public final class ManhattanPlotZoom extends JPanel {
 					_markerKey,
 					_centerPhysPos,
 					_requestedSetSize);
-		} else if (op.getOperationType().equals(OPType.GENOTYPICTEST.toString())) {
+		} else if (op.getOperationType().equals(OPType.GENOTYPICTEST)) {
 			xyd = GenericReportGenerator.getManhattanZoomByMarkerIdOrIdx(
 					manhattanPlotZoom,
 					_opId,
@@ -613,7 +613,7 @@ public final class ManhattanPlotZoom extends JPanel {
 					_markerKey,
 					_centerPhysPos,
 					_requestedSetSize);
-		} else if (op.getOperationType().equals(OPType.TRENDTEST.toString())) {
+		} else if (op.getOperationType().equals(OPType.TRENDTEST)) {
 			xyd = GenericReportGenerator.getManhattanZoomByMarkerIdOrIdx(
 					manhattanPlotZoom,
 					_opId,

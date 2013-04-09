@@ -54,7 +54,7 @@ public class Dialogs {
 			List<Operation> operationAL = new ArrayList<Operation>();
 			for (int i = 0; i < operationsList.size(); i++) {
 				Operation op = operationsList.get(i);
-				if (op.getOperationType().equals(filterOpType.toString())) {
+				if (op.getOperationType().equals(filterOpType)) {
 					StringBuilder sb = new StringBuilder();
 					sb.append("OP: ");
 					sb.append(op.getId());
@@ -91,7 +91,7 @@ public class Dialogs {
 			List<Operation> operationAL = new ArrayList<Operation>();
 			for (int i = 0; i < operationsList.size(); i++) {
 				Operation op = operationsList.get(i);
-				if (filterOpTypeAL.contains(op.getOperationType())) {
+				if (filterOpTypeAL.contains(op.getOperationType().toString())) {
 					StringBuilder sb = new StringBuilder();
 					sb.append("OP: ");
 					sb.append(op.getId());
@@ -130,7 +130,7 @@ public class Dialogs {
 			List<Operation> operationAL = new ArrayList<Operation>();
 			for (int i = 0; i < operationsList.size(); i++) {
 				Operation op = operationsList.get(i);
-				if (op.getOperationType().equals(filterOpType.toString())) {
+				if (op.getOperationType().equals(filterOpType)) {
 					StringBuilder sb = new StringBuilder();
 					sb.append("OP: ");
 					sb.append(op.getId());

@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.model.Operation;
 import org.gwaspi.model.OperationsList;
 import org.slf4j.Logger;
@@ -154,67 +155,83 @@ public class OperationManager {
 	//</editor-fold>
 
 	//<editor-fold defaultstate="expanded" desc="OPERATIONS METADATA">
-	public static List<String> checkForNecessaryOperations(List<String> necessaryOPs, int matrixId) {
-		try {
-			List<Operation> chkOpAL = OperationsList.getOperationsList(matrixId);
+	public static List<OPType> checkForNecessaryOperations(final List<OPType> necessaryOPs, int matrixId) {
 
-			for (int i = 0; i < chkOpAL.size(); i++) {
-				if (necessaryOPs.contains(chkOpAL.get(i).getOperationType())) {
-					necessaryOPs.remove(chkOpAL.get(i).getOperationType());
+		List<OPType> missingOPs = new ArrayList<OPType>(necessaryOPs);
+
+		try {
+			List<Operation> chkOperations = OperationsList.getOperationsList(matrixId);
+
+			for (Operation operation : chkOperations) {
+				OPType type = operation.getOperationType();
+				if (necessaryOPs.contains(type)) {
+					missingOPs.remove(type);
 				}
 			}
 		} catch (IOException ex) {
 			log.error(null, ex);
 		}
-		return necessaryOPs;
+
+		return missingOPs;
 	}
 
-	public static List<String> checkForNecessaryOperations(List<String> necessaryOPs, int matrixId, int opId) {
-		try {
-			List<Operation> chkMatrixAL = OperationsList.getOperationsList(matrixId);
+	public static List<OPType> checkForNecessaryOperations(List<OPType> necessaryOPs, int matrixId, int opId) {
 
-			for (int i = 0; i < chkMatrixAL.size(); i++) {
+		List<OPType> missingOPs = new ArrayList<OPType>(necessaryOPs);
+
+		try {
+			List<Operation> chkOperations = OperationsList.getOperationsList(matrixId);
+
+			for (Operation operation : chkOperations) {
 				// Check if current operation is from parent matrix or parent operation
-				int parentOperationId = chkMatrixAL.get(i).getParentOperationId();
+				int parentOperationId = operation.getParentOperationId();
 				if ((parentOperationId == -1) || (parentOperationId == opId)) {
-					necessaryOPs.remove(chkMatrixAL.get(i).getOperationType());
+					missingOPs.remove(operation.getOperationType());
 				}
 			}
 		} catch (IOException ex) {
 			log.error(null, ex);
 		}
-		return necessaryOPs;
+		return missingOPs;
 	}
 
-	public static List<String> checkForBlackListedOperations(List<String> blackListOPs, int matrixId) {
-		List<String> nonoOPs = new ArrayList<String>();
-		try {
-			List<Operation> chkOpAL = OperationsList.getOperationsList(matrixId);
+	public static List<OPType> checkForBlackListedOperations(List<OPType> blackListOPs, int matrixId) {
 
-			for (int i = 0; i < chkOpAL.size(); i++) {
-				if (blackListOPs.contains(chkOpAL.get(i).getOperationType())) {
-					nonoOPs.add(chkOpAL.get(i).getOperationType());
+		List<OPType> nonoOPs = new ArrayList<OPType>();
+
+		try {
+			List<Operation> chkOperations = OperationsList.getOperationsList(matrixId);
+
+			for (Operation operation : chkOperations) {
+				OPType type = operation.getOperationType();
+				if (blackListOPs.contains(type)) {
+					nonoOPs.add(type);
 				}
 			}
 		} catch (IOException ex) {
 			log.error(null, ex);
 		}
+
 		return nonoOPs;
 	}
 
-	public static List<String> checkForBlackListedOperations(List<String> blackListOPs, int matrixId, int opId) {
-		List<String> nonoOPs = new ArrayList<String>();
-		try {
-			List<Operation> chkOpAL = OperationsList.getOperationsList(matrixId, opId);
+	public static List<OPType> checkForBlackListedOperations(List<OPType> blackListOPs, int matrixId, int opId) {
 
-			for (int i = 0; i < chkOpAL.size(); i++) {
-				if (blackListOPs.contains(chkOpAL.get(i).getOperationType())) {
-					nonoOPs.add(chkOpAL.get(i).getOperationType());
+		List<OPType> nonoOPs = new ArrayList<OPType>();
+
+		try {
+			List<Operation> chkOperations = OperationsList.getOperationsList(matrixId, opId);
+
+			for (Operation operation : chkOperations) {
+				OPType type = operation.getOperationType();
+				if (blackListOPs.contains(type)) {
+					nonoOPs.add(type);
 				}
 			}
 		} catch (IOException ex) {
 			log.error(null, ex);
 		}
+
 		return nonoOPs;
 	}
 	//</editor-fold>

@@ -152,7 +152,7 @@ public class GWASpiExplorer {
 						DefaultMutableTreeNode subOperationItem = GWASpiExplorerNodes.createSubOperationTreeNode(subOP.getId());
 
 						// LOAD REPORTS ON CURRENT SUB-OPERATION
-						if (!subOP.getOperationType().equals(OPType.HARDY_WEINBERG.toString())) { //NOT IF HW
+						if (!subOP.getOperationType().equals(OPType.HARDY_WEINBERG)) { // NOT IF HW
 							List<Report> reportsList = ReportsList.getReportsList(subOP.getId(), Integer.MIN_VALUE);
 							for (int n = 0; n < reportsList.size(); n++) {
 								Report rp = reportsList.get(n);
@@ -171,7 +171,7 @@ public class GWASpiExplorer {
 					// START TESTING
 					// LOAD REPORTS ON CURRENT OPERATION
 					List<Report> reportsList = ReportsList.getReportsList(currentOP.getId(), Integer.MIN_VALUE);
-					if (!currentOP.getOperationType().equals(OPType.SAMPLE_QA.toString())) { //SAMPLE_QA MUST BE DEALT DIFFERENTLY
+					if (!currentOP.getOperationType().equals(OPType.SAMPLE_QA)) { // SAMPLE_QA MUST BE DEALT DIFFERENTLY
 						for (int n = 0; n < reportsList.size(); n++) {
 							DefaultMutableTreeNode reportItem = GWASpiExplorerNodes.createReportTreeNode(reportsList.get(n).getId());
 							operationItem.add(reportItem);
@@ -310,7 +310,7 @@ public class GWASpiExplorer {
 						tree.expandPath(treePath);
 						Operation currentOP = OperationsList.getById(currentElementInfo.getNodeId());
 						Operation parentOP = OperationsList.getById(parentElementInfo.getNodeId());
-						if (currentOP.getOperationType().equals(OPType.HARDY_WEINBERG.toString())) {
+						if (currentOP.getOperationType().equals(OPType.HARDY_WEINBERG)) {
 							// Display HW Report
 							List<Report> reportsList = ReportsList.getReportsList(currentOP.getId(), currentOP.getParentMatrixId());
 							if (reportsList.size() > 0) {
@@ -319,15 +319,15 @@ public class GWASpiExplorer {
 								gwasPiExplorerPanel.setPnl_Content(new Report_HardyWeinbergSummary(hwReport.getStudyId(), reportFile, hwReport.getParentOperationId()));
 								gwasPiExplorerPanel.getScrl_Content().setViewportView(gwasPiExplorerPanel.getPnl_Content());
 							}
-						} else if (currentOP.getOperationType().equals(OPType.ALLELICTEST.toString())) {
+						} else if (currentOP.getOperationType().equals(OPType.ALLELICTEST)) {
 							// Display Association Report
 							gwasPiExplorerPanel.setPnl_Content(new Report_AnalysisPanel(currentOP.getStudyId(), currentOP.getParentMatrixId(), currentOP.getId(), null));
 							gwasPiExplorerPanel.getScrl_Content().setViewportView(gwasPiExplorerPanel.getPnl_Content());
-						} else if (currentOP.getOperationType().equals(OPType.GENOTYPICTEST.toString())) {
+						} else if (currentOP.getOperationType().equals(OPType.GENOTYPICTEST)) {
 							// Display Association Report
 							gwasPiExplorerPanel.setPnl_Content(new Report_AnalysisPanel(currentOP.getStudyId(), currentOP.getParentMatrixId(), currentOP.getId(), null));
 							gwasPiExplorerPanel.getScrl_Content().setViewportView(gwasPiExplorerPanel.getPnl_Content());
-						} else if (currentOP.getOperationType().equals(OPType.TRENDTEST.toString())) {
+						} else if (currentOP.getOperationType().equals(OPType.TRENDTEST)) {
 							// Display Trend Test Report
 							gwasPiExplorerPanel.setPnl_Content(new Report_AnalysisPanel(currentOP.getStudyId(), currentOP.getParentMatrixId(), currentOP.getId(), null));
 							gwasPiExplorerPanel.getScrl_Content().setViewportView(gwasPiExplorerPanel.getPnl_Content());
@@ -340,11 +340,11 @@ public class GWASpiExplorer {
 						// Display Operation
 						tree.expandPath(treePath);
 						Operation currentOP = OperationsList.getById(currentElementInfo.getNodeId());
-						if (currentOP.getOperationType().equals(OPType.MARKER_QA.toString())) {
+						if (currentOP.getOperationType().equals(OPType.MARKER_QA)) {
 							// Display MarkerQA panel
 							gwasPiExplorerPanel.setPnl_Content(new MatrixMarkerQAPanel(currentOP.getParentMatrixId(), currentOP.getId()));
 							gwasPiExplorerPanel.getScrl_Content().setViewportView(gwasPiExplorerPanel.getPnl_Content());
-						} else if (currentOP.getOperationType().equals(OPType.SAMPLE_QA.toString())) {
+						} else if (currentOP.getOperationType().equals(OPType.SAMPLE_QA)) {
 							// Display SampleQA Report
 							List<Report> reportsList = ReportsList.getReportsList(currentOP.getId(), currentOP.getParentMatrixId());
 							if (reportsList.size() > 0) {

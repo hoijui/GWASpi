@@ -105,11 +105,11 @@ public class Report_AnalysisPanel extends JPanel {
 		List<Report> reportsList = ReportsList.getReportsList(_opId, _matrixId);
 		if (reportsList.size() == 3) {
 			String reportFile = reportsList.get(2).getFileName();
-			if (currentOP.getOperationType().equals(OPType.ALLELICTEST.toString())) {
+			if (currentOP.getOperationType().equals(OPType.ALLELICTEST)) {
 				pnl_Report = new Report_AnalysisAllelicTestImpl(_studyId, reportFile, _opId, NRows);
-			} else if (currentOP.getOperationType().equals(OPType.GENOTYPICTEST.toString())) {
+			} else if (currentOP.getOperationType().equals(OPType.GENOTYPICTEST)) {
 				pnl_Report = new Report_AnalysisGenotypicTestImpl(_studyId, reportFile, _opId, NRows);
-			} else if (currentOP.getOperationType().equals(OPType.TRENDTEST.toString())) {
+			} else if (currentOP.getOperationType().equals(OPType.TRENDTEST)) {
 				pnl_Report = new Report_AnalysisTrendTestImpl(_studyId, reportFile, _opId, NRows);
 			}
 		}

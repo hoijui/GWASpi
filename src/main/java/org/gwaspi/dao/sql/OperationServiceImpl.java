@@ -40,7 +40,8 @@ public class OperationServiceImpl implements OperationService {
 		if (!rs.isEmpty() && rs.get(0).size() == cDBOperations.T_CREATE_OPERATIONS.length) {
 			String friendlyName = (rs.get(0).get(cDBOperations.f_OP_NAME) != null) ? rs.get(0).get(cDBOperations.f_OP_NAME).toString() : "";
 			String netCDFName = (rs.get(0).get(cDBOperations.f_OP_NETCDF_NAME) != null) ? rs.get(0).get(cDBOperations.f_OP_NETCDF_NAME).toString() : "";
-			String type = (rs.get(0).get(cDBOperations.f_OP_TYPE) != null) ? rs.get(0).get(cDBOperations.f_OP_TYPE).toString() : "";
+			String typeStr = (rs.get(0).get(cDBOperations.f_OP_TYPE) != null) ? rs.get(0).get(cDBOperations.f_OP_TYPE).toString() : "";
+			OPType type = OPType.valueOf(typeStr);
 			int parentMatrixId = (rs.get(0).get(cDBOperations.f_PARENT_MATRIXID) != null) ? Integer.parseInt(rs.get(0).get(cDBOperations.f_PARENT_MATRIXID).toString()) : -1;
 			int parentOperationId = (rs.get(0).get(cDBOperations.f_PARENT_OPID) != null) ? Integer.parseInt(rs.get(0).get(cDBOperations.f_PARENT_OPID).toString()) : -1;
 			String command = (rs.get(0).get(cDBOperations.f_OP_COMMAND) != null) ? rs.get(0).get(cDBOperations.f_OP_COMMAND).toString() : "";
@@ -223,7 +224,7 @@ public class OperationServiceImpl implements OperationService {
 	public int getIdOfLastOperationTypeOccurance(List<Operation> operationsList, OPType opType) {
 		int result = Integer.MIN_VALUE;
 		for (int i = 0; i < operationsList.size(); i++) {
-			if (operationsList.get(i).getOperationType().equals(OPType.MARKER_QA.toString())) {
+			if (operationsList.get(i).getOperationType().equals(OPType.MARKER_QA)) {
 				result = operationsList.get(i).getId();
 			}
 		}

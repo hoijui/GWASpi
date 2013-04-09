@@ -12,7 +12,6 @@ import java.util.Map;
 import org.gwaspi.constants.cDBGWASpi;
 import org.gwaspi.constants.cDBMatrix;
 import org.gwaspi.constants.cDBReports;
-import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.dao.ReportService;
 import org.gwaspi.database.DbManager;
@@ -179,9 +178,11 @@ public class ReportServiceImpl implements ReportService {
 
 		// Get Genotype Freq. assigned name. Pry out the part inserted by user only
 		try {
-			if (op.getOperationType().equals(cNetCDF.Defaults.OPType.ALLELICTEST.toString())
-					|| op.getOperationType().equals(cNetCDF.Defaults.OPType.GENOTYPICTEST.toString())
-					|| op.getOperationType().equals(cNetCDF.Defaults.OPType.TRENDTEST.toString())) {
+			final OPType operationType = op.getOperationType();
+			if (operationType.equals(OPType.ALLELICTEST)
+					|| operationType.equals(OPType.GENOTYPICTEST)
+					|| operationType.equals(OPType.TRENDTEST))
+			{
 				Operation parentOp = OperationsList.getById(op.getParentOperationId());
 				String[] tmp = parentOp.getFriendlyName().split("-", 2);
 				tmp = tmp[1].split("using");

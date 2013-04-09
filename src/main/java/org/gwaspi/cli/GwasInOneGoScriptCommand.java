@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.global.Text;
 import org.gwaspi.netCDF.operations.GWASinOneGOParams;
 import org.gwaspi.netCDF.operations.OperationManager;
@@ -83,13 +83,13 @@ class GwasInOneGoScriptCommand extends AbstractScriptCommand {
 			gwasParams.setFriendlyName(gwasName);
 			gwasParams.setProceed(true);
 
-			List<String> necessaryOPsAL = new ArrayList<String>();
-			necessaryOPsAL.add(cNetCDF.Defaults.OPType.SAMPLE_QA.toString());
-			necessaryOPsAL.add(cNetCDF.Defaults.OPType.MARKER_QA.toString());
-			List missingOPsAL = OperationManager.checkForNecessaryOperations(necessaryOPsAL, matrixId);
+			List<OPType> necessaryOPs = new ArrayList<OPType>();
+			necessaryOPs.add(OPType.SAMPLE_QA);
+			necessaryOPs.add(OPType.MARKER_QA);
+			List<OPType> missingOPs = OperationManager.checkForNecessaryOperations(necessaryOPs, matrixId);
 
 			// QA block
-			if (gwasParams.isProceed() && missingOPsAL.size() > 0) {
+			if (gwasParams.isProceed() && missingOPs.size() > 0) {
 				gwasParams.setProceed(false);
 				System.out.println(Text.Operation.warnQABeforeAnything + "\n" + Text.Operation.willPerformOperation);
 				MultiOperations.doMatrixQAs(studyId, matrixId);

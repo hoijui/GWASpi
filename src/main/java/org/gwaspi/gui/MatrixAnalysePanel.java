@@ -29,7 +29,6 @@ import javax.swing.SwingConstants;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.tree.DefaultMutableTreeNode;
-import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.utils.BrowserHelpUrlAction;
@@ -348,29 +347,32 @@ public class MatrixAnalysePanel extends JPanel {
 				if (affectionStates.contains(SampleInfo.Affection.UNAFFECTED)
 						&& affectionStates.contains(SampleInfo.Affection.AFFECTED))
 				{
-					List<String> necessaryOPsAL = new ArrayList<String>();
-					necessaryOPsAL.add(cNetCDF.Defaults.OPType.SAMPLE_QA.toString());
-					necessaryOPsAL.add(cNetCDF.Defaults.OPType.MARKER_QA.toString());
-					necessaryOPsAL.add(cNetCDF.Defaults.OPType.MARKER_CENSUS_BY_PHENOTYPE.toString());
-					necessaryOPsAL.add(cNetCDF.Defaults.OPType.MARKER_CENSUS_BY_AFFECTION.toString());
-					necessaryOPsAL.add(cNetCDF.Defaults.OPType.HARDY_WEINBERG.toString());
-					List<String> missingOPsAL = OperationManager.checkForNecessaryOperations(necessaryOPsAL, parentMatrix.getId());
+					List<OPType> necessaryOPs = new ArrayList<OPType>();
+					necessaryOPs.add(OPType.SAMPLE_QA);
+					necessaryOPs.add(OPType.MARKER_QA);
+					necessaryOPs.add(OPType.MARKER_CENSUS_BY_PHENOTYPE);
+					necessaryOPs.add(OPType.MARKER_CENSUS_BY_AFFECTION);
+					necessaryOPs.add(OPType.HARDY_WEINBERG);
+					List<OPType> missingOPs = OperationManager.checkForNecessaryOperations(necessaryOPs, parentMatrix.getId());
 
 					// WHAT TO DO IF OPs ARE MISSING
 					boolean performTest = true;
-					if (missingOPsAL.size() > 0) {
-						if (missingOPsAL.contains(OPType.SAMPLE_QA.toString())
-								|| missingOPsAL.contains(OPType.MARKER_QA.toString())) {
+					if (missingOPs.size() > 0) {
+						if (missingOPs.contains(OPType.SAMPLE_QA)
+								|| missingOPs.contains(OPType.MARKER_QA))
+						{
 							Dialogs.showWarningDialogue("Before performing the " + testName + " you must launch\n a '" + Text.Operation.GTFreqAndHW + "' first or perform a '" + Text.Operation.gwasInOneGo + "' instead.");
 							MultiOperations.doMatrixQAs(parentMatrix.getStudyId(), parentMatrix.getId());
 							performTest = false;
-						} else if (missingOPsAL.contains(OPType.MARKER_CENSUS_BY_AFFECTION.toString())
-								&& missingOPsAL.contains(OPType.MARKER_CENSUS_BY_PHENOTYPE.toString())) {
+						} else if (missingOPs.contains(OPType.MARKER_CENSUS_BY_AFFECTION)
+								&& missingOPs.contains(OPType.MARKER_CENSUS_BY_PHENOTYPE))
+						{
 							Dialogs.showWarningDialogue("Before performing the " + testName + " you must launch\n a '" + Text.Operation.GTFreqAndHW + "' first or perform a '" + Text.Operation.gwasInOneGo + "' instead.");
 							performTest = false;
-						} else if (missingOPsAL.contains(OPType.HARDY_WEINBERG.toString())
-								&& !(missingOPsAL.contains(OPType.MARKER_CENSUS_BY_AFFECTION.toString())
-								&& missingOPsAL.contains(OPType.MARKER_CENSUS_BY_PHENOTYPE.toString()))) {
+						} else if (missingOPs.contains(OPType.HARDY_WEINBERG)
+								&& !(missingOPs.contains(OPType.MARKER_CENSUS_BY_AFFECTION)
+								&& missingOPs.contains(OPType.MARKER_CENSUS_BY_PHENOTYPE)))
+						{
 							Dialogs.showWarningDialogue("Before performing the " + testName + " you must launch\n a '" + Text.Operation.hardyWeiberg + "' first or perform a '" + Text.Operation.gwasInOneGo + "' instead.");
 							MultiOperations.doHardyWeinberg(parentMatrix.getStudyId(),
 									parentMatrix.getId(),
@@ -453,31 +455,31 @@ public class MatrixAnalysePanel extends JPanel {
 				if (affectionStates.contains(SampleInfo.Affection.UNAFFECTED)
 						&& affectionStates.contains(SampleInfo.Affection.AFFECTED))
 				{
-					List<String> necessaryOPsAL = new ArrayList<String>();
-					necessaryOPsAL.add(cNetCDF.Defaults.OPType.SAMPLE_QA.toString());
-					necessaryOPsAL.add(cNetCDF.Defaults.OPType.MARKER_QA.toString());
-					necessaryOPsAL.add(cNetCDF.Defaults.OPType.MARKER_CENSUS_BY_PHENOTYPE.toString());
-					necessaryOPsAL.add(cNetCDF.Defaults.OPType.MARKER_CENSUS_BY_AFFECTION.toString());
-					necessaryOPsAL.add(cNetCDF.Defaults.OPType.HARDY_WEINBERG.toString());
-					List<String> missingOPsAL = OperationManager.checkForNecessaryOperations(necessaryOPsAL, parentMatrix.getId());
+					List<OPType> necessaryOPs = new ArrayList<OPType>();
+					necessaryOPs.add(OPType.SAMPLE_QA);
+					necessaryOPs.add(OPType.MARKER_QA);
+					necessaryOPs.add(OPType.MARKER_CENSUS_BY_PHENOTYPE);
+					necessaryOPs.add(OPType.MARKER_CENSUS_BY_AFFECTION);
+					necessaryOPs.add(OPType.HARDY_WEINBERG);
+					List<OPType> missingOPs = OperationManager.checkForNecessaryOperations(necessaryOPs, parentMatrix.getId());
 
 					// WHAT TO DO IF OPs ARE MISSING
 					boolean performTest = true;
-					if (missingOPsAL.size() > 0) {
-						if (missingOPsAL.contains(OPType.SAMPLE_QA.toString())
-								|| missingOPsAL.contains(OPType.MARKER_QA.toString()))
+					if (missingOPs.size() > 0) {
+						if (missingOPs.contains(OPType.SAMPLE_QA)
+								|| missingOPs.contains(OPType.MARKER_QA))
 						{
 							Dialogs.showWarningDialogue("Before performing a " + Text.Operation.trendTest + " you must launch\n a '" + Text.Operation.GTFreqAndHW + "' first or perform a '" + Text.Operation.gwasInOneGo + "' instead.");
 							MultiOperations.doMatrixQAs(parentMatrix.getStudyId(), parentMatrix.getId());
 							performTest = false;
-						} else if (missingOPsAL.contains(OPType.MARKER_CENSUS_BY_AFFECTION.toString())
-								&& missingOPsAL.contains(OPType.MARKER_CENSUS_BY_PHENOTYPE.toString()))
+						} else if (missingOPs.contains(OPType.MARKER_CENSUS_BY_AFFECTION)
+								&& missingOPs.contains(OPType.MARKER_CENSUS_BY_PHENOTYPE))
 						{
 							Dialogs.showWarningDialogue("Before performing a " + Text.Operation.trendTest + " you must launch\n a '" + Text.Operation.GTFreqAndHW + "' first or perform a '" + Text.Operation.gwasInOneGo + "' instead.");
 							performTest = false;
-						} else if (missingOPsAL.contains(OPType.HARDY_WEINBERG.toString())
-								&& !(missingOPsAL.contains(OPType.MARKER_CENSUS_BY_AFFECTION.toString())
-								&& missingOPsAL.contains(OPType.MARKER_CENSUS_BY_PHENOTYPE.toString())))
+						} else if (missingOPs.contains(OPType.HARDY_WEINBERG)
+								&& !(missingOPs.contains(OPType.MARKER_CENSUS_BY_AFFECTION)
+								&& missingOPs.contains(OPType.MARKER_CENSUS_BY_PHENOTYPE)))
 						{
 							Dialogs.showWarningDialogue("Before performing a " + Text.Operation.trendTest + " you must launch\n a '" + Text.Operation.hardyWeiberg + "' first or perform a '" + Text.Operation.gwasInOneGo + "' instead.");
 							MultiOperations.doHardyWeinberg(parentMatrix.getStudyId(),
@@ -547,10 +549,10 @@ public class MatrixAnalysePanel extends JPanel {
 		@Override
 		public void actionPerformed(ActionEvent evt) {
 			try {
-				List<String> necessaryOPsAL = new ArrayList<String>();
-				necessaryOPsAL.add(cNetCDF.Defaults.OPType.SAMPLE_QA.toString());
-				necessaryOPsAL.add(cNetCDF.Defaults.OPType.MARKER_QA.toString());
-				List<String> missingOPsAL = OperationManager.checkForNecessaryOperations(necessaryOPsAL, parentMatrix.getId());
+				List<OPType> necessaryOPs = new ArrayList<OPType>();
+				necessaryOPs.add(OPType.SAMPLE_QA);
+				necessaryOPs.add(OPType.MARKER_QA);
+				List<OPType> missingOPs = OperationManager.checkForNecessaryOperations(necessaryOPs, parentMatrix.getId());
 
 				int choice = Dialogs.showOptionDialogue(Text.Operation.chosePhenotype, Text.Operation.genotypeFreqAndHW, Text.Operation.htmlCurrentAffectionFromDB, Text.Operation.htmlAffectionFromFile, Text.All.cancel);
 				File phenotypeFile = null;
@@ -587,7 +589,7 @@ public class MatrixAnalysePanel extends JPanel {
 				}
 
 				// <editor-fold defaultstate="expanded" desc="QA BLOCK">
-				if (gwasParams.isProceed() && missingOPsAL.size() > 0) {
+				if (gwasParams.isProceed() && missingOPs.size() > 0) {
 					gwasParams.setProceed(false);
 					gwasParams.setProceed(false);
 					Dialogs.showWarningDialogue(Text.Operation.warnQABeforeAnything + "\n" + Text.Operation.willPerformOperation);
@@ -687,12 +689,12 @@ public class MatrixAnalysePanel extends JPanel {
 		public void actionPerformed(ActionEvent evt) {
 			try {
 //				List<String> blackListOPsAL = new ArrayList<String>();
-//				blackListOPsAL.add(cNetCDF.Defaults.OPType.MARKER_CENSUS_BY_AFFECTION.toString());
+//				blackListOPsAL.add(OPType.MARKER_CENSUS_BY_AFFECTION.toString());
 
-				List<String> necessaryOPsAL = new ArrayList<String>();
-				necessaryOPsAL.add(cNetCDF.Defaults.OPType.SAMPLE_QA.toString());
-				necessaryOPsAL.add(cNetCDF.Defaults.OPType.MARKER_QA.toString());
-				List<String> missingOPsAL = OperationManager.checkForNecessaryOperations(necessaryOPsAL, parentMatrix.getId());
+				List<OPType> necessaryOPs = new ArrayList<OPType>();
+				necessaryOPs.add(OPType.SAMPLE_QA);
+				necessaryOPs.add(OPType.MARKER_QA);
+				List<OPType> missingOPs = OperationManager.checkForNecessaryOperations(necessaryOPs, parentMatrix.getId());
 
 				MatrixMetadata matrixMetadata = MatricesList.getMatrixMetadataById(parentMatrix.getId());
 
@@ -718,7 +720,7 @@ public class MatrixAnalysePanel extends JPanel {
 				}
 
 				//QA BLOCK
-				if (gwasParams.isProceed() && missingOPsAL.size() > 0) {
+				if (gwasParams.isProceed() && missingOPs.size() > 0) {
 					gwasParams.setProceed(false);
 					Dialogs.showWarningDialogue(Text.Operation.warnQABeforeAnything + "\n" + Text.Operation.willPerformOperation);
 					MultiOperations.doMatrixQAs(parentMatrix.getStudyId(), parentMatrix.getId());
