@@ -66,13 +66,13 @@ public class GenericReportGenerator {
 	public static final Color PLOT_MANHATTAN_BACKGROUND_ALTERNATIVE_DEFAULT = new Color(230, 230, 230);
 	public static final String PLOT_MANHATTAN_MAIN_CONFIG = "CHART_MANHATTAN_PLOT_MAIN";
 	public static final Color PLOT_MANHATTAN_MAIN_DEFAULT = Color.BLUE;
-	public static final String PLOT_QQ_BACKGROUND_CONFIG = "CHART_MANHATTAN_PLOT_MAIN";
+	public static final String PLOT_QQ_BACKGROUND_CONFIG = "CHART_QQ_PLOT_BACKGROUND";
 	public static final Color PLOT_QQ_BACKGROUND_DEFAULT = new Color(230, 230, 230);
-	public static final String PLOT_QQ_ACTUAL_CONFIG = "CHART_MANHATTAN_PLOT_MAIN";
+	public static final String PLOT_QQ_ACTUAL_CONFIG = "CHART_QQ_PLOT_MAIN";
 	public static final Color PLOT_QQ_ACTUAL_DEFAULT = Color.BLUE;
-	public static final String PLOT_QQ_MU_CONFIG = "CHART_MANHATTAN_PLOT_MAIN";
+	public static final String PLOT_QQ_MU_CONFIG = "CHART_QQ_PLOT_MU";
 	public static final Color PLOT_QQ_MU_DEFAULT = Color.GRAY;
-	public static final String PLOT_QQ_SIGMA_CONFIG = "CHART_MANHATTAN_PLOT_MAIN";
+	public static final String PLOT_QQ_SIGMA_CONFIG = "CHART_QQ_PLOT_SIGMA";
 	public static final Color PLOT_QQ_SIGMA_DEFAULT = Color.LIGHT_GRAY;
 
 	private GenericReportGenerator() {
