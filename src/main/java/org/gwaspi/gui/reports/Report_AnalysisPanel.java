@@ -48,7 +48,7 @@ public class Report_AnalysisPanel extends JPanel {
 	private JTextArea txtA_OpDesc;
 	// End of variables declaration
 
-	public Report_AnalysisPanel(final int _studyId, final int _matrixId, final int _opId, String NRows) throws IOException {
+	public Report_AnalysisPanel(final int _studyId, final int _matrixId, final int _opId, final Integer nRows) throws IOException {
 
 		parentMatrix = MatricesList.getById(_matrixId);
 		if (_opId != Integer.MIN_VALUE) {
@@ -106,11 +106,11 @@ public class Report_AnalysisPanel extends JPanel {
 		if (reportsList.size() == 3) {
 			String reportFile = reportsList.get(2).getFileName();
 			if (currentOP.getOperationType().equals(OPType.ALLELICTEST)) {
-				pnl_Report = new Report_AnalysisAllelicTestImpl(_studyId, reportFile, _opId, NRows);
+				pnl_Report = new Report_AnalysisAllelicTestImpl(_studyId, reportFile, _opId, nRows);
 			} else if (currentOP.getOperationType().equals(OPType.GENOTYPICTEST)) {
-				pnl_Report = new Report_AnalysisGenotypicTestImpl(_studyId, reportFile, _opId, NRows);
+				pnl_Report = new Report_AnalysisGenotypicTestImpl(_studyId, reportFile, _opId, nRows);
 			} else if (currentOP.getOperationType().equals(OPType.TRENDTEST)) {
-				pnl_Report = new Report_AnalysisTrendTestImpl(_studyId, reportFile, _opId, NRows);
+				pnl_Report = new Report_AnalysisTrendTestImpl(_studyId, reportFile, _opId, nRows);
 			}
 		}
 		pnl_Report.setBorder(BorderFactory.createTitledBorder("Report"));

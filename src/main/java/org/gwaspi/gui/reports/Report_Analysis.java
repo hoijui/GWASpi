@@ -7,8 +7,8 @@ import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
+import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
@@ -34,7 +34,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.JTextField;
+import javax.swing.JFormattedTextField;
 import javax.swing.LayoutStyle;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
@@ -92,11 +92,12 @@ public abstract class Report_Analysis extends JPanel {
 	protected JComboBox cmb_SearchDB;
 	private JScrollPane scrl_ReportTable;
 	protected final JTable tbl_ReportTable;
-	protected final JTextField txt_NRows;
-	private JTextField txt_PvalThreshold;
+	protected final JFormattedTextField txt_NRows;
+	/** @deprecated currently not added -> not visible */
+	private JFormattedTextField txt_PvalThreshold;
 	// End of variables declaration
 
-	protected Report_Analysis(final int studyId, final int opId, final String analysisFileName, final String nRows) {
+	protected Report_Analysis(final int studyId, final int opId, final String analysisFileName, final Integer nRows) {
 
 		this.studyId = studyId;
 		this.opId = opId;
@@ -114,7 +115,7 @@ public abstract class Report_Analysis extends JPanel {
 		reportFile = new File(reportPath + analysisFileName);
 
 		pnl_Summary = new JPanel();
-		txt_NRows = new JTextField();
+		txt_NRows = new JFormattedTextField();
 		txt_NRows.setInputVerifier(new IntegerInputVerifier());
 		txt_NRows.addFocusListener(new FocusAdapter() {
 			@Override
@@ -128,7 +129,7 @@ public abstract class Report_Analysis extends JPanel {
 			}
 		});
 		lbl_suffix1 = new JLabel();
-		txt_PvalThreshold = new JTextField();
+		txt_PvalThreshold = new JFormattedTextField();
 		btn_Get = new JButton();
 
 		pnl_SearchDB = new JPanel();
@@ -162,22 +163,12 @@ public abstract class Report_Analysis extends JPanel {
 
 		pnl_Summary.setBorder(BorderFactory.createTitledBorder(Text.Reports.summary));
 
-		try {
-			Integer.parseInt(nRows);
-			txt_NRows.setText(nRows);
-		} catch (NumberFormatException ex) {
-			log.warn(null, ex);
-			txt_NRows.setText("100");
-		}
+		Integer actualNRows = (nRows == null) ? 100 : nRows;
+		txt_NRows.setValue(actualNRows);
 
-		txt_NRows.setHorizontalAlignment(JTextField.TRAILING);
-		txt_NRows.addKeyListener(new KeyListener() {
-			public void keyTyped(KeyEvent e) {
-			}
-
-			public void keyPressed(KeyEvent e) {
-			}
-
+		txt_NRows.setHorizontalAlignment(JFormattedTextField.TRAILING);
+		txt_NRows.addKeyListener(new KeyAdapter() {
+			@Override
 			public void keyReleased(KeyEvent e) {
 				int key = e.getKeyChar();
 				if (key == KeyEvent.VK_ENTER) {
@@ -320,12 +311,13 @@ public abstract class Report_Analysis extends JPanel {
 						double avgMarkersPerPhysPos = (double) nbMarkers / (maxPhysPos - startPhysPos);
 						int requestedWindowSize = Math.abs((int) Math.round(ManhattanPlotZoom.MARKERS_NUM_DEFAULT / avgMarkersPerPhysPos));
 
-						GWASpiExplorerPanel.getSingleton().setPnl_Content(new ManhattanPlotZoom(opId,
-								 chr,
-								 tbl_ReportTable.getValueAt(rowIndex, 0).toString(), //MarkerID
-								 markerPhysPos,
-								 requestedWindowSize, //requested window size in phys positions
-								 txt_NRows.getText()));
+						GWASpiExplorerPanel.getSingleton().setPnl_Content(new ManhattanPlotZoom(
+								opId,
+								chr,
+								tbl_ReportTable.getValueAt(rowIndex, 0).toString(), // MarkerID
+								markerPhysPos,
+								requestedWindowSize, // requested window size in phys positions
+								((Number) txt_NRows.getValue()).intValue()));
 						GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
 					}
 					if (colIndex == getExternalResourceColumnIndex()) { // Show selected resource database
@@ -483,10 +475,10 @@ public abstract class Report_Analysis extends JPanel {
 		private int studyId;
 		private String reportFileName;
 		private JTable reportTable;
-		private JTextField nRows;
+		private JFormattedTextField nRows;
 		private List<Integer> colIndToSave;
 
-		public SaveAsAction(int studyId, String reportFileName, JTable reportTable, JTextField nRows, int trailingColsNotToSave) {
+		public SaveAsAction(int studyId, String reportFileName, JTable reportTable, JFormattedTextField nRows, int trailingColsNotToSave) {
 
 			this.studyId = studyId;
 			this.reportFileName = reportFileName;
@@ -500,7 +492,7 @@ public abstract class Report_Analysis extends JPanel {
 			putValue(NAME, Text.All.save);
 		}
 
-		public SaveAsAction(int studyId, String reportFileName, JTable reportTable, JTextField nRows) {
+		public SaveAsAction(int studyId, String reportFileName, JTable reportTable, JFormattedTextField nRows) {
 			this(studyId, reportFileName, reportTable, nRows, 0);
 		}
 

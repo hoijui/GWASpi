@@ -95,7 +95,7 @@ public final class ManhattanPlotZoom extends JPanel {
 	private String origChr;
 	private String currentMarkerId;
 	private String currentChr;
-	private String txtNRows;
+	private Integer nRows;
 	private long centerPhysPos;
 	private long startPhysPos;
 	private long requestedSetSize;
@@ -131,13 +131,13 @@ public final class ManhattanPlotZoom extends JPanel {
 			String chr,
 			long startPhysPos,
 			long requestedPosWindow,
-			String txtNRows)
+			Integer nRows)
 	{
 		this.parent = parent;
 		this.opId = opId;
 		this.currentChr = chr;
 		this.origChr = chr;
-		this.txtNRows = txtNRows;
+		this.nRows = nRows;
 		this.startPhysPos = startPhysPos;
 		this.requestedPosWindow = requestedPosWindow;
 
@@ -151,14 +151,14 @@ public final class ManhattanPlotZoom extends JPanel {
 			String markerId,
 			long centerPhysPos,
 			long requestedSetSize,
-			String txtNRows)
+			Integer nRows)
 	{
 		this.opId = opId;
 		this.currentMarkerId = markerId;
 		this.origMarkerId = markerId;
 		this.currentChr = chr;
 		this.origChr = chr;
-		this.txtNRows = txtNRows;
+		this.nRows = nRows;
 		this.centerPhysPos = centerPhysPos;
 		this.requestedSetSize = requestedSetSize;
 
@@ -862,7 +862,7 @@ public final class ManhattanPlotZoom extends JPanel {
 					 origChr,
 					 startPhysPos, // startPhysPos
 					 requestedPosWindow, // physPos window
-					 txtNRows));
+					 nRows));
 
 			GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
 		}
@@ -902,7 +902,7 @@ public final class ManhattanPlotZoom extends JPanel {
 		public void actionPerformed(ActionEvent evt) {
 			try {
 				List<Report> reportsList = ReportsList.getReportsList(rdOPMetadata.getOPId(), rdOPMetadata.getParentMatrixId());
-				GWASpiExplorerPanel.getSingleton().setPnl_Content(new Report_AnalysisPanel(rdOPMetadata.getStudyId(), rdOPMetadata.getParentMatrixId(), rdOPMetadata.getOPId(), txtNRows));
+				GWASpiExplorerPanel.getSingleton().setPnl_Content(new Report_AnalysisPanel(rdOPMetadata.getStudyId(), rdOPMetadata.getParentMatrixId(), rdOPMetadata.getOPId(), nRows));
 				GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
 			} catch (IOException ex) {
 				log.error(null, ex);

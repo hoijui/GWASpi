@@ -20,11 +20,11 @@ import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
+import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.JTextField;
 import javax.swing.LayoutStyle;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
@@ -70,7 +70,7 @@ public class Report_QAMarkersSummary extends JPanel {
 	private JLabel lbl_suffix1;
 	private JScrollPane scrl_ReportTable;
 	private JTable tbl_ReportTable;
-	private JTextField txt_NRows;
+	private JFormattedTextField txt_NRows;
 	// End of variables declaration
 
 	public Report_QAMarkersSummary(final int _studyId, final String _qaFileName, int _opId) throws IOException {
@@ -95,7 +95,7 @@ public class Report_QAMarkersSummary extends JPanel {
 		reportFile = new File(reportPath + _qaFileName);
 
 		pnl_Summary = new JPanel();
-		txt_NRows = new JTextField();
+		txt_NRows = new JFormattedTextField();
 		txt_NRows.setInputVerifier(new IntegerInputVerifier());
 		txt_NRows.addFocusListener(new FocusAdapter() {
 			@Override
@@ -130,8 +130,8 @@ public class Report_QAMarkersSummary extends JPanel {
 
 		final Action loadReportAction = new LoadReportAction(reportFile, tbl_ReportTable, txt_NRows, qaValue);
 
-		txt_NRows.setText("100");
-		txt_NRows.setHorizontalAlignment(JTextField.TRAILING);
+		txt_NRows.setValue(Integer.valueOf(100));
+		txt_NRows.setHorizontalAlignment(JFormattedTextField.TRAILING);
 		txt_NRows.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyReleased(KeyEvent e) {
@@ -235,10 +235,10 @@ public class Report_QAMarkersSummary extends JPanel {
 
 		private File reportFile;
 		private JTable reportTable;
-		private JTextField nRows;
+		private JFormattedTextField nRows;
 		private String qaValue;
 
-		LoadReportAction(File reportFile, JTable reportTable, JTextField nRows, String qaValue) {
+		LoadReportAction(File reportFile, JTable reportTable, JFormattedTextField nRows, String qaValue) {
 
 			this.reportFile = reportFile;
 			this.reportTable = reportTable;

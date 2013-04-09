@@ -29,7 +29,7 @@ public final class Report_AnalysisTrendTestImpl extends Report_Analysis {
 			Text.Reports.zoom,
 			Text.Reports.externalResource};
 
-	public Report_AnalysisTrendTestImpl(final int studyId, final String analysisFileName, final int opId, String nRows) {
+	public Report_AnalysisTrendTestImpl(final int studyId, final String analysisFileName, final int opId, final Integer nRows) {
 		super(studyId, opId, analysisFileName, nRows);
 	}
 

@@ -98,7 +98,7 @@ public final class ManhattanChartDisplay extends JPanel {
 									selectedSliceInfo[1].toString(),
 									(Long) selectedSliceInfo[3], // startPhysPos
 									(Long) selectedSliceInfo[4], // physPos window
-									"100"));
+									100));
 							GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
 						}
 					}
