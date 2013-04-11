@@ -429,7 +429,7 @@ public class GenericReportGenerator {
 		XYDataset resultXYDataset = null;
 
 		try {
-			Map<MarkerKey, Object> dataSetMap = new LinkedHashMap<MarkerKey, Object>();
+			Map<MarkerKey, Object[]> dataSetMap = new LinkedHashMap<MarkerKey, Object[]>();
 			OperationMetadata rdOPMetadata = OperationsList.getOperationMetadata(opId);
 
 			NetcdfFile assocNcFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());
@@ -473,9 +473,9 @@ public class GenericReportGenerator {
 			rdAssocMarkerSetMap = rdAssocMarkerSet.fillOpSetMapWithVariable(assocNcFile, netCDFVar);
 			assocNcFile.close();
 			if (rdAssocMarkerSetMap != null) {
-				for (Map.Entry<MarkerKey, Object> entry : dataSetMap.entrySet()) {
+				for (Map.Entry<MarkerKey, Object[]> entry : dataSetMap.entrySet()) {
 					MarkerKey key = entry.getKey();
-					Object[] data = (Object[]) entry.getValue(); //CHR, POS, PVAL
+					Object[] data = entry.getValue(); // CHR, POS, PVAL
 					double[] value = (double[]) rdAssocMarkerSetMap.get(key);
 					Double pval = (Double) value[1]; // PVAL
 					if (!Double.isNaN(pval) && !Double.isInfinite(pval)) { // Ignore NaN Pvalues
@@ -492,9 +492,9 @@ public class GenericReportGenerator {
 			XYSeries dataSeries = new XYSeries("");
 
 			Map<String, MarkerKey> labeler = new LinkedHashMap<String, MarkerKey>();
-			for (Map.Entry<MarkerKey, Object> entry : dataSetMap.entrySet()) {
+			for (Map.Entry<MarkerKey, Object[]> entry : dataSetMap.entrySet()) {
 				MarkerKey tmpMarker = entry.getKey();
-				Object[] data = (Object[]) entry.getValue(); // CHR, POS, PVAL
+				Object[] data = entry.getValue(); // CHR, POS, PVAL
 
 				int position = (Integer) data[1];
 				double pVal = 1;
