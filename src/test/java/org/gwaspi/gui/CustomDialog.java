@@ -1,3 +1,5 @@
+/* Copyright (c) Sun Microsystems, Inc. (BSD 3-Clause) */
+
 package org.gwaspi.gui;
 
 /*

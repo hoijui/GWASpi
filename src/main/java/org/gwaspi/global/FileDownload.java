@@ -1,3 +1,10 @@
+/* Copyright (c) Marco Schmidt (UNKOWN) */
+
+/*
+ * Other works by Marco Schmidt, like the JUI application or ImageInfo.java,
+ * are published under public domain or under the GPL.
+ */
+
 package org.gwaspi.global;
 
 import java.io.BufferedOutputStream;

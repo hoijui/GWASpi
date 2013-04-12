@@ -1,3 +1,5 @@
+/* Copyright (c) Ian Schneider, OSGeo Foundation (LGPL, version 2 or later) */
+
 package org.gwaspi.trastero;
 
 import java.awt.*;

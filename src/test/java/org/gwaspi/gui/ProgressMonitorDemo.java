@@ -1,3 +1,4 @@
+/* Copyright (c) Sun Microsystems, Inc. (BSD 3-Clause) */
 /*
  * Copyright (c) 1995 - 2008 Sun Microsystems, Inc.  All rights reserved.
  *

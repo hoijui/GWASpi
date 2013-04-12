@@ -1,3 +1,5 @@
+/* Copyright (c) Oracle and/or its affiliates (BSD 3-Clause) */
+
 package org.gwaspi.gui;
 
 /*

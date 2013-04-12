@@ -1,3 +1,5 @@
+/* Copyright (c) Object Refinery Limited and Contributors (LGPL 2.1 or later) */
+
 /* -----------------------
  * MouseListenerDemo4.java
  * -----------------------

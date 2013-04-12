@@ -1,3 +1,5 @@
+/* Copyright (c) Canadian Mind Products (public domain, non-military use) */
+
 package org.gwaspi.gui;
 
 import java.awt.Dimension;
