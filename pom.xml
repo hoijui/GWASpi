@@ -69,6 +69,13 @@
 		</developer>
 	</developers>
 
+	<scm>
+		<connection>scm:git:git://github.com/GWASpi/GWASpi</connection>
+		<developerConnection>scm:git:git@github.com:GWASpi/GWASpi.git</developerConnection>
+		<url>http://github.com/GWASpi/GWASpi</url>
+		<tag>HEAD</tag>
+	</scm>
+
 	<reporting>
 		<plugins>
 			<plugin>
