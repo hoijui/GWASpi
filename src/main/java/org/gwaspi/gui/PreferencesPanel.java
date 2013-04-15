@@ -200,19 +200,20 @@ public class PreferencesPanel extends JPanel {
 						Dialogs.showInfoDialogue("Warning! Path provided does not exists!\nThis may cause " + Text.App.appName + " to fail!\nPlease fix broken path: " + preferencesTable.getValueAt(i, 1).toString());
 						resetPreferencesAction.actionPerformed(null);
 					}
-				} else if (preferencesTable.getValueAt(i, 0).toString().equals("CHART_MANHATTAN_PLOT_BCKG") || //Check if it's a color setting
-						preferencesTable.getValueAt(i, 0).toString().equals("CHART_MANHATTAN_PLOT_BCKG_ALT")
+				} else if (preferencesTable.getValueAt(i, 0).toString().equals("CHART_MANHATTAN_PLOT_BCKG")
+						|| preferencesTable.getValueAt(i, 0).toString().equals("CHART_MANHATTAN_PLOT_BCKG_ALT")
 						|| preferencesTable.getValueAt(i, 0).toString().equals("CHART_MANHATTAN_PLOT_DOT")
 						|| preferencesTable.getValueAt(i, 0).toString().equals("CHART_QQ_PLOT_BCKG")
 						|| preferencesTable.getValueAt(i, 0).toString().equals("CHART_QQ_PLOT_DOT")
 						|| preferencesTable.getValueAt(i, 0).toString().equals("CHART_QQ_PLOT_2SIGMA")
 						|| preferencesTable.getValueAt(i, 0).toString().equals("CHART_SAMPLEQA_HETZYG_THRESHOLD")
-						|| preferencesTable.getValueAt(i, 0).toString().equals("CHART_SAMPLEQA_MISSING_THRESHOLD")) {
-
+						|| preferencesTable.getValueAt(i, 0).toString().equals("CHART_SAMPLEQA_MISSING_THRESHOLD"))
+				{
+					// Check if it is a valid color setting,
+					// and issue a warning if not.
 					String[] tmp = preferencesTable.getValueAt(i, 1).toString().split(",");
 					if (tmp.length == 3) {
 						try {
-							// XXX This code does nothing... logic error?
 							int redInt = Integer.parseInt(tmp[0]);
 							if (redInt < 0 || redInt > 255) {
 								redInt = redInt % 255;
