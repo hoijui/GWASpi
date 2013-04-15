@@ -240,6 +240,7 @@ public class StudyServiceImpl implements StudyService {
 
 		// Create log file containing study history
 		FileWriter fw = new FileWriter(Config.getConfigValue(Config.PROPERTY_LOG_DIR, "") + "/" + studyId + ".log");
-		return result;
+		throw new UnsupportedOperationException("Not yet fully implemented method");
+//		return result;
 	}
 }
