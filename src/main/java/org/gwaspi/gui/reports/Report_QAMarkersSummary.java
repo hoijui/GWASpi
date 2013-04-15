@@ -59,7 +59,7 @@ public class Report_QAMarkersSummary extends JPanel {
 	// Variables declaration - do not modify
 	private File reportFile;
 	private int opId;
-	private String qaValue;
+	private final String qaValue;
 	private JButton btn_Get;
 	private JButton btn_Save;
 	private JButton btn_Back;
@@ -78,12 +78,13 @@ public class Report_QAMarkersSummary extends JPanel {
 		String reportName = GWASpiExplorerPanel.getSingleton().getTree().getLastSelectedPathComponent().toString();
 		reportName = reportName.substring(reportName.indexOf('-') + 2);
 
-		qaValue = "Mismatching";
+		String tmpQaValue = "Mismatching";
 		String nRowsSuffix = "Markers";
 		if (reportName.contains("Missingness")) {
-			qaValue = "Missing Ratio";
+			tmpQaValue = "Missing Ratio";
 			nRowsSuffix = "Markers by most significant Missing Ratios";
 		}
+		this.qaValue = tmpQaValue;
 
 		String reportPath = "";
 		try {

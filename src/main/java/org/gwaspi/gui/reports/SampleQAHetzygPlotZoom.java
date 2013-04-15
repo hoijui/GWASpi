@@ -110,15 +110,15 @@ public final class SampleQAHetzygPlotZoom extends JPanel {
 	/**
 	 * Creates new form ManhattanPlotZoom
 	 *
-	 * @param _opId
+	 * @param opId
 	 */
-	public SampleQAHetzygPlotZoom(int _opId) throws IOException {
+	public SampleQAHetzygPlotZoom(int opId) throws IOException {
 
-		opId = _opId;
+		this.opId = opId;
 
 		try {
-			op = OperationsList.getById(opId);
-			rdOPMetadata = OperationsList.getOperationMetadata(opId);
+			op = OperationsList.getById(this.opId);
+			rdOPMetadata = OperationsList.getOperationMetadata(this.opId);
 			rdMatrixMetadata = MatricesList.getMatrixMetadataById(rdOPMetadata.getParentMatrixId());
 		} catch (IOException ex) {
 			log.error(null, ex);

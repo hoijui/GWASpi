@@ -84,17 +84,17 @@ public class Report_QASamplesSummary extends JPanel {
 	private JTextField txt_NRows;
 	// End of variables declaration
 
-	public Report_QASamplesSummary(final int _studyId, final String _qaFileName, int _opId) {
+	public Report_QASamplesSummary(final int studyId, final String qaFileName, final int opId) {
 
-		opId = _opId;
+		this.opId = opId;
 
 		String reportPath = "";
 		try {
-			reportPath = Config.getConfigValue(Config.PROPERTY_REPORTS_DIR, "") + "/STUDY_" + _studyId + "/";
+			reportPath = Config.getConfigValue(Config.PROPERTY_REPORTS_DIR, "") + "/STUDY_" + studyId + "/";
 		} catch (IOException ex) {
 			log.error(null, ex);
 		}
-		reportFile = new File(reportPath + _qaFileName);
+		reportFile = new File(reportPath + qaFileName);
 
 		pnl_Summary = new JPanel();
 		txt_NRows = new JTextField();
@@ -178,9 +178,9 @@ public class Report_QASamplesSummary extends JPanel {
 		scrl_ReportTable.setViewportView(tbl_ReportTable);
 
 		//<editor-fold defaultstate="expanded" desc="FOOTER">
-		btn_Save.setAction(new SaveAsAction(_studyId, _qaFileName, tbl_ReportTable, txt_NRows));
+		btn_Save.setAction(new SaveAsAction(studyId, qaFileName, tbl_ReportTable, txt_NRows));
 
-		btn_Back.setAction(new Report_Analysis.BackAction(opId));
+		btn_Back.setAction(new Report_Analysis.BackAction(this.opId));
 
 		btn_Help.setAction(new BrowserHelpUrlAction(HelpURLs.QryURL.sampleQAreport));
 
