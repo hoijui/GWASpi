@@ -241,10 +241,14 @@ public class ProcessTab extends JPanel {
 				studyIdsStr.append(", ");
 				studyIdsStr.append(studyId.toString());
 			}
-			studyIdsStr.delete(0, 2); // delete the first ", "
+			if (studyIdsStr.length() == 0) {
+				studyIdsStr.append(" - ");
+			} else {
+				studyIdsStr.delete(0, 2); // delete the first ", "
+			}
 
 			spreadSheet[i][0] = i;
-			spreadSheet[i][1] = studyIdsStr != null ? studyIdsStr.toString() : " - ";
+			spreadSheet[i][1] = studyIdsStr.toString();
 			spreadSheet[i][2] = swingWorkerItemsAL.get(i).getTask().getTaskName() != null ? swingWorkerItemsAL.get(i).getTask().getTaskName() : " - ";
 			spreadSheet[i][3] = swingWorkerItemsAL.get(i).getLaunchTime() != null ? swingWorkerItemsAL.get(i).getLaunchTime() : " - ";
 			spreadSheet[i][4] = swingWorkerItemsAL.get(i).getStartTime() != null ? swingWorkerItemsAL.get(i).getStartTime() : " - ";
