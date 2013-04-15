@@ -50,6 +50,19 @@ public class Report_SampleInfoPanel extends JPanel {
 	private static final Logger log
 			= LoggerFactory.getLogger(Report_SampleInfoPanel.class);
 
+	private static final String[] COLUMNS = new String[] {
+			"#",
+			Text.Reports.familyId,
+			Text.Reports.sampleId,
+			Text.Reports.fatherId,
+			Text.Reports.motherId,
+			Text.Reports.sex,
+			Text.Reports.affection,
+			Text.Reports.age,
+			Text.Reports.category,
+			Text.Reports.disease,
+			Text.Reports.population};
+
 	// Variables declaration - do not modify
 	private File missingFile;
 	private int studyId;
@@ -148,10 +161,10 @@ public class Report_SampleInfoPanel extends JPanel {
 		List<SampleInfo> allSamplesFromPool = SampleInfoList.getAllSampleInfoFromDBByPoolID(studyId);
 
 		// Getting data from file and subdividing to series all points by chromosome
-		List<Object[]> tableRowAL = new ArrayList<Object[]>();
+		List<Object[]> tableRows = new ArrayList<Object[]>();
 		int id = 1;
 		for (SampleInfo sampleInfo : allSamplesFromPool) {
-			Object[] row = new Object[11];
+			Object[] row = new Object[COLUMNS.length];
 
 			String familyId = sampleInfo.getFamilyId();
 			String sampleId = sampleInfo.getSampleId();
@@ -176,30 +189,17 @@ public class Report_SampleInfoPanel extends JPanel {
 			row[9] = disease;
 			row[10] = population;
 
-			tableRowAL.add(row);
+			tableRows.add(row);
 
 			id++;
 		}
 
-		Object[][] tableMatrix = new Object[tableRowAL.size()][10];
-		for (int i = 0; i < tableRowAL.size(); i++) {
-			tableMatrix[i] = tableRowAL.get(i);
+		Object[][] tableMatrix = new Object[tableRows.size()][COLUMNS.length];
+		for (int i = 0; i < tableRows.size(); i++) {
+			tableMatrix[i] = tableRows.get(i);
 		}
 
-		String[] columns = new String[]{"#",
-			Text.Reports.familyId,
-			Text.Reports.sampleId,
-			Text.Reports.fatherId,
-			Text.Reports.motherId,
-			Text.Reports.sex,
-			Text.Reports.affection,
-			Text.Reports.age,
-			Text.Reports.category,
-			Text.Reports.disease,
-			Text.Reports.population};
-
-
-		TableModel model = new DefaultTableModel(tableMatrix, columns);
+		TableModel model = new DefaultTableModel(tableMatrix, COLUMNS);
 		tbl_ReportTable.setModel(model);
 
 		//<editor-fold defaultstate="expanded" desc="Linux Sorter">

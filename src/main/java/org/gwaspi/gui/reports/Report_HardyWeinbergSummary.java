@@ -53,6 +53,17 @@ public class Report_HardyWeinbergSummary extends JPanel {
 	private static final Logger log
 			= LoggerFactory.getLogger(Report_HardyWeinbergSummary.class);
 
+	private static final String[] COLUMNS = new String[] {
+			Text.Reports.markerId,
+			Text.Reports.rsId,
+			Text.Reports.chr,
+			Text.Reports.pos,
+			Text.Reports.minAallele,
+			Text.Reports.majAallele,
+			Text.Reports.hwPval + Text.Reports.CTRL,
+			Text.Reports.hwObsHetzy + Text.Reports.CTRL,
+			Text.Reports.hwExpHetzy + Text.Reports.CTRL};
+
 	// Variables declaration - do not modify
 	private File reportFile;
 	private int opId;
@@ -257,8 +268,9 @@ public class Report_HardyWeinbergSummary extends JPanel {
 					inputBufferReader = new BufferedReader(inputFileReader);
 
 					// Getting data from file and subdividing to series all points by chromosome
-					List<Object[]> tableRowAL = new ArrayList<Object[]>();
-					String header = inputBufferReader.readLine();
+					List<Object[]> tableRows = new ArrayList<Object[]>();
+					// read but ignore the header
+					/*String header = */inputBufferReader.readLine();
 					int count = 0;
 					while (count < getRowsNb) {
 						String l = inputBufferReader.readLine();
@@ -266,7 +278,7 @@ public class Report_HardyWeinbergSummary extends JPanel {
 							break;
 						}
 						String[] cVals = l.split(cImport.Separators.separators_SpaceTab_rgxp);
-						Object[] row = new Object[9]; // FIXME use a constant
+						Object[] row = new Object[COLUMNS.length];
 
 						String markerId = cVals[0];
 						String rsId = cVals[1];
@@ -316,28 +328,16 @@ public class Report_HardyWeinbergSummary extends JPanel {
 //							row[8] = dfRound.format(expHetzyCtrl);
 //						}
 
-						tableRowAL.add(row);
+						tableRows.add(row);
 						count++;
 					}
 
-					Object[][] tableMatrix = new Object[tableRowAL.size()][9]; // FIXME use constant
-					for (int i = 0; i < tableRowAL.size(); i++) {
-						tableMatrix[i] = tableRowAL.get(i);
+					Object[][] tableMatrix = new Object[tableRows.size()][COLUMNS.length];
+					for (int i = 0; i < tableRows.size(); i++) {
+						tableMatrix[i] = tableRows.get(i);
 					}
 
-					String[] columns = new String[]{
-						Text.Reports.markerId,
-						Text.Reports.rsId,
-						Text.Reports.chr,
-						Text.Reports.pos,
-						Text.Reports.minAallele,
-						Text.Reports.majAallele,
-						Text.Reports.hwPval + Text.Reports.CTRL,
-						Text.Reports.hwObsHetzy + Text.Reports.CTRL,
-						Text.Reports.hwExpHetzy + Text.Reports.CTRL
-					};
-
-					TableModel model = new DefaultTableModel(tableMatrix, columns);
+					TableModel model = new DefaultTableModel(tableMatrix, COLUMNS);
 					reportTable.setModel(model);
 
 					//<editor-fold defaultstate="expanded" desc="Linux Sorter">

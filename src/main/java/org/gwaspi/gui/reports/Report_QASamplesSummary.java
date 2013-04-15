@@ -55,6 +55,20 @@ public class Report_QASamplesSummary extends JPanel {
 	private static final Logger log
 			= LoggerFactory.getLogger(Report_QASamplesSummary.class);
 
+	private static final String[] COLUMNS = new String[] {
+			Text.Reports.familyId,
+			Text.Reports.sampleId,
+			Text.Reports.fatherId,
+			Text.Reports.motherId,
+			Text.Reports.sex,
+			Text.Reports.affection,
+			Text.Reports.age,
+			Text.Reports.category,
+			Text.Reports.disease,
+			Text.Reports.population,
+			Text.Reports.missRatio,
+			Text.Reports.smplHetzyRat};
+
 	// Variables declaration - do not modify
 	private File reportFile;
 	private int opId;
@@ -245,8 +259,9 @@ public class Report_QASamplesSummary extends JPanel {
 					inputBufferReader = new BufferedReader(inputFileReader);
 
 					// Getting data from file and subdividing to series all points by chromosome
-					List<Object[]> tableRowAL = new ArrayList<Object[]>();
-					String header = inputBufferReader.readLine();
+					List<Object[]> tableRows = new ArrayList<Object[]>();
+					// read but ignore the header
+					/*String header = */inputBufferReader.readLine();
 					int count = 0;
 					while (count < getRowsNb) {
 						String l = inputBufferReader.readLine();
@@ -285,30 +300,16 @@ public class Report_QASamplesSummary extends JPanel {
 						row[10] = missRat;
 						row[11] = hetzyRat;
 
-						tableRowAL.add(row);
+						tableRows.add(row);
 						count++;
 					}
 
-					Object[][] tableMatrix = new Object[tableRowAL.size()][12]; // FIXME use constant
-					for (int i = 0; i < tableRowAL.size(); i++) {
-						tableMatrix[i] = tableRowAL.get(i);
+					Object[][] tableMatrix = new Object[tableRows.size()][COLUMNS.length];
+					for (int i = 0; i < tableRows.size(); i++) {
+						tableMatrix[i] = tableRows.get(i);
 					}
 
-					String[] columns = new String[]{
-						Text.Reports.familyId,
-						Text.Reports.sampleId,
-						Text.Reports.fatherId,
-						Text.Reports.motherId,
-						Text.Reports.sex,
-						Text.Reports.affection,
-						Text.Reports.age,
-						Text.Reports.category,
-						Text.Reports.disease,
-						Text.Reports.population,
-						Text.Reports.missRatio,
-						Text.Reports.smplHetzyRat};
-
-					TableModel model = new DefaultTableModel(tableMatrix, columns);
+					TableModel model = new DefaultTableModel(tableMatrix, COLUMNS);
 					reportTable.setModel(model);
 
 					//<editor-fold defaultstate="expanded" desc="Linux Sorter">

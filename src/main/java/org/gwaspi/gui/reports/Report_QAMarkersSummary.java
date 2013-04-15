@@ -235,14 +235,21 @@ public class Report_QAMarkersSummary extends JPanel {
 		private File reportFile;
 		private JTable reportTable;
 		private JFormattedTextField nRows;
-		private String qaValue;
+		private final String[] columns;
 
 		LoadReportAction(File reportFile, JTable reportTable, JFormattedTextField nRows, String qaValue) {
 
 			this.reportFile = reportFile;
 			this.reportTable = reportTable;
 			this.nRows = nRows;
-			this.qaValue = qaValue;
+			this.columns = new String[] {
+					Text.Reports.markerId,
+					Text.Reports.rsId,
+					Text.Reports.chr,
+					Text.Reports.pos,
+					Text.Reports.minAallele,
+					Text.Reports.majAallele,
+					qaValue};
 			putValue(NAME, Text.All.get);
 		}
 
@@ -258,8 +265,9 @@ public class Report_QAMarkersSummary extends JPanel {
 					inputBufferReader = new BufferedReader(inputFileReader);
 
 					// Getting data from file and subdividing to series all points by chromosome
-					List<Object[]> tableRowAL = new ArrayList<Object[]>();
-					String header = inputBufferReader.readLine();
+					List<Object[]> tableRows = new ArrayList<Object[]>();
+					// read but ignore the header
+					/*String header = */inputBufferReader.readLine();
 					int count = 0;
 					while (count < getRowsNb) {
 						String l = inputBufferReader.readLine();
@@ -267,7 +275,7 @@ public class Report_QAMarkersSummary extends JPanel {
 							break;
 						}
 						String[] cVals = l.split(cImport.Separators.separators_SpaceTab_rgxp);
-						Object[] row = new Object[7]; // FIXME use constant
+						Object[] row = new Object[columns.length];
 
 						String markerId = cVals[0];
 						String rsId = cVals[1];
@@ -297,24 +305,14 @@ public class Report_QAMarkersSummary extends JPanel {
 //							row[6] = dfRound.format(missRat);
 //						}
 
-						tableRowAL.add(row);
+						tableRows.add(row);
 						count++;
 					}
 
-					Object[][] tableMatrix = new Object[tableRowAL.size()][7]; // FIXME use constant
-					for (int i = 0; i < tableRowAL.size(); i++) {
-						tableMatrix[i] = tableRowAL.get(i);
+					Object[][] tableMatrix = new Object[tableRows.size()][columns.length];
+					for (int i = 0; i < tableRows.size(); i++) {
+						tableMatrix[i] = tableRows.get(i);
 					}
-
-					String[] columns = new String[] {
-						Text.Reports.markerId,
-						Text.Reports.rsId,
-						Text.Reports.chr,
-						Text.Reports.pos,
-						Text.Reports.minAallele,
-						Text.Reports.majAallele,
-						qaValue
-					};
 
 					TableModel model = new DefaultTableModel(tableMatrix, columns);
 					reportTable.setModel(model);
