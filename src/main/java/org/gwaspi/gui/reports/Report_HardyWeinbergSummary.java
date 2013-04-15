@@ -11,7 +11,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -253,8 +252,6 @@ public class Report_HardyWeinbergSummary extends JPanel {
 				if (reportFile.exists() && !reportFile.isDirectory()) {
 					int getRowsNb = Integer.parseInt(nRows.getText());
 
-					DecimalFormat dfSci = new DecimalFormat("0.##E0#");
-					DecimalFormat dfRound = new DecimalFormat("0.#####");
 					inputFileReader = new FileReader(reportFile);
 					BufferedReader inputBufferReader = new BufferedReader(inputFileReader);
 
@@ -292,19 +289,19 @@ public class Report_HardyWeinbergSummary extends JPanel {
 						Double obsHetzyCtrl_f;
 						Double expHetzyCtrl_f;
 						try {
-							hwPvalCtrl_f = Double.parseDouble(dfSci.format(hwPvalCtrl));
+							hwPvalCtrl_f = Double.parseDouble(Report_Analysis.FORMAT_SCIENTIFIC.format(hwPvalCtrl));
 						} catch (NumberFormatException ex) {
 							hwPvalCtrl_f = hwPvalCtrl;
 							log.warn(null, ex);
 						}
 						try {
-							obsHetzyCtrl_f = Double.parseDouble(dfRound.format(obsHetzyCtrl));
+							obsHetzyCtrl_f = Double.parseDouble(Report_Analysis.FORMAT_ROUND.format(obsHetzyCtrl));
 						} catch (NumberFormatException ex) {
 							obsHetzyCtrl_f = obsHetzyCtrl;
 							log.warn(null, ex);
 						}
 						try {
-							expHetzyCtrl_f = Double.parseDouble(dfRound.format(expHetzyCtrl));
+							expHetzyCtrl_f = Double.parseDouble(Report_Analysis.FORMAT_ROUND.format(expHetzyCtrl));
 						} catch (NumberFormatException ex) {
 							expHetzyCtrl_f = expHetzyCtrl;
 							log.warn(null, ex);

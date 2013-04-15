@@ -11,7 +11,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -254,8 +253,6 @@ public class Report_QAMarkersSummary extends JPanel {
 				if (reportFile.exists() && !reportFile.isDirectory()) {
 					int getRowsNb = Integer.parseInt(nRows.getText());
 
-					DecimalFormat dfSci = new DecimalFormat("0.##E0#");
-					DecimalFormat dfRound = new DecimalFormat("0.#####");
 					inputFileReader = new FileReader(reportFile);
 					BufferedReader inputBufferReader = new BufferedReader(inputFileReader);
 
@@ -289,7 +286,7 @@ public class Report_QAMarkersSummary extends JPanel {
 //						if (!cGlobal.OSNAME.contains("Windows")) {
 						Double missRat_f;
 						try {
-							missRat_f = Double.parseDouble(dfRound.format(missRat));
+							missRat_f = Double.parseDouble(Report_Analysis.FORMAT_ROUND.format(missRat));
 						} catch (NumberFormatException ex) {
 							missRat_f = missRat;
 							log.warn(null, ex);

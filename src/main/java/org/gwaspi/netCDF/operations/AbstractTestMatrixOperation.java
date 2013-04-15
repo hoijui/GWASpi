@@ -1,7 +1,6 @@
 package org.gwaspi.netCDF.operations;
 
 import java.io.IOException;
-import java.text.DecimalFormat;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -9,6 +8,7 @@ import java.util.Map;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.global.Text;
+import org.gwaspi.gui.reports.Report_Analysis;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.MatricesList;
@@ -96,11 +96,10 @@ public abstract class AbstractTestMatrixOperation implements MatrixOperation {
 			NetcdfFileWriteable wrOPNcFile = null;
 			try {
 				// CREATE netCDF-3 FILE
-				DecimalFormat dfSci = new DecimalFormat("0.##E0#");
 				OperationFactory wrOPHandler = new OperationFactory(
 						rdCensusOPMetadata.getStudyId(),
 						testName, // friendly name
-						testName + " on " + markerCensusOP.getFriendlyName() + "\n" + rdCensusOPMetadata.getDescription() + "\nHardy-Weinberg threshold: " + dfSci.format(hwThreshold), // description
+						testName + " on " + markerCensusOP.getFriendlyName() + "\n" + rdCensusOPMetadata.getDescription() + "\nHardy-Weinberg threshold: " + Report_Analysis.FORMAT_SCIENTIFIC.format(hwThreshold), // description
 						wrMarkerSetMap.size(),
 						rdCensusOPMetadata.getImplicitSetSize(),
 						rdChrInfoSetMap.size(),

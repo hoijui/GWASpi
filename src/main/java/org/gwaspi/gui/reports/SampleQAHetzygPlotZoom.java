@@ -9,7 +9,6 @@ import java.awt.event.ActionEvent;
 import java.awt.geom.Rectangle2D;
 import java.io.File;
 import java.io.IOException;
-import java.text.DecimalFormat;
 import java.util.Map;
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
@@ -442,9 +441,6 @@ public final class SampleQAHetzygPlotZoom extends JPanel {
 	private class MyXYToolTipGenerator extends StandardXYToolTipGenerator
 			implements XYToolTipGenerator
 	{
-		private DecimalFormat dfSci = new DecimalFormat("0.##E0#");
-		private DecimalFormat dfInteger = new DecimalFormat("#");
-
 		MyXYToolTipGenerator() {
 		}
 
@@ -471,8 +467,8 @@ public final class SampleQAHetzygPlotZoom extends JPanel {
 //					toolTip.append("<br>");
 //				}
 
-				toolTip.append("Miss. ratio: ").append(dfSci.format(missingRatValue));
-				toolTip.append("<br>Hetzyg. ratio: ").append(dfSci.format(hetzygValue));
+				toolTip.append("Miss. ratio: ").append(Report_Analysis.FORMAT_SCIENTIFIC.format(missingRatValue));
+				toolTip.append("<br>Hetzyg. ratio: ").append(Report_Analysis.FORMAT_SCIENTIFIC.format(hetzygValue));
 
 			}
 			toolTip.append("</html>");

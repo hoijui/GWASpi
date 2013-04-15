@@ -75,6 +75,8 @@ public class GenericReportGenerator {
 	public static final String PLOT_QQ_SIGMA_CONFIG = "CHART_QQ_PLOT_SIGMA";
 	public static final Color PLOT_QQ_SIGMA_DEFAULT = Color.LIGHT_GRAY;
 
+	public static final DecimalFormat FORMAT_P_VALUE = new DecimalFormat("0.#E0#");
+
 	private GenericReportGenerator() {
 	}
 
@@ -221,7 +223,7 @@ public class GenericReportGenerator {
 			LogAxis rangeAxis = new LogAxis("P value");
 			rangeAxis.setBase(10);
 			rangeAxis.setInverted(true);
-			rangeAxis.setNumberFormatOverride(new DecimalFormat("0.#E0#"));
+			rangeAxis.setNumberFormatOverride(FORMAT_P_VALUE);
 
 			rangeAxis.setTickMarkOutsideLength(2.0f);
 			rangeAxis.setMinorTickCount(2);
@@ -260,10 +262,9 @@ public class GenericReportGenerator {
 		// Add significance Threshold to subplot
 		final Marker thresholdLine = new ValueMarker(threshold);
 		thresholdLine.setPaint(Color.red);
-		DecimalFormat df1 = new DecimalFormat("0.#E0#");
 		// Add legend to hetzyThreshold
 		if (showlables) {
-			thresholdLine.setLabel("P = " + df1.format(threshold));
+			thresholdLine.setLabel("P = " + FORMAT_P_VALUE.format(threshold));
 		}
 		thresholdLine.setLabelAnchor(RectangleAnchor.TOP_RIGHT);
 		thresholdLine.setLabelTextAnchor(TextAnchor.BOTTOM_RIGHT);
@@ -277,9 +278,9 @@ public class GenericReportGenerator {
 
 		chrAxis.setTickLabelsVisible(false);
 		chrAxis.setTickMarksVisible(false);
-//            chrAxis.setNumberFormatOverride(new DecimalFormat("0.##E0#"));
-//            TickUnitSource units = NumberAxis.createIntegerTickUnits();
-//            chrAxis.setStandardTickUnits(units);
+//		chrAxis.setNumberFormatOverride(Report_Analysis.FORMAT_SCIENTIFIC);
+//		TickUnitSource units = NumberAxis.createIntegerTickUnits();
+//		chrAxis.setStandardTickUnits(units);
 
 		//combinedPlot.setGap(0);
 		combinedPlot.add(subplot, 1);

@@ -73,8 +73,9 @@ public abstract class Report_Analysis extends JPanel {
 	private static final Logger log
 			= LoggerFactory.getLogger(Report_Analysis.class);
 
-	protected static final DecimalFormat FORMAT_SCIENTIFIC = new DecimalFormat("0.##E0#");
-	protected static final DecimalFormat FORMAT_ROUND = new DecimalFormat("0.#####");
+	public static final DecimalFormat FORMAT_SCIENTIFIC = new DecimalFormat("0.##E0#");
+	public static final DecimalFormat FORMAT_ROUND = new DecimalFormat("0.#####");
+	public static final DecimalFormat FORMAT_INTEGER = new DecimalFormat("#");
 
 	// Variables declaration - do not modify
 	private final int studyId;

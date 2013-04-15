@@ -6,7 +6,6 @@ import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -147,9 +146,6 @@ public class Report_SampleInfoPanel extends JPanel {
 	private void actionLoadReport() throws IOException {
 
 		List<SampleInfo> allSamplesFromPool = SampleInfoList.getAllSampleInfoFromDBByPoolID(studyId);
-
-		DecimalFormat dfSci = new DecimalFormat("0.##E0#");
-		DecimalFormat dfRound = new DecimalFormat("0.#####");
 
 		// Getting data from file and subdividing to series all points by chromosome
 		List<Object[]> tableRowAL = new ArrayList<Object[]>();

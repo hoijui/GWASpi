@@ -5,7 +5,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.text.DecimalFormat;
 import java.util.Set;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
@@ -124,7 +123,7 @@ public class PlinkReportLoaderCombined {
 			LogAxis rangeAxis = new LogAxis("P value");
 			rangeAxis.setBase(10);
 			rangeAxis.setInverted(true);
-			rangeAxis.setNumberFormatOverride(new DecimalFormat("0.#E0#"));
+			rangeAxis.setNumberFormatOverride(GenericReportGenerator.FORMAT_P_VALUE);
 
 			rangeAxis.setTickMarkOutsideLength(2.0f);
 			rangeAxis.setMinorTickCount(2);

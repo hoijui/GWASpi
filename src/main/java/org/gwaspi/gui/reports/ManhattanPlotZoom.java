@@ -11,7 +11,6 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.io.File;
 import java.io.IOException;
-import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Map;
 import javax.swing.AbstractAction;
@@ -684,7 +683,7 @@ public final class ManhattanPlotZoom extends JPanel {
 		LogAxis logPAxis = new LogAxis("P value");
 		logPAxis.setBase(10);
 		logPAxis.setInverted(true);
-		logPAxis.setNumberFormatOverride(new DecimalFormat("0.#E0#"));
+		logPAxis.setNumberFormatOverride(GenericReportGenerator.FORMAT_P_VALUE);
 
 		logPAxis.setTickMarkOutsideLength(2.0f);
 		logPAxis.setMinorTickCount(2);
@@ -700,9 +699,8 @@ public final class ManhattanPlotZoom extends JPanel {
 		//threshold = 0.5/rdMatrixMetadata.getMarkerSetSize();  // (0.05/10⁶ SNPs => 5*10-⁷)
 		final Marker thresholdLine = new ValueMarker(threshold);
 		thresholdLine.setPaint(Color.red);
-		DecimalFormat df1 = new DecimalFormat("0.#E0#");
 		// Add legend to threshold
-		thresholdLine.setLabel("P = " + df1.format(threshold));
+		thresholdLine.setLabel("P = " + GenericReportGenerator.FORMAT_P_VALUE.format(threshold));
 		thresholdLine.setLabelAnchor(RectangleAnchor.TOP_RIGHT);
 		thresholdLine.setLabelTextAnchor(TextAnchor.BOTTOM_RIGHT);
 		plot.addRangeMarker(thresholdLine);
@@ -748,8 +746,6 @@ public final class ManhattanPlotZoom extends JPanel {
 	private class MyXYToolTipGenerator extends StandardXYToolTipGenerator
 			implements XYToolTipGenerator
 	{
-		private DecimalFormat dfSci = new DecimalFormat("0.##E0#");
-		private DecimalFormat dfInteger = new DecimalFormat("#");
 		private String chr;
 
 		MyXYToolTipGenerator(String _chr) {
@@ -762,14 +758,14 @@ public final class ManhattanPlotZoom extends JPanel {
 			double position = dataset.getXValue(series, item);
 			double pValue = dataset.getYValue(series, item);
 
-			String chrPos = chr + "_" + dfInteger.format(position);
+			String chrPos = chr + "_" + Report_Analysis.FORMAT_INTEGER.format(position);
 			if (getLabelerMap().containsKey(chrPos)) {
 				toolTip.append(getLabelerMap().get(chrPos));
 				toolTip.append("<br>");
 			}
 
-			toolTip.append("pVal: ").append(dfSci.format(pValue));
-			toolTip.append("<br>pos: ").append(dfInteger.format(position));
+			toolTip.append("pVal: ").append(Report_Analysis.FORMAT_SCIENTIFIC.format(pValue));
+			toolTip.append("<br>pos: ").append(Report_Analysis.FORMAT_INTEGER.format(position));
 			toolTip.append("</html>");
 			return toolTip.toString();
 		}
