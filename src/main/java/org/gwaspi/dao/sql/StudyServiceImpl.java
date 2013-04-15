@@ -183,14 +183,18 @@ public class StudyServiceImpl implements StudyService {
 			DbManager db = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
 
 			// INSERT study data into study management table
-			boolean result = db.insertValuesInTable(cDBGWASpi.SCH_APP,
+			boolean success = db.insertValuesInTable(
+					cDBGWASpi.SCH_APP,
 					cDBGWASpi.T_STUDIES,
 					cDBGWASpi.F_INSERT_STUDIES,
-					new Object[]{studyName, // name
+					new Object[] {
+						studyName, // name
 						description, // description
 						"external", // stydy_type
 						"1"}); // validity
-
+			if (!success) {
+				throw new IOException("Failed to insert study " + studyName);
+			}
 		} catch (Exception ex) {
 			log.error("Failed creating management database", ex);
 		}

@@ -17,6 +17,9 @@ public interface DbManager {
 
 	List<Map<String, Object>> executeSelectStatement(String selectStatement);
 
+	/**
+	 * @return true if the values were successfully stored, false otherwise
+	 */
 	boolean insertValuesInTable(String schema, String table, String[] fields, Object[] values);
 
 	boolean updateTable(
