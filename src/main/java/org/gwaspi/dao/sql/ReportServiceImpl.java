@@ -2,6 +2,7 @@ package org.gwaspi.dao.sql;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -143,7 +144,7 @@ public class ReportServiceImpl implements ReportService {
 		return createSortedMap(map, new MapValueComparator<K, V>(false));
 	}
 
-	private static class MapValueComparator<K, V> implements Comparator<Map.Entry<K, V>> {
+	private static class MapValueComparator<K, V> implements Comparator<Map.Entry<K, V>>, Serializable {
 
 		private final int multiplier;
 
