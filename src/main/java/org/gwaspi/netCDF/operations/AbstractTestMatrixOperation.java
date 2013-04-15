@@ -172,13 +172,15 @@ public abstract class AbstractTestMatrixOperation implements MatrixOperation {
 			} catch (IOException ex) {
 				log.error(null, ex);
 			} finally {
-				if (null != rdOPNcFile) {
-					try {
+				try {
+					if (rdOPNcFile != null) {
 						rdOPNcFile.close();
-						wrOPNcFile.close();
-					} catch (IOException ex) {
-						log.warn("Cannot close file", ex);
 					}
+					if (wrOPNcFile != null) {
+						wrOPNcFile.close();
+					}
+				} catch (IOException ex) {
+					log.warn("Cannot close file", ex);
 				}
 			}
 		} else { // NO DATA LEFT AFTER THRESHOLD FILTER PICKING

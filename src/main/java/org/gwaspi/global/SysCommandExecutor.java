@@ -40,6 +40,8 @@ public class SysCommandExecutor {
 
 		StringBuilder result = new StringBuilder();
 
+		InputStreamReader inputStreamReader = null;
+		BufferedReader inputBufferReader = null;
 		try {
 			Runtime rt = Runtime.getRuntime();
 
@@ -52,9 +54,10 @@ public class SysCommandExecutor {
 //				JOptionPane.showMessageDialog(org.gwaspi.gui.StartGUI.getFrames()[0], "Sorry, your Operating System is not supported by our software.\nSupported platforms include Windows and Linux.");
 //			}
 
-			BufferedReader input = new BufferedReader(new InputStreamReader(pr.getInputStream()));
+			inputStreamReader = new InputStreamReader(pr.getInputStream());
+			inputBufferReader = new BufferedReader(inputStreamReader);
 			String line;
-			while ((line = input.readLine()) != null) {
+			while ((line = inputBufferReader.readLine()) != null) {
 				result.append(line).append("\n");
 			}
 
@@ -62,6 +65,16 @@ public class SysCommandExecutor {
 			result.append("\n").append(exitVal).append("\n");
 		} catch (Exception ex) {
 			log.error("Failed to execute command: " + cmd, ex);
+		} finally {
+			try {
+				if (inputBufferReader != null) {
+					inputBufferReader.close();
+				} else if (inputStreamReader != null) {
+					inputStreamReader.close();
+				}
+			} catch (Exception ex) {
+				log.warn(null, ex);
+			}
 		}
 
 		return result.toString();

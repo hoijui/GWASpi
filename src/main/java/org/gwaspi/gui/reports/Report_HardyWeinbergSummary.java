@@ -248,12 +248,13 @@ public class Report_HardyWeinbergSummary extends JPanel {
 		@Override
 		public void actionPerformed(ActionEvent evt) {
 			FileReader inputFileReader = null;
+			BufferedReader inputBufferReader = null;
 			try {
 				if (reportFile.exists() && !reportFile.isDirectory()) {
 					int getRowsNb = Integer.parseInt(nRows.getText());
 
 					inputFileReader = new FileReader(reportFile);
-					BufferedReader inputBufferReader = new BufferedReader(inputFileReader);
+					inputBufferReader = new BufferedReader(inputFileReader);
 
 					// Getting data from file and subdividing to series all points by chromosome
 					List<Object[]> tableRowAL = new ArrayList<Object[]>();
@@ -384,7 +385,11 @@ public class Report_HardyWeinbergSummary extends JPanel {
 				log.error(null, ex);
 			} finally {
 				try {
-					inputFileReader.close();
+					if (inputBufferReader != null) {
+						inputBufferReader.close();
+					} else if (inputFileReader != null) {
+						inputFileReader.close();
+					}
 				} catch (Exception ex) {
 					log.warn(null, ex);
 				}

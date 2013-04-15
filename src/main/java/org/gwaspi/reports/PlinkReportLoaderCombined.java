@@ -45,68 +45,79 @@ public class PlinkReportLoaderCombined {
 
 		XYSeries series1 = null;
 		XYSeries series2 = null;
-		FileReader inputFileReader = new FileReader(plinkReport);
-		BufferedReader inputBufferReader = new BufferedReader(inputFileReader);
+		FileReader inputFileReader = null;
+		BufferedReader inputBufferReader = null;
+		try {
+			inputFileReader = new FileReader(plinkReport);
+			inputBufferReader = new BufferedReader(inputFileReader);
 
+			// Getting data from file and subdividing to series all points by chromosome
+			String l;
+			String tempChr = "";
+			// read but ignore the header
+			/*String header = */inputBufferReader.readLine();
+			int count = 0;
+			while ((l = inputBufferReader.readLine()) != null) {
+				if (count % 10000 == 0) {
+					log.info("loadAssocUnadjLogPvsPos -> reader count: {}", count);
+				}
+				count++;
 
-		//Getting data from file and subdividing to series all points by chromosome
-		String l;
-		String tempChr = "";
-		String header = inputBufferReader.readLine();
-		int count = 0;
-		while ((l = inputBufferReader.readLine()) != null) {
+				l = l.trim().replaceAll("\\s+", ",");
+				String[] cVals = l.split(",");
+				String markerId = cVals[1];
+				int position = Integer.parseInt(cVals[2]);
+				String s_pVal = cVals[8];
 
-			if (count % 10000 == 0) {
-				log.info("loadAssocUnadjLogPvsPos -> reader count: {}", count);
-			}
-			count++;
+				if (!s_pVal.equals("NA")) {
+					double pValue = Double.parseDouble(s_pVal); // P value
 
+					if (cVals[0].toString().equals(tempChr)) {
+						if (redMarkersHS.contains(markerId)) { // Insert in alternate color series
+							series2.add(position, pValue);
+						} else {
+							series1.add(position, pValue);
+						}
 
-			l = l.trim().replaceAll("\\s+", ",");
-			String[] cVals = l.split(",");
-			String markerId = cVals[1];
-			int position = Integer.parseInt(cVals[2]);
-			String s_pVal = cVals[8];
-
-			if (!s_pVal.equals("NA")) {
-				double pValue = Double.parseDouble(s_pVal); // P value
-
-				if (cVals[0].toString().equals(tempChr)) {
-					if (redMarkersHS.contains(markerId)) {  //Insert in alternate color series
-						series2.add(position, pValue);
+//						series1.add(position, logPValue);
 					} else {
-						series1.add(position, pValue);
+						if (!tempChr.equals("")) { // Not the first time round!
+							XYSeriesCollection tempChrData = new XYSeriesCollection();
+							tempChrData.addSeries(series1);
+							tempChrData.addSeries(series2);
+							appendToCombinedRangePlot(combinedPlot, tempChr, tempChrData, false);
+						}
+
+						tempChr = cVals[0];
+						series1 = new XYSeries("Imputed");
+						series2 = new XYSeries("Observed"); // Alternate color series
+						if (redMarkersHS.contains(markerId)) { // Insert inlternate color series
+							series2.add(position, pValue);
+						} else {
+							series1.add(position, pValue);
+						}
+
+//						series1 = new XYSeries(cVals[0]);
+//						series1.add(position, logPValue);
 					}
-
-//                        series1.add(position, logPValue);
-
-				} else {
-					if (!tempChr.equals("")) { //Not the first time round!
-						XYSeriesCollection tempChrData = new XYSeriesCollection();
-						tempChrData.addSeries(series1);
-						tempChrData.addSeries(series2);
-						appendToCombinedRangePlot(combinedPlot, tempChr, tempChrData, false);
-					}
-
-					tempChr = cVals[0];
-					series1 = new XYSeries("Imputed");
-					series2 = new XYSeries("Observed");  //Alternate color series
-					if (redMarkersHS.contains(markerId)) {  //Insert inlternate color series
-						series2.add(position, pValue);
-					} else {
-						series1.add(position, pValue);
-					}
-
-//                        series1 = new XYSeries(cVals[0]);
-//                        series1.add(position, logPValue);
 				}
 			}
+			// Append last chromosome to combined plot
+			XYSeriesCollection tempChrData = new XYSeriesCollection();
+			tempChrData.addSeries(series1);
+			tempChrData.addSeries(series2);
+			appendToCombinedRangePlot(combinedPlot, tempChr, tempChrData, true);
+		} finally {
+			try {
+				if (inputBufferReader != null) {
+					inputBufferReader.close();
+				} else if (inputFileReader != null) {
+					inputFileReader.close();
+				}
+			} catch (Exception ex) {
+				log.warn(null, ex);
+			}
 		}
-		//Append last chromosome to combined plot
-		XYSeriesCollection tempChrData = new XYSeriesCollection();
-		tempChrData.addSeries(series1);
-		tempChrData.addSeries(series2);
-		appendToCombinedRangePlot(combinedPlot, tempChr, tempChrData, true);
 
 		return combinedPlot;
 	}
