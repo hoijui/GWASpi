@@ -355,7 +355,6 @@ public class ProcessTab extends JPanel {
 	private void displayColumnCursor(MouseEvent me, JTable table) {
 		Point p = me.getPoint();
 		int column = table.columnAtPoint(p);
-		int row = table.rowAtPoint(p);
 		String columnName = table.getColumnName(column);
 		if (columnName.equals(Text.Reports.zoom)) {
 			setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
