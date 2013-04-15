@@ -573,14 +573,14 @@ public class GenericReportGenerator {
 					while (goOn && i < rdAssocMarkerSetMap.size()) {
 						Object key = it.next();
 						if (key.equals(origMarkerKey)) {
-							minPosition = i - Math.round(requestedSetSize / 2);
+							minPosition = i - Math.round((float) requestedSetSize / 2);
 							if (minPosition < 0) {
 								minPosition = 0;
 							}
 
 							middlePosition = i;
 
-							maxPosition = i + Math.round(requestedSetSize / 2);
+							maxPosition = i + Math.round((float) requestedSetSize / 2);
 							if (maxPosition > rdAssocMarkerSetMap.size()) {
 								maxPosition = rdAssocMarkerSetMap.size();
 							}

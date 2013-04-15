@@ -65,8 +65,8 @@ public class StartGWASpi extends JFrame {
 	public void start(List<String> args) throws IOException, SQLException, ParseException, UnsupportedLookAndFeelException {
 
 		// Get current size of heap in bytes
-		maxHeapSize = Math.round(Runtime.getRuntime().totalMemory() / 1048576); // heapSize in MB
-		maxProcessMarkers = Math.round(maxHeapSize * 625); // 1.6GB needed for 10^6 markers (safe, 1.4 - 1.5 real)
+		maxHeapSize = Math.round((double) Runtime.getRuntime().totalMemory() / 1048576); // heapSize in MB
+		maxProcessMarkers = Math.round((double) maxHeapSize * 625); // 1.6GB needed for 10^6 markers (safe, 1.4 - 1.5 real)
 
 		if (args.contains("script")) {
 			guiMode = false;

@@ -262,7 +262,7 @@ public final class ManhattanChartDisplay extends JPanel {
 
 		int chrNb = Math.round((float) pxXposNoLeftPad / chrPlotWidthPad);
 		int pxXRest = pxXposNoLeftPad - (chrNb * chrPlotWidthPad);
-		int sliceNb = Math.round(pxXRest / defaultSliceWidth);
+		int sliceNb = Math.round((float) pxXRest / defaultSliceWidth);
 		long longStartPhysPos = startPhysPos + (sliceNb * defaultSlotsNb);
 
 		Object[] sliceInfo = new Object[5];
