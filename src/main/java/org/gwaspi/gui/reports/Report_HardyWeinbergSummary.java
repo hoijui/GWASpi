@@ -287,7 +287,7 @@ public class Report_HardyWeinbergSummary extends JPanel {
 						row[4] = minAllele;
 						row[5] = majAllele;
 
-	//					if (!cGlobal.OSNAME.contains("Windows")){
+//						if (!cGlobal.OSNAME.contains("Windows")) {
 						Double hwPvalCtrl_f;
 						Double obsHetzyCtrl_f;
 						Double expHetzyCtrl_f;
@@ -312,11 +312,11 @@ public class Report_HardyWeinbergSummary extends JPanel {
 						row[6] = hwPvalCtrl_f;
 						row[7] = obsHetzyCtrl_f;
 						row[8] = expHetzyCtrl_f;
-	//					} else {
-	//						row[6] = dfRound.format(hwPvalCtrl);
-	//						row[7] = dfSci.format(obsHetzyCtrl);
-	//						row[8] = dfRound.format(expHetzyCtrl);
-	//					}
+//						} else {
+//							row[6] = dfRound.format(hwPvalCtrl);
+//							row[7] = dfSci.format(obsHetzyCtrl);
+//							row[8] = dfRound.format(expHetzyCtrl);
+//						}
 
 						tableRowAL.add(row);
 						count++;
@@ -343,8 +343,8 @@ public class Report_HardyWeinbergSummary extends JPanel {
 					reportTable.setModel(model);
 
 					//<editor-fold defaultstate="expanded" desc="Linux Sorter">
-	//				if (!cGlobal.OSNAME.contains("Windows")) {
-	//					RowSorter<TableModel> sorter = new TableRowSorter<TableModel>(model);
+//					if (!cGlobal.OSNAME.contains("Windows")) {
+//						RowSorter<TableModel> sorter = new TableRowSorter<TableModel>(model);
 					TableRowSorter sorter = new TableRowSorter(model) {
 						Comparator<Object> comparator = new Comparator<Object>() {
 							public int compare(Object o1, Object o2) {

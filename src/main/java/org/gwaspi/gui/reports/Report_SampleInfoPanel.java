@@ -242,7 +242,7 @@ public class Report_SampleInfoPanel extends JPanel {
 		};
 
 		tbl_ReportTable.setRowSorter(sorter);
-//        }
+//		}
 		//</editor-fold>
 	}
 

@@ -82,7 +82,7 @@ public final class SampleQAHetzygPlotZoom extends JPanel {
 	private String currentMarkerId;
 	private long centerPhysPos;
 	private long startPhysPos;
-	private int defaultMarkerNb = (int) Math.round(100000 * ((double) StartGWASpi.maxHeapSize / 2000)); //roughly 2000MB needed per 100.000 plotted markers
+	private int defaultMarkerNb = (int) Math.round(100000 * ((double) StartGWASpi.maxHeapSize / 2000)); // roughly 2000MB needed per 100.000 plotted markers
 	private XYDataset initXYDataset;
 	private JFreeChart zoomChart;
 	private ChartPanel zoomPanel;
@@ -112,9 +112,6 @@ public final class SampleQAHetzygPlotZoom extends JPanel {
 	 * Creates new form ManhattanPlotZoom
 	 *
 	 * @param _opId
-	 * @param _txt_NRows
-	 * @param _startIdxPos
-	 * @param _requestedSetSize
 	 */
 	public SampleQAHetzygPlotZoom(int _opId) throws IOException {
 
@@ -154,7 +151,7 @@ public final class SampleQAHetzygPlotZoom extends JPanel {
 
 	private void initGUI() {
 
-//        setCursor(CursorUtils.WAIT_CURSOR);
+//		setCursor(CursorUtils.WAIT_CURSOR);
 
 		pnl_ChartNavigator = new JPanel();
 		pnl_Chart = new JPanel();
@@ -221,7 +218,7 @@ public final class SampleQAHetzygPlotZoom extends JPanel {
 
 		btn_Reset.setAction(new ResetAction());
 
-		// <editor-fold defaultstate="expanded" desc="FOOTER">
+		//<editor-fold defaultstate="expanded" desc="FOOTER">
 		GroupLayout pnl_FooterGroup0Layout = new GroupLayout(pnl_FooterGroup0);
 		pnl_FooterGroup0.setLayout(pnl_FooterGroup0Layout);
 		pnl_FooterGroup0Layout.setHorizontalGroup(
@@ -275,9 +272,7 @@ public final class SampleQAHetzygPlotZoom extends JPanel {
 				.addComponent(btn_Reset)
 				.addComponent(btn_Save)));
 
-
 		pnl_FooterGroup1Layout.linkSize(SwingConstants.VERTICAL, new Component[]{btn_Reset, btn_Save});
-
 
 		GroupLayout pnl_FooterLayout = new GroupLayout(pnl_Footer);
 		pnl_Footer.setLayout(pnl_FooterLayout);
@@ -296,9 +291,9 @@ public final class SampleQAHetzygPlotZoom extends JPanel {
 				.addComponent(pnl_FooterGroup0, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 				.addComponent(pnl_FooterGroup1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
 				.addContainerGap()));
-		// </editor-fold>
+		//</editor-fold>
 
-		// <editor-fold defaultstate="expanded" desc="LAYOUT">
+		//<editor-fold defaultstate="expanded" desc="LAYOUT">
 		GroupLayout layout = new GroupLayout(this);
 		this.setLayout(layout);
 		layout.setHorizontalGroup(
@@ -317,7 +312,7 @@ public final class SampleQAHetzygPlotZoom extends JPanel {
 				.addComponent(pnl_Footer, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 				.addContainerGap()));
 
-		// </editor-fold>
+		//</editor-fold>
 
 //		setCursor(CursorUtils.DEFAULT_CURSOR);
 	}
@@ -330,7 +325,8 @@ public final class SampleQAHetzygPlotZoom extends JPanel {
 	}
 
 	private JFreeChart createChart(XYDataset dataset) {
-		JFreeChart chart = ChartFactory.createScatterPlot("Heterozygosity vs. Missing Ratio",
+		JFreeChart chart = ChartFactory.createScatterPlot(
+				"Heterozygosity vs. Missing Ratio",
 				"Heterozygosity Ratio",
 				"Missing Ratio",
 				dataset,
@@ -342,33 +338,30 @@ public final class SampleQAHetzygPlotZoom extends JPanel {
 		plot.setDomainZeroBaselineVisible(true);
 		plot.setRangeZeroBaselineVisible(true);
 
+		// CHART BACKGROUD COLOR
+		chart.setBackgroundPaint(Color.getHSBColor(0.1f, 0.1f, 1.0f)); // Hue, saturation, brightness
+		plot.setBackgroundPaint(manhattan_back); // Hue, saturation, brightness 9
 
-		//CHART BACKGROUD COLOR
-		chart.setBackgroundPaint(Color.getHSBColor(0.1f, 0.1f, 1.0f)); //Hue, saturation, brightness
-		plot.setBackgroundPaint(manhattan_back); //Hue, saturation, brightness 9
-
-
-		//GRIDLINES
+		// GRIDLINES
 		plot.setDomainGridlineStroke(new BasicStroke(0.0f));
 		plot.setDomainMinorGridlineStroke(new BasicStroke(0.0f));
-		plot.setDomainGridlinePaint(manhattan_back.darker().darker()); //Hue, saturation, brightness 7
-		plot.setDomainMinorGridlinePaint(manhattan_back); //Hue, saturation, brightness 9
+		plot.setDomainGridlinePaint(manhattan_back.darker().darker()); // Hue, saturation, brightness 7
+		plot.setDomainMinorGridlinePaint(manhattan_back); // Hue, saturation, brightness 9
 		plot.setRangeGridlineStroke(new BasicStroke(0.0f));
 		plot.setRangeMinorGridlineStroke(new BasicStroke(0.0f));
-		plot.setRangeGridlinePaint(manhattan_back.darker().darker()); //Hue, saturation, brightness 7
-		plot.setRangeMinorGridlinePaint(manhattan_back.darker());  //Hue, saturation, brightness 8
+		plot.setRangeGridlinePaint(manhattan_back.darker().darker()); // Hue, saturation, brightness 7
+		plot.setRangeMinorGridlinePaint(manhattan_back.darker());  // Hue, saturation, brightness 8
 
 		plot.setDomainMinorGridlinesVisible(true);
 		plot.setRangeMinorGridlinesVisible(true);
 
-		//DOTS RENDERER
+		// DOTS RENDERER
 		XYLineAndShapeRenderer renderer = (XYLineAndShapeRenderer) plot.getRenderer();
 		renderer.setSeriesPaint(0, manhattan_dot);
 //		renderer.setSeriesOutlinePaint(0, Color.DARK_GRAY);
 //		renderer.setUseOutlinePaint(true);
-		//Set dot shape of the currently appended Series
+		// Set dot shape of the currently appended Series
 		renderer.setSeriesShape(0, new Rectangle2D.Double(-1, -1, 2, 2));
-
 
 		renderer.setSeriesVisibleInLegend(0, false);
 
@@ -399,7 +392,6 @@ public final class SampleQAHetzygPlotZoom extends JPanel {
 		missratAxis.setTickMarksVisible(true);
 		missratAxis.setRange(0, maxMissrat * 1.1);
 
-
 		// Add significance Threshold to subplot
 		final Marker missingThresholdLine = new ValueMarker(missingThreshold);
 		missingThresholdLine.setPaint(Color.blue);
@@ -414,8 +406,8 @@ public final class SampleQAHetzygPlotZoom extends JPanel {
 		hetzyThresholdLine.setLabelTextAnchor(TextAnchor.TOP_RIGHT);
 		missingThresholdLine.setLabelAnchor(RectangleAnchor.BOTTOM_LEFT);
 		missingThresholdLine.setLabelTextAnchor(TextAnchor.TOP_LEFT);
-		plot.addRangeMarker(missingThresholdLine);   //THIS FOR MISSING RATIO
-		plot.addDomainMarker(hetzyThresholdLine);    //THIS FOR HETZY RATIO
+		plot.addRangeMarker(missingThresholdLine); // THIS FOR MISSING RATIO
+		plot.addDomainMarker(hetzyThresholdLine); // THIS FOR HETZY RATIO
 
 		// Marker label if below hetzyThreshold
 		XYItemRenderer lblRenderer = plot.getRenderer();

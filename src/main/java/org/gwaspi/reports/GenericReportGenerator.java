@@ -550,7 +550,7 @@ public class GenericReportGenerator {
 			rdInfoMarkerSet.initFullMarkerIdSetMap();
 
 
-			//ESTIMATE WINDOW SIZE
+			// ESTIMATE WINDOW SIZE
 			Integer minPosition = 0;
 			Integer middlePosition = requestedSetSize / 2;
 			Integer maxPosition = requestedSetSize;
@@ -558,7 +558,6 @@ public class GenericReportGenerator {
 			minPosition = startIdxPos;
 			middlePosition = Math.round((float) (minPosition + requestedSetSize) / 2);
 			maxPosition = minPosition + requestedSetSize;
-
 
 			if (rdAssocMarkerSetMap.size() < maxPosition) {
 				requestedSetSize = rdAssocMarkerSetMap.size();
@@ -600,7 +599,7 @@ public class GenericReportGenerator {
 				MarkerKey key = it.next();
 				if (i >= minPosition && i <= maxPosition) {
 					dataSetMap.put(key, null);
-					if (i == middlePosition) { // MAKE SURE WE KNOW WHAT MARKERID IS IN THE MIDDLE
+					if (i == middlePosition) { // MAKE SURE WE KNOW WHAT MARKER-ID IS IN THE MIDDLE
 						origMarkerKey = key;
 					}
 				}

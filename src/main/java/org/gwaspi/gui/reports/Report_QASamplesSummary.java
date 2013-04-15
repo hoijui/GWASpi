@@ -314,8 +314,8 @@ public class Report_QASamplesSummary extends JPanel {
 					reportTable.setModel(model);
 
 					//<editor-fold defaultstate="expanded" desc="Linux Sorter">
-	//				if (!cGlobal.OSNAME.contains("Windows")) {
-	//					RowSorter<TableModel> sorter = new TableRowSorter<TableModel>(model);
+//					if (!cGlobal.OSNAME.contains("Windows")) {
+//						RowSorter<TableModel> sorter = new TableRowSorter<TableModel>(model);
 					TableRowSorter sorter = new TableRowSorter(model) {
 						Comparator<Object> comparator = new Comparator<Object>() {
 							public int compare(Object o1, Object o2) {
@@ -349,7 +349,7 @@ public class Report_QASamplesSummary extends JPanel {
 					};
 
 					reportTable.setRowSorter(sorter);
-	//				}
+//					}
 					//</editor-fold>
 				}
 			} catch (IOException ex) {

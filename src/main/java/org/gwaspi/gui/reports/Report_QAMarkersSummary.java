@@ -286,7 +286,7 @@ public class Report_QAMarkersSummary extends JPanel {
 						row[4] = minAllele;
 						row[5] = majAllele;
 
-	//					if (!cOSNAME.contains("Windows")){
+//						if (!cGlobal.OSNAME.contains("Windows")) {
 						Double missRat_f;
 						try {
 							missRat_f = Double.parseDouble(dfRound.format(missRat));
@@ -295,9 +295,9 @@ public class Report_QAMarkersSummary extends JPanel {
 							log.warn(null, ex);
 						}
 						row[6] = missRat_f;
-	//					} else {
-	//						row[6] = dfRound.format(missRat);
-	//					}
+//						} else {
+//							row[6] = dfRound.format(missRat);
+//						}
 
 						tableRowAL.add(row);
 						count++;

@@ -241,7 +241,7 @@ public final class ManhattanChartDisplay extends JPanel {
 
 		int pxXposNoLeftPad = pxXpos - padLeft;
 
-		int[] chrInfo = getChrInfo(pxXposNoLeftPad);  // Nb of markers, first physical position, last physical position, start index number in MarkerSet, placeholder
+		int[] chrInfo = getChrInfo(pxXposNoLeftPad); // Nb of markers, first physical position, last physical position, start index number in MarkerSet, placeholder
 
 		int nbMarkers = chrInfo[0];
 		int startPhysPos = chrInfo[1];
@@ -252,13 +252,13 @@ public final class ManhattanChartDisplay extends JPanel {
 		double avgSlotsPerPx = (double) (maxPhysPos - startPhysPos) / chrPlotWidth;
 
 		int defaultSliceWidth;
-		// FIXME the following if statement does not make sense (two times the smae code)
+		// FIXME the following if statement does not make sense (two times the same code)
 		if (avgMarkersPerPx < 0) {
-			defaultSliceWidth = (int) Math.round(ManhattanPlotZoom.MARKERS_NUM_DEFAULT / avgMarkersPerPx); //width of a slice inside current chr
+			defaultSliceWidth = (int) Math.round(ManhattanPlotZoom.MARKERS_NUM_DEFAULT / avgMarkersPerPx); // width of a slice inside current chr
 		} else {
-			defaultSliceWidth = (int) Math.round(ManhattanPlotZoom.MARKERS_NUM_DEFAULT / avgMarkersPerPx); //width of a slice inside current chr
+			defaultSliceWidth = (int) Math.round(ManhattanPlotZoom.MARKERS_NUM_DEFAULT / avgMarkersPerPx); // width of a slice inside current chr
 		}
-		long defaultSlotsNb = Math.round(defaultSliceWidth * avgSlotsPerPx); //Nb of physical slots per slice
+		long defaultSlotsNb = Math.round(defaultSliceWidth * avgSlotsPerPx); // Nb of physical slots per slice
 
 		int chrNb = Math.round((float) pxXposNoLeftPad / chrPlotWidthPad);
 		int pxXRest = pxXposNoLeftPad - (chrNb * chrPlotWidthPad);
@@ -286,7 +286,7 @@ public final class ManhattanChartDisplay extends JPanel {
 				break;
 			}
 			chr = entry.getKey();
-			chrInfo = (int[]) entry.getValue(); //Nb of markers, first physical position, last physical position, start index number in MarkerSet,
+			chrInfo = (int[]) entry.getValue(); // Nb of markers, first physical position, last physical position, start index number in MarkerSet,
 			i++;
 		}
 

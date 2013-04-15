@@ -150,7 +150,6 @@ public class PlinkReportLoaderCombined {
 		subplot.setRenderer(renderer);
 		subplot.setBackgroundPaint(null);
 
-
 		final Marker thresholdLine = new ValueMarker(0.0000005);
 		thresholdLine.setPaint(Color.red);
 		if (showlables) {
@@ -160,8 +159,6 @@ public class PlinkReportLoaderCombined {
 		thresholdLine.setLabelTextAnchor(TextAnchor.BOTTOM_RIGHT);
 		subplot.addRangeMarker(thresholdLine);
 
-
-
 		NumberAxis chrAxis = (NumberAxis) subplot.getDomainAxis();
 		chrAxis.setAxisLineVisible(false);
 		chrAxis.setTickLabelsVisible(false);
@@ -170,31 +167,31 @@ public class PlinkReportLoaderCombined {
 		//combinedPlot.setGap(0);
 		combinedPlot.add(subplot, 1);
 	}
-// <editor-fold defaultstate="expanded" desc="Deprecated">
-//    public static List<IdChrPosValuePoint> loadUnadjAssoReportFromFile(File reportFile, int valueColumn) throws FileNotFoundException, IOException {
-//        int idColumn=1;
-//        int chrColumn=0;
-//        int posColumn=2;
+//<editor-fold defaultstate="expanded" desc="Deprecated">
+//	public static List<IdChrPosValuePoint> loadUnadjAssoReportFromFile(File reportFile, int valueColumn) throws FileNotFoundException, IOException {
+//		int idColumn=1;
+//		int chrColumn=0;
+//		int posColumn=2;
 //
-//        FileReader inputFileReader = new FileReader(reportFile);
-//        BufferedReader inputBufferReader = new BufferedReader(inputFileReader);
+//		FileReader inputFileReader = new FileReader(reportFile);
+//		BufferedReader inputBufferReader = new BufferedReader(inputFileReader);
 //
-//        List<IdChrPosValuePoint> pointsList = new ArrayList<IdChrPosValuePoint>();
+//		List<IdChrPosValuePoint> pointsList = new ArrayList<IdChrPosValuePoint>();
 //
-//        String l;
-//        while ((l = inputBufferReader.readLine()) != null) {
-//            String[] cVals = l.split(graphics.Constants.plinkReportSpaceSeparator_regexp);
-//            IdChrPosValuePoint temp_genotype = new IdChrPosValuePoint(cVals[idColumn],
-//                                                                  cVals[chrColumn],
-//                                                                  Long.parseLong(cVals[posColumn]),
-//                                                                  Long.parseLong(cVals[valueColumn]));
-//            pointsList.add(temp_genotype);
-//        }
+//		String l;
+//		while ((l = inputBufferReader.readLine()) != null) {
+//			String[] cVals = l.split(graphics.Constants.plinkReportSpaceSeparator_regexp);
+//			IdChrPosValuePoint temp_genotype = new IdChrPosValuePoint(
+//					cVals[idColumn],
+//					cVals[chrColumn],
+//					Long.parseLong(cVals[posColumn]),
+//					Long.parseLong(cVals[valueColumn]));
+//			pointsList.add(temp_genotype);
+//		}
 //
-//
-//        //Create comparators for sorting and grouping genotypeList
-//        Collections.sort(pointsList, new graphics.IdChrPosValuePoint.AbsolutePositionComparator());
-//        return pointsList;
-//    }
-// </editor-fold>
+//		//Create comparators for sorting and grouping genotypeList
+//		Collections.sort(pointsList, new graphics.IdChrPosValuePoint.AbsolutePositionComparator());
+//		return pointsList;
+//	}
+//</editor-fold>
 }

@@ -816,7 +816,7 @@ public final class ManhattanPlotZoom extends JPanel {
 
 					rsLabel = getLabelerMap().get(chrPos.toString()).toString();
 
-					//result = value.toString().substring(0, 4);  // could apply formatting here
+					//result = value.toString().substring(0, 4); // could apply formatting here
 				}
 				if (getLabelerMap().get(chrPos.toString()).toString().equals(origMarkerId)) {
 					rsLabel = getLabelerMap().get(chrPos.toString()).toString();
