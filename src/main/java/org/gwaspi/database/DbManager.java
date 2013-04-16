@@ -2,13 +2,8 @@ package org.gwaspi.database;
 
 import java.util.List;
 import java.util.Map;
-import org.gwaspi.framework.jdbc.connection.ConnectionProvider;
 
 public interface DbManager {
-
-	ConnectionProvider getConnectionProvider();
-
-	void setConnectionProvider(ConnectionProvider connectionProvider);
 
 	List<Map<String, Object>> selectMutipleClauses(String schema, String table,
 			String[] fields, String[] clauseFields, Object[] clauseValues);
