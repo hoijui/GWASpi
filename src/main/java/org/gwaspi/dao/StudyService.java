@@ -14,7 +14,7 @@ public interface StudyService {
 
 	String createStudyManagementTable(Object[] insertValues);
 
-	void insertNewStudy(String studyName, String description);
+	int insertNewStudy(String studyName, String description);
 
 	void deleteStudy(int studyId, boolean deleteReports) throws IOException;
 

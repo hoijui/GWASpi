@@ -178,7 +178,10 @@ public class StudyServiceImpl implements StudyService {
 	}
 
 	@Override
-	public void insertNewStudy(String studyName, String description) {
+	public int insertNewStudy(String studyName, String description) {
+
+		int newStudyId = Integer.MIN_VALUE;
+
 		try {
 			DbManager db = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
 
@@ -195,9 +198,14 @@ public class StudyServiceImpl implements StudyService {
 			if (!success) {
 				throw new IOException("Failed to insert study " + studyName);
 			}
+
+			List<Study> studyList = getAll();
+			newStudyId = studyList.get(studyList.size() - 1).getId();
 		} catch (Exception ex) {
 			log.error("Failed creating management database", ex);
 		}
+
+		return newStudyId;
 	}
 
 	@Override

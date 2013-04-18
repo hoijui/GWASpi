@@ -40,7 +40,8 @@ abstract class AbstractScriptCommand implements ScriptCommand {
 		} catch (Exception ex) {
 			if (allowNew) {
 				if (studyIdStr.contains("New Study")) {
-					studyId = addStudy(studyIdStr/*.substring(10)*/,
+					studyId = StudyList.insertNewStudy(
+							studyIdStr/*.substring(10)*/,
 							"Study created by command-line interface");
 				}
 			} else {
@@ -76,18 +77,5 @@ abstract class AbstractScriptCommand implements ScriptCommand {
 		}
 
 		return studyExists;
-	}
-
-	protected static int addStudy(String newStudyName, String description) throws IOException {
-
-		int newStudyId;
-
-		StudyList.insertNewStudy(newStudyName, description);
-
-		Object[][] studyTable = StudyList.getStudyTable();
-
-		newStudyId = (Integer) studyTable[studyTable.length - 1][0];
-
-		return newStudyId;
 	}
 }

@@ -35,8 +35,8 @@ public class StudyList {
 		return studyService.createStudyManagementTable(insertValues);
 	}
 
-	public static void insertNewStudy(String studyName, String description) {
-		studyService.insertNewStudy(studyName, description);
+	public static int insertNewStudy(String studyName, String description) {
+		return studyService.insertNewStudy(studyName, description);
 	}
 
 	public static void deleteStudy(int studyId, boolean deleteReports) throws IOException {
