@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import org.gwaspi.constants.cDBGWASpi;
 import org.gwaspi.constants.cDBMatrix;
-import org.gwaspi.constants.cDBOperations;
 import org.gwaspi.dao.StudyService;
 import org.gwaspi.database.DbManager;
 import org.gwaspi.global.Config;
@@ -127,34 +126,6 @@ public class StudyServiceImpl implements StudyService {
 		}
 
 		return rs;
-	}
-
-	@Override
-	public Object[][] getAllAsTable() throws IOException {
-
-		Object[][] studyTable = null;
-
-		String dbName = cDBGWASpi.DB_DATACENTER;
-		DbManager studyDbManager = ServiceLocator.getDbManager(dbName);
-		try {
-			List<Map<String, Object>> rs = studyDbManager.executeSelectStatement("SELECT * FROM " + cDBGWASpi.SCH_APP + "." + cDBGWASpi.T_STUDIES + " ORDER BY " + cDBGWASpi.f_ID + " ASC WITH RR");
-
-			studyTable = new Object[rs.size()][4];
-			for (int i = 0; i < rs.size(); i++) {
-				// PREVENT PHANTOM-DB READS EXCEPTIONS
-				if (!rs.isEmpty() && rs.get(i).size() == cDBGWASpi.T_CREATE_STUDIES.length) {
-					studyTable[i][0] = (Integer) rs.get(i).get(cDBGWASpi.f_ID);
-					studyTable[i][1] = rs.get(i).get(cDBGWASpi.f_NAME).toString();
-					studyTable[i][2] = rs.get(i).get(cDBGWASpi.f_STUDY_DESCRIPTION).toString();
-					String timestamp = rs.get(i).get(cDBOperations.f_CREATION_DATE).toString(); // FIXME this creates a large number, but we'd rather have Date or a human readable Stirng of a date
-					studyTable[i][3] = timestamp.substring(0, timestamp.lastIndexOf('.'));
-				}
-			}
-		} catch (Exception ex) {
-			log.error(null, ex);
-		}
-
-		return studyTable;
 	}
 
 	@Override

@@ -1,7 +1,9 @@
 package org.gwaspi.cli;
 
 import java.io.IOException;
+import java.util.List;
 import org.gwaspi.global.Text;
+import org.gwaspi.model.Study;
 import org.gwaspi.model.StudyList;
 
 /**
@@ -54,24 +56,19 @@ abstract class AbstractScriptCommand implements ScriptCommand {
 
 	protected static boolean checkStudy(int studyId) throws IOException {
 
-		boolean studyExists = false;
+		boolean studyExists;
 
-		Object[][] studyTable = StudyList.getStudyTable();
-		if (studyId != Integer.MIN_VALUE) {
-			for (int i = 0; i < studyTable.length; i++) {
-				if ((Integer) studyTable[i][0] == studyId) {
-					studyExists = true;
-				}
-			}
-		}
+		Study study = StudyList.getStudy(studyId);
+		studyExists = (study != null);
 
 		if (!studyExists) {
+			List<Study> studyList = StudyList.getStudyList();
 			System.out.println("\n" + Text.Cli.studyNotExist);
 			System.out.println(Text.Cli.availableStudies);
-			for (int i = 0; i < studyTable.length; i++) {
-				System.out.println("Study ID: " + studyTable[i][0]);
-				System.out.println("Name: " + studyTable[i][1]);
-				System.out.println("Description: " + studyTable[i][2]);
+			for (Study studyX : studyList) {
+				System.out.println("Study ID: " + studyX.getId());
+				System.out.println("Name: " + studyX.getName());
+				System.out.println("Description: " + studyX.getDescription());
 				System.out.println("\n");
 			}
 		}

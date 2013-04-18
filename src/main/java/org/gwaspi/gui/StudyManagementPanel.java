@@ -8,6 +8,7 @@ import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.io.IOException;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
@@ -25,7 +26,7 @@ import javax.swing.LayoutStyle;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.border.TitledBorder;
-import javax.swing.table.DefaultTableModel;
+import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.tree.DefaultMutableTreeNode;
 import org.gwaspi.global.Text;
@@ -71,6 +72,55 @@ public class StudyManagementPanel extends JPanel {
 	private JTextArea txtA_Desc;
 	private JTextField txtF_NewStudyName;
 	// End of variables declaration
+
+	private static final class StudyTableModel extends AbstractTableModel {
+
+		private static final String[] COLUMN_NAMES = new String[] {
+				Text.Study.studyID,
+				Text.Study.studyName,
+				Text.All.description,
+				Text.All.createDate};
+
+		private final List<Study> studies;
+
+		StudyTableModel(final List<Study> studies) {
+
+			this.studies = studies;
+		}
+
+		@Override
+		public int getRowCount() {
+			return studies.size();
+		}
+
+		@Override
+		public int getColumnCount() {
+			return COLUMN_NAMES.length;
+		}
+
+		@Override
+		public String getColumnName(int column) {
+			return COLUMN_NAMES[column];
+		}
+
+		@Override
+		public Object getValueAt(int rowIndex, int columnIndex) {
+
+			Study study = studies.get(rowIndex);
+			switch (columnIndex) {
+				case 0:
+					return study.getId();
+				case 1:
+					return study.getName();
+				case 2:
+					return study.getDescription();
+				case 3:
+					return study.getCreationDate();
+				default:
+					return null;
+			}
+		}
+	}
 
 	public StudyManagementPanel() throws IOException {
 
@@ -147,11 +197,7 @@ public class StudyManagementPanel extends JPanel {
 		btn_AddStudy.setAction(new AddStudyAction());
 
 		pnl_StudiesTable.setBorder(BorderFactory.createTitledBorder(null, Text.Study.availableStudies, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("DejaVu Sans", 1, 13))); // NOI18N
-		tbl_StudiesTable.setModel(new DefaultTableModel(
-				StudyList.getStudyTable(),
-				new String[]{
-					Text.Study.studyID, Text.Study.studyName, Text.All.description, Text.All.createDate
-				}));
+		tbl_StudiesTable.setModel(new StudyTableModel(StudyList.getStudyList()));
 		scrl_StudiesTable.setViewportView(tbl_StudiesTable);
 		btn_DeleteStudy.setAction(new DeleteStudyAction());
 

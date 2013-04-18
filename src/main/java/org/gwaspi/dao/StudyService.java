@@ -10,8 +10,6 @@ public interface StudyService {
 
 	List<Study> getAll() throws IOException;
 
-	Object[][] getAllAsTable() throws IOException;
-
 	String createStudyManagementTable(Object[] insertValues);
 
 	int insertNewStudy(String studyName, String description);

@@ -27,10 +27,6 @@ public class StudyList {
 		return studyService.getAll();
 	}
 
-	public static Object[][] getStudyTable() throws IOException {
-		return studyService.getAllAsTable();
-	}
-
 	public static String createStudyManagementTable(Object[] insertValues) {
 		return studyService.createStudyManagementTable(insertValues);
 	}
