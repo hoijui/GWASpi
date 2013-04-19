@@ -5,6 +5,7 @@ import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.Serializable;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.nio.channels.FileChannel;
@@ -12,9 +13,13 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import org.gwaspi.constants.cGlobal;
@@ -556,6 +561,42 @@ public class Utils {
 
 		for (Map.Entry<K, ?> entry : order.entrySet()) {
 			result.put(entry.getKey(), values.get(entry.getKey()));
+		}
+
+		return result;
+	}
+
+	public static <K, V> Map<K, V> createMapSortedByValue(Map<K, V> map) {
+		return createSortedMap(map, new MapValueComparator<K, V>(true));
+	}
+
+	public static <K, V> Map<K, V> createMapSortedByValueDescending(Map<K, V> map) {
+		return createSortedMap(map, new MapValueComparator<K, V>(false));
+	}
+
+	private static class MapValueComparator<K, V> implements Comparator<Map.Entry<K, V>>, Serializable {
+
+		private final int multiplier;
+
+		MapValueComparator(boolean ascending) {
+			this.multiplier = ascending ? 1 : -1;
+		}
+
+		@Override
+		public int compare(Map.Entry<K, V> o1, Map.Entry<K, V> o2) {
+			return multiplier * ((Comparable) o1.getValue()).compareTo(o2.getValue());
+		}
+	}
+
+	private static <K, V> Map<K, V> createSortedMap(Map<K, V> map, Comparator<Map.Entry<K, V>> comparator) {
+
+		Map<K, V> result = new LinkedHashMap<K, V>(map.size());
+
+		List<Map.Entry<K, V>> list = new LinkedList<Map.Entry<K, V>>(map.entrySet());
+		Collections.sort(list, comparator);
+
+		for (Map.Entry<K, V> entry : list) {
+			result.put(entry.getKey(), entry.getValue());
 		}
 
 		return result;

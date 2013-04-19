@@ -186,7 +186,7 @@ public class OutputAssociation {
 				unsortedMarkerIdPvalMap.put(entry.getKey(), values[1]);
 			}
 
-			Map<MarkerKey, ?> sortingMarkerSetMap = ReportsList.createMapSortedByValue(unsortedMarkerIdPvalMap);
+			Map<MarkerKey, ?> sortingMarkerSetMap = org.gwaspi.global.Utils.createMapSortedByValue(unsortedMarkerIdPvalMap);
 			if (unsortedMarkerIdPvalMap != null) {
 				unsortedMarkerIdPvalMap.clear();
 			}

@@ -171,7 +171,7 @@ public class OutputTrendTest {
 				unsortedMarkerIdPvalMap.put(entry.getKey(), values[1]);
 			}
 
-			Map<MarkerKey, Double> sortingMarkerSetMap = ReportsList.createMapSortedByValue(unsortedMarkerIdPvalMap);
+			Map<MarkerKey, Double> sortingMarkerSetMap = org.gwaspi.global.Utils.createMapSortedByValue(unsortedMarkerIdPvalMap);
 			if (unsortedMarkerIdPvalMap != null) {
 				unsortedMarkerIdPvalMap.clear();
 			}

@@ -68,7 +68,7 @@ public class OutputHardyWeinberg {
 
 		try {
 			Map<MarkerKey, Double> unsortedMarkerIdHWPval_ALTMap = GatherHardyWeinbergData.loadHWPval_ALT(opId);
-			Map<MarkerKey, Double> sortingMarkerSetMap = ReportsList.createMapSortedByValue(unsortedMarkerIdHWPval_ALTMap);
+			Map<MarkerKey, Double> sortingMarkerSetMap = org.gwaspi.global.Utils.createMapSortedByValue(unsortedMarkerIdHWPval_ALTMap);
 			if (unsortedMarkerIdHWPval_ALTMap != null) {
 				unsortedMarkerIdHWPval_ALTMap.clear();
 			}

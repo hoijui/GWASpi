@@ -2,12 +2,7 @@ package org.gwaspi.dao.sql;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import org.gwaspi.constants.cDBGWASpi;
@@ -132,46 +127,6 @@ public class ReportServiceImpl implements ReportService {
 
 		return rs;
 	}
-
-	//<editor-fold defaultstate="expanded" desc="UTILS">
-	@Override
-	public <K, V> Map<K, V> createMapSortedByValue(Map<K, V> map) {
-		return createSortedMap(map, new MapValueComparator<K, V>(true));
-	}
-
-	@Override
-	public <K, V> Map<K, V> createMapSortedByValueDescending(Map<K, V> map) {
-		return createSortedMap(map, new MapValueComparator<K, V>(false));
-	}
-
-	private static class MapValueComparator<K, V> implements Comparator<Map.Entry<K, V>>, Serializable {
-
-		private final int multiplier;
-
-		MapValueComparator(boolean ascending) {
-			this.multiplier = ascending ? 1 : -1;
-		}
-
-		@Override
-		public int compare(Map.Entry<K, V> o1, Map.Entry<K, V> o2) {
-			return multiplier * ((Comparable) o1.getValue()).compareTo(o2.getValue());
-		}
-	}
-
-	private static <K, V> Map<K, V> createSortedMap(Map<K, V> map, Comparator<Map.Entry<K, V>> comparator) {
-
-		Map<K, V> result = new LinkedHashMap<K, V>(map.size());
-
-		List<Map.Entry<K, V>> list = new LinkedList<Map.Entry<K, V>>(map.entrySet());
-		Collections.sort(list, comparator);
-
-		for (Map.Entry<K, V> entry : list) {
-			result.put(entry.getKey(), entry.getValue());
-		}
-
-		return result;
-	}
-	//</editor-fold>
 
 	//<editor-fold defaultstate="expanded" desc="OPERATIONS METADATA">
 	@Override

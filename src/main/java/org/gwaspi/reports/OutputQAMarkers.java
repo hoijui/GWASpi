@@ -83,7 +83,7 @@ public class OutputQAMarkers {
 
 		try {
 			Map<MarkerKey, Double> unsortedMarkerIdMissingRatMap = GatherQAMarkersData.loadMarkerQAMissingRatio(opId);
-			Map<MarkerKey, Double> sortedMarkerIdMissingRatMap = ReportsList.createMapSortedByValueDescending(unsortedMarkerIdMissingRatMap);
+			Map<MarkerKey, Double> sortedMarkerIdMissingRatMap = org.gwaspi.global.Utils.createMapSortedByValueDescending(unsortedMarkerIdMissingRatMap);
 			if (unsortedMarkerIdMissingRatMap != null) {
 				unsortedMarkerIdMissingRatMap.clear();
 			}

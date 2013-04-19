@@ -86,7 +86,7 @@ public class OutputQASamples {
 
 		try {
 			Map<SampleKey, Double> unsortedSamplesMissingRatMap = GatherQASamplesData.loadSamplesQAMissingRatio(opId);
-			Map<SampleKey, Double> sortedSamplesMissingRatMap = ReportsList.createMapSortedByValueDescending(unsortedSamplesMissingRatMap);
+			Map<SampleKey, Double> sortedSamplesMissingRatMap = org.gwaspi.global.Utils.createMapSortedByValueDescending(unsortedSamplesMissingRatMap);
 			if (unsortedSamplesMissingRatMap != null) {
 				unsortedSamplesMissingRatMap.clear();
 			}

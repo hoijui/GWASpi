@@ -2,7 +2,6 @@ package org.gwaspi.model;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 import org.gwaspi.dao.ReportService;
 import org.gwaspi.dao.sql.ReportServiceImpl;
 
@@ -26,14 +25,6 @@ public class ReportsList {
 
 	public static List<Report> getReportsList(int opId, int matrixId) throws IOException {
 		return reportService.getReportsList(opId, matrixId);
-	}
-
-	public static <K, V> Map<K, V> createMapSortedByValue(Map<K, V> map) {
-		return reportService.createMapSortedByValue(map);
-	}
-
-	public static <K, V> Map<K, V> createMapSortedByValueDescending(Map<K, V> map) {
-		return reportService.createMapSortedByValueDescending(map);
 	}
 
 	public static String getReportNamePrefix(Operation op) {
