@@ -13,6 +13,7 @@ import org.gwaspi.dao.OperationService;
 import org.gwaspi.database.DbManager;
 import org.gwaspi.global.Config;
 import org.gwaspi.global.ServiceLocator;
+import org.gwaspi.model.MatrixOperationSpec;
 import org.gwaspi.model.Operation;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.ReportsList;

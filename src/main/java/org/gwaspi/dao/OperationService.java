@@ -3,30 +3,11 @@ package org.gwaspi.dao;
 import java.io.IOException;
 import java.util.List;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
+import org.gwaspi.model.MatrixOperationSpec;
 import org.gwaspi.model.Operation;
 import org.gwaspi.model.OperationMetadata;
 
 public interface OperationService {
-
-	public static class MatrixOperationSpec {
-
-		private final Integer id;
-		private final OPType type;
-
-		public MatrixOperationSpec(Integer id, OPType type) {
-
-			this.id = id;
-			this.type = type;
-		}
-
-		public Integer getId() {
-			return id;
-		}
-
-		public OPType geType() {
-			return type;
-		}
-	}
 
 	Operation getById(int operationId) throws IOException;
 
