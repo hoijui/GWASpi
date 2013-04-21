@@ -168,6 +168,10 @@ public class MatrixMetadata {
 		return description;
 	}
 
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
 	public String getMatrixNetCDFName() {
 		return matrixNetCDFName;
 	}
