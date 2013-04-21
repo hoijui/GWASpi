@@ -2,7 +2,6 @@ package org.gwaspi.model;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 import org.gwaspi.dao.MatrixService;
 import org.gwaspi.dao.sql.MatrixServiceImpl;
 
@@ -30,10 +29,6 @@ public final class MatricesList {
 
 	public static List<Matrix> getMatrixList() throws IOException {
 		return matrixService.getMatrixList();
-	}
-
-	public static List<Map<String, Object>> getAllMatricesList() throws IOException {
-		return matrixService.getAllMatricesList();
 	}
 
 	public static List<MatrixMetadata> getMatricesTable(int studyId) throws IOException {

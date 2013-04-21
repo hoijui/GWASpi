@@ -113,8 +113,7 @@ public class MatrixServiceImpl implements MatrixService {
 		return rs;
 	}
 
-	@Override
-	public List<Map<String, Object>> getAllMatricesList() throws IOException {
+	private List<Map<String, Object>> getAllMatricesList() throws IOException {
 		List<Map<String, Object>> rs = null;
 		String dbName = cDBGWASpi.DB_DATACENTER;
 		DbManager studyDbManager = ServiceLocator.getDbManager(dbName);

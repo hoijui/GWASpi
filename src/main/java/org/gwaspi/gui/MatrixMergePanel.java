@@ -9,7 +9,6 @@ import java.awt.event.FocusEvent;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
@@ -27,7 +26,6 @@ import javax.swing.LayoutStyle;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.border.TitledBorder;
-import org.gwaspi.constants.cDBMatrix;
 import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.utils.BrowserHelpUrlAction;
@@ -54,7 +52,7 @@ public class MatrixMergePanel extends JPanel {
 
 	// Variables declaration - do not modify
 	private Matrix parentMatrix;
-	private List<Object[]> matrixItemsAL;
+	private List<Object[]> matrixItems;
 	private JButton btn_Back;
 	private JButton btn_Help;
 	private JButton btn_Merge;
@@ -82,7 +80,7 @@ public class MatrixMergePanel extends JPanel {
 	public MatrixMergePanel(int _matrixId) throws IOException {
 
 		parentMatrix = MatricesList.getById(_matrixId);
-		matrixItemsAL = getMatrixItems();
+		matrixItems = getMatrixItems();
 
 		mergeMethod = new ButtonGroup();
 		pnl_ParentMatrixDesc = new JPanel();
@@ -135,9 +133,9 @@ public class MatrixMergePanel extends JPanel {
 
 		pnl_addedMatrix.setBorder(BorderFactory.createTitledBorder(null, Text.Trafo.mergeWithMatrix, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("Dialog", 1, 12))); // NOI18N
 
-		String[] matricesNames = new String[matrixItemsAL.size()];
-		for (int i = 0; i < matrixItemsAL.size(); i++) {
-			Object[] matrixItem = matrixItemsAL.get(i);
+		String[] matricesNames = new String[matrixItems.size()];
+		for (int i = 0; i < matrixItems.size(); i++) {
+			Object[] matrixItem = matrixItems.get(i);
 			matricesNames[i] = matrixItem[1].toString();
 		}
 		cmb_SelectMatrix.setModel(new DefaultComboBoxModel(matricesNames));
@@ -240,7 +238,7 @@ public class MatrixMergePanel extends JPanel {
 			}
 		});
 		scroll_TrafoMatrixDescription.setViewportView(txtA_NewMatrixDescription);
-		btn_Merge.setAction(new MergeAction(parentMatrix, txtA_NewMatrixDescription, txt_NewMatrixName, matrixItemsAL, cmb_SelectMatrix, rdio_MergeMarkers, rdio_MergeSamples, rdio_MergeAll));
+		btn_Merge.setAction(new MergeAction(parentMatrix, txtA_NewMatrixDescription, txt_NewMatrixName, matrixItems, cmb_SelectMatrix, rdio_MergeMarkers, rdio_MergeSamples, rdio_MergeAll));
 
 		//<editor-fold defaultstate="expanded" desc="LAYOUT NEW MATRIX DESC">
 		GroupLayout pnl_TrafoMatrixDescLayout = new GroupLayout(pnl_TrafoMatrixDesc);
@@ -337,7 +335,7 @@ public class MatrixMergePanel extends JPanel {
 		private Matrix parentMatrix;
 		private JTextArea newMatrixDescription;
 		private JTextField newMatrixName;
-		private List<Object[]> matrixItemsAL;
+		private List<Object[]> matrixItems;
 		private JComboBox selectMatrix;
 		private JRadioButton mergeMarkers;
 		private JRadioButton mergeSamples;
@@ -347,7 +345,7 @@ public class MatrixMergePanel extends JPanel {
 				Matrix parentMatrix,
 				JTextArea newMatrixDescription,
 				JTextField newMatrixName,
-				List<Object[]> matrixItemsAL,
+				List<Object[]> matrixItems,
 				JComboBox selectMatrix,
 				JRadioButton mergeMarkers,
 				JRadioButton mergeSamples,
@@ -356,7 +354,7 @@ public class MatrixMergePanel extends JPanel {
 			this.parentMatrix = parentMatrix;
 			this.newMatrixDescription = newMatrixDescription;
 			this.newMatrixName = newMatrixName;
-			this.matrixItemsAL = matrixItemsAL;
+			this.matrixItems = matrixItems;
 			this.selectMatrix = selectMatrix;
 			this.mergeMarkers = mergeMarkers;
 			this.mergeSamples = mergeSamples;
@@ -367,7 +365,7 @@ public class MatrixMergePanel extends JPanel {
 		@Override
 		public void actionPerformed(ActionEvent evt) {
 			try {
-				int addMatrixId = (Integer) matrixItemsAL.get(selectMatrix.getSelectedIndex())[0];
+				int addMatrixId = (Integer) matrixItems.get(selectMatrix.getSelectedIndex())[0];
 
 				MatrixMetadata parentMatrixMetadata = MatricesList.getMatrixMetadataById(parentMatrix.getId());
 				MatrixMetadata addMatrixMetadata = MatricesList.getMatrixMetadataById(addMatrixId);
@@ -454,36 +452,30 @@ public class MatrixMergePanel extends JPanel {
 		return study_name;
 	}
 
-	public static List<Object[]> getMatrixItems() throws IOException {
+	private static List<Object[]> getMatrixItems() throws IOException {
 
-		List<Object[]> resultAL = new ArrayList<Object[]>();
+		List<Object[]> result = new ArrayList<Object[]>();
 
-		List<Map<String, Object>> rsMatrices = MatricesList.getAllMatricesList();
-		int rowcount = rsMatrices.size();
-		if (rowcount > 0) {
-			for (int i = rowcount - 1; i >= 0; i--) // loop through rows of result set
-			{
-				// PREVENT PHANTOM-DB READS EXCEPTIONS
-				if (!rsMatrices.isEmpty() && rsMatrices.get(i).size() == cDBMatrix.T_CREATE_MATRICES.length) {
-					int currentMatrixId = (Integer) rsMatrices.get(i).get(cDBMatrix.f_ID);
-					Matrix currentMatrix = MatricesList.getById(currentMatrixId);
-					StringBuilder sb = new StringBuilder();
-					sb.append("SID: ");
-					sb.append(currentMatrix.getStudyId());
-					sb.append(" - MX: ");
-					sb.append(currentMatrix.getId());
-					sb.append(" - ");
-					sb.append(currentMatrix.getMatrixMetadata().getMatrixFriendlyName());
+		List<Matrix> matrices = MatricesList.getMatrixList();
+		if (!matrices.isEmpty()) {
+			for (int i = matrices.size() - 1; i >= 0; i--) {
+				Matrix currentMatrix = matrices.get(i);
+				StringBuilder sb = new StringBuilder();
+				sb.append("SID: ");
+				sb.append(currentMatrix.getStudyId());
+				sb.append(" - MX: ");
+				sb.append(currentMatrix.getId());
+				sb.append(" - ");
+				sb.append(currentMatrix.getMatrixMetadata().getMatrixFriendlyName());
 
-					Object[] matrixItem = new Object[2];
-					matrixItem[0] = currentMatrix.getId();
-					matrixItem[1] = sb.toString();
+				Object[] matrixItem = new Object[2];
+				matrixItem[0] = currentMatrix.getId();
+				matrixItem[1] = sb.toString();
 
-					resultAL.add(matrixItem);
-				}
+				result.add(matrixItem);
 			}
 		}
-		return resultAL;
+		return result;
 	}
 	//</editor-fold>
 }
