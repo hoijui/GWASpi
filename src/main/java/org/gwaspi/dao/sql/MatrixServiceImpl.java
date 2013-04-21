@@ -230,19 +230,6 @@ public class MatrixServiceImpl implements MatrixService {
 	}
 
 	@Override
-	public String generateMatrixNetCDFNameByDate() {
-		String matrixName = "GT_";
-		matrixName += org.gwaspi.global.Utils.getShortDateTimeForFileName();
-		matrixName = matrixName.replace(":", "");
-		matrixName = matrixName.replace(" ", "");
-		matrixName = matrixName.replace("/", "");
-//		matrixName = matrixName.replaceAll("[a-zA-Z]", "");
-
-//		matrixName = matrixName.substring(0, matrixName.length() - 3); // Remove "CET" from name
-		return matrixName;
-	}
-
-	@Override
 	public void saveMatrixDescription(int matrixId, String description) throws IOException {
 
 		DbManager db = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
@@ -317,7 +304,7 @@ public class MatrixServiceImpl implements MatrixService {
 
 		int matrixId = Integer.MIN_VALUE;
 		String matrixFriendlyName = newMatrixName;
-		String matrixNetCDFName = generateMatrixNetCDFNameByDate();
+		String matrixNetCDFName = org.gwaspi.database.Utils.generateMatrixNetCDFNameByDate();
 		String description = "";
 		String matrixType = "";
 		long creationDate = Long.MIN_VALUE;

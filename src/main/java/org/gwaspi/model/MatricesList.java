@@ -52,10 +52,6 @@ public final class MatricesList {
 		matrixService.deleteMatrix(matrixId, deleteReports);
 	}
 
-	public static String generateMatrixNetCDFNameByDate() {
-		return matrixService.generateMatrixNetCDFNameByDate();
-	}
-
 	public static void saveMatrixDescription(int matrixId, String description) throws IOException {
 		matrixService.saveMatrixDescription(matrixId, description);
 	}

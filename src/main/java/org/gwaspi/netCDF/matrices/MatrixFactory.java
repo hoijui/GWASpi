@@ -46,7 +46,7 @@ public class MatrixFactory {
 			throws InvalidRangeException, IOException
 	{
 		if (samplesDimSize > 0 && markerDimSize > 0) {
-			resultMatrixName = MatricesList.generateMatrixNetCDFNameByDate();
+			resultMatrixName = org.gwaspi.database.Utils.generateMatrixNetCDFNameByDate();
 			netCDFHandler = generateNetcdfHandler(
 					studyId,
 					resultMatrixName,

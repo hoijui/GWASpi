@@ -22,4 +22,16 @@ public class Utils {
 		}
 		return result.toString();
 	}
+
+	public static String generateMatrixNetCDFNameByDate() {
+		String matrixName = "GT_";
+		matrixName += org.gwaspi.global.Utils.getShortDateTimeForFileName();
+		matrixName = matrixName.replace(":", "");
+		matrixName = matrixName.replace(" ", "");
+		matrixName = matrixName.replace("/", "");
+//		matrixName = matrixName.replaceAll("[a-zA-Z]", "");
+
+//		matrixName = matrixName.substring(0, matrixName.length() - 3); // Remove "CET" from name
+		return matrixName;
+	}
 }
