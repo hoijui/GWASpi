@@ -3,6 +3,7 @@ package org.gwaspi.dao.sql;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import org.gwaspi.constants.cDBGWASpi;
@@ -306,7 +307,7 @@ public class MatrixServiceImpl implements MatrixService {
 		String matrixNetCDFName = org.gwaspi.database.Utils.generateMatrixNetCDFNameByDate();
 		String description = "";
 		String matrixType = "";
-		long creationDate = Long.MIN_VALUE;
+		Date creationDate = null;
 
 		String pathToMatrix = netCDFpath;
 		return loadMatrixMetadataFromFile(matrixId, matrixFriendlyName, matrixNetCDFName, studyId, pathToMatrix, description, matrixType, creationDate);
@@ -319,7 +320,7 @@ public class MatrixServiceImpl implements MatrixService {
 		String description = "";
 		String matrixType = "";
 		int studyId = Integer.MIN_VALUE;
-		long creationDate = Long.MIN_VALUE;
+		Date creationDate = null;
 
 		// PREVENT PHANTOM-DB READS EXCEPTIONS
 		if (dbProperties.size() == cDBMatrix.T_CREATE_MATRICES.length) {
@@ -335,7 +336,8 @@ public class MatrixServiceImpl implements MatrixService {
 			studyId = (dbProperties.get(cDBMatrix.f_STUDYID) != null) ? Integer.parseInt(dbProperties.get(cDBMatrix.f_STUDYID).toString()) : 0;
 			String dateTime = dbProperties.get(cDBMatrix.f_CREATION_DATE).toString();
 			dateTime = dateTime.substring(0, dateTime.lastIndexOf('.'));
-			creationDate = org.gwaspi.global.Utils.stringToDate(dateTime, "yyyy-MM-dd HH:mm:ss").getTime();
+			long creationDateLong = org.gwaspi.global.Utils.stringToDate(dateTime, "yyyy-MM-dd HH:mm:ss").getTime();
+			creationDate = new Date(creationDateLong);
 		}
 
 		String genotypesFolder = Config.getConfigValue(Config.PROPERTY_GENOTYPES_DIR, "");
@@ -344,7 +346,7 @@ public class MatrixServiceImpl implements MatrixService {
 		return loadMatrixMetadataFromFile(matrixId, matrixFriendlyName, matrixNetCDFName, studyId, pathToMatrix, description, matrixType, creationDate);
 	}
 
-	private MatrixMetadata loadMatrixMetadataFromFile(int matrixId, String matrixFriendlyName, String matrixNetCDFName, int studyId, String pathToMatrix, String description, String matrixType, long creationDate) throws IOException {
+	public static MatrixMetadata loadMatrixMetadataFromFile(int matrixId, String matrixFriendlyName, String matrixNetCDFName, int studyId, String pathToMatrix, String description, String matrixType, Date creationDate) throws IOException {
 
 		String gwaspiDBVersion = "";
 		ImportFormat technology = ImportFormat.UNKNOWN;
