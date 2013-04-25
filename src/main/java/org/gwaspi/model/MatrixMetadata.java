@@ -1,5 +1,6 @@
 package org.gwaspi.model;
 
+import java.util.Date;
 import org.gwaspi.constants.cImport.ImportFormat;
 import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
@@ -29,7 +30,7 @@ public class MatrixMetadata {
 	private int parent1MatrixId;
 	private int parent2MatrixId;
 	private String inputLocation;
-	private long creationDate;
+	private Date creationDate;
 
 //	public MatrixMetadata() {
 //
@@ -50,7 +51,7 @@ public class MatrixMetadata {
 //		this.parent1MatrixId = -1;
 //		this.parent2MatrixId = -1;
 //		this.inputLocation = "";
-//		this.creationDate = Long.MIN_VALUE;
+//		this.creationDate = new Date();
 //	}
 
 	public MatrixMetadata(
@@ -81,7 +82,7 @@ public class MatrixMetadata {
 		this.parent1MatrixId = parent1MatrixId;
 		this.parent2MatrixId = parent2MatrixId;
 		this.inputLocation = inputLocation;
-		this.creationDate = Long.MIN_VALUE;
+		this.creationDate = new Date();
 	}
 
 	public MatrixMetadata(
@@ -99,7 +100,7 @@ public class MatrixMetadata {
 			int sampleSetSize,
 			int studyId,
 			String matrixType,
-			long creationDate)
+			Date creationDate)
 	{
 		this.matrixId = matrixId;
 		this.matrixFriendlyName = matrixFriendlyName;
@@ -118,6 +119,7 @@ public class MatrixMetadata {
 		this.parent1MatrixId = -1;
 		this.parent2MatrixId = -1;
 		this.inputLocation = "";
+		this.creationDate = (Date) creationDate.clone();
 	}
 
 	public boolean getHasDictionray() {
@@ -192,7 +194,7 @@ public class MatrixMetadata {
 		return inputLocation;
 	}
 
-	public long getCreationDate() {
+	public Date getCreationDate() {
 		return creationDate;
 	}
 }

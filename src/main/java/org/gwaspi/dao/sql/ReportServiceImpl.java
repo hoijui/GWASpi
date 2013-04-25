@@ -131,6 +131,10 @@ public class ReportServiceImpl implements ReportService {
 	//<editor-fold defaultstate="expanded" desc="OPERATIONS METADATA">
 	@Override
 	public String getReportNamePrefix(Operation op) {
+		return extractReportNamePrefix(op);
+	}
+
+	public static String extractReportNamePrefix(Operation op) {
 		StringBuilder prefix = new StringBuilder();
 		prefix.append("mx-");
 		prefix.append(op.getParentMatrixId());

@@ -149,7 +149,7 @@ public class OperationFactory {
 				Integer.MIN_VALUE,
 				Integer.MIN_VALUE,
 				studyId,
-				Long.MIN_VALUE
+				null
 				));
 
 		opMetaData = OperationsList.getOperationMetadata(resultOPnetCDFName);

@@ -1,6 +1,7 @@
 package org.gwaspi.model;
 
 
+import java.util.Date;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 
 /**
@@ -22,7 +23,7 @@ public class OperationMetadata {
 	private int opSetSize;
 	private int implicitSetSize;
 	private int studyId;
-	private long creationDate;
+	private Date creationDate;
 
 //	public OperationMetadata() {
 //
@@ -33,11 +34,11 @@ public class OperationMetadata {
 //		this.netCDFName = "";
 //		this.description = "";
 //		this.pathToMatrix = "";
-//		this.gtCode = "";
+//		this.gtCode = null;
 //		this.opSetSize = Integer.MIN_VALUE;
 //		this.implicitSetSize = Integer.MIN_VALUE;
 //		this.studyId = Integer.MIN_VALUE;
-//		this.creationDate = Long.MIN_VALUE;
+//		this.creationDate = new Date();
 //	}
 
 	public OperationMetadata(
@@ -52,7 +53,7 @@ public class OperationMetadata {
 			int opSetSize,
 			int implicitSetSize,
 			int studyId,
-			long creationDate
+			Date creationDate
 			)
 	{
 		this.id = id;
@@ -66,7 +67,7 @@ public class OperationMetadata {
 		this.opSetSize = opSetSize;
 		this.implicitSetSize = implicitSetSize;
 		this.studyId = studyId;
-		this.creationDate = creationDate;
+		this.creationDate = (Date) creationDate.clone();
 	}
 
 	public int getOPId() {
@@ -113,7 +114,7 @@ public class OperationMetadata {
 		return implicitSetSize;
 	}
 
-	public long getCreationDate() {
+	public Date getCreationDate() {
 		return creationDate;
 	}
 }

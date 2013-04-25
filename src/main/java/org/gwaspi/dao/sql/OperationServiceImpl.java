@@ -3,6 +3,7 @@ package org.gwaspi.dao.sql;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import org.gwaspi.constants.cDBGWASpi;
@@ -371,7 +372,7 @@ public class OperationServiceImpl implements OperationService {
 		int studyId = Integer.MIN_VALUE;
 		int opSetSize = Integer.MIN_VALUE;
 		int implicitSetSize = Integer.MIN_VALUE;
-		long creationDate = Long.MIN_VALUE;
+		Date creationDate = null;
 
 		// PREVENT PHANTOM-DB READS EXCEPTIONS
 		if (dbProperties.size() == cDBOperations.T_CREATE_OPERATIONS.length) {
@@ -386,7 +387,8 @@ public class OperationServiceImpl implements OperationService {
 			studyId = (Integer) dbProperties.get(cDBOperations.f_STUDYID);
 			String dateTime = dbProperties.get(cDBOperations.f_CREATION_DATE).toString();
 			dateTime = dateTime.substring(0, dateTime.lastIndexOf('.'));
-			creationDate = org.gwaspi.global.Utils.stringToDate(dateTime, "yyyy-MM-dd HH:mm:ss").getTime();
+			long creationDateLong = org.gwaspi.global.Utils.stringToDate(dateTime, "yyyy-MM-dd HH:mm:ss").getTime();
+			creationDate = new Date(creationDateLong);
 		}
 
 		String genotypesFolder = Config.getConfigValue(Config.PROPERTY_GENOTYPES_DIR, "");
