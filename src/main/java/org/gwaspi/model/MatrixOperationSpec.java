@@ -17,7 +17,7 @@ public class MatrixOperationSpec {
 		return id;
 	}
 
-	public OPType geType() {
+	public OPType getType() {
 		return type;
 	}
 }

@@ -207,7 +207,7 @@ public class OutputTrendTest {
 			int markersQAopId = Integer.MIN_VALUE;
 			for (int i = 0; i < operations.size(); i++) {
 				MatrixOperationSpec op = operations.get(i);
-				if (op.geType().equals(OPType.MARKER_QA)) {
+				if (op.getType().equals(OPType.MARKER_QA)) {
 					markersQAopId = op.getId();
 				}
 			}
