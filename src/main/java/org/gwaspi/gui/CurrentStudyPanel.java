@@ -6,8 +6,6 @@ import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
-import java.util.LinkedHashMap;
-import java.util.Map;
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.GroupLayout;
@@ -22,7 +20,6 @@ import javax.swing.LayoutStyle;
 import javax.swing.SwingConstants;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.TableCellRenderer;
-import javax.swing.tree.DefaultMutableTreeNode;
 import org.gwaspi.global.Text;
 import org.gwaspi.global.Utils;
 import org.gwaspi.gui.utils.BrowserHelpUrlAction;
@@ -30,7 +27,6 @@ import org.gwaspi.gui.utils.CursorUtils;
 import org.gwaspi.gui.utils.Dialogs;
 import org.gwaspi.gui.utils.HelpURLs;
 import org.gwaspi.gui.utils.MatricesTableModel;
-import org.gwaspi.gui.utils.NodeToPathCorrespondence;
 import org.gwaspi.gui.utils.RowRendererDefault;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.Study;
@@ -52,7 +48,6 @@ public class CurrentStudyPanel extends JPanel {
 
 	// Variables declaration
 	private Study study;
-	private Map<Integer, Object> treeChildrenMap = new LinkedHashMap<Integer, Object>();
 	private JButton btn_DeleteMatrix;
 	private JButton btn_LoadGenotypes;
 	private JButton btn_UpdateSampleInfo;
@@ -77,8 +72,6 @@ public class CurrentStudyPanel extends JPanel {
 	public CurrentStudyPanel(int studyId) throws IOException {
 
 		study = StudyList.getStudy(studyId);
-		DefaultMutableTreeNode matrixNode = (DefaultMutableTreeNode) GWASpiExplorerPanel.getSingleton().getTree().getLastSelectedPathComponent();
-		treeChildrenMap = NodeToPathCorrespondence.buildNodeToPathCorrespondence(matrixNode, false);
 
 		pnl_StudyDesc = new JPanel();
 		scrl_Desc = new JScrollPane();

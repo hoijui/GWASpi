@@ -5,7 +5,6 @@ import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.GroupLayout;
@@ -20,7 +19,6 @@ import javax.swing.LayoutStyle;
 import javax.swing.SwingConstants;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.TableCellRenderer;
-import javax.swing.tree.DefaultMutableTreeNode;
 import org.gwaspi.constants.cDBSamples;
 import org.gwaspi.constants.cExport;
 import org.gwaspi.constants.cExport.ExportFormat;
@@ -30,7 +28,6 @@ import org.gwaspi.gui.utils.BrowserHelpUrlAction;
 import org.gwaspi.gui.utils.Dialogs;
 import org.gwaspi.gui.utils.HelpURLs;
 import org.gwaspi.gui.utils.LimitedLengthDocument;
-import org.gwaspi.gui.utils.NodeToPathCorrespondence;
 import org.gwaspi.gui.utils.OperationsTableModel;
 import org.gwaspi.gui.utils.RowRendererDefault;
 import org.gwaspi.model.MatricesList;
@@ -55,7 +52,6 @@ public class CurrentMatrixPanel extends JPanel {
 
 	// Variables declaration
 	private Matrix matrix;
-	private Map<Integer, Object> treeChildrenMap;
 	private JButton btn_Back;
 	private JButton btn_DeleteMatrix;
 	private JButton btn_DeleteOperation;
@@ -82,8 +78,6 @@ public class CurrentMatrixPanel extends JPanel {
 	public CurrentMatrixPanel(int _matrixId) throws IOException {
 
 		matrix = MatricesList.getById(_matrixId);
-		DefaultMutableTreeNode matrixNode = (DefaultMutableTreeNode) GWASpiExplorerPanel.getSingleton().getTree().getLastSelectedPathComponent();
-		treeChildrenMap = NodeToPathCorrespondence.buildNodeToPathCorrespondence(matrixNode, true);
 
 		pnl_MatrixDesc = new JPanel();
 		scrl_MatrixDesc = new JScrollPane();

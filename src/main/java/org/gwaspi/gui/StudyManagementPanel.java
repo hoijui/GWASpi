@@ -7,9 +7,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.io.IOException;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.GroupLayout;
@@ -28,13 +26,11 @@ import javax.swing.SwingUtilities;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellRenderer;
-import javax.swing.tree.DefaultMutableTreeNode;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.utils.BrowserHelpUrlAction;
 import org.gwaspi.gui.utils.Dialogs;
 import org.gwaspi.gui.utils.HelpURLs;
 import org.gwaspi.gui.utils.LimitedLengthDocument;
-import org.gwaspi.gui.utils.NodeToPathCorrespondence;
 import org.gwaspi.gui.utils.RowRendererDefault;
 import org.gwaspi.model.Study;
 import org.gwaspi.model.StudyList;
@@ -56,7 +52,6 @@ public class StudyManagementPanel extends JPanel {
 
 	// Variables declaration
 	private Study study;
-	private Map<Integer, Object> treeChildrenMap = new LinkedHashMap<Integer, Object>();
 	private JButton btn_AddStudy;
 	private JButton btn_DeleteStudy;
 	private JLabel lbl_Desc;
@@ -123,9 +118,6 @@ public class StudyManagementPanel extends JPanel {
 	}
 
 	public StudyManagementPanel() throws IOException {
-
-		DefaultMutableTreeNode studyManagementNode = (DefaultMutableTreeNode) GWASpiExplorerPanel.getSingleton().getTree().getLastSelectedPathComponent();
-		treeChildrenMap = NodeToPathCorrespondence.buildNodeToPathCorrespondence(studyManagementNode, false);
 
 		pnl_StudyDesc = new JPanel();
 		lbl_NewStudyName = new JLabel();

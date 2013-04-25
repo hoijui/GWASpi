@@ -9,9 +9,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -28,7 +26,6 @@ import javax.swing.LayoutStyle;
 import javax.swing.SwingConstants;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.TableCellRenderer;
-import javax.swing.tree.DefaultMutableTreeNode;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.utils.BrowserHelpUrlAction;
@@ -38,7 +35,6 @@ import org.gwaspi.gui.utils.HelpURLs;
 import org.gwaspi.gui.utils.MoreAssocInfo;
 import org.gwaspi.gui.utils.MoreGWASinOneGoInfo;
 import org.gwaspi.gui.utils.MoreInfoForGtFreq;
-import org.gwaspi.gui.utils.NodeToPathCorrespondence;
 import org.gwaspi.gui.utils.OperationsTableModel;
 import org.gwaspi.gui.utils.RowRendererDefault;
 import org.gwaspi.model.MatricesList;
@@ -69,7 +65,6 @@ public class MatrixAnalysePanel extends JPanel {
 	// Variables declaration - do not modify
 	private Matrix parentMatrix;
 	private final Operation currentOP;
-	private Map<Integer, Object> treeChildrenMap = new LinkedHashMap<Integer, Object>();
 	private JButton btn_1_1;
 	private JButton btn_1_2;
 	private JButton btn_1_3;
@@ -100,8 +95,6 @@ public class MatrixAnalysePanel extends JPanel {
 		} else {
 			currentOP = null;
 		}
-		DefaultMutableTreeNode matrixNode = (DefaultMutableTreeNode) GWASpiExplorerPanel.getSingleton().getTree().getLastSelectedPathComponent();
-		treeChildrenMap = NodeToPathCorrespondence.buildNodeToPathCorrespondence(matrixNode, true);
 
 		pnl_MatrixDesc = new JPanel();
 		scrl_MatrixDesc = new JScrollPane();
