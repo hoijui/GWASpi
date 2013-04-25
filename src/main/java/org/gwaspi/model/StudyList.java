@@ -3,6 +3,7 @@ package org.gwaspi.model;
 import java.io.IOException;
 import java.util.List;
 import org.gwaspi.dao.StudyService;
+import org.gwaspi.dao.jpa.JPAStudyService;
 import org.gwaspi.dao.sql.StudyServiceImpl;
 
 /**
@@ -14,7 +15,10 @@ import org.gwaspi.dao.sql.StudyServiceImpl;
  */
 public class StudyList {
 
-	private static final StudyService studyService = new StudyServiceImpl();
+	private static final StudyService studyService
+			= MatricesList.USE_JPA
+			? new JPAStudyService()
+			: new StudyServiceImpl();
 
 	private StudyList() {
 	}

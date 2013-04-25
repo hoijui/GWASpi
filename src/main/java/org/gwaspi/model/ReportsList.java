@@ -3,6 +3,7 @@ package org.gwaspi.model;
 import java.io.IOException;
 import java.util.List;
 import org.gwaspi.dao.ReportService;
+import org.gwaspi.dao.jpa.JPAReportService;
 import org.gwaspi.dao.sql.ReportServiceImpl;
 
 /**
@@ -14,7 +15,10 @@ import org.gwaspi.dao.sql.ReportServiceImpl;
  */
 public class ReportsList {
 
-	private static final ReportService reportService = new ReportServiceImpl();
+	private static final ReportService reportService
+			= MatricesList.USE_JPA
+			? new JPAReportService()
+			: new ReportServiceImpl();
 
 	private ReportsList() {
 	}

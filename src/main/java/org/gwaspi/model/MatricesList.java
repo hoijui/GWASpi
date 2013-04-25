@@ -3,6 +3,7 @@ package org.gwaspi.model;
 import java.io.IOException;
 import java.util.List;
 import org.gwaspi.dao.MatrixService;
+import org.gwaspi.dao.jpa.JPAMatrixService;
 import org.gwaspi.dao.sql.MatrixServiceImpl;
 
 /**
@@ -14,7 +15,12 @@ import org.gwaspi.dao.sql.MatrixServiceImpl;
  */
 public final class MatricesList {
 
-	private static final MatrixService matrixService = new MatrixServiceImpl();
+	public static final boolean USE_JPA = true;
+
+	private static final MatrixService matrixService
+			= USE_JPA
+			? new JPAMatrixService()
+			: new MatrixServiceImpl();
 
 	private MatricesList() {
 	}
