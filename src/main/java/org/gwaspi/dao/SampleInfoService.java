@@ -20,5 +20,5 @@ public interface SampleInfoService {
 
 	void deleteSamplesByPoolId(Integer studyId) throws IOException;
 
-	List<String> insertSampleInfos(Integer studyId, Collection<SampleInfo> sampleInfos) throws IOException;
+	void insertSampleInfos(Integer studyId, Collection<SampleInfo> sampleInfos) throws IOException;
 }

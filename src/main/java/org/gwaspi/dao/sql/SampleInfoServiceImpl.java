@@ -170,7 +170,7 @@ public class SampleInfoServiceImpl implements SampleInfoService {
 	}
 
 	@Override
-	public List<String> insertSampleInfos(Integer studyId, Collection<SampleInfo> sampleInfos) throws IOException {
+	public void insertSampleInfos(Integer studyId, Collection<SampleInfo> sampleInfos) throws IOException {
 		// Retrieving Samplelist from DB
 		List<String> samplesAllreadyInDBAL = new ArrayList<String>(0);
 		DbManager db = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
@@ -180,15 +180,14 @@ public class SampleInfoServiceImpl implements SampleInfoService {
 			log.error(null, ex);
 		}
 
-		List<String> result = new ArrayList<String>();
+		List<String> newlyInsertedSamples = new ArrayList<String>();
 		if (!sampleInfos.isEmpty()) {
 			// FIRST UPDATE SAMPLES ALLREADY IN DB
-			updateSamplesByHashMap(db, studyId, sampleInfos, samplesAllreadyInDBAL);
+			updateSamplesByHashMap(db, studyId, sampleInfos, samplesAllreadyInDBAL); // FIXME We should probably use the sampleKey, instead of only the sampleId
 
 			// NEXT INSERT ANY NEW SAMPLES
-			result = insertSamplesByHashMap(db, studyId, sampleInfos, samplesAllreadyInDBAL);
+			newlyInsertedSamples = insertSamplesByHashMap(db, studyId, sampleInfos, samplesAllreadyInDBAL); // FIXME We should probably use the sampleKey, instead of only the sampleId
 		}
-		return result;
 	}
 
 	private static List<String> insertSamplesByHashMap(DbManager db, Integer studyId, Collection<SampleInfo> sampleInfos, List<String> samplesAllreadyInDBAL) throws IOException {

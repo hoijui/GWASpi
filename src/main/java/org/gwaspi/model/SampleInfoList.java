@@ -44,7 +44,7 @@ public class SampleInfoList {
 		sampleInfoService.deleteSamplesByPoolId(poolId);
 	}
 
-	public static List<String> insertSampleInfos(Integer studyId, Collection<SampleInfo> sampleInfos) throws IOException {
-		return sampleInfoService.insertSampleInfos(studyId, sampleInfos);
+	public static void insertSampleInfos(Integer studyId, Collection<SampleInfo> sampleInfos) throws IOException {
+		sampleInfoService.insertSampleInfos(studyId, sampleInfos);
 	}
 }
