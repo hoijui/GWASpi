@@ -2,6 +2,15 @@ package org.gwaspi.model;
 
 import java.io.Serializable;
 import java.util.Date;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,6 +20,20 @@ import org.slf4j.LoggerFactory;
  * IBE, Institute of Evolutionary Biology (UPF-CSIC)
  * CEXS-UPF-PRBB
  */
+@Entity
+@Table(name = "study")
+@NamedQueries({
+//	@NamedQuery(name = "acc_size",             query = "SELECT count(a.id) FROM Account a"),
+//	@NamedQuery(name = "size_active",          query = "SELECT count(a.id) FROM Account a WHERE ((a.inGameTime >= :minInGameTime) AND (a.lastLogin > :oneWeekAgo))"),
+//	q_size_active.setParameter("minInGameTime", Account.Rank.Beginner.getRequiredTime());
+//	@NamedQuery(name = "acc_size_active",      query = "SELECT count(a.id) FROM Account a WHERE ((a.inGameTime >= " + /*Account.Rank.Beginner.getRequiredTime()*/(5 * 60 * 60) + ") AND (a.lastLogin > :oneWeekAgo))"),
+	@NamedQuery(name = "study_list",           query = "SELECT s FROM Study s"),
+//	@NamedQuery(name = "acc_fetchByName",      query = "SELECT a FROM Account a WHERE a.name = :name"),
+//	@NamedQuery(name = "acc_fetchByLowerName", query = "SELECT a FROM Account a WHERE (LOWER(a.name) = :lowerName)"),
+//	@NamedQuery(name = "acc_fetchByLastIP",    query = "SELECT a FROM Account a WHERE a.lastIp = :ip"),
+//	@NamedQuery(name = "acc_fetchByEmail",     query = "SELECT a FROM Account a WHERE a.email = :email")
+	@NamedQuery(name = "study_fetchById",      query = "SELECT s FROM Study s WHERE s.id = :id"),
+})
 public class Study implements Serializable {
 
 	private static final Logger log
@@ -57,26 +80,83 @@ public class Study implements Serializable {
 //		this.studyMatrices = new ArrayList<Integer>();
 	}
 
+	/**
+	 * Returns the unique study identification number.
+	 * @return the study-id
+	 */
+	@Id
+	@GeneratedValue
+	@Column(
+		name       = "id",
+		unique     = true,
+		nullable   = false,
+		insertable = true,
+		updatable  = false
+		)
 	public int getId() {
 		return id;
 	}
 
+	/**
+	 * Sets the unique study identification number.
+	 * @param id the study-id to set
+	 */
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	@Column(
+		name       = "name",
+		unique     = false,
+		nullable   = false,
+		insertable = true,
+		updatable  = false
+		)
 	public String getName() {
 		return name;
 	}
 
+	@Column(
+		name       = "description",
+		unique     = false,
+		nullable   = false,
+		insertable = true,
+		updatable  = false
+		)
 	public String getDescription() {
 		return description;
 	}
 
+	@Column(
+		name       = "studyType",
+		unique     = false,
+		nullable   = false,
+		insertable = true,
+		updatable  = false
+		)
 	public String getStudyType() {
 		return studyType;
 	}
 
+	@Column(
+		name       = "validity",
+		unique     = false,
+		nullable   = false,
+		insertable = true,
+		updatable  = false
+		)
 	public String getValidity() {
 		return validity;
 	}
 
+	@Temporal(TemporalType.DATE)
+	@Column(
+		name       = "creationDate",
+		unique     = false,
+		nullable   = false,
+		insertable = true,
+		updatable  = false
+		)
 	public Date getCreationDate() {
 		return creationDate;
 	}

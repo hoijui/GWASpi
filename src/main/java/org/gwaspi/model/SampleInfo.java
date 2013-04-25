@@ -1,8 +1,28 @@
 package org.gwaspi.model;
 
 import java.io.Serializable;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 import org.gwaspi.constants.cDBSamples;
 
+@Entity
+@Table(name = "sampleInfo")
+@NamedQueries({
+	@NamedQuery(
+		name = "sampleInfo_listByStudyId",
+		query = "SELECT s FROM SampleInfo s WHERE s.poolId = :studyId"),
+	@NamedQuery(
+		name = "sampleInfo_listBySampleIdFamilyIdStudyId",
+		query = "SELECT s FROM SampleInfo s WHERE s.sampleId = :sampleId AND s.familyId = :familyId AND s.poolId = :studyId"),
+	@NamedQuery(
+		name = "sampleInfo_deleteByStudyId",
+		query = "DELETE FROM SampleInfo s WHERE s.poolId = :studyId"),
+})
 public class SampleInfo implements Comparable<SampleInfo>, Serializable {
 
 	public static enum Sex {
@@ -303,35 +323,98 @@ public class SampleInfo implements Comparable<SampleInfo>, Serializable {
 	/**
 	 * Returns a unique identifier for this specific sample.
 	 */
+	@Transient
 	public SampleKey getKey() {
 		return key;
 	}
 
+	@Column(
+		name       = "orderId",
+		unique     = false,
+		nullable   = false,
+		insertable = true,
+		updatable  = false
+		)
 	public int getOrderId() {
 		return orderId;
 	}
 
+
+	/**
+	 * Returns the sample-id, which is unique in combination with the family-id.
+	 * @return the sample-id
+	 */
+	@Id
+	@Column(
+		name       = "sampleId",
+		unique     = false,
+		nullable   = false,
+		insertable = true,
+		updatable  = false
+		)
 	public String getSampleId() {
 		return sampleId;
 	}
 
+	/**
+	 * Sets the unique study identification number.
+	 * @param id the study-id to set
+	 */
+	public void setSampleId(String sampleId) {
+		this.sampleId = sampleId;
+	}
+
+	/**
+	 * Returns the family-id, which is unique in combination with the sample-id.
+	 * @return the family-id
+	 */
+	@Id
+	@Column(
+		name       = "familyId",
+		unique     = false,
+		nullable   = false,
+		insertable = true,
+		updatable  = false
+		)
 	public String getFamilyId() {
 		return familyId;
 	}
 
+	@Column(
+		name       = "fatherId",
+		unique     = false,
+		nullable   = false,
+		insertable = true,
+		updatable  = false
+		)
 	public String getFatherId() {
 		return fatherId;
 	}
 
+	@Column(
+		name       = "motherId",
+		unique     = false,
+		nullable   = false,
+		insertable = true,
+		updatable  = false
+		)
 	public String getMotherId() {
 		return motherId;
 	}
 
+	@Column(
+		name       = "sex",
+		unique     = false,
+		nullable   = false,
+		insertable = true,
+		updatable  = false
+		)
 	public Sex getSex() {
 		return sex;
 	}
 
 	/** @deprecated */
+	@Transient
 	public String getSexStr() {
 
 		if (getSex() != null) {
@@ -341,11 +424,19 @@ public class SampleInfo implements Comparable<SampleInfo>, Serializable {
 		}
 	}
 
+	@Column(
+		name       = "affection",
+		unique     = false,
+		nullable   = false,
+		insertable = true,
+		updatable  = false
+		)
 	public Affection getAffection() {
 		return affection;
 	}
 
 	/** @deprecated */
+	@Transient
 	public String getAffectionStr() {
 
 		if (getAffection() != null) {
@@ -355,26 +446,69 @@ public class SampleInfo implements Comparable<SampleInfo>, Serializable {
 		}
 	}
 
+	@Column(
+		name       = "category",
+		unique     = false,
+		nullable   = false,
+		insertable = true,
+		updatable  = false
+		)
 	public String getCategory() {
 		return category;
 	}
 
+	@Column(
+		name       = "disease",
+		unique     = false,
+		nullable   = false,
+		insertable = true,
+		updatable  = false
+		)
 	public String getDisease() {
 		return disease;
 	}
 
+	@Column(
+		name       = "population",
+		unique     = false,
+		nullable   = false,
+		insertable = true,
+		updatable  = false
+		)
 	public String getPopulation() {
 		return population;
 	}
 
+	@Column(
+		name       = "age",
+		unique     = false,
+		nullable   = false,
+		insertable = true,
+		updatable  = false
+		)
 	public int getAge() {
 		return age;
 	}
 
+	@Column(
+		name       = "filter",
+		unique     = false,
+		nullable   = false,
+		insertable = true,
+		updatable  = false
+		)
 	public String getFilter() {
 		return filter;
 	}
 
+	@Id
+	@Column(
+		name       = "poolId",
+		unique     = false,
+		nullable   = false,
+		insertable = true,
+		updatable  = false
+		)
 	public Integer getPoolId() {
 		return poolId;
 	}
@@ -383,10 +517,24 @@ public class SampleInfo implements Comparable<SampleInfo>, Serializable {
 		this.poolId = poolId;
 	}
 
+	@Column(
+		name       = "approved",
+		unique     = false,
+		nullable   = false,
+		insertable = true,
+		updatable  = false
+		)
 	public int getApproved() {
 		return approved;
 	}
 
+	@Column(
+		name       = "status",
+		unique     = false,
+		nullable   = false,
+		insertable = true,
+		updatable  = false
+		)
 	public int getStatus() {
 		return status;
 	}
