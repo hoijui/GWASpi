@@ -45,7 +45,13 @@ public class OperationsList {
 	}
 
 	public static int getIdOfLastOperationTypeOccurance(List<Operation> operationsList, OPType opType) {
-		return operationService.getIdOfLastOperationTypeOccurance(operationsList, opType);
+		int result = Integer.MIN_VALUE;
+		for (int i = 0; i < operationsList.size(); i++) {
+			if (operationsList.get(i).getOperationType().equals(OPType.MARKER_QA)) {
+				result = operationsList.get(i).getId();
+			}
+		}
+		return result;
 	}
 
 	public static String createOperationsMetadataTable() {

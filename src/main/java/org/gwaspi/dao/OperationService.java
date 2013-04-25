@@ -21,8 +21,6 @@ public interface OperationService {
 
 	List<OperationMetadata> getOperationsTable(int parentMatrixId, int opId) throws IOException;
 
-	int getIdOfLastOperationTypeOccurance(List<Operation> operationsList, OPType opType);
-
 	String createOperationsMetadataTable();
 
 	void insertOPMetadata(OperationMetadata operationMetadata) throws IOException;

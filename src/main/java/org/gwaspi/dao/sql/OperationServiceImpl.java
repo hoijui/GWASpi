@@ -220,19 +220,6 @@ public class OperationServiceImpl implements OperationService {
 	}
 	//</editor-fold>
 
-	//<editor-fold defaultstate="expanded" desc="HELPERS">
-	@Override
-	public int getIdOfLastOperationTypeOccurance(List<Operation> operationsList, OPType opType) {
-		int result = Integer.MIN_VALUE;
-		for (int i = 0; i < operationsList.size(); i++) {
-			if (operationsList.get(i).getOperationType().equals(OPType.MARKER_QA)) {
-				result = operationsList.get(i).getId();
-			}
-		}
-		return result;
-	}
-	//</editor-fold>
-
 	@Override
 	public String createOperationsMetadataTable() {
 		boolean result = false;
