@@ -137,7 +137,7 @@ public class SampleInfoServiceImpl implements SampleInfoService {
 		Object disease = properties.get(cDBSamples.f_DISEASE);
 		Object population = properties.get(cDBSamples.f_POPULATION);
 		Object filter = properties.get(cDBSamples.f_FILTER);
-		Object poolId = properties.get(cDBSamples.f_POOL_ID);
+		Integer poolId = (Integer) properties.get(cDBSamples.f_POOL_ID);
 		Object approvedStr = properties.get(cDBSamples.f_APPROVED);
 		Object statusStr = properties.get(cDBSamples.f_STATUS_ID_FK);
 
@@ -160,7 +160,7 @@ public class SampleInfoServiceImpl implements SampleInfoService {
 				population.toString(),
 				age,
 				(filter == null) ? "" : filter.toString(),
-				(poolId == null) ? "" : poolId.toString(),
+				(poolId == null) ? null : poolId,
 				approved,
 				status
 				);
@@ -267,10 +267,10 @@ public class SampleInfoServiceImpl implements SampleInfoService {
 							sampleInfo.getDisease(), // disease
 							sampleInfo.getPopulation(), // population
 							sampleInfo.getAge(), // age
-							studyId.toString(),
+							studyId,
 							100}, // status_id_fk = 100 (OK)
 						new String[] {cDBSamples.f_SAMPLE_ID, cDBSamples.f_FAMILY_ID, cDBSamples.f_POOL_ID},
-						new String[] {sampleInfo.getSampleId(), sampleInfo.getFamilyId(), studyId.toString()});
+						new Object[] {sampleInfo.getSampleId(), sampleInfo.getFamilyId(), studyId});
 				result++;
 			}
 

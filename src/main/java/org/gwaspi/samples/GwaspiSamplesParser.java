@@ -50,7 +50,7 @@ public class GwaspiSamplesParser implements SamplesParser {
 						cVals[cImport.Annotation.GWASpi.population],
 						Integer.parseInt(cVals[cImport.Annotation.GWASpi.age]),
 						"",
-						"",
+						null,
 						Integer.MIN_VALUE,
 						Integer.MIN_VALUE
 						));

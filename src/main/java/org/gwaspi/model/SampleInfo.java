@@ -175,7 +175,7 @@ public class SampleInfo implements Comparable<SampleInfo>, Serializable {
 	private String population;
 	private int age;
 	private String filter;
-	private String poolId;
+	private Integer poolId;
 	private int approved;
 	private int status;
 
@@ -193,7 +193,7 @@ public class SampleInfo implements Comparable<SampleInfo>, Serializable {
 		this.population = "0";
 		this.age = 0;
 		this.filter = "";
-		this.poolId = "";
+		this.poolId = null;
 		this.approved = 0;
 		this.status = 0;
 		this.key = new SampleKey(this.sampleId, this.familyId);
@@ -230,7 +230,7 @@ public class SampleInfo implements Comparable<SampleInfo>, Serializable {
 		this.population = population;
 		this.age = age;
 		this.filter = "";
-		this.poolId = "";
+		this.poolId = null;
 		this.approved = 0;
 		this.status = 0;
 		this.key = new SampleKey(this.sampleId, this.familyId);
@@ -250,7 +250,7 @@ public class SampleInfo implements Comparable<SampleInfo>, Serializable {
 			String population,
 			int age,
 			String filter,
-			String poolId,
+			Integer poolId,
 			int approved,
 			int status)
 	{
@@ -375,8 +375,12 @@ public class SampleInfo implements Comparable<SampleInfo>, Serializable {
 		return filter;
 	}
 
-	public String getPoolId() {
+	public Integer getPoolId() {
 		return poolId;
+	}
+
+	public void setPoolId(Integer poolId) {
+		this.poolId = poolId;
 	}
 
 	public int getApproved() {

@@ -40,7 +40,7 @@ public class HGDP1SamplesParser implements SamplesParser {
 					"0",
 					0,
 					"",
-					"",
+					null,
 					Integer.MIN_VALUE,
 					Integer.MIN_VALUE
 					));
