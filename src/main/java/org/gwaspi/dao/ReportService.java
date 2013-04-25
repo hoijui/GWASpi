@@ -15,7 +15,7 @@ public interface ReportService {
 
 	Report getById(int reportId) throws IOException;
 
-	List<Report> getReportsList(int opId, int matrixId) throws IOException;
+	List<Report> getReportsList(int parentOperationId, int parentMatrixId) throws IOException;
 
 	String getReportNamePrefix(Operation op);
 
@@ -23,7 +23,7 @@ public interface ReportService {
 
 	void insertRPMetadata(Report report) throws IOException;
 
-	void deleteReportByMatrixId(int matrixId) throws IOException;
+	void deleteReportByMatrixId(int parentMatrixId) throws IOException;
 
-	void deleteReportByOperationId(int opId) throws IOException;
+	void deleteReportByOperationId(int parentOperationId) throws IOException;
 }

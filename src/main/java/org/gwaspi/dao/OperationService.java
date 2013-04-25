@@ -11,15 +11,15 @@ public interface OperationService {
 
 	Operation getById(int operationId) throws IOException;
 
-	List<Operation> getOperationsList(int matrixId) throws IOException;
+	List<Operation> getOperationsList(int parentMatrixId) throws IOException;
 
-	List<Operation> getOperationsList(int matrixId, int parentOpId) throws IOException;
+	List<Operation> getOperationsList(int parentMatrixId, int parentOpId) throws IOException;
 
-	List<Operation> getOperationsList(int matrixId, int parentOpId, OPType opType) throws IOException;
+	List<Operation> getOperationsList(int parentMatrixId, int parentOpId, OPType opType) throws IOException;
 
-	List<OperationMetadata> getOperationsTable(int matrixId) throws IOException;
+	List<OperationMetadata> getOperationsTable(int parentMatrixId) throws IOException;
 
-	List<OperationMetadata> getOperationsTable(int matrixId, int opId) throws IOException;
+	List<OperationMetadata> getOperationsTable(int parentMatrixId, int opId) throws IOException;
 
 	int getIdOfLastOperationTypeOccurance(List<Operation> operationsList, OPType opType);
 

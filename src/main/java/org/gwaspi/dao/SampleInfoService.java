@@ -14,11 +14,11 @@ public interface SampleInfoService {
 
 	List<SampleInfo> getAllSampleInfoFromDB() throws IOException;
 
-	List<SampleInfo> getAllSampleInfoFromDBByPoolID(Integer poolId) throws IOException;
+	List<SampleInfo> getAllSampleInfoFromDBByPoolID(Integer studyId) throws IOException;
 
-	List<SampleInfo> getCurrentSampleInfoFromDB(SampleKey key, Integer poolId) throws IOException;
+	List<SampleInfo> getCurrentSampleInfoFromDB(SampleKey key, Integer studyId) throws IOException;
 
-	void deleteSamplesByPoolId(Integer poolId) throws IOException;
+	void deleteSamplesByPoolId(Integer studyId) throws IOException;
 
 	List<String> insertSampleInfos(Integer studyId, Collection<SampleInfo> sampleInfos) throws IOException;
 }

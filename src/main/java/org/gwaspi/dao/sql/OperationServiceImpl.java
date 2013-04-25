@@ -78,11 +78,11 @@ public class OperationServiceImpl implements OperationService {
 	}
 
 	@Override
-	public List<Operation> getOperationsList(int matrixId) throws IOException {
+	public List<Operation> getOperationsList(int parentMatrixId) throws IOException {
 
 		List<Operation> operationsList = new ArrayList<Operation>();
 
-		List<Map<String, Object>> rsOperations = getOperationsListByMatrixId(matrixId);
+		List<Map<String, Object>> rsOperations = getOperationsListByMatrixId(parentMatrixId);
 
 		int rowcount = rsOperations.size();
 		if (rowcount > 0) {
@@ -101,11 +101,11 @@ public class OperationServiceImpl implements OperationService {
 	}
 
 	@Override
-	public List<Operation> getOperationsList(int matrixId, int parentOpId) throws IOException {
+	public List<Operation> getOperationsList(int parentMatrixId, int parentOpId) throws IOException {
 
 		List<Operation> operationsList = new ArrayList<Operation>();
 
-		List<Map<String, Object>> rsOperations = getOperationsListByMatrixId(matrixId);
+		List<Map<String, Object>> rsOperations = getOperationsListByMatrixId(parentMatrixId);
 
 		int rowcount = rsOperations.size();
 		if (rowcount > 0) {
@@ -127,11 +127,11 @@ public class OperationServiceImpl implements OperationService {
 	}
 
 	@Override
-	public List<Operation> getOperationsList(int matrixId, int parentOpId, OPType opType) throws IOException {
+	public List<Operation> getOperationsList(int parentMatrixId, int parentOpId, OPType opType) throws IOException {
 
 		List<Operation> operationsList = new ArrayList<Operation>();
 
-		List<Map<String, Object>> rsOperations = getOperationsListByMatrixId(matrixId);
+		List<Map<String, Object>> rsOperations = getOperationsListByMatrixId(parentMatrixId);
 
 		int rowcount = rsOperations.size();
 		if (rowcount > 0) {
