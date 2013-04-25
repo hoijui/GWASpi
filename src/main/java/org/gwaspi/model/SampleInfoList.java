@@ -24,10 +24,6 @@ public class SampleInfoList {
 		return sampleInfoService.createSamplesInfoTable();
 	}
 
-	public static List<String> selectSampleIDList(Integer poolId) {
-		return sampleInfoService.selectSampleIDList(poolId);
-	}
-
 	public static List<SampleInfo> getAllSampleInfoFromDB() throws IOException {
 		return sampleInfoService.getAllSampleInfoFromDB();
 	}

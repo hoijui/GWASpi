@@ -44,8 +44,7 @@ public class SampleInfoServiceImpl implements SampleInfoService {
 		return (result) ? "1" : "0";
 	}
 
-	@Override
-	public List<String> selectSampleIDList(Integer poolId) {
+	private List<String> selectSampleIDList(Integer poolId) {
 		try {
 			DbManager dBManager = ServiceLocator.getDbManager(cDBGWASpi.DB_DATACENTER);
 			String sql = "SELECT " + cDBSamples.f_SAMPLE_ID + " FROM " + cDBGWASpi.SCH_SAMPLES + "." + cDBSamples.T_SAMPLES_INFO + " WHERE " + cDBSamples.f_POOL_ID + "='" + poolId + "' ORDER BY order_id  WITH RR";
