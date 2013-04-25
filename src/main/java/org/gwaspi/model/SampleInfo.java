@@ -1,8 +1,9 @@
 package org.gwaspi.model;
 
+import java.io.Serializable;
 import org.gwaspi.constants.cDBSamples;
 
-public class SampleInfo implements Comparable<SampleInfo> {
+public class SampleInfo implements Comparable<SampleInfo>, Serializable {
 
 	public static enum Sex {
 		UNKNOWN,

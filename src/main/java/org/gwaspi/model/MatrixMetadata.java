@@ -1,5 +1,6 @@
 package org.gwaspi.model;
 
+import java.io.Serializable;
 import java.util.Date;
 import org.gwaspi.constants.cImport.ImportFormat;
 import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
@@ -11,7 +12,7 @@ import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
  * IBE, Institute of Evolutionary Biology (UPF-CSIC)
  * CEXS-UPF-PRBB
  */
-public class MatrixMetadata {
+public class MatrixMetadata implements Serializable {
 
 	private int matrixId;
 	private String matrixFriendlyName;
@@ -32,27 +33,27 @@ public class MatrixMetadata {
 	private String inputLocation;
 	private Date creationDate;
 
-//	public MatrixMetadata() {
-//
-//		this.matrixId = Integer.MIN_VALUE;
-//		this.matrixFriendlyName = "";
-//		this.matrixNetCDFName = "";
-//		this.pathToMatrix = "";
-//		this.technology = ImportFormat.UNKNOWN;
-//		this.gwaspiDBVersion = "";
-//		this.description = "";
-//		this.gtEncoding = null;
-//		this.strand = null;
-//		this.hasDictionray = false;
-//		this.markerSetSize = Integer.MIN_VALUE;
-//		this.sampleSetSize = Integer.MIN_VALUE;
-//		this.studyId = Integer.MIN_VALUE;
-//		this.matrixType = "";
-//		this.parent1MatrixId = -1;
-//		this.parent2MatrixId = -1;
-//		this.inputLocation = "";
-//		this.creationDate = new Date();
-//	}
+	protected MatrixMetadata() {
+
+		this.matrixId = Integer.MIN_VALUE;
+		this.matrixFriendlyName = "";
+		this.matrixNetCDFName = "";
+		this.pathToMatrix = "";
+		this.technology = ImportFormat.UNKNOWN;
+		this.gwaspiDBVersion = "";
+		this.description = "";
+		this.gtEncoding = null;
+		this.strand = null;
+		this.hasDictionray = false;
+		this.markerSetSize = Integer.MIN_VALUE;
+		this.sampleSetSize = Integer.MIN_VALUE;
+		this.studyId = Integer.MIN_VALUE;
+		this.matrixType = "";
+		this.parent1MatrixId = -1;
+		this.parent2MatrixId = -1;
+		this.inputLocation = "";
+		this.creationDate = new Date();
+	}
 
 	public MatrixMetadata(
 			String matrixFriendlyName,

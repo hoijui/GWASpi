@@ -1,11 +1,16 @@
 package org.gwaspi.model;
 
+import java.io.Serializable;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 
-public class MatrixOperationSpec {
+public class MatrixOperationSpec implements Serializable {
 
 	private final Integer id;
 	private final OPType type;
+
+	protected MatrixOperationSpec() {
+		this(null, null);
+	}
 
 	public MatrixOperationSpec(Integer id, OPType type) {
 

@@ -1,6 +1,7 @@
 package org.gwaspi.model;
 
 
+import java.io.Serializable;
 import java.util.Date;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 
@@ -10,7 +11,7 @@ import org.gwaspi.constants.cNetCDF.Defaults.OPType;
  * IBE, Institute of Evolutionary Biology (UPF-CSIC)
  * CEXS-UPF-PRBB
  */
-public class OperationMetadata {
+public class OperationMetadata implements Serializable {
 
 	private int id;
 	private int parentMatrixId;
@@ -25,21 +26,21 @@ public class OperationMetadata {
 	private int studyId;
 	private Date creationDate;
 
-//	public OperationMetadata() {
-//
-//		this.id = Integer.MIN_VALUE;
-//		this.parentMatrixId = Integer.MIN_VALUE;
-//		this.parentOperationId = Integer.MIN_VALUE;
-//		this.opName = "";
-//		this.netCDFName = "";
-//		this.description = "";
-//		this.pathToMatrix = "";
-//		this.gtCode = null;
-//		this.opSetSize = Integer.MIN_VALUE;
-//		this.implicitSetSize = Integer.MIN_VALUE;
-//		this.studyId = Integer.MIN_VALUE;
-//		this.creationDate = new Date();
-//	}
+	protected OperationMetadata() {
+
+		this.id = Integer.MIN_VALUE;
+		this.parentMatrixId = Integer.MIN_VALUE;
+		this.parentOperationId = Integer.MIN_VALUE;
+		this.opName = "";
+		this.netCDFName = "";
+		this.description = "";
+		this.pathToMatrix = "";
+		this.gtCode = null;
+		this.opSetSize = Integer.MIN_VALUE;
+		this.implicitSetSize = Integer.MIN_VALUE;
+		this.studyId = Integer.MIN_VALUE;
+		this.creationDate = new Date();
+	}
 
 	public OperationMetadata(
 			int id,
