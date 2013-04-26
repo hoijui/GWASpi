@@ -120,10 +120,10 @@ public class MetadataLoaderPlink implements MetadataLoader {
 		return sortedMetadataTM;
 	}
 
-	public Map<MarkerKey, Object> parseOrigMapFile(String path) throws IOException {
+	public Map<MarkerKey, byte[]> parseOrigMapFile(String path) throws IOException {
 		FileReader fr = new FileReader(path);
 		BufferedReader inputMapBR = new BufferedReader(fr);
-		Map<MarkerKey, Object> origMarkerIdSetMap = new LinkedHashMap<MarkerKey, Object>();
+		Map<MarkerKey, byte[]> origMarkerIdSetMap = new LinkedHashMap<MarkerKey, byte[]>();
 
 		String l;
 		while ((l = inputMapBR.readLine()) != null) {

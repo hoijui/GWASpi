@@ -173,7 +173,7 @@ public class MatrixTranslator {
 
 				//<editor-fold defaultstate="expanded" desc="GENOTYPES WRITER">
 				// Get correct bases dictionary for translation
-				Map<MarkerKey, Object> dictionnaryMap = rdMarkerSet.getDictionaryBases();
+				Map<MarkerKey, char[]> dictionnaryMap = rdMarkerSet.getDictionaryBases();
 
 				// Iterate through Samples, use Sample item position to read all Markers GTs from rdMarkerIdSetMap.
 				int sampleIndex = 0;
@@ -382,7 +382,7 @@ public class MatrixTranslator {
 		return result;
 	}
 
-	private void translateCurrentSampleAB12AllelesMap(Map<MarkerKey, byte[]> codedMap, GenotypeEncoding rdMatrixType, Map<MarkerKey, Object> dictionaryMap) {
+	private void translateCurrentSampleAB12AllelesMap(Map<MarkerKey, byte[]> codedMap, GenotypeEncoding rdMatrixType, Map<MarkerKey, char[]> dictionaryMap) {
 		byte alleleA;
 		byte alleleB;
 
@@ -393,7 +393,7 @@ public class MatrixTranslator {
 				// Iterate through all markers
 				for (Map.Entry<MarkerKey, byte[]> entry : codedMap.entrySet()) {
 					MarkerKey markerKey = entry.getKey();
-					char[] basesDict = dictionaryMap.get(markerKey).toString().toCharArray();
+					char[] basesDict = dictionaryMap.get(markerKey);
 					byte[] codedAlleles = entry.getValue();
 					byte[] transAlleles = new byte[2];
 

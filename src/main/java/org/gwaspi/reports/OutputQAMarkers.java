@@ -198,7 +198,7 @@ public class OutputQAMarkers {
 			}
 
 			// STORE MISMATCH STATE FOR LATER
-			Map<MarkerKey, Object> storedMismatchStateMap = new LinkedHashMap<MarkerKey, Object>();
+			Map<MarkerKey, Integer> storedMismatchStateMap = new LinkedHashMap<MarkerKey, Integer>();
 			storedMismatchStateMap.putAll(sortingMarkerSetMap);
 
 			String sep = cExport.separator_REPORTS;

@@ -229,6 +229,30 @@ public class SampleInfo implements Comparable<SampleInfo>, Serializable {
 	public SampleInfo(
 			String sampleId,
 			String familyId,
+			Sex sex,
+			Affection affection)
+	{
+		this.orderId = Integer.MIN_VALUE;
+		this.sampleId = sampleId;
+		this.familyId = familyId;
+		this.fatherId = "";
+		this.motherId = "";
+		this.sex = sex;
+		this.affection = affection;
+		this.category = "";
+		this.disease = "";
+		this.population = "";
+		this.age = Integer.MIN_VALUE;
+		this.filter = "";
+		this.poolId = null;
+		this.approved = 0;
+		this.status = 0;
+		this.key = new SampleKey(this.sampleId, this.familyId);
+	}
+
+	public SampleInfo(
+			String sampleId,
+			String familyId,
 			String fatherId,
 			String motherId,
 			Sex sex,

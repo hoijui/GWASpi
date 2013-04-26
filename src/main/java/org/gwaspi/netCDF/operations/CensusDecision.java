@@ -1,5 +1,7 @@
 package org.gwaspi.netCDF.operations;
 
+import org.gwaspi.model.SampleInfo.Sex;
+
 /**
  *
  * @author Fernando Muñiz Fernandez
@@ -12,20 +14,22 @@ public enum CensusDecision {
 	CountMalesNonAutosomally,
 	CountFemalesNonAutosomally;
 
-	static CensusDecision getDecisionByChrAndSex(String chr, String sex) {
+	static CensusDecision getDecisionByChrAndSex(final String chr, final Sex sex) {
+
 		CensusDecision decision = CensusDecision.CountAutosomally;
+
 		if (chr.equals("X")) {
-			if (sex.equals("1")) { // Male
+			if (sex == Sex.MALE) {
 				// Do not count to census when Chromosome is X and Sex is male
 				decision = CensusDecision.CountMalesNonAutosomally;
 			}
-		}
-		if (chr.equals("Y")) {
-			if (sex.equals("2")) { // Female
+		} else if (chr.equals("Y")) {
+			if (sex == Sex.FEMALE) {
 				// Do not count to census when Chromosome is Y and Sex is female
 				decision = CensusDecision.CountFemalesNonAutosomally;
 			}
 		}
+
 		return decision;
 	}
 }

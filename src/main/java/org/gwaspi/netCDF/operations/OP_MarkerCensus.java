@@ -23,6 +23,8 @@ import org.gwaspi.model.Operation;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.SampleInfo;
+import org.gwaspi.model.SampleInfo.Affection;
+import org.gwaspi.model.SampleInfo.Sex;
 import org.gwaspi.model.SampleInfoList;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.netCDF.markers.MarkerSet;
@@ -79,7 +81,7 @@ public class OP_MarkerCensus implements MatrixOperation {
 	public int processMatrix() throws IOException, InvalidRangeException {
 		int resultOpId = Integer.MIN_VALUE;
 
-		Map<SampleKey, Object> excludeSampleSetMap = new LinkedHashMap<SampleKey, Object>();
+		Map<SampleKey, Double> excludeSampleSetMap = new LinkedHashMap<SampleKey, Double>();
 		boolean dataRemaining = pickingMarkersAndSamplesFromQA(excludeSampleSetMap);
 
 		if (dataRemaining) {
@@ -138,7 +140,7 @@ public class OP_MarkerCensus implements MatrixOperation {
 				writeMetadata(wrNcFile, rdMarkerSet, wrMarkerSetMap, wrSampleKeys);
 
 				//<editor-fold defaultstate="expanded" desc="PROCESSOR">
-				Map<SampleKey, String[]> samplesInfoMap = fetchSampleInfo(rdMatrixMetadata, wrSampleKeys);
+				Map<SampleKey, SampleInfo> samplesInfoMap = fetchSampleInfo(rdMatrixMetadata, wrSampleKeys);
 
 				// Iterate through markerset, take it marker by marker
 				rdMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
@@ -212,10 +214,10 @@ public class OP_MarkerCensus implements MatrixOperation {
 
 					rdSampleSet.readAllSamplesGTsFromCurrentMarkerToMap(rdNcFile, rdSampleSetMap, markerNb);
 					for (SampleKey sampleKey : wrSampleKeys) {
-						String[] sampleInfo = samplesInfoMap.get(sampleKey);
+						SampleInfo sampleInfo = samplesInfoMap.get(sampleKey);
 
 						//<editor-fold defaultstate="expanded" desc="THE DECIDER">
-						CensusDecision decision = CensusDecision.getDecisionByChrAndSex(markerChr, sampleInfo[0]);
+						CensusDecision decision = CensusDecision.getDecisionByChrAndSex(markerChr, sampleInfo.getSex());
 
 						float counter = 1;
 //						if (decision == CensusDecision.CountMalesNonAutosomally) {
@@ -230,7 +232,7 @@ public class OP_MarkerCensus implements MatrixOperation {
 								decision,
 								knownAlleles,
 								allSamplesGTsTable,
-								sampleInfo[1],
+								sampleInfo.getAffection(),
 								caseSamplesGTsTable,
 								ctrlSamplesGTsTable,
 								hwSamplesGTsTable,
@@ -622,7 +624,7 @@ public class OP_MarkerCensus implements MatrixOperation {
 	 * @return true if there is data left after picking, false otherwise
 	 */
 	private boolean pickingMarkersAndSamplesFromQA(
-			Map<SampleKey, Object> excludeSampleSetMap)
+			Map<SampleKey, Double> excludeSampleSetMap)
 			throws IOException
 	{
 		OperationMetadata markerQAMetadata = OperationsList.getOperationMetadata(markerQAOP.getId());
@@ -633,8 +635,8 @@ public class OP_MarkerCensus implements MatrixOperation {
 
 		MarkerOperationSet rdQAMarkerSet = new MarkerOperationSet(markerQAMetadata.getStudyId(), markerQAMetadata.getOPId());
 		SampleOperationSet rdQASampleSet = new SampleOperationSet(sampleQAMetadata.getStudyId(), sampleQAMetadata.getOPId());
-		Map<MarkerKey, Object> rdQAMarkerSetMap = rdQAMarkerSet.getOpSetMap();
-		Map<SampleKey, Object> rdQASampleSetMap = rdQASampleSet.getOpSetMap();
+		Map<MarkerKey, ?> rdQAMarkerSetMap = rdQAMarkerSet.getOpSetMap();
+		Map<SampleKey, ?> rdQASampleSetMap = rdQASampleSet.getOpSetMap();
 		Map<MarkerKey, Object> excludeMarkerSetMap = new LinkedHashMap<MarkerKey, Object>();
 		excludeSampleSetMap.clear();
 
@@ -646,7 +648,7 @@ public class OP_MarkerCensus implements MatrixOperation {
 			Map<MarkerKey, Integer> rdQAMarkerSetMapMismatchStates = rdQAMarkerSet.fillOpSetMapWithVariable(rdMarkerQANcFile, cNetCDF.Census.VAR_OP_MARKERS_MISMATCHSTATE);
 			for (Map.Entry<MarkerKey, Integer> entry : rdQAMarkerSetMapMismatchStates.entrySet()) {
 				MarkerKey key = entry.getKey();
-				Object value = entry.getValue();
+				Integer value = entry.getValue();
 				if (value.equals(cNetCDF.Defaults.DEFAULT_MISMATCH_YES)) {
 					excludeMarkerSetMap.put(key, value);
 				}
@@ -657,7 +659,7 @@ public class OP_MarkerCensus implements MatrixOperation {
 		Map<MarkerKey, Double> rdQAMarkerSetMapMissingRat = rdQAMarkerSet.fillOpSetMapWithVariable(rdMarkerQANcFile, cNetCDF.Census.VAR_OP_MARKERS_MISSINGRAT);
 		for (Map.Entry<MarkerKey, Double> entry : rdQAMarkerSetMapMissingRat.entrySet()) {
 			MarkerKey key = entry.getKey();
-			double value = entry.getValue();
+			Double value = entry.getValue();
 			if (value > markerMissingRatio) {
 				excludeMarkerSetMap.put(key, value);
 			}
@@ -699,13 +701,15 @@ public class OP_MarkerCensus implements MatrixOperation {
 			CensusDecision decision,
 			Map<Byte, Float> knownAlleles,
 			Map<Integer, Float> allSamplesGTsTable,
-			String affection,
+			Affection affection,
 			Map<Integer, Float> caseSamplesGTsTable,
 			Map<Integer, Float> ctrlSamplesGTsTable,
 			Map<Integer, Float> hwSamplesGTsTable,
 			float counter,
 			int missingCount)
 	{
+		int newMissingCount = missingCount;
+
 		// Gather alleles different from 0 into a list of known alleles
 		// and count the number of appearences
 		if (tempGT[0] != AlleleBytes._0) {
@@ -723,7 +727,7 @@ public class OP_MarkerCensus implements MatrixOperation {
 			knownAlleles.put(tempGT[1], tempCount + counter);
 		}
 		if (tempGT[0] == AlleleBytes._0 && tempGT[1] == AlleleBytes._0) {
-			missingCount++;
+			newMissingCount++;
 		}
 
 		int intAllele1 = tempGT[0];
@@ -737,13 +741,13 @@ public class OP_MarkerCensus implements MatrixOperation {
 		}
 		allSamplesGTsTable.put(intAlleleSum, tempCount + counter);
 
-		if (affection.equals("2")) { // CASE
+		if (affection == Affection.AFFECTED) {
 			tempCount = 0;
 			if (caseSamplesGTsTable.containsKey(intAlleleSum)) {
 				tempCount = caseSamplesGTsTable.get(intAlleleSum);
 			}
 			caseSamplesGTsTable.put(intAlleleSum, tempCount + counter);
-		} else if (affection.equals("1")) { // CONTROL
+		} else if (affection == Affection.UNAFFECTED) {
 			tempCount = 0;
 			if (ctrlSamplesGTsTable.containsKey(intAlleleSum)) {
 				tempCount = ctrlSamplesGTsTable.get(intAlleleSum);
@@ -765,24 +769,21 @@ public class OP_MarkerCensus implements MatrixOperation {
 			}
 		}
 
-		return missingCount;
+		return newMissingCount;
 	}
 
-	private Map<SampleKey, String[]> fetchSampleInfo(
+	private Map<SampleKey, SampleInfo> fetchSampleInfo(
 			MatrixMetadata rdMatrixMetadata,
 			Collection<SampleKey> wrSampleKeys)
 			throws IOException
 	{
-		Map<SampleKey, String[]> samplesInfoMap = new LinkedHashMap<SampleKey, String[]>(); // XXX change to Collection<SampleInfo>?
+		Map<SampleKey, SampleInfo> samplesInfoMap = new LinkedHashMap<SampleKey, SampleInfo>();
 		List<SampleInfo> sampleInfos = SampleInfoList.getAllSampleInfoFromDBByPoolID(rdMatrixMetadata.getStudyId());
 		if (phenoFile == null) {
 			for (SampleInfo sampleInfo : sampleInfos) {
 				SampleKey tempSampleKey = sampleInfo.getKey();
 				if (wrSampleKeys.contains(tempSampleKey)) {
-					String sex = sampleInfo.getSexStr();
-					String affection = sampleInfo.getAffectionStr();
-					String[] info = new String[]{sex, affection};
-					samplesInfoMap.put(tempSampleKey, info);
+					samplesInfoMap.put(tempSampleKey, sampleInfo);
 				}
 			}
 		} else {
@@ -793,24 +794,26 @@ public class OP_MarkerCensus implements MatrixOperation {
 			String l;
 			while ((l = phenotypeBR.readLine()) != null) {
 				String[] cVals = l.split(cImport.Separators.separators_CommaSpaceTab_rgxp);
-				String[] info = new String[]{cVals[GWASpi.sex], cVals[GWASpi.affection]};
-				samplesInfoMap.put(new SampleKey(cVals[GWASpi.sampleId], cVals[GWASpi.familyId]), info);
+				SampleInfo info = new SampleInfo(
+						cVals[GWASpi.sampleId],
+						cVals[GWASpi.familyId],
+						Sex.parse(cVals[GWASpi.sex]),
+						Affection.parse(cVals[GWASpi.affection]));
+				samplesInfoMap.put(info.getKey(), info);
 			}
 			phenotypeBR.close();
 			// CHECK IF THERE ARE MISSING SAMPLES IN THE PHENO PHILE
 			for (SampleKey sampleKey : wrSampleKeys) {
 				if (!samplesInfoMap.containsKey(sampleKey)) {
 					String sex = "0";
-					String affection = "0";
+					SampleInfo info = new SampleInfo();
 					for (SampleInfo sampleInfo : sampleInfos) {
 						SampleKey tmpSampleKey = sampleInfo.getKey();
 						if (tmpSampleKey.equals(sampleKey)) {
-							sex = sampleInfo.getSexStr();
-							affection = sampleInfo.getAffectionStr();
+							info = sampleInfo;
 							break;
 						}
 					}
-					String[] info = new String[] {sex, affection};
 					samplesInfoMap.put(sampleKey, info);
 				}
 			}

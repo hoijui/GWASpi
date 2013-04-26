@@ -239,7 +239,7 @@ public class LoadGTFromPlinkFlatFiles implements GenotypesLoader {
 		//<editor-fold defaultstate="expanded" desc="MATRIX GENOTYPES LOAD ">
 		GenotypeEncoding guessedGTCode = GenotypeEncoding.UNKNOWN;
 		log.info(Text.All.processing);
-		Map<MarkerKey, Object> mapMarkerSetMap = markerSetLoader.parseOrigMapFile(loadDescription.getGtDirPath());
+		Map<MarkerKey, byte[]> mapMarkerSetMap = markerSetLoader.parseOrigMapFile(loadDescription.getGtDirPath());
 		loadPedGenotypes(
 				new File(loadDescription.getAnnotationFilePath()),
 				ncfile,
@@ -288,7 +288,7 @@ public class LoadGTFromPlinkFlatFiles implements GenotypesLoader {
 	public void loadPedGenotypes(File file,
 			NetcdfFileWriteable ncfile,
 			Collection<MarkerKey> wrMarkerKeys,
-			Map<MarkerKey, Object> mapMarkerSetMap,
+			Map<MarkerKey, ?> mapMarkerSetMap,
 			List<SampleKey> sampleKeys,
 			GenotypeEncoding guessedGTCode)
 			throws IOException, InvalidRangeException

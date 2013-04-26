@@ -80,7 +80,7 @@ public abstract class Report_Analysis extends JPanel {
 	// Variables declaration - do not modify
 	private final int studyId;
 	private final int opId;
-	protected Map<String, Object> chrSetInfoMap;
+	protected Map<String, int[]> chrSetInfoMap;
 	protected File reportFile;
 	private JButton btn_Get;
 	private JButton btn_Save;
@@ -102,7 +102,7 @@ public abstract class Report_Analysis extends JPanel {
 
 		this.studyId = studyId;
 		this.opId = opId;
-		this.chrSetInfoMap = new LinkedHashMap<String, Object>();
+		this.chrSetInfoMap = new LinkedHashMap<String, int[]>();
 
 		String reportName = GWASpiExplorerPanel.getSingleton().getTree().getLastSelectedPathComponent().toString();
 		reportName = reportName.substring(reportName.indexOf('-') + 2);
@@ -302,10 +302,10 @@ public abstract class Report_Analysis extends JPanel {
 
 					if (colIndex == getZoomColumnIndex()) { // Zoom
 						setCursor(CursorUtils.WAIT_CURSOR);
-						long markerPhysPos = (Long) tbl_ReportTable.getValueAt(rowIndex, 3); //marker physical position in chromosome
-						String chr = tbl_ReportTable.getValueAt(rowIndex, 2).toString(); //Chromosome
+						long markerPhysPos = (Long) tbl_ReportTable.getValueAt(rowIndex, 3); // marker physical position in chromosome
+						String chr = tbl_ReportTable.getValueAt(rowIndex, 2).toString(); // Chromosome
 
-						int[] chrInfo = (int[]) chrSetInfoMap.get(chr); //Nb of markers, first physical position, last physical position, start index number in MarkerSet,
+						int[] chrInfo = chrSetInfoMap.get(chr); // Nb of markers, first physical position, last physical position, start index number in MarkerSet,
 						int nbMarkers = (Integer) chrInfo[0];
 						int startPhysPos = (Integer) chrInfo[1];
 						int maxPhysPos = (Integer) chrInfo[2];

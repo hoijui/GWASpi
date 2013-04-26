@@ -260,7 +260,7 @@ public class LoadGTFromPlinkBinaryFiles implements GenotypesLoader {
 		// <editor-fold defaultstate="expanded" desc="MATRIX GENOTYPES LOAD ">
 		GenotypeEncoding guessedGTCode = GenotypeEncoding.O12;
 		log.info(Text.All.processing);
-		Map<SampleKey, Object> bimSamples = markerSetLoader.parseOrigBimFile(loadDescription.getAnnotationFilePath()); //key = markerId, values{allele1 (minor), allele2 (major)}
+		Map<SampleKey, String[]> bimSamples = markerSetLoader.parseOrigBimFile(loadDescription.getAnnotationFilePath()); //key = markerId, values{allele1 (minor), allele2 (major)}
 		loadBedGenotypes(
 				new File(loadDescription.getGtDirPath()),
 				ncfile,
@@ -302,7 +302,7 @@ public class LoadGTFromPlinkBinaryFiles implements GenotypesLoader {
 	private void loadBedGenotypes(
 			File file,
 			NetcdfFileWriteable ncfile,
-			Map<SampleKey, Object> bimSamples,
+			Map<SampleKey, String[]> bimSamples,
 			Collection<SampleInfo> sampleInfos,
 			GenotypeEncoding guessedGTCode,
 			int hyperSlabRows)
@@ -320,14 +320,13 @@ public class LoadGTFromPlinkBinaryFiles implements GenotypesLoader {
 			bytesPerSNP = (sampleNb / 4) + 1;
 		}
 
-		Iterator<Object> itMarkerSet = bimSamples.values().iterator();
+		Iterator<String[]> itMarkerSet = bimSamples.values().iterator();
 		Iterator<SampleInfo> itSampleSet = sampleInfos.iterator();
 
 		// SKIP HEADER
 		bedIS.readByte();
 		bedIS.readByte();
 		byte mode = bedIS.readByte();
-
 
 		// INIT VARS
 		String[] alleles;
@@ -349,7 +348,7 @@ public class LoadGTFromPlinkBinaryFiles implements GenotypesLoader {
 						mappedGenotypes.put(sampleId, cNetCDF.Defaults.DEFAULT_GT);
 					}
 
-					alleles = (String[]) itMarkerSet.next(); // key = markerId, values{allele1 (minor), allele2 (major)}
+					alleles = itMarkerSet.next(); // key = markerId, values{allele1 (minor), allele2 (major)}
 
 					// READ ALL SAMPLE GTs FOR CURRENT SNP
 					int check = bedIS.read(rowBytes, 0, bytesPerSNP);

@@ -15,6 +15,7 @@ import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleInfo;
+import org.gwaspi.model.SampleInfo.Sex;
 import org.gwaspi.model.SampleInfoList;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.netCDF.markers.MarkerSet;
@@ -204,11 +205,11 @@ public class OP_QAMarkers implements MatrixOperation {
 			rdMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
 
 			List<SampleInfo> sampleInfos = SampleInfoList.getAllSampleInfoFromDBByPoolID(rdMatrixMetadata.getStudyId());
-			Map<SampleKey, Object> samplesInfoMap = new LinkedHashMap<SampleKey, Object>();
+			Map<SampleKey, Sex> samplesInfoMap = new LinkedHashMap<SampleKey, Sex>();
 			for (SampleInfo sampleInfo : sampleInfos) {
 				SampleKey tempSampleId = sampleInfo.getKey();
 				if (rdSampleSetMap.containsKey(tempSampleId)) {
-					String sex = sampleInfo.getSexStr();
+					Sex sex = sampleInfo.getSex();
 					samplesInfoMap.put(tempSampleId, sex);
 				}
 			}
@@ -228,7 +229,7 @@ public class OP_QAMarkers implements MatrixOperation {
 					SampleKey sampleKey = sampleEntry.getKey();
 
 					//<editor-fold defaultstate="expanded" desc="THE DECIDER">
-					CensusDecision decision = CensusDecision.getDecisionByChrAndSex(new String(sampleEntry.getValue()), samplesInfoMap.get(sampleKey).toString());
+					CensusDecision decision = CensusDecision.getDecisionByChrAndSex(new String(sampleEntry.getValue()), samplesInfoMap.get(sampleKey));
 					//</editor-fold>
 
 					//<editor-fold defaultstate="expanded" desc="SUMMING SAMPLESET GENOTYPES">

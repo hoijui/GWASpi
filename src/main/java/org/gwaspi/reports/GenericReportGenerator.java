@@ -435,7 +435,7 @@ public class GenericReportGenerator {
 
 			NetcdfFile assocNcFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());
 			MarkerOperationSet rdAssocMarkerSet = new MarkerOperationSet(rdOPMetadata.getStudyId(), opId);
-			Map<MarkerKey, Object> rdAssocMarkerSetMap = rdAssocMarkerSet.getOpSetMap();
+			Map<MarkerKey, double[]> rdAssocMarkerSetMap = rdAssocMarkerSet.getOpSetMap();
 
 			MarkerSet rdInfoMarkerSet = new MarkerSet(rdOPMetadata.getStudyId(), rdOPMetadata.getParentMatrixId());
 			rdInfoMarkerSet.initFullMarkerIdSetMap();
@@ -456,7 +456,7 @@ public class GenericReportGenerator {
 			}
 
 			// CUT READ-Map TO SIZE
-			for (Map.Entry<MarkerKey, Object> entry : rdAssocMarkerSetMap.entrySet()) {
+			for (Map.Entry<MarkerKey, ?> entry : rdAssocMarkerSetMap.entrySet()) {
 				MarkerKey key = entry.getKey();
 				MarkerMetadata chrInfo = rdInfoMarkerSet.getMarkerMetadata().get(key);
 				Object[] plotInfo = new Object[3];
@@ -477,7 +477,7 @@ public class GenericReportGenerator {
 				for (Map.Entry<MarkerKey, Object[]> entry : dataSetMap.entrySet()) {
 					MarkerKey key = entry.getKey();
 					Object[] data = entry.getValue(); // CHR, POS, PVAL
-					double[] value = (double[]) rdAssocMarkerSetMap.get(key);
+					double[] value = rdAssocMarkerSetMap.get(key);
 					Double pval = (Double) value[1]; // PVAL
 					if (!Double.isNaN(pval) && !Double.isInfinite(pval)) { // Ignore NaN Pvalues
 						data[2] = pval;
@@ -698,7 +698,7 @@ public class GenericReportGenerator {
 		NetcdfFile sampleQANcFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());
 		SampleOperationSet rdSampleQAOPSet = new SampleOperationSet(rdOPMetadata.getStudyId(), opId);
 
-		Map<SampleKey, Object> sampleSetMap = rdSampleQAOPSet.getOpSetMap();
+		Map<SampleKey, ?> sampleSetMap = rdSampleQAOPSet.getOpSetMap();
 		List<Double> hetzygVals = rdSampleQAOPSet.getListWithVariable(sampleQANcFile, cNetCDF.Census.VAR_OP_SAMPLES_HETZYRAT);
 		List<Double> missingratVals = rdSampleQAOPSet.getListWithVariable(sampleQANcFile, cNetCDF.Census.VAR_OP_SAMPLES_MISSINGRAT);
 
@@ -707,7 +707,7 @@ public class GenericReportGenerator {
 
 		int count = 0;
 		Map<String, SampleKey> samplesLabeler = new LinkedHashMap<String, SampleKey>();
-		for (Map.Entry<SampleKey, Object> entry : sampleSetMap.entrySet()) {
+		for (Map.Entry<SampleKey, ?> entry : sampleSetMap.entrySet()) {
 			SampleKey tmpSampleKey = entry.getKey();
 			double tmpHetzyVal = hetzygVals.get(count);
 			double tmpMissratVal = missingratVals.get(count);

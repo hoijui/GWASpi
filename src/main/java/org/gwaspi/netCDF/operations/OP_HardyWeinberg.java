@@ -45,7 +45,7 @@ public class OP_HardyWeinberg implements MatrixOperation {
 
 		MarkerOperationSet rdOperationSet = new MarkerOperationSet(rdOPMetadata.getStudyId(), markerCensusOP.getId());
 		Map<MarkerKey, char[]> rdMarkerSetMap = rdOperationSet.getOpSetMap();
-		Map<SampleKey, Object> rdSampleSetMap = rdOperationSet.getImplicitSetMap();
+		Map<SampleKey, ?> rdSampleSetMap = rdOperationSet.getImplicitSetMap();
 
 		NetcdfFileWriteable wrNcFile = null;
 		try {

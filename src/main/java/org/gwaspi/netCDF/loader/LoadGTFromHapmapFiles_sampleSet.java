@@ -249,7 +249,7 @@ public class LoadGTFromHapmapFiles_sampleSet extends LoadGTFromHapmapFiles imple
 		}
 		String[] headerFields = header.split(cImport.Separators.separators_SpaceTab_rgxp);
 
-		Map<String, Object> sampleOrderMap = new LinkedHashMap<String, Object>();
+		Map<String, String> sampleOrderMap = new LinkedHashMap<String, String>();
 		for (int j = LoadGTFromHapmapFiles.Standard.sampleId; j < headerFields.length; j++) {
 			sampleOrderMap.put(String.valueOf(j), headerFields[j]);
 		}

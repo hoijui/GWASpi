@@ -360,7 +360,7 @@ public class Utils {
 	//<editor-fold defaultstate="expanded" desc="GENOTYPE SAVERS">
 	public static boolean saveChunkedCurrentSampleGTsToMatrix(
 			NetcdfFileWriteable wrNcFile,
-			Map<String, Object> wrMap,
+			Map<?, Object> wrMap,
 			int samplePos,
 			int offset)
 			throws InvalidRangeException
@@ -582,7 +582,7 @@ public class Utils {
 
 	//<editor-fold defaultstate="expanded" desc="POJOs TO netCDFJOs">
 	//<editor-fold defaultstate="expanded" desc="ArrayChar.D3">
-	public static ArrayChar.D3 writeMapToCurrentSampleArrayCharD3(Map<String, Object> map, int stride) {
+	public static ArrayChar.D3 writeMapToCurrentSampleArrayCharD3(Map<?, Object> map, int stride) {
 		ArrayChar.D3 charArray = new ArrayChar.D3(1, map.size(), stride);
 		Index ima = charArray.getIndex();
 
@@ -596,7 +596,7 @@ public class Utils {
 		return charArray;
 	}
 
-	public static ArrayChar.D3 writeMapToCurrentMarkerArrayCharD3(Map<String, Object> map, int stride) {
+	public static ArrayChar.D3 writeMapToCurrentMarkerArrayCharD3(Map<?, Object> map, int stride) {
 		ArrayChar.D3 charArray = new ArrayChar.D3(map.size(), 1, stride);
 		Index ima = charArray.getIndex();
 
@@ -911,7 +911,7 @@ public class Utils {
 
 	//<editor-fold defaultstate="expanded" desc="ArrayChar.D1">
 	public static Map<String, Object> writeD1ArrayCharToMapKeys(ArrayChar inputArray) {
-		Map<String, Object> result = new LinkedHashMap();
+		Map<String, Object> result = new LinkedHashMap<String, Object>();
 		StringBuilder key = new StringBuilder("");
 		Index index = inputArray.getIndex();
 

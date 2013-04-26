@@ -517,8 +517,8 @@ public class MarkerSet {
 	/**
 	 * HELPER GETS DICTIONARY OF CURRENT MATRIX. IS CONCURRENT TO INSTANTIATED Map
 	 */
-	public Map<MarkerKey, Object> getDictionaryBases() throws IOException {
-		Map<MarkerKey, Object> dictionnary = new LinkedHashMap<MarkerKey, Object>();
+	public Map<MarkerKey, char[]> getDictionaryBases() throws IOException {
+		Map<MarkerKey, char[]> dictionnary = new LinkedHashMap<MarkerKey, char[]>();
 		try {
 			Variable varBasesDict = ncfile.findVariable(cNetCDF.Variables.VAR_MARKERS_BASES_DICT);
 			if (null != varBasesDict) {
@@ -535,7 +535,7 @@ public class MarkerSet {
 					for (int j = 0; j < dictShape[1]; j++) {
 						alleles.append(dictAlleles_ACD2.getChar(index.set(i, j)));
 					}
-					dictionnary.put(key, alleles.toString().trim());
+					dictionnary.put(key, alleles.toString().trim().toCharArray());
 				}
 			}
 		} catch (InvalidRangeException ex) {

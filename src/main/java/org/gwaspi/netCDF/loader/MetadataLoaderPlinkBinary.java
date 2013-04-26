@@ -129,10 +129,10 @@ public class MetadataLoaderPlinkBinary implements MetadataLoader {
 		return sortedMetadataTM;
 	}
 
-	public Map<SampleKey, Object> parseOrigBimFile(String path) throws IOException {
+	public Map<SampleKey, String[]> parseOrigBimFile(String path) throws IOException {
 		FileReader fr = new FileReader(path);
 		BufferedReader inputMapBR = new BufferedReader(fr);
-		Map<SampleKey, Object> origMarkerIdSetMap = new LinkedHashMap<SampleKey, Object>();
+		Map<SampleKey, String[]> origMarkerIdSetMap = new LinkedHashMap<SampleKey, String[]>();
 
 		String l;
 		while ((l = inputMapBR.readLine()) != null) {
