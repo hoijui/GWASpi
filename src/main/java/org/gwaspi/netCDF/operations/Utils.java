@@ -358,6 +358,9 @@ public class Utils {
 	}
 
 	//<editor-fold defaultstate="expanded" desc="GENOTYPE SAVERS">
+	/**
+	 * @deprecated unused
+	 */
 	public static boolean saveChunkedCurrentSampleGTsToMatrix(
 			NetcdfFileWriteable wrNcFile,
 			Map<?, Object> wrMap,
@@ -368,7 +371,7 @@ public class Utils {
 		boolean result = false;
 		ArrayChar.D3 genotypes = writeMapToCurrentSampleArrayCharD3(wrMap, cNetCDF.Strides.STRIDE_GT);
 
-		int[] origin = new int[]{samplePos, offset, 0};
+		int[] origin = new int[] {samplePos, offset, 0};
 		try {
 			wrNcFile.write(cNetCDF.Variables.VAR_GENOTYPES, origin, genotypes);
 			log.info("Done writing Sample {} genotypes", samplePos);
@@ -381,6 +384,9 @@ public class Utils {
 		return result;
 	}
 
+	/**
+	 * @deprecated unused
+	 */
 	public static boolean saveChunkedCurrentMarkerGTsToMatrix(
 			NetcdfFileWriteable wrNcFile,
 			Map<String, Object> wrMap,
@@ -582,6 +588,9 @@ public class Utils {
 
 	//<editor-fold defaultstate="expanded" desc="POJOs TO netCDFJOs">
 	//<editor-fold defaultstate="expanded" desc="ArrayChar.D3">
+	/**
+	 * @deprecated unused
+	 */
 	public static ArrayChar.D3 writeMapToCurrentSampleArrayCharD3(Map<?, Object> map, int stride) {
 		ArrayChar.D3 charArray = new ArrayChar.D3(1, map.size(), stride);
 		Index ima = charArray.getIndex();
@@ -596,6 +605,9 @@ public class Utils {
 		return charArray;
 	}
 
+	/**
+	 * @deprecated unused
+	 */
 	public static ArrayChar.D3 writeMapToCurrentMarkerArrayCharD3(Map<?, Object> map, int stride) {
 		ArrayChar.D3 charArray = new ArrayChar.D3(map.size(), 1, stride);
 		Index ima = charArray.getIndex();
@@ -910,6 +922,9 @@ public class Utils {
 	//</editor-fold>
 
 	//<editor-fold defaultstate="expanded" desc="ArrayChar.D1">
+	/**
+	 * @deprecated unused
+	 */
 	public static Map<String, Object> writeD1ArrayCharToMapKeys(ArrayChar inputArray) {
 		Map<String, Object> result = new LinkedHashMap<String, Object>();
 		StringBuilder key = new StringBuilder("");
@@ -922,9 +937,11 @@ public class Utils {
 		result.put(key.toString().trim(), "");
 
 		return result;
-
 	}
 
+	/**
+	 * @deprecated unused
+	 */
 	public static void writeD1ArrayCharToMapValues(ArrayChar inputArray, Map<String, Object> map) {
 		StringBuilder value = new StringBuilder("");
 		Index index = inputArray.getIndex();

@@ -118,6 +118,9 @@ public class MarkerOperationSet<V> extends AbstractOperationSet<MarkerKey, V> {
 		return returnMap;
 	}
 
+	/**
+	 * @deprecated unused
+	 */
 	private static <MarkerKey> Map<MarkerKey, Object> pickValidMarkerSetItemsByKey(Map<MarkerKey, Object> map, Set<Object> criteria, boolean includes) {
 		Map<MarkerKey, Object> returnMap = new LinkedHashMap<MarkerKey, Object>();
 

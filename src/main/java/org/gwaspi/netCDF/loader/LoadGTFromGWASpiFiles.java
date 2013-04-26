@@ -347,6 +347,9 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 	//</editor-fold>
 
 	//<editor-fold defaultstate="expanded" desc="HELPER METHODS">
+	/**
+	 * @deprecated unused
+	 */
 	private Map<String, Object> getSampleIds(File hapmapGTFile) throws IOException {
 
 		Map<String, Object> uniqueSamples = new LinkedHashMap<String, Object>();

@@ -280,7 +280,6 @@ public class SampleInfo implements Comparable<SampleInfo>, Serializable {
 		this.key = new SampleKey(this.sampleId, this.familyId);
 	}
 
-
 	public SampleInfo(
 			int orderId,
 			String sampleId,

@@ -118,6 +118,9 @@ public class LoadGTFromBeagleFiles extends AbstractLoadGTFromFiles {
 	//</editor-fold>
 
 	//<editor-fold defaultstate="expanded" desc="HELPER METHODS">
+	/**
+	 * @deprecated unused
+	 */
 	private Map<String, Object> getBeagleSampleIds(File hapmapGTFile) throws IOException {
 
 		Map<String, Object> uniqueSamples = new LinkedHashMap<String, Object>();
