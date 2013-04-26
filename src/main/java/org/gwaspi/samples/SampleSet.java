@@ -350,12 +350,6 @@ public class SampleSet {
 			}
 		}
 	}
-
-	public void fillMapWithDefaultValue(Map<String, Object> map, Object defaultVal) {
-		for (Map.Entry<String, Object> entry : map.entrySet()) {
-			entry.setValue(defaultVal);
-		}
-	}
 	//</editor-fold>
 
 	//<editor-fold defaultstate="expanded" desc="SAMPLESET PICKERS">
