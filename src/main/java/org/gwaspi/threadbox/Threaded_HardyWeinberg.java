@@ -2,6 +2,7 @@ package org.gwaspi.threadbox;
 
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.model.GWASpiExplorerNodes;
+import org.gwaspi.netCDF.operations.OperationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,18 +29,20 @@ public class Threaded_HardyWeinberg extends CommonRunnable {
 		this.censusOpId = censusOpId;
 	}
 
+	@Override
 	protected Logger createLog() {
 		return LoggerFactory.getLogger(Threaded_HardyWeinberg.class);
 	}
 
+	@Override
 	protected void runInternal(SwingWorkerItem thisSwi) throws Exception {
 
 		// HW ON GENOTYPE FREQ.
-		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
-			if (censusOpId != Integer.MIN_VALUE) {
-				int hwOpId = org.gwaspi.netCDF.operations.OperationManager.performHardyWeinberg(censusOpId, cNetCDF.Defaults.DEFAULT_AFFECTION);
-				GWASpiExplorerNodes.insertSubOperationUnderOperationNode(censusOpId, hwOpId);
-			}
+		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)
+				&& (censusOpId != Integer.MIN_VALUE))
+		{
+			int hwOpId = OperationManager.performHardyWeinberg(censusOpId, cNetCDF.Defaults.DEFAULT_AFFECTION);
+			GWASpiExplorerNodes.insertSubOperationUnderOperationNode(censusOpId, hwOpId);
 		}
 	}
 }

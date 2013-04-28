@@ -73,7 +73,6 @@ public class LoadDataPanel extends JPanel {
 	private JPanel pnl_Input;
 	private JPanel pnl_NameAndDesc;
 	private JPanel pnl_Gif;
-	private JPanel pnl_GifLeft;
 	private JScrollPane scrl_NewMatrixDescription;
 	private JTextArea txtA_NewMatrixDescription;
 	private JTextField txt_File1;
@@ -114,7 +113,6 @@ public class LoadDataPanel extends JPanel {
 		btn_Go = new JButton();
 		btn_Help = new JButton();
 		pnl_Gif = new JPanel();
-		pnl_GifLeft = new JPanel();
 
 		formatAction = new LoadDataPanel.FormatAction();
 		browseSampleInfoAction = new LoadDataPanel.BrowseSampleInfoAction();
@@ -738,10 +736,8 @@ public class LoadDataPanel extends JPanel {
 					}
 					if (txt_FileSampleInfo.getText().isEmpty() && famFile.exists()) {
 						txt_FileSampleInfo.setText(famFile.getPath());
-					} else if (famFile.exists()) {
-						if (option == JOptionPane.YES_OPTION) {
-							txt_FileSampleInfo.setText(famFile.getPath());
-						}
+					} else if (famFile.exists() && (option == JOptionPane.YES_OPTION)) {
+						txt_FileSampleInfo.setText(famFile.getPath());
 					}
 				}
 			} else if (cmb_Format.getSelectedItem().equals(cImport.ImportFormat.Sequenom)) {
@@ -794,10 +790,8 @@ public class LoadDataPanel extends JPanel {
 					}
 					if (txt_FileSampleInfo.getText().isEmpty() && famFile.exists()) {
 						txt_FileSampleInfo.setText(famFile.getPath());
-					} else if (famFile.exists()) {
-						if (option == JOptionPane.YES_OPTION) {
-							txt_FileSampleInfo.setText(famFile.getPath());
-						}
+					} else if (famFile.exists() && (option == JOptionPane.YES_OPTION)) {
+						txt_FileSampleInfo.setText(famFile.getPath());
 					}
 				}
 			} else if (cmb_Format.getSelectedItem().equals(cImport.ImportFormat.BEAGLE)) {

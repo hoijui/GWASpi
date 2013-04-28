@@ -268,17 +268,15 @@ public class PreferencesPanel extends JPanel {
 			//</editor-fold>
 			if (proceed) {
 				Integer decision = Dialogs.showConfirmDialogue("Do you really want to change the current preference values?\nDoing so may cause breakage if the data expected (databases, genotypes...) is not available at the new paths.");
-				if (decision == JOptionPane.YES_OPTION) {
-					if (proceed) {
-						for (int i = 0; i < preferencesTable.getRowCount(); i++) {
-							try {
-								Config.setConfigValue(preferencesTable.getValueAt(i, 0).toString(), preferencesTable.getValueAt(i, 1).toString());
-							} catch (IOException ex) {
-								log.error(null, ex);
-							}
+				if ((decision == JOptionPane.YES_OPTION) && proceed) {
+					for (int i = 0; i < preferencesTable.getRowCount(); i++) {
+						try {
+							Config.setConfigValue(preferencesTable.getValueAt(i, 0).toString(), preferencesTable.getValueAt(i, 1).toString());
+						} catch (IOException ex) {
+							log.error(null, ex);
 						}
-						Dialogs.showInfoDialogue("Preferences & Paths Saved");
 					}
+					Dialogs.showInfoDialogue("Preferences & Paths Saved");
 				}
 			}
 		}

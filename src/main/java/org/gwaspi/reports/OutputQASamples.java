@@ -43,20 +43,20 @@ public class OutputQASamples {
 		samplMissOutName = prefix + "samplmissing.txt";
 
 
-		if (createSortedSampleMissingnessReport(opId, samplMissOutName, op.getStudyId())) {
-			if (newReport) {
-				ReportsList.insertRPMetadata(new Report(
-						Integer.MIN_VALUE,
-						"Sample Missingness Table",
-						samplMissOutName,
-						OPType.SAMPLE_QA,
-						op.getParentMatrixId(),
-						opId,
-						"Sample Missingness Table",
-						op.getStudyId()));
+		if (createSortedSampleMissingnessReport(opId, samplMissOutName, op.getStudyId())
+				&& newReport)
+		{
+			ReportsList.insertRPMetadata(new Report(
+					Integer.MIN_VALUE,
+					"Sample Missingness Table",
+					samplMissOutName,
+					OPType.SAMPLE_QA,
+					op.getParentMatrixId(),
+					opId,
+					"Sample Missingness Table",
+					op.getStudyId()));
 
-				org.gwaspi.global.Utils.sysoutCompleted("Sample Missingness QA Report");
-			}
+			org.gwaspi.global.Utils.sysoutCompleted("Sample Missingness QA Report");
 		}
 
 		samplMissOutName = prefix + "hetzyg-missing";

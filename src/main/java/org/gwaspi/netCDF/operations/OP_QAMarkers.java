@@ -256,10 +256,11 @@ public class OP_QAMarkers implements MatrixOperation {
 						}
 						knownAlleles.put(tempGT[1], tempCount + counter);
 					}
-					if (tempGT[0] == AlleleBytes._0 && tempGT[1] == AlleleBytes._0) {
-						if (decision != CensusDecision.CountFemalesNonAutosomally) {
-							missingCount++;
-						}
+					if ((tempGT[0] == AlleleBytes._0)
+							&& (tempGT[1] == AlleleBytes._0)
+							&& (decision != CensusDecision.CountFemalesNonAutosomally))
+					{
+						missingCount++;
 					}
 
 					Short intAlleleSum = (short)((short)tempGT[0] + (short)tempGT[1]); // 2 alleles per GT

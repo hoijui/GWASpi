@@ -47,10 +47,12 @@ public class Threaded_GTFreq_HW extends CommonRunnable {
 		this.gwasParams = gwasParams;
 	}
 
+	@Override
 	protected Logger createLog() {
 		return LoggerFactory.getLogger(Threaded_GTFreq_HW.class);
 	}
 
+	@Override
 	protected void runInternal(SwingWorkerItem thisSwi) throws Exception {
 
 		List<Operation> operations = OperationsList.getOperationsList(matrixId);
@@ -115,13 +117,12 @@ public class Threaded_GTFreq_HW extends CommonRunnable {
 			GWASpiExplorerNodes.insertOperationUnderMatrixNode(matrixId, censusOpId);
 		}
 
-
 		// HW ON GENOTYPE FREQ.
-		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
-			if (censusOpId != Integer.MIN_VALUE) {
-				int hwOpId = OperationManager.performHardyWeinberg(censusOpId, cNetCDF.Defaults.DEFAULT_AFFECTION);
-				GWASpiExplorerNodes.insertSubOperationUnderOperationNode(censusOpId, hwOpId);
-			}
+		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)
+				&& (censusOpId != Integer.MIN_VALUE))
+		{
+			int hwOpId = OperationManager.performHardyWeinberg(censusOpId, cNetCDF.Defaults.DEFAULT_AFFECTION);
+			GWASpiExplorerNodes.insertSubOperationUnderOperationNode(censusOpId, hwOpId);
 		}
 		//</editor-fold>
 	}

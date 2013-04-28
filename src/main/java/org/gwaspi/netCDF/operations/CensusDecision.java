@@ -19,16 +19,12 @@ public enum CensusDecision {
 
 		CensusDecision decision = CensusDecision.CountAutosomally;
 
-		if (chr.equals("X")) {
-			if (sex == Sex.MALE) {
-				// Do not count to census when Chromosome is X and Sex is male
-				decision = CensusDecision.CountMalesNonAutosomally;
-			}
-		} else if (chr.equals("Y")) {
-			if (sex == Sex.FEMALE) {
-				// Do not count to census when Chromosome is Y and Sex is female
-				decision = CensusDecision.CountFemalesNonAutosomally;
-			}
+		if (chr.equals("X") && (sex == Sex.MALE)) {
+			// Do not count to census when Chromosome is X and Sex is male
+			decision = CensusDecision.CountMalesNonAutosomally;
+		} else if (chr.equals("Y") && (sex == Sex.FEMALE)) {
+			// Do not count to census when Chromosome is Y and Sex is female
+			decision = CensusDecision.CountFemalesNonAutosomally;
 		}
 
 		return decision;

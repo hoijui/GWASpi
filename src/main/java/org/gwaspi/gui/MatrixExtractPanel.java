@@ -585,20 +585,18 @@ public class MatrixExtractPanel extends JPanel {
 					}
 
 					File markerCriteriaFile = new File(mi_marker_criteria_file);
-					if (markerCriteria.isEmpty()) {
-						if (cmb_MarkersVariable.getSelectedIndex() != 0) { // NOT ALL MARKERS
-							if (!markerCriteriaFile.isFile()) {
-								throw new IllegalArgumentException("Marker criteria file missing!");
-							}
-						}
+					if (markerCriteria.isEmpty()
+							&& (cmb_MarkersVariable.getSelectedIndex() != 0) // NOT ALL MARKERS
+							&& !markerCriteriaFile.isFile())
+					{
+						throw new IllegalArgumentException("Marker criteria file missing!");
 					}
 					File sampleCriteriaFile = new File(mi_sample_criteria_file);
-					if (sampleCriteria.isEmpty()) {
-						if (cmb_SamplesVariable.getSelectedIndex() != 0) { // NOT ALL SAMPLES
-							if (!sampleCriteriaFile.isFile()) {
-								throw new IllegalArgumentException("Sample criteria file missing!");
-							}
-						}
+					if (sampleCriteria.isEmpty()
+							&& (cmb_SamplesVariable.getSelectedIndex() != 0) // NOT ALL SAMPLES
+							&& !sampleCriteriaFile.isFile())
+					{
+						throw new IllegalArgumentException("Sample criteria file missing!");
 					}
 
 					String markerPickVar = "";

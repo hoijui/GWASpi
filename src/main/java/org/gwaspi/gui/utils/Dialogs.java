@@ -434,7 +434,7 @@ public class Dialogs {
 			// getting the latest opened dir
 			try {
 				String dir = Config.getConfigValue(Config.PROPERTY_LAST_OPENED_DIR, cGlobal.HOMEDIR);
-				fc.setCurrentDirectory(new java.io.File(dir));
+				fc.setCurrentDirectory(new File(dir));
 			} catch (IOException ex) {
 				log.error(null, ex);
 			}
@@ -467,7 +467,7 @@ public class Dialogs {
 			// getting the last opened dir
 			try {
 				String dir = Config.getConfigValue(Config.PROPERTY_LAST_OPENED_DIR, cGlobal.HOMEDIR);
-				fc.setCurrentDirectory(new java.io.File(dir));
+				fc.setCurrentDirectory(new File(dir));
 			} catch (IOException ex) {
 				log.error(null, ex);
 			}

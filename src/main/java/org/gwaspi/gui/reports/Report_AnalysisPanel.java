@@ -165,14 +165,11 @@ public class Report_AnalysisPanel extends JPanel {
 				int option = JOptionPane.showConfirmDialog(dialogParent, Text.Operation.confirmDelete1);
 				if (option == JOptionPane.YES_OPTION) {
 					int deleteReportOption = JOptionPane.showConfirmDialog(dialogParent, Text.Reports.confirmDelete);
-					if (deleteReportOption != JOptionPane.CANCEL_OPTION) {
-						if (option == JOptionPane.YES_OPTION) {
-							boolean deleteReport = false;
-							if (deleteReportOption == JOptionPane.YES_OPTION) {
-								deleteReport = true;
-							}
-							MultiOperations.deleteOperationsByOpId(parentMatrix.getStudyId(), parentMatrix.getId(), currentOP.getId(), deleteReport);
-						}
+					if ((deleteReportOption != JOptionPane.CANCEL_OPTION)
+							&& (option == JOptionPane.YES_OPTION))
+					{
+						final boolean deleteReport = (deleteReportOption == JOptionPane.YES_OPTION);
+						MultiOperations.deleteOperationsByOpId(parentMatrix.getStudyId(), parentMatrix.getId(), currentOP.getId(), deleteReport);
 					}
 				}
 			} else {
