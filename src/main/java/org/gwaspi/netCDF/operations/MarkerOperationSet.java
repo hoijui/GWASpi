@@ -117,30 +117,5 @@ public class MarkerOperationSet<V> extends AbstractOperationSet<MarkerKey, V> {
 
 		return returnMap;
 	}
-
-	/**
-	 * @deprecated unused
-	 */
-	private static <MarkerKey> Map<MarkerKey, Object> pickValidMarkerSetItemsByKey(Map<MarkerKey, Object> map, Set<Object> criteria, boolean includes) {
-		Map<MarkerKey, Object> returnMap = new LinkedHashMap<MarkerKey, Object>();
-
-		if (includes) {
-			for (Map.Entry<MarkerKey, Object> entry : map.entrySet()) {
-				MarkerKey key = entry.getKey();
-				if (criteria.contains(key)) {
-					returnMap.put(key, entry.getValue());
-				}
-			}
-		} else {
-			for (Map.Entry<MarkerKey, Object> entry : map.entrySet()) {
-				MarkerKey key = entry.getKey();
-				if (!criteria.contains(key)) {
-					returnMap.put(key, entry.getValue());
-				}
-			}
-		}
-
-		return returnMap;
-	}
 	//</editor-fold>
 }

@@ -28,21 +28,6 @@ public class DbManagerImpl implements DbManager {
 		connectionProvider = cp;
 	}
 
-	/**
-	 * @deprecated unused
-	 */
-	public ConnectionProvider getConnectionProvider() {
-		return connectionProvider;
-	}
-
-	/**
-	 * @deprecated unused
-	 */
-	public void setConnectionProvider(ConnectionProvider connectionProvider) {
-		this.connectionProvider = connectionProvider;
-		qex = new QueryExecutor(connectionProvider);
-	}
-
 	@Override
 	public int executeStatement(String statement) {
 		try {

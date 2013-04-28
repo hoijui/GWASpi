@@ -255,18 +255,6 @@ public class AbstractOperationSet<K, V> {
 		return result;
 	}
 
-	/**
-	 * @deprecated unused
-	 */
-	public Map<String, Object> fillWrMapWithRdMapValue(Map<String, Object> wrMap, Map<String, Object> rdMap) {
-		for (Map.Entry<String, Object> entry : wrMap.entrySet()) {
-			String key = entry.getKey();
-			Object value = rdMap.get(key);
-			entry.setValue(value);
-		}
-		return wrMap;
-	}
-
 	public List getListWithVariable(NetcdfFile ncfile, String variable) {
 
 		List list = new ArrayList();

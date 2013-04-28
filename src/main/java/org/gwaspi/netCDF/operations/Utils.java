@@ -220,31 +220,6 @@ public class Utils {
 
 		return result;
 	}
-
-	/**
-	 * @deprecated unused
-	 */
-	public static boolean saveIntMapItemD1ToWrMatrix(NetcdfFileWriteable wrNcFile, Map<String, Object[]> wrMap, int itemNb, String variable) {
-		boolean result = false;
-
-		try {
-			ArrayInt.D1 arrayInt = Utils.writeMapValueItemToD1ArrayInt(wrMap, itemNb);
-			int[] origin1 = new int[1];
-			try {
-				wrNcFile.write(variable, origin1, arrayInt);
-				log.info("Done writing {}", variable);
-				result = true;
-			} catch (IOException ex) {
-				log.error("Failed writing " + variable + " to netCDF", ex);
-			} catch (InvalidRangeException ex) {
-				log.error("Failed writing " + variable + " to netCDF", ex);
-			}
-		} catch (Exception ex) {
-			log.error("Failed writing " + variable, ex);
-		}
-
-		return result;
-	}
 	//</editor-fold>
 
 	//<editor-fold defaultstate="expanded" desc="D2 SAVERS">
@@ -325,91 +300,6 @@ public class Utils {
 		return result;
 	}
 
-	/**
-	 * @deprecated unused
-	 */
-	public static boolean saveCharChunkedMapItemToWrMatrix(
-			NetcdfFileWriteable wrNcFile,
-			Map<String, MarkerMetadata> wrMap,
-			String variable,
-			int itemNb,
-			int varStride,
-			int offset)
-	{
-		boolean result = false;
-
-		try {
-			ArrayChar.D2 markersD2 = null; //writeMapValueItemToD2ArrayChar(wrMap, itemNb, varStride);
-			int[] markersOrig = new int[] {offset, 0};
-			try {
-				wrNcFile.write(variable, markersOrig, markersD2);
-				log.info("Done writing {}", variable);
-				result = true;
-			} catch (IOException ex) {
-				log.error("Failed writing file", ex);
-			} catch (InvalidRangeException ex) {
-				log.error("Failed writing file", ex);
-			}
-		} catch (Exception ex) {
-			log.error("Failed writing " + variable, ex);
-		}
-
-		return result;
-	}
-
-	//<editor-fold defaultstate="expanded" desc="GENOTYPE SAVERS">
-	/**
-	 * @deprecated unused
-	 */
-	public static boolean saveChunkedCurrentSampleGTsToMatrix(
-			NetcdfFileWriteable wrNcFile,
-			Map<?, Object> wrMap,
-			int samplePos,
-			int offset)
-			throws InvalidRangeException
-	{
-		boolean result = false;
-		ArrayChar.D3 genotypes = writeMapToCurrentSampleArrayCharD3(wrMap, cNetCDF.Strides.STRIDE_GT);
-
-		int[] origin = new int[] {samplePos, offset, 0};
-		try {
-			wrNcFile.write(cNetCDF.Variables.VAR_GENOTYPES, origin, genotypes);
-			log.info("Done writing Sample {} genotypes", samplePos);
-			result = true;
-		} catch (IOException ex) {
-			log.error("Failed writing genotypes to netCDF in MatrixDataExtractor", ex);
-		} catch (InvalidRangeException ex) {
-			log.error("Failed writing genotypes to netCDF in MatrixDataExtractor", ex);
-		}
-		return result;
-	}
-
-	/**
-	 * @deprecated unused
-	 */
-	public static boolean saveChunkedCurrentMarkerGTsToMatrix(
-			NetcdfFileWriteable wrNcFile,
-			Map<String, Object> wrMap,
-			int markerPos,
-			int offset)
-	{
-		boolean result = false;
-		ArrayChar.D3 genotypes = writeMapToCurrentMarkerArrayCharD3(wrMap, cNetCDF.Strides.STRIDE_GT);
-
-		int[] origin = new int[]{offset, markerPos, 0};
-		try {
-			wrNcFile.write(cNetCDF.Variables.VAR_GENOTYPES, origin, genotypes);
-			log.info("Done writing genotypes");
-			result = true;
-		} catch (IOException ex) {
-			log.error("Failed writing genotypes to netCDF in MatrixDataExtractor", ex);
-		} catch (InvalidRangeException ex) {
-			log.error("Failed writing genotypes to netCDF in MatrixDataExtractor", ex);
-		}
-		return result;
-	}
-	//</editor-fold>
-
 	//<editor-fold defaultstate="expanded" desc="D1 SAVERS">
 	public static boolean saveDoubleChunkedMapD1ToWrMatrix(
 			NetcdfFileWriteable wrNcFile,
@@ -438,37 +328,6 @@ public class Utils {
 		return result;
 	}
 
-	/**
-	 * @deprecated unused
-	 */
-	public static boolean saveDoubleChunkedMapItemD1ToWrMatrix(
-			NetcdfFileWriteable wrNcFile,
-			Map<?, Object[]> wrMap,
-			int itemNb,
-			String variable,
-			int offset)
-	{
-		boolean result = false;
-
-		try {
-			ArrayDouble.D1 arrayDouble = null; //Utils.writeMapValueItemToD1ArrayDouble(wrMap, itemNb);
-			int[] origin1 = new int[] {offset};
-			try {
-				wrNcFile.write(variable, origin1, arrayDouble);
-				log.info("Done writing {}", variable);
-				result = true;
-			} catch (IOException ex) {
-				log.error("Failed writing " + variable + " to netCDF", ex);
-			} catch (InvalidRangeException ex) {
-				log.error("Failed writing " + variable + " to netCDF", ex);
-			}
-		} catch (Exception ex) {
-			log.error("Failed writing " + variable, ex);
-		}
-
-		return result;
-	}
-
 	public static boolean saveIntChunkedMapD1ToWrMatrix(
 			NetcdfFileWriteable wrNcFile,
 			Map<?, Integer> wrMap,
@@ -479,37 +338,6 @@ public class Utils {
 
 		try {
 			ArrayInt.D1 arrayInt = Utils.writeMapValueToD1ArrayInt(wrMap);
-			int[] origin1 = new int[]{offset};
-			try {
-				wrNcFile.write(variable, origin1, arrayInt);
-				log.info("Done writing {}", variable);
-				result = true;
-			} catch (IOException ex) {
-				log.error("Failed writing " + variable + " to netCDF", ex);
-			} catch (InvalidRangeException ex) {
-				log.error("Failed writing " + variable + " to netCDF", ex);
-			}
-		} catch (Exception ex) {
-			log.error("Failed writing " + variable, ex);
-		}
-
-		return result;
-	}
-
-	/**
-	 * @deprecated unused
-	 */
-	public static boolean saveIntChunkedMapItemD1ToWrMatrix(
-			NetcdfFileWriteable wrNcFile,
-			Map<String, Object[]> wrMap,
-			int itemNb,
-			String variable,
-			int offset)
-	{
-		boolean result = false;
-
-		try {
-			ArrayInt.D1 arrayInt = Utils.writeMapValueItemToD1ArrayInt(wrMap, itemNb);
 			int[] origin1 = new int[]{offset};
 			try {
 				wrNcFile.write(variable, origin1, arrayInt);
@@ -587,42 +415,6 @@ public class Utils {
 	//</editor-fold>
 
 	//<editor-fold defaultstate="expanded" desc="POJOs TO netCDFJOs">
-	//<editor-fold defaultstate="expanded" desc="ArrayChar.D3">
-	/**
-	 * @deprecated unused
-	 */
-	public static ArrayChar.D3 writeMapToCurrentSampleArrayCharD3(Map<?, Object> map, int stride) {
-		ArrayChar.D3 charArray = new ArrayChar.D3(1, map.size(), stride);
-		Index ima = charArray.getIndex();
-
-		int markerCounter = 0;
-		for (Object value : map.values()) {
-			// 1 Sample at a time, iterating through markers, starting at gtSpan 0
-			charArray.setString(ima.set(0, markerCounter, 0), value.toString().trim()); // XXX This is currently unused, but one might have to use org.gwaspi.global.Utils.toMeaningfullRep() instead of toString() here
-			markerCounter++;
-		}
-
-		return charArray;
-	}
-
-	/**
-	 * @deprecated unused
-	 */
-	public static ArrayChar.D3 writeMapToCurrentMarkerArrayCharD3(Map<?, Object> map, int stride) {
-		ArrayChar.D3 charArray = new ArrayChar.D3(map.size(), 1, stride);
-		Index ima = charArray.getIndex();
-
-		int sampleCounter = 0;
-		for (Object value : map.values()) {
-			// 1 Marker at a time, iterating through samples, starting at gtSpan 0
-			charArray.setString(ima.set(sampleCounter, 0, 0), value.toString().trim()); // XXX This is currently unused, but one might have to use org.gwaspi.global.Utils.toMeaningfullRep() instead of toString() here
-			sampleCounter++;
-		}
-
-		return charArray;
-	}
-	//</editor-fold>
-
 	//<editor-fold defaultstate="expanded" desc="ArrayChar.D2">
 	public static ArrayChar.D2 writeSingleValueToD2ArrayChar(String value, int stride, int num) {
 		ArrayChar.D2 charArray = new ArrayChar.D2(num, stride);
@@ -729,21 +521,6 @@ public class Utils {
 		return intArray;
 	}
 
-	/**
-	 * @deprecated unused
-	 */
-	public static ArrayInt.D1 writeMapValueItemToD1ArrayInt(Map<?, Object[]> map, int itemNb) {
-		ArrayInt.D1 intArray = new ArrayInt.D1(map.size());
-		Index index = intArray.getIndex();
-
-		int count = 0;
-		for (Object[] values : map.values()) {
-			intArray.setInt(index.set(count), (Integer) values[itemNb]);
-			count++;
-		}
-
-		return intArray;
-	}
 	public static <V> ArrayInt.D1 writeMapValueItemToD1ArrayInt(Map<?, V> map, TypeConverter<V, Integer> valueToIntegerConverter) {
 		ArrayInt.D1 intArray = new ArrayInt.D1(map.size());
 		Index index = intArray.getIndex();
@@ -918,42 +695,6 @@ public class Utils {
 
 
 		return als;
-	}
-	//</editor-fold>
-
-	//<editor-fold defaultstate="expanded" desc="ArrayChar.D1">
-	/**
-	 * @deprecated unused
-	 */
-	public static Map<String, Object> writeD1ArrayCharToMapKeys(ArrayChar inputArray) {
-		Map<String, Object> result = new LinkedHashMap<String, Object>();
-		StringBuilder key = new StringBuilder("");
-		Index index = inputArray.getIndex();
-
-		int[] shape = inputArray.getShape();
-		for (int j = 0; j < shape[0]; j++) {
-			key.append(inputArray.getChar(index.set(j)));
-		}
-		result.put(key.toString().trim(), "");
-
-		return result;
-	}
-
-	/**
-	 * @deprecated unused
-	 */
-	public static void writeD1ArrayCharToMapValues(ArrayChar inputArray, Map<String, Object> map) {
-		StringBuilder value = new StringBuilder("");
-		Index index = inputArray.getIndex();
-
-		int[] shape = inputArray.getShape();
-		Iterator<String> it = map.keySet().iterator();
-		String key = it.next();
-
-		for (int j = 0; j < shape[0]; j++) {
-			value.append(inputArray.getChar(index.set(j)));
-		}
-		map.put(key, value.toString().trim());
 	}
 	//</editor-fold>
 

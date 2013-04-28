@@ -1,13 +1,9 @@
 package org.gwaspi.netCDF.loader;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.util.Collection;
-import java.util.LinkedHashMap;
 import java.util.Map;
-import org.gwaspi.constants.cImport;
 import org.gwaspi.constants.cImport.ImportFormat;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
@@ -347,27 +343,6 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 	//</editor-fold>
 
 	//<editor-fold defaultstate="expanded" desc="HELPER METHODS">
-	/**
-	 * @deprecated unused
-	 */
-	private Map<String, Object> getSampleIds(File hapmapGTFile) throws IOException {
-
-		Map<String, Object> uniqueSamples = new LinkedHashMap<String, Object>();
-
-		FileReader fr = new FileReader(hapmapGTFile.getPath());
-		BufferedReader inputAnnotationBr = new BufferedReader(fr);
-		String header = inputAnnotationBr.readLine();
-		inputAnnotationBr.close();
-
-		String[] hapmapVals = header.split(cImport.Separators.separators_SpaceTab_rgxp);
-
-		for (int i = cImport.SampleInfo.sampleId; i < hapmapVals.length; i++) {
-			uniqueSamples.put(hapmapVals[i], "");
-		}
-
-		return uniqueSamples;
-	}
-
 	private void copyMatrixToGenotypesFolder(int studyId, String importMatrixPath, String newMatrixCDFName) {
 		try {
 			String genotypesFolder = Config.getConfigValue(Config.PROPERTY_GENOTYPES_DIR, "");

@@ -225,47 +225,6 @@ public class SampleSet {
 		readAllSamplesGTsFromCurrentMarkerToMap(rdNcFile, null, rdMap, markerNb);
 	}
 
-	/**
-	 * @deprecated unused
-	 */
-	public Map<SampleKey, ?> fillSampleIdSetMapWithVariable(NetcdfFile ncfile, String variable) {
-
-//		try {
-//			Variable var = ncfile.findVariable(variable);
-//
-//			if (null == var) {
-//				return null;
-//			}
-//
-//			DataType dataType = var.getDataType();
-//			int[] varShape = var.getShape();
-//
-//			sampleSetSize = varShape[0];
-//			if (dataType == DataType.CHAR) {
-//				ArrayChar.D2 sampleSetAC = (ArrayChar.D2) var.read("(0:" + (sampleSetSize - 1) + ":1, 0:" + (varShape[1] - 1) + ":1)");
-//				org.gwaspi.netCDF.operations.Utils.writeD2ArrayCharToMapValues(sampleSetAC, sampleIdSetMap);
-//			}
-//			if (dataType == DataType.DOUBLE) {
-//				ArrayDouble.D1 sampleSetAF = (ArrayDouble.D1) var.read("(0:" + (sampleSetSize - 1) + ":1");
-//				org.gwaspi.netCDF.operations.Utils.writeD1ArrayDoubleToMapValues(sampleSetAF, sampleIdSetMap);
-//			}
-//		} catch (IOException ex) {
-//			log.error("Cannot open file", ex);
-//		} catch (InvalidRangeException ex) {
-//			log.error("Cannot read data", ex);
-//		} finally {
-//			if (null != ncfile) {
-//				try {
-//					ncfile.close();
-//				} catch (IOException ex) {
-//					log.warn("Cannot close file", ex);
-//				}
-//			}
-//		}
-
-		return sampleIdSetMap;
-	}
-
 	private void fillSampleIdSetMapWithVariable(Map<SampleKey, ?> map, String variable) {
 		NetcdfFile ncfile = null;
 
