@@ -92,6 +92,10 @@ public class Operation implements Serializable {
 		return id;
 	}
 
+	protected void setId(int id) {
+		this.id = id;
+	}
+
 	@Id
 	@Column(
 		name       = "parentMatrixId",
@@ -104,6 +108,10 @@ public class Operation implements Serializable {
 		return parentMatrixId;
 	}
 
+	protected void setParentMatrixId(int parentMatrixId) {
+		this.parentMatrixId = parentMatrixId;
+	}
+
 	@Id
 	@Column(
 		name       = "studyId",
@@ -114,6 +122,10 @@ public class Operation implements Serializable {
 		)
 	public int getStudyId() {
 		return studyId;
+	}
+
+	protected void setStudyId(int studyId) {
+		this.studyId = studyId;
 	}
 
 	@Column(

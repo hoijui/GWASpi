@@ -96,9 +96,9 @@ public class Report implements Serializable {
 //	 * Sets the unique report identification number.
 //	 * @param id the report-id to set
 //	 */
-//	public void setId(int id) {
-//		this.id = id;
-//	}
+	protected void setId(int id) {
+		this.id = id;
+	}
 
 	@Id
 	@Column(
@@ -112,6 +112,10 @@ public class Report implements Serializable {
 		return parentMatrixId;
 	}
 
+	protected void setParentMatrixId(int parentMatrixId) {
+		this.parentMatrixId = parentMatrixId;
+	}
+
 	@Id
 	@Column(
 		name       = "studyId",
@@ -122,6 +126,10 @@ public class Report implements Serializable {
 		)
 	public int getStudyId() {
 		return studyId;
+	}
+
+	protected void setStudyId(int studyId) {
+		this.studyId = studyId;
 	}
 
 	@Column(
@@ -167,6 +175,10 @@ public class Report implements Serializable {
 		)
 	public int getParentOperationId() {
 		return parentOpId;
+	}
+
+	protected void setParentOperationId(int parentOpId) {
+		this.parentOpId = parentOpId;
 	}
 
 	@Column(

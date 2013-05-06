@@ -56,6 +56,10 @@ public class Matrix implements Serializable {
 		return matrixId;
 	}
 
+	protected void setId(int matrixId) {
+		this.matrixId = matrixId;
+	}
+
 	@Id
 	@Column(
 		name       = "studyId",
@@ -66,6 +70,10 @@ public class Matrix implements Serializable {
 		)
 	public int getStudyId() {
 		return studyId;
+	}
+
+	protected void setStudyId(int studyId) {
+		this.studyId = studyId;
 	}
 
 	@Column(

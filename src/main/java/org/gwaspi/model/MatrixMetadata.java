@@ -170,6 +170,10 @@ public class MatrixMetadata implements Serializable {
 		return matrixId;
 	}
 
+	protected void setMatrixId(int matrixId) {
+		this.matrixId = matrixId;
+	}
+
 	@Id
 	@Column(
 		name       = "studyId",
@@ -180,6 +184,10 @@ public class MatrixMetadata implements Serializable {
 		)
 	public int getStudyId() {
 		return studyId;
+	}
+
+	protected void setStudyId(int studyId) {
+		this.studyId = studyId;
 	}
 
 	@Column(
@@ -307,7 +315,6 @@ public class MatrixMetadata implements Serializable {
 		return matrixType;
 	}
 
-	@Id
 	@Column(
 		name       = "parent1MatrixId",
 		unique     = false,
@@ -319,7 +326,6 @@ public class MatrixMetadata implements Serializable {
 		return parent1MatrixId;
 	}
 
-	@Id
 	@Column(
 		name       = "parent2MatrixId",
 		unique     = false,

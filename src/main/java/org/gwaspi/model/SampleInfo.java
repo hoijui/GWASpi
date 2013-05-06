@@ -403,6 +403,10 @@ public class SampleInfo implements Comparable<SampleInfo>, Serializable {
 		return familyId;
 	}
 
+	protected void setFamilyId(String familyId) {
+		this.familyId = familyId;
+	}
+
 	@Column(
 		name       = "fatherId",
 		unique     = false,

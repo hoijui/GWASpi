@@ -110,6 +110,10 @@ public class OperationMetadata implements Serializable {
 		return id;
 	}
 
+	protected void setOPId(int id) {
+		this.id = id;
+	}
+
 	@Id
 	@Column(
 		name       = "parentMatrixId",
@@ -122,6 +126,10 @@ public class OperationMetadata implements Serializable {
 		return parentMatrixId;
 	}
 
+	protected void setParentMatrixId(int parentMatrixId) {
+		this.parentMatrixId = parentMatrixId;
+	}
+
 	@Id
 	@Column(
 		name       = "studyId",
@@ -132,6 +140,10 @@ public class OperationMetadata implements Serializable {
 		)
 	public int getStudyId() {
 		return studyId;
+	}
+
+	protected void setStudyId(int studyId) {
+		this.studyId = studyId;
 	}
 
 	@Column(
@@ -210,6 +222,10 @@ public class OperationMetadata implements Serializable {
 		)
 	public int getParentOperationId() {
 		return parentOperationId;
+	}
+
+	protected void setParentOperationId(int parentOperationId) {
+		this.parentOperationId = parentOperationId;
 	}
 
 	@Column(
