@@ -7,6 +7,7 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.NoResultException;
+import javax.persistence.Persistence;
 import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 import org.gwaspi.dao.SampleInfoService;
@@ -30,6 +31,12 @@ public class JPASampleInfoService implements SampleInfoService {
 	private EntityManagerFactory emf = null;
 
 	public JPASampleInfoService() {
+
+		try {
+			emf = Persistence.createEntityManagerFactory("gwaspi");
+		} catch (PersistenceException ex) {
+			LOG.error("Failed to initialize database storage", ex);
+		}
 	}
 
 	private EntityManager open() {
