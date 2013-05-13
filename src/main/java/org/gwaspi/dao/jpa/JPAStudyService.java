@@ -129,7 +129,8 @@ public class JPAStudyService implements StudyService {
 
 	@Override
 	public String createStudyManagementTable(Object[] insertValues) {
-//		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+
+		int newStudyId = insertNewStudy((String) insertValues[0], (String) insertValues[1]);
 		return "1";
 	}
 
