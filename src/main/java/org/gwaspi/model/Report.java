@@ -75,6 +75,32 @@ public class Report implements Serializable {
 		this.studyId = studyId;
 	}
 
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		final Report other = (Report) obj;
+		if (this.getId() != other.getId()) {
+			return false;
+		}
+		if (this.getStudyId() != other.getStudyId()) {
+			return false;
+		}
+		return true;
+	}
+
+	@Override
+	public int hashCode() {
+		int hash = 3;
+		hash = 17 * hash + this.getId();
+		hash = 17 * hash + this.getStudyId();
+		return hash;
+	}
+
 	/**
 	 * Returns the unique report identification number.
 	 * @return the report-id

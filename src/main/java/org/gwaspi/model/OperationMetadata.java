@@ -98,6 +98,32 @@ public class OperationMetadata implements Serializable {
 		this.creationDate = (Date) creationDate.clone();
 	}
 
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		final OperationMetadata other = (OperationMetadata) obj;
+		if (this.getOPId() != other.getOPId()) {
+			return false;
+		}
+		if (this.getStudyId() != other.getStudyId()) {
+			return false;
+		}
+		return true;
+	}
+
+	@Override
+	public int hashCode() {
+		int hash = 3;
+		hash = 17 * hash + this.getOPId();
+		hash = 17 * hash + this.getStudyId();
+		return hash;
+	}
+
 	@Id
 	@Column(
 		name       = "id",

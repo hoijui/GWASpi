@@ -44,6 +44,32 @@ public class Matrix implements Serializable {
 		this.matrixMetadata = matrixMetadata;
 	}
 
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		final Matrix other = (Matrix) obj;
+		if (this.getId() != other.getId()) {
+			return false;
+		}
+		if (this.getStudyId() != other.getStudyId()) {
+			return false;
+		}
+		return true;
+	}
+
+	@Override
+	public int hashCode() {
+		int hash = 3;
+		hash = 17 * hash + this.getId();
+		hash = 17 * hash + this.getStudyId();
+		return hash;
+	}
+
 	@Id
 	@Column(
 		name       = "id",

@@ -147,6 +147,32 @@ public class MatrixMetadata implements Serializable {
 		this.creationDate = (Date) creationDate.clone();
 	}
 
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		final MatrixMetadata other = (MatrixMetadata) obj;
+		if (this.getMatrixId() != other.getMatrixId()) {
+			return false;
+		}
+		if (this.getStudyId() != other.getStudyId()) {
+			return false;
+		}
+		return true;
+	}
+
+	@Override
+	public int hashCode() {
+		int hash = 3;
+		hash = 17 * hash + this.getMatrixId();
+		hash = 17 * hash + this.getStudyId();
+		return hash;
+	}
+
 	@Column(
 		name       = "hasDictionray",
 		unique     = false,

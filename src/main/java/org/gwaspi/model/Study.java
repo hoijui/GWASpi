@@ -80,6 +80,28 @@ public class Study implements Serializable {
 //		this.studyMatrices = new ArrayList<Integer>();
 	}
 
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		final Study other = (Study) obj;
+		if (this.getId() != other.getId()) {
+			return false;
+		}
+		return true;
+	}
+
+	@Override
+	public int hashCode() {
+		int hash = 7;
+		hash = 71 * hash + this.getId();
+		return hash;
+	}
+
 	/**
 	 * Returns the unique study identification number.
 	 * @return the study-id
