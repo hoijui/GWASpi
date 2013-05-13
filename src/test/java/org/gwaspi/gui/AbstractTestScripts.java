@@ -92,8 +92,8 @@ public abstract class AbstractTestScripts {
 		 */
 		private final File scriptsDir;
 
-		private int lastLoadedMatrixId = -1;
-		private Map<String, Integer> fileNameToLoadedMatrixId = new HashMap<String, Integer>();
+		private int lastLoadedMatrixId;
+		private Map<String, Integer> fileNameToLoadedMatrixId;
 
 		Setup(File dbDataDir, File exportDir, File tmpDir, File scriptsDir) {
 
@@ -101,6 +101,8 @@ public abstract class AbstractTestScripts {
 			this.exportDir = exportDir;
 			this.tmpDir = tmpDir;
 			this.scriptsDir = scriptsDir;
+			this.lastLoadedMatrixId = -1;
+			this.fileNameToLoadedMatrixId = new HashMap<String, Integer>();
 		}
 
 		public static Setup createTemp() throws IOException {
