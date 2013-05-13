@@ -1,7 +1,7 @@
 data-dir=${DATA_DIR}
 [script]
 0.command=export_matrix
-1.study-id=1
+1.study-id=${STUDY_ID}
 2.matrix-id=${MATRIX_ID}
 3.format=${FORMAT}
 [/script]

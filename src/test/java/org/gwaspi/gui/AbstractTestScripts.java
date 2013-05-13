@@ -95,6 +95,8 @@ public abstract class AbstractTestScripts {
 		private int lastLoadedMatrixId;
 		private Map<String, Integer> fileNameToLoadedMatrixId;
 
+		private int studyId;
+
 		Setup(File dbDataDir, File exportDir, File tmpDir, File scriptsDir) {
 
 			this.dbDataDir = dbDataDir;
@@ -103,6 +105,7 @@ public abstract class AbstractTestScripts {
 			this.scriptsDir = scriptsDir;
 			this.lastLoadedMatrixId = -1;
 			this.fileNameToLoadedMatrixId = new HashMap<String, Integer>();
+			this.studyId = -1;
 		}
 
 		public static Setup createTemp() throws IOException {
@@ -136,6 +139,17 @@ public abstract class AbstractTestScripts {
 
 			deleteDirRecursively(getDbDataDir());
 			deleteDirRecursively(getTmpDir());
+		}
+
+		public void setStudyId(int studyId) {
+			if (this.studyId != -1) {
+				throw new IllegalStateException("The study-ID was already set");
+			}
+			this.studyId = studyId;
+		}
+
+		public int getStudyId() {
+			return studyId;
 		}
 
 		public File getDbDataDir() {
@@ -174,6 +188,7 @@ public abstract class AbstractTestScripts {
 	public static void createTempDataDirs() throws IOException {
 
 		setup = Setup.createTemp();
+		setup.setStudyId(1); // XXX We should create a new study and use it
 	}
 
 	@AfterClass

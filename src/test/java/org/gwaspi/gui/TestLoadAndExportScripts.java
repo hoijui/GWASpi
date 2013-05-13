@@ -58,6 +58,7 @@ public class TestLoadAndExportScripts extends AbstractTestScripts {
 		substitutions.put("\\$\\{IN_FILE_1\\}", bedFile.getAbsolutePath());
 		substitutions.put("\\$\\{IN_FILE_2\\}", bimFile.getAbsolutePath());
 		substitutions.put("\\$\\{SAMPLE_INFO_FILE\\}", famFile.getAbsolutePath());
+		substitutions.put("\\$\\{STUDY_ID\\}", String.valueOf(setup.getStudyId()));
 		substitutions.put("\\$\\{MATRIX_NAME\\}", matrixName);
 		substitutions.put("\\$\\{FORMAT\\}", cImport.ImportFormat.PLINK_Binary.name());
 		copyFile(plinkLoadScript, scriptFile, substitutions);
@@ -104,6 +105,7 @@ public class TestLoadAndExportScripts extends AbstractTestScripts {
 		substitutions.put("\\$\\{IN_FILE_1\\}", mapFile.getAbsolutePath());
 		substitutions.put("\\$\\{IN_FILE_2\\}", pedFile.getAbsolutePath());
 		substitutions.put("\\$\\{SAMPLE_INFO_FILE\\}", "no info file");
+		substitutions.put("\\$\\{STUDY_ID\\}", String.valueOf(setup.getStudyId()));
 		substitutions.put("\\$\\{MATRIX_NAME\\}", matrixName);
 		substitutions.put("\\$\\{FORMAT\\}", cImport.ImportFormat.PLINK.name());
 		copyFile(plinkLoadScript, scriptFile, substitutions);
@@ -152,6 +154,7 @@ public class TestLoadAndExportScripts extends AbstractTestScripts {
 		copyFile(plinkFlatMap, mapFile, substitutions);
 		copyFile(plinkFlatPed, pedFile, substitutions);
 		substitutions.put("\\$\\{DATA_DIR\\}", setup.getDbDataDir().getAbsolutePath());
+		substitutions.put("\\$\\{STUDY_ID\\}", String.valueOf(setup.getStudyId()));
 		substitutions.put("\\$\\{MATRIX_ID\\}", String.valueOf(matrixId));
 		substitutions.put("\\$\\{FORMAT\\}", cExport.ExportFormat.PLINK.name());
 		copyFile(plinkLoadScript, scriptFile, substitutions);
@@ -160,8 +163,8 @@ public class TestLoadAndExportScripts extends AbstractTestScripts {
 
 		startGWASpi(createArgs(scriptFile.getAbsolutePath(), logFile.getAbsolutePath()));
 
-		File outputMapFileName = new File(setup.getExportDir(), "STUDY_1/" + matrixName + ".map");
-		File outputPedFileName = new File(setup.getExportDir(), "STUDY_1/" + matrixName + ".ped");
+		File outputMapFileName = new File(setup.getExportDir(), "STUDY_" + setup.getStudyId() + "/" + matrixName + ".map");
+		File outputPedFileName = new File(setup.getExportDir(), "STUDY_" + setup.getStudyId() + "/" + matrixName + ".ped");
 
 		// compare the export results with the references
 		compareFiles(mapFile, outputMapFileName);
@@ -202,6 +205,7 @@ public class TestLoadAndExportScripts extends AbstractTestScripts {
 		substitutions.put("\\$\\{DATA_DIR\\}", setup.getDbDataDir().getAbsolutePath());
 		substitutions.put("\\$\\{IN_FILE_1\\}", markersFile.getAbsolutePath());
 		substitutions.put("\\$\\{IN_FILE_2\\}", samplesFile.getAbsolutePath());
+		substitutions.put("\\$\\{STUDY_ID\\}", String.valueOf(setup.getStudyId()));
 		substitutions.put("\\$\\{MATRIX_NAME\\}", matrixName);
 		substitutions.put("\\$\\{FORMAT\\}", cImport.ImportFormat.HGDP1.name());
 		substitutions.put("\\$\\{SAMPLE_INFO_FILE\\}", "no info file");
