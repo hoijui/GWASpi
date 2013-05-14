@@ -316,6 +316,7 @@ public class SampleInfo implements Comparable<SampleInfo>, Serializable {
 		if (other instanceof SampleInfo) {
 			SampleInfo otherSampleInfo = (SampleInfo) other;
 			equal = getFamilyId().equals(otherSampleInfo.getFamilyId());
+			equal = equal && getPoolId().equals(otherSampleInfo.getPoolId());
 			equal = equal && getSampleId().equals(otherSampleInfo.getSampleId());
 		}
 
@@ -324,10 +325,10 @@ public class SampleInfo implements Comparable<SampleInfo>, Serializable {
 
 	@Override
 	public int hashCode() {
-
-		int hash = 7;
-		hash = 31 * hash + (this.sampleId != null ? this.sampleId.hashCode() : 0);
-		hash = 31 * hash + (this.familyId != null ? this.familyId.hashCode() : 0);
+		int hash = 3;
+		hash = 23 * hash + (this.getSampleId() != null ? this.getSampleId().hashCode() : 0);
+		hash = 23 * hash + (this.getFamilyId() != null ? this.getFamilyId().hashCode() : 0);
+		hash = 23 * hash + (this.getPoolId() != null ? this.getPoolId().hashCode() : 0);
 		return hash;
 	}
 
