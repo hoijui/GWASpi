@@ -154,6 +154,9 @@ public class JPAMatrixService implements MatrixService {
 			Query query = em.createNamedQuery("matrixMetadata_listByStudyId");
 			query.setParameter("studyId", studyId);
 			matricesMetadata = query.getResultList();
+			for (int i = 0; i < matricesMetadata.size(); i++) {
+				matricesMetadata.set(i, completeMatricesTable(matricesMetadata.get(i)));
+			}
 		} catch (Exception ex) {
 			LOG.error("Failed fetching all matrices-metadata", ex);
 		} finally {
@@ -162,7 +165,6 @@ public class JPAMatrixService implements MatrixService {
 
 		return matricesMetadata;
 	}
-
 
 	@Override
 	public String createMatricesTable() {
@@ -264,6 +266,7 @@ public class JPAMatrixService implements MatrixService {
 			query = em.createNamedQuery("matrixMetadata_fetchById");
 			query.setParameter("id", matrixIds.get(matrixIds.size() - 1));
 			matrixMetadata = (MatrixMetadata) query.getSingleResult();
+			matrixMetadata = completeMatricesTable(matrixMetadata);
 		} catch (Exception ex) {
 			LOG.trace("Failed fetching latest-matrix-metadata", ex);
 		} finally {
@@ -284,6 +287,7 @@ public class JPAMatrixService implements MatrixService {
 			Query query = em.createNamedQuery("matrixMetadata_fetchById");
 			query.setParameter("id", matrixId);
 			matrixMetadata = (MatrixMetadata) query.getSingleResult();
+			matrixMetadata = completeMatricesTable(matrixMetadata);
 		} catch (NoResultException ex) {
 			LOG.trace("Failed fetching matrix-metadata by id: " + matrixId
 					+ " (id not found)", ex);
@@ -307,6 +311,7 @@ public class JPAMatrixService implements MatrixService {
 			Query query = em.createNamedQuery("matrixMetadata_fetchByNetCDFName");
 			query.setParameter("netCDFName", netCDFName);
 			matrixMetadata = (MatrixMetadata) query.getSingleResult();
+			matrixMetadata = completeMatricesTable(matrixMetadata);
 		} catch (NoResultException ex) {
 			LOG.trace("Failed fetching matrix-metadata by netCDFname: " + netCDFName
 					+ " (id not found)", ex);
@@ -331,6 +336,21 @@ public class JPAMatrixService implements MatrixService {
 
 		String pathToMatrix = netCDFpath;
 		return MatrixServiceImpl.loadMatrixMetadataFromFile(matrixId, matrixFriendlyName, matrixNetCDFName, studyId, pathToMatrix, description, matrixType, creationDate);
+	}
+
+	private MatrixMetadata completeMatricesTable(MatrixMetadata toCompleteMatrixMetadata) throws IOException {
+		String genotypesFolder = Config.getConfigValue(Config.PROPERTY_GENOTYPES_DIR, "");
+		String pathToStudy = genotypesFolder + "/STUDY_" + toCompleteMatrixMetadata.getStudyId() + "/";
+		String pathToMatrix = pathToStudy + toCompleteMatrixMetadata.getMatrixNetCDFName() + ".nc";
+		return MatrixServiceImpl.loadMatrixMetadataFromFile(
+				toCompleteMatrixMetadata.getMatrixId(),
+				toCompleteMatrixMetadata.getMatrixFriendlyName(),
+				toCompleteMatrixMetadata.getMatrixNetCDFName(),
+				toCompleteMatrixMetadata.getStudyId(),
+				pathToMatrix,
+				toCompleteMatrixMetadata.getDescription(),
+				toCompleteMatrixMetadata.getMatrixType(),
+				toCompleteMatrixMetadata.getCreationDate());
 	}
 
 	@Override
