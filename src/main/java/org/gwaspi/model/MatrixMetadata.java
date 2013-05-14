@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
@@ -189,6 +190,7 @@ public class MatrixMetadata implements Serializable {
 	}
 
 	@Id
+	@GeneratedValue
 	@Column(
 		name       = "matrixId",
 		unique     = false,
@@ -331,7 +333,7 @@ public class MatrixMetadata implements Serializable {
 	@Column(
 		name       = "strand",
 		unique     = false,
-		nullable   = false,
+		nullable   = true,
 		insertable = true,
 		updatable  = false
 		)
