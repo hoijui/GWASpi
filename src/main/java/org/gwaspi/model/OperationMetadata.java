@@ -95,7 +95,8 @@ public class OperationMetadata implements Serializable {
 		this.opSetSize = opSetSize;
 		this.implicitSetSize = implicitSetSize;
 		this.studyId = studyId;
-		this.creationDate = (Date) creationDate.clone();
+		this.creationDate = (creationDate == null)
+				? null : (Date) creationDate.clone();
 	}
 
 	@Override
@@ -301,7 +302,7 @@ public class OperationMetadata implements Serializable {
 	@Column(
 		name       = "creationDate",
 		unique     = false,
-		nullable   = false,
+		nullable   = true,
 		insertable = true,
 		updatable  = false
 		)
