@@ -8,7 +8,6 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.NoResultException;
-import javax.persistence.Persistence;
 import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 import org.gwaspi.dao.MatrixService;
@@ -33,16 +32,11 @@ public class JPAMatrixService implements MatrixService {
 	private static final Logger LOG
 			= LoggerFactory.getLogger(JPAMatrixService.class);
 
-	private EntityManagerFactory emf = null;
+	private final EntityManagerFactory emf;
 
 
-	public JPAMatrixService() {
-
-		try {
-			emf = Persistence.createEntityManagerFactory("gwaspi");
-		} catch (PersistenceException ex) {
-			LOG.error("Failed to initialize database storage", ex);
-		}
+	public JPAMatrixService(EntityManagerFactory emf) {
+		this.emf = emf;
 	}
 
 	private EntityManager open() {

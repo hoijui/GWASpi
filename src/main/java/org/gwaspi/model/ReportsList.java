@@ -17,7 +17,7 @@ public class ReportsList {
 
 	private static final ReportService reportService
 			= MatricesList.USE_JPA
-			? new JPAReportService()
+			? new JPAReportService(StudyList.getEntityManagerFactory())
 			: new ReportServiceImpl();
 
 	private ReportsList() {

@@ -7,7 +7,6 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.NoResultException;
-import javax.persistence.Persistence;
 import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
@@ -31,16 +30,11 @@ public class JPAOperationService implements OperationService {
 	private static final Logger LOG
 			= LoggerFactory.getLogger(JPAOperationService.class);
 
-	private EntityManagerFactory emf = null;
+	private final EntityManagerFactory emf;
 
 
-	public JPAOperationService() {
-
-		try {
-			emf = Persistence.createEntityManagerFactory("gwaspi");
-		} catch (PersistenceException ex) {
-			LOG.error("Failed to initialize database storage", ex);
-		}
+	public JPAOperationService(EntityManagerFactory emf) {
+		this.emf = emf;
 	}
 
 	private EntityManager open() {

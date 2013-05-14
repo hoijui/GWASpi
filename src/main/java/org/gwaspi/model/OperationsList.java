@@ -18,7 +18,7 @@ public class OperationsList {
 
 	private static final OperationService operationService
 			= MatricesList.USE_JPA
-			? new JPAOperationService()
+			? new JPAOperationService(StudyList.getEntityManagerFactory())
 			: new OperationServiceImpl();
 
 	private OperationsList() {

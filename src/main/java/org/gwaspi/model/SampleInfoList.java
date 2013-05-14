@@ -18,7 +18,7 @@ public class SampleInfoList {
 
 	private static final SampleInfoService sampleInfoService
 			= MatricesList.USE_JPA
-			? new JPASampleInfoService()
+			? new JPASampleInfoService(StudyList.getEntityManagerFactory())
 			: new SampleInfoServiceImpl();
 
 	private SampleInfoList() {

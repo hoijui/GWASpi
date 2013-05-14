@@ -7,7 +7,6 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.NoResultException;
-import javax.persistence.Persistence;
 import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 import org.gwaspi.dao.StudyService;
@@ -31,16 +30,11 @@ public class JPAStudyService implements StudyService {
 	private static final Logger LOG
 			= LoggerFactory.getLogger(JPAStudyService.class);
 
-	private EntityManagerFactory emf = null;
+	private final EntityManagerFactory emf;
 
 
-	public JPAStudyService() {
-
-		try {
-			emf = Persistence.createEntityManagerFactory("gwaspi");
-		} catch (PersistenceException ex) {
-			LOG.error("Failed to initialize database storage", ex);
-		}
+	public JPAStudyService(EntityManagerFactory emf) {
+		this.emf = emf;
 	}
 
 	private EntityManager open() {

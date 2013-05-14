@@ -19,7 +19,7 @@ public final class MatricesList {
 
 	private static final MatrixService matrixService
 			= USE_JPA
-			? new JPAMatrixService()
+			? new JPAMatrixService(StudyList.getEntityManagerFactory())
 			: new MatrixServiceImpl();
 
 	private MatricesList() {
