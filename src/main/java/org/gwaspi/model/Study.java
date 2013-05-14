@@ -129,6 +129,7 @@ public class Study implements Serializable {
 
 	@Column(
 		name       = "name",
+		length     = 127,
 		unique     = false,
 		nullable   = false,
 		insertable = true,
@@ -144,6 +145,7 @@ public class Study implements Serializable {
 
 	@Column(
 		name       = "description",
+		length     = 255,
 		unique     = false,
 		nullable   = false,
 		insertable = true,
@@ -159,6 +161,7 @@ public class Study implements Serializable {
 
 	@Column(
 		name       = "studyType",
+		length     = 63,
 		unique     = false,
 		nullable   = false,
 		insertable = true,
@@ -174,6 +177,7 @@ public class Study implements Serializable {
 
 	@Column(
 		name       = "validity",
+		length     = 31,
 		unique     = false,
 		nullable   = false,
 		insertable = true,

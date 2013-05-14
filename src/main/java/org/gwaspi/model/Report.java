@@ -160,6 +160,7 @@ public class Report implements Serializable {
 
 	@Column(
 		name       = "friendlyName",
+		length     = 255,
 		unique     = false,
 		nullable   = false,
 		insertable = true,
@@ -175,6 +176,7 @@ public class Report implements Serializable {
 
 	@Column(
 		name       = "fileName",
+		length     = 255,
 		unique     = false,
 		nullable   = false,
 		insertable = true,
@@ -221,6 +223,7 @@ public class Report implements Serializable {
 
 	@Column(
 		name       = "description",
+		length     = 255,
 		unique     = false,
 		nullable   = false,
 		insertable = true,

@@ -174,6 +174,7 @@ public class OperationMetadata implements Serializable {
 
 	@Column(
 		name       = "opName",
+		length     = 127,
 		unique     = false,
 		nullable   = false,
 		insertable = true,
@@ -189,6 +190,7 @@ public class OperationMetadata implements Serializable {
 
 	@Column(
 		name       = "netCDFName",
+		length     = 255,
 		unique     = false,
 		nullable   = false,
 		insertable = true,
@@ -234,6 +236,7 @@ public class OperationMetadata implements Serializable {
 
 	@Column(
 		name       = "pathToMatrix",
+		length     = 1023,
 		unique     = false,
 		nullable   = false,
 		insertable = true,
@@ -249,6 +252,7 @@ public class OperationMetadata implements Serializable {
 
 	@Column(
 		name       = "description",
+		length     = 255,
 		unique     = false,
 		nullable   = false,
 		insertable = true,

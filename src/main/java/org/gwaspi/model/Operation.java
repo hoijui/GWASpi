@@ -156,6 +156,7 @@ public class Operation implements Serializable {
 
 	@Column(
 		name       = "friendlyName",
+		length     = 255,
 		unique     = false,
 		nullable   = false,
 		insertable = true,
@@ -171,6 +172,7 @@ public class Operation implements Serializable {
 
 	@Column(
 		name       = "netCDFName",
+		length     = 255,
 		unique     = false,
 		nullable   = false,
 		insertable = true,
@@ -201,6 +203,7 @@ public class Operation implements Serializable {
 
 	@Column(
 		name       = "command",
+		length     = 2047,
 		unique     = false,
 		nullable   = false,
 		insertable = true,
@@ -216,6 +219,7 @@ public class Operation implements Serializable {
 
 	@Column(
 		name       = "description",
+		length     = 255,
 		unique     = false,
 		nullable   = false,
 		insertable = true,

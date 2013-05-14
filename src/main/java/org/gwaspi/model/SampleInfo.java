@@ -373,6 +373,7 @@ public class SampleInfo implements Comparable<SampleInfo>, Serializable {
 	@Id
 	@Column(
 		name       = "sampleId",
+		length     = 127,
 		unique     = false,
 		nullable   = false,
 		insertable = true,
@@ -397,6 +398,7 @@ public class SampleInfo implements Comparable<SampleInfo>, Serializable {
 	@Id
 	@Column(
 		name       = "familyId",
+		length     = 127,
 		unique     = false,
 		nullable   = false,
 		insertable = true,
@@ -412,6 +414,7 @@ public class SampleInfo implements Comparable<SampleInfo>, Serializable {
 
 	@Column(
 		name       = "fatherId",
+		length     = 127,
 		unique     = false,
 		nullable   = false,
 		insertable = true,
@@ -427,6 +430,7 @@ public class SampleInfo implements Comparable<SampleInfo>, Serializable {
 
 	@Column(
 		name       = "motherId",
+		length     = 127,
 		unique     = false,
 		nullable   = false,
 		insertable = true,
@@ -494,6 +498,7 @@ public class SampleInfo implements Comparable<SampleInfo>, Serializable {
 
 	@Column(
 		name       = "category",
+		length     = 127,
 		unique     = false,
 		nullable   = false,
 		insertable = true,
@@ -509,6 +514,7 @@ public class SampleInfo implements Comparable<SampleInfo>, Serializable {
 
 	@Column(
 		name       = "disease",
+		length     = 127,
 		unique     = false,
 		nullable   = false,
 		insertable = true,
@@ -524,6 +530,7 @@ public class SampleInfo implements Comparable<SampleInfo>, Serializable {
 
 	@Column(
 		name       = "population",
+		length     = 127,
 		unique     = false,
 		nullable   = false,
 		insertable = true,
@@ -554,6 +561,7 @@ public class SampleInfo implements Comparable<SampleInfo>, Serializable {
 
 	@Column(
 		name       = "filter",
+		length     = 255,
 		unique     = false,
 		nullable   = false,
 		insertable = true,

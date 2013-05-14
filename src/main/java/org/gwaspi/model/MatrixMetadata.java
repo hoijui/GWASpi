@@ -222,6 +222,7 @@ public class MatrixMetadata implements Serializable {
 
 	@Column(
 		name       = "matrixFriendlyName",
+		length     = 255,
 		unique     = false,
 		nullable   = false,
 		insertable = true,
@@ -252,6 +253,7 @@ public class MatrixMetadata implements Serializable {
 
 	@Column(
 		name       = "gwaspiDBVersion",
+		length     = 63,
 		unique     = false,
 		nullable   = false,
 		insertable = true,
@@ -312,6 +314,7 @@ public class MatrixMetadata implements Serializable {
 
 	@Column(
 		name       = "pathToMatrix",
+		length     = 1023,
 		unique     = false,
 		nullable   = false,
 		insertable = true,
@@ -342,6 +345,7 @@ public class MatrixMetadata implements Serializable {
 
 	@Column(
 		name       = "description",
+		length     = 1023,
 		unique     = false,
 		nullable   = false,
 		insertable = true,
@@ -357,6 +361,7 @@ public class MatrixMetadata implements Serializable {
 
 	@Column(
 		name       = "matrixNetCDFName",
+		length     = 255,
 		unique     = false,
 		nullable   = false,
 		insertable = true,
@@ -372,6 +377,7 @@ public class MatrixMetadata implements Serializable {
 
 	@Column(
 		name       = "matrixType",
+		length     = 31,
 		unique     = false,
 		nullable   = false,
 		insertable = true,
@@ -417,6 +423,7 @@ public class MatrixMetadata implements Serializable {
 
 	@Column(
 		name       = "inputLocation",
+		length     = 1023,
 		unique     = false,
 		nullable   = false,
 		insertable = true,
