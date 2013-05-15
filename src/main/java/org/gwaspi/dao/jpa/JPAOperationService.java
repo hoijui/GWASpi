@@ -240,6 +240,18 @@ public class JPAOperationService implements OperationService {
 			em = open();
 			begin(em);
 			em.persist(operationMetadata);
+			Operation operation = new Operation(
+					operationMetadata.getOPId(),
+					operationMetadata.getOPName(),
+					operationMetadata.getMatrixCDFName(),
+					operationMetadata.getGenotypeCode(),
+					operationMetadata.getParentMatrixId(),
+					operationMetadata.getParentOperationId(),
+					"", // command
+					operationMetadata.getDescription(),
+					operationMetadata.getStudyId()
+					);
+			em.persist(operation);
 			commit(em);
 		} catch (Exception ex) {
 			LOG.error("Failed persisting operation-metadata", ex);
