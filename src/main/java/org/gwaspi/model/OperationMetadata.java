@@ -43,13 +43,13 @@ import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 public class OperationMetadata implements Serializable {
 
 	private int id;
+	private String opName; // == Operation.friendlyName
+	private String netCDFName;
+	private OPType gtCode; // == Operation.type
 	private int parentMatrixId;
 	private int parentOperationId;
-	private String opName;
-	private String netCDFName;
 	private String description;
 	private String pathToMatrix;
-	private OPType gtCode;
 	private int opSetSize;
 	private int implicitSetSize;
 	private int studyId;
