@@ -92,10 +92,10 @@ public class JPAOperationService implements OperationService {
 			query.setParameter("id", operationId);
 			operation = (Operation) query.getSingleResult();
 		} catch (NoResultException ex) {
-			LOG.trace("Failed fetching a operation by id: " + operationId
+			LOG.error("Failed fetching a operation by id: " + operationId
 					+ " (id not found)", ex);
 		} catch (Exception ex) {
-			LOG.trace("Failed fetching a operation by id: " + operationId, ex);
+			LOG.error("Failed fetching a operation by id: " + operationId, ex);
 		} finally {
 			close(em);
 		}
@@ -356,10 +356,10 @@ public class JPAOperationService implements OperationService {
 			query.setParameter("id", operationId);
 			operationMetadata = (OperationMetadata) query.getSingleResult();
 		} catch (NoResultException ex) {
-			LOG.trace("Failed fetching a operation-metadata by id: " + operationId
+			LOG.error("Failed fetching a operation-metadata by id: " + operationId
 					+ " (id not found)", ex);
 		} catch (Exception ex) {
-			LOG.trace("Failed fetching a operation-metadata by id: " + operationId, ex);
+			LOG.error("Failed fetching a operation-metadata by id: " + operationId, ex);
 		} finally {
 			close(em);
 		}
@@ -380,10 +380,10 @@ public class JPAOperationService implements OperationService {
 			query.setParameter("netCDFName", netCDFName);
 			operationMetadata = (OperationMetadata) query.getSingleResult();
 		} catch (NoResultException ex) {
-			LOG.trace("Failed fetching a operation-metadata by netCDF-name: " + netCDFName
+			LOG.error("Failed fetching a operation-metadata by netCDF-name: " + netCDFName
 					+ " (id not found)", ex);
 		} catch (Exception ex) {
-			LOG.trace("Failed fetching a operation-metadata by netCDF-name: " + netCDFName, ex);
+			LOG.error("Failed fetching a operation-metadata by netCDF-name: " + netCDFName, ex);
 		} finally {
 			close(em);
 		}

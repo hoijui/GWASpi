@@ -111,7 +111,7 @@ public class JPASampleInfoService implements SampleInfoService {
 			query.setParameter("studyId", studyId);
 			sampleInfos = (List<SampleInfo>) query.getResultList();
 		} catch (NoResultException ex) {
-			LOG.trace("Failed fetching a sample-info by study-id: " + studyId
+			LOG.error("Failed fetching a sample-info by study-id: " + studyId
 					+ " (not found)", ex);
 		} catch (Exception ex) {
 			LOG.error("Failed fetching sample-info", ex);
@@ -137,7 +137,7 @@ public class JPASampleInfoService implements SampleInfoService {
 			query.setParameter("studyId", studyId);
 			sampleInfos = (List<SampleInfo>) query.getResultList();
 		} catch (NoResultException ex) {
-			LOG.trace("Failed fetching a sample-info by"
+			LOG.error("Failed fetching a sample-info by"
 					+ ": sample-id: " + key.getSampleId()
 					+ ", family-id: " + key.getFamilyId()
 					+ ", study-id: " + studyId
@@ -163,7 +163,7 @@ public class JPASampleInfoService implements SampleInfoService {
 			query.setParameter("studyId", studyId);
 			deleted = query.executeUpdate();
 		} catch (NoResultException ex) {
-			LOG.trace("Failed deleting sample-infos by"
+			LOG.error("Failed deleting sample-infos by"
 					+ ": study-id: " + studyId
 					+ "; (not found)", ex);
 		} catch (Exception ex) {

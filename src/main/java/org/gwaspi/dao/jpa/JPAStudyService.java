@@ -92,10 +92,10 @@ public class JPAStudyService implements StudyService {
 			query.setParameter("id", studyId);
 			study = (Study) query.getSingleResult();
 		} catch (NoResultException ex) {
-			LOG.trace("Failed fetching a study by id: " + studyId
+			LOG.error("Failed fetching a study by id: " + studyId
 					+ " (id not found)", ex);
 		} catch (Exception ex) {
-			LOG.trace("Failed fetching a study by id: " + studyId, ex);
+			LOG.error("Failed fetching a study by id: " + studyId, ex);
 		} finally {
 			close(em);
 		}

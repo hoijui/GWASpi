@@ -94,10 +94,10 @@ public class JPAMatrixService implements MatrixService {
 			query.setParameter("id", matrixId);
 			matrix = (Matrix) query.getSingleResult();
 		} catch (NoResultException ex) {
-			LOG.trace("Failed fetching a matrix by id: " + matrixId
+			LOG.error("Failed fetching a matrix by id: " + matrixId
 					+ " (id not found)", ex);
 		} catch (Exception ex) {
-			LOG.trace("Failed fetching a matrix by id: " + matrixId, ex);
+			LOG.error("Failed fetching a matrix by id: " + matrixId, ex);
 		} finally {
 			close(em);
 		}
@@ -180,6 +180,12 @@ public class JPAMatrixService implements MatrixService {
 			em = open();
 			begin(em);
 			em.persist(matrixMetadata);
+			// now we will use the genreated matrix id
+			Matrix matrix = new Matrix(
+					matrixMetadata.getMatrixId(),
+					matrixMetadata.getStudyId(),
+					matrixMetadata);
+			em.persist(matrix);
 			commit(em);
 		} catch (Exception ex) {
 			LOG.error("Failed adding a matrix-metadata", ex);
@@ -268,7 +274,7 @@ public class JPAMatrixService implements MatrixService {
 			matrixMetadata = (MatrixMetadata) query.getSingleResult();
 			matrixMetadata = completeMatricesTable(matrixMetadata);
 		} catch (Exception ex) {
-			LOG.trace("Failed fetching latest-matrix-metadata", ex);
+			LOG.error("Failed fetching latest-matrix-metadata", ex);
 		} finally {
 			close(em);
 		}
@@ -289,10 +295,10 @@ public class JPAMatrixService implements MatrixService {
 			matrixMetadata = (MatrixMetadata) query.getSingleResult();
 			matrixMetadata = completeMatricesTable(matrixMetadata);
 		} catch (NoResultException ex) {
-			LOG.trace("Failed fetching matrix-metadata by id: " + matrixId
+			LOG.error("Failed fetching matrix-metadata by id: " + matrixId
 					+ " (id not found)", ex);
 		} catch (Exception ex) {
-			LOG.trace("Failed fetching matrix-metadata by id: " + matrixId, ex);
+			LOG.error("Failed fetching matrix-metadata by id: " + matrixId, ex);
 		} finally {
 			close(em);
 		}
@@ -313,10 +319,10 @@ public class JPAMatrixService implements MatrixService {
 			matrixMetadata = (MatrixMetadata) query.getSingleResult();
 			matrixMetadata = completeMatricesTable(matrixMetadata);
 		} catch (NoResultException ex) {
-			LOG.trace("Failed fetching matrix-metadata by netCDFname: " + netCDFName
+			LOG.error("Failed fetching matrix-metadata by netCDFname: " + netCDFName
 					+ " (id not found)", ex);
 		} catch (Exception ex) {
-			LOG.trace("Failed fetching matrix-metadata by netCDFname: " + netCDFName, ex);
+			LOG.error("Failed fetching matrix-metadata by netCDFname: " + netCDFName, ex);
 		} finally {
 			close(em);
 		}

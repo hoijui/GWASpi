@@ -87,10 +87,10 @@ public class JPAReportService implements ReportService {
 			query.setParameter("id", reportId);
 			report = (Report) query.getSingleResult();
 		} catch (NoResultException ex) {
-			LOG.trace("Failed fetching a report by id: " + reportId
+			LOG.error("Failed fetching a report by id: " + reportId
 					+ " (id not found)", ex);
 		} catch (Exception ex) {
-			LOG.trace("Failed fetching a report by id: " + reportId, ex);
+			LOG.error("Failed fetching a report by id: " + reportId, ex);
 		} finally {
 			close(em);
 		}
@@ -112,7 +112,7 @@ public class JPAReportService implements ReportService {
 			query.setParameter("parentMatrixId", parentMatrixId);
 			reports = (List<Report>) query.getResultList();
 		} catch (NoResultException ex) {
-			LOG.trace("Failed fetching a report by"
+			LOG.error("Failed fetching a report by"
 					+ ": parent-operation-id: " + parentOperationId
 					+ ", parent-matrix-id: " + parentMatrixId
 					+ "; (not found)", ex);
@@ -165,7 +165,7 @@ public class JPAReportService implements ReportService {
 			query.setParameter("parentMatrixId", parentMatrixId);
 			deleted = query.executeUpdate();
 		} catch (NoResultException ex) {
-			LOG.trace("Failed deleting reports by"
+			LOG.error("Failed deleting reports by"
 					+ ": parent-matrix-id: " + parentMatrixId
 					+ "; (not found)", ex);
 		} catch (Exception ex) {
@@ -187,7 +187,7 @@ public class JPAReportService implements ReportService {
 			query.setParameter("parentOperationId", parentOperationId);
 			deleted = query.executeUpdate();
 		} catch (NoResultException ex) {
-			LOG.trace("Failed deleting reports by"
+			LOG.error("Failed deleting reports by"
 					+ ": parent-operation-id: " + parentOperationId
 					+ "; (not found)", ex);
 		} catch (Exception ex) {
