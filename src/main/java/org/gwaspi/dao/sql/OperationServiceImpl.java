@@ -370,8 +370,6 @@ public class OperationServiceImpl implements OperationService {
 		String description = "";
 		OPType gtCode = null;
 		int studyId = Integer.MIN_VALUE;
-		int opSetSize = Integer.MIN_VALUE;
-		int implicitSetSize = Integer.MIN_VALUE;
 		Date creationDate = null;
 
 		// PREVENT PHANTOM-DB READS EXCEPTIONS
@@ -391,11 +389,31 @@ public class OperationServiceImpl implements OperationService {
 			creationDate = new Date(creationDateLong);
 		}
 
+		return completeOperationMetadata(new OperationMetadata(
+				opId,
+				parentMatrixId,
+				parentOperationId,
+				opName,
+				netCDF_name,
+				description,
+				"",
+				gtCode,
+				Integer.MIN_VALUE,
+				Integer.MIN_VALUE,
+				studyId,
+				creationDate));
+	}
+
+	public static OperationMetadata completeOperationMetadata(OperationMetadata toComplete) throws IOException {
+
+		int opSetSize = Integer.MIN_VALUE;
+		int implicitSetSize = Integer.MIN_VALUE;
+
 		String genotypesFolder = Config.getConfigValue(Config.PROPERTY_GENOTYPES_DIR, "");
-		String pathToStudy = genotypesFolder + "/STUDY_" + studyId + "/";
-		String pathToMatrix = pathToStudy + netCDF_name + ".nc";
-		NetcdfFile ncfile = null;
+		String pathToStudy = genotypesFolder + "/STUDY_" + toComplete.getStudyId() + "/";
+		String pathToMatrix = pathToStudy + toComplete.getMatrixCDFName() + ".nc";
 		if (new File(pathToMatrix).exists()) {
+			NetcdfFile ncfile = null;
 			try {
 				ncfile = NetcdfFile.open(pathToMatrix);
 //				gtCode = ncfile.findGlobalAttribute(cNetCDF.Attributes.GLOB_GTCODE).getStringValue();
@@ -419,18 +437,18 @@ public class OperationServiceImpl implements OperationService {
 		}
 
 		OperationMetadata operationMetadata = new OperationMetadata(
-				opId,
-				parentMatrixId,
-				parentOperationId,
-				opName,
-				netCDF_name,
-				description,
+				toComplete.getId(),
+				toComplete.getParentMatrixId(),
+				toComplete.getParentOperationId(),
+				toComplete.getOPName(),
+				toComplete.getMatrixCDFName(),
+				toComplete.getDescription(),
 				pathToMatrix,
-				gtCode,
+				toComplete.getGenotypeCode(),
 				opSetSize,
 				implicitSetSize,
-				studyId,
-				creationDate);
+				toComplete.getStudyId(),
+				toComplete.getCreationDate());
 
 		return operationMetadata;
 	}

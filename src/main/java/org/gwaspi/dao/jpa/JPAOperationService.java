@@ -11,6 +11,7 @@ import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.dao.OperationService;
+import org.gwaspi.dao.sql.OperationServiceImpl;
 import org.gwaspi.global.Config;
 import org.gwaspi.model.MatrixOperationSpec;
 import org.gwaspi.model.Operation;
@@ -180,6 +181,10 @@ public class JPAOperationService implements OperationService {
 					"operationMetadata_listByParentMatrixId");
 			query.setParameter("parentMatrixId", parentMatrixId);
 			operationsMetadata = query.getResultList();
+
+			for (int i = 0; i < operationsMetadata.size(); i++) {
+				operationsMetadata.set(i, OperationServiceImpl.completeOperationMetadata(operationsMetadata.get(i)));
+			}
 		} catch (Exception ex) {
 			LOG.error("Failed fetching operation-metadata", ex);
 		} finally {
@@ -208,6 +213,10 @@ public class JPAOperationService implements OperationService {
 			query.setParameter("parentMatrixId", parentMatrixId);
 			query.setParameter("parentOperationId", operationId);
 			operationsMetadata.addAll(query.getResultList());
+
+			for (int i = 0; i < operationsMetadata.size(); i++) {
+				operationsMetadata.set(i, OperationServiceImpl.completeOperationMetadata(operationsMetadata.get(i)));
+			}
 		} catch (Exception ex) {
 			LOG.error("Failed fetching operation-metadata", ex);
 		} finally {
@@ -355,6 +364,7 @@ public class JPAOperationService implements OperationService {
 			Query query = em.createNamedQuery("operationMetadata_fetchById");
 			query.setParameter("id", operationId);
 			operationMetadata = (OperationMetadata) query.getSingleResult();
+			operationMetadata = OperationServiceImpl.completeOperationMetadata(operationMetadata);
 		} catch (NoResultException ex) {
 			LOG.error("Failed fetching a operation-metadata by id: " + operationId
 					+ " (id not found)", ex);
@@ -379,6 +389,7 @@ public class JPAOperationService implements OperationService {
 					"operationMetadata_fetchByNetCDFName");
 			query.setParameter("netCDFName", netCDFName);
 			operationMetadata = (OperationMetadata) query.getSingleResult();
+			operationMetadata = OperationServiceImpl.completeOperationMetadata(operationMetadata);
 		} catch (NoResultException ex) {
 			LOG.error("Failed fetching a operation-metadata by netCDF-name: " + netCDFName
 					+ " (id not found)", ex);
