@@ -106,7 +106,6 @@ public class Operation implements Serializable {
 	}
 
 	@Id
-	@GeneratedValue
 	@Column(
 		name       = "id",
 		unique     = false,

@@ -5,12 +5,14 @@ import java.io.Serializable;
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 
 /**
@@ -126,6 +128,7 @@ public class OperationMetadata implements Serializable {
 	}
 
 	@Id
+	@GeneratedValue
 	@Column(
 		name       = "id",
 		unique     = false,
@@ -133,12 +136,17 @@ public class OperationMetadata implements Serializable {
 		insertable = true,
 		updatable  = false
 		)
-	public int getOPId() {
+	public int getId() {
 		return id;
 	}
 
-	protected void setOPId(int id) {
+	protected void setId(int id) {
 		this.id = id;
+	}
+
+	@Transient
+	public int getOPId() {
+		return id;
 	}
 
 	@Id
