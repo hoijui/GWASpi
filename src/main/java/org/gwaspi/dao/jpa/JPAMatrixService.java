@@ -90,7 +90,7 @@ public class JPAMatrixService implements MatrixService {
 		EntityManager em = null;
 		try {
 			em = open();
-			Query query = em.createNamedQuery("matrix_fetchById");
+			Query query = em.createNamedQuery("matrixMetadata_fetchById");
 			query.setParameter("id", matrixId);
 			matrix = (Matrix) query.getSingleResult();
 		} catch (NoResultException ex) {
@@ -113,7 +113,7 @@ public class JPAMatrixService implements MatrixService {
 		EntityManager em = null;
 		try {
 			em = open();
-			matrices = em.createNamedQuery("matrix_list").getResultList();
+			matrices = em.createNamedQuery("matrixMetadata_list").getResultList();
 		} catch (Exception ex) {
 			LOG.error("Failed fetching all matrices", ex);
 		} finally {
@@ -131,7 +131,7 @@ public class JPAMatrixService implements MatrixService {
 		EntityManager em = null;
 		try {
 			em = open();
-			Query query = em.createNamedQuery("matrix_listByStudyId");
+			Query query = em.createNamedQuery("matrixMetadata_listByStudyId");
 			query.setParameter("studyId", studyId);
 			matrices = query.getResultList();
 		} catch (Exception ex) {
@@ -180,12 +180,6 @@ public class JPAMatrixService implements MatrixService {
 			em = open();
 			begin(em);
 			em.persist(matrixMetadata);
-			// now we will use the genreated matrix id
-			Matrix matrix = new Matrix(
-					matrixMetadata.getMatrixId(),
-					matrixMetadata.getStudyId(),
-					matrixMetadata);
-			em.persist(matrix);
 			commit(em);
 		} catch (Exception ex) {
 			LOG.error("Failed adding a matrix-metadata", ex);

@@ -11,6 +11,7 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 import org.gwaspi.constants.cImport.ImportFormat;
 import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
@@ -31,13 +32,16 @@ import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
 		name = "matrixMetadata_fetchByNetCDFName",
 		query = "SELECT mm FROM MatrixMetadata mm WHERE mm.matrixNetCDFName = :netCDFName"),
 	@NamedQuery(
+		name = "matrixMetadata_list",
+		query = "SELECT mm FROM MatrixMetadata mm"),
+	@NamedQuery(
 		name = "matrixMetadata_listIds",
 		query = "SELECT mm.matrixId FROM MatrixMetadata mm ORDER BY mm.matrixId"),
 	@NamedQuery(
 		name = "matrixMetadata_listByStudyId",
 		query = "SELECT mm FROM MatrixMetadata mm WHERE mm.studyId = :studyId"),
 })
-public class MatrixMetadata implements Serializable {
+public class MatrixMetadata implements Serializable, Matrix {
 
 	private int matrixId;
 	private String matrixFriendlyName;
@@ -410,5 +414,15 @@ public class MatrixMetadata implements Serializable {
 
 	protected void setCreationDate(Date creationDate) {
 		this.creationDate = creationDate;
+	}
+
+	@Transient
+	public int getId() {
+		return getMatrixId();
+	}
+
+	@Transient
+	public MatrixMetadata getMatrixMetadata() {
+		return this;
 	}
 }

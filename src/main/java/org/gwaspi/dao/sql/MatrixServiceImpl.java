@@ -50,9 +50,7 @@ public class MatrixServiceImpl implements MatrixService {
 	public Matrix getById(int matrixId) throws IOException {
 
 		MatrixMetadata matrixMetadata = getMatrixMetadataById(matrixId);
-		int studyId = matrixMetadata.getStudyId();
-
-		return new Matrix(matrixId, studyId, matrixMetadata);
+		return matrixMetadata;
 	}
 
 	@Override
