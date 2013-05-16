@@ -240,6 +240,11 @@ public class JPAOperationService implements OperationService {
 			em = open();
 			begin(em);
 			em.persist(operationMetadata);
+			commit(em);
+
+			// HACK now we have the generated matrix-ID
+			em = open();
+			begin(em);
 			Operation operation = new Operation(
 					operationMetadata.getOPId(),
 					operationMetadata.getOPName(),
