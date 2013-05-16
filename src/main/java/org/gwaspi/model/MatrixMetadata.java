@@ -174,18 +174,12 @@ public class MatrixMetadata implements Serializable {
 		return hash;
 	}
 
-	@Column(
-		name       = "hasDictionray",
-		unique     = false,
-		nullable   = false,
-		insertable = true,
-		updatable  = false
-		)
+	@Transient
 	public boolean getHasDictionray() {
 		return hasDictionray;
 	}
 
-	protected void setHasDictionray(boolean hasDictionray) {
+	public void setHasDictionray(boolean hasDictionray) {
 		this.hasDictionray = hasDictionray;
 	}
 
@@ -238,64 +232,39 @@ public class MatrixMetadata implements Serializable {
 		this.matrixFriendlyName = matrixFriendlyName;
 	}
 
-	@Column(
-		name       = "technology",
-		unique     = false,
-		nullable   = false,
-		insertable = true,
-		updatable  = false
-		)
+	@Transient
 	public ImportFormat getTechnology() {
 		return technology;
 	}
 
-	protected void setTechnology(ImportFormat technology) {
+	public void setTechnology(ImportFormat technology) {
 		this.technology = technology;
 	}
 
-	@Column(
-		name       = "gwaspiDBVersion",
-		length     = 63,
-		unique     = false,
-		nullable   = false,
-		insertable = true,
-		updatable  = false
-		)
+	@Transient
 	public String getGwaspiDBVersion() {
 		return gwaspiDBVersion;
 	}
 
-	protected void setGwaspiDBVersion(String gwaspiDBVersion) {
+	public void setGwaspiDBVersion(String gwaspiDBVersion) {
 		this.gwaspiDBVersion = gwaspiDBVersion;
 	}
 
-	@Column(
-		name       = "gtEncoding",
-		unique     = false,
-		nullable   = false,
-		insertable = true,
-		updatable  = false
-		)
+	@Transient
 	public GenotypeEncoding getGenotypeEncoding() {
 		return gtEncoding;
 	}
 
-	protected void setGenotypeEncoding(GenotypeEncoding gtEncoding) {
+	public void setGenotypeEncoding(GenotypeEncoding gtEncoding) {
 		this.gtEncoding = gtEncoding;
 	}
 
-	@Column(
-		name       = "markerSetSize",
-		unique     = false,
-		nullable   = false,
-		insertable = true,
-		updatable  = false
-		)
+	@Transient
 	public int getMarkerSetSize() {
 		return markerSetSize;
 	}
 
-	protected void setMarkerSetSize(int markerSetSize) {
+	public void setMarkerSetSize(int markerSetSize) {
 		this.markerSetSize = markerSetSize;
 	}
 
@@ -306,42 +275,30 @@ public class MatrixMetadata implements Serializable {
 		insertable = true,
 		updatable  = false
 		)
+	@Transient
 	public int getSampleSetSize() {
 		return sampleSetSize;
 	}
 
-	protected void setSampleSetSize(int sampleSetSize) {
+	public void setSampleSetSize(int sampleSetSize) {
 		this.sampleSetSize = sampleSetSize;
 	}
 
-	@Column(
-		name       = "pathToMatrix",
-		length     = 1023,
-		unique     = false,
-		nullable   = false,
-		insertable = true,
-		updatable  = false
-		)
+	@Transient
 	public String getPathToMatrix() {
 		return pathToMatrix;
 	}
 
-	protected void setPathToMatrix(String pathToMatrix) {
+	public void setPathToMatrix(String pathToMatrix) {
 		this.pathToMatrix = pathToMatrix;
 	}
 
-	@Column(
-		name       = "strand",
-		unique     = false,
-		nullable   = true,
-		insertable = true,
-		updatable  = false
-		)
+	@Transient
 	public StrandType getStrand() {
 		return strand;
 	}
 
-	protected void setStrand(StrandType strand) {
+	public void setStrand(StrandType strand) {
 		this.strand = strand;
 	}
 
