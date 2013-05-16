@@ -185,8 +185,18 @@ public class JPASampleInfoService implements SampleInfoService {
 				em.persist(sampleInfo);
 				commit(em);
 			} catch (Exception ex) {
-				LOG.error("Failed adding a sample-info", ex);
-				rollback(em);
+				try {
+					em = open();
+					begin(em);
+					em.merge(sampleInfo);
+					commit(em);
+				} catch (Exception ex2) {
+					LOG.error("Failed adding a sample-info", ex);
+					LOG.error("Failed mergeing a sample-info", ex2);
+					rollback(em);
+				} finally {
+					close(em);
+				}
 			} finally {
 				close(em);
 			}
