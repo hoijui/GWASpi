@@ -23,8 +23,11 @@ import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 		name = "report_fetchById",
 		query = "SELECT r FROM Report r WHERE r.id = :id"),
 	@NamedQuery(
-		name = "report_fetchByParentOperationIdParentMatrixId",
-		query = "SELECT r FROM Report r WHERE r.parentOperationId = :parentOperationId AND r.parentMatrixId = :parentMatrixId"),
+		name = "report_fetchByParentOperationId",
+		query = "SELECT r FROM Report r WHERE r.parentOperationId = :parentOperationId"),
+	@NamedQuery(
+		name = "report_fetchByParentMatrixId",
+		query = "SELECT r FROM Report r WHERE r.parentMatrixId = :parentMatrixId"),
 	@NamedQuery(
 		name = "report_deleteByParentMatrixId",
 		query = "DELETE FROM Report r WHERE r.parentMatrixId = :parentMatrixId"),

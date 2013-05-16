@@ -15,6 +15,7 @@ public interface ReportService {
 
 	Report getById(int reportId) throws IOException;
 
+	// XXX split into two methods, with either parentOperationId or parentMatrixId param, as we do not allow to fetch by specifying both anyway (on has to be Integer.MIN_VALUE as it works now)
 	List<Report> getReportsList(int parentOperationId, int parentMatrixId) throws IOException;
 
 	String getReportNamePrefix(Operation op);

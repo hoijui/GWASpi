@@ -106,10 +106,16 @@ public class JPAReportService implements ReportService {
 		EntityManager em = null;
 		try {
 			em = open();
-			Query query = em.createNamedQuery(
-					"report_fetchByParentOperationIdParentMatrixId");
-			query.setParameter("parentOperationId", parentOperationId);
-			query.setParameter("parentMatrixId", parentMatrixId);
+			Query query;
+			if (parentMatrixId == Integer.MIN_VALUE) {
+				query = em.createNamedQuery(
+						"report_fetchByParentOperationId");
+				query.setParameter("parentOperationId", parentOperationId);
+			} else {
+				query = em.createNamedQuery(
+						"report_fetchByParentMatrixId");
+				query.setParameter("parentMatrixId", parentMatrixId);
+			}
 			reports = (List<Report>) query.getResultList();
 		} catch (NoResultException ex) {
 			LOG.error("Failed fetching a report by"
