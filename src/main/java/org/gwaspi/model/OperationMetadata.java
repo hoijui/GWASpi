@@ -40,7 +40,7 @@ import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 		name = "operationMetadata_listByParentMatrixIdParentOperationId",
 		query = "SELECT om FROM OperationMetadata om WHERE om.parentMatrixId = :parentMatrixId AND om.parentOperationId = :parentOperationId"),
 })
-public class OperationMetadata implements Serializable {
+public class OperationMetadata implements Serializable, MatrixOperationSpec {
 
 	private int id;
 	private String opName; // == Operation.friendlyName
@@ -301,5 +301,10 @@ public class OperationMetadata implements Serializable {
 
 	protected void setCreationDate(Date creationDate) {
 		this.creationDate = creationDate;
+	}
+
+	@Transient
+	public OPType getType() {
+		return getGenotypeCode();
 	}
 }

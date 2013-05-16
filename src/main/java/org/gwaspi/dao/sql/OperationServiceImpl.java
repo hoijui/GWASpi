@@ -273,7 +273,21 @@ public class OperationServiceImpl implements OperationService {
 			if (!rs.isEmpty() && rs.get(rowcount).size() == cDBOperations.T_CREATE_OPERATIONS.length) {
 				Integer id = (Integer) rs.get(rowcount).get(cDBOperations.f_ID);
 				OPType type = OPType.valueOf((String) rs.get(rowcount).get(cDBOperations.f_OP_TYPE));
-				result.add(new MatrixOperationSpec(id, type));
+				MatrixOperationSpec matrixOperationSpec = new OperationMetadata(
+						id,
+						Integer.MIN_VALUE,
+						Integer.MIN_VALUE,
+						null,
+						null,
+						null,
+						null,
+						type,
+						Integer.MIN_VALUE,
+						Integer.MIN_VALUE,
+						Integer.MIN_VALUE,
+						null
+						);
+				result.add(matrixOperationSpec);
 			}
 		}
 

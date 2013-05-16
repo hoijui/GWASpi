@@ -270,8 +270,8 @@ public class JPAOperationService implements OperationService {
 		try {
 			em = open();
 			Query query = em.createNamedQuery(
-					"matrixOperationSpecs_listByMatrixId");
-			query.setParameter("id", matrixId);
+					"operationMetadata_listByParentMatrixId");
+			query.setParameter("parentMatrixId", matrixId);
 			matrixOperationSpecs = query.getResultList();
 		} catch (Exception ex) {
 			LOG.error("Failed fetching matrix-operation-specs", ex);
