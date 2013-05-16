@@ -43,7 +43,7 @@ public class DatabaseGenerator {
 		allResults += ReportsList.createReportsMetadataTable();
 
 		// STUDY_0 SPECIFIC DATA
-		Object[] testStudy = new Object[]{
+		Object[] testStudy = new Object[]{ // HACK
 			"Study 1",
 			"",
 			"",
