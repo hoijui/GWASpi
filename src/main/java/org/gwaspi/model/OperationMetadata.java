@@ -228,34 +228,21 @@ public class OperationMetadata implements Serializable {
 		this.gtCode = gtCode;
 	}
 
-	@Column(
-		name       = "opSetSize",
-		unique     = false,
-		nullable   = false,
-		insertable = true,
-		updatable  = false
-		)
+	@Transient
 	public int getOpSetSize() {
 		return opSetSize;
 	}
 
-	protected void setOpSetSize(int opSetSize) {
+	public void setOpSetSize(int opSetSize) {
 		this.opSetSize = opSetSize;
 	}
 
-	@Column(
-		name       = "pathToMatrix",
-		length     = 1023,
-		unique     = false,
-		nullable   = false,
-		insertable = true,
-		updatable  = false
-		)
+	@Transient
 	public String getPathToMatrix() {
 		return pathToMatrix;
 	}
 
-	protected void setPathToMatrix(String pathToMatrix) {
+	public void setPathToMatrix(String pathToMatrix) {
 		this.pathToMatrix = pathToMatrix;
 	}
 
@@ -291,18 +278,12 @@ public class OperationMetadata implements Serializable {
 		this.parentOperationId = parentOperationId;
 	}
 
-	@Column(
-		name       = "implicitSetSize",
-		unique     = false,
-		nullable   = false,
-		insertable = true,
-		updatable  = false
-		)
+	@Transient
 	public int getImplicitSetSize() {
 		return implicitSetSize;
 	}
 
-	protected void setImplicitSetSize(int implicitSetSize) {
+	public void setImplicitSetSize(int implicitSetSize) {
 		this.implicitSetSize = implicitSetSize;
 	}
 
