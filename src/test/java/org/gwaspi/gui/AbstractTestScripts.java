@@ -12,6 +12,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import org.gwaspi.model.MatricesList;
 import org.gwaspi.threadbox.SwingDeleterItemList;
 import org.gwaspi.threadbox.SwingWorkerItemList;
 import org.junit.AfterClass;
@@ -171,7 +172,16 @@ public abstract class AbstractTestScripts {
 		public void addLoadedFileName(String matrixName) {
 
 			if (!fileNameToLoadedMatrixId.containsKey(matrixName)) {
-				fileNameToLoadedMatrixId.put(matrixName, ++lastLoadedMatrixId + 1);
+				// for the classic/moapi backend
+				if (MatricesList.USE_JPA) {
+					// HACK for the JPAMatrixService, which generates IDs: 2, 9, 16, 23, ...
+					int nextId = (lastLoadedMatrixId == -1) ? 2 : lastLoadedMatrixId + 7;
+					fileNameToLoadedMatrixId.put(matrixName, nextId);
+					lastLoadedMatrixId = nextId;
+				} else {
+					fileNameToLoadedMatrixId.put(matrixName, ++lastLoadedMatrixId + 1);
+				}
+
 			}
 		}
 
