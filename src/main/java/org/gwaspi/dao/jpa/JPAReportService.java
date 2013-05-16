@@ -149,7 +149,11 @@ public class JPAReportService implements ReportService {
 		try {
 			em = open();
 			begin(em);
-			em.persist(report);
+			if (report.getId() == Integer.MIN_VALUE) {
+				em.persist(report);
+			} else {
+				em.merge(report);
+			}
 			commit(em);
 		} catch (Exception ex) {
 			LOG.error("Failed adding a report", ex);

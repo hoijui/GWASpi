@@ -179,7 +179,11 @@ public class JPAMatrixService implements MatrixService {
 		try {
 			em = open();
 			begin(em);
-			em.persist(matrixMetadata);
+			if (matrixMetadata.getId() == Integer.MIN_VALUE) {
+				em.persist(matrixMetadata);
+			} else {
+				em.merge(matrixMetadata);
+			}
 			commit(em);
 		} catch (Exception ex) {
 			LOG.error("Failed adding a matrix-metadata", ex);

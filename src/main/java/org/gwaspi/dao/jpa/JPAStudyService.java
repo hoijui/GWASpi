@@ -137,7 +137,11 @@ public class JPAStudyService implements StudyService {
 		try {
 			em = open();
 			begin(em);
-			em.persist(study);
+			if (study.getId() == Integer.MIN_VALUE) {
+				em.persist(study);
+			} else {
+				em.merge(study);
+			}
 			commit(em);
 		} catch (Exception ex) {
 			LOG.error("Failed adding a study", ex);
