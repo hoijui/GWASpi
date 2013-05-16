@@ -261,7 +261,7 @@ public class OperationMetadata implements Serializable {
 
 	@Column(
 		name       = "description",
-		length     = 255,
+		length     = 511,
 		unique     = false,
 		nullable   = false,
 		insertable = true,

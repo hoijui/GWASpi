@@ -41,7 +41,7 @@ public class Operation implements Serializable {
 	private int parentMatrixId; // INTEGER
 	private int parentOperationId; // INTEGER
 	private String command; // VARCHAR(2000)
-	private String description; // VARCHAR(255)
+	private String description; // VARCHAR(511)
 	private int studyId; // INTEGER
 
 	protected Operation() {
@@ -218,7 +218,7 @@ public class Operation implements Serializable {
 
 	@Column(
 		name       = "description",
-		length     = 255,
+		length     = 511,
 		unique     = false,
 		nullable   = false,
 		insertable = true,
