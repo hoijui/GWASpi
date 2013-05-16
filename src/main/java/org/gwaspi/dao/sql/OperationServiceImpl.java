@@ -450,20 +450,10 @@ public class OperationServiceImpl implements OperationService {
 			}
 		}
 
-		OperationMetadata operationMetadata = new OperationMetadata(
-				toComplete.getId(),
-				toComplete.getParentMatrixId(),
-				toComplete.getParentOperationId(),
-				toComplete.getOPName(),
-				toComplete.getMatrixCDFName(),
-				toComplete.getDescription(),
-				pathToMatrix,
-				toComplete.getGenotypeCode(),
-				opSetSize,
-				implicitSetSize,
-				toComplete.getStudyId(),
-				toComplete.getCreationDate());
+		toComplete.setPathToMatrix(pathToMatrix);
+		toComplete.setOpSetSize(opSetSize);
+		toComplete.setImplicitSetSize(implicitSetSize);
 
-		return operationMetadata;
+		return toComplete;
 	}
 }
