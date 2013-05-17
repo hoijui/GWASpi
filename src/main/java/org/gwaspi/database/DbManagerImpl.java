@@ -12,6 +12,7 @@ import java.util.Map;
 import org.gwaspi.framework.error.GeneralApplicationException;
 import org.gwaspi.framework.jdbc.connection.ConnectionProvider;
 import org.gwaspi.framework.jdbc.query.QueryExecutor;
+import org.gwaspi.framework.jdbc.resultset.ResultSetHandler;
 import org.gwaspi.framework.jdbc.resultset.RowMappingResultSetHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,6 +27,28 @@ public class DbManagerImpl implements DbManager {
 	public DbManagerImpl(ConnectionProvider cp) {
 		qex = new QueryExecutor(cp);
 		connectionProvider = cp;
+	}
+
+	private int executeUpdate(String statement) throws GeneralApplicationException {
+		return executeUpdate(statement, new Object[0]);
+	}
+
+	private int executeUpdate(String statement, Object[] values) throws GeneralApplicationException {
+		return qex.executeUpdate(statement, values);
+	}
+
+	private void executeQuery(String statement, ResultSetHandler resultSetHandler) throws GeneralApplicationException {
+		executeQuery(statement, new Object[0], resultSetHandler);
+	}
+
+	private void executeQuery(String statement, Object[] clauseValues, ResultSetHandler resultSetHandler) throws GeneralApplicationException {
+		qex.executeQuery(statement, clauseValues, resultSetHandler);
+	}
+
+	private List getResults() throws GeneralApplicationException {
+
+		List results = qex.getResults();
+		return results;
 	}
 
 	@Override
@@ -61,9 +84,9 @@ public class DbManagerImpl implements DbManager {
 		makeWhereClause(sql, clauseFields);
 
 		try {
-			qex.executeQuery(sql.toString(), clauseValues,
+			executeQuery(sql.toString(), clauseValues,
 					new RowMappingResultSetHandler());
-			return qex.getResults();
+			return getResults();
 		} catch (GeneralApplicationException ex) {
 			throw new RuntimeException(ex);
 		}
@@ -72,8 +95,8 @@ public class DbManagerImpl implements DbManager {
 	@Override
 	public List<Map<String, Object>> executeSelectStatement(String statement) {
 		try {
-			qex.executeQuery(statement, new RowMappingResultSetHandler());
-			return qex.getResults();
+			executeQuery(statement, new RowMappingResultSetHandler());
+			return getResults();
 		} catch (GeneralApplicationException ex) {
 			throw new RuntimeException(ex);
 		}
@@ -113,7 +136,7 @@ public class DbManagerImpl implements DbManager {
 		//sql.append(")  WITH RR");
 
 		try {
-			int affectedRows = qex.executeUpdate(sql.toString(), values);
+			int affectedRows = executeUpdate(sql.toString(), values);
 			return affectedRows == 1;
 		} catch (GeneralApplicationException ex) {
 			throw new RuntimeException(ex);
@@ -150,7 +173,7 @@ public class DbManagerImpl implements DbManager {
 		params.addAll(Arrays.asList(clauseValues));
 
 		try {
-			int affectedRows = qex.executeUpdate(sql.toString(), params.toArray());
+			int affectedRows = executeUpdate(sql.toString(), params.toArray());
 			return affectedRows > 0;
 		} catch (GeneralApplicationException ex) {
 			throw new RuntimeException(ex);
@@ -160,7 +183,7 @@ public class DbManagerImpl implements DbManager {
 	@Override
 	public boolean dropTable(String schema, String table) {
 		try {
-			qex.executeUpdate("DROP TABLE " + schema + "." + table);
+			executeUpdate("DROP TABLE " + schema + "." + table);
 
 			return true;
 		} catch (GeneralApplicationException ex) {
@@ -184,7 +207,7 @@ public class DbManagerImpl implements DbManager {
 		sql.append(")");
 
 		try {
-			qex.executeUpdate(sql.toString());
+			executeUpdate(sql.toString());
 
 			return true;
 		} catch (GeneralApplicationException ex) {
@@ -199,7 +222,7 @@ public class DbManagerImpl implements DbManager {
 		sql.append(schema);
 
 		try {
-			qex.executeUpdate(sql.toString());
+			executeUpdate(sql.toString());
 
 			return true;
 		} catch (GeneralApplicationException ex) {
