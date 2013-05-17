@@ -412,6 +412,10 @@ public class OP_QAMarkers implements MatrixOperation {
 					if (orderedAlleles == null) {
 						orderedAlleles = new OrderedAlleles();
 					}
+					// NOTE This was checking for == null before,
+					//   which could never happend.
+					//   Therefore, some '0' were left in the end;
+					//   when both alleles were the same/there was only one.
 					if (orderedAlleles.getAllele1() == '0' && orderedAlleles.getAllele2() != '0') {
 						orderedAlleles.setAllele1(orderedAlleles.getAllele2());
 					}
