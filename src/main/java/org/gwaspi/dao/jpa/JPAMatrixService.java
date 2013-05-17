@@ -96,6 +96,13 @@ public class JPAMatrixService implements MatrixService {
 		} catch (NoResultException ex) {
 			LOG.error("Failed fetching a matrix by id: " + matrixId
 					+ " (id not found)", ex);
+			LOG.info("Available matrix-IDs:");
+			List<Matrix> matrixList = getMatrixList();
+			StringBuilder matricesIds = new StringBuilder();
+			for (Matrix mat : matrixList) {
+				matricesIds.append(mat.getId()).append(" ");
+			}
+			LOG.info(matricesIds.toString());
 		} catch (Exception ex) {
 			LOG.error("Failed fetching a matrix by id: " + matrixId, ex);
 		} finally {
@@ -295,6 +302,13 @@ public class JPAMatrixService implements MatrixService {
 		} catch (NoResultException ex) {
 			LOG.error("Failed fetching matrix-metadata by id: " + matrixId
 					+ " (id not found)", ex);
+			LOG.info("Available matrix-IDs:");
+			List<Matrix> matrixList = getMatrixList();
+			StringBuilder matricesIds = new StringBuilder();
+			for (Matrix mat : matrixList) {
+				matricesIds.append(mat.getId()).append(" ");
+			}
+			LOG.info(matricesIds.toString());
 		} catch (Exception ex) {
 			LOG.error("Failed fetching matrix-metadata by id: " + matrixId, ex);
 		} finally {
