@@ -143,6 +143,10 @@ public class Report implements Serializable {
 		return friendlyName;
 	}
 
+	protected void setFriendlyName(String friendlyName) {
+		this.friendlyName = friendlyName;
+	}
+
 	@Column(
 		name       = "fileName",
 		unique     = false,
@@ -154,6 +158,10 @@ public class Report implements Serializable {
 		return fileName;
 	}
 
+	protected void setFileName(String fileName) {
+		this.fileName = fileName;
+	}
+
 	@Column(
 		name       = "type",
 		unique     = false,
@@ -163,6 +171,10 @@ public class Report implements Serializable {
 		)
 	public OPType getReportType() {
 		return type;
+	}
+
+	protected void setReportType(OPType type) {
+		this.type = type;
 	}
 
 	@Id
@@ -190,5 +202,9 @@ public class Report implements Serializable {
 		)
 	public String getDescription() {
 		return description;
+	}
+
+	protected void setDescription(String description) {
+		this.description = description;
 	}
 }

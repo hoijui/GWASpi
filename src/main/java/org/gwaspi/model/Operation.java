@@ -139,6 +139,10 @@ public class Operation implements Serializable {
 		return friendlyName;
 	}
 
+	protected void setFriendlyName(String friendlyName) {
+		this.friendlyName = friendlyName;
+	}
+
 	@Column(
 		name       = "netCDFName",
 		unique     = false,
@@ -148,6 +152,10 @@ public class Operation implements Serializable {
 		)
 	public String getNetCDFName() {
 		return netCDFName;
+	}
+
+	protected void setNetCDFName(String netCDFName) {
+		this.netCDFName = netCDFName;
 	}
 
 	@Column(
@@ -161,6 +169,10 @@ public class Operation implements Serializable {
 		return type;
 	}
 
+	protected void setOperationType(OPType type) {
+		this.type = type;
+	}
+
 	@Column(
 		name       = "command",
 		unique     = false,
@@ -170,6 +182,10 @@ public class Operation implements Serializable {
 		)
 	public String getCommand() {
 		return command;
+	}
+
+	protected void setCommand(String command) {
+		this.command = command;
 	}
 
 	@Column(
@@ -183,6 +199,10 @@ public class Operation implements Serializable {
 		return description;
 	}
 
+	protected void setDescription(String description) {
+		this.description = description;
+	}
+
 	@Column(
 		name       = "parentOperationId",
 		unique     = false,
@@ -192,5 +212,9 @@ public class Operation implements Serializable {
 		)
 	public int getParentOperationId() {
 		return parentOperationId;
+	}
+
+	protected void setParentOperationId(int parentOperationId) {
+		this.parentOperationId = parentOperationId;
 	}
 }

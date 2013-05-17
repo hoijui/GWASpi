@@ -158,6 +158,10 @@ public class MatrixMetadata implements Serializable {
 		return hasDictionray;
 	}
 
+	protected void setHasDictionray(boolean hasDictionray) {
+		this.hasDictionray = hasDictionray;
+	}
+
 	@Id
 	@Column(
 		name       = "matrixId",
@@ -201,6 +205,10 @@ public class MatrixMetadata implements Serializable {
 		return matrixFriendlyName;
 	}
 
+	protected void setMatrixFriendlyName(String matrixFriendlyName) {
+		this.matrixFriendlyName = matrixFriendlyName;
+	}
+
 	@Column(
 		name       = "technology",
 		unique     = false,
@@ -210,6 +218,10 @@ public class MatrixMetadata implements Serializable {
 		)
 	public ImportFormat getTechnology() {
 		return technology;
+	}
+
+	protected void setTechnology(ImportFormat technology) {
+		this.technology = technology;
 	}
 
 	@Column(
@@ -223,6 +235,10 @@ public class MatrixMetadata implements Serializable {
 		return gwaspiDBVersion;
 	}
 
+	protected void setGwaspiDBVersion(String gwaspiDBVersion) {
+		this.gwaspiDBVersion = gwaspiDBVersion;
+	}
+
 	@Column(
 		name       = "gtEncoding",
 		unique     = false,
@@ -232,6 +248,10 @@ public class MatrixMetadata implements Serializable {
 		)
 	public GenotypeEncoding getGenotypeEncoding() {
 		return gtEncoding;
+	}
+
+	protected void setGenotypeEncoding(GenotypeEncoding gtEncoding) {
+		this.gtEncoding = gtEncoding;
 	}
 
 	@Column(
@@ -245,6 +265,10 @@ public class MatrixMetadata implements Serializable {
 		return markerSetSize;
 	}
 
+	protected void setMarkerSetSize(int markerSetSize) {
+		this.markerSetSize = markerSetSize;
+	}
+
 	@Column(
 		name       = "sampleSetSize",
 		unique     = false,
@@ -254,6 +278,10 @@ public class MatrixMetadata implements Serializable {
 		)
 	public int getSampleSetSize() {
 		return sampleSetSize;
+	}
+
+	protected void setSampleSetSize(int sampleSetSize) {
+		this.sampleSetSize = sampleSetSize;
 	}
 
 	@Column(
@@ -267,6 +295,10 @@ public class MatrixMetadata implements Serializable {
 		return pathToMatrix;
 	}
 
+	protected void setPathToMatrix(String pathToMatrix) {
+		this.pathToMatrix = pathToMatrix;
+	}
+
 	@Column(
 		name       = "strand",
 		unique     = false,
@@ -276,6 +308,10 @@ public class MatrixMetadata implements Serializable {
 		)
 	public StrandType getStrand() {
 		return strand;
+	}
+
+	protected void setStrand(StrandType strand) {
+		this.strand = strand;
 	}
 
 	@Column(
@@ -304,6 +340,10 @@ public class MatrixMetadata implements Serializable {
 		return matrixNetCDFName;
 	}
 
+	protected void setMatrixNetCDFName(String matrixNetCDFName) {
+		this.matrixNetCDFName = matrixNetCDFName;
+	}
+
 	@Column(
 		name       = "matrixType",
 		unique     = false,
@@ -313,6 +353,10 @@ public class MatrixMetadata implements Serializable {
 		)
 	public String getMatrixType() {
 		return matrixType;
+	}
+
+	protected void setMatrixType(String matrixType) {
+		this.matrixType = matrixType;
 	}
 
 	@Column(
@@ -326,6 +370,10 @@ public class MatrixMetadata implements Serializable {
 		return parent1MatrixId;
 	}
 
+	protected void setParent1MatrixId(int parent1MatrixId) {
+		this.parent1MatrixId = parent1MatrixId;
+	}
+
 	@Column(
 		name       = "parent2MatrixId",
 		unique     = false,
@@ -335,6 +383,10 @@ public class MatrixMetadata implements Serializable {
 		)
 	public int getParent2MatrixId() {
 		return parent2MatrixId;
+	}
+
+	protected void setParent2MatrixId(int parent2MatrixId) {
+		this.parent2MatrixId = parent2MatrixId;
 	}
 
 	@Column(
@@ -348,6 +400,10 @@ public class MatrixMetadata implements Serializable {
 		return inputLocation;
 	}
 
+	protected void setInputLocation(String inputLocation) {
+		this.inputLocation = inputLocation;
+	}
+
 	@Temporal(TemporalType.DATE)
 	@Column(
 		name       = "creationDate",
@@ -358,5 +414,9 @@ public class MatrixMetadata implements Serializable {
 		)
 	public Date getCreationDate() {
 		return creationDate;
+	}
+
+	protected void setCreationDate(Date creationDate) {
+		this.creationDate = creationDate;
 	}
 }

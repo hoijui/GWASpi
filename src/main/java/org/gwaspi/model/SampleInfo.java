@@ -362,6 +362,9 @@ public class SampleInfo implements Comparable<SampleInfo>, Serializable {
 		return orderId;
 	}
 
+	protected void setOrderId(int orderId) {
+		this.orderId = orderId;
+	}
 
 	/**
 	 * Returns the sample-id, which is unique in combination with the family-id.
@@ -418,6 +421,10 @@ public class SampleInfo implements Comparable<SampleInfo>, Serializable {
 		return fatherId;
 	}
 
+	protected void setFatherId(String fatherId) {
+		this.fatherId = fatherId;
+	}
+
 	@Column(
 		name       = "motherId",
 		unique     = false,
@@ -429,6 +436,10 @@ public class SampleInfo implements Comparable<SampleInfo>, Serializable {
 		return motherId;
 	}
 
+	protected void setMotherId(String motherId) {
+		this.motherId = motherId;
+	}
+
 	@Column(
 		name       = "sex",
 		unique     = false,
@@ -438,6 +449,10 @@ public class SampleInfo implements Comparable<SampleInfo>, Serializable {
 		)
 	public Sex getSex() {
 		return sex;
+	}
+
+	protected void setSex(Sex sex) {
+		this.sex = sex;
 	}
 
 	/** @deprecated */
@@ -462,6 +477,10 @@ public class SampleInfo implements Comparable<SampleInfo>, Serializable {
 		return affection;
 	}
 
+	protected void setAffection(Affection affection) {
+		this.affection = affection;
+	}
+
 	/** @deprecated */
 	@Transient
 	public String getAffectionStr() {
@@ -484,6 +503,10 @@ public class SampleInfo implements Comparable<SampleInfo>, Serializable {
 		return category;
 	}
 
+	protected void setCategory(String category) {
+		this.category = category;
+	}
+
 	@Column(
 		name       = "disease",
 		unique     = false,
@@ -493,6 +516,10 @@ public class SampleInfo implements Comparable<SampleInfo>, Serializable {
 		)
 	public String getDisease() {
 		return disease;
+	}
+
+	protected void setDisease(String disease) {
+		this.disease = disease;
 	}
 
 	@Column(
@@ -506,6 +533,10 @@ public class SampleInfo implements Comparable<SampleInfo>, Serializable {
 		return population;
 	}
 
+	protected void setPopulation(String population) {
+		this.population = population;
+	}
+
 	@Column(
 		name       = "age",
 		unique     = false,
@@ -517,6 +548,10 @@ public class SampleInfo implements Comparable<SampleInfo>, Serializable {
 		return age;
 	}
 
+	protected void setAge(int age) {
+		this.age = age;
+	}
+
 	@Column(
 		name       = "filter",
 		unique     = false,
@@ -526,6 +561,10 @@ public class SampleInfo implements Comparable<SampleInfo>, Serializable {
 		)
 	public String getFilter() {
 		return filter;
+	}
+
+	protected void setFilter(String filter) {
+		this.filter = filter;
 	}
 
 	@Id
@@ -555,6 +594,10 @@ public class SampleInfo implements Comparable<SampleInfo>, Serializable {
 		return approved;
 	}
 
+	protected void setApproved(int approved) {
+		this.approved = approved;
+	}
+
 	@Column(
 		name       = "status",
 		unique     = false,
@@ -564,6 +607,10 @@ public class SampleInfo implements Comparable<SampleInfo>, Serializable {
 		)
 	public int getStatus() {
 		return status;
+	}
+
+	protected void setStatus(int status) {
+		this.status = status;
 	}
 
 	/**

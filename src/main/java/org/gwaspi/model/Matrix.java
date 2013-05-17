@@ -86,4 +86,8 @@ public class Matrix implements Serializable {
 	public MatrixMetadata getMatrixMetadata() {
 		return matrixMetadata;
 	}
+
+	protected void setMatrixMetadata(MatrixMetadata matrixMetadata) {
+		this.matrixMetadata = matrixMetadata;
+	}
 }

@@ -116,6 +116,10 @@ public class Study implements Serializable {
 		return name;
 	}
 
+	protected void setName(String name) {
+		this.name = name;
+	}
+
 	@Column(
 		name       = "description",
 		unique     = false,
@@ -125,6 +129,10 @@ public class Study implements Serializable {
 		)
 	public String getDescription() {
 		return description;
+	}
+
+	protected void setDescription(String description) {
+		this.description = description;
 	}
 
 	@Column(
@@ -138,6 +146,10 @@ public class Study implements Serializable {
 		return studyType;
 	}
 
+	protected void setStudyType(String studyType) {
+		this.studyType = studyType;
+	}
+
 	@Column(
 		name       = "validity",
 		unique     = false,
@@ -147,6 +159,10 @@ public class Study implements Serializable {
 		)
 	public String getValidity() {
 		return validity;
+	}
+
+	protected void setValidity(String validity) {
+		this.validity = validity;
 	}
 
 	@Temporal(TemporalType.DATE)
@@ -159,5 +175,9 @@ public class Study implements Serializable {
 		)
 	public Date getCreationDate() {
 		return creationDate;
+	}
+
+	protected void setCreationDate(Date creationDate) {
+		this.creationDate = creationDate;
 	}
 }

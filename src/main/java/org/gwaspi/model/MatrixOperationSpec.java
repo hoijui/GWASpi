@@ -19,7 +19,7 @@ import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 public class MatrixOperationSpec implements Serializable {
 
 	private Integer id;
-	private final OPType type;
+	private OPType type;
 
 	protected MatrixOperationSpec() {
 		this(null, null);
@@ -56,5 +56,9 @@ public class MatrixOperationSpec implements Serializable {
 		)
 	public OPType getType() {
 		return type;
+	}
+
+	protected void setType(OPType type) {
+		this.type = type;
 	}
 }

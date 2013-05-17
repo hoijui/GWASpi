@@ -157,6 +157,10 @@ public class OperationMetadata implements Serializable {
 		return opName;
 	}
 
+	protected void setOPName(String opName) {
+		this.opName = opName;
+	}
+
 	@Column(
 		name       = "netCDFName",
 		unique     = false,
@@ -166,6 +170,10 @@ public class OperationMetadata implements Serializable {
 		)
 	public String getMatrixCDFName() {
 		return netCDFName;
+	}
+
+	protected void setMatrixCDFName(String netCDFName) {
+		this.netCDFName = netCDFName;
 	}
 
 	@Column(
@@ -179,6 +187,10 @@ public class OperationMetadata implements Serializable {
 		return gtCode;
 	}
 
+	protected void setGenotypeCode(OPType gtCode) {
+		this.gtCode = gtCode;
+	}
+
 	@Column(
 		name       = "opSetSize",
 		unique     = false,
@@ -188,6 +200,10 @@ public class OperationMetadata implements Serializable {
 		)
 	public int getOpSetSize() {
 		return opSetSize;
+	}
+
+	protected void setOpSetSize(int opSetSize) {
+		this.opSetSize = opSetSize;
 	}
 
 	@Column(
@@ -201,6 +217,10 @@ public class OperationMetadata implements Serializable {
 		return pathToMatrix;
 	}
 
+	protected void setPathToMatrix(String pathToMatrix) {
+		this.pathToMatrix = pathToMatrix;
+	}
+
 	@Column(
 		name       = "description",
 		unique     = false,
@@ -210,6 +230,10 @@ public class OperationMetadata implements Serializable {
 		)
 	public String getDescription() {
 		return description;
+	}
+
+	protected void setDescription(String description) {
+		this.description = description;
 	}
 
 	@Id
@@ -239,6 +263,10 @@ public class OperationMetadata implements Serializable {
 		return implicitSetSize;
 	}
 
+	protected void setImplicitSetSize(int implicitSetSize) {
+		this.implicitSetSize = implicitSetSize;
+	}
+
 	@Temporal(TemporalType.DATE)
 	@Column(
 		name       = "creationDate",
@@ -249,5 +277,9 @@ public class OperationMetadata implements Serializable {
 		)
 	public Date getCreationDate() {
 		return creationDate;
+	}
+
+	protected void setCreationDate(Date creationDate) {
+		this.creationDate = creationDate;
 	}
 }
