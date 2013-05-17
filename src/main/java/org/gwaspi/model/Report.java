@@ -109,7 +109,7 @@ public class Report implements Serializable {
 	 * @return the report-id
 	 */
 	@Id
-	@GeneratedValue
+	@GeneratedValue(strategy = javax.persistence.GenerationType.SEQUENCE)
 	@Column(
 		name       = "id",
 		unique     = false,

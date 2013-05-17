@@ -188,7 +188,7 @@ public class MatrixMetadata implements Serializable, Matrix {
 	}
 
 	@Id
-	@GeneratedValue
+	@GeneratedValue(strategy = javax.persistence.GenerationType.SEQUENCE)
 	@Column(
 		name       = "matrixId",
 		unique     = false,

@@ -107,7 +107,7 @@ public class Study implements Serializable {
 	 * @return the study-id
 	 */
 	@Id
-	@GeneratedValue
+	@GeneratedValue(strategy = javax.persistence.GenerationType.SEQUENCE)
 	@Column(
 		name       = "id",
 		unique     = true,

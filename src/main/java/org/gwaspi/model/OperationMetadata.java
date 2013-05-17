@@ -128,7 +128,7 @@ public class OperationMetadata implements Serializable, MatrixOperationSpec {
 	}
 
 	@Id
-	@GeneratedValue
+	@GeneratedValue(strategy = javax.persistence.GenerationType.SEQUENCE)
 	@Column(
 		name       = "id",
 		unique     = false,
