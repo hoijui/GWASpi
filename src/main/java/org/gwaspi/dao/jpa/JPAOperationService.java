@@ -1,23 +1,24 @@
 package org.gwaspi.dao.jpa;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.Collections;
-import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceException;
 import javax.persistence.Query;
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
+import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.dao.OperationService;
-import org.gwaspi.dao.sql.OperationServiceImpl;
 import org.gwaspi.global.Config;
 import org.gwaspi.model.MatrixOperationSpec;
 import org.gwaspi.model.Operation;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.ReportsList;
-
+import ucar.nc2.Dimension;
+import ucar.nc2.NetcdfFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -183,7 +184,7 @@ public class JPAOperationService implements OperationService {
 			operationsMetadata = query.getResultList();
 
 			for (int i = 0; i < operationsMetadata.size(); i++) {
-				operationsMetadata.set(i, OperationServiceImpl.completeOperationMetadata(operationsMetadata.get(i)));
+				operationsMetadata.set(i, completeOperationMetadata(operationsMetadata.get(i)));
 			}
 		} catch (Exception ex) {
 			LOG.error("Failed fetching operation-metadata", ex);
@@ -215,7 +216,7 @@ public class JPAOperationService implements OperationService {
 			operationsMetadata.addAll(query.getResultList());
 
 			for (int i = 0; i < operationsMetadata.size(); i++) {
-				operationsMetadata.set(i, OperationServiceImpl.completeOperationMetadata(operationsMetadata.get(i)));
+				operationsMetadata.set(i, completeOperationMetadata(operationsMetadata.get(i)));
 			}
 		} catch (Exception ex) {
 			LOG.error("Failed fetching operation-metadata", ex);
@@ -381,7 +382,7 @@ public class JPAOperationService implements OperationService {
 			Query query = em.createNamedQuery("operationMetadata_fetchById");
 			query.setParameter("id", operationId);
 			operationMetadata = (OperationMetadata) query.getSingleResult();
-			operationMetadata = OperationServiceImpl.completeOperationMetadata(operationMetadata);
+			operationMetadata = completeOperationMetadata(operationMetadata);
 		} catch (NoResultException ex) {
 			LOG.error("Failed fetching a operation-metadata by id: " + operationId
 					+ " (id not found)", ex);
@@ -406,7 +407,7 @@ public class JPAOperationService implements OperationService {
 					"operationMetadata_fetchByNetCDFName");
 			query.setParameter("netCDFName", netCDFName);
 			operationMetadata = (OperationMetadata) query.getSingleResult();
-			operationMetadata = OperationServiceImpl.completeOperationMetadata(operationMetadata);
+			operationMetadata = completeOperationMetadata(operationMetadata);
 		} catch (NoResultException ex) {
 			LOG.error("Failed fetching a operation-metadata by netCDF-name: " + netCDFName
 					+ " (id not found)", ex);
@@ -417,5 +418,44 @@ public class JPAOperationService implements OperationService {
 		}
 
 		return operationMetadata;
+	}
+
+	public static OperationMetadata completeOperationMetadata(OperationMetadata toComplete) throws IOException {
+
+		int opSetSize = Integer.MIN_VALUE;
+		int implicitSetSize = Integer.MIN_VALUE;
+
+		String genotypesFolder = Config.getConfigValue(Config.PROPERTY_GENOTYPES_DIR, "");
+		String pathToStudy = genotypesFolder + "/STUDY_" + toComplete.getStudyId() + "/";
+		String pathToMatrix = pathToStudy + toComplete.getMatrixCDFName() + ".nc";
+		if (new File(pathToMatrix).exists()) {
+			NetcdfFile ncfile = null;
+			try {
+				ncfile = NetcdfFile.open(pathToMatrix);
+//				gtCode = ncfile.findGlobalAttribute(cNetCDF.Attributes.GLOB_GTCODE).getStringValue();
+
+				Dimension markerSetDim = ncfile.findDimension(cNetCDF.Dimensions.DIM_OPSET);
+				opSetSize = markerSetDim.getLength();
+
+				Dimension implicitDim = ncfile.findDimension(cNetCDF.Dimensions.DIM_IMPLICITSET);
+				implicitSetSize = implicitDim.getLength();
+			} catch (IOException ex) {
+				LOG.error("Cannot open file: " + pathToMatrix, ex);
+			} finally {
+				if (null != ncfile) {
+					try {
+						ncfile.close();
+					} catch (IOException ex) {
+						LOG.warn("Cannot close file: " + ncfile.getLocation(), ex);
+					}
+				}
+			}
+		}
+
+		toComplete.setPathToMatrix(pathToMatrix);
+		toComplete.setOpSetSize(opSetSize);
+		toComplete.setImplicitSetSize(implicitSetSize);
+
+		return toComplete;
 	}
 }

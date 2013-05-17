@@ -15,7 +15,6 @@ import java.util.prefs.Preferences;
 import javax.swing.JOptionPane;
 import javax.xml.parsers.ParserConfigurationException;
 import org.gwaspi.constants.cGlobal;
-import org.gwaspi.database.DerbyDBReshaper;
 import org.gwaspi.gui.StartGWASpi;
 import org.gwaspi.gui.reports.SampleQAHetzygPlotZoom;
 import org.gwaspi.gui.utils.Dialogs;
@@ -226,9 +225,6 @@ public class Config {
 					isInitiated = true;
 				}
 			}
-
-			// ALTER EXISTING DERBY DB TABLES TO SUIT CURRENT GWASPI VERSION
-			DerbyDBReshaper.alterTableUpdates();
 		} catch (Exception ex) {
 			isInitiated = false;
 			log.error("Failed initializing the configuration", ex);
@@ -257,10 +253,13 @@ public class Config {
 
 	protected static void createDataStructure(File dataDir) throws IOException, BackingStoreException, URISyntaxException {
 
+		Utils.createFolder(dataDir);
+
 		File derbyCenter = initDataBaseVars(dataDir);
 
 		if (!derbyCenter.exists()) {
-			org.gwaspi.database.DatabaseGenerator.initDataCenter();
+			// STUDY_1 SPECIFIC DATA
+			StudyList.insertNewStudy("Study 1", ""); // HACK We should not have to add a default study, but currently have to (at least for the unit-tests)
 		}
 
 		Utils.createFolder(dataDir.getPath(), "genotypes");

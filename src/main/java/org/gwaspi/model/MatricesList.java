@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.List;
 import org.gwaspi.dao.MatrixService;
 import org.gwaspi.dao.jpa.JPAMatrixService;
-import org.gwaspi.dao.sql.MatrixServiceImpl;
 
 /**
  *
@@ -18,9 +17,7 @@ public final class MatricesList {
 	public static final boolean USE_JPA = true;
 
 	private static final MatrixService matrixService
-			= USE_JPA
-			? new JPAMatrixService(StudyList.getEntityManagerFactory())
-			: new MatrixServiceImpl();
+			= new JPAMatrixService(StudyList.getEntityManagerFactory());
 
 	private MatricesList() {
 	}

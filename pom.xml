@@ -270,11 +270,7 @@
 			<groupId>org.apache.derby</groupId>
 			<artifactId>derby</artifactId>
 			<version>10.10.1.1</version>
-		</dependency>
-		<dependency>
-			<groupId>org.gwaspi</groupId>
-			<artifactId>moapi-framework</artifactId>
-			<version>2.0.3-SNAPSHOT</version>
+			<scope>runtime</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>

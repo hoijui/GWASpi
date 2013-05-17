@@ -8,9 +8,10 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceException;
 import javax.persistence.Query;
+import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.dao.ReportService;
-import org.gwaspi.dao.sql.ReportServiceImpl;
 import org.gwaspi.model.Operation;
+import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.Report;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -133,7 +134,36 @@ public class JPAReportService implements ReportService {
 
 	@Override
 	public String getReportNamePrefix(Operation op) {
-		return ReportServiceImpl.extractReportNamePrefix(op);
+		return extractReportNamePrefix(op);
+	}
+
+	public static String extractReportNamePrefix(Operation op) {
+		StringBuilder prefix = new StringBuilder();
+		prefix.append("mx-");
+		prefix.append(op.getParentMatrixId());
+
+		prefix.append("_").append(op.getOperationType().toString()).append("-");
+		prefix.append(op.getId());
+
+		// Get Genotype Freq. assigned name. Pry out the part inserted by user only
+		try {
+			final OPType operationType = op.getOperationType();
+			if (operationType.equals(OPType.ALLELICTEST)
+					|| operationType.equals(OPType.GENOTYPICTEST)
+					|| operationType.equals(OPType.TRENDTEST))
+			{
+				Operation parentOp = OperationsList.getById(op.getParentOperationId());
+				String[] tmp = parentOp.getFriendlyName().split("-", 2);
+				tmp = tmp[1].split("using");
+				prefix.append("_");
+				prefix.append(org.gwaspi.global.Utils.stripNonAlphaNumericDashUndscr(tmp[0].trim()));
+				prefix.append("_");
+			}
+		} catch (IOException ex) {
+			LOG.error(null, ex);
+		}
+
+		return prefix.toString();
 	}
 
 	@Override

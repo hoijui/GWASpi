@@ -5,7 +5,6 @@ import java.util.List;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.dao.OperationService;
 import org.gwaspi.dao.jpa.JPAOperationService;
-import org.gwaspi.dao.sql.OperationServiceImpl;
 
 /**
  *
@@ -17,9 +16,7 @@ import org.gwaspi.dao.sql.OperationServiceImpl;
 public class OperationsList {
 
 	private static final OperationService operationService
-			= MatricesList.USE_JPA
-			? new JPAOperationService(StudyList.getEntityManagerFactory())
-			: new OperationServiceImpl();
+			= new JPAOperationService(StudyList.getEntityManagerFactory());
 
 	private OperationsList() {
 	}

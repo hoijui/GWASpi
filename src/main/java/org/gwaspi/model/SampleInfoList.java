@@ -5,7 +5,6 @@ import java.util.Collection;
 import java.util.List;
 import org.gwaspi.dao.SampleInfoService;
 import org.gwaspi.dao.jpa.JPASampleInfoService;
-import org.gwaspi.dao.sql.SampleInfoServiceImpl;
 
 /**
  *
@@ -17,9 +16,7 @@ import org.gwaspi.dao.sql.SampleInfoServiceImpl;
 public class SampleInfoList {
 
 	private static final SampleInfoService sampleInfoService
-			= MatricesList.USE_JPA
-			? new JPASampleInfoService(StudyList.getEntityManagerFactory())
-			: new SampleInfoServiceImpl();
+			= new JPASampleInfoService(StudyList.getEntityManagerFactory());
 
 	private SampleInfoList() {
 	}

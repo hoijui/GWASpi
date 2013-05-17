@@ -10,17 +10,24 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceException;
 import javax.persistence.Query;
+import org.gwaspi.constants.cImport.ImportFormat;
+import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
+import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
 import org.gwaspi.dao.MatrixService;
-import org.gwaspi.dao.sql.MatrixServiceImpl;
 import org.gwaspi.global.Config;
 import org.gwaspi.model.Matrix;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.Operation;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.ReportsList;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ucar.ma2.ArrayChar;
+import ucar.ma2.InvalidRangeException;
+import ucar.nc2.Dimension;
+import ucar.nc2.NetcdfFile;
+import ucar.nc2.Variable;
 
 /**
  * JPA implementation of a matrix service.
@@ -353,14 +360,14 @@ public class JPAMatrixService implements MatrixService {
 		Date creationDate = null;
 
 		String pathToMatrix = netCDFpath;
-		return MatrixServiceImpl.loadMatrixMetadataFromFile(matrixId, matrixFriendlyName, matrixNetCDFName, studyId, pathToMatrix, description, matrixType, creationDate);
+		return loadMatrixMetadataFromFile(matrixId, matrixFriendlyName, matrixNetCDFName, studyId, pathToMatrix, description, matrixType, creationDate);
 	}
 
 	private MatrixMetadata completeMatricesTable(MatrixMetadata toCompleteMatrixMetadata) throws IOException {
 		String genotypesFolder = Config.getConfigValue(Config.PROPERTY_GENOTYPES_DIR, "");
 		String pathToStudy = genotypesFolder + "/STUDY_" + toCompleteMatrixMetadata.getStudyId() + "/";
 		String pathToMatrix = pathToStudy + toCompleteMatrixMetadata.getMatrixNetCDFName() + ".nc";
-		return MatrixServiceImpl.loadMatrixMetadataFromFile(
+		return loadMatrixMetadataFromFile(
 				toCompleteMatrixMetadata.getMatrixId(),
 				toCompleteMatrixMetadata.getMatrixFriendlyName(),
 				toCompleteMatrixMetadata.getMatrixNetCDFName(),
@@ -369,6 +376,83 @@ public class JPAMatrixService implements MatrixService {
 				toCompleteMatrixMetadata.getDescription(),
 				toCompleteMatrixMetadata.getMatrixType(),
 				toCompleteMatrixMetadata.getCreationDate());
+	}
+
+	public static MatrixMetadata loadMatrixMetadataFromFile(int matrixId, String matrixFriendlyName, String matrixNetCDFName, int studyId, String pathToMatrix, String description, String matrixType, Date creationDate) throws IOException {
+
+		String gwaspiDBVersion = "";
+		ImportFormat technology = ImportFormat.UNKNOWN;
+		GenotypeEncoding gtEncoding = GenotypeEncoding.UNKNOWN;
+		StrandType strand = StrandType.UNKNOWN;
+		boolean hasDictionray = false;
+		int markerSetSize = Integer.MIN_VALUE;
+		int sampleSetSize = Integer.MIN_VALUE;
+
+//		String genotypesFolder = Config.getConfigValue(Config.PROPERTY_GENOTYPES_DIR, "");
+//		String pathToStudy = genotypesFolder + "/STUDY_" + studyId + "/";
+//		pathToMatrix = pathToStudy + matrixNetCDFName + ".nc";
+		NetcdfFile ncfile = null;
+		if (new File(pathToMatrix).exists()) {
+			try {
+				ncfile = NetcdfFile.open(pathToMatrix);
+
+				technology = ImportFormat.compareTo(ncfile.findGlobalAttribute(cNetCDF.Attributes.GLOB_TECHNOLOGY).getStringValue());
+				try {
+					gwaspiDBVersion = ncfile.findGlobalAttribute(cNetCDF.Attributes.GLOB_GWASPIDB_VERSION).getStringValue();
+				} catch (Exception ex) {
+					LOG.error(null, ex);
+				}
+
+				Variable var = ncfile.findVariable(cNetCDF.Variables.GLOB_GTENCODING);
+				if (var != null) {
+					try {
+						ArrayChar.D2 gtCodeAC = (ArrayChar.D2) var.read("(0:0:1, 0:7:1)");
+//						gtEncoding = GenotypeEncoding.valueOf(gtCodeAC.getString(0));
+						gtEncoding = GenotypeEncoding.compareTo(gtCodeAC.getString(0)); // HACK, the above was used before
+					} catch (InvalidRangeException ex) {
+						LOG.error(null, ex);
+					}
+				}
+
+				strand = StrandType.valueOf(ncfile.findGlobalAttribute(cNetCDF.Attributes.GLOB_STRAND).getStringValue());
+				hasDictionray = ((Integer) ncfile.findGlobalAttribute(cNetCDF.Attributes.GLOB_HAS_DICTIONARY).getNumericValue() != 0);
+
+				Dimension markerSetDim = ncfile.findDimension(cNetCDF.Dimensions.DIM_MARKERSET);
+				markerSetSize = markerSetDim.getLength();
+
+				Dimension sampleSetDim = ncfile.findDimension(cNetCDF.Dimensions.DIM_SAMPLESET);
+				sampleSetSize = sampleSetDim.getLength();
+			} catch (IOException ex) {
+				LOG.error("Cannot open file: " + ncfile, ex);
+			} finally {
+				if (null != ncfile) {
+					try {
+						ncfile.close();
+					} catch (IOException ex) {
+						LOG.warn("Cannot close file: " + ncfile, ex);
+					}
+				}
+			}
+		}
+
+		MatrixMetadata matrixMetadata = new MatrixMetadata(
+			matrixId,
+			matrixFriendlyName,
+			matrixNetCDFName,
+			pathToMatrix,
+			technology,
+			gwaspiDBVersion,
+			description,
+			gtEncoding,
+			strand,
+			hasDictionray,
+			markerSetSize,
+			sampleSetSize,
+			studyId,
+			matrixType,
+			creationDate);
+
+		return matrixMetadata;
 	}
 
 	@Override
