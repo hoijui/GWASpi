@@ -1,4 +1,4 @@
-/* Copyright (c) Ian Schneider, OSGeo Foundation (LGPL, version 2 or later) */
+/* Copyright (c) Ian Schneider, OSGeo Foundation (LGPL 2 or later) */
 
 package org.gwaspi.trastero;
 
