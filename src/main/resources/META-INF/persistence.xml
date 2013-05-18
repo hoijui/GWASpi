@@ -8,13 +8,11 @@
 		<provider>org.hibernate.ejb.HibernatePersistence</provider>
 
 		<properties>
-			<property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect"/>
-			<property name="hibernate.connection.username" value="postgres"/>
-			<property name="hibernate.connection.driver_class" value="org.postgresql.Driver"/>
-			<property name="hibernate.connection.password" value="postgres"/>
-			<property name="hibernate.connection.url" value="jdbc:postgresql://localhost/gwaspi"/>
-			<!--<property name="hibernate.cache.provider_class" value="org.hibernate.cache.OSCacheProvider"/>-->
-			<!--<property name="hibernate.cache.provider_class" value="org.hibernate.cache.HashtableCacheProvider"/>-->
+			<property name="hibernate.dialect" value="org.hibernate.dialect.DerbyDialect"/>
+			<property name="hibernate.connection.driver_class" value="org.apache.derby.jdbc.EmbeddedDriver"/>
+			<property name="hibernate.connection.url" value="jdbc:derby:gwaspi;create=true;databaseName=gwaspi"/>
+			<property name="hibernate.connection.username" value="gwaspi"/>
+			<property name="hibernate.connection.password" value="gwaspi"/>
 			<property name="hibernate.cache.provider_class" value="org.hibernate.cache.NoCacheProvider"/>
 			<property name="hibernate.hbm2ddl.auto" value="update"/>
 		</properties>
