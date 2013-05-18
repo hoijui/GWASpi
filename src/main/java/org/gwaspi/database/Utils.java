@@ -11,6 +11,9 @@ public class Utils {
 	private Utils() {
 	}
 
+	/**
+	 * @deprecated unused
+	 */
 	public static String arrayToString(String[] a, String separator) {
 		StringBuilder result = new StringBuilder();
 		if (a.length > 0) {
