@@ -1,8 +1,3 @@
-/*
- * TestJPanel.java
- *
- * Created on Nov 11, 2009, 12:13:59 PM
- */
 package org.gwaspi.gui;
 
 /**

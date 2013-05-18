@@ -1,8 +1,3 @@
-/*
- * ManhattanPlotNavigator.java
- *
- * Created on Mar 31, 2010, 3:00:13 PM
- */
 package org.gwaspi.gui;
 
 /**

@@ -1,8 +1,3 @@
-/*
- * LoadDataPanel_old.java
- *
- * Created on Nov 19, 2009, 12:49:41 PM
- */
 package org.gwaspi.gui;
 
 /**

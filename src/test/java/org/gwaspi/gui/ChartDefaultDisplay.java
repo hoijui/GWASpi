@@ -1,8 +1,3 @@
-/*
- * ChartDefaultDisplay.java
- *
- * Created on Nov 17, 2009, 12:11:22 PM
- */
 package org.gwaspi.gui;
 
 /**

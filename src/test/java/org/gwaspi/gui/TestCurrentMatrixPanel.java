@@ -1,8 +1,3 @@
-/*
- * TestCurrentMatrixPanel.java
- *
- * Created on Nov 12, 2009, 3:53:16 PM
- */
 package org.gwaspi.gui;
 
 /**

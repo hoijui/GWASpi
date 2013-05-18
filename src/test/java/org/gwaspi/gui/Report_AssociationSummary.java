@@ -1,8 +1,3 @@
-/*
- * Report_AssociationSummary.java
- *
- * Created on Nov 16, 2009, 3:42:18 PM
- */
 package org.gwaspi.gui;
 
 /**

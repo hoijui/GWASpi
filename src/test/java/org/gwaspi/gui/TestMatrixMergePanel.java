@@ -1,8 +1,3 @@
-/*
- * MatrixTrafoPanel.java
- *
- * Created on Nov 13, 2009, 2:08:31 PM
- */
 package org.gwaspi.gui;
 
 /**

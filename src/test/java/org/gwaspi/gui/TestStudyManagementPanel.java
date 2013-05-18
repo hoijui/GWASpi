@@ -1,8 +1,3 @@
-/*
- * CurrentStudyPanel.java
- *
- * Created on Nov 12, 2009, 10:04:17 AM
- */
 package org.gwaspi.gui;
 
 /**

@@ -1,8 +1,3 @@
-/*
- * BatchRunTab.java
- *
- * Created on December 2, 2008, 2:35 PM
- */
 package org.gwaspi.gui;
 
 /**

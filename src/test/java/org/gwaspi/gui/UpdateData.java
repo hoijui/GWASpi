@@ -1,8 +1,3 @@
-/*
- * UpdateData.java
- *
- * Created on October 2, 2008, 2:56 PM
- */
 package org.gwaspi.gui;
 
 /**

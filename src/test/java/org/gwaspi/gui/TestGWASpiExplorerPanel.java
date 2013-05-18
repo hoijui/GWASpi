@@ -1,8 +1,3 @@
-/*
- * TestGWASpiExplorerPanel.java
- *
- * Created on Nov 13, 2009, 11:19:50 AM
- */
 package org.gwaspi.gui;
 
 /**

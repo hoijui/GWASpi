@@ -1,8 +1,3 @@
-/*
- * SampleQAHeterozygosityPlot.java
- *
- * Created on Feb 18, 2011, 11:38:30 AM
- */
 package org.gwaspi.gui;
 
 /**

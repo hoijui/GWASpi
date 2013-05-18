@@ -1,8 +1,3 @@
-/*
- * TestJFrame2.java
- *
- * Created on Nov 11, 2009, 11:30:36 AM
- */
 package org.gwaspi.gui;
 
 /**

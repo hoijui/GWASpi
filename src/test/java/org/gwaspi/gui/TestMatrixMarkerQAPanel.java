@@ -1,8 +1,3 @@
-/*
- * MatrixAnalysePanel.java
- *
- * Created on Nov 13, 2009, 4:53:04 PM
- */
 package org.gwaspi.gui;
 
 /**

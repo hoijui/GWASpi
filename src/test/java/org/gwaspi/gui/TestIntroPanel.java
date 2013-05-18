@@ -1,8 +1,3 @@
-/*
- * TestIntroPanel.java
- *
- * Created on Nov 11, 2009, 6:51:46 PM
- */
 package org.gwaspi.gui;
 
 import java.awt.Image;

@@ -1,8 +1,3 @@
-/*
- * LoadAndCheckTab.java
- *
- * Created on October 27, 2008, 6:20 PM
- */
 package org.gwaspi.gui;
 
 /**
