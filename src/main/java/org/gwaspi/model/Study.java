@@ -8,6 +8,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -107,7 +108,8 @@ public class Study implements Serializable {
 	 * @return the study-id
 	 */
 	@Id
-	@GeneratedValue(strategy = javax.persistence.GenerationType.SEQUENCE)
+	@SequenceGenerator(name = "seqStudyId")
+	@GeneratedValue(strategy = javax.persistence.GenerationType.TABLE, generator = "seqStudyId")
 	@Column(
 		name       = "id",
 		unique     = true,

@@ -7,6 +7,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 
@@ -109,7 +110,8 @@ public class Report implements Serializable {
 	 * @return the report-id
 	 */
 	@Id
-	@GeneratedValue(strategy = javax.persistence.GenerationType.SEQUENCE)
+	@SequenceGenerator(name = "seqReportId")
+	@GeneratedValue(strategy = javax.persistence.GenerationType.TABLE, generator = "seqReportId")
 	@Column(
 		name       = "id",
 		unique     = false,

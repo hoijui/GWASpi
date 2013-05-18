@@ -172,17 +172,7 @@ public abstract class AbstractTestScripts {
 		public void addLoadedFileName(String matrixName) {
 
 			if (!fileNameToLoadedMatrixId.containsKey(matrixName)) {
-				// for the classic/moapi backend
-				if (MatricesList.USE_JPA) {
-					// HACK for the JPAMatrixService, which generates IDs: 2, 9, 16, 23, ...
-//					int nextId = (lastLoadedMatrixId == -1) ? 2 : lastLoadedMatrixId + 7; // for @GeneratedValue(strategy = javax.persistence.GenerationType.AUTO/IDENTITY) ... which is the defautl, but does not work for Derby
-					int nextId = (lastLoadedMatrixId == -1) ? 10 : lastLoadedMatrixId + 1; // for @GeneratedValue(strategy = javax.persistence.GenerationType.SEQUENCE)
-					fileNameToLoadedMatrixId.put(matrixName, nextId);
-					lastLoadedMatrixId = nextId;
-				} else {
-					fileNameToLoadedMatrixId.put(matrixName, ++lastLoadedMatrixId + 1);
-				}
-
+				fileNameToLoadedMatrixId.put(matrixName, ++lastLoadedMatrixId + 1);
 			}
 		}
 
@@ -199,7 +189,7 @@ public abstract class AbstractTestScripts {
 	public static void createTempDataDirs() throws IOException {
 
 		setup = Setup.createTemp();
-		setup.setStudyId(0); // XXX We should create a new study and use it
+		setup.setStudyId(1); // XXX We should create a new study and use it
 	}
 
 	@AfterClass

@@ -14,8 +14,6 @@ import org.gwaspi.dao.jpa.JPAMatrixService;
  */
 public final class MatricesList {
 
-	public static final boolean USE_JPA = true;
-
 	private static final MatrixService matrixService
 			= new JPAMatrixService(StudyList.getEntityManagerFactory());
 
