@@ -403,11 +403,4 @@ public class Config {
 		// decide on the db system directory
 		System.setProperty("derby.system.home", dataCenter);
 	}
-
-	public static boolean downloadFile(String dwnlUrl, String savePath, String saveName) {
-		boolean result;
-		File saveFile = new File(savePath + "/" + saveName);
-		result = FileDownload.download(dwnlUrl, saveFile.getPath());
-		return result;
-	}
 }
