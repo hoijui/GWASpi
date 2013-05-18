@@ -20,7 +20,7 @@ public class Report_AssociationPanel extends javax.swing.JPanel {
 	 */
 	@SuppressWarnings("unchecked")
     private void initComponents() {//GEN-BEGIN:initComponents
-        
+
         pnl_OperationDesc = new javax.swing.JPanel();
         scrl_OpDesc = new javax.swing.JScrollPane();
         txtA_OpDesc = new javax.swing.JTextArea();
@@ -33,19 +33,19 @@ public class Report_AssociationPanel extends javax.swing.JPanel {
         btn_Get = new javax.swing.JButton();
         scrl_ReportTable = new javax.swing.JScrollPane();
         tbl_ReportTable = new javax.swing.JTable();
-        
+
         setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Allelic Association Test", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("FreeSans", 1, 24))); // NOI18N
         setFont(new java.awt.Font("DejaVu Sans", 1, 18)); // NOI18N
-        
+
         pnl_OperationDesc.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Operation:  tata, OperationID: ", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("DejaVu Sans", 1, 13))); // NOI18N
-        
+
         txtA_OpDesc.setColumns(20);
         txtA_OpDesc.setRows(5);
         txtA_OpDesc.setBorder(javax.swing.BorderFactory.createTitledBorder("Description"));
         scrl_OpDesc.setViewportView(txtA_OpDesc);
-        
+
         btn_DeleteOperation.setText("Delete Operation");
-        
+
         javax.swing.GroupLayout pnl_OperationDescLayout = new javax.swing.GroupLayout(pnl_OperationDesc);
         pnl_OperationDesc.setLayout(pnl_OperationDescLayout);
         pnl_OperationDescLayout.setHorizontalGroup(
@@ -64,20 +64,20 @@ public class Report_AssociationPanel extends javax.swing.JPanel {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btn_DeleteOperation))
                 );
-        
+
         pnl_Report.setBorder(javax.swing.BorderFactory.createTitledBorder("Report"));
-        
+
         pnl_Summary.setBorder(javax.swing.BorderFactory.createTitledBorder("Summary"));
-        
+
         rdio_ShowNRows.setText("Show");
-        
+
         txt_NRows.setHorizontalAlignment(javax.swing.JTextField.TRAILING);
         txt_NRows.setText("100");
-        
+
         lbl_suffix1.setText("most significant p-Values.");
-        
+
         btn_Get.setText("Get");
-        
+
         javax.swing.GroupLayout pnl_SummaryLayout = new javax.swing.GroupLayout(pnl_Summary);
         pnl_Summary.setLayout(pnl_SummaryLayout);
         pnl_SummaryLayout.setHorizontalGroup(
@@ -103,7 +103,7 @@ public class Report_AssociationPanel extends javax.swing.JPanel {
                 .addComponent(btn_Get))
                 .addContainerGap())
                 );
-        
+
         tbl_ReportTable.setModel(new javax.swing.table.DefaultTableModel(
                 new Object [][] {
                     {null, null, null, null},
@@ -116,7 +116,7 @@ public class Report_AssociationPanel extends javax.swing.JPanel {
         }
         ));
         scrl_ReportTable.setViewportView(tbl_ReportTable);
-        
+
         javax.swing.GroupLayout pnl_ReportLayout = new javax.swing.GroupLayout(pnl_Report);
         pnl_Report.setLayout(pnl_ReportLayout);
         pnl_ReportLayout.setHorizontalGroup(
@@ -136,7 +136,7 @@ public class Report_AssociationPanel extends javax.swing.JPanel {
                 .addComponent(scrl_ReportTable, javax.swing.GroupLayout.DEFAULT_SIZE, 384, Short.MAX_VALUE)
                 .addContainerGap())
                 );
-        
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(

@@ -20,7 +20,7 @@ public class TestJFrame2 extends javax.swing.JFrame {
 	 */
 	@SuppressWarnings("unchecked")
     private void initComponents() {//GEN-BEGIN:initComponents
-        
+
         pnl_MatrixExtractPanel = new javax.swing.JPanel();
         pnl_NameAndDesc = new javax.swing.JPanel();
         lblTitle = new javax.swing.JLabel();
@@ -56,21 +56,21 @@ public class TestJFrame2 extends javax.swing.JFrame {
         button_Help6 = new javax.swing.JButton();
         button_Help5 = new javax.swing.JButton();
         button_Help4 = new javax.swing.JButton();
-        
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        
+
         lblTitle.setText("Extract From Matrix: ");
-        
+
         lbl_CurrentMatrix.setText(" ");
-        
+
         lbl_NewMatrixName.setText("New Matrix Name:");
-        
+
         lbl_Description.setText("Add Description:");
-        
+
         textArea_Description.setColumns(20);
         textArea_Description.setRows(5);
         scroll_Description.setViewportView(textArea_Description);
-        
+
         javax.swing.GroupLayout pnl_NameAndDescLayout = new javax.swing.GroupLayout(pnl_NameAndDesc);
         pnl_NameAndDesc.setLayout(pnl_NameAndDescLayout);
         pnl_NameAndDescLayout.setHorizontalGroup(
@@ -107,35 +107,35 @@ public class TestJFrame2 extends javax.swing.JFrame {
                 .addComponent(scroll_Description, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(239, 239, 239))
                 );
-        
+
         lbl_MarkerZone.setFont(new java.awt.Font("DejaVu Sans", 1, 14));
         lbl_MarkerZone.setText("Marker Selection");
-        
+
         lbl_MarkersVariable.setText("Property / Variable: ");
-        
+
         cmb_MarkersVariable.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-        
+
         button_Help3.setText("?");
-        
+
         button_Help1.setText("?");
-        
+
         lbl_MarkersCriteria.setText("Criteria:");
-        
+
         txtArea_MarkersCriteria.setColumns(20);
         txtArea_MarkersCriteria.setRows(5);
         scroll_MarkersCriteria.setViewportView(txtArea_MarkersCriteria);
-        
+
         lbl_MarkersCriteriaFile.setText("Criteria File:");
-        
+
         button_MarkersCriteriaBrowse.setText("Browse");
         button_MarkersCriteriaBrowse.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 button_MarkersCriteriaBrowseActionPerformed(evt);
             }
         });
-        
+
         button_Help2.setText("?");
-        
+
         javax.swing.GroupLayout pnl_MarkerZoneLayout = new javax.swing.GroupLayout(pnl_MarkerZone);
         pnl_MarkerZone.setLayout(pnl_MarkerZoneLayout);
         pnl_MarkerZoneLayout.setHorizontalGroup(
@@ -194,35 +194,35 @@ public class TestJFrame2 extends javax.swing.JFrame {
                 .addComponent(button_Help2))))
                 .addContainerGap())
                 );
-        
+
         lbl_SampleZone.setFont(new java.awt.Font("DejaVu Sans", 1, 14));
         lbl_SampleZone.setText("Sample Selection");
-        
+
         lbl_SamplesVariable.setText("Property / Variable: ");
-        
+
         cmb_SamplesVariable.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-        
+
         lbl_SamplesCriteria.setText("Criteria:");
-        
+
         txtArea_SamplesCriteria.setColumns(20);
         txtArea_SamplesCriteria.setRows(5);
         scroll_SamplesCriteria.setViewportView(txtArea_SamplesCriteria);
-        
+
         lbl_SamplesCriteriaFile.setText("Criteria File:");
-        
+
         button_SamplesCriteriaBrowse.setText("Browse");
         button_SamplesCriteriaBrowse.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 button_SamplesCriteriaBrowseActionPerformed(evt);
             }
         });
-        
+
         button_Help6.setText("?");
-        
+
         button_Help5.setText("?");
-        
+
         button_Help4.setText("?");
-        
+
         javax.swing.GroupLayout pnl_SampleZoneLayout = new javax.swing.GroupLayout(pnl_SampleZone);
         pnl_SampleZone.setLayout(pnl_SampleZoneLayout);
         pnl_SampleZoneLayout.setHorizontalGroup(
@@ -275,7 +275,7 @@ public class TestJFrame2 extends javax.swing.JFrame {
                 .addComponent(lbl_SamplesCriteria))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 );
-        
+
         javax.swing.GroupLayout pnl_MatrixExtractPanelLayout = new javax.swing.GroupLayout(pnl_MatrixExtractPanel);
         pnl_MatrixExtractPanel.setLayout(pnl_MatrixExtractPanelLayout);
         pnl_MatrixExtractPanelLayout.setHorizontalGroup(
@@ -305,7 +305,7 @@ public class TestJFrame2 extends javax.swing.JFrame {
                 .addComponent(pnl_SampleZone, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 );
-        
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -320,7 +320,7 @@ public class TestJFrame2 extends javax.swing.JFrame {
                 .addComponent(pnl_MatrixExtractPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(94, Short.MAX_VALUE))
                 );
-        
+
         pack();
     }//GEN-END:initComponents
 

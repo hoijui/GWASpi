@@ -20,7 +20,7 @@ public class LoadAndCheckTab extends javax.swing.JFrame {
 	 */
 	@SuppressWarnings("unchecked")
     private void initComponents() {//GEN-BEGIN:initComponents
-        
+
         jTabbedPane1 = new javax.swing.JTabbedPane();
         panel_DataLoad = new javax.swing.JPanel();
         label_inputFormat = new javax.swing.JLabel();
@@ -30,27 +30,27 @@ public class LoadAndCheckTab extends javax.swing.JFrame {
         progressBar_progress = new javax.swing.JProgressBar();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTextArea1 = new javax.swing.JTextArea();
-        
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        
+
         label_inputFormat.setText("Input format: ");
-        
+
         combo_inputFormat.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-        
+
         button_AddData.setText("Load Data");
         button_AddData.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 button_AddDataActionPerformed(evt);
             }
         });
-        
+
         label_progress.setText("Progress: ");
-        
+
         jTextArea1.setColumns(20);
         jTextArea1.setRows(5);
         jTextArea1.setText("Important! \nRead this before you load any genotypes into the Database!\n\nGenotypes should not be loaded unless you have added the files from all the chips \nyou need to proceed with your study! Loading new genotypes from a given technology \nalready loaded in a previous process will generate repeated entries and will be \nflagged as duplicate, inconsistent or erroneous data, depending on the contents of\nthe genotyping experiments.\n\nInitiating a Load will start a series of integrity and quality checks upon your data \nand will take a long time to perform, depending on your hardware. Be sure to \nkeep your workstation safe from crashes, as it may stop a process in midst and \ngenerate corrupted data. This would imply that the process has to be started \nagain or even that your dataset may become unusable and has to be recreated.\n\nPlease take all this factors in considerations before starting this task!");
         jScrollPane1.setViewportView(jTextArea1);
-        
+
         javax.swing.GroupLayout panel_DataLoadLayout = new javax.swing.GroupLayout(panel_DataLoad);
         panel_DataLoad.setLayout(panel_DataLoadLayout);
         panel_DataLoadLayout.setHorizontalGroup(
@@ -88,9 +88,9 @@ public class LoadAndCheckTab extends javax.swing.JFrame {
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 335, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(59, 59, 59))
                 );
-        
+
         jTabbedPane1.addTab("tab2", panel_DataLoad);
-        
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -105,7 +105,7 @@ public class LoadAndCheckTab extends javax.swing.JFrame {
                 .addComponent(jTabbedPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 571, Short.MAX_VALUE)
                 .addContainerGap())
                 );
-        
+
         pack();
     }//GEN-END:initComponents
 

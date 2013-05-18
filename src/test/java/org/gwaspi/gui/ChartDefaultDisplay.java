@@ -20,14 +20,14 @@ public class ChartDefaultDisplay extends javax.swing.JPanel {
 	 */
 	@SuppressWarnings("unchecked")
     private void initComponents() {//GEN-BEGIN:initComponents
-        
+
         pnl_Chart = new javax.swing.JPanel();
         scrl_Chart = new javax.swing.JScrollPane();
         pnl_Footer = new javax.swing.JPanel();
         btn_Save = new javax.swing.JButton();
-        
+
         setBorder(javax.swing.BorderFactory.createTitledBorder(""));
-        
+
         javax.swing.GroupLayout pnl_ChartLayout = new javax.swing.GroupLayout(pnl_Chart);
         pnl_Chart.setLayout(pnl_ChartLayout);
         pnl_ChartLayout.setHorizontalGroup(
@@ -48,14 +48,14 @@ public class ChartDefaultDisplay extends javax.swing.JPanel {
                 .addComponent(scrl_Chart, javax.swing.GroupLayout.DEFAULT_SIZE, 520, Short.MAX_VALUE)
                 .addContainerGap()))
                 );
-        
+
         btn_Save.setText("Save As");
         btn_Save.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn_SaveActionPerformed(evt);
             }
         });
-        
+
         javax.swing.GroupLayout pnl_FooterLayout = new javax.swing.GroupLayout(pnl_Footer);
         pnl_Footer.setLayout(pnl_FooterLayout);
         pnl_FooterLayout.setHorizontalGroup(
@@ -69,7 +69,7 @@ public class ChartDefaultDisplay extends javax.swing.JPanel {
                 pnl_FooterLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addComponent(btn_Save)
                 );
-        
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(

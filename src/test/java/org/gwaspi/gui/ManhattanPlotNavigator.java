@@ -20,7 +20,7 @@ public class ManhattanPlotNavigator extends javax.swing.JPanel {
 	 */
 	@SuppressWarnings("unchecked")
     private void initComponents() {//GEN-BEGIN:initComponents
-        
+
         pnl_ChartNavigator = new javax.swing.JPanel();
         pnl_Chart = new javax.swing.JPanel();
         scrl_Chart = new javax.swing.JScrollPane();
@@ -34,11 +34,11 @@ public class ManhattanPlotNavigator extends javax.swing.JPanel {
         slid_Tracker = new javax.swing.JSlider();
         pnl_SearchDB = new javax.swing.JPanel();
         cmb_SearchDB = new javax.swing.JComboBox();
-        
+
         pnl_ChartNavigator.setBorder(javax.swing.BorderFactory.createTitledBorder("Manhattan Plot Navigator"));
-        
+
         pnl_Chart.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
-        
+
         javax.swing.GroupLayout pnl_ChartLayout = new javax.swing.GroupLayout(pnl_Chart);
         pnl_Chart.setLayout(pnl_ChartLayout);
         pnl_ChartLayout.setHorizontalGroup(
@@ -49,7 +49,7 @@ public class ManhattanPlotNavigator extends javax.swing.JPanel {
                 pnl_ChartLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addComponent(scrl_Chart, javax.swing.GroupLayout.DEFAULT_SIZE, 437, Short.MAX_VALUE)
                 );
-        
+
         javax.swing.GroupLayout pnl_ChartNavigatorLayout = new javax.swing.GroupLayout(pnl_ChartNavigator);
         pnl_ChartNavigator.setLayout(pnl_ChartNavigatorLayout);
         pnl_ChartNavigatorLayout.setHorizontalGroup(
@@ -66,13 +66,13 @@ public class ManhattanPlotNavigator extends javax.swing.JPanel {
                 .addComponent(pnl_Chart, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
                 );
-        
+
         btn_Back.setText("Back to Table");
-        
+
         btn_Save.setText("Save View");
-        
+
         btn_Reset.setText("Reset");
-        
+
         javax.swing.GroupLayout pnl_FooterGroup1Layout = new javax.swing.GroupLayout(pnl_FooterGroup1);
         pnl_FooterGroup1.setLayout(pnl_FooterGroup1Layout);
         pnl_FooterGroup1Layout.setHorizontalGroup(
@@ -84,10 +84,10 @@ public class ManhattanPlotNavigator extends javax.swing.JPanel {
                 .addComponent(btn_Save, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
                 );
-        
-        
+
+
         pnl_FooterGroup1Layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {btn_Reset, btn_Save});
-        
+
         pnl_FooterGroup1Layout.setVerticalGroup(
                 pnl_FooterGroup1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(pnl_FooterGroup1Layout.createSequentialGroup()
@@ -96,13 +96,13 @@ public class ManhattanPlotNavigator extends javax.swing.JPanel {
                 .addComponent(btn_Reset))
                 .addContainerGap(16, Short.MAX_VALUE))
                 );
-        
-        
+
+
         pnl_FooterGroup1Layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {btn_Reset, btn_Save});
-        
-        
+
+
         btn_Back2.setText("Back to Manhattan Plot");
-        
+
         javax.swing.GroupLayout pnl_FooterLayout = new javax.swing.GroupLayout(pnl_Footer);
         pnl_Footer.setLayout(pnl_FooterLayout);
         pnl_FooterLayout.setHorizontalGroup(
@@ -130,9 +130,9 @@ public class ManhattanPlotNavigator extends javax.swing.JPanel {
                 .addComponent(pnl_FooterGroup1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(55, 55, 55))))
                 );
-        
+
         pnl_Tracker.setBorder(javax.swing.BorderFactory.createTitledBorder("Position"));
-        
+
         slid_Tracker.setMaximum(17000);
         slid_Tracker.setValue(3500);
         slid_Tracker.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -140,7 +140,7 @@ public class ManhattanPlotNavigator extends javax.swing.JPanel {
                 slid_TrackerMouseReleased(evt);
             }
         });
-        
+
         javax.swing.GroupLayout pnl_TrackerLayout = new javax.swing.GroupLayout(pnl_Tracker);
         pnl_Tracker.setLayout(pnl_TrackerLayout);
         pnl_TrackerLayout.setHorizontalGroup(
@@ -154,11 +154,11 @@ public class ManhattanPlotNavigator extends javax.swing.JPanel {
                 pnl_TrackerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addComponent(slid_Tracker, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                 );
-        
+
         pnl_SearchDB.setBorder(javax.swing.BorderFactory.createTitledBorder("Search Database"));
-        
+
         cmb_SearchDB.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-        
+
         javax.swing.GroupLayout pnl_SearchDBLayout = new javax.swing.GroupLayout(pnl_SearchDB);
         pnl_SearchDB.setLayout(pnl_SearchDBLayout);
         pnl_SearchDBLayout.setHorizontalGroup(
@@ -174,7 +174,7 @@ public class ManhattanPlotNavigator extends javax.swing.JPanel {
                 .addComponent(cmb_SearchDB, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(14, Short.MAX_VALUE))
                 );
-        
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(

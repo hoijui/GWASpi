@@ -20,7 +20,7 @@ public class Report_QAMarkersSummary extends javax.swing.JPanel {
 	 */
 	@SuppressWarnings("unchecked")
     private void initComponents() {//GEN-BEGIN:initComponents
-        
+
         pnl_Summary = new javax.swing.JPanel();
         rdio_ShowNRows = new javax.swing.JRadioButton();
         txt_NRows = new javax.swing.JTextField();
@@ -32,19 +32,19 @@ public class Report_QAMarkersSummary extends javax.swing.JPanel {
         btn_Save = new javax.swing.JButton();
         btn_Back = new javax.swing.JButton();
         btn_Help = new javax.swing.JButton();
-        
+
         setBorder(javax.swing.BorderFactory.createTitledBorder("Report"));
-        
+
         pnl_Summary.setBorder(javax.swing.BorderFactory.createTitledBorder("Summary"));
-        
+
         rdio_ShowNRows.setText("Show");
-        
+
         txt_NRows.setText("100");
-        
+
         lbl_suffix1.setText("most significant Missingness Ratios");
-        
+
         btn_Get.setText("Get");
-        
+
         javax.swing.GroupLayout pnl_SummaryLayout = new javax.swing.GroupLayout(pnl_Summary);
         pnl_Summary.setLayout(pnl_SummaryLayout);
         pnl_SummaryLayout.setHorizontalGroup(
@@ -70,7 +70,7 @@ public class Report_QAMarkersSummary extends javax.swing.JPanel {
                 .addComponent(btn_Get))
                 .addContainerGap())
                 );
-        
+
         tbl_ReportTable.setModel(new javax.swing.table.DefaultTableModel(
                 new Object [][] {
                     {null, null, null, null},
@@ -83,23 +83,23 @@ public class Report_QAMarkersSummary extends javax.swing.JPanel {
         }
         ));
         scrl_ReportTable.setViewportView(tbl_ReportTable);
-        
+
         btn_Save.setText("Save View As");
         btn_Save.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn_SaveActionPerformed(evt);
             }
         });
-        
+
         btn_Back.setText("Back");
         btn_Back.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn_BackActionPerformed(evt);
             }
         });
-        
+
         btn_Help.setText("Help");
-        
+
         javax.swing.GroupLayout pnl_FooterLayout = new javax.swing.GroupLayout(pnl_Footer);
         pnl_Footer.setLayout(pnl_FooterLayout);
         pnl_FooterLayout.setHorizontalGroup(
@@ -113,10 +113,10 @@ public class Report_QAMarkersSummary extends javax.swing.JPanel {
                 .addComponent(btn_Save, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
                 );
-        
-        
+
+
         pnl_FooterLayout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {btn_Back, btn_Help});
-        
+
         pnl_FooterLayout.setVerticalGroup(
                 pnl_FooterLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(pnl_FooterLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -124,7 +124,7 @@ public class Report_QAMarkersSummary extends javax.swing.JPanel {
                 .addComponent(btn_Back)
                 .addComponent(btn_Help))
                 );
-        
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(

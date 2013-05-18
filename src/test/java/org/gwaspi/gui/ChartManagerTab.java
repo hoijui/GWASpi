@@ -20,7 +20,7 @@ public class ChartManagerTab extends javax.swing.JFrame {
 	 */
 	@SuppressWarnings("unchecked")
     private void initComponents() {//GEN-BEGIN:initComponents
-        
+
         jTabbedPane1 = new javax.swing.JTabbedPane();
         panel_ChartTab = new javax.swing.JPanel();
         labe_SelectPlot = new javax.swing.JLabel();
@@ -31,28 +31,28 @@ public class ChartManagerTab extends javax.swing.JFrame {
         button_SaveCompleteChart = new javax.swing.JButton();
         button_SaveZoomedChart = new javax.swing.JButton();
         panel_Plot = new javax.swing.JPanel();
-        
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        
+
         labe_SelectPlot.setText("Select Plot type:");
-        
+
         combo_SelectPlot.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "-log(p) vs position", "Chi² Q/Q plot" }));
-        
+
         label_ReportFile.setText("Report File:");
-        
+
         textField_ReportFile.setMinimumSize(new java.awt.Dimension(10, 29));
-        
+
         button_ReportFile.setText("Browse");
-        
+
         button_SaveCompleteChart.setText("Save Complete Chart");
         button_SaveCompleteChart.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 button_SaveCompleteChartActionPerformed(evt);
             }
         });
-        
+
         button_SaveZoomedChart.setText("Save Zoomed Chart");
-        
+
         javax.swing.GroupLayout panel_PlotLayout = new javax.swing.GroupLayout(panel_Plot);
         panel_Plot.setLayout(panel_PlotLayout);
         panel_PlotLayout.setHorizontalGroup(
@@ -63,7 +63,7 @@ public class ChartManagerTab extends javax.swing.JFrame {
                 panel_PlotLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGap(0, 401, Short.MAX_VALUE)
                 );
-        
+
         javax.swing.GroupLayout panel_ChartTabLayout = new javax.swing.GroupLayout(panel_ChartTab);
         panel_ChartTab.setLayout(panel_ChartTabLayout);
         panel_ChartTabLayout.setHorizontalGroup(
@@ -112,9 +112,9 @@ public class ChartManagerTab extends javax.swing.JFrame {
                 .addComponent(button_SaveZoomedChart))
                 .addContainerGap())
                 );
-        
+
         jTabbedPane1.addTab("Charts & Graphics", panel_ChartTab);
-        
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -129,7 +129,7 @@ public class ChartManagerTab extends javax.swing.JFrame {
                 .addComponent(jTabbedPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 589, Short.MAX_VALUE)
                 .addContainerGap())
                 );
-        
+
         pack();
     }//GEN-END:initComponents
 

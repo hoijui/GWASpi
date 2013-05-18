@@ -20,7 +20,7 @@ public class BatchRunTab extends javax.swing.JFrame {
 	 */
 	@SuppressWarnings("unchecked")
     private void initComponents() {//GEN-BEGIN:initComponents
-        
+
         radioGroup_Samples = new javax.swing.ButtonGroup();
         jTabbedPane1 = new javax.swing.JTabbedPane();
         panel_BatchRun = new javax.swing.JPanel();
@@ -49,59 +49,59 @@ public class BatchRunTab extends javax.swing.JFrame {
         combo_Analysis = new javax.swing.JComboBox();
         separator_Progress = new javax.swing.JSeparator();
         checkBox_ExportPlink = new javax.swing.JCheckBox();
-        
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        
+
         title_Progress.setFont(new java.awt.Font("DejaVu Sans", 1, 13));
         title_Progress.setText("General Progress");
-        
+
         button_RunBatch.setText("Run Batch");
-        
+
         title_Study.setFont(new java.awt.Font("DejaVu Sans", 1, 13));
         title_Study.setText("Study");
-        
+
         combo_Study.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-        
+
         title_Samples.setFont(new java.awt.Font("DejaVu Sans", 1, 13));
         title_Samples.setText("Samples");
-        
+
         radio_LoadSamples.setText("Use your Sample info");
         radio_LoadSamples.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 radio_LoadSamplesActionPerformed(evt);
             }
         });
-        
+
         textField_LoadSamples.setText("Location of Sample Info file...");
-        
+
         button_LoadSamples.setText("Browse");
-        
+
         radio_DummySamples.setText("Generate dummy Samples and info");
         radio_DummySamples.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 radio_DummySamplesActionPerformed(evt);
             }
         });
-        
+
         title_DNAArrays.setFont(new java.awt.Font("DejaVu Sans", 1, 13));
         title_DNAArrays.setText("DNA Arrays");
-        
+
         label_Format.setText("Format");
-        
+
         combo_Format.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-        
+
         textField_DNAArraysDir.setText("Location of DNA array files...");
         textField_DNAArraysDir.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 textField_DNAArraysDirActionPerformed(evt);
             }
         });
-        
+
         button_DNAArrays.setText("Browse");
-        
+
         title_Analysis.setFont(new java.awt.Font("DejaVu Sans", 1, 13));
         title_Analysis.setText("Analysis");
-        
+
         checkBox_Analysis.setText("Perform Analysis");
         checkBox_Analysis.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
@@ -113,11 +113,11 @@ public class BatchRunTab extends javax.swing.JFrame {
                 checkBox_AnalysisActionPerformed(evt);
             }
         });
-        
+
         combo_Analysis.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-        
+
         checkBox_ExportPlink.setText("Export Plink files");
-        
+
         javax.swing.GroupLayout panel_OperationsLayout = new javax.swing.GroupLayout(panel_Operations);
         panel_Operations.setLayout(panel_OperationsLayout);
         panel_OperationsLayout.setHorizontalGroup(
@@ -187,14 +187,14 @@ public class BatchRunTab extends javax.swing.JFrame {
                 .addComponent(checkBox_Analysis))
                 .addGap(749, 749, 749))
                 );
-        
-        
+
+
         panel_OperationsLayout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {textField_DNAArraysDir, textField_LoadSamples});
-        
-        
-        
+
+
+
         panel_OperationsLayout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {separator_DNAArrays, separator_Progress, separator_Samples, separator_Study});
-        
+
         panel_OperationsLayout.setVerticalGroup(
                 panel_OperationsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(panel_OperationsLayout.createSequentialGroup()
@@ -240,13 +240,13 @@ public class BatchRunTab extends javax.swing.JFrame {
                 .addComponent(separator_Progress, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(22, Short.MAX_VALUE))
                 );
-        
-        
+
+
         panel_OperationsLayout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {separator_DNAArrays, separator_Progress, separator_Samples, separator_Study});
-        
-        
+
+
         scrollPane_Operations.setViewportView(panel_Operations);
-        
+
         javax.swing.GroupLayout panel_BatchRunLayout = new javax.swing.GroupLayout(panel_BatchRun);
         panel_BatchRun.setLayout(panel_BatchRunLayout);
         panel_BatchRunLayout.setHorizontalGroup(
@@ -264,10 +264,10 @@ public class BatchRunTab extends javax.swing.JFrame {
                 .addComponent(progressBar_progress, javax.swing.GroupLayout.PREFERRED_SIZE, 780, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(15, Short.MAX_VALUE))
                 );
-        
-        
+
+
         panel_BatchRunLayout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {progressBar_progress, scrollPane_Operations});
-        
+
         panel_BatchRunLayout.setVerticalGroup(
                 panel_BatchRunLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(panel_BatchRunLayout.createSequentialGroup()
@@ -281,9 +281,9 @@ public class BatchRunTab extends javax.swing.JFrame {
                 .addComponent(button_RunBatch, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(45, Short.MAX_VALUE))
                 );
-        
+
         jTabbedPane1.addTab("tab1", panel_BatchRun);
-        
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -294,7 +294,7 @@ public class BatchRunTab extends javax.swing.JFrame {
                 layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addComponent(jTabbedPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 697, Short.MAX_VALUE)
                 );
-        
+
         pack();
     }//GEN-END:initComponents
 

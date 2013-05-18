@@ -7,7 +7,7 @@ public class TestJFrame extends javax.swing.JFrame {
 	}
 
     private void initComponents() {//GEN-BEGIN:initComponents
-        
+
         lblTitle = new javax.swing.JLabel();
         lbl_CurrentMatrix = new javax.swing.JLabel();
         lbl_NewMatrixName = new javax.swing.JLabel();
@@ -42,91 +42,91 @@ public class TestJFrame extends javax.swing.JFrame {
         button_Help6 = new javax.swing.JButton();
         button_Back = new javax.swing.JButton();
         button_Go = new javax.swing.JButton();
-        
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        
+
         lblTitle.setText("Extract From Matrix: ");
-        
+
         lbl_CurrentMatrix.setText(" ");
-        
+
         lbl_NewMatrixName.setText("New Matrix Name:");
-        
+
         lbl_Description.setText("Add Description:");
-        
+
         textArea_Description.setColumns(20);
         textArea_Description.setRows(5);
         scroll_Description.setViewportView(textArea_Description);
-        
+
         lbl_MarkerZone.setFont(new java.awt.Font("DejaVu Sans", 1, 14));
         lbl_MarkerZone.setText("Marker Selection");
-        
+
         lbl_MarkersVariable.setText("Property / Variable: ");
-        
+
         cmb_MarkersVariable.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-        
+
         lbl_MarkersCriteria.setText("Criteria:");
-        
+
         txtArea_MarkersCriteria.setColumns(20);
         txtArea_MarkersCriteria.setRows(5);
         scroll_MarkersCriteria.setViewportView(txtArea_MarkersCriteria);
-        
+
         lbl_MarkersCriteriaFile.setText("Criteria File:");
-        
+
         button_MarkersCriteriaBrowse.setText("Browse");
         button_MarkersCriteriaBrowse.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 button_MarkersCriteriaBrowseActionPerformed(evt);
             }
         });
-        
+
         button_Help1.setText("?");
-        
+
         button_Help2.setText("?");
-        
+
         button_Help3.setText("?");
-        
+
         lbl_SampleZone.setFont(new java.awt.Font("DejaVu Sans", 1, 14));
         lbl_SampleZone.setText("Sample Selection");
-        
+
         lbl_SamplesVariable.setText("Property / Variable: ");
-        
+
         cmb_SamplesVariable.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-        
+
         txtArea_SamplesCriteria.setColumns(20);
         txtArea_SamplesCriteria.setRows(5);
         scroll_SamplesCriteria.setViewportView(txtArea_SamplesCriteria);
-        
+
         lbl_SamplesCriteria.setText("Criteria:");
-        
+
         lbl_SamplesCriteriaFile.setText("Criteria File:");
-        
+
         button_SamplesCriteriaBrowse.setText("Browse");
         button_SamplesCriteriaBrowse.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 button_SamplesCriteriaBrowseActionPerformed(evt);
             }
         });
-        
+
         button_Help4.setText("?");
-        
+
         button_Help5.setText("?");
-        
+
         button_Help6.setText("?");
-        
+
         button_Back.setText("Back");
         button_Back.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 button_BackActionPerformed(evt);
             }
         });
-        
+
         button_Go.setText("Go!");
         button_Go.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 button_GoActionPerformed(evt);
             }
         });
-        
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -211,10 +211,10 @@ public class TestJFrame extends javax.swing.JFrame {
                 .addComponent(button_Help5, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(2286, 2286, 2286))))
                 );
-        
-        
+
+
         layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {button_Help1, button_Help2, button_Help3, button_Help4, button_Help5, button_Help6});
-        
+
         layout.setVerticalGroup(
                 layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(layout.createSequentialGroup()
@@ -279,11 +279,11 @@ public class TestJFrame extends javax.swing.JFrame {
                 .addComponent(button_Go, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(164, 164, 164))
                 );
-        
-        
+
+
         layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {button_Help1, button_Help2, button_Help3, button_Help4, button_Help5, button_Help6});
-        
-        
+
+
         pack();
     }//GEN-END:initComponents
 

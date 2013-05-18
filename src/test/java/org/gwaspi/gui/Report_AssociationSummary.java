@@ -20,7 +20,7 @@ public class Report_AssociationSummary extends javax.swing.JPanel {
 	 */
 	@SuppressWarnings("unchecked")
     private void initComponents() {//GEN-BEGIN:initComponents
-        
+
         pnl_Summary = new javax.swing.JPanel();
         txt_NRows = new javax.swing.JTextField();
         lbl_suffix1 = new javax.swing.JLabel();
@@ -29,18 +29,18 @@ public class Report_AssociationSummary extends javax.swing.JPanel {
         cmb_SearchDB = new javax.swing.JComboBox();
         scrl_ReportTable = new javax.swing.JScrollPane();
         tbl_ReportTable = new javax.swing.JTable();
-        
+
         setBorder(javax.swing.BorderFactory.createTitledBorder("Report"));
-        
+
         pnl_Summary.setBorder(javax.swing.BorderFactory.createTitledBorder("Summary"));
-        
+
         txt_NRows.setHorizontalAlignment(javax.swing.JTextField.TRAILING);
         txt_NRows.setText("100");
-        
+
         lbl_suffix1.setText("most significant p-Values.");
-        
+
         btn_Get.setText("Get");
-        
+
         javax.swing.GroupLayout pnl_SummaryLayout = new javax.swing.GroupLayout(pnl_Summary);
         pnl_Summary.setLayout(pnl_SummaryLayout);
         pnl_SummaryLayout.setHorizontalGroup(
@@ -63,11 +63,11 @@ public class Report_AssociationSummary extends javax.swing.JPanel {
                 .addComponent(btn_Get))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 );
-        
+
         pnl_SearchDB.setBorder(javax.swing.BorderFactory.createTitledBorder("Search Database"));
-        
+
         cmb_SearchDB.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-        
+
         javax.swing.GroupLayout pnl_SearchDBLayout = new javax.swing.GroupLayout(pnl_SearchDB);
         pnl_SearchDB.setLayout(pnl_SearchDBLayout);
         pnl_SearchDBLayout.setHorizontalGroup(
@@ -83,7 +83,7 @@ public class Report_AssociationSummary extends javax.swing.JPanel {
                 .addComponent(cmb_SearchDB, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(14, Short.MAX_VALUE))
                 );
-        
+
         tbl_ReportTable.setModel(new javax.swing.table.DefaultTableModel(
                 new Object [][] {
                     {null, null, null, null},
@@ -96,7 +96,7 @@ public class Report_AssociationSummary extends javax.swing.JPanel {
         }
         ));
         scrl_ReportTable.setViewportView(tbl_ReportTable);
-        
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
