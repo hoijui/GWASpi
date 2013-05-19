@@ -220,7 +220,7 @@ public class IntroPanel extends JPanel {
 				.addComponent(scroll_Help, GroupLayout.DEFAULT_SIZE, 137, Short.MAX_VALUE)
 				.addGap(11, 11, 11)
 				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-				.addComponent(scroll_Contact, GroupLayout.DEFAULT_SIZE, 102, GroupLayout.PREFERRED_SIZE)
+				.addComponent(scroll_Contact, GroupLayout.DEFAULT_SIZE, 122, GroupLayout.PREFERRED_SIZE)
 				.addComponent(scroll_IBE, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
 				.addGap(18, 18, 18)
 				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
