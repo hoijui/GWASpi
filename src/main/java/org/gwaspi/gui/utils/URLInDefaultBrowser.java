@@ -1,3 +1,5 @@
+/* Copyright (c) Dem Pilafian (public domain) */
+
 package org.gwaspi.gui.utils;
 
 import java.io.File;
