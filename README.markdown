@@ -1,4 +1,4 @@
-# Genome-Wide Association Studies processing interface FIXME
+# Genome-wide Association Studies Pipeline
 
 __README__
 
