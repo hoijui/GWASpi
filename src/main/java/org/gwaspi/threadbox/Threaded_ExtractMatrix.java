@@ -11,12 +11,6 @@ import org.gwaspi.netCDF.operations.OP_QASamples;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- *
- * @author Fernando Muñiz Fernandez
- * IBE, Institute of Evolutionary Biology (UPF-CSIC)
- * CEXS-UPF-PRBB
- */
 public class Threaded_ExtractMatrix extends CommonRunnable {
 
 	private int resultMatrixId;

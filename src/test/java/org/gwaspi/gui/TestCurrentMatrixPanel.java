@@ -1,9 +1,5 @@
 package org.gwaspi.gui;
 
-/**
- *
- * @author fernando
- */
 public class TestCurrentMatrixPanel extends javax.swing.JPanel {
 
 	/**

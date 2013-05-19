@@ -5,10 +5,6 @@ import javax.swing.JFrame;
 import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
 
-/**
- *
- * @author u56124
- */
 public class InfoPanes extends JFrame {
 
 	public InfoPanes() {

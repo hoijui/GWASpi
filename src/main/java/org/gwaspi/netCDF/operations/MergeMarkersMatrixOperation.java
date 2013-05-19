@@ -10,12 +10,6 @@ import org.gwaspi.model.SampleKey;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.NetcdfFileWriteable;
 
-/**
- *
- * @author Fernando Muñiz Fernandez
- * IBE, Institute of Evolutionary Biology (UPF-CSIC)
- * CEXS-UPF-PRBB
- */
 public class MergeMarkersMatrixOperation extends AbstractMergeMarkersMatrixOperation {
 
 	public MergeMarkersMatrixOperation(

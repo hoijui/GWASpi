@@ -19,10 +19,6 @@ import org.gwaspi.gui.utils.Dialogs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- *
- * @author u56124
- */
 public class TestAnalyserTab extends JPanel {
 
 	private final Logger log

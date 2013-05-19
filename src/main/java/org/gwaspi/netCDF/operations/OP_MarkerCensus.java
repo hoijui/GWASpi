@@ -36,12 +36,6 @@ import ucar.ma2.InvalidRangeException;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFileWriteable;
 
-/**
- *
- * @author Fernando Muñiz Fernandez
- * IBE, Institute of Evolutionary Biology (UPF-CSIC)
- * CEXS-UPF-PRBB
- */
 public class OP_MarkerCensus implements MatrixOperation {
 
 	private final Logger log = LoggerFactory.getLogger(OP_MarkerCensus.class);

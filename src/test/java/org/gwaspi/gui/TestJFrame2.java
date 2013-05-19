@@ -1,9 +1,5 @@
 package org.gwaspi.gui;
 
-/**
- *
- * @author fernando
- */
 public class TestJFrame2 extends javax.swing.JFrame {
 
 	/**

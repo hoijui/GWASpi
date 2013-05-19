@@ -62,12 +62,6 @@ import org.gwaspi.netCDF.operations.MarkerOperationSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- *
- * @author Fernando Muñiz Fernandez
- * IBE, Institute of Evolutionary Biology (UPF-CSIC)
- * CEXS-UPF-PRBB
- */
 public abstract class Report_Analysis extends JPanel {
 
 	private static final Logger log

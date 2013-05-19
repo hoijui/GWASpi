@@ -1,9 +1,5 @@
 package org.gwaspi.gui;
 
-/**
- *
- * @author fernando
- */
 public class TestPreferencesPanel extends javax.swing.JPanel {
 
 	/**

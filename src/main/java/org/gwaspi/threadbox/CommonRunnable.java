@@ -3,12 +3,6 @@ package org.gwaspi.threadbox;
 import org.gwaspi.global.Text;
 import org.slf4j.Logger;
 
-/**
- *
- * @author Fernando Muñiz Fernandez
- * IBE, Institute of Evolutionary Biology (UPF-CSIC)
- * CEXS-UPF-PRBB
- */
 public abstract class CommonRunnable implements Runnable {
 
 	private final Logger log;

@@ -9,12 +9,6 @@ import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleInfoList;
 import ucar.ma2.InvalidRangeException;
 
-/**
- *
- * @author Fernando Muñiz Fernandez
- * IBE, Institute of Evolutionary Biology (UPF-CSIC)
- * CEXS-UPF-PRBB
- */
 public class LoadManager {
 
 	private static final Map<ImportFormat, GenotypesLoader> genotypesLoaders;

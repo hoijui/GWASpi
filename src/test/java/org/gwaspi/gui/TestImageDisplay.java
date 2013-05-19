@@ -4,10 +4,6 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import javax.swing.*;
 
-/**
- *
- * @author u56124
- */
 public class TestImageDisplay extends JFrame {
 
 	private JScrollPane scrl_Image = new javax.swing.JScrollPane();

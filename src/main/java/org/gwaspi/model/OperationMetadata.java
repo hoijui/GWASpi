@@ -16,12 +16,6 @@ import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 
-/**
- *
- * @author Fernando Muñiz Fernandez
- * IBE, Institute of Evolutionary Biology (UPF-CSIC)
- * CEXS-UPF-PRBB
- */
 @Entity
 @Table(name = "operationMetadata")
 @NamedQueries({

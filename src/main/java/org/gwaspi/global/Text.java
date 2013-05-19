@@ -3,12 +3,6 @@ package org.gwaspi.global;
 import org.gwaspi.constants.cGlobal;
 import org.gwaspi.constants.cNetCDF;
 
-/**
- *
- * @author Fernando Muñiz Fernandez
- * IBE, Institute of Evolutionary Biology (UPF-CSIC)
- * CEXS-UPF-PRBB
- */
 public class Text {
 
 	public static class App {

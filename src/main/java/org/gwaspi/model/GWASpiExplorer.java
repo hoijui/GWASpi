@@ -39,12 +39,6 @@ import org.gwaspi.model.GWASpiExplorerNodes.UncollapsableNodeElementInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- *
- * @author Fernando Muñiz Fernandez
- * IBE, Institute of Evolutionary Biology (UPF-CSIC)
- * CEXS-UPF-PRBB
- */
 public class GWASpiExplorer {
 
 	private static final Logger log = LoggerFactory.getLogger(GWASpiExplorer.class);

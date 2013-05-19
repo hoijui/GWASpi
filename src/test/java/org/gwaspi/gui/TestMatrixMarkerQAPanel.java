@@ -1,9 +1,5 @@
 package org.gwaspi.gui;
 
-/**
- *
- * @author u56124
- */
 public class TestMatrixMarkerQAPanel extends javax.swing.JPanel {
 
 	/**

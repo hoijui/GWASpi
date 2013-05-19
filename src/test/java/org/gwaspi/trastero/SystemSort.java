@@ -5,12 +5,6 @@ import java.io.IOException;
 import javax.swing.JProgressBar;
 import org.gwaspi.constants.cGlobal;
 
-/**
- *
- * @author Fernando Muñiz Fernandez
- * IBE, Institute of Evolutionary Biology (UPF-CSIC)
- * CEXS-UPF-PRBB
- */
 public class SystemSort {
 
 	private static int numFiles;

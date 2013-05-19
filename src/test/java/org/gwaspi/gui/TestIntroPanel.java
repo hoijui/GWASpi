@@ -3,10 +3,6 @@ package org.gwaspi.gui;
 import java.awt.Image;
 import java.awt.Toolkit;
 
-/**
- *
- * @author fernando
- */
 public class TestIntroPanel extends javax.swing.JPanel {
 
 	/**

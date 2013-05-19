@@ -2,12 +2,6 @@ package org.gwaspi.statistics;
 
 import java.math.BigInteger;
 
-/**
- *
- * @author Fernando Muñiz Fernandez
- * IBE, Institute of Evolutionary Biology (UPF-CSIC)
- * CEXS-UPF-PRBB
- */
 public class Utils {
 
 	private Utils() {

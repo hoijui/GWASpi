@@ -11,9 +11,6 @@ import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 
 /**
  * XXX merge with OperationMetadata, as they contain basically the same data
- * @author Fernando Muñiz Fernandez
- * IBE, Institute of Evolutionary Biology (UPF-CSIC)
- * CEXS-UPF-PRBB
  */
 @Entity
 @Table(name = "operationX")

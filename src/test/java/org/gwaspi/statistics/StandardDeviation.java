@@ -3,10 +3,6 @@ package org.gwaspi.statistics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- *
- * @author u56124
- */
 public class StandardDeviation {
 
 	private final Logger log = LoggerFactory.getLogger(StandardDeviation.class);

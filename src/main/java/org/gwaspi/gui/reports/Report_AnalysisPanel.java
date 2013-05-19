@@ -28,12 +28,6 @@ import org.gwaspi.model.ReportsList;
 import org.gwaspi.threadbox.MultiOperations;
 import org.gwaspi.threadbox.SwingWorkerItemList;
 
-/**
- *
- * @author Fernando Muñiz Fernandez
- * IBE, Institute of Evolutionary Biology (UPF-CSIC)
- * CEXS-UPF-PRBB
- */
 public class Report_AnalysisPanel extends JPanel {
 
 	private Matrix parentMatrix;

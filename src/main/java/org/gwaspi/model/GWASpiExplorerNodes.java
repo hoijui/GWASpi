@@ -13,12 +13,6 @@ import org.gwaspi.gui.StartGWASpi;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- *
- * @author Fernando Muñiz Fernandez
- * IBE, Institute of Evolutionary Biology (UPF-CSIC)
- * CEXS-UPF-PRBB
- */
 public class GWASpiExplorerNodes {
 
 	private static final Logger log

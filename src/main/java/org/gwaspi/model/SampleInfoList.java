@@ -7,10 +7,6 @@ import org.gwaspi.dao.SampleInfoService;
 import org.gwaspi.dao.jpa.JPASampleInfoService;
 
 /**
- *
- * @author Fernando Muñiz Fernandez
- * IBE, Institute of Evolutionary Biology (UPF-CSIC)
- * CEXS-UPF-PRBB
  * @deprecated use SampleInfoService directly
  */
 public class SampleInfoList {

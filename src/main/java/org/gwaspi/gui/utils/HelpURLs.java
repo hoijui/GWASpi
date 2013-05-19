@@ -2,12 +2,6 @@ package org.gwaspi.gui.utils;
 
 import org.gwaspi.global.Text;
 
-/**
- *
- * @author Fernando Muñiz Fernandez
- * IBE, Institute of Evolutionary Biology (UPF-CSIC)
- * CEXS-UPF-PRBB
- */
 public class HelpURLs {
 
 	public static final String baseURL = "http://www.gwaspi.org/";

@@ -22,12 +22,6 @@ import ucar.nc2.Attribute;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFileWriteable;
 
-/**
- *
- * @author Fernando Muñiz Fernandez
- * IBE, Institute of Evolutionary Biology (UPF-CSIC)
- * CEXS-UPF-PRBB
- */
 public abstract class AbstractMergeMarkersMatrixOperation extends AbstractMergeMatrixOperation {
 
 	private final Logger log = LoggerFactory.getLogger(AbstractMergeMarkersMatrixOperation.class);

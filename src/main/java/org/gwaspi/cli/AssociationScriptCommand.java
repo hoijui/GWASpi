@@ -9,11 +9,6 @@ import org.gwaspi.netCDF.operations.GWASinOneGOParams;
 import org.gwaspi.netCDF.operations.OperationManager;
 import org.gwaspi.threadbox.MultiOperations;
 
-/**
- * @author Fernando Muñiz Fernandez
- * IBE, Institute of Evolutionary Biology (UPF-CSIC)
- * CEXS-UPF-PRBB
- */
 class AssociationScriptCommand extends AbstractScriptCommand {
 
 	private final boolean allelic;

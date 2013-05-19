@@ -5,12 +5,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.gwaspi.constants.cNetCDF;
 
-/**
- *
- * @author Fernando Muñiz Fernandez
- * IBE, Institute of Evolutionary Biology (UPF-CSIC)
- * CEXS-UPF-PRBB
- */
 public class ComparatorChrAutPosMarkerIdAsc implements Comparator<String> {
 
 	private static final Pattern SIMPLE_INTEGER = Pattern.compile("[0-9]{1,}");

@@ -7,12 +7,6 @@ import org.gwaspi.model.SampleKey;
 import org.gwaspi.netCDF.markers.MarkerSet;
 import org.gwaspi.samples.SampleSet;
 
-/**
- *
- * @author Fernando Muñiz Fernandez
- * IBE, Institute of Evolutionary Biology (UPF-CSIC)
- * CEXS-UPF-PRBB
- */
 interface Formatter {
 
 	boolean export(

@@ -12,10 +12,6 @@ import org.junit.runners.MethodSorters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- *
- * @author hoijui
- */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class TestLoadAndExportScripts extends AbstractTestScripts {
 

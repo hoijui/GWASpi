@@ -3,12 +3,6 @@ package org.gwaspi.constants;
 import java.awt.Color;
 import javax.swing.UIManager;
 
-/**
- *
- * @author Fernando Muñiz Fernandez
- * IBE, Institute of Evolutionary Biology (UPF-CSIC)
- * CEXS-UPF-PRBB
- */
 public class cGlobal {
 
 	public static final String APP_NAME = "GWASpi";

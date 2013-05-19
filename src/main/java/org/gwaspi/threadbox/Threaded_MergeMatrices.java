@@ -4,12 +4,6 @@ import org.gwaspi.netCDF.operations.MatrixOperation;
 import org.gwaspi.netCDF.operations.MergeAllMatrixOperation;
 import org.gwaspi.netCDF.operations.MergeMarkersMatrixOperation;
 
-/**
- *
- * @author Fernando Muñiz Fernandez
- * IBE, Institute of Evolutionary Biology (UPF-CSIC)
- * CEXS-UPF-PRBB
- */
 public class Threaded_MergeMatrices extends AbstractThreaded_MergeMatrices {
 
 	/**

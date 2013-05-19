@@ -5,11 +5,6 @@ import java.io.IOException;
 import java.util.List;
 import org.gwaspi.threadbox.MultiOperations;
 
-/**
- * @author Fernando Muñiz Fernandez
- * IBE, Institute of Evolutionary Biology (UPF-CSIC)
- * CEXS-UPF-PRBB
- */
 class UpdateSampleInfoScriptCommand extends AbstractScriptCommand {
 
 	UpdateSampleInfoScriptCommand() {

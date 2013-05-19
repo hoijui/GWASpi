@@ -26,10 +26,6 @@ import org.gwaspi.gui.utils.URLInDefaultBrowser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- *
- * @author u56124
- */
 public class GWASinOneGoDialog extends JFrame {
 
 	private static final Logger log

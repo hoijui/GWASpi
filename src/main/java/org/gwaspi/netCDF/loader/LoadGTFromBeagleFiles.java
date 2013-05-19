@@ -15,12 +15,6 @@ import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.SampleKey;
 import ucar.ma2.InvalidRangeException;
 
-/**
- *
- * @author Fernando Muñiz Fernandez
- * IBE, Institute of Evolutionary Biology (UPF-CSIC)
- * CEXS-UPF-PRBB
- */
 public class LoadGTFromBeagleFiles extends AbstractLoadGTFromFiles {
 
 	private static interface Standard {

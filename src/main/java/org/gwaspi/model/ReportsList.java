@@ -6,10 +6,6 @@ import org.gwaspi.dao.ReportService;
 import org.gwaspi.dao.jpa.JPAReportService;
 
 /**
- *
- * @author Fernando Muñiz Fernandez
- * IBE, Institute of Evolutionary Biology (UPF-CSIC)
- * CEXS-UPF-PRBB
  * @deprecated use ReportService directly
  */
 public class ReportsList {

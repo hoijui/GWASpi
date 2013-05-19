@@ -6,8 +6,6 @@ package org.gwaspi.model;
  * in a PLINK Flat "*.ped" file.
  * The (combined) value of this key is unique within a set of samples,
  * so for example within a single "*.ped" file.
- *
- * @author hoijui
  */
 public final class SampleKey implements Comparable<SampleKey> {
 

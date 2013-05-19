@@ -7,12 +7,6 @@ import org.gwaspi.constants.cNetCDF;
 import ucar.ma2.*;
 import ucar.nc2.*;
 
-/**
- *
- * @author Fernando Muñiz Fernandez
- * IBE, Institute of Evolutionary Biology (UPF-CSIC)
- * CEXS-UPF-PRBB
- */
 public class CreateNetcdf {
 
 	private CreateNetcdf() {

@@ -9,10 +9,6 @@ import java.util.Map;
 
 /**
  * Parses command line parameters and executes them.
- *
- * @author Fernando Muñiz Fernandez
- * IBE, Institute of Evolutionary Biology (UPF-CSIC)
- * CEXS-UPF-PRBB
  */
 public class CliExecutor {
 

@@ -6,8 +6,6 @@ package org.gwaspi.model;
  * in a PLINK Flat "*.map" file.
  * The value of this key is unique within a set of markers,
  * so for example withing a single "*.map" file.
- *
- * @author hoijui
  */
 public final class MarkerKey implements Comparable<MarkerKey> {
 

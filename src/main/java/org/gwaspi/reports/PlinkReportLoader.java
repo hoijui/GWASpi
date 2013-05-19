@@ -42,10 +42,6 @@ import org.slf4j.LoggerFactory;
  *   CHISQ   Basic allelic test chi-square (1df)
  *   P       Asymptotic p-value for this test
  *   OR      Estimated odds ratio (for A1, i.e. A2 is reference)
- *
- * @author Fernando Muñiz Fernandez
- * IBE, Institute of Evolutionary Biology (UPF-CSIC)
- * CEXS-UPF-PRBB
  */
 public class PlinkReportLoader {
 

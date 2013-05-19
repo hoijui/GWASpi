@@ -24,12 +24,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.NetcdfFile;
 
-/**
- *
- * @author Fernando Muñiz Fernandez
- * IBE, Institute of Evolutionary Biology (UPF-CSIC)
- * CEXS-UPF-PRBB
- */
 class BeagleFormatter implements Formatter {
 
 	private final Logger log = LoggerFactory.getLogger(BeagleFormatter.class);

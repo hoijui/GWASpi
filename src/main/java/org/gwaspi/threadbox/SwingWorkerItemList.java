@@ -4,12 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import org.gwaspi.gui.ProcessTab;
 
-/**
- *
- * @author Fernando Muñiz Fernandez
- * IBE, Institute of Evolutionary Biology (UPF-CSIC)
- * CEXS-UPF-PRBB
- */
 public class SwingWorkerItemList {
 
 	private static List<SwingWorkerItem> swingWorkerItems = new ArrayList<SwingWorkerItem>();

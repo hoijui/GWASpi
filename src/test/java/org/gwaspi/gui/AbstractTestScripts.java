@@ -18,10 +18,6 @@ import org.gwaspi.threadbox.SwingWorkerItemList;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 
-/**
- *
- * @author hoijui
- */
 public abstract class AbstractTestScripts {
 
 	private static Setup setup = null;

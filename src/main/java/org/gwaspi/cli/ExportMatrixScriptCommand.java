@@ -6,11 +6,6 @@ import org.gwaspi.constants.cDBSamples;
 import org.gwaspi.constants.cExport;
 import org.gwaspi.threadbox.MultiOperations;
 
-/**
- * @author Fernando Muñiz Fernandez
- * IBE, Institute of Evolutionary Biology (UPF-CSIC)
- * CEXS-UPF-PRBB
- */
 class ExportMatrixScriptCommand extends AbstractScriptCommand {
 
 	ExportMatrixScriptCommand() {

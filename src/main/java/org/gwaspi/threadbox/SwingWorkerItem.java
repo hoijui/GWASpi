@@ -5,12 +5,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
-/**
- *
- * @author Fernando Muñiz Fernandez
- * IBE, Institute of Evolutionary Biology (UPF-CSIC)
- * CEXS-UPF-PRBB
- */
 public class SwingWorkerItem {
 
 	private final CommonRunnable task;

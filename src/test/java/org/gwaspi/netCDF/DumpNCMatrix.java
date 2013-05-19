@@ -15,12 +15,6 @@ import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 
-/**
- *
- * @author Fernando Muñiz Fernandez
- * IBE, Institute of Evolutionary Biology (UPF-CSIC)
- * CEXS-UPF-PRBB
- */
 public class DumpNCMatrix {
 
 	private static final Logger log = LoggerFactory.getLogger(DumpNCMatrix.class);

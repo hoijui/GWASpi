@@ -1,11 +1,5 @@
 package org.gwaspi.database;
 
-/**
- *
- * @author Fernando Muñiz Fernandez
- * IBE, Institute of Evolutionary Biology (UPF-CSIC)
- * CEXS-UPF-PRBB
- */
 public class Utils {
 
 	private Utils() {

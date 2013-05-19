@@ -6,10 +6,6 @@ import org.gwaspi.dao.MatrixService;
 import org.gwaspi.dao.jpa.JPAMatrixService;
 
 /**
- *
- * @author Fernando Muñiz Fernandez
- * IBE, Institute of Evolutionary Biology (UPF-CSIC)
- * CEXS-UPF-PRBB
  * @deprecated use MatrixService directly
  */
 public final class MatricesList {

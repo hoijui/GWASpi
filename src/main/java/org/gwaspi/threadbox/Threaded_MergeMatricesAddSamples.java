@@ -3,12 +3,6 @@ package org.gwaspi.threadbox;
 import org.gwaspi.netCDF.operations.MatrixMergeSamples;
 import org.gwaspi.netCDF.operations.MatrixOperation;
 
-/**
- *
- * @author Fernando Muñiz Fernandez
- * IBE, Institute of Evolutionary Biology (UPF-CSIC)
- * CEXS-UPF-PRBB
- */
 public class Threaded_MergeMatricesAddSamples extends AbstractThreaded_MergeMatrices {
 
 	public Threaded_MergeMatricesAddSamples(

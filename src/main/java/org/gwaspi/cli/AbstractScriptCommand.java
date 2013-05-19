@@ -8,10 +8,6 @@ import org.gwaspi.model.StudyList;
 
 /**
  * Parses, prepares and executes one command read from a script file.
- *
- * @author Fernando Muñiz Fernandez
- * IBE, Institute of Evolutionary Biology (UPF-CSIC)
- * CEXS-UPF-PRBB
  */
 abstract class AbstractScriptCommand implements ScriptCommand {
 

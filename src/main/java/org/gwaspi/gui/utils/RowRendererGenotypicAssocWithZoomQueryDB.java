@@ -4,10 +4,6 @@ package org.gwaspi.gui.utils;
 import java.awt.Component;
 import javax.swing.JTable;
 
-/**
- *
- * @author u49878
- */
 public class RowRendererGenotypicAssocWithZoomQueryDB extends RowRendererDefault {
 
 	@Override

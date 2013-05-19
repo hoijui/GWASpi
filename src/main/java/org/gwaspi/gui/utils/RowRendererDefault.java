@@ -16,10 +16,6 @@ import org.gwaspi.threadbox.SwingDeleterItemList;
 import org.gwaspi.threadbox.SwingWorkerItem;
 import org.gwaspi.threadbox.SwingWorkerItemList;
 
-/**
- *
- * @author u49878
- */
 public class RowRendererDefault extends DefaultTableCellRenderer {
 
 	private static final URL ICON_PATH_ZOOM     = RowRendererDefault.class.getResource("/img/icon/zoom2_20x20.png");

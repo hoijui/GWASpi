@@ -8,12 +8,6 @@ import org.gwaspi.model.SampleKey;
 import org.gwaspi.samples.SampleSet;
 import ucar.nc2.NetcdfFile;
 
-/**
- *
- * @author Fernando Muñiz Fernandez
- * IBE, Institute of Evolutionary Biology (UPF-CSIC)
- * CEXS-UPF-PRBB
- */
 public class IterateThroughMarkerMap {
 
 	private Map<MarkerKey, Object> basesMap = new LinkedHashMap<MarkerKey, Object>();

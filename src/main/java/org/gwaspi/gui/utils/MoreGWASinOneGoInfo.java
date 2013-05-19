@@ -32,12 +32,6 @@ import org.gwaspi.netCDF.operations.GWASinOneGOParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- *
- * @author Fernando Muñiz Fernandez
- * IBE, Institute of Evolutionary Biology (UPF-CSIC)
- * CEXS-UPF-PRBB
- */
 public class MoreGWASinOneGoInfo extends JFrame {
 
 	private final Logger log = LoggerFactory.getLogger(MoreGWASinOneGoInfo.class);

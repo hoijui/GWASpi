@@ -28,12 +28,6 @@ import org.gwaspi.threadbox.SwingWorkerItemList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- *
- * @author Fernando Muñiz Fernandez
- * IBE, Institute of Evolutionary Biology (UPF-CSIC)
- * CEXS-UPF-PRBB
- */
 public class StartGWASpi extends JFrame {
 
 	private static final Logger log = LoggerFactory.getLogger(StartGWASpi.class);

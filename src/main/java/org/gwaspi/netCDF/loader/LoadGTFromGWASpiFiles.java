@@ -32,10 +32,6 @@ import ucar.nc2.NetcdfFileWriteable;
  * Loads genotypes from GWASpi's own file format.
  * Can load a single file or multiple files, as long as they belong to
  * a single population (CEU, YRI, JPT...).
- *
- * @author Fernando Muñiz Fernandez
- * IBE, Institute of Evolutionary Biology (UPF-CSIC)
- * CEXS-UPF-PRBB
  */
 public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 

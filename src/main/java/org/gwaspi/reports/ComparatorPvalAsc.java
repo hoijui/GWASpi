@@ -3,12 +3,6 @@ package org.gwaspi.reports;
 import java.util.Comparator;
 import java.util.Map;
 
-/**
- *
- * @author Fernando Muñiz Fernandez
- * IBE, Institute of Evolutionary Biology (UPF-CSIC)
- * CEXS-UPF-PRBB
- */
 class ComparatorPvalAsc implements Comparator<Map.Entry> {
 
 	public int compare(Map.Entry e1, Map.Entry e2) {

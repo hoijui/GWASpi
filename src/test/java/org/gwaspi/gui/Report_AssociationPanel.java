@@ -1,9 +1,5 @@
 package org.gwaspi.gui;
 
-/**
- *
- * @author u56124
- */
 public class Report_AssociationPanel extends javax.swing.JPanel {
 
 	/**

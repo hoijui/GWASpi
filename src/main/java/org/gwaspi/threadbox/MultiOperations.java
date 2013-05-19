@@ -13,12 +13,6 @@ import org.gwaspi.gui.StartGWASpi;
 import org.gwaspi.netCDF.loader.GenotypesLoadDescription;
 import org.gwaspi.netCDF.operations.GWASinOneGOParams;
 
-/**
- *
- * @author Fernando Muñiz Fernandez
- * IBE, Institute of Evolutionary Biology (UPF-CSIC)
- * CEXS-UPF-PRBB
- */
 public class MultiOperations {
 
 	private MultiOperations() {

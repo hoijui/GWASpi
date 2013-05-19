@@ -74,10 +74,6 @@ import org.jfree.ui.TextAnchor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- *
- * @author fernando
- */
 public final class ManhattanPlotZoom extends JPanel {
 
 	private final Logger log = LoggerFactory.getLogger(ManhattanPlotZoom.class);

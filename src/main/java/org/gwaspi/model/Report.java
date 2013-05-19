@@ -11,12 +11,6 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 
-/**
- *
- * @author Fernando Muñiz Fernandez
- * IBE, Institute of Evolutionary Biology (UPF-CSIC)
- * CEXS-UPF-PRBB
- */
 @Entity
 @Table(name = "report")
 @NamedQueries({

@@ -10,10 +10,6 @@ import org.jfree.chart.plot.CombinedRangeXYPlot;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- *
- * @author u56124
- */
 public class TestReports extends javax.swing.JPanel {
 
 	private static final Logger log = LoggerFactory.getLogger(TestReports.class);

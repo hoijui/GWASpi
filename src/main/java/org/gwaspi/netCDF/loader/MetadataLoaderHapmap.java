@@ -21,12 +21,6 @@ import org.slf4j.LoggerFactory;
  * http://hapmap.ncbi.nlm.nih.gov/downloads/genotypes/?N=D
  */
 
-/**
- *
- * @author Fernando Muñiz Fernandez
- * IBE, Institute of Evolutionary Biology (UPF-CSIC)
- * CEXS-UPF-PRBB
- */
 public class MetadataLoaderHapmap implements MetadataLoader {
 
 	private final Logger log

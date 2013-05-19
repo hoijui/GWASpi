@@ -3,12 +3,6 @@ package org.gwaspi.netCDF.operations;
 
 import org.gwaspi.model.SampleInfo.Sex;
 
-/**
- *
- * @author Fernando Muñiz Fernandez
- * IBE, Institute of Evolutionary Biology (UPF-CSIC)
- * CEXS-UPF-PRBB
- */
 public enum CensusDecision {
 
 	CountAutosomally,

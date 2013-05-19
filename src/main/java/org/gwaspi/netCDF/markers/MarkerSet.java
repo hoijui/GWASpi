@@ -33,10 +33,6 @@ import ucar.nc2.Variable;
  *
  * The matrix netCDF file is opened at creation of the MarkerSet and closed
  * at finalization of the class. No need to pass a netCDF handler anymore.
- *
- * @author Fernando Muñiz Fernandez
- * IBE, Institute of Evolutionary Biology (UPF-CSIC)
- * CEXS-UPF-PRBB
  */
 public class MarkerSet {
 

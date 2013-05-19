@@ -6,10 +6,6 @@ import java.util.List;
 
 /**
  * Duplicate SNPs to be removed
- *
- * @author Fernando Muñiz Fernandez
- * IBE, Institute of Evolutionary Biology (UPF-CSIC)
- * CEXS-UPF-PRBB
  */
 public class SNPBlacklist {
 

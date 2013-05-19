@@ -7,10 +7,6 @@ import org.gwaspi.dao.OperationService;
 import org.gwaspi.dao.jpa.JPAOperationService;
 
 /**
- *
- * @author Fernando Muñiz Fernandez
- * IBE, Institute of Evolutionary Biology (UPF-CSIC)
- * CEXS-UPF-PRBB
  * @deprecated use OperationService directly
  */
 public class OperationsList {

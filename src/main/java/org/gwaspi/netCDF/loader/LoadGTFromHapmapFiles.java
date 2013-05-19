@@ -34,10 +34,6 @@ import ucar.nc2.NetcdfFileWriteable;
  * Can load a single file or multiple files, as long as they belong to a single population (CEU, YRI, JPT...)
  * Imports Hapmap genotype files as found on
  * http://hapmap.ncbi.nlm.nih.gov/downloads/genotypes/?N=D
- *
- * @author Fernando Muñiz Fernandez
- * IBE, Institute of Evolutionary Biology (UPF-CSIC)
- * CEXS-UPF-PRBB
  */
 public class LoadGTFromHapmapFiles implements GenotypesLoader {
 

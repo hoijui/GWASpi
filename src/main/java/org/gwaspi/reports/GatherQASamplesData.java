@@ -9,12 +9,6 @@ import org.gwaspi.model.SampleKey;
 import org.gwaspi.netCDF.operations.SampleOperationSet;
 import ucar.nc2.NetcdfFile;
 
-/**
- *
- * @author Fernando Muñiz Fernandez
- * IBE, Institute of Evolutionary Biology (UPF-CSIC)
- * CEXS-UPF-PRBB
- */
 public class GatherQASamplesData {
 
 	private GatherQASamplesData() {

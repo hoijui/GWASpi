@@ -1,11 +1,5 @@
 package org.gwaspi.constants;
 
-/**
- *
- * @author Fernando Muñiz Fernandez
- * IBE, Institute of Evolutionary Biology (UPF-CSIC)
- * CEXS-UPF-PRBB
- */
 public class cDBOperations {
 
 	public static final String f_ID = "id";

@@ -6,12 +6,6 @@ import org.gwaspi.netCDF.exporter.MatrixExporter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- *
- * @author Fernando Muñiz Fernandez
- * IBE, Institute of Evolutionary Biology (UPF-CSIC)
- * CEXS-UPF-PRBB
- */
 public class Threaded_ExportMatrix extends CommonRunnable {
 
 	private boolean startWithGUI = org.gwaspi.gui.StartGWASpi.guiMode;
