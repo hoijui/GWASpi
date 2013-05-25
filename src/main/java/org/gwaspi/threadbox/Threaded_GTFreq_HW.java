@@ -98,9 +98,14 @@ public class Threaded_GTFreq_HW extends CommonRunnable {
 					Collection<SampleInfo> sampleInfos = SamplesParserManager.scanSampleInfo(ImportFormat.GWASpi, phenotypeFile.getPath());
 					SampleInfoList.insertSampleInfos(matrixId, sampleInfos);
 
-					censusOpId = OperationManager.censusCleanMatrixMarkersByPhenotypeFile(matrixId,
+					censusOpId = OperationManager.censusCleanMatrixMarkersByPhenotypeFile(
+							matrixId,
 							sampleQAOpId,
-							markersQAOpId, gwasParams.getDiscardMarkerMisRatVal(), gwasParams.isDiscardGTMismatches(), gwasParams.getDiscardSampleMisRatVal(), gwasParams.getDiscardSampleHetzyRatVal(),
+							markersQAOpId,
+							gwasParams.getDiscardMarkerMisRatVal(),
+							gwasParams.isDiscardGTMismatches(),
+							gwasParams.getDiscardSampleMisRatVal(),
+							gwasParams.getDiscardSampleHetzyRatVal(),
 							new StringBuilder().append(gwasParams.getFriendlyName()).append(" using ").append(phenotypeFile.getName()).toString(),
 							phenotypeFile);
 
@@ -114,9 +119,14 @@ public class Threaded_GTFreq_HW extends CommonRunnable {
 				if (affectionStates.contains(SampleInfo.Affection.UNAFFECTED)
 						&& affectionStates.contains(SampleInfo.Affection.AFFECTED))
 				{
-					censusOpId = OperationManager.censusCleanMatrixMarkers(matrixId,
+					censusOpId = OperationManager.censusCleanMatrixMarkers(
+							matrixId,
 							sampleQAOpId,
-							markersQAOpId, gwasParams.getDiscardMarkerMisRatVal(), gwasParams.isDiscardGTMismatches(), gwasParams.getDiscardSampleMisRatVal(), gwasParams.getDiscardSampleHetzyRatVal(),
+							markersQAOpId,
+							gwasParams.getDiscardMarkerMisRatVal(),
+							gwasParams.isDiscardGTMismatches(),
+							gwasParams.getDiscardSampleMisRatVal(),
+							gwasParams.getDiscardSampleHetzyRatVal(),
 							new StringBuilder().append(gwasParams.getFriendlyName()).append(" using ").append(cNetCDF.Defaults.DEFAULT_AFFECTION).toString());
 
 					org.gwaspi.global.Utils.sysoutCompleted("Genotype Frequency Count");
