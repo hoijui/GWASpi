@@ -65,11 +65,7 @@ public class BeagleSamplesParser implements SamplesParser {
 					"0",
 					"0",
 					SampleInfo.Sex.UNKNOWN,
-					SampleInfo.Affection.parse(beagleAffections[i]),
-					"0",
-					"0",
-					"0",
-					0
+					SampleInfo.Affection.parse(beagleAffections[i])
 					);
 			sampleInfos.add(sampleInfo);
 		}

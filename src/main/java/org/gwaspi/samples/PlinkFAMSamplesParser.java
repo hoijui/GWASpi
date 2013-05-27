@@ -57,11 +57,7 @@ public class PlinkFAMSamplesParser implements SamplesParser {
 					cVals[cImport.Annotation.Plink_Binary.ped_fatherId],
 					cVals[cImport.Annotation.Plink_Binary.ped_motherId],
 					sex,
-					affection,
-					"0",
-					"0",
-					"0",
-					0
+					affection
 					);
 
 			sampleInfos.add(sampleInfo);

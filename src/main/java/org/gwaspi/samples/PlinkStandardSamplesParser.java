@@ -70,11 +70,7 @@ public class PlinkStandardSamplesParser implements SamplesParser {
 							cVals[cImport.Annotation.Plink_Standard.ped_fatherId],
 							cVals[cImport.Annotation.Plink_Standard.ped_motherId],
 							sex,
-							affection,
-							"0",
-							"0",
-							"0",
-							0
+							affection
 							);
 				} else {
 					sampleInfo = new SampleInfo();
@@ -111,11 +107,7 @@ public class PlinkStandardSamplesParser implements SamplesParser {
 							cVals[cImport.Annotation.Plink_Standard.ped_fatherId],
 							cVals[cImport.Annotation.Plink_Standard.ped_motherId],
 							sex,
-							affection,
-							"0",
-							"0",
-							"0",
-							0
+							affection
 							);
 				} else {
 					sampleInfo = new SampleInfo();

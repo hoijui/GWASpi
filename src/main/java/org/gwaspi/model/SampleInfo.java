@@ -265,21 +265,17 @@ public class SampleInfo implements Comparable<SampleInfo>, Serializable {
 			String fatherId,
 			String motherId,
 			Sex sex,
-			Affection affection,
-			String category,
-			String disease,
-			String population,
-			int age)
+			Affection affection)
 	{
 		this.orderId = Integer.MIN_VALUE;
 		this.fatherId = fatherId;
 		this.motherId = motherId;
 		this.sex = sex;
 		this.affection = affection;
-		this.category = category;
-		this.disease = disease;
-		this.population = population;
-		this.age = age;
+		this.category = "0";
+		this.disease = "0";
+		this.population = "0";
+		this.age = 0;
 		this.filter = "";
 		this.poolId = null;
 		this.approved = 0;

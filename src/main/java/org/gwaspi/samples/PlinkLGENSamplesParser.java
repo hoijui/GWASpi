@@ -51,11 +51,7 @@ public class PlinkLGENSamplesParser implements SamplesParser {
 					"0",
 					"0",
 					SampleInfo.Sex.UNKNOWN,
-					SampleInfo.Affection.UNKNOWN,
-					"0",
-					"0",
-					"0",
-					0
+					SampleInfo.Affection.UNKNOWN
 					);
 
 			sampleInfos.add(sampleInfo);
