@@ -57,29 +57,27 @@ public class MarkerSet {
 			= LoggerFactory.getLogger(MarkerSet.class);
 
 	// MARKERSET_MEATADATA
-	private ImportFormat technology = ImportFormat.UNKNOWN; // platform
-	private int markerSetSize = 0; // probe_nb
-	private MatrixMetadata matrixMetadata;
-	private NetcdfFile ncfile = null;
-	private int startMkIdx = 0;
-	private int endMkIdx = Integer.MIN_VALUE;
-	private Map<MarkerKey, ?> markerIdSetMap = new LinkedHashMap<MarkerKey, Object>();
-	private Map<MarkerKey, ?> markerRsIdSetMap = new LinkedHashMap<MarkerKey, Object>();
+	private final ImportFormat technology; // platform
+	private final int markerSetSize; // probe_nb
+	private final NetcdfFile ncfile;
+	private int startMkIdx;
+	private int endMkIdx;
+	private Map<MarkerKey, ?> markerIdSetMap;
+	private Map<MarkerKey, ?> markerRsIdSetMap;
 
-	public MarkerSet(int studyId, int matrixId) throws IOException {
-		matrixMetadata = MatricesList.getMatrixMetadataById(matrixId);
-		technology = matrixMetadata.getTechnology();
-		markerSetSize = matrixMetadata.getMarkerSetSize();
+	public MarkerSet(MatrixMetadata matrixMetadata) throws IOException {
 
-		ncfile = NetcdfFile.open(matrixMetadata.getPathToMatrix());
+		this.technology = matrixMetadata.getTechnology();
+		this.markerSetSize = matrixMetadata.getMarkerSetSize();
+		this.ncfile = NetcdfFile.open(matrixMetadata.getPathToMatrix());
+		this.startMkIdx = 0;
+		this.endMkIdx = Integer.MIN_VALUE;
+		this.markerIdSetMap = new LinkedHashMap<MarkerKey, Object>();
+		this.markerRsIdSetMap = new LinkedHashMap<MarkerKey, Object>();
 	}
 
-	public MarkerSet(int studyId, String netCDFPath, String netCDFName) throws IOException {
-		matrixMetadata = MatricesList.getMatrixMetadata(netCDFPath, studyId, netCDFName);
-		technology = matrixMetadata.getTechnology();
-		markerSetSize = matrixMetadata.getMarkerSetSize();
-
-		ncfile = NetcdfFile.open(netCDFPath);
+	public MarkerSet(int studyId, int matrixId) throws IOException {
+		this(MatricesList.getMatrixMetadataById(matrixId));
 	}
 
 	@Override

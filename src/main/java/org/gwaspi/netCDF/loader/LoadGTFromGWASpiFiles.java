@@ -176,7 +176,7 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 		String startTime = org.gwaspi.global.Utils.getMediumDateTimeAsString();
 
 		//<editor-fold defaultstate="expanded" desc="CREATE MARKERSET & NETCDF">
-		MarkerSet rdMarkerSet = new MarkerSet(importMatrixMetadata.getStudyId(), loadDescription.getGtDirPath(), importMatrixMetadata.getMatrixNetCDFName());
+		MarkerSet rdMarkerSet = new MarkerSet(importMatrixMetadata);
 		rdMarkerSet.initFullMarkerIdSetMap();
 		rdMarkerSet.fillMarkerSetMapWithChrAndPos();
 		Map<MarkerKey, MarkerMetadata> rdMarkerSetMap = rdMarkerSet.getMarkerMetadata();
