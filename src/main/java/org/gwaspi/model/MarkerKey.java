@@ -22,13 +22,13 @@ package org.gwaspi.model;
  * For example, you can think of it as the type of the primary key
  * in a PLINK Flat "*.map" file.
  * The value of this key is unique within a set of markers,
- * so for example withing a single "*.map" file.
+ * so for example within a single "*.map" file.
  */
 public final class MarkerKey implements Comparable<MarkerKey> {
 
 	public static final KeyFactory<MarkerKey> KEY_FACTORY = new MarkerKeyFactory();
 
-	private String markerId;
+	private final String markerId;
 
 	public MarkerKey(String markerId) {
 
