@@ -35,8 +35,8 @@ public final class SampleKey implements Comparable<SampleKey>, Serializable {
 	 */
 	public static final String FAMILY_ID_NONE = "0";
 
-	private String sampleId;
-	private String familyId;
+	private final String sampleId;
+	private final String familyId;
 
 	public SampleKey(String sampleId, String familyId) {
 
