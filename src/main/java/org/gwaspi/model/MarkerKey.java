@@ -17,6 +17,8 @@
 
 package org.gwaspi.model;
 
+import java.io.Serializable;
+
 /**
  * Uniquely identifies a marker within a set of markers.
  * For example, you can think of it as the type of the primary key
@@ -24,7 +26,7 @@ package org.gwaspi.model;
  * The value of this key is unique within a set of markers,
  * so for example within a single "*.map" file.
  */
-public final class MarkerKey implements Comparable<MarkerKey> {
+public final class MarkerKey implements Comparable<MarkerKey>, Serializable {
 
 	public static final KeyFactory<MarkerKey> KEY_FACTORY = new MarkerKeyFactory();
 
