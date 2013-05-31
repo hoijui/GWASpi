@@ -17,6 +17,8 @@
 
 package org.gwaspi.model;
 
+import java.io.Serializable;
+
 /**
  * Uniquely identifies a sample within a set of samples.
  * For example, you can think of it as the type of the primary key
@@ -24,7 +26,7 @@ package org.gwaspi.model;
  * The (combined) value of this key is unique within a set of samples,
  * so for example within a single "*.ped" file.
  */
-public final class SampleKey implements Comparable<SampleKey> {
+public final class SampleKey implements Comparable<SampleKey>, Serializable {
 
 	public static final KeyFactory<SampleKey> KEY_FACTORY = new SampleKeyFactory();
 	/**
