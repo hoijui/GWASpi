@@ -301,9 +301,9 @@ public class OP_QAMarkers implements MatrixOperation {
 					}
 					if (knownAlleles.size() == 1) {
 						// Homozygote (AA or aa)
-						byte byteAllele1 = itKnAll.next();
-						byte byteAllele2 = '0';
-						int intAllele1 = byteAllele1;
+						final byte byteAllele1 = itKnAll.next();
+						final byte byteAllele2 = '0';
+						final int intAllele1 = byteAllele1;
 						intAA.add(intAllele1);
 						intAA.add(intAllele1 * 2);
 
@@ -315,13 +315,13 @@ public class OP_QAMarkers implements MatrixOperation {
 					}
 					if (knownAlleles.size() == 2) {
 						// Heterezygote (contains mix of AA, Aa or aa)
-						byte byteAllele1 = itKnAll.next();
-						int countAllele1 = Math.round(knownAlleles.get(byteAllele1));
-						int intAllele1 = byteAllele1;
-						byte byteAllele2 = itKnAll.next();
-						int countAllele2 = Math.round(knownAlleles.get(byteAllele2));
-						int intAllele2 = byteAllele2;
-						int totAlleles = countAllele1 + countAllele2;
+						final byte byteAllele1 = itKnAll.next();
+						final int countAllele1 = Math.round(knownAlleles.get(byteAllele1));
+						final int intAllele1 = byteAllele1;
+						final byte byteAllele2 = itKnAll.next();
+						final int countAllele2 = Math.round(knownAlleles.get(byteAllele2));
+						final int intAllele2 = byteAllele2;
+						final int totAlleles = countAllele1 + countAllele2;
 
 						if (countAllele1 >= countAllele2) {
 							// Finding out what allele is major and minor
