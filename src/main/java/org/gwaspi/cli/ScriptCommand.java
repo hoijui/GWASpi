@@ -18,7 +18,7 @@
 package org.gwaspi.cli;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.Map;
 
 /**
  * Parses, prepares and executes one command read from a script file.
@@ -27,5 +27,8 @@ interface ScriptCommand {
 
 	String getCommandName();
 
-	boolean execute(List<String> args) throws IOException;
+	/**
+	 * @param args a list of properties in the order they appeared in the script
+	 */
+	boolean execute(Map<String, String> args) throws IOException;
 }

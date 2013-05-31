@@ -18,7 +18,7 @@
 package org.gwaspi.cli;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.Map;
 import org.gwaspi.constants.cImport.ImportFormat;
 import org.gwaspi.netCDF.loader.GenotypesLoadDescription;
 import org.gwaspi.netCDF.operations.GWASinOneGOParams;
@@ -31,7 +31,7 @@ class LoadGenotypesDoGwasInOneGoScriptCommand extends AbstractScriptCommand {
 	}
 
 	@Override
-	public boolean execute(List<String> args) throws IOException {
+	public boolean execute(Map<String, String> args) throws IOException {
 
 		// <editor-fold defaultstate="expanded" desc="SCRIPT EXAMPLE">
 		/*
@@ -67,34 +67,34 @@ class LoadGenotypesDoGwasInOneGoScriptCommand extends AbstractScriptCommand {
 		GWASinOneGOParams gwasParams = new GWASinOneGOParams();
 
 		// checking study
-		int studyId = prepareStudy(args.get(1), true);
+		int studyId = prepareStudy(args.get("study-id"), true);
 		boolean studyExists = checkStudy(studyId);
 
 		if (studyExists) {
-			ImportFormat format = ImportFormat.compareTo(args.get(2));
-			String newMatrixName = args.get(4);
-			String description = args.get(5);
+			ImportFormat format = ImportFormat.compareTo(args.get("format"));
+			String newMatrixName = args.get("new-matrix-name");
+			String description = args.get("description");
 
 			gwasParams.setDiscardGTMismatches(true);
-			gwasParams.setDiscardMarkerByMisRat(Boolean.parseBoolean(args.get(9)));
-			gwasParams.setDiscardMarkerMisRatVal(Double.parseDouble(args.get(10)));
-			gwasParams.setDiscardMarkerHWCalc(Boolean.parseBoolean(args.get(11)));
-			gwasParams.setDiscardMarkerHWFree(Boolean.parseBoolean(args.get(12)));
-			gwasParams.setDiscardMarkerHWTreshold(Double.parseDouble(args.get(13)));
-			gwasParams.setDiscardSampleByMisRat(Boolean.parseBoolean(args.get(14)));
-			gwasParams.setDiscardSampleMisRatVal(Double.parseDouble(args.get(15)));
-			gwasParams.setDiscardSampleByHetzyRat(Boolean.parseBoolean(args.get(16)));
-			gwasParams.setDiscardSampleHetzyRatVal(Double.parseDouble(args.get(17)));
-			gwasParams.setPerformAllelicTests(Boolean.parseBoolean(args.get(18)));
-			gwasParams.setPerformGenotypicTests(Boolean.parseBoolean(args.get(19)));
-			gwasParams.setPerformTrendTests(Boolean.parseBoolean(args.get(20)));
+			gwasParams.setDiscardMarkerByMisRat(Boolean.parseBoolean(args.get("discard-marker-by-missing-ratio")));
+			gwasParams.setDiscardMarkerMisRatVal(Double.parseDouble(args.get("discard-marker-missing-ratio-threshold")));
+			gwasParams.setDiscardMarkerHWCalc(Boolean.parseBoolean(args.get("calculate-discard-threshold-for-HW")));
+			gwasParams.setDiscardMarkerHWFree(Boolean.parseBoolean(args.get("discard-marker-with-provided-threshold")));
+			gwasParams.setDiscardMarkerHWTreshold(Double.parseDouble(args.get("discard-marker-HW-treshold")));
+			gwasParams.setDiscardSampleByMisRat(Boolean.parseBoolean(args.get("discard-samples-by-missing-ratio")));
+			gwasParams.setDiscardSampleMisRatVal(Double.parseDouble(args.get("discard-samples-missing-ratio-threshold")));
+			gwasParams.setDiscardSampleByHetzyRat(Boolean.parseBoolean(args.get("discard-samples-by-heterozygosity-ratio")));
+			gwasParams.setDiscardSampleHetzyRatVal(Double.parseDouble(args.get("discard-samples-heterozygosity-ratio-threshold")));
+			gwasParams.setPerformAllelicTests(Boolean.parseBoolean(args.get("perform-Allelic-Tests")));
+			gwasParams.setPerformGenotypicTests(Boolean.parseBoolean(args.get("perform-Genotypic-Tests")));
+			gwasParams.setPerformTrendTests(Boolean.parseBoolean(args.get("perform-Trend-Tests")));
 			gwasParams.setFriendlyName(newMatrixName);
 			gwasParams.setProceed(true);
 
 			GenotypesLoadDescription loadDescription = new GenotypesLoadDescription(
-					args.get(6), // File 1
-					args.get(8), // Sample Info file
-					args.get(7), // File 2
+					args.get("file1-path"), // File 1
+					args.get("sample-info-path"), // Sample Info file
+					args.get("file2-path"), // File 2
 					studyId, // StudyId
 					format, // Format
 					newMatrixName, // New Matrix name
@@ -105,7 +105,7 @@ class LoadGenotypesDoGwasInOneGoScriptCommand extends AbstractScriptCommand {
 					);
 			MultiOperations.loadMatrixDoGWASifOK(
 					loadDescription, // Format
-					Boolean.parseBoolean(args.get(3)), // Dummy samples
+					Boolean.parseBoolean(args.get("use-dummy-samples")), // Dummy samples
 					true, // Do GWAS
 					gwasParams); // gwasParams (dummy)
 

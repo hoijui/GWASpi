@@ -18,7 +18,7 @@
 package org.gwaspi.cli;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.Map;
 import org.gwaspi.constants.cDBSamples;
 import org.gwaspi.constants.cExport;
 import org.gwaspi.threadbox.MultiOperations;
@@ -30,17 +30,21 @@ class ExportMatrixScriptCommand extends AbstractScriptCommand {
 	}
 
 	@Override
-	public boolean execute(List<String> args) throws IOException {
+	public boolean execute(Map<String, String> args) throws IOException {
 
 		// checking study
-		int studyId = prepareStudy(args.get(1), false);
-		int matrixId = Integer.parseInt(args.get(2)); // Study Id
+		int studyId = prepareStudy(args.get("study-id"), false);
+		int matrixId = Integer.parseInt(args.get("matrix-id"));
 		boolean studyExists = checkStudy(studyId);
 
-		String format = args.get(3);
+		String format = args.get("format");
 
 		if (studyExists) {
-			MultiOperations.doExportMatrix(studyId, matrixId, cExport.ExportFormat.valueOf(format), cDBSamples.f_AFFECTION);
+			MultiOperations.doExportMatrix(
+					studyId,
+					matrixId,
+					cExport.ExportFormat.valueOf(format),
+					cDBSamples.f_AFFECTION);
 			return true;
 		}
 

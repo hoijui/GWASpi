@@ -20,6 +20,7 @@ package org.gwaspi.cli;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.global.Text;
 import org.gwaspi.netCDF.operations.GWASinOneGOParams;
@@ -37,7 +38,7 @@ class AssociationScriptCommand extends AbstractScriptCommand {
 	}
 
 	@Override
-	public boolean execute(List<String> args) throws IOException {
+	public boolean execute(Map<String, String> args) throws IOException {
 
 		//<editor-fold defaultstate="expanded" desc="SCRIPT EXAMPLE">
 		/*
@@ -60,22 +61,22 @@ class AssociationScriptCommand extends AbstractScriptCommand {
 		GWASinOneGOParams gwasParams = new GWASinOneGOParams();
 
 		// checking study
-		int studyId = prepareStudy(args.get(1), false);
+		int studyId = prepareStudy(args.get("study-id"), false);
 		boolean studyExists = checkStudy(studyId);
 
 		if (studyExists) {
-			int matrixId = Integer.parseInt(args.get(2)); // Parent Matrix Id
-			int gtFreqId = Integer.parseInt(args.get(3)); // Parent GtFreq Id
-			int hwId = Integer.parseInt(args.get(4)); // Parent GtFreq Id
+			int matrixId = Integer.parseInt(args.get("matrix-id")); // Parent Matrix Id
+			int gtFreqId = Integer.parseInt(args.get("gtfreq-id")); // Parent GtFreq operation Id
+			int hwId = Integer.parseInt(args.get("hw-id")); // Parent Hardy-Weinberg operation Id
 
 			gwasParams.setPerformAllelicTests(allelic);
 			gwasParams.setPerformGenotypicTests(!allelic);
 			gwasParams.setPerformTrendTests(false);
 
 			gwasParams.setDiscardGTMismatches(true);
-			gwasParams.setDiscardMarkerHWCalc(Boolean.parseBoolean(args.get(5)));
-			gwasParams.setDiscardMarkerHWFree(Boolean.parseBoolean(args.get(6)));
-			gwasParams.setDiscardMarkerHWTreshold(Double.parseDouble(args.get(7)));
+			gwasParams.setDiscardMarkerHWCalc(Boolean.parseBoolean(args.get("calculate-discard-threshold-for-HW")));
+			gwasParams.setDiscardMarkerHWFree(Boolean.parseBoolean(args.get("discard-marker-with-provided-HW-threshold")));
+			gwasParams.setDiscardMarkerHWTreshold(Double.parseDouble(args.get("discard-marker-HW-treshold")));
 			gwasParams.setProceed(true);
 
 			List<OPType> necessaryOPs = new ArrayList<OPType>();
@@ -93,7 +94,8 @@ class AssociationScriptCommand extends AbstractScriptCommand {
 			// test block
 			if (gwasParams.isProceed()) {
 				System.out.println(Text.All.processing);
-				MultiOperations.doAssociationTest(studyId,
+				MultiOperations.doAssociationTest(
+						studyId,
 						matrixId,
 						gtFreqId,
 						hwId,

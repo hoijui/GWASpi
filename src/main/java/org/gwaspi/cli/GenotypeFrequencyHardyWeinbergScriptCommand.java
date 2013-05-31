@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.global.Text;
 import org.gwaspi.netCDF.operations.GWASinOneGOParams;
@@ -34,7 +35,7 @@ class GenotypeFrequencyHardyWeinbergScriptCommand extends AbstractScriptCommand 
 	}
 
 	@Override
-	public boolean execute(List<String> args) throws IOException {
+	public boolean execute(Map<String, String> args) throws IOException {
 
 		//<editor-fold defaultstate="expanded" desc="SCRIPT EXAMPLE">
 		/*
@@ -59,23 +60,23 @@ class GenotypeFrequencyHardyWeinbergScriptCommand extends AbstractScriptCommand 
 		GWASinOneGOParams gwasParams = new GWASinOneGOParams();
 
 		// checking study
-		int studyId = prepareStudy(args.get(1), false);
+		int studyId = prepareStudy(args.get("study-id"), false);
 		boolean studyExists = checkStudy(studyId);
 
 		if (studyExists) {
-			int matrixId = Integer.parseInt(args.get(2)); // Parent Matrix Id
-			String gtFrqName = args.get(3);
-			boolean useExternalPhenoFile = Boolean.parseBoolean(args.get(4));
+			int matrixId = Integer.parseInt(args.get("matrix-id")); // Parent Matrix Id
+			String gtFrqName = args.get("gtfreq-name");
+			boolean useExternalPhenoFile = Boolean.parseBoolean(args.get("use-external-phenotype-file"));
 			File phenoFile = null;
 			if (useExternalPhenoFile) {
-				phenoFile = new File(args.get(5));
+				phenoFile = new File(args.get("external-phenotype-file"));
 			}
 
 			gwasParams.setDiscardGTMismatches(true);
-			gwasParams.setDiscardMarkerByMisRat(Boolean.parseBoolean(args.get(6)));
-			gwasParams.setDiscardMarkerMisRatVal(Double.parseDouble(args.get(7)));
-			gwasParams.setDiscardSampleByMisRat(Boolean.parseBoolean(args.get(8)));
-			gwasParams.setDiscardSampleMisRatVal(Double.parseDouble(args.get(9)));
+			gwasParams.setDiscardMarkerByMisRat(Boolean.parseBoolean(args.get("discard-by-marker-missing-ratio")));
+			gwasParams.setDiscardMarkerMisRatVal(Double.parseDouble(args.get("discard-marker-missing-ratio-threshold")));
+			gwasParams.setDiscardSampleByMisRat(Boolean.parseBoolean(args.get("discard-samples-by-missing-ratio")));
+			gwasParams.setDiscardSampleMisRatVal(Double.parseDouble(args.get("discard-samples-missing-ratio-threshold")));
 			gwasParams.setFriendlyName(gtFrqName);
 			gwasParams.setProceed(true);
 

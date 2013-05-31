@@ -19,7 +19,7 @@ package org.gwaspi.cli;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
+import java.util.Map;
 import org.gwaspi.threadbox.MultiOperations;
 
 class UpdateSampleInfoScriptCommand extends AbstractScriptCommand {
@@ -29,18 +29,20 @@ class UpdateSampleInfoScriptCommand extends AbstractScriptCommand {
 	}
 
 	@Override
-	public boolean execute(List<String> args) throws IOException {
+	public boolean execute(Map<String, String> args) throws IOException {
 
 		// checking study
-		int studyId = prepareStudy(args.get(1), true);
+		int studyId = prepareStudy(args.get("study-id"), true);
 		boolean studyExists = checkStudy(studyId);
 
-		File sampleInfoFile = new File(args.get(2));
+		File sampleInfoFile = new File(args.get("sample-info-file"));
 		if (studyExists && (sampleInfoFile != null) && sampleInfoFile.exists()) {
 			MultiOperations.updateSampleInfo(studyId,
 					sampleInfoFile);
 			return true;
 		}
+
+		// FIXME implement me!
 
 		return false;
 	}

@@ -61,20 +61,19 @@ public class CliExecutor {
 		boolean success = false;
 
 		// GET ALL SCRIPTS CONTAINED IN FILE
-		List<List<String>> scriptsAL = org.gwaspi.cli.Utils.readArgsFromScript(scriptFile);
+		List<Map<String, String>> scripts = org.gwaspi.cli.Utils.readArgsFromScript(scriptFile);
 
-		System.out.println("\nScripts in queue: " + scriptsAL.size());
+		System.out.println("\nScripts in queue: " + scripts.size());
 
 		// ITERATE THROUGH SCRIPTS AND LAUNCH THREAD FOR EACH
-		for (int i = 0; i < scriptsAL.size(); i++) {
-
+		for (int i = 0; i < scripts.size(); i++) {
 			// TRY TO GARBAGE COLLECT BEFORE ANY OTHER THING
 			System.gc();
 
 			// GET ARGS FOR CURRENT SCRIPT
-			List<String> args = scriptsAL.get(i);
-			// GET COMMAND LINE OF CURRENT SCRIPT
-			String command = args.get(0).toString();
+			Map<String, String> args = scripts.get(i);
+			// GET COMMAND NAME OF CURRENT SCRIPT
+			String command = args.values().iterator().next();
 
 			System.out.println("Script " + i + ": " + command);
 

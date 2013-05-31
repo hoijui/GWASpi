@@ -22,7 +22,9 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,40 +69,42 @@ public class Utils {
 		return result;
 	}
 
-	public static List<List<String>> readArgsFromScript(File src) throws IOException {
+	public static List<Map<String, String>> readArgsFromScript(File src) throws IOException {
 
-		List<List<String>> result = new ArrayList<List<String>>();
-		List<String> tmpScript = new ArrayList<String>();
+		List<Map<String, String>> scripts = new ArrayList<Map<String, String>>();
 
 		FileReader fr = null;
 		BufferedReader br = null;
+		String line = null;
+		int lineNum = -1;
 		try {
 			fr = new FileReader(src);
 			br = new BufferedReader(fr);
 
-			boolean header = true;
-			while (header && br.ready()) {
-				String tmpLine = br.readLine();
-				if (tmpLine.startsWith("[script]")) {
-					header = false;
+			Map<String, String> script = null;
+			while (br.ready()) {
+				line = br.readLine().trim();
+				lineNum++;
+				if ((script == null) && line.startsWith("[script]")) {
+					// We use LinkedHashMap, because it preserves the order
+					// of the entries (the order of insertion of the keys).
+					// Most scripts rely on this order.
+					script = new LinkedHashMap<String, String>();
+				} else if (script != null) {
+					if (line.startsWith("[/script]")) {
+						scripts.add(script);
+						script = null;
+					} else if (!line.startsWith("#") && !line.isEmpty()) {
+						int startKey = line.indexOf('.') + 1;
+						int startValue = line.indexOf('=') + 1;
+						String key = line.substring(startKey, startValue - 1).trim();
+						String value = line.substring(startValue).trim();
+						script.put(key, value);
+					}
 				}
 			}
-
-			int count = 0;
-			while (br.ready()) {
-				String l = br.readLine();
-				if (!l.equals("[/script]")) {
-					int start = l.indexOf('=') + 1;
-//					if (start == -1) {
-//						start = 0;
-//					}
-					tmpScript.add(l.substring(start));
-					count++;
-				} else {
-					result.add(tmpScript);
-					tmpScript = new ArrayList<String>();
-					br.readLine(); // Ignore next [script] line
-				}
+			if (script != null) {
+				throw new RuntimeException("Unfinnished script");
 			}
 		} finally {
 			try {
@@ -110,10 +114,10 @@ public class Utils {
 					fr.close();
 				}
 			} catch (Exception ex) {
-				log.warn(null, ex);
+				log.warn("Failed parsing script at line " + lineNum + ": \"" + line + "\"" , ex);
 			}
 		}
 
-		return result;
+		return scripts;
 	}
 }
