@@ -186,7 +186,7 @@ public class OutputAssociation {
 		return result;
 	}
 
-	public boolean createSortedAssociationReport(int opId, String reportName) throws IOException {
+	private boolean createSortedAssociationReport(int opId, String reportName) throws IOException {
 		boolean result;
 
 		try {
