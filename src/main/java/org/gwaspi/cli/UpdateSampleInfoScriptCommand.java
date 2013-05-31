@@ -31,6 +31,19 @@ class UpdateSampleInfoScriptCommand extends AbstractScriptCommand {
 	@Override
 	public boolean execute(Map<String, String> args) throws IOException {
 
+		//<editor-fold defaultstate="expanded" desc="SCRIPT EXAMPLE">
+		/*
+		# This is a demo file
+		# Usage: java -Xms1500m -Xmx2500m -jar GWASpi.jar script <scriptFile>
+		data-dir=/media/data/GWASpi
+		[script]
+		0.command=update_sample_info
+		1.study-id=1
+		2.sample-info-file=/tmp/mySampleInfo.txt
+		[/script]
+		*/
+		//</editor-fold>
+
 		// checking study
 		int studyId = prepareStudy(args.get("study-id"), true);
 		boolean studyExists = checkStudy(studyId);

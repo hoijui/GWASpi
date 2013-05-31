@@ -39,8 +39,8 @@ class GwasInOneGoScriptCommand extends AbstractScriptCommand {
 
 		//<editor-fold defaultstate="expanded" desc="SCRIPT EXAMPLE">
 		/*
-		#This is a demo file
-		#Usage: java -Xms1500m -Xmx2500m -jar GWASpi.jar script scriptFile [log org.gwaspi.cli.log]
+		# This is a demo file
+		# Usage: java -Xms1500m -Xmx2500m -jar GWASpi.jar script scriptFile [log org.gwaspi.cli.log]
 		data-dir=/media/data/GWASpi
 		[script]
 		0.command=gwas_in_one_go

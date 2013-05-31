@@ -33,6 +33,25 @@ class LoadGenotypesScriptCommand extends AbstractScriptCommand {
 	@Override
 	public boolean execute(Map<String, String> args) throws IOException {
 
+		//<editor-fold defaultstate="expanded" desc="SCRIPT EXAMPLE">
+		/*
+		# This is a demo file
+		# Usage: java -Xms1500m -Xmx2500m -jar GWASpi.jar script scriptFile [log org.gwaspi.cli.log]
+		data-dir=/media/data/GWASpi
+		[script]
+		0.command=load_genotypes
+		1.study-id=1
+		2.format=PLINK
+		3.use-dummy-samples=true
+		4.new-matrix-name=Matrix 42
+		5.description=Load genotypes of batch 42
+		6.file1-path=/GWASpi/input/Plink/mi_input.map
+		7.file2-path=/GWASpi/input/Plink/mi_input.ped
+		8.sample-info-path=no info file
+		[/script]
+		*/
+		//</editor-fold>
+
 		GWASinOneGOParams gwasParams = new GWASinOneGOParams();
 
 		// checking study

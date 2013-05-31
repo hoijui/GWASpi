@@ -32,6 +32,20 @@ class ExportMatrixScriptCommand extends AbstractScriptCommand {
 	@Override
 	public boolean execute(Map<String, String> args) throws IOException {
 
+		//<editor-fold defaultstate="expanded" desc="SCRIPT EXAMPLE">
+		/*
+		# This is a demo file
+		# Usage: java -Xms1500m -Xmx2500m -jar GWASpi.jar script scriptFile [log org.gwaspi.cli.log]
+		data-dir=/media/data/GWASpi
+		[script]
+		0.command=export_matrix
+		1.study-id=1
+		2.matrix-id=8
+		3.format=MACH
+		[/script]
+		*/
+		//</editor-fold>
+
 		// checking study
 		int studyId = prepareStudy(args.get("study-id"), false);
 		int matrixId = Integer.parseInt(args.get("matrix-id"));
