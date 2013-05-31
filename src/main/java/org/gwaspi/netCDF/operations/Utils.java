@@ -27,7 +27,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.global.TypeConverter;
-import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.SampleKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
