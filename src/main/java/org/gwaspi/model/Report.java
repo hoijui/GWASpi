@@ -22,6 +22,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.IdClass;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.SequenceGenerator;
@@ -30,6 +31,7 @@ import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 
 @Entity
 @Table(name = "report")
+@IdClass(ReportKey.class)
 @NamedQueries({
 	@NamedQuery(
 		name = "report_fetchById",
@@ -40,6 +42,9 @@ import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 	@NamedQuery(
 		name = "report_fetchByParentMatrixId",
 		query = "SELECT r FROM Report r WHERE r.parentMatrixId = :parentMatrixId"),
+	@NamedQuery(
+		name = "report_fetchByParentMatrixIdParentOperationId",
+		query = "SELECT r FROM Report r WHERE r.parentMatrixId = :parentMatrixId AND r.parentOperationId = :parentOperationId"),
 	@NamedQuery(
 		name = "report_deleteByParentMatrixId",
 		query = "DELETE FROM Report r WHERE r.parentMatrixId = :parentMatrixId"),

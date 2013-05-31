@@ -23,6 +23,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.IdClass;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.SequenceGenerator;
@@ -36,6 +37,7 @@ import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
 
 @Entity
 @Table(name = "matrixMetadata")
+@IdClass(MatrixKey.class)
 @NamedQueries({
 	@NamedQuery(
 		name = "matrixMetadata_fetchById",

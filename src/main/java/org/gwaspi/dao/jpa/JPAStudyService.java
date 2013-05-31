@@ -173,8 +173,28 @@ public class JPAStudyService implements StudyService {
 	@Override
 	public void deleteStudy(int studyId, boolean deleteReports) throws IOException {
 
-		Study study = getById(studyId);
+		Study study;
 
+		// DELETE METADATA INFO FROM DB
+		boolean removed = false;
+		EntityManager em = null;
+		try {
+			em = open();
+			begin(em);
+			study = em.find(Study.class, studyId);
+			if (study == null) {
+				throw new IllegalArgumentException("No study found with this ID: " + studyId);
+			}
+			em.remove(study);
+			commit(em);
+			removed = true;
+		} catch (Exception ex) {
+			LOG.error("Failed removing a study", ex);
+			rollback(em);
+			return;
+		} finally {
+			close(em);
+		}
 		List<Matrix> matrixList = MatricesList.getMatrixList(studyId);
 
 		for (int i = 0; i < matrixList.size(); i++) {
@@ -184,22 +204,6 @@ public class JPAStudyService implements StudyService {
 			} catch (IOException ex) {
 				LOG.warn(null, ex);
 			}
-		}
-
-		// DELETE METADATA INFO FROM DB
-		boolean removed = false;
-		EntityManager em = null;
-		try {
-			em = open();
-			begin(em);
-			em.remove(study);
-			commit(em);
-			removed = true;
-		} catch (Exception ex) {
-			LOG.error("Failed removing a study", ex);
-			rollback(em);
-		} finally {
-			close(em);
 		}
 
 		// DELETE STUDY FOLDERS

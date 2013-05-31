@@ -227,8 +227,27 @@ public class JPAMatrixService implements MatrixService {
 	@Override
 	public void deleteMatrix(int matrixId, boolean deleteReports) {
 		try {
-			Matrix matrix = getById(matrixId);
-			MatrixMetadata matrixMetadata = getMatrixMetadataById(matrixId);
+			MatrixMetadata matrixMetadata = null;
+
+			// DELETE METADATA INFO FROM DB
+			boolean removed = false;
+			EntityManager em = null;
+			try {
+				em = open();
+				begin(em);
+				matrixMetadata = em.find(MatrixMetadata.class, matrixId);
+				if (matrixMetadata == null) {
+					throw new IllegalArgumentException("No matrix found with this ID: " + matrixId);
+				}
+				em.remove(matrixMetadata); // This is done implicitly by remove(matrix)
+				commit(em);
+				removed = true;
+			} catch (Exception ex) {
+				rollback(em);
+				throw ex;
+			} finally {
+				close(em);
+			}
 
 			String genotypesFolder = Config.getConfigValue(Config.PROPERTY_GENOTYPES_DIR, "");
 			genotypesFolder += "/STUDY_" + matrixMetadata.getStudyId() + "/";
@@ -245,23 +264,6 @@ public class JPAMatrixService implements MatrixService {
 			// DELETE MATRIX NETCDF FILE
 			File matrixFile = new File(genotypesFolder + matrixMetadata.getMatrixNetCDFName() + ".nc");
 			org.gwaspi.global.Utils.tryToDeleteFile(matrixFile);
-
-			// DELETE METADATA INFO FROM DB
-			boolean removed = false;
-			EntityManager em = null;
-			try {
-				em = open();
-				begin(em);
-				em.remove(matrix);
-				em.remove(matrixMetadata);
-				commit(em);
-				removed = true;
-			} catch (Exception ex) {
-				LOG.error("Failed removing a matrix", ex);
-				rollback(em);
-			} finally {
-				close(em);
-			}
 		} catch (Exception ex) {
 			LOG.error("Failed deleting matrix", ex);
 		}

@@ -170,15 +170,18 @@ public class JPASampleInfoService implements SampleInfoService {
 		EntityManager em = null;
 		try {
 			em = open();
+			begin(em);
 			Query query = em.createNamedQuery("sampleInfo_deleteByStudyId");
 			query.setParameter("studyId", studyId);
 			deleted = query.executeUpdate();
+			commit(em);
 		} catch (NoResultException ex) {
 			LOG.error("Failed deleting sample-infos by"
 					+ ": study-id: " + studyId
 					+ "; (not found)", ex);
 		} catch (Exception ex) {
 			LOG.error("Failed deleting sample-infos", ex);
+			rollback(em);
 		} finally {
 			close(em);
 		}

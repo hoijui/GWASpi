@@ -21,6 +21,7 @@ import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.IdClass;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
@@ -31,6 +32,7 @@ import org.gwaspi.constants.cNetCDF.Defaults.OPType;
  */
 @Entity
 @Table(name = "operationX")
+@IdClass(OperationKey.class)
 @NamedQueries({
 	@NamedQuery(
 		name = "operation_fetchById",

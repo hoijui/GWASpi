@@ -326,7 +326,12 @@ public class JPAOperationService implements OperationService {
 					try {
 						em = open();
 						begin(em);
-						em.remove(getById(operations.get(i).getId()));
+						final int operationId = operations.get(i).getId();
+						Operation operation = em.find(Operation.class, operationId);
+						if (operation == null) {
+							throw new IllegalArgumentException("No operation found with this ID: " + operationId);
+						}
+						em.remove(operation);
 						commit(em);
 					} catch (Exception ex) {
 						LOG.error("Failed removing a matrix", ex);

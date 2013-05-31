@@ -126,13 +126,21 @@ public class JPAReportService implements ReportService {
 			em = open();
 			Query query;
 			if (parentMatrixId == Integer.MIN_VALUE) {
+				if (parentOperationId == Integer.MIN_VALUE) {
+					throw new IllegalArgumentException("You have to specify at least one of either parentOperationId or parentMatrixId");
+				}
 				query = em.createNamedQuery(
 						"report_fetchByParentOperationId");
 				query.setParameter("parentOperationId", parentOperationId);
-			} else {
+			} else if (parentOperationId == Integer.MIN_VALUE) {
 				query = em.createNamedQuery(
 						"report_fetchByParentMatrixId");
 				query.setParameter("parentMatrixId", parentMatrixId);
+			} else {
+				query = em.createNamedQuery(
+						"report_fetchByParentMatrixIdParentOperationId");
+				query.setParameter("parentMatrixId", parentMatrixId);
+				query.setParameter("parentOperationId", parentOperationId);
 			}
 			reports = (List<Report>) query.getResultList();
 		} catch (NoResultException ex) {
@@ -218,15 +226,22 @@ public class JPAReportService implements ReportService {
 		EntityManager em = null;
 		try {
 			em = open();
+			begin(em);
 			Query query = em.createNamedQuery("report_deleteByParentMatrixId");
 			query.setParameter("parentMatrixId", parentMatrixId);
 			deleted = query.executeUpdate();
+			commit(em);
 		} catch (NoResultException ex) {
 			LOG.error("Failed deleting reports by"
 					+ ": parent-matrix-id: " + parentMatrixId
-					+ "; (not found)", ex);
+					+ "; (not found)",
+					ex);
+			rollback(em);
 		} catch (Exception ex) {
-			LOG.error("Failed deleting reports", ex);
+			LOG.error("Failed deleting reports by"
+					+ ": parent-matrix-id: " + parentMatrixId,
+					ex);
+			rollback(em);
 		} finally {
 			close(em);
 		}

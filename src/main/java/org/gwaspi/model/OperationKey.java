@@ -14,67 +14,64 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package org.gwaspi.model;
 
 import java.io.Serializable;
 
 /**
- * Uniquely identifies a matrix.
+ * Uniquely identifies an operation.
  */
-public class MatrixKey implements Comparable<MatrixKey>, Serializable {
+public class OperationKey implements Comparable<OperationKey>, Serializable {
 
 	private int studyId;
-	private int matrixId;
+	private int parentMatrixId;
+	private int id;
 
-	protected MatrixKey() {
-
-		this.studyId = Integer.MIN_VALUE;
-		this.matrixId = Integer.MIN_VALUE;
-	}
-
-	public MatrixKey(int studyId, int matrixId) {
+	public OperationKey(int studyId, int parentMatrixId, int id) {
 
 		this.studyId = studyId;
-		this.matrixId = matrixId;
+		this.parentMatrixId = parentMatrixId;
+		this.id = id;
+	}
+
+	protected OperationKey() {
+		this(Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE);
+	}
+
+	@Override
+	public int compareTo(OperationKey other) {
+		return hashCode() - other.hashCode();
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-
 		if (obj == null) {
 			return false;
 		}
 		if (getClass() != obj.getClass()) {
 			return false;
 		}
-		final MatrixKey other = (MatrixKey) obj;
+		final OperationKey other = (OperationKey) obj;
 		if (this.getStudyId() != other.getStudyId()) {
 			return false;
 		}
-		if (this.getMatrixId() != other.getMatrixId()) {
+		if (this.getId() != other.getId()) {
 			return false;
 		}
-
+		if (this.getParentMatrixId() != other.getParentMatrixId()) {
+			return false;
+		}
 		return true;
 	}
 
 	@Override
 	public int hashCode() {
-		int hash = 3;
-		hash = 19 * hash + this.getStudyId();
-		hash = 19 * hash + this.getMatrixId();
+		int hash = 7;
+		hash = 83 * hash + this.studyId;
+		hash = 83 * hash + this.parentMatrixId;
+		hash = 83 * hash + this.id;
 		return hash;
-	}
-
-	@Override
-	public int compareTo(MatrixKey other) {
-
-		int diffStudy = this.getStudyId() - other.getStudyId();
-		if (diffStudy == 0) {
-			diffStudy = this.getMatrixId() - other.getMatrixId();
-		}
-
-		return diffStudy;
 	}
 
 	public int getStudyId() {
@@ -85,11 +82,19 @@ public class MatrixKey implements Comparable<MatrixKey>, Serializable {
 		this.studyId = studyId;
 	}
 
-	public int getMatrixId() {
-		return matrixId;
+	public int getId() {
+		return id;
 	}
 
-	protected void setMatrixId(int matrixId) {
-		this.matrixId = matrixId;
+	protected void setId(int id) {
+		this.id = id;
+	}
+
+	public int getParentMatrixId() {
+		return parentMatrixId;
+	}
+
+	protected void setParentMatrixId(int parentMatrixId) {
+		this.parentMatrixId = parentMatrixId;
 	}
 }
