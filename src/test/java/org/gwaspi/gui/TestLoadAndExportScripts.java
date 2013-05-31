@@ -34,9 +34,17 @@ public class TestLoadAndExportScripts extends AbstractTestScripts {
 
 	private static final Logger log = LoggerFactory.getLogger(TestLoadAndExportScripts.class);
 
-	private static void testLoadPlinkBinary(Setup setup, String name) throws Exception {
+	/**
+	 * @return the matrixName
+	 */
+	private static String testLoadPlinkBinary(Setup setup, String name) throws Exception {
 
 		String matrixName = cImport.ImportFormat.PLINK_Binary.name() + "." + name;
+
+		if (setup.getMatrixIds().containsKey(matrixName)) {
+			// this data is already loaded
+			return matrixName;
+		}
 
 		String bedFileName = name + ".bed";
 		String bimFileName = name + ".bim";
@@ -83,11 +91,21 @@ public class TestLoadAndExportScripts extends AbstractTestScripts {
 		setup.addLoadedFileName(matrixName);
 
 		log.info("Load from PLINK Binary DONE.");
+
+		return matrixName;
 	}
 
-	static void testLoadPlinkFlat(Setup setup, String name) throws Exception {
+	/**
+	 * @return the matrixName
+	 */
+	static String testLoadPlinkFlat(Setup setup, String name) throws Exception {
 
 		String matrixName = cImport.ImportFormat.PLINK.name() + "." + name;
+
+		if (setup.getMatrixIds().containsKey(matrixName)) {
+			// this data is already loaded
+			return matrixName;
+		}
 
 		String mapFileName = name + ".map";
 		String pedFileName = name + ".ped";
@@ -130,15 +148,13 @@ public class TestLoadAndExportScripts extends AbstractTestScripts {
 		setup.addLoadedFileName(matrixName);
 
 		log.info("Load from PLINK Flat DONE.");
+
+		return matrixName;
 	}
 
 	private static void testExportPlinkFlat(Setup setup, String name) throws Exception {
 
-		String matrixName = cImport.ImportFormat.PLINK.name() + "." + name;
-
-		if (!setup.getMatrixIds().containsKey(matrixName)) {
-			testLoadPlinkFlat(setup, name);
-		}
+		String matrixName = testLoadPlinkFlat(setup, name);
 		int matrixId = setup.getMatrixIds().get(matrixName);
 
 		String compareMapFileName = name + ".map";
