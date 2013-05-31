@@ -512,7 +512,12 @@ public abstract class Report_Analysis extends JPanel {
 			try {
 				String reportPath = Config.getConfigValue(Config.PROPERTY_REPORTS_DIR, "") + "/STUDY_" + studyId + "/";
 				File origFile = new File(reportPath + chartPath);
-				File newFile = new File(Dialogs.selectDirectoryDialog(JOptionPane.OK_OPTION).getPath() + "/" + chartPath);
+				File newDir = Dialogs.selectDirectoryDialog(JOptionPane.OK_OPTION);
+				if (newDir == null) {
+					// the user has not choosen a directory to save to
+					return;
+				}
+				File newFile = new File(newDir.getPath() + "/" + chartPath);
 				if (origFile.exists()) {
 					Utils.copyFile(origFile, newFile);
 				}
