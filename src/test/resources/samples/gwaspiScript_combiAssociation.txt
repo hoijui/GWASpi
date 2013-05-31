@@ -1,0 +1,8 @@
+data-dir=${DATA_DIR}
+[script]
+0.command=combi_association
+1.study-id=${STUDY_ID}
+2.matrix-id=${MATRIX_ID}
+3.genotype-encoding=allelic
+#4.phenotype-info-file=/tmp/myPhenotypeInfo.txt
+[/script]
