@@ -32,11 +32,11 @@ import org.slf4j.LoggerFactory;
  */
 public class StudyList {
 
+	private static EntityManagerFactory emf = null;
 	private static final Logger log
 			= LoggerFactory.getLogger(JPAStudyService.class);
 	private static final StudyService studyService
 			= new JPAStudyService(getEntityManagerFactory());
-	private static EntityManagerFactory emf = null;
 
 	private StudyList() {
 	}
