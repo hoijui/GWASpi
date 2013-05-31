@@ -131,12 +131,13 @@ public class OperationManager {
 		Operation markerCensusOP = OperationsList.getById(censusOpId);
 		Operation hwOP = OperationsList.getById(hwOpId);
 
-		resultOpId = new OP_AssociationTests(
+		AbstractTestMatrixOperation testOperation = new OP_AssociationTests(
 				rdMatrixId,
 				markerCensusOP,
 				hwOP,
 				hwThreshold,
-				allelic).processMatrix();
+				allelic);
+		resultOpId = testOperation.processMatrix();
 
 		return resultOpId;
 	}
