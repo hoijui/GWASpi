@@ -48,31 +48,29 @@ public class SampleSet {
 			= LoggerFactory.getLogger(SampleSet.class);
 
 	// SAMPLESET_MEATADATA
-	private int sampleset_id = Integer.MIN_VALUE; // id
-	private int sampleSetSize = 0;
-	private MatrixMetadata matrixMetadata;
-	private Map<SampleKey, ?> sampleIdSetMap = new LinkedHashMap<SampleKey, Object>();
+	private final MatrixMetadata matrixMetadata;
+	private Map<SampleKey, ?> sampleIdSetMap;
+	private int sampleSetSize;
+
+	private SampleSet(MatrixMetadata matrixMetadata) throws IOException {
+		this.matrixMetadata = matrixMetadata;
+		this.sampleSetSize = matrixMetadata.getMarkerSetSize();
+		this.sampleIdSetMap = new LinkedHashMap<SampleKey, Object>();
+	}
 
 	public SampleSet(int studyId, int matrixId) throws IOException {
-		matrixMetadata = MatricesList.getMatrixMetadataById(matrixId);
-		sampleSetSize = matrixMetadata.getMarkerSetSize();
+		this(MatricesList.getMatrixMetadataById(matrixId));
 	}
 
 	public SampleSet(int studyId, String netCDFName) throws IOException {
-		matrixMetadata = MatricesList.getMatrixMetadataByNetCDFname(netCDFName);
-		sampleSetSize = matrixMetadata.getMarkerSetSize();
+		this(MatricesList.getMatrixMetadataByNetCDFname(netCDFName));
 	}
 
 	public SampleSet(int studyId, String netCDFPath, String netCDFName) throws IOException {
-		matrixMetadata = MatricesList.getMatrixMetadata(netCDFPath, studyId, netCDFName);
-		sampleSetSize = matrixMetadata.getMarkerSetSize();
+		this(MatricesList.getMatrixMetadata(netCDFPath, studyId, netCDFName));
 	}
 
 	// ACCESSORS
-	public int getSampleSetId() {
-		return sampleset_id;
-	}
-
 	public int getSampleSetSize() {
 		return sampleSetSize;
 	}
