@@ -19,8 +19,11 @@ package org.gwaspi.cli;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import org.gwaspi.global.Text;
+import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.Study;
+import org.gwaspi.model.StudyKey;
 import org.gwaspi.model.StudyList;
 
 /**
@@ -40,7 +43,72 @@ abstract class AbstractScriptCommand implements ScriptCommand {
 	}
 
 	/**
-	 * parses the study ID, and eventually creates a new study, if requested.
+	 * Fetches a study-key from the properties.
+	 * @param script properties specified in the script
+	 * @param idKey property-key of the id of the study
+	 * @param nameKey property-key of the name of the study
+	 * @param allowNew if true, then we create a new study,
+	 *   if the found value <code>contains("New Study")</code>
+	 * @return the parsed study-key
+	 */
+	protected static StudyKey fetchStudyKey(Map<String, String> script, String idKey, String nameKey, boolean allowNew) throws IOException {
+
+		String idValue = script.get(idKey);
+		String nameValue = script.get(nameKey);
+
+		if ((idValue == null) && (nameValue == null)) {
+			throw new RuntimeException("Neither nameKey (\"" + nameKey
+					+ "\") nor id (\"" + idKey + "\") of the study are specified");
+		} else if ((idValue != null) && (nameValue != null)) {
+			throw new RuntimeException("You may only specify either name (\"" + nameKey
+					+ "\") or id (\"" + idKey + "\") of the study, not both");
+		} else if (idValue != null) {
+			int studyId;
+			try {
+				studyId = Integer.parseInt(idValue);
+			} catch (NumberFormatException ex) {
+				if (allowNew && idValue.contains("New Study")) {
+					studyId = StudyList.insertNewStudy(
+							idValue/*.substring(10)*/,
+							"Study created by command-line interface");
+				} else {
+					throw new IOException("The Study-id must be an integer value of an existing Study, \"" + idValue + "\" is not so!");
+				}
+			}
+			return new StudyKey(studyId);
+		} else {
+			if (allowNew && nameValue.contains("New Study")) {
+				int studyId = StudyList.insertNewStudy(
+						idValue/*.substring(10)*/,
+						"Study created by command-line interface");
+				return new StudyKey(studyId);
+			} else {
+				return new StudyKey(nameValue);
+			}
+		}
+	}
+
+	protected static MatrixKey fetchMatrixKey(Map<String, String> script, StudyKey studyKey, String idKey, String nameKey) throws IOException {
+
+		String idValue = script.get(idKey);
+		String nameValue = script.get(nameKey);
+
+		if ((idValue == null) && (nameValue == null)) {
+			throw new RuntimeException("Neither nameKey (\"" + nameKey
+					+ "\") nor id (\"" + idKey + "\") of the matrix are specified");
+		} else if ((idValue != null) && (nameValue != null)) {
+			throw new RuntimeException("You may only specify either name (\"" + nameKey
+					+ "\") or id (\"" + idKey + "\") of the matrix, not both");
+		} else if (idValue != null) {
+			int matrixId = Integer.parseInt(idValue);
+			return new MatrixKey(studyKey, matrixId);
+		} else {
+			return new MatrixKey(studyKey, nameValue);
+		}
+	}
+
+	/**
+	 * Parses the study ID, and eventually creates a new study, if requested.
 	 * @param studyIdStr the study ID parameter as given on the command-line
 	 * @param allowNew if true, then we create a new study,
 	 *   if <code>studyIdStr.contains("New Study")</code>
