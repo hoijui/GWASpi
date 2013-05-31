@@ -108,18 +108,6 @@ public class OperationFactory {
 						implicitSetSize);
 				break;
 			case ALLELICTEST:
-				rdOPMetadata = OperationsList.getOperationMetadata(parentOperationId);
-				//resultOPnetCDFName = OPType + "_" + rdOPMetadata.getMatrixCDFName();
-				netCDFHandler = generateNetcdfAssociationHandler(
-						studyId,
-						resultOPnetCDFName,
-						description,
-						opType,
-						opSetSize,
-						implicitSetSize,
-						chrSetSize,
-						true);
-				break;
 			case GENOTYPICTEST:
 				rdOPMetadata = OperationsList.getOperationMetadata(parentOperationId);
 				//resultOPnetCDFName = OPType + "_" + rdOPMetadata.getMatrixCDFName();
@@ -130,8 +118,7 @@ public class OperationFactory {
 						opType,
 						opSetSize,
 						implicitSetSize,
-						chrSetSize,
-						false);
+						chrSetSize);
 				break;
 			case TRENDTEST:
 				rdOPMetadata = OperationsList.getOperationMetadata(parentOperationId);
@@ -509,22 +496,23 @@ public class OperationFactory {
 			OPType opType,
 			int markerSetSize,
 			int sampleSetSize,
-			int chrSetSize,
-			boolean allelic)
+			int chrSetSize)
 			throws InvalidRangeException, IOException
 	{
 
 		final int boxDimensions;
 		final String boxDimensionsName;
 		final String ncVariableName;
-		if (allelic) {
+		if (opType == OPType.ALLELICTEST) {
 			boxDimensions = 3;
 			boxDimensionsName = cNetCDF.Dimensions.DIM_3BOXES;
 			ncVariableName = cNetCDF.Association.VAR_OP_MARKERS_ASAllelicAssociationTPOR;
-		} else {
+		} else if (opType == OPType.GENOTYPICTEST) {
 			boxDimensions = 4;
 			boxDimensionsName = cNetCDF.Dimensions.DIM_4BOXES;
 			ncVariableName = cNetCDF.Association.VAR_OP_MARKERS_ASGenotypicAssociationTP2OR;
+		} else {
+			throw new IOException("Unsupported operation type " + opType.name());
 		}
 
 		NetcdfFileWriteable ncfile = null;
