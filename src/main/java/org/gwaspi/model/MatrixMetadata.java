@@ -238,7 +238,7 @@ public class MatrixMetadata implements Serializable, Matrix {
 	@Column(
 		name       = "matrixFriendlyName",
 		length     = 255,
-		unique     = false,
+		unique     = true,
 		nullable   = false,
 		insertable = true,
 		updatable  = false
@@ -340,7 +340,7 @@ public class MatrixMetadata implements Serializable, Matrix {
 	@Column(
 		name       = "matrixNetCDFName",
 		length     = 255,
-		unique     = false,
+		unique     = true,
 		nullable   = false,
 		insertable = true,
 		updatable  = false
