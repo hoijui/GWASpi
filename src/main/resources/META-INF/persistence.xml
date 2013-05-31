@@ -8,7 +8,7 @@
 		<provider>org.hibernate.ejb.HibernatePersistence</provider>
 
 		<properties>
-			<property name="hibernate.dialect" value="org.hibernate.dialect.DerbyDialect"/>
+			<property name="hibernate.dialect" value="org.hibernate.dialect.DerbyTenSevenDialect"/>
 			<property name="hibernate.connection.driver_class" value="org.apache.derby.jdbc.EmbeddedDriver"/>
 			<property name="hibernate.connection.url" value="jdbc:derby:gwaspi;create=true;databaseName=gwaspi"/>
 			<property name="hibernate.connection.username" value="gwaspi"/>
