@@ -588,7 +588,8 @@ public class MatrixExtractPanel extends JPanel {
 							if ((samplePickCase == SetSamplePickCase.SAMPLES_INCLUDE_BY_ID)
 									|| (samplePickCase == SetSamplePickCase.SAMPLES_EXCLUDE_BY_ID))
 							{
-								sampleCriteria.add(SampleKey.valueOf(sampleCrit));
+								sampleCriteria.add(SampleKey.valueOf(
+										parentMatrix.getStudyId(), sampleCrit));
 							} else {
 								sampleCriteria.add(sampleCrit.toCharArray());
 							}
@@ -625,7 +626,8 @@ public class MatrixExtractPanel extends JPanel {
 						description = "";
 					}
 
-					MultiOperations.doExtractData(parentMatrix.getStudyId(),
+					MultiOperations.doExtractData(
+							parentMatrix.getStudyId(),
 							parentMatrix.getId(),
 							newMatrixName,
 							description,

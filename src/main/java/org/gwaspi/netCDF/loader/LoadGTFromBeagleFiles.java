@@ -72,6 +72,7 @@ public class LoadGTFromBeagleFiles extends AbstractLoadGTFromFiles {
 
 	@Override
 	public void loadIndividualFiles(
+			int studyId,
 			File file,
 			SampleKey sampleKey,
 			Map<MarkerKey, byte[]> wrMarkerSetMap)
@@ -97,7 +98,7 @@ public class LoadGTFromBeagleFiles extends AbstractLoadGTFromFiles {
 				for (int i = Standard.genotypes; i < headerFields.length; i = i + 2) {
 					String sampleId = headerFields[i];
 					// NOTE The Beagle format does not have a family-ID
-					sampleOrderMap.put(new SampleKey(sampleId, SampleKey.FAMILY_ID_NONE), i);
+					sampleOrderMap.put(new SampleKey(studyId, sampleId, SampleKey.FAMILY_ID_NONE), i);
 				}
 			}
 			if (l.startsWith("M")) { // Found first marker row!

@@ -19,21 +19,35 @@ package org.gwaspi.model;
 
 public final class SampleKeyFactory implements KeyFactory<SampleKey> {
 
-	@Override
-	public String encode(SampleKey key) {
+	private final int studyId;
+
+	public SampleKeyFactory(int studyId) {
+		this.studyId = studyId;
+	}
+
+	public static String encodeStatic(SampleKey key) {
 		return key.getSampleId() + " " + key.getFamilyId();
 	}
 
-	@Override
-	public SampleKey decode(String keyStr) {
+	public static SampleKey decodeStatic(int studyId, String keyStr) {
 		SampleKey key = null;
 
 		String[] parts = keyStr.split(" ", 3);
 		if (parts.length == 2) {
-			key = new SampleKey(parts[0], parts[1]);
+			key = new SampleKey(studyId, parts[0], parts[1]);
 		}
 
 		// TODO throw some type of runtime exception if keyStr does not conform strictly to a valid key
 		return key;
+	}
+
+	@Override
+	public String encode(SampleKey key) {
+		return encodeStatic(key);
+	}
+
+	@Override
+	public SampleKey decode(String keyStr) {
+		return decodeStatic(studyId, keyStr);
 	}
 }

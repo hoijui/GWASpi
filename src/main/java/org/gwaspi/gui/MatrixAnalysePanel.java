@@ -56,6 +56,7 @@ import org.gwaspi.gui.utils.OperationsTableModel;
 import org.gwaspi.gui.utils.RowRendererDefault;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.Matrix;
+import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.Operation;
 import org.gwaspi.model.OperationMetadata;
@@ -603,8 +604,8 @@ public class MatrixAnalysePanel extends JPanel {
 
 				// <editor-fold defaultstate="expanded" desc="GENOTYPE FREQ. & HW BLOCK">
 			if (gwasParams.isProceed()) {
-				MultiOperations.doGTFreqDoHW(parentMatrix.getStudyId(),
-						parentMatrix.getId(),
+				MultiOperations.doGTFreqDoHW(
+						new MatrixKey(parentMatrix.getStudyId(), parentMatrix.getId()),
 						phenotypeFile,
 						gwasParams);
 			}
@@ -741,8 +742,8 @@ public class MatrixAnalysePanel extends JPanel {
 					if (affectionStates.contains(SampleInfo.Affection.UNAFFECTED)
 							&& affectionStates.contains(SampleInfo.Affection.AFFECTED))
 					{
-						MultiOperations.doGWASwithAlterPhenotype(parentMatrix.getStudyId(),
-								parentMatrix.getId(),
+						MultiOperations.doGWASwithAlterPhenotype(
+								new MatrixKey(parentMatrix.getStudyId(), parentMatrix.getId()),
 								phenotypeFile,
 								gwasParams);
 					} else {

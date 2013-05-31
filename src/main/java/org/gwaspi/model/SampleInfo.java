@@ -21,6 +21,7 @@ import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.IdClass;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
@@ -29,16 +30,17 @@ import org.gwaspi.constants.cDBSamples;
 
 @Entity
 @Table(name = "sampleInfo")
+@IdClass(SampleKey.class)
 @NamedQueries({
 	@NamedQuery(
 		name = "sampleInfo_listByStudyId",
-		query = "SELECT s FROM SampleInfo s WHERE s.poolId = :studyId"),
+		query = "SELECT s FROM SampleInfo s WHERE s.studyId = :studyId"),
 	@NamedQuery(
 		name = "sampleInfo_listBySampleIdFamilyIdStudyId",
-		query = "SELECT s FROM SampleInfo s WHERE s.sampleId = :sampleId AND s.familyId = :familyId AND s.poolId = :studyId"),
+		query = "SELECT s FROM SampleInfo s WHERE s.sampleId = :sampleId AND s.familyId = :familyId AND s.studyId = :studyId"),
 	@NamedQuery(
 		name = "sampleInfo_deleteByStudyId",
-		query = "DELETE FROM SampleInfo s WHERE s.poolId = :studyId"),
+		query = "DELETE FROM SampleInfo s WHERE s.studyId = :studyId"),
 })
 public class SampleInfo implements Comparable<SampleInfo>, Serializable {
 
@@ -209,7 +211,7 @@ public class SampleInfo implements Comparable<SampleInfo>, Serializable {
 	private String population;
 	private int age;
 	private String filter;
-	private Integer poolId;
+	private int studyId;
 	private int approved;
 	private int status;
 
@@ -225,19 +227,20 @@ public class SampleInfo implements Comparable<SampleInfo>, Serializable {
 		this.population = "0";
 		this.age = 0;
 		this.filter = "";
-		this.poolId = null;
+		this.studyId = Integer.MIN_VALUE;
 		this.approved = 0;
 		this.status = 0;
-		this.key = new SampleKey("0", "0");
+		this.key = new SampleKey(Integer.MIN_VALUE, "0", "0");
 	}
 
-	public SampleInfo(String sampleId) {
+	public SampleInfo(int studyId, String sampleId) {
 		this();
 
-		this.key = new SampleKey(sampleId, "0");
+		this.key = new SampleKey(studyId, sampleId, "0");
 	}
 
 	public SampleInfo(
+			int studyId,
 			String sampleId,
 			String familyId,
 			Sex sex,
@@ -253,13 +256,14 @@ public class SampleInfo implements Comparable<SampleInfo>, Serializable {
 		this.population = "";
 		this.age = Integer.MIN_VALUE;
 		this.filter = "";
-		this.poolId = null;
+		this.studyId = studyId;
 		this.approved = 0;
 		this.status = 0;
-		this.key = new SampleKey(sampleId, familyId);
+		this.key = new SampleKey(studyId, sampleId, familyId);
 	}
 
 	public SampleInfo(
+			int studyId,
 			String sampleId,
 			String familyId,
 			String fatherId,
@@ -277,10 +281,10 @@ public class SampleInfo implements Comparable<SampleInfo>, Serializable {
 		this.population = "0";
 		this.age = 0;
 		this.filter = "";
-		this.poolId = null;
+		this.studyId = studyId;
 		this.approved = 0;
 		this.status = 0;
-		this.key = new SampleKey(sampleId, familyId);
+		this.key = new SampleKey(studyId, sampleId, familyId);
 	}
 
 	public SampleInfo(
@@ -296,7 +300,7 @@ public class SampleInfo implements Comparable<SampleInfo>, Serializable {
 			String population,
 			int age,
 			String filter,
-			Integer poolId,
+			int studyId,
 			int approved,
 			int status)
 	{
@@ -310,10 +314,10 @@ public class SampleInfo implements Comparable<SampleInfo>, Serializable {
 		this.population = population;
 		this.age = age;
 		this.filter = filter;
-		this.poolId = poolId;
+		this.studyId = studyId;
 		this.approved = approved;
 		this.status = status;
-		this.key = new SampleKey(sampleId, familyId);
+		this.key = new SampleKey(studyId, sampleId, familyId);
 	}
 
 	@Override
@@ -329,7 +333,7 @@ public class SampleInfo implements Comparable<SampleInfo>, Serializable {
 		if (other instanceof SampleInfo) {
 			SampleInfo otherSampleInfo = (SampleInfo) other;
 			equal = getFamilyId().equals(otherSampleInfo.getFamilyId());
-			equal = equal && getPoolId().equals(otherSampleInfo.getPoolId());
+			equal = equal && getStudyId().equals(otherSampleInfo.getStudyId());
 			equal = equal && getSampleId().equals(otherSampleInfo.getSampleId());
 		}
 
@@ -341,7 +345,7 @@ public class SampleInfo implements Comparable<SampleInfo>, Serializable {
 		int hash = 3;
 		hash = 23 * hash + (this.getSampleId() != null ? this.getSampleId().hashCode() : 0);
 		hash = 23 * hash + (this.getFamilyId() != null ? this.getFamilyId().hashCode() : 0);
-		hash = 23 * hash + (this.getPoolId() != null ? this.getPoolId().hashCode() : 0);
+		hash = 23 * hash + (this.getStudyId() != null ? this.getStudyId().hashCode() : 0);
 		return hash;
 	}
 
@@ -390,7 +394,7 @@ public class SampleInfo implements Comparable<SampleInfo>, Serializable {
 	 * @param id the study-id to set
 	 */
 	public void setSampleId(String sampleId) {
-		this.key = new SampleKey(sampleId, getFamilyId());
+		this.key = new SampleKey(getStudyId() == null ? Integer.MIN_VALUE : getStudyId(), sampleId, getFamilyId());
 	}
 
 	/**
@@ -411,7 +415,7 @@ public class SampleInfo implements Comparable<SampleInfo>, Serializable {
 	}
 
 	protected void setFamilyId(String familyId) {
-		this.key = new SampleKey(getSampleId(), familyId);
+		this.key = new SampleKey(getStudyId() == null ? Integer.MIN_VALUE : getStudyId(), getSampleId(), familyId);
 	}
 
 	@Column(
@@ -579,18 +583,18 @@ public class SampleInfo implements Comparable<SampleInfo>, Serializable {
 
 	@Id
 	@Column(
-		name       = "poolId",
+		name       = "studyId",
 		unique     = false,
 		nullable   = false,
 		insertable = true,
 		updatable  = false
 		)
-	public Integer getPoolId() {
-		return poolId;
+	public Integer getStudyId() {
+		return studyId;
 	}
 
-	public void setPoolId(Integer poolId) {
-		this.poolId = poolId;
+	public void setStudyId(Integer studyId) {
+		this.studyId = studyId;
 	}
 
 	@Column(
@@ -655,7 +659,7 @@ public class SampleInfo implements Comparable<SampleInfo>, Serializable {
 		} else if (fieldName.equals(cDBSamples.f_FILTER)) {
 			return getFilter();
 		} else if (fieldName.equals(cDBSamples.f_POOL_ID)) {
-			return getPoolId();
+			return getStudyId();
 		} else if (fieldName.equals(cDBSamples.f_APPROVED)) {
 			return getApproved();
 		} else if (fieldName.equals(cDBSamples.f_STATUS_ID_FK)) {

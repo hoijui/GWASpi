@@ -268,6 +268,7 @@ public class LoadGTFromHGDP1Files implements GenotypesLoader {
 
 			try {
 				loadIndividualFiles(
+						loadDescription.getStudyId(),
 						new File(loadDescription.getGtDirPath()),
 						sampleInfo.getKey(),
 						alleles,
@@ -324,6 +325,7 @@ public class LoadGTFromHGDP1Files implements GenotypesLoader {
 	 * @see AbstractLoadGTFromFiles#loadIndividualFiles
 	 */
 	public void loadIndividualFiles(
+			int studyId,
 			File file,
 			SampleKey sampleKey,
 			Map<MarkerKey, byte[]> alleles,
@@ -349,7 +351,7 @@ public class LoadGTFromHGDP1Files implements GenotypesLoader {
 			if (!headerFields[i].isEmpty()) {
 				String sampleId = headerFields[i];
 				// NOTE The HGDP1 format does not have a family-ID
-				sampleOrderMap.put(new SampleKey(sampleId, SampleKey.FAMILY_ID_NONE), i);
+				sampleOrderMap.put(new SampleKey(studyId, sampleId, SampleKey.FAMILY_ID_NONE), i);
 			}
 		}
 

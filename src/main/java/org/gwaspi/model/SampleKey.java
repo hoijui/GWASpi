@@ -20,33 +20,34 @@ package org.gwaspi.model;
 import java.io.Serializable;
 
 /**
- * Uniquely identifies a sample within a set of samples.
+ * Uniquely identifies a sample (within a set of samples).
  * For example, you can think of it as the type of the primary key
  * in a PLINK Flat "*.ped" file.
  * The (combined) value of this key is unique within a set of samples,
  * so for example within a single "*.ped" file.
  */
-public final class SampleKey implements Comparable<SampleKey>, Serializable {
+public class SampleKey implements Comparable<SampleKey>, Serializable {
 
-	public static final KeyFactory<SampleKey> KEY_FACTORY = new SampleKeyFactory();
 	/**
 	 * This one is used as the default value if no family-ID is available.
 	 * This is the case in the Affymetrix and Beagle formats, for example.
 	 */
 	public static final String FAMILY_ID_NONE = "0";
 
-	private final String sampleId;
-	private final String familyId;
+	private int studyId;
+	private String sampleId;
+	private String familyId;
 
-	public SampleKey(String sampleId, String familyId) {
+	public SampleKey(Integer studyId, String sampleId, String familyId) {
 
+		this.studyId = studyId;
 		this.sampleId = sampleId;
 		this.familyId = familyId;
 	}
 
-//	public SampleKey() {
-//		this("0", FAMILY_ID_NONE);
-//	}
+	protected SampleKey() {
+		this(Integer.MIN_VALUE, FAMILY_ID_NONE, FAMILY_ID_NONE);
+	}
 
 	@Override
 	public int compareTo(SampleKey other) {
@@ -60,7 +61,8 @@ public final class SampleKey implements Comparable<SampleKey>, Serializable {
 
 		if (other instanceof SampleKey) {
 			SampleKey otherSampleKey = (SampleKey) other;
-			equal = getFamilyId().equals(otherSampleKey.getFamilyId());
+			equal = getStudyId() == otherSampleKey.getStudyId();
+			equal = equal && getFamilyId().equals(otherSampleKey.getFamilyId());
 			equal = equal && getSampleId().equals(otherSampleKey.getSampleId());
 		}
 
@@ -69,16 +71,16 @@ public final class SampleKey implements Comparable<SampleKey>, Serializable {
 
 	@Override
 	public int hashCode() {
-
 		int hash = 7;
-		hash = 31 * hash + (this.sampleId != null ? this.sampleId.hashCode() : 0);
-		hash = 31 * hash + (this.familyId != null ? this.familyId.hashCode() : 0);
+		hash = 11 * hash + this.studyId;
+		hash = 11 * hash + (this.sampleId != null ? this.sampleId.hashCode() : 0);
+		hash = 11 * hash + (this.familyId != null ? this.familyId.hashCode() : 0);
 		return hash;
 	}
 
 	@Override
 	public String toString() {
-		return KEY_FACTORY.encode(this);
+		return SampleKeyFactory.encodeStatic(this);
 	}
 
 	/**
@@ -87,15 +89,31 @@ public final class SampleKey implements Comparable<SampleKey>, Serializable {
 	 *   {@link SampleKey#toString()}
 	 * @return the parsed sample key
 	 */
-	public static SampleKey valueOf(String keyStr) {
-		return KEY_FACTORY.decode(keyStr);
+	public static SampleKey valueOf(int studyId, String keyStr) {
+		return SampleKeyFactory.decodeStatic(studyId, keyStr);
+	}
+
+	public int getStudyId() {
+		return studyId;
+	}
+
+	protected void setStudyId(int studyId) {
+		this.studyId = studyId;
 	}
 
 	public String getSampleId() {
 		return sampleId;
 	}
 
+	protected void setSampleId(String sampleId) {
+		this.sampleId = sampleId;
+	}
+
 	public String getFamilyId() {
 		return familyId;
+	}
+
+	protected void setFamilyId(String familyId) {
+		this.familyId = familyId;
 	}
 }

@@ -151,7 +151,8 @@ public class OP_MarkerCensus implements MatrixOperation {
 				writeMetadata(wrNcFile, rdMarkerSet, wrMarkerSetMap, wrSampleKeys);
 
 				//<editor-fold defaultstate="expanded" desc="PROCESSOR">
-				Map<SampleKey, SampleInfo> samplesInfoMap = fetchSampleInfo(rdMatrixMetadata, wrSampleKeys);
+				Map<SampleKey, SampleInfo> samplesInfoMap = fetchSampleInfo(
+						rdMatrixMetadata.getStudyId(), rdMatrixMetadata, wrSampleKeys);
 
 				// Iterate through markerset, take it marker by marker
 				rdMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
@@ -784,6 +785,7 @@ public class OP_MarkerCensus implements MatrixOperation {
 	}
 
 	private Map<SampleKey, SampleInfo> fetchSampleInfo(
+			int studyId,
 			MatrixMetadata rdMatrixMetadata,
 			Collection<SampleKey> wrSampleKeys)
 			throws IOException
@@ -806,6 +808,7 @@ public class OP_MarkerCensus implements MatrixOperation {
 			while ((l = phenotypeBR.readLine()) != null) {
 				String[] cVals = l.split(cImport.Separators.separators_CommaSpaceTab_rgxp);
 				SampleInfo info = new SampleInfo(
+						studyId,
 						cVals[GWASpi.sampleId],
 						cVals[GWASpi.familyId],
 						Sex.parse(cVals[GWASpi.sex]),

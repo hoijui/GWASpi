@@ -26,7 +26,7 @@ import org.gwaspi.model.SampleInfo;
 public class AffymetrixSamplesParser implements SamplesParser {
 
 	@Override
-	public Collection<SampleInfo> scanSampleInfo(String sampleInfoPath) throws IOException {
+	public Collection<SampleInfo> scanSampleInfo(int studyId, String sampleInfoPath) throws IOException {
 
 		Collection<SampleInfo> sampleInfos = new LinkedList<SampleInfo>();
 
@@ -41,7 +41,7 @@ public class AffymetrixSamplesParser implements SamplesParser {
 			} else {
 				sampleId = l.substring(0, l.lastIndexOf('.'));
 			}
-			SampleInfo sampleInfo = new SampleInfo(sampleId);
+			SampleInfo sampleInfo = new SampleInfo(studyId, sampleId);
 			sampleInfos.add(sampleInfo);
 		}
 

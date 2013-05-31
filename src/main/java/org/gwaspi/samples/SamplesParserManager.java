@@ -86,8 +86,8 @@ public class SamplesParserManager {
 	}
 	//</editor-fold>
 
-	public static Collection<SampleInfo> scanSampleInfo(ImportFormat importFormat, String genotypePath) throws IOException {
-		return sampleParsers.get(importFormat).scanSampleInfo(genotypePath);
+	public static Collection<SampleInfo> scanSampleInfo(int studyId, ImportFormat importFormat, String genotypePath) throws IOException {
+		return sampleParsers.get(importFormat).scanSampleInfo(studyId, genotypePath);
 	}
 
 	public static Set<SampleInfo.Affection> scanSampleInfoAffectionStates(String sampleInfoPath) throws IOException {

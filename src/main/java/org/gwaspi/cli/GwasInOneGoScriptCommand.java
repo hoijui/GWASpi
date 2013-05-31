@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.global.Text;
+import org.gwaspi.model.MatrixKey;
 import org.gwaspi.netCDF.operations.GWASinOneGOParams;
 import org.gwaspi.netCDF.operations.OperationManager;
 import org.gwaspi.threadbox.MultiOperations;
@@ -111,8 +112,8 @@ class GwasInOneGoScriptCommand extends AbstractScriptCommand {
 			// GWAS block
 			if (gwasParams.isProceed()) {
 				System.out.println(Text.All.processing);
-				MultiOperations.doGWASwithAlterPhenotype(studyId,
-						matrixId,
+				MultiOperations.doGWASwithAlterPhenotype(
+						new MatrixKey(studyId, matrixId),
 						phenoFile,
 						gwasParams);
 				return true;

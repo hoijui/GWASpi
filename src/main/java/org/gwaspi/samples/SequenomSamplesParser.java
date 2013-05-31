@@ -34,7 +34,7 @@ public class SequenomSamplesParser implements SamplesParser {
 			= LoggerFactory.getLogger(SequenomSamplesParser.class);
 
 	@Override
-	public Collection<SampleInfo> scanSampleInfo(String sampleInfoPath) throws IOException {
+	public Collection<SampleInfo> scanSampleInfo(int studyId, String sampleInfoPath) throws IOException {
 
 		Collection<SampleInfo> sampleInfos = new LinkedList<SampleInfo>();
 
@@ -48,7 +48,8 @@ public class SequenomSamplesParser implements SamplesParser {
 			if (!l.contains("SAMPLE_ID")) { // SKIP ALL HEADER LINES
 				String[] cVals = l.split(cImport.Separators.separators_CommaSpaceTab_rgxp);
 				// TODO maybe use more then just the sampleId read from the Sequenom file?
-				SampleInfo sampleInfo = new SampleInfo(cVals[cImport.Annotation.Sequenom.sampleId]);
+				SampleInfo sampleInfo = new SampleInfo(
+						studyId, cVals[cImport.Annotation.Sequenom.sampleId]);
 				if (!sampleInfos.contains(sampleInfo)) {
 					sampleInfos.add(sampleInfo);
 				}

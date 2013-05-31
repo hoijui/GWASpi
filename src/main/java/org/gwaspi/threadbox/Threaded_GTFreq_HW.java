@@ -26,6 +26,7 @@ import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.GWASpiExplorerNodes;
+import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.Operation;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.SampleInfo;
@@ -38,22 +39,22 @@ import org.slf4j.LoggerFactory;
 
 public class Threaded_GTFreq_HW extends CommonRunnable {
 
-	private final int matrixId;
+	private final MatrixKey matrixKey;
 	private final File phenotypeFile;
 	private final GWASinOneGOParams gwasParams;
 
 	public Threaded_GTFreq_HW(
-			int matrixId,
+			MatrixKey matrixKey,
 			File phenotypeFile,
 			GWASinOneGOParams gwasParams)
 	{
 		super(
 				"GT Freq. & HW",
 				"Genotype Frequency count & Hardy-Weinberg test",
-				"Genotypes Freq. & HW on Matrix ID: " + matrixId,
+				"Genotypes Freq. & HW on Matrix ID: " + matrixKey.getMatrixId(),
 				"Genotype Frequency count & Hardy-Weinberg test");
 
-		this.matrixId = matrixId;
+		this.matrixKey = matrixKey;
 		this.phenotypeFile = phenotypeFile;
 		this.gwasParams = gwasParams;
 	}
@@ -66,7 +67,7 @@ public class Threaded_GTFreq_HW extends CommonRunnable {
 	@Override
 	protected void runInternal(SwingWorkerItem thisSwi) throws Exception {
 
-		List<Operation> operations = OperationsList.getOperationsList(matrixId);
+		List<Operation> operations = OperationsList.getOperationsList(matrixKey.getMatrixId());
 		int sampleQAOpId = OperationsList.getIdOfLastOperationTypeOccurance(operations, OPType.SAMPLE_QA);
 		int markersQAOpId = OperationsList.getIdOfLastOperationTypeOccurance(operations, OPType.MARKER_QA);
 
@@ -95,11 +96,14 @@ public class Threaded_GTFreq_HW extends CommonRunnable {
 						&& affectionStates.contains(SampleInfo.Affection.AFFECTED))
 				{
 					getLog().info("Updating Sample Info in DB");
-					Collection<SampleInfo> sampleInfos = SamplesParserManager.scanSampleInfo(ImportFormat.GWASpi, phenotypeFile.getPath());
-					SampleInfoList.insertSampleInfos(matrixId, sampleInfos);
+					Collection<SampleInfo> sampleInfos = SamplesParserManager.scanSampleInfo(
+							matrixKey.getStudyId(),
+							ImportFormat.GWASpi,
+							phenotypeFile.getPath());
+					SampleInfoList.insertSampleInfos(matrixKey.getMatrixId(), sampleInfos);
 
 					censusOpId = OperationManager.censusCleanMatrixMarkersByPhenotypeFile(
-							matrixId,
+							matrixKey.getMatrixId(),
 							sampleQAOpId,
 							markersQAOpId,
 							gwasParams.getDiscardMarkerMisRatVal(),
@@ -115,12 +119,12 @@ public class Threaded_GTFreq_HW extends CommonRunnable {
 					getLog().warn(Text.Operation.warnAffectionMissing);
 				}
 			} else { // BY DB AFFECTION
-				Set<SampleInfo.Affection> affectionStates = SamplesParserManager.getDBAffectionStates(matrixId); //use Sample Info file affection state
+				Set<SampleInfo.Affection> affectionStates = SamplesParserManager.getDBAffectionStates(matrixKey.getMatrixId()); // use Sample Info file affection state
 				if (affectionStates.contains(SampleInfo.Affection.UNAFFECTED)
 						&& affectionStates.contains(SampleInfo.Affection.AFFECTED))
 				{
 					censusOpId = OperationManager.censusCleanMatrixMarkers(
-							matrixId,
+							matrixKey.getMatrixId(),
 							sampleQAOpId,
 							markersQAOpId,
 							gwasParams.getDiscardMarkerMisRatVal(),
@@ -135,7 +139,7 @@ public class Threaded_GTFreq_HW extends CommonRunnable {
 					getLog().warn(Text.Operation.warnAffectionMissing);
 				}
 			}
-			GWASpiExplorerNodes.insertOperationUnderMatrixNode(matrixId, censusOpId);
+			GWASpiExplorerNodes.insertOperationUnderMatrixNode(matrixKey.getMatrixId(), censusOpId);
 		}
 
 		// HW ON GENOTYPE FREQ.

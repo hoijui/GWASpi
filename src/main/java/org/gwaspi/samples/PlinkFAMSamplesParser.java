@@ -34,7 +34,7 @@ public class PlinkFAMSamplesParser implements SamplesParser {
 			= LoggerFactory.getLogger(PlinkFAMSamplesParser.class);
 
 	@Override
-	public Collection<SampleInfo> scanSampleInfo(String sampleInfoPath) throws IOException {
+	public Collection<SampleInfo> scanSampleInfo(int studyId, String sampleInfoPath) throws IOException {
 
 		Collection<SampleInfo> sampleInfos = new LinkedList<SampleInfo>();
 		FileReader inputFileReader = new FileReader(new File(sampleInfoPath));
@@ -52,6 +52,7 @@ public class PlinkFAMSamplesParser implements SamplesParser {
 			SampleInfo.Sex sex = SampleInfo.Sex.parse(sexStr);
 			SampleInfo.Affection affection = SampleInfo.Affection.parse(affectionStr);
 			SampleInfo sampleInfo = new SampleInfo(
+					studyId,
 					cVals[cImport.Annotation.Plink_Binary.ped_sampleId],
 					cVals[cImport.Annotation.Plink_Binary.ped_familyId],
 					cVals[cImport.Annotation.Plink_Binary.ped_fatherId],

@@ -188,7 +188,7 @@ public class JPASampleInfoService implements SampleInfoService {
 	public void insertSampleInfos(Integer studyId, Collection<SampleInfo> sampleInfos) throws IOException {
 
 		for (SampleInfo sampleInfo : sampleInfos) {
-			sampleInfo.setPoolId(studyId);
+			sampleInfo.setStudyId(studyId);
 			EntityManager em = null;
 			try {
 				em = open();

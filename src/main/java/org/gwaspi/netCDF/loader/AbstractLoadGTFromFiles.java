@@ -296,6 +296,7 @@ public abstract class AbstractLoadGTFromFiles implements GenotypesLoader {
 			for (int i = 0; i < gtFilesToImport.length; i++) {
 				try {
 					loadIndividualFiles(
+							loadDescription.getStudyId(),
 							new File(loadDescription.getGtDirPath()),
 							sampleInfo.getKey(),
 							alleles);
@@ -375,7 +376,9 @@ public abstract class AbstractLoadGTFromFiles implements GenotypesLoader {
 	 * @param alleles maps marker-keys to an allele pairs;
 	 *   the values are usually of type byte[2]
 	 */
-	public abstract void loadIndividualFiles(File file,
+	public abstract void loadIndividualFiles(
+			int studyId,
+			File file,
 			SampleKey sampleKey,
 			Map<MarkerKey, byte[]> alleles)
 			throws IOException, InvalidRangeException;

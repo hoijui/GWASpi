@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.global.Text;
+import org.gwaspi.model.MatrixKey;
 import org.gwaspi.netCDF.operations.GWASinOneGOParams;
 import org.gwaspi.netCDF.operations.OperationManager;
 import org.gwaspi.threadbox.MultiOperations;
@@ -95,8 +96,8 @@ class GenotypeFrequencyHardyWeinbergScriptCommand extends AbstractScriptCommand 
 			// GT freq. & HW block
 			if (gwasParams.isProceed()) {
 				System.out.println(Text.All.processing);
-				MultiOperations.doGTFreqDoHW(studyId,
-						matrixId,
+				MultiOperations.doGTFreqDoHW(
+						new MatrixKey(studyId, matrixId),
 						phenoFile,
 						gwasParams);
 				return true;

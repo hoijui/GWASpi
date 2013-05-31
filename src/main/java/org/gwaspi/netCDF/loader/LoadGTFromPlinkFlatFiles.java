@@ -252,6 +252,7 @@ public class LoadGTFromPlinkFlatFiles implements GenotypesLoader {
 		log.info(Text.All.processing);
 		Map<MarkerKey, byte[]> mapMarkerSetMap = markerSetLoader.parseOrigMapFile(loadDescription.getGtDirPath());
 		loadPedGenotypes(
+				loadDescription.getStudyId(),
 				new File(loadDescription.getAnnotationFilePath()),
 				ncfile,
 				markerSetMap.keySet(),
@@ -296,7 +297,9 @@ public class LoadGTFromPlinkFlatFiles implements GenotypesLoader {
 		return result;
 	}
 
-	public void loadPedGenotypes(File file,
+	public void loadPedGenotypes(
+			int studyId,
+			File file,
 			NetcdfFileWriteable ncfile,
 			Collection<MarkerKey> wrMarkerKeys,
 			Map<MarkerKey, ?> mapMarkerSetMap,
@@ -346,7 +349,7 @@ public class LoadGTFromPlinkFlatFiles implements GenotypesLoader {
 			}
 
 			// WRITING GENOTYPE DATA INTO netCDF FILE
-			int sampleIndex = sampleKeys.indexOf(new SampleKey(sampleId, familyId));
+			int sampleIndex = sampleKeys.indexOf(new SampleKey(studyId, sampleId, familyId));
 			if (sampleIndex != -1) {  //CHECK IF CURRENT SAMPLE IS KNOWN IN SAMPLEINFO FILE!!
 				org.gwaspi.netCDF.operations.Utils.saveSingleSampleGTsToMatrix(ncfile, allelesMap, sampleIndex);
 			}

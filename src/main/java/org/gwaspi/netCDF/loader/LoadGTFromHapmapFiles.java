@@ -102,11 +102,11 @@ public class LoadGTFromHapmapFiles implements GenotypesLoader {
 		if (hapmapGTFile.isDirectory()) {
 			File[] gtFilesToImport = org.gwaspi.global.Utils.listFiles(loadDescription.getGtDirPath());
 			for (int i = 0; i < gtFilesToImport.length; i++) {
-				Collection<SampleInfo> tempSamplesMap = getHapmapSampleIds(gtFilesToImport[i]);
+				Collection<SampleInfo> tempSamplesMap = getHapmapSampleIds(loadDescription.getStudyId(), gtFilesToImport[i]);
 				sampleInfos.addAll(tempSamplesMap);
 			}
 		} else {
-			sampleInfos.addAll(getHapmapSampleIds(hapmapGTFile));
+			sampleInfos.addAll(getHapmapSampleIds(loadDescription.getStudyId(), hapmapGTFile));
 		}
 
 		return processHapmapGTFiles(hapmapGTFile.isDirectory(), loadDescription, sampleInfos);
@@ -302,6 +302,7 @@ public class LoadGTFromHapmapFiles implements GenotypesLoader {
 
 			for (int i = 0; i < gtFilesToImport.length; i++) {
 				loadIndividualFiles(
+						loadDescription.getStudyId(),
 						gtFilesToImport[i],
 						sampleInfo.getKey(),
 						alleles,
@@ -352,7 +353,9 @@ public class LoadGTFromHapmapFiles implements GenotypesLoader {
 	/**
 	 * @see AbstractLoadGTFromFiles#loadIndividualFiles
 	 */
-	private void loadIndividualFiles(File file,
+	private void loadIndividualFiles(
+			int studyId,
+			File file,
 			SampleKey sampleKey,
 			Map<MarkerKey, byte[]> alleles,
 			GenotypeEncoding guessedGTCode)
@@ -370,7 +373,7 @@ public class LoadGTFromHapmapFiles implements GenotypesLoader {
 
 		Map<SampleKey, Object> sampleOrderMap = new LinkedHashMap<SampleKey, Object>();
 		for (int i = Standard.sampleId; i < headerFields.length; i++) {
-			sampleOrderMap.put(SampleKey.valueOf(headerFields[i]), i); // FIXME this is only the sampleID, without familyID. does hapMap have a familyId?
+			sampleOrderMap.put(SampleKey.valueOf(studyId, headerFields[i]), i); // FIXME this is only the sampleID, without familyID. does hapMap have a familyId?
 		}
 		Object sampleColumnNb = sampleOrderMap.get(sampleKey);
 
@@ -417,7 +420,7 @@ public class LoadGTFromHapmapFiles implements GenotypesLoader {
 	//</editor-fold>
 
 	//<editor-fold defaultstate="expanded" desc="HELPER METHODS">
-	private Collection<SampleInfo> getHapmapSampleIds(File hapmapGTFile) throws IOException {
+	private Collection<SampleInfo> getHapmapSampleIds(int studyId, File hapmapGTFile) throws IOException {
 
 		Collection<SampleInfo> uniqueSamples = new LinkedList<SampleInfo>();
 
@@ -429,7 +432,7 @@ public class LoadGTFromHapmapFiles implements GenotypesLoader {
 		String[] hapmapVals = header.split(cImport.Separators.separators_SpaceTab_rgxp);
 
 		for (int i = Standard.sampleId; i < hapmapVals.length; i++) {
-			uniqueSamples.add(new SampleInfo(hapmapVals[i]));
+			uniqueSamples.add(new SampleInfo(studyId, hapmapVals[i]));
 		}
 
 		return uniqueSamples;

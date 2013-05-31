@@ -99,7 +99,7 @@ public class Utils {
 					population,
 					age,
 					baseSampleInfo.getFilter(),
-					baseSampleInfo.getPoolId(),
+					baseSampleInfo.getStudyId(),
 					baseSampleInfo.getApproved(),
 					baseSampleInfo.getStatus());
 		}

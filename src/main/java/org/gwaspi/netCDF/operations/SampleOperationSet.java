@@ -19,10 +19,11 @@ package org.gwaspi.netCDF.operations;
 
 import java.io.IOException;
 import org.gwaspi.model.SampleKey;
+import org.gwaspi.model.SampleKeyFactory;
 
 public class SampleOperationSet<V> extends AbstractOperationSet<SampleKey, V> {
 
 	public SampleOperationSet(int studyId, int opId) throws IOException {
-		super(studyId, opId, SampleKey.KEY_FACTORY);
+		super(studyId, opId, new SampleKeyFactory(studyId));
 	}
 }

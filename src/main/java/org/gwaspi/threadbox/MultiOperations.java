@@ -27,6 +27,7 @@ import org.gwaspi.constants.cNetCDF.Defaults.SetSamplePickCase;
 import org.gwaspi.gui.GWASpiExplorerPanel;
 import org.gwaspi.gui.ProcessTab;
 import org.gwaspi.gui.StartGWASpi;
+import org.gwaspi.model.MatrixKey;
 import org.gwaspi.netCDF.loader.GenotypesLoadDescription;
 import org.gwaspi.netCDF.operations.GWASinOneGOParams;
 
@@ -83,19 +84,18 @@ public class MultiOperations {
 	//<editor-fold defaultstate="expanded" desc="ANALYSIS">
 	/** LOAD & GWAS */
 	public static void doGWASwithAlterPhenotype(
-			final int studyId,
-			final int matrixId,
+			final MatrixKey matrixKey,
 			final File phenofile,
 			final GWASinOneGOParams gwasParams)
 	{
 		CommonRunnable task = new Threaded_GWAS(
-				matrixId,
+				matrixKey,
 				phenofile,
 				gwasParams);
 
 		TaskLockProperties lockProperties = new TaskLockProperties();
-		lockProperties.getStudyIds().add(studyId);
-		lockProperties.getMatricesIds().add(matrixId);
+		lockProperties.getStudyIds().add(matrixKey.getStudyId());
+		lockProperties.getMatricesIds().add(matrixKey.getMatrixId());
 
 		queueTask(task, lockProperties);
 	}
@@ -119,19 +119,18 @@ public class MultiOperations {
 
 	/** LOAD & GWAS */
 	public static void doGTFreqDoHW(
-			final int studyId,
-			final int matrixId,
+			final MatrixKey matrixKey,
 			final File phenoFile,
 			final GWASinOneGOParams gwasParams)
 	{
 		CommonRunnable task = new Threaded_GTFreq_HW(
-				matrixId,
+				matrixKey,
 				phenoFile,
 				gwasParams);
 
 		TaskLockProperties lockProperties = new TaskLockProperties();
-		lockProperties.getStudyIds().add(studyId);
-		lockProperties.getMatricesIds().add(matrixId);
+		lockProperties.getStudyIds().add(matrixKey.getStudyId());
+		lockProperties.getMatricesIds().add(matrixKey.getMatrixId());
 
 		queueTask(task, lockProperties);
 	}

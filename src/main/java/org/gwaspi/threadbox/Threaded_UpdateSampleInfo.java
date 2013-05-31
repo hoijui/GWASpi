@@ -55,7 +55,10 @@ public class Threaded_UpdateSampleInfo extends CommonRunnable {
 
 	protected void runInternal(SwingWorkerItem thisSwi) throws Exception {
 
-		Collection<SampleInfo> sampleInfos = SamplesParserManager.scanSampleInfo(ImportFormat.GWASpi, sampleInfoFile.getPath());
+		Collection<SampleInfo> sampleInfos = SamplesParserManager.scanSampleInfo(
+				poolId,
+				ImportFormat.GWASpi,
+				sampleInfoFile.getPath());
 		SampleInfoList.insertSampleInfos(poolId, sampleInfos);
 
 		// DO NOT! Write new reports of SAMPLE QA

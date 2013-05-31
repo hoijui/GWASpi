@@ -34,7 +34,7 @@ public class IlluminaLGENSamplesParser implements SamplesParser {
 			= LoggerFactory.getLogger(IlluminaLGENSamplesParser.class);
 
 	@Override
-	public Collection<SampleInfo> scanSampleInfo(String sampleInfoPath) throws IOException {
+	public Collection<SampleInfo> scanSampleInfo(int studyId, String sampleInfoPath) throws IOException {
 
 		Collection<SampleInfo> sampleInfos = new LinkedList<SampleInfo>();
 
@@ -58,6 +58,7 @@ public class IlluminaLGENSamplesParser implements SamplesParser {
 				l = inputBufferReader.readLine();
 				String[] cVals = l.split(cImport.Separators.separators_CommaSpaceTab_rgxp);
 				SampleInfo sampleInfo = new SampleInfo(
+						studyId,
 						cVals[cImport.Annotation.Plink_LGEN.lgen_sampleId],
 						cVals[cImport.Annotation.Plink_LGEN.lgen_familyId],
 						"0",

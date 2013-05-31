@@ -66,6 +66,7 @@ public class Threaded_Loader_GWASifOK extends CommonRunnable {
 	protected void runInternal(SwingWorkerItem thisSwi) throws Exception {
 
 		Collection<SampleInfo> sampleInfos = SampleInfoCollectorSwitch.collectSampleInfo(
+				loadDescription.getStudyId(),
 				loadDescription.getFormat(),
 				dummySamples,
 				loadDescription.getSampleFilePath(),

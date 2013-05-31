@@ -204,7 +204,7 @@ public class MatrixDataExtractor {
 				if ((samplePickCase == SetSamplePickCase.SAMPLES_INCLUDE_BY_ID)
 						|| (samplePickCase == SetSamplePickCase.SAMPLES_EXCLUDE_BY_ID))
 				{
-					((Set<SampleKey>) sampleCriteria).add(SampleKey.valueOf(l));
+					((Set<SampleKey>) sampleCriteria).add(SampleKey.valueOf(studyId, l));
 				} else {
 					((Set<char[]>) sampleCriteria).add(l.toCharArray());
 				}

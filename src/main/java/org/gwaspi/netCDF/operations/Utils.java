@@ -665,7 +665,7 @@ public class Utils {
 	/**
 	 * @deprecated just remove, as it was wrong anyway (we need MarkerKey, not SampleKey)
 	 */
-	public static <V> Map<SampleKey, V> writeD2ArrayCharToMapSampleKeys(ArrayChar inputArray, V commonValue) {
+	public static <V> Map<SampleKey, V> writeD2ArrayCharToMapSampleKeys(int studyId, ArrayChar inputArray, V commonValue) {
 		Map<SampleKey, V> result = new LinkedHashMap<SampleKey, V>();
 
 		int[] shape = inputArray.getShape();
@@ -673,7 +673,7 @@ public class Utils {
 			ArrayChar wrCharArray = new ArrayChar(new int[] {1, shape[1]});
 			ArrayChar.D2.arraycopy(inputArray, i * shape[1], wrCharArray, 0, shape[1]);
 			char[] values = (char[]) wrCharArray.copyTo1DJavaArray();
-			result.put(SampleKey.valueOf(String.valueOf(values).trim()), commonValue);
+			result.put(SampleKey.valueOf(studyId, String.valueOf(values).trim()), commonValue);
 		}
 
 		return result;

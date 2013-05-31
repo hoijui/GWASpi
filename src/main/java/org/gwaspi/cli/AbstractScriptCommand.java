@@ -21,7 +21,9 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import org.gwaspi.global.Text;
+import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixKey;
+import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.Study;
 import org.gwaspi.model.StudyKey;
 import org.gwaspi.model.StudyList;
@@ -88,7 +90,7 @@ abstract class AbstractScriptCommand implements ScriptCommand {
 		}
 	}
 
-	protected static MatrixKey fetchMatrixKey(Map<String, String> script, StudyKey studyKey, String idKey, String nameKey) throws IOException {
+	protected static MatrixKey fetchMatrixKey(Map<String, String> script, int studyId, String idKey, String nameKey) throws IOException {
 
 		String idValue = script.get(idKey);
 		String nameValue = script.get(nameKey);
@@ -101,9 +103,10 @@ abstract class AbstractScriptCommand implements ScriptCommand {
 					+ "\") or id (\"" + idKey + "\") of the matrix, not both");
 		} else if (idValue != null) {
 			int matrixId = Integer.parseInt(idValue);
-			return new MatrixKey(studyKey, matrixId);
+			return new MatrixKey(studyId, matrixId);
 		} else {
-			return new MatrixKey(studyKey, nameValue);
+			MatrixMetadata matrixMetadata = MatricesList.getMatrixMetadataByNetCDFname(nameValue);
+			return new MatrixKey(studyId, matrixMetadata.getId());
 		}
 	}
 

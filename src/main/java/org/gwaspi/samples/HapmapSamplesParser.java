@@ -33,7 +33,7 @@ public class HapmapSamplesParser implements SamplesParser {
 	 * NOTE No affection state available
 	 */
 	@Override
-	public Collection<SampleInfo> scanSampleInfo(String sampleInfoPath) throws IOException {
+	public Collection<SampleInfo> scanSampleInfo(int studyId, String sampleInfoPath) throws IOException {
 
 		Collection<SampleInfo> sampleInfos = new LinkedList<SampleInfo>();
 		FileReader fr = null;
@@ -49,7 +49,8 @@ public class HapmapSamplesParser implements SamplesParser {
 
 				String[] hapmapVals = header.split(cImport.Separators.separators_SpaceTab_rgxp);
 				for (int j = LoadGTFromHapmapFiles.Standard.sampleId; j < hapmapVals.length; j++) {
-					SampleInfo sampleInfo = new SampleInfo(hapmapVals[j]);
+					SampleInfo sampleInfo = new SampleInfo(
+							studyId, hapmapVals[j]);
 					sampleInfos.add(sampleInfo);
 				}
 			}
@@ -61,7 +62,8 @@ public class HapmapSamplesParser implements SamplesParser {
 
 			String[] hapmapVals = header.split(cImport.Separators.separators_SpaceTab_rgxp);
 			for (int i = LoadGTFromHapmapFiles.Standard.sampleId; i < hapmapVals.length; i++) {
-				SampleInfo sampleInfo = new SampleInfo(hapmapVals[i]);
+				SampleInfo sampleInfo = new SampleInfo(
+							studyId, hapmapVals[i]);
 				sampleInfos.add(sampleInfo);
 			}
 		}

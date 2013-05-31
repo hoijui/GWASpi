@@ -253,6 +253,7 @@ public class LoadGTFromSequenomFiles implements GenotypesLoader {
 			for (int i = 0; i < gtFilesToImport.length; i++) {
 				//log.info("Input file: "+i);
 				loadIndividualFiles(
+						loadDescription.getStudyId(),
 						gtFilesToImport[i],
 						sampleInfo.getKey(),
 						alleles);
@@ -315,7 +316,9 @@ public class LoadGTFromSequenomFiles implements GenotypesLoader {
 	/**
 	 * @see AbstractLoadGTFromFiles#loadIndividualFiles
 	 */
-	public void loadIndividualFiles(File file,
+	public void loadIndividualFiles(
+			int studyId,
+			File file,
 			SampleKey sampleKey,
 			Map<MarkerKey, byte[]> alleles)
 			throws IOException, InvalidRangeException
@@ -330,7 +333,7 @@ public class LoadGTFromSequenomFiles implements GenotypesLoader {
 				String[] cVals = l.split(cImport.Separators.separators_Tab_rgxp);
 				String currSampleId = cVals[Standard.sampleId];
 				// NOTE The Sequenom format does not have a family-ID
-				SampleKey currSampleKey = new SampleKey(currSampleId, SampleKey.FAMILY_ID_NONE);
+				SampleKey currSampleKey = new SampleKey(studyId, currSampleId, SampleKey.FAMILY_ID_NONE);
 				if (currSampleKey.equals(sampleKey)) {
 					// ONLY PROCESS CURRENT SAMPLEID DATA
 					String markerId = cVals[Standard.markerId].trim();

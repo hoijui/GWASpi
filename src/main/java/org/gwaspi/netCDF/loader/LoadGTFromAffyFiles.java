@@ -109,7 +109,7 @@ public class LoadGTFromAffyFiles implements GenotypesLoader {
 					break;
 			}
 			// NOTE The Beagle format does not have a family-ID
-			samples.add(new SampleKey(sampleId, SampleKey.FAMILY_ID_NONE));
+			samples.add(new SampleKey(loadDescription.getStudyId(), sampleId, SampleKey.FAMILY_ID_NONE));
 		}
 
 		// COMPARE SAMPLE INFO LIST TO AVAILABLE FILES

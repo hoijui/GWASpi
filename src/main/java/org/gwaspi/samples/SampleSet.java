@@ -98,7 +98,10 @@ public class SampleSet {
 				sampleSetSize = markerSetDim.getLength();
 				ArrayChar.D2 sampleSetAC = (ArrayChar.D2) var.read("(0:" + (sampleSetSize - 1) + ":1, 0:" + (varShape[1] - 1) + ":1)");
 
-				sampleIdSetMap = org.gwaspi.netCDF.operations.Utils.writeD2ArrayCharToMapSampleKeys(sampleSetAC, null);
+				sampleIdSetMap = org.gwaspi.netCDF.operations.Utils.writeD2ArrayCharToMapSampleKeys(
+						matrixMetadata.getStudyId(),
+						sampleSetAC,
+						null);
 			} catch (IOException ex) {
 				log.error("Cannot read data", ex);
 			} catch (InvalidRangeException ex) {
@@ -150,7 +153,10 @@ public class SampleSet {
 				sampleSetSize = markerSetDim.getLength();
 				ArrayChar.D2 sampleSetAC = (ArrayChar.D2) var.read("(0:" + (sampleSetSize - 1) + ":1, 0:" + (varShape[1] - 1) + ":1)");
 
-				sampleIdSetMap = org.gwaspi.netCDF.operations.Utils.writeD2ArrayCharToMapSampleKeys(sampleSetAC, null);
+				sampleIdSetMap = org.gwaspi.netCDF.operations.Utils.writeD2ArrayCharToMapSampleKeys(
+						matrixMetadata.getStudyId(),
+						sampleSetAC,
+						null);
 			} catch (IOException ex) {
 				log.error("Cannot read data", ex);
 			} catch (InvalidRangeException ex) {

@@ -23,5 +23,5 @@ import org.gwaspi.model.SampleInfo;
 
 public interface SamplesParser {
 
-	Collection<SampleInfo> scanSampleInfo(String sampleInfoPath) throws IOException;
+	Collection<SampleInfo> scanSampleInfo(int studyId, String sampleInfoPath) throws IOException;
 }

@@ -152,7 +152,7 @@ public class MetadataLoaderPlinkBinary implements MetadataLoader {
 			String markerId = mapVals[Plink_Binary.bim_markerId].trim();
 			alleles[0] = mapVals[Plink_Binary.bim_allele1].trim();
 			alleles[1] = mapVals[Plink_Binary.bim_allele2].trim();
-			origMarkerIdSetMap.put(SampleKey.valueOf(markerId), alleles);
+			origMarkerIdSetMap.put(SampleKey.valueOf(studyId, markerId), alleles); // XXX really? markerId as sampleId?
 		}
 
 		inputMapBR.close();

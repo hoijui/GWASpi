@@ -34,7 +34,7 @@ public class GwaspiSamplesParser implements SamplesParser {
 			= LoggerFactory.getLogger(GwaspiSamplesParser.class);
 
 	@Override
-	public Collection<SampleInfo> scanSampleInfo(String sampleInfoPath) throws IOException {
+	public Collection<SampleInfo> scanSampleInfo(int studyId, String sampleInfoPath) throws IOException {
 
 		Collection<SampleInfo> sampleInfos = new LinkedList<SampleInfo>();
 		FileReader inputFileReader;
@@ -67,7 +67,7 @@ public class GwaspiSamplesParser implements SamplesParser {
 						cVals[cImport.Annotation.GWASpi.population],
 						Integer.parseInt(cVals[cImport.Annotation.GWASpi.age]),
 						"",
-						null,
+						studyId,
 						Integer.MIN_VALUE,
 						Integer.MIN_VALUE
 						));

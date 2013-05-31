@@ -32,7 +32,7 @@ public class HGDP1SamplesParser implements SamplesParser {
 	 * NOTE No affection state available
 	 */
 	@Override
-	public Collection<SampleInfo> scanSampleInfo(String sampleInfoPath) throws IOException {
+	public Collection<SampleInfo> scanSampleInfo(int studyId, String sampleInfoPath) throws IOException {
 
 		Collection<SampleInfo> sampleInfos = new LinkedList<SampleInfo>();
 		File sampleFile = new File(sampleInfoPath);
@@ -44,7 +44,7 @@ public class HGDP1SamplesParser implements SamplesParser {
 		String[] sampleIds = sampleIdHeader.split(cImport.Separators.separators_SpaceTab_rgxp);
 		for (int i = 1; i < sampleIds.length; i++) {
 			String sampleId = sampleIds[i];
-			sampleInfos.add(new SampleInfo(
+			sampleInfos.add(new SampleInfo( // XXX use a ctor with less args?
 					Integer.MIN_VALUE,
 					sampleId,
 					"0",
@@ -57,7 +57,7 @@ public class HGDP1SamplesParser implements SamplesParser {
 					"0",
 					0,
 					"",
-					null,
+					studyId,
 					Integer.MIN_VALUE,
 					Integer.MIN_VALUE
 					));
