@@ -456,7 +456,7 @@ public class Dialogs {
 
 				// setting the directory to latest opened dir
 				try {
-					Config.setConfigValue(Config.PROPERTY_LAST_OPENED_DIR, resultFile.getParent());
+					Config.setConfigValue(Config.PROPERTY_LAST_OPENED_DIR, resultFile);
 				} catch (IOException ex) {
 					log.error(null, ex);
 				}
