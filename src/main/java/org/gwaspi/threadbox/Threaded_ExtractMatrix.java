@@ -85,7 +85,8 @@ public class Threaded_ExtractMatrix extends CommonRunnable {
 	protected void runInternal(SwingWorkerItem thisSwi) throws Exception {
 
 		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
-			MatrixDataExtractor exMatrix = new MatrixDataExtractor(studyId,
+			MatrixDataExtractor exMatrix = new MatrixDataExtractor(
+					studyId,
 					parentMatrixId,
 					newMatrixName,
 					description,
@@ -95,7 +96,7 @@ public class Threaded_ExtractMatrix extends CommonRunnable {
 					samplePickVar,
 					markerCriteria,
 					sampleCriteria,
-					Integer.MIN_VALUE, //Filter pos, not used now
+					Integer.MIN_VALUE, // Filter pos, not used now
 					markerCriteriaFile,
 					sampleCriteriaFile);
 			resultMatrixId = exMatrix.extractGenotypesToNewMatrix();
