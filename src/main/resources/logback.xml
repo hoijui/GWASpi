@@ -17,8 +17,9 @@
 	</root>
 
 	<!-- Disable debugging messages for certain dependencies -->
-	<logger name="org.hibernate" level="INFO"/>
+	<logger name="org.hibernate" level="WARN"/>
 	<logger name="org.apache" level="WARN"/>
+	<logger name="org.jboss" level="WARN"/>
 	<logger name="ucar.nc2" level="WARN"/>
 	<logger name="ch.qos.logback" level="WARN"/>
 
