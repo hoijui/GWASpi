@@ -156,7 +156,7 @@ public class OperationManager {
 				= new CombiTestMatrixOperation(params);
 		resultOpId = testOperation.processMatrix();
 
-		return new OperationKey(params.getParentMatrixKey(), resultOpId);
+		return new OperationKey(params.getMatrixKey(), resultOpId);
 	}
 
 	public static OperationKey performCleanTrendTests(

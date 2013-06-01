@@ -48,7 +48,6 @@ import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
-import org.gwaspi.model.Operation;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.SampleInfo;
@@ -272,12 +271,12 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 		MatrixSamples(MatrixKey matrixKey) throws IOException, InvalidRangeException {
 
 			this.matrixKey = matrixKey;
-			int studyId = matrixKey.getStudyKey().getId();
-			int matrixId = matrixKey.getId();
-			MatrixMetadata rdMatrixMetadata = MatricesList.getMatrixMetadataById( matrixId);
+			int studyId = matrixKey.getStudyId();
+			int matrixId = matrixKey.getMatrixId();
+			MatrixMetadata rdMatrixMetadata = MatricesList.getMatrixMetadataById(matrixKey);
 			netCdfFile = NetcdfFile.open(rdMatrixMetadata.getPathToMatrix());
 
-			MarkerSet rdMarkerSet = new MarkerSet(studyId,  matrixId);
+			MarkerSet rdMarkerSet = new MarkerSet(matrixKey);
 			rdMarkerSet.initFullMarkerIdSetMap();
 	//		rdMarkerSet.fillGTsForCurrentSampleIntoInitMap(readStudyId);
 	//		rdMarkerSet.fillWith(cNetCDF.Defaults.DEFAULT_GT);
@@ -285,7 +284,7 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 	//		Map<MarkerKey, byte[]> wrMarkerSetMap = new LinkedHashMap<MarkerKey, byte[]>();
 	//		wrMarkerSetMap.putAll(rdMarkerSet.getMarkerIdSetMapByteArray());
 
-			sampleSet = new SampleSet(rdMatrixMetadata.getStudyId(),  matrixId);
+			sampleSet = new SampleSet(matrixKey);
 //			samples = sampleSet.getSampleIdSetMapByteArray();
 			sampleKeys = sampleSet.getSampleKeys();
 			// This one has to be ordered! (and it is, due to the map being a LinkedHashMap)
@@ -297,12 +296,10 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 
 		private Map<SampleKey, SampleInfo> retrieveSampleInfos() throws IOException, InvalidRangeException {
 
-			int studyId = matrixKey.getStudyKey().getId();
-
 			// This one has to be ordered! (and it is, due to the map being a LinkedHashMap)
 			Set<SampleKey> sampleKeysOrdered = sampleSet.getSampleIdSetMapByteArray().keySet();
 
-			List<SampleInfo> allSampleInfos = SampleInfoList.getAllSampleInfoFromDBByPoolID(studyId);
+			List<SampleInfo> allSampleInfos = SampleInfoList.getAllSampleInfoFromDBByPoolID(matrixKey.getStudyKey());
 			Map<SampleKey, SampleInfo> sampleInfosUnordered = new LinkedHashMap<SampleKey, SampleInfo>(allSampleInfos.size());
 			for (SampleInfo sampleInfo : allSampleInfos) {
 				sampleInfosUnordered.put(sampleInfo.getKey(), sampleInfo);

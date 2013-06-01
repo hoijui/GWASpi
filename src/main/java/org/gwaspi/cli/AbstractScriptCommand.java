@@ -139,9 +139,6 @@ abstract class AbstractScriptCommand implements ScriptCommand {
 		return studyKey;
 	}
 
-	protected static boolean checkStudy(int studyId) throws IOException {
-		return checkStudy(new StudyKey(studyId));
-	}
 	protected static boolean checkStudy(StudyKey studyKey) throws IOException {
 
 		boolean studyExists;

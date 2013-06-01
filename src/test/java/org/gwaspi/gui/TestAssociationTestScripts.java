@@ -23,8 +23,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.gwaspi.constants.cImport;
+import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
+import org.gwaspi.model.StudyKey;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
@@ -40,6 +42,7 @@ public class TestAssociationTestScripts extends AbstractTestScripts {
 
 		String matrixName = TestLoadAndExportScripts.testLoadPlinkFlat(setup, name);
 		int matrixId = setup.getMatrixIds().get(matrixName);
+		MatrixKey matrixKey = new MatrixKey(new StudyKey(setup.getStudyId()), matrixId);
 
 		String mapFileName = name + ".map";
 		String pedFileName = name + ".ped";
@@ -70,7 +73,7 @@ public class TestAssociationTestScripts extends AbstractTestScripts {
 
 		log.info("Run Hardy-Weinberg Test ({}, {}) DONE.", mapFileName, pedFileName);
 
-		List<OperationMetadata> operationsTable = OperationsList.getOperationsTable(matrixId);
+		List<OperationMetadata> operationsTable = OperationsList.getOperationsTable(matrixKey);
 		log.info("available opeartions:");
 		for (OperationMetadata operationMetadata : operationsTable) {
 			log.info("\toperation id: {}, name: \"{}\"",

@@ -71,10 +71,7 @@ class CombiTestScriptCommand extends AbstractScriptCommand {
 //		GWASinOneGOParams gwasParams = new GWASinOneGOParams();
 		// checking study
 		StudyKey studyKey = fetchStudyKey(args, "study-id", "study-name", false);
-		if (studyKey.isSpecifiedByName()) {
-			throw new RuntimeException("Not yet supported (see next line in code)");
-		}
-		boolean studyExists = checkStudy(studyKey.getId());
+		boolean studyExists = checkStudy(studyKey);
 
 		if (studyExists) {
 			MatrixKey matrixKey = fetchMatrixKey(args, studyKey, "matrix-id", "matrix-name");
