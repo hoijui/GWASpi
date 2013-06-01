@@ -351,6 +351,9 @@ public class OP_QAMarkers implements MatrixOperation {
 									new String(new byte[] {byteAllele1}).charAt(0)
 									);
 						}
+					} else {
+						throw new IOException("More then 2 known alleles ("
+								+ knownAlleles.size() + ")");
 					}
 					//</editor-fold>
 
@@ -418,9 +421,6 @@ public class OP_QAMarkers implements MatrixOperation {
 					wrMarkerSetCensusMap.put(markerKey, census);
 					wrMarkerSetMismatchStateMap.put(markerKey, cNetCDF.Defaults.DEFAULT_MISMATCH_NO);
 
-					if (orderedAlleles == null) {
-						orderedAlleles = new OrderedAlleles();
-					}
 					// NOTE This was checking for <code>== null</code>
 					//   (which was never the case)
 					//   instead of <code>== '0'</code> before.
