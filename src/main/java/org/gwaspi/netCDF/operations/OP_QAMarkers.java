@@ -298,8 +298,7 @@ public class OP_QAMarkers implements MatrixOperation {
 					if (knownAlleles.isEmpty()) {
 						// Completely missing (00)
 						orderedAlleles = new OrderedAlleles();
-					}
-					if (knownAlleles.size() == 1) {
+					} else if (knownAlleles.size() == 1) {
 						// Homozygote (AA or aa)
 						final byte byteAllele1 = itKnAll.next();
 						final byte byteAllele2 = '0';
@@ -312,8 +311,7 @@ public class OP_QAMarkers implements MatrixOperation {
 								1.0,
 								new String(new byte[] {byteAllele2}).charAt(0)
 								);
-					}
-					if (knownAlleles.size() == 2) {
+					} else if (knownAlleles.size() == 2) {
 						// Heterezygote (contains mix of AA, Aa or aa)
 						final byte byteAllele1 = itKnAll.next();
 						final int countAllele1 = Math.round(knownAlleles.get(byteAllele1));
@@ -423,16 +421,21 @@ public class OP_QAMarkers implements MatrixOperation {
 					if (orderedAlleles == null) {
 						orderedAlleles = new OrderedAlleles();
 					}
-					// NOTE This was checking for == null before,
-					//   which could never happend.
-					//   Therefore, some '0' were left in the end;
-					//   when both alleles were the same/there was only one.
-					if (orderedAlleles.getAllele1() == '0' && orderedAlleles.getAllele2() != '0') {
+					// NOTE This was checking for <code>== null</code>
+					//   (which was never the case)
+					//   instead of <code>== '0'</code> before.
+					//   Therefore, some '0' were left in the end
+					//   (when there was only one known allele).
+					if (orderedAlleles.getAllele1() == '0'
+							&& orderedAlleles.getAllele2() != '0')
+					{
 						orderedAlleles.setAllele1(orderedAlleles.getAllele2());
-					}
-					if (orderedAlleles.getAllele2() == '0' && orderedAlleles.getAllele1() != '0') {
+					} else if (orderedAlleles.getAllele2() == '0'
+							&& orderedAlleles.getAllele1() != '0')
+					{
 						orderedAlleles.setAllele2(orderedAlleles.getAllele1());
 					}
+
 					wrMarkerSetKnownAllelesMap.put(markerKey, orderedAlleles);
 				} else {
 					int[] census = new int[4];
