@@ -28,7 +28,6 @@ import org.gwaspi.global.Config;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MatrixOperationSpec;
-import org.gwaspi.model.Operation;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.Report;
@@ -49,7 +48,7 @@ public class OutputHardyWeinberg {
 	}
 
 	public static boolean writeReportsForMarkersHWData(int opId) throws IOException {
-		Operation op = OperationsList.getById(opId);
+		OperationMetadata op = OperationsList.getById(opId);
 
 		//String hwOutName = "hw_"+op.getId()+"_"+op.getFriendlyName()+".hw";
 		String prefix = ReportsList.getReportNamePrefix(op);

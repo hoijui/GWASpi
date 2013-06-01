@@ -19,7 +19,7 @@ package org.gwaspi.dao;
 
 import java.io.IOException;
 import java.util.List;
-import org.gwaspi.model.Operation;
+import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.Report;
 
 public interface ReportService {
@@ -29,7 +29,7 @@ public interface ReportService {
 	// XXX split into two methods, with either parentOperationId or parentMatrixId param, as we do not allow to fetch by specifying both anyway (on has to be Integer.MIN_VALUE as it works now)
 	List<Report> getReportsList(int parentOperationId, int parentMatrixId) throws IOException;
 
-	String getReportNamePrefix(Operation op);
+	String getReportNamePrefix(OperationMetadata op);
 
 	String createReportsMetadataTable();
 

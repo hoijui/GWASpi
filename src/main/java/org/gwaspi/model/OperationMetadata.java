@@ -53,6 +53,9 @@ import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 	@NamedQuery(
 		name = "operationMetadata_listByParentMatrixIdParentOperationId",
 		query = "SELECT om FROM OperationMetadata om WHERE om.parentMatrixId = :parentMatrixId AND om.parentOperationId = :parentOperationId"),
+	@NamedQuery(
+		name = "operationMetadata_listByParentMatrixIdParentOperationIdOperationType",
+		query = "SELECT om FROM OperationMetadata om WHERE om.parentMatrixId = :parentMatrixId AND om.parentOperationId = :parentOperationId AND om.genotypeCode = :operationType"),
 })
 public class OperationMetadata implements Serializable, MatrixOperationSpec {
 
@@ -212,6 +215,11 @@ public class OperationMetadata implements Serializable, MatrixOperationSpec {
 		this.opName = opName;
 	}
 
+	@Transient
+	public String getFriendlyName() {
+		return getOPName();
+	}
+
 	@Column(
 		name       = "netCDFName",
 		length     = 255,
@@ -228,6 +236,11 @@ public class OperationMetadata implements Serializable, MatrixOperationSpec {
 		this.netCDFName = netCDFName;
 	}
 
+	@Transient
+	public String getNetCDFName() {
+		return getMatrixCDFName();
+	}
+
 	@Column(
 		name       = "gtCode",
 		unique     = false,
@@ -241,6 +254,11 @@ public class OperationMetadata implements Serializable, MatrixOperationSpec {
 
 	protected void setGenotypeCode(OPType gtCode) {
 		this.gtCode = gtCode;
+	}
+
+	@Transient
+	public OPType getOperationType() {
+		return getGenotypeCode();
 	}
 
 	@Transient

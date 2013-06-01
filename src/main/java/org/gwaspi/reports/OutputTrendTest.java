@@ -30,7 +30,6 @@ import org.gwaspi.global.Config;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MatrixOperationSpec;
-import org.gwaspi.model.Operation;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.Report;
@@ -55,7 +54,7 @@ public class OutputTrendTest {
 
 	public static boolean writeReportsForTrendTestData(int opId) throws IOException {
 		boolean result = false;
-		Operation op = OperationsList.getById(opId);
+		OperationMetadata op = OperationsList.getById(opId);
 
 		org.gwaspi.global.Utils.createFolder(Config.getConfigValue(Config.PROPERTY_REPORTS_DIR, ""), "STUDY_" + op.getStudyId());
 		//String manhattanName = "mnhtt_"+outName;

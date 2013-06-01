@@ -40,7 +40,7 @@ import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
 import org.gwaspi.global.Config;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixMetadata;
-import org.gwaspi.model.Operation;
+import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,15 +56,15 @@ public class Dialogs {
 	}
 
 	//<editor-fold defaultstate="expanded" desc="DIALOG BOXES">
-	public static Operation showOperationCombo(int matrixId, OPType filterOpType) throws IOException {
-		Operation selectedOP = null;
-		List<Operation> operationsList = OperationsList.getOperationsList(matrixId);
+	public static OperationMetadata showOperationCombo(int matrixId, OPType filterOpType) throws IOException {
+		OperationMetadata selectedOP = null;
+		List<OperationMetadata> operationsList = OperationsList.getOperationsList(matrixId);
 
 		if (!operationsList.isEmpty()) {
 			List<String> operationsNames = new ArrayList<String>();
-			List<Operation> operationAL = new ArrayList<Operation>();
+			List<OperationMetadata> operationAL = new ArrayList<OperationMetadata>();
 			for (int i = 0; i < operationsList.size(); i++) {
-				Operation op = operationsList.get(i);
+				OperationMetadata op = operationsList.get(i);
 				if (op.getOperationType().equals(filterOpType)) {
 					StringBuilder sb = new StringBuilder();
 					sb.append("OP: ");
@@ -93,15 +93,15 @@ public class Dialogs {
 		return selectedOP;
 	}
 
-	public static Operation showOperationCombo(int matrixId, List<String> filterOpTypeAL, String title) throws IOException {
-		Operation selectedOP = null;
-		List<Operation> operationsList = OperationsList.getOperationsList(matrixId);
+	public static OperationMetadata showOperationCombo(int matrixId, List<String> filterOpTypeAL, String title) throws IOException {
+		OperationMetadata selectedOP = null;
+		List<OperationMetadata> operationsList = OperationsList.getOperationsList(matrixId);
 
 		if (!operationsList.isEmpty()) {
 			List<String> operationsNames = new ArrayList<String>();
-			List<Operation> operationAL = new ArrayList<Operation>();
+			List<OperationMetadata> operationAL = new ArrayList<OperationMetadata>();
 			for (int i = 0; i < operationsList.size(); i++) {
-				Operation op = operationsList.get(i);
+				OperationMetadata op = operationsList.get(i);
 				if (filterOpTypeAL.contains(op.getOperationType().toString())) {
 					StringBuilder sb = new StringBuilder();
 					sb.append("OP: ");
@@ -132,15 +132,15 @@ public class Dialogs {
 		return selectedOP;
 	}
 
-	public static Operation showOperationSubOperationsCombo(int matrixId, int parentOpId, OPType filterOpType, String title) throws IOException {
-		Operation selectedSubOp = null;
-		List<Operation> operationsList = OperationsList.getOperationsList(matrixId, parentOpId);
+	public static OperationMetadata showOperationSubOperationsCombo(int matrixId, int parentOpId, OPType filterOpType, String title) throws IOException {
+		OperationMetadata selectedSubOp = null;
+		List<OperationMetadata> operationsList = OperationsList.getOperationsList(matrixId, parentOpId);
 
 		if (!operationsList.isEmpty()) {
 			List<String> operationsNames = new ArrayList<String>();
-			List<Operation> operationAL = new ArrayList<Operation>();
+			List<OperationMetadata> operationAL = new ArrayList<OperationMetadata>();
 			for (int i = 0; i < operationsList.size(); i++) {
-				Operation op = operationsList.get(i);
+				OperationMetadata op = operationsList.get(i);
 				if (op.getOperationType().equals(filterOpType)) {
 					StringBuilder sb = new StringBuilder();
 					sb.append("OP: ");

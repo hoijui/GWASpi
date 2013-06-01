@@ -36,7 +36,7 @@ import org.gwaspi.dao.MatrixService;
 import org.gwaspi.global.Config;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
-import org.gwaspi.model.Operation;
+import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.ReportsList;
 import org.slf4j.Logger;
@@ -234,9 +234,9 @@ public class JPAMatrixService implements MatrixService {
 			genotypesFolder += "/STUDY_" + matrixMetadata.getStudyId() + "/";
 
 			// DELETE OPERATION netCDFs FROM THIS MATRIX
-			List<Operation> operations = OperationsList.getOperationsList(matrixId);
-			for (Operation op : operations) {
-				File opFile = new File(genotypesFolder + op.getNetCDFName() + ".nc");
+			List<OperationMetadata> operations = OperationsList.getOperationsList(matrixId);
+			for (OperationMetadata op : operations) {
+				File opFile = new File(genotypesFolder + op.getMatrixCDFName()+ ".nc");
 				org.gwaspi.global.Utils.tryToDeleteFile(opFile);
 			}
 

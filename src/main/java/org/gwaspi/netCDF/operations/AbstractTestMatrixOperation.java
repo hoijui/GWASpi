@@ -30,7 +30,6 @@ import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixMetadata;
-import org.gwaspi.model.Operation;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.SampleKey;
@@ -47,17 +46,17 @@ public abstract class AbstractTestMatrixOperation implements MatrixOperation {
 	private final Logger log
 			= LoggerFactory.getLogger(AbstractTestMatrixOperation.class);
 
-	private int rdMatrixId;
-	private Operation markerCensusOP;
-	private Operation hwOP;
-	private double hwThreshold;
-	private String testName;
-	private OPType testType;
+	private final int rdMatrixId;
+	private final OperationMetadata markerCensusOP;
+	private final OperationMetadata hwOP;
+	private final double hwThreshold;
+	private final String testName;
+	private final OPType testType;
 
 	public AbstractTestMatrixOperation(
 			int rdMatrixId,
-			Operation markerCensusOP,
-			Operation hwOP,
+			OperationMetadata markerCensusOP,
+			OperationMetadata hwOP,
 			double hwThreshold,
 			String testName,
 			OPType testType)
@@ -217,15 +216,14 @@ public abstract class AbstractTestMatrixOperation implements MatrixOperation {
 		return filtered;
 	}
 
-	static boolean excludeMarkersByHW(Operation hwOP, double hwThreshold, Collection<MarkerKey> excludeMarkerSetMap) throws IOException {
+	static boolean excludeMarkersByHW(OperationMetadata hwOP, double hwThreshold, Collection<MarkerKey> excludeMarkerSetMap) throws IOException {
 
 		excludeMarkerSetMap.clear();
 		int totalMarkerNb = 0;
 
 		if (hwOP != null) {
-			OperationMetadata hwMetadata = OperationsList.getOperationMetadata(hwOP.getId());
-			NetcdfFile rdHWNcFile = NetcdfFile.open(hwMetadata.getPathToMatrix());
-			MarkerOperationSet rdHWOperationSet = new MarkerOperationSet(hwMetadata.getStudyId(), hwMetadata.getOPId());
+			NetcdfFile rdHWNcFile = NetcdfFile.open(hwOP.getPathToMatrix());
+			MarkerOperationSet rdHWOperationSet = new MarkerOperationSet(hwOP.getStudyId(), hwOP.getOPId());
 			Map<MarkerKey, Double> rdHWMarkerSetMap = rdHWOperationSet.getOpSetMap();
 			totalMarkerNb = rdHWMarkerSetMap.size();
 

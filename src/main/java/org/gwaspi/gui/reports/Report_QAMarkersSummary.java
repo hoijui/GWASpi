@@ -58,7 +58,7 @@ import org.gwaspi.gui.utils.HelpURLs;
 import org.gwaspi.gui.utils.IntegerInputVerifier;
 import org.gwaspi.gui.utils.RowRendererDefault;
 import org.gwaspi.model.MatrixKey;
-import org.gwaspi.model.Operation;
+import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -390,7 +390,7 @@ public class Report_QAMarkersSummary extends JPanel {
 	private static class BackAction extends AbstractAction {
 
 		private final int opId;
-		private final Operation op;
+		private final OperationMetadata op;
 
 		BackAction(int opId) throws IOException {
 

@@ -42,7 +42,7 @@ public class ReportsList {
 		return reportService.getReportsList(parentOperationId, parentMatrixId);
 	}
 
-	public static String getReportNamePrefix(Operation op) {
+	public static String getReportNamePrefix(OperationMetadata op) {
 		return reportService.getReportNamePrefix(op);
 	}
 

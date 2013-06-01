@@ -48,7 +48,6 @@ import org.gwaspi.gui.utils.CursorUtils;
 import org.gwaspi.gui.utils.Dialogs;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixMetadata;
-import org.gwaspi.model.Operation;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.SampleKey;
@@ -87,7 +86,6 @@ public final class SampleQAHetzygPlotZoom extends JPanel {
 	public static final double PLOT_SAMPLEQA_MISSING_THRESHOLD_DEFAULT = 0.5;
 
 	private int opId;
-	private Operation op;
 	private OperationMetadata rdOPMetadata;
 	private Map<String, SampleKey> labeler;
 	private MatrixMetadata rdMatrixMetadata;
@@ -130,7 +128,6 @@ public final class SampleQAHetzygPlotZoom extends JPanel {
 		this.opId = opId;
 
 		try {
-			op = OperationsList.getById(this.opId);
 			rdOPMetadata = OperationsList.getOperationMetadata(this.opId);
 			rdMatrixMetadata = MatricesList.getMatrixMetadataById(rdOPMetadata.getParentMatrixId());
 		} catch (IOException ex) {

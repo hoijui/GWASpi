@@ -31,7 +31,6 @@ import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.dao.OperationService;
 import org.gwaspi.global.Config;
 import org.gwaspi.model.MatrixOperationSpec;
-import org.gwaspi.model.Operation;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.ReportsList;
 import ucar.nc2.Dimension;
@@ -100,16 +99,16 @@ public class JPAOperationService implements OperationService {
 	}
 
 	@Override
-	public Operation getById(int operationId) throws IOException {
+	public OperationMetadata getById(int operationId) throws IOException {
 
-		Operation operation = null;
+		OperationMetadata operation = null;
 
 		EntityManager em = null;
 		try {
 			em = open();
-			Query query = em.createNamedQuery("operation_fetchById");
+			Query query = em.createNamedQuery("operationMetadata_fetchById");
 			query.setParameter("id", operationId);
-			operation = (Operation) query.getSingleResult();
+			operation = (OperationMetadata) query.getSingleResult();
 		} catch (NoResultException ex) {
 			LOG.error("Failed fetching a operation by id: " + operationId
 					+ " (id not found)", ex);
@@ -123,35 +122,15 @@ public class JPAOperationService implements OperationService {
 	}
 
 	@Override
-	public List<Operation> getOperationsList(int parentMatrixId) throws IOException {
+	public List<OperationMetadata> getOperationsList(int parentMatrixId, int parentOpId) throws IOException {
 
-		List<Operation> operations = Collections.EMPTY_LIST;
-
-		EntityManager em = null;
-		try {
-			em = open();
-			Query query = em.createNamedQuery("operation_listByParentMatrixId");
-			query.setParameter("parentMatrixId", parentMatrixId);
-			operations = query.getResultList();
-		} catch (Exception ex) {
-			LOG.error("Failed fetching operations", ex);
-		} finally {
-			close(em);
-		}
-
-		return operations;
-	}
-
-	@Override
-	public List<Operation> getOperationsList(int parentMatrixId, int parentOpId) throws IOException {
-
-		List<Operation> operations = Collections.EMPTY_LIST;
+		List<OperationMetadata> operations = Collections.EMPTY_LIST;
 
 		EntityManager em = null;
 		try {
 			em = open();
 			Query query = em.createNamedQuery(
-					"operation_listByParentMatrixIdParentOperationId");
+					"operationMetadata_listByParentMatrixIdParentOperationId");
 			query.setParameter("parentMatrixId", parentMatrixId);
 			query.setParameter("parentOperationId", parentOpId);
 			operations = query.getResultList();
@@ -165,15 +144,15 @@ public class JPAOperationService implements OperationService {
 	}
 
 	@Override
-	public List<Operation> getOperationsList(int parentMatrixId, int parentOpId, OPType opType) throws IOException {
+	public List<OperationMetadata> getOperationsList(int parentMatrixId, int parentOpId, OPType opType) throws IOException {
 
-		List<Operation> operations = Collections.EMPTY_LIST;
+		List<OperationMetadata> operations = Collections.EMPTY_LIST;
 
 		EntityManager em = null;
 		try {
 			em = open();
 			Query query = em.createNamedQuery(
-					"operation_listByParentMatrixIdParentOperationIdOperationType");
+					"operationMetadata_listByParentMatrixIdParentOperationIdOperationType");
 			query.setParameter("parentMatrixId", parentMatrixId);
 			query.setParameter("parentOperationId", parentOpId);
 			query.setParameter("operationType", opType);
@@ -259,23 +238,6 @@ public class JPAOperationService implements OperationService {
 			begin(em);
 			em.persist(operationMetadata);
 			commit(em);
-
-			// HACK now we have the generated matrix-ID
-			em = open();
-			begin(em);
-			Operation operation = new Operation(
-					operationMetadata.getOPId(),
-					operationMetadata.getOPName(),
-					operationMetadata.getMatrixCDFName(),
-					operationMetadata.getGenotypeCode(),
-					operationMetadata.getParentMatrixId(),
-					operationMetadata.getParentOperationId(),
-					"", // command
-					operationMetadata.getDescription(),
-					operationMetadata.getStudyId()
-					);
-			em.persist(operation);
-			commit(em);
 		} catch (Exception ex) {
 			LOG.error("Failed persisting operation-metadata", ex);
 			rollback(em);
@@ -309,10 +271,10 @@ public class JPAOperationService implements OperationService {
 	public void deleteOperationBranch(int studyId, int opId, boolean deleteReports) throws IOException {
 
 		try {
-			Operation op = getById(opId);
+			OperationMetadata op = getById(opId);
 			String genotypesFolder = Config.getConfigValue(Config.PROPERTY_GENOTYPES_DIR, "");
 
-			List<Operation> operations = getOperationsList(op.getParentMatrixId(), opId);
+			List<OperationMetadata> operations = getOperationsList(op.getParentMatrixId(), opId);
 			if (!operations.isEmpty()) {
 				operations.add(op);
 				for (int i = 0; i < operations.size(); i++) {
@@ -326,8 +288,8 @@ public class JPAOperationService implements OperationService {
 					try {
 						em = open();
 						begin(em);
-						final int operationId = operations.get(i).getId();
-						Operation operation = em.find(Operation.class, operationId);
+						final int operationId = operations.get(i).getId(); // FIXME use OperationKey
+						OperationMetadata operation = em.find(OperationMetadata.class, operationId);
 						if (operation == null) {
 							throw new IllegalArgumentException("No operation found with this ID: " + operationId);
 						}

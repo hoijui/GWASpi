@@ -57,7 +57,6 @@ import org.gwaspi.gui.utils.RowRendererDefault;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
-import org.gwaspi.model.Operation;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.SampleInfo;
@@ -74,25 +73,25 @@ public class MatrixAnalysePanel extends JPanel {
 	private static final Logger log = LoggerFactory.getLogger(MatrixAnalysePanel.class);
 
 	// Variables declaration - do not modify
-	private MatrixKey parentMatrix;
-	private final Operation currentOP;
-	private JButton btn_1_1;
-	private JButton btn_1_2;
-	private JButton btn_1_3;
-	private JButton btn_1_4;
-	private JButton btn_1_5;
-	private JButton btn_Back;
-	private JButton btn_DeleteOperation;
-	private JButton btn_Help;
-	private JPanel pnl_Spacer;
-	private JPanel pnl_NewOperation;
-	private JPanel pnl_Buttons;
-	private JPanel pnl_Footer;
-	private JPanel pnl_MatrixDesc;
-	private JScrollPane scrl_MatrixDesc;
-	private JScrollPane scrl_MatrixOperations;
-	private JTable tbl_MatrixOperations;
-	private JTextArea txtA_Description;
+	private final MatrixKey parentMatrix;
+	private final OperationMetadata currentOP;
+	private final JButton btn_1_1;
+	private final JButton btn_1_2;
+	private final JButton btn_1_3;
+	private final JButton btn_1_4;
+	private final JButton btn_1_5;
+	private final JButton btn_Back;
+	private final JButton btn_DeleteOperation;
+	private final JButton btn_Help;
+	private final JPanel pnl_Spacer;
+	private final JPanel pnl_NewOperation;
+	private final JPanel pnl_Buttons;
+	private final JPanel pnl_Footer;
+	private final JPanel pnl_MatrixDesc;
+	private final JScrollPane scrl_MatrixDesc;
+	private final JScrollPane scrl_MatrixOperations;
+	private final JTable tbl_MatrixOperations;
+	private final JTextArea txtA_Description;
 	private GWASinOneGOParams gwasParams = new GWASinOneGOParams();
 	private final Action gwasInOneGoAction;
 	// End of variables declaration
@@ -304,12 +303,12 @@ public class MatrixAnalysePanel extends JPanel {
 
 		private MatrixKey parentMatrix;
 		private GWASinOneGOParams gwasParams;
-		private final Operation currentOP;
+		private final OperationMetadata currentOP;
 		private final boolean allelic;
 		private final String testName;
 		private final String testNameHtml;
 
-		AssociationTestsAction(MatrixKey parentMatrix, GWASinOneGOParams gwasParams, Operation currentOP, boolean allelic) {
+		AssociationTestsAction(MatrixKey parentMatrix, GWASinOneGOParams gwasParams, OperationMetadata currentOP, boolean allelic) {
 
 			this.parentMatrix = parentMatrix;
 			this.gwasParams = gwasParams;
@@ -320,7 +319,7 @@ public class MatrixAnalysePanel extends JPanel {
 			putValue(NAME, testNameHtml);
 		}
 
-		public static int evaluateCensusOPId(Operation currentOP, MatrixKey parentMatrix) throws IOException {
+		public static int evaluateCensusOPId(OperationMetadata currentOP, MatrixKey parentMatrix) throws IOException {
 
 			int censusOPId = Integer.MIN_VALUE;
 
@@ -331,7 +330,7 @@ public class MatrixAnalysePanel extends JPanel {
 				List<String> censusTypesAL = new ArrayList<String>();
 				censusTypesAL.add(OPType.MARKER_CENSUS_BY_AFFECTION.toString());
 				censusTypesAL.add(OPType.MARKER_CENSUS_BY_PHENOTYPE.toString());
-				Operation markerCensusOP = Dialogs.showOperationCombo(parentMatrix.getMatrixId(), censusTypesAL, Text.Operation.GTFreqAndHW);
+				OperationMetadata markerCensusOP = Dialogs.showOperationCombo(parentMatrix.getMatrixId(), censusTypesAL, Text.Operation.GTFreqAndHW);
 				if (markerCensusOP != null) {
 					censusOPId = markerCensusOP.getId();
 				}
@@ -402,8 +401,8 @@ public class MatrixAnalysePanel extends JPanel {
 						if (gwasParams.isProceed()) {
 							ProcessTab.getSingleton().showTab();
 							// GET HW OPERATION
-							List<Operation> hwOperations = OperationsList.getOperationsList(parentMatrix.getMatrixId(), censusOPId, OPType.HARDY_WEINBERG);
-							for (Operation currentHWop : hwOperations) {
+							List<OperationMetadata> hwOperations = OperationsList.getOperationsList(parentMatrix.getMatrixId(), censusOPId, OPType.HARDY_WEINBERG);
+							for (OperationMetadata currentHWop : hwOperations) {
 								// REQUEST WHICH HW TO USE
 								if (currentHWop != null) {
 									hwOPId = currentHWop.getId();
@@ -437,11 +436,11 @@ public class MatrixAnalysePanel extends JPanel {
 
 	private static class TrendTestsAction extends AbstractAction {
 
-		private MatrixKey parentMatrix;
+		private final MatrixKey parentMatrix;
 		private GWASinOneGOParams gwasParams;
-		private final Operation currentOP;
+		private final OperationMetadata currentOP;
 
-		TrendTestsAction(MatrixKey parentMatrix, GWASinOneGOParams gwasParams, Operation currentOP) {
+		TrendTestsAction(MatrixKey parentMatrix, GWASinOneGOParams gwasParams, OperationMetadata currentOP) {
 
 			this.parentMatrix = parentMatrix;
 			this.gwasParams = gwasParams;
@@ -511,8 +510,8 @@ public class MatrixAnalysePanel extends JPanel {
 						if (gwasParams.isProceed()) {
 							ProcessTab.getSingleton().showTab();
 							// GET HW OPERATION
-							List<Operation> hwOperations = OperationsList.getOperationsList(parentMatrix.getMatrixId(), censusOPId, OPType.HARDY_WEINBERG);
-							for (Operation currentHWop : hwOperations) {
+							List<OperationMetadata> hwOperations = OperationsList.getOperationsList(parentMatrix.getMatrixId(), censusOPId, OPType.HARDY_WEINBERG);
+							for (OperationMetadata currentHWop : hwOperations) {
 								// REQUEST WHICH HW TO USE
 								if (currentHWop != null) {
 									hwOPId = currentHWop.getId();
@@ -625,12 +624,12 @@ public class MatrixAnalysePanel extends JPanel {
 	//<editor-fold defaultstate="expanded" desc="HELPERS">
 	private static class DeleteOperationAction extends AbstractAction {
 
-		private Operation currentOP;
-		private Component dialogParent;
-		private MatrixKey parentMatrix;
-		private JTable table;
+		private final OperationMetadata currentOP;
+		private final Component dialogParent;
+		private final MatrixKey parentMatrix;
+		private final JTable table;
 
-		DeleteOperationAction(Operation currentOP, Component dialogParent, MatrixKey parentMatrix, JTable table) {
+		DeleteOperationAction(OperationMetadata currentOP, Component dialogParent, MatrixKey parentMatrix, JTable table) {
 
 			this.currentOP = currentOP;
 			this.dialogParent = dialogParent;
@@ -683,7 +682,7 @@ public class MatrixAnalysePanel extends JPanel {
 
 	private static class GwasInOneGoAction extends AbstractAction {
 
-		private MatrixKey parentMatrix;
+		private final MatrixKey parentMatrix;
 		private GWASinOneGOParams gwasParams;
 
 		GwasInOneGoAction(MatrixKey parentMatrix, GWASinOneGOParams gwasParams) {
@@ -767,9 +766,9 @@ public class MatrixAnalysePanel extends JPanel {
 	private static class BackAction extends AbstractAction {
 
 		private final MatrixKey parentMatrix;
-		private final Operation currentOP;
+		private final OperationMetadata currentOP;
 
-		BackAction(MatrixKey parentMatrix, Operation currentOP) {
+		BackAction(MatrixKey parentMatrix, OperationMetadata currentOP) {
 
 			this.parentMatrix = parentMatrix;
 			this.currentOP = currentOP;

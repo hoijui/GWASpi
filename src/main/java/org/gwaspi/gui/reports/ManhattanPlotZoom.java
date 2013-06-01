@@ -55,7 +55,6 @@ import org.gwaspi.gui.utils.URLInDefaultBrowser;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixMetadata;
-import org.gwaspi.model.Operation;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.Report;
@@ -99,7 +98,7 @@ public final class ManhattanPlotZoom extends JPanel {
 	public static final int MARKERS_NUM_DEFAULT = (int) Math.round(100000 * ((double) StartGWASpi.maxHeapSize / 2000));
 
 	private int opId;
-	private Operation op;
+	private OperationMetadata op;
 	private OperationMetadata rdOPMetadata;
 	private Map<String, MarkerKey> labeler;
 	private MatrixMetadata rdMatrixMetadata;

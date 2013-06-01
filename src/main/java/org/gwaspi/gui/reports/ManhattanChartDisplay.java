@@ -43,7 +43,7 @@ import org.gwaspi.gui.MatrixAnalysePanel;
 import org.gwaspi.gui.utils.CursorUtils;
 import org.gwaspi.gui.utils.Dialogs;
 import org.gwaspi.model.MatrixKey;
-import org.gwaspi.model.Operation;
+import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.netCDF.operations.MarkerOperationSet;
 import org.slf4j.Logger;
@@ -355,7 +355,7 @@ public final class ManhattanChartDisplay extends JPanel {
 		@Override
 		public void actionPerformed(ActionEvent evt) {
 			try {
-				Operation op = OperationsList.getById(opId);
+				OperationMetadata op = OperationsList.getById(opId);
 				GWASpiExplorerPanel.getSingleton().getTree().setSelectionPath(GWASpiExplorerPanel.getSingleton().getTree().getSelectionPath().getParentPath());
 				GWASpiExplorerPanel.getSingleton().setPnl_Content(new MatrixAnalysePanel(new MatrixKey(op.getStudyId(), op.getParentMatrixId()), opId));
 				GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());

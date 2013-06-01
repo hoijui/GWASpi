@@ -50,7 +50,7 @@ import org.gwaspi.gui.utils.RowRendererDefault;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
-import org.gwaspi.model.Operation;
+import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.threadbox.MultiOperations;
 import org.gwaspi.threadbox.SwingWorkerItemList;
@@ -406,7 +406,7 @@ public class CurrentMatrixPanel extends JPanel {
 						}
 
 						// CHECK IF MARKER QA EXISTS FOR EXPORT TO BE PERMITTED
-						List<Operation> operations = OperationsList.getOperationsList(matrix.getMatrixId());
+						List<OperationMetadata> operations = OperationsList.getOperationsList(matrix.getMatrixId());
 						int markersQAOpId = OperationsList.getIdOfLastOperationTypeOccurance(operations, OPType.MARKER_QA);
 						if (markersQAOpId != Integer.MIN_VALUE) {
 							MultiOperations.doExportMatrix(matrix.getStudyId(), matrix.getMatrixId(), format, expPhenotype);

@@ -37,7 +37,7 @@ import org.gwaspi.global.Text;
 import org.gwaspi.gui.utils.BrowserHelpUrlAction;
 import org.gwaspi.gui.utils.Dialogs;
 import org.gwaspi.model.MatrixKey;
-import org.gwaspi.model.Operation;
+import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.Report;
 import org.gwaspi.model.ReportsList;
@@ -47,7 +47,7 @@ import org.gwaspi.threadbox.SwingWorkerItemList;
 public class Report_AnalysisPanel extends JPanel {
 
 	private final MatrixKey parentMatrix;
-	private final Operation currentOP;
+	private final OperationMetadata currentOP;
 	// Variables declaration - do not modify
 	private final JButton btn_Back;
 	private final JButton btn_DeleteOperation;
@@ -162,9 +162,9 @@ public class Report_AnalysisPanel extends JPanel {
 
 		private final MatrixKey parentMatrix;
 		private final Component dialogParent;
-		private final Operation currentOP;
+		private final OperationMetadata currentOP;
 
-		DeleteOperationAction(MatrixKey parentMatrix, Component dialogParent, Operation currentOP) {
+		DeleteOperationAction(MatrixKey parentMatrix, Component dialogParent, OperationMetadata currentOP) {
 
 			this.parentMatrix = parentMatrix;
 			this.dialogParent = dialogParent;

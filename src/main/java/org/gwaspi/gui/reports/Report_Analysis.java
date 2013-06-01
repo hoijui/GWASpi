@@ -74,7 +74,7 @@ import org.gwaspi.gui.utils.LinksExternalResouces;
 import org.gwaspi.gui.utils.RowRendererDefault;
 import org.gwaspi.gui.utils.URLInDefaultBrowser;
 import org.gwaspi.model.MatrixKey;
-import org.gwaspi.model.Operation;
+import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.netCDF.operations.MarkerOperationSet;
 import org.slf4j.Logger;
@@ -602,12 +602,12 @@ public abstract class Report_Analysis extends JPanel {
 	static class BackAction extends AbstractAction {
 
 		private final int opId;
-		private final Operation op;
+		private final OperationMetadata op;
 
 		BackAction(int opId) {
 
 			this.opId = opId;
-			Operation operation = null;
+			OperationMetadata operation = null;
 			try {
 				operation = OperationsList.getById(opId);
 			} catch (IOException ex) {

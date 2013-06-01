@@ -27,7 +27,7 @@ import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.dao.ReportService;
-import org.gwaspi.model.Operation;
+import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.Report;
 import org.slf4j.Logger;
@@ -158,11 +158,11 @@ public class JPAReportService implements ReportService {
 	}
 
 	@Override
-	public String getReportNamePrefix(Operation op) {
+	public String getReportNamePrefix(OperationMetadata op) {
 		return extractReportNamePrefix(op);
 	}
 
-	public static String extractReportNamePrefix(Operation op) {
+	public static String extractReportNamePrefix(OperationMetadata op) {
 		StringBuilder prefix = new StringBuilder();
 		prefix.append("mx-");
 		prefix.append(op.getParentMatrixId());
@@ -177,7 +177,7 @@ public class JPAReportService implements ReportService {
 					|| operationType.equals(OPType.GENOTYPICTEST)
 					|| operationType.equals(OPType.TRENDTEST))
 			{
-				Operation parentOp = OperationsList.getById(op.getParentOperationId());
+				OperationMetadata parentOp = OperationsList.getById(op.getParentOperationId());
 				String[] tmp = parentOp.getFriendlyName().split("-", 2);
 				tmp = tmp[1].split("using");
 				prefix.append("_");

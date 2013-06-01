@@ -22,7 +22,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
-import org.gwaspi.model.Operation;
+import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,8 +50,8 @@ public class OperationManager {
 		org.gwaspi.global.Utils.sysoutStart("Genotypes Frequency Count by Affection");
 
 		int resultOpId; // Integer.MIN_VALUE
-		Operation sampleQAOP = OperationsList.getById(samplesQAOpId);
-		Operation markerQAOP = OperationsList.getById(markersQAOpId);
+		OperationMetadata sampleQAOP = OperationsList.getById(samplesQAOpId);
+		OperationMetadata markerQAOP = OperationsList.getById(markersQAOpId);
 
 		resultOpId = new OP_MarkerCensus(
 				_rdMatrixId,
@@ -82,8 +82,8 @@ public class OperationManager {
 		org.gwaspi.global.Utils.sysoutStart("Genotypes Frequency Count using " + phenoFile.getName());
 
 		int resultOpId; // Integer.MIN_VALUE
-		Operation sampleQAOP = OperationsList.getById(samplesQAOpId);
-		Operation markerQAOP = OperationsList.getById(markersQAOpId);
+		OperationMetadata sampleQAOP = OperationsList.getById(samplesQAOpId);
+		OperationMetadata markerQAOP = OperationsList.getById(markersQAOpId);
 
 		resultOpId = new OP_MarkerCensus(
 				_rdMatrixId,
@@ -101,7 +101,7 @@ public class OperationManager {
 
 	public static int performHardyWeinberg(int censusOpId, String hwName) throws IOException, InvalidRangeException {
 		int resultOpId; // Integer.MIN_VALUE
-		Operation censusOP = OperationsList.getById(censusOpId);
+		OperationMetadata censusOP = OperationsList.getById(censusOpId);
 
 		org.gwaspi.global.Utils.sysoutStart("Hardy-Weinberg");
 
@@ -128,8 +128,8 @@ public class OperationManager {
 
 		org.gwaspi.global.Utils.sysoutStart(" " + (allelic ? "Allelic" : "Genotypic") + " Association Test using QA and HW thresholds");
 
-		Operation markerCensusOP = OperationsList.getById(censusOpId);
-		Operation hwOP = OperationsList.getById(hwOpId);
+		OperationMetadata markerCensusOP = OperationsList.getById(censusOpId);
+		OperationMetadata hwOP = OperationsList.getById(hwOpId);
 
 		AbstractTestMatrixOperation testOperation = new OP_AssociationTests(
 				rdMatrixId,
@@ -153,8 +153,8 @@ public class OperationManager {
 
 		org.gwaspi.global.Utils.sysoutStart("Cochran-Armitage Trend Test using QA and HW thresholds");
 
-		Operation markerCensusOP = OperationsList.getById(censusOpId);
-		Operation hwOP = OperationsList.getById(hwOpId);
+		OperationMetadata markerCensusOP = OperationsList.getById(censusOpId);
+		OperationMetadata hwOP = OperationsList.getById(hwOpId);
 
 		resultOpId = new OP_TrendTests(
 				_rdMatrixId,
@@ -172,9 +172,9 @@ public class OperationManager {
 		List<OPType> missingOPs = new ArrayList<OPType>(necessaryOPs);
 
 		try {
-			List<Operation> chkOperations = OperationsList.getOperationsList(matrixId);
+			List<OperationMetadata> chkOperations = OperationsList.getOperationsList(matrixId);
 
-			for (Operation operation : chkOperations) {
+			for (OperationMetadata operation : chkOperations) {
 				OPType type = operation.getOperationType();
 				if (necessaryOPs.contains(type)) {
 					missingOPs.remove(type);
@@ -192,9 +192,9 @@ public class OperationManager {
 		List<OPType> missingOPs = new ArrayList<OPType>(necessaryOPs);
 
 		try {
-			List<Operation> chkOperations = OperationsList.getOperationsList(matrixId);
+			List<OperationMetadata> chkOperations = OperationsList.getOperationsList(matrixId);
 
-			for (Operation operation : chkOperations) {
+			for (OperationMetadata operation : chkOperations) {
 				// Check if current operation is from parent matrix or parent operation
 				int parentOperationId = operation.getParentOperationId();
 				if ((parentOperationId == -1) || (parentOperationId == opId)) {
@@ -212,9 +212,9 @@ public class OperationManager {
 		List<OPType> nonoOPs = new ArrayList<OPType>();
 
 		try {
-			List<Operation> chkOperations = OperationsList.getOperationsList(matrixId);
+			List<OperationMetadata> chkOperations = OperationsList.getOperationsList(matrixId);
 
-			for (Operation operation : chkOperations) {
+			for (OperationMetadata operation : chkOperations) {
 				OPType type = operation.getOperationType();
 				if (blackListOPs.contains(type)) {
 					nonoOPs.add(type);
@@ -232,9 +232,9 @@ public class OperationManager {
 		List<OPType> nonoOPs = new ArrayList<OPType>();
 
 		try {
-			List<Operation> chkOperations = OperationsList.getOperationsList(matrixId, opId);
+			List<OperationMetadata> chkOperations = OperationsList.getOperationsList(matrixId, opId);
 
-			for (Operation operation : chkOperations) {
+			for (OperationMetadata operation : chkOperations) {
 				OPType type = operation.getOperationType();
 				if (blackListOPs.contains(type)) {
 					nonoOPs.add(type);

@@ -24,7 +24,6 @@ import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.MarkerKey;
-import org.gwaspi.model.Operation;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.SampleKey;
@@ -39,10 +38,10 @@ public class OP_HardyWeinberg implements MatrixOperation {
 
 	private final Logger log = LoggerFactory.getLogger(OP_HardyWeinberg.class);
 
-	private Operation markerCensusOP;
+	private OperationMetadata markerCensusOP;
 	private String censusName;
 
-	public OP_HardyWeinberg(Operation markerCensusOP, String censusName) {
+	public OP_HardyWeinberg(OperationMetadata markerCensusOP, String censusName) {
 
 		this.markerCensusOP = markerCensusOP;
 		this.censusName = censusName;

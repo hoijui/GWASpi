@@ -36,7 +36,6 @@ import org.gwaspi.global.Text;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixMetadata;
-import org.gwaspi.model.Operation;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.SampleInfo;
@@ -57,23 +56,23 @@ public class OP_MarkerCensus implements MatrixOperation {
 
 	private final Logger log = LoggerFactory.getLogger(OP_MarkerCensus.class);
 
-	private int rdMatrixId;
-	private String censusName;
-	private Operation sampleQAOP;
-	private double sampleMissingRatio;
-	private double sampleHetzygRatio;
-	private Operation markerQAOP;
-	private boolean discardMismatches;
-	private double markerMissingRatio;
-	private File phenoFile;
+	private final int rdMatrixId;
+	private final String censusName;
+	private final OperationMetadata sampleQAOP;
+	private final double sampleMissingRatio;
+	private final double sampleHetzygRatio;
+	private final OperationMetadata markerQAOP;
+	private final boolean discardMismatches;
+	private final double markerMissingRatio;
+	private final File phenoFile;
 
 	public OP_MarkerCensus(
 			int rdMatrixId,
 			String censusName,
-			Operation sampleQAOP,
+			OperationMetadata sampleQAOP,
 			double sampleMissingRatio,
 			double sampleHetzygRatio,
-			Operation markerQAOP,
+			OperationMetadata markerQAOP,
 			boolean discardMismatches,
 			double markerMissingRatio,
 			File phenoFile)

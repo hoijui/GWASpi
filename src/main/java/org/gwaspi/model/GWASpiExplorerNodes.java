@@ -43,10 +43,10 @@ public class GWASpiExplorerNodes {
 
 		public static final int NODE_ID_NONE = 0;
 
-		private int nodeId;
-		private int parentNodeId;
-		private String nodeType;
-		private String nodeUniqueName;
+		private final int nodeId;
+		private final int parentNodeId;
+		private final String nodeType;
+		private final String nodeUniqueName;
 		private boolean collapsable;
 
 		public NodeElementInfo(
@@ -164,7 +164,7 @@ public class GWASpiExplorerNodes {
 	protected static DefaultMutableTreeNode createOperationTreeNode(int opId) {
 		DefaultMutableTreeNode tn = null;
 		try {
-			Operation op = OperationsList.getById(opId);
+			OperationMetadata op = OperationsList.getById(opId);
 			tn = new DefaultMutableTreeNode(new NodeElementInfo(
 					op.getParentMatrixId(),
 					opId,
@@ -187,7 +187,7 @@ public class GWASpiExplorerNodes {
 //			studyNodeName
 //			nodeUniqueName
 
-			Operation op = OperationsList.getById(opId);
+			OperationMetadata op = OperationsList.getById(opId);
 //			int[] pathIds = new int[]{0, op.getId(), op.getParentMatrixId(), op.getParentOperationId(), opId};
 			tn = new DefaultMutableTreeNode(new NodeElementInfo(
 					op.getParentOperationId(),
@@ -323,7 +323,7 @@ public class GWASpiExplorerNodes {
 	public static void insertSubOperationUnderOperationNode(int parentOpId, int opId) throws IOException {
 		try {
 			// GET MATRIX
-			Operation parentOP = OperationsList.getById(parentOpId);
+			OperationMetadata parentOP = OperationsList.getById(parentOpId);
 			TreePath parentPath = GWASpiExplorerPanel.getSingleton().getTree().getNextMatch("OP: " + parentOpId + " - " + parentOP.getFriendlyName(), 0, Position.Bias.Forward);
 
 			DefaultMutableTreeNode newNode = createOperationTreeNode(opId);
@@ -357,7 +357,7 @@ public class GWASpiExplorerNodes {
 		if (StartGWASpi.guiMode) {
 			try {
 				// GET OPERATION
-				Operation parentOP = OperationsList.getById(parentOpId);
+				OperationMetadata parentOP = OperationsList.getById(parentOpId);
 				TreePath parentPath = GWASpiExplorerPanel.getSingleton().getTree().getNextMatch("OP: " + parentOpId + " - " + parentOP.getFriendlyName(), 0, Position.Bias.Forward);
 				DefaultMutableTreeNode parentNode = (DefaultMutableTreeNode) parentPath.getLastPathComponent();
 

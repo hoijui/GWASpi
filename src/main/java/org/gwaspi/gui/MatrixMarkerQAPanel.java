@@ -40,7 +40,7 @@ import org.gwaspi.gui.utils.HelpURLs;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
-import org.gwaspi.model.Operation;
+import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.netCDF.operations.GWASinOneGOParams;
 import org.gwaspi.threadbox.MultiOperations;
@@ -55,7 +55,7 @@ public class MatrixMarkerQAPanel extends JPanel {
 
 	// Variables declaration - do not modify
 	private final MatrixKey parentMatrix;
-	private final Operation currentOP;
+	private final OperationMetadata currentOP;
 	private final JButton btn_Back;
 	private final JButton btn_DeleteOperation;
 	private final JButton btn_Help;
@@ -174,11 +174,11 @@ public class MatrixMarkerQAPanel extends JPanel {
 
 	private static class DeleteOperationAction extends AbstractAction {
 
-		private final Operation currentOP;
+		private final OperationMetadata currentOP;
 		private final Component dialogParent;
 		private final MatrixKey parentMatrix;
 
-		DeleteOperationAction(Operation currentOP, Component dialogParent, MatrixKey parentMatrix) {
+		DeleteOperationAction(OperationMetadata currentOP, Component dialogParent, MatrixKey parentMatrix) {
 
 			this.currentOP = currentOP;
 			this.dialogParent = dialogParent;

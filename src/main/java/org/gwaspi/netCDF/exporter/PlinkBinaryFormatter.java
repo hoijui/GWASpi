@@ -31,7 +31,7 @@ import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MatrixMetadata;
-import org.gwaspi.model.Operation;
+import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleKey;
@@ -121,7 +121,7 @@ public class PlinkBinaryFormatter implements Formatter {
 		rdMarkerSet.appendVariableToMarkerSetMapValue(cNetCDF.Variables.VAR_MARKERS_POS, sep);
 
 		// ALLELES
-		List<Operation> operations = OperationsList.getOperationsList(rdMatrixMetadata.getMatrixId());
+		List<OperationMetadata> operations = OperationsList.getOperationsList(rdMatrixMetadata.getMatrixId());
 		int markersQAOpId = OperationsList.getIdOfLastOperationTypeOccurance(operations, OPType.MARKER_QA);
 
 		Map<MarkerKey, char[]> minorAllelesMap = GatherQAMarkersData.loadMarkerQAMinorAlleles(markersQAOpId);

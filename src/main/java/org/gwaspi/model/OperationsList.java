@@ -34,35 +34,35 @@ public class OperationsList {
 	private OperationsList() {
 	}
 
-	public static Operation getById(int operationId) throws IOException {
+	public static OperationMetadata getById(int operationId) throws IOException {
 		return operationService.getById(operationId);
 	}
 
-	public static List<Operation> getOperationsList(int matrixId) throws IOException {
-		return operationService.getOperationsList(matrixId);
+	public static List<OperationMetadata> getOperationsList(int parentMatrixId) throws IOException {
+		return operationService.getOperationsTable(parentMatrixId);
 	}
 
-	public static List<Operation> getOperationsList(int matrixId, int parentOpId) throws IOException {
-		return operationService.getOperationsList(matrixId, parentOpId);
+	public static List<OperationMetadata> getOperationsList(int parentMatrixId, int parentOpId) throws IOException {
+		return operationService.getOperationsList(parentMatrixId, parentOpId);
 	}
 
-	public static List<Operation> getOperationsList(int matrixId, int parentOpId, OPType opType) throws IOException {
-		return operationService.getOperationsList(matrixId, parentOpId, opType);
+	public static List<OperationMetadata> getOperationsList(int parentMatrixId, int parentOpId, OPType opType) throws IOException {
+		return operationService.getOperationsList(parentMatrixId, parentOpId, opType);
 	}
 
-	public static List<OperationMetadata> getOperationsTable(int matrixId) throws IOException {
-		return operationService.getOperationsTable(matrixId);
+	public static List<OperationMetadata> getOperationsTable(int parentMatrixId) throws IOException {
+		return operationService.getOperationsTable(parentMatrixId);
 	}
 
-	public static List<OperationMetadata> getOperationsTable(int matrixId, int opId) throws IOException {
-		return operationService.getOperationsTable(matrixId, opId);
+	public static List<OperationMetadata> getOperationsTable(int parentMatrixId, int opId) throws IOException {
+		return operationService.getOperationsTable(parentMatrixId, opId);
 	}
 
-	public static int getIdOfLastOperationTypeOccurance(List<Operation> operationsList, OPType opType) {
+	public static int getIdOfLastOperationTypeOccurance(List<OperationMetadata> operations, OPType opType) {
 		int result = Integer.MIN_VALUE;
-		for (int i = 0; i < operationsList.size(); i++) {
-			if (operationsList.get(i).getOperationType().equals(OPType.MARKER_QA)) {
-				result = operationsList.get(i).getId();
+		for (int i = 0; i < operations.size(); i++) {
+			if (operations.get(i).getOperationType().equals(OPType.MARKER_QA)) {
+				result = operations.get(i).getId();
 			}
 		}
 		return result;

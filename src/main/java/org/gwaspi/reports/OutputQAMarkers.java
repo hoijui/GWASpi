@@ -27,7 +27,6 @@ import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.global.Config;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MatrixOperationSpec;
-import org.gwaspi.model.Operation;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.Report;
@@ -48,7 +47,7 @@ public class OutputQAMarkers {
 	}
 
 	public static boolean writeReportsForQAMarkersData(int opId) throws IOException {
-		Operation op = OperationsList.getById(opId);
+		OperationMetadata op = OperationsList.getById(opId);
 
 		String prefix = ReportsList.getReportNamePrefix(op);
 		String markMissOutName = prefix + "markmissing.txt";

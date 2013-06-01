@@ -22,7 +22,7 @@ import java.util.Map;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.model.MarkerKey;
-import org.gwaspi.model.Operation;
+import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.statistics.Associations;
 import org.gwaspi.statistics.Pvalue;
 import org.slf4j.Logger;
@@ -41,8 +41,8 @@ public class OP_AssociationTests extends AbstractTestMatrixOperation {
 
 	public OP_AssociationTests(
 			int rdMatrixId,
-			Operation markerCensusOP,
-			Operation hwOP,
+			OperationMetadata markerCensusOP,
+			OperationMetadata hwOP,
 			double hwThreshold,
 			boolean allelic)
 	{
