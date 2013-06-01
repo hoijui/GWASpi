@@ -31,6 +31,7 @@ import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.dao.OperationService;
 import org.gwaspi.global.Config;
 import org.gwaspi.model.MatrixOperationSpec;
+import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.ReportsList;
 import ucar.nc2.Dimension;
@@ -288,10 +289,11 @@ public class JPAOperationService implements OperationService {
 					try {
 						em = open();
 						begin(em);
-						final int operationId = operations.get(i).getId(); // FIXME use OperationKey
-						OperationMetadata operation = em.find(OperationMetadata.class, operationId);
+						final int operationId = operations.get(i).getId();
+						final OperationKey operationKey = new OperationKey(studyId, op.getParentMatrixId(), operationId);
+						OperationMetadata operation = em.find(OperationMetadata.class, operationKey);
 						if (operation == null) {
-							throw new IllegalArgumentException("No operation found with this ID: " + operationId);
+							throw new IllegalArgumentException("No operation found with this ID: " + operationKey.getId());
 						}
 						em.remove(operation);
 						commit(em);
