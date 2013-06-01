@@ -82,6 +82,7 @@ public class MatrixAnalysePanel extends JPanel {
 	private final JButton btn_1_3;
 	private final JButton btn_1_4;
 	private final JButton btn_1_5;
+	private final JButton btn_1_6;
 	private final JButton btn_Back;
 	private final JButton btn_DeleteOperation;
 	private final JButton btn_Help;
@@ -144,6 +145,7 @@ public class MatrixAnalysePanel extends JPanel {
 		btn_1_3 = new JButton();
 		btn_1_4 = new JButton();
 		btn_1_5 = new JButton();
+		btn_1_6 = new JButton();
 
 		gwasInOneGoAction = new GwasInOneGoAction(parentMatrixKey, gwasParams);
 		gwasInOneGoAction.setEnabled(currentOP == null);
@@ -208,11 +210,13 @@ public class MatrixAnalysePanel extends JPanel {
 		genFreqAndHWAction.setEnabled(currentOP == null);
 		btn_1_2.setAction(genFreqAndHWAction);
 
-		btn_1_3.setAction(new AssociationTestsAction(parentMatrixKey, gwasParams, currentOP, true));
+		btn_1_3.setAction(new AssociationTestsAction(parentMatrixKey, gwasParams, currentOP, true, false));
 
-		btn_1_4.setAction(new AssociationTestsAction(parentMatrixKey, gwasParams, currentOP, false));
+		btn_1_4.setAction(new AssociationTestsAction(parentMatrixKey, gwasParams, currentOP, false, false));
 
 		btn_1_5.setAction(new TrendTestsAction(parentMatrixKey, gwasParams, currentOP));
+
+		btn_1_6.setAction(new AssociationTestsAction(parentMatrixKey, gwasParams, currentOP, true, true));
 
 		//<editor-fold defaultstate="expanded" desc="LAYOUT BUTTONS">
 		GroupLayout pnl_SpacerLayout = new GroupLayout(pnl_Spacer);
@@ -230,6 +234,7 @@ public class MatrixAnalysePanel extends JPanel {
 		pnl_Buttons.add(btn_1_5);
 		pnl_Buttons.add(btn_1_2);
 		pnl_Buttons.add(btn_1_4);
+		pnl_Buttons.add(btn_1_6);
 
 		GroupLayout pnl_NewOperationLayout = new GroupLayout(pnl_NewOperation);
 		pnl_NewOperation.setLayout(pnl_NewOperationLayout);
@@ -307,17 +312,24 @@ public class MatrixAnalysePanel extends JPanel {
 		private GWASinOneGOParams gwasParams;
 		private final OperationMetadata currentOP;
 		private final boolean allelic;
+		private final boolean combi;
 		private final String testName;
 		private final String testNameHtml;
 
-		AssociationTestsAction(MatrixKey parentMatrixKey, GWASinOneGOParams gwasParams, OperationMetadata currentOP, boolean allelic) {
+		AssociationTestsAction(MatrixKey parentMatrixKey, GWASinOneGOParams gwasParams, OperationMetadata currentOP, boolean allelic, boolean combi) {
 
 			this.parentMatrixKey = parentMatrixKey;
 			this.gwasParams = gwasParams;
 			this.currentOP = currentOP;
 			this.allelic = allelic;
-			this.testName = (allelic ?  Text.Operation.allelicAssocTest : Text.Operation.genoAssocTest);
-			this.testNameHtml = (allelic ? Text.Operation.htmlAllelicAssocTest : Text.Operation.htmlGenotypicTest);
+			this.combi = combi;
+			if (combi) {
+				this.testName = "Combi Association Test";
+				this.testNameHtml = "<html><div align='center'>Combi Association Test<div></html>";
+			} else {
+				this.testName = (allelic ?  Text.Operation.allelicAssocTest : Text.Operation.genoAssocTest);
+				this.testNameHtml = (allelic ? Text.Operation.htmlAllelicAssocTest : Text.Operation.htmlGenotypicTest);
+			}
 			putValue(NAME, testNameHtml);
 		}
 
@@ -413,6 +425,9 @@ public class MatrixAnalysePanel extends JPanel {
 							if (reProceed && censusOPKey != null && hwOPKey != null) {
 
 								// >>>>>> START THREADING HERE <<<<<<<
+								if (combi) {
+									throw new RuntimeException("call combi test here"); // TODO implement me!
+								}
 								MultiOperations.doAssociationTest(
 										parentMatrixKey,
 										censusOPKey,

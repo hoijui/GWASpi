@@ -117,6 +117,7 @@ public class OperationFactory {
 				break;
 			case ALLELICTEST:
 			case GENOTYPICTEST:
+			case COMBI_ASSOC_TEST:
 				rdOPMetadata = OperationsList.getOperationMetadata(parentOperationId);
 				//resultOPnetCDFName = OPType + "_" + rdOPMetadata.getMatrixCDFName();
 				netCDFHandler = generateNetcdfAssociationHandler(
@@ -518,6 +519,10 @@ public class OperationFactory {
 			boxDimensions = 4;
 			boxDimensionsName = cNetCDF.Dimensions.DIM_4BOXES;
 			ncVariableName = cNetCDF.Association.VAR_OP_MARKERS_ASGenotypicAssociationTP2OR;
+		} else if (opType == OPType.COMBI_ASSOC_TEST) {
+			boxDimensions = 4; // FIXME
+			boxDimensionsName = cNetCDF.Dimensions.DIM_4BOXES; // FIXME
+			ncVariableName = cNetCDF.Association.VAR_OP_MARKERS_ASGenotypicAssociationTP2OR; // FIXME
 		} else {
 			throw new IOException("Unsupported operation type " + opType.name());
 		}
