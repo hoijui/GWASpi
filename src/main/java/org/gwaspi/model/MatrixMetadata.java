@@ -222,6 +222,11 @@ public class MatrixMetadata implements Serializable {
 		this.matrixId = matrixId;
 	}
 
+	@Transient
+	public MatrixKey getKey() {
+		return new MatrixKey(getStudyId(), getMatrixId());
+	}
+
 	@Id
 	@Column(
 		name       = "studyId",

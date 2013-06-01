@@ -199,7 +199,7 @@ public class JPAStudyService implements StudyService {
 
 		for (int i = 0; i < matrixList.size(); i++) {
 			try {
-				MatricesList.deleteMatrix(matrixList.get(i).getMatrixId(), deleteReports);
+				MatricesList.deleteMatrix(matrixList.get(i), deleteReports);
 				GWASpiExplorerPanel.getSingleton().updateTreePanel(true);
 			} catch (IOException ex) {
 				LOG.warn(null, ex);

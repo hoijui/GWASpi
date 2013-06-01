@@ -53,8 +53,8 @@ public final class MatricesList {
 		matrixService.insertMatrixMetadata(matrixMetadata);
 	}
 
-	public static void deleteMatrix(int matrixId, boolean deleteReports) {
-		matrixService.deleteMatrix(matrixId, deleteReports);
+	public static void deleteMatrix(MatrixKey matrixKey, boolean deleteReports) {
+		matrixService.deleteMatrix(matrixKey, deleteReports);
 	}
 
 	public static void saveMatrixDescription(int matrixId, String description) throws IOException {

@@ -206,7 +206,7 @@ public class JPAMatrixService implements MatrixService {
 	}
 
 	@Override
-	public void deleteMatrix(int matrixId, boolean deleteReports) {
+	public void deleteMatrix(MatrixKey matrixKey, boolean deleteReports) {
 		try {
 			MatrixMetadata matrixMetadata = null;
 
@@ -216,9 +216,9 @@ public class JPAMatrixService implements MatrixService {
 			try {
 				em = open();
 				begin(em);
-				matrixMetadata = em.find(MatrixMetadata.class, matrixId);
+				matrixMetadata = em.find(MatrixMetadata.class, matrixKey);
 				if (matrixMetadata == null) {
-					throw new IllegalArgumentException("No matrix found with this ID: " + matrixId);
+					throw new IllegalArgumentException("No matrix found with this ID: (" + matrixKey.getStudyId() + ") " + matrixKey.getMatrixId());
 				}
 				em.remove(matrixMetadata); // This is done implicitly by remove(matrix)
 				commit(em);
@@ -234,13 +234,13 @@ public class JPAMatrixService implements MatrixService {
 			genotypesFolder += "/STUDY_" + matrixMetadata.getStudyId() + "/";
 
 			// DELETE OPERATION netCDFs FROM THIS MATRIX
-			List<OperationMetadata> operations = OperationsList.getOperationsList(matrixId);
+			List<OperationMetadata> operations = OperationsList.getOperationsList(matrixKey.getMatrixId());
 			for (OperationMetadata op : operations) {
 				File opFile = new File(genotypesFolder + op.getMatrixCDFName()+ ".nc");
 				org.gwaspi.global.Utils.tryToDeleteFile(opFile);
 			}
 
-			ReportsList.deleteReportByMatrixId(matrixId);
+			ReportsList.deleteReportByMatrixId(matrixKey.getMatrixId());
 
 			// DELETE MATRIX NETCDF FILE
 			File matrixFile = new File(genotypesFolder + matrixMetadata.getMatrixNetCDFName() + ".nc");

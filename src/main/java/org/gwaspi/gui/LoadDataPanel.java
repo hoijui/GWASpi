@@ -692,7 +692,7 @@ public class LoadDataPanel extends JPanel {
 					MatrixMetadata deleteMxMetaData = MatricesList.getLatestMatrixId();
 					if (deleteMxMetaData.getMatrixFriendlyName().equals(txt_NewMatrixName.getText())) {
 						log.info("Deleting orphan files and references");
-						MatricesList.deleteMatrix(deleteMxMetaData.getMatrixId(), true);
+						MatricesList.deleteMatrix(deleteMxMetaData.getKey(), true);
 					}
 
 					GWASpiExplorerPanel.getSingleton().updateTreePanel(true);
