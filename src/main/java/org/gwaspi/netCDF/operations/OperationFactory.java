@@ -26,6 +26,7 @@ import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.global.Config;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
+import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.DataType;
@@ -59,7 +60,7 @@ public class OperationFactory {
 			throws InvalidRangeException, IOException
 	{
 		// OPERATION CASE SELECTOR
-		resultOPnetCDFName = opType.name() + "_" + org.gwaspi.database.Utils.generateMatrixNetCDFNameByDate();
+		resultOPnetCDFName = opType.name() + "_" + MatrixFactory.generateMatrixNetCDFNameByDate();
 		switch (opType) {
 			case MARKER_QA:
 				//resultOPnetCDFName = OPType + "_" + rdMatrixMetadata.getMatrixCDFName();

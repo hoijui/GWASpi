@@ -39,6 +39,7 @@ import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.ReportsList;
+import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.ArrayChar;
@@ -356,7 +357,7 @@ public class JPAMatrixService implements MatrixService {
 
 		int matrixId = Integer.MIN_VALUE;
 		String matrixFriendlyName = newMatrixName;
-		String matrixNetCDFName = org.gwaspi.database.Utils.generateMatrixNetCDFNameByDate();
+		String matrixNetCDFName = MatrixFactory.generateMatrixNetCDFNameByDate();
 		String description = "";
 		String matrixType = "";
 		Date creationDate = null;
