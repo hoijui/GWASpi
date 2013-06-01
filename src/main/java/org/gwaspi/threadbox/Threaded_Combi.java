@@ -20,7 +20,6 @@ package org.gwaspi.threadbox;
 import java.util.List;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.model.GWASpiExplorerNodes;
-import org.gwaspi.model.Operation;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.netCDF.operations.OperationManager;
@@ -57,7 +56,7 @@ public class Threaded_Combi extends CommonRunnable {
 
 		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
 			int assocOpId = OperationManager.performCleanCombiTest(params);
-			GWASpiExplorerNodes.insertOperationUnderMatrixNode(params.getMatrixKey().getId(), assocOpId);
+			GWASpiExplorerNodes.insertOperationUnderMatrixNode(params.getMatrixKey().getMatrixId(), assocOpId);
 
 //			// XXX Make Reports (needs newMatrixId, QAopId, AssocOpId)
 //			if (assocOpId != Integer.MIN_VALUE) {

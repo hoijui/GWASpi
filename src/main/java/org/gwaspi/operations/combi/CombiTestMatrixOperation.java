@@ -48,7 +48,6 @@ import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
-import org.gwaspi.model.Operation;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.SampleInfo;
@@ -272,8 +271,8 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 		MatrixSamples(MatrixKey matrixKey) throws IOException, InvalidRangeException {
 
 			this.matrixKey = matrixKey;
-			int studyId = matrixKey.getStudyKey().getId();
-			int matrixId = matrixKey.getId();
+			int studyId = matrixKey.getStudyId();
+			int matrixId = matrixKey.getMatrixId();
 			MatrixMetadata rdMatrixMetadata = MatricesList.getMatrixMetadataById( matrixId);
 			netCdfFile = NetcdfFile.open(rdMatrixMetadata.getPathToMatrix());
 
@@ -297,7 +296,7 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 
 		private Map<SampleKey, SampleInfo> retrieveSampleInfos() throws IOException, InvalidRangeException {
 
-			int studyId = matrixKey.getStudyKey().getId();
+			int studyId = matrixKey.getStudyId();
 
 			// This one has to be ordered! (and it is, due to the map being a LinkedHashMap)
 			Set<SampleKey> sampleKeysOrdered = sampleSet.getSampleIdSetMapByteArray().keySet();

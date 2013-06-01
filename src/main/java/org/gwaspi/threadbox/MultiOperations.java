@@ -162,14 +162,14 @@ public class MultiOperations {
 		CommonRunnable task = new Threaded_Combi(params);
 
 		TaskLockProperties lockProperties = new TaskLockProperties();
-		if (params.getMatrixKey().getStudyKey().isSpecifiedByName()) {
-			throw new IllegalStateException(); // FIXME need to fetch the study-id
-		}
-		if (params.getMatrixKey().isSpecifiedByName()) {
-			throw new IllegalStateException(); // FIXME need to fetch the matrix-id
-		}
-		lockProperties.getStudyIds().add(params.getMatrixKey().getStudyKey().getId());
-		lockProperties.getMatricesIds().add(params.getMatrixKey().getId());
+//		if (params.getMatrixKey().getStudyKey().isSpecifiedByName()) {
+//			throw new IllegalStateException(); // FIXME need to fetch the study-id
+//		}
+//		if (params.getMatrixKey().isSpecifiedByName()) {
+//			throw new IllegalStateException(); // FIXME need to fetch the matrix-id
+//		}
+		lockProperties.getStudyIds().add(params.getMatrixKey().getStudyId());
+		lockProperties.getMatricesIds().add(params.getMatrixKey().getMatrixId());
 
 		queueTask(task, lockProperties);
 	}

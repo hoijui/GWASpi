@@ -77,7 +77,7 @@ class CombiTestScriptCommand extends AbstractScriptCommand {
 		boolean studyExists = checkStudy(studyKey.getId());
 
 		if (studyExists) {
-			MatrixKey matrixKey = fetchMatrixKey(args, studyKey, "matrix-id", "matrix-name");
+			MatrixKey matrixKey = fetchMatrixKey(args, studyKey.getId(), "matrix-id", "matrix-name");
 
 			GenotypeEncoder genotypeEncoder = GENOTYPE_ENCODERS.get(args.get("genotype-encoding"));
 
