@@ -55,16 +55,18 @@ public class OutputAssociation {
 	private final String variableName;
 	private final int qqPlotDof;
 	private final String header;
+	private final boolean combi = false;
 
 	public OutputAssociation(boolean allelic) {
 
-		this.testType = allelic ? OPType.ALLELICTEST : OPType.GENOTYPICTEST;
-		this.testName = allelic ? "Allelic" : "Genotypic";
-		this.variableName = allelic
+		this.testType = (combi ? OPType.COMBI_ASSOC_TEST : (allelic ? OPType.ALLELICTEST : OPType.GENOTYPICTEST));
+		this.testName = (allelic ? "Allelic" : "Genotypic") + (combi ? " Combi" : "");
+		this.variableName = (combi ? Association.VAR_OP_MARKERS_ASGenotypicAssociationTP2OR // FIXME
+				: (allelic
 				? Association.VAR_OP_MARKERS_ASAllelicAssociationTPOR
-				: Association.VAR_OP_MARKERS_ASGenotypicAssociationTP2OR;
-		this.qqPlotDof = allelic ? 1 : 2;
-		this.header = "MarkerID\trsID\tChr\tPosition\tMin. Allele\tMaj. Allele\tX²\tPval\t" + (allelic ? "OR" : "OR-AA/aa\tOR-Aa/aa") + "\n";
+				: Association.VAR_OP_MARKERS_ASGenotypicAssociationTP2OR));
+		this.qqPlotDof = allelic ? 1 : 2; // FIXME
+		this.header = "MarkerID\trsID\tChr\tPosition\tMin. Allele\tMaj. Allele\tX²\tPval\t" + (allelic ? "OR" : "OR-AA/aa\tOR-Aa/aa") + "\n"; // FIXME
 	}
 
 	public boolean writeReportsForAssociationData(OperationKey operationKey) throws IOException {
@@ -77,7 +79,7 @@ public class OutputAssociation {
 		String manhattanName = prefix + "manhtt";
 
 		log.info(Text.All.processing);
-		if (writeManhattanPlotFromAssociationData(operationKey, manhattanName, 4000, 500)) {
+		if (!combi && writeManhattanPlotFromAssociationData(operationKey, manhattanName, 4000, 500)) {
 			result = true;
 			ReportsList.insertRPMetadata(new Report(
 					Integer.MIN_VALUE,
@@ -91,7 +93,7 @@ public class OutputAssociation {
 		}
 		//String qqName = "qq_" + outName;
 		String qqName = prefix + "qq";
-		if (result && writeQQPlotFromAssociationData(operationKey, qqName, 500, 500)) {
+		if (result && !combi && writeQQPlotFromAssociationData(operationKey, qqName, 500, 500)) {
 			result = true;
 			ReportsList.insertRPMetadata(new Report(
 					Integer.MIN_VALUE,

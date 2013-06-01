@@ -26,6 +26,8 @@ import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
+import org.gwaspi.operations.combi.CombiTestMatrixOperation;
+import org.gwaspi.operations.combi.CombiTestParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.InvalidRangeException;
@@ -141,6 +143,20 @@ public class OperationManager {
 		resultOpId = testOperation.processMatrix();
 
 		return new OperationKey(censusOpKey.getParentMatrixKey(), resultOpId);
+	}
+
+	public static OperationKey performCleanCombiTest(CombiTestParams params)
+			throws IOException, InvalidRangeException
+	{
+		int resultOpId; // Integer.MIN_VALUE
+
+		org.gwaspi.global.Utils.sysoutStart(" Combi Association Test");
+
+		CombiTestMatrixOperation testOperation
+				= new CombiTestMatrixOperation(params);
+		resultOpId = testOperation.processMatrix();
+
+		return new OperationKey(params.getParentMatrixKey(), resultOpId);
 	}
 
 	public static OperationKey performCleanTrendTests(

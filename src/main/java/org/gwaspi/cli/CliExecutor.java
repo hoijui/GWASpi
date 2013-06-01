@@ -38,6 +38,7 @@ public class CliExecutor {
 		addScriptCommand(tmpScriptCommands, new GwasInOneGoScriptCommand());
 		addScriptCommand(tmpScriptCommands, new AssociationScriptCommand(true));
 		addScriptCommand(tmpScriptCommands, new AssociationScriptCommand(false));
+		addScriptCommand(tmpScriptCommands, new CombiTestScriptCommand());
 		addScriptCommand(tmpScriptCommands, new GenotypeFrequencyHardyWeinbergScriptCommand());
 		addScriptCommand(tmpScriptCommands, new ExportMatrixScriptCommand());
 		addScriptCommand(tmpScriptCommands, new TrendTestScriptCommand());

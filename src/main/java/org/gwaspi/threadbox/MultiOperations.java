@@ -32,6 +32,7 @@ import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.loader.GenotypesLoadDescription;
 import org.gwaspi.netCDF.operations.GWASinOneGOParams;
+import org.gwaspi.operations.combi.CombiTestParams;
 
 public class MultiOperations {
 
@@ -152,6 +153,23 @@ public class MultiOperations {
 		lockProperties.getMatricesIds().add(matrixKey.getMatrixId());
 		lockProperties.getOperationsIds().add(censusOPKey.getId());
 		lockProperties.getOperationsIds().add(hwOPKey.getId());
+
+		queueTask(task, lockProperties);
+	}
+
+	public static void doCombiTest(final CombiTestParams params) {
+
+		CommonRunnable task = new Threaded_Combi(params);
+
+		TaskLockProperties lockProperties = new TaskLockProperties();
+		if (params.getMatrixKey().getStudyKey().isSpecifiedByName()) {
+			throw new IllegalStateException(); // FIXME need to fetch the study-id
+		}
+		if (params.getMatrixKey().isSpecifiedByName()) {
+			throw new IllegalStateException(); // FIXME need to fetch the matrix-id
+		}
+		lockProperties.getStudyIds().add(params.getMatrixKey().getStudyKey().getId());
+		lockProperties.getMatricesIds().add(params.getMatrixKey().getId());
 
 		queueTask(task, lockProperties);
 	}
