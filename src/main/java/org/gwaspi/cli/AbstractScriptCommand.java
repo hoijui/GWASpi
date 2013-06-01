@@ -106,7 +106,7 @@ abstract class AbstractScriptCommand implements ScriptCommand {
 			return new MatrixKey(studyId, matrixId);
 		} else {
 			MatrixMetadata matrixMetadata = MatricesList.getMatrixMetadataByNetCDFname(nameValue);
-			return new MatrixKey(studyId, matrixMetadata.getId());
+			return new MatrixKey(studyId, matrixMetadata.getMatrixId());
 		}
 	}
 

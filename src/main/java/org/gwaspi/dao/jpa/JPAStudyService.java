@@ -30,7 +30,7 @@ import org.gwaspi.dao.StudyService;
 import org.gwaspi.global.Config;
 import org.gwaspi.gui.GWASpiExplorerPanel;
 import org.gwaspi.model.MatricesList;
-import org.gwaspi.model.Matrix;
+import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.SampleInfoList;
 import org.gwaspi.model.Study;
 
@@ -195,11 +195,11 @@ public class JPAStudyService implements StudyService {
 		} finally {
 			close(em);
 		}
-		List<Matrix> matrixList = MatricesList.getMatrixList(studyId);
+		List<MatrixKey> matrixList = MatricesList.getMatrixList(studyId);
 
 		for (int i = 0; i < matrixList.size(); i++) {
 			try {
-				MatricesList.deleteMatrix(matrixList.get(i).getId(), deleteReports);
+				MatricesList.deleteMatrix(matrixList.get(i).getMatrixId(), deleteReports);
 				GWASpiExplorerPanel.getSingleton().updateTreePanel(true);
 			} catch (IOException ex) {
 				LOG.warn(null, ex);

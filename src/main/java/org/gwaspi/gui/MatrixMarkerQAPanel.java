@@ -38,7 +38,8 @@ import org.gwaspi.gui.utils.BrowserHelpUrlAction;
 import org.gwaspi.gui.utils.Dialogs;
 import org.gwaspi.gui.utils.HelpURLs;
 import org.gwaspi.model.MatricesList;
-import org.gwaspi.model.Matrix;
+import org.gwaspi.model.MatrixKey;
+import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.Operation;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.netCDF.operations.GWASinOneGOParams;
@@ -53,22 +54,23 @@ public class MatrixMarkerQAPanel extends JPanel {
 			= LoggerFactory.getLogger(MatrixMarkerQAPanel.class);
 
 	// Variables declaration - do not modify
-	private Matrix parentMatrix;
+	private final MatrixKey parentMatrix;
 	private final Operation currentOP;
-	private JButton btn_Back;
-	private JButton btn_DeleteOperation;
-	private JButton btn_Help;
-	private JPanel pnl_Footer;
-	private JPanel pnl_MatrixDesc;
-	private JScrollPane scrl_MatrixDesc;
-	private JTextArea txtA_Description;
-	private GWASinOneGOParams gwasParams = new GWASinOneGOParams();
+	private final JButton btn_Back;
+	private final JButton btn_DeleteOperation;
+	private final JButton btn_Help;
+	private final JPanel pnl_Footer;
+	private final JPanel pnl_MatrixDesc;
+	private final JScrollPane scrl_MatrixDesc;
+	private final JTextArea txtA_Description;
+	private final GWASinOneGOParams gwasParams = new GWASinOneGOParams();
 	// End of variables declaration
 
-	@SuppressWarnings("unchecked")
-	public MatrixMarkerQAPanel(int _matrixId, int _opId) throws IOException {
+	public MatrixMarkerQAPanel(MatrixKey parentMatrixKey, int _opId) throws IOException {
 
-		parentMatrix = MatricesList.getById(_matrixId);
+		parentMatrix = parentMatrixKey;
+		MatrixMetadata parentMatrixMetadata = MatricesList.getMatrixMetadataById(parentMatrix.getMatrixId());
+
 		if (_opId != Integer.MIN_VALUE) {
 			currentOP = OperationsList.getById(_opId);
 		} else {
@@ -94,8 +96,8 @@ public class MatrixMarkerQAPanel extends JPanel {
 			pnl_MatrixDesc.setBorder(BorderFactory.createTitledBorder(null, Text.Operation.operationId + ": " + currentOP.getId(), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("DejaVu Sans", 1, 13))); // NOI18N
 			txtA_Description.setText(currentOP.getDescription().toString());
 		} else {
-			pnl_MatrixDesc.setBorder(BorderFactory.createTitledBorder(null, Text.Matrix.matrix + ": " + parentMatrix.getMatrixMetadata().getMatrixFriendlyName(), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("DejaVu Sans", 1, 13))); // NOI18N
-			txtA_Description.setText(parentMatrix.getMatrixMetadata().getDescription().toString());
+			pnl_MatrixDesc.setBorder(BorderFactory.createTitledBorder(null, Text.Matrix.matrix + ": " + parentMatrixMetadata.getMatrixFriendlyName(), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("DejaVu Sans", 1, 13))); // NOI18N
+			txtA_Description.setText(parentMatrixMetadata.getDescription().toString());
 		}
 		scrl_MatrixDesc.setViewportView(txtA_Description);
 
@@ -172,11 +174,11 @@ public class MatrixMarkerQAPanel extends JPanel {
 
 	private static class DeleteOperationAction extends AbstractAction {
 
-		private Operation currentOP;
-		private Component dialogParent;
-		private Matrix parentMatrix;
+		private final Operation currentOP;
+		private final Component dialogParent;
+		private final MatrixKey parentMatrix;
 
-		DeleteOperationAction(Operation currentOP, Component dialogParent, Matrix parentMatrix) {
+		DeleteOperationAction(Operation currentOP, Component dialogParent, MatrixKey parentMatrix) {
 
 			this.currentOP = currentOP;
 			this.dialogParent = dialogParent;
@@ -199,7 +201,7 @@ public class MatrixMarkerQAPanel extends JPanel {
 								if (deleteReportOption == JOptionPane.YES_OPTION) {
 									deleteReport = true;
 								}
-								MultiOperations.deleteOperationsByOpId(parentMatrix.getStudyId(), parentMatrix.getId(), opId, deleteReport);
+								MultiOperations.deleteOperationsByOpId(parentMatrix.getStudyId(), parentMatrix.getMatrixId(), opId, deleteReport);
 
 								//OperationManager.deleteOperationAndChildren(parentMatrix.getStudyId(), opId, deleteReport);
 							}
@@ -220,9 +222,9 @@ public class MatrixMarkerQAPanel extends JPanel {
 
 	private static class BackAction extends AbstractAction {
 
-		private Matrix parentMatrix;
+		private final MatrixKey parentMatrix;
 
-		BackAction(Matrix parentMatrix) {
+		BackAction(MatrixKey parentMatrix) {
 
 			this.parentMatrix = parentMatrix;
 			putValue(NAME, Text.All.Back);
@@ -232,7 +234,7 @@ public class MatrixMarkerQAPanel extends JPanel {
 		public void actionPerformed(ActionEvent evt) {
 			try {
 				GWASpiExplorerPanel.getSingleton().getTree().setSelectionPath(GWASpiExplorerPanel.getSingleton().getTree().getSelectionPath().getParentPath());
-				GWASpiExplorerPanel.getSingleton().setPnl_Content(new CurrentMatrixPanel(parentMatrix.getId()));
+				GWASpiExplorerPanel.getSingleton().setPnl_Content(new CurrentMatrixPanel(parentMatrix));
 				GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
 			} catch (IOException ex) {
 				log.error(null, ex);

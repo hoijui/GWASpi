@@ -48,7 +48,7 @@ import org.gwaspi.gui.utils.Dialogs;
 import org.gwaspi.gui.utils.HelpURLs;
 import org.gwaspi.gui.utils.LimitedLengthDocument;
 import org.gwaspi.model.MatricesList;
-import org.gwaspi.model.Matrix;
+import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.threadbox.MultiOperations;
 import org.slf4j.Logger;
@@ -60,30 +60,31 @@ public class MatrixTrafoPanel extends JPanel {
 			= LoggerFactory.getLogger(MatrixTrafoPanel.class);
 
 	// Variables declaration - do not modify
-	private Matrix parentMatrix;
-	private JButton btn_1_1;
-	private JButton btn_1_2;
-	private JButton btn_2_1;
-	private JButton btn_Back;
-	private JButton btn_Help;
-	private JLabel lbl_NewMatrixName;
-	private JPanel pnl_ButtonsContainer;
-	private JPanel pnl_ButtonsSpacer;
-	private JPanel pnl_Buttons;
-	private JPanel pnl_Footer;
-	private JPanel pnl_ParentMatrixDesc;
-	private JPanel pnl_TrafoMatrixDesc;
-	private JScrollPane scrl_ParentMatrixDesc;
-	private JScrollPane scroll_TrafoMatrixDescription;
-	private JTextArea txtA_NewMatrixDescription;
-	private JTextArea txtA_ParentMatrixDesc;
-	private JTextField txt_NewMatrixName;
+	private final MatrixKey parentMatrix;
+	private final JButton btn_1_1;
+	private final JButton btn_1_2;
+	private final JButton btn_2_1;
+	private final JButton btn_Back;
+	private final JButton btn_Help;
+	private final JLabel lbl_NewMatrixName;
+	private final JPanel pnl_ButtonsContainer;
+	private final JPanel pnl_ButtonsSpacer;
+	private final JPanel pnl_Buttons;
+	private final JPanel pnl_Footer;
+	private final JPanel pnl_ParentMatrixDesc;
+	private final JPanel pnl_TrafoMatrixDesc;
+	private final JScrollPane scrl_ParentMatrixDesc;
+	private final JScrollPane scroll_TrafoMatrixDescription;
+	private final JTextArea txtA_NewMatrixDescription;
+	private final JTextArea txtA_ParentMatrixDesc;
+	private final JTextField txt_NewMatrixName;
 	// End of variables declaration
 
 	@SuppressWarnings("unchecked")
-	public MatrixTrafoPanel(int _matrixId) throws IOException {
+	public MatrixTrafoPanel(MatrixKey parentMatrixKey) throws IOException {
 
-		parentMatrix = MatricesList.getById(_matrixId);
+		parentMatrix = parentMatrixKey;
+		MatrixMetadata parentMatrixMetadata = MatricesList.getMatrixMetadataById(parentMatrix.getMatrixId());
 
 		pnl_ParentMatrixDesc = new JPanel();
 		scrl_ParentMatrixDesc = new JScrollPane();
@@ -105,11 +106,11 @@ public class MatrixTrafoPanel extends JPanel {
 
 		setBorder(BorderFactory.createTitledBorder(null, Text.Trafo.transformMatrix, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("FreeSans", 1, 18))); // NOI18N
 
-		pnl_ParentMatrixDesc.setBorder(BorderFactory.createTitledBorder(null, Text.Matrix.parentMatrix + " " + parentMatrix.getMatrixMetadata().getMatrixFriendlyName(), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("DejaVu Sans", 1, 13))); // NOI18N
+		pnl_ParentMatrixDesc.setBorder(BorderFactory.createTitledBorder(null, Text.Matrix.parentMatrix + " " + parentMatrixMetadata.getMatrixFriendlyName(), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("DejaVu Sans", 1, 13))); // NOI18N
 		txtA_ParentMatrixDesc.setColumns(20);
 		txtA_ParentMatrixDesc.setRows(5);
 		txtA_ParentMatrixDesc.setBorder(BorderFactory.createTitledBorder(Text.All.description));
-		txtA_ParentMatrixDesc.setText(parentMatrix.getMatrixMetadata().getDescription());
+		txtA_ParentMatrixDesc.setText(parentMatrixMetadata.getDescription());
 		txtA_ParentMatrixDesc.setEditable(false);
 		scrl_ParentMatrixDesc.setViewportView(txtA_ParentMatrixDesc);
 
@@ -318,7 +319,7 @@ public class MatrixTrafoPanel extends JPanel {
 			String newMatrixName = checkNewMatrixData();
 			if (!newMatrixName.isEmpty()) {
 				try {
-					MatrixMetadata parentMatrixMetadata = MatricesList.getMatrixMetadataById(parentMatrix.getId());
+					MatrixMetadata parentMatrixMetadata = MatricesList.getMatrixMetadataById(parentMatrix.getMatrixId());
 					String description = txtA_NewMatrixDescription.getText();
 					if (txtA_NewMatrixDescription.getText().equals(Text.All.optional)) {
 						description = "";
@@ -328,9 +329,10 @@ public class MatrixTrafoPanel extends JPanel {
 							|| parentMatrixMetadata.getGenotypeEncoding().equals(GenotypeEncoding.O12))
 					{
 						if (parentMatrixMetadata.getHasDictionray()) {
-							MultiOperations.doTranslateAB12ToACGT(parentMatrix.getStudyId(),
-									parentMatrix.getId(),
-									cNetCDF.Defaults.GenotypeEncoding.AB0, //No matter if AB or 12, works the same here
+							MultiOperations.doTranslateAB12ToACGT(
+									parentMatrix.getStudyId(),
+									parentMatrix.getMatrixId(),
+									cNetCDF.Defaults.GenotypeEncoding.AB0, // No matter if AB or 12, works the same here
 									newMatrixName,
 									description);
 						} else {
@@ -360,7 +362,7 @@ public class MatrixTrafoPanel extends JPanel {
 			String newMatrixName = checkNewMatrixData();
 			if (!newMatrixName.isEmpty()) {
 				try {
-					MatrixMetadata parentMatrixMetadata = MatricesList.getMatrixMetadataById(parentMatrix.getId());
+					MatrixMetadata parentMatrixMetadata = MatricesList.getMatrixMetadataById(parentMatrix.getMatrixId());
 
 					String description = txtA_NewMatrixDescription.getText();
 					if (txtA_NewMatrixDescription.getText().equals(Text.All.optional)) {
@@ -369,8 +371,9 @@ public class MatrixTrafoPanel extends JPanel {
 
 					if (parentMatrixMetadata.getGenotypeEncoding().equals(GenotypeEncoding.O1234)) {
 
-						MultiOperations.doTranslateAB12ToACGT(parentMatrix.getStudyId(),
-								parentMatrix.getId(),
+						MultiOperations.doTranslateAB12ToACGT(
+								parentMatrix.getStudyId(),
+								parentMatrix.getMatrixId(),
 								cNetCDF.Defaults.GenotypeEncoding.O1234,
 								newMatrixName,
 								description);
@@ -398,7 +401,7 @@ public class MatrixTrafoPanel extends JPanel {
 			String newMatrixName = checkNewMatrixData();
 			if (!newMatrixName.isEmpty()) {
 				try {
-					MatrixMetadata parentMatrixMetadata = MatricesList.getMatrixMetadataById(parentMatrix.getId());
+					MatrixMetadata parentMatrixMetadata = MatricesList.getMatrixMetadataById(parentMatrix.getMatrixId());
 
 					String description = txtA_NewMatrixDescription.getText();
 					if (txtA_NewMatrixDescription.getText().equals(Text.All.optional)) {
@@ -409,8 +412,9 @@ public class MatrixTrafoPanel extends JPanel {
 							|| parentMatrixMetadata.getGenotypeEncoding().equals(GenotypeEncoding.ACGT0)) {
 
 						File flipMarkersFile = Dialogs.selectFilesAndDirectoriesDialog(JOptionPane.OK_OPTION);
-						MultiOperations.doStrandFlipMatrix(parentMatrix.getStudyId(),
-								parentMatrix.getId(),
+						MultiOperations.doStrandFlipMatrix(
+								parentMatrix.getStudyId(),
+								parentMatrix.getMatrixId(),
 								cNetCDF.Variables.VAR_MARKERSET,
 								flipMarkersFile,
 								newMatrixName,
@@ -431,9 +435,9 @@ public class MatrixTrafoPanel extends JPanel {
 	//<editor-fold defaultstate="expanded" desc="HELPERS">
 	private static class BackAction extends AbstractAction {
 
-		private Matrix parentMatrix;
+		private MatrixKey parentMatrix;
 
-		BackAction(Matrix parentMatrix) {
+		BackAction(MatrixKey parentMatrix) {
 
 			this.parentMatrix = parentMatrix;
 			putValue(NAME, Text.All.Back);
@@ -442,7 +446,7 @@ public class MatrixTrafoPanel extends JPanel {
 		@Override
 		public void actionPerformed(ActionEvent evt) {
 			try {
-				GWASpiExplorerPanel.getSingleton().setPnl_Content(new CurrentMatrixPanel(parentMatrix.getId()));
+				GWASpiExplorerPanel.getSingleton().setPnl_Content(new CurrentMatrixPanel(parentMatrix));
 				GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
 			} catch (IOException ex) {
 				log.error(null, ex);

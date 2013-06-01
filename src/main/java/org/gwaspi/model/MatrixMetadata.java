@@ -46,8 +46,11 @@ import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
 		name = "matrixMetadata_fetchByNetCDFName",
 		query = "SELECT mm FROM MatrixMetadata mm WHERE mm.matrixNetCDFName = :netCDFName"),
 	@NamedQuery(
-		name = "matrixMetadata_list",
-		query = "SELECT mm FROM MatrixMetadata mm"),
+		name = "matrixMetadata_listKeys",
+		query = "SELECT mm.studyId, mm.matrixId FROM MatrixMetadata mm"),
+	@NamedQuery(
+		name = "matrixMetadata_listIdsByStudyId",
+		query = "SELECT mm.matrixId FROM MatrixMetadata mm WHERE mm.studyId = :studyId"),
 	@NamedQuery(
 		name = "matrixMetadata_listIds",
 		query = "SELECT mm.matrixId FROM MatrixMetadata mm ORDER BY mm.matrixId"),
@@ -55,7 +58,7 @@ import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
 		name = "matrixMetadata_listByStudyId",
 		query = "SELECT mm FROM MatrixMetadata mm WHERE mm.studyId = :studyId"),
 })
-public class MatrixMetadata implements Serializable, Matrix {
+public class MatrixMetadata implements Serializable {
 
 	private int matrixId;
 	private String matrixFriendlyName;
@@ -429,15 +432,5 @@ public class MatrixMetadata implements Serializable, Matrix {
 
 	protected void setCreationDate(Date creationDate) {
 		this.creationDate = creationDate;
-	}
-
-	@Transient
-	public int getId() {
-		return getMatrixId();
-	}
-
-	@Transient
-	public MatrixMetadata getMatrixMetadata() {
-		return this;
 	}
 }

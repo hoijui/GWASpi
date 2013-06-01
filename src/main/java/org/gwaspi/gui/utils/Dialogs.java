@@ -39,7 +39,7 @@ import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
 import org.gwaspi.global.Config;
 import org.gwaspi.model.MatricesList;
-import org.gwaspi.model.Matrix;
+import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.Operation;
 import org.gwaspi.model.OperationsList;
 import org.slf4j.Logger;
@@ -260,21 +260,21 @@ public class Dialogs {
 		return strandType;
 	}
 
-	public static int showMatrixSelectCombo() throws IOException {
-		List<Matrix> matrixList = MatricesList.getMatrixList();
-		//String[] matrixNames = new String[matrices.matrixList.size()];
-		List<String> matrixNames = new ArrayList<String>();
-		List<Integer> matrixIDs = new ArrayList<Integer>();
-		for (int i = 0; i < matrixList.size(); i++) {
-			Matrix mx = matrixList.get(i);
+	/**
+	 * @deprecated unused
+	 */
+	public static int showMatrixSelectCombo(int studyId) throws IOException {
+		List<MatrixMetadata> matrices = MatricesList.getMatricesTable(studyId);
+		List<String> matrixNames = new ArrayList<String>(matrices.size());
+		List<Integer> matrixIDs = new ArrayList<Integer>(matrices.size());
+		for (MatrixMetadata matrixMetadata : matrices) {
 			StringBuilder mn = new StringBuilder();
 			mn.append("SID: ");
-			mn.append(mx.getStudyId());
+			mn.append(matrixMetadata.getStudyId());
 			mn.append(" - MX: ");
-			mn.append(mx.getMatrixMetadata().getMatrixFriendlyName());
-			//matrixNames[i]=mn.toString();
+			mn.append(matrixMetadata.getMatrixFriendlyName());
 			matrixNames.add(mn.toString());
-			matrixIDs.add(mx.getId());
+			matrixIDs.add(matrixMetadata.getMatrixId());
 		}
 
 		String selectedRow = (String) JOptionPane.showInputDialog(

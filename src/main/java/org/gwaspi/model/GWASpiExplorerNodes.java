@@ -135,11 +135,12 @@ public class GWASpiExplorerNodes {
 	protected static DefaultMutableTreeNode createMatrixTreeNode(int matrixId) {
 		DefaultMutableTreeNode tn = null;
 		try {
-			Matrix mx = MatricesList.getById(matrixId);
-			tn = new DefaultMutableTreeNode(new NodeElementInfo(mx.getStudyId(),
+			MatrixMetadata matrixMetadata = MatricesList.getMatrixMetadataById(matrixId);
+			tn = new DefaultMutableTreeNode(new NodeElementInfo(
+					matrixMetadata.getStudyId(),
 					matrixId,
 					Text.App.treeMatrix,
-					"MX: " + matrixId + " - " + mx.getMatrixMetadata().getMatrixFriendlyName()));
+					"MX: " + matrixId + " - " + matrixMetadata.getMatrixFriendlyName()));
 		} catch (IOException ex) {
 			log.error(null, ex);
 		}
@@ -151,7 +152,8 @@ public class GWASpiExplorerNodes {
 		// CHECK IF STUDY EXISTS
 		List<SampleInfo> sampleInfos = SampleInfoList.getAllSampleInfoFromDBByPoolID(studyId);
 		if (!sampleInfos.isEmpty()) {
-			tn = new DefaultMutableTreeNode(new NodeElementInfo(studyId, // parentNodeId
+			tn = new DefaultMutableTreeNode(new NodeElementInfo(
+					studyId, // parentNodeId
 					studyId, // nodeId
 					Text.App.treeSampleInfo, // nodeType
 					Text.App.treeSampleInfo)); // nodeUniqueName
@@ -163,7 +165,8 @@ public class GWASpiExplorerNodes {
 		DefaultMutableTreeNode tn = null;
 		try {
 			Operation op = OperationsList.getById(opId);
-			tn = new DefaultMutableTreeNode(new NodeElementInfo(op.getParentMatrixId(),
+			tn = new DefaultMutableTreeNode(new NodeElementInfo(
+					op.getParentMatrixId(),
 					opId,
 					Text.App.treeOperation,
 					"OP: " + opId + " - " + op.getFriendlyName()));
@@ -186,7 +189,8 @@ public class GWASpiExplorerNodes {
 
 			Operation op = OperationsList.getById(opId);
 //			int[] pathIds = new int[]{0, op.getId(), op.getParentMatrixId(), op.getParentOperationId(), opId};
-			tn = new DefaultMutableTreeNode(new NodeElementInfo(op.getParentOperationId(),
+			tn = new DefaultMutableTreeNode(new NodeElementInfo(
+					op.getParentOperationId(),
 					opId,
 					Text.App.treeOperation,
 					"OP: " + opId + " - " + op.getFriendlyName()));
@@ -201,7 +205,8 @@ public class GWASpiExplorerNodes {
 		try {
 			Report rp = ReportsList.getById(rpId);
 //			int[] pathIds = new int[]{0, rp.getId(), rp.getParentMatrixId(), rp.getParentOperationId(), rpId};
-			tn = new DefaultMutableTreeNode(new NodeElementInfo(rpId,
+			tn = new DefaultMutableTreeNode(new NodeElementInfo(
+					rp.getParentMatrixId(),
 					rpId,
 					Text.App.treeReport,
 					"RP: " + rpId + " - " + rp.getFriendlyName()));
@@ -301,8 +306,8 @@ public class GWASpiExplorerNodes {
 	public static void insertOperationUnderMatrixNode(int matrixId, int opId) throws IOException {
 		try {
 			// GET MATRIX
-			Matrix matrix = MatricesList.getById(matrixId);
-			TreePath parentPath = GWASpiExplorerPanel.getSingleton().getTree().getNextMatch("MX: " + matrixId + " - " + matrix.getMatrixMetadata().getMatrixFriendlyName(), 0, Position.Bias.Forward);
+			MatrixMetadata matrixMetadata = MatricesList.getMatrixMetadataById(matrixId);
+			TreePath parentPath = GWASpiExplorerPanel.getSingleton().getTree().getNextMatch("MX: " + matrixId + " - " + matrixMetadata.getMatrixFriendlyName(), 0, Position.Bias.Forward);
 
 			DefaultMutableTreeNode newNode = createOperationTreeNode(opId);
 

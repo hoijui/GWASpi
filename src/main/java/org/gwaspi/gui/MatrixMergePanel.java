@@ -50,7 +50,7 @@ import org.gwaspi.gui.utils.Dialogs;
 import org.gwaspi.gui.utils.HelpURLs;
 import org.gwaspi.gui.utils.LimitedLengthDocument;
 import org.gwaspi.model.MatricesList;
-import org.gwaspi.model.Matrix;
+import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.threadbox.MultiOperations;
 import org.slf4j.Logger;
@@ -62,36 +62,36 @@ public class MatrixMergePanel extends JPanel {
 			= LoggerFactory.getLogger(MatrixMergePanel.class);
 
 	// Variables declaration - do not modify
-	private Matrix parentMatrix;
-	private List<Object[]> matrixItems;
-	private JButton btn_Back;
-	private JButton btn_Help;
-	private JButton btn_Merge;
-	private ButtonGroup mergeMethod;
-	private JComboBox cmb_SelectMatrix;
-	private JRadioButton rdio_MergeMarkers;
-	private JRadioButton rdio_MergeSamples;
-	private JRadioButton rdio_MergeAll;
-	private JScrollPane scrl_Notes;
-	private JTextArea txtA_Notes;
-	private JLabel lbl_NewMatrixName;
-	private JLabel lbl_SelectMatrix;
-	private JPanel pnl_Footer;
-	private JPanel pnl_ParentMatrixDesc;
-	private JPanel pnl_TrafoMatrixDesc;
-	private JPanel pnl_addedMatrix;
-	private JScrollPane scrl_ParentMatrixDesc;
-	private JScrollPane scroll_TrafoMatrixDescription;
-	private JTextArea txtA_NewMatrixDescription;
-	private JTextArea txtA_ParentMatrixDesc;
-	private JTextField txt_NewMatrixName;
+	private final MatrixKey parentMatrix;
+	private final List<Object[]> matrixItems;
+	private final JButton btn_Back;
+	private final JButton btn_Help;
+	private final JButton btn_Merge;
+	private final ButtonGroup mergeMethod;
+	private final JComboBox cmb_SelectMatrix;
+	private final JRadioButton rdio_MergeMarkers;
+	private final JRadioButton rdio_MergeSamples;
+	private final JRadioButton rdio_MergeAll;
+	private final JScrollPane scrl_Notes;
+	private final JTextArea txtA_Notes;
+	private final JLabel lbl_NewMatrixName;
+	private final JLabel lbl_SelectMatrix;
+	private final JPanel pnl_Footer;
+	private final JPanel pnl_ParentMatrixDesc;
+	private final JPanel pnl_TrafoMatrixDesc;
+	private final JPanel pnl_addedMatrix;
+	private final JScrollPane scrl_ParentMatrixDesc;
+	private final JScrollPane scroll_TrafoMatrixDescription;
+	private final JTextArea txtA_NewMatrixDescription;
+	private final JTextArea txtA_ParentMatrixDesc;
+	private final JTextField txt_NewMatrixName;
 	// End of variables declaration
 
-	@SuppressWarnings("unchecked")
-	public MatrixMergePanel(int _matrixId) throws IOException {
+	public MatrixMergePanel(MatrixKey parentMatrixKey) throws IOException {
 
-		parentMatrix = MatricesList.getById(_matrixId);
-		matrixItems = getMatrixItems();
+		parentMatrix = parentMatrixKey;
+		MatrixMetadata parentMatrixMetadata = MatricesList.getMatrixMetadataById(parentMatrix.getMatrixId());
+		matrixItems = getMatrixItems(parentMatrixKey.getStudyId());
 
 		mergeMethod = new ButtonGroup();
 		pnl_ParentMatrixDesc = new JPanel();
@@ -117,11 +117,11 @@ public class MatrixMergePanel extends JPanel {
 
 		setBorder(BorderFactory.createTitledBorder(null, Text.Trafo.mergeMatrices, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("FreeSans", 1, 18))); // NOI18N
 
-		pnl_ParentMatrixDesc.setBorder(BorderFactory.createTitledBorder(null, Text.Matrix.parentMatrix + " " + parentMatrix.getMatrixMetadata().getMatrixFriendlyName(), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("DejaVu Sans", 1, 13))); // NOI18N
+		pnl_ParentMatrixDesc.setBorder(BorderFactory.createTitledBorder(null, Text.Matrix.parentMatrix + " " + parentMatrixMetadata.getMatrixFriendlyName(), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("DejaVu Sans", 1, 13))); // NOI18N
 		txtA_ParentMatrixDesc.setColumns(20);
 		txtA_ParentMatrixDesc.setRows(5);
 		txtA_ParentMatrixDesc.setBorder(BorderFactory.createTitledBorder(Text.All.description));
-		txtA_ParentMatrixDesc.setText(parentMatrix.getMatrixMetadata().getDescription());
+		txtA_ParentMatrixDesc.setText(parentMatrixMetadata.getDescription());
 		txtA_ParentMatrixDesc.setEditable(false);
 		scrl_ParentMatrixDesc.setViewportView(txtA_ParentMatrixDesc);
 
@@ -343,17 +343,17 @@ public class MatrixMergePanel extends JPanel {
 	//<editor-fold defaultstate="expanded" desc="MERGE">
 	private static class MergeAction extends AbstractAction {
 
-		private Matrix parentMatrix;
-		private JTextArea newMatrixDescription;
-		private JTextField newMatrixName;
-		private List<Object[]> matrixItems;
-		private JComboBox selectMatrix;
-		private JRadioButton mergeMarkers;
-		private JRadioButton mergeSamples;
-		private JRadioButton mergeAll;
+		private final MatrixKey parentMatrix;
+		private final JTextArea newMatrixDescription;
+		private final JTextField newMatrixName;
+		private final List<Object[]> matrixItems;
+		private final JComboBox selectMatrix;
+		private final JRadioButton mergeMarkers;
+		private final JRadioButton mergeSamples;
+		private final JRadioButton mergeAll;
 
 		MergeAction(
-				Matrix parentMatrix,
+				MatrixKey parentMatrix,
 				JTextArea newMatrixDescription,
 				JTextField newMatrixName,
 				List<Object[]> matrixItems,
@@ -378,7 +378,7 @@ public class MatrixMergePanel extends JPanel {
 			try {
 				int addMatrixId = (Integer) matrixItems.get(selectMatrix.getSelectedIndex())[0];
 
-				MatrixMetadata parentMatrixMetadata = MatricesList.getMatrixMetadataById(parentMatrix.getId());
+				MatrixMetadata parentMatrixMetadata = MatricesList.getMatrixMetadataById(parentMatrix.getMatrixId());
 				MatrixMetadata addMatrixMetadata = MatricesList.getMatrixMetadataById(addMatrixId);
 				if (parentMatrixMetadata.getGenotypeEncoding().equals(addMatrixMetadata.getGenotypeEncoding())) {
 					if (parentMatrixMetadata.getGenotypeEncoding().equals(GenotypeEncoding.UNKNOWN)) {
@@ -394,8 +394,9 @@ public class MatrixMergePanel extends JPanel {
 						}
 
 						if (mergeMarkers.isSelected()) {
-							MultiOperations.doMergeMatrix(parentMatrix.getStudyId(),
-									parentMatrix.getId(),
+							MultiOperations.doMergeMatrix(
+									parentMatrix.getStudyId(),
+									parentMatrix.getMatrixId(),
 									addMatrixId,
 									newMatrixName.getText(),
 									description,
@@ -403,16 +404,18 @@ public class MatrixMergePanel extends JPanel {
 						}
 
 						if (mergeSamples.isSelected()) {
-							MultiOperations.doMergeMatrixAddSamples(parentMatrix.getStudyId(),
-									parentMatrix.getId(),
+							MultiOperations.doMergeMatrixAddSamples(
+									parentMatrix.getStudyId(),
+									parentMatrix.getMatrixId(),
 									addMatrixId,
 									newMatrixName.getText(),
 									description);
 						}
 
 						if (mergeAll.isSelected()) {
-							MultiOperations.doMergeMatrix(parentMatrix.getStudyId(),
-									parentMatrix.getId(),
+							MultiOperations.doMergeMatrix(
+									parentMatrix.getStudyId(),
+									parentMatrix.getMatrixId(),
 									addMatrixId,
 									newMatrixName.getText(),
 									description,
@@ -432,9 +435,9 @@ public class MatrixMergePanel extends JPanel {
 	//<editor-fold defaultstate="expanded" desc="HELPERS">
 	private static class BackAction extends AbstractAction {
 
-		private Matrix parentMatrix;
+		private final MatrixKey parentMatrix;
 
-		BackAction(Matrix parentMatrix) {
+		BackAction(MatrixKey parentMatrix) {
 
 			this.parentMatrix = parentMatrix;
 			putValue(NAME, Text.All.Back);
@@ -443,7 +446,7 @@ public class MatrixMergePanel extends JPanel {
 		@Override
 		public void actionPerformed(ActionEvent evt) {
 			try {
-				GWASpiExplorerPanel.getSingleton().setPnl_Content(new CurrentMatrixPanel(parentMatrix.getId()));
+				GWASpiExplorerPanel.getSingleton().setPnl_Content(new CurrentMatrixPanel(parentMatrix));
 				GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
 			} catch (IOException ex) {
 				log.error(null, ex);
@@ -451,6 +454,9 @@ public class MatrixMergePanel extends JPanel {
 		}
 	}
 
+	/**
+	 * @deprecated unused
+	 */
 	private String checkNewMatrixData() {
 
 		String study_name = txt_NewMatrixName.getText().trim();
@@ -463,24 +469,24 @@ public class MatrixMergePanel extends JPanel {
 		return study_name;
 	}
 
-	private static List<Object[]> getMatrixItems() throws IOException {
+	private static List<Object[]> getMatrixItems(int studyId) throws IOException {
 
 		List<Object[]> result = new ArrayList<Object[]>();
 
-		List<Matrix> matrices = MatricesList.getMatrixList();
+		List<MatrixMetadata> matrices = MatricesList.getMatricesTable(studyId);
 		if (!matrices.isEmpty()) {
 			for (int i = matrices.size() - 1; i >= 0; i--) {
-				Matrix currentMatrix = matrices.get(i);
+				MatrixMetadata currentMatrix = matrices.get(i);
 				StringBuilder sb = new StringBuilder();
 				sb.append("SID: ");
 				sb.append(currentMatrix.getStudyId());
 				sb.append(" - MX: ");
-				sb.append(currentMatrix.getId());
+				sb.append(currentMatrix.getMatrixId());
 				sb.append(" - ");
-				sb.append(currentMatrix.getMatrixMetadata().getMatrixFriendlyName());
+				sb.append(currentMatrix.getMatrixFriendlyName());
 
 				Object[] matrixItem = new Object[2];
-				matrixItem[0] = currentMatrix.getId();
+				matrixItem[0] = currentMatrix.getMatrixId();
 				matrixItem[1] = sb.toString();
 
 				result.add(matrixItem);

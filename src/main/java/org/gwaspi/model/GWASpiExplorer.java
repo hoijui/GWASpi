@@ -143,14 +143,14 @@ public class GWASpiExplorer {
 			}
 
 			// LOAD MATRICES FOR CURRENT STUDY
-			List<Matrix> matrixList = MatricesList.getMatrixList(studyList.get(i).getId());
+			List<MatrixKey> matrixList = MatricesList.getMatrixList(studyList.get(i).getId());
 			for (int j = 0; j < matrixList.size(); j++) {
 
-				DefaultMutableTreeNode matrixItem = GWASpiExplorerNodes.createMatrixTreeNode(matrixList.get(j).getId());
+				DefaultMutableTreeNode matrixItem = GWASpiExplorerNodes.createMatrixTreeNode(matrixList.get(j).getMatrixId());
 
 				// LOAD Parent OPERATIONS ON CURRENT MATRIX
-				List<Operation> parentOperations = OperationsList.getOperationsList(matrixList.get(j).getId(), -1);
-				List<Operation> allOperations = OperationsList.getOperationsList(matrixList.get(j).getId());
+				List<Operation> parentOperations = OperationsList.getOperationsList(matrixList.get(j).getMatrixId(), -1);
+				List<Operation> allOperations = OperationsList.getOperationsList(matrixList.get(j).getMatrixId());
 				for (int k = 0; k < parentOperations.size(); k++) {
 					// LOAD SUB OPERATIONS ON CURRENT MATRIX
 					Operation currentOP = parentOperations.get(k);
@@ -215,7 +215,7 @@ public class GWASpiExplorer {
 
 	//<editor-fold defaultstate="expanded" desc="LISTENER">
 	// TREE SELECTION LISTENER
-	private static TreeSelectionListener treeListener = new TreeSelectionListener() {
+	private static final TreeSelectionListener treeListener = new TreeSelectionListener() {
 		public void valueChanged(TreeSelectionEvent evt) {
 
 			JTree tree = (JTree) evt.getSource();
@@ -306,9 +306,9 @@ public class GWASpiExplorer {
 			} // Matrix Branch
 			else if (currentElementInfo.getNodeType().equals(Text.App.treeMatrix)) {
 				try {
-					// We are in MatrixItemAL node
+					// We are in MatrixItems node
 					tree.expandPath(treePath);
-					gwasPiExplorerPanel.setPnl_Content(new CurrentMatrixPanel(currentElementInfo.getNodeId()));
+					gwasPiExplorerPanel.setPnl_Content(new CurrentMatrixPanel(new MatrixKey(currentElementInfo.getParentNodeId(), currentElementInfo.getNodeId())));
 					gwasPiExplorerPanel.getScrl_Content().setViewportView(gwasPiExplorerPanel.getPnl_Content());
 				} catch (IOException ex) {
 					log.warn(null, ex);
@@ -344,7 +344,7 @@ public class GWASpiExplorer {
 							gwasPiExplorerPanel.getScrl_Content().setViewportView(gwasPiExplorerPanel.getPnl_Content());
 						} else {
 							//gwasPiExplorerPanel.pnl_Content = new MatrixAnalysePanel(parentOP.getParentMatrixId(), currentElementInfo.parentNodeId);
-							gwasPiExplorerPanel.setPnl_Content(new MatrixAnalysePanel(parentOP.getParentMatrixId(), currentElementInfo.getNodeId()));
+							gwasPiExplorerPanel.setPnl_Content(new MatrixAnalysePanel(new MatrixKey(parentOP.getStudyId(), parentOP.getParentMatrixId()), currentElementInfo.getNodeId()));
 							gwasPiExplorerPanel.getScrl_Content().setViewportView(gwasPiExplorerPanel.getPnl_Content());
 						}
 					} else {
@@ -353,7 +353,7 @@ public class GWASpiExplorer {
 						Operation currentOP = OperationsList.getById(currentElementInfo.getNodeId());
 						if (currentOP.getOperationType().equals(OPType.MARKER_QA)) {
 							// Display MarkerQA panel
-							gwasPiExplorerPanel.setPnl_Content(new MatrixMarkerQAPanel(currentOP.getParentMatrixId(), currentOP.getId()));
+							gwasPiExplorerPanel.setPnl_Content(new MatrixMarkerQAPanel(new MatrixKey(currentOP.getStudyId(), currentOP.getParentMatrixId()), currentOP.getId()));
 							gwasPiExplorerPanel.getScrl_Content().setViewportView(gwasPiExplorerPanel.getPnl_Content());
 						} else if (currentOP.getOperationType().equals(OPType.SAMPLE_QA)) {
 							// Display SampleQA Report
@@ -366,7 +366,7 @@ public class GWASpiExplorer {
 							}
 						} else {
 							// Display Operation analysis panel
-							gwasPiExplorerPanel.setPnl_Content(new MatrixAnalysePanel(parentElementInfo.getNodeId(), currentElementInfo.getNodeId()));
+							gwasPiExplorerPanel.setPnl_Content(new MatrixAnalysePanel(new MatrixKey(currentOP.getStudyId(), parentElementInfo.getNodeId()), currentElementInfo.getNodeId()));
 							gwasPiExplorerPanel.getScrl_Content().setViewportView(gwasPiExplorerPanel.getPnl_Content());
 						}
 					}

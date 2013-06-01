@@ -19,6 +19,7 @@ package org.gwaspi.dao.jpa;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -33,7 +34,7 @@ import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
 import org.gwaspi.dao.MatrixService;
 import org.gwaspi.global.Config;
-import org.gwaspi.model.Matrix;
+import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.Operation;
 import org.gwaspi.model.OperationsList;
@@ -107,44 +108,20 @@ public class JPAMatrixService implements MatrixService {
 	}
 
 	@Override
-	public Matrix getById(int matrixId) throws IOException {
+	public List<MatrixKey> getMatrixList() throws IOException {
 
-		Matrix matrix = null;
+		List<MatrixKey> matrices = Collections.EMPTY_LIST;
 
 		EntityManager em = null;
 		try {
 			em = open();
-			Query query = em.createNamedQuery("matrixMetadata_fetchById");
-			query.setParameter("id", matrixId);
-			matrix = (Matrix) query.getSingleResult();
-		} catch (NoResultException ex) {
-			LOG.error("Failed fetching a matrix by id: " + matrixId
-					+ " (id not found)", ex);
-			LOG.info("Available matrix-IDs:");
-			List<Matrix> matrixList = getMatrixList();
-			StringBuilder matricesIds = new StringBuilder();
-			for (Matrix mat : matrixList) {
-				matricesIds.append(mat.getId()).append(" ");
+			List<Object[]> matricesKeyParts = em.createNamedQuery("matrixMetadata_listKeys").getResultList();
+			matrices = new ArrayList<MatrixKey>(matricesKeyParts.size());
+			for (Object[] matrixKeyParts : matricesKeyParts) {
+				matrices.add(new MatrixKey(
+						(Integer) matrixKeyParts[0],
+						(Integer) matrixKeyParts[1]));
 			}
-			LOG.info(matricesIds.toString());
-		} catch (Exception ex) {
-			LOG.error("Failed fetching a matrix by id: " + matrixId, ex);
-		} finally {
-			close(em);
-		}
-
-		return matrix;
-	}
-
-	@Override
-	public List<Matrix> getMatrixList() throws IOException {
-
-		List<Matrix> matrices = Collections.EMPTY_LIST;
-
-		EntityManager em = null;
-		try {
-			em = open();
-			matrices = em.createNamedQuery("matrixMetadata_list").getResultList();
 		} catch (Exception ex) {
 			LOG.error("Failed fetching all matrices", ex);
 		} finally {
@@ -155,16 +132,20 @@ public class JPAMatrixService implements MatrixService {
 	}
 
 	@Override
-	public List<Matrix> getMatrixList(int studyId) throws IOException {
+	public List<MatrixKey> getMatrixList(int studyId) throws IOException {
 
-		List<Matrix> matrices = Collections.EMPTY_LIST;
+		List<MatrixKey> matrices = Collections.EMPTY_LIST;
 
 		EntityManager em = null;
 		try {
 			em = open();
-			Query query = em.createNamedQuery("matrixMetadata_listByStudyId");
+			Query query = em.createNamedQuery("matrixMetadata_listIdsByStudyId");
 			query.setParameter("studyId", studyId);
-			matrices = query.getResultList();
+			List<Integer> matricesIds = query.getResultList();
+			matrices = new ArrayList<MatrixKey>(matricesIds.size());
+			for (Integer matrixId : matricesIds) {
+				matrices.add(new MatrixKey(studyId, matrixId));
+			}
 		} catch (Exception ex) {
 			LOG.error("Failed fetching all matrices", ex);
 		} finally {
@@ -210,7 +191,7 @@ public class JPAMatrixService implements MatrixService {
 		try {
 			em = open();
 			begin(em);
-			if (matrixMetadata.getId() == Integer.MIN_VALUE) {
+			if (matrixMetadata.getMatrixId() == Integer.MIN_VALUE) {
 				em.persist(matrixMetadata);
 			} else {
 				em.merge(matrixMetadata);
@@ -328,13 +309,15 @@ public class JPAMatrixService implements MatrixService {
 		} catch (NoResultException ex) {
 			LOG.error("Failed fetching matrix-metadata by id: " + matrixId
 					+ " (id not found)", ex);
-			LOG.info("Available matrix-IDs:");
-			List<Matrix> matrixList = getMatrixList();
-			StringBuilder matricesIds = new StringBuilder();
-			for (Matrix mat : matrixList) {
-				matricesIds.append(mat.getId()).append(" ");
+			LOG.info("Available matrices:");
+			List<MatrixKey> matrixList = getMatrixList();
+			StringBuilder matrices = new StringBuilder();
+			for (MatrixKey mat : matrixList) {
+				matrices.append(" {study-id: ");
+				matrices.append(mat.getStudyId()).append(", matrix-id: ");
+				matrices.append(mat.getMatrixId()).append("}");
 			}
-			LOG.info(matricesIds.toString());
+			LOG.info(matrices.toString());
 		} catch (Exception ex) {
 			LOG.error("Failed fetching matrix-metadata by id: " + matrixId, ex);
 		} finally {

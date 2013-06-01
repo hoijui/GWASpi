@@ -57,6 +57,7 @@ import org.gwaspi.gui.utils.BrowserHelpUrlAction;
 import org.gwaspi.gui.utils.HelpURLs;
 import org.gwaspi.gui.utils.IntegerInputVerifier;
 import org.gwaspi.gui.utils.RowRendererDefault;
+import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.Operation;
 import org.gwaspi.model.OperationsList;
 import org.slf4j.Logger;
@@ -402,7 +403,7 @@ public class Report_QAMarkersSummary extends JPanel {
 		public void actionPerformed(ActionEvent evt) {
 			try {
 				GWASpiExplorerPanel.getSingleton().getTree().setSelectionPath(GWASpiExplorerPanel.getSingleton().getTree().getSelectionPath().getParentPath());
-				GWASpiExplorerPanel.getSingleton().setPnl_Content(new MatrixMarkerQAPanel(op.getParentMatrixId(), opId));
+				GWASpiExplorerPanel.getSingleton().setPnl_Content(new MatrixMarkerQAPanel(new MatrixKey(op.getStudyId(), op.getParentMatrixId()), opId));
 				GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
 			} catch (IOException ex) {
 				log.error(null, ex);

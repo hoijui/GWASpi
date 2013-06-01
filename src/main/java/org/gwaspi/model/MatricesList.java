@@ -33,15 +33,11 @@ public final class MatricesList {
 	private MatricesList() {
 	}
 
-	public static Matrix getById(int matrixId) throws IOException {
-		return matrixService.getById(matrixId);
-	}
-
-	public static List<Matrix> getMatrixList(int studyId) throws IOException {
+	public static List<MatrixKey> getMatrixList(int studyId) throws IOException {
 		return matrixService.getMatrixList(studyId);
 	}
 
-	public static List<Matrix> getMatrixList() throws IOException {
+	public static List<MatrixKey> getMatrixList() throws IOException {
 		return matrixService.getMatrixList();
 	}
 

@@ -48,7 +48,8 @@ import org.gwaspi.gui.utils.LimitedLengthDocument;
 import org.gwaspi.gui.utils.OperationsTableModel;
 import org.gwaspi.gui.utils.RowRendererDefault;
 import org.gwaspi.model.MatricesList;
-import org.gwaspi.model.Matrix;
+import org.gwaspi.model.MatrixKey;
+import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.Operation;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.threadbox.MultiOperations;
@@ -62,33 +63,33 @@ public class CurrentMatrixPanel extends JPanel {
 			= LoggerFactory.getLogger(CurrentMatrixPanel.class);
 
 	// Variables declaration
-	private Matrix matrix;
-	private JButton btn_Back;
-	private JButton btn_DeleteMatrix;
-	private JButton btn_DeleteOperation;
-	private JButton btn_Help;
-	private JButton btn_Operation1_1;
-	private JButton btn_Operation1_2;
-	private JButton btn_Operation1_3;
-	private JButton btn_Operation1_4;
-	private JButton btn_Operation1_5;
-	private JButton btn_Operation1_6;
-	private JButton btn_SaveDesc;
-	private JPanel pnl_Spacer;
-	private JPanel pnl_Buttons;
-	private JPanel pnl_Footer;
-	private JPanel pnl_MatrixDesc;
-	private JPanel pnl_NewOperation;
-	private JScrollPane scrl_MatrixDesc;
-	private JScrollPane scrl_MatrixOperations;
-	private JTable tbl_MatrixOperations;
-	private JTextArea txtA_MatrixDesc;
-
+	private final MatrixKey matrix;
+	private final JButton btn_Back;
+	private final JButton btn_DeleteMatrix;
+	private final JButton btn_DeleteOperation;
+	private final JButton btn_Help;
+	private final JButton btn_Operation1_1;
+	private final JButton btn_Operation1_2;
+	private final JButton btn_Operation1_3;
+	private final JButton btn_Operation1_4;
+	private final JButton btn_Operation1_5;
+	private final JButton btn_Operation1_6;
+	private final JButton btn_SaveDesc;
+	private final JPanel pnl_Spacer;
+	private final JPanel pnl_Buttons;
+	private final JPanel pnl_Footer;
+	private final JPanel pnl_MatrixDesc;
+	private final JPanel pnl_NewOperation;
+	private final JScrollPane scrl_MatrixDesc;
+	private final JScrollPane scrl_MatrixOperations;
+	private final JTable tbl_MatrixOperations;
+	private final JTextArea txtA_MatrixDesc;
 	// End of variables declaration
-	@SuppressWarnings("unchecked")
-	public CurrentMatrixPanel(int _matrixId) throws IOException {
 
-		matrix = MatricesList.getById(_matrixId);
+	public CurrentMatrixPanel(MatrixKey matrixKey) throws IOException {
+
+		matrix = matrixKey;
+		MatrixMetadata matrixMetadata = MatricesList.getMatrixMetadataById(matrix.getMatrixId());
 
 		pnl_MatrixDesc = new JPanel();
 		scrl_MatrixDesc = new JScrollPane();
@@ -99,7 +100,7 @@ public class CurrentMatrixPanel extends JPanel {
 		tbl_MatrixOperations = new JTable() {
 			@Override
 			public boolean isCellEditable(int row, int col) {
-				return false; //Renders column 0 uneditable.
+				return false; // Renders column 0 uneditable.
 			}
 
 			@Override
@@ -131,17 +132,17 @@ public class CurrentMatrixPanel extends JPanel {
 		setBorder(BorderFactory.createTitledBorder(null, Text.Matrix.matrix, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("FreeSans", 1, 18))); // NOI18N
 
 
-		pnl_MatrixDesc.setBorder(BorderFactory.createTitledBorder(null, Text.Matrix.currentMatrix + " " + matrix.getMatrixMetadata().getMatrixFriendlyName() + ", " + Text.Matrix.matrixID + ": mx" + matrix.getId(), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("DejaVu Sans", 1, 13))); // NOI18N
+		pnl_MatrixDesc.setBorder(BorderFactory.createTitledBorder(null, Text.Matrix.currentMatrix + " " + matrixMetadata.getMatrixFriendlyName() + ", " + Text.Matrix.matrixID + ": mx" + matrix.getMatrixId(), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("DejaVu Sans", 1, 13))); // NOI18N
 		txtA_MatrixDesc.setColumns(20);
 		txtA_MatrixDesc.setRows(5);
 		txtA_MatrixDesc.setBorder(BorderFactory.createTitledBorder(null, Text.All.description, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("DejaVu Sans", 1, 13))); // NOI18N
 		txtA_MatrixDesc.setDocument(new LimitedLengthDocument(1999));
-		txtA_MatrixDesc.setText(matrix.getMatrixMetadata().getDescription());
+		txtA_MatrixDesc.setText(matrixMetadata.getDescription());
 		scrl_MatrixDesc.setViewportView(txtA_MatrixDesc);
 		btn_DeleteMatrix.setAction(new DeleteMatrixAction(matrix, this));
 		btn_SaveDesc.setAction(new SaveDescriptionAction(matrix, txtA_MatrixDesc));
 
-		tbl_MatrixOperations.setModel(new OperationsTableModel(OperationsList.getOperationsTable(_matrixId)));
+		tbl_MatrixOperations.setModel(new OperationsTableModel(OperationsList.getOperationsTable(matrix.getMatrixId())));
 		scrl_MatrixOperations.setViewportView(tbl_MatrixOperations);
 		btn_DeleteOperation.setAction(new DeleteOperationAction(matrix, this, tbl_MatrixOperations));
 
@@ -316,9 +317,9 @@ public class CurrentMatrixPanel extends JPanel {
 	//<editor-fold defaultstate="expanded" desc="HELPERS">
 	private static class ExtractMatrixAction extends AbstractAction {
 
-		private Matrix matrix;
+		private final MatrixKey matrix;
 
-		ExtractMatrixAction(Matrix matrix) {
+		ExtractMatrixAction(MatrixKey matrix) {
 
 			this.matrix = matrix;
 			putValue(NAME, Text.Trafo.extractData);
@@ -327,7 +328,7 @@ public class CurrentMatrixPanel extends JPanel {
 		@Override
 		public void actionPerformed(ActionEvent evt) {
 			try {
-				GWASpiExplorerPanel.getSingleton().setPnl_Content(new MatrixExtractPanel(matrix.getId(), "", ""));
+				GWASpiExplorerPanel.getSingleton().setPnl_Content(new MatrixExtractPanel(matrix, "", ""));
 				GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
 			} catch (IOException ex) {
 				log.error(null, ex);
@@ -337,9 +338,9 @@ public class CurrentMatrixPanel extends JPanel {
 
 	private static class TransformMatrixAction extends AbstractAction {
 
-		private Matrix matrix;
+		private final MatrixKey matrix;
 
-		TransformMatrixAction(Matrix matrix) {
+		TransformMatrixAction(MatrixKey matrix) {
 
 			this.matrix = matrix;
 			putValue(NAME, Text.Trafo.transformMatrix);
@@ -349,7 +350,7 @@ public class CurrentMatrixPanel extends JPanel {
 		public void actionPerformed(ActionEvent evt) {
 			// Goto Trafo Pane
 			try {
-				GWASpiExplorerPanel.getSingleton().setPnl_Content(new MatrixTrafoPanel(matrix.getId()));
+				GWASpiExplorerPanel.getSingleton().setPnl_Content(new MatrixTrafoPanel(matrix));
 				GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
 			} catch (IOException ex) {
 				log.error(null, ex);
@@ -359,9 +360,9 @@ public class CurrentMatrixPanel extends JPanel {
 
 	private static class AnalyseDataAction extends AbstractAction {
 
-		private Matrix matrix;
+		private final MatrixKey matrix;
 
-		AnalyseDataAction(Matrix matrix) {
+		AnalyseDataAction(MatrixKey matrix) {
 
 			this.matrix = matrix;
 			putValue(NAME, Text.Operation.analyseData);
@@ -371,7 +372,7 @@ public class CurrentMatrixPanel extends JPanel {
 		public void actionPerformed(ActionEvent evt) {
 			// Goto Matrix Analysis Panel
 			try {
-				GWASpiExplorerPanel.getSingleton().setPnl_Content(new MatrixAnalysePanel(matrix.getId(), Integer.MIN_VALUE));
+				GWASpiExplorerPanel.getSingleton().setPnl_Content(new MatrixAnalysePanel(matrix, Integer.MIN_VALUE));
 				GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
 			} catch (IOException ex) {
 				log.error(null, ex);
@@ -381,9 +382,9 @@ public class CurrentMatrixPanel extends JPanel {
 
 	private static class ExportMatrixAction extends AbstractAction {
 
-		private Matrix matrix;
+		private final MatrixKey matrix;
 
-		ExportMatrixAction(Matrix matrix) {
+		ExportMatrixAction(MatrixKey matrix) {
 
 			this.matrix = matrix;
 			putValue(NAME, Text.Trafo.exportMatrix);
@@ -405,10 +406,10 @@ public class CurrentMatrixPanel extends JPanel {
 						}
 
 						// CHECK IF MARKER QA EXISTS FOR EXPORT TO BE PERMITTED
-						List<Operation> operations = OperationsList.getOperationsList(matrix.getId());
+						List<Operation> operations = OperationsList.getOperationsList(matrix.getMatrixId());
 						int markersQAOpId = OperationsList.getIdOfLastOperationTypeOccurance(operations, OPType.MARKER_QA);
 						if (markersQAOpId != Integer.MIN_VALUE) {
-							MultiOperations.doExportMatrix(matrix.getStudyId(), matrix.getId(), format, expPhenotype);
+							MultiOperations.doExportMatrix(matrix.getStudyId(), matrix.getMatrixId(), format, expPhenotype);
 						} else {
 							Dialogs.showWarningDialogue(Text.Operation.warnOperationsMissing + " Marker QA");
 						}
@@ -416,7 +417,7 @@ public class CurrentMatrixPanel extends JPanel {
 						log.error(null, ex);
 					}
 				} else {
-					MultiOperations.doExportMatrix(matrix.getStudyId(), matrix.getId(), format, expPhenotype);
+					MultiOperations.doExportMatrix(matrix.getStudyId(), matrix.getMatrixId(), format, expPhenotype);
 				}
 			}
 		}
@@ -424,9 +425,9 @@ public class CurrentMatrixPanel extends JPanel {
 
 	private static class MergeMatricesAction extends AbstractAction {
 
-		private Matrix matrix;
+		private final MatrixKey matrix;
 
-		MergeMatricesAction(Matrix matrix) {
+		MergeMatricesAction(MatrixKey matrix) {
 
 			this.matrix = matrix;
 			putValue(NAME, Text.Trafo.mergeMatrices);
@@ -435,7 +436,7 @@ public class CurrentMatrixPanel extends JPanel {
 		@Override
 		public void actionPerformed(ActionEvent evt) {
 			try {
-				GWASpiExplorerPanel.getSingleton().setPnl_Content(new MatrixMergePanel(matrix.getId()));
+				GWASpiExplorerPanel.getSingleton().setPnl_Content(new MatrixMergePanel(matrix));
 				GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
 			} catch (IOException ex) {
 				log.error(null, ex);
@@ -445,9 +446,9 @@ public class CurrentMatrixPanel extends JPanel {
 
 	private static class TranslateMatricesAction extends AbstractAction {
 
-		private Matrix matrix;
+		private final MatrixKey matrix;
 
-		TranslateMatricesAction(Matrix matrix) {
+		TranslateMatricesAction(MatrixKey matrix) {
 
 			this.matrix = matrix;
 			putValue(NAME, Text.Trafo.translateMatrix);
@@ -465,10 +466,10 @@ public class CurrentMatrixPanel extends JPanel {
 
 	private static class SaveDescriptionAction extends AbstractAction {
 
-		private Matrix matrix;
-		private JTextArea matrixDesc;
+		private final MatrixKey matrix;
+		private final JTextArea matrixDesc;
 
-		SaveDescriptionAction(Matrix matrix, JTextArea matrixDesc) {
+		SaveDescriptionAction(MatrixKey matrix, JTextArea matrixDesc) {
 
 			this.matrix = matrix;
 			this.matrixDesc = matrixDesc;
@@ -478,7 +479,7 @@ public class CurrentMatrixPanel extends JPanel {
 		@Override
 		public void actionPerformed(ActionEvent evt) {
 			try {
-				MatricesList.saveMatrixDescription(matrix.getId(), matrixDesc.getText());
+				MatricesList.saveMatrixDescription(matrix.getMatrixId(), matrixDesc.getText());
 			} catch (IOException ex) {
 				log.error(null, ex);
 			}
@@ -487,10 +488,10 @@ public class CurrentMatrixPanel extends JPanel {
 
 	private static class DeleteMatrixAction extends AbstractAction {
 
-		private Matrix matrix;
-		private Component dialogParent;
+		private final MatrixKey matrix;
+		private final Component dialogParent;
 
-		DeleteMatrixAction(Matrix matrix, Component dialogParent) {
+		DeleteMatrixAction(MatrixKey matrix, Component dialogParent) {
 
 			this.matrix = matrix;
 			this.dialogParent = dialogParent;
@@ -500,7 +501,7 @@ public class CurrentMatrixPanel extends JPanel {
 		@Override
 		public void actionPerformed(ActionEvent evt) {
 			// TODO TEST IF THE DELETED ITEM IS REQUIRED FOR A QUEUED WORKER
-			if (SwingWorkerItemList.permitsDeletionOfMatrixId(matrix.getId())) {
+			if (SwingWorkerItemList.permitsDeletionOfMatrixId(matrix.getMatrixId())) {
 				int option = JOptionPane.showConfirmDialog(dialogParent, Text.Matrix.confirmDelete1 + Text.Matrix.confirmDelete2);
 				if (option == JOptionPane.YES_OPTION) {
 					int deleteReportOption = JOptionPane.showConfirmDialog(dialogParent, Text.Reports.confirmDelete);
@@ -510,7 +511,7 @@ public class CurrentMatrixPanel extends JPanel {
 						if (deleteReportOption == JOptionPane.YES_OPTION) {
 							deleteReport = true;
 						}
-						MultiOperations.deleteMatrix(matrix.getStudyId(), matrix.getId(), deleteReport);
+						MultiOperations.deleteMatrix(matrix.getStudyId(), matrix.getMatrixId(), deleteReport);
 					}
 				}
 			} else {
@@ -521,11 +522,11 @@ public class CurrentMatrixPanel extends JPanel {
 
 	private static class DeleteOperationAction extends AbstractAction {
 
-		private Matrix matrix;
-		private JTable matrixOperationsTable;
-		private Component dialogParent;
+		private final MatrixKey matrix;
+		private final JTable matrixOperationsTable;
+		private final Component dialogParent;
 
-		DeleteOperationAction(Matrix matrix, Component dialogParent, JTable matrixOperationsTable) {
+		DeleteOperationAction(MatrixKey matrix, Component dialogParent, JTable matrixOperationsTable) {
 
 			this.matrix = matrix;
 			this.dialogParent = dialogParent;
@@ -552,7 +553,7 @@ public class CurrentMatrixPanel extends JPanel {
 										if (deleteReportOption == JOptionPane.YES_OPTION) {
 											deleteReport = true;
 										}
-										MultiOperations.deleteOperationsByOpId(matrix.getStudyId(), matrix.getId(), opId, deleteReport);
+										MultiOperations.deleteOperationsByOpId(matrix.getStudyId(), matrix.getMatrixId(), opId, deleteReport);
 
 										//OperationManager.deleteOperationAndChildren(matrix.getStudyId(), opId, deleteReport);
 									}
@@ -572,9 +573,9 @@ public class CurrentMatrixPanel extends JPanel {
 
 	private static class BackAction extends AbstractAction {
 
-		private Matrix matrix;
+		private final MatrixKey matrix;
 
-		BackAction(Matrix matrix) {
+		BackAction(MatrixKey matrix) {
 
 			this.matrix = matrix;
 			putValue(NAME, Text.All.Back);

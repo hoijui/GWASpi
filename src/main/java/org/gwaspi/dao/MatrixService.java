@@ -19,16 +19,14 @@ package org.gwaspi.dao;
 
 import java.io.IOException;
 import java.util.List;
-import org.gwaspi.model.Matrix;
+import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
 
 public interface MatrixService {
 
-	Matrix getById(int matrixId) throws IOException;
+	List<MatrixKey> getMatrixList(int studyId) throws IOException;
 
-	List<Matrix> getMatrixList(int studyId) throws IOException;
-
-	List<Matrix> getMatrixList() throws IOException;
+	List<MatrixKey> getMatrixList() throws IOException;
 
 	List<MatrixMetadata> getMatricesTable(int studyId) throws IOException;
 

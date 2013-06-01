@@ -57,7 +57,8 @@ import org.gwaspi.gui.utils.HelpURLs;
 import org.gwaspi.gui.utils.LimitedLengthDocument;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MatricesList;
-import org.gwaspi.model.Matrix;
+import org.gwaspi.model.MatrixKey;
+import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.netCDF.markers.MarkerSet;
 import org.gwaspi.threadbox.MultiOperations;
@@ -69,47 +70,45 @@ public class MatrixExtractPanel extends JPanel {
 	private static final Logger log
 			= LoggerFactory.getLogger(MatrixExtractPanel.class);
 
-	public MatrixExtractPanel(int _matrixId, String newMatrixName, String newMatrixDesc) throws IOException {
-		initComponents(_matrixId, newMatrixName, newMatrixDesc);
-	}
 	// Variables declaration - do not modify
-	private Matrix parentMatrix;
-	private List<Object[]> markerPickerTable = new ArrayList<Object[]>();
-	private List<Object[]> samplePickerTable = new ArrayList<Object[]>();
-	private JButton btn_Back;
-	private JButton btn_Go;
-	private JButton btn_Help;
-	private JButton btn_MarkersCriteriaBrowse;
-	private JButton btn_SamplesCriteriaBrowse;
-	private JComboBox cmb_MarkersVariable;
-	private JComboBox cmb_SamplesVariable;
-	private JLabel lbl_MarkersCriteria;
-	private JLabel lbl_MarkersCriteriaFile;
-	private JLabel lbl_MarkersVariable;
-	private JLabel lbl_NewMatrixName;
-	private JLabel lbl_ParentMatrix;
-	private JLabel lbl_ParentMatrixName;
-	private JLabel lbl_SamplesCriteria;
-	private JLabel lbl_SamplesCriteriaFile;
-	private JLabel lbl_SamplesVariable;
-	private JPanel pnl_Footer;
-	private JPanel pnl_MarkerZone;
-	private JPanel pnl_NameAndDesc;
-	private JPanel pnl_SampleZone;
-	private JScrollPane scrl_MarkersCriteria;
-	private JScrollPane scrl_NewMatrixDescription;
-	private JScrollPane scrl_SamplesCriteria;
-	private JTextArea txtA_MarkersCriteria;
-	private JTextArea txtA_NewMatrixDescription;
-	private JTextArea txtA_SamplesCriteria;
-	private JTextField txt_MarkersCriteriaFile;
-	private JTextField txt_NewMatrixName;
-	private JTextField txt_SamplesCriteriaFile;
+	private final MatrixKey parentMatrix;
+	private final List<Object[]> markerPickerTable = new ArrayList<Object[]>();
+	private final List<Object[]> samplePickerTable = new ArrayList<Object[]>();
+	private final JButton btn_Back;
+	private final JButton btn_Go;
+	private final JButton btn_Help;
+	private final JButton btn_MarkersCriteriaBrowse;
+	private final JButton btn_SamplesCriteriaBrowse;
+	private final JComboBox cmb_MarkersVariable;
+	private final JComboBox cmb_SamplesVariable;
+	private final JLabel lbl_MarkersCriteria;
+	private final JLabel lbl_MarkersCriteriaFile;
+	private final JLabel lbl_MarkersVariable;
+	private final JLabel lbl_NewMatrixName;
+	private final JLabel lbl_ParentMatrix;
+	private final JLabel lbl_ParentMatrixName;
+	private final JLabel lbl_SamplesCriteria;
+	private final JLabel lbl_SamplesCriteriaFile;
+	private final JLabel lbl_SamplesVariable;
+	private final JPanel pnl_Footer;
+	private final JPanel pnl_MarkerZone;
+	private final JPanel pnl_NameAndDesc;
+	private final JPanel pnl_SampleZone;
+	private final JScrollPane scrl_MarkersCriteria;
+	private final JScrollPane scrl_NewMatrixDescription;
+	private final JScrollPane scrl_SamplesCriteria;
+	private final JTextArea txtA_MarkersCriteria;
+	private final JTextArea txtA_NewMatrixDescription;
+	private final JTextArea txtA_SamplesCriteria;
+	private final JTextField txt_MarkersCriteriaFile;
+	private final JTextField txt_NewMatrixName;
+	private final JTextField txt_SamplesCriteriaFile;
 	// End of variables declaration
 
-	@SuppressWarnings("unchecked")
-	private void initComponents(int _matrixId, String newMatrixName, String newMatrixDesc) throws IOException {
-		parentMatrix = MatricesList.getById(_matrixId);
+	public MatrixExtractPanel(MatrixKey parentMatrixKey, String newMatrixName, String newMatrixDesc) throws IOException {
+
+		parentMatrix = parentMatrixKey;
+		MatrixMetadata matrixMetadata = MatricesList.getMatrixMetadataById(parentMatrix.getMatrixId());
 
 		pnl_NameAndDesc = new JPanel();
 		lbl_ParentMatrix = new JLabel();
@@ -182,7 +181,7 @@ public class MatrixExtractPanel extends JPanel {
 		pnl_SampleZone.setBorder(BorderFactory.createTitledBorder(null, Text.Trafo.sampleSelectZone, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("DejaVu Sans", 1, 13))); // NOI18N
 
 		lbl_ParentMatrix.setText(Text.Matrix.parentMatrix);
-		lbl_ParentMatrixName.setText(parentMatrix.getMatrixMetadata().getMatrixFriendlyName());
+		lbl_ParentMatrixName.setText(matrixMetadata.getMatrixFriendlyName());
 		lbl_NewMatrixName.setText(Text.Matrix.newMatrixName);
 		txt_NewMatrixName.setDocument(new LimitedLengthDocument(63));
 		txtA_NewMatrixDescription.setColumns(20);
@@ -260,7 +259,7 @@ public class MatrixExtractPanel extends JPanel {
 			markerPickerTable.get(6)[0].toString()};
 		cmb_MarkersVariable.setModel(new DefaultComboBoxModel(markerPickerVars));
 		// PREFILL CRITERIA TXT WITH CHROMOSOME CODES IF NECESSARY
-		cmb_MarkersVariable.setAction(new MarkersVariableAction(_matrixId));
+		cmb_MarkersVariable.setAction(new MarkersVariableAction(parentMatrix));
 
 		lbl_MarkersCriteria.setText(Text.Trafo.criteria);
 		txtA_MarkersCriteria.setColumns(20);
@@ -628,7 +627,7 @@ public class MatrixExtractPanel extends JPanel {
 
 					MultiOperations.doExtractData(
 							parentMatrix.getStudyId(),
-							parentMatrix.getId(),
+							parentMatrix.getMatrixId(),
 							newMatrixName,
 							description,
 							markerPickCase,
@@ -684,9 +683,9 @@ public class MatrixExtractPanel extends JPanel {
 
 		private final Map<MarkerKey, int[]> rdChrInfoSetMap;
 
-		MarkersVariableAction(int matrixId) throws IOException {
+		MarkersVariableAction(MatrixKey parentMatrix) throws IOException {
 
-			MarkerSet parentMarkerSet = new MarkerSet(parentMatrix.getStudyId(), matrixId);
+			MarkerSet parentMarkerSet = new MarkerSet(parentMatrix.getStudyId(), parentMatrix.getMatrixId());
 			rdChrInfoSetMap = parentMarkerSet.getChrInfoSetMap();
 
 			putValue(NAME, Text.Trafo.variable);
@@ -694,7 +693,10 @@ public class MatrixExtractPanel extends JPanel {
 
 		@Override
 		public void actionPerformed(ActionEvent evt) {
-				if (cmb_MarkersVariable.getSelectedIndex() == 1 || cmb_MarkersVariable.getSelectedIndex() == 4) { //Chromosome variables
+
+			final int selectedIndex = cmb_MarkersVariable.getSelectedIndex();
+			if (selectedIndex == 1 || selectedIndex == 4) {
+				// Chromosome variables
 
 				StringBuilder sb = new StringBuilder();
 				for (MarkerKey key : rdChrInfoSetMap.keySet()) {
@@ -710,9 +712,9 @@ public class MatrixExtractPanel extends JPanel {
 
 	private static class BackAction extends AbstractAction {
 
-		private Matrix parentMatrix;
+		private final MatrixKey parentMatrix;
 
-		BackAction(Matrix parentMatrix) {
+		BackAction(MatrixKey parentMatrix) {
 
 			this.parentMatrix = parentMatrix;
 			putValue(NAME, Text.All.Back);
@@ -721,7 +723,7 @@ public class MatrixExtractPanel extends JPanel {
 		@Override
 		public void actionPerformed(ActionEvent evt) {
 			try {
-				GWASpiExplorerPanel.getSingleton().setPnl_Content(new CurrentMatrixPanel(parentMatrix.getId()));
+				GWASpiExplorerPanel.getSingleton().setPnl_Content(new CurrentMatrixPanel(parentMatrix));
 				GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
 			} catch (IOException ex) {
 				log.error(null, ex);
