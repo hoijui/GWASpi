@@ -85,7 +85,7 @@ public class Threaded_GWAS extends CommonRunnable {
 							matrixKey.getStudyId(),
 							ImportFormat.GWASpi,
 							phenotypeFile.getPath());
-					SampleInfoList.insertSampleInfos(matrixKey.getMatrixId(), sampleInfos); // FIXME this should be studyId, not MatrixId!!
+					SampleInfoList.insertSampleInfos(matrixKey.getStudyId(), sampleInfos);
 
 					String censusName = gwasParams.getFriendlyName() + " using " + phenotypeFile.getName();
 					censusOpId = OperationManager.censusCleanMatrixMarkersByPhenotypeFile(
