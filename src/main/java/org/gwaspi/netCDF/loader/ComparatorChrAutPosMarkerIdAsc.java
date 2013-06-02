@@ -17,13 +17,15 @@
 
 package org.gwaspi.netCDF.loader;
 
+import java.io.Serializable;
 import java.util.Comparator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.gwaspi.constants.cNetCDF;
 
-public class ComparatorChrAutPosMarkerIdAsc implements Comparator<String> {
-
+public class ComparatorChrAutPosMarkerIdAsc
+		implements Comparator<String>, Serializable
+{
 	private static final Pattern SIMPLE_INTEGER = Pattern.compile("[0-9]{1,}");
 
 	@Override

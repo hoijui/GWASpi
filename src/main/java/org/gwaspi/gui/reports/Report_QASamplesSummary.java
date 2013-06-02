@@ -434,7 +434,7 @@ public class Report_QASamplesSummary extends JPanel {
 					tableData = new StringBuilder();
 
 					for (int colNb = 0; colNb < reportTable.getModel().getColumnCount(); colNb++) {
-						String curVal = reportTable.getValueAt(rowNb, colNb).toString();
+						String curVal = (String) reportTable.getValueAt(rowNb, colNb);
 
 						if (curVal == null) {
 							curVal = "";

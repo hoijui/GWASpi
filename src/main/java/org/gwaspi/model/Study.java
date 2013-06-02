@@ -88,7 +88,8 @@ public class Study implements Serializable {
 		this.description = description;
 		this.studyType = studyType;
 		this.validity = validity;
-		this.creationDate = (Date) creationDate.clone();
+		this.creationDate = (creationDate == null)
+				? null : (Date) creationDate.clone();
 //		this.studyMatrices = new ArrayList<Integer>();
 	}
 
@@ -213,7 +214,7 @@ public class Study implements Serializable {
 		updatable  = false
 		)
 	public Date getCreationDate() {
-		return creationDate;
+		return (creationDate == null) ? null : (Date) creationDate.clone();
 	}
 
 	protected void setCreationDate(Date creationDate) {

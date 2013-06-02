@@ -81,63 +81,74 @@ public class PlinkReportLoader {
 		XYSeries series1 = null;
 		XYSeries series2 = null;
 
-		FileReader inputFileReader = new FileReader(plinkReport);
-		BufferedReader inputBufferReader = new BufferedReader(inputFileReader);
+		FileReader inputFileReader = null;
+		BufferedReader inputBufferReader = null;
+		String tempChr = null;
+		try {
+			inputFileReader = new FileReader(plinkReport);
+			inputBufferReader = new BufferedReader(inputFileReader);
 
+			// Getting data from file and subdividing to series all points by chromosome
+			String l;
+			tempChr = "";
+			String header = inputBufferReader.readLine();
+			int count = 0;
+			while ((l = inputBufferReader.readLine()) != null) {
 
-		//Getting data from file and subdividing to series all points by chromosome
-		String l;
-		String tempChr = "";
-		String header = inputBufferReader.readLine();
-		int count = 0;
-		while ((l = inputBufferReader.readLine()) != null) {
+				if (count % 10000 == 0) {
+					log.info("loadAssocUnadjLogPvsPos -> reader count: {}", count);
+				}
+				count++;
 
-			if (count % 10000 == 0) {
-				log.info("loadAssocUnadjLogPvsPos -> reader count: {}", count);
-			}
-			count++;
+				l = l.trim().replaceAll("\\s+", ",");
+				String[] cVals = l.split(",");
 
-			l = l.trim().replaceAll("\\s+", ",");
-			String[] cVals = l.split(",");
+				String markerId = cVals[1];
+				int position = Integer.parseInt(cVals[2]);
+				String s_pVal = cVals[8];
 
-			String markerId = cVals[1];
-			int position = Integer.parseInt(cVals[2]);
-			String s_pVal = cVals[8];
+				if (!s_pVal.equals("NA")) {
+					double logPValue = Math.abs(Math.log(Double.parseDouble(s_pVal)) / Math.log(10));
 
-			if (!s_pVal.equals("NA")) {
-				double logPValue = Math.abs(Math.log(Double.parseDouble(s_pVal)) / Math.log(10));
-
-				if (cVals[0].toString().equals(tempChr)) {
-					if (redMarkersHS.contains(markerId)) {
-						series2.add(position, logPValue);
+					if (cVals[0].toString().equals(tempChr)) {
+						if (redMarkersHS.contains(markerId)) {
+							series2.add(position, logPValue);
+						} else {
+							series1.add(position, logPValue);
+						}
+						labeler.put(tempChr + "_" + position, markerId);
 					} else {
-						series1.add(position, logPValue);
-					}
-					labeler.put(tempChr + "_" + position, markerId);
-				} else {
-					if (!tempChr.equals("")) { //SKIP FIRST TIME (NO DATA YET!)
-						chrData.addSeries(series1);
-						chrData.addSeries(series2);
-						appendToCombinedRangePlot(combinedPlot, tempChr, chrData);
-					}
-					tempChr = cVals[0];
-					series1 = new XYSeries("Imputed");
-					series2 = new XYSeries("Observed");
-					labeler.put(tempChr + "_" + position, markerId);
+						if (!tempChr.equals("")) { // SKIP FIRST TIME (NO DATA YET!)
+							chrData.addSeries(series1);
+							chrData.addSeries(series2);
+							appendToCombinedRangePlot(combinedPlot, tempChr, chrData);
+						}
+						tempChr = cVals[0];
+						series1 = new XYSeries("Imputed");
+						series2 = new XYSeries("Observed");
+						labeler.put(tempChr + "_" + position, markerId);
 
-					if (redMarkersHS.contains(markerId)) {
-						series2.add(position, logPValue);
-					} else {
-						series1.add(position, logPValue);
+						if (redMarkersHS.contains(markerId)) {
+							series2.add(position, logPValue);
+						} else {
+							series1.add(position, logPValue);
+						}
 					}
 				}
 			}
+		} finally {
+			if (inputBufferReader != null) {
+				inputBufferReader.close();
+			} else if (inputFileReader != null) {
+				inputFileReader.close();
+			}
 		}
+
 		chrData.addSeries(series1);
 		chrData.addSeries(series2);
-		appendToCombinedRangePlot(combinedPlot, tempChr, chrData); //ADD LAST CHR TO PLOT
-		return combinedPlot;
+		appendToCombinedRangePlot(combinedPlot, tempChr, chrData); // ADD LAST CHR TO PLOT
 
+		return combinedPlot;
 	}
 
 	private static void appendToCombinedRangePlot(CombinedRangeXYPlot combinedPlot, String chromosome, XYSeriesCollection seriesCol) {

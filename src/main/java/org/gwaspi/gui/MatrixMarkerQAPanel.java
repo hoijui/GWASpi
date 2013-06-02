@@ -86,17 +86,36 @@ public class MatrixMarkerQAPanel extends JPanel {
 		btn_Back = new JButton();
 		btn_Help = new JButton();
 
-		setBorder(BorderFactory.createTitledBorder(null, Text.Operation.operation + ": " + currentOP.getFriendlyName(), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("FreeSans", 1, 18))); // NOI18N
+		setBorder(BorderFactory.createTitledBorder(null,
+				Text.Operation.operation + ": "
+				+ ((currentOP == null) ? "<NONE>" : currentOP.getFriendlyName()),
+				TitledBorder.DEFAULT_JUSTIFICATION,
+				TitledBorder.DEFAULT_POSITION,
+				new Font("FreeSans", 1, 18))); // NOI18N
 
 		txtA_Description.setColumns(20);
 		txtA_Description.setRows(5);
 		txtA_Description.setEditable(false);
-		txtA_Description.setBorder(BorderFactory.createTitledBorder(null, Text.All.description, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("DejaVu Sans", 1, 13))); // NOI18N
+		txtA_Description.setBorder(BorderFactory.createTitledBorder(null,
+				Text.All.description,
+				TitledBorder.DEFAULT_JUSTIFICATION,
+				TitledBorder.DEFAULT_POSITION,
+				new Font("DejaVu Sans", 1, 13))); // NOI18N
 		if (_opId != Integer.MIN_VALUE) {
-			pnl_MatrixDesc.setBorder(BorderFactory.createTitledBorder(null, Text.Operation.operationId + ": " + currentOP.getId(), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("DejaVu Sans", 1, 13))); // NOI18N
-			txtA_Description.setText(currentOP.getDescription().toString());
+			pnl_MatrixDesc.setBorder(BorderFactory.createTitledBorder(null,
+					Text.Operation.operationId + ": "
+					+ ((currentOP == null) ? "<NONE>" : currentOP.getId()),
+					TitledBorder.DEFAULT_JUSTIFICATION,
+					TitledBorder.DEFAULT_POSITION,
+					new Font("DejaVu Sans", 1, 13))); // NOI18N
+			txtA_Description.setText((currentOP == null) ? "<NONE>"
+					: currentOP.getDescription());
 		} else {
-			pnl_MatrixDesc.setBorder(BorderFactory.createTitledBorder(null, Text.Matrix.matrix + ": " + parentMatrixMetadata.getMatrixFriendlyName(), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("DejaVu Sans", 1, 13))); // NOI18N
+			pnl_MatrixDesc.setBorder(BorderFactory.createTitledBorder(null,
+					Text.Matrix.matrix + ": " + parentMatrixMetadata.getMatrixFriendlyName(),
+					TitledBorder.DEFAULT_JUSTIFICATION,
+					TitledBorder.DEFAULT_POSITION,
+					new Font("DejaVu Sans", 1, 13))); // NOI18N
 			txtA_Description.setText(parentMatrixMetadata.getDescription().toString());
 		}
 		scrl_MatrixDesc.setViewportView(txtA_Description);
@@ -183,6 +202,7 @@ public class MatrixMarkerQAPanel extends JPanel {
 			this.currentOP = currentOP;
 			this.dialogParent = dialogParent;
 			this.parentMatrix = parentMatrix;
+			setEnabled(currentOP != null);
 			putValue(NAME, Text.Operation.deleteOperation);
 		}
 

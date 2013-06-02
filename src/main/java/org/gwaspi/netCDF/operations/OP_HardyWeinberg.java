@@ -38,8 +38,8 @@ public class OP_HardyWeinberg implements MatrixOperation {
 
 	private final Logger log = LoggerFactory.getLogger(OP_HardyWeinberg.class);
 
-	private OperationMetadata markerCensusOP;
-	private String censusName;
+	private final OperationMetadata markerCensusOP;
+	private final String censusName;
 
 	public OP_HardyWeinberg(OperationMetadata markerCensusOP, String censusName) {
 
@@ -141,9 +141,15 @@ public class OP_HardyWeinberg implements MatrixOperation {
 		} catch (IOException ex) {
 			log.error(null, ex);
 		} finally {
-			if (null != rdNcFile) {
+			if (rdNcFile != null) {
 				try {
 					rdNcFile.close();
+				} catch (IOException ex) {
+					log.warn("Cannot close file", ex);
+				}
+			}
+			if (wrNcFile != null) {
+				try {
 					wrNcFile.close();
 				} catch (IOException ex) {
 					log.warn("Cannot close file", ex);

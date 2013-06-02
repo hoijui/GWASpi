@@ -21,7 +21,6 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -151,24 +150,27 @@ public class ReportWriter {
 		return appendResult;
 	}
 
-	private static void copyFile(String srFile, String dtFile) {
+	private static void copyFile(String srFile, String dtFile) throws IOException {
+
+		InputStream in = null;
+		OutputStream out = null;
 		try {
-			InputStream in = new FileInputStream(new File(srFile));
+			in = new FileInputStream(new File(srFile));
 			final boolean append = false;
-			OutputStream out = new FileOutputStream(new File(dtFile), append);
+			out = new FileOutputStream(new File(dtFile), append);
 
 			byte[] buf = new byte[1024];
 			int len;
 			while ((len = in.read(buf)) > 0) {
 				out.write(buf, 0, len);
 			}
-			in.close();
-			out.close();
-		} catch (FileNotFoundException ex) {
-			log.error("File not found in the specified directory", ex);
-//			org.gwaspi.gui.StartGWASpi.exit();
-		} catch (IOException ex) {
-			log.error(null, ex);
+		} finally {
+			if (in != null) {
+				in.close();
+			}
+			if (out != null) {
+				out.close();
+			}
 		}
 	}
 

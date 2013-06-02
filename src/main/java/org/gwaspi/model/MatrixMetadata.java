@@ -434,7 +434,7 @@ public class MatrixMetadata implements Serializable {
 		updatable  = false
 		)
 	public Date getCreationDate() {
-		return creationDate;
+		return (creationDate == null) ? null : (Date) creationDate.clone();
 	}
 
 	protected void setCreationDate(Date creationDate) {

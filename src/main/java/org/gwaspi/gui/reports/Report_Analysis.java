@@ -176,7 +176,7 @@ public abstract class Report_Analysis extends JPanel {
 
 		pnl_Summary.setBorder(BorderFactory.createTitledBorder(Text.Reports.summary));
 
-		Integer actualNRows = (nRows == null) ? 100 : nRows;
+		Integer actualNRows = (nRows == null) ? Integer.valueOf(100) : nRows;
 		txt_NRows.setValue(actualNRows);
 
 		txt_NRows.setHorizontalAlignment(JFormattedTextField.TRAILING);
@@ -556,7 +556,7 @@ public abstract class Report_Analysis extends JPanel {
 					tableData = new StringBuilder();
 
 					for (int colNb : colIndToSave) {
-						String curVal = reportTable.getValueAt(rowNb, colNb).toString();
+						String curVal = (String) reportTable.getValueAt(rowNb, colNb);
 
 						if (curVal == null) {
 							curVal = "";

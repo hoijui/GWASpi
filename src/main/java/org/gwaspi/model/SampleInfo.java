@@ -394,7 +394,10 @@ public class SampleInfo implements Comparable<SampleInfo>, Serializable {
 	 * @param id the study-id to set
 	 */
 	public void setSampleId(String sampleId) {
-		this.key = new SampleKey(getStudyId() == null ? Integer.MIN_VALUE : getStudyId(), sampleId, getFamilyId());
+		this.key = new SampleKey(
+				(getStudyId() == null) ? Integer.valueOf(Integer.MIN_VALUE) : getStudyId(),
+				sampleId,
+				getFamilyId());
 	}
 
 	/**
@@ -415,7 +418,10 @@ public class SampleInfo implements Comparable<SampleInfo>, Serializable {
 	}
 
 	protected void setFamilyId(String familyId) {
-		this.key = new SampleKey(getStudyId() == null ? Integer.MIN_VALUE : getStudyId(), getSampleId(), familyId);
+		this.key = new SampleKey(
+				(getStudyId() == null) ? Integer.valueOf(Integer.MIN_VALUE) : getStudyId(),
+				getSampleId(),
+				familyId);
 	}
 
 	@Column(

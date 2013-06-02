@@ -403,9 +403,15 @@ public class OP_MarkerCensus implements MatrixOperation {
 			} catch (IOException ex) {
 				log.error(null, ex);
 			} finally {
-				if (null != rdNcFile) {
+				if (rdNcFile != null) {
 					try {
 						rdNcFile.close();
+					} catch (IOException ex) {
+						log.warn("Cannot close file", ex);
+					}
+				}
+				if (wrNcFile != null) {
+					try {
 						wrNcFile.close();
 					} catch (IOException ex) {
 						log.warn("Cannot close file", ex);

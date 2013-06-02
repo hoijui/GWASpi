@@ -434,7 +434,7 @@ public class MatrixTranslator {
 				// Iterate through all markers
 				for (Map.Entry<MarkerKey, byte[]> entry : codedMap.entrySet()) {
 					MarkerKey markerKey = entry.getKey();
-					char[] basesDict = dictionaryMap.get(markerKey).toString().toCharArray();
+					char[] basesDict = dictionaryMap.get(markerKey);
 					byte[] codedAlleles = entry.getValue();
 					byte[] transAlleles = new byte[2];
 

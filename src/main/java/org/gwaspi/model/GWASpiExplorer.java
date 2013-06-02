@@ -246,7 +246,7 @@ public class GWASpiExplorer {
 			NodeElementInfo currentElementInfo = (NodeElementInfo) currentElement;
 
 			TreePath treePath = evt.getPath();
-			if (treePath != null && !currentElementInfo.getNodeType().equals(Text.App.treeParent)) {
+			if ((treePath != null) && !currentElementInfo.getNodeType().equals(Text.App.treeParent)) {
 				try {
 					Config.setConfigValue(Config.PROPERTY_LAST_SELECTED_NODE, currentElementInfo.getNodeUniqueName());
 				} catch (IOException ex) {
@@ -268,7 +268,7 @@ public class GWASpiExplorer {
 
 			// Get parent node of currently selected node
 			NodeElementInfo parentElementInfo = null;
-			if (treePath.getParentPath() != null) {
+			if ((treePath != null) && (treePath.getParentPath() != null)) {
 				DefaultMutableTreeNode parentNode = (DefaultMutableTreeNode) treePath.getParentPath().getLastPathComponent();
 				Object parentElement = parentNode.getUserObject();
 				parentElementInfo = (NodeElementInfo) parentElement;
@@ -429,7 +429,7 @@ public class GWASpiExplorer {
 	};
 
 	// PRE-EXPANSION/COLLAPSE LISTENER
-	private class MyTreeWillExpandListener implements TreeWillExpandListener {
+	private static class MyTreeWillExpandListener implements TreeWillExpandListener {
 
 		public void treeWillExpand(TreeExpansionEvent evt) throws ExpandVetoException {
 			// Get the path that will be expanded

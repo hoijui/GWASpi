@@ -99,17 +99,17 @@ public class LoadGTFromAffyFiles implements GenotypesLoader {
 		// GET SAMPLES FROM FILES
 		List<SampleKey> samples = new ArrayList<SampleKey>();
 		for (int i = 0; i < gtFilesToImport.length; i++) {
-			String sampleId;
+			SampleKey sampleKey;
 			switch (loadDescription.getFormat()) {
 				case Affymetrix_GenomeWide6:
-					sampleId = getAffySampleId(gtFilesToImport[i]);
+					sampleKey = getAffySampleId(loadDescription.getStudyId(), gtFilesToImport[i]);
 					break;
 				default:
-					sampleId = "";
+					sampleKey = new SampleKey(loadDescription.getStudyId(), "", SampleKey.FAMILY_ID_NONE);
 					break;
 			}
 			// NOTE The Beagle format does not have a family-ID
-			samples.add(new SampleKey(loadDescription.getStudyId(), sampleId, SampleKey.FAMILY_ID_NONE));
+			samples.add(sampleKey);
 		}
 
 		// COMPARE SAMPLE INFO LIST TO AVAILABLE FILES
@@ -364,7 +364,7 @@ public class LoadGTFromAffyFiles implements GenotypesLoader {
 	{
 		// LOAD INPUT FILE
 		// GET SAMPLEID
-		String sampleId = getAffySampleId(file);
+		SampleKey sampleKey = getAffySampleId(loadDescription.getStudyId(), file);
 
 		FileReader inputFileReader = new FileReader(file);
 		BufferedReader inputBufferReader = new BufferedReader(inputFileReader);
@@ -420,13 +420,13 @@ public class LoadGTFromAffyFiles implements GenotypesLoader {
 		}
 
 		// WRITING GENOTYPE DATA INTO netCDF FILE
-		int sampleIndex = samples.indexOf(sampleId);
+		int sampleIndex = samples.indexOf(sampleKey);
 		if (sampleIndex != -1) { // CHECK IF CURRENT FILE IS NOT PRESENT IN SAMPLEINFO FILE!!
 			org.gwaspi.netCDF.operations.Utils.saveSingleSampleGTsToMatrix(ncfile, sortedAlleles, sampleIndex);
 		}
 	}
 
-	private static String getAffySampleId(File fileToScan) throws IOException {
+	private static SampleKey getAffySampleId(int studyId, File fileToScan) throws IOException {
 //		FileReader inputFileReader = new FileReader(fileToScan);
 //		BufferedReader inputBufferReader = new BufferedReader(inputFileReader);
 		String l = fileToScan.getName();
@@ -441,6 +441,6 @@ public class LoadGTFromAffyFiles implements GenotypesLoader {
 //		String[] cVals = l.split("_");
 //		String sampleId = cVals[preprocessing.cFormats.sampleId];
 
-		return sampleId;
+		return new SampleKey(studyId, sampleId, SampleKey.FAMILY_ID_NONE);
 	}
 }

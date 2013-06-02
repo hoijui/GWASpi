@@ -86,7 +86,8 @@ public class Report_AnalysisPanel extends JPanel {
 		txtA_OpDesc.setRows(5);
 		txtA_OpDesc.setEditable(false);
 		txtA_OpDesc.setBorder(BorderFactory.createTitledBorder(Text.All.description));
-		txtA_OpDesc.setText(currentOP.getDescription());
+		txtA_OpDesc.setText((currentOP == null) ? "<NONE>"
+					: currentOP.getDescription());
 		scrl_OpDesc.setViewportView(txtA_OpDesc);
 
 		btn_DeleteOperation.setAction(new DeleteOperationAction(parentMatrix, this, currentOP));
