@@ -166,7 +166,9 @@ public class MatrixMetadata implements Serializable {
 		this.parent1MatrixId = -1;
 		this.parent2MatrixId = -1;
 		this.inputLocation = "";
-		this.creationDate = (Date) creationDate.clone();
+		this.creationDate = (creationDate == null)
+				? null
+				: (Date) creationDate.clone();
 	}
 
 	@Override
