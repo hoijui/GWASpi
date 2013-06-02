@@ -176,7 +176,6 @@ public class JPAStudyService implements StudyService {
 		Study study;
 
 		// DELETE METADATA INFO FROM DB
-		boolean removed = false;
 		EntityManager em = null;
 		try {
 			em = open();
@@ -187,11 +186,11 @@ public class JPAStudyService implements StudyService {
 			}
 			em.remove(study);
 			commit(em);
-			removed = true;
 		} catch (Exception ex) {
-			LOG.error("Failed removing a study", ex);
 			rollback(em);
-			return;
+			throw new IOException("Failed deleting study by"
+					+ ": study-id: " + studyId,
+					ex);
 		} finally {
 			close(em);
 		}

@@ -164,23 +164,19 @@ public class JPASampleInfoService implements SampleInfoService {
 	@Override
 	public void deleteSamplesByPoolId(Integer studyId) throws IOException {
 
-		int deleted = 0;
-
 		EntityManager em = null;
 		try {
 			em = open();
 			begin(em);
 			Query query = em.createNamedQuery("sampleInfo_deleteByStudyId");
 			query.setParameter("studyId", studyId);
-			deleted = query.executeUpdate();
+			query.executeUpdate();
 			commit(em);
-		} catch (NoResultException ex) {
-			LOG.error("Failed deleting sample-infos by"
-					+ ": study-id: " + studyId
-					+ "; (not found)", ex);
 		} catch (Exception ex) {
-			LOG.error("Failed deleting sample-infos", ex);
 			rollback(em);
+			throw new IOException("Failed deleting sample-infos by"
+					+ ": study-id: " + studyId,
+					ex);
 		} finally {
 			close(em);
 		}

@@ -286,10 +286,11 @@ public class JPAOperationService implements OperationService {
 					}
 
 					EntityManager em = null;
+					int operationId = Integer.MIN_VALUE;
 					try {
 						em = open();
 						begin(em);
-						final int operationId = operations.get(i).getId();
+						operationId = operations.get(i).getId();
 						final OperationKey operationKey = new OperationKey(studyId, op.getParentMatrixId(), operationId);
 						OperationMetadata operation = em.find(OperationMetadata.class, operationKey);
 						if (operation == null) {
@@ -298,8 +299,11 @@ public class JPAOperationService implements OperationService {
 						em.remove(operation);
 						commit(em);
 					} catch (Exception ex) {
-						LOG.error("Failed removing a matrix", ex);
 						rollback(em);
+						throw new IOException("Failed deleting operation by"
+								+ ": study-id: " + studyId
+								+ ", operation-id: " + operationId,
+								ex);
 					} finally {
 						close(em);
 					}
@@ -315,45 +319,46 @@ public class JPAOperationService implements OperationService {
 				try {
 					em = open();
 					begin(em);
-					em.remove(getById(opId));
+					final OperationKey operationKey = new OperationKey(studyId, op.getParentMatrixId(), opId);
+					OperationMetadata operation = em.find(OperationMetadata.class, operationKey);
+					if (operation == null) {
+						throw new IllegalArgumentException("No operation found with this ID: " + operationKey.getId());
+					}
+					em.remove(operation);
 					commit(em);
 				} catch (Exception ex) {
-					LOG.error("Failed removing a matrix", ex);
 					rollback(em);
+					throw new IOException("Failed deleting operation by"
+							+ ": operation-id: " + opId,
+							ex);
 				} finally {
 					close(em);
 				}
 			}
-		} catch (IOException ex) {
-			LOG.warn(null, ex);
+		} catch (Exception ex) {
 			// PURGE INEXISTING OPERATIONS FROM DB
+			OperationMetadata op = getById(opId);
 			EntityManager em = null;
 			try {
 				em = open();
 				begin(em);
-				em.remove(getById(opId));
+				final OperationKey operationKey = new OperationKey(studyId, op.getParentMatrixId(), opId);
+				OperationMetadata operation = em.find(OperationMetadata.class, operationKey);
+				if (operation == null) {
+					throw new IllegalArgumentException("No operation found with this ID: " + operationKey.getId());
+				}
+				em.remove(operation);
 				commit(em);
 			} catch (Exception exi) {
-				LOG.error("Failed removing a matrix", ex);
 				rollback(em);
+				throw new IOException("Failed deleting operation by"
+						+ ": study-id: " + studyId
+						+ ", operation-id: " + opId,
+						exi);
 			} finally {
 				close(em);
 			}
-		} catch (IllegalArgumentException ex) {
-			LOG.warn(null, ex);
-			// PURGE INEXISTING OPERATIONS FROM DB
-			EntityManager em = null;
-			try {
-				em = open();
-				begin(em);
-				em.remove(getById(opId));
-				commit(em);
-			} catch (Exception exi) {
-				LOG.error("Failed removing a matrix", ex);
-				rollback(em);
-			} finally {
-				close(em);
-			}
+			throw new IOException(ex);
 		}
 	}
 

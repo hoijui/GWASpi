@@ -221,27 +221,19 @@ public class JPAReportService implements ReportService {
 	@Override
 	public void deleteReportByMatrixId(int parentMatrixId) throws IOException {
 
-		int deleted = 0;
-
 		EntityManager em = null;
 		try {
 			em = open();
 			begin(em);
 			Query query = em.createNamedQuery("report_deleteByParentMatrixId");
 			query.setParameter("parentMatrixId", parentMatrixId);
-			deleted = query.executeUpdate();
+			query.executeUpdate();
 			commit(em);
-		} catch (NoResultException ex) {
-			LOG.error("Failed deleting reports by"
-					+ ": parent-matrix-id: " + parentMatrixId
-					+ "; (not found)",
-					ex);
-			rollback(em);
 		} catch (Exception ex) {
-			LOG.error("Failed deleting reports by"
+			rollback(em);
+			throw new IOException("Failed deleting reports by"
 					+ ": parent-matrix-id: " + parentMatrixId,
 					ex);
-			rollback(em);
 		} finally {
 			close(em);
 		}
@@ -250,20 +242,17 @@ public class JPAReportService implements ReportService {
 	@Override
 	public void deleteReportByOperationId(int parentOperationId) throws IOException {
 
-		int deleted = 0;
-
 		EntityManager em = null;
 		try {
 			em = open();
 			Query query = em.createNamedQuery("report_deleteByParentOperationId");
 			query.setParameter("parentOperationId", parentOperationId);
-			deleted = query.executeUpdate();
-		} catch (NoResultException ex) {
-			LOG.error("Failed deleting reports by"
-					+ ": parent-operation-id: " + parentOperationId
-					+ "; (not found)", ex);
+			query.executeUpdate();
 		} catch (Exception ex) {
-			LOG.error("Failed deleting reports", ex);
+			rollback(em);
+			throw new IOException("Failed deleting reports by"
+					+ ": parent-operation-id: " + parentOperationId,
+					ex);
 		} finally {
 			close(em);
 		}
