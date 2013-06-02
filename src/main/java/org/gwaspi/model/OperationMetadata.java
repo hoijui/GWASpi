@@ -127,20 +127,21 @@ public class OperationMetadata implements Serializable, MatrixOperationSpec {
 			return false;
 		}
 		final OperationMetadata other = (OperationMetadata) obj;
-		if (this.getOPId() != other.getOPId()) {
-			return false;
-		}
 		if (this.getStudyId() != other.getStudyId()) {
 			return false;
 		}
-		return true;
+		if (this.getParentMatrixId() != other.getParentMatrixId()) {
+			return false;
+		}
+		return (this.getOPId() == other.getOPId());
 	}
 
 	@Override
 	public int hashCode() {
-		int hash = 3;
-		hash = 17 * hash + this.getOPId();
-		hash = 17 * hash + this.getStudyId();
+		int hash = 7;
+		hash = 29 * hash + this.getStudyId();
+		hash = 29 * hash + this.getParentMatrixId();
+		hash = 29 * hash + this.getOPId();
 		return hash;
 	}
 
