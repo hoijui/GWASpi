@@ -25,8 +25,6 @@ import org.gwaspi.model.SampleKey;
 
 public interface SampleInfoService {
 
-	String createSamplesInfoTable();
-
 	List<SampleInfo> getAllSampleInfoFromDB() throws IOException;
 
 	List<SampleInfo> getAllSampleInfoFromDBByPoolID(Integer studyId) throws IOException;

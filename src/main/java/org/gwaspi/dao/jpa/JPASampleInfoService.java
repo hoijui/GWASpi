@@ -87,11 +87,6 @@ public class JPASampleInfoService implements SampleInfoService {
 	}
 
 	@Override
-	public String createSamplesInfoTable() {
-		return "1";
-	}
-
-	@Override
 	public List<SampleInfo> getAllSampleInfoFromDB() throws IOException {
 
 		List<SampleInfo> sampleInfos = Collections.EMPTY_LIST;

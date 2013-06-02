@@ -62,19 +62,11 @@ public class StudyList {
 		return studyService.getAll();
 	}
 
-	public static String createStudyManagementTable(Object[] insertValues) {
-		return studyService.createStudyManagementTable(insertValues);
-	}
-
 	public static int insertNewStudy(String studyName, String description) {
 		return studyService.insertNewStudy(studyName, description);
 	}
 
 	public static void deleteStudy(int studyId, boolean deleteReports) throws IOException {
 		studyService.deleteStudy(studyId, deleteReports);
-	}
-
-	public static String createStudyLogFile(Integer studyId) throws IOException {
-		return studyService.createStudyLogFile(studyId);
 	}
 }

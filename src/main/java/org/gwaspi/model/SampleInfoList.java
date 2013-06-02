@@ -34,10 +34,6 @@ public class SampleInfoList {
 	private SampleInfoList() {
 	}
 
-	public static String createSamplesInfoTable() {
-		return sampleInfoService.createSamplesInfoTable();
-	}
-
 	public static List<SampleInfo> getAllSampleInfoFromDB() throws IOException {
 		return sampleInfoService.getAllSampleInfoFromDB();
 	}

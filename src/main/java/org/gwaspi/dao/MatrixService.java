@@ -30,8 +30,6 @@ public interface MatrixService {
 
 	List<MatrixMetadata> getMatricesTable(int studyId) throws IOException;
 
-	String createMatricesTable();
-
 	void insertMatrixMetadata(MatrixMetadata matrixMetadata) throws IOException;
 
 	void deleteMatrix(MatrixKey matrixKey, boolean deleteReports) throws IOException;
@@ -49,6 +47,4 @@ public interface MatrixService {
 	 * The size of this Map is very small.
 	 */
 	MatrixMetadata getMatrixMetadata(String netCDFpath, int studyId, String newMatrixName) throws IOException;
-
-	void shutdownBackend() throws IOException;
 }

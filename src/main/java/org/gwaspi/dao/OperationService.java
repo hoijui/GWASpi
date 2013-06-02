@@ -35,8 +35,6 @@ public interface OperationService {
 
 	List<OperationMetadata> getOperationsTable(int parentMatrixId, int opId) throws IOException;
 
-	String createOperationsMetadataTable();
-
 	void insertOPMetadata(OperationMetadata operationMetadata) throws IOException;
 
 	List<MatrixOperationSpec> getMatrixOperations(int matrixId) throws IOException;

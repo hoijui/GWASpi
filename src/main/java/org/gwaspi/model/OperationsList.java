@@ -68,10 +68,6 @@ public class OperationsList {
 		return result;
 	}
 
-	public static String createOperationsMetadataTable() {
-		return operationService.createOperationsMetadataTable();
-	}
-
 	public static void insertOPMetadata(OperationMetadata operationMetadata) throws IOException {
 		operationService.insertOPMetadata(operationMetadata);
 	}

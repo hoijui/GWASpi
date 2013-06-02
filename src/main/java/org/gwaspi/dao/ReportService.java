@@ -29,9 +29,7 @@ public interface ReportService {
 	// XXX split into two methods, with either parentOperationId or parentMatrixId param, as we do not allow to fetch by specifying both anyway (on has to be Integer.MIN_VALUE as it works now)
 	List<Report> getReportsList(int parentOperationId, int parentMatrixId) throws IOException;
 
-	String getReportNamePrefix(OperationMetadata op);
-
-	String createReportsMetadataTable();
+	String getReportNamePrefix(OperationMetadata op); // TODO move somewhere else
 
 	void insertRPMetadata(Report report) throws IOException;
 

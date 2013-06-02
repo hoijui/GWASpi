@@ -180,12 +180,6 @@ public class JPAMatrixService implements MatrixService {
 	}
 
 	@Override
-	public String createMatricesTable() {
-//		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-		return "1";
-	}
-
-	@Override
 	public void insertMatrixMetadata(MatrixMetadata matrixMetadata) throws IOException {
 
 		EntityManager em = null;
@@ -455,7 +449,4 @@ public class JPAMatrixService implements MatrixService {
 
 		return matrixMetadata;
 	}
-
-	@Override
-	public void shutdownBackend() throws IOException {}
 }

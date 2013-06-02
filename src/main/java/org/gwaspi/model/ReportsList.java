@@ -46,10 +46,6 @@ public class ReportsList {
 		return reportService.getReportNamePrefix(op);
 	}
 
-	public static String createReportsMetadataTable() {
-		return reportService.createReportsMetadataTable();
-	}
-
 	public static void insertRPMetadata(Report report) throws IOException {
 		reportService.insertRPMetadata(report);
 	}

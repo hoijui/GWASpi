@@ -49,16 +49,6 @@ public class StartGWASpi extends JFrame {
 
 	private static final Logger log = LoggerFactory.getLogger(StartGWASpi.class);
 
-	static {
-		Thread shutdownDerby = new Thread() {
-			@Override
-			public void run() {
-				StartGWASpi.shutdownBackend();
-			}
-		};
-		Runtime.getRuntime().addShutdownHook(shutdownDerby);
-	}
-
 	// create a JFrame to hold everything
 	// TODO convert all this to non-static, and make configuration in general more modular (eg, use swing preferences for everything?
 	public static boolean guiMode = true;
@@ -211,15 +201,6 @@ public class StartGWASpi extends JFrame {
 		}
 
 		return isInitiated;
-	}
-
-	private static void shutdownBackend() {
-
-		try {
-			MatricesList.shutdownBackend();
-		} catch (IOException ex) {
-			log.error(null, ex);
-		}
 	}
 
 	public static void exit() {

@@ -287,8 +287,6 @@ public class Config {
 		Document localDom = getLocalVersionDom();
 		List<Element> localElements = XMLParser.parseDocument(localDom, "GWASpi");
 		setConfigValue(PROPERTY_CURRENT_GWASPIDB_VERSION, XMLParser.getTextValue(localElements.get(0), "GWASpi_DB_Version"));
-
-		StudyList.createStudyLogFile(0);
 	}
 
 	private static void updateConfigDataDirs(File dataDir) throws IOException, BackingStoreException, URISyntaxException {

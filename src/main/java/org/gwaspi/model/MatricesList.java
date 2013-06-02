@@ -45,10 +45,6 @@ public final class MatricesList {
 		return matrixService.getMatricesTable(studyId);
 	}
 
-	public static String createMatricesTable() {
-		return matrixService.createMatricesTable();
-	}
-
 	public static void insertMatrixMetadata(MatrixMetadata matrixMetadata) throws IOException {
 		matrixService.insertMatrixMetadata(matrixMetadata);
 	}
@@ -75,9 +71,5 @@ public final class MatricesList {
 
 	public static MatrixMetadata getMatrixMetadata(String netCDFpath, int studyId, String newMatrixName) throws IOException {
 		return matrixService.getMatrixMetadata(netCDFpath, studyId, newMatrixName);
-	}
-
-	public static void shutdownBackend() throws IOException {
-		matrixService.shutdownBackend();
 	}
 }

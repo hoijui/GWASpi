@@ -139,13 +139,6 @@ public class JPAStudyService implements StudyService {
 	}
 
 	@Override
-	public String createStudyManagementTable(Object[] insertValues) {
-
-		int newStudyId = insertNewStudy((String) insertValues[0], (String) insertValues[1]);
-		return "1";
-	}
-
-	@Override
 	public int insertNewStudy(String name, String description) {
 
 		Study study = new Study(name, description);
@@ -218,11 +211,5 @@ public class JPAStudyService implements StudyService {
 
 		// DELETE STUDY POOL SAMPLES
 		SampleInfoList.deleteSamplesByPoolId(studyId);
-	}
-
-	@Override
-	public String createStudyLogFile(Integer studyId) throws IOException {
-//		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-		return "";
 	}
 }

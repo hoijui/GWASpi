@@ -225,12 +225,6 @@ public class JPAOperationService implements OperationService {
 	}
 
 	@Override
-	public String createOperationsMetadataTable() {
-//		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-		return "1";
-	}
-
-	@Override
 	public void insertOPMetadata(OperationMetadata operationMetadata) throws IOException {
 
 		EntityManager em = null;
