@@ -102,10 +102,8 @@ public class Study implements Serializable {
 			return false;
 		}
 		final Study other = (Study) obj;
-		if (this.getId() != other.getId()) {
-			return false;
-		}
-		return true;
+
+		return this.getId() == other.getId();
 	}
 
 	@Override

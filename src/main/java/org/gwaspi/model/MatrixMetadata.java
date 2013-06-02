@@ -180,13 +180,10 @@ public class MatrixMetadata implements Serializable {
 			return false;
 		}
 		final MatrixMetadata other = (MatrixMetadata) obj;
-		if (this.getMatrixId() != other.getMatrixId()) {
-			return false;
-		}
 		if (this.getStudyId() != other.getStudyId()) {
 			return false;
 		}
-		return true;
+		return (this.getMatrixId() == other.getMatrixId());
 	}
 
 	@Override
