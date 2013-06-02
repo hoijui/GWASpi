@@ -91,14 +91,18 @@ public class SwingDeleterItemList {
 				}
 				// DELETE MATRIX
 				if (deleteTarget.equals(DeleteTarget.MATRIX)) {
-					currentSdi.setStartTime(org.gwaspi.global.Utils.getShortDateTimeAsString());
-					currentSdi.setQueueState(QueueState.PROCESSING);
+					try {
+						currentSdi.setStartTime(org.gwaspi.global.Utils.getShortDateTimeAsString());
+						currentSdi.setQueueState(QueueState.PROCESSING);
 
-					MatricesList.deleteMatrix(new MatrixKey(currentSdi.getStudyId(), currentSdi.getMatrixId()), currentSdi.isDeleteReports());
-					MultiOperations.printCompleted("deleting Matrix ID:" + currentSdi.getMatrixId());
+						MatricesList.deleteMatrix(new MatrixKey(currentSdi.getStudyId(), currentSdi.getMatrixId()), currentSdi.isDeleteReports());
+						MultiOperations.printCompleted("deleting Matrix ID:" + currentSdi.getMatrixId());
 
-					GWASpiExplorerNodes.deleteMatrixNode(currentSdi.getMatrixId());
-					flagCurrentItemDeleted();
+						GWASpiExplorerNodes.deleteMatrixNode(currentSdi.getMatrixId());
+						flagCurrentItemDeleted();
+					} catch (IOException ex) {
+						log.error(null, ex);
+					}
 				}
 				// DELETE OPERATION BY OPID
 				if (deleteTarget.equals(DeleteTarget.OPERATION_BY_OPID)) {

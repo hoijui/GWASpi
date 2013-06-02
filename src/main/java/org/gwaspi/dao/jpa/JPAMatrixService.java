@@ -207,48 +207,46 @@ public class JPAMatrixService implements MatrixService {
 	}
 
 	@Override
-	public void deleteMatrix(MatrixKey matrixKey, boolean deleteReports) {
+	public void deleteMatrix(MatrixKey matrixKey, boolean deleteReports) throws IOException {
+
+		MatrixMetadata matrixMetadata = null;
+
+		// DELETE METADATA INFO FROM DB
+		EntityManager em = null;
 		try {
-			MatrixMetadata matrixMetadata = null;
-
-			// DELETE METADATA INFO FROM DB
-			boolean removed = false;
-			EntityManager em = null;
-			try {
-				em = open();
-				begin(em);
-				matrixMetadata = em.find(MatrixMetadata.class, matrixKey);
-				if (matrixMetadata == null) {
-					throw new IllegalArgumentException("No matrix found with this ID: (" + matrixKey.getStudyId() + ") " + matrixKey.getMatrixId());
-				}
-				em.remove(matrixMetadata); // This is done implicitly by remove(matrix)
-				commit(em);
-				removed = true;
-			} catch (Exception ex) {
-				rollback(em);
-				throw ex;
-			} finally {
-				close(em);
+			em = open();
+			begin(em);
+			matrixMetadata = em.find(MatrixMetadata.class, matrixKey);
+			if (matrixMetadata == null) {
+				throw new IllegalArgumentException("No matrix found with this ID: (" + matrixKey.getStudyId() + ") " + matrixKey.getMatrixId());
 			}
-
-			String genotypesFolder = Config.getConfigValue(Config.PROPERTY_GENOTYPES_DIR, "");
-			genotypesFolder += "/STUDY_" + matrixMetadata.getStudyId() + "/";
-
-			// DELETE OPERATION netCDFs FROM THIS MATRIX
-			List<OperationMetadata> operations = OperationsList.getOperationsList(matrixKey.getMatrixId());
-			for (OperationMetadata op : operations) {
-				File opFile = new File(genotypesFolder + op.getMatrixCDFName()+ ".nc");
-				org.gwaspi.global.Utils.tryToDeleteFile(opFile);
-			}
-
-			ReportsList.deleteReportByMatrixId(matrixKey.getMatrixId());
-
-			// DELETE MATRIX NETCDF FILE
-			File matrixFile = new File(genotypesFolder + matrixMetadata.getMatrixNetCDFName() + ".nc");
-			org.gwaspi.global.Utils.tryToDeleteFile(matrixFile);
+			em.remove(matrixMetadata); // This is done implicitly by remove(matrix)
+			commit(em);
 		} catch (Exception ex) {
-			LOG.error("Failed deleting matrix", ex);
+			rollback(em);
+			throw new IOException("Failed deleting matrix by"
+					+ ": study-id: " + matrixKey.getStudyId()
+					+ ", matrix-id: " + matrixKey.getMatrixId(),
+					ex);
+		} finally {
+			close(em);
 		}
+
+		String genotypesFolder = Config.getConfigValue(Config.PROPERTY_GENOTYPES_DIR, "");
+		genotypesFolder += "/STUDY_" + matrixMetadata.getStudyId() + "/";
+
+		// DELETE OPERATION netCDFs FROM THIS MATRIX
+		List<OperationMetadata> operations = OperationsList.getOperationsList(matrixKey.getMatrixId());
+		for (OperationMetadata op : operations) {
+			File opFile = new File(genotypesFolder + op.getMatrixCDFName()+ ".nc");
+			org.gwaspi.global.Utils.tryToDeleteFile(opFile);
+		}
+
+		ReportsList.deleteReportByMatrixId(matrixKey.getMatrixId());
+
+		// DELETE MATRIX NETCDF FILE
+		File matrixFile = new File(genotypesFolder + matrixMetadata.getMatrixNetCDFName() + ".nc");
+		org.gwaspi.global.Utils.tryToDeleteFile(matrixFile);
 	}
 
 	@Override

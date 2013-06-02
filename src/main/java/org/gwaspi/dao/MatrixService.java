@@ -34,7 +34,7 @@ public interface MatrixService {
 
 	void insertMatrixMetadata(MatrixMetadata matrixMetadata) throws IOException;
 
-	void deleteMatrix(MatrixKey matrixKey, boolean deleteReports);
+	void deleteMatrix(MatrixKey matrixKey, boolean deleteReports) throws IOException;
 
 	void saveMatrixDescription(int matrixId, String description) throws IOException;
 
