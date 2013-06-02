@@ -34,9 +34,8 @@ import org.slf4j.LoggerFactory;
 
 public class JPASampleInfoService implements SampleInfoService {
 
-	private static final Logger log = LoggerFactory.getLogger(JPASampleInfoService.class);
 	private static final Logger LOG
-			= LoggerFactory.getLogger(JPASampleInfoService.class); // FIXME we not need two ;-)
+			= LoggerFactory.getLogger(JPASampleInfoService.class);
 
 	private final EntityManagerFactory emf;
 
