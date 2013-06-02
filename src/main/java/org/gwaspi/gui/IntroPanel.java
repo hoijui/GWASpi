@@ -27,8 +27,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 import javax.swing.AbstractAction;
 import javax.swing.AbstractListModel;
 import javax.swing.BorderFactory;
@@ -68,7 +66,6 @@ public class IntroPanel extends JPanel {
 	private JButton btn_exit;
 	private JButton btn_preferences;
 	private JButton btn_start;
-	private List<Object[]> helpLinksAL;
 	// End of variables declaration
 
 	@SuppressWarnings("unchecked")
@@ -109,34 +106,20 @@ public class IntroPanel extends JPanel {
 				.addGap(0, 157, Short.MAX_VALUE));
 		//</editor-fold>
 
-		helpLinksAL = new ArrayList<Object[]>();
-		helpLinksAL.add(HelpURLs.Intro.intro);
-		helpLinksAL.add(HelpURLs.Intro.quickstart);
-		helpLinksAL.add(HelpURLs.Intro.tutorial);
-		helpLinksAL.add(HelpURLs.Intro.loadGts);
-		helpLinksAL.add(HelpURLs.Intro.fileFormats);
-		helpLinksAL.add(HelpURLs.Intro.GWASinOneGo);
-
-
 		txtP_About.setEditable(false);
 		txtP_About.setText(Text.App.appDescription);
 		scroll_About.setViewportView(txtP_About);
 
 		list_Help.setBorder(BorderFactory.createTitledBorder(null, Text.Help.aboutHelp, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("DejaVu Sans", 1, 13))); // NOI18N
 		list_Help.setModel(new AbstractListModel() {
-			private final String[] strings = {helpLinksAL.get(0)[0].toString(),
-				helpLinksAL.get(1)[0].toString(),
-				helpLinksAL.get(2)[0].toString(),
-				helpLinksAL.get(3)[0].toString(),
-				helpLinksAL.get(4)[0].toString(),
-				helpLinksAL.get(5)[0].toString()};
-
+			@Override
 			public int getSize() {
-				return strings.length;
+				return HelpURLs.INTRO_LINKS.size();
 			}
 
+			@Override
 			public Object getElementAt(int i) {
-				return strings[i];
+				return HelpURLs.INTRO_LINKS.get(i).getLabel();
 			}
 		});
 		list_Help.addMouseListener(new MouseAdapter() {
@@ -155,7 +138,7 @@ public class IntroPanel extends JPanel {
 			}
 
 			private void list_HelpMouseReleased(MouseEvent evt) throws IOException {
-				URLInDefaultBrowser.browseHelpURL(helpLinksAL.get(list_Help.getSelectedIndex())[1].toString());
+				URLInDefaultBrowser.browseHelpURL(HelpURLs.INTRO_LINKS.get(list_Help.getSelectedIndex()).getUrl());
 			}
 		});
 		scroll_Help.setViewportView(list_Help);
@@ -301,7 +284,7 @@ public class IntroPanel extends JPanel {
 			}
 
 			private void list_HelpMouseReleased(MouseEvent evt) throws IOException {
-				URLInDefaultBrowser.browseHelpURL(helpLinksAL.get(0)[1].toString());
+				URLInDefaultBrowser.browseHelpURL(HelpURLs.INTRO_LINKS.get(0).getUrl());
 			}
 		});
 

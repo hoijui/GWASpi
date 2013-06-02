@@ -17,26 +17,51 @@
 
 package org.gwaspi.gui.utils;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.gwaspi.global.Text;
 
 public class HelpURLs {
 
 	public static final String baseURL = "http://www.gwaspi.org/";
 
-	private HelpURLs() {
+	public static class HelpURL {
+
+		private final String label;
+		private final String url;
+
+		public HelpURL(String label, String url) {
+
+			this.label = label;
+			this.url = url;
+		}
+
+		public String getLabel() {
+			return label;
+		}
+
+		public String getUrl() {
+			return url;
+		}
 	}
 
-	public static class Intro {
+	public static List<HelpURL> INTRO_LINKS = new ArrayList<HelpURL>();
+	static {
+		INTRO_LINKS.add(new HelpURL("Introducing " + Text.App.appName,
+				"?page_id=213"));
+		INTRO_LINKS.add(new HelpURL("Quickstart",
+			"?page_id=175"));
+		INTRO_LINKS.add(new HelpURL("Tutorial",
+			"?page_id=226"));
+		INTRO_LINKS.add(new HelpURL("Load Genotyes",
+			"?page_id=245"));
+		INTRO_LINKS.add(new HelpURL("Import File Formats",
+			"?page_id=121"));
+		INTRO_LINKS.add(new HelpURL("GWAS in one go",
+			"?page_id=289"));
+	}
 
-		public static final Object[] intro = new Object[]{"Introducing " + Text.App.appName, "?page_id=213"};
-		public static final Object[] quickstart = new Object[]{"Quickstart", "?page_id=175"};
-		public static final Object[] tutorial = new Object[]{"Tutorial", "?page_id=226"};
-		public static final Object[] loadGts = new Object[]{"Load Genotyes", "?page_id=245"};
-		public static final Object[] fileFormats = new Object[]{"Import File Formats", "?page_id=121"};
-		public static final Object[] GWASinOneGo = new Object[]{"GWAS in one go", "?page_id=289"};
-
-		private Intro() {
-		}
+	private HelpURLs() {
 	}
 
 	public static class QryURL {
