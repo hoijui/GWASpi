@@ -82,17 +82,7 @@ public class Threaded_UpdateSampleInfo extends CommonRunnable {
 		oldDesc.append(" (");
 		oldDesc.append(org.gwaspi.global.Utils.getShortDateTimeAsString());
 		oldDesc.append(") *");
-		saveDescription(oldDesc.toString(), poolId);
-	}
-
-	private void saveDescription(String description, int studyId) {
-		try {
-			org.gwaspi.global.Utils.logBlockInStudyDesc(description, studyId);
-			MatricesList.saveMatrixDescription(
-					studyId,
-					description);
-		} catch (IOException ex) {
-			getLog().error(null, ex);
-		}
+		study.setDescription(oldDesc.toString());
+		StudyList.updateStudy(study);
 	}
 }

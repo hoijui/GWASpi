@@ -167,7 +167,7 @@ public class Study implements Serializable {
 		return description;
 	}
 
-	protected void setDescription(String description) {
+	public void setDescription(String description) {
 		this.description = description;
 	}
 

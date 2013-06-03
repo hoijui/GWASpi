@@ -69,4 +69,8 @@ public class StudyList {
 	public static void deleteStudy(int studyId, boolean deleteReports) throws IOException {
 		studyService.deleteStudy(studyId, deleteReports);
 	}
+
+	public static void updateStudy(Study study) throws IOException {
+		studyService.updateStudy(study);
+	}
 }

@@ -212,4 +212,23 @@ public class JPAStudyService implements StudyService {
 		// DELETE STUDY POOL SAMPLES
 		SampleInfoList.deleteSamplesByPoolId(studyId);
 	}
+
+	public void updateStudy(Study study) throws IOException {
+
+		EntityManager em = null;
+		try {
+			em = open();
+			begin(em);
+			if (study.getId() == Integer.MIN_VALUE) {
+				throw new IllegalArgumentException("Study was not yet persisted!");
+			}
+			em.merge(study);
+			commit(em);
+		} catch (Exception ex) {
+			LOG.error("Failed updating a study", ex);
+			rollback(em);
+		} finally {
+			close(em);
+		}
+	}
 }

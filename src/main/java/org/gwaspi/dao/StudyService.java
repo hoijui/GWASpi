@@ -30,4 +30,6 @@ public interface StudyService {
 	int insertNewStudy(String studyName, String description);
 
 	void deleteStudy(int studyId, boolean deleteReports) throws IOException;
+
+	void updateStudy(Study study) throws IOException;
 }

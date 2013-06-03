@@ -260,7 +260,8 @@ public class CurrentStudyPanel extends JPanel {
 			try {
 				Utils.logBlockInStudyDesc(descriptionSource.getText(), study.getId());
 
-				MatricesList.saveMatrixDescription(study.getId(), descriptionSource.getText());
+				study.setDescription(descriptionSource.getText());
+				StudyList.updateStudy(study);
 			} catch (IOException ex) {
 				log.error(null, ex);
 			}
