@@ -41,6 +41,14 @@ public class ReportKey implements Comparable<ReportKey>, Serializable {
 		this(Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE);
 	}
 
+	public static ReportKey valueOf(Report report) {
+		return new ReportKey(
+				report.getStudyId(),
+				report.getParentMatrixId(),
+				report.getParentOperationId(),
+				report.getId());
+	}
+
 	@Override
 	public int compareTo(ReportKey other) {
 		return hashCode() - other.hashCode();

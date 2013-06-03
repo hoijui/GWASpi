@@ -39,6 +39,13 @@ public class OperationKey implements Comparable<OperationKey>, Serializable {
 		this(Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE);
 	}
 
+	public static OperationKey valueOf(OperationMetadata operation) {
+		return new OperationKey(
+				operation.getStudyId(),
+				operation.getParentMatrixId(),
+				operation.getId());
+	}
+
 	@Override
 	public int compareTo(OperationKey other) {
 		return hashCode() - other.hashCode();

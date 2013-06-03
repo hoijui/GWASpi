@@ -93,6 +93,13 @@ public class SampleKey implements Comparable<SampleKey>, Serializable {
 		return SampleKeyFactory.decodeStatic(studyId, keyStr);
 	}
 
+	public static SampleKey valueOf(SampleInfo sample) {
+		return new SampleKey(
+				sample.getStudyId(),
+				sample.getSampleId(),
+				sample.getFamilyId());
+	}
+
 	public int getStudyId() {
 		return studyId;
 	}

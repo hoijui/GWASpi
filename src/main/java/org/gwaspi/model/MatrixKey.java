@@ -38,6 +38,12 @@ public class MatrixKey implements Comparable<MatrixKey>, Serializable {
 		this.matrixId = matrixId;
 	}
 
+	public static MatrixKey valueOf(MatrixMetadata matrix) {
+		return new MatrixKey(
+				matrix.getStudyId(),
+				matrix.getMatrixId());
+	}
+
 	@Override
 	public boolean equals(Object obj) {
 

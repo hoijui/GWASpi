@@ -28,4 +28,8 @@ public class StudyKey extends IdNameKey {
 	public StudyKey(String name) {
 		super(name);
 	}
+
+	public static StudyKey valueOf(Study study) {
+		return new StudyKey(study.getId());
+	}
 }
