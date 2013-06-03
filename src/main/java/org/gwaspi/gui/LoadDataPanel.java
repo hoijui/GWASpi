@@ -683,23 +683,22 @@ public class LoadDataPanel extends JPanel {
 					Dialogs.showWarningDialogue(Text.Matrix.warnInputNewMatrixName);
 				}
 			} catch (Exception ex) {
-				try {
-					Dialogs.showWarningDialogue(Text.All.warnLoadError + "\n" + Text.All.warnWrongFormat);
-					log.error(Text.All.warnLoadError, ex);
-					log.error(Text.All.warnWrongFormat);
-
-					// DELETE BROKEN NEW MATRIX AND REPORTS
-					MatrixMetadata deleteMxMetaData = MatricesList.getLatestMatrixId();
-					if (deleteMxMetaData.getMatrixFriendlyName().equals(txt_NewMatrixName.getText())) {
-						log.info("Deleting orphan files and references");
-						MatricesList.deleteMatrix(deleteMxMetaData.getKey(), true);
-					}
-
-					GWASpiExplorerPanel.getSingleton().updateTreePanel(true);
-				} catch (IOException ex1) {
-					log.error(null, ex);
-				}
-				//Logger.getLogger(LoadDataPanel.class.getName()).log(Level.SEVERE, null, ex);
+				Dialogs.showWarningDialogue(Text.All.warnLoadError + "\n" + Text.All.warnWrongFormat);
+				log.error(Text.All.warnLoadError, ex);
+				log.error(Text.All.warnWrongFormat);
+				// NOTE the following has no business here, because the actual load operation is executed in an other thread, and thus most of the possible exceptions would not even end up here
+//				try {
+//					// DELETE BROKEN NEW MATRIX AND REPORTS
+//					MatrixMetadata deleteMxMetaData = MatricesList.getLatestMatrixId();
+//					if (deleteMxMetaData.getMatrixFriendlyName().equals(txt_NewMatrixName.getText())) {
+//						log.info("Deleting orphan files and references");
+//						MatricesList.deleteMatrix(deleteMxMetaData.getKey(), true);
+//					}
+//
+//					GWASpiExplorerPanel.getSingleton().updateTreePanel(true);
+//				} catch (IOException ex1) {
+//					log.error(null, ex);
+//				}
 			}
 		}
 	}

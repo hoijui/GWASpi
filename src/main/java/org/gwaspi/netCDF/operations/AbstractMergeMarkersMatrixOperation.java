@@ -27,6 +27,7 @@ import org.gwaspi.global.Text;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.MatricesList;
+import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.slf4j.Logger;
@@ -250,11 +251,12 @@ public abstract class AbstractMergeMarkersMatrixOperation extends AbstractMergeM
 
 				descSB.append("\nGenotype encoding: ");
 				descSB.append(rdMatrix1Metadata.getGenotypeEncoding());
-				MatricesList.saveMatrixDescription(
-						resultMatrixId,
-						descSB.toString());
 
 				resultMatrixId = wrMatrixHandler.getResultMatrixId();
+
+				MatrixMetadata resultMatrixMetadata = wrMatrixHandler.getResultMatrixMetadata();
+				resultMatrixMetadata.setDescription(descSB.toString());
+				MatricesList.updateMatrix(resultMatrixMetadata);
 
 				wrNcFile.close();
 				rdNcFile1.close();
@@ -264,7 +266,7 @@ public abstract class AbstractMergeMarkersMatrixOperation extends AbstractMergeM
 				if (rdMatrix1Metadata.getGenotypeEncoding().equals(GenotypeEncoding.ACGT0)
 						|| rdMatrix1Metadata.getGenotypeEncoding().equals(GenotypeEncoding.O1234))
 				{
-					double[] mismatchState = checkForMismatches(wrMatrixHandler.getResultMatrixId()); // mismatchCount, mismatchRatio
+					double[] mismatchState = checkForMismatches(resultMatrixId); // mismatchCount, mismatchRatio
 					if (mismatchState[1] > 0.01) {
 						log.warn("");
 						log.warn("Mismatch ratio is bigger than 1% ({}%)!", (mismatchState[1] * 100));

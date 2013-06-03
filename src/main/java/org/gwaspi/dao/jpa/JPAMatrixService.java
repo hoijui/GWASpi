@@ -109,7 +109,7 @@ public class JPAMatrixService implements MatrixService {
 	}
 
 	@Override
-	public List<MatrixKey> getMatrixList() throws IOException {
+	public List<MatrixKey> getMatrixKeys() throws IOException {
 
 		List<MatrixKey> matrices = Collections.EMPTY_LIST;
 
@@ -133,7 +133,7 @@ public class JPAMatrixService implements MatrixService {
 	}
 
 	@Override
-	public List<MatrixKey> getMatrixList(int studyId) throws IOException {
+	public List<MatrixKey> getMatrixKeys(int studyId) throws IOException {
 
 		List<MatrixKey> matrices = Collections.EMPTY_LIST;
 
@@ -157,7 +157,7 @@ public class JPAMatrixService implements MatrixService {
 	}
 
 	@Override
-	public List<MatrixMetadata> getMatricesTable(int studyId) throws IOException {
+	public List<MatrixMetadata> getMatrices(int studyId) throws IOException {
 
 		List<MatrixMetadata> matricesMetadata = Collections.EMPTY_LIST;
 
@@ -180,7 +180,7 @@ public class JPAMatrixService implements MatrixService {
 	}
 
 	@Override
-	public void insertMatrixMetadata(MatrixMetadata matrixMetadata) throws IOException {
+	public void insertMatrix(MatrixMetadata matrixMetadata) throws IOException {
 
 		EntityManager em = null;
 		try {
@@ -244,11 +244,7 @@ public class JPAMatrixService implements MatrixService {
 	}
 
 	@Override
-	public void saveMatrixDescription(int matrixId, String description) throws IOException {
-
-		MatrixMetadata matrixMetadata = getMatrixMetadataById(matrixId);
-		matrixMetadata.setDescription(description);
-
+	public void updateMatrix(MatrixMetadata matrixMetadata) throws IOException {
 		EntityManager em = null;
 		try {
 			em = open();
@@ -264,31 +260,7 @@ public class JPAMatrixService implements MatrixService {
 	}
 
 	@Override
-	public MatrixMetadata getLatestMatrixId() throws IOException {
-
-		MatrixMetadata matrixMetadata = null;
-
-		EntityManager em = null;
-		try {
-			em = open();
-			Query query = em.createNamedQuery("matrixMetadata_listIds");
-			List<Integer> matrixIds = query.getResultList();
-
-			query = em.createNamedQuery("matrixMetadata_fetchById");
-			query.setParameter("id", matrixIds.get(matrixIds.size() - 1));
-			matrixMetadata = (MatrixMetadata) query.getSingleResult();
-			matrixMetadata = completeMatricesTable(matrixMetadata);
-		} catch (Exception ex) {
-			LOG.error("Failed fetching latest-matrix-metadata", ex);
-		} finally {
-			close(em);
-		}
-
-		return matrixMetadata;
-	}
-
-	@Override
-	public MatrixMetadata getMatrixMetadataById(int matrixId) throws IOException {
+	public MatrixMetadata getMatrix(int matrixId) throws IOException {
 
 		MatrixMetadata matrixMetadata = null;
 
@@ -303,7 +275,7 @@ public class JPAMatrixService implements MatrixService {
 			LOG.error("Failed fetching matrix-metadata by id: " + matrixId
 					+ " (id not found)", ex);
 			LOG.info("Available matrices:");
-			List<MatrixKey> matrixList = getMatrixList();
+			List<MatrixKey> matrixList = getMatrixKeys();
 			StringBuilder matrices = new StringBuilder();
 			for (MatrixKey mat : matrixList) {
 				matrices.append(" {study-id: ");
@@ -321,7 +293,7 @@ public class JPAMatrixService implements MatrixService {
 	}
 
 	@Override
-	public MatrixMetadata getMatrixMetadataByNetCDFname(String netCDFName) throws IOException {
+	public MatrixMetadata getMatrix(String netCDFName) throws IOException {
 
 		MatrixMetadata matrixMetadata = null;
 
@@ -345,7 +317,7 @@ public class JPAMatrixService implements MatrixService {
 	}
 
 	@Override
-	public MatrixMetadata getMatrixMetadata(String netCDFpath, int studyId, String newMatrixName) throws IOException {
+	public MatrixMetadata getMatrix(String netCDFpath, int studyId, String newMatrixName) throws IOException {
 
 		int matrixId = Integer.MIN_VALUE;
 		String matrixFriendlyName = newMatrixName;

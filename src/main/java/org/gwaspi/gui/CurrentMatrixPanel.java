@@ -479,7 +479,9 @@ public class CurrentMatrixPanel extends JPanel {
 		@Override
 		public void actionPerformed(ActionEvent evt) {
 			try {
-				MatricesList.saveMatrixDescription(matrix.getMatrixId(), matrixDesc.getText());
+				MatrixMetadata matrixMetadataById = MatricesList.getMatrixMetadataById(matrix.getMatrixId());
+				matrixMetadataById.setDescription(matrixDesc.getText());
+				MatricesList.updateMatrix(matrixMetadataById);
 			} catch (IOException ex) {
 				log.error(null, ex);
 			}

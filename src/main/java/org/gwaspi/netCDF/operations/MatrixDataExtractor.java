@@ -431,7 +431,10 @@ public class MatrixDataExtractor {
 
 					descSB.append("\nGenotype encoding: ");
 					descSB.append(rdMatrixMetadata.getGenotypeEncoding());
-					MatricesList.saveMatrixDescription(resultMatrixId, descSB.toString());
+
+					MatrixMetadata resultMatrixMetadata = wrMatrixHandler.getResultMatrixMetadata();
+					resultMatrixMetadata.setDescription(descSB.toString());
+					MatricesList.updateMatrix(resultMatrixMetadata);
 
 					wrNcFile.close();
 				} catch (IOException ex) {

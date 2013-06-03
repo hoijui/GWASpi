@@ -339,9 +339,10 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 			StringBuilder descSB = new StringBuilder(loadDescription.getDescription());
 			descSB.append("Genotype encoding: ");
 			descSB.append(guessedGTCode);
-			MatricesList.saveMatrixDescription(
-					matrixFactory.getMatrixMetaData().getMatrixId(),
-					descSB.toString());
+
+			MatrixMetadata matrixMetaData = matrixFactory.getMatrixMetaData();
+			matrixMetaData.setDescription(descSB.toString());
+			MatricesList.updateMatrix(matrixMetaData);
 
 			//CLOSE FILE
 			ncfile.close();

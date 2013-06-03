@@ -25,6 +25,7 @@ import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MatricesList;
+import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.slf4j.Logger;
@@ -218,9 +219,10 @@ public class MatrixMergeSamples extends AbstractMergeMatrixOperation {
 
 				descSB.append("\nGenotype encoding: ");
 				descSB.append(rdMatrix1Metadata.getGenotypeEncoding());
-				MatricesList.saveMatrixDescription(
-						resultMatrixId,
-						descSB.toString());
+
+				MatrixMetadata resultMatrixMetadata = wrMatrixHandler.getResultMatrixMetadata();
+				resultMatrixMetadata.setDescription(descSB.toString());
+				MatricesList.updateMatrix(resultMatrixMetadata);
 
 				resultMatrixId = wrMatrixHandler.getResultMatrixId();
 

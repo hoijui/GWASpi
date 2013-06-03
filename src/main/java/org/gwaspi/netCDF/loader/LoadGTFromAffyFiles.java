@@ -35,6 +35,7 @@ import org.gwaspi.global.Text;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.MatricesList;
+import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
@@ -335,9 +336,10 @@ public class LoadGTFromAffyFiles implements GenotypesLoader {
 
 			descSB.append("Genotype encoding: ");
 			descSB.append(guessedGTCode);
-			MatricesList.saveMatrixDescription(
-					matrixFactory.getMatrixMetaData().getMatrixId(),
-					descSB.toString());
+
+			MatrixMetadata matrixMetaData = matrixFactory.getMatrixMetaData();
+			matrixMetaData.setDescription(descSB.toString());
+			MatricesList.updateMatrix(matrixMetaData);
 
 			//CLOSE FILE
 			ncfile.close();

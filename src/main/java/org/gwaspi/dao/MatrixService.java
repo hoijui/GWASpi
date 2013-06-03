@@ -24,27 +24,25 @@ import org.gwaspi.model.MatrixMetadata;
 
 public interface MatrixService {
 
-	List<MatrixKey> getMatrixList(int studyId) throws IOException;
+	List<MatrixKey> getMatrixKeys(int studyId) throws IOException;
 
-	List<MatrixKey> getMatrixList() throws IOException;
+	List<MatrixKey> getMatrixKeys() throws IOException;
 
-	List<MatrixMetadata> getMatricesTable(int studyId) throws IOException;
+	MatrixMetadata getMatrix(int matrixId) throws IOException;
 
-	void insertMatrixMetadata(MatrixMetadata matrixMetadata) throws IOException;
+	MatrixMetadata getMatrix(String netCDFname) throws IOException;
+
+	List<MatrixMetadata> getMatrices(int studyId) throws IOException;
+
+    /**
+	 * This Method used to import GWASpi matrix from an external file.
+	 * The size of this Map is very small.
+	 */
+	MatrixMetadata getMatrix(String netCDFpath, int studyId, String name) throws IOException;
+
+	void insertMatrix(MatrixMetadata matrixMetadata) throws IOException;
 
 	void deleteMatrix(MatrixKey matrixKey, boolean deleteReports) throws IOException;
 
-	void saveMatrixDescription(int matrixId, String description) throws IOException;
-
-	MatrixMetadata getLatestMatrixId() throws IOException;
-
-	MatrixMetadata getMatrixMetadataById(int matrixId) throws IOException;
-
-	MatrixMetadata getMatrixMetadataByNetCDFname(String netCDFname) throws IOException;
-
-    /**
-	 * This Method used to import GWASpi matrix from an external file
-	 * The size of this Map is very small.
-	 */
-	MatrixMetadata getMatrixMetadata(String netCDFpath, int studyId, String newMatrixName) throws IOException;
+	void updateMatrix(MatrixMetadata matrixMetadata) throws IOException;
 }

@@ -34,42 +34,38 @@ public final class MatricesList {
 	}
 
 	public static List<MatrixKey> getMatrixList(int studyId) throws IOException {
-		return matrixService.getMatrixList(studyId);
+		return matrixService.getMatrixKeys(studyId);
 	}
 
 	public static List<MatrixKey> getMatrixList() throws IOException {
-		return matrixService.getMatrixList();
+		return matrixService.getMatrixKeys();
 	}
 
 	public static List<MatrixMetadata> getMatricesTable(int studyId) throws IOException {
-		return matrixService.getMatricesTable(studyId);
+		return matrixService.getMatrices(studyId);
 	}
 
 	public static void insertMatrixMetadata(MatrixMetadata matrixMetadata) throws IOException {
-		matrixService.insertMatrixMetadata(matrixMetadata);
+		matrixService.insertMatrix(matrixMetadata);
 	}
 
 	public static void deleteMatrix(MatrixKey matrixKey, boolean deleteReports) throws IOException {
 		matrixService.deleteMatrix(matrixKey, deleteReports);
 	}
 
-	public static void saveMatrixDescription(int matrixId, String description) throws IOException {
-		matrixService.saveMatrixDescription(matrixId, description);
-	}
-
-	public static MatrixMetadata getLatestMatrixId() throws IOException {
-		return matrixService.getLatestMatrixId();
+	public static void updateMatrix(MatrixMetadata matrixMetadata) throws IOException {
+		matrixService.updateMatrix(matrixMetadata);
 	}
 
 	public static MatrixMetadata getMatrixMetadataById(int matrixId) throws IOException {
-		return matrixService.getMatrixMetadataById(matrixId);
+		return matrixService.getMatrix(matrixId);
 	}
 
 	public static MatrixMetadata getMatrixMetadataByNetCDFname(String netCDFname) throws IOException {
-		return matrixService.getMatrixMetadataByNetCDFname(netCDFname);
+		return matrixService.getMatrix(netCDFname);
 	}
 
 	public static MatrixMetadata getMatrixMetadata(String netCDFpath, int studyId, String newMatrixName) throws IOException {
-		return matrixService.getMatrixMetadata(netCDFpath, studyId, newMatrixName);
+		return matrixService.getMatrix(netCDFpath, studyId, newMatrixName);
 	}
 }
