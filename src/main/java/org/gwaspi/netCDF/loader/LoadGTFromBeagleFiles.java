@@ -30,6 +30,7 @@ import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.SampleKey;
+import org.gwaspi.model.StudyKey;
 import ucar.ma2.InvalidRangeException;
 
 public class LoadGTFromBeagleFiles extends AbstractLoadGTFromFiles {
@@ -67,12 +68,12 @@ public class LoadGTFromBeagleFiles extends AbstractLoadGTFromFiles {
 				curAnnotationFilePath,
 				loadDescription.getChromosome(),
 				loadDescription.getStrand(),
-				loadDescription.getStudyId());
+				loadDescription.getStudyKey());
 	}
 
 	@Override
 	public void loadIndividualFiles(
-			int studyId,
+			StudyKey studyKey,
 			File file,
 			SampleKey sampleKey,
 			Map<MarkerKey, byte[]> wrMarkerSetMap)
@@ -98,7 +99,7 @@ public class LoadGTFromBeagleFiles extends AbstractLoadGTFromFiles {
 				for (int i = Standard.genotypes; i < headerFields.length; i = i + 2) {
 					String sampleId = headerFields[i];
 					// NOTE The Beagle format does not have a family-ID
-					sampleOrderMap.put(new SampleKey(studyId, sampleId, SampleKey.FAMILY_ID_NONE), i);
+					sampleOrderMap.put(new SampleKey(studyKey, sampleId, SampleKey.FAMILY_ID_NONE), i);
 				}
 			}
 			if (l.startsWith("M")) { // Found first marker row!

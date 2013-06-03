@@ -20,6 +20,7 @@ package org.gwaspi.threadbox;
 import java.util.List;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.model.GWASpiExplorerNodes;
+import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.netCDF.operations.GWASinOneGOParams;
@@ -92,7 +93,8 @@ public class Threaded_Association extends CommonRunnable {
 					hwOpId,
 					gwasParams.getDiscardMarkerHWTreshold(),
 					allelic);
-			GWASpiExplorerNodes.insertSubOperationUnderOperationNode(censusOpId, assocOpId);
+			OperationKey assocOpKey = OperationKey.valueOf(OperationsList.getById(assocOpId));
+			GWASpiExplorerNodes.insertSubOperationUnderOperationNode(censusOpId, assocOpKey);
 
 			// Make Reports (needs newMatrixId, QAopId, AssocOpId)
 			if (assocOpId != Integer.MIN_VALUE) {

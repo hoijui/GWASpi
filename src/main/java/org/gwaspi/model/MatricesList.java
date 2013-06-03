@@ -33,16 +33,16 @@ public final class MatricesList {
 	private MatricesList() {
 	}
 
-	public static List<MatrixKey> getMatrixList(int studyId) throws IOException {
-		return matrixService.getMatrixKeys(studyId);
+	public static List<MatrixKey> getMatrixList(StudyKey studyKey) throws IOException {
+		return matrixService.getMatrixKeys(studyKey);
 	}
 
 	public static List<MatrixKey> getMatrixList() throws IOException {
 		return matrixService.getMatrixKeys();
 	}
 
-	public static List<MatrixMetadata> getMatricesTable(int studyId) throws IOException {
-		return matrixService.getMatrices(studyId);
+	public static List<MatrixMetadata> getMatricesTable(StudyKey studyKey) throws IOException {
+		return matrixService.getMatrices(studyKey);
 	}
 
 	public static void insertMatrixMetadata(MatrixMetadata matrixMetadata) throws IOException {
@@ -65,7 +65,7 @@ public final class MatricesList {
 		return matrixService.getMatrix(netCDFname);
 	}
 
-	public static MatrixMetadata getMatrixMetadata(String netCDFpath, int studyId, String newMatrixName) throws IOException {
-		return matrixService.getMatrix(netCDFpath, studyId, newMatrixName);
+	public static MatrixMetadata getMatrixMetadata(String netCDFpath, StudyKey studyKey, String newMatrixName) throws IOException {
+		return matrixService.getMatrix(netCDFpath, studyKey, newMatrixName);
 	}
 }

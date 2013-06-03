@@ -28,6 +28,7 @@ import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleKey;
+import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.loader.ComparatorChrAutPosMarkerIdAsc;
 import org.gwaspi.netCDF.markers.MarkerSet;
 import org.gwaspi.samples.SampleSet;
@@ -40,7 +41,7 @@ public abstract class AbstractMergeMatrixOperation implements MatrixOperation {
 
 	private final Logger log = LoggerFactory.getLogger(AbstractMergeMatrixOperation.class);
 
-	protected int studyId;
+	protected StudyKey studyKey;
 	protected int rdMatrix1Id;
 	protected int rdMatrix2Id;
 	protected final String wrMatrixFriendlyName;
@@ -77,7 +78,7 @@ public abstract class AbstractMergeMatrixOperation implements MatrixOperation {
 	}
 
 	public AbstractMergeMatrixOperation(
-			int studyId,
+			StudyKey studyKey,
 			int rdMatrix1Id,
 			int rdMatrix2Id,
 			String wrMatrixFriendlyName,
@@ -90,13 +91,13 @@ public abstract class AbstractMergeMatrixOperation implements MatrixOperation {
 				wrMatrixFriendlyName,
 				wrMatrixDescription);
 
-		this.studyId = studyId;
+		this.studyKey = studyKey;
 
-		this.rdMarkerSet1 = new MarkerSet(this.studyId, this.rdMatrix1Id);
-		this.rdMarkerSet2 = new MarkerSet(this.studyId, this.rdMatrix2Id);
+		this.rdMarkerSet1 = new MarkerSet(this.studyKey, this.rdMatrix1Id);
+		this.rdMarkerSet2 = new MarkerSet(this.studyKey, this.rdMatrix2Id);
 
-		this.rdSampleSet1 = new SampleSet(this.studyId, this.rdMatrix1Id);
-		this.rdSampleSet2 = new SampleSet(this.studyId, this.rdMatrix2Id);
+		this.rdSampleSet1 = new SampleSet(this.studyKey, this.rdMatrix1Id);
+		this.rdSampleSet2 = new SampleSet(this.studyKey, this.rdMatrix2Id);
 	}
 
 	public AbstractMergeMatrixOperation(
@@ -112,13 +113,13 @@ public abstract class AbstractMergeMatrixOperation implements MatrixOperation {
 				wrMatrixFriendlyName,
 				wrMatrixDescription);
 
-		this.studyId = this.rdMatrix1Metadata.getStudyId();
+		this.studyKey = this.rdMatrix1Metadata.getStudyKey();
 
-		this.rdMarkerSet1 = new MarkerSet(this.rdMatrix1Metadata.getStudyId(), this.rdMatrix1Id);
-		this.rdMarkerSet2 = new MarkerSet(this.rdMatrix2Metadata.getStudyId(), this.rdMatrix2Id);
+		this.rdMarkerSet1 = new MarkerSet(this.rdMatrix1Metadata.getStudyKey(), this.rdMatrix1Id);
+		this.rdMarkerSet2 = new MarkerSet(this.rdMatrix2Metadata.getStudyKey(), this.rdMatrix2Id);
 
-		this.rdSampleSet1 = new SampleSet(this.rdMatrix1Metadata.getStudyId(), this.rdMatrix1Id);
-		this.rdSampleSet2 = new SampleSet(this.rdMatrix2Metadata.getStudyId(), this.rdMatrix2Id);
+		this.rdSampleSet1 = new SampleSet(this.rdMatrix1Metadata.getStudyKey(), this.rdMatrix1Id);
+		this.rdSampleSet2 = new SampleSet(this.rdMatrix2Metadata.getStudyKey(), this.rdMatrix2Id);
 	}
 
 	private static Map<MarkerKey, char[]> getMatrixMapWithChrAndPos(MarkerSet rdMarkerSet) {
@@ -214,8 +215,8 @@ public abstract class AbstractMergeMatrixOperation implements MatrixOperation {
 		double[] result = new double[2];
 
 		wrMatrixMetadata = MatricesList.getMatrixMetadataById(wrMatrixId);
-		wrSampleSet = new SampleSet(wrMatrixMetadata.getStudyId(), wrMatrixId);
-		wrMarkerSet = new MarkerSet(wrMatrixMetadata.getStudyId(), wrMatrixId);
+		wrSampleSet = new SampleSet(wrMatrixMetadata.getStudyKey(), wrMatrixId);
+		wrMarkerSet = new MarkerSet(wrMatrixMetadata.getStudyKey(), wrMatrixId);
 		wrMarkerSet.initFullMarkerIdSetMap();
 		Map<SampleKey, char[]> wrSampleSetMap = wrSampleSet.getSampleIdSetMapCharArray();
 

@@ -29,6 +29,7 @@ import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.SampleKeyFactory;
+import org.gwaspi.model.StudyKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.ArrayChar;
@@ -43,16 +44,16 @@ public class AbstractOperationSet<K, V> {
 
 	private static final Logger log = LoggerFactory.getLogger(AbstractOperationSet.class);
 
-	private final int studyId;
+	private final StudyKey studyKey;
 	private int opSetSize;
 	private int implicitSetSize;
 	private OperationMetadata opMetadata;
 	private Map<K, V> opSetMap;
 	private final KeyFactory<K> keyFactory;
 
-	public AbstractOperationSet(int studyId, int opId, KeyFactory<K> keyFactory) throws IOException {
+	public AbstractOperationSet(StudyKey studyKey, int opId, KeyFactory<K> keyFactory) throws IOException {
 
-		this.studyId = studyId;
+		this.studyKey = studyKey;
 		this.opSetSize = 0;
 		this.implicitSetSize = 0;
 		this.opMetadata = OperationsList.getOperationMetadata(opId);
@@ -182,7 +183,7 @@ public class AbstractOperationSet<K, V> {
 				implicitSetSize = varShape[0];
 				ArrayChar.D2 sampleSetAC = (ArrayChar.D2) var.read("(0:" + (implicitSetSize - 1) + ":1, 0:" + (varShape[1] - 1) + ":1)");
 
-				implicitSetMap = wrapToKeyMap(sampleSetAC, new SampleKeyFactory(studyId));
+				implicitSetMap = wrapToKeyMap(sampleSetAC, new SampleKeyFactory(studyKey));
 			} catch (IOException ex) {
 				log.error("Cannot read data", ex);
 			} catch (InvalidRangeException ex) {

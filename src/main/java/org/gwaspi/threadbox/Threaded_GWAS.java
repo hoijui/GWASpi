@@ -27,6 +27,7 @@ import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.GWASpiExplorerNodes;
 import org.gwaspi.model.MatrixKey;
+import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.SampleInfo;
@@ -41,9 +42,9 @@ import org.slf4j.LoggerFactory;
 
 public class Threaded_GWAS extends CommonRunnable {
 
-	private MatrixKey matrixKey;
-	private File phenotypeFile;
-	private GWASinOneGOParams gwasParams;
+	private final MatrixKey matrixKey;
+	private final File phenotypeFile;
+	private final GWASinOneGOParams gwasParams;
 
 	public Threaded_GWAS(
 			MatrixKey matrixKey,
@@ -82,7 +83,7 @@ public class Threaded_GWAS extends CommonRunnable {
 				{
 					getLog().info("Updating Sample Info in DB");
 					Collection<SampleInfo> sampleInfos = SamplesParserManager.scanSampleInfo(
-							matrixKey.getStudyId(),
+							matrixKey.getStudyKey(),
 							ImportFormat.GWASpi,
 							phenotypeFile.getPath());
 					SampleInfoList.insertSampleInfos(sampleInfos);
@@ -126,7 +127,8 @@ public class Threaded_GWAS extends CommonRunnable {
 				}
 			}
 
-			GWASpiExplorerNodes.insertOperationUnderMatrixNode(matrixKey.getMatrixId(), censusOpId);
+			OperationKey censusOpKey = OperationKey.valueOf(OperationsList.getById(censusOpId));
+			GWASpiExplorerNodes.insertOperationUnderMatrixNode(censusOpKey);
 		}
 
 		int hwOpId = checkPerformHW(thisSwi, censusOpId);
@@ -143,7 +145,8 @@ public class Threaded_GWAS extends CommonRunnable {
 				&& censusOpId != Integer.MIN_VALUE)
 		{
 			hwOpId = OperationManager.performHardyWeinberg(censusOpId, cNetCDF.Defaults.DEFAULT_AFFECTION);
-			GWASpiExplorerNodes.insertSubOperationUnderOperationNode(censusOpId, hwOpId);
+			OperationKey hwOpKey = OperationKey.valueOf(OperationsList.getById(hwOpId));
+			GWASpiExplorerNodes.insertSubOperationUnderOperationNode(censusOpId, hwOpKey);
 		}
 
 		return hwOpId;
@@ -187,7 +190,8 @@ public class Threaded_GWAS extends CommonRunnable {
 					hwOpId,
 					gwasParams.getDiscardMarkerHWTreshold(),
 					allelic);
-			GWASpiExplorerNodes.insertSubOperationUnderOperationNode(censusOpId, assocOpId);
+			OperationKey assocOpKey = OperationKey.valueOf(OperationsList.getById(assocOpId));
+			GWASpiExplorerNodes.insertSubOperationUnderOperationNode(censusOpId, assocOpKey);
 
 			// Make Reports (needs newMatrixId, QAopId, AssocOpId)
 			if (assocOpId != Integer.MIN_VALUE) {
@@ -211,8 +215,10 @@ public class Threaded_GWAS extends CommonRunnable {
 			int trendOpId = OperationManager.performCleanTrendTests(
 					matrixId,
 					censusOpId,
-					hwOpId, gwasParams.getDiscardMarkerHWTreshold());
-			GWASpiExplorerNodes.insertSubOperationUnderOperationNode(censusOpId, trendOpId);
+					hwOpId,
+					gwasParams.getDiscardMarkerHWTreshold());
+			OperationKey trendOpKey = OperationKey.valueOf(OperationsList.getById(trendOpId));
+			GWASpiExplorerNodes.insertSubOperationUnderOperationNode(censusOpId, trendOpKey);
 
 			// Make Reports (needs newMatrixId, QAopId, AssocOpId)
 			if (trendOpId != Integer.MIN_VALUE) {

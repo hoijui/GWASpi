@@ -38,16 +38,16 @@ public class SampleInfoList {
 		return sampleInfoService.getSamples();
 	}
 
-	public static List<SampleInfo> getAllSampleInfoFromDBByPoolID(Integer poolId) throws IOException {
-		return sampleInfoService.getSamples(poolId);
+	public static List<SampleInfo> getAllSampleInfoFromDBByPoolID(StudyKey studyKey) throws IOException {
+		return sampleInfoService.getSamples(studyKey);
 	}
 
 	public static SampleInfo getSample(SampleKey key) throws IOException {
 		return sampleInfoService.getSample(key);
 	}
 
-	public static void deleteSamplesByPoolId(Integer poolId) throws IOException {
-		sampleInfoService.deleteSamples(poolId);
+	public static void deleteSamples(StudyKey studyKey) throws IOException {
+		sampleInfoService.deleteSamples(studyKey);
 	}
 
 	public static void insertSampleInfos(Collection<SampleInfo> sampleInfos) throws IOException {

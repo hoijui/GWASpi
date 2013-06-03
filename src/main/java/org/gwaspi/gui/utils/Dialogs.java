@@ -42,6 +42,7 @@ import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
+import org.gwaspi.model.StudyKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -263,14 +264,14 @@ public class Dialogs {
 	/**
 	 * @deprecated unused
 	 */
-	public static int showMatrixSelectCombo(int studyId) throws IOException {
-		List<MatrixMetadata> matrices = MatricesList.getMatricesTable(studyId);
+	public static int showMatrixSelectCombo(StudyKey studyKey) throws IOException {
+		List<MatrixMetadata> matrices = MatricesList.getMatricesTable(studyKey);
 		List<String> matrixNames = new ArrayList<String>(matrices.size());
 		List<Integer> matrixIDs = new ArrayList<Integer>(matrices.size());
 		for (MatrixMetadata matrixMetadata : matrices) {
 			StringBuilder mn = new StringBuilder();
 			mn.append("SID: ");
-			mn.append(matrixMetadata.getStudyId());
+			mn.append(matrixMetadata.getStudyKey().getId());
 			mn.append(" - MX: ");
 			mn.append(matrixMetadata.getMatrixFriendlyName());
 			matrixNames.add(mn.toString());

@@ -33,6 +33,7 @@ import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.Report;
 import org.gwaspi.model.ReportsList;
+import org.gwaspi.model.Study;
 import org.gwaspi.netCDF.markers.MarkerSet;
 import org.gwaspi.netCDF.operations.AbstractOperationSet;
 import org.gwaspi.netCDF.operations.MarkerOperationSet;
@@ -55,7 +56,7 @@ public class OutputTrendTest {
 		boolean result = false;
 		OperationMetadata op = OperationsList.getById(opId);
 
-		org.gwaspi.global.Utils.createFolder(Config.getConfigValue(Config.PROPERTY_REPORTS_DIR, ""), "STUDY_" + op.getStudyId());
+		org.gwaspi.global.Utils.createFolder(new File(Study.constructReportsPath(op.getStudyKey())));
 		//String manhattanName = "mnhtt_"+outName;
 		String prefix = ReportsList.getReportNamePrefix(op);
 		String manhattanName = prefix + "manhtt";
@@ -71,7 +72,7 @@ public class OutputTrendTest {
 					op.getParentMatrixId(),
 					opId,
 					"Trend Test Manhattan Plot",
-					op.getStudyId()));
+					op.getStudyKey()));
 			log.info("Saved Manhattan Plot in reports folder");
 		}
 		//String qqName = "qq_"+outName;
@@ -86,7 +87,7 @@ public class OutputTrendTest {
 					op.getParentMatrixId(),
 					opId,
 					"Trend Test QQ Plot",
-					op.getStudyId()));
+					op.getStudyKey()));
 
 			log.info("Saved Trend Test QQ Plot in reports folder");
 		}
@@ -102,7 +103,7 @@ public class OutputTrendTest {
 					op.getParentMatrixId(),
 					opId,
 					"Trend Tests Values",
-					op.getStudyId()));
+					op.getStudyKey()));
 
 			org.gwaspi.global.Utils.sysoutCompleted("Trend Test Reports & Charts");
 		}
@@ -133,7 +134,7 @@ public class OutputTrendTest {
 			picWidth = 2000;
 		}
 
-		String imagePath = Config.getConfigValue(Config.PROPERTY_REPORTS_DIR, "") + "/STUDY_" + rdOPMetadata.getStudyId() + "/" + outName + ".png";
+		String imagePath = Study.constructReportsPath(rdOPMetadata.getStudyKey()) + outName + ".png";
 		try {
 			ChartUtilities.saveChartAsPNG(new File(imagePath),
 					chart,
@@ -155,7 +156,7 @@ public class OutputTrendTest {
 		JFreeChart chart = new JFreeChart("X² QQ", JFreeChart.DEFAULT_TITLE_FONT, qqPlot, true);
 
 		OperationMetadata rdOPMetadata = OperationsList.getOperationMetadata(opId);
-		String imagePath = Config.getConfigValue(Config.PROPERTY_REPORTS_DIR, "") + "/STUDY_" + rdOPMetadata.getStudyId() + "/" + outName + ".png";
+		String imagePath = Study.constructReportsPath(rdOPMetadata.getStudyKey()) + outName + ".png";
 		try {
 			ChartUtilities.saveChartAsPNG(new File(imagePath),
 					chart,
@@ -187,13 +188,13 @@ public class OutputTrendTest {
 
 			String sep = cExport.separator_REPORTS;
 			OperationMetadata rdOPMetadata = OperationsList.getOperationMetadata(opId);
-			MarkerSet rdInfoMarkerSet = new MarkerSet(rdOPMetadata.getStudyId(), rdOPMetadata.getParentMatrixId());
+			MarkerSet rdInfoMarkerSet = new MarkerSet(rdOPMetadata.getStudyKey(), rdOPMetadata.getParentMatrixId());
 			rdInfoMarkerSet.initFullMarkerIdSetMap();
 
 			// WRITE HEADER OF FILE
 			String header = "MarkerID\trsID\tChr\tPosition\tMin. Allele\tMaj. Allele\tTrend-Test\tPval\n";
 			String reportNameExt = reportName + ".txt";
-			String reportPath = Config.getConfigValue(Config.PROPERTY_REPORTS_DIR, "") + "/STUDY_" + rdOPMetadata.getStudyId() + "/";
+			String reportPath = Study.constructReportsPath(rdOPMetadata.getStudyKey());
 
 			// WRITE MARKERSET RSID
 			rdInfoMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_RSID);
@@ -225,7 +226,7 @@ public class OutputTrendTest {
 				OperationMetadata qaMetadata = OperationsList.getOperationMetadata(markersQAopId);
 				NetcdfFile qaNcFile = NetcdfFile.open(qaMetadata.getPathToMatrix());
 
-				MarkerOperationSet rdOperationSet = new MarkerOperationSet(rdOPMetadata.getStudyId(), markersQAopId);
+				MarkerOperationSet rdOperationSet = new MarkerOperationSet(rdOPMetadata.getStudyKey(), markersQAopId);
 				Map<MarkerKey, char[]> opMarkerSetMap = rdOperationSet.getOpSetMap();
 
 				// MINOR ALLELE

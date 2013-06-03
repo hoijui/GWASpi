@@ -19,6 +19,9 @@ package org.gwaspi.threadbox;
 
 import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import org.gwaspi.model.GWASpiExplorerNodes;
+import org.gwaspi.model.OperationKey;
+import org.gwaspi.model.OperationsList;
+import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.operations.MatrixTranslator;
 import org.gwaspi.netCDF.operations.OP_QAMarkers;
 import org.gwaspi.netCDF.operations.OP_QASamples;
@@ -27,14 +30,14 @@ import org.slf4j.LoggerFactory;
 
 public class Threaded_TranslateMatrix extends CommonRunnable {
 
-	private int studyId;
-	private int parentMatrixId;
-	private GenotypeEncoding gtEncoding;
-	private String newMatrixName;
-	private String description;
+	private final StudyKey studyKey;
+	private final int parentMatrixId;
+	private final GenotypeEncoding gtEncoding;
+	private final String newMatrixName;
+	private final String description;
 
 	public Threaded_TranslateMatrix(
-			int studyId,
+			StudyKey studyKey,
 			int parentMatrixId,
 			GenotypeEncoding gtEncoding,
 			String newMatrixName,
@@ -46,7 +49,7 @@ public class Threaded_TranslateMatrix extends CommonRunnable {
 				"Translate Matrix: " + newMatrixName,
 				"Translating Matrix");
 
-		this.studyId = studyId;
+		this.studyKey = studyKey;
 		this.parentMatrixId = parentMatrixId;
 		this.gtEncoding = gtEncoding;
 		this.newMatrixName = newMatrixName;
@@ -60,7 +63,8 @@ public class Threaded_TranslateMatrix extends CommonRunnable {
 	protected void runInternal(SwingWorkerItem thisSwi) throws Exception {
 
 		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
-			MatrixTranslator matrixTransformer = new MatrixTranslator(studyId,
+			MatrixTranslator matrixTransformer = new MatrixTranslator(
+					studyKey,
 					parentMatrixId,
 					newMatrixName,
 					description);
@@ -77,13 +81,14 @@ public class Threaded_TranslateMatrix extends CommonRunnable {
 				throw new IllegalStateException("Invalid value for gtEncoding: " + gtEncoding);
 			}
 
-			GWASpiExplorerNodes.insertMatrixNode(studyId, resultMatrixId);
+			GWASpiExplorerNodes.insertMatrixNode(studyKey, resultMatrixId);
 
 			if (!thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
 				return;
 			}
 			int sampleQAOpId = new OP_QASamples(resultMatrixId).processMatrix();
-			GWASpiExplorerNodes.insertOperationUnderMatrixNode(resultMatrixId, sampleQAOpId);
+			OperationKey sampleQAOpKey = OperationKey.valueOf(OperationsList.getById(sampleQAOpId));
+			GWASpiExplorerNodes.insertOperationUnderMatrixNode(sampleQAOpKey);
 			org.gwaspi.reports.OutputQASamples.writeReportsForQASamplesData(sampleQAOpId, true);
 			GWASpiExplorerNodes.insertReportsUnderOperationNode(sampleQAOpId);
 
@@ -91,7 +96,8 @@ public class Threaded_TranslateMatrix extends CommonRunnable {
 				return;
 			}
 			int markersQAOpId = new OP_QAMarkers(resultMatrixId).processMatrix();
-			GWASpiExplorerNodes.insertOperationUnderMatrixNode(resultMatrixId, markersQAOpId);
+			OperationKey markersQAOpKey = OperationKey.valueOf(OperationsList.getById(markersQAOpId));
+			GWASpiExplorerNodes.insertOperationUnderMatrixNode(markersQAOpKey);
 			org.gwaspi.reports.OutputQAMarkers.writeReportsForQAMarkersData(markersQAOpId);
 			GWASpiExplorerNodes.insertReportsUnderOperationNode(markersQAOpId);
 			MultiOperations.printCompleted("Matrix Quality Control");

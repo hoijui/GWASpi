@@ -21,13 +21,14 @@ import java.io.IOException;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleInfoList;
 import org.gwaspi.model.SampleKey;
+import org.gwaspi.model.StudyKey;
 
 public class Utils {
 
 	private Utils() {
 	}
 
-	public static SampleInfo getCurrentSampleFormattedInfo(SampleKey key, Integer poolId) throws IOException {
+	public static SampleInfo getCurrentSampleFormattedInfo(SampleKey key, StudyKey studyKey) throws IOException {
 
 		SampleInfo sampleInfo = SampleInfoList.getSample(key);
 
@@ -96,7 +97,7 @@ public class Utils {
 					population,
 					age,
 					baseSampleInfo.getFilter(),
-					baseSampleInfo.getStudyId(),
+					baseSampleInfo.getStudyKey(),
 					baseSampleInfo.getApproved(),
 					baseSampleInfo.getStatus());
 		}

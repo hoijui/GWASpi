@@ -21,10 +21,11 @@ import java.io.IOException;
 import java.util.List;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
+import org.gwaspi.model.StudyKey;
 
 public interface MatrixService {
 
-	List<MatrixKey> getMatrixKeys(int studyId) throws IOException;
+	List<MatrixKey> getMatrixKeys(StudyKey studyKey) throws IOException;
 
 	List<MatrixKey> getMatrixKeys() throws IOException;
 
@@ -32,13 +33,13 @@ public interface MatrixService {
 
 	MatrixMetadata getMatrix(String netCDFname) throws IOException;
 
-	List<MatrixMetadata> getMatrices(int studyId) throws IOException;
+	List<MatrixMetadata> getMatrices(StudyKey studyKey) throws IOException;
 
     /**
 	 * This Method used to import GWASpi matrix from an external file.
 	 * The size of this Map is very small.
 	 */
-	MatrixMetadata getMatrix(String netCDFpath, int studyId, String name) throws IOException;
+	MatrixMetadata getMatrix(String netCDFpath, StudyKey studyKey, String name) throws IOException;
 
 	void insertMatrix(MatrixMetadata matrixMetadata) throws IOException;
 

@@ -20,6 +20,7 @@ package org.gwaspi.cli;
 import java.io.IOException;
 import java.util.Map;
 import org.gwaspi.constants.cImport.ImportFormat;
+import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.loader.GenotypesLoadDescription;
 import org.gwaspi.netCDF.operations.GWASinOneGOParams;
 import org.gwaspi.threadbox.MultiOperations;
@@ -55,8 +56,8 @@ class LoadGenotypesScriptCommand extends AbstractScriptCommand {
 		GWASinOneGOParams gwasParams = new GWASinOneGOParams();
 
 		// checking study
-		int studyId = prepareStudy(args.get("study-id"), true);
-		boolean studyExists = checkStudy(studyId);
+		StudyKey studyKey = prepareStudy(args.get("study-id"), true);
+		boolean studyExists = checkStudy(studyKey);
 
 		if (studyExists) {
 			ImportFormat format = ImportFormat.compareTo(args.get("format"));
@@ -67,7 +68,7 @@ class LoadGenotypesScriptCommand extends AbstractScriptCommand {
 					args.get("file1-path"), // File 1
 					args.get("sample-info-path"), // Sample Info file
 					args.get("file2-path"), // File 2
-					studyId, // StudyId
+					studyKey, // StudyKey
 					format, // Format
 					newMatrixName, // New Matrix name
 					description, // Description

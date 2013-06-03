@@ -38,6 +38,7 @@ import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleKey;
+import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -103,10 +104,10 @@ public class LoadGTFromAffyFiles implements GenotypesLoader {
 			SampleKey sampleKey;
 			switch (loadDescription.getFormat()) {
 				case Affymetrix_GenomeWide6:
-					sampleKey = getAffySampleId(loadDescription.getStudyId(), gtFilesToImport[i]);
+					sampleKey = getAffySampleId(loadDescription.getStudyKey(), gtFilesToImport[i]);
 					break;
 				default:
-					sampleKey = new SampleKey(loadDescription.getStudyId(), "", SampleKey.FAMILY_ID_NONE);
+					sampleKey = new SampleKey(loadDescription.getStudyKey(), "", SampleKey.FAMILY_ID_NONE);
 					break;
 			}
 			// NOTE The Beagle format does not have a family-ID
@@ -121,7 +122,7 @@ public class LoadGTFromAffyFiles implements GenotypesLoader {
 		MetadataLoaderAffy markerSetLoader = new MetadataLoaderAffy(
 				loadDescription.getAnnotationFilePath(),
 				loadDescription.getFormat(),
-				loadDescription.getStudyId());
+				loadDescription.getStudyKey());
 		Map<MarkerKey, MarkerMetadata> markerSetMap = markerSetLoader.getSortedMarkerSetWithMetaData();
 
 		log.info("Done initializing sorted MarkerSetMap");
@@ -158,7 +159,7 @@ public class LoadGTFromAffyFiles implements GenotypesLoader {
 		Map<MarkerKey, int[]> chrSetMap = org.gwaspi.netCDF.matrices.Utils.aggregateChromosomeInfo(markerSetMap, 2, 5);
 
 		MatrixFactory matrixFactory = new MatrixFactory(
-				loadDescription.getStudyId(),
+				loadDescription.getStudyKey(),
 				loadDescription.getFormat(),
 				loadDescription.getFriendlyName(),
 				descSB.toString(), // description
@@ -366,7 +367,7 @@ public class LoadGTFromAffyFiles implements GenotypesLoader {
 	{
 		// LOAD INPUT FILE
 		// GET SAMPLEID
-		SampleKey sampleKey = getAffySampleId(loadDescription.getStudyId(), file);
+		SampleKey sampleKey = getAffySampleId(loadDescription.getStudyKey(), file);
 
 		FileReader inputFileReader = new FileReader(file);
 		BufferedReader inputBufferReader = new BufferedReader(inputFileReader);
@@ -428,7 +429,7 @@ public class LoadGTFromAffyFiles implements GenotypesLoader {
 		}
 	}
 
-	private static SampleKey getAffySampleId(int studyId, File fileToScan) throws IOException {
+	private static SampleKey getAffySampleId(StudyKey studyKey, File fileToScan) throws IOException {
 //		FileReader inputFileReader = new FileReader(fileToScan);
 //		BufferedReader inputBufferReader = new BufferedReader(inputFileReader);
 		String l = fileToScan.getName();
@@ -443,6 +444,6 @@ public class LoadGTFromAffyFiles implements GenotypesLoader {
 //		String[] cVals = l.split("_");
 //		String sampleId = cVals[preprocessing.cFormats.sampleId];
 
-		return new SampleKey(studyId, sampleId, SampleKey.FAMILY_ID_NONE);
+		return new SampleKey(studyKey, sampleId, SampleKey.FAMILY_ID_NONE);
 	}
 }

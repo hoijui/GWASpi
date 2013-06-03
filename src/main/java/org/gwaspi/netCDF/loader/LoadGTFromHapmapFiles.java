@@ -38,6 +38,7 @@ import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleKey;
+import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -103,11 +104,11 @@ public class LoadGTFromHapmapFiles implements GenotypesLoader {
 		if (hapmapGTFile.isDirectory()) {
 			File[] gtFilesToImport = org.gwaspi.global.Utils.listFiles(loadDescription.getGtDirPath());
 			for (int i = 0; i < gtFilesToImport.length; i++) {
-				Collection<SampleInfo> tempSamplesMap = getHapmapSampleIds(loadDescription.getStudyId(), gtFilesToImport[i]);
+				Collection<SampleInfo> tempSamplesMap = getHapmapSampleIds(loadDescription.getStudyKey(), gtFilesToImport[i]);
 				sampleInfos.addAll(tempSamplesMap);
 			}
 		} else {
-			sampleInfos.addAll(getHapmapSampleIds(loadDescription.getStudyId(), hapmapGTFile));
+			sampleInfos.addAll(getHapmapSampleIds(loadDescription.getStudyKey(), hapmapGTFile));
 		}
 
 		return processHapmapGTFiles(hapmapGTFile.isDirectory(), loadDescription, sampleInfos);
@@ -132,7 +133,7 @@ public class LoadGTFromHapmapFiles implements GenotypesLoader {
 			MetadataLoaderHapmap markerSetLoader = new MetadataLoaderHapmap(
 					gtFilesToImport[i].getPath(),
 					loadDescription.getFormat(),
-					loadDescription.getStudyId());
+					loadDescription.getStudyKey());
 			Map<MarkerKey, MarkerMetadata> tmpMarkerMap = markerSetLoader.getSortedMarkerSetWithMetaData();
 			markerSetMap.putAll(tmpMarkerMap);
 		}
@@ -170,7 +171,7 @@ public class LoadGTFromHapmapFiles implements GenotypesLoader {
 		Map<MarkerKey, int[]> chrSetMap = org.gwaspi.netCDF.matrices.Utils.aggregateChromosomeInfo(markerSetMap, 2, 3);
 
 		MatrixFactory matrixFactory = new MatrixFactory(
-				loadDescription.getStudyId(),
+				loadDescription.getStudyKey(),
 				loadDescription.getFormat(),
 				loadDescription.getFriendlyName(),
 				descSB.toString(), // description
@@ -303,7 +304,7 @@ public class LoadGTFromHapmapFiles implements GenotypesLoader {
 
 			for (int i = 0; i < gtFilesToImport.length; i++) {
 				loadIndividualFiles(
-						loadDescription.getStudyId(),
+						loadDescription.getStudyKey(),
 						gtFilesToImport[i],
 						sampleInfo.getKey(),
 						alleles,
@@ -356,7 +357,7 @@ public class LoadGTFromHapmapFiles implements GenotypesLoader {
 	 * @see AbstractLoadGTFromFiles#loadIndividualFiles
 	 */
 	private void loadIndividualFiles(
-			int studyId,
+			StudyKey studyKey,
 			File file,
 			SampleKey sampleKey,
 			Map<MarkerKey, byte[]> alleles,
@@ -375,7 +376,7 @@ public class LoadGTFromHapmapFiles implements GenotypesLoader {
 
 		Map<SampleKey, Object> sampleOrderMap = new LinkedHashMap<SampleKey, Object>();
 		for (int i = Standard.sampleId; i < headerFields.length; i++) {
-			sampleOrderMap.put(SampleKey.valueOf(studyId, headerFields[i]), i); // FIXME this is only the sampleID, without familyID. does hapMap have a familyId?
+			sampleOrderMap.put(SampleKey.valueOf(studyKey, headerFields[i]), i); // FIXME this is only the sampleID, without familyID. does hapMap have a familyId?
 		}
 		Object sampleColumnNb = sampleOrderMap.get(sampleKey);
 
@@ -422,7 +423,7 @@ public class LoadGTFromHapmapFiles implements GenotypesLoader {
 	//</editor-fold>
 
 	//<editor-fold defaultstate="expanded" desc="HELPER METHODS">
-	private Collection<SampleInfo> getHapmapSampleIds(int studyId, File hapmapGTFile) throws IOException {
+	private Collection<SampleInfo> getHapmapSampleIds(StudyKey studyKey, File hapmapGTFile) throws IOException {
 
 		Collection<SampleInfo> uniqueSamples = new LinkedList<SampleInfo>();
 
@@ -434,7 +435,7 @@ public class LoadGTFromHapmapFiles implements GenotypesLoader {
 		String[] hapmapVals = header.split(cImport.Separators.separators_SpaceTab_rgxp);
 
 		for (int i = Standard.sampleId; i < hapmapVals.length; i++) {
-			uniqueSamples.add(new SampleInfo(studyId, hapmapVals[i]));
+			uniqueSamples.add(new SampleInfo(studyKey, hapmapVals[i]));
 		}
 
 		return uniqueSamples;

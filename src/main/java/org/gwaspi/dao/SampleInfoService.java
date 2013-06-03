@@ -22,6 +22,7 @@ import java.util.Collection;
 import java.util.List;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleKey;
+import org.gwaspi.model.StudyKey;
 
 public interface SampleInfoService {
 
@@ -29,9 +30,9 @@ public interface SampleInfoService {
 
 	List<SampleInfo> getSamples() throws IOException;
 
-	List<SampleInfo> getSamples(Integer studyId) throws IOException;
+	List<SampleInfo> getSamples(StudyKey studyKey) throws IOException;
 
-	void deleteSamples(int studyId) throws IOException;
+	void deleteSamples(StudyKey studyKey) throws IOException;
 
 	void insertSamples(Collection<SampleInfo> sampleInfos) throws IOException;
 }

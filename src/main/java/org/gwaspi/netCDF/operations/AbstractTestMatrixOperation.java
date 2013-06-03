@@ -80,8 +80,8 @@ public abstract class AbstractTestMatrixOperation implements MatrixOperation {
 			OperationMetadata rdCensusOPMetadata = OperationsList.getOperationMetadata(markerCensusOP.getId());
 			NetcdfFile rdOPNcFile = NetcdfFile.open(rdCensusOPMetadata.getPathToMatrix());
 
-			MarkerOperationSet rdCaseMarkerSet = new MarkerOperationSet(rdCensusOPMetadata.getStudyId(), markerCensusOP.getId());
-			MarkerOperationSet rdCtrlMarkerSet = new MarkerOperationSet(rdCensusOPMetadata.getStudyId(), markerCensusOP.getId());
+			MarkerOperationSet rdCaseMarkerSet = new MarkerOperationSet(rdCensusOPMetadata.getStudyKey(), markerCensusOP.getId());
+			MarkerOperationSet rdCtrlMarkerSet = new MarkerOperationSet(rdCensusOPMetadata.getStudyKey(), markerCensusOP.getId());
 			Map<SampleKey, ?> rdSampleSetMap = rdCaseMarkerSet.getImplicitSetMap();
 			rdCaseMarkerSet.getOpSetMap(); // without this, we get an NPE later on
 			Map<MarkerKey, char[]> rdCtrlMarkerIdSetMap = rdCtrlMarkerSet.getOpSetMap();
@@ -95,7 +95,7 @@ public abstract class AbstractTestMatrixOperation implements MatrixOperation {
 
 			// GATHER INFO FROM ORIGINAL MATRIX
 			MatrixMetadata parentMatrixMetadata = MatricesList.getMatrixMetadataById(markerCensusOP.getParentMatrixId());
-			MarkerSet rdMarkerSet = new MarkerSet(parentMatrixMetadata.getStudyId(), markerCensusOP.getParentMatrixId());
+			MarkerSet rdMarkerSet = new MarkerSet(parentMatrixMetadata.getStudyKey(), markerCensusOP.getParentMatrixId());
 			rdMarkerSet.initFullMarkerIdSetMap();
 
 			// retrieve chromosome info
@@ -107,7 +107,7 @@ public abstract class AbstractTestMatrixOperation implements MatrixOperation {
 			try {
 				// CREATE netCDF-3 FILE
 				OperationFactory wrOPHandler = new OperationFactory(
-						rdCensusOPMetadata.getStudyId(),
+						rdCensusOPMetadata.getStudyKey(),
 						testName, // friendly name
 						testName + " on " + markerCensusOP.getFriendlyName() + "\n" + rdCensusOPMetadata.getDescription() + "\nHardy-Weinberg threshold: " + Report_Analysis.FORMAT_SCIENTIFIC.format(hwThreshold), // description
 						wrMarkerSetMap.size(),
@@ -223,7 +223,7 @@ public abstract class AbstractTestMatrixOperation implements MatrixOperation {
 
 		if (hwOP != null) {
 			NetcdfFile rdHWNcFile = NetcdfFile.open(hwOP.getPathToMatrix());
-			MarkerOperationSet rdHWOperationSet = new MarkerOperationSet(hwOP.getStudyId(), hwOP.getOPId());
+			MarkerOperationSet rdHWOperationSet = new MarkerOperationSet(hwOP.getStudyKey(), hwOP.getOPId());
 			Map<MarkerKey, Double> rdHWMarkerSetMap = rdHWOperationSet.getOpSetMap();
 			totalMarkerNb = rdHWMarkerSetMap.size();
 

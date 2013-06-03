@@ -31,6 +31,7 @@ import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MarkerMetadata;
+import org.gwaspi.model.StudyKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,14 +44,14 @@ public class MetadataLoaderHapmap implements MetadataLoader {
 	private final Logger log
 			= LoggerFactory.getLogger(MetadataLoaderHapmap.class);
 
-	private String hapmapPath;
-	private int studyId;
-	private ImportFormat format;
+	private final String hapmapPath;
+	private final StudyKey studyKey;
+	private final ImportFormat format;
 
-	public MetadataLoaderHapmap(String hapmapPath, ImportFormat format, int studyId) {
+	public MetadataLoaderHapmap(String hapmapPath, ImportFormat format, StudyKey studyKey) {
 
 		this.hapmapPath = hapmapPath;
-		this.studyId = studyId;
+		this.studyKey = studyKey;
 		this.format = format;
 	}
 
@@ -87,7 +88,7 @@ public class MetadataLoaderHapmap implements MetadataLoader {
 		}
 
 		String description = "Generated sorted MarkerIdSet Map sorted by chromosome and position";
-		MetadataLoaderPlink.logAsWhole(startTime, hapmapPath, description, studyId);
+		MetadataLoaderPlink.logAsWhole(startTime, hapmapPath, description, studyKey.getId());
 		return markerMetadata;
 	}
 

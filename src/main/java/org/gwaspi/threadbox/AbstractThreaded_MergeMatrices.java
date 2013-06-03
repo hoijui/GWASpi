@@ -18,6 +18,9 @@
 package org.gwaspi.threadbox;
 
 import org.gwaspi.model.GWASpiExplorerNodes;
+import org.gwaspi.model.OperationKey;
+import org.gwaspi.model.OperationsList;
+import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.operations.MatrixOperation;
 import org.gwaspi.netCDF.operations.OP_QAMarkers;
 import org.gwaspi.netCDF.operations.OP_QASamples;
@@ -26,14 +29,14 @@ import org.slf4j.LoggerFactory;
 
 public abstract class AbstractThreaded_MergeMatrices extends CommonRunnable {
 
-	protected final int studyId;
+	protected final StudyKey studyKey;
 	protected final int parentMatrixId1;
 	protected final int parentMatrixId2;
 	protected final String newMatrixName;
 	protected final String description;
 
 	public AbstractThreaded_MergeMatrices(
-			int studyId,
+			StudyKey studyKey,
 			int parentMatrixId1,
 			int parentMatrixId2,
 			String newMatrixName,
@@ -45,7 +48,7 @@ public abstract class AbstractThreaded_MergeMatrices extends CommonRunnable {
 				"Merge Matrices: " + newMatrixName,
 				"Merging Matrices");
 
-		this.studyId = studyId;
+		this.studyKey = studyKey;
 		this.parentMatrixId1 = parentMatrixId1;
 		this.parentMatrixId2 = parentMatrixId2;
 		this.newMatrixName = newMatrixName;
@@ -66,13 +69,14 @@ public abstract class AbstractThreaded_MergeMatrices extends CommonRunnable {
 			final MatrixOperation joinMatrices = createMatrixOperation();
 
 			final int resultMatrixId = joinMatrices.processMatrix();
-			GWASpiExplorerNodes.insertMatrixNode(studyId, resultMatrixId);
+			GWASpiExplorerNodes.insertMatrixNode(studyKey, resultMatrixId);
 
 			if (!thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
 				return;
 			}
 			int sampleQAOpId = new OP_QASamples(resultMatrixId).processMatrix();
-			GWASpiExplorerNodes.insertOperationUnderMatrixNode(resultMatrixId, sampleQAOpId);
+			OperationKey sampleQAOpKey = OperationKey.valueOf(OperationsList.getById(sampleQAOpId));
+			GWASpiExplorerNodes.insertOperationUnderMatrixNode(sampleQAOpKey);
 			org.gwaspi.reports.OutputQASamples.writeReportsForQASamplesData(sampleQAOpId, true);
 			GWASpiExplorerNodes.insertReportsUnderOperationNode(sampleQAOpId);
 
@@ -80,7 +84,8 @@ public abstract class AbstractThreaded_MergeMatrices extends CommonRunnable {
 				return;
 			}
 			int markersQAOpId = new OP_QAMarkers(resultMatrixId).processMatrix();
-			GWASpiExplorerNodes.insertOperationUnderMatrixNode(resultMatrixId, markersQAOpId);
+			OperationKey markersQAOpKey = OperationKey.valueOf(OperationsList.getById(markersQAOpId));
+			GWASpiExplorerNodes.insertOperationUnderMatrixNode(markersQAOpKey);
 			org.gwaspi.reports.OutputQAMarkers.writeReportsForQAMarkersData(markersQAOpId);
 			GWASpiExplorerNodes.insertReportsUnderOperationNode(markersQAOpId);
 			MultiOperations.printCompleted("Matrix Quality Control");

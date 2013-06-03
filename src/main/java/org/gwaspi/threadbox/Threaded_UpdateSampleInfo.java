@@ -18,13 +18,12 @@
 package org.gwaspi.threadbox;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Collection;
 import org.gwaspi.constants.cImport.ImportFormat;
-import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleInfoList;
 import org.gwaspi.model.Study;
+import org.gwaspi.model.StudyKey;
 import org.gwaspi.model.StudyList;
 import org.gwaspi.samples.SamplesParserManager;
 import org.slf4j.Logger;
@@ -32,20 +31,20 @@ import org.slf4j.LoggerFactory;
 
 public class Threaded_UpdateSampleInfo extends CommonRunnable {
 
-	private File sampleInfoFile;
-	private int poolId;
+	private final StudyKey studyKey;
+	private final File sampleInfoFile;
 
 	public Threaded_UpdateSampleInfo(
-			int poolId,
+			StudyKey studyKey,
 			File sampleInfoFile)
 	{
 		super(
 				"Update Sample Info",
 				"Sample Info Update",
-				"Update Sample Info on Study ID: " + poolId,
+				"Update Sample Info on Study ID: " + studyKey,
 				"Sample Info Update");
 
-		this.poolId = poolId;
+		this.studyKey = studyKey;
 		this.sampleInfoFile = sampleInfoFile;
 	}
 
@@ -56,7 +55,7 @@ public class Threaded_UpdateSampleInfo extends CommonRunnable {
 	protected void runInternal(SwingWorkerItem thisSwi) throws Exception {
 
 		Collection<SampleInfo> sampleInfos = SamplesParserManager.scanSampleInfo(
-				poolId,
+				studyKey,
 				ImportFormat.GWASpi,
 				sampleInfoFile.getPath());
 		SampleInfoList.insertSampleInfos(sampleInfos);
@@ -74,7 +73,7 @@ public class Threaded_UpdateSampleInfo extends CommonRunnable {
 //			org.gwaspi.reports.OutputQASamples.writeReportsForQASamplesData(qaOpId, false);
 //		}
 
-		Study study = StudyList.getStudy(poolId);
+		Study study = StudyList.getStudy(studyKey);
 
 		StringBuilder oldDesc = new StringBuilder(study.getDescription());
 		oldDesc.append("\n* Sample Info updated from: ");

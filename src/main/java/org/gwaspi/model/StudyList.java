@@ -54,20 +54,20 @@ public class StudyList {
 		return emf;
 	}
 
-	public static Study getStudy(int studyId) throws IOException {
-		return studyService.getById(studyId);
+	public static Study getStudy(StudyKey studyKey) throws IOException {
+		return studyService.getStudy(studyKey);
 	}
 
 	public static List<Study> getStudyList() throws IOException {
-		return studyService.getAll();
+		return studyService.getStudies();
 	}
 
-	public static int insertNewStudy(String studyName, String description) {
-		return studyService.insertNewStudy(studyName, description);
+	public static StudyKey insertNewStudy(Study study) {
+		return studyService.insertStudy(study);
 	}
 
-	public static void deleteStudy(int studyId, boolean deleteReports) throws IOException {
-		studyService.deleteStudy(studyId, deleteReports);
+	public static void deleteStudy(StudyKey studyKey, boolean deleteReports) throws IOException {
+		studyService.deleteStudy(studyKey, deleteReports);
 	}
 
 	public static void updateStudy(Study study) throws IOException {

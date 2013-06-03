@@ -20,6 +20,7 @@ package org.gwaspi.threadbox;
 import java.util.List;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.model.GWASpiExplorerNodes;
+import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.netCDF.operations.GWASinOneGOParams;
@@ -84,10 +85,13 @@ public class Threaded_TrendTest extends CommonRunnable {
 		}
 
 		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
-			int trendTestOpId = OperationManager.performCleanTrendTests(matrixId,
+			int trendTestOpId = OperationManager.performCleanTrendTests(
+					matrixId,
 					censusOpId,
-					hwOpId, gwasParams.getDiscardMarkerHWTreshold());
-			GWASpiExplorerNodes.insertSubOperationUnderOperationNode(censusOpId, trendTestOpId);
+					hwOpId,
+					gwasParams.getDiscardMarkerHWTreshold());
+			OperationKey trendTestOpKey = OperationKey.valueOf(OperationsList.getById(trendTestOpId));
+			GWASpiExplorerNodes.insertSubOperationUnderOperationNode(censusOpId, trendTestOpKey);
 
 			// Make Reports (needs newMatrixId, QAopId, AssocOpId)
 			if (trendTestOpId != Integer.MIN_VALUE) {

@@ -25,6 +25,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import org.gwaspi.constants.cImport;
 import org.gwaspi.model.SampleInfo;
+import org.gwaspi.model.StudyKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,7 +35,7 @@ public class PlinkStandardSamplesParser implements SamplesParser {
 			= LoggerFactory.getLogger(PlinkStandardSamplesParser.class);
 
 	@Override
-	public Collection<SampleInfo> scanSampleInfo(int studyId, String sampleInfoPath) throws IOException {
+	public Collection<SampleInfo> scanSampleInfo(StudyKey studyKey, String sampleInfoPath) throws IOException {
 
 		Collection<SampleInfo> sampleInfos = new LinkedList<SampleInfo>();
 		FileReader inputFileReader;
@@ -65,7 +66,7 @@ public class PlinkStandardSamplesParser implements SamplesParser {
 					SampleInfo.Sex sex = SampleInfo.Sex.parse(sexStr);
 					SampleInfo.Affection affection = SampleInfo.Affection.parse(affectionStr);
 					sampleInfo = new SampleInfo(
-							studyId,
+							studyKey,
 							cVals[cImport.Annotation.Plink_Standard.ped_sampleId],
 							cVals[cImport.Annotation.Plink_Standard.ped_familyId],
 							cVals[cImport.Annotation.Plink_Standard.ped_fatherId],
@@ -103,7 +104,7 @@ public class PlinkStandardSamplesParser implements SamplesParser {
 					SampleInfo.Sex sex = SampleInfo.Sex.parse(sexStr);
 					SampleInfo.Affection affection = SampleInfo.Affection.parse(affectionStr);
 					sampleInfo = new SampleInfo(
-							studyId,
+							studyKey,
 							cVals[cImport.Annotation.Plink_Standard.ped_sampleId],
 							cVals[cImport.Annotation.Plink_Standard.ped_familyId],
 							cVals[cImport.Annotation.Plink_Standard.ped_fatherId],

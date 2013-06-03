@@ -127,7 +127,7 @@ public class MatrixMergeSamples extends AbstractMergeMatrixOperation {
 			descSB.append(methodDescription);
 
 			MatrixFactory wrMatrixHandler = new MatrixFactory(
-					studyId,
+					studyKey,
 					technology, // technology
 					wrMatrixFriendlyName,
 					wrMatrixDescription + "\n\n" + descSB.toString(), // description

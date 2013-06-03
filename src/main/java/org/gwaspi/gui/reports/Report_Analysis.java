@@ -60,7 +60,6 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 import org.gwaspi.constants.cImport;
-import org.gwaspi.global.Config;
 import org.gwaspi.global.Text;
 import org.gwaspi.global.Utils;
 import org.gwaspi.gui.GWASpiExplorerPanel;
@@ -76,6 +75,8 @@ import org.gwaspi.gui.utils.URLInDefaultBrowser;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
+import org.gwaspi.model.Study;
+import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.operations.MarkerOperationSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -90,7 +91,7 @@ public abstract class Report_Analysis extends JPanel {
 	public static final DecimalFormat FORMAT_INTEGER = new DecimalFormat("#");
 
 	// Variables declaration - do not modify
-	private final int studyId;
+	private final StudyKey studyKey;
 	private final int opId;
 	protected Map<String, int[]> chrSetInfoMap;
 	protected File reportFile;
@@ -110,9 +111,9 @@ public abstract class Report_Analysis extends JPanel {
 	private JFormattedTextField txt_PvalThreshold;
 	// End of variables declaration
 
-	protected Report_Analysis(final int studyId, final int opId, final String analysisFileName, final Integer nRows) {
+	protected Report_Analysis(final StudyKey studyKey, final int opId, final String analysisFileName, final Integer nRows) {
 
-		this.studyId = studyId;
+		this.studyKey = studyKey;
 		this.opId = opId;
 		this.chrSetInfoMap = new LinkedHashMap<String, int[]>();
 
@@ -121,7 +122,7 @@ public abstract class Report_Analysis extends JPanel {
 
 		String reportPath = "";
 		try {
-			reportPath = Config.getConfigValue(Config.PROPERTY_REPORTS_DIR, "") + "/STUDY_" + studyId + "/";
+			reportPath = Study.constructReportsPath(studyKey);
 		} catch (IOException ex) {
 			log.error(null, ex);
 		}
@@ -240,7 +241,7 @@ public abstract class Report_Analysis extends JPanel {
 		scrl_ReportTable.setViewportView(tbl_ReportTable);
 
 		//<editor-fold defaultstate="expanded" desc="FOOTER">
-		btn_Save.setAction(new SaveAsAction(studyId, analysisFileName, tbl_ReportTable, txt_NRows, 3));
+		btn_Save.setAction(new SaveAsAction(studyKey, analysisFileName, tbl_ReportTable, txt_NRows, 3));
 
 		btn_Back.setAction(new BackAction(opId));
 
@@ -350,7 +351,7 @@ public abstract class Report_Analysis extends JPanel {
 //		reportName = reportName.substring(reportName.indexOf('-') + 2);
 //		String reportPath = "";
 //		try {
-//			reportPath = Config.getConfigValue(Config.PROPERTY_REPORTS_DIR, "") + "/STUDY_" + studyId + "/";
+//			reportPath = Study.constructReportsPath(studyKey);
 //		} catch (IOException ex) {
 //			log.error(null, ex);
 //		}
@@ -372,7 +373,7 @@ public abstract class Report_Analysis extends JPanel {
 	protected abstract Object[] parseRow(String[] cVals);
 
 	protected final void initChrSetInfo() throws IOException {
-		MarkerOperationSet opSet = new MarkerOperationSet(studyId, opId);
+		MarkerOperationSet opSet = new MarkerOperationSet(studyKey, opId);
 		// Nb of markers, first physical position, last physical position, start index number in MarkerSet,
 		chrSetInfoMap = opSet.getChrInfoSetMap();
 	}
@@ -485,15 +486,15 @@ public abstract class Report_Analysis extends JPanel {
 
 	public static class SaveAsAction extends AbstractAction {
 
-		private int studyId;
+		private StudyKey studyKey;
 		private String reportFileName;
 		private JTable reportTable;
 		private JFormattedTextField nRows;
 		private List<Integer> colIndToSave;
 
-		public SaveAsAction(int studyId, String reportFileName, JTable reportTable, JFormattedTextField nRows, int trailingColsNotToSave) {
+		public SaveAsAction(StudyKey studyKey, String reportFileName, JTable reportTable, JFormattedTextField nRows, int trailingColsNotToSave) {
 
-			this.studyId = studyId;
+			this.studyKey = studyKey;
 			this.reportFileName = reportFileName;
 			this.reportTable = reportTable;
 			this.nRows = nRows;
@@ -505,13 +506,13 @@ public abstract class Report_Analysis extends JPanel {
 			putValue(NAME, Text.All.save);
 		}
 
-		public SaveAsAction(int studyId, String reportFileName, JTable reportTable, JFormattedTextField nRows) {
-			this(studyId, reportFileName, reportTable, nRows, 0);
+		public SaveAsAction(StudyKey studyKey, String reportFileName, JTable reportTable, JFormattedTextField nRows) {
+			this(studyKey, reportFileName, reportTable, nRows, 0);
 		}
 
-		private void actionSaveCompleteReportAs(int studyId, String chartPath) {
+		private void actionSaveCompleteReportAs(StudyKey studyKey, String chartPath) {
 			try {
-				String reportPath = Config.getConfigValue(Config.PROPERTY_REPORTS_DIR, "") + "/STUDY_" + studyId + "/";
+				String reportPath = Study.constructReportsPath(studyKey);
 				File origFile = new File(reportPath + chartPath);
 				File newDir = Dialogs.selectDirectoryDialog(JOptionPane.OK_OPTION);
 				if (newDir == null) {
@@ -591,7 +592,7 @@ public abstract class Report_Analysis extends JPanel {
 					actionSaveReportViewAs(reportFileName);
 					break;
 				case JOptionPane.NO_OPTION:
-					actionSaveCompleteReportAs(studyId, reportFileName);
+					actionSaveCompleteReportAs(studyKey, reportFileName);
 					break;
 				default: // JOptionPane.CANCEL_OPTION
 					break;
@@ -624,7 +625,7 @@ public abstract class Report_Analysis extends JPanel {
 		public void actionPerformed(ActionEvent evt) {
 			try {
 				GWASpiExplorerPanel.getSingleton().getTree().setSelectionPath(GWASpiExplorerPanel.getSingleton().getTree().getSelectionPath().getParentPath());
-				GWASpiExplorerPanel.getSingleton().setPnl_Content(new MatrixAnalysePanel(new MatrixKey(op.getStudyId(), op.getParentMatrixId()), opId));
+				GWASpiExplorerPanel.getSingleton().setPnl_Content(new MatrixAnalysePanel(new MatrixKey(op.getStudyKey(), op.getParentMatrixId()), opId));
 				GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
 			} catch (IOException ex) {
 				log.error(null, ex);

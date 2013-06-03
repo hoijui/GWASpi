@@ -18,6 +18,7 @@
 package org.gwaspi.reports;
 
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Map;
@@ -30,6 +31,8 @@ import org.gwaspi.model.Report;
 import org.gwaspi.model.ReportsList;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleKey;
+import org.gwaspi.model.Study;
+import org.gwaspi.model.StudyKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,14 +50,14 @@ public class OutputQASamples {
 	public static boolean writeReportsForQASamplesData(int opId, boolean newReport) throws IOException {
 		OperationMetadata op = OperationsList.getById(opId);
 
-		org.gwaspi.global.Utils.createFolder(Config.getConfigValue(Config.PROPERTY_REPORTS_DIR, ""), "STUDY_" + op.getStudyId());
-		reportPath = Config.getConfigValue(Config.PROPERTY_REPORTS_DIR, "") + "/" + "STUDY_" + op.getStudyId() + "/";
+		org.gwaspi.global.Utils.createFolder(new File(Study.constructReportsPath(op.getStudyKey())));
+		reportPath = Study.constructReportsPath(op.getStudyKey());
 
 		String prefix = ReportsList.getReportNamePrefix(op);
 		samplMissOutName = prefix + "samplmissing.txt";
 
 
-		if (createSortedSampleMissingnessReport(opId, samplMissOutName, op.getStudyId())
+		if (createSortedSampleMissingnessReport(opId, samplMissOutName, op.getStudyKey())
 				&& newReport)
 		{
 			ReportsList.insertRPMetadata(new Report(
@@ -65,7 +68,7 @@ public class OutputQASamples {
 					op.getParentMatrixId(),
 					opId,
 					"Sample Missingness Table",
-					op.getStudyId()));
+					op.getStudyKey()));
 
 			org.gwaspi.global.Utils.sysoutCompleted("Sample Missingness QA Report");
 		}
@@ -81,7 +84,7 @@ public class OutputQASamples {
 				op.getParentMatrixId(),
 				opId,
 				"Sample Heterozygosity vs Missingness Plot",
-				op.getStudyId()));
+				op.getStudyKey()));
 
 		org.gwaspi.global.Utils.sysoutCompleted("Sample Missingness QA Report");
 //            }
@@ -91,7 +94,7 @@ public class OutputQASamples {
 		return true;
 	}
 
-	public static boolean createSortedSampleMissingnessReport(int opId, String reportName, Integer poolId) throws IOException {
+	public static boolean createSortedSampleMissingnessReport(int opId, String reportName, StudyKey studyKey) throws IOException {
 		boolean result;
 		String sep = cExport.separator_REPORTS;
 
@@ -114,7 +117,7 @@ public class OutputQASamples {
 			// GET SAMPLE INFO FROM DB
 			for (Map.Entry<SampleKey, Double> entry : sortedSamplesMissingRatMap.entrySet()) {
 				SampleKey tempSampleKey = entry.getKey();
-				SampleInfo sampleInfo = org.gwaspi.netCDF.exporter.Utils.getCurrentSampleFormattedInfo(tempSampleKey, poolId);
+				SampleInfo sampleInfo = org.gwaspi.netCDF.exporter.Utils.getCurrentSampleFormattedInfo(tempSampleKey, studyKey);
 
 				String familyId = sampleInfo.getFamilyId();
 				String fatherId = sampleInfo.getFatherId();
@@ -173,7 +176,7 @@ public class OutputQASamples {
 //        JFreeChart chart = new JFreeChart("Sample Heterozygosity vs. Missingness", JFreeChart.DEFAULT_TITLE_FONT, qqPlot, true);
 //
 //        OperationMetadata rdOPMetadata = new OperationMetadata(opId);
-//        String imagePath=Config.getConfigValue(Config.PROPERTY_REPORTS_DIR, "") + "/STUDY_"+rdOPMetadata.getStudyId()+"/"+outName+".png";
+//        String imagePath = Study.constructReportsPath(rdOPMetadata.getStudyKey()) + outName + ".png";
 //        try {
 //            ChartUtilities.saveChartAsPNG(new File(imagePath),
 //                                           chart,

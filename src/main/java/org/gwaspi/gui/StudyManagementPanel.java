@@ -324,7 +324,7 @@ public class StudyManagementPanel extends JPanel {
 						study_description = "";
 					}
 
-					StudyList.insertNewStudy(study_name, study_description);
+					StudyList.insertNewStudy(new Study(study_name, study_description));
 					GWASpiExplorerPanel.getSingleton().setPnl_Content(new StudyManagementPanel());
 					GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
 					GWASpiExplorerPanel.getSingleton().updateTreePanel(true);

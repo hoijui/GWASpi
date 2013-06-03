@@ -17,23 +17,27 @@
 
 package org.gwaspi.model;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.IdClass;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import org.gwaspi.global.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Entity
 @Table(name = "study")
+@IdClass(StudyKey.class)
 @NamedQueries({
 //	@NamedQuery(name = "acc_size",             query = "SELECT count(a.id) FROM Account a"),
 //	@NamedQuery(name = "size_active",          query = "SELECT count(a.id) FROM Account a WHERE ((a.inGameTime >= :minInGameTime) AND (a.lastLogin > :oneWeekAgo))"),
@@ -91,6 +95,45 @@ public class Study implements Serializable {
 		this.creationDate = (creationDate == null)
 				? null : (Date) creationDate.clone();
 //		this.studyMatrices = new ArrayList<Integer>();
+	}
+
+	/**
+	 * Returns the location of the DB-external storage path
+	 * for genotypes.
+	 * @param studyKey each study has its own sub-path
+	 * @return
+	 * @throws IOException
+	 */
+	public static String constructGTPath(StudyKey studyKey) throws IOException {
+		return constructStoragePath(studyKey, Config.PROPERTY_GENOTYPES_DIR);
+	}
+
+	/**
+	 * Returns the location of the DB-external storage path
+	 * for reports.
+	 * @param studyKey each study has its own sub-path
+	 * @return
+	 * @throws IOException
+	 */
+	public static String constructReportsPath(StudyKey studyKey) throws IOException {
+		return constructStoragePath(studyKey, Config.PROPERTY_REPORTS_DIR);
+	}
+
+	/**
+	 * Returns the location of the DB-external storage path
+	 * for exports.
+	 * @param studyKey each study has its own sub-path
+	 * @return
+	 * @throws IOException
+	 */
+	public static String constructExportsPath(StudyKey studyKey) throws IOException {
+		return constructStoragePath(studyKey, Config.PROPERTY_EXPORT_DIR);
+	}
+
+	private static String constructStoragePath(StudyKey studyKey, String basePathConfigKey) throws IOException {
+		return String.format("%s/STUDY_%d/",
+				Config.getConfigValue(basePathConfigKey, ""),
+				studyKey.getId());
 	}
 
 	@Override

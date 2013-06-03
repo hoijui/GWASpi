@@ -19,22 +19,22 @@ package org.gwaspi.model;
 
 public final class SampleKeyFactory implements KeyFactory<SampleKey> {
 
-	private final int studyId;
+	private final StudyKey studyKey;
 
-	public SampleKeyFactory(int studyId) {
-		this.studyId = studyId;
+	public SampleKeyFactory(StudyKey studyKey) {
+		this.studyKey = studyKey;
 	}
 
 	public static String encodeStatic(SampleKey key) {
 		return key.getSampleId() + " " + key.getFamilyId();
 	}
 
-	public static SampleKey decodeStatic(int studyId, String keyStr) {
+	public static SampleKey decodeStatic(StudyKey studyKey, String keyStr) {
 		SampleKey key = null;
 
 		String[] parts = keyStr.split(" ", 3);
 		if (parts.length == 2) {
-			key = new SampleKey(studyId, parts[0], parts[1]);
+			key = new SampleKey(studyKey, parts[0], parts[1]);
 		}
 
 		// TODO throw some type of runtime exception if keyStr does not conform strictly to a valid key
@@ -48,6 +48,6 @@ public final class SampleKeyFactory implements KeyFactory<SampleKey> {
 
 	@Override
 	public SampleKey decode(String keyStr) {
-		return decodeStatic(studyId, keyStr);
+		return decodeStatic(studyKey, keyStr);
 	}
 }

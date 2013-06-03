@@ -41,6 +41,7 @@ import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.Report;
 import org.gwaspi.model.ReportsList;
+import org.gwaspi.model.StudyKey;
 import org.gwaspi.threadbox.MultiOperations;
 import org.gwaspi.threadbox.SwingWorkerItemList;
 
@@ -58,9 +59,9 @@ public class Report_AnalysisPanel extends JPanel {
 	private final JTextArea txtA_OpDesc;
 	// End of variables declaration
 
-	public Report_AnalysisPanel(final int _studyId, final int _matrixId, final int _opId, final Integer nRows) throws IOException {
+	public Report_AnalysisPanel(final StudyKey studyKey, final int _matrixId, final int _opId, final Integer nRows) throws IOException {
 
-		parentMatrix = new MatrixKey(_studyId, _matrixId);
+		parentMatrix = new MatrixKey(studyKey, _matrixId);
 		if (_opId != Integer.MIN_VALUE) {
 			currentOP = OperationsList.getById(_opId);
 		} else {
@@ -117,11 +118,11 @@ public class Report_AnalysisPanel extends JPanel {
 		if (reportsList.size() == 3) {
 			String reportFile = reportsList.get(2).getFileName();
 			if (currentOP.getOperationType().equals(OPType.ALLELICTEST)) {
-				pnl_ReportTmp = new Report_AnalysisAllelicTestImpl(_studyId, reportFile, _opId, nRows);
+				pnl_ReportTmp = new Report_AnalysisAllelicTestImpl(studyKey, reportFile, _opId, nRows);
 			} else if (currentOP.getOperationType().equals(OPType.GENOTYPICTEST)) {
-				pnl_ReportTmp = new Report_AnalysisGenotypicTestImpl(_studyId, reportFile, _opId, nRows);
+				pnl_ReportTmp = new Report_AnalysisGenotypicTestImpl(studyKey, reportFile, _opId, nRows);
 			} else if (currentOP.getOperationType().equals(OPType.TRENDTEST)) {
-				pnl_ReportTmp = new Report_AnalysisTrendTestImpl(_studyId, reportFile, _opId, nRows);
+				pnl_ReportTmp = new Report_AnalysisTrendTestImpl(studyKey, reportFile, _opId, nRows);
 			}
 		}
 		if (pnl_ReportTmp == null) {
@@ -184,7 +185,7 @@ public class Report_AnalysisPanel extends JPanel {
 							&& (option == JOptionPane.YES_OPTION))
 					{
 						final boolean deleteReport = (deleteReportOption == JOptionPane.YES_OPTION);
-						MultiOperations.deleteOperationsByOpId(parentMatrix.getStudyId(), parentMatrix.getMatrixId(), currentOP.getId(), deleteReport);
+						MultiOperations.deleteOperationsByOpId(parentMatrix.getStudyKey(), parentMatrix.getMatrixId(), currentOP.getId(), deleteReport);
 					}
 				}
 			} else {

@@ -60,7 +60,7 @@ import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
 })
 public class MatrixMetadata implements Serializable {
 
-	private int matrixId;
+	private MatrixKey key;
 	private String matrixFriendlyName;
 	private String matrixNetCDFName;
 	private String pathToMatrix;
@@ -72,7 +72,6 @@ public class MatrixMetadata implements Serializable {
 	private boolean hasDictionray;
 	private int markerSetSize;
 	private int sampleSetSize;
-	private int studyId;
 	private String matrixType; // matrix_type VARCHAR(32) NOT NULL
 	private int parent1MatrixId;
 	private int parent2MatrixId;
@@ -81,7 +80,7 @@ public class MatrixMetadata implements Serializable {
 
 	protected MatrixMetadata() {
 
-		this.matrixId = Integer.MIN_VALUE;
+		this.key = new MatrixKey(null, Integer.MIN_VALUE);
 		this.matrixFriendlyName = "";
 		this.matrixNetCDFName = "";
 		this.pathToMatrix = "";
@@ -93,7 +92,6 @@ public class MatrixMetadata implements Serializable {
 		this.hasDictionray = false;
 		this.markerSetSize = Integer.MIN_VALUE;
 		this.sampleSetSize = Integer.MIN_VALUE;
-		this.studyId = Integer.MIN_VALUE;
 		this.matrixType = "";
 		this.parent1MatrixId = -1;
 		this.parent2MatrixId = -1;
@@ -106,13 +104,13 @@ public class MatrixMetadata implements Serializable {
 			String matrixNetCDFName,
 			String description,
 			GenotypeEncoding gtEncoding,
-			int studyId,
+			StudyKey studyKey,
 			int parent1MatrixId,
 			int parent2MatrixId,
 			String inputLocation
 			)
 	{
-		this.matrixId = Integer.MIN_VALUE;
+		this.key = new MatrixKey(studyKey, Integer.MIN_VALUE);
 		this.matrixFriendlyName = matrixFriendlyName;
 		this.matrixNetCDFName = matrixNetCDFName;
 		this.pathToMatrix = "";
@@ -124,7 +122,6 @@ public class MatrixMetadata implements Serializable {
 		this.hasDictionray = false;
 		this.markerSetSize = Integer.MIN_VALUE;
 		this.sampleSetSize = Integer.MIN_VALUE;
-		this.studyId = studyId;
 		this.matrixType = "";
 		this.parent1MatrixId = parent1MatrixId;
 		this.parent2MatrixId = parent2MatrixId;
@@ -133,7 +130,7 @@ public class MatrixMetadata implements Serializable {
 	}
 
 	public MatrixMetadata(
-			int matrixId,
+			MatrixKey key,
 			String matrixFriendlyName,
 			String matrixNetCDFName,
 			String pathToMatrix,
@@ -145,11 +142,10 @@ public class MatrixMetadata implements Serializable {
 			boolean hasDictionray,
 			int markerSetSize,
 			int sampleSetSize,
-			int studyId,
 			String matrixType,
 			Date creationDate)
 	{
-		this.matrixId = matrixId;
+		this.key = key;
 		this.matrixFriendlyName = matrixFriendlyName;
 		this.matrixNetCDFName = matrixNetCDFName;
 		this.pathToMatrix = pathToMatrix;
@@ -161,7 +157,6 @@ public class MatrixMetadata implements Serializable {
 		this.hasDictionray = hasDictionray;
 		this.markerSetSize = markerSetSize;
 		this.sampleSetSize = sampleSetSize;
-		this.studyId = studyId;
 		this.matrixType = matrixType;
 		this.parent1MatrixId = -1;
 		this.parent2MatrixId = -1;
@@ -214,16 +209,16 @@ public class MatrixMetadata implements Serializable {
 		updatable  = false
 		)
 	public int getMatrixId() {
-		return matrixId;
+		return key.getMatrixId();
 	}
 
 	protected void setMatrixId(int matrixId) {
-		this.matrixId = matrixId;
+		this.key = new MatrixKey(key.getStudyKey(), matrixId);
 	}
 
 	@Transient
 	public MatrixKey getKey() {
-		return new MatrixKey(getStudyId(), getMatrixId());
+		return key;
 	}
 
 	@Id
@@ -235,11 +230,16 @@ public class MatrixMetadata implements Serializable {
 		updatable  = false
 		)
 	public int getStudyId() {
-		return studyId;
+		return key.getStudyId();
 	}
 
 	protected void setStudyId(int studyId) {
-		this.studyId = studyId;
+		this.key = new MatrixKey(new StudyKey(studyId), key.getMatrixId());
+	}
+
+	@Transient
+	public StudyKey getStudyKey() {
+		return key.getStudyKey();
 	}
 
 	@Column(

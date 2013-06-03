@@ -29,6 +29,7 @@ import javax.persistence.Query;
 import org.gwaspi.dao.SampleInfoService;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleKey;
+import org.gwaspi.model.StudyKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -105,7 +106,7 @@ public class JPASampleInfoService implements SampleInfoService {
 	}
 
 	@Override
-	public List<SampleInfo> getSamples(Integer studyId) throws IOException {
+	public List<SampleInfo> getSamples(StudyKey studyKey) throws IOException {
 
 		List<SampleInfo> sampleInfos = Collections.EMPTY_LIST;
 
@@ -113,10 +114,10 @@ public class JPASampleInfoService implements SampleInfoService {
 		try {
 			em = open();
 			Query query = em.createNamedQuery("sampleInfo_listByStudyId");
-			query.setParameter("studyId", studyId);
+			query.setParameter("studyId", studyKey.getId());
 			sampleInfos = (List<SampleInfo>) query.getResultList();
 		} catch (NoResultException ex) {
-			LOG.error("Failed fetching a sample-info by study-id: " + studyId
+			LOG.error("Failed fetching a sample-info by study-id: " + studyKey.getId()
 					+ " (not found)", ex);
 		} catch (Exception ex) {
 			LOG.error("Failed fetching sample-info", ex);
@@ -146,20 +147,20 @@ public class JPASampleInfoService implements SampleInfoService {
 	}
 
 	@Override
-	public void deleteSamples(int studyId) throws IOException {
+	public void deleteSamples(StudyKey studyKey) throws IOException {
 
 		EntityManager em = null;
 		try {
 			em = open();
 			begin(em);
 			Query query = em.createNamedQuery("sampleInfo_deleteByStudyId");
-			query.setParameter("studyId", studyId);
+			query.setParameter("studyId", studyKey.getId());
 			query.executeUpdate();
 			commit(em);
 		} catch (Exception ex) {
 			rollback(em);
 			throw new IOException("Failed deleting sample-infos by"
-					+ ": study-id: " + studyId,
+					+ ": study-id: " + studyKey.getId(),
 					ex);
 		} finally {
 			close(em);

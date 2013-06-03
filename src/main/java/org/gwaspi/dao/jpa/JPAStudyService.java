@@ -23,16 +23,14 @@ import java.util.Collections;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-import javax.persistence.NoResultException;
 import javax.persistence.PersistenceException;
-import javax.persistence.Query;
 import org.gwaspi.dao.StudyService;
-import org.gwaspi.global.Config;
 import org.gwaspi.gui.GWASpiExplorerPanel;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.SampleInfoList;
 import org.gwaspi.model.Study;
+import org.gwaspi.model.StudyKey;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -98,21 +96,16 @@ public class JPAStudyService implements StudyService {
 	}
 
 	@Override
-	public Study getById(int studyId) throws IOException {
+	public Study getStudy(StudyKey studyKey) throws IOException {
 
 		Study study = null;
 
 		EntityManager em = null;
 		try {
 			em = open();
-			Query query = em.createNamedQuery("study_fetchById");
-			query.setParameter("id", studyId);
-			study = (Study) query.getSingleResult();
-		} catch (NoResultException ex) {
-			LOG.error("Failed fetching a study by id: " + studyId
-					+ " (id not found)", ex);
+			study = em.find(Study.class, studyKey);
 		} catch (Exception ex) {
-			LOG.error("Failed fetching a study by id: " + studyId, ex);
+			throw new IOException("Failed fetching a study by: " + studyKey, ex);
 		} finally {
 			close(em);
 		}
@@ -121,7 +114,7 @@ public class JPAStudyService implements StudyService {
 	}
 
 	@Override
-	public List<Study> getAll() throws IOException {
+	public List<Study> getStudies() throws IOException {
 
 		List<Study> studies = Collections.EMPTY_LIST;
 
@@ -139,9 +132,7 @@ public class JPAStudyService implements StudyService {
 	}
 
 	@Override
-	public int insertNewStudy(String name, String description) {
-
-		Study study = new Study(name, description);
+	public StudyKey insertStudy(Study study) { // TODO return StudyKey instead
 
 		EntityManager em = null;
 		try {
@@ -150,7 +141,7 @@ public class JPAStudyService implements StudyService {
 			if (study.getId() == Integer.MIN_VALUE) {
 				em.persist(study);
 			} else {
-				em.merge(study);
+				throw new IllegalArgumentException("Study was already persisted!");
 			}
 			commit(em);
 		} catch (Exception ex) {
@@ -160,11 +151,11 @@ public class JPAStudyService implements StudyService {
 			close(em);
 		}
 
-		return study.getId();
+		return StudyKey.valueOf(study);
 	}
 
 	@Override
-	public void deleteStudy(int studyId, boolean deleteReports) throws IOException {
+	public void deleteStudy(StudyKey studyKey, boolean deleteReports) throws IOException {
 
 		Study study;
 
@@ -173,21 +164,20 @@ public class JPAStudyService implements StudyService {
 		try {
 			em = open();
 			begin(em);
-			study = em.find(Study.class, studyId);
+			study = em.find(Study.class, studyKey);
 			if (study == null) {
-				throw new IllegalArgumentException("No study found with this ID: " + studyId);
+				throw new IllegalArgumentException("No study found with this key: " + studyKey);
 			}
 			em.remove(study);
 			commit(em);
 		} catch (Exception ex) {
 			rollback(em);
-			throw new IOException("Failed deleting study by"
-					+ ": study-id: " + studyId,
+			throw new IOException("Failed deleting study by: " + studyKey,
 					ex);
 		} finally {
 			close(em);
 		}
-		List<MatrixKey> matrixList = MatricesList.getMatrixList(studyId);
+		List<MatrixKey> matrixList = MatricesList.getMatrixList(studyKey);
 
 		for (int i = 0; i < matrixList.size(); i++) {
 			try {
@@ -199,18 +189,16 @@ public class JPAStudyService implements StudyService {
 		}
 
 		// DELETE STUDY FOLDERS
-		String genotypesFolder = Config.getConfigValue(Config.PROPERTY_GENOTYPES_DIR, "");
-		File gtStudyFolder = new File(genotypesFolder + "/STUDY_" + studyId);
+		File gtStudyFolder = new File(Study.constructGTPath(studyKey));
 		org.gwaspi.global.Utils.deleteFolder(gtStudyFolder);
 
 		if (deleteReports) {
-			String reportsFolder = Config.getConfigValue(Config.PROPERTY_REPORTS_DIR, "");
-			File repStudyFolder = new File(reportsFolder + "/STUDY_" + studyId);
+			File repStudyFolder = new File(Study.constructReportsPath(studyKey));
 			org.gwaspi.global.Utils.deleteFolder(repStudyFolder);
 		}
 
 		// DELETE STUDY POOL SAMPLES
-		SampleInfoList.deleteSamplesByPoolId(studyId);
+		SampleInfoList.deleteSamples(studyKey);
 	}
 
 	public void updateStudy(Study study) throws IOException {

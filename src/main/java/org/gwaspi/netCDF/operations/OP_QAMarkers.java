@@ -148,11 +148,11 @@ public class OP_QAMarkers implements MatrixOperation {
 
 		NetcdfFile rdNcFile = NetcdfFile.open(rdMatrixMetadata.getPathToMatrix());
 
-		MarkerSet rdMarkerSet = new MarkerSet(rdMatrixMetadata.getStudyId(), rdMatrixId);
+		MarkerSet rdMarkerSet = new MarkerSet(rdMatrixMetadata.getStudyKey(), rdMatrixId);
 		rdMarkerSet.initFullMarkerIdSetMap();
 		//Map<String, Object> rdMarkerSetMap = rdMarkerSet.markerIdSetMap; // This to test heap usage of copying locally the Map from markerset
 
-		SampleSet rdSampleSet = new SampleSet(rdMatrixMetadata.getStudyId(), rdMatrixId);
+		SampleSet rdSampleSet = new SampleSet(rdMatrixMetadata.getStudyKey(), rdMatrixId);
 		Map<SampleKey, byte[]> rdSampleSetMap = rdSampleSet.getSampleIdSetMapByteArray();
 
 		NetcdfFileWriteable wrNcFile = null;
@@ -163,7 +163,7 @@ public class OP_QAMarkers implements MatrixOperation {
 					+ "\nMarkers: " + rdMarkerSet.getMarkerKeys().size()
 					+ "\nStarted at: " + org.gwaspi.global.Utils.getShortDateTimeAsString();
 			OperationFactory wrOPHandler = new OperationFactory(
-					rdMatrixMetadata.getStudyId(),
+					rdMatrixMetadata.getStudyKey(),
 					"Marker QA", // friendly name
 					description, // description
 					rdMarkerSet.getMarkerKeys().size(),
@@ -215,7 +215,7 @@ public class OP_QAMarkers implements MatrixOperation {
 			// INIT MARKER AND SAMPLE INFO
 			rdMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
 
-			List<SampleInfo> sampleInfos = SampleInfoList.getAllSampleInfoFromDBByPoolID(rdMatrixMetadata.getStudyId());
+			List<SampleInfo> sampleInfos = SampleInfoList.getAllSampleInfoFromDBByPoolID(rdMatrixMetadata.getStudyKey());
 			Map<SampleKey, Sex> samplesInfoMap = new LinkedHashMap<SampleKey, Sex>();
 			for (SampleInfo sampleInfo : sampleInfos) {
 				SampleKey tempSampleId = sampleInfo.getKey();

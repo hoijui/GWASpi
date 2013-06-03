@@ -67,7 +67,7 @@ public class GatherHardyWeinbergData {
 
 		OperationMetadata rdOPMetadata = OperationsList.getOperationMetadata(opId);
 
-		MarkerOperationSet rdInfoMarkerSet = new MarkerOperationSet(rdOPMetadata.getStudyId(), opId);
+		MarkerOperationSet rdInfoMarkerSet = new MarkerOperationSet(rdOPMetadata.getStudyKey(), opId);
 		Map<MarkerKey, Double> rdMatrixMarkerSetMap = rdInfoMarkerSet.getOpSetMap();
 
 		NetcdfFile assocNcFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());

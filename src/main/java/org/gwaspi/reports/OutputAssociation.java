@@ -34,6 +34,7 @@ import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.Report;
 import org.gwaspi.model.ReportsList;
+import org.gwaspi.model.Study;
 import org.gwaspi.netCDF.markers.MarkerSet;
 import org.gwaspi.netCDF.operations.AbstractOperationSet;
 import org.gwaspi.netCDF.operations.MarkerOperationSet;
@@ -70,7 +71,7 @@ public class OutputAssociation {
 		boolean result = false;
 		OperationMetadata op = OperationsList.getById(opId);
 
-		org.gwaspi.global.Utils.createFolder(Config.getConfigValue(Config.PROPERTY_REPORTS_DIR, ""), "STUDY_" + op.getStudyId());
+		org.gwaspi.global.Utils.createFolder(new File(Study.constructReportsPath(op.getStudyKey())));
 		//String manhattanName = "mnhtt_" + outName;
 		String prefix = ReportsList.getReportNamePrefix(op);
 		String manhattanName = prefix + "manhtt";
@@ -86,7 +87,7 @@ public class OutputAssociation {
 					op.getParentMatrixId(),
 					opId,
 					testName + " Association Manhattan Plot",
-					op.getStudyId()));
+					op.getStudyKey()));
 			log.info("Saved " + testName + " Association Manhattan Plot in reports folder");
 		}
 		//String qqName = "qq_" + outName;
@@ -101,7 +102,7 @@ public class OutputAssociation {
 					op.getParentMatrixId(),
 					opId,
 					testName + " Association QQ Plot",
-					op.getStudyId()));
+					op.getStudyKey()));
 
 			log.info("Saved " + testName + " Association QQ Plot in reports folder");
 		}
@@ -117,7 +118,7 @@ public class OutputAssociation {
 					op.getParentMatrixId(),
 					opId,
 					testName + " Association Tests Values",
-					op.getStudyId()));
+					op.getStudyKey()));
 
 			org.gwaspi.global.Utils.sysoutCompleted(testName + " Association Reports & Charts");
 		}
@@ -148,7 +149,7 @@ public class OutputAssociation {
 			picWidth = 2000;
 		}
 
-		String imagePath = Config.getConfigValue(Config.PROPERTY_REPORTS_DIR, "") + "/STUDY_" + rdOPMetadata.getStudyId() + "/" + outName + ".png";
+		String imagePath = Study.constructReportsPath(rdOPMetadata.getStudyKey()) + outName + ".png";
 		try {
 			ChartUtilities.saveChartAsPNG(new File(imagePath),
 					chart,
@@ -170,7 +171,7 @@ public class OutputAssociation {
 		JFreeChart chart = new JFreeChart("X² QQ", JFreeChart.DEFAULT_TITLE_FONT, qqPlot, true);
 
 		OperationMetadata rdOPMetadata = OperationsList.getOperationMetadata(opId);
-		String imagePath = Config.getConfigValue(Config.PROPERTY_REPORTS_DIR, "") + "/STUDY_" + rdOPMetadata.getStudyId() + "/" + outName + ".png";
+		String imagePath = Study.constructReportsPath(rdOPMetadata.getStudyKey()) + outName + ".png";
 		try {
 			ChartUtilities.saveChartAsPNG(new File(imagePath),
 					chart,
@@ -202,12 +203,12 @@ public class OutputAssociation {
 
 			String sep = cExport.separator_REPORTS;
 			OperationMetadata rdOPMetadata = OperationsList.getOperationMetadata(opId);
-			MarkerSet rdInfoMarkerSet = new MarkerSet(rdOPMetadata.getStudyId(), rdOPMetadata.getParentMatrixId());
+			MarkerSet rdInfoMarkerSet = new MarkerSet(rdOPMetadata.getStudyKey(), rdOPMetadata.getParentMatrixId());
 			rdInfoMarkerSet.initFullMarkerIdSetMap();
 
 			// WRITE HEADER OF FILE
 			String reportNameExt = reportName + ".txt";
-			String reportPath = Config.getConfigValue(Config.PROPERTY_REPORTS_DIR, "") + "/STUDY_" + rdOPMetadata.getStudyId() + "/";
+			String reportPath = Study.constructReportsPath(rdOPMetadata.getStudyKey());
 
 			// WRITE MARKERSET RSID
 			rdInfoMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_RSID);
@@ -239,7 +240,7 @@ public class OutputAssociation {
 				OperationMetadata qaMetadata = OperationsList.getOperationMetadata(markersQAopId);
 				NetcdfFile qaNcFile = NetcdfFile.open(qaMetadata.getPathToMatrix());
 
-				MarkerOperationSet rdOperationSet = new MarkerOperationSet(rdOPMetadata.getStudyId(), markersQAopId);
+				MarkerOperationSet rdOperationSet = new MarkerOperationSet(rdOPMetadata.getStudyKey(), markersQAopId);
 				Map<MarkerKey, char[]> opMarkerSetMap = rdOperationSet.getOpSetMap();
 
 				// MINOR ALLELE

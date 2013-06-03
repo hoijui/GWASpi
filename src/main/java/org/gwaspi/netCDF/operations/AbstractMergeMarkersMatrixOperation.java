@@ -29,6 +29,7 @@ import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleKey;
+import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,7 +46,7 @@ public abstract class AbstractMergeMarkersMatrixOperation extends AbstractMergeM
 	private final Logger log = LoggerFactory.getLogger(AbstractMergeMarkersMatrixOperation.class);
 
 	public AbstractMergeMarkersMatrixOperation(
-			int studyId,
+			StudyKey studyKey,
 			int rdMatrix1Id,
 			int rdMatrix2Id,
 			String wrMatrixFriendlyName,
@@ -53,7 +54,7 @@ public abstract class AbstractMergeMarkersMatrixOperation extends AbstractMergeM
 			throws IOException, InvalidRangeException
 	{
 		super(
-				studyId,
+				studyKey,
 				rdMatrix1Id,
 				rdMatrix2Id,
 				wrMatrixFriendlyName,
@@ -120,7 +121,7 @@ public abstract class AbstractMergeMarkersMatrixOperation extends AbstractMergeM
 			descSB.append(methodDescription);
 
 			MatrixFactory wrMatrixHandler = new MatrixFactory(
-					studyId,
+					studyKey,
 					technology, // technology
 					wrMatrixFriendlyName,
 					wrMatrixDescription + "\n\n" + descSB.toString(), // description

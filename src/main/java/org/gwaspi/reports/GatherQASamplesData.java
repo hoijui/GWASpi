@@ -35,7 +35,7 @@ public class GatherQASamplesData {
 
 		OperationMetadata rdOPMetadata = OperationsList.getOperationMetadata(opId);
 
-		SampleOperationSet rdInfoSampleSet = new SampleOperationSet(rdOPMetadata.getStudyId(), opId);
+		SampleOperationSet rdInfoSampleSet = new SampleOperationSet(rdOPMetadata.getStudyKey(), opId);
 		Map<SampleKey, Double> rdMatrixSampleSetMap = rdInfoSampleSet.getOpSetMap();
 
 		NetcdfFile ncFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());
@@ -49,7 +49,7 @@ public class GatherQASamplesData {
 
 		OperationMetadata rdOPMetadata = OperationsList.getOperationMetadata(opId);
 
-		SampleOperationSet rdInfoSampleSet = new SampleOperationSet(rdOPMetadata.getStudyId(), opId);
+		SampleOperationSet rdInfoSampleSet = new SampleOperationSet(rdOPMetadata.getStudyKey(), opId);
 		Map<SampleKey, Double> rdMatrixSampleSetMap = rdInfoSampleSet.getOpSetMap();
 
 		NetcdfFile ncFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());

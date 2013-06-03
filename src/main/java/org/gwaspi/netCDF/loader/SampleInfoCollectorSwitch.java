@@ -29,6 +29,7 @@ import org.gwaspi.constants.cImport;
 import org.gwaspi.constants.cImport.ImportFormat;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.SampleInfo;
+import org.gwaspi.model.StudyKey;
 import org.gwaspi.samples.SamplesParserManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,14 +42,14 @@ public class SampleInfoCollectorSwitch {
 	}
 
 	private static void checkMissingSampleInfo(
-			int studyId,
+			StudyKey studyKey,
 			Collection<SampleInfo> dummySampleInfos,
 			Collection<SampleInfo> sampleInfos)
 	{
 		for (SampleInfo dummySampleInfo : dummySampleInfos) {
 			if (!sampleInfos.contains(dummySampleInfo)) {
 				SampleInfo dummySampleInfoCopy = new SampleInfo(
-						studyId, dummySampleInfo.getSampleId());
+						studyKey, dummySampleInfo.getSampleId());
 				sampleInfos.add(dummySampleInfoCopy);
 				log.warn(Text.Study.warnMissingSampleInfo);
 				log.warn("SampleID: {}", dummySampleInfo.getSampleId());
@@ -69,7 +70,7 @@ public class SampleInfoCollectorSwitch {
 	}
 
 	public static Collection<SampleInfo> collectSampleInfo(
-			int studyId,
+			StudyKey studyKey,
 			ImportFormat format,
 			boolean dummySamples,
 			String sampleInfoPath,
@@ -85,20 +86,20 @@ public class SampleInfoCollectorSwitch {
 			case Illumina_LGEN:
 				log.info(Text.Matrix.scanAffectionStandby);
 				if (dummySamples) {
-					sampleInfos = SamplesParserManager.scanSampleInfo(studyId, format, altSampleInfoPath2);
+					sampleInfos = SamplesParserManager.scanSampleInfo(studyKey, format, altSampleInfoPath2);
 				} else {
-					Collection<SampleInfo> dummySamplesInfos = SamplesParserManager.scanSampleInfo(studyId, format, altSampleInfoPath2);
-					sampleInfos = SamplesParserManager.scanSampleInfo(studyId, ImportFormat.GWASpi, sampleInfoPath);
-					checkMissingSampleInfo(studyId, dummySamplesInfos, sampleInfos);
+					Collection<SampleInfo> dummySamplesInfos = SamplesParserManager.scanSampleInfo(studyKey, format, altSampleInfoPath2);
+					sampleInfos = SamplesParserManager.scanSampleInfo(studyKey, ImportFormat.GWASpi, sampleInfoPath);
+					checkMissingSampleInfo(studyKey, dummySamplesInfos, sampleInfos);
 				}
 				break;
 			case PLINK_Binary:
 				log.info(Text.Matrix.scanAffectionStandby);
 				if (checkIsPlinkFAMFile(sampleInfoPath)) {
-					sampleInfos = SamplesParserManager.scanSampleInfo(studyId, format, sampleInfoPath);
+					sampleInfos = SamplesParserManager.scanSampleInfo(studyKey, format, sampleInfoPath);
 				} else {
 					// It is a SampleInfo file
-					sampleInfos = SamplesParserManager.scanSampleInfo(studyId, ImportFormat.GWASpi, sampleInfoPath);
+					sampleInfos = SamplesParserManager.scanSampleInfo(studyKey, ImportFormat.GWASpi, sampleInfoPath);
 				}
 				break;
 			case HAPMAP:
@@ -106,18 +107,18 @@ public class SampleInfoCollectorSwitch {
 			case HGDP1:
 				log.info(Text.Matrix.scanAffectionStandby);
 				if (dummySamples) {
-					sampleInfos = SamplesParserManager.scanSampleInfo(studyId, format, altSampleInfoPath1);
+					sampleInfos = SamplesParserManager.scanSampleInfo(studyKey, format, altSampleInfoPath1);
 				} else {
-					Collection<SampleInfo> dummySamplesInfos = SamplesParserManager.scanSampleInfo(studyId, format, altSampleInfoPath1);
-					sampleInfos = SamplesParserManager.scanSampleInfo(studyId, ImportFormat.GWASpi, sampleInfoPath);
-					checkMissingSampleInfo(studyId, dummySamplesInfos, sampleInfos);
+					Collection<SampleInfo> dummySamplesInfos = SamplesParserManager.scanSampleInfo(studyKey, format, altSampleInfoPath1);
+					sampleInfos = SamplesParserManager.scanSampleInfo(studyKey, ImportFormat.GWASpi, sampleInfoPath);
+					checkMissingSampleInfo(studyKey, dummySamplesInfos, sampleInfos);
 				}
 				break;
 			case GWASpi:
-				sampleInfos = SamplesParserManager.scanSampleInfo(studyId, format, sampleInfoPath);
+				sampleInfos = SamplesParserManager.scanSampleInfo(studyKey, format, sampleInfoPath);
 				break;
 			case Sequenom:
-				sampleInfos = SamplesParserManager.scanSampleInfo(studyId, ImportFormat.GWASpi, sampleInfoPath); // FIXME why not format instead of ImportFormat.GWASpi?
+				sampleInfos = SamplesParserManager.scanSampleInfo(studyKey, ImportFormat.GWASpi, sampleInfoPath); // FIXME why not format instead of ImportFormat.GWASpi?
 				break;
 			default:
 				sampleInfos = new ArrayList<SampleInfo>();

@@ -22,7 +22,6 @@ import java.util.Collections;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-import javax.persistence.NoResultException;
 import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
@@ -30,6 +29,7 @@ import org.gwaspi.dao.ReportService;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.Report;
+import org.gwaspi.model.ReportKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -94,21 +94,16 @@ public class JPAReportService implements ReportService {
 	}
 
 	@Override
-	public Report getById(int reportId) throws IOException {
+	public Report getReport(ReportKey reportKey) throws IOException {
 
 		Report report = null;
 
 		EntityManager em = null;
 		try {
 			em = open();
-			Query query = em.createNamedQuery("report_fetchById");
-			query.setParameter("id", reportId);
-			report = (Report) query.getSingleResult();
-		} catch (NoResultException ex) {
-			LOG.error("Failed fetching a report by id: " + reportId
-					+ " (id not found)", ex);
+			report = em.find(Report.class, reportKey);
 		} catch (Exception ex) {
-			LOG.error("Failed fetching a report by id: " + reportId, ex);
+			throw new IOException("Failed fetching a report by: " + reportKey, ex);
 		} finally {
 			close(em);
 		}
@@ -117,7 +112,7 @@ public class JPAReportService implements ReportService {
 	}
 
 	@Override
-	public List<Report> getReportsList(int parentOperationId, int parentMatrixId) throws IOException {
+	public List<Report> getReports(int parentOperationId, int parentMatrixId) throws IOException {
 
 		List<Report> reports = Collections.EMPTY_LIST;
 
@@ -143,13 +138,11 @@ public class JPAReportService implements ReportService {
 				query.setParameter("parentOperationId", parentOperationId);
 			}
 			reports = (List<Report>) query.getResultList();
-		} catch (NoResultException ex) {
-			LOG.error("Failed fetching a report by"
+		} catch (Exception ex) {
+			throw new IOException("Failed fetching a report by"
 					+ ": parent-operation-id: " + parentOperationId
 					+ ", parent-matrix-id: " + parentMatrixId
 					+ "; (not found)", ex);
-		} catch (Exception ex) {
-			LOG.error("Failed fetching report", ex);
 		} finally {
 			close(em);
 		}
@@ -192,7 +185,7 @@ public class JPAReportService implements ReportService {
 	}
 
 	@Override
-	public void insertRPMetadata(Report report) {
+	public void insertReport(Report report) {
 
 		EntityManager em = null;
 		try {

@@ -35,7 +35,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.LayoutStyle;
-import org.gwaspi.global.Config;
 import org.gwaspi.global.Text;
 import org.gwaspi.global.Utils;
 import org.gwaspi.gui.GWASpiExplorerPanel;
@@ -45,6 +44,8 @@ import org.gwaspi.gui.utils.Dialogs;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
+import org.gwaspi.model.Study;
+import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.operations.MarkerOperationSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -73,13 +74,13 @@ public final class ManhattanChartDisplay extends JPanel {
 	private int padGap = 9; // Pixel padding between chromosome plots
 	// End of variables declaration
 
-	public ManhattanChartDisplay(final int studyId, final String chartPath, int _opId) {
+	public ManhattanChartDisplay(final StudyKey studyKey, final String chartPath, int _opId) {
 		fired = false;
-		initManhattanChartDisplay(studyId, chartPath, _opId);
-		initChromosmesMap(studyId, chartPath);
+		initManhattanChartDisplay(studyKey, chartPath, _opId);
+		initChromosmesMap(studyKey, chartPath);
 	}
 
-	private void initManhattanChartDisplay(final int studyId, final String chartPath, int _opId) {
+	private void initManhattanChartDisplay(final StudyKey studyKey, final String chartPath, int _opId) {
 
 		opId = _opId;
 
@@ -138,7 +139,7 @@ public final class ManhattanChartDisplay extends JPanel {
 		btn_Back = new JButton();
 
 		//<editor-fold defaultstate="expanded" desc="">
-		btn_Save.setAction(new SaveAsAction(studyId, chartPath));
+		btn_Save.setAction(new SaveAsAction(studyKey, chartPath));
 
 		btn_Back.setAction(new BackToTableAction(opId));
 
@@ -200,11 +201,11 @@ public final class ManhattanChartDisplay extends JPanel {
 		//</editor-fold>
 	}
 
-	private void initChromosmesMap(int studyId, String chartPath) {
+	private void initChromosmesMap(StudyKey studyKey, String chartPath) {
 
 		// LOAD MANHATTANPLOT IMAGE
 		try {
-			String reportPath = Config.getConfigValue(Config.PROPERTY_REPORTS_DIR, "") + "/STUDY_" + studyId + "/";
+			String reportPath = Study.constructReportsPath(studyKey);
 			File testF = new File(reportPath + chartPath);
 			if (testF.exists()) {
 				ImageIcon image = new ImageIcon(testF.getPath());
@@ -226,7 +227,7 @@ public final class ManhattanChartDisplay extends JPanel {
 		}
 
 		try {
-			MarkerOperationSet opSet = new MarkerOperationSet(studyId, opId);
+			MarkerOperationSet opSet = new MarkerOperationSet(studyKey, opId);
 			chrSetInfoMap = opSet.getChrInfoSetMap();
 
 			// CHECK HOW MANY CHR HAVE PLOTS (ANY MARKERS?)
@@ -315,12 +316,12 @@ public final class ManhattanChartDisplay extends JPanel {
 
 	private static class SaveAsAction extends AbstractAction {
 
-		private int studyId;
-		private String chartPath;
+		private final StudyKey studyKey;
+		private final String chartPath;
 
-		SaveAsAction(int studyId, String chartPath) {
+		SaveAsAction(StudyKey studyKey, String chartPath) {
 
-			this.studyId = studyId;
+			this.studyKey = studyKey;
 			this.chartPath = chartPath;
 			putValue(NAME, Text.All.save);
 		}
@@ -328,7 +329,7 @@ public final class ManhattanChartDisplay extends JPanel {
 		@Override
 		public void actionPerformed(ActionEvent evt) {
 			try {
-				String reportPath = Config.getConfigValue(Config.PROPERTY_REPORTS_DIR, "") + "/STUDY_" + studyId + "/";
+				String reportPath = Study.constructReportsPath(studyKey);
 				File origFile = new File(reportPath + chartPath);
 				File newFile = new File(Dialogs.selectDirectoryDialog(JOptionPane.OK_OPTION).getPath() + "/" + chartPath);
 				if (origFile.exists()) {
@@ -357,7 +358,7 @@ public final class ManhattanChartDisplay extends JPanel {
 			try {
 				OperationMetadata op = OperationsList.getById(opId);
 				GWASpiExplorerPanel.getSingleton().getTree().setSelectionPath(GWASpiExplorerPanel.getSingleton().getTree().getSelectionPath().getParentPath());
-				GWASpiExplorerPanel.getSingleton().setPnl_Content(new MatrixAnalysePanel(new MatrixKey(op.getStudyId(), op.getParentMatrixId()), opId));
+				GWASpiExplorerPanel.getSingleton().setPnl_Content(new MatrixAnalysePanel(new MatrixKey(op.getStudyKey(), op.getParentMatrixId()), opId));
 				GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
 			} catch (IOException ex) {
 				log.error(null, ex);

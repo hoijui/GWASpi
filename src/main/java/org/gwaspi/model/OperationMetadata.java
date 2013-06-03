@@ -69,7 +69,7 @@ public class OperationMetadata implements Serializable {
 	private String pathToMatrix;
 	private int opSetSize;
 	private int implicitSetSize;
-	private int studyId;
+	private StudyKey studyKey;
 	private Date creationDate;
 
 	protected OperationMetadata() {
@@ -84,7 +84,7 @@ public class OperationMetadata implements Serializable {
 		this.gtCode = null;
 		this.opSetSize = Integer.MIN_VALUE;
 		this.implicitSetSize = Integer.MIN_VALUE;
-		this.studyId = Integer.MIN_VALUE;
+		this.studyKey = null;
 		this.creationDate = new Date();
 	}
 
@@ -99,7 +99,7 @@ public class OperationMetadata implements Serializable {
 			OPType gtCode,
 			int opSetSize,
 			int implicitSetSize,
-			int studyId,
+			StudyKey studyKey,
 			Date creationDate
 			)
 	{
@@ -113,7 +113,7 @@ public class OperationMetadata implements Serializable {
 		this.gtCode = gtCode;
 		this.opSetSize = opSetSize;
 		this.implicitSetSize = implicitSetSize;
-		this.studyId = studyId;
+		this.studyKey = studyKey;
 		this.creationDate = (creationDate == null)
 				? null : (Date) creationDate.clone();
 	}
@@ -193,11 +193,16 @@ public class OperationMetadata implements Serializable {
 		updatable  = false
 		)
 	public int getStudyId() {
-		return studyId;
+		return studyKey.getId();
 	}
 
 	protected void setStudyId(int studyId) {
-		this.studyId = studyId;
+		this.studyKey = new StudyKey(studyId);
+	}
+
+	@Transient
+	public StudyKey getStudyKey() {
+		return studyKey;
 	}
 
 	@Column(

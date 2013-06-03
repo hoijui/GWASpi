@@ -17,30 +17,29 @@
 package org.gwaspi.model;
 
 import java.io.Serializable;
+import javax.persistence.Transient;
 
 /**
  * Uniquely identifies a matrix.
  */
 public class MatrixKey implements Comparable<MatrixKey>, Serializable {
 
-	private int studyId;
+	private StudyKey studyKey;
 	private int matrixId;
 
-	protected MatrixKey() {
+	public MatrixKey(StudyKey studyKey, int matrixId) {
 
-		this.studyId = Integer.MIN_VALUE;
-		this.matrixId = Integer.MIN_VALUE;
+		this.studyKey = studyKey;
+		this.matrixId = matrixId;
 	}
 
-	public MatrixKey(int studyId, int matrixId) {
-
-		this.studyId = studyId;
-		this.matrixId = matrixId;
+	protected MatrixKey() {
+		this(null, Integer.MIN_VALUE);
 	}
 
 	public static MatrixKey valueOf(MatrixMetadata matrix) {
 		return new MatrixKey(
-				matrix.getStudyId(),
+				matrix.getStudyKey(),
 				matrix.getMatrixId());
 	}
 
@@ -84,11 +83,16 @@ public class MatrixKey implements Comparable<MatrixKey>, Serializable {
 	}
 
 	public int getStudyId() {
-		return studyId;
+		return studyKey.getId();
 	}
 
 	protected void setStudyId(int studyId) {
-		this.studyId = studyId;
+		this.studyKey = new StudyKey(studyId);
+	}
+
+	@Transient
+	public StudyKey getStudyKey() {
+		return studyKey;
 	}
 
 	public int getMatrixId() {

@@ -98,7 +98,7 @@ public class LoadGTFromIlluminaLGENFiles implements GenotypesLoader {
 		File[] gtFilesToImport = org.gwaspi.global.Utils.listFiles(loadDescription.getGtDirPath());
 
 		//<editor-fold defaultstate="expanded" desc="CREATE MARKERSET & NETCDF">
-		MetadataLoaderIlluminaLGEN markerSetLoader = new MetadataLoaderIlluminaLGEN(loadDescription.getAnnotationFilePath(), loadDescription.getStudyId());
+		MetadataLoaderIlluminaLGEN markerSetLoader = new MetadataLoaderIlluminaLGEN(loadDescription.getAnnotationFilePath(), loadDescription.getStudyKey());
 		Map<MarkerKey, MarkerMetadata> sortedAlleles = markerSetLoader.getSortedMarkerSetWithMetaData();
 
 		log.info("Done initializing sorted MarkerSetMap");
@@ -135,7 +135,7 @@ public class LoadGTFromIlluminaLGENFiles implements GenotypesLoader {
 		Map<MarkerKey, int[]> chrSetMap = org.gwaspi.netCDF.matrices.Utils.aggregateChromosomeInfo(sortedAlleles, 2, 3);
 
 		MatrixFactory matrixFactory = new MatrixFactory(
-				loadDescription.getStudyId(),
+				loadDescription.getStudyKey(),
 				loadDescription.getFormat(),
 				loadDescription.getFriendlyName(),
 				descSB.toString(), // description
@@ -290,7 +290,7 @@ public class LoadGTFromIlluminaLGENFiles implements GenotypesLoader {
 			log.error("Failed creating file " + ncfile.getLocation(), ex);
 		}
 
-		AbstractLoadGTFromFiles.logAsWhole(startTime, loadDescription.getStudyId(), loadDescription.getGtDirPath(), loadDescription.getFormat(), loadDescription.getFriendlyName(), loadDescription.getDescription());
+		AbstractLoadGTFromFiles.logAsWhole(startTime, loadDescription.getStudyKey().getId(), loadDescription.getGtDirPath(), loadDescription.getFormat(), loadDescription.getFriendlyName(), loadDescription.getDescription());
 
 		org.gwaspi.global.Utils.sysoutCompleted("writing Genotypes to Matrix");
 		return result;

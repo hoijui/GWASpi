@@ -49,10 +49,10 @@ import org.gwaspi.gui.utils.BrowserHelpUrlAction;
 import org.gwaspi.gui.utils.Dialogs;
 import org.gwaspi.gui.utils.HelpURLs;
 import org.gwaspi.gui.utils.RowRendererDefault;
-import org.gwaspi.model.OperationMetadata;
-import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleInfoList;
+import org.gwaspi.model.Study;
+import org.gwaspi.model.StudyKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -76,18 +76,18 @@ public class Report_SampleInfoPanel extends JPanel {
 
 	// Variables declaration - do not modify
 	private File missingFile;
-	private int studyId;
-	private JButton btn_Save;
-	private JButton btn_Back;
-	private JButton btn_Help;
-	private JPanel pnl_Footer;
-	private JScrollPane scrl_ReportTable;
-	private JTable tbl_ReportTable;
+	private final StudyKey studyKey;
+	private final JButton btn_Save;
+	private final JButton btn_Back;
+	private final JButton btn_Help;
+	private final JPanel pnl_Footer;
+	private final JScrollPane scrl_ReportTable;
+	private final JTable tbl_ReportTable;
 	// End of variables declaration
 
-	public Report_SampleInfoPanel(final int _studyId) throws IOException {
+	public Report_SampleInfoPanel(final StudyKey studyKey) throws IOException {
 
-		studyId = _studyId;
+		this.studyKey = studyKey;
 
 		scrl_ReportTable = new JScrollPane();
 		tbl_ReportTable = new JTable() {
@@ -115,7 +115,7 @@ public class Report_SampleInfoPanel extends JPanel {
 
 		btn_Save.setAction(new SaveReportViewAsAction(tbl_ReportTable));
 
-		btn_Back.setAction(new BackAction(studyId));
+		btn_Back.setAction(new BackAction(studyKey));
 
 		btn_Help.setAction(new BrowserHelpUrlAction(HelpURLs.QryURL.sampleInforeport));
 
@@ -169,7 +169,7 @@ public class Report_SampleInfoPanel extends JPanel {
 	//private void actionLoadReport(ActionEvent evt) {
 	private void actionLoadReport() throws IOException {
 
-		List<SampleInfo> allSamplesFromPool = SampleInfoList.getAllSampleInfoFromDBByPoolID(studyId);
+		List<SampleInfo> allSamplesFromPool = SampleInfoList.getAllSampleInfoFromDBByPoolID(studyKey);
 
 		// Getting data from file and subdividing to series all points by chromosome
 		List<Object[]> tableRows = new ArrayList<Object[]>();
@@ -229,7 +229,7 @@ public class Report_SampleInfoPanel extends JPanel {
 							Integer i1 = Integer.parseInt(o1.toString());
 							Integer i2 = Integer.parseInt(o2.toString());
 							return i1.compareTo(i2);
-						} catch (Exception ex1) {
+						} catch (NumberFormatException ex1) {
 							log.warn(null, ex1);
 							return o1.toString().compareTo(o2.toString());
 						}
@@ -253,9 +253,9 @@ public class Report_SampleInfoPanel extends JPanel {
 		//</editor-fold>
 	}
 
-	private void actionSaveCompleteReportAs(int studyId, String chartPath) {
+	private void actionSaveCompleteReportAs(StudyKey studyKey, String chartPath) {
 		try {
-			String reportPath = Config.getConfigValue(Config.PROPERTY_REPORTS_DIR, "") + "/STUDY_" + studyId + "/";
+			String reportPath = Study.constructReportsPath(studyKey);
 			File origFile = new File(reportPath + chartPath);
 			File newFile = new File(Dialogs.selectDirectoryDialog(JOptionPane.OK_OPTION).getPath() + "/" + chartPath);
 			if (origFile.exists()) {
@@ -275,7 +275,7 @@ public class Report_SampleInfoPanel extends JPanel {
 
 	private static class SaveReportViewAsAction extends AbstractAction {
 
-		private JTable reportTable;
+		private final JTable reportTable;
 
 		SaveReportViewAsAction(JTable reportTable) {
 
@@ -334,20 +334,19 @@ public class Report_SampleInfoPanel extends JPanel {
 
 	private static class BackAction extends AbstractAction {
 
-		private int studyId;
+		private final StudyKey studyKey;
 
-		BackAction(int studyId) {
+		BackAction(StudyKey studyKey) {
 
-			this.studyId = studyId;
+			this.studyKey = studyKey;
 			putValue(NAME, Text.All.Back);
 		}
 
 		@Override
 		public void actionPerformed(ActionEvent evt) {
 			try {
-				OperationMetadata op = OperationsList.getById(studyId);
 				GWASpiExplorerPanel.getSingleton().getTree().setSelectionPath(GWASpiExplorerPanel.getSingleton().getTree().getSelectionPath().getParentPath());
-				GWASpiExplorerPanel.getSingleton().setPnl_Content(new CurrentStudyPanel(studyId));
+				GWASpiExplorerPanel.getSingleton().setPnl_Content(new CurrentStudyPanel(studyKey));
 				GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
 			} catch (IOException ex) {
 				log.error(null, ex);

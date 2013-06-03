@@ -53,7 +53,7 @@ public class OP_HardyWeinberg implements MatrixOperation {
 		OperationMetadata rdOPMetadata = OperationsList.getOperationMetadata(markerCensusOP.getId());
 		NetcdfFile rdNcFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());
 
-		MarkerOperationSet rdOperationSet = new MarkerOperationSet(rdOPMetadata.getStudyId(), markerCensusOP.getId());
+		MarkerOperationSet rdOperationSet = new MarkerOperationSet(rdOPMetadata.getStudyKey(), markerCensusOP.getId());
 		Map<MarkerKey, char[]> rdMarkerSetMap = rdOperationSet.getOpSetMap();
 		Map<SampleKey, ?> rdSampleSetMap = rdOperationSet.getImplicitSetMap();
 
@@ -62,7 +62,7 @@ public class OP_HardyWeinberg implements MatrixOperation {
 			// CREATE netCDF-3 FILE
 
 			OperationFactory wrOPHandler = new OperationFactory(
-					rdOPMetadata.getStudyId(),
+					rdOPMetadata.getStudyKey(),
 					"Hardy-Weinberg_" + censusName, // friendly name
 					"Hardy-Weinberg test on Samples marked as controls (only females for the X chromosome)\nMarkers: " + rdMarkerSetMap.size() + "\nSamples: " + rdSampleSetMap.size(), //description
 					rdMarkerSetMap.size(),

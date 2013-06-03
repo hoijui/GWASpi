@@ -409,7 +409,7 @@ public class CurrentMatrixPanel extends JPanel {
 						List<OperationMetadata> operations = OperationsList.getOperationsList(matrix.getMatrixId());
 						int markersQAOpId = OperationsList.getIdOfLastOperationTypeOccurance(operations, OPType.MARKER_QA);
 						if (markersQAOpId != Integer.MIN_VALUE) {
-							MultiOperations.doExportMatrix(matrix.getStudyId(), matrix.getMatrixId(), format, expPhenotype);
+							MultiOperations.doExportMatrix(matrix.getStudyKey(), matrix.getMatrixId(), format, expPhenotype);
 						} else {
 							Dialogs.showWarningDialogue(Text.Operation.warnOperationsMissing + " Marker QA");
 						}
@@ -417,7 +417,7 @@ public class CurrentMatrixPanel extends JPanel {
 						log.error(null, ex);
 					}
 				} else {
-					MultiOperations.doExportMatrix(matrix.getStudyId(), matrix.getMatrixId(), format, expPhenotype);
+					MultiOperations.doExportMatrix(matrix.getStudyKey(), matrix.getMatrixId(), format, expPhenotype);
 				}
 			}
 		}
@@ -513,7 +513,7 @@ public class CurrentMatrixPanel extends JPanel {
 						if (deleteReportOption == JOptionPane.YES_OPTION) {
 							deleteReport = true;
 						}
-						MultiOperations.deleteMatrix(matrix.getStudyId(), matrix.getMatrixId(), deleteReport);
+						MultiOperations.deleteMatrix(matrix.getStudyKey(), matrix.getMatrixId(), deleteReport);
 					}
 				}
 			} else {
@@ -555,9 +555,9 @@ public class CurrentMatrixPanel extends JPanel {
 										if (deleteReportOption == JOptionPane.YES_OPTION) {
 											deleteReport = true;
 										}
-										MultiOperations.deleteOperationsByOpId(matrix.getStudyId(), matrix.getMatrixId(), opId, deleteReport);
+										MultiOperations.deleteOperationsByOpId(matrix.getStudyKey(), matrix.getMatrixId(), opId, deleteReport);
 
-										//OperationManager.deleteOperationAndChildren(matrix.getStudyId(), opId, deleteReport);
+										//OperationManager.deleteOperationAndChildren(matrix.getStudyKey(), opId, deleteReport);
 									}
 								} else {
 									Dialogs.showWarningDialogue(Text.Processes.cantDeleteRequiredItem);
@@ -587,7 +587,7 @@ public class CurrentMatrixPanel extends JPanel {
 		public void actionPerformed(ActionEvent evt) {
 			try {
 				GWASpiExplorerPanel.getSingleton().getTree().setSelectionPath(GWASpiExplorerPanel.getSingleton().getTree().getSelectionPath().getParentPath());
-				GWASpiExplorerPanel.getSingleton().setPnl_Content(new CurrentStudyPanel(matrix.getStudyId()));
+				GWASpiExplorerPanel.getSingleton().setPnl_Content(new CurrentStudyPanel(matrix.getStudyKey()));
 				GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
 			} catch (IOException ex) {
 				log.error(null, ex);

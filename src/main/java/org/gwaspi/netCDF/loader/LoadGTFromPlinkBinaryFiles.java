@@ -87,7 +87,7 @@ public class LoadGTFromPlinkBinaryFiles implements GenotypesLoader {
 		MetadataLoaderPlinkBinary markerSetLoader = new MetadataLoaderPlinkBinary(
 				loadDescription.getAnnotationFilePath(),
 				loadDescription.getStrand(),
-				loadDescription.getStudyId());
+				loadDescription.getStudyKey());
 		Map<MarkerKey, MarkerMetadata> sortedMarkerSetMap = markerSetLoader.getSortedMarkerSetWithMetaData(); //markerid, rsId, chr, pos, allele1, allele2
 
 		// PLAYING IT SAFE WITH HALF THE maxProcessMarkers
@@ -130,7 +130,7 @@ public class LoadGTFromPlinkBinaryFiles implements GenotypesLoader {
 		Map<MarkerKey, int[]> chrSetMap = org.gwaspi.netCDF.matrices.Utils.aggregateChromosomeInfo(sortedMarkerSetMap, 2, 3);
 
 		MatrixFactory matrixFactory = new MatrixFactory(
-				loadDescription.getStudyId(),
+				loadDescription.getStudyKey(),
 				loadDescription.getFormat(),
 				loadDescription.getFriendlyName(),
 				descSB.toString(), // description

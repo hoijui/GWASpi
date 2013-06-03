@@ -47,18 +47,22 @@ public class GWASpiExplorerNodes {
 		private final int parentNodeId;
 		private final String nodeType;
 		private final String nodeUniqueName;
+		/** This may contain a StudyKey, MatrixKey, OperationKey, ReportKey, ... */
+		private final Object contentKey;
 		private boolean collapsable;
 
 		public NodeElementInfo(
 				int parentNodeId,
 				int nodeId,
 				String nodeType,
-				String nodeName)
+				String nodeName,
+				Object contentKey)
 		{
 			this.parentNodeId = parentNodeId;
 			this.nodeId = nodeId;
 			this.nodeType = nodeType;
 			this.nodeUniqueName = nodeName;
+			this.contentKey = contentKey;
 			this.collapsable = false;
 		}
 
@@ -83,6 +87,10 @@ public class GWASpiExplorerNodes {
 			return nodeUniqueName;
 		}
 
+		public Object getContentKey() {
+			return contentKey;
+		}
+
 		public boolean isCollapsable() {
 			return collapsable;
 		}
@@ -98,9 +106,10 @@ public class GWASpiExplorerNodes {
 				int parentNodeId,
 				int nodeId,
 				String nodeType,
-				String nodeName)
+				String nodeName,
+				Object contentKey)
 		{
-			super(parentNodeId, nodeId, nodeType, nodeName);
+			super(parentNodeId, nodeId, nodeType, nodeName, contentKey);
 		}
 
 		@Override
@@ -109,74 +118,72 @@ public class GWASpiExplorerNodes {
 		}
 	}
 
-	protected static DefaultMutableTreeNode createStudyTreeNode(int studyId) {
-		DefaultMutableTreeNode tn = null;
-		try {
-			Study study = StudyList.getStudy(studyId);
+	protected static DefaultMutableTreeNode createStudyTreeNode(Study study) {
+//		parentNodeId
+//		nodeId
+//		nodeType
+//		nodeUniqueName => will be rsult of toString() call of DefaultMutableTreeNode
+//		friendlyName
 
-//			parentNodeId
-//			nodeId
-//			nodeType
-//			nodeUniqueName => will be rsult of toString() call of DefaultMutableTreeNode
-//			friendlyName
-
-			tn = new DefaultMutableTreeNode(new NodeElementInfo(
-					NodeElementInfo.NODE_ID_NONE,
-					study.getId(),
-					Text.App.treeStudy,
-					"SID: " + study.getId() + " - " + study.getName()));
-		} catch (IOException ex) {
-			log.error(null, ex);
-		}
+		DefaultMutableTreeNode tn = new DefaultMutableTreeNode(
+				new NodeElementInfo(
+				NodeElementInfo.NODE_ID_NONE,
+				study.getId(),
+				Text.App.treeStudy,
+				"SID: " + study.getId() + " - " + study.getName(),
+				StudyKey.valueOf(study)));
 
 		return tn;
 	}
 
-	protected static DefaultMutableTreeNode createMatrixTreeNode(int matrixId) {
+	protected static DefaultMutableTreeNode createMatrixTreeNode(MatrixKey matrixKey) {
 		DefaultMutableTreeNode tn = null;
 		try {
-			MatrixMetadata matrixMetadata = MatricesList.getMatrixMetadataById(matrixId);
+			MatrixMetadata matrixMetadata = MatricesList.getMatrixMetadataById(matrixKey.getMatrixId());
 			tn = new DefaultMutableTreeNode(new NodeElementInfo(
 					matrixMetadata.getStudyId(),
-					matrixId,
+					matrixKey.getMatrixId(),
 					Text.App.treeMatrix,
-					"MX: " + matrixId + " - " + matrixMetadata.getMatrixFriendlyName()));
+					"MX: " + matrixKey.getMatrixId() + " - " + matrixMetadata.getMatrixFriendlyName(),
+					matrixKey));
 		} catch (IOException ex) {
 			log.error(null, ex);
 		}
 		return tn;
 	}
 
-	protected static DefaultMutableTreeNode createSampleInfoTreeNode(int studyId) throws IOException {
+	protected static DefaultMutableTreeNode createSampleInfoTreeNode(StudyKey studyKey) throws IOException {
 		DefaultMutableTreeNode tn = null;
 		// CHECK IF STUDY EXISTS
-		List<SampleInfo> sampleInfos = SampleInfoList.getAllSampleInfoFromDBByPoolID(studyId);
+		List<SampleInfo> sampleInfos = SampleInfoList.getAllSampleInfoFromDBByPoolID(studyKey);
 		if (!sampleInfos.isEmpty()) {
 			tn = new DefaultMutableTreeNode(new NodeElementInfo(
-					studyId, // parentNodeId
-					studyId, // nodeId
+					studyKey.getId(), // parentNodeId
+					studyKey.getId(), // nodeId
 					Text.App.treeSampleInfo, // nodeType
-					Text.App.treeSampleInfo)); // nodeUniqueName
+					Text.App.treeSampleInfo,
+					studyKey)); // nodeUniqueName
 		}
 		return tn;
 	}
 
-	protected static DefaultMutableTreeNode createOperationTreeNode(int opId) {
+	protected static DefaultMutableTreeNode createOperationTreeNode(OperationKey operationKey) {
 		DefaultMutableTreeNode tn = null;
 		try {
-			OperationMetadata op = OperationsList.getById(opId);
+			OperationMetadata op = OperationsList.getById(operationKey.getId());
 			tn = new DefaultMutableTreeNode(new NodeElementInfo(
 					op.getParentMatrixId(),
-					opId,
+					operationKey.getId(),
 					Text.App.treeOperation,
-					"OP: " + opId + " - " + op.getFriendlyName()));
+					"OP: " + operationKey.getId() + " - " + op.getFriendlyName(),
+					operationKey));
 		} catch (IOException ex) {
 			log.error(null, ex);
 		}
 		return tn;
 	}
 
-	protected static DefaultMutableTreeNode createSubOperationTreeNode(int opId) {
+	protected static DefaultMutableTreeNode createSubOperationTreeNode(OperationKey operationKey) {
 		DefaultMutableTreeNode tn = null;
 		try {
 
@@ -187,29 +194,31 @@ public class GWASpiExplorerNodes {
 //			studyNodeName
 //			nodeUniqueName
 
-			OperationMetadata op = OperationsList.getById(opId);
+			OperationMetadata op = OperationsList.getById(operationKey.getId());
 //			int[] pathIds = new int[]{0, op.getId(), op.getParentMatrixId(), op.getParentOperationId(), opId};
 			tn = new DefaultMutableTreeNode(new NodeElementInfo(
 					op.getParentOperationId(),
-					opId,
+					operationKey.getId(),
 					Text.App.treeOperation,
-					"OP: " + opId + " - " + op.getFriendlyName()));
+					"OP: " + operationKey.getId() + " - " + op.getFriendlyName(),
+					operationKey));
 		} catch (IOException ex) {
 			log.error(null, ex);
 		}
 		return tn;
 	}
 
-	protected static DefaultMutableTreeNode createReportTreeNode(int rpId) {
+	protected static DefaultMutableTreeNode createReportTreeNode(ReportKey reportKey) {
 		DefaultMutableTreeNode tn = null;
 		try {
-			Report rp = ReportsList.getById(rpId);
+			Report rp = ReportsList.getReport(reportKey);
 //			int[] pathIds = new int[]{0, rp.getId(), rp.getParentMatrixId(), rp.getParentOperationId(), rpId};
 			tn = new DefaultMutableTreeNode(new NodeElementInfo(
 					rp.getParentMatrixId(),
-					rpId,
+					reportKey.getId(),
 					Text.App.treeReport,
-					"RP: " + rpId + " - " + rp.getFriendlyName()));
+					"RP: " + reportKey.getId() + " - " + rp.getFriendlyName(),
+					reportKey));
 		} catch (IOException ex) {
 			log.error(null, ex);
 		}
@@ -225,29 +234,30 @@ public class GWASpiExplorerNodes {
 			List<Study> studyList = StudyList.getStudyList();
 			TreePath parentPath = GWASpiExplorerPanel.getSingleton().getTree().getNextMatch(Text.App.treeStudyManagement, 0, Position.Bias.Forward);
 
-			DefaultMutableTreeNode newNode = createStudyTreeNode(studyList.get(studyList.size() - 1).getId());
+			DefaultMutableTreeNode newNode = createStudyTreeNode(studyList.get(studyList.size() - 1));
 
 			if (parentPath != null) {
 				DefaultMutableTreeNode parentNode = (DefaultMutableTreeNode) parentPath.getLastPathComponent();
 				addNode(parentNode, newNode, true);
 			}
-		} catch (Exception ex) {
+		} catch (IOException ex) {
 			log.error(null, ex);
 		}
 	}
 
-	public static void insertStudyNode(int studyId) throws IOException {
+	public static void insertStudyNode(StudyKey studyKey) throws IOException {
 		try {
 			// GET STUDY
 			TreePath parentPath = GWASpiExplorerPanel.getSingleton().getTree().getNextMatch(Text.App.treeStudyManagement, 0, Position.Bias.Forward);
 
-			DefaultMutableTreeNode newNode = createStudyTreeNode(studyId);
+			Study study = StudyList.getStudy(studyKey);
+			DefaultMutableTreeNode newNode = createStudyTreeNode(study);
 
 			if (parentPath != null) {
 				DefaultMutableTreeNode parentNode = (DefaultMutableTreeNode) parentPath.getLastPathComponent();
 				addNode(parentNode, newNode, true);
 			}
-		} catch (Exception ex) {
+		} catch (IOException ex) {
 			log.error(null, ex);
 		}
 	}
@@ -268,14 +278,15 @@ public class GWASpiExplorerNodes {
 	//</editor-fold>
 
 	//<editor-fold defaultstate="expanded" desc="MATRIX NODES">
-	public static void insertMatrixNode(int studyId, int matrixId) throws IOException {
+	public static void insertMatrixNode(StudyKey studyKey, int matrixId) throws IOException {
 		if (StartGWASpi.guiMode) {
 			try {
+				MatrixKey matrixKey = new MatrixKey(studyKey, matrixId);
 				// GET STUDY
-				Study study = StudyList.getStudy(studyId);
+				Study study = StudyList.getStudy(studyKey);
 				TreePath parentPath = GWASpiExplorerPanel.getSingleton().getTree().getNextMatch("SID: " + study.getId() + " - " + study.getName(), 0, Position.Bias.Forward);
 
-				DefaultMutableTreeNode newNode = createMatrixTreeNode(matrixId);
+				DefaultMutableTreeNode newNode = createMatrixTreeNode(matrixKey);
 
 				if (parentPath != null) {
 					DefaultMutableTreeNode parentNode = (DefaultMutableTreeNode) parentPath.getLastPathComponent();
@@ -303,36 +314,37 @@ public class GWASpiExplorerNodes {
 	//</editor-fold>
 
 	//<editor-fold defaultstate="expanded" desc="OPERATION NODES">
-	public static void insertOperationUnderMatrixNode(int matrixId, int opId) throws IOException {
+	public static void insertOperationUnderMatrixNode(OperationKey operationKey) throws IOException {
 		try {
-			// GET MATRIX
-			MatrixMetadata matrixMetadata = MatricesList.getMatrixMetadataById(matrixId);
-			TreePath parentPath = GWASpiExplorerPanel.getSingleton().getTree().getNextMatch("MX: " + matrixId + " - " + matrixMetadata.getMatrixFriendlyName(), 0, Position.Bias.Forward);
 
-			DefaultMutableTreeNode newNode = createOperationTreeNode(opId);
+			// GET MATRIX
+			MatrixMetadata matrixMetadata = MatricesList.getMatrixMetadataById(operationKey.getParentMatrixId());
+			TreePath parentPath = GWASpiExplorerPanel.getSingleton().getTree().getNextMatch("MX: " + operationKey.getParentMatrixId() + " - " + matrixMetadata.getMatrixFriendlyName(), 0, Position.Bias.Forward);
+
+			DefaultMutableTreeNode newNode = createOperationTreeNode(operationKey);
 
 			if (parentPath != null) {
 				DefaultMutableTreeNode parentNode = (DefaultMutableTreeNode) parentPath.getLastPathComponent();
 				addNode(parentNode, newNode, true);
 			}
-		} catch (Exception ex) {
+		} catch (IOException ex) {
 			log.error(null, ex);
 		}
 	}
 
-	public static void insertSubOperationUnderOperationNode(int parentOpId, int opId) throws IOException {
+	public static void insertSubOperationUnderOperationNode(int parentOpId, OperationKey operationKey) throws IOException {
 		try {
 			// GET MATRIX
 			OperationMetadata parentOP = OperationsList.getById(parentOpId);
 			TreePath parentPath = GWASpiExplorerPanel.getSingleton().getTree().getNextMatch("OP: " + parentOpId + " - " + parentOP.getFriendlyName(), 0, Position.Bias.Forward);
 
-			DefaultMutableTreeNode newNode = createOperationTreeNode(opId);
+			DefaultMutableTreeNode newNode = createOperationTreeNode(operationKey);
 
 			if (parentPath != null) {
 				DefaultMutableTreeNode parentNode = (DefaultMutableTreeNode) parentPath.getLastPathComponent();
 				addNode(parentNode, newNode, true);
 			}
-		} catch (Exception ex) {
+		} catch (IOException ex) {
 			log.error(null, ex);
 		}
 	}
@@ -370,11 +382,11 @@ public class GWASpiExplorerNodes {
 							&& !parentOP.getOperationType().equals(OPType.SAMPLE_QA)
 							&& !rp.getReportType().equals(OPType.ALLELICTEST))
 					{
-						DefaultMutableTreeNode newNode = createReportTreeNode(reportsList.get(n).getId());
+						DefaultMutableTreeNode newNode = createReportTreeNode(ReportKey.valueOf(reportsList.get(n)));
 						addNode(parentNode, newNode, true);
 					}
 				}
-			} catch (Exception ex) {
+			} catch (IOException ex) {
 				log.error(null, ex);
 			}
 		}

@@ -36,6 +36,7 @@ import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleKey;
+import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -149,7 +150,7 @@ public abstract class AbstractLoadGTFromFiles implements GenotypesLoader {
 		Map<MarkerKey, int[]> chrSetMap = org.gwaspi.netCDF.matrices.Utils.aggregateChromosomeInfo(markerSetMap, 2, 3);
 
 		MatrixFactory matrixFactory = new MatrixFactory(
-				loadDescription.getStudyId(),
+				loadDescription.getStudyKey(),
 				loadDescription.getFormat(),
 				loadDescription.getFriendlyName(),
 				descSB.toString(), // description
@@ -297,7 +298,7 @@ public abstract class AbstractLoadGTFromFiles implements GenotypesLoader {
 			for (int i = 0; i < gtFilesToImport.length; i++) {
 				try {
 					loadIndividualFiles(
-							loadDescription.getStudyId(),
+							loadDescription.getStudyKey(),
 							new File(loadDescription.getGtDirPath()),
 							sampleInfo.getKey(),
 							alleles);
@@ -353,7 +354,7 @@ public abstract class AbstractLoadGTFromFiles implements GenotypesLoader {
 			log.error("Failed creating file " + ncfile.getLocation(), ex);
 		}
 
-		logAsWhole(startTime, loadDescription.getStudyId(), loadDescription.getGtDirPath(), loadDescription.getFormat(), loadDescription.getFriendlyName(), loadDescription.getDescription());
+		logAsWhole(startTime, loadDescription.getStudyKey().getId(), loadDescription.getGtDirPath(), loadDescription.getFormat(), loadDescription.getFriendlyName(), loadDescription.getDescription());
 
 		org.gwaspi.global.Utils.sysoutCompleted("writing Genotypes to Matrix");
 		return result;
@@ -379,7 +380,7 @@ public abstract class AbstractLoadGTFromFiles implements GenotypesLoader {
 	 *   the values are usually of type byte[2]
 	 */
 	public abstract void loadIndividualFiles(
-			int studyId,
+			StudyKey studyKey,
 			File file,
 			SampleKey sampleKey,
 			Map<MarkerKey, byte[]> alleles)

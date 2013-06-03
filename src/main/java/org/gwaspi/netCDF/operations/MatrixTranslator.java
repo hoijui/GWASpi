@@ -29,6 +29,7 @@ import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleKey;
+import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.markers.MarkerSet;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.gwaspi.samples.SampleSet;
@@ -44,7 +45,7 @@ public class MatrixTranslator {
 
 	private final Logger log = LoggerFactory.getLogger(MatrixTranslator.class);
 
-	private final int studyId;
+	private final StudyKey studyKey;
 	private final int rdMatrixId;
 	private final int wrMatrixId;
 	private final String wrMatrixFriendlyName;
@@ -57,7 +58,7 @@ public class MatrixTranslator {
 	private final Map<SampleKey, ?> rdSampleSetMap;
 
 	public MatrixTranslator(
-			int studyId,
+			StudyKey studyKey,
 			int rdMatrixId,
 			String wrMatrixFriendlyName,
 			String wrMatrixDescription)
@@ -66,18 +67,18 @@ public class MatrixTranslator {
 		// INIT EXTRACTOR OBJECTS
 		this.rdMatrixId = rdMatrixId;
 		this.rdMatrixMetadata = MatricesList.getMatrixMetadataById(this.rdMatrixId);
-		this.studyId = rdMatrixMetadata.getStudyId();
+		this.studyKey = rdMatrixMetadata.getStudyKey();
 		this.wrMatrixId = Integer.MIN_VALUE;
 		this.wrMatrixFriendlyName = wrMatrixFriendlyName;
 		this.wrMatrixDescription = wrMatrixDescription;
 
-		this.rdMarkerSet = new MarkerSet(this.rdMatrixMetadata.getStudyId(), this.rdMatrixId);
+		this.rdMarkerSet = new MarkerSet(this.rdMatrixMetadata.getStudyKey(), this.rdMatrixId);
 		this.rdMarkerSet.initFullMarkerIdSetMap();
 
 		this.wrMarkerIdSetMap = new LinkedHashMap<MarkerKey, byte[]>();
 		this.rdChrInfoSetMap = this.rdMarkerSet.getChrInfoSetMap();
 
-		this.rdSampleSet = new SampleSet(this.rdMatrixMetadata.getStudyId(), this.rdMatrixId);
+		this.rdSampleSet = new SampleSet(this.rdMatrixMetadata.getStudyKey(), this.rdMatrixId);
 		this.rdSampleSetMap = this.rdSampleSet.getSampleIdSetMapByteArray();
 	}
 
@@ -106,7 +107,7 @@ public class MatrixTranslator {
 				descSB.append(GenotypeEncoding.ACGT0.toString());
 
 				MatrixFactory wrMatrixHandler = new MatrixFactory(
-						studyId,
+						studyKey,
 						rdMatrixMetadata.getTechnology(), // technology
 						wrMatrixFriendlyName,
 						descSB.toString(), // description
@@ -264,7 +265,7 @@ public class MatrixTranslator {
 				descSB.append("Markers: ").append(rdMatrixMetadata.getMarkerSetSize()).append(", Samples: ").append(rdMatrixMetadata.getSampleSetSize());
 
 				MatrixFactory wrMatrixHandler = new MatrixFactory(
-						studyId,
+						studyKey,
 						rdMatrixMetadata.getTechnology(), // technology
 						wrMatrixFriendlyName,
 						descSB.toString(), // description
@@ -488,8 +489,8 @@ public class MatrixTranslator {
 		return rdMatrixId;
 	}
 
-	public int getStudyId() {
-		return studyId;
+	public StudyKey getStudyKey() {
+		return studyKey;
 	}
 
 	public int getWrMatrixId() {

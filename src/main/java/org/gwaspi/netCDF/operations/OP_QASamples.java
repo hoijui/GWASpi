@@ -58,14 +58,14 @@ public class OP_QASamples implements MatrixOperation {
 
 		NetcdfFile rdNcFile = NetcdfFile.open(rdMatrixMetadata.getPathToMatrix());
 
-		MarkerSet rdMarkerSet = new MarkerSet(rdMatrixMetadata.getStudyId(), rdMatrixId);
+		MarkerSet rdMarkerSet = new MarkerSet(rdMatrixMetadata.getStudyKey(), rdMatrixId);
 		rdMarkerSet.initFullMarkerIdSetMap();
 
 		Map<MarkerKey, int[]> rdChrSetMap = rdMarkerSet.getChrInfoSetMap();
 
 		//Map<String, Object> rdMarkerSetMap = rdMarkerSet.markerIdSetMap; // This to test heap usage of copying locally the Map from markerset
 
-		SampleSet rdSampleSet = new SampleSet(rdMatrixMetadata.getStudyId(), rdMatrixId);
+		SampleSet rdSampleSet = new SampleSet(rdMatrixMetadata.getStudyKey(), rdMatrixId);
 
 		// Iterate through samples
 		int sampleNb = 0;
@@ -115,7 +115,7 @@ public class OP_QASamples implements MatrixOperation {
 			// CREATE netCDF-3 FILE
 
 			OperationFactory wrOPHandler = new OperationFactory(
-					rdMatrixMetadata.getStudyId(),
+					rdMatrixMetadata.getStudyKey(),
 					"Sample QA", //friendly name
 					"Sample census on " + rdMatrixMetadata.getMatrixFriendlyName() + "\nSamples: " + wrSampleSetMissingCountMap.size(), //description
 					wrSampleSetMissingCountMap.size(),

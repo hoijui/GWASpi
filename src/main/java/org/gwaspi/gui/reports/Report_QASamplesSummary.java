@@ -51,13 +51,14 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 import org.gwaspi.constants.cImport;
-import org.gwaspi.global.Config;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.utils.BrowserHelpUrlAction;
 import org.gwaspi.gui.utils.Dialogs;
 import org.gwaspi.gui.utils.HelpURLs;
 import org.gwaspi.gui.utils.IntegerInputVerifier;
 import org.gwaspi.gui.utils.RowRendererDefault;
+import org.gwaspi.model.Study;
+import org.gwaspi.model.StudyKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -95,13 +96,13 @@ public class Report_QASamplesSummary extends JPanel {
 	private JTextField txt_NRows;
 	// End of variables declaration
 
-	public Report_QASamplesSummary(final int studyId, final String qaFileName, final int opId) {
+	public Report_QASamplesSummary(final StudyKey studyKey, final String qaFileName, final int opId) {
 
 		this.opId = opId;
 
 		String reportPath = "";
 		try {
-			reportPath = Config.getConfigValue(Config.PROPERTY_REPORTS_DIR, "") + "/STUDY_" + studyId + "/";
+			reportPath = Study.constructReportsPath(studyKey);
 		} catch (IOException ex) {
 			log.error(null, ex);
 		}
@@ -189,7 +190,7 @@ public class Report_QASamplesSummary extends JPanel {
 		scrl_ReportTable.setViewportView(tbl_ReportTable);
 
 		//<editor-fold defaultstate="expanded" desc="FOOTER">
-		btn_Save.setAction(new SaveAsAction(studyId, qaFileName, tbl_ReportTable, txt_NRows));
+		btn_Save.setAction(new SaveAsAction(studyKey, qaFileName, tbl_ReportTable, txt_NRows));
 
 		btn_Back.setAction(new Report_Analysis.BackAction(this.opId));
 
@@ -364,8 +365,6 @@ public class Report_QASamplesSummary extends JPanel {
 				}
 			} catch (IOException ex) {
 				log.error(null, ex);
-			} catch (Exception ex) {
-				log.error(null, ex);
 			} finally {
 				try {
 					if (inputBufferReader != null) {
@@ -373,7 +372,7 @@ public class Report_QASamplesSummary extends JPanel {
 					} else if (inputFileReader != null) {
 						inputFileReader.close();
 					}
-				} catch (Exception ex) {
+				} catch (IOException ex) {
 					log.warn(null, ex);
 				}
 			}
@@ -382,14 +381,14 @@ public class Report_QASamplesSummary extends JPanel {
 
 	private static class SaveAsAction extends AbstractAction {
 
-		private int studyId;
-		private String chartPath;
-		private JTable reportTable;
-		private JTextField nRows;
+		private final StudyKey studyKey;
+		private final String chartPath;
+		private final JTable reportTable;
+		private final JTextField nRows;
 
-		SaveAsAction(int studyId, String chartPath, JTable reportTable, JTextField nRows) {
+		SaveAsAction(StudyKey studyKey, String chartPath, JTable reportTable, JTextField nRows) {
 
-			this.studyId = studyId;
+			this.studyKey = studyKey;
 			this.chartPath = chartPath;
 			this.reportTable = reportTable;
 			this.nRows = nRows;
@@ -469,7 +468,7 @@ public class Report_QASamplesSummary extends JPanel {
 
 		private void actionSaveCompleteReportAs() {
 			try {
-				String reportPath = Config.getConfigValue(Config.PROPERTY_REPORTS_DIR, "") + "/STUDY_" + studyId + "/";
+				String reportPath = Study.constructReportsPath(studyKey);
 				File origFile = new File(reportPath + chartPath);
 				File newFile = new File(Dialogs.selectDirectoryDialog(JOptionPane.OK_OPTION).getPath() + "/" + chartPath);
 				if (origFile.exists()) {

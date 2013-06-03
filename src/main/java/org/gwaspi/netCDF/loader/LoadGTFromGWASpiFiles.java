@@ -34,6 +34,8 @@ import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleKey;
+import org.gwaspi.model.Study;
+import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.markers.MarkerSet;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.gwaspi.samples.SampleSet;
@@ -85,7 +87,7 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 		int result = Integer.MIN_VALUE;
 
 		if (new File(loadDescription.getGtDirPath()).exists()) {
-		SampleSet matrixSampleSet = new SampleSet(loadDescription.getStudyId(), "");
+		SampleSet matrixSampleSet = new SampleSet(loadDescription.getStudyKey(), "");
 		Map<SampleKey, byte[]> matrixSampleSetMap = matrixSampleSet.getSampleIdSetMapByteArray(loadDescription.getGtDirPath());
 
 		boolean testExcessSamplesInMatrix = false;
@@ -112,7 +114,10 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 			log.info("Warning!\nSome Samples in the imported genotypes are not described in the Sample Info file!\nData will not be imported!");
 		}
 
-		MatrixMetadata importMatrixMetadata = MatricesList.getMatrixMetadata(loadDescription.getGtDirPath(), loadDescription.getStudyId(), loadDescription.getFriendlyName());
+		MatrixMetadata importMatrixMetadata = MatricesList.getMatrixMetadata(
+				loadDescription.getGtDirPath(),
+				loadDescription.getStudyKey(),
+				loadDescription.getFriendlyName());
 
 		// CREATE netCDF-3 FILE
 		StringBuilder descSB = new StringBuilder(Text.Matrix.descriptionHeader1);
@@ -150,13 +155,16 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 						importMatrixMetadata.getMatrixNetCDFName(),
 						descSB.toString(), // description
 						importMatrixMetadata.getGenotypeEncoding(),
-						loadDescription.getStudyId(),
+						loadDescription.getStudyKey(),
 						Integer.MIN_VALUE,
 						Integer.MIN_VALUE,
 						""
 						));
 			}
-			copyMatrixToGenotypesFolder(loadDescription.getStudyId(), loadDescription.getGtDirPath(), importMatrixMetadata.getMatrixNetCDFName());
+			copyMatrixToGenotypesFolder(
+					loadDescription.getStudyKey(),
+					loadDescription.getGtDirPath(),
+					importMatrixMetadata.getMatrixNetCDFName());
 		} else {
 			generateNewGWASpiDBversionMatrix(loadDescription, importMatrixMetadata);
 		}
@@ -181,7 +189,10 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 		rdMarkerSet.fillMarkerSetMapWithChrAndPos();
 		Map<MarkerKey, MarkerMetadata> rdMarkerSetMap = rdMarkerSet.getMarkerMetadata();
 
-		SampleSet rdSampleSet = new SampleSet(importMatrixMetadata.getStudyId(), loadDescription.getGtDirPath(), importMatrixMetadata.getMatrixNetCDFName());
+		SampleSet rdSampleSet = new SampleSet(
+				importMatrixMetadata.getStudyKey(),
+				loadDescription.getGtDirPath(),
+				importMatrixMetadata.getMatrixNetCDFName());
 		Map<SampleKey, byte[]> rdSampleSetMap = rdSampleSet.getSampleIdSetMapByteArray();
 
 		log.info("Done initializing sorted MarkerSetMap");
@@ -190,7 +201,7 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 		Map<MarkerKey, int[]> chrSetMap = org.gwaspi.netCDF.matrices.Utils.aggregateChromosomeInfo(rdMarkerSetMap, 0, 1);
 
 		MatrixFactory matrixFactory = new MatrixFactory(
-				loadDescription.getStudyId(),
+				loadDescription.getStudyKey(),
 				loadDescription.getFormat(),
 				loadDescription.getFriendlyName(),
 				importMatrixMetadata.getDescription(), //description
@@ -357,10 +368,9 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 	//</editor-fold>
 
 	//<editor-fold defaultstate="expanded" desc="HELPER METHODS">
-	private void copyMatrixToGenotypesFolder(int studyId, String importMatrixPath, String newMatrixCDFName) {
+	private void copyMatrixToGenotypesFolder(StudyKey studyKey, String importMatrixPath, String newMatrixCDFName) {
 		try {
-			String genotypesFolder = Config.getConfigValue(Config.PROPERTY_GENOTYPES_DIR, "");
-			File pathToStudy = new File(genotypesFolder, "STUDY_" + studyId);
+			File pathToStudy = new File(Study.constructGTPath(studyKey));
 			if (!pathToStudy.exists()) {
 				org.gwaspi.global.Utils.createFolder(pathToStudy);
 			}

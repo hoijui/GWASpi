@@ -31,10 +31,11 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.LayoutStyle;
-import org.gwaspi.global.Config;
 import org.gwaspi.global.Text;
 import org.gwaspi.global.Utils;
 import org.gwaspi.gui.utils.Dialogs;
+import org.gwaspi.model.Study;
+import org.gwaspi.model.StudyKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,15 +45,15 @@ public class ChartDefaultDisplay extends JPanel {
 			= LoggerFactory.getLogger(ChartDefaultDisplay.class);
 
 	// Variables declaration - do not modify
-	private JPanel pnl_Chart;
-	private JPanel pnl_Footer;
-	private JScrollPane scrl_Chart;
-	private JButton btn_Save;
-	private JButton btn_Back;
-	private int opId;
+	private final JPanel pnl_Chart;
+	private final JPanel pnl_Footer;
+	private final JScrollPane scrl_Chart;
+	private final JButton btn_Save;
+	private final JButton btn_Back;
+	private final int opId;
 	// End of variables declaration
 
-	public ChartDefaultDisplay(final int studyId, final String chartPath, int _opId) {
+	public ChartDefaultDisplay(final StudyKey studyKey, final String chartPath, int _opId) {
 
 		opId = _opId;
 
@@ -63,7 +64,7 @@ public class ChartDefaultDisplay extends JPanel {
 		btn_Back = new JButton();
 
 		//<editor-fold defaultstate="expanded" desc="">
-		btn_Save.setAction(new SaveAsAction(studyId, chartPath));
+		btn_Save.setAction(new SaveAsAction(studyKey, chartPath));
 
 		btn_Back.setAction(new Report_Analysis.BackAction(opId));
 
@@ -124,12 +125,12 @@ public class ChartDefaultDisplay extends JPanel {
 				.addContainerGap()));
 		//</editor-fold>
 
-		diplayChart(studyId, chartPath);
+		diplayChart(studyKey, chartPath);
 	}
 
-	private void diplayChart(int studyId, String chartPath) {
+	private void diplayChart(StudyKey studyKey, String chartPath) {
 		try {
-			String reportPath = Config.getConfigValue(Config.PROPERTY_REPORTS_DIR, "") + "/STUDY_" + studyId + "/";
+			String reportPath = Study.constructReportsPath(studyKey);
 			File testF = new File(reportPath + chartPath);
 			if (testF.exists()) {
 				Icon image = new ImageIcon(testF.getPath());
@@ -145,12 +146,12 @@ public class ChartDefaultDisplay extends JPanel {
 
 	private static class SaveAsAction extends AbstractAction {
 
-		private int studyId;
-		private String chartPath;
+		private final StudyKey studyKey;
+		private final String chartPath;
 
-		SaveAsAction(int studyId, String chartPath) {
+		SaveAsAction(StudyKey studyKey, String chartPath) {
 
-			this.studyId = studyId;
+			this.studyKey = studyKey;
 			this.chartPath = chartPath;
 			putValue(NAME, Text.All.save);
 		}
@@ -158,7 +159,7 @@ public class ChartDefaultDisplay extends JPanel {
 		@Override
 		public void actionPerformed(ActionEvent evt) {
 			try {
-				String reportPath = Config.getConfigValue(Config.PROPERTY_REPORTS_DIR, "") + "/STUDY_" + studyId + "/";
+				String reportPath = Study.constructReportsPath(studyKey);
 				File origFile = new File(reportPath + chartPath);
 				File newFile = new File(Dialogs.selectDirectoryDialog(JOptionPane.OK_OPTION).getPath() + "/" + chartPath);
 				if (origFile.exists()) {

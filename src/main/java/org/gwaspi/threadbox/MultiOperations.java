@@ -28,6 +28,7 @@ import org.gwaspi.gui.GWASpiExplorerPanel;
 import org.gwaspi.gui.ProcessTab;
 import org.gwaspi.gui.StartGWASpi;
 import org.gwaspi.model.MatrixKey;
+import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.loader.GenotypesLoadDescription;
 import org.gwaspi.netCDF.operations.GWASinOneGOParams;
 
@@ -50,12 +51,12 @@ public class MultiOperations {
 
 	//<editor-fold defaultstate="expanded" desc="LOADERS">
 	/** SAMPLES QA */
-	public static void doMatrixQAs(final int studyId, final int matrixId) {
+	public static void doMatrixQAs(final StudyKey studyKey, final int matrixId) {
 
 		CommonRunnable task = new Threaded_MatrixQA(matrixId);
 
 		TaskLockProperties lockProperties = new TaskLockProperties();
-		lockProperties.getStudyIds().add(studyId);
+		lockProperties.getStudyIds().add(studyKey.getId());
 		lockProperties.getMatricesIds().add(matrixId);
 
 		queueTask(task, lockProperties);
@@ -75,7 +76,7 @@ public class MultiOperations {
 				gwasParams);
 
 		TaskLockProperties lockProperties = new TaskLockProperties();
-		lockProperties.getStudyIds().add(loadDescription.getStudyId());
+		lockProperties.getStudyIds().add(loadDescription.getStudyKey().getId());
 
 		queueTask(task, lockProperties);
 	}
@@ -102,7 +103,7 @@ public class MultiOperations {
 
 	/** LOAD & GWAS */
 	public static void doHardyWeinberg(
-			final int studyId,
+			final StudyKey studyKey,
 			final int matrixId,
 			final int censusOpId)
 	{
@@ -111,7 +112,7 @@ public class MultiOperations {
 				censusOpId);
 
 		TaskLockProperties lockProperties = new TaskLockProperties();
-		lockProperties.getStudyIds().add(studyId);
+		lockProperties.getStudyIds().add(studyKey.getId());
 		lockProperties.getMatricesIds().add(matrixId);
 
 		queueTask(task, lockProperties);
@@ -137,7 +138,7 @@ public class MultiOperations {
 
 	/** LOAD & GWAS */
 	public static void doAssociationTest(
-			final int studyId,
+			final StudyKey studyKey,
 			final int matrixId,
 			final int censusOPId,
 			final int hwOPId,
@@ -152,7 +153,7 @@ public class MultiOperations {
 				allelic);
 
 		TaskLockProperties lockProperties = new TaskLockProperties();
-		lockProperties.getStudyIds().add(studyId);
+		lockProperties.getStudyIds().add(studyKey.getId());
 		lockProperties.getMatricesIds().add(matrixId);
 		lockProperties.getOperationsIds().add(censusOPId);
 		lockProperties.getOperationsIds().add(hwOPId);
@@ -162,7 +163,7 @@ public class MultiOperations {
 
 	/** LOAD & GWAS */
 	public static void doTrendTest(
-			final int studyId,
+			final StudyKey studyKey,
 			final int matrixId,
 			final int censusOPId,
 			final int hwOPId,
@@ -175,7 +176,7 @@ public class MultiOperations {
 				gwasParams);
 
 		TaskLockProperties lockProperties = new TaskLockProperties();
-		lockProperties.getStudyIds().add(studyId);
+		lockProperties.getStudyIds().add(studyKey.getId());
 		lockProperties.getMatricesIds().add(matrixId);
 		lockProperties.getOperationsIds().add(censusOPId);
 		lockProperties.getOperationsIds().add(hwOPId);
@@ -186,7 +187,7 @@ public class MultiOperations {
 
 	//<editor-fold defaultstate="expanded" desc="DATA MANAGEMENT">
 	public static void doExtractData(
-			final int studyId,
+			final StudyKey studyKey,
 			final int parentMatrixId,
 			final String newMatrixName,
 			final String description,
@@ -200,7 +201,7 @@ public class MultiOperations {
 			final File sampleCriteriaFile)
 	{
 		CommonRunnable task = new Threaded_ExtractMatrix(
-				studyId,
+				studyKey,
 				parentMatrixId,
 				newMatrixName,
 				description,
@@ -214,7 +215,7 @@ public class MultiOperations {
 				sampleCriteriaFile);
 
 		TaskLockProperties lockProperties = new TaskLockProperties();
-		lockProperties.getStudyIds().add(studyId);
+		lockProperties.getStudyIds().add(studyKey.getId());
 		lockProperties.getMatricesIds().add(parentMatrixId);
 
 		queueTask(task, lockProperties);
@@ -228,7 +229,7 @@ public class MultiOperations {
 			final String description)
 	{
 		CommonRunnable task = new Threaded_TranslateMatrix(
-				studyId,
+				new StudyKey(studyId),
 				parentMatrixId,
 				gtEncoding,
 				newMatrixName,
@@ -242,7 +243,7 @@ public class MultiOperations {
 	}
 
 	public static void doExportMatrix(
-			final int studyId,
+			final StudyKey studyKey,
 			final int matrixId,
 			final ExportFormat format,
 			final String phenotype)
@@ -253,14 +254,14 @@ public class MultiOperations {
 				phenotype);
 
 		TaskLockProperties lockProperties = new TaskLockProperties();
-		lockProperties.getStudyIds().add(studyId);
+		lockProperties.getStudyIds().add(studyKey.getId());
 		lockProperties.getMatricesIds().add(matrixId);
 
 		queueTask(task, lockProperties);
 	}
 
 	public static void doMergeMatrix(
-			final int studyId,
+			final StudyKey studyKey,
 			final int parentMatrixId1,
 			final int parentMatrixId2,
 			final String newMatrixName,
@@ -268,7 +269,7 @@ public class MultiOperations {
 			final boolean all)
 	{
 		CommonRunnable task = new Threaded_MergeMatrices(
-				studyId,
+				studyKey,
 				parentMatrixId1,
 				parentMatrixId2,
 				newMatrixName,
@@ -276,7 +277,7 @@ public class MultiOperations {
 				all);
 
 		TaskLockProperties lockProperties = new TaskLockProperties();
-		lockProperties.getStudyIds().add(studyId);
+		lockProperties.getStudyIds().add(studyKey.getId());
 		lockProperties.getMatricesIds().add(parentMatrixId1);
 		lockProperties.getMatricesIds().add(parentMatrixId2);
 
@@ -284,21 +285,21 @@ public class MultiOperations {
 	}
 
 	public static void doMergeMatrixAddSamples(
-			final int studyId,
+			final StudyKey studyKey,
 			final int parentMatrixId1,
 			final int parentMatrixId2,
 			final String newMatrixName,
 			final String description)
 	{
 		CommonRunnable task = new Threaded_MergeMatricesAddSamples(
-				studyId,
+				studyKey,
 				parentMatrixId1,
 				parentMatrixId2,
 				newMatrixName,
 				description);
 
 		TaskLockProperties lockProperties = new TaskLockProperties();
-		lockProperties.getStudyIds().add(studyId);
+		lockProperties.getStudyIds().add(studyKey.getId());
 		lockProperties.getMatricesIds().add(parentMatrixId1);
 		lockProperties.getMatricesIds().add(parentMatrixId2);
 
@@ -314,7 +315,7 @@ public class MultiOperations {
 			final String description)
 	{
 		CommonRunnable task = new Threaded_FlipStrandMatrix(
-				studyId,
+				new StudyKey(studyId),
 				parentMatrixId,
 				newMatrixName,
 				description,
@@ -333,7 +334,7 @@ public class MultiOperations {
 			final File sampleInfoFile)
 	{
 		CommonRunnable task = new Threaded_UpdateSampleInfo(
-				studyId,
+				new StudyKey(studyId),
 				sampleInfoFile);
 
 		TaskLockProperties lockProperties = new TaskLockProperties();
@@ -360,21 +361,21 @@ public class MultiOperations {
 		queueDeleteTask(sdi);
 	}
 
-	public static void deleteMatrix(final int studyId, final int matrixId, final boolean deleteReports) {
+	public static void deleteMatrix(final StudyKey studyKey, final int matrixId, final boolean deleteReports) {
 
 		SwingDeleterItem sdi = new SwingDeleterItem(
 				SwingDeleterItem.DeleteTarget.MATRIX,
-				studyId,
+				studyKey.getId(),
 				matrixId,
 				deleteReports);
 		queueDeleteTask(sdi);
 	}
 
-	public static void deleteOperationsByOpId(final int studyId, final int matrixId, final int opId, final boolean deleteReports) {
+	public static void deleteOperationsByOpId(final StudyKey studyKey, final int matrixId, final int opId, final boolean deleteReports) {
 
 		SwingDeleterItem sdi = new SwingDeleterItem(
 				SwingDeleterItem.DeleteTarget.OPERATION_BY_OPID,
-				studyId,
+				studyKey.getId(),
 				matrixId,
 				opId,
 				deleteReports);

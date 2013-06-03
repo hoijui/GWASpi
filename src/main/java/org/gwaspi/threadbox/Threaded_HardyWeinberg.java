@@ -19,6 +19,8 @@ package org.gwaspi.threadbox;
 
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.model.GWASpiExplorerNodes;
+import org.gwaspi.model.OperationKey;
+import org.gwaspi.model.OperationsList;
 import org.gwaspi.netCDF.operations.OperationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,7 +55,8 @@ public class Threaded_HardyWeinberg extends CommonRunnable {
 				&& (censusOpId != Integer.MIN_VALUE))
 		{
 			int hwOpId = OperationManager.performHardyWeinberg(censusOpId, cNetCDF.Defaults.DEFAULT_AFFECTION);
-			GWASpiExplorerNodes.insertSubOperationUnderOperationNode(censusOpId, hwOpId);
+			OperationKey hwOpKey = OperationKey.valueOf(OperationsList.getById(hwOpId));
+			GWASpiExplorerNodes.insertSubOperationUnderOperationNode(censusOpId, hwOpKey);
 		}
 	}
 }

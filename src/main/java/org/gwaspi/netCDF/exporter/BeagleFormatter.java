@@ -95,7 +95,7 @@ class BeagleFormatter implements Formatter {
 			StringBuilder affectionLine = new StringBuilder("A" + sep + "affection");
 
 			for (SampleKey sampleKey : rdSampleSetMap.keySet()) {
-				SampleInfo sampleInfo = Utils.getCurrentSampleFormattedInfo(sampleKey, rdMatrixMetadata.getStudyId());
+				SampleInfo sampleInfo = Utils.getCurrentSampleFormattedInfo(sampleKey, rdMatrixMetadata.getStudyKey());
 
 				sampleLine.append(sep);
 				sampleLine.append(sampleInfo.getSampleId());
@@ -212,7 +212,7 @@ class BeagleFormatter implements Formatter {
 				OperationMetadata qaMetadata = OperationsList.getOperationMetadata(markersQAopId);
 				NetcdfFile qaNcFile = NetcdfFile.open(qaMetadata.getPathToMatrix());
 
-				MarkerOperationSet<char[]> rdOperationSet = new MarkerOperationSet<char[]>(rdMatrixMetadata.getStudyId(), markersQAopId);
+				MarkerOperationSet<char[]> rdOperationSet = new MarkerOperationSet<char[]>(rdMatrixMetadata.getStudyKey(), markersQAopId);
 				Map<MarkerKey, char[]> opMarkerSetMap = rdOperationSet.getOpSetMap();
 
 				// MAJOR ALLELE

@@ -33,6 +33,8 @@ import org.gwaspi.global.Config;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.ReportsList;
+import org.gwaspi.model.Study;
+import org.gwaspi.model.StudyKey;
 import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
 import org.slf4j.Logger;
@@ -266,18 +268,18 @@ public class JPAOperationService implements OperationService {
 	public void deleteOperationBranch(OperationKey operationKey, boolean deleteReports) throws IOException {
 
 		final int opId = operationKey.getId();
-		final int studyId = operationKey.getStudyId();
-		
+		final StudyKey studyKey = new StudyKey(operationKey.getStudyId());
+
 		try {
 			OperationMetadata op = getOperation(operationKey);
-			String genotypesFolder = Config.getConfigValue(Config.PROPERTY_GENOTYPES_DIR, "");
 
 			// delete child operations
 			List<OperationMetadata> operations = getOperations(op.getParentMatrixId(), opId);
 			if (!operations.isEmpty()) {
 				operations.add(op);
 				for (int i = 0; i < operations.size(); i++) {
-					File matrixOPFile = new File(genotypesFolder + "/STUDY_" + studyId + "/" + operations.get(i).getNetCDFName() + ".nc");
+					String pathToStudy = Study.constructGTPath(studyKey);
+					File matrixOPFile = new File(pathToStudy + operations.get(i).getNetCDFName() + ".nc");
 					org.gwaspi.global.Utils.tryToDeleteFile(matrixOPFile);
 					if (deleteReports) {
 						ReportsList.deleteReportByOperationId(operations.get(i).getId());
@@ -298,7 +300,7 @@ public class JPAOperationService implements OperationService {
 					} catch (Exception ex) {
 						rollback(em);
 						throw new IOException("Failed deleting operation by"
-								+ ": study-id: " + studyId
+								+ ": study-id: " + studyKey.getId()
 								+ ", operation-id: " + operationId,
 								ex);
 					} finally {
@@ -306,7 +308,8 @@ public class JPAOperationService implements OperationService {
 					}
 				}
 			} else {
-				File matrixOPFile = new File(genotypesFolder + "/STUDY_" + studyId + "/" + op.getNetCDFName() + ".nc");
+				String pathToStudy = Study.constructGTPath(studyKey);
+				File matrixOPFile = new File(pathToStudy + op.getNetCDFName() + ".nc");
 				org.gwaspi.global.Utils.tryToDeleteFile(matrixOPFile);
 				if (deleteReports) {
 					ReportsList.deleteReportByOperationId(opId);
@@ -347,7 +350,7 @@ public class JPAOperationService implements OperationService {
 			} catch (Exception exi) {
 				rollback(em);
 				throw new IOException("Failed deleting operation by"
-						+ ": study-id: " + studyId
+						+ ": study-id: " + studyKey.getId()
 						+ ", operation-id: " + opId,
 						exi);
 			} finally {
@@ -387,8 +390,7 @@ public class JPAOperationService implements OperationService {
 		int opSetSize = Integer.MIN_VALUE;
 		int implicitSetSize = Integer.MIN_VALUE;
 
-		String genotypesFolder = Config.getConfigValue(Config.PROPERTY_GENOTYPES_DIR, "");
-		String pathToStudy = genotypesFolder + "/STUDY_" + toComplete.getStudyId() + "/";
+		String pathToStudy = Study.constructGTPath(new StudyKey(toComplete.getStudyId()));
 		String pathToMatrix = pathToStudy + toComplete.getMatrixCDFName() + ".nc";
 		if (new File(pathToMatrix).exists()) {
 			NetcdfFile ncfile = null;

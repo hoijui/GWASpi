@@ -20,6 +20,7 @@ package org.gwaspi.netCDF.loader;
 import org.gwaspi.constants.cImport.ImportFormat;
 import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
+import org.gwaspi.model.StudyKey;
 
 public class GenotypesLoadDescription {
 
@@ -43,7 +44,7 @@ public class GenotypesLoadDescription {
 	 * formats BEAGLE and HGDP1.
 	 */
 	private final String annotationFilePath;
-	private final int studyId;
+	private final StudyKey studyKey;
 	private final ImportFormat format;
 	private final String friendlyName;
 	private final String description;
@@ -55,7 +56,7 @@ public class GenotypesLoadDescription {
 			String gtDirPath,
 			String sampleFilePath,
 			String annotationFilePath,
-			int studyId,
+			StudyKey studyKey,
 			ImportFormat format,
 			String friendlyName,
 			String description,
@@ -66,7 +67,7 @@ public class GenotypesLoadDescription {
 		this.gtDirPath = gtDirPath;
 		this.sampleFilePath = sampleFilePath;
 		this.annotationFilePath = annotationFilePath;
-		this.studyId = studyId;
+		this.studyKey = studyKey;
 		this.format = format;
 		this.friendlyName = friendlyName;
 		this.description = description;
@@ -95,8 +96,8 @@ public class GenotypesLoadDescription {
 		return annotationFilePath;
 	}
 
-	public int getStudyId() {
-		return studyId;
+	public StudyKey getStudyKey() {
+		return studyKey;
 	}
 
 	public ImportFormat getFormat() {

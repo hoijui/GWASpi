@@ -33,13 +33,13 @@ public class ReportsList {
 	private ReportsList() {
 	}
 
-	public static Report getById(int reportId) throws IOException {
-		return reportService.getById(reportId);
+	public static Report getReport(ReportKey reportKey) throws IOException {
+		return reportService.getReport(reportKey);
 	}
 
 	// XXX split into two methods, with either parentOperationId or parentMatrixId param, as we do not allow to fetch by specifying both anyway (on has to be Integer.MIN_VALUE as it works now)
 	public static List<Report> getReportsList(int parentOperationId, int parentMatrixId) throws IOException {
-		return reportService.getReportsList(parentOperationId, parentMatrixId);
+		return reportService.getReports(parentOperationId, parentMatrixId);
 	}
 
 	public static String getReportNamePrefix(OperationMetadata op) {
@@ -47,7 +47,7 @@ public class ReportsList {
 	}
 
 	public static void insertRPMetadata(Report report) throws IOException {
-		reportService.insertRPMetadata(report);
+		reportService.insertReport(report);
 	}
 
 	public static void deleteReportByMatrixId(int matrixId) throws IOException {

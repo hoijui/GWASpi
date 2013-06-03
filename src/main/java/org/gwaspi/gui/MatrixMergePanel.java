@@ -52,6 +52,7 @@ import org.gwaspi.gui.utils.LimitedLengthDocument;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
+import org.gwaspi.model.StudyKey;
 import org.gwaspi.threadbox.MultiOperations;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -91,7 +92,7 @@ public class MatrixMergePanel extends JPanel {
 
 		parentMatrix = parentMatrixKey;
 		MatrixMetadata parentMatrixMetadata = MatricesList.getMatrixMetadataById(parentMatrix.getMatrixId());
-		matrixItems = getMatrixItems(parentMatrixKey.getStudyId());
+		matrixItems = getMatrixItems(parentMatrixKey.getStudyKey());
 
 		mergeMethod = new ButtonGroup();
 		pnl_ParentMatrixDesc = new JPanel();
@@ -395,7 +396,7 @@ public class MatrixMergePanel extends JPanel {
 
 						if (mergeMarkers.isSelected()) {
 							MultiOperations.doMergeMatrix(
-									parentMatrix.getStudyId(),
+									parentMatrix.getStudyKey(),
 									parentMatrix.getMatrixId(),
 									addMatrixId,
 									newMatrixName.getText(),
@@ -405,7 +406,7 @@ public class MatrixMergePanel extends JPanel {
 
 						if (mergeSamples.isSelected()) {
 							MultiOperations.doMergeMatrixAddSamples(
-									parentMatrix.getStudyId(),
+									parentMatrix.getStudyKey(),
 									parentMatrix.getMatrixId(),
 									addMatrixId,
 									newMatrixName.getText(),
@@ -414,7 +415,7 @@ public class MatrixMergePanel extends JPanel {
 
 						if (mergeAll.isSelected()) {
 							MultiOperations.doMergeMatrix(
-									parentMatrix.getStudyId(),
+									parentMatrix.getStudyKey(),
 									parentMatrix.getMatrixId(),
 									addMatrixId,
 									newMatrixName.getText(),
@@ -469,11 +470,11 @@ public class MatrixMergePanel extends JPanel {
 		return study_name;
 	}
 
-	private static List<Object[]> getMatrixItems(int studyId) throws IOException {
+	private static List<Object[]> getMatrixItems(StudyKey studyKey) throws IOException {
 
 		List<Object[]> result = new ArrayList<Object[]>();
 
-		List<MatrixMetadata> matrices = MatricesList.getMatricesTable(studyId);
+		List<MatrixMetadata> matrices = MatricesList.getMatricesTable(studyKey);
 		if (!matrices.isEmpty()) {
 			for (int i = matrices.size() - 1; i >= 0; i--) {
 				MatrixMetadata currentMatrix = matrices.get(i);

@@ -29,6 +29,7 @@ import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixMetadata;
+import org.gwaspi.model.StudyKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.ArrayByte;
@@ -76,7 +77,7 @@ public class MarkerSet {
 		this.markerRsIdSetMap = new LinkedHashMap<MarkerKey, Object>();
 	}
 
-	public MarkerSet(int studyId, int matrixId) throws IOException {
+	public MarkerSet(StudyKey studyKey, int matrixId) throws IOException {
 		this(MatricesList.getMatrixMetadataById(matrixId));
 	}
 

@@ -27,6 +27,7 @@ import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.GWASpiExplorerNodes;
 import org.gwaspi.model.MatrixKey;
+import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.SampleInfo;
@@ -97,7 +98,7 @@ public class Threaded_GTFreq_HW extends CommonRunnable {
 				{
 					getLog().info("Updating Sample Info in DB");
 					Collection<SampleInfo> sampleInfos = SamplesParserManager.scanSampleInfo(
-							matrixKey.getStudyId(),
+							matrixKey.getStudyKey(),
 							ImportFormat.GWASpi,
 							phenotypeFile.getPath());
 					SampleInfoList.insertSampleInfos(sampleInfos);
@@ -139,7 +140,8 @@ public class Threaded_GTFreq_HW extends CommonRunnable {
 					getLog().warn(Text.Operation.warnAffectionMissing);
 				}
 			}
-			GWASpiExplorerNodes.insertOperationUnderMatrixNode(matrixKey.getMatrixId(), censusOpId);
+			OperationKey censusOpKey = OperationKey.valueOf(OperationsList.getById(censusOpId));
+			GWASpiExplorerNodes.insertOperationUnderMatrixNode(censusOpKey);
 		}
 
 		// HW ON GENOTYPE FREQ.
@@ -147,7 +149,8 @@ public class Threaded_GTFreq_HW extends CommonRunnable {
 				&& (censusOpId != Integer.MIN_VALUE))
 		{
 			int hwOpId = OperationManager.performHardyWeinberg(censusOpId, cNetCDF.Defaults.DEFAULT_AFFECTION);
-			GWASpiExplorerNodes.insertSubOperationUnderOperationNode(censusOpId, hwOpId);
+			OperationKey hwOpKey = OperationKey.valueOf(OperationsList.getById(hwOpId));
+			GWASpiExplorerNodes.insertSubOperationUnderOperationNode(censusOpId, hwOpKey);
 		}
 		//</editor-fold>
 	}

@@ -60,6 +60,8 @@ import org.gwaspi.gui.utils.RowRendererDefault;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
+import org.gwaspi.model.Study;
+import org.gwaspi.model.StudyKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,22 +71,22 @@ public class Report_QAMarkersSummary extends JPanel {
 			= LoggerFactory.getLogger(Report_QAMarkersSummary.class);
 
 	// Variables declaration - do not modify
-	private File reportFile;
-	private int opId;
+	private final File reportFile;
+	private final int opId;
 	private final String qaValue;
-	private JButton btn_Get;
-	private JButton btn_Save;
-	private JButton btn_Back;
-	private JButton btn_Help;
-	private JPanel pnl_Footer;
-	private JPanel pnl_Summary;
-	private JLabel lbl_suffix1;
-	private JScrollPane scrl_ReportTable;
-	private JTable tbl_ReportTable;
-	private JFormattedTextField txt_NRows;
+	private final JButton btn_Get;
+	private final JButton btn_Save;
+	private final JButton btn_Back;
+	private final JButton btn_Help;
+	private final JPanel pnl_Footer;
+	private final JPanel pnl_Summary;
+	private final JLabel lbl_suffix1;
+	private final JScrollPane scrl_ReportTable;
+	private final JTable tbl_ReportTable;
+	private final JFormattedTextField txt_NRows;
 	// End of variables declaration
 
-	public Report_QAMarkersSummary(final int _studyId, final String _qaFileName, int _opId) throws IOException {
+	public Report_QAMarkersSummary(final StudyKey studyKey, final String _qaFileName, int _opId) throws IOException {
 
 		opId = _opId;
 		String reportName = GWASpiExplorerPanel.getSingleton().getTree().getLastSelectedPathComponent().toString();
@@ -100,7 +102,7 @@ public class Report_QAMarkersSummary extends JPanel {
 
 		String reportPath = "";
 		try {
-			reportPath = Config.getConfigValue(Config.PROPERTY_REPORTS_DIR, "") + "/STUDY_" + _studyId + "/";
+			reportPath = Study.constructReportsPath(studyKey);
 		} catch (IOException ex) {
 			log.error(null, ex);
 		}
@@ -188,7 +190,7 @@ public class Report_QAMarkersSummary extends JPanel {
 		scrl_ReportTable.setViewportView(tbl_ReportTable);
 
 		//<editor-fold defaultstate="expanded" desc="FOOTER">
-		btn_Save.setAction(new Report_Analysis.SaveAsAction(_studyId, _qaFileName, tbl_ReportTable, txt_NRows));
+		btn_Save.setAction(new Report_Analysis.SaveAsAction(studyKey, _qaFileName, tbl_ReportTable, txt_NRows));
 
 		btn_Back.setAction(new BackAction(opId));
 
@@ -245,9 +247,9 @@ public class Report_QAMarkersSummary extends JPanel {
 
 	private static class LoadReportAction extends AbstractAction {
 
-		private File reportFile;
-		private JTable reportTable;
-		private JFormattedTextField nRows;
+		private final File reportFile;
+		private final JTable reportTable;
+		private final JFormattedTextField nRows;
 		private final String[] columns;
 
 		LoadReportAction(File reportFile, JTable reportTable, JFormattedTextField nRows, String qaValue) {
@@ -403,7 +405,7 @@ public class Report_QAMarkersSummary extends JPanel {
 		public void actionPerformed(ActionEvent evt) {
 			try {
 				GWASpiExplorerPanel.getSingleton().getTree().setSelectionPath(GWASpiExplorerPanel.getSingleton().getTree().getSelectionPath().getParentPath());
-				GWASpiExplorerPanel.getSingleton().setPnl_Content(new MatrixMarkerQAPanel(new MatrixKey(op.getStudyId(), op.getParentMatrixId()), opId));
+				GWASpiExplorerPanel.getSingleton().setPnl_Content(new MatrixMarkerQAPanel(new MatrixKey(op.getStudyKey(), op.getParentMatrixId()), opId));
 				GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
 			} catch (IOException ex) {
 				log.error(null, ex);

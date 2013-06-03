@@ -28,6 +28,8 @@ import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
 import org.gwaspi.global.Config;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixMetadata;
+import org.gwaspi.model.Study;
+import org.gwaspi.model.StudyKey;
 import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.Dimension;
@@ -41,7 +43,7 @@ public class MatrixFactory {
 	private MatrixMetadata matrixMetaData = null;
 
 	private MatrixFactory(
-			int studyId,
+			StudyKey studyKey,
 			ImportFormat technology,
 			String friendlyName,
 			String description,
@@ -59,7 +61,7 @@ public class MatrixFactory {
 		if (samplesDimSize > 0 && markerDimSize > 0) {
 			resultMatrixName = generateMatrixNetCDFNameByDate();
 			netCDFHandler = generateNetcdfHandler(
-					studyId,
+					studyKey,
 					resultMatrixName,
 					technology,
 					description,
@@ -82,7 +84,7 @@ public class MatrixFactory {
 					resultMatrixName,
 					description,
 					matrixType,
-					studyId,
+					studyKey,
 					origMatrix1Id,
 					origMatrix2Id,
 					inputLocation));
@@ -97,7 +99,7 @@ public class MatrixFactory {
 	 * Constructor to use with matrix input
 	 */
 	public MatrixFactory(
-			int studyId,
+			StudyKey studyKey,
 			ImportFormat technology,
 			String friendlyName,
 			String description,
@@ -112,7 +114,7 @@ public class MatrixFactory {
 			throws InvalidRangeException, IOException
 	{
 		this(
-				studyId,
+				studyKey,
 				technology,
 				friendlyName,
 				description,
@@ -131,7 +133,7 @@ public class MatrixFactory {
 	 * Constructor to use with file input
 	 */
 	public MatrixFactory(
-			int studyId,
+			StudyKey studyKey,
 			ImportFormat technology,
 			String friendlyName,
 			String description,
@@ -145,7 +147,7 @@ public class MatrixFactory {
 			throws InvalidRangeException, IOException
 	{
 		this(
-				studyId,
+				studyKey,
 				technology,
 				friendlyName,
 				description,
@@ -178,7 +180,7 @@ public class MatrixFactory {
 	}
 
 	public static NetcdfFileWriteable generateNetcdfHandler(
-			Integer studyId,
+			StudyKey studyKey,
 			String matrixName,
 			ImportFormat technology,
 			String description,
@@ -192,7 +194,7 @@ public class MatrixFactory {
 	{
 		// CREATE netCDF-3 FILE
 		String genotypesFolder = Config.getConfigValue(Config.PROPERTY_GENOTYPES_DIR, "");
-		File pathToStudy = new File(genotypesFolder + "/STUDY_" + studyId);
+		File pathToStudy = new File(Study.constructGTPath(studyKey));
 		if (!pathToStudy.exists()) {
 			org.gwaspi.global.Utils.createFolder(pathToStudy);
 		}
@@ -206,7 +208,7 @@ public class MatrixFactory {
 		NetcdfFileWriteable ncfile = NetcdfFileWriteable.createNew(writeFileName, false);
 
 		// global attributes
-		ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_STUDY, studyId);
+		ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_STUDY, studyKey.getId());
 		ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_TECHNOLOGY, technology.toString());
 		String versionNb = Config.getConfigValue(Config.PROPERTY_CURRENT_GWASPIDB_VERSION, null);
 		ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_GWASPIDB_VERSION, versionNb);

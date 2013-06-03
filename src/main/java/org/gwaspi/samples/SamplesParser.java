@@ -20,8 +20,9 @@ package org.gwaspi.samples;
 import java.io.IOException;
 import java.util.Collection;
 import org.gwaspi.model.SampleInfo;
+import org.gwaspi.model.StudyKey;
 
 public interface SamplesParser {
 
-	Collection<SampleInfo> scanSampleInfo(int studyId, String sampleInfoPath) throws IOException;
+	Collection<SampleInfo> scanSampleInfo(StudyKey studyKey, String sampleInfoPath) throws IOException;
 }

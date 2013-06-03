@@ -244,7 +244,7 @@ public class PlinkBinaryFormatter implements Formatter {
 		// Iterate through all samples
 		int sampleNb = 0;
 		for (SampleKey sampleKey : rdSampleSetMap.keySet()) {
-			SampleInfo sampleInfo = Utils.getCurrentSampleFormattedInfo(sampleKey, rdMatrixMetadata.getStudyId());
+			SampleInfo sampleInfo = Utils.getCurrentSampleFormattedInfo(sampleKey, rdMatrixMetadata.getStudyKey());
 
 			String familyId = sampleInfo.getFamilyId();
 			String fatherId = sampleInfo.getFatherId();

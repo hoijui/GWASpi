@@ -55,8 +55,7 @@ import org.gwaspi.gui.utils.Dialogs;
 import org.gwaspi.gui.utils.HelpURLs;
 import org.gwaspi.gui.utils.LimitedLengthDocument;
 import org.gwaspi.gui.utils.MoreGWASinOneGoInfo;
-import org.gwaspi.model.MatricesList;
-import org.gwaspi.model.MatrixMetadata;
+import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.loader.GenotypesLoadDescription;
 import org.gwaspi.netCDF.operations.GWASinOneGOParams;
 import org.gwaspi.threadbox.MultiOperations;
@@ -91,16 +90,16 @@ public class LoadDataPanel extends JPanel {
 	private final JTextField txt_FileSampleInfo;
 	private final JTextField txt_NewMatrixName;
 	private boolean dummySamples = true;
-	private final int studyId;
+	private final StudyKey studyKey;
 	private boolean[] fieldObligatoryState;
 	private GWASinOneGOParams gwasParams = new GWASinOneGOParams();
 	private final Action formatAction;
 	private final Action browseSampleInfoAction;
 	// End of variables declaration
 
-	public LoadDataPanel(int _studyId) {
+	public LoadDataPanel(StudyKey studyKey) {
 
-		studyId = _studyId;
+		this.studyKey = studyKey;
 
 		pnl_NameAndDesc = new JPanel();
 		lbl_NewMatrixName = new JLabel();
@@ -306,7 +305,7 @@ public class LoadDataPanel extends JPanel {
 				.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)));
 		//</editor-fold>
 
-		btn_Back.setAction(new LoadDataPanel.BackAction(studyId));
+		btn_Back.setAction(new LoadDataPanel.BackAction(studyKey));
 
 		btn_Go.setAction(new LoadDataPanel.LoadGenotypesAction());
 
@@ -646,7 +645,7 @@ public class LoadDataPanel extends JPanel {
 									txt_File1.getText(),
 									txt_FileSampleInfo.getText(),
 									txt_File2.getText(),
-									studyId,
+									studyKey,
 									(ImportFormat) cmb_Format.getSelectedItem(),
 									newMatrixName,
 									txtA_NewMatrixDescription.getText(),
@@ -893,18 +892,18 @@ public class LoadDataPanel extends JPanel {
 
 	private static class BackAction extends AbstractAction {
 
-		private int studyId;
+		private final StudyKey studyKey;
 
-		BackAction(int studyId) {
+		BackAction(StudyKey studyKey) {
 
-			this.studyId = studyId;
+			this.studyKey = studyKey;
 			putValue(NAME, Text.All.Back);
 		}
 
 		@Override
 		public void actionPerformed(ActionEvent evt) {
 			try {
-				GWASpiExplorerPanel.getSingleton().setPnl_Content(new CurrentStudyPanel(studyId));
+				GWASpiExplorerPanel.getSingleton().setPnl_Content(new CurrentStudyPanel(studyKey));
 				GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
 			} catch (IOException ex) {
 				log.error(null, ex);

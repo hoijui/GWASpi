@@ -20,16 +20,17 @@ package org.gwaspi.dao;
 import java.io.IOException;
 import java.util.List;
 import org.gwaspi.model.Study;
+import org.gwaspi.model.StudyKey;
 
 public interface StudyService {
 
-	Study getById(int studyId) throws IOException;
+	Study getStudy(StudyKey studyKey) throws IOException;
 
-	List<Study> getAll() throws IOException;
+	List<Study> getStudies() throws IOException;
 
-	int insertNewStudy(String studyName, String description);
+	StudyKey insertStudy(Study study);
 
-	void deleteStudy(int studyId, boolean deleteReports) throws IOException;
+	void deleteStudy(StudyKey studyKey, boolean deleteReports) throws IOException;
 
 	void updateStudy(Study study) throws IOException;
 }

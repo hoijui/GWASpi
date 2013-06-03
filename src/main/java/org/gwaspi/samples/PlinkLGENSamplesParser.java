@@ -25,6 +25,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import org.gwaspi.constants.cImport;
 import org.gwaspi.model.SampleInfo;
+import org.gwaspi.model.StudyKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,7 +35,7 @@ public class PlinkLGENSamplesParser implements SamplesParser {
 			= LoggerFactory.getLogger(PlinkLGENSamplesParser.class);
 
 	@Override
-	public Collection<SampleInfo> scanSampleInfo(int studyId, String sampleInfoPath) throws IOException {
+	public Collection<SampleInfo> scanSampleInfo(StudyKey studyKey, String sampleInfoPath) throws IOException {
 
 		Collection<SampleInfo> sampleInfos = new LinkedList<SampleInfo>();
 
@@ -46,7 +47,7 @@ public class PlinkLGENSamplesParser implements SamplesParser {
 			String l = inputBufferReader.readLine();
 			String[] cVals = l.split(cImport.Separators.separators_CommaSpaceTab_rgxp);
 			SampleInfo sampleInfo = new SampleInfo(
-					studyId,
+					studyKey,
 					cVals[cImport.Annotation.Plink_LGEN.lgen_sampleId],
 					cVals[cImport.Annotation.Plink_LGEN.lgen_familyId],
 					"0",

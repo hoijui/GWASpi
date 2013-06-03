@@ -26,6 +26,8 @@ import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.global.Config;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
+import org.gwaspi.model.Study;
+import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,7 +50,7 @@ public class OperationFactory {
 	 * To use with matrix input.
 	 */
 	public OperationFactory(
-			Integer studyId,
+			StudyKey studyKey,
 			String friendlyName,
 			String description,
 			int opSetSize,
@@ -64,7 +66,8 @@ public class OperationFactory {
 		switch (opType) {
 			case MARKER_QA:
 				//resultOPnetCDFName = OPType + "_" + rdMatrixMetadata.getMatrixCDFName();
-				netCDFHandler = generateNetcdfMarkerQAHandler(studyId,
+				netCDFHandler = generateNetcdfMarkerQAHandler(
+						studyKey,
 						resultOPnetCDFName,
 						description,
 						opType,
@@ -73,7 +76,8 @@ public class OperationFactory {
 				break;
 			case SAMPLE_QA:
 				//resultOPnetCDFName = OPType + "_" + rdMatrixMetadata.getMatrixCDFName();
-				netCDFHandler = generateNetcdfSampleQAHandler(studyId,
+				netCDFHandler = generateNetcdfSampleQAHandler(
+						studyKey,
 						resultOPnetCDFName,
 						description,
 						opType,
@@ -82,7 +86,8 @@ public class OperationFactory {
 				break;
 			case MARKER_CENSUS_BY_AFFECTION:
 				//resultOPnetCDFName = OPType + "_" + MatrixManager.generateMatrixNetCDFNameByDate();
-				netCDFHandler = generateNetcdfCensusHandler(studyId,
+				netCDFHandler = generateNetcdfCensusHandler(
+						studyKey,
 						resultOPnetCDFName,
 						description,
 						opType,
@@ -91,7 +96,8 @@ public class OperationFactory {
 				break;
 			case MARKER_CENSUS_BY_PHENOTYPE:
 				//resultOPnetCDFName = OPType + "_" + MatrixManager.generateMatrixNetCDFNameByDate();
-				netCDFHandler = generateNetcdfCensusHandler(studyId,
+				netCDFHandler = generateNetcdfCensusHandler(
+						studyKey,
 						resultOPnetCDFName,
 						description,
 						opType,
@@ -101,7 +107,8 @@ public class OperationFactory {
 			case HARDY_WEINBERG:
 				OperationMetadata rdOPMetadata = OperationsList.getOperationMetadata(parentOperationId);
 				//resultOPnetCDFName = OPType + "_" + rdOPMetadata.getMatrixCDFName();
-				netCDFHandler = generateNetcdfHardyWeinbergHandler(studyId,
+				netCDFHandler = generateNetcdfHardyWeinbergHandler(
+						studyKey,
 						resultOPnetCDFName,
 						description,
 						opType,
@@ -113,7 +120,7 @@ public class OperationFactory {
 				rdOPMetadata = OperationsList.getOperationMetadata(parentOperationId);
 				//resultOPnetCDFName = OPType + "_" + rdOPMetadata.getMatrixCDFName();
 				netCDFHandler = generateNetcdfAssociationHandler(
-						studyId,
+						studyKey,
 						resultOPnetCDFName,
 						description,
 						opType,
@@ -124,7 +131,8 @@ public class OperationFactory {
 			case TRENDTEST:
 				rdOPMetadata = OperationsList.getOperationMetadata(parentOperationId);
 				//resultOPnetCDFName = OPType + "_" + rdOPMetadata.getMatrixCDFName();
-				netCDFHandler = generateNetcdfTrendTestHandler(studyId,
+				netCDFHandler = generateNetcdfTrendTestHandler(
+						studyKey,
 						resultOPnetCDFName,
 						description,
 						opType,
@@ -147,7 +155,7 @@ public class OperationFactory {
 				opType,
 				Integer.MIN_VALUE,
 				Integer.MIN_VALUE,
-				studyId,
+				studyKey,
 				null
 				));
 
@@ -178,7 +186,7 @@ public class OperationFactory {
 	}
 
 	public static NetcdfFileWriteable generateNetcdfMarkerQAHandler(
-			Integer studyId,
+			StudyKey studyKey,
 			String resultOPName,
 			String description,
 			OPType opType,
@@ -188,8 +196,7 @@ public class OperationFactory {
 		NetcdfFileWriteable ncfile = null;
 		try {
 			// CREATE netCDF-3 FILE
-			String genotypesFolder = Config.getConfigValue(Config.PROPERTY_GENOTYPES_DIR, "");
-			File pathToStudy = new File(genotypesFolder, "STUDY_" + studyId);
+			File pathToStudy = new File(Study.constructGTPath(studyKey));
 			if (!pathToStudy.exists()) {
 				org.gwaspi.global.Utils.createFolder(pathToStudy);
 			}
@@ -202,7 +209,7 @@ public class OperationFactory {
 			ncfile = NetcdfFileWriteable.createNew(writeFileName, false);
 
 			// global attributes
-			ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_STUDY, studyId);
+			ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_STUDY, studyKey.getId());
 			ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_DESCRIPTION, description);
 
 			// dimensions
@@ -264,7 +271,8 @@ public class OperationFactory {
 		return ncfile;
 	}
 
-	public static NetcdfFileWriteable generateNetcdfSampleQAHandler(Integer studyId,
+	public static NetcdfFileWriteable generateNetcdfSampleQAHandler(
+			StudyKey studyKey,
 			String matrixName,
 			String description,
 			OPType opType,
@@ -275,8 +283,7 @@ public class OperationFactory {
 		NetcdfFileWriteable ncfile = null;
 		try {
 			// CREATE netCDF-3 FILE
-			String genotypesFolder = Config.getConfigValue(Config.PROPERTY_GENOTYPES_DIR, "");
-			File pathToStudy = new File(genotypesFolder, "STUDY_" + studyId);
+			File pathToStudy = new File(Study.constructGTPath(studyKey));
 			if (!pathToStudy.exists()) {
 				org.gwaspi.global.Utils.createFolder(pathToStudy);
 			}
@@ -288,7 +295,7 @@ public class OperationFactory {
 			int sampleStride = cNetCDF.Strides.STRIDE_SAMPLE_NAME;
 			int markerStride = cNetCDF.Strides.STRIDE_MARKER_NAME;
 
-			ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_STUDY, studyId);
+			ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_STUDY, studyKey.getId());
 			ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_DESCRIPTION, description);
 
 			// dimensions
@@ -326,7 +333,8 @@ public class OperationFactory {
 
 	}
 
-	public static NetcdfFileWriteable generateNetcdfCensusHandler(Integer studyId,
+	public static NetcdfFileWriteable generateNetcdfCensusHandler(
+			StudyKey studyKey,
 			String matrixName,
 			String description,
 			OPType opType,
@@ -337,8 +345,7 @@ public class OperationFactory {
 		NetcdfFileWriteable ncfile = null;
 		try {
 			// CREATE netCDF-3 FILE
-			String genotypesFolder = Config.getConfigValue(Config.PROPERTY_GENOTYPES_DIR, "");
-			File pathToStudy = new File(genotypesFolder, "STUDY_" + studyId);
+			File pathToStudy = new File(Study.constructGTPath(studyKey));
 			if (!pathToStudy.exists()) {
 				org.gwaspi.global.Utils.createFolder(pathToStudy);
 			}
@@ -351,7 +358,7 @@ public class OperationFactory {
 			ncfile = NetcdfFileWriteable.createNew(writeFileName, false);
 
 			// global attributes
-			ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_STUDY, studyId);
+			ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_STUDY, studyKey.getId());
 			ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_DESCRIPTION, description);
 
 			// dimensions
@@ -415,7 +422,8 @@ public class OperationFactory {
 		return ncfile;
 	}
 
-	public static NetcdfFileWriteable generateNetcdfHardyWeinbergHandler(Integer studyId,
+	public static NetcdfFileWriteable generateNetcdfHardyWeinbergHandler(
+			StudyKey studyKey,
 			String matrixName,
 			String description,
 			OPType opType,
@@ -426,8 +434,7 @@ public class OperationFactory {
 		NetcdfFileWriteable ncfile = null;
 		try {
 			// CREATE netCDF-3 FILE
-			String genotypesFolder = Config.getConfigValue(Config.PROPERTY_GENOTYPES_DIR, "");
-			File pathToStudy = new File(genotypesFolder, "STUDY_" + studyId);
+			File pathToStudy = new File(Study.constructGTPath(studyKey));
 			if (!pathToStudy.exists()) {
 				org.gwaspi.global.Utils.createFolder(pathToStudy);
 			}
@@ -439,7 +446,7 @@ public class OperationFactory {
 			ncfile = NetcdfFileWriteable.createNew(writeFileName, false);
 
 			// global attributes
-			ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_STUDY, studyId);
+			ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_STUDY, studyKey.getId());
 			ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_DESCRIPTION, description);
 
 			// dimensions
@@ -491,7 +498,7 @@ public class OperationFactory {
 	}
 
 	public static NetcdfFileWriteable generateNetcdfAssociationHandler(
-			Integer studyId,
+			StudyKey studyKey,
 			String matrixName,
 			String description,
 			OPType opType,
@@ -519,8 +526,7 @@ public class OperationFactory {
 		NetcdfFileWriteable ncfile = null;
 		try {
 			// CREATE netCDF-3 FILE
-			String genotypesFolder = Config.getConfigValue(Config.PROPERTY_GENOTYPES_DIR, "");
-			File pathToStudy = new File(genotypesFolder, "STUDY_" + studyId);
+			File pathToStudy = new File(Study.constructGTPath(studyKey));
 			if (!pathToStudy.exists()) {
 				org.gwaspi.global.Utils.createFolder(pathToStudy);
 			}
@@ -532,7 +538,7 @@ public class OperationFactory {
 			ncfile = NetcdfFileWriteable.createNew(writeFileName, false);
 
 			// global attributes
-			ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_STUDY, studyId);
+			ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_STUDY, studyKey.getId());
 			ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_DESCRIPTION, description);
 
 			// dimensions
@@ -588,7 +594,8 @@ public class OperationFactory {
 		return ncfile;
 	}
 
-	public static NetcdfFileWriteable generateNetcdfTrendTestHandler(Integer studyId,
+	public static NetcdfFileWriteable generateNetcdfTrendTestHandler(
+			StudyKey studyKey,
 			String matrixName,
 			String description,
 			OPType opType,
@@ -600,8 +607,7 @@ public class OperationFactory {
 		NetcdfFileWriteable ncfile = null;
 		try {
 			// CREATE netCDF-3 FILE
-			String genotypesFolder = Config.getConfigValue(Config.PROPERTY_GENOTYPES_DIR, "");
-			File pathToStudy = new File(genotypesFolder, "STUDY_" + studyId);
+			File pathToStudy = new File(Study.constructGTPath(studyKey));
 			if (!pathToStudy.exists()) {
 				org.gwaspi.global.Utils.createFolder(pathToStudy);
 			}
@@ -613,7 +619,7 @@ public class OperationFactory {
 			ncfile = NetcdfFileWriteable.createNew(writeFileName, false);
 
 			// global attributes
-			ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_STUDY, studyId);
+			ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_STUDY, studyKey.getId());
 			ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_DESCRIPTION, description);
 
 			// dimensions

@@ -24,7 +24,6 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.EnumMap;
 import java.util.EnumSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.gwaspi.constants.cImport;
@@ -35,6 +34,7 @@ import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleInfoList;
 import org.gwaspi.model.SampleKey;
+import org.gwaspi.model.StudyKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.InvalidRangeException;
@@ -70,7 +70,7 @@ public class SamplesParserManager {
 			log.info("Getting Sample Affection info for: {}",
 					rdMatrixMetadata.getMatrixFriendlyName());
 //			NetcdfFile rdNcFile = NetcdfFile.open(rdMatrixMetadata.getPathToMatrix());
-			SampleSet rdSampleSet = new SampleSet(rdMatrixMetadata.getStudyId(), matrixId);
+			SampleSet rdSampleSet = new SampleSet(rdMatrixMetadata.getStudyKey(), matrixId);
 			for (SampleKey key : rdSampleSet.getSampleKeys()) {
 				SampleInfo sampleInfo = SampleInfoList.getSample(key);
 				if (sampleInfo != null) {
@@ -86,8 +86,8 @@ public class SamplesParserManager {
 	}
 	//</editor-fold>
 
-	public static Collection<SampleInfo> scanSampleInfo(int studyId, ImportFormat importFormat, String genotypePath) throws IOException {
-		return sampleParsers.get(importFormat).scanSampleInfo(studyId, genotypePath);
+	public static Collection<SampleInfo> scanSampleInfo(StudyKey studyKey, ImportFormat importFormat, String genotypePath) throws IOException {
+		return sampleParsers.get(importFormat).scanSampleInfo(studyKey, genotypePath);
 	}
 
 	public static Set<SampleInfo.Affection> scanSampleInfoAffectionStates(String sampleInfoPath) throws IOException {

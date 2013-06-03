@@ -28,6 +28,7 @@ import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleInfoList;
 import org.gwaspi.model.SampleKey;
+import org.gwaspi.model.StudyKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.ArrayByte;
@@ -58,16 +59,16 @@ public class SampleSet {
 		this.sampleIdSetMap = new LinkedHashMap<SampleKey, Object>();
 	}
 
-	public SampleSet(int studyId, int matrixId) throws IOException {
+	public SampleSet(StudyKey studyKey, int matrixId) throws IOException {
 		this(MatricesList.getMatrixMetadataById(matrixId));
 	}
 
-	public SampleSet(int studyId, String netCDFName) throws IOException {
+	public SampleSet(StudyKey studyKey, String netCDFName) throws IOException {
 		this(MatricesList.getMatrixMetadataByNetCDFname(netCDFName));
 	}
 
-	public SampleSet(int studyId, String netCDFPath, String netCDFName) throws IOException {
-		this(MatricesList.getMatrixMetadata(netCDFPath, studyId, netCDFName));
+	public SampleSet(StudyKey studyKey, String netCDFPath, String netCDFName) throws IOException {
+		this(MatricesList.getMatrixMetadata(netCDFPath, studyKey, netCDFName));
 	}
 
 	// ACCESSORS
@@ -99,7 +100,7 @@ public class SampleSet {
 				ArrayChar.D2 sampleSetAC = (ArrayChar.D2) var.read("(0:" + (sampleSetSize - 1) + ":1, 0:" + (varShape[1] - 1) + ":1)");
 
 				sampleIdSetMap = org.gwaspi.netCDF.operations.Utils.writeD2ArrayCharToMapSampleKeys(
-						matrixMetadata.getStudyId(),
+						matrixMetadata.getStudyKey(),
 						sampleSetAC,
 						null);
 			} catch (IOException ex) {
@@ -154,7 +155,7 @@ public class SampleSet {
 				ArrayChar.D2 sampleSetAC = (ArrayChar.D2) var.read("(0:" + (sampleSetSize - 1) + ":1, 0:" + (varShape[1] - 1) + ":1)");
 
 				sampleIdSetMap = org.gwaspi.netCDF.operations.Utils.writeD2ArrayCharToMapSampleKeys(
-						matrixMetadata.getStudyId(),
+						matrixMetadata.getStudyKey(),
 						sampleSetAC,
 						null);
 			} catch (IOException ex) {
@@ -330,9 +331,9 @@ public class SampleSet {
 	//</editor-fold>
 
 	//<editor-fold defaultstate="expanded" desc="SAMPLESET PICKERS">
-	public Map<SampleKey, Integer> pickValidSampleSetItemsByDBField(Integer poolId, Set<SampleKey> sampleKeys, String dbField, Set<?> criteria, boolean include) throws IOException {
+	public Map<SampleKey, Integer> pickValidSampleSetItemsByDBField(StudyKey studyKey, Set<SampleKey> sampleKeys, String dbField, Set<?> criteria, boolean include) throws IOException {
 		Map<SampleKey, Integer> returnMap = new LinkedHashMap<SampleKey, Integer>();
-		List<SampleInfo> sampleInfos = SampleInfoList.getAllSampleInfoFromDBByPoolID(poolId);
+		List<SampleInfo> sampleInfos = SampleInfoList.getAllSampleInfoFromDBByPoolID(studyKey);
 
 		int pickCounter = 0;
 		if (include) {

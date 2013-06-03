@@ -43,6 +43,7 @@ import org.gwaspi.model.SampleInfo.Affection;
 import org.gwaspi.model.SampleInfo.Sex;
 import org.gwaspi.model.SampleInfoList;
 import org.gwaspi.model.SampleKey;
+import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.markers.MarkerSet;
 import org.gwaspi.samples.SampleSet;
 import org.slf4j.Logger;
@@ -102,14 +103,14 @@ public class OP_MarkerCensus implements MatrixOperation {
 
 			NetcdfFile rdNcFile = NetcdfFile.open(rdMatrixMetadata.getPathToMatrix());
 
-			MarkerSet rdMarkerSet = new MarkerSet(rdMatrixMetadata.getStudyId(), rdMatrixId);
+			MarkerSet rdMarkerSet = new MarkerSet(rdMatrixMetadata.getStudyKey(), rdMatrixId);
 			rdMarkerSet.initFullMarkerIdSetMap();
 			rdMarkerSet.fillWith(cNetCDF.Defaults.DEFAULT_GT);
 
 			Map<MarkerKey, byte[]> wrMarkerSetMap = new LinkedHashMap<MarkerKey, byte[]>();
 			wrMarkerSetMap.putAll(rdMarkerSet.getMarkerIdSetMapByteArray());
 
-			SampleSet rdSampleSet = new SampleSet(rdMatrixMetadata.getStudyId(), rdMatrixId);
+			SampleSet rdSampleSet = new SampleSet(rdMatrixMetadata.getStudyKey(), rdMatrixId);
 			Map<SampleKey, byte[]> rdSampleSetMap = rdSampleSet.getSampleIdSetMapByteArray();
 			Collection<SampleKey> wrSampleKeys = new HashSet<SampleKey>(); // XXX Should this be a List instead, to preserve order?
 			for (SampleKey key : rdSampleSetMap.keySet()) {
@@ -130,7 +131,7 @@ public class OP_MarkerCensus implements MatrixOperation {
 					opType = cNetCDF.Defaults.OPType.MARKER_CENSUS_BY_PHENOTYPE;
 				}
 				OperationFactory wrOPHandler = new OperationFactory(
-						rdMatrixMetadata.getStudyId(),
+						rdMatrixMetadata.getStudyKey(),
 						"Genotypes freq. - " + censusName, // friendly name
 						description + "\nSample missing ratio threshold: " + sampleMissingRatio + "\nSample heterozygosity ratio threshold: " + sampleHetzygRatio + "\nMarker missing ratio threshold: " + markerMissingRatio + "\nDiscard mismatching Markers: " + discardMismatches + "\nMarkers: " + wrMarkerSetMap.size() + "\nSamples: " + wrSampleKeys.size(), // description
 						wrMarkerSetMap.size(),
@@ -151,7 +152,7 @@ public class OP_MarkerCensus implements MatrixOperation {
 
 				//<editor-fold defaultstate="expanded" desc="PROCESSOR">
 				Map<SampleKey, SampleInfo> samplesInfoMap = fetchSampleInfo(
-						rdMatrixMetadata.getStudyId(), rdMatrixMetadata, wrSampleKeys);
+						rdMatrixMetadata.getStudyKey(), rdMatrixMetadata, wrSampleKeys);
 
 				// Iterate through markerset, take it marker by marker
 				rdMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
@@ -650,8 +651,8 @@ public class OP_MarkerCensus implements MatrixOperation {
 		OperationMetadata sampleQAMetadata = OperationsList.getOperationMetadata(sampleQAOP.getId());
 		NetcdfFile rdSampleQANcFile = NetcdfFile.open(sampleQAMetadata.getPathToMatrix());
 
-		MarkerOperationSet rdQAMarkerSet = new MarkerOperationSet(markerQAMetadata.getStudyId(), markerQAMetadata.getOPId());
-		SampleOperationSet rdQASampleSet = new SampleOperationSet(sampleQAMetadata.getStudyId(), sampleQAMetadata.getOPId());
+		MarkerOperationSet rdQAMarkerSet = new MarkerOperationSet(markerQAMetadata.getStudyKey(), markerQAMetadata.getOPId());
+		SampleOperationSet rdQASampleSet = new SampleOperationSet(sampleQAMetadata.getStudyKey(), sampleQAMetadata.getOPId());
 		Map<MarkerKey, ?> rdQAMarkerSetMap = rdQAMarkerSet.getOpSetMap();
 		Map<SampleKey, ?> rdQASampleSetMap = rdQASampleSet.getOpSetMap();
 		Map<MarkerKey, Object> excludeMarkerSetMap = new LinkedHashMap<MarkerKey, Object>();
@@ -790,13 +791,13 @@ public class OP_MarkerCensus implements MatrixOperation {
 	}
 
 	private Map<SampleKey, SampleInfo> fetchSampleInfo(
-			int studyId,
+			StudyKey studyKey,
 			MatrixMetadata rdMatrixMetadata,
 			Collection<SampleKey> wrSampleKeys)
 			throws IOException
 	{
 		Map<SampleKey, SampleInfo> samplesInfoMap = new LinkedHashMap<SampleKey, SampleInfo>();
-		List<SampleInfo> sampleInfos = SampleInfoList.getAllSampleInfoFromDBByPoolID(rdMatrixMetadata.getStudyId());
+		List<SampleInfo> sampleInfos = SampleInfoList.getAllSampleInfoFromDBByPoolID(rdMatrixMetadata.getStudyKey());
 		if (phenoFile == null) {
 			for (SampleInfo sampleInfo : sampleInfos) {
 				SampleKey tempSampleKey = sampleInfo.getKey();
@@ -813,7 +814,7 @@ public class OP_MarkerCensus implements MatrixOperation {
 			while ((l = phenotypeBR.readLine()) != null) {
 				String[] cVals = l.split(cImport.Separators.separators_CommaSpaceTab_rgxp);
 				SampleInfo info = new SampleInfo(
-						studyId,
+						studyKey,
 						cVals[GWASpi.sampleId],
 						cVals[GWASpi.familyId],
 						Sex.parse(cVals[GWASpi.sex]),

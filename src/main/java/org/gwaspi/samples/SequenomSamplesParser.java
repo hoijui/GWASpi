@@ -25,6 +25,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import org.gwaspi.constants.cImport;
 import org.gwaspi.model.SampleInfo;
+import org.gwaspi.model.StudyKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,7 +35,7 @@ public class SequenomSamplesParser implements SamplesParser {
 			= LoggerFactory.getLogger(SequenomSamplesParser.class);
 
 	@Override
-	public Collection<SampleInfo> scanSampleInfo(int studyId, String sampleInfoPath) throws IOException {
+	public Collection<SampleInfo> scanSampleInfo(StudyKey studyKey, String sampleInfoPath) throws IOException {
 
 		Collection<SampleInfo> sampleInfos = new LinkedList<SampleInfo>();
 
@@ -49,7 +50,7 @@ public class SequenomSamplesParser implements SamplesParser {
 				String[] cVals = l.split(cImport.Separators.separators_CommaSpaceTab_rgxp);
 				// TODO maybe use more then just the sampleId read from the Sequenom file?
 				SampleInfo sampleInfo = new SampleInfo(
-						studyId, cVals[cImport.Annotation.Sequenom.sampleId]);
+						studyKey, cVals[cImport.Annotation.Sequenom.sampleId]);
 				if (!sampleInfos.contains(sampleInfo)) {
 					sampleInfos.add(sampleInfo);
 				}

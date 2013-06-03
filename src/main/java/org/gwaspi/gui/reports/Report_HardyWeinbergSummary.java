@@ -49,13 +49,14 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 import org.gwaspi.constants.cImport;
-import org.gwaspi.global.Config;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.GWASpiExplorerPanel;
 import org.gwaspi.gui.utils.BrowserHelpUrlAction;
 import org.gwaspi.gui.utils.HelpURLs;
 import org.gwaspi.gui.utils.IntegerInputVerifier;
 import org.gwaspi.gui.utils.RowRendererDefault;
+import org.gwaspi.model.Study;
+import org.gwaspi.model.StudyKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -76,21 +77,21 @@ public class Report_HardyWeinbergSummary extends JPanel {
 			Text.Reports.hwExpHetzy + Text.Reports.CTRL};
 
 	// Variables declaration - do not modify
-	private File reportFile;
-	private int opId;
-	private JButton btn_Get;
-	private JButton btn_Save;
-	private JButton btn_Back;
-	private JButton btn_Help;
-	private JPanel pnl_Footer;
-	private JLabel lbl_suffix1;
-	private JPanel pnl_Summary;
-	private JScrollPane scrl_ReportTable;
-	private JTable tbl_ReportTable;
-	private JFormattedTextField txt_NRows;
+	private final File reportFile;
+	private final int opId;
+	private final JButton btn_Get;
+	private final JButton btn_Save;
+	private final JButton btn_Back;
+	private final JButton btn_Help;
+	private final JPanel pnl_Footer;
+	private final JLabel lbl_suffix1;
+	private final JPanel pnl_Summary;
+	private final JScrollPane scrl_ReportTable;
+	private final JTable tbl_ReportTable;
+	private final JFormattedTextField txt_NRows;
 	// End of variables declaration
 
-	public Report_HardyWeinbergSummary(final int _studyId, final String _hwFileName, int _opId) {
+	public Report_HardyWeinbergSummary(final StudyKey studyKey, final String _hwFileName, int _opId) {
 
 		opId = _opId;
 		String reportName = GWASpiExplorerPanel.getSingleton().getTree().getLastSelectedPathComponent().toString();
@@ -98,7 +99,7 @@ public class Report_HardyWeinbergSummary extends JPanel {
 
 		String reportPath = "";
 		try {
-			reportPath = Config.getConfigValue(Config.PROPERTY_REPORTS_DIR, "") + "/STUDY_" + _studyId + "/";
+			reportPath = Study.constructReportsPath(studyKey);
 		} catch (IOException ex) {
 			log.error(null, ex);
 		}
@@ -198,7 +199,7 @@ public class Report_HardyWeinbergSummary extends JPanel {
 		scrl_ReportTable.setViewportView(tbl_ReportTable);
 
 		//<editor-fold defaultstate="expanded" desc="FOOTER">
-		btn_Save.setAction(new Report_Analysis.SaveAsAction(_studyId, _hwFileName, tbl_ReportTable, txt_NRows));
+		btn_Save.setAction(new Report_Analysis.SaveAsAction(studyKey, _hwFileName, tbl_ReportTable, txt_NRows));
 
 		btn_Back.setAction(new Report_Analysis.BackAction(opId));
 
@@ -255,9 +256,9 @@ public class Report_HardyWeinbergSummary extends JPanel {
 
 	private static class LoadReportAction extends AbstractAction {
 
-		private File reportFile;
-		private JTable reportTable;
-		private JFormattedTextField nRows;
+		private final File reportFile;
+		private final JTable reportTable;
+		private final JFormattedTextField nRows;
 
 		LoadReportAction(File reportFile, JTable reportTable, JFormattedTextField nRows) {
 

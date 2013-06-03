@@ -35,6 +35,7 @@ import org.gwaspi.constants.cGlobal;
 import org.gwaspi.gui.StartGWASpi;
 import org.gwaspi.gui.reports.SampleQAHetzygPlotZoom;
 import org.gwaspi.gui.utils.Dialogs;
+import org.gwaspi.model.Study;
 import org.gwaspi.model.StudyList;
 import org.gwaspi.reports.GenericReportGenerator;
 import org.slf4j.Logger;
@@ -270,7 +271,7 @@ public class Config {
 
 		if (!derbyCenter.exists()) {
 			// STUDY_1 SPECIFIC DATA
-			StudyList.insertNewStudy("Study 1", ""); // HACK We should not have to add a default study, but currently have to (at least for the unit-tests)
+			StudyList.insertNewStudy(new Study("Study 1", "")); // HACK We should not have to add a default study, but currently have to (at least for the unit-tests)
 		}
 
 		Utils.createFolder(dataDir.getPath(), "genotypes");

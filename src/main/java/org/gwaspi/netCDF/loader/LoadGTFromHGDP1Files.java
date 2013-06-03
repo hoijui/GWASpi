@@ -37,6 +37,7 @@ import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleKey;
+import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -93,7 +94,7 @@ public class LoadGTFromHGDP1Files implements GenotypesLoader {
 		MetadataLoaderHGDP1 markerSetLoader = new MetadataLoaderHGDP1(
 				loadDescription.getAnnotationFilePath(),
 				loadDescription.getStrand(),
-				loadDescription.getStudyId());
+				loadDescription.getStudyKey());
 		Map<MarkerKey, MarkerMetadata> markerSetMap = markerSetLoader.getSortedMarkerSetWithMetaData();
 
 		log.info("Done initializing sorted MarkerSetMap");
@@ -131,7 +132,7 @@ public class LoadGTFromHGDP1Files implements GenotypesLoader {
 		Map<MarkerKey, int[]> chrSetMap = org.gwaspi.netCDF.matrices.Utils.aggregateChromosomeInfo(markerSetMap, 2, 3);
 
 		MatrixFactory matrixFactory = new MatrixFactory(
-				loadDescription.getStudyId(),
+				loadDescription.getStudyKey(),
 				loadDescription.getFormat(),
 				loadDescription.getFriendlyName(),
 				descSB.toString(), // description
@@ -269,7 +270,7 @@ public class LoadGTFromHGDP1Files implements GenotypesLoader {
 
 			try {
 				loadIndividualFiles(
-						loadDescription.getStudyId(),
+						loadDescription.getStudyKey(),
 						new File(loadDescription.getGtDirPath()),
 						sampleInfo.getKey(),
 						alleles,
@@ -317,7 +318,7 @@ public class LoadGTFromHGDP1Files implements GenotypesLoader {
 			log.error("Failed creating file " + ncfile.getLocation(), ex);
 		}
 
-		AbstractLoadGTFromFiles.logAsWhole(startTime, loadDescription.getStudyId(), loadDescription.getGtDirPath(), loadDescription.getFormat(), loadDescription.getFriendlyName(), loadDescription.getDescription());
+		AbstractLoadGTFromFiles.logAsWhole(startTime, loadDescription.getStudyKey().getId(), loadDescription.getGtDirPath(), loadDescription.getFormat(), loadDescription.getFriendlyName(), loadDescription.getDescription());
 
 		org.gwaspi.global.Utils.sysoutCompleted("writing data to Matrix");
 		return result;
@@ -327,7 +328,7 @@ public class LoadGTFromHGDP1Files implements GenotypesLoader {
 	 * @see AbstractLoadGTFromFiles#loadIndividualFiles
 	 */
 	public void loadIndividualFiles(
-			int studyId,
+			StudyKey studyKey,
 			File file,
 			SampleKey sampleKey,
 			Map<MarkerKey, byte[]> alleles,
@@ -353,7 +354,7 @@ public class LoadGTFromHGDP1Files implements GenotypesLoader {
 			if (!headerFields[i].isEmpty()) {
 				String sampleId = headerFields[i];
 				// NOTE The HGDP1 format does not have a family-ID
-				sampleOrderMap.put(new SampleKey(studyId, sampleId, SampleKey.FAMILY_ID_NONE), i);
+				sampleOrderMap.put(new SampleKey(studyKey, sampleId, SampleKey.FAMILY_ID_NONE), i);
 			}
 		}
 

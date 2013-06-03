@@ -38,6 +38,7 @@ import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleKey;
+import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -86,7 +87,7 @@ public class LoadGTFromPlinkFlatFiles implements GenotypesLoader {
 		//<editor-fold defaultstate="expanded" desc="CREATE MARKERSET & NETCDF">
 		MetadataLoaderPlink markerSetLoader = new MetadataLoaderPlink(
 				loadDescription.getGtDirPath(),
-				loadDescription.getStudyId());
+				loadDescription.getStudyKey());
 		Map<MarkerKey, MarkerMetadata> markerSetMap = markerSetLoader.getSortedMarkerSetWithMetaData(); // markerid, rsId, chr, pos
 
 		log.info("Done initializing sorted MarkerSetMap");
@@ -122,7 +123,7 @@ public class LoadGTFromPlinkFlatFiles implements GenotypesLoader {
 		Map<MarkerKey, int[]> chrSetMap = org.gwaspi.netCDF.matrices.Utils.aggregateChromosomeInfo(markerSetMap, 2, 3);
 
 		MatrixFactory matrixFactory = new MatrixFactory(
-				loadDescription.getStudyId(),
+				loadDescription.getStudyKey(),
 				loadDescription.getFormat(),
 				loadDescription.getFriendlyName(),
 				descSB.toString(), // description
@@ -253,7 +254,7 @@ public class LoadGTFromPlinkFlatFiles implements GenotypesLoader {
 		log.info(Text.All.processing);
 		Map<MarkerKey, byte[]> mapMarkerSetMap = markerSetLoader.parseOrigMapFile(loadDescription.getGtDirPath());
 		loadPedGenotypes(
-				loadDescription.getStudyId(),
+				loadDescription.getStudyKey(),
 				new File(loadDescription.getAnnotationFilePath()),
 				ncfile,
 				markerSetMap.keySet(),
@@ -289,7 +290,7 @@ public class LoadGTFromPlinkFlatFiles implements GenotypesLoader {
 
 		AbstractLoadGTFromFiles.logAsWhole(
 				startTime,
-				loadDescription.getStudyId(),
+				loadDescription.getStudyKey().getId(),
 				loadDescription.getGtDirPath(),
 				ImportFormat.PLINK,
 				loadDescription.getFriendlyName(),
@@ -300,7 +301,7 @@ public class LoadGTFromPlinkFlatFiles implements GenotypesLoader {
 	}
 
 	public void loadPedGenotypes(
-			int studyId,
+			StudyKey studyKey,
 			File file,
 			NetcdfFileWriteable ncfile,
 			Collection<MarkerKey> wrMarkerKeys,
@@ -351,7 +352,7 @@ public class LoadGTFromPlinkFlatFiles implements GenotypesLoader {
 			}
 
 			// WRITING GENOTYPE DATA INTO netCDF FILE
-			int sampleIndex = sampleKeys.indexOf(new SampleKey(studyId, sampleId, familyId));
+			int sampleIndex = sampleKeys.indexOf(new SampleKey(studyKey, sampleId, familyId));
 			if (sampleIndex != -1) {  //CHECK IF CURRENT SAMPLE IS KNOWN IN SAMPLEINFO FILE!!
 				org.gwaspi.netCDF.operations.Utils.saveSingleSampleGTsToMatrix(ncfile, allelesMap, sampleIndex);
 			}

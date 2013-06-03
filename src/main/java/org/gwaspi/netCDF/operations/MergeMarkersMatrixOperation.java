@@ -24,13 +24,14 @@ import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.SampleKey;
+import org.gwaspi.model.StudyKey;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.NetcdfFileWriteable;
 
 public class MergeMarkersMatrixOperation extends AbstractMergeMarkersMatrixOperation {
 
 	public MergeMarkersMatrixOperation(
-			int studyId,
+			StudyKey studyKey,
 			int rdMatrix1Id,
 			int rdMatrix2Id,
 			String wrMatrixFriendlyName,
@@ -38,7 +39,7 @@ public class MergeMarkersMatrixOperation extends AbstractMergeMarkersMatrixOpera
 			throws IOException, InvalidRangeException
 	{
 		super(
-				studyId,
+				studyKey,
 				rdMatrix1Id,
 				rdMatrix2Id,
 				wrMatrixFriendlyName,

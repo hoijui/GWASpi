@@ -211,7 +211,6 @@ public class SampleInfo implements Comparable<SampleInfo>, Serializable {
 	private String population;
 	private int age;
 	private String filter;
-	private int studyId;
 	private int approved;
 	private int status;
 
@@ -227,20 +226,19 @@ public class SampleInfo implements Comparable<SampleInfo>, Serializable {
 		this.population = "0";
 		this.age = 0;
 		this.filter = "";
-		this.studyId = Integer.MIN_VALUE;
 		this.approved = 0;
 		this.status = 0;
-		this.key = new SampleKey(Integer.MIN_VALUE, "0", "0");
+		this.key = new SampleKey(null, "0", "0");
 	}
 
-	public SampleInfo(int studyId, String sampleId) {
+	public SampleInfo(StudyKey studyKey, String sampleId) {
 		this();
 
-		this.key = new SampleKey(studyId, sampleId, "0");
+		this.key = new SampleKey(studyKey, sampleId, "0");
 	}
 
 	public SampleInfo(
-			int studyId,
+			StudyKey studyKey,
 			String sampleId,
 			String familyId,
 			Sex sex,
@@ -256,14 +254,13 @@ public class SampleInfo implements Comparable<SampleInfo>, Serializable {
 		this.population = "";
 		this.age = Integer.MIN_VALUE;
 		this.filter = "";
-		this.studyId = studyId;
 		this.approved = 0;
 		this.status = 0;
-		this.key = new SampleKey(studyId, sampleId, familyId);
+		this.key = new SampleKey(studyKey, sampleId, familyId);
 	}
 
 	public SampleInfo(
-			int studyId,
+			StudyKey studyKey,
 			String sampleId,
 			String familyId,
 			String fatherId,
@@ -281,10 +278,9 @@ public class SampleInfo implements Comparable<SampleInfo>, Serializable {
 		this.population = "0";
 		this.age = 0;
 		this.filter = "";
-		this.studyId = studyId;
 		this.approved = 0;
 		this.status = 0;
-		this.key = new SampleKey(studyId, sampleId, familyId);
+		this.key = new SampleKey(studyKey, sampleId, familyId);
 	}
 
 	public SampleInfo(
@@ -300,7 +296,7 @@ public class SampleInfo implements Comparable<SampleInfo>, Serializable {
 			String population,
 			int age,
 			String filter,
-			int studyId,
+			StudyKey studyKey,
 			int approved,
 			int status)
 	{
@@ -314,10 +310,9 @@ public class SampleInfo implements Comparable<SampleInfo>, Serializable {
 		this.population = population;
 		this.age = age;
 		this.filter = filter;
-		this.studyId = studyId;
 		this.approved = approved;
 		this.status = status;
-		this.key = new SampleKey(studyId, sampleId, familyId);
+		this.key = new SampleKey(studyKey, sampleId, familyId);
 	}
 
 	@Override
@@ -330,10 +325,10 @@ public class SampleInfo implements Comparable<SampleInfo>, Serializable {
 
 		boolean equal = false;
 
-		if (other instanceof SampleInfo) {
+		if (other instanceof SampleInfo) { // TODO replace with sampleKey.equals other.sampleKey
 			SampleInfo otherSampleInfo = (SampleInfo) other;
 			equal = getFamilyId().equals(otherSampleInfo.getFamilyId());
-			equal = equal && getStudyId().equals(otherSampleInfo.getStudyId());
+			equal = equal && (getStudyId() == otherSampleInfo.getStudyId());
 			equal = equal && getSampleId().equals(otherSampleInfo.getSampleId());
 		}
 
@@ -345,7 +340,7 @@ public class SampleInfo implements Comparable<SampleInfo>, Serializable {
 		int hash = 3;
 		hash = 23 * hash + (this.getSampleId() != null ? this.getSampleId().hashCode() : 0);
 		hash = 23 * hash + (this.getFamilyId() != null ? this.getFamilyId().hashCode() : 0);
-		hash = 23 * hash + (this.getStudyId() != null ? this.getStudyId().hashCode() : 0);
+		hash = 23 * hash + this.getStudyId();
 		return hash;
 	}
 
@@ -395,7 +390,7 @@ public class SampleInfo implements Comparable<SampleInfo>, Serializable {
 	 */
 	public void setSampleId(String sampleId) {
 		this.key = new SampleKey(
-				(getStudyId() == null) ? Integer.valueOf(Integer.MIN_VALUE) : getStudyId(),
+				getStudyKey(),
 				sampleId,
 				getFamilyId());
 	}
@@ -419,7 +414,7 @@ public class SampleInfo implements Comparable<SampleInfo>, Serializable {
 
 	protected void setFamilyId(String familyId) {
 		this.key = new SampleKey(
-				(getStudyId() == null) ? Integer.valueOf(Integer.MIN_VALUE) : getStudyId(),
+				getStudyKey(),
 				getSampleId(),
 				familyId);
 	}
@@ -595,12 +590,20 @@ public class SampleInfo implements Comparable<SampleInfo>, Serializable {
 		insertable = true,
 		updatable  = false
 		)
-	public Integer getStudyId() {
-		return studyId;
+	public int getStudyId() {
+		return key.getStudyKey().getId();
 	}
 
-	public void setStudyId(Integer studyId) {
-		this.studyId = studyId;
+	protected void setStudyId(int studyId) {
+		this.key = new SampleKey(
+				new StudyKey(studyId),
+				getSampleId(),
+				getFamilyId());
+	}
+
+	@Transient
+	public StudyKey getStudyKey() {
+		return key.getStudyKey();
 	}
 
 	@Column(

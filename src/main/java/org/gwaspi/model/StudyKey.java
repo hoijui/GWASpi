@@ -16,20 +16,60 @@
  */
 package org.gwaspi.model;
 
+import java.io.Serializable;
+
 /**
- * Identifies a study, possibly by different criteria.
+ * Uniquely identifies a study.
  */
-public class StudyKey extends IdNameKey {
+public class StudyKey implements Comparable<StudyKey>, Serializable {
+
+	private int id;
 
 	public StudyKey(int id) {
-		super(id);
+		this.id = id;
 	}
 
-	public StudyKey(String name) {
-		super(name);
+	protected StudyKey() {
+		this(Integer.MIN_VALUE);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		final StudyKey other = (StudyKey) obj;
+		if (this.getId() != other.getId()) {
+			return false;
+		}
+		return true;
+	}
+
+	@Override
+	public int hashCode() {
+		int hash = 7;
+		hash = 41 * hash + this.id;
+		return hash;
+	}
+
+	@Override
+	public int compareTo(StudyKey other) {
+
+		return this.getId() - other.getId();
 	}
 
 	public static StudyKey valueOf(Study study) {
 		return new StudyKey(study.getId());
+	}
+
+	public int getId() {
+		return id;
+	}
+
+	protected void setId(int id) {
+		this.id = id;
 	}
 }

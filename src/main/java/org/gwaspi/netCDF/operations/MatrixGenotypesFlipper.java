@@ -33,6 +33,7 @@ import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleKey;
+import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.markers.MarkerSet;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.gwaspi.samples.SampleSet;
@@ -48,8 +49,8 @@ public class MatrixGenotypesFlipper {
 
 	private final Logger log = LoggerFactory.getLogger(MatrixGenotypesFlipper.class);
 
-	private int studyId = Integer.MIN_VALUE;
-	private int rdMatrixId = Integer.MIN_VALUE;
+	private StudyKey studyKey = null;
+	private int rdMatrixId;
 	private int wrMatrixId = Integer.MIN_VALUE;
 	private String wrMatrixFriendlyName = "";
 	private String wrMatrixDescription = "";
@@ -67,7 +68,7 @@ public class MatrixGenotypesFlipper {
 	 * This constructor to extract data from Matrix a by passing a variable and
 	 * the criteria to filter items by.
 	 *
-	 * @param studyId
+	 * @param studyKey
 	 * @param rdMatrixId
 	 * @param wrMatrixFriendlyName
 	 * @param wrMatrixDescription
@@ -77,7 +78,7 @@ public class MatrixGenotypesFlipper {
 	 * @throws InvalidRangeException
 	 */
 	public MatrixGenotypesFlipper(
-			int studyId,
+			StudyKey studyKey,
 			int rdMatrixId,
 			String wrMatrixFriendlyName,
 			String wrMatrixDescription,
@@ -88,19 +89,19 @@ public class MatrixGenotypesFlipper {
 		// INIT EXTRACTOR OBJECTS
 		this.rdMatrixId = rdMatrixId;
 		this.rdMatrixMetadata = MatricesList.getMatrixMetadataById(this.rdMatrixId);
-		this.studyId = rdMatrixMetadata.getStudyId();
+		this.studyKey = rdMatrixMetadata.getStudyKey();
 		this.wrMatrixFriendlyName = wrMatrixFriendlyName;
 		this.wrMatrixDescription = wrMatrixDescription;
 		this.gtEncoding = this.rdMatrixMetadata.getGenotypeEncoding();
 		this.flipperFile = flipperFile;
 
-		this.rdMarkerSet = new MarkerSet(this.rdMatrixMetadata.getStudyId(), this.rdMatrixId);
+		this.rdMarkerSet = new MarkerSet(this.rdMatrixMetadata.getStudyKey(), this.rdMatrixId);
 		this.rdMarkerSet.initFullMarkerIdSetMap();
 		this.rdMarkerIdSetMap = this.rdMarkerSet.getMarkerIdSetMapByteArray();
 
 		this.rdChrInfoSetMap = this.rdMarkerSet.getChrInfoSetMap();
 
-		this.rdSampleSet = new SampleSet(this.rdMatrixMetadata.getStudyId(), this.rdMatrixId);
+		this.rdSampleSet = new SampleSet(this.rdMatrixMetadata.getStudyKey(), this.rdMatrixId);
 		this.rdSampleSetMap = this.rdSampleSet.getSampleIdSetMapByteArray();
 
 		if (this.flipperFile.isFile()) {
@@ -133,7 +134,7 @@ public class MatrixGenotypesFlipper {
 			descSB.append("Markers: ").append(rdMarkerSet.getMarkerSetSize()).append(", Samples: ").append(rdSampleSet.getSampleSetSize());
 
 			MatrixFactory wrMatrixHandler = new MatrixFactory(
-					studyId,
+					studyKey,
 					rdMatrixMetadata.getTechnology(), // technology
 					wrMatrixFriendlyName,
 					descSB.toString(), // description

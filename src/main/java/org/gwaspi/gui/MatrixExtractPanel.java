@@ -588,7 +588,7 @@ public class MatrixExtractPanel extends JPanel {
 									|| (samplePickCase == SetSamplePickCase.SAMPLES_EXCLUDE_BY_ID))
 							{
 								sampleCriteria.add(SampleKey.valueOf(
-										parentMatrix.getStudyId(), sampleCrit));
+										parentMatrix.getStudyKey(), sampleCrit));
 							} else {
 								sampleCriteria.add(sampleCrit.toCharArray());
 							}
@@ -626,7 +626,7 @@ public class MatrixExtractPanel extends JPanel {
 					}
 
 					MultiOperations.doExtractData(
-							parentMatrix.getStudyId(),
+							parentMatrix.getStudyKey(),
 							parentMatrix.getMatrixId(),
 							newMatrixName,
 							description,
@@ -685,7 +685,7 @@ public class MatrixExtractPanel extends JPanel {
 
 		MarkersVariableAction(MatrixKey parentMatrix) throws IOException {
 
-			MarkerSet parentMarkerSet = new MarkerSet(parentMatrix.getStudyId(), parentMatrix.getMatrixId());
+			MarkerSet parentMarkerSet = new MarkerSet(parentMatrix.getStudyKey(), parentMatrix.getMatrixId());
 			rdChrInfoSetMap = parentMarkerSet.getChrInfoSetMap();
 
 			putValue(NAME, Text.Trafo.variable);

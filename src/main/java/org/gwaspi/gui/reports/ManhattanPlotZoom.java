@@ -97,16 +97,16 @@ public final class ManhattanPlotZoom extends JPanel {
 	/** roughly 2000MB needed per 100.000 plotted markers */
 	public static final int MARKERS_NUM_DEFAULT = (int) Math.round(100000 * ((double) StartGWASpi.maxHeapSize / 2000));
 
-	private int opId;
+	private final int opId;
 	private OperationMetadata op;
 	private OperationMetadata rdOPMetadata;
 	private Map<String, MarkerKey> labeler;
 	private MatrixMetadata rdMatrixMetadata;
 	private String origMarkerId;
-	private String origChr;
+	private final String origChr;
 	private String currentMarkerId;
-	private String currentChr;
-	private Integer nRows;
+	private final String currentChr;
+	private final Integer nRows;
 	private long centerPhysPos;
 	private long startPhysPos;
 	private long requestedSetSize;
@@ -183,7 +183,7 @@ public final class ManhattanPlotZoom extends JPanel {
 			this.rdOPMetadata = OperationsList.getOperationMetadata(this.opId);
 			this.rdMatrixMetadata = MatricesList.getMatrixMetadataById(this.rdOPMetadata.getParentMatrixId());
 
-//			OperationSet rdAssocMarkerSet = new OperationSet(this.rdOPMetadata.getStudyId(), this.opId);
+//			OperationSet rdAssocMarkerSet = new OperationSet(this.rdOPMetadata.getStudyKey(), this.opId);
 //			this.labelerMap = rdAssocMarkerSet.getOpSetMap();
 		} catch (IOException ex) {
 			log.error(null, ex);
@@ -910,7 +910,7 @@ public final class ManhattanPlotZoom extends JPanel {
 		public void actionPerformed(ActionEvent evt) {
 			try {
 				List<Report> reportsList = ReportsList.getReportsList(rdOPMetadata.getOPId(), rdOPMetadata.getParentMatrixId());
-				GWASpiExplorerPanel.getSingleton().setPnl_Content(new Report_AnalysisPanel(rdOPMetadata.getStudyId(), rdOPMetadata.getParentMatrixId(), rdOPMetadata.getOPId(), nRows));
+				GWASpiExplorerPanel.getSingleton().setPnl_Content(new Report_AnalysisPanel(rdOPMetadata.getStudyKey(), rdOPMetadata.getParentMatrixId(), rdOPMetadata.getOPId(), nRows));
 				GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
 			} catch (IOException ex) {
 				log.error(null, ex);
@@ -937,7 +937,7 @@ public final class ManhattanPlotZoom extends JPanel {
 						reportFile = reportsList.get(i).getFileName();
 					}
 				}
-				GWASpiExplorerPanel.getSingleton().setPnl_Content(new ManhattanChartDisplay(rdOPMetadata.getStudyId(), reportFile, rdOPMetadata.getOPId()));
+				GWASpiExplorerPanel.getSingleton().setPnl_Content(new ManhattanChartDisplay(rdOPMetadata.getStudyKey(), reportFile, rdOPMetadata.getOPId()));
 				GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
 			} catch (IOException ex) {
 				log.error(null, ex);

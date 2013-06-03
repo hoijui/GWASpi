@@ -18,6 +18,7 @@
 package org.gwaspi.model;
 
 import java.io.Serializable;
+import javax.persistence.Transient;
 
 /**
  * Uniquely identifies a sample (within a set of samples).
@@ -34,19 +35,19 @@ public class SampleKey implements Comparable<SampleKey>, Serializable {
 	 */
 	public static final String FAMILY_ID_NONE = "0";
 
-	private int studyId;
+	private StudyKey studyKey;
 	private String sampleId;
 	private String familyId;
 
-	public SampleKey(Integer studyId, String sampleId, String familyId) {
+	public SampleKey(StudyKey studyKey, String sampleId, String familyId) {
 
-		this.studyId = studyId;
+		this.studyKey = studyKey;
 		this.sampleId = sampleId;
 		this.familyId = familyId;
 	}
 
 	protected SampleKey() {
-		this(Integer.MIN_VALUE, FAMILY_ID_NONE, FAMILY_ID_NONE);
+		this(null, FAMILY_ID_NONE, FAMILY_ID_NONE);
 	}
 
 	@Override
@@ -72,7 +73,7 @@ public class SampleKey implements Comparable<SampleKey>, Serializable {
 	@Override
 	public int hashCode() {
 		int hash = 7;
-		hash = 11 * hash + this.studyId;
+		hash = 11 * hash + this.studyKey.hashCode();
 		hash = 11 * hash + (this.sampleId != null ? this.sampleId.hashCode() : 0);
 		hash = 11 * hash + (this.familyId != null ? this.familyId.hashCode() : 0);
 		return hash;
@@ -89,23 +90,28 @@ public class SampleKey implements Comparable<SampleKey>, Serializable {
 	 *   {@link SampleKey#toString()}
 	 * @return the parsed sample key
 	 */
-	public static SampleKey valueOf(int studyId, String keyStr) {
-		return SampleKeyFactory.decodeStatic(studyId, keyStr);
+	public static SampleKey valueOf(StudyKey studyKey, String keyStr) {
+		return SampleKeyFactory.decodeStatic(studyKey, keyStr);
 	}
 
 	public static SampleKey valueOf(SampleInfo sample) {
 		return new SampleKey(
-				sample.getStudyId(),
+				sample.getStudyKey(),
 				sample.getSampleId(),
 				sample.getFamilyId());
 	}
 
 	public int getStudyId() {
-		return studyId;
+		return studyKey.getId();
 	}
 
 	protected void setStudyId(int studyId) {
-		this.studyId = studyId;
+		this.studyKey = new StudyKey(studyId);
+	}
+
+	@Transient
+	public StudyKey getStudyKey() {
+		return studyKey;
 	}
 
 	public String getSampleId() {

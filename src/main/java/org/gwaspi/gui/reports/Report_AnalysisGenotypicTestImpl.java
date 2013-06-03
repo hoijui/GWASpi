@@ -20,6 +20,7 @@ package org.gwaspi.gui.reports;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.utils.RowRendererDefault;
 import org.gwaspi.gui.utils.RowRendererGenotypicAssocWithZoomQueryDB;
+import org.gwaspi.model.StudyKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,8 +43,8 @@ public final class Report_AnalysisGenotypicTestImpl extends Report_Analysis {
 			Text.Reports.zoom,
 			Text.Reports.externalResource};
 
-	public Report_AnalysisGenotypicTestImpl(final int studyId, final String analysisFileName, final int opId, Integer nRows) {
-		super(studyId, opId, analysisFileName, nRows);
+	public Report_AnalysisGenotypicTestImpl(final StudyKey studyKey, final String analysisFileName, final int opId, Integer nRows) {
+		super(studyKey, opId, analysisFileName, nRows);
 	}
 
 	@Override

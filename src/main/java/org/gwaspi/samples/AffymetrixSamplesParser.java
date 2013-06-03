@@ -22,11 +22,12 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.LinkedList;
 import org.gwaspi.model.SampleInfo;
+import org.gwaspi.model.StudyKey;
 
 public class AffymetrixSamplesParser implements SamplesParser {
 
 	@Override
-	public Collection<SampleInfo> scanSampleInfo(int studyId, String sampleInfoPath) throws IOException {
+	public Collection<SampleInfo> scanSampleInfo(StudyKey studyKey, String sampleInfoPath) throws IOException {
 
 		Collection<SampleInfo> sampleInfos = new LinkedList<SampleInfo>();
 
@@ -41,7 +42,7 @@ public class AffymetrixSamplesParser implements SamplesParser {
 			} else {
 				sampleId = l.substring(0, l.lastIndexOf('.'));
 			}
-			SampleInfo sampleInfo = new SampleInfo(studyId, sampleId);
+			SampleInfo sampleInfo = new SampleInfo(studyKey, sampleId);
 			sampleInfos.add(sampleInfo);
 		}
 

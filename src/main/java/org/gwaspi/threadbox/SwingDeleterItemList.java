@@ -31,6 +31,7 @@ import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.ReportsList;
+import org.gwaspi.model.StudyKey;
 import org.gwaspi.model.StudyList;
 import org.gwaspi.threadbox.SwingDeleterItem.DeleteTarget;
 import org.slf4j.Logger;
@@ -81,7 +82,7 @@ public class SwingDeleterItemList {
 						currentSdi.setStartTime(org.gwaspi.global.Utils.getShortDateTimeAsString());
 						currentSdi.setQueueState(QueueState.PROCESSING);
 
-						StudyList.deleteStudy(currentSdi.getStudyId(), currentSdi.isDeleteReports());
+						StudyList.deleteStudy(new StudyKey(currentSdi.getStudyId()), currentSdi.isDeleteReports());
 						MultiOperations.printCompleted("deleting Study ID: " + currentSdi.getStudyId());
 
 						GWASpiExplorerNodes.deleteStudyNode(currentSdi.getStudyId());
@@ -96,7 +97,7 @@ public class SwingDeleterItemList {
 						currentSdi.setStartTime(org.gwaspi.global.Utils.getShortDateTimeAsString());
 						currentSdi.setQueueState(QueueState.PROCESSING);
 
-						MatricesList.deleteMatrix(new MatrixKey(currentSdi.getStudyId(), currentSdi.getMatrixId()), currentSdi.isDeleteReports());
+						MatricesList.deleteMatrix(new MatrixKey(new StudyKey(currentSdi.getStudyId()), currentSdi.getMatrixId()), currentSdi.isDeleteReports());
 						MultiOperations.printCompleted("deleting Matrix ID:" + currentSdi.getMatrixId());
 
 						GWASpiExplorerNodes.deleteMatrixNode(currentSdi.getMatrixId());

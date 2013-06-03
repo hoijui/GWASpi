@@ -221,9 +221,13 @@ public class MatrixMarkerQAPanel extends JPanel {
 								if (deleteReportOption == JOptionPane.YES_OPTION) {
 									deleteReport = true;
 								}
-								MultiOperations.deleteOperationsByOpId(parentMatrix.getStudyId(), parentMatrix.getMatrixId(), opId, deleteReport);
+								MultiOperations.deleteOperationsByOpId(
+										parentMatrix.getStudyKey(),
+										parentMatrix.getMatrixId(),
+										opId,
+										deleteReport);
 
-								//OperationManager.deleteOperationAndChildren(parentMatrix.getStudyId(), opId, deleteReport);
+								//OperationManager.deleteOperationAndChildren(parentMatrix.getStudyKey(), opId, deleteReport);
 							}
 							if (currentOP.getId() == opId) {
 								GWASpiExplorerPanel.getSingleton().getTree().setSelectionPath(GWASpiExplorerPanel.getSingleton().getTree().getSelectionPath().getParentPath());

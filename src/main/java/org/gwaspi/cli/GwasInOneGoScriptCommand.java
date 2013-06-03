@@ -25,6 +25,7 @@ import java.util.Map;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.MatrixKey;
+import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.operations.GWASinOneGOParams;
 import org.gwaspi.netCDF.operations.OperationManager;
 import org.gwaspi.threadbox.MultiOperations;
@@ -69,8 +70,8 @@ class GwasInOneGoScriptCommand extends AbstractScriptCommand {
 		GWASinOneGOParams gwasParams = new GWASinOneGOParams();
 
 		// checking study
-		int studyId = prepareStudy(args.get("study-id"), false);
-		boolean studyExists = checkStudy(studyId);
+		StudyKey studyKey = prepareStudy(args.get("study-id"), false);
+		boolean studyExists = checkStudy(studyKey);
 
 		if (studyExists) {
 			int matrixId = Integer.parseInt(args.get("matrix-id")); // Parent Matrix Id
@@ -106,14 +107,14 @@ class GwasInOneGoScriptCommand extends AbstractScriptCommand {
 			if (gwasParams.isProceed() && missingOPs.size() > 0) {
 				gwasParams.setProceed(false);
 				System.out.println(Text.Operation.warnQABeforeAnything + "\n" + Text.Operation.willPerformOperation);
-				MultiOperations.doMatrixQAs(studyId, matrixId);
+				MultiOperations.doMatrixQAs(studyKey, matrixId);
 			}
 
 			// GWAS block
 			if (gwasParams.isProceed()) {
 				System.out.println(Text.All.processing);
 				MultiOperations.doGWASwithAlterPhenotype(
-						new MatrixKey(studyId, matrixId),
+						new MatrixKey(studyKey, matrixId),
 						phenoFile,
 						gwasParams);
 				return true;

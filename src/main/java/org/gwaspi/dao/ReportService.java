@@ -21,17 +21,18 @@ import java.io.IOException;
 import java.util.List;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.Report;
+import org.gwaspi.model.ReportKey;
 
 public interface ReportService {
 
-	Report getById(int reportId) throws IOException;
+	Report getReport(ReportKey reportKey) throws IOException;
 
 	// XXX split into two methods, with either parentOperationId or parentMatrixId param, as we do not allow to fetch by specifying both anyway (on has to be Integer.MIN_VALUE as it works now)
-	List<Report> getReportsList(int parentOperationId, int parentMatrixId) throws IOException;
+	List<Report> getReports(int parentOperationId, int parentMatrixId) throws IOException;
 
 	String getReportNamePrefix(OperationMetadata op); // TODO move somewhere else
 
-	void insertRPMetadata(Report report) throws IOException;
+	void insertReport(Report report) throws IOException;
 
 	void deleteReportByMatrixId(int parentMatrixId) throws IOException;
 

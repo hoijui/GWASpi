@@ -39,6 +39,8 @@ import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.ReportsList;
+import org.gwaspi.model.Study;
+import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -120,7 +122,7 @@ public class JPAMatrixService implements MatrixService {
 			matrices = new ArrayList<MatrixKey>(matricesKeyParts.size());
 			for (Object[] matrixKeyParts : matricesKeyParts) {
 				matrices.add(new MatrixKey(
-						(Integer) matrixKeyParts[0],
+						new StudyKey((Integer) matrixKeyParts[0]),
 						(Integer) matrixKeyParts[1]));
 			}
 		} catch (Exception ex) {
@@ -133,7 +135,7 @@ public class JPAMatrixService implements MatrixService {
 	}
 
 	@Override
-	public List<MatrixKey> getMatrixKeys(int studyId) throws IOException {
+	public List<MatrixKey> getMatrixKeys(StudyKey studyKey) throws IOException {
 
 		List<MatrixKey> matrices = Collections.EMPTY_LIST;
 
@@ -141,11 +143,11 @@ public class JPAMatrixService implements MatrixService {
 		try {
 			em = open();
 			Query query = em.createNamedQuery("matrixMetadata_listIdsByStudyId");
-			query.setParameter("studyId", studyId);
+			query.setParameter("studyId", studyKey.getId());
 			List<Integer> matricesIds = query.getResultList();
 			matrices = new ArrayList<MatrixKey>(matricesIds.size());
 			for (Integer matrixId : matricesIds) {
-				matrices.add(new MatrixKey(studyId, matrixId));
+				matrices.add(new MatrixKey(studyKey, matrixId));
 			}
 		} catch (Exception ex) {
 			LOG.error("Failed fetching all matrices", ex);
@@ -157,7 +159,7 @@ public class JPAMatrixService implements MatrixService {
 	}
 
 	@Override
-	public List<MatrixMetadata> getMatrices(int studyId) throws IOException {
+	public List<MatrixMetadata> getMatrices(StudyKey studyKey) throws IOException {
 
 		List<MatrixMetadata> matricesMetadata = Collections.EMPTY_LIST;
 
@@ -165,7 +167,7 @@ public class JPAMatrixService implements MatrixService {
 		try {
 			em = open();
 			Query query = em.createNamedQuery("matrixMetadata_listByStudyId");
-			query.setParameter("studyId", studyId);
+			query.setParameter("studyId", studyKey.getId());
 			matricesMetadata = query.getResultList();
 			for (int i = 0; i < matricesMetadata.size(); i++) {
 				matricesMetadata.set(i, completeMatricesTable(matricesMetadata.get(i)));
@@ -226,8 +228,7 @@ public class JPAMatrixService implements MatrixService {
 			close(em);
 		}
 
-		String genotypesFolder = Config.getConfigValue(Config.PROPERTY_GENOTYPES_DIR, "");
-		genotypesFolder += "/STUDY_" + matrixMetadata.getStudyId() + "/";
+		String genotypesFolder = Study.constructGTPath(matrixMetadata.getKey().getStudyKey());
 
 		// DELETE OPERATION netCDFs FROM THIS MATRIX
 		List<OperationMetadata> operations = OperationsList.getOperationsList(matrixKey.getMatrixId());
@@ -317,7 +318,7 @@ public class JPAMatrixService implements MatrixService {
 	}
 
 	@Override
-	public MatrixMetadata getMatrix(String netCDFpath, int studyId, String newMatrixName) throws IOException {
+	public MatrixMetadata getMatrix(String netCDFpath, StudyKey studyKey, String newMatrixName) throws IOException {
 
 		int matrixId = Integer.MIN_VALUE;
 		String matrixFriendlyName = newMatrixName;
@@ -327,25 +328,24 @@ public class JPAMatrixService implements MatrixService {
 		Date creationDate = null;
 
 		String pathToMatrix = netCDFpath;
-		return loadMatrixMetadataFromFile(matrixId, matrixFriendlyName, matrixNetCDFName, studyId, pathToMatrix, description, matrixType, creationDate);
+		return loadMatrixMetadataFromFile(matrixId, matrixFriendlyName, matrixNetCDFName, studyKey, pathToMatrix, description, matrixType, creationDate);
 	}
 
 	private MatrixMetadata completeMatricesTable(MatrixMetadata toCompleteMatrixMetadata) throws IOException {
-		String genotypesFolder = Config.getConfigValue(Config.PROPERTY_GENOTYPES_DIR, "");
-		String pathToStudy = genotypesFolder + "/STUDY_" + toCompleteMatrixMetadata.getStudyId() + "/";
+		String pathToStudy = Study.constructGTPath(toCompleteMatrixMetadata.getKey().getStudyKey());
 		String pathToMatrix = pathToStudy + toCompleteMatrixMetadata.getMatrixNetCDFName() + ".nc";
 		return loadMatrixMetadataFromFile(
 				toCompleteMatrixMetadata.getMatrixId(),
 				toCompleteMatrixMetadata.getMatrixFriendlyName(),
 				toCompleteMatrixMetadata.getMatrixNetCDFName(),
-				toCompleteMatrixMetadata.getStudyId(),
+				new StudyKey(toCompleteMatrixMetadata.getStudyId()),
 				pathToMatrix,
 				toCompleteMatrixMetadata.getDescription(),
 				toCompleteMatrixMetadata.getMatrixType(),
 				toCompleteMatrixMetadata.getCreationDate());
 	}
 
-	public static MatrixMetadata loadMatrixMetadataFromFile(int matrixId, String matrixFriendlyName, String matrixNetCDFName, int studyId, String pathToMatrix, String description, String matrixType, Date creationDate) throws IOException {
+	private static MatrixMetadata loadMatrixMetadataFromFile(int matrixId, String matrixFriendlyName, String matrixNetCDFName, StudyKey studyKey, String pathToMatrix, String description, String matrixType, Date creationDate) throws IOException {
 
 		String gwaspiDBVersion = "";
 		ImportFormat technology = ImportFormat.UNKNOWN;
@@ -355,9 +355,6 @@ public class JPAMatrixService implements MatrixService {
 		int markerSetSize = Integer.MIN_VALUE;
 		int sampleSetSize = Integer.MIN_VALUE;
 
-//		String genotypesFolder = Config.getConfigValue(Config.PROPERTY_GENOTYPES_DIR, "");
-//		String pathToStudy = genotypesFolder + "/STUDY_" + studyId + "/";
-//		pathToMatrix = pathToStudy + matrixNetCDFName + ".nc";
 		NetcdfFile ncfile = null;
 		if (new File(pathToMatrix).exists()) {
 			try {
@@ -403,7 +400,7 @@ public class JPAMatrixService implements MatrixService {
 		}
 
 		MatrixMetadata matrixMetadata = new MatrixMetadata(
-			matrixId,
+			new MatrixKey(studyKey, matrixId),
 			matrixFriendlyName,
 			matrixNetCDFName,
 			pathToMatrix,
@@ -415,7 +412,6 @@ public class JPAMatrixService implements MatrixService {
 			hasDictionray,
 			markerSetSize,
 			sampleSetSize,
-			studyId,
 			matrixType,
 			creationDate);
 

@@ -18,32 +18,33 @@
 package org.gwaspi.model;
 
 import java.io.Serializable;
+import javax.persistence.Transient;
 
 /**
  * Uniquely identifies a report.
  */
 public class ReportKey implements Comparable<ReportKey>, Serializable {
 
-	private int studyId;
+	private StudyKey studyKey;
 	private int parentMatrixId;
 	private int parentOperationId;
 	private int id;
 
-	public ReportKey(int studyId, int parentMatrixId, int parentOperationId, int id) {
+	public ReportKey(StudyKey studyKey, int parentMatrixId, int parentOperationId, int id) {
 
-		this.studyId = studyId;
+		this.studyKey = studyKey;
 		this.parentMatrixId = parentMatrixId;
 		this.parentOperationId = parentOperationId;
 		this.id = id;
 	}
 
 	protected ReportKey() {
-		this(Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE);
+		this(null, Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE);
 	}
 
 	public static ReportKey valueOf(Report report) {
 		return new ReportKey(
-				report.getStudyId(),
+				report.getStudyKey(),
 				report.getParentMatrixId(),
 				report.getParentOperationId(),
 				report.getId());
@@ -57,7 +58,7 @@ public class ReportKey implements Comparable<ReportKey>, Serializable {
 	@Override
 	public int hashCode() {
 		int hash = 5;
-		hash = 61 * hash + this.studyId;
+		hash = 61 * hash + this.studyKey.hashCode();
 		hash = 61 * hash + this.id;
 		hash = 61 * hash + this.parentMatrixId;
 		hash = 61 * hash + this.parentOperationId;
@@ -73,7 +74,7 @@ public class ReportKey implements Comparable<ReportKey>, Serializable {
 			return false;
 		}
 		final ReportKey other = (ReportKey) obj;
-		if (this.getStudyId() != other.getStudyId()) {
+		if (!this.getStudyKey().equals(other.getStudyKey())) {
 			return false;
 		}
 		if (this.getId() != other.getId()) {
@@ -89,11 +90,16 @@ public class ReportKey implements Comparable<ReportKey>, Serializable {
 	}
 
 	public int getStudyId() {
-		return studyId;
+		return studyKey.getId();
 	}
 
 	protected void setStudyId(int studyId) {
-		this.studyId = studyId;
+		this.studyKey = new StudyKey(studyId);
+	}
+
+	@Transient
+	public StudyKey getStudyKey() {
+		return studyKey;
 	}
 
 	public int getId() {

@@ -17,6 +17,7 @@
 
 package org.gwaspi.threadbox;
 
+import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.operations.MatrixOperation;
 import org.gwaspi.netCDF.operations.MergeAllMatrixOperation;
 import org.gwaspi.netCDF.operations.MergeMarkersMatrixOperation;
@@ -30,7 +31,7 @@ public class Threaded_MergeMatrices extends AbstractThreaded_MergeMatrices {
 	private final boolean all;
 
 	public Threaded_MergeMatrices(
-			int studyId,
+			StudyKey studyKey,
 			int parentMatrixId1,
 			int parentMatrixId2,
 			String newMatrixName,
@@ -38,7 +39,7 @@ public class Threaded_MergeMatrices extends AbstractThreaded_MergeMatrices {
 			boolean all)
 	{
 		super(
-				studyId,
+				studyKey,
 				parentMatrixId1,
 				parentMatrixId2,
 				newMatrixName,
@@ -54,14 +55,14 @@ public class Threaded_MergeMatrices extends AbstractThreaded_MergeMatrices {
 
 		if (all) {
 			joinMatrices = new MergeAllMatrixOperation(
-				studyId,
+				studyKey,
 				parentMatrixId1,
 				parentMatrixId2,
 				newMatrixName,
 				description);
 		} else {
 			joinMatrices = new MergeMarkersMatrixOperation(
-				studyId,
+				studyKey,
 				parentMatrixId1,
 				parentMatrixId2,
 				newMatrixName,

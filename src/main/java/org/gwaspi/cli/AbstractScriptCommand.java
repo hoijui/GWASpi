@@ -65,32 +65,33 @@ abstract class AbstractScriptCommand implements ScriptCommand {
 			throw new RuntimeException("You may only specify either name (\"" + nameKey
 					+ "\") or id (\"" + idKey + "\") of the study, not both");
 		} else if (idValue != null) {
-			int studyId;
+			StudyKey studyKey;
 			try {
-				studyId = Integer.parseInt(idValue);
+				studyKey = new StudyKey(Integer.parseInt(idValue));
 			} catch (NumberFormatException ex) {
 				if (allowNew && idValue.contains("New Study")) {
-					studyId = StudyList.insertNewStudy(
+					studyKey = StudyList.insertNewStudy(new Study(
 							idValue/*.substring(10)*/,
-							"Study created by command-line interface");
+							"Study created by command-line interface"));
 				} else {
 					throw new IOException("The Study-id must be an integer value of an existing Study, \"" + idValue + "\" is not so!");
 				}
 			}
-			return new StudyKey(studyId);
+			return studyKey;
 		} else { // -> (nameValue != null)
 			if (allowNew && nameValue.contains("New Study")) {
-				int studyId = StudyList.insertNewStudy(
+				StudyKey studyKey = StudyList.insertNewStudy(new Study(
 						idValue/*.substring(10)*/,
-						"Study created by command-line interface");
-				return new StudyKey(studyId);
+						"Study created by command-line interface"));
+				return studyKey;
 			} else {
-				return new StudyKey(nameValue);
+				throw new UnsupportedOperationException("Not yet implemented");
+//				return StudyList.getStudyKey(nameValue);
 			}
 		}
 	}
 
-	protected static MatrixKey fetchMatrixKey(Map<String, String> script, int studyId, String idKey, String nameKey) throws IOException {
+	protected static MatrixKey fetchMatrixKey(Map<String, String> script, StudyKey studyKey, String idKey, String nameKey) throws IOException {
 
 		String idValue = script.get(idKey);
 		String nameValue = script.get(nameKey);
@@ -103,10 +104,10 @@ abstract class AbstractScriptCommand implements ScriptCommand {
 					+ "\") or id (\"" + idKey + "\") of the matrix, not both");
 		} else if (idValue != null) {
 			int matrixId = Integer.parseInt(idValue);
-			return new MatrixKey(studyId, matrixId);
+			return new MatrixKey(studyKey, matrixId);
 		} else {
 			MatrixMetadata matrixMetadata = MatricesList.getMatrixMetadataByNetCDFname(nameValue);
-			return new MatrixKey(studyId, matrixMetadata.getMatrixId());
+			return new MatrixKey(studyKey, matrixMetadata.getMatrixId());
 		}
 	}
 
@@ -117,32 +118,35 @@ abstract class AbstractScriptCommand implements ScriptCommand {
 	 *   if <code>studyIdStr.contains("New Study")</code>
 	 * @return the study ID or Integer.MIN_VALUE, in case of a problem.
 	 */
-	protected static int prepareStudy(String studyIdStr, boolean allowNew) throws IOException {
+	protected static StudyKey prepareStudy(String studyIdStr, boolean allowNew) throws IOException {
 
-		int studyId = Integer.MIN_VALUE;
+		StudyKey studyKey = null;
 
 		try {
-			studyId = Integer.parseInt(studyIdStr); // Study Id
+			studyKey = new StudyKey(Integer.parseInt(studyIdStr)); // Study Id
 		} catch (Exception ex) {
 			if (allowNew) {
 				if (studyIdStr.contains("New Study")) {
-					studyId = StudyList.insertNewStudy(
+					studyKey = StudyList.insertNewStudy(new Study(
 							studyIdStr/*.substring(10)*/,
-							"Study created by command-line interface");
+							"Study created by command-line interface"));
 				}
 			} else {
 				System.out.println("The Study-id must be an integer value of an existing Study, \""+studyIdStr+"\" is not so!");
 			}
 		}
 
-		return studyId;
+		return studyKey;
 	}
 
 	protected static boolean checkStudy(int studyId) throws IOException {
+		return checkStudy(new StudyKey(studyId));
+	}
+	protected static boolean checkStudy(StudyKey studyKey) throws IOException {
 
 		boolean studyExists;
 
-		Study study = StudyList.getStudy(studyId);
+		Study study = StudyList.getStudy(studyKey);
 		studyExists = (study != null);
 
 		if (!studyExists) {

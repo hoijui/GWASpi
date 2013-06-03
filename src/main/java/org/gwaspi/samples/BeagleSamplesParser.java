@@ -25,11 +25,12 @@ import java.util.Collection;
 import java.util.LinkedList;
 import org.gwaspi.constants.cImport;
 import org.gwaspi.model.SampleInfo;
+import org.gwaspi.model.StudyKey;
 
 public class BeagleSamplesParser implements SamplesParser {
 
 	@Override
-	public Collection<SampleInfo> scanSampleInfo(int studyId, String sampleInfoPath) throws IOException {
+	public Collection<SampleInfo> scanSampleInfo(StudyKey studyKey, String sampleInfoPath) throws IOException {
 
 		Collection<SampleInfo> sampleInfos = new LinkedList<SampleInfo>();
 
@@ -60,7 +61,7 @@ public class BeagleSamplesParser implements SamplesParser {
 
 		for (int i = 2; i < beagleAffections.length; i++) {
 			SampleInfo sampleInfo = new SampleInfo(
-					studyId,
+					studyKey,
 					sampleIds[i],
 					"0",
 					"0",

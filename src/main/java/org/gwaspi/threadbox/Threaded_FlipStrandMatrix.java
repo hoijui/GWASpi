@@ -19,6 +19,9 @@ package org.gwaspi.threadbox;
 
 import java.io.File;
 import org.gwaspi.model.GWASpiExplorerNodes;
+import org.gwaspi.model.OperationKey;
+import org.gwaspi.model.OperationsList;
+import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.operations.MatrixGenotypesFlipper;
 import org.gwaspi.netCDF.operations.OP_QAMarkers;
 import org.gwaspi.netCDF.operations.OP_QASamples;
@@ -28,15 +31,15 @@ import org.slf4j.LoggerFactory;
 public class Threaded_FlipStrandMatrix extends CommonRunnable {
 
 	private int resultMatrixId;
-	private int studyId;
-	private int parentMatrixId;
-	private String newMatrixName;
-	private String description;
-	private String markerIdentifyer;
-	private File markerFlipFile;
+	private final StudyKey studyKey;
+	private final int parentMatrixId;
+	private final String newMatrixName;
+	private final String description;
+	private final String markerIdentifyer;
+	private final File markerFlipFile;
 
 	public Threaded_FlipStrandMatrix(
-			int studyId,
+			StudyKey studyKey,
 			int parentMatrixId,
 			String newMatrixName,
 			String description,
@@ -49,7 +52,7 @@ public class Threaded_FlipStrandMatrix extends CommonRunnable {
 				"Flip Strand Matrix ID: " + parentMatrixId,
 				"Extracting");
 
-		this.studyId = studyId;
+		this.studyKey = studyKey;
 		this.parentMatrixId = parentMatrixId;
 		this.newMatrixName = newMatrixName;
 		this.description = description;
@@ -64,26 +67,29 @@ public class Threaded_FlipStrandMatrix extends CommonRunnable {
 	protected void runInternal(SwingWorkerItem thisSwi) throws Exception {
 
 		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
-			MatrixGenotypesFlipper flipMatrix = new MatrixGenotypesFlipper(studyId,
+			MatrixGenotypesFlipper flipMatrix = new MatrixGenotypesFlipper(
+					studyKey,
 					parentMatrixId,
 					newMatrixName,
 					description,
 					markerIdentifyer,
 					markerFlipFile);
 			resultMatrixId = flipMatrix.flipGenotypesToNewMatrix();
-			GWASpiExplorerNodes.insertMatrixNode(studyId, resultMatrixId);
+			GWASpiExplorerNodes.insertMatrixNode(studyKey, resultMatrixId);
 		}
 
 		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
 			int sampleQAOpId = new OP_QASamples(resultMatrixId).processMatrix();
-			GWASpiExplorerNodes.insertOperationUnderMatrixNode(resultMatrixId, sampleQAOpId);
+			OperationKey sampleQAOpKey = OperationKey.valueOf(OperationsList.getById(sampleQAOpId));
+			GWASpiExplorerNodes.insertOperationUnderMatrixNode(sampleQAOpKey);
 			org.gwaspi.reports.OutputQASamples.writeReportsForQASamplesData(sampleQAOpId, true);
 			GWASpiExplorerNodes.insertReportsUnderOperationNode(sampleQAOpId);
 		}
 
 		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
 			int markersQAOpId = new OP_QAMarkers(resultMatrixId).processMatrix();
-			GWASpiExplorerNodes.insertOperationUnderMatrixNode(resultMatrixId, markersQAOpId);
+			OperationKey markersQAOpKey = OperationKey.valueOf(OperationsList.getById(markersQAOpId));
+			GWASpiExplorerNodes.insertOperationUnderMatrixNode(markersQAOpKey);
 			org.gwaspi.reports.OutputQAMarkers.writeReportsForQAMarkersData(markersQAOpId);
 			GWASpiExplorerNodes.insertReportsUnderOperationNode(markersQAOpId);
 			MultiOperations.printCompleted("Matrix Quality Control");

@@ -32,6 +32,7 @@ import org.gwaspi.global.Text;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.SampleKey;
+import org.gwaspi.model.StudyKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,14 +41,14 @@ public class MetadataLoaderPlinkBinary implements MetadataLoader {
 	private final Logger log
 			= LoggerFactory.getLogger(MetadataLoaderPlinkBinary.class);
 
-	private String bimPath;
-	private StrandType strand;
-	private int studyId;
+	private final String bimPath;
+	private final StrandType strand;
+	private final StudyKey studyKey;
 
-	public MetadataLoaderPlinkBinary(String bimPath, StrandType strand, int studyId) {
+	public MetadataLoaderPlinkBinary(String bimPath, StrandType strand, StudyKey studyKey) {
 
 		this.bimPath = bimPath;
-		this.studyId = studyId;
+		this.studyKey = studyKey;
 		this.strand = strand;
 	}
 
@@ -152,7 +153,7 @@ public class MetadataLoaderPlinkBinary implements MetadataLoader {
 			String markerId = mapVals[Plink_Binary.bim_markerId].trim();
 			alleles[0] = mapVals[Plink_Binary.bim_allele1].trim();
 			alleles[1] = mapVals[Plink_Binary.bim_allele2].trim();
-			origMarkerIdSetMap.put(SampleKey.valueOf(studyId, markerId), alleles); // XXX really? markerId as sampleId?
+			origMarkerIdSetMap.put(SampleKey.valueOf(studyKey, markerId), alleles); // XXX really? markerId as sampleId?
 		}
 
 		inputMapBR.close();

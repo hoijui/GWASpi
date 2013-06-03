@@ -47,6 +47,7 @@ import org.gwaspi.gui.utils.MatricesTableModel;
 import org.gwaspi.gui.utils.RowRendererDefault;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.Study;
+import org.gwaspi.model.StudyKey;
 import org.gwaspi.model.StudyList;
 import org.gwaspi.threadbox.MultiOperations;
 import org.gwaspi.threadbox.SwingWorkerItemList;
@@ -75,14 +76,9 @@ public class CurrentStudyPanel extends JPanel {
 	private final JTextArea txtA_StudyDesc;
 	// End of variables declaration
 
-	/**
-	 *
-	 * @param studyId
-	 * @throws IOException
-	 */
-	public CurrentStudyPanel(int studyId) throws IOException {
+	public CurrentStudyPanel(StudyKey studyKey) throws IOException {
 
-		study = StudyList.getStudy(studyId);
+		study = StudyList.getStudy(studyKey);
 
 		pnl_StudyDesc = new JPanel();
 		scrl_Desc = new JScrollPane();
@@ -134,7 +130,7 @@ public class CurrentStudyPanel extends JPanel {
 		btn_LoadGenotypes.setAction(new LoadGenotypesAction(study));
 
 		pnl_MatrixTable.setBorder(BorderFactory.createTitledBorder(null, Text.Matrix.matrices, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("DejaVu Sans", 1, 13))); // NOI18N
-		tbl_MatrixTable.setModel(new MatricesTableModel(MatricesList.getMatricesTable(study.getId())));
+		tbl_MatrixTable.setModel(new MatricesTableModel(MatricesList.getMatricesTable(StudyKey.valueOf(study))));
 		scrl_MatrixTable.setViewportView(tbl_MatrixTable);
 
 		btn_DeleteMatrix.setAction(new DeleteMatrixAction(study, this, tbl_MatrixTable));
@@ -281,7 +277,7 @@ public class CurrentStudyPanel extends JPanel {
 		@Override
 		public void actionPerformed(ActionEvent evt) {
 			//GWASpiExplorerPanel.getSingleton().pnl_Content = new LoadDataPanel(study.getId());
-			GWASpiExplorerPanel.getSingleton().setPnl_Content(new LoadDataPanel(study.getId()));
+			GWASpiExplorerPanel.getSingleton().setPnl_Content(new LoadDataPanel(StudyKey.valueOf(study)));
 			GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
 		}
 	}
@@ -348,7 +344,7 @@ public class CurrentStudyPanel extends JPanel {
 								if (deleteReportOption == JOptionPane.YES_OPTION) {
 									deleteReport = true;
 								}
-								MultiOperations.deleteMatrix(study.getId(), matrixId, deleteReport);
+								MultiOperations.deleteMatrix(StudyKey.valueOf(study), matrixId, deleteReport);
 								//netCDF.matrices.MatrixManager.deleteMatrix(matrixId, deleteReport);
 							} else {
 								Dialogs.showWarningDialogue(Text.Processes.cantDeleteRequiredItem);

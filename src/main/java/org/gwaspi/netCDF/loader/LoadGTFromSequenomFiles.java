@@ -36,6 +36,7 @@ import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleKey;
+import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -95,7 +96,7 @@ public class LoadGTFromSequenomFiles implements GenotypesLoader {
 //		File gtFileToImport = new File(gtDirPath);
 
 		//<editor-fold defaultstate="expanded" desc="CREATE MARKERSET & NETCDF">
-		MetadataLoader markerSetLoader = new MetadataLoaderSequenom(loadDescription.getAnnotationFilePath(), loadDescription.getStudyId());
+		MetadataLoader markerSetLoader = new MetadataLoaderSequenom(loadDescription.getAnnotationFilePath(), loadDescription.getStudyKey());
 
 		Map<MarkerKey, MarkerMetadata> markerSetMap = markerSetLoader.getSortedMarkerSetWithMetaData();
 
@@ -133,7 +134,7 @@ public class LoadGTFromSequenomFiles implements GenotypesLoader {
 		Map<MarkerKey, int[]> chrSetMap = org.gwaspi.netCDF.matrices.Utils.aggregateChromosomeInfo(markerSetMap, 2, 3);
 
 		MatrixFactory matrixFactory = new MatrixFactory(
-				loadDescription.getStudyId(),
+				loadDescription.getStudyKey(),
 				loadDescription.getFormat(),
 				loadDescription.getFriendlyName(),
 				descSB.toString(), // description
@@ -254,7 +255,7 @@ public class LoadGTFromSequenomFiles implements GenotypesLoader {
 			for (int i = 0; i < gtFilesToImport.length; i++) {
 				//log.info("Input file: "+i);
 				loadIndividualFiles(
-						loadDescription.getStudyId(),
+						loadDescription.getStudyKey(),
 						gtFilesToImport[i],
 						sampleInfo.getKey(),
 						alleles);
@@ -319,7 +320,7 @@ public class LoadGTFromSequenomFiles implements GenotypesLoader {
 	 * @see AbstractLoadGTFromFiles#loadIndividualFiles
 	 */
 	public void loadIndividualFiles(
-			int studyId,
+			StudyKey studyKey,
 			File file,
 			SampleKey sampleKey,
 			Map<MarkerKey, byte[]> alleles)
@@ -335,7 +336,7 @@ public class LoadGTFromSequenomFiles implements GenotypesLoader {
 				String[] cVals = l.split(cImport.Separators.separators_Tab_rgxp);
 				String currSampleId = cVals[Standard.sampleId];
 				// NOTE The Sequenom format does not have a family-ID
-				SampleKey currSampleKey = new SampleKey(studyId, currSampleId, SampleKey.FAMILY_ID_NONE);
+				SampleKey currSampleKey = new SampleKey(studyKey, currSampleId, SampleKey.FAMILY_ID_NONE);
 				if (currSampleKey.equals(sampleKey)) {
 					// ONLY PROCESS CURRENT SAMPLEID DATA
 					String markerId = cVals[Standard.markerId].trim();
