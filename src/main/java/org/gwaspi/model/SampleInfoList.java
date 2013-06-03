@@ -35,22 +35,22 @@ public class SampleInfoList {
 	}
 
 	public static List<SampleInfo> getAllSampleInfoFromDB() throws IOException {
-		return sampleInfoService.getAllSampleInfoFromDB();
+		return sampleInfoService.getSamples();
 	}
 
 	public static List<SampleInfo> getAllSampleInfoFromDBByPoolID(Integer poolId) throws IOException {
-		return sampleInfoService.getAllSampleInfoFromDBByPoolID(poolId);
+		return sampleInfoService.getSamples(poolId);
 	}
 
-	public static List<SampleInfo> getCurrentSampleInfoFromDB(SampleKey key, Integer poolId) throws IOException {
-		return sampleInfoService.getCurrentSampleInfoFromDB(key, poolId);
+	public static SampleInfo getSample(SampleKey key) throws IOException {
+		return sampleInfoService.getSample(key);
 	}
 
 	public static void deleteSamplesByPoolId(Integer poolId) throws IOException {
-		sampleInfoService.deleteSamplesByPoolId(poolId);
+		sampleInfoService.deleteSamples(poolId);
 	}
 
-	public static void insertSampleInfos(Integer studyId, Collection<SampleInfo> sampleInfos) throws IOException {
-		sampleInfoService.insertSampleInfos(studyId, sampleInfos);
+	public static void insertSampleInfos(Collection<SampleInfo> sampleInfos) throws IOException {
+		sampleInfoService.insertSamples(sampleInfos);
 	}
 }

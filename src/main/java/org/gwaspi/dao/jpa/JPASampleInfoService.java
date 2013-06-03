@@ -87,7 +87,7 @@ public class JPASampleInfoService implements SampleInfoService {
 	}
 
 	@Override
-	public List<SampleInfo> getAllSampleInfoFromDB() throws IOException {
+	public List<SampleInfo> getSamples() throws IOException {
 
 		List<SampleInfo> sampleInfos = Collections.EMPTY_LIST;
 
@@ -105,7 +105,7 @@ public class JPASampleInfoService implements SampleInfoService {
 	}
 
 	@Override
-	public List<SampleInfo> getAllSampleInfoFromDBByPoolID(Integer studyId) throws IOException {
+	public List<SampleInfo> getSamples(Integer studyId) throws IOException {
 
 		List<SampleInfo> sampleInfos = Collections.EMPTY_LIST;
 
@@ -128,36 +128,25 @@ public class JPASampleInfoService implements SampleInfoService {
 	}
 
 	@Override
-	public List<SampleInfo> getCurrentSampleInfoFromDB(SampleKey key, Integer studyId) throws IOException {
+	public SampleInfo getSample(SampleKey key) throws IOException {
 
-		List<SampleInfo> sampleInfos = Collections.EMPTY_LIST;
+		SampleInfo sampleInfo = null;
 
 		EntityManager em = null;
 		try {
 			em = open();
-			Query query = em.createNamedQuery(
-					"sampleInfo_listBySampleIdFamilyIdStudyId");
-			query.setParameter("sampleId", key.getSampleId());
-			query.setParameter("familyId", key.getFamilyId());
-			query.setParameter("studyId", studyId);
-			sampleInfos = (List<SampleInfo>) query.getResultList();
-		} catch (NoResultException ex) {
-			LOG.error("Failed fetching a sample-info by"
-					+ ": sample-id: " + key.getSampleId()
-					+ ", family-id: " + key.getFamilyId()
-					+ ", study-id: " + studyId
-					+ "; (not found)", ex);
+			sampleInfo = em.find(SampleInfo.class, key);
 		} catch (Exception ex) {
-			LOG.error("Failed fetching sample-info", ex);
+			LOG.error("Failed fetching sample-info: " + key, ex);
 		} finally {
 			close(em);
 		}
 
-		return sampleInfos;
+		return sampleInfo;
 	}
 
 	@Override
-	public void deleteSamplesByPoolId(Integer studyId) throws IOException {
+	public void deleteSamples(int studyId) throws IOException {
 
 		EntityManager em = null;
 		try {
@@ -178,10 +167,9 @@ public class JPASampleInfoService implements SampleInfoService {
 	}
 
 	@Override
-	public void insertSampleInfos(Integer studyId, Collection<SampleInfo> sampleInfos) throws IOException {
+	public void insertSamples(Collection<SampleInfo> sampleInfos) throws IOException {
 
 		for (SampleInfo sampleInfo : sampleInfos) {
-			sampleInfo.setStudyId(studyId);
 			EntityManager em = null;
 			try {
 				em = open();
@@ -192,7 +180,7 @@ public class JPASampleInfoService implements SampleInfoService {
 				try {
 					em = open();
 					begin(em);
-					em.merge(sampleInfo);
+					em.merge(sampleInfo); // TODO rather check the id, and decide to do persist or merge
 					commit(em);
 				} catch (Exception ex2) {
 					LOG.error("Failed adding a sample-info", ex);

@@ -57,7 +57,7 @@ public class LoadManager {
 		if (genotypesLoader == null) {
 			throw new IOException("No Genotypes-Loader found for format " + loadDescription.getFormat());
 		} else {
-			SampleInfoList.insertSampleInfos(loadDescription.getStudyId(), sampleInfos);
+			SampleInfoList.insertSampleInfos(sampleInfos);
 			newMatrixId = genotypesLoader.processData(loadDescription, sampleInfos);
 		}
 

@@ -59,7 +59,7 @@ public class Threaded_UpdateSampleInfo extends CommonRunnable {
 				poolId,
 				ImportFormat.GWASpi,
 				sampleInfoFile.getPath());
-		SampleInfoList.insertSampleInfos(poolId, sampleInfos);
+		SampleInfoList.insertSampleInfos(sampleInfos);
 
 		// DO NOT! Write new reports of SAMPLE QA
 //		OperationsList opList = new OperationsList(matrix.getMatrixId());

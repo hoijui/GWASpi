@@ -18,7 +18,6 @@
 package org.gwaspi.netCDF.exporter;
 
 import java.io.IOException;
-import java.util.List;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleInfoList;
 import org.gwaspi.model.SampleKey;
@@ -30,15 +29,13 @@ public class Utils {
 
 	public static SampleInfo getCurrentSampleFormattedInfo(SampleKey key, Integer poolId) throws IOException {
 
-		SampleInfo sampleInfo = null;
-
-		List<SampleInfo> sampleInfos = SampleInfoList.getCurrentSampleInfoFromDB(key, poolId);
+		SampleInfo sampleInfo = SampleInfoList.getSample(key);
 
 		// PREVENT PHANTOM-DB READS EXCEPTIONS
-		if (sampleInfos.isEmpty()) {
+		if (sampleInfo == null) {
 			throw new IOException("No sample-info found in the DB for sample-key: " + key.toString());
 		} else {
-			SampleInfo baseSampleInfo = sampleInfos.get(0);
+			SampleInfo baseSampleInfo = sampleInfo;
 
 			// XXX maybe we should make use of the familyId in key instead (or at least aswell, checking this value against it)
 			String familyId = baseSampleInfo.getFamilyId();

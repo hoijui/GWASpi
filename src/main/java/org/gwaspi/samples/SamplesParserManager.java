@@ -72,9 +72,9 @@ public class SamplesParserManager {
 //			NetcdfFile rdNcFile = NetcdfFile.open(rdMatrixMetadata.getPathToMatrix());
 			SampleSet rdSampleSet = new SampleSet(rdMatrixMetadata.getStudyId(), matrixId);
 			for (SampleKey key : rdSampleSet.getSampleKeys()) {
-				List<SampleInfo> sampleInfos = SampleInfoList.getCurrentSampleInfoFromDB(key, rdMatrixMetadata.getStudyId());
-				if (sampleInfos != null) {
-					resultHS.add(sampleInfos.get(0).getAffection());
+				SampleInfo sampleInfo = SampleInfoList.getSample(key);
+				if (sampleInfo != null) {
+					resultHS.add(sampleInfo.getAffection());
 				}
 			}
 		} catch (InvalidRangeException ex) {

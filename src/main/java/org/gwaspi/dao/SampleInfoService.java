@@ -25,13 +25,13 @@ import org.gwaspi.model.SampleKey;
 
 public interface SampleInfoService {
 
-	List<SampleInfo> getAllSampleInfoFromDB() throws IOException;
+	SampleInfo getSample(SampleKey key) throws IOException;
 
-	List<SampleInfo> getAllSampleInfoFromDBByPoolID(Integer studyId) throws IOException;
+	List<SampleInfo> getSamples() throws IOException;
 
-	List<SampleInfo> getCurrentSampleInfoFromDB(SampleKey key, Integer studyId) throws IOException;
+	List<SampleInfo> getSamples(Integer studyId) throws IOException;
 
-	void deleteSamplesByPoolId(Integer studyId) throws IOException;
+	void deleteSamples(int studyId) throws IOException;
 
-	void insertSampleInfos(Integer studyId, Collection<SampleInfo> sampleInfos) throws IOException;
+	void insertSamples(Collection<SampleInfo> sampleInfos) throws IOException;
 }

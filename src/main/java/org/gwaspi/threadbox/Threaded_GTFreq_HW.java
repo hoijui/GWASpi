@@ -100,7 +100,7 @@ public class Threaded_GTFreq_HW extends CommonRunnable {
 							matrixKey.getStudyId(),
 							ImportFormat.GWASpi,
 							phenotypeFile.getPath());
-					SampleInfoList.insertSampleInfos(matrixKey.getMatrixId(), sampleInfos);
+					SampleInfoList.insertSampleInfos(sampleInfos);
 
 					censusOpId = OperationManager.censusCleanMatrixMarkersByPhenotypeFile(
 							matrixKey.getMatrixId(),
