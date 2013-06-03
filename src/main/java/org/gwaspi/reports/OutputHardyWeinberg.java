@@ -27,7 +27,6 @@ import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.global.Config;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.MarkerKey;
-import org.gwaspi.model.MatrixOperationSpec;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.Report;
@@ -114,10 +113,10 @@ public class OutputHardyWeinberg {
 
 			// WRITE KNOWN ALLELES FROM QA
 			// get MARKER_QA Operation
-			List<MatrixOperationSpec> operations = OperationsList.getMatrixOperations(rdOPMetadata.getParentMatrixId());
+			List<OperationMetadata> operations = OperationsList.getOperationsList(rdOPMetadata.getParentMatrixId());
 			int markersQAopId = Integer.MIN_VALUE;
 			for (int i = 0; i < operations.size(); i++) {
-				MatrixOperationSpec op = operations.get(i);
+				OperationMetadata op = operations.get(i);
 				if (op.getType().equals(OPType.MARKER_QA)) {
 					markersQAopId = op.getId();
 				}

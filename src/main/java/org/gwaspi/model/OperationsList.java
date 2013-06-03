@@ -35,23 +35,23 @@ public class OperationsList {
 	}
 
 	public static OperationMetadata getById(int operationId) throws IOException {
-		return operationService.getById(operationId);
+		return operationService.getOperation(operationId);
 	}
 
 	public static List<OperationMetadata> getOperationsList(int parentMatrixId) throws IOException {
-		return operationService.getOperationsTable(parentMatrixId);
+		return operationService.getOperations(parentMatrixId);
 	}
 
 	public static List<OperationMetadata> getOperationsList(int parentMatrixId, int parentOpId) throws IOException {
-		return operationService.getOperationsList(parentMatrixId, parentOpId);
+		return operationService.getOperations(parentMatrixId, parentOpId);
 	}
 
 	public static List<OperationMetadata> getOperationsList(int parentMatrixId, int parentOpId, OPType opType) throws IOException {
-		return operationService.getOperationsList(parentMatrixId, parentOpId, opType);
+		return operationService.getOperations(parentMatrixId, parentOpId, opType);
 	}
 
 	public static List<OperationMetadata> getOperationsTable(int parentMatrixId) throws IOException {
-		return operationService.getOperationsTable(parentMatrixId);
+		return operationService.getOperations(parentMatrixId);
 	}
 
 	public static List<OperationMetadata> getOperationsTable(int parentMatrixId, int opId) throws IOException {
@@ -72,18 +72,14 @@ public class OperationsList {
 		operationService.insertOPMetadata(operationMetadata);
 	}
 
-	public static List<MatrixOperationSpec> getMatrixOperations(int matrixId) throws IOException {
-		return operationService.getMatrixOperations(matrixId);
-	}
-
 	public static void deleteOperationBranch(int studyId, int opId, boolean deleteReports) throws IOException {
 		operationService.deleteOperationBranch(studyId, opId, deleteReports);
 	}
 
 	public static OperationMetadata getOperationMetadata(int opId) throws IOException {
-		return operationService.getOperationMetadata(opId);
+		return operationService.getOperation(opId);
 	}
 	public static OperationMetadata getOperationMetadata(String netCDFname) throws IOException {
-		return operationService.getOperationMetadata(netCDFname);
+		return operationService.getOperation(netCDFname);
 	}
 }

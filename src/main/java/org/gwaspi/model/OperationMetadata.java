@@ -57,7 +57,7 @@ import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 		name = "operationMetadata_listByParentMatrixIdParentOperationIdOperationType",
 		query = "SELECT om FROM OperationMetadata om WHERE om.parentMatrixId = :parentMatrixId AND om.parentOperationId = :parentOperationId AND om.genotypeCode = :operationType"),
 })
-public class OperationMetadata implements Serializable, MatrixOperationSpec {
+public class OperationMetadata implements Serializable {
 
 	private int id;
 	private String opName; // == Operation.friendlyName

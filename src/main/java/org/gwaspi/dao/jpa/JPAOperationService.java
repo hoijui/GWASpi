@@ -30,7 +30,6 @@ import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.dao.OperationService;
 import org.gwaspi.global.Config;
-import org.gwaspi.model.MatrixOperationSpec;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.ReportsList;
@@ -100,30 +99,50 @@ public class JPAOperationService implements OperationService {
 	}
 
 	@Override
-	public OperationMetadata getById(int operationId) throws IOException {
+	public OperationMetadata getOperation(OperationKey operationKey) throws IOException {
 
-		OperationMetadata operation = null;
+		OperationMetadata operationMetadata = null;
+
+		EntityManager em = null;
+		try {
+			em = open();
+			operationMetadata = em.find(OperationMetadata.class, operationKey);
+			operationMetadata = completeOperationMetadata(operationMetadata);
+		} catch (Exception ex) {
+			throw new IOException("Failed fetching a operation-metadata by id: " + operationKey, ex);
+		} finally {
+			close(em);
+		}
+
+		return operationMetadata;
+	}
+
+	@Override
+	public OperationMetadata getOperation(int operationId) throws IOException {
+
+		OperationMetadata operationMetadata = null;
 
 		EntityManager em = null;
 		try {
 			em = open();
 			Query query = em.createNamedQuery("operationMetadata_fetchById");
 			query.setParameter("id", operationId);
-			operation = (OperationMetadata) query.getSingleResult();
+			operationMetadata = (OperationMetadata) query.getSingleResult();
+			operationMetadata = completeOperationMetadata(operationMetadata);
 		} catch (NoResultException ex) {
-			LOG.error("Failed fetching a operation by id: " + operationId
+			LOG.error("Failed fetching a operation-metadata by id: " + operationId
 					+ " (id not found)", ex);
 		} catch (Exception ex) {
-			LOG.error("Failed fetching a operation by id: " + operationId, ex);
+			LOG.error("Failed fetching a operation-metadata by id: " + operationId, ex);
 		} finally {
 			close(em);
 		}
 
-		return operation;
+		return operationMetadata;
 	}
 
 	@Override
-	public List<OperationMetadata> getOperationsList(int parentMatrixId, int parentOpId) throws IOException {
+	public List<OperationMetadata> getOperations(int parentMatrixId, int parentOpId) throws IOException {
 
 		List<OperationMetadata> operations = Collections.EMPTY_LIST;
 
@@ -145,7 +164,7 @@ public class JPAOperationService implements OperationService {
 	}
 
 	@Override
-	public List<OperationMetadata> getOperationsList(int parentMatrixId, int parentOpId, OPType opType) throws IOException {
+	public List<OperationMetadata> getOperations(int parentMatrixId, int parentOpId, OPType opType) throws IOException {
 
 		List<OperationMetadata> operations = Collections.EMPTY_LIST;
 
@@ -168,7 +187,7 @@ public class JPAOperationService implements OperationService {
 	}
 
 	@Override
-	public List<OperationMetadata> getOperationsTable(int parentMatrixId) throws IOException {
+	public List<OperationMetadata> getOperations(int parentMatrixId) throws IOException {
 
 		List<OperationMetadata> operationsMetadata = Collections.EMPTY_LIST;
 
@@ -225,7 +244,7 @@ public class JPAOperationService implements OperationService {
 	}
 
 	@Override
-	public void insertOPMetadata(OperationMetadata operationMetadata) throws IOException {
+	public OperationKey insertOPMetadata(OperationMetadata operationMetadata) throws IOException {
 
 		EntityManager em = null;
 		try {
@@ -239,37 +258,18 @@ public class JPAOperationService implements OperationService {
 		} finally {
 			close(em);
 		}
-	}
 
-	@Override
-	public List<MatrixOperationSpec> getMatrixOperations(int matrixId) throws IOException {
-
-		List<MatrixOperationSpec> matrixOperationSpecs = Collections.EMPTY_LIST;
-
-		EntityManager em = null;
-		try {
-			em = open();
-			Query query = em.createNamedQuery(
-					"operationMetadata_listByParentMatrixId");
-			query.setParameter("parentMatrixId", matrixId);
-			matrixOperationSpecs = query.getResultList();
-		} catch (Exception ex) {
-			LOG.error("Failed fetching matrix-operation-specs", ex);
-		} finally {
-			close(em);
-		}
-
-		return matrixOperationSpecs;
+		return OperationKey.valueOf(operationMetadata);
 	}
 
 	@Override
 	public void deleteOperationBranch(int studyId, int opId, boolean deleteReports) throws IOException {
 
 		try {
-			OperationMetadata op = getById(opId);
+			OperationMetadata op = getOperation(opId);
 			String genotypesFolder = Config.getConfigValue(Config.PROPERTY_GENOTYPES_DIR, "");
 
-			List<OperationMetadata> operations = getOperationsList(op.getParentMatrixId(), opId);
+			List<OperationMetadata> operations = getOperations(op.getParentMatrixId(), opId);
 			if (!operations.isEmpty()) {
 				operations.add(op);
 				for (int i = 0; i < operations.size(); i++) {
@@ -331,7 +331,7 @@ public class JPAOperationService implements OperationService {
 			}
 		} catch (Exception ex) {
 			// PURGE INEXISTING OPERATIONS FROM DB
-			OperationMetadata op = getById(opId);
+			OperationMetadata op = getOperation(opId);
 			EntityManager em = null;
 			try {
 				em = open();
@@ -357,31 +357,7 @@ public class JPAOperationService implements OperationService {
 	}
 
 	@Override
-	public OperationMetadata getOperationMetadata(int operationId) throws IOException {
-
-		OperationMetadata operationMetadata = null;
-
-		EntityManager em = null;
-		try {
-			em = open();
-			Query query = em.createNamedQuery("operationMetadata_fetchById");
-			query.setParameter("id", operationId);
-			operationMetadata = (OperationMetadata) query.getSingleResult();
-			operationMetadata = completeOperationMetadata(operationMetadata);
-		} catch (NoResultException ex) {
-			LOG.error("Failed fetching a operation-metadata by id: " + operationId
-					+ " (id not found)", ex);
-		} catch (Exception ex) {
-			LOG.error("Failed fetching a operation-metadata by id: " + operationId, ex);
-		} finally {
-			close(em);
-		}
-
-		return operationMetadata;
-	}
-
-	@Override
-	public OperationMetadata getOperationMetadata(String netCDFName) throws IOException {
+	public OperationMetadata getOperation(String netCDFName) throws IOException {
 
 		OperationMetadata operationMetadata = null;
 

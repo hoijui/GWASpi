@@ -27,7 +27,6 @@ import org.gwaspi.constants.cExport;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.model.MarkerKey;
-import org.gwaspi.model.MatrixOperationSpec;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
@@ -201,10 +200,10 @@ class BeagleFormatter implements Formatter {
 
 			// WRITE KNOWN ALLELES FROM QA
 			// get MARKER_QA Operation
-			List<MatrixOperationSpec> operations = OperationsList.getMatrixOperations(rdMatrixMetadata.getMatrixId());
+			List<OperationMetadata> operations = OperationsList.getOperationsList(rdMatrixMetadata.getMatrixId());
 			int markersQAopId = Integer.MIN_VALUE;
 			for (int i = 0; i < operations.size(); i++) {
-				MatrixOperationSpec op = operations.get(i);
+				OperationMetadata op = operations.get(i);
 				if (op.getType().equals(OPType.MARKER_QA)) {
 					markersQAopId = op.getId();
 				}
