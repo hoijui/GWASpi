@@ -57,22 +57,22 @@ public class CurrentStudyPanel extends JPanel {
 
 	private static final Logger log = LoggerFactory.getLogger(CurrentStudyPanel.class);
 
-	// Variables declaration
-	private Study study;
-	private JButton btn_DeleteMatrix;
-	private JButton btn_LoadGenotypes;
-	private JButton btn_UpdateSampleInfo;
-	private JButton btn_SaveDesc;
-	private JButton btn_DeleteStudy;
-	private JPanel pnl_MatrixTable;
-	private JPanel pnl_StudyDesc;
-	private JPanel pnl_Footer;
-	private JButton btn_Back;
-	private JButton btn_Help;
-	private JScrollPane scrl_Desc;
-	private JScrollPane scrl_MatrixTable;
-	private JTable tbl_MatrixTable;
-	private JTextArea txtA_StudyDesc;
+	// Variables declaration // TODO remove all of these comments
+	private final Study study;
+	private final JButton btn_DeleteMatrix;
+	private final JButton btn_LoadGenotypes;
+	private final JButton btn_UpdateSampleInfo;
+	private final JButton btn_SaveDesc;
+	private final JButton btn_DeleteStudy;
+	private final JPanel pnl_MatrixTable;
+	private final JPanel pnl_StudyDesc;
+	private final JPanel pnl_Footer;
+	private final JButton btn_Back;
+	private final JButton btn_Help;
+	private final JScrollPane scrl_Desc;
+	private final JScrollPane scrl_MatrixTable;
+	private final JTable tbl_MatrixTable;
+	private final JTextArea txtA_StudyDesc;
 	// End of variables declaration
 
 	/**
@@ -245,8 +245,8 @@ public class CurrentStudyPanel extends JPanel {
 
 	private static class SaveDescriptionAction extends AbstractAction {
 
-		private Study study;
-		private JTextArea descriptionSource;
+		private final Study study;
+		private final JTextArea descriptionSource;
 
 		SaveDescriptionAction(Study study, JTextArea descriptionSource) {
 
@@ -270,7 +270,7 @@ public class CurrentStudyPanel extends JPanel {
 
 	private static class LoadGenotypesAction extends AbstractAction {
 
-		private Study study;
+		private final Study study;
 
 		LoadGenotypesAction(Study study) {
 
@@ -288,7 +288,7 @@ public class CurrentStudyPanel extends JPanel {
 
 	private static class LoadSampleInfoAction extends AbstractAction {
 
-		private Study study;
+		private final Study study;
 
 		LoadSampleInfoAction(Study study) {
 
@@ -318,9 +318,9 @@ public class CurrentStudyPanel extends JPanel {
 
 	private static class DeleteMatrixAction extends AbstractAction {
 
-		private Study study;
-		private Component dialogParent;
-		private JTable table;
+		private final Study study;
+		private final Component dialogParent;
+		private final JTable table;
 
 		DeleteMatrixAction(Study study, Component dialogParent, JTable table) {
 
@@ -363,8 +363,8 @@ public class CurrentStudyPanel extends JPanel {
 
 	private static class DeleteStudyAction extends AbstractAction {
 
-		private Study study;
-		private Component dialogParent;
+		private final Study study;
+		private final Component dialogParent;
 
 		DeleteStudyAction(Study study, Component dialogParent) {
 
