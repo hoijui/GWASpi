@@ -78,7 +78,7 @@ abstract class AbstractScriptCommand implements ScriptCommand {
 				}
 			}
 			return new StudyKey(studyId);
-		} else {
+		} else { // -> (nameValue != null)
 			if (allowNew && nameValue.contains("New Study")) {
 				int studyId = StudyList.insertNewStudy(
 						idValue/*.substring(10)*/,
