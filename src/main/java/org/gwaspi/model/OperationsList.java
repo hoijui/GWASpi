@@ -72,8 +72,8 @@ public class OperationsList {
 		operationService.insertOPMetadata(operationMetadata);
 	}
 
-	public static void deleteOperationBranch(int studyId, int opId, boolean deleteReports) throws IOException {
-		operationService.deleteOperationBranch(studyId, opId, deleteReports);
+	public static void deleteOperationBranch(OperationKey operationKey, boolean deleteReports) throws IOException {
+		operationService.deleteOperationBranch(operationKey, deleteReports);
 	}
 
 	public static OperationMetadata getOperationMetadata(int opId) throws IOException {

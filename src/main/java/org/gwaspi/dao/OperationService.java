@@ -41,5 +41,5 @@ public interface OperationService {
 
 	OperationKey insertOPMetadata(OperationMetadata operationMetadata) throws IOException;
 
-	void deleteOperationBranch(int studyId, int opId, boolean deleteReports) throws IOException;
+	void deleteOperationBranch(OperationKey operationKey, boolean deleteReports) throws IOException;
 }

@@ -28,6 +28,7 @@ import org.gwaspi.gui.utils.CursorUtils;
 import org.gwaspi.model.GWASpiExplorerNodes;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixKey;
+import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.ReportsList;
 import org.gwaspi.model.StudyList;
@@ -110,7 +111,11 @@ public class SwingDeleterItemList {
 						currentSdi.setStartTime(org.gwaspi.global.Utils.getShortDateTimeAsString());
 						currentSdi.setQueueState(QueueState.PROCESSING);
 
-						OperationsList.deleteOperationBranch(currentSdi.getStudyId(), currentSdi.getOpId(), currentSdi.isDeleteReports());
+						OperationsList.deleteOperationBranch(new OperationKey(
+								currentSdi.getStudyId(),
+								currentSdi.getMatrixId(),
+								currentSdi.getOpId()),
+								currentSdi.isDeleteReports());
 						MultiOperations.printCompleted("deleting Operation ID: " + currentSdi.getOpId());
 
 						GWASpiExplorerNodes.deleteOperationNode(currentSdi.getOpId());

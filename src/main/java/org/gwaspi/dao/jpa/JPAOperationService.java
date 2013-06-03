@@ -263,12 +263,16 @@ public class JPAOperationService implements OperationService {
 	}
 
 	@Override
-	public void deleteOperationBranch(int studyId, int opId, boolean deleteReports) throws IOException {
+	public void deleteOperationBranch(OperationKey operationKey, boolean deleteReports) throws IOException {
 
+		final int opId = operationKey.getId();
+		final int studyId = operationKey.getStudyId();
+		
 		try {
-			OperationMetadata op = getOperation(opId);
+			OperationMetadata op = getOperation(operationKey);
 			String genotypesFolder = Config.getConfigValue(Config.PROPERTY_GENOTYPES_DIR, "");
 
+			// delete child operations
 			List<OperationMetadata> operations = getOperations(op.getParentMatrixId(), opId);
 			if (!operations.isEmpty()) {
 				operations.add(op);
@@ -285,7 +289,6 @@ public class JPAOperationService implements OperationService {
 						em = open();
 						begin(em);
 						operationId = operations.get(i).getId();
-						final OperationKey operationKey = new OperationKey(studyId, op.getParentMatrixId(), operationId);
 						OperationMetadata operation = em.find(OperationMetadata.class, operationKey);
 						if (operation == null) {
 							throw new IllegalArgumentException("No operation found with this ID: " + operationKey.getId());
@@ -313,7 +316,6 @@ public class JPAOperationService implements OperationService {
 				try {
 					em = open();
 					begin(em);
-					final OperationKey operationKey = new OperationKey(studyId, op.getParentMatrixId(), opId);
 					OperationMetadata operation = em.find(OperationMetadata.class, operationKey);
 					if (operation == null) {
 						throw new IllegalArgumentException("No operation found with this ID: " + operationKey.getId());
@@ -336,7 +338,6 @@ public class JPAOperationService implements OperationService {
 			try {
 				em = open();
 				begin(em);
-				final OperationKey operationKey = new OperationKey(studyId, op.getParentMatrixId(), opId);
 				OperationMetadata operation = em.find(OperationMetadata.class, operationKey);
 				if (operation == null) {
 					throw new IllegalArgumentException("No operation found with this ID: " + operationKey.getId());
