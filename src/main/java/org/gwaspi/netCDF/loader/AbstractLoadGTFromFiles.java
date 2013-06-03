@@ -50,10 +50,10 @@ public abstract class AbstractLoadGTFromFiles implements GenotypesLoader {
 	private final Logger log
 			= LoggerFactory.getLogger(AbstractLoadGTFromFiles.class);
 
-	private ImportFormat format;
-	private StrandType matrixStrand;
-	private boolean hasDictionary;
-	private String markersD2Variables;
+	private final ImportFormat format;
+	private final StrandType matrixStrand;
+	private final boolean hasDictionary;
+	private final String markersD2Variables;
 
 	public AbstractLoadGTFromFiles(
 			ImportFormat format,
