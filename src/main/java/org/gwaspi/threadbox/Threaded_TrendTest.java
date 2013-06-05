@@ -30,10 +30,10 @@ import org.slf4j.LoggerFactory;
 
 public class Threaded_TrendTest extends CommonRunnable {
 
-	private int matrixId;
-	private int censusOpId;
-	private int hwOpId;
-	private GWASinOneGOParams gwasParams;
+	private final int matrixId;
+	private final int censusOpId;
+	private final int hwOpId;
+	private final GWASinOneGOParams gwasParams;
 
 	public Threaded_TrendTest(
 			int matrixId,

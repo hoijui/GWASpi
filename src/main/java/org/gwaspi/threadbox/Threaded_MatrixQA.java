@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
 
 public class Threaded_MatrixQA extends CommonRunnable {
 
-	private int matrixId;
+	private final int matrixId;
 
 	public Threaded_MatrixQA(int matrixId)
 	{
