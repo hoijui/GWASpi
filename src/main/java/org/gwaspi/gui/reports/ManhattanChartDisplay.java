@@ -42,6 +42,7 @@ import org.gwaspi.gui.MatrixAnalysePanel;
 import org.gwaspi.gui.utils.CursorUtils;
 import org.gwaspi.gui.utils.Dialogs;
 import org.gwaspi.model.MatrixKey;
+import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.Study;
@@ -64,7 +65,7 @@ public final class ManhattanChartDisplay extends JPanel {
 	private boolean fired;
 	private JButton btn_Save;
 	private JButton btn_Back;
-	private int opId;
+	private OperationKey operationKey;
 	private Map<String, int[]> chrSetInfoMap = new LinkedHashMap<String, int[]>();
 	private String chr = "";
 	private int chartWidth = 0;
@@ -74,15 +75,15 @@ public final class ManhattanChartDisplay extends JPanel {
 	private int padGap = 9; // Pixel padding between chromosome plots
 	// End of variables declaration
 
-	public ManhattanChartDisplay(final StudyKey studyKey, final String chartPath, int _opId) {
+	public ManhattanChartDisplay(final String chartPath, OperationKey operationKey) {
 		fired = false;
-		initManhattanChartDisplay(studyKey, chartPath, _opId);
-		initChromosmesMap(studyKey, chartPath);
+		initManhattanChartDisplay(chartPath, operationKey);
+		initChromosmesMap(operationKey.getParentMatrixKey().getStudyKey(), chartPath);
 	}
 
-	private void initManhattanChartDisplay(final StudyKey studyKey, final String chartPath, int _opId) {
+	private void initManhattanChartDisplay(final String chartPath, final OperationKey operationKey) {
 
-		opId = _opId;
+		this.operationKey = operationKey;
 
 		scrl_Chart = new JScrollPane();
 		pnl_Chart = new JPanel();
@@ -107,7 +108,7 @@ public final class ManhattanChartDisplay extends JPanel {
 
 							GWASpiExplorerPanel.getSingleton().setPnl_Content(new ManhattanPlotZoom(
 									ManhattanChartDisplay.this,
-									opId,
+									operationKey,
 									selectedSliceInfo[1].toString(),
 									(Long) selectedSliceInfo[3], // startPhysPos
 									(Long) selectedSliceInfo[4], // physPos window
@@ -139,9 +140,9 @@ public final class ManhattanChartDisplay extends JPanel {
 		btn_Back = new JButton();
 
 		//<editor-fold defaultstate="expanded" desc="">
-		btn_Save.setAction(new SaveAsAction(studyKey, chartPath));
+		btn_Save.setAction(new SaveAsAction(operationKey.getParentMatrixKey().getStudyKey(), chartPath));
 
-		btn_Back.setAction(new BackToTableAction(opId));
+		btn_Back.setAction(new BackToTableAction(operationKey));
 
 		GroupLayout pnl_FooterLayout = new GroupLayout(pnl_Footer);
 		pnl_Footer.setLayout(pnl_FooterLayout);
@@ -227,7 +228,7 @@ public final class ManhattanChartDisplay extends JPanel {
 		}
 
 		try {
-			MarkerOperationSet opSet = new MarkerOperationSet(studyKey, opId);
+			MarkerOperationSet opSet = new MarkerOperationSet(operationKey);
 			chrSetInfoMap = opSet.getChrInfoSetMap();
 
 			// CHECK HOW MANY CHR HAVE PLOTS (ANY MARKERS?)
@@ -345,20 +346,20 @@ public final class ManhattanChartDisplay extends JPanel {
 
 	private static class BackToTableAction extends AbstractAction {
 
-		private int opId;
+		private OperationKey operationKey;
 
-		BackToTableAction(int opId) {
+		BackToTableAction(OperationKey operationKey) {
 
-			this.opId = opId;
+			this.operationKey = operationKey;
 			putValue(NAME, Text.All.Back);
 		}
 
 		@Override
 		public void actionPerformed(ActionEvent evt) {
 			try {
-				OperationMetadata op = OperationsList.getById(opId);
+				OperationMetadata op = OperationsList.getOperation(operationKey);
 				GWASpiExplorerPanel.getSingleton().getTree().setSelectionPath(GWASpiExplorerPanel.getSingleton().getTree().getSelectionPath().getParentPath());
-				GWASpiExplorerPanel.getSingleton().setPnl_Content(new MatrixAnalysePanel(new MatrixKey(op.getStudyKey(), op.getParentMatrixId()), opId));
+				GWASpiExplorerPanel.getSingleton().setPnl_Content(new MatrixAnalysePanel(new MatrixKey(op.getStudyKey(), op.getParentMatrixId()), operationKey));
 				GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
 			} catch (IOException ex) {
 				log.error(null, ex);

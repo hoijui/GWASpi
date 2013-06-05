@@ -46,6 +46,7 @@ import org.gwaspi.gui.utils.HelpURLs;
 import org.gwaspi.gui.utils.MatricesTableModel;
 import org.gwaspi.gui.utils.RowRendererDefault;
 import org.gwaspi.model.MatricesList;
+import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.Study;
 import org.gwaspi.model.StudyKey;
 import org.gwaspi.model.StudyList;
@@ -133,7 +134,7 @@ public class CurrentStudyPanel extends JPanel {
 		tbl_MatrixTable.setModel(new MatricesTableModel(MatricesList.getMatricesTable(StudyKey.valueOf(study))));
 		scrl_MatrixTable.setViewportView(tbl_MatrixTable);
 
-		btn_DeleteMatrix.setAction(new DeleteMatrixAction(study, this, tbl_MatrixTable));
+		btn_DeleteMatrix.setAction(new DeleteMatrixAction(studyKey, this, tbl_MatrixTable));
 		btn_DeleteMatrix.setBackground(new Color(242, 138, 121));
 
 		//<editor-fold defaultstate="expanded" desc="LAYOUT STUDY">
@@ -314,13 +315,13 @@ public class CurrentStudyPanel extends JPanel {
 
 	private static class DeleteMatrixAction extends AbstractAction {
 
-		private final Study study;
+		private final StudyKey studyKey;
 		private final Component dialogParent;
 		private final JTable table;
 
-		DeleteMatrixAction(Study study, Component dialogParent, JTable table) {
+		DeleteMatrixAction(StudyKey studyKey, Component dialogParent, JTable table) {
 
-			this.study = study;
+			this.studyKey = studyKey;
 			this.dialogParent = dialogParent;
 			this.table = table;
 			putValue(NAME, "Delete Matrix");
@@ -344,7 +345,7 @@ public class CurrentStudyPanel extends JPanel {
 								if (deleteReportOption == JOptionPane.YES_OPTION) {
 									deleteReport = true;
 								}
-								MultiOperations.deleteMatrix(StudyKey.valueOf(study), matrixId, deleteReport);
+								MultiOperations.deleteMatrix(new MatrixKey(studyKey, matrixId), deleteReport);
 								//netCDF.matrices.MatrixManager.deleteMatrix(matrixId, deleteReport);
 							} else {
 								Dialogs.showWarningDialogue(Text.Processes.cantDeleteRequiredItem);

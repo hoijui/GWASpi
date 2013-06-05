@@ -24,6 +24,7 @@ import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.MarkerKey;
+import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.SampleKey;
@@ -38,22 +39,22 @@ public class OP_HardyWeinberg implements MatrixOperation {
 
 	private final Logger log = LoggerFactory.getLogger(OP_HardyWeinberg.class);
 
-	private final OperationMetadata markerCensusOP;
+	private final OperationKey markerCensusOPKey;
 	private final String censusName;
 
-	public OP_HardyWeinberg(OperationMetadata markerCensusOP, String censusName) {
+	public OP_HardyWeinberg(OperationKey markerCensusOPKey, String censusName) {
 
-		this.markerCensusOP = markerCensusOP;
+		this.markerCensusOPKey = markerCensusOPKey;
 		this.censusName = censusName;
 	}
 
 	public int processMatrix() throws IOException, InvalidRangeException {
 		int resultOpId = Integer.MIN_VALUE;
 
-		OperationMetadata rdOPMetadata = OperationsList.getOperationMetadata(markerCensusOP.getId());
+		OperationMetadata rdOPMetadata = OperationsList.getOperationMetadata(markerCensusOPKey.getId());
 		NetcdfFile rdNcFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());
 
-		MarkerOperationSet rdOperationSet = new MarkerOperationSet(rdOPMetadata.getStudyKey(), markerCensusOP.getId());
+		MarkerOperationSet rdOperationSet = new MarkerOperationSet(markerCensusOPKey);
 		Map<MarkerKey, char[]> rdMarkerSetMap = rdOperationSet.getOpSetMap();
 		Map<SampleKey, ?> rdSampleSetMap = rdOperationSet.getImplicitSetMap();
 
@@ -62,15 +63,15 @@ public class OP_HardyWeinberg implements MatrixOperation {
 			// CREATE netCDF-3 FILE
 
 			OperationFactory wrOPHandler = new OperationFactory(
-					rdOPMetadata.getStudyKey(),
+					markerCensusOPKey.getParentMatrixKey().getStudyKey(),
 					"Hardy-Weinberg_" + censusName, // friendly name
 					"Hardy-Weinberg test on Samples marked as controls (only females for the X chromosome)\nMarkers: " + rdMarkerSetMap.size() + "\nSamples: " + rdSampleSetMap.size(), //description
 					rdMarkerSetMap.size(),
 					rdSampleSetMap.size(),
 					0,
 					OPType.HARDY_WEINBERG,
-					rdOPMetadata.getParentMatrixId(), // Parent matrixId
-					markerCensusOP.getId()); // Parent operationId
+					markerCensusOPKey.getParentMatrixKey(), // Parent matrixId
+					markerCensusOPKey.getId()); // Parent operationId
 			wrNcFile = wrOPHandler.getNetCDFHandler();
 
 			try {

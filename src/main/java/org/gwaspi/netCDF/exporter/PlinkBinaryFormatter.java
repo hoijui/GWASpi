@@ -30,7 +30,9 @@ import org.gwaspi.constants.cExport;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.model.MarkerKey;
+import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
+import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.SampleInfo;
@@ -121,12 +123,12 @@ public class PlinkBinaryFormatter implements Formatter {
 		rdMarkerSet.appendVariableToMarkerSetMapValue(cNetCDF.Variables.VAR_MARKERS_POS, sep);
 
 		// ALLELES
-		List<OperationMetadata> operations = OperationsList.getOperationsList(rdMatrixMetadata.getMatrixId());
-		int markersQAOpId = OperationsList.getIdOfLastOperationTypeOccurance(operations, OPType.MARKER_QA);
+		List<OperationMetadata> operations = OperationsList.getOperationsList(MatrixKey.valueOf(rdMatrixMetadata));
+		OperationKey markersQAOpKey = OperationsList.getIdOfLastOperationTypeOccurance(operations, OPType.MARKER_QA);
 
-		Map<MarkerKey, char[]> minorAllelesMap = GatherQAMarkersData.loadMarkerQAMinorAlleles(markersQAOpId);
-		Map<MarkerKey, char[]> majorAllelesMap = GatherQAMarkersData.loadMarkerQAMajorAlleles(markersQAOpId);
-		Map<MarkerKey, Double> minorAlleleFreqMap = GatherQAMarkersData.loadMarkerQAMinorAlleleFrequency(markersQAOpId);
+		Map<MarkerKey, char[]> minorAllelesMap = GatherQAMarkersData.loadMarkerQAMinorAlleles(markersQAOpKey);
+		Map<MarkerKey, char[]> majorAllelesMap = GatherQAMarkersData.loadMarkerQAMajorAlleles(markersQAOpKey);
+		Map<MarkerKey, Double> minorAlleleFreqMap = GatherQAMarkersData.loadMarkerQAMinorAlleleFrequency(markersQAOpKey);
 		for (Map.Entry<MarkerKey, char[]> entry : rdMarkerSet.getMarkerIdSetMapCharArray().entrySet()) {
 			MarkerKey key = entry.getKey();
 			String minorAllele = new String(minorAllelesMap.get(key));

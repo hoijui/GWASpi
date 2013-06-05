@@ -30,6 +30,7 @@ import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.dao.OperationService;
 import org.gwaspi.global.Config;
+import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.ReportsList;
@@ -189,7 +190,7 @@ public class JPAOperationService implements OperationService {
 	}
 
 	@Override
-	public List<OperationMetadata> getOperations(int parentMatrixId) throws IOException {
+	public List<OperationMetadata> getOperations(MatrixKey parentMatrixKey) throws IOException {
 
 		List<OperationMetadata> operationsMetadata = Collections.EMPTY_LIST;
 
@@ -198,7 +199,7 @@ public class JPAOperationService implements OperationService {
 			em = open();
 			Query query = em.createNamedQuery(
 					"operationMetadata_listByParentMatrixId");
-			query.setParameter("parentMatrixId", parentMatrixId);
+			query.setParameter("parentMatrixId", parentMatrixKey.getMatrixId());
 			operationsMetadata = query.getResultList();
 
 			for (int i = 0; i < operationsMetadata.size(); i++) {
@@ -214,7 +215,7 @@ public class JPAOperationService implements OperationService {
 	}
 
 	@Override
-	public List<OperationMetadata> getOperationsTable(int parentMatrixId, int operationId) throws IOException {
+	public List<OperationMetadata> getOperationAndSubOperations(int parentMatrixId, int operationId) throws IOException {
 
 		List<OperationMetadata> operationsMetadata = Collections.EMPTY_LIST;
 
@@ -246,7 +247,7 @@ public class JPAOperationService implements OperationService {
 	}
 
 	@Override
-	public OperationKey insertOPMetadata(OperationMetadata operationMetadata) throws IOException {
+	public OperationKey insertOperation(OperationMetadata operationMetadata) throws IOException {
 
 		EntityManager em = null;
 		try {
@@ -265,7 +266,7 @@ public class JPAOperationService implements OperationService {
 	}
 
 	@Override
-	public void deleteOperationBranch(OperationKey operationKey, boolean deleteReports) throws IOException {
+	public void deleteOperation(OperationKey operationKey, boolean deleteReports) throws IOException {
 
 		final int opId = operationKey.getId();
 		final StudyKey studyKey = new StudyKey(operationKey.getStudyId());

@@ -20,6 +20,7 @@ package org.gwaspi.reports;
 import java.io.IOException;
 import java.util.Map;
 import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.SampleKey;
@@ -31,11 +32,11 @@ public class GatherQASamplesData {
 	private GatherQASamplesData() {
 	}
 
-	public static Map<SampleKey, Double> loadSamplesQAMissingRatio(int opId) throws IOException {
+	public static Map<SampleKey, Double> loadSamplesQAMissingRatio(OperationKey operationKey) throws IOException {
 
-		OperationMetadata rdOPMetadata = OperationsList.getOperationMetadata(opId);
+		OperationMetadata rdOPMetadata = OperationsList.getOperation(operationKey);
 
-		SampleOperationSet rdInfoSampleSet = new SampleOperationSet(rdOPMetadata.getStudyKey(), opId);
+		SampleOperationSet rdInfoSampleSet = new SampleOperationSet(operationKey);
 		Map<SampleKey, Double> rdMatrixSampleSetMap = rdInfoSampleSet.getOpSetMap();
 
 		NetcdfFile ncFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());
@@ -45,11 +46,11 @@ public class GatherQASamplesData {
 		return rdMatrixSampleSetMap;
 	}
 
-	public static Map<SampleKey, Double> loadSamplesQAHetZygRatio(int opId) throws IOException {
+	public static Map<SampleKey, Double> loadSamplesQAHetZygRatio(OperationKey operationKey) throws IOException {
 
-		OperationMetadata rdOPMetadata = OperationsList.getOperationMetadata(opId);
+		OperationMetadata rdOPMetadata = OperationsList.getOperation(operationKey);
 
-		SampleOperationSet rdInfoSampleSet = new SampleOperationSet(rdOPMetadata.getStudyKey(), opId);
+		SampleOperationSet rdInfoSampleSet = new SampleOperationSet(operationKey);
 		Map<SampleKey, Double> rdMatrixSampleSetMap = rdInfoSampleSet.getOpSetMap();
 
 		NetcdfFile ncFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());

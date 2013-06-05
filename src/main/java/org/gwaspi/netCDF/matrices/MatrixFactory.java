@@ -27,6 +27,7 @@ import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
 import org.gwaspi.global.Config;
 import org.gwaspi.model.MatricesList;
+import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.Study;
 import org.gwaspi.model.StudyKey;
@@ -39,11 +40,10 @@ public class MatrixFactory {
 
 	private NetcdfFileWriteable netCDFHandler = null;
 	private String resultMatrixName = "";
-	private int resultMatrixId = Integer.MIN_VALUE;
+	private MatrixKey resultMatrixKey = null;
 	private MatrixMetadata matrixMetaData = null;
 
 	private MatrixFactory(
-			StudyKey studyKey,
 			ImportFormat technology,
 			String friendlyName,
 			String description,
@@ -53,15 +53,15 @@ public class MatrixFactory {
 			int samplesDimSize,
 			int markerDimSize,
 			int chrDimSize,
-			int origMatrix1Id,
-			int origMatrix2Id,
+			MatrixKey origMatrix1Key,
+			MatrixKey origMatrix2Key,
 			String inputLocation)
 			throws InvalidRangeException, IOException
 	{
 		if (samplesDimSize > 0 && markerDimSize > 0) {
 			resultMatrixName = generateMatrixNetCDFNameByDate();
 			netCDFHandler = generateNetcdfHandler(
-					studyKey,
+					origMatrix1Key.getStudyKey(),
 					resultMatrixName,
 					technology,
 					description,
@@ -84,14 +84,14 @@ public class MatrixFactory {
 					resultMatrixName,
 					description,
 					matrixType,
-					studyKey,
-					origMatrix1Id,
-					origMatrix2Id,
+					origMatrix1Key.getStudyKey(),
+					origMatrix1Key.getMatrixId(),
+					origMatrix2Key.getMatrixId(),
 					inputLocation));
 
 			matrixMetaData = MatricesList.getMatrixMetadataByNetCDFname(resultMatrixName);
 
-			resultMatrixId = matrixMetaData.getMatrixId();
+			resultMatrixKey = MatrixKey.valueOf(matrixMetaData);
 		}
 	}
 
@@ -99,7 +99,6 @@ public class MatrixFactory {
 	 * Constructor to use with matrix input
 	 */
 	public MatrixFactory(
-			StudyKey studyKey,
 			ImportFormat technology,
 			String friendlyName,
 			String description,
@@ -109,12 +108,11 @@ public class MatrixFactory {
 			int samplesDimSize,
 			int markerDimSize,
 			int chrDimSize,
-			int origMatrix1Id,
-			int origMatrix2Id)
+			MatrixKey origMatrixKey1,
+			MatrixKey origMatrixKey2)
 			throws InvalidRangeException, IOException
 	{
 		this(
-				studyKey,
 				technology,
 				friendlyName,
 				description,
@@ -124,16 +122,15 @@ public class MatrixFactory {
 				samplesDimSize,
 				markerDimSize,
 				chrDimSize,
-				origMatrix1Id,
-				origMatrix2Id,
-				"Matrix is result of " + origMatrix1Id);
+				origMatrixKey1,
+				origMatrixKey2,
+				"Matrix is result of " + origMatrixKey1);
 	}
 
 	/**
 	 * Constructor to use with file input
 	 */
 	public MatrixFactory(
-			StudyKey studyKey,
 			ImportFormat technology,
 			String friendlyName,
 			String description,
@@ -147,7 +144,6 @@ public class MatrixFactory {
 			throws InvalidRangeException, IOException
 	{
 		this(
-				studyKey,
 				technology,
 				friendlyName,
 				description,
@@ -157,8 +153,8 @@ public class MatrixFactory {
 				samplesDimSize,
 				markerDimSize,
 				chrDimSize,
-				-1,
-				-1,
+				new MatrixKey(null, Integer.MIN_VALUE),
+				new MatrixKey(null, Integer.MIN_VALUE),
 				dataLocation);
 	}
 
@@ -171,8 +167,15 @@ public class MatrixFactory {
 		return resultMatrixName;
 	}
 
+	/**
+	 * @deprecated
+	 */
 	public int getResultMatrixId() {
-		return resultMatrixId;
+		return resultMatrixKey.getMatrixId();
+	}
+
+	public MatrixKey getResultMatrixKey() {
+		return resultMatrixKey;
 	}
 
 	public MatrixMetadata getResultMatrixMetadata() {

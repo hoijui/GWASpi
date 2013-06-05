@@ -23,25 +23,23 @@ import java.util.Map;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.MarkerKey;
+import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.SampleKey;
-import org.gwaspi.model.StudyKey;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.NetcdfFileWriteable;
 
 public class MergeAllMatrixOperation extends AbstractMergeMarkersMatrixOperation {
 
 	public MergeAllMatrixOperation(
-			StudyKey studyKey,
-			int rdMatrix1Id,
-			int rdMatrix2Id,
+			MatrixKey rdMatrixKey1,
+			MatrixKey rdMatrixKey2,
 			String wrMatrixFriendlyName,
 			String wrMatrixDescription)
 			throws IOException, InvalidRangeException
 	{
 		super(
-				studyKey,
-				rdMatrix1Id,
-				rdMatrix2Id,
+				rdMatrixKey1,
+				rdMatrixKey2,
 				wrMatrixFriendlyName,
 				wrMatrixDescription);
 	}
@@ -69,7 +67,7 @@ public class MergeAllMatrixOperation extends AbstractMergeMarkersMatrixOperation
 				theSamples,
 				numSamples,
 				humanReadableMethodName,
-				methodDescription);
+				methodDescription).getMatrixId();
 	}
 
 	@Override

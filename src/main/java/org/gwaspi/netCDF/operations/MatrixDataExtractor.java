@@ -33,9 +33,9 @@ import org.gwaspi.gui.utils.Dialogs;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.MatricesList;
+import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleKey;
-import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.markers.MarkerSet;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.gwaspi.samples.SampleSet;
@@ -51,8 +51,7 @@ public class MatrixDataExtractor {
 
 	private final Logger log = LoggerFactory.getLogger(MatrixDataExtractor.class);
 
-	private StudyKey studyKey;
-	private int rdMatrixId;
+	private MatrixKey rdMatrixKey;
 	private String wrMatrixFriendlyName;
 	private String wrMatrixDescription;
 	private File markerCriteriaFile;
@@ -75,8 +74,7 @@ public class MatrixDataExtractor {
 	 * This constructor to extract data from Matrix a by passing a variable and
 	 * the criteria to filter items by.
 	 *
-	 * @param studyKey
-	 * @param rdMatrixId
+	 * @param rdMatrixKey
 	 * @param wrMatrixFriendlyName
 	 * @param wrMatrixDescription
 	 * @param markerPickCase
@@ -92,8 +90,7 @@ public class MatrixDataExtractor {
 	 * @throws InvalidRangeException
 	 */
 	public MatrixDataExtractor(
-			StudyKey studyKey,
-			int rdMatrixId,
+			MatrixKey rdMatrixKey,
 			String wrMatrixFriendlyName,
 			String wrMatrixDescription,
 			SetMarkerPickCase markerPickCase,
@@ -115,16 +112,15 @@ public class MatrixDataExtractor {
 		this.markerCriteriaFile = markerPickerFile;
 		this.sampleCriteriaFile = samplePickerFile;
 
-		this.rdMatrixId = rdMatrixId;
-		this.rdMatrixMetadata = MatricesList.getMatrixMetadataById(this.rdMatrixId);
-		this.studyKey = rdMatrixMetadata.getStudyKey();
+		this.rdMatrixKey = rdMatrixKey;
+		this.rdMatrixMetadata = MatricesList.getMatrixMetadataById(this.rdMatrixKey);
 		this.wrMatrixFriendlyName = wrMatrixFriendlyName;
 		this.wrMatrixDescription = wrMatrixDescription;
 
-		this.rdMarkerSet = new MarkerSet(this.rdMatrixMetadata.getStudyKey(), this.rdMatrixId);
+		this.rdMarkerSet = new MarkerSet(this.rdMatrixKey);
 		this.rdMarkerSet.initFullMarkerIdSetMap();
 
-		this.rdSampleSet = new SampleSet(this.rdMatrixMetadata.getStudyKey(), this.rdMatrixId);
+		this.rdSampleSet = new SampleSet(this.rdMatrixKey);
 		this.rdSampleSetMap = this.rdSampleSet.getSampleIdSetMapCharArray();
 
 		//<editor-fold defaultstate="expanded" desc="MARKERSET PICKING">
@@ -205,7 +201,7 @@ public class MatrixDataExtractor {
 				if ((samplePickCase == SetSamplePickCase.SAMPLES_INCLUDE_BY_ID)
 						|| (samplePickCase == SetSamplePickCase.SAMPLES_EXCLUDE_BY_ID))
 				{
-					((Set<SampleKey>) sampleCriteria).add(SampleKey.valueOf(studyKey, l));
+					((Set<SampleKey>) sampleCriteria).add(SampleKey.valueOf(rdMatrixKey.getStudyKey(), l));
 				} else {
 					((Set<char[]>) sampleCriteria).add(l.toCharArray());
 				}
@@ -249,11 +245,11 @@ public class MatrixDataExtractor {
 				break;
 			case SAMPLES_INCLUDE_BY_DB_FIELD:
 				// USE DB DATA
-				this.wrSampleSetMap = this.rdSampleSet.pickValidSampleSetItemsByDBField(studyKey, this.rdSampleSetMap.keySet(), samplePickerVar, sampleCriteria, true);
+				this.wrSampleSetMap = this.rdSampleSet.pickValidSampleSetItemsByDBField(rdMatrixKey.getStudyKey(), this.rdSampleSetMap.keySet(), samplePickerVar, sampleCriteria, true);
 				break;
 			case SAMPLES_EXCLUDE_BY_DB_FIELD:
 				// USE DB DATA
-				this.wrSampleSetMap = this.rdSampleSet.pickValidSampleSetItemsByDBField(studyKey, this.rdSampleSetMap.keySet(), samplePickerVar, sampleCriteria, false);
+				this.wrSampleSetMap = this.rdSampleSet.pickValidSampleSetItemsByDBField(rdMatrixKey.getStudyKey(), this.rdSampleSetMap.keySet(), samplePickerVar, sampleCriteria, false);
 				break;
 			default:
 				int j = 0;
@@ -318,7 +314,6 @@ public class MatrixDataExtractor {
 				descSB.append("Markers: ").append(wrMarkerIdSetMap.size()).append(", Samples: ").append(wrSampleSetMap.size());
 
 				MatrixFactory wrMatrixHandler = new MatrixFactory(
-						studyKey,
 						rdMatrixMetadata.getTechnology(), // technology
 						wrMatrixFriendlyName,
 						descSB.toString(), // description
@@ -328,8 +323,8 @@ public class MatrixDataExtractor {
 						wrSampleSetMap.size(),
 						wrMarkerIdSetMap.size(),
 						rdChrInfoSetMap.size(),
-						rdMatrixId, // Orig matrixId 1
-						Integer.MIN_VALUE); // Orig matrixId 2
+						rdMatrixKey, // Orig matrixId 1
+						null); // Orig matrixId 2
 
 				resultMatrixId = wrMatrixHandler.getResultMatrixId();
 

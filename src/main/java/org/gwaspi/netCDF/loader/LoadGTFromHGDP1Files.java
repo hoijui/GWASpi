@@ -132,7 +132,6 @@ public class LoadGTFromHGDP1Files implements GenotypesLoader {
 		Map<MarkerKey, int[]> chrSetMap = org.gwaspi.netCDF.matrices.Utils.aggregateChromosomeInfo(markerSetMap, 2, 3);
 
 		MatrixFactory matrixFactory = new MatrixFactory(
-				loadDescription.getStudyKey(),
 				loadDescription.getFormat(),
 				loadDescription.getFriendlyName(),
 				descSB.toString(), // description

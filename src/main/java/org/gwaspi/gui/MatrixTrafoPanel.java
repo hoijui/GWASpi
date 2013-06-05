@@ -60,7 +60,7 @@ public class MatrixTrafoPanel extends JPanel {
 			= LoggerFactory.getLogger(MatrixTrafoPanel.class);
 
 	// Variables declaration - do not modify
-	private final MatrixKey parentMatrix;
+	private final MatrixKey parentMatrixKey;
 	private final JButton btn_1_1;
 	private final JButton btn_1_2;
 	private final JButton btn_2_1;
@@ -80,11 +80,10 @@ public class MatrixTrafoPanel extends JPanel {
 	private final JTextField txt_NewMatrixName;
 	// End of variables declaration
 
-	@SuppressWarnings("unchecked")
 	public MatrixTrafoPanel(MatrixKey parentMatrixKey) throws IOException {
 
-		parentMatrix = parentMatrixKey;
-		MatrixMetadata parentMatrixMetadata = MatricesList.getMatrixMetadataById(parentMatrix.getMatrixId());
+		this.parentMatrixKey = parentMatrixKey;
+		MatrixMetadata parentMatrixMetadata = MatricesList.getMatrixMetadataById(parentMatrixKey);
 
 		pnl_ParentMatrixDesc = new JPanel();
 		scrl_ParentMatrixDesc = new JScrollPane();
@@ -247,7 +246,7 @@ public class MatrixTrafoPanel extends JPanel {
 				.addContainerGap()));
 		//</editor-fold>
 
-		btn_Back.setAction(new BackAction(parentMatrix));
+		btn_Back.setAction(new BackAction(parentMatrixKey));
 		btn_Help.setAction(new BrowserHelpUrlAction(HelpURLs.QryURL.matrixTranslate));
 
 		//<editor-fold defaultstate="expanded" desc="FOOTER">
@@ -319,7 +318,7 @@ public class MatrixTrafoPanel extends JPanel {
 			String newMatrixName = checkNewMatrixData();
 			if (!newMatrixName.isEmpty()) {
 				try {
-					MatrixMetadata parentMatrixMetadata = MatricesList.getMatrixMetadataById(parentMatrix.getMatrixId());
+					MatrixMetadata parentMatrixMetadata = MatricesList.getMatrixMetadataById(parentMatrixKey);
 					String description = txtA_NewMatrixDescription.getText();
 					if (txtA_NewMatrixDescription.getText().equals(Text.All.optional)) {
 						description = "";
@@ -330,8 +329,7 @@ public class MatrixTrafoPanel extends JPanel {
 					{
 						if (parentMatrixMetadata.getHasDictionray()) {
 							MultiOperations.doTranslateAB12ToACGT(
-									parentMatrix.getStudyId(),
-									parentMatrix.getMatrixId(),
+									parentMatrixKey,
 									cNetCDF.Defaults.GenotypeEncoding.AB0, // No matter if AB or 12, works the same here
 									newMatrixName,
 									description);
@@ -362,7 +360,7 @@ public class MatrixTrafoPanel extends JPanel {
 			String newMatrixName = checkNewMatrixData();
 			if (!newMatrixName.isEmpty()) {
 				try {
-					MatrixMetadata parentMatrixMetadata = MatricesList.getMatrixMetadataById(parentMatrix.getMatrixId());
+					MatrixMetadata parentMatrixMetadata = MatricesList.getMatrixMetadataById(parentMatrixKey);
 
 					String description = txtA_NewMatrixDescription.getText();
 					if (txtA_NewMatrixDescription.getText().equals(Text.All.optional)) {
@@ -372,8 +370,7 @@ public class MatrixTrafoPanel extends JPanel {
 					if (parentMatrixMetadata.getGenotypeEncoding().equals(GenotypeEncoding.O1234)) {
 
 						MultiOperations.doTranslateAB12ToACGT(
-								parentMatrix.getStudyId(),
-								parentMatrix.getMatrixId(),
+								parentMatrixKey,
 								cNetCDF.Defaults.GenotypeEncoding.O1234,
 								newMatrixName,
 								description);
@@ -401,7 +398,7 @@ public class MatrixTrafoPanel extends JPanel {
 			String newMatrixName = checkNewMatrixData();
 			if (!newMatrixName.isEmpty()) {
 				try {
-					MatrixMetadata parentMatrixMetadata = MatricesList.getMatrixMetadataById(parentMatrix.getMatrixId());
+					MatrixMetadata parentMatrixMetadata = MatricesList.getMatrixMetadataById(parentMatrixKey);
 
 					String description = txtA_NewMatrixDescription.getText();
 					if (txtA_NewMatrixDescription.getText().equals(Text.All.optional)) {
@@ -413,8 +410,7 @@ public class MatrixTrafoPanel extends JPanel {
 
 						File flipMarkersFile = Dialogs.selectFilesAndDirectoriesDialog(JOptionPane.OK_OPTION);
 						MultiOperations.doStrandFlipMatrix(
-								parentMatrix.getStudyId(),
-								parentMatrix.getMatrixId(),
+								parentMatrixKey,
 								cNetCDF.Variables.VAR_MARKERSET,
 								flipMarkersFile,
 								newMatrixName,

@@ -55,6 +55,7 @@ import org.gwaspi.gui.utils.URLInDefaultBrowser;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixMetadata;
+import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.Report;
@@ -97,9 +98,8 @@ public final class ManhattanPlotZoom extends JPanel {
 	/** roughly 2000MB needed per 100.000 plotted markers */
 	public static final int MARKERS_NUM_DEFAULT = (int) Math.round(100000 * ((double) StartGWASpi.maxHeapSize / 2000));
 
-	private final int opId;
+	private final OperationKey operationKey;
 	private OperationMetadata op;
-	private OperationMetadata rdOPMetadata;
 	private Map<String, MarkerKey> labeler;
 	private MatrixMetadata rdMatrixMetadata;
 	private String origMarkerId;
@@ -138,14 +138,14 @@ public final class ManhattanPlotZoom extends JPanel {
 
 	public ManhattanPlotZoom(
 			ManhattanChartDisplay parent,
-			int opId,
+			OperationKey operationKey,
 			String chr,
 			long startPhysPos,
 			long requestedPosWindow,
 			Integer nRows)
 	{
 		this.parent = parent;
-		this.opId = opId;
+		this.operationKey = operationKey;
 		this.currentChr = chr;
 		this.origChr = chr;
 		this.nRows = nRows;
@@ -157,14 +157,15 @@ public final class ManhattanPlotZoom extends JPanel {
 		setCursor(CursorUtils.DEFAULT_CURSOR);
 	}
 
-	public ManhattanPlotZoom(int opId,
+	public ManhattanPlotZoom(
+			OperationKey operationKey,
 			String chr,
 			String markerId,
 			long centerPhysPos,
 			long requestedSetSize,
 			Integer nRows)
 	{
-		this.opId = opId;
+		this.operationKey = operationKey;
 		this.currentMarkerId = markerId;
 		this.origMarkerId = markerId;
 		this.currentChr = chr;
@@ -179,9 +180,8 @@ public final class ManhattanPlotZoom extends JPanel {
 	public void initChart(boolean usePhysicalPosition) {
 
 		try {
-			this.op = OperationsList.getById(this.opId);
-			this.rdOPMetadata = OperationsList.getOperationMetadata(this.opId);
-			this.rdMatrixMetadata = MatricesList.getMatrixMetadataById(this.rdOPMetadata.getParentMatrixId());
+			this.op = OperationsList.getOperation(operationKey);
+			this.rdMatrixMetadata = MatricesList.getMatrixMetadataById(operationKey.getParentMatrixKey());
 
 //			OperationSet rdAssocMarkerSet = new OperationSet(this.rdOPMetadata.getStudyKey(), this.opId);
 //			this.labelerMap = rdAssocMarkerSet.getOpSetMap();
@@ -208,14 +208,14 @@ public final class ManhattanPlotZoom extends JPanel {
 		if (usePhysicalPosition) {
 			initXYDataset = getXYDataSetByPhysPos(
 					this,
-					opId,
+					operationKey,
 					origChr,
 					startPhysPos,
 					requestedPosWindow);
 		} else {
 			initXYDataset = getXYDataSetByMarkerIdAndPhysPos(
 					this,
-					opId,
+					operationKey,
 					origChr,
 					currentMarkerId,
 					centerPhysPos,
@@ -405,7 +405,7 @@ public final class ManhattanPlotZoom extends JPanel {
 
 		btn_Save.setAction(new SaveAsAction());
 
-		btn_Reset.setAction(new ResetAction(opId));
+		btn_Reset.setAction(new ResetAction(operationKey));
 
 		btn_Back.setAction(new BackToTableAction());
 
@@ -514,7 +514,7 @@ public final class ManhattanPlotZoom extends JPanel {
 	// <editor-fold defaultstate="expanded" desc="CHART GENERATOR">
 	private XYDataset getXYDataSetByPhysPos(
 			ManhattanPlotZoom manhattanPlotZoom,
-			int _opId,
+			OperationKey operationKey,
 			String _origChr,
 			long _startPhysPos,
 			long _requestedPosWindow)
@@ -523,7 +523,7 @@ public final class ManhattanPlotZoom extends JPanel {
 		if (op.getOperationType().equals(OPType.ALLELICTEST)) {
 			xyd = GenericReportGenerator.getManhattanZoomByChrAndPos(
 					manhattanPlotZoom,
-					_opId,
+					operationKey,
 					cNetCDF.Association.VAR_OP_MARKERS_ASAllelicAssociationTPOR,
 					_origChr,
 					null,
@@ -532,7 +532,7 @@ public final class ManhattanPlotZoom extends JPanel {
 		} else if (op.getOperationType().equals(OPType.GENOTYPICTEST)) {
 			xyd = GenericReportGenerator.getManhattanZoomByChrAndPos(
 					manhattanPlotZoom,
-					_opId,
+					operationKey,
 					cNetCDF.Association.VAR_OP_MARKERS_ASGenotypicAssociationTP2OR,
 					_origChr,
 					null,
@@ -541,7 +541,7 @@ public final class ManhattanPlotZoom extends JPanel {
 		} else if (op.getOperationType().equals(OPType.TRENDTEST)) {
 			xyd = GenericReportGenerator.getManhattanZoomByChrAndPos(
 					manhattanPlotZoom,
-					_opId,
+					operationKey,
 					cNetCDF.Association.VAR_OP_MARKERS_ASTrendTestTP,
 					_origChr,
 					null,
@@ -554,7 +554,7 @@ public final class ManhattanPlotZoom extends JPanel {
 
 	private XYDataset getXYDataSetByMarkerIdAndPhysPos(
 			ManhattanPlotZoom manhattanPlotZoom,
-			int _opId,
+			OperationKey operationKey,
 			String _origChr,
 			String _markerId,
 			long _centerPhysPos,
@@ -564,7 +564,7 @@ public final class ManhattanPlotZoom extends JPanel {
 		if (op.getOperationType().equals(OPType.ALLELICTEST)) {
 			xyd = GenericReportGenerator.getManhattanZoomByChrAndPos(
 					manhattanPlotZoom,
-					_opId,
+					operationKey,
 					cNetCDF.Association.VAR_OP_MARKERS_ASAllelicAssociationTPOR,
 					_origChr,
 					_markerId,
@@ -573,7 +573,7 @@ public final class ManhattanPlotZoom extends JPanel {
 		} else if (op.getOperationType().equals(OPType.GENOTYPICTEST)) {
 			xyd = GenericReportGenerator.getManhattanZoomByChrAndPos(
 					manhattanPlotZoom,
-					_opId,
+					operationKey,
 					cNetCDF.Association.VAR_OP_MARKERS_ASGenotypicAssociationTP2OR,
 					_origChr,
 					_markerId,
@@ -582,7 +582,7 @@ public final class ManhattanPlotZoom extends JPanel {
 		} else if (op.getOperationType().equals(OPType.TRENDTEST)) {
 			xyd = GenericReportGenerator.getManhattanZoomByChrAndPos(
 					manhattanPlotZoom,
-					_opId,
+					operationKey,
 					cNetCDF.Association.VAR_OP_MARKERS_ASTrendTestTP,
 					_origChr,
 					_markerId,
@@ -601,7 +601,7 @@ public final class ManhattanPlotZoom extends JPanel {
 	 */
 	XYDataset getXYDataSetByMarkerIdAndIdx(
 			ManhattanPlotZoom manhattanPlotZoom,
-			int _opId,
+			OperationKey operationKey,
 			String _origChr,
 			MarkerKey _markerKey,
 			int _centerPhysPos,
@@ -611,7 +611,7 @@ public final class ManhattanPlotZoom extends JPanel {
 		if (op.getOperationType().equals(OPType.ALLELICTEST)) {
 			xyd = GenericReportGenerator.getManhattanZoomByMarkerIdOrIdx(
 					manhattanPlotZoom,
-					_opId,
+					operationKey,
 					cNetCDF.Association.VAR_OP_MARKERS_ASAllelicAssociationTPOR,
 					_markerKey,
 					_centerPhysPos,
@@ -619,7 +619,7 @@ public final class ManhattanPlotZoom extends JPanel {
 		} else if (op.getOperationType().equals(OPType.GENOTYPICTEST)) {
 			xyd = GenericReportGenerator.getManhattanZoomByMarkerIdOrIdx(
 					manhattanPlotZoom,
-					_opId,
+					operationKey,
 					cNetCDF.Association.VAR_OP_MARKERS_ASGenotypicAssociationTP2OR,
 					_markerKey,
 					_centerPhysPos,
@@ -627,7 +627,7 @@ public final class ManhattanPlotZoom extends JPanel {
 		} else if (op.getOperationType().equals(OPType.TRENDTEST)) {
 			xyd = GenericReportGenerator.getManhattanZoomByMarkerIdOrIdx(
 					manhattanPlotZoom,
-					_opId,
+					operationKey,
 					cNetCDF.Association.VAR_OP_MARKERS_ASTrendTestTP,
 					_markerKey,
 					_centerPhysPos,
@@ -854,11 +854,11 @@ public final class ManhattanPlotZoom extends JPanel {
 
 	private class ResetAction extends AbstractAction {
 
-		private int opId;
+		private OperationKey operationKey;
 
-		ResetAction(int opId) {
+		ResetAction(OperationKey operationKey) {
 
-			this.opId = opId;
+			this.operationKey = operationKey;
 			putValue(NAME, Text.All.reset);
 		}
 
@@ -866,7 +866,7 @@ public final class ManhattanPlotZoom extends JPanel {
 		public void actionPerformed(ActionEvent evt) {
 			GWASpiExplorerPanel.getSingleton().setPnl_Content(new ManhattanPlotZoom(
 					 parent,
-					 opId,
+					 operationKey,
 					 origChr,
 					 startPhysPos, // startPhysPos
 					 requestedPosWindow, // physPos window
@@ -909,8 +909,8 @@ public final class ManhattanPlotZoom extends JPanel {
 		@Override
 		public void actionPerformed(ActionEvent evt) {
 			try {
-				List<Report> reportsList = ReportsList.getReportsList(rdOPMetadata.getOPId(), rdOPMetadata.getParentMatrixId());
-				GWASpiExplorerPanel.getSingleton().setPnl_Content(new Report_AnalysisPanel(rdOPMetadata.getStudyKey(), rdOPMetadata.getParentMatrixId(), rdOPMetadata.getOPId(), nRows));
+				List<Report> reportsList = ReportsList.getReportsList(op.getOPId(), op.getParentMatrixId());
+				GWASpiExplorerPanel.getSingleton().setPnl_Content(new Report_AnalysisPanel(op.getParentMatrixKey(), OperationKey.valueOf(op), nRows));
 				GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
 			} catch (IOException ex) {
 				log.error(null, ex);
@@ -929,7 +929,7 @@ public final class ManhattanPlotZoom extends JPanel {
 		public void actionPerformed(ActionEvent evt) {
 			try {
 				parent.setFired(false);
-				List<Report> reportsList = ReportsList.getReportsList(rdOPMetadata.getOPId(), rdOPMetadata.getParentMatrixId());
+				List<Report> reportsList = ReportsList.getReportsList(op.getOPId(), op.getParentMatrixId());
 				String reportFile = "";
 				for (int i = 0; i < reportsList.size(); i++) {
 					OPType reportType = reportsList.get(i).getReportType();
@@ -937,7 +937,7 @@ public final class ManhattanPlotZoom extends JPanel {
 						reportFile = reportsList.get(i).getFileName();
 					}
 				}
-				GWASpiExplorerPanel.getSingleton().setPnl_Content(new ManhattanChartDisplay(rdOPMetadata.getStudyKey(), reportFile, rdOPMetadata.getOPId()));
+				GWASpiExplorerPanel.getSingleton().setPnl_Content(new ManhattanChartDisplay(reportFile, OperationKey.valueOf(op)));
 				GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
 			} catch (IOException ex) {
 				log.error(null, ex);

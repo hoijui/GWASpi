@@ -59,23 +59,20 @@ import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 })
 public class OperationMetadata implements Serializable {
 
-	private int id;
+	private OperationKey key;
 	private String opName; // == Operation.friendlyName
 	private String netCDFName;
 	private OPType gtCode; // == Operation.type
-	private int parentMatrixId;
 	private int parentOperationId;
 	private String description;
 	private String pathToMatrix;
 	private int opSetSize;
 	private int implicitSetSize;
-	private StudyKey studyKey;
 	private Date creationDate;
 
 	protected OperationMetadata() {
 
-		this.id = Integer.MIN_VALUE;
-		this.parentMatrixId = Integer.MIN_VALUE;
+		this.key = null;
 		this.parentOperationId = Integer.MIN_VALUE;
 		this.opName = "";
 		this.netCDFName = "";
@@ -84,13 +81,12 @@ public class OperationMetadata implements Serializable {
 		this.gtCode = null;
 		this.opSetSize = Integer.MIN_VALUE;
 		this.implicitSetSize = Integer.MIN_VALUE;
-		this.studyKey = null;
 		this.creationDate = new Date();
 	}
 
 	public OperationMetadata(
 			int id,
-			int parentMatrixId,
+			MatrixKey parentMatrixKey,
 			int parentOperationId,
 			String opName,
 			String netCDFName,
@@ -99,12 +95,10 @@ public class OperationMetadata implements Serializable {
 			OPType gtCode,
 			int opSetSize,
 			int implicitSetSize,
-			StudyKey studyKey,
 			Date creationDate
 			)
 	{
-		this.id = id;
-		this.parentMatrixId = parentMatrixId;
+		this.key = new OperationKey(parentMatrixKey, id);
 		this.parentOperationId = parentOperationId;
 		this.opName = opName;
 		this.netCDFName = netCDFName;
@@ -113,7 +107,6 @@ public class OperationMetadata implements Serializable {
 		this.gtCode = gtCode;
 		this.opSetSize = opSetSize;
 		this.implicitSetSize = implicitSetSize;
-		this.studyKey = studyKey;
 		this.creationDate = (creationDate == null)
 				? null : (Date) creationDate.clone();
 	}
@@ -156,16 +149,16 @@ public class OperationMetadata implements Serializable {
 		updatable  = false
 		)
 	public int getId() {
-		return id;
+		return key.getId();
 	}
 
 	protected void setId(int id) {
-		this.id = id;
+		this.key = new OperationKey(key.getParentMatrixKey(), id);
 	}
 
 	@Transient
 	public int getOPId() {
-		return id;
+		return getId();
 	}
 
 	@Id
@@ -177,11 +170,19 @@ public class OperationMetadata implements Serializable {
 		updatable  = false
 		)
 	public int getParentMatrixId() {
-		return parentMatrixId;
+		return key.getParentMatrixKey().getMatrixId();
 	}
 
 	protected void setParentMatrixId(int parentMatrixId) {
-		this.parentMatrixId = parentMatrixId;
+		this.key = new OperationKey(new MatrixKey(
+				key.getParentMatrixKey().getStudyKey(),
+				parentMatrixId),
+				getId());
+	}
+
+	@Transient
+	public MatrixKey getParentMatrixKey() {
+		return key.getParentMatrixKey();
 	}
 
 	@Id
@@ -193,16 +194,19 @@ public class OperationMetadata implements Serializable {
 		updatable  = false
 		)
 	public int getStudyId() {
-		return studyKey.getId();
+		return key.getParentMatrixKey().getStudyKey().getId();
 	}
 
 	protected void setStudyId(int studyId) {
-		this.studyKey = new StudyKey(studyId);
+		this.key = new OperationKey(new MatrixKey(
+				new StudyKey(studyId),
+				key.getParentMatrixKey().getMatrixId()),
+				getId());
 	}
 
 	@Transient
 	public StudyKey getStudyKey() {
-		return studyKey;
+		return key.getParentMatrixKey().getStudyKey();
 	}
 
 	@Column(

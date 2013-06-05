@@ -38,8 +38,12 @@ public class OperationsList {
 		return operationService.getOperation(operationId);
 	}
 
-	public static List<OperationMetadata> getOperationsList(int parentMatrixId) throws IOException {
-		return operationService.getOperations(parentMatrixId);
+	public static OperationMetadata getOperation(OperationKey operationKey) throws IOException {
+		return operationService.getOperation(operationKey);
+	}
+
+	public static List<OperationMetadata> getOperationsList(MatrixKey parentMatrixKey) throws IOException {
+		return operationService.getOperations(parentMatrixKey);
 	}
 
 	public static List<OperationMetadata> getOperationsList(int parentMatrixId, int parentOpId) throws IOException {
@@ -50,30 +54,30 @@ public class OperationsList {
 		return operationService.getOperations(parentMatrixId, parentOpId, opType);
 	}
 
-	public static List<OperationMetadata> getOperationsTable(int parentMatrixId) throws IOException {
-		return operationService.getOperations(parentMatrixId);
+	public static List<OperationMetadata> getOperationsTable(MatrixKey parentMatrixKey) throws IOException {
+		return operationService.getOperations(parentMatrixKey);
 	}
 
 	public static List<OperationMetadata> getOperationsTable(int parentMatrixId, int opId) throws IOException {
-		return operationService.getOperationsTable(parentMatrixId, opId);
+		return operationService.getOperationAndSubOperations(parentMatrixId, opId);
 	}
 
-	public static int getIdOfLastOperationTypeOccurance(List<OperationMetadata> operations, OPType opType) {
-		int result = Integer.MIN_VALUE;
+	public static OperationKey getIdOfLastOperationTypeOccurance(List<OperationMetadata> operations, OPType opType) {
+		OperationKey result = null;
 		for (int i = 0; i < operations.size(); i++) {
 			if (operations.get(i).getOperationType().equals(OPType.MARKER_QA)) {
-				result = operations.get(i).getId();
+				result = OperationKey.valueOf(operations.get(i));
 			}
 		}
 		return result;
 	}
 
 	public static void insertOPMetadata(OperationMetadata operationMetadata) throws IOException {
-		operationService.insertOPMetadata(operationMetadata);
+		operationService.insertOperation(operationMetadata);
 	}
 
 	public static void deleteOperationBranch(OperationKey operationKey, boolean deleteReports) throws IOException {
-		operationService.deleteOperationBranch(operationKey, deleteReports);
+		operationService.deleteOperation(operationKey, deleteReports);
 	}
 
 	public static OperationMetadata getOperationMetadata(int opId) throws IOException {

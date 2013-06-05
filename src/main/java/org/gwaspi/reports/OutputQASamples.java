@@ -25,6 +25,7 @@ import java.util.Map;
 import org.gwaspi.constants.cExport;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.global.Config;
+import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.Report;
@@ -47,8 +48,8 @@ public class OutputQASamples {
 	private OutputQASamples() {
 	}
 
-	public static boolean writeReportsForQASamplesData(int opId, boolean newReport) throws IOException {
-		OperationMetadata op = OperationsList.getById(opId);
+	public static boolean writeReportsForQASamplesData(OperationKey operationKey, boolean newReport) throws IOException {
+		OperationMetadata op = OperationsList.getOperation(operationKey);
 
 		org.gwaspi.global.Utils.createFolder(new File(Study.constructReportsPath(op.getStudyKey())));
 		reportPath = Study.constructReportsPath(op.getStudyKey());
@@ -57,7 +58,7 @@ public class OutputQASamples {
 		samplMissOutName = prefix + "samplmissing.txt";
 
 
-		if (createSortedSampleMissingnessReport(opId, samplMissOutName, op.getStudyKey())
+		if (createSortedSampleMissingnessReport(operationKey, samplMissOutName, op.getStudyKey())
 				&& newReport)
 		{
 			ReportsList.insertRPMetadata(new Report(
@@ -65,8 +66,7 @@ public class OutputQASamples {
 					"Sample Missingness Table",
 					samplMissOutName,
 					OPType.SAMPLE_QA,
-					op.getParentMatrixId(),
-					opId,
+					operationKey,
 					"Sample Missingness Table",
 					op.getStudyKey()));
 
@@ -81,8 +81,7 @@ public class OutputQASamples {
 				"Sample Heterozygosity vs Missingness Plot",
 				samplMissOutName,
 				OPType.SAMPLE_HTZYPLOT,
-				op.getParentMatrixId(),
-				opId,
+				operationKey,
 				"Sample Heterozygosity vs Missingness Plot",
 				op.getStudyKey()));
 
@@ -94,18 +93,18 @@ public class OutputQASamples {
 		return true;
 	}
 
-	public static boolean createSortedSampleMissingnessReport(int opId, String reportName, StudyKey studyKey) throws IOException {
+	public static boolean createSortedSampleMissingnessReport(OperationKey operationKey, String reportName, StudyKey studyKey) throws IOException {
 		boolean result;
 		String sep = cExport.separator_REPORTS;
 
 		try {
-			Map<SampleKey, Double> unsortedSamplesMissingRatMap = GatherQASamplesData.loadSamplesQAMissingRatio(opId);
+			Map<SampleKey, Double> unsortedSamplesMissingRatMap = GatherQASamplesData.loadSamplesQAMissingRatio(operationKey);
 			Map<SampleKey, Double> sortedSamplesMissingRatMap = org.gwaspi.global.Utils.createMapSortedByValueDescending(unsortedSamplesMissingRatMap);
 			if (unsortedSamplesMissingRatMap != null) {
 				unsortedSamplesMissingRatMap.clear();
 			}
 
-			Map<SampleKey, Double> samplesMissingRatMap = GatherQASamplesData.loadSamplesQAHetZygRatio(opId);
+			Map<SampleKey, Double> samplesMissingRatMap = GatherQASamplesData.loadSamplesQAHetZygRatio(operationKey);
 
 			//WRITE HEADER OF FILE
 			FileWriter tempFW = new FileWriter(reportPath + samplMissOutName);

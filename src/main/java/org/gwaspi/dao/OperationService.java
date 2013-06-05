@@ -20,6 +20,7 @@ package org.gwaspi.dao;
 import java.io.IOException;
 import java.util.List;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
+import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 
@@ -35,11 +36,11 @@ public interface OperationService {
 
 	List<OperationMetadata> getOperations(int parentMatrixId, int parentOpId, OPType opType) throws IOException;
 
-	List<OperationMetadata> getOperations(int parentMatrixId) throws IOException;
+	List<OperationMetadata> getOperations(MatrixKey parentMatrixKey) throws IOException;
 
-	List<OperationMetadata> getOperationsTable(int parentMatrixId, int opId) throws IOException;
+	List<OperationMetadata> getOperationAndSubOperations(int parentMatrixId, int opId) throws IOException;
 
-	OperationKey insertOPMetadata(OperationMetadata operationMetadata) throws IOException;
+	OperationKey insertOperation(OperationMetadata operationMetadata) throws IOException;
 
-	void deleteOperationBranch(OperationKey operationKey, boolean deleteReports) throws IOException;
+	void deleteOperation(OperationKey operationKey, boolean deleteReports) throws IOException;
 }

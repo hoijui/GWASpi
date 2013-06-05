@@ -55,8 +55,8 @@ import org.gwaspi.gui.utils.BrowserHelpUrlAction;
 import org.gwaspi.gui.utils.HelpURLs;
 import org.gwaspi.gui.utils.IntegerInputVerifier;
 import org.gwaspi.gui.utils.RowRendererDefault;
+import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.Study;
-import org.gwaspi.model.StudyKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -78,7 +78,7 @@ public class Report_HardyWeinbergSummary extends JPanel {
 
 	// Variables declaration - do not modify
 	private final File reportFile;
-	private final int opId;
+	private final OperationKey operationKey;
 	private final JButton btn_Get;
 	private final JButton btn_Save;
 	private final JButton btn_Back;
@@ -91,15 +91,15 @@ public class Report_HardyWeinbergSummary extends JPanel {
 	private final JFormattedTextField txt_NRows;
 	// End of variables declaration
 
-	public Report_HardyWeinbergSummary(final StudyKey studyKey, final String _hwFileName, int _opId) {
+	public Report_HardyWeinbergSummary(final OperationKey operationKey, final String _hwFileName) {
 
-		opId = _opId;
+		this.operationKey = operationKey;
 		String reportName = GWASpiExplorerPanel.getSingleton().getTree().getLastSelectedPathComponent().toString();
 		reportName = reportName.substring(reportName.indexOf('-') + 2);
 
 		String reportPath = "";
 		try {
-			reportPath = Study.constructReportsPath(studyKey);
+			reportPath = Study.constructReportsPath(operationKey.getParentMatrixKey().getStudyKey());
 		} catch (IOException ex) {
 			log.error(null, ex);
 		}
@@ -199,9 +199,9 @@ public class Report_HardyWeinbergSummary extends JPanel {
 		scrl_ReportTable.setViewportView(tbl_ReportTable);
 
 		//<editor-fold defaultstate="expanded" desc="FOOTER">
-		btn_Save.setAction(new Report_Analysis.SaveAsAction(studyKey, _hwFileName, tbl_ReportTable, txt_NRows));
+		btn_Save.setAction(new Report_Analysis.SaveAsAction(operationKey.getParentMatrixKey().getStudyKey(), _hwFileName, tbl_ReportTable, txt_NRows));
 
-		btn_Back.setAction(new Report_Analysis.BackAction(opId));
+		btn_Back.setAction(new Report_Analysis.BackAction(operationKey));
 
 		btn_Help.setAction(new BrowserHelpUrlAction(HelpURLs.QryURL.hwReport));
 

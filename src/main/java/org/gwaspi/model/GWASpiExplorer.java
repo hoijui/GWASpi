@@ -65,9 +65,9 @@ public class GWASpiExplorer {
 	/** Possible values are "Angled" (the default), "Horizontal", and "None". */
 	private final String lineStyle;
 	// Optionally set the look and feel.
-	private final static Icon customOpenIcon = initIcon("hex_open.png");
-	private final static Icon customClosedIcon = initIcon("hex_closed.png");
-	private final static Icon customLeafIcon = initIcon("leaf_sepia.png");
+	private static final Icon customOpenIcon = initIcon("hex_open.png");
+	private static final Icon customClosedIcon = initIcon("hex_closed.png");
+	private static final Icon customLeafIcon = initIcon("leaf_sepia.png");
 
 	public GWASpiExplorer() {
 
@@ -152,7 +152,7 @@ public class GWASpiExplorer {
 
 				// LOAD Parent OPERATIONS ON CURRENT MATRIX
 				List<OperationMetadata> parentOperations = OperationsList.getOperationsList(matrixList.get(j).getMatrixId(), -1);
-				List<OperationMetadata> allOperations = OperationsList.getOperationsList(matrixList.get(j).getMatrixId());
+				List<OperationMetadata> allOperations = OperationsList.getOperationsList(matrixList.get(j));
 				for (int k = 0; k < parentOperations.size(); k++) {
 					// LOAD SUB OPERATIONS ON CURRENT MATRIX
 					OperationMetadata currentOP = parentOperations.get(k);
@@ -329,24 +329,26 @@ public class GWASpiExplorer {
 							if (reportsList.size() > 0) {
 								Report hwReport = reportsList.get(0);
 								String reportFile = hwReport.getFileName();
-								gwasPiExplorerPanel.setPnl_Content(new Report_HardyWeinbergSummary(hwReport.getStudyKey(), reportFile, hwReport.getParentOperationId()));
+								gwasPiExplorerPanel.setPnl_Content(new Report_HardyWeinbergSummary(hwReport.getParentOperationKey(), reportFile));
 								gwasPiExplorerPanel.getScrl_Content().setViewportView(gwasPiExplorerPanel.getPnl_Content());
 							}
 						} else if (currentOP.getOperationType().equals(OPType.ALLELICTEST)) {
 							// Display Association Report
-							gwasPiExplorerPanel.setPnl_Content(new Report_AnalysisPanel(currentOP.getStudyKey(), currentOP.getParentMatrixId(), currentOP.getId(), null));
+							gwasPiExplorerPanel.setPnl_Content(new Report_AnalysisPanel(currentOP.getParentMatrixKey(), OperationKey.valueOf(currentOP), null));
 							gwasPiExplorerPanel.getScrl_Content().setViewportView(gwasPiExplorerPanel.getPnl_Content());
 						} else if (currentOP.getOperationType().equals(OPType.GENOTYPICTEST)) {
 							// Display Association Report
-							gwasPiExplorerPanel.setPnl_Content(new Report_AnalysisPanel(currentOP.getStudyKey(), currentOP.getParentMatrixId(), currentOP.getId(), null));
+							gwasPiExplorerPanel.setPnl_Content(new Report_AnalysisPanel(currentOP.getParentMatrixKey(), OperationKey.valueOf(currentOP), null));
 							gwasPiExplorerPanel.getScrl_Content().setViewportView(gwasPiExplorerPanel.getPnl_Content());
 						} else if (currentOP.getOperationType().equals(OPType.TRENDTEST)) {
 							// Display Trend Test Report
-							gwasPiExplorerPanel.setPnl_Content(new Report_AnalysisPanel(currentOP.getStudyKey(), currentOP.getParentMatrixId(), currentOP.getId(), null));
+							gwasPiExplorerPanel.setPnl_Content(new Report_AnalysisPanel(currentOP.getParentMatrixKey(), OperationKey.valueOf(currentOP), null));
 							gwasPiExplorerPanel.getScrl_Content().setViewportView(gwasPiExplorerPanel.getPnl_Content());
 						} else {
 							//gwasPiExplorerPanel.pnl_Content = new MatrixAnalysePanel(parentOP.getParentMatrixId(), currentElementInfo.parentNodeId);
-							gwasPiExplorerPanel.setPnl_Content(new MatrixAnalysePanel(new MatrixKey(parentOP.getStudyKey(), parentOP.getParentMatrixId()), currentElementInfo.getNodeId()));
+							MatrixKey matrixKey = new MatrixKey(parentOP.getStudyKey(), parentOP.getParentMatrixId());
+							OperationKey operationKey = new OperationKey(matrixKey, currentElementInfo.getNodeId());
+							gwasPiExplorerPanel.setPnl_Content(new MatrixAnalysePanel(matrixKey, operationKey));
 							gwasPiExplorerPanel.getScrl_Content().setViewportView(gwasPiExplorerPanel.getPnl_Content());
 						}
 					} else {
@@ -363,12 +365,14 @@ public class GWASpiExplorer {
 							if (reportsList.size() > 0) {
 								Report sampleQAReport = reportsList.get(0);
 								String reportFile = sampleQAReport.getFileName();
-								gwasPiExplorerPanel.setPnl_Content(new Report_QASamplesSummary(sampleQAReport.getStudyKey(), reportFile, sampleQAReport.getParentOperationId()));
+								gwasPiExplorerPanel.setPnl_Content(new Report_QASamplesSummary(sampleQAReport.getParentOperationKey(), reportFile));
 								gwasPiExplorerPanel.getScrl_Content().setViewportView(gwasPiExplorerPanel.getPnl_Content());
 							}
 						} else {
 							// Display Operation analysis panel
-							gwasPiExplorerPanel.setPnl_Content(new MatrixAnalysePanel(new MatrixKey(currentOP.getStudyKey(), parentElementInfo.getNodeId()), currentElementInfo.getNodeId()));
+							MatrixKey matrixKey = new MatrixKey(currentOP.getStudyKey(), parentElementInfo.getNodeId());
+							OperationKey operationKey = new OperationKey(matrixKey, currentElementInfo.getNodeId());
+							gwasPiExplorerPanel.setPnl_Content(new MatrixAnalysePanel(matrixKey, operationKey));
 							gwasPiExplorerPanel.getScrl_Content().setViewportView(gwasPiExplorerPanel.getPnl_Content());
 						}
 					}
@@ -383,20 +387,20 @@ public class GWASpiExplorer {
 					Report rp = ReportsList.getReport((ReportKey) currentElementInfo.getContentKey());
 					String reportFile = rp.getFileName();
 					if (rp.getReportType().equals(OPType.SAMPLE_HTZYPLOT)) {
-						gwasPiExplorerPanel.setPnl_Content(new SampleQAHetzygPlotZoom(rp.getParentOperationId()));
+						gwasPiExplorerPanel.setPnl_Content(new SampleQAHetzygPlotZoom(rp.getParentOperationKey()));
 						gwasPiExplorerPanel.getScrl_Content().setViewportView(gwasPiExplorerPanel.getPnl_Content());
 					}
 					if (rp.getReportType().equals(OPType.ALLELICTEST)) {
 						//gwasPiExplorerPanel.pnl_Content = new Report_AssociationSummary(rp.getId(), reportFile, rp.getParentOperationId(), null);
-						gwasPiExplorerPanel.setPnl_Content(new Report_AnalysisPanel(rp.getStudyKey(), rp.getParentMatrixId(), rp.getParentOperationId(), null));
+						gwasPiExplorerPanel.setPnl_Content(new Report_AnalysisPanel(rp.getParentMatrixKey(), rp.getParentOperationKey(), null));
 						gwasPiExplorerPanel.getScrl_Content().setViewportView(gwasPiExplorerPanel.getPnl_Content());
 					}
 					if (rp.getReportType().equals(OPType.QQPLOT)) {
-						gwasPiExplorerPanel.setPnl_Content(new ChartDefaultDisplay(rp.getStudyKey(), reportFile, rp.getParentOperationId()));
+						gwasPiExplorerPanel.setPnl_Content(new ChartDefaultDisplay(reportFile, rp.getParentOperationKey()));
 						gwasPiExplorerPanel.getScrl_Content().setViewportView(gwasPiExplorerPanel.getPnl_Content());
 					}
 					if (rp.getReportType().equals(OPType.MANHATTANPLOT)) {
-						gwasPiExplorerPanel.setPnl_Content(new ManhattanChartDisplay(rp.getStudyKey(), reportFile, rp.getParentOperationId()));
+						gwasPiExplorerPanel.setPnl_Content(new ManhattanChartDisplay(reportFile, rp.getParentOperationKey()));
 						gwasPiExplorerPanel.getScrl_Content().setViewportView(gwasPiExplorerPanel.getPnl_Content());
 					}
 					if (rp.getReportType().equals(OPType.MARKER_QA)) {
@@ -408,7 +412,7 @@ public class GWASpiExplorer {
 //						gwasPiExplorerPanel.scrl_Content.setViewportView(gwasPiExplorerPanel.pnl_Content);
 //					}
 					if (rp.getReportType().equals(OPType.HARDY_WEINBERG)) {
-						gwasPiExplorerPanel.setPnl_Content(new Report_HardyWeinbergSummary(rp.getStudyKey(), reportFile, rp.getParentOperationId()));
+						gwasPiExplorerPanel.setPnl_Content(new Report_HardyWeinbergSummary(rp.getParentOperationKey(), reportFile));
 						gwasPiExplorerPanel.getScrl_Content().setViewportView(gwasPiExplorerPanel.getPnl_Content());
 					}
 				} catch (IOException ex) {

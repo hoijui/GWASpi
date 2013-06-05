@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.Set;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.model.MatricesList;
+import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleInfoList;
@@ -59,8 +60,15 @@ public class SampleSet {
 		this.sampleIdSetMap = new LinkedHashMap<SampleKey, Object>();
 	}
 
+	/**
+	 * @deprecated use MatrixKey version instead!
+	 */
 	public SampleSet(StudyKey studyKey, int matrixId) throws IOException {
-		this(MatricesList.getMatrixMetadataById(matrixId));
+		this(MatricesList.getMatrixMetadataById(new MatrixKey(studyKey, matrixId)));
+	}
+
+	public SampleSet(MatrixKey matrixKey) throws IOException {
+		this(MatricesList.getMatrixMetadataById(matrixKey));
 	}
 
 	public SampleSet(StudyKey studyKey, String netCDFName) throws IOException {

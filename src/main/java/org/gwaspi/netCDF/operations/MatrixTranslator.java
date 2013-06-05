@@ -27,6 +27,7 @@ import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MatricesList;
+import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.StudyKey;
@@ -45,8 +46,7 @@ public class MatrixTranslator {
 
 	private final Logger log = LoggerFactory.getLogger(MatrixTranslator.class);
 
-	private final StudyKey studyKey;
-	private final int rdMatrixId;
+	private final MatrixKey rdMatrixKey;
 	private final int wrMatrixId;
 	private final String wrMatrixFriendlyName;
 	private final String wrMatrixDescription;
@@ -58,27 +58,25 @@ public class MatrixTranslator {
 	private final Map<SampleKey, ?> rdSampleSetMap;
 
 	public MatrixTranslator(
-			StudyKey studyKey,
-			int rdMatrixId,
+			MatrixKey rdMatrixKey,
 			String wrMatrixFriendlyName,
 			String wrMatrixDescription)
 			throws IOException, InvalidRangeException
 	{
 		// INIT EXTRACTOR OBJECTS
-		this.rdMatrixId = rdMatrixId;
-		this.rdMatrixMetadata = MatricesList.getMatrixMetadataById(this.rdMatrixId);
-		this.studyKey = rdMatrixMetadata.getStudyKey();
+		this.rdMatrixKey = rdMatrixKey;
+		this.rdMatrixMetadata = MatricesList.getMatrixMetadataById(this.rdMatrixKey);
 		this.wrMatrixId = Integer.MIN_VALUE;
 		this.wrMatrixFriendlyName = wrMatrixFriendlyName;
 		this.wrMatrixDescription = wrMatrixDescription;
 
-		this.rdMarkerSet = new MarkerSet(this.rdMatrixMetadata.getStudyKey(), this.rdMatrixId);
+		this.rdMarkerSet = new MarkerSet(this.rdMatrixKey);
 		this.rdMarkerSet.initFullMarkerIdSetMap();
 
 		this.wrMarkerIdSetMap = new LinkedHashMap<MarkerKey, byte[]>();
 		this.rdChrInfoSetMap = this.rdMarkerSet.getChrInfoSetMap();
 
-		this.rdSampleSet = new SampleSet(this.rdMatrixMetadata.getStudyKey(), this.rdMatrixId);
+		this.rdSampleSet = new SampleSet(this.rdMatrixKey);
 		this.rdSampleSetMap = this.rdSampleSet.getSampleIdSetMapByteArray();
 	}
 
@@ -94,7 +92,7 @@ public class MatrixTranslator {
 				// CREATE netCDF-3 FILE
 				StringBuilder descSB = new StringBuilder(Text.Matrix.descriptionHeader1);
 				descSB.append(org.gwaspi.global.Utils.getShortDateTimeAsString());
-				descSB.append("\nThrough Matrix translation from parent Matrix MX: ").append(rdMatrixId).append(" - ").append(rdMatrixMetadata.getMatrixFriendlyName());
+				descSB.append("\nThrough Matrix translation from parent Matrix MX: ").append(rdMatrixKey).append(" - ").append(rdMatrixMetadata.getMatrixFriendlyName());
 				descSB.append("\nTranslation method: AB0 or 012 to ACGT0 using the parent's dictionnary");
 				if (!wrMatrixDescription.isEmpty()) {
 					descSB.append("\n\nDescription: ");
@@ -107,7 +105,6 @@ public class MatrixTranslator {
 				descSB.append(GenotypeEncoding.ACGT0.toString());
 
 				MatrixFactory wrMatrixHandler = new MatrixFactory(
-						studyKey,
 						rdMatrixMetadata.getTechnology(), // technology
 						wrMatrixFriendlyName,
 						descSB.toString(), // description
@@ -117,8 +114,8 @@ public class MatrixTranslator {
 						rdSampleSet.getSampleSetSize(),
 						rdMarkerSet.getMarkerSetSize(),
 						rdChrInfoSetMap.size(),
-						rdMatrixId, // Orig matrixId 1
-						Integer.MIN_VALUE); // Orig matrixId 2
+						rdMatrixKey, // Orig matrixId 1
+						null); // Orig matrixId 2
 
 				NetcdfFileWriteable wrNcFile = wrMatrixHandler.getNetCDFHandler();
 				try {
@@ -265,7 +262,6 @@ public class MatrixTranslator {
 				descSB.append("Markers: ").append(rdMatrixMetadata.getMarkerSetSize()).append(", Samples: ").append(rdMatrixMetadata.getSampleSetSize());
 
 				MatrixFactory wrMatrixHandler = new MatrixFactory(
-						studyKey,
 						rdMatrixMetadata.getTechnology(), // technology
 						wrMatrixFriendlyName,
 						descSB.toString(), // description
@@ -275,8 +271,8 @@ public class MatrixTranslator {
 						rdSampleSet.getSampleSetSize(),
 						rdMarkerSet.getMarkerSetSize(),
 						rdChrInfoSetMap.size(),
-						rdMatrixId, // Orig matrixId 1
-						Integer.MIN_VALUE); // Orig matrixId 2
+						rdMatrixKey, // Orig matrixId 1
+						null); // Orig matrixId 2
 
 				NetcdfFileWriteable wrNcFile = wrMatrixHandler.getNetCDFHandler();
 				try {
@@ -486,11 +482,11 @@ public class MatrixTranslator {
 
 	//<editor-fold defaultstate="expanded" desc="ACCESSORS">
 	public int getRdMatrixId() {
-		return rdMatrixId;
+		return rdMatrixKey.getMatrixId();
 	}
 
 	public StudyKey getStudyKey() {
-		return studyKey;
+		return rdMatrixKey.getStudyKey();
 	}
 
 	public int getWrMatrixId() {

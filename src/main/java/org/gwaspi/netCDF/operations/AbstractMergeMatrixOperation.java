@@ -26,9 +26,9 @@ import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.MatricesList;
+import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleKey;
-import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.loader.ComparatorChrAutPosMarkerIdAsc;
 import org.gwaspi.netCDF.markers.MarkerSet;
 import org.gwaspi.samples.SampleSet;
@@ -41,9 +41,8 @@ public abstract class AbstractMergeMatrixOperation implements MatrixOperation {
 
 	private final Logger log = LoggerFactory.getLogger(AbstractMergeMatrixOperation.class);
 
-	protected StudyKey studyKey;
-	protected int rdMatrix1Id;
-	protected int rdMatrix2Id;
+	protected MatrixKey rdMatrix1Key;
+	protected MatrixKey rdMatrix2Key;
 	protected final String wrMatrixFriendlyName;
 	protected final String wrMatrixDescription;
 	protected MatrixMetadata rdMatrix1Metadata;
@@ -56,9 +55,9 @@ public abstract class AbstractMergeMatrixOperation implements MatrixOperation {
 	protected SampleSet rdSampleSet2;
 	protected SampleSet wrSampleSet;
 
-	private AbstractMergeMatrixOperation(
-			Integer rdMatrix1Id,
-			Integer rdMatrix2Id,
+	protected AbstractMergeMatrixOperation(
+			MatrixKey rdMatrix1Key,
+			MatrixKey rdMatrix2Key,
 			String wrMatrixFriendlyName,
 			String wrMatrixDescription)
 			throws IOException, InvalidRangeException
@@ -67,59 +66,20 @@ public abstract class AbstractMergeMatrixOperation implements MatrixOperation {
 		this.wrMarkerSet = null;
 		this.wrSampleSet = null;
 
-		this.rdMatrix1Id = rdMatrix1Id;
-		this.rdMatrix2Id = rdMatrix2Id;
+		this.rdMatrix1Key = rdMatrix1Key;
+		this.rdMatrix2Key = rdMatrix2Key;
 
-		this.rdMatrix1Metadata = MatricesList.getMatrixMetadataById(this.rdMatrix1Id);
-		this.rdMatrix2Metadata = MatricesList.getMatrixMetadataById(this.rdMatrix2Id);
+		this.rdMatrix1Metadata = MatricesList.getMatrixMetadataById(this.rdMatrix1Key);
+		this.rdMatrix2Metadata = MatricesList.getMatrixMetadataById(this.rdMatrix2Key);
 
 		this.wrMatrixFriendlyName = wrMatrixFriendlyName;
 		this.wrMatrixDescription = wrMatrixDescription;
-	}
 
-	public AbstractMergeMatrixOperation(
-			StudyKey studyKey,
-			int rdMatrix1Id,
-			int rdMatrix2Id,
-			String wrMatrixFriendlyName,
-			String wrMatrixDescription)
-			throws IOException, InvalidRangeException
-	{
-		this(
-				rdMatrix1Id,
-				rdMatrix2Id,
-				wrMatrixFriendlyName,
-				wrMatrixDescription);
+		this.rdMarkerSet1 = new MarkerSet(this.rdMatrix1Key);
+		this.rdMarkerSet2 = new MarkerSet(this.rdMatrix2Key);
 
-		this.studyKey = studyKey;
-
-		this.rdMarkerSet1 = new MarkerSet(this.studyKey, this.rdMatrix1Id);
-		this.rdMarkerSet2 = new MarkerSet(this.studyKey, this.rdMatrix2Id);
-
-		this.rdSampleSet1 = new SampleSet(this.studyKey, this.rdMatrix1Id);
-		this.rdSampleSet2 = new SampleSet(this.studyKey, this.rdMatrix2Id);
-	}
-
-	public AbstractMergeMatrixOperation(
-			int rdMatrix1Id,
-			int rdMatrix2Id,
-			String wrMatrixFriendlyName,
-			String wrMatrixDescription)
-			throws IOException, InvalidRangeException
-	{
-		this(
-				(Integer) rdMatrix1Id,
-				(Integer) rdMatrix2Id,
-				wrMatrixFriendlyName,
-				wrMatrixDescription);
-
-		this.studyKey = this.rdMatrix1Metadata.getStudyKey();
-
-		this.rdMarkerSet1 = new MarkerSet(this.rdMatrix1Metadata.getStudyKey(), this.rdMatrix1Id);
-		this.rdMarkerSet2 = new MarkerSet(this.rdMatrix2Metadata.getStudyKey(), this.rdMatrix2Id);
-
-		this.rdSampleSet1 = new SampleSet(this.rdMatrix1Metadata.getStudyKey(), this.rdMatrix1Id);
-		this.rdSampleSet2 = new SampleSet(this.rdMatrix2Metadata.getStudyKey(), this.rdMatrix2Id);
+		this.rdSampleSet1 = new SampleSet(this.rdMatrix1Key);
+		this.rdSampleSet2 = new SampleSet(this.rdMatrix2Key);
 	}
 
 	private static Map<MarkerKey, char[]> getMatrixMapWithChrAndPos(MarkerSet rdMarkerSet) {
@@ -211,12 +171,12 @@ public abstract class AbstractMergeMatrixOperation implements MatrixOperation {
 		return resultMap;
 	}
 
-	protected double[] checkForMismatches(int wrMatrixId) throws IOException, InvalidRangeException {
+	protected double[] checkForMismatches(MatrixKey wrMatrixKey) throws IOException, InvalidRangeException {
 		double[] result = new double[2];
 
-		wrMatrixMetadata = MatricesList.getMatrixMetadataById(wrMatrixId);
-		wrSampleSet = new SampleSet(wrMatrixMetadata.getStudyKey(), wrMatrixId);
-		wrMarkerSet = new MarkerSet(wrMatrixMetadata.getStudyKey(), wrMatrixId);
+		wrMatrixMetadata = MatricesList.getMatrixMetadataById(wrMatrixKey);
+		wrSampleSet = new SampleSet(wrMatrixKey);
+		wrMarkerSet = new MarkerSet(wrMatrixKey);
 		wrMarkerSet.initFullMarkerIdSetMap();
 		Map<SampleKey, char[]> wrSampleSetMap = wrSampleSet.getSampleIdSetMapCharArray();
 

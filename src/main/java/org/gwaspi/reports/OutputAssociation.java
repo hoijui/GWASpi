@@ -27,9 +27,9 @@ import org.gwaspi.constants.cExport;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Association;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
-import org.gwaspi.global.Config;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.MarkerKey;
+import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.Report;
@@ -67,9 +67,9 @@ public class OutputAssociation {
 		this.header = "MarkerID\trsID\tChr\tPosition\tMin. Allele\tMaj. Allele\tX²\tPval\t" + (allelic ? "OR" : "OR-AA/aa\tOR-Aa/aa") + "\n";
 	}
 
-	public boolean writeReportsForAssociationData(int opId) throws IOException {
+	public boolean writeReportsForAssociationData(OperationKey operationKey) throws IOException {
 		boolean result = false;
-		OperationMetadata op = OperationsList.getById(opId);
+		OperationMetadata op = OperationsList.getOperation(operationKey);
 
 		org.gwaspi.global.Utils.createFolder(new File(Study.constructReportsPath(op.getStudyKey())));
 		//String manhattanName = "mnhtt_" + outName;
@@ -77,30 +77,28 @@ public class OutputAssociation {
 		String manhattanName = prefix + "manhtt";
 
 		log.info(Text.All.processing);
-		if (writeManhattanPlotFromAssociationData(opId, manhattanName, 4000, 500)) {
+		if (writeManhattanPlotFromAssociationData(operationKey, manhattanName, 4000, 500)) {
 			result = true;
 			ReportsList.insertRPMetadata(new Report(
 					Integer.MIN_VALUE,
 					testName + " assoc. Manhattan Plot",
 					manhattanName + ".png",
 					OPType.MANHATTANPLOT,
-					op.getParentMatrixId(),
-					opId,
+					operationKey,
 					testName + " Association Manhattan Plot",
 					op.getStudyKey()));
 			log.info("Saved " + testName + " Association Manhattan Plot in reports folder");
 		}
 		//String qqName = "qq_" + outName;
 		String qqName = prefix + "qq";
-		if (result && writeQQPlotFromAssociationData(opId, qqName, 500, 500)) {
+		if (result && writeQQPlotFromAssociationData(operationKey, qqName, 500, 500)) {
 			result = true;
 			ReportsList.insertRPMetadata(new Report(
 					Integer.MIN_VALUE,
 					testName + " assoc. QQ Plot",
 					qqName + ".png",
 					OPType.QQPLOT,
-					op.getParentMatrixId(),
-					opId,
+					operationKey,
 					testName + " Association QQ Plot",
 					op.getStudyKey()));
 
@@ -108,15 +106,14 @@ public class OutputAssociation {
 		}
 		//String assocName = "assoc_"+outName;
 		String assocName = prefix;
-		if (result && createSortedAssociationReport(opId, assocName)) {
+		if (result && createSortedAssociationReport(operationKey, assocName)) {
 			result = true;
 			ReportsList.insertRPMetadata(new Report(
 					Integer.MIN_VALUE,
 					testName + " Association Tests Values",
 					assocName + ".txt",
 					testType,
-					op.getParentMatrixId(),
-					opId,
+					operationKey,
 					testName + " Association Tests Values",
 					op.getStudyKey()));
 
@@ -126,17 +123,17 @@ public class OutputAssociation {
 		return result;
 	}
 
-	private boolean writeManhattanPlotFromAssociationData(int opId, String outName, int width, int height) throws IOException {
+	private boolean writeManhattanPlotFromAssociationData(OperationKey operationKey, String outName, int width, int height) throws IOException {
 		boolean result = false;
 		// Generating XY scatter plot with loaded data
-		CombinedRangeXYPlot combinedPlot = GenericReportGenerator.buildManhattanPlot(opId, variableName);
+		CombinedRangeXYPlot combinedPlot = GenericReportGenerator.buildManhattanPlot(operationKey, variableName);
 
 		JFreeChart chart = new JFreeChart("P value", JFreeChart.DEFAULT_TITLE_FONT, combinedPlot, true);
 
 		// CHART BACKGROUD COLOR
 		chart.setBackgroundPaint(Color.getHSBColor(0.1f, 0.1f, 1.0f)); // Hue, saturation, brightness
 
-		OperationMetadata rdOPMetadata = OperationsList.getOperationMetadata(opId);
+		OperationMetadata rdOPMetadata = OperationsList.getOperation(operationKey);
 		int pointNb = rdOPMetadata.getOpSetSize();
 		int picWidth = 4000;
 		if (pointNb < 1000) {
@@ -149,7 +146,7 @@ public class OutputAssociation {
 			picWidth = 2000;
 		}
 
-		String imagePath = Study.constructReportsPath(rdOPMetadata.getStudyKey()) + outName + ".png";
+		String imagePath = Study.constructReportsPath(operationKey.getParentMatrixKey().getStudyKey()) + outName + ".png";
 		try {
 			ChartUtilities.saveChartAsPNG(new File(imagePath),
 					chart,
@@ -163,17 +160,18 @@ public class OutputAssociation {
 		return result;
 	}
 
-	private boolean writeQQPlotFromAssociationData(int opId, String outName, int width, int height) throws IOException {
+	private boolean writeQQPlotFromAssociationData(OperationKey operationKey, String outName, int width, int height) throws IOException {
 		boolean result = false;
 		// Generating XY scatter plot with loaded data
-		XYPlot qqPlot = GenericReportGenerator.buildQQPlot(opId, variableName, qqPlotDof);
+		XYPlot qqPlot = GenericReportGenerator.buildQQPlot(operationKey, variableName, qqPlotDof);
 
 		JFreeChart chart = new JFreeChart("X² QQ", JFreeChart.DEFAULT_TITLE_FONT, qqPlot, true);
 
-		OperationMetadata rdOPMetadata = OperationsList.getOperationMetadata(opId);
+		OperationMetadata rdOPMetadata = OperationsList.getOperation(operationKey);
 		String imagePath = Study.constructReportsPath(rdOPMetadata.getStudyKey()) + outName + ".png";
 		try {
-			ChartUtilities.saveChartAsPNG(new File(imagePath),
+			ChartUtilities.saveChartAsPNG(
+					new File(imagePath),
 					chart,
 					width,
 					height);
@@ -185,11 +183,11 @@ public class OutputAssociation {
 		return result;
 	}
 
-	private boolean createSortedAssociationReport(int opId, String reportName) throws IOException {
+	private boolean createSortedAssociationReport(OperationKey operationKey, String reportName) throws IOException {
 		boolean result;
 
 		try {
-			Map<MarkerKey, double[]> unsortedMarkerIdAssocValsMap = GenericReportGenerator.getAnalysisVarData(opId, variableName);
+			Map<MarkerKey, double[]> unsortedMarkerIdAssocValsMap = GenericReportGenerator.getAnalysisVarData(operationKey, variableName);
 			Map<MarkerKey, Double> unsortedMarkerIdPvalMap = new LinkedHashMap<MarkerKey, Double>();
 			for (Map.Entry<MarkerKey, double[]> entry : unsortedMarkerIdAssocValsMap.entrySet()) {
 				double[] values = entry.getValue();
@@ -202,7 +200,7 @@ public class OutputAssociation {
 			}
 
 			String sep = cExport.separator_REPORTS;
-			OperationMetadata rdOPMetadata = OperationsList.getOperationMetadata(opId);
+			OperationMetadata rdOPMetadata = OperationsList.getOperation(operationKey);
 			MarkerSet rdInfoMarkerSet = new MarkerSet(rdOPMetadata.getStudyKey(), rdOPMetadata.getParentMatrixId());
 			rdInfoMarkerSet.initFullMarkerIdSetMap();
 
@@ -227,20 +225,20 @@ public class OutputAssociation {
 
 			// WRITE KNOWN ALLELES FROM QA
 			// get MARKER_QA Operation
-			List<OperationMetadata> operations = OperationsList.getOperationsList(rdOPMetadata.getParentMatrixId());
-			int markersQAopId = Integer.MIN_VALUE;
+			List<OperationMetadata> operations = OperationsList.getOperationsList(rdOPMetadata.getParentMatrixKey());
+			OperationKey markersQAopKey = null;
 			for (int i = 0; i < operations.size(); i++) {
 				OperationMetadata op = operations.get(i);
 				if (op.getType().equals(OPType.MARKER_QA)) {
-					markersQAopId = op.getId();
+					markersQAopKey = OperationKey.valueOf(op);
 				}
 			}
 			Map<MarkerKey, String> sortedMarkerAlleles = new LinkedHashMap<MarkerKey, String>(sortingMarkerSetMap.size());
-			if (markersQAopId != Integer.MIN_VALUE) {
-				OperationMetadata qaMetadata = OperationsList.getOperationMetadata(markersQAopId);
+			if (markersQAopKey != null) {
+				OperationMetadata qaMetadata = OperationsList.getOperation(markersQAopKey);
 				NetcdfFile qaNcFile = NetcdfFile.open(qaMetadata.getPathToMatrix());
 
-				MarkerOperationSet rdOperationSet = new MarkerOperationSet(rdOPMetadata.getStudyKey(), markersQAopId);
+				MarkerOperationSet rdOperationSet = new MarkerOperationSet(markersQAopKey);
 				Map<MarkerKey, char[]> opMarkerSetMap = rdOperationSet.getOpSetMap();
 
 				// MINOR ALLELE

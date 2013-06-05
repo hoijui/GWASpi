@@ -22,9 +22,9 @@ import java.util.Set;
 import org.gwaspi.constants.cNetCDF.Defaults.SetMarkerPickCase;
 import org.gwaspi.constants.cNetCDF.Defaults.SetSamplePickCase;
 import org.gwaspi.model.GWASpiExplorerNodes;
+import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationsList;
-import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.operations.MatrixDataExtractor;
 import org.gwaspi.netCDF.operations.OP_QAMarkers;
 import org.gwaspi.netCDF.operations.OP_QASamples;
@@ -33,9 +33,8 @@ import org.slf4j.LoggerFactory;
 
 public class Threaded_ExtractMatrix extends CommonRunnable {
 
-	private int resultMatrixId;
-	private final StudyKey studyKey;
-	private final int parentMatrixId;
+	private MatrixKey resultMatrixKey;
+	private final MatrixKey parentMatrixKey;
 	private final String newMatrixName;
 	private final String description;
 	private final SetMarkerPickCase markerPickCase;
@@ -48,8 +47,7 @@ public class Threaded_ExtractMatrix extends CommonRunnable {
 	private final File sampleCriteriaFile;
 
 	public Threaded_ExtractMatrix(
-			StudyKey studyKey,
-			int parentMatrixId,
+			MatrixKey parentMatrixKey,
 			String newMatrixName,
 			String description,
 			SetMarkerPickCase markerPickCase,
@@ -67,8 +65,7 @@ public class Threaded_ExtractMatrix extends CommonRunnable {
 				"Data Extract: " + newMatrixName,
 				"Extracting");
 
-		this.studyKey = studyKey;
-		this.parentMatrixId = parentMatrixId;
+		this.parentMatrixKey = parentMatrixKey;
 		this.newMatrixName = newMatrixName;
 		this.description = description;
 		this.markerPickCase = markerPickCase;
@@ -89,8 +86,7 @@ public class Threaded_ExtractMatrix extends CommonRunnable {
 
 		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
 			MatrixDataExtractor exMatrix = new MatrixDataExtractor(
-					studyKey,
-					parentMatrixId,
+					parentMatrixKey,
 					newMatrixName,
 					description,
 					markerPickCase,
@@ -102,24 +98,25 @@ public class Threaded_ExtractMatrix extends CommonRunnable {
 					Integer.MIN_VALUE, // Filter pos, not used now
 					markerCriteriaFile,
 					sampleCriteriaFile);
-			resultMatrixId = exMatrix.extractGenotypesToNewMatrix();
-			GWASpiExplorerNodes.insertMatrixNode(studyKey, resultMatrixId);
+			int resultMatrixId = exMatrix.extractGenotypesToNewMatrix();
+			resultMatrixKey = new MatrixKey(parentMatrixKey.getStudyKey(), resultMatrixId);
+			GWASpiExplorerNodes.insertMatrixNode(resultMatrixKey);
 		}
 
 		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
-			int sampleQAOpId = new OP_QASamples(resultMatrixId).processMatrix();
+			int sampleQAOpId = new OP_QASamples(resultMatrixKey).processMatrix();
 			OperationKey sampleQAOpKey = OperationKey.valueOf(OperationsList.getById(sampleQAOpId));
 			GWASpiExplorerNodes.insertOperationUnderMatrixNode(sampleQAOpKey);
-			org.gwaspi.reports.OutputQASamples.writeReportsForQASamplesData(sampleQAOpId, true);
-			GWASpiExplorerNodes.insertReportsUnderOperationNode(sampleQAOpId);
+			org.gwaspi.reports.OutputQASamples.writeReportsForQASamplesData(sampleQAOpKey, true);
+			GWASpiExplorerNodes.insertReportsUnderOperationNode(sampleQAOpKey);
 		}
 
 		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
-			int markersQAOpId = new OP_QAMarkers(resultMatrixId).processMatrix();
+			int markersQAOpId = new OP_QAMarkers(resultMatrixKey).processMatrix();
 			OperationKey markersQAOpKey = OperationKey.valueOf(OperationsList.getById(markersQAOpId));
 			GWASpiExplorerNodes.insertOperationUnderMatrixNode(markersQAOpKey);
-			org.gwaspi.reports.OutputQAMarkers.writeReportsForQAMarkersData(markersQAOpId);
-			GWASpiExplorerNodes.insertReportsUnderOperationNode(markersQAOpId);
+			org.gwaspi.reports.OutputQAMarkers.writeReportsForQAMarkersData(markersQAOpKey);
+			GWASpiExplorerNodes.insertReportsUnderOperationNode(markersQAOpKey);
 			MultiOperations.printCompleted("Matrix Quality Control");
 		}
 	}

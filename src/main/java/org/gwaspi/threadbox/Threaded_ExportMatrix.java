@@ -19,29 +19,30 @@ package org.gwaspi.threadbox;
 
 import org.gwaspi.constants.cExport.ExportFormat;
 import org.gwaspi.gui.ProcessTab;
+import org.gwaspi.model.MatrixKey;
 import org.gwaspi.netCDF.exporter.MatrixExporter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class Threaded_ExportMatrix extends CommonRunnable {
 
-	private boolean startWithGUI = org.gwaspi.gui.StartGWASpi.guiMode;
-	private int matrixId;
-	private ExportFormat format;
-	private String phenotype;
+	private final boolean startWithGUI = org.gwaspi.gui.StartGWASpi.guiMode;
+	private final MatrixKey matrixKey;
+	private final ExportFormat format;
+	private final String phenotype;
 
 	public Threaded_ExportMatrix(
-			int matrixId,
+			MatrixKey matrixKey,
 			ExportFormat format,
 			String phenotype)
 	{
 		super(
 				"Export Matrix",
 				"Exporting Matrix",
-				"Export Matrix ID: " + matrixId,
+				"Export Matrix ID: " + matrixKey.getMatrixId(),
 				"Exporting Matrix");
 
-		this.matrixId = matrixId;
+		this.matrixKey = matrixKey;
 		this.format = format;
 		this.phenotype = phenotype;
 	}
@@ -58,7 +59,7 @@ public class Threaded_ExportMatrix extends CommonRunnable {
 			if (startWithGUI) {
 				ProcessTab.getSingleton().showTab();
 			}
-			MatrixExporter mEx = new MatrixExporter(matrixId);
+			MatrixExporter mEx = new MatrixExporter(matrixKey);
 			mEx.exportToFormat(format, phenotype);
 		}
 	}

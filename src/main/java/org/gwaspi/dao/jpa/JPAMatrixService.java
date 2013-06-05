@@ -231,7 +231,7 @@ public class JPAMatrixService implements MatrixService {
 		String genotypesFolder = Study.constructGTPath(matrixMetadata.getKey().getStudyKey());
 
 		// DELETE OPERATION netCDFs FROM THIS MATRIX
-		List<OperationMetadata> operations = OperationsList.getOperationsList(matrixKey.getMatrixId());
+		List<OperationMetadata> operations = OperationsList.getOperationsList(matrixKey);
 		for (OperationMetadata op : operations) {
 			File opFile = new File(genotypesFolder + op.getMatrixCDFName()+ ".nc");
 			org.gwaspi.global.Utils.tryToDeleteFile(opFile);
@@ -261,7 +261,7 @@ public class JPAMatrixService implements MatrixService {
 	}
 
 	@Override
-	public MatrixMetadata getMatrix(int matrixId) throws IOException {
+	public MatrixMetadata getMatrix(MatrixKey matrixKey) throws IOException {
 
 		MatrixMetadata matrixMetadata = null;
 
@@ -269,11 +269,11 @@ public class JPAMatrixService implements MatrixService {
 		try {
 			em = open();
 			Query query = em.createNamedQuery("matrixMetadata_fetchById");
-			query.setParameter("id", matrixId);
+			query.setParameter("id", matrixKey.getMatrixId());
 			matrixMetadata = (MatrixMetadata) query.getSingleResult();
 			matrixMetadata = completeMatricesTable(matrixMetadata);
 		} catch (NoResultException ex) {
-			LOG.error("Failed fetching matrix-metadata by id: " + matrixId
+			LOG.error("Failed fetching matrix-metadata by id: " + matrixKey
 					+ " (id not found)", ex);
 			LOG.info("Available matrices:");
 			List<MatrixKey> matrixList = getMatrixKeys();
@@ -285,7 +285,7 @@ public class JPAMatrixService implements MatrixService {
 			}
 			LOG.info(matrices.toString());
 		} catch (Exception ex) {
-			LOG.error("Failed fetching matrix-metadata by id: " + matrixId, ex);
+			LOG.error("Failed fetching matrix-metadata by id: " + matrixKey, ex);
 		} finally {
 			close(em);
 		}

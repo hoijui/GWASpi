@@ -22,6 +22,7 @@ import java.util.Map;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.model.MarkerKey;
+import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,13 +33,13 @@ public class OP_TrendTests extends AbstractTestMatrixOperation {
 	private final Logger log = LoggerFactory.getLogger(OP_TrendTests.class);
 
 	public OP_TrendTests(
-			int rdMatrixId,
+			MatrixKey rdMatrixKey,
 			OperationMetadata markerCensusOP,
 			OperationMetadata hwOP,
 			double hwThreshold)
 	{
 		super(
-			rdMatrixId,
+			rdMatrixKey,
 			markerCensusOP,
 			hwOP,
 			hwThreshold,

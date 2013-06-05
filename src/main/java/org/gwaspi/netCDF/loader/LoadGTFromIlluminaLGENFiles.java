@@ -135,7 +135,6 @@ public class LoadGTFromIlluminaLGENFiles implements GenotypesLoader {
 		Map<MarkerKey, int[]> chrSetMap = org.gwaspi.netCDF.matrices.Utils.aggregateChromosomeInfo(sortedAlleles, 2, 3);
 
 		MatrixFactory matrixFactory = new MatrixFactory(
-				loadDescription.getStudyKey(),
 				loadDescription.getFormat(),
 				loadDescription.getFriendlyName(),
 				descSB.toString(), // description

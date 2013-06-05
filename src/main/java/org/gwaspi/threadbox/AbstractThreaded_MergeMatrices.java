@@ -18,9 +18,8 @@
 package org.gwaspi.threadbox;
 
 import org.gwaspi.model.GWASpiExplorerNodes;
+import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
-import org.gwaspi.model.OperationsList;
-import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.operations.MatrixOperation;
 import org.gwaspi.netCDF.operations.OP_QAMarkers;
 import org.gwaspi.netCDF.operations.OP_QASamples;
@@ -29,16 +28,14 @@ import org.slf4j.LoggerFactory;
 
 public abstract class AbstractThreaded_MergeMatrices extends CommonRunnable {
 
-	protected final StudyKey studyKey;
-	protected final int parentMatrixId1;
-	protected final int parentMatrixId2;
+	protected final MatrixKey parentMatrixKey1;
+	protected final MatrixKey parentMatrixKey2;
 	protected final String newMatrixName;
 	protected final String description;
 
 	public AbstractThreaded_MergeMatrices(
-			StudyKey studyKey,
-			int parentMatrixId1,
-			int parentMatrixId2,
+			MatrixKey parentMatrixKey1,
+			MatrixKey parentMatrixKey2,
 			String newMatrixName,
 			String description)
 	{
@@ -48,9 +45,8 @@ public abstract class AbstractThreaded_MergeMatrices extends CommonRunnable {
 				"Merge Matrices: " + newMatrixName,
 				"Merging Matrices");
 
-		this.studyKey = studyKey;
-		this.parentMatrixId1 = parentMatrixId1;
-		this.parentMatrixId2 = parentMatrixId2;
+		this.parentMatrixKey1 = parentMatrixKey1;
+		this.parentMatrixKey2 = parentMatrixKey2;
 		this.newMatrixName = newMatrixName;
 		this.description = description;
 	}
@@ -69,25 +65,28 @@ public abstract class AbstractThreaded_MergeMatrices extends CommonRunnable {
 			final MatrixOperation joinMatrices = createMatrixOperation();
 
 			final int resultMatrixId = joinMatrices.processMatrix();
-			GWASpiExplorerNodes.insertMatrixNode(studyKey, resultMatrixId);
+			final MatrixKey resultMatrixKey = new MatrixKey(
+					parentMatrixKey1.getStudyKey(),
+					resultMatrixId);
+			GWASpiExplorerNodes.insertMatrixNode(resultMatrixKey);
 
 			if (!thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
 				return;
 			}
-			int sampleQAOpId = new OP_QASamples(resultMatrixId).processMatrix();
-			OperationKey sampleQAOpKey = OperationKey.valueOf(OperationsList.getById(sampleQAOpId));
+			int sampleQAOpId = new OP_QASamples(resultMatrixKey).processMatrix();
+			OperationKey sampleQAOpKey = new OperationKey(resultMatrixKey, sampleQAOpId);
 			GWASpiExplorerNodes.insertOperationUnderMatrixNode(sampleQAOpKey);
-			org.gwaspi.reports.OutputQASamples.writeReportsForQASamplesData(sampleQAOpId, true);
-			GWASpiExplorerNodes.insertReportsUnderOperationNode(sampleQAOpId);
+			org.gwaspi.reports.OutputQASamples.writeReportsForQASamplesData(sampleQAOpKey, true);
+			GWASpiExplorerNodes.insertReportsUnderOperationNode(sampleQAOpKey);
 
 			if (!thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
 				return;
 			}
-			int markersQAOpId = new OP_QAMarkers(resultMatrixId).processMatrix();
-			OperationKey markersQAOpKey = OperationKey.valueOf(OperationsList.getById(markersQAOpId));
+			int markersQAOpId = new OP_QAMarkers(resultMatrixKey).processMatrix();
+			OperationKey markersQAOpKey = new OperationKey(resultMatrixKey, markersQAOpId);
 			GWASpiExplorerNodes.insertOperationUnderMatrixNode(markersQAOpKey);
-			org.gwaspi.reports.OutputQAMarkers.writeReportsForQAMarkersData(markersQAOpId);
-			GWASpiExplorerNodes.insertReportsUnderOperationNode(markersQAOpId);
+			org.gwaspi.reports.OutputQAMarkers.writeReportsForQAMarkersData(markersQAOpKey);
+			GWASpiExplorerNodes.insertReportsUnderOperationNode(markersQAOpKey);
 			MultiOperations.printCompleted("Matrix Quality Control");
 		}
 	}

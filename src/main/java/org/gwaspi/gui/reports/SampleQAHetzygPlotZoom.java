@@ -48,6 +48,7 @@ import org.gwaspi.gui.utils.CursorUtils;
 import org.gwaspi.gui.utils.Dialogs;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixMetadata;
+import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.SampleKey;
@@ -85,7 +86,7 @@ public final class SampleQAHetzygPlotZoom extends JPanel {
 	public static final String PLOT_SAMPLEQA_MISSING_THRESHOLD_CONFIG = "CHART_SAMPLEQA_MISSING_THRESHOLD";
 	public static final double PLOT_SAMPLEQA_MISSING_THRESHOLD_DEFAULT = 0.5;
 
-	private int opId;
+	private OperationKey operationKey;
 	private OperationMetadata rdOPMetadata;
 	private Map<String, SampleKey> labeler;
 	private MatrixMetadata rdMatrixMetadata;
@@ -121,15 +122,15 @@ public final class SampleQAHetzygPlotZoom extends JPanel {
 	/**
 	 * Creates new form ManhattanPlotZoom
 	 *
-	 * @param opId
+	 * @param operationKey
 	 */
-	public SampleQAHetzygPlotZoom(int opId) throws IOException {
+	public SampleQAHetzygPlotZoom(OperationKey operationKey) throws IOException {
 
-		this.opId = opId;
+		this.operationKey = operationKey;
 
 		try {
-			rdOPMetadata = OperationsList.getOperationMetadata(this.opId);
-			rdMatrixMetadata = MatricesList.getMatrixMetadataById(rdOPMetadata.getParentMatrixId());
+			rdOPMetadata = OperationsList.getOperation(this.operationKey);
+			rdMatrixMetadata = MatricesList.getMatrixMetadataById(operationKey.getParentMatrixKey());
 		} catch (IOException ex) {
 			log.error(null, ex);
 		}
@@ -148,7 +149,7 @@ public final class SampleQAHetzygPlotZoom extends JPanel {
 				PLOT_SAMPLEQA_MISSING_THRESHOLD_CONFIG,
 				String.valueOf(PLOT_SAMPLEQA_MISSING_THRESHOLD_DEFAULT)));
 
-		initXYDataset = getSampleHetzygDataset(opId);
+		initXYDataset = getSampleHetzygDataset(operationKey);
 
 		zoomChart = createChart(initXYDataset);
 		zoomPanel = new ChartPanel(zoomChart);
@@ -327,9 +328,9 @@ public final class SampleQAHetzygPlotZoom extends JPanel {
 	}
 
 	// <editor-fold defaultstate="expanded" desc="CHART GENERATOR">
-	XYDataset getSampleHetzygDataset(int _opId) throws IOException {
+	XYDataset getSampleHetzygDataset(OperationKey operationKey) throws IOException {
 
-		XYDataset xyd = GenericReportGenerator.getSampleHetzygDataset(this, opId);
+		XYDataset xyd = GenericReportGenerator.getSampleHetzygDataset(this, operationKey);
 		return xyd;
 	}
 
@@ -554,7 +555,7 @@ public final class SampleQAHetzygPlotZoom extends JPanel {
 				missingThreshold = Double.parseDouble(txt_missing.getText());
 				Config.setConfigValue("CHART_SAMPLEQA_HETZYG_THRESHOLD", hetzyThreshold.toString());
 				Config.setConfigValue("CHART_SAMPLEQA_MISSING_THRESHOLD", missingThreshold.toString());
-				GWASpiExplorerPanel.getSingleton().setPnl_Content(new SampleQAHetzygPlotZoom(opId));
+				GWASpiExplorerPanel.getSingleton().setPnl_Content(new SampleQAHetzygPlotZoom(operationKey));
 				GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
 			} catch (Exception ex) {
 				log.warn(Text.App.warnMustBeNumeric, ex);
@@ -573,7 +574,7 @@ public final class SampleQAHetzygPlotZoom extends JPanel {
 		@Override
 		public void actionPerformed(ActionEvent evt) {
 			try {
-				GWASpiExplorerPanel.getSingleton().setPnl_Content(new SampleQAHetzygPlotZoom(opId));
+				GWASpiExplorerPanel.getSingleton().setPnl_Content(new SampleQAHetzygPlotZoom(operationKey));
 				GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
 			} catch (IOException ex) {
 				log.error(null, ex);

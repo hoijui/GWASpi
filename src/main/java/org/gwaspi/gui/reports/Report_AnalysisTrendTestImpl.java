@@ -20,7 +20,7 @@ package org.gwaspi.gui.reports;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.utils.RowRendererDefault;
 import org.gwaspi.gui.utils.RowRendererTrendTestWithZoomQueryDB;
-import org.gwaspi.model.StudyKey;
+import org.gwaspi.model.OperationKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,8 +41,8 @@ public final class Report_AnalysisTrendTestImpl extends Report_Analysis {
 			Text.Reports.zoom,
 			Text.Reports.externalResource};
 
-	public Report_AnalysisTrendTestImpl(final StudyKey studyKey, final String analysisFileName, final int opId, final Integer nRows) {
-		super(studyKey, opId, analysisFileName, nRows);
+	public Report_AnalysisTrendTestImpl(final OperationKey operationKey, final String analysisFileName, final Integer nRows) {
+		super(operationKey, analysisFileName, nRows);
 	}
 
 	@Override

@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
-import org.gwaspi.global.Config;
+import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.Study;
@@ -57,7 +57,7 @@ public class OperationFactory {
 			int implicitSetSize,
 			int chrSetSize,
 			OPType opType,
-			int parentMatrixId,
+			MatrixKey parentMatrixKey,
 			int parentOperationId)
 			throws InvalidRangeException, IOException
 	{
@@ -146,7 +146,7 @@ public class OperationFactory {
 
 		OperationsList.insertOPMetadata(new OperationMetadata(
 				Integer.MIN_VALUE,
-				parentMatrixId,
+				parentMatrixKey,
 				parentOperationId,
 				friendlyName,
 				resultOPnetCDFName,
@@ -155,7 +155,6 @@ public class OperationFactory {
 				opType,
 				Integer.MIN_VALUE,
 				Integer.MIN_VALUE,
-				studyKey,
 				null
 				));
 

@@ -29,7 +29,9 @@ import org.gwaspi.gui.reports.Report_Analysis;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.MatricesList;
+import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
+import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.SampleKey;
@@ -46,7 +48,7 @@ public abstract class AbstractTestMatrixOperation implements MatrixOperation {
 	private final Logger log
 			= LoggerFactory.getLogger(AbstractTestMatrixOperation.class);
 
-	private final int rdMatrixId;
+	private final MatrixKey rdMatrixKey;
 	private final OperationMetadata markerCensusOP;
 	private final OperationMetadata hwOP;
 	private final double hwThreshold;
@@ -54,14 +56,14 @@ public abstract class AbstractTestMatrixOperation implements MatrixOperation {
 	private final OPType testType;
 
 	public AbstractTestMatrixOperation(
-			int rdMatrixId,
+			MatrixKey rdMatrixKey,
 			OperationMetadata markerCensusOP,
 			OperationMetadata hwOP,
 			double hwThreshold,
 			String testName,
 			OPType testType)
 	{
-		this.rdMatrixId = rdMatrixId;
+		this.rdMatrixKey = rdMatrixKey;
 		this.markerCensusOP = markerCensusOP;
 		this.hwOP = hwOP;
 		this.hwThreshold = hwThreshold;
@@ -77,11 +79,12 @@ public abstract class AbstractTestMatrixOperation implements MatrixOperation {
 		boolean dataLeft = excludeMarkersByHW(hwOP, hwThreshold, toBeExcluded);
 
 		if (dataLeft) { // CHECK IF THERE IS ANY DATA LEFT TO PROCESS AFTER PICKING
-			OperationMetadata rdCensusOPMetadata = OperationsList.getOperationMetadata(markerCensusOP.getId());
+			OperationKey markerCensusOPKey = OperationKey.valueOf(markerCensusOP);
+			OperationMetadata rdCensusOPMetadata = OperationsList.getOperation(markerCensusOPKey);
 			NetcdfFile rdOPNcFile = NetcdfFile.open(rdCensusOPMetadata.getPathToMatrix());
 
-			MarkerOperationSet rdCaseMarkerSet = new MarkerOperationSet(rdCensusOPMetadata.getStudyKey(), markerCensusOP.getId());
-			MarkerOperationSet rdCtrlMarkerSet = new MarkerOperationSet(rdCensusOPMetadata.getStudyKey(), markerCensusOP.getId());
+			MarkerOperationSet rdCaseMarkerSet = new MarkerOperationSet(markerCensusOPKey);
+			MarkerOperationSet rdCtrlMarkerSet = new MarkerOperationSet(markerCensusOPKey);
 			Map<SampleKey, ?> rdSampleSetMap = rdCaseMarkerSet.getImplicitSetMap();
 			rdCaseMarkerSet.getOpSetMap(); // without this, we get an NPE later on
 			Map<MarkerKey, char[]> rdCtrlMarkerIdSetMap = rdCtrlMarkerSet.getOpSetMap();
@@ -94,7 +97,7 @@ public abstract class AbstractTestMatrixOperation implements MatrixOperation {
 			}
 
 			// GATHER INFO FROM ORIGINAL MATRIX
-			MatrixMetadata parentMatrixMetadata = MatricesList.getMatrixMetadataById(markerCensusOP.getParentMatrixId());
+			MatrixMetadata parentMatrixMetadata = MatricesList.getMatrixMetadataById(markerCensusOP.getParentMatrixKey());
 			MarkerSet rdMarkerSet = new MarkerSet(parentMatrixMetadata.getStudyKey(), markerCensusOP.getParentMatrixId());
 			rdMarkerSet.initFullMarkerIdSetMap();
 
@@ -114,7 +117,7 @@ public abstract class AbstractTestMatrixOperation implements MatrixOperation {
 						rdCensusOPMetadata.getImplicitSetSize(),
 						rdChrInfoSetMap.size(),
 						testType,
-						rdCensusOPMetadata.getParentMatrixId(), // Parent matrixId
+						rdCensusOPMetadata.getParentMatrixKey(), // Parent matrixId
 						markerCensusOP.getId()); // Parent operationId
 				wrOPNcFile = wrOPHandler.getNetCDFHandler();
 
@@ -223,7 +226,7 @@ public abstract class AbstractTestMatrixOperation implements MatrixOperation {
 
 		if (hwOP != null) {
 			NetcdfFile rdHWNcFile = NetcdfFile.open(hwOP.getPathToMatrix());
-			MarkerOperationSet rdHWOperationSet = new MarkerOperationSet(hwOP.getStudyKey(), hwOP.getOPId());
+			MarkerOperationSet rdHWOperationSet = new MarkerOperationSet(OperationKey.valueOf(hwOP));
 			Map<MarkerKey, Double> rdHWMarkerSetMap = rdHWOperationSet.getOpSetMap();
 			totalMarkerNb = rdHWMarkerSetMap.size();
 

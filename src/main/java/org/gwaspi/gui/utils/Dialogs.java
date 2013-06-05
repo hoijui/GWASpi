@@ -39,6 +39,7 @@ import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
 import org.gwaspi.global.Config;
 import org.gwaspi.model.MatricesList;
+import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
@@ -57,9 +58,9 @@ public class Dialogs {
 	}
 
 	//<editor-fold defaultstate="expanded" desc="DIALOG BOXES">
-	public static OperationMetadata showOperationCombo(int matrixId, OPType filterOpType) throws IOException {
+	public static OperationMetadata showOperationCombo(MatrixKey matrixKey, OPType filterOpType) throws IOException {
 		OperationMetadata selectedOP = null;
-		List<OperationMetadata> operationsList = OperationsList.getOperationsList(matrixId);
+		List<OperationMetadata> operationsList = OperationsList.getOperationsList(matrixKey);
 
 		if (!operationsList.isEmpty()) {
 			List<String> operationsNames = new ArrayList<String>();
@@ -94,9 +95,9 @@ public class Dialogs {
 		return selectedOP;
 	}
 
-	public static OperationMetadata showOperationCombo(int matrixId, List<String> filterOpTypeAL, String title) throws IOException {
+	public static OperationMetadata showOperationCombo(MatrixKey matrixKey, List<String> filterOpTypeAL, String title) throws IOException {
 		OperationMetadata selectedOP = null;
-		List<OperationMetadata> operationsList = OperationsList.getOperationsList(matrixId);
+		List<OperationMetadata> operationsList = OperationsList.getOperationsList(matrixKey);
 
 		if (!operationsList.isEmpty()) {
 			List<String> operationsNames = new ArrayList<String>();

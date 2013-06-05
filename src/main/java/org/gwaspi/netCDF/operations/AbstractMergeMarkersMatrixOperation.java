@@ -27,6 +27,7 @@ import org.gwaspi.global.Text;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.MatricesList;
+import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.StudyKey;
@@ -46,17 +47,15 @@ public abstract class AbstractMergeMarkersMatrixOperation extends AbstractMergeM
 	private final Logger log = LoggerFactory.getLogger(AbstractMergeMarkersMatrixOperation.class);
 
 	public AbstractMergeMarkersMatrixOperation(
-			StudyKey studyKey,
-			int rdMatrix1Id,
-			int rdMatrix2Id,
+			MatrixKey rdMatrixKey1,
+			MatrixKey rdMatrixKey2,
 			String wrMatrixFriendlyName,
 			String wrMatrixDescription)
 			throws IOException, InvalidRangeException
 	{
 		super(
-				studyKey,
-				rdMatrix1Id,
-				rdMatrix2Id,
+				rdMatrixKey1,
+				rdMatrixKey2,
 				wrMatrixFriendlyName,
 				wrMatrixDescription);
 	}
@@ -64,7 +63,7 @@ public abstract class AbstractMergeMarkersMatrixOperation extends AbstractMergeM
 	/**
 	 * Mingles markers and keeps samples constant.
 	 */
-	protected int mergeMatrices(
+	protected MatrixKey mergeMatrices(
 			Map<SampleKey, byte[]> rdSampleSetMap1,
 			Map<SampleKey, byte[]> rdSampleSetMap2,
 			Map<SampleKey, int[]> wrSampleSetMap,
@@ -74,7 +73,7 @@ public abstract class AbstractMergeMarkersMatrixOperation extends AbstractMergeM
 			final String methodDescription)
 			throws IOException, InvalidRangeException
 	{
-		int resultMatrixId = Integer.MIN_VALUE;
+		MatrixKey resultMatrixKey = null;
 
 		NetcdfFile rdNcFile1 = NetcdfFile.open(rdMatrix1Metadata.getPathToMatrix());
 		NetcdfFile rdNcFile2 = NetcdfFile.open(rdMatrix2Metadata.getPathToMatrix());
@@ -121,7 +120,6 @@ public abstract class AbstractMergeMarkersMatrixOperation extends AbstractMergeM
 			descSB.append(methodDescription);
 
 			MatrixFactory wrMatrixHandler = new MatrixFactory(
-					studyKey,
 					technology, // technology
 					wrMatrixFriendlyName,
 					wrMatrixDescription + "\n\n" + descSB.toString(), // description
@@ -131,8 +129,8 @@ public abstract class AbstractMergeMarkersMatrixOperation extends AbstractMergeM
 					numSamples,
 					wrComboSortedMarkerSetMap.size(), // Use comboed wrSortedMingledMarkerMap as MarkerSet
 					chrInfo.size(),
-					rdMatrix1Id, // Parent matrixId 1
-					rdMatrix2Id); // Parent matrixId 2
+					rdMatrix1Key, // Parent matrixId 1
+					rdMatrix2Key); // Parent matrixId 2
 
 			NetcdfFileWriteable wrNcFile = wrMatrixHandler.getNetCDFHandler();
 			try {
@@ -253,7 +251,7 @@ public abstract class AbstractMergeMarkersMatrixOperation extends AbstractMergeM
 				descSB.append("\nGenotype encoding: ");
 				descSB.append(rdMatrix1Metadata.getGenotypeEncoding());
 
-				resultMatrixId = wrMatrixHandler.getResultMatrixId();
+				resultMatrixKey = wrMatrixHandler.getResultMatrixKey();
 
 				MatrixMetadata resultMatrixMetadata = wrMatrixHandler.getResultMatrixMetadata();
 				resultMatrixMetadata.setDescription(descSB.toString());
@@ -267,7 +265,7 @@ public abstract class AbstractMergeMarkersMatrixOperation extends AbstractMergeM
 				if (rdMatrix1Metadata.getGenotypeEncoding().equals(GenotypeEncoding.ACGT0)
 						|| rdMatrix1Metadata.getGenotypeEncoding().equals(GenotypeEncoding.O1234))
 				{
-					double[] mismatchState = checkForMismatches(resultMatrixId); // mismatchCount, mismatchRatio
+					double[] mismatchState = checkForMismatches(resultMatrixKey); // mismatchCount, mismatchRatio
 					if (mismatchState[1] > 0.01) {
 						log.warn("");
 						log.warn("Mismatch ratio is bigger than 1% ({}%)!", (mismatchState[1] * 100));
@@ -288,7 +286,7 @@ public abstract class AbstractMergeMarkersMatrixOperation extends AbstractMergeM
 		}
 		//</editor-fold>
 
-		return resultMatrixId;
+		return resultMatrixKey;
 	}
 
 	protected abstract void writeGenotypes(

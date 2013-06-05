@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.Set;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.model.GWASpiExplorerNodes;
+import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.SampleInfo;
@@ -77,33 +78,31 @@ public class Threaded_Loader_GWASifOK extends CommonRunnable {
 		Set<SampleInfo.Affection> affectionStates = SampleInfoCollectorSwitch.collectAffectionStates(sampleInfos);
 
 		//<editor-fold defaultstate="expanded" desc="LOAD PROCESS">
-		int matrixId = Integer.MIN_VALUE;
+		MatrixKey matrixKey = null;
 		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
-			matrixId = LoadManager.dispatchLoadByFormat(
+			matrixKey = LoadManager.dispatchLoadByFormat(
 					loadDescription,
 					sampleInfos);
 			MultiOperations.printCompleted("Loading Genotypes");
-			GWASpiExplorerNodes.insertMatrixNode(loadDescription.getStudyKey(), matrixId);
+			GWASpiExplorerNodes.insertMatrixNode(matrixKey);
 		}
 		//</editor-fold>
 
 		//<editor-fold defaultstate="expanded" desc="QA PROCESS">
-		int samplesQAOpId = Integer.MIN_VALUE;
+		OperationKey samplesQAOpKey = null;
 		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
-			samplesQAOpId = new OP_QASamples(matrixId).processMatrix();
-			OperationKey samplesQAOpKey = OperationKey.valueOf(OperationsList.getById(samplesQAOpId));
+			samplesQAOpKey = new OperationKey(matrixKey, new OP_QASamples(matrixKey).processMatrix());
 			GWASpiExplorerNodes.insertOperationUnderMatrixNode(samplesQAOpKey);
-			OutputQASamples.writeReportsForQASamplesData(samplesQAOpId, true);
-			GWASpiExplorerNodes.insertReportsUnderOperationNode(samplesQAOpId);
+			OutputQASamples.writeReportsForQASamplesData(samplesQAOpKey, true);
+			GWASpiExplorerNodes.insertReportsUnderOperationNode(samplesQAOpKey);
 		}
 
-		int markersQAOpId = Integer.MIN_VALUE;
+		OperationKey markersQAOpKey = null;
 		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
-			markersQAOpId = new OP_QAMarkers(matrixId).processMatrix();
-			OperationKey markersQAOpKey = OperationKey.valueOf(OperationsList.getById(markersQAOpId));
+			markersQAOpKey = new OperationKey(matrixKey, new OP_QAMarkers(matrixKey).processMatrix());
 			GWASpiExplorerNodes.insertOperationUnderMatrixNode(markersQAOpKey);
-			OutputQAMarkers.writeReportsForQAMarkersData(markersQAOpId);
-			GWASpiExplorerNodes.insertReportsUnderOperationNode(markersQAOpId);
+			OutputQAMarkers.writeReportsForQAMarkersData(markersQAOpKey);
+			GWASpiExplorerNodes.insertReportsUnderOperationNode(markersQAOpKey);
 			MultiOperations.printCompleted("Matrix Quality Control");
 		}
 		//</editor-fold>
@@ -116,25 +115,24 @@ public class Threaded_Loader_GWASifOK extends CommonRunnable {
 
 			//<editor-fold defaultstate="expanded" desc="PRE-GWAS PROCESS">
 			// GENOTYPE FREQ.
-			int censusOpId = Integer.MIN_VALUE;
+			OperationKey censusOpKey = null;
 			if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
-				censusOpId = OperationManager.censusCleanMatrixMarkers(
-						matrixId,
-						samplesQAOpId,
-						markersQAOpId,
+				censusOpKey = OperationManager.censusCleanMatrixMarkers(
+						matrixKey,
+						samplesQAOpKey,
+						markersQAOpKey,
 						gwasParams.getDiscardMarkerMisRatVal(),
 						gwasParams.isDiscardGTMismatches(),
 						gwasParams.getDiscardSampleMisRatVal(),
 						gwasParams.getDiscardSampleHetzyRatVal(),
 						cNetCDF.Defaults.DEFAULT_AFFECTION);
-				OperationKey censusOpKey = OperationKey.valueOf(OperationsList.getById(censusOpId));
 				GWASpiExplorerNodes.insertOperationUnderMatrixNode(censusOpKey);
 			}
 
-			int hwOpId = Threaded_GWAS.checkPerformHW(thisSwi, censusOpId);
+			OperationKey hwOpKey = Threaded_GWAS.checkPerformHW(thisSwi, censusOpKey);
 			//</editor-fold>
 
-			Threaded_GWAS.performGWAS(gwasParams, matrixId, thisSwi, markersQAOpId, censusOpId, hwOpId);
+			Threaded_GWAS.performGWAS(gwasParams, matrixKey, thisSwi, markersQAOpKey, censusOpKey, hwOpKey);
 		}
 	}
 }

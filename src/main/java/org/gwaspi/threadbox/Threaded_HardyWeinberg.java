@@ -27,19 +27,17 @@ import org.slf4j.LoggerFactory;
 
 public class Threaded_HardyWeinberg extends CommonRunnable {
 
-	private int censusOpId;
+	private final OperationKey censusOpKey;
 
-	public Threaded_HardyWeinberg(
-			int matrixId,
-			int censusOpId)
-	{
+	public Threaded_HardyWeinberg(OperationKey censusOpKey) {
+
 		super(
 				"Hardy-Weinberg",
 				"Hardy-Weinberg test",
-				"Hardy-Weinberg on Matrix ID: " + matrixId,
+				"Hardy-Weinberg on Matrix ID: " + censusOpKey.getParentMatrixId(),
 				"Hardy-Weinberg");
 
-		this.censusOpId = censusOpId;
+		this.censusOpKey = censusOpKey;
 	}
 
 	@Override
@@ -52,11 +50,11 @@ public class Threaded_HardyWeinberg extends CommonRunnable {
 
 		// HW ON GENOTYPE FREQ.
 		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)
-				&& (censusOpId != Integer.MIN_VALUE))
+				&& (censusOpKey != null)
+				&& (censusOpKey.getId() != Integer.MIN_VALUE))
 		{
-			int hwOpId = OperationManager.performHardyWeinberg(censusOpId, cNetCDF.Defaults.DEFAULT_AFFECTION);
-			OperationKey hwOpKey = OperationKey.valueOf(OperationsList.getById(hwOpId));
-			GWASpiExplorerNodes.insertSubOperationUnderOperationNode(censusOpId, hwOpKey);
+			OperationKey hwOpKey = OperationManager.performHardyWeinberg(censusOpKey, cNetCDF.Defaults.DEFAULT_AFFECTION);
+			GWASpiExplorerNodes.insertSubOperationUnderOperationNode(censusOpKey, hwOpKey);
 		}
 	}
 }

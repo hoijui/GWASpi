@@ -30,6 +30,7 @@ import org.gwaspi.constants.cImport;
 import org.gwaspi.constants.cImport.Annotation.GWASpi;
 import org.gwaspi.constants.cImport.ImportFormat;
 import org.gwaspi.model.MatricesList;
+import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleInfoList;
@@ -63,14 +64,14 @@ public class SamplesParserManager {
 	}
 
 	//<editor-fold defaultstate="expanded" desc="DB SAMPLE INFO PROVIDERS">
-	public static Set<SampleInfo.Affection> getDBAffectionStates(int matrixId) {
+	public static Set<SampleInfo.Affection> getDBAffectionStates(MatrixKey matrixKey) {
 		Set<SampleInfo.Affection> resultHS = EnumSet.noneOf(SampleInfo.Affection.class);
 		try {
-			MatrixMetadata rdMatrixMetadata = MatricesList.getMatrixMetadataById(matrixId);
+			MatrixMetadata rdMatrixMetadata = MatricesList.getMatrixMetadataById(matrixKey);
 			log.info("Getting Sample Affection info for: {}",
 					rdMatrixMetadata.getMatrixFriendlyName());
 //			NetcdfFile rdNcFile = NetcdfFile.open(rdMatrixMetadata.getPathToMatrix());
-			SampleSet rdSampleSet = new SampleSet(rdMatrixMetadata.getStudyKey(), matrixId);
+			SampleSet rdSampleSet = new SampleSet(matrixKey);
 			for (SampleKey key : rdSampleSet.getSampleKeys()) {
 				SampleInfo sampleInfo = SampleInfoList.getSample(key);
 				if (sampleInfo != null) {

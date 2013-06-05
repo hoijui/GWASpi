@@ -35,7 +35,9 @@ import org.gwaspi.constants.cNetCDF.Defaults.AlleleBytes;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MatricesList;
+import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
+import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.SampleInfo;
@@ -57,7 +59,7 @@ public class OP_MarkerCensus implements MatrixOperation {
 
 	private final Logger log = LoggerFactory.getLogger(OP_MarkerCensus.class);
 
-	private final int rdMatrixId;
+	private final MatrixKey rdMatrixKey;
 	private final String censusName;
 	private final OperationMetadata sampleQAOP;
 	private final double sampleMissingRatio;
@@ -68,7 +70,7 @@ public class OP_MarkerCensus implements MatrixOperation {
 	private final File phenoFile;
 
 	public OP_MarkerCensus(
-			int rdMatrixId,
+			MatrixKey rdMatrixKey,
 			String censusName,
 			OperationMetadata sampleQAOP,
 			double sampleMissingRatio,
@@ -78,7 +80,7 @@ public class OP_MarkerCensus implements MatrixOperation {
 			double markerMissingRatio,
 			File phenoFile)
 	{
-		this.rdMatrixId = rdMatrixId;
+		this.rdMatrixKey = rdMatrixKey;
 		this.censusName = censusName;
 		this.sampleQAOP = sampleQAOP;
 		this.sampleMissingRatio = sampleMissingRatio;
@@ -99,18 +101,18 @@ public class OP_MarkerCensus implements MatrixOperation {
 			// THERE IS DATA LEFT TO PROCESS AFTER PICKING
 
 			//<editor-fold defaultstate="expanded" desc="PURGE Maps">
-			MatrixMetadata rdMatrixMetadata = MatricesList.getMatrixMetadataById(rdMatrixId);
+			MatrixMetadata rdMatrixMetadata = MatricesList.getMatrixMetadataById(rdMatrixKey);
 
 			NetcdfFile rdNcFile = NetcdfFile.open(rdMatrixMetadata.getPathToMatrix());
 
-			MarkerSet rdMarkerSet = new MarkerSet(rdMatrixMetadata.getStudyKey(), rdMatrixId);
+			MarkerSet rdMarkerSet = new MarkerSet(rdMatrixKey);
 			rdMarkerSet.initFullMarkerIdSetMap();
 			rdMarkerSet.fillWith(cNetCDF.Defaults.DEFAULT_GT);
 
 			Map<MarkerKey, byte[]> wrMarkerSetMap = new LinkedHashMap<MarkerKey, byte[]>();
 			wrMarkerSetMap.putAll(rdMarkerSet.getMarkerIdSetMapByteArray());
 
-			SampleSet rdSampleSet = new SampleSet(rdMatrixMetadata.getStudyKey(), rdMatrixId);
+			SampleSet rdSampleSet = new SampleSet(rdMatrixKey);
 			Map<SampleKey, byte[]> rdSampleSetMap = rdSampleSet.getSampleIdSetMapByteArray();
 			Collection<SampleKey> wrSampleKeys = new HashSet<SampleKey>(); // XXX Should this be a List instead, to preserve order?
 			for (SampleKey key : rdSampleSetMap.keySet()) {
@@ -138,7 +140,7 @@ public class OP_MarkerCensus implements MatrixOperation {
 						wrSampleKeys.size(),
 						0,
 						opType,
-						rdMatrixMetadata.getMatrixId(), // Parent matrixId
+						rdMatrixKey, // Parent matrixId
 						-1); // Parent operationId
 
 				wrNcFile = wrOPHandler.getNetCDFHandler();
@@ -651,8 +653,8 @@ public class OP_MarkerCensus implements MatrixOperation {
 		OperationMetadata sampleQAMetadata = OperationsList.getOperationMetadata(sampleQAOP.getId());
 		NetcdfFile rdSampleQANcFile = NetcdfFile.open(sampleQAMetadata.getPathToMatrix());
 
-		MarkerOperationSet rdQAMarkerSet = new MarkerOperationSet(markerQAMetadata.getStudyKey(), markerQAMetadata.getOPId());
-		SampleOperationSet rdQASampleSet = new SampleOperationSet(sampleQAMetadata.getStudyKey(), sampleQAMetadata.getOPId());
+		MarkerOperationSet rdQAMarkerSet = new MarkerOperationSet(OperationKey.valueOf(markerQAMetadata));
+		SampleOperationSet rdQASampleSet = new SampleOperationSet(OperationKey.valueOf(sampleQAMetadata));
 		Map<MarkerKey, ?> rdQAMarkerSetMap = rdQAMarkerSet.getOpSetMap();
 		Map<SampleKey, ?> rdQASampleSetMap = rdQASampleSet.getOpSetMap();
 		Map<MarkerKey, Object> excludeMarkerSetMap = new LinkedHashMap<MarkerKey, Object>();

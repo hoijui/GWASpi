@@ -23,7 +23,7 @@ import java.util.Map;
 import java.util.Set;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.model.MarkerKey;
-import org.gwaspi.model.StudyKey;
+import org.gwaspi.model.OperationKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.ArrayChar;
@@ -37,8 +37,8 @@ public class MarkerOperationSet<V> extends AbstractOperationSet<MarkerKey, V> {
 
 	private static final Logger log = LoggerFactory.getLogger(MarkerOperationSet.class);
 
-	public MarkerOperationSet(StudyKey studyKey, int opId) throws IOException {
-		super(studyKey, opId, MarkerKey.KEY_FACTORY);
+	public MarkerOperationSet(OperationKey operationKey) throws IOException {
+		super(operationKey, MarkerKey.KEY_FACTORY);
 	}
 
 	//<editor-fold defaultstate="expanded" desc="CHROMOSOME INFO">

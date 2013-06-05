@@ -67,6 +67,7 @@ class GenotypeFrequencyHardyWeinbergScriptCommand extends AbstractScriptCommand 
 
 		if (studyExists) {
 			int matrixId = Integer.parseInt(args.get("matrix-id")); // Parent Matrix Id
+			MatrixKey matrixKey = new MatrixKey(studyKey, matrixId);
 			String gtFrqName = args.get("gtfreq-name");
 			boolean useExternalPhenoFile = Boolean.parseBoolean(args.get("use-external-phenotype-file"));
 			File phenoFile = null;
@@ -85,20 +86,20 @@ class GenotypeFrequencyHardyWeinbergScriptCommand extends AbstractScriptCommand 
 			List<OPType> necessaryOPs = new ArrayList<OPType>();
 			necessaryOPs.add(OPType.SAMPLE_QA);
 			necessaryOPs.add(OPType.MARKER_QA);
-			List<OPType> missingOPs = OperationManager.checkForNecessaryOperations(necessaryOPs, matrixId);
+			List<OPType> missingOPs = OperationManager.checkForNecessaryOperations(necessaryOPs, matrixKey);
 
 			// QA block
 			if (gwasParams.isProceed() && missingOPs.size() > 0) {
 				gwasParams.setProceed(false);
 				System.out.println(Text.Operation.warnQABeforeAnything + "\n" + Text.Operation.willPerformOperation);
-				MultiOperations.doMatrixQAs(studyKey, matrixId);
+				MultiOperations.doMatrixQAs(matrixKey);
 			}
 
 			// GT freq. & HW block
 			if (gwasParams.isProceed()) {
 				System.out.println(Text.All.processing);
 				MultiOperations.doGTFreqDoHW(
-						new MatrixKey(studyKey, matrixId),
+						matrixKey,
 						phenoFile,
 						gwasParams);
 				return true;

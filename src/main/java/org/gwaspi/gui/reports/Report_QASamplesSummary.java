@@ -57,6 +57,7 @@ import org.gwaspi.gui.utils.Dialogs;
 import org.gwaspi.gui.utils.HelpURLs;
 import org.gwaspi.gui.utils.IntegerInputVerifier;
 import org.gwaspi.gui.utils.RowRendererDefault;
+import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.Study;
 import org.gwaspi.model.StudyKey;
 import org.slf4j.Logger;
@@ -83,7 +84,7 @@ public class Report_QASamplesSummary extends JPanel {
 
 	// Variables declaration - do not modify
 	private File reportFile;
-	private int opId;
+	private OperationKey operationKey;
 	private JButton btn_Get;
 	private JButton btn_Save;
 	private JButton btn_Back;
@@ -96,13 +97,13 @@ public class Report_QASamplesSummary extends JPanel {
 	private JTextField txt_NRows;
 	// End of variables declaration
 
-	public Report_QASamplesSummary(final StudyKey studyKey, final String qaFileName, final int opId) {
+	public Report_QASamplesSummary(final OperationKey operationKey, final String qaFileName) {
 
-		this.opId = opId;
+		this.operationKey = operationKey;
 
 		String reportPath = "";
 		try {
-			reportPath = Study.constructReportsPath(studyKey);
+			reportPath = Study.constructReportsPath(operationKey.getParentMatrixKey().getStudyKey());
 		} catch (IOException ex) {
 			log.error(null, ex);
 		}
@@ -190,9 +191,9 @@ public class Report_QASamplesSummary extends JPanel {
 		scrl_ReportTable.setViewportView(tbl_ReportTable);
 
 		//<editor-fold defaultstate="expanded" desc="FOOTER">
-		btn_Save.setAction(new SaveAsAction(studyKey, qaFileName, tbl_ReportTable, txt_NRows));
+		btn_Save.setAction(new SaveAsAction(operationKey.getParentMatrixKey().getStudyKey(), qaFileName, tbl_ReportTable, txt_NRows));
 
-		btn_Back.setAction(new Report_Analysis.BackAction(this.opId));
+		btn_Back.setAction(new Report_Analysis.BackAction(this.operationKey));
 
 		btn_Help.setAction(new BrowserHelpUrlAction(HelpURLs.QryURL.sampleQAreport));
 
@@ -247,9 +248,9 @@ public class Report_QASamplesSummary extends JPanel {
 
 	private static class LoadReportAction extends AbstractAction {
 
-		private File reportFile;
-		private JTable reportTable;
-		private JTextField nRows;
+		private final File reportFile;
+		private final JTable reportTable;
+		private final JTextField nRows;
 
 		LoadReportAction(File reportFile, JTable reportTable, JTextField nRows) {
 

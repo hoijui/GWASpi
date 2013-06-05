@@ -27,7 +27,9 @@ import org.gwaspi.constants.cExport;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.model.MarkerKey;
+import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
+import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.SampleInfo;
@@ -200,19 +202,19 @@ class BeagleFormatter implements Formatter {
 
 			// WRITE KNOWN ALLELES FROM QA
 			// get MARKER_QA Operation
-			List<OperationMetadata> operations = OperationsList.getOperationsList(rdMatrixMetadata.getMatrixId());
-			int markersQAopId = Integer.MIN_VALUE;
+			List<OperationMetadata> operations = OperationsList.getOperationsList(MatrixKey.valueOf(rdMatrixMetadata));
+			OperationKey markersQAopKey = null;
 			for (int i = 0; i < operations.size(); i++) {
 				OperationMetadata op = operations.get(i);
 				if (op.getType().equals(OPType.MARKER_QA)) {
-					markersQAopId = op.getId();
+					markersQAopKey = OperationKey.valueOf(op);
 				}
 			}
-			if (markersQAopId != Integer.MIN_VALUE) {
-				OperationMetadata qaMetadata = OperationsList.getOperationMetadata(markersQAopId);
+			if (markersQAopKey != null) {
+				OperationMetadata qaMetadata = OperationsList.getOperation(markersQAopKey);
 				NetcdfFile qaNcFile = NetcdfFile.open(qaMetadata.getPathToMatrix());
 
-				MarkerOperationSet<char[]> rdOperationSet = new MarkerOperationSet<char[]>(rdMatrixMetadata.getStudyKey(), markersQAopId);
+				MarkerOperationSet<char[]> rdOperationSet = new MarkerOperationSet<char[]>(markersQAopKey);
 				Map<MarkerKey, char[]> opMarkerSetMap = rdOperationSet.getOpSetMap();
 
 				// MAJOR ALLELE

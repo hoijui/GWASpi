@@ -17,23 +17,21 @@
 
 package org.gwaspi.threadbox;
 
-import org.gwaspi.model.StudyKey;
+import org.gwaspi.model.MatrixKey;
 import org.gwaspi.netCDF.operations.MatrixMergeSamples;
 import org.gwaspi.netCDF.operations.MatrixOperation;
 
 public class Threaded_MergeMatricesAddSamples extends AbstractThreaded_MergeMatrices {
 
 	public Threaded_MergeMatricesAddSamples(
-			StudyKey studyKey,
-			int parentMatrixId1,
-			int parentMatrixId2,
+			MatrixKey parentMatrixKey1,
+			MatrixKey parentMatrixKey2,
 			String newMatrixName,
 			String description)
 	{
 		super(
-				studyKey,
-				parentMatrixId1,
-				parentMatrixId2,
+				parentMatrixKey1,
+				parentMatrixKey2,
 				newMatrixName,
 				description);
 	}
@@ -42,9 +40,8 @@ public class Threaded_MergeMatricesAddSamples extends AbstractThreaded_MergeMatr
 	protected MatrixOperation createMatrixOperation() throws Exception {
 
 		return new MatrixMergeSamples(
-				studyKey.getId(),
-				parentMatrixId1,
-				parentMatrixId2,
+				parentMatrixKey1,
+				parentMatrixKey2,
 				newMatrixName,
 				description);
 	}

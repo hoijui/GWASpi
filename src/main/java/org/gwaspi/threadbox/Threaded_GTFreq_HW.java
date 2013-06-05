@@ -68,9 +68,9 @@ public class Threaded_GTFreq_HW extends CommonRunnable {
 	@Override
 	protected void runInternal(SwingWorkerItem thisSwi) throws Exception {
 
-		List<OperationMetadata> operations = OperationsList.getOperationsList(matrixKey.getMatrixId());
-		int sampleQAOpId = OperationsList.getIdOfLastOperationTypeOccurance(operations, OPType.SAMPLE_QA);
-		int markersQAOpId = OperationsList.getIdOfLastOperationTypeOccurance(operations, OPType.MARKER_QA);
+		List<OperationMetadata> operations = OperationsList.getOperationsList(matrixKey);
+		OperationKey sampleQAOpKey = OperationsList.getIdOfLastOperationTypeOccurance(operations, OPType.SAMPLE_QA);
+		OperationKey markersQAOpKey = OperationsList.getIdOfLastOperationTypeOccurance(operations, OPType.MARKER_QA);
 
 		//<editor-fold defaultstate="expanded" desc="GT FREQ. & HW PROCESS">
 		if (!gwasParams.isDiscardMarkerByMisRat()) {
@@ -87,10 +87,9 @@ public class Threaded_GTFreq_HW extends CommonRunnable {
 		}
 
 		// GT FREQ. BY PHENOFILE OR DB AFFECTION
-		int censusOpId = Integer.MIN_VALUE;
+		OperationKey censusOpKey = null;
 		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
-			if (phenotypeFile != null && phenotypeFile.exists() && phenotypeFile.isFile()) { //BY EXTERNAL PHENOTYPE FILE
-
+			if (phenotypeFile != null && phenotypeFile.exists() && phenotypeFile.isFile()) { // BY EXTERNAL PHENOTYPE FILE
 				Set<SampleInfo.Affection> affectionStates = SamplesParserManager.scanSampleInfoAffectionStates(phenotypeFile.getPath()); //use Sample Info file affection state
 
 				if (affectionStates.contains(SampleInfo.Affection.UNAFFECTED)
@@ -103,10 +102,10 @@ public class Threaded_GTFreq_HW extends CommonRunnable {
 							phenotypeFile.getPath());
 					SampleInfoList.insertSampleInfos(sampleInfos);
 
-					censusOpId = OperationManager.censusCleanMatrixMarkersByPhenotypeFile(
-							matrixKey.getMatrixId(),
-							sampleQAOpId,
-							markersQAOpId,
+					censusOpKey = OperationManager.censusCleanMatrixMarkersByPhenotypeFile(
+							matrixKey,
+							sampleQAOpKey,
+							markersQAOpKey,
 							gwasParams.getDiscardMarkerMisRatVal(),
 							gwasParams.isDiscardGTMismatches(),
 							gwasParams.getDiscardSampleMisRatVal(),
@@ -120,14 +119,14 @@ public class Threaded_GTFreq_HW extends CommonRunnable {
 					getLog().warn(Text.Operation.warnAffectionMissing);
 				}
 			} else { // BY DB AFFECTION
-				Set<SampleInfo.Affection> affectionStates = SamplesParserManager.getDBAffectionStates(matrixKey.getMatrixId()); // use Sample Info file affection state
+				Set<SampleInfo.Affection> affectionStates = SamplesParserManager.getDBAffectionStates(matrixKey); // use Sample Info file affection state
 				if (affectionStates.contains(SampleInfo.Affection.UNAFFECTED)
 						&& affectionStates.contains(SampleInfo.Affection.AFFECTED))
 				{
-					censusOpId = OperationManager.censusCleanMatrixMarkers(
-							matrixKey.getMatrixId(),
-							sampleQAOpId,
-							markersQAOpId,
+					censusOpKey = OperationManager.censusCleanMatrixMarkers(
+							matrixKey,
+							sampleQAOpKey,
+							markersQAOpKey,
 							gwasParams.getDiscardMarkerMisRatVal(),
 							gwasParams.isDiscardGTMismatches(),
 							gwasParams.getDiscardSampleMisRatVal(),
@@ -140,17 +139,19 @@ public class Threaded_GTFreq_HW extends CommonRunnable {
 					getLog().warn(Text.Operation.warnAffectionMissing);
 				}
 			}
-			OperationKey censusOpKey = OperationKey.valueOf(OperationsList.getById(censusOpId));
-			GWASpiExplorerNodes.insertOperationUnderMatrixNode(censusOpKey);
+
+			if (censusOpKey != null) {
+				censusOpKey = OperationKey.valueOf(OperationsList.getOperation(censusOpKey));
+				GWASpiExplorerNodes.insertOperationUnderMatrixNode(censusOpKey);
+			}
 		}
 
 		// HW ON GENOTYPE FREQ.
 		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)
-				&& (censusOpId != Integer.MIN_VALUE))
+				&& (censusOpKey != null))
 		{
-			int hwOpId = OperationManager.performHardyWeinberg(censusOpId, cNetCDF.Defaults.DEFAULT_AFFECTION);
-			OperationKey hwOpKey = OperationKey.valueOf(OperationsList.getById(hwOpId));
-			GWASpiExplorerNodes.insertSubOperationUnderOperationNode(censusOpId, hwOpKey);
+			OperationKey hwOpKey = OperationManager.performHardyWeinberg(censusOpKey, cNetCDF.Defaults.DEFAULT_AFFECTION);
+			GWASpiExplorerNodes.insertSubOperationUnderOperationNode(censusOpKey, hwOpKey);
 		}
 		//</editor-fold>
 	}

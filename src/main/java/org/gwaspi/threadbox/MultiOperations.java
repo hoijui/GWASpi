@@ -28,6 +28,7 @@ import org.gwaspi.gui.GWASpiExplorerPanel;
 import org.gwaspi.gui.ProcessTab;
 import org.gwaspi.gui.StartGWASpi;
 import org.gwaspi.model.MatrixKey;
+import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.loader.GenotypesLoadDescription;
 import org.gwaspi.netCDF.operations.GWASinOneGOParams;
@@ -51,13 +52,13 @@ public class MultiOperations {
 
 	//<editor-fold defaultstate="expanded" desc="LOADERS">
 	/** SAMPLES QA */
-	public static void doMatrixQAs(final StudyKey studyKey, final int matrixId) {
+	public static void doMatrixQAs(final MatrixKey matrixKey) {
 
-		CommonRunnable task = new Threaded_MatrixQA(matrixId);
+		CommonRunnable task = new Threaded_MatrixQA(matrixKey);
 
 		TaskLockProperties lockProperties = new TaskLockProperties();
-		lockProperties.getStudyIds().add(studyKey.getId());
-		lockProperties.getMatricesIds().add(matrixId);
+		lockProperties.getStudyIds().add(matrixKey.getStudyKey().getId());
+		lockProperties.getMatricesIds().add(matrixKey.getMatrixId());
 
 		queueTask(task, lockProperties);
 	}
@@ -102,18 +103,13 @@ public class MultiOperations {
 	}
 
 	/** LOAD & GWAS */
-	public static void doHardyWeinberg(
-			final StudyKey studyKey,
-			final int matrixId,
-			final int censusOpId)
+	public static void doHardyWeinberg(final OperationKey censusOpKey)
 	{
-		CommonRunnable task = new Threaded_HardyWeinberg(
-				matrixId,
-				censusOpId);
+		CommonRunnable task = new Threaded_HardyWeinberg(censusOpKey);
 
 		TaskLockProperties lockProperties = new TaskLockProperties();
-		lockProperties.getStudyIds().add(studyKey.getId());
-		lockProperties.getMatricesIds().add(matrixId);
+		lockProperties.getStudyIds().add(censusOpKey.getStudyId());
+		lockProperties.getMatricesIds().add(censusOpKey.getParentMatrixId());
 
 		queueTask(task, lockProperties);
 	}
@@ -138,48 +134,46 @@ public class MultiOperations {
 
 	/** LOAD & GWAS */
 	public static void doAssociationTest(
-			final StudyKey studyKey,
-			final int matrixId,
-			final int censusOPId,
-			final int hwOPId,
+			final MatrixKey matrixKey,
+			final OperationKey censusOPKey,
+			final OperationKey hwOPKey,
 			final GWASinOneGOParams gwasParams,
 			final boolean allelic)
 	{
 		CommonRunnable task = new Threaded_Association(
-				matrixId,
-				censusOPId,
-				hwOPId,
+				matrixKey,
+				censusOPKey,
+				hwOPKey,
 				gwasParams,
 				allelic);
 
 		TaskLockProperties lockProperties = new TaskLockProperties();
-		lockProperties.getStudyIds().add(studyKey.getId());
-		lockProperties.getMatricesIds().add(matrixId);
-		lockProperties.getOperationsIds().add(censusOPId);
-		lockProperties.getOperationsIds().add(hwOPId);
+		lockProperties.getStudyIds().add(matrixKey.getStudyId());
+		lockProperties.getMatricesIds().add(matrixKey.getMatrixId());
+		lockProperties.getOperationsIds().add(censusOPKey.getId());
+		lockProperties.getOperationsIds().add(hwOPKey.getId());
 
 		queueTask(task, lockProperties);
 	}
 
 	/** LOAD & GWAS */
 	public static void doTrendTest(
-			final StudyKey studyKey,
-			final int matrixId,
-			final int censusOPId,
-			final int hwOPId,
+			final MatrixKey matrixKey,
+			final OperationKey censusOPKey,
+			final OperationKey hwOPKey,
 			final GWASinOneGOParams gwasParams)
 	{
 		CommonRunnable task = new Threaded_TrendTest(
-				matrixId,
-				censusOPId,
-				hwOPId,
+				matrixKey,
+				censusOPKey,
+				hwOPKey,
 				gwasParams);
 
 		TaskLockProperties lockProperties = new TaskLockProperties();
-		lockProperties.getStudyIds().add(studyKey.getId());
-		lockProperties.getMatricesIds().add(matrixId);
-		lockProperties.getOperationsIds().add(censusOPId);
-		lockProperties.getOperationsIds().add(hwOPId);
+		lockProperties.getStudyIds().add(matrixKey.getStudyId());
+		lockProperties.getMatricesIds().add(matrixKey.getMatrixId());
+		lockProperties.getOperationsIds().add(censusOPKey.getId());
+		lockProperties.getOperationsIds().add(hwOPKey.getId());
 
 		queueTask(task, lockProperties);
 	}
@@ -187,8 +181,7 @@ public class MultiOperations {
 
 	//<editor-fold defaultstate="expanded" desc="DATA MANAGEMENT">
 	public static void doExtractData(
-			final StudyKey studyKey,
-			final int parentMatrixId,
+			final MatrixKey parentMatrixKey,
 			final String newMatrixName,
 			final String description,
 			final SetMarkerPickCase markerPickCase,
@@ -201,8 +194,7 @@ public class MultiOperations {
 			final File sampleCriteriaFile)
 	{
 		CommonRunnable task = new Threaded_ExtractMatrix(
-				studyKey,
-				parentMatrixId,
+				parentMatrixKey,
 				newMatrixName,
 				description,
 				markerPickCase,
@@ -215,116 +207,107 @@ public class MultiOperations {
 				sampleCriteriaFile);
 
 		TaskLockProperties lockProperties = new TaskLockProperties();
-		lockProperties.getStudyIds().add(studyKey.getId());
-		lockProperties.getMatricesIds().add(parentMatrixId);
+		lockProperties.getStudyIds().add(parentMatrixKey.getStudyId());
+		lockProperties.getMatricesIds().add(parentMatrixKey.getMatrixId());
 
 		queueTask(task, lockProperties);
 	}
 
 	public static void doTranslateAB12ToACGT(
-			final int studyId,
-			final int parentMatrixId,
+			final MatrixKey parentMatrixKey,
 			final GenotypeEncoding gtEncoding,
 			final String newMatrixName,
 			final String description)
 	{
 		CommonRunnable task = new Threaded_TranslateMatrix(
-				new StudyKey(studyId),
-				parentMatrixId,
+				parentMatrixKey,
 				gtEncoding,
 				newMatrixName,
 				description);
 
 		TaskLockProperties lockProperties = new TaskLockProperties();
-		lockProperties.getStudyIds().add(studyId);
-		lockProperties.getMatricesIds().add(parentMatrixId);
+		lockProperties.getStudyIds().add(parentMatrixKey.getStudyId());
+		lockProperties.getMatricesIds().add(parentMatrixKey.getMatrixId());
 
 		queueTask(task, lockProperties);
 	}
 
 	public static void doExportMatrix(
-			final StudyKey studyKey,
-			final int matrixId,
+			final MatrixKey matrixKey,
 			final ExportFormat format,
 			final String phenotype)
 	{
 		CommonRunnable task = new Threaded_ExportMatrix(
-				matrixId,
+				matrixKey,
 				format,
 				phenotype);
 
 		TaskLockProperties lockProperties = new TaskLockProperties();
-		lockProperties.getStudyIds().add(studyKey.getId());
-		lockProperties.getMatricesIds().add(matrixId);
+		lockProperties.getStudyIds().add(matrixKey.getStudyId());
+		lockProperties.getMatricesIds().add(matrixKey.getMatrixId());
 
 		queueTask(task, lockProperties);
 	}
 
 	public static void doMergeMatrix(
-			final StudyKey studyKey,
-			final int parentMatrixId1,
-			final int parentMatrixId2,
+			final MatrixKey parentMatrixKey1,
+			final MatrixKey parentMatrixKey2,
 			final String newMatrixName,
 			final String description,
 			final boolean all)
 	{
 		CommonRunnable task = new Threaded_MergeMatrices(
-				studyKey,
-				parentMatrixId1,
-				parentMatrixId2,
+				parentMatrixKey1,
+				parentMatrixKey2,
 				newMatrixName,
 				description,
 				all);
 
 		TaskLockProperties lockProperties = new TaskLockProperties();
-		lockProperties.getStudyIds().add(studyKey.getId());
-		lockProperties.getMatricesIds().add(parentMatrixId1);
-		lockProperties.getMatricesIds().add(parentMatrixId2);
+		lockProperties.getStudyIds().add(parentMatrixKey1.getStudyKey().getId());
+		lockProperties.getMatricesIds().add(parentMatrixKey1.getMatrixId());
+		lockProperties.getMatricesIds().add(parentMatrixKey2.getMatrixId());
 
 		queueTask(task, lockProperties);
 	}
 
 	public static void doMergeMatrixAddSamples(
-			final StudyKey studyKey,
-			final int parentMatrixId1,
-			final int parentMatrixId2,
+			final MatrixKey parentMatrixKey1,
+			final MatrixKey parentMatrixKey2,
 			final String newMatrixName,
 			final String description)
 	{
 		CommonRunnable task = new Threaded_MergeMatricesAddSamples(
-				studyKey,
-				parentMatrixId1,
-				parentMatrixId2,
+				parentMatrixKey1,
+				parentMatrixKey2,
 				newMatrixName,
 				description);
 
 		TaskLockProperties lockProperties = new TaskLockProperties();
-		lockProperties.getStudyIds().add(studyKey.getId());
-		lockProperties.getMatricesIds().add(parentMatrixId1);
-		lockProperties.getMatricesIds().add(parentMatrixId2);
+		lockProperties.getStudyIds().add(parentMatrixKey1.getStudyKey().getId());
+		lockProperties.getMatricesIds().add(parentMatrixKey1.getMatrixId());
+		lockProperties.getMatricesIds().add(parentMatrixKey2.getMatrixId());
 
 		queueTask(task, lockProperties);
 	}
 
 	public static void doStrandFlipMatrix(
-			final int studyId,
-			final int parentMatrixId,
+			final MatrixKey parentMatrixKey,
 			final String markerIdentifyer,
 			final File markerFlipFile,
 			final String newMatrixName,
 			final String description)
 	{
 		CommonRunnable task = new Threaded_FlipStrandMatrix(
-				new StudyKey(studyId),
-				parentMatrixId,
+				parentMatrixKey,
 				newMatrixName,
 				description,
 				markerIdentifyer,
 				markerFlipFile);
 
 		TaskLockProperties lockProperties = new TaskLockProperties();
-		lockProperties.getStudyIds().add(studyId);
-		lockProperties.getMatricesIds().add(parentMatrixId);
+		lockProperties.getStudyIds().add(parentMatrixKey.getStudyKey().getId());
+		lockProperties.getMatricesIds().add(parentMatrixKey.getMatrixId());
 
 		queueTask(task, lockProperties);
 	}
@@ -361,22 +344,22 @@ public class MultiOperations {
 		queueDeleteTask(sdi);
 	}
 
-	public static void deleteMatrix(final StudyKey studyKey, final int matrixId, final boolean deleteReports) {
+	public static void deleteMatrix(final MatrixKey matrixKey, final boolean deleteReports) {
 
 		SwingDeleterItem sdi = new SwingDeleterItem(
 				SwingDeleterItem.DeleteTarget.MATRIX,
-				studyKey.getId(),
-				matrixId,
+				matrixKey.getStudyKey().getId(),
+				matrixKey.getMatrixId(),
 				deleteReports);
 		queueDeleteTask(sdi);
 	}
 
-	public static void deleteOperationsByOpId(final StudyKey studyKey, final int matrixId, final int opId, final boolean deleteReports) {
+	public static void deleteOperationsByOpId(final MatrixKey matrixKey, final int opId, final boolean deleteReports) {
 
 		SwingDeleterItem sdi = new SwingDeleterItem(
 				SwingDeleterItem.DeleteTarget.OPERATION_BY_OPID,
-				studyKey.getId(),
-				matrixId,
+				matrixKey.getStudyKey().getId(),
+				matrixKey.getMatrixId(),
 				opId,
 				deleteReports);
 		queueDeleteTask(sdi);

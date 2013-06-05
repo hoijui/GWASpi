@@ -71,7 +71,7 @@ public class MatrixExtractPanel extends JPanel {
 			= LoggerFactory.getLogger(MatrixExtractPanel.class);
 
 	// Variables declaration - do not modify
-	private final MatrixKey parentMatrix;
+	private final MatrixKey parentMatrixKey;
 	private final List<Object[]> markerPickerTable = new ArrayList<Object[]>();
 	private final List<Object[]> samplePickerTable = new ArrayList<Object[]>();
 	private final JButton btn_Back;
@@ -107,8 +107,8 @@ public class MatrixExtractPanel extends JPanel {
 
 	public MatrixExtractPanel(MatrixKey parentMatrixKey, String newMatrixName, String newMatrixDesc) throws IOException {
 
-		parentMatrix = parentMatrixKey;
-		MatrixMetadata matrixMetadata = MatricesList.getMatrixMetadataById(parentMatrix.getMatrixId());
+		this.parentMatrixKey = parentMatrixKey;
+		MatrixMetadata matrixMetadata = MatricesList.getMatrixMetadataById(parentMatrixKey);
 
 		pnl_NameAndDesc = new JPanel();
 		lbl_ParentMatrix = new JLabel();
@@ -259,7 +259,7 @@ public class MatrixExtractPanel extends JPanel {
 			markerPickerTable.get(6)[0].toString()};
 		cmb_MarkersVariable.setModel(new DefaultComboBoxModel(markerPickerVars));
 		// PREFILL CRITERIA TXT WITH CHROMOSOME CODES IF NECESSARY
-		cmb_MarkersVariable.setAction(new MarkersVariableAction(parentMatrix));
+		cmb_MarkersVariable.setAction(new MarkersVariableAction(parentMatrixKey));
 
 		lbl_MarkersCriteria.setText(Text.Trafo.criteria);
 		txtA_MarkersCriteria.setColumns(20);
@@ -476,7 +476,7 @@ public class MatrixExtractPanel extends JPanel {
 				.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)));
 		//</editor-fold>
 
-		btn_Back.setAction(new BackAction(parentMatrix));
+		btn_Back.setAction(new BackAction(parentMatrixKey));
 
 		btn_Go.setAction(new ExtractAction());
 
@@ -588,7 +588,7 @@ public class MatrixExtractPanel extends JPanel {
 									|| (samplePickCase == SetSamplePickCase.SAMPLES_EXCLUDE_BY_ID))
 							{
 								sampleCriteria.add(SampleKey.valueOf(
-										parentMatrix.getStudyKey(), sampleCrit));
+										parentMatrixKey.getStudyKey(), sampleCrit));
 							} else {
 								sampleCriteria.add(sampleCrit.toCharArray());
 							}
@@ -626,8 +626,7 @@ public class MatrixExtractPanel extends JPanel {
 					}
 
 					MultiOperations.doExtractData(
-							parentMatrix.getStudyKey(),
-							parentMatrix.getMatrixId(),
+							parentMatrixKey,
 							newMatrixName,
 							description,
 							markerPickCase,

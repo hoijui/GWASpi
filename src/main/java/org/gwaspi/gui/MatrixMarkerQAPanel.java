@@ -54,7 +54,7 @@ public class MatrixMarkerQAPanel extends JPanel {
 			= LoggerFactory.getLogger(MatrixMarkerQAPanel.class);
 
 	// Variables declaration - do not modify
-	private final MatrixKey parentMatrix;
+	private final MatrixKey parentMatrixKey;
 	private final OperationMetadata currentOP;
 	private final JButton btn_Back;
 	private final JButton btn_DeleteOperation;
@@ -68,8 +68,8 @@ public class MatrixMarkerQAPanel extends JPanel {
 
 	public MatrixMarkerQAPanel(MatrixKey parentMatrixKey, int _opId) throws IOException {
 
-		parentMatrix = parentMatrixKey;
-		MatrixMetadata parentMatrixMetadata = MatricesList.getMatrixMetadataById(parentMatrix.getMatrixId());
+		this.parentMatrixKey = parentMatrixKey;
+		MatrixMetadata parentMatrixMetadata = MatricesList.getMatrixMetadataById(parentMatrixKey);
 
 		if (_opId != Integer.MIN_VALUE) {
 			currentOP = OperationsList.getById(_opId);
@@ -120,7 +120,7 @@ public class MatrixMarkerQAPanel extends JPanel {
 		}
 		scrl_MatrixDesc.setViewportView(txtA_Description);
 
-		btn_DeleteOperation.setAction(new DeleteOperationAction(currentOP, this, parentMatrix));
+		btn_DeleteOperation.setAction(new DeleteOperationAction(currentOP, this, parentMatrixKey));
 
 		//<editor-fold defaultstate="expanded" desc="LAYOUT MATRIX DESC">
 		GroupLayout pnl_MatrixDescLayout = new GroupLayout(pnl_MatrixDesc);
@@ -143,7 +143,7 @@ public class MatrixMarkerQAPanel extends JPanel {
 
 		//</editor-fold>
 
-		Action backAction = new BackAction(parentMatrix);
+		Action backAction = new BackAction(parentMatrixKey);
 		backAction.setEnabled(currentOP != null);
 		btn_Back.setAction(backAction);
 		btn_Help.setAction(new BrowserHelpUrlAction(HelpURLs.QryURL.markerQAreport));
@@ -195,13 +195,13 @@ public class MatrixMarkerQAPanel extends JPanel {
 
 		private final OperationMetadata currentOP;
 		private final Component dialogParent;
-		private final MatrixKey parentMatrix;
+		private final MatrixKey parentMatrixKey;
 
 		DeleteOperationAction(OperationMetadata currentOP, Component dialogParent, MatrixKey parentMatrix) {
 
 			this.currentOP = currentOP;
 			this.dialogParent = dialogParent;
-			this.parentMatrix = parentMatrix;
+			this.parentMatrixKey = parentMatrix;
 			setEnabled(currentOP != null);
 			putValue(NAME, Text.Operation.deleteOperation);
 		}
@@ -222,8 +222,7 @@ public class MatrixMarkerQAPanel extends JPanel {
 									deleteReport = true;
 								}
 								MultiOperations.deleteOperationsByOpId(
-										parentMatrix.getStudyKey(),
-										parentMatrix.getMatrixId(),
+										parentMatrixKey,
 										opId,
 										deleteReport);
 

@@ -24,6 +24,7 @@ import java.util.Map;
 import org.gwaspi.constants.cExport.ExportFormat;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.MatricesList;
+import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.Study;
@@ -37,23 +38,23 @@ public class MatrixExporter {
 
 	private final Logger log = LoggerFactory.getLogger(MachFormatter.class);
 
-	private int rdMatrixId = Integer.MIN_VALUE;
-	private MatrixMetadata rdMatrixMetadata = null;
-	private MarkerSet rdMarkerSet = null;
-	private SampleSet rdSampleSet = null;
-	private Map<SampleKey, byte[]> rdSampleSetMap = null;
+	private final MatrixKey rdMatrixKey;
+	private final MatrixMetadata rdMatrixMetadata;
+	private MarkerSet rdMarkerSet;
+	private final SampleSet rdSampleSet;
+	private final Map<SampleKey, byte[]> rdSampleSetMap;
 	private final Map<ExportFormat, Formatter> formatters;
 
-	public MatrixExporter(int _rdMatrixId) throws IOException, InvalidRangeException {
+	public MatrixExporter(MatrixKey rdMatrixKey) throws IOException, InvalidRangeException {
 
 		// INIT EXTRACTOR OBJECTS
 
-		rdMatrixId = _rdMatrixId;
-		rdMatrixMetadata = MatricesList.getMatrixMetadataById(rdMatrixId);
+		this.rdMatrixKey = rdMatrixKey;
+		rdMatrixMetadata = MatricesList.getMatrixMetadataById(rdMatrixKey);
 
-		rdMarkerSet = new MarkerSet(rdMatrixMetadata.getStudyKey(), rdMatrixId);
+		rdMarkerSet = new MarkerSet(rdMatrixKey);
 
-		rdSampleSet = new SampleSet(rdMatrixMetadata.getStudyKey(), rdMatrixId);
+		rdSampleSet = new SampleSet(rdMatrixKey);
 		rdSampleSetMap = rdSampleSet.getSampleIdSetMapByteArray();
 
 		formatters = new EnumMap<ExportFormat, Formatter>(ExportFormat.class);
@@ -75,7 +76,7 @@ public class MatrixExporter {
 		Formatter formatter = formatters.get(exportFormat);
 
 		if (exportFormat == ExportFormat.BEAGLE) {
-			rdMarkerSet = new MarkerSet(rdMatrixMetadata.getStudyKey(), rdMatrixId);
+			rdMarkerSet = new MarkerSet(rdMatrixKey);
 		}
 		boolean result = formatter.export(
 				exportPath,

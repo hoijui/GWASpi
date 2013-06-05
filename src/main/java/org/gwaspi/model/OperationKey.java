@@ -18,20 +18,28 @@
 package org.gwaspi.model;
 
 import java.io.Serializable;
+import javax.persistence.Transient;
 
 /**
  * Uniquely identifies an operation.
  */
 public class OperationKey implements Comparable<OperationKey>, Serializable {
 
-	private int studyId;
-	private int parentMatrixId;
+	private MatrixKey parentMatrixKey;
 	private int id;
 
+	/**
+	 * @deprecated
+	 */
 	public OperationKey(int studyId, int parentMatrixId, int id) {
 
-		this.studyId = studyId;
-		this.parentMatrixId = parentMatrixId;
+		this.parentMatrixKey = new MatrixKey(new StudyKey(studyId), parentMatrixId);
+		this.id = id;
+	}
+	
+	public OperationKey(MatrixKey parentMatrixKey, int id) {
+
+		this.parentMatrixKey = parentMatrixKey;
 		this.id = id;
 	}
 
@@ -60,33 +68,45 @@ public class OperationKey implements Comparable<OperationKey>, Serializable {
 			return false;
 		}
 		final OperationKey other = (OperationKey) obj;
-		if (this.getStudyId() != other.getStudyId()) {
+		if (!this.getParentMatrixKey().equals(other.getParentMatrixKey())) {
 			return false;
 		}
-		if (this.getId() != other.getId()) {
-			return false;
-		}
-		if (this.getParentMatrixId() != other.getParentMatrixId()) {
-			return false;
-		}
-		return true;
+		return (this.getId() != other.getId());
 	}
 
 	@Override
 	public int hashCode() {
-		int hash = 7;
-		hash = 83 * hash + this.studyId;
-		hash = 83 * hash + this.parentMatrixId;
-		hash = 83 * hash + this.id;
+		int hash = 5;
+		hash = 97 * hash + (this.parentMatrixKey != null ? this.parentMatrixKey.hashCode() : 0);
+		hash = 97 * hash + this.id;
 		return hash;
 	}
 
 	public int getStudyId() {
-		return studyId;
+		return parentMatrixKey.getStudyId();
 	}
 
 	protected void setStudyId(int studyId) {
-		this.studyId = studyId;
+		this.parentMatrixKey = new MatrixKey(
+				new StudyKey(studyId),
+				parentMatrixKey.getMatrixId()
+				);
+	}
+
+	public int getParentMatrixId() {
+		return parentMatrixKey.getMatrixId();
+	}
+
+	protected void setParentMatrixId(int parentMatrixId) {
+		this.parentMatrixKey = new MatrixKey(
+				parentMatrixKey.getStudyKey(),
+				parentMatrixId
+				);
+	}
+
+	@Transient
+	public MatrixKey getParentMatrixKey() {
+		return parentMatrixKey;
 	}
 
 	public int getId() {
@@ -95,13 +115,5 @@ public class OperationKey implements Comparable<OperationKey>, Serializable {
 
 	protected void setId(int id) {
 		this.id = id;
-	}
-
-	public int getParentMatrixId() {
-		return parentMatrixId;
-	}
-
-	protected void setParentMatrixId(int parentMatrixId) {
-		this.parentMatrixId = parentMatrixId;
 	}
 }

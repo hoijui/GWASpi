@@ -18,13 +18,13 @@
 package org.gwaspi.netCDF.operations;
 
 import java.io.IOException;
+import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.SampleKeyFactory;
-import org.gwaspi.model.StudyKey;
 
 public class SampleOperationSet<V> extends AbstractOperationSet<SampleKey, V> {
 
-	public SampleOperationSet(StudyKey studyKey, int opId) throws IOException {
-		super(studyKey, opId, new SampleKeyFactory(studyKey));
+	public SampleOperationSet(OperationKey operationKey) throws IOException {
+		super(operationKey, new SampleKeyFactory(operationKey.getParentMatrixKey().getStudyKey()));
 	}
 }

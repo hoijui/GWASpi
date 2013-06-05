@@ -20,6 +20,7 @@ package org.gwaspi.threadbox;
 import java.util.List;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.model.GWASpiExplorerNodes;
+import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
@@ -31,26 +32,26 @@ import org.slf4j.LoggerFactory;
 
 public class Threaded_TrendTest extends CommonRunnable {
 
-	private final int matrixId;
-	private final int censusOpId;
-	private final int hwOpId;
+	private final MatrixKey matrixKey;
+	private final OperationKey censusOpKey;
+	private final OperationKey hwOpKey;
 	private final GWASinOneGOParams gwasParams;
 
 	public Threaded_TrendTest(
-			int matrixId,
-			int censusOpId,
-			int hwOpId,
+			MatrixKey matrixKey,
+			OperationKey censusOpKey,
+			OperationKey hwOpKey,
 			GWASinOneGOParams gwasParams)
 	{
 		super(
 				"Cochran-Armitage Trend Test",
 				"Cochran-Armitage Trend Test",
-				"Cochran-Armitage Trend Test on Matrix ID: " + matrixId,
+				"Cochran-Armitage Trend Test on Matrix ID: " + matrixKey.getMatrixId(),
 				"Cochran-Armitage Trend Test");
 
-		this.matrixId = matrixId;
-		this.censusOpId = censusOpId;
-		this.hwOpId = hwOpId;
+		this.matrixKey = matrixKey;
+		this.censusOpKey = censusOpKey;
+		this.hwOpKey = hwOpKey;
 		this.gwasParams = gwasParams;
 	}
 
@@ -60,8 +61,8 @@ public class Threaded_TrendTest extends CommonRunnable {
 
 	protected void runInternal(SwingWorkerItem thisSwi) throws Exception {
 
-		List<OperationMetadata> operations = OperationsList.getOperationsList(matrixId);
-		int markersQAOpId = OperationsList.getIdOfLastOperationTypeOccurance(operations, OPType.MARKER_QA);
+		List<OperationMetadata> operations = OperationsList.getOperationsList(matrixKey);
+		OperationKey markersQAOpKey = OperationsList.getIdOfLastOperationTypeOccurance(operations, OPType.MARKER_QA);
 
 		if (!gwasParams.isDiscardMarkerByMisRat()) {
 			gwasParams.setDiscardMarkerMisRatVal(1);
@@ -78,25 +79,24 @@ public class Threaded_TrendTest extends CommonRunnable {
 
 		// TREND-TEST (needs newMatrixId, censusOpId, pickedMarkerSet, pickedSampleSet)
 
-		OperationMetadata markerQAMetadata = OperationsList.getOperationMetadata(markersQAOpId);
+		OperationMetadata markerQAMetadata = OperationsList.getOperation(markersQAOpKey);
 
 		if (gwasParams.isDiscardMarkerHWCalc()) {
 			gwasParams.setDiscardMarkerHWTreshold(0.05 / markerQAMetadata.getOpSetSize());
 		}
 
 		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
-			int trendTestOpId = OperationManager.performCleanTrendTests(
-					matrixId,
-					censusOpId,
-					hwOpId,
+			OperationKey trendTestOpKey = OperationManager.performCleanTrendTests(
+					matrixKey,
+					censusOpKey,
+					hwOpKey,
 					gwasParams.getDiscardMarkerHWTreshold());
-			OperationKey trendTestOpKey = OperationKey.valueOf(OperationsList.getById(trendTestOpId));
-			GWASpiExplorerNodes.insertSubOperationUnderOperationNode(censusOpId, trendTestOpKey);
+			GWASpiExplorerNodes.insertSubOperationUnderOperationNode(censusOpKey, trendTestOpKey);
 
 			// Make Reports (needs newMatrixId, QAopId, AssocOpId)
-			if (trendTestOpId != Integer.MIN_VALUE) {
-				OutputTrendTest.writeReportsForTrendTestData(trendTestOpId);
-				GWASpiExplorerNodes.insertReportsUnderOperationNode(trendTestOpId);
+			if (trendTestOpKey != null) {
+				OutputTrendTest.writeReportsForTrendTestData(trendTestOpKey);
+				GWASpiExplorerNodes.insertReportsUnderOperationNode(trendTestOpKey);
 			}
 		}
 	}

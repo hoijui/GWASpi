@@ -30,6 +30,7 @@ import org.gwaspi.global.Text;
 import org.gwaspi.global.TypeConverter;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MatricesList;
+import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleInfo.Sex;
@@ -48,7 +49,7 @@ public class OP_QAMarkers implements MatrixOperation {
 
 	private final Logger log = LoggerFactory.getLogger(OP_QAMarkers.class);
 
-	private int rdMatrixId;
+	private MatrixKey rdMatrixKey;
 
 	private static final class OrderedAlleles {
 
@@ -132,8 +133,8 @@ public class OP_QAMarkers implements MatrixOperation {
 		}
 	}
 
-	public OP_QAMarkers(int rdMatrixId) {
-		this.rdMatrixId = rdMatrixId;
+	public OP_QAMarkers(MatrixKey rdMatrixKey) {
+		this.rdMatrixKey = rdMatrixKey;
 	}
 
 	public int processMatrix() throws IOException, InvalidRangeException {
@@ -144,15 +145,15 @@ public class OP_QAMarkers implements MatrixOperation {
 		Map<MarkerKey, Double> wrMarkerSetMissingRatioMap = new LinkedHashMap<MarkerKey, Double>();
 		Map<MarkerKey, OrderedAlleles> wrMarkerSetKnownAllelesMap = new LinkedHashMap<MarkerKey, OrderedAlleles>();
 
-		MatrixMetadata rdMatrixMetadata = MatricesList.getMatrixMetadataById(rdMatrixId);
+		MatrixMetadata rdMatrixMetadata = MatricesList.getMatrixMetadataById(rdMatrixKey);
 
 		NetcdfFile rdNcFile = NetcdfFile.open(rdMatrixMetadata.getPathToMatrix());
 
-		MarkerSet rdMarkerSet = new MarkerSet(rdMatrixMetadata.getStudyKey(), rdMatrixId);
+		MarkerSet rdMarkerSet = new MarkerSet(rdMatrixKey);
 		rdMarkerSet.initFullMarkerIdSetMap();
 		//Map<String, Object> rdMarkerSetMap = rdMarkerSet.markerIdSetMap; // This to test heap usage of copying locally the Map from markerset
 
-		SampleSet rdSampleSet = new SampleSet(rdMatrixMetadata.getStudyKey(), rdMatrixId);
+		SampleSet rdSampleSet = new SampleSet(rdMatrixKey);
 		Map<SampleKey, byte[]> rdSampleSetMap = rdSampleSet.getSampleIdSetMapByteArray();
 
 		NetcdfFileWriteable wrNcFile = null;
@@ -170,7 +171,7 @@ public class OP_QAMarkers implements MatrixOperation {
 					rdSampleSetMap.size(),
 					0,
 					OPType.MARKER_QA,
-					rdMatrixMetadata.getMatrixId(), // Parent matrixId
+					rdMatrixKey, // Parent matrixId
 					-1); // Parent operationId
 
 			wrNcFile = wrOPHandler.getNetCDFHandler();

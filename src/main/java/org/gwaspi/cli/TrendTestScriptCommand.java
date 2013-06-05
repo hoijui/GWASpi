@@ -23,6 +23,8 @@ import java.util.List;
 import java.util.Map;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.global.Text;
+import org.gwaspi.model.MatrixKey;
+import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.operations.GWASinOneGOParams;
 import org.gwaspi.netCDF.operations.OperationManager;
@@ -63,8 +65,11 @@ class TrendTestScriptCommand extends AbstractScriptCommand {
 
 		if (studyExists) {
 			int matrixId = Integer.parseInt(args.get("matrix-id")); // Parent Matrix Id
+			MatrixKey matrixKey = new MatrixKey(studyKey, matrixId);
 			int gtFreqId = Integer.parseInt(args.get("gtfreq-id")); // Parent GtFreq operation Id
+			OperationKey gtFreqKey = new OperationKey(matrixKey, gtFreqId);
 			int hwId = Integer.parseInt(args.get("hw-id")); // Parent Hardy-Weinberg operation Id
+			OperationKey hwKey = new OperationKey(matrixKey, hwId);
 
 			gwasParams.setPerformAllelicTests(false);
 			gwasParams.setPerformGenotypicTests(false);
@@ -79,23 +84,22 @@ class TrendTestScriptCommand extends AbstractScriptCommand {
 			List<OPType> necessaryOPs = new ArrayList<OPType>();
 			necessaryOPs.add(OPType.SAMPLE_QA);
 			necessaryOPs.add(OPType.MARKER_QA);
-			List<OPType> missingOPs = OperationManager.checkForNecessaryOperations(necessaryOPs, matrixId);
+			List<OPType> missingOPs = OperationManager.checkForNecessaryOperations(necessaryOPs, matrixKey);
 
 			// QA BLOCK
 			if (gwasParams.isProceed() && missingOPs.size() > 0) {
 				gwasParams.setProceed(false);
 				System.out.println(Text.Operation.warnQABeforeAnything + "\n" + Text.Operation.willPerformOperation);
-				MultiOperations.doMatrixQAs(studyKey, matrixId);
+				MultiOperations.doMatrixQAs(matrixKey);
 			}
 
 			// TRend TEST BLOCK
 			if (gwasParams.isProceed()) {
 				System.out.println(Text.All.processing);
 				MultiOperations.doTrendTest(
-						studyKey,
-						matrixId,
-						gtFreqId,
-						hwId,
+						matrixKey,
+						gtFreqKey,
+						hwKey,
 						gwasParams);
 				return true;
 			}

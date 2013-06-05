@@ -63,7 +63,7 @@ public class MatrixMergePanel extends JPanel {
 			= LoggerFactory.getLogger(MatrixMergePanel.class);
 
 	// Variables declaration - do not modify
-	private final MatrixKey parentMatrix;
+	private final MatrixKey parentMatrixKey;
 	private final List<Object[]> matrixItems;
 	private final JButton btn_Back;
 	private final JButton btn_Help;
@@ -90,8 +90,8 @@ public class MatrixMergePanel extends JPanel {
 
 	public MatrixMergePanel(MatrixKey parentMatrixKey) throws IOException {
 
-		parentMatrix = parentMatrixKey;
-		MatrixMetadata parentMatrixMetadata = MatricesList.getMatrixMetadataById(parentMatrix.getMatrixId());
+		this.parentMatrixKey = parentMatrixKey;
+		MatrixMetadata parentMatrixMetadata = MatricesList.getMatrixMetadataById(parentMatrixKey);
 		matrixItems = getMatrixItems(parentMatrixKey.getStudyKey());
 
 		mergeMethod = new ButtonGroup();
@@ -250,7 +250,7 @@ public class MatrixMergePanel extends JPanel {
 			}
 		});
 		scroll_TrafoMatrixDescription.setViewportView(txtA_NewMatrixDescription);
-		btn_Merge.setAction(new MergeAction(parentMatrix, txtA_NewMatrixDescription, txt_NewMatrixName, matrixItems, cmb_SelectMatrix, rdio_MergeMarkers, rdio_MergeSamples, rdio_MergeAll));
+		btn_Merge.setAction(new MergeAction(parentMatrixKey, txtA_NewMatrixDescription, txt_NewMatrixName, matrixItems, cmb_SelectMatrix, rdio_MergeMarkers, rdio_MergeSamples, rdio_MergeAll));
 
 		//<editor-fold defaultstate="expanded" desc="LAYOUT NEW MATRIX DESC">
 		GroupLayout pnl_TrafoMatrixDescLayout = new GroupLayout(pnl_TrafoMatrixDesc);
@@ -280,7 +280,7 @@ public class MatrixMergePanel extends JPanel {
 				.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)));
 		//</editor-fold>
 
-		btn_Back.setAction(new BackAction(parentMatrix));
+		btn_Back.setAction(new BackAction(parentMatrixKey));
 		btn_Help.setAction(new BrowserHelpUrlAction(HelpURLs.QryURL.matrixMerge));
 
 		//<editor-fold defaultstate="expanded" desc="LAYOUT FOOTER">
@@ -344,7 +344,7 @@ public class MatrixMergePanel extends JPanel {
 	//<editor-fold defaultstate="expanded" desc="MERGE">
 	private static class MergeAction extends AbstractAction {
 
-		private final MatrixKey parentMatrix;
+		private final MatrixKey parentMatrixKey;
 		private final JTextArea newMatrixDescription;
 		private final JTextField newMatrixName;
 		private final List<Object[]> matrixItems;
@@ -363,7 +363,7 @@ public class MatrixMergePanel extends JPanel {
 				JRadioButton mergeSamples,
 				JRadioButton mergeAll)
 		{
-			this.parentMatrix = parentMatrix;
+			this.parentMatrixKey = parentMatrix;
 			this.newMatrixDescription = newMatrixDescription;
 			this.newMatrixName = newMatrixName;
 			this.matrixItems = matrixItems;
@@ -378,9 +378,10 @@ public class MatrixMergePanel extends JPanel {
 		public void actionPerformed(ActionEvent evt) {
 			try {
 				int addMatrixId = (Integer) matrixItems.get(selectMatrix.getSelectedIndex())[0];
+				MatrixKey addMatrixKey = new MatrixKey(parentMatrixKey.getStudyKey(), addMatrixId);
 
-				MatrixMetadata parentMatrixMetadata = MatricesList.getMatrixMetadataById(parentMatrix.getMatrixId());
-				MatrixMetadata addMatrixMetadata = MatricesList.getMatrixMetadataById(addMatrixId);
+				MatrixMetadata parentMatrixMetadata = MatricesList.getMatrixMetadataById(parentMatrixKey);
+				MatrixMetadata addMatrixMetadata = MatricesList.getMatrixMetadataById(addMatrixKey);
 				if (parentMatrixMetadata.getGenotypeEncoding().equals(addMatrixMetadata.getGenotypeEncoding())) {
 					if (parentMatrixMetadata.getGenotypeEncoding().equals(GenotypeEncoding.UNKNOWN)) {
 						// UNKOWN ENCODING, PROBABLY NOT A GOOD IDEA TO PROCEED
@@ -396,9 +397,8 @@ public class MatrixMergePanel extends JPanel {
 
 						if (mergeMarkers.isSelected()) {
 							MultiOperations.doMergeMatrix(
-									parentMatrix.getStudyKey(),
-									parentMatrix.getMatrixId(),
-									addMatrixId,
+									parentMatrixKey,
+									addMatrixKey,
 									newMatrixName.getText(),
 									description,
 									false);
@@ -406,18 +406,16 @@ public class MatrixMergePanel extends JPanel {
 
 						if (mergeSamples.isSelected()) {
 							MultiOperations.doMergeMatrixAddSamples(
-									parentMatrix.getStudyKey(),
-									parentMatrix.getMatrixId(),
-									addMatrixId,
+									parentMatrixKey,
+									addMatrixKey,
 									newMatrixName.getText(),
 									description);
 						}
 
 						if (mergeAll.isSelected()) {
 							MultiOperations.doMergeMatrix(
-									parentMatrix.getStudyKey(),
-									parentMatrix.getMatrixId(),
-									addMatrixId,
+									parentMatrixKey,
+									addMatrixKey,
 									newMatrixName.getText(),
 									description,
 									true);

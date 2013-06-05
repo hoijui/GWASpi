@@ -57,8 +57,8 @@ public final class MatricesList {
 		matrixService.updateMatrix(matrixMetadata);
 	}
 
-	public static MatrixMetadata getMatrixMetadataById(int matrixId) throws IOException {
-		return matrixService.getMatrix(matrixId);
+	public static MatrixMetadata getMatrixMetadataById(MatrixKey matrixKey) throws IOException {
+		return matrixService.getMatrix(matrixKey);
 	}
 
 	public static MatrixMetadata getMatrixMetadataByNetCDFname(String netCDFname) throws IOException {

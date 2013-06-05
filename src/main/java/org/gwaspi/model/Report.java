@@ -79,12 +79,11 @@ public class Report implements Serializable {
 			String friendlyName,
 			String fileName,
 			OPType type,
-			int parentMatrixId,
-			int parentOpId,
+			OperationKey parentOpKey,
 			String description,
 			StudyKey studyKey)
 	{
-		this.key = new ReportKey(studyKey, parentMatrixId, parentOpId, id);
+		this.key = new ReportKey(parentOpKey, id);
 		this.friendlyName = friendlyName;
 		this.fileName = fileName;
 		this.type = type;

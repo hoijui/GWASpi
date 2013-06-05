@@ -25,6 +25,7 @@ import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MatricesList;
+import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
@@ -49,16 +50,15 @@ public class MatrixMergeSamples extends AbstractMergeMatrixOperation {
 	 * Duplicate Samples from the 2nd Matrix will overwrite Samples in the 1st Matrix
 	 */
 	public MatrixMergeSamples(
-			int studyId, // XXX this is unused, confusing!
-			int rdMatrix1Id,
-			int rdMatrix2Id,
+			MatrixKey rdMatrixKey1,
+			MatrixKey rdMatrixKey2,
 			String wrMatrixFriendlyName,
 			String wrMatrixDescription)
 			throws IOException, InvalidRangeException
 	{
 		super(
-				rdMatrix1Id,
-				rdMatrix2Id,
+				rdMatrixKey1,
+				rdMatrixKey2,
 				wrMatrixFriendlyName,
 				wrMatrixDescription);
 	}
@@ -127,7 +127,6 @@ public class MatrixMergeSamples extends AbstractMergeMatrixOperation {
 			descSB.append(methodDescription);
 
 			MatrixFactory wrMatrixHandler = new MatrixFactory(
-					studyKey,
 					technology, // technology
 					wrMatrixFriendlyName,
 					wrMatrixDescription + "\n\n" + descSB.toString(), // description
@@ -137,8 +136,8 @@ public class MatrixMergeSamples extends AbstractMergeMatrixOperation {
 					numSamples,
 					rdMarkerSet1.getMarkerSetSize(), // Keep rdwrMarkerIdSetMap1 from Matrix1. MarkerSet is constant
 					chrInfo.size(),
-					rdMatrix1Id, // Parent matrixId 1
-					rdMatrix2Id); // Parent matrixId 2
+					rdMatrix1Key, // Parent matrixId 1
+					rdMatrix2Key); // Parent matrixId 2
 
 			NetcdfFileWriteable wrNcFile = wrMatrixHandler.getNetCDFHandler();
 			try {
@@ -234,7 +233,7 @@ public class MatrixMergeSamples extends AbstractMergeMatrixOperation {
 				if (rdMatrix1Metadata.getGenotypeEncoding().equals(GenotypeEncoding.ACGT0)
 						|| rdMatrix1Metadata.getGenotypeEncoding().equals(GenotypeEncoding.O1234))
 				{
-					double[] mismatchState = checkForMismatches(wrMatrixHandler.getResultMatrixId()); // mismatchCount, mismatchRatio
+					double[] mismatchState = checkForMismatches(wrMatrixHandler.getResultMatrixKey()); // mismatchCount, mismatchRatio
 					if (mismatchState[1] > 0.01) {
 						log.warn("");
 						log.warn("Mismatch ratio is bigger than 1% ({}%)!", (mismatchState[1] * 100));

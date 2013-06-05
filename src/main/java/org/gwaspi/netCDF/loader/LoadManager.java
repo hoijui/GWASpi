@@ -22,6 +22,7 @@ import java.util.Collection;
 import java.util.EnumMap;
 import java.util.Map;
 import org.gwaspi.constants.cImport.ImportFormat;
+import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleInfoList;
 import ucar.ma2.InvalidRangeException;
@@ -46,7 +47,7 @@ public class LoadManager {
 	private LoadManager() {
 	}
 
-	public static int dispatchLoadByFormat(
+	public static MatrixKey dispatchLoadByFormat(
 			GenotypesLoadDescription loadDescription,
 			Collection<SampleInfo> sampleInfos)
 			throws IOException, InvalidRangeException, InterruptedException
@@ -61,6 +62,6 @@ public class LoadManager {
 			newMatrixId = genotypesLoader.processData(loadDescription, sampleInfos);
 		}
 
-		return newMatrixId;
+		return new MatrixKey(loadDescription.getStudyKey(), newMatrixId);
 	}
 }

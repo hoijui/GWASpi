@@ -22,6 +22,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
+import org.gwaspi.model.MatrixKey;
+import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.slf4j.Logger;
@@ -36,10 +38,10 @@ public class OperationManager {
 	}
 
 	//<editor-fold defaultstate="expanded" desc="MATRIX CENSUS">
-	public static int censusCleanMatrixMarkers(
-			int _rdMatrixId,
-			int samplesQAOpId,
-			int markersQAOpId,
+	public static OperationKey censusCleanMatrixMarkers(
+			MatrixKey rdMatrixKey,
+			OperationKey samplesQAOpKey,
+			OperationKey markersQAOpKey,
 			double markerMissingRatio,
 			boolean discardMismatches,
 			double sampleMissingRatio,
@@ -50,11 +52,11 @@ public class OperationManager {
 		org.gwaspi.global.Utils.sysoutStart("Genotypes Frequency Count by Affection");
 
 		int resultOpId; // Integer.MIN_VALUE
-		OperationMetadata sampleQAOP = OperationsList.getById(samplesQAOpId);
-		OperationMetadata markerQAOP = OperationsList.getById(markersQAOpId);
+		OperationMetadata sampleQAOP = OperationsList.getOperation(samplesQAOpKey);
+		OperationMetadata markerQAOP = OperationsList.getOperation(markersQAOpKey);
 
 		resultOpId = new OP_MarkerCensus(
-				_rdMatrixId,
+				rdMatrixKey,
 				censusName,
 				sampleQAOP,
 				sampleMissingRatio,
@@ -64,13 +66,13 @@ public class OperationManager {
 				markerMissingRatio,
 				null).processMatrix();
 
-		return resultOpId;
+		return new OperationKey(rdMatrixKey, resultOpId);
 	}
 
-	public static int censusCleanMatrixMarkersByPhenotypeFile(
-			int _rdMatrixId,
-			int samplesQAOpId,
-			int markersQAOpId,
+	public static OperationKey censusCleanMatrixMarkersByPhenotypeFile(
+			MatrixKey rdMatrixKey,
+			OperationKey samplesQAOpKey,
+			OperationKey markersQAOpKey,
 			double markerMissingRatio,
 			boolean discardMismatches,
 			double sampleMissingRatio,
@@ -82,11 +84,11 @@ public class OperationManager {
 		org.gwaspi.global.Utils.sysoutStart("Genotypes Frequency Count using " + phenoFile.getName());
 
 		int resultOpId; // Integer.MIN_VALUE
-		OperationMetadata sampleQAOP = OperationsList.getById(samplesQAOpId);
-		OperationMetadata markerQAOP = OperationsList.getById(markersQAOpId);
+		OperationMetadata sampleQAOP = OperationsList.getOperation(samplesQAOpKey);
+		OperationMetadata markerQAOP = OperationsList.getOperation(markersQAOpKey);
 
 		resultOpId = new OP_MarkerCensus(
-				_rdMatrixId,
+				rdMatrixKey,
 				censusName,
 				sampleQAOP,
 				sampleMissingRatio,
@@ -96,30 +98,29 @@ public class OperationManager {
 				markerMissingRatio,
 				phenoFile).processMatrix();
 
-		return resultOpId;
+		return new OperationKey(rdMatrixKey, resultOpId);
 	}
 
-	public static int performHardyWeinberg(int censusOpId, String hwName) throws IOException, InvalidRangeException {
+	public static OperationKey performHardyWeinberg(OperationKey censusOpKey, String hwName) throws IOException, InvalidRangeException {
 		int resultOpId; // Integer.MIN_VALUE
-		OperationMetadata censusOP = OperationsList.getById(censusOpId);
+		OperationMetadata censusOP = OperationsList.getOperation(censusOpKey);
 
 		org.gwaspi.global.Utils.sysoutStart("Hardy-Weinberg");
 
-		resultOpId = new OP_HardyWeinberg(
-				censusOP,
-				hwName).processMatrix();
+		resultOpId = new OP_HardyWeinberg(censusOpKey, hwName).processMatrix();
+		OperationKey operationKey = new OperationKey(censusOpKey.getParentMatrixKey(), resultOpId);
 
-		org.gwaspi.reports.OutputHardyWeinberg.writeReportsForMarkersHWData(resultOpId);
+		org.gwaspi.reports.OutputHardyWeinberg.writeReportsForMarkersHWData(operationKey);
 
-		return resultOpId;
+		return operationKey;
 	}
 	//</editor-fold>
 
 	//<editor-fold defaultstate="expanded" desc="ANALYSIS">
-	public static int performCleanAssociationTests(
-			int rdMatrixId,
-			int censusOpId,
-			int hwOpId,
+	public static OperationKey performCleanAssociationTests(
+			MatrixKey rdMatrixKey,
+			OperationKey censusOpKey,
+			OperationKey hwOpKey,
 			double hwThreshold,
 			boolean allelic)
 			throws IOException, InvalidRangeException
@@ -128,24 +129,24 @@ public class OperationManager {
 
 		org.gwaspi.global.Utils.sysoutStart(" " + (allelic ? "Allelic" : "Genotypic") + " Association Test using QA and HW thresholds");
 
-		OperationMetadata markerCensusOP = OperationsList.getById(censusOpId);
-		OperationMetadata hwOP = OperationsList.getById(hwOpId);
+		OperationMetadata markerCensusOP = OperationsList.getOperation(censusOpKey);
+		OperationMetadata hwOP = OperationsList.getOperation(hwOpKey);
 
 		AbstractTestMatrixOperation testOperation = new OP_AssociationTests(
-				rdMatrixId,
+				rdMatrixKey,
 				markerCensusOP,
 				hwOP,
 				hwThreshold,
 				allelic);
 		resultOpId = testOperation.processMatrix();
 
-		return resultOpId;
+		return new OperationKey(censusOpKey.getParentMatrixKey(), resultOpId);
 	}
 
-	public static int performCleanTrendTests(
-			int _rdMatrixId,
-			int censusOpId,
-			int hwOpId,
+	public static OperationKey performCleanTrendTests(
+			MatrixKey rdMatrixKey,
+			OperationKey censusOpKey,
+			OperationKey hwOpKey,
 			double hwThreshold)
 			throws IOException, InvalidRangeException
 	{
@@ -153,26 +154,27 @@ public class OperationManager {
 
 		org.gwaspi.global.Utils.sysoutStart("Cochran-Armitage Trend Test using QA and HW thresholds");
 
-		OperationMetadata markerCensusOP = OperationsList.getById(censusOpId);
-		OperationMetadata hwOP = OperationsList.getById(hwOpId);
+		OperationMetadata markerCensusOP = OperationsList.getOperation(censusOpKey);
+		OperationMetadata hwOP = OperationsList.getOperation(hwOpKey);
 
 		resultOpId = new OP_TrendTests(
-				_rdMatrixId,
+				rdMatrixKey,
 				markerCensusOP,
 				hwOP,
 				hwThreshold).processMatrix();
 
-		return resultOpId;
+
+		return new OperationKey(censusOpKey.getParentMatrixKey(), resultOpId);
 	}
 	//</editor-fold>
 
 	//<editor-fold defaultstate="expanded" desc="OPERATIONS METADATA">
-	public static List<OPType> checkForNecessaryOperations(final List<OPType> necessaryOPs, int matrixId) {
+	public static List<OPType> checkForNecessaryOperations(final List<OPType> necessaryOPs, MatrixKey matrixKey) {
 
 		List<OPType> missingOPs = new ArrayList<OPType>(necessaryOPs);
 
 		try {
-			List<OperationMetadata> chkOperations = OperationsList.getOperationsList(matrixId);
+			List<OperationMetadata> chkOperations = OperationsList.getOperationsList(matrixKey);
 
 			for (OperationMetadata operation : chkOperations) {
 				OPType type = operation.getOperationType();
@@ -187,12 +189,12 @@ public class OperationManager {
 		return missingOPs;
 	}
 
-	public static List<OPType> checkForNecessaryOperations(List<OPType> necessaryOPs, int matrixId, int opId) {
+	public static List<OPType> checkForNecessaryOperations(List<OPType> necessaryOPs, MatrixKey matrixKey, int opId) {
 
 		List<OPType> missingOPs = new ArrayList<OPType>(necessaryOPs);
 
 		try {
-			List<OperationMetadata> chkOperations = OperationsList.getOperationsList(matrixId);
+			List<OperationMetadata> chkOperations = OperationsList.getOperationsList(matrixKey);
 
 			for (OperationMetadata operation : chkOperations) {
 				// Check if current operation is from parent matrix or parent operation
@@ -207,12 +209,12 @@ public class OperationManager {
 		return missingOPs;
 	}
 
-	public static List<OPType> checkForBlackListedOperations(List<OPType> blackListOPs, int matrixId) {
+	public static List<OPType> checkForBlackListedOperations(List<OPType> blackListOPs, MatrixKey matrixKey) {
 
 		List<OPType> nonoOPs = new ArrayList<OPType>();
 
 		try {
-			List<OperationMetadata> chkOperations = OperationsList.getOperationsList(matrixId);
+			List<OperationMetadata> chkOperations = OperationsList.getOperationsList(matrixKey);
 
 			for (OperationMetadata operation : chkOperations) {
 				OPType type = operation.getOperationType();

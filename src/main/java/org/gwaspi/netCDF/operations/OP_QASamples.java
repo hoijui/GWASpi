@@ -25,6 +25,7 @@ import org.gwaspi.constants.cNetCDF.Defaults.AlleleBytes;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MatricesList;
+import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.netCDF.markers.MarkerSet;
@@ -40,10 +41,10 @@ public class OP_QASamples implements MatrixOperation {
 
 	private final Logger log = LoggerFactory.getLogger(OP_QASamples.class);
 
-	private int rdMatrixId;
+	private final MatrixKey rdMatrixKey;
 
-	public OP_QASamples(int rdMatrixId) {
-		this.rdMatrixId = rdMatrixId;
+	public OP_QASamples(MatrixKey rdMatrixKey) {
+		this.rdMatrixKey = rdMatrixKey;
 	}
 
 	@Override
@@ -54,18 +55,18 @@ public class OP_QASamples implements MatrixOperation {
 		Map<SampleKey, Double> wrSampleSetMissingRatioMap = new LinkedHashMap<SampleKey, Double>();
 		Map<SampleKey, Double> wrSampleSetHetzyRatioMap = new LinkedHashMap<SampleKey, Double>();
 
-		MatrixMetadata rdMatrixMetadata = MatricesList.getMatrixMetadataById(rdMatrixId);
+		MatrixMetadata rdMatrixMetadata = MatricesList.getMatrixMetadataById(rdMatrixKey);
 
 		NetcdfFile rdNcFile = NetcdfFile.open(rdMatrixMetadata.getPathToMatrix());
 
-		MarkerSet rdMarkerSet = new MarkerSet(rdMatrixMetadata.getStudyKey(), rdMatrixId);
+		MarkerSet rdMarkerSet = new MarkerSet(rdMatrixKey);
 		rdMarkerSet.initFullMarkerIdSetMap();
 
 		Map<MarkerKey, int[]> rdChrSetMap = rdMarkerSet.getChrInfoSetMap();
 
 		//Map<String, Object> rdMarkerSetMap = rdMarkerSet.markerIdSetMap; // This to test heap usage of copying locally the Map from markerset
 
-		SampleSet rdSampleSet = new SampleSet(rdMatrixMetadata.getStudyKey(), rdMatrixId);
+		SampleSet rdSampleSet = new SampleSet(rdMatrixKey);
 
 		// Iterate through samples
 		int sampleNb = 0;
@@ -122,7 +123,7 @@ public class OP_QASamples implements MatrixOperation {
 					rdMatrixMetadata.getMarkerSetSize(),
 					0,
 					OPType.SAMPLE_QA,
-					rdMatrixMetadata.getMatrixId(), // Parent matrixId
+					rdMatrixKey, // Parent matrixId
 					-1);                            // Parent operationId
 
 			wrNcFile = wrOPHandler.getNetCDFHandler();

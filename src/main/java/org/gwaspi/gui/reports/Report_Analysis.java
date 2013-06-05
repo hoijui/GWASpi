@@ -73,6 +73,7 @@ import org.gwaspi.gui.utils.LinksExternalResouces;
 import org.gwaspi.gui.utils.RowRendererDefault;
 import org.gwaspi.gui.utils.URLInDefaultBrowser;
 import org.gwaspi.model.MatrixKey;
+import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.Study;
@@ -91,8 +92,7 @@ public abstract class Report_Analysis extends JPanel {
 	public static final DecimalFormat FORMAT_INTEGER = new DecimalFormat("#");
 
 	// Variables declaration - do not modify
-	private final StudyKey studyKey;
-	private final int opId;
+	private final OperationKey operationKey;
 	protected Map<String, int[]> chrSetInfoMap;
 	protected File reportFile;
 	private JButton btn_Get;
@@ -111,10 +111,9 @@ public abstract class Report_Analysis extends JPanel {
 	private JFormattedTextField txt_PvalThreshold;
 	// End of variables declaration
 
-	protected Report_Analysis(final StudyKey studyKey, final int opId, final String analysisFileName, final Integer nRows) {
+	protected Report_Analysis(final OperationKey operationKey, final String analysisFileName, final Integer nRows) {
 
-		this.studyKey = studyKey;
-		this.opId = opId;
+		this.operationKey = operationKey;
 		this.chrSetInfoMap = new LinkedHashMap<String, int[]>();
 
 		String reportName = GWASpiExplorerPanel.getSingleton().getTree().getLastSelectedPathComponent().toString();
@@ -122,7 +121,7 @@ public abstract class Report_Analysis extends JPanel {
 
 		String reportPath = "";
 		try {
-			reportPath = Study.constructReportsPath(studyKey);
+			reportPath = Study.constructReportsPath(operationKey.getParentMatrixKey().getStudyKey());
 		} catch (IOException ex) {
 			log.error(null, ex);
 		}
@@ -241,9 +240,9 @@ public abstract class Report_Analysis extends JPanel {
 		scrl_ReportTable.setViewportView(tbl_ReportTable);
 
 		//<editor-fold defaultstate="expanded" desc="FOOTER">
-		btn_Save.setAction(new SaveAsAction(studyKey, analysisFileName, tbl_ReportTable, txt_NRows, 3));
+		btn_Save.setAction(new SaveAsAction(operationKey.getParentMatrixKey().getStudyKey(), analysisFileName, tbl_ReportTable, txt_NRows, 3));
 
-		btn_Back.setAction(new BackAction(opId));
+		btn_Back.setAction(new BackAction(operationKey));
 
 		btn_Help.setAction(new BrowserHelpUrlAction(HelpURLs.QryURL.assocReport));
 
@@ -326,7 +325,7 @@ public abstract class Report_Analysis extends JPanel {
 						int requestedWindowSize = Math.abs((int) Math.round(ManhattanPlotZoom.MARKERS_NUM_DEFAULT / avgMarkersPerPhysPos));
 
 						GWASpiExplorerPanel.getSingleton().setPnl_Content(new ManhattanPlotZoom(
-								opId,
+								operationKey,
 								chr,
 								tbl_ReportTable.getValueAt(rowIndex, 0).toString(), // MarkerID
 								markerPhysPos,
@@ -373,7 +372,7 @@ public abstract class Report_Analysis extends JPanel {
 	protected abstract Object[] parseRow(String[] cVals);
 
 	protected final void initChrSetInfo() throws IOException {
-		MarkerOperationSet opSet = new MarkerOperationSet(studyKey, opId);
+		MarkerOperationSet opSet = new MarkerOperationSet(operationKey);
 		// Nb of markers, first physical position, last physical position, start index number in MarkerSet,
 		chrSetInfoMap = opSet.getChrInfoSetMap();
 	}
@@ -602,19 +601,19 @@ public abstract class Report_Analysis extends JPanel {
 
 	static class BackAction extends AbstractAction {
 
-		private final int opId;
+		private final OperationKey operationKey;
 		private final OperationMetadata op;
 
-		BackAction(int opId) {
+		BackAction(OperationKey operationKey) {
 
-			this.opId = opId;
+			this.operationKey = operationKey;
 			OperationMetadata operation = null;
 			try {
-				operation = OperationsList.getById(opId);
+				operation = OperationsList.getOperation(operationKey);
 			} catch (IOException ex) {
 				setEnabled(false);
 				putValue(SHORT_DESCRIPTION,
-						"Failed to fetch operation for ID " + this.opId);
+						"Failed to fetch operation " + this.operationKey);
 				log.warn("Failed to fetch operation for the Back action", ex);
 			}
 			this.op = operation;
@@ -625,7 +624,7 @@ public abstract class Report_Analysis extends JPanel {
 		public void actionPerformed(ActionEvent evt) {
 			try {
 				GWASpiExplorerPanel.getSingleton().getTree().setSelectionPath(GWASpiExplorerPanel.getSingleton().getTree().getSelectionPath().getParentPath());
-				GWASpiExplorerPanel.getSingleton().setPnl_Content(new MatrixAnalysePanel(new MatrixKey(op.getStudyKey(), op.getParentMatrixId()), opId));
+				GWASpiExplorerPanel.getSingleton().setPnl_Content(new MatrixAnalysePanel(new MatrixKey(op.getStudyKey(), op.getParentMatrixId()), operationKey));
 				GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
 			} catch (IOException ex) {
 				log.error(null, ex);

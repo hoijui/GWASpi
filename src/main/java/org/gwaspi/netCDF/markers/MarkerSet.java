@@ -28,6 +28,7 @@ import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.MatricesList;
+import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.StudyKey;
 import org.slf4j.Logger;
@@ -77,8 +78,15 @@ public class MarkerSet {
 		this.markerRsIdSetMap = new LinkedHashMap<MarkerKey, Object>();
 	}
 
+	/**
+	 * @deprecated use MatrixKey version instead!
+	 */
 	public MarkerSet(StudyKey studyKey, int matrixId) throws IOException {
-		this(MatricesList.getMatrixMetadataById(matrixId));
+		this(MatricesList.getMatrixMetadataById(new MatrixKey(studyKey, matrixId)));
+	}
+
+	public MarkerSet(MatrixKey matrixKey) throws IOException {
+		this(MatricesList.getMatrixMetadataById(matrixKey));
 	}
 
 	@Override

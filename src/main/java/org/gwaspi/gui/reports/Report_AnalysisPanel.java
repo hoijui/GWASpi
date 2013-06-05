@@ -37,17 +37,17 @@ import org.gwaspi.global.Text;
 import org.gwaspi.gui.utils.BrowserHelpUrlAction;
 import org.gwaspi.gui.utils.Dialogs;
 import org.gwaspi.model.MatrixKey;
+import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.Report;
 import org.gwaspi.model.ReportsList;
-import org.gwaspi.model.StudyKey;
 import org.gwaspi.threadbox.MultiOperations;
 import org.gwaspi.threadbox.SwingWorkerItemList;
 
 public class Report_AnalysisPanel extends JPanel {
 
-	private final MatrixKey parentMatrix;
+	private final MatrixKey parentMatrixKey;
 	private final OperationMetadata currentOP;
 	// Variables declaration - do not modify
 	private final JButton btn_Back;
@@ -59,11 +59,11 @@ public class Report_AnalysisPanel extends JPanel {
 	private final JTextArea txtA_OpDesc;
 	// End of variables declaration
 
-	public Report_AnalysisPanel(final StudyKey studyKey, final int _matrixId, final int _opId, final Integer nRows) throws IOException {
+	public Report_AnalysisPanel(final MatrixKey parentMatrixKey, final OperationKey operationKey, final Integer nRows) throws IOException {
 
-		parentMatrix = new MatrixKey(studyKey, _matrixId);
-		if (_opId != Integer.MIN_VALUE) {
-			currentOP = OperationsList.getById(_opId);
+		this.parentMatrixKey = parentMatrixKey;
+		if (operationKey != null) {
+			currentOP = OperationsList.getOperation(operationKey);
 		} else {
 			currentOP = null;
 		}
@@ -91,7 +91,7 @@ public class Report_AnalysisPanel extends JPanel {
 					: currentOP.getDescription());
 		scrl_OpDesc.setViewportView(txtA_OpDesc);
 
-		btn_DeleteOperation.setAction(new DeleteOperationAction(parentMatrix, this, currentOP));
+		btn_DeleteOperation.setAction(new DeleteOperationAction(parentMatrixKey, this, currentOP));
 
 		//<editor-fold defaultstate="expanded" desc="LAYOUT OPERATION DESC">
 		GroupLayout pnl_OperationDescLayout = new GroupLayout(pnl_OperationDesc);
@@ -113,16 +113,16 @@ public class Report_AnalysisPanel extends JPanel {
 				.addContainerGap(6, Short.MAX_VALUE)));
 		//</editor-fold>
 
-		List<Report> reportsList = ReportsList.getReportsList(_opId, _matrixId);
+		List<Report> reportsList = ReportsList.getReportsList(operationKey.getId(), parentMatrixKey.getMatrixId());
 		JPanel pnl_ReportTmp = null;
 		if (reportsList.size() == 3) {
 			String reportFile = reportsList.get(2).getFileName();
 			if (currentOP.getOperationType().equals(OPType.ALLELICTEST)) {
-				pnl_ReportTmp = new Report_AnalysisAllelicTestImpl(studyKey, reportFile, _opId, nRows);
+				pnl_ReportTmp = new Report_AnalysisAllelicTestImpl(operationKey, reportFile, nRows);
 			} else if (currentOP.getOperationType().equals(OPType.GENOTYPICTEST)) {
-				pnl_ReportTmp = new Report_AnalysisGenotypicTestImpl(studyKey, reportFile, _opId, nRows);
+				pnl_ReportTmp = new Report_AnalysisGenotypicTestImpl(operationKey, reportFile, nRows);
 			} else if (currentOP.getOperationType().equals(OPType.TRENDTEST)) {
-				pnl_ReportTmp = new Report_AnalysisTrendTestImpl(studyKey, reportFile, _opId, nRows);
+				pnl_ReportTmp = new Report_AnalysisTrendTestImpl(operationKey, reportFile, nRows);
 			}
 		}
 		if (pnl_ReportTmp == null) {
@@ -162,13 +162,13 @@ public class Report_AnalysisPanel extends JPanel {
 	//<editor-fold defaultstate="expanded" desc="METHODS">
 	private static class DeleteOperationAction extends AbstractAction {
 
-		private final MatrixKey parentMatrix;
+		private final MatrixKey parentMatrixKey;
 		private final Component dialogParent;
 		private final OperationMetadata currentOP;
 
-		DeleteOperationAction(MatrixKey parentMatrix, Component dialogParent, OperationMetadata currentOP) {
+		DeleteOperationAction(MatrixKey parentMatrixKey, Component dialogParent, OperationMetadata currentOP) {
 
-			this.parentMatrix = parentMatrix;
+			this.parentMatrixKey = parentMatrixKey;
 			this.dialogParent = dialogParent;
 			this.currentOP = currentOP;
 			putValue(NAME, Text.Operation.deleteOperation);
@@ -185,7 +185,7 @@ public class Report_AnalysisPanel extends JPanel {
 							&& (option == JOptionPane.YES_OPTION))
 					{
 						final boolean deleteReport = (deleteReportOption == JOptionPane.YES_OPTION);
-						MultiOperations.deleteOperationsByOpId(parentMatrix.getStudyKey(), parentMatrix.getMatrixId(), currentOP.getId(), deleteReport);
+						MultiOperations.deleteOperationsByOpId(parentMatrixKey, currentOP.getId(), deleteReport);
 					}
 				}
 			} else {
