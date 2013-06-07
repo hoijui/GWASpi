@@ -294,7 +294,7 @@ public class Dialogs {
 	}
 
 	public static Integer showConfirmDialogue(String message) {
-		return JOptionPane.showConfirmDialog(null, message, "Confirm?", JOptionPane.QUESTION_MESSAGE);
+		return JOptionPane.showConfirmDialog(null, message, "Confirm?", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 	}
 
 	public static void showWarningDialogue(String message) {
