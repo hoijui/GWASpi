@@ -30,6 +30,14 @@ public class ReportKey implements Comparable<ReportKey>, Serializable {
 	private int parentOperationId;
 	private int id;
 
+	public ReportKey(OperationKey parentOperationKey, int id) {
+
+		this.studyKey = parentOperationKey.getParentMatrixKey().getStudyKey();
+		this.parentMatrixId = parentOperationKey.getParentMatrixKey().getMatrixId();
+		this.parentOperationId = parentOperationKey.getId();
+		this.id = id;
+	}
+
 	public ReportKey(StudyKey studyKey, int parentMatrixId, int parentOperationId, int id) {
 
 		this.studyKey = studyKey;

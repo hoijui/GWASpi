@@ -167,6 +167,11 @@ public class Report implements Serializable {
 				key.getId());
 	}
 
+	@Transient
+	public MatrixKey getParentMatrixKey() {
+		return new MatrixKey(key.getStudyKey(), key.getParentMatrixId());
+	}
+
 	@Id
 	@Column(
 		name       = "studyId",
@@ -257,6 +262,11 @@ public class Report implements Serializable {
 				key.getParentMatrixId(),
 				parentOpId,
 				key.getId());
+	}
+
+	@Transient
+	public OperationKey getParentOperationKey() {
+		return new OperationKey(getParentMatrixKey(), getParentOperationId());
 	}
 
 	@Column(

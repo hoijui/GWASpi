@@ -318,6 +318,11 @@ public class OperationMetadata implements Serializable {
 	}
 
 	@Transient
+	public OperationKey getParentOperationKey() {
+		return new OperationKey(getParentMatrixKey(), getParentOperationId());
+	}
+
+	@Transient
 	public int getImplicitSetSize() {
 		return implicitSetSize;
 	}
