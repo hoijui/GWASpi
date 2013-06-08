@@ -29,7 +29,6 @@ import java.util.List;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.dao.OperationService;
-import org.gwaspi.global.Config;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
@@ -215,7 +214,7 @@ public class JPAOperationService implements OperationService {
 	}
 
 	@Override
-	public List<OperationMetadata> getOperationAndSubOperations(int parentMatrixId, int operationId) throws IOException {
+	public List<OperationMetadata> getOperationAndSubOperations(OperationKey operationKey) throws IOException {
 
 		List<OperationMetadata> operationsMetadata = Collections.EMPTY_LIST;
 
@@ -224,14 +223,14 @@ public class JPAOperationService implements OperationService {
 			em = open();
 			Query query = em.createNamedQuery(
 					"operationMetadata_listByParentMatrixIdOperationId");
-			query.setParameter("parentMatrixId", parentMatrixId);
-			query.setParameter("operationId", operationId);
+			query.setParameter("parentMatrixId", operationKey.getParentMatrixId());
+			query.setParameter("operationId", operationKey.getId());
 			operationsMetadata = query.getResultList();
 
 			query = em.createNamedQuery(
 					"operationMetadata_listByParentMatrixIdParentOperationId");
-			query.setParameter("parentMatrixId", parentMatrixId);
-			query.setParameter("parentOperationId", operationId);
+			query.setParameter("parentMatrixId", operationKey.getParentMatrixId());
+			query.setParameter("parentOperationId", operationKey.getId());
 			operationsMetadata.addAll(query.getResultList());
 
 			for (int i = 0; i < operationsMetadata.size(); i++) {

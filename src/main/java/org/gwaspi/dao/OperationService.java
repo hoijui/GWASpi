@@ -38,7 +38,7 @@ public interface OperationService {
 
 	List<OperationMetadata> getOperations(MatrixKey parentMatrixKey) throws IOException;
 
-	List<OperationMetadata> getOperationAndSubOperations(int parentMatrixId, int opId) throws IOException;
+	List<OperationMetadata> getOperationAndSubOperations(OperationKey operationKey) throws IOException;
 
 	OperationKey insertOperation(OperationMetadata operationMetadata) throws IOException;
 

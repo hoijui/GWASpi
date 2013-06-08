@@ -166,7 +166,7 @@ public class MatrixAnalysePanel extends JPanel {
 
 		Collection<OperationMetadata> tableMatrix;
 		if (currentOP != null) {
-			tableMatrix = OperationsList.getOperationsTable(parentMatrixKey.getMatrixId(), currentOP.getId());
+			tableMatrix = OperationsList.getOperationAndSubOperations(operationKey);
 		} else {
 			tableMatrix = OperationsList.getOperationsTable(parentMatrixKey);
 		}

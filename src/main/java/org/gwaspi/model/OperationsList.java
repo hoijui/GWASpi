@@ -58,8 +58,8 @@ public class OperationsList {
 		return operationService.getOperations(parentMatrixKey);
 	}
 
-	public static List<OperationMetadata> getOperationsTable(int parentMatrixId, int opId) throws IOException {
-		return operationService.getOperationAndSubOperations(parentMatrixId, opId);
+	public static List<OperationMetadata> getOperationAndSubOperations(OperationKey operationKey) throws IOException {
+		return operationService.getOperationAndSubOperations(operationKey);
 	}
 
 	public static OperationKey getIdOfLastOperationTypeOccurance(List<OperationMetadata> operations, OPType opType) {
