@@ -82,6 +82,20 @@ public class MatrixKey implements Comparable<MatrixKey>, Serializable {
 		return diffStudy;
 	}
 
+	@Override
+	public String toString() {
+
+		StringBuilder strRep = new StringBuilder();
+
+		strRep.append(getClass().getSimpleName());
+		strRep.append("[");
+		strRep.append("study-id: ").append(getStudyId());
+		strRep.append(", id: ").append(getMatrixId());
+		strRep.append("]");
+
+		return strRep.toString();
+	}
+
 	public int getStudyId() {
 		return studyKey.getId();
 	}

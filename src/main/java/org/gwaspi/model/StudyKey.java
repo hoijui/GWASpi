@@ -61,6 +61,19 @@ public class StudyKey implements Comparable<StudyKey>, Serializable {
 		return this.getId() - other.getId();
 	}
 
+	@Override
+	public String toString() {
+
+		StringBuilder strRep = new StringBuilder();
+
+		strRep.append(getClass().getSimpleName());
+		strRep.append("[");
+		strRep.append("id: ").append(getId());
+		strRep.append("]");
+
+		return strRep.toString();
+	}
+
 	public static StudyKey valueOf(Study study) {
 		return new StudyKey(study.getId());
 	}

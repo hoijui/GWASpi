@@ -36,7 +36,7 @@ public class OperationKey implements Comparable<OperationKey>, Serializable {
 		this.parentMatrixKey = new MatrixKey(new StudyKey(studyId), parentMatrixId);
 		this.id = id;
 	}
-	
+
 	public OperationKey(MatrixKey parentMatrixKey, int id) {
 
 		this.parentMatrixKey = parentMatrixKey;
@@ -80,6 +80,21 @@ public class OperationKey implements Comparable<OperationKey>, Serializable {
 		hash = 97 * hash + (this.parentMatrixKey != null ? this.parentMatrixKey.hashCode() : 0);
 		hash = 97 * hash + this.id;
 		return hash;
+	}
+
+	@Override
+	public String toString() {
+
+		StringBuilder strRep = new StringBuilder();
+
+		strRep.append(getClass().getSimpleName());
+		strRep.append("[");
+		strRep.append("study-id: ").append(getStudyId());
+		strRep.append(", matrix-id: ").append(getParentMatrixId());
+		strRep.append(", id: ").append(getId());
+		strRep.append("]");
+
+		return strRep.toString();
 	}
 
 	public int getStudyId() {

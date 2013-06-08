@@ -97,6 +97,22 @@ public class ReportKey implements Comparable<ReportKey>, Serializable {
 		return true;
 	}
 
+	@Override
+	public String toString() {
+
+		StringBuilder strRep = new StringBuilder();
+
+		strRep.append(getClass().getSimpleName());
+		strRep.append("[");
+		strRep.append("study-id: ").append(getStudyId());
+		strRep.append(", matrix-id: ").append(getParentMatrixId());
+		strRep.append(", operation-id: ").append(getParentOperationId());
+		strRep.append(", id: ").append(getId());
+		strRep.append("]");
+
+		return strRep.toString();
+	}
+
 	public int getStudyId() {
 		return studyKey.getId();
 	}
