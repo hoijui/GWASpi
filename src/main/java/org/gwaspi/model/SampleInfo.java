@@ -228,7 +228,7 @@ public class SampleInfo implements Comparable<SampleInfo>, Serializable {
 		this.filter = "";
 		this.approved = 0;
 		this.status = 0;
-		this.key = new SampleKey(null, "0", "0");
+		this.key = new SampleKey(new StudyKey(Integer.MIN_VALUE), "0", "0");
 	}
 
 	public SampleInfo(StudyKey studyKey, String sampleId) {

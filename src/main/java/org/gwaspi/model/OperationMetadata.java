@@ -72,7 +72,7 @@ public class OperationMetadata implements Serializable {
 
 	protected OperationMetadata() {
 
-		this.key = null;
+		this.key = new OperationKey();
 		this.parentOperationId = Integer.MIN_VALUE;
 		this.opName = "";
 		this.netCDFName = "";

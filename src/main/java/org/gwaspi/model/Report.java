@@ -67,7 +67,7 @@ public class Report implements Serializable {
 
 	protected Report() {
 
-		this.key = new ReportKey(null, Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE);
+		this.key = new ReportKey(new StudyKey(Integer.MIN_VALUE), Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE);
 		this.friendlyName = "";
 		this.fileName = "";
 		this.type = null;

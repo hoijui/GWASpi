@@ -80,7 +80,7 @@ public class MatrixMetadata implements Serializable {
 
 	protected MatrixMetadata() {
 
-		this.key = new MatrixKey(null, Integer.MIN_VALUE);
+		this.key = new MatrixKey(new StudyKey(Integer.MIN_VALUE), Integer.MIN_VALUE);
 		this.matrixFriendlyName = "";
 		this.matrixNetCDFName = "";
 		this.pathToMatrix = "";
