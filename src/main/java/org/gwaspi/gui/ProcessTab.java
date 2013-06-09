@@ -273,7 +273,7 @@ public class ProcessTab extends JPanel {
 		for (int i = 0; i < swingDeleterItemsAL.size(); i++) {
 
 			spreadSheet[count][0] = "Del_" + i;
-			spreadSheet[count][1] = swingDeleterItemsAL.get(i).getStudyId();
+			spreadSheet[count][1] = swingDeleterItemsAL.get(i).getStudyKey();
 			spreadSheet[count][2] = swingDeleterItemsAL.get(i).getDescription() != null ? swingDeleterItemsAL.get(i).getDescription() : " - ";
 			spreadSheet[count][3] = swingDeleterItemsAL.get(i).getLaunchTime() != null ? swingDeleterItemsAL.get(i).getLaunchTime() : " - ";
 			spreadSheet[count][4] = swingDeleterItemsAL.get(i).getStartTime() != null ? swingDeleterItemsAL.get(i).getStartTime() : " - ";

@@ -335,11 +335,10 @@ public class MultiOperations {
 		ProcessTab.getSingleton().updateProcessOverview();
 	}
 
-	public static void deleteStudy(final int studyId, final boolean deleteReports) {
+	public static void deleteStudy(final StudyKey studyKey, final boolean deleteReports) {
 
 		SwingDeleterItem sdi = new SwingDeleterItem(
-				SwingDeleterItem.DeleteTarget.STUDY,
-				studyId,
+				studyKey,
 				deleteReports);
 		queueDeleteTask(sdi);
 	}
@@ -347,20 +346,15 @@ public class MultiOperations {
 	public static void deleteMatrix(final MatrixKey matrixKey, final boolean deleteReports) {
 
 		SwingDeleterItem sdi = new SwingDeleterItem(
-				SwingDeleterItem.DeleteTarget.MATRIX,
-				matrixKey.getStudyKey().getId(),
-				matrixKey.getMatrixId(),
+				matrixKey,
 				deleteReports);
 		queueDeleteTask(sdi);
 	}
 
-	public static void deleteOperationsByOpId(final MatrixKey matrixKey, final int opId, final boolean deleteReports) {
+	public static void deleteOperation(final OperationKey operationKey, final boolean deleteReports) {
 
 		SwingDeleterItem sdi = new SwingDeleterItem(
-				SwingDeleterItem.DeleteTarget.OPERATION_BY_OPID,
-				matrixKey.getStudyKey().getId(),
-				matrixKey.getMatrixId(),
-				opId,
+				operationKey,
 				deleteReports);
 		queueDeleteTask(sdi);
 	}

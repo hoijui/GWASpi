@@ -20,6 +20,9 @@ package org.gwaspi.threadbox;
 import java.util.ArrayList;
 import java.util.List;
 import org.gwaspi.gui.ProcessTab;
+import org.gwaspi.model.MatrixKey;
+import org.gwaspi.model.OperationKey;
+import org.gwaspi.model.StudyKey;
 
 public class SwingWorkerItemList {
 
@@ -153,16 +156,16 @@ public class SwingWorkerItemList {
 		flagCurrentItem(timeStamp, QueueState.ERROR);
 	}
 
-	public static boolean permitsDeletionOfStudyId(int studyId) {
-		return !parentStudyIds.contains(studyId);
+	public static boolean permitsDeletionOf(StudyKey studyKey) {
+		return !parentStudyIds.contains(studyKey.getId());
 	}
 
-	public static boolean permitsDeletionOfMatrixId(int matrixId) {
-		return !parentMatricesIds.contains(matrixId);
+	public static boolean permitsDeletionOf(MatrixKey matrixKey) {
+		return !parentMatricesIds.contains(matrixKey.getMatrixId());
 	}
 
-	public static boolean permitsDeletionOfOperationId(int opId) {
-		return !parentOperationsIds.contains(opId);
+	public static boolean permitsDeletionOf(OperationKey operationKey) {
+		return !parentOperationsIds.contains(operationKey.getId());
 	}
 
 	public static void unlockParentItems(SwingWorkerItem swi) {

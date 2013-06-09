@@ -504,7 +504,7 @@ public class CurrentMatrixPanel extends JPanel {
 		@Override
 		public void actionPerformed(ActionEvent evt) {
 			// TODO TEST IF THE DELETED ITEM IS REQUIRED FOR A QUEUED WORKER
-			if (SwingWorkerItemList.permitsDeletionOfMatrixId(matrixKey.getMatrixId())) {
+			if (SwingWorkerItemList.permitsDeletionOf(matrixKey)) {
 				int option = JOptionPane.showConfirmDialog(dialogParent, Text.Matrix.confirmDelete1 + Text.Matrix.confirmDelete2);
 				if (option == JOptionPane.YES_OPTION) {
 					int deleteReportOption = JOptionPane.showConfirmDialog(dialogParent, Text.Reports.confirmDelete);
@@ -549,14 +549,15 @@ public class CurrentMatrixPanel extends JPanel {
 							for (int i = 0; i < selectedOPs.length; i++) {
 								int tmpOPRow = selectedOPs[i];
 								int opId = (Integer) matrixOperationsTable.getModel().getValueAt(tmpOPRow, 0);
+								OperationKey operationKey = new OperationKey(matrixKey, opId);
 								//TEST IF THE DELETED ITEM IS REQUIRED FOR A QUED WORKER
-								if (SwingWorkerItemList.permitsDeletionOfOperationId(opId)) {
+								if (SwingWorkerItemList.permitsDeletionOf(operationKey)) {
 									if (option == JOptionPane.YES_OPTION) {
 										boolean deleteReport = false;
 										if (deleteReportOption == JOptionPane.YES_OPTION) {
 											deleteReport = true;
 										}
-										MultiOperations.deleteOperationsByOpId(matrixKey, opId, deleteReport);
+										MultiOperations.deleteOperation(operationKey, deleteReport);
 
 										//OperationManager.deleteOperationAndChildren(matrix.getStudyKey(), opId, deleteReport);
 									}

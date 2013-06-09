@@ -620,14 +620,14 @@ public class MatrixAnalysePanel extends JPanel {
 
 		private final OperationMetadata currentOP;
 		private final Component dialogParent;
-		private final MatrixKey parentMatrix;
+		private final MatrixKey parentMatrixKey;
 		private final JTable table;
 
-		DeleteOperationAction(OperationMetadata currentOP, Component dialogParent, MatrixKey parentMatrix, JTable table) {
+		DeleteOperationAction(OperationMetadata currentOP, Component dialogParent, MatrixKey parentMatrixKey, JTable table) {
 
 			this.currentOP = currentOP;
 			this.dialogParent = dialogParent;
-			this.parentMatrix = parentMatrix;
+			this.parentMatrixKey = parentMatrixKey;
 			this.table = table;
 			putValue(NAME, Text.Operation.deleteOperation);
 		}
@@ -640,21 +640,21 @@ public class MatrixAnalysePanel extends JPanel {
 					int option = JOptionPane.showConfirmDialog(dialogParent, Text.Operation.confirmDelete1);
 					if (option == JOptionPane.YES_OPTION) {
 						int deleteReportOption = JOptionPane.showConfirmDialog(dialogParent, Text.Reports.confirmDelete);
-						int opId = Integer.MIN_VALUE;
+						OperationKey operationKey = null;
 						if (deleteReportOption != JOptionPane.CANCEL_OPTION) {
 							for (int i = selectedOPs.length - 1; i >= 0; i--) {
 								int tmpOPRow = selectedOPs[i];
-								opId = (Integer) table.getModel().getValueAt(tmpOPRow, 0);
+								int operationId = (Integer) table.getModel().getValueAt(tmpOPRow, 0);
+								operationKey = new OperationKey(parentMatrixKey, operationId);
 								//TEST IF THE DELETED ITEM IS REQUIRED FOR A QUED WORKER
-								if (SwingWorkerItemList.permitsDeletionOfOperationId(opId)) {
+								if (SwingWorkerItemList.permitsDeletionOf(operationKey)) {
 									if (option == JOptionPane.YES_OPTION) {
 										boolean deleteReport = false;
 										if (deleteReportOption == JOptionPane.YES_OPTION) {
 											deleteReport = true;
 										}
-										MultiOperations.deleteOperationsByOpId(
-												parentMatrix,
-												opId,
+										MultiOperations.deleteOperation(
+												operationKey,
 												deleteReport);
 
 										//OperationManager.deleteOperationBranch(parentMatrix.getStudyKey(), opId, deleteReport);
@@ -664,7 +664,7 @@ public class MatrixAnalysePanel extends JPanel {
 								}
 							}
 
-							if (currentOP.getId() == opId) {
+							if (OperationKey.valueOf(currentOP) == operationKey) {
 								GWASpiExplorerPanel.getSingleton().getTree().setSelectionPath(GWASpiExplorerPanel.getSingleton().getTree().getSelectionPath().getParentPath());
 							}
 							GWASpiExplorerPanel.getSingleton().updateTreePanel(true);

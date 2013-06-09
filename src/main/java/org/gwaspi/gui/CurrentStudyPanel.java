@@ -124,7 +124,7 @@ public class CurrentStudyPanel extends JPanel {
 
 		btn_SaveDesc.setAction(new SaveDescriptionAction(study, txtA_StudyDesc));
 
-		btn_DeleteStudy.setAction(new DeleteStudyAction(study, this));
+		btn_DeleteStudy.setAction(new DeleteStudyAction(studyKey, this));
 
 		btn_UpdateSampleInfo.setAction(new LoadSampleInfoAction(study));
 
@@ -338,14 +338,15 @@ public class CurrentStudyPanel extends JPanel {
 						dialogParent.setCursor(CursorUtils.WAIT_CURSOR);
 						for (int i = 0; i < selectedMatrices.length; i++) {
 							int tmpMatrixRow = selectedMatrices[i];
-							int matrixId = (Integer) table.getModel().getValueAt(tmpMatrixRow, 0);
+							int matrixid = (Integer) table.getModel().getValueAt(tmpMatrixRow, 0);
+							MatrixKey matrixKey = new MatrixKey(studyKey, matrixid);
 							//TEST IF THE DELETED ITEM IS REQUIRED FOR A QUED WORKER
-							if (SwingWorkerItemList.permitsDeletionOfMatrixId(matrixId)) {
+							if (SwingWorkerItemList.permitsDeletionOf(matrixKey)) {
 								boolean deleteReport = false;
 								if (deleteReportOption == JOptionPane.YES_OPTION) {
 									deleteReport = true;
 								}
-								MultiOperations.deleteMatrix(new MatrixKey(studyKey, matrixId), deleteReport);
+								MultiOperations.deleteMatrix(matrixKey, deleteReport);
 								//netCDF.matrices.MatrixManager.deleteMatrix(matrixId, deleteReport);
 							} else {
 								Dialogs.showWarningDialogue(Text.Processes.cantDeleteRequiredItem);
@@ -360,12 +361,12 @@ public class CurrentStudyPanel extends JPanel {
 
 	private static class DeleteStudyAction extends AbstractAction {
 
-		private final Study study;
+		private final StudyKey studyKey;
 		private final Component dialogParent;
 
-		DeleteStudyAction(Study study, Component dialogParent) {
+		DeleteStudyAction(StudyKey studyKey, Component dialogParent) {
 
-			this.study = study;
+			this.studyKey = studyKey;
 			this.dialogParent = dialogParent;
 			putValue(NAME, Text.Study.deleteStudy);
 		}
@@ -373,7 +374,7 @@ public class CurrentStudyPanel extends JPanel {
 		@Override
 		public void actionPerformed(ActionEvent evt) {
 			// TODO TEST IF THE DELETED ITEM IS REQUIRED FOR A QUED WORKER
-			if (SwingWorkerItemList.permitsDeletionOfStudyId(study.getId())) {
+			if (SwingWorkerItemList.permitsDeletionOf(studyKey)) {
 				int option = JOptionPane.showConfirmDialog(dialogParent, Text.Study.confirmDelete1 + Text.Study.confirmDelete2);
 				if (option == JOptionPane.YES_OPTION) {
 					int deleteReportOption = JOptionPane.showConfirmDialog(dialogParent, Text.Reports.confirmDelete);
@@ -383,7 +384,7 @@ public class CurrentStudyPanel extends JPanel {
 						if (deleteReportOption == JOptionPane.YES_OPTION) {
 							deleteReport = true;
 						}
-						MultiOperations.deleteStudy(study.getId(), deleteReport);
+						MultiOperations.deleteStudy(studyKey, deleteReport);
 					}
 				}
 			} else {

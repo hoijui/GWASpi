@@ -177,7 +177,7 @@ public class Report_AnalysisPanel extends JPanel {
 		@Override
 		public void actionPerformed(ActionEvent evt) {
 			// TEST IF THE DELETED ITEM IS REQUIRED FOR A QUED WORKER
-			if (SwingWorkerItemList.permitsDeletionOfMatrixId(currentOP.getId())) { // XXX FIXME? should it be permitsDeletionOfOperationId
+			if (SwingWorkerItemList.permitsDeletionOf(OperationKey.valueOf(currentOP))) { // XXX FIXME? should it be permitsDeletionOf
 				int option = JOptionPane.showConfirmDialog(dialogParent, Text.Operation.confirmDelete1);
 				if (option == JOptionPane.YES_OPTION) {
 					int deleteReportOption = JOptionPane.showConfirmDialog(dialogParent, Text.Reports.confirmDelete);
@@ -185,7 +185,7 @@ public class Report_AnalysisPanel extends JPanel {
 							&& (option == JOptionPane.YES_OPTION))
 					{
 						final boolean deleteReport = (deleteReportOption == JOptionPane.YES_OPTION);
-						MultiOperations.deleteOperationsByOpId(parentMatrixKey, currentOP.getId(), deleteReport);
+						MultiOperations.deleteOperation(OperationKey.valueOf(currentOP), deleteReport);
 					}
 				}
 			} else {

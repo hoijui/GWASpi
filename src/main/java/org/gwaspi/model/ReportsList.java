@@ -50,8 +50,8 @@ public class ReportsList {
 		reportService.insertReport(report);
 	}
 
-	public static void deleteReportByMatrixId(int matrixId) throws IOException {
-		reportService.deleteReportByMatrixId(matrixId);
+	public static void deleteReportByMatrixId(MatrixKey matrixKey) throws IOException {
+		reportService.deleteReportByMatrixId(matrixKey);
 	}
 
 	public static void deleteReportByOperationId(int opId) throws IOException {

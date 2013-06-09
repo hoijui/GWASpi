@@ -19,6 +19,7 @@ package org.gwaspi.dao;
 
 import java.io.IOException;
 import java.util.List;
+import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.Report;
 import org.gwaspi.model.ReportKey;
@@ -34,7 +35,7 @@ public interface ReportService {
 
 	void insertReport(Report report) throws IOException;
 
-	void deleteReportByMatrixId(int parentMatrixId) throws IOException;
+	void deleteReportByMatrixId(MatrixKey parentMatrixKey) throws IOException;
 
 	void deleteReportByOperationId(int parentOperationId) throws IOException;
 }

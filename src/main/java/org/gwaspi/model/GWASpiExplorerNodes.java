@@ -262,10 +262,10 @@ public class GWASpiExplorerNodes {
 		}
 	}
 
-	public static void deleteStudyNode(int studyId) {
+	public static void deleteStudyNode(StudyKey studyKey) {
 		try {
 			// GET DELETE PATH BY PREFIX ONLY
-			TreePath deletePath = GWASpiExplorerPanel.getSingleton().getTree().getNextMatch("SID: " + studyId + " - ", 0, Position.Bias.Forward);
+			TreePath deletePath = GWASpiExplorerPanel.getSingleton().getTree().getNextMatch("SID: " + studyKey.getId() + " - ", 0, Position.Bias.Forward);
 
 			if (deletePath != null) {
 				DefaultMutableTreeNode deleteNode = (DefaultMutableTreeNode) deletePath.getLastPathComponent();
@@ -297,10 +297,10 @@ public class GWASpiExplorerNodes {
 		}
 	}
 
-	public static void deleteMatrixNode(int matrixId) {
+	public static void deleteMatrixNode(MatrixKey matrixKey) {
 		try {
 			// GET DELETE PATH BY PREFIX ONLY
-			TreePath deletePath = GWASpiExplorerPanel.getSingleton().getTree().getNextMatch("MX: " + matrixId + " - ", 0, Position.Bias.Forward);
+			TreePath deletePath = GWASpiExplorerPanel.getSingleton().getTree().getNextMatch("MX: " + matrixKey.getMatrixId() + " - ", 0, Position.Bias.Forward);
 
 			if (deletePath != null) {
 				DefaultMutableTreeNode deleteNode = (DefaultMutableTreeNode) deletePath.getLastPathComponent();
@@ -348,10 +348,10 @@ public class GWASpiExplorerNodes {
 		}
 	}
 
-	public static void deleteOperationNode(int opId) {
+	public static void deleteOperationNode(OperationKey operationKey) {
 		try {
 			// GET DELETE PATH BY PREFIX ONLY
-			TreePath deletePath = GWASpiExplorerPanel.getSingleton().getTree().getNextMatch("OP: " + opId + " - ", 0, Position.Bias.Forward);
+			TreePath deletePath = GWASpiExplorerPanel.getSingleton().getTree().getNextMatch("OP: " + operationKey.getId() + " - ", 0, Position.Bias.Forward);
 
 			if (deletePath != null) {
 				DefaultMutableTreeNode deleteNode = (DefaultMutableTreeNode) deletePath.getLastPathComponent();

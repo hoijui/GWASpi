@@ -40,6 +40,7 @@ import org.gwaspi.gui.utils.HelpURLs;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
+import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.netCDF.operations.GWASinOneGOParams;
@@ -209,9 +210,9 @@ public class MatrixMarkerQAPanel extends JPanel {
 		@Override
 		public void actionPerformed(ActionEvent evt) {
 			try {
-				int opId = currentOP.getId();
+				OperationKey operationKey = OperationKey.valueOf(currentOP);
 				// TEST IF THE DELETED ITEM IS REQUIRED FOR A QUED WORKER
-				if (SwingWorkerItemList.permitsDeletionOfOperationId(opId)) {
+				if (SwingWorkerItemList.permitsDeletionOf(operationKey)) {
 					int option = JOptionPane.showConfirmDialog(dialogParent, Text.Operation.confirmDelete1);
 					if (option == JOptionPane.YES_OPTION) {
 						int deleteReportOption = JOptionPane.showConfirmDialog(dialogParent, Text.Reports.confirmDelete);
@@ -221,14 +222,13 @@ public class MatrixMarkerQAPanel extends JPanel {
 								if (deleteReportOption == JOptionPane.YES_OPTION) {
 									deleteReport = true;
 								}
-								MultiOperations.deleteOperationsByOpId(
-										parentMatrixKey,
-										opId,
+								MultiOperations.deleteOperation(
+										operationKey,
 										deleteReport);
 
 								//OperationManager.deleteOperationAndChildren(parentMatrix.getStudyKey(), opId, deleteReport);
 							}
-							if (currentOP.getId() == opId) {
+							if (OperationKey.valueOf(currentOP) == operationKey) { // XXX Is this not always true?
 								GWASpiExplorerPanel.getSingleton().getTree().setSelectionPath(GWASpiExplorerPanel.getSingleton().getTree().getSelectionPath().getParentPath());
 							}
 							GWASpiExplorerPanel.getSingleton().updateTreePanel(true);

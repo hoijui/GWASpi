@@ -27,13 +27,9 @@ import org.gwaspi.gui.StartGWASpi;
 import org.gwaspi.gui.utils.CursorUtils;
 import org.gwaspi.model.GWASpiExplorerNodes;
 import org.gwaspi.model.MatricesList;
-import org.gwaspi.model.MatrixKey;
-import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.ReportsList;
-import org.gwaspi.model.StudyKey;
 import org.gwaspi.model.StudyList;
-import org.gwaspi.threadbox.SwingDeleterItem.DeleteTarget;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,9 +46,9 @@ public class SwingDeleterItemList {
 		//SwingDeleterItemList.purgeDoneDeletes();
 		boolean addMe = true;
 		for (SwingDeleterItem allreadySdi : swingDeleterItems) {
-			if (allreadySdi.getStudyId() == sdi.getStudyId()
-					&& allreadySdi.getMatrixId() == sdi.getMatrixId()
-					&& allreadySdi.getOpId() == sdi.getOpId()) {
+			if (allreadySdi.getStudyKey() == sdi.getStudyKey()
+					&& allreadySdi.getMatrixKey() == sdi.getMatrixKey()
+					&& allreadySdi.getOperationKey() == sdi.getOperationKey()) {
 				addMe = false;
 			}
 		}
@@ -74,70 +70,61 @@ public class SwingDeleterItemList {
 
 		for (SwingDeleterItem currentSdi : swingDeleterItems) {
 			if (currentSdi.getQueueState().equals(QueueState.QUEUED)) {
-				DeleteTarget deleteTarget = currentSdi.getDeleteTarget();
-
-				// DELETE STUDY
-				if (deleteTarget.equals(DeleteTarget.STUDY)) {
+				if (currentSdi.getStudyKey() != null) {
 					try {
 						currentSdi.setStartTime(org.gwaspi.global.Utils.getShortDateTimeAsString());
 						currentSdi.setQueueState(QueueState.PROCESSING);
 
-						StudyList.deleteStudy(new StudyKey(currentSdi.getStudyId()), currentSdi.isDeleteReports());
-						MultiOperations.printCompleted("deleting Study ID: " + currentSdi.getStudyId());
+						StudyList.deleteStudy(currentSdi.getStudyKey(), currentSdi.isDeleteReports());
+						MultiOperations.printCompleted("deleting Study ID: " + currentSdi.getStudyKey());
 
-						GWASpiExplorerNodes.deleteStudyNode(currentSdi.getStudyId());
+						GWASpiExplorerNodes.deleteStudyNode(currentSdi.getStudyKey());
 						flagCurrentItemDeleted();
 					} catch (IOException ex) {
 						log.error(null, ex);
 					}
-				}
-				// DELETE MATRIX
-				if (deleteTarget.equals(DeleteTarget.MATRIX)) {
+				} else if (currentSdi.getMatrixKey() != null) {
 					try {
 						currentSdi.setStartTime(org.gwaspi.global.Utils.getShortDateTimeAsString());
 						currentSdi.setQueueState(QueueState.PROCESSING);
 
-						MatricesList.deleteMatrix(new MatrixKey(new StudyKey(currentSdi.getStudyId()), currentSdi.getMatrixId()), currentSdi.isDeleteReports());
-						MultiOperations.printCompleted("deleting Matrix ID:" + currentSdi.getMatrixId());
+						MatricesList.deleteMatrix(currentSdi.getMatrixKey(), currentSdi.isDeleteReports());
+						MultiOperations.printCompleted("deleting Matrix ID:" + currentSdi.getMatrixKey());
 
-						GWASpiExplorerNodes.deleteMatrixNode(currentSdi.getMatrixId());
+						GWASpiExplorerNodes.deleteMatrixNode(currentSdi.getMatrixKey());
 						flagCurrentItemDeleted();
 					} catch (IOException ex) {
 						log.error(null, ex);
 					}
-				}
-				// DELETE OPERATION BY OPID
-				if (deleteTarget.equals(DeleteTarget.OPERATION_BY_OPID)) {
+				} else if (currentSdi.getOperationKey() != null) {
 					try {
 						currentSdi.setStartTime(org.gwaspi.global.Utils.getShortDateTimeAsString());
 						currentSdi.setQueueState(QueueState.PROCESSING);
 
-						OperationsList.deleteOperationBranch(new OperationKey(
-								currentSdi.getStudyId(),
-								currentSdi.getMatrixId(),
-								currentSdi.getOpId()),
+						OperationsList.deleteOperationBranch(
+								currentSdi.getOperationKey(),
 								currentSdi.isDeleteReports());
-						MultiOperations.printCompleted("deleting Operation ID: " + currentSdi.getOpId());
+						MultiOperations.printCompleted("deleting Operation ID: " + currentSdi.getOperationKey());
 
-						GWASpiExplorerNodes.deleteOperationNode(currentSdi.getOpId());
+						GWASpiExplorerNodes.deleteOperationNode(currentSdi.getOperationKey());
 						flagCurrentItemDeleted();
 					} catch (IOException ex) {
 						log.error(null, ex);
 					}
-				}
-				// DELETE REPORTS BY MATRIX-ID -- NOT IN USE!
-				if (deleteTarget.equals(DeleteTarget.REPORTS_BY_MATRIXID)) {
+				} else {
+					// DELETE REPORTS BY MATRIX-ID -- NOT IN USE!
 					try {
 						currentSdi.setStartTime(org.gwaspi.global.Utils.getShortDateTimeAsString());
 						currentSdi.setQueueState(QueueState.PROCESSING);
 
-						ReportsList.deleteReportByMatrixId(currentSdi.getMatrixId());
-						MultiOperations.printCompleted("deleting Reports from Matrix ID: " + currentSdi.getMatrixId());
+						ReportsList.deleteReportByMatrixId(currentSdi.getMatrixKey());
+						MultiOperations.printCompleted("deleting Reports from Matrix ID: " + currentSdi.getMatrixKey());
 
 						flagCurrentItemDeleted();
 					} catch (IOException ex) {
 						log.error(null, ex);
 					}
+					throw new RuntimeException("We should never end up in this code branch!");
 				}
 			}
 		}

@@ -50,6 +50,7 @@ import org.gwaspi.gui.utils.HelpURLs;
 import org.gwaspi.gui.utils.LimitedLengthDocument;
 import org.gwaspi.gui.utils.RowRendererDefault;
 import org.gwaspi.model.Study;
+import org.gwaspi.model.StudyKey;
 import org.gwaspi.model.StudyList;
 import org.gwaspi.threadbox.MultiOperations;
 import org.gwaspi.threadbox.SwingWorkerItemList;
@@ -361,18 +362,19 @@ public class StudyManagementPanel extends JPanel {
 					int deleteReportOption = JOptionPane.showConfirmDialog(StudyManagementPanel.this, Text.Reports.confirmDelete);
 					for (int i = 0; i < selectedStudyIds.length; i++) {
 						int studyId = selectedStudyIds[i];
+						StudyKey studyKey = new StudyKey(studyId);
 						//TEST IF THE DELETED ITEM IS REQUIRED FOR A QUED WORKER
-						if (SwingWorkerItemList.permitsDeletionOfStudyId(studyId)) {
+						if (SwingWorkerItemList.permitsDeletionOf(studyKey)) {
 							if (option == JOptionPane.YES_OPTION && deleteReportOption != JOptionPane.CANCEL_OPTION) {
 
 								boolean deleteReport = false;
 								if (deleteReportOption == JOptionPane.YES_OPTION) {
 									deleteReport = true;
 								}
-								MultiOperations.deleteStudy(studyId, deleteReport);
+								MultiOperations.deleteStudy(studyKey, deleteReport);
 
 	//							try {
-	//								StudyList.deleteStudy(studyId, deleteReport);
+	//								StudyList.deleteStudy(studyKey, deleteReport);
 	//								try {
 	//									GWASpiExplorerPanel.getSingleton().pnl_Content = new StudyManagementPanel();
 	//									GWASpiExplorerPanel.getSingleton().scrl_Content.setViewportView(GWASpiExplorerPanel.getSingleton().pnl_Content);

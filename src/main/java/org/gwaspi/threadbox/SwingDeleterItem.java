@@ -17,6 +17,10 @@
 
 package org.gwaspi.threadbox;
 
+import org.gwaspi.model.MatrixKey;
+import org.gwaspi.model.OperationKey;
+import org.gwaspi.model.StudyKey;
+
 public class SwingDeleterItem {
 
 	private String launchTime;
@@ -24,56 +28,44 @@ public class SwingDeleterItem {
 	private String endTime;
 	private QueueState queueState;
 	private String description;
-	private final DeleteTarget deleteTarget;
 	private final boolean deleteReports;
-	private final int studyId;
-	private final int matrixId;
-	private final int opId;
-	private final int rpId;
+	private final StudyKey studyKey;
+	private final MatrixKey matrixKey;
+	private final OperationKey operationKey;
 
 	SwingDeleterItem(
-			DeleteTarget deleteTarget,
-			int studyId,
+			StudyKey studyKey,
 			boolean deleteReports)
 	{
-		this(deleteTarget, studyId, Integer.MIN_VALUE, deleteReports);
+		this(studyKey, null, null, deleteReports);
 	}
 
 	SwingDeleterItem(
-			DeleteTarget deleteTarget,
-			int studyId,
-			int matrixId,
+			MatrixKey matrixKey,
 			boolean deleteReports)
 	{
-		this(deleteTarget, studyId, matrixId, Integer.MIN_VALUE, deleteReports);
+		this(null, matrixKey, null, deleteReports);
 	}
 
 	SwingDeleterItem(
-			DeleteTarget deleteTarget,
-			int studyId,
-			int matrixId,
-			int opId,
+			OperationKey operationKey,
 			boolean deleteReports)
 	{
-		this(deleteTarget, studyId, matrixId, opId, Integer.MIN_VALUE, deleteReports);
+		this(null, null, operationKey, deleteReports);
 	}
 
 	SwingDeleterItem(
-			DeleteTarget deleteTarget,
-			int studyId,
-			int matrixId,
-			int opId,
-			int rpId,
+			StudyKey studyKey,
+			MatrixKey matrixKey,
+			OperationKey operationKey,
 			boolean deleteReports)
 	{
 		this.launchTime = org.gwaspi.global.Utils.getShortDateTimeAsString();
 		this.queueState = QueueState.QUEUED;
-		this.deleteTarget = deleteTarget;
 		this.deleteReports = deleteReports;
-		this.studyId = studyId;
-		this.matrixId = matrixId;
-		this.opId = opId;
-		this.rpId = rpId;
+		this.studyKey = studyKey;
+		this.matrixKey = matrixKey;
+		this.operationKey = operationKey;
 	}
 
 	public QueueState getQueueState() {
@@ -96,24 +88,16 @@ public class SwingDeleterItem {
 		return endTime;
 	}
 
-	public DeleteTarget getDeleteTarget() {
-		return deleteTarget;
+	public MatrixKey getMatrixKey() {
+		return matrixKey;
 	}
 
-	public int getMatrixId() {
-		return matrixId;
+	public OperationKey getOperationKey() {
+		return operationKey;
 	}
 
-	public int getOpId() {
-		return opId;
-	}
-
-	public int getRpId() {
-		return rpId;
-	}
-
-	public int getStudyId() {
-		return studyId;
+	public StudyKey getStudyKey() {
+		return studyKey;
 	}
 
 	public boolean isDeleteReports() {
@@ -124,21 +108,12 @@ public class SwingDeleterItem {
 
 		if (description == null) {
 			StringBuilder sb = new StringBuilder();
-			// DELETE STUDY
-			if (getDeleteTarget().equals(DeleteTarget.STUDY)) {
-				sb.append("Delete Study (ID): ").append(getStudyId());
-			}
-			// DELETE MATRIX
-			if (getDeleteTarget().equals(DeleteTarget.MATRIX)) {
-				sb.append("Delete Matrix (ID): ").append(getMatrixId());
-			}
-			// DELETE OPERATION BY MATRIX-ID
-			if (getDeleteTarget().equals(DeleteTarget.REPORTS_BY_MATRIXID)) {
-				sb.append("Delete Operations from Matrix (ID): ").append(getMatrixId());
-			}
-			// DELETE OPERATION BY OPERATION-ID
-			if (getDeleteTarget().equals(DeleteTarget.OPERATION_BY_OPID)) {
-				sb.append("Delete Operation (ID): ").append(getOpId());
+			if (getStudyKey() != null) {
+				sb.append("Delete Study (ID): ").append(getStudyKey());
+			} else if (getMatrixKey() != null) {
+				sb.append("Delete Matrix (ID): ").append(getMatrixKey());
+			} else if (getOperationKey() != null) {
+				sb.append("Delete Operation (ID): ").append(getOperationKey());
 			}
 			description = sb.toString();
 		}
@@ -157,18 +132,5 @@ public class SwingDeleterItem {
 
 	public void setStartTime(String startTime) {
 		this.startTime = startTime;
-	}
-
-	public static enum DeleteTarget {
-		STUDY,
-		MATRIX,
-		/**
-		 * NOTE had String value: "OPERATION_BY_MATRIXID"
-		 * @deprecated unused!
-		 */
-		REPORTS_BY_MATRIXID,
-		OPERATION_BY_OPID,
-		/** @deprecated unused! */
-		REPORT
 	}
 }

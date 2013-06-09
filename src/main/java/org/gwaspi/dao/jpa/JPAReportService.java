@@ -26,6 +26,7 @@ import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.dao.ReportService;
+import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.Report;
@@ -206,20 +207,20 @@ public class JPAReportService implements ReportService {
 	}
 
 	@Override
-	public void deleteReportByMatrixId(int parentMatrixId) throws IOException {
+	public void deleteReportByMatrixId(MatrixKey parentMatrixKey) throws IOException {
 
 		EntityManager em = null;
 		try {
 			em = open();
 			begin(em);
 			Query query = em.createNamedQuery("report_deleteByParentMatrixId");
-			query.setParameter("parentMatrixId", parentMatrixId);
+			query.setParameter("parentMatrixId", parentMatrixKey.getMatrixId());
 			query.executeUpdate();
 			commit(em);
 		} catch (Exception ex) {
 			rollback(em);
 			throw new IOException("Failed deleting reports by"
-					+ ": parent-matrix-id: " + parentMatrixId,
+					+ ": parent-matrix-id: " + parentMatrixKey,
 					ex);
 		} finally {
 			close(em);

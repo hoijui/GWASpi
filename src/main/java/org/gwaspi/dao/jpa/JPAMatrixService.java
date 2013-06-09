@@ -237,7 +237,7 @@ public class JPAMatrixService implements MatrixService {
 			org.gwaspi.global.Utils.tryToDeleteFile(opFile);
 		}
 
-		ReportsList.deleteReportByMatrixId(matrixKey.getMatrixId());
+		ReportsList.deleteReportByMatrixId(matrixKey);
 
 		// DELETE MATRIX NETCDF FILE
 		File matrixFile = new File(genotypesFolder + matrixMetadata.getMatrixNetCDFName() + ".nc");
