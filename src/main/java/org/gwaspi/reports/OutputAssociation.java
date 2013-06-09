@@ -201,7 +201,7 @@ public class OutputAssociation {
 
 			String sep = cExport.separator_REPORTS;
 			OperationMetadata rdOPMetadata = OperationsList.getOperation(operationKey);
-			MarkerSet rdInfoMarkerSet = new MarkerSet(rdOPMetadata.getStudyKey(), rdOPMetadata.getParentMatrixId());
+			MarkerSet rdInfoMarkerSet = new MarkerSet(operationKey.getParentMatrixKey());
 			rdInfoMarkerSet.initFullMarkerIdSetMap();
 
 			// WRITE HEADER OF FILE

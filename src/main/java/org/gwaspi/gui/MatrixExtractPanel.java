@@ -682,9 +682,9 @@ public class MatrixExtractPanel extends JPanel {
 
 		private final Map<MarkerKey, int[]> rdChrInfoSetMap;
 
-		MarkersVariableAction(MatrixKey parentMatrix) throws IOException {
+		MarkersVariableAction(MatrixKey parentMatrixKey) throws IOException {
 
-			MarkerSet parentMarkerSet = new MarkerSet(parentMatrix.getStudyKey(), parentMatrix.getMatrixId());
+			MarkerSet parentMarkerSet = new MarkerSet(parentMatrixKey);
 			rdChrInfoSetMap = parentMarkerSet.getChrInfoSetMap();
 
 			putValue(NAME, Text.Trafo.variable);

@@ -60,13 +60,6 @@ public class SampleSet {
 		this.sampleIdSetMap = new LinkedHashMap<SampleKey, Object>();
 	}
 
-	/**
-	 * @deprecated use MatrixKey version instead!
-	 */
-	public SampleSet(StudyKey studyKey, int matrixId) throws IOException {
-		this(MatricesList.getMatrixMetadataById(new MatrixKey(studyKey, matrixId)));
-	}
-
 	public SampleSet(MatrixKey matrixKey) throws IOException {
 		this(MatricesList.getMatrixMetadataById(matrixKey));
 	}

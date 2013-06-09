@@ -98,7 +98,7 @@ public abstract class AbstractTestMatrixOperation implements MatrixOperation {
 
 			// GATHER INFO FROM ORIGINAL MATRIX
 			MatrixMetadata parentMatrixMetadata = MatricesList.getMatrixMetadataById(markerCensusOP.getParentMatrixKey());
-			MarkerSet rdMarkerSet = new MarkerSet(parentMatrixMetadata.getStudyKey(), markerCensusOP.getParentMatrixId());
+			MarkerSet rdMarkerSet = new MarkerSet(MatrixKey.valueOf(parentMatrixMetadata));
 			rdMarkerSet.initFullMarkerIdSetMap();
 
 			// retrieve chromosome info

@@ -134,9 +134,9 @@ public class Dialogs {
 		return selectedOP;
 	}
 
-	public static OperationMetadata showOperationSubOperationsCombo(int matrixId, int parentOpId, OPType filterOpType, String title) throws IOException {
+	public static OperationMetadata showOperationSubOperationsCombo(MatrixKey matrixKey, int parentOpId, OPType filterOpType, String title) throws IOException {
 		OperationMetadata selectedSubOp = null;
-		List<OperationMetadata> operationsList = OperationsList.getOperationsList(matrixId, parentOpId);
+		List<OperationMetadata> operationsList = OperationsList.getOperationsList(matrixKey.getMatrixId(), parentOpId);
 
 		if (!operationsList.isEmpty()) {
 			List<String> operationsNames = new ArrayList<String>();

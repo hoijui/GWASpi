@@ -114,7 +114,7 @@ public class GenericReportGenerator {
 		OperationMetadata rdOPMetadata = OperationsList.getOperation(operationKey);
 
 		//<editor-fold defaultstate="expanded" desc="GET POSITION DATA">
-		MarkerSet rdInfoMarkerSet = new MarkerSet(rdOPMetadata.getStudyKey(), rdOPMetadata.getParentMatrixId());
+		MarkerSet rdInfoMarkerSet = new MarkerSet(operationKey.getParentMatrixKey());
 		rdInfoMarkerSet.initFullMarkerIdSetMap();
 
 //		long snpNumber = rdInfoMarkerSet.getMarkerSetSize();
@@ -449,7 +449,7 @@ public class GenericReportGenerator {
 			MarkerOperationSet rdAssocMarkerSet = new MarkerOperationSet(operationKey);
 			Map<MarkerKey, double[]> rdAssocMarkerSetMap = rdAssocMarkerSet.getOpSetMap();
 
-			MarkerSet rdInfoMarkerSet = new MarkerSet(rdOPMetadata.getStudyKey(), rdOPMetadata.getParentMatrixId());
+			MarkerSet rdInfoMarkerSet = new MarkerSet(operationKey.getParentMatrixKey());
 			rdInfoMarkerSet.initFullMarkerIdSetMap();
 			rdInfoMarkerSet.fillMarkerSetMapWithChrAndPos();
 
@@ -559,7 +559,7 @@ public class GenericReportGenerator {
 			Map<MarkerKey, double[]> rdAssocMarkerSetMap = rdAssocMarkerSet.getOpSetMap();
 
 			//<editor-fold defaultstate="expanded" desc="GET POSITION DATA">
-			MarkerSet rdInfoMarkerSet = new MarkerSet(rdOPMetadata.getStudyKey(), rdOPMetadata.getParentMatrixId());
+			MarkerSet rdInfoMarkerSet = new MarkerSet(operationKey.getParentMatrixKey());
 			rdInfoMarkerSet.initFullMarkerIdSetMap();
 
 
@@ -760,12 +760,12 @@ public class GenericReportGenerator {
 		return rdAssocMarkerSetMap;
 	}
 
-	public static Map<MarkerKey, Object[]> getMarkerSetChrAndPos(int opId) throws IOException {
+	public static Map<MarkerKey, Object[]> getMarkerSetChrAndPos(OperationKey operationKey) throws IOException {
 		Map<MarkerKey, Object[]> dataSetMap = new LinkedHashMap<MarkerKey, Object[]>();
-		OperationMetadata rdOPMetadata = OperationsList.getOperationMetadata(opId);
+		OperationMetadata rdOPMetadata = OperationsList.getOperation(operationKey);
 
 		//<editor-fold defaultstate="expanded" desc="GET POSITION DATA">
-		MarkerSet rdInfoMarkerSet = new MarkerSet(rdOPMetadata.getStudyKey(), rdOPMetadata.getParentMatrixId());
+		MarkerSet rdInfoMarkerSet = new MarkerSet(operationKey.getParentMatrixKey());
 		rdInfoMarkerSet.initFullMarkerIdSetMap();
 		rdInfoMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
 		if (rdInfoMarkerSet.getMarkerIdSetMapCharArray() != null) {
