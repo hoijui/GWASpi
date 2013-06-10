@@ -746,24 +746,57 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 		}
 	}
 
-	private static svm_problem createLibSvmProblem(Map<SampleKey, List<Double>> X, Map<SampleKey, Double> Y) {
-
+	private static svm_problem createLibSvmProblem(
+			Map<SampleKey, List<Double>> X,
+			Map<SampleKey, Double> Y,
+			svm_parameter libSvmParameters)
+	{
 		int dEncoded = X.values().iterator().next().size();
 		int n = X.size();
 
 		svm_problem prob = new svm_problem();
 
 		// prepare the features
-		prob.x = new svm_node[n][dEncoded];
-		Iterator<List<Double>> itX = X.values().iterator();
-		for (int si = 0; si < n; si++) {
-			List<Double> sampleGTs = itX.next();
-			for (int mi = 0; mi < dEncoded; mi++) {
-				svm_node curNode = new svm_node();
-//				curNode.index = mi;
-				curNode.index = si; /// XXX correct?
-				curNode.value = sampleGTs.get(mi);
-				prob.x[si][mi] = curNode;
+		if (libSvmParameters.kernel_type == svm_parameter.PRECOMPUTED) {
+			// precomute the kernel: K = X' * X
+			prob.x = new svm_node[n][n];
+//			// TODO
+//			throw new RuntimeException();
+			Iterator<List<Double>> itX = X.values().iterator();
+			List<List<Double>> valuesX = new ArrayList<List<Double>>(X.values());
+			for (int si1 = 0; si1 < n; si1++) {
+				List<Double> sampleGTs1 = itX.next();
+				for (int si2 = 0; si2 <= si1; si2++) { // calculate only half of the matrix, caus it is symmetric
+					List<Double> sampleGTs2 = valuesX.get(si2);
+					double res = 0.0;
+					for (int mi = 0; mi < dEncoded; mi++) {
+						res += sampleGTs1.get(mi) * sampleGTs2.get(mi);
+					}
+
+					// save two times, cause the matrix is symmetric
+					svm_node curNodeL = new svm_node();
+					curNodeL.index = si1;
+					curNodeL.value = res;
+					prob.x[si1][si2] = curNodeL;
+
+					svm_node curNodeU = new svm_node();
+					curNodeU.index = si2;
+					curNodeU.value = res;
+					prob.x[si2][si1] = curNodeU;
+				}
+			}
+		} else {
+			prob.x = new svm_node[n][dEncoded];
+			Iterator<List<Double>> itX = X.values().iterator();
+			for (int si = 0; si < n; si++) {
+				List<Double> sampleGTs = itX.next();
+				for (int mi = 0; mi < dEncoded; mi++) {
+					svm_node curNode = new svm_node();
+	//				curNode.index = mi;
+					curNode.index = si; /// XXX correct?
+					curNode.value = sampleGTs.get(mi);
+					prob.x[si][mi] = curNode;
+				}
 			}
 		}
 		System.err.println("XXX X: " + prob.x.length + " * " + prob.x[0].length);
@@ -793,7 +826,8 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 		/** possible values: C_SVC, NU_SVC, ONE_CLASS, EPSILON_SVR, NU_SVR */
 		svmParams.svm_type = svm_parameter.C_SVC;
 		/** possible values: LINEAR, POLY, RBF, SIGMOID, PRECOMPUTED */
-		svmParams.kernel_type = svm_parameter.LINEAR;
+//		svmParams.kernel_type = svm_parameter.LINEAR;
+		svmParams.kernel_type = svm_parameter.PRECOMPUTED;
 		/** for poly */
 		svmParams.degree = 3;
 		/** for poly/RBF/sigmoid */
@@ -849,7 +883,10 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 			final double alpha = alphas[0][svi];
 			final double y = ys[x[0].index];
 			for (int di = 0; di < d; di++) {
-				final double alphaYXi = alpha * y * x[di].value;
+//				final double alphaYXi = alpha * y * x[di].value;
+				// NOTE We dismiss the y, which would be part of normal SVM,
+				// because we want the absolute sum (i forgot again why so :/ )
+				final double alphaYXi = alpha * x[di].value;
 //				System.err.print(" " + svwp);
 				weights.set(di, weights.get(di) + alphaYXi);
 			}
@@ -868,23 +905,23 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 
 		whiten(X);
 
-		svm_problem libSvmProblem = createLibSvmProblem(X, Y);
-
 		svm_parameter libSvmParameters = createLibSvmParameters();
+
+		svm_problem libSvmProblem = createLibSvmProblem(X, Y, libSvmParameters);
 
 		svm_model svmModel = svm.svm_train(libSvmProblem, libSvmParameters);
 
-//		double[][] alphas = svmModel.sv_coef;
+		double[][] alphas = svmModel.sv_coef;
 //		svm_node[][] SVs = svmModel.SV;
 //
-//		System.err.println("XXX alphas: " + alphas.length + " * " + alphas[0].length);
-//		for (int i = 0; i < alphas.length; i++) {
-//			System.err.print("\talpha:");
-//			for (int j = 0; j < alphas[i].length; j++) {
-//				System.err.print(" " + alphas[i][j]);
-//			}
-//			System.err.println();
-//		}
+		System.err.println("XXX alphas: " + alphas.length + " * " + alphas[0].length);
+		for (int i = 0; i < alphas.length; i++) {
+			System.err.print("\talpha:");
+			for (int j = 0; j < alphas[i].length; j++) {
+				System.err.print(" " + alphas[i][j]);
+			}
+			System.err.println();
+		}
 //
 //		System.err.println("XXX SVs: " + SVs.length + " * " + SVs[0].length);
 //		for (int i = 0; i < SVs.length; i++) {
@@ -903,6 +940,8 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 		System.err.println("XXX dSamples: " + dSamples);
 		System.err.println("XXX dEncoded: " + dEncoded);
 		System.err.println("XXX n: " + n);
+		System.err.println("XXX genotypeEncoder: " + genotypeEncoder.getClass().getSimpleName());
+		System.err.println("XXX encodingFactor: " + genotypeEncoder.getEncodingFactor());
 
 		List<Double> weights = new ArrayList<Double>(dSamples);
 		genotypeEncoder.decodeWeights(weightsEncoded, weights);
@@ -913,9 +952,9 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 
 	public static void main(String[] args) {
 
-//		GenotypeEncoder encoder = new AllelicGenotypeEncoder(); // TODO
+		GenotypeEncoder encoder = new AllelicGenotypeEncoder(); // TODO
 //		GenotypeEncoder encoder = new GenotypicGenotypeEncoder(); // TODO
-		GenotypeEncoder encoder = new NominalGenotypeEncoder(); // TODO
+//		GenotypeEncoder encoder = new NominalGenotypeEncoder(); // TODO
 
 		runEncodingAndSVM(encoder);
 //		runSVM(encoder);
