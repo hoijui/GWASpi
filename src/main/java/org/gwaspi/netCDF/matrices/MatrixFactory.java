@@ -131,6 +131,7 @@ public class MatrixFactory {
 	 * Constructor to use with file input
 	 */
 	public MatrixFactory(
+			StudyKey studyKey,
 			ImportFormat technology,
 			String friendlyName,
 			String description,
@@ -153,8 +154,8 @@ public class MatrixFactory {
 				samplesDimSize,
 				markerDimSize,
 				chrDimSize,
-				new MatrixKey(null, Integer.MIN_VALUE),
-				new MatrixKey(null, Integer.MIN_VALUE),
+				new MatrixKey(studyKey, Integer.MIN_VALUE),
+				new MatrixKey(studyKey, Integer.MIN_VALUE),
 				dataLocation);
 	}
 

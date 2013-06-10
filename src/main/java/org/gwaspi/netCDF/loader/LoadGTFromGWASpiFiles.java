@@ -201,6 +201,7 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 		Map<MarkerKey, int[]> chrSetMap = org.gwaspi.netCDF.matrices.Utils.aggregateChromosomeInfo(rdMarkerSetMap, 0, 1);
 
 		MatrixFactory matrixFactory = new MatrixFactory(
+				loadDescription.getStudyKey(),
 				loadDescription.getFormat(),
 				loadDescription.getFriendlyName(),
 				importMatrixMetadata.getDescription(), //description

@@ -159,6 +159,7 @@ public class LoadGTFromAffyFiles implements GenotypesLoader {
 		Map<MarkerKey, int[]> chrSetMap = org.gwaspi.netCDF.matrices.Utils.aggregateChromosomeInfo(markerSetMap, 2, 5);
 
 		MatrixFactory matrixFactory = new MatrixFactory(
+				loadDescription.getStudyKey(),
 				loadDescription.getFormat(),
 				loadDescription.getFriendlyName(),
 				descSB.toString(), // description
