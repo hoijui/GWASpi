@@ -56,9 +56,7 @@ import org.gwaspi.gui.utils.BrowserHelpUrlAction;
 import org.gwaspi.gui.utils.HelpURLs;
 import org.gwaspi.gui.utils.IntegerInputVerifier;
 import org.gwaspi.gui.utils.RowRendererDefault;
-import org.gwaspi.model.MatrixKey;
-import org.gwaspi.model.OperationMetadata;
-import org.gwaspi.model.OperationsList;
+import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.Study;
 import org.gwaspi.model.StudyKey;
 import org.slf4j.Logger;
@@ -71,7 +69,7 @@ public class Report_QAMarkersSummary extends JPanel {
 
 	// Variables declaration - do not modify
 	private final File reportFile;
-	private final int opId;
+	private final OperationKey operationKey;
 	private final String qaValue;
 	private final JButton btn_Get;
 	private final JButton btn_Save;
@@ -85,9 +83,9 @@ public class Report_QAMarkersSummary extends JPanel {
 	private final JFormattedTextField txt_NRows;
 	// End of variables declaration
 
-	public Report_QAMarkersSummary(final StudyKey studyKey, final String _qaFileName, int _opId) throws IOException {
+	public Report_QAMarkersSummary(final StudyKey studyKey, final String _qaFileName, OperationKey operationKey) throws IOException {
 
-		opId = _opId;
+		this.operationKey = operationKey;
 		String reportName = GWASpiExplorerPanel.getSingleton().getTree().getLastSelectedPathComponent().toString();
 		reportName = reportName.substring(reportName.indexOf('-') + 2);
 
@@ -191,7 +189,7 @@ public class Report_QAMarkersSummary extends JPanel {
 		//<editor-fold defaultstate="expanded" desc="FOOTER">
 		btn_Save.setAction(new Report_Analysis.SaveAsAction(studyKey, _qaFileName, tbl_ReportTable, txt_NRows));
 
-		btn_Back.setAction(new BackAction(opId));
+		btn_Back.setAction(new BackAction(operationKey));
 
 		btn_Help.setAction(new BrowserHelpUrlAction(HelpURLs.QryURL.markerQAreport));
 
@@ -390,13 +388,11 @@ public class Report_QAMarkersSummary extends JPanel {
 
 	private static class BackAction extends AbstractAction {
 
-		private final int opId;
-		private final OperationMetadata op;
+		private final OperationKey operationKey;
 
-		BackAction(int opId) throws IOException {
+		BackAction(OperationKey operationKey) throws IOException {
 
-			this.opId = opId;
-			this.op = OperationsList.getById(opId);
+			this.operationKey = operationKey;
 			putValue(NAME, Text.All.Back);
 		}
 
@@ -404,7 +400,7 @@ public class Report_QAMarkersSummary extends JPanel {
 		public void actionPerformed(ActionEvent evt) {
 			try {
 				GWASpiExplorerPanel.getSingleton().getTree().setSelectionPath(GWASpiExplorerPanel.getSingleton().getTree().getSelectionPath().getParentPath());
-				GWASpiExplorerPanel.getSingleton().setPnl_Content(new MatrixMarkerQAPanel(new MatrixKey(op.getStudyKey(), op.getParentMatrixId()), opId));
+				GWASpiExplorerPanel.getSingleton().setPnl_Content(new MatrixMarkerQAPanel(operationKey.getParentMatrixKey(), operationKey.getId()));
 				GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
 			} catch (IOException ex) {
 				log.error(null, ex);

@@ -404,7 +404,7 @@ public class GWASpiExplorer {
 						gwasPiExplorerPanel.getScrl_Content().setViewportView(gwasPiExplorerPanel.getPnl_Content());
 					}
 					if (rp.getReportType().equals(OPType.MARKER_QA)) {
-						gwasPiExplorerPanel.setPnl_Content(new Report_QAMarkersSummary(rp.getStudyKey(), reportFile, rp.getParentOperationId()));
+						gwasPiExplorerPanel.setPnl_Content(new Report_QAMarkersSummary(rp.getStudyKey(), reportFile, rp.getParentOperationKey()));
 						gwasPiExplorerPanel.getScrl_Content().setViewportView(gwasPiExplorerPanel.getPnl_Content());
 					}
 //					if(rp.getReportType().equals(OPType.SAMPLE_QA.toString())){
