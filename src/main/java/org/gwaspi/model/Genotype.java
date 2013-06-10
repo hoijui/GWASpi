@@ -56,4 +56,12 @@ public class Genotype implements Serializable, Comparable<Genotype> {
 	public String toString() {
 		return new String(rawGt);
 	}
+
+	public byte getFather() {
+		return rawGt[0];
+	}
+
+	public byte getMother() {
+		return rawGt[1];
+	}
 }
