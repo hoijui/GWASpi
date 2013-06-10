@@ -92,7 +92,7 @@ public class MatrixTranslator {
 				// CREATE netCDF-3 FILE
 				StringBuilder descSB = new StringBuilder(Text.Matrix.descriptionHeader1);
 				descSB.append(org.gwaspi.global.Utils.getShortDateTimeAsString());
-				descSB.append("\nThrough Matrix translation from parent Matrix MX: ").append(rdMatrixKey).append(" - ").append(rdMatrixMetadata.getMatrixFriendlyName());
+				descSB.append("\nThrough Matrix translation from parent Matrix MX: ").append(rdMatrixKey.getMatrixId()).append(" - ").append(rdMatrixMetadata.getMatrixFriendlyName());
 				descSB.append("\nTranslation method: AB0 or 012 to ACGT0 using the parent's dictionnary");
 				if (!wrMatrixDescription.isEmpty()) {
 					descSB.append("\n\nDescription: ");
