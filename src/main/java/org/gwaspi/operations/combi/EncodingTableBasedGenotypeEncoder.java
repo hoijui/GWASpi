@@ -46,17 +46,41 @@ public abstract class EncodingTableBasedGenotypeEncoder implements GenotypeEncod
 		}
 	}
 
+	private double norm2(List<Double> numbers) {
+
+		double norm = 0.0;
+		for (Double number : numbers) {
+			norm += number * number;
+		}
+		norm = Math.sqrt(norm);
+
+		return norm;
+	}
+
 	@Override
 	public void decodeWeights(List<Double> encodedWeights,
 			List<Double> decodedWeights)
 	{
+		final double norm = norm2(encodedWeights);
 		final int encodingFactor = getEncodingFactor();
 		for (int ewi = 0; ewi < encodedWeights.size(); ewi += encodingFactor) {
 			double sum = 0.0;
 			for (int lwi = 0; lwi < encodingFactor; lwi++) {
-				sum += encodedWeights.get(ewi + lwi);
+				final double wEncNormalized = Math.abs(encodedWeights.get(ewi + lwi)) / norm;
+				sum += wEncNormalized * wEncNormalized; // NOTE change this for a p-norm with p != 2
 			}
-			decodedWeights.add(sum / encodingFactor);
+//			final double wDecNormalized = sum / encodingFactor;
+			final double wDecNormalized = Math.sqrt(sum); // NOTE change this for a p-norm with p != 2
+			decodedWeights.add(wDecNormalized);
 		}
+
+//		final int encodingFactor = getEncodingFactor();
+//		for (int ewi = 0; ewi < encodedWeights.size(); ewi += encodingFactor) {
+//			double sum = 0.0;
+//			for (int lwi = 0; lwi < encodingFactor; lwi++) {
+//				sum += encodedWeights.get(ewi + lwi);
+//			}
+//			decodedWeights.add(sum / encodingFactor);
+//		}
 	}
 }
