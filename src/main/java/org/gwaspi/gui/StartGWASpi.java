@@ -39,7 +39,6 @@ import org.gwaspi.constants.cGlobal;
 import org.gwaspi.global.Config;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.utils.Dialogs;
-import org.gwaspi.model.MatricesList;
 import org.gwaspi.threadbox.SwingDeleterItemList;
 import org.gwaspi.threadbox.SwingWorkerItemList;
 import org.slf4j.Logger;
