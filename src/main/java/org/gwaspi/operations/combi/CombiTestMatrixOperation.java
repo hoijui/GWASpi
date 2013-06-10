@@ -271,8 +271,6 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 		MatrixSamples(MatrixKey matrixKey) throws IOException, InvalidRangeException {
 
 			this.matrixKey = matrixKey;
-			int studyId = matrixKey.getStudyId();
-			int matrixId = matrixKey.getMatrixId();
 			MatrixMetadata rdMatrixMetadata = MatricesList.getMatrixMetadataById(matrixKey);
 			netCdfFile = NetcdfFile.open(rdMatrixMetadata.getPathToMatrix());
 
@@ -872,21 +870,27 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 	private static List<Double> calculateOriginalSpaceWeights(
 			final double[][] alphas,
 			final svm_node[][] xs,
+			final List<List<Double>> X,
 			final double[] ys)
 	{
-		final int d = xs[0].length;
+//		final int d = xs[0].length;
+		final int d = X.get(0).size();
 
 		List<Double> weights
 				= new ArrayList<Double>(Collections.nCopies(d , 0.0));
 		for (int svi = 0; svi < xs.length; svi++) {
-			final svm_node[] x = xs[svi];
+			final svm_node[] xsi = xs[svi];
+			final int svIndex = xsi[0].index;
+			final List<Double> Xsi = X.get(svIndex);
 			final double alpha = alphas[0][svi];
-			final double y = ys[x[0].index];
+			final double y = ys[svIndex];
 			for (int di = 0; di < d; di++) {
+//				final double x = xsi[di].value;
+				final double x = Xsi.get(di);
 //				final double alphaYXi = alpha * y * x[di].value;
 				// NOTE We dismiss the y, which would be part of normal SVM,
 				// because we want the absolute sum (i forgot again why so :/ )
-				final double alphaYXi = alpha * x[di].value;
+				final double alphaYXi = alpha * x;
 //				System.err.print(" " + svwp);
 				weights.set(di, weights.get(di) + alphaYXi);
 			}
@@ -933,7 +937,7 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 //		}
 
 		List<Double> weightsEncoded = calculateOriginalSpaceWeights(
-				svmModel.sv_coef, svmModel.SV, libSvmProblem.y);
+				svmModel.sv_coef, svmModel.SV, new ArrayList(X.values()), libSvmProblem.y);
 
 		System.err.println("XXX weights(encoded): " + weightsEncoded.size() + "" + weightsEncoded);
 
