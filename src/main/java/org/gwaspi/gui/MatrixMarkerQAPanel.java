@@ -245,11 +245,11 @@ public class MatrixMarkerQAPanel extends JPanel {
 
 	private static class BackAction extends AbstractAction {
 
-		private final MatrixKey parentMatrix;
+		private final MatrixKey parentMatrixKey;
 
-		BackAction(MatrixKey parentMatrix) {
+		BackAction(MatrixKey parentMatrixKey) {
 
-			this.parentMatrix = parentMatrix;
+			this.parentMatrixKey = parentMatrixKey;
 			putValue(NAME, Text.All.Back);
 		}
 
@@ -257,7 +257,7 @@ public class MatrixMarkerQAPanel extends JPanel {
 		public void actionPerformed(ActionEvent evt) {
 			try {
 				GWASpiExplorerPanel.getSingleton().getTree().setSelectionPath(GWASpiExplorerPanel.getSingleton().getTree().getSelectionPath().getParentPath());
-				GWASpiExplorerPanel.getSingleton().setPnl_Content(new CurrentMatrixPanel(parentMatrix));
+				GWASpiExplorerPanel.getSingleton().setPnl_Content(new CurrentMatrixPanel(parentMatrixKey));
 				GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
 			} catch (IOException ex) {
 				log.error(null, ex);
