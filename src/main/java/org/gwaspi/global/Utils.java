@@ -291,41 +291,10 @@ public class Utils {
 		return dateOut;
 	}
 
-	/**
-	 * @deprecated unused!
-	 */
-	public static String getSQLDateAsString() {
-
-		Date now = new Date();
-		java.sql.Date jsqlD = new java.sql.Date(now.getTime());
-
-		return jsqlD.toString();
-	}
-
 	public static String getTimeStamp() {
 
 		Calendar now = Calendar.getInstance();
 		return timeStampFormat.format(now.getTime());
-	}
-
-	/**
-	 * @deprecated unused!
-	 */
-	public static String dateToString(Date date) {
-
-		String dateStr = dateFormat.format(date);
-
-		return dateStr;
-	}
-
-	/**
-	 * @deprecated unused!
-	 */
-	public static Date stringToDate(String txtDate) throws ParseException {
-
-		Date date = dateFormat.parse(txtDate);
-
-		return date;
 	}
 
 	public static Date stringToDate(String txtDate, String format) {

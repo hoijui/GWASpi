@@ -28,15 +28,6 @@ public class OperationKey implements Comparable<OperationKey>, Serializable {
 	private MatrixKey parentMatrixKey;
 	private int id;
 
-	/**
-	 * @deprecated
-	 */
-	public OperationKey(int studyId, int parentMatrixId, int id) {
-
-		this.parentMatrixKey = new MatrixKey(new StudyKey(studyId), parentMatrixId);
-		this.id = id;
-	}
-
 	public OperationKey(MatrixKey parentMatrixKey, int id) {
 
 		this.parentMatrixKey = parentMatrixKey;
@@ -44,13 +35,16 @@ public class OperationKey implements Comparable<OperationKey>, Serializable {
 	}
 
 	protected OperationKey() {
-		this(Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE);
+		this(
+				new MatrixKey(
+				new StudyKey(Integer.MIN_VALUE),
+				Integer.MIN_VALUE),
+				Integer.MIN_VALUE);
 	}
 
 	public static OperationKey valueOf(OperationMetadata operation) {
 		return new OperationKey(
-				operation.getStudyId(),
-				operation.getParentMatrixId(),
+				operation.getParentMatrixKey(),
 				operation.getId());
 	}
 
