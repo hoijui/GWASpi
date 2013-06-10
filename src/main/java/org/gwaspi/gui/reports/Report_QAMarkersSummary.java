@@ -347,7 +347,7 @@ public class Report_QAMarkersSummary extends JPanel {
 										Integer i1 = Integer.parseInt(o1.toString());
 										Integer i2 = Integer.parseInt(o2.toString());
 										return i1.compareTo(i2);
-									} catch (Exception ex1) {
+									} catch (NumberFormatException ex1) {
 										log.warn(null, ex1);
 										return o1.toString().compareTo(o2.toString());
 									}
@@ -381,7 +381,7 @@ public class Report_QAMarkersSummary extends JPanel {
 					} else if (inputFileReader != null) {
 						inputFileReader.close();
 					}
-				} catch (Exception ex) {
+				} catch (IOException ex) {
 					log.warn(null, ex);
 				}
 			}
