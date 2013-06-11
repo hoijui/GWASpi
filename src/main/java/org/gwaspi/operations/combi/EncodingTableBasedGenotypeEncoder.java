@@ -24,7 +24,7 @@ import org.gwaspi.model.Genotype;
 
 public abstract class EncodingTableBasedGenotypeEncoder implements GenotypeEncoder {
 
-	public abstract Map<Genotype, List<Double>> generateEncodingTable(
+	public abstract Map<Genotype, List<Double>> generateEncodingTable( use linked hash map
 			List<Genotype> possibleGenotypes);
 
 	@Override
@@ -36,6 +36,14 @@ public abstract class EncodingTableBasedGenotypeEncoder implements GenotypeEncod
 		// create the encoding table
 		Map<Genotype, List<Double>> encodingTable
 				= generateEncodingTable(possibleGenotypes);
+		System.err.println("XXX encodingTable: " + encodingTable.size() + " * " + encodingTable.values().iterator().next().size());
+		for (Map.Entry<Genotype, List<Double>> encodingTableEntry : encodingTable.entrySet()) {
+			System.err.print("\t" + encodingTableEntry.getKey() + " ->");
+			for (Double value : encodingTableEntry.getValue()) {
+				System.err.print(" " + value);
+			}
+			System.err.println();
+		}
 
 		// encode
 		Collection<List<Double>> encodedGTValues = encodedGenotypes.values();

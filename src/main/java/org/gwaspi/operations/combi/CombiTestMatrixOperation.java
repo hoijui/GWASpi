@@ -17,9 +17,11 @@
 
 package org.gwaspi.operations.combi;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -73,6 +75,8 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 
 	private final Logger log
 			= LoggerFactory.getLogger(CombiTestMatrixOperation.class);
+
+	private static final File BASE_DIR = new File(System.getProperty("user.home"), "/Projects/GWASpi/var/data/marius/example/extra");
 
 	/**
 	 * Whether we are to perform allelic or genotypic association tests.
@@ -909,6 +913,23 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 
 		whiten(X);
 
+		List<List<Double>> xValues = new ArrayList<List<Double>>(X.values());
+
+		String encoderString;
+		if (genotypeEncoder instanceof AllelicGenotypeEncoder) {
+			encoderString = "allelic";
+		} else if (genotypeEncoder instanceof GenotypicGenotypeEncoder) {
+			encoderString = "genotypic";
+		} else if (genotypeEncoder instanceof NominalGenotypeEncoder) {
+			encoderString = "nominal";
+		} else {
+			throw new RuntimeException();
+		}
+
+		File correctFeaturesFile = new File(BASE_DIR, "featmat_" + encoderString + "_extra");
+		List<List<Double>> correctFeatures = parsePlainTextMatrix(correctFeaturesFile, true);
+		compare(correctFeatures, xValues);
+
 		svm_parameter libSvmParameters = createLibSvmParameters();
 
 		svm_problem libSvmProblem = createLibSvmProblem(X, Y, libSvmParameters);
@@ -952,6 +973,77 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 		System.err.println("XXX weights: (" + weights.size() + ") " + weights);
 
 		return Integer.MIN_VALUE;
+	}
+
+	public static void compare(
+			List<List<Double>> matrixA,
+			List<List<Double>> matrixB)
+	{
+		final int rowsA = matrixA.size();
+		final int rowsB = matrixB.size();
+		final int colsA = matrixA.get(0).size();
+		final int colsB = matrixB.get(0).size();
+
+		if ((rowsA != rowsB) || (colsA != colsB)) {
+			throw new RuntimeException(String.format(
+					"matrix A dimension (%d, %d) differ from dimensions of matrix B (%d, %d)",
+					rowsA, colsA, rowsB, colsB));
+		}
+		for (int y = 0; y < matrixA.size(); y++) {
+			List<Double> rowA = matrixA.get(y);
+			List<Double> rowB = matrixB.get(y);
+			for (int x = 0; x < rowA.size(); x++) {
+				final double valA = rowA.get(x);
+				final double valB = rowB.get(x);
+				if (Math.abs((valA - valB) / (valA + valB)) > 0.01) {
+					throw new RuntimeException(String.format(
+						"matrix A differs from matrix B at (%d, %d): %f, %f",
+						y, x, valA, valB));
+				}
+			}
+
+		}
+	}
+
+	public static List<List<Double>> parsePlainTextMatrix(File sourceFile) {
+		return parsePlainTextMatrix(sourceFile, false);
+	}
+	public static List<List<Double>> parsePlainTextMatrix(File sourceFile, boolean transposed) {
+
+		List<List<Double>> matrix = new ArrayList<List<Double>>();
+
+		FileReader fileReader = null;
+		BufferedReader bufferedReader = null;
+		try {
+			fileReader = new FileReader(sourceFile);
+			bufferedReader = new BufferedReader(fileReader);
+			String line = bufferedReader.readLine();
+			while (line != null) {
+				String[] strValues = line.split("[ ]+");
+				if (transposed) {
+					if (matrix.isEmpty()) {
+						// initialize the rows
+						for (int svi = 0; svi < strValues.length; svi++) {
+							matrix.add(new ArrayList<Double>());
+						}
+					}
+					for (int svi = 0; svi < strValues.length; svi++) {
+						matrix.get(svi).add(Double.parseDouble(strValues[svi]));
+					}
+				} else {
+					List<Double> row = new ArrayList<Double>(strValues.length);
+					for (int svi = 0; svi < strValues.length; svi++) {
+						row.add(Double.parseDouble(strValues[svi]));
+					}
+					matrix.add(row);
+				}
+				line = bufferedReader.readLine();
+			}
+		} catch (IOException ex) {
+			ex.printStackTrace();
+		}
+
+		return matrix;
 	}
 
 	public static void main(String[] args) {

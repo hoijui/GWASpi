@@ -34,7 +34,7 @@ public class Genotype implements Serializable, Comparable<Genotype> {
 
 	@Override
 	public int compareTo(Genotype other) {
-		return hashCode() - other.hashCode();
+		return other.hashCode() - hashCode();
 	}
 
 	@Override
