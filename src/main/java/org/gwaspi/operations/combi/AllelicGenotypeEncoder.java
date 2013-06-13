@@ -38,32 +38,125 @@ import org.gwaspi.model.Genotype;
  */
 public class AllelicGenotypeEncoder extends EncodingTableBasedGenotypeEncoder {
 
-	private static final List<List<Double>> ENCODED_VALUES;
+//	private static final List<List<Double>> ENCODED_VALUES;
+//	static {
+//		ENCODED_VALUES = new ArrayList<List<Double>>(4);
+//
+//		ENCODED_VALUES.add(Collections.unmodifiableList(new ArrayList<Double>(
+//				Arrays.asList(0.0, 1.0, 0.0, 1.0)))); // {'A', 'A'}
+//		ENCODED_VALUES.add(Collections.unmodifiableList(new ArrayList<Double>(
+//				Arrays.asList(0.0, 1.0, 1.0, 0.0)))); // {'A', 'C'}
+//		ENCODED_VALUES.add(Collections.unmodifiableList(new ArrayList<Double>(
+//				Arrays.asList(1.0, 0.0, 0.0, 1.0)))); // {'C', 'A'}
+//		ENCODED_VALUES.add(Collections.unmodifiableList(new ArrayList<Double>(
+//				Arrays.asList(1.0, 0.0, 1.0, 0.0)))); // {'C', 'C'}
+//	}
+	private static final Map<Integer, List<Double>> ENCODED_VALUES_LOWER;
 	static {
-		ENCODED_VALUES = new ArrayList<List<Double>>(4);
+		ENCODED_VALUES_LOWER = new HashMap<Integer, List<Double>>(5);
 
-		ENCODED_VALUES.add(Collections.unmodifiableList(new ArrayList<Double>(
-				Arrays.asList(0.0, 1.0, 0.0, 1.0)))); // {'A', 'A'}
-		ENCODED_VALUES.add(Collections.unmodifiableList(new ArrayList<Double>(
-				Arrays.asList(0.0, 1.0, 1.0, 0.0)))); // {'A', 'C'}
-		ENCODED_VALUES.add(Collections.unmodifiableList(new ArrayList<Double>(
-				Arrays.asList(1.0, 0.0, 0.0, 1.0)))); // {'C', 'A'}
-		ENCODED_VALUES.add(Collections.unmodifiableList(new ArrayList<Double>(
-				Arrays.asList(1.0, 0.0, 1.0, 0.0)))); // {'C', 'C'}
+		ENCODED_VALUES_LOWER.put(0, Collections.unmodifiableList(new ArrayList<Double>(
+//				Arrays.asList(0.0, 0.0, 0.0, 0.0)))); // "00"
+				Arrays.asList(1.0, 1.0, 1.0, 1.0)))); // "00"
+		ENCODED_VALUES_LOWER.put(4, Collections.unmodifiableList(new ArrayList<Double>(
+				Arrays.asList(0.0, 1.0, 0.0, 1.0)))); // "AA"
+		ENCODED_VALUES_LOWER.put(5, Collections.unmodifiableList(new ArrayList<Double>(
+				Arrays.asList(0.0, 1.0, 1.0, 0.0)))); // "AT"
+		ENCODED_VALUES_LOWER.put(7, Collections.unmodifiableList(new ArrayList<Double>(
+				Arrays.asList(1.0, 0.0, 0.0, 1.0)))); // "TA"
+		ENCODED_VALUES_LOWER.put(8, Collections.unmodifiableList(new ArrayList<Double>(
+				Arrays.asList(1.0, 0.0, 1.0, 0.0)))); // "TT"
+	}
+	private static final Map<Integer, List<Double>> ENCODED_VALUES_UPPER;
+	static {
+		ENCODED_VALUES_UPPER = new HashMap<Integer, List<Double>>(5);
+
+		ENCODED_VALUES_UPPER.put(0, Collections.unmodifiableList(new ArrayList<Double>(
+//				Arrays.asList(0.0, 0.0, 0.0, 0.0)))); // "00"
+				Arrays.asList(1.0, 1.0, 1.0, 1.0)))); // "00"
+		ENCODED_VALUES_UPPER.put(4, Collections.unmodifiableList(new ArrayList<Double>(
+				Arrays.asList(1.0, 0.0, 1.0, 0.0)))); // "AA"
+		ENCODED_VALUES_UPPER.put(5, Collections.unmodifiableList(new ArrayList<Double>(
+				Arrays.asList(1.0, 0.0, 0.0, 1.0)))); // "AT"
+		ENCODED_VALUES_UPPER.put(7, Collections.unmodifiableList(new ArrayList<Double>(
+				Arrays.asList(0.0, 1.0, 1.0, 0.0)))); // "TA"
+		ENCODED_VALUES_UPPER.put(8, Collections.unmodifiableList(new ArrayList<Double>(
+				Arrays.asList(0.0, 1.0, 0.0, 1.0)))); // "TT"
 	}
 
 	@Override
 	public Map<Genotype, List<Double>> generateEncodingTable(
-			List<Genotype> possibleGenotypes)
+			List<Genotype> possibleGenotypes,
+			List<Genotype> rawGenotypes)
 	{
 		Map<Genotype, List<Double>> encodingTable
 				= new HashMap<Genotype, List<Double>>(possibleGenotypes.size());
 
-		SortedSet<Genotype> sortedGenotypes = new TreeSet<Genotype>(possibleGenotypes);
+		Map<Genotype, Integer> baseEncodingTable
+				= generateBaseEncodingTable(possibleGenotypes);
+		
+//		SortedSet<Genotype> sortedGenotypes = new TreeSet<Genotype>(possibleGenotypes);
+//
+//		Iterator<List<Double>> encodedValues = ENCODED_VALUES.iterator();
+//		for (Genotype genotype : sortedGenotypes) {
+//			encodingTable.put(genotype, encodedValues.next());
+//		}
 
-		Iterator<List<Double>> encodedValues = ENCODED_VALUES.iterator();
-		for (Genotype genotype : sortedGenotypes) {
-			encodingTable.put(genotype, encodedValues.next());
+
+
+		Genotype lastNonZeroGt = rawGenotypes.get(0);
+//		for (Genotype rawGenotype : rawGenotypes) {
+		for (int rgi = rawGenotypes.size() - 1; rgi >= 0; rgi--) {
+			Genotype rawGenotype = rawGenotypes.get(rgi);
+			if (rawGenotype.getFather() != '0' && rawGenotype.getMother() != '0') {
+				lastNonZeroGt = rawGenotype;
+				break;
+			}
+		}
+		// true if the alphabetically lower letter appears first in the gt samples,
+		// eg. the first value is "AA" or "AT", false is "TA" or "TT"
+		Iterator<Genotype> baseEncodingKeyIterator = baseEncodingTable.keySet().iterator();
+		Genotype firstNonZeroBaseGt = baseEncodingKeyIterator.next();
+		if (firstNonZeroBaseGt.getFather() == '0') {
+			firstNonZeroBaseGt = baseEncodingKeyIterator.next();
+		}
+//		final byte lowestCharFirst = (byte) Math.min(firstNonZeroGt.getFather(), firstNonZeroGt.getMother());
+		final byte charLast = lastNonZeroGt.getMother();
+		final byte lowestCharFirstBase = (byte) Math.min(firstNonZeroBaseGt.getFather(), firstNonZeroBaseGt.getMother());
+//		final boolean isLowerFirst = (firstNonZeroGt.getFather() == firstNonZeroBaseGt.getFather());
+//		final boolean isLowerFirst = (firstNonZeroGt.getMother() == firstNonZeroBaseGt.getMother());
+		// true if the alphabetically lower letter appears in the first non-"00" GT.
+		// eg. the first value is "AA", "AT" or "TA", false if it is "TT"
+		final boolean lowerInFirst = (charLast == lowestCharFirstBase);
+
+
+
+		Map<Integer, List<Double>> encodedValues
+				= lowerInFirst
+				? ENCODED_VALUES_LOWER
+				: ENCODED_VALUES_UPPER;
+
+		for (Map.Entry<Genotype, Integer> baseEncoding : baseEncodingTable.entrySet()) {
+System.out.println("XXX " + baseEncoding.getKey() + " -> " + baseEncoding.getValue());
+//			double curValue;
+//			switch (baseEncoding.getValue()) {
+//				case 4: // "AA"
+//					curValue = 3.0;
+//					break;
+//				case 5: // "AG"
+//					curValue = 2.0;
+//					break;
+//				case 7: // "GA"
+//					curValue = 1.0;
+//					break;
+//				case 8: // "GG"
+//					curValue = 0.0;
+//					break;
+//				default: // "00"
+//					curValue = 4.0;
+//					break;
+//			}
+			encodingTable.put(baseEncoding.getKey(), encodedValues.get(baseEncoding.getValue()));
 		}
 
 		return encodingTable;

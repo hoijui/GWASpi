@@ -38,32 +38,54 @@ import org.gwaspi.model.Genotype;
  */
 public class GenotypicGenotypeEncoder extends EncodingTableBasedGenotypeEncoder {
 
-	private static final List<List<Double>> ENCODED_VALUES;
+//	private static final List<List<Double>> ENCODED_VALUES;
+//	static {
+//		ENCODED_VALUES = new ArrayList<List<Double>>(4);
+//
+//		ENCODED_VALUES.add(Collections.unmodifiableList(new ArrayList<Double>(
+//				Arrays.asList(1.0, 0.0, 0.0)))); // "AA"
+//		ENCODED_VALUES.add(Collections.unmodifiableList(new ArrayList<Double>(
+//				Arrays.asList(0.0, 1.0, 0.0)))); // "AT"
+//		ENCODED_VALUES.add(Collections.unmodifiableList(new ArrayList<Double>(
+//				Arrays.asList(0.0, 1.0, 0.0)))); // "TA"
+//		ENCODED_VALUES.add(Collections.unmodifiableList(new ArrayList<Double>(
+//				Arrays.asList(0.0, 0.0, 1.0)))); // "TT"
+//	}
+	private static final Map<Integer, List<Double>> ENCODED_VALUES;
 	static {
-		ENCODED_VALUES = new ArrayList<List<Double>>(4);
+		ENCODED_VALUES = new HashMap<Integer, List<Double>>(5);
 
-		ENCODED_VALUES.add(Collections.unmodifiableList(new ArrayList<Double>(
-				Arrays.asList(1.0, 0.0, 0.0)))); // {'A', 'A'}
-		ENCODED_VALUES.add(Collections.unmodifiableList(new ArrayList<Double>(
-				Arrays.asList(0.0, 1.0, 0.0)))); // {'A', 'C'}
-		ENCODED_VALUES.add(Collections.unmodifiableList(new ArrayList<Double>(
-				Arrays.asList(0.0, 1.0, 0.0)))); // {'C', 'A'}
-		ENCODED_VALUES.add(Collections.unmodifiableList(new ArrayList<Double>(
-				Arrays.asList(0.0, 0.0, 1.0)))); // {'C', 'C'}
+		ENCODED_VALUES.put(0, Collections.unmodifiableList(new ArrayList<Double>(
+				Arrays.asList(0.0, 0.0, 0.0)))); // "00"
+		ENCODED_VALUES.put(4, Collections.unmodifiableList(new ArrayList<Double>(
+				Arrays.asList(1.0, 0.0, 0.0)))); // "AA"
+		ENCODED_VALUES.put(5, Collections.unmodifiableList(new ArrayList<Double>(
+				Arrays.asList(0.0, 1.0, 0.0)))); // "AT"
+		ENCODED_VALUES.put(7, Collections.unmodifiableList(new ArrayList<Double>(
+				Arrays.asList(0.0, 1.0, 0.0)))); // "TA"
+		ENCODED_VALUES.put(8, Collections.unmodifiableList(new ArrayList<Double>(
+				Arrays.asList(0.0, 0.0, 1.0)))); // "TT"
 	}
 
 	@Override
 	public Map<Genotype, List<Double>> generateEncodingTable(
-			List<Genotype> possibleGenotypes)
+			List<Genotype> possibleGenotypes,
+			List<Genotype> rawGenotypes)
 	{
 		Map<Genotype, List<Double>> encodingTable
 				= new HashMap<Genotype, List<Double>>(possibleGenotypes.size());
 
-		SortedSet<Genotype> sortedGenotypes = new TreeSet<Genotype>(possibleGenotypes);
-
-		Iterator<List<Double>> encodedValues = ENCODED_VALUES.iterator();
-		for (Genotype genotype : sortedGenotypes) {
-			encodingTable.put(genotype, encodedValues.next());
+//		SortedSet<Genotype> sortedGenotypes = new TreeSet<Genotype>(possibleGenotypes);
+//
+//		Iterator<List<Double>> encodedValues = ENCODED_VALUES.iterator();
+//		for (Genotype genotype : sortedGenotypes) {
+//			encodingTable.put(genotype, encodedValues.next());
+//		}
+		Map<Genotype, Integer> baseEncodingTable
+				= generateBaseEncodingTable(possibleGenotypes);
+		for (Map.Entry<Genotype, Integer> baseEncoding : baseEncodingTable.entrySet()) {
+//System.out.println("XXX " + baseEncoding.getKey() + " -> " + baseEncoding.getValue());
+			encodingTable.put(baseEncoding.getKey(), ENCODED_VALUES.get(baseEncoding.getValue()));
 		}
 
 		return encodingTable;
