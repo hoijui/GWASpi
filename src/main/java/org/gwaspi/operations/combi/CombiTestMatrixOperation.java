@@ -796,7 +796,8 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 	private static svm_problem createLibSvmProblem(
 			Map<SampleKey, List<Double>> X,
 			Map<SampleKey, Double> Y,
-			svm_parameter libSvmParameters)
+			svm_parameter libSvmParameters,
+			String encoderString)
 	{
 		svm_problem prob = new svm_problem();
 
@@ -811,6 +812,15 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 //			prob.x = new svm_node[n][n];
 			List<List<Double>> matXT = transpose(matX);
 			problemInput = matrixMult(matX, matXT);
+
+			{
+				File correctKernelFile = new File(BASE_DIR, "K_" + encoderString);
+				List<List<Double>> correctKernel = parsePlainTextMatrix(correctKernelFile, false);
+
+				System.err.println("\ncompare kernel matrices ...");
+				compareMatrices(correctKernel, problemInput);
+				System.err.println("done. they are equal! good!\n");
+			}
 
 			// This is required by the libSVM standard for a PRECOMPUTED kernel
 			int sampleIndex = 1;
@@ -1020,7 +1030,7 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 
 		svm_parameter libSvmParameters = createLibSvmParameters();
 
-		svm_problem libSvmProblem = createLibSvmProblem(X, Y, libSvmParameters);
+		svm_problem libSvmProblem = createLibSvmProblem(X, Y, libSvmParameters, encoderString);
 
 		svm_model svmModel = svm.svm_train(libSvmProblem, libSvmParameters);
 
