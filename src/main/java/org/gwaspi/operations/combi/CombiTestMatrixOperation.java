@@ -20,11 +20,15 @@ package org.gwaspi.operations.combi;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -640,7 +644,18 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 
 			storeForSVM(X, Y);
 
-			runSVM(X, Y, genotypeEncoder);
+			String encoderString;
+			if (genotypeEncoder instanceof AllelicGenotypeEncoder) {
+				encoderString = "allelic";
+			} else if (genotypeEncoder instanceof GenotypicGenotypeEncoder) {
+				encoderString = "genotypic";
+			} else if (genotypeEncoder instanceof NominalGenotypeEncoder) {
+				encoderString = "nominal";
+			} else {
+				throw new RuntimeException();
+			}
+
+			runSVM(new ArrayList<List<Double>>(X.values()), new ArrayList<Double>(Y.values()), genotypeEncoder, encoderString);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -672,15 +687,26 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 			Y = (Map<SampleKey, Double>) ois.readObject();
 			ois.close();
 
-			runSVM(X, Y, genotypeEncoder);
+			String encoderString;
+			if (genotypeEncoder instanceof AllelicGenotypeEncoder) {
+				encoderString = "allelic";
+			} else if (genotypeEncoder instanceof GenotypicGenotypeEncoder) {
+				encoderString = "genotypic";
+			} else if (genotypeEncoder instanceof NominalGenotypeEncoder) {
+				encoderString = "nominal";
+			} else {
+				throw new RuntimeException();
+			}
+
+			runSVM(new ArrayList<List<Double>>(X.values()), new ArrayList<Double>(Y.values()), genotypeEncoder, encoderString);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
-	private static void whiten(Map<SampleKey, List<Double>> X) {
+	private static void whiten(List<List<Double>> X) {
 
-		int dEncoded = X.values().iterator().next().size();
+		int dEncoded = X.iterator().next().size();
 		int n = X.size();
 
 //		System.err.println("XXX X raw: " + X.size() + " * " + X.values().iterator().next().size());
@@ -696,7 +722,7 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 			sums.add(0.0);
 			varianceSums.add(0.0);
 		}
-		for (List<Double> x : X.values()) {
+		for (List<Double> x : X) {
 			for (int di = 0; di < dEncoded; di++) {
 				sums.set(di, sums.get(di) + x.get(di));
 			}
@@ -718,7 +744,7 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 		// TODO
 
 		// subtract the mean & calculate the variance sums
-		for (List<Double> x : X.values()) {
+		for (List<Double> x : X) {
 			for (int di = 0; di < dEncoded; di++) {
 				final double newValue = x.get(di) - mean.get(di);
 				x.set(di, newValue);
@@ -745,7 +771,7 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 		}
 
 		// set the variance to 1
-		for (List<Double> x : X.values()) {
+		for (List<Double> x : X) {
 			for (int di = 0; di < dEncoded; di++) {
 				final double curStdDev = stdDev.get(di);
 				final double oldValue = x.get(di);
@@ -794,26 +820,25 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 	}
 
 	private static svm_problem createLibSvmProblem(
-			Map<SampleKey, List<Double>> X,
-			Map<SampleKey, Double> Y,
+			List<List<Double>> X,
+			List<Double> Y,
 			svm_parameter libSvmParameters,
 			String encoderString)
 	{
 		svm_problem prob = new svm_problem();
 
-		int dEncoded = X.values().iterator().next().size();
+		int dEncoded = X.iterator().next().size();
 		int n = X.size();
 
 		// prepare the features
-		final List<List<Double>> matX = new ArrayList<List<Double>>(X.values());
 		List<List<Double>> problemInput;
 		if (libSvmParameters.kernel_type == svm_parameter.PRECOMPUTED) {
 			// precomute the kernel: K = X' * X
 //			prob.x = new svm_node[n][n];
-			List<List<Double>> matXT = transpose(matX);
-			problemInput = matrixMult(matX, matXT);
+			List<List<Double>> XT = transpose(X);
+			problemInput = matrixMult(X, XT);
 
-			{
+			if (encoderString != null) {
 				File correctKernelFile = new File(BASE_DIR, "K_" + encoderString);
 				List<List<Double>> correctKernel = parsePlainTextMatrix(correctKernelFile, false);
 
@@ -828,6 +853,35 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 				// XXX NOTE This is bad, because it will double the underlaying arrays size!
 				problemInputRow.add(0, (double) sampleIndex++);
 			}
+			// TESTING output to libSVM input format for a precomputed kernel, to test it externally
+			File generatedLibSvmKernelFile = new File(BASE_DIR, "generatedLibSvmKernel_" + encoderString + ".txt");
+//			System.err.println("\nX: " + X);
+//			System.err.println("\nXT: " + XT);
+//			System.err.println("\nX * XT: " + problemInput);
+			System.err.println("\nwriting generated libSVM PRECOMPUTED kernel file to " + generatedLibSvmKernelFile + " ...");
+			try {
+				OutputStreamWriter kernOut = new FileWriter(generatedLibSvmKernelFile);
+				Iterator<Double> Yit = Y.iterator();
+				for (List<Double> problemInputRow : problemInput) {
+					final double y = Yit.next();
+					kernOut.write(String.valueOf(y));
+					int ci = 0;
+					for (Double value : problemInputRow) {
+						kernOut.write(' ');
+						kernOut.write(String.valueOf(ci));
+						kernOut.write(':');
+						kernOut.write(String.valueOf(value));
+						ci++;
+					}
+					kernOut.write('\n');
+				}
+				kernOut.close();
+			} catch (FileNotFoundException ex) {
+				throw new RuntimeException(ex);
+			} catch (IOException ex) {
+				ex.printStackTrace();
+			}
+			System.err.println("done writing kernel file.");
 
 			// XXX NOTE Do not delete this code! as it will be bael to save us memory!
 ////			// TODO
@@ -855,7 +909,7 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 //				}
 //			}
 		} else {
-			problemInput = matX;
+			problemInput = X;
 
 //			prob.x = new svm_node[n][dEncoded];
 //			Iterator<List<Double>> itX = X.values().iterator();
@@ -871,14 +925,14 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 //			}
 		}
 		prob.x = new svm_node[problemInput.size()][problemInput.get(0).size()];
-		System.err.println("problemInput: " + problemInput.size() + " * " + problemInput.get(0).size());
+		System.err.println("\nproblemInput: " + problemInput.size() + " * " + problemInput.get(0).size());
 		Iterator<List<Double>> itX = problemInput.iterator();
 		for (int si = 0; si < problemInput.size(); si++) {
 			List<Double> sampleGTs = itX.next();
 			for (int mi = 0; mi < problemInput.get(0).size(); mi++) {
 				svm_node curNode = new svm_node();
-//				curNode.index = mi; // XXX correct?
-				curNode.index = si; // XXX correct? pretty sure that yes
+				curNode.index = mi; // XXX correct?
+//				curNode.index = si; // XXX correct? pretty sure that yes
 				curNode.value = sampleGTs.get(mi);
 				prob.x[si][mi] = curNode;
 			}
@@ -898,7 +952,7 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 		prob.l = n;
 		prob.y = new double[prob.l];
 		System.err.print("\ty:");
-		Iterator<Double> itY = Y.values().iterator();
+		Iterator<Double> itY = Y.iterator();
 		for (int si = 0; si < n; si++) {
 			double y = itY.next();
 //			y = (y + 1.0) / 2.0;
@@ -906,6 +960,33 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 			System.err.print(" " + y);
 		}
 		System.err.println();
+
+		{
+			File generatedLibSvmKernelFile = new File(BASE_DIR, "generatedLibSvmKernel_" + encoderString + "_after.txt");
+//			System.err.println("\nX: " + X);
+//			System.err.println("\nXT: " + XT);
+//			System.err.println("\nX * XT: " + problemInput);
+			System.err.println("\nAGAIN writing generated libSVM PRECOMPUTED kernel file to " + generatedLibSvmKernelFile + " ...");
+			try {
+				OutputStreamWriter kernOut = new FileWriter(generatedLibSvmKernelFile);
+				for (int si = 0; si < prob.x.length; si++) {
+					kernOut.write(String.valueOf(prob.y[si]));
+					for (int mi = 0; mi < prob.x[si].length; mi++) {
+						kernOut.write(' ');
+						kernOut.write(String.valueOf(prob.x[si][mi].index));
+						kernOut.write(':');
+						kernOut.write(String.valueOf(prob.x[si][mi].value));
+					}
+					kernOut.write('\n');
+				}
+				kernOut.close();
+			} catch (FileNotFoundException ex) {
+				throw new RuntimeException(ex);
+			} catch (IOException ex) {
+				ex.printStackTrace();
+			}
+			System.err.println("done writing kernel file.");
+		}
 
 		return prob;
 	}
@@ -971,9 +1052,12 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 
 		List<Double> weights
 				= new ArrayList<Double>(Collections.nCopies(d , 0.0));
+System.err.println("calculateOriginalSpaceWeights: " + xs.length);
 		for (int svi = 0; svi < xs.length; svi++) {
 			final svm_node[] xsi = xs[svi];
-			final int svIndex = xsi[0].index;
+//			final int svIndex = xsi[0].index; // FIXME this is wrong! it is the other index (marker-id, not sample-id!
+			final int svIndex = (int) xsi[0].value; // FIXME this only works wiht precomputed!
+			System.err.println("svIndex: " + svIndex);
 			final List<Double> Xsi = X.get(svIndex);
 			final double alpha = alphas[0][svi];
 			final double y = ys[svIndex];
@@ -995,32 +1079,20 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 	}
 
 
-	private static int runSVM(Map<SampleKey, List<Double>> X, Map<SampleKey, Double> Y, GenotypeEncoder genotypeEncoder) {
+//	private static int runSVM(Map<SampleKey, List<Double>> X, Map<SampleKey, Double> Y, GenotypeEncoder genotypeEncoder) {
+	private static int runSVM(List<List<Double>> X, List<Double> Y, GenotypeEncoder genotypeEncoder, String encoderString) {
 
-		int dEncoded = X.values().iterator().next().size();
+		int dEncoded = X.iterator().next().size();
 		int dSamples = dEncoded / genotypeEncoder.getEncodingFactor();
 		int n = X.size();
 
 		whiten(X);
 
-		List<List<Double>> xValues = new ArrayList<List<Double>>(X.values());
-
-		String encoderString;
-		if (genotypeEncoder instanceof AllelicGenotypeEncoder) {
-			encoderString = "allelic";
-		} else if (genotypeEncoder instanceof GenotypicGenotypeEncoder) {
-			encoderString = "genotypic";
-		} else if (genotypeEncoder instanceof NominalGenotypeEncoder) {
-			encoderString = "nominal";
-		} else {
-			throw new RuntimeException();
-		}
-
 		// check if feature matrix is equivalent to the one calculated with matlab
-		{
+		if (encoderString != null) {
 			File correctFeaturesFile = new File(BASE_DIR, "featmat_" + encoderString + "_extra");
 			List<List<Double>> correctFeatures = parsePlainTextMatrix(correctFeaturesFile, false);
-			List<List<Double>> xValuesTrans = transpose(xValues);
+			List<List<Double>> xValuesTrans = transpose(X);
 //			System.err.println("\nXXX correctFeatures[2]: " + correctFeatures.get(2));
 //			System.err.println("\nXXX xValues[2]: " + xValuesTrans.get(2));
 			System.err.println("\ncompare feature matrices ...");
@@ -1034,8 +1106,16 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 
 		svm_model svmModel = svm.svm_train(libSvmProblem, libSvmParameters);
 
+
+		List<Double> myAlphas = new ArrayList<Double>(Collections.nCopies(n, 0.0));
+		for (int i = 0; i < svmModel.sv_coef[0].length; i++) {
+			final double value = svmModel.sv_coef[0][i];
+			final int index = svmModel.SV[i][0].index;
+			myAlphas.set(index, value);
+		}
+
 		// check if the alphas are equivalent to the ones calculated with matlab
-		{
+		if (encoderString != null) {
 			double[][] alphas = svmModel.sv_coef;
 			svm_node[][] SVs = svmModel.SV;
 			System.err.println("\n alphas: " + alphas.length + " * " + alphas[0].length);
@@ -1064,16 +1144,8 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 			List<Double> correctAlphas = new ArrayList<Double>(Collections.nCopies(n, 0.0));
 			for (int i = 0; i < correctAlphasSparse.size(); i++) {
 				final double value = correctAlphasSparse.get(i).get(0);
-				final int index = correctAlphasSparse.get(i).get(1).intValue() - 1;
+				final int index = correctAlphasSparse.get(i).get(1).intValue();
 				correctAlphas.set(index, value);
-			}
-
-			// HACK these next two lines only work, because we have a single row only, else it would make a shalow copy, and all the rows woudl be equal
-			List<Double> myAlphas = new ArrayList<Double>(Collections.nCopies(n, 0.0));
-			for (int i = 0; i < svmModel.sv_coef[0].length; i++) {
-				final double value = svmModel.sv_coef[0][i];
-				final int index = svmModel.SV[i][0].index;
-				myAlphas.set(index, value);
 			}
 
 //			{
@@ -1099,6 +1171,8 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 			System.err.println("\ncompare alpha vectors ...");
 			compareVectors(correctAlphas, myAlphas);
 			System.err.println("done. they are equal! good!\n");
+		} else {
+			System.err.println("\njava alphas: ("+myAlphas.size()+")\n" + myAlphas);
 		}
 
 //
@@ -1112,7 +1186,7 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 //		}
 
 		List<Double> weightsEncoded = calculateOriginalSpaceWeights(
-				svmModel.sv_coef, svmModel.SV, new ArrayList(X.values()), libSvmProblem.y);
+				svmModel.sv_coef, svmModel.SV, X, libSvmProblem.y);
 
 		// check if the weights are equivalent to the ones calculated with matlab
 		{
@@ -1136,9 +1210,11 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 		System.err.println("XXX genotypeEncoder: " + genotypeEncoder.getClass().getSimpleName());
 		System.err.println("XXX encodingFactor: " + genotypeEncoder.getEncodingFactor());
 
-		List<Double> weights = new ArrayList<Double>(dSamples);
-		genotypeEncoder.decodeWeights(weightsEncoded, weights);
-		System.err.println("XXX weights: (" + weights.size() + ") " + weights);
+		if (encoderString != null) {
+			List<Double> weights = new ArrayList<Double>(dSamples);
+			genotypeEncoder.decodeWeights(weightsEncoded, weights);
+			System.err.println("XXX weights: (" + weights.size() + ") " + weights);
+		}
 
 		return Integer.MIN_VALUE;
 	}
@@ -1269,11 +1345,20 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 
 	public static void main(String[] args) {
 
-//		GenotypeEncoder encoder = new AllelicGenotypeEncoder(); // TODO
-//		GenotypeEncoder encoder = new GenotypicGenotypeEncoder(); // TODO
-		GenotypeEncoder encoder = new NominalGenotypeEncoder(); // TODO
+//		GenotypeEncoder genotypeEncoder = new AllelicGenotypeEncoder(); // TODO
+		GenotypeEncoder genotypeEncoder = new GenotypicGenotypeEncoder(); // TODO
+//		GenotypeEncoder genotypeEncoder = new NominalGenotypeEncoder(); // TODO
 
-		runEncodingAndSVM(encoder);
-//		runSVM(encoder);
+//		runSVM(genotypeEncoder);
+
+		runEncodingAndSVM(genotypeEncoder);
+
+//		List<List<Double>> X = new ArrayList<List<Double>>(2);
+//		X.add(Arrays.asList(new Double[] {1.0, 0.0}));
+//		X.add(Arrays.asList(new Double[] {0.0, 1.0}));
+//		List<Double> Y = new ArrayList<Double>(2);
+//		Y.add(1.0);
+//		Y.add(-1.0);
+//		runSVM(X, Y, genotypeEncoder, null);
 	}
 }
