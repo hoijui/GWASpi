@@ -1056,7 +1056,7 @@ System.err.println("calculateOriginalSpaceWeights: " + xs.length);
 		for (int svi = 0; svi < xs.length; svi++) {
 			final svm_node[] xsi = xs[svi];
 //			final int svIndex = xsi[0].index; // FIXME this is wrong! it is the other index (marker-id, not sample-id!
-			final int svIndex = (int) xsi[0].value; // FIXME this only works wiht precomputed!
+			final int svIndex = (int) xsi[0].value - 1; // FIXME this only works wiht PRECOMPUTED!
 			System.err.println("svIndex: " + svIndex);
 			final List<Double> Xsi = X.get(svIndex);
 			final double alpha = alphas[0][svi];
@@ -1108,9 +1108,24 @@ System.err.println("calculateOriginalSpaceWeights: " + xs.length);
 
 
 		List<Double> myAlphas = new ArrayList<Double>(Collections.nCopies(n, 0.0));
+		int curSVIndex = 0;
 		for (int i = 0; i < svmModel.sv_coef[0].length; i++) {
-			final double value = svmModel.sv_coef[0][i];
-			final int index = svmModel.SV[i][0].index;
+			final double value = svmModel.sv_coef[0][i] * -1.0; // HACK FIXME no idea why we get inverted signs, but it should not matter much for our purpose
+			int index;
+			if (libSvmParameters.kernel_type == svm_parameter.PRECOMPUTED) {
+				index = (int) svmModel.SV[i][0].value - 1; // XXX NOTE only works with PRECOMPUTED!
+			} else { // LINEAR
+//				while (libSvmProblem.x[curSVIndex][0] != svmModel.SV[i][0]) {
+//					curSVIndex++;
+//				}
+//				index = curSVIndex;
+				index = (int) svmModel.sv_indices[0][i]; // XXX testing
+			}
+//			final int index = svmModel.SV[i][0].index;
+//			final int index = (int) svmModel.SV[i][0].index; // XXX NOTE does NOT work with PRECOMPUTED!
+//			final int index = (int) svmModel.SV[i][0].value - 1; // XXX NOTE only works with PRECOMPUTED!
+//			final int index = (int) svmModel.sv_indices[i][0]; // XXX testing
+//			final int index = (int) svmModel.sv_indices[0][i]; // XXX testing
 			myAlphas.set(index, value);
 		}
 
@@ -1118,13 +1133,14 @@ System.err.println("calculateOriginalSpaceWeights: " + xs.length);
 		if (encoderString != null) {
 			double[][] alphas = svmModel.sv_coef;
 			svm_node[][] SVs = svmModel.SV;
-			System.err.println("\n alphas: " + alphas.length + " * " + alphas[0].length);
+			System.err.println("\n alphas: " + alphas.length + " * " + alphas[0].length + ": " + Arrays.asList(alphas[0]));
 			System.err.println("\n SVs: " + SVs.length + " * " + SVs[0].length);
 
 			List<List<Double>> alphasLM = new ArrayList<List<Double>>(alphas.length);
 			for (int i = 0; i < alphas.length; i++) {
 				List<Double> curRow = new ArrayList<Double>(alphas[i].length);
 				for (int j = 0; j < alphas[i].length; j++) {
+System.err.println("\talpha: " + i + ", " + j + ": " + alphas[i][j]);
 					curRow.add(alphas[i][j]);
 				}
 				alphasLM.add(curRow);
@@ -1281,7 +1297,7 @@ System.err.println("calculateOriginalSpaceWeights: " + xs.length);
 	 * Returns true if the supplied values are (quite) equal.
 	 */
 	public static boolean compareValues(double valA, double valB) {
-		return !(Math.abs((valA - valB) / (valA + valB)) > 0.0001);
+		return !(Math.abs((valA - valB) / (valA + valB)) > 0.01);
 	}
 
 	public static List<List<Double>> transpose(List<List<Double>> matrix) {
@@ -1346,8 +1362,8 @@ System.err.println("calculateOriginalSpaceWeights: " + xs.length);
 	public static void main(String[] args) {
 
 //		GenotypeEncoder genotypeEncoder = new AllelicGenotypeEncoder(); // TODO
-		GenotypeEncoder genotypeEncoder = new GenotypicGenotypeEncoder(); // TODO
-//		GenotypeEncoder genotypeEncoder = new NominalGenotypeEncoder(); // TODO
+//		GenotypeEncoder genotypeEncoder = new GenotypicGenotypeEncoder(); // TODO
+		GenotypeEncoder genotypeEncoder = new NominalGenotypeEncoder(); // TODO
 
 //		runSVM(genotypeEncoder);
 
