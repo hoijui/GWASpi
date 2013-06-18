@@ -1206,15 +1206,12 @@ System.err.println("\talpha: " + i + ", " + j + ": " + alphas[i][j]);
 
 		// check if the weights are equivalent to the ones calculated with matlab
 		{
-//			File correctWeightsFile = new File(BASE_DIR, "alpha_" + encoderString);
-//			List<List<Double>> correctAlphasSparse = parsePlainTextMatrix(correctAlphasFile, false);
-//			List<Double> templateRow = new ArrayList<Double>(Collections.nCopies(n, 0.0));
-//			List<List<Double>> correctAlphas = new ArrayList<List<Double>>(Collections.nCopies(1, templateRow));
-//			for (int i = 0; i < correctAlphasSparse.size(); i++) {
-//				final double value = correctAlphasSparse.get(i).get(0);
-//				final int index = correctAlphasSparse.get(i).get(1).intValue() - 1;
-//				correctAlphas.get(0).set(index, value);
-//			}
+			File mlWeightsRawFile = new File(BASE_DIR, "w_" + encoderString + "_raw");
+			List<Double> mlWeightsRaw = parsePlainTextMatrix(mlWeightsRawFile, true).get(0);
+
+			System.err.println("\ncompare raw, encoded weights vectors ...");
+			compareVectors(mlWeightsRaw, weightsEncoded);
+			System.err.println("done. they are equal! good!\n");
 		}
 
 		System.err.println("XXX weights(encoded): " + weightsEncoded.size());
@@ -1297,7 +1294,9 @@ System.err.println("\talpha: " + i + ", " + j + ": " + alphas[i][j]);
 	 * Returns true if the supplied values are (quite) equal.
 	 */
 	public static boolean compareValues(double valA, double valB) {
-		return !(Math.abs((valA - valB) / (valA + valB)) > 0.01);
+
+		final double relativeDiff = Math.abs((valA - valB) / (valA + valB));
+		return (valA == valA) || Double.isNaN(relativeDiff) || !(relativeDiff > 0.01);
 	}
 
 	public static List<List<Double>> transpose(List<List<Double>> matrix) {
@@ -1362,8 +1361,8 @@ System.err.println("\talpha: " + i + ", " + j + ": " + alphas[i][j]);
 	public static void main(String[] args) {
 
 //		GenotypeEncoder genotypeEncoder = new AllelicGenotypeEncoder(); // TODO
-//		GenotypeEncoder genotypeEncoder = new GenotypicGenotypeEncoder(); // TODO
-		GenotypeEncoder genotypeEncoder = new NominalGenotypeEncoder(); // TODO
+		GenotypeEncoder genotypeEncoder = new GenotypicGenotypeEncoder(); // TODO
+//		GenotypeEncoder genotypeEncoder = new NominalGenotypeEncoder(); // TODO
 
 //		runSVM(genotypeEncoder);
 
