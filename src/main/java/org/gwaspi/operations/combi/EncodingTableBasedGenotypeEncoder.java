@@ -17,6 +17,7 @@
 package org.gwaspi.operations.combi;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -88,12 +89,28 @@ public abstract class EncodingTableBasedGenotypeEncoder implements GenotypeEncod
 			System.err.println();
 		}
 
-		// encode
-		Collection<List<Double>> encodedGTValues = encodedGenotypes.values();
-		Iterator<List<Double>> encodedIt = encodedGTValues.iterator();
-		for (Genotype genotype : rawGenotypes) {
-			List<Double> encodedValues = encodedIt.next();
-			encodedValues.addAll(encodingTable.get(genotype));
+		if (encodedGenotypes.size() - (
+				encodedGenotypes.containsKey(Genotype.INVALID)
+				? 1 : 0) == 1)
+		{
+			// only one valid GT type was found
+			// for example, all SNPs have the value "AA"
+			// -> write only 0.0 values under this SNP
+			final List<Double> nullEncoding = Collections.nCopies(getEncodingFactor(), 0.0);
+			Collection<List<Double>> encodedGTValues = encodedGenotypes.values();
+			Iterator<List<Double>> encodedIt = encodedGTValues.iterator();
+			for (Genotype genotype : rawGenotypes) {
+				List<Double> encodedValues = encodedIt.next();
+				encodedValues.addAll(nullEncoding);
+			}
+		} else {
+			// encode
+			Collection<List<Double>> encodedGTValues = encodedGenotypes.values();
+			Iterator<List<Double>> encodedIt = encodedGTValues.iterator();
+			for (Genotype genotype : rawGenotypes) {
+				List<Double> encodedValues = encodedIt.next();
+				encodedValues.addAll(encodingTable.get(genotype));
+			}
 		}
 	}
 

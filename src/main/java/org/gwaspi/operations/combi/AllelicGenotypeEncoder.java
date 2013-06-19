@@ -56,8 +56,8 @@ public class AllelicGenotypeEncoder extends EncodingTableBasedGenotypeEncoder {
 		ENCODED_VALUES_LOWER = new HashMap<Integer, List<Double>>(5);
 
 		ENCODED_VALUES_LOWER.put(0, Collections.unmodifiableList(new ArrayList<Double>(
-//				Arrays.asList(0.0, 0.0, 0.0, 0.0)))); // "00"
-				Arrays.asList(1.0, 1.0, 1.0, 1.0)))); // "00"
+				Arrays.asList(0.0, 0.0, 0.0, 0.0)))); // "00"
+//				Arrays.asList(1.0, 1.0, 1.0, 1.0)))); // "00"
 		ENCODED_VALUES_LOWER.put(4, Collections.unmodifiableList(new ArrayList<Double>(
 				Arrays.asList(0.0, 1.0, 0.0, 1.0)))); // "AA"
 		ENCODED_VALUES_LOWER.put(5, Collections.unmodifiableList(new ArrayList<Double>(
@@ -72,8 +72,8 @@ public class AllelicGenotypeEncoder extends EncodingTableBasedGenotypeEncoder {
 		ENCODED_VALUES_UPPER = new HashMap<Integer, List<Double>>(5);
 
 		ENCODED_VALUES_UPPER.put(0, Collections.unmodifiableList(new ArrayList<Double>(
-//				Arrays.asList(0.0, 0.0, 0.0, 0.0)))); // "00"
-				Arrays.asList(1.0, 1.0, 1.0, 1.0)))); // "00"
+				Arrays.asList(0.0, 0.0, 0.0, 0.0)))); // "00"
+//				Arrays.asList(1.0, 1.0, 1.0, 1.0)))); // "00"
 		ENCODED_VALUES_UPPER.put(4, Collections.unmodifiableList(new ArrayList<Double>(
 				Arrays.asList(1.0, 0.0, 1.0, 0.0)))); // "AA"
 		ENCODED_VALUES_UPPER.put(5, Collections.unmodifiableList(new ArrayList<Double>(
@@ -94,7 +94,7 @@ public class AllelicGenotypeEncoder extends EncodingTableBasedGenotypeEncoder {
 
 		Map<Genotype, Integer> baseEncodingTable
 				= generateBaseEncodingTable(possibleGenotypes);
-		
+
 //		SortedSet<Genotype> sortedGenotypes = new TreeSet<Genotype>(possibleGenotypes);
 //
 //		Iterator<List<Double>> encodedValues = ENCODED_VALUES.iterator();
@@ -131,10 +131,12 @@ public class AllelicGenotypeEncoder extends EncodingTableBasedGenotypeEncoder {
 
 
 
+//		Map<Integer, List<Double>> encodedValues
+//				= lowerInFirst
+//				? ENCODED_VALUES_LOWER
+//				: ENCODED_VALUES_UPPER;
 		Map<Integer, List<Double>> encodedValues
-				= lowerInFirst
-				? ENCODED_VALUES_LOWER
-				: ENCODED_VALUES_UPPER;
+				= ENCODED_VALUES_UPPER;
 
 		for (Map.Entry<Genotype, Integer> baseEncoding : baseEncodingTable.entrySet()) {
 System.out.println("XXX " + baseEncoding.getKey() + " -> " + baseEncoding.getValue());
