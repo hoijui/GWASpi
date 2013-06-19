@@ -27,13 +27,10 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -45,39 +42,20 @@ import libsvm.svm_model;
 import libsvm.svm_node;
 import libsvm.svm_parameter;
 import libsvm.svm_problem;
-import org.gwaspi.constants.cNetCDF;
-import org.gwaspi.constants.cNetCDF.Defaults.OPType;
-import org.gwaspi.global.GenotypeComparator;
-import org.gwaspi.global.Text;
 import org.gwaspi.model.Genotype;
 import org.gwaspi.model.MarkerKey;
-import org.gwaspi.model.MatricesList;
-import org.gwaspi.model.MatrixKey;
-import org.gwaspi.model.MatrixMetadata;
-import org.gwaspi.model.OperationMetadata;
-import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleInfo.Affection;
-import org.gwaspi.model.SampleInfoList;
 import org.gwaspi.model.SampleKey;
-import org.gwaspi.netCDF.markers.MarkerSet;
-import org.gwaspi.netCDF.operations.MarkerOperationSet;
+import org.gwaspi.netCDF.markers.MarkersIterable;
 import org.gwaspi.netCDF.operations.MatrixOperation;
-import org.gwaspi.netCDF.operations.OperationFactory;
-import org.gwaspi.netCDF.operations.Utils;
-import org.gwaspi.samples.SampleSet;
-import org.gwaspi.statistics.Associations;
-import org.gwaspi.statistics.Pvalue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.ma2.ArrayChar;
 import ucar.ma2.InvalidRangeException;
-import ucar.nc2.NetcdfFile;
-import ucar.nc2.NetcdfFileWriteable;
 
 public class CombiTestMatrixOperation implements MatrixOperation {
 
-	private final Logger log
+	private static final Logger LOG
 			= LoggerFactory.getLogger(CombiTestMatrixOperation.class);
 
 	private static final File BASE_DIR = new File(System.getProperty("user.home"), "/Projects/GWASpi/var/data/marius/example/extra");
@@ -92,413 +70,20 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 		this.params = params;
 	}
 
-//	/**
-//	 * Performs the Allelic or Genotypic Association Tests.
-//	 * @param wrNcFile
-//	 * @param wrCaseMarkerIdSetMap
-//	 * @param wrCtrlMarkerSet
-//	 */
-//	protected void performTest(NetcdfFileWriteable wrNcFile, Map<MarkerKey, int[]> wrCaseMarkerIdSetMap, Map<MarkerKey, int[]> wrCtrlMarkerSet) {
-//
-////		svm_problem prob = new svm_problem();
-////		prob.l = wrCaseMarkerIdSetMap.size();
-////		prob.x = new svm_node[prob.l][];
-////		for (int i = 0; i < prob.l; i++) {
-////			prob.x[i] = vx.get(i);
-////		}
-////		prob.y = new double[prob.l];
-////		for (int i = 0; i < prob.l; i++) {
-////			prob.y[i] = vy.get(i);
-////		}
-//
-//
-//
-//		// Iterate through markerset
-//		int markerNb = 0;
-//		Map<MarkerKey, Double[]> result = new LinkedHashMap<MarkerKey, Double[]>(wrCaseMarkerIdSetMap.size());
-//		for (Map.Entry<MarkerKey, int[]> entry : wrCaseMarkerIdSetMap.entrySet()) {
-//			MarkerKey markerKey = entry.getKey();
-//
-//			int[] caseCntgTable = entry.getValue();
-//			int[] ctrlCntgTable = wrCtrlMarkerSet.get(markerKey);
-//
-//			// INIT VALUES
-//			int caseAA = caseCntgTable[0];
-//			int caseAa = caseCntgTable[1];
-//			int caseaa = caseCntgTable[2];
-//			int caseTot = caseAA + caseaa + caseAa;
-//
-//			int ctrlAA = ctrlCntgTable[0];
-//			int ctrlAa = ctrlCntgTable[1];
-//			int ctrlaa = ctrlCntgTable[2];
-//			int ctrlTot = ctrlAA + ctrlaa + ctrlAa;
-//
-//			Double[] store;
-//			if (allelic) {
-//				// allelic test
-//				int sampleNb = caseTot + ctrlTot;
-//
-//				double allelicT = Associations.calculateAllelicAssociationChiSquare(
-//						sampleNb,
-//						caseAA,
-//						caseAa,
-//						caseaa,
-//						caseTot,
-//						ctrlAA,
-//						ctrlAa,
-//						ctrlaa,
-//						ctrlTot);
-//				double allelicPval = Pvalue.calculatePvalueFromChiSqr(allelicT, 1);
-//
-//				double allelicOR = Associations.calculateAllelicAssociationOR(
-//						caseAA,
-//						caseAa,
-//						caseaa,
-//						ctrlAA,
-//						ctrlAa,
-//						ctrlaa);
-//
-//				store = new Double[3];
-//				store[0] = allelicT;
-//				store[1] = allelicPval;
-//				store[2] = allelicOR;
-//			} else {
-//				// genotypic test
-//				double gntypT = Associations.calculateGenotypicAssociationChiSquare(
-//						caseAA,
-//						caseAa,
-//						caseaa,
-//						caseTot,
-//						ctrlAA,
-//						ctrlAa,
-//						ctrlaa,
-//						ctrlTot);
-//				double gntypPval = Pvalue.calculatePvalueFromChiSqr(gntypT, 2);
-//				double[] gntypOR = Associations.calculateGenotypicAssociationOR(
-//						caseAA,
-//						caseAa,
-//						caseaa,
-//						ctrlAA,
-//						ctrlAa,
-//						ctrlaa);
-//
-//				store = new Double[4];
-//				store[0] = gntypT;
-//				store[1] = gntypPval;
-//				store[2] = gntypOR[0];
-//				store[3] = gntypOR[1];
-//			}
-//			result.put(markerKey, store); // store P-value and stuff
-//
-//			markerNb++;
-//			if (markerNb % 100000 == 0) {
-//				log.info("Processed {} markers", markerNb);
-//			}
-//		}
-//
-//		//<editor-fold defaultstate="expanded" desc="ALLELICTEST DATA WRITER">
-//		int[] boxes;
-//		String variableName;
-//		if (allelic) {
-//			boxes = new int[] {0, 1, 2};
-//			variableName = cNetCDF.Association.VAR_OP_MARKERS_ASAllelicAssociationTPOR;
-//		} else {
-//			boxes = new int[] {0, 1, 2, 3};
-//			variableName = cNetCDF.Association.VAR_OP_MARKERS_ASGenotypicAssociationTP2OR;
-//		}
-//		Utils.saveDoubleMapD2ToWrMatrix(wrNcFile, result, boxes, variableName);
-//		//</editor-fold>
-//	}
-
-//	private static class SampleInfosFetcher {
-//
-//		private final SampleSet sampleSet;
-//		private final NetcdfFile netCdfFile;
-//		private final List<MarkerKey> markerKeys;
-//		private int nextMarker;
-//		private Map<SampleKey, byte[]> samples;
-//
-//		SampleInfosFetcher(MatrixKey matrixKey) throws IOException, InvalidRangeException {
-//
-//			int readStudyId = matrixKey.getStudyKey().getId();
-//			int readMatrixId = matrixKey.getId();
-//			MatrixMetadata rdMatrixMetadata = MatricesList.getMatrixMetadataById(readMatrixId);
-////			netCdfFile = NetcdfFile.open(rdMatrixMetadata.getPathToMatrix());
-////
-////			MarkerSet rdMarkerSet = new MarkerSet(readStudyId, readMatrixId);
-////			rdMarkerSet.initFullMarkerIdSetMap();
-////	//		rdMarkerSet.fillGTsForCurrentSampleIntoInitMap(readStudyId);
-////	//		rdMarkerSet.fillWith(cNetCDF.Defaults.DEFAULT_GT);
-////	//
-////	//		Map<MarkerKey, byte[]> wrMarkerSetMap = new LinkedHashMap<MarkerKey, byte[]>();
-////	//		wrMarkerSetMap.putAll(rdMarkerSet.getMarkerIdSetMapByteArray());
-////
-//			sampleSet = new SampleSet(rdMatrixMetadata.getStudyId(), readMatrixId);
-//			samples = sampleSet.getSampleIdSetMapByteArray();
-////			// This one has to be ordered! (and it is, due to the map being a LinkedHashMap)
-//			Set<SampleKey> sampleKeys = sampleSet.getSampleIdSetMapByteArray().keySet();
-////			// This one has to be ordered! (and it is, due to the map being a LinkedHashMap)
-////			markerKeys = new ArrayList<MarkerKey>(rdMarkerSet.getMarkerIdSetMapInteger().keySet());
-//
-//			List<SampleInfo> allSampleInfos = SampleInfoList.getAllSampleInfoFromDBByPoolID(readStudyId);
-//			Map<SampleKey, SampleInfo> sampleInfos
-//					= new LinkedHashMap<SampleKey, SampleInfo>(allSampleInfos.size());
-//			for (SampleInfo sampleInfo : allSampleInfos) {
-//				sampleInfos.put(sampleInfo.getKey(), sampleInfo);
-//			}
-//			Map<SampleKey, Double> affectionStates
-//					= new LinkedHashMap<SampleKey, Double>(allSampleInfos.size());
-//			// we iterate over sampleKeys now, to get the correct order
-//			for (SampleKey sampleKey : sampleKeys) {
-//				Affection affection = sampleInfos.get(sampleKey).getAffection();
-//				if (affection == Affection.UNKNOWN) {
-//					throw new RuntimeException("Should we filter this out beforehand?");
-//				}
-//	//			System.err.println("\tlabel: " + affection);
-//				Double encodedDisease = affection.equals(Affection.AFFECTED) ? 1.0 : 0.0; // XXX or should it be -1.0 instead of 0.0?
-//				affectionStates.put(sampleKey, encodedDisease);
-//			}
-//
-//			nextMarker = 0;
-//		}
-//	}
-
-	/** TODO move into MarkerSet ? */
-	private static class MatrixSamples implements
-			Iterable<Map.Entry<MarkerKey, Map<SampleKey, byte[]>>>, // HACK
-			Iterator<Map.Entry<MarkerKey, Map<SampleKey, byte[]>>>
-	{
-		private final MatrixKey matrixKey;
-		private final SampleSet sampleSet;
-		private final NetcdfFile netCdfFile;
-		private final List<MarkerKey> markerKeys;
-		private Set<SampleKey> sampleKeys;
-		private int nextMarker;
-		private Map<SampleKey, SampleInfo> sampleInfos;
-
-		MatrixSamples(MatrixKey matrixKey) throws IOException, InvalidRangeException {
-
-			this.matrixKey = matrixKey;
-			MatrixMetadata rdMatrixMetadata = MatricesList.getMatrixMetadataById(matrixKey);
-			netCdfFile = NetcdfFile.open(rdMatrixMetadata.getPathToMatrix());
-
-			MarkerSet rdMarkerSet = new MarkerSet(matrixKey);
-			rdMarkerSet.initFullMarkerIdSetMap();
-	//		rdMarkerSet.fillGTsForCurrentSampleIntoInitMap(readStudyId);
-	//		rdMarkerSet.fillWith(cNetCDF.Defaults.DEFAULT_GT);
-	//
-	//		Map<MarkerKey, byte[]> wrMarkerSetMap = new LinkedHashMap<MarkerKey, byte[]>();
-	//		wrMarkerSetMap.putAll(rdMarkerSet.getMarkerIdSetMapByteArray());
-
-			sampleSet = new SampleSet(matrixKey);
-//			samples = sampleSet.getSampleIdSetMapByteArray();
-			sampleKeys = sampleSet.getSampleKeys();
-			// This one has to be ordered! (and it is, due to the map being a LinkedHashMap)
-			markerKeys = new ArrayList<MarkerKey>(rdMarkerSet.getMarkerIdSetMapInteger().keySet());
-
-			nextMarker = 0;
-			sampleInfos = retrieveSampleInfos();
-		}
-
-		private Map<SampleKey, SampleInfo> retrieveSampleInfos() throws IOException, InvalidRangeException {
-
-			// This one has to be ordered! (and it is, due to the map being a LinkedHashMap)
-			Set<SampleKey> sampleKeysOrdered = sampleSet.getSampleIdSetMapByteArray().keySet();
-
-			List<SampleInfo> allSampleInfos = SampleInfoList.getAllSampleInfoFromDBByPoolID(matrixKey.getStudyKey());
-			Map<SampleKey, SampleInfo> sampleInfosUnordered = new LinkedHashMap<SampleKey, SampleInfo>(allSampleInfos.size());
-			for (SampleInfo sampleInfo : allSampleInfos) {
-				sampleInfosUnordered.put(sampleInfo.getKey(), sampleInfo);
-			}
-
-			// we use LinkedHashMap for retainig the order of input
-			Map<SampleKey, SampleInfo> localSampleInfos = new LinkedHashMap<SampleKey, SampleInfo>(sampleInfosUnordered.size());
-			for (SampleKey sampleKey : sampleKeysOrdered) {
-				localSampleInfos.put(sampleKey, sampleInfosUnordered.get(sampleKey));
-			}
-
-			return localSampleInfos;
-		}
-
-		public Map<SampleKey, SampleInfo> getSampleInfos() {
-			return sampleInfos;
-		}
-
-		public List<MarkerKey> getMarkerKeys() {
-			return markerKeys;
-		}
-
-		@Override
-		public boolean hasNext() {
-			return nextMarker < markerKeys.size();
-		}
-
-		@Override
-		public Map.Entry<MarkerKey, Map<SampleKey, byte[]>> next() {
-
-			Map<SampleKey, byte[]> samples
-					= new LinkedHashMap<SampleKey, byte[]>(sampleKeys.size());
-			for (SampleKey sampleKey : sampleKeys) {
-				samples.put(sampleKey, null);
-			}
-			try {
-				sampleSet.readAllSamplesGTsFromCurrentMarkerToMap(netCdfFile, samples, nextMarker);
-			} catch (IOException ex) {
-				throw new RuntimeException(ex);
-			}
-
-			Map.Entry<MarkerKey, Map<SampleKey, byte[]>> next
-					= Collections.singletonMap(markerKeys.get(nextMarker), samples).entrySet().iterator().next();
-			nextMarker++;
-
-			return next;
-		}
-
-		@Override
-		public void remove() {
-			throw new UnsupportedOperationException(
-					"We do not support removing elements (from the persistent storage) through this iterator.");
-		}
-
-		public Iterator<Map.Entry<MarkerKey, Map<SampleKey, byte[]>>> iterator() {
-			return this; // FIXME HACK Will fail if iterated a second time!
-		}
-	}
-
-	public void TESTING() throws IOException, InvalidRangeException {
-
-//		svm_problem prob = new svm_problem();
-//		prob.l = wrCaseMarkerIdSetMap.size();
-//		prob.x = new svm_node[prob.l][];
-//		for (int i = 0; i < prob.l; i++) {
-//			prob.x[i] = vx.get(i);
-//		}
-//		prob.y = new double[prob.l];
-//		for (int i = 0; i < prob.l; i++) {
-//			prob.y[i] = vy.get(i);
-//		}
-
-
-//		int resultOpId = Integer.MIN_VALUE;
-//
-//		OperationMetadata rdOPMetadata = OperationsList.getOperationMetadata(markerCensusOP.getId());
-//		NetcdfFile rdNcFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());
-//
-//		MarkerOperationSet rdOperationSet = new MarkerOperationSet(rdOPMetadata.getStudyId(), markerCensusOP.getId());
-//		Map<MarkerKey, char[]> rdMarkerSetMap = rdOperationSet.getOpSetMap();
-//		Map<SampleKey, ?> rdSampleSetMap = rdOperationSet.getImplicitSetMap();
-//
-//		NetcdfFileWriteable wrNcFile = null;
-//		try {
-//			// CREATE netCDF-3 FILE
-//
-//			OperationFactory wrOPHandler = new OperationFactory(
-//					rdOPMetadata.getStudyId(),
-//					"Combi_" + censusName, // friendly name
-//					"Combi test on Samples marked as controls (only females for the X chromosome)\nMarkers: " + rdMarkerSetMap.size() + "\nSamples: " + rdSampleSetMap.size(), //description
-//					rdMarkerSetMap.size(),
-//					rdSampleSetMap.size(),
-//					0,
-//					OPType.COMBI_ASSOC_TEST,
-//					rdOPMetadata.getParentMatrixId(), // Parent matrixId
-//					markerCensusOP.getId()); // Parent operationId
-//			wrNcFile = wrOPHandler.getNetCDFHandler();
-//
-//			try {
-//				wrNcFile.create();
-//			} catch (IOException ex) {
-//				log.error("Failed creating file: " + wrNcFile.getLocation(), ex);
-//			}
-//
-//			//<editor-fold defaultstate="expanded" desc="METADATA WRITER">
-//			// MARKERSET MARKERID
-//			ArrayChar.D2 markersD2 = Utils.writeMapKeysToD2ArrayChar(rdMarkerSetMap, cNetCDF.Strides.STRIDE_MARKER_NAME);
-//			int[] markersOrig = new int[] {0, 0};
-//			try {
-//				wrNcFile.write(cNetCDF.Variables.VAR_OPSET, markersOrig, markersD2);
-//			} catch (IOException ex) {
-//				log.error("Failed writing file: " + wrNcFile.getLocation(), ex);
-//			} catch (InvalidRangeException ex) {
-//				log.error(null, ex);
-//			}
-//
-//			// MARKERSET RSID
-//			rdMarkerSetMap = rdOperationSet.fillOpSetMapWithVariable(rdNcFile, cNetCDF.Variables.VAR_MARKERS_RSID);
-//			Utils.saveCharMapValueToWrMatrix(wrNcFile, rdMarkerSetMap, cNetCDF.Variables.VAR_MARKERS_RSID, cNetCDF.Strides.STRIDE_MARKER_NAME);
-//
-//			// WRITE SAMPLESET TO MATRIX FROM SAMPLES ARRAYLIST
-//			ArrayChar.D2 samplesD2 = org.gwaspi.netCDF.operations.Utils.writeMapKeysToD2ArrayChar(rdSampleSetMap, cNetCDF.Strides.STRIDE_SAMPLE_NAME);
-//
-//			int[] sampleOrig = new int[]{0, 0};
-//			try {
-//				wrNcFile.write(cNetCDF.Variables.VAR_IMPLICITSET, sampleOrig, samplesD2);
-//			} catch (IOException ex) {
-//				log.error("Failed writing file: " + wrNcFile.getLocation(), ex);
-//			} catch (InvalidRangeException ex) {
-//				log.error(null, ex);
-//			}
-//			log.info("Done writing SampleSet to matrix");
-//			//</editor-fold>
-//
-//			//<editor-fold defaultstate="expanded" desc="GET CENSUS & PERFORM HW">
-//			Map<MarkerKey, int[]> markersCensus;
-////			// PROCESS ALL SAMPLES
-////			rdOperationSet.fillOpSetMapWithDefaultValue(new int[0]); // PURGE
-////			markersCensus = rdOperationSet.fillOpSetMapWithVariable(rdNcFile, cNetCDF.Census.VAR_OP_MARKERS_CENSUSALL);
-////			performHardyWeinberg(wrNcFile, markersCensus, "ALL");
-////
-////			// PROCESS CASE SAMPLES
-////			rdOperationSet.fillOpSetMapWithDefaultValue(new int[0]); // PURGE
-////			markersCensus = rdOperationSet.fillOpSetMapWithVariable(rdNcFile, cNetCDF.Census.VAR_OP_MARKERS_CENSUSCASE);
-////			performHardyWeinberg(wrNcFile, markersCensus, "CASE");
-//
-//			// PROCESS CONTROL SAMPLES
-//			log.info(Text.All.processing);
-//			rdOperationSet.fillOpSetMapWithDefaultValue(new int[0]); // PURGE
-//			markersCensus = rdOperationSet.fillOpSetMapWithVariable(rdNcFile, cNetCDF.Census.VAR_OP_MARKERS_CENSUSCTRL);
-//			performHardyWeinberg(wrNcFile, markersCensus, "CTRL");
-//
-//			// PROCESS ALTERNATE HW SAMPLES
-//			log.info(Text.All.processing);
-//			rdOperationSet.fillOpSetMapWithDefaultValue(new int[0]); // PURGE
-//			markersCensus = rdOperationSet.fillOpSetMapWithVariable(rdNcFile, cNetCDF.Census.VAR_OP_MARKERS_CENSUSHW);
-//			performHardyWeinberg(wrNcFile, markersCensus, "HW-ALT");
-//			//</editor-fold>
-//
-//			resultOpId = wrOPHandler.getResultOPId();
-//			org.gwaspi.global.Utils.sysoutCompleted("Hardy-Weinberg Equilibrium Test");
-//		} catch (InvalidRangeException ex) {
-//			log.error(null, ex);
-//		} catch (IOException ex) {
-//			log.error(null, ex);
-//		} finally {
-//			if (null != rdNcFile) {
-//				try {
-//					rdNcFile.close();
-//					wrNcFile.close();
-//				} catch (IOException ex) {
-//					log.warn("Cannot close file", ex);
-//				}
-//			}
-//		}
-//
-//		return resultOpId;
-	}
-
 	@Override
 	public int processMatrix() throws IOException, InvalidRangeException {
-		System.out.println("XXX Combi-test Start");
+		LOG.debug("Combi-test Start");
 
-		MatrixSamples matrixSamples = new MatrixSamples(params.getMatrixKey());
-		Map<SampleKey, SampleInfo> sampleInfos = matrixSamples.getSampleInfos();
+		MarkersIterable markersIterable = new MarkersIterable(params.getMatrixKey());
+		Map<SampleKey, SampleInfo> sampleInfos = markersIterable.getSampleInfos();
 
 		// dimensions of the samples(-space) == #markers (== #SNPs)
-		int dSamples = matrixSamples.getMarkerKeys().size();
+		int dSamples = markersIterable.getMarkerKeys().size();
 		// dimensions of the encoded samples(-space) == #markers * encoding-factor
 		int dEncoded = dSamples * params.getEncoder().getEncodingFactor();
 		int n = sampleInfos.size();
 
-		storeForEncoding(matrixSamples, sampleInfos, dSamples, dEncoded, n);
+		storeForEncoding(markersIterable, sampleInfos, dSamples, dEncoded, n);
 
 		return Integer.MIN_VALUE;
 	}
@@ -530,7 +115,7 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 			int n)
 			throws IOException, InvalidRangeException
 	{
-		System.err.println("XXX samples:");
+		LOG.debug("samples:");
 
 		// we use LinkedHashMap to preserve the inut order
 		Map<SampleKey, List<Double>> encodedSamples
@@ -545,12 +130,14 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 		int mi = 0;
 		for (Map.Entry<MarkerKey, Map<SampleKey, byte[]>> markerSamples : markerSamplesIterable) {
 			Map<SampleKey, byte[]> samples = markerSamples.getValue();
-			System.err.print("\nmarker " + mi + "\n");
+			LOG.debug("");
+			StringBuilder debugOut = new StringBuilder();
+			debugOut.append("marker ").append(mi).append("\n");
 			for (byte[] gt : samples.values()) {
-				System.err.print(" " + new String(gt));
+				debugOut.append(" ").append(new String(gt));
 			}
-			System.err.println();
-//			System.err.println("XXX Combi-test");
+			LOG.debug(debugOut.toString());
+//			log.debug("Combi-test");
 
 			// convert & collect unique GTs (unique per marker)
 			List<Genotype> all = new ArrayList<Genotype>(n);
@@ -559,20 +146,20 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 				Genotype genotype = new Genotype(sample.getValue());
 				all.add(genotype);
 				unique.add(genotype);
-//				System.err.println("\t" + sample.getKey() + ": " + new String(sample.getValue()));
+//				log.debug("\t" + sample.getKey() + ": " + new String(sample.getValue()));
 			}
 			List<Genotype> uniqueList = new ArrayList<Genotype>(unique);
 			Collections.sort(uniqueList);
-//			System.err.println("\tunique GT list:");
+//			log.debug("\tunique GT list:");
 //			for (Genotype genotype : uniqueList) {
-//				System.err.println("\t\t\t\t" + genotype);
+//				log.debug("\t\t\t\t" + genotype);
 //			}
 
 			// test output
 //			uniqueGts.put(markerKey, curUniqueGts);
-//			System.err.println("\t" + markerKey + ": " + curUniqueGts.size());
+//			log.debug("\t" + markerKey + ": " + curUniqueGts.size());
 //			for (Genotype genotype : curUniqueGts) {
-//				System.err.println("\t\t" + genotype);
+//				log.debug("\t\t" + genotype);
 //			}
 
 			// encode all samples for this marker
@@ -585,15 +172,13 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 
 	private static final File TMP_RAW_DATA_FILE = new File(System.getProperty("user.home") + "/Projects/GWASpi/repos/GWASpi/rawDataTmp.ser");
 
-	private static void storeForEncoding(MatrixSamples matrixSamples, Map<SampleKey, SampleInfo> sampleInfos, int dSamples, int dEncoded, int n) {
+	private static void storeForEncoding(MarkersIterable markersIterable, Map<SampleKey, SampleInfo> sampleInfos, int dSamples, int dEncoded, int n) {
 
 		// we use LinkedHashMap to preserve the inut order
 		Map<MarkerKey, Map<SampleKey, byte[]>> loadedMatrixSamples
 				= new LinkedHashMap<MarkerKey, Map<SampleKey, byte[]>>(dSamples);
-		for (Map.Entry<MarkerKey, Map<SampleKey, byte[]>> markerSamples : matrixSamples) {
+		for (Map.Entry<MarkerKey, Map<SampleKey, byte[]>> markerSamples : markersIterable) {
 			loadedMatrixSamples.put(markerSamples.getKey(), markerSamples.getValue());
-			for (byte[] gt : markerSamples.getValue().values()) {
-			}
 		}
 
 		try {
@@ -709,9 +294,9 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 		int dEncoded = X.iterator().next().size();
 		int n = X.size();
 
-//		System.err.println("XXX X raw: " + X.size() + " * " + X.values().iterator().next().size());
+//		log.debug("X raw: " + X.size() + " * " + X.values().iterator().next().size());
 //		for (List<Double> x : X.values()) {
-//			System.err.println("\tx: " + x);
+//			log.debug("\tx: " + x);
 //		}
 
 		// center the data
@@ -727,17 +312,17 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 				sums.set(di, sums.get(di) + x.get(di));
 			}
 		}
-//		System.err.println("XXX sums: " + sums);
+//		log.debug("sums: " + sums);
 		List<Double> mean = new ArrayList<Double>(dEncoded);
 		for (int di = 0; di < dEncoded; di++) {
 //			Double divide = sums.get(di).setScale(4).divide(new Double(nSamples), Double.ROUND_HALF_UP);
-//			System.err.println("XXX mean part: " + sums.get(di) + " / " + nSamples + " = " + divide);
+//			log.debug("mean part: " + sums.get(di) + " / " + nSamples + " = " + divide);
 //			mean.add(sums.get(di).divide(new Double(nSamples), Double.ROUND_HALF_UP).doubleValue());
 			final double curSum = sums.get(di);
 			final double curMean = (curSum == 0.0) ? 0.0 : (curSum / n);
 			mean.add(curMean);
 		}
-//		System.err.println("XXX mean: " + mean);
+//		log.debug("mean: " + mean);
 		// alternatively, using a moving average as described in the second formula here:
 		// https://en.wikipedia.org/wiki/Moving_average#Cumulative_moving_average
 		// this might be faster, might not.
@@ -842,9 +427,9 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 				File correctKernelFile = new File(BASE_DIR, "K_" + encoderString);
 				List<List<Double>> correctKernel = parsePlainTextMatrix(correctKernelFile, false);
 
-				System.err.println("\ncompare kernel matrices ...");
+				LOG.debug("\ncompare kernel matrices ...");
 				compareMatrices(correctKernel, problemInput);
-				System.err.println("done. they are equal! good!\n");
+				LOG.debug("done. they are equal! good!\n");
 			}
 
 			// This is required by the libSVM standard for a PRECOMPUTED kernel
@@ -855,10 +440,10 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 			}
 			// TESTING output to libSVM input format for a precomputed kernel, to test it externally
 			File generatedLibSvmKernelFile = new File(BASE_DIR, "generatedLibSvmKernel_" + encoderString + ".txt");
-//			System.err.println("\nX: " + X);
-//			System.err.println("\nXT: " + XT);
-//			System.err.println("\nX * XT: " + problemInput);
-			System.err.println("\nwriting generated libSVM PRECOMPUTED kernel file to " + generatedLibSvmKernelFile + " ...");
+//			log.debug("\nX: " + X);
+//			log.debug("\nXT: " + XT);
+//			log.debug("\nX * XT: " + problemInput);
+			LOG.debug("\nwriting generated libSVM PRECOMPUTED kernel file to " + generatedLibSvmKernelFile + " ...");
 			try {
 				OutputStreamWriter kernOut = new FileWriter(generatedLibSvmKernelFile);
 				Iterator<Double> Yit = Y.iterator();
@@ -881,7 +466,7 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 			} catch (IOException ex) {
 				ex.printStackTrace();
 			}
-			System.err.println("done writing kernel file.");
+			LOG.debug("done writing kernel file.");
 
 			// XXX NOTE Do not delete this code! as it will be bael to save us memory!
 ////			// TODO
@@ -925,7 +510,7 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 //			}
 		}
 		prob.x = new svm_node[problemInput.size()][problemInput.get(0).size()];
-		System.err.println("\nproblemInput: " + problemInput.size() + " * " + problemInput.get(0).size());
+		LOG.debug("\nproblemInput: " + problemInput.size() + " * " + problemInput.get(0).size());
 		Iterator<List<Double>> itX = problemInput.iterator();
 		for (int si = 0; si < problemInput.size(); si++) {
 			List<Double> sampleGTs = itX.next();
@@ -939,34 +524,26 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 		}
 
 
-//		System.err.println("XXX X: " + prob.x.length + " * " + prob.x[0].length);
-//		for (int i = 0; i < prob.x.length; i++) {
-//			System.err.print("\tx:");
-//			for (int j = 0; j < prob.x[i].length; j++) {
-//				System.err.print(" " + prob.x[i][j].value);
-//			}
-//			System.err.println();
-//		}
-
 		// prepare the labels
 		prob.l = n;
 		prob.y = new double[prob.l];
-		System.err.print("\ty:");
+		StringBuilder debugOut = new StringBuilder();
+		debugOut.append("\ty:");
 		Iterator<Double> itY = Y.iterator();
 		for (int si = 0; si < n; si++) {
 			double y = itY.next();
 //			y = (y + 1.0) / 2.0;
 			prob.y[si] = y;
-			System.err.print(" " + y);
+			debugOut.append(" " + y);
 		}
-		System.err.println();
+		LOG.debug(debugOut.toString());
 
 		{
 			File generatedLibSvmKernelFile = new File(BASE_DIR, "generatedLibSvmKernel_" + encoderString + "_after.txt");
-//			System.err.println("\nX: " + X);
-//			System.err.println("\nXT: " + XT);
-//			System.err.println("\nX * XT: " + problemInput);
-			System.err.println("\nAGAIN writing generated libSVM PRECOMPUTED kernel file to " + generatedLibSvmKernelFile + " ...");
+//			log.debug("\nX: " + X);
+//			log.debug("\nXT: " + XT);
+//			log.debug("\nX * XT: " + problemInput);
+			LOG.debug("\nAGAIN writing generated libSVM PRECOMPUTED kernel file to " + generatedLibSvmKernelFile + " ...");
 			try {
 				OutputStreamWriter kernOut = new FileWriter(generatedLibSvmKernelFile);
 				for (int si = 0; si < prob.x.length; si++) {
@@ -985,7 +562,7 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 			} catch (IOException ex) {
 				ex.printStackTrace();
 			}
-			System.err.println("done writing kernel file.");
+			LOG.debug("done writing kernel file.");
 		}
 
 		return prob;
@@ -1052,27 +629,32 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 
 		List<Double> weights
 				= new ArrayList<Double>(Collections.nCopies(d , 0.0));
-System.err.println("calculateOriginalSpaceWeights: " + xs.length);
+LOG.debug("calculateOriginalSpaceWeights: " + xs.length);
 		for (int svi = 0; svi < xs.length; svi++) {
 			final svm_node[] xsi = xs[svi];
 //			final int svIndex = xsi[0].index; // FIXME this is wrong! it is the other index (marker-id, not sample-id!
 			final int svIndex = (int) xsi[0].value - 1; // FIXME this only works wiht PRECOMPUTED!
-			System.err.println("svIndex: " + svIndex);
+//			log.debug("svIndex: " + svIndex);
 			final List<Double> Xsi = X.get(svIndex);
+//			final List<Double> Xsi = new ArrayList<Double>(xsi.length - 1); // FIXME this only works wiht PRECOMPUTED!
+//			for (int i = 1; i < xsi.length; i++) {
+//				svm_node elem = xsi[i];
+//				Xsi.add(elem.value);
+//			}
 			final double alpha = alphas[0][svi];
 			final double y = ys[svIndex];
 			for (int di = 0; di < d; di++) {
 //				final double x = xsi[di].value;
-//				final double x = Xsi.get(di);
-				final double x = Math.abs(Xsi.get(di));
+				final double x = Xsi.get(di);
+//				final double x = Math.abs(Xsi.get(di));
 //				final double alphaYXi = alpha * y * x;
 				// NOTE We dismiss the y, which would be part of normal SVM,
 				// because we want the absolute sum (i forgot again why so :/ )
-				final double alphaYXi = alpha * x;
-//				System.err.print(" " + svwp);
+//				final double alphaYXi = alpha * x;
+				final double alphaYXi = - alpha * x; // FIXME why here change sign again?!?!
 				weights.set(di, weights.get(di) + alphaYXi);
 			}
-//			System.err.println();
+//			log.debug();
 		}
 
 		return weights;
@@ -1093,11 +675,11 @@ System.err.println("calculateOriginalSpaceWeights: " + xs.length);
 			File correctFeaturesFile = new File(BASE_DIR, "featmat_" + encoderString + "_extra");
 			List<List<Double>> correctFeatures = parsePlainTextMatrix(correctFeaturesFile, false);
 			List<List<Double>> xValuesTrans = transpose(X);
-//			System.err.println("\nXXX correctFeatures[2]: " + correctFeatures.get(2));
-//			System.err.println("\nXXX xValues[2]: " + xValuesTrans.get(2));
-			System.err.println("\ncompare feature matrices ...");
+//			log.debug("\nXXX correctFeatures[2]: " + correctFeatures.get(2));
+//			log.debug("\nXXX xValues[2]: " + xValuesTrans.get(2));
+			LOG.debug("\ncompare feature matrices ...");
 			compareMatrices(correctFeatures, xValuesTrans);
-			System.err.println("done. they are equal! good!\n");
+			LOG.debug("done. they are equal! good!\n");
 		}
 
 		svm_parameter libSvmParameters = createLibSvmParameters();
@@ -1133,26 +715,17 @@ System.err.println("calculateOriginalSpaceWeights: " + xs.length);
 		if (encoderString != null) {
 			double[][] alphas = svmModel.sv_coef;
 			svm_node[][] SVs = svmModel.SV;
-			System.err.println("\n alphas: " + alphas.length + " * " + alphas[0].length + ": " + Arrays.asList(alphas[0]));
-			System.err.println("\n SVs: " + SVs.length + " * " + SVs[0].length);
+			LOG.debug("\n alphas: " + alphas.length + " * " + alphas[0].length + ": " + Arrays.asList(alphas[0]));
+			LOG.debug("\n SVs: " + SVs.length + " * " + SVs[0].length);
 
-			List<List<Double>> alphasLM = new ArrayList<List<Double>>(alphas.length);
-			for (int i = 0; i < alphas.length; i++) {
-				List<Double> curRow = new ArrayList<Double>(alphas[i].length);
-				for (int j = 0; j < alphas[i].length; j++) {
-System.err.println("\talpha: " + i + ", " + j + ": " + alphas[i][j]);
-					curRow.add(alphas[i][j]);
-				}
-				alphasLM.add(curRow);
-			}
-
-//			System.err.println("\nXXX alphas: " + alphas.length + " * " + alphas[0].length);
+//			List<List<Double>> alphasLM = new ArrayList<List<Double>>(alphas.length);
 //			for (int i = 0; i < alphas.length; i++) {
-//				System.err.print("\talpha:");
+//				List<Double> curRow = new ArrayList<Double>(alphas[i].length);
 //				for (int j = 0; j < alphas[i].length; j++) {
-//					System.err.print(" " + alphas[i][j]);
+//LOG.debug("\talpha: " + i + ", " + j + ": " + alphas[i][j]);
+//					curRow.add(alphas[i][j]);
 //				}
-//				System.err.println();
+//				alphasLM.add(curRow);
 //			}
 
 			File correctAlphasFile = new File(BASE_DIR, "alpha_" + encoderString);
@@ -1175,58 +748,75 @@ System.err.println("\talpha: " + i + ", " + j + ": " + alphas[i][j]);
 //				matrixB.add(Arrays.asList(new Double[] {2.0, 1.0, 0.0}));
 //
 //				List<List<Double>> res = matrixMult(matrixA, matrixB);
-//				System.err.println("\nmatrixA: " + matrixA);
-//				System.err.println("\nmatrixB: " + matrixB);
-//				System.err.println("\nres: " + res);
+//				log.debug("\nmatrixA: " + matrixA);
+//				log.debug("\nmatrixB: " + matrixB);
+//				log.debug("\nres: " + res);
 //			}
 
 //			Collections.sort(correctAlphas);
 //			Collections.sort(myAlphas);
-			System.err.println("\nmatlab alphas: ("+correctAlphas.size()+")\n" + correctAlphas);
-			System.err.println("\njava alphas: ("+myAlphas.size()+")\n" + myAlphas);
-			System.err.println("\ncompare alpha vectors ...");
+			LOG.debug("\nmatlab alphas: ("+correctAlphas.size()+")\n" + correctAlphas);
+			LOG.debug("\njava alphas: ("+myAlphas.size()+")\n" + myAlphas);
+			LOG.debug("\ncompare alpha vectors ...");
 			compareVectors(correctAlphas, myAlphas);
-			System.err.println("done. they are equal! good!\n");
+			LOG.debug("done. they are equal! good!\n");
 		} else {
-			System.err.println("\njava alphas: ("+myAlphas.size()+")\n" + myAlphas);
+			LOG.debug("\njava alphas: ("+myAlphas.size()+")\n" + myAlphas);
 		}
-
-//
-//		System.err.println("XXX SVs: " + SVs.length + " * " + SVs[0].length);
-//		for (int i = 0; i < SVs.length; i++) {
-//			System.err.print("\tsv:");
-//			for (int j = 0; j < SVs[i].length; j++) {
-//				System.err.print(" " + SVs[i][j].value + "(" + SVs[i][j].index + ")");
-//			}
-//			System.err.println();
-//		}
 
 		List<Double> weightsEncoded = calculateOriginalSpaceWeights(
 				svmModel.sv_coef, svmModel.SV, X, libSvmProblem.y);
 
-		// check if the weights are equivalent to the ones calculated with matlab
-		{
+		// check if the raw encoded weights are equivalent to the ones calculated with matlab
+		if (encoderString != null) {
 			File mlWeightsRawFile = new File(BASE_DIR, "w_" + encoderString + "_raw");
 			List<Double> mlWeightsRaw = parsePlainTextMatrix(mlWeightsRawFile, true).get(0);
 
-			System.err.println("\ncompare raw, encoded weights vectors ...");
+			LOG.debug("\nXXX correct weights raw: (" + mlWeightsRaw.size() + ") " + mlWeightsRaw);
+			LOG.debug("weights raw: (" + weightsEncoded.size() + ") " + weightsEncoded);
+			LOG.debug("compare raw, encoded weights vectors ...");
 			compareVectors(mlWeightsRaw, weightsEncoded);
-			System.err.println("done. they are equal! good!\n");
+			LOG.debug("done. they are equal! good!\n");
 		}
 
-		System.err.println("XXX weights(encoded): " + weightsEncoded.size());
-		System.err.println("\t" + weightsEncoded);
+		LOG.debug("weights(encoded): " + weightsEncoded.size());
+		LOG.debug("\t" + weightsEncoded);
 
-		System.err.println("XXX dSamples: " + dSamples);
-		System.err.println("XXX dEncoded: " + dEncoded);
-		System.err.println("XXX n: " + n);
-		System.err.println("XXX genotypeEncoder: " + genotypeEncoder.getClass().getSimpleName());
-		System.err.println("XXX encodingFactor: " + genotypeEncoder.getEncodingFactor());
+		LOG.debug("dSamples: " + dSamples);
+		LOG.debug("dEncoded: " + dEncoded);
+		LOG.debug("n: " + n);
+		LOG.debug("genotypeEncoder: " + genotypeEncoder.getClass().getSimpleName());
+		LOG.debug("encodingFactor: " + genotypeEncoder.getEncodingFactor());
 
 		if (encoderString != null) {
 			List<Double> weights = new ArrayList<Double>(dSamples);
 			genotypeEncoder.decodeWeights(weightsEncoded, weights);
-			System.err.println("XXX weights: (" + weights.size() + ") " + weights);
+
+			// check if the decoded weights are equivalent to the ones calculated with matlab
+			{
+				File mlWeightsFinalFile = new File(BASE_DIR, "w_" + encoderString + "_final");
+				List<Double> mlWeightsFinal = parsePlainTextMatrix(mlWeightsFinalFile, false).get(0);
+
+				LOG.debug("\nXXX correct weights final: (" + mlWeightsFinal.size() + ") " + mlWeightsFinal);
+				LOG.debug("weights final: (" + weights.size() + ") " + weights);
+				LOG.debug("compare final, decoded weights vectors ...");
+				compareVectors(mlWeightsFinal, weights);
+				LOG.debug("done. they are equal! good!\n");
+			}
+
+			// apply moving average filter (p-norm filter)
+			List<Double> weightsFiltered = new ArrayList(weights);
+			pNormFilter(weightsFiltered, 3, 2);
+
+			// check if the filtered weights are equivalent to the ones calculated with matlab
+			{
+				File mlWeightsFinalFilteredFile = new File(BASE_DIR, "w_" + encoderString + "_final_filtered");
+				List<Double> mlWeightsFinalFiltered = parsePlainTextMatrix(mlWeightsFinalFilteredFile, false).get(0);
+
+				LOG.debug("\ncompare final, filtered weights vectors ...");
+				compareVectors(mlWeightsFinalFiltered, weightsFiltered);
+				LOG.debug("done. they are equal! good!\n");
+			}
 		}
 
 		return Integer.MIN_VALUE;
@@ -1252,8 +842,6 @@ System.err.println("\talpha: " + i + ", " + j + ": " + alphas[i][j]);
 			for (int x = 0; x < rowA.size(); x++) {
 				double valA = rowA.get(x);
 				double valB = rowB.get(x);
-//				valA = Math.abs(valA); // FIXME do not use!
-//				valB = Math.abs(valB); // FIXME do not use!
 				if (!compareValues(valA, valB)) {
 					throw new RuntimeException(String.format(
 						"matrix A differs from matrix B at (%d, %d): %f, %f",
@@ -1279,8 +867,6 @@ System.err.println("\talpha: " + i + ", " + j + ": " + alphas[i][j]);
 		for (int y = 0; y < vectorA.size(); y++) {
 			double valA = vectorA.get(y);
 			double valB = vectorB.get(y);
-//			valA = Math.abs(valA); // FIXME do not use!
-//			valB = Math.abs(valB); // FIXME do not use!
 			if (!compareValues(valA, valB)) {
 				throw new RuntimeException(String.format(
 					"vector A differs from vector B at (%d): %f, %f",
@@ -1295,8 +881,9 @@ System.err.println("\talpha: " + i + ", " + j + ": " + alphas[i][j]);
 	 */
 	public static boolean compareValues(double valA, double valB) {
 
+		final double diff = Math.abs(valA - valB);
 		final double relativeDiff = Math.abs((valA - valB) / (valA + valB));
-		return (valA == valA) || Double.isNaN(relativeDiff) || !(relativeDiff > 0.01);
+		return !(diff > 0.00000000001) ||Double.isNaN(relativeDiff) || !(relativeDiff > 0.01);
 	}
 
 	public static List<List<Double>> transpose(List<List<Double>> matrix) {
@@ -1352,10 +939,78 @@ System.err.println("\talpha: " + i + ", " + j + ": " + alphas[i][j]);
 				line = bufferedReader.readLine();
 			}
 		} catch (IOException ex) {
-			ex.printStackTrace();
+			throw new RuntimeException(ex);
+		} finally {
+			if (bufferedReader != null) {
+				try {
+					bufferedReader.close();
+				} catch (IOException ex) {
+					throw new RuntimeException(ex);
+				}
+			} else if (fileReader != null) {
+				try {
+					fileReader.close();
+				} catch (IOException ex) {
+					throw new RuntimeException(ex);
+				}
+			}
 		}
 
 		return matrix;
+	}
+
+	private static boolean isEven(int number) {
+		return ((number % 2) == 0);
+	}
+
+	/**
+	 * Filters the weights with a p-norm moving average filter.
+	 * See {@link http://www.mathworks.com/matlabcentral/fileexchange/12276-movingaverage-v3-1-mar-2008}.
+	 * @param weights the weights to be filtered
+	 * @param filterWidth the kernel size k (has to be an odd number)
+	 * @param norm the value p for the p-norm to use
+	 * @return filtered version of weights (same length)
+	 */
+	private static void pNormFilter(List<Double> weights, int filterWidth, int norm) {
+
+		if (filterWidth < 1 || isEven(filterWidth)) {
+			throw new IllegalArgumentException("filterWidth has to be a positive, odd number");
+		}
+
+		if (filterWidth == 1) {
+			return;
+		}
+
+		final int n = weights.size();
+		final int kHalf = (filterWidth - 1) / 2;
+		final double normInv = 1.0 / norm;
+		final double filterWidthInvNormed = Math.pow(filterWidth, normInv);
+
+		// calculate the cummultive sum
+		List<Double> cumSum = new ArrayList<Double>(n + filterWidth);
+		double curSum = 0.0;
+		for (int i = -(kHalf + 1); i < n + kHalf; i++) {
+			final double value = (i < 0) || (i >= n) ? 0.0 : Math.pow(weights.get(i), norm);
+			curSum += value;
+			cumSum.add(curSum);
+		}
+
+		// calculate the p-norm moving average values
+		for (int i = 0; i < n; i++) {
+			final double valSum = Math.pow(cumSum.get(i + filterWidth) - cumSum.get(i), normInv);
+			weights.set(i, valSum / filterWidthInvNormed);
+		}
+
+//		N = length(w);
+//		kHalf = (k - 1) / 2;
+//		w = w.^ p;
+//		%% Recursive moving average method
+//		% With CUMSUM trick copied from RUNMEAN bwnew Jos van der Geest (12 mar 2008)
+//		wnew = [zeros(1, kHalf+1), w, zeros(1, kHalf)];
+//		wnew = cumsum(wnew);
+//		wnew = (wnew(k+1:end) - wnew(1:end-k)).^(1/p);
+//		wnew = wnew ./ (k.^(1/p));
+
 	}
 
 	public static void main(String[] args) {
