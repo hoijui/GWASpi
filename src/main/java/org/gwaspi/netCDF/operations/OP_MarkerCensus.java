@@ -28,11 +28,14 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import org.gwaspi.constants.cImport;
 import org.gwaspi.constants.cImport.Annotation.GWASpi;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.AlleleBytes;
+import org.gwaspi.global.Extractor;
 import org.gwaspi.global.Text;
+import org.gwaspi.model.Census;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixKey;
@@ -187,7 +190,7 @@ public class OP_MarkerCensus implements MatrixOperation {
 				}
 				int countChunks = 0;
 
-				Map<MarkerKey, int[]> wrChunkedMarkerCensusMap = new LinkedHashMap<MarkerKey, int[]>();
+				Map<MarkerKey, Census> wrChunkedMarkerCensusMap = new LinkedHashMap<MarkerKey, Census>();
 				Map<MarkerKey, char[]> wrChunkedKnownAllelesMap = new LinkedHashMap<MarkerKey, char[]>();
 				for (Map.Entry<MarkerKey, ?> entry : wrMarkerInfos.entrySet()) {
 					MarkerKey markerKey = entry.getKey();
@@ -203,11 +206,11 @@ public class OP_MarkerCensus implements MatrixOperation {
 
 							countChunks++;
 						}
-						wrChunkedMarkerCensusMap = new LinkedHashMap<MarkerKey, int[]>();
+						wrChunkedMarkerCensusMap = new LinkedHashMap<MarkerKey, Census>();
 						wrChunkedKnownAllelesMap = new LinkedHashMap<MarkerKey, char[]>();
 						System.gc(); // Try to garbage collect here
 					}
-					wrChunkedMarkerCensusMap.put(markerKey, new int[0]);
+					wrChunkedMarkerCensusMap.put(markerKey, new Census()); // XXX This might be unrequired (would only, possibly make sense in case of an exception, but even then still only marginally, and with code modifications)
 					countMarkers++;
 
 					Map<Byte, Float> knownAlleles = new LinkedHashMap<Byte, Float>();
@@ -346,21 +349,20 @@ public class OP_MarkerCensus implements MatrixOperation {
 							obsHwaa = hwSamplesContingencyTable.get("aa");
 						}
 
-						int[] census = new int[13];
-
-						census[0] = obsAllAA; // all
-						census[1] = obsAllAa; // all
-						census[2] = obsAllaa; // all
-						census[3] = missingCount; // all
-						census[4] = obsCaseAA; // case
-						census[5] = obsCaseAa; // case
-						census[6] = obsCaseaa; // case
-						census[7] = obsCntrlAA; // control
-						census[8] = obsCntrlAa; // control
-						census[9] = obsCntrlaa; // control
-						census[10] = obsHwAA; // HW samples
-						census[11] = obsHwAa; // HW samples
-						census[12] = obsHwaa; // HW samples
+						Census census = new Census(
+								obsAllAA, // all
+								obsAllAa, // all
+								obsAllaa, // all
+								missingCount, // all
+								obsCaseAA, // case
+								obsCaseAa, // case
+								obsCaseaa, // case
+								obsCntrlAA, // control
+								obsCntrlAa, // control
+								obsCntrlaa, // control
+								obsHwAA, // HW samples
+								obsHwAa, // HW samples
+								obsHwaa); // HW samples
 
 						wrChunkedMarkerCensusMap.put(markerKey, census);
 
@@ -379,8 +381,7 @@ public class OP_MarkerCensus implements MatrixOperation {
 						wrChunkedKnownAllelesMap.put(markerKey, new String(alleles).toCharArray());
 					} else {
 						// MISMATCHES FOUND
-						int[] census = new int[10];
-						wrChunkedMarkerCensusMap.put(markerKey, census);
+						wrChunkedMarkerCensusMap.put(markerKey, new Census());
 						wrChunkedKnownAllelesMap.put(markerKey, "00".toCharArray());
 					}
 
@@ -880,7 +881,7 @@ public class OP_MarkerCensus implements MatrixOperation {
 
 	private static void censusDataWriter(
 			NetcdfFileWriteable wrNcFile,
-			Map<MarkerKey, int[]> wrChunkedMarkerCensusMap,
+			Map<MarkerKey, Census> wrChunkedMarkerCensusMap,
 			Map<MarkerKey, char[]> wrChunkedKnownAllelesMap,
 			int countChunks,
 			int chunkSize)
@@ -894,38 +895,34 @@ public class OP_MarkerCensus implements MatrixOperation {
 				countChunks * chunkSize);
 
 		// ALL CENSUS
-		int[] columns = new int[] {0, 1, 2, 3};
 		Utils.saveIntChunkedMapD2ToWrMatrix(
 				wrNcFile,
 				wrChunkedMarkerCensusMap,
-				columns,
+				Census.EXTRACTOR_ALL,
 				cNetCDF.Census.VAR_OP_MARKERS_CENSUSALL,
 				countChunks * chunkSize);
 
 		// CASE CENSUS
-		columns = new int[]{4, 5, 6};
 		Utils.saveIntChunkedMapD2ToWrMatrix(
 				wrNcFile,
 				wrChunkedMarkerCensusMap,
-				columns,
+				Census.EXTRACTOR_CASE,
 				cNetCDF.Census.VAR_OP_MARKERS_CENSUSCASE,
 				countChunks * chunkSize);
 
 		// CONTROL CENSUS
-		columns = new int[]{7, 8, 9};
 		Utils.saveIntChunkedMapD2ToWrMatrix(
 				wrNcFile,
 				wrChunkedMarkerCensusMap,
-				columns,
+				Census.EXTRACTOR_CONTROL,
 				cNetCDF.Census.VAR_OP_MARKERS_CENSUSCTRL,
 				countChunks * chunkSize);
 
 		// ALTERNATE HW CENSUS
-		columns = new int[]{10, 11, 12};
 		Utils.saveIntChunkedMapD2ToWrMatrix(
 				wrNcFile,
 				wrChunkedMarkerCensusMap,
-				columns,
+				Census.EXTRACTOR_ALTERNATE_HW,
 				cNetCDF.Census.VAR_OP_MARKERS_CENSUSHW,
 				countChunks * chunkSize);
 	}
