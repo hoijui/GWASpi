@@ -26,6 +26,7 @@ import java.util.Map;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.MatrixKey;
+import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.operations.GWASinOneGOParams;
 import org.gwaspi.netCDF.operations.OperationManager;
@@ -76,18 +77,23 @@ class CombiTestScriptCommand extends AbstractScriptCommand {
 		if (studyExists) {
 			MatrixKey matrixKey = fetchMatrixKey(args, studyKey, "matrix-id", "matrix-name");
 
+			OperationKey hwOperationKey = fetchOperationKey(args, matrixKey, "hw-operation-id", "hw-operation-name");
+			double hwThreshold = Double.parseDouble(args.get("hw-threshold"));
+
 			GenotypeEncoder genotypeEncoder = GENOTYPE_ENCODERS.get(args.get("genotype-encoding"));
 
 			String phenotypeInfoStr = args.get("phenotype-info-file");
 			File phenotypeInfo = (phenotypeInfoStr == null) ? null : new File(phenotypeInfoStr);
 
-			String resultMatrixName = "Combi-Test for matrix " + matrixKey.toString();
+//			String resultMatrixName = "Combi-Test for matrix " + matrixKey.toString();
 
 			CombiTestParams params = new CombiTestParams(
 					matrixKey,
-					genotypeEncoder,
-					phenotypeInfo,
-					resultMatrixName);
+					hwOperationKey,
+					hwThreshold,
+					genotypeEncoder);
+//					phenotypeInfo,
+//					resultMatrixName);
 
 			// test block
 //			if (gwasParams.isProceed()) {

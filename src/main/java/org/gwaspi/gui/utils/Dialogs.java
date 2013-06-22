@@ -95,27 +95,27 @@ public class Dialogs {
 		return selectedOP;
 	}
 
-	public static OperationMetadata showOperationCombo(MatrixKey matrixKey, List<String> filterOpTypeAL, String title) throws IOException {
+	public static OperationMetadata showOperationCombo(MatrixKey matrixKey, List<String> filterOpTypes, String title) throws IOException {
 		OperationMetadata selectedOP = null;
 		List<OperationMetadata> operationsList = OperationsList.getOperationsList(matrixKey);
 
 		if (!operationsList.isEmpty()) {
 			List<String> operationsNames = new ArrayList<String>();
-			List<OperationMetadata> operationAL = new ArrayList<OperationMetadata>();
+			List<OperationMetadata> operations = new ArrayList<OperationMetadata>();
 			for (int i = 0; i < operationsList.size(); i++) {
 				OperationMetadata op = operationsList.get(i);
-				if (filterOpTypeAL.contains(op.getOperationType().toString())) {
+				if (filterOpTypes.contains(op.getOperationType().toString())) {
 					StringBuilder sb = new StringBuilder();
 					sb.append("OP: ");
 					sb.append(op.getId());
 					sb.append(" - ");
 					sb.append(op.getFriendlyName());
 					operationsNames.add(sb.toString());
-					operationAL.add(op);
+					operations.add(op);
 				}
 			}
 
-			if (!operationAL.isEmpty()) {
+			if (!operations.isEmpty()) {
 				String selectedRow = (String) JOptionPane.showInputDialog(
 						null,
 						"Choose " + title + " to use...",
@@ -126,7 +126,7 @@ public class Dialogs {
 						0);
 
 				if (selectedRow != null) {
-					selectedOP = operationAL.get(operationsNames.indexOf(selectedRow));
+					selectedOP = operations.get(operationsNames.indexOf(selectedRow));
 				}
 			}
 		}

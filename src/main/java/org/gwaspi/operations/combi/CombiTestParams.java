@@ -18,6 +18,7 @@ package org.gwaspi.operations.combi;
 
 import java.io.File;
 import org.gwaspi.model.MatrixKey;
+import org.gwaspi.model.OperationKey;
 
 /**
  * Parameters for the {@link CombiTestMatrixOperation}.
@@ -32,34 +33,62 @@ public class CombiTestParams {
 	 * Which matrix to operate on (read from).
 	 */
 	private final MatrixKey matrixKey;
-
+	private final OperationKey hardyWeinbergOperationKey;
+	private final double hardyWeinbergThreshold;
 	private final GenotypeEncoder encoder;
-	private final File phenotypeInfo;
+//	private final File phenotypeInfo;
 	private final String resultMatrixName;
 
 	public CombiTestParams(
 			MatrixKey matrixKey,
+			OperationKey hardyWeinbergOperationKey,
+			double hardyWeinbergThreshold,
 			GenotypeEncoder encoder,
-			File phenotypeInfo,
+//			File phenotypeInfo,
 			String resultMatrixName)
 	{
 		this.matrixKey = matrixKey;
+		this.hardyWeinbergOperationKey = hardyWeinbergOperationKey;
+		this.hardyWeinbergThreshold = hardyWeinbergThreshold;
 		this.encoder = encoder;
-		this.phenotypeInfo = phenotypeInfo;
+//		this.phenotypeInfo = phenotypeInfo;
 		this.resultMatrixName = resultMatrixName;
+	}
+
+	public CombiTestParams(
+			MatrixKey matrixKey,
+			OperationKey hardyWeinbergOperationKey,
+			double hardyWeinbergThreshold,
+			GenotypeEncoder encoder)
+	{
+		this(
+				matrixKey,
+				hardyWeinbergOperationKey,
+				hardyWeinbergThreshold,
+				encoder,
+				"Combi-Test for matrix " + matrixKey.toString()
+				);
 	}
 
 	public MatrixKey getMatrixKey() {
 		return matrixKey;
 	}
 
+	public OperationKey getHardyWeinbergOperationKey() {
+		return hardyWeinbergOperationKey;
+	}
+
+	public double getHardyWeinbergThreshold() {
+		return hardyWeinbergThreshold;
+	}
+
 	public GenotypeEncoder getEncoder() {
 		return encoder;
 	}
-
-	public File getPhenotypeInfo() {
-		return phenotypeInfo;
-	}
+//
+//	public File getPhenotypeInfo() {
+//		return phenotypeInfo;
+//	}
 
 	public String getResultMatrixName() {
 		return resultMatrixName;

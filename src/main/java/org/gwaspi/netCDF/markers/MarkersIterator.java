@@ -37,10 +37,14 @@ public class MarkersIterator implements
 	private final MarkersIterable markersIterable;
 	private final NetcdfFile netCdfFile;
 	private int nextMarker;
+	private final int totalMarkers;
+	private final int totalExcluded;
+	/** Number of items excluded so far */
+	private int excluded;
 
 	/**
 	 * Allows to iterate over the unfiltered MarkerKeys of a matrix.
-	 * @param matrixKey
+	 * @param markersIterable
 	 * @throws IOException
 	 * @throws InvalidRangeException
 	 */
@@ -52,12 +56,17 @@ public class MarkersIterator implements
 				this.markersIterable.getMatrixKey());
 		netCdfFile = NetcdfFile.open(rdMatrixMetadata.getPathToMatrix());
 
+		totalMarkers = markersIterable.getMarkerKeys().size();
+		MarkersIterable.Excluder<MarkerKey> excluder = markersIterable.getExcluder();
+		totalExcluded = (excluder == null) ? 0 : excluder.getTotalExcluded();
+
 		nextMarker = 0;
+		excluded = 0;
 	}
 
 	@Override
 	public boolean hasNext() {
-		return nextMarker < this.markersIterable.getMarkerKeys().size();
+		return (totalMarkers - nextMarker - (totalExcluded - excluded)) > 0;
 	}
 
 	@Override
@@ -68,6 +77,15 @@ public class MarkersIterator implements
 		for (SampleKey sampleKey : this.markersIterable.getSampleKeys()) {
 			samples.put(sampleKey, null);
 		}
+		MarkersIterable.Excluder<MarkerKey> excluder = markersIterable.getExcluder();
+		MarkerKey curMarkerKey = markersIterable.getMarkerKeys().get(nextMarker);
+		if (excluder != null) {
+			while (excluder.isExcluded(curMarkerKey)) {
+				excluded++;
+				nextMarker++;
+				curMarkerKey = markersIterable.getMarkerKeys().get(nextMarker);
+			}
+		}
 		try {
 			this.markersIterable.getSampleSet().readAllSamplesGTsFromCurrentMarkerToMap(netCdfFile, samples, nextMarker);
 		} catch (IOException ex) {
@@ -75,7 +93,7 @@ public class MarkersIterator implements
 		}
 
 		Map.Entry<MarkerKey, Map<SampleKey, byte[]>> next
-				= Collections.singletonMap(this.markersIterable.getMarkerKeys().get(nextMarker), samples).entrySet().iterator().next();
+				= Collections.singletonMap(curMarkerKey, samples).entrySet().iterator().next();
 		nextMarker++;
 
 		return next;

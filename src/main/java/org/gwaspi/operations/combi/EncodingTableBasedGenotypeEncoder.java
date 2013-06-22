@@ -151,4 +151,9 @@ public abstract class EncodingTableBasedGenotypeEncoder implements GenotypeEncod
 //			decodedWeights.add(sum / encodingFactor);
 //		}
 	}
+
+	@Override
+	public String toString() {
+		return getClass().getSimpleName();
+	}
 }

@@ -24,6 +24,9 @@ import org.gwaspi.global.Text;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
+import org.gwaspi.model.OperationKey;
+import org.gwaspi.model.OperationMetadata;
+import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.Study;
 import org.gwaspi.model.StudyKey;
 import org.gwaspi.model.StudyList;
@@ -108,6 +111,26 @@ abstract class AbstractScriptCommand implements ScriptCommand {
 		} else {
 			MatrixMetadata matrixMetadata = MatricesList.getMatrixMetadataByNetCDFname(nameValue);
 			return new MatrixKey(studyKey, matrixMetadata.getMatrixId());
+		}
+	}
+
+	protected static OperationKey fetchOperationKey(Map<String, String> script, MatrixKey parentMatrixKey, String idKey, String nameKey) throws IOException {
+
+		String idValue = script.get(idKey);
+		String nameValue = script.get(nameKey);
+
+		if ((idValue == null) && (nameValue == null)) {
+			throw new RuntimeException("Neither nameKey (\"" + nameKey
+					+ "\") nor id (\"" + idKey + "\") of the operation are specified");
+		} else if ((idValue != null) && (nameValue != null)) {
+			throw new RuntimeException("You may only specify either name (\"" + nameKey
+					+ "\") or id (\"" + idKey + "\") of the operation, not both");
+		} else if (idValue != null) {
+			int operationId = Integer.parseInt(idValue);
+			return new OperationKey(parentMatrixKey, operationId);
+		} else {
+			OperationMetadata operationMetadata = OperationsList.getOperationMetadata(nameValue);
+			return OperationKey.valueOf(operationMetadata);
 		}
 	}
 

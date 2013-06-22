@@ -63,6 +63,9 @@ import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.netCDF.operations.GWASinOneGOParams;
 import org.gwaspi.netCDF.operations.OperationManager;
+import org.gwaspi.operations.combi.CombiTestParams;
+import org.gwaspi.operations.combi.GenotypeEncoder;
+import org.gwaspi.operations.combi.GenotypeEncoderChooserGUI;
 import org.gwaspi.samples.SamplesParserManager;
 import org.gwaspi.threadbox.MultiOperations;
 import org.gwaspi.threadbox.SwingWorkerItemList;
@@ -210,13 +213,13 @@ public class MatrixAnalysePanel extends JPanel {
 		genFreqAndHWAction.setEnabled(currentOP == null);
 		btn_1_2.setAction(genFreqAndHWAction);
 
-		btn_1_3.setAction(new AssociationTestsAction(parentMatrixKey, gwasParams, currentOP, true, false));
+		btn_1_3.setAction(new AssociationTestsAction(parentMatrixKey, gwasParams, currentOP, this, true, false));
 
-		btn_1_4.setAction(new AssociationTestsAction(parentMatrixKey, gwasParams, currentOP, false, false));
+		btn_1_4.setAction(new AssociationTestsAction(parentMatrixKey, gwasParams, currentOP, this, false, false));
 
 		btn_1_5.setAction(new TrendTestsAction(parentMatrixKey, gwasParams, currentOP));
 
-		btn_1_6.setAction(new AssociationTestsAction(parentMatrixKey, gwasParams, currentOP, true, true));
+		btn_1_6.setAction(new AssociationTestsAction(parentMatrixKey, gwasParams, currentOP, this, true, true));
 
 		//<editor-fold defaultstate="expanded" desc="LAYOUT BUTTONS">
 		GroupLayout pnl_SpacerLayout = new GroupLayout(pnl_Spacer);
@@ -315,8 +318,9 @@ public class MatrixAnalysePanel extends JPanel {
 		private final boolean combi;
 		private final String testName;
 		private final String testNameHtml;
+		private final Component dialogParent;
 
-		AssociationTestsAction(MatrixKey parentMatrixKey, GWASinOneGOParams gwasParams, OperationMetadata currentOP, boolean allelic, boolean combi) {
+		AssociationTestsAction(MatrixKey parentMatrixKey, GWASinOneGOParams gwasParams, OperationMetadata currentOP, Component dialogParent, boolean allelic, boolean combi) {
 
 			this.parentMatrixKey = parentMatrixKey;
 			this.gwasParams = gwasParams;
@@ -330,6 +334,7 @@ public class MatrixAnalysePanel extends JPanel {
 				this.testName = (allelic ?  Text.Operation.allelicAssocTest : Text.Operation.genoAssocTest);
 				this.testNameHtml = (allelic ? Text.Operation.htmlAllelicAssocTest : Text.Operation.htmlGenotypicTest);
 			}
+			this.dialogParent = dialogParent;
 			putValue(NAME, testNameHtml);
 		}
 
@@ -397,7 +402,8 @@ public class MatrixAnalysePanel extends JPanel {
 							performTest = false;
 						}
 					}
-
+GenotypeEncoderChooserGUI.chooseGenotypeEncoder(dialogParent);
+							
 					// DO TEST
 					if (performTest) {
 						boolean reProceed = true;
@@ -405,8 +411,13 @@ public class MatrixAnalysePanel extends JPanel {
 							reProceed = false;
 						}
 
+						GenotypeEncoder genotypeEncoder = null;
 						if (reProceed) {
-							gwasParams = new MoreAssocInfo().showMoreInfo();
+							if (combi) {
+								genotypeEncoder = GenotypeEncoderChooserGUI.chooseGenotypeEncoder(dialogParent);
+							} else {
+								gwasParams = new MoreAssocInfo().showMoreInfo();
+							}
 						}
 
 						if (gwasParams.isProceed()) {
@@ -426,14 +437,22 @@ public class MatrixAnalysePanel extends JPanel {
 
 								// >>>>>> START THREADING HERE <<<<<<<
 								if (combi) {
-									throw new RuntimeException("call combi test here"); // TODO implement me!
+									if (genotypeEncoder != null) {
+										MultiOperations.doCombiTest(new CombiTestParams(
+												parentMatrixKey,
+												hwOPKey,
+												gwasParams.getDiscardMarkerHWTreshold(),
+												genotypeEncoder
+												));
+									}
+								} else {
+									MultiOperations.doAssociationTest(
+											parentMatrixKey,
+											censusOPKey,
+											hwOPKey,
+											gwasParams,
+											allelic);
 								}
-								MultiOperations.doAssociationTest(
-										parentMatrixKey,
-										censusOPKey,
-										hwOPKey,
-										gwasParams,
-										allelic);
 							}
 						}
 					}
