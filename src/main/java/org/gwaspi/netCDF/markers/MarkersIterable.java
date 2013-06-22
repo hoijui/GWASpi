@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.Set;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MatrixKey;
+import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleInfoList;
 import org.gwaspi.model.SampleKey;
@@ -51,6 +52,28 @@ public class MarkersIterable implements
 	 * @throws InvalidRangeException
 	 */
 	public MarkersIterable(MatrixKey matrixKey) throws IOException, InvalidRangeException {
+
+		this.matrixKey = matrixKey;
+
+		MarkerSet rdMarkerSet = new MarkerSet(matrixKey);
+		rdMarkerSet.initFullMarkerIdSetMap();
+//		rdMarkerSet.fillGTsForCurrentSampleIntoInitMap(readStudyId);
+//		rdMarkerSet.fillWith(cNetCDF.Defaults.DEFAULT_GT);
+//
+//		Map<MarkerKey, byte[]> wrMarkerSetMap = new LinkedHashMap<MarkerKey, byte[]>();
+//		wrMarkerSetMap.putAll(rdMarkerSet.getMarkerIdSetMapByteArray());
+
+		this.sampleSet = new SampleSet(matrixKey);
+//			samples = sampleSet.getSampleIdSetMapByteArray();
+		this.sampleKeys = sampleSet.getSampleKeys();
+		// This one has to be ordered! (and it is, due to the map being a LinkedHashMap)
+		this.markerKeys = new ArrayList<MarkerKey>(rdMarkerSet.getMarkerIdSetMapInteger().keySet());
+
+		this.nextMarker = 0;
+		this.sampleInfos = retrieveSampleInfos();
+	}
+
+	public MarkersIterable(OperationKey hardyWeinbergOk) throws IOException, InvalidRangeException {
 
 		this.matrixKey = matrixKey;
 
