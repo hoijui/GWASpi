@@ -28,6 +28,7 @@ import org.gwaspi.constants.cNetCDF.Defaults.AlleleBytes;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.global.Text;
 import org.gwaspi.global.TypeConverter;
+import org.gwaspi.model.Census;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixKey;
@@ -141,7 +142,7 @@ public class OP_QAMarkers implements MatrixOperation {
 		int resultOpId = Integer.MIN_VALUE;
 
 		Map<MarkerKey, Integer> wrMarkerSetMismatchStateMap = new LinkedHashMap<MarkerKey, Integer>();
-		Map<MarkerKey, int[]> wrMarkerSetCensusMap = new LinkedHashMap<MarkerKey, int[]>();
+		Map<MarkerKey, Census> wrMarkerSetCensusMap = new LinkedHashMap<MarkerKey, Census>();
 		Map<MarkerKey, Double> wrMarkerSetMissingRatioMap = new LinkedHashMap<MarkerKey, Double>();
 		Map<MarkerKey, OrderedAlleles> wrMarkerSetKnownAllelesMap = new LinkedHashMap<MarkerKey, OrderedAlleles>();
 
@@ -412,12 +413,11 @@ public class OP_QAMarkers implements MatrixOperation {
 						obsAllaa = allSamplesContingencyTable.get("aa");
 					}
 
-					int[] census = new int[4];
-
-					census[0] = obsAllAA; // all
-					census[1] = obsAllAa; // all
-					census[2] = obsAllaa; // all
-					census[3] = missingCount; // all
+					Census census = new Census(
+							obsAllAA, // all
+							obsAllAa, // all
+							obsAllaa, // all
+							missingCount); // all
 
 					wrMarkerSetCensusMap.put(markerKey, census);
 					wrMarkerSetMismatchStateMap.put(markerKey, cNetCDF.Defaults.DEFAULT_MISMATCH_NO);
@@ -439,8 +439,7 @@ public class OP_QAMarkers implements MatrixOperation {
 
 					wrMarkerSetKnownAllelesMap.put(markerKey, orderedAlleles);
 				} else {
-					int[] census = new int[4];
-					wrMarkerSetCensusMap.put(markerKey, census);
+					wrMarkerSetCensusMap.put(markerKey, new Census());
 					wrMarkerSetMismatchStateMap.put(markerKey, cNetCDF.Defaults.DEFAULT_MISMATCH_YES);
 
 					orderedAlleles = new OrderedAlleles();
@@ -474,8 +473,7 @@ public class OP_QAMarkers implements MatrixOperation {
 			Utils.saveDoubleMapItemD1ToWrMatrix(wrNcFile, wrMarkerSetKnownAllelesMap, OrderedAlleles.TO_ALLELE_2_FREQ, cNetCDF.Census.VAR_OP_MARKERS_MINALLELEFRQ);
 
 			// ALL CENSUS
-			int[] columns = new int[] {0, 1, 2, 3};
-			Utils.saveIntMapD2ToWrMatrix(wrNcFile, wrMarkerSetCensusMap, columns, cNetCDF.Census.VAR_OP_MARKERS_CENSUSALL);
+			Utils.saveIntMapD2ToWrMatrix(wrNcFile, wrMarkerSetCensusMap, Census.EXTRACTOR_ALL, cNetCDF.Census.VAR_OP_MARKERS_CENSUSALL);
 			//</editor-fold>
 
 			resultOpId = wrOPHandler.getResultOPId();

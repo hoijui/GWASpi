@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.global.Extractor;
 import org.gwaspi.global.TypeConverter;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.StudyKey;
@@ -396,6 +397,34 @@ public class Utils {
 		return result;
 	}
 
+	public static <V> boolean saveIntChunkedMapD2ToWrMatrix(
+			NetcdfFileWriteable wrNcFile,
+			Map<?, V> wrMap,
+			Extractor<V, Iterator<Integer>> valuesExtractor,
+			String variable,
+			int offset)
+	{
+		boolean result = false;
+
+		try {
+			ArrayInt.D2 arrayIntD2 = Utils.writeMapValueItemToD2ArrayInt(wrMap, valuesExtractor);
+			int[] origin1 = new int[]{offset, 0};
+			try {
+				wrNcFile.write(variable, origin1, arrayIntD2);
+				log.info("Done writing {}", variable);
+				result = true;
+			} catch (IOException ex) {
+				log.error("Failed writing " + variable + " to netCDF", ex);
+			} catch (InvalidRangeException ex) {
+				log.error("Failed writing " + variable + " to netCDF", ex);
+			}
+		} catch (Exception ex) {
+			log.error("Failed writing " + variable, ex);
+		}
+
+		return result;
+	}
+
 	public static boolean saveDoubleChunkedD2ToWrMatrix(
 			NetcdfFileWriteable wrNcFile,
 			Map<String, Double[]> wrMap,
@@ -556,6 +585,24 @@ public class Utils {
 		for (int[] values : map.values()) {
 			for (int j = 0; j < columns.length; j++) {
 				intArray.setInt(ima.set(i, j), values[columns[j]]);
+			}
+			i++;
+		}
+
+		return intArray;
+	}
+
+	public static <V> ArrayInt.D2 writeMapValueItemToD2ArrayInt(Map<?, V> map, Extractor<V, Iterator<Integer>> valuesExtractor) {
+		ArrayInt.D2 intArray = new ArrayInt.D2(map.size(), valuesExtractor.getNumberOfValues());
+		Index ima = intArray.getIndex();
+
+		int i = 0;
+		for (V value : map.values()) {
+			Iterator<Integer> values = valuesExtractor.extract(value);
+			int j = 0;
+			while (values.hasNext()) {
+				intArray.setInt(ima.set(i, j), values.next());
+				j++;
 			}
 			i++;
 		}
