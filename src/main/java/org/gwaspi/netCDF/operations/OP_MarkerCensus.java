@@ -364,7 +364,6 @@ public class OP_MarkerCensus implements MatrixOperation {
 
 						wrChunkedMarkerCensusMap.put(markerKey, census);
 
-						StringBuilder sb = new StringBuilder();
 						byte[] alleles = cNetCDF.Defaults.DEFAULT_GT;
 						Iterator<Byte> knit = knownAlleles.keySet().iterator();
 						if (knownAlleles.size() == 2) {
@@ -376,9 +375,8 @@ public class OP_MarkerCensus implements MatrixOperation {
 							Byte allele1 = knit.next();
 							alleles = new byte[] {allele1, allele1};
 						}
-						sb.append(new String(alleles));
 
-						wrChunkedKnownAllelesMap.put(markerKey, sb.toString().toCharArray());
+						wrChunkedKnownAllelesMap.put(markerKey, new String(alleles).toCharArray());
 					} else {
 						// MISMATCHES FOUND
 						int[] census = new int[10];
