@@ -73,7 +73,7 @@ public class Utils {
 	}
 
 	public static boolean saveCharMapValueToWrMatrix(NetcdfFileWriteable wrNcFile, Map<?, char[]> wrMap, String variable, int varStride) {
-		return saveCharChunkedMapToWrMatrix(wrNcFile, wrMap, variable, varStride, 0);
+		return saveCharMapToWrMatrix(wrNcFile, wrMap, variable, varStride, 0);
 	}
 
 	public static <V> boolean saveCharMapItemToWrMatrix(NetcdfFileWriteable wrNcFile, Map<?, V> wrMap, String variable, TypeConverter<V, String> typeConverter, int varStride) {
@@ -137,7 +137,7 @@ public class Utils {
 
 	//<editor-fold defaultstate="expanded" desc="D1 SAVERS">
 	public static boolean saveDoubleMapD1ToWrMatrix(NetcdfFileWriteable wrNcFile, Map<?, Double> wrMap, String variable) {
-		return saveDoubleChunkedMapD1ToWrMatrix(wrNcFile, wrMap, variable, 0);
+		return saveDoubleMapD1ToWrMatrix(wrNcFile, wrMap, variable, 0);
 	}
 
 	public static boolean saveDoubleMapItemD1ToWrMatrix(NetcdfFileWriteable wrNcFile, Map<?, Double[]> wrMap, final int itemNb, String variable) {
@@ -175,23 +175,23 @@ public class Utils {
 	}
 
 	public static boolean saveIntMapD1ToWrMatrix(NetcdfFileWriteable wrNcFile, Map<?, Integer> wrMap, String variable) {
-		return saveIntChunkedMapD1ToWrMatrix(wrNcFile, wrMap, variable, 0);
+		return saveIntMapD1ToWrMatrix(wrNcFile, wrMap, variable, 0);
 	}
 	//</editor-fold>
 
 	//<editor-fold defaultstate="expanded" desc="D2 SAVERS">
 	public static boolean saveIntMapD2ToWrMatrix(NetcdfFileWriteable wrNcFile, Map<?, int[]> wrMap, int[] columns, String variable) {
-		return saveIntChunkedMapD2ToWrMatrix(wrNcFile, wrMap, columns, variable, 0);
+		return saveIntMapD2ToWrMatrix(wrNcFile, wrMap, columns, variable, 0);
 	}
 
 	public static boolean saveDoubleMapD2ToWrMatrix(NetcdfFileWriteable wrNcFile, Map<?, Double[]> wrMap, int[] columns, String variable) {
-		return saveDoubleChunkedD2ToWrMatrix(wrNcFile, wrMap, columns, variable, 0);
+		return saveDoubleMapD2ToWrMatrix(wrNcFile, wrMap, columns, variable, 0);
 	}
 	//</editor-fold>
 	//</editor-fold>
 
 	//<editor-fold defaultstate="expanded" desc="CHUNKED SAVERS">
-	public static boolean saveCharChunkedMapToWrMatrix(
+	public static boolean saveCharMapToWrMatrix(
 			NetcdfFileWriteable wrNcFile,
 			Map<?, char[]> wrMap,
 			String variable,
@@ -222,7 +222,7 @@ public class Utils {
 	}
 
 	//<editor-fold defaultstate="expanded" desc="D1 SAVERS">
-	public static boolean saveDoubleChunkedMapD1ToWrMatrix(
+	public static boolean saveDoubleMapD1ToWrMatrix(
 			NetcdfFileWriteable wrNcFile,
 			Map<?, Double> wrMap,
 			String variable,
@@ -249,7 +249,7 @@ public class Utils {
 		return result;
 	}
 
-	public static boolean saveIntChunkedMapD1ToWrMatrix(
+	public static boolean saveIntMapD1ToWrMatrix(
 			NetcdfFileWriteable wrNcFile,
 			Map<?, Integer> wrMap,
 			String variable,
@@ -278,7 +278,7 @@ public class Utils {
 	//</editor-fold>
 
 	//<editor-fold defaultstate="expanded" desc="D2 SAVERS">
-	public static boolean saveIntChunkedMapD2ToWrMatrix(
+	public static boolean saveIntMapD2ToWrMatrix(
 			NetcdfFileWriteable wrNcFile,
 			Map<?, int[]> wrMap,
 			int[] columns,
@@ -306,7 +306,7 @@ public class Utils {
 		return result;
 	}
 
-	public static <V> boolean saveIntChunkedMapD2ToWrMatrix(
+	public static <V> boolean saveIntMapD2ToWrMatrix(
 			NetcdfFileWriteable wrNcFile,
 			Map<?, V> wrMap,
 			Extractor<V, Iterator<Integer>> valuesExtractor,
@@ -334,7 +334,7 @@ public class Utils {
 		return result;
 	}
 
-	public static boolean saveDoubleChunkedD2ToWrMatrix(
+	public static boolean saveDoubleMapD2ToWrMatrix(
 			NetcdfFileWriteable wrNcFile,
 			Map<?, Double[]> wrMap,
 			int[] columns,
