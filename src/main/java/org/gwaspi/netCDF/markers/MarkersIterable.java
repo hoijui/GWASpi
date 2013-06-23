@@ -18,6 +18,7 @@ package org.gwaspi.netCDF.markers;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -38,7 +39,11 @@ import ucar.ma2.InvalidRangeException;
 public class MarkersIterable implements
 		Iterable<Map.Entry<MarkerKey, Map<SampleKey, byte[]>>>
 {
+	private static class Excluder {
+	}
+
 	private final MatrixKey matrixKey;
+	private final Collection<SampleKey> excluder;
 	private final SampleSet sampleSet;
 	private final List<MarkerKey> markerKeys;
 	private Set<SampleKey> sampleKeys;
@@ -54,6 +59,7 @@ public class MarkersIterable implements
 	public MarkersIterable(MatrixKey matrixKey) throws IOException, InvalidRangeException {
 
 		this.matrixKey = matrixKey;
+		this.excluder = null;
 
 		MarkerSet rdMarkerSet = new MarkerSet(matrixKey);
 		rdMarkerSet.initFullMarkerIdSetMap();
@@ -75,7 +81,7 @@ public class MarkersIterable implements
 
 	public MarkersIterable(OperationKey hardyWeinbergOk) throws IOException, InvalidRangeException {
 
-		this.matrixKey = matrixKey;
+		this.matrixKey = hardyWeinbergOk.getParentMatrixKey();
 
 		MarkerSet rdMarkerSet = new MarkerSet(matrixKey);
 		rdMarkerSet.initFullMarkerIdSetMap();

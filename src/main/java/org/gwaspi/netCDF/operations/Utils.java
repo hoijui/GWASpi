@@ -184,6 +184,15 @@ public class Utils {
 		return saveIntMapD2ToWrMatrix(wrNcFile, wrMap, columns, variable, 0);
 	}
 
+	public static <V> boolean saveIntMapD2ToWrMatrix(
+			NetcdfFileWriteable wrNcFile,
+			Map<?, V> wrMap,
+			Extractor<V, Iterator<Integer>> valuesExtractor,
+			String variable)
+	{
+		return saveIntMapD2ToWrMatrix(wrNcFile, wrMap, valuesExtractor, variable, 0);
+	}
+
 	public static boolean saveDoubleMapD2ToWrMatrix(NetcdfFileWriteable wrNcFile, Map<?, Double[]> wrMap, int[] columns, String variable) {
 		return saveDoubleMapD2ToWrMatrix(wrNcFile, wrMap, columns, variable, 0);
 	}
