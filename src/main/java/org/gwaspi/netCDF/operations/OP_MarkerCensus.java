@@ -887,7 +887,7 @@ public class OP_MarkerCensus implements MatrixOperation {
 			int chunkSize)
 	{
 		// KNOWN ALLELES
-		Utils.saveCharChunkedMapToWrMatrix(
+		Utils.saveCharMapToWrMatrix(
 				wrNcFile,
 				wrChunkedKnownAllelesMap,
 				cNetCDF.Variables.VAR_ALLELES,
@@ -895,7 +895,7 @@ public class OP_MarkerCensus implements MatrixOperation {
 				countChunks * chunkSize);
 
 		// ALL CENSUS
-		Utils.saveIntChunkedMapD2ToWrMatrix(
+		Utils.saveIntMapD2ToWrMatrix(
 				wrNcFile,
 				wrChunkedMarkerCensusMap,
 				Census.EXTRACTOR_ALL,
@@ -903,7 +903,7 @@ public class OP_MarkerCensus implements MatrixOperation {
 				countChunks * chunkSize);
 
 		// CASE CENSUS
-		Utils.saveIntChunkedMapD2ToWrMatrix(
+		Utils.saveIntMapD2ToWrMatrix(
 				wrNcFile,
 				wrChunkedMarkerCensusMap,
 				Census.EXTRACTOR_CASE,
@@ -911,7 +911,7 @@ public class OP_MarkerCensus implements MatrixOperation {
 				countChunks * chunkSize);
 
 		// CONTROL CENSUS
-		Utils.saveIntChunkedMapD2ToWrMatrix(
+		Utils.saveIntMapD2ToWrMatrix(
 				wrNcFile,
 				wrChunkedMarkerCensusMap,
 				Census.EXTRACTOR_CONTROL,
@@ -919,7 +919,7 @@ public class OP_MarkerCensus implements MatrixOperation {
 				countChunks * chunkSize);
 
 		// ALTERNATE HW CENSUS
-		Utils.saveIntChunkedMapD2ToWrMatrix(
+		Utils.saveIntMapD2ToWrMatrix(
 				wrNcFile,
 				wrChunkedMarkerCensusMap,
 				Census.EXTRACTOR_ALTERNATE_HW,
