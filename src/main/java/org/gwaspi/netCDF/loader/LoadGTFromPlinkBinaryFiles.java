@@ -410,7 +410,7 @@ public class LoadGTFromPlinkBinaryFiles implements GenotypesLoader {
 					}
 
 					if (rowCounter != 1 && rowCounter % (hyperSlabRows) == 0) {
-						ArrayByte.D3 genotypesArray = org.gwaspi.netCDF.operations.Utils.writeALValuesToSamplesHyperSlabArrayByteD3(genotypes, mappedGenotypes.size(), cNetCDF.Strides.STRIDE_GT);
+						ArrayByte.D3 genotypesArray = org.gwaspi.netCDF.operations.Utils.writeListValuesToSamplesHyperSlabArrayByteD3(genotypes, mappedGenotypes.size(), cNetCDF.Strides.STRIDE_GT);
 						int[] origin = new int[]{0, (rowCounter - hyperSlabRows), 0}; //0,0,0 for 1st marker ; 0,1,0 for 2nd marker....
 //                        log.info("Origin at rowCount "+rowCounter+": "+origin[0]+"|"+origin[1]+"|"+origin[2]);
 						try {
@@ -435,7 +435,7 @@ public class LoadGTFromPlinkBinaryFiles implements GenotypesLoader {
 
 			//WRITING LAST HYPERSLAB
 			int lastHyperSlabRows = markerNb - (genotypes.size() / sampleNb);
-			ArrayByte.D3 genotypesArray = org.gwaspi.netCDF.operations.Utils.writeALValuesToSamplesHyperSlabArrayByteD3(genotypes, sampleInfos.size(), cNetCDF.Strides.STRIDE_GT);
+			ArrayByte.D3 genotypesArray = org.gwaspi.netCDF.operations.Utils.writeListValuesToSamplesHyperSlabArrayByteD3(genotypes, sampleInfos.size(), cNetCDF.Strides.STRIDE_GT);
 			int[] origin = new int[]{0, lastHyperSlabRows, 0}; //0,0,0 for 1st marker ; 0,1,0 for 2nd marker....
 //            log.info("Last origin at rowCount "+rowCounter+": "+origin[0]+"|"+origin[1]+"|"+origin[2]);
 			try {

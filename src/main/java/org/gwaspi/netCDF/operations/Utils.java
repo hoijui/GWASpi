@@ -73,26 +73,7 @@ public class Utils {
 	}
 
 	public static boolean saveCharMapValueToWrMatrix(NetcdfFileWriteable wrNcFile, Map<?, char[]> wrMap, String variable, int varStride) {
-		boolean result = false;
-
-		try {
-			ArrayChar.D2 markersD2 = writeMapValueToD2ArrayChar(wrMap, varStride);
-
-			int[] markersOrig = new int[] {0, 0};
-			try {
-				wrNcFile.write(variable, markersOrig, markersD2);
-				log.info("Done writing {}", variable);
-				result = true;
-			} catch (IOException ex) {
-				log.error("Failed writing file", ex);
-			} catch (InvalidRangeException ex) {
-				log.error("Failed writing file", ex);
-			}
-		} catch (Exception ex) {
-			log.error("Failed writing " + variable, ex);
-		}
-
-		return result;
+		return saveCharChunkedMapToWrMatrix(wrNcFile, wrMap, variable, varStride, 0);
 	}
 
 	public static <V> boolean saveCharMapItemToWrMatrix(NetcdfFileWriteable wrNcFile, Map<?, V> wrMap, String variable, TypeConverter<V, String> typeConverter, int varStride) {
@@ -156,25 +137,7 @@ public class Utils {
 
 	//<editor-fold defaultstate="expanded" desc="D1 SAVERS">
 	public static boolean saveDoubleMapD1ToWrMatrix(NetcdfFileWriteable wrNcFile, Map<?, Double> wrMap, String variable) {
-		boolean result = false;
-
-		try {
-			ArrayDouble.D1 arrayDouble = writeMapValueToD1ArrayDouble(wrMap);
-			int[] origin1 = new int[1];
-			try {
-				wrNcFile.write(variable, origin1, arrayDouble);
-				log.info("Done writing {}", variable);
-				result = true;
-			} catch (IOException ex) {
-				log.error("Failed writing " + variable + " to netCDF", ex);
-			} catch (InvalidRangeException ex) {
-				log.error("Failed writing " + variable + " to netCDF", ex);
-			}
-		} catch (Exception ex) {
-			log.error("Failed writing " + variable, ex);
-		}
-
-		return result;
+		return saveDoubleChunkedMapD1ToWrMatrix(wrNcFile, wrMap, variable, 0);
 	}
 
 	public static boolean saveDoubleMapItemD1ToWrMatrix(NetcdfFileWriteable wrNcFile, Map<?, Double[]> wrMap, final int itemNb, String variable) {
@@ -212,71 +175,17 @@ public class Utils {
 	}
 
 	public static boolean saveIntMapD1ToWrMatrix(NetcdfFileWriteable wrNcFile, Map<?, Integer> wrMap, String variable) {
-		boolean result = false;
-
-		try {
-			ArrayInt.D1 arrayInt = Utils.writeMapValueToD1ArrayInt(wrMap);
-			int[] origin1 = new int[1];
-			try {
-				wrNcFile.write(variable, origin1, arrayInt);
-				log.info("Done writing {}", variable);
-				result = true;
-			} catch (IOException ex) {
-				log.error("Failed writing " + variable + " to netCDF", ex);
-			} catch (InvalidRangeException ex) {
-				log.error("Failed writing " + variable + " to netCDF", ex);
-			}
-		} catch (Exception ex) {
-			log.error("Failed writing " + variable, ex);
-		}
-
-		return result;
+		return saveIntChunkedMapD1ToWrMatrix(wrNcFile, wrMap, variable, 0);
 	}
 	//</editor-fold>
 
 	//<editor-fold defaultstate="expanded" desc="D2 SAVERS">
 	public static boolean saveIntMapD2ToWrMatrix(NetcdfFileWriteable wrNcFile, Map<?, int[]> wrMap, int[] columns, String variable) {
-		boolean result = false;
-
-		try {
-			ArrayInt.D2 arrayIntD2 = writeMapValueItemToD2ArrayInt(wrMap, columns);
-			int[] origin1 = new int[2];
-			try {
-				wrNcFile.write(variable, origin1, arrayIntD2);
-				log.info("Done writing {}", variable);
-				result = true;
-			} catch (IOException ex) {
-				log.error("Failed writing " + variable + " to netCDF", ex);
-			} catch (InvalidRangeException ex) {
-				log.error("Failed writing " + variable + " to netCDF", ex);
-			}
-		} catch (Exception ex) {
-			log.error("Failed writing " + variable, ex);
-		}
-
-		return result;
+		return saveIntChunkedMapD2ToWrMatrix(wrNcFile, wrMap, columns, variable, 0);
 	}
 
 	public static boolean saveDoubleMapD2ToWrMatrix(NetcdfFileWriteable wrNcFile, Map<?, Double[]> wrMap, int[] columns, String variable) {
-		boolean result = false;
-
-		try {
-			ArrayDouble.D2 arrayDoubleD2 = writeMapValueItemToD2ArrayDouble(wrMap, columns);
-			int[] origin1 = new int[2];
-			try {
-				wrNcFile.write(variable, origin1, arrayDoubleD2);
-				log.info("Done writing {}", variable);
-				result = true;
-			} catch (IOException ex) {
-				log.error("Failed writing " + variable + " to netCDF", ex);
-			} catch (InvalidRangeException ex) {
-				log.error("Failed writing " + variable + " to netCDF", ex);
-			}
-		} catch (Exception ex) {
-			log.error("Failed writing " + variable, ex);
-		}
-
-		return result;
+		return saveDoubleChunkedD2ToWrMatrix(wrNcFile, wrMap, columns, variable, 0);
 	}
 	//</editor-fold>
 	//</editor-fold>
@@ -427,10 +336,11 @@ public class Utils {
 
 	public static boolean saveDoubleChunkedD2ToWrMatrix(
 			NetcdfFileWriteable wrNcFile,
-			Map<String, Double[]> wrMap,
+			Map<?, Double[]> wrMap,
 			int[] columns,
 			String variable,
-			int offset) {
+			int offset)
+	{
 		boolean result = false;
 
 		try {
@@ -613,8 +523,8 @@ public class Utils {
 	//</editor-fold>
 
 	//<editor-fold defaultstate="expanded" desc="ArrayByte.D3">
-	public static ArrayByte.D3 writeALValuesToSamplesHyperSlabArrayByteD3(List<byte[]> genotypesAL, int sampleNb, int stride) {
-		int markerNb = genotypesAL.size() / sampleNb;
+	public static ArrayByte.D3 writeListValuesToSamplesHyperSlabArrayByteD3(List<byte[]> genotypes, int sampleNb, int stride) {
+		int markerNb = genotypes.size() / sampleNb;
 		int alCounter = 0;
 
 		// samplesDim, markersDim, gtStrideDim
@@ -624,7 +534,7 @@ public class Utils {
 		for (int markerCounter = 0; markerCounter < markerNb; markerCounter++) {
 			for (int sampleCounter = 0; sampleCounter < sampleNb; sampleCounter++) {
 
-				byte[] value = genotypesAL.get(alCounter);
+				byte[] value = genotypes.get(alCounter);
 				// 1 Sample at a time, iterating through markers
 				byteArray.setByte(ima.set(sampleCounter, markerCounter, 0), value[0]); // first byte
 				byteArray.setByte(ima.set(sampleCounter, markerCounter, 1), value[1]); // second byte
