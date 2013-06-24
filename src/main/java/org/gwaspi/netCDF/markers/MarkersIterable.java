@@ -19,19 +19,25 @@ package org.gwaspi.netCDF.markers;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
+import org.gwaspi.model.OperationMetadata;
+import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleInfoList;
 import org.gwaspi.model.SampleKey;
+import org.gwaspi.netCDF.operations.MarkerOperationSet;
 import org.gwaspi.samples.SampleSet;
 import ucar.ma2.InvalidRangeException;
+import ucar.nc2.NetcdfFile;
 
 /**
  * TODO
@@ -39,16 +45,93 @@ import ucar.ma2.InvalidRangeException;
 public class MarkersIterable implements
 		Iterable<Map.Entry<MarkerKey, Map<SampleKey, byte[]>>>
 {
-	private static class Excluder {
+	/**
+	 * Basically, this is a delayed loader of a list of elements
+	 * to be excluded.
+	 * @param VT the type of value that is to be excluded or not
+	 */
+	public interface Excluder<VT> {
+
+		void init() throws IOException;
+
+		boolean isExcludingAll();
+
+		boolean isExcludingNone();
+
+		boolean isExcluded(VT object);
+	}
+
+	public static class HWExcluder implements Excluder<MarkerKey> {
+
+		private final OperationKey hwOperationKey;
+		private final double hwThreshold;
+		private Collection<MarkerKey> excludeMarkers;
+		private boolean excludingAll;
+		private boolean excludingNone;
+
+		public HWExcluder(OperationKey hwOperationKey, double hwThreshold) {
+
+			this.hwOperationKey = hwOperationKey;
+			this.hwThreshold = hwThreshold;
+			this.excludeMarkers = null;
+			this.excludingAll = false;
+			this.excludingNone = false;
+		}
+
+		@Override
+		public void init() throws IOException {
+
+			Collection<MarkerKey> toBeExcluded = new HashSet<MarkerKey>();
+
+			OperationMetadata hwOP = OperationsList.getOperation(hwOperationKey);
+
+			int totalMarkerNb = 0;
+
+			if (hwOP != null) {
+				NetcdfFile rdHWNcFile = NetcdfFile.open(hwOP.getPathToMatrix());
+				MarkerOperationSet rdHWOperationSet = new MarkerOperationSet(OperationKey.valueOf(hwOP));
+				Map<MarkerKey, Double> rdHWMarkers = rdHWOperationSet.getOpSetMap();
+
+				// EXCLUDE MARKER BY HARDY WEINBERG THRESHOLD
+				rdHWMarkers = rdHWOperationSet.fillOpSetMapWithVariable(rdHWNcFile, cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWPval_CTRL);
+				totalMarkerNb = rdHWMarkers.size();
+				for (Map.Entry<MarkerKey, Double> entry : rdHWMarkers.entrySet()) {
+					double value = entry.getValue();
+					if (value < hwThreshold) {
+						toBeExcluded.add(entry.getKey());
+					}
+				}
+				rdHWNcFile.close();
+			}
+
+			excludingAll = (toBeExcluded.size() < totalMarkerNb);
+			excludingNone = toBeExcluded.isEmpty();
+			excludeMarkers = toBeExcluded;
+		}
+
+		@Override
+		public boolean isExcludingAll() {
+			return excludingAll;
+		}
+
+		@Override
+		public boolean isExcludingNone() {
+			return excludingNone;
+		}
+
+		@Override
+		public boolean isExcluded(MarkerKey object) {
+			return excludeMarkers.contains(object);
+		}
+
 	}
 
 	private final MatrixKey matrixKey;
 	private final Collection<SampleKey> excluder;
 	private final SampleSet sampleSet;
 	private final List<MarkerKey> markerKeys;
-	private Set<SampleKey> sampleKeys;
-	private int nextMarker;
-	private Map<SampleKey, SampleInfo> sampleInfos;
+	private final Set<SampleKey> sampleKeys;
+	private final Map<SampleKey, SampleInfo> sampleInfos;
 
 	/**
 	 * Allows to iterate over the unfiltered MarkerKeys of a matrix.
@@ -75,13 +158,13 @@ public class MarkersIterable implements
 		// This one has to be ordered! (and it is, due to the map being a LinkedHashMap)
 		this.markerKeys = new ArrayList<MarkerKey>(rdMarkerSet.getMarkerIdSetMapInteger().keySet());
 
-		this.nextMarker = 0;
 		this.sampleInfos = retrieveSampleInfos();
 	}
 
 	public MarkersIterable(OperationKey hardyWeinbergOk) throws IOException, InvalidRangeException {
 
 		this.matrixKey = hardyWeinbergOk.getParentMatrixKey();
+		this.excluder = null;
 
 		MarkerSet rdMarkerSet = new MarkerSet(matrixKey);
 		rdMarkerSet.initFullMarkerIdSetMap();
@@ -97,7 +180,6 @@ public class MarkersIterable implements
 		// This one has to be ordered! (and it is, due to the map being a LinkedHashMap)
 		this.markerKeys = new ArrayList<MarkerKey>(rdMarkerSet.getMarkerIdSetMapInteger().keySet());
 
-		this.nextMarker = 0;
 		this.sampleInfos = retrieveSampleInfos();
 	}
 
