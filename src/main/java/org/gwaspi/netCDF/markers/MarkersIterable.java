@@ -58,6 +58,8 @@ public class MarkersIterable implements
 
 		boolean isExcludingNone();
 
+		int getTotalExcluded();
+
 		boolean isExcluded(VT object);
 	}
 
@@ -120,6 +122,11 @@ public class MarkersIterable implements
 		}
 
 		@Override
+		public int getTotalExcluded() {
+			return excludeMarkers.size();
+		}
+
+		@Override
 		public boolean isExcluded(MarkerKey object) {
 			return excludeMarkers.contains(object);
 		}
@@ -127,7 +134,7 @@ public class MarkersIterable implements
 	}
 
 	private final MatrixKey matrixKey;
-	private final Collection<SampleKey> excluder;
+	private final Excluder<MarkerKey> excluder;
 	private final SampleSet sampleSet;
 	private final List<MarkerKey> markerKeys;
 	private final Set<SampleKey> sampleKeys;
@@ -139,10 +146,14 @@ public class MarkersIterable implements
 	 * @throws IOException
 	 * @throws InvalidRangeException
 	 */
-	public MarkersIterable(MatrixKey matrixKey) throws IOException, InvalidRangeException {
+	public MarkersIterable(MatrixKey matrixKey, Excluder<MarkerKey> excluder) throws IOException, InvalidRangeException {
 
 		this.matrixKey = matrixKey;
-		this.excluder = null;
+		this.excluder = excluder;
+
+		if (excluder != null) {
+			excluder.init();
+		}
 
 		MarkerSet rdMarkerSet = new MarkerSet(matrixKey);
 		rdMarkerSet.initFullMarkerIdSetMap();
@@ -161,26 +172,8 @@ public class MarkersIterable implements
 		this.sampleInfos = retrieveSampleInfos();
 	}
 
-	public MarkersIterable(OperationKey hardyWeinbergOk) throws IOException, InvalidRangeException {
-
-		this.matrixKey = hardyWeinbergOk.getParentMatrixKey();
-		this.excluder = null;
-
-		MarkerSet rdMarkerSet = new MarkerSet(matrixKey);
-		rdMarkerSet.initFullMarkerIdSetMap();
-//		rdMarkerSet.fillGTsForCurrentSampleIntoInitMap(readStudyId);
-//		rdMarkerSet.fillWith(cNetCDF.Defaults.DEFAULT_GT);
-//
-//		Map<MarkerKey, byte[]> wrMarkerSetMap = new LinkedHashMap<MarkerKey, byte[]>();
-//		wrMarkerSetMap.putAll(rdMarkerSet.getMarkerIdSetMapByteArray());
-
-		this.sampleSet = new SampleSet(matrixKey);
-//			samples = sampleSet.getSampleIdSetMapByteArray();
-		this.sampleKeys = sampleSet.getSampleKeys();
-		// This one has to be ordered! (and it is, due to the map being a LinkedHashMap)
-		this.markerKeys = new ArrayList<MarkerKey>(rdMarkerSet.getMarkerIdSetMapInteger().keySet());
-
-		this.sampleInfos = retrieveSampleInfos();
+	public MarkersIterable(MatrixKey matrixKey) throws IOException, InvalidRangeException {
+		this(matrixKey, null);
 	}
 
 	private Map<SampleKey, SampleInfo> retrieveSampleInfos() throws IOException, InvalidRangeException {
@@ -205,6 +198,10 @@ public class MarkersIterable implements
 
 	MatrixKey getMatrixKey() {
 		return matrixKey;
+	}
+
+	Excluder<MarkerKey> getExcluder() {
+		return excluder;
 	}
 
 	SampleSet getSampleSet() {
