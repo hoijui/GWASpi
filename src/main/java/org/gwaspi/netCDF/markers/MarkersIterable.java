@@ -54,10 +54,6 @@ public class MarkersIterable implements
 
 		void init() throws IOException;
 
-		boolean isExcludingAll();
-
-		boolean isExcludingNone();
-
 		int getTotalExcluded();
 
 		boolean isExcluded(VT object);
@@ -68,16 +64,12 @@ public class MarkersIterable implements
 		private final OperationKey hwOperationKey;
 		private final double hwThreshold;
 		private Collection<MarkerKey> excludeMarkers;
-		private boolean excludingAll;
-		private boolean excludingNone;
 
 		public HWExcluder(OperationKey hwOperationKey, double hwThreshold) {
 
 			this.hwOperationKey = hwOperationKey;
 			this.hwThreshold = hwThreshold;
 			this.excludeMarkers = null;
-			this.excludingAll = false;
-			this.excludingNone = false;
 		}
 
 		@Override
@@ -87,38 +79,27 @@ public class MarkersIterable implements
 
 			OperationMetadata hwOP = OperationsList.getOperation(hwOperationKey);
 
-			int totalMarkerNb = 0;
-
-			if (hwOP != null) {
-				NetcdfFile rdHWNcFile = NetcdfFile.open(hwOP.getPathToMatrix());
-				MarkerOperationSet rdHWOperationSet = new MarkerOperationSet(OperationKey.valueOf(hwOP));
-				Map<MarkerKey, Double> rdHWMarkers = rdHWOperationSet.getOpSetMap();
-
-				// EXCLUDE MARKER BY HARDY WEINBERG THRESHOLD
-				rdHWMarkers = rdHWOperationSet.fillOpSetMapWithVariable(rdHWNcFile, cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWPval_CTRL);
-				totalMarkerNb = rdHWMarkers.size();
-				for (Map.Entry<MarkerKey, Double> entry : rdHWMarkers.entrySet()) {
-					double value = entry.getValue();
-					if (value < hwThreshold) {
-						toBeExcluded.add(entry.getKey());
-					}
-				}
-				rdHWNcFile.close();
+			if (hwOP == null) {
+				throw new IllegalArgumentException(
+						"Hardy-Weinberg operation does not exist: "
+						+ hwOperationKey.toString());
 			}
 
-			excludingAll = (toBeExcluded.size() < totalMarkerNb);
-			excludingNone = toBeExcluded.isEmpty();
+			NetcdfFile rdHWNcFile = NetcdfFile.open(hwOP.getPathToMatrix());
+			MarkerOperationSet rdHWOperationSet = new MarkerOperationSet(OperationKey.valueOf(hwOP));
+			Map<MarkerKey, Double> rdHWMarkers = rdHWOperationSet.getOpSetMap();
+
+			// EXCLUDE MARKER BY HARDY WEINBERG THRESHOLD
+			rdHWMarkers = rdHWOperationSet.fillOpSetMapWithVariable(rdHWNcFile, cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWPval_CTRL);
+			for (Map.Entry<MarkerKey, Double> entry : rdHWMarkers.entrySet()) {
+				double value = entry.getValue();
+				if (value < hwThreshold) {
+					toBeExcluded.add(entry.getKey());
+				}
+			}
+			rdHWNcFile.close();
+
 			excludeMarkers = toBeExcluded;
-		}
-
-		@Override
-		public boolean isExcludingAll() {
-			return excludingAll;
-		}
-
-		@Override
-		public boolean isExcludingNone() {
-			return excludingNone;
 		}
 
 		@Override

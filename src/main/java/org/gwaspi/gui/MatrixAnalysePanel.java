@@ -63,6 +63,8 @@ import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.netCDF.operations.GWASinOneGOParams;
 import org.gwaspi.netCDF.operations.OperationManager;
+import org.gwaspi.operations.combi.CombiTestParams;
+import org.gwaspi.operations.combi.GenotypeEncoder;
 import org.gwaspi.samples.SamplesParserManager;
 import org.gwaspi.threadbox.MultiOperations;
 import org.gwaspi.threadbox.SwingWorkerItemList;
@@ -398,6 +400,11 @@ public class MatrixAnalysePanel extends JPanel {
 						}
 					}
 
+					GenotypeEncoder genotypeEncoder = null;
+					if (combi) {
+						genotypeEncoder =
+					}
+
 					// DO TEST
 					if (performTest) {
 						boolean reProceed = true;
@@ -427,13 +434,21 @@ public class MatrixAnalysePanel extends JPanel {
 								// >>>>>> START THREADING HERE <<<<<<<
 								if (combi) {
 									throw new RuntimeException("call combi test here"); // TODO implement me!
+									MultiOperations.doCombiTest(new CombiTestParams(
+											parentMatrixKey,
+											hwOPKey,
+											gwasParams.getDiscardMarkerHWTreshold(),
+											ffff,
+											gwasParams.
+											));
+								} else {
+									MultiOperations.doAssociationTest(
+											parentMatrixKey,
+											censusOPKey,
+											hwOPKey,
+											gwasParams,
+											allelic);
 								}
-								MultiOperations.doAssociationTest(
-										parentMatrixKey,
-										censusOPKey,
-										hwOPKey,
-										gwasParams,
-										allelic);
 							}
 						}
 					}

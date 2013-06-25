@@ -57,7 +57,8 @@ public class MarkersIterator implements
 		netCdfFile = NetcdfFile.open(rdMatrixMetadata.getPathToMatrix());
 
 		totalMarkers = markersIterable.getMarkerKeys().size();
-		totalExcluded = markersIterable.getExcluder().getTotalExcluded();
+		MarkersIterable.Excluder<MarkerKey> excluder = markersIterable.getExcluder();
+		totalExcluded = (excluder == null) ? 0 : excluder.getTotalExcluded();
 
 		nextMarker = 0;
 		excluded = 0;
@@ -78,10 +79,12 @@ public class MarkersIterator implements
 		}
 		MarkersIterable.Excluder<MarkerKey> excluder = markersIterable.getExcluder();
 		MarkerKey curMarkerKey = markersIterable.getMarkerKeys().get(nextMarker);
-		while (excluder.isExcluded(curMarkerKey)) {
-			excluded++;
-			nextMarker++;
-			curMarkerKey = markersIterable.getMarkerKeys().get(nextMarker);
+		if (excluder != null) {
+			while (excluder.isExcluded(curMarkerKey)) {
+				excluded++;
+				nextMarker++;
+				curMarkerKey = markersIterable.getMarkerKeys().get(nextMarker);
+			}
 		}
 		try {
 			this.markersIterable.getSampleSet().readAllSamplesGTsFromCurrentMarkerToMap(netCdfFile, samples, nextMarker);

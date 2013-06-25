@@ -73,8 +73,15 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 	@Override
 	public int processMatrix() throws IOException, InvalidRangeException {
 		LOG.debug("Combi-test Start");
-
-		MarkersIterable markersIterable = new MarkersIterable(params.getMatrixKey());
+		MarkersIterable.Excluder<MarkerKey> excluder = null;
+		if (params.getHardyWeinbergOperationKey() != null) {
+			excluder = new MarkersIterable.HWExcluder(
+					params.getHardyWeinbergOperationKey(),
+					params.getHardyWeinbergThreshold());
+		}
+		MarkersIterable markersIterable = new MarkersIterable(
+				params.getMatrixKey(),
+				excluder);
 		Map<SampleKey, SampleInfo> sampleInfos = markersIterable.getSampleInfos();
 
 		// dimensions of the samples(-space) == #markers (== #SNPs)
