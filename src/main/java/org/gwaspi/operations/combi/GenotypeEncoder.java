@@ -16,10 +16,8 @@
  */
 package org.gwaspi.operations.combi;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import org.gwaspi.model.Genotype;
 
 /**
@@ -98,4 +96,9 @@ public interface GenotypeEncoder {
 	void decodeWeights(
 			final List<Double> encodedWeights,
 			List<Double> decodedWeights);
+
+	/**
+	 * Returns a human friendly name of the encoding algorithm.
+	 */
+	String getHumanReadableName();
 }

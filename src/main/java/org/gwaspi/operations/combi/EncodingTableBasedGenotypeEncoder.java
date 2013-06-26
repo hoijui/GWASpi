@@ -153,7 +153,12 @@ public abstract class EncodingTableBasedGenotypeEncoder implements GenotypeEncod
 	}
 
 	@Override
+	public String getHumanReadableName() {
+		return getClass().getSimpleName().replaceFirst(GenotypeEncoder.class.getSimpleName(), "");
+	}
+
+	@Override
 	public String toString() {
-		return getClass().getSimpleName();
+		return getHumanReadableName();
 	}
 }
