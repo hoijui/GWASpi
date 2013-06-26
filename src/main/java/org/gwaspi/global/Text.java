@@ -99,7 +99,7 @@ public class Text {
 		public static final String cancel = "Cancel";
 		public static final String abort = "Abort";
 		public static final String next = "Next";
-		public static final String processing = "Processing...";
+		public static final String processing = "Processing..."; // FIXME unuse this, as it is too unspecific, and is used for stufff that dures looong! -> frustrating
 		public static final String file1 = "File 1";
 		public static final String file2 = "File 2";
 		public static final String file3 = "File 3";
