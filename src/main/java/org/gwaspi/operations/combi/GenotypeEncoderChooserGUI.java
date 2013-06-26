@@ -17,7 +17,6 @@
 package org.gwaspi.operations.combi;
 
 import java.awt.Component;
-import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 
 /**
@@ -25,7 +24,7 @@ import javax.swing.JOptionPane;
  */
 public class GenotypeEncoderChooserGUI /*extends JOptionPane*/ {
 
-	private static final String TITLE = "Choose the GenotypeEncoder to use";
+	private static final String TITLE = "Choose the genotype encoder to use";
 	private static final Object[] ALL_ENCODERS = new Object[] {
 		new AllelicGenotypeEncoder(),
 		new GenotypicGenotypeEncoder(),
