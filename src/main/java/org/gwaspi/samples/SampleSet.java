@@ -98,7 +98,17 @@ public class SampleSet {
 
 			try {
 				sampleSetSize = markerSetDim.getLength();
-				ArrayChar.D2 sampleSetAC = (ArrayChar.D2) var.read("(0:" + (sampleSetSize - 1) + ":1, 0:" + (varShape[1] - 1) + ":1)");
+
+				StringBuilder netCdfReadStrBldr = new StringBuilder(64);
+				netCdfReadStrBldr
+						.append("(0:")
+						.append(sampleSetSize - 1)
+						.append(":1, 0:")
+						.append(varShape[1] - 1)
+						.append(":1)");
+				String netCdfReadStr = netCdfReadStrBldr.toString();
+
+				ArrayChar.D2 sampleSetAC = (ArrayChar.D2) var.read(netCdfReadStr);
 
 				sampleIdSetMap = org.gwaspi.netCDF.operations.Utils.writeD2ArrayCharToMapSampleKeys(
 						matrixMetadata.getStudyKey(),
@@ -153,7 +163,17 @@ public class SampleSet {
 
 			try {
 				sampleSetSize = markerSetDim.getLength();
-				ArrayChar.D2 sampleSetAC = (ArrayChar.D2) var.read("(0:" + (sampleSetSize - 1) + ":1, 0:" + (varShape[1] - 1) + ":1)");
+
+				StringBuilder netCdfReadStrBldr = new StringBuilder(64);
+				netCdfReadStrBldr
+						.append("(0:")
+						.append(sampleSetSize - 1)
+						.append(":1, 0:")
+						.append(varShape[1] - 1)
+						.append(":1)");
+				String netCdfReadStr = netCdfReadStrBldr.toString();
+
+				ArrayChar.D2 sampleSetAC = (ArrayChar.D2) var.read(netCdfReadStr);
 
 				sampleIdSetMap = org.gwaspi.netCDF.operations.Utils.writeD2ArrayCharToMapSampleKeys(
 						matrixMetadata.getStudyKey(),
@@ -199,10 +219,43 @@ public class SampleSet {
 
 				Dimension sampleSetDim = rdNcFile.findDimension(cNetCDF.Dimensions.DIM_SAMPLESET);
 
-				ArrayByte.D3 gt_ACD3 = (ArrayByte.D3) genotypes.read(
-						"(0:" + (sampleSetDim.getLength() - 1) + ":1, "
-						+ markerNb + ":" + markerNb + ":1, "
-						+ "0:" + (varShape[2] - 1) + ":1)");
+				// NOTE exemplary code!
+				// how to best create the required string?
+				// see http://stackoverflow.com/questions/513600/should-i-use-javas-string-format-if-performance-is-important
+				// suposedly the slowest; String.format
+//				String netCdfReadStr = String.format(
+//						"(0:%d:1, %d:%d:1, 0:%d:1)",
+//						(sampleSetDim.getLength() - 1),
+//						markerNb,
+//						markerNb,
+//						(varShape[2] - 1));
+				// faster; MessageFormat
+//				MessageFormat gtReadMF = new MessageFormat("(0:%d:1, %d:%d:1, 0:%d:1)");
+//				String netCdfReadStr = gtReadMF.format(new Object[] {
+//						(sampleSetDim.getLength() - 1),
+//						markerNb,
+//						markerNb,
+//						(varShape[2] - 1)});
+				// ... about the same as MessageFormat(?); String + String
+//				String netCdfReadStr
+//						= "(0:" + (sampleSetDim.getLength() - 1) + ":1, "
+//						+ markerNb + ":" + markerNb + ":1, "
+//						+ "0:" + (varShape[2] - 1) + ":1)";
+				// fastest and most memory friendly way: StringBuilder (not thread-safe)
+				StringBuilder netCdfReadStrBldr = new StringBuilder(64);
+				netCdfReadStrBldr
+						.append("(0:")
+						.append(sampleSetDim.getLength() - 1)
+						.append(":1, ")
+						.append(markerNb)
+						.append(":")
+						.append(markerNb)
+						.append(":1, " + "0:")
+						.append(varShape[2] - 1)
+						.append(":1)");
+				String netCdfReadStr = netCdfReadStrBldr.toString();
+
+				ArrayByte.D3 gt_ACD3 = (ArrayByte.D3) genotypes.read(netCdfReadStr);
 
 				int[] shp = gt_ACD3.getShape();
 				int reducer = 0;
@@ -263,7 +316,16 @@ public class SampleSet {
 			try {
 				sampleSetSize = sampleSetDim.getLength();
 				if (dataType == DataType.CHAR) {
-					ArrayChar.D2 sampleSetAC = (ArrayChar.D2) var.read("(0:" + (sampleSetSize - 1) + ":1, 0:" + (varShape[1] - 1) + ":1)");
+					StringBuilder netCdfReadStrBldr = new StringBuilder(64);
+					netCdfReadStrBldr
+							.append("(0:")
+							.append(sampleSetSize - 1)
+							.append(":1, 0:")
+							.append(varShape[1] - 1)
+							.append(":1)");
+					String netCdfReadStr = netCdfReadStrBldr.toString();
+
+					ArrayChar.D2 sampleSetAC = (ArrayChar.D2) var.read(netCdfReadStr);
 					org.gwaspi.netCDF.operations.Utils.writeD2ArrayCharToMapValues(sampleSetAC, (Map<SampleKey, char[]>) map);
 					sampleIdSetMap = map;
 				}
@@ -308,7 +370,18 @@ public class SampleSet {
 			try {
 				sampleSetSize = sampleSetDim.getLength();
 				if (dataType == DataType.CHAR) {
-					ArrayChar.D2 sampleSetAC = (ArrayChar.D2) var.read("(0:" + (sampleSetSize - 1) + ":1, " + filterPos + ":" + filterPos + ":1)");
+					StringBuilder netCdfReadStrBldr = new StringBuilder(64);
+					netCdfReadStrBldr
+							.append("(0:")
+							.append(sampleSetSize - 1)
+							.append(":1, ")
+							.append(filterPos)
+							.append(":")
+							.append(filterPos)
+							.append(":1)");
+					String netCdfReadStr = netCdfReadStrBldr.toString();
+
+					ArrayChar.D2 sampleSetAC = (ArrayChar.D2) var.read(netCdfReadStr);
 					org.gwaspi.netCDF.operations.Utils.writeD2ArrayCharToMapValues(sampleSetAC, map);
 					sampleIdSetMap = map;
 				}
