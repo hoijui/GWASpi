@@ -153,12 +153,23 @@ public class MarkerSet {
 					endMkIdx = markerSetSize - 1;
 				}
 
+				StringBuilder netCdfReadStrBldr = new StringBuilder(64);
+				netCdfReadStrBldr
+						.append("(")
+						.append(startMkIdx)
+						.append(":")
+						.append(endMkIdx)
+						.append(":1, 0:")
+						.append(varShape[1] - 1)
+						.append(":1)");
+				String netCdfReadStr = netCdfReadStrBldr.toString();
+
 				if (dataType == DataType.CHAR) {
-					ArrayChar.D2 markerSetAC = (ArrayChar.D2) var.read("(" + startMkIdx + ":" + endMkIdx + ":1, 0:" + (varShape[1] - 1) + ":1)");
+					ArrayChar.D2 markerSetAC = (ArrayChar.D2) var.read(netCdfReadStr);
 					markerIdSetMap = wrapToMarkerKeyMap(markerSetAC);
 				}
 				if (dataType == DataType.BYTE) {
-					ArrayByte.D2 markerSetAC = (ArrayByte.D2) var.read("(" + startMkIdx + ":" + endMkIdx + ":1, 0:" + (varShape[1] - 1) + ":1)");
+					ArrayByte.D2 markerSetAC = (ArrayByte.D2) var.read(netCdfReadStr);
 					markerIdSetMap = wrapToMarkerKeyMap(markerSetAC);
 				}
 			} catch (IOException ex) {
@@ -202,12 +213,23 @@ public class MarkerSet {
 					endMkIdx = markerSetSize - 1;
 				}
 
+				StringBuilder netCdfReadStrBldr = new StringBuilder(64);
+				netCdfReadStrBldr
+						.append("(")
+						.append(startMkIdx)
+						.append(":")
+						.append(endMkIdx)
+						.append(":1, 0:")
+						.append(varShape[1] - 1)
+						.append(":1)");
+				String netCdfReadStr = netCdfReadStrBldr.toString();
+
 				if (dataType == DataType.CHAR) {
-					ArrayChar.D2 markerSetAC = (ArrayChar.D2) var.read("(" + startMkIdx + ":" + endMkIdx + ":1, 0:" + (varShape[1] - 1) + ":1)");
+					ArrayChar.D2 markerSetAC = (ArrayChar.D2) var.read(netCdfReadStr);
 					markerRsIdSetMap = wrapToMarkerKeyMap(markerSetAC);
 				}
 				if (dataType == DataType.BYTE) {
-					ArrayByte.D2 markerSetAC = (ArrayByte.D2) var.read("(" + startMkIdx + ":" + endMkIdx + ":1, 0:" + (varShape[1] - 1) + ":1)");
+					ArrayByte.D2 markerSetAC = (ArrayByte.D2) var.read(netCdfReadStr);
 					markerRsIdSetMap = wrapToMarkerKeyMap(markerSetAC);
 				}
 			} catch (IOException ex) {
@@ -300,9 +322,22 @@ public class MarkerSet {
 					endMkIdx = markerSetSize - 1;
 				}
 
-				ArrayByte.D3 gt_ACD3 = (ArrayByte.D3) var.read("(" + sampleNb + ":" + sampleNb + ":1, "
-						+ startMkIdx + ":" + endMkIdx + ":1, "
-						+ "0:" + (varShape[2] - 1) + ":1)");
+				StringBuilder netCdfReadStrBldr = new StringBuilder(64);
+				netCdfReadStrBldr
+						.append("(")
+						.append(sampleNb)
+						.append(":")
+						.append(sampleNb)
+						.append(":1, ")
+						.append(startMkIdx)
+						.append(":")
+						.append(endMkIdx)
+						.append(":1, " + "0:")
+						.append(varShape[2] - 1)
+						.append(":1)");
+				String netCdfReadStr = netCdfReadStrBldr.toString();
+
+				ArrayByte.D3 gt_ACD3 = (ArrayByte.D3) var.read(netCdfReadStr);
 
 				int[] shp = gt_ACD3.getShape();
 				int reducer = 0;
@@ -338,28 +373,44 @@ public class MarkerSet {
 			DataType dataType = var.getDataType();
 			int[] varShape = var.getShape();
 
+			StringBuilder netCdfReadStrBldr = new StringBuilder(64);
+			netCdfReadStrBldr
+					.append("(")
+					.append(startMkIdx)
+					.append(":")
+					.append(endMkIdx)
+					.append(":1");
+			if (varShape.length == 2) {
+				netCdfReadStrBldr
+						.append(", 0:")
+						.append(varShape[1] - 1)
+						.append(":1");
+			}
+			netCdfReadStrBldr.append(")");
+			String netCdfReadStr = netCdfReadStrBldr.toString();
+
 			try {
 				if ((dataType == DataType.CHAR) && (varShape.length == 2)) {
-					ArrayChar.D2 markerSetAC = (ArrayChar.D2) var.read("(" + startMkIdx + ":" + endMkIdx + ":1, 0:" + (varShape[1] - 1) + ":1)");
+					ArrayChar.D2 markerSetAC = (ArrayChar.D2) var.read(netCdfReadStr);
 					org.gwaspi.netCDF.operations.Utils.writeD2ArrayCharToMapValues(markerSetAC, (Map<MarkerKey, char[]>) markerIdSetMap);
 				}
 				if (dataType == DataType.DOUBLE) {
 					if (varShape.length == 1) {
-						ArrayDouble.D1 markerSetAF = (ArrayDouble.D1) var.read("(" + startMkIdx + ":" + endMkIdx + ":1)");
+						ArrayDouble.D1 markerSetAF = (ArrayDouble.D1) var.read(netCdfReadStr);
 						org.gwaspi.netCDF.operations.Utils.writeD1ArrayDoubleToMapValues(markerSetAF, (Map<MarkerKey, Double>) markerIdSetMap);
 					}
 					if (varShape.length == 2) {
-						ArrayDouble.D2 markerSetAF = (ArrayDouble.D2) var.read("(" + startMkIdx + ":" + endMkIdx + ":1, 0:" + (varShape[1] - 1) + ":1))");
+						ArrayDouble.D2 markerSetAF = (ArrayDouble.D2) var.read(netCdfReadStr);
 						org.gwaspi.netCDF.operations.Utils.writeD2ArrayDoubleToMapValues(markerSetAF, (Map<MarkerKey, double[]>) markerIdSetMap);
 					}
 				}
 				if (dataType == DataType.INT) {
 					if (varShape.length == 1) {
-						ArrayInt.D1 markerSetAD = (ArrayInt.D1) var.read("(" + startMkIdx + ":" + endMkIdx + ":1)");
+						ArrayInt.D1 markerSetAD = (ArrayInt.D1) var.read(netCdfReadStr);
 						org.gwaspi.netCDF.operations.Utils.writeD1ArrayIntToMapValues(markerSetAD, (Map<MarkerKey, Integer>) markerIdSetMap);
 					}
 					if (varShape.length == 2) {
-						ArrayInt.D2 markerSetAD = (ArrayInt.D2) var.read("(" + startMkIdx + ":" + endMkIdx + ":1, 0:" + (varShape[1] - 1) + ":1))");
+						ArrayInt.D2 markerSetAD = (ArrayInt.D2) var.read(netCdfReadStr);
 						org.gwaspi.netCDF.operations.Utils.writeD2ArrayIntToMapValues(markerSetAD, (Map<MarkerKey, int[]>) markerIdSetMap);
 					}
 				}
@@ -384,7 +435,18 @@ public class MarkerSet {
 
 			try {
 				if ((dataType == DataType.CHAR) && (varShape.length == 2)) {
-					ArrayChar.D2 markerSetAC = (ArrayChar.D2) var.read("(" + startMkIdx + ":" + endMkIdx + ":1, 0:" + (varShape[1] - 1) + ":1)");
+					StringBuilder netCdfReadStrBldr = new StringBuilder(64);
+					netCdfReadStrBldr
+							.append("(")
+							.append(startMkIdx)
+							.append(":")
+							.append(endMkIdx)
+							.append(":1, 0:")
+							.append(varShape[1] - 1)
+							.append(":1)");
+					String netCdfReadStr = netCdfReadStrBldr.toString();
+
+					ArrayChar.D2 markerSetAC = (ArrayChar.D2) var.read(netCdfReadStr);
 					org.gwaspi.netCDF.operations.Utils.writeD2ArrayCharToMapValues(markerSetAC, (Map<MarkerKey, char[]>) markerIdSetMap);
 				}
 			} catch (IOException ex) {
