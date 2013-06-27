@@ -18,6 +18,7 @@ package org.gwaspi.operations.combi;
 
 import java.awt.Component;
 import javax.swing.JOptionPane;
+import org.gwaspi.cli.CombiTestScriptCommand;
 
 /**
  * TODO
@@ -25,11 +26,6 @@ import javax.swing.JOptionPane;
 public class GenotypeEncoderChooserGUI /*extends JOptionPane*/ {
 
 	private static final String TITLE = "Choose the genotype encoder to use";
-	private static final Object[] ALL_ENCODERS = new Object[] {
-		new AllelicGenotypeEncoder(),
-		new GenotypicGenotypeEncoder(),
-		new NominalGenotypeEncoder()
-	};
 
 	public GenotypeEncoderChooserGUI() {
 
@@ -46,21 +42,23 @@ public class GenotypeEncoderChooserGUI /*extends JOptionPane*/ {
 	}
 
 	public static GenotypeEncoder chooseGenotypeEncoder(Component parentComponent) {
+		//		GenotypeEncoderChooserGUI optionPane = new GenotypeEncoderChooserGUI();
+		//		JDialog dialog = optionPane.createDialog(parentComponent, TITLE);
+		//		dialog.setVisible(true);
+		//		dialog.dispose();
+		//		GenotypeEncoder selectedValue = (GenotypeEncoder) optionPane.getValue();
 
-//		GenotypeEncoderChooserGUI optionPane = new GenotypeEncoderChooserGUI();
-//		JDialog dialog = optionPane.createDialog(parentComponent, TITLE);
-//		dialog.setVisible(true);
-//		dialog.dispose();
-//		GenotypeEncoder selectedValue = (GenotypeEncoder) optionPane.getValue();
-
+		GenotypeEncoder[] genotypeEncoders
+				= CombiTestScriptCommand.GENOTYPE_ENCODERS.values().toArray(
+				new GenotypeEncoder[CombiTestScriptCommand.GENOTYPE_ENCODERS.size()]);
 		GenotypeEncoder selectedValue = (GenotypeEncoder) JOptionPane.showInputDialog(
 				parentComponent,
 				TITLE, // no message, title is enough
 				TITLE,
 				JOptionPane.QUESTION_MESSAGE,
 				null, // use the default icon
-				ALL_ENCODERS,
-				ALL_ENCODERS[0]);
+				genotypeEncoders,
+				genotypeEncoders[0]);
 
 		return selectedValue;
 	}

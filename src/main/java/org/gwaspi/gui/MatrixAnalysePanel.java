@@ -43,6 +43,7 @@ import javax.swing.LayoutStyle;
 import javax.swing.SwingConstants;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.TableCellRenderer;
+import org.gwaspi.cli.CombiTestScriptCommand;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.utils.BrowserHelpUrlAction;
@@ -64,6 +65,7 @@ import org.gwaspi.model.SampleInfo;
 import org.gwaspi.netCDF.operations.GWASinOneGOParams;
 import org.gwaspi.netCDF.operations.OperationManager;
 import org.gwaspi.operations.combi.CombiTestParams;
+import org.gwaspi.operations.combi.CombiTestParamsGUI;
 import org.gwaspi.operations.combi.GenotypeEncoder;
 import org.gwaspi.operations.combi.GenotypeEncoderChooserGUI;
 import org.gwaspi.samples.SamplesParserManager;
@@ -362,7 +364,6 @@ public class MatrixAnalysePanel extends JPanel {
 		public void actionPerformed(ActionEvent evt) {
 			try {
 				OperationKey censusOPKey = evaluateCensusOPId(currentOP, parentMatrixKey);
-				OperationKey hwOPKey = null;
 
 				StartGWASpi.mainGUIFrame.setCursor(CursorUtils.WAIT_CURSOR);
 				Set<SampleInfo.Affection> affectionStates = SamplesParserManager.getDBAffectionStates(parentMatrixKey);
@@ -402,8 +403,7 @@ public class MatrixAnalysePanel extends JPanel {
 							performTest = false;
 						}
 					}
-GenotypeEncoderChooserGUI.chooseGenotypeEncoder(dialogParent);
-							
+
 					// DO TEST
 					if (performTest) {
 						boolean reProceed = true;
@@ -411,10 +411,30 @@ GenotypeEncoderChooserGUI.chooseGenotypeEncoder(dialogParent);
 							reProceed = false;
 						}
 
-						GenotypeEncoder genotypeEncoder = null;
+						OperationKey hwOPKey = null;
+						// GET HW OPERATION
+						List<OperationMetadata> hwOperations = OperationsList.getOperationsList(parentMatrixKey.getMatrixId(), censusOPKey.getId(), OPType.HARDY_WEINBERG);
+						for (OperationMetadata currentHWop : hwOperations) {
+							// REQUEST WHICH HW TO USE
+							// FIXME this looks strange.. just use the last one?
+							if (currentHWop != null) {
+								hwOPKey = OperationKey.valueOf(currentHWop);
+							} else {
+								reProceed = false;
+							}
+						}
+
+						CombiTestParams combiTestParams = null;
 						if (reProceed) {
 							if (combi) {
-								genotypeEncoder = GenotypeEncoderChooserGUI.chooseGenotypeEncoder(dialogParent);
+								combiTestParams = new CombiTestParams(
+										parentMatrixKey,
+										hwOPKey,
+										gwasParams.getDiscardMarkerHWTreshold(),
+										CombiTestScriptCommand.GENOTYPE_ENCODERS.values().iterator().next()
+										);
+								combiTestParams = CombiTestParamsGUI.chooseCombiTestParams(dialogParent, combiTestParams);
+//								genotypeEncoder = GenotypeEncoderChooserGUI.chooseGenotypeEncoder(dialogParent);
 							} else {
 								gwasParams = new MoreAssocInfo().showMoreInfo();
 							}
@@ -422,28 +442,13 @@ GenotypeEncoderChooserGUI.chooseGenotypeEncoder(dialogParent);
 
 						if (gwasParams.isProceed()) {
 							ProcessTab.getSingleton().showTab();
-							// GET HW OPERATION
-							List<OperationMetadata> hwOperations = OperationsList.getOperationsList(parentMatrixKey.getMatrixId(), censusOPKey.getId(), OPType.HARDY_WEINBERG);
-							for (OperationMetadata currentHWop : hwOperations) {
-								// REQUEST WHICH HW TO USE
-								if (currentHWop != null) {
-									hwOPKey = OperationKey.valueOf(currentHWop);
-								} else {
-									reProceed = false;
-								}
-							}
 
 							if (reProceed && censusOPKey != null && hwOPKey != null) {
 
 								// >>>>>> START THREADING HERE <<<<<<<
 								if (combi) {
-									if (genotypeEncoder != null) {
-										MultiOperations.doCombiTest(new CombiTestParams(
-												parentMatrixKey,
-												hwOPKey,
-												gwasParams.getDiscardMarkerHWTreshold(),
-												genotypeEncoder
-												));
+									if (combiTestParams != null) {
+										MultiOperations.doCombiTest(combiTestParams);
 									}
 								} else {
 									MultiOperations.doAssociationTest(

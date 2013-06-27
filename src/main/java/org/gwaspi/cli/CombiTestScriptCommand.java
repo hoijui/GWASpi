@@ -37,9 +37,9 @@ import org.gwaspi.operations.combi.GenotypeEncoder;
 import org.gwaspi.operations.combi.GenotypicGenotypeEncoder;
 import org.gwaspi.threadbox.MultiOperations;
 
-class CombiTestScriptCommand extends AbstractScriptCommand {
+public class CombiTestScriptCommand extends AbstractScriptCommand {
 
-	private static final Map<String, GenotypeEncoder> GENOTYPE_ENCODERS
+	public static final Map<String, GenotypeEncoder> GENOTYPE_ENCODERS
 			= new HashMap<String, GenotypeEncoder>();
 	static {
 		GENOTYPE_ENCODERS.put("allelic", new AllelicGenotypeEncoder());
