@@ -68,8 +68,6 @@ import org.gwaspi.netCDF.operations.GWASinOneGOParams;
 import org.gwaspi.netCDF.operations.OperationManager;
 import org.gwaspi.operations.combi.CombiTestParams;
 import org.gwaspi.operations.combi.CombiTestParamsGUI;
-import org.gwaspi.operations.combi.GenotypeEncoder;
-import org.gwaspi.operations.combi.GenotypeEncoderChooserGUI;
 import org.gwaspi.samples.SamplesParserManager;
 import org.gwaspi.threadbox.MultiOperations;
 import org.gwaspi.threadbox.SwingWorkerItemList;
