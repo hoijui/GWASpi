@@ -28,6 +28,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import org.gwaspi.cli.CombiTestScriptCommand;
+import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.gui.utils.MinMaxDoubleVerifier;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
@@ -144,7 +146,8 @@ public class CombiTestParamsGUI extends JPanel {
 
 		List<OperationMetadata> hwOperations;
 		try {
-			hwOperations = OperationsList.getOperationsList(parentMatrixKey);
+			OperationKey censusOPKey = evaluateCensusOPId(currentOP, parentMatrixKey);
+			hwOperations = OperationsList.getOperationsList(parentMatrixKey.getMatrixId(), Integer.MIN_VALUE, OPType.HARDY_WEINBERG);
 		} catch (IOException ex) {
 			throw new RuntimeException(ex);
 		}
