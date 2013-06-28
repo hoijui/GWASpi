@@ -145,7 +145,7 @@ public class CurrentMatrixPanel extends JPanel {
 
 		tbl_MatrixOperations.setModel(new OperationsTableModel(OperationsList.getOperationsTable(matrixKey)));
 		scrl_MatrixOperations.setViewportView(tbl_MatrixOperations);
-		btn_DeleteOperation.setAction(new DeleteOperationAction(matrix, this, tbl_MatrixOperations));
+		btn_DeleteOperation.setAction(new MatrixAnalysePanel.DeleteOperationAction(null, this, matrix, tbl_MatrixOperations));
 
 
 		pnl_NewOperation.setBorder(BorderFactory.createTitledBorder(null, Text.Operation.newOperation, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("DejaVu Sans", 1, 13))); // NOI18N
@@ -519,58 +519,6 @@ public class CurrentMatrixPanel extends JPanel {
 				}
 			} else {
 				Dialogs.showWarningDialogue(Text.Processes.cantDeleteRequiredItem);
-			}
-		}
-	}
-
-	private static class DeleteOperationAction extends AbstractAction {
-
-		private final MatrixKey matrixKey;
-		private final JTable matrixOperationsTable;
-		private final Component dialogParent;
-
-		DeleteOperationAction(MatrixKey matrixKey, Component dialogParent, JTable matrixOperationsTable) {
-
-			this.matrixKey = matrixKey;
-			this.dialogParent = dialogParent;
-			this.matrixOperationsTable = matrixOperationsTable;
-			putValue(NAME, Text.Operation.deleteOperation);
-		}
-
-		@Override
-		public void actionPerformed(ActionEvent evt) {
-			int[] selectedOPs = matrixOperationsTable.getSelectedRows();
-			if (selectedOPs.length > 0) {
-				try {
-					int option = JOptionPane.showConfirmDialog(dialogParent, Text.Operation.confirmDelete1);
-					if (option == JOptionPane.YES_OPTION) {
-						int deleteReportOption = JOptionPane.showConfirmDialog(dialogParent, Text.Reports.confirmDelete);
-						if (deleteReportOption != JOptionPane.CANCEL_OPTION) {
-							for (int i = 0; i < selectedOPs.length; i++) {
-								int tmpOPRow = selectedOPs[i];
-								int opId = (Integer) matrixOperationsTable.getModel().getValueAt(tmpOPRow, 0);
-								OperationKey operationKey = new OperationKey(matrixKey, opId);
-								//TEST IF THE DELETED ITEM IS REQUIRED FOR A QUED WORKER
-								if (SwingWorkerItemList.permitsDeletionOf(operationKey)) {
-									if (option == JOptionPane.YES_OPTION) {
-										boolean deleteReport = false;
-										if (deleteReportOption == JOptionPane.YES_OPTION) {
-											deleteReport = true;
-										}
-										MultiOperations.deleteOperation(operationKey, deleteReport);
-
-										//OperationManager.deleteOperationAndChildren(matrix.getStudyKey(), opId, deleteReport);
-									}
-								} else {
-									Dialogs.showWarningDialogue(Text.Processes.cantDeleteRequiredItem);
-								}
-							}
-							GWASpiExplorerPanel.getSingleton().updateTreePanel(true);
-						}
-					}
-				} catch (IOException ex) {
-					log.error(null, ex);
-				}
 			}
 		}
 	}
