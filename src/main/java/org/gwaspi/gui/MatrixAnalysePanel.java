@@ -311,7 +311,7 @@ public class MatrixAnalysePanel extends JPanel {
 	}
 
 	//<editor-fold defaultstate="expanded" desc="ANALYSIS">
-	private static class AssociationTestsAction extends AbstractAction {
+	public static class AssociationTestsAction extends AbstractAction {
 
 		private final MatrixKey parentMatrixKey;
 		private GWASinOneGOParams gwasParams;
@@ -434,6 +434,7 @@ public class MatrixAnalysePanel extends JPanel {
 										CombiTestScriptCommand.GENOTYPE_ENCODERS.values().iterator().next()
 										);
 								combiTestParams = CombiTestParamsGUI.chooseCombiTestParams(dialogParent, combiTestParams);
+								gwasParams.setProceed(true);
 //								genotypeEncoder = GenotypeEncoderChooserGUI.chooseGenotypeEncoder(dialogParent);
 							} else {
 								gwasParams = new MoreAssocInfo().showMoreInfo();

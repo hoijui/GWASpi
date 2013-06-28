@@ -16,7 +16,6 @@
  */
 package org.gwaspi.operations.combi;
 
-import java.io.File;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
 
@@ -38,6 +37,12 @@ public class CombiTestParams {
 	private final GenotypeEncoder encoder;
 //	private final File phenotypeInfo;
 	private final String resultMatrixName;
+	private final int markersToKeep;
+	/**
+	 * Whether to use resampling based threshold calibration.
+	 * This feature takes a lot of computation time!
+	 */
+	private final boolean useThresholdCalibration;
 
 	public CombiTestParams(
 			MatrixKey matrixKey,
@@ -45,6 +50,8 @@ public class CombiTestParams {
 			double hardyWeinbergThreshold,
 			GenotypeEncoder encoder,
 //			File phenotypeInfo,
+			int markersToKeep,
+			boolean useThresholdCalibration,
 			String resultMatrixName)
 	{
 		this.matrixKey = matrixKey;
@@ -52,6 +59,8 @@ public class CombiTestParams {
 		this.hardyWeinbergThreshold = hardyWeinbergThreshold;
 		this.encoder = encoder;
 //		this.phenotypeInfo = phenotypeInfo;
+		this.markersToKeep = markersToKeep;
+		this.useThresholdCalibration = useThresholdCalibration;
 		this.resultMatrixName = resultMatrixName;
 	}
 
@@ -59,13 +68,17 @@ public class CombiTestParams {
 			MatrixKey matrixKey,
 			OperationKey hardyWeinbergOperationKey,
 			double hardyWeinbergThreshold,
-			GenotypeEncoder encoder)
+			GenotypeEncoder encoder,
+			int markersToKeep,
+			boolean useThresholdCalibration)
 	{
 		this(
 				matrixKey,
 				hardyWeinbergOperationKey,
 				hardyWeinbergThreshold,
 				encoder,
+				markersToKeep,
+				useThresholdCalibration,
 				"Combi-Test for matrix " + matrixKey.toString()
 				);
 	}
@@ -89,6 +102,14 @@ public class CombiTestParams {
 //	public File getPhenotypeInfo() {
 //		return phenotypeInfo;
 //	}
+
+	public int getMarkersToKeep() {
+		return markersToKeep;
+	}
+
+	public boolean isUseThresholdCalibration() {
+		return useThresholdCalibration;
+	}
 
 	public String getResultMatrixName() {
 		return resultMatrixName;

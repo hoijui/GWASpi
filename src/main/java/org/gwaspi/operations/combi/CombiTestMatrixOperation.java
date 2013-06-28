@@ -55,10 +55,12 @@ import ucar.ma2.InvalidRangeException;
 
 public class CombiTestMatrixOperation implements MatrixOperation {
 
+	public static boolean EXAMPLE_TEST = false; // HACK
+
 	private static final Logger LOG
 			= LoggerFactory.getLogger(CombiTestMatrixOperation.class);
 
-	private static final File BASE_DIR = new File(System.getProperty("user.home"), "/Projects/GWASpi/var/data/marius/example/extra");
+	private static final File BASE_DIR = new File(System.getProperty("user.home"), "/Projects/GWASpi/var/data/marius/example/extra"); // HACK
 
 	/**
 	 * Whether we are to perform allelic or genotypic association tests.
@@ -72,7 +74,10 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 
 	@Override
 	public int processMatrix() throws IOException, InvalidRangeException {
-		LOG.debug("Combi-test Start");
+
+		LOG.info("Combi Association Test: start");
+
+		LOG.info("Combi Association Test: init");
 		MarkersIterable.Excluder<MarkerKey> excluder = null;
 		if (params.getHardyWeinbergOperationKey() != null) {
 			excluder = new MarkersIterable.HWExcluder(
@@ -90,9 +95,13 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 		int dEncoded = dSamples * params.getEncoder().getEncodingFactor();
 		int n = sampleInfos.size();
 
-		storeForEncoding(markersIterable, sampleInfos, dSamples, dEncoded, n);
+		if (EXAMPLE_TEST) { // HACK
+			storeForEncoding(markersIterable, sampleInfos, dSamples, dEncoded, n);
+		} else {
+			return runEncodingAndSVM(markersIterable, sampleInfos, dSamples, dEncoded, n, params.getEncoder());
+		}
 
-		return Integer.MIN_VALUE;
+		return Integer.MIN_VALUE; // FIXME return correct value here
 	}
 
 	private static Map<SampleKey, Double> encodeAffectionStates(final Map<SampleKey, SampleInfo> sampleInfos, int n) {
@@ -219,13 +228,31 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 			n = (Integer) ois.readObject();
 			ois.close();
 
+			runEncodingAndSVM(matrixSamples.entrySet(), sampleInfos, dSamples, dEncoded, n, genotypeEncoder);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	private static int runEncodingAndSVM(
+			Iterable<Map.Entry<MarkerKey, Map<SampleKey, byte[]>>> matrixSamples,
+//			Map<MarkerKey, Map<SampleKey, byte[]>> matrixSamples,
+			Map<SampleKey, SampleInfo> sampleInfos,
+			int dSamples,
+			int dEncoded,
+			int n,
+			GenotypeEncoder genotypeEncoder)
+	{
+		try {
+			LOG.info("Combi Association Test: encode samples");
 			Map<SampleKey, List<Double>> encodedSamples = encodeSamples(
-					matrixSamples.entrySet(),
+					matrixSamples,
 					sampleInfos.keySet(),
 					genotypeEncoder,
 					dSamples,
 					dEncoded,
 					n);
+			LOG.info("Combi Association Test: encode affection states");
 			Map<SampleKey, Double> encodedAffectionStates = encodeAffectionStates(
 					sampleInfos,
 					n);
@@ -234,23 +261,27 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 			Map<SampleKey, List<Double>> X = encodedSamples;
 			Map<SampleKey, Double> Y = encodedAffectionStates;
 
-			storeForSVM(X, Y);
+			String encoderString = null;
+			if (EXAMPLE_TEST) { // HACK
+				storeForSVM(X, Y);
 
-			String encoderString;
-			if (genotypeEncoder instanceof AllelicGenotypeEncoder) {
-				encoderString = "allelic";
-			} else if (genotypeEncoder instanceof GenotypicGenotypeEncoder) {
-				encoderString = "genotypic";
-			} else if (genotypeEncoder instanceof NominalGenotypeEncoder) {
-				encoderString = "nominal";
-			} else {
-				throw new RuntimeException();
+				if (genotypeEncoder instanceof AllelicGenotypeEncoder) {
+					encoderString = "allelic";
+				} else if (genotypeEncoder instanceof GenotypicGenotypeEncoder) {
+					encoderString = "genotypic";
+				} else if (genotypeEncoder instanceof NominalGenotypeEncoder) {
+					encoderString = "nominal";
+				} else {
+					throw new RuntimeException();
+				}
 			}
 
-			runSVM(new ArrayList<List<Double>>(X.values()), new ArrayList<Double>(Y.values()), genotypeEncoder, encoderString);
+			return runSVM(new ArrayList<List<Double>>(X.values()), new ArrayList<Double>(Y.values()), genotypeEncoder, encoderString);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+
+		return Integer.MIN_VALUE;
 	}
 
 	private static final File TMP_SVM_DATA_FILE = new File(System.getProperty("user.home") + "/Projects/GWASpi/repos/GWASpi/svmDataTmp.ser");
@@ -298,6 +329,7 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 
 	private static void whiten(List<List<Double>> X) {
 
+		LOG.info("Combi Association Test: whiten the feature matrix (make center = 0 and variance = 1)");
 		int dEncoded = X.iterator().next().size();
 		int n = X.size();
 
@@ -354,11 +386,11 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 //		}
 
 		// calculate the variance
-		List<Double> variance = new ArrayList<Double>(dEncoded);
+//		List<Double> variance = new ArrayList<Double>(dEncoded);
 		List<Double> stdDev = new ArrayList<Double>(dEncoded);
 		for (int di = 0; di < dEncoded; di++) {
 			double curVariance = varianceSums.get(di) / n * dEncoded;
-			variance.add(curVariance);
+//			variance.add(curVariance);
 			stdDev.add(Math.sqrt(curVariance));
 		}
 
@@ -689,37 +721,40 @@ LOG.debug("calculateOriginalSpaceWeights: " + xs.length);
 			LOG.debug("done. they are equal! good!\n");
 		}
 
+		LOG.info("Combi Association Test: create SVM parameters");
 		svm_parameter libSvmParameters = createLibSvmParameters();
 
+		LOG.info("Combi Association Test: init the SVM model");
 		svm_problem libSvmProblem = createLibSvmProblem(X, Y, libSvmParameters, encoderString);
 
+		LOG.info("Combi Association Test: train the SVM model");
 		svm_model svmModel = svm.svm_train(libSvmProblem, libSvmParameters);
 
 
-		List<Double> myAlphas = new ArrayList<Double>(Collections.nCopies(n, 0.0));
-		int curSVIndex = 0;
-		for (int i = 0; i < svmModel.sv_coef[0].length; i++) {
-			final double value = svmModel.sv_coef[0][i] * -1.0; // HACK FIXME no idea why we get inverted signs, but it should not matter much for our purpose
-			int index;
-			if (libSvmParameters.kernel_type == svm_parameter.PRECOMPUTED) {
-				index = (int) svmModel.SV[i][0].value - 1; // XXX NOTE only works with PRECOMPUTED!
-			} else { // LINEAR
-//				while (libSvmProblem.x[curSVIndex][0] != svmModel.SV[i][0]) {
-//					curSVIndex++;
-//				}
-//				index = curSVIndex;
-				index = (int) svmModel.sv_indices[0][i]; // XXX testing
-			}
-//			final int index = svmModel.SV[i][0].index;
-//			final int index = (int) svmModel.SV[i][0].index; // XXX NOTE does NOT work with PRECOMPUTED!
-//			final int index = (int) svmModel.SV[i][0].value - 1; // XXX NOTE only works with PRECOMPUTED!
-//			final int index = (int) svmModel.sv_indices[i][0]; // XXX testing
-//			final int index = (int) svmModel.sv_indices[0][i]; // XXX testing
-			myAlphas.set(index, value);
-		}
-
 		// check if the alphas are equivalent to the ones calculated with matlab
 		if (encoderString != null) {
+			List<Double> myAlphas = new ArrayList<Double>(Collections.nCopies(n, 0.0));
+			int curSVIndex = 0;
+			for (int i = 0; i < svmModel.sv_coef[0].length; i++) {
+				final double value = svmModel.sv_coef[0][i] * -1.0; // HACK FIXME no idea why we get inverted signs, but it should not matter much for our purpose
+				int index;
+				if (libSvmParameters.kernel_type == svm_parameter.PRECOMPUTED) {
+					index = (int) svmModel.SV[i][0].value - 1; // XXX NOTE only works with PRECOMPUTED!
+				} else { // LINEAR
+	//				while (libSvmProblem.x[curSVIndex][0] != svmModel.SV[i][0]) {
+	//					curSVIndex++;
+	//				}
+	//				index = curSVIndex;
+					index = (int) svmModel.sv_indices[0][i]; // XXX testing
+				}
+	//			final int index = svmModel.SV[i][0].index;
+	//			final int index = (int) svmModel.SV[i][0].index; // XXX NOTE does NOT work with PRECOMPUTED!
+	//			final int index = (int) svmModel.SV[i][0].value - 1; // XXX NOTE only works with PRECOMPUTED!
+	//			final int index = (int) svmModel.sv_indices[i][0]; // XXX testing
+	//			final int index = (int) svmModel.sv_indices[0][i]; // XXX testing
+				myAlphas.set(index, value);
+			}
+
 			double[][] alphas = svmModel.sv_coef;
 			svm_node[][] SVs = svmModel.SV;
 			LOG.debug("\n alphas: " + alphas.length + " * " + alphas[0].length + ": " + Arrays.asList(alphas[0]));
@@ -765,17 +800,18 @@ LOG.debug("calculateOriginalSpaceWeights: " + xs.length);
 			LOG.debug("\nmatlab alphas: ("+correctAlphas.size()+")\n" + correctAlphas);
 			LOG.debug("\njava alphas: ("+myAlphas.size()+")\n" + myAlphas);
 			LOG.debug("\ncompare alpha vectors ...");
-	try {
-			compareVectors(correctAlphas, myAlphas);
-	} catch (RuntimeException ex) {
-		// XXX make unequal alphas non-fatal; DANGER!
-		ex.printStackTrace();
-	}
+			try {
+				compareVectors(correctAlphas, myAlphas);
+			} catch (RuntimeException ex) {
+				// XXX make unequal alphas non-fatal; DANGER!
+				ex.printStackTrace();
+			}
 			LOG.debug("done. they are equal! good!\n");
-		} else {
-			LOG.debug("\njava alphas: ("+myAlphas.size()+")\n" + myAlphas);
+//		} else {
+//			LOG.debug("\njava alphas: ("+myAlphas.size()+")\n" + myAlphas);
 		}
 
+		LOG.info("Combi Association Test: calculate original space weights from alphas");
 		List<Double> weightsEncoded = calculateOriginalSpaceWeights(
 				svmModel.sv_coef, svmModel.SV, X, libSvmProblem.y);
 
@@ -800,10 +836,11 @@ LOG.debug("calculateOriginalSpaceWeights: " + xs.length);
 		LOG.debug("genotypeEncoder: " + genotypeEncoder.getClass().getSimpleName());
 		LOG.debug("encodingFactor: " + genotypeEncoder.getEncodingFactor());
 
-		if (encoderString != null) {
-			List<Double> weights = new ArrayList<Double>(dSamples);
-			genotypeEncoder.decodeWeights(weightsEncoded, weights);
+		LOG.info("Combi Association Test: decode weights from the encoded feature space into marker space");
+		List<Double> weights = new ArrayList<Double>(dSamples);
+		genotypeEncoder.decodeWeights(weightsEncoded, weights);
 
+		if (encoderString != null) {
 			// check if the decoded weights are equivalent to the ones calculated with matlab
 			{
 				File mlWeightsFinalFile = new File(BASE_DIR, "w_" + encoderString + "_final");
@@ -815,21 +852,26 @@ LOG.debug("calculateOriginalSpaceWeights: " + xs.length);
 				compareVectors(mlWeightsFinal, weights);
 				LOG.debug("done. they are equal! good!\n");
 			}
-
-			// apply moving average filter (p-norm filter)
-			List<Double> weightsFiltered = new ArrayList(weights);
-			pNormFilter(weightsFiltered, 3, 2);
-
-			// check if the filtered weights are equivalent to the ones calculated with matlab
-			{
-				File mlWeightsFinalFilteredFile = new File(BASE_DIR, "w_" + encoderString + "_final_filtered");
-				List<Double> mlWeightsFinalFiltered = parsePlainTextMatrix(mlWeightsFinalFilteredFile, false).get(0);
-
-				LOG.debug("\ncompare final, filtered weights vectors ...");
-				compareVectors(mlWeightsFinalFiltered, weightsFiltered);
-				LOG.debug("done. they are equal! good!\n");
-			}
 		}
+
+		// apply moving average filter (p-norm filter)
+		LOG.info("Combi Association Test: apply moving average filter (p-norm filter) on the weights");
+		List<Double> weightsFiltered = new ArrayList(weights);
+		pNormFilter(weightsFiltered, 3, 2); // FIXME change to 35, 2 for bigger stuff
+
+		if (encoderString != null) {
+			// check if the filtered weights are equivalent to the ones calculated with matlab
+			File mlWeightsFinalFilteredFile = new File(BASE_DIR, "w_" + encoderString + "_final_filtered");
+			List<Double> mlWeightsFinalFiltered = parsePlainTextMatrix(mlWeightsFinalFilteredFile, false).get(0);
+
+			LOG.debug("\ncompare final, filtered weights vectors ...");
+			compareVectors(mlWeightsFinalFiltered, weightsFiltered);
+			LOG.debug("done. they are equal! good!\n");
+		}
+		LOG.debug("Combi Association Test: filtered weights: " + weightsFiltered);
+
+		// TODO sort the weights (should already be absolute?)
+		// TODO write stuff to a matrix (maybethe list of important markers?)
 
 		return Integer.MIN_VALUE;
 	}
@@ -1026,6 +1068,8 @@ LOG.debug("calculateOriginalSpaceWeights: " + xs.length);
 	}
 
 	public static void main(String[] args) {
+
+		EXAMPLE_TEST = true;
 //
 //		GenotypeEncoder genotypeEncoder = new AllelicGenotypeEncoder(); // TODO
 //		GenotypeEncoder genotypeEncoder = new GenotypicGenotypeEncoder(); // TODO
@@ -1042,5 +1086,6 @@ LOG.debug("calculateOriginalSpaceWeights: " + xs.length);
 //		Y.add(1.0);
 //		Y.add(-1.0);
 //		runSVM(X, Y, genotypeEncoder, null);
+		EXAMPLE_TEST = false;
 	}
 }

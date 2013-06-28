@@ -17,18 +17,22 @@
 package org.gwaspi.operations.combi;
 
 import java.awt.Component;
+import java.awt.Container;
 import java.io.IOException;
 import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import javax.swing.GroupLayout;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import org.gwaspi.cli.CombiTestScriptCommand;
-import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.gui.utils.MinMaxDoubleVerifier;
 import org.gwaspi.model.MatrixKey;
@@ -63,7 +67,7 @@ public class CombiTestParamsGUI extends JPanel {
 		this.parentMatrixL = new JLabel();
 		this.parentMatrixTF = new JTextField();
 		this.hwOperationL = new JLabel();
-		this.hwOperationCB = new JComboBox(getAllHWOperationKeys(combiTestParams.getMatrixKey()));
+		this.hwOperationCB = new JComboBox(getAllHWOperationKeys(combiTestParams.getMatrixKey(), null));
 		this.hwThresholdL = new JLabel();
 		this.hwThresholdTF = new JFormattedTextField(NumberFormat.getNumberInstance());
 		this.genotypeEncoderL = new JLabel();
@@ -93,61 +97,69 @@ public class CombiTestParamsGUI extends JPanel {
 		this.add(this.parentMatrixL);
 		this.add(this.parentMatrixTF);
 
+		Map<JLabel, JComponent> labelsAndComponents = new LinkedHashMap<JLabel, JComponent>();
+	private final JLabel parentMatrixL;
+	private final JTextField parentMatrixTF;
+	private final JLabel hwOperationL;
+	private final JComboBox hwOperationCB;
+	private final JLabel hwThresholdL;
+	private final JFormattedTextField hwThresholdTF;
+	private final JLabel genotypeEncoderL;
+	private final JComboBox genotypeEncoderCB;
+	private final JLabel resultMatrixL;
+	private final JTextField resultMatrixTF;
+		labelsAndComponents.put(, this);
+		createLayout(parentMatrixL, parentMatrixTF);
+		createLayout(hwOperationL, hwOperationCB);
+		createLayout(hwThresholdL, hwThresholdTF);
+		createLayout(genotypeEncoderL, genotypeEncoderCB);
+		createLayout(resultMatrixL, resultMatrixTF);
+	}
+	private static void createLayout(Container container, Map<JLabel, JComponent> labelsAndComponents) {
 
-        GroupLayout layout = new GroupLayout(this);
-        setLayout(layout);
+        GroupLayout layout = new GroupLayout(container);
+        container.setLayout(layout);
 
 		layout.setAutoCreateGaps(true);
 		layout.setAutoCreateContainerGaps(true);
 
-		GroupLayout.SequentialGroup horizontalGroup = layout.createSequentialGroup();
-        horizontalGroup.addGroup(layout.createParallelGroup()
-				.addComponent(parentMatrixL)
-				.addComponent(hwOperationL)
-				.addComponent(hwThresholdL)
-				.addComponent(genotypeEncoderL)
-				.addComponent(resultMatrixL)
-				);
-		horizontalGroup.addGroup(layout.createParallelGroup()
-				.addComponent(parentMatrixTF)
-				.addComponent(hwOperationCB)
-				.addComponent(hwThresholdTF)
-				.addComponent(genotypeEncoderCB)
-				.addComponent(resultMatrixTF)
-				);
-		layout.setHorizontalGroup(horizontalGroup);
+		GroupLayout.SequentialGroup horizontalG = layout.createSequentialGroup();
+		GroupLayout.ParallelGroup horizontalLabelsG = layout.createParallelGroup();
+		GroupLayout.ParallelGroup horizontalComponentsG = layout.createParallelGroup();
+		for (Map.Entry<JLabel, JComponent> labelAndComponent : labelsAndComponents.entrySet()) {
+			horizontalLabelsG.addComponent(labelAndComponent.getKey());
+			labelAndComponent.getKey().setLabelFor(labelAndComponent.getValue());
+			horizontalComponentsG.addComponent(labelAndComponent.getValue());
+		}
+        horizontalG.addGroup(horizontalLabelsG);
+		horizontalG.addGroup(horizontalComponentsG);
+		layout.setHorizontalGroup(horizontalG);
 
 
         GroupLayout.SequentialGroup verticalGroup = layout.createSequentialGroup();
-        verticalGroup.addGroup(layout.createParallelGroup()
-				.addComponent(parentMatrixL)
-				.addComponent(parentMatrixTF)
-				);
-        verticalGroup.addGroup(layout.createParallelGroup()
-				.addComponent(hwOperationL)
-				.addComponent(hwOperationCB)
-				);
-        verticalGroup.addGroup(layout.createParallelGroup()
-				.addComponent(hwThresholdL)
-				.addComponent(hwThresholdTF)
-				);
-        verticalGroup.addGroup(layout.createParallelGroup()
-				.addComponent(genotypeEncoderL)
-				.addComponent(genotypeEncoderCB)
-				);
-        verticalGroup.addGroup(layout.createParallelGroup()
-				.addComponent(resultMatrixL)
-				.addComponent(resultMatrixTF)
-				);
+		for (Map.Entry<JLabel, JComponent> labelAndComponent : labelsAndComponents.entrySet()) {
+			GroupLayout.ParallelGroup verticalLabelAndComponentG = layout.createParallelGroup();
+			verticalLabelAndComponentG.addComponent(labelAndComponent.getKey());
+			verticalLabelAndComponentG.addComponent(labelAndComponent.getValue());
+			verticalGroup.addGroup(verticalLabelAndComponentG);
+		}
 		layout.setVerticalGroup(verticalGroup);
 	}
 
-	private OperationKey[] getAllHWOperationKeys(MatrixKey parentMatrixKey) {
+	private OperationKey[] getAllHWOperationKeys(MatrixKey parentMatrixKey, OperationKey currentCensusOPKey) {
 
 		List<OperationMetadata> hwOperations;
 		try {
-			OperationKey censusOPKey = evaluateCensusOPId(currentOP, parentMatrixKey);
-			hwOperations = OperationsList.getOperationsList(parentMatrixKey.getMatrixId(), Integer.MIN_VALUE, OPType.HARDY_WEINBERG);
+//			OperationKey censusOPKey = MatrixAnalysePanel.AssociationTestsAction.evaluateCensusOPId(currentCensusOPKey, parentMatrixKey);
+//			hwOperations = OperationsList.getOperationsList(parentMatrixKey.getMatrixId(), censusOPKey.getId(), OPType.HARDY_WEINBERG);
+			// FIXME use also censusOp?
+			List<OperationMetadata> operations = OperationsList.getOperationsList(parentMatrixKey);
+			hwOperations = new ArrayList<OperationMetadata>(operations.size());
+			for (OperationMetadata operationMetadata : operations) {
+				if (operationMetadata.getOperationType() == OPType.HARDY_WEINBERG) {
+					hwOperations.add(operationMetadata);
+				}
+			}
 		} catch (IOException ex) {
 			throw new RuntimeException(ex);
 		}
