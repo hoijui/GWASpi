@@ -42,6 +42,8 @@ import javax.swing.JTextArea;
 import javax.swing.LayoutStyle;
 import javax.swing.SwingConstants;
 import javax.swing.border.TitledBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.TableCellRenderer;
 import org.gwaspi.cli.CombiTestScriptCommand;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
@@ -180,7 +182,7 @@ public class MatrixAnalysePanel extends JPanel {
 
 		tbl_MatrixOperations.setModel(new OperationsTableModel(tableMatrix));
 		scrl_MatrixOperations.setViewportView(tbl_MatrixOperations);
-		btn_DeleteOperation.setAction(new DeleteOperationAction(currentOP, this, parentMatrixKey, tbl_MatrixOperations));
+		btn_DeleteOperation.setAction(new DeleteOperationAction(operationKey, this, parentMatrixKey, tbl_MatrixOperations));
 
 		//<editor-fold defaultstate="expanded" desc="LAYOUT MATRIX DESC">
 		GroupLayout pnl_MatrixDescLayout = new GroupLayout(pnl_MatrixDesc);
@@ -655,25 +657,32 @@ public class MatrixAnalysePanel extends JPanel {
 	//</editor-fold>
 
 	//<editor-fold defaultstate="expanded" desc="HELPERS">
-	private static class DeleteOperationAction extends AbstractAction {
+	public static class DeleteOperationAction extends AbstractAction implements ListSelectionListener {
 
-		private final OperationMetadata currentOP;
-		private final Component dialogParent;
+		private final OperationKey currentlySelectedOPKey;
 		private final MatrixKey parentMatrixKey;
-		private final JTable table;
+		private final JTable matrixOperationsTable;
+		private final Component dialogParent;
 
-		DeleteOperationAction(OperationMetadata currentOP, Component dialogParent, MatrixKey parentMatrixKey, JTable table) {
+		DeleteOperationAction(OperationKey currentlySelectedOPKey, Component dialogParent, MatrixKey parentMatrixKey, JTable matrixOperationsTable) {
 
-			this.currentOP = currentOP;
-			this.dialogParent = dialogParent;
+			this.currentlySelectedOPKey = currentlySelectedOPKey; // NOTE this might be null
 			this.parentMatrixKey = parentMatrixKey;
-			this.table = table;
+			this.dialogParent = dialogParent;
+			this.matrixOperationsTable = matrixOperationsTable;
+			this.matrixOperationsTable.getSelectionModel().addListSelectionListener(this);
+			setEnabled(!this.matrixOperationsTable.getSelectionModel().isSelectionEmpty());
 			putValue(NAME, Text.Operation.deleteOperation);
 		}
 
 		@Override
+		public void valueChanged(ListSelectionEvent evt) {
+			setEnabled(!this.matrixOperationsTable.getSelectionModel().isSelectionEmpty());
+		}
+
+		@Override
 		public void actionPerformed(ActionEvent evt) {
-			int[] selectedOPs = table.getSelectedRows();
+			int[] selectedOPs = matrixOperationsTable.getSelectedRows();
 			if (selectedOPs.length > 0) {
 				try {
 					int option = JOptionPane.showConfirmDialog(dialogParent, Text.Operation.confirmDelete1);
@@ -681,11 +690,12 @@ public class MatrixAnalysePanel extends JPanel {
 						int deleteReportOption = JOptionPane.showConfirmDialog(dialogParent, Text.Reports.confirmDelete);
 						OperationKey operationKey = null;
 						if (deleteReportOption != JOptionPane.CANCEL_OPTION) {
+							OperationsTableModel tableModel = (OperationsTableModel) matrixOperationsTable.getModel();
 							for (int i = selectedOPs.length - 1; i >= 0; i--) {
 								int tmpOPRow = selectedOPs[i];
-								int operationId = (Integer) table.getModel().getValueAt(tmpOPRow, 0);
+								int operationId = (Integer) matrixOperationsTable.getModel().getValueAt(tmpOPRow, 0);
 								operationKey = new OperationKey(parentMatrixKey, operationId);
-								//TEST IF THE DELETED ITEM IS REQUIRED FOR A QUED WORKER
+								// TEST IF THE DELETED ITEM IS REQUIRED FOR A QUEUED WORKER
 								if (SwingWorkerItemList.permitsDeletionOf(operationKey)) {
 									if (option == JOptionPane.YES_OPTION) {
 										boolean deleteReport = false;
@@ -695,15 +705,16 @@ public class MatrixAnalysePanel extends JPanel {
 										MultiOperations.deleteOperation(
 												operationKey,
 												deleteReport);
+										tableModel.removeRow(selectedOPs[i]);
 
-										//OperationManager.deleteOperationBranch(parentMatrix.getStudyKey(), opId, deleteReport);
+										//OperationManager.deleteOperationAndChildren(parentMatrixKey.getStudyKey(), opId, deleteReport);
 									}
 								} else {
 									Dialogs.showWarningDialogue(Text.Processes.cantDeleteRequiredItem);
 								}
 							}
 
-							if (OperationKey.valueOf(currentOP) == operationKey) {
+							if (currentlySelectedOPKey == operationKey) {
 								GWASpiExplorerPanel.getSingleton().getTree().setSelectionPath(GWASpiExplorerPanel.getSingleton().getTree().getSelectionPath().getParentPath());
 							}
 							GWASpiExplorerPanel.getSingleton().updateTreePanel(true);
