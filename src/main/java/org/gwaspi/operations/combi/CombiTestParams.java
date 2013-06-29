@@ -83,6 +83,31 @@ public class CombiTestParams {
 				);
 	}
 
+	public CombiTestParams(
+			MatrixKey matrixKey,
+			OperationKey hardyWeinbergOperationKey)
+	{
+		this.matrixKey = matrixKey;
+		this.hardyWeinbergOperationKey = hardyWeinbergOperationKey;
+		this.hardyWeinbergThreshold = hardyWeinbergThreshold;
+		this.encoder = encoder;
+//		this.phenotypeInfo = phenotypeInfo;
+		this.markersToKeep = markersToKeep;
+		this.useThresholdCalibration = useThresholdCalibration;
+		this.resultMatrixName = resultMatrixName;
+	}
+
+	public CombiTestParams(MatrixKey matrixKey) {
+		this.matrixKey = matrixKey;
+		this.hardyWeinbergOperationKey = hardyWeinbergOperationKey;
+		this.hardyWeinbergThreshold = hardyWeinbergThreshold;
+		this.encoder = encoder;
+//		this.phenotypeInfo = phenotypeInfo;
+		this.markersToKeep = markersToKeep;
+		this.useThresholdCalibration = useThresholdCalibration;
+		this.resultMatrixName = resultMatrixName;
+	}
+
 	public MatrixKey getMatrixKey() {
 		return matrixKey;
 	}
