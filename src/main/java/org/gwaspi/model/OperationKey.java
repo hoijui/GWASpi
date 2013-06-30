@@ -17,6 +17,7 @@
 
 package org.gwaspi.model;
 
+import java.io.IOException;
 import java.io.Serializable;
 import javax.persistence.Transient;
 
@@ -76,16 +77,51 @@ public class OperationKey implements Comparable<OperationKey>, Serializable {
 		return hash;
 	}
 
-	@Override
-	public String toString() {
+	public String toRawIdString() {
+
+		StringBuilder strRep = new StringBuilder();
+
+		strRep.append("study-id: ").append(getStudyId());
+		strRep.append(", matrix-id: ").append(getParentMatrixId());
+		strRep.append(", id: ").append(getId());
+
+		return strRep.toString();
+	}
+
+	public String toIdString() {
 
 		StringBuilder strRep = new StringBuilder();
 
 		strRep.append(getClass().getSimpleName());
 		strRep.append("[");
-		strRep.append("study-id: ").append(getStudyId());
-		strRep.append(", matrix-id: ").append(getParentMatrixId());
-		strRep.append(", id: ").append(getId());
+		strRep.append(toRawIdString());
+		strRep.append("]");
+
+		return strRep.toString();
+	}
+
+	public String fetchName() {
+
+		String operationName;
+
+		try {
+			OperationMetadata operation = OperationsList.getOperation(this);
+			operationName = operation.getFriendlyName();
+		} catch (IOException ex) {
+			operationName = "<operation-name-unknown>";
+		}
+
+		return operationName;
+	}
+
+	@Override
+	public String toString() {
+
+		StringBuilder strRep = new StringBuilder();
+
+		strRep.append(fetchName());
+		strRep.append(" [");
+		strRep.append(toRawIdString());
 		strRep.append("]");
 
 		return strRep.toString();

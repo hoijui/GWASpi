@@ -27,6 +27,7 @@ import java.util.Map;
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.GroupLayout;
+import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
@@ -63,24 +64,37 @@ public class CombiTestParamsGUI extends JPanel {
 	private final JComboBox hwOperationCB;
 
 	private final JLabel hwThresholdL;
+	private final JPanel hwThresholdP;
 	private final JFormattedTextField hwThresholdTF;
+	private final JTextField hwThresholdTF2;
+	private final JButton hwThresholdB;
 
 	private final JLabel genotypeEncoderL;
+	private final JPanel genotypeEncoderP;
 	private final JComboBox genotypeEncoderCB;
+	private final JButton genotypeEncoderB;
 
 	private final JLabel markersToKeepL;
+	private final JPanel markersToKeepP;
 	private final JSpinner markersToKeepS;
+	private final JTextField markersToKeepTF;
+	private final JButton markersToKeepB;
 
 	private final JLabel useThresholdCalibrationL;
+	private final JPanel useThresholdCalibrationP;
 	private final JCheckBox useThresholdCalibrationCB;
+	private final JTextField useThresholdCalibrationTF;
 
 	private final JLabel resultMatrixL;
+	private final JPanel resultMatrixP;
 	private final JTextField resultMatrixTF;
+	private final JCheckBox resultMatrixCB;
 
 	public CombiTestParamsGUI() {
 
 		this.originalCombiTestParams = null;
 
+		// init the GUI components
 		this.parentMatrixL = new JLabel();
 		this.parentMatrixTF = new JTextField();
 
@@ -88,75 +102,113 @@ public class CombiTestParamsGUI extends JPanel {
 		this.hwOperationCB = new JComboBox();
 
 		this.hwThresholdL = new JLabel();
+		this.hwThresholdP = new JPanel();
 		this.hwThresholdTF = new JFormattedTextField(NumberFormat.getNumberInstance());
+		this.hwThresholdTF2 = new JTextField();
+		this.hwThresholdB = new JButton();
 
 		this.genotypeEncoderL = new JLabel();
+		this.genotypeEncoderP = new JPanel();
 		this.genotypeEncoderCB = new JComboBox();
+		this.genotypeEncoderB = new JButton();
 
 		this.markersToKeepL = new JLabel();
+		this.markersToKeepP = new JPanel();
 		this.markersToKeepS = new JSpinner();
+		this.markersToKeepTF = new JTextField();
+		this.markersToKeepB = new JButton();
 
 		this.useThresholdCalibrationL = new JLabel();
+		this.useThresholdCalibrationP = new JPanel();
 		this.useThresholdCalibrationCB = new JCheckBox();
+		this.useThresholdCalibrationTF = new JTextField();
 
 		this.resultMatrixL = new JLabel();
+		this.resultMatrixP = new JPanel();
 		this.resultMatrixTF = new JTextField();
-	}
+		this.resultMatrixCB = new JCheckBox();
 
-	public void setCombiTestParams(CombiTestParams combiTestParams) {
+		// pre-configure the GUI components
+		this.hwThresholdP.add(this.hwThresholdTF);
+		this.hwThresholdP.add(this.hwThresholdTF2);
+		this.hwThresholdP.add(this.hwThresholdB);
+
+		this.genotypeEncoderP.add(this.genotypeEncoderCB);
+		this.genotypeEncoderP.add(this.genotypeEncoderB);
+
+		this.markersToKeepP.add(this.markersToKeepS);
+		this.markersToKeepP.add(this.markersToKeepTF);
+		this.markersToKeepP.add(this.markersToKeepB);
+
+		this.useThresholdCalibrationP.add(this.useThresholdCalibrationCB);
+		this.useThresholdCalibrationP.add(this.useThresholdCalibrationTF);
+
+		this.resultMatrixP.add(this.resultMatrixTF);
+		this.resultMatrixP.add(this.resultMatrixCB);
+
+
+		Map<JLabel, JComponent> labelsAndComponents = new LinkedHashMap<JLabel, JComponent>();
+		labelsAndComponents.put(parentMatrixL, parentMatrixTF);
+		labelsAndComponents.put(hwOperationL, hwOperationCB);
+		labelsAndComponents.put(hwThresholdL, hwThresholdP);
+		labelsAndComponents.put(genotypeEncoderL, genotypeEncoderP);
+		labelsAndComponents.put(markersToKeepL, markersToKeepP);
+		labelsAndComponents.put(useThresholdCalibrationL, useThresholdCalibrationP);
+		labelsAndComponents.put(resultMatrixL, resultMatrixP);
+		createLayout(this, labelsAndComponents);
+
 
 		this.parentMatrixL.setText("parent matrix");
 		this.hwOperationL.setLabelFor(this.parentMatrixTF);
-		this.parentMatrixTF.setText(combiTestParams.getMatrixKey().toString());
 		this.parentMatrixTF.setEditable(false);
 
 		this.hwOperationL.setText("Hardy-Weinberg operation");
 		this.hwOperationL.setLabelFor(this.hwOperationCB);
-		this.hwOperationCB.setModel(new DefaultComboBoxModel(getAllHWOperationKeys(combiTestParams.getMatrixKey(), null)));
-		this.hwOperationCB.setSelectedItem(combiTestParams.getHardyWeinbergOperationKey());
 
 		this.hwThresholdL.setText("Hardy-Weinberg threshold");
 		this.hwThresholdL.setLabelFor(this.hwThresholdTF);
 		this.hwThresholdTF.setInputVerifier(new MinMaxDoubleVerifier(0.0000000000001, 1.0));
 //		this.hwThresholdTF.setColumns(10);
 //		this.hwThresholdTF.addPropertyChangeListener("value", this);
-		this.hwThresholdTF.setValue(combiTestParams.getHardyWeinbergThreshold());
 
 		this.genotypeEncoderL.setText("geno-type to SVN feature encoding");
 		this.genotypeEncoderL.setLabelFor(this.genotypeEncoderCB);
 		this.genotypeEncoderCB.setModel(new DefaultComboBoxModel(CombiTestScriptCommand.GENOTYPE_ENCODERS.values().toArray()));
-		this.genotypeEncoderCB.setSelectedItem(combiTestParams.getEncoder());
 
 		this.markersToKeepL.setText("number of markers to keep");
 		this.markersToKeepL.setLabelFor(this.markersToKeepS);
-		SpinnerModel model = new SpinnerNumberModel(
-				2, // initial value
-				1, // min
-				currentYear + 100, // max
-				1); // step
-		this.markersToKeepS.setModel(model);
 
 		this.useThresholdCalibrationL.setText("use resampling based threshold calibration");
 		this.useThresholdCalibrationL.setLabelFor(this.useThresholdCalibrationCB);
-//		this.useThresholdCalibrationCB;
 
 		this.resultMatrixL.setText("Result matrix name");
 		this.resultMatrixL.setLabelFor(this.resultMatrixTF);
-		this.resultMatrixTF.setText(combiTestParams.getResultMatrixName());
-
-		this.add(this.parentMatrixL);
-		this.add(this.parentMatrixTF);
-
-		Map<JLabel, JComponent> labelsAndComponents = new LinkedHashMap<JLabel, JComponent>();
-		labelsAndComponents.put(parentMatrixL, parentMatrixTF);
-		labelsAndComponents.put(hwOperationL, hwOperationCB);
-		labelsAndComponents.put(hwThresholdL, hwThresholdTF);
-		labelsAndComponents.put(genotypeEncoderL, genotypeEncoderCB);
-		labelsAndComponents.put(markersToKeepL, markersToKeepS);
-		labelsAndComponents.put(useThresholdCalibrationL, useThresholdCalibrationCB);
-		labelsAndComponents.put(resultMatrixL, resultMatrixTF);
-		createLayout(this, labelsAndComponents);
 	}
+
+	public void setCombiTestParams(CombiTestParams combiTestParams) {
+
+		this.parentMatrixTF.setText(combiTestParams.getMatrixKey().toString());
+
+		this.hwOperationCB.setModel(new DefaultComboBoxModel(getAllHWOperationKeys(combiTestParams.getMatrixKey(), null)));
+		this.hwOperationCB.setSelectedItem(combiTestParams.getHardyWeinbergOperationKey());
+
+		this.hwThresholdTF.setValue(combiTestParams.getHardyWeinbergThreshold());
+
+		this.genotypeEncoderCB.setModel(new DefaultComboBoxModel(CombiTestScriptCommand.GENOTYPE_ENCODERS.values().toArray()));
+		this.genotypeEncoderCB.setSelectedItem(combiTestParams.getEncoder());
+
+		SpinnerModel model = new SpinnerNumberModel(
+				combiTestParams.getMarkersToKeep(), // initial value
+				1, // min
+				combiTestParams.getTotalMarkers() - 1, // max
+				1); // step
+		this.markersToKeepS.setModel(model);
+
+		this.useThresholdCalibrationCB.setSelected(combiTestParams.isUseThresholdCalibration());
+
+		this.resultMatrixTF.setText(combiTestParams.getResultMatrixName());
+	}
+
 	private static void createLayout(Container container, Map<JLabel, JComponent> labelsAndComponents) {
 
         GroupLayout layout = new GroupLayout(container);
@@ -170,7 +222,8 @@ public class CombiTestParamsGUI extends JPanel {
 		GroupLayout.ParallelGroup horizontalComponentsG = layout.createParallelGroup();
 		for (Map.Entry<JLabel, JComponent> labelAndComponent : labelsAndComponents.entrySet()) {
 			horizontalLabelsG.addComponent(labelAndComponent.getKey());
-			labelAndComponent.getKey().setLabelFor(labelAndComponent.getValue());
+			// The following is better done manually, earlier
+//			labelAndComponent.getKey().setLabelFor(labelAndComponent.getValue());
 			horizontalComponentsG.addComponent(labelAndComponent.getValue());
 		}
         horizontalG.addGroup(horizontalLabelsG);

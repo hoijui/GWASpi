@@ -16,6 +16,7 @@
  */
 package org.gwaspi.model;
 
+import java.io.IOException;
 import java.io.Serializable;
 import javax.persistence.Transient;
 
@@ -82,15 +83,50 @@ public class MatrixKey implements Comparable<MatrixKey>, Serializable {
 		return diffStudy;
 	}
 
-	@Override
-	public String toString() {
+	public String toRawIdString() {
+
+		StringBuilder strRep = new StringBuilder();
+
+		strRep.append("study-id: ").append(getStudyId());
+		strRep.append(", id: ").append(getMatrixId());
+
+		return strRep.toString();
+	}
+
+	public String toIdString() {
 
 		StringBuilder strRep = new StringBuilder();
 
 		strRep.append(getClass().getSimpleName());
 		strRep.append("[");
-		strRep.append("study-id: ").append(getStudyId());
-		strRep.append(", id: ").append(getMatrixId());
+		strRep.append(toRawIdString());
+		strRep.append("]");
+
+		return strRep.toString();
+	}
+
+	public String fetchName() {
+
+		String matrixName;
+
+		try {
+			MatrixMetadata matrix = MatricesList.getMatrixMetadataById(this);
+			matrixName = matrix.getMatrixFriendlyName();
+		} catch (IOException ex) {
+			matrixName = "<matrix-name-unknown>";
+		}
+
+		return matrixName;
+	}
+
+	@Override
+	public String toString() {
+
+		StringBuilder strRep = new StringBuilder();
+
+		strRep.append(fetchName());
+		strRep.append(" [");
+		strRep.append(toRawIdString());
 		strRep.append("]");
 
 		return strRep.toString();

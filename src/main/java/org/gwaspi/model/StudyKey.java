@@ -16,6 +16,7 @@
  */
 package org.gwaspi.model;
 
+import java.io.IOException;
 import java.io.Serializable;
 
 /**
@@ -61,14 +62,49 @@ public class StudyKey implements Comparable<StudyKey>, Serializable {
 		return this.getId() - other.getId();
 	}
 
-	@Override
-	public String toString() {
+	public String toRawIdString() {
+
+		StringBuilder strRep = new StringBuilder();
+
+		strRep.append("id: ").append(getId());
+
+		return strRep.toString();
+	}
+
+	public String toIdString() {
 
 		StringBuilder strRep = new StringBuilder();
 
 		strRep.append(getClass().getSimpleName());
 		strRep.append("[");
-		strRep.append("id: ").append(getId());
+		strRep.append(toRawIdString());
+		strRep.append("]");
+
+		return strRep.toString();
+	}
+
+	public String fetchName() {
+
+		String studyName;
+
+		try {
+			Study study = StudyList.getStudy(this);
+			studyName = study.getName();
+		} catch (IOException ex) {
+			studyName = "<study-name-unknown>";
+		}
+
+		return studyName;
+	}
+
+	@Override
+	public String toString() {
+
+		StringBuilder strRep = new StringBuilder();
+
+		strRep.append(fetchName());
+		strRep.append(" [");
+		strRep.append(toRawIdString());
 		strRep.append("]");
 
 		return strRep.toString();

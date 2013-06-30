@@ -429,9 +429,7 @@ public class MatrixAnalysePanel extends JPanel {
 							if (combi) {
 								combiTestParams = new CombiTestParams(
 										parentMatrixKey,
-										hwOPKey,
-										gwasParams.getDiscardMarkerHWTreshold(),
-										CombiTestScriptCommand.GENOTYPE_ENCODERS.values().iterator().next()
+										hwOPKey
 										);
 								combiTestParams = CombiTestParamsGUI.chooseCombiTestParams(dialogParent, combiTestParams);
 								gwasParams.setProceed(true);

@@ -19,12 +19,9 @@ package org.gwaspi.operations.combi;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import org.gwaspi.model.Genotype;
@@ -39,6 +36,11 @@ import org.gwaspi.model.Genotype;
  * smaller allele, and <code>'C'</code> for the bigger one.
  */
 public class NominalGenotypeEncoder extends EncodingTableBasedGenotypeEncoder {
+
+	public static final NominalGenotypeEncoder SINGLETON = new NominalGenotypeEncoder();
+
+	private NominalGenotypeEncoder() {
+	}
 
 	@Override
 	public Map<Genotype, List<Double>> generateEncodingTable(
