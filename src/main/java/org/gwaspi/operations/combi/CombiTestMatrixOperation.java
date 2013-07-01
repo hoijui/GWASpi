@@ -131,7 +131,7 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 			int n)
 			throws IOException, InvalidRangeException
 	{
-		LOG.debug("samples:");
+//		LOG.debug("samples:");
 
 		// we use LinkedHashMap to preserve the inut order
 		Map<SampleKey, List<Double>> encodedSamples
@@ -146,13 +146,13 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 		int mi = 0;
 		for (Map.Entry<MarkerKey, Map<SampleKey, byte[]>> markerSamples : markerSamplesIterable) {
 			Map<SampleKey, byte[]> samples = markerSamples.getValue();
-			LOG.debug("");
-			StringBuilder debugOut = new StringBuilder();
-			debugOut.append("marker ").append(mi).append("\n");
-			for (byte[] gt : samples.values()) {
-				debugOut.append(" ").append(new String(gt));
-			}
-			LOG.debug(debugOut.toString());
+//			LOG.debug("");
+//			StringBuilder debugOut = new StringBuilder();
+//			debugOut.append("marker ").append(mi).append("\n");
+//			for (byte[] gt : samples.values()) {
+//				debugOut.append(" ").append(new String(gt));
+//			}
+//			LOG.debug(debugOut.toString());
 //			log.debug("Combi-test");
 
 			// convert & collect unique GTs (unique per marker)

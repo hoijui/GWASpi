@@ -45,7 +45,6 @@ import javax.swing.border.TitledBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.TableCellRenderer;
-import org.gwaspi.cli.CombiTestScriptCommand;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.utils.BrowserHelpUrlAction;
@@ -432,7 +431,9 @@ public class MatrixAnalysePanel extends JPanel {
 										hwOPKey
 										);
 								combiTestParams = CombiTestParamsGUI.chooseCombiTestParams(dialogParent, combiTestParams);
-								gwasParams.setProceed(true);
+								if (combiTestParams != null) {
+									gwasParams.setProceed(true);
+								}
 //								genotypeEncoder = GenotypeEncoderChooserGUI.chooseGenotypeEncoder(dialogParent);
 							} else {
 								gwasParams = new MoreAssocInfo().showMoreInfo();
@@ -446,9 +447,7 @@ public class MatrixAnalysePanel extends JPanel {
 
 								// >>>>>> START THREADING HERE <<<<<<<
 								if (combi) {
-									if (combiTestParams != null) {
-										MultiOperations.doCombiTest(combiTestParams);
-									}
+									MultiOperations.doCombiTest(combiTestParams);
 								} else {
 									MultiOperations.doAssociationTest(
 											parentMatrixKey,
