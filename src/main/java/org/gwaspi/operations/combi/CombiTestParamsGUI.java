@@ -16,6 +16,7 @@
  */
 package org.gwaspi.operations.combi;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.event.ActionEvent;
@@ -44,6 +45,8 @@ import javax.swing.JTextField;
 import javax.swing.JToggleButton;
 import javax.swing.SpinnerModel;
 import javax.swing.SpinnerNumberModel;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.JTextComponent;
@@ -73,7 +76,7 @@ public class CombiTestParamsGUI extends JPanel {
 	private final JLabel hwThresholdLabel;
 	private final JPanel hwThresholdP;
 	private final JFormattedTextField hwThresholdValue;
-	private final JTextField hwThresholdPercentage;
+	private final JSpinner hwThresholdPercentage;
 	private final JCheckBox hwThresholdDefault;
 
 	private final JLabel genotypeEncoderLabel;
@@ -84,7 +87,7 @@ public class CombiTestParamsGUI extends JPanel {
 	private final JLabel markersToKeepLabel;
 	private final JPanel markersToKeepP;
 	private final JSpinner markersToKeepValue;
-	private final JTextField markersToKeepPercentage;
+	private final JSpinner markersToKeepPercentage;
 	private final JButton markersToKeepDefault;
 
 	private final JLabel useThresholdCalibrationLabel;
@@ -181,7 +184,7 @@ public class CombiTestParamsGUI extends JPanel {
 		this.hwThresholdLabel = new JLabel();
 		this.hwThresholdP = new JPanel();
 		this.hwThresholdValue = new JFormattedTextField(NumberFormat.getNumberInstance());
-		this.hwThresholdPercentage = new JTextField();
+		this.hwThresholdPercentage = new JSpinner();
 		this.hwThresholdDefault = new JCheckBox();
 
 		this.genotypeEncoderLabel = new JLabel();
@@ -192,7 +195,7 @@ public class CombiTestParamsGUI extends JPanel {
 		this.markersToKeepLabel = new JLabel();
 		this.markersToKeepP = new JPanel();
 		this.markersToKeepValue = new JSpinner();
-		this.markersToKeepPercentage = new JTextField();
+		this.markersToKeepPercentage = new JSpinner();
 		this.markersToKeepDefault = new JButton();
 
 		this.useThresholdCalibrationLabel = new JLabel();
@@ -244,9 +247,11 @@ public class CombiTestParamsGUI extends JPanel {
 
 		this.hwThresholdLabel.setText("Hardy-Weinberg threshold");
 		this.hwThresholdLabel.setLabelFor(this.hwThresholdValue);
+		this.hwThresholdValue.setToolTipText("Discard markers with Hardy-Weinberg p-value smaller then this value");
 		this.hwThresholdValue.setInputVerifier(new MinMaxDoubleVerifier(0.0000000000001, 1.0));
 //		this.hwThresholdTF.setColumns(10);
 //		this.hwThresholdValue.addPropertyChangeListener("value", this); // TODO use this!
+		this.hwThresholdPercentage.setToolTipText("Discard markers with Hardy-Weinberg p-value smaller then this value / #markers");
 
 		this.genotypeEncoderLabel.setText("geno-type to SVN feature encoding");
 		this.genotypeEncoderLabel.setLabelFor(this.genotypeEncoderValue);
@@ -257,8 +262,18 @@ public class CombiTestParamsGUI extends JPanel {
 
 		this.useThresholdCalibrationLabel.setText("use resampling based threshold calibration");
 		this.useThresholdCalibrationLabel.setLabelFor(this.useThresholdCalibrationValue);
-		this.useThresholdCalibrationValue.addChangeListener(null);
-		this.useThresholdCalibrationDefault
+		this.useThresholdCalibrationDefault.setText("");
+		this.useThresholdCalibrationDefault.setForeground(Color.RED);
+		this.useThresholdCalibrationValue.addChangeListener(new ChangeListener() {
+			@Override
+			public void stateChanged(ChangeEvent evt) {
+				if (useThresholdCalibrationValue.isSelected()) {
+					useThresholdCalibrationDefault.setText("very slow!");
+				} else {
+					useThresholdCalibrationDefault.setText("");
+				}
+			}
+		});
 
 		this.resultMatrixLabel.setText("Result matrix name");
 		this.resultMatrixLabel.setLabelFor(this.resultMatrixValue);
@@ -273,16 +288,22 @@ public class CombiTestParamsGUI extends JPanel {
 
 		this.hwThresholdValue.setValue(combiTestParams.getHardyWeinbergThreshold());
 		this.hwThresholdDefault.setAction(new DefaultAction(this.hwThresholdValue, String.valueOf(combiTestParams.getHardyWeinbergThresholdDefault())));
+		SpinnerModel hwThresholdPercentageModel = new SpinnerNumberModel(
+				XXX combiTestParams.getMarkersToKeep(), // initial value
+				0.1, // min
+				100.0, // max
+				0.5); // step
+		this.hwThresholdPercentage.setModel(hwThresholdPercentageModel);
 
 		this.genotypeEncoderValue.setModel(new DefaultComboBoxModel(CombiTestScriptCommand.GENOTYPE_ENCODERS.values().toArray()));
 		this.genotypeEncoderValue.setSelectedItem(combiTestParams.getEncoder());
 
-		SpinnerModel model = new SpinnerNumberModel(
+		SpinnerModel markersToKeepValueModel = new SpinnerNumberModel(
 				combiTestParams.getMarkersToKeep(), // initial value
 				1, // min
 				combiTestParams.getTotalMarkers() - 1, // max
 				1); // step
-		this.markersToKeepValue.setModel(model);
+		this.markersToKeepValue.setModel(markersToKeepValueModel);
 
 		this.useThresholdCalibrationValue.setSelected(combiTestParams.isUseThresholdCalibration());
 
