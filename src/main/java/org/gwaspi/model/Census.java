@@ -19,13 +19,13 @@ package org.gwaspi.model;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
-import org.gwaspi.global.Extractor;
+import org.gwaspi.global.EnumeratedValueExtractor;
 
 /**
  * Contains statistical data about a marker within a set of samples.
  */
 public class Census {
-	private static abstract class CensusExtractor implements Extractor<Census, Iterator<Integer>> {
+	private static abstract class CensusExtractor implements EnumeratedValueExtractor<Census, Iterator<Integer>> {
 
 		abstract Integer extractIndex(Census object, int extractIndex);
 

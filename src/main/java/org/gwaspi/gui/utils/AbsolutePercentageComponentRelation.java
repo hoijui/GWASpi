@@ -21,6 +21,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import javax.swing.JComponent;
 import javax.swing.JSpinner;
+import org.gwaspi.global.Extractor;
 
 /**
  * Allows to connect two GUI components, one holding the absolute value,
@@ -29,26 +30,38 @@ import javax.swing.JSpinner;
  */
 public abstract class AbsolutePercentageComponentRelation<C extends JComponent, V> implements PropertyChangeListener {
 
-	private static final int DEFAULT_ROUNDING_MULTIPLIER_PERCENTAGE = 0.1;
-
 	private final JSpinner absoluteComponent;
 	private final JSpinner percentageComponent;
 	private final Number totalValue;
-	private final int absoluteRoundingMult;
-	private final int percentageRoundingMult;
+	private final Extractor<Number, Number> absoluteConstrainer;
+	private final Extractor<Number, Number> percentageConstrainer;
+
+	public static class RoundingConstrainer
+			implements Extractor<Number, Number>
+	{
+		private final double roundingMultiplier;
+
+		public RoundingConstrainer(double roundingMultiplier) {
+			this.roundingMultiplier = roundingMultiplier;
+		}
+
+		public Number extract(Number object) {
+			return Math.round(object.doubleValue() * roundingMultiplier) / roundingMultiplier;
+		}
+	}
 
 	public AbsolutePercentageComponentRelation(
 			JSpinner absoluteComponent,
 			JSpinner percentageComponent,
 			Number totalValue,
-			int absoluteRoundingMult,
-			int percentageRoundingMult)
+			Extractor<Number, Number> absoluteConstrainer,
+			Extractor<Number, Number> percentageConstrainer)
 	{
 		this.absoluteComponent = absoluteComponent;
 		this.percentageComponent = percentageComponent;
 		this.totalValue = totalValue;
-		this.absoluteRoundingMult = absoluteRoundingMult;
-		this.percentageRoundingMult = percentageRoundingMult;
+		this.absoluteConstrainer = absoluteConstrainer;
+		this.percentageConstrainer = percentageConstrainer;
 
 		this.absoluteComponent.addPropertyChangeListener("value", this);
 		this.percentageComponent.addPropertyChangeListener("value", this);
@@ -57,32 +70,36 @@ public abstract class AbsolutePercentageComponentRelation<C extends JComponent, 
 	public AbsolutePercentageComponentRelation(
 			JSpinner absoluteComponent,
 			JSpinner percentageComponent,
-			Number totalValue,
-			int absoluteRoundingMult,
-			int percentageRoundingMult)
+			Number totalValue)
 	{
 		this(
-			JSpinner absoluteComponent,
-			JSpinner percentageComponent,
-			Number totalValue,
-			int absoluteRoundingMult,
-			int percentageRoundingMult)
+			absoluteComponent,
+			percentageComponent,
+			totalValue,
+			new RoundingConstrainer(1.0),
+			new RoundingConstrainer(10.0));
 	}
 
 	private Number absoluteToPercentage(Number absoluteValue) {
+
+		double rawPercentageValue = absoluteValue.doubleValue() / totalValue.doubleValue();
+		return percentageConstrainer.extract(rawPercentageValue);
 	}
 
 	private Number percentageToAbsolute(Number percentageValue) {
 
-		long rawAbsoluteValue = (long) (totalValue.longValue() * percentageValue.doubleValue());
-		absoluteComponent.getEditor().getInputVerifier().;
+		double rawAbsoluteValue = totalValue.doubleValue() * percentageValue.doubleValue();
+		return absoluteConstrainer.extract(rawAbsoluteValue);
 	}
 
 	@Override
 	public void propertyChange(PropertyChangeEvent evt) {
 
 		if (evt.getSource().equals(absoluteComponent)) {
-			XXX;
+			Number newPercentage = percentageToAbsolute((Number) absoluteComponent.getValue());
+			if (! newPercentage.equals(percentageComponent.getValue())) {
+				percentageComponent.setValue(newPercentage);
+			}
 		} else if (evt.getSource().equals(percentageComponent)) {
 			XXX;
 		} else {

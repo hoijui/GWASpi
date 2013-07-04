@@ -33,7 +33,7 @@ import org.gwaspi.constants.cImport;
 import org.gwaspi.constants.cImport.Annotation.GWASpi;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.AlleleBytes;
-import org.gwaspi.global.Extractor;
+import org.gwaspi.global.EnumeratedValueExtractor;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.Census;
 import org.gwaspi.model.MarkerKey;

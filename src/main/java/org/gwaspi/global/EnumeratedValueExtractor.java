@@ -19,7 +19,8 @@ package org.gwaspi.global;
 /**
  * Allows to extract one or multiple values out of an object
  */
-public interface Extractor<IV, OV> {
-
-	OV extract(IV object);
+public interface EnumeratedValueExtractor<IV, OV>
+		extends Extractor<IV, OV>
+{
+	int getNumberOfValues();
 }
