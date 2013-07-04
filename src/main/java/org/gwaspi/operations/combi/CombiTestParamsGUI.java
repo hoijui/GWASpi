@@ -19,7 +19,10 @@ package org.gwaspi.operations.combi;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
+import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -31,6 +34,7 @@ import javax.swing.Action;
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.GroupLayout;
+import javax.swing.GroupLayout.Alignment;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -52,7 +56,10 @@ import javax.swing.event.DocumentListener;
 import javax.swing.text.JTextComponent;
 import org.gwaspi.cli.CombiTestScriptCommand;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
+import org.gwaspi.gui.utils.ComboBoxDefaultAction;
 import org.gwaspi.gui.utils.MinMaxDoubleVerifier;
+import org.gwaspi.gui.utils.SpinnerDefaultAction;
+import org.gwaspi.gui.utils.TextDefaultAction;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
@@ -88,7 +95,7 @@ public class CombiTestParamsGUI extends JPanel {
 	private final JPanel markersToKeepP;
 	private final JSpinner markersToKeepValue;
 	private final JSpinner markersToKeepPercentage;
-	private final JButton markersToKeepDefault;
+	private final JCheckBox markersToKeepDefault;
 
 	private final JLabel useThresholdCalibrationLabel;
 	private final JPanel useThresholdCalibrationP;
@@ -99,76 +106,6 @@ public class CombiTestParamsGUI extends JPanel {
 	private final JPanel resultMatrixP;
 	private final JTextField resultMatrixValue;
 	private final JCheckBox resultMatrixDefault;
-
-	/**
-	 * Allows to reset the value of a text component to its default.
-	 * In case of a toggle-button, it also buffers the custom value,
-	 * and later goes back to that value.
-	 */
-	private static class DefaultAction extends AbstractAction implements DocumentListener {
-
-		private final JTextComponent valueComponent;
-		private final String defaultValue;
-		private String customValue;
-
-		DefaultAction(JTextComponent valueComponent, String defaultValue) {
-
-			this.valueComponent = valueComponent;
-			this.defaultValue = defaultValue;
-			this.customValue = valueComponent.getText();
-
-			final boolean isDefaultValue = this.customValue.equals(this.defaultValue);
-
-			putValue(NAME, "Use default");
-			putValue(SELECTED_KEY, isDefaultValue);
-
-			this.valueComponent.getDocument().addDocumentListener(this);
-			this.valueComponent.setEditable(!isDefaultValue);
-		}
-
-		@Override
-		public void actionPerformed(ActionEvent evt) {
-
-			if (evt.getSource() instanceof JToggleButton) {
-				// if our source is a JToggleButton, JCheckBox or a JRadioButton ...
-				JToggleButton sourceToggleButton = (JToggleButton) evt.getSource();
-				valueComponent.setEditable(!sourceToggleButton.isSelected());
-				if (sourceToggleButton.isSelected()) {
-					// put the custom value into a buffer,
-					// if the user wants to use the default value
-					customValue = valueComponent.getText();
-				} else {
-					// or restore it from that buffer,
-					// if the user wants to use a non default value again
-					valueComponent.setText(customValue);
-					return;
-				}
-			}
-			// else (e.g. if our source is a JButton),
-			// always restore the default value
-
-			valueComponent.setText(defaultValue);
-		}
-
-		@Override
-		public void insertUpdate(DocumentEvent evt) {
-			textValueChanged();
-		}
-
-		@Override
-		public void removeUpdate(DocumentEvent evt) {
-			textValueChanged();
-		}
-
-		@Override
-		public void changedUpdate(DocumentEvent evt) {
-			textValueChanged();
-		}
-
-		private void textValueChanged() {
-//			throw new UnsupportedOperationException("Not supported yet.");
-		}
-	}
 
 	public CombiTestParamsGUI() {
 
@@ -196,7 +133,7 @@ public class CombiTestParamsGUI extends JPanel {
 		this.markersToKeepP = new JPanel();
 		this.markersToKeepValue = new JSpinner();
 		this.markersToKeepPercentage = new JSpinner();
-		this.markersToKeepDefault = new JButton();
+		this.markersToKeepDefault = new JCheckBox();
 
 		this.useThresholdCalibrationLabel = new JLabel();
 		this.useThresholdCalibrationP = new JPanel();
@@ -237,6 +174,8 @@ public class CombiTestParamsGUI extends JPanel {
 		labelsAndComponents.put(resultMatrixLabel, resultMatrixP);
 		createLayout(this, labelsAndComponents);
 
+		FlowLayout contentPanelLayout = new FlowLayout();
+		contentPanelLayout.setAlignment(FlowLayout.LEADING);
 
 		this.parentMatrixLabel.setText("parent matrix");
 		this.hwOperationLabel.setLabelFor(this.parentMatrixValue);
@@ -247,6 +186,7 @@ public class CombiTestParamsGUI extends JPanel {
 
 		this.hwThresholdLabel.setText("Hardy-Weinberg threshold");
 		this.hwThresholdLabel.setLabelFor(this.hwThresholdValue);
+		this.hwThresholdP.setLayout(contentPanelLayout);
 		this.hwThresholdValue.setToolTipText("Discard markers with Hardy-Weinberg p-value smaller then this value");
 		this.hwThresholdValue.setInputVerifier(new MinMaxDoubleVerifier(0.0000000000001, 1.0));
 //		this.hwThresholdTF.setColumns(10);
@@ -255,13 +195,16 @@ public class CombiTestParamsGUI extends JPanel {
 
 		this.genotypeEncoderLabel.setText("geno-type to SVN feature encoding");
 		this.genotypeEncoderLabel.setLabelFor(this.genotypeEncoderValue);
+		this.genotypeEncoderP.setLayout(contentPanelLayout);
 		this.genotypeEncoderValue.setModel(new DefaultComboBoxModel(CombiTestScriptCommand.GENOTYPE_ENCODERS.values().toArray()));
 
 		this.markersToKeepLabel.setText("number of markers to keep");
 		this.markersToKeepLabel.setLabelFor(this.markersToKeepValue);
+		this.markersToKeepP.setLayout(contentPanelLayout);
 
 		this.useThresholdCalibrationLabel.setText("use resampling based threshold calibration");
 		this.useThresholdCalibrationLabel.setLabelFor(this.useThresholdCalibrationValue);
+		this.useThresholdCalibrationP.setLayout(contentPanelLayout);
 		this.useThresholdCalibrationDefault.setText("");
 		this.useThresholdCalibrationDefault.setForeground(Color.RED);
 		this.useThresholdCalibrationValue.addChangeListener(new ChangeListener() {
@@ -277,6 +220,7 @@ public class CombiTestParamsGUI extends JPanel {
 
 		this.resultMatrixLabel.setText("Result matrix name");
 		this.resultMatrixLabel.setLabelFor(this.resultMatrixValue);
+		this.resultMatrixP.setLayout(contentPanelLayout);
 	}
 
 	public void setCombiTestParams(CombiTestParams combiTestParams) {
@@ -287,9 +231,9 @@ public class CombiTestParamsGUI extends JPanel {
 		this.hwOperationValue.setSelectedItem(combiTestParams.getHardyWeinbergOperationKey());
 
 		this.hwThresholdValue.setValue(combiTestParams.getHardyWeinbergThreshold());
-		this.hwThresholdDefault.setAction(new DefaultAction(this.hwThresholdValue, String.valueOf(combiTestParams.getHardyWeinbergThresholdDefault())));
+		this.hwThresholdDefault.setAction(new TextDefaultAction(this.hwThresholdValue, String.valueOf(combiTestParams.getHardyWeinbergThresholdDefault())));
 		SpinnerModel hwThresholdPercentageModel = new SpinnerNumberModel(
-				XXX combiTestParams.getMarkersToKeep(), // initial value
+				combiTestParams.getHardyWeinbergThreshold() * combiTestParams.getTotalMarkers() / 100.0, // initial value
 				0.1, // min
 				100.0, // max
 				0.5); // step
@@ -297,6 +241,7 @@ public class CombiTestParamsGUI extends JPanel {
 
 		this.genotypeEncoderValue.setModel(new DefaultComboBoxModel(CombiTestScriptCommand.GENOTYPE_ENCODERS.values().toArray()));
 		this.genotypeEncoderValue.setSelectedItem(combiTestParams.getEncoder());
+		this.genotypeEncoderDefault.setAction(new ComboBoxDefaultAction(this.genotypeEncoderValue, combiTestParams.getEncoderDefault()));
 
 		SpinnerModel markersToKeepValueModel = new SpinnerNumberModel(
 				combiTestParams.getMarkersToKeep(), // initial value
@@ -304,11 +249,12 @@ public class CombiTestParamsGUI extends JPanel {
 				combiTestParams.getTotalMarkers() - 1, // max
 				1); // step
 		this.markersToKeepValue.setModel(markersToKeepValueModel);
+		this.markersToKeepDefault.setAction(new SpinnerDefaultAction(this.markersToKeepValue, combiTestParams.getMarkersToKeepDefault()));
 
 		this.useThresholdCalibrationValue.setSelected(combiTestParams.isUseThresholdCalibration());
 
 		this.resultMatrixValue.setText(combiTestParams.getResultMatrixName());
-		this.resultMatrixDefault.setAction(new DefaultAction(this.resultMatrixValue, combiTestParams.getResultMatrixNameDefault()));
+		this.resultMatrixDefault.setAction(new TextDefaultAction(this.resultMatrixValue, combiTestParams.getResultMatrixNameDefault()));
 	}
 
 	private static void createLayout(Container container, Map<JLabel, JComponent> labelsAndComponents) {
@@ -323,10 +269,10 @@ public class CombiTestParamsGUI extends JPanel {
 		GroupLayout.ParallelGroup horizontalLabelsG = layout.createParallelGroup();
 		GroupLayout.ParallelGroup horizontalComponentsG = layout.createParallelGroup();
 		for (Map.Entry<JLabel, JComponent> labelAndComponent : labelsAndComponents.entrySet()) {
-			horizontalLabelsG.addComponent(labelAndComponent.getKey());
+			horizontalLabelsG.addComponent(labelAndComponent.getKey(), GroupLayout.Alignment.TRAILING);
 			// The following is better done manually, earlier
 //			labelAndComponent.getKey().setLabelFor(labelAndComponent.getValue());
-			horizontalComponentsG.addComponent(labelAndComponent.getValue());
+			horizontalComponentsG.addComponent(labelAndComponent.getValue(), GroupLayout.Alignment.LEADING);
 		}
         horizontalG.addGroup(horizontalLabelsG);
 		horizontalG.addGroup(horizontalComponentsG);
