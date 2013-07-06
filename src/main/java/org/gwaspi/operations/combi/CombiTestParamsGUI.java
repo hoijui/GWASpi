@@ -56,6 +56,7 @@ import javax.swing.event.DocumentListener;
 import javax.swing.text.JTextComponent;
 import org.gwaspi.cli.CombiTestScriptCommand;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
+import org.gwaspi.gui.utils.AbsolutePercentageComponentRelation;
 import org.gwaspi.gui.utils.ComboBoxDefaultAction;
 import org.gwaspi.gui.utils.MinMaxDoubleVerifier;
 import org.gwaspi.gui.utils.SpinnerDefaultAction;
@@ -96,6 +97,7 @@ public class CombiTestParamsGUI extends JPanel {
 	private final JSpinner markersToKeepValue;
 	private final JSpinner markersToKeepPercentage;
 	private final JCheckBox markersToKeepDefault;
+	private AbsolutePercentageComponentRelation hwThresholdComponentRelation;
 
 	private final JLabel useThresholdCalibrationLabel;
 	private final JPanel useThresholdCalibrationP;
@@ -134,6 +136,7 @@ public class CombiTestParamsGUI extends JPanel {
 		this.markersToKeepValue = new JSpinner();
 		this.markersToKeepPercentage = new JSpinner();
 		this.markersToKeepDefault = new JCheckBox();
+		this.hwThresholdComponentRelation = null;
 
 		this.useThresholdCalibrationLabel = new JLabel();
 		this.useThresholdCalibrationP = new JPanel();
@@ -250,6 +253,18 @@ public class CombiTestParamsGUI extends JPanel {
 				1); // step
 		this.markersToKeepValue.setModel(markersToKeepValueModel);
 		this.markersToKeepDefault.setAction(new SpinnerDefaultAction(this.markersToKeepValue, combiTestParams.getMarkersToKeepDefault()));
+		System.err.println("combiTestParams.getMarkersToKeep(): " + combiTestParams.getMarkersToKeep());
+		System.err.println("combiTestParams.getTotalMarkers(): " + combiTestParams.getTotalMarkers());
+		System.err.println("combiTestParams.getMarkersToKeep() / combiTestParams.getTotalMarkers() * 100.0: " + ((double) combiTestParams.getMarkersToKeep() / combiTestParams.getTotalMarkers() * 100.0));
+		System.err.println("combiTestParams.getMarkersToKeep() / combiTestParams.getTotalMarkers(): " + ((double) combiTestParams.getMarkersToKeep() / combiTestParams.getTotalMarkers()));
+		SpinnerModel markersToKeepPercentageModel = new SpinnerNumberModel(
+				(double) combiTestParams.getMarkersToKeep() / combiTestParams.getTotalMarkers() * 100.0, // initial value
+				0.1, // min
+				100.0, // max
+				0.5); // step
+		this.markersToKeepPercentage.setModel(markersToKeepPercentageModel);
+		this.hwThresholdComponentRelation
+				= new AbsolutePercentageComponentRelation(markersToKeepValue, markersToKeepPercentage, combiTestParams.getTotalMarkers());
 
 		this.useThresholdCalibrationValue.setSelected(combiTestParams.isUseThresholdCalibration());
 

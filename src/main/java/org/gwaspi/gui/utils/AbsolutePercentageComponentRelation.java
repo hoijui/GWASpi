@@ -21,6 +21,8 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import javax.swing.JComponent;
 import javax.swing.JSpinner;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import org.gwaspi.global.Extractor;
 
 /**
@@ -28,8 +30,9 @@ import org.gwaspi.global.Extractor;
  * the other holding the same value in percentages,
  * to update one components value, if it changed in the other.
  */
-public abstract class AbsolutePercentageComponentRelation<C extends JComponent, V> implements PropertyChangeListener {
-
+public class AbsolutePercentageComponentRelation<C extends JComponent, V>
+		implements PropertyChangeListener, ChangeListener
+{
 	private final JSpinner absoluteComponent;
 	private final JSpinner percentageComponent;
 	private final Number totalValue;
@@ -63,8 +66,10 @@ public abstract class AbsolutePercentageComponentRelation<C extends JComponent, 
 		this.absoluteConstrainer = absoluteConstrainer;
 		this.percentageConstrainer = percentageConstrainer;
 
-		this.absoluteComponent.addPropertyChangeListener("value", this);
-		this.percentageComponent.addPropertyChangeListener("value", this);
+//		this.absoluteComponent.addPropertyChangeListener("value", this);
+//		this.percentageComponent.addPropertyChangeListener("value", this);
+		this.absoluteComponent.addChangeListener(this);
+		this.percentageComponent.addChangeListener(this);
 	}
 
 	public AbsolutePercentageComponentRelation(
@@ -82,13 +87,13 @@ public abstract class AbsolutePercentageComponentRelation<C extends JComponent, 
 
 	private Number absoluteToPercentage(Number absoluteValue) {
 
-		double rawPercentageValue = absoluteValue.doubleValue() / totalValue.doubleValue();
+		double rawPercentageValue = absoluteValue.doubleValue() / totalValue.doubleValue() * 100.;
 		return percentageConstrainer.extract(rawPercentageValue);
 	}
 
 	private Number percentageToAbsolute(Number percentageValue) {
 
-		double rawAbsoluteValue = totalValue.doubleValue() * percentageValue.doubleValue();
+		double rawAbsoluteValue = totalValue.doubleValue() * percentageValue.doubleValue() / 100.0;
 		return absoluteConstrainer.extract(rawAbsoluteValue);
 	}
 
@@ -96,12 +101,33 @@ public abstract class AbsolutePercentageComponentRelation<C extends JComponent, 
 	public void propertyChange(PropertyChangeEvent evt) {
 
 		if (evt.getSource().equals(absoluteComponent)) {
-			Number newPercentage = percentageToAbsolute((Number) absoluteComponent.getValue());
-			if (! newPercentage.equals(percentageComponent.getValue())) {
+			Number newPercentage = absoluteToPercentage((Number) absoluteComponent.getValue());
+			if (!newPercentage.equals(percentageComponent.getValue())) {
 				percentageComponent.setValue(newPercentage);
 			}
 		} else if (evt.getSource().equals(percentageComponent)) {
-			XXX;
+			Number newAbsolute = percentageToAbsolute((Number) percentageComponent.getValue());
+			if (!newAbsolute.equals(absoluteComponent.getValue())) {
+				absoluteComponent.setValue(newAbsolute);
+			}
+		} else {
+			throw new RuntimeException();
+		}
+	}
+
+	@Override
+	public void stateChanged(ChangeEvent evt) {
+
+		if (evt.getSource().equals(absoluteComponent)) {
+			Number newPercentage = absoluteToPercentage((Number) absoluteComponent.getValue());
+			if (!newPercentage.equals(percentageComponent.getValue())) {
+				percentageComponent.setValue(newPercentage);
+			}
+		} else if (evt.getSource().equals(percentageComponent)) {
+			Number newAbsolute = percentageToAbsolute((Number) percentageComponent.getValue());
+			if (!newAbsolute.equals(absoluteComponent.getValue())) {
+				absoluteComponent.setValue(newAbsolute);
+			}
 		} else {
 			throw new RuntimeException();
 		}
