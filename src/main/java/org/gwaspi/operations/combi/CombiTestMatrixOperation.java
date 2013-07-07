@@ -113,7 +113,8 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 		for (SampleInfo sampleInfo : sampleInfos.values()) {
 			Affection affection = sampleInfo.getAffection();
 			if (affection == Affection.UNKNOWN) {
-				throw new RuntimeException("Should we filter this out beforehand?");
+//				throw new RuntimeException("Should we filter this out beforehand?");
+				continue; // HACK maybe hacky, cause we should have filtered it out earlier? (i(robin) currently think it is ok here)
 			}
 			Double encodedDisease = affection.equals(Affection.AFFECTED) ? 1.0 : -1.0; // XXX or should it be 0.0 instead of -1.0?
 			affectionStates.put(sampleInfo.getKey(), encodedDisease);
@@ -124,7 +125,8 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 
 	private static Map<SampleKey, List<Double>> encodeSamples(
 			Iterable<Map.Entry<MarkerKey, Map<SampleKey, byte[]>>> markerSamplesIterable,
-			Set<SampleKey> sampleKeys, // NOTE needs to be well ordered!
+//			Set<SampleKey> sampleKeys, // NOTE needs to be well ordered!
+			Map<SampleKey, SampleInfo> sampleInfos, // NOTE needs to be well ordered!
 			GenotypeEncoder encoder,
 			int dSamples,
 			int dEncoded,
@@ -132,6 +134,7 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 			throws IOException, InvalidRangeException
 	{
 //		LOG.debug("samples:");
+		Set<SampleKey> sampleKeys = sampleInfos.keySet();// NOTE needs to be well ordered!
 
 		// we use LinkedHashMap to preserve the inut order
 		Map<SampleKey, List<Double>> encodedSamples
@@ -158,7 +161,12 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 			// convert & collect unique GTs (unique per marker)
 			List<Genotype> all = new ArrayList<Genotype>(n);
 			Set<Genotype> unique = new LinkedHashSet<Genotype>(4);
+			Iterator<SampleInfo> sampleInfoIt = sampleInfos.values().iterator();
 			for (Map.Entry<SampleKey, byte[]> sample : samples.entrySet()) {
+				SampleInfo curSampleInfo = sampleInfoIt.next();
+				if (curSampleInfo.getAffection() == Affection.UNKNOWN) {
+					continue; // HACK maybe hacky, cause we should have filtered it out earlier? (i(robin) think not)
+				}
 				Genotype genotype = new Genotype(sample.getValue());
 				all.add(genotype);
 				unique.add(genotype);
@@ -247,7 +255,8 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 			LOG.info("Combi Association Test: encode samples");
 			Map<SampleKey, List<Double>> encodedSamples = encodeSamples(
 					matrixSamples,
-					sampleInfos.keySet(),
+//					sampleInfos.keySet(),
+					sampleInfos,
 					genotypeEncoder,
 					dSamples,
 					dEncoded,
