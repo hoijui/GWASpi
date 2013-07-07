@@ -80,14 +80,14 @@ public abstract class EncodingTableBasedGenotypeEncoder implements GenotypeEncod
 		// create the encoding table
 		Map<Genotype, List<Double>> encodingTable
 				= generateEncodingTable(possibleGenotypes, rawGenotypes);
-		System.err.println("XXX encodingTable: " + encodingTable.size() + " * " + encodingTable.values().iterator().next().size());
-		for (Map.Entry<Genotype, List<Double>> encodingTableEntry : encodingTable.entrySet()) {
-			System.err.print("\t" + encodingTableEntry.getKey() + " ->");
-			for (Double value : encodingTableEntry.getValue()) {
-				System.err.print(" " + value);
-			}
-			System.err.println();
-		}
+//		System.err.println("XXX encodingTable: " + encodingTable.size() + " * " + encodingTable.values().iterator().next().size());
+//		for (Map.Entry<Genotype, List<Double>> encodingTableEntry : encodingTable.entrySet()) {
+//			System.err.print("\t" + encodingTableEntry.getKey() + " ->");
+//			for (Double value : encodingTableEntry.getValue()) {
+//				System.err.print(" " + value);
+//			}
+//			System.err.println();
+//		}
 
 		if (encodedGenotypes.size() - (
 				encodedGenotypes.containsKey(Genotype.INVALID)

@@ -17,8 +17,8 @@
 
 package org.gwaspi.gui.utils;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import javax.swing.JComboBox;
 
 /**
@@ -26,12 +26,12 @@ import javax.swing.JComboBox;
  * In case of a toggle-button as actuator, it also buffers the custom value,
  * and later goes back to that value.
  */
-public class ComboBoxDefaultAction extends AbstractDefaultAction<JComboBox, Object> implements PropertyChangeListener {
+public class ComboBoxDefaultAction extends AbstractDefaultAction<JComboBox, Object> implements ItemListener {
 
 	public ComboBoxDefaultAction(JComboBox valueComponent, Object defaultValue, boolean makeUneditable) {
 		super(valueComponent, defaultValue, makeUneditable);
 
-		valueComponent.addPropertyChangeListener(this);
+		valueComponent.addItemListener(this);
 	}
 
 	public ComboBoxDefaultAction(JComboBox valueComponent, Object defaultValue) {
@@ -54,7 +54,7 @@ public class ComboBoxDefaultAction extends AbstractDefaultAction<JComboBox, Obje
 	}
 
 	@Override
-	public void propertyChange(PropertyChangeEvent evt) {
+	public void itemStateChanged(ItemEvent evt) {
 		valueChanged();
 	}
 }

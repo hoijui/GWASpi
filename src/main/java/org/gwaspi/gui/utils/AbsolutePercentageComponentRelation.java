@@ -33,8 +33,8 @@ import org.gwaspi.global.Extractor;
 public class AbsolutePercentageComponentRelation<C extends JComponent, V>
 		implements PropertyChangeListener, ChangeListener
 {
-	private final JSpinner absoluteComponent;
-	private final JSpinner percentageComponent;
+	private final ValueContainer absoluteComponent;
+	private final ValueContainer percentageComponent;
 	private final Number totalValue;
 	private final Extractor<Number, Number> absoluteConstrainer;
 	private final Extractor<Number, Number> percentageConstrainer;
@@ -48,14 +48,15 @@ public class AbsolutePercentageComponentRelation<C extends JComponent, V>
 			this.roundingMultiplier = roundingMultiplier;
 		}
 
+		@Override
 		public Number extract(Number object) {
 			return Math.round(object.doubleValue() * roundingMultiplier) / roundingMultiplier;
 		}
 	}
 
 	public AbsolutePercentageComponentRelation(
-			JSpinner absoluteComponent,
-			JSpinner percentageComponent,
+			ValueContainer absoluteComponent,
+			ValueContainer percentageComponent,
 			Number totalValue,
 			Extractor<Number, Number> absoluteConstrainer,
 			Extractor<Number, Number> percentageConstrainer)
@@ -73,8 +74,8 @@ public class AbsolutePercentageComponentRelation<C extends JComponent, V>
 	}
 
 	public AbsolutePercentageComponentRelation(
-			JSpinner absoluteComponent,
-			JSpinner percentageComponent,
+			ValueContainer absoluteComponent,
+			ValueContainer percentageComponent,
 			Number totalValue)
 	{
 		this(
