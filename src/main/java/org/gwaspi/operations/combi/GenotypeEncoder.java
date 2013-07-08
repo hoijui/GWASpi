@@ -16,8 +16,10 @@
  */
 package org.gwaspi.operations.combi;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import libsvm.svm_problem;
 import org.gwaspi.model.Genotype;
 
 /**
@@ -51,7 +53,7 @@ public interface GenotypeEncoder {
 	 *   }
 	 *   </code>
 	 * @param encodedGenotypes output, possibly multiple values per marker,
-	 *   for example (XXX encoding):
+	 *   for example (Nominal encoding):
 	 *   <code>
 	 *   {
 	 *     {1, 2, 2, ...}, // encoded samples for marker 0
@@ -64,10 +66,25 @@ public interface GenotypeEncoder {
 //			final Collection<Collection<byte[]>> possibleGenotypes,
 //			final Collection<Collection<byte[]>> rawGenotypes,
 //			Collection<Collection<Double>> encodedGenotypes);
+//	void encodeGenotypes(
+//			final List<Genotype> possibleGenotypes,
+//			final List<Genotype> rawGenotypes,
+//			Map<?, List<Double>> encodedGenotypes);
+//	void encodeGenotypes(
+//			final List<Genotype> possibleGenotypes,
+//			final List<Genotype> rawGenotypes,
+//			svm_problem libSvmProblem,
+//			int markerIndex);
+//	void encodeGenotypes(
+//			final List<Genotype> possibleGenotypes,
+//			final List<Genotype> rawGenotypes,
+//			float[][] encodedSamplesMarkers,
+//			int markerIndex);
 	void encodeGenotypes(
-			final List<Genotype> possibleGenotypes,
-			final List<Genotype> rawGenotypes,
-			Map<?, List<Double>> encodedGenotypes);
+			final Collection<byte[]> rawGenotypes,
+			final List<Boolean> samplesToKeep,
+			float[][] encodedSamplesMarkers,
+			int markerIndex);
 
 
 	/**

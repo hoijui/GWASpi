@@ -49,9 +49,13 @@ public class Genotype implements Serializable, Comparable<Genotype> {
 		return false;
 	}
 
+	public static int hashCode(byte[] rawGt) {
+		return (256 * rawGt[0]) + rawGt[1];
+	}
+
 	@Override
 	public int hashCode() {
-		return (256 * rawGt[0]) + rawGt[1];
+		return hashCode(rawGt);
 	}
 
 	@Override
@@ -64,6 +68,14 @@ public class Genotype implements Serializable, Comparable<Genotype> {
 	}
 
 	public byte getMother() {
+		return rawGt[1];
+	}
+
+	public static Byte getFather(byte[] rawGt) {
+		return rawGt[0];
+	}
+
+	public static Byte getMother(byte[] rawGt) {
 		return rawGt[1];
 	}
 }
