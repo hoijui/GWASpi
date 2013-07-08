@@ -16,6 +16,7 @@
  */
 package org.gwaspi.operations.combi;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
@@ -24,6 +25,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import libsvm.svm_node;
+import libsvm.svm_problem;
 import org.gwaspi.model.Genotype;
 
 public abstract class EncodingTableBasedGenotypeEncoder implements GenotypeEncoder {
@@ -72,10 +75,15 @@ public abstract class EncodingTableBasedGenotypeEncoder implements GenotypeEncod
 	}
 
 	@Override
+//	public void encodeGenotypes(
+//			List<Genotype> possibleGenotypes,
+//			List<Genotype> rawGenotypes,
+//			Map<?, List<Double>> encodedGenotypes)
 	public void encodeGenotypes(
-			List<Genotype> possibleGenotypes,
-			List<Genotype> rawGenotypes,
-			Map<?, List<Double>> encodedGenotypes)
+			final List<Genotype> possibleGenotypes,
+			final List<Genotype> rawGenotypes,
+			svm_problem libSvmProblem,
+			int mi)
 	{
 		// create the encoding table
 		Map<Genotype, List<Double>> encodingTable
@@ -89,27 +97,36 @@ public abstract class EncodingTableBasedGenotypeEncoder implements GenotypeEncod
 //			System.err.println();
 //		}
 
-		if (encodedGenotypes.size() - (
-				encodedGenotypes.containsKey(Genotype.INVALID)
+		if (possibleGenotypes.size() - (
+				possibleGenotypes.contains(Genotype.INVALID)
 				? 1 : 0) == 1)
 		{
 			// only one valid GT type was found
 			// for example, all SNPs have the value "AA"
 			// -> write only 0.0 values under this SNP
-			final List<Double> nullEncoding = Collections.nCopies(getEncodingFactor(), 0.0);
-			Collection<List<Double>> encodedGTValues = encodedGenotypes.values();
-			Iterator<List<Double>> encodedIt = encodedGTValues.iterator();
-			for (Genotype genotype : rawGenotypes) {
-				List<Double> encodedValues = encodedIt.next();
-				encodedValues.addAll(nullEncoding);
+//			final List<Double> nullEncoding = Collections.nCopies(getEncodingFactor(), 0.0);
+//			Collection<List<Double>> encodedGTValues = encodedGenotypes.values();
+//			Iterator<List<Double>> encodedIt = encodedGTValues.iterator();
+//			for (Genotype genotype : rawGenotypes) {
+//				List<Double> encodedValues = encodedIt.next();
+//				encodedValues.addAll(nullEncoding);
+//			}
+//			Arrays.fill(libSvmProblem.x[markerIndex], 0.0);
+			for (int di = 0; di < libSvmProblem.x.length; di++) {
+				libSvmProblem.x[di][mi].value = 0.0;
 			}
 		} else {
 			// encode
-			Collection<List<Double>> encodedGTValues = encodedGenotypes.values();
-			Iterator<List<Double>> encodedIt = encodedGTValues.iterator();
+//			Collection<List<Double>> encodedGTValues = encodedGenotypes.values();
+//			Iterator<List<Double>> encodedIt = encodedGTValues.iterator();
+			int di = 0;
 			for (Genotype genotype : rawGenotypes) {
-				List<Double> encodedValues = encodedIt.next();
-				encodedValues.addAll(encodingTable.get(genotype));
+				//List<Double> encodedValues = encodedIt.next();
+				List<Double> encodedGT = encodingTable.get(genotype);
+//				encodedValues.addAll(encodedGT);
+				for (Double encVal : encodedGT) {
+					libSvmProblem.x[di][mi].value = encVal;
+				}
 			}
 		}
 	}
