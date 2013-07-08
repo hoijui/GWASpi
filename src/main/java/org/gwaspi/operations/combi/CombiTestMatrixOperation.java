@@ -62,6 +62,15 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 
 	private static final File BASE_DIR = new File(System.getProperty("user.home"), "/Projects/GWASpi/var/data/marius/example/extra"); // HACK
 
+//	private static class EncodedSVMProblemData {
+//
+////		private final Map<SampleKey, List<Double>> samples;
+////		private final Map<SampleKey, Double> affection;
+//
+//		EncodedSVMProblemData(int samples, int markers) {
+//		}
+//	}
+
 	/**
 	 * Whether we are to perform allelic or genotypic association tests.
 	 */
@@ -237,8 +246,8 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 			ois.close();
 
 			runEncodingAndSVM(matrixSamples.entrySet(), sampleInfos, dSamples, dEncoded, n, genotypeEncoder);
-		} catch (Exception e) {
-			e.printStackTrace();
+		} catch (Exception ex) {
+			ex.printStackTrace();
 		}
 	}
 
