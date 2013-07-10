@@ -79,14 +79,29 @@ public abstract class EncodingTableBasedGenotypeEncoder implements GenotypeEncod
 //			List<Genotype> possibleGenotypes,
 //			List<Genotype> rawGenotypes,
 //			Map<?, List<Double>> encodedGenotypes)
+//	public void encodeGenotypes(
+//			final List<Genotype> possibleGenotypes,
+//			final List<Genotype> rawGenotypes,
+//			svm_problem libSvmProblem,
+//			int mi)
+//	public void encodeGenotypes(
+//			final List<Genotype> possibleGenotypes,
+//			final List<Genotype> rawGenotypes,
+//			float[][] encodedSamplesMarkers,
+//			int mi)
+//	public void encodeGenotypes(
+//			final List<Genotype> possibleGenotypes,
+//			final List<Genotype> rawGenotypes,
+//			float[][] encodedSamplesMarkers,
+//			int mi)
 	public void encodeGenotypes(
-			final List<Genotype> possibleGenotypes,
-			final List<Genotype> rawGenotypes,
-			svm_problem libSvmProblem,
+			final Collection<byte[]> rawGenotypes,
+			final List<Boolean> samplesToKeep,
+			float[][] encodedSamplesMarkers,
 			int mi)
 	{
 		// create the encoding table
-		Map<Genotype, List<Double>> encodingTable
+		Map<Integer, List<Double>> encodingTable
 				= generateEncodingTable(possibleGenotypes, rawGenotypes);
 //		System.err.println("XXX encodingTable: " + encodingTable.size() + " * " + encodingTable.values().iterator().next().size());
 //		for (Map.Entry<Genotype, List<Double>> encodingTableEntry : encodingTable.entrySet()) {
@@ -112,20 +127,27 @@ public abstract class EncodingTableBasedGenotypeEncoder implements GenotypeEncod
 //				encodedValues.addAll(nullEncoding);
 //			}
 //			Arrays.fill(libSvmProblem.x[markerIndex], 0.0);
-			for (int di = 0; di < libSvmProblem.x.length; di++) {
-				libSvmProblem.x[di][mi].value = 0.0;
+
+//			for (int di = 0; di < libSvmProblem.x.length; di++) {
+//				libSvmProblem.x[di][mi].value = 0.0;
+//			}
+
+			for (int di = 0; di < encodedSamplesMarkers.length; di++) {
+				encodedSamplesMarkers[di][mi] = 0.0f;
 			}
 		} else {
 			// encode
 //			Collection<List<Double>> encodedGTValues = encodedGenotypes.values();
 //			Iterator<List<Double>> encodedIt = encodedGTValues.iterator();
 			int di = 0;
-			for (Genotype genotype : rawGenotypes) {
+			for (byte[] genotype : rawGenotypes) {
 				//List<Double> encodedValues = encodedIt.next();
-				List<Double> encodedGT = encodingTable.get(genotype);
+				List<Double> encodedGT = encodingTable.get(Genotype.hashCode(genotype));
 //				encodedValues.addAll(encodedGT);
 				for (Double encVal : encodedGT) {
-					libSvmProblem.x[di][mi].value = encVal;
+//					libSvmProblem.x[di][mi].value = encVal;
+
+					encodedSamplesMarkers[di][mi] = encVal.floatValue();
 				}
 			}
 		}

@@ -61,7 +61,7 @@ public class NominalGenotypeEncoder extends EncodingTableBasedGenotypeEncoder {
 		}
 
 		// count GTs
-		// FIXME This value can most likely be taken from the census or HW operation or something else that was alreayd executed
+		// FIXME This value can most likely be taken from the census or HW operation or something else that was already executed
 		// NOTE we use LHM, so the order of insertion stays the same
 		Map<Byte, Integer> gtValueOccurence = new LinkedHashMap<Byte, Integer>();
 		// init

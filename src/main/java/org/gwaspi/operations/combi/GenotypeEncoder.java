@@ -69,10 +69,15 @@ public interface GenotypeEncoder {
 //			final List<Genotype> possibleGenotypes,
 //			final List<Genotype> rawGenotypes,
 //			Map<?, List<Double>> encodedGenotypes);
+//	void encodeGenotypes(
+//			final List<Genotype> possibleGenotypes,
+//			final List<Genotype> rawGenotypes,
+//			svm_problem libSvmProblem,
+//			int markerIndex);
 	void encodeGenotypes(
 			final List<Genotype> possibleGenotypes,
 			final List<Genotype> rawGenotypes,
-			svm_problem libSvmProblem,
+			float[][] encodedSamplesMarkers,
 			int markerIndex);
 
 

@@ -107,30 +107,30 @@ public class AllelicGenotypeEncoder extends EncodingTableBasedGenotypeEncoder {
 
 
 
-		Genotype lastNonZeroGt = rawGenotypes.get(0);
-//		for (Genotype rawGenotype : rawGenotypes) {
-		for (int rgi = rawGenotypes.size() - 1; rgi >= 0; rgi--) {
-			Genotype rawGenotype = rawGenotypes.get(rgi);
-			if (rawGenotype.getFather() != '0' && rawGenotype.getMother() != '0') {
-				lastNonZeroGt = rawGenotype;
-				break;
-			}
-		}
-		// true if the alphabetically lower letter appears first in the gt samples,
-		// eg. the first value is "AA" or "AT", false is "TA" or "TT"
-		Iterator<Genotype> baseEncodingKeyIterator = baseEncodingTable.keySet().iterator();
-		Genotype firstNonZeroBaseGt = baseEncodingKeyIterator.next();
-		if (firstNonZeroBaseGt.getFather() == '0') {
-			firstNonZeroBaseGt = baseEncodingKeyIterator.next();
-		}
-//		final byte lowestCharFirst = (byte) Math.min(firstNonZeroGt.getFather(), firstNonZeroGt.getMother());
-		final byte charLast = lastNonZeroGt.getMother();
-		final byte lowestCharFirstBase = (byte) Math.min(firstNonZeroBaseGt.getFather(), firstNonZeroBaseGt.getMother());
-//		final boolean isLowerFirst = (firstNonZeroGt.getFather() == firstNonZeroBaseGt.getFather());
-//		final boolean isLowerFirst = (firstNonZeroGt.getMother() == firstNonZeroBaseGt.getMother());
-		// true if the alphabetically lower letter appears in the first non-"00" GT.
-		// eg. the first value is "AA", "AT" or "TA", false if it is "TT"
-		final boolean lowerInFirst = (charLast == lowestCharFirstBase);
+//		Genotype lastNonZeroGt = rawGenotypes.get(0);
+////		for (Genotype rawGenotype : rawGenotypes) {
+//		for (int rgi = rawGenotypes.size() - 1; rgi >= 0; rgi--) {
+//			Genotype rawGenotype = rawGenotypes.get(rgi);
+//			if (rawGenotype.getFather() != '0' && rawGenotype.getMother() != '0') {
+//				lastNonZeroGt = rawGenotype;
+//				break;
+//			}
+//		}
+//		// true if the alphabetically lower letter appears first in the gt samples,
+//		// eg. the first value is "AA" or "AT", false is "TA" or "TT"
+//		Iterator<Genotype> baseEncodingKeyIterator = baseEncodingTable.keySet().iterator();
+//		Genotype firstNonZeroBaseGt = baseEncodingKeyIterator.next();
+//		if (firstNonZeroBaseGt.getFather() == '0') {
+//			firstNonZeroBaseGt = baseEncodingKeyIterator.next();
+//		}
+////		final byte lowestCharFirst = (byte) Math.min(firstNonZeroGt.getFather(), firstNonZeroGt.getMother());
+//		final byte charLast = lastNonZeroGt.getMother();
+//		final byte lowestCharFirstBase = (byte) Math.min(firstNonZeroBaseGt.getFather(), firstNonZeroBaseGt.getMother());
+////		final boolean isLowerFirst = (firstNonZeroGt.getFather() == firstNonZeroBaseGt.getFather());
+////		final boolean isLowerFirst = (firstNonZeroGt.getMother() == firstNonZeroBaseGt.getMother());
+//		// true if the alphabetically lower letter appears in the first non-"00" GT.
+//		// eg. the first value is "AA", "AT" or "TA", false if it is "TT"
+//		final boolean lowerInFirst = (charLast == lowestCharFirstBase);
 
 
 
