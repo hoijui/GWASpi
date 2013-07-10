@@ -16,6 +16,7 @@
  */
 package org.gwaspi.operations.combi;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import libsvm.svm_problem;
@@ -74,9 +75,14 @@ public interface GenotypeEncoder {
 //			final List<Genotype> rawGenotypes,
 //			svm_problem libSvmProblem,
 //			int markerIndex);
+//	void encodeGenotypes(
+//			final List<Genotype> possibleGenotypes,
+//			final List<Genotype> rawGenotypes,
+//			float[][] encodedSamplesMarkers,
+//			int markerIndex);
 	void encodeGenotypes(
-			final List<Genotype> possibleGenotypes,
-			final List<Genotype> rawGenotypes,
+			final Collection<byte[]> rawGenotypes,
+			final List<Boolean> samplesToKeep,
 			float[][] encodedSamplesMarkers,
 			int markerIndex);
 

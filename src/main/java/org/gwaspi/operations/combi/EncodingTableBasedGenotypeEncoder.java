@@ -31,27 +31,27 @@ import org.gwaspi.model.Genotype;
 
 public abstract class EncodingTableBasedGenotypeEncoder implements GenotypeEncoder {
 
-	public abstract Map<Genotype, List<Double>> generateEncodingTable(
-			List<Genotype> possibleGenotypes,
-			List<Genotype> rawGenotypes);
+	public abstract Map<Integer, List<Float>> generateEncodingTable(
+			List<byte[]> possibleGenotypes,
+			List<byte[]> rawGenotypes);
 
 	/**
 	 *
 	 * @param possibleGenotypes
 	 * @return will e.g. contain (a sub-set of):
-	 *   {"00":0, "0A":1, "0G":2, "A0":3, "AA":4, "AG":5, "G0":6, "GA":7, "GG":8}
+	 *   {"00".hash():0, "0A".hash():1, "0G".hash():2, "A0".hash():3, "AA".hash():4, "AG".hash():5, "G0".hash():6, "GA".hash():7, "GG".hash():8}
 	 */
-	protected static Map<Genotype, Integer> generateBaseEncodingTable(
-			List<Genotype> possibleGenotypes)
+	protected static Map<Integer, Integer> generateBaseEncodingTable(
+			List<byte[]> possibleGenotypes)
 	{
-		Map<Genotype, Integer> baseEncodingTable
-				= new LinkedHashMap<Genotype, Integer>(possibleGenotypes.size());
+		Map<Integer, Integer> baseEncodingTable
+				= new LinkedHashMap<Integer, Integer>(possibleGenotypes.size());
 
 		// this set will e.g. contain (a sub-set of): {'0', 'A', 'G'}
 		Set<Byte> possibleValues = new TreeSet<Byte>();
-		for (Genotype genotype : possibleGenotypes) {
-			possibleValues.add(genotype.getFather());
-			possibleValues.add(genotype.getMother());
+		for (byte[] genotype : possibleGenotypes) {
+			possibleValues.add(Genotype.getFather(genotype));
+			possibleValues.add(Genotype.getMother(genotype));
 		}
 
 		// this map will e.g. contain (a sub-set of):
@@ -65,10 +65,10 @@ public abstract class EncodingTableBasedGenotypeEncoder implements GenotypeEncod
 
 		// this map will e.g. contain (a sub-set of):
 		// {"00":0, "0A":1, "0G":2, "A0":3, "AA":4, "AG":5, "G0":6, "GA":7, "GG":8}
-		for (Genotype possibleGenotype : possibleGenotypes) {
-			int value = possibleValuesSingleEncoding.get(possibleGenotype.getFather());
-			value = (value * 3) + possibleValuesSingleEncoding.get(possibleGenotype.getMother());
-			baseEncodingTable.put(possibleGenotype, value);
+		for (byte[] possibleGenotype : possibleGenotypes) {
+			int value = possibleValuesSingleEncoding.get(Genotype.getFather(possibleGenotype));
+			value = (value * 3) + possibleValuesSingleEncoding.get(Genotype.getMother(possibleGenotype));
+			baseEncodingTable.put(Genotype.hashCode(possibleGenotype), value);
 		}
 
 		return baseEncodingTable;
@@ -101,7 +101,7 @@ public abstract class EncodingTableBasedGenotypeEncoder implements GenotypeEncod
 			int mi)
 	{
 		// create the encoding table
-		Map<Integer, List<Double>> encodingTable
+		Map<Integer, List<Float>> encodingTable
 				= generateEncodingTable(possibleGenotypes, rawGenotypes);
 //		System.err.println("XXX encodingTable: " + encodingTable.size() + " * " + encodingTable.values().iterator().next().size());
 //		for (Map.Entry<Genotype, List<Double>> encodingTableEntry : encodingTable.entrySet()) {

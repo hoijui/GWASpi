@@ -70,4 +70,12 @@ public class Genotype implements Serializable, Comparable<Genotype> {
 	public byte getMother() {
 		return rawGt[1];
 	}
+
+	public static Byte getFather(byte[] rawGt) {
+		return rawGt[0];
+	}
+
+	public static Byte getMother(byte[] rawGt) {
+		return rawGt[1];
+	}
 }
