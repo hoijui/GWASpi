@@ -38,6 +38,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import javax.swing.ProgressMonitor;
 import libsvm.svm;
 import libsvm.svm_model;
 import libsvm.svm_node;
@@ -156,7 +157,7 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 			throws IOException, InvalidRangeException
 	{
 //		LOG.debug("samples:");
-		Set<SampleKey> sampleKeys = sampleInfos.keySet();// NOTE needs to be well ordered!
+//		Set<SampleKey> sampleKeys = sampleInfos.keySet();// NOTE needs to be well ordered!
 
 		// evaluate which samples to keep
 		// HACK maybe hacky, cause we should have filtered it out earlier? (i(robin) think not)
@@ -194,6 +195,7 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 //		List<Genotype> all = new ArrayList<Genotype>(n);
 //		Set<Genotype> unique = new LinkedHashSet<Genotype>(4);
 //		List<Genotype> uniqueList = new ArrayList<Genotype>(4);
+		ProgressMonitor encodingMarkersPM = new ProgressMonitor(null, "encoding samples", null, 0, dSamples);
 		for (Map.Entry<MarkerKey, Map<SampleKey, byte[]>> markerSamples : markerSamplesIterable) {
 			Map<SampleKey, byte[]> samples = markerSamples.getValue();
 //			LOG.debug("");
@@ -241,7 +243,13 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 
 			mi++;
 
-			if ((mi % 1000) == 0) {
+			encodingMarkersPM.setProgress(mi);
+			if ((mi % 250) == 0) {
+				encodingMarkersPM.setNote(String.format(
+						"Combi Association Test: encoded markers %d / %d ~= %f%%",
+						mi,
+						dSamples,
+						(double) mi / dSamples * 100.0));
 				LOG.info("Combi Association Test: encoded markers {} / {}", mi, dSamples);
 			}
 		}
@@ -818,6 +826,7 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 			prob.x = new svm_node[n][1 + n];
 
 			LOG.info("Combi Association Test: libSVM problem: calculate the kernel");
+			ProgressMonitor calculatingKernelPM = new ProgressMonitor(null, "calculate kernel", null, 0, n*n);
 			for (int si = 0; si < n; si++) {
 				// This is required by the libSVM standard for a PRECOMPUTED kernel
 				svm_node sampleIndexNode = new svm_node();
@@ -825,6 +834,7 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 				sampleIndexNode.value = si;
 				prob.x[si][0] = sampleIndexNode;
 
+				int calculatedKernelElements = 0;
 				for (int s2i = si; s2i < n; s2i++) {
 					double kernelValue = 0.0;
 					for (int di = 0; di < dEncoded; di++) {
@@ -835,16 +845,24 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 					curNode.index = 1 + s2i;
 					curNode.value = kernelValue;
 					prob.x[si][1 + s2i] = curNode;
+					calculatedKernelElements++;
 					if (si != s2i) {
 						// because the matrix is symmetric
 						svm_node curNodeT = new svm_node();
 						curNodeT.index = 1 + si;
 						curNodeT.value = kernelValue;
 						prob.x[s2i][1 + si] = curNodeT;
+						calculatedKernelElements++;
 					}
+					calculatingKernelPM.setProgress(calculatedKernelElements);
 				}
 
 				if ((si % 100) == 0) {
+					calculatingKernelPM.setNote(String.format(
+							"Combi Association Test: calculated kernel values: %d / %d ~= %f%%",
+							calculatedKernelElements,
+							n*n,
+							(double) calculatedKernelElements / (n*n) * 100.0));
 					LOG.info("Combi Association Test: calculated kernel rows: {} / {}", si, n);
 				}
 			}
