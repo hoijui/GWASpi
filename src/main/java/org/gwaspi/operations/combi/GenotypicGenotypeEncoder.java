@@ -18,6 +18,7 @@ package org.gwaspi.operations.combi;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -75,7 +76,7 @@ public class GenotypicGenotypeEncoder extends EncodingTableBasedGenotypeEncoder 
 	@Override
 	public Map<Integer, List<Float>> generateEncodingTable(
 			List<byte[]> possibleGenotypes,
-			List<byte[]> rawGenotypes)
+			Collection<byte[]> rawGenotypes)
 	{
 		Map<Integer, List<Float>> encodingTable
 				= new HashMap<Integer, List<Float>>(possibleGenotypes.size());

@@ -17,6 +17,7 @@
 package org.gwaspi.operations.combi;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -43,21 +44,21 @@ public class NominalGenotypeEncoder extends EncodingTableBasedGenotypeEncoder {
 	}
 
 	@Override
-	public Map<Genotype, List<Double>> generateEncodingTable(
-			List<Genotype> possibleGenotypes,
-			List<Genotype> rawGenotypes)
+	public Map<Integer, List<Float>> generateEncodingTable(
+			List<byte[]> possibleGenotypes,
+			Collection<byte[]> rawGenotypes)
 	{
-		Map<Genotype, List<Double>> encodingTable
-				= new HashMap<Genotype, List<Double>>(possibleGenotypes.size());
+		Map<Integer, List<Float>> encodingTable
+				= new HashMap<Integer, List<Float>>(possibleGenotypes.size());
 
-		Map<Genotype, Integer> baseEncodingTable
+		Map<Integer, Integer> baseEncodingTable
 				= generateBaseEncodingTable(possibleGenotypes);
 
 		// extractthe possible GTs
 		SortedSet<Byte> possibleGTs = new TreeSet<Byte>();
-		for (Genotype possibleGenotype : possibleGenotypes) {
-			possibleGTs.add(possibleGenotype.getFather());
-			possibleGTs.add(possibleGenotype.getMother());
+		for (byte[] possibleGenotype : possibleGenotypes) {
+			possibleGTs.add(Genotype.getFather(possibleGenotype));
+			possibleGTs.add(Genotype.getMother(possibleGenotype));
 		}
 
 		// count GTs
@@ -69,17 +70,17 @@ public class NominalGenotypeEncoder extends EncodingTableBasedGenotypeEncoder {
 			gtValueOccurence.put(possibleGT, 0);
 		}
 		// count
-		for (Genotype rawGenotype : rawGenotypes) {
-			gtValueOccurence.put(rawGenotype.getFather(), gtValueOccurence.get(rawGenotype.getFather()) + 1);
-			gtValueOccurence.put(rawGenotype.getMother(), gtValueOccurence.get(rawGenotype.getMother()) + 1);
+		for (byte[] rawGenotype : rawGenotypes) {
+			gtValueOccurence.put(Genotype.getFather(rawGenotype), gtValueOccurence.get(Genotype.getFather(rawGenotype)) + 1);
+			gtValueOccurence.put(Genotype.getMother(rawGenotype), gtValueOccurence.get(Genotype.getMother(rawGenotype)) + 1);
 		}
 		gtValueOccurence.remove((byte) '0');
 		List<Integer> occurences = new ArrayList<Integer>(gtValueOccurence.values());
 		// always count the GTs with lower occurences
 		// this leads to an overall smaller mean value
 		final boolean countHigher = (occurences.get(0) > occurences.get(1));
-		System.err.println(String.format("occurences: %d vs %d", occurences.get(0), occurences.get(1)));
-		System.err.println(String.format("countHigher: %b", countHigher));
+//		System.err.println(String.format("occurences: %d vs %d", occurences.get(0), occurences.get(1)));
+//		System.err.println(String.format("countHigher: %b", countHigher));
 
 
 //		Iterator<Genotype> baseEncodingKeyIterator = baseEncodingTable.keySet().iterator();
@@ -122,32 +123,32 @@ public class NominalGenotypeEncoder extends EncodingTableBasedGenotypeEncoder {
 //		// eg. the first value is "AA", "AT" or "TA", false if it is "TT"
 //		final boolean lowerInFirst = (charLast == lowestCharFirstBase);
 
-		for (Map.Entry<Genotype, Integer> baseEncoding : baseEncodingTable.entrySet()) {
-			double curValue;
+		for (Map.Entry<Integer, Integer> baseEncoding : baseEncodingTable.entrySet()) {
+			float curValue;
 //System.out.println("XXX " + baseEncoding.getKey() + " -> " + baseEncoding.getValue());
 			switch (baseEncoding.getValue()) {
 				case 4: // "AA"
-//					curValue = 0.0;
+//					curValue = 0.0f;
 					if (countHigher)
-						curValue = 0.0;
+						curValue = 0.0f;
 					else
-						curValue = 2.0;
+						curValue = 2.0f;
 					break;
 				case 5: // "AG"
-					curValue = 1.0;
+					curValue = 1.0f;
 					break;
 				case 7: // "GA"
-					curValue = 1.0;
+					curValue = 1.0f;
 					break;
 				case 8: // "GG"
-//					curValue = 2.0;
+//					curValue = 2.0f;
 					if (countHigher)
-						curValue = 2.0;
+						curValue = 2.0f;
 					else
-						curValue = 0.0;
+						curValue = 0.0f;
 					break;
 				default: // "00"
-					curValue = 0.0;
+					curValue = 0.0f;
 					break;
 			}
 			encodingTable.put(baseEncoding.getKey(), Collections.singletonList(curValue));

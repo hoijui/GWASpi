@@ -16,14 +16,17 @@
  */
 package org.gwaspi.operations.combi;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.TreeSet;
 import libsvm.svm_node;
 import libsvm.svm_problem;
@@ -33,7 +36,7 @@ public abstract class EncodingTableBasedGenotypeEncoder implements GenotypeEncod
 
 	public abstract Map<Integer, List<Float>> generateEncodingTable(
 			List<byte[]> possibleGenotypes,
-			List<byte[]> rawGenotypes);
+			Collection<byte[]> rawGenotypes);
 
 	/**
 	 *
@@ -100,6 +103,16 @@ public abstract class EncodingTableBasedGenotypeEncoder implements GenotypeEncod
 			float[][] encodedSamplesMarkers,
 			int mi)
 	{
+		Map<Integer, byte[]> unique = new TreeMap<Integer, byte[]>();
+		Iterator<Boolean> keep = samplesToKeep.iterator();
+		for (byte[] genotype : rawGenotypes) {
+			if (keep.next().booleanValue()) {
+				unique.put(Genotype.hashCode(genotype), genotype);
+			}
+		}
+		List<byte[]> possibleGenotypes = new ArrayList<byte[]>(unique.values());
+//		Collections.sort(possibleGenotypes); // NOTE note required, because we use TreeMap
+
 		// create the encoding table
 		Map<Integer, List<Float>> encodingTable
 				= generateEncodingTable(possibleGenotypes, rawGenotypes);
@@ -113,7 +126,7 @@ public abstract class EncodingTableBasedGenotypeEncoder implements GenotypeEncod
 //		}
 
 		if (possibleGenotypes.size() - (
-				possibleGenotypes.contains(Genotype.INVALID)
+				possibleGenotypes.contains(Genotype.INVALID.hashCode())
 				? 1 : 0) == 1)
 		{
 			// only one valid GT type was found
@@ -140,14 +153,17 @@ public abstract class EncodingTableBasedGenotypeEncoder implements GenotypeEncod
 //			Collection<List<Double>> encodedGTValues = encodedGenotypes.values();
 //			Iterator<List<Double>> encodedIt = encodedGTValues.iterator();
 			int di = 0;
+			/*Iterator<Boolean> */keep = samplesToKeep.iterator();
 			for (byte[] genotype : rawGenotypes) {
-				//List<Double> encodedValues = encodedIt.next();
-				List<Double> encodedGT = encodingTable.get(Genotype.hashCode(genotype));
-//				encodedValues.addAll(encodedGT);
-				for (Double encVal : encodedGT) {
-//					libSvmProblem.x[di][mi].value = encVal;
+				if (keep.next().booleanValue()) {
+//					List<Double> encodedValues = encodedIt.next();
+					List<Float> encodedGT = encodingTable.get(Genotype.hashCode(genotype));
+//					encodedValues.addAll(encodedGT);
+					for (Float encVal : encodedGT) {
+//						libSvmProblem.x[di][mi].value = encVal;
 
-					encodedSamplesMarkers[di][mi] = encVal.floatValue();
+						encodedSamplesMarkers[di][mi] = encVal.floatValue();
+					}
 				}
 			}
 		}

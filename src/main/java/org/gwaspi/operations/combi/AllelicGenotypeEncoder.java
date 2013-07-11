@@ -18,6 +18,7 @@ package org.gwaspi.operations.combi;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -51,51 +52,51 @@ public class AllelicGenotypeEncoder extends EncodingTableBasedGenotypeEncoder {
 //		ENCODED_VALUES.add(Collections.unmodifiableList(new ArrayList<Double>(
 //				Arrays.asList(1.0, 0.0, 1.0, 0.0)))); // {'C', 'C'}
 //	}
-	private static final Map<Integer, List<Double>> ENCODED_VALUES_LOWER;
+	private static final Map<Integer, List<Float>> ENCODED_VALUES_LOWER;
 	static {
-		ENCODED_VALUES_LOWER = new HashMap<Integer, List<Double>>(5);
+		ENCODED_VALUES_LOWER = new HashMap<Integer, List<Float>>(5);
 
-		ENCODED_VALUES_LOWER.put(0, Collections.unmodifiableList(new ArrayList<Double>(
-				Arrays.asList(0.0, 0.0, 0.0, 0.0)))); // "00"
-//				Arrays.asList(1.0, 1.0, 1.0, 1.0)))); // "00"
-		ENCODED_VALUES_LOWER.put(4, Collections.unmodifiableList(new ArrayList<Double>(
-				Arrays.asList(0.0, 1.0, 0.0, 1.0)))); // "AA"
-		ENCODED_VALUES_LOWER.put(5, Collections.unmodifiableList(new ArrayList<Double>(
-				Arrays.asList(0.0, 1.0, 1.0, 0.0)))); // "AT"
-		ENCODED_VALUES_LOWER.put(7, Collections.unmodifiableList(new ArrayList<Double>(
-				Arrays.asList(1.0, 0.0, 0.0, 1.0)))); // "TA"
-		ENCODED_VALUES_LOWER.put(8, Collections.unmodifiableList(new ArrayList<Double>(
-				Arrays.asList(1.0, 0.0, 1.0, 0.0)))); // "TT"
+		ENCODED_VALUES_LOWER.put(0, Collections.unmodifiableList(new ArrayList<Float>(
+				Arrays.asList(0.0f, 0.0f, 0.0f, 0.0f)))); // "00"
+//				Arrays.asList(1.0f, 1.0f, 1.0f, 1.0f)))); // "00"
+		ENCODED_VALUES_LOWER.put(4, Collections.unmodifiableList(new ArrayList<Float>(
+				Arrays.asList(0.0f, 1.0f, 0.0f, 1.0f)))); // "AA"
+		ENCODED_VALUES_LOWER.put(5, Collections.unmodifiableList(new ArrayList<Float>(
+				Arrays.asList(0.0f, 1.0f, 1.0f, 0.0f)))); // "AT"
+		ENCODED_VALUES_LOWER.put(7, Collections.unmodifiableList(new ArrayList<Float>(
+				Arrays.asList(1.0f, 0.0f, 0.0f, 1.0f)))); // "TA"
+		ENCODED_VALUES_LOWER.put(8, Collections.unmodifiableList(new ArrayList<Float>(
+				Arrays.asList(1.0f, 0.0f, 1.0f, 0.0f)))); // "TT"
 	}
-	private static final Map<Integer, List<Double>> ENCODED_VALUES_UPPER;
+	private static final Map<Integer, List<Float>> ENCODED_VALUES_UPPER;
 	static {
-		ENCODED_VALUES_UPPER = new HashMap<Integer, List<Double>>(5);
+		ENCODED_VALUES_UPPER = new HashMap<Integer, List<Float>>(5);
 
-		ENCODED_VALUES_UPPER.put(0, Collections.unmodifiableList(new ArrayList<Double>(
-				Arrays.asList(0.0, 0.0, 0.0, 0.0)))); // "00"
-//				Arrays.asList(1.0, 1.0, 1.0, 1.0)))); // "00"
-		ENCODED_VALUES_UPPER.put(4, Collections.unmodifiableList(new ArrayList<Double>(
-				Arrays.asList(1.0, 0.0, 1.0, 0.0)))); // "AA"
-		ENCODED_VALUES_UPPER.put(5, Collections.unmodifiableList(new ArrayList<Double>(
-				Arrays.asList(1.0, 0.0, 0.0, 1.0)))); // "AT"
-		ENCODED_VALUES_UPPER.put(7, Collections.unmodifiableList(new ArrayList<Double>(
-				Arrays.asList(0.0, 1.0, 1.0, 0.0)))); // "TA"
-		ENCODED_VALUES_UPPER.put(8, Collections.unmodifiableList(new ArrayList<Double>(
-				Arrays.asList(0.0, 1.0, 0.0, 1.0)))); // "TT"
+		ENCODED_VALUES_UPPER.put(0, Collections.unmodifiableList(new ArrayList<Float>(
+				Arrays.asList(0.0f, 0.0f, 0.0f, 0.0f)))); // "00"
+//				Arrays.asList(1.0f, 1.0f, 1.0f, 1.0f)))); // "00"
+		ENCODED_VALUES_UPPER.put(4, Collections.unmodifiableList(new ArrayList<Float>(
+				Arrays.asList(1.0f, 0.0f, 1.0f, 0.0f)))); // "AA"
+		ENCODED_VALUES_UPPER.put(5, Collections.unmodifiableList(new ArrayList<Float>(
+				Arrays.asList(1.0f, 0.0f, 0.0f, 1.0f)))); // "AT"
+		ENCODED_VALUES_UPPER.put(7, Collections.unmodifiableList(new ArrayList<Float>(
+				Arrays.asList(0.0f, 1.0f, 1.0f, 0.0f)))); // "TA"
+		ENCODED_VALUES_UPPER.put(8, Collections.unmodifiableList(new ArrayList<Float>(
+				Arrays.asList(0.0f, 1.0f, 0.0f, 1.0f)))); // "TT"
 	}
 
 	private AllelicGenotypeEncoder() {
 	}
 
 	@Override
-	public Map<Genotype, List<Double>> generateEncodingTable(
-			List<Genotype> possibleGenotypes,
-			List<Genotype> rawGenotypes)
+	public Map<Integer, List<Float>> generateEncodingTable(
+			List<byte[]> possibleGenotypes,
+			Collection<byte[]> rawGenotypes)
 	{
-		Map<Genotype, List<Double>> encodingTable
-				= new HashMap<Genotype, List<Double>>(possibleGenotypes.size());
+		Map<Integer, List<Float>> encodingTable
+				= new HashMap<Integer, List<Float>>(possibleGenotypes.size());
 
-		Map<Genotype, Integer> baseEncodingTable
+		Map<Integer, Integer> baseEncodingTable
 				= generateBaseEncodingTable(possibleGenotypes);
 
 //		SortedSet<Genotype> sortedGenotypes = new TreeSet<Genotype>(possibleGenotypes);
@@ -138,10 +139,10 @@ public class AllelicGenotypeEncoder extends EncodingTableBasedGenotypeEncoder {
 //				= lowerInFirst
 //				? ENCODED_VALUES_LOWER
 //				: ENCODED_VALUES_UPPER;
-		Map<Integer, List<Double>> encodedValues
+		Map<Integer, List<Float>> encodedValues
 				= ENCODED_VALUES_UPPER;
 
-		for (Map.Entry<Genotype, Integer> baseEncoding : baseEncodingTable.entrySet()) {
+		for (Map.Entry<Integer, Integer> baseEncoding : baseEncodingTable.entrySet()) {
 System.out.println("XXX " + baseEncoding.getKey() + " -> " + baseEncoding.getValue());
 //			double curValue;
 //			switch (baseEncoding.getValue()) {

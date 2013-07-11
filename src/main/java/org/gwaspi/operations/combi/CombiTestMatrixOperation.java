@@ -456,6 +456,7 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 //				}
 //			}
 
+			whiten(encodedSamples);
 
 			svm_problem libSvmProblem = createLibSvmProblem(
 					encodedSamples,
@@ -683,6 +684,75 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 		}
 	}
 
+	private static void whiten(float[][] x) {
+
+		LOG.info("Combi Association Test: whiten the feature matrix (make center = 0 and variance = 1)");
+		int dEncoded = x[0].length;
+		int n = x.length;
+
+		// center the data
+		// ... using Double to calculate the mean, to prevent nummerical inaccuracies
+		double[] sums = new double[dEncoded];
+		double[] varianceSums = new double[dEncoded];
+		for (int di = 0; di < dEncoded; di++) {
+			sums[di] = 0.0;
+			varianceSums[di] = 0.0;
+		}
+		for (int si = 0; si < n; si++) {
+			for (int di = 0; di < dEncoded; di++) {
+				sums[di] += x[si][di];
+			}
+		}
+//		log.debug("sums: " + sums);
+		List<Double> mean = new ArrayList<Double>(dEncoded);
+		for (int di = 0; di < dEncoded; di++) {
+//			Double divide = sums.get(di).setScale(4).divide(new Double(nSamples), Double.ROUND_HALF_UP);
+//			log.debug("mean part: " + sums.get(di) + " / " + nSamples + " = " + divide);
+//			mean.add(sums.get(di).divide(new Double(nSamples), Double.ROUND_HALF_UP).doubleValue());
+			final double curSum = sums[di];
+			final double curMean = (curSum == 0.0) ? 0.0 : (curSum / n);
+			mean.add(curMean);
+		}
+//		log.debug("mean: " + mean);
+
+		// subtract the mean & calculate the variance sums
+		for (int si = 0; si < n; si++) {
+			for (int di = 0; di < dEncoded; di++) {
+				final float newValue = x[si][di] - mean.get(di).floatValue();
+				x[si][di] = newValue;
+				//varianceSums.set(di, varianceSums.get(di).add(new Double(newValue * newValue)))); // faster
+//				varianceSums.set(di, varianceSums.get(di).add(new Double(newValue.pow(2))); // XXX more precise
+				varianceSums[di] += (newValue * newValue);
+			}
+		}
+
+//		// calculate the variance sums separately?
+//		for (List<Double> x : X.values()) {
+//			for (int di = 0; di < dEncoded; di++) {
+//				x.set(di, x.get(di) - mean.get(di));
+//			}
+//		}
+
+		// calculate the variance
+//		List<Double> variance = new ArrayList<Double>(dEncoded);
+		List<Double> stdDev = new ArrayList<Double>(dEncoded);
+		for (int di = 0; di < dEncoded; di++) {
+			double curVariance = varianceSums[di] / n * dEncoded;
+//			variance.add(curVariance);
+			stdDev.add(Math.sqrt(curVariance));
+		}
+
+		// set the variance to 1
+		for (int si = 0; si < n; si++) {
+			for (int di = 0; di < dEncoded; di++) {
+				final float curStdDev = stdDev.get(di).floatValue();
+				final float oldValue = x[si][di];
+				final float newValue = (curStdDev == 0.0) ? oldValue : (oldValue / curStdDev);
+				x[si][di] = newValue;
+			}
+		}
+	}
+
 	private static List<List<Double>> matrixMult(
 			List<List<Double>> matrixA,
 			List<List<Double>> matrixB)
@@ -728,6 +798,7 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 			svm_parameter libSvmParameters,
 			String encoderString)
 	{
+		LOG.info("Combi Association Test: libSVM problem: create");
 		svm_problem prob = new svm_problem();
 
 //		int dEncoded = X.iterator().next().size();
@@ -743,7 +814,10 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 //			List<List<Double>> XT = transpose(X);
 //			problemInput = matrixMult(X, XT);
 
+			LOG.info("Combi Association Test: libSVM problem: allocate kernel memory");
 			prob.x = new svm_node[n][1 + n];
+
+			LOG.info("Combi Association Test: libSVM problem: calculate the kernel");
 			for (int si = 0; si < n; si++) {
 				// This is required by the libSVM standard for a PRECOMPUTED kernel
 				svm_node sampleIndexNode = new svm_node();
@@ -751,7 +825,7 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 				sampleIndexNode.value = si;
 				prob.x[si][0] = sampleIndexNode;
 
-				for (int s2i = 0; s2i < (n - si); s2i++) {
+				for (int s2i = si; s2i < n; s2i++) {
 					double kernelValue = 0.0;
 					for (int di = 0; di < dEncoded; di++) {
 						kernelValue += X[si][di] * X[s2i][di];
@@ -768,6 +842,10 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 						curNodeT.value = kernelValue;
 						prob.x[s2i][1 + si] = curNodeT;
 					}
+				}
+
+				if ((si % 100) == 0) {
+					LOG.info("Combi Association Test: calculated kernel rows: {} / {}", si, n);
 				}
 			}
 
@@ -874,6 +952,7 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 
 
 		// prepare the labels
+		LOG.info("Combi Association Test: libSVM problem: store the label");
 		prob.l = n;
 		prob.y = new double[prob.l];
 //		StringBuilder debugOut = new StringBuilder();
@@ -1277,7 +1356,8 @@ LOG.debug("calculateOriginalSpaceWeights: " + xs.length);
 		int dSamples = dEncoded / genotypeEncoder.getEncodingFactor();
 		int n = libSvmProblem.x.length;
 
-		whiten(libSvmProblem);
+//		LOG.info("Combi Association Test: whiten");
+//		whiten(libSvmProblem);
 
 //		// check if feature matrix is equivalent to the one calculated with matlab
 //		if (encoderString != null) {
@@ -1294,7 +1374,7 @@ LOG.debug("calculateOriginalSpaceWeights: " + xs.length);
 		LOG.info("Combi Association Test: create SVM parameters");
 		svm_parameter libSvmParameters = createLibSvmParameters();
 
-		LOG.info("Combi Association Test: init the SVM model");
+//		LOG.info("Combi Association Test: init the SVM model");
 //		svm_problem libSvmProblem = createLibSvmProblem(X, Y, libSvmParameters, encoderString);
 
 		LOG.info("Combi Association Test: train the SVM model");
