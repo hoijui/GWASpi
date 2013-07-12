@@ -195,7 +195,7 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 //		List<Genotype> all = new ArrayList<Genotype>(n);
 //		Set<Genotype> unique = new LinkedHashSet<Genotype>(4);
 //		List<Genotype> uniqueList = new ArrayList<Genotype>(4);
-		ProgressMonitor encodingMarkersPM = new ProgressMonitor(null, "encoding samples", null, 0, dSamples);
+		ProgressMonitor encodingMarkersPM = new ProgressMonitor(null, "encoding markers", "", 0, dSamples);
 		for (Map.Entry<MarkerKey, Map<SampleKey, byte[]>> markerSamples : markerSamplesIterable) {
 			Map<SampleKey, byte[]> samples = markerSamples.getValue();
 //			LOG.debug("");
@@ -243,10 +243,12 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 
 			mi++;
 
-			encodingMarkersPM.setProgress(mi);
+			if ((mi % 50) == 0) {
+				encodingMarkersPM.setProgress(mi);
+			}
 			if ((mi % 250) == 0) {
 				encodingMarkersPM.setNote(String.format(
-						"Combi Association Test: encoded markers %d / %d ~= %f%%",
+						"%d / %d ~= %f%%",
 						mi,
 						dSamples,
 						(double) mi / dSamples * 100.0));
@@ -401,9 +403,6 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 			svm_parameter libSvmParameters = createLibSvmParameters();
 
 			LOG.info("Combi Association Test: init the SVM model");
-			int libSvmProblemBytes = (n * 8) + ((n * (dSamples + dEncoded)) * 8) + (n * n * (8 + 4 + 8));
-			int libSvmProblemMBytes = (int) (libSvmProblemBytes / 1024.0 / 1024.0);
-			LOG.info("Combi Association Test: required memory: ~ {}MB (on a 64bit system)", libSvmProblemMBytes);
 //if (1 == 1) return Integer.MIN_VALUE;
 //			LOG.info("Combi Association Test: allocate container memory");
 //			svm_problem libSvmProblem = new svm_problem();
@@ -822,11 +821,20 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 //			List<List<Double>> XT = transpose(X);
 //			problemInput = matrixMult(X, XT);
 
+			// FEATURES
+//			int libSvmProblemBytes = (n * 8) + ((n * (dSamples + dEncoded)) * 8) + (n * n * (8 + 4 + 8));
+			// KERNEL
+			int libSvmProblemBytes = (n * 8) + (n * n * (8 + 4 + 8));
+
+			int libSvmProblemMBytes = (int) (libSvmProblemBytes / 1024.0 / 1024.0);
+			LOG.info("Combi Association Test: libSVM problem: required memory: ~ {}MB (on a 64bit system)", libSvmProblemMBytes);
+
 			LOG.info("Combi Association Test: libSVM problem: allocate kernel memory");
 			prob.x = new svm_node[n][1 + n];
 
 			LOG.info("Combi Association Test: libSVM problem: calculate the kernel");
-			ProgressMonitor calculatingKernelPM = new ProgressMonitor(null, "calculate kernel", null, 0, n*n);
+			ProgressMonitor calculatingKernelPM = new ProgressMonitor(null, "calculate kernel matrix elements", "", 0, n*n);
+			int calculatedKernelElements = 0;
 			for (int si = 0; si < n; si++) {
 				// This is required by the libSVM standard for a PRECOMPUTED kernel
 				svm_node sampleIndexNode = new svm_node();
@@ -834,7 +842,6 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 				sampleIndexNode.value = si;
 				prob.x[si][0] = sampleIndexNode;
 
-				int calculatedKernelElements = 0;
 				for (int s2i = si; s2i < n; s2i++) {
 					double kernelValue = 0.0;
 					for (int di = 0; di < dEncoded; di++) {
@@ -854,12 +861,14 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 						prob.x[s2i][1 + si] = curNodeT;
 						calculatedKernelElements++;
 					}
-					calculatingKernelPM.setProgress(calculatedKernelElements);
 				}
 
-				if ((si % 100) == 0) {
+				if ((si % 10) == 0) { // FIXME nearly never true, cause we are in the outer loop
+					calculatingKernelPM.setProgress(calculatedKernelElements);
+				}
+				if ((si % 100) == 0) { // FIXME nearly never true, cause we are in the outer loop
 					calculatingKernelPM.setNote(String.format(
-							"Combi Association Test: calculated kernel values: %d / %d ~= %f%%",
+							"%d / %d ~= %f%%",
 							calculatedKernelElements,
 							n*n,
 							(double) calculatedKernelElements / (n*n) * 100.0));
@@ -1322,29 +1331,36 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 			final double[][] alphas,
 			final svm_node[][] xs,
 //			final List<List<Double>> X,
-			final double[] ys)
+			final double[] ys,
+			svm_parameter libSvmParameters)
 	{
 //		final int d = xs[0].length;
 //		final int d = X.get(0).size();
 		final int d = xs[0].length;
 
-		List<Double> weights
-				= new ArrayList<Double>(Collections.nCopies(d , 0.0));
+//		List<Double> weights
+//				= new ArrayList<Double>(Collections.nCopies(d , 0.0));
+		double[] weights = new double[d];
+		Arrays.fill(weights, 0.0); // probably not required, but it does not hurt to make things clear
 LOG.debug("calculateOriginalSpaceWeights: " + xs.length);
 		for (int svi = 0; svi < xs.length; svi++) {
 			final svm_node[] xsi = xs[svi];
 //			final int svIndex = xsi[0].index; // FIXME this is wrong! it is the other index (marker-id, not sample-id!
 //			final int svIndex = (int) xsi[0].value - 1; // FIXME this only works with PRECOMPUTED!
-			final int svIndex = (int) xsi[0].value; // FIXME this only works with LINEAR!
+//			final int svIndex = (int) xsi[0].value; // FIXME this only works with LINEAR!
+//			int svIndex = (int) xsi[0].value;
+//			if (libSvmParameters.kernel_type == svm_parameter.PRECOMPUTED) {
+//				svIndex -= 1;
+//			}
 //			log.debug("svIndex: " + svIndex);
 //			final List<Double> Xsi = X.get(svIndex);
-//			final List<Double> Xsi = new ArrayList<Double>(xsi.length - 1); // FIXME this only works wiht PRECOMPUTED!
+//			final List<Double> Xsi = new ArrayList<Double>(xsi.length - 1); // FIXME this only works with PRECOMPUTED!
 //			for (int i = 1; i < xsi.length; i++) {
 //				svm_node elem = xsi[i];
 //				Xsi.add(elem.value);
 //			}
 			final double alpha = alphas[0][svi];
-			final double y = ys[svIndex];
+//			final double y = ys[svIndex];
 			for (int di = 0; di < d; di++) {
 				final double x = xsi[di].value;
 //				final double x = Xsi.get(di);
@@ -1354,12 +1370,19 @@ LOG.debug("calculateOriginalSpaceWeights: " + xs.length);
 				// because we want the absolute sum (i forgot again why so :/ )
 //				final double alphaYXi = alpha * x;
 				final double alphaYXi = - alpha * x; // FIXME why here change sign again?!?!
-				weights.set(di, weights.get(di) + alphaYXi);
+//				weights.set(di, weights.get(di) + alphaYXi);
+				weights[di] += alphaYXi;
 			}
 //			log.debug();
 		}
 
-		return weights;
+		List<Double> weightsList = new ArrayList<Double>(weights.length);
+		for (int wi = 0; wi < weights.length; wi++) {
+			weightsList.add(weights[wi]);
+		}
+
+//		return weights;
+		return weightsList;
 	}
 
 
@@ -1481,7 +1504,7 @@ LOG.debug("calculateOriginalSpaceWeights: " + xs.length);
 
 		LOG.info("Combi Association Test: calculate original space weights from alphas");
 		List<Double> weightsEncoded = calculateOriginalSpaceWeights(
-				svmModel.sv_coef, svmModel.SV/*, X*/, libSvmProblem.y);
+				svmModel.sv_coef, svmModel.SV/*, X*/, libSvmProblem.y, libSvmParameters);
 
 		// check if the raw encoded weights are equivalent to the ones calculated with matlab
 		if (encoderString != null) {
