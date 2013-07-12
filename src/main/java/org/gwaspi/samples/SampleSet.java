@@ -206,6 +206,51 @@ public class SampleSet {
 	//</editor-fold>
 
 	//<editor-fold defaultstate="expanded" desc="SAMPLESET FILLERS">
+	private static String constructNetCDFReadStr(Dimension sampleSetDim, int markerNb, int varDim2) {
+
+		// NOTE exemplary code!
+		// how to best create the required string?
+		// see http://stackoverflow.com/questions/513600/should-i-use-javas-string-format-if-performance-is-important
+		// suposedly the slowest; String.format
+//				String netCdfReadStr = String.format(
+//						"(0:%d:1, %d:%d:1, 0:%d:1)",
+//						(sampleSetDim.getLength() - 1),
+//						markerNb,
+//						markerNb,
+//						(varDim2 - 1));
+		// faster; MessageFormat
+//				MessageFormat gtReadMF = new MessageFormat("(0:%d:1, %d:%d:1, 0:%d:1)");
+//				String netCdfReadStr = gtReadMF.format(new Object[] {
+//						(sampleSetDim.getLength() - 1),
+//						markerNb,
+//						markerNb,
+//						(varShape[2] - 1)});
+		// ... about the same as MessageFormat(?); String + String
+//				String netCdfReadStr
+//						= "(0:" + (sampleSetDim.getLength() - 1) + ":1, "
+//						+ markerNb + ":" + markerNb + ":1, "
+//						+ "0:" + (varDim2 - 1) + ":1)";
+		// fastest and most memory friendly way: StringBuilder (not thread-safe)
+		StringBuilder netCdfReadStrBldr = new StringBuilder(64);
+		netCdfReadStrBldr
+				.append("(0:")
+				.append(sampleSetDim.getLength() - 1)
+				.append(":1, ")
+				.append(markerNb)
+				.append(":")
+				.append(markerNb)
+				.append(":1, " + "0:")
+				.append(varDim2 - 1)
+				.append(":1)");
+		String netCdfReadStr = netCdfReadStrBldr.toString();
+
+		return netCdfReadStr;
+	}
+
+	private static ArrayByte.D3 readGTs(Variable genotypes, String netCdfReadStr) throws InvalidRangeException, IOException {
+		return (ArrayByte.D3) genotypes.read(netCdfReadStr);
+	}
+
 	public void readAllSamplesGTsFromCurrentMarkerToMap(NetcdfFile rdNcFile, Map<SampleKey, byte[]> rdBytes, Map<SampleKey, char[]> rdChar, int markerNb) throws IOException {
 
 		try {
@@ -219,43 +264,10 @@ public class SampleSet {
 
 				Dimension sampleSetDim = rdNcFile.findDimension(cNetCDF.Dimensions.DIM_SAMPLESET);
 
-				// NOTE exemplary code!
-				// how to best create the required string?
-				// see http://stackoverflow.com/questions/513600/should-i-use-javas-string-format-if-performance-is-important
-				// suposedly the slowest; String.format
-//				String netCdfReadStr = String.format(
-//						"(0:%d:1, %d:%d:1, 0:%d:1)",
-//						(sampleSetDim.getLength() - 1),
-//						markerNb,
-//						markerNb,
-//						(varShape[2] - 1));
-				// faster; MessageFormat
-//				MessageFormat gtReadMF = new MessageFormat("(0:%d:1, %d:%d:1, 0:%d:1)");
-//				String netCdfReadStr = gtReadMF.format(new Object[] {
-//						(sampleSetDim.getLength() - 1),
-//						markerNb,
-//						markerNb,
-//						(varShape[2] - 1)});
-				// ... about the same as MessageFormat(?); String + String
-//				String netCdfReadStr
-//						= "(0:" + (sampleSetDim.getLength() - 1) + ":1, "
-//						+ markerNb + ":" + markerNb + ":1, "
-//						+ "0:" + (varShape[2] - 1) + ":1)";
-				// fastest and most memory friendly way: StringBuilder (not thread-safe)
-				StringBuilder netCdfReadStrBldr = new StringBuilder(64);
-				netCdfReadStrBldr
-						.append("(0:")
-						.append(sampleSetDim.getLength() - 1)
-						.append(":1, ")
-						.append(markerNb)
-						.append(":")
-						.append(markerNb)
-						.append(":1, " + "0:")
-						.append(varShape[2] - 1)
-						.append(":1)");
-				String netCdfReadStr = netCdfReadStrBldr.toString();
+				String netCdfReadStr = constructNetCDFReadStr(sampleSetDim, markerNb, varShape[2]);
 
-				ArrayByte.D3 gt_ACD3 = (ArrayByte.D3) genotypes.read(netCdfReadStr);
+//				ArrayByte.D3 gt_ACD3 = (ArrayByte.D3) genotypes.read(netCdfReadStr);
+				ArrayByte.D3 gt_ACD3 = readGTs(genotypes, netCdfReadStr);
 
 				int[] shp = gt_ACD3.getShape();
 				int reducer = 0;
