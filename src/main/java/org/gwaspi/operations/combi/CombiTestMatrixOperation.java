@@ -145,6 +145,35 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 		return affectionStates;
 	}
 
+	private static int calcFeatureBytes(int samples, int markers, GenotypeEncoder encoder, byte baseStorageTypeBytes) {
+
+		int bytes = samples * markers * encoder.getEncodingFactor() * baseStorageTypeBytes;
+
+		return bytes;
+	}
+
+	private static int calcKernelBytes(int samples) {
+
+		boolean precomputed = true;
+		final int n = samples;
+
+		int bytes;
+		if (precomputed) {
+			// kernel
+			bytes = (n * 8) + (n * n * (8 + 4 + 8));
+		} else {
+			// features
+//			bytes = (n * 8) + ((n * (dSamples + dEncoded)) * 8) + (n * n * (8 + 4 + 8));
+			bytes = 0;
+		}
+
+		return bytes;
+	}
+
+	private static double bytes2gigaBytes(int bytes) {
+		return bytes / (1024.0 * 1024.0 * 1024.0);
+	}
+
 	private static float[][] encodeSamples(
 			Iterable<Map.Entry<MarkerKey, Map<SampleKey, byte[]>>> markerSamplesIterable,
 //			Set<SampleKey> sampleKeys, // NOTE needs to be well ordered!
