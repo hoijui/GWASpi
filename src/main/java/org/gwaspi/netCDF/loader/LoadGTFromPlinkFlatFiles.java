@@ -57,6 +57,26 @@ public class LoadGTFromPlinkFlatFiles implements GenotypesLoader {
 	public LoadGTFromPlinkFlatFiles() {
 	}
 
+	protected void addAdditionalBigDescriptionProperties(StringBuilder descSB, GenotypesLoadDescription loadDescription) {
+//		super.addAdditionalBigDescriptionProperties(descSB, loadDescription); // XXX uncomment!
+
+		descSB.append(loadDescription.getGtDirPath());
+		descSB.append(" (MAP file)\n");
+		descSB.append(loadDescription.getAnnotationFilePath());
+		descSB.append(" (PED file)\n");
+		if (new File(loadDescription.getSampleFilePath()).exists()) {
+			descSB.append(loadDescription.getSampleFilePath());
+			descSB.append(" (Sample Info file)\n");
+		}
+	}
+
+	protected MetadataLoader createMetaDataLoader(GenotypesLoadDescription loadDescription) {
+
+		return new MetadataLoaderPlink(
+				loadDescription.getGtDirPath(),
+				loadDescription.getStudyKey());
+	}
+
 	@Override
 	public ImportFormat getFormat() {
 		return ImportFormat.PLINK;
@@ -74,7 +94,7 @@ public class LoadGTFromPlinkFlatFiles implements GenotypesLoader {
 
 	@Override
 	public String getMarkersD2Variables() {
-		throw new UnsupportedOperationException("Not supported yet."); // FIXME implement me!
+		return null;
 	}
 
 	@Override
@@ -86,9 +106,7 @@ public class LoadGTFromPlinkFlatFiles implements GenotypesLoader {
 		List<SampleKey> sampleKeys = AbstractLoadGTFromFiles.extractKeys(sampleInfos);
 
 		//<editor-fold defaultstate="expanded" desc="CREATE MARKERSET & NETCDF">
-		MetadataLoaderPlink markerSetLoader = new MetadataLoaderPlink(
-				loadDescription.getGtDirPath(),
-				loadDescription.getStudyKey());
+		MetadataLoaderPlink markerSetLoader = createMetaDataLoader(loadDescription);
 		Map<MarkerKey, MarkerMetadata> markerSetMap = markerSetLoader.getSortedMarkerSetWithMetaData(); // markerid, rsId, chr, pos
 
 		log.info("Done initializing sorted MarkerSetMap");
@@ -111,14 +129,7 @@ public class LoadGTFromPlinkFlatFiles implements GenotypesLoader {
 		descSB.append("\n");
 		descSB.append(Text.Matrix.descriptionHeader3);
 		descSB.append("\n");
-		descSB.append(loadDescription.getGtDirPath());
-		descSB.append(" (MAP file)\n");
-		descSB.append(loadDescription.getAnnotationFilePath());
-		descSB.append(" (PED file)\n");
-		if (new File(loadDescription.getSampleFilePath()).exists()) {
-			descSB.append(loadDescription.getSampleFilePath());
-			descSB.append(" (Sample Info file)\n");
-		}
+		addAdditionalBigDescriptionProperties(descSB, loadDescription);
 
 		//RETRIEVE CHROMOSOMES INFO
 		Map<MarkerKey, int[]> chrSetMap = org.gwaspi.netCDF.matrices.Utils.aggregateChromosomeInfo(markerSetMap, 2, 3);

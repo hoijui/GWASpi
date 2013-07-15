@@ -56,16 +56,17 @@ public class LoadGTFromBeagleFiles extends AbstractLoadGTFromFiles {
 	protected void addAdditionalBigDescriptionProperties(StringBuilder descSB, GenotypesLoadDescription loadDescription) {
 		super.addAdditionalBigDescriptionProperties(descSB, loadDescription);
 
+		descSB.append(loadDescription.getGtDirPath());
+		descSB.append(" (Genotype file)\n");
 		descSB.append(loadDescription.getAnnotationFilePath());
 		descSB.append(" (Marker file)\n");
 	}
 
 	@Override
-	protected MetadataLoader createMetaDataLoader(String filePath, GenotypesLoadDescription loadDescription) {
+	protected MetadataLoader createMetaDataLoader(GenotypesLoadDescription loadDescription) {
 
-		String curAnnotationFilePath = filePath;
 		return new MetadataLoaderBeagle(
-				curAnnotationFilePath,
+				loadDescription.getAnnotationFilePath(),
 				loadDescription.getChromosome(),
 				loadDescription.getStrand(),
 				loadDescription.getStudyKey());

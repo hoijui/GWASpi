@@ -92,7 +92,7 @@ public abstract class AbstractLoadGTFromFiles implements GenotypesLoader {
 	protected void addAdditionalBigDescriptionProperties(StringBuilder descSB, GenotypesLoadDescription loadDescription) {
 	}
 
-	protected abstract MetadataLoader createMetaDataLoader(String filePath, GenotypesLoadDescription loadDescription);
+	protected abstract MetadataLoader createMetaDataLoader(GenotypesLoadDescription loadDescription);
 
 	//<editor-fold defaultstate="expanded" desc="PROCESS GENOTYPES">
 	@Override
@@ -114,7 +114,7 @@ public abstract class AbstractLoadGTFromFiles implements GenotypesLoader {
 		Map<MarkerKey, MarkerMetadata> markerSetMap = new LinkedHashMap<MarkerKey, MarkerMetadata>();
 
 		//<editor-fold defaultstate="expanded" desc="CREATE MARKERSET & NETCDF">
-		MetadataLoader markerSetLoader = createMetaDataLoader(loadDescription.getAnnotationFilePath(), loadDescription);
+		MetadataLoader markerSetLoader = createMetaDataLoader(loadDescription);
 		Map<MarkerKey, MarkerMetadata> tmpMarkerMap = markerSetLoader.getSortedMarkerSetWithMetaData();
 		markerSetMap.putAll(tmpMarkerMap);
 
@@ -140,8 +140,6 @@ public abstract class AbstractLoadGTFromFiles implements GenotypesLoader {
 		descSB.append("\n");
 		descSB.append(Text.Matrix.descriptionHeader3);
 		descSB.append("\n");
-		descSB.append(loadDescription.getGtDirPath());
-		descSB.append(" (Genotype file)\n");
 		addAdditionalBigDescriptionProperties(descSB, loadDescription);
 		if (new File(loadDescription.getSampleFilePath()).exists()) {
 			descSB.append(loadDescription.getSampleFilePath());
