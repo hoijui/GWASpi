@@ -23,6 +23,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import org.gwaspi.constants.cImport;
 import org.gwaspi.constants.cImport.ImportFormat;
@@ -82,13 +83,13 @@ public class LoadGTFromHGDP1Files implements GenotypesLoader {
 		throw new UnsupportedOperationException("Not supported yet."); // FIXME implement me!
 	}
 
-	//<editor-fold defaultstate="expanded" desc="PROCESS GENOTYPES">
 	@Override
 	public int processData(GenotypesLoadDescription loadDescription, Collection<SampleInfo> sampleInfos) throws IOException, InvalidRangeException, InterruptedException {
 		int result = Integer.MIN_VALUE;
 
 		String startTime = org.gwaspi.global.Utils.getMediumDateTimeAsString();
 
+		List<SampleKey> sampleKeys = AbstractLoadGTFromFiles.extractKeys(sampleInfos);
 
 		//<editor-fold defaultstate="expanded" desc="CREATE MARKERSET & NETCDF">
 		MetadataLoaderHGDP1 markerSetLoader = new MetadataLoaderHGDP1(
@@ -115,7 +116,7 @@ public class LoadGTFromHGDP1Files implements GenotypesLoader {
 		descSB.append("Markers: ").append(markerSetMap.size()).append(", Samples: ").append(sampleInfos.size());
 		descSB.append("\n");
 		descSB.append(Text.Matrix.descriptionHeader2);
-		descSB.append(loadDescription.getFormat());
+		descSB.append(loadDescription.getFormat().toString());
 		descSB.append("\n");
 		descSB.append(Text.Matrix.descriptionHeader3);
 		descSB.append("\n");
@@ -156,8 +157,8 @@ public class LoadGTFromHGDP1Files implements GenotypesLoader {
 		//</editor-fold>
 
 		//<editor-fold defaultstate="expanded" desc="WRITE MATRIX METADATA">
-		// WRITE SAMPLESET TO MATRIX FROM SAMPLES ARRAYLIST
-		ArrayChar.D2 samplesD2 = org.gwaspi.netCDF.operations.Utils.writeCollectionToD2ArrayChar(AbstractLoadGTFromFiles.extractKeys(sampleInfos), cNetCDF.Strides.STRIDE_SAMPLE_NAME);
+		// WRITE SAMPLESET TO MATRIX FROM SAMPLES LIST
+		ArrayChar.D2 samplesD2 = org.gwaspi.netCDF.operations.Utils.writeCollectionToD2ArrayChar(sampleKeys, cNetCDF.Strides.STRIDE_SAMPLE_NAME);
 
 		int[] sampleOrig = new int[]{0, 0};
 		try {
@@ -208,12 +209,12 @@ public class LoadGTFromHGDP1Files implements GenotypesLoader {
 		org.gwaspi.netCDF.operations.Utils.saveCharMapKeyToWrMatrix(ncfile, chrSetMap, cNetCDF.Variables.VAR_CHR_IN_MATRIX, 8);
 
 		// Number of marker per chromosome & max pos for each chromosome
-		int[] columns = new int[]{0, 1, 2, 3};
+		int[] columns = new int[] {0, 1, 2, 3};
 		org.gwaspi.netCDF.operations.Utils.saveIntMapD2ToWrMatrix(ncfile, chrSetMap, columns, cNetCDF.Variables.VAR_CHR_INFO);
 
 
 		// WRITE POSITION METADATA FROM ANNOTATION FILE
-		//markersD2 = org.gwaspi.netCDF.operations.Utils.writeMapValueItemToD2ArrayChar(wrMarkerSetMap, 3, cNetCDF.Strides.STRIDE_POS);
+		//markersD2 = org.gwaspi.netCDF.operations.Utils.writeMapValueItemToD2ArrayChar(sortedMarkerSetMap, 3, cNetCDF.Strides.STRIDE_POS);
 		ArrayInt.D1 markersPosD1 = org.gwaspi.netCDF.operations.Utils.writeMapValueItemToD1ArrayInt(markerSetMap, MarkerMetadata.TO_POS);
 		int[] posOrig = new int[1];
 		try {
@@ -225,7 +226,6 @@ public class LoadGTFromHGDP1Files implements GenotypesLoader {
 		}
 		log.info("Done writing positions to matrix");
 
-
 		// WRITE GT STRAND FROM ANNOTATION FILE
 		int[] gtOrig = new int[] {0, 0};
 		String strandFlag;
@@ -234,16 +234,16 @@ public class LoadGTFromHGDP1Files implements GenotypesLoader {
 				strandFlag = StrandFlags.strandPLS;
 				break;
 			case MINUS:
-				strandFlag = cImport.StrandFlags.strandMIN;
+				strandFlag = StrandFlags.strandMIN;
 				break;
 			case FWD:
-				strandFlag = cImport.StrandFlags.strandFWD;
+				strandFlag = StrandFlags.strandFWD;
 				break;
 			case REV:
-				strandFlag = cImport.StrandFlags.strandREV;
+				strandFlag = StrandFlags.strandREV;
 				break;
 			default:
-				strandFlag = cImport.StrandFlags.strandUNK;
+				strandFlag = StrandFlags.strandUNK;
 				break;
 		}
 		markersD2 = org.gwaspi.netCDF.operations.Utils.writeSingleValueToD2ArrayChar(strandFlag, cNetCDF.Strides.STRIDE_STRAND, markerSetMap.size());
@@ -257,11 +257,9 @@ public class LoadGTFromHGDP1Files implements GenotypesLoader {
 		}
 		markersD2 = null;
 		log.info("Done writing strand info to matrix");
+		//</editor-fold>
 
-
-		// </editor-fold>
-
-		// <editor-fold defaultstate="expanded" desc="MATRIX GENOTYPES LOAD ">
+		//<editor-fold defaultstate="expanded" desc="MATRIX GENOTYPES LOAD ">
 		GenotypeEncoding guessedGTCode = GenotypeEncoding.UNKNOWN;
 		int sampleIndex = 0;
 		for (SampleInfo sampleInfo : sampleInfos) {
@@ -293,11 +291,11 @@ public class LoadGTFromHGDP1Files implements GenotypesLoader {
 		}
 
 		log.info("Done writing genotypes to matrix");
-		// </editor-fold>
+		//</editor-fold>
 
 		// CLOSE THE FILE AND BY THIS, MAKE IT READ-ONLY
 		try {
-			//GUESS GENOTYPE ENCODING
+			// GUESS GENOTYPE ENCODING
 			ArrayChar.D2 guessedGTCodeAC = new ArrayChar.D2(1, 8);
 			Index index = guessedGTCodeAC.getIndex();
 			guessedGTCodeAC.setString(index.set(0, 0), guessedGTCode.toString().trim());
@@ -311,16 +309,22 @@ public class LoadGTFromHGDP1Files implements GenotypesLoader {
 			matrixMetaData.setDescription(descSB.toString());
 			MatricesList.updateMatrix(matrixMetaData);
 
-			//CLOSE FILE
+			// CLOSE FILE
 			ncfile.close();
 			result = matrixFactory.getMatrixMetaData().getMatrixId();
 		} catch (IOException ex) {
 			log.error("Failed creating file " + ncfile.getLocation(), ex);
 		}
 
-		AbstractLoadGTFromFiles.logAsWhole(startTime, loadDescription.getStudyKey().getId(), loadDescription.getGtDirPath(), loadDescription.getFormat(), loadDescription.getFriendlyName(), loadDescription.getDescription());
+		AbstractLoadGTFromFiles.logAsWhole(
+				startTime,
+				loadDescription.getStudyKey().getId(),
+				loadDescription.getGtDirPath(),
+				loadDescription.getFormat(),
+				loadDescription.getFriendlyName(),
+				loadDescription.getDescription());
 
-		org.gwaspi.global.Utils.sysoutCompleted("writing data to Matrix");
+		org.gwaspi.global.Utils.sysoutCompleted("writing Genotypes to Matrix");
 		return result;
 	}
 
@@ -387,5 +391,4 @@ public class LoadGTFromHGDP1Files implements GenotypesLoader {
 			guessedGTCode = Utils.detectGTEncoding(alleles);
 		}
 	}
-	//</editor-fold>
 }

@@ -99,7 +99,7 @@ public class LoadGTFromAffyFiles implements GenotypesLoader {
 
 		//<editor-fold defaultstate="expanded" desc="SAMPLES GATHERING">
 		// GET SAMPLES FROM FILES
-		List<SampleKey> samples = new ArrayList<SampleKey>();
+		List<SampleKey> sampleKeys = new ArrayList<SampleKey>();
 		for (int i = 0; i < gtFilesToImport.length; i++) {
 			SampleKey sampleKey;
 			switch (loadDescription.getFormat()) {
@@ -111,7 +111,7 @@ public class LoadGTFromAffyFiles implements GenotypesLoader {
 					break;
 			}
 			// NOTE The Beagle format does not have a family-ID
-			samples.add(sampleKey);
+			sampleKeys.add(sampleKey);
 		}
 
 		// COMPARE SAMPLE INFO LIST TO AVAILABLE FILES
@@ -138,10 +138,10 @@ public class LoadGTFromAffyFiles implements GenotypesLoader {
 //		descSB.append("\nGenotype encoding: ");
 //		descSB.append(gtCode);
 		descSB.append("\n");
-		descSB.append("Markers: ").append(markerSetMap.size()).append(", Samples: ").append(samples.size());
+		descSB.append("Markers: ").append(markerSetMap.size()).append(", Samples: ").append(sampleKeys.size());
 		descSB.append("\n");
 		descSB.append(Text.Matrix.descriptionHeader2);
-		descSB.append(loadDescription.getFormat());
+		descSB.append(loadDescription.getFormat().toString());
 		descSB.append("\n");
 		descSB.append(Text.Matrix.descriptionHeader3);
 		descSB.append("\n");
@@ -166,7 +166,7 @@ public class LoadGTFromAffyFiles implements GenotypesLoader {
 				loadDescription.getGtCode(),
 				(getMatrixStrand() != null) ? getMatrixStrand() : loadDescription.getStrand(),
 				isHasDictionary(),
-				samples.size(),
+				sampleKeys.size(),
 				markerSetMap.size(),
 				chrSetMap.size(),
 				loadDescription.getGtDirPath());
@@ -183,8 +183,8 @@ public class LoadGTFromAffyFiles implements GenotypesLoader {
 		//</editor-fold>
 
 		//<editor-fold defaultstate="expanded" desc="WRITE MATRIX METADATA">
-		// WRITE SAMPLESET TO MATRIX FROM SAMPLES ARRAYLIST
-		ArrayChar.D2 samplesD2 = org.gwaspi.netCDF.operations.Utils.writeCollectionToD2ArrayChar(samples, cNetCDF.Strides.STRIDE_SAMPLE_NAME);
+		// WRITE SAMPLESET TO MATRIX FROM SAMPLES LIST
+		ArrayChar.D2 samplesD2 = org.gwaspi.netCDF.operations.Utils.writeCollectionToD2ArrayChar(sampleKeys, cNetCDF.Strides.STRIDE_SAMPLE_NAME);
 
 		int[] sampleOrig = new int[]{0, 0};
 		try {
@@ -235,12 +235,12 @@ public class LoadGTFromAffyFiles implements GenotypesLoader {
 		org.gwaspi.netCDF.operations.Utils.saveCharMapKeyToWrMatrix(ncfile, chrSetMap, cNetCDF.Variables.VAR_CHR_IN_MATRIX, 8);
 
 		// Number of marker per chromosome & max pos for each chromosome
-		int[] columns = new int[]{0, 1, 2, 3};
+		int[] columns = new int[] {0, 1, 2, 3};
 		org.gwaspi.netCDF.operations.Utils.saveIntMapD2ToWrMatrix(ncfile, chrSetMap, columns, cNetCDF.Variables.VAR_CHR_INFO);
 
 
 		// WRITE POSITION METADATA FROM ANNOTATION FILE
-		//markersD2 = org.gwaspi.netCDF.operations.Utils.writeMapValueItemToD2ArrayChar(markerSetMap, 5, cNetCDF.Strides.STRIDE_POS);
+		//markersD2 = org.gwaspi.netCDF.operations.Utils.writeMapValueItemToD2ArrayChar(sortedMarkerSetMap, 5, cNetCDF.Strides.STRIDE_POS);
 		ArrayInt.D1 markersPosD1 = org.gwaspi.netCDF.operations.Utils.writeMapValueItemToD1ArrayInt(markerSetMap, MarkerMetadata.TO_POS);
 		int[] posOrig = new int[1];
 		try {
@@ -297,11 +297,9 @@ public class LoadGTFromAffyFiles implements GenotypesLoader {
 		}
 		markersD2 = null;
 		log.info("Done writing strand info to matrix");
+		//</editor-fold>
 
-
-		// </editor-fold>
-
-		// <editor-fold defaultstate="expanded" desc="MATRIX GENOTYPES LOAD ">
+		//<editor-fold defaultstate="expanded" desc="MATRIX GENOTYPES LOAD ">
 		// PURGE alleles
 		Map<MarkerKey, byte[]> alleles = AbstractLoadGTFromFiles.fillMap(markerSetMap.keySet(), cNetCDF.Defaults.DEFAULT_GT);
 
@@ -314,7 +312,7 @@ public class LoadGTFromAffyFiles implements GenotypesLoader {
 					gtFilesToImport[i],
 					ncfile,
 					alleles,
-					samples);
+					sampleKeys);
 
 			if (i == 0) {
 				log.info(Text.All.processing);
@@ -324,11 +322,11 @@ public class LoadGTFromAffyFiles implements GenotypesLoader {
 		}
 
 		log.info("Done writing genotypes to matrix");
-		// </editor-fold>
+		//</editor-fold>
 
 		// CLOSE THE FILE AND BY THIS, MAKE IT READ-ONLY
 		try {
-			//GUESS GENOTYPE ENCODING
+			// GUESS GENOTYPE ENCODING
 			ArrayChar.D2 guessedGTCodeAC = new ArrayChar.D2(1, 8);
 			Index index = guessedGTCodeAC.getIndex();
 			guessedGTCodeAC.setString(index.set(0, 0), guessedGTCode.toString().trim());
@@ -342,12 +340,20 @@ public class LoadGTFromAffyFiles implements GenotypesLoader {
 			matrixMetaData.setDescription(descSB.toString());
 			MatricesList.updateMatrix(matrixMetaData);
 
-			//CLOSE FILE
+			// CLOSE FILE
 			ncfile.close();
 			result = matrixFactory.getMatrixMetaData().getMatrixId();
 		} catch (IOException ex) {
 			log.error("Failed creating file " + ncfile.getLocation(), ex);
 		}
+
+		AbstractLoadGTFromFiles.logAsWhole(
+				startTime,
+				loadDescription.getStudyKey().getId(),
+				loadDescription.getGtDirPath(),
+				loadDescription.getFormat(),
+				loadDescription.getFriendlyName(),
+				loadDescription.getDescription());
 
 		org.gwaspi.global.Utils.sysoutCompleted("writing Genotypes to Matrix");
 		return result;

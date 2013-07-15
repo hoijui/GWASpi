@@ -28,6 +28,7 @@ import java.util.StringTokenizer;
 import org.gwaspi.constants.cImport;
 import org.gwaspi.constants.cImport.Annotation.Plink_Standard;
 import org.gwaspi.constants.cImport.ImportFormat;
+import org.gwaspi.constants.cImport.StrandFlags;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
@@ -106,7 +107,7 @@ public class LoadGTFromPlinkFlatFiles implements GenotypesLoader {
 		descSB.append("Markers: ").append(markerSetMap.size()).append(", Samples: ").append(sampleInfos.size());
 		descSB.append("\n");
 		descSB.append(Text.Matrix.descriptionHeader2);
-		descSB.append(loadDescription.getFormat());
+		descSB.append(loadDescription.getFormat().toString());
 		descSB.append("\n");
 		descSB.append(Text.Matrix.descriptionHeader3);
 		descSB.append("\n");
@@ -217,23 +218,23 @@ public class LoadGTFromPlinkFlatFiles implements GenotypesLoader {
 		log.info("Done writing positions to matrix");
 
 		// WRITE GT STRAND FROM ANNOTATION FILE
-		int[] gtOrig = new int[]{0, 0};
+		int[] gtOrig = new int[] {0, 0};
 		String strandFlag;
 		switch (loadDescription.getStrand()) {
 			case PLUS:
-				strandFlag = cImport.StrandFlags.strandPLS;
+				strandFlag = StrandFlags.strandPLS;
 				break;
 			case MINUS:
-				strandFlag = cImport.StrandFlags.strandMIN;
+				strandFlag = StrandFlags.strandMIN;
 				break;
 			case FWD:
-				strandFlag = cImport.StrandFlags.strandFWD;
+				strandFlag = StrandFlags.strandFWD;
 				break;
 			case REV:
-				strandFlag = cImport.StrandFlags.strandREV;
+				strandFlag = StrandFlags.strandREV;
 				break;
 			default:
-				strandFlag = cImport.StrandFlags.strandUNK;
+				strandFlag = StrandFlags.strandUNK;
 				break;
 		}
 		markersD2 = org.gwaspi.netCDF.operations.Utils.writeSingleValueToD2ArrayChar(strandFlag, cNetCDF.Strides.STRIDE_STRAND, markerSetMap.size());
@@ -292,7 +293,7 @@ public class LoadGTFromPlinkFlatFiles implements GenotypesLoader {
 				startTime,
 				loadDescription.getStudyKey().getId(),
 				loadDescription.getGtDirPath(),
-				ImportFormat.PLINK,
+				loadDescription.getFormat(),
 				loadDescription.getFriendlyName(),
 				loadDescription.getDescription());
 
