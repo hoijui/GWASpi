@@ -81,6 +81,10 @@ public final class MarkerKey implements Comparable<MarkerKey>, Serializable {
 		return KEY_FACTORY.decode(keyStr);
 	}
 
+	public static MarkerKey valueOf(MarkerMetadata marker) {
+		return new MarkerKey(marker.getMarkerId());
+	}
+
 	public String getMarkerId() {
 		return markerId;
 	}

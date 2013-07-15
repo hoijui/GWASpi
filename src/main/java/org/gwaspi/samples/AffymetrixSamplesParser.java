@@ -18,23 +18,19 @@
 package org.gwaspi.samples;
 
 import java.io.File;
-import java.io.IOException;
-import java.util.Collection;
-import java.util.LinkedList;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.StudyKey;
+import org.gwaspi.netCDF.loader.SamplesReceiver;
 
 public class AffymetrixSamplesParser implements SamplesParser {
 
 	@Override
-	public Collection<SampleInfo> scanSampleInfo(StudyKey studyKey, String sampleInfoPath) throws IOException {
-
-		Collection<SampleInfo> sampleInfos = new LinkedList<SampleInfo>();
+	public void scanSampleInfo(StudyKey studyKey, String sampleInfoPath, SamplesReceiver samplesReceiver) throws Exception {
 
 		File[] gtFilesToImport = org.gwaspi.global.Utils.listFiles(sampleInfoPath);
 
-		for (int i = 0; i < gtFilesToImport.length; i++) {
-			String l = gtFilesToImport[i].getName();
+		for (File gtFilesToImport1 : gtFilesToImport) {
+			String l = gtFilesToImport1.getName();
 			String sampleId;
 			int end = l.lastIndexOf(".birdseed-v2");
 			if (end != -1) {
@@ -43,9 +39,7 @@ public class AffymetrixSamplesParser implements SamplesParser {
 				sampleId = l.substring(0, l.lastIndexOf('.'));
 			}
 			SampleInfo sampleInfo = new SampleInfo(studyKey, sampleId);
-			sampleInfos.add(sampleInfo);
+			samplesReceiver.addSampleInfo(sampleInfo);
 		}
-
-		return sampleInfos;
 	}
 }

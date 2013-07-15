@@ -18,14 +18,9 @@
 package org.gwaspi.netCDF.loader;
 
 import java.io.IOException;
-import java.util.Collection;
 import java.util.EnumMap;
 import java.util.Map;
 import org.gwaspi.constants.cImport.ImportFormat;
-import org.gwaspi.model.MatrixKey;
-import org.gwaspi.model.SampleInfo;
-import org.gwaspi.model.SampleInfoList;
-import ucar.ma2.InvalidRangeException;
 
 public class LoadManager {
 
@@ -47,21 +42,24 @@ public class LoadManager {
 	private LoadManager() {
 	}
 
-	public static MatrixKey dispatchLoadByFormat(
+	public static void dispatchLoadByFormat(
 			GenotypesLoadDescription loadDescription,
-			Collection<SampleInfo> sampleInfos)
-			throws IOException, InvalidRangeException, InterruptedException
+			SamplesReceiver samplesReceiver)
+			throws Exception, InterruptedException
 	{
-		int newMatrixId = Integer.MIN_VALUE;
-
 		GenotypesLoader genotypesLoader = genotypesLoaders.get(loadDescription.getFormat());
+
+		// HACK
+		if (samplesReceiver instanceof NetCDFSaverSamplesReceiver
+				&& genotypesLoader instanceof AbstractLoadGTFromFiles)
+		{
+			((NetCDFSaverSamplesReceiver) samplesReceiver).setGTLoader((AbstractLoadGTFromFiles) genotypesLoader);
+		}
+
 		if (genotypesLoader == null) {
 			throw new IOException("No Genotypes-Loader found for format " + loadDescription.getFormat());
 		} else {
-			SampleInfoList.insertSampleInfos(sampleInfos);
-			newMatrixId = genotypesLoader.processData(loadDescription, sampleInfos);
+			genotypesLoader.processData(loadDescription, samplesReceiver);
 		}
-
-		return new MatrixKey(loadDescription.getStudyKey(), newMatrixId);
 	}
 }

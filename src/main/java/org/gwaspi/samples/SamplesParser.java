@@ -18,11 +18,10 @@
 package org.gwaspi.samples;
 
 import java.io.IOException;
-import java.util.Collection;
-import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.StudyKey;
+import org.gwaspi.netCDF.loader.SamplesReceiver;
 
 public interface SamplesParser {
 
-	Collection<SampleInfo> scanSampleInfo(StudyKey studyKey, String sampleInfoPath) throws IOException;
+	void scanSampleInfo(StudyKey studyKey, String sampleInfoPath, SamplesReceiver samplesReceiver) throws Exception;
 }

@@ -20,7 +20,6 @@ package org.gwaspi.netCDF.loader;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -29,7 +28,6 @@ import org.gwaspi.constants.cImport.Annotation.HapmapGT_Standard;
 import org.gwaspi.constants.cImport.ImportFormat;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.global.Text;
-import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.StudyKey;
 import org.slf4j.Logger;
@@ -56,7 +54,8 @@ public class MetadataLoaderHapmap implements MetadataLoader {
 	}
 
 	@Override
-	public Map<MarkerKey, MarkerMetadata> getSortedMarkerSetWithMetaData() throws IOException {
+	public void loadMarkers(SamplesReceiver samplesReceiver) throws Exception {
+
 		String startTime = org.gwaspi.global.Utils.getMediumDateTimeAsString();
 
 		SortedMap<String, String> tempTM = parseAnnotationBRFile(); // rsId, alleles [A/T], chr, pos, strand, genome_build, center, protLSID, assayLSID, panelLSID, QC_code, ensue GTs by SampleId
@@ -64,7 +63,6 @@ public class MetadataLoaderHapmap implements MetadataLoader {
 		org.gwaspi.global.Utils.sysoutStart("initilaizing Marker info");
 		log.info(Text.All.processing);
 
-		Map<MarkerKey, MarkerMetadata> markerMetadata = new LinkedHashMap<MarkerKey, MarkerMetadata>();
 		for (Map.Entry<String, String> entry : tempTM.entrySet()) {
 			String[] keyValues = entry.getKey().split(cNetCDF.Defaults.TMP_SEPARATOR); // chr;pos;markerId
 			String[] valValues = entry.getValue().split(cNetCDF.Defaults.TMP_SEPARATOR);  // rsId;strand;alleles
@@ -84,15 +82,15 @@ public class MetadataLoaderHapmap implements MetadataLoader {
 					valValues[2], // alleles
 					valValues[1]); // strand
 
-			markerMetadata.put(MarkerKey.valueOf(keyValues[2]), markerInfo);
+			samplesReceiver.addMarkerMetadata(markerInfo);
 		}
 
 		String description = "Generated sorted MarkerIdSet Map sorted by chromosome and position";
 		MetadataLoaderPlink.logAsWhole(startTime, hapmapPath, description, studyKey.getId());
-		return markerMetadata;
 	}
 
 	private SortedMap<String, String> parseAnnotationBRFile() throws IOException {
+
 		FileReader fr = new FileReader(hapmapPath);
 		BufferedReader inputAnnotationBr = new BufferedReader(fr);
 		SortedMap<String, String> sortedMetadataTM = new TreeMap<String, String>(new ComparatorChrAutPosMarkerIdAsc());
@@ -105,16 +103,19 @@ public class MetadataLoaderHapmap implements MetadataLoader {
 			String[] hapmapVals = l.split(cImport.Separators.separators_SpaceTab_rgxp);
 			String alleles = hapmapVals[HapmapGT_Standard.alleles].replace("/", "");
 
-			// chr;pos;markerId
+			// "chr;pos;markerId"
 			String chr = hapmapVals[HapmapGT_Standard.chr];
 			if (chr.length() > 3) {
 				chr = chr.substring(3);
 			} // Probably contains "chr" in front of number
+			String pos = hapmapVals[HapmapGT_Standard.pos];
+			String rsId = hapmapVals[HapmapGT_Standard.rsId];
+
 			StringBuilder sbKey = new StringBuilder(chr); // 0 => chr
 			sbKey.append(cNetCDF.Defaults.TMP_SEPARATOR);
-			sbKey.append(hapmapVals[HapmapGT_Standard.pos]); // 1 => pos
+			sbKey.append(pos); // 1 => pos
 			sbKey.append(cNetCDF.Defaults.TMP_SEPARATOR);
-			sbKey.append(hapmapVals[HapmapGT_Standard.rsId]); // 2 => markerId
+			sbKey.append(rsId); // 2 => markerId
 
 			// rsId;strand;alleles
 			StringBuilder sbVal = new StringBuilder(hapmapVals[HapmapGT_Standard.rsId]); // 0 => markerId = rsId
@@ -122,7 +123,6 @@ public class MetadataLoaderHapmap implements MetadataLoader {
 			sbVal.append(hapmapVals[HapmapGT_Standard.strand]); // 1 => strand
 			sbVal.append(cNetCDF.Defaults.TMP_SEPARATOR);
 			sbVal.append(alleles); // 2 => alleles
-
 
 			sortedMetadataTM.put(sbKey.toString(), sbVal.toString());
 

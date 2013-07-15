@@ -18,11 +18,14 @@
 package org.gwaspi.netCDF.loader;
 
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.Map;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MarkerMetadata;
 
-public interface MetadataLoader {
+public interface MetadataLoader /*extends Iterable<MarkerMetadata>*/ {
 
-	Map<MarkerKey, MarkerMetadata> getSortedMarkerSetWithMetaData() throws IOException;
+//	Map<MarkerKey, MarkerMetadata> getSortedMarkerSetWithMetaData() throws IOException;
+
+	void loadMarkers(SamplesReceiver samplesReceiver) throws Exception;
 }

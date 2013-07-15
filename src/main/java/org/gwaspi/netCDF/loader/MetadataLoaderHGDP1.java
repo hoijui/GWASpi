@@ -20,7 +20,6 @@ package org.gwaspi.netCDF.loader;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -29,7 +28,6 @@ import org.gwaspi.constants.cImport.Annotation.HGDP1_Standard;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
 import org.gwaspi.global.Text;
-import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.StudyKey;
 import org.slf4j.Logger;
@@ -52,7 +50,8 @@ public class MetadataLoaderHGDP1 implements MetadataLoader {
 	}
 
 	@Override
-	public Map<MarkerKey, MarkerMetadata> getSortedMarkerSetWithMetaData() throws IOException {
+	public void loadMarkers(SamplesReceiver samplesReceiver) throws Exception {
+
 		String startTime = org.gwaspi.global.Utils.getMediumDateTimeAsString();
 
 		SortedMap<String, String> tempTM = parseAndSortMarkerFile(); // chr, markerId, genetic distance, position
@@ -60,9 +59,8 @@ public class MetadataLoaderHGDP1 implements MetadataLoader {
 		org.gwaspi.global.Utils.sysoutStart("initilaizing Marker info");
 		log.info(Text.All.processing);
 
-		Map<MarkerKey, MarkerMetadata> markerMetadata = new LinkedHashMap<MarkerKey, MarkerMetadata>();
 		for (Map.Entry<String, String> entry : tempTM.entrySet()) {
-			// chr; pos; markerId
+			// "chr;pos;markerId"
 			String[] keyValues = entry.getKey().split(cNetCDF.Defaults.TMP_SEPARATOR);
 			int pos;
 			try {
@@ -80,15 +78,18 @@ public class MetadataLoaderHGDP1 implements MetadataLoader {
 					MetadataLoaderBeagle.fixChrData(keyValues[0]), // chr
 					pos); // pos
 
-			markerMetadata.put(MarkerKey.valueOf(keyValues[2]), markerInfo);
+			samplesReceiver.addMarkerMetadata(markerInfo);
 		}
 
 		String description = "Generated sorted MarkerIdSet Map sorted by chromosome and position";
 		MetadataLoaderPlink.logAsWhole(startTime, markerFilePath, description, studyKey.getId());
-		return markerMetadata;
 	}
 
+	/**
+	 * Parses the marker file.
+	 */
 	private SortedMap<String, String> parseAndSortMarkerFile() throws IOException {
+
 		FileReader fr = new FileReader(markerFilePath);
 		BufferedReader inputMapBR = new BufferedReader(fr);
 		SortedMap<String, String> sortedMetadataTM = new TreeMap<String, String>(new ComparatorChrAutPosMarkerIdAsc());
@@ -96,21 +97,23 @@ public class MetadataLoaderHGDP1 implements MetadataLoader {
 		String l;
 		int count = 0;
 		while ((l = inputMapBR.readLine()) != null) {
-			String[]markerVals = l.split(cImport.Separators.separators_SpaceTab_rgxp);
+			String[] markerVals = l.split(cImport.Separators.separators_SpaceTab_rgxp);
 			String markerId = markerVals[HGDP1_Standard.rsId].trim();
 			String rsId = "";
 			if (markerId.startsWith("rs")) {
 				rsId = markerId;
 			}
+			String chr = markerVals[HGDP1_Standard.chr].trim();
+			String pos = markerVals[HGDP1_Standard.pos].trim();
 
-			// chr;pos;markerId
-			StringBuilder sbKey = new StringBuilder(markerVals[HGDP1_Standard.chr]);
+			// "chr;pos;markerId"
+			StringBuilder sbKey = new StringBuilder(chr);
 			sbKey.append(cNetCDF.Defaults.TMP_SEPARATOR);
-			sbKey.append(markerVals[HGDP1_Standard.pos].trim());
+			sbKey.append(pos);
 			sbKey.append(cNetCDF.Defaults.TMP_SEPARATOR);
 			sbKey.append(markerId);
 
-			// rsId;
+			// rsId
 			StringBuilder sbVal = new StringBuilder(rsId); // 0 => rsId
 
 			sortedMetadataTM.put(sbKey.toString(), sbVal.toString());

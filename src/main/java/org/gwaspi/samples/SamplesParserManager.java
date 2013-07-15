@@ -36,6 +36,7 @@ import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleInfoList;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.StudyKey;
+import org.gwaspi.netCDF.loader.SamplesReceiver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.InvalidRangeException;
@@ -87,8 +88,8 @@ public class SamplesParserManager {
 	}
 	//</editor-fold>
 
-	public static Collection<SampleInfo> scanSampleInfo(StudyKey studyKey, ImportFormat importFormat, String genotypePath) throws IOException {
-		return sampleParsers.get(importFormat).scanSampleInfo(studyKey, genotypePath);
+	public static void scanSampleInfo(StudyKey studyKey, ImportFormat importFormat, String genotypePath, SamplesReceiver samplesReceiver) throws Exception {
+		sampleParsers.get(importFormat).scanSampleInfo(studyKey, genotypePath, samplesReceiver);
 	}
 
 	public static Set<SampleInfo.Affection> scanSampleInfoAffectionStates(String sampleInfoPath) throws IOException {

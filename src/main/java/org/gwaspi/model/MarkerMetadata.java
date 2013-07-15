@@ -18,9 +18,10 @@
 package org.gwaspi.model;
 
 
+import java.io.Serializable;
 import org.gwaspi.global.TypeConverter;
 
-public class MarkerMetadata {
+public class MarkerMetadata implements Serializable, Comparable<MarkerMetadata> {
 
 	public static final TypeConverter<MarkerMetadata, String> TO_MARKER_ID
 			= new TypeConverter<MarkerMetadata, String>()
@@ -123,6 +124,36 @@ public class MarkerMetadata {
 			int pos)
 	{
 		this(null, null, chr, pos, null);
+	}
+
+	@Override
+	public boolean equals(Object other) {
+
+		boolean equals = false;
+
+		if (other instanceof MarkerMetadata) {
+			MarkerMetadata otherMM = (MarkerMetadata) other;
+			equals = getMarkerId().equals(otherMM.getMarkerId())
+					&& getChr().equals(otherMM.getChr())
+					&& (getPos() == otherMM.getPos());
+		}
+
+		return equals;
+	}
+
+	@Override
+	public int hashCode() {
+
+		int hash = 7;
+		hash = 19 * hash + (this.markerId != null ? this.markerId.hashCode() : 0);
+		hash = 19 * hash + (this.chr != null ? this.chr.hashCode() : 0);
+		hash = 19 * hash + this.pos;
+		return hash;
+	}
+
+	@Override
+	public int compareTo(MarkerMetadata other) {
+		return hashCode() - other.hashCode();
 	}
 
 	public String getMarkerId() {

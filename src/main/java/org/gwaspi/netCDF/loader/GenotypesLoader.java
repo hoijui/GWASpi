@@ -17,19 +17,26 @@
 
 package org.gwaspi.netCDF.loader;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Iterator;
+import java.util.Map;
 import org.gwaspi.constants.cImport.ImportFormat;
 import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
+import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.SampleInfo;
+import org.gwaspi.model.SampleKey;
+import org.gwaspi.model.StudyKey;
 import ucar.ma2.InvalidRangeException;
 
-public interface GenotypesLoader {
+public interface GenotypesLoader /*extends Iterable<Map.Entry<MarkerKey, byte[]>>*/ {
+
 
 	/**
 	 * Process Genotypes
 	 */
-	int processData(GenotypesLoadDescription loadDescription, Collection<SampleInfo> sampleInfo) throws IOException, InvalidRangeException, InterruptedException;
+	void processData(GenotypesLoadDescription loadDescription, SamplesReceiver samplesReceiver) throws Exception;
 
 	ImportFormat getFormat();
 

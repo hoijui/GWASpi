@@ -20,12 +20,10 @@ package org.gwaspi.samples;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.io.IOException;
-import java.util.Collection;
-import java.util.LinkedList;
 import org.gwaspi.constants.cImport;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.StudyKey;
+import org.gwaspi.netCDF.loader.SamplesReceiver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,9 +33,8 @@ public class PlinkStandardSamplesParser implements SamplesParser {
 			= LoggerFactory.getLogger(PlinkStandardSamplesParser.class);
 
 	@Override
-	public Collection<SampleInfo> scanSampleInfo(StudyKey studyKey, String sampleInfoPath) throws IOException {
+	public void scanSampleInfo(StudyKey studyKey, String sampleInfoPath, SamplesReceiver samplesReceiver) throws Exception {
 
-		Collection<SampleInfo> sampleInfos = new LinkedList<SampleInfo>();
 		FileReader inputFileReader;
 		BufferedReader inputBufferReader;
 
@@ -53,7 +50,7 @@ public class PlinkStandardSamplesParser implements SamplesParser {
 			inputFileReader = new FileReader(sampleFile);
 			inputBufferReader = new BufferedReader(inputFileReader);
 
-			int count = 0;
+			int numSamples = 0;
 			while (inputBufferReader.ready()) {
 				String l = inputBufferReader.readLine();
 				SampleInfo sampleInfo;
@@ -77,19 +74,18 @@ public class PlinkStandardSamplesParser implements SamplesParser {
 				} else {
 					sampleInfo = new SampleInfo();
 				}
+				samplesReceiver.addSampleInfo(sampleInfo);
+				numSamples++;
 
-				sampleInfos.add(sampleInfo);
-
-				count++;
-				if (count % 100 == 0) {
-					log.info("Parsed {} Samples for info...", count);
+				if (numSamples % 100 == 0) {
+					log.info("Parsed {} Samples for info...", numSamples);
 				}
 			}
 		} else { // LONG PED FILE
 			// This has sucked out 1 week of my life and caused many grey hairs!
-			int count = 0;
+			int numSamples = 0;
 			while (inputBufferReader.ready()) {
-				if (count != 0) {
+				if (numSamples != 0) {
 					chunker = new char[300];
 					inputBufferReader.read(chunker, 0, 300); // Read a sizable but conrolled chunk of data into memory
 				}
@@ -117,18 +113,16 @@ public class PlinkStandardSamplesParser implements SamplesParser {
 				}
 				inputBufferReader.readLine(); // Read rest of line and discard it...
 
-				sampleInfos.add(sampleInfo);
+				samplesReceiver.addSampleInfo(sampleInfo);
+				numSamples++;
 
-				count++;
-				if (count % 100 == 0) {
-					log.info("Parsed {} Samples for info...", count);
+				if (numSamples % 100 == 0) {
+					log.info("Parsed {} Samples for info...", numSamples);
 				}
 			}
 		}
 
 		inputBufferReader.close();
 		inputFileReader.close();
-
-		return sampleInfos;
 	}
 }

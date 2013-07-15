@@ -31,7 +31,6 @@ import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MarkerMetadata;
-import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.StudyKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,7 +52,8 @@ public class MetadataLoaderPlinkBinary implements MetadataLoader {
 	}
 
 	@Override
-	public Map<MarkerKey, MarkerMetadata> getSortedMarkerSetWithMetaData() throws IOException {
+	public void loadMarkers(SamplesReceiver samplesReceiver) throws Exception {
+
 		String startTime = org.gwaspi.global.Utils.getMediumDateTimeAsString();
 
 		SortedMap<String, String> tempTM = parseAndSortBimFile(); // chr, markerId, genetic distance, position
@@ -61,9 +61,8 @@ public class MetadataLoaderPlinkBinary implements MetadataLoader {
 		org.gwaspi.global.Utils.sysoutStart("initilaizing Marker info");
 		log.info(Text.All.processing);
 
-		Map<MarkerKey, MarkerMetadata> markerMetadata = new LinkedHashMap<MarkerKey, MarkerMetadata>();
 		for (Map.Entry<String, String> entry : tempTM.entrySet()) {
-			// chr;pos;markerId
+			// "chr;pos;markerId"
 			String[] keyValues = entry.getKey().split(cNetCDF.Defaults.TMP_SEPARATOR);
 			int pos;
 			try {
@@ -88,11 +87,11 @@ public class MetadataLoaderPlinkBinary implements MetadataLoader {
 					pos, // pos
 					valValues); // alleles
 
-			markerMetadata.put(MarkerKey.valueOf(keyValues[2]), markerInfo);
+			samplesReceiver.addMarkerMetadata(markerInfo);
 		}
 
 		String description = "Generated sorted MarkerIdSet Map sorted by chromosome and position";
-		return markerMetadata;
+		MetadataLoaderPlink.logAsWhole(startTime, bimPath, description, studyKey.getId());
 	}
 
 	private SortedMap<String, String> parseAndSortBimFile() throws IOException {
@@ -104,25 +103,26 @@ public class MetadataLoaderPlinkBinary implements MetadataLoader {
 		String l;
 		int count = 0;
 		while ((l = inputMapBR.readLine()) != null) {
-			String[] bimVals = l.split(cImport.Separators.separators_SpaceTab_rgxp);
-			String markerId = bimVals[Plink_Binary.bim_markerId].trim();
+			String[] markerVals = l.split(cImport.Separators.separators_SpaceTab_rgxp);
+			String markerId = markerVals[Plink_Binary.bim_markerId].trim();
 			String rsId = "";
 			if (markerId.startsWith("rs")) {
 				rsId = markerId;
 			}
-			String chr = bimVals[Plink_Binary.bim_chr].trim();
+			String chr = markerVals[Plink_Binary.bim_chr].trim();
+			String pos = markerVals[Plink_Binary.bim_pos].trim();
 
-			// chr;pos;markerId
+			// "chr;pos;markerId"
 			StringBuilder sbKey = new StringBuilder(chr);
 			sbKey.append(cNetCDF.Defaults.TMP_SEPARATOR);
-			sbKey.append(bimVals[Plink_Binary.bim_pos].trim());
+			sbKey.append(pos);
 			sbKey.append(cNetCDF.Defaults.TMP_SEPARATOR);
 			sbKey.append(markerId);
 
 			// rsId
 			StringBuilder sbVal = new StringBuilder(); // 0 => markerid
-			sbVal.append(bimVals[Plink_Binary.bim_allele1].trim());
-			sbVal.append(bimVals[Plink_Binary.bim_allele2].trim());
+			sbVal.append(markerVals[Plink_Binary.bim_allele1].trim());
+			sbVal.append(markerVals[Plink_Binary.bim_allele2].trim());
 
 			sortedMetadataTM.put(sbKey.toString(), sbVal.toString());
 
@@ -141,10 +141,11 @@ public class MetadataLoaderPlinkBinary implements MetadataLoader {
 		return sortedMetadataTM;
 	}
 
-	public Map<SampleKey, String[]> parseOrigBimFile(String path) throws IOException {
+	public static Map<MarkerKey, String[]> parseOrigBimFile(String path, StudyKey studyKey) throws IOException {
+
 		FileReader fr = new FileReader(path);
 		BufferedReader inputMapBR = new BufferedReader(fr);
-		Map<SampleKey, String[]> origMarkerIdSetMap = new LinkedHashMap<SampleKey, String[]>();
+		Map<MarkerKey, String[]> origMarkerIdSetMap = new LinkedHashMap<MarkerKey, String[]>();
 
 		String l;
 		while ((l = inputMapBR.readLine()) != null) {
@@ -153,7 +154,7 @@ public class MetadataLoaderPlinkBinary implements MetadataLoader {
 			String markerId = mapVals[Plink_Binary.bim_markerId].trim();
 			alleles[0] = mapVals[Plink_Binary.bim_allele1].trim();
 			alleles[1] = mapVals[Plink_Binary.bim_allele2].trim();
-			origMarkerIdSetMap.put(SampleKey.valueOf(studyKey, markerId), alleles); // XXX really? markerId as sampleId?
+			origMarkerIdSetMap.put(new MarkerKey(markerId), alleles);
 		}
 
 		inputMapBR.close();
