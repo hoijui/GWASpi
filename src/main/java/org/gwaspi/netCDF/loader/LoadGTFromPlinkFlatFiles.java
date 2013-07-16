@@ -106,7 +106,7 @@ public class LoadGTFromPlinkFlatFiles implements GenotypesLoader {
 		List<SampleKey> sampleKeys = AbstractLoadGTFromFiles.extractKeys(sampleInfos);
 
 		//<editor-fold defaultstate="expanded" desc="CREATE MARKERSET & NETCDF">
-		MetadataLoaderPlink markerSetLoader = createMetaDataLoader(loadDescription);
+		MetadataLoader markerSetLoader = createMetaDataLoader(loadDescription);
 		Map<MarkerKey, MarkerMetadata> markerSetMap = markerSetLoader.getSortedMarkerSetWithMetaData(); // markerid, rsId, chr, pos
 
 		log.info("Done initializing sorted MarkerSetMap");
@@ -264,7 +264,7 @@ public class LoadGTFromPlinkFlatFiles implements GenotypesLoader {
 		//<editor-fold defaultstate="expanded" desc="MATRIX GENOTYPES LOAD ">
 		GenotypeEncoding guessedGTCode = GenotypeEncoding.UNKNOWN;
 		log.info(Text.All.processing);
-		Map<MarkerKey, byte[]> mapMarkerSetMap = markerSetLoader.parseOrigMapFile(loadDescription.getGtDirPath());
+		Map<MarkerKey, byte[]> mapMarkerSetMap = MetadataLoaderPlink.parseOrigMapFile(loadDescription.getGtDirPath());
 		loadPedGenotypes(
 				loadDescription.getStudyKey(),
 				new File(loadDescription.getAnnotationFilePath()),

@@ -63,6 +63,23 @@ public class LoadGTFromHGDP1Files implements GenotypesLoader {
 	public LoadGTFromHGDP1Files() {
 	}
 
+	protected void addAdditionalBigDescriptionProperties(StringBuilder descSB, GenotypesLoadDescription loadDescription) {
+//		super.addAdditionalBigDescriptionProperties(descSB, loadDescription); // XXX uncomment!
+
+		descSB.append(loadDescription.getGtDirPath());
+		descSB.append(" (Genotype file)\n");
+		descSB.append(loadDescription.getAnnotationFilePath());
+		descSB.append(" (Marker file)\n");
+	}
+
+	protected MetadataLoader createMetaDataLoader(GenotypesLoadDescription loadDescription) {
+
+		return new MetadataLoaderHGDP1(
+				loadDescription.getAnnotationFilePath(),
+				loadDescription.getStrand(),
+				loadDescription.getStudyKey());
+	}
+
 	@Override
 	public ImportFormat getFormat() {
 		return ImportFormat.HGDP1;
@@ -92,10 +109,7 @@ public class LoadGTFromHGDP1Files implements GenotypesLoader {
 		List<SampleKey> sampleKeys = AbstractLoadGTFromFiles.extractKeys(sampleInfos);
 
 		//<editor-fold defaultstate="expanded" desc="CREATE MARKERSET & NETCDF">
-		MetadataLoaderHGDP1 markerSetLoader = new MetadataLoaderHGDP1(
-				loadDescription.getAnnotationFilePath(),
-				loadDescription.getStrand(),
-				loadDescription.getStudyKey());
+		MetadataLoader markerSetLoader = createMetaDataLoader(loadDescription);
 		Map<MarkerKey, MarkerMetadata> markerSetMap = markerSetLoader.getSortedMarkerSetWithMetaData();
 
 		log.info("Done initializing sorted MarkerSetMap");
@@ -120,10 +134,7 @@ public class LoadGTFromHGDP1Files implements GenotypesLoader {
 		descSB.append("\n");
 		descSB.append(Text.Matrix.descriptionHeader3);
 		descSB.append("\n");
-		descSB.append(loadDescription.getGtDirPath());
-		descSB.append(" (Genotype file)\n");
-		descSB.append(loadDescription.getAnnotationFilePath());
-		descSB.append(" (Marker file)\n");
+		addAdditionalBigDescriptionProperties(descSB, loadDescription);
 		if (new File(loadDescription.getSampleFilePath()).exists()) {
 			descSB.append(loadDescription.getSampleFilePath());
 			descSB.append(" (Sample Info file)\n");

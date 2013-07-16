@@ -141,7 +141,7 @@ public class MetadataLoaderPlinkBinary implements MetadataLoader {
 		return sortedMetadataTM;
 	}
 
-	public Map<SampleKey, String[]> parseOrigBimFile(String path) throws IOException {
+	public static Map<SampleKey, String[]> parseOrigBimFile(String path) throws IOException {
 		FileReader fr = new FileReader(path);
 		BufferedReader inputMapBR = new BufferedReader(fr);
 		Map<SampleKey, String[]> origMarkerIdSetMap = new LinkedHashMap<SampleKey, String[]>();

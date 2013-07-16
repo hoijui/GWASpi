@@ -76,6 +76,20 @@ public class LoadGTFromHapmapFiles implements GenotypesLoader {
 	public LoadGTFromHapmapFiles() {
 	}
 
+	protected void addAdditionalBigDescriptionProperties(StringBuilder descSB, GenotypesLoadDescription loadDescription) {
+//		super.addAdditionalBigDescriptionProperties(descSB, loadDescription); // XXX uncomment!
+
+		descSB.append(loadDescription.getGtDirPath());
+		descSB.append(" (Genotype file)\n");
+	}
+
+	protected MetadataLoader createMetaDataLoader(GenotypesLoadDescription loadDescription) {
+
+		return new MetadataLoaderPlink(XXX
+				loadDescription.getGtDirPath(),
+				loadDescription.getStudyKey());
+	}
+
 	@Override
 	public ImportFormat getFormat() {
 		return ImportFormat.HAPMAP;
@@ -163,8 +177,7 @@ public class LoadGTFromHapmapFiles implements GenotypesLoader {
 		descSB.append("\n");
 		descSB.append(Text.Matrix.descriptionHeader3);
 		descSB.append("\n");
-		descSB.append(loadDescription.getGtDirPath());
-		descSB.append(" (Genotype file)\n");
+		addAdditionalBigDescriptionProperties(descSB, loadDescription);
 		if (new File(loadDescription.getSampleFilePath()).exists()) {
 			descSB.append(loadDescription.getSampleFilePath());
 			descSB.append(" (Sample Info file)\n");

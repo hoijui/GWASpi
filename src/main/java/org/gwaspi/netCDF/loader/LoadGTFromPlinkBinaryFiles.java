@@ -59,6 +59,23 @@ public class LoadGTFromPlinkBinaryFiles implements GenotypesLoader {
 	public LoadGTFromPlinkBinaryFiles() {
 	}
 
+	protected void addAdditionalBigDescriptionProperties(StringBuilder descSB, GenotypesLoadDescription loadDescription) {
+//		super.addAdditionalBigDescriptionProperties(descSB, loadDescription); // XXX uncomment!
+
+		descSB.append(loadDescription.getAnnotationFilePath());
+		descSB.append(" (BIM file)\n");
+		descSB.append(loadDescription.getGtDirPath());
+		descSB.append(" (BED file)\n");
+	}
+
+	protected MetadataLoader createMetaDataLoader(GenotypesLoadDescription loadDescription) {
+
+		return new MetadataLoaderPlinkBinary(
+				loadDescription.getAnnotationFilePath(),
+				loadDescription.getStrand(),
+				loadDescription.getStudyKey());
+	}
+
 	@Override
 	public ImportFormat getFormat() {
 		return ImportFormat.PLINK_Binary;
@@ -88,10 +105,7 @@ public class LoadGTFromPlinkBinaryFiles implements GenotypesLoader {
 		List<SampleKey> sampleKeys = AbstractLoadGTFromFiles.extractKeys(sampleInfos);
 
 		//<editor-fold defaultstate="expanded" desc="CREATE MARKERSET & NETCDF">
-		MetadataLoaderPlinkBinary markerSetLoader = new MetadataLoaderPlinkBinary(
-				loadDescription.getAnnotationFilePath(),
-				loadDescription.getStrand(),
-				loadDescription.getStudyKey());
+		MetadataLoader markerSetLoader = createMetaDataLoader(loadDescription);
 		Map<MarkerKey, MarkerMetadata> markerSetMap = markerSetLoader.getSortedMarkerSetWithMetaData(); //markerid, rsId, chr, pos, allele1, allele2
 
 		// PLAYING IT SAFE WITH HALF THE maxProcessMarkers
@@ -121,10 +135,7 @@ public class LoadGTFromPlinkBinaryFiles implements GenotypesLoader {
 		descSB.append("\n");
 		descSB.append(Text.Matrix.descriptionHeader3);
 		descSB.append("\n");
-		descSB.append(loadDescription.getAnnotationFilePath());
-		descSB.append(" (BIM file)\n");
-		descSB.append(loadDescription.getGtDirPath());
-		descSB.append(" (BED file)\n");
+		addAdditionalBigDescriptionProperties(descSB, loadDescription);
 		if (new File(loadDescription.getSampleFilePath()).exists()) {
 			descSB.append(loadDescription.getSampleFilePath());
 			descSB.append(" (FAM/Sample Info file)\n");
@@ -275,7 +286,7 @@ public class LoadGTFromPlinkBinaryFiles implements GenotypesLoader {
 		//<editor-fold defaultstate="expanded" desc="MATRIX GENOTYPES LOAD ">
 		GenotypeEncoding guessedGTCode = GenotypeEncoding.O12;
 		log.info(Text.All.processing);
-		Map<SampleKey, String[]> bimSamples = markerSetLoader.parseOrigBimFile(loadDescription.getAnnotationFilePath()); //key = markerId, values{allele1 (minor), allele2 (major)}
+		Map<SampleKey, String[]> bimSamples = MetadataLoaderPlinkBinary.parseOrigBimFile(loadDescription.getAnnotationFilePath()); //key = markerId, values{allele1 (minor), allele2 (major)}
 		loadBedGenotypes(
 				new File(loadDescription.getGtDirPath()),
 				ncfile,

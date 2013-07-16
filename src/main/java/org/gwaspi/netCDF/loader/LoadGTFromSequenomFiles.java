@@ -64,6 +64,26 @@ public class LoadGTFromSequenomFiles implements GenotypesLoader {
 	public LoadGTFromSequenomFiles() {
 	}
 
+	protected void addAdditionalBigDescriptionProperties(StringBuilder descSB, GenotypesLoadDescription loadDescription) {
+//		super.addAdditionalBigDescriptionProperties(descSB, loadDescription); // XXX uncomment!
+XXX
+		descSB.append(loadDescription.getGtDirPath());
+		descSB.append(" (MAP file)\n");
+		descSB.append(loadDescription.getAnnotationFilePath());
+		descSB.append(" (PED file)\n");
+		if (new File(loadDescription.getSampleFilePath()).exists()) {
+			descSB.append(loadDescription.getSampleFilePath());
+			descSB.append(" (Sample Info file)\n");
+		}
+	}
+
+	protected MetadataLoader createMetaDataLoader(GenotypesLoadDescription loadDescription) {
+
+		return new MetadataLoaderSequenom(
+				loadDescription.getAnnotationFilePath(),
+				loadDescription.getStudyKey());
+	}
+
 	@Override
 	public ImportFormat getFormat() {
 		return ImportFormat.Sequenom;

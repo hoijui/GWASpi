@@ -67,6 +67,24 @@ public class LoadGTFromAffyFiles implements GenotypesLoader {
 	public LoadGTFromAffyFiles() {
 	}
 
+	protected void addAdditionalBigDescriptionProperties(StringBuilder descSB, GenotypesLoadDescription loadDescription) {
+//		super.addAdditionalBigDescriptionProperties(descSB, loadDescription); // XXX uncomment!
+
+		descSB.append(loadDescription.getGtDirPath());
+		descSB.append(" (Genotype files)\n");
+		descSB.append("\n");
+		descSB.append(loadDescription.getAnnotationFilePath());
+		descSB.append(" (Annotation file)\n");
+	}
+
+	protected MetadataLoader createMetaDataLoader(GenotypesLoadDescription loadDescription) {
+
+		return new MetadataLoaderAffy(
+				loadDescription.getAnnotationFilePath(),
+				loadDescription.getFormat(),
+				loadDescription.getStudyKey());
+	}
+
 	@Override
 	public ImportFormat getFormat() {
 		return ImportFormat.Affymetrix_GenomeWide6;
@@ -119,10 +137,7 @@ public class LoadGTFromAffyFiles implements GenotypesLoader {
 		//</editor-fold>
 
 		//<editor-fold defaultstate="expanded" desc="CREATE MARKERSET & NETCDF">
-		MetadataLoaderAffy markerSetLoader = new MetadataLoaderAffy(
-				loadDescription.getAnnotationFilePath(),
-				loadDescription.getFormat(),
-				loadDescription.getStudyKey());
+		MetadataLoader markerSetLoader = createMetaDataLoader(loadDescription);
 		Map<MarkerKey, MarkerMetadata> markerSetMap = markerSetLoader.getSortedMarkerSetWithMetaData();
 
 		log.info("Done initializing sorted MarkerSetMap");
@@ -145,11 +160,7 @@ public class LoadGTFromAffyFiles implements GenotypesLoader {
 		descSB.append("\n");
 		descSB.append(Text.Matrix.descriptionHeader3);
 		descSB.append("\n");
-		descSB.append(loadDescription.getGtDirPath());
-		descSB.append(" (Genotype files)\n");
-		descSB.append("\n");
-		descSB.append(loadDescription.getAnnotationFilePath());
-		descSB.append(" (Annotation file)\n");
+		addAdditionalBigDescriptionProperties(descSB, loadDescription);
 		if (new File(loadDescription.getSampleFilePath()).exists()) {
 			descSB.append(loadDescription.getSampleFilePath());
 			descSB.append(" (Sample Info file)\n");

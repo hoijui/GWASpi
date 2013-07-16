@@ -64,6 +64,23 @@ public class LoadGTFromIlluminaLGENFiles implements GenotypesLoader {
 	public LoadGTFromIlluminaLGENFiles() {
 	}
 
+	protected void addAdditionalBigDescriptionProperties(StringBuilder descSB, GenotypesLoadDescription loadDescription) {
+//		super.addAdditionalBigDescriptionProperties(descSB, loadDescription); // XXX uncomment!
+
+		descSB.append(loadDescription.getGtDirPath());
+		descSB.append(" (Genotype files)\n");
+		descSB.append("\n");
+		descSB.append(loadDescription.getAnnotationFilePath());
+		descSB.append(" (Annotation file)\n");
+	}
+
+	protected MetadataLoader createMetaDataLoader(GenotypesLoadDescription loadDescription) {
+
+		return new MetadataLoaderIlluminaLGEN(
+				loadDescription.getAnnotationFilePath(),
+				loadDescription.getStudyKey());
+	}
+
 	@Override
 	public ImportFormat getFormat() {
 		return ImportFormat.Illumina_LGEN;
@@ -98,9 +115,7 @@ public class LoadGTFromIlluminaLGENFiles implements GenotypesLoader {
 		File[] gtFilesToImport = org.gwaspi.global.Utils.listFiles(loadDescription.getGtDirPath());
 
 		//<editor-fold defaultstate="expanded" desc="CREATE MARKERSET & NETCDF">
-		MetadataLoaderIlluminaLGEN markerSetLoader = new MetadataLoaderIlluminaLGEN(
-				loadDescription.getAnnotationFilePath(),
-				loadDescription.getStudyKey());
+		MetadataLoader markerSetLoader = createMetaDataLoader(loadDescription);
 		Map<MarkerKey, MarkerMetadata> markerSetMap = markerSetLoader.getSortedMarkerSetWithMetaData(); // markerid, rsId, chr, pos
 
 		log.info("Done initializing sorted MarkerSetMap");
@@ -123,11 +138,7 @@ public class LoadGTFromIlluminaLGENFiles implements GenotypesLoader {
 		descSB.append("\n");
 		descSB.append(Text.Matrix.descriptionHeader3);
 		descSB.append("\n");
-		descSB.append(loadDescription.getGtDirPath());
-		descSB.append(" (Genotype files)\n");
-		descSB.append("\n");
-		descSB.append(loadDescription.getAnnotationFilePath());
-		descSB.append(" (Annotation file)\n");
+		addAdditionalBigDescriptionProperties(descSB, loadDescription);
 		if (new File(loadDescription.getSampleFilePath()).exists()) {
 			descSB.append(loadDescription.getSampleFilePath());
 			descSB.append(" (Sample Info file)\n");
