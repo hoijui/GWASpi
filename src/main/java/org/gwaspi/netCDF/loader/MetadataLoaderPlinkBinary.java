@@ -92,6 +92,7 @@ public class MetadataLoaderPlinkBinary implements MetadataLoader {
 		}
 
 		String description = "Generated sorted MarkerIdSet Map sorted by chromosome and position";
+		MetadataLoaderPlink.logAsWhole(startTime, bimPath, description, studyKey.getId());
 		return markerMetadata;
 	}
 
@@ -141,7 +142,8 @@ public class MetadataLoaderPlinkBinary implements MetadataLoader {
 		return sortedMetadataTM;
 	}
 
-	public static Map<SampleKey, String[]> parseOrigBimFile(String path) throws IOException {
+	public static Map<SampleKey, String[]> parseOrigBimFile(String path, StudyKey studyKey) throws IOException {
+
 		FileReader fr = new FileReader(path);
 		BufferedReader inputMapBR = new BufferedReader(fr);
 		Map<SampleKey, String[]> origMarkerIdSetMap = new LinkedHashMap<SampleKey, String[]>();

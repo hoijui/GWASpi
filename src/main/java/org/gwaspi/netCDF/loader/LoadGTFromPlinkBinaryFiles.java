@@ -286,7 +286,10 @@ public class LoadGTFromPlinkBinaryFiles implements GenotypesLoader {
 		//<editor-fold defaultstate="expanded" desc="MATRIX GENOTYPES LOAD ">
 		GenotypeEncoding guessedGTCode = GenotypeEncoding.O12;
 		log.info(Text.All.processing);
-		Map<SampleKey, String[]> bimSamples = MetadataLoaderPlinkBinary.parseOrigBimFile(loadDescription.getAnnotationFilePath()); //key = markerId, values{allele1 (minor), allele2 (major)}
+		Map<SampleKey, String[]> bimSamples = MetadataLoaderPlinkBinary.parseOrigBimFile(
+				loadDescription.getAnnotationFilePath(),
+				loadDescription.getStudyKey()
+				); // key = markerId, values{allele1 (minor), allele2 (major)}
 		loadBedGenotypes(
 				new File(loadDescription.getGtDirPath()),
 				ncfile,

@@ -166,7 +166,38 @@ public class cImport {
 			public static final int age = 9;
 		}
 
-		public static interface Plink_Standard {
+		/**
+		 * Returns the column indices for different marker properties,
+		 * when parsed from a (format specific) file.
+		 */
+		public static interface MarkerParseStandard {
+
+			int getChrIndex();
+			int getMarkerIdIndex();
+//			int getGenDistIndex();
+			int getPosIndex();
+		}
+
+		public static class Plink_Standard implements MarkerParseStandard {
+
+			@Override
+			public int getChrIndex() {
+				return map_chr;
+			}
+
+			@Override
+			public int getMarkerIdIndex() {
+				return map_markerId;
+			}
+
+			public int getGenDistIndex() {
+				return map_gendist;
+			}
+
+			@Override
+			public int getPosIndex() {
+				return map_pos;
+			}
 
 			public static final int map_chr = 0;
 			public static final int map_markerId = 1;
@@ -184,7 +215,26 @@ public class cImport {
 					ped_sampleId};
 		}
 
-		public static interface Plink_LGEN {
+		public static class Plink_LGEN implements MarkerParseStandard {
+
+			@Override
+			public int getChrIndex() {
+				return map_chr;
+			}
+
+			@Override
+			public int getMarkerIdIndex() {
+				return map_markerId;
+			}
+
+			public int getGenDistIndex() {
+				return map_gendist;
+			}
+
+			@Override
+			public int getPosIndex() {
+				return map_pos;
+			}
 
 			public static final int map_chr = 0;
 			public static final int map_markerId = 1;
@@ -197,7 +247,26 @@ public class cImport {
 			public static final int lgen_allele2_fwd = 4;
 		}
 
-		public static interface Plink_Binary {
+		public static class Plink_Binary implements MarkerParseStandard {
+
+			@Override
+			public int getChrIndex() {
+				return bim_chr;
+			}
+
+			@Override
+			public int getMarkerIdIndex() {
+				return bim_markerId;
+			}
+
+			public int getGenDistIndex() {
+				return bim_gendist;
+			}
+
+			@Override
+			public int getPosIndex() {
+				return bim_pos;
+			}
 
 			public static final int bim_chr = 0;
 			public static final int bim_markerId = 1;
@@ -213,7 +282,22 @@ public class cImport {
 			public static final int ped_affection = Plink_Standard.ped_affection;
 		}
 
-		public static interface HapmapGT_Standard {
+		public static class HapmapGT_Standard implements MarkerParseStandard {
+
+			@Override
+			public int getChrIndex() {
+				return chr;
+			}
+
+			@Override
+			public int getMarkerIdIndex() {
+				return rsId;
+			}
+
+			@Override
+			public int getPosIndex() {
+				return pos;
+			}
 
 			public static final int rsId = 0;
 			public static final int alleles = 1;
@@ -225,7 +309,22 @@ public class cImport {
 			public static final int qc_code = 10;
 		}
 
-		public static interface Beagle_Standard {
+		public static class Beagle_Standard implements MarkerParseStandard {
+
+			@Override
+			public int getChrIndex() {
+				return -1;
+			}
+
+			@Override
+			public int getMarkerIdIndex() {
+				return rsId;
+			}
+
+			@Override
+			public int getPosIndex() {
+				return pos;
+			}
 
 			public static final int rsId = 0;
 			public static final int pos = 1;
@@ -233,14 +332,44 @@ public class cImport {
 			public static final int allele2 = 3;
 		}
 
-		public static interface HGDP1_Standard {
+		public static class HGDP1_Standard implements MarkerParseStandard {
+
+			@Override
+			public int getChrIndex() {
+				return chr;
+			}
+
+			@Override
+			public int getMarkerIdIndex() {
+				return rsId;
+			}
+
+			@Override
+			public int getPosIndex() {
+				return pos;
+			}
 
 			public static final int rsId = 0;
 			public static final int chr = 1;
 			public static final int pos = 2;
 		}
 
-		public static interface Sequenom {
+		public static class Sequenomimplements implements MarkerParseStandard {
+
+			@Override
+			public int getChrIndex() {
+				return annot_chr;
+			}
+
+			@Override
+			public int getMarkerIdIndex() {
+				return annot_markerId;
+			}
+
+			@Override
+			public int getPosIndex() {
+				return annot_pos;
+			}
 
 			public static final int sampleId = 0;
 			public static final int alleles = 1;

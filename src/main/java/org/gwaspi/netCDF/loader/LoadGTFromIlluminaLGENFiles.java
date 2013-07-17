@@ -128,6 +128,8 @@ public class LoadGTFromIlluminaLGENFiles implements GenotypesLoader {
 			descSB.append(loadDescription.getDescription());
 			descSB.append("\n");
 		}
+//		descSB.append("\nStrand: ");
+//		descSB.append(strand);
 //		descSB.append("\nGenotype encoding: ");
 //		descSB.append(gtCode);
 		descSB.append("\n");
@@ -144,7 +146,7 @@ public class LoadGTFromIlluminaLGENFiles implements GenotypesLoader {
 			descSB.append(" (Sample Info file)\n");
 		}
 
-		// RETRIEVE CHROMOSOMES INFO
+		//RETRIEVE CHROMOSOMES INFO
 		Map<MarkerKey, int[]> chrSetMap = org.gwaspi.netCDF.matrices.Utils.aggregateChromosomeInfo(markerSetMap, 2, 3);
 
 		MatrixFactory matrixFactory = new MatrixFactory(

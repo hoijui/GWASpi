@@ -59,7 +59,7 @@ public class MetadataLoaderPlink implements MetadataLoader {
 
 		Map<MarkerKey, MarkerMetadata> markerMetadata = new LinkedHashMap<MarkerKey, MarkerMetadata>();
 		for (Map.Entry<String, String> entry : tempTM.entrySet()) {
-			// chr;pos;markerId
+			// "chr;pos;markerId"
 			String[] keyValues = entry.getKey().split(cNetCDF.Defaults.TMP_SEPARATOR);
 			int pos;
 			try {
@@ -97,18 +97,19 @@ public class MetadataLoaderPlink implements MetadataLoader {
 		String l;
 		int count = 0;
 		while ((l = inputMapBR.readLine()) != null) {
-			String[] mapVals = l.split(cImport.Separators.separators_SpaceTab_rgxp);
-			String markerId = mapVals[Plink_Standard.map_markerId].trim();
+			String[] markerVals = l.split(cImport.Separators.separators_SpaceTab_rgxp);
+			String markerId = markerVals[Plink_Standard.map_markerId].trim();
 			String rsId = "";
 			if (markerId.startsWith("rs")) {
 				rsId = markerId;
 			}
-			String chr = mapVals[Plink_Standard.map_chr].trim();
+			String chr = markerVals[Plink_Standard.map_chr].trim();
+			String pos = markerVals[Plink_Standard.map_pos].trim();
 
-			// chr;pos;markerId
+			// "chr;pos;markerId"
 			StringBuilder sbKey = new StringBuilder(chr);
 			sbKey.append(cNetCDF.Defaults.TMP_SEPARATOR);
-			sbKey.append(mapVals[Plink_Standard.map_pos].trim());
+			sbKey.append(pos);
 			sbKey.append(cNetCDF.Defaults.TMP_SEPARATOR);
 			sbKey.append(markerId);
 

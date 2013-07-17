@@ -125,6 +125,31 @@ public class MarkerMetadata {
 		this(null, null, chr, pos, null);
 	}
 
+	@Override
+	public boolean equals(Object other) {
+
+		boolean equals = false;
+
+		if (other instanceof MarkerMetadata) {
+			MarkerMetadata otherMM = (MarkerMetadata) other;
+			equals = getMarkerId().equals(otherMM.getMarkerId())
+					&& getChr().equals(otherMM.getChr())
+					&& (getPos() == otherMM.getPos());
+		}
+
+		return equals;
+	}
+
+	@Override
+	public int hashCode() {
+
+		int hash = 7;
+		hash = 19 * hash + (this.markerId != null ? this.markerId.hashCode() : 0);
+		hash = 19 * hash + (this.chr != null ? this.chr.hashCode() : 0);
+		hash = 19 * hash + this.pos;
+		return hash;
+	}
+
 	public String getMarkerId() {
 		return markerId;
 	}

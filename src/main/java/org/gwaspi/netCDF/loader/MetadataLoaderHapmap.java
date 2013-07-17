@@ -93,6 +93,7 @@ public class MetadataLoaderHapmap implements MetadataLoader {
 	}
 
 	private SortedMap<String, String> parseAnnotationBRFile() throws IOException {
+
 		FileReader fr = new FileReader(hapmapPath);
 		BufferedReader inputAnnotationBr = new BufferedReader(fr);
 		SortedMap<String, String> sortedMetadataTM = new TreeMap<String, String>(new ComparatorChrAutPosMarkerIdAsc());
@@ -105,7 +106,7 @@ public class MetadataLoaderHapmap implements MetadataLoader {
 			String[] hapmapVals = l.split(cImport.Separators.separators_SpaceTab_rgxp);
 			String alleles = hapmapVals[HapmapGT_Standard.alleles].replace("/", "");
 
-			// chr;pos;markerId
+			// "chr;pos;markerId"
 			String chr = hapmapVals[HapmapGT_Standard.chr];
 			if (chr.length() > 3) {
 				chr = chr.substring(3);
