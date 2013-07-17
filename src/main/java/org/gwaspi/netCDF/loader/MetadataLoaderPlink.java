@@ -20,6 +20,7 @@ package org.gwaspi.netCDF.loader;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.SortedMap;
@@ -157,5 +158,10 @@ public class MetadataLoaderPlink implements MetadataLoader {
 		operation.append("End Time: ").append(org.gwaspi.global.Utils.getMediumDateTimeAsString()).append(".\n");
 		operation.append("Description: ").append(description).append(".\n");
 		org.gwaspi.global.Utils.logOperationInStudyDesc(operation.toString(), studyId);
+	}
+
+	@Override
+	public Iterator<MarkerMetadata> iterator() {
+		XXX;
 	}
 }
