@@ -112,11 +112,12 @@ public class MetadataLoaderSequenom implements MetadataLoader {
 				rsId = markerId;
 			}
 			String chr = mapVals[Sequenom.annot_chr].trim();
+			String pos = mapVals[Sequenom.annot_pos].trim();
 
-			// chr;pos;markerId
+			// "chr;pos;markerId"
 			StringBuilder sbKey = new StringBuilder(chr);
 			sbKey.append(cNetCDF.Defaults.TMP_SEPARATOR);
-			sbKey.append(mapVals[Sequenom.annot_pos].trim());
+			sbKey.append(pos);
 			sbKey.append(cNetCDF.Defaults.TMP_SEPARATOR);
 			sbKey.append(markerId);
 

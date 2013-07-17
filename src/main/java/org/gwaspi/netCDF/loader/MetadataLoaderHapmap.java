@@ -111,11 +111,14 @@ public class MetadataLoaderHapmap implements MetadataLoader {
 			if (chr.length() > 3) {
 				chr = chr.substring(3);
 			} // Probably contains "chr" in front of number
+			String pos = hapmapVals[HapmapGT_Standard.pos];
+			String rsId = hapmapVals[HapmapGT_Standard.rsId];
+
 			StringBuilder sbKey = new StringBuilder(chr); // 0 => chr
 			sbKey.append(cNetCDF.Defaults.TMP_SEPARATOR);
-			sbKey.append(hapmapVals[HapmapGT_Standard.pos]); // 1 => pos
+			sbKey.append(pos); // 1 => pos
 			sbKey.append(cNetCDF.Defaults.TMP_SEPARATOR);
-			sbKey.append(hapmapVals[HapmapGT_Standard.rsId]); // 2 => markerId
+			sbKey.append(rsId); // 2 => markerId
 
 			// rsId;strand;alleles
 			StringBuilder sbVal = new StringBuilder(hapmapVals[HapmapGT_Standard.rsId]); // 0 => markerId = rsId
@@ -123,7 +126,6 @@ public class MetadataLoaderHapmap implements MetadataLoader {
 			sbVal.append(hapmapVals[HapmapGT_Standard.strand]); // 1 => strand
 			sbVal.append(cNetCDF.Defaults.TMP_SEPARATOR);
 			sbVal.append(alleles); // 2 => alleles
-
 
 			sortedMetadataTM.put(sbKey.toString(), sbVal.toString());
 

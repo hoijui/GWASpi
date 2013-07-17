@@ -354,7 +354,7 @@ public class cImport {
 			public static final int pos = 2;
 		}
 
-		public static class Sequenomimplements implements MarkerParseStandard {
+		public static class Sequenom implements MarkerParseStandard {
 
 			@Override
 			public int getChrIndex() {

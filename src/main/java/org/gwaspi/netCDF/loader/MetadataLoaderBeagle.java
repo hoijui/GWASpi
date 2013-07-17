@@ -106,11 +106,12 @@ public class MetadataLoaderBeagle implements MetadataLoader {
 			if (markerId.startsWith("rs")) {
 				rsId = markerId;
 			}
+			String pos = markerVals[Beagle_Standard.pos].trim();
 
 			// chr;pos;markerId
 			StringBuilder sbKey = new StringBuilder(chr);
 			sbKey.append(cNetCDF.Defaults.TMP_SEPARATOR);
-			sbKey.append(markerVals[Beagle_Standard.pos].trim());
+			sbKey.append(pos);
 			sbKey.append(cNetCDF.Defaults.TMP_SEPARATOR);
 			sbKey.append(markerId);
 

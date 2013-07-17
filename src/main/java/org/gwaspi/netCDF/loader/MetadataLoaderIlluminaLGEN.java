@@ -104,7 +104,6 @@ public class MetadataLoaderIlluminaLGEN implements MetadataLoader {
 			}
 		}
 
-
 		String l;
 		int count = 0;
 		while ((l = inputMapBR.readLine()) != null) {
@@ -115,11 +114,12 @@ public class MetadataLoaderIlluminaLGEN implements MetadataLoader {
 				rsId = markerId;
 			}
 			String chr = mapVals[Plink_LGEN.map_chr].trim();
+			String pos = mapVals[Plink_LGEN.map_pos].trim();
 
 			// chr;pos;markerId
 			StringBuilder sbKey = new StringBuilder(chr);
 			sbKey.append(cNetCDF.Defaults.TMP_SEPARATOR);
-			sbKey.append(mapVals[Plink_LGEN.map_pos].trim());
+			sbKey.append(pos);
 			sbKey.append(cNetCDF.Defaults.TMP_SEPARATOR);
 			sbKey.append(markerId);
 

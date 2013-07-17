@@ -112,11 +112,12 @@ public class MetadataLoaderPlinkBinary implements MetadataLoader {
 				rsId = markerId;
 			}
 			String chr = bimVals[Plink_Binary.bim_chr].trim();
+			String pos = bimVals[Plink_Binary.bim_pos].trim();
 
-			// chr;pos;markerId
+			// "chr;pos;markerId"
 			StringBuilder sbKey = new StringBuilder(chr);
 			sbKey.append(cNetCDF.Defaults.TMP_SEPARATOR);
-			sbKey.append(bimVals[Plink_Binary.bim_pos].trim());
+			sbKey.append(pos);
 			sbKey.append(cNetCDF.Defaults.TMP_SEPARATOR);
 			sbKey.append(markerId);
 
