@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,7 +49,7 @@ import ucar.ma2.Index;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.NetcdfFileWriteable;
 
-public class LoadGTFromSequenomFiles implements GenotypesLoader {
+public class LoadGTFromSequenomFiles extends AbstractLoadGTFromFiles implements GenotypesLoader {
 
 	private final Logger log
 			= LoggerFactory.getLogger(LoadGTFromSequenomFiles.class);
@@ -63,21 +64,32 @@ public class LoadGTFromSequenomFiles implements GenotypesLoader {
 	}
 
 	public LoadGTFromSequenomFiles() {
+		super(ImportFormat.Sequenom, StrandType.PLSMIN, false, null);
 	}
 
+	@Override
+	public Iterator<Map.Entry<MarkerKey, byte[]>> iterator(
+			StudyKey studyKey,
+			SampleKey sampleKey,
+			File file)
+			throws IOException
+	{
+//		return new PlinkFlatParseIterator(studyKey, file, sampleKey);
+		throw new UnsupportedOperationException("This method of this class should never be called!");
+	}
+
+	@Override
 	protected void addAdditionalBigDescriptionProperties(StringBuilder descSB, GenotypesLoadDescription loadDescription) {
 //		super.addAdditionalBigDescriptionProperties(descSB, loadDescription); // XXX uncomment!
-XXX
+XXX;
 		descSB.append(loadDescription.getGtDirPath());
-		descSB.append(" (MAP file)\n");
+		descSB.append(" (Genotype files)\n");
+		descSB.append("\n");
 		descSB.append(loadDescription.getAnnotationFilePath());
-		descSB.append(" (PED file)\n");
-		if (new File(loadDescription.getSampleFilePath()).exists()) {
-			descSB.append(loadDescription.getSampleFilePath());
-			descSB.append(" (Sample Info file)\n");
-		}
+		descSB.append(" (Annotation file)\n");
 	}
 
+	@Override
 	protected MetadataLoader createMetaDataLoader(GenotypesLoadDescription loadDescription) {
 
 		return new MetadataLoaderSequenom(
@@ -102,7 +114,7 @@ XXX
 
 	@Override
 	public String getMarkersD2Variables() {
-		throw new UnsupportedOperationException("Not supported yet."); // FIXME implement me!
+		return null;
 	}
 
 	@Override
@@ -113,12 +125,10 @@ XXX
 
 		List<SampleKey> sampleKeys = AbstractLoadGTFromFiles.extractKeys(sampleInfos);
 
-		File[] gtFilesToImport = org.gwaspi.global.Utils.listFiles(loadDescription.getGtDirPath());
-//		File gtFileToImport = new File(gtDirPath);
+		Map<MarkerKey, MarkerMetadata> markerSetMap = new LinkedHashMap<MarkerKey, MarkerMetadata>();
 
 		//<editor-fold defaultstate="expanded" desc="CREATE MARKERSET & NETCDF">
 //		Map<MarkerKey, MarkerMetadata> tmpMarkerMap = markerSetLoader.getSortedMarkerSetWithMetaData();
-		Map<MarkerKey, MarkerMetadata> markerSetMap = new LinkedHashMap<MarkerKey, MarkerMetadata>();
 		MetadataLoader markerSetLoader = createMetaDataLoader(loadDescription);
 		for (MarkerMetadata markerMetadata : markerSetLoader) {
 			markerSetMap.put(MarkerKey.valueOf(markerMetadata), markerMetadata);
@@ -145,11 +155,7 @@ XXX
 		descSB.append("\n");
 		descSB.append(Text.Matrix.descriptionHeader3);
 		descSB.append("\n");
-		descSB.append(loadDescription.getGtDirPath());
-		descSB.append(" (Genotype files)\n");
-		descSB.append("\n");
-		descSB.append(loadDescription.getAnnotationFilePath());
-		descSB.append(" (Annotation file)\n");
+		addAdditionalBigDescriptionProperties(descSB, loadDescription);
 		if (new File(loadDescription.getSampleFilePath()).exists()) {
 			descSB.append(loadDescription.getSampleFilePath());
 			descSB.append(" (Sample Info file)\n");
@@ -270,6 +276,57 @@ XXX
 
 		//<editor-fold defaultstate="expanded" desc="MATRIX GENOTYPES LOAD ">
 		GenotypeEncoding guessedGTCode = GenotypeEncoding.UNKNOWN;
+		loadGenotypes(loadDescription, sampleInfos, markerSetMap, ncfile, sampleKeys, guessedGTCode);
+		log.info("Done writing genotypes to matrix");
+		//</editor-fold>
+
+		// CLOSE THE FILE AND BY THIS, MAKE IT READ-ONLY
+		try {
+			// GUESS GENOTYPE ENCODING
+			ArrayChar.D2 guessedGTCodeAC = new ArrayChar.D2(1, 8);
+			Index index = guessedGTCodeAC.getIndex();
+			guessedGTCodeAC.setString(index.set(0, 0), guessedGTCode.toString().trim());
+			int[] origin = new int[]{0, 0};
+			ncfile.write(cNetCDF.Variables.GLOB_GTENCODING, origin, guessedGTCodeAC);
+
+			descSB.append("Genotype encoding: ");
+			descSB.append(guessedGTCode);
+
+			MatrixMetadata matrixMetaData = matrixFactory.getMatrixMetaData();
+			matrixMetaData.setDescription(descSB.toString());
+			MatricesList.updateMatrix(matrixMetaData);
+
+			// CLOSE FILE
+			ncfile.close();
+			result = matrixFactory.getMatrixMetaData().getMatrixId();
+		} catch (IOException ex) {
+			log.error("Failed creating file " + ncfile.getLocation(), ex);
+		}
+
+		AbstractLoadGTFromFiles.logAsWhole(
+				startTime,
+				loadDescription.getStudyKey().getId(),
+				loadDescription.getGtDirPath(),
+				loadDescription.getFormat(),
+				loadDescription.getFriendlyName(),
+				loadDescription.getDescription());
+
+		org.gwaspi.global.Utils.sysoutCompleted("writing Genotypes to Matrix");
+		return result;
+	}
+
+	protected void loadGenotypes(
+			GenotypesLoadDescription loadDescription,
+			Collection<SampleInfo> sampleInfos,
+			Map<MarkerKey, MarkerMetadata> markerSetMap,
+			NetcdfFileWriteable ncfile,
+			List<SampleKey> sampleKeys,
+			GenotypeEncoding guessedGTCode)
+			throws IOException, InvalidRangeException
+	{
+		File[] gtFilesToImport = org.gwaspi.global.Utils.listFiles(loadDescription.getGtDirPath());
+//		File gtFileToImport = new File(gtDirPath);
+
 		// INIT AND PURGE SORTEDMARKERSET Map
 		int sampleIndex = 0;
 		for (SampleInfo sampleInfo : sampleInfos) {
@@ -310,43 +367,6 @@ XXX
 				log.info("Done processing sample Nº{}", sampleIndex);
 			}
 		}
-
-		log.info("Done writing genotypes to matrix");
-		//</editor-fold>
-
-		// CLOSE THE FILE AND BY THIS, MAKE IT READ-ONLY
-		try {
-			// GUESS GENOTYPE ENCODING
-			ArrayChar.D2 guessedGTCodeAC = new ArrayChar.D2(1, 8);
-			Index index = guessedGTCodeAC.getIndex();
-			guessedGTCodeAC.setString(index.set(0, 0), guessedGTCode.toString().trim());
-			int[] origin = new int[]{0, 0};
-			ncfile.write(cNetCDF.Variables.GLOB_GTENCODING, origin, guessedGTCodeAC);
-
-			descSB.append("Genotype encoding: ");
-			descSB.append(guessedGTCode);
-
-			MatrixMetadata matrixMetaData = matrixFactory.getMatrixMetaData();
-			matrixMetaData.setDescription(descSB.toString());
-			MatricesList.updateMatrix(matrixMetaData);
-
-			// CLOSE FILE
-			ncfile.close();
-			result = matrixFactory.getMatrixMetaData().getMatrixId();
-		} catch (IOException ex) {
-			log.error("Failed creating file " + ncfile.getLocation(), ex);
-		}
-
-		AbstractLoadGTFromFiles.logAsWhole(
-				startTime,
-				loadDescription.getStudyKey().getId(),
-				loadDescription.getGtDirPath(),
-				loadDescription.getFormat(),
-				loadDescription.getFriendlyName(),
-				loadDescription.getDescription());
-
-		org.gwaspi.global.Utils.sysoutCompleted("writing Genotypes to Matrix");
-		return result;
 	}
 
 	/**

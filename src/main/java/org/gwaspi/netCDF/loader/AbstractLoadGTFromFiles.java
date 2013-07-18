@@ -243,7 +243,7 @@ public abstract class AbstractLoadGTFromFiles implements GenotypesLoader {
 		if (getMarkersD2Variables() != null) {
 		markersD2 = org.gwaspi.netCDF.operations.Utils.writeMapValueItemToD2ArrayChar(markerSetMap, MarkerMetadata.TO_STRAND, cNetCDF.Strides.STRIDE_GT);
 		try {
-			ncfile.write(markersD2Variables, markersOrig, markersD2);
+			ncfile.write(getMarkersD2Variables(), markersOrig, markersD2);
 		} catch (IOException ex) {
 			log.error("Failed writing file", ex);
 		} catch (InvalidRangeException ex) {

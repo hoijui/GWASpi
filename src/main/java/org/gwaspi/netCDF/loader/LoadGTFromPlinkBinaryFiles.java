@@ -105,10 +105,11 @@ public class LoadGTFromPlinkBinaryFiles implements GenotypesLoader {
 
 		List<SampleKey> sampleKeys = AbstractLoadGTFromFiles.extractKeys(sampleInfos);
 
+		Map<MarkerKey, MarkerMetadata> markerSetMap = new LinkedHashMap<MarkerKey, MarkerMetadata>();
+
 		//<editor-fold defaultstate="expanded" desc="CREATE MARKERSET & NETCDF">
 		// markerid, rsId, chr, pos, allele1, allele2
 //		Map<MarkerKey, MarkerMetadata> tmpMarkerMap = markerSetLoader.getSortedMarkerSetWithMetaData();
-		Map<MarkerKey, MarkerMetadata> markerSetMap = new LinkedHashMap<MarkerKey, MarkerMetadata>();
 		MetadataLoader markerSetLoader = createMetaDataLoader(loadDescription);
 		for (MarkerMetadata markerMetadata : markerSetLoader) {
 			markerSetMap.put(MarkerKey.valueOf(markerMetadata), markerMetadata);
@@ -191,7 +192,7 @@ public class LoadGTFromPlinkBinaryFiles implements GenotypesLoader {
 		log.info("Done writing SampleSet to matrix");
 
 		// WRITE RSID & MARKERID METADATA FROM METADATAMap
-		ArrayChar.D2 markersD2 = org.gwaspi.netCDF.operations.Utils.writeMapValueItemToD2ArrayChar(markerSetMap, MarkerMetadata.TO_MARKER_ID, cNetCDF.Strides.STRIDE_MARKER_NAME);
+		ArrayChar.D2 markersD2 = org.gwaspi.netCDF.operations.Utils.writeMapValueItemToD2ArrayChar(markerSetMap, MarkerMetadata.TO_RS_ID, cNetCDF.Strides.STRIDE_MARKER_NAME);
 
 		int[] markersOrig = new int[]{0, 0};
 		try {
@@ -293,18 +294,7 @@ public class LoadGTFromPlinkBinaryFiles implements GenotypesLoader {
 		//<editor-fold defaultstate="expanded" desc="MATRIX GENOTYPES LOAD ">
 		GenotypeEncoding guessedGTCode = GenotypeEncoding.O12;
 		log.info(Text.All.processing);
-		Map<SampleKey, String[]> bimSamples = MetadataLoaderPlinkBinary.parseOrigBimFile(
-				loadDescription.getAnnotationFilePath(),
-				loadDescription.getStudyKey()
-				); // key = markerId, values{allele1 (minor), allele2 (major)}
-		loadBedGenotypes(
-				new File(loadDescription.getGtDirPath()),
-				ncfile,
-				bimSamples,
-				sampleInfos,
-				guessedGTCode,
-				hyperSlabRows);
-
+		loadGenotypes(loadDescription, sampleInfos, markerSetMap, ncfile, sampleKeys, guessedGTCode);
 		log.info("Done writing genotypes to matrix");
 		//</editor-fold>
 
@@ -341,6 +331,29 @@ public class LoadGTFromPlinkBinaryFiles implements GenotypesLoader {
 
 		org.gwaspi.global.Utils.sysoutCompleted("writing Genotypes to Matrix");
 		return result;
+	}
+
+	@Override
+	protected void loadGenotypes(
+			GenotypesLoadDescription loadDescription,
+			Collection<SampleInfo> sampleInfos,
+			Map<MarkerKey, MarkerMetadata> markerSetMap,
+			NetcdfFileWriteable ncfile,
+			List<SampleKey> sampleKeys,
+			GenotypeEncoding guessedGTCode)
+			throws IOException, InvalidRangeException
+	{
+		Map<SampleKey, String[]> bimSamples = MetadataLoaderPlinkBinary.parseOrigBimFile(
+				loadDescription.getAnnotationFilePath(),
+				loadDescription.getStudyKey()
+				); // key = markerId, values{allele1 (minor), allele2 (major)}
+		loadBedGenotypes(
+				new File(loadDescription.getGtDirPath()),
+				ncfile,
+				bimSamples,
+				sampleInfos,
+				guessedGTCode,
+				hyperSlabRows);
 	}
 
 	private void loadBedGenotypes(

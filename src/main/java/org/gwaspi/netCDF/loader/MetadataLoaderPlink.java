@@ -49,6 +49,28 @@ public class MetadataLoaderPlink implements MetadataLoader {
 		this.studyKey = studyKey;
 	}
 
+
+	@Override
+	public Iterator<MarkerMetadata> iterator() {
+		return new PlinkFlatMarkerParseIterator();
+	}
+
+	private static class PlinkFlatMarkerParseIterator implements Iterator<MarkerMetadata> {
+
+		public boolean hasNext() {
+			throw new UnsupportedOperationException("Not supported yet.");
+		}
+
+		public MarkerMetadata next() {
+			throw new UnsupportedOperationException("Not supported yet.");
+		}
+
+		public void remove() {
+			throw new UnsupportedOperationException();
+		}
+
+	}
+
 	@Override
 	public Map<MarkerKey, MarkerMetadata> getSortedMarkerSetWithMetaData() throws IOException {
 		String startTime = org.gwaspi.global.Utils.getMediumDateTimeAsString();
@@ -158,10 +180,5 @@ public class MetadataLoaderPlink implements MetadataLoader {
 		operation.append("End Time: ").append(org.gwaspi.global.Utils.getMediumDateTimeAsString()).append(".\n");
 		operation.append("Description: ").append(description).append(".\n");
 		org.gwaspi.global.Utils.logOperationInStudyDesc(operation.toString(), studyId);
-	}
-
-	@Override
-	public Iterator<MarkerMetadata> iterator() {
-		XXX;
 	}
 }

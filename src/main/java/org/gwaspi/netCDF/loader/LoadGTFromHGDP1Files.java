@@ -48,7 +48,7 @@ import ucar.ma2.Index;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.NetcdfFileWriteable;
 
-public class LoadGTFromHGDP1Files implements GenotypesLoader {
+public class LoadGTFromHGDP1Files extends AbstractLoadGTFromFiles implements GenotypesLoader {
 
 	private final Logger log
 			= LoggerFactory.getLogger(LoadGTFromHGDP1Files.class);
@@ -108,9 +108,10 @@ public class LoadGTFromHGDP1Files implements GenotypesLoader {
 
 		List<SampleKey> sampleKeys = AbstractLoadGTFromFiles.extractKeys(sampleInfos);
 
+		Map<MarkerKey, MarkerMetadata> markerSetMap = new LinkedHashMap<MarkerKey, MarkerMetadata>();
+
 		//<editor-fold defaultstate="expanded" desc="CREATE MARKERSET & NETCDF">
 //		Map<MarkerKey, MarkerMetadata> tmpMarkerMap = markerSetLoader.getSortedMarkerSetWithMetaData();
-		Map<MarkerKey, MarkerMetadata> markerSetMap = new LinkedHashMap<MarkerKey, MarkerMetadata>();
 		MetadataLoader markerSetLoader = createMetaDataLoader(loadDescription);
 		for (MarkerMetadata markerMetadata : markerSetLoader) {
 			markerSetMap.put(MarkerKey.valueOf(markerMetadata), markerMetadata);
@@ -277,35 +278,7 @@ public class LoadGTFromHGDP1Files implements GenotypesLoader {
 
 		//<editor-fold defaultstate="expanded" desc="MATRIX GENOTYPES LOAD ">
 		GenotypeEncoding guessedGTCode = GenotypeEncoding.UNKNOWN;
-		int sampleIndex = 0;
-		for (SampleInfo sampleInfo : sampleInfos) {
-			// PURGE MarkerIdMap
-			Map<MarkerKey, byte[]> alleles = AbstractLoadGTFromFiles.fillMap(markerSetMap.keySet(), cNetCDF.Defaults.DEFAULT_GT);
-
-			try {
-				loadIndividualFiles(
-						loadDescription.getStudyKey(),
-						new File(loadDescription.getGtDirPath()),
-						sampleInfo.getKey(),
-						alleles,
-						guessedGTCode);
-
-				// WRITING GENOTYPE DATA INTO netCDF FILE
-				org.gwaspi.netCDF.operations.Utils.saveSingleSampleGTsToMatrix(ncfile, alleles, sampleIndex);
-			} catch (IOException ex) {
-				log.warn(null, ex);
-			} catch (InvalidRangeException ex) {
-				log.warn(null, ex);
-			}
-
-			sampleIndex++;
-			if (sampleIndex == 1) {
-				log.info(Text.All.processing);
-			} else if (sampleIndex % 100 == 0) {
-				log.info("Done processing sample Nº{}", sampleIndex);
-			}
-		}
-
+		loadGenotypes(loadDescription, sampleInfos, markerSetMap, ncfile, sampleKeys, guessedGTCode);
 		log.info("Done writing genotypes to matrix");
 		//</editor-fold>
 
@@ -342,6 +315,45 @@ public class LoadGTFromHGDP1Files implements GenotypesLoader {
 
 		org.gwaspi.global.Utils.sysoutCompleted("writing Genotypes to Matrix");
 		return result;
+	}
+
+	protected void loadGenotypes(
+			GenotypesLoadDescription loadDescription,
+			Collection<SampleInfo> sampleInfos,
+			Map<MarkerKey, MarkerMetadata> markerSetMap,
+			NetcdfFileWriteable ncfile,
+			List<SampleKey> sampleKeys,
+			GenotypeEncoding guessedGTCode)
+			throws IOException, InvalidRangeException
+	{
+		int sampleIndex = 0;
+		for (SampleInfo sampleInfo : sampleInfos) {
+			// PURGE MarkerIdMap
+			Map<MarkerKey, byte[]> alleles = AbstractLoadGTFromFiles.fillMap(markerSetMap.keySet(), cNetCDF.Defaults.DEFAULT_GT);
+
+			try {
+				loadIndividualFiles(
+						loadDescription.getStudyKey(),
+						new File(loadDescription.getGtDirPath()),
+						sampleInfo.getKey(),
+						alleles,
+						guessedGTCode);
+
+				// WRITING GENOTYPE DATA INTO netCDF FILE
+				org.gwaspi.netCDF.operations.Utils.saveSingleSampleGTsToMatrix(ncfile, alleles, sampleIndex);
+			} catch (IOException ex) {
+				log.warn(null, ex);
+			} catch (InvalidRangeException ex) {
+				log.warn(null, ex);
+			}
+
+			sampleIndex++;
+			if (sampleIndex == 1) {
+				log.info(Text.All.processing);
+			} else if (sampleIndex % 100 == 0) {
+				log.info("Done processing sample Nº{}", sampleIndex);
+			}
+		}
 	}
 
 	/**

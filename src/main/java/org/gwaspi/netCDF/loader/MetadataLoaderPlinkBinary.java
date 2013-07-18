@@ -63,7 +63,7 @@ public class MetadataLoaderPlinkBinary implements MetadataLoader {
 
 		Map<MarkerKey, MarkerMetadata> markerMetadata = new LinkedHashMap<MarkerKey, MarkerMetadata>();
 		for (Map.Entry<String, String> entry : tempTM.entrySet()) {
-			// chr;pos;markerId
+			// "chr;pos;markerId"
 			String[] keyValues = entry.getKey().split(cNetCDF.Defaults.TMP_SEPARATOR);
 			int pos;
 			try {
@@ -105,14 +105,14 @@ public class MetadataLoaderPlinkBinary implements MetadataLoader {
 		String l;
 		int count = 0;
 		while ((l = inputMapBR.readLine()) != null) {
-			String[] bimVals = l.split(cImport.Separators.separators_SpaceTab_rgxp);
-			String markerId = bimVals[Plink_Binary.bim_markerId].trim();
+			String[] markerVals = l.split(cImport.Separators.separators_SpaceTab_rgxp);
+			String markerId = markerVals[Plink_Binary.bim_markerId].trim();
 			String rsId = "";
 			if (markerId.startsWith("rs")) {
 				rsId = markerId;
 			}
-			String chr = bimVals[Plink_Binary.bim_chr].trim();
-			String pos = bimVals[Plink_Binary.bim_pos].trim();
+			String chr = markerVals[Plink_Binary.bim_chr].trim();
+			String pos = markerVals[Plink_Binary.bim_pos].trim();
 
 			// "chr;pos;markerId"
 			StringBuilder sbKey = new StringBuilder(chr);
@@ -123,8 +123,8 @@ public class MetadataLoaderPlinkBinary implements MetadataLoader {
 
 			// rsId
 			StringBuilder sbVal = new StringBuilder(); // 0 => markerid
-			sbVal.append(bimVals[Plink_Binary.bim_allele1].trim());
-			sbVal.append(bimVals[Plink_Binary.bim_allele2].trim());
+			sbVal.append(markerVals[Plink_Binary.bim_allele1].trim());
+			sbVal.append(markerVals[Plink_Binary.bim_allele2].trim());
 
 			sortedMetadataTM.put(sbKey.toString(), sbVal.toString());
 
