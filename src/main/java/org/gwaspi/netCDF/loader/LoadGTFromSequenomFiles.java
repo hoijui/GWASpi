@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import org.gwaspi.constants.cImport;
@@ -116,9 +117,13 @@ XXX
 //		File gtFileToImport = new File(gtDirPath);
 
 		//<editor-fold defaultstate="expanded" desc="CREATE MARKERSET & NETCDF">
-		MetadataLoader markerSetLoader = new MetadataLoaderSequenom(loadDescription.getAnnotationFilePath(), loadDescription.getStudyKey());
-
-		Map<MarkerKey, MarkerMetadata> markerSetMap = markerSetLoader.getSortedMarkerSetWithMetaData();
+//		Map<MarkerKey, MarkerMetadata> tmpMarkerMap = markerSetLoader.getSortedMarkerSetWithMetaData();
+		Map<MarkerKey, MarkerMetadata> markerSetMap = new LinkedHashMap<MarkerKey, MarkerMetadata>();
+		MetadataLoader markerSetLoader = createMetaDataLoader(loadDescription);
+		for (MarkerMetadata markerMetadata : markerSetLoader) {
+			markerSetMap.put(MarkerKey.valueOf(markerMetadata), markerMetadata);
+		}
+//		markerSetMap.putAll(tmpMarkerMap);
 
 		log.info("Done initializing sorted MarkerSetMap");
 

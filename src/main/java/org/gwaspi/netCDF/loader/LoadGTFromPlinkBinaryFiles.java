@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import org.gwaspi.constants.cImport.ImportFormat;
@@ -105,8 +106,14 @@ public class LoadGTFromPlinkBinaryFiles implements GenotypesLoader {
 		List<SampleKey> sampleKeys = AbstractLoadGTFromFiles.extractKeys(sampleInfos);
 
 		//<editor-fold defaultstate="expanded" desc="CREATE MARKERSET & NETCDF">
+		// markerid, rsId, chr, pos, allele1, allele2
+//		Map<MarkerKey, MarkerMetadata> tmpMarkerMap = markerSetLoader.getSortedMarkerSetWithMetaData();
+		Map<MarkerKey, MarkerMetadata> markerSetMap = new LinkedHashMap<MarkerKey, MarkerMetadata>();
 		MetadataLoader markerSetLoader = createMetaDataLoader(loadDescription);
-		Map<MarkerKey, MarkerMetadata> markerSetMap = markerSetLoader.getSortedMarkerSetWithMetaData(); //markerid, rsId, chr, pos, allele1, allele2
+		for (MarkerMetadata markerMetadata : markerSetLoader) {
+			markerSetMap.put(MarkerKey.valueOf(markerMetadata), markerMetadata);
+		}
+//		markerSetMap.putAll(tmpMarkerMap);
 
 		// PLAYING IT SAFE WITH HALF THE maxProcessMarkers
 		int hyperSlabRows = (int) Math.round(

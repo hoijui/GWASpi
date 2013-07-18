@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import org.gwaspi.constants.cImport;
@@ -137,8 +138,13 @@ public class LoadGTFromAffyFiles implements GenotypesLoader {
 		//</editor-fold>
 
 		//<editor-fold defaultstate="expanded" desc="CREATE MARKERSET & NETCDF">
+//		Map<MarkerKey, MarkerMetadata> tmpMarkerMap = markerSetLoader.getSortedMarkerSetWithMetaData();
+		Map<MarkerKey, MarkerMetadata> markerSetMap = new LinkedHashMap<MarkerKey, MarkerMetadata>();
 		MetadataLoader markerSetLoader = createMetaDataLoader(loadDescription);
-		Map<MarkerKey, MarkerMetadata> markerSetMap = markerSetLoader.getSortedMarkerSetWithMetaData();
+		for (MarkerMetadata markerMetadata : markerSetLoader) {
+			markerSetMap.put(MarkerKey.valueOf(markerMetadata), markerMetadata);
+		}
+//		markerSetMap.putAll(tmpMarkerMap);
 
 		log.info("Done initializing sorted MarkerSetMap");
 

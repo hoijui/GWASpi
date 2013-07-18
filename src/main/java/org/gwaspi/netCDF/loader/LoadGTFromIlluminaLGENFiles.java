@@ -115,8 +115,14 @@ public class LoadGTFromIlluminaLGENFiles implements GenotypesLoader {
 		File[] gtFilesToImport = org.gwaspi.global.Utils.listFiles(loadDescription.getGtDirPath());
 
 		//<editor-fold defaultstate="expanded" desc="CREATE MARKERSET & NETCDF">
+		// markerid, rsId, chr, pos
+//		Map<MarkerKey, MarkerMetadata> tmpMarkerMap = markerSetLoader.getSortedMarkerSetWithMetaData();
+		Map<MarkerKey, MarkerMetadata> markerSetMap = new LinkedHashMap<MarkerKey, MarkerMetadata>();
 		MetadataLoader markerSetLoader = createMetaDataLoader(loadDescription);
-		Map<MarkerKey, MarkerMetadata> markerSetMap = markerSetLoader.getSortedMarkerSetWithMetaData(); // markerid, rsId, chr, pos
+		for (MarkerMetadata markerMetadata : markerSetLoader) {
+			markerSetMap.put(MarkerKey.valueOf(markerMetadata), markerMetadata);
+		}
+//		markerSetMap.putAll(tmpMarkerMap);
 
 		log.info("Done initializing sorted MarkerSetMap");
 

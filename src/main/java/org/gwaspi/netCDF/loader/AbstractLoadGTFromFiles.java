@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -103,20 +104,15 @@ public abstract class AbstractLoadGTFromFiles implements GenotypesLoader {
 
 		List<SampleKey> sampleKeys = AbstractLoadGTFromFiles.extractKeys(sampleInfos);
 
-		File gtFile = new File(loadDescription.getGtDirPath());
-		File[] gtFilesToImport;
-		if (gtFile.isDirectory()) {
-			gtFilesToImport = org.gwaspi.global.Utils.listFiles(loadDescription.getGtDirPath());
-		} else {
-			gtFilesToImport = new File[]{new File(loadDescription.getGtDirPath())};
-		}
-
 		Map<MarkerKey, MarkerMetadata> markerSetMap = new LinkedHashMap<MarkerKey, MarkerMetadata>();
 
 		//<editor-fold defaultstate="expanded" desc="CREATE MARKERSET & NETCDF">
 		MetadataLoader markerSetLoader = createMetaDataLoader(loadDescription);
-		Map<MarkerKey, MarkerMetadata> tmpMarkerMap = markerSetLoader.getSortedMarkerSetWithMetaData();
-		markerSetMap.putAll(tmpMarkerMap);
+		for (MarkerMetadata markerMetadata : markerSetLoader) {
+			markerSetMap.put(MarkerKey.valueOf(markerMetadata), markerMetadata);
+		}
+//		Map<MarkerKey, MarkerMetadata> tmpMarkerMap = markerSetLoader.getSortedMarkerSetWithMetaData();
+//		markerSetMap.putAll(tmpMarkerMap);
 
 		log.info("Done initializing sorted MarkerSetMap");
 
@@ -244,7 +240,7 @@ public abstract class AbstractLoadGTFromFiles implements GenotypesLoader {
 		log.info("Done writing positions to matrix");
 
 		// WRITE CUSTOM ALLELES METADATA FROM ANNOTATION FILE
-		if (markersD2Variables != null) {
+		if (getMarkersD2Variables() != null) {
 		markersD2 = org.gwaspi.netCDF.operations.Utils.writeMapValueItemToD2ArrayChar(markerSetMap, MarkerMetadata.TO_STRAND, cNetCDF.Strides.STRIDE_GT);
 		try {
 			ncfile.write(markersD2Variables, markersOrig, markersD2);
@@ -290,48 +286,13 @@ public abstract class AbstractLoadGTFromFiles implements GenotypesLoader {
 		//</editor-fold>
 
 		//<editor-fold defaultstate="expanded" desc="MATRIX GENOTYPES LOAD ">
-		int sampleIndex = 0;
-		for (SampleInfo sampleInfo : sampleInfos) {
-			// PURGE MarkerIdMap
-			Map<MarkerKey, byte[]> alleles = fillMap(markerSetMap.keySet(), cNetCDF.Defaults.DEFAULT_GT);
-
-			for (int i = 0; i < gtFilesToImport.length; i++) {
-				try {
-					loadIndividualFiles(
-							loadDescription.getStudyKey(),
-							new File(loadDescription.getGtDirPath()),
-							sampleInfo.getKey(),
-							alleles);
-
-					// WRITING GENOTYPE DATA INTO netCDF FILE
-					org.gwaspi.netCDF.operations.Utils.saveSingleSampleGTsToMatrix(ncfile, alleles, sampleIndex);
-
-					if (Thread.interrupted()) {
-						throw new InterruptedException();
-					}
-				} catch (IOException ex) {
-					log.warn(null, ex);
-				} catch (InvalidRangeException ex) {
-					log.warn(null, ex);
-				} catch (InterruptedException ex) {
-					log.warn(null, ex);
-					// TODO Write some cleanup code for when thread has been interrupted
-				}
-			}
-
-			sampleIndex++;
-			if (sampleIndex == 1) {
-				log.info(Text.All.processing);
-			} else if (sampleIndex % 100 == 0) {
-				log.info("Done processing sample Nº{}", sampleIndex);
-			}
-		}
-
+		GenotypeEncoding guessedGTCode = GenotypeEncoding.UNKNOWN;
+		log.info(Text.All.processing);
+		loadGenotypes(loadDescription, sampleInfos, markerSetMap, ncfile, sampleKeys, guessedGTCode);
 		log.info("Done writing genotypes to matrix");
 		//</editor-fold>
 
 		// CLOSE THE FILE AND BY THIS, MAKE IT READ-ONLY
-		GenotypeEncoding guessedGTCode = GenotypeEncoding.UNKNOWN;
 		try {
 			// GUESS GENOTYPE ENCODING
 			ArrayChar.D2 guessedGTCodeAC = new ArrayChar.D2(1, 8);
@@ -366,6 +327,68 @@ public abstract class AbstractLoadGTFromFiles implements GenotypesLoader {
 		return result;
 	}
 
+	protected void loadGenotypes(
+			GenotypesLoadDescription loadDescription,
+			Collection<SampleInfo> sampleInfos,
+			Map<MarkerKey, MarkerMetadata> markerSetMap,
+			NetcdfFileWriteable ncfile,
+			List<SampleKey> sampleKeys,
+			GenotypeEncoding guessedGTCode)
+			throws IOException, InvalidRangeException
+	{
+		File gtFile = new File(loadDescription.getGtDirPath());
+		File[] gtFilesToImport;
+		if (gtFile.isDirectory()) {
+			gtFilesToImport = org.gwaspi.global.Utils.listFiles(loadDescription.getGtDirPath());
+		} else {
+			gtFilesToImport = new File[]{new File(loadDescription.getGtDirPath())};
+		}
+		int sampleIndex = 0;
+		for (SampleInfo sampleInfo : sampleInfos) {
+			// PURGE MarkerIdMap
+			Map<MarkerKey, byte[]> alleles = fillMap(markerSetMap.keySet(), cNetCDF.Defaults.DEFAULT_GT);
+
+			for (int i = 0; i < gtFilesToImport.length; i++) {
+				try {
+//					loadIndividualFiles(
+//							loadDescription.getStudyKey(),
+//							new File(loadDescription.getGtDirPath()),
+//							sampleInfo.getKey(),
+//							alleles);
+					Iterator<Map.Entry<MarkerKey, byte[]>> markerGtIt = iterator(
+							loadDescription.getStudyKey(),
+							sampleInfo.getKey(),
+							new File(loadDescription.getGtDirPath()));
+					while (markerGtIt.hasNext()) {
+						Map.Entry<MarkerKey, byte[]> markerGt = markerGtIt.next();
+						alleles.put(markerGt.getKey(), markerGt.getValue());
+					}
+
+					// WRITING GENOTYPE DATA INTO netCDF FILE
+					org.gwaspi.netCDF.operations.Utils.saveSingleSampleGTsToMatrix(ncfile, alleles, sampleIndex);
+
+					if (Thread.interrupted()) {
+						throw new InterruptedException();
+					}
+				} catch (IOException ex) {
+					log.warn(null, ex);
+				} catch (InvalidRangeException ex) {
+					log.warn(null, ex);
+				} catch (InterruptedException ex) {
+					log.warn(null, ex);
+					// TODO Write some cleanup code for when thread has been interrupted
+				}
+			}
+
+			sampleIndex++;
+			if (sampleIndex == 1) {
+				log.info(Text.All.processing);
+			} else if (sampleIndex % 100 == 0) {
+				log.info("Done processing sample Nº{}", sampleIndex);
+			}
+		}
+	}
+
 	static <K, V> Map<K, V> fillMap(Collection<K> keys, V value) {
 
 		Map<K, V> result = new LinkedHashMap<K, V>(keys.size());
@@ -385,12 +408,17 @@ public abstract class AbstractLoadGTFromFiles implements GenotypesLoader {
 	 * @param alleles maps marker-keys to an allele pairs;
 	 *   the values are usually of type byte[2]
 	 */
-	public abstract void loadIndividualFiles(
+//	public abstract void loadIndividualFiles(
+//			StudyKey studyKey,
+//			File file,
+//			SampleKey sampleKey,
+//			Map<MarkerKey, byte[]> alleles)
+//			throws IOException, InvalidRangeException;
+	protected abstract Iterator<Map.Entry<MarkerKey, byte[]>> iterator(
 			StudyKey studyKey,
-			File file,
 			SampleKey sampleKey,
-			Map<MarkerKey, byte[]> alleles)
-			throws IOException, InvalidRangeException;
+			File file)
+			throws IOException;
 	//</editor-fold>
 
 	static void logAsWhole(String startTime, int studyId, String dirPath, ImportFormat format, String matrixName, String description) throws IOException {
