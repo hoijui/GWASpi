@@ -287,7 +287,7 @@ public class MatrixMergeSamples extends AbstractMergeMatrixOperation {
 			}
 
 			// Write wrMarkerIdSetMap to A3 ArrayChar and save to wrMatrix
-			Utils.saveSingleSampleGTsToMatrix(wrNcFile, rdMarkerSet1.getMarkerIdSetMapByteArray(), sampleIndices[2]);
+			Utils.saveSingleSampleGTsToMatrix(wrNcFile, rdMarkerSet1.getMarkerIdSetMapByteArray().values(), sampleIndices[2]);
 		}
 	}
 }

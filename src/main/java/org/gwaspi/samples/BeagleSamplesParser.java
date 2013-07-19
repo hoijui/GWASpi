@@ -21,18 +21,15 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Collection;
-import java.util.LinkedList;
 import org.gwaspi.constants.cImport;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.StudyKey;
+import org.gwaspi.netCDF.loader.SamplesReceiver;
 
 public class BeagleSamplesParser implements SamplesParser {
 
 	@Override
-	public Collection<SampleInfo> scanSampleInfo(StudyKey studyKey, String sampleInfoPath) throws IOException {
-
-		Collection<SampleInfo> sampleInfos = new LinkedList<SampleInfo>();
+	public void scanSampleInfo(StudyKey studyKey, String sampleInfoPath, SamplesReceiver samplesReceiver) throws Exception {
 
 		FileReader inputFileReader;
 		File sampleFile = new File(sampleInfoPath);
@@ -69,11 +66,9 @@ public class BeagleSamplesParser implements SamplesParser {
 					SampleInfo.Sex.UNKNOWN,
 					SampleInfo.Affection.parse(beagleAffections[i])
 					);
-			sampleInfos.add(sampleInfo);
+			samplesReceiver.addSampleInfo(sampleInfo);
 		}
 
 		inputFileReader.close();
-
-		return sampleInfos;
 	}
 }

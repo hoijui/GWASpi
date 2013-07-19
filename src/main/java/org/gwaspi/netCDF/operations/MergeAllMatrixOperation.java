@@ -115,7 +115,7 @@ public class MergeAllMatrixOperation extends AbstractMergeMarkersMatrixOperation
 			}
 
 			// Write wrMarkerIdSetMap to A3 ArrayChar and save to wrMatrix
-			Utils.saveSingleSampleGTsToMatrix(wrNcFile, wrComboSortedMarkerGTs, wrSampleIndex);
+			Utils.saveSingleSampleGTsToMatrix(wrNcFile, wrComboSortedMarkerGTs.values(), wrSampleIndex);
 			wrSampleIndex++;
 		}
 	}

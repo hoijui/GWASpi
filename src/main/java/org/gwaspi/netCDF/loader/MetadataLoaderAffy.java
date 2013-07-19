@@ -20,7 +20,6 @@ package org.gwaspi.netCDF.loader;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -28,7 +27,6 @@ import org.gwaspi.constants.cImport.Annotation.Affymetrix_GenomeWide6;
 import org.gwaspi.constants.cImport.ImportFormat;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.global.Text;
-import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.StudyKey;
 import org.slf4j.Logger;
@@ -54,7 +52,8 @@ public class MetadataLoaderAffy implements MetadataLoader {
 	}
 
 	@Override
-	public Map<MarkerKey, MarkerMetadata> getSortedMarkerSetWithMetaData() throws IOException {
+	public void loadMarkers(SamplesReceiver samplesReceiver) throws Exception {
+
 		String startTime = org.gwaspi.global.Utils.getMediumDateTimeAsString();
 
 		SortedMap<String, String> tempTM = parseAnnotationBRFile(); // affyId, rsId,chr,pseudo-autosomal,pos, strand, alleles, plus-alleles
@@ -62,7 +61,6 @@ public class MetadataLoaderAffy implements MetadataLoader {
 		org.gwaspi.global.Utils.sysoutStart("initilaizing Marker info");
 		log.info(Text.All.processing);
 
-		Map<MarkerKey, MarkerMetadata> markerMetadata = new LinkedHashMap<MarkerKey, MarkerMetadata>();
 		for (Map.Entry<String, String> entry : tempTM.entrySet()) {
 			// keyValues = chr;pseudo-autosomal1;pseudo-autosomal2;pos;markerId"
 			String[] keyValues = entry.getKey().split(cNetCDF.Defaults.TMP_SEPARATOR);
@@ -89,12 +87,11 @@ public class MetadataLoaderAffy implements MetadataLoader {
 //					keyValues[1], // pseudo-autosomal1
 //					keyValues[2], // pseudo-autosomal2
 
-			markerMetadata.put(MarkerKey.valueOf(keyValues[4]), markerInfo);
+			samplesReceiver.addMarkerMetadata(markerInfo);
 		}
 
 		String description = "Generated sorted MarkerIdSet Map sorted by chromosome and position";
 		MetadataLoaderPlink.logAsWhole(startTime, annotationPath, description, studyKey.getId());
-		return markerMetadata;
 	}
 
 	private SortedMap<String, String> parseAnnotationBRFile() throws IOException {

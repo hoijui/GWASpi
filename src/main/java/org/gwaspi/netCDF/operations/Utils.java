@@ -99,10 +99,9 @@ public class Utils {
 	}
 
 	//<editor-fold defaultstate="expanded" desc="GENOTYPE SAVERS">
-	public static boolean saveSingleSampleGTsToMatrix(NetcdfFileWriteable wrNcFile, Map<?, byte[]> wrMap, int sampleIndex) {
+	public static boolean saveSingleSampleGTsToMatrix(NetcdfFileWriteable wrNcFile, Collection<byte[]> values, int sampleIndex) {
 		boolean result = false;
-		ArrayByte.D3 genotypes = writeMapToSingleSampleArrayByteD3(wrMap, cNetCDF.Strides.STRIDE_GT);
-//		ArrayByte.D3 genotypes = writeMapToCurrentSampleArrayByteD3(wrMap, cNetCDF.Strides.STRIDE_GT);
+		ArrayByte.D3 genotypes = writeToSingleSampleArrayByteD3(values, cNetCDF.Strides.STRIDE_GT);
 
 		int[] origin = new int[] {sampleIndex, 0, 0};
 		try {
@@ -554,16 +553,16 @@ public class Utils {
 		return byteArray;
 	}
 
-	public static ArrayByte.D3 writeMapToSingleSampleArrayByteD3(Map<?, byte[]> map, int stride) {
+	public static ArrayByte.D3 writeToSingleSampleArrayByteD3(Collection<byte[]> values, int stride) {
 		// samplesDim, markersDim, gtStrideDim
-		ArrayByte.D3 byteArray = new ArrayByte.D3(1, map.size(), stride);
+		ArrayByte.D3 byteArray = new ArrayByte.D3(1, values.size(), stride);
 		Index ima = byteArray.getIndex();
 
 		int markerCount = 0;
-		for (byte[] values : map.values()) {
+		for (byte[] value : values) {
 			// 1 Sample at a time, iterating through markers
-			byteArray.setByte(ima.set(0, markerCount, 0), values[0]); // first byte
-			byteArray.setByte(ima.set(0, markerCount, 1), values[1]); // second byte
+			byteArray.setByte(ima.set(0, markerCount, 0), value[0]); // first byte
+			byteArray.setByte(ima.set(0, markerCount, 1), value[1]); // second byte
 			markerCount++;
 		}
 

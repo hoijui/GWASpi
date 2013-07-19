@@ -23,7 +23,9 @@ import java.util.Map;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MarkerMetadata;
 
-public interface MetadataLoader extends Iterable<MarkerMetadata> {
+public interface MetadataLoader /*extends Iterable<MarkerMetadata>*/ {
 
 //	Map<MarkerKey, MarkerMetadata> getSortedMarkerSetWithMetaData() throws IOException;
+
+	void loadMarkers(SamplesReceiver samplesReceiver) throws Exception;
 }

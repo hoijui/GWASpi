@@ -194,7 +194,7 @@ public class MatrixTranslator {
 					translateCurrentSampleAB12AllelesMap(wrMarkerIdSetMap, rdMatrixGtCode, dictionnaryMap);
 
 					// Write wrMarkerIdSetMap to A3 ArrayChar and save to wrMatrix
-					Utils.saveSingleSampleGTsToMatrix(wrNcFile, wrMarkerIdSetMap, sampleIndex);
+					Utils.saveSingleSampleGTsToMatrix(wrNcFile, wrMarkerIdSetMap.values(), sampleIndex);
 					if (sampleIndex % 100 == 0) {
 						log.info("Samples translated: {}", sampleIndex);
 					}
@@ -346,7 +346,7 @@ public class MatrixTranslator {
 					translateCurrentSample1234AllelesMap(wrMarkerIdSetMap, markerStrandsMap.keySet());
 
 					// Write wrMarkerIdSetMap to A3 ArrayChar and save to wrMatrix
-					Utils.saveSingleSampleGTsToMatrix(wrNcFile, wrMarkerIdSetMap, sampleNb);
+					Utils.saveSingleSampleGTsToMatrix(wrNcFile, wrMarkerIdSetMap.values(), sampleNb);
 
 					if (sampleNb % 100 == 0) {
 						log.info("Samples translated: {}", sampleNb);

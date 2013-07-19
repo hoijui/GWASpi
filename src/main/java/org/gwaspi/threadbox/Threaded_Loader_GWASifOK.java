@@ -25,7 +25,9 @@ import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.netCDF.loader.GenotypesLoadDescription;
+import org.gwaspi.netCDF.loader.InMemorySamplesReceiver;
 import org.gwaspi.netCDF.loader.LoadManager;
+import org.gwaspi.netCDF.loader.NetCDFSaverSamplesReceiver;
 import org.gwaspi.netCDF.loader.SampleInfoCollectorSwitch;
 import org.gwaspi.netCDF.operations.GWASinOneGOParams;
 import org.gwaspi.netCDF.operations.OP_QAMarkers;
@@ -67,21 +69,25 @@ public class Threaded_Loader_GWASifOK extends CommonRunnable {
 
 	protected void runInternal(SwingWorkerItem thisSwi) throws Exception {
 
-		Collection<SampleInfo> sampleInfos = SampleInfoCollectorSwitch.collectSampleInfo(
+		NetCDFSaverSamplesReceiver samplesReceiver = new NetCDFSaverSamplesReceiver(loadDescription); // HACK FIXME
+		SampleInfoCollectorSwitch.collectSampleInfo(
 				loadDescription.getStudyKey(),
 				loadDescription.getFormat(),
 				dummySamples,
 				loadDescription.getSampleFilePath(),
 				loadDescription.getGtDirPath(),
-				loadDescription.getAnnotationFilePath());
-		Set<SampleInfo.Affection> affectionStates = SampleInfoCollectorSwitch.collectAffectionStates(sampleInfos);
+				loadDescription.getAnnotationFilePath(),
+				samplesReceiver);
+		Set<SampleInfo.Affection> affectionStates = SampleInfoCollectorSwitch.collectAffectionStates(samplesReceiver.getDataSet().getSampleInfos());
 
 		//<editor-fold defaultstate="expanded" desc="LOAD PROCESS">
 		MatrixKey matrixKey = null;
 		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
-			matrixKey = LoadManager.dispatchLoadByFormat(
+			LoadManager.dispatchLoadByFormat(
 					loadDescription,
-					sampleInfos);
+					samplesReceiver);
+			matrixKey = samplesReceiver.getResultMatrixKey();
+			samplesReceiver.done();
 			MultiOperations.printCompleted("Loading Genotypes");
 			GWASpiExplorerNodes.insertMatrixNode(matrixKey);
 		}

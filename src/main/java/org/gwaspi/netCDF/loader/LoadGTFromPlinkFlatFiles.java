@@ -23,31 +23,22 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 import org.gwaspi.constants.cImport;
 import org.gwaspi.constants.cImport.Annotation.Plink_Standard;
 import org.gwaspi.constants.cImport.ImportFormat;
-import org.gwaspi.constants.cImport.StrandFlags;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
-import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
-import org.gwaspi.global.Text;
+import org.gwaspi.model.DataSet;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MarkerMetadata;
-import org.gwaspi.model.MatricesList;
-import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.StudyKey;
-import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.ma2.ArrayChar;
-import ucar.ma2.ArrayInt;
-import ucar.ma2.Index;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.NetcdfFileWriteable;
 
@@ -94,44 +85,55 @@ public class LoadGTFromPlinkFlatFiles extends AbstractLoadGTFromFiles implements
 	}
 
 	@Override
+//	protected void loadGenotypes(
+//			GenotypesLoadDescription loadDescription,
+//			Collection<SampleInfo> sampleInfos,
+//			Map<MarkerKey, MarkerMetadata> markerSetMap,
+//			NetcdfFileWriteable ncfile,
+//			List<SampleKey> sampleKeys,
+//			GenotypeEncoding guessedGTCode)
+//			throws IOException, InvalidRangeException
+//	{
 	protected void loadGenotypes(
 			GenotypesLoadDescription loadDescription,
-			Collection<SampleInfo> sampleInfos,
-			Map<MarkerKey, MarkerMetadata> markerSetMap,
-			NetcdfFileWriteable ncfile,
-			List<SampleKey> sampleKeys,
-			GenotypeEncoding guessedGTCode)
-			throws IOException, InvalidRangeException
+			SamplesReceiver samplesReceiver)
+			throws Exception
 	{
 		Map<MarkerKey, byte[]> mapMarkerSetMap = MetadataLoaderPlink.parseOrigMapFile(loadDescription.getGtDirPath());
-		loadPedGenotypes(
-				loadDescription.getStudyKey(),
-				new File(loadDescription.getAnnotationFilePath()),
-				ncfile,
-				markerSetMap.keySet(),
-				mapMarkerSetMap,
-				sampleKeys,
-				guessedGTCode);
-	}
-
-	public void loadPedGenotypes(
-			StudyKey studyKey,
-			File file,
-			NetcdfFileWriteable ncfile,
-			Collection<MarkerKey> wrMarkerKeys,
-			Map<MarkerKey, ?> mapMarkerSetMap,
-			List<SampleKey> sampleKeys,
-			GenotypeEncoding guessedGTCode)
-			throws IOException, InvalidRangeException
-	{
+//		loadPedGenotypes(
+//				loadDescription.getStudyKey(),
+//				new File(loadDescription.getAnnotationFilePath()),
+//				ncfile,
+//				markerSetMap.keySet(),
+//				mapMarkerSetMap,
+//				sampleKeys,
+//				guessedGTCode);
+//	}
+//
+//	public void loadPedGenotypes(
+//			StudyKey studyKey,
+//			File file,
+//			NetcdfFileWriteable ncfile,
+//			Collection<MarkerKey> wrMarkerKeys,
+//			Map<MarkerKey, ?> mapMarkerSetMap,
+//			List<SampleKey> sampleKeys,
+//			GenotypeEncoding guessedGTCode)
+//			throws IOException, InvalidRangeException
+//	{
+		File file = new File(loadDescription.getAnnotationFilePath());
 		FileReader inputFileReader = new FileReader(file);
 		BufferedReader inputBufferReader = new BufferedReader(inputFileReader);
+
+		// HACK
+		DataSet dataSet = ((InMemorySamplesReceiver) samplesReceiver).getDataSet();
+
+		List<SampleKey> sampleKeys = AbstractLoadGTFromFiles.extractKeys(dataSet.getSampleInfos());
 
 		// GET ALLELES
 		String l;
 		while ((l = inputBufferReader.readLine()) != null) {
 			// PURGE WRITE MARKER SET
-			Map<MarkerKey, byte[]> allelesMap = AbstractLoadGTFromFiles.fillMap(wrMarkerKeys, cNetCDF.Defaults.DEFAULT_GT);
+			Map<MarkerKey, byte[]> allelesMap = AbstractLoadGTFromFiles.fillMap(dataSet.getMarkerMetadatas().keySet(), cNetCDF.Defaults.DEFAULT_GT);
 
 			StringTokenizer st = new StringTokenizer(l, cImport.Separators.separators_CommaSpaceTab_rgxp);
 
@@ -159,16 +161,17 @@ public class LoadGTFromPlinkFlatFiles extends AbstractLoadGTFromFiles implements
 			}
 			st = null;
 
-			if (guessedGTCode.equals(cNetCDF.Defaults.GenotypeEncoding.UNKNOWN)) {
-				guessedGTCode = Utils.detectGTEncoding(allelesMap);
-			} else if (guessedGTCode.equals(cNetCDF.Defaults.GenotypeEncoding.O12)) {
-				guessedGTCode = Utils.detectGTEncoding(allelesMap);
-			}
+//			GenotypeEncoding guessedGTCode = getGuessedGTCode();
+//			if (guessedGTCode.equals(cNetCDF.Defaults.GenotypeEncoding.UNKNOWN)
+//					|| guessedGTCode.equals(cNetCDF.Defaults.GenotypeEncoding.O12))
+//			{
+//				guessedGTCode = Utils.detectGTEncoding(allelesMap);
+//			}
 
 			// WRITING GENOTYPE DATA INTO netCDF FILE
-			int sampleIndex = sampleKeys.indexOf(new SampleKey(studyKey, sampleId, familyId));
+			int sampleIndex = sampleKeys.indexOf(new SampleKey(loadDescription.getStudyKey(), sampleId, familyId));
 			if (sampleIndex != -1) {  //CHECK IF CURRENT SAMPLE IS KNOWN IN SAMPLEINFO FILE!!
-				org.gwaspi.netCDF.operations.Utils.saveSingleSampleGTsToMatrix(ncfile, allelesMap, sampleIndex);
+				samplesReceiver.addSampleGTAlleles(allelesMap.values());
 			}
 		}
 		inputBufferReader.close();

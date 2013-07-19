@@ -21,11 +21,10 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Collection;
-import java.util.LinkedList;
 import org.gwaspi.constants.cImport;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.StudyKey;
+import org.gwaspi.netCDF.loader.SamplesReceiver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,16 +34,14 @@ public class IlluminaLGENSamplesParser implements SamplesParser {
 			= LoggerFactory.getLogger(IlluminaLGENSamplesParser.class);
 
 	@Override
-	public Collection<SampleInfo> scanSampleInfo(StudyKey studyKey, String sampleInfoPath) throws IOException {
-
-		Collection<SampleInfo> sampleInfos = new LinkedList<SampleInfo>();
+	public void scanSampleInfo(StudyKey studyKey, String sampleInfoPath, SamplesReceiver samplesReceiver) throws Exception {
 
 		File[] gtFilesToImport = org.gwaspi.global.Utils.listFiles(sampleInfoPath);
 
-		for (int i = 0; i < gtFilesToImport.length; i++) {
-			FileReader inputFileReader = new FileReader(gtFilesToImport[i]);
+		int numSamples = 0;
+		for (File gtFilesToImport1 : gtFilesToImport) {
+			FileReader inputFileReader = new FileReader(gtFilesToImport1);
 			BufferedReader inputBufferReader = new BufferedReader(inputFileReader);
-
 			boolean gotHeader = false;
 			while (!gotHeader && inputBufferReader.ready()) {
 				String header = inputBufferReader.readLine();
@@ -53,7 +50,6 @@ public class IlluminaLGENSamplesParser implements SamplesParser {
 					gotHeader = true;
 				}
 			}
-
 			String l;
 			while (inputBufferReader.ready()) {
 				l = inputBufferReader.readLine();
@@ -67,20 +63,16 @@ public class IlluminaLGENSamplesParser implements SamplesParser {
 						SampleInfo.Sex.UNKNOWN,
 						SampleInfo.Affection.UNKNOWN
 						);
+				samplesReceiver.addSampleInfo(sampleInfo);
+				numSamples++;
 
-				sampleInfos.add(sampleInfo);
-
-				if (sampleInfos.size() % 100 == 0) {
-					log.info("Parsed {} Samples...", sampleInfos.size());
+				if (numSamples % 100 == 0) {
+					log.info("Parsed {} Samples...", numSamples);
 				}
 			}
-			log.info("Parsed {} Samples in LGEN file {}...",
-					sampleInfos.size(), gtFilesToImport[i].getName());
-
+			log.info("Parsed {} Samples in LGEN file {}...", numSamples, gtFilesToImport1.getName());
 			inputBufferReader.close();
 			inputFileReader.close();
 		}
-
-		return sampleInfos;
 	}
 }

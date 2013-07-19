@@ -29,7 +29,6 @@ import org.gwaspi.constants.cImport.Annotation.Plink_Binary;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
 import org.gwaspi.global.Text;
-import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.StudyKey;
@@ -53,7 +52,8 @@ public class MetadataLoaderPlinkBinary implements MetadataLoader {
 	}
 
 	@Override
-	public Map<MarkerKey, MarkerMetadata> getSortedMarkerSetWithMetaData() throws IOException {
+	public void loadMarkers(SamplesReceiver samplesReceiver) throws Exception {
+
 		String startTime = org.gwaspi.global.Utils.getMediumDateTimeAsString();
 
 		SortedMap<String, String> tempTM = parseAndSortBimFile(); // chr, markerId, genetic distance, position
@@ -61,7 +61,6 @@ public class MetadataLoaderPlinkBinary implements MetadataLoader {
 		org.gwaspi.global.Utils.sysoutStart("initilaizing Marker info");
 		log.info(Text.All.processing);
 
-		Map<MarkerKey, MarkerMetadata> markerMetadata = new LinkedHashMap<MarkerKey, MarkerMetadata>();
 		for (Map.Entry<String, String> entry : tempTM.entrySet()) {
 			// "chr;pos;markerId"
 			String[] keyValues = entry.getKey().split(cNetCDF.Defaults.TMP_SEPARATOR);
@@ -88,12 +87,11 @@ public class MetadataLoaderPlinkBinary implements MetadataLoader {
 					pos, // pos
 					valValues); // alleles
 
-			markerMetadata.put(MarkerKey.valueOf(keyValues[2]), markerInfo);
+			samplesReceiver.addMarkerMetadata(markerInfo);
 		}
 
 		String description = "Generated sorted MarkerIdSet Map sorted by chromosome and position";
 		MetadataLoaderPlink.logAsWhole(startTime, bimPath, description, studyKey.getId());
-		return markerMetadata;
 	}
 
 	private SortedMap<String, String> parseAndSortBimFile() throws IOException {

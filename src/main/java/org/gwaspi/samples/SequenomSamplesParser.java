@@ -21,11 +21,10 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Collection;
-import java.util.LinkedList;
 import org.gwaspi.constants.cImport;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.StudyKey;
+import org.gwaspi.netCDF.loader.SamplesReceiver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,15 +34,14 @@ public class SequenomSamplesParser implements SamplesParser {
 			= LoggerFactory.getLogger(SequenomSamplesParser.class);
 
 	@Override
-	public Collection<SampleInfo> scanSampleInfo(StudyKey studyKey, String sampleInfoPath) throws IOException {
-
-		Collection<SampleInfo> sampleInfos = new LinkedList<SampleInfo>();
+	public void scanSampleInfo(StudyKey studyKey, String sampleInfoPath, SamplesReceiver samplesReceiver) throws Exception {
 
 		File gtFileToImport = new File(sampleInfoPath);
 		FileReader inputFileReader = new FileReader(gtFileToImport);
 		BufferedReader inputBufferReader = new BufferedReader(inputFileReader);
 
 		String l;
+		int numSamples = 0;
 		while (inputBufferReader.ready()) {
 			l = inputBufferReader.readLine();
 			if (!l.contains("SAMPLE_ID")) { // SKIP ALL HEADER LINES
@@ -51,22 +49,22 @@ public class SequenomSamplesParser implements SamplesParser {
 				// TODO maybe use more then just the sampleId read from the Sequenom file?
 				SampleInfo sampleInfo = new SampleInfo(
 						studyKey, cVals[cImport.Annotation.Sequenom.sampleId]);
-				if (!sampleInfos.contains(sampleInfo)) {
-					sampleInfos.add(sampleInfo);
-				}
+				// NOTE this is done in DataSet, by using LinkedHashSet for the sampleInfos
+//				if (!sampleInfos.contains(sampleInfo)) {
+					samplesReceiver.addSampleInfo(sampleInfo);
+//				}
+				numSamples++;
 
-				if (sampleInfos.size() % 100 == 0) {
-					log.info("Parsed {} lines...", sampleInfos.size());
+				if (numSamples % 100 == 0) {
+					log.info("Parsed {} lines...", numSamples);
 				}
 			}
 
 		}
 		log.info("Parsed {} Samples in Sequenom file {}...",
-				sampleInfos.size(), gtFileToImport);
+				numSamples, gtFileToImport);
 
 		inputBufferReader.close();
 		inputFileReader.close();
-
-		return sampleInfos;
 	}
 }

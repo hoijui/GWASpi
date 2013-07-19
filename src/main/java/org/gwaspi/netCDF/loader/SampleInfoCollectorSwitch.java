@@ -69,62 +69,85 @@ public class SampleInfoCollectorSwitch {
 		return (cVals.length == 6);
 	}
 
-	public static Collection<SampleInfo> collectSampleInfo(
+	public static void collectSampleInfo(
 			StudyKey studyKey,
 			ImportFormat format,
 			boolean dummySamples,
 			String sampleInfoPath,
 			String altSampleInfoPath1,
-			String altSampleInfoPath2)
-			throws IOException
+			String altSampleInfoPath2,
+			SamplesReceiver samplesReceiver)
+			throws Exception
 	{
-		Collection<SampleInfo> sampleInfos;
-
 		switch (format) {
 			case Affymetrix_GenomeWide6:
 			case PLINK:
 			case Illumina_LGEN:
 				log.info(Text.Matrix.scanAffectionStandby);
 				if (dummySamples) {
-					sampleInfos = SamplesParserManager.scanSampleInfo(studyKey, format, altSampleInfoPath2);
+					samplesReceiver.startLoadingDummySampleInfos();
+					SamplesParserManager.scanSampleInfo(studyKey, format, altSampleInfoPath2, samplesReceiver);
+					samplesReceiver.finishedLoadingDummySampleInfos();
 				} else {
-					Collection<SampleInfo> dummySamplesInfos = SamplesParserManager.scanSampleInfo(studyKey, format, altSampleInfoPath2);
-					sampleInfos = SamplesParserManager.scanSampleInfo(studyKey, ImportFormat.GWASpi, sampleInfoPath);
-					checkMissingSampleInfo(studyKey, dummySamplesInfos, sampleInfos);
+					samplesReceiver.startLoadingDummySampleInfos();
+					SamplesParserManager.scanSampleInfo(studyKey, format, altSampleInfoPath2, samplesReceiver);
+					samplesReceiver.finishedLoadingDummySampleInfos();
+
+					samplesReceiver.startLoadingSampleInfos();
+					SamplesParserManager.scanSampleInfo(studyKey, ImportFormat.GWASpi, sampleInfoPath, samplesReceiver);
+					samplesReceiver.finishedLoadingSampleInfos();
+
+					// NOTE this is done in DataSet, by using LinkedHashSet for the sampleInfos
+//					checkMissingSampleInfo(studyKey, dummySamplesInfos, sampleInfos);
 				}
 				break;
 			case PLINK_Binary:
 				log.info(Text.Matrix.scanAffectionStandby);
+				samplesReceiver.startLoadingSampleInfos();
 				if (checkIsPlinkFAMFile(sampleInfoPath)) {
-					sampleInfos = SamplesParserManager.scanSampleInfo(studyKey, format, sampleInfoPath);
+					SamplesParserManager.scanSampleInfo(studyKey, format, sampleInfoPath, samplesReceiver);
 				} else {
 					// It is a SampleInfo file
-					sampleInfos = SamplesParserManager.scanSampleInfo(studyKey, ImportFormat.GWASpi, sampleInfoPath);
+					SamplesParserManager.scanSampleInfo(studyKey, ImportFormat.GWASpi, sampleInfoPath, samplesReceiver);
 				}
+				samplesReceiver.finishedLoadingSampleInfos();
 				break;
 			case HAPMAP:
 			case BEAGLE:
 			case HGDP1:
 				log.info(Text.Matrix.scanAffectionStandby);
 				if (dummySamples) {
-					sampleInfos = SamplesParserManager.scanSampleInfo(studyKey, format, altSampleInfoPath1);
+					samplesReceiver.startLoadingDummySampleInfos();
+					SamplesParserManager.scanSampleInfo(studyKey, format, altSampleInfoPath1, samplesReceiver);
+					samplesReceiver.finishedLoadingDummySampleInfos();
 				} else {
-					Collection<SampleInfo> dummySamplesInfos = SamplesParserManager.scanSampleInfo(studyKey, format, altSampleInfoPath1);
-					sampleInfos = SamplesParserManager.scanSampleInfo(studyKey, ImportFormat.GWASpi, sampleInfoPath);
-					checkMissingSampleInfo(studyKey, dummySamplesInfos, sampleInfos);
+					samplesReceiver.startLoadingDummySampleInfos();
+					SamplesParserManager.scanSampleInfo(studyKey, format, altSampleInfoPath1, samplesReceiver);
+					samplesReceiver.finishedLoadingDummySampleInfos();
+
+					samplesReceiver.startLoadingSampleInfos();
+					SamplesParserManager.scanSampleInfo(studyKey, ImportFormat.GWASpi, sampleInfoPath, samplesReceiver);
+					samplesReceiver.finishedLoadingSampleInfos();
+
+					// NOTE this is done in DataSet, by using LinkedHashSet for the sampleInfos
+//					checkMissingSampleInfo(studyKey, dummySamplesInfos, sampleInfos);
 				}
 				break;
 			case GWASpi:
-				sampleInfos = SamplesParserManager.scanSampleInfo(studyKey, format, sampleInfoPath);
+				samplesReceiver.startLoadingSampleInfos();
+				SamplesParserManager.scanSampleInfo(studyKey, format, sampleInfoPath, samplesReceiver);
+				samplesReceiver.finishedLoadingSampleInfos();
 				break;
 			case Sequenom:
-				sampleInfos = SamplesParserManager.scanSampleInfo(studyKey, ImportFormat.GWASpi, sampleInfoPath); // FIXME why not format instead of ImportFormat.GWASpi?
+				samplesReceiver.startLoadingSampleInfos();
+				SamplesParserManager.scanSampleInfo(studyKey, ImportFormat.GWASpi, sampleInfoPath, samplesReceiver); // FIXME why not format instead of ImportFormat.GWASpi?
+				samplesReceiver.finishedLoadingSampleInfos();
 				break;
 			default:
-				sampleInfos = new ArrayList<SampleInfo>();
+//				sampleInfos = new ArrayList<SampleInfo>();
 		}
-
-		return sampleInfos;
+//
+//		return sampleInfos;
 	}
 
 	public static Set<SampleInfo.Affection> collectAffectionStates(Collection<SampleInfo> sampleInfos) {

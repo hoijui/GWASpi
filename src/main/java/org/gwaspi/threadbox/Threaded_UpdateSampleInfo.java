@@ -25,6 +25,7 @@ import org.gwaspi.model.SampleInfoList;
 import org.gwaspi.model.Study;
 import org.gwaspi.model.StudyKey;
 import org.gwaspi.model.StudyList;
+import org.gwaspi.netCDF.loader.InMemorySamplesReceiver;
 import org.gwaspi.samples.SamplesParserManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,10 +55,13 @@ public class Threaded_UpdateSampleInfo extends CommonRunnable {
 
 	protected void runInternal(SwingWorkerItem thisSwi) throws Exception {
 
-		Collection<SampleInfo> sampleInfos = SamplesParserManager.scanSampleInfo(
+		InMemorySamplesReceiver inMemorySamplesReceiver = new InMemorySamplesReceiver();
+		SamplesParserManager.scanSampleInfo(
 				studyKey,
 				ImportFormat.GWASpi,
-				sampleInfoFile.getPath());
+				sampleInfoFile.getPath(),
+				inMemorySamplesReceiver);
+		Collection<SampleInfo> sampleInfos = inMemorySamplesReceiver.getDataSet().getSampleInfos();
 		SampleInfoList.insertSampleInfos(sampleInfos);
 
 		// DO NOT! Write new reports of SAMPLE QA

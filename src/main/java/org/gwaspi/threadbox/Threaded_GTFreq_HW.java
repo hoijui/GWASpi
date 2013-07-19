@@ -32,6 +32,7 @@ import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleInfoList;
+import org.gwaspi.netCDF.loader.InMemorySamplesReceiver;
 import org.gwaspi.netCDF.operations.GWASinOneGOParams;
 import org.gwaspi.netCDF.operations.OperationManager;
 import org.gwaspi.samples.SamplesParserManager;
@@ -96,10 +97,13 @@ public class Threaded_GTFreq_HW extends CommonRunnable {
 						&& affectionStates.contains(SampleInfo.Affection.AFFECTED))
 				{
 					getLog().info("Updating Sample Info in DB");
-					Collection<SampleInfo> sampleInfos = SamplesParserManager.scanSampleInfo(
+					InMemorySamplesReceiver inMemorySamplesReceiver = new InMemorySamplesReceiver();
+					SamplesParserManager.scanSampleInfo(
 							matrixKey.getStudyKey(),
 							ImportFormat.GWASpi,
-							phenotypeFile.getPath());
+							phenotypeFile.getPath(),
+							inMemorySamplesReceiver);
+					Collection<SampleInfo> sampleInfos = inMemorySamplesReceiver.getDataSet().getSampleInfos();
 					SampleInfoList.insertSampleInfos(sampleInfos);
 
 					censusOpKey = OperationManager.censusCleanMatrixMarkersByPhenotypeFile(

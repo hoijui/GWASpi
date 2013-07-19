@@ -20,7 +20,6 @@ package org.gwaspi.netCDF.loader;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.SortedMap;
@@ -49,30 +48,30 @@ public class MetadataLoaderPlink implements MetadataLoader {
 		this.studyKey = studyKey;
 	}
 
+//	@Override
+//	public Iterator<MarkerMetadata> iterator() {
+//		return new PlinkFlatMarkerParseIterator();
+//	}
+//
+//	private static class PlinkFlatMarkerParseIterator implements Iterator<MarkerMetadata> {
+//
+//		public boolean hasNext() {
+//			throw new UnsupportedOperationException("Not supported yet.");
+//		}
+//
+//		public MarkerMetadata next() {
+//			throw new UnsupportedOperationException("Not supported yet.");
+//		}
+//
+//		public void remove() {
+//			throw new UnsupportedOperationException();
+//		}
+//
+//	}
 
 	@Override
-	public Iterator<MarkerMetadata> iterator() {
-		return new PlinkFlatMarkerParseIterator();
-	}
+	public void loadMarkers(SamplesReceiver samplesReceiver) throws Exception {
 
-	private static class PlinkFlatMarkerParseIterator implements Iterator<MarkerMetadata> {
-
-		public boolean hasNext() {
-			throw new UnsupportedOperationException("Not supported yet.");
-		}
-
-		public MarkerMetadata next() {
-			throw new UnsupportedOperationException("Not supported yet.");
-		}
-
-		public void remove() {
-			throw new UnsupportedOperationException();
-		}
-
-	}
-
-	@Override
-	public Map<MarkerKey, MarkerMetadata> getSortedMarkerSetWithMetaData() throws IOException {
 		String startTime = org.gwaspi.global.Utils.getMediumDateTimeAsString();
 
 		SortedMap<String, String> tempTM = parseAndSortMapFile(); // chr, markerId, genetic distance, position
@@ -80,7 +79,6 @@ public class MetadataLoaderPlink implements MetadataLoader {
 		org.gwaspi.global.Utils.sysoutStart("initilaizing Marker info");
 		log.info(Text.All.processing);
 
-		Map<MarkerKey, MarkerMetadata> markerMetadata = new LinkedHashMap<MarkerKey, MarkerMetadata>();
 		for (Map.Entry<String, String> entry : tempTM.entrySet()) {
 			// "chr;pos;markerId"
 			String[] keyValues = entry.getKey().split(cNetCDF.Defaults.TMP_SEPARATOR);
@@ -103,12 +101,11 @@ public class MetadataLoaderPlink implements MetadataLoader {
 					MetadataLoaderBeagle.fixChrData(keyValues[0]), // chr
 					pos); // pos
 
-			markerMetadata.put(MarkerKey.valueOf(keyValues[2]), markerInfo);
+			samplesReceiver.addMarkerMetadata(markerInfo);
 		}
 
 		String description = "Generated sorted MarkerIdSet Map sorted by chromosome and position";
 		logAsWhole(startTime, mapPath, description, studyKey.getId());
-		return markerMetadata;
 	}
 
 	private SortedMap<String, String> parseAndSortMapFile() throws IOException {

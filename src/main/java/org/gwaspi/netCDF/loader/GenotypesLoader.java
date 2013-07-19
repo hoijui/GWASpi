@@ -36,7 +36,7 @@ public interface GenotypesLoader /*extends Iterable<Map.Entry<MarkerKey, byte[]>
 	/**
 	 * Process Genotypes
 	 */
-	int processData(GenotypesLoadDescription loadDescription, Collection<SampleInfo> sampleInfo) throws IOException, InvalidRangeException, InterruptedException;
+	void processData(GenotypesLoadDescription loadDescription, SamplesReceiver samplesReceiver) throws Exception;
 
 	ImportFormat getFormat();
 

@@ -21,11 +21,10 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Collection;
-import java.util.LinkedList;
 import org.gwaspi.constants.cImport;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.StudyKey;
+import org.gwaspi.netCDF.loader.SamplesReceiver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,11 +34,11 @@ public class MultipleIlluminaLGENSamplesParser implements SamplesParser {
 			= LoggerFactory.getLogger(MultipleIlluminaLGENSamplesParser.class);
 
 	@Override
-	public Collection<SampleInfo> scanSampleInfo(StudyKey studyKey, String sampleInfoPath) throws IOException {
+	public void scanSampleInfo(StudyKey studyKey, String sampleInfoPath, SamplesReceiver samplesReceiver) throws Exception {
 
-		Collection<SampleInfo> sampleInfos = new LinkedList<SampleInfo>();
 		File[] lgenFilesToScan = org.gwaspi.global.Utils.listFiles(sampleInfoPath);
 
+		int numSamples = 0;
 		for (File currentLGENFile : lgenFilesToScan) {
 			FileReader inputFileReader = new FileReader(currentLGENFile);
 			BufferedReader inputBufferReader = new BufferedReader(inputFileReader);
@@ -69,16 +68,14 @@ public class MultipleIlluminaLGENSamplesParser implements SamplesParser {
 						SampleInfo.Sex.UNKNOWN,
 						SampleInfo.Affection.UNKNOWN
 						);
-
-				sampleInfos.add(sampleInfo);
+				samplesReceiver.addSampleInfo(sampleInfo);
+				numSamples++;
 			}
 			log.info("Parsed {} Samples in LGEN file {}...",
-					sampleInfos.size(), currentLGENFile.getName());
+					numSamples, currentLGENFile.getName());
 
 			inputBufferReader.close();
 			inputFileReader.close();
 		}
-
-		return sampleInfos;
 	}
 }

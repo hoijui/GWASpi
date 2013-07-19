@@ -26,6 +26,7 @@ import java.util.LinkedList;
 import org.gwaspi.constants.cImport;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.StudyKey;
+import org.gwaspi.netCDF.loader.SamplesReceiver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,13 +36,12 @@ public class PlinkFAMSamplesParser implements SamplesParser {
 			= LoggerFactory.getLogger(PlinkFAMSamplesParser.class);
 
 	@Override
-	public Collection<SampleInfo> scanSampleInfo(StudyKey studyKey, String sampleInfoPath) throws IOException {
+	public void scanSampleInfo(StudyKey studyKey, String sampleInfoPath, SamplesReceiver samplesReceiver) throws Exception {
 
-		Collection<SampleInfo> sampleInfos = new LinkedList<SampleInfo>();
 		FileReader inputFileReader = new FileReader(new File(sampleInfoPath));
 		BufferedReader inputBufferReader = new BufferedReader(inputFileReader);
 
-		int count = 0;
+		int numSamples = 0;
 		while (inputBufferReader.ready()) {
 			String l = inputBufferReader.readLine();
 			String[] cVals = l.split(cImport.Separators.separators_CommaSpaceTab_rgxp);
@@ -61,18 +61,15 @@ public class PlinkFAMSamplesParser implements SamplesParser {
 					sex,
 					affection
 					);
+			samplesReceiver.addSampleInfo(sampleInfo);
+			numSamples++;
 
-			sampleInfos.add(sampleInfo);
-
-			count++;
-			if (count % 100 == 0) {
-				log.info("Parsed {} Samples for info...", count);
+			if (numSamples % 100 == 0) {
+				log.info("Parsed {} Samples for info...", numSamples);
 			}
 		}
 
 		inputBufferReader.close();
 		inputFileReader.close();
-
-		return sampleInfos;
 	}
 }

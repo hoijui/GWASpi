@@ -47,21 +47,22 @@ public class LoadManager {
 	private LoadManager() {
 	}
 
-	public static MatrixKey dispatchLoadByFormat(
+	public static void dispatchLoadByFormat(
 			GenotypesLoadDescription loadDescription,
-			Collection<SampleInfo> sampleInfos)
+			SamplesReceiver samplesReceiver)
 			throws IOException, InvalidRangeException, InterruptedException
 	{
-		int newMatrixId = Integer.MIN_VALUE;
-
 		GenotypesLoader genotypesLoader = genotypesLoaders.get(loadDescription.getFormat());
+
+		// HACK
+		if (samplesReceiver instanceof NetCDFSaverSamplesReceiver) {
+			((NetCDFSaverSamplesReceiver) samplesReceiver).setGTLoader(genotypesLoader);
+		}
+
 		if (genotypesLoader == null) {
 			throw new IOException("No Genotypes-Loader found for format " + loadDescription.getFormat());
 		} else {
-			SampleInfoList.insertSampleInfos(sampleInfos);
-			newMatrixId = genotypesLoader.processData(loadDescription, sampleInfos);
+			genotypesLoader.processData(loadDescription, samplesReceiver);
 		}
-
-		return new MatrixKey(loadDescription.getStudyKey(), newMatrixId);
 	}
 }

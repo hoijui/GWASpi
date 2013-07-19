@@ -408,7 +408,7 @@ public class MatrixDataExtractor {
 					Map<MarkerKey, byte[]> sortedRdPos = org.gwaspi.global.Utils.createOrderedMap(wrMarkerIdSetMap, rdMarkerSet.getMarkerIdSetMapByteArray());
 
 					// Write wrMarkerIdSetMap to A3 ArrayChar and save to wrMatrix
-					Utils.saveSingleSampleGTsToMatrix(wrNcFile, sortedRdPos, sampleWrIndex);
+					Utils.saveSingleSampleGTsToMatrix(wrNcFile, sortedRdPos.values(), sampleWrIndex);
 					if (sampleWrIndex % 100 == 0) {
 						log.info("Samples copied: {}", sampleWrIndex);
 					}
