@@ -36,6 +36,7 @@ import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.StartGWASpi;
+import org.gwaspi.model.DataSet;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.MatricesList;
@@ -115,14 +116,6 @@ public class LoadGTFromPlinkBinaryFiles implements GenotypesLoader {
 			markerSetMap.put(MarkerKey.valueOf(markerMetadata), markerMetadata);
 		}
 //		markerSetMap.putAll(tmpMarkerMap);
-
-		// PLAYING IT SAFE WITH HALF THE maxProcessMarkers
-		int hyperSlabRows = (int) Math.round(
-				(double) StartGWASpi.maxProcessMarkers / (sampleInfos.size() * 2));
-		if (markerSetMap.size() < hyperSlabRows) {
-			hyperSlabRows = markerSetMap.size();
-		}
-
 		log.info("Done initializing sorted MarkerSetMap");
 
 		// CREATE netCDF-3 FILE
@@ -334,51 +327,68 @@ public class LoadGTFromPlinkBinaryFiles implements GenotypesLoader {
 	}
 
 	@Override
+//	protected void loadGenotypes(
+//			GenotypesLoadDescription loadDescription,
+//			Collection<SampleInfo> sampleInfos,
+//			Map<MarkerKey, MarkerMetadata> markerSetMap,
+//			NetcdfFileWriteable ncfile,
+//			List<SampleKey> sampleKeys,
+//			GenotypeEncoding guessedGTCode)
+//			throws IOException, InvalidRangeException
+//	{
 	protected void loadGenotypes(
 			GenotypesLoadDescription loadDescription,
-			Collection<SampleInfo> sampleInfos,
-			Map<MarkerKey, MarkerMetadata> markerSetMap,
-			NetcdfFileWriteable ncfile,
-			List<SampleKey> sampleKeys,
-			GenotypeEncoding guessedGTCode)
-			throws IOException, InvalidRangeException
+			SamplesReceiver samplesReceiver)
+			throws Exception
 	{
-		Map<SampleKey, String[]> bimSamples = MetadataLoaderPlinkBinary.parseOrigBimFile(
+		DataSet dataSet = ((InMemorySamplesReceiver) samplesReceiver).getDataSet();
+
+//		// PLAYING IT SAFE WITH HALF THE maxProcessMarkers
+//		// This number specifies, how many markers (lines in hte file)
+//		// are read into memory, before writing them to the NetCDF-file
+//		int hyperSlabRows = (int) Math.round(
+//				(double) StartGWASpi.maxProcessMarkers / (dataSet.getSampleInfos().size() * 2));
+//		if (dataSet.getMarkerMetadatas().size() < hyperSlabRows) {
+//			hyperSlabRows = dataSet.getMarkerMetadatas().size();
+//		}
+
+		Map<MarkerKey, String[]> bimSamples = MetadataLoaderPlinkBinary.parseOrigBimFile(
 				loadDescription.getAnnotationFilePath(),
 				loadDescription.getStudyKey()
 				); // key = markerId, values{allele1 (minor), allele2 (major)}
-		loadBedGenotypes(
-				new File(loadDescription.getGtDirPath()),
-				ncfile,
-				bimSamples,
-				sampleInfos,
-				guessedGTCode,
-				hyperSlabRows);
-	}
-
-	private void loadBedGenotypes(
-			File file,
-			NetcdfFileWriteable ncfile,
-			Map<SampleKey, String[]> bimSamples,
-			Collection<SampleInfo> sampleInfos,
-			GenotypeEncoding guessedGTCode,
-			int hyperSlabRows)
-			throws IOException, InvalidRangeException
-	{
+//		loadBedGenotypes(
+//				new File(loadDescription.getGtDirPath()),
+//				ncfile,
+//				bimSamples,
+//				sampleInfos,
+//				guessedGTCode,
+//				hyperSlabRows);
+//	}
+//
+//	private void loadBedGenotypes(
+//			File file,
+//			NetcdfFileWriteable ncfile,
+//			Map<SampleKey, String[]> bimSamples,
+//			Collection<SampleInfo> sampleInfos,
+//			GenotypeEncoding guessedGTCode,
+//			int hyperSlabRows)
+//			throws IOException, InvalidRangeException
+//	{
+		File file = new File(loadDescription.getGtDirPath());
 		FileInputStream bedFS = new FileInputStream(file);
 		DataInputStream bedIS = new DataInputStream(bedFS);
 
-		int sampleNb = sampleInfos.size();
-		int markerNb = bimSamples.size();
+		int sampleNb = dataSet.getSampleInfos().size();
+//		int markerNb = bimSamples.size();
 		int bytesPerSNP = 0;
-		if (sampleNb % 4 == 0) {  //Nb OF BYTES IN EACH ROW
+		if (sampleNb % 4 == 0) { // Nb OF BYTES IN EACH ROW
 			bytesPerSNP = sampleNb / 4;
 		} else {
 			bytesPerSNP = (sampleNb / 4) + 1;
 		}
 
 		Iterator<String[]> itMarkerSet = bimSamples.values().iterator();
-		Iterator<SampleInfo> itSampleSet = sampleInfos.iterator();
+		Iterator<SampleInfo> itSampleSet = dataSet.getSampleInfos().iterator();
 
 		// SKIP HEADER
 		bedIS.readByte();
@@ -394,15 +404,15 @@ public class LoadGTFromPlinkBinaryFiles implements GenotypesLoader {
 		if (mode == 1) {
 			// GET GENOTYPES
 			int rowCounter = 1;
-			List<byte[]> genotypes = new ArrayList<byte[]>();
+//			List<byte[]> genotypes = new ArrayList<byte[]>();
 			while (itMarkerSet.hasNext()) {
 				try {
 					// NEW SNP
 					// Load genotyes map with defaults
-					Map<String, byte[]> mappedGenotypes = new HashMap<String, byte[]>();
+					Map<SampleKey, byte[]> mappedGenotypes = new LinkedHashMap<SampleKey, byte[]>();
 					while (itSampleSet.hasNext()) {
-						String sampleId = itSampleSet.next().getSampleId();
-						mappedGenotypes.put(sampleId, cNetCDF.Defaults.DEFAULT_GT);
+						SampleKey sampleKey = SampleKey.valueOf(itSampleSet.next());
+						mappedGenotypes.put(sampleKey, cNetCDF.Defaults.DEFAULT_GT);
 					}
 
 					alleles = itMarkerSet.next(); // key = markerId, values{allele1 (minor), allele2 (major)}
@@ -410,28 +420,28 @@ public class LoadGTFromPlinkBinaryFiles implements GenotypesLoader {
 					// READ ALL SAMPLE GTs FOR CURRENT SNP
 					int check = bedIS.read(rowBytes, 0, bytesPerSNP);
 					int bitsPerRow = 1;
-					itSampleSet = sampleInfos.iterator();
+					itSampleSet = dataSet.getSampleInfos().iterator();
 					for (int j = 0; j < bytesPerSNP; j++) { // ITERATE THROUGH ROWS (READING BYTES PER ROW)
 						byteData = rowBytes[j];
 						for (int i = 0; i < 8; i = i + 2) { // FOR EACH BYTE IN ROW, EAT 2 BITS AT A TIME
 							if (bitsPerRow <= (sampleNb * 2)) { // SKIP EXCESS BITS
 								allele1 = getBit(byteData, i);
 								allele2 = getBit(byteData, i + 1);
-								String sampleId = itSampleSet.next().getSampleId();
+								SampleKey sampleKey = SampleKey.valueOf(itSampleSet.next());
 								if (!allele1 && !allele2) { // 00 Homozygote "1"/"1" - Minor allele
-									mappedGenotypes.put(sampleId, new byte[] {
+									mappedGenotypes.put(sampleKey, new byte[] {
 											(byte) alleles[0].charAt(0),
 											(byte) alleles[0].charAt(0)});
 								} else if (allele1 && allele2) { // 11 Homozygote "2"/"2" - Major allele
-									mappedGenotypes.put(sampleId, new byte[] {
+									mappedGenotypes.put(sampleKey, new byte[] {
 											(byte) alleles[1].charAt(0),
 											(byte) alleles[1].charAt(0)});
 								} else if (!allele1 && allele2) { // 01 Heterozygote
-									mappedGenotypes.put(sampleId, new byte[] {
+									mappedGenotypes.put(sampleKey, new byte[] {
 											(byte) alleles[0].charAt(0),
 											(byte) alleles[1].charAt(0)});
 								} else if (allele1 && !allele2) { // 10 Missing genotype
-									mappedGenotypes.put(sampleId, cNetCDF.Defaults.DEFAULT_GT);
+									mappedGenotypes.put(sampleKey, cNetCDF.Defaults.DEFAULT_GT);
 								}
 
 								bitsPerRow = bitsPerRow + 2;
@@ -446,27 +456,22 @@ public class LoadGTFromPlinkBinaryFiles implements GenotypesLoader {
 //						guessedGTCode = Utils.detectGTEncoding(sampleSetMap); // FIXME ???
 //					}
 
-					// WRITING HYPERSLABS AT A TIME
-					for (SampleInfo sampleInfo : sampleInfos) {
-						String sampleId = sampleInfo.getSampleId();
-						byte[] value = mappedGenotypes.get(sampleId);
-						genotypes.add(value);
-					}
+					samplesReceiver.addMarkerGTAlleles(mappedGenotypes.values());
 
-					if (rowCounter != 1 && rowCounter % (hyperSlabRows) == 0) {
-						ArrayByte.D3 genotypesArray = org.gwaspi.netCDF.operations.Utils.writeListValuesToSamplesHyperSlabArrayByteD3(genotypes, mappedGenotypes.size(), cNetCDF.Strides.STRIDE_GT);
-						int[] origin = new int[]{0, (rowCounter - hyperSlabRows), 0}; //0,0,0 for 1st marker ; 0,1,0 for 2nd marker....
-//                        log.info("Origin at rowCount "+rowCounter+": "+origin[0]+"|"+origin[1]+"|"+origin[2]);
-						try {
-							ncfile.write(cNetCDF.Variables.VAR_GENOTYPES, origin, genotypesArray);
-						} catch (IOException ex) {
-							log.error("Failed writing file", ex);
-						} catch (InvalidRangeException ex) {
-							log.error("Bad origin at rowCount " + rowCounter + ": " + origin[0] + "|" + origin[1] + "|" + origin[2], ex);
-						}
-
-						genotypes.clear();
-					}
+//					if (rowCounter != 1 && rowCounter % (hyperSlabRows) == 0) {
+//						ArrayByte.D3 genotypesArray = org.gwaspi.netCDF.operations.Utils.writeListValuesToSamplesHyperSlabArrayByteD3(genotypes, mappedGenotypes.size(), cNetCDF.Strides.STRIDE_GT);
+//						int[] origin = new int[]{0, (rowCounter - hyperSlabRows), 0}; //0,0,0 for 1st marker ; 0,1,0 for 2nd marker....
+////						log.info("Origin at rowCount "+rowCounter+": "+origin[0]+"|"+origin[1]+"|"+origin[2]);
+//						try {
+//							ncfile.write(cNetCDF.Variables.VAR_GENOTYPES, origin, genotypesArray);
+//						} catch (IOException ex) {
+//							log.error("Failed writing file", ex);
+//						} catch (InvalidRangeException ex) {
+//							log.error("Bad origin at rowCount " + rowCounter + ": " + origin[0] + "|" + origin[1] + "|" + origin[2], ex);
+//						}
+//
+//						genotypes.clear();
+//					}
 				} catch (EOFException ex) {
 					log.info("End of File", ex);
 					break;
@@ -477,19 +482,19 @@ public class LoadGTFromPlinkBinaryFiles implements GenotypesLoader {
 				rowCounter++;
 			}
 
-			//WRITING LAST HYPERSLAB
-			int lastHyperSlabRows = markerNb - (genotypes.size() / sampleNb);
-			ArrayByte.D3 genotypesArray = org.gwaspi.netCDF.operations.Utils.writeListValuesToSamplesHyperSlabArrayByteD3(genotypes, sampleInfos.size(), cNetCDF.Strides.STRIDE_GT);
-			int[] origin = new int[]{0, lastHyperSlabRows, 0}; //0,0,0 for 1st marker ; 0,1,0 for 2nd marker....
-//            log.info("Last origin at rowCount "+rowCounter+": "+origin[0]+"|"+origin[1]+"|"+origin[2]);
-			try {
-				ncfile.write(cNetCDF.Variables.VAR_GENOTYPES, origin, genotypesArray);
-				log.info("Processed markers: " + rowCounter);
-			} catch (IOException ex) {
-				log.error("Failed writing file", ex);
-			} catch (InvalidRangeException ex) {
-				log.error("Bad origin at rowCount " + rowCounter + ": " + origin[0] + "|" + origin[1] + "|" + origin[2], ex);
-			}
+//			// WRITING LAST HYPERSLAB
+//			int lastHyperSlabRows = markerNb - (genotypes.size() / sampleNb);
+//			ArrayByte.D3 genotypesArray = org.gwaspi.netCDF.operations.Utils.writeListValuesToSamplesHyperSlabArrayByteD3(genotypes, sampleInfos.size(), cNetCDF.Strides.STRIDE_GT);
+//			int[] origin = new int[]{0, lastHyperSlabRows, 0}; //0,0,0 for 1st marker ; 0,1,0 for 2nd marker....
+////			log.info("Last origin at rowCount "+rowCounter+": "+origin[0]+"|"+origin[1]+"|"+origin[2]);
+//			try {
+//				ncfile.write(cNetCDF.Variables.VAR_GENOTYPES, origin, genotypesArray);
+//				log.info("Processed markers: " + rowCounter);
+//			} catch (IOException ex) {
+//				log.error("Failed writing file", ex);
+//			} catch (InvalidRangeException ex) {
+//				log.error("Bad origin at rowCount " + rowCounter + ": " + origin[0] + "|" + origin[1] + "|" + origin[2], ex);
+//			}
 		} else {
 			log.warn("Binary PLINK file must be in SNP-major mode!");
 		}

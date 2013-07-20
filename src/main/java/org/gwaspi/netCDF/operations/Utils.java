@@ -531,22 +531,21 @@ public class Utils {
 	//</editor-fold>
 
 	//<editor-fold defaultstate="expanded" desc="ArrayByte.D3">
-	public static ArrayByte.D3 writeListValuesToSamplesHyperSlabArrayByteD3(List<byte[]> genotypes, int sampleNb, int stride) {
+	public static ArrayByte.D3 writeListValuesToSamplesHyperSlabArrayByteD3(Collection<byte[]> genotypes, int sampleNb, int stride) {
 		int markerNb = genotypes.size() / sampleNb;
-		int alCounter = 0;
 
 		// samplesDim, markersDim, gtStrideDim
 		ArrayByte.D3 byteArray = new ArrayByte.D3(sampleNb, markerNb, stride);
 		Index ima = byteArray.getIndex();
 
+		Iterator<byte[]> genotype = genotypes.iterator();
 		for (int markerCounter = 0; markerCounter < markerNb; markerCounter++) {
 			for (int sampleCounter = 0; sampleCounter < sampleNb; sampleCounter++) {
 
-				byte[] value = genotypes.get(alCounter);
+				byte[] value = genotype.next();
 				// 1 Sample at a time, iterating through markers
 				byteArray.setByte(ima.set(sampleCounter, markerCounter, 0), value[0]); // first byte
 				byteArray.setByte(ima.set(sampleCounter, markerCounter, 1), value[1]); // second byte
-				alCounter++;
 			}
 		}
 

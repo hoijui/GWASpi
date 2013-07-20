@@ -29,8 +29,8 @@ import org.gwaspi.constants.cImport.Annotation.Plink_Binary;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
 import org.gwaspi.global.Text;
+import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MarkerMetadata;
-import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.StudyKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -141,11 +141,11 @@ public class MetadataLoaderPlinkBinary implements MetadataLoader {
 		return sortedMetadataTM;
 	}
 
-	public static Map<SampleKey, String[]> parseOrigBimFile(String path, StudyKey studyKey) throws IOException {
+	public static Map<MarkerKey, String[]> parseOrigBimFile(String path, StudyKey studyKey) throws IOException {
 
 		FileReader fr = new FileReader(path);
 		BufferedReader inputMapBR = new BufferedReader(fr);
-		Map<SampleKey, String[]> origMarkerIdSetMap = new LinkedHashMap<SampleKey, String[]>();
+		Map<MarkerKey, String[]> origMarkerIdSetMap = new LinkedHashMap<MarkerKey, String[]>();
 
 		String l;
 		while ((l = inputMapBR.readLine()) != null) {
@@ -154,7 +154,7 @@ public class MetadataLoaderPlinkBinary implements MetadataLoader {
 			String markerId = mapVals[Plink_Binary.bim_markerId].trim();
 			alleles[0] = mapVals[Plink_Binary.bim_allele1].trim();
 			alleles[1] = mapVals[Plink_Binary.bim_allele2].trim();
-			origMarkerIdSetMap.put(SampleKey.valueOf(studyKey, markerId), alleles); // XXX really? markerId as sampleId?
+			origMarkerIdSetMap.put(new MarkerKey(markerId), alleles);
 		}
 
 		inputMapBR.close();

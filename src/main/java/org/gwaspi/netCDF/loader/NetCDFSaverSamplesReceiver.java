@@ -31,6 +31,7 @@ import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
 import org.gwaspi.global.Text;
+import org.gwaspi.gui.StartGWASpi;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.MatricesList;
@@ -43,6 +44,7 @@ import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ucar.ma2.ArrayByte;
 import ucar.ma2.ArrayChar;
 import ucar.ma2.ArrayInt;
 import ucar.ma2.Index;
@@ -58,16 +60,26 @@ public class NetCDFSaverSamplesReceiver extends InMemorySamplesReceiver {
 	private AbstractLoadGTFromFiles gtLoader;
 	private String startTime;
 	private MatrixKey resultMatrixKey;
-	private int curSampleIndex;
+	private int curAlleleSampleIndex;
+	private int curAllelesMarkerIndex;
 	private StringBuilder descSB;
 	private MatrixFactory matrixFactory;
 	private NetcdfFileWriteable ncfile;
+	private Boolean alleleLoadPerSample;
+	/** This is only used when alleleLoadPerSample == FALSE */
+	private List<byte[]> genotypesHyperslabs;
+	private int hyperSlabRows;
 
 	public NetCDFSaverSamplesReceiver(
 			GenotypesLoadDescription loadDescription)
 	{
 		this.loadDescription = loadDescription;
 		this.gtLoader = null;
+		this.curAlleleSampleIndex = -1;
+		this.curAllelesMarkerIndex = -1;
+		this.alleleLoadPerSample = null;
+		this.genotypesHyperslabs = null;
+		this.hyperSlabRows = -1;
 	}
 
 	public MatrixKey getResultMatrixKey() {
@@ -326,21 +338,91 @@ public class NetCDFSaverSamplesReceiver extends InMemorySamplesReceiver {
 	}
 
 	@Override
-	public void startLoadingAlleles() throws Exception {
+	public void startLoadingAlleles(boolean perSample) throws Exception {
 
-		curSampleIndex = 0;
+		alleleLoadPerSample = perSample;
+
+		if (alleleLoadPerSample) {
+			curAlleleSampleIndex = 0;
+		} else {
+			curAllelesMarkerIndex = 0;
+
+			// PLAYING IT SAFE WITH HALF THE maxProcessMarkers
+			// This number specifies, how many markers (lines in hte file)
+			// are read into memory, before writing them to the NetCDF-file
+			hyperSlabRows = (int) Math.round(
+					(double) StartGWASpi.maxProcessMarkers / (getDataSet().getSampleInfos().size() * 2));
+			if (getDataSet().getMarkerMetadatas().size() < hyperSlabRows) {
+				hyperSlabRows = getDataSet().getMarkerMetadatas().size();
+			}
+
+			genotypesHyperslabs = new ArrayList<byte[]>(hyperSlabRows);
+		}
+
 		log.info(Text.All.processing);
 	}
 
 	@Override
 	public void addSampleGTAlleles(Collection<byte[]> sampleAlleles) throws Exception {
 
-		org.gwaspi.netCDF.operations.Utils.saveSingleSampleGTsToMatrix(ncfile, sampleAlleles, curSampleIndex);
-		curSampleIndex++;
+		if (!alleleLoadPerSample) {
+			throw new IllegalStateException("You can not mix loading per sample and loading per marker");
+		}
+
+		org.gwaspi.netCDF.operations.Utils.saveSingleSampleGTsToMatrix(ncfile, sampleAlleles, curAlleleSampleIndex);
+		curAlleleSampleIndex++;
+	}
+
+	@Override
+	public void addMarkerGTAlleles(Collection<byte[]> markerAlleles) throws Exception {
+
+		if (alleleLoadPerSample) {
+			throw new IllegalStateException("You can not mix loading per sample and loading per marker");
+		}
+
+//		// WRITING HYPERSLABS AT A TIME
+//		for (SampleInfo sampleInfo : getDataSet().getSampleInfos()) {
+//			String sampleId = sampleInfo.getSampleId();
+//			byte[] value = mappedGenotypes.get(sampleId);
+//			genotypesHyperslabs.add(value);
+//		}
+		genotypesHyperslabs.addAll(markerAlleles);
+		curAllelesMarkerIndex++;
+
+		if (curAllelesMarkerIndex != 1 && curAllelesMarkerIndex % (hyperSlabRows) == 0) {
+			ArrayByte.D3 genotypesArray = org.gwaspi.netCDF.operations.Utils.writeListValuesToSamplesHyperSlabArrayByteD3(genotypesHyperslabs, mappedGenotypes.size(), cNetCDF.Strides.STRIDE_GT);
+			int[] origin = new int[]{0, (curAllelesMarkerIndex - hyperSlabRows), 0}; //0,0,0 for 1st marker ; 0,1,0 for 2nd marker....
+//						log.info("Origin at rowCount "+rowCounter+": "+origin[0]+"|"+origin[1]+"|"+origin[2]);
+			try {
+				ncfile.write(cNetCDF.Variables.VAR_GENOTYPES, origin, genotypesArray);
+			} catch (IOException ex) {
+				log.error("Failed writing file", ex);
+			} catch (InvalidRangeException ex) {
+				log.error("Bad origin at rowCount " + curAllelesMarkerIndex + ": " + origin[0] + "|" + origin[1] + "|" + origin[2], ex);
+			}
+
+			genotypesHyperslabs.clear();
+		}
 	}
 
 	@Override
 	public void finishedLoadingAlleles() throws Exception {
+
+		if (!alleleLoadPerSample) {
+			// WRITING LAST HYPERSLAB
+			int lastHyperSlabRows = markerNb - (genotypesHyperslabs.size() / getDataSet().getSampleInfos().size());
+			ArrayByte.D3 genotypesArray = org.gwaspi.netCDF.operations.Utils.writeListValuesToSamplesHyperSlabArrayByteD3(genotypesHyperslabs, getDataSet().getSampleInfos().size(), cNetCDF.Strides.STRIDE_GT);
+			int[] origin = new int[]{0, lastHyperSlabRows, 0}; //0,0,0 for 1st marker ; 0,1,0 for 2nd marker....
+//			log.info("Last origin at rowCount "+rowCounter+": "+origin[0]+"|"+origin[1]+"|"+origin[2]);
+			try {
+				ncfile.write(cNetCDF.Variables.VAR_GENOTYPES, origin, genotypesArray);
+				log.info("Processed markers: " + curAllelesMarkerIndex);
+			} catch (IOException ex) {
+				log.error("Failed writing file", ex);
+			} catch (InvalidRangeException ex) {
+				log.error("Bad origin at rowCount " + curAllelesMarkerIndex + ": " + origin[0] + "|" + origin[1] + "|" + origin[2], ex);
+			}
+		}
 
 //		//<editor-fold defaultstate="expanded" desc="MATRIX GENOTYPES LOAD ">
 //		GenotypeEncoding guessedGTCode = GenotypeEncoding.UNKNOWN;
