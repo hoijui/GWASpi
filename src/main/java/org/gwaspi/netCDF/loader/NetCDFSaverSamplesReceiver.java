@@ -57,7 +57,7 @@ public class NetCDFSaverSamplesReceiver extends InMemorySamplesReceiver {
 			= LoggerFactory.getLogger(NetCDFSaverSamplesReceiver.class);
 
 	private final GenotypesLoadDescription loadDescription;
-	private AbstractLoadGTFromFiles gtLoader;
+	private AbstractLoadGTFromFiles gtLoader; // HACK
 	private String startTime;
 	private MatrixKey resultMatrixKey;
 	private int curAlleleSampleIndex;
@@ -189,7 +189,7 @@ public class NetCDFSaverSamplesReceiver extends InMemorySamplesReceiver {
 		descSB.append("\n");
 		gtLoader.addAdditionalBigDescriptionProperties(descSB, loadDescription);
 		if (new File(loadDescription.getSampleFilePath()).exists()) {
-			descSB.append(loadDescription.getSampleFilePath());
+			descSB.append(loadDescription.getSampleFilePath()); // the FAM file, in case of PLink Binary
 			descSB.append(" (Sample Info file)\n");
 		}
 
@@ -305,24 +305,7 @@ public class NetCDFSaverSamplesReceiver extends InMemorySamplesReceiver {
 
 		// WRITE GT STRAND FROM ANNOTATION FILE
 		int[] gtOrig = new int[] {0, 0};
-		String strandFlag;
-		switch (loadDescription.getStrand()) {
-			case PLUS:
-				strandFlag = StrandFlags.strandPLS;
-				break;
-			case MINUS:
-				strandFlag = StrandFlags.strandMIN;
-				break;
-			case FWD:
-				strandFlag = StrandFlags.strandFWD;
-				break;
-			case REV:
-				strandFlag = StrandFlags.strandREV;
-				break;
-			default:
-				strandFlag = StrandFlags.strandUNK;
-				break;
-		}
+		String strandFlag = gtLoader.getStrandFlag(loadDescription);
 		markersD2 = org.gwaspi.netCDF.operations.Utils.writeSingleValueToD2ArrayChar(strandFlag, cNetCDF.Strides.STRIDE_STRAND, getDataSet().getMarkerMetadatas().size());
 
 		try {
@@ -390,7 +373,7 @@ public class NetCDFSaverSamplesReceiver extends InMemorySamplesReceiver {
 		curAllelesMarkerIndex++;
 
 		if (curAllelesMarkerIndex != 1 && curAllelesMarkerIndex % (hyperSlabRows) == 0) {
-			ArrayByte.D3 genotypesArray = org.gwaspi.netCDF.operations.Utils.writeListValuesToSamplesHyperSlabArrayByteD3(genotypesHyperslabs, mappedGenotypes.size(), cNetCDF.Strides.STRIDE_GT);
+			ArrayByte.D3 genotypesArray = org.gwaspi.netCDF.operations.Utils.writeListValuesToSamplesHyperSlabArrayByteD3(genotypesHyperslabs, getDataSet().getSampleInfos().size(), cNetCDF.Strides.STRIDE_GT);
 			int[] origin = new int[]{0, (curAllelesMarkerIndex - hyperSlabRows), 0}; //0,0,0 for 1st marker ; 0,1,0 for 2nd marker....
 //						log.info("Origin at rowCount "+rowCounter+": "+origin[0]+"|"+origin[1]+"|"+origin[2]);
 			try {
@@ -409,6 +392,8 @@ public class NetCDFSaverSamplesReceiver extends InMemorySamplesReceiver {
 	public void finishedLoadingAlleles() throws Exception {
 
 		if (!alleleLoadPerSample) {
+//			int markerNb = bimSamples.size();
+			int markerNb = curAllelesMarkerIndex;
 			// WRITING LAST HYPERSLAB
 			int lastHyperSlabRows = markerNb - (genotypesHyperslabs.size() / getDataSet().getSampleInfos().size());
 			ArrayByte.D3 genotypesArray = org.gwaspi.netCDF.operations.Utils.writeListValuesToSamplesHyperSlabArrayByteD3(genotypesHyperslabs, getDataSet().getSampleInfos().size(), cNetCDF.Strides.STRIDE_GT);

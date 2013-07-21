@@ -28,10 +28,12 @@ import java.util.List;
 import java.util.Map;
 import org.gwaspi.constants.cImport;
 import org.gwaspi.constants.cImport.ImportFormat;
+import org.gwaspi.constants.cImport.StrandFlags;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
 import org.gwaspi.global.Text;
+import org.gwaspi.model.DataSet;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.MatricesList;
@@ -98,7 +100,12 @@ public class LoadGTFromIlluminaLGENFiles implements GenotypesLoader {
 
 	@Override
 	public String getMarkersD2Variables() {
-		throw new UnsupportedOperationException("Not supported yet."); // FIXME implement me!
+		return null;
+	}
+
+	@Override
+	protected String getStrandFlag(GenotypesLoadDescription loadDescription) {
+		return cNetCDF.Defaults.StrandType.FWD.toString();
 	}
 
 	@Override
@@ -112,7 +119,7 @@ public class LoadGTFromIlluminaLGENFiles implements GenotypesLoader {
 			sampleIds.add(sampleInfo.getSampleId());
 		}
 
-		File[] gtFilesToImport = org.gwaspi.global.Utils.listFiles(loadDescription.getGtDirPath());
+//		File[] gtFilesToImport = org.gwaspi.global.Utils.listFiles(loadDescription.getGtDirPath());
 
 		//<editor-fold defaultstate="expanded" desc="CREATE MARKERSET & NETCDF">
 		// markerid, rsId, chr, pos
@@ -321,17 +328,47 @@ public class LoadGTFromIlluminaLGENFiles implements GenotypesLoader {
 		return result;
 	}
 
+	@Override
+	protected void loadGenotypes(
+			GenotypesLoadDescription loadDescription,
+			SamplesReceiver samplesReceiver)
+			throws Exception
+	{
+		File[] gtFilesToImport = org.gwaspi.global.Utils.listFiles(loadDescription.getGtDirPath());
+
+		for (int i = 0; i < gtFilesToImport.length; i++) {
+			//log.info("Input file: "+i);
+			loadIndividualFiles(
+					loadDescription,
+					samplesReceiver,
+					gtFilesToImport[i]);
+//					ncfile,
+//					markerSetMap,
+//					sampleIds,
+//					guessedGTCode);
+
+			if (i % 10 == 0) {
+				log.info("Done processing file " + i);
+			}
+		}
+	}
+
 	/**
 	 * @see AbstractLoadGTFromFiles#loadIndividualFiles
 	 */
-	public void loadIndividualFiles(
-			File file,
-			NetcdfFileWriteable ncfile,
-			Map<MarkerKey, ?> sortedMetadata,
-			List<String> samplesAL,
-			GenotypeEncoding guessedGTCode)
-			throws IOException, InvalidRangeException
+	private void loadIndividualFiles(
+			GenotypesLoadDescription loadDescription,
+			SamplesReceiver samplesReceiver,
+			File file)
+//			NetcdfFileWriteable ncfile,
+//			Map<MarkerKey, ?> sortedMetadata,
+//			List<String> samplesAL,
+//			GenotypeEncoding guessedGTCode)
+			throws Exception
 	{
+		// HACK
+		DataSet dataSet = ((InMemorySamplesReceiver) samplesReceiver).getDataSet();
+
 		// LOAD INPUT FILE
 		FileReader inputFileReader = new FileReader(file);
 		BufferedReader inputBufferReader = new BufferedReader(inputFileReader);
@@ -368,7 +405,7 @@ public class LoadGTFromIlluminaLGENFiles implements GenotypesLoader {
 			} else {
 				if (!currentSampleId.equals("")) { //EXCEPT FIRST TIME ROUND
 					// INIT AND PURGE SORTEDMARKERSET Map
-					Map<MarkerKey, byte[]> sortedAlleles = AbstractLoadGTFromFiles.fillMap(sortedMetadata.keySet(), cNetCDF.Defaults.DEFAULT_GT);
+					Map<MarkerKey, byte[]> sortedAlleles = AbstractLoadGTFromFiles.fillMap(dataSet.getMarkerMetadatas().keySet(), cNetCDF.Defaults.DEFAULT_GT);
 
 					// WRITE Map TO MATRIX
 					for (Map.Entry<MarkerKey, byte[]> entry : sortedAlleles.entrySet()) {
@@ -383,7 +420,7 @@ public class LoadGTFromIlluminaLGENFiles implements GenotypesLoader {
 					// WRITING GENOTYPE DATA INTO netCDF FILE
 					int sampleIndex = samplesAL.indexOf(currentSampleId);
 					if (sampleIndex != -1) {  //CHECK IF CURRENT FILE IS NOT PRESENT IN SAMPLEINFO FILE!!
-						org.gwaspi.netCDF.operations.Utils.saveSingleSampleGTsToMatrix(ncfile, sortedAlleles, sampleIndex);
+						samplesReceiver.addSampleGTAlleles(sortedAlleles.values());
 					}
 				}
 
@@ -406,7 +443,7 @@ public class LoadGTFromIlluminaLGENFiles implements GenotypesLoader {
 
 		// WRITE LAST SAMPLE Map TO MATRIX
 		// INIT AND PURGE SORTEDMARKERSET Map
-		Map<MarkerKey, byte[]> sortedAlleles = AbstractLoadGTFromFiles.fillMap(sortedMetadata.keySet(), cNetCDF.Defaults.DEFAULT_GT);
+		Map<MarkerKey, byte[]> sortedAlleles = AbstractLoadGTFromFiles.fillMap(dataSet.getMarkerMetadatas().keySet(), cNetCDF.Defaults.DEFAULT_GT);
 		for (Map.Entry<MarkerKey, byte[]> entry : sortedAlleles.entrySet()) {
 			MarkerKey markerKey = entry.getKey();
 			byte[] value = (tempMarkerSet.get(markerKey) != null) ? tempMarkerSet.get(markerKey) : cNetCDF.Defaults.DEFAULT_GT;
@@ -426,12 +463,12 @@ public class LoadGTFromIlluminaLGENFiles implements GenotypesLoader {
 		int sampleIndex = samplesAL.indexOf(currentSampleId);
 		if (sampleIndex != -1) {  //CHECK IF CURRENT FILE IS NOT PRESENT IN SAMPLEINFO FILE!!
 			org.gwaspi.netCDF.operations.Utils.saveSingleSampleGTsToMatrix(ncfile, sortedAlleles, sampleIndex);
+			samplesReceiver.addSampleGTAlleles(sortedAlleles.values()); needs sampleIndex;
 		}
 	}
 
 	private static String getAffySampleId(File fileToScan) throws IOException {
-//        FileReader inputFileReader = new FileReader(fileToScan);
-//        BufferedReader inputBufferReader = new BufferedReader(inputFileReader);
+
 		String l = fileToScan.getName();
 		String sampleId = l;
 		int end = l.lastIndexOf(".birdseed-v2");

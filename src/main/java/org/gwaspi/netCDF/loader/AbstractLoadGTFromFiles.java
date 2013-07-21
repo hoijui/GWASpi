@@ -106,6 +106,35 @@ public abstract class AbstractLoadGTFromFiles implements GenotypesLoader {
 
 	protected abstract MetadataLoader createMetaDataLoader(GenotypesLoadDescription loadDescription);
 
+	protected boolean isLoadAllelePerSample() {
+		return true;
+	}
+
+	protected String getStrandFlag(GenotypesLoadDescription loadDescription) {
+
+		String strandFlag;
+
+		switch (loadDescription.getStrand()) {
+			case PLUS:
+				strandFlag = StrandFlags.strandPLS;
+				break;
+			case MINUS:
+				strandFlag = StrandFlags.strandMIN;
+				break;
+			case FWD:
+				strandFlag = StrandFlags.strandFWD;
+				break;
+			case REV:
+				strandFlag = StrandFlags.strandREV;
+				break;
+			default:
+				strandFlag = StrandFlags.strandUNK;
+				break;
+		}
+
+		return strandFlag;
+	}
+
 	//<editor-fold defaultstate="expanded" desc="PROCESS GENOTYPES">
 	@Override
 	public void processData(GenotypesLoadDescription loadDescription, SamplesReceiver samplesReceiver) throws Exception {
@@ -303,7 +332,7 @@ public abstract class AbstractLoadGTFromFiles implements GenotypesLoader {
 //		GenotypeEncoding guessedGTCode = GenotypeEncoding.UNKNOWN;
 //		log.info(Text.All.processing);
 
-		samplesReceiver.startLoadingAlleles();
+		samplesReceiver.startLoadingAlleles(isLoadAllelePerSample());
 		loadGenotypes(loadDescription, samplesReceiver);
 		samplesReceiver.finishedLoadingAlleles();
 

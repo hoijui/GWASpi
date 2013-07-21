@@ -48,10 +48,20 @@ public interface SamplesReceiver {
 	void finishedLoadingMarkerMetadatas() throws Exception;
 
 	void startLoadingAlleles(boolean perSample) throws Exception;
-	/** Adds all the GTs/SNPs for a single sample (one GT per marker) */
-	void addSampleGTAlleles(Collection<byte[]> sampleAlleles) throws Exception;
-	/** Adds all the GTs/SNPs for a single marker (one GT per sample) */
-	void addMarkerGTAlleles(Collection<byte[]> markerAlleles) throws Exception;
+	/**
+	 * Adds all the GTs/SNPs for a single sample (one GT per marker).
+	 * @param sampleIndex  index in relation to the samples infos
+	 *   (as in, the index of a list created in the order they were added)
+	 * @see #addSampleInfo
+	 */
+	void addSampleGTAlleles(int sampleIndex, Collection<byte[]> sampleAlleles) throws Exception;
+	/**
+	 * Adds all the GTs/SNPs for a single marker (one GT per sample).
+	 * @param markerIndex  index in relation to the markers meta-data
+	 *   (as in, the index of a list created in the order they were added)
+	 * @see #addMarkerMetadata
+	 */
+	void addMarkerGTAlleles(int markerIndex, Collection<byte[]> markerAlleles) throws Exception;
 	void finishedLoadingAlleles() throws Exception;
 
 	void done() throws Exception;
