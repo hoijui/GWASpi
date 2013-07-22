@@ -420,7 +420,7 @@ public class LoadGTFromIlluminaLGENFiles implements GenotypesLoader {
 					// WRITING GENOTYPE DATA INTO netCDF FILE
 					int sampleIndex = samplesAL.indexOf(currentSampleId);
 					if (sampleIndex != -1) {  //CHECK IF CURRENT FILE IS NOT PRESENT IN SAMPLEINFO FILE!!
-						samplesReceiver.addSampleGTAlleles(sortedAlleles.values());
+						samplesReceiver.addSampleGTAlleles(sampleIndex, sortedAlleles.values());
 					}
 				}
 
@@ -453,9 +453,9 @@ public class LoadGTFromIlluminaLGENFiles implements GenotypesLoader {
 			tempMarkerSet.clear();
 		}
 
-		if (guessedGTCode.equals(cNetCDF.Defaults.GenotypeEncoding.UNKNOWN)) {
-			guessedGTCode = Utils.detectGTEncoding(sortedAlleles);
-		} else if (guessedGTCode.equals(cNetCDF.Defaults.GenotypeEncoding.O12)) {
+		GenotypeEncoding guessedGTCode = XXX;
+		if (guessedGTCode.equals(cNetCDF.Defaults.GenotypeEncoding.UNKNOWN)
+				|| guessedGTCode.equals(cNetCDF.Defaults.GenotypeEncoding.O12)) {
 			guessedGTCode = Utils.detectGTEncoding(sortedAlleles);
 		}
 
