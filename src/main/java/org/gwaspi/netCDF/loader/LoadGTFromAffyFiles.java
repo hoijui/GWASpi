@@ -33,6 +33,7 @@ import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
 import org.gwaspi.global.Text;
+import org.gwaspi.global.TypeConverter;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.MatricesList;
@@ -103,7 +104,17 @@ public class LoadGTFromAffyFiles implements GenotypesLoader {
 
 	@Override
 	public String getMarkersD2Variables() {
-		throw new UnsupportedOperationException("Not supported yet."); // FIXME implement me!
+		return cNetCDF.Variables.VAR_MARKERS_BASES_DICT;
+	}
+
+	@Override
+	protected TypeConverter<MarkerMetadata, String> getBaseDictPropertyExtractor() {
+		return MarkerMetadata.TO_ALLELES;
+	}
+
+	@Override
+	protected boolean isHasStrandInfo() {
+		return true;
 	}
 
 	@Override
@@ -374,6 +385,34 @@ public class LoadGTFromAffyFiles implements GenotypesLoader {
 
 		org.gwaspi.global.Utils.sysoutCompleted("writing Genotypes to Matrix");
 		return result;
+	}
+
+	@Override
+	protected void loadGenotypes(
+			GenotypesLoadDescription loadDescription,
+			SamplesReceiver samplesReceiver)
+			throws Exception
+	{
+		// PURGE alleles
+		Map<MarkerKey, byte[]> alleles = AbstractLoadGTFromFiles.fillMap(markerSetMap.keySet(), cNetCDF.Defaults.DEFAULT_GT);
+
+		// START PROCESS OF LOADING GENOTYPES
+		for (int i = 0; i < gtFilesToImport.length; i++) {
+			//log.info("Input file: "+i);
+			loadIndividualFiles(
+					loadDescription,
+					guessedGTCode,
+					gtFilesToImport[i],
+					ncfile,
+					alleles,
+					sampleKeys);
+
+			if (i == 0) {
+				log.info(Text.All.processing);
+			} else if (i % 10 == 0) {
+				log.info("Done processing sample Nº" + i);
+			}
+		}
 	}
 
 	/**
