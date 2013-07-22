@@ -31,6 +31,7 @@ import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
 import org.gwaspi.global.Text;
+import org.gwaspi.global.TypeConverter;
 import org.gwaspi.model.DataSet;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MarkerMetadata;
@@ -110,6 +111,9 @@ public abstract class AbstractLoadGTFromFiles implements GenotypesLoader {
 		return true;
 	}
 
+	/**
+	 * @see #isHasStrandInfo
+	 */
 	protected String getStrandFlag(GenotypesLoadDescription loadDescription) {
 
 		String strandFlag;
@@ -135,6 +139,27 @@ public abstract class AbstractLoadGTFromFiles implements GenotypesLoader {
 		return strandFlag;
 	}
 
+	protected void loadMarkerMetadata(GenotypesLoadDescription loadDescription, SamplesReceiver samplesReceiver) throws Exception {
+
+		MetadataLoader markerSetLoader = createMetaDataLoader(loadDescription);
+		samplesReceiver.startLoadingMarkerMetadatas();
+		markerSetLoader.loadMarkers(samplesReceiver);
+		samplesReceiver.finishedLoadingMarkerMetadatas();
+	}
+
+	protected TypeConverter<MarkerMetadata, String> getBaseDictPropertyExtractor() {
+		return MarkerMetadata.TO_STRAND;
+	}
+
+	/**
+	 * Whether each marker loaded has a strand info.
+	 * If false, then a global one has to be provided.
+	 * @see #getStrandFlag
+	 */
+	protected boolean isHasStrandInfo() {
+		return false;
+	}
+
 	//<editor-fold defaultstate="expanded" desc="PROCESS GENOTYPES">
 	@Override
 	public void processData(GenotypesLoadDescription loadDescription, SamplesReceiver samplesReceiver) throws Exception {
@@ -147,10 +172,7 @@ public abstract class AbstractLoadGTFromFiles implements GenotypesLoader {
 //		Map<MarkerKey, MarkerMetadata> markerSetMap = new LinkedHashMap<MarkerKey, MarkerMetadata>();
 //
 //		//<editor-fold defaultstate="expanded" desc="CREATE MARKERSET & NETCDF">
-		MetadataLoader markerSetLoader = createMetaDataLoader(loadDescription);
-		samplesReceiver.startLoadingMarkerMetadatas();
-		markerSetLoader.loadMarkers(samplesReceiver);
-		samplesReceiver.finishedLoadingMarkerMetadatas();
+		loadMarkerMetadata(loadDescription, samplesReceiver);
 //		for (MarkerMetadata markerMetadata : markerSetLoader) {
 //			markerSetMap.put(MarkerKey.valueOf(markerMetadata), markerMetadata);
 //		}

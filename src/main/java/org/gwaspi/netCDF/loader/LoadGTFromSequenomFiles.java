@@ -98,26 +98,6 @@ XXX;
 	}
 
 	@Override
-	public ImportFormat getFormat() {
-		return ImportFormat.Sequenom;
-	}
-
-	@Override
-	public StrandType getMatrixStrand() {
-		return StrandType.PLSMIN;
-	}
-
-	@Override
-	public boolean isHasDictionary() {
-		return false;
-	}
-
-	@Override
-	public String getMarkersD2Variables() {
-		return null;
-	}
-
-	@Override
 	public int processData(GenotypesLoadDescription loadDescription, Collection<SampleInfo> sampleInfos) throws IOException, InvalidRangeException, InterruptedException {
 		int result = Integer.MIN_VALUE;
 
@@ -343,9 +323,9 @@ XXX;
 						alleles);
 			}
 
-			if (guessedGTCode.equals(cNetCDF.Defaults.GenotypeEncoding.UNKNOWN)) {
-				guessedGTCode = Utils.detectGTEncoding(alleles);
-			} else if (guessedGTCode.equals(cNetCDF.Defaults.GenotypeEncoding.O12)) {
+			if (guessedGTCode.equals(cNetCDF.Defaults.GenotypeEncoding.UNKNOWN)
+					|| guessedGTCode.equals(cNetCDF.Defaults.GenotypeEncoding.O12))
+			{
 				guessedGTCode = Utils.detectGTEncoding(alleles);
 			}
 

@@ -87,6 +87,7 @@ public class LoadGTFromPlinkBinaryFiles extends AbstractLoadGTFromFiles implemen
 			SamplesReceiver samplesReceiver)
 			throws Exception
 	{
+		// HACK
 		DataSet dataSet = ((InMemorySamplesReceiver) samplesReceiver).getDataSet();
 
 		Map<MarkerKey, String[]> bimSamples = MetadataLoaderPlinkBinary.parseOrigBimFile(
@@ -176,7 +177,7 @@ public class LoadGTFromPlinkBinaryFiles extends AbstractLoadGTFromFiles implemen
 //						guessedGTCode = Utils.detectGTEncoding(sampleSetMap); // FIXME ???
 //					}
 
-					samplesReceiver.addMarkerGTAlleles(mappedGenotypes.values());
+					samplesReceiver.addMarkerGTAlleles(rowCounter, mappedGenotypes.values());
 				} catch (EOFException ex) {
 					log.info("End of File", ex);
 					break;

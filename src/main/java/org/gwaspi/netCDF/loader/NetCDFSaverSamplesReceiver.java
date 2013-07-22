@@ -292,7 +292,7 @@ public class NetCDFSaverSamplesReceiver extends InMemorySamplesReceiver {
 
 		// WRITE CUSTOM ALLELES METADATA FROM ANNOTATION FILE
 		if (gtLoader.getMarkersD2Variables() != null) {
-		markersD2 = org.gwaspi.netCDF.operations.Utils.writeMapValueItemToD2ArrayChar(getDataSet().getMarkerMetadatas(), MarkerMetadata.TO_STRAND, cNetCDF.Strides.STRIDE_GT);
+		markersD2 = org.gwaspi.netCDF.operations.Utils.writeMapValueItemToD2ArrayChar(getDataSet().getMarkerMetadatas(), gtLoader.getBaseDictPropertyExtractor(), cNetCDF.Strides.STRIDE_GT);
 		try {
 			ncfile.write(gtLoader.getMarkersD2Variables(), markersOrig, markersD2);
 		} catch (IOException ex) {
@@ -305,8 +305,13 @@ public class NetCDFSaverSamplesReceiver extends InMemorySamplesReceiver {
 
 		// WRITE GT STRAND FROM ANNOTATION FILE
 		int[] gtOrig = new int[] {0, 0};
-		String strandFlag = gtLoader.getStrandFlag(loadDescription);
-		markersD2 = org.gwaspi.netCDF.operations.Utils.writeSingleValueToD2ArrayChar(strandFlag, cNetCDF.Strides.STRIDE_STRAND, getDataSet().getMarkerMetadatas().size());
+		if (gtLoader.isHasStrandInfo()) {
+			// TODO Strand info is buggy in Hapmap bulk download!
+			markersD2 = org.gwaspi.netCDF.operations.Utils.writeMapValueItemToD2ArrayChar(getDataSet().getMarkerMetadatas(), MarkerMetadata.TO_STRAND, cNetCDF.Strides.STRIDE_STRAND);
+		} else {
+			String strandFlag = gtLoader.getStrandFlag(loadDescription);
+			markersD2 = org.gwaspi.netCDF.operations.Utils.writeSingleValueToD2ArrayChar(strandFlag, cNetCDF.Strides.STRIDE_STRAND, getDataSet().getMarkerMetadatas().size());
+		}
 
 		try {
 			ncfile.write(cNetCDF.Variables.VAR_GT_STRAND, gtOrig, markersD2);
