@@ -18,14 +18,9 @@
 package org.gwaspi.netCDF.loader;
 
 import java.io.IOException;
-import java.util.Collection;
 import java.util.EnumMap;
 import java.util.Map;
 import org.gwaspi.constants.cImport.ImportFormat;
-import org.gwaspi.model.MatrixKey;
-import org.gwaspi.model.SampleInfo;
-import org.gwaspi.model.SampleInfoList;
-import ucar.ma2.InvalidRangeException;
 
 public class LoadManager {
 
@@ -50,13 +45,15 @@ public class LoadManager {
 	public static void dispatchLoadByFormat(
 			GenotypesLoadDescription loadDescription,
 			SamplesReceiver samplesReceiver)
-			throws IOException, InvalidRangeException, InterruptedException
+			throws Exception, InterruptedException
 	{
 		GenotypesLoader genotypesLoader = genotypesLoaders.get(loadDescription.getFormat());
 
 		// HACK
-		if (samplesReceiver instanceof NetCDFSaverSamplesReceiver) {
-			((NetCDFSaverSamplesReceiver) samplesReceiver).setGTLoader(genotypesLoader);
+		if (samplesReceiver instanceof NetCDFSaverSamplesReceiver
+				&& genotypesLoader instanceof AbstractLoadGTFromFiles)
+		{
+			((NetCDFSaverSamplesReceiver) samplesReceiver).setGTLoader((AbstractLoadGTFromFiles) genotypesLoader);
 		}
 
 		if (genotypesLoader == null) {

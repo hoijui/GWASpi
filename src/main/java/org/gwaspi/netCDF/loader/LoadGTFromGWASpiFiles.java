@@ -81,11 +81,9 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 	}
 
 	@Override
-	public int processData(GenotypesLoadDescription loadDescription, Collection<SampleInfo> sampleInfos)
-			throws IOException, InvalidRangeException, InterruptedException
+	public void processData(GenotypesLoadDescription loadDescription, SamplesReceiver samplesReceiver)
+			throws Exception, InterruptedException
 	{
-		int result = Integer.MIN_VALUE;
-
 		String startTime = org.gwaspi.global.Utils.getMediumDateTimeAsString();
 
 		if (new File(loadDescription.getGtDirPath()).exists()) {
@@ -137,7 +135,8 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 		descSB.append("Technology: ");
 		descSB.append(importMatrixMetadata.getTechnology());
 		descSB.append("\n");
-		descSB.append("Markers: " + importMatrixMetadata.getMarkerSetSize() + ", Samples: " + importMatrixMetadata.getSampleSetSize());
+		descSB.append("Markers: ").append(importMatrixMetadata.getMarkerSetSize());
+		descSB.append(", Samples: ").append(importMatrixMetadata.getSampleSetSize());
 		descSB.append("\n");
 		descSB.append(Text.Matrix.descriptionHeader2);
 		descSB.append(loadDescription.getFormat().toString());
@@ -175,8 +174,6 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 
 		result = importMatrixMetadata.getMatrixId();
 		}
-
-		return result;
 	}
 
 	private int generateNewGWASpiDBversionMatrix(GenotypesLoadDescription loadDescription, MatrixMetadata importMatrixMetadata)
@@ -317,8 +314,9 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 		for (int i = 0; i < rdSampleSetMap.size(); i++) {
 			rdMarkerSet.fillGTsForCurrentSampleIntoInitMap(sampleWrIndex);
 
-			//Write MarkerIdSetMap to A3 ArrayChar and save to wrMatrix
+			// Write MarkerIdSetMap to A3 ArrayChar and save to wrMatrix
 			org.gwaspi.netCDF.operations.Utils.saveSingleSampleGTsToMatrix(ncfile, rdMarkerSet.getMarkerIdSetMapByteArray(), sampleWrIndex);
+			samplesReceiver.addS
 			if (sampleWrIndex % 100 == 0) {
 				log.info("Samples copied: " + sampleWrIndex);
 			}

@@ -60,7 +60,7 @@ public class NetCDFSaverSamplesReceiver extends InMemorySamplesReceiver {
 	private AbstractLoadGTFromFiles gtLoader; // HACK
 	private String startTime;
 	private MatrixKey resultMatrixKey;
-	private int curAlleleSampleIndex;
+//	private int curAlleleSampleIndex;
 	private int curAllelesMarkerIndex;
 	private StringBuilder descSB;
 	private MatrixFactory matrixFactory;
@@ -75,7 +75,7 @@ public class NetCDFSaverSamplesReceiver extends InMemorySamplesReceiver {
 	{
 		this.loadDescription = loadDescription;
 		this.gtLoader = null;
-		this.curAlleleSampleIndex = -1;
+//		this.curAlleleSampleIndex = -1;
 		this.curAllelesMarkerIndex = -1;
 		this.alleleLoadPerSample = null;
 		this.genotypesHyperslabs = null;
@@ -331,9 +331,9 @@ public class NetCDFSaverSamplesReceiver extends InMemorySamplesReceiver {
 		alleleLoadPerSample = perSample;
 
 		if (alleleLoadPerSample) {
-			curAlleleSampleIndex = 0;
+//			curAlleleSampleIndex = 0;
 		} else {
-			curAllelesMarkerIndex = 0;
+//			curAllelesMarkerIndex = 0;
 
 			// PLAYING IT SAFE WITH HALF THE maxProcessMarkers
 			// This number specifies, how many markers (lines in hte file)
@@ -351,18 +351,19 @@ public class NetCDFSaverSamplesReceiver extends InMemorySamplesReceiver {
 	}
 
 	@Override
-	public void addSampleGTAlleles(Collection<byte[]> sampleAlleles) throws Exception {
+	public void addSampleGTAlleles(int sampleIndex, Collection<byte[]> sampleAlleles) throws Exception {
 
 		if (!alleleLoadPerSample) {
 			throw new IllegalStateException("You can not mix loading per sample and loading per marker");
 		}
 
-		org.gwaspi.netCDF.operations.Utils.saveSingleSampleGTsToMatrix(ncfile, sampleAlleles, curAlleleSampleIndex);
-		curAlleleSampleIndex++;
+//		org.gwaspi.netCDF.operations.Utils.saveSingleSampleGTsToMatrix(ncfile, sampleAlleles, curAlleleSampleIndex);
+		org.gwaspi.netCDF.operations.Utils.saveSingleSampleGTsToMatrix(ncfile, sampleAlleles, sampleIndex);
+//		curAlleleSampleIndex++;
 	}
 
 	@Override
-	public void addMarkerGTAlleles(Collection<byte[]> markerAlleles) throws Exception {
+	public void addMarkerGTAlleles(int markerIndex, Collection<byte[]> markerAlleles) throws Exception {
 
 		if (alleleLoadPerSample) {
 			throw new IllegalStateException("You can not mix loading per sample and loading per marker");
@@ -375,7 +376,8 @@ public class NetCDFSaverSamplesReceiver extends InMemorySamplesReceiver {
 //			genotypesHyperslabs.add(value);
 //		}
 		genotypesHyperslabs.addAll(markerAlleles);
-		curAllelesMarkerIndex++;
+//		curAllelesMarkerIndex++;
+		curAllelesMarkerIndex = markerIndex;
 
 		if (curAllelesMarkerIndex != 1 && curAllelesMarkerIndex % (hyperSlabRows) == 0) {
 			ArrayByte.D3 genotypesArray = org.gwaspi.netCDF.operations.Utils.writeListValuesToSamplesHyperSlabArrayByteD3(genotypesHyperslabs, getDataSet().getSampleInfos().size(), cNetCDF.Strides.STRIDE_GT);

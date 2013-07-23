@@ -23,6 +23,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import org.gwaspi.constants.cImport;
 import org.gwaspi.constants.cImport.ImportFormat;
@@ -130,12 +131,14 @@ public class LoadGTFromIlluminaLGENFiles extends AbstractLoadGTFromFiles impleme
 		// HACK
 		DataSet dataSet = ((InMemorySamplesReceiver) samplesReceiver).getDataSet();
 
+		List<SampleKey> sampleKeys = AbstractLoadGTFromFiles.extractKeys(dataSet.getSampleInfos());
+
 		// LOAD INPUT FILE
 		FileReader inputFileReader = new FileReader(file);
 		BufferedReader inputBufferReader = new BufferedReader(inputFileReader);
 
 		//Skip header rows
-		String header = "";
+		String header;
 		boolean gotHeader = false;
 		while (!gotHeader && inputBufferReader.ready()) {
 			header = inputBufferReader.readLine();
@@ -154,17 +157,18 @@ public class LoadGTFromIlluminaLGENFiles extends AbstractLoadGTFromFiles impleme
 		//GET ALLELES
 		String l;
 		Map<MarkerKey, byte[]> tempMarkerSet = new LinkedHashMap<MarkerKey, byte[]>();
-		String currentSampleId = "";
+		SampleKey currentSampleKey = new SampleKey(loadDescription.getStudyKey(), "", SampleKey.FAMILY_ID_NONE);
 		while ((l = inputBufferReader.readLine()) != null) {
 			String[] cVals = l.split(cImport.Separators.separators_CommaTab_rgxp);
+			String tmpSampleId = cVals[1];
 
-			if (cVals[1].equals(currentSampleId)) {
+			if (tmpSampleId.equals(currentSampleKey.getSampleId())) {
 				byte[] tmpAlleles = new byte[] {
 						(byte) cVals[Standard.allele1].charAt(0),
 						(byte) cVals[Standard.allele2].charAt(0)};
 				tempMarkerSet.put(MarkerKey.valueOf(cVals[Standard.markerId]), tmpAlleles);
 			} else {
-				if (!currentSampleId.equals("")) { //EXCEPT FIRST TIME ROUND
+				if (!currentSampleKey.getSampleId().equals("")) { // EXCEPT FIRST TIME ROUND
 					// INIT AND PURGE SORTEDMARKERSET Map
 					Map<MarkerKey, byte[]> sortedAlleles = AbstractLoadGTFromFiles.fillMap(dataSet.getMarkerMetadatas().keySet(), cNetCDF.Defaults.DEFAULT_GT);
 
@@ -174,19 +178,16 @@ public class LoadGTFromIlluminaLGENFiles extends AbstractLoadGTFromFiles impleme
 						byte[] value = (tempMarkerSet.get(markerKey) != null) ? tempMarkerSet.get(markerKey) : cNetCDF.Defaults.DEFAULT_GT;
 						entry.setValue(value);
 					}
-					if (tempMarkerSet != null) {
-						tempMarkerSet.clear();
-					}
+					tempMarkerSet.clear();
 
 					// WRITING GENOTYPE DATA INTO netCDF FILE
-					int sampleIndex = samplesAL.indexOf(currentSampleId);
+					int sampleIndex = sampleKeys.indexOf(currentSampleKey);
 					if (sampleIndex != -1) {  //CHECK IF CURRENT FILE IS NOT PRESENT IN SAMPLEINFO FILE!!
 						samplesReceiver.addSampleGTAlleles(sampleIndex, sortedAlleles.values());
 					}
 				}
 
-				currentSampleId = cVals[1];
-				log.info("Loading Sample: " + currentSampleId);
+				currentSampleKey = new SampleKey(loadDescription.getStudyKey(), tmpSampleId, SampleKey.FAMILY_ID_NONE);
 
 				byte[] tmpAlleles;
 				if (cVals[Standard.allele1].equals(Standard.missing)
@@ -210,9 +211,7 @@ public class LoadGTFromIlluminaLGENFiles extends AbstractLoadGTFromFiles impleme
 			byte[] value = (tempMarkerSet.get(markerKey) != null) ? tempMarkerSet.get(markerKey) : cNetCDF.Defaults.DEFAULT_GT;
 			entry.setValue(value);
 		}
-		if (tempMarkerSet != null) {
-			tempMarkerSet.clear();
-		}
+		tempMarkerSet.clear();
 
 		GenotypeEncoding guessedGTCode = getGuessedGTCode();
 		if (guessedGTCode.equals(cNetCDF.Defaults.GenotypeEncoding.UNKNOWN)
@@ -222,7 +221,7 @@ public class LoadGTFromIlluminaLGENFiles extends AbstractLoadGTFromFiles impleme
 		}
 
 		// WRITING GENOTYPE DATA INTO netCDF FILE
-		int sampleIndex = samplesAL.indexOf(currentSampleId);
+		int sampleIndex = sampleKeys.indexOf(currentSampleKey);
 		if (sampleIndex != -1) {  //CHECK IF CURRENT FILE IS NOT PRESENT IN SAMPLEINFO FILE!!
 			samplesReceiver.addSampleGTAlleles(sampleIndex, sortedAlleles.values());
 		}
@@ -231,12 +230,12 @@ public class LoadGTFromIlluminaLGENFiles extends AbstractLoadGTFromFiles impleme
 	private static String getAffySampleId(File fileToScan) throws IOException {
 
 		String l = fileToScan.getName();
-		String sampleId = l;
+		String sampleId;
 		int end = l.lastIndexOf(".birdseed-v2");
 		if (end != -1) {
 			sampleId = l.substring(0, end);
 		} else {
-			sampleId = l.substring(0, l.indexOf("."));
+			sampleId = l.substring(0, l.indexOf('.'));
 		}
 
 //		String[] cVals = l.split("_");

@@ -165,7 +165,7 @@ public class LoadGTFromPlinkFlatFiles extends AbstractLoadGTFromFiles implements
 			// WRITING GENOTYPE DATA INTO netCDF FILE
 			int sampleIndex = sampleKeys.indexOf(new SampleKey(loadDescription.getStudyKey(), sampleId, familyId));
 			if (sampleIndex != -1) {  //CHECK IF CURRENT SAMPLE IS KNOWN IN SAMPLEINFO FILE!!
-				samplesReceiver.addSampleGTAlleles(allelesMap.values());
+				samplesReceiver.addSampleGTAlleles(sampleIndex, allelesMap.values());
 			}
 		}
 		inputBufferReader.close();

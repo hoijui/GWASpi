@@ -82,13 +82,13 @@ public class InMemorySamplesReceiver implements SamplesReceiver {
 	}
 
 	@Override
-	public void addSampleGTAlleles(Collection<byte[]> sampleAlleles) throws Exception {
+	public void addSampleGTAlleles(int sampleIndex, Collection<byte[]> sampleAlleles) throws Exception {
 //		dataSet.getSamplesAlleles().add(sampleAlleles);
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public void addMarkerGTAlleles(Collection<byte[]> markerAlleles) throws Exception {
+	public void addMarkerGTAlleles(int markerIndex, Collection<byte[]> markerAlleles) throws Exception {
 		throw new UnsupportedOperationException();
 	}
 
