@@ -37,7 +37,6 @@ import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.StudyKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.ma2.InvalidRangeException;
 
 public class LoadGTFromHGDP1Files extends AbstractLoadGTFromFiles implements GenotypesLoader {
 
@@ -109,8 +108,6 @@ public class LoadGTFromHGDP1Files extends AbstractLoadGTFromFiles implements Gen
 				samplesReceiver.addSampleGTAlleles(sampleIndex, alleles.values());
 			} catch (IOException ex) {
 				log.warn(null, ex);
-			} catch (InvalidRangeException ex) {
-				log.warn(null, ex);
 			}
 
 			sampleIndex++;
@@ -131,7 +128,7 @@ public class LoadGTFromHGDP1Files extends AbstractLoadGTFromFiles implements Gen
 			SampleKey sampleKey,
 			Map<MarkerKey, byte[]> alleles,
 			GenotypeEncoding guessedGTCode)
-			throws IOException, InvalidRangeException
+			throws IOException
 	{
 		FileReader inputFileReader = new FileReader(file);
 		BufferedReader inputBufferReader = new BufferedReader(inputFileReader);

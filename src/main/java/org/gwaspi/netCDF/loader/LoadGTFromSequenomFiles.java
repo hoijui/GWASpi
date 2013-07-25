@@ -35,7 +35,6 @@ import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.StudyKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.ma2.InvalidRangeException;
 
 public class LoadGTFromSequenomFiles extends AbstractLoadGTFromFiles implements GenotypesLoader {
 
@@ -130,8 +129,6 @@ public class LoadGTFromSequenomFiles extends AbstractLoadGTFromFiles implements 
 				samplesReceiver.addSampleGTAlleles(sampleIndex, alleles.values());
 			} catch (IOException ex) {
 				log.error("Failed writing file", ex);
-			} catch (InvalidRangeException ex) {
-				log.error(null, ex);
 			}
 
 			sampleIndex++;
@@ -151,7 +148,7 @@ public class LoadGTFromSequenomFiles extends AbstractLoadGTFromFiles implements 
 			File file,
 			SampleKey sampleKey,
 			Map<MarkerKey, byte[]> alleles)
-			throws IOException, InvalidRangeException
+			throws IOException
 	{
 		FileReader inputFileReader = new FileReader(file);
 		BufferedReader inputBufferReader = new BufferedReader(inputFileReader);

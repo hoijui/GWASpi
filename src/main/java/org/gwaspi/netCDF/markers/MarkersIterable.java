@@ -127,7 +127,7 @@ public class MarkersIterable implements
 	 * @throws IOException
 	 * @throws InvalidRangeException
 	 */
-	public MarkersIterable(MatrixKey matrixKey, Excluder<MarkerKey> excluder) throws IOException, InvalidRangeException {
+	public MarkersIterable(MatrixKey matrixKey, Excluder<MarkerKey> excluder) throws IOException {
 
 		this.matrixKey = matrixKey;
 		this.excluder = excluder;
@@ -157,7 +157,7 @@ public class MarkersIterable implements
 		this(matrixKey, null);
 	}
 
-	private Map<SampleKey, SampleInfo> retrieveSampleInfos() throws IOException, InvalidRangeException {
+	private Map<SampleKey, SampleInfo> retrieveSampleInfos() throws IOException {
 
 		// This one has to be ordered! (and it is, due to the map being a LinkedHashMap)
 		Set<SampleKey> sampleKeysOrdered = sampleSet.getSampleIdSetMapByteArray().keySet();

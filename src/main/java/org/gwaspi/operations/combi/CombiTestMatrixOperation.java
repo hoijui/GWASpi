@@ -53,7 +53,6 @@ import org.gwaspi.netCDF.markers.MarkersIterable;
 import org.gwaspi.netCDF.operations.MatrixOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.ma2.InvalidRangeException;
 
 public class CombiTestMatrixOperation implements MatrixOperation {
 
@@ -84,7 +83,7 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 	}
 
 	@Override
-	public int processMatrix() throws IOException, InvalidRangeException {
+	public int processMatrix() throws IOException {
 
 		LOG.info("Combi Association Test: start");
 
@@ -183,7 +182,7 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 			int dEncoded,
 			int n,
 			List<SampleKey> usedSamples)
-			throws IOException, InvalidRangeException
+			throws IOException
 	{
 //		LOG.debug("samples:");
 //		Set<SampleKey> sampleKeys = sampleInfos.keySet();// NOTE needs to be well ordered!
