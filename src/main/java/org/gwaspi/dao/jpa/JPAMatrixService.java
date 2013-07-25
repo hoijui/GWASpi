@@ -330,7 +330,7 @@ public class JPAMatrixService implements MatrixService {
 		return loadMatrixMetadataFromFile(matrixId, matrixFriendlyName, matrixNetCDFName, studyKey, pathToMatrix, description, matrixType, creationDate);
 	}
 
-	private MatrixMetadata completeMatricesTable(MatrixMetadata toCompleteMatrixMetadata) throws IOException {
+	private static MatrixMetadata completeMatricesTable(MatrixMetadata toCompleteMatrixMetadata) throws IOException {
 		String pathToStudy = Study.constructGTPath(toCompleteMatrixMetadata.getKey().getStudyKey());
 		String pathToMatrix = pathToStudy + toCompleteMatrixMetadata.getMatrixNetCDFName() + ".nc";
 		return loadMatrixMetadataFromFile(
