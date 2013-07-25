@@ -28,6 +28,7 @@ import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
 import org.gwaspi.global.Config;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.utils.Dialogs;
+import org.gwaspi.model.DataSet;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.MatricesList;
@@ -86,13 +87,16 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 	{
 		String startTime = org.gwaspi.global.Utils.getMediumDateTimeAsString();
 
+		// HACK
+		DataSet dataSet = ((InMemorySamplesReceiver) samplesReceiver).getDataSet();
+
 		if (new File(loadDescription.getGtDirPath()).exists()) {
 		SampleSet matrixSampleSet = new SampleSet(loadDescription.getStudyKey(), "");
 		Map<SampleKey, byte[]> matrixSampleSetMap = matrixSampleSet.getSampleIdSetMapByteArray(loadDescription.getGtDirPath());
 
 		boolean testExcessSamplesInMatrix = false;
 		boolean testExcessSamplesInFile = false;
-		Collection<SampleKey> sampleKeys = AbstractLoadGTFromFiles.extractKeys(sampleInfos);
+		Collection<SampleKey> sampleKeys = AbstractLoadGTFromFiles.extractKeys(dataSet.getSampleInfos());
 		for (SampleKey key : matrixSampleSetMap.keySet()) {
 			if (!sampleKeys.contains(key)) {
 				testExcessSamplesInMatrix = true;
@@ -100,7 +104,7 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 			}
 		}
 
-		for (SampleInfo sampleInfo : sampleInfos) {
+		for (SampleInfo sampleInfo : dataSet.getSampleInfos()) {
 			if (!matrixSampleSetMap.containsKey(sampleInfo.getKey())) {
 				testExcessSamplesInFile = true;
 				break;
@@ -167,17 +171,15 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 					loadDescription.getGtDirPath(),
 					importMatrixMetadata.getMatrixNetCDFName());
 		} else {
-			generateNewGWASpiDBversionMatrix(loadDescription, importMatrixMetadata);
+			generateNewGWASpiDBversionMatrix(loadDescription, samplesReceiver, importMatrixMetadata);
 		}
 
 		importMatrixMetadata = MatricesList.getMatrixMetadataByNetCDFname(importMatrixMetadata.getMatrixNetCDFName());
-
-		result = importMatrixMetadata.getMatrixId();
 		}
 	}
 
-	private int generateNewGWASpiDBversionMatrix(GenotypesLoadDescription loadDescription, MatrixMetadata importMatrixMetadata)
-			throws IOException, InvalidRangeException, InterruptedException
+	private int generateNewGWASpiDBversionMatrix(GenotypesLoadDescription loadDescription, SamplesReceiver samplesReceiver, MatrixMetadata importMatrixMetadata)
+			throws Exception, InterruptedException
 	{
 		int result = Integer.MIN_VALUE;
 		String startTime = org.gwaspi.global.Utils.getMediumDateTimeAsString();
@@ -315,8 +317,8 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 			rdMarkerSet.fillGTsForCurrentSampleIntoInitMap(sampleWrIndex);
 
 			// Write MarkerIdSetMap to A3 ArrayChar and save to wrMatrix
-			org.gwaspi.netCDF.operations.Utils.saveSingleSampleGTsToMatrix(ncfile, rdMarkerSet.getMarkerIdSetMapByteArray(), sampleWrIndex);
-			samplesReceiver.addS
+//			org.gwaspi.netCDF.operations.Utils.saveSingleSampleGTsToMatrix(ncfile, rdMarkerSet.getMarkerIdSetMapByteArray().values(), sampleWrIndex);
+			samplesReceiver.addSampleGTAlleles(sampleWrIndex, rdMarkerSet.getMarkerIdSetMapByteArray().values());
 			if (sampleWrIndex % 100 == 0) {
 				log.info("Samples copied: " + sampleWrIndex);
 			}
