@@ -794,10 +794,10 @@ public class Utils {
 
 		int[] shape = inputArray.getShape();
 		Iterator<Entry<K, byte[]>> entries = map.entrySet().iterator();
+		ArrayByte wrArray = new ArrayByte(new int[] {1, shape[1]});
 		for (int i = 0; i < shape[0]; i++) {
 			Entry<K, byte[]> entry = entries.next();
 
-			ArrayByte wrArray = new ArrayByte(new int[] {1, shape[1]});
 			ArrayByte.D2.arraycopy(inputArray, i * shape[1], wrArray, 0, shape[1]);
 			byte[] values = (byte[]) wrArray.copyTo1DJavaArray();
 			entry.setValue(values);
