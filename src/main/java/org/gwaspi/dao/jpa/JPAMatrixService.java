@@ -274,6 +274,7 @@ public class JPAMatrixService implements MatrixService {
 		} catch (NoResultException ex) {
 			LOG.error("Failed fetching matrix-metadata by id: " + matrixKey.toRawIdString()
 					+ " (id not found)", ex);
+			close(em);
 			LOG.info("Available matrices:");
 			List<MatrixKey> matrixList = getMatrixKeys();
 			StringBuilder matrices = new StringBuilder();
