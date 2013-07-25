@@ -107,7 +107,7 @@ public class MachFormatter implements Formatter {
 		// Iterate through all samples
 		int sampleNb = 0;
 		for (SampleKey sampleKey : rdSampleSetMap.keySet()) {
-			SampleInfo sampleInfo = Utils.getCurrentSampleFormattedInfo(sampleKey, rdMatrixMetadata.getStudyKey());
+			SampleInfo sampleInfo = Utils.getCurrentSampleFormattedInfo(sampleKey);
 			String sexStr = "0";
 			String familyId = sampleInfo.getFamilyId();
 			String fatherId = sampleInfo.getFatherId();

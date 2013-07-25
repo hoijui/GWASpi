@@ -66,7 +66,7 @@ public class PlinkFormatter implements Formatter {
 			// Iterate through all samples
 			int sampleNb = 0;
 			for (SampleKey sampleKey : rdSampleSetMap.keySet()) {
-				SampleInfo sampleInfo = Utils.getCurrentSampleFormattedInfo(sampleKey, rdMatrixMetadata.getStudyKey());
+				SampleInfo sampleInfo = Utils.getCurrentSampleFormattedInfo(sampleKey);
 
 				String familyId = sampleInfo.getFamilyId();
 				String fatherId = sampleInfo.getFatherId();

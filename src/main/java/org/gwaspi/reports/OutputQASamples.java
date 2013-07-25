@@ -115,7 +115,7 @@ public class OutputQASamples {
 			// GET SAMPLE INFO FROM DB
 			for (Map.Entry<SampleKey, Double> entry : sortedSamplesMissingRatMap.entrySet()) {
 				SampleKey tempSampleKey = entry.getKey();
-				SampleInfo sampleInfo = org.gwaspi.netCDF.exporter.Utils.getCurrentSampleFormattedInfo(tempSampleKey, studyKey);
+				SampleInfo sampleInfo = org.gwaspi.netCDF.exporter.Utils.getCurrentSampleFormattedInfo(tempSampleKey);
 
 				String familyId = sampleInfo.getFamilyId();
 				String fatherId = sampleInfo.getFatherId();

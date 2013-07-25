@@ -28,7 +28,7 @@ public class Utils {
 	private Utils() {
 	}
 
-	public static SampleInfo getCurrentSampleFormattedInfo(SampleKey key, StudyKey studyKey) throws IOException {
+	public static SampleInfo getCurrentSampleFormattedInfo(SampleKey key) throws IOException {
 
 		SampleInfo sampleInfo = SampleInfoList.getSample(key);
 
