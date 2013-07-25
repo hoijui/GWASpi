@@ -215,7 +215,7 @@ public class Config {
 						log.info("Using database path: {}", dataDir.getAbsolutePath());
 						if (dataDir.exists()) {
 							// assume the existing dir contains a database
-							// with valid sturcutre already
+							// with valid structure already
 							initDataBaseVars(dataDir);
 							isInitiated = true;
 						} else {
