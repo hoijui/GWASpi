@@ -151,6 +151,8 @@ public class PlinkFormatter implements Formatter {
 
 			// MARKERSET POSITION
 			rdMarkerSet.appendVariableToMarkerSetMapValue(cNetCDF.Variables.VAR_MARKERS_POS, sep);
+
+			// write the accumulated values to the .map file
 			int markerNb = 0;
 			for (char[] pos : rdMarkerSet.getMarkerIdSetMapCharArray().values()) {
 				mapBW.append(new String(pos));
