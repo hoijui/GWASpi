@@ -547,8 +547,7 @@ public class MarkerSet {
 						}
 						entry.setValue((value + newValue.toString().trim()).toCharArray());
 					}
-				}
-				if ((dataType == DataType.FLOAT) && (varShape.length == 1)) {
+				} else if ((dataType == DataType.FLOAT) && (varShape.length == 1)) {
 					ArrayFloat.D1 markerSetAF = (ArrayFloat.D1) var.read("(" + startMkIdx + ":" + endMkIdx + ":1)");
 
 					int[] shape = markerSetAF.getShape();
@@ -563,8 +562,7 @@ public class MarkerSet {
 						Float floatValue = markerSetAF.getFloat(index.set(i));
 						entry.setValue((value + floatValue.toString()).toCharArray());
 					}
-				}
-				if ((dataType == DataType.INT) && (varShape.length == 1)) {
+				} else if ((dataType == DataType.INT) && (varShape.length == 1)) {
 					ArrayInt.D1 markerSetAF = (ArrayInt.D1) var.read("(" + startMkIdx + ":" + endMkIdx + ":1)");
 
 					int[] shape = markerSetAF.getShape();
