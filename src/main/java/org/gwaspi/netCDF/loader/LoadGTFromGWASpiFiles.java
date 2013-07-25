@@ -83,7 +83,7 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 
 	@Override
 	public void processData(GenotypesLoadDescription loadDescription, SamplesReceiver samplesReceiver)
-			throws Exception, InterruptedException
+			throws Exception
 	{
 		String startTime = org.gwaspi.global.Utils.getMediumDateTimeAsString();
 
@@ -179,7 +179,7 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 	}
 
 	private int generateNewGWASpiDBversionMatrix(GenotypesLoadDescription loadDescription, SamplesReceiver samplesReceiver, MatrixMetadata importMatrixMetadata)
-			throws Exception, InterruptedException
+			throws Exception
 	{
 		int result = Integer.MIN_VALUE;
 		String startTime = org.gwaspi.global.Utils.getMediumDateTimeAsString();

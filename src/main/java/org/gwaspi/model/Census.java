@@ -25,7 +25,7 @@ import org.gwaspi.global.EnumeratedValueExtractor;
  * Contains statistical data about a marker within a set of samples.
  */
 public class Census {
-	private static abstract class CensusExtractor implements EnumeratedValueExtractor<Census, Iterator<Integer>> {
+	private abstract static class CensusExtractor implements EnumeratedValueExtractor<Census, Iterator<Integer>> {
 
 		abstract Integer extractIndex(Census object, int extractIndex);
 

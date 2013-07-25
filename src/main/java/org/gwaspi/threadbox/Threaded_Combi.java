@@ -17,15 +17,10 @@
 
 package org.gwaspi.threadbox;
 
-import java.util.List;
-import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.model.GWASpiExplorerNodes;
 import org.gwaspi.model.OperationKey;
-import org.gwaspi.model.OperationMetadata;
-import org.gwaspi.model.OperationsList;
 import org.gwaspi.netCDF.operations.OperationManager;
 import org.gwaspi.operations.combi.CombiTestParams;
-import org.gwaspi.reports.OutputAssociation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

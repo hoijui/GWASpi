@@ -19,17 +19,12 @@ package org.gwaspi.cli;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.StudyKey;
-import org.gwaspi.netCDF.operations.GWASinOneGOParams;
-import org.gwaspi.netCDF.operations.OperationManager;
 import org.gwaspi.operations.combi.AllelicGenotypeEncoder;
 import org.gwaspi.operations.combi.NominalGenotypeEncoder;
 import org.gwaspi.operations.combi.CombiTestParams;

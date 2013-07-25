@@ -43,7 +43,6 @@ import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.StudyKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.ma2.InvalidRangeException;
 
 /**
  * HapMap genotypes loader.

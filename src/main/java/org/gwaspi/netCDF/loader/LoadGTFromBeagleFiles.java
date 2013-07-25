@@ -28,15 +28,12 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import org.gwaspi.constants.cImport;
 import org.gwaspi.constants.cImport.ImportFormat;
-import org.gwaspi.constants.cNetCDF;
-import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.StudyKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.ma2.InvalidRangeException;
 
 public class LoadGTFromBeagleFiles extends AbstractLoadGTFromFiles {
 
