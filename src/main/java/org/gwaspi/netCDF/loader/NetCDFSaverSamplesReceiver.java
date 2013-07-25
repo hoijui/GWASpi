@@ -21,15 +21,10 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import org.gwaspi.constants.cImport.ImportFormat;
-import org.gwaspi.constants.cImport.StrandFlags;
 import org.gwaspi.constants.cNetCDF;
-import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
-import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.StartGWASpi;
 import org.gwaspi.model.MarkerKey;
@@ -40,7 +35,6 @@ import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleInfoList;
 import org.gwaspi.model.SampleKey;
-import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -89,49 +83,6 @@ public class NetCDFSaverSamplesReceiver extends InMemorySamplesReceiver {
 	public void setGTLoader(AbstractLoadGTFromFiles gtLoader) {
 		this.gtLoader = gtLoader;
 	}
-
-//	private final ImportFormat format;
-//	private final StrandType matrixStrand;
-//	private final boolean hasDictionary;
-//	private final String markersD2Variables;
-//
-//	public NetCDFSaverSamplesReceiver(
-//			ImportFormat format,
-//			StrandType matrixStrand,
-//			boolean hasDictionary,
-//			String markersD2Variables
-//			)
-//	{
-//		this.format = format;
-//		this.matrixStrand = matrixStrand;
-//		this.hasDictionary = hasDictionary;
-//		this.markersD2Variables = markersD2Variables;
-//	}
-//
-//	@Override
-//	public ImportFormat getFormat() {
-//		return format;
-//	}
-//
-//	@Override
-//	public StrandType getMatrixStrand() {
-//		return matrixStrand;
-//	}
-//
-//	@Override
-//	public boolean isHasDictionary() {
-//		return hasDictionary;
-//	}
-//
-//	@Override
-//	public String getMarkersD2Variables() {
-//		return markersD2Variables;
-//	}
-//
-//	protected void addAdditionalBigDescriptionProperties(StringBuilder descSB, GenotypesLoadDescription loadDescription) {
-//	}
-//
-//	protected abstract MetadataLoader createMetaDataLoader(GenotypesLoadDescription loadDescription);
 
 	@Override
 	public void init() throws Exception {
