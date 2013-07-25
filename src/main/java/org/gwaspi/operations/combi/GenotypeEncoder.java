@@ -18,9 +18,6 @@ package org.gwaspi.operations.combi;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
-import libsvm.svm_problem;
-import org.gwaspi.model.Genotype;
 
 /**
  * Encodes genotypes into values suitable for SVM input,

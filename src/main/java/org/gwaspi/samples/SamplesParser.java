@@ -17,7 +17,6 @@
 
 package org.gwaspi.samples;
 
-import java.io.IOException;
 import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.loader.SamplesReceiver;
 

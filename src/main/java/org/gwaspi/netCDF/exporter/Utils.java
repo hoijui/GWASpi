@@ -21,7 +21,6 @@ import java.io.IOException;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleInfoList;
 import org.gwaspi.model.SampleKey;
-import org.gwaspi.model.StudyKey;
 
 public class Utils {
 

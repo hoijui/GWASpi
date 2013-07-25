@@ -129,10 +129,11 @@ public class NominalGenotypeEncoder extends EncodingTableBasedGenotypeEncoder {
 			switch (baseEncoding.getValue()) {
 				case 4: // "AA"
 //					curValue = 0.0f;
-					if (countHigher)
+					if (countHigher) {
 						curValue = 0.0f;
-					else
+					} else {
 						curValue = 2.0f;
+					}
 					break;
 				case 5: // "AG"
 					curValue = 1.0f;
@@ -142,10 +143,11 @@ public class NominalGenotypeEncoder extends EncodingTableBasedGenotypeEncoder {
 					break;
 				case 8: // "GG"
 //					curValue = 2.0f;
-					if (countHigher)
+					if (countHigher) {
 						curValue = 2.0f;
-					else
+					} else {
 						curValue = 0.0f;
+					}
 					break;
 				default: // "00"
 					curValue = 0.0f;
