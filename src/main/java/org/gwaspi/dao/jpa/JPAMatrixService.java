@@ -272,7 +272,7 @@ public class JPAMatrixService implements MatrixService {
 			matrixMetadata = (MatrixMetadata) query.getSingleResult();
 			matrixMetadata = completeMatricesTable(matrixMetadata);
 		} catch (NoResultException ex) {
-			LOG.error("Failed fetching matrix-metadata by id: " + matrixKey
+			LOG.error("Failed fetching matrix-metadata by id: " + matrixKey.toRawIdString()
 					+ " (id not found)", ex);
 			LOG.info("Available matrices:");
 			List<MatrixKey> matrixList = getMatrixKeys();
@@ -284,7 +284,7 @@ public class JPAMatrixService implements MatrixService {
 			}
 			LOG.info(matrices.toString());
 		} catch (Exception ex) {
-			LOG.error("Failed fetching matrix-metadata by id: " + matrixKey, ex);
+			LOG.error("Failed fetching matrix-metadata by id: " + matrixKey.toRawIdString(), ex);
 		} finally {
 			close(em);
 		}
