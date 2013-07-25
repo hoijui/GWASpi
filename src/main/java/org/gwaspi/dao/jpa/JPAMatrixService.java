@@ -269,8 +269,8 @@ public class JPAMatrixService implements MatrixService {
 			em = open();
 			Query query = em.createNamedQuery("matrixMetadata_fetchById");
 			query.setParameter("id", matrixKey.getMatrixId());
-			matrixMetadata = (MatrixMetadata) query.getSingleResult();
-			matrixMetadata = completeMatricesTable(matrixMetadata);
+			MatrixMetadata matrixMetadataTmp = (MatrixMetadata) query.getSingleResult();
+			matrixMetadata = completeMatricesTable(matrixMetadataTmp);
 		} catch (NoResultException ex) {
 			LOG.error("Failed fetching matrix-metadata by id: " + matrixKey.toRawIdString()
 					+ " (id not found)", ex);
