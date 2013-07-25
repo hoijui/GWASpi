@@ -138,8 +138,9 @@ public class PlinkFormatter implements Formatter {
 			// MARKERSET CHROMOSOME
 			rdMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
 
-			// MARKERSET RSID
-			rdMarkerSet.appendVariableToMarkerSetMapValue(cNetCDF.Variables.VAR_MARKERS_RSID, sep);
+			// MARKERSET MARKER-ID and/or RSID
+//			rdMarkerSet.appendVariableToMarkerSetMapValue(cNetCDF.Variables.VAR_MARKERS_RSID, sep);
+			rdMarkerSet.appendVariableToMarkerSetMapValue(cNetCDF.Variables.VAR_MARKERSET, sep);
 
 			// DEFAULT GENETIC DISTANCE = 0
 			for (Map.Entry<?, char[]> entry : rdMarkerSet.getMarkerIdSetMapCharArray().entrySet()) {
