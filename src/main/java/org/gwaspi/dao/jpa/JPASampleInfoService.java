@@ -178,17 +178,18 @@ public class JPASampleInfoService implements SampleInfoService {
 				em.persist(sampleInfo);
 				commit(em);
 			} catch (Exception ex) {
+				EntityManager emInner = null;
 				try {
-					em = open();
-					begin(em);
-					em.merge(sampleInfo); // TODO rather check the id, and decide to do persist or merge
-					commit(em);
+					emInner = open();
+					begin(emInner);
+					emInner.merge(sampleInfo); // TODO rather check the id, and decide to do persist or merge
+					commit(emInner);
 				} catch (Exception ex2) {
 					LOG.error("Failed adding a sample-info", ex);
 					LOG.error("Failed mergeing a sample-info", ex2);
-					rollback(em);
+					rollback(emInner);
 				} finally {
-					close(em);
+					close(emInner);
 				}
 			} finally {
 				close(em);
