@@ -98,9 +98,19 @@ public class Utils {
 	}
 
 	public static File createFolder(File folder) throws IOException {
+
+		if (log.isDebugEnabled()) {
+			File parent = folder.getParentFile();
+			while (!parent.getAbsolutePath().equals("/") && !parent.exists()) { // HACK only works on unix file systems
+				log.debug("parent folder does not exist: {}", parent.getAbsolutePath());
+				parent = parent.getParentFile();
+			}
+		}
+
 		if (!folder.exists() && !folder.mkdir()) {
 			throw new IOException("Failed to create directory " + folder.getPath());
 		}
+
 		return folder;
 	}
 
