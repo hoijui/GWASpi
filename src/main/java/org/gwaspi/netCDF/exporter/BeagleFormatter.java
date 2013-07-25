@@ -97,7 +97,7 @@ class BeagleFormatter implements Formatter {
 			StringBuilder affectionLine = new StringBuilder("A" + sep + "affection");
 
 			for (SampleKey sampleKey : rdSampleSetMap.keySet()) {
-				SampleInfo sampleInfo = Utils.getCurrentSampleFormattedInfo(sampleKey, rdMatrixMetadata.getStudyKey());
+				SampleInfo sampleInfo = Utils.getCurrentSampleFormattedInfo(sampleKey);
 
 				sampleLine.append(sep);
 				sampleLine.append(sampleInfo.getSampleId());

@@ -78,7 +78,7 @@ public class GWASpiFormatter implements Formatter {
 //				Population
 //				Age
 
-				SampleInfo sampleInfo = Utils.getCurrentSampleFormattedInfo(sampleKey, rdMatrixMetadata.getStudyKey());
+				SampleInfo sampleInfo = Utils.getCurrentSampleFormattedInfo(sampleKey);
 
 				String familyId = sampleInfo.getFamilyId();
 				String fatherId = sampleInfo.getFatherId();
