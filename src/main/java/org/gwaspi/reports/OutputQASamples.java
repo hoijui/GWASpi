@@ -73,8 +73,8 @@ public class OutputQASamples {
 		}
 
 		samplMissOutName = prefix + "hetzyg-missing";
-//		if(createSampleHetzygPlot(opId, samplMissOutName, 500, 500)){
-//			if(newReport){
+//		if (createSampleHetzygPlot(opId, samplMissOutName, 500, 500)) {
+//			if (newReport) {
 		ReportsList.insertRPMetadata(new Report(
 				Integer.MIN_VALUE,
 				"Sample Heterozygosity vs Missingness Plot",
@@ -85,8 +85,8 @@ public class OutputQASamples {
 				op.getStudyKey()));
 
 		org.gwaspi.global.Utils.sysoutCompleted("Sample Missingness QA Report");
-//            }
-//        }
+//			}
+//		}
 
 
 		return true;
