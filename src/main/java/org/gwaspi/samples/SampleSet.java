@@ -82,7 +82,7 @@ public class SampleSet {
 	}
 
 	//<editor-fold defaultstate="expanded" desc="SAMPLESET FETCHERS">
-	private Map<SampleKey, ?> getSampleIdSetMap() throws InvalidRangeException {
+	private Map<SampleKey, ?> getSampleIdSetMap() throws IOException {
 		NetcdfFile ncfile = null;
 
 		try {
@@ -119,7 +119,6 @@ public class SampleSet {
 			} catch (InvalidRangeException ex) {
 				log.error("Cannot read data", ex);
 			}
-
 		} catch (IOException ex) {
 			log.error("Cannot open file", ex);
 		} finally {
@@ -135,19 +134,19 @@ public class SampleSet {
 		return sampleIdSetMap;
 	}
 
-	public Map<SampleKey, char[]> getSampleIdSetMapCharArray() throws InvalidRangeException {
+	public Map<SampleKey, char[]> getSampleIdSetMapCharArray() throws IOException {
 		return (Map<SampleKey, char[]>) getSampleIdSetMap();
 	}
 
-	public Map<SampleKey, byte[]> getSampleIdSetMapByteArray() throws InvalidRangeException {
+	public Map<SampleKey, byte[]> getSampleIdSetMapByteArray() throws IOException {
 		return (Map<SampleKey, byte[]>) getSampleIdSetMap();
 	}
 
-	public Set<SampleKey> getSampleKeys() throws InvalidRangeException {
+	public Set<SampleKey> getSampleKeys() throws IOException {
 		return getSampleIdSetMap().keySet();
 	}
 
-	private Map<SampleKey, ?> getSampleIdSetMap(String matrixImportPath) throws InvalidRangeException {
+	private Map<SampleKey, ?> getSampleIdSetMap(String matrixImportPath) throws IOException {
 		NetcdfFile ncfile = null;
 
 		try {
@@ -200,7 +199,7 @@ public class SampleSet {
 		return sampleIdSetMap;
 	}
 
-	public Map<SampleKey, byte[]> getSampleIdSetMapByteArray(String matrixImportPath) throws InvalidRangeException {
+	public Map<SampleKey, byte[]> getSampleIdSetMapByteArray(String matrixImportPath) throws IOException {
 		return (Map<SampleKey, byte[]>) getSampleIdSetMap(matrixImportPath);
 	}
 	//</editor-fold>
