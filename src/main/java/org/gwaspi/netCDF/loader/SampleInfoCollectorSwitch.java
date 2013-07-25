@@ -88,6 +88,9 @@ public class SampleInfoCollectorSwitch {
 					samplesReceiver.startLoadingDummySampleInfos();
 					SamplesParserManager.scanSampleInfo(studyKey, format, altSampleInfoPath2, samplesReceiver);
 					samplesReceiver.finishedLoadingDummySampleInfos();
+
+					samplesReceiver.startLoadingSampleInfos();
+					samplesReceiver.finishedLoadingSampleInfos();
 				} else {
 					samplesReceiver.startLoadingDummySampleInfos();
 					SamplesParserManager.scanSampleInfo(studyKey, format, altSampleInfoPath2, samplesReceiver);
@@ -120,6 +123,9 @@ public class SampleInfoCollectorSwitch {
 					samplesReceiver.startLoadingDummySampleInfos();
 					SamplesParserManager.scanSampleInfo(studyKey, format, altSampleInfoPath1, samplesReceiver);
 					samplesReceiver.finishedLoadingDummySampleInfos();
+
+					samplesReceiver.startLoadingSampleInfos();
+					samplesReceiver.finishedLoadingSampleInfos();
 				} else {
 					samplesReceiver.startLoadingDummySampleInfos();
 					SamplesParserManager.scanSampleInfo(studyKey, format, altSampleInfoPath1, samplesReceiver);
