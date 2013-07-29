@@ -99,24 +99,8 @@ public class NetCDFSaverSamplesReceiver extends InMemorySamplesReceiver {
 	//<editor-fold defaultstate="expanded" desc="PROCESS GENOTYPES">
 	@Override
 	public void finishedLoadingMarkerMetadatas() throws IOException, InvalidRangeException, InterruptedException {
-//	public void init() throws Exception {
-//		int result = Integer.MIN_VALUE;
-//
-//		String startTime = org.gwaspi.global.Utils.getMediumDateTimeAsString();
 
 		List<SampleKey> sampleKeys = NetCDFSaverSamplesReceiver.extractKeys(getDataSet().getSampleInfos());
-
-//		Map<MarkerKey, MarkerMetadata> markerSetMap = new LinkedHashMap<MarkerKey, MarkerMetadata>();
-//
-//		//<editor-fold defaultstate="expanded" desc="CREATE MARKERSET & NETCDF">
-//		MetadataLoader markerSetLoader = createMetaDataLoader(loadDescription);
-//		for (MarkerMetadata markerMetadata : markerSetLoader) {
-//			markerSetMap.put(MarkerKey.valueOf(markerMetadata), markerMetadata);
-//		}
-//		Map<MarkerKey, MarkerMetadata> tmpMarkerMap = markerSetLoader.getSortedMarkerSetWithMetaData();
-//		markerSetMap.putAll(tmpMarkerMap);
-//
-//		log.info("Done initializing sorted MarkerSetMap");
 
 		// CREATE netCDF-3 FILE
 		descSB = new StringBuilder(Text.Matrix.descriptionHeader1);
@@ -168,7 +152,6 @@ public class NetCDFSaverSamplesReceiver extends InMemorySamplesReceiver {
 		} catch (IOException ex) {
 			log.error("Failed creating file " + ncfile.getLocation(), ex);
 		}
-		//log.info("Done creating netCDF handle ");
 		//</editor-fold>
 
 		//<editor-fold defaultstate="expanded" desc="WRITE MATRIX METADATA">
@@ -308,9 +291,7 @@ public class NetCDFSaverSamplesReceiver extends InMemorySamplesReceiver {
 			throw new IllegalStateException("You can not mix loading per sample and loading per marker");
 		}
 
-//		org.gwaspi.netCDF.operations.Utils.saveSingleSampleGTsToMatrix(ncfile, sampleAlleles, curAlleleSampleIndex);
 		org.gwaspi.netCDF.operations.Utils.saveSingleSampleGTsToMatrix(ncfile, sampleAlleles, sampleIndex);
-//		curAlleleSampleIndex++;
 	}
 
 	@Override
@@ -320,20 +301,14 @@ public class NetCDFSaverSamplesReceiver extends InMemorySamplesReceiver {
 			throw new IllegalStateException("You can not mix loading per sample and loading per marker");
 		}
 
-//		// WRITING HYPERSLABS AT A TIME
-//		for (SampleInfo sampleInfo : getDataSet().getSampleInfos()) {
-//			String sampleId = sampleInfo.getSampleId();
-//			byte[] value = mappedGenotypes.get(sampleId);
-//			genotypesHyperslabs.add(value);
-//		}
 		genotypesHyperslabs.addAll(markerAlleles);
-//		curAllelesMarkerIndex++;
 		curAllelesMarkerIndex = markerIndex;
 
 		if (curAllelesMarkerIndex != 1 && curAllelesMarkerIndex % (hyperSlabRows) == 0) {
-			ArrayByte.D3 genotypesArray = org.gwaspi.netCDF.operations.Utils.writeListValuesToSamplesHyperSlabArrayByteD3(genotypesHyperslabs, getDataSet().getSampleInfos().size(), cNetCDF.Strides.STRIDE_GT);
-			int[] origin = new int[]{0, (curAllelesMarkerIndex - hyperSlabRows), 0}; //0,0,0 for 1st marker ; 0,1,0 for 2nd marker....
-//						log.info("Origin at rowCount "+rowCounter+": "+origin[0]+"|"+origin[1]+"|"+origin[2]);
+			// WRITING HYPERSLABS AT A TIME
+			ArrayByte.D3 genotypesArray = org.gwaspi.netCDF.operations.Utils.writeListValuesToSamplesHyperSlabArrayByteD3(
+					genotypesHyperslabs, getDataSet().getSampleInfos().size(), cNetCDF.Strides.STRIDE_GT);
+			int[] origin = new int[]{0, (curAllelesMarkerIndex - hyperSlabRows), 0}; // 0,0,0 for 1st marker ; 0,1,0 for 2nd marker ...
 			try {
 				ncfile.write(cNetCDF.Variables.VAR_GENOTYPES, origin, genotypesArray);
 			} catch (IOException ex) {
