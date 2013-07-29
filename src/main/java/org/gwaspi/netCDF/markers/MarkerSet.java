@@ -179,66 +179,6 @@ public class MarkerSet {
 			}
 		}
 	}
-
-	// USE RSID AS KEYS
-	/**
-	 * @deprecated is unused
-	 */
-	public void initFullRsIdSetMap() {
-		startMkIdx = 0;
-		endMkIdx = Integer.MIN_VALUE;
-		initRsIdSetMap(startMkIdx, endMkIdx);
-	}
-
-	/**
-	 * @deprecated is unused
-	 */
-	public void initRsIdSetMap(int _startMkInd, int _endMkIdx) {
-		startMkIdx = _startMkInd;
-		endMkIdx = _endMkIdx;
-
-		Variable var = ncfile.findVariable(cNetCDF.Variables.VAR_MARKERS_RSID);
-
-		if (var != null) {
-
-			DataType dataType = var.getDataType();
-			int[] varShape = var.getShape();
-
-			try {
-				// KEEP INDEXES REAL
-				if (startMkIdx == Integer.MIN_VALUE) {
-					startMkIdx = 0;
-				}
-				if (endMkIdx == Integer.MIN_VALUE) {
-					endMkIdx = markerSetSize - 1;
-				}
-
-				StringBuilder netCdfReadStrBldr = new StringBuilder(64);
-				netCdfReadStrBldr
-						.append("(")
-						.append(startMkIdx)
-						.append(":")
-						.append(endMkIdx)
-						.append(":1, 0:")
-						.append(varShape[1] - 1)
-						.append(":1)");
-				String netCdfReadStr = netCdfReadStrBldr.toString();
-
-				if (dataType == DataType.CHAR) {
-					ArrayChar.D2 markerSetAC = (ArrayChar.D2) var.read(netCdfReadStr);
-					markerRsIdSetMap = wrapToMarkerKeyMap(markerSetAC);
-				}
-				if (dataType == DataType.BYTE) {
-					ArrayByte.D2 markerSetAC = (ArrayByte.D2) var.read(netCdfReadStr);
-					markerRsIdSetMap = wrapToMarkerKeyMap(markerSetAC);
-				}
-			} catch (IOException ex) {
-				log.error("Cannot read data", ex);
-			} catch (InvalidRangeException ex) {
-				log.error("Cannot read data", ex);
-			}
-		}
-	}
 	//</editor-fold>
 
 	//<editor-fold defaultstate="expanded" desc="CHROMOSOME INFO">
