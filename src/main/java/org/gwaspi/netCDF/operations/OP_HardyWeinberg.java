@@ -82,7 +82,7 @@ public class OP_HardyWeinberg implements MatrixOperation {
 
 			//<editor-fold defaultstate="expanded" desc="METADATA WRITER">
 			// MARKERSET MARKERID
-			ArrayChar.D2 markersD2 = Utils.writeMapKeysToD2ArrayChar(rdMarkerSetMap, cNetCDF.Strides.STRIDE_MARKER_NAME);
+			ArrayChar.D2 markersD2 = Utils.writeCollectionToD2ArrayChar(rdMarkerSetMap.keySet(), cNetCDF.Strides.STRIDE_MARKER_NAME);
 			int[] markersOrig = new int[] {0, 0};
 			try {
 				wrNcFile.write(cNetCDF.Variables.VAR_OPSET, markersOrig, markersD2);
@@ -94,10 +94,10 @@ public class OP_HardyWeinberg implements MatrixOperation {
 
 			// MARKERSET RSID
 			rdMarkerSetMap = rdOperationSet.fillOpSetMapWithVariable(rdNcFile, cNetCDF.Variables.VAR_MARKERS_RSID);
-			Utils.saveCharMapValueToWrMatrix(wrNcFile, rdMarkerSetMap, cNetCDF.Variables.VAR_MARKERS_RSID, cNetCDF.Strides.STRIDE_MARKER_NAME);
+			Utils.saveCharMapValueToWrMatrix(wrNcFile, rdMarkerSetMap.values(), cNetCDF.Variables.VAR_MARKERS_RSID, cNetCDF.Strides.STRIDE_MARKER_NAME);
 
 			// WRITE SAMPLESET TO MATRIX FROM SAMPLES ARRAYLIST
-			ArrayChar.D2 samplesD2 = org.gwaspi.netCDF.operations.Utils.writeMapKeysToD2ArrayChar(rdSampleSetMap, cNetCDF.Strides.STRIDE_SAMPLE_NAME);
+			ArrayChar.D2 samplesD2 = org.gwaspi.netCDF.operations.Utils.writeCollectionToD2ArrayChar(rdSampleSetMap.keySet(), cNetCDF.Strides.STRIDE_SAMPLE_NAME);
 
 			int[] sampleOrig = new int[]{0, 0};
 			try {
@@ -219,16 +219,16 @@ public class OP_HardyWeinberg implements MatrixOperation {
 
 		// CONTROL SAMPLES
 		if (category.equals("CTRL")) {
-			Utils.saveDoubleMapItemD1ToWrMatrix(wrNcFile, result, 0, cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWPval_CTRL);
+			Utils.saveDoubleMapItemD1ToWrMatrix(wrNcFile, result.values(), 0, cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWPval_CTRL);
 			int[] boxes = new int[] {1, 2};
-			Utils.saveDoubleMapD2ToWrMatrix(wrNcFile, result, boxes, cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWHETZY_CTRL);
+			Utils.saveDoubleMapD2ToWrMatrix(wrNcFile, result.values(), boxes, cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWHETZY_CTRL);
 		}
 
 		// HW-ALT SAMPLES
 		if (category.equals("HW-ALT")) {
-			Utils.saveDoubleMapItemD1ToWrMatrix(wrNcFile, result, 0, cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWPval_ALT);
+			Utils.saveDoubleMapItemD1ToWrMatrix(wrNcFile, result.values(), 0, cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWPval_ALT);
 			int[] boxes = new int[] {1, 2};
-			Utils.saveDoubleMapD2ToWrMatrix(wrNcFile, result, boxes, cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWHETZY_ALT);
+			Utils.saveDoubleMapD2ToWrMatrix(wrNcFile, result.values(), boxes, cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWHETZY_ALT);
 		}
 		//</editor-fold>
 	}

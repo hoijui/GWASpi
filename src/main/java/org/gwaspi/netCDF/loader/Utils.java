@@ -18,8 +18,8 @@
 package org.gwaspi.netCDF.loader;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 import org.gwaspi.constants.cImport;
 import org.gwaspi.constants.cNetCDF.Defaults.AlleleBytes;
@@ -98,11 +98,11 @@ public class Utils {
 		return values;
 	}
 
-	public static GenotypeEncoding detectGTEncoding(Map<?, byte[]> map) {
+	public static GenotypeEncoding detectGTEncoding(Collection<byte[]> genotypes) {
 		GenotypeEncoding gtEcoding;
 
 		Set<Byte> allAlleles = new HashSet<Byte>();
-		for (byte[] values : map.values()) {
+		for (byte[] values : genotypes) {
 			allAlleles.add(values[0]);
 			allAlleles.add(values[1]);
 		}

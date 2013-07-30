@@ -217,7 +217,7 @@ public class LoadGTFromIlluminaLGENFiles extends AbstractLoadGTFromFiles impleme
 		if (guessedGTCode.equals(cNetCDF.Defaults.GenotypeEncoding.UNKNOWN)
 				|| guessedGTCode.equals(cNetCDF.Defaults.GenotypeEncoding.O12))
 		{
-			guessedGTCode = Utils.detectGTEncoding(sortedAlleles);
+			guessedGTCode = Utils.detectGTEncoding(sortedAlleles.values());
 		}
 
 		// WRITING GENOTYPE DATA INTO netCDF FILE

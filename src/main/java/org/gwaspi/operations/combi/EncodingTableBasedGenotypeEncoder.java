@@ -73,25 +73,6 @@ public abstract class EncodingTableBasedGenotypeEncoder implements GenotypeEncod
 	}
 
 	@Override
-//	public void encodeGenotypes(
-//			List<Genotype> possibleGenotypes,
-//			List<Genotype> rawGenotypes,
-//			Map<?, List<Double>> encodedGenotypes)
-//	public void encodeGenotypes(
-//			final List<Genotype> possibleGenotypes,
-//			final List<Genotype> rawGenotypes,
-//			svm_problem libSvmProblem,
-//			int mi)
-//	public void encodeGenotypes(
-//			final List<Genotype> possibleGenotypes,
-//			final List<Genotype> rawGenotypes,
-//			float[][] encodedSamplesMarkers,
-//			int mi)
-//	public void encodeGenotypes(
-//			final List<Genotype> possibleGenotypes,
-//			final List<Genotype> rawGenotypes,
-//			float[][] encodedSamplesMarkers,
-//			int mi)
 	public void encodeGenotypes(
 			final Collection<byte[]> rawGenotypes,
 			final List<Boolean> samplesToKeep,

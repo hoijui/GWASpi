@@ -141,7 +141,7 @@ public abstract class AbstractMergeMarkersMatrixOperation extends AbstractMergeM
 
 			//<editor-fold defaultstate="expanded" desc="METADATA WRITER">
 			// SAMPLESET
-			ArrayChar.D2 samplesD2 = Utils.writeMapKeysToD2ArrayChar(theSamples, cNetCDF.Strides.STRIDE_SAMPLE_NAME);
+			ArrayChar.D2 samplesD2 = Utils.writeCollectionToD2ArrayChar(theSamples.keySet(), cNetCDF.Strides.STRIDE_SAMPLE_NAME);
 
 			int[] sampleOrig = new int[]{0, 0};
 			try {
@@ -154,7 +154,7 @@ public abstract class AbstractMergeMarkersMatrixOperation extends AbstractMergeM
 			log.info("Done writing SampleSet to matrix");
 
 			// MARKERSET MARKERID
-			ArrayChar.D2 markersD2 = Utils.writeMapKeysToD2ArrayChar(wrComboSortedMarkerSetMap, cNetCDF.Strides.STRIDE_MARKER_NAME);
+			ArrayChar.D2 markersD2 = Utils.writeCollectionToD2ArrayChar(wrComboSortedMarkerSetMap.keySet(), cNetCDF.Strides.STRIDE_MARKER_NAME);
 			int[] markersOrig = new int[] {0, 0};
 			try {
 				wrNcFile.write(cNetCDF.Variables.VAR_MARKERSET, markersOrig, markersD2);
@@ -165,7 +165,7 @@ public abstract class AbstractMergeMarkersMatrixOperation extends AbstractMergeM
 			}
 
 			// WRITE CHROMOSOME METADATA FROM ANNOTATION FILE
-			markersD2 = org.gwaspi.netCDF.operations.Utils.writeMapValueItemToD2ArrayChar(wrComboSortedMarkerSetMap, MarkerMetadata.TO_CHR, cNetCDF.Strides.STRIDE_CHR);
+			markersD2 = org.gwaspi.netCDF.operations.Utils.writeValuesToD2ArrayChar(wrComboSortedMarkerSetMap.values(), MarkerMetadata.TO_CHR, cNetCDF.Strides.STRIDE_CHR);
 
 			try {
 				wrNcFile.write(cNetCDF.Variables.VAR_MARKERS_CHR, markersOrig, markersD2);
@@ -180,10 +180,10 @@ public abstract class AbstractMergeMarkersMatrixOperation extends AbstractMergeM
 			org.gwaspi.netCDF.operations.Utils.saveCharMapKeyToWrMatrix(wrNcFile, chrInfo, cNetCDF.Variables.VAR_CHR_IN_MATRIX, 8);
 			// Number of marker per chromosome & max pos for each chromosome
 			int[] columns = new int[] {0, 1, 2, 3};
-			org.gwaspi.netCDF.operations.Utils.saveIntMapD2ToWrMatrix(wrNcFile, chrInfo, columns, cNetCDF.Variables.VAR_CHR_INFO);
+			org.gwaspi.netCDF.operations.Utils.saveIntMapD2ToWrMatrix(wrNcFile, chrInfo.values(), columns, cNetCDF.Variables.VAR_CHR_INFO);
 
 			// WRITE POSITION METADATA FROM ANNOTATION FILE
-			ArrayInt.D1 markersPosD1 = org.gwaspi.netCDF.operations.Utils.writeMapValueItemToD1ArrayInt(wrComboSortedMarkerSetMap, MarkerMetadata.TO_POS);
+			ArrayInt.D1 markersPosD1 = org.gwaspi.netCDF.operations.Utils.writeValuesToD1ArrayInt(wrComboSortedMarkerSetMap.values(), MarkerMetadata.TO_POS);
 			int[] posOrig = new int[1];
 			try {
 				wrNcFile.write(cNetCDF.Variables.VAR_MARKERS_POS, posOrig, markersPosD1);
@@ -205,7 +205,7 @@ public abstract class AbstractMergeMarkersMatrixOperation extends AbstractMergeM
 			rdMarkerSet2.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_RSID);
 			combinedMarkerRSIDs.putAll(rdMarkerSet2.getMarkerIdSetMapCharArray());
 
-			Utils.saveCharMapValueToWrMatrix(wrNcFile, combinedMarkerRSIDs, cNetCDF.Variables.VAR_MARKERS_RSID, cNetCDF.Strides.STRIDE_MARKER_NAME);
+			Utils.saveCharMapValueToWrMatrix(wrNcFile, combinedMarkerRSIDs.values(), cNetCDF.Variables.VAR_MARKERS_RSID, cNetCDF.Strides.STRIDE_MARKER_NAME);
 			//</editor-fold>
 
 			//<editor-fold defaultstate="expanded" desc="MARKERSET DICTIONARY ALLELES">
@@ -220,7 +220,7 @@ public abstract class AbstractMergeMarkersMatrixOperation extends AbstractMergeM
 				rdMarkerSet2.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_BASES_DICT);
 				combinedMarkerBasesDicts.putAll(rdMarkerSet2.getMarkerIdSetMapCharArray());
 
-				Utils.saveCharMapValueToWrMatrix(wrNcFile, combinedMarkerBasesDicts, cNetCDF.Variables.VAR_MARKERS_BASES_DICT, cNetCDF.Strides.STRIDE_GT);
+				Utils.saveCharMapValueToWrMatrix(wrNcFile, combinedMarkerBasesDicts.values(), cNetCDF.Variables.VAR_MARKERS_BASES_DICT, cNetCDF.Strides.STRIDE_GT);
 			}
 			//</editor-fold>
 
@@ -231,7 +231,7 @@ public abstract class AbstractMergeMarkersMatrixOperation extends AbstractMergeM
 			rdMarkerSet2.fillInitMapWithVariable(cNetCDF.Variables.VAR_GT_STRAND);
 			combinedMarkerGTStrands.putAll(rdMarkerSet2.getMarkerIdSetMapCharArray());
 
-			Utils.saveCharMapValueToWrMatrix(wrNcFile, combinedMarkerGTStrands, cNetCDF.Variables.VAR_GT_STRAND, 3);
+			Utils.saveCharMapValueToWrMatrix(wrNcFile, combinedMarkerGTStrands.values(), cNetCDF.Variables.VAR_GT_STRAND, 3);
 			//</editor-fold>
 			//</editor-fold>
 			//</editor-fold>

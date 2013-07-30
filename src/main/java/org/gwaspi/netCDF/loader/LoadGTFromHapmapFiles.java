@@ -246,7 +246,7 @@ public class LoadGTFromHapmapFiles extends AbstractLoadGTFromFiles implements Ge
 		if (guessedGTCode.equals(cNetCDF.Defaults.GenotypeEncoding.UNKNOWN)
 				|| guessedGTCode.equals(cNetCDF.Defaults.GenotypeEncoding.O12))
 		{
-			guessedGTCode = Utils.detectGTEncoding(alleles);
+			guessedGTCode = Utils.detectGTEncoding(alleles.values());
 		}
 	}
 	//</editor-fold>

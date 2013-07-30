@@ -129,7 +129,7 @@ public abstract class AbstractTestMatrixOperation implements MatrixOperation {
 
 				//<editor-fold defaultstate="expanded" desc="METADATA WRITER">
 				// MARKERSET MARKERID
-				ArrayChar.D2 markersD2 = Utils.writeMapKeysToD2ArrayChar(wrMarkerSetMap, cNetCDF.Strides.STRIDE_MARKER_NAME);
+				ArrayChar.D2 markersD2 = Utils.writeCollectionToD2ArrayChar(wrMarkerSetMap.keySet(), cNetCDF.Strides.STRIDE_MARKER_NAME);
 				int[] markersOrig = new int[]{0, 0};
 				try {
 					wrOPNcFile.write(cNetCDF.Variables.VAR_OPSET, markersOrig, markersD2);
@@ -142,10 +142,10 @@ public abstract class AbstractTestMatrixOperation implements MatrixOperation {
 				// MARKERSET RSID
 				Map<MarkerKey, char[]> rdCaseMarkerIdSetMap = rdCaseMarkerSet.fillOpSetMapWithVariable(rdOPNcFile, cNetCDF.Variables.VAR_MARKERS_RSID);
 				Map<MarkerKey, char[]> sortedCaseMarkerIds = org.gwaspi.global.Utils.createOrderedMap(wrMarkerSetMap, rdCaseMarkerIdSetMap);
-				Utils.saveCharMapValueToWrMatrix(wrOPNcFile, sortedCaseMarkerIds, cNetCDF.Variables.VAR_MARKERS_RSID, cNetCDF.Strides.STRIDE_MARKER_NAME);
+				Utils.saveCharMapValueToWrMatrix(wrOPNcFile, sortedCaseMarkerIds.values(), cNetCDF.Variables.VAR_MARKERS_RSID, cNetCDF.Strides.STRIDE_MARKER_NAME);
 
 				// WRITE SAMPLESET TO MATRIX FROM SAMPLES ARRAYLIST
-				ArrayChar.D2 samplesD2 = org.gwaspi.netCDF.operations.Utils.writeMapKeysToD2ArrayChar(rdSampleSetMap, cNetCDF.Strides.STRIDE_SAMPLE_NAME);
+				ArrayChar.D2 samplesD2 = org.gwaspi.netCDF.operations.Utils.writeCollectionToD2ArrayChar(rdSampleSetMap.keySet(), cNetCDF.Strides.STRIDE_SAMPLE_NAME);
 
 				int[] sampleOrig = new int[] {0, 0};
 				try {
@@ -162,7 +162,7 @@ public abstract class AbstractTestMatrixOperation implements MatrixOperation {
 				org.gwaspi.netCDF.operations.Utils.saveCharMapKeyToWrMatrix(wrOPNcFile, rdChrInfoSetMap, cNetCDF.Variables.VAR_CHR_IN_MATRIX, 8);
 				// Number of marker per chromosome & max pos for each chromosome
 				int[] columns = new int[] {0, 1, 2, 3};
-				org.gwaspi.netCDF.operations.Utils.saveIntMapD2ToWrMatrix(wrOPNcFile, rdChrInfoSetMap, columns, cNetCDF.Variables.VAR_CHR_INFO);
+				org.gwaspi.netCDF.operations.Utils.saveIntMapD2ToWrMatrix(wrOPNcFile, rdChrInfoSetMap.values(), columns, cNetCDF.Variables.VAR_CHR_INFO);
 				//</editor-fold>
 
 				//<editor-fold defaultstate="expanded" desc="GET CENSUS & PERFORM TESTS">
