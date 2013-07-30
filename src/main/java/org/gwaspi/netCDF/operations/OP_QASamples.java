@@ -149,7 +149,7 @@ public class OP_QASamples implements MatrixOperation {
 			log.info("Done writing SampleSet to matrix");
 
 			// WRITE MARKERSET TO MATRIX
-			ArrayChar.D2 markersD2 = Utils.writeMapKeysToD2ArrayChar(rdMarkerSet.getMarkerIdSetMapByteArray(), cNetCDF.Strides.STRIDE_MARKER_NAME);
+			ArrayChar.D2 markersD2 = Utils.writeCollectionToD2ArrayChar(rdMarkerSet.getMarkerIdSetMapByteArray().keySet(), cNetCDF.Strides.STRIDE_MARKER_NAME);
 			int[] markersOrig = new int[]{0, 0};
 			try {
 				wrNcFile.write(cNetCDF.Variables.VAR_IMPLICITSET, markersOrig, markersD2);
@@ -163,13 +163,13 @@ public class OP_QASamples implements MatrixOperation {
 
 			//<editor-fold defaultstate="expanded" desc="CENSUS DATA WRITER">
 			// MISSING RATIO
-			Utils.saveDoubleMapD1ToWrMatrix(wrNcFile, wrSampleSetMissingRatioMap, cNetCDF.Census.VAR_OP_SAMPLES_MISSINGRAT);
+			Utils.saveDoubleMapD1ToWrMatrix(wrNcFile, wrSampleSetMissingRatioMap.values(), cNetCDF.Census.VAR_OP_SAMPLES_MISSINGRAT);
 
 			// MISSING COUNT
-			Utils.saveIntMapD1ToWrMatrix(wrNcFile, wrSampleSetMissingCountMap, cNetCDF.Census.VAR_OP_SAMPLES_MISSINGCOUNT);
+			Utils.saveIntMapD1ToWrMatrix(wrNcFile, wrSampleSetMissingCountMap.values(), cNetCDF.Census.VAR_OP_SAMPLES_MISSINGCOUNT);
 
 			// HETEROZYGOSITY RATIO
-			Utils.saveDoubleMapD1ToWrMatrix(wrNcFile, wrSampleSetHetzyRatioMap, cNetCDF.Census.VAR_OP_SAMPLES_HETZYRAT);
+			Utils.saveDoubleMapD1ToWrMatrix(wrNcFile, wrSampleSetHetzyRatioMap.values(), cNetCDF.Census.VAR_OP_SAMPLES_HETZYRAT);
 			//</editor-fold>
 
 			resultOpId = wrOPHandler.getResultOPId();

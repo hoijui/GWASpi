@@ -197,10 +197,10 @@ public class OP_QAMarkers implements MatrixOperation {
 
 			// MARKERSET RSID
 			rdMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_RSID);
-			Utils.saveCharMapValueToWrMatrix(wrNcFile, rdMarkerSet.getMarkerIdSetMapCharArray(), cNetCDF.Variables.VAR_MARKERS_RSID, cNetCDF.Strides.STRIDE_MARKER_NAME);
+			Utils.saveCharMapValueToWrMatrix(wrNcFile, rdMarkerSet.getMarkerIdSetMapCharArray().values(), cNetCDF.Variables.VAR_MARKERS_RSID, cNetCDF.Strides.STRIDE_MARKER_NAME);
 
 			// WRITE SAMPLESET TO MATRIX FROM SAMPLES ARRAYLIST
-			ArrayChar.D2 samplesD2 = org.gwaspi.netCDF.operations.Utils.writeMapKeysToD2ArrayChar(rdSampleSetMap, cNetCDF.Strides.STRIDE_SAMPLE_NAME);
+			ArrayChar.D2 samplesD2 = org.gwaspi.netCDF.operations.Utils.writeCollectionToD2ArrayChar(rdSampleSetMap.keySet(), cNetCDF.Strides.STRIDE_SAMPLE_NAME);
 
 			int[] sampleOrig = new int[]{0, 0};
 			try {
@@ -460,20 +460,20 @@ public class OP_QAMarkers implements MatrixOperation {
 
 			//<editor-fold defaultstate="expanded" desc="QA DATA WRITER">
 			// MISSING RATIO
-			Utils.saveDoubleMapD1ToWrMatrix(wrNcFile, wrMarkerSetMissingRatioMap, cNetCDF.Census.VAR_OP_MARKERS_MISSINGRAT);
+			Utils.saveDoubleMapD1ToWrMatrix(wrNcFile, wrMarkerSetMissingRatioMap.values(), cNetCDF.Census.VAR_OP_MARKERS_MISSINGRAT);
 
 			// MISMATCH STATE
-			Utils.saveIntMapD1ToWrMatrix(wrNcFile, wrMarkerSetMismatchStateMap, cNetCDF.Census.VAR_OP_MARKERS_MISMATCHSTATE);
+			Utils.saveIntMapD1ToWrMatrix(wrNcFile, wrMarkerSetMismatchStateMap.values(), cNetCDF.Census.VAR_OP_MARKERS_MISMATCHSTATE);
 
 			// KNOWN ALLELES
 			//Utils.saveCharMapValueToWrMatrix(wrNcFile, wrMarkerSetKnownAllelesMap, cNetCDF.Census.VAR_OP_MARKERS_KNOWNALLELES, cNetCDF.Strides.STRIDE_GT);
-			Utils.saveCharMapItemToWrMatrix(wrNcFile, wrMarkerSetKnownAllelesMap, cNetCDF.Census.VAR_OP_MARKERS_MAJALLELES, OrderedAlleles.TO_ALLELE_1, cNetCDF.Strides.STRIDE_GT / 2);
-			Utils.saveDoubleMapItemD1ToWrMatrix(wrNcFile, wrMarkerSetKnownAllelesMap, OrderedAlleles.TO_ALLELE_1_FREQ, cNetCDF.Census.VAR_OP_MARKERS_MAJALLELEFRQ);
-			Utils.saveCharMapItemToWrMatrix(wrNcFile, wrMarkerSetKnownAllelesMap, cNetCDF.Census.VAR_OP_MARKERS_MINALLELES, OrderedAlleles.TO_ALLELE_2, cNetCDF.Strides.STRIDE_GT / 2);
-			Utils.saveDoubleMapItemD1ToWrMatrix(wrNcFile, wrMarkerSetKnownAllelesMap, OrderedAlleles.TO_ALLELE_2_FREQ, cNetCDF.Census.VAR_OP_MARKERS_MINALLELEFRQ);
+			Utils.saveCharMapItemToWrMatrix(wrNcFile, wrMarkerSetKnownAllelesMap.values(), cNetCDF.Census.VAR_OP_MARKERS_MAJALLELES, OrderedAlleles.TO_ALLELE_1, cNetCDF.Strides.STRIDE_GT / 2);
+			Utils.saveDoubleMapItemD1ToWrMatrix(wrNcFile, wrMarkerSetKnownAllelesMap.values(), OrderedAlleles.TO_ALLELE_1_FREQ, cNetCDF.Census.VAR_OP_MARKERS_MAJALLELEFRQ);
+			Utils.saveCharMapItemToWrMatrix(wrNcFile, wrMarkerSetKnownAllelesMap.values(), cNetCDF.Census.VAR_OP_MARKERS_MINALLELES, OrderedAlleles.TO_ALLELE_2, cNetCDF.Strides.STRIDE_GT / 2);
+			Utils.saveDoubleMapItemD1ToWrMatrix(wrNcFile, wrMarkerSetKnownAllelesMap.values(), OrderedAlleles.TO_ALLELE_2_FREQ, cNetCDF.Census.VAR_OP_MARKERS_MINALLELEFRQ);
 
 			// ALL CENSUS
-			Utils.saveIntMapD2ToWrMatrix(wrNcFile, wrMarkerSetCensusMap, Census.EXTRACTOR_ALL, cNetCDF.Census.VAR_OP_MARKERS_CENSUSALL);
+			Utils.saveIntMapD2ToWrMatrix(wrNcFile, wrMarkerSetCensusMap.values(), Census.EXTRACTOR_ALL, cNetCDF.Census.VAR_OP_MARKERS_CENSUSALL);
 			//</editor-fold>
 
 			resultOpId = wrOPHandler.getResultOPId();

@@ -90,7 +90,7 @@ public class OP_TrendTests extends AbstractTestMatrixOperation {
 
 		//<editor-fold defaultstate="expanded" desc="TREND-TEST DATA WRITER">
 		int[] boxes = new int[] {0, 1};
-		Utils.saveDoubleMapD2ToWrMatrix(wrNcFile, result, boxes, cNetCDF.Association.VAR_OP_MARKERS_ASTrendTestTP);
+		Utils.saveDoubleMapD2ToWrMatrix(wrNcFile, result.values(), boxes, cNetCDF.Association.VAR_OP_MARKERS_ASTrendTestTP);
 		//</editor-fold>
 	}
 }

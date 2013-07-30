@@ -157,7 +157,7 @@ public class MatrixGenotypesFlipper {
 			// WRITING METADATA TO MATRIX
 
 			// SAMPLESET
-			ArrayChar.D2 samplesD2 = Utils.writeMapKeysToD2ArrayChar(rdSampleSetMap, cNetCDF.Strides.STRIDE_SAMPLE_NAME);
+			ArrayChar.D2 samplesD2 = Utils.writeCollectionToD2ArrayChar(rdSampleSetMap.keySet(), cNetCDF.Strides.STRIDE_SAMPLE_NAME);
 
 			int[] sampleOrig = new int[]{0, 0};
 			try {
@@ -170,7 +170,7 @@ public class MatrixGenotypesFlipper {
 			log.info("Done writing SampleSet to matrix");
 
 			// MARKERSET MARKERID
-			ArrayChar.D2 markersD2 = Utils.writeMapKeysToD2ArrayChar(rdMarkerIdSetMap, cNetCDF.Strides.STRIDE_MARKER_NAME);
+			ArrayChar.D2 markersD2 = Utils.writeCollectionToD2ArrayChar(rdMarkerIdSetMap.keySet(), cNetCDF.Strides.STRIDE_MARKER_NAME);
 			int[] markersOrig = new int[]{0, 0};
 			try {
 				wrNcFile.write(cNetCDF.Variables.VAR_MARKERSET, markersOrig, markersD2);
@@ -183,24 +183,24 @@ public class MatrixGenotypesFlipper {
 			// MARKERSET RSID
 			rdMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_RSID);
 			Map<MarkerKey, char[]> sortedMarkerRSIDs = org.gwaspi.global.Utils.createOrderedMap(rdMarkerIdSetMap, rdMarkerSet.getMarkerIdSetMapCharArray());
-			Utils.saveCharMapValueToWrMatrix(wrNcFile, sortedMarkerRSIDs, cNetCDF.Variables.VAR_MARKERS_RSID, cNetCDF.Strides.STRIDE_MARKER_NAME);
+			Utils.saveCharMapValueToWrMatrix(wrNcFile, sortedMarkerRSIDs.values(), cNetCDF.Variables.VAR_MARKERS_RSID, cNetCDF.Strides.STRIDE_MARKER_NAME);
 
 			// MARKERSET CHROMOSOME
 			rdMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
 			Map<MarkerKey, char[]> sortedMarkerCHRs = org.gwaspi.global.Utils.createOrderedMap(rdMarkerIdSetMap, rdMarkerSet.getMarkerIdSetMapCharArray());
-			Utils.saveCharMapValueToWrMatrix(wrNcFile, sortedMarkerCHRs, cNetCDF.Variables.VAR_MARKERS_CHR, cNetCDF.Strides.STRIDE_CHR);
+			Utils.saveCharMapValueToWrMatrix(wrNcFile, sortedMarkerCHRs.values(), cNetCDF.Variables.VAR_MARKERS_CHR, cNetCDF.Strides.STRIDE_CHR);
 
 			// Set of chromosomes found in matrix along with number of markersinfo
 			org.gwaspi.netCDF.operations.Utils.saveCharMapKeyToWrMatrix(wrNcFile, rdChrInfoSetMap, cNetCDF.Variables.VAR_CHR_IN_MATRIX, 8);
 			// Number of marker per chromosome & max pos for each chromosome
 			int[] columns = new int[]{0, 1, 2, 3};
-			org.gwaspi.netCDF.operations.Utils.saveIntMapD2ToWrMatrix(wrNcFile, rdChrInfoSetMap, columns, cNetCDF.Variables.VAR_CHR_INFO);
+			org.gwaspi.netCDF.operations.Utils.saveIntMapD2ToWrMatrix(wrNcFile, rdChrInfoSetMap.values(), columns, cNetCDF.Variables.VAR_CHR_INFO);
 
 			// MARKERSET POSITION
 			rdMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_POS);
 			Map<MarkerKey, Integer> sortedMarkerPos = org.gwaspi.global.Utils.createOrderedMap(rdMarkerIdSetMap, rdMarkerSet.getMarkerIdSetMapInteger());
 			//Utils.saveCharMapValueToWrMatrix(wrNcFile, sortedMarkerPos, cNetCDF.Variables.VAR_MARKERS_POS, cNetCDF.Strides.STRIDE_POS);
-			Utils.saveIntMapD1ToWrMatrix(wrNcFile, sortedMarkerPos, cNetCDF.Variables.VAR_MARKERS_POS);
+			Utils.saveIntMapD1ToWrMatrix(wrNcFile, sortedMarkerPos.values(), cNetCDF.Variables.VAR_MARKERS_POS);
 
 			// MARKERSET DICTIONARY ALLELES
 			rdMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_BASES_DICT);
@@ -213,7 +213,7 @@ public class MatrixGenotypesFlipper {
 					entry.setValue(alleles.toCharArray());
 				}
 			}
-			Utils.saveCharMapValueToWrMatrix(wrNcFile, sortedMarkerBasesDicts, cNetCDF.Variables.VAR_MARKERS_BASES_DICT, cNetCDF.Strides.STRIDE_GT);
+			Utils.saveCharMapValueToWrMatrix(wrNcFile, sortedMarkerBasesDicts.values(), cNetCDF.Variables.VAR_MARKERS_BASES_DICT, cNetCDF.Strides.STRIDE_GT);
 
 			// GENOTYPE STRAND
 			rdMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_GT_STRAND);
@@ -227,7 +227,7 @@ public class MatrixGenotypesFlipper {
 					entry.setValue(strand.toCharArray());
 				}
 			}
-			Utils.saveCharMapValueToWrMatrix(wrNcFile, sortedMarkerGTStrands, cNetCDF.Variables.VAR_GT_STRAND, 3);
+			Utils.saveCharMapValueToWrMatrix(wrNcFile, sortedMarkerGTStrands.values(), cNetCDF.Variables.VAR_GT_STRAND, 3);
 			//</editor-fold>
 
 			//<editor-fold defaultstate="expanded" desc="GENOTYPES WRITER">
@@ -247,7 +247,7 @@ public class MatrixGenotypesFlipper {
 				}
 
 				// Write rdMarkerIdSetMap to A3 ArrayChar and save to wrMatrix
-				Utils.saveSingleMarkerGTsToMatrix(wrNcFile, rdSampleSetMap, markerIndex);
+				Utils.saveSingleMarkerGTsToMatrix(wrNcFile, rdSampleSetMap.values(), markerIndex);
 				if (markerIndex % 10000 == 0) {
 					log.info("Markers processed: {}" + markerIndex);
 				}

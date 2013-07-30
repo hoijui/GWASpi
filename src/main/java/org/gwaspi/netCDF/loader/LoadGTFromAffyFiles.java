@@ -220,7 +220,7 @@ public class LoadGTFromAffyFiles extends AbstractLoadGTFromFiles implements Geno
 		if (guessedGTCode.equals(GenotypeEncoding.UNKNOWN)
 				|| guessedGTCode.equals(GenotypeEncoding.O12))
 		{
-			guessedGTCode = Utils.detectGTEncoding(sortedAlleles);
+			guessedGTCode = Utils.detectGTEncoding(sortedAlleles.values());
 		}
 
 		// WRITING GENOTYPE DATA INTO netCDF FILE

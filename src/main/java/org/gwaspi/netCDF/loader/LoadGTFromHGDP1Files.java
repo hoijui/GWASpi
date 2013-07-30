@@ -179,7 +179,7 @@ public class LoadGTFromHGDP1Files extends AbstractLoadGTFromFiles implements Gen
 		if (guessedGTCode.equals(GenotypeEncoding.UNKNOWN)
 				|| guessedGTCode.equals(GenotypeEncoding.O12))
 		{
-			guessedGTCode = Utils.detectGTEncoding(alleles);
+			guessedGTCode = Utils.detectGTEncoding(alleles.values());
 		}
 	}
 }
