@@ -197,7 +197,6 @@ public class MatrixFactory {
 			throws InvalidRangeException, IOException
 	{
 		// CREATE netCDF-3 FILE
-		String genotypesFolder = Config.getConfigValue(Config.PROPERTY_GENOTYPES_DIR, "");
 		File pathToStudy = new File(Study.constructGTPath(studyKey));
 		if (!pathToStudy.exists()) {
 			org.gwaspi.global.Utils.createFolder(pathToStudy);
@@ -208,8 +207,8 @@ public class MatrixFactory {
 		int sampleStride = cNetCDF.Strides.STRIDE_SAMPLE_NAME;
 //		int strandStride = cNetCDF.Strides.STRIDE_STRAND;
 
-		String writeFileName = pathToStudy + "/" + matrixName + ".nc";
-		NetcdfFileWriteable ncfile = NetcdfFileWriteable.createNew(writeFileName, false);
+		File writeFile = new File(pathToStudy, matrixName + ".nc");
+		NetcdfFileWriteable ncfile = NetcdfFileWriteable.createNew(writeFile.getAbsolutePath(), false);
 
 		// global attributes
 		ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_STUDY, studyKey.getId());
