@@ -83,55 +83,7 @@ public class SampleSet {
 
 	//<editor-fold defaultstate="expanded" desc="SAMPLESET FETCHERS">
 	private Map<SampleKey, ?> getSampleIdSetMap() throws IOException {
-		NetcdfFile ncfile = null;
-
-		try {
-			ncfile = NetcdfFile.open(matrixMetadata.getPathToMatrix());
-			Variable var = ncfile.findVariable(cNetCDF.Variables.VAR_SAMPLESET);
-
-			if (null == var) {
-				return null;
-			}
-
-			int[] varShape = var.getShape();
-			Dimension markerSetDim = ncfile.findDimension(cNetCDF.Dimensions.DIM_SAMPLESET);
-
-			try {
-				sampleSetSize = markerSetDim.getLength();
-
-				StringBuilder netCdfReadStrBldr = new StringBuilder(64);
-				netCdfReadStrBldr
-						.append("(0:")
-						.append(sampleSetSize - 1)
-						.append(":1, 0:")
-						.append(varShape[1] - 1)
-						.append(":1)");
-				String netCdfReadStr = netCdfReadStrBldr.toString();
-
-				ArrayChar.D2 sampleSetAC = (ArrayChar.D2) var.read(netCdfReadStr);
-
-				sampleIdSetMap = org.gwaspi.netCDF.operations.Utils.writeD2ArrayCharToMapSampleKeys(
-						matrixMetadata.getStudyKey(),
-						sampleSetAC,
-						null);
-			} catch (IOException ex) {
-				log.error("Cannot read data", ex);
-			} catch (InvalidRangeException ex) {
-				log.error("Cannot read data", ex);
-			}
-		} catch (IOException ex) {
-			log.error("Cannot open file", ex);
-		} finally {
-			if (null != ncfile) {
-				try {
-					ncfile.close();
-				} catch (IOException ex) {
-					log.warn("Cannot close file", ex);
-				}
-			}
-		}
-
-		return sampleIdSetMap;
+		return getSampleIdSetMap(matrixMetadata.getPathToMatrix());
 	}
 
 	public Map<SampleKey, char[]> getSampleIdSetMapCharArray() throws IOException {
