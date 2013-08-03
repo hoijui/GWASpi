@@ -70,7 +70,7 @@ public class DataSet {
 //		return samplesAlleles.get(sampleIndex);
 //	}
 	/**
-	 * @return all alleles/genotype pairs of the all samples.
+	 * @return all alleles/genotype pairs of all the samples.
 	 */
 	public Collection<Collection<byte[]>> getSamplesAlleles() {
 		return samplesAlleles;
