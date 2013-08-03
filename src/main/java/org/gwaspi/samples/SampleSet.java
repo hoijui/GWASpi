@@ -202,7 +202,7 @@ public class SampleSet {
 		return (ArrayByte.D3) genotypes.read(netCdfReadStr);
 	}
 
-	public void readAllSamplesGTsFromCurrentMarkerToMap(NetcdfFile rdNcFile, Map<SampleKey, byte[]> rdBytes, Map<SampleKey, char[]> rdChar, int markerNb) throws IOException {
+	public void readAllSamplesGTsFromCurrentMarkerToMap(NetcdfFile rdNcFile, Map<SampleKey, byte[]> rdBytes, int markerNb) throws IOException {
 
 		try {
 			Variable genotypes = rdNcFile.findVariable(cNetCDF.Variables.VAR_GENOTYPES);
@@ -233,17 +233,10 @@ public class SampleSet {
 				}
 
 				if (reducer == 1) {
-					if ((rdBytes == null) || rdChar != null) {
-						throw new IOException("Tried to read byte[] values, but found String ones");
-					}
 					ArrayByte.D2 gt_ACD2 = (ArrayByte.D2) gt_ACD3.reduce();
 					org.gwaspi.netCDF.operations.Utils.writeD2ArrayByteToMapValues(gt_ACD2, rdBytes);
-				} else if (reducer == 2) {
-					if ((rdChar == null) || rdBytes != null) {
-						throw new IOException("Tried to read String values, but found byte[] ones");
-					}
-					ArrayByte.D1 gt_ACD1 = (ArrayByte.D1) gt_ACD3.reduce();
-					org.gwaspi.netCDF.operations.Utils.writeD1ArrayByteToMapValues(gt_ACD1, rdChar);
+				} else {
+					throw new IllegalStateException();
 				}
 			} catch (InvalidRangeException ex) {
 				log.error("Cannot read data", ex);
@@ -251,14 +244,6 @@ public class SampleSet {
 		} catch (IOException ex) {
 			log.error("Cannot open file", ex);
 		}
-	}
-
-	public void readAllSamplesGTsFromCurrentMarkerToMap(NetcdfFile rdNcFile, Map<SampleKey, byte[]> rdMap, int markerNb) throws IOException {
-		readAllSamplesGTsFromCurrentMarkerToMap(rdNcFile, rdMap, null, markerNb);
-	}
-
-	public void readAllSamplesGTsFromCurrentMarkerToStringMap(NetcdfFile rdNcFile, Map<SampleKey, char[]> rdMap, int markerNb) throws IOException {
-		readAllSamplesGTsFromCurrentMarkerToMap(rdNcFile, null, rdMap, markerNb);
 	}
 
 	private void fillSampleIdSetMapWithVariable(Map<SampleKey, ?> map, String variable) {

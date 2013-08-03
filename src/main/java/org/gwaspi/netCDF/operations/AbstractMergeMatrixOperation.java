@@ -178,7 +178,7 @@ public abstract class AbstractMergeMatrixOperation implements MatrixOperation {
 		wrSampleSet = new SampleSet(wrMatrixKey);
 		wrMarkerSet = new MarkerSet(wrMatrixKey);
 		wrMarkerSet.initFullMarkerIdSetMap();
-		Map<SampleKey, char[]> wrSampleSetMap = wrSampleSet.getSampleIdSetMapCharArray();
+		Map<SampleKey, byte[]> wrSampleSetMap = wrSampleSet.getSampleIdSetMapByteArray();
 
 		NetcdfFile rdNcFile = NetcdfFile.open(wrMatrixMetadata.getPathToMatrix());
 
@@ -188,22 +188,22 @@ public abstract class AbstractMergeMatrixOperation implements MatrixOperation {
 
 		// Iterate through markerSet
 		for (MarkerKey markerKey : wrMarkerSet.getMarkerKeys()) {
-			Map<Character, Integer> knownAlleles = new LinkedHashMap<Character, Integer>();
+			Map<Byte, Integer> knownAlleles = new LinkedHashMap<Byte, Integer>();
 
 			// Get a sampleset-full of GTs
-			wrSampleSet.readAllSamplesGTsFromCurrentMarkerToStringMap(rdNcFile, wrSampleSetMap, markerNb);
+			wrSampleSet.readAllSamplesGTsFromCurrentMarkerToMap(rdNcFile, wrSampleSetMap, markerNb);
 
 			// Iterate through sampleSet
-			for (char[] tempGT : wrSampleSetMap.values()) {
+			for (byte[] tempGT : wrSampleSetMap.values()) {
 				// Gather alleles different from 0 into a list of known alleles and count the number of appearences
-				if (tempGT[0] != '0') {
+				if (tempGT[0] != ((byte) '0')) {
 					int tempCount = 0;
 					if (knownAlleles.containsKey(tempGT[0])) {
 						tempCount = knownAlleles.get(tempGT[0]);
 					}
 					knownAlleles.put(tempGT[0], tempCount + 1);
 				}
-				if (tempGT[1] != '0') {
+				if (tempGT[1] != ((byte) '0')) {
 					int tempCount = 0;
 					if (knownAlleles.containsKey(tempGT[1])) {
 						tempCount = knownAlleles.get(tempGT[1]);
