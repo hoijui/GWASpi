@@ -368,7 +368,7 @@ public class SampleSet {
 	//</editor-fold>
 
 	//<editor-fold defaultstate="expanded" desc="SAMPLESET PICKERS">
-	public Map<SampleKey, Integer> pickValidSampleSetItemsByDBField(StudyKey studyKey, Set<SampleKey> sampleKeys, String dbField, Set<?> criteria, boolean include) throws IOException {
+	public static Map<SampleKey, Integer> pickValidSampleSetItemsByDBField(StudyKey studyKey, Set<SampleKey> sampleKeys, String dbField, Set<?> criteria, boolean include) throws IOException {
 		Map<SampleKey, Integer> returnMap = new LinkedHashMap<SampleKey, Integer>();
 		List<SampleInfo> sampleInfos = SampleInfoList.getAllSampleInfoFromDBByPoolID(studyKey);
 
@@ -433,14 +433,14 @@ public class SampleSet {
 		int pickCounter = 0;
 		if (include) {
 			for (Map.Entry<SampleKey, char[]> entry : map.entrySet()) {
-				if (criteria.contains(entry.getValue())) {
+				if (criteria.contains(entry.getValue())) { // FIXME bad comparison of arrays (should check individual entries)
 					returnMap.put(entry.getKey(), pickCounter);
 				}
 				pickCounter++;
 			}
 		} else {
 			for (Map.Entry<SampleKey, char[]> entry : map.entrySet()) {
-				if (!criteria.contains(entry.getValue())) {
+				if (!criteria.contains(entry.getValue())) { // FIXME bad comparison of arrays (should check individual entries)
 					returnMap.put(entry.getKey(), pickCounter);
 				}
 				pickCounter++;
@@ -450,7 +450,7 @@ public class SampleSet {
 		return returnMap;
 	}
 
-	public Map<SampleKey, Integer> pickValidSampleSetItemsByNetCDFKey(Set<SampleKey> sampleKeys, Set<SampleKey> criteria, boolean include) throws IOException {
+	public static Map<SampleKey, Integer> pickValidSampleSetItemsByNetCDFKey(Set<SampleKey> sampleKeys, Set<SampleKey> criteria, boolean include) throws IOException {
 		Map<SampleKey, Integer> returnMap = new LinkedHashMap<SampleKey, Integer>();
 
 		int pickCounter = 0;
