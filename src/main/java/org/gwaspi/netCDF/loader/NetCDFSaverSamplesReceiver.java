@@ -45,7 +45,7 @@ import ucar.ma2.Index;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.NetcdfFileWriteable;
 
-public class NetCDFSaverSamplesReceiver extends InMemorySamplesReceiver {
+public class NetCDFSaverSamplesReceiver extends AbstractSamplesReceiver {
 
 	private final Logger log
 			= LoggerFactory.getLogger(NetCDFSaverSamplesReceiver.class);

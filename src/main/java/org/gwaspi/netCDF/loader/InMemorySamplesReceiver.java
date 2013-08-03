@@ -14,89 +14,33 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package org.gwaspi.netCDF.loader;
 
-
 import java.util.Collection;
-import org.gwaspi.model.DataSet;
-import org.gwaspi.model.MarkerKey;
-import org.gwaspi.model.MarkerMetadata;
-import org.gwaspi.model.SampleInfo;
 
 /**
  * TODO
  */
-public class InMemorySamplesReceiver implements SamplesReceiver {
-
-	private final DataSet dataSet;
+public class InMemorySamplesReceiver extends AbstractSamplesReceiver implements SamplesReceiver {
 
 	public InMemorySamplesReceiver() {
-
-		this.dataSet = new DataSet();
-	}
-
-	public DataSet getDataSet() {
-		return dataSet;
-	}
-
-	@Override
-	public void init() throws Exception {
-	}
-
-	@Override
-	public void startLoadingDummySampleInfos() throws Exception {
-	}
-
-	@Override
-	public void finishedLoadingDummySampleInfos() throws Exception {
-	}
-
-	@Override
-	public void startLoadingSampleInfos() throws Exception {
-	}
-
-	@Override
-	public void addSampleInfo(SampleInfo sampleInfo) throws Exception {
-		dataSet.getSampleInfos().add(sampleInfo);
-	}
-
-	@Override
-	public void finishedLoadingSampleInfos() throws Exception {
-	}
-
-	@Override
-	public void startLoadingMarkerMetadatas() throws Exception {
-	}
-
-	@Override
-	public void addMarkerMetadata(MarkerMetadata markerMetadata) throws Exception {
-		dataSet.getMarkerMetadatas().put(MarkerKey.valueOf(markerMetadata), markerMetadata);
-	}
-
-	@Override
-	public void finishedLoadingMarkerMetadatas() throws Exception {
 	}
 
 	@Override
 	public void startLoadingAlleles(boolean perSample) throws Exception {
+		super.startLoadingAlleles(perSample);
+		
+		getDataSet().initAlleleStorage();
 	}
 
 	@Override
 	public void addSampleGTAlleles(int sampleIndex, Collection<byte[]> sampleAlleles) throws Exception {
-//		dataSet.getSamplesAlleles().add(sampleAlleles);
-		throw new UnsupportedOperationException();
+		getDataSet().setSampleAlleles(sampleIndex, sampleAlleles);
 	}
 
 	@Override
 	public void addMarkerGTAlleles(int markerIndex, Collection<byte[]> markerAlleles) throws Exception {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public void finishedLoadingAlleles() throws Exception {
-	}
-
-	@Override
-	public void done() throws Exception {
+		getDataSet().setMarkerAlleles(markerIndex, markerAlleles);
 	}
 }

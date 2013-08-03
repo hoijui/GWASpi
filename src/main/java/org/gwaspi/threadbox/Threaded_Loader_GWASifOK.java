@@ -24,9 +24,11 @@ import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.netCDF.loader.GenotypesLoadDescription;
+import org.gwaspi.netCDF.loader.InMemorySamplesReceiver;
 import org.gwaspi.netCDF.loader.LoadManager;
 import org.gwaspi.netCDF.loader.NetCDFSaverSamplesReceiver;
 import org.gwaspi.netCDF.loader.SampleInfoCollectorSwitch;
+import org.gwaspi.netCDF.loader.ZipTwoWaySaverSamplesReceiver;
 import org.gwaspi.netCDF.operations.GWASinOneGOParams;
 import org.gwaspi.netCDF.operations.OP_QAMarkers;
 import org.gwaspi.netCDF.operations.OP_QASamples;
@@ -67,7 +69,9 @@ public class Threaded_Loader_GWASifOK extends CommonRunnable {
 
 	protected void runInternal(SwingWorkerItem thisSwi) throws Exception {
 
-		NetCDFSaverSamplesReceiver samplesReceiver = new NetCDFSaverSamplesReceiver(loadDescription); // HACK FIXME
+//		NetCDFSaverSamplesReceiver samplesReceiver = new NetCDFSaverSamplesReceiver(loadDescription); // HACK FIXME
+//		ZipTwoWaySaverSamplesReceiver samplesReceiver = new ZipTwoWaySaverSamplesReceiver(loadDescription); // HACK FIXME
+		InMemorySamplesReceiver samplesReceiver = new InMemorySamplesReceiver(); // HACK FIXME
 		SampleInfoCollectorSwitch.collectSampleInfo(
 				loadDescription.getStudyKey(),
 				loadDescription.getFormat(),

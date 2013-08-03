@@ -80,29 +80,29 @@ public class MatrixTranslator {
 		this.rdSampleSetMap = this.rdSampleSet.getSampleIdSetMapByteArray();
 	}
 
-	public int translateAB12AllelesToACGT() throws InvalidRangeException, IOException {
+	public int translateAB12AllelesToACGT() throws IOException, InvalidRangeException {
 		int result = Integer.MIN_VALUE;
+		String translationMethodDesc = "AB0 or 012 to ACGT0 using the parent's dictionnary";
 
 		NetcdfFile rdNcFile = NetcdfFile.open(rdMatrixMetadata.getPathToMatrix());
-		GenotypeEncoding rdMatrixGtCode = rdMatrixMetadata.getGenotypeEncoding();
+		GenotypeEncoding rdMatrixGTCode = rdMatrixMetadata.getGenotypeEncoding();
 
-		if (!rdMatrixGtCode.equals(GenotypeEncoding.ACGT0)) { //Has not allready been translated
-
+		if (!rdMatrixGTCode.equals(GenotypeEncoding.ACGT0)) { // Has not yet been translated
 			try {
 				// CREATE netCDF-3 FILE
 				StringBuilder descSB = new StringBuilder(Text.Matrix.descriptionHeader1);
 				descSB.append(org.gwaspi.global.Utils.getShortDateTimeAsString());
 				descSB.append("\nThrough Matrix translation from parent Matrix MX: ").append(rdMatrixKey.getMatrixId()).append(" - ").append(rdMatrixMetadata.getMatrixFriendlyName());
-				descSB.append("\nTranslation method: AB0 or 012 to ACGT0 using the parent's dictionnary");
+				descSB.append("\nTranslation method: ").append(translationMethodDesc);
 				if (!wrMatrixDescription.isEmpty()) {
 					descSB.append("\n\nDescription: ");
 					descSB.append(wrMatrixDescription);
 					descSB.append("\n");
 				}
-				descSB.append("\n");
-				descSB.append("Markers: ").append(rdMatrixMetadata.getMarkerSetSize()).append(", Samples: ").append(rdMatrixMetadata.getSampleSetSize());
 				descSB.append("\nGenotype encoding: ");
 				descSB.append(GenotypeEncoding.ACGT0.toString());
+				descSB.append("\n");
+				descSB.append("Markers: ").append(rdMatrixMetadata.getMarkerSetSize()).append(", Samples: ").append(rdMatrixMetadata.getSampleSetSize());
 
 				MatrixFactory wrMatrixHandler = new MatrixFactory(
 						rdMatrixMetadata.getTechnology(), // technology
@@ -163,7 +163,7 @@ public class MatrixTranslator {
 				// Set of chromosomes found in matrix along with number of markersinfo
 				org.gwaspi.netCDF.operations.Utils.saveCharMapKeyToWrMatrix(wrNcFile, rdChrInfoSetMap, cNetCDF.Variables.VAR_CHR_IN_MATRIX, 8);
 				// Number of marker per chromosome & max pos for each chromosome
-				int[] columns = new int[]{0, 1, 2, 3};
+				int[] columns = new int[] {0, 1, 2, 3};
 				org.gwaspi.netCDF.operations.Utils.saveIntMapD2ToWrMatrix(wrNcFile, rdChrInfoSetMap.values(), columns, cNetCDF.Variables.VAR_CHR_INFO);
 
 				// MARKERSET POSITION
@@ -191,10 +191,11 @@ public class MatrixTranslator {
 					rdMarkerSet.fillGTsForCurrentSampleIntoInitMap(sampleIndex);
 					// Send to be translated
 					wrMarkerIdSetMap = rdMarkerSet.getMarkerIdSetMapByteArray();
-					translateCurrentSampleAB12AllelesMap(wrMarkerIdSetMap, rdMatrixGtCode, dictionnaryMap);
+					translateCurrentSampleAB12AllelesMap(wrMarkerIdSetMap, rdMatrixGTCode, dictionnaryMap);
 
 					// Write wrMarkerIdSetMap to A3 ArrayChar and save to wrMatrix
 					Utils.saveSingleSampleGTsToMatrix(wrNcFile, wrMarkerIdSetMap.values(), sampleIndex);
+
 					if (sampleIndex % 100 == 0) {
 						log.info("Samples translated: {}", sampleIndex);
 					}
@@ -240,6 +241,7 @@ public class MatrixTranslator {
 	// TODO Test translate1234AllelesToACGT
 	public int translate1234AllelesToACGT() throws IOException, InvalidRangeException {
 		int result = Integer.MIN_VALUE;
+		String translationMethodDesc = "O1234 to ACGT0 using 0=0, 1=A, 2=C, 3=G, 4=T";
 
 		NetcdfFile rdNcFile = NetcdfFile.open(rdMatrixMetadata.getPathToMatrix());
 		GenotypeEncoding rdMatrixGTCode = rdMatrixMetadata.getGenotypeEncoding();
@@ -249,8 +251,8 @@ public class MatrixTranslator {
 				// CREATE netCDF-3 FILE
 				StringBuilder descSB = new StringBuilder(Text.Matrix.descriptionHeader1);
 				descSB.append(org.gwaspi.global.Utils.getShortDateTimeAsString());
-				descSB.append("\nThrough Matrix translation from parent Matrix MX: ").append(rdMatrixMetadata.getMatrixId()).append(" - ").append(rdMatrixMetadata.getMatrixFriendlyName());
-				descSB.append("\nTranslation method: O1234 to ACGT0 using 0=0, 1=A, 2=C, 3=G, 4=T");
+				descSB.append("\nThrough Matrix translation from parent Matrix MX: ").append(rdMatrixKey.getMatrixId()).append(" - ").append(rdMatrixMetadata.getMatrixFriendlyName());
+				descSB.append("\nTranslation method: ").append(translationMethodDesc);
 				if (!wrMatrixDescription.isEmpty()) {
 					descSB.append("\n\nDescription: ");
 					descSB.append(wrMatrixDescription);
@@ -288,7 +290,7 @@ public class MatrixTranslator {
 				// SAMPLESET
 				ArrayChar.D2 samplesD2 = Utils.writeCollectionToD2ArrayChar(rdSampleSetMap.keySet(), cNetCDF.Strides.STRIDE_SAMPLE_NAME);
 
-				int[] sampleOrig = new int[]{0, 0};
+				int[] sampleOrig = new int[] {0, 0};
 				try {
 					wrNcFile.write(cNetCDF.Variables.VAR_SAMPLESET, sampleOrig, samplesD2);
 				} catch (IOException ex) {
@@ -300,7 +302,7 @@ public class MatrixTranslator {
 
 				// MARKERSET MARKERID
 				ArrayChar.D2 markersD2 = Utils.writeCollectionToD2ArrayChar(rdMarkerSet.getMarkerKeys(), cNetCDF.Strides.STRIDE_MARKER_NAME);
-				int[] markersOrig = new int[]{0, 0};
+				int[] markersOrig = new int[] {0, 0};
 				try {
 					wrNcFile.write(cNetCDF.Variables.VAR_MARKERSET, markersOrig, markersD2);
 				} catch (IOException ex) {
@@ -319,12 +321,12 @@ public class MatrixTranslator {
 
 				// MARKERSET POSITION
 				rdMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_POS);
-				//Utils.saveCharMapValueToWrMatrix(wrNcFile, rdMarkerIdSetMap, cNetCDF.Variables.VAR_MARKERS_POS, cNetCDF.Strides.STRIDE_POS);
 				Utils.saveIntMapD1ToWrMatrix(wrNcFile, rdMarkerSet.getMarkerIdSetMapInteger().values(), cNetCDF.Variables.VAR_MARKERS_POS);
 
 				// MARKERSET DICTIONARY ALLELES
 				rdMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_BASES_DICT);
-				Utils.saveCharMapValueToWrMatrix(wrNcFile, rdMarkerSet.getMarkerIdSetMapCharArray().values(), cNetCDF.Variables.VAR_MARKERS_BASES_DICT, cNetCDF.Strides.STRIDE_GT);
+				Map<MarkerKey, char[]> sortedBasesDicts = rdMarkerSet.getMarkerIdSetMapCharArray();
+				Utils.saveCharMapValueToWrMatrix(wrNcFile, sortedBasesDicts.values(), cNetCDF.Variables.VAR_MARKERS_BASES_DICT, cNetCDF.Strides.STRIDE_GT);
 
 				// GENOTYPE STRAND
 				rdMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_GT_STRAND);
@@ -336,24 +338,24 @@ public class MatrixTranslator {
 				Map<MarkerKey, Object> markerStrandsMap = new LinkedHashMap<MarkerKey, Object>();
 				markerStrandsMap.putAll(rdChrInfoSetMap); // XXX was rdSampleSetMap instead of rdChrInfoSetMap before; but that one had the wrong type -> bug; but is this the right set (with MarkerKey's as keys)?
 
-				// Iterate through pmAllelesAndStrandsMap, use Sample item position to read all Markers GTs from rdMarkerIdSetMap.
-				int sampleNb = 0;
+				// Iterate through Samples, use Sample item position to read all Markers GTs from rdMarkerIdSetMap.
+				int sampleIndex = 0;
 				for (int i = 0; i < rdSampleSetMap.size(); i++) {
 					// Get alleles from read matrix
-					rdMarkerSet.fillGTsForCurrentSampleIntoInitMap(sampleNb);
+					rdMarkerSet.fillGTsForCurrentSampleIntoInitMap(sampleIndex);
 					// Send to be translated
 					wrMarkerIdSetMap = rdMarkerSet.getMarkerIdSetMapByteArray();
 					translateCurrentSample1234AllelesMap(wrMarkerIdSetMap, markerStrandsMap.keySet());
 
 					// Write wrMarkerIdSetMap to A3 ArrayChar and save to wrMatrix
-					Utils.saveSingleSampleGTsToMatrix(wrNcFile, wrMarkerIdSetMap.values(), sampleNb);
+					Utils.saveSingleSampleGTsToMatrix(wrNcFile, wrMarkerIdSetMap.values(), sampleIndex);
 
-					if (sampleNb % 100 == 0) {
-						log.info("Samples translated: {}", sampleNb);
+					if (sampleIndex % 100 == 0) {
+						log.info("Samples translated: {}", sampleIndex);
 					}
-					sampleNb++;
+					sampleIndex++;
 				}
-				log.info("Total Samples translated: {}", sampleNb);
+				log.info("Total Samples translated: {}", sampleIndex);
 				//</editor-fold>
 
 				// CLOSE THE FILE AND BY THIS, MAKE IT READ-ONLY
@@ -381,7 +383,7 @@ public class MatrixTranslator {
 					try {
 						rdNcFile.close();
 					} catch (IOException ex) {
-						log.warn("Failed close file " + rdNcFile.getLocation(), ex);
+						log.warn("Failed to close file " + rdNcFile.getLocation(), ex);
 					}
 				}
 			}
@@ -390,7 +392,7 @@ public class MatrixTranslator {
 		return result;
 	}
 
-	private void translateCurrentSampleAB12AllelesMap(Map<MarkerKey, byte[]> codedMap, GenotypeEncoding rdMatrixType, Map<MarkerKey, char[]> dictionaryMap) {
+	private static void translateCurrentSampleAB12AllelesMap(Map<MarkerKey, byte[]> codedMap, GenotypeEncoding rdMatrixType, Map<MarkerKey, char[]> dictionaryMap) {
 		byte alleleA;
 		byte alleleB;
 
@@ -459,7 +461,7 @@ public class MatrixTranslator {
 		}
 	}
 
-	private void translateCurrentSample1234AllelesMap(Map<MarkerKey, byte[]> codedMap, Collection<MarkerKey> markerStrands) {
+	private static void translateCurrentSample1234AllelesMap(Map<MarkerKey, byte[]> codedMap, Collection<MarkerKey> markerStrands) {
 
 		Map<Byte, Byte> dictionary = new HashMap<Byte, Byte>();
 		dictionary.put(cNetCDF.Defaults.AlleleBytes._0, cNetCDF.Defaults.AlleleBytes._0);

@@ -19,6 +19,8 @@ package org.gwaspi.model;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -31,7 +33,8 @@ public class DataSet {
 
 	private final Collection<SampleInfo> sampleInfos;
 	private final Map<MarkerKey, MarkerMetadata> markerMetadatas;
-	private final List<Collection<byte[]>> samplesAlleles;
+//	private List<List<byte[]>> samplesGTs;
+	private List<List<byte[]>> markersGTs;
 
 	public DataSet() {
 
@@ -45,7 +48,26 @@ public class DataSet {
 		this.sampleInfos = new LinkedHashSet<SampleInfo>();
 		// NOTE We use LinkedHashMap to preserve insertion order!
 		this.markerMetadatas = new LinkedHashMap<MarkerKey, MarkerMetadata>();
-		this.samplesAlleles = new ArrayList<Collection<byte[]>>();
+//		this.samplesGTs = null;
+		this.markersGTs = null;
+	}
+
+	/**
+	 * Allocates memory to store all alleles.
+	 * NOTE: This will use a lot of RAM!
+	 *   Approximately 2 * (#samples + 4) * (#markers) Bytes!
+	 */
+	public void initAlleleStorage() {
+
+//		samplesGTs = new ArrayList<List<byte[]>>(sampleInfos.size());
+//		for (int si = 0; si < sampleInfos.size(); si++) {
+//			samplesGTs.add(new ArrayList<byte[]>(Collections.nCopies(markerMetadatas.size(), (byte[]) null)));
+//		}
+
+		markersGTs = new ArrayList<List<byte[]>>(markerMetadatas.size());
+		for (int mi = 0; mi < markerMetadatas.size(); mi++) {
+			markersGTs.add(new ArrayList<byte[]>(Collections.nCopies(sampleInfos.size(), (byte[]) null)));
+		}
 	}
 
 	/**
@@ -62,17 +84,68 @@ public class DataSet {
 		return markerMetadatas;
 	}
 
-//	/**
-//	 * @return all alleles/genotype pairs of the specified sample.
-//	 * @see #getSampleInfos()
-//	 */
-//	public Collection<byte[]> getSampleAlleles(int sampleIndex) {
-//		return samplesAlleles.get(sampleIndex);
-//	}
 	/**
-	 * @return all alleles/genotype pairs of all the samples.
+	 * Returns all GTs/Alleles of a single sample.
+	 * The returned collection has size() == #markers.
+	 * We use both a parameter list and a return list for performance reasons.
+	 * This way, we can either fill the supplied one,
+	 * eliminating the cost for creating a new one,
+	 * or return the internally stored one, in case it exists.
+	 * @return all alleles/genotype pairs of the specified sample.
+	 * @see #getSampleInfos()
 	 */
-	public Collection<Collection<byte[]>> getSamplesAlleles() {
-		return samplesAlleles;
+	public List<byte[]> getSampleAlleles(int sampleIndex, List<byte[]> toFill) {
+
+		int markerIndex = 0;
+		for (List<byte[]> markerGTs : markersGTs) {
+			toFill.set(markerIndex++, markerGTs.get(sampleIndex));
+		}
+		return toFill;
+
+//		return samplesAlleles.get(sampleIndex);
+	}
+//	/**
+//	 * @return all alleles/genotype pairs of all the samples.
+//	 */
+//	public Collection<Collection<byte[]>> getSamplesAlleles() {
+//		return samplesAlleles;
+//	}
+
+	public void setSampleAlleles(int sampleIndex, Collection<byte[]> newSampleGTs) {
+
+		Iterator<byte[]> newSampleGTsIt = newSampleGTs.iterator();
+		for (List<byte[]> markerGTs : markersGTs) {
+			markerGTs.set(sampleIndex, newSampleGTsIt.next());
+		}
+	}
+
+	/**
+	 * Returns all GTs/Alleles of a single marker.
+	 * The returned collection has size() == #samples.
+	 * We use both a parameter list and a return list for performance reasons.
+	 * This way, we can either fill the supplied one,
+	 * eliminating the cost for creating a new one,
+	 * or return the internally stored one, in case it exists.
+	 * @return all allele/genotype pairs of the specified marker.
+	 * @see #getMarkerMetadatas()
+	 */
+	public List<byte[]> getMarkerAlleles(int markerIndex, List<byte[]> toFill) {
+
+//		int sampleIndex = 0;
+//		for (List<byte[]> sampleGts : samplesGts) {
+//			toFill.set(sampleIndex++, sampleGts.get(markerIndex));
+//		}
+//		return toFill;
+
+		return markersGTs.get(markerIndex);
+	}
+
+	public void setMarkerAlleles(int markerIndex, Collection<byte[]> newMarkersGTs) {
+
+		List<byte[]> markerGTs = markersGTs.get(markerIndex);
+		int sampleIndex = 0;
+		for (byte[] newMarkerGTs : newMarkersGTs) {
+			markerGTs.set(sampleIndex++, newMarkerGTs);
+		}
 	}
 }
