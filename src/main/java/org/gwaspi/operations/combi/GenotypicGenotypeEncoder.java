@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Uses this encoding scheme:<br/>
@@ -71,7 +72,7 @@ public class GenotypicGenotypeEncoder extends EncodingTableBasedGenotypeEncoder 
 
 	@Override
 	public Map<Integer, List<Float>> generateEncodingTable(
-			List<byte[]> possibleGenotypes,
+			Set<byte[]> possibleGenotypes,
 			Collection<byte[]> rawGenotypes)
 	{
 		Map<Integer, List<Float>> encodingTable

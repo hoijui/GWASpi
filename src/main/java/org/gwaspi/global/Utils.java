@@ -30,6 +30,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -545,12 +546,12 @@ public class Utils {
 	 * of entries in the Map order (regarding the keys),
 	 * and the values copied from the Map values.
 	 */
-	public static <K, V> Map<K, V> createOrderedMap(final Map<K, ?> order, final Map<K, V> values) {
+	public static <K, V> Map<K, V> createOrderedMap(final Collection<K> order, final Map<K, V> values) {
 
 		Map<K, V> result = new LinkedHashMap<K, V>(order.size());
 
-		for (Map.Entry<K, ?> entry : order.entrySet()) {
-			result.put(entry.getKey(), values.get(entry.getKey()));
+		for (K key : order) {
+			result.put(key, values.get(key));
 		}
 
 		return result;

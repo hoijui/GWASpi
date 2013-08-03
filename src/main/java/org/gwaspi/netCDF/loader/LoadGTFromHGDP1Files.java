@@ -29,7 +29,6 @@ import org.gwaspi.constants.cImport.ImportFormat;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
-import org.gwaspi.global.Text;
 import org.gwaspi.model.DataSet;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.SampleInfo;
@@ -51,7 +50,7 @@ public class LoadGTFromHGDP1Files extends AbstractLoadGTFromFiles implements Gen
 	}
 
 	public LoadGTFromHGDP1Files() {
-		super(ImportFormat.HGDP1, StrandType.UNKNOWN, false, null);
+		super(new MetadataLoaderHGDP1(), ImportFormat.HGDP1, StrandType.UNKNOWN, false);
 	}
 
 	@Override
@@ -75,17 +74,9 @@ public class LoadGTFromHGDP1Files extends AbstractLoadGTFromFiles implements Gen
 	}
 
 	@Override
-	protected MetadataLoader createMetaDataLoader(GenotypesLoadDescription loadDescription) {
-
-		return new MetadataLoaderHGDP1(
-				loadDescription.getAnnotationFilePath(),
-				loadDescription.getStrand(),
-				loadDescription.getStudyKey());
-	}
-
 	protected void loadGenotypes(
 			GenotypesLoadDescription loadDescription,
-			SamplesReceiver samplesReceiver)
+			DataSetDestination samplesReceiver)
 			throws Exception
 	{
 		// HACK
@@ -111,10 +102,9 @@ public class LoadGTFromHGDP1Files extends AbstractLoadGTFromFiles implements Gen
 			}
 
 			sampleIndex++;
-			if (sampleIndex == 1) {
-				log.info(Text.All.processing);
-			} else if (sampleIndex % 100 == 0) {
-				log.info("Done processing sample Nº{}", sampleIndex);
+			if ((sampleIndex == 1) || (sampleIndex % 100 == 0)) {
+				log.info("Done processing sample {} / {}", sampleIndex,
+						dataSet.getSampleInfos().size());
 			}
 		}
 	}

@@ -53,7 +53,7 @@ public class LoadGTFromIlluminaLGENFiles extends AbstractLoadGTFromFiles impleme
 	}
 
 	public LoadGTFromIlluminaLGENFiles() {
-		super(ImportFormat.Illumina_LGEN, StrandType.PLSMIN, false, null);
+		super(new MetadataLoaderIlluminaLGEN(), ImportFormat.Illumina_LGEN, StrandType.PLSMIN, false);
 	}
 
 	@Override
@@ -78,22 +78,9 @@ public class LoadGTFromIlluminaLGENFiles extends AbstractLoadGTFromFiles impleme
 	}
 
 	@Override
-	protected MetadataLoader createMetaDataLoader(GenotypesLoadDescription loadDescription) {
-
-		return new MetadataLoaderIlluminaLGEN(
-				loadDescription.getAnnotationFilePath(),
-				loadDescription.getStudyKey());
-	}
-
-	@Override
-	protected String getStrandFlag(GenotypesLoadDescription loadDescription) {
-		return cNetCDF.Defaults.StrandType.FWD.toString();
-	}
-
-	@Override
 	protected void loadGenotypes(
 			GenotypesLoadDescription loadDescription,
-			SamplesReceiver samplesReceiver)
+			DataSetDestination samplesReceiver)
 			throws Exception
 	{
 		File[] gtFilesToImport = org.gwaspi.global.Utils.listFiles(loadDescription.getGtDirPath());
@@ -120,7 +107,7 @@ public class LoadGTFromIlluminaLGENFiles extends AbstractLoadGTFromFiles impleme
 	 */
 	private void loadIndividualFiles(
 			GenotypesLoadDescription loadDescription,
-			SamplesReceiver samplesReceiver,
+			DataSetDestination samplesReceiver,
 			File file)
 //			NetcdfFileWriteable ncfile,
 //			Map<MarkerKey, ?> sortedMetadata,

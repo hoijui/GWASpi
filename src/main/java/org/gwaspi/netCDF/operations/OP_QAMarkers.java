@@ -26,7 +26,6 @@ import java.util.Map;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.AlleleBytes;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
-import org.gwaspi.global.Text;
 import org.gwaspi.global.TypeConverter;
 import org.gwaspi.model.Census;
 import org.gwaspi.model.MarkerKey;
@@ -54,12 +53,12 @@ public class OP_QAMarkers implements MatrixOperation {
 
 	private static final class OrderedAlleles {
 
-		public static final TypeConverter<OrderedAlleles, String> TO_ALLELE_1
-				= new TypeConverter<OrderedAlleles, String>()
+		public static final TypeConverter<OrderedAlleles, Byte> TO_ALLELE_1
+				= new TypeConverter<OrderedAlleles, Byte>()
 		{
 			@Override
-			public String convert(OrderedAlleles from) {
-				return String.valueOf(from.getAllele1());
+			public Byte convert(OrderedAlleles from) {
+				return from.getAllele1();
 			}
 		};
 
@@ -72,12 +71,12 @@ public class OP_QAMarkers implements MatrixOperation {
 			}
 		};
 
-		public static final TypeConverter<OrderedAlleles, String> TO_ALLELE_2
-				= new TypeConverter<OrderedAlleles, String>()
+		public static final TypeConverter<OrderedAlleles, Byte> TO_ALLELE_2
+				= new TypeConverter<OrderedAlleles, Byte>()
 		{
 			@Override
-			public String convert(OrderedAlleles from) {
-				return String.valueOf(from.getAllele2());
+			public Byte convert(OrderedAlleles from) {
+				return from.getAllele2();
 			}
 		};
 
@@ -90,14 +89,14 @@ public class OP_QAMarkers implements MatrixOperation {
 			}
 		};
 
-		private char allele1;
+		private byte allele1;
 		private final double allele1Freq;
-		private char allele2;
+		private byte allele2;
 
 		OrderedAlleles(
-				char allele1,
+				byte allele1,
 				double allele1Freq,
-				char allele2
+				byte allele2
 				)
 		{
 			this.allele1 = allele1;
@@ -106,14 +105,17 @@ public class OP_QAMarkers implements MatrixOperation {
 		}
 
 		OrderedAlleles() {
-			this('0', 0.0, '0');
+			this((byte) '0', 0.0, (byte) '0');
 		}
 
-		public char getAllele1() {
+		/**
+		 * @return the mayor allele
+		 */
+		public byte getAllele1() {
 			return allele1;
 		}
 
-		public void setAllele1(char allele1) {
+		public void setAllele1(byte allele1) {
 			this.allele1 = allele1;
 		}
 
@@ -121,11 +123,14 @@ public class OP_QAMarkers implements MatrixOperation {
 			return allele1Freq;
 		}
 
-		public char getAllele2() {
+		/**
+		 * @return the minor allele
+		 */
+		public byte getAllele2() {
 			return allele2;
 		}
 
-		public void setAllele2(char allele2) {
+		public void setAllele2(byte allele2) {
 			this.allele2 = allele2;
 		}
 
@@ -138,7 +143,18 @@ public class OP_QAMarkers implements MatrixOperation {
 		this.rdMatrixKey = rdMatrixKey;
 	}
 
-	public int processMatrix() throws IOException, InvalidRangeException {
+	@Override
+	public boolean isValid() {
+		return true;
+	}
+
+	@Override
+	public String getProblemDescription() {
+		return null;
+	}
+
+	@Override
+	public int processMatrix() throws IOException {
 		int resultOpId = Integer.MIN_VALUE;
 
 		Map<MarkerKey, Integer> wrMarkerSetMismatchStateMap = new LinkedHashMap<MarkerKey, Integer>();
@@ -175,41 +191,36 @@ public class OP_QAMarkers implements MatrixOperation {
 					rdMatrixKey, // Parent matrixId
 					-1); // Parent operationId
 
+			// wrNcFile will contain:
+			// - cNetCDF.Variables.VAR_OPSET: (String, key.getId()) marker keys
+			// - cNetCDF.Variables.VAR_MARKERS_RSID: (String) marker RS-IDs
+			// - cNetCDF.Variables.VAR_IMPLICITSET: (String, key.getSampleId() + " " + key.getFamilyId()) sample keys
+			// - cNetCDF.Census.VAR_OP_MARKERS_MISSINGRAT: (double) missing ratio for each marker
+			// - cNetCDF.Census.VAR_OP_MARKERS_MISMATCHSTATE: (int) mismatch state for each marker
+			// - cNetCDF.Census.VAR_OP_MARKERS_MAJALLELES: (byte) dictionary allele 1 for each marker
+			// - cNetCDF.Census.VAR_OP_MARKERS_MAJALLELEFRQ: (double) frequency of dictionary allele 1 in all the alleles for any given marker
+			// - cNetCDF.Census.VAR_OP_MARKERS_MINALLELES: (byte) dictionary allele 2 for each marker
+			// - cNetCDF.Census.VAR_OP_MARKERS_MINALLELEFRQ: (double) frequency of dictionary allele 2 in all the alleles for any given marker
+			// - cNetCDF.Census.VAR_OP_MARKERS_CENSUSALL: ({int, int, int, int}) allele-AA, allele-Aa, allele-aa, missing-count for each marker
+
 			wrNcFile = wrOPHandler.getNetCDFHandler();
-			try {
-				wrNcFile.create();
-			} catch (IOException ex) {
-				log.error("Failed creating file: " + wrNcFile.getLocation(), ex);
-			}
-			//log.trace("Done creating netCDF handle: " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
+			wrNcFile.create();
+			log.trace("Done creating netCDF handle: " + wrNcFile.toString());
 
 			//<editor-fold defaultstate="expanded" desc="METADATA WRITER">
 			// MARKERSET MARKERID
-			ArrayChar.D2 markersD2 = Utils.writeCollectionToD2ArrayChar(rdMarkerSet.getMarkerKeys(), cNetCDF.Strides.STRIDE_MARKER_NAME);
+			ArrayChar.D2 markersD2 = NetCdfUtils.writeCollectionToD2ArrayChar(rdMarkerSet.getMarkerKeys(), cNetCDF.Strides.STRIDE_MARKER_NAME);
 			int[] markersOrig = new int[] {0, 0};
-			try {
-				wrNcFile.write(cNetCDF.Variables.VAR_OPSET, markersOrig, markersD2);
-			} catch (IOException ex) {
-				log.error("Failed writing file: " + wrNcFile.getLocation(), ex);
-			} catch (InvalidRangeException ex) {
-				log.error(null, ex);
-			}
+			wrNcFile.write(cNetCDF.Variables.VAR_OPSET, markersOrig, markersD2);
 
 			// MARKERSET RSID
 			rdMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_RSID);
-			Utils.saveCharMapValueToWrMatrix(wrNcFile, rdMarkerSet.getMarkerIdSetMapCharArray().values(), cNetCDF.Variables.VAR_MARKERS_RSID, cNetCDF.Strides.STRIDE_MARKER_NAME);
+			NetCdfUtils.saveCharMapValueToWrMatrix(wrNcFile, rdMarkerSet.getMarkerIdSetMapCharArray().values(), cNetCDF.Variables.VAR_MARKERS_RSID, cNetCDF.Strides.STRIDE_MARKER_NAME);
 
 			// WRITE SAMPLESET TO MATRIX FROM SAMPLES ARRAYLIST
-			ArrayChar.D2 samplesD2 = org.gwaspi.netCDF.operations.Utils.writeCollectionToD2ArrayChar(rdSampleSetMap.keySet(), cNetCDF.Strides.STRIDE_SAMPLE_NAME);
-
-			int[] sampleOrig = new int[]{0, 0};
-			try {
-				wrNcFile.write(cNetCDF.Variables.VAR_IMPLICITSET, sampleOrig, samplesD2);
-			} catch (IOException ex) {
-				log.error("Failed writing file: " + wrNcFile.getLocation(), ex);
-			} catch (InvalidRangeException ex) {
-				log.error(null, ex);
-			}
+			ArrayChar.D2 samplesD2 = NetCdfUtils.writeCollectionToD2ArrayChar(rdSampleSetMap.keySet(), cNetCDF.Strides.STRIDE_SAMPLE_NAME);
+			int[] sampleOrig = new int[] {0, 0};
+			wrNcFile.write(cNetCDF.Variables.VAR_IMPLICITSET, sampleOrig, samplesD2);
 			log.info("Done writing SampleSet to matrix");
 			//</editor-fold>
 
@@ -309,9 +320,9 @@ public class OP_QAMarkers implements MatrixOperation {
 						intAA.add(intAllele1 * 2);
 
 						orderedAlleles = new OrderedAlleles(
-								new String(new byte[] {byteAllele1}).charAt(0),
+								byteAllele1,
 								1.0,
-								new String(new byte[] {byteAllele2}).charAt(0)
+								byteAllele2
 								);
 					} else if (knownAlleles.size() == 2) {
 						// Heterezygote (contains mix of AA, Aa or aa)
@@ -334,9 +345,9 @@ public class OP_QAMarkers implements MatrixOperation {
 							intAa.add(intAllele1 + intAllele2);
 
 							orderedAlleles = new OrderedAlleles(
-									new String(new byte[] {byteAllele1}).charAt(0),
+									byteAllele1,
 									(double) countAllele1 / totAlleles,
-									new String(new byte[] {byteAllele2}).charAt(0)
+									byteAllele2
 									);
 						} else {
 							intAA.add(intAllele2);
@@ -348,9 +359,9 @@ public class OP_QAMarkers implements MatrixOperation {
 							intAa.add(intAllele1 + intAllele2);
 
 							orderedAlleles = new OrderedAlleles(
-									new String(new byte[] {byteAllele2}).charAt(0),
+									byteAllele2,
 									(double) countAllele2 / totAlleles,
-									new String(new byte[] {byteAllele1}).charAt(0)
+									byteAllele1
 									);
 						}
 					} else {
@@ -427,12 +438,12 @@ public class OP_QAMarkers implements MatrixOperation {
 					//   instead of <code>== '0'</code> before.
 					//   Therefore, some '0' were left in the end
 					//   (when there was only one known allele).
-					if (orderedAlleles.getAllele1() == '0'
-							&& orderedAlleles.getAllele2() != '0')
+					if (orderedAlleles.getAllele1() == (byte) '0'
+							&& orderedAlleles.getAllele2() != (byte) '0')
 					{
 						orderedAlleles.setAllele1(orderedAlleles.getAllele2());
-					} else if (orderedAlleles.getAllele2() == '0'
-							&& orderedAlleles.getAllele1() != '0')
+					} else if (orderedAlleles.getAllele2() == (byte) '0'
+							&& orderedAlleles.getAllele1() != (byte) '0')
 					{
 						orderedAlleles.setAllele2(orderedAlleles.getAllele1());
 					}
@@ -450,33 +461,33 @@ public class OP_QAMarkers implements MatrixOperation {
 				wrMarkerSetMissingRatioMap.put(markerKey, missingRatio);
 
 				markerNb++;
-				if (markerNb == 1) {
-					log.info(Text.All.processing);
-				} else if (markerNb % 100000 == 0) {
-					log.info("Processed markers: {}", markerNb);
+				if ((markerNb == 1) || (markerNb % 10000 == 0)) {
+					log.info("Processed markers: {} / {}", markerNb, rdMarkerSet.size());
 				}
 			}
 			//</editor-fold>
 
 			//<editor-fold defaultstate="expanded" desc="QA DATA WRITER">
 			// MISSING RATIO
-			Utils.saveDoubleMapD1ToWrMatrix(wrNcFile, wrMarkerSetMissingRatioMap.values(), cNetCDF.Census.VAR_OP_MARKERS_MISSINGRAT);
+			NetCdfUtils.saveDoubleMapD1ToWrMatrix(wrNcFile, wrMarkerSetMissingRatioMap.values(), cNetCDF.Census.VAR_OP_MARKERS_MISSINGRAT);
 
 			// MISMATCH STATE
-			Utils.saveIntMapD1ToWrMatrix(wrNcFile, wrMarkerSetMismatchStateMap.values(), cNetCDF.Census.VAR_OP_MARKERS_MISMATCHSTATE);
+			NetCdfUtils.saveIntMapD1ToWrMatrix(wrNcFile, wrMarkerSetMismatchStateMap.values(), cNetCDF.Census.VAR_OP_MARKERS_MISMATCHSTATE);
 
 			// KNOWN ALLELES
 			//Utils.saveCharMapValueToWrMatrix(wrNcFile, wrMarkerSetKnownAllelesMap, cNetCDF.Census.VAR_OP_MARKERS_KNOWNALLELES, cNetCDF.Strides.STRIDE_GT);
-			Utils.saveCharMapItemToWrMatrix(wrNcFile, wrMarkerSetKnownAllelesMap.values(), cNetCDF.Census.VAR_OP_MARKERS_MAJALLELES, OrderedAlleles.TO_ALLELE_1, cNetCDF.Strides.STRIDE_GT / 2);
-			Utils.saveDoubleMapItemD1ToWrMatrix(wrNcFile, wrMarkerSetKnownAllelesMap.values(), OrderedAlleles.TO_ALLELE_1_FREQ, cNetCDF.Census.VAR_OP_MARKERS_MAJALLELEFRQ);
-			Utils.saveCharMapItemToWrMatrix(wrNcFile, wrMarkerSetKnownAllelesMap.values(), cNetCDF.Census.VAR_OP_MARKERS_MINALLELES, OrderedAlleles.TO_ALLELE_2, cNetCDF.Strides.STRIDE_GT / 2);
-			Utils.saveDoubleMapItemD1ToWrMatrix(wrNcFile, wrMarkerSetKnownAllelesMap.values(), OrderedAlleles.TO_ALLELE_2_FREQ, cNetCDF.Census.VAR_OP_MARKERS_MINALLELEFRQ);
+			NetCdfUtils.saveByteMapItemToWrMatrix(wrNcFile, wrMarkerSetKnownAllelesMap.values(), cNetCDF.Census.VAR_OP_MARKERS_MAJALLELES, OrderedAlleles.TO_ALLELE_1, cNetCDF.Strides.STRIDE_GT / 2);
+			NetCdfUtils.saveDoubleMapItemD1ToWrMatrix(wrNcFile, wrMarkerSetKnownAllelesMap.values(), OrderedAlleles.TO_ALLELE_1_FREQ, cNetCDF.Census.VAR_OP_MARKERS_MAJALLELEFRQ);
+			NetCdfUtils.saveByteMapItemToWrMatrix(wrNcFile, wrMarkerSetKnownAllelesMap.values(), cNetCDF.Census.VAR_OP_MARKERS_MINALLELES, OrderedAlleles.TO_ALLELE_2, cNetCDF.Strides.STRIDE_GT / 2);
+			NetCdfUtils.saveDoubleMapItemD1ToWrMatrix(wrNcFile, wrMarkerSetKnownAllelesMap.values(), OrderedAlleles.TO_ALLELE_2_FREQ, cNetCDF.Census.VAR_OP_MARKERS_MINALLELEFRQ);
 
 			// ALL CENSUS
-			Utils.saveIntMapD2ToWrMatrix(wrNcFile, wrMarkerSetCensusMap.values(), Census.EXTRACTOR_ALL, cNetCDF.Census.VAR_OP_MARKERS_CENSUSALL);
+			NetCdfUtils.saveIntMapD2ToWrMatrix(wrNcFile, wrMarkerSetCensusMap.values(), Census.EXTRACTOR_ALL, cNetCDF.Census.VAR_OP_MARKERS_CENSUSALL);
 			//</editor-fold>
 
 			resultOpId = wrOPHandler.getResultOPId();
+		} catch (InvalidRangeException ex) {
+			throw new IOException(ex);
 		} finally {
 			if (null != rdNcFile) {
 				try {

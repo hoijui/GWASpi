@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.netCDF.operations.NetCdfUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.ArrayChar;
@@ -58,7 +59,7 @@ public class DumpNCMatrix {
 
 			if (dataType == DataType.CHAR) {
 				ArrayChar.D2 markerSetAC = (ArrayChar.D2) var.read("(0:" + (markerSetSize - 1) + ":1, 0:" + (varShape[1] - 1) + ":1)");
-				markerIdSetMap = org.gwaspi.netCDF.operations.Utils.writeD2ArrayCharToMapKeys(markerSetAC, null);
+				markerIdSetMap = NetCdfUtils.writeD2ArrayCharToMapKeys(markerSetAC, null);
 			}
 		} catch (IOException ex) {
 			log.error("Cannot read data", ex);
@@ -75,7 +76,7 @@ public class DumpNCMatrix {
 			int sampleSetSize = markerSetDim.getLength();
 			ArrayChar.D2 sampleSetAC = (ArrayChar.D2) var.read("(0:" + (sampleSetSize - 1) + ":1, 0:" + (varShape[1] - 1) + ":1)");
 
-			sampleIdSetMap = org.gwaspi.netCDF.operations.Utils.writeD2ArrayCharToMapKeys(sampleSetAC, null);
+			sampleIdSetMap = NetCdfUtils.writeD2ArrayCharToMapKeys(sampleSetAC, null);
 		} catch (IOException ex) {
 			log.error("Cannot read data", ex);
 		} catch (InvalidRangeException ex) {
@@ -103,7 +104,7 @@ public class DumpNCMatrix {
 				ArrayChar.D3 gt_ACD3 = (ArrayChar.D3) genotypes.read("(" + sampleNb + ":" + sampleNb + ":1, 0:" + (varShape[1] - 1) + ":1, 0:" + (varShape[2] - 1) + ":1)");
 				ArrayChar.D2 gt_ACD2 = (ArrayChar.D2) gt_ACD3.reduce();
 
-				org.gwaspi.netCDF.operations.Utils.writeD2ArrayCharToMapValues(gt_ACD2, markerIdSetMap);
+				NetCdfUtils.writeD2ArrayCharToMapValues(gt_ACD2, markerIdSetMap);
 
 				for (Object alleles : markerIdSetMap.values()) {
 					sampleLineSB.append("\t").append(alleles);

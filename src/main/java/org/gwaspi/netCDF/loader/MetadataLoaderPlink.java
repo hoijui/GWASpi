@@ -27,7 +27,7 @@ import java.util.TreeMap;
 import org.gwaspi.constants.cImport;
 import org.gwaspi.constants.cImport.Annotation.Plink_Standard;
 import org.gwaspi.constants.cNetCDF;
-import org.gwaspi.global.Text;
+import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.StudyKey;
@@ -39,13 +39,17 @@ public class MetadataLoaderPlink implements MetadataLoader {
 	private final Logger log
 			= LoggerFactory.getLogger(MetadataLoaderPlink.class);
 
-	private final String mapPath;
-	private final StudyKey studyKey;
+	public MetadataLoaderPlink() {
+	}
 
-	public MetadataLoaderPlink(String mapPath, StudyKey studyKey) {
+	@Override
+	public boolean isHasStrandInfo() {
+		return false;
+	}
 
-		this.mapPath = mapPath;
-		this.studyKey = studyKey;
+	@Override
+	public StrandType getFixedStrandFlag() {
+		return null;
 	}
 
 //	@Override
@@ -70,14 +74,22 @@ public class MetadataLoaderPlink implements MetadataLoader {
 //	}
 
 	@Override
-	public void loadMarkers(SamplesReceiver samplesReceiver) throws Exception {
+	public void loadMarkers(DataSetDestination samplesReceiver, GenotypesLoadDescription loadDescription) throws Exception {
+		loadMarkers(
+				samplesReceiver,
+				loadDescription.getGtDirPath(),
+				loadDescription.getStudyKey());
+	}
+
+	private void loadMarkers(DataSetDestination samplesReceiver, String mapPath, StudyKey studyKey) throws Exception {
 
 		String startTime = org.gwaspi.global.Utils.getMediumDateTimeAsString();
 
-		SortedMap<String, String> tempTM = parseAndSortMapFile(); // chr, markerId, genetic distance, position
+		// chr, markerId, genetic distance, position
+		SortedMap<String, String> tempTM = parseAndSortMapFile(mapPath);
 
 		org.gwaspi.global.Utils.sysoutStart("initilaizing Marker info");
-		log.info(Text.All.processing);
+		log.info("parse raw data into marker metadata objects");
 
 		for (Map.Entry<String, String> entry : tempTM.entrySet()) {
 			// "chr;pos;markerId"
@@ -108,7 +120,7 @@ public class MetadataLoaderPlink implements MetadataLoader {
 		logAsWhole(startTime, mapPath, description, studyKey.getId());
 	}
 
-	private SortedMap<String, String> parseAndSortMapFile() throws IOException {
+	private SortedMap<String, String> parseAndSortMapFile(String mapPath) throws IOException {
 
 		FileReader fr = new FileReader(mapPath);
 		BufferedReader inputMapBR = new BufferedReader(fr);
@@ -140,13 +152,11 @@ public class MetadataLoaderPlink implements MetadataLoader {
 
 			count++;
 
-			if (count == 1) {
-				log.info(Text.All.processing);
-			} else if (count % 100000 == 0) {
-				log.info("Parsed annotation lines: {}", count);
+			if ((count == 1) || (count % 100000 == 0)) {
+				log.info("read and pre-parse marker metadat from file(s); lines: {}", count);
 			}
 		}
-		log.info("Parsed annotation lines: {}", count);
+		log.info("read and pre-parse marker metadat from file(s); lines: {}", count);
 
 		inputMapBR.close();
 

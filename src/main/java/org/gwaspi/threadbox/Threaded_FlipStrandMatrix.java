@@ -18,10 +18,13 @@
 package org.gwaspi.threadbox;
 
 import java.io.File;
+import java.io.IOException;
+import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.GWASpiExplorerNodes;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.netCDF.operations.MatrixGenotypesFlipper;
+import org.gwaspi.netCDF.operations.MatrixGenotypesFlipperNetCDFDataSetDestination;
 import org.gwaspi.netCDF.operations.OP_QAMarkers;
 import org.gwaspi.netCDF.operations.OP_QASamples;
 import org.slf4j.Logger;
@@ -29,30 +32,28 @@ import org.slf4j.LoggerFactory;
 
 public class Threaded_FlipStrandMatrix extends CommonRunnable {
 
-	private MatrixKey resultMatrixKey;
-	private final MatrixKey parentMatrixKey;
+	private final DataSetSource parentDataSetSource;
 	private final String newMatrixName;
 	private final String description;
-	private final String markerIdentifyer;
 	private final File markerFlipFile;
 
 	public Threaded_FlipStrandMatrix(
-			MatrixKey parentMatrixKey,
+			DataSetSource parentDataSetSource,
 			String newMatrixName,
 			String description,
-			String markerIdentifyer,
 			File markerFlipFile)
+			throws IOException
 	{
 		super(
 				"Flip Strand Matrix",
 				"Flipping Genotypes",
-				"Flip Strand Matrix ID: " + parentMatrixKey.getMatrixId(),
+				"Flip Strand Matrix ID: " + parentDataSetSource.getMatrixMetadata().getKey().getMatrixId(),
 				"Extracting");
 
-		this.parentMatrixKey = parentMatrixKey;
+
+		this.parentDataSetSource = parentDataSetSource;
 		this.newMatrixName = newMatrixName;
 		this.description = description;
-		this.markerIdentifyer = markerIdentifyer;
 		this.markerFlipFile = markerFlipFile;
 	}
 
@@ -62,15 +63,20 @@ public class Threaded_FlipStrandMatrix extends CommonRunnable {
 
 	protected void runInternal(SwingWorkerItem thisSwi) throws Exception {
 
+		MatrixKey resultMatrixKey = null;
 		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
-			MatrixGenotypesFlipper flipMatrix = new MatrixGenotypesFlipper(
-					parentMatrixKey,
+			MatrixGenotypesFlipperNetCDFDataSetDestination dataSetDestination
+					= new MatrixGenotypesFlipperNetCDFDataSetDestination(
+					parentDataSetSource,
 					newMatrixName,
 					description,
-					markerIdentifyer,
 					markerFlipFile);
-			int resultMatrixId = flipMatrix.flipGenotypesToNewMatrix();
-			resultMatrixKey = new MatrixKey(parentMatrixKey.getStudyKey(), resultMatrixId);
+			MatrixGenotypesFlipper flipMatrix = new MatrixGenotypesFlipper(
+					parentDataSetSource,
+					dataSetDestination,
+					markerFlipFile);
+			flipMatrix.processMatrix();
+			resultMatrixKey = dataSetDestination.getResultMatrixKey();
 			GWASpiExplorerNodes.insertMatrixNode(resultMatrixKey);
 		}
 

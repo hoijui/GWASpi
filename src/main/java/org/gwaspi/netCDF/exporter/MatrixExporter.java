@@ -22,17 +22,14 @@ import java.io.IOException;
 import java.util.EnumMap;
 import java.util.Map;
 import org.gwaspi.constants.cExport.ExportFormat;
-import org.gwaspi.global.Text;
+import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
-import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.Study;
-import org.gwaspi.netCDF.markers.MarkerSet;
-import org.gwaspi.samples.SampleSet;
+import org.gwaspi.netCDF.markers.NetCDFDataSetSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.ma2.InvalidRangeException;
 
 public class MatrixExporter {
 
@@ -40,22 +37,17 @@ public class MatrixExporter {
 
 	private final MatrixKey rdMatrixKey;
 	private final MatrixMetadata rdMatrixMetadata;
-	private MarkerSet rdMarkerSet;
-	private final SampleSet rdSampleSet;
-	private final Map<SampleKey, byte[]> rdSampleSetMap;
+	private final DataSetSource rdDataSetSource;
 	private final Map<ExportFormat, Formatter> formatters;
 
-	public MatrixExporter(MatrixKey rdMatrixKey) throws IOException, InvalidRangeException {
+	public MatrixExporter(MatrixKey rdMatrixKey) throws IOException {
 
 		// INIT EXTRACTOR OBJECTS
 
 		this.rdMatrixKey = rdMatrixKey;
 		rdMatrixMetadata = MatricesList.getMatrixMetadataById(rdMatrixKey);
 
-		rdMarkerSet = new MarkerSet(rdMatrixKey);
-
-		rdSampleSet = new SampleSet(rdMatrixKey);
-		rdSampleSetMap = rdSampleSet.getSampleIdSetMapByteArray();
+		rdDataSetSource = new NetCDFDataSetSource(rdMatrixKey);
 
 		formatters = new EnumMap<ExportFormat, Formatter>(ExportFormat.class);
 		formatters.put(ExportFormat.PLINK, new PlinkFormatter());
@@ -69,28 +61,21 @@ public class MatrixExporter {
 	}
 
 	public boolean exportToFormat(ExportFormat exportFormat, String phenotype) throws IOException {
-		log.info(Text.All.processing);
-
 		String exportPath = Study.constructExportsPath(rdMatrixMetadata.getStudyKey());
+		String taskDesc = "exporting Matrix to \"" + exportPath + "\"";
+		org.gwaspi.global.Utils.sysoutStart(taskDesc);
+
 		org.gwaspi.global.Utils.createFolder(new File(exportPath));
 		Formatter formatter = formatters.get(exportFormat);
 
-		if (exportFormat == ExportFormat.BEAGLE) {
-			rdMarkerSet = new MarkerSet(rdMatrixKey);
-		}
 		boolean result = formatter.export(
 				exportPath,
 				rdMatrixMetadata,
-				rdMarkerSet,
-				rdSampleSet,
-				rdSampleSetMap,
+				rdDataSetSource,
 				phenotype);
 
-		if (rdMarkerSet.getMarkerIdSetMapCharArray() != null) {
-			rdMarkerSet.getMarkerIdSetMapCharArray().clear();
-		}
+		org.gwaspi.global.Utils.sysoutCompleted(taskDesc);
 
-		org.gwaspi.global.Utils.sysoutCompleted("exporting Matrix to \"" + exportPath + "\"");
 		return result;
 	}
 }

@@ -16,52 +16,14 @@
  */
 package org.gwaspi.model;
 
-
-import java.util.Iterator;
 import java.util.NoSuchElementException;
-import org.gwaspi.global.EnumeratedValueExtractor;
 
 /**
  * Contains statistical data about a marker within a set of samples.
  */
 public class Census {
-	private abstract static class CensusExtractor implements EnumeratedValueExtractor<Census, Iterator<Integer>> {
 
-		abstract Integer extractIndex(Census object, int extractIndex);
-
-		private final class CensusExtractorIterator implements Iterator<Integer> {
-
-			private final Census object;
-			private int nextIndex;
-
-			CensusExtractorIterator(Census object) {
-				this.object = object;
-				this.nextIndex = 0;
-			}
-
-			@Override
-			public boolean hasNext() {
-				return nextIndex < getNumberOfValues();
-			}
-
-			@Override
-			public Integer next() {
-				return extractIndex(object, nextIndex++);
-			}
-
-			@Override
-			public void remove() {
-				throw new UnsupportedOperationException("You may not remove through this Iterator.");
-			}
-		}
-
-		@Override
-		public Iterator<Integer> extract(Census object) {
-			return new CensusExtractorIterator(object);
-		}
-	}
-
-	private static final class AllCensusExtractor extends CensusExtractor {
+	private static final class AllCensusExtractor extends AbstractObjectEnumeratedValueExtractor<Census> {
 
 		@Override
 		public int getNumberOfValues() {
@@ -80,7 +42,7 @@ public class Census {
 		}
 	}
 
-	private static final class CaseCensusExtractor extends CensusExtractor {
+	private static final class CaseCensusExtractor extends AbstractObjectEnumeratedValueExtractor<Census> {
 
 		@Override
 		public int getNumberOfValues() {
@@ -98,7 +60,7 @@ public class Census {
 		}
 	}
 
-	private static final class ControlCensusExtractor extends CensusExtractor {
+	private static final class ControlCensusExtractor extends AbstractObjectEnumeratedValueExtractor<Census> {
 
 		@Override
 		public int getNumberOfValues() {
@@ -116,7 +78,7 @@ public class Census {
 		}
 	}
 
-	private static final class AlternateHWCensusExtractor extends CensusExtractor {
+	private static final class AlternateHWCensusExtractor extends AbstractObjectEnumeratedValueExtractor<Census> {
 
 		@Override
 		public int getNumberOfValues() {
@@ -134,10 +96,10 @@ public class Census {
 		}
 	}
 
-	public static final CensusExtractor EXTRACTOR_ALL = new AllCensusExtractor();
-	public static final CensusExtractor EXTRACTOR_CASE = new CaseCensusExtractor();
-	public static final CensusExtractor EXTRACTOR_CONTROL = new ControlCensusExtractor();
-	public static final CensusExtractor EXTRACTOR_ALTERNATE_HW = new AlternateHWCensusExtractor();
+	public static final AbstractObjectEnumeratedValueExtractor<Census> EXTRACTOR_ALL = new AllCensusExtractor();
+	public static final AbstractObjectEnumeratedValueExtractor<Census> EXTRACTOR_CASE = new CaseCensusExtractor();
+	public static final AbstractObjectEnumeratedValueExtractor<Census> EXTRACTOR_CONTROL = new ControlCensusExtractor();
+	public static final AbstractObjectEnumeratedValueExtractor<Census> EXTRACTOR_ALTERNATE_HW = new AlternateHWCensusExtractor();
 
 	private final int allAA; // all
 	private final int allAa; // all

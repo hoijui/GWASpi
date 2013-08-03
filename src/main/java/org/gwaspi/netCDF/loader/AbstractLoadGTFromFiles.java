@@ -26,15 +26,11 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import org.gwaspi.constants.cImport.ImportFormat;
-import org.gwaspi.constants.cImport.StrandFlags;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
-import org.gwaspi.global.Text;
-import org.gwaspi.global.TypeConverter;
 import org.gwaspi.model.DataSet;
 import org.gwaspi.model.MarkerKey;
-import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.StudyKey;
@@ -46,23 +42,23 @@ public abstract class AbstractLoadGTFromFiles implements GenotypesLoader {
 	private final Logger log
 			= LoggerFactory.getLogger(AbstractLoadGTFromFiles.class);
 
+	private final MetadataLoader markerSetMetadataLoader;
 	private final ImportFormat format;
 	private final StrandType matrixStrand;
 	private final boolean hasDictionary;
-	private final String markersD2Variables;
 	private GenotypeEncoding guessedGTCode;
 
 	public AbstractLoadGTFromFiles(
+			MetadataLoader markerSetMetadataLoader,
 			ImportFormat format,
 			StrandType matrixStrand,
-			boolean hasDictionary,
-			String markersD2Variables
+			boolean hasDictionary
 			)
 	{
+		this.markerSetMetadataLoader = markerSetMetadataLoader;
 		this.format = format;
 		this.matrixStrand = matrixStrand;
 		this.hasDictionary = hasDictionary;
-		this.markersD2Variables = markersD2Variables;
 		this.guessedGTCode = GenotypeEncoding.UNKNOWN;
 	}
 
@@ -76,14 +72,13 @@ public abstract class AbstractLoadGTFromFiles implements GenotypesLoader {
 		return matrixStrand;
 	}
 
-	@Override
-	public boolean isHasDictionary() {
-		return hasDictionary;
+	public MetadataLoader getMetadataLoader() {
+		return markerSetMetadataLoader;
 	}
 
 	@Override
-	public String getMarkersD2Variables() {
-		return markersD2Variables;
+	public boolean isHasDictionary() {
+		return hasDictionary;
 	}
 
 	public GenotypeEncoding getGuessedGTCode() {
@@ -97,66 +92,20 @@ public abstract class AbstractLoadGTFromFiles implements GenotypesLoader {
 	protected void addAdditionalBigDescriptionProperties(StringBuilder descSB, GenotypesLoadDescription loadDescription) {
 	}
 
-	protected abstract MetadataLoader createMetaDataLoader(GenotypesLoadDescription loadDescription);
-
 	protected boolean isLoadAllelePerSample() {
 		return true;
 	}
 
-	/**
-	 * @see #isHasStrandInfo
-	 */
-	protected String getStrandFlag(GenotypesLoadDescription loadDescription) {
+	private void loadMarkerMetadata(GenotypesLoadDescription loadDescription, DataSetDestination samplesReceiver) throws Exception {
 
-		String strandFlag;
-
-		switch (loadDescription.getStrand()) {
-			case PLUS:
-				strandFlag = StrandFlags.strandPLS;
-				break;
-			case MINUS:
-				strandFlag = StrandFlags.strandMIN;
-				break;
-			case FWD:
-				strandFlag = StrandFlags.strandFWD;
-				break;
-			case REV:
-				strandFlag = StrandFlags.strandREV;
-				break;
-			default:
-				strandFlag = StrandFlags.strandUNK;
-				break;
-		}
-
-		return strandFlag;
-	}
-
-	protected void loadMarkerMetadata(GenotypesLoadDescription loadDescription, SamplesReceiver samplesReceiver) throws Exception {
-
-		MetadataLoader markerSetLoader = createMetaDataLoader(loadDescription);
-		samplesReceiver.startLoadingMarkerMetadatas();
-		markerSetLoader.loadMarkers(samplesReceiver);
+		samplesReceiver.startLoadingMarkerMetadatas(false);
+		markerSetMetadataLoader.loadMarkers(samplesReceiver, loadDescription);
 		samplesReceiver.finishedLoadingMarkerMetadatas();
-	}
-
-	protected TypeConverter<MarkerMetadata, String> getBaseDictPropertyExtractor() {
-		return MarkerMetadata.TO_STRAND;
-	}
-
-	/**
-	 * Whether each marker loaded has a strand info.
-	 * If false, then a global one has to be provided.
-	 * If true, then the MarkerMetadata has to have strand info set
-	 * (the ctor to set it has to be used, or a setter, if one exists).
-	 * @see #getStrandFlag
-	 */
-	protected boolean isHasStrandInfo() {
-		return false;
 	}
 
 	//<editor-fold defaultstate="expanded" desc="PROCESS GENOTYPES">
 	@Override
-	public void processData(GenotypesLoadDescription loadDescription, SamplesReceiver samplesReceiver) throws Exception {
+	public void processData(GenotypesLoadDescription loadDescription, DataSetDestination samplesReceiver) throws Exception {
 		loadMarkerMetadata(loadDescription, samplesReceiver);
 
 		samplesReceiver.startLoadingAlleles(isLoadAllelePerSample());
@@ -166,7 +115,7 @@ public abstract class AbstractLoadGTFromFiles implements GenotypesLoader {
 
 	protected void loadGenotypes(
 			GenotypesLoadDescription loadDescription,
-			SamplesReceiver samplesReceiver)
+			DataSetDestination samplesReceiver)
 			throws Exception
 	{
 		File gtFile = new File(loadDescription.getGtDirPath());
@@ -187,21 +136,17 @@ public abstract class AbstractLoadGTFromFiles implements GenotypesLoader {
 				try {
 //					loadIndividualFiles(
 //							loadDescription.getStudyKey(),
-//							new File(loadDescription.getGtDirPath()),
+//							gtFilesToImport[i],
 //							sampleInfo.getKey(),
 //							alleles);
 					Iterator<Map.Entry<MarkerKey, byte[]>> markerGtIt = iterator(
 							loadDescription.getStudyKey(),
 							sampleInfo.getKey(),
-							new File(loadDescription.getGtDirPath()));
+							gtFilesToImport[i]);
 					while (markerGtIt.hasNext()) {
 						Map.Entry<MarkerKey, byte[]> markerGt = markerGtIt.next();
 						alleles.put(markerGt.getKey(), markerGt.getValue());
 					}
-
-					// WRITING GENOTYPE DATA INTO netCDF FILE
-					samplesReceiver.addSampleGTAlleles(i, alleles.values());
-//					org.gwaspi.netCDF.operations.Utils.saveSingleSampleGTsToMatrix(ncfile, alleles, sampleIndex);
 
 					if (Thread.interrupted()) {
 						throw new InterruptedException();
@@ -214,11 +159,14 @@ public abstract class AbstractLoadGTFromFiles implements GenotypesLoader {
 				}
 			}
 
+			// WRITING GENOTYPE DATA INTO netCDF FILE
+			samplesReceiver.addSampleGTAlleles(sampleIndex, alleles.values());
+//					org.gwaspi.netCDF.operations.Utils.saveSingleSampleGTsToMatrix(ncfile, alleles, sampleIndex);
+
 			sampleIndex++;
-			if (sampleIndex == 1) {
-				log.info(Text.All.processing);
-			} else if (sampleIndex % 100 == 0) {
-				log.info("Done processing sample Nº{}", sampleIndex);
+			if ((sampleIndex == 1) || (sampleIndex % 100 == 0)) {
+				log.info("Done processing sample {} / {}", sampleIndex,
+						dataSet.getSampleInfos().size());
 			}
 		}
 	}

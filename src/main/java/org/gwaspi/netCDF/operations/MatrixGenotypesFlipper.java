@@ -22,266 +22,171 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.Iterator;
 import java.util.Set;
-import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.constants.cNetCDF.Defaults.AlleleBytes;
 import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
-import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
 import org.gwaspi.global.Text;
+import org.gwaspi.model.ChromosomeInfo;
+import org.gwaspi.model.ChromosomeKey;
+import org.gwaspi.model.DataSetSource;
+import org.gwaspi.model.GenotypesList;
 import org.gwaspi.model.MarkerKey;
-import org.gwaspi.model.MatricesList;
-import org.gwaspi.model.MatrixKey;
-import org.gwaspi.model.MatrixMetadata;
+import org.gwaspi.model.MarkerMetadata;
+import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleKey;
-import org.gwaspi.netCDF.markers.MarkerSet;
-import org.gwaspi.netCDF.matrices.MatrixFactory;
-import org.gwaspi.samples.SampleSet;
+import org.gwaspi.netCDF.loader.DataSetDestination;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.ma2.ArrayChar;
-import ucar.ma2.Index;
-import ucar.ma2.InvalidRangeException;
-import ucar.nc2.NetcdfFile;
-import ucar.nc2.NetcdfFileWriteable;
 
-public class MatrixGenotypesFlipper {
+public class MatrixGenotypesFlipper implements MatrixOperation {
 
 	private final Logger log = LoggerFactory.getLogger(MatrixGenotypesFlipper.class);
 
-	private MatrixKey rdMatrixKey;
-	private int wrMatrixId = Integer.MIN_VALUE;
-	private String wrMatrixFriendlyName = "";
-	private String wrMatrixDescription = "";
-	private File flipperFile;
-	private MatrixMetadata rdMatrixMetadata = null;
-	private GenotypeEncoding gtEncoding = GenotypeEncoding.UNKNOWN;
-	private MarkerSet rdMarkerSet = null;
-	private Set<MarkerKey> markerFlipHS = new HashSet<MarkerKey>();
-	private SampleSet rdSampleSet = null;
-	private Map<MarkerKey, ?> rdMarkerIdSetMap = new LinkedHashMap<MarkerKey, Object>();
-	private Map<SampleKey, byte[]> rdSampleSetMap = new LinkedHashMap<SampleKey, byte[]>();
-	private Map<MarkerKey, int[]> rdChrInfoSetMap = new LinkedHashMap<MarkerKey, int[]>();
+	private final DataSetSource dataSetSource;
+	private final DataSetDestination dataSetDestination;
+	private final File flipperFile;
+	private final Set<MarkerKey> markersToFlip;
 
 	/**
-	 * This constructor to extract data from Matrix a by passing a variable and
-	 * the criteria to filter items by.
-	 *
-	 * @param rdMatrixKey
-	 * @param wrMatrixFriendlyName
-	 * @param wrMatrixDescription
-	 * @param markerVariable
-	 * @param flipperFile
-	 * @throws IOException
-	 * @throws InvalidRangeException
+	 * Use this constructor to extract data from a matrix
+	 * by passing a variable and the criteria to filter items by.
 	 */
 	public MatrixGenotypesFlipper(
-			MatrixKey rdMatrixKey,
-			String wrMatrixFriendlyName,
-			String wrMatrixDescription,
-			String markerVariable,
+			DataSetSource dataSetSource,
+			DataSetDestination dataSetDestination,
 			File flipperFile)
-			throws IOException, InvalidRangeException
+			throws IOException
 	{
-		// INIT EXTRACTOR OBJECTS
-		this.rdMatrixKey = rdMatrixKey;
-		this.rdMatrixMetadata = MatricesList.getMatrixMetadataById(this.rdMatrixKey);
-		this.wrMatrixFriendlyName = wrMatrixFriendlyName;
-		this.wrMatrixDescription = wrMatrixDescription;
-		this.gtEncoding = this.rdMatrixMetadata.getGenotypeEncoding();
+		this.dataSetSource = dataSetSource;
+		this.dataSetDestination = dataSetDestination;
 		this.flipperFile = flipperFile;
+		this.markersToFlip = loadMarkerKeys(this.flipperFile);
+	}
 
-		this.rdMarkerSet = new MarkerSet(this.rdMatrixKey);
-		this.rdMarkerSet.initFullMarkerIdSetMap();
-		this.rdMarkerIdSetMap = this.rdMarkerSet.getMarkerIdSetMapByteArray();
+	/**
+	 * Loads a number of marker keys from a plain text file.
+	 * @return the loaded marker keys
+	 * @throws IOException
+	 */
+	private static Set<MarkerKey> loadMarkerKeys(File flipperFile) throws IOException {
 
-		this.rdChrInfoSetMap = this.rdMarkerSet.getChrInfoSetMap();
+		Set<MarkerKey> markerKeys = new HashSet<MarkerKey>();
 
-		this.rdSampleSet = new SampleSet(this.rdMatrixKey);
-		this.rdSampleSetMap = this.rdSampleSet.getSampleIdSetMapByteArray();
-
-		if (this.flipperFile.isFile()) {
-			FileReader fr = new FileReader(this.flipperFile);
+		if (flipperFile.isFile()) {
+			FileReader fr = new FileReader(flipperFile);
 			BufferedReader br = new BufferedReader(fr);
 			String line;
 			while ((line = br.readLine()) != null) {
-				this.markerFlipHS.add(MarkerKey.valueOf(line));
+				markerKeys.add(MarkerKey.valueOf(line));
 			}
 			br.close();
 		}
+
+		return markerKeys;
 	}
 
-	public int flipGenotypesToNewMatrix() throws IOException {
-		int resultMatrixId = Integer.MIN_VALUE;
+	@Override
+	public boolean isValid() {
+		return true;
+	}
+
+	@Override
+	public String getProblemDescription() {
+
+		String problemDescription = null;
+
 		try {
-			// CREATE netCDF-3 FILE
-			StringBuilder descSB = new StringBuilder(Text.Matrix.descriptionHeader1);
-			descSB.append(org.gwaspi.global.Utils.getShortDateTimeAsString());
-			descSB.append("\nThrough Matrix genotype flipping from parent Matrix MX: ").append(rdMatrixMetadata.getMatrixId()).append(" - ").append(rdMatrixMetadata.getMatrixFriendlyName());
-			descSB.append("\nUsed list of markers to be flipped: ").append(flipperFile.getPath());
-			if (!wrMatrixDescription.isEmpty()) {
-				descSB.append("\n\nDescription: ");
-				descSB.append(wrMatrixDescription);
-				descSB.append("\n");
+			GenotypeEncoding genotypeEncoding = dataSetSource.getMatrixMetadata().getGenotypeEncoding();
+			if (!genotypeEncoding.equals(GenotypeEncoding.O1234)
+					&& !genotypeEncoding.equals(GenotypeEncoding.ACGT0))
+			{
+				problemDescription = Text.Trafo.warnNotACGTor1234;
 			}
-			descSB.append("\nGenotype encoding: ");
-			descSB.append(rdMatrixMetadata.getGenotypeEncoding());
-			descSB.append("\n");
-			descSB.append("Markers: ").append(rdMarkerSet.getMarkerSetSize()).append(", Samples: ").append(rdSampleSet.getSampleSetSize());
-
-			MatrixFactory wrMatrixHandler = new MatrixFactory(
-					rdMatrixMetadata.getTechnology(), // technology
-					wrMatrixFriendlyName,
-					descSB.toString(), // description
-					rdMatrixMetadata.getGenotypeEncoding(), // Matrix genotype encoding from orig matrix genotype encoding
-					StrandType.valueOf("FLP"), // FIXME this will fail at runtime
-					rdMatrixMetadata.getHasDictionray(), // has dictionary?
-					rdSampleSet.getSampleSetSize(),
-					rdMarkerSet.getMarkerSetSize(),
-					rdChrInfoSetMap.size(),
-					rdMatrixKey, // Orig matrixId 1
-					null); // Orig matrixId 2
-
-			resultMatrixId = wrMatrixHandler.getResultMatrixId();
-
-			NetcdfFile rdNcFile = NetcdfFile.open(rdMatrixMetadata.getPathToMatrix());
-			NetcdfFileWriteable wrNcFile = wrMatrixHandler.getNetCDFHandler();
-			try {
-				wrNcFile.create();
-			} catch (IOException ex) {
-				log.error("Failed creating file " + wrNcFile.getLocation(), ex);
-			}
-			//log.trace("Done creating netCDF handle in MatrixataExtractor: " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
-
-			//<editor-fold defaultstate="expanded" desc="METADATA WRITER">
-			// WRITING METADATA TO MATRIX
-
-			// SAMPLESET
-			ArrayChar.D2 samplesD2 = Utils.writeCollectionToD2ArrayChar(rdSampleSetMap.keySet(), cNetCDF.Strides.STRIDE_SAMPLE_NAME);
-
-			int[] sampleOrig = new int[]{0, 0};
-			try {
-				wrNcFile.write(cNetCDF.Variables.VAR_SAMPLESET, sampleOrig, samplesD2);
-			} catch (IOException ex) {
-				log.error("Failed writing file", ex);
-			} catch (InvalidRangeException ex) {
-				log.error(null, ex);
-			}
-			log.info("Done writing SampleSet to matrix");
-
-			// MARKERSET MARKERID
-			ArrayChar.D2 markersD2 = Utils.writeCollectionToD2ArrayChar(rdMarkerIdSetMap.keySet(), cNetCDF.Strides.STRIDE_MARKER_NAME);
-			int[] markersOrig = new int[]{0, 0};
-			try {
-				wrNcFile.write(cNetCDF.Variables.VAR_MARKERSET, markersOrig, markersD2);
-			} catch (IOException ex) {
-				log.error("Failed writing file", ex);
-			} catch (InvalidRangeException ex) {
-				log.error(null, ex);
-			}
-
-			// MARKERSET RSID
-			rdMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_RSID);
-			Map<MarkerKey, char[]> sortedMarkerRSIDs = org.gwaspi.global.Utils.createOrderedMap(rdMarkerIdSetMap, rdMarkerSet.getMarkerIdSetMapCharArray());
-			Utils.saveCharMapValueToWrMatrix(wrNcFile, sortedMarkerRSIDs.values(), cNetCDF.Variables.VAR_MARKERS_RSID, cNetCDF.Strides.STRIDE_MARKER_NAME);
-
-			// MARKERSET CHROMOSOME
-			rdMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
-			Map<MarkerKey, char[]> sortedMarkerCHRs = org.gwaspi.global.Utils.createOrderedMap(rdMarkerIdSetMap, rdMarkerSet.getMarkerIdSetMapCharArray());
-			Utils.saveCharMapValueToWrMatrix(wrNcFile, sortedMarkerCHRs.values(), cNetCDF.Variables.VAR_MARKERS_CHR, cNetCDF.Strides.STRIDE_CHR);
-
-			// Set of chromosomes found in matrix along with number of markersinfo
-			org.gwaspi.netCDF.operations.Utils.saveCharMapKeyToWrMatrix(wrNcFile, rdChrInfoSetMap, cNetCDF.Variables.VAR_CHR_IN_MATRIX, 8);
-			// Number of marker per chromosome & max pos for each chromosome
-			int[] columns = new int[]{0, 1, 2, 3};
-			org.gwaspi.netCDF.operations.Utils.saveIntMapD2ToWrMatrix(wrNcFile, rdChrInfoSetMap.values(), columns, cNetCDF.Variables.VAR_CHR_INFO);
-
-			// MARKERSET POSITION
-			rdMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_POS);
-			Map<MarkerKey, Integer> sortedMarkerPos = org.gwaspi.global.Utils.createOrderedMap(rdMarkerIdSetMap, rdMarkerSet.getMarkerIdSetMapInteger());
-			//Utils.saveCharMapValueToWrMatrix(wrNcFile, sortedMarkerPos, cNetCDF.Variables.VAR_MARKERS_POS, cNetCDF.Strides.STRIDE_POS);
-			Utils.saveIntMapD1ToWrMatrix(wrNcFile, sortedMarkerPos.values(), cNetCDF.Variables.VAR_MARKERS_POS);
-
-			// MARKERSET DICTIONARY ALLELES
-			rdMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_BASES_DICT);
-			Map<MarkerKey, char[]> sortedMarkerBasesDicts = org.gwaspi.global.Utils.createOrderedMap(rdMarkerIdSetMap, rdMarkerSet.getMarkerIdSetMapCharArray());
-			for (Map.Entry<MarkerKey, char[]> entry : sortedMarkerBasesDicts.entrySet()) {
-				MarkerKey markerKey = entry.getKey();
-				if (markerFlipHS.contains(markerKey)) {
-					String alleles = new String(entry.getValue());
-					alleles = flipDictionaryAlleles(alleles);
-					entry.setValue(alleles.toCharArray());
-				}
-			}
-			Utils.saveCharMapValueToWrMatrix(wrNcFile, sortedMarkerBasesDicts.values(), cNetCDF.Variables.VAR_MARKERS_BASES_DICT, cNetCDF.Strides.STRIDE_GT);
-
-			// GENOTYPE STRAND
-			rdMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_GT_STRAND);
-			Map<MarkerKey, char[]> sortedMarkerGTStrands = org.gwaspi.global.Utils.createOrderedMap(rdMarkerIdSetMap, rdMarkerSet.getMarkerIdSetMapCharArray());
-
-			for (Map.Entry<MarkerKey, char[]> entry : sortedMarkerGTStrands.entrySet()) {
-				MarkerKey markerKey = entry.getKey();
-				if (markerFlipHS.contains(markerKey)) {
-					String strand = new String(entry.getValue());
-					strand = flipStranding(strand);
-					entry.setValue(strand.toCharArray());
-				}
-			}
-			Utils.saveCharMapValueToWrMatrix(wrNcFile, sortedMarkerGTStrands.values(), cNetCDF.Variables.VAR_GT_STRAND, 3);
-			//</editor-fold>
-
-			//<editor-fold defaultstate="expanded" desc="GENOTYPES WRITER">
-			log.info(Text.All.processing);
-			int markerIndex = 0;
-			for (Map.Entry<MarkerKey, ?> entry : rdMarkerIdSetMap.entrySet()) {
-				MarkerKey markerKey = entry.getKey();
-				rdSampleSet.readAllSamplesGTsFromCurrentMarkerToMap(rdNcFile, rdSampleSetMap, markerIndex);
-
-				if (markerFlipHS.contains(markerKey)) {
-					for (Map.Entry<SampleKey, byte[]> sampleEntry : rdSampleSetMap.entrySet()) {
-						// we deal with references here, so we change the value
-						// in the map. no need to explicitly write it back.
-						byte[] gt = sampleEntry.getValue();
-						flipGenotypes(gt, gtEncoding);
-					}
-				}
-
-				// Write rdMarkerIdSetMap to A3 ArrayChar and save to wrMatrix
-				Utils.saveSingleMarkerGTsToMatrix(wrNcFile, rdSampleSetMap.values(), markerIndex);
-				if (markerIndex % 10000 == 0) {
-					log.info("Markers processed: {}" + markerIndex);
-				}
-				markerIndex++;
-			}
-			//</editor-fold>
-
-			// CLOSE THE FILE AND BY THIS, MAKE IT READ-ONLY
-			try {
-				// GENOTYPE ENCODING
-				ArrayChar.D2 guessedGTCodeAC = new ArrayChar.D2(1, 8);
-				Index index = guessedGTCodeAC.getIndex();
-				guessedGTCodeAC.setString(index.set(0, 0), rdMatrixMetadata.getGenotypeEncoding().toString());
-				int[] origin = new int[]{0, 0};
-				wrNcFile.write(cNetCDF.Variables.GLOB_GTENCODING, origin, guessedGTCodeAC);
-
-				descSB.append("\nGenotype encoding: ");
-				descSB.append(rdMatrixMetadata.getGenotypeEncoding());
-
-				MatrixMetadata resultMatrixMetadata = wrMatrixHandler.getResultMatrixMetadata();
-				resultMatrixMetadata.setDescription(descSB.toString());
-				MatricesList.updateMatrix(resultMatrixMetadata);
-
-				wrNcFile.close();
-			} catch (IOException ex) {
-				log.error("Failed creating file " + wrNcFile.getLocation(), ex);
-			}
-
-			org.gwaspi.global.Utils.sysoutCompleted("Genotype Flipping to new Matrix");
-		} catch (InvalidRangeException ex) {
-			log.error(null, ex);
 		} catch (IOException ex) {
-			log.error(null, ex);
+			problemDescription = ex.getMessage();
 		}
+
+		return problemDescription;
+	}
+
+	@Override
+	public int processMatrix() throws IOException {
+
+		int resultMatrixId = Integer.MIN_VALUE;
+
+		// simply copy&paste the sample infos
+		dataSetDestination.startLoadingSampleInfos(true);
+//		for (SampleInfo sampleInfo : dataSetSource.getSamplesInfosSource()) {
+//			dataSetDestination.addSampleInfo(sampleInfo);
+//		}
+		for (SampleKey sampleKey : dataSetSource.getSamplesKeysSource()) {
+			dataSetDestination.addSampleKey(sampleKey);
+		}
+		dataSetDestination.finishedLoadingSampleInfos();
+
+		// copy&paste the marker metadata aswell,
+		// but flipp dictionary-alleles and strand
+		// of the ones that are selected for flipping
+		dataSetDestination.startLoadingMarkerMetadatas(false);
+		Iterator<MarkerKey> markerKeysIt = dataSetSource.getMarkersKeysSource().iterator();
+		for (MarkerMetadata origMarkerMetadata : dataSetSource.getMarkersMetadatasSource()) {
+			MarkerKey markerKey = markerKeysIt.next();
+
+			MarkerMetadata newMarkerMetadata;
+			if (markersToFlip.contains(markerKey)) {
+				String alleles = flipDictionaryAlleles(origMarkerMetadata.getAlleles());
+				String strand = flipStranding(origMarkerMetadata.getStrand());
+
+				newMarkerMetadata = new MarkerMetadata(
+						origMarkerMetadata.getMarkerId(),
+						origMarkerMetadata.getRsId(),
+						origMarkerMetadata.getChr(),
+						origMarkerMetadata.getPos(),
+						alleles,
+						strand);
+			} else {
+				newMarkerMetadata = origMarkerMetadata;
+			}
+			dataSetDestination.addMarkerMetadata(newMarkerMetadata);
+		}
+		dataSetDestination.finishedLoadingMarkerMetadatas();
+
+		// simply copy&paste the chromosomes infos
+		dataSetDestination.startLoadingChromosomeMetadatas();
+		Iterator<ChromosomeInfo> chromosomesInfosIt = dataSetSource.getChromosomesInfosSource().iterator();
+		for (ChromosomeKey chromosomeKey : dataSetSource.getChromosomesKeysSource()) {
+			ChromosomeInfo chromosomeInfo = chromosomesInfosIt.next();
+			dataSetDestination.addChromosomeMetadata(chromosomeKey, chromosomeInfo);
+		}
+		dataSetDestination.finishedLoadingChromosomeMetadatas();
+
+		// WRITE GENOTYPES
+		dataSetDestination.startLoadingAlleles(false);
+		log.info(Text.All.processing);
+		int markerIndex = 0;
+		final GenotypeEncoding gtEncoding = dataSetSource.getMatrixMetadata().getGenotypeEncoding();
+		markerKeysIt = dataSetSource.getMarkersKeysSource().iterator();
+		for (GenotypesList markerGenotypes : dataSetSource.getMarkersGenotypesSource()) {
+			MarkerKey markerKey = markerKeysIt.next();
+			if (markersToFlip.contains(markerKey)) {
+				for (byte[] gt : markerGenotypes) {
+					// we deal with references here, so we change the value
+					// in the map. no need to explicitly write it back.
+					flipGenotypes(gt, gtEncoding);
+				}
+			}
+
+			// Write rdMarkerIdSetMap to A3 ArrayChar and save to wrMatrix
+			dataSetDestination.addMarkerGTAlleles(markerIndex, markerGenotypes);
+			markerIndex++;
+			if ((markerIndex == 1) || ((markerIndex % 10000) == 0)) {
+				log.info("Markers processed: {} / {}", markerIndex, dataSetSource.getMarkersGenotypesSource().size());
+			}
+		}
+		dataSetDestination.finishedLoadingAlleles();
+
+		org.gwaspi.global.Utils.sysoutCompleted("Genotype Flipping to new Matrix");
 
 		return resultMatrixId;
 	}
@@ -312,30 +217,30 @@ public class MatrixGenotypesFlipper {
 	private static void flipGenotypes(byte[] gt, GenotypeEncoding gtEncoding) {
 		byte[] result = gt;
 
-		if (gtEncoding.equals(cNetCDF.Defaults.GenotypeEncoding.ACGT0)) {
+		if (gtEncoding.equals(GenotypeEncoding.ACGT0)) {
 			for (int i = 0; i < gt.length; i++) {
-				if (gt[i] == cNetCDF.Defaults.AlleleBytes.A) {
-					result[i] = cNetCDF.Defaults.AlleleBytes.T;
-				} else if (gt[i] == cNetCDF.Defaults.AlleleBytes.C) {
-					result[i] = cNetCDF.Defaults.AlleleBytes.G;
-				} else if (gt[i] == cNetCDF.Defaults.AlleleBytes.G) {
-					result[i] = cNetCDF.Defaults.AlleleBytes.C;
-				} else if (gt[i] == cNetCDF.Defaults.AlleleBytes.T) {
-					result[i] = cNetCDF.Defaults.AlleleBytes.A;
+				if (gt[i] == AlleleBytes.A) {
+					result[i] = AlleleBytes.T;
+				} else if (gt[i] == AlleleBytes.C) {
+					result[i] = AlleleBytes.G;
+				} else if (gt[i] == AlleleBytes.G) {
+					result[i] = AlleleBytes.C;
+				} else if (gt[i] == AlleleBytes.T) {
+					result[i] = AlleleBytes.A;
 				}
 			}
 		}
 
-		if (gtEncoding.equals(cNetCDF.Defaults.GenotypeEncoding.O1234)) {
+		if (gtEncoding.equals(GenotypeEncoding.O1234)) {
 			for (int i = 0; i < gt.length; i++) {
-				if (gt[i] == cNetCDF.Defaults.AlleleBytes._1) {
-					result[i] = cNetCDF.Defaults.AlleleBytes._4;
-				} else if (gt[i] == cNetCDF.Defaults.AlleleBytes._2) {
-					result[i] = cNetCDF.Defaults.AlleleBytes._3;
-				} else if (gt[i] == cNetCDF.Defaults.AlleleBytes._3) {
-					result[i] = cNetCDF.Defaults.AlleleBytes._2;
-				} else if (gt[i] == cNetCDF.Defaults.AlleleBytes._4) {
-					result[i] = cNetCDF.Defaults.AlleleBytes._1;
+				if (gt[i] == AlleleBytes._1) {
+					result[i] = AlleleBytes._4;
+				} else if (gt[i] == AlleleBytes._2) {
+					result[i] = AlleleBytes._3;
+				} else if (gt[i] == AlleleBytes._3) {
+					result[i] = AlleleBytes._2;
+				} else if (gt[i] == AlleleBytes._4) {
+					result[i] = AlleleBytes._1;
 				}
 			}
 		}

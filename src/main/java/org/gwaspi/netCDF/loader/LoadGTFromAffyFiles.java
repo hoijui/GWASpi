@@ -31,11 +31,8 @@ import org.gwaspi.constants.cImport.ImportFormat;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
-import org.gwaspi.global.Text;
-import org.gwaspi.global.TypeConverter;
 import org.gwaspi.model.DataSet;
 import org.gwaspi.model.MarkerKey;
-import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.StudyKey;
 import org.slf4j.Logger;
@@ -58,7 +55,7 @@ public class LoadGTFromAffyFiles extends AbstractLoadGTFromFiles implements Geno
 	}
 
 	public LoadGTFromAffyFiles() {
-		super(ImportFormat.Affymetrix_GenomeWide6, StrandType.PLSMIN, true, cNetCDF.Variables.VAR_MARKERS_BASES_DICT);
+		super(new MetadataLoaderAffy(), ImportFormat.Affymetrix_GenomeWide6, StrandType.PLSMIN, true);
 	}
 
 	@Override
@@ -83,28 +80,9 @@ public class LoadGTFromAffyFiles extends AbstractLoadGTFromFiles implements Geno
 	}
 
 	@Override
-	protected MetadataLoader createMetaDataLoader(GenotypesLoadDescription loadDescription) {
-
-		return new MetadataLoaderAffy(
-				loadDescription.getAnnotationFilePath(),
-				loadDescription.getFormat(),
-				loadDescription.getStudyKey());
-	}
-
-	@Override
-	protected TypeConverter<MarkerMetadata, String> getBaseDictPropertyExtractor() {
-		return MarkerMetadata.TO_ALLELES;
-	}
-
-	@Override
-	protected boolean isHasStrandInfo() {
-		return true;
-	}
-
-	@Override
 	protected void loadGenotypes(
 			GenotypesLoadDescription loadDescription,
-			SamplesReceiver samplesReceiver)
+			DataSetDestination samplesReceiver)
 			throws Exception
 	{
 		// HACK
@@ -146,10 +124,9 @@ public class LoadGTFromAffyFiles extends AbstractLoadGTFromFiles implements Geno
 					alleles,
 					sampleKeys);
 
-			if (i == 0) {
-				log.info(Text.All.processing);
-			} else if (i % 10 == 0) {
-				log.info("Done processing sample Nº" + i);
+			if ((i == 1) || ((i+1) % 100 == 0)) {
+				log.info("Done processing sample {} / {}", i,
+						sampleKeys.size());
 			}
 		}
 	}
@@ -159,7 +136,7 @@ public class LoadGTFromAffyFiles extends AbstractLoadGTFromFiles implements Geno
 	 */
 	private void loadIndividualFiles(
 			GenotypesLoadDescription loadDescription,
-			SamplesReceiver samplesReceiver,
+			DataSetDestination samplesReceiver,
 			File file,
 			Map<MarkerKey, byte[]> sortedAlleles,
 			List<SampleKey> samples)
@@ -212,9 +189,7 @@ public class LoadGTFromAffyFiles extends AbstractLoadGTFromFiles implements Geno
 			byte[] value = tempMarkerSet.containsKey(key) ? tempMarkerSet.get(key) : cNetCDF.Defaults.DEFAULT_GT;
 			sortedAlleles.put(key, value);
 		}
-		if (tempMarkerSet != null) {
-			tempMarkerSet.clear();
-		}
+		tempMarkerSet.clear();
 
 		GenotypeEncoding guessedGTCode = getGuessedGTCode();
 		if (guessedGTCode.equals(GenotypeEncoding.UNKNOWN)

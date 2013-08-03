@@ -27,7 +27,6 @@ import org.gwaspi.constants.cImport;
 import org.gwaspi.constants.cImport.Annotation.Beagle_Standard;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
-import org.gwaspi.global.Text;
 import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.StudyKey;
 import org.slf4j.Logger;
@@ -38,28 +37,33 @@ public class MetadataLoaderBeagle implements MetadataLoader {
 	private final Logger log
 			= LoggerFactory.getLogger(MetadataLoaderBeagle.class);
 
-	private final String markerFilePath;
-	private final String chr;
-	private final StrandType strand;
-	private final StudyKey studyKey;
-
-	public MetadataLoaderBeagle(String mapPath, String chr, StrandType strand, StudyKey studyKey) {
-
-		this.markerFilePath = mapPath;
-		this.chr = chr;
-		this.strand = strand;
-		this.studyKey = studyKey;
+	@Override
+	public boolean isHasStrandInfo() {
+		return false;
 	}
 
 	@Override
-	public void loadMarkers(SamplesReceiver samplesReceiver) throws Exception {
+	public StrandType getFixedStrandFlag() {
+		return null;
+	}
+
+	@Override
+	public void loadMarkers(DataSetDestination samplesReceiver, GenotypesLoadDescription loadDescription) throws Exception {
+		loadMarkers(
+				samplesReceiver,
+				loadDescription.getAnnotationFilePath(),
+				loadDescription.getChromosome(),
+				loadDescription.getStudyKey());
+	}
+
+	private void loadMarkers(DataSetDestination samplesReceiver, String markerFilePath, String chr, StudyKey studyKey) throws Exception {
 
 		String startTime = org.gwaspi.global.Utils.getMediumDateTimeAsString();
 
-		SortedMap<String, String> tempTM = parseAndSortMarkerFile(); // chr, markerId, genetic distance, position
+		SortedMap<String, String> tempTM = parseAndSortMarkerFile(markerFilePath, chr); // chr, markerId, genetic distance, position
 
 		org.gwaspi.global.Utils.sysoutStart("initilaizing Marker info");
-		log.info(Text.All.processing);
+		log.info("parse raw data into marker metadata objects");
 
 		for (Map.Entry<String, String> entry : tempTM.entrySet()) {
 			// chr;pos;markerId
@@ -89,7 +93,7 @@ public class MetadataLoaderBeagle implements MetadataLoader {
 		MetadataLoaderPlink.logAsWhole(startTime, markerFilePath, description, studyKey.getId());
 	}
 
-	private SortedMap<String, String> parseAndSortMarkerFile() throws IOException {
+	private SortedMap<String, String> parseAndSortMarkerFile(String markerFilePath, String chr) throws IOException {
 		FileReader fr = new FileReader(markerFilePath);
 		BufferedReader inputMapBR = new BufferedReader(fr);
 		SortedMap<String, String> sortedMetadataTM = new TreeMap<String, String>(new ComparatorChrAutPosMarkerIdAsc());
@@ -121,13 +125,11 @@ public class MetadataLoaderBeagle implements MetadataLoader {
 
 			count++;
 
-			if (count == 1) {
-				log.info(Text.All.processing);
-			} else if (count % 100000 == 0) {
-				log.info("Parsed annotation lines: {}", count);
+			if ((count == 1) || (count % 100000 == 0)) {
+				log.info("read and pre-parse marker metadat from file(s); lines: {}", count);
 			}
 		}
-		log.info("Parsed annotation lines: {}", count);
+		log.info("read and pre-parse marker metadat from file(s); lines: {}", count);
 
 		inputMapBR.close();
 

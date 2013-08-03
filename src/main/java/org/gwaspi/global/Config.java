@@ -31,6 +31,7 @@ import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 import javax.swing.JOptionPane;
 import javax.xml.parsers.ParserConfigurationException;
+import org.gwaspi.cli.ScriptUtils;
 import org.gwaspi.constants.cGlobal;
 import org.gwaspi.gui.StartGWASpi;
 import org.gwaspi.gui.reports.SampleQAHetzygPlotZoom;
@@ -211,7 +212,7 @@ public class Config {
 					if (scriptFile != null) {
 						// Use path from script file
 						// 1st line contains data path
-						File dataDir = new File(org.gwaspi.cli.Utils.readDataDirFromScript(scriptFile));
+						File dataDir = new File(ScriptUtils.readDataDirFromScript(scriptFile));
 						log.info("Using database path: {}", dataDir.getAbsolutePath());
 						if (dataDir.exists()) {
 							// assume the existing dir contains a database

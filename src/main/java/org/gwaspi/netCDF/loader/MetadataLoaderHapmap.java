@@ -18,6 +18,7 @@
 package org.gwaspi.netCDF.loader;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Map;
@@ -27,7 +28,7 @@ import org.gwaspi.constants.cImport;
 import org.gwaspi.constants.cImport.Annotation.HapmapGT_Standard;
 import org.gwaspi.constants.cImport.ImportFormat;
 import org.gwaspi.constants.cNetCDF;
-import org.gwaspi.global.Text;
+import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
 import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.StudyKey;
 import org.slf4j.Logger;
@@ -42,26 +43,41 @@ public class MetadataLoaderHapmap implements MetadataLoader {
 	private final Logger log
 			= LoggerFactory.getLogger(MetadataLoaderHapmap.class);
 
-	private final String hapmapPath;
-	private final StudyKey studyKey;
-	private final ImportFormat format;
-
-	public MetadataLoaderHapmap(String hapmapPath, ImportFormat format, StudyKey studyKey) {
-
-		this.hapmapPath = hapmapPath;
-		this.studyKey = studyKey;
-		this.format = format;
+	public MetadataLoaderHapmap() {
 	}
 
 	@Override
-	public void loadMarkers(SamplesReceiver samplesReceiver) throws Exception {
+	public boolean isHasStrandInfo() {
+		return true;
+	}
+
+	@Override
+	public StrandType getFixedStrandFlag() {
+		return null;
+	}
+
+	@Override
+	public void loadMarkers(DataSetDestination samplesReceiver, GenotypesLoadDescription loadDescription) throws Exception {
+
+		File[] gtFilesToImport = LoadGTFromHapmapFiles.extractGTFilesToImport(loadDescription);
+		for (int i = 0; i < gtFilesToImport.length; i++) {
+			loadMarkers(
+					samplesReceiver,
+					gtFilesToImport[i].getPath(),
+					loadDescription.getFormat(),
+					loadDescription.getStudyKey());
+		}
+	}
+
+	private void loadMarkers(DataSetDestination samplesReceiver, String hapmapPath, ImportFormat format, StudyKey studyKey) throws Exception {
 
 		String startTime = org.gwaspi.global.Utils.getMediumDateTimeAsString();
 
-		SortedMap<String, String> tempTM = parseAnnotationBRFile(); // rsId, alleles [A/T], chr, pos, strand, genome_build, center, protLSID, assayLSID, panelLSID, QC_code, ensue GTs by SampleId
+		// rsId, alleles [A/T], chr, pos, strand, genome_build, center, protLSID, assayLSID, panelLSID, QC_code, ensue GTs by SampleId
+		SortedMap<String, String> tempTM = parseAnnotationBRFile(hapmapPath);
 
 		org.gwaspi.global.Utils.sysoutStart("initilaizing Marker info");
-		log.info(Text.All.processing);
+		log.info("parse raw data into marker metadata objects");
 
 		for (Map.Entry<String, String> entry : tempTM.entrySet()) {
 			String[] keyValues = entry.getKey().split(cNetCDF.Defaults.TMP_SEPARATOR); // chr;pos;markerId
@@ -89,7 +105,7 @@ public class MetadataLoaderHapmap implements MetadataLoader {
 		MetadataLoaderPlink.logAsWhole(startTime, hapmapPath, description, studyKey.getId());
 	}
 
-	private SortedMap<String, String> parseAnnotationBRFile() throws IOException {
+	private SortedMap<String, String> parseAnnotationBRFile(String hapmapPath) throws IOException {
 
 		FileReader fr = new FileReader(hapmapPath);
 		BufferedReader inputAnnotationBr = new BufferedReader(fr);
@@ -128,13 +144,11 @@ public class MetadataLoaderHapmap implements MetadataLoader {
 
 			count++;
 
-			if (count == 1) {
-				log.info(Text.All.processing);
-			} else if (count % 100000 == 0) {
-				log.info("Parsed annotation lines: {}", count);
+			if ((count == 1) || (count % 100000 == 0)) {
+				log.info("read and pre-parse marker metadat from file(s); lines: {}", count);
 			}
 		}
-		log.info("Parsed annotation lines: {}", count);
+		log.info("read and pre-parse marker metadat from file(s); lines: {}", count);
 
 		inputAnnotationBr.close();
 

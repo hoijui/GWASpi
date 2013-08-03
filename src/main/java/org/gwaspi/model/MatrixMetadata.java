@@ -190,7 +190,7 @@ public class MatrixMetadata implements Serializable {
 	}
 
 	@Transient
-	public boolean getHasDictionray() {
+	public boolean getHasDictionray() { // FIXME spelling mistake
 		return hasDictionray;
 	}
 

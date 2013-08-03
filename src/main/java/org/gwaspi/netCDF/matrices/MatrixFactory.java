@@ -38,10 +38,10 @@ import ucar.nc2.NetcdfFileWriteable;
 
 public class MatrixFactory {
 
-	private NetcdfFileWriteable netCDFHandler = null;
-	private String resultMatrixName = "";
-	private MatrixKey resultMatrixKey = null;
-	private MatrixMetadata matrixMetaData = null;
+	private final NetcdfFileWriteable netCDFHandler;
+	private final String resultMatrixName;
+	private final MatrixKey resultMatrixKey;
+	private final MatrixMetadata matrixMetaData;
 
 	private MatrixFactory(
 			ImportFormat technology,
@@ -92,6 +92,8 @@ public class MatrixFactory {
 			matrixMetaData = MatricesList.getMatrixMetadataByNetCDFname(resultMatrixName);
 
 			resultMatrixKey = MatrixKey.valueOf(matrixMetaData);
+		} else {
+			throw new IllegalArgumentException();
 		}
 	}
 
@@ -304,10 +306,6 @@ public class MatrixFactory {
 		ncfile.addVariable(cNetCDF.Variables.GLOB_GTENCODING, DataType.CHAR, gtEncodingSpace);
 
 		return ncfile;
-	}
-
-	public MatrixMetadata getMatrixMetaData() {
-		return matrixMetaData;
 	}
 
 	public static String generateMatrixNetCDFNameByDate() {

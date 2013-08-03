@@ -27,9 +27,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import org.gwaspi.constants.cExport;
-import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
+import org.gwaspi.model.DataSetSource;
+import org.gwaspi.model.GenotypesList;
 import org.gwaspi.model.MarkerKey;
+import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.OperationKey;
@@ -37,12 +39,9 @@ import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleKey;
-import org.gwaspi.netCDF.markers.MarkerSet;
 import org.gwaspi.reports.GatherQAMarkersData;
-import org.gwaspi.samples.SampleSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.nc2.NetcdfFile;
 
 public class PlinkBinaryFormatter implements Formatter {
 
@@ -73,9 +72,7 @@ public class PlinkBinaryFormatter implements Formatter {
 	public boolean export(
 			String exportPath,
 			MatrixMetadata rdMatrixMetadata,
-			MarkerSet rdMarkerSet,
-			SampleSet rdSampleSet,
-			Map<SampleKey, byte[]> rdSampleSetMap,
+			DataSetSource dataSetSource,
 			String phenotype)
 			throws IOException
 	{
@@ -85,84 +82,75 @@ public class PlinkBinaryFormatter implements Formatter {
 		}
 
 		boolean result = false;
-		NetcdfFile rdNcFile = NetcdfFile.open(rdMatrixMetadata.getPathToMatrix());
 		String sep = cExport.separator_PLINK;
-
-		//<editor-fold defaultstate="expanded" desc="BIM FILE">
-		String filePath = exportDir.getPath() + "/" + rdMatrixMetadata.getMatrixFriendlyName() + ".bim";
-		FileWriter mapFW = new FileWriter(filePath);
-		BufferedWriter mapBW = new BufferedWriter(mapFW);
-
-		// BIM files
-		//     chromosome (1-22, X(23), Y(24), XY(25), MT(26) or 0 if unplaced)
-		//     rs# or snp identifier
-		//     Genetic distance (morgans)
-		//     Base-pair position (bp units)
-		//     Allele 1
-		//     Allele 2
-
-		// PURGE MARKERSET
-		rdMarkerSet.initFullMarkerIdSetMap();
-		rdMarkerSet.fillWith(new char[0]);
-
-		// MARKERSET CHROMOSOME
-		rdMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
-
-		// MARKERSET RSID
-		rdMarkerSet.appendVariableToMarkerSetMapValue(cNetCDF.Variables.VAR_MARKERS_RSID, sep);
-
-		// DEFAULT GENETIC DISTANCE = 0
-		for (Map.Entry<?, char[]> entry : rdMarkerSet.getMarkerIdSetMapCharArray().entrySet()) {
-			StringBuilder value = new StringBuilder(new String(entry.getValue()));
-			value.append(sep);
-			value.append("0");
-			entry.setValue(value.toString().toCharArray());
-		}
-
-		// MARKERSET POSITION
-		rdMarkerSet.appendVariableToMarkerSetMapValue(cNetCDF.Variables.VAR_MARKERS_POS, sep);
 
 		// ALLELES
 		List<OperationMetadata> operations = OperationsList.getOperationsList(MatrixKey.valueOf(rdMatrixMetadata));
 		OperationKey markersQAOpKey = OperationsList.getIdOfLastOperationTypeOccurance(operations, OPType.MARKER_QA);
 
-		Map<MarkerKey, char[]> minorAllelesMap = GatherQAMarkersData.loadMarkerQAMinorAlleles(markersQAOpKey);
-		Map<MarkerKey, char[]> majorAllelesMap = GatherQAMarkersData.loadMarkerQAMajorAlleles(markersQAOpKey);
+		Map<MarkerKey, byte[]> minorAllelesMap = GatherQAMarkersData.loadMarkerQAMinorAlleles(markersQAOpKey);
+		Map<MarkerKey, byte[]> majorAllelesMap = GatherQAMarkersData.loadMarkerQAMajorAlleles(markersQAOpKey);
 		Map<MarkerKey, Double> minorAlleleFreqMap = GatherQAMarkersData.loadMarkerQAMinorAlleleFrequency(markersQAOpKey);
-		for (Map.Entry<MarkerKey, char[]> entry : rdMarkerSet.getMarkerIdSetMapCharArray().entrySet()) {
-			MarkerKey key = entry.getKey();
-			String minorAllele = new String(minorAllelesMap.get(key));
-			String majorAllele = new String(majorAllelesMap.get(key));
-			Double minAlleleFreq = minorAlleleFreqMap.get(key);
 
-			if (minAlleleFreq == 0.5) { // IF BOTH ALLELES ARE EQUALLY COMMON, USE ALPHABETICAL ORDER
-				String tmpMinorAllele = majorAllele;
-				majorAllele = minorAllele;
-				minorAllele = tmpMinorAllele;
+		//<editor-fold defaultstate="expanded" desc="BIM FILE">
+		File bimFile = new File(exportDir.getPath(),
+				rdMatrixMetadata.getMatrixFriendlyName() + ".bim");
+		BufferedWriter bimBW = null;
+		try {
+			FileWriter mapFW = new FileWriter(bimFile);
+			bimBW = new BufferedWriter(mapFW);
 
-				majorAllelesMap.put(key, majorAllele.toCharArray());
-				minorAllelesMap.put(key, minorAllele.toCharArray());
+			// BIM files
+			//     chromosome (1-22, X(23), Y(24), XY(25), MT(26) or 0 if unplaced)
+			//     rs# or snp identifier
+			//     Genetic distance (morgans)
+			//     Base-pair position (bp units)
+			//     Allele 1
+			//     Allele 2
+
+			for (MarkerMetadata curMarkerMetadata : dataSetSource.getMarkersMetadatasSource()) {
+				bimBW.write(curMarkerMetadata.getChr());
+				bimBW.write(sep);
+				bimBW.write(curMarkerMetadata.getRsId()); // XXX Maybe has to be marker-id instead?
+				bimBW.write(sep);
+				bimBW.write('0'); // DEFAULT GENETIC DISTANCE
+				bimBW.write(sep);
+				bimBW.write(Integer.toString(curMarkerMetadata.getPos())); // NOTE This conversion is required, because Writer#write(int) actually writes a char, not the int value.
+
+				// HACK from here on, make nicer! (and unuse NetCDF)
+				MarkerKey key = MarkerKey.valueOf(curMarkerMetadata);
+				String minorAllele = new String(minorAllelesMap.get(key));
+				String majorAllele = new String(majorAllelesMap.get(key));
+				Double minAlleleFreq = minorAlleleFreqMap.get(key);
+				if (minAlleleFreq == 0.5 && majorAllele.compareTo(majorAllele) > 0) { // IF BOTH ALLELES ARE EQUALLY COMMON, USE ALPHABETICAL ORDER
+					String tmpMinorAllele = majorAllele;
+					majorAllele = minorAllele;
+					minorAllele = tmpMinorAllele;
+
+					majorAllelesMap.put(key, majorAllele.getBytes());
+					minorAllelesMap.put(key, minorAllele.getBytes());
+				}
+				bimBW.write(sep);
+				bimBW.write(minorAllele);
+				bimBW.write(sep);
+				bimBW.write(majorAllele);
+
+				bimBW.write('\n');
 			}
 
-			char[] values = entry.getValue();
-			mapBW.append(new String(values));
-			mapBW.append(sep);
-			mapBW.append(minorAllele);
-			mapBW.append(sep);
-			mapBW.append(majorAllele);
-			mapBW.append("\n");
+			org.gwaspi.global.Utils.sysoutCompleted("Completed exporting BIM file to " + bimFile.getAbsolutePath());
+		} finally {
+			if (bimBW != null) {
+				bimBW.close();
+			}
 		}
-
-		mapBW.close();
-		mapFW.close();
-		org.gwaspi.global.Utils.sysoutCompleted("Completed exporting BIM file to " + filePath);
 		//</editor-fold>
 
 		//<editor-fold defaultstate="expanded" desc="BED FILE">
 		// THIS SHOULD BE MULTIPLE OF SAMPLE SET LENGTH
-		int nbOfSamples = rdSampleSet.getSampleSetSize();
+		int nbOfSamples = dataSetSource.getSamplesKeysSource().size();
 		int bytesPerSampleSet = ((int) Math.ceil((double) nbOfSamples / 8)) * 2;
-		int nbOfMarkers = rdMarkerSet.getMarkerSetSize();
+		int nbOfMarkers = dataSetSource.getMarkersKeysSource().size();
 		int nbRowsPerChunk = Math.round((float) org.gwaspi.gui.StartGWASpi.maxProcessMarkers / nbOfSamples);
 		if (nbRowsPerChunk > nbOfMarkers) {
 			nbRowsPerChunk = nbOfMarkers;
@@ -170,128 +158,135 @@ public class PlinkBinaryFormatter implements Formatter {
 		int byteChunkSize = bytesPerSampleSet * nbRowsPerChunk;
 
 		// Create an output stream to the file.
-		filePath = exportDir.getPath() + "/" + rdMatrixMetadata.getMatrixFriendlyName() + ".bed";
-		File bedFW = new File(filePath);
-		FileOutputStream file_output = new FileOutputStream(bedFW);
-		DataOutputStream data_out = new DataOutputStream(file_output);
+		File bedFile = new File(exportDir.getPath(),
+				rdMatrixMetadata.getMatrixFriendlyName() + ".bed");
+		DataOutputStream bedBW = null;
+		try {
+			FileOutputStream bedFW = new FileOutputStream(bedFile);
+			bedBW = new DataOutputStream(bedFW);
 
-//          |----magic number---|  |---mode--|  |----------genotype data-----------|
-//          01101100 00011011   00000001   11011100 00001111 11100111
-//                                              (SNP-major)
+//	          |----magic number---|  |---mode--|  |----------genotype data-----------|
+//	          01101100 00011011   00000001   11011100 00001111 11100111
+//	                                              (SNP-major)
 
-		data_out.writeByte(108); // TODO document magic number
-		data_out.writeByte(27); // TODO document magic number
-		data_out.writeByte(1); // mode SNP-major
+			bedBW.writeByte(108); // TODO document magic number
+			bedBW.writeByte(27); // TODO document magic number
+			bedBW.writeByte(1); // mode SNP-major
 
-		int markerNb = 0;
-		int byteCount = 0;
-		byte[] wrBytes = new byte[byteChunkSize];
-		// ITERATE THROUGH ALL MARKERS, ONE SAMPLESET AT A TIME
-		for (MarkerKey markerKey : rdMarkerSet.getMarkerKeys()) {
-			String tmpMinorAllele = new String(minorAllelesMap.get(markerKey));
-			String tmpMajorAllele = new String(majorAllelesMap.get(markerKey));
+			int markerNb = 0;
+			int byteCount = 0;
+			byte[] wrBytes = new byte[byteChunkSize];
+			// ITERATE THROUGH ALL MARKERS, ONE SAMPLESET AT A TIME
+			Iterator<GenotypesList> markersGenotypesIt = dataSetSource.getMarkersGenotypesSource().iterator();
+			for (MarkerKey markerKey : dataSetSource.getMarkersKeysSource()) {
+				String tmpMinorAllele = new String(minorAllelesMap.get(markerKey));
+				String tmpMajorAllele = new String(majorAllelesMap.get(markerKey));
 
-			// GET SAMPLESET FOR CURRENT MARKER
-			rdSampleSet.readAllSamplesGTsFromCurrentMarkerToMap(rdNcFile, rdSampleSetMap, markerNb);
+				for (Iterator<byte[]> rdSampleGts = markersGenotypesIt.next().iterator(); rdSampleGts.hasNext();) {
+					// ONE BYTE AT A TIME (4 SAMPLES)
+					StringBuilder tetraGTs = new StringBuilder("");
+					for (int i = 0; i < 4; i++) {
+						if (rdSampleGts.hasNext()) {
+							byte[] tempGT = rdSampleGts.next();
+							byte[] translatedByte = translateTo00011011Byte(tempGT, tmpMinorAllele, tmpMajorAllele);
+							tetraGTs.insert(0, translatedByte[0]); // REVERSE ORDER, AS PER PLINK SPECS http://pngu.mgh.harvard.edu/~purcell/plink/binary.shtml
+							tetraGTs.insert(0, translatedByte[1]);
+						}
+					}
 
-			for (Iterator<byte[]> rdSampleGts = rdSampleSetMap.values().iterator(); rdSampleGts.hasNext();) {
-				// ONE BYTE AT A TIME (4 SAMPLES)
-				StringBuilder tetraGTs = new StringBuilder("");
-				for (int i = 0; i < 4; i++) {
-					if (rdSampleGts.hasNext()) {
-						byte[] tempGT = rdSampleGts.next();
-						byte[] translatedByte = translateTo00011011Byte(tempGT, tmpMinorAllele, tmpMajorAllele);
-						tetraGTs.insert(0, translatedByte[0]); // REVERSE ORDER, AS PER PLINK SPECS http://pngu.mgh.harvard.edu/~purcell/plink/binary.shtml
-						tetraGTs.insert(0, translatedByte[1]);
+					int number = Integer.parseInt(tetraGTs.toString(), 2);
+					byte[] tetraGT = new byte[] {(byte) number};
+
+					System.arraycopy(tetraGT,
+							0,
+							wrBytes,
+							byteCount,
+							1);
+					byteCount++;
+
+					if (byteCount == byteChunkSize) {
+						// WRITE TO FILE
+						bedBW.write(wrBytes, 0, byteChunkSize);
+
+						// INIT NEW CHUNK
+						wrBytes = new byte[byteChunkSize];
+						byteCount = 0;
 					}
 				}
 
-				int number = Integer.parseInt(tetraGTs.toString(), 2);
-				byte[] tetraGT = new byte[] {(byte) number};
-
-				System.arraycopy(tetraGT,
-						0,
-						wrBytes,
-						byteCount,
-						1);
-				byteCount++;
-
-				if (byteCount == byteChunkSize) {
-					// WRITE TO FILE
-					data_out.write(wrBytes, 0, byteChunkSize);
-
-					// INIT NEW CHUNK
-					wrBytes = new byte[byteChunkSize];
-					byteCount = 0;
-				}
+				markerNb++;
 			}
 
-			markerNb++;
+			// WRITE LAST BITES TO FILE
+			bedBW.write(wrBytes, 0, byteCount);
+
+			org.gwaspi.global.Utils.sysoutCompleted("Completed exporting BED file to " + bedFile.getAbsolutePath());
+		} finally {
+			if (bedBW != null) {
+				bedBW.close();
+			}
 		}
-
-		// WRITE LAST BITES TO FILE
-		data_out.write(wrBytes, 0, byteCount);
-
-		// Close file when finished with it..
-		data_out.close();
-
-		org.gwaspi.global.Utils.sysoutCompleted("Completed exporting BED file to " + filePath);
 		//</editor-fold>
 
 		//<editor-fold defaultstate="expanded" desc="FAM FILE">
-		filePath = exportDir.getPath() + "/" + rdMatrixMetadata.getMatrixFriendlyName() + ".fam";
-		FileWriter tfamFW = new FileWriter(filePath);
-		BufferedWriter tfamBW = new BufferedWriter(tfamFW);
+		File famFile = new File(exportDir.getPath(),
+				rdMatrixMetadata.getMatrixFriendlyName() + ".fam");
+		BufferedWriter tfamBW = null;
+		try {
+			FileWriter tfamFW = new FileWriter(famFile);
+			tfamBW = new BufferedWriter(tfamFW);
 
-		// Iterate through all samples
-		int sampleNb = 0;
-		for (SampleKey sampleKey : rdSampleSetMap.keySet()) {
-			SampleInfo sampleInfo = Utils.getCurrentSampleFormattedInfo(sampleKey);
+			// Iterate through all samples
+			int sampleNb = 0;
+			for (SampleKey sampleKey : dataSetSource.getSamplesKeysSource()) {
+				SampleInfo sampleInfo = Utils.getCurrentSampleFormattedInfo(sampleKey);
 
-			String familyId = sampleInfo.getFamilyId();
-			String fatherId = sampleInfo.getFatherId();
-			String motherId = sampleInfo.getMotherId();
-			String sex = sampleInfo.getSexStr();
-			String affectionOrExpPhenotype;
-			if (eigensoft) {
-				affectionOrExpPhenotype = sampleInfo.getField(phenotype).toString();
-			} else {
-				affectionOrExpPhenotype = sampleInfo.getAffectionStr();
+				String familyId = sampleInfo.getFamilyId();
+				String fatherId = sampleInfo.getFatherId();
+				String motherId = sampleInfo.getMotherId();
+				String sex = sampleInfo.getSexStr();
+				String affectionOrExpPhenotype;
+				if (eigensoft) {
+					affectionOrExpPhenotype = sampleInfo.getField(phenotype).toString();
+				} else {
+					affectionOrExpPhenotype = sampleInfo.getAffectionStr();
+				}
+
+				// FAM files
+				// Family ID
+				// Individual ID
+				// Paternal ID
+				// Maternal ID
+				// Sex (1=male; 2=female; other=unknown)
+				// Affection (PLink Binary) / Phenotype (Eigensoft)
+
+				tfamBW.append(familyId);
+				tfamBW.append(sep);
+				tfamBW.append(sampleKey.getSampleId());
+				tfamBW.append(sep);
+				tfamBW.append(fatherId);
+				tfamBW.append(sep);
+				tfamBW.append(motherId);
+				tfamBW.append(sep);
+				tfamBW.append(sex);
+				tfamBW.append(sep);
+				tfamBW.append(affectionOrExpPhenotype);
+
+				tfamBW.append("\n");
+				tfamBW.flush();
+
+				sampleNb++;
+				if (sampleNb % 100 == 0) {
+					log.info("Samples exported: {}", sampleNb);
+				}
 			}
 
-			// FAM files
-			// Family ID
-			// Individual ID
-			// Paternal ID
-			// Maternal ID
-			// Sex (1=male; 2=female; other=unknown)
-			// Affection (PLink Binary) / Phenotype (Eigensoft)
-
-			StringBuilder line = new StringBuilder();
-			line.append(familyId);
-			line.append(sep);
-			line.append(sampleKey.getSampleId());
-			line.append(sep);
-			line.append(fatherId);
-			line.append(sep);
-			line.append(motherId);
-			line.append(sep);
-			line.append(sex);
-			line.append(sep);
-			line.append(affectionOrExpPhenotype);
-
-			tfamBW.append(line);
-			tfamBW.append("\n");
-			tfamBW.flush();
-
-			sampleNb++;
-			if (sampleNb % 100 == 0) {
-				log.info("Samples exported: {}", sampleNb);
+			org.gwaspi.global.Utils.sysoutCompleted("Completed exporting FAM file to " + famFile.getAbsolutePath());
+		} finally {
+			if (tfamBW != null) {
+				tfamBW.close();
 			}
 		}
-		tfamBW.close();
-		tfamFW.close();
-		org.gwaspi.global.Utils.sysoutCompleted("Completed exporting FAM file to " + filePath);
 		//</editor-fold>
 
 		return result;

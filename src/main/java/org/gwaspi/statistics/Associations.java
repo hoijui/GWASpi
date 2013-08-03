@@ -180,14 +180,14 @@ public class Associations {
 		int obsaaColTot = obsCaseaa + obsCtrlaa;
 		int totGT = obsCaseRowTot + obsCtrlRowTot;
 
-		BigInteger rowBang = org.gwaspi.statistics.Utils.factorial(BigInteger.valueOf(obsCaseRowTot)).multiply(org.gwaspi.statistics.Utils.factorial(BigInteger.valueOf(obsCtrlRowTot)));
-		BigInteger colBang = org.gwaspi.statistics.Utils.factorial(BigInteger.valueOf(obsAAColTot)).multiply(org.gwaspi.statistics.Utils.factorial(BigInteger.valueOf(obsAaColTot))).multiply(org.gwaspi.statistics.Utils.factorial(BigInteger.valueOf(obsaaColTot)));
-		BigInteger denomBang = org.gwaspi.statistics.Utils.factorial(BigInteger.valueOf(totGT)).multiply(org.gwaspi.statistics.Utils.factorial(BigInteger.valueOf(obsCaseAA)));
-		denomBang = denomBang.multiply(org.gwaspi.statistics.Utils.factorial(BigInteger.valueOf(obsCaseAa)));
-		denomBang = denomBang.multiply(org.gwaspi.statistics.Utils.factorial(BigInteger.valueOf(obsCaseaa)));
-		denomBang = denomBang.multiply(org.gwaspi.statistics.Utils.factorial(BigInteger.valueOf(obsCtrlAA)));
-		denomBang = denomBang.multiply(org.gwaspi.statistics.Utils.factorial(BigInteger.valueOf(obsCtrlAa)));
-		denomBang = denomBang.multiply(org.gwaspi.statistics.Utils.factorial(BigInteger.valueOf(obsCtrlaa)));
+		BigInteger rowBang = StatisticsUtils.factorial(BigInteger.valueOf(obsCaseRowTot)).multiply(StatisticsUtils.factorial(BigInteger.valueOf(obsCtrlRowTot)));
+		BigInteger colBang = StatisticsUtils.factorial(BigInteger.valueOf(obsAAColTot)).multiply(StatisticsUtils.factorial(BigInteger.valueOf(obsAaColTot))).multiply(StatisticsUtils.factorial(BigInteger.valueOf(obsaaColTot)));
+		BigInteger denomBang = StatisticsUtils.factorial(BigInteger.valueOf(totGT)).multiply(StatisticsUtils.factorial(BigInteger.valueOf(obsCaseAA)));
+		denomBang = denomBang.multiply(StatisticsUtils.factorial(BigInteger.valueOf(obsCaseAa)));
+		denomBang = denomBang.multiply(StatisticsUtils.factorial(BigInteger.valueOf(obsCaseaa)));
+		denomBang = denomBang.multiply(StatisticsUtils.factorial(BigInteger.valueOf(obsCtrlAA)));
+		denomBang = denomBang.multiply(StatisticsUtils.factorial(BigInteger.valueOf(obsCtrlAa)));
+		denomBang = denomBang.multiply(StatisticsUtils.factorial(BigInteger.valueOf(obsCtrlaa)));
 
 		BigInteger result = rowBang.multiply(colBang);
 		result = result.divide(denomBang);

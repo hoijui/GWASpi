@@ -18,109 +18,104 @@
 package org.gwaspi.netCDF.operations;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.global.Text;
+import org.gwaspi.model.DataSetSource;
+import org.gwaspi.model.GenotypesList;
 import org.gwaspi.model.MarkerKey;
-import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.SampleKey;
-import ucar.ma2.InvalidRangeException;
-import ucar.nc2.NetcdfFileWriteable;
+import org.gwaspi.model.SamplesKeysSource;
+import org.gwaspi.netCDF.loader.DataSetDestination;
 
 public class MergeMarkersMatrixOperation extends AbstractMergeMarkersMatrixOperation {
 
 	public MergeMarkersMatrixOperation(
-			MatrixKey rdMatrix1Key,
-			MatrixKey rdMatrix2Key,
-			String wrMatrixFriendlyName,
-			String wrMatrixDescription)
-			throws IOException, InvalidRangeException
+			DataSetSource dataSetSource1,
+			DataSetSource dataSetSource2,
+			DataSetDestination dataSetDestination)
+			throws IOException
 	{
 		super(
-				rdMatrix1Key,
-				rdMatrix2Key,
-				wrMatrixFriendlyName,
-				wrMatrixDescription);
+				dataSetSource1,
+				dataSetSource2,
+				dataSetDestination);
 	}
 
 	@Override
-	public int processMatrix() throws IOException, InvalidRangeException {
+	public int processMatrix() throws IOException {
 
 		// Get combo SampleSet with position[] (wrPos, rdMatrixNb, rdPos)
-		Map<SampleKey, byte[]> rdSampleSetMap1 = rdSampleSet1.getSampleIdSetMapByteArray();
-		Map<SampleKey, byte[]> rdSampleSetMap2 = rdSampleSet2.getSampleIdSetMapByteArray();
-		Map<SampleKey, int[]> wrSampleSetMap = getSampleSetWithIndicesMap(rdSampleSetMap1, rdSampleSetMap2);
-		Map<SampleKey, byte[]> theSamples = rdSampleSetMap1;
+		Map<SampleKey, int[]> wrSampleSetMap = getSampleSetWithIndicesMap(dataSetSource1.getSamplesKeysSource(), dataSetSource2.getSamplesKeysSource());
+		// Keep rdMatrix1Metadata from Matrix1. SampleSet is constant
+		SamplesKeysSource sampleKeys = dataSetSource1.getSamplesKeysSource();
 
-		final int numSamples = rdMatrix1Metadata.getSampleSetSize(); // Keep rdMatrix1Metadata from Matrix1. SampleSet is constant
 		final String humanReadableMethodName = Text.Trafo.mergeMarkersOnly;
 		final String methodDescription = Text.Trafo.mergeMethodMarkerJoin;
 
-		return mergeMatrices(
-				rdSampleSetMap1,
-				rdSampleSetMap2,
+		mergeMatrices(
 				wrSampleSetMap,
-				theSamples,
-				numSamples,
+				sampleKeys,
 				humanReadableMethodName,
-				methodDescription).getMatrixId();
+				methodDescription);
+
+		return Integer.MIN_VALUE;
 	}
 
 	@Override
 	protected void writeGenotypes(
-			NetcdfFileWriteable wrNcFile,
 			Map<SampleKey, int[]> wrSampleSetMap,
-			Map<MarkerKey, ?> wrComboSortedMarkerSetMap,
-			Map<SampleKey, byte[]> rdSampleSetMap1,
-			Map<SampleKey, byte[]> rdSampleSetMap2)
-			throws InvalidRangeException, IOException
+			Collection<MarkerKey> wrComboSortedMarkers)
+			throws IOException
 	{
 		// Get SampleId index from each Matrix
 		// Iterate through wrSampleSetMap
-		for (Object value : wrSampleSetMap.values()) {
-			int[] sampleIndices = (int[]) value; // position[rdPos matrix 1, rdPos matrix 2]
+		dataSetDestination.startLoadingAlleles(true);
+		for (int[] sampleIndices : wrSampleSetMap.values()) { // position[rdPos matrix 1, rdPos matrix 2]
+			final int readDataSet1SampleIndex = sampleIndices[0];
+			final int readDataSet2SampleIndex = sampleIndices[1];
 
-			// Read from Matrix1
-			rdMarkerSet1.fillWith(cNetCDF.Defaults.DEFAULT_GT);
-			rdMarkerSet1.fillGTsForCurrentSampleIntoInitMap(sampleIndices[0]);
-
-			// Read from Matrix2
-			rdMarkerSet2.fillWith(cNetCDF.Defaults.DEFAULT_GT);
-			rdMarkerSet2.fillGTsForCurrentSampleIntoInitMap(sampleIndices[1]);
+			GenotypesList dataSet1SampleGenotypes = dataSetSource1.getSamplesGenotypesSource().get(readDataSet1SampleIndex);
+			GenotypesList dataSet2SampleGenotypes = dataSetSource2.getSamplesGenotypesSource().get(readDataSet2SampleIndex);
 
 			// Fill wrSortedMingledMarkerMap with matrix 1+2 Genotypes
-			Map<MarkerKey, byte[]> wrComboSortedMarkerGTs = new LinkedHashMap<MarkerKey, byte[]>(wrComboSortedMarkerSetMap.size());
-			for (Map.Entry<MarkerKey, ?> markerEntry : wrComboSortedMarkerSetMap.entrySet()) {
-				MarkerKey markerKey = markerEntry.getKey();
-				byte[] genotype = cNetCDF.Defaults.DEFAULT_GT;
-				if (rdMarkerSet1.getMarkerIdSetMapByteArray().containsKey(markerKey)) {
-					genotype = rdMarkerSet1.getMarkerIdSetMapByteArray().get(markerKey);
-				}
-				if (rdMarkerSet2.getMarkerIdSetMapByteArray().containsKey(markerKey)) {
-					genotype = rdMarkerSet2.getMarkerIdSetMapByteArray().get(markerKey);
+			Map<MarkerKey, byte[]> wrComboSortedMarkerGTs = new LinkedHashMap<MarkerKey, byte[]>(wrComboSortedMarkers.size());
+			for (MarkerKey markerKey : wrComboSortedMarkers) {
+				byte[] genotype;
+				final int dataSet1MarkerIndex = dataSetSource1.getMarkersKeysSource().indexOf(markerKey);
+				if (dataSet1MarkerIndex >= 0) {
+					genotype = dataSet1SampleGenotypes.get(dataSet1MarkerIndex);
+				} else {
+					final int dataSet2MarkerIndex = dataSetSource2.getMarkersKeysSource().indexOf(markerKey);
+					if (dataSet2MarkerIndex >= 0) {
+						genotype = dataSet2SampleGenotypes.get(dataSet2MarkerIndex);
+					} else {
+						genotype = cNetCDF.Defaults.DEFAULT_GT;
+					}
 				}
 
 				wrComboSortedMarkerGTs.put(markerKey, genotype);
 			}
 
-			// Write wrMarkerIdSetMap to A3 ArrayChar and save to wrMatrix
-			Utils.saveSingleSampleGTsToMatrix(wrNcFile, wrComboSortedMarkerGTs.values(), sampleIndices[0]);
+			addSampleGTAlleles(readDataSet1SampleIndex, wrComboSortedMarkerGTs.values());
 		}
+		dataSetDestination.finishedLoadingAlleles();
 	}
 
-	private static Map<SampleKey, int[]> getSampleSetWithIndicesMap(Map<SampleKey, ?> sampleSetMap1, Map<SampleKey, ?> sampleSetMap2) {
+	private static Map<SampleKey, int[]> getSampleSetWithIndicesMap(SamplesKeysSource sampleKeys1, SamplesKeysSource sampleKeys2) {
 		Map<SampleKey, int[]> resultMap = new LinkedHashMap<SampleKey, int[]>();
 
 		int rdPos = 0;
-		for (SampleKey key : sampleSetMap1.keySet()) {
-			int[] position = new int[] {rdPos, 0}; // rdPos matrix 1
+		for (SampleKey key : sampleKeys1) {
+			int[] position = new int[] {rdPos, -1}; // rdPos matrix 1
 			resultMap.put(key, position);
 			rdPos++;
 		}
 
 		rdPos = 0;
-		for (SampleKey key : sampleSetMap2.keySet()) {
+		for (SampleKey key : sampleKeys2) {
 			// IF SAMPLE ALLREADY EXISTS IN MATRIX1 SUBSTITUTE VALUES WITH MATRIX2
 			if (resultMap.containsKey(key)) {
 				int[] position = resultMap.get(key);

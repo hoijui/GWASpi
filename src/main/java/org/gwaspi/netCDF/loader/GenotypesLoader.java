@@ -25,7 +25,7 @@ public interface GenotypesLoader {
 	/**
 	 * Process Genotypes
 	 */
-	void processData(GenotypesLoadDescription loadDescription, SamplesReceiver samplesReceiver) throws Exception;
+	void processData(GenotypesLoadDescription loadDescription, DataSetDestination samplesReceiver) throws Exception;
 
 	ImportFormat getFormat();
 
@@ -36,6 +36,4 @@ public interface GenotypesLoader {
 	StrandType getMatrixStrand();
 
 	boolean isHasDictionary();
-
-	String getMarkersD2Variables();
 }

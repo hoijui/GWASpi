@@ -14,23 +14,23 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package org.gwaspi.operations.combi;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 import java.util.TreeSet;
 import org.gwaspi.model.Genotype;
+import org.gwaspi.netCDF.operations.NetCdfUtils;
 
 public abstract class EncodingTableBasedGenotypeEncoder implements GenotypeEncoder {
 
 	public abstract Map<Integer, List<Float>> generateEncodingTable(
-			List<byte[]> possibleGenotypes,
+			Set<byte[]> possibleGenotypes,
 			Collection<byte[]> rawGenotypes);
 
 	/**
@@ -40,7 +40,7 @@ public abstract class EncodingTableBasedGenotypeEncoder implements GenotypeEncod
 	 *   {"00".hash():0, "0A".hash():1, "0G".hash():2, "A0".hash():3, "AA".hash():4, "AG".hash():5, "G0".hash():6, "GA".hash():7, "GG".hash():8}
 	 */
 	protected static Map<Integer, Integer> generateBaseEncodingTable(
-			List<byte[]> possibleGenotypes)
+			Set<byte[]> possibleGenotypes)
 	{
 		Map<Integer, Integer> baseEncodingTable
 				= new LinkedHashMap<Integer, Integer>(possibleGenotypes.size());
@@ -79,15 +79,8 @@ public abstract class EncodingTableBasedGenotypeEncoder implements GenotypeEncod
 			float[][] encodedSamplesMarkers,
 			int mi)
 	{
-		Map<Integer, byte[]> unique = new TreeMap<Integer, byte[]>();
-		Iterator<Boolean> keep = samplesToKeep.iterator();
-		for (byte[] genotype : rawGenotypes) {
-			if (keep.next().booleanValue()) {
-				unique.put(Genotype.hashCode(genotype), genotype);
-			}
-		}
-		List<byte[]> possibleGenotypes = new ArrayList<byte[]>(unique.values());
-//		Collections.sort(possibleGenotypes); // NOTE note required, because we use TreeMap
+		Set<byte[]> possibleGenotypes = NetCdfUtils.extractUniqueGenotypesOrdered(
+				rawGenotypes, samplesToKeep);
 
 		// create the encoding table
 		Map<Integer, List<Float>> encodingTable
@@ -129,7 +122,7 @@ public abstract class EncodingTableBasedGenotypeEncoder implements GenotypeEncod
 //			Collection<List<Double>> encodedGTValues = encodedGenotypes.values();
 //			Iterator<List<Double>> encodedIt = encodedGTValues.iterator();
 			int di = 0;
-			/*Iterator<Boolean> */keep = samplesToKeep.iterator();
+			Iterator<Boolean> keep = samplesToKeep.iterator();
 			for (byte[] genotype : rawGenotypes) {
 				if (keep.next().booleanValue()) {
 //					List<Double> encodedValues = encodedIt.next();

@@ -21,16 +21,15 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Map;
+import java.util.Iterator;
 import org.gwaspi.constants.cExport;
+import org.gwaspi.model.DataSetSource;
+import org.gwaspi.model.GenotypesList;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleKey;
-import org.gwaspi.netCDF.markers.MarkerSet;
-import org.gwaspi.samples.SampleSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.nc2.NetcdfFile;
 
 public class SpreadsheetFormatter implements Formatter {
 
@@ -40,13 +39,10 @@ public class SpreadsheetFormatter implements Formatter {
 	public boolean export(
 			String exportPath,
 			MatrixMetadata rdMatrixMetadata,
-			MarkerSet rdMarkerSet,
-			SampleSet rdSampleSet,
-			Map<SampleKey, byte[]> rdSampleSetMap,
+			DataSetSource dataSetSource,
 			String phenotype)
 			throws IOException
 	{
-
 		File exportDir = new File(exportPath);
 		if (!exportDir.exists() || !exportDir.isDirectory()) {
 			return false;
@@ -54,43 +50,37 @@ public class SpreadsheetFormatter implements Formatter {
 
 		boolean result = false;
 		String sep = cExport.separator_REPORTS;
-		NetcdfFile rdNcFile = NetcdfFile.open(rdMatrixMetadata.getPathToMatrix());
-		rdMarkerSet.initFullMarkerIdSetMap();
 
+		//<editor-fold defaultstate="expanded" desc="SPREADSHEET FILE">
+		BufferedWriter pedBW = null;
 		try {
-			//<editor-fold defaultstate="expanded" desc="SPREADSHEET FILE">
-			FileWriter pedFW = new FileWriter(exportDir.getPath() + "/" + rdMatrixMetadata.getMatrixFriendlyName() + ".csv");
-			BufferedWriter pedBW = new BufferedWriter(pedFW);
+			FileWriter pedFW = new FileWriter(new File(exportDir.getPath(),
+					rdMatrixMetadata.getMatrixFriendlyName() + ".csv"));
+			pedBW = new BufferedWriter(pedFW);
 
 			// HEADER CONTAINING MARKER IDs
-			StringBuilder line = new StringBuilder();
-			for (MarkerKey key : rdMarkerSet.getMarkerKeys()) {
-				line.append(sep);
-				line.append(key.getMarkerId());
+			for (MarkerKey key : dataSetSource.getMarkersKeysSource()) {
+				pedBW.append(sep);
+				pedBW.append(key.getMarkerId());
 			}
-			pedBW.append(line);
 			pedBW.append("\n");
 			pedBW.flush();
 
 			// Iterate through all samples
 			int sampleNb = 0;
-			for (SampleKey sampleKey : rdSampleSetMap.keySet()) {
+			Iterator<GenotypesList> samplesGenotypesIt = dataSetSource.getSamplesGenotypesSource().iterator();
+			for (SampleKey sampleKey : dataSetSource.getSamplesKeysSource()) {
+				// Individual ID
+				pedBW.append(sampleKey.getSampleId());
+
+				// Genotypes
 				// Iterate through all markers
-				rdMarkerSet.fillGTsForCurrentSampleIntoInitMap(sampleNb);
-				StringBuilder genotypes = new StringBuilder();
-				for (byte[] tempGT : rdMarkerSet.getMarkerIdSetMapByteArray().values()) {
-					genotypes.append(sep);
-					genotypes.append(new String(tempGT, 0, 1));
-					genotypes.append(new String(tempGT, 1, 1));
+				for (byte[] tempGT : samplesGenotypesIt.next()) {
+					pedBW.append(sep);
+					pedBW.append((char) tempGT[0]);
+					pedBW.append((char) tempGT[1]);
 				}
 
-				// Individual ID
-				// Genotypes
-				line = new StringBuilder();
-				line.append(sampleKey.getSampleId());
-				line.append(genotypes);
-
-				pedBW.append(line);
 				pedBW.append("\n");
 				pedBW.flush();
 
@@ -100,22 +90,14 @@ public class SpreadsheetFormatter implements Formatter {
 				}
 			}
 			log.info("Samples exported to Fleur file: {}", sampleNb);
-			pedBW.close();
-			pedFW.close();
-			//</editor-fold>
 
 			result = true;
-		} catch (IOException ex) {
-			log.error(null, ex);
 		} finally {
-			if (null != rdNcFile) {
-				try {
-					rdNcFile.close();
-				} catch (IOException ex) {
-					log.warn("Cannot close file: " + rdNcFile, ex);
-				}
+			if (pedBW != null) {
+				pedBW.close();
 			}
 		}
+		//</editor-fold>
 
 		return result;
 	}

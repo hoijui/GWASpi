@@ -42,7 +42,7 @@ public class LoadGTFromPlinkFlatFiles extends AbstractLoadGTFromFiles implements
 			= LoggerFactory.getLogger(LoadGTFromPlinkFlatFiles.class);
 
 	public LoadGTFromPlinkFlatFiles() {
-		super(ImportFormat.PLINK, null, false, null);
+		super(new MetadataLoaderPlink(), ImportFormat.PLINK, null, false);
 	}
 
 	@Override
@@ -71,49 +71,13 @@ public class LoadGTFromPlinkFlatFiles extends AbstractLoadGTFromFiles implements
 	}
 
 	@Override
-	protected MetadataLoader createMetaDataLoader(GenotypesLoadDescription loadDescription) {
-
-		return new MetadataLoaderPlink(
-				loadDescription.getGtDirPath(),
-				loadDescription.getStudyKey());
-	}
-
-	@Override
-//	protected void loadGenotypes(
-//			GenotypesLoadDescription loadDescription,
-//			Collection<SampleInfo> sampleInfos,
-//			Map<MarkerKey, MarkerMetadata> markerSetMap,
-//			NetcdfFileWriteable ncfile,
-//			List<SampleKey> sampleKeys,
-//			GenotypeEncoding guessedGTCode)
-//			throws IOException, InvalidRangeException
-//	{
 	protected void loadGenotypes(
 			GenotypesLoadDescription loadDescription,
-			SamplesReceiver samplesReceiver)
+			DataSetDestination samplesReceiver)
 			throws Exception
 	{
 		Map<MarkerKey, byte[]> mapMarkerSetMap = MetadataLoaderPlink.parseOrigMapFile(loadDescription.getGtDirPath());
-//		loadPedGenotypes(
-//				loadDescription.getStudyKey(),
-//				new File(loadDescription.getAnnotationFilePath()),
-//				ncfile,
-//				markerSetMap.keySet(),
-//				mapMarkerSetMap,
-//				sampleKeys,
-//				guessedGTCode);
-//	}
-//
-//	public void loadPedGenotypes(
-//			StudyKey studyKey,
-//			File file,
-//			NetcdfFileWriteable ncfile,
-//			Collection<MarkerKey> wrMarkerKeys,
-//			Map<MarkerKey, ?> mapMarkerSetMap,
-//			List<SampleKey> sampleKeys,
-//			GenotypeEncoding guessedGTCode)
-//			throws IOException, InvalidRangeException
-//	{
+
 		File file = new File(loadDescription.getAnnotationFilePath());
 		FileReader inputFileReader = new FileReader(file);
 		BufferedReader inputBufferReader = new BufferedReader(inputFileReader);
@@ -153,7 +117,6 @@ public class LoadGTFromPlinkFlatFiles extends AbstractLoadGTFromFiles implements
 						(byte) (st.nextToken().charAt(0))};
 				allelesMap.put(markerKey, alleles);
 			}
-			st = null;
 
 //			GenotypeEncoding guessedGTCode = getGuessedGTCode();
 //			if (guessedGTCode.equals(cNetCDF.Defaults.GenotypeEncoding.UNKNOWN)

@@ -28,7 +28,6 @@ import org.gwaspi.constants.cImport;
 import org.gwaspi.constants.cImport.Annotation.Plink_Binary;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
-import org.gwaspi.global.Text;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.StudyKey;
@@ -40,26 +39,36 @@ public class MetadataLoaderPlinkBinary implements MetadataLoader {
 	private final Logger log
 			= LoggerFactory.getLogger(MetadataLoaderPlinkBinary.class);
 
-	private final String bimPath;
-	private final StrandType strand;
-	private final StudyKey studyKey;
-
-	public MetadataLoaderPlinkBinary(String bimPath, StrandType strand, StudyKey studyKey) {
-
-		this.bimPath = bimPath;
-		this.studyKey = studyKey;
-		this.strand = strand;
+	public MetadataLoaderPlinkBinary() {
 	}
 
 	@Override
-	public void loadMarkers(SamplesReceiver samplesReceiver) throws Exception {
+	public boolean isHasStrandInfo() {
+		return false;
+	}
+
+	@Override
+	public StrandType getFixedStrandFlag() {
+		return null;
+	}
+
+	@Override
+	public void loadMarkers(DataSetDestination samplesReceiver, GenotypesLoadDescription loadDescription) throws Exception {
+		loadMarkers(
+				samplesReceiver,
+				loadDescription.getAnnotationFilePath(),
+				loadDescription.getStudyKey());
+	}
+
+	private void loadMarkers(DataSetDestination samplesReceiver, String bimPath, StudyKey studyKey) throws Exception {
 
 		String startTime = org.gwaspi.global.Utils.getMediumDateTimeAsString();
 
-		SortedMap<String, String> tempTM = parseAndSortBimFile(); // chr, markerId, genetic distance, position
+		// chr, markerId, genetic distance, position
+		SortedMap<String, String> tempTM = parseAndSortBimFile(bimPath);
 
 		org.gwaspi.global.Utils.sysoutStart("initilaizing Marker info");
-		log.info(Text.All.processing);
+		log.info("parse raw data into marker metadata objects");
 
 		for (Map.Entry<String, String> entry : tempTM.entrySet()) {
 			// "chr;pos;markerId"
@@ -72,7 +81,7 @@ public class MetadataLoaderPlinkBinary implements MetadataLoader {
 				log.warn(null, ex);
 			}
 
-			// rsId
+			// alleles (bases dictionary)
 			String valValues = entry.getValue();
 //			values = fixPlusAlleles(values);
 
@@ -94,7 +103,7 @@ public class MetadataLoaderPlinkBinary implements MetadataLoader {
 		MetadataLoaderPlink.logAsWhole(startTime, bimPath, description, studyKey.getId());
 	}
 
-	private SortedMap<String, String> parseAndSortBimFile() throws IOException {
+	private SortedMap<String, String> parseAndSortBimFile(String bimPath) throws IOException {
 
 		FileReader fr = new FileReader(bimPath);
 		BufferedReader inputMapBR = new BufferedReader(fr);
@@ -119,8 +128,8 @@ public class MetadataLoaderPlinkBinary implements MetadataLoader {
 			sbKey.append(cNetCDF.Defaults.TMP_SEPARATOR);
 			sbKey.append(markerId);
 
-			// rsId
-			StringBuilder sbVal = new StringBuilder(); // 0 => markerid
+			// alleles (bases dictionary)
+			StringBuilder sbVal = new StringBuilder();
 			sbVal.append(markerVals[Plink_Binary.bim_allele1].trim());
 			sbVal.append(markerVals[Plink_Binary.bim_allele2].trim());
 
@@ -128,13 +137,11 @@ public class MetadataLoaderPlinkBinary implements MetadataLoader {
 
 			count++;
 
-			if (count == 1) {
-				log.info(Text.All.processing);
-			} else if (count % 100000 == 0) {
-				log.info("Parsed annotation lines: {}", count);
+			if ((count == 1) || (count % 100000 == 0)) {
+				log.info("read and pre-parse marker metadat from file(s); lines: {}", count);
 			}
 		}
-		log.info("Parsed annotation lines: {}", count);
+		log.info("read and pre-parse marker metadat from file(s); lines: {}", count);
 
 		inputMapBR.close();
 

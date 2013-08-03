@@ -18,14 +18,19 @@
 package org.gwaspi.dao.jpa;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceException;
 import javax.persistence.Query;
+import org.gwaspi.constants.cNetCDF.Variables;
 import org.gwaspi.dao.SampleInfoService;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleKey;
@@ -88,6 +93,44 @@ public class JPASampleInfoService implements SampleInfoService {
 	}
 
 	@Override
+	public List<SampleKey> getSampleKeys() throws IOException {
+		return getSampleKeys(null);
+	}
+
+	@Override
+	public List<SampleKey> getSampleKeys(StudyKey studyKey) throws IOException {
+
+		List<SampleKey> sampleKeys = Collections.EMPTY_LIST;
+
+		EntityManager em = null;
+		try {
+			em = open();
+			Query query;
+			if (studyKey == null) {
+				query = em.createNamedQuery("sampleInfo_listKeys");
+			} else {
+				query = em.createNamedQuery("sampleInfo_listKeysByStudyId");
+				query.setParameter("studyId", studyKey.getId());
+			}
+			List<Object[]> sampleKeysParts = query.getResultList();
+			sampleKeys = new ArrayList<SampleKey>(sampleKeysParts.size());
+			for (Object[] sampleKeyParts : sampleKeysParts) {
+				SampleKey sampleKey = new SampleKey(
+						new StudyKey((Integer) sampleKeyParts[0]),
+						(String) sampleKeyParts[1],
+						(String) sampleKeyParts[2]);
+				sampleKeys.add(sampleKey);
+			}
+		} catch (Exception ex) {
+			throw new IOException("Failed fetching all matrices", ex);
+		} finally {
+			close(em);
+		}
+
+		return sampleKeys;
+	}
+
+	@Override
 	public List<SampleInfo> getSamples() throws IOException {
 
 		List<SampleInfo> sampleInfos = Collections.EMPTY_LIST;
@@ -97,7 +140,7 @@ public class JPASampleInfoService implements SampleInfoService {
 			em = open();
 			sampleInfos = em.createNamedQuery("sampleInfo_list").getResultList();
 		} catch (Exception ex) {
-			LOG.error("Failed fetching all sample-infos", ex);
+			throw new IOException("Failed fetching all sample-infos", ex);
 		} finally {
 			close(em);
 		}
@@ -117,10 +160,11 @@ public class JPASampleInfoService implements SampleInfoService {
 			query.setParameter("studyId", studyKey.getId());
 			sampleInfos = (List<SampleInfo>) query.getResultList();
 		} catch (NoResultException ex) {
-			LOG.error("Failed fetching a sample-info by study-id: " + studyKey.getId()
-					+ " (not found)", ex);
+			throw new IOException("Failed fetching a sample-info by study-id: "
+					+ studyKey.getId() + " (not found)",
+					ex);
 		} catch (Exception ex) {
-			LOG.error("Failed fetching sample-info", ex);
+			throw new IOException("Failed fetching sample-info", ex);
 		} finally {
 			close(em);
 		}
@@ -138,12 +182,68 @@ public class JPASampleInfoService implements SampleInfoService {
 			em = open();
 			sampleInfo = em.find(SampleInfo.class, key);
 		} catch (Exception ex) {
-			LOG.error("Failed fetching sample-info: " + key, ex);
+			throw new IOException("Failed fetching sample-info: " + key.toString(), ex);
 		} finally {
 			close(em);
 		}
 
 		return sampleInfo;
+	}
+
+	@Override
+	public <T> Map<SampleKey, Integer> pickSamples(StudyKey studyKey, String variable, Collection<T> criteria, boolean include) throws IOException {
+
+		// fetch the specified variable value for all the samples
+		Collection<T> samplesVarValue;
+		EntityManager em = null;
+		try {
+			em = open();
+			Query query;
+			if (variable.equals(Variables.VAR_SAMPLESET)) { // sample ID
+				query = em.createNamedQuery("sampleInfo_listSampleIds");
+			} else if (variable.equals(Variables.VAR_SAMPLES_AFFECTION)) {
+				query = em.createNamedQuery("sampleInfo_listSampleAffections");
+			} else if (variable.equals(Variables.VAR_SAMPLES_SEX)) {
+				query = em.createNamedQuery("sampleInfo_listSampleSexes");
+			} else {
+				throw new UnsupportedOperationException("Unknown sample info variable: \"" + variable + "\"");
+			}
+			query.setParameter("studyId", studyKey.getId());
+			samplesVarValue = (List<T>) query.getResultList();
+		} catch (NoResultException ex) {
+			throw new IOException(
+					"Failed fetching sample-info variable by study-id: "
+					+ studyKey.getId() + " (not found)",
+					ex);
+		} catch (Exception ex) {
+			throw new IOException(ex);
+		} finally {
+			close(em);
+		}
+
+		// do the picking
+		Map<SampleKey, Integer> pickedSamples = new LinkedHashMap<SampleKey, Integer>();
+		Iterator<SampleKey> sampleKeysIt = getSampleKeys(studyKey).iterator();
+		int sampleIndex = 0;
+		if (include) {
+			for (T varValue : samplesVarValue) {
+				SampleKey key = sampleKeysIt.next();
+				if (criteria.contains(varValue)) {
+					pickedSamples.put(key, sampleIndex);
+				}
+				sampleIndex++;
+			}
+		} else {
+			for (T varValue : samplesVarValue) {
+				SampleKey key = sampleKeysIt.next();
+				if (!criteria.contains(varValue)) {
+					pickedSamples.put(key, sampleIndex);
+				}
+				sampleIndex++;
+			}
+		}
+
+		return pickedSamples;
 	}
 
 	@Override

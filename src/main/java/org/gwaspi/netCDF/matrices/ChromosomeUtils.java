@@ -19,44 +19,42 @@ package org.gwaspi.netCDF.matrices;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import org.gwaspi.model.ChromosomeInfo;
+import org.gwaspi.model.ChromosomeKey;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MarkerMetadata;
 
-public class Utils {
+public class ChromosomeUtils {
 
-	private Utils() {
+	private ChromosomeUtils() {
 	}
 
 	/**
-	 * Map to be aggregated, where is the chr, where is the position.
+	 * Map to be aggregated, where is the chromosome, where is the position.
 	 */
-	public static Map<MarkerKey, int[]> aggregateChromosomeInfo(Map<MarkerKey, MarkerMetadata> wrMarkerSetMap, int chrIdx, int posIdx) {
+	public static Map<ChromosomeKey, ChromosomeInfo> aggregateChromosomeInfo(Map<MarkerKey, MarkerMetadata> wrMarkerSetMap, int chrIdx, int posIdx) {
 		// RETRIEVE CHROMOSOMES INFO
-		Map<MarkerKey, int[]> chrSetMap = new LinkedHashMap<MarkerKey, int[]>();
+		Map<ChromosomeKey, ChromosomeInfo> chrSetMap = new LinkedHashMap<ChromosomeKey, ChromosomeInfo>();
 		String curChr = "";
 		int firstPos = 0;
 		int markerCount = 0;
 		int idx = 0;
-		int[] chrInfo = new int[4];
+		ChromosomeInfo chrInfo = new ChromosomeInfo();
 		for (MarkerMetadata metaInfo : wrMarkerSetMap.values()) {
 			// value: markerid, rsId, chr, pos
 			if (!curChr.equals(metaInfo.getChr())) {
 				if (markerCount != 0) { // Not first time round
-					chrSetMap.put(MarkerKey.valueOf(curChr), chrInfo);
-					chrInfo = new int[4];
+					chrSetMap.put(ChromosomeKey.valueOf(curChr), chrInfo);
 				}
 				firstPos = metaInfo.getPos(); // First physical position in chromosome
 				curChr = metaInfo.getChr();
 				markerCount = 1;
 			}
-			chrInfo[0] = markerCount; // How many markers in current chromosome
-			chrInfo[1] = firstPos; // First physical position in chromosome
-			chrInfo[2] = metaInfo.getPos(); // Last physical position in current chromosome
-			chrInfo[3] = idx; // Last set index for current chromosome
+			chrInfo = new ChromosomeInfo(markerCount, firstPos, metaInfo.getPos(), idx);
 			markerCount++;
 			idx++;
 		}
-		chrSetMap.put(MarkerKey.valueOf(curChr), chrInfo); // Store last chromosome info
+		chrSetMap.put(ChromosomeKey.valueOf(curChr), chrInfo); // Store last chromosome info
 
 		return chrSetMap;
 	}

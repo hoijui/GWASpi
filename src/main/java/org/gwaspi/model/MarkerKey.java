@@ -74,7 +74,7 @@ public final class MarkerKey implements Comparable<MarkerKey>, Serializable {
 	/**
 	 * Allows to parse a marker key from a single string value.
 	 * @param keyStr should be of the form returned by
-	 *   {@link MarkerKey#toString()}
+	 *   {@link #toString()}
 	 * @return the parsed marker key
 	 */
 	public static MarkerKey valueOf(String keyStr) {

@@ -20,12 +20,12 @@ package org.gwaspi.samples;
 import java.io.File;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.StudyKey;
-import org.gwaspi.netCDF.loader.SamplesReceiver;
+import org.gwaspi.netCDF.loader.DataSetDestination;
 
 public class AffymetrixSamplesParser implements SamplesParser {
 
 	@Override
-	public void scanSampleInfo(StudyKey studyKey, String sampleInfoPath, SamplesReceiver samplesReceiver) throws Exception {
+	public void scanSampleInfo(StudyKey studyKey, String sampleInfoPath, DataSetDestination samplesReceiver) throws Exception {
 
 		File[] gtFilesToImport = org.gwaspi.global.Utils.listFiles(sampleInfoPath);
 

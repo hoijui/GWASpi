@@ -33,11 +33,8 @@ import org.gwaspi.constants.cImport.ImportFormat;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
-import org.gwaspi.global.Text;
-import org.gwaspi.global.TypeConverter;
 import org.gwaspi.model.DataSet;
 import org.gwaspi.model.MarkerKey;
-import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.StudyKey;
@@ -69,7 +66,7 @@ public class LoadGTFromHapmapFiles extends AbstractLoadGTFromFiles implements Ge
 	}
 
 	public LoadGTFromHapmapFiles() {
-		super(ImportFormat.HAPMAP, StrandType.FWD, true, cNetCDF.Variables.VAR_MARKERS_BASES_DICT);
+		super(new MetadataLoaderHapmap(), ImportFormat.HAPMAP, StrandType.FWD, true);
 	}
 
 	@Override
@@ -90,29 +87,7 @@ public class LoadGTFromHapmapFiles extends AbstractLoadGTFromFiles implements Ge
 		descSB.append(" (Genotype file)\n");
 	}
 
-	@Override
-	protected MetadataLoader createMetaDataLoader(GenotypesLoadDescription loadDescription) {
-		throw new UnsupportedOperationException("This method of this class should never be called! see loadMarkerMetadata(...)");
-	}
-
-	@Override
-	protected void loadMarkerMetadata(GenotypesLoadDescription loadDescription, SamplesReceiver samplesReceiver) throws Exception {
-
-		samplesReceiver.startLoadingMarkerMetadatas();
-
-		File[] gtFilesToImport = getGTFilesToImport(loadDescription);
-		for (int i = 0; i < gtFilesToImport.length; i++) {
-			MetadataLoaderHapmap markerSetLoader = new MetadataLoaderHapmap(
-					gtFilesToImport[i].getPath(),
-					loadDescription.getFormat(),
-					loadDescription.getStudyKey());
-			markerSetLoader.loadMarkers(samplesReceiver);
-		}
-
-		samplesReceiver.finishedLoadingMarkerMetadatas();
-	}
-
-	private File[] getGTFilesToImport(GenotypesLoadDescription loadDescription) {
+	public static File[] extractGTFilesToImport(GenotypesLoadDescription loadDescription) {
 
 		File[] gtFilesToImport;
 
@@ -126,21 +101,11 @@ public class LoadGTFromHapmapFiles extends AbstractLoadGTFromFiles implements Ge
 		return gtFilesToImport;
 	}
 
-	@Override
-	protected TypeConverter<MarkerMetadata, String> getBaseDictPropertyExtractor() {
-		return MarkerMetadata.TO_ALLELES;
-	}
-
-	@Override
-	protected boolean isHasStrandInfo() {
-		return false;
-	}
-
 	//<editor-fold defaultstate="expanded" desc="PROCESS GENOTYPES">
 	@Override
 	protected void loadGenotypes(
 			GenotypesLoadDescription loadDescription,
-			SamplesReceiver samplesReceiver)
+			DataSetDestination samplesReceiver)
 			throws Exception
 	{
 		// HACK
@@ -148,7 +113,7 @@ public class LoadGTFromHapmapFiles extends AbstractLoadGTFromFiles implements Ge
 
 		Collection<SampleInfo> sampleInfos = new ArrayList<SampleInfo>(dataSet.getSampleInfos());
 
-		File[] gtFilesToImport = getGTFilesToImport(loadDescription);
+		File[] gtFilesToImport = extractGTFilesToImport(loadDescription);
 
 		// TODO check if real sample files coincides with sampleInfoFile
 		for (int i = 0; i < gtFilesToImport.length; i++) {
@@ -174,10 +139,9 @@ public class LoadGTFromHapmapFiles extends AbstractLoadGTFromFiles implements Ge
 			}
 
 			sampleIndex++;
-			if (sampleIndex == 1) {
-				log.info(Text.All.processing);
-			} else if (sampleIndex % 100 == 0) {
-				log.info("Done processing sample Nº{}", sampleIndex);
+			if ((sampleIndex == 1) || (sampleIndex % 100 == 0)) {
+				log.info("Done processing sample {} / {}", sampleIndex,
+						dataSet.getSampleInfos().size());
 			}
 		}
 	}

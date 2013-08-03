@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import org.gwaspi.model.Genotype;
@@ -45,7 +46,7 @@ public class NominalGenotypeEncoder extends EncodingTableBasedGenotypeEncoder {
 
 	@Override
 	public Map<Integer, List<Float>> generateEncodingTable(
-			List<byte[]> possibleGenotypes,
+			Set<byte[]> possibleGenotypes,
 			Collection<byte[]> rawGenotypes)
 	{
 		Map<Integer, List<Float>> encodingTable

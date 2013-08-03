@@ -25,9 +25,8 @@ import java.util.Iterator;
 import java.util.Map;
 import org.gwaspi.constants.cImport;
 import org.gwaspi.constants.cImport.ImportFormat;
-import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.constants.cNetCDF.Defaults;
 import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
-import org.gwaspi.global.Text;
 import org.gwaspi.model.DataSet;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.SampleInfo;
@@ -51,7 +50,7 @@ public class LoadGTFromSequenomFiles extends AbstractLoadGTFromFiles implements 
 	}
 
 	public LoadGTFromSequenomFiles() {
-		super(ImportFormat.Sequenom, StrandType.PLSMIN, false, null);
+		super(new MetadataLoaderSequenom(), ImportFormat.Sequenom, StrandType.PLSMIN, false);
 	}
 
 	@Override
@@ -77,22 +76,9 @@ public class LoadGTFromSequenomFiles extends AbstractLoadGTFromFiles implements 
 	}
 
 	@Override
-	protected MetadataLoader createMetaDataLoader(GenotypesLoadDescription loadDescription) {
-
-		return new MetadataLoaderSequenom(
-				loadDescription.getAnnotationFilePath(),
-				loadDescription.getStudyKey());
-	}
-
-	@Override
-	protected String getStrandFlag(GenotypesLoadDescription loadDescription) {
-		return cNetCDF.Defaults.StrandType.FWD.toString();
-	}
-
-	@Override
 	protected void loadGenotypes(
 			GenotypesLoadDescription loadDescription,
-			SamplesReceiver samplesReceiver)
+			DataSetDestination samplesReceiver)
 			throws Exception
 	{
 		// HACK
@@ -105,7 +91,7 @@ public class LoadGTFromSequenomFiles extends AbstractLoadGTFromFiles implements 
 		int sampleIndex = 0;
 		for (SampleInfo sampleInfo : dataSet.getSampleInfos()) {
 			// PURGE MarkerIdMap on current sample
-			Map<MarkerKey, byte[]> alleles = AbstractLoadGTFromFiles.fillMap(dataSet.getMarkerMetadatas().keySet(), cNetCDF.Defaults.DEFAULT_GT);
+			Map<MarkerKey, byte[]> alleles = AbstractLoadGTFromFiles.fillMap(dataSet.getMarkerMetadatas().keySet(), Defaults.DEFAULT_GT);
 
 			// PARSE ALL FILES FOR ANY DATA ON CURRENT SAMPLE
 			for (int i = 0; i < gtFilesToImport.length; i++) {
@@ -132,10 +118,9 @@ public class LoadGTFromSequenomFiles extends AbstractLoadGTFromFiles implements 
 			}
 
 			sampleIndex++;
-			if (sampleIndex == 1) {
-				log.info(Text.All.processing);
-			} else if (sampleIndex % 100 == 0) {
-				log.info("Done processing sample Nº{}", sampleIndex);
+			if ((sampleIndex == 1) || (sampleIndex % 100 == 0)) {
+				log.info("Done processing sample {} / {}", sampleIndex,
+						dataSet.getSampleInfos().size());
 			}
 		}
 	}

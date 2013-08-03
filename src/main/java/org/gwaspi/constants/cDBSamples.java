@@ -17,6 +17,9 @@
 
 package org.gwaspi.constants;
 
+import org.gwaspi.model.SampleInfo.Affection;
+import org.gwaspi.model.SampleInfo.Sex;
+
 public class cDBSamples {
 
 	// * ALL SAMPLES INFO *
@@ -46,6 +49,29 @@ public class cDBSamples {
 		f_POPULATION,
 		f_SEX
 	};
+
+	public static Object parseFromField(String fieldName, String value) {
+
+		if (fieldName.equals(cDBSamples.f_SAMPLE_ID)) {
+			return value.toCharArray();
+		} else if (fieldName.equals(cDBSamples.f_FAMILY_ID)) {
+			return value.toCharArray();
+		} else if (fieldName.equals(cDBSamples.f_SEX)) {
+			return Sex.parse(value);
+		} else if (fieldName.equals(cDBSamples.f_AFFECTION)) {
+			return Affection.parse(value);
+		} else if (fieldName.equals(cDBSamples.f_CATEGORY)) {
+			return value.toCharArray();
+		} else if (fieldName.equals(cDBSamples.f_DISEASE)) {
+			return value.toCharArray();
+		} else if (fieldName.equals(cDBSamples.f_POPULATION)) {
+			return value.toCharArray();
+		} else if (fieldName.equals(cDBSamples.f_AGE)) {
+			return Integer.parseInt(value);
+		} else {
+			throw new IllegalArgumentException("Can not parse to type of sample field \"" + fieldName + "\"");
+		}
+	}
 
 	private cDBSamples() {
 	}

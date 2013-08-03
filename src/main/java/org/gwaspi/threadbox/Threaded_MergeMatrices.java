@@ -17,25 +17,33 @@
 
 package org.gwaspi.threadbox;
 
+import org.gwaspi.global.Text;
+import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.MatrixKey;
+import org.gwaspi.netCDF.loader.AbstractNetCDFDataSetDestination;
+import org.gwaspi.netCDF.markers.NetCDFDataSetSource;
+import org.gwaspi.netCDF.operations.MatrixMergeSamples;
 import org.gwaspi.netCDF.operations.MatrixOperation;
 import org.gwaspi.netCDF.operations.MergeAllMatrixOperation;
 import org.gwaspi.netCDF.operations.MergeMarkersMatrixOperation;
+import org.gwaspi.netCDF.operations.MergeMatrixNetCDFDataSetDestination;
 
 public class Threaded_MergeMatrices extends AbstractThreaded_MergeMatrices {
 
 	/**
 	 * Whether to merge all, or only the marked samples
-	 * TODO the second part of the previous sentence needs revising
+	 * TODO the previous sentence needs revising
 	 */
-	private final boolean all;
+	private final boolean samples;
+	private final boolean markers;
 
 	public Threaded_MergeMatrices(
 			MatrixKey parentMatrixKey1,
 			MatrixKey parentMatrixKey2,
 			String newMatrixName,
 			String description,
-			boolean all)
+			boolean samples,
+			boolean markers)
 	{
 		super(
 				parentMatrixKey1,
@@ -43,26 +51,53 @@ public class Threaded_MergeMatrices extends AbstractThreaded_MergeMatrices {
 				newMatrixName,
 				description);
 
-		this.all = all;
+		this.samples = samples;
+		this.markers = markers;
 	}
 
 	@Override
 	protected MatrixOperation createMatrixOperation() throws Exception {
 
-		final MatrixOperation joinMatrices;
+		final DataSetSource dataSetSource1 = new NetCDFDataSetSource(parentMatrixKey1);
+		final DataSetSource dataSetSource2 = new NetCDFDataSetSource(parentMatrixKey2);
 
-		if (all) {
-			joinMatrices = new MergeAllMatrixOperation(
-				parentMatrixKey1,
-				parentMatrixKey2,
-				newMatrixName,
-				description);
+		final String humanReadableMethodName;
+		final String methodDescription;
+		if (samples) {
+			humanReadableMethodName = Text.Trafo.mergeSamplesOnly;
+			methodDescription = Text.Trafo.mergeMethodSampleJoin;
+		} else if (markers) {
+			humanReadableMethodName = Text.Trafo.mergeMarkersOnly;
+			methodDescription = Text.Trafo.mergeMethodMarkerJoin;
 		} else {
-			joinMatrices = new MergeMarkersMatrixOperation(
-				parentMatrixKey1,
-				parentMatrixKey2,
+			humanReadableMethodName = Text.Trafo.mergeAll;
+			methodDescription = Text.Trafo.mergeMethodMergeAll;
+		}
+		AbstractNetCDFDataSetDestination dataSetDestination
+				= new MergeMatrixNetCDFDataSetDestination(
+				dataSetSource1,
+				dataSetSource2,
 				newMatrixName,
-				description);
+				description,
+				humanReadableMethodName,
+				methodDescription);
+
+		final MatrixOperation joinMatrices;
+		if (samples) {
+			joinMatrices = new MatrixMergeSamples(
+					dataSetSource1,
+					dataSetSource2,
+					dataSetDestination);
+		} else if (markers) {
+			joinMatrices = new MergeMarkersMatrixOperation(
+					dataSetSource1,
+					dataSetSource2,
+					dataSetDestination);
+		} else {
+			joinMatrices = new MergeAllMatrixOperation(
+					dataSetSource1,
+					dataSetSource2,
+					dataSetDestination);
 		}
 
 		return joinMatrices;

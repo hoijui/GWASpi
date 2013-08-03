@@ -47,14 +47,8 @@ public class LoadGTFromBeagleFiles extends AbstractLoadGTFromFiles {
 		public static final String missing = "0";
 	}
 
-	//<editor-fold defaultstate="expanded" desc="CONSTRUCTORS">
-	public LoadGTFromBeagleFiles()
-	{
-		super(
-				ImportFormat.BEAGLE,
-				StrandType.UNKNOWN,
-				false,
-				null); // disabled, else: cNetCDF.Variables.VAR_MARKERS_BASES_KNOWN
+	public LoadGTFromBeagleFiles() {
+		super(new MetadataLoaderBeagle(), ImportFormat.BEAGLE, StrandType.UNKNOWN, false);
 	}
 
 	@Override
@@ -75,16 +69,6 @@ public class LoadGTFromBeagleFiles extends AbstractLoadGTFromFiles {
 		descSB.append(" (Genotype file)\n");
 		descSB.append(loadDescription.getAnnotationFilePath());
 		descSB.append(" (Marker file)\n");
-	}
-
-	@Override
-	protected MetadataLoader createMetaDataLoader(GenotypesLoadDescription loadDescription) {
-
-		return new MetadataLoaderBeagle(
-				loadDescription.getAnnotationFilePath(),
-				loadDescription.getChromosome(),
-				loadDescription.getStrand(),
-				loadDescription.getStudyKey());
 	}
 
 	private static class BeagleParseIterator implements Iterator<Map.Entry<MarkerKey, byte[]>> {
@@ -301,5 +285,4 @@ public class LoadGTFromBeagleFiles extends AbstractLoadGTFromFiles {
 //				}
 //			}
 //	}
-	//</editor-fold>
 }

@@ -15,34 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.gwaspi.threadbox;
+package org.gwaspi.model;
 
-import org.gwaspi.model.MatrixKey;
-import org.gwaspi.netCDF.operations.MatrixMergeSamples;
-import org.gwaspi.netCDF.operations.MatrixOperation;
+import java.util.Collection;
 
-public class Threaded_MergeMatricesAddSamples extends AbstractThreaded_MergeMatrices {
+public interface GenotypesListFactory {
 
-	public Threaded_MergeMatricesAddSamples(
-			MatrixKey parentMatrixKey1,
-			MatrixKey parentMatrixKey2,
-			String newMatrixName,
-			String description)
-	{
-		super(
-				parentMatrixKey1,
-				parentMatrixKey2,
-				newMatrixName,
-				description);
-	}
-
-	@Override
-	protected MatrixOperation createMatrixOperation() throws Exception {
-
-		return new MatrixMergeSamples(
-				parentMatrixKey1,
-				parentMatrixKey2,
-				newMatrixName,
-				description);
-	}
+	GenotypesList createGenotypesList(Collection<byte[]> rawGenotypes);
 }

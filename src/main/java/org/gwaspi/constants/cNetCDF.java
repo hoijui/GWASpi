@@ -201,13 +201,13 @@ public class cNetCDF {
 
 		public static enum StrandType {
 
-			PLUS,
-			MINUS,
-			PLSMIN,
-			FWD,
-			REV,
-			FWDREV,
-			UNKNOWN;
+			PLUS("+"),
+			MINUS("-"),
+			PLSMIN("+/-"),
+			FWD("fwd"),
+			REV("rev"),
+			FWDREV("fwdrev"),
+			UNKNOWN("unk");
 
 			public static StrandType compareTo(String str) {
 				try {
@@ -215,6 +215,17 @@ public class cNetCDF {
 				} catch (Exception ex) {
 					return null;
 				}
+			}
+
+			private final String strRep;
+
+			private StrandType(String strRep) {
+				this.strRep = strRep;
+			}
+
+			@Override
+			public String toString() {
+				return strRep;
 			}
 		}
 		public static final String[] Chromosomes = new String[]{
@@ -266,13 +277,13 @@ public class cNetCDF {
 		public static enum SetSamplePickCase {
 
 			ALL_SAMPLES,
-			SAMPLES_INCLUDE_BY_NETCDF_FILTER,
-			SAMPLES_INCLUDE_BY_NETCDF_CRITERIA,
-			SAMPLES_INCLUDE_BY_ID,
+//			SAMPLES_INCLUDE_BY_NETCDF_FILTER,
+//			SAMPLES_INCLUDE_BY_NETCDF_CRITERIA,
+//			SAMPLES_INCLUDE_BY_ID,
 			SAMPLES_INCLUDE_BY_DB_FIELD,
-			SAMPLES_EXCLUDE_BY_NETCDF_FILTER,
-			SAMPLES_EXCLUDE_BY_NETCDF_CRITERIA,
-			SAMPLES_EXCLUDE_BY_ID,
+//			SAMPLES_EXCLUDE_BY_NETCDF_FILTER,
+//			SAMPLES_EXCLUDE_BY_NETCDF_CRITERIA,
+//			SAMPLES_EXCLUDE_BY_ID,
 			SAMPLES_EXCLUDE_BY_DB_FIELD;
 
 			public static SetSamplePickCase compareTo(String str) {

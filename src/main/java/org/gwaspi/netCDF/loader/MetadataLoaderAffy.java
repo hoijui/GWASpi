@@ -26,7 +26,7 @@ import java.util.TreeMap;
 import org.gwaspi.constants.cImport.Annotation.Affymetrix_GenomeWide6;
 import org.gwaspi.constants.cImport.ImportFormat;
 import org.gwaspi.constants.cNetCDF;
-import org.gwaspi.global.Text;
+import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
 import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.StudyKey;
 import org.slf4j.Logger;
@@ -40,26 +40,37 @@ public class MetadataLoaderAffy implements MetadataLoader {
 	/** Duplicate SNPs to be removed */
 	private static final SNPBlacklist snpBlackList = new SNPBlacklist();
 
-	private String annotationPath;
-	private StudyKey studyKey;
-	private ImportFormat format;
-
-	public MetadataLoaderAffy(String annotationPath, ImportFormat format, StudyKey studyKey) {
-
-		this.annotationPath = annotationPath;
-		this.studyKey = studyKey;
-		this.format = format;
+	public MetadataLoaderAffy() {
 	}
 
 	@Override
-	public void loadMarkers(SamplesReceiver samplesReceiver) throws Exception {
+	public boolean isHasStrandInfo() {
+		return true;
+	}
+
+	@Override
+	public StrandType getFixedStrandFlag() {
+		return null;
+	}
+
+	@Override
+	public void loadMarkers(DataSetDestination samplesReceiver, GenotypesLoadDescription loadDescription) throws Exception {
+		loadMarkers(
+				samplesReceiver,
+				loadDescription.getAnnotationFilePath(),
+				loadDescription.getFormat(),
+				loadDescription.getStudyKey());
+	}
+
+	private void loadMarkers(DataSetDestination samplesReceiver, String annotationPath, ImportFormat format, StudyKey studyKey) throws Exception {
 
 		String startTime = org.gwaspi.global.Utils.getMediumDateTimeAsString();
 
-		SortedMap<String, String> tempTM = parseAnnotationBRFile(); // affyId, rsId,chr,pseudo-autosomal,pos, strand, alleles, plus-alleles
+		// affyId, rsId,chr,pseudo-autosomal,pos, strand, alleles, plus-alleles
+		SortedMap<String, String> tempTM = parseAnnotationBRFile(annotationPath);
 
 		org.gwaspi.global.Utils.sysoutStart("initilaizing Marker info");
-		log.info(Text.All.processing);
+		log.info("parse raw data into marker metadata objects");
 
 		for (Map.Entry<String, String> entry : tempTM.entrySet()) {
 			// keyValues = chr;pseudo-autosomal1;pseudo-autosomal2;pos;markerId"
@@ -94,7 +105,7 @@ public class MetadataLoaderAffy implements MetadataLoader {
 		MetadataLoaderPlink.logAsWhole(startTime, annotationPath, description, studyKey.getId());
 	}
 
-	private SortedMap<String, String> parseAnnotationBRFile() throws IOException {
+	private SortedMap<String, String> parseAnnotationBRFile(String annotationPath) throws IOException {
 		FileReader fr = new FileReader(annotationPath);
 		BufferedReader inputAnnotationBr = new BufferedReader(fr);
 		SortedMap<String, String> sortedMetadataTM = new TreeMap<String, String>(new ComparatorChrAutPosMarkerIdAsc());
@@ -136,13 +147,11 @@ public class MetadataLoaderAffy implements MetadataLoader {
 			}
 			count++;
 
-			if (count == 1) {
-				log.info(Text.All.processing);
-			} else if (count % 100000 == 0) {
-				log.info("Parsed annotation lines: {}", count);
+			if ((count == 1) || (count % 100000 == 0)) {
+				log.info("read and pre-parse marker metadat from file(s); lines: {}", count);
 			}
 		}
-		log.info("Parsed annotation lines: {}", count);
+		log.info("read and pre-parse marker metadat from file(s); lines: {}", count);
 
 		inputAnnotationBr.close();
 

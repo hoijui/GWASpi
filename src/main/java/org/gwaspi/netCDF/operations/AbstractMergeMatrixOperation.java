@@ -18,119 +18,82 @@
 package org.gwaspi.netCDF.operations;
 
 import java.io.IOException;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.Map;
+import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
-import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
+import org.gwaspi.model.DataSetSource;
+import org.gwaspi.model.ExtendedMarkerKey;
+import org.gwaspi.model.GenotypesList;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MarkerMetadata;
-import org.gwaspi.model.MatricesList;
-import org.gwaspi.model.MatrixKey;
-import org.gwaspi.model.MatrixMetadata;
+import org.gwaspi.model.MarkersMetadataSource;
 import org.gwaspi.model.SampleKey;
-import org.gwaspi.netCDF.loader.ComparatorChrAutPosMarkerIdAsc;
-import org.gwaspi.netCDF.markers.MarkerSet;
-import org.gwaspi.samples.SampleSet;
+import org.gwaspi.model.SamplesKeysSource;
+import org.gwaspi.netCDF.loader.DataSetDestination;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.ma2.InvalidRangeException;
-import ucar.nc2.NetcdfFile;
 
 public abstract class AbstractMergeMatrixOperation implements MatrixOperation {
 
-	private final Logger log = LoggerFactory.getLogger(AbstractMergeMatrixOperation.class);
+	private static final Logger log = LoggerFactory.getLogger(AbstractMergeMatrixOperation.class);
 
-	protected MatrixKey rdMatrix1Key;
-	protected MatrixKey rdMatrix2Key;
-	protected final String wrMatrixFriendlyName;
-	protected final String wrMatrixDescription;
-	protected MatrixMetadata rdMatrix1Metadata;
-	protected MatrixMetadata rdMatrix2Metadata;
-	protected MatrixMetadata wrMatrixMetadata;
-	protected MarkerSet rdMarkerSet1;
-	protected MarkerSet rdMarkerSet2;
-	protected MarkerSet wrMarkerSet;
-	protected SampleSet rdSampleSet1;
-	protected SampleSet rdSampleSet2;
-	protected SampleSet wrSampleSet;
+	protected final DataSetSource dataSetSource1;
+	protected final DataSetSource dataSetSource2;
+	protected final DataSetDestination dataSetDestination;
 
 	protected AbstractMergeMatrixOperation(
-			MatrixKey rdMatrix1Key,
-			MatrixKey rdMatrix2Key,
-			String wrMatrixFriendlyName,
-			String wrMatrixDescription)
-			throws IOException, InvalidRangeException
+			DataSetSource dataSetSource1,
+			DataSetSource dataSetSource2,
+			DataSetDestination dataSetDestination)
+			throws IOException
 	{
-		this.wrMatrixMetadata = null;
-		this.wrMarkerSet = null;
-		this.wrSampleSet = null;
-
-		this.rdMatrix1Key = rdMatrix1Key;
-		this.rdMatrix2Key = rdMatrix2Key;
-
-		this.rdMatrix1Metadata = MatricesList.getMatrixMetadataById(this.rdMatrix1Key);
-		this.rdMatrix2Metadata = MatricesList.getMatrixMetadataById(this.rdMatrix2Key);
-
-		this.wrMatrixFriendlyName = wrMatrixFriendlyName;
-		this.wrMatrixDescription = wrMatrixDescription;
-
-		this.rdMarkerSet1 = new MarkerSet(this.rdMatrix1Key);
-		this.rdMarkerSet2 = new MarkerSet(this.rdMatrix2Key);
-
-		this.rdSampleSet1 = new SampleSet(this.rdMatrix1Key);
-		this.rdSampleSet2 = new SampleSet(this.rdMatrix2Key);
+		this.dataSetSource1 = dataSetSource1;
+		this.dataSetSource2 = dataSetSource2;
+		this.dataSetDestination = dataSetDestination;
 	}
 
-	private static Map<MarkerKey, char[]> getMatrixMapWithChrAndPos(MarkerSet rdMarkerSet) {
+	private static Map<MarkerKey, ExtendedMarkerKey> getMatrixMapWithChrAndPosAndMarkerId(MarkersMetadataSource markersMetadataSource) {
 
-		rdMarkerSet.initFullMarkerIdSetMap();
-
-		rdMarkerSet.fillWith(new char[0]);
-		rdMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
-		Map<MarkerKey, char[]> chrMap = new LinkedHashMap<MarkerKey, char[]>(rdMarkerSet.getMarkerIdSetMapCharArray());
-		Map<MarkerKey, char[]> workMap = new LinkedHashMap<MarkerKey, char[]>(chrMap.size());
-		rdMarkerSet.fillWith(new char[0]);
-		rdMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_POS);
-		for (Map.Entry<MarkerKey, char[]> entry : chrMap.entrySet()) {
-			MarkerKey markerKey = entry.getKey();
-			char[] chr = entry.getValue();
-			Integer pos = rdMarkerSet.getMarkerIdSetMapInteger().get(markerKey);
-			StringBuilder sbKey = new StringBuilder(new String(chr));
-			sbKey.append(cNetCDF.Defaults.TMP_SEPARATOR);
-			sbKey.append(pos.toString());
-			sbKey.append(cNetCDF.Defaults.TMP_SEPARATOR);
-			sbKey.append(markerKey.getMarkerId());
-			workMap.put(markerKey, sbKey.toString().toCharArray());
-		}
-		if (rdMarkerSet.getMarkerIdSetMapInteger() != null) {
-			rdMarkerSet.getMarkerIdSetMapInteger().clear();
+		Map<MarkerKey, ExtendedMarkerKey> workMap = new LinkedHashMap<MarkerKey, ExtendedMarkerKey>(markersMetadataSource.size());
+		for (MarkerMetadata markerMetadata : markersMetadataSource) {
+			workMap.put(MarkerKey.valueOf(markerMetadata), ExtendedMarkerKey.valueOf(markerMetadata));
 		}
 
 		return workMap;
 	}
 
-	protected Map<MarkerKey, MarkerMetadata> mingleAndSortMarkerSet() {
+	protected SortedMap<ExtendedMarkerKey, MarkerKey> mingleAndSortMarkerSetRaw() {
 
-		Map<MarkerKey, char[]> workMap = getMatrixMapWithChrAndPos(rdMarkerSet1);
-		workMap.putAll(getMatrixMapWithChrAndPos(rdMarkerSet2));
+		Map<MarkerKey, ExtendedMarkerKey> workMap = getMatrixMapWithChrAndPosAndMarkerId(dataSetSource1.getMarkersMetadatasSource());
+		workMap.putAll(getMatrixMapWithChrAndPosAndMarkerId(dataSetSource2.getMarkersMetadatasSource()));
 
-		// SORT MERGED Map
-		SortedMap<String, MarkerKey> sortedMetadataTM = new TreeMap<String, MarkerKey>(new ComparatorChrAutPosMarkerIdAsc());
-		for (Map.Entry<MarkerKey, char[]> entry : workMap.entrySet()) {
-			MarkerKey key = entry.getKey();
-			String value = new String(entry.getValue());
-			sortedMetadataTM.put(value, key);
+		// sort by extended marker key
+		SortedMap<ExtendedMarkerKey, MarkerKey> sorted = new TreeMap<ExtendedMarkerKey, MarkerKey>();
+		for (Map.Entry<MarkerKey, ExtendedMarkerKey> entry : workMap.entrySet()) {
+			sorted.put(entry.getValue(), entry.getKey());
 		}
 
-		// PACKAGE IN A Map
+		return sorted;
+	}
+
+	protected Map<MarkerKey, MarkerMetadata> mingleAndSortMarkerSet() {
+
+		SortedMap<ExtendedMarkerKey, MarkerKey> sorted = mingleAndSortMarkerSetRaw();
+
+		// repackage
 		Map<MarkerKey, MarkerMetadata> result = new LinkedHashMap<MarkerKey, MarkerMetadata>();
-		for (Map.Entry<String, MarkerKey> entry : sortedMetadataTM.entrySet()) {
-			String key = entry.getKey();
-			String[] keyValues = key.split(cNetCDF.Defaults.TMP_SEPARATOR);
+		for (Map.Entry<ExtendedMarkerKey, MarkerKey> entry : sorted.entrySet()) {
+			ExtendedMarkerKey key = entry.getKey();
 			MarkerMetadata markerInfo = new MarkerMetadata(
-					keyValues[0], // chr
-					Integer.parseInt(keyValues[1])); // pos
+					key.getChr(),
+					key.getPos());
 
 			MarkerKey markerKey = entry.getValue();
 			result.put(markerKey, markerInfo);
@@ -139,12 +102,96 @@ public abstract class AbstractMergeMatrixOperation implements MatrixOperation {
 		return result;
 	}
 
-	protected static Map<SampleKey, int[]> getComboSampleSetWithIndicesArray(Map<SampleKey, ?> sampleSetMap1, Map<SampleKey, ?> sampleSetMap2) {
+	/**
+	 * With the help of this, we perform on-the-fly mismatch checking,
+	 * while we are storing sample genotypes.
+	 */
+	private Collection<Set<Byte>> perMarkerAlleles;
+	private int numSamples;
+	private int mismatchCount;
+	private double mismatchRatio;
+
+	protected void initiateGenotypesMismatchChecking(int numMarkers) throws IOException {
+
+		GenotypeEncoding genotypeEncoding = dataSetSource1.getMatrixMetadata().getGenotypeEncoding();
+		if (genotypeEncoding.equals(GenotypeEncoding.ACGT0)
+				|| genotypeEncoding.equals(GenotypeEncoding.O1234))
+		{
+			perMarkerAlleles = new LinkedList<Set<Byte>>();
+			for (int mi = 0; mi < numMarkers; mi++) {
+				perMarkerAlleles.add(new HashSet<Byte>());
+			}
+		} else {
+			perMarkerAlleles = null;
+		}
+	}
+
+	protected void addSampleGTAlleles(int sampleIndex, Collection<byte[]> sampleAlleles) throws IOException {
+
+		if (perMarkerAlleles != null) {
+			// assemble per marker alleles
+			Iterator<Set<Byte>> perMarkerAllelesIt = perMarkerAlleles.iterator();
+			for (byte[] bs : sampleAlleles) {
+				Set<Byte> markerAllele = perMarkerAllelesIt.next();
+				for (byte allele : bs) {
+					markerAllele.add(allele);
+				}
+			}
+		}
+
+		dataSetDestination.addSampleGTAlleles(sampleIndex, sampleAlleles);
+	}
+
+	protected void finalizeGenotypesMismatchChecking() {
+
+		mismatchCount = 0;
+		mismatchRatio = 0.0;
+		if (perMarkerAlleles != null) {
+			for (Set<Byte> markerAllele : perMarkerAlleles) {
+				// remove the invalid allele 0
+				markerAllele.remove((byte) 0);
+
+				if (markerAllele.size() > 2) {
+					mismatchCount++;
+				}
+			}
+
+			mismatchRatio = (double) mismatchCount / numSamples;
+		}
+	}
+
+	protected void validateMissingRatio() {
+
+		// CHECK FOR MISMATCHES
+		if (getMismatchRatio() > 0.01) {
+			log.warn("");
+			log.warn("Mismatch ratio is bigger than 1% ({}%)!", (getMismatchRatio() * 100));
+			log.warn("There might be an issue with strand positioning of your genotypes!");
+			log.warn("");
+			//resultMatrixId = new int[] {wrMatrixHandler.getResultMatrixId(),-4};  // The threshold of acceptable mismatching genotypes has been crossed
+		}
+	}
+
+	protected int getMissingCount() {
+		return mismatchCount;
+	}
+
+	protected double getMismatchRatio() {
+		return mismatchRatio;
+	}
+
+//	protected void addMarkerGTAlleles(int markerIndex, Collection<byte[]> markerAlleles) throws IOException {
+//		// TODO check for mismatches!
+//		XXX;
+//		dataSetDestination.addMarkerGTAlleles(markerIndex, markerAlleles);
+//	}
+
+	protected static Map<SampleKey, int[]> getComboSampleSetWithIndicesArray(SamplesKeysSource sampleKeys1, SamplesKeysSource sampleKeys2) {
 		Map<SampleKey, int[]> resultMap = new LinkedHashMap<SampleKey, int[]>();
 
 		int wrPos = 0;
 		int rdPos = 0;
-		for (SampleKey key : sampleSetMap1.keySet()) {
+		for (SampleKey key : sampleKeys1) {
 			int[] position = new int[] {1, rdPos, wrPos}; // rdMatrixNb, rdPos, wrPos
 			resultMap.put(key, position);
 			wrPos++;
@@ -152,7 +199,7 @@ public abstract class AbstractMergeMatrixOperation implements MatrixOperation {
 		}
 
 		rdPos = 0;
-		for (SampleKey key : sampleSetMap2.keySet()) {
+		for (SampleKey key : sampleKeys2) {
 			int[] position;
 			// IF SAMPLE ALLREADY EXISTS IN MATRIX1 SUBSTITUTE VALUES WITH MATRIX2
 			if (resultMap.containsKey(key)) {
@@ -160,7 +207,7 @@ public abstract class AbstractMergeMatrixOperation implements MatrixOperation {
 				position[0] = 2; // rdMatrixNb
 				position[1] = rdPos; // rdPos
 			} else {
-				position = new int[]{2, rdPos, wrPos}; // rdMatrixNb, rdPos, wrPos
+				position = new int[] {2, rdPos, wrPos}; // rdMatrixNb, rdPos, wrPos
 			}
 
 			resultMap.put(key, position);
@@ -171,47 +218,26 @@ public abstract class AbstractMergeMatrixOperation implements MatrixOperation {
 		return resultMap;
 	}
 
-	protected double[] checkForMismatches(MatrixKey wrMatrixKey) throws IOException, InvalidRangeException {
+	protected static double[] checkForMismatches(DataSetSource dataSetSource) throws IOException {
+
 		double[] result = new double[2];
 
-		wrMatrixMetadata = MatricesList.getMatrixMetadataById(wrMatrixKey);
-		wrSampleSet = new SampleSet(wrMatrixKey);
-		wrMarkerSet = new MarkerSet(wrMatrixKey);
-		wrMarkerSet.initFullMarkerIdSetMap();
-		Map<SampleKey, byte[]> wrSampleSetMap = wrSampleSet.getSampleIdSetMapByteArray();
-
-		NetcdfFile rdNcFile = NetcdfFile.open(wrMatrixMetadata.getPathToMatrix());
-
-		// Iterate through markerset, take it marker by marker
 		int markerNb = 0;
-		double mismatchCount = 0;
-
-		// Iterate through markerSet
-		for (MarkerKey markerKey : wrMarkerSet.getMarkerKeys()) {
-			Map<Byte, Integer> knownAlleles = new LinkedHashMap<Byte, Integer>();
-
-			// Get a sampleset-full of GTs
-			wrSampleSet.readAllSamplesGTsFromCurrentMarkerToMap(rdNcFile, wrSampleSetMap, markerNb);
-
-			// Iterate through sampleSet
-			for (byte[] tempGT : wrSampleSetMap.values()) {
-				// Gather alleles different from 0 into a list of known alleles and count the number of appearences
-				if (tempGT[0] != ((byte) '0')) {
-					int tempCount = 0;
-					if (knownAlleles.containsKey(tempGT[0])) {
-						tempCount = knownAlleles.get(tempGT[0]);
-					}
-					knownAlleles.put(tempGT[0], tempCount + 1);
-				}
-				if (tempGT[1] != ((byte) '0')) {
-					int tempCount = 0;
-					if (knownAlleles.containsKey(tempGT[1])) {
-						tempCount = knownAlleles.get(tempGT[1]);
-					}
-					knownAlleles.put(tempGT[1], tempCount + 1);
+		int mismatchCount = 0;
+		for (GenotypesList markerGenotypes : dataSetSource.getMarkersGenotypesSource()) {
+			Set<Byte> knownAlleles = new HashSet<Byte>();
+			for (byte[] tempGT : markerGenotypes) {
+				// Gather alleles into a list of known alleles
+				// and count the number of appearences
+				for (byte allele : tempGT) {
+					knownAlleles.add(allele);
 				}
 			}
+			// we are not interested in the "invalid" allele 0
+			knownAlleles.remove((byte) '0');
 
+			// if we have more then two different alleles per marker,
+			// something is wrong
 			if (knownAlleles.size() > 2) {
 				mismatchCount++;
 			}
@@ -221,8 +247,9 @@ public abstract class AbstractMergeMatrixOperation implements MatrixOperation {
 				log.info("Checking markers for mismatches: {}", markerNb);
 			}
 		}
+		final int numSamples = dataSetSource.getSamplesKeysSource().size();
+		final double mismatchRatio = (double) mismatchCount / numSamples;
 
-		double mismatchRatio = mismatchCount / wrSampleSet.getSampleSetSize();
 		result[0] = mismatchCount;
 		result[1] = mismatchRatio;
 

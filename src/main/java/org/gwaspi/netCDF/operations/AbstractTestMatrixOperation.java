@@ -26,6 +26,8 @@ import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.reports.Report_Analysis;
+import org.gwaspi.model.ChromosomeInfo;
+import org.gwaspi.model.ChromosomeKey;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.MatricesList;
@@ -36,6 +38,7 @@ import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.netCDF.markers.MarkerSet;
+import org.gwaspi.netCDF.matrices.ChromosomeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.ArrayChar;
@@ -72,7 +75,17 @@ public abstract class AbstractTestMatrixOperation implements MatrixOperation {
 	}
 
 	@Override
-	public int processMatrix() throws IOException, InvalidRangeException {
+	public boolean isValid() {
+		return true;
+	}
+
+	@Override
+	public String getProblemDescription() {
+		return null;
+	}
+
+	@Override
+	public int processMatrix() throws IOException {
 		int resultAssocId = Integer.MIN_VALUE;
 
 		Collection<MarkerKey> toBeExcluded = new HashSet<MarkerKey>();
@@ -89,10 +102,10 @@ public abstract class AbstractTestMatrixOperation implements MatrixOperation {
 			rdCaseMarkerSet.getOpSetMap(); // without this, we get an NPE later on
 			Map<MarkerKey, char[]> rdCtrlMarkerIdSetMap = rdCtrlMarkerSet.getOpSetMap();
 
-			Map<MarkerKey, MarkerMetadata> wrMarkerSetMap = new LinkedHashMap<MarkerKey, MarkerMetadata>();
+			Map<MarkerKey, MarkerMetadata> wrMarkerMetadata = new LinkedHashMap<MarkerKey, MarkerMetadata>();
 			for (MarkerKey key : rdCtrlMarkerIdSetMap.keySet()) {
 				if (!toBeExcluded.contains(key)) {
-					wrMarkerSetMap.put(key, null);
+					wrMarkerMetadata.put(key, null);
 				}
 			}
 
@@ -103,8 +116,8 @@ public abstract class AbstractTestMatrixOperation implements MatrixOperation {
 
 			// retrieve chromosome info
 			rdMarkerSet.fillMarkerSetMapWithChrAndPos();
-			MarkerSet.replaceWithValuesFrom(wrMarkerSetMap, rdMarkerSet.getMarkerMetadata());
-			Map<MarkerKey, int[]> rdChrInfoSetMap = org.gwaspi.netCDF.matrices.Utils.aggregateChromosomeInfo(wrMarkerSetMap, 0, 1);
+			MarkerSet.replaceWithValuesFrom(wrMarkerMetadata, rdMarkerSet.getMarkerMetadata());
+			Map<ChromosomeKey, ChromosomeInfo> chromosomeInfo = ChromosomeUtils.aggregateChromosomeInfo(wrMarkerMetadata, 0, 1);
 
 			NetcdfFileWriteable wrOPNcFile = null;
 			try {
@@ -113,56 +126,41 @@ public abstract class AbstractTestMatrixOperation implements MatrixOperation {
 						rdCensusOPMetadata.getStudyKey(),
 						testName, // friendly name
 						testName + " on " + markerCensusOP.getFriendlyName() + "\n" + rdCensusOPMetadata.getDescription() + "\nHardy-Weinberg threshold: " + Report_Analysis.FORMAT_SCIENTIFIC.format(hwThreshold), // description
-						wrMarkerSetMap.size(),
+						wrMarkerMetadata.size(),
 						rdCensusOPMetadata.getImplicitSetSize(),
-						rdChrInfoSetMap.size(),
+						chromosomeInfo.size(),
 						testType,
 						rdCensusOPMetadata.getParentMatrixKey(), // Parent matrixId
 						markerCensusOP.getId()); // Parent operationId
-				wrOPNcFile = wrOPHandler.getNetCDFHandler();
 
-				try {
-					wrOPNcFile.create();
-				} catch (IOException ex) {
-					log.error("Failed creating file: " + wrOPNcFile.getLocation(), ex);
-				}
+				wrOPNcFile = wrOPHandler.getNetCDFHandler();
+				wrOPNcFile.create();
+				log.trace("Done creating netCDF handle: " + wrOPNcFile.toString());
 
 				//<editor-fold defaultstate="expanded" desc="METADATA WRITER">
 				// MARKERSET MARKERID
-				ArrayChar.D2 markersD2 = Utils.writeCollectionToD2ArrayChar(wrMarkerSetMap.keySet(), cNetCDF.Strides.STRIDE_MARKER_NAME);
+				ArrayChar.D2 markersD2 = NetCdfUtils.writeCollectionToD2ArrayChar(wrMarkerMetadata.keySet(), cNetCDF.Strides.STRIDE_MARKER_NAME);
 				int[] markersOrig = new int[]{0, 0};
-				try {
-					wrOPNcFile.write(cNetCDF.Variables.VAR_OPSET, markersOrig, markersD2);
-				} catch (IOException ex) {
-					log.error("Failed writing file", ex);
-				} catch (InvalidRangeException ex) {
-					log.error("Failed writing file", ex);
-				}
+				wrOPNcFile.write(cNetCDF.Variables.VAR_OPSET, markersOrig, markersD2);
 
 				// MARKERSET RSID
 				Map<MarkerKey, char[]> rdCaseMarkerIdSetMap = rdCaseMarkerSet.fillOpSetMapWithVariable(rdOPNcFile, cNetCDF.Variables.VAR_MARKERS_RSID);
-				Map<MarkerKey, char[]> sortedCaseMarkerIds = org.gwaspi.global.Utils.createOrderedMap(wrMarkerSetMap, rdCaseMarkerIdSetMap);
-				Utils.saveCharMapValueToWrMatrix(wrOPNcFile, sortedCaseMarkerIds.values(), cNetCDF.Variables.VAR_MARKERS_RSID, cNetCDF.Strides.STRIDE_MARKER_NAME);
+				Map<MarkerKey, char[]> sortedCaseMarkerIds = org.gwaspi.global.Utils.createOrderedMap(wrMarkerMetadata.keySet(), rdCaseMarkerIdSetMap);
+				NetCdfUtils.saveCharMapValueToWrMatrix(wrOPNcFile, sortedCaseMarkerIds.values(), cNetCDF.Variables.VAR_MARKERS_RSID, cNetCDF.Strides.STRIDE_MARKER_NAME);
 
 				// WRITE SAMPLESET TO MATRIX FROM SAMPLES ARRAYLIST
-				ArrayChar.D2 samplesD2 = org.gwaspi.netCDF.operations.Utils.writeCollectionToD2ArrayChar(rdSampleSetMap.keySet(), cNetCDF.Strides.STRIDE_SAMPLE_NAME);
+				ArrayChar.D2 samplesD2 = NetCdfUtils.writeCollectionToD2ArrayChar(rdSampleSetMap.keySet(), cNetCDF.Strides.STRIDE_SAMPLE_NAME);
 
 				int[] sampleOrig = new int[] {0, 0};
-				try {
-					wrOPNcFile.write(cNetCDF.Variables.VAR_IMPLICITSET, sampleOrig, samplesD2);
-				} catch (IOException ex) {
-					log.error("Failed writing file", ex);
-				} catch (InvalidRangeException ex) {
-					log.error("Failed writing file", ex);
-				}
+				wrOPNcFile.write(cNetCDF.Variables.VAR_IMPLICITSET, sampleOrig, samplesD2);
 				log.info("Done writing SampleSet to matrix");
 
 				// WRITE CHROMOSOME INFO
 				// Set of chromosomes found in matrix along with number of markersinfo
-				org.gwaspi.netCDF.operations.Utils.saveCharMapKeyToWrMatrix(wrOPNcFile, rdChrInfoSetMap, cNetCDF.Variables.VAR_CHR_IN_MATRIX, 8);
+				NetCdfUtils.saveObjectsToStringToMatrix(wrOPNcFile, chromosomeInfo.keySet(), cNetCDF.Variables.VAR_CHR_IN_MATRIX, 8);
 				// Number of marker per chromosome & max pos for each chromosome
 				int[] columns = new int[] {0, 1, 2, 3};
-				org.gwaspi.netCDF.operations.Utils.saveIntMapD2ToWrMatrix(wrOPNcFile, rdChrInfoSetMap.values(), columns, cNetCDF.Variables.VAR_CHR_INFO);
+				NetCdfUtils.saveChromosomeInfosD2ToWrMatrix(wrOPNcFile, chromosomeInfo.values(), columns, cNetCDF.Variables.VAR_CHR_INFO);
 				//</editor-fold>
 
 				//<editor-fold defaultstate="expanded" desc="GET CENSUS & PERFORM TESTS">
@@ -173,17 +171,14 @@ public abstract class AbstractTestMatrixOperation implements MatrixOperation {
 				Map<MarkerKey, int[]> rdMarkerCensusCtrls = rdCtrlMarkerSet.fillOpSetMapWithVariable(rdOPNcFile, cNetCDF.Census.VAR_OP_MARKERS_CENSUSCTRL);
 				Map<MarkerKey, int[]> wrCtrlMarkerSet = filter(rdMarkerCensusCtrls, toBeExcluded);
 
-				log.info(Text.All.processing);
+				org.gwaspi.global.Utils.sysoutStart(testName);
 				performTest(wrOPNcFile, wrCaseMarkerIdSetMap, wrCtrlMarkerSet);
-
 				org.gwaspi.global.Utils.sysoutCompleted(testName);
 				//</editor-fold>
 
 				resultAssocId = wrOPHandler.getResultOPId();
 			} catch (InvalidRangeException ex) {
-				log.error(null, ex);
-			} catch (IOException ex) {
-				log.error(null, ex);
+				throw new IOException(ex);
 			} finally {
 				try {
 					if (rdOPNcFile != null) {
@@ -251,5 +246,5 @@ public abstract class AbstractTestMatrixOperation implements MatrixOperation {
 	 * @param wrCaseMarkerIdSetMap
 	 * @param wrCtrlMarkerSet
 	 */
-	protected abstract void performTest(NetcdfFileWriteable wrNcFile, Map<MarkerKey, int[]> wrCaseMarkerIdSetMap, Map<MarkerKey, int[]> wrCtrlMarkerSet);
+	protected abstract void performTest(NetcdfFileWriteable wrNcFile, Map<MarkerKey, int[]> wrCaseMarkerIdSetMap, Map<MarkerKey, int[]> wrCtrlMarkerSet) throws IOException;
 }

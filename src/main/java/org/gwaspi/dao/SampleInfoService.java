@@ -20,6 +20,7 @@ package org.gwaspi.dao;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.StudyKey;
@@ -28,9 +29,18 @@ public interface SampleInfoService {
 
 	SampleInfo getSample(SampleKey key) throws IOException;
 
+	List<SampleKey> getSampleKeys() throws IOException;
+
+	List<SampleKey> getSampleKeys(StudyKey studyKey) throws IOException;
+
 	List<SampleInfo> getSamples() throws IOException;
 
 	List<SampleInfo> getSamples(StudyKey studyKey) throws IOException;
+
+	/**
+	 * @return picked samples keys and indices in the original/full set of samples of the study
+	 */
+	<T> Map<SampleKey, Integer> pickSamples(StudyKey studyKey, String variable, Collection<T> criteria, boolean include) throws IOException;
 
 	void deleteSamples(StudyKey studyKey) throws IOException;
 

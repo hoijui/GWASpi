@@ -75,7 +75,7 @@ public class SampleInfoCollectorSwitch {
 			String sampleInfoPath,
 			String altSampleInfoPath1,
 			String altSampleInfoPath2,
-			SamplesReceiver samplesReceiver)
+			DataSetDestination samplesReceiver)
 			throws Exception
 	{
 		switch (format) {
@@ -88,14 +88,14 @@ public class SampleInfoCollectorSwitch {
 					SamplesParserManager.scanSampleInfo(studyKey, format, altSampleInfoPath2, samplesReceiver);
 					samplesReceiver.finishedLoadingDummySampleInfos();
 
-					samplesReceiver.startLoadingSampleInfos();
+					samplesReceiver.startLoadingSampleInfos(false);
 					samplesReceiver.finishedLoadingSampleInfos();
 				} else {
 					samplesReceiver.startLoadingDummySampleInfos();
 					SamplesParserManager.scanSampleInfo(studyKey, format, altSampleInfoPath2, samplesReceiver);
 					samplesReceiver.finishedLoadingDummySampleInfos();
 
-					samplesReceiver.startLoadingSampleInfos();
+					samplesReceiver.startLoadingSampleInfos(false);
 					SamplesParserManager.scanSampleInfo(studyKey, ImportFormat.GWASpi, sampleInfoPath, samplesReceiver);
 					samplesReceiver.finishedLoadingSampleInfos();
 
@@ -105,7 +105,7 @@ public class SampleInfoCollectorSwitch {
 				break;
 			case PLINK_Binary:
 				log.info(Text.Matrix.scanAffectionStandby);
-				samplesReceiver.startLoadingSampleInfos();
+				samplesReceiver.startLoadingSampleInfos(false);
 				if (checkIsPlinkFAMFile(sampleInfoPath)) {
 					SamplesParserManager.scanSampleInfo(studyKey, format, sampleInfoPath, samplesReceiver);
 				} else {
@@ -123,14 +123,14 @@ public class SampleInfoCollectorSwitch {
 					SamplesParserManager.scanSampleInfo(studyKey, format, altSampleInfoPath1, samplesReceiver);
 					samplesReceiver.finishedLoadingDummySampleInfos();
 
-					samplesReceiver.startLoadingSampleInfos();
+					samplesReceiver.startLoadingSampleInfos(false);
 					samplesReceiver.finishedLoadingSampleInfos();
 				} else {
 					samplesReceiver.startLoadingDummySampleInfos();
 					SamplesParserManager.scanSampleInfo(studyKey, format, altSampleInfoPath1, samplesReceiver);
 					samplesReceiver.finishedLoadingDummySampleInfos();
 
-					samplesReceiver.startLoadingSampleInfos();
+					samplesReceiver.startLoadingSampleInfos(false);
 					SamplesParserManager.scanSampleInfo(studyKey, ImportFormat.GWASpi, sampleInfoPath, samplesReceiver);
 					samplesReceiver.finishedLoadingSampleInfos();
 
@@ -139,12 +139,12 @@ public class SampleInfoCollectorSwitch {
 				}
 				break;
 			case GWASpi:
-				samplesReceiver.startLoadingSampleInfos();
+				samplesReceiver.startLoadingSampleInfos(false);
 				SamplesParserManager.scanSampleInfo(studyKey, format, sampleInfoPath, samplesReceiver);
 				samplesReceiver.finishedLoadingSampleInfos();
 				break;
 			case Sequenom:
-				samplesReceiver.startLoadingSampleInfos();
+				samplesReceiver.startLoadingSampleInfos(false);
 				SamplesParserManager.scanSampleInfo(studyKey, ImportFormat.GWASpi, sampleInfoPath, samplesReceiver); // FIXME why not format instead of ImportFormat.GWASpi?
 				samplesReceiver.finishedLoadingSampleInfos();
 				break;

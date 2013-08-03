@@ -17,6 +17,7 @@
 
 package org.gwaspi.netCDF.operations;
 
+import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.gwaspi.constants.cNetCDF;
@@ -65,7 +66,7 @@ public class OP_AssociationTests extends AbstractTestMatrixOperation {
 	 * @param wrCtrlMarkerSet
 	 */
 	@Override
-	protected void performTest(NetcdfFileWriteable wrNcFile, Map<MarkerKey, int[]> wrCaseMarkerIdSetMap, Map<MarkerKey, int[]> wrCtrlMarkerSet) {
+	protected void performTest(NetcdfFileWriteable wrNcFile, Map<MarkerKey, int[]> wrCaseMarkerIdSetMap, Map<MarkerKey, int[]> wrCtrlMarkerSet) throws IOException {
 		// Iterate through markerset
 		int markerNb = 0;
 		Map<MarkerKey, Double[]> result = new LinkedHashMap<MarkerKey, Double[]>(wrCaseMarkerIdSetMap.size());
@@ -159,7 +160,7 @@ public class OP_AssociationTests extends AbstractTestMatrixOperation {
 			boxes = new int[] {0, 1, 2, 3};
 			variableName = cNetCDF.Association.VAR_OP_MARKERS_ASGenotypicAssociationTP2OR;
 		}
-		Utils.saveDoubleMapD2ToWrMatrix(wrNcFile, result.values(), boxes, variableName);
+		NetCdfUtils.saveDoubleMapD2ToWrMatrix(wrNcFile, result.values(), boxes, variableName);
 		//</editor-fold>
 	}
 }

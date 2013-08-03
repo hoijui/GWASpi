@@ -21,9 +21,9 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
-import org.gwaspi.constants.cImport;
 import org.gwaspi.constants.cNetCDF.Defaults.AlleleBytes;
 import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
+import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
 
 public class Utils {
 
@@ -57,7 +57,7 @@ public class Utils {
 
 		// FLIP TO (+)STRAND AND PRESERVE ALPHABETICAL ORDER
 		String cleanAlleles = "";
-		if (values[strandNb].equals(cImport.StrandFlags.strandMIN)) { // check if strand is "-"
+		if (values[strandNb].equals(StrandType.MINUS.toString())) { // check if strand is "-"
 			switch (Bases.valueOf(values[allelesNb].toString().substring(0, 1))) // inspect 1st allele
 			{
 				case A:

@@ -22,12 +22,12 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
-import org.gwaspi.global.Text;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.SampleKey;
+import org.gwaspi.statistics.StatisticsUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.ArrayChar;
@@ -48,7 +48,18 @@ public class OP_HardyWeinberg implements MatrixOperation {
 		this.censusName = censusName;
 	}
 
-	public int processMatrix() throws IOException, InvalidRangeException {
+	@Override
+	public boolean isValid() {
+		return true;
+	}
+
+	@Override
+	public String getProblemDescription() {
+		return null;
+	}
+
+	@Override
+	public int processMatrix() throws IOException {
 		int resultOpId = Integer.MIN_VALUE;
 
 		OperationMetadata rdOPMetadata = OperationsList.getOperationMetadata(markerCensusOPKey.getId());
@@ -72,41 +83,26 @@ public class OP_HardyWeinberg implements MatrixOperation {
 					OPType.HARDY_WEINBERG,
 					markerCensusOPKey.getParentMatrixKey(), // Parent matrixId
 					markerCensusOPKey.getId()); // Parent operationId
-			wrNcFile = wrOPHandler.getNetCDFHandler();
 
-			try {
-				wrNcFile.create();
-			} catch (IOException ex) {
-				log.error("Failed creating file: " + wrNcFile.getLocation(), ex);
-			}
+			wrNcFile = wrOPHandler.getNetCDFHandler();
+			wrNcFile.create();
+			log.trace("Done creating netCDF handle: " + wrNcFile.toString());
 
 			//<editor-fold defaultstate="expanded" desc="METADATA WRITER">
 			// MARKERSET MARKERID
-			ArrayChar.D2 markersD2 = Utils.writeCollectionToD2ArrayChar(rdMarkerSetMap.keySet(), cNetCDF.Strides.STRIDE_MARKER_NAME);
+			ArrayChar.D2 markersD2 = NetCdfUtils.writeCollectionToD2ArrayChar(rdMarkerSetMap.keySet(), cNetCDF.Strides.STRIDE_MARKER_NAME);
 			int[] markersOrig = new int[] {0, 0};
-			try {
-				wrNcFile.write(cNetCDF.Variables.VAR_OPSET, markersOrig, markersD2);
-			} catch (IOException ex) {
-				log.error("Failed writing file: " + wrNcFile.getLocation(), ex);
-			} catch (InvalidRangeException ex) {
-				log.error(null, ex);
-			}
+			wrNcFile.write(cNetCDF.Variables.VAR_OPSET, markersOrig, markersD2);
 
 			// MARKERSET RSID
 			rdMarkerSetMap = rdOperationSet.fillOpSetMapWithVariable(rdNcFile, cNetCDF.Variables.VAR_MARKERS_RSID);
-			Utils.saveCharMapValueToWrMatrix(wrNcFile, rdMarkerSetMap.values(), cNetCDF.Variables.VAR_MARKERS_RSID, cNetCDF.Strides.STRIDE_MARKER_NAME);
+			NetCdfUtils.saveCharMapValueToWrMatrix(wrNcFile, rdMarkerSetMap.values(), cNetCDF.Variables.VAR_MARKERS_RSID, cNetCDF.Strides.STRIDE_MARKER_NAME);
 
 			// WRITE SAMPLESET TO MATRIX FROM SAMPLES ARRAYLIST
-			ArrayChar.D2 samplesD2 = org.gwaspi.netCDF.operations.Utils.writeCollectionToD2ArrayChar(rdSampleSetMap.keySet(), cNetCDF.Strides.STRIDE_SAMPLE_NAME);
+			ArrayChar.D2 samplesD2 = NetCdfUtils.writeCollectionToD2ArrayChar(rdSampleSetMap.keySet(), cNetCDF.Strides.STRIDE_SAMPLE_NAME);
 
-			int[] sampleOrig = new int[]{0, 0};
-			try {
-				wrNcFile.write(cNetCDF.Variables.VAR_IMPLICITSET, sampleOrig, samplesD2);
-			} catch (IOException ex) {
-				log.error("Failed writing file: " + wrNcFile.getLocation(), ex);
-			} catch (InvalidRangeException ex) {
-				log.error(null, ex);
-			}
+			int[] sampleOrig = new int[] {0, 0};
+			wrNcFile.write(cNetCDF.Variables.VAR_IMPLICITSET, sampleOrig, samplesD2);
 			log.info("Done writing SampleSet to matrix");
 			//</editor-fold>
 
@@ -123,13 +119,13 @@ public class OP_HardyWeinberg implements MatrixOperation {
 //			performHardyWeinberg(wrNcFile, markersCensus, "CASE");
 
 			// PROCESS CONTROL SAMPLES
-			log.info(Text.All.processing);
+			log.info("Perform Hardy-Weinberg test (Control)");
 			rdOperationSet.fillOpSetMapWithDefaultValue(new int[0]); // PURGE
 			markersCensus = rdOperationSet.fillOpSetMapWithVariable(rdNcFile, cNetCDF.Census.VAR_OP_MARKERS_CENSUSCTRL);
 			performHardyWeinberg(wrNcFile, markersCensus, "CTRL");
 
 			// PROCESS ALTERNATE HW SAMPLES
-			log.info(Text.All.processing);
+			log.info("Perform Hardy-Weinberg test (HW-ALT)");
 			rdOperationSet.fillOpSetMapWithDefaultValue(new int[0]); // PURGE
 			markersCensus = rdOperationSet.fillOpSetMapWithVariable(rdNcFile, cNetCDF.Census.VAR_OP_MARKERS_CENSUSHW);
 			performHardyWeinberg(wrNcFile, markersCensus, "HW-ALT");
@@ -138,9 +134,7 @@ public class OP_HardyWeinberg implements MatrixOperation {
 			resultOpId = wrOPHandler.getResultOPId();
 			org.gwaspi.global.Utils.sysoutCompleted("Hardy-Weinberg Equilibrium Test");
 		} catch (InvalidRangeException ex) {
-			log.error(null, ex);
-		} catch (IOException ex) {
-			log.error(null, ex);
+			throw new IOException(ex);
 		} finally {
 			if (rdNcFile != null) {
 				try {
@@ -161,7 +155,7 @@ public class OP_HardyWeinberg implements MatrixOperation {
 		return resultOpId;
 	}
 
-	private void performHardyWeinberg(NetcdfFileWriteable wrNcFile, Map<MarkerKey, int[]> markersContingencyMap, String category) {
+	private void performHardyWeinberg(NetcdfFileWriteable wrNcFile, Map<MarkerKey, int[]> markersContingencyMap, String category) throws IOException {
 		// Iterate through markerset
 		int markerNb = 0;
 		Map<MarkerKey, Double[]> result = new LinkedHashMap<MarkerKey, Double[]>(markersContingencyMap.size());
@@ -174,8 +168,8 @@ public class OP_HardyWeinberg implements MatrixOperation {
 			int sampleNb = obsAA + obsaa + obsAa;
 			double obsHzy = (double) obsAa / sampleNb;
 
-			double fA = org.gwaspi.statistics.Utils.calculatePunnettFrequency(obsAA, obsAa, sampleNb);
-			double fa = org.gwaspi.statistics.Utils.calculatePunnettFrequency(obsaa, obsAa, sampleNb);
+			double fA = StatisticsUtils.calculatePunnettFrequency(obsAA, obsAa, sampleNb);
+			double fa = StatisticsUtils.calculatePunnettFrequency(obsaa, obsAa, sampleNb);
 
 			double pAA = fA * fA;
 			double pAa = 2 * fA * fa;
@@ -205,31 +199,30 @@ public class OP_HardyWeinberg implements MatrixOperation {
 		//<editor-fold defaultstate="expanded" desc="HARDY-WEINBERG DATA WRITER">
 //		// ALL SAMPLES
 //		if(category.equals("ALL")){
-//			Utils.saveArrayDoubleItemD1ToWrMatrix(wrNcFile, markersContingencyMap, 0, cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWPval_ALL);
+//			NetCdfUtils.saveArrayDoubleItemD1ToWrMatrix(wrNcFile, markersContingencyMap, 0, cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWPval_ALL);
 //			int[] boxes = new int[]{1,2};
-//			Utils.saveArrayDoubleD2ToWrMatrix(wrNcFile, markersContingencyMap, boxes, cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWHETZY_ALL);
+//			NetCdfUtils.saveArrayDoubleD2ToWrMatrix(wrNcFile, markersContingencyMap, boxes, cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWHETZY_ALL);
 //		}
 //
 //		// CASE SAMPLES
 //		if(category.equals("CASE")){
-//			Utils.saveArrayDoubleItemD1ToWrMatrix(wrNcFile, markersContingencyMap, 0, cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWPval_CASE);
+//			NetCdfUtils.saveArrayDoubleItemD1ToWrMatrix(wrNcFile, markersContingencyMap, 0, cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWPval_CASE);
 //			int[] boxes = new int[]{1,2};
-//			Utils.saveArrayDoubleD2ToWrMatrix(wrNcFile, markersContingencyMap, boxes, cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWHETZY_CASE);
+//			NetCdfUtils.saveArrayDoubleD2ToWrMatrix(wrNcFile, markersContingencyMap, boxes, cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWHETZY_CASE);
 //		}
 
 		// CONTROL SAMPLES
 		if (category.equals("CTRL")) {
-			Utils.saveDoubleMapItemD1ToWrMatrix(wrNcFile, result.values(), 0, cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWPval_CTRL);
+			NetCdfUtils.saveDoubleMapItemD1ToWrMatrix(wrNcFile, result.values(), 0, cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWPval_CTRL);
 			int[] boxes = new int[] {1, 2};
-			Utils.saveDoubleMapD2ToWrMatrix(wrNcFile, result.values(), boxes, cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWHETZY_CTRL);
+			NetCdfUtils.saveDoubleMapD2ToWrMatrix(wrNcFile, result.values(), boxes, cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWHETZY_CTRL);
 		}
 
 		// HW-ALT SAMPLES
 		if (category.equals("HW-ALT")) {
-			Utils.saveDoubleMapItemD1ToWrMatrix(wrNcFile, result.values(), 0, cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWPval_ALT);
+			NetCdfUtils.saveDoubleMapItemD1ToWrMatrix(wrNcFile, result.values(), 0, cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWPval_ALT);
 			int[] boxes = new int[] {1, 2};
-			Utils.saveDoubleMapD2ToWrMatrix(wrNcFile, result.values(), boxes, cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWHETZY_ALT);
+			NetCdfUtils.saveDoubleMapD2ToWrMatrix(wrNcFile, result.values(), boxes, cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWHETZY_ALT);
 		}
-		//</editor-fold>
 	}
 }
