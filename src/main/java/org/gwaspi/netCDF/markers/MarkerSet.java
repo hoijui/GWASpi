@@ -294,9 +294,8 @@ public class MarkerSet {
 				if (reducer == 1) {
 					ArrayByte.D2 gt_ACD2 = (ArrayByte.D2) gt_ACD3.reduce();
 					org.gwaspi.netCDF.operations.Utils.writeD2ArrayByteToMapValues(gt_ACD2, (Map<MarkerKey, byte[]>) markerIdSetMap);
-				} else if (reducer == 2) {
-					ArrayByte.D1 gt_ACD1 = (ArrayByte.D1) gt_ACD3.reduce();
-					org.gwaspi.netCDF.operations.Utils.writeD1ArrayByteToMapValues(gt_ACD1, (Map<MarkerKey, char[]>) markerIdSetMap);
+				} else {
+					throw new IllegalStateException();
 				}
 			} catch (IOException ex) {
 				log.error("Cannot read data", ex);
