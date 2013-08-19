@@ -15,18 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.gwaspi.netCDF.exporter;
+package org.gwaspi.model;
 
-import java.io.IOException;
-import org.gwaspi.model.DataSetSource;
-import org.gwaspi.model.MatrixMetadata;
+import java.util.List;
 
-interface Formatter {
-
-	boolean export(
-			String exportPath,
-			MatrixMetadata rdMatrixMetadata,
-			DataSetSource dataSetSource,
-			String phenotype)
-			throws IOException;
+/**
+ * TODO
+ */
+public interface MarkersKeysSource extends List<MarkerKey> {
 }

@@ -59,7 +59,7 @@ public class MetadataLoaderAffy implements MetadataLoader {
 		SortedMap<String, String> tempTM = parseAnnotationBRFile(); // affyId, rsId,chr,pseudo-autosomal,pos, strand, alleles, plus-alleles
 
 		org.gwaspi.global.Utils.sysoutStart("initilaizing Marker info");
-		log.info(Text.All.processing);
+		log.info("parse raw data into marker metadata objects");
 
 		for (Map.Entry<String, String> entry : tempTM.entrySet()) {
 			// keyValues = chr;pseudo-autosomal1;pseudo-autosomal2;pos;markerId"
@@ -136,13 +136,11 @@ public class MetadataLoaderAffy implements MetadataLoader {
 			}
 			count++;
 
-			if (count == 1) {
-				log.info(Text.All.processing);
-			} else if (count % 100000 == 0) {
-				log.info("Parsed annotation lines: {}", count);
+			if ((count == 1) || (count % 100000 == 0)) {
+				log.info("read and pre-parse marker metadat from file(s); lines: {}", count);
 			}
 		}
-		log.info("Parsed annotation lines: {}", count);
+		log.info("read and pre-parse marker metadat from file(s); lines: {}", count);
 
 		inputAnnotationBr.close();
 

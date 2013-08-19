@@ -15,18 +15,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.gwaspi.netCDF.exporter;
+package org.gwaspi.model;
 
-import java.io.IOException;
-import org.gwaspi.model.DataSetSource;
-import org.gwaspi.model.MatrixMetadata;
+import java.util.List;
+import java.util.Set;
 
-interface Formatter {
+/**
+ * Represents an ordered list of genotypes (==allele-pairs).
+ */
+public interface GenotypesList extends List<byte[]> {
 
-	boolean export(
-			String exportPath,
-			MatrixMetadata rdMatrixMetadata,
-			DataSetSource dataSetSource,
-			String phenotype)
-			throws IOException;
+	/**
+	 * Returns a fixed order set of all values that might appear
+	 * in this list of genotypes.
+	 */
+	Set<byte[]> getPossibleGenotypes();
 }

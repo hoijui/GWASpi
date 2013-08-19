@@ -22,12 +22,17 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
+import java.util.TreeMap;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.global.EnumeratedValueExtractor;
 import org.gwaspi.global.TypeConverter;
+import org.gwaspi.model.ChromosomeInfo;
+import org.gwaspi.model.Genotype;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.StudyKey;
 import org.slf4j.Logger;
@@ -183,6 +188,10 @@ public class Utils {
 		return saveIntMapD2ToWrMatrix(wrNcFile, values, columns, variable, 0);
 	}
 
+	public static boolean saveChromosomeInfosD2ToWrMatrix(NetcdfFileWriteable wrNcFile, Collection<ChromosomeInfo> values, int[] columns, String variable) {
+		return saveIntMapD2ToWrMatrix(wrNcFile, values, ChromosomeInfo.EXTRACTOR, variable, 0);
+	}
+
 	public static <V> boolean saveIntMapD2ToWrMatrix(
 			NetcdfFileWriteable wrNcFile,
 			Collection<V> values,
@@ -232,15 +241,15 @@ public class Utils {
 	//<editor-fold defaultstate="expanded" desc="D1 SAVERS">
 	public static boolean saveDoubleMapD1ToWrMatrix(
 			NetcdfFileWriteable wrNcFile,
-			Collection<Double> wrMap,
+			Collection<Double> values,
 			String variable,
 			int offset)
 	{
 		boolean result = false;
 
 		try {
-			ArrayDouble.D1 arrayDouble = Utils.writeValuesToD1ArrayDouble(wrMap);
-			int[] origin1 = new int[]{offset};
+			ArrayDouble.D1 arrayDouble = Utils.writeValuesToD1ArrayDouble(values);
+			int[] origin1 = new int[] {offset};
 			try {
 				wrNcFile.write(variable, origin1, arrayDouble);
 				log.info("Done writing {}", variable);
@@ -259,15 +268,15 @@ public class Utils {
 
 	public static boolean saveIntMapD1ToWrMatrix(
 			NetcdfFileWriteable wrNcFile,
-			Collection<Integer> wrMap,
+			Collection<Integer> values,
 			String variable,
 			int offset)
 	{
 		boolean result = false;
 
 		try {
-			ArrayInt.D1 arrayInt = Utils.writeValuesToD1ArrayInt(wrMap);
-			int[] origin1 = new int[]{offset};
+			ArrayInt.D1 arrayInt = Utils.writeValuesToD1ArrayInt(values);
+			int[] origin1 = new int[] {offset};
 			try {
 				wrNcFile.write(variable, origin1, arrayInt);
 				log.info("Done writing {}", variable);
@@ -288,7 +297,7 @@ public class Utils {
 	//<editor-fold defaultstate="expanded" desc="D2 SAVERS">
 	public static boolean saveIntMapD2ToWrMatrix(
 			NetcdfFileWriteable wrNcFile,
-			Collection<int[]> wrMap,
+			Collection<int[]> values,
 			int[] columns,
 			String variable,
 			int offset)
@@ -296,8 +305,8 @@ public class Utils {
 		boolean result = false;
 
 		try {
-			ArrayInt.D2 arrayIntD2 = Utils.writeValuesToD2ArrayInt(wrMap, columns);
-			int[] origin1 = new int[]{offset, 0};
+			ArrayInt.D2 arrayIntD2 = Utils.writeValuesToD2ArrayInt(values, columns);
+			int[] origin1 = new int[] {offset, 0};
 			try {
 				wrNcFile.write(variable, origin1, arrayIntD2);
 				log.info("Done writing {}", variable);
@@ -744,6 +753,24 @@ public class Utils {
 			entries.next().setValue(values);
 		}
 	}
+
+	public static <K> void writeD2ArrayIntToChromosomeInfoMapValues(ArrayInt.D2 inputArray, Map<K, ChromosomeInfo> map) {
+		int[] shape = inputArray.getShape();
+		Iterator<Entry<K, ChromosomeInfo>> entries = map.entrySet().iterator();
+
+		for (int i = 0; i < (shape[0] * shape[1]); i = i + shape[1]) {
+			ArrayInt wrIntArray = new ArrayInt(new int[] {1, shape[1]});
+			ArrayInt.D2.arraycopy(inputArray, i, wrIntArray, 0, shape[1]);
+			int[] values = (int[]) wrIntArray.copyTo1DJavaArray();
+			ChromosomeInfo chromosomeInfo = new ChromosomeInfo(
+					values[0],
+					values[1],
+					values[2],
+					values[3]);
+
+			entries.next().setValue(chromosomeInfo);
+		}
+	}
 	//</editor-fold>
 
 	//<editor-fold defaultstate="expanded" desc="ArrayByte.D2">
@@ -806,4 +833,35 @@ public class Utils {
 	}
 	//</editor-fold>
 	//</editor-fold>
+
+
+	public static Set<byte[]> extractUniqueGenotypesOrdered(
+			final Collection<byte[]> rawGenotypes,
+			final List<Boolean> indicesToKeep)
+	{
+		Map<Integer, byte[]> unique = new TreeMap<Integer, byte[]>();
+		Iterator<Boolean> keep = indicesToKeep.iterator();
+		for (byte[] genotype : rawGenotypes) {
+			if (keep.next().booleanValue()) {
+				unique.put(Genotype.hashCode(genotype), genotype);
+			}
+		}
+		Set<byte[]> uniqueGenotypes = new LinkedHashSet<byte[]>(unique.values());
+//		Collections.sort(uniqueGenotypes); // NOTE not required, because we use TreeMap
+
+		return uniqueGenotypes;
+	}
+
+	public static Set<byte[]> extractUniqueGenotypesOrdered(
+			final Collection<byte[]> rawGenotypes)
+	{
+		Map<Integer, byte[]> unique = new TreeMap<Integer, byte[]>();
+		for (byte[] genotype : rawGenotypes) {
+			unique.put(Genotype.hashCode(genotype), genotype);
+		}
+		Set<byte[]> uniqueGenotypes = new LinkedHashSet<byte[]>(unique.values());
+//		Collections.sort(uniqueGenotypes); // NOTE not required, because we use TreeMap
+
+		return uniqueGenotypes;
+	}
 }

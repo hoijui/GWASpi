@@ -30,6 +30,7 @@ import org.gwaspi.constants.cNetCDF.Defaults.SetMarkerPickCase;
 import org.gwaspi.constants.cNetCDF.Defaults.SetSamplePickCase;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.utils.Dialogs;
+import org.gwaspi.model.ChromosomeInfo;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.MatricesList;
@@ -68,7 +69,7 @@ public class MatrixDataExtractor {
 	private Map<MarkerKey, byte[]> wrMarkerIdSetMap;
 	private Map<SampleKey, char[]> rdSampleSetMap;
 	private Map<SampleKey, Integer> wrSampleSetMap;
-	private Map<MarkerKey, int[]> rdChrInfoSetMap;
+	private Map<MarkerKey, ChromosomeInfo> rdChrInfoSetMap;
 
 	/**
 	 * This constructor to extract data from Matrix a by passing a variable and
@@ -378,7 +379,7 @@ public class MatrixDataExtractor {
 				org.gwaspi.netCDF.operations.Utils.saveCharMapKeyToWrMatrix(wrNcFile, rdChrInfoSetMap, cNetCDF.Variables.VAR_CHR_IN_MATRIX, 8);
 				// Number of marker per chromosome & max pos for each chromosome
 				int[] columns = new int[] {0, 1, 2, 3};
-				org.gwaspi.netCDF.operations.Utils.saveIntMapD2ToWrMatrix(wrNcFile, rdChrInfoSetMap.values(), columns, cNetCDF.Variables.VAR_CHR_INFO);
+				org.gwaspi.netCDF.operations.Utils.saveChromosomeInfosD2ToWrMatrix(wrNcFile, rdChrInfoSetMap.values(), columns, cNetCDF.Variables.VAR_CHR_INFO);
 
 				// MARKERSET POSITION
 				rdMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_POS);
@@ -399,7 +400,6 @@ public class MatrixDataExtractor {
 
 				//<editor-fold defaultstate="expanded" desc="GENOTYPES WRITER">
 				// Iterate through wrSampleSetMap, use item position to read correct sample GTs into rdMarkerIdSetMap.
-				log.info(Text.All.processing);
 				int sampleWrIndex = 0;
 				for (Integer rdPos : wrSampleSetMap.values()) {
 					// Iterate through wrMarkerIdSetMap, get the correct GT from rdMarkerIdSetMap
@@ -409,10 +409,10 @@ public class MatrixDataExtractor {
 
 					// Write wrMarkerIdSetMap to A3 ArrayChar and save to wrMatrix
 					Utils.saveSingleSampleGTsToMatrix(wrNcFile, sortedRdPos.values(), sampleWrIndex);
-					if (sampleWrIndex % 100 == 0) {
-						log.info("Samples copied: {}", sampleWrIndex);
-					}
 					sampleWrIndex++;
+					if ((sampleWrIndex == 1) || ((sampleWrIndex % 100) == 0)) {
+						log.info("Samples copied: {} / {}", sampleWrIndex, wrSampleSetMap.size());
+					}
 				}
 				//</editor-fold>
 

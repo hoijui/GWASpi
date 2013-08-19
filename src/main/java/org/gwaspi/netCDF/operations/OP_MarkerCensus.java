@@ -176,7 +176,7 @@ public class OP_MarkerCensus implements MatrixOperation {
 					rdMarkerSet.getMarkerIdSetMapCharArray().clear();
 				}
 
-				log.info(Text.All.processing);
+				log.info("Start Census testing markers");
 
 				int countMarkers = 0;
 				int chunkSize = Math.round((float)org.gwaspi.gui.StartGWASpi.maxProcessMarkers / 4);

@@ -21,17 +21,16 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Map;
+import java.util.Iterator;
 import org.gwaspi.constants.cExport;
-import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.model.DataSetSource;
+import org.gwaspi.model.GenotypesList;
+import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleKey;
-import org.gwaspi.netCDF.markers.MarkerSet;
-import org.gwaspi.samples.SampleSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.nc2.NetcdfFile;
 
 public class PlinkTransposedFormatter implements Formatter {
 
@@ -41,9 +40,7 @@ public class PlinkTransposedFormatter implements Formatter {
 	public boolean export(
 			String exportPath,
 			MatrixMetadata rdMatrixMetadata,
-			MarkerSet rdMarkerSet,
-			SampleSet rdSampleSet,
-			Map<SampleKey, byte[]> rdSampleSetMap,
+			DataSetSource dataSetSource,
 			String phenotype)
 			throws IOException
 	{
@@ -54,14 +51,13 @@ public class PlinkTransposedFormatter implements Formatter {
 
 		boolean result = false;
 		String sep = cExport.separator_PLINK;
-		NetcdfFile rdNcFile = NetcdfFile.open(rdMatrixMetadata.getPathToMatrix());
-		rdMarkerSet.initFullMarkerIdSetMap();
 
+		//<editor-fold defaultstate="expanded" desc="TPED FILE">
+		BufferedWriter tpedBW = null;
 		try {
-			//<editor-fold defaultstate="expanded" desc="TPED FILE">
-			FileWriter tpedFW = new FileWriter(exportDir.getPath() + "/" + rdMatrixMetadata.getMatrixFriendlyName() + ".tped");
-			BufferedWriter tpedBW = new BufferedWriter(tpedFW);
-
+			FileWriter tpedFW = new FileWriter(new File(exportDir.getPath(),
+					rdMatrixMetadata.getMatrixFriendlyName() + ".tped"));
+			tpedBW = new BufferedWriter(tpedFW);
 			// TPED files:
 			// chromosome (1-22, X(23), Y(24), XY(25), MT(26) or 0 if unplaced)
 			// rs# or snp identifier
@@ -69,62 +65,46 @@ public class PlinkTransposedFormatter implements Formatter {
 			// Base-pair position (bp units)
 			// Genotypes
 
-			// PURGE MARKERSET
-			rdMarkerSet.fillWith(new char[0]);
+			Iterator<GenotypesList> markersGenotypesIt = dataSetSource.getMarkersGenotypesSource().iterator();
+			for (MarkerMetadata curMarkerMetadata : dataSetSource.getMarkersMetadatasSource()) {
+				tpedBW.write(curMarkerMetadata.getChr());
+				tpedBW.write(sep);
+				tpedBW.write(curMarkerMetadata.getRsId()); // XXX Maybe has to be marker-id instead?
+				tpedBW.write(sep);
+				tpedBW.write('0'); // DEFAULT GENETIC DISTANCE
+				tpedBW.write(sep);
+				tpedBW.write(curMarkerMetadata.getPos());
 
-			// MARKERSET CHROMOSOME
-			rdMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
-
-			// MARKERSET RSID
-			rdMarkerSet.appendVariableToMarkerSetMapValue(cNetCDF.Variables.VAR_MARKERS_RSID, sep);
-
-			// DEFAULT GENETIC DISTANCE = 0
-			for (Map.Entry<?, char[]> entry : rdMarkerSet.getMarkerIdSetMapCharArray().entrySet()) {
-				StringBuilder value = new StringBuilder(new String(entry.getValue()));
-				value.append(sep);
-				value.append("0");
-				entry.setValue(value.toString().toCharArray());
-			}
-
-			// MARKERSET POSITION
-			rdMarkerSet.appendVariableToMarkerSetMapValue(cNetCDF.Variables.VAR_MARKERS_POS, sep);
-
-			// Iterate through markerset
-			int markerNb = 0;
-			for (char[] pos : rdMarkerSet.getMarkerIdSetMapCharArray().values()) {
-				StringBuilder line = new StringBuilder();
-
-				// Iterate through sampleset
-				StringBuilder genotypes = new StringBuilder();
-				rdSampleSet.readAllSamplesGTsFromCurrentMarkerToMap(rdNcFile, rdSampleSetMap, markerNb);
-				for (byte[] tempGT : rdSampleSetMap.values()) {
-					genotypes.append(sep);
-					genotypes.append(new String(tempGT, 0, 1));
-					genotypes.append(sep);
-					genotypes.append(new String(tempGT, 1, 1));
+				// iterate through each samples genotype for the current marker
+				for (byte[] tempGT : markersGenotypesIt.next()) {
+					tpedBW.write(sep);
+					tpedBW.write((char) tempGT[0]);
+					tpedBW.write(sep);
+					tpedBW.write((char) tempGT[1]);
 				}
 
-				line.append(new String(pos));
-				line.append(genotypes);
-
-				tpedBW.append(line);
-				tpedBW.append("\n");
-				markerNb++;
+				tpedBW.write('\n');
 			}
 
-			log.info("Markers exported to tped: {}", markerNb);
+			log.info("Markers exported to tped: {}",
+					dataSetSource.getMarkersGenotypesSource().size());
+		} finally {
+			if (tpedBW != null) {
+				tpedBW.close();
+			}
+		}
+		//</editor-fold>
 
-			tpedBW.close();
-			tpedFW.close();
-			//</editor-fold>
-
-			//<editor-fold defaultstate="expanded" desc="TFAM FILE">
-			FileWriter tfamFW = new FileWriter(exportDir.getPath() + "/" + rdMatrixMetadata.getMatrixFriendlyName() + ".tfam");
-			BufferedWriter tfamBW = new BufferedWriter(tfamFW);
+		//<editor-fold defaultstate="expanded" desc="TFAM FILE">
+		BufferedWriter tfamBW = null;
+		try {
+			FileWriter tfamFW = new FileWriter(new File(exportDir.getPath(),
+					rdMatrixMetadata.getMatrixFriendlyName() + ".tfam"));
+			tfamBW = new BufferedWriter(tfamFW);
 
 			// Iterate through all samples
 			int sampleNb = 0;
-			for (SampleKey sampleKey : rdSampleSetMap.keySet()) {
+			for (SampleKey sampleKey : dataSetSource.getSamplesKeysSource()) {
 				SampleInfo sampleInfo = Utils.getCurrentSampleFormattedInfo(sampleKey);
 
 				String familyId = sampleInfo.getFamilyId();
@@ -141,20 +121,18 @@ public class PlinkTransposedFormatter implements Formatter {
 				// Sex (1=male; 2=female; other=unknown)
 				// Affection
 
-				StringBuilder line = new StringBuilder();
-				line.append(familyId);
-				line.append(sep);
-				line.append(sampleKey.getSampleId());
-				line.append(sep);
-				line.append(fatherId);
-				line.append(sep);
-				line.append(motherId);
-				line.append(sep);
-				line.append(sex);
-				line.append(sep);
-				line.append(affection);
+				tfamBW.append(familyId);
+				tfamBW.append(sep);
+				tfamBW.append(sampleKey.getSampleId());
+				tfamBW.append(sep);
+				tfamBW.append(fatherId);
+				tfamBW.append(sep);
+				tfamBW.append(motherId);
+				tfamBW.append(sep);
+				tfamBW.append(sex);
+				tfamBW.append(sep);
+				tfamBW.append(affection);
 
-				tfamBW.append(line);
 				tfamBW.append("\n");
 				tfamBW.flush();
 
@@ -163,22 +141,14 @@ public class PlinkTransposedFormatter implements Formatter {
 					log.info("Samples exported: {}", sampleNb);
 				}
 			}
-			tfamBW.close();
-			tfamFW.close();
-			//</editor-fold>
 
 			result = true;
-		} catch (IOException ex) {
-			log.error(null, ex);
 		} finally {
-			if (null != rdNcFile) {
-				try {
-					rdNcFile.close();
-				} catch (IOException ex) {
-					log.warn("Cannot close file: " + rdNcFile, ex);
-				}
+			if (tfamBW != null) {
+				tfamBW.close();
 			}
 		}
+		//</editor-fold>
 
 		return result;
 	}

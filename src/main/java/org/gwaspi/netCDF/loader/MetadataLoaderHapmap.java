@@ -61,7 +61,7 @@ public class MetadataLoaderHapmap implements MetadataLoader {
 		SortedMap<String, String> tempTM = parseAnnotationBRFile(); // rsId, alleles [A/T], chr, pos, strand, genome_build, center, protLSID, assayLSID, panelLSID, QC_code, ensue GTs by SampleId
 
 		org.gwaspi.global.Utils.sysoutStart("initilaizing Marker info");
-		log.info(Text.All.processing);
+		log.info("parse raw data into marker metadata objects");
 
 		for (Map.Entry<String, String> entry : tempTM.entrySet()) {
 			String[] keyValues = entry.getKey().split(cNetCDF.Defaults.TMP_SEPARATOR); // chr;pos;markerId
@@ -128,13 +128,11 @@ public class MetadataLoaderHapmap implements MetadataLoader {
 
 			count++;
 
-			if (count == 1) {
-				log.info(Text.All.processing);
-			} else if (count % 100000 == 0) {
-				log.info("Parsed annotation lines: {}", count);
+			if ((count == 1) || (count % 100000 == 0)) {
+				log.info("read and pre-parse marker metadat from file(s); lines: {}", count);
 			}
 		}
-		log.info("Parsed annotation lines: {}", count);
+		log.info("read and pre-parse marker metadat from file(s); lines: {}", count);
 
 		inputAnnotationBr.close();
 

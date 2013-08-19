@@ -72,6 +72,7 @@ import org.gwaspi.gui.utils.IntegerInputVerifier;
 import org.gwaspi.gui.utils.LinksExternalResouces;
 import org.gwaspi.gui.utils.RowRendererDefault;
 import org.gwaspi.gui.utils.URLInDefaultBrowser;
+import org.gwaspi.model.ChromosomeInfo;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
@@ -93,7 +94,7 @@ public abstract class Report_Analysis extends JPanel {
 
 	// Variables declaration - do not modify
 	private final OperationKey operationKey;
-	protected Map<String, int[]> chrSetInfoMap;
+	protected Map<String, ChromosomeInfo> chrSetInfoMap;
 	protected File reportFile;
 	private JButton btn_Get;
 	private JButton btn_Save;
@@ -114,7 +115,7 @@ public abstract class Report_Analysis extends JPanel {
 	protected Report_Analysis(final OperationKey operationKey, final String analysisFileName, final Integer nRows) {
 
 		this.operationKey = operationKey;
-		this.chrSetInfoMap = new LinkedHashMap<String, int[]>();
+		this.chrSetInfoMap = new LinkedHashMap<String, ChromosomeInfo>();
 
 		String reportName = GWASpiExplorerPanel.getSingleton().getTree().getLastSelectedPathComponent().toString();
 		reportName = reportName.substring(reportName.indexOf('-') + 2);
@@ -317,10 +318,10 @@ public abstract class Report_Analysis extends JPanel {
 						long markerPhysPos = (Long) tbl_ReportTable.getValueAt(rowIndex, 3); // marker physical position in chromosome
 						String chr = tbl_ReportTable.getValueAt(rowIndex, 2).toString(); // Chromosome
 
-						int[] chrInfo = chrSetInfoMap.get(chr); // Nb of markers, first physical position, last physical position, start index number in MarkerSet,
-						int nbMarkers = (Integer) chrInfo[0];
-						int startPhysPos = (Integer) chrInfo[1];
-						int maxPhysPos = (Integer) chrInfo[2];
+						ChromosomeInfo chrInfo = chrSetInfoMap.get(chr);
+						int nbMarkers = chrInfo.getMarkerCount();
+						int startPhysPos = chrInfo.getFirstPos();
+						int maxPhysPos = chrInfo.getPos();
 						double avgMarkersPerPhysPos = (double) nbMarkers / (maxPhysPos - startPhysPos);
 						int requestedWindowSize = Math.abs((int) Math.round(ManhattanPlotZoom.MARKERS_NUM_DEFAULT / avgMarkersPerPhysPos));
 

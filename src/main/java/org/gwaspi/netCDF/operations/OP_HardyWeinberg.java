@@ -123,13 +123,13 @@ public class OP_HardyWeinberg implements MatrixOperation {
 //			performHardyWeinberg(wrNcFile, markersCensus, "CASE");
 
 			// PROCESS CONTROL SAMPLES
-			log.info(Text.All.processing);
+			log.info("Perform Hardy-Weinberg test (Control)");
 			rdOperationSet.fillOpSetMapWithDefaultValue(new int[0]); // PURGE
 			markersCensus = rdOperationSet.fillOpSetMapWithVariable(rdNcFile, cNetCDF.Census.VAR_OP_MARKERS_CENSUSCTRL);
 			performHardyWeinberg(wrNcFile, markersCensus, "CTRL");
 
 			// PROCESS ALTERNATE HW SAMPLES
-			log.info(Text.All.processing);
+			log.info("Perform Hardy-Weinberg test (HW-ALT)");
 			rdOperationSet.fillOpSetMapWithDefaultValue(new int[0]); // PURGE
 			markersCensus = rdOperationSet.fillOpSetMapWithVariable(rdNcFile, cNetCDF.Census.VAR_OP_MARKERS_CENSUSHW);
 			performHardyWeinberg(wrNcFile, markersCensus, "HW-ALT");

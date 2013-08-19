@@ -21,19 +21,18 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import org.gwaspi.constants.cExport;
-import org.gwaspi.constants.cNetCDF;
-import org.gwaspi.model.MarkerKey;
+import org.gwaspi.model.DataSetSource;
+import org.gwaspi.model.GenotypesList;
+import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleKey;
-import org.gwaspi.netCDF.markers.MarkerSet;
-import org.gwaspi.samples.SampleSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.nc2.NetcdfFile;
 
 public class MachFormatter implements Formatter {
 
@@ -44,9 +43,7 @@ public class MachFormatter implements Formatter {
 	public boolean export(
 			String exportPath,
 			MatrixMetadata rdMatrixMetadata,
-			MarkerSet rdMarkerSet,
-			SampleSet rdSampleSet,
-			Map<SampleKey, byte[]> rdSampleSetMap,
+			DataSetSource dataSetSource,
 			String phenotype)
 			throws IOException
 	{
@@ -56,146 +53,134 @@ public class MachFormatter implements Formatter {
 		}
 
 		boolean result = false;
-		NetcdfFile rdNcFile = NetcdfFile.open(rdMatrixMetadata.getPathToMatrix());
 
-		try {
-			rdMarkerSet.initFullMarkerIdSetMap();
+		// FIND START AND END MARKERS BY CHROMOSOME
+		String tmpChr = "";
+		int start = 0;
+		int end = 0;
+		String dataSetName = rdMatrixMetadata.getMatrixFriendlyName();
+		List<String> chrMarkerRsIds = new LinkedList<String>();
+		for (MarkerMetadata value : dataSetSource.getMarkersMetadatasSource()) {
+			String chr = value.getChr();
 
-			// FIND START AND END MARKERS BY CHROMOSOME
-			rdMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
-			Map<MarkerKey, char[]> chrMarkerSetMap = new LinkedHashMap<MarkerKey, char[]>();
-			chrMarkerSetMap.putAll(rdMarkerSet.getMarkerIdSetMapCharArray());
-			String tmpChr = "";
-			int start = 0;
-			int end = 0;
-			for (char[] value : chrMarkerSetMap.values()) {
-				String chr = new String(value);
-				if (!chr.equals(tmpChr)) {
-					if (start != end) {
-						exportChromosomeToMped(exportDir, rdMatrixMetadata, rdMarkerSet, rdSampleSetMap, tmpChr, start, end - 1);
-						exportChromosomeToDat(exportDir, rdMatrixMetadata, rdMarkerSet, tmpChr, start, end - 1);
-						start = end;
-					}
-					tmpChr = chr;
-				}
-				end++;
+			// CHECK IF rsID is available
+			String markerId = value.getRsId();
+			if (markerId.isEmpty()) {
+				markerId = value.getMarkerId();
 			}
-			exportChromosomeToMped(exportDir, rdMatrixMetadata, rdMarkerSet, rdSampleSetMap, tmpChr, start, end);
-			exportChromosomeToDat(exportDir, rdMatrixMetadata, rdMarkerSet, tmpChr, start, end - 1);
+			chrMarkerRsIds.add(markerId);
 
-			result = true;
-		} catch (IOException ex) {
-			log.error(null, ex);
-		} finally {
-			if (null != rdNcFile) {
-				try {
-					rdNcFile.close();
-				} catch (IOException ex) {
-					log.warn("Cannot close file: " + rdNcFile, ex);
+			if (!chr.equals(tmpChr)) {
+				if (start != end) {
+					exportChromosomeToMped(exportDir, dataSetName, dataSetSource, tmpChr, start, end - 1);
+					exportChromosomeToDat(exportDir, dataSetName, dataSetSource, chrMarkerRsIds, tmpChr, start, end - 1);
+					start = end;
+					chrMarkerRsIds.clear();
 				}
+				tmpChr = chr;
 			}
+			end++;
 		}
+		exportChromosomeToMped(exportDir, dataSetName, dataSetSource, tmpChr, start, end);
+		exportChromosomeToDat(exportDir, dataSetName, dataSetSource, chrMarkerRsIds, tmpChr, start, end - 1);
+
+		result = true;
 
 		return result;
 	}
 
-	private void exportChromosomeToMped(File exportDir, MatrixMetadata rdMatrixMetadata, MarkerSet rdMarkerSet, Map<SampleKey, ?> rdSampleSetMap, String chr, int startPos, int endPos) throws IOException {
+	private void exportChromosomeToMped(File exportDir, String dataSetName, DataSetSource dataSetSource, String chr, int startPos, int endPos) throws IOException {
 
-		FileWriter pedFW = new FileWriter(exportDir.getPath() + "/" + rdMatrixMetadata.getMatrixFriendlyName() + "_chr" + chr + ".mped");
-		BufferedWriter pedBW = new BufferedWriter(pedFW);
+		BufferedWriter pedBW = null;
+		try {
+			FileWriter pedFW = new FileWriter(new File(exportDir.getPath(),
+					dataSetName + "_chr" + chr + ".mped"));
+			pedBW = new BufferedWriter(pedFW);
 
-		// Iterate through all samples
-		int sampleNb = 0;
-		for (SampleKey sampleKey : rdSampleSetMap.keySet()) {
-			SampleInfo sampleInfo = Utils.getCurrentSampleFormattedInfo(sampleKey);
-			String sexStr = "0";
-			String familyId = sampleInfo.getFamilyId();
-			String fatherId = sampleInfo.getFatherId();
-			String motherId = sampleInfo.getMotherId();
-			SampleInfo.Sex sex = sampleInfo.getSex();
-			if (sex == SampleInfo.Sex.MALE) {
-				sexStr = "M";
-			} else if (sex == SampleInfo.Sex.FEMALE) {
-				sexStr = "F";
+			// Iterate through all samples
+			int sampleNb = 0;
+			Iterator<GenotypesList> samplesGenotypesIt = dataSetSource.getSamplesGenotypesSource().iterator();
+			for (SampleKey sampleKey : dataSetSource.getSamplesKeysSource()) {
+				SampleInfo sampleInfo = Utils.getCurrentSampleFormattedInfo(sampleKey);
+				String sexStr = "0";
+				String familyId = sampleInfo.getFamilyId();
+				String fatherId = sampleInfo.getFatherId();
+				String motherId = sampleInfo.getMotherId();
+				SampleInfo.Sex sex = sampleInfo.getSex();
+				if (sex == SampleInfo.Sex.MALE) {
+					sexStr = "M";
+				} else if (sex == SampleInfo.Sex.FEMALE) {
+					sexStr = "F";
+				}
+
+				// Family ID
+				// Individual ID
+				// Paternal ID
+				// Maternal ID
+				// Sex (1=male; 2=female; other=unknown)
+				// Genotypes
+
+				pedBW.append(familyId);
+				pedBW.append(SEP);
+				pedBW.append(sampleKey.getSampleId());
+				pedBW.append(SEP);
+				pedBW.append(fatherId);
+				pedBW.append(SEP);
+				pedBW.append(motherId);
+				pedBW.append(SEP);
+				pedBW.append(sexStr);
+
+				// Iterate through current chrl markers
+				XXX;
+				rdMarkerSet.initMarkerIdSetMap(startPos, endPos);  XXX;
+				rdMarkerSet.fillGTsForCurrentSampleIntoInitMap(sampleNb);
+				int markerNb = 0;
+				for (byte[] tempGT : samplesGenotypesIt.next()) {
+					pedBW.append(SEP);
+					pedBW.append((char) tempGT[0]);
+					pedBW.append(SEP);
+					pedBW.append((char) tempGT[1]);
+					markerNb++;
+				}
+
+				pedBW.append("\n");
+				pedBW.flush();
+
+				sampleNb++;
 			}
-
-			// Iterate through current chrl markers
-			rdMarkerSet.initMarkerIdSetMap(startPos, endPos);
-			rdMarkerSet.fillGTsForCurrentSampleIntoInitMap(sampleNb);
-			StringBuilder genotypes = new StringBuilder();
-			int markerNb = 0;
-			for (byte[] tempGT : rdMarkerSet.getMarkerIdSetMapByteArray().values()) {
-				genotypes.append(SEP);
-				genotypes.append(new String(tempGT, 0, 1));
-				genotypes.append(SEP);
-				genotypes.append(new String(tempGT, 1, 1));
-				markerNb++;
+			log.info("Samples exported to chr{} MPED file: {}", chr, sampleNb);
+		} finally {
+			if (pedBW != null) {
+				pedBW.close();
 			}
-
-			// Family ID
-			// Individual ID
-			// Paternal ID
-			// Maternal ID
-			// Sex (1=male; 2=female; other=unknown)
-			// Genotypes
-
-			StringBuilder line = new StringBuilder();
-			line.append(familyId);
-			line.append(SEP);
-			line.append(sampleKey.getSampleId());
-			line.append(SEP);
-			line.append(fatherId);
-			line.append(SEP);
-			line.append(motherId);
-			line.append(SEP);
-			line.append(sexStr);
-			line.append(genotypes);
-
-			pedBW.append(line);
-			pedBW.append("\n");
-			pedBW.flush();
-
-			sampleNb++;
 		}
-		log.info("Samples exported to chr{} MPED file: {}", chr, sampleNb);
-		pedBW.close();
-		pedFW.close();
 	}
 
-	public void exportChromosomeToDat(File exportDir, MatrixMetadata rdMatrixMetadata, MarkerSet rdMarkerSet, String chr, int startPos, int endPos) throws IOException {
+	public void exportChromosomeToDat(File exportDir, String dataSetName, DataSetSource dataSetSource, List<String> chrMarkerRsIds, String chr, int startPos, int endPos) throws IOException {
 
-		FileWriter datFW = new FileWriter(exportDir.getPath() + "/" + rdMatrixMetadata.getMatrixFriendlyName() + "_chr" + chr + ".dat");
-		BufferedWriter datBW = new BufferedWriter(datFW);
+		BufferedWriter datBW = null;
+		try {
+			FileWriter datFW = new FileWriter(new File(exportDir.getPath(),
+					dataSetName + "_chr" + chr + ".dat"));
+			datBW = new BufferedWriter(datFW);
 
-		// DAT files
-		//     "M" indicates a marker
-		//     rs# or marker identifier
+			// DAT files
+			//     "M" indicates a marker
+			//     rs# or marker identifier
 
-		// MARKERSET RSID
-		rdMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_RSID);
-
-		// Iterate through current chr markers
-		// INIT MARKERSET
-		rdMarkerSet.initMarkerIdSetMap(startPos, endPos);
-		int markerNb = 0;
-		for (Map.Entry<MarkerKey, char[]> entry : rdMarkerSet.getMarkerIdSetMapCharArray().entrySet()) {
-			// CHECK IF rsID is available
-			String markerId = entry.getKey().getMarkerId();
-			String value = new String(entry.getValue());
-			if (!value.isEmpty()) {
-				markerId = value;
+			// Iterate through current chr markers
+			// INIT MARKERSET
+			for (String rsId : chrMarkerRsIds) {
+				datBW.append("M" + SEP);
+				datBW.append(rsId);
+				datBW.append("\n");
 			}
 
-			datBW.append("M" + SEP);
-			datBW.append(markerId);
-			datBW.append("\n");
-
-			markerNb++;
+			log.info("Markers exported to chr{} DAT file: {}", chr, (endPos + 1 - startPos));
+		} finally {
+			if (datBW != null) {
+				datBW.close();
+			}
 		}
-
-		log.info("Markers exported to chr{} DAT file: {}", chr, (endPos + 1 - startPos));
-
-		datBW.close();
-		datFW.close();
 	}
 }

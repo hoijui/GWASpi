@@ -69,9 +69,10 @@ public class MatrixExporter {
 	}
 
 	public boolean exportToFormat(ExportFormat exportFormat, String phenotype) throws IOException {
-		log.info(Text.All.processing);
-
 		String exportPath = Study.constructExportsPath(rdMatrixMetadata.getStudyKey());
+		String taskDesc = "exporting Matrix to \"" + exportPath + "\"";
+		org.gwaspi.global.Utils.sysoutStart(taskDesc);
+
 		org.gwaspi.global.Utils.createFolder(new File(exportPath));
 		Formatter formatter = formatters.get(exportFormat);
 
@@ -90,7 +91,8 @@ public class MatrixExporter {
 			rdMarkerSet.getMarkerIdSetMapCharArray().clear();
 		}
 
-		org.gwaspi.global.Utils.sysoutCompleted("exporting Matrix to \"" + exportPath + "\"");
+		org.gwaspi.global.Utils.sysoutCompleted(taskDesc);
+
 		return result;
 	}
 }

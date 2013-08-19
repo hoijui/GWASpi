@@ -41,6 +41,7 @@ import org.gwaspi.gui.GWASpiExplorerPanel;
 import org.gwaspi.gui.MatrixAnalysePanel;
 import org.gwaspi.gui.utils.CursorUtils;
 import org.gwaspi.gui.utils.Dialogs;
+import org.gwaspi.model.ChromosomeInfo;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
@@ -66,7 +67,7 @@ public final class ManhattanChartDisplay extends JPanel {
 	private JButton btn_Save;
 	private JButton btn_Back;
 	private OperationKey operationKey;
-	private Map<String, int[]> chrSetInfoMap = new LinkedHashMap<String, int[]>();
+	private Map<String, ChromosomeInfo> chrSetInfoMap = new LinkedHashMap<String, ChromosomeInfo>();
 	private String chr = "";
 	private int chartWidth = 0;
 	private int chrPlotWidth = 0;
@@ -233,9 +234,8 @@ public final class ManhattanChartDisplay extends JPanel {
 
 			// CHECK HOW MANY CHR HAVE PLOTS (ANY MARKERS?)
 			int chrPlotNb = 0;
-			for (int[] value : chrSetInfoMap.values()) {
-				int[] chrInfo = value; // Nb of markers, first physical position, last physical position, start index number in MarkerSet,
-				if (chrInfo[0] > 0) {
+			for (ChromosomeInfo chrInfo : chrSetInfoMap.values()) {
+				if (chrInfo.getMarkerCount() > 0) {
 					chrPlotNb++;
 				}
 			}
@@ -255,12 +255,12 @@ public final class ManhattanChartDisplay extends JPanel {
 
 		int pxXposNoLeftPad = pxXpos - padLeft;
 
-		int[] chrInfo = getChrInfo(pxXposNoLeftPad); // Nb of markers, first physical position, last physical position, start index number in MarkerSet, placeholder
+		ChromosomeInfo chrInfo = getChrInfo(pxXposNoLeftPad);
 
-		int nbMarkers = chrInfo[0];
-		int startPhysPos = chrInfo[1];
-		int maxPhysPos = chrInfo[2];
-		int startIdx = chrInfo[3];
+		int nbMarkers = chrInfo.getMarkerCount();
+		int startPhysPos = chrInfo.getFirstPos();
+		int maxPhysPos = chrInfo.getPos();
+		int startIdx = chrInfo.getIndex();
 
 		double avgMarkersPerPx = (double) nbMarkers / chrPlotWidth;
 		double avgSlotsPerPx = (double) (maxPhysPos - startPhysPos) / chrPlotWidth;
@@ -289,13 +289,13 @@ public final class ManhattanChartDisplay extends JPanel {
 		return sliceInfo;
 	}
 
-	private int[] getChrInfo(int pxXposNoLeftPad) {
+	private ChromosomeInfo getChrInfo(int pxXposNoLeftPad) {
 
 		int selectedChrMap = Math.round((float) pxXposNoLeftPad / chrPlotWidthPad);
 
-		int[] chrInfo = new int[4];
+		ChromosomeInfo chrInfo = new ChromosomeInfo();
 		int i = 0;
-		for (Map.Entry<String, int[]> entry : chrSetInfoMap.entrySet()) {
+		for (Map.Entry<String, ChromosomeInfo> entry : chrSetInfoMap.entrySet()) {
 			if ((i > selectedChrMap) || (i >= chrSetInfoMap.size())) {
 				break;
 			}

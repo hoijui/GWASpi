@@ -25,6 +25,7 @@ import java.util.Map;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import org.gwaspi.global.Text;
+import org.gwaspi.model.ChromosomeInfo;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixKey;
@@ -54,7 +55,7 @@ public class MatrixTranslator {
 	private final MarkerSet rdMarkerSet;
 	private final SampleSet rdSampleSet;
 	private Map<MarkerKey, byte[]> wrMarkerIdSetMap;
-	private final Map<MarkerKey, int[]> rdChrInfoSetMap;
+	private final Map<MarkerKey, ChromosomeInfo> rdChrInfoSetMap;
 	private final Map<SampleKey, ?> rdSampleSetMap;
 
 	public MatrixTranslator(
@@ -164,7 +165,7 @@ public class MatrixTranslator {
 				org.gwaspi.netCDF.operations.Utils.saveCharMapKeyToWrMatrix(wrNcFile, rdChrInfoSetMap, cNetCDF.Variables.VAR_CHR_IN_MATRIX, 8);
 				// Number of marker per chromosome & max pos for each chromosome
 				int[] columns = new int[] {0, 1, 2, 3};
-				org.gwaspi.netCDF.operations.Utils.saveIntMapD2ToWrMatrix(wrNcFile, rdChrInfoSetMap.values(), columns, cNetCDF.Variables.VAR_CHR_INFO);
+				org.gwaspi.netCDF.operations.Utils.saveChromosomeInfosD2ToWrMatrix(wrNcFile, rdChrInfoSetMap.values(), columns, cNetCDF.Variables.VAR_CHR_INFO);
 
 				// MARKERSET POSITION
 				rdMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_POS);

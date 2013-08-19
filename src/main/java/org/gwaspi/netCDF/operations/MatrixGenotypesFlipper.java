@@ -22,13 +22,13 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
 import org.gwaspi.global.Text;
+import org.gwaspi.model.ChromosomeInfo;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixKey;
@@ -57,11 +57,11 @@ public class MatrixGenotypesFlipper {
 	private MatrixMetadata rdMatrixMetadata = null;
 	private GenotypeEncoding gtEncoding = GenotypeEncoding.UNKNOWN;
 	private MarkerSet rdMarkerSet = null;
-	private Set<MarkerKey> markerFlipHS = new HashSet<MarkerKey>();
+	private final Set<MarkerKey> markerFlipHS = new HashSet<MarkerKey>();
 	private SampleSet rdSampleSet = null;
-	private Map<MarkerKey, ?> rdMarkerIdSetMap = new LinkedHashMap<MarkerKey, Object>();
-	private Map<SampleKey, byte[]> rdSampleSetMap = new LinkedHashMap<SampleKey, byte[]>();
-	private Map<MarkerKey, int[]> rdChrInfoSetMap = new LinkedHashMap<MarkerKey, int[]>();
+	private final Map<MarkerKey, ?> rdMarkerIdSetMap;
+	private final Map<SampleKey, byte[]> rdSampleSetMap;
+	private final Map<MarkerKey, ChromosomeInfo> rdChrInfoSetMap;
 
 	/**
 	 * This constructor to extract data from Matrix a by passing a variable and
@@ -193,8 +193,8 @@ public class MatrixGenotypesFlipper {
 			// Set of chromosomes found in matrix along with number of markersinfo
 			org.gwaspi.netCDF.operations.Utils.saveCharMapKeyToWrMatrix(wrNcFile, rdChrInfoSetMap, cNetCDF.Variables.VAR_CHR_IN_MATRIX, 8);
 			// Number of marker per chromosome & max pos for each chromosome
-			int[] columns = new int[]{0, 1, 2, 3};
-			org.gwaspi.netCDF.operations.Utils.saveIntMapD2ToWrMatrix(wrNcFile, rdChrInfoSetMap.values(), columns, cNetCDF.Variables.VAR_CHR_INFO);
+			int[] columns = new int[] {0, 1, 2, 3};
+			org.gwaspi.netCDF.operations.Utils.saveChromosomeInfosD2ToWrMatrix(wrNcFile, rdChrInfoSetMap.values(), columns, cNetCDF.Variables.VAR_CHR_INFO);
 
 			// MARKERSET POSITION
 			rdMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_POS);
@@ -248,10 +248,10 @@ public class MatrixGenotypesFlipper {
 
 				// Write rdMarkerIdSetMap to A3 ArrayChar and save to wrMatrix
 				Utils.saveSingleMarkerGTsToMatrix(wrNcFile, rdSampleSetMap.values(), markerIndex);
-				if (markerIndex % 10000 == 0) {
-					log.info("Markers processed: {}" + markerIndex);
-				}
 				markerIndex++;
+				if ((markerIndex == 1) || ((markerIndex % 10000) == 0)) {
+					log.info("Markers processed: {} / {}", markerIndex, rdMarkerIdSetMap.size());
+				}
 			}
 			//</editor-fold>
 

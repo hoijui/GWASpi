@@ -22,6 +22,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.model.ChromosomeInfo;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.OperationKey;
 import org.slf4j.Logger;
@@ -42,9 +43,9 @@ public class MarkerOperationSet<V> extends AbstractOperationSet<MarkerKey, V> {
 	}
 
 	//<editor-fold defaultstate="expanded" desc="CHROMOSOME INFO">
-	public Map<String, int[]> getChrInfoSetMap() {
+	public Map<String, ChromosomeInfo> getChrInfoSetMap() {
 		NetcdfFile ncfile = null;
-		Map<String, int[]> chrInfoMap = new LinkedHashMap<String, int[]>();
+		Map<String, ChromosomeInfo> chrInfoMap = new LinkedHashMap<String, ChromosomeInfo>();
 
 		try {
 			ncfile = NetcdfFile.open(getOperationMetadata().getPathToMatrix());
@@ -81,7 +82,7 @@ public class MarkerOperationSet<V> extends AbstractOperationSet<MarkerKey, V> {
 			try {
 				if (dataType == DataType.INT) {
 					ArrayInt.D2 chrSetAI = (ArrayInt.D2) var.read("(0:" + (varShape[0] - 1) + ":1, 0:3:1)");
-					org.gwaspi.netCDF.operations.Utils.writeD2ArrayIntToMapValues(chrSetAI, chrInfoMap);
+					org.gwaspi.netCDF.operations.Utils.writeD2ArrayIntToChromosomeInfoMapValues(chrSetAI, chrInfoMap);
 				}
 			} catch (IOException ex) {
 				log.error("Cannot read data", ex);

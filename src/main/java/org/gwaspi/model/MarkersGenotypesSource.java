@@ -15,18 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.gwaspi.netCDF.exporter;
+package org.gwaspi.model;
 
-import java.io.IOException;
-import org.gwaspi.model.DataSetSource;
-import org.gwaspi.model.MatrixMetadata;
+import java.util.List;
+import java.util.Map;
 
-interface Formatter {
-
-	boolean export(
-			String exportPath,
-			MatrixMetadata rdMatrixMetadata,
-			DataSetSource dataSetSource,
-			String phenotype)
-			throws IOException;
+/**
+ * Allows to read the genotypes matrix, marker by marker.
+ * Each list of genotypes is #samples long.
+ * The map has an ordered iterator.
+ * Not all Map operations are supported by all implementations,
+ * and some might be unbearably slow.
+ */
+//public interface MarkersGenotypesSource extends Map<MarkerKey, GenotypesList> {
+public interface MarkersGenotypesSource extends List<GenotypesList> {
 }

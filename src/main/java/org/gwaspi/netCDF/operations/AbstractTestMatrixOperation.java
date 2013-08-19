@@ -26,6 +26,7 @@ import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.reports.Report_Analysis;
+import org.gwaspi.model.ChromosomeInfo;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.MatricesList;
@@ -104,7 +105,7 @@ public abstract class AbstractTestMatrixOperation implements MatrixOperation {
 			// retrieve chromosome info
 			rdMarkerSet.fillMarkerSetMapWithChrAndPos();
 			MarkerSet.replaceWithValuesFrom(wrMarkerSetMap, rdMarkerSet.getMarkerMetadata());
-			Map<MarkerKey, int[]> rdChrInfoSetMap = org.gwaspi.netCDF.matrices.Utils.aggregateChromosomeInfo(wrMarkerSetMap, 0, 1);
+			Map<MarkerKey, ChromosomeInfo> rdChrInfoSetMap = org.gwaspi.netCDF.matrices.Utils.aggregateChromosomeInfo(wrMarkerSetMap, 0, 1);
 
 			NetcdfFileWriteable wrOPNcFile = null;
 			try {
@@ -162,7 +163,7 @@ public abstract class AbstractTestMatrixOperation implements MatrixOperation {
 				org.gwaspi.netCDF.operations.Utils.saveCharMapKeyToWrMatrix(wrOPNcFile, rdChrInfoSetMap, cNetCDF.Variables.VAR_CHR_IN_MATRIX, 8);
 				// Number of marker per chromosome & max pos for each chromosome
 				int[] columns = new int[] {0, 1, 2, 3};
-				org.gwaspi.netCDF.operations.Utils.saveIntMapD2ToWrMatrix(wrOPNcFile, rdChrInfoSetMap.values(), columns, cNetCDF.Variables.VAR_CHR_INFO);
+				org.gwaspi.netCDF.operations.Utils.saveChromosomeInfosD2ToWrMatrix(wrOPNcFile, rdChrInfoSetMap.values(), columns, cNetCDF.Variables.VAR_CHR_INFO);
 				//</editor-fold>
 
 				//<editor-fold defaultstate="expanded" desc="GET CENSUS & PERFORM TESTS">
@@ -173,9 +174,8 @@ public abstract class AbstractTestMatrixOperation implements MatrixOperation {
 				Map<MarkerKey, int[]> rdMarkerCensusCtrls = rdCtrlMarkerSet.fillOpSetMapWithVariable(rdOPNcFile, cNetCDF.Census.VAR_OP_MARKERS_CENSUSCTRL);
 				Map<MarkerKey, int[]> wrCtrlMarkerSet = filter(rdMarkerCensusCtrls, toBeExcluded);
 
-				log.info(Text.All.processing);
+				org.gwaspi.global.Utils.sysoutStart(testName);
 				performTest(wrOPNcFile, wrCaseMarkerIdSetMap, wrCtrlMarkerSet);
-
 				org.gwaspi.global.Utils.sysoutCompleted(testName);
 				//</editor-fold>
 

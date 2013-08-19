@@ -28,6 +28,7 @@ import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
 import org.gwaspi.global.Config;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.utils.Dialogs;
+import org.gwaspi.model.ChromosomeInfo;
 import org.gwaspi.model.DataSet;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MarkerMetadata;
@@ -199,7 +200,7 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 		log.info("Done initializing sorted MarkerSetMap");
 
 		// RETRIEVE CHROMOSOMES INFO
-		Map<MarkerKey, int[]> chrSetMap = org.gwaspi.netCDF.matrices.Utils.aggregateChromosomeInfo(rdMarkerSetMap, 0, 1);
+		Map<MarkerKey, ChromosomeInfo> chrSetMap = org.gwaspi.netCDF.matrices.Utils.aggregateChromosomeInfo(rdMarkerSetMap, 0, 1);
 
 		MatrixFactory matrixFactory = new MatrixFactory(
 				loadDescription.getStudyKey(),
@@ -259,7 +260,7 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 
 		// Number of marker per chromosome & max pos for each chromosome
 		int[] columns = new int[] {0, 1, 2, 3};
-		org.gwaspi.netCDF.operations.Utils.saveIntMapD2ToWrMatrix(ncfile, chrSetMap.values(), columns, cNetCDF.Variables.VAR_CHR_INFO);
+		org.gwaspi.netCDF.operations.Utils.saveChromosomeInfosD2ToWrMatrix(ncfile, chrSetMap.values(), columns, cNetCDF.Variables.VAR_CHR_INFO);
 
 
 		// WRITE POSITION METADATA FROM ANNOTATION FILE
@@ -311,7 +312,6 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 
 		//<editor-fold defaultstate="expanded" desc="GENOTYPES WRITER">
 		//Iterate through rdSampleSetMap, use item position to read correct sample GTs into rdMarkerIdSetMap.
-		log.info(Text.All.processing);
 		int sampleWrIndex = 0;
 		for (int i = 0; i < rdSampleSetMap.size(); i++) {
 			rdMarkerSet.fillGTsForCurrentSampleIntoInitMap(sampleWrIndex);
@@ -319,10 +319,11 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 			// Write MarkerIdSetMap to A3 ArrayChar and save to wrMatrix
 //			org.gwaspi.netCDF.operations.Utils.saveSingleSampleGTsToMatrix(ncfile, rdMarkerSet.getMarkerIdSetMapByteArray().values(), sampleWrIndex);
 			samplesReceiver.addSampleGTAlleles(sampleWrIndex, rdMarkerSet.getMarkerIdSetMapByteArray().values());
-			if (sampleWrIndex % 100 == 0) {
-				log.info("Samples copied: " + sampleWrIndex);
-			}
 			sampleWrIndex++;
+			if ((sampleWrIndex == 1) || (sampleWrIndex % 100 == 0)) {
+				log.info("Done processing sample {} / {}", sampleWrIndex,
+						rdSampleSetMap.size());
+			}
 		}
 		//</editor-fold>
 

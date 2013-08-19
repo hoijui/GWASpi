@@ -175,6 +175,12 @@ public class OP_QAMarkers implements MatrixOperation {
 					rdMatrixKey, // Parent matrixId
 					-1); // Parent operationId
 
+			// wrNcFile will contain:
+			// - cNetCDF.Variables.VAR_OPSET: marker keys==IDs (String)
+			// - cNetCDF.Variables.VAR_MARKERS_RSID: marker RS-IDs (String)
+			// - cNetCDF.Variables.VAR_IMPLICITSET: sample keys
+			// TODO More!
+
 			wrNcFile = wrOPHandler.getNetCDFHandler();
 			try {
 				wrNcFile.create();
@@ -334,9 +340,9 @@ public class OP_QAMarkers implements MatrixOperation {
 							intAa.add(intAllele1 + intAllele2);
 
 							orderedAlleles = new OrderedAlleles(
-									new String(new byte[] {byteAllele1}).charAt(0),
+									(char) byteAllele1,
 									(double) countAllele1 / totAlleles,
-									new String(new byte[] {byteAllele2}).charAt(0)
+									(char) byteAllele2
 									);
 						} else {
 							intAA.add(intAllele2);
@@ -348,9 +354,9 @@ public class OP_QAMarkers implements MatrixOperation {
 							intAa.add(intAllele1 + intAllele2);
 
 							orderedAlleles = new OrderedAlleles(
-									new String(new byte[] {byteAllele2}).charAt(0),
+									(char) byteAllele2,
 									(double) countAllele2 / totAlleles,
-									new String(new byte[] {byteAllele1}).charAt(0)
+									(char) byteAllele1
 									);
 						}
 					} else {
@@ -450,10 +456,8 @@ public class OP_QAMarkers implements MatrixOperation {
 				wrMarkerSetMissingRatioMap.put(markerKey, missingRatio);
 
 				markerNb++;
-				if (markerNb == 1) {
-					log.info(Text.All.processing);
-				} else if (markerNb % 100000 == 0) {
-					log.info("Processed markers: {}", markerNb);
+				if ((markerNb == 1) || (markerNb % 10000 == 0)) {
+					log.info("Processed markers: {} / {}", markerNb, rdMarkerSet.size());
 				}
 			}
 			//</editor-fold>

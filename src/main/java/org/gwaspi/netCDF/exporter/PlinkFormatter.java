@@ -21,17 +21,16 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Map;
+import java.util.Iterator;
 import org.gwaspi.constants.cExport;
-import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.model.DataSetSource;
+import org.gwaspi.model.GenotypesList;
+import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleKey;
-import org.gwaspi.netCDF.markers.MarkerSet;
-import org.gwaspi.samples.SampleSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.nc2.NetcdfFile;
 
 public class PlinkFormatter implements Formatter {
 
@@ -41,9 +40,7 @@ public class PlinkFormatter implements Formatter {
 	public boolean export(
 			String exportPath,
 			MatrixMetadata rdMatrixMetadata,
-			MarkerSet rdMarkerSet,
-			SampleSet rdSampleSet,
-			Map<SampleKey, byte[]> rdSampleSetMap,
+			DataSetSource dataSetSource,
 			String phenotype)
 			throws IOException
 	{
@@ -55,17 +52,18 @@ public class PlinkFormatter implements Formatter {
 		boolean result = false;
 		String sep = cExport.separator_PLINK;
 		String sepBig = cExport.separator_PLINK_big;
-		NetcdfFile rdNcFile = NetcdfFile.open(rdMatrixMetadata.getPathToMatrix());
-		rdMarkerSet.initFullMarkerIdSetMap();
 
+		//<editor-fold defaultstate="expanded" desc="PED FILE">
+		BufferedWriter pedBW = null;
 		try {
-			//<editor-fold defaultstate="expanded" desc="PED FILE">
-			FileWriter pedFW = new FileWriter(exportDir.getPath() + "/" + rdMatrixMetadata.getMatrixFriendlyName() + ".ped");
-			BufferedWriter pedBW = new BufferedWriter(pedFW);
+			FileWriter pedFW = new FileWriter(new File(exportDir.getPath(),
+					rdMatrixMetadata.getMatrixFriendlyName() + ".ped"));
+			pedBW = new BufferedWriter(pedFW);
 
 			// Iterate through all samples
 			int sampleNb = 0;
-			for (SampleKey sampleKey : rdSampleSetMap.keySet()) {
+			Iterator<GenotypesList> samplesGenotypesIt = dataSetSource.getSamplesGenotypesSource().iterator();
+			for (SampleKey sampleKey : dataSetSource.getSamplesKeysSource()) {
 				SampleInfo sampleInfo = Utils.getCurrentSampleFormattedInfo(sampleKey);
 
 				String familyId = sampleInfo.getFamilyId();
@@ -73,16 +71,6 @@ public class PlinkFormatter implements Formatter {
 				String motherId = sampleInfo.getMotherId();
 				String sex = sampleInfo.getSexStr();
 				String affection = sampleInfo.getAffectionStr();
-
-				// Iterate through all markers
-				rdMarkerSet.fillGTsForCurrentSampleIntoInitMap(sampleNb);
-				StringBuilder genotypes = new StringBuilder();
-				for (byte[] tempGT : rdMarkerSet.getMarkerIdSetMapByteArray().values()) {
-					genotypes.append(sepBig);
-					genotypes.append(new String(tempGT, 0, 1));
-					genotypes.append(sep);
-					genotypes.append(new String(tempGT, 1, 1));
-				}
 
 				// Family ID
 				// Individual ID
@@ -92,23 +80,27 @@ public class PlinkFormatter implements Formatter {
 				// Affection
 				// Genotypes
 
-				StringBuilder line = new StringBuilder();
-				line.append(familyId);
-				line.append(sepBig);
+				pedBW.append(familyId);
+				pedBW.append(sepBig);
 
-				line.append(sampleKey.getSampleId());
-				line.append(sep);
-				line.append(fatherId);
-				line.append(sep);
-				line.append(motherId);
-				line.append(sep);
-				line.append(sex);
-				line.append(sep);
-				line.append(affection);
+				pedBW.append(sampleKey.getSampleId());
+				pedBW.append(sep);
+				pedBW.append(fatherId);
+				pedBW.append(sep);
+				pedBW.append(motherId);
+				pedBW.append(sep);
+				pedBW.append(sex);
+				pedBW.append(sep);
+				pedBW.append(affection);
 
-				line.append(genotypes);
+				// Iterate through all markers
+				for (byte[] tempGT : samplesGenotypesIt.next()) {
+					pedBW.append(sepBig);
+					pedBW.append((char) tempGT[0]);
+					pedBW.append(sep);
+					pedBW.append((char) tempGT[1]);
+				}
 
-				pedBW.append(line);
 				pedBW.append("\n");
 				pedBW.flush();
 
@@ -118,13 +110,19 @@ public class PlinkFormatter implements Formatter {
 				}
 			}
 			log.info("Samples exported to PED file: {}", sampleNb);
-			pedBW.close();
-			pedFW.close();
-			//</editor-fold>
+		} finally {
+			if (pedBW != null) {
+				pedBW.close();
+			}
+		}
+		//</editor-fold>
 
-			//<editor-fold defaultstate="expanded" desc="MAP FILE">
-			FileWriter mapFW = new FileWriter(exportDir.getPath() + "/" + rdMatrixMetadata.getMatrixFriendlyName() + ".map");
-			BufferedWriter mapBW = new BufferedWriter(mapFW);
+		//<editor-fold defaultstate="expanded" desc="MAP FILE">
+		BufferedWriter mapBW = null;
+		try {
+			FileWriter mapFW = new FileWriter(new File(exportDir.getPath(),
+					rdMatrixMetadata.getMatrixFriendlyName() + ".map"));
+			mapBW = new BufferedWriter(mapFW);
 
 			// MAP files
 			//     chromosome (1-22, X(23), Y(24), XY(25), MT(26) or 0 if unplaced)
@@ -132,53 +130,27 @@ public class PlinkFormatter implements Formatter {
 			//     Genetic distance (morgans)
 			//     Base-pair position (bp units)
 
-			// PURGE MARKERSET
-			rdMarkerSet.fillWith(new char[0]);
-
-			// MARKERSET CHROMOSOME
-			rdMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
-
-			// MARKERSET MARKER-ID and/or RSID
-//			rdMarkerSet.appendVariableToMarkerSetMapValue(cNetCDF.Variables.VAR_MARKERS_RSID, sep);
-			rdMarkerSet.appendVariableToMarkerSetMapValue(cNetCDF.Variables.VAR_MARKERSET, sep);
-
-			// DEFAULT GENETIC DISTANCE = 0
-			for (Map.Entry<?, char[]> entry : rdMarkerSet.getMarkerIdSetMapCharArray().entrySet()) {
-				StringBuilder value = new StringBuilder(new String(entry.getValue()));
-				value.append(sep);
-				value.append("0");
-				entry.setValue(value.toString().toCharArray());
+			for (MarkerMetadata curMarkerMetadata : dataSetSource.getMarkersMetadatasSource()) {
+				mapBW.write(curMarkerMetadata.getChr());
+				mapBW.write(sep);
+				mapBW.write(curMarkerMetadata.getMarkerId());
+				mapBW.write(sep);
+				mapBW.write('0'); // DEFAULT GENETIC DISTANCE
+				mapBW.write(sep);
+				mapBW.write(curMarkerMetadata.getPos());
+				mapBW.write('\n');
 			}
 
-			// MARKERSET POSITION
-			rdMarkerSet.appendVariableToMarkerSetMapValue(cNetCDF.Variables.VAR_MARKERS_POS, sep);
-
-			// write the accumulated values to the .map file
-			int markerNb = 0;
-			for (char[] pos : rdMarkerSet.getMarkerIdSetMapCharArray().values()) {
-				mapBW.append(new String(pos));
-				mapBW.append("\n");
-				markerNb++;
-			}
-
-			log.info("Markers exported to MAP file: {}", markerNb);
-
-			mapBW.close();
-			mapFW.close();
-			//</editor-fold>
+			log.info("Markers exported to MAP file: {}",
+					dataSetSource.getMarkersMetadatasSource().size());
 
 			result = true;
-		} catch (Throwable ex) {
-			log.error(null, ex);
 		} finally {
-			if (null != rdNcFile) {
-				try {
-					rdNcFile.close();
-				} catch (IOException ex) {
-					log.warn("Cannot close file: " + rdNcFile, ex);
-				}
+			if (mapBW != null) {
+				mapBW.close();
 			}
 		}
+		//</editor-fold>
 
 		return result;
 	}

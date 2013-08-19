@@ -21,17 +21,14 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Map;
 import org.gwaspi.constants.cExport;
 import org.gwaspi.gui.utils.Dialogs;
+import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleKey;
-import org.gwaspi.netCDF.markers.MarkerSet;
-import org.gwaspi.samples.SampleSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.nc2.NetcdfFile;
 
 public class GWASpiFormatter implements Formatter {
 
@@ -41,9 +38,7 @@ public class GWASpiFormatter implements Formatter {
 	public boolean export(
 			String exportPath,
 			MatrixMetadata rdMatrixMetadata,
-			MarkerSet rdMarkerSet,
-			SampleSet rdSampleSet,
-			Map<SampleKey, byte[]> rdSampleSetMap,
+			DataSetSource dataSetSource,
 			String phenotype)
 			throws IOException
 	{
@@ -54,19 +49,19 @@ public class GWASpiFormatter implements Formatter {
 
 		boolean result = false;
 		String sep = cExport.separator_SAMPLE_INFO;
-		NetcdfFile rdNcFile = NetcdfFile.open(rdMatrixMetadata.getPathToMatrix());
+		BufferedWriter sampleInfoBW = null;
 		try {
-
 			//<editor-fold defaultstate="expanded" desc="SAMPLE INFO FILE">
-			FileWriter sampleInfoFW = new FileWriter(exportDir.getPath() + "/SampleInfo_" + rdMatrixMetadata.getMatrixFriendlyName() + ".txt");
-			BufferedWriter sampleInfoBW = new BufferedWriter(sampleInfoFW);
+			FileWriter sampleInfoFW = new FileWriter(new File(exportDir.getPath(),
+					"SampleInfo_" + rdMatrixMetadata.getMatrixFriendlyName() + ".txt"));
+			sampleInfoBW = new BufferedWriter(sampleInfoFW);
 
 			sampleInfoBW.append("FamilyID\tSampleID\tFatherID\tMotherID\tSex\tAffection\tCategory\tDesease\tPopulation\tAge");
 			sampleInfoBW.append("\n");
 
 			//Iterate through all samples
 			int sampleNb = 0;
-			for (SampleKey sampleKey : rdSampleSetMap.keySet()) {
+			for (SampleKey sampleKey : dataSetSource.getSamplesKeysSource()) {
 //				FamilyID
 //				SampleID
 //				FatherID
@@ -90,29 +85,26 @@ public class GWASpiFormatter implements Formatter {
 				String population = sampleInfo.getPopulation();
 				int age = sampleInfo.getAge();
 
-				StringBuilder line = new StringBuilder();
-				line.append(familyId);
-				line.append(sep);
-				line.append(sampleKey.getSampleId());
-				line.append(sep);
-				line.append(fatherId);
-				line.append(sep);
-				line.append(motherId);
-				line.append(sep);
-				line.append(sex);
-				line.append(sep);
-				line.append(affection);
-				line.append(sep);
-				line.append(category);
-				line.append(sep);
-				line.append(desease);
-				line.append(sep);
-				line.append(population);
-				line.append(sep);
-				line.append(age);
-
-				sampleInfoBW.append(line);
-				sampleInfoBW.append("\n");
+				sampleInfoBW.write(familyId);
+				sampleInfoBW.write(sep);
+				sampleInfoBW.write(sampleKey.getSampleId());
+				sampleInfoBW.write(sep);
+				sampleInfoBW.write(fatherId);
+				sampleInfoBW.write(sep);
+				sampleInfoBW.write(motherId);
+				sampleInfoBW.write(sep);
+				sampleInfoBW.write(sex);
+				sampleInfoBW.write(sep);
+				sampleInfoBW.write(affection);
+				sampleInfoBW.write(sep);
+				sampleInfoBW.write(category);
+				sampleInfoBW.write(sep);
+				sampleInfoBW.write(desease);
+				sampleInfoBW.write(sep);
+				sampleInfoBW.write(population);
+				sampleInfoBW.write(sep);
+				sampleInfoBW.write(age);
+				sampleInfoBW.write('\n');
 				sampleInfoBW.flush();
 
 				sampleNb++;
@@ -120,35 +112,28 @@ public class GWASpiFormatter implements Formatter {
 					log.info("Samples exported: {}", sampleNb);
 				}
 			}
-			sampleInfoBW.close();
-			sampleInfoFW.close();
 			//</editor-fold>
-
-			//<editor-fold defaultstate="expanded" desc="GWASpi netCDF MATRIX">
-			try {
-				File origFile = new File(rdMatrixMetadata.getPathToMatrix());
-				File newFile = new File(exportDir.getPath() + "/" + rdMatrixMetadata.getMatrixFriendlyName() + ".nc");
-				if (origFile.exists()) {
-					org.gwaspi.global.Utils.copyFile(origFile, newFile);
-				}
-			} catch (Exception ex) {
-				Dialogs.showWarningDialogue("A table saving error has occurred");
-				log.error("A table saving error has occurred", ex);
-			}
-			//</editor-fold>
-
-			result = true;
-		} catch (IOException ex) {
-			log.error(null, ex);
 		} finally {
-			if (null != rdNcFile) {
-				try {
-					rdNcFile.close();
-				} catch (IOException ex) {
-					log.warn("Cannot close file: " + rdNcFile, ex);
-				}
+			if (sampleInfoBW != null) {
+				sampleInfoBW.close();
 			}
 		}
+
+		//<editor-fold defaultstate="expanded" desc="GWASpi netCDF MATRIX">
+		try {
+			File origFile = new File(rdMatrixMetadata.getPathToMatrix());
+			File newFile = new File(exportDir.getPath(),
+					rdMatrixMetadata.getMatrixFriendlyName() + ".nc");
+			if (origFile.exists()) {
+				org.gwaspi.global.Utils.copyFile(origFile, newFile);
+			}
+
+			result = true;
+		} catch (Exception ex) {
+			Dialogs.showWarningDialogue("A table saving error has occurred");
+			log.error("A table saving error has occurred", ex);
+		}
+		//</editor-fold>
 
 		return result;
 	}

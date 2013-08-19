@@ -15,18 +15,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.gwaspi.netCDF.exporter;
+package org.gwaspi.model;
 
-import java.io.IOException;
-import org.gwaspi.model.DataSetSource;
-import org.gwaspi.model.MatrixMetadata;
+/**
+ * TODO
+ */
+public interface DataSetSource {
 
-interface Formatter {
+	MarkersGenotypesSource getMarkersGenotypesSource();
 
-	boolean export(
-			String exportPath,
-			MatrixMetadata rdMatrixMetadata,
-			DataSetSource dataSetSource,
-			String phenotype)
-			throws IOException;
+	MarkersMetadataSource getMarkersMetadatasSource();
+
+	MarkersChromosomeInfosSource getMarkersChromosomeInfosSource();
+
+	MarkersKeysSource getMarkersKeysSource();
+
+	SamplesGenotypesSource getSamplesGenotypesSource();
+
+	SamplesInfosSource getSamplesInfosSource();
+
+	SamplesKeysSource getSamplesKeysSource();
 }

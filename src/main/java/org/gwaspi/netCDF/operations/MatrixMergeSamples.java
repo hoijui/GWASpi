@@ -24,6 +24,7 @@ import org.gwaspi.constants.cImport.ImportFormat;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import org.gwaspi.global.Text;
+import org.gwaspi.model.ChromosomeInfo;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixKey;
@@ -89,7 +90,7 @@ public class MatrixMergeSamples extends AbstractMergeMatrixOperation {
 		rdMarkerSet2.initFullMarkerIdSetMap();
 
 		// RETRIEVE CHROMOSOMES INFO
-		Map<MarkerKey, int[]> chrInfo = rdMarkerSet1.getChrInfoSetMap();
+		Map<MarkerKey, ChromosomeInfo> chrInfo = rdMarkerSet1.getChrInfoSetMap();
 
 		//<editor-fold defaultstate="expanded" desc="CREATE MATRIX">
 		try {
@@ -186,7 +187,7 @@ public class MatrixMergeSamples extends AbstractMergeMatrixOperation {
 			org.gwaspi.netCDF.operations.Utils.saveCharMapKeyToWrMatrix(wrNcFile, chrInfo, cNetCDF.Variables.VAR_CHR_IN_MATRIX, 8);
 			// Number of marker per chromosome & max pos for each chromosome
 			int[] columns = new int[] {0, 1, 2, 3};
-			org.gwaspi.netCDF.operations.Utils.saveIntMapD2ToWrMatrix(wrNcFile, chrInfo.values(), columns, cNetCDF.Variables.VAR_CHR_INFO);
+			org.gwaspi.netCDF.operations.Utils.saveChromosomeInfosD2ToWrMatrix(wrNcFile, chrInfo.values(), columns, cNetCDF.Variables.VAR_CHR_INFO);
 
 			// MARKERSET POSITION
 			rdMarkerSet1.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_POS);

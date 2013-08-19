@@ -18,11 +18,15 @@
 package org.gwaspi.samples;
 
 import java.io.IOException;
+import java.util.AbstractList;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.model.GenotypesList;
+import org.gwaspi.model.MarkersGenotypesSource;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
@@ -44,9 +48,9 @@ import ucar.nc2.Variable;
 /**
  * TODO move to package org.gwaspi.model and create a SampleService
  */
-public class SampleSet {
+public class SampleSet extends AbstractList<GenotypesList> implements MarkersGenotypesSource {
 
-	private final Logger log
+	private static final Logger log
 			= LoggerFactory.getLogger(SampleSet.class);
 
 	// SAMPLESET_MEATADATA
@@ -202,7 +206,7 @@ public class SampleSet {
 		return (ArrayByte.D3) genotypes.read(netCdfReadStr);
 	}
 
-	public void readAllSamplesGTsFromCurrentMarkerToMap(NetcdfFile rdNcFile, Map<SampleKey, byte[]> rdBytes, int markerNb) throws IOException {
+	public static void readAllSamplesGTsFromCurrentMarkerToMap(NetcdfFile rdNcFile, Map<SampleKey, byte[]> rdBytes, int markerNb) throws IOException {
 
 		try {
 			Variable genotypes = rdNcFile.findVariable(cNetCDF.Variables.VAR_GENOTYPES);
@@ -458,4 +462,25 @@ public class SampleSet {
 		return returnMap;
 	}
 	//</editor-fold>
+
+	@Override
+	public int size() {
+		return sampleIdSetMap.size();
+	}
+
+	@Override
+	public GenotypesList get(int markerIndex) {
+
+		if (sampleIdSetMap == null) {
+			initFullMarkerIdSetMap();
+		}
+		try {
+			fillGTsForCurrentSampleIntoInitMap(markerIndex);
+		} catch (IOException ex) {
+			throw new RuntimeException(ex);
+		}
+		Collection<byte[]> sampleGenotypes = getMarkerIdSetMapByteArray().values();
+
+		return genotyesListFactory.createGenotypesList(sampleGenotypes);
+	}
 }

@@ -680,12 +680,12 @@ public class MatrixExtractPanel extends JPanel {
 
 	private class MarkersVariableAction extends AbstractAction { // FIXME make static
 
-		private final Map<MarkerKey, int[]> rdChrInfoSetMap;
+		private final Set<MarkerKey> markerKeys;
 
 		MarkersVariableAction(MatrixKey parentMatrixKey) throws IOException {
 
 			MarkerSet parentMarkerSet = new MarkerSet(parentMatrixKey);
-			rdChrInfoSetMap = parentMarkerSet.getChrInfoSetMap();
+			markerKeys = parentMarkerSet.getMarkerKeys();
 
 			putValue(NAME, Text.Trafo.variable);
 		}
@@ -698,7 +698,7 @@ public class MatrixExtractPanel extends JPanel {
 				// Chromosome variables
 
 				StringBuilder sb = new StringBuilder();
-				for (MarkerKey key : rdChrInfoSetMap.keySet()) {
+				for (MarkerKey key : markerKeys) {
 					sb.append(key.getMarkerId());
 					sb.append(",");
 				}

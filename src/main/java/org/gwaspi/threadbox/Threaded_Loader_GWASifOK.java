@@ -69,9 +69,9 @@ public class Threaded_Loader_GWASifOK extends CommonRunnable {
 
 	protected void runInternal(SwingWorkerItem thisSwi) throws Exception {
 
-//		NetCDFSaverSamplesReceiver samplesReceiver = new NetCDFSaverSamplesReceiver(loadDescription); // HACK FIXME
+		NetCDFSaverSamplesReceiver samplesReceiver = new NetCDFSaverSamplesReceiver(loadDescription); // HACK FIXME
 //		ZipTwoWaySaverSamplesReceiver samplesReceiver = new ZipTwoWaySaverSamplesReceiver(loadDescription); // HACK FIXME
-		InMemorySamplesReceiver samplesReceiver = new InMemorySamplesReceiver(); // HACK FIXME
+//		InMemorySamplesReceiver samplesReceiver = new InMemorySamplesReceiver(); // HACK FIXME
 		SampleInfoCollectorSwitch.collectSampleInfo(
 				loadDescription.getStudyKey(),
 				loadDescription.getFormat(),

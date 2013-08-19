@@ -48,12 +48,12 @@ public abstract class AbstractMergeMatrixOperation implements MatrixOperation {
 	protected MatrixMetadata rdMatrix1Metadata;
 	protected MatrixMetadata rdMatrix2Metadata;
 	protected MatrixMetadata wrMatrixMetadata;
-	protected MarkerSet rdMarkerSet1;
-	protected MarkerSet rdMarkerSet2;
-	protected MarkerSet wrMarkerSet;
-	protected SampleSet rdSampleSet1;
-	protected SampleSet rdSampleSet2;
-	protected SampleSet wrSampleSet;
+//	protected MarkerSet rdMarkerSet1;
+//	protected MarkerSet rdMarkerSet2;
+//	protected MarkerSet wrMarkerSet;
+//	protected SampleSet rdSampleSet1;
+//	protected SampleSet rdSampleSet2;
+//	protected SampleSet wrSampleSet;
 
 	protected AbstractMergeMatrixOperation(
 			MatrixKey rdMatrix1Key,

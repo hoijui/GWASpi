@@ -27,6 +27,7 @@ import org.gwaspi.constants.cImport.ImportFormat;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.StartGWASpi;
+import org.gwaspi.model.ChromosomeInfo;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.MatricesList;
@@ -129,7 +130,7 @@ public class NetCDFSaverSamplesReceiver extends AbstractSamplesReceiver {
 		}
 
 		// RETRIEVE CHROMOSOMES INFO
-		Map<MarkerKey, int[]> chrSetMap = org.gwaspi.netCDF.matrices.Utils.aggregateChromosomeInfo(getDataSet().getMarkerMetadatas(), 2, 3);
+		Map<MarkerKey, ChromosomeInfo> chrSetMap = org.gwaspi.netCDF.matrices.Utils.aggregateChromosomeInfo(getDataSet().getMarkerMetadatas(), 2, 3);
 
 		matrixFactory = new MatrixFactory(
 				loadDescription.getStudyKey(),
@@ -208,7 +209,7 @@ public class NetCDFSaverSamplesReceiver extends AbstractSamplesReceiver {
 
 		// Number of marker per chromosome & max pos for each chromosome
 		int[] columns = new int[] {0, 1, 2, 3};
-		org.gwaspi.netCDF.operations.Utils.saveIntMapD2ToWrMatrix(ncfile, chrSetMap.values(), columns, cNetCDF.Variables.VAR_CHR_INFO);
+		org.gwaspi.netCDF.operations.Utils.saveChromosomeInfosD2ToWrMatrix(ncfile, chrSetMap.values(), columns, cNetCDF.Variables.VAR_CHR_INFO);
 
 
 		// WRITE POSITION METADATA FROM ANNOTATION FILE
@@ -281,7 +282,8 @@ public class NetCDFSaverSamplesReceiver extends AbstractSamplesReceiver {
 			genotypesHyperslabs = new ArrayList<byte[]>(hyperSlabRows);
 		}
 
-		log.info(Text.All.processing);
+		String savingBy = (perSample ? "sample" : "marker");
+		log.info("initialized NetCDF storage, saving {} by {}", savingBy, savingBy);
 	}
 
 	@Override

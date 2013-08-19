@@ -15,18 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.gwaspi.netCDF.exporter;
+package org.gwaspi.model;
 
-import java.io.IOException;
-import org.gwaspi.model.DataSetSource;
-import org.gwaspi.model.MatrixMetadata;
+import java.util.Collection;
 
-interface Formatter {
+public interface GenotypesListFactory {
 
-	boolean export(
-			String exportPath,
-			MatrixMetadata rdMatrixMetadata,
-			DataSetSource dataSetSource,
-			String phenotype)
-			throws IOException;
+	GenotypesList createGenotypesList(Collection<byte[]> rawGenotypes);
 }

@@ -57,7 +57,7 @@ public class MetadataLoaderHGDP1 implements MetadataLoader {
 		SortedMap<String, String> tempTM = parseAndSortMarkerFile(); // chr, markerId, genetic distance, position
 
 		org.gwaspi.global.Utils.sysoutStart("initilaizing Marker info");
-		log.info(Text.All.processing);
+		log.info("parse raw data into marker metadata objects");
 
 		for (Map.Entry<String, String> entry : tempTM.entrySet()) {
 			// "chr;pos;markerId"
@@ -120,13 +120,11 @@ public class MetadataLoaderHGDP1 implements MetadataLoader {
 
 			count++;
 
-			if (count == 1) {
-				log.info(Text.All.processing);
-			} else if (count % 100000 == 0) {
-				log.info("Parsed annotation lines: {}", count);
+			if ((count == 1) || (count % 100000 == 0)) {
+				log.info("read and pre-parse marker metadat from file(s); lines: {}", count);
 			}
 		}
-		log.info("Parsed annotation lines: {}", count);
+		log.info("read and pre-parse marker metadat from file(s); lines: {}", count);
 
 		inputMapBR.close();
 

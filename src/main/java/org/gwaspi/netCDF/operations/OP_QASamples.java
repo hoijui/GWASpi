@@ -18,23 +18,29 @@
 package org.gwaspi.netCDF.operations;
 
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.AlleleBytes;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
+import org.gwaspi.model.ChromosomeInfo;
+import org.gwaspi.model.GenotypesList;
 import org.gwaspi.model.MarkerKey;
+import org.gwaspi.model.MarkerMetadata;
+import org.gwaspi.model.MarkersChromosomeInfosSource;
+import org.gwaspi.model.MarkersMetadataSource;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleKey;
+import org.gwaspi.model.SamplesGenotypesSource;
 import org.gwaspi.netCDF.markers.MarkerSet;
 import org.gwaspi.samples.SampleSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.ArrayChar;
 import ucar.ma2.InvalidRangeException;
-import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFileWriteable;
 
 public class OP_QASamples implements MatrixOperation {
@@ -57,12 +63,13 @@ public class OP_QASamples implements MatrixOperation {
 
 		MatrixMetadata rdMatrixMetadata = MatricesList.getMatrixMetadataById(rdMatrixKey);
 
-		NetcdfFile rdNcFile = NetcdfFile.open(rdMatrixMetadata.getPathToMatrix());
+//		NetcdfFile rdNcFile = NetcdfFile.open(rdMatrixMetadata.getPathToMatrix());
 
-		MarkerSet rdMarkerSet = new MarkerSet(rdMatrixKey);
-		rdMarkerSet.initFullMarkerIdSetMap();
+		SamplesGenotypesSource rdMarkerSet = new MarkerSet(rdMatrixKey);
+//		rdMarkerSet.initFullMarkerIdSetMap();
 
-		Map<MarkerKey, int[]> rdChrSetMap = rdMarkerSet.getChrInfoSetMap();
+//		MarkersChromosomeInfosSource markersChrInfSrc = rdMarkerSet.getChrInfoSetMap();
+		MarkersMetadataSource markersInfSrc = rdMarkerSet.getChrInfoSetMap();
 
 		//Map<String, Object> rdMarkerSetMap = rdMarkerSet.markerIdSetMap; // This to test heap usage of copying locally the Map from markerset
 
@@ -70,21 +77,22 @@ public class OP_QASamples implements MatrixOperation {
 
 		// Iterate through samples
 		int sampleNb = 0;
+		Iterator<GenotypesList> samplesGenotypesIt = rdMarkerSet.iterator();
 		for (SampleKey sampleKey : rdSampleSet.getSampleKeys()) {
 			Integer missingCount = 0;
 			Integer heterozygCount = 0;
 
 			// Iterate through markerset
-			rdMarkerSet.fillGTsForCurrentSampleIntoInitMap(sampleNb);
+			GenotypesList sampleGenotypes = samplesGenotypesIt.next();
 			int markerIndex = 0;
-			for (Map.Entry<?, byte[]> entry : rdMarkerSet.getMarkerIdSetMapByteArray().entrySet()) {
-				byte[] tempGT = entry.getValue();
+			Iterator<MarkerMetadata> markersInfSrcIt = markersInfSrc.iterator();
+			for (byte[] tempGT : sampleGenotypes) {
 				if (tempGT[0] == AlleleBytes._0 && tempGT[1] == AlleleBytes._0) {
 					missingCount++;
 				}
 
 				// WE DON'T WANT NON AUTOSOMAL CHR FOR HETZY
-				String currentChr = MarkerSet.getChrByMarkerIndex(rdChrSetMap, markerIndex);
+				String currentChr = markersInfSrcIt.next().getChr();
 				if (!currentChr.equals("X")
 						&& !currentChr.equals("Y")
 						&& !currentChr.equals("XY")
@@ -174,13 +182,13 @@ public class OP_QASamples implements MatrixOperation {
 
 			resultOpId = wrOPHandler.getResultOPId();
 		} finally {
-			if (null != rdNcFile) {
-				try {
-					rdNcFile.close();
-				} catch (IOException ex) {
-					log.warn("Cannot close file " + rdNcFile, ex);
-				}
-			}
+//			if (null != rdNcFile) {
+//				try {
+//					rdNcFile.close();
+//				} catch (IOException ex) {
+//					log.warn("Cannot close file " + rdNcFile, ex);
+//				}
+//			}
 			if (null != wrNcFile) {
 				try {
 					wrNcFile.close();

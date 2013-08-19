@@ -146,10 +146,9 @@ public class LoadGTFromAffyFiles extends AbstractLoadGTFromFiles implements Geno
 					alleles,
 					sampleKeys);
 
-			if (i == 0) {
-				log.info(Text.All.processing);
-			} else if (i % 10 == 0) {
-				log.info("Done processing sample Nº" + i);
+			if ((i == 1) || ((i+1) % 100 == 0)) {
+				log.info("Done processing sample {} / {}", i,
+						sampleKeys.size());
 			}
 		}
 	}

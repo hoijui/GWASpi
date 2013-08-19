@@ -187,21 +187,17 @@ public abstract class AbstractLoadGTFromFiles implements GenotypesLoader {
 				try {
 //					loadIndividualFiles(
 //							loadDescription.getStudyKey(),
-//							new File(loadDescription.getGtDirPath()),
+//							gtFilesToImport[i],
 //							sampleInfo.getKey(),
 //							alleles);
 					Iterator<Map.Entry<MarkerKey, byte[]>> markerGtIt = iterator(
 							loadDescription.getStudyKey(),
 							sampleInfo.getKey(),
-							new File(loadDescription.getGtDirPath()));
+							gtFilesToImport[i]);
 					while (markerGtIt.hasNext()) {
 						Map.Entry<MarkerKey, byte[]> markerGt = markerGtIt.next();
 						alleles.put(markerGt.getKey(), markerGt.getValue());
 					}
-
-					// WRITING GENOTYPE DATA INTO netCDF FILE
-					samplesReceiver.addSampleGTAlleles(i, alleles.values());
-//					org.gwaspi.netCDF.operations.Utils.saveSingleSampleGTsToMatrix(ncfile, alleles, sampleIndex);
 
 					if (Thread.interrupted()) {
 						throw new InterruptedException();
@@ -214,11 +210,14 @@ public abstract class AbstractLoadGTFromFiles implements GenotypesLoader {
 				}
 			}
 
+			// WRITING GENOTYPE DATA INTO netCDF FILE
+			samplesReceiver.addSampleGTAlleles(sampleIndex, alleles.values());
+//					org.gwaspi.netCDF.operations.Utils.saveSingleSampleGTsToMatrix(ncfile, alleles, sampleIndex);
+
 			sampleIndex++;
-			if (sampleIndex == 1) {
-				log.info(Text.All.processing);
-			} else if (sampleIndex % 100 == 0) {
-				log.info("Done processing sample Nº{}", sampleIndex);
+			if ((sampleIndex == 1) || (sampleIndex % 100 == 0)) {
+				log.info("Done processing sample {} / {}", sampleIndex,
+						dataSet.getSampleInfos().size());
 			}
 		}
 	}

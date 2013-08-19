@@ -21,11 +21,14 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import org.gwaspi.constants.cExport;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
+import org.gwaspi.model.DataSetSource;
+import org.gwaspi.model.GenotypesList;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
@@ -34,10 +37,8 @@ import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleKey;
-import org.gwaspi.netCDF.markers.MarkerSet;
 import org.gwaspi.netCDF.operations.AbstractOperationSet;
 import org.gwaspi.netCDF.operations.MarkerOperationSet;
-import org.gwaspi.samples.SampleSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.NetcdfFile;
@@ -50,9 +51,7 @@ class BeagleFormatter implements Formatter {
 	public boolean export(
 			String exportPath,
 			MatrixMetadata rdMatrixMetadata,
-			MarkerSet rdMarkerSet,
-			SampleSet rdSampleSet,
-			Map<SampleKey, byte[]> rdSampleSetMap,
+			DataSetSource dataSetSource,
 			String phenotype)
 			throws IOException
 	{
@@ -63,13 +62,14 @@ class BeagleFormatter implements Formatter {
 
 		boolean result = false;
 		String sep = cExport.separator_BEAGLE;
-		NetcdfFile rdNcFile = NetcdfFile.open(rdMatrixMetadata.getPathToMatrix());
 
+		BufferedWriter beagleBW = null;
 		try {
-			FileWriter beagleFW = new FileWriter(exportDir.getPath() + "/" + rdMatrixMetadata.getMatrixFriendlyName() + ".beagle");
-			BufferedWriter beagleBW = new BufferedWriter(beagleFW);
+			FileWriter beagleFW = new FileWriter(new File(exportDir.getPath(),
+					rdMatrixMetadata.getMatrixFriendlyName() + ".beagle"));
+			beagleBW = new BufferedWriter(beagleFW);
 
-			//BEAGLE files:
+			// BEAGLE files:
 			// BEAGLE files are marker major, one line per marker, 2 columns per sample
 			// # started lines contain comments and are ignored by Beagle
 			// A started lines contain affection info (2 columns by sample)m 1=unaffected, 2=affected, 0=unknown
@@ -96,7 +96,7 @@ class BeagleFormatter implements Formatter {
 			StringBuilder ageLine = new StringBuilder("#" + sep + "age");
 			StringBuilder affectionLine = new StringBuilder("A" + sep + "affection");
 
-			for (SampleKey sampleKey : rdSampleSetMap.keySet()) {
+			for (SampleKey sampleKey : dataSetSource.getSamplesKeysSource()) {
 				SampleInfo sampleInfo = Utils.getCurrentSampleFormattedInfo(sampleKey);
 
 				sampleLine.append(sep);
@@ -151,26 +151,20 @@ class BeagleFormatter implements Formatter {
 			//</editor-fold>
 
 			//<editor-fold defaultstate="expanded" desc="GENOTYPES">
-			rdMarkerSet.initFullMarkerIdSetMap();
-
-			//Iterate through markerset
+			// Iterate through markers
 			int markerNb = 0;
-			for (MarkerKey markerKey : rdMarkerSet.getMarkerKeys()) {
-				StringBuilder markerLine = new StringBuilder("M" + sep + markerKey.toString());
+			Iterator<GenotypesList> markersGenotypesIt = dataSetSource.getMarkersGenotypesSource().iterator();
+			for (MarkerKey markerKey : dataSetSource.getMarkersKeysSource()) {
+				beagleBW.append("M" + sep + markerKey.toString());
 
 				// Iterate through sampleset
-				StringBuilder currMarkerGTs = new StringBuilder();
-				rdSampleSet.readAllSamplesGTsFromCurrentMarkerToMap(rdNcFile, rdSampleSetMap, markerNb);
-				for (byte[] tempGT : rdSampleSetMap.values()) {
-					currMarkerGTs.append(sep);
-					currMarkerGTs.append(new String(tempGT, 0, 1));
-					currMarkerGTs.append(sep);
-					currMarkerGTs.append(new String(tempGT, 1, 1));
+				for (byte[] tempGT : markersGenotypesIt.next()) {
+					beagleBW.append(sep);
+					beagleBW.append((char) tempGT[0]);
+					beagleBW.append(sep);
+					beagleBW.append((char) tempGT[1]);
 				}
 
-				markerLine.append(currMarkerGTs);
-
-				beagleBW.append(markerLine);
 				beagleBW.append("\n");
 				markerNb++;
 				if (markerNb % 100 == 0) {
@@ -179,11 +173,19 @@ class BeagleFormatter implements Formatter {
 			}
 			log.info("Markers exported to Beagle file: {}", markerNb);
 			//</editor-fold>
-			//</editor-fold>
+		} finally {
+			if (beagleBW != null) {
+				beagleBW.close();
+			}
+		}
+		//</editor-fold>
 
-			//<editor-fold defaultstate="expanded" desc="BEAGLE MARKER FILE">
-			FileWriter markerFW = new FileWriter(exportDir.getPath() + "/" + rdMatrixMetadata.getMatrixFriendlyName() + ".markers");
-			BufferedWriter markerBW = new BufferedWriter(markerFW);
+		//<editor-fold defaultstate="expanded" desc="BEAGLE MARKER FILE">
+		BufferedWriter markerBW = null;
+		try {
+			FileWriter markerFW = new FileWriter(new File(exportDir.getPath(),
+					rdMatrixMetadata.getMatrixFriendlyName() + ".markers"));
+			markerBW = new BufferedWriter(markerFW);
 
 			// MARKER files
 			//     rs# or snp identifier
@@ -259,27 +261,13 @@ class BeagleFormatter implements Formatter {
 
 			log.info("Markers exported to MARKER file: {}", markerNb);
 
-			markerBW.close();
-			markerFW.close();
-			//</editor-fold>
-
-			log.info("Markers exported to BEAGLE: {}", markerNb);
-
-			beagleBW.close();
-			beagleFW.close();
-
 			result = true;
-		} catch (IOException ex) {
-			log.error(null, ex);
 		} finally {
-			if (null != rdNcFile) {
-				try {
-					rdNcFile.close();
-				} catch (IOException ex) {
-					log.warn("Cannot close file: " + rdNcFile, ex);
-				}
+			if (markerBW != null) {
+				markerBW.close();
 			}
 		}
+		//</editor-fold>
 
 		return result;
 	}

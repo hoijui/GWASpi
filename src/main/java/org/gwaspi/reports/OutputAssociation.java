@@ -78,7 +78,7 @@ public class OutputAssociation {
 		String prefix = ReportsList.getReportNamePrefix(op);
 		String manhattanName = prefix + "manhtt";
 
-		log.info(Text.All.processing);
+		log.info("Start saving {} test", testName);
 		if (!combi && writeManhattanPlotFromAssociationData(operationKey, manhattanName, 4000, 500)) {
 			result = true;
 			ReportsList.insertRPMetadata(new Report(
@@ -104,7 +104,7 @@ public class OutputAssociation {
 					testName + " Association QQ Plot",
 					op.getStudyKey()));
 
-			log.info("Saved " + testName + " Association QQ Plot in reports folder");
+			log.info("Saved {} Association QQ Plot in reports folder", testName);
 		}
 		//String assocName = "assoc_"+outName;
 		String assocName = prefix;

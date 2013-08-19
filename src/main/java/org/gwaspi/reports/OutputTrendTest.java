@@ -61,7 +61,7 @@ public class OutputTrendTest {
 		String prefix = ReportsList.getReportNamePrefix(op);
 		String manhattanName = prefix + "manhtt";
 
-		log.info(Text.All.processing);
+		log.info("Start saving trend test");
 		if (writeManhattanPlotFromTrendTestData(operationKey, manhattanName, 4000, 500)) {
 			result = true;
 			ReportsList.insertRPMetadata(new Report(
