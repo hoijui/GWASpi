@@ -29,6 +29,7 @@ import org.gwaspi.model.GenotypesList;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.MarkersChromosomeInfosSource;
+import org.gwaspi.model.MarkersKeysSource;
 import org.gwaspi.model.MarkersMetadataSource;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixKey;
@@ -66,6 +67,7 @@ public class OP_QASamples implements MatrixOperation {
 //		NetcdfFile rdNcFile = NetcdfFile.open(rdMatrixMetadata.getPathToMatrix());
 
 		SamplesGenotypesSource rdMarkerSet = new MarkerSet(rdMatrixKey);
+		MarkersKeysSource rdMarkersKeysSource = XXX;
 //		rdMarkerSet.initFullMarkerIdSetMap();
 
 //		MarkersChromosomeInfosSource markersChrInfSrc = rdMarkerSet.getChrInfoSetMap();
@@ -106,9 +108,9 @@ public class OP_QASamples implements MatrixOperation {
 
 			wrSampleSetMissingCountMap.put(sampleKey, missingCount);
 
-			double missingRatio = (double) missingCount / rdMarkerSet.getMarkerKeys().size();
+			double missingRatio = (double) missingCount / markersInfSrc.size();
 			wrSampleSetMissingRatioMap.put(sampleKey, missingRatio);
-			double heterozygRatio = (double) heterozygCount / (rdMarkerSet.getMarkerKeys().size() - missingCount);
+			double heterozygRatio = (double) heterozygCount / (markersInfSrc.size() - missingCount);
 			wrSampleSetHetzyRatioMap.put(sampleKey, heterozygRatio);
 
 			sampleNb++;
@@ -157,7 +159,7 @@ public class OP_QASamples implements MatrixOperation {
 			log.info("Done writing SampleSet to matrix");
 
 			// WRITE MARKERSET TO MATRIX
-			ArrayChar.D2 markersD2 = Utils.writeCollectionToD2ArrayChar(rdMarkerSet.getMarkerIdSetMapByteArray().keySet(), cNetCDF.Strides.STRIDE_MARKER_NAME);
+			ArrayChar.D2 markersD2 = Utils.writeCollectionToD2ArrayChar(rdMarkersKeysSource, cNetCDF.Strides.STRIDE_MARKER_NAME);
 			int[] markersOrig = new int[]{0, 0};
 			try {
 				wrNcFile.write(cNetCDF.Variables.VAR_IMPLICITSET, markersOrig, markersD2);

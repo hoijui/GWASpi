@@ -30,6 +30,7 @@ import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.GenotypesList;
 import org.gwaspi.model.MarkerKey;
+import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.OperationKey;
@@ -187,22 +188,6 @@ class BeagleFormatter implements Formatter {
 					rdMatrixMetadata.getMatrixFriendlyName() + ".markers"));
 			markerBW = new BufferedWriter(markerFW);
 
-			// MARKER files
-			//     rs# or snp identifier
-			//     Base-pair position (bp units)
-			//     Allele 1
-			//     Allele 2
-
-			// PURGE MARKERSET
-			rdMarkerSet.fillWith(new char[0]);
-
-			// MARKERSET RSID
-			rdMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_RSID);
-
-			// MARKERSET POSITION
-			rdMarkerSet.appendVariableToMarkerSetMapValue(cNetCDF.Variables.VAR_MARKERS_POS, sep);
-
-			// WRITE KNOWN ALLELES FROM QA
 			// get MARKER_QA Operation
 			List<OperationMetadata> operations = OperationsList.getOperationsList(MatrixKey.valueOf(rdMatrixMetadata));
 			OperationKey markersQAopKey = null;
@@ -212,54 +197,46 @@ class BeagleFormatter implements Formatter {
 					markersQAopKey = OperationKey.valueOf(op);
 				}
 			}
+
+			Map<MarkerKey, char[]> opQaMarkersAllelesMaj = null;
+			Map<MarkerKey, char[]> opQaMarkersAllelesMin = null;
 			if (markersQAopKey != null) {
 				OperationMetadata qaMetadata = OperationsList.getOperation(markersQAopKey);
 				NetcdfFile qaNcFile = NetcdfFile.open(qaMetadata.getPathToMatrix());
-
 				MarkerOperationSet<char[]> rdOperationSet = new MarkerOperationSet<char[]>(markersQAopKey);
-				Map<MarkerKey, char[]> opMarkerSetMap = rdOperationSet.getOpSetMap();
 
 				// MAJOR ALLELE
-				opMarkerSetMap = rdOperationSet.fillOpSetMapWithVariable(qaNcFile, cNetCDF.Census.VAR_OP_MARKERS_MAJALLELES);
-				for (Map.Entry<MarkerKey, char[]> entry : rdMarkerSet.getMarkerIdSetMapCharArray().entrySet()) {
-					MarkerKey key = entry.getKey();
-					char[] allele1Value = opMarkerSetMap.get(key);
-					char[] infoValue = entry.getValue();
-
-					StringBuilder sb = new StringBuilder();
-					sb.append(infoValue); // previously stored info
-					sb.append(sep);
-					sb.append(allele1Value);
-
-					entry.setValue(sb.toString().toCharArray());
-				}
+				/*opQaMarkersAllelesMaj = */rdOperationSet.getOpSetMap();
+				opQaMarkersAllelesMaj = rdOperationSet.fillOpSetMapWithVariable(qaNcFile, cNetCDF.Census.VAR_OP_MARKERS_MAJALLELES);
 
 				// MINOR ALLELE
-				AbstractOperationSet.fillMapWithDefaultValue(opMarkerSetMap, new char[0]);
-				opMarkerSetMap = rdOperationSet.fillOpSetMapWithVariable(qaNcFile, cNetCDF.Census.VAR_OP_MARKERS_MINALLELES);
-				for (Map.Entry<MarkerKey, char[]> entry : rdMarkerSet.getMarkerIdSetMapCharArray().entrySet()) {
-					MarkerKey key = entry.getKey();
-					char[] allele2Value = opMarkerSetMap.get(key);
-					char[] infoValue = entry.getValue();
+				/*opQaMarkersAllelesMin = */rdOperationSet.getOpSetMap();
+				opQaMarkersAllelesMin = rdOperationSet.fillOpSetMapWithVariable(qaNcFile, cNetCDF.Census.VAR_OP_MARKERS_MINALLELES);
+			}
+			// MARKER files
+			//     rs# or snp identifier
+			//     Base-pair position (bp units)
+			//     Allele 1
+			//     Allele 2
 
-					StringBuilder sb = new StringBuilder();
-					sb.append(infoValue); // previously stored info
-					sb.append(sep);
-					sb.append(allele2Value);
+			Iterator<MarkerKey> markersKeysIt = dataSetSource.getMarkersKeysSource().iterator();
+			for (MarkerMetadata curMarkerMetadata : dataSetSource.getMarkersMetadatasSource()) {
+				markerBW.write(curMarkerMetadata.getRsId());
+				markerBW.write(sep);
+				markerBW.write(curMarkerMetadata.getPos());
 
-					entry.setValue(sb.toString().toCharArray());
+				if (markersQAopKey != null) {
+					MarkerKey markerKey = markersKeysIt.next();
+					markerBW.write(sep);
+					markerBW.write(opQaMarkersAllelesMaj.get(markerKey));
+					markerBW.write(sep);
+					markerBW.write(opQaMarkersAllelesMin.get(markerKey));
 				}
+
+				markerBW.write('\n');
 			}
 
-			// WRITE ALL Map TO BUFFERWRITER
-			markerNb = 0;
-			for (char[] value : rdMarkerSet.getMarkerIdSetMapCharArray().values()) {
-				markerBW.append(new String(value));
-				markerBW.append("\n");
-				markerNb++;
-			}
-
-			log.info("Markers exported to MARKER file: {}", markerNb);
+			log.info("Markers exported to MARKER file: {}", dataSetSource.getMarkersMetadatasSource().size());
 
 			result = true;
 		} finally {

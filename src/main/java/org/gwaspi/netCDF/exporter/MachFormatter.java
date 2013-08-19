@@ -21,6 +21,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -54,6 +55,11 @@ public class MachFormatter implements Formatter {
 
 		boolean result = false;
 
+		List<Iterator<byte[]>> samplesGenotypesIterators = new ArrayList<Iterator<byte[]>>(dataSetSource.getSamplesGenotypesSource().size());
+		for (GenotypesList sampleGenotypesList : dataSetSource.getSamplesGenotypesSource()) {
+			samplesGenotypesIterators.add(sampleGenotypesList.iterator());
+		}
+
 		// FIND START AND END MARKERS BY CHROMOSOME
 		String tmpChr = "";
 		int start = 0;
@@ -72,7 +78,7 @@ public class MachFormatter implements Formatter {
 
 			if (!chr.equals(tmpChr)) {
 				if (start != end) {
-					exportChromosomeToMped(exportDir, dataSetName, dataSetSource, tmpChr, start, end - 1);
+					exportChromosomeToMped(exportDir, dataSetName, dataSetSource, samplesGenotypesIterators, tmpChr, start, end - 1);
 					exportChromosomeToDat(exportDir, dataSetName, dataSetSource, chrMarkerRsIds, tmpChr, start, end - 1);
 					start = end;
 					chrMarkerRsIds.clear();
@@ -81,7 +87,7 @@ public class MachFormatter implements Formatter {
 			}
 			end++;
 		}
-		exportChromosomeToMped(exportDir, dataSetName, dataSetSource, tmpChr, start, end);
+		exportChromosomeToMped(exportDir, dataSetName, dataSetSource, samplesGenotypesIterators, tmpChr, start, end);
 		exportChromosomeToDat(exportDir, dataSetName, dataSetSource, chrMarkerRsIds, tmpChr, start, end - 1);
 
 		result = true;
@@ -89,7 +95,7 @@ public class MachFormatter implements Formatter {
 		return result;
 	}
 
-	private void exportChromosomeToMped(File exportDir, String dataSetName, DataSetSource dataSetSource, String chr, int startPos, int endPos) throws IOException {
+	private void exportChromosomeToMped(File exportDir, String dataSetName, DataSetSource dataSetSource, List<Iterator<byte[]>> samplesGenotypesIterators, String chr, int startPos, int endPos) throws IOException {
 
 		BufferedWriter pedBW = null;
 		try {
@@ -99,7 +105,7 @@ public class MachFormatter implements Formatter {
 
 			// Iterate through all samples
 			int sampleNb = 0;
-			Iterator<GenotypesList> samplesGenotypesIt = dataSetSource.getSamplesGenotypesSource().iterator();
+			Iterator<Iterator<byte[]>> samplesGenotypesIt = samplesGenotypesIterators.iterator();
 			for (SampleKey sampleKey : dataSetSource.getSamplesKeysSource()) {
 				SampleInfo sampleInfo = Utils.getCurrentSampleFormattedInfo(sampleKey);
 				String sexStr = "0";
@@ -131,11 +137,10 @@ public class MachFormatter implements Formatter {
 				pedBW.append(sexStr);
 
 				// Iterate through current chrl markers
-				XXX;
-				rdMarkerSet.initMarkerIdSetMap(startPos, endPos);  XXX;
-				rdMarkerSet.fillGTsForCurrentSampleIntoInitMap(sampleNb);
 				int markerNb = 0;
-				for (byte[] tempGT : samplesGenotypesIt.next()) {
+				Iterator<byte[]> sampleGenotypesIt = samplesGenotypesIt.next();
+				for (int ip = startPos; ip < endPos; ip++) {
+					byte[] tempGT = sampleGenotypesIt.next();
 					pedBW.append(SEP);
 					pedBW.append((char) tempGT[0]);
 					pedBW.append(SEP);
