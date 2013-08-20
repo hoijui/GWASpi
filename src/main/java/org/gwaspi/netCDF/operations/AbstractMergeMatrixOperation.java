@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.MatricesList;
@@ -30,7 +31,9 @@ import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.netCDF.loader.ComparatorChrAutPosMarkerIdAsc;
+import org.gwaspi.netCDF.loader.DataSetDestination;
 import org.gwaspi.netCDF.markers.MarkerSet;
+import org.gwaspi.netCDF.markers.NetCDFDataSetSource;
 import org.gwaspi.samples.SampleSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,23 +51,20 @@ public abstract class AbstractMergeMatrixOperation implements MatrixOperation {
 	protected MatrixMetadata rdMatrix1Metadata;
 	protected MatrixMetadata rdMatrix2Metadata;
 	protected MatrixMetadata wrMatrixMetadata;
-//	protected MarkerSet rdMarkerSet1;
-//	protected MarkerSet rdMarkerSet2;
-//	protected MarkerSet wrMarkerSet;
-//	protected SampleSet rdSampleSet1;
-//	protected SampleSet rdSampleSet2;
-//	protected SampleSet wrSampleSet;
+	protected DataSetSource dataSetSource1;
+	protected DataSetSource dataSetSource2;
+	protected DataSetDestination dataSetDestination;
 
 	protected AbstractMergeMatrixOperation(
 			MatrixKey rdMatrix1Key,
 			MatrixKey rdMatrix2Key,
 			String wrMatrixFriendlyName,
-			String wrMatrixDescription)
+			String wrMatrixDescription,
+			DataSetDestination dataSetDestination)
 			throws IOException, InvalidRangeException
 	{
 		this.wrMatrixMetadata = null;
-		this.wrMarkerSet = null;
-		this.wrSampleSet = null;
+		this.dataSetDestination = dataSetDestination;
 
 		this.rdMatrix1Key = rdMatrix1Key;
 		this.rdMatrix2Key = rdMatrix2Key;
@@ -75,11 +75,13 @@ public abstract class AbstractMergeMatrixOperation implements MatrixOperation {
 		this.wrMatrixFriendlyName = wrMatrixFriendlyName;
 		this.wrMatrixDescription = wrMatrixDescription;
 
-		this.rdMarkerSet1 = new MarkerSet(this.rdMatrix1Key);
-		this.rdMarkerSet2 = new MarkerSet(this.rdMatrix2Key);
+		MarkerSet rdMarkerSet1 = new MarkerSet(this.rdMatrix1Key);
+		SampleSet rdSampleSet1 = new SampleSet(this.rdMatrix1Key);
+		this.dataSetSource1 = new NetCDFDataSetSource(rdMarkerSet1, rdSampleSet1);
 
-		this.rdSampleSet1 = new SampleSet(this.rdMatrix1Key);
-		this.rdSampleSet2 = new SampleSet(this.rdMatrix2Key);
+		MarkerSet rdMarkerSet2 = new MarkerSet(this.rdMatrix2Key);
+		SampleSet rdSampleSet2 = new SampleSet(this.rdMatrix2Key);
+		this.dataSetSource2 = new NetCDFDataSetSource(rdMarkerSet2, rdSampleSet2);
 	}
 
 	private static Map<MarkerKey, char[]> getMatrixMapWithChrAndPos(MarkerSet rdMarkerSet) {

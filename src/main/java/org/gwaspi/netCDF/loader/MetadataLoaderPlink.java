@@ -70,7 +70,7 @@ public class MetadataLoaderPlink implements MetadataLoader {
 //	}
 
 	@Override
-	public void loadMarkers(SamplesReceiver samplesReceiver) throws Exception {
+	public void loadMarkers(DataSetDestination samplesReceiver) throws Exception {
 
 		String startTime = org.gwaspi.global.Utils.getMediumDateTimeAsString();
 

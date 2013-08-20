@@ -93,7 +93,7 @@ public class LoadGTFromIlluminaLGENFiles extends AbstractLoadGTFromFiles impleme
 	@Override
 	protected void loadGenotypes(
 			GenotypesLoadDescription loadDescription,
-			SamplesReceiver samplesReceiver)
+			DataSetDestination samplesReceiver)
 			throws Exception
 	{
 		File[] gtFilesToImport = org.gwaspi.global.Utils.listFiles(loadDescription.getGtDirPath());
@@ -120,7 +120,7 @@ public class LoadGTFromIlluminaLGENFiles extends AbstractLoadGTFromFiles impleme
 	 */
 	private void loadIndividualFiles(
 			GenotypesLoadDescription loadDescription,
-			SamplesReceiver samplesReceiver,
+			DataSetDestination samplesReceiver,
 			File file)
 //			NetcdfFileWriteable ncfile,
 //			Map<MarkerKey, ?> sortedMetadata,

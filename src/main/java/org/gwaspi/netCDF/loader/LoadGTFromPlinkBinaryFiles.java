@@ -84,7 +84,7 @@ public class LoadGTFromPlinkBinaryFiles extends AbstractLoadGTFromFiles implemen
 	@Override
 	protected void loadGenotypes(
 			GenotypesLoadDescription loadDescription,
-			SamplesReceiver samplesReceiver)
+			DataSetDestination samplesReceiver)
 			throws Exception
 	{
 		// HACK

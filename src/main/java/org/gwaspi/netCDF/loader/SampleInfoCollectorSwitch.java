@@ -75,7 +75,7 @@ public class SampleInfoCollectorSwitch {
 			String sampleInfoPath,
 			String altSampleInfoPath1,
 			String altSampleInfoPath2,
-			SamplesReceiver samplesReceiver)
+			DataSetDestination samplesReceiver)
 			throws Exception
 	{
 		switch (format) {

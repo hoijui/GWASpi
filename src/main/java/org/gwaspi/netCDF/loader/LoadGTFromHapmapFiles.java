@@ -96,7 +96,7 @@ public class LoadGTFromHapmapFiles extends AbstractLoadGTFromFiles implements Ge
 	}
 
 	@Override
-	protected void loadMarkerMetadata(GenotypesLoadDescription loadDescription, SamplesReceiver samplesReceiver) throws Exception {
+	protected void loadMarkerMetadata(GenotypesLoadDescription loadDescription, DataSetDestination samplesReceiver) throws Exception {
 
 		samplesReceiver.startLoadingMarkerMetadatas();
 
@@ -140,7 +140,7 @@ public class LoadGTFromHapmapFiles extends AbstractLoadGTFromFiles implements Ge
 	@Override
 	protected void loadGenotypes(
 			GenotypesLoadDescription loadDescription,
-			SamplesReceiver samplesReceiver)
+			DataSetDestination samplesReceiver)
 			throws Exception
 	{
 		// HACK

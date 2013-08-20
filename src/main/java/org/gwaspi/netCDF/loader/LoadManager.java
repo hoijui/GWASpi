@@ -44,7 +44,7 @@ public class LoadManager {
 
 	public static void dispatchLoadByFormat(
 			GenotypesLoadDescription loadDescription,
-			SamplesReceiver samplesReceiver)
+			DataSetDestination samplesReceiver)
 			throws Exception
 	{
 		GenotypesLoader genotypesLoader = genotypesLoaders.get(loadDescription.getFormat());

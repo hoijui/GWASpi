@@ -85,7 +85,7 @@ public class LoadGTFromHGDP1Files extends AbstractLoadGTFromFiles implements Gen
 
 	protected void loadGenotypes(
 			GenotypesLoadDescription loadDescription,
-			SamplesReceiver samplesReceiver)
+			DataSetDestination samplesReceiver)
 			throws Exception
 	{
 		// HACK

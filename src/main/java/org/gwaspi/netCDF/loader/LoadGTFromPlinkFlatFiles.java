@@ -90,7 +90,7 @@ public class LoadGTFromPlinkFlatFiles extends AbstractLoadGTFromFiles implements
 //	{
 	protected void loadGenotypes(
 			GenotypesLoadDescription loadDescription,
-			SamplesReceiver samplesReceiver)
+			DataSetDestination samplesReceiver)
 			throws Exception
 	{
 		Map<MarkerKey, byte[]> mapMarkerSetMap = MetadataLoaderPlink.parseOrigMapFile(loadDescription.getGtDirPath());

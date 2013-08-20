@@ -24,7 +24,7 @@ import org.gwaspi.constants.cImport;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.loader.LoadGTFromHapmapFiles;
-import org.gwaspi.netCDF.loader.SamplesReceiver;
+import org.gwaspi.netCDF.loader.DataSetDestination;
 
 public class HapmapSamplesParser implements SamplesParser {
 
@@ -32,7 +32,7 @@ public class HapmapSamplesParser implements SamplesParser {
 	 * NOTE No affection state available
 	 */
 	@Override
-	public void scanSampleInfo(StudyKey studyKey, String sampleInfoPath, SamplesReceiver samplesReceiver) throws Exception {
+	public void scanSampleInfo(StudyKey studyKey, String sampleInfoPath, DataSetDestination samplesReceiver) throws Exception {
 
 		FileReader fr = null;
 		BufferedReader inputAnnotationBr = null;

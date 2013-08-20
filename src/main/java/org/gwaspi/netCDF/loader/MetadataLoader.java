@@ -19,5 +19,5 @@ package org.gwaspi.netCDF.loader;
 
 public interface MetadataLoader {
 
-	void loadMarkers(SamplesReceiver samplesReceiver) throws Exception;
+	void loadMarkers(DataSetDestination samplesReceiver) throws Exception;
 }

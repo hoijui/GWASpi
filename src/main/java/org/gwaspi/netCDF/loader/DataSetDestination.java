@@ -27,7 +27,7 @@ import org.gwaspi.model.SampleInfo;
  * to this softwares internal format using NetCDF,
  * or ...?
  */
-public interface SamplesReceiver {
+public interface DataSetDestination {
 
 	void init() throws Exception;
 

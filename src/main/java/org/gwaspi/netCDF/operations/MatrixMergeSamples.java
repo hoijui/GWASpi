@@ -30,6 +30,7 @@ import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleKey;
+import org.gwaspi.netCDF.loader.DataSetDestination;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,14 +56,16 @@ public class MatrixMergeSamples extends AbstractMergeMatrixOperation {
 			MatrixKey rdMatrixKey1,
 			MatrixKey rdMatrixKey2,
 			String wrMatrixFriendlyName,
-			String wrMatrixDescription)
+			String wrMatrixDescription,
+			DataSetDestination dataSetDestination)
 			throws IOException, InvalidRangeException
 	{
 		super(
 				rdMatrixKey1,
 				rdMatrixKey2,
 				wrMatrixFriendlyName,
-				wrMatrixDescription);
+				wrMatrixDescription,
+				dataSetDestination);
 	}
 
 	/**

@@ -104,7 +104,7 @@ public class LoadGTFromAffyFiles extends AbstractLoadGTFromFiles implements Geno
 	@Override
 	protected void loadGenotypes(
 			GenotypesLoadDescription loadDescription,
-			SamplesReceiver samplesReceiver)
+			DataSetDestination samplesReceiver)
 			throws Exception
 	{
 		// HACK
@@ -158,7 +158,7 @@ public class LoadGTFromAffyFiles extends AbstractLoadGTFromFiles implements Geno
 	 */
 	private void loadIndividualFiles(
 			GenotypesLoadDescription loadDescription,
-			SamplesReceiver samplesReceiver,
+			DataSetDestination samplesReceiver,
 			File file,
 			Map<MarkerKey, byte[]> sortedAlleles,
 			List<SampleKey> samples)

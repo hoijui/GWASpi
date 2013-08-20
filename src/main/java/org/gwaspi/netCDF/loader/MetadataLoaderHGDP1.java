@@ -50,7 +50,7 @@ public class MetadataLoaderHGDP1 implements MetadataLoader {
 	}
 
 	@Override
-	public void loadMarkers(SamplesReceiver samplesReceiver) throws Exception {
+	public void loadMarkers(DataSetDestination samplesReceiver) throws Exception {
 
 		String startTime = org.gwaspi.global.Utils.getMediumDateTimeAsString();
 

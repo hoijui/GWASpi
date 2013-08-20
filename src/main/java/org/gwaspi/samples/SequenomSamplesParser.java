@@ -23,7 +23,7 @@ import java.io.FileReader;
 import org.gwaspi.constants.cImport;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.StudyKey;
-import org.gwaspi.netCDF.loader.SamplesReceiver;
+import org.gwaspi.netCDF.loader.DataSetDestination;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,7 +33,7 @@ public class SequenomSamplesParser implements SamplesParser {
 			= LoggerFactory.getLogger(SequenomSamplesParser.class);
 
 	@Override
-	public void scanSampleInfo(StudyKey studyKey, String sampleInfoPath, SamplesReceiver samplesReceiver) throws Exception {
+	public void scanSampleInfo(StudyKey studyKey, String sampleInfoPath, DataSetDestination samplesReceiver) throws Exception {
 
 		File gtFileToImport = new File(sampleInfoPath);
 		FileReader inputFileReader = new FileReader(gtFileToImport);

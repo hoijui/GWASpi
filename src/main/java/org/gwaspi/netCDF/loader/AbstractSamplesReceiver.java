@@ -26,7 +26,7 @@ import org.gwaspi.model.SampleInfo;
 /**
  * TODO
  */
-public abstract class AbstractSamplesReceiver implements SamplesReceiver {
+public abstract class AbstractSamplesReceiver implements DataSetDestination {
 
 	private final DataSet dataSet;
 

@@ -92,7 +92,7 @@ public class LoadGTFromSequenomFiles extends AbstractLoadGTFromFiles implements 
 	@Override
 	protected void loadGenotypes(
 			GenotypesLoadDescription loadDescription,
-			SamplesReceiver samplesReceiver)
+			DataSetDestination samplesReceiver)
 			throws Exception
 	{
 		// HACK

@@ -131,7 +131,7 @@ public abstract class AbstractLoadGTFromFiles implements GenotypesLoader {
 		return strandFlag;
 	}
 
-	protected void loadMarkerMetadata(GenotypesLoadDescription loadDescription, SamplesReceiver samplesReceiver) throws Exception {
+	protected void loadMarkerMetadata(GenotypesLoadDescription loadDescription, DataSetDestination samplesReceiver) throws Exception {
 
 		MetadataLoader markerSetLoader = createMetaDataLoader(loadDescription);
 		samplesReceiver.startLoadingMarkerMetadatas();
@@ -156,7 +156,7 @@ public abstract class AbstractLoadGTFromFiles implements GenotypesLoader {
 
 	//<editor-fold defaultstate="expanded" desc="PROCESS GENOTYPES">
 	@Override
-	public void processData(GenotypesLoadDescription loadDescription, SamplesReceiver samplesReceiver) throws Exception {
+	public void processData(GenotypesLoadDescription loadDescription, DataSetDestination samplesReceiver) throws Exception {
 		loadMarkerMetadata(loadDescription, samplesReceiver);
 
 		samplesReceiver.startLoadingAlleles(isLoadAllelePerSample());
@@ -166,7 +166,7 @@ public abstract class AbstractLoadGTFromFiles implements GenotypesLoader {
 
 	protected void loadGenotypes(
 			GenotypesLoadDescription loadDescription,
-			SamplesReceiver samplesReceiver)
+			DataSetDestination samplesReceiver)
 			throws Exception
 	{
 		File gtFile = new File(loadDescription.getGtDirPath());

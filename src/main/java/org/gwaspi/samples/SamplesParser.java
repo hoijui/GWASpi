@@ -18,9 +18,9 @@
 package org.gwaspi.samples;
 
 import org.gwaspi.model.StudyKey;
-import org.gwaspi.netCDF.loader.SamplesReceiver;
+import org.gwaspi.netCDF.loader.DataSetDestination;
 
 public interface SamplesParser {
 
-	void scanSampleInfo(StudyKey studyKey, String sampleInfoPath, SamplesReceiver samplesReceiver) throws Exception;
+	void scanSampleInfo(StudyKey studyKey, String sampleInfoPath, DataSetDestination samplesReceiver) throws Exception;
 }

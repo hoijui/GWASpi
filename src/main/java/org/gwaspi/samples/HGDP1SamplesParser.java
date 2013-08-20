@@ -23,7 +23,7 @@ import java.io.FileReader;
 import org.gwaspi.constants.cImport;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.StudyKey;
-import org.gwaspi.netCDF.loader.SamplesReceiver;
+import org.gwaspi.netCDF.loader.DataSetDestination;
 
 public class HGDP1SamplesParser implements SamplesParser {
 
@@ -31,7 +31,7 @@ public class HGDP1SamplesParser implements SamplesParser {
 	 * NOTE No affection state available
 	 */
 	@Override
-	public void scanSampleInfo(StudyKey studyKey, String sampleInfoPath, SamplesReceiver samplesReceiver) throws Exception {
+	public void scanSampleInfo(StudyKey studyKey, String sampleInfoPath, DataSetDestination samplesReceiver) throws Exception {
 
 		File sampleFile = new File(sampleInfoPath);
 		FileReader inputFileReader = new FileReader(sampleFile);
