@@ -22,35 +22,33 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.global.Text;
+import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.MarkerKey;
-import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.SampleKey;
+import org.gwaspi.model.SamplesKeysSource;
+import org.gwaspi.netCDF.loader.DataSetDestination;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.NetcdfFileWriteable;
 
 public class MergeMarkersMatrixOperation extends AbstractMergeMarkersMatrixOperation {
 
 	public MergeMarkersMatrixOperation(
-			MatrixKey rdMatrix1Key,
-			MatrixKey rdMatrix2Key,
-			String wrMatrixFriendlyName,
-			String wrMatrixDescription)
+			DataSetSource dataSetSource1,
+			DataSetSource dataSetSource2,
+			DataSetDestination dataSetDestination)
 			throws IOException, InvalidRangeException
 	{
 		super(
-				rdMatrix1Key,
-				rdMatrix2Key,
-				wrMatrixFriendlyName,
-				wrMatrixDescription);
+				dataSetSource1,
+				dataSetSource2,
+				dataSetDestination);
 	}
 
 	@Override
 	public int processMatrix() throws IOException, InvalidRangeException {
 
 		// Get combo SampleSet with position[] (wrPos, rdMatrixNb, rdPos)
-		Map<SampleKey, byte[]> rdSampleSetMap1 = rdSampleSet1.getSampleIdSetMapByteArray();
-		Map<SampleKey, byte[]> rdSampleSetMap2 = rdSampleSet2.getSampleIdSetMapByteArray();
-		Map<SampleKey, int[]> wrSampleSetMap = getSampleSetWithIndicesMap(rdSampleSetMap1, rdSampleSetMap2);
+		Map<SampleKey, int[]> wrSampleSetMap = getSampleSetWithIndicesMap(dataSetSource1.getSamplesKeysSource(), dataSetSource2.getSamplesKeysSource());
 		Map<SampleKey, byte[]> theSamples = rdSampleSetMap1;
 
 		final int numSamples = rdMatrix1Metadata.getSampleSetSize(); // Keep rdMatrix1Metadata from Matrix1. SampleSet is constant
@@ -58,8 +56,6 @@ public class MergeMarkersMatrixOperation extends AbstractMergeMarkersMatrixOpera
 		final String methodDescription = Text.Trafo.mergeMethodMarkerJoin;
 
 		return mergeMatrices(
-				rdSampleSetMap1,
-				rdSampleSetMap2,
 				wrSampleSetMap,
 				theSamples,
 				numSamples,
@@ -78,9 +74,7 @@ public class MergeMarkersMatrixOperation extends AbstractMergeMarkersMatrixOpera
 	{
 		// Get SampleId index from each Matrix
 		// Iterate through wrSampleSetMap
-		for (Object value : wrSampleSetMap.values()) {
-			int[] sampleIndices = (int[]) value; // position[rdPos matrix 1, rdPos matrix 2]
-
+		for (int[] sampleIndices : wrSampleSetMap.values()) { // position[rdPos matrix 1, rdPos matrix 2]
 			// Read from Matrix1
 			rdMarkerSet1.fillWith(cNetCDF.Defaults.DEFAULT_GT);
 			rdMarkerSet1.fillGTsForCurrentSampleIntoInitMap(sampleIndices[0]);
@@ -109,18 +103,18 @@ public class MergeMarkersMatrixOperation extends AbstractMergeMarkersMatrixOpera
 		}
 	}
 
-	private static Map<SampleKey, int[]> getSampleSetWithIndicesMap(Map<SampleKey, ?> sampleSetMap1, Map<SampleKey, ?> sampleSetMap2) {
+	private static Map<SampleKey, int[]> getSampleSetWithIndicesMap(SamplesKeysSource sampleKeys1, SamplesKeysSource sampleKeys2) {
 		Map<SampleKey, int[]> resultMap = new LinkedHashMap<SampleKey, int[]>();
 
 		int rdPos = 0;
-		for (SampleKey key : sampleSetMap1.keySet()) {
+		for (SampleKey key : sampleKeys1) {
 			int[] position = new int[] {rdPos, 0}; // rdPos matrix 1
 			resultMap.put(key, position);
 			rdPos++;
 		}
 
 		rdPos = 0;
-		for (SampleKey key : sampleSetMap2.keySet()) {
+		for (SampleKey key : sampleKeys2) {
 			// IF SAMPLE ALLREADY EXISTS IN MATRIX1 SUBSTITUTE VALUES WITH MATRIX2
 			if (resultMap.containsKey(key)) {
 				int[] position = resultMap.get(key);

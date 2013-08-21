@@ -25,6 +25,7 @@ import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.ChromosomeInfo;
+import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixKey;
@@ -53,26 +54,22 @@ public class MatrixMergeSamples extends AbstractMergeMatrixOperation {
 	 * Duplicate Samples from the 2nd Matrix will overwrite Samples in the 1st Matrix
 	 */
 	public MatrixMergeSamples(
-			MatrixKey rdMatrixKey1,
-			MatrixKey rdMatrixKey2,
-			String wrMatrixFriendlyName,
-			String wrMatrixDescription,
+			DataSetSource dataSetSource1,
+			DataSetSource dataSetSource2,
 			DataSetDestination dataSetDestination)
-			throws IOException, InvalidRangeException
+			throws IOException
 	{
 		super(
-				rdMatrixKey1,
-				rdMatrixKey2,
-				wrMatrixFriendlyName,
-				wrMatrixDescription,
-				dataSetDestination);
+			dataSetSource1,
+			dataSetSource2,
+			dataSetDestination);
 	}
 
 	/**
 	 * Appends samples and keeps markers constant.
 	 */
 	@Override
-	public int processMatrix() throws IOException, InvalidRangeException {
+	public int processMatrix() throws IOException {
 		int resultMatrixId = Integer.MIN_VALUE;
 
 		NetcdfFile rdNcFile1 = NetcdfFile.open(rdMatrix1Metadata.getPathToMatrix());

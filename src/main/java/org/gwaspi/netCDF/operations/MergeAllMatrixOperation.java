@@ -22,26 +22,25 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.global.Text;
+import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.MarkerKey;
-import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.SampleKey;
+import org.gwaspi.netCDF.loader.DataSetDestination;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.NetcdfFileWriteable;
 
 public class MergeAllMatrixOperation extends AbstractMergeMarkersMatrixOperation {
 
 	public MergeAllMatrixOperation(
-			MatrixKey rdMatrixKey1,
-			MatrixKey rdMatrixKey2,
-			String wrMatrixFriendlyName,
-			String wrMatrixDescription)
+			DataSetSource dataSetSource1,
+			DataSetSource dataSetSource2,
+			DataSetDestination dataSetDestination)
 			throws IOException, InvalidRangeException
 	{
 		super(
-				rdMatrixKey1,
-				rdMatrixKey2,
-				wrMatrixFriendlyName,
-				wrMatrixDescription);
+				dataSetSource1,
+				dataSetSource2,
+				dataSetDestination);
 	}
 
 	/**
@@ -51,9 +50,7 @@ public class MergeAllMatrixOperation extends AbstractMergeMarkersMatrixOperation
 	public int processMatrix() throws IOException, InvalidRangeException {
 
 		// Get combo SampleSet with position[] (wrPos, rdMatrixNb, rdPos)
-		Map<SampleKey, byte[]> rdSampleSetMap1 = rdSampleSet1.getSampleIdSetMapByteArray();
-		Map<SampleKey, byte[]> rdSampleSetMap2 = rdSampleSet2.getSampleIdSetMapByteArray();
-		Map<SampleKey, int[]> wrSampleSetMap = getComboSampleSetWithIndicesArray(rdSampleSetMap1, rdSampleSetMap2);
+		Map<SampleKey, int[]> wrSampleSetMap = getComboSampleSetWithIndicesArray(dataSetSource1.getSamplesKeysSource(), dataSetSource2.getSamplesKeysSource());
 		Map<SampleKey, ?> theSamples = wrSampleSetMap;
 
 		final int numSamples = wrSampleSetMap.size(); // Comboed SampleSet
@@ -61,8 +58,6 @@ public class MergeAllMatrixOperation extends AbstractMergeMarkersMatrixOperation
 		final String methodDescription = Text.Trafo.mergeMethodMergeAll;
 
 		return mergeMatrices(
-				rdSampleSetMap1,
-				rdSampleSetMap2,
 				wrSampleSetMap,
 				theSamples,
 				numSamples,

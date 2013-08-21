@@ -25,12 +25,14 @@ import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.ChromosomeInfo;
+import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleKey;
+import org.gwaspi.netCDF.loader.DataSetDestination;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,25 +49,21 @@ public abstract class AbstractMergeMarkersMatrixOperation extends AbstractMergeM
 	private final Logger log = LoggerFactory.getLogger(AbstractMergeMarkersMatrixOperation.class);
 
 	public AbstractMergeMarkersMatrixOperation(
-			MatrixKey rdMatrixKey1,
-			MatrixKey rdMatrixKey2,
-			String wrMatrixFriendlyName,
-			String wrMatrixDescription)
+			DataSetSource dataSetSource1,
+			DataSetSource dataSetSource2,
+			DataSetDestination dataSetDestination)
 			throws IOException, InvalidRangeException
 	{
 		super(
-				rdMatrixKey1,
-				rdMatrixKey2,
-				wrMatrixFriendlyName,
-				wrMatrixDescription);
+				dataSetSource1,
+				dataSetSource2,
+				dataSetDestination);
 	}
 
 	/**
 	 * Mingles markers and keeps samples constant.
 	 */
 	protected MatrixKey mergeMatrices(
-			Map<SampleKey, byte[]> rdSampleSetMap1,
-			Map<SampleKey, byte[]> rdSampleSetMap2,
 			Map<SampleKey, int[]> wrSampleSetMap,
 			Map<SampleKey, ?> theSamples,
 			final int numSamples,
