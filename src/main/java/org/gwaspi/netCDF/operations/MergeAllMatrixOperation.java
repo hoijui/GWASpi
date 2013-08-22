@@ -47,7 +47,7 @@ public class MergeAllMatrixOperation extends AbstractMergeMarkersMatrixOperation
 	 * Mingles markers and keeps samples constant.
 	 */
 	@Override
-	public int processMatrix() throws IOException, InvalidRangeException {
+	public int processMatrix() throws IOException {
 
 		// Get combo SampleSet with position[] (wrPos, rdMatrixNb, rdPos)
 		Map<SampleKey, int[]> wrSampleSetMap = getComboSampleSetWithIndicesArray(dataSetSource1.getSamplesKeysSource(), dataSetSource2.getSamplesKeysSource());

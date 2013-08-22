@@ -45,7 +45,7 @@ public class MergeMarkersMatrixOperation extends AbstractMergeMarkersMatrixOpera
 	}
 
 	@Override
-	public int processMatrix() throws IOException, InvalidRangeException {
+	public int processMatrix() throws IOException {
 
 		// Get combo SampleSet with position[] (wrPos, rdMatrixNb, rdPos)
 		Map<SampleKey, int[]> wrSampleSetMap = getSampleSetWithIndicesMap(dataSetSource1.getSamplesKeysSource(), dataSetSource2.getSamplesKeysSource());

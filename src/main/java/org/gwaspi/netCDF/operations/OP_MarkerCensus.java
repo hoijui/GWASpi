@@ -92,7 +92,8 @@ public class OP_MarkerCensus implements MatrixOperation {
 		this.phenoFile = phenoFile;
 	}
 
-	public int processMatrix() throws IOException, InvalidRangeException {
+	@Override
+	public int processMatrix() throws IOException {
 		int resultOpId = Integer.MIN_VALUE;
 
 		Map<SampleKey, Double> excludeSampleSetMap = new LinkedHashMap<SampleKey, Double>();
@@ -145,11 +146,8 @@ public class OP_MarkerCensus implements MatrixOperation {
 						-1); // Parent operationId
 
 				wrNcFile = wrOPHandler.getNetCDFHandler();
-				try {
-					wrNcFile.create();
-				} catch (IOException ex) {
-					log.error("Failed creating file: " + wrNcFile.getLocation(), ex);
-				}
+				wrNcFile.create();
+				log.trace("Done creating netCDF handle: " + wrNcFile.toString());
 
 				writeMetadata(wrNcFile, rdMarkerSet, wrMarkerSetMap, wrSampleKeys);
 
@@ -399,9 +397,7 @@ public class OP_MarkerCensus implements MatrixOperation {
 
 				resultOpId = wrOPHandler.getResultOPId();
 			} catch (InvalidRangeException ex) {
-				log.error(null, ex);
-			} catch (IOException ex) {
-				log.error(null, ex);
+				throw new IOException(ex);
 			} finally {
 				if (rdNcFile != null) {
 					try {
@@ -846,17 +842,12 @@ public class OP_MarkerCensus implements MatrixOperation {
 			MarkerSet rdMarkerSet,
 			Map<MarkerKey, byte[]> wrMarkerSetMap,
 			Collection<SampleKey> wrSampleKeys)
+			throws IOException, InvalidRangeException
 	{
 		// MARKERSET MARKERID
 		ArrayChar.D2 markersD2 = Utils.writeCollectionToD2ArrayChar(wrMarkerSetMap.keySet(), cNetCDF.Strides.STRIDE_MARKER_NAME);
 		int[] markersOrig = new int[]{0, 0};
-		try {
-			wrNcFile.write(cNetCDF.Variables.VAR_OPSET, markersOrig, markersD2);
-		} catch (IOException ex) {
-			log.error("Failed writing file: " + wrNcFile.getLocation(), ex);
-		} catch (InvalidRangeException ex) {
-			log.error(null, ex);
-		}
+		wrNcFile.write(cNetCDF.Variables.VAR_OPSET, markersOrig, markersD2);
 
 		// MARKERSET RSID
 		rdMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_RSID);
@@ -867,13 +858,7 @@ public class OP_MarkerCensus implements MatrixOperation {
 		ArrayChar.D2 samplesD2 = org.gwaspi.netCDF.operations.Utils.writeCollectionToD2ArrayChar(wrSampleKeys, cNetCDF.Strides.STRIDE_SAMPLE_NAME);
 
 		int[] sampleOrig = new int[]{0, 0};
-		try {
-			wrNcFile.write(cNetCDF.Variables.VAR_IMPLICITSET, sampleOrig, samplesD2);
-		} catch (IOException ex) {
-			log.error("Failed writing file: " + wrNcFile.getLocation(), ex);
-		} catch (InvalidRangeException ex) {
-			log.error(null, ex);
-		}
+		wrNcFile.write(cNetCDF.Variables.VAR_IMPLICITSET, sampleOrig, samplesD2);
 		log.info("Done writing Sample Set to operation");
 	}
 

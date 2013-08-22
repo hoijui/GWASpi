@@ -24,11 +24,8 @@ import java.util.Map;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.AlleleBytes;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
-import org.gwaspi.model.ChromosomeInfo;
 import org.gwaspi.model.GenotypesList;
-import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MarkerMetadata;
-import org.gwaspi.model.MarkersChromosomeInfosSource;
 import org.gwaspi.model.MarkersKeysSource;
 import org.gwaspi.model.MarkersMetadataSource;
 import org.gwaspi.model.MatricesList;
@@ -55,7 +52,7 @@ public class OP_QASamples implements MatrixOperation {
 	}
 
 	@Override
-	public int processMatrix() throws IOException, InvalidRangeException {
+	public int processMatrix() throws IOException {
 		int resultOpId = Integer.MIN_VALUE;
 
 		Map<SampleKey, Integer> wrSampleSetMissingCountMap = new LinkedHashMap<SampleKey, Integer>();
@@ -137,37 +134,21 @@ public class OP_QASamples implements MatrixOperation {
 					-1);                            // Parent operationId
 
 			wrNcFile = wrOPHandler.getNetCDFHandler();
-			try {
-				wrNcFile.create();
-			} catch (IOException ex) {
-				log.error("Failed creating file: " + wrNcFile.getLocation(), ex);
-			}
-			//log.trace("Done creating netCDF handle: " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
+			wrNcFile.create();
+			log.trace("Done creating netCDF handle: " + wrNcFile.toString());
 
 			//<editor-fold defaultstate="expanded" desc="METADATA WRITER">
 			// SAMPLESET
 			ArrayChar.D2 samplesD2 = Utils.writeCollectionToD2ArrayChar(rdSampleSet.getSampleKeys(), cNetCDF.Strides.STRIDE_SAMPLE_NAME);
 
-			int[] sampleOrig = new int[]{0, 0};
-			try {
-				wrNcFile.write(cNetCDF.Variables.VAR_OPSET, sampleOrig, samplesD2);
-			} catch (IOException ex) {
-				log.error("Failed writing file: " + wrNcFile.getLocation(), ex);
-			} catch (InvalidRangeException ex) {
-				log.error(null, ex);
-			}
+			int[] sampleOrig = new int[] {0, 0};
+			wrNcFile.write(cNetCDF.Variables.VAR_OPSET, sampleOrig, samplesD2);
 			log.info("Done writing SampleSet to matrix");
 
 			// WRITE MARKERSET TO MATRIX
 			ArrayChar.D2 markersD2 = Utils.writeCollectionToD2ArrayChar(rdMarkersKeysSource, cNetCDF.Strides.STRIDE_MARKER_NAME);
-			int[] markersOrig = new int[]{0, 0};
-			try {
-				wrNcFile.write(cNetCDF.Variables.VAR_IMPLICITSET, markersOrig, markersD2);
-			} catch (IOException ex) {
-				log.error("Failed writing file: " + wrNcFile.getLocation(), ex);
-			} catch (InvalidRangeException ex) {
-				log.error(null, ex);
-			}
+			int[] markersOrig = new int[] {0, 0};
+			wrNcFile.write(cNetCDF.Variables.VAR_IMPLICITSET, markersOrig, markersD2);
 			log.info("Done writing MarkerSet to matrix");
 			//</editor-fold>
 
@@ -183,6 +164,8 @@ public class OP_QASamples implements MatrixOperation {
 			//</editor-fold>
 
 			resultOpId = wrOPHandler.getResultOPId();
+		} catch (InvalidRangeException ex) {
+			throw new IOException(ex);
 		} finally {
 //			if (null != rdNcFile) {
 //				try {

@@ -24,11 +24,10 @@ import org.gwaspi.constants.cImport.ImportFormat;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import org.gwaspi.global.Text;
-import org.gwaspi.model.ChromosomeInfo;
 import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.MarkerKey;
+import org.gwaspi.model.MarkersChromosomeInfosSource;
 import org.gwaspi.model.MatricesList;
-import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.netCDF.loader.DataSetDestination;
@@ -76,9 +75,7 @@ public class MatrixMergeSamples extends AbstractMergeMatrixOperation {
 		NetcdfFile rdNcFile2 = NetcdfFile.open(rdMatrix2Metadata.getPathToMatrix());
 
 		// Get combo SampleSet with position[] (wrPos, rdMatrixNb, rdPos)
-		Map<SampleKey, byte[]> rdSampleSetMap1 = rdSampleSet1.getSampleIdSetMapByteArray();
-		Map<SampleKey, byte[]> rdSampleSetMap2 = rdSampleSet2.getSampleIdSetMapByteArray();
-		Map<SampleKey, int[]> wrComboSampleSetMap = getComboSampleSetWithIndicesArray(rdSampleSetMap1, rdSampleSetMap2);
+		Map<SampleKey, int[]> wrComboSampleSetMap = getComboSampleSetWithIndicesArray(dataSetSource1.getSamplesKeysSource(), dataSetSource2.getSamplesKeysSource());
 		Map<SampleKey, ?> theSamples = wrComboSampleSetMap;
 
 		// Use comboed wrComboSampleSetMap as SampleSet
@@ -90,7 +87,8 @@ public class MatrixMergeSamples extends AbstractMergeMatrixOperation {
 		rdMarkerSet2.initFullMarkerIdSetMap();
 
 		// RETRIEVE CHROMOSOMES INFO
-		Map<MarkerKey, ChromosomeInfo> chrInfo = rdMarkerSet1.getChrInfoSetMap();
+		MarkersChromosomeInfosSource chrInfo = dataSetSource1.getMarkersChromosomeInfosSource();
+//		Map<MarkerKey, ChromosomeInfo> chrInfo = rdMarkerSet1.getChrInfoSetMap();
 
 		//<editor-fold defaultstate="expanded" desc="CREATE MATRIX">
 		try {
@@ -111,7 +109,7 @@ public class MatrixMergeSamples extends AbstractMergeMatrixOperation {
 			StringBuilder descSB = new StringBuilder(Text.Matrix.descriptionHeader1);
 			descSB.append(org.gwaspi.global.Utils.getShortDateTimeAsString());
 			descSB.append("\n");
-			descSB.append("Markers: ").append(rdSampleSetMap1.size()).append(", Samples: ").append(numSamples);
+			descSB.append("Markers: ").append(dataSetSource1.getMarkersKeysSource().size()).append(", Samples: ").append(numSamples);
 			descSB.append("\n");
 			descSB.append(Text.Trafo.mergedFrom);
 			descSB.append("\nMX-");
@@ -142,38 +140,22 @@ public class MatrixMergeSamples extends AbstractMergeMatrixOperation {
 					rdMatrix2Key); // Parent matrixId 2
 
 			NetcdfFileWriteable wrNcFile = wrMatrixHandler.getNetCDFHandler();
-			try {
-				wrNcFile.create();
-			} catch (IOException ex) {
-				log.error("Failed creating file " + wrNcFile.getLocation(), ex);
-			}
-			//log.trace("Done creating netCDF handle in MatrixSampleJoin: " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
+			wrNcFile.create();
+			log.trace("Done creating netCDF handle: " + wrNcFile.toString());
 
 			//<editor-fold defaultstate="expanded" desc="METADATA WRITER">
 			// SAMPLESET
 			ArrayChar.D2 samplesD2 = Utils.writeCollectionToD2ArrayChar(theSamples.keySet(), cNetCDF.Strides.STRIDE_SAMPLE_NAME);
 
-			int[] sampleOrig = new int[]{0, 0};
-			try {
-				wrNcFile.write(cNetCDF.Variables.VAR_SAMPLESET, sampleOrig, samplesD2);
-			} catch (IOException ex) {
-				log.error("Failed writing file", ex);
-			} catch (InvalidRangeException ex) {
-				log.error(null, ex);
-			}
+			int[] sampleOrig = new int[] {0, 0};
+			wrNcFile.write(cNetCDF.Variables.VAR_SAMPLESET, sampleOrig, samplesD2);
 			log.info("Done writing SampleSet to matrix");
 
 			// Keep rdwrMarkerIdSetMap1 from Matrix1 constant
 			// MARKERSET MARKERID
 			ArrayChar.D2 markersD2 = Utils.writeCollectionToD2ArrayChar(rdMarkerSet1.getMarkerKeys(), cNetCDF.Strides.STRIDE_MARKER_NAME);
 			int[] markersOrig = new int[] {0, 0};
-			try {
-				wrNcFile.write(cNetCDF.Variables.VAR_MARKERSET, markersOrig, markersD2);
-			} catch (IOException ex) {
-				log.error("Failed writing file", ex);
-			} catch (InvalidRangeException ex) {
-				log.error(null, ex);
-			}
+			wrNcFile.write(cNetCDF.Variables.VAR_MARKERSET, markersOrig, markersD2);
 
 			// MARKERSET RSID
 			rdMarkerSet1.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_RSID);
@@ -184,10 +166,10 @@ public class MatrixMergeSamples extends AbstractMergeMatrixOperation {
 			Utils.saveCharMapValueToWrMatrix(wrNcFile, rdMarkerSet1.getMarkerIdSetMapCharArray().values(), cNetCDF.Variables.VAR_MARKERS_CHR, cNetCDF.Strides.STRIDE_CHR);
 
 			// Set of chromosomes found in matrix along with number of markersinfo
-			org.gwaspi.netCDF.operations.Utils.saveCharMapKeyToWrMatrix(wrNcFile, chrInfo, cNetCDF.Variables.VAR_CHR_IN_MATRIX, 8);
+			org.gwaspi.netCDF.operations.Utils.saveCharMapKeyToWrMatrix(wrNcFile, dataSetSource1.getMarkersKeysSource(), cNetCDF.Variables.VAR_CHR_IN_MATRIX, 8);
 			// Number of marker per chromosome & max pos for each chromosome
 			int[] columns = new int[] {0, 1, 2, 3};
-			org.gwaspi.netCDF.operations.Utils.saveChromosomeInfosD2ToWrMatrix(wrNcFile, chrInfo.values(), columns, cNetCDF.Variables.VAR_CHR_INFO);
+			org.gwaspi.netCDF.operations.Utils.saveChromosomeInfosD2ToWrMatrix(wrNcFile, chrInfo, columns, cNetCDF.Variables.VAR_CHR_INFO);
 
 			// MARKERSET POSITION
 			rdMarkerSet1.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_POS);
@@ -210,49 +192,43 @@ public class MatrixMergeSamples extends AbstractMergeMatrixOperation {
 			writeGenotypes(wrNcFile, wrComboSampleSetMap.values());
 
 			// CLOSE THE FILE AND BY THIS, MAKE IT READ-ONLY
-			try {
-				// GENOTYPE ENCODING
-				ArrayChar.D2 guessedGTCodeAC = new ArrayChar.D2(1, 8);
-				Index index = guessedGTCodeAC.getIndex();
-				guessedGTCodeAC.setString(index.set(0, 0), rdMatrix1Metadata.getGenotypeEncoding().toString());
-				int[] origin = new int[]{0, 0};
-				wrNcFile.write(cNetCDF.Variables.GLOB_GTENCODING, origin, guessedGTCodeAC);
+			// GENOTYPE ENCODING
+			ArrayChar.D2 guessedGTCodeAC = new ArrayChar.D2(1, 8);
+			Index index = guessedGTCodeAC.getIndex();
+			guessedGTCodeAC.setString(index.set(0, 0), rdMatrix1Metadata.getGenotypeEncoding().toString());
+			int[] origin = new int[]{0, 0};
+			wrNcFile.write(cNetCDF.Variables.GLOB_GTENCODING, origin, guessedGTCodeAC);
 
-				descSB.append("\nGenotype encoding: ");
-				descSB.append(rdMatrix1Metadata.getGenotypeEncoding());
+			descSB.append("\nGenotype encoding: ");
+			descSB.append(rdMatrix1Metadata.getGenotypeEncoding());
 
-				MatrixMetadata resultMatrixMetadata = wrMatrixHandler.getResultMatrixMetadata();
-				resultMatrixMetadata.setDescription(descSB.toString());
-				MatricesList.updateMatrix(resultMatrixMetadata);
+			MatrixMetadata resultMatrixMetadata = wrMatrixHandler.getResultMatrixMetadata();
+			resultMatrixMetadata.setDescription(descSB.toString());
+			MatricesList.updateMatrix(resultMatrixMetadata);
 
-				resultMatrixId = wrMatrixHandler.getResultMatrixId();
+			resultMatrixId = wrMatrixHandler.getResultMatrixId();
 
-				wrNcFile.close();
-				rdNcFile1.close();
-				rdNcFile2.close();
+			wrNcFile.close();
+			rdNcFile1.close();
+			rdNcFile2.close();
 
-				// CHECK FOR MISMATCHES
-				if (rdMatrix1Metadata.getGenotypeEncoding().equals(GenotypeEncoding.ACGT0)
-						|| rdMatrix1Metadata.getGenotypeEncoding().equals(GenotypeEncoding.O1234))
-				{
-					double[] mismatchState = checkForMismatches(wrMatrixHandler.getResultMatrixKey()); // mismatchCount, mismatchRatio
-					if (mismatchState[1] > 0.01) {
-						log.warn("");
-						log.warn("Mismatch ratio is bigger than 1% ({}%)!", (mismatchState[1] * 100));
-						log.warn("There might be an issue with strand positioning of your genotypes!");
-						log.warn("");
-						//resultMatrixId = new int[] {wrMatrixHandler.getResultMatrixId(),-4};  // The threshold of acceptable mismatching genotypes has been crossed
-					}
+			// CHECK FOR MISMATCHES
+			if (rdMatrix1Metadata.getGenotypeEncoding().equals(GenotypeEncoding.ACGT0)
+					|| rdMatrix1Metadata.getGenotypeEncoding().equals(GenotypeEncoding.O1234))
+			{
+				double[] mismatchState = checkForMismatches(wrMatrixHandler.getResultMatrixKey()); // mismatchCount, mismatchRatio
+				if (mismatchState[1] > 0.01) {
+					log.warn("");
+					log.warn("Mismatch ratio is bigger than 1% ({}%)!", (mismatchState[1] * 100));
+					log.warn("There might be an issue with strand positioning of your genotypes!");
+					log.warn("");
+					//resultMatrixId = new int[] {wrMatrixHandler.getResultMatrixId(),-4};  // The threshold of acceptable mismatching genotypes has been crossed
 				}
-			} catch (IOException ex) {
-				log.error("Failed creating file " + wrNcFile.getLocation(), ex);
 			}
 
 			org.gwaspi.global.Utils.sysoutCompleted("extraction to new Matrix");
 		} catch (InvalidRangeException ex) {
-			log.error(null, ex);
-		} catch (IOException ex) {
-			log.error(null, ex);
+			throw new IOException(ex);
 		}
 		//</editor-fold>
 

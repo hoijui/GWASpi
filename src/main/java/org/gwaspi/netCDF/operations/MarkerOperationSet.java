@@ -65,10 +65,8 @@ public class MarkerOperationSet<V> extends AbstractOperationSet<MarkerKey, V> {
 					ArrayChar.D2 markerSetAC = (ArrayChar.D2) var.read("(0:" + (varShape[0] - 1) + ":1, 0:7:1)");
 					chrInfoMap = org.gwaspi.netCDF.operations.Utils.writeD2ArrayCharToMapKeys(markerSetAC, null);
 				}
-			} catch (IOException ex) {
-				log.error("Cannot read data", ex);
 			} catch (InvalidRangeException ex) {
-				log.error("Cannot read data", ex);
+				throw new IOException(ex);
 			}
 
 			// GET INFO FOR EACH CHROMOSOME
@@ -84,10 +82,8 @@ public class MarkerOperationSet<V> extends AbstractOperationSet<MarkerKey, V> {
 					ArrayInt.D2 chrSetAI = (ArrayInt.D2) var.read("(0:" + (varShape[0] - 1) + ":1, 0:3:1)");
 					org.gwaspi.netCDF.operations.Utils.writeD2ArrayIntToChromosomeInfoMapValues(chrSetAI, chrInfoMap);
 				}
-			} catch (IOException ex) {
-				log.error("Cannot read data", ex);
 			} catch (InvalidRangeException ex) {
-				log.error("Cannot read data", ex);
+				throw new IOException(ex);
 			}
 		} catch (IOException ex) {
 			log.error("Cannot open file", ex);

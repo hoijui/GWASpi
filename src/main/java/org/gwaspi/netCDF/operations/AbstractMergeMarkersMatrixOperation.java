@@ -33,6 +33,7 @@ import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.netCDF.loader.DataSetDestination;
+import org.gwaspi.netCDF.loader.NetCDFSaverSamplesReceiver;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,6 +61,60 @@ public abstract class AbstractMergeMarkersMatrixOperation extends AbstractMergeM
 				dataSetDestination);
 	}
 
+	public static XXX createNetCdfDataSetDestination() {
+
+		//<editor-fold defaultstate="expanded" desc="CREATE MATRIX">
+		NetCDFSaverSamplesReceiver netCDFSaverSamplesReceiver = null;
+//		netCDFSaverSamplesReceiver.init();
+//		try {
+			// CREATE netCDF-3 FILE
+			boolean hasDictionary = false;
+			if (rdMatrix1Metadata.getHasDictionray() == rdMatrix2Metadata.getHasDictionray()) {
+				hasDictionary = rdMatrix1Metadata.getHasDictionray();
+			}
+			GenotypeEncoding gtEncoding = GenotypeEncoding.UNKNOWN;
+			if (rdMatrix1Metadata.getGenotypeEncoding().equals(rdMatrix2Metadata.getGenotypeEncoding())) {
+				gtEncoding = rdMatrix1Metadata.getGenotypeEncoding();
+			}
+			ImportFormat technology = ImportFormat.UNKNOWN;
+			if (rdMatrix1Metadata.getTechnology().equals(rdMatrix2Metadata.getTechnology())) {
+				technology = rdMatrix1Metadata.getTechnology();
+			}
+
+			StringBuilder descSB = new StringBuilder(Text.Matrix.descriptionHeader1);
+			descSB.append(org.gwaspi.global.Utils.getShortDateTimeAsString());
+			descSB.append("\n");
+			descSB.append("Markers: ").append(wrComboSortedMarkerSetMap.size()).append(", Samples: ").append(numSamples);
+			descSB.append("\n");
+			descSB.append(Text.Trafo.mergedFrom);
+			descSB.append("\nMX-");
+			descSB.append(rdMatrix1Metadata.getMatrixId());
+			descSB.append(" - ");
+			descSB.append(rdMatrix1Metadata.getMatrixFriendlyName());
+			descSB.append("\nMX-");
+			descSB.append(rdMatrix2Metadata.getMatrixId());
+			descSB.append(" - ");
+			descSB.append(rdMatrix2Metadata.getMatrixFriendlyName());
+			descSB.append("\n\n");
+			descSB.append("Merge Method - ");
+			descSB.append(humanReadableMethodName);
+			descSB.append(":\n");
+			descSB.append(methodDescription);
+
+			MatrixFactory wrMatrixHandler = new MatrixFactory(
+					technology, // technology
+					wrMatrixFriendlyName,
+					wrMatrixDescription + "\n\n" + descSB.toString(), // description
+					gtEncoding, // GT encoding
+					rdMatrix1Metadata.getStrand(),
+					hasDictionary, // has dictionary?
+					numSamples,
+					wrComboSortedMarkerSetMap.size(), // Use comboed wrSortedMingledMarkerMap as MarkerSet
+					chrInfo.size(),
+					rdMatrix1Key, // Parent matrixId 1
+					rdMatrix2Key); // Parent matrixId 2
+	}
+
 	/**
 	 * Mingles markers and keeps samples constant.
 	 */
@@ -69,7 +124,7 @@ public abstract class AbstractMergeMarkersMatrixOperation extends AbstractMergeM
 			final int numSamples,
 			final String humanReadableMethodName,
 			final String methodDescription)
-			throws IOException, InvalidRangeException
+			throws IOException
 	{
 		MatrixKey resultMatrixKey = null;
 
@@ -82,6 +137,7 @@ public abstract class AbstractMergeMarkersMatrixOperation extends AbstractMergeM
 		Map<MarkerKey, ChromosomeInfo> chrInfo = org.gwaspi.netCDF.matrices.Utils.aggregateChromosomeInfo(wrComboSortedMarkerSetMap, 0, 1);
 
 		//<editor-fold defaultstate="expanded" desc="CREATE MATRIX">
+		NetCDFSaverSamplesReceiver netCDFSaverSamplesReceiver = null;
 		try {
 			// CREATE netCDF-3 FILE
 			boolean hasDictionary = false;
@@ -131,48 +187,26 @@ public abstract class AbstractMergeMarkersMatrixOperation extends AbstractMergeM
 					rdMatrix2Key); // Parent matrixId 2
 
 			NetcdfFileWriteable wrNcFile = wrMatrixHandler.getNetCDFHandler();
-			try {
-				wrNcFile.create();
-			} catch (IOException ex) {
-				log.error("Failed creating file " + wrNcFile.getLocation(), ex);
-			}
-			//log.trace("Done creating netCDF handle in MatrixSampleJoin: " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
+			wrNcFile.create();
+			log.trace("Done creating netCDF handle: " + wrNcFile.toString());
 
 			//<editor-fold defaultstate="expanded" desc="METADATA WRITER">
 			// SAMPLESET
 			ArrayChar.D2 samplesD2 = Utils.writeCollectionToD2ArrayChar(theSamples.keySet(), cNetCDF.Strides.STRIDE_SAMPLE_NAME);
 
-			int[] sampleOrig = new int[]{0, 0};
-			try {
-				wrNcFile.write(cNetCDF.Variables.VAR_SAMPLESET, sampleOrig, samplesD2);
-			} catch (IOException ex) {
-				log.error("Failed writing file", ex);
-			} catch (InvalidRangeException ex) {
-				log.error(null, ex);
-			}
+			int[] sampleOrig = new int[] {0, 0};
+			wrNcFile.write(cNetCDF.Variables.VAR_SAMPLESET, sampleOrig, samplesD2);
 			log.info("Done writing SampleSet to matrix");
 
 			// MARKERSET MARKERID
 			ArrayChar.D2 markersD2 = Utils.writeCollectionToD2ArrayChar(wrComboSortedMarkerSetMap.keySet(), cNetCDF.Strides.STRIDE_MARKER_NAME);
 			int[] markersOrig = new int[] {0, 0};
-			try {
-				wrNcFile.write(cNetCDF.Variables.VAR_MARKERSET, markersOrig, markersD2);
-			} catch (IOException ex) {
-				log.error("Failed writing file", ex);
-			} catch (InvalidRangeException ex) {
-				log.error(null, ex);
-			}
+			wrNcFile.write(cNetCDF.Variables.VAR_MARKERSET, markersOrig, markersD2);
 
 			// WRITE CHROMOSOME METADATA FROM ANNOTATION FILE
 			markersD2 = org.gwaspi.netCDF.operations.Utils.writeValuesToD2ArrayChar(wrComboSortedMarkerSetMap.values(), MarkerMetadata.TO_CHR, cNetCDF.Strides.STRIDE_CHR);
 
-			try {
-				wrNcFile.write(cNetCDF.Variables.VAR_MARKERS_CHR, markersOrig, markersD2);
-			} catch (IOException ex) {
-				log.error("Failed writing file", ex);
-			} catch (InvalidRangeException ex) {
-				log.error(null, ex);
-			}
+			wrNcFile.write(cNetCDF.Variables.VAR_MARKERS_CHR, markersOrig, markersD2);
 			log.info("Done writing chromosomes to matrix");
 
 			// Set of chromosomes found in matrix along with number of markersinfo
@@ -184,13 +218,7 @@ public abstract class AbstractMergeMarkersMatrixOperation extends AbstractMergeM
 			// WRITE POSITION METADATA FROM ANNOTATION FILE
 			ArrayInt.D1 markersPosD1 = org.gwaspi.netCDF.operations.Utils.writeValuesToD1ArrayInt(wrComboSortedMarkerSetMap.values(), MarkerMetadata.TO_POS);
 			int[] posOrig = new int[1];
-			try {
-				wrNcFile.write(cNetCDF.Variables.VAR_MARKERS_POS, posOrig, markersPosD1);
-			} catch (IOException ex) {
-				log.error("Failed writing file", ex);
-			} catch (InvalidRangeException ex) {
-				log.error(null, ex);
-			}
+			wrNcFile.write(cNetCDF.Variables.VAR_MARKERS_POS, posOrig, markersPosD1);
 			log.info("Done writing positions to matrix");
 
 			//<editor-fold defaultstate="expanded" desc="GATHER METADATA FROM BOTH MATRICES">
@@ -238,49 +266,43 @@ public abstract class AbstractMergeMarkersMatrixOperation extends AbstractMergeM
 			writeGenotypes(wrNcFile, wrSampleSetMap, combinedMarkerGTStrands, rdSampleSetMap1, rdSampleSetMap2);
 
 			// CLOSE THE FILE AND BY THIS, MAKE IT READ-ONLY
-			try {
-				// GENOTYPE ENCODING
-				ArrayChar.D2 guessedGTCodeAC = new ArrayChar.D2(1, 8);
-				Index index = guessedGTCodeAC.getIndex();
-				guessedGTCodeAC.setString(index.set(0, 0), rdMatrix1Metadata.getGenotypeEncoding().toString());
-				int[] origin = new int[] {0, 0};
-				wrNcFile.write(cNetCDF.Variables.GLOB_GTENCODING, origin, guessedGTCodeAC);
+			// GENOTYPE ENCODING
+			ArrayChar.D2 guessedGTCodeAC = new ArrayChar.D2(1, 8);
+			Index index = guessedGTCodeAC.getIndex();
+			guessedGTCodeAC.setString(index.set(0, 0), rdMatrix1Metadata.getGenotypeEncoding().toString());
+			int[] origin = new int[] {0, 0};
+			wrNcFile.write(cNetCDF.Variables.GLOB_GTENCODING, origin, guessedGTCodeAC);
 
-				descSB.append("\nGenotype encoding: ");
-				descSB.append(rdMatrix1Metadata.getGenotypeEncoding());
+			descSB.append("\nGenotype encoding: ");
+			descSB.append(rdMatrix1Metadata.getGenotypeEncoding());
 
-				resultMatrixKey = wrMatrixHandler.getResultMatrixKey();
+			resultMatrixKey = wrMatrixHandler.getResultMatrixKey();
 
-				MatrixMetadata resultMatrixMetadata = wrMatrixHandler.getResultMatrixMetadata();
-				resultMatrixMetadata.setDescription(descSB.toString());
-				MatricesList.updateMatrix(resultMatrixMetadata);
+			MatrixMetadata resultMatrixMetadata = wrMatrixHandler.getResultMatrixMetadata();
+			resultMatrixMetadata.setDescription(descSB.toString());
+			MatricesList.updateMatrix(resultMatrixMetadata);
 
-				wrNcFile.close();
-				rdNcFile1.close();
-				rdNcFile2.close();
+			wrNcFile.close();
+			rdNcFile1.close();
+			rdNcFile2.close();
 
-				// CHECK FOR MISMATCHES
-				if (rdMatrix1Metadata.getGenotypeEncoding().equals(GenotypeEncoding.ACGT0)
-						|| rdMatrix1Metadata.getGenotypeEncoding().equals(GenotypeEncoding.O1234))
-				{
-					double[] mismatchState = checkForMismatches(resultMatrixKey); // mismatchCount, mismatchRatio
-					if (mismatchState[1] > 0.01) {
-						log.warn("");
-						log.warn("Mismatch ratio is bigger than 1% ({}%)!", (mismatchState[1] * 100));
-						log.warn("There might be an issue with strand positioning of your genotypes!");
-						log.warn("");
-						//resultMatrixId = new int[] {wrMatrixHandler.getResultMatrixId(),-4};  // The threshold of acceptable mismatching genotypes has been crossed
-					}
+			// CHECK FOR MISMATCHES
+			if (rdMatrix1Metadata.getGenotypeEncoding().equals(GenotypeEncoding.ACGT0)
+					|| rdMatrix1Metadata.getGenotypeEncoding().equals(GenotypeEncoding.O1234))
+			{
+				double[] mismatchState = checkForMismatches(resultMatrixKey); // mismatchCount, mismatchRatio
+				if (mismatchState[1] > 0.01) {
+					log.warn("");
+					log.warn("Mismatch ratio is bigger than 1% ({}%)!", (mismatchState[1] * 100));
+					log.warn("There might be an issue with strand positioning of your genotypes!");
+					log.warn("");
+					//resultMatrixId = new int[] {wrMatrixHandler.getResultMatrixId(),-4};  // The threshold of acceptable mismatching genotypes has been crossed
 				}
-			} catch (IOException ex) {
-				log.error("Failed creating file " + wrNcFile.getLocation(), ex);
 			}
 
 			org.gwaspi.global.Utils.sysoutCompleted("extraction to new Matrix");
 		} catch (InvalidRangeException ex) {
-			log.error(null, ex);
-		} catch (IOException ex) {
-			log.error(null, ex);
+			throw new IOException(ex);
 		}
 		//</editor-fold>
 

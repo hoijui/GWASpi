@@ -116,7 +116,8 @@ public class NetCDFSaverSamplesReceiver extends AbstractSamplesReceiver {
 //		descSB.append("\nGenotype encoding: ");
 //		descSB.append(gtCode);
 		descSB.append("\n");
-		descSB.append("Markers: ").append(getDataSet().getMarkerMetadatas().size()).append(", Samples: ").append(getDataSet().getSampleInfos().size());
+		descSB.append("Markers: ").append(getDataSet().getMarkerMetadatas().size());
+		descSB.append(", Samples: ").append(getDataSet().getSampleInfos().size());
 		descSB.append("\n");
 		descSB.append(Text.Matrix.descriptionHeader2);
 		descSB.append(loadDescription.getFormat().toString());
@@ -205,7 +206,7 @@ public class NetCDFSaverSamplesReceiver extends AbstractSamplesReceiver {
 		log.info("Done writing chromosomes to matrix");
 
 		// Set of chromosomes found in matrix along with number of markersinfo
-		org.gwaspi.netCDF.operations.Utils.saveCharMapKeyToWrMatrix(ncfile, chrSetMap, cNetCDF.Variables.VAR_CHR_IN_MATRIX, 8);
+		org.gwaspi.netCDF.operations.Utils.saveCharMapKeyToWrMatrix(ncfile, chrSetMap.keySet(), cNetCDF.Variables.VAR_CHR_IN_MATRIX, 8);
 
 		// Number of marker per chromosome & max pos for each chromosome
 		int[] columns = new int[] {0, 1, 2, 3};

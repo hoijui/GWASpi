@@ -105,10 +105,8 @@ public class AbstractOperationSet<K, V> {
 					ArrayChar.D2 markerSetAC = (ArrayChar.D2) var.read("(0:" + (opSetSize - 1) + ":1, 0:" + (varShape[1] - 1) + ":1)");
 					opSetMap = wrapToKeyMap(markerSetAC, keyFactory);
 				}
-			} catch (IOException ex) {
-				log.error("Cannot read data", ex);
 			} catch (InvalidRangeException ex) {
-				log.error("Cannot read data", ex);
+				throw new IOException(ex);
 			}
 		} catch (IOException ex) {
 			log.error("Cannot open file", ex);
@@ -146,10 +144,8 @@ public class AbstractOperationSet<K, V> {
 					ArrayChar.D2 markerSetAC = (ArrayChar.D2) var.read("(0:" + (opSetSize - 1) + ":1, 0:" + (varShape[1] - 1) + ":1)");
 					opRsIdSetMap = wrapToKeyMap(markerSetAC, keyFactory);
 				}
-			} catch (IOException ex) {
-				log.error("Cannot read data", ex);
 			} catch (InvalidRangeException ex) {
-				log.error("Cannot read data", ex);
+				throw new IOException(ex);
 			}
 		} catch (IOException ex) {
 			log.error("Cannot open file", ex);
@@ -184,10 +180,8 @@ public class AbstractOperationSet<K, V> {
 				ArrayChar.D2 sampleSetAC = (ArrayChar.D2) var.read("(0:" + (implicitSetSize - 1) + ":1, 0:" + (varShape[1] - 1) + ":1)");
 
 				implicitSetMap = wrapToKeyMap(sampleSetAC, new SampleKeyFactory(operationKey.getParentMatrixKey().getStudyKey()));
-			} catch (IOException ex) {
-				log.error("Cannot read data", ex);
 			} catch (InvalidRangeException ex) {
-				log.error("Cannot read data", ex);
+				throw new IOException(ex);
 			}
 		} catch (IOException ex) {
 			log.error("Cannot open file", ex);

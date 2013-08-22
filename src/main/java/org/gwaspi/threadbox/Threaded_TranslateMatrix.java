@@ -69,8 +69,7 @@ public class Threaded_TranslateMatrix extends CommonRunnable {
 					|| gtEncoding.equals(GenotypeEncoding.O12))
 			{
 				resultMatrixId = matrixTransformer.translateAB12AllelesToACGT();
-			} else if (gtEncoding.equals(GenotypeEncoding.O1234))
-			{
+			} else if (gtEncoding.equals(GenotypeEncoding.O1234)) {
 				resultMatrixId = matrixTransformer.translate1234AllelesToACGT();
 			} else {
 				throw new IllegalStateException("Invalid value for gtEncoding: " + gtEncoding);

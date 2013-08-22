@@ -239,18 +239,18 @@ public class MatrixDataExtractor {
 				this.wrSampleSetMap = this.rdSampleSet.pickValidSampleSetItemsByNetCDFValue(this.rdSampleSetMap, samplePickerVar, (Set<char[]>) sampleCriteria, false);
 				break;
 			case SAMPLES_INCLUDE_BY_ID:
-				this.wrSampleSetMap = this.rdSampleSet.pickValidSampleSetItemsByNetCDFKey(this.rdSampleSetMap.keySet(), (Set<SampleKey>) sampleCriteria, true);
+				this.wrSampleSetMap = SampleSet.pickValidSampleSetItemsByNetCDFKey(this.rdSampleSetMap.keySet(), (Set<SampleKey>) sampleCriteria, true);
 				break;
 			case SAMPLES_EXCLUDE_BY_ID:
-				this.wrSampleSetMap = this.rdSampleSet.pickValidSampleSetItemsByNetCDFKey(this.rdSampleSetMap.keySet(), (Set<SampleKey>) sampleCriteria, false);
+				this.wrSampleSetMap = SampleSet.pickValidSampleSetItemsByNetCDFKey(this.rdSampleSetMap.keySet(), (Set<SampleKey>) sampleCriteria, false);
 				break;
 			case SAMPLES_INCLUDE_BY_DB_FIELD:
 				// USE DB DATA
-				this.wrSampleSetMap = this.rdSampleSet.pickValidSampleSetItemsByDBField(rdMatrixKey.getStudyKey(), this.rdSampleSetMap.keySet(), samplePickerVar, sampleCriteria, true);
+				this.wrSampleSetMap = SampleSet.pickValidSampleSetItemsByDBField(rdMatrixKey.getStudyKey(), this.rdSampleSetMap.keySet(), samplePickerVar, sampleCriteria, true);
 				break;
 			case SAMPLES_EXCLUDE_BY_DB_FIELD:
 				// USE DB DATA
-				this.wrSampleSetMap = this.rdSampleSet.pickValidSampleSetItemsByDBField(rdMatrixKey.getStudyKey(), this.rdSampleSetMap.keySet(), samplePickerVar, sampleCriteria, false);
+				this.wrSampleSetMap = SampleSet.pickValidSampleSetItemsByDBField(rdMatrixKey.getStudyKey(), this.rdSampleSetMap.keySet(), samplePickerVar, sampleCriteria, false);
 				break;
 			default:
 				int j = 0;
@@ -331,12 +331,8 @@ public class MatrixDataExtractor {
 
 				NetcdfFile rdNcFile = NetcdfFile.open(rdMatrixMetadata.getPathToMatrix());
 				NetcdfFileWriteable wrNcFile = wrMatrixHandler.getNetCDFHandler();
-				try {
-					wrNcFile.create();
-				} catch (IOException ex) {
-					log.error("Failed creating file: " + wrNcFile.getLocation(), ex);
-				}
-				//log.trace("Done creating netCDF handle in MatrixataExtractor: " + org.gwaspi.global.Utils.getMediumDateTimeAsString());
+				wrNcFile.create();
+				log.trace("Done creating netCDF handle: " + wrNcFile.toString());
 
 				//<editor-fold defaultstate="expanded" desc="METADATA WRITER">
 				// WRITING METADATA TO MATRIX
@@ -345,25 +341,13 @@ public class MatrixDataExtractor {
 				ArrayChar.D2 samplesD2 = Utils.writeCollectionToD2ArrayChar(wrSampleSetMap.keySet(), cNetCDF.Strides.STRIDE_SAMPLE_NAME);
 
 				int[] sampleOrig = new int[]{0, 0};
-				try {
-					wrNcFile.write(cNetCDF.Variables.VAR_SAMPLESET, sampleOrig, samplesD2);
-				} catch (IOException ex) {
-					log.error("Failed writing file", ex);
-				} catch (InvalidRangeException ex) {
-					log.error(null, ex);
-				}
+				wrNcFile.write(cNetCDF.Variables.VAR_SAMPLESET, sampleOrig, samplesD2);
 				log.info("Done writing SampleSet to matrix");
 
 				// MARKERSET MARKERID
 				ArrayChar.D2 markersD2 = Utils.writeCollectionToD2ArrayChar(wrMarkerIdSetMap.keySet(), cNetCDF.Strides.STRIDE_MARKER_NAME);
 				int[] markersOrig = new int[]{0, 0};
-				try {
-					wrNcFile.write(cNetCDF.Variables.VAR_MARKERSET, markersOrig, markersD2);
-				} catch (IOException ex) {
-					log.error("Failed writing file", ex);
-				} catch (InvalidRangeException ex) {
-					log.error(null, ex);
-				}
+				wrNcFile.write(cNetCDF.Variables.VAR_MARKERSET, markersOrig, markersD2);
 
 				// MARKERSET RSID
 				rdMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_RSID);
@@ -376,7 +360,7 @@ public class MatrixDataExtractor {
 				Utils.saveCharMapValueToWrMatrix(wrNcFile, sortedMarkerChrs.values(), cNetCDF.Variables.VAR_MARKERS_CHR, cNetCDF.Strides.STRIDE_CHR);
 
 				// Set of chromosomes found in matrix along with number of markersinfo
-				org.gwaspi.netCDF.operations.Utils.saveCharMapKeyToWrMatrix(wrNcFile, rdChrInfoSetMap, cNetCDF.Variables.VAR_CHR_IN_MATRIX, 8);
+				org.gwaspi.netCDF.operations.Utils.saveCharMapKeyToWrMatrix(wrNcFile, rdChrInfoSetMap.keySet(), cNetCDF.Variables.VAR_CHR_IN_MATRIX, 8);
 				// Number of marker per chromosome & max pos for each chromosome
 				int[] columns = new int[] {0, 1, 2, 3};
 				org.gwaspi.netCDF.operations.Utils.saveChromosomeInfosD2ToWrMatrix(wrNcFile, rdChrInfoSetMap.values(), columns, cNetCDF.Variables.VAR_CHR_INFO);
@@ -417,31 +401,25 @@ public class MatrixDataExtractor {
 				//</editor-fold>
 
 				// CLOSE THE FILE AND BY THIS, MAKE IT READ-ONLY
-				try {
-					// GENOTYPE ENCODING
-					ArrayChar.D2 guessedGTCodeAC = new ArrayChar.D2(1, 8);
-					Index index = guessedGTCodeAC.getIndex();
-					guessedGTCodeAC.setString(index.set(0, 0), rdMatrixMetadata.getGenotypeEncoding().toString());
-					int[] origin = new int[]{0, 0};
-					wrNcFile.write(cNetCDF.Variables.GLOB_GTENCODING, origin, guessedGTCodeAC);
+				// GENOTYPE ENCODING
+				ArrayChar.D2 guessedGTCodeAC = new ArrayChar.D2(1, 8);
+				Index index = guessedGTCodeAC.getIndex();
+				guessedGTCodeAC.setString(index.set(0, 0), rdMatrixMetadata.getGenotypeEncoding().toString());
+				int[] origin = new int[]{0, 0};
+				wrNcFile.write(cNetCDF.Variables.GLOB_GTENCODING, origin, guessedGTCodeAC);
 
-					descSB.append("\nGenotype encoding: ");
-					descSB.append(rdMatrixMetadata.getGenotypeEncoding());
+				descSB.append("\nGenotype encoding: ");
+				descSB.append(rdMatrixMetadata.getGenotypeEncoding());
 
-					MatrixMetadata resultMatrixMetadata = wrMatrixHandler.getResultMatrixMetadata();
-					resultMatrixMetadata.setDescription(descSB.toString());
-					MatricesList.updateMatrix(resultMatrixMetadata);
+				MatrixMetadata resultMatrixMetadata = wrMatrixHandler.getResultMatrixMetadata();
+				resultMatrixMetadata.setDescription(descSB.toString());
+				MatricesList.updateMatrix(resultMatrixMetadata);
 
-					wrNcFile.close();
-				} catch (IOException ex) {
-					log.error("Failed creating file: " + wrNcFile.getLocation(), ex);
-				}
+				wrNcFile.close();
 
 				org.gwaspi.global.Utils.sysoutCompleted("Extraction to new Matrix");
 			} catch (InvalidRangeException ex) {
-				log.error(null, ex);
-			} catch (IOException ex) {
-				log.error(null, ex);
+				throw new IOException(ex);
 			}
 		} else {
 			Dialogs.showWarningDialogue(Text.Trafo.criteriaReturnsNoResults);

@@ -54,11 +54,11 @@ public class Utils {
 	}
 
 	//<editor-fold defaultstate="expanded" desc="SAVERS">
-	public static <K> boolean saveCharMapKeyToWrMatrix(NetcdfFileWriteable wrNcFile, Map<K, ?> wrMap, String variable, int varStride) {
+	public static <K> boolean saveCharMapKeyToWrMatrix(NetcdfFileWriteable wrNcFile, Collection<K> keys, String variable, int varStride) {
 		boolean result = false;
 
 		try {
-			ArrayChar.D2 markersD2 = writeCollectionToD2ArrayChar(wrMap.keySet(), varStride);
+			ArrayChar.D2 markersD2 = writeCollectionToD2ArrayChar(keys, varStride);
 
 			int[] markersOrig = new int[] {0, 0};
 			try {
@@ -68,7 +68,7 @@ public class Utils {
 			} catch (IOException ex) {
 				log.error("Failed writing file", ex);
 			} catch (InvalidRangeException ex) {
-				log.error("Failed writing file", ex);
+				throw new IOException(ex);
 			}
 		} catch (Exception ex) {
 			log.error("Failed writing " + variable, ex);
