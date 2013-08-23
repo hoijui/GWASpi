@@ -22,7 +22,7 @@ import java.util.Collection;
 /**
  * TODO
  */
-public class InMemorySamplesReceiver extends AbstractSamplesReceiver implements DataSetDestination {
+public class InMemorySamplesReceiver extends AbstractDataSetDestination implements DataSetDestination {
 
 	public InMemorySamplesReceiver() {
 	}

@@ -18,6 +18,7 @@
 package org.gwaspi.netCDF.operations;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.gwaspi.constants.cImport.ImportFormat;
@@ -33,7 +34,7 @@ import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.netCDF.loader.DataSetDestination;
-import org.gwaspi.netCDF.loader.NetCDFSaverSamplesReceiver;
+import org.gwaspi.netCDF.loader.LoadingNetCDFDataSetDestination;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,13 +42,12 @@ import ucar.ma2.ArrayChar;
 import ucar.ma2.ArrayInt;
 import ucar.ma2.Index;
 import ucar.ma2.InvalidRangeException;
-import ucar.nc2.Attribute;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFileWriteable;
 
 public abstract class AbstractMergeMarkersMatrixOperation extends AbstractMergeMatrixOperation {
 
-	private final Logger log = LoggerFactory.getLogger(AbstractMergeMarkersMatrixOperation.class);
+	private static final Logger log = LoggerFactory.getLogger(AbstractMergeMarkersMatrixOperation.class);
 
 	public AbstractMergeMarkersMatrixOperation(
 			DataSetSource dataSetSource1,
@@ -61,59 +61,60 @@ public abstract class AbstractMergeMarkersMatrixOperation extends AbstractMergeM
 				dataSetDestination);
 	}
 
-	public static XXX createNetCdfDataSetDestination() {
-
-		//<editor-fold defaultstate="expanded" desc="CREATE MATRIX">
-		NetCDFSaverSamplesReceiver netCDFSaverSamplesReceiver = null;
-//		netCDFSaverSamplesReceiver.init();
-//		try {
-			// CREATE netCDF-3 FILE
-			boolean hasDictionary = false;
-			if (rdMatrix1Metadata.getHasDictionray() == rdMatrix2Metadata.getHasDictionray()) {
-				hasDictionary = rdMatrix1Metadata.getHasDictionray();
-			}
-			GenotypeEncoding gtEncoding = GenotypeEncoding.UNKNOWN;
-			if (rdMatrix1Metadata.getGenotypeEncoding().equals(rdMatrix2Metadata.getGenotypeEncoding())) {
-				gtEncoding = rdMatrix1Metadata.getGenotypeEncoding();
-			}
-			ImportFormat technology = ImportFormat.UNKNOWN;
-			if (rdMatrix1Metadata.getTechnology().equals(rdMatrix2Metadata.getTechnology())) {
-				technology = rdMatrix1Metadata.getTechnology();
-			}
-
-			StringBuilder descSB = new StringBuilder(Text.Matrix.descriptionHeader1);
-			descSB.append(org.gwaspi.global.Utils.getShortDateTimeAsString());
-			descSB.append("\n");
-			descSB.append("Markers: ").append(wrComboSortedMarkerSetMap.size()).append(", Samples: ").append(numSamples);
-			descSB.append("\n");
-			descSB.append(Text.Trafo.mergedFrom);
-			descSB.append("\nMX-");
-			descSB.append(rdMatrix1Metadata.getMatrixId());
-			descSB.append(" - ");
-			descSB.append(rdMatrix1Metadata.getMatrixFriendlyName());
-			descSB.append("\nMX-");
-			descSB.append(rdMatrix2Metadata.getMatrixId());
-			descSB.append(" - ");
-			descSB.append(rdMatrix2Metadata.getMatrixFriendlyName());
-			descSB.append("\n\n");
-			descSB.append("Merge Method - ");
-			descSB.append(humanReadableMethodName);
-			descSB.append(":\n");
-			descSB.append(methodDescription);
-
-			MatrixFactory wrMatrixHandler = new MatrixFactory(
-					technology, // technology
-					wrMatrixFriendlyName,
-					wrMatrixDescription + "\n\n" + descSB.toString(), // description
-					gtEncoding, // GT encoding
-					rdMatrix1Metadata.getStrand(),
-					hasDictionary, // has dictionary?
-					numSamples,
-					wrComboSortedMarkerSetMap.size(), // Use comboed wrSortedMingledMarkerMap as MarkerSet
-					chrInfo.size(),
-					rdMatrix1Key, // Parent matrixId 1
-					rdMatrix2Key); // Parent matrixId 2
-	}
+//	public static LoadingNetCDFDataSetDestination createNetCdfDataSetDestination() {
+//
+//		LoadingNetCDFDataSetDestination netCDFSaverSamplesReceiver = null;
+////		netCDFSaverSamplesReceiver.init();
+////		try {
+//			// CREATE netCDF-3 FILE
+//			boolean hasDictionary = false;
+//			if (rdMatrix1Metadata.getHasDictionray() == rdMatrix2Metadata.getHasDictionray()) {
+//				hasDictionary = rdMatrix1Metadata.getHasDictionray();
+//			}
+//			GenotypeEncoding gtEncoding = GenotypeEncoding.UNKNOWN;
+//			if (rdMatrix1Metadata.getGenotypeEncoding().equals(rdMatrix2Metadata.getGenotypeEncoding())) {
+//				gtEncoding = rdMatrix1Metadata.getGenotypeEncoding();
+//			}
+//			ImportFormat technology = ImportFormat.UNKNOWN;
+//			if (rdMatrix1Metadata.getTechnology().equals(rdMatrix2Metadata.getTechnology())) {
+//				technology = rdMatrix1Metadata.getTechnology();
+//			}
+//
+//			StringBuilder descSB = new StringBuilder(Text.Matrix.descriptionHeader1);
+//			descSB.append(org.gwaspi.global.Utils.getShortDateTimeAsString());
+//			descSB.append("\n");
+//			descSB.append("Markers: ").append(wrComboSortedMarkerSetMap.size()).append(", Samples: ").append(numSamples);
+//			descSB.append("\n");
+//			descSB.append(Text.Trafo.mergedFrom);
+//			descSB.append("\nMX-");
+//			descSB.append(rdMatrix1Metadata.getMatrixId());
+//			descSB.append(" - ");
+//			descSB.append(rdMatrix1Metadata.getMatrixFriendlyName());
+//			descSB.append("\nMX-");
+//			descSB.append(rdMatrix2Metadata.getMatrixId());
+//			descSB.append(" - ");
+//			descSB.append(rdMatrix2Metadata.getMatrixFriendlyName());
+//			descSB.append("\n\n");
+//			descSB.append("Merge Method - ");
+//			descSB.append(humanReadableMethodName);
+//			descSB.append(":\n");
+//			descSB.append(methodDescription);
+//
+//			MatrixFactory wrMatrixHandler = new MatrixFactory(
+//					technology, // technology
+//					wrMatrixFriendlyName,
+//					wrMatrixDescription + "\n\n" + descSB.toString(), // description
+//					gtEncoding, // GT encoding
+//					rdMatrix1Metadata.getStrand(),
+//					hasDictionary, // has dictionary?
+//					numSamples,
+//					wrComboSortedMarkerSetMap.size(), // Use comboed wrSortedMingledMarkerMap as MarkerSet
+//					chrInfo.size(),
+//					rdMatrix1Key, // Parent matrixId 1
+//					rdMatrix2Key); // Parent matrixId 2
+//
+//			return netCDFSaverSamplesReceiver;
+//	}
 
 	/**
 	 * Mingles markers and keeps samples constant.
@@ -136,8 +137,7 @@ public abstract class AbstractMergeMarkersMatrixOperation extends AbstractMergeM
 		// RETRIEVE CHROMOSOMES INFO
 		Map<MarkerKey, ChromosomeInfo> chrInfo = org.gwaspi.netCDF.matrices.Utils.aggregateChromosomeInfo(wrComboSortedMarkerSetMap, 0, 1);
 
-		//<editor-fold defaultstate="expanded" desc="CREATE MATRIX">
-		NetCDFSaverSamplesReceiver netCDFSaverSamplesReceiver = null;
+		LoadingNetCDFDataSetDestination netCDFSaverSamplesReceiver = null;
 		try {
 			// CREATE netCDF-3 FILE
 			boolean hasDictionary = false;
@@ -156,7 +156,8 @@ public abstract class AbstractMergeMarkersMatrixOperation extends AbstractMergeM
 			StringBuilder descSB = new StringBuilder(Text.Matrix.descriptionHeader1);
 			descSB.append(org.gwaspi.global.Utils.getShortDateTimeAsString());
 			descSB.append("\n");
-			descSB.append("Markers: ").append(wrComboSortedMarkerSetMap.size()).append(", Samples: ").append(numSamples);
+			descSB.append("Markers: ").append(wrComboSortedMarkerSetMap.size());
+			descSB.append(", Samples: ").append(numSamples);
 			descSB.append("\n");
 			descSB.append(Text.Trafo.mergedFrom);
 			descSB.append("\nMX-");
@@ -173,7 +174,7 @@ public abstract class AbstractMergeMarkersMatrixOperation extends AbstractMergeM
 			descSB.append(":\n");
 			descSB.append(methodDescription);
 
-			MatrixFactory wrMatrixHandler = new MatrixFactory(
+			MatrixFactory matrixFactory = new MatrixFactory(
 					technology, // technology
 					wrMatrixFriendlyName,
 					wrMatrixDescription + "\n\n" + descSB.toString(), // description
@@ -186,82 +187,37 @@ public abstract class AbstractMergeMarkersMatrixOperation extends AbstractMergeM
 					rdMatrix1Key, // Parent matrixId 1
 					rdMatrix2Key); // Parent matrixId 2
 
-			NetcdfFileWriteable wrNcFile = wrMatrixHandler.getNetCDFHandler();
-			wrNcFile.create();
-			log.trace("Done creating netCDF handle: " + wrNcFile.toString());
-
-			//<editor-fold defaultstate="expanded" desc="METADATA WRITER">
-			// SAMPLESET
-			ArrayChar.D2 samplesD2 = Utils.writeCollectionToD2ArrayChar(theSamples.keySet(), cNetCDF.Strides.STRIDE_SAMPLE_NAME);
-
-			int[] sampleOrig = new int[] {0, 0};
-			wrNcFile.write(cNetCDF.Variables.VAR_SAMPLESET, sampleOrig, samplesD2);
-			log.info("Done writing SampleSet to matrix");
-
-			// MARKERSET MARKERID
-			ArrayChar.D2 markersD2 = Utils.writeCollectionToD2ArrayChar(wrComboSortedMarkerSetMap.keySet(), cNetCDF.Strides.STRIDE_MARKER_NAME);
-			int[] markersOrig = new int[] {0, 0};
-			wrNcFile.write(cNetCDF.Variables.VAR_MARKERSET, markersOrig, markersD2);
-
-			// WRITE CHROMOSOME METADATA FROM ANNOTATION FILE
-			markersD2 = org.gwaspi.netCDF.operations.Utils.writeValuesToD2ArrayChar(wrComboSortedMarkerSetMap.values(), MarkerMetadata.TO_CHR, cNetCDF.Strides.STRIDE_CHR);
-
-			wrNcFile.write(cNetCDF.Variables.VAR_MARKERS_CHR, markersOrig, markersD2);
-			log.info("Done writing chromosomes to matrix");
-
-			// Set of chromosomes found in matrix along with number of markersinfo
-			org.gwaspi.netCDF.operations.Utils.saveCharMapKeyToWrMatrix(wrNcFile, chrInfo, cNetCDF.Variables.VAR_CHR_IN_MATRIX, 8);
-			// Number of marker per chromosome & max pos for each chromosome
-			int[] columns = new int[] {0, 1, 2, 3};
-			org.gwaspi.netCDF.operations.Utils.saveChromosomeInfosD2ToWrMatrix(wrNcFile, chrInfo.values(), columns, cNetCDF.Variables.VAR_CHR_INFO);
-
-			// WRITE POSITION METADATA FROM ANNOTATION FILE
-			ArrayInt.D1 markersPosD1 = org.gwaspi.netCDF.operations.Utils.writeValuesToD1ArrayInt(wrComboSortedMarkerSetMap.values(), MarkerMetadata.TO_POS);
-			int[] posOrig = new int[1];
-			wrNcFile.write(cNetCDF.Variables.VAR_MARKERS_POS, posOrig, markersPosD1);
-			log.info("Done writing positions to matrix");
-
-			//<editor-fold defaultstate="expanded" desc="GATHER METADATA FROM BOTH MATRICES">
 			rdMarkerSet1.initFullMarkerIdSetMap();
 			rdMarkerSet2.initFullMarkerIdSetMap();
-
-			//<editor-fold defaultstate="expanded" desc="MARKERSET RSID">
 			Map<MarkerKey, char[]> combinedMarkerRSIDs = new LinkedHashMap<MarkerKey, char[]>();
 			rdMarkerSet1.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_RSID);
 			combinedMarkerRSIDs.putAll(rdMarkerSet1.getMarkerIdSetMapCharArray());
 			rdMarkerSet2.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_RSID);
 			combinedMarkerRSIDs.putAll(rdMarkerSet2.getMarkerIdSetMapCharArray());
 
-			Utils.saveCharMapValueToWrMatrix(wrNcFile, combinedMarkerRSIDs.values(), cNetCDF.Variables.VAR_MARKERS_RSID, cNetCDF.Strides.STRIDE_MARKER_NAME);
-			//</editor-fold>
-
-			//<editor-fold defaultstate="expanded" desc="MARKERSET DICTIONARY ALLELES">
-			Attribute hasDictionary1 = rdNcFile1.findGlobalAttribute(cNetCDF.Attributes.GLOB_HAS_DICTIONARY);
-			Attribute hasDictionary2 = rdNcFile2.findGlobalAttribute(cNetCDF.Attributes.GLOB_HAS_DICTIONARY);
-			if ((Integer) hasDictionary1.getNumericValue() == 1
-					&& (Integer) hasDictionary2.getNumericValue() == 1)
-			{
-				Map<MarkerKey, char[]> combinedMarkerBasesDicts = new LinkedHashMap<MarkerKey, char[]>();
+			boolean hasDictionary1 = ((Integer) rdNcFile1.findGlobalAttribute(cNetCDF.Attributes.GLOB_HAS_DICTIONARY).getNumericValue() == 1);
+			boolean hasDictionary2 = ((Integer) rdNcFile2.findGlobalAttribute(cNetCDF.Attributes.GLOB_HAS_DICTIONARY).getNumericValue() == 1);
+			Map<MarkerKey, char[]> combinedMarkerBasesDicts = null;
+			if (hasDictionary1 && hasDictionary2) {
+				combinedMarkerBasesDicts = new LinkedHashMap<MarkerKey, char[]>();
 				rdMarkerSet1.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_BASES_DICT);
 				combinedMarkerBasesDicts.putAll(rdMarkerSet1.getMarkerIdSetMapCharArray());
 				rdMarkerSet2.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_BASES_DICT);
 				combinedMarkerBasesDicts.putAll(rdMarkerSet2.getMarkerIdSetMapCharArray());
-
-				Utils.saveCharMapValueToWrMatrix(wrNcFile, combinedMarkerBasesDicts.values(), cNetCDF.Variables.VAR_MARKERS_BASES_DICT, cNetCDF.Strides.STRIDE_GT);
 			}
-			//</editor-fold>
 
-			//<editor-fold defaultstate="expanded" desc="GENOTYPE STRAND">
 			Map<MarkerKey, char[]> combinedMarkerGTStrands = new LinkedHashMap<MarkerKey, char[]>();
 			rdMarkerSet1.fillInitMapWithVariable(cNetCDF.Variables.VAR_GT_STRAND);
 			combinedMarkerGTStrands.putAll(rdMarkerSet1.getMarkerIdSetMapCharArray());
 			rdMarkerSet2.fillInitMapWithVariable(cNetCDF.Variables.VAR_GT_STRAND);
 			combinedMarkerGTStrands.putAll(rdMarkerSet2.getMarkerIdSetMapCharArray());
 
-			Utils.saveCharMapValueToWrMatrix(wrNcFile, combinedMarkerGTStrands.values(), cNetCDF.Variables.VAR_GT_STRAND, 3);
-			//</editor-fold>
-			//</editor-fold>
-			//</editor-fold>
+			NetcdfFileWriteable wrNcFile = matrixFactory.getNetCDFHandler();
+			wrNcFile.create();
+			log.trace("Done creating netCDF handle: " + wrNcFile.toString());
+
+			saveSamplesMatadata(theSamples.keySet(), wrNcFile);
+			saveMarkersMatadata(wrComboSortedMarkerSetMap, chrInfo, wrNcFile);
 
 			writeGenotypes(wrNcFile, wrSampleSetMap, combinedMarkerGTStrands, rdSampleSetMap1, rdSampleSetMap2);
 
@@ -274,11 +230,11 @@ public abstract class AbstractMergeMarkersMatrixOperation extends AbstractMergeM
 			wrNcFile.write(cNetCDF.Variables.GLOB_GTENCODING, origin, guessedGTCodeAC);
 
 			descSB.append("\nGenotype encoding: ");
-			descSB.append(rdMatrix1Metadata.getGenotypeEncoding());
+			descSB.append(rdMatrix1Metadata.getGenotypeEncoding().toString());
 
-			resultMatrixKey = wrMatrixHandler.getResultMatrixKey();
+			resultMatrixKey = matrixFactory.getResultMatrixKey();
 
-			MatrixMetadata resultMatrixMetadata = wrMatrixHandler.getResultMatrixMetadata();
+			MatrixMetadata resultMatrixMetadata = matrixFactory.getResultMatrixMetadata();
 			resultMatrixMetadata.setDescription(descSB.toString());
 			MatricesList.updateMatrix(resultMatrixMetadata);
 
@@ -304,9 +260,53 @@ public abstract class AbstractMergeMarkersMatrixOperation extends AbstractMergeM
 		} catch (InvalidRangeException ex) {
 			throw new IOException(ex);
 		}
-		//</editor-fold>
 
 		return resultMatrixKey;
+	}
+
+	private static void saveSamplesMatadata(Collection<SampleKey> sampleKeys, NetcdfFileWriteable wrNcFile) throws IOException, InvalidRangeException {
+
+		// SAMPLESET
+		ArrayChar.D2 samplesD2 = Utils.writeCollectionToD2ArrayChar(sampleKeys, cNetCDF.Strides.STRIDE_SAMPLE_NAME);
+		int[] sampleOrig = new int[] {0, 0};
+		wrNcFile.write(cNetCDF.Variables.VAR_SAMPLESET, sampleOrig, samplesD2);
+		log.info("Done writing SampleSet to matrix");
+	}
+
+	private static void saveMarkersMatadata(Map<MarkerKey, MarkerMetadata> markerMetadatas, Map<MarkerKey, ChromosomeInfo> chrInfo, NetcdfFileWriteable wrNcFile) throws IOException, InvalidRangeException {
+
+		// MARKERSET MARKERID
+		ArrayChar.D2 markersD2 = Utils.writeCollectionToD2ArrayChar(markerMetadatas.keySet(), cNetCDF.Strides.STRIDE_MARKER_NAME);
+		int[] markersOrig = new int[] {0, 0};
+		wrNcFile.write(cNetCDF.Variables.VAR_MARKERSET, markersOrig, markersD2);
+
+		// WRITE CHROMOSOME METADATA FROM ANNOTATION FILE
+		markersD2 = org.gwaspi.netCDF.operations.Utils.writeValuesToD2ArrayChar(markerMetadatas.values(), MarkerMetadata.TO_CHR, cNetCDF.Strides.STRIDE_CHR);
+		wrNcFile.write(cNetCDF.Variables.VAR_MARKERS_CHR, markersOrig, markersD2);
+		log.info("Done writing chromosomes to matrix");
+
+		// Set of chromosomes found in matrix along with number of markersinfo
+		org.gwaspi.netCDF.operations.Utils.saveObjectsToStringToMatrix(wrNcFile, chrInfo.keySet(), cNetCDF.Variables.VAR_CHR_IN_MATRIX, 8);
+		// Number of marker per chromosome & max pos for each chromosome
+		int[] columns = new int[] {0, 1, 2, 3};
+		org.gwaspi.netCDF.operations.Utils.saveChromosomeInfosD2ToWrMatrix(wrNcFile, chrInfo.values(), columns, cNetCDF.Variables.VAR_CHR_INFO);
+
+		// WRITE POSITION METADATA FROM ANNOTATION FILE
+		ArrayInt.D1 markersPosD1 = org.gwaspi.netCDF.operations.Utils.writeValuesToD1ArrayInt(markerMetadatas.values(), MarkerMetadata.TO_POS);
+		int[] posOrig = new int[] {0};
+		wrNcFile.write(cNetCDF.Variables.VAR_MARKERS_POS, posOrig, markersPosD1);
+		log.info("Done writing positions to matrix");
+
+		// MARKERSET RSID
+		Utils.saveCharMapValueToWrMatrix(wrNcFile, combinedMarkerRSIDs.values(), cNetCDF.Variables.VAR_MARKERS_RSID, cNetCDF.Strides.STRIDE_MARKER_NAME);
+
+		// MARKERSET DICTIONARY ALLELES
+		if (combinedMarkerBasesDicts != null) {
+			Utils.saveCharMapValueToWrMatrix(wrNcFile, combinedMarkerBasesDicts.values(), cNetCDF.Variables.VAR_MARKERS_BASES_DICT, cNetCDF.Strides.STRIDE_GT);
+		}
+
+		// GENOTYPE STRAND
+		Utils.saveCharMapValueToWrMatrix(wrNcFile, combinedMarkerGTStrands.values(), cNetCDF.Variables.VAR_GT_STRAND, 3);
 	}
 
 	protected abstract void writeGenotypes(

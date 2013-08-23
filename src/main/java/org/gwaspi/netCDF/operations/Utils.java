@@ -54,97 +54,69 @@ public class Utils {
 	}
 
 	//<editor-fold defaultstate="expanded" desc="SAVERS">
-	public static <K> boolean saveCharMapKeyToWrMatrix(NetcdfFileWriteable wrNcFile, Collection<K> keys, String variable, int varStride) {
-		boolean result = false;
+	public static <K> void saveObjectsToStringToMatrix(NetcdfFileWriteable wrNcFile, Collection<K> keys, String variable, int varStride) throws IOException {
 
 		try {
 			ArrayChar.D2 markersD2 = writeCollectionToD2ArrayChar(keys, varStride);
 
 			int[] markersOrig = new int[] {0, 0};
-			try {
-				wrNcFile.write(variable, markersOrig, markersD2);
-				log.info("Done writing {}", variable);
-				result = true;
-			} catch (IOException ex) {
-				log.error("Failed writing file", ex);
-			} catch (InvalidRangeException ex) {
-				throw new IOException(ex);
-			}
+			wrNcFile.write(variable, markersOrig, markersD2);
+			log.info("Done writing {}", variable);
 		} catch (Exception ex) {
-			log.error("Failed writing " + variable, ex);
+			throw new IOException("Failed writing " + variable + " to netCDF file " + wrNcFile.toString(), ex);
 		}
-
-		return result;
 	}
 
-	public static boolean saveCharMapValueToWrMatrix(NetcdfFileWriteable wrNcFile, Collection<char[]> wrMap, String variable, int varStride) {
-		return saveCharMapToWrMatrix(wrNcFile, wrMap, variable, varStride, 0);
+	public static void saveCharMapValueToWrMatrix(NetcdfFileWriteable wrNcFile, Collection<char[]> wrMap, String variable, int varStride) throws IOException {
+		saveCharMapToWrMatrix(wrNcFile, wrMap, variable, varStride, 0);
 	}
 
-	public static <V> boolean saveCharMapItemToWrMatrix(NetcdfFileWriteable wrNcFile, Collection<V> wrMap, String variable, TypeConverter<V, String> typeConverter, int varStride) {
-		boolean result = false;
+	public static <V> void saveCharMapItemToWrMatrix(NetcdfFileWriteable wrNcFile, Collection<V> wrMap, String variable, TypeConverter<V, String> typeConverter, int varStride) throws IOException {
 
 		try {
 			ArrayChar.D2 markersD2 = writeValuesToD2ArrayChar(wrMap, typeConverter, varStride);
 			int[] markersOrig = new int[] {0, 0};
-			try {
-				wrNcFile.write(variable, markersOrig, markersD2);
-				log.info("Done writing {}", variable);
-				result = true;
-			} catch (IOException ex) {
-				log.error("Failed writing file", ex);
-			} catch (InvalidRangeException ex) {
-				log.error("Failed writing file", ex);
-			}
+			wrNcFile.write(variable, markersOrig, markersD2);
+			log.info("Done writing {}", variable);
 		} catch (Exception ex) {
-			log.error("Failed writing " + variable, ex);
+			throw new IOException("Failed writing " + variable + " to netCDF file " + wrNcFile.toString(), ex);
 		}
-
-		return result;
 	}
 
 	//<editor-fold defaultstate="expanded" desc="GENOTYPE SAVERS">
-	public static boolean saveSingleSampleGTsToMatrix(NetcdfFileWriteable wrNcFile, Collection<byte[]> values, int sampleIndex) {
-		boolean result = false;
+	public static void saveSingleSampleGTsToMatrix(NetcdfFileWriteable wrNcFile, Collection<byte[]> values, int sampleIndex) throws IOException {
+
 		ArrayByte.D3 genotypes = writeToSingleSampleArrayByteD3(values, cNetCDF.Strides.STRIDE_GT);
 
 		int[] origin = new int[] {sampleIndex, 0, 0};
 		try {
 			wrNcFile.write(cNetCDF.Variables.VAR_GENOTYPES, origin, genotypes);
 //			log.info("Done writing Sample {} genotypes", samplePos);
-			result = true;
-		} catch (IOException ex) {
-			log.error("Failed writing genotypes to netCDF in MatrixDataExtractor", ex);
 		} catch (InvalidRangeException ex) {
-			log.error("Failed writing genotypes to netCDF in MatrixDataExtractor", ex);
+			throw new IOException("Failed writing genotypes to netCDF in MatrixDataExtractor, netCDF file " + wrNcFile.toString(), ex);
 		}
-		return result;
 	}
 
-	public static boolean saveSingleMarkerGTsToMatrix(NetcdfFileWriteable wrNcFile, Collection<byte[]> rawGenotypes, int markerIndex) {
-		boolean result = false;
+	public static void saveSingleMarkerGTsToMatrix(NetcdfFileWriteable wrNcFile, Collection<byte[]> rawGenotypes, int markerIndex) throws IOException {
+
 		ArrayByte.D3 genotypes = writeMapToSingleMarkerArrayByteD3(rawGenotypes, cNetCDF.Strides.STRIDE_GT);
 
 		int[] origin = new int[] {0, markerIndex, 0};
 		try {
 			wrNcFile.write(cNetCDF.Variables.VAR_GENOTYPES, origin, genotypes);
 //			log.info("Done writing genotypes");
-			result = true;
-		} catch (IOException ex) {
-			log.error("Failed writing genotypes to netCDF in MatrixDataExtractor", ex);
 		} catch (InvalidRangeException ex) {
-			log.error("Failed writing genotypes to netCDF in MatrixDataExtractor", ex);
+			throw new IOException("Failed writing genotypes to netCDF in MatrixDataExtractor, netCDF file " + wrNcFile.toString(), ex);
 		}
-		return result;
 	}
 	//</editor-fold>
 
 	//<editor-fold defaultstate="expanded" desc="D1 SAVERS">
-	public static boolean saveDoubleMapD1ToWrMatrix(NetcdfFileWriteable wrNcFile, Collection<Double> wrMap, String variable) {
-		return saveDoubleMapD1ToWrMatrix(wrNcFile, wrMap, variable, 0);
+	public static void saveDoubleMapD1ToWrMatrix(NetcdfFileWriteable wrNcFile, Collection<Double> wrMap, String variable) throws IOException {
+		saveDoubleMapD1ToWrMatrix(wrNcFile, wrMap, variable, 0);
 	}
 
-	public static boolean saveDoubleMapItemD1ToWrMatrix(NetcdfFileWriteable wrNcFile, Collection<Double[]> wrMap, final int itemNb, String variable) {
+	public static void saveDoubleMapItemD1ToWrMatrix(NetcdfFileWriteable wrNcFile, Collection<Double[]> wrMap, final int itemNb, String variable) throws IOException {
 
 		TypeConverter<Double[], Double> typeConverter = new TypeConverter<Double[], Double>() {
 			@Override
@@ -153,230 +125,161 @@ public class Utils {
 			}
 		};
 
-		return saveDoubleMapItemD1ToWrMatrix(wrNcFile, wrMap, typeConverter, variable);
+		saveDoubleMapItemD1ToWrMatrix(wrNcFile, wrMap, typeConverter, variable);
 	}
 
-	public static <V> boolean saveDoubleMapItemD1ToWrMatrix(NetcdfFileWriteable wrNcFile, Collection<V> wrMap, TypeConverter<V, Double> typeConverter, String variable) {
-		boolean result = false;
+	public static <V> void saveDoubleMapItemD1ToWrMatrix(NetcdfFileWriteable wrNcFile, Collection<V> wrMap, TypeConverter<V, Double> typeConverter, String variable) throws IOException {
 
 		try {
 			ArrayDouble.D1 arrayDouble = Utils.writeValuesToD1ArrayDouble(wrMap, typeConverter);
-			int[] origin1 = new int[1];
-			try {
-				wrNcFile.write(variable, origin1, arrayDouble);
-				log.info("Done writing {}", variable);
-				result = true;
-			} catch (IOException ex) {
-				log.error("Failed writing " + variable + " to netCDF", ex);
-			} catch (InvalidRangeException ex) {
-				log.error("Failed writing " + variable + " to netCDF", ex);
-			}
+			int[] origin1 = new int[] {0};
+			wrNcFile.write(variable, origin1, arrayDouble);
+			log.info("Done writing {}", variable);
 		} catch (Exception ex) {
-			log.error("Failed writing " + variable, ex);
+			throw new IOException("Failed writing " + variable + " to netCDF file " + wrNcFile.toString(), ex);
 		}
-
-		return result;
 	}
 
-	public static boolean saveIntMapD1ToWrMatrix(NetcdfFileWriteable wrNcFile, Collection<Integer> wrMap, String variable) {
-		return saveIntMapD1ToWrMatrix(wrNcFile, wrMap, variable, 0);
+	public static void saveIntMapD1ToWrMatrix(NetcdfFileWriteable wrNcFile, Collection<Integer> wrMap, String variable) throws IOException {
+		saveIntMapD1ToWrMatrix(wrNcFile, wrMap, variable, 0);
 	}
 	//</editor-fold>
 
 	//<editor-fold defaultstate="expanded" desc="D2 SAVERS">
-	public static boolean saveIntMapD2ToWrMatrix(NetcdfFileWriteable wrNcFile, Collection<int[]> values, int[] columns, String variable) {
-		return saveIntMapD2ToWrMatrix(wrNcFile, values, columns, variable, 0);
+	public static void saveIntMapD2ToWrMatrix(NetcdfFileWriteable wrNcFile, Collection<int[]> values, int[] columns, String variable) throws IOException {
+		saveIntMapD2ToWrMatrix(wrNcFile, values, columns, variable, 0);
 	}
 
-	public static boolean saveChromosomeInfosD2ToWrMatrix(NetcdfFileWriteable wrNcFile, Collection<ChromosomeInfo> values, int[] columns, String variable) {
-		return saveIntMapD2ToWrMatrix(wrNcFile, values, ChromosomeInfo.EXTRACTOR, variable, 0);
+	public static void saveChromosomeInfosD2ToWrMatrix(NetcdfFileWriteable wrNcFile, Collection<ChromosomeInfo> values, int[] columns, String variable) throws IOException {
+		saveIntMapD2ToWrMatrix(wrNcFile, values, ChromosomeInfo.EXTRACTOR, variable, 0);
 	}
 
-	public static <V> boolean saveIntMapD2ToWrMatrix(
+	public static <V> void saveIntMapD2ToWrMatrix(
 			NetcdfFileWriteable wrNcFile,
 			Collection<V> values,
 			EnumeratedValueExtractor<V, Iterator<Integer>> valuesExtractor,
 			String variable)
+			throws IOException
 	{
-		return saveIntMapD2ToWrMatrix(wrNcFile, values, valuesExtractor, variable, 0);
+		saveIntMapD2ToWrMatrix(wrNcFile, values, valuesExtractor, variable, 0);
 	}
 
-	public static boolean saveDoubleMapD2ToWrMatrix(NetcdfFileWriteable wrNcFile, Collection<Double[]> values, int[] columns, String variable) {
-		return saveDoubleMapD2ToWrMatrix(wrNcFile, values, columns, variable, 0);
+	public static void saveDoubleMapD2ToWrMatrix(NetcdfFileWriteable wrNcFile, Collection<Double[]> values, int[] columns, String variable) throws IOException {
+		saveDoubleMapD2ToWrMatrix(wrNcFile, values, columns, variable, 0);
 	}
 	//</editor-fold>
 	//</editor-fold>
 
 	//<editor-fold defaultstate="expanded" desc="CHUNKED SAVERS">
-	public static boolean saveCharMapToWrMatrix(
+	public static void saveCharMapToWrMatrix(
 			NetcdfFileWriteable wrNcFile,
 			Collection<char[]> values,
 			String variable,
 			int varStride,
 			int offset)
+			throws IOException
 	{
-		boolean result = false;
-
 		try {
 			ArrayChar.D2 markersD2 = writeCollectionToD2ArrayChar(values, varStride);
 
 			// first origin is the initial markerset position, second is the original allele position
 			int[] markersOrig = new int[] {offset, 0};
-			try {
-				wrNcFile.write(variable, markersOrig, markersD2);
-				log.info("Done writing {}", variable);
-				result = true;
-			} catch (IOException ex) {
-				log.error("Failed writing file", ex);
-			} catch (InvalidRangeException ex) {
-				log.error("Failed writing file", ex);
-			}
+			wrNcFile.write(variable, markersOrig, markersD2);
+			log.info("Done writing {}", variable);
 		} catch (Exception ex) {
-			log.error("Failed writing " + variable, ex);
+			throw new IOException("Failed writing " + variable + " to netCDF file " + wrNcFile.toString(), ex);
 		}
-
-		return result;
 	}
 
 	//<editor-fold defaultstate="expanded" desc="D1 SAVERS">
-	public static boolean saveDoubleMapD1ToWrMatrix(
+	public static void saveDoubleMapD1ToWrMatrix(
 			NetcdfFileWriteable wrNcFile,
 			Collection<Double> values,
 			String variable,
 			int offset)
+			throws IOException
 	{
-		boolean result = false;
-
 		try {
 			ArrayDouble.D1 arrayDouble = Utils.writeValuesToD1ArrayDouble(values);
 			int[] origin1 = new int[] {offset};
-			try {
-				wrNcFile.write(variable, origin1, arrayDouble);
-				log.info("Done writing {}", variable);
-				result = true;
-			} catch (IOException ex) {
-				log.error("Failed writing " + variable + " to netCDF", ex);
-			} catch (InvalidRangeException ex) {
-				log.error("Failed writing " + variable + " to netCDF", ex);
-			}
+			wrNcFile.write(variable, origin1, arrayDouble);
+			log.info("Done writing {}", variable);
 		} catch (Exception ex) {
-			log.error("Failed writing " + variable, ex);
+			throw new IOException("Failed writing " + variable + " to netCDF file " + wrNcFile.toString(), ex);
 		}
-
-		return result;
 	}
 
-	public static boolean saveIntMapD1ToWrMatrix(
+	public static void saveIntMapD1ToWrMatrix(
 			NetcdfFileWriteable wrNcFile,
 			Collection<Integer> values,
 			String variable,
 			int offset)
+			throws IOException
 	{
-		boolean result = false;
-
 		try {
 			ArrayInt.D1 arrayInt = Utils.writeValuesToD1ArrayInt(values);
 			int[] origin1 = new int[] {offset};
-			try {
-				wrNcFile.write(variable, origin1, arrayInt);
-				log.info("Done writing {}", variable);
-				result = true;
-			} catch (IOException ex) {
-				log.error("Failed writing " + variable + " to netCDF", ex);
-			} catch (InvalidRangeException ex) {
-				log.error("Failed writing " + variable + " to netCDF", ex);
-			}
+			wrNcFile.write(variable, origin1, arrayInt);
+			log.info("Done writing {}", variable);
 		} catch (Exception ex) {
-			log.error("Failed writing " + variable, ex);
+			throw new IOException("Failed writing " + variable + " to netCDF file " + wrNcFile.toString(), ex);
 		}
-
-		return result;
 	}
 	//</editor-fold>
 
 	//<editor-fold defaultstate="expanded" desc="D2 SAVERS">
-	public static boolean saveIntMapD2ToWrMatrix(
+	public static void saveIntMapD2ToWrMatrix(
 			NetcdfFileWriteable wrNcFile,
 			Collection<int[]> values,
 			int[] columns,
 			String variable,
 			int offset)
+			throws IOException
 	{
-		boolean result = false;
-
 		try {
 			ArrayInt.D2 arrayIntD2 = Utils.writeValuesToD2ArrayInt(values, columns);
 			int[] origin1 = new int[] {offset, 0};
-			try {
-				wrNcFile.write(variable, origin1, arrayIntD2);
-				log.info("Done writing {}", variable);
-				result = true;
-			} catch (IOException ex) {
-				log.error("Failed writing " + variable + " to netCDF", ex);
-			} catch (InvalidRangeException ex) {
-				log.error("Failed writing " + variable + " to netCDF", ex);
-			}
+			wrNcFile.write(variable, origin1, arrayIntD2);
+			log.info("Done writing {}", variable);
 		} catch (Exception ex) {
-			log.error("Failed writing " + variable, ex);
+			throw new IOException("Failed writing " + variable + " to netCDF file " + wrNcFile.toString(), ex);
 		}
-
-		return result;
 	}
 
-	public static <V> boolean saveIntMapD2ToWrMatrix(
+	public static <V> void saveIntMapD2ToWrMatrix(
 			NetcdfFileWriteable wrNcFile,
 			Collection<V> values,
 			EnumeratedValueExtractor<V, Iterator<Integer>> valuesExtractor,
 			String variable,
 			int offset)
+			throws IOException
 	{
-		boolean result = false;
-
 		try {
 			ArrayInt.D2 arrayIntD2 = Utils.writeValuesToD2ArrayInt(values, valuesExtractor);
 			int[] origin1 = new int[]{offset, 0};
-			try {
-				wrNcFile.write(variable, origin1, arrayIntD2);
-				log.info("Done writing {}", variable);
-				result = true;
-			} catch (IOException ex) {
-				log.error("Failed writing " + variable + " to netCDF", ex);
-			} catch (InvalidRangeException ex) {
-				log.error("Failed writing " + variable + " to netCDF", ex);
-			}
+			wrNcFile.write(variable, origin1, arrayIntD2);
+			log.info("Done writing {}", variable);
 		} catch (Exception ex) {
-			log.error("Failed writing " + variable, ex);
+			throw new IOException("Failed writing " + variable + " to netCDF file " + wrNcFile.toString(), ex);
 		}
-
-		return result;
 	}
 
-	public static boolean saveDoubleMapD2ToWrMatrix(
+	public static void saveDoubleMapD2ToWrMatrix(
 			NetcdfFileWriteable wrNcFile,
 			Collection<Double[]> values,
 			int[] columns,
 			String variable,
 			int offset)
+			throws IOException
 	{
-		boolean result = false;
-
 		try {
 			ArrayDouble.D2 arrayDoubleD2 = Utils.writeValuesToD2ArrayDouble(values, columns);
 			int[] origin1 = new int[] {offset, 0};
-			try {
-				wrNcFile.write(variable, origin1, arrayDoubleD2);
-				log.info("Done writing {}", variable);
-				result = true;
-			} catch (IOException ex) {
-				log.error("Failed writing " + variable + " to netCDF", ex);
-			} catch (InvalidRangeException ex) {
-				log.error("Failed writing " + variable + " to netCDF", ex);
-			}
+			wrNcFile.write(variable, origin1, arrayDoubleD2);
+			log.info("Done writing {}", variable);
 		} catch (Exception ex) {
-			log.error("Failed writing " + variable, ex);
+			throw new IOException("Failed writing " + variable + " to netCDF file " + wrNcFile.toString(), ex);
 		}
-
-		return result;
 	}
 	//</editor-fold>
 	//</editor-fold>

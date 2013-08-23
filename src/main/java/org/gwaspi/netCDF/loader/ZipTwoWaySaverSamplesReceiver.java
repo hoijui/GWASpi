@@ -134,7 +134,7 @@ public class ZipTwoWaySaverSamplesReceiver extends InMemorySamplesReceiver {
 
 		Map<MarkerKey, MarkerMetadata> markerMetadatas = getDataSet().getMarkerMetadatas();
 		markerKeys = new ArrayList<MarkerKey>(markerMetadatas.keySet());
-		sampleKeys = NetCDFSaverSamplesReceiver.extractKeys(getDataSet().getSampleInfos());
+		sampleKeys = LoadingNetCDFDataSetDestination.extractKeys(getDataSet().getSampleInfos());
 
 		log.info("Writing genotypes to zip files");
 	}

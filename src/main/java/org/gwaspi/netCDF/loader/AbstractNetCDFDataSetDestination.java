@@ -36,6 +36,7 @@ import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleInfoList;
 import org.gwaspi.model.SampleKey;
+import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,18 +47,14 @@ import ucar.ma2.Index;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.NetcdfFileWriteable;
 
-public class NetCDFSaverSamplesReceiver extends AbstractSamplesReceiver {
+public abstract class AbstractNetCDFDataSetDestination extends AbstractDataSetDestination {
 
-	private final Logger log
-			= LoggerFactory.getLogger(NetCDFSaverSamplesReceiver.class);
+	private static final Logger log
+			= LoggerFactory.getLogger(AbstractNetCDFDataSetDestination.class);
 
-	private final GenotypesLoadDescription loadDescription;
-	private AbstractLoadGTFromFiles gtLoader; // HACK
-	private String startTime;
 	private MatrixKey resultMatrixKey;
 //	private int curAlleleSampleIndex;
 	private int curAllelesMarkerIndex;
-	private StringBuilder descSB;
 	private MatrixFactory matrixFactory;
 	private NetcdfFileWriteable ncfile;
 	private Boolean alleleLoadPerSample;
@@ -65,11 +62,8 @@ public class NetCDFSaverSamplesReceiver extends AbstractSamplesReceiver {
 	private List<byte[]> genotypesHyperslabs;
 	private int hyperSlabRows;
 
-	public NetCDFSaverSamplesReceiver(
-			GenotypesLoadDescription loadDescription)
-	{
-		this.loadDescription = loadDescription;
-		this.gtLoader = null;
+	public AbstractNetCDFDataSetDestination() {
+
 //		this.curAlleleSampleIndex = -1;
 		this.curAllelesMarkerIndex = -1;
 		this.alleleLoadPerSample = null;
@@ -81,14 +75,9 @@ public class NetCDFSaverSamplesReceiver extends AbstractSamplesReceiver {
 		return resultMatrixKey;
 	}
 
-	public void setGTLoader(AbstractLoadGTFromFiles gtLoader) {
-		this.gtLoader = gtLoader;
-	}
-
 	@Override
 	public void init() throws Exception {
 
-		startTime = org.gwaspi.global.Utils.getMediumDateTimeAsString();
 		resultMatrixKey = null;
 	}
 
@@ -97,14 +86,11 @@ public class NetCDFSaverSamplesReceiver extends AbstractSamplesReceiver {
 		SampleInfoList.insertSampleInfos(getDataSet().getSampleInfos());
 	}
 
-	//<editor-fold defaultstate="expanded" desc="PROCESS GENOTYPES">
 	@Override
-	public void finishedLoadingMarkerMetadatas() throws IOException, InvalidRangeException, InterruptedException {
-
-		List<SampleKey> sampleKeys = NetCDFSaverSamplesReceiver.extractKeys(getDataSet().getSampleInfos());
+	public void finishedLoadingMarkerMetadatas() throws IOException {
 
 		// CREATE netCDF-3 FILE
-		descSB = new StringBuilder(Text.Matrix.descriptionHeader1);
+		StringBuilder descSB = new StringBuilder(Text.Matrix.descriptionHeader1);
 		descSB.append(org.gwaspi.global.Utils.getShortDateTimeAsString());
 		if (!loadDescription.getDescription().isEmpty()) {
 			descSB.append("\nDescription: ");
@@ -131,134 +117,93 @@ public class NetCDFSaverSamplesReceiver extends AbstractSamplesReceiver {
 		}
 
 		// RETRIEVE CHROMOSOMES INFO
-		Map<MarkerKey, ChromosomeInfo> chrSetMap = org.gwaspi.netCDF.matrices.Utils.aggregateChromosomeInfo(getDataSet().getMarkerMetadatas(), 2, 3);
+		Map<MarkerKey, ChromosomeInfo> chrInfo = org.gwaspi.netCDF.matrices.Utils.aggregateChromosomeInfo(getDataSet().getMarkerMetadatas(), 2, 3);
 
-		matrixFactory = new MatrixFactory(
-				loadDescription.getStudyKey(),
-				loadDescription.getFormat(),
-				loadDescription.getFriendlyName(),
-				descSB.toString(), // description
-				loadDescription.getGtCode(),
-				(gtLoader.getMatrixStrand() != null) ? gtLoader.getMatrixStrand() : loadDescription.getStrand(),
-				gtLoader.isHasDictionary(),
-				getDataSet().getSampleInfos().size(),
-				getDataSet().getMarkerMetadatas().size(),
-				chrSetMap.size(),
-				loadDescription.getGtDirPath());
-
-		ncfile = matrixFactory.getNetCDFHandler();
-
-		// create the file
 		try {
-			ncfile.create();
-		} catch (IOException ex) {
-			log.error("Failed creating file " + ncfile.getLocation(), ex);
-		}
-		//</editor-fold>
+			matrixFactory = new MatrixFactory(
+					loadDescription.getStudyKey(),
+					loadDescription.getFormat(),
+					loadDescription.getFriendlyName(),
+					descSB.toString(), // description
+					loadDescription.getGtCode(),
+					(gtLoader.getMatrixStrand() != null) ? gtLoader.getMatrixStrand() : loadDescription.getStrand(),
+					gtLoader.isHasDictionary(),
+					getDataSet().getSampleInfos().size(),
+					getDataSet().getMarkerMetadatas().size(),
+					chrInfo.size(),
+					loadDescription.getGtDirPath());
 
-		//<editor-fold defaultstate="expanded" desc="WRITE MATRIX METADATA">
+			// create the NetCDF file
+			ncfile = matrixFactory.getNetCDFHandler();
+			ncfile.create();
+			log.trace("Done creating netCDF handle: " + ncfile.toString());
+
+			List<SampleKey> sampleKeys = AbstractNetCDFDataSetDestination.extractKeys(sampleInfos);
+			saveSamplesMatadata(sampleKeys, ncfile);
+			saveMarkersMatadata(getDataSet().getMarkerMetadatas(), chrInfo, ncfile);
+		} catch (InvalidRangeException ex) {
+			throw new IOException(ex);
+		}
+	}
+
+	private static void saveSamplesMatadata(Collection<SampleKey> sampleKeys, NetcdfFileWriteable ncfile) throws IOException, InvalidRangeException {
+
 		// WRITE SAMPLESET TO MATRIX FROM SAMPLES LIST
 		ArrayChar.D2 samplesD2 = org.gwaspi.netCDF.operations.Utils.writeCollectionToD2ArrayChar(sampleKeys, cNetCDF.Strides.STRIDE_SAMPLE_NAME);
-
-		int[] sampleOrig = new int[]{0, 0};
-		try {
-			ncfile.write(cNetCDF.Variables.VAR_SAMPLESET, sampleOrig, samplesD2);
-		} catch (IOException ex) {
-			log.error("Failed writing file", ex);
-		} catch (InvalidRangeException ex) {
-			log.error(null, ex);
-		}
-		samplesD2 = null;
+		int[] sampleOrig = new int[] {0, 0};
+		ncfile.write(cNetCDF.Variables.VAR_SAMPLESET, sampleOrig, samplesD2);
 		log.info("Done writing SampleSet to matrix");
+	}
+
+	private static void saveMarkersMatadata(Map<MarkerKey, MarkerMetadata> markerMetadatas, Map<MarkerKey, ChromosomeInfo> chrInfo, NetcdfFileWriteable ncfile) throws IOException, InvalidRangeException {
 
 		// WRITE RSID & MARKERID METADATA FROM METADATAMap
-		ArrayChar.D2 markersD2 = org.gwaspi.netCDF.operations.Utils.writeValuesToD2ArrayChar(getDataSet().getMarkerMetadatas().values(), MarkerMetadata.TO_RS_ID, cNetCDF.Strides.STRIDE_MARKER_NAME);
+		ArrayChar.D2 markersD2 = org.gwaspi.netCDF.operations.Utils.writeValuesToD2ArrayChar(markerMetadatas.values(), MarkerMetadata.TO_RS_ID, cNetCDF.Strides.STRIDE_MARKER_NAME);
+		int[] markersOrig = new int[] {0, 0};
+		ncfile.write(cNetCDF.Variables.VAR_MARKERS_RSID, markersOrig, markersD2);
 
-		int[] markersOrig = new int[]{0, 0};
-		try {
-			ncfile.write(cNetCDF.Variables.VAR_MARKERS_RSID, markersOrig, markersD2);
-		} catch (IOException ex) {
-			log.error("Failed writing file", ex);
-		} catch (InvalidRangeException ex) {
-			log.error(null, ex);
-		}
-		markersD2 = org.gwaspi.netCDF.operations.Utils.writeValuesToD2ArrayChar(getDataSet().getMarkerMetadatas().values(), MarkerMetadata.TO_MARKER_ID, cNetCDF.Strides.STRIDE_MARKER_NAME);
-		try {
-			ncfile.write(cNetCDF.Variables.VAR_MARKERSET, markersOrig, markersD2);
-		} catch (IOException ex) {
-			log.error("Failed writing file", ex);
-		} catch (InvalidRangeException ex) {
-			log.error(null, ex);
-		}
+		markersD2 = org.gwaspi.netCDF.operations.Utils.writeValuesToD2ArrayChar(markerMetadatas.values(), MarkerMetadata.TO_MARKER_ID, cNetCDF.Strides.STRIDE_MARKER_NAME);
+		ncfile.write(cNetCDF.Variables.VAR_MARKERSET, markersOrig, markersD2);
 		log.info("Done writing MarkerId and RsId to matrix");
 
 		// WRITE CHROMOSOME METADATA FROM ANNOTATION FILE
 		// Chromosome location for each marker
-		markersD2 = org.gwaspi.netCDF.operations.Utils.writeValuesToD2ArrayChar(getDataSet().getMarkerMetadatas().values(), MarkerMetadata.TO_CHR, cNetCDF.Strides.STRIDE_CHR);
-
-		try {
-			ncfile.write(cNetCDF.Variables.VAR_MARKERS_CHR, markersOrig, markersD2);
-		} catch (IOException ex) {
-			log.error("Failed writing file", ex);
-		} catch (InvalidRangeException ex) {
-			log.error(null, ex);
-		}
+		markersD2 = org.gwaspi.netCDF.operations.Utils.writeValuesToD2ArrayChar(markerMetadatas.values(), MarkerMetadata.TO_CHR, cNetCDF.Strides.STRIDE_CHR);
+		ncfile.write(cNetCDF.Variables.VAR_MARKERS_CHR, markersOrig, markersD2);
 		log.info("Done writing chromosomes to matrix");
 
 		// Set of chromosomes found in matrix along with number of markersinfo
-		org.gwaspi.netCDF.operations.Utils.saveCharMapKeyToWrMatrix(ncfile, chrSetMap.keySet(), cNetCDF.Variables.VAR_CHR_IN_MATRIX, 8);
-
+		org.gwaspi.netCDF.operations.Utils.saveObjectsToStringToMatrix(ncfile, chrInfo.keySet(), cNetCDF.Variables.VAR_CHR_IN_MATRIX, 8);
 		// Number of marker per chromosome & max pos for each chromosome
 		int[] columns = new int[] {0, 1, 2, 3};
-		org.gwaspi.netCDF.operations.Utils.saveChromosomeInfosD2ToWrMatrix(ncfile, chrSetMap.values(), columns, cNetCDF.Variables.VAR_CHR_INFO);
-
+		org.gwaspi.netCDF.operations.Utils.saveChromosomeInfosD2ToWrMatrix(ncfile, chrInfo.values(), columns, cNetCDF.Variables.VAR_CHR_INFO);
 
 		// WRITE POSITION METADATA FROM ANNOTATION FILE
 		//markersD2 = org.gwaspi.netCDF.operations.Utils.writeValuesToD2ArrayChar(sortedMarkerSetMap, 3, cNetCDF.Strides.STRIDE_POS);
-		ArrayInt.D1 markersPosD1 = org.gwaspi.netCDF.operations.Utils.writeValuesToD1ArrayInt(getDataSet().getMarkerMetadatas().values(), MarkerMetadata.TO_POS);
-		int[] posOrig = new int[1];
-		try {
-			ncfile.write(cNetCDF.Variables.VAR_MARKERS_POS, posOrig, markersPosD1);
-		} catch (IOException ex) {
-			log.error("Failed writing file", ex);
-		} catch (InvalidRangeException ex) {
-			log.error(null, ex);
-		}
+		ArrayInt.D1 markersPosD1 = org.gwaspi.netCDF.operations.Utils.writeValuesToD1ArrayInt(markerMetadatas.values(), MarkerMetadata.TO_POS);
+		int[] posOrig = new int[] {0};
+		ncfile.write(cNetCDF.Variables.VAR_MARKERS_POS, posOrig, markersPosD1);
 		log.info("Done writing positions to matrix");
 
 		// WRITE CUSTOM ALLELES METADATA FROM ANNOTATION FILE
 		if (gtLoader.getMarkersD2Variables() != null) {
-		markersD2 = org.gwaspi.netCDF.operations.Utils.writeValuesToD2ArrayChar(getDataSet().getMarkerMetadatas().values(), gtLoader.getBaseDictPropertyExtractor(), cNetCDF.Strides.STRIDE_GT);
-		try {
+			markersD2 = org.gwaspi.netCDF.operations.Utils.writeValuesToD2ArrayChar(markerMetadatas.values(), gtLoader.getBaseDictPropertyExtractor(), cNetCDF.Strides.STRIDE_GT);
 			ncfile.write(gtLoader.getMarkersD2Variables(), markersOrig, markersD2);
-		} catch (IOException ex) {
-			log.error("Failed writing file", ex);
-		} catch (InvalidRangeException ex) {
-			log.error(null, ex);
-		}
-		log.info("Done writing forward alleles to matrix");
+			log.info("Done writing forward alleles to matrix");
 		}
 
 		// WRITE GT STRAND FROM ANNOTATION FILE
 		int[] gtOrig = new int[] {0, 0};
 		if (gtLoader.isHasStrandInfo()) {
 			// TODO Strand info is buggy in Hapmap bulk download!
-			markersD2 = org.gwaspi.netCDF.operations.Utils.writeValuesToD2ArrayChar(getDataSet().getMarkerMetadatas().values(), MarkerMetadata.TO_STRAND, cNetCDF.Strides.STRIDE_STRAND);
+			markersD2 = org.gwaspi.netCDF.operations.Utils.writeValuesToD2ArrayChar(markerMetadatas.values(), MarkerMetadata.TO_STRAND, cNetCDF.Strides.STRIDE_STRAND);
 		} else {
 			String strandFlag = gtLoader.getStrandFlag(loadDescription);
-			markersD2 = org.gwaspi.netCDF.operations.Utils.writeSingleValueToD2ArrayChar(strandFlag, cNetCDF.Strides.STRIDE_STRAND, getDataSet().getMarkerMetadatas().size());
+			markersD2 = org.gwaspi.netCDF.operations.Utils.writeSingleValueToD2ArrayChar(strandFlag, cNetCDF.Strides.STRIDE_STRAND, markerMetadatas.size());
 		}
 
-		try {
-			ncfile.write(cNetCDF.Variables.VAR_GT_STRAND, gtOrig, markersD2);
-		} catch (IOException ex) {
-			log.error("Failed writing file", ex);
-		} catch (InvalidRangeException ex) {
-			log.error(null, ex);
-		}
-		markersD2 = null;
+		ncfile.write(cNetCDF.Variables.VAR_GT_STRAND, gtOrig, markersD2);
 		log.info("Done writing strand info to matrix");
-		//</editor-fold>
 	}
 
 	@Override
@@ -298,7 +243,7 @@ public class NetCDFSaverSamplesReceiver extends AbstractSamplesReceiver {
 	}
 
 	@Override
-	public void addMarkerGTAlleles(int markerIndex, Collection<byte[]> markerAlleles) throws Exception {
+	public void addMarkerGTAlleles(int markerIndex, Collection<byte[]> markerAlleles) throws IOException {
 
 		if (alleleLoadPerSample) {
 			throw new IllegalStateException("You can not mix loading per sample and loading per marker");
@@ -311,13 +256,11 @@ public class NetCDFSaverSamplesReceiver extends AbstractSamplesReceiver {
 			// WRITING HYPERSLABS AT A TIME
 			ArrayByte.D3 genotypesArray = org.gwaspi.netCDF.operations.Utils.writeListValuesToSamplesHyperSlabArrayByteD3(
 					genotypesHyperslabs, getDataSet().getSampleInfos().size(), cNetCDF.Strides.STRIDE_GT);
-			int[] origin = new int[]{0, (curAllelesMarkerIndex - hyperSlabRows), 0}; // 0,0,0 for 1st marker ; 0,1,0 for 2nd marker ...
+			int[] origin = new int[] {0, (curAllelesMarkerIndex - hyperSlabRows), 0}; // 0, 0, 0 for 1st marker; 0, 1, 0 for 2nd marker ...
 			try {
 				ncfile.write(cNetCDF.Variables.VAR_GENOTYPES, origin, genotypesArray);
-			} catch (IOException ex) {
-				log.error("Failed writing file", ex);
 			} catch (InvalidRangeException ex) {
-				log.error("Bad origin at rowCount " + curAllelesMarkerIndex + ": " + origin[0] + "|" + origin[1] + "|" + origin[2], ex);
+				throw new IOException("Bad origin at rowCount " + curAllelesMarkerIndex + ": " + origin[0] + "|" + origin[1] + "|" + origin[2], ex);
 			}
 
 			genotypesHyperslabs.clear();
@@ -325,7 +268,7 @@ public class NetCDFSaverSamplesReceiver extends AbstractSamplesReceiver {
 	}
 
 	@Override
-	public void finishedLoadingAlleles() throws Exception {
+	public void finishedLoadingAlleles() throws IOException {
 
 		if (!alleleLoadPerSample) {
 //			int markerNb = bimSamples.size();
@@ -333,15 +276,13 @@ public class NetCDFSaverSamplesReceiver extends AbstractSamplesReceiver {
 			// WRITING LAST HYPERSLAB
 			int lastHyperSlabRows = markerNb - (genotypesHyperslabs.size() / getDataSet().getSampleInfos().size());
 			ArrayByte.D3 genotypesArray = org.gwaspi.netCDF.operations.Utils.writeListValuesToSamplesHyperSlabArrayByteD3(genotypesHyperslabs, getDataSet().getSampleInfos().size(), cNetCDF.Strides.STRIDE_GT);
-			int[] origin = new int[]{0, lastHyperSlabRows, 0}; //0,0,0 for 1st marker ; 0,1,0 for 2nd marker....
+			int[] origin = new int[] {0, lastHyperSlabRows, 0}; //0, 0, 0 for 1st marker; 0, 1, 0 for 2nd marker....
 //			log.info("Last origin at rowCount "+rowCounter+": "+origin[0]+"|"+origin[1]+"|"+origin[2]);
 			try {
 				ncfile.write(cNetCDF.Variables.VAR_GENOTYPES, origin, genotypesArray);
 				log.info("Processed markers: " + curAllelesMarkerIndex);
-			} catch (IOException ex) {
-				log.error("Failed writing file", ex);
 			} catch (InvalidRangeException ex) {
-				log.error("Bad origin at rowCount " + curAllelesMarkerIndex + ": " + origin[0] + "|" + origin[1] + "|" + origin[2], ex);
+				throw new IOException("Bad origin at rowCount " + curAllelesMarkerIndex + ": " + origin[0] + "|" + origin[1] + "|" + origin[2], ex);
 			}
 		}
 
@@ -357,48 +298,29 @@ public class NetCDFSaverSamplesReceiver extends AbstractSamplesReceiver {
 			// GUESS GENOTYPE ENCODING
 			ArrayChar.D2 guessedGTCodeAC = new ArrayChar.D2(1, 8);
 			Index index = guessedGTCodeAC.getIndex();
-			guessedGTCodeAC.setString(index.set(0, 0), gtLoader.getGuessedGTCode().toString().trim());
-			int[] origin = new int[]{0, 0};
+			guessedGTCodeAC.setString(index.set(0, 0), getGuessedGTCode());
+			int[] origin = new int[] {0, 0};
 			ncfile.write(cNetCDF.Variables.GLOB_GTENCODING, origin, guessedGTCodeAC);
 
-			descSB.append("Genotype encoding: ");
-			descSB.append(gtLoader.getGuessedGTCode().toString());
-
 			MatrixMetadata matrixMetaData = matrixFactory.getMatrixMetaData();
+			StringBuilder descSB = new StringBuilder(matrixMetaData.getDescription());
+			descSB.append("Genotype encoding: ");
+			descSB.append(getGuessedGTCode());
 			matrixMetaData.setDescription(descSB.toString());
 			MatricesList.updateMatrix(matrixMetaData);
 
 			// CLOSE FILE
 			ncfile.close();
-			int resultMatrixId = matrixFactory.getMatrixMetaData().getMatrixId();
-			resultMatrixKey = new MatrixKey(loadDescription.getStudyKey(), resultMatrixId);
-		} catch (IOException ex) {
-			log.error("Failed creating file " + ncfile.getLocation(), ex);
+			resultMatrixKey = MatrixKey.valueOf(matrixMetaData);
+		} catch (InvalidRangeException ex) {
+			throw new IOException(ex);
 		}
-
-		logAsWhole(
-				startTime,
-				loadDescription.getStudyKey().getId(),
-				loadDescription.getGtDirPath(),
-				loadDescription.getFormat(),
-				loadDescription.getFriendlyName(),
-				loadDescription.getDescription());
-
-		org.gwaspi.global.Utils.sysoutCompleted("writing Genotypes to Matrix");
 	}
+
+	protected abstract String getGuessedGTCode();
 
 	@Override
 	public void done() throws Exception {
-	}
-
-	static void logAsWhole(String startTime, int studyId, String dirPath, ImportFormat format, String matrixName, String description) throws IOException {
-		// LOG OPERATION IN STUDY HISTORY
-		StringBuilder operation = new StringBuilder("\nLoaded raw " + format + " genotype data in path " + dirPath + ".\n");
-		operation.append("Start Time: ").append(startTime).append("\n");
-		operation.append("End Time: ").append(org.gwaspi.global.Utils.getMediumDateTimeAsString()).append(".\n");
-		operation.append("Data stored in matrix ").append(matrixName).append(".\n");
-		operation.append("Description: ").append(description).append(".\n");
-		org.gwaspi.global.Utils.logOperationInStudyDesc(operation.toString(), studyId);
 	}
 
 	static List<SampleKey> extractKeys(Collection<SampleInfo> sampleInfos) {

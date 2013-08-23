@@ -166,7 +166,7 @@ public class MatrixMergeSamples extends AbstractMergeMatrixOperation {
 			Utils.saveCharMapValueToWrMatrix(wrNcFile, rdMarkerSet1.getMarkerIdSetMapCharArray().values(), cNetCDF.Variables.VAR_MARKERS_CHR, cNetCDF.Strides.STRIDE_CHR);
 
 			// Set of chromosomes found in matrix along with number of markersinfo
-			org.gwaspi.netCDF.operations.Utils.saveCharMapKeyToWrMatrix(wrNcFile, dataSetSource1.getMarkersKeysSource(), cNetCDF.Variables.VAR_CHR_IN_MATRIX, 8);
+			org.gwaspi.netCDF.operations.Utils.saveObjectsToStringToMatrix(wrNcFile, dataSetSource1.getMarkersKeysSource(), cNetCDF.Variables.VAR_CHR_IN_MATRIX, 8);
 			// Number of marker per chromosome & max pos for each chromosome
 			int[] columns = new int[] {0, 1, 2, 3};
 			org.gwaspi.netCDF.operations.Utils.saveChromosomeInfosD2ToWrMatrix(wrNcFile, chrInfo, columns, cNetCDF.Variables.VAR_CHR_INFO);
@@ -235,7 +235,7 @@ public class MatrixMergeSamples extends AbstractMergeMatrixOperation {
 		return resultMatrixId;
 	}
 
-	protected void writeGenotypes(
+	private void writeGenotypes(
 			NetcdfFileWriteable wrNcFile,
 			Collection<int[]> wrComboSampleSetMap)
 			throws InvalidRangeException, IOException

@@ -50,10 +50,10 @@ public class LoadManager {
 		GenotypesLoader genotypesLoader = genotypesLoaders.get(loadDescription.getFormat());
 
 		// HACK
-		if (samplesReceiver instanceof NetCDFSaverSamplesReceiver
+		if (samplesReceiver instanceof LoadingNetCDFDataSetDestination
 				&& genotypesLoader instanceof AbstractLoadGTFromFiles)
 		{
-			((NetCDFSaverSamplesReceiver) samplesReceiver).setGTLoader((AbstractLoadGTFromFiles) genotypesLoader);
+			((LoadingNetCDFDataSetDestination) samplesReceiver).setGTLoader((AbstractLoadGTFromFiles) genotypesLoader);
 		}
 
 		if (genotypesLoader == null) {
