@@ -20,6 +20,7 @@ package org.gwaspi.netCDF.loader;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -81,20 +82,20 @@ public class ZipTwoWaySaverSamplesReceiver extends InMemorySamplesReceiver {
 	}
 
 	@Override
-	public void init() throws Exception {
+	public void init() throws IOException {
 
 		startTime = org.gwaspi.global.Utils.getMediumDateTimeAsString();
 		resultMatrixKey = null;
 	}
 
 	@Override
-	public void finishedLoadingSampleInfos() throws Exception {
+	public void finishedLoadingSampleInfos() throws IOException {
 		SampleInfoList.insertSampleInfos(getDataSet().getSampleInfos());
 	}
 
 	//<editor-fold defaultstate="expanded" desc="PROCESS GENOTYPES">
 	@Override
-	public void finishedLoadingMarkerMetadatas() throws Exception {
+	public void finishedLoadingMarkerMetadatas() throws IOException {
 	}
 
 	int numSamples;
@@ -107,7 +108,7 @@ public class ZipTwoWaySaverSamplesReceiver extends InMemorySamplesReceiver {
 	List<MarkerKey> markerKeys;
 
 	@Override
-	public void startLoadingAlleles(boolean perSample) throws Exception {
+	public void startLoadingAlleles(boolean perSample) throws IOException {
 
 		alleleLoadPerSample = perSample;
 
@@ -140,7 +141,7 @@ public class ZipTwoWaySaverSamplesReceiver extends InMemorySamplesReceiver {
 	}
 
 	@Override
-	public void addSampleGTAlleles(int sampleIndex, Collection<byte[]> sampleAlleles) throws Exception {
+	public void addSampleGTAlleles(int sampleIndex, Collection<byte[]> sampleAlleles) throws IOException {
 
 		if (!alleleLoadPerSample) {
 			throw new IllegalStateException("You can not mix loading per sample and loading per marker");
@@ -152,7 +153,7 @@ public class ZipTwoWaySaverSamplesReceiver extends InMemorySamplesReceiver {
 	}
 
 	@Override
-	public void addMarkerGTAlleles(int markerIndex, Collection<byte[]> markerAlleles) throws Exception {
+	public void addMarkerGTAlleles(int markerIndex, Collection<byte[]> markerAlleles) throws IOException {
 
 		if (alleleLoadPerSample) {
 			throw new IllegalStateException("You can not mix loading per sample and loading per marker");
@@ -163,7 +164,7 @@ public class ZipTwoWaySaverSamplesReceiver extends InMemorySamplesReceiver {
 		writeGTsGZip(markerIndex, markersPerArchive, numMarkers, pathToZippedMarkers, entryName, markerAlleles);
 	}
 
-	private void writeGTsZip(int index, int perArchive, int total, File pathToZipped, String entryName, Collection<byte[]> alleles) throws Exception {
+	private void writeGTsZip(int index, int perArchive, int total, File pathToZipped, String entryName, Collection<byte[]> alleles) throws IOException {
 
 		if ((index % perArchive) == 0) {
 			int lastInArchive = Math.min(total, index + perArchive);
@@ -185,7 +186,7 @@ public class ZipTwoWaySaverSamplesReceiver extends InMemorySamplesReceiver {
 		}
 	}
 
-	private void writeGTsGZip(int index, int perArchive, int total, File pathToZipped, String entryName, Collection<byte[]> alleles) throws Exception {
+	private void writeGTsGZip(int index, int perArchive, int total, File pathToZipped, String entryName, Collection<byte[]> alleles) throws IOException {
 
 		if ((index % perArchive) == 0) {
 			int lastInArchive = Math.min(total, index + perArchive);
@@ -204,7 +205,7 @@ public class ZipTwoWaySaverSamplesReceiver extends InMemorySamplesReceiver {
 		}
 	}
 
-	private static void writeGTsEncoded(OutputStream out, Collection<byte[]> alleles) throws Exception {
+	private static void writeGTsEncoded(OutputStream out, Collection<byte[]> alleles) throws IOException {
 
 		for (byte[] allele : alleles) {
 			out.write(allele);
@@ -212,12 +213,12 @@ public class ZipTwoWaySaverSamplesReceiver extends InMemorySamplesReceiver {
 	}
 
 	@Override
-	public void finishedLoadingAlleles() throws Exception {
+	public void finishedLoadingAlleles() throws IOException {
 
 		log.info("Done writing genotypes to zip files");
 	}
 
 	@Override
-	public void done() throws Exception {
+	public void done() throws IOException {
 	}
 }

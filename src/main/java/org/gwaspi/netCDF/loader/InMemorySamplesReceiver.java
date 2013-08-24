@@ -17,6 +17,7 @@
 
 package org.gwaspi.netCDF.loader;
 
+import java.io.IOException;
 import java.util.Collection;
 
 /**
@@ -28,19 +29,19 @@ public class InMemorySamplesReceiver extends AbstractDataSetDestination implemen
 	}
 
 	@Override
-	public void startLoadingAlleles(boolean perSample) throws Exception {
+	public void startLoadingAlleles(boolean perSample) throws IOException {
 		super.startLoadingAlleles(perSample);
-		
+
 		getDataSet().initAlleleStorage();
 	}
 
 	@Override
-	public void addSampleGTAlleles(int sampleIndex, Collection<byte[]> sampleAlleles) throws Exception {
+	public void addSampleGTAlleles(int sampleIndex, Collection<byte[]> sampleAlleles) throws IOException {
 		getDataSet().setSampleAlleles(sampleIndex, sampleAlleles);
 	}
 
 	@Override
-	public void addMarkerGTAlleles(int markerIndex, Collection<byte[]> markerAlleles) throws Exception {
+	public void addMarkerGTAlleles(int markerIndex, Collection<byte[]> markerAlleles) throws IOException {
 		getDataSet().setMarkerAlleles(markerIndex, markerAlleles);
 	}
 }

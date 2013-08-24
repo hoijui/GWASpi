@@ -14,9 +14,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package org.gwaspi.netCDF.loader;
 
-
+import java.io.IOException;
 import java.util.Collection;
 import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.SampleInfo;
@@ -29,40 +30,40 @@ import org.gwaspi.model.SampleInfo;
  */
 public interface DataSetDestination {
 
-	void init() throws Exception;
+	void init() throws IOException;
 
 	/**
 	 * dummy means here, that these infos are used, if there are no real,
 	 * full sample infos available for one, multiple
 	 * or all samples in the data-set.
 	 */
-	void startLoadingDummySampleInfos() throws Exception;
-	void finishedLoadingDummySampleInfos() throws Exception;
+	void startLoadingDummySampleInfos() throws IOException;
+	void finishedLoadingDummySampleInfos() throws IOException;
 
-	void startLoadingSampleInfos() throws Exception;
-	void addSampleInfo(SampleInfo sampleInfo) throws Exception;
-	void finishedLoadingSampleInfos() throws Exception;
+	void startLoadingSampleInfos() throws IOException;
+	void addSampleInfo(SampleInfo sampleInfo) throws IOException;
+	void finishedLoadingSampleInfos() throws IOException;
 
-	void startLoadingMarkerMetadatas() throws Exception;
-	void addMarkerMetadata(MarkerMetadata markerMetadata) throws Exception;
-	void finishedLoadingMarkerMetadatas() throws Exception;
+	void startLoadingMarkerMetadatas() throws IOException;
+	void addMarkerMetadata(MarkerMetadata markerMetadata) throws IOException;
+	void finishedLoadingMarkerMetadatas() throws IOException;
 
-	void startLoadingAlleles(boolean perSample) throws Exception;
+	void startLoadingAlleles(boolean perSample) throws IOException;
 	/**
 	 * Adds all the GTs/SNPs for a single sample (one GT per marker).
 	 * @param sampleIndex  index in relation to the samples infos
 	 *   (as in, the index of a list created in the order they were added)
 	 * @see #addSampleInfo
 	 */
-	void addSampleGTAlleles(int sampleIndex, Collection<byte[]> sampleAlleles) throws Exception;
+	void addSampleGTAlleles(int sampleIndex, Collection<byte[]> sampleAlleles) throws IOException;
 	/**
 	 * Adds all the GTs/SNPs for a single marker (one GT per sample).
 	 * @param markerIndex  index in relation to the markers meta-data
 	 *   (as in, the index of a list created in the order they were added)
 	 * @see #addMarkerMetadata
 	 */
-	void addMarkerGTAlleles(int markerIndex, Collection<byte[]> markerAlleles) throws Exception;
-	void finishedLoadingAlleles() throws Exception;
+	void addMarkerGTAlleles(int markerIndex, Collection<byte[]> markerAlleles) throws IOException;
+	void finishedLoadingAlleles() throws IOException;
 
-	void done() throws Exception;
+	void done() throws IOException;
 }

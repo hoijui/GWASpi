@@ -36,7 +36,6 @@ import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleInfoList;
 import org.gwaspi.model.SampleKey;
-import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -76,13 +75,13 @@ public abstract class AbstractNetCDFDataSetDestination extends AbstractDataSetDe
 	}
 
 	@Override
-	public void init() throws Exception {
+	public void init() throws IOException {
 
 		resultMatrixKey = null;
 	}
 
 	@Override
-	public void finishedLoadingSampleInfos() throws Exception {
+	public void finishedLoadingSampleInfos() throws IOException {
 		SampleInfoList.insertSampleInfos(getDataSet().getSampleInfos());
 	}
 
@@ -207,7 +206,7 @@ public abstract class AbstractNetCDFDataSetDestination extends AbstractDataSetDe
 	}
 
 	@Override
-	public void startLoadingAlleles(boolean perSample) throws Exception {
+	public void startLoadingAlleles(boolean perSample) throws IOException {
 
 		alleleLoadPerSample = perSample;
 
@@ -233,7 +232,7 @@ public abstract class AbstractNetCDFDataSetDestination extends AbstractDataSetDe
 	}
 
 	@Override
-	public void addSampleGTAlleles(int sampleIndex, Collection<byte[]> sampleAlleles) throws Exception {
+	public void addSampleGTAlleles(int sampleIndex, Collection<byte[]> sampleAlleles) throws IOException {
 
 		if (!alleleLoadPerSample) {
 			throw new IllegalStateException("You can not mix loading per sample and loading per marker");
@@ -320,7 +319,7 @@ public abstract class AbstractNetCDFDataSetDestination extends AbstractDataSetDe
 	protected abstract String getGuessedGTCode();
 
 	@Override
-	public void done() throws Exception {
+	public void done() throws IOException {
 	}
 
 	static List<SampleKey> extractKeys(Collection<SampleInfo> sampleInfos) {

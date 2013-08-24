@@ -14,9 +14,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package org.gwaspi.netCDF.loader;
 
-
+import java.io.IOException;
 import java.util.Collection;
 import org.gwaspi.model.DataSet;
 import org.gwaspi.model.MarkerKey;
@@ -40,62 +41,62 @@ public abstract class AbstractDataSetDestination implements DataSetDestination {
 	}
 
 	@Override
-	public void init() throws Exception {
+	public void init() throws IOException {
 	}
 
 	@Override
-	public void startLoadingDummySampleInfos() throws Exception {
+	public void startLoadingDummySampleInfos() throws IOException {
 	}
 
 	@Override
-	public void finishedLoadingDummySampleInfos() throws Exception {
+	public void finishedLoadingDummySampleInfos() throws IOException {
 	}
 
 	@Override
-	public void startLoadingSampleInfos() throws Exception {
+	public void startLoadingSampleInfos() throws IOException {
 	}
 
 	@Override
-	public void addSampleInfo(SampleInfo sampleInfo) throws Exception {
+	public void addSampleInfo(SampleInfo sampleInfo) throws IOException {
 		dataSet.getSampleInfos().add(sampleInfo);
 	}
 
 	@Override
-	public void finishedLoadingSampleInfos() throws Exception {
+	public void finishedLoadingSampleInfos() throws IOException {
 	}
 
 	@Override
-	public void startLoadingMarkerMetadatas() throws Exception {
+	public void startLoadingMarkerMetadatas() throws IOException {
 	}
 
 	@Override
-	public void addMarkerMetadata(MarkerMetadata markerMetadata) throws Exception {
+	public void addMarkerMetadata(MarkerMetadata markerMetadata) throws IOException {
 		dataSet.getMarkerMetadatas().put(MarkerKey.valueOf(markerMetadata), markerMetadata);
 	}
 
 	@Override
-	public void finishedLoadingMarkerMetadatas() throws Exception {
+	public void finishedLoadingMarkerMetadatas() throws IOException {
 	}
 
 	@Override
-	public void startLoadingAlleles(boolean perSample) throws Exception {
+	public void startLoadingAlleles(boolean perSample) throws IOException {
 	}
 
 	@Override
-	public void addSampleGTAlleles(int sampleIndex, Collection<byte[]> sampleAlleles) throws Exception {
+	public void addSampleGTAlleles(int sampleIndex, Collection<byte[]> sampleAlleles) throws IOException {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public void addMarkerGTAlleles(int markerIndex, Collection<byte[]> markerAlleles) throws Exception {
+	public void addMarkerGTAlleles(int markerIndex, Collection<byte[]> markerAlleles) throws IOException {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public void finishedLoadingAlleles() throws Exception {
+	public void finishedLoadingAlleles() throws IOException {
 	}
 
 	@Override
-	public void done() throws Exception {
+	public void done() throws IOException {
 	}
 }
