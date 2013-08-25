@@ -26,6 +26,7 @@ import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.ChromosomeInfo;
+import org.gwaspi.model.ChromosomeKey;
 import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MarkerMetadata;
@@ -135,7 +136,7 @@ public abstract class AbstractMergeMarkersMatrixOperation extends AbstractMergeM
 		Map<MarkerKey, MarkerMetadata> wrComboSortedMarkerSetMap = mingleAndSortMarkerSet();
 
 		// RETRIEVE CHROMOSOMES INFO
-		Map<MarkerKey, ChromosomeInfo> chrInfo = org.gwaspi.netCDF.matrices.Utils.aggregateChromosomeInfo(wrComboSortedMarkerSetMap, 0, 1);
+		Map<ChromosomeKey, ChromosomeInfo> chrInfo = org.gwaspi.netCDF.matrices.Utils.aggregateChromosomeInfo(wrComboSortedMarkerSetMap, 0, 1);
 
 		LoadingNetCDFDataSetDestination netCDFSaverSamplesReceiver = null;
 		try {
@@ -277,7 +278,7 @@ public abstract class AbstractMergeMarkersMatrixOperation extends AbstractMergeM
 		log.info("Done writing SampleSet to matrix");
 	}
 
-	private static void saveMarkersMatadata(Map<MarkerKey, MarkerMetadata> markerMetadatas, Map<MarkerKey, ChromosomeInfo> chrInfo, NetcdfFileWriteable wrNcFile) throws IOException, InvalidRangeException {
+	private static void saveMarkersMatadata(Map<MarkerKey, MarkerMetadata> markerMetadatas, Map<ChromosomeKey, ChromosomeInfo> chrInfo, NetcdfFileWriteable wrNcFile) throws IOException, InvalidRangeException {
 
 		// MARKERSET MARKERID
 		ArrayChar.D2 markersD2 = NetCdfUtils.writeCollectionToD2ArrayChar(markerMetadatas.keySet(), cNetCDF.Strides.STRIDE_MARKER_NAME);

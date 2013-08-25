@@ -27,6 +27,7 @@ import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.StartGWASpi;
 import org.gwaspi.model.ChromosomeInfo;
+import org.gwaspi.model.ChromosomeKey;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.MatricesList;
@@ -116,7 +117,7 @@ public abstract class AbstractNetCDFDataSetDestination extends AbstractDataSetDe
 		}
 
 		// RETRIEVE CHROMOSOMES INFO
-		Map<MarkerKey, ChromosomeInfo> chrInfo = org.gwaspi.netCDF.matrices.Utils.aggregateChromosomeInfo(getDataSet().getMarkerMetadatas(), 2, 3);
+		Map<ChromosomeKey, ChromosomeInfo> chrInfo = org.gwaspi.netCDF.matrices.Utils.aggregateChromosomeInfo(getDataSet().getMarkerMetadatas(), 2, 3);
 
 		try {
 			matrixFactory = new MatrixFactory(
@@ -154,7 +155,7 @@ public abstract class AbstractNetCDFDataSetDestination extends AbstractDataSetDe
 		log.info("Done writing SampleSet to matrix");
 	}
 
-	private static void saveMarkersMatadata(Map<MarkerKey, MarkerMetadata> markerMetadatas, Map<MarkerKey, ChromosomeInfo> chrInfo, NetcdfFileWriteable ncfile) throws IOException, InvalidRangeException {
+	private static void saveMarkersMatadata(Map<MarkerKey, MarkerMetadata> markerMetadatas, Map<ChromosomeKey, ChromosomeInfo> chrInfo, NetcdfFileWriteable ncfile) throws IOException, InvalidRangeException {
 
 		// WRITE RSID & MARKERID METADATA FROM METADATAMap
 		ArrayChar.D2 markersD2 = NetCdfUtils.writeValuesToD2ArrayChar(markerMetadatas.values(), MarkerMetadata.TO_RS_ID, cNetCDF.Strides.STRIDE_MARKER_NAME);

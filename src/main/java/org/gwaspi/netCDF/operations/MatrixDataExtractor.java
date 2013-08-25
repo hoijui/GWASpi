@@ -31,6 +31,7 @@ import org.gwaspi.constants.cNetCDF.Defaults.SetSamplePickCase;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.utils.Dialogs;
 import org.gwaspi.model.ChromosomeInfo;
+import org.gwaspi.model.ChromosomeKey;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.MatricesList;
@@ -69,7 +70,7 @@ public class MatrixDataExtractor {
 	private Map<MarkerKey, byte[]> wrMarkerIdSetMap;
 	private Map<SampleKey, char[]> rdSampleSetMap;
 	private Map<SampleKey, Integer> wrSampleSetMap;
-	private Map<MarkerKey, ChromosomeInfo> rdChrInfoSetMap;
+	private Map<ChromosomeKey, ChromosomeInfo> rdChrInfoSetMap;
 
 	/**
 	 * This constructor to extract data from Matrix a by passing a variable and
@@ -405,7 +406,7 @@ public class MatrixDataExtractor {
 				ArrayChar.D2 guessedGTCodeAC = new ArrayChar.D2(1, 8);
 				Index index = guessedGTCodeAC.getIndex();
 				guessedGTCodeAC.setString(index.set(0, 0), rdMatrixMetadata.getGenotypeEncoding().toString());
-				int[] origin = new int[]{0, 0};
+				int[] origin = new int[] {0, 0};
 				wrNcFile.write(cNetCDF.Variables.GLOB_GTENCODING, origin, guessedGTCodeAC);
 
 				descSB.append("\nGenotype encoding: ");

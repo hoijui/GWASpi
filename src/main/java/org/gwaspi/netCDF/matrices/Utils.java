@@ -20,6 +20,7 @@ package org.gwaspi.netCDF.matrices;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.gwaspi.model.ChromosomeInfo;
+import org.gwaspi.model.ChromosomeKey;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MarkerMetadata;
 
@@ -29,11 +30,11 @@ public class Utils {
 	}
 
 	/**
-	 * Map to be aggregated, where is the chr, where is the position.
+	 * Map to be aggregated, where is the chromosome, where is the position.
 	 */
-	public static Map<MarkerKey, ChromosomeInfo> aggregateChromosomeInfo(Map<MarkerKey, MarkerMetadata> wrMarkerSetMap, int chrIdx, int posIdx) {
+	public static Map<ChromosomeKey, ChromosomeInfo> aggregateChromosomeInfo(Map<MarkerKey, MarkerMetadata> wrMarkerSetMap, int chrIdx, int posIdx) {
 		// RETRIEVE CHROMOSOMES INFO
-		Map<MarkerKey, ChromosomeInfo> chrSetMap = new LinkedHashMap<MarkerKey, ChromosomeInfo>();
+		Map<ChromosomeKey, ChromosomeInfo> chrSetMap = new LinkedHashMap<ChromosomeKey, ChromosomeInfo>();
 		String curChr = "";
 		int firstPos = 0;
 		int markerCount = 0;
@@ -43,7 +44,7 @@ public class Utils {
 			// value: markerid, rsId, chr, pos
 			if (!curChr.equals(metaInfo.getChr())) {
 				if (markerCount != 0) { // Not first time round
-					chrSetMap.put(MarkerKey.valueOf(curChr), chrInfo);
+					chrSetMap.put(ChromosomeKey.valueOf(curChr), chrInfo);
 				}
 				firstPos = metaInfo.getPos(); // First physical position in chromosome
 				curChr = metaInfo.getChr();
@@ -53,7 +54,7 @@ public class Utils {
 			markerCount++;
 			idx++;
 		}
-		chrSetMap.put(MarkerKey.valueOf(curChr), chrInfo); // Store last chromosome info
+		chrSetMap.put(ChromosomeKey.valueOf(curChr), chrInfo); // Store last chromosome info
 
 		return chrSetMap;
 	}
