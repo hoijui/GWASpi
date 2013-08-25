@@ -137,7 +137,7 @@ public abstract class AbstractMergeMarkersMatrixOperation extends AbstractMergeM
 		Map<MarkerKey, MarkerMetadata> wrComboSortedMarkerSetMap = mingleAndSortMarkerSet();
 
 		// RETRIEVE CHROMOSOMES INFO
-		Map<ChromosomeKey, ChromosomeInfo> chrInfo = ChromosomeUtils.aggregateChromosomeInfo(wrComboSortedMarkerSetMap, 0, 1);
+		Map<ChromosomeKey, ChromosomeInfo> chromosomeInfo = ChromosomeUtils.aggregateChromosomeInfo(wrComboSortedMarkerSetMap, 0, 1);
 
 		LoadingNetCDFDataSetDestination netCDFSaverSamplesReceiver = null;
 		try {
@@ -185,7 +185,7 @@ public abstract class AbstractMergeMarkersMatrixOperation extends AbstractMergeM
 					hasDictionary, // has dictionary?
 					numSamples,
 					wrComboSortedMarkerSetMap.size(), // Use comboed wrSortedMingledMarkerMap as MarkerSet
-					chrInfo.size(),
+					chromosomeInfo.size(),
 					rdMatrix1Key, // Parent matrixId 1
 					rdMatrix2Key); // Parent matrixId 2
 
@@ -223,7 +223,7 @@ public abstract class AbstractMergeMarkersMatrixOperation extends AbstractMergeM
 			log.trace("Done creating netCDF handle: " + wrNcFile.toString());
 
 			saveSamplesMatadata(theSamples.keySet(), wrNcFile);
-			saveMarkersMatadata(wrComboSortedMarkerSetMap, chrInfo, wrNcFile);
+			saveMarkersMatadata(wrComboSortedMarkerSetMap, chromosomeInfo, wrNcFile);
 
 			writeGenotypes(wrNcFile, wrSampleSetMap, combinedMarkerGTStrands, rdSampleSetMap1, rdSampleSetMap2);
 

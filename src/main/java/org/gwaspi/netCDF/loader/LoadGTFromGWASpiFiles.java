@@ -201,7 +201,7 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 		log.info("Done initializing sorted MarkerSetMap");
 
 		// RETRIEVE CHROMOSOMES INFO
-		Map<ChromosomeKey, ChromosomeInfo> chrSetMap = ChromosomeUtils.aggregateChromosomeInfo(rdMarkerSetMap, 0, 1);
+		Map<ChromosomeKey, ChromosomeInfo> chromosomeInfo = ChromosomeUtils.aggregateChromosomeInfo(rdMarkerSetMap, 0, 1);
 
 		MatrixFactory matrixFactory = new MatrixFactory(
 				loadDescription.getStudyKey(),
@@ -213,7 +213,7 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 				isHasDictionary(),
 				rdSampleSetMap.size(),
 				rdMarkerSetMap.size(),
-				chrSetMap.size(),
+				chromosomeInfo.size(),
 				loadDescription.getGtDirPath());
 
 		NetcdfFileWriteable ncfile = matrixFactory.getNetCDFHandler();
@@ -240,11 +240,11 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 		log.info("Done writing chromosomes to matrix");
 
 		// Set of chromosomes found in matrix along with number of markersinfo
-		NetCdfUtils.saveObjectsToStringToMatrix(ncfile, chrSetMap.keySet(), cNetCDF.Variables.VAR_CHR_IN_MATRIX, 8);
+		NetCdfUtils.saveObjectsToStringToMatrix(ncfile, chromosomeInfo.keySet(), cNetCDF.Variables.VAR_CHR_IN_MATRIX, 8);
 
 		// Number of marker per chromosome & max pos for each chromosome
 		int[] columns = new int[] {0, 1, 2, 3};
-		NetCdfUtils.saveChromosomeInfosD2ToWrMatrix(ncfile, chrSetMap.values(), columns, cNetCDF.Variables.VAR_CHR_INFO);
+		NetCdfUtils.saveChromosomeInfosD2ToWrMatrix(ncfile, chromosomeInfo.values(), columns, cNetCDF.Variables.VAR_CHR_INFO);
 
 
 		// WRITE POSITION METADATA FROM ANNOTATION FILE

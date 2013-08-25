@@ -24,27 +24,16 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import org.gwaspi.constants.cImport.ImportFormat;
-import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.global.Text;
-import org.gwaspi.gui.StartGWASpi;
 import org.gwaspi.model.ChromosomeInfo;
-import org.gwaspi.model.MarkerKey;
-import org.gwaspi.model.MarkerMetadata;
-import org.gwaspi.model.MatricesList;
-import org.gwaspi.model.MatrixKey;
-import org.gwaspi.model.MatrixMetadata;
+import org.gwaspi.model.ChromosomeKey;
 import org.gwaspi.model.SampleInfo;
-import org.gwaspi.model.SampleInfoList;
 import org.gwaspi.model.SampleKey;
+import org.gwaspi.netCDF.matrices.ChromosomeUtils;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.ma2.ArrayByte;
-import ucar.ma2.ArrayChar;
-import ucar.ma2.ArrayInt;
-import ucar.ma2.Index;
 import ucar.ma2.InvalidRangeException;
-import ucar.nc2.NetcdfFileWriteable;
 
 /**
  * Used when loading a data-set from an external source
@@ -63,7 +52,6 @@ public class LoadingNetCDFDataSetDestination extends AbstractNetCDFDataSetDestin
 	public LoadingNetCDFDataSetDestination(
 			GenotypesLoadDescription loadDescription)
 	{
-		super(loadDescription.getStudyKey());
 		this.loadDescription = loadDescription;
 		this.gtLoader = null;
 	}
@@ -79,128 +67,55 @@ public class LoadingNetCDFDataSetDestination extends AbstractNetCDFDataSetDestin
 		startTime = org.gwaspi.global.Utils.getMediumDateTimeAsString();
 	}
 
-//	//<editor-fold defaultstate="expanded" desc="PROCESS GENOTYPES">
 	@Override
-	public void finishedLoadingMarkerMetadatas() throws IOException {
-		XXX; see in parent class;
-//
-//		List<SampleKey> sampleKeys = LoadingNetCDFDataSetDestination.extractKeys(getDataSet().getSampleInfos());
-//
-//		// CREATE netCDF-3 FILE
-//		StringBuilder descSB = new StringBuilder(Text.Matrix.descriptionHeader1);
-//		descSB.append(org.gwaspi.global.Utils.getShortDateTimeAsString());
-//		if (!loadDescription.getDescription().isEmpty()) {
-//			descSB.append("\nDescription: ");
-//			descSB.append(loadDescription.getDescription());
-//			descSB.append("\n");
-//		}
-////		descSB.append("\nStrand: ");
-////		descSB.append(strand);
-////		descSB.append("\nGenotype encoding: ");
-////		descSB.append(gtCode);
-//		descSB.append("\n");
-//		descSB.append("Markers: ").append(getDataSet().getMarkerMetadatas().size());
-//		descSB.append(", Samples: ").append(getDataSet().getSampleInfos().size());
-//		descSB.append("\n");
-//		descSB.append(Text.Matrix.descriptionHeader2);
-//		descSB.append(loadDescription.getFormat().toString());
-//		descSB.append("\n");
-//		descSB.append(Text.Matrix.descriptionHeader3);
-//		descSB.append("\n");
-//		gtLoader.addAdditionalBigDescriptionProperties(descSB, loadDescription);
-//		if (new File(loadDescription.getSampleFilePath()).exists()) {
-//			descSB.append(loadDescription.getSampleFilePath()); // the FAM file, in case of PLink Binary
-//			descSB.append(" (Sample Info file)\n");
-//		}
-//
-//		// RETRIEVE CHROMOSOMES INFO
-//		Map<MarkerKey, ChromosomeInfo> chrSetMap = org.gwaspi.netCDF.matrices.Utils.aggregateChromosomeInfo(getDataSet().getMarkerMetadatas(), 2, 3);
-//
-//		try {
-//			matrixFactory = new MatrixFactory(
-//					loadDescription.getStudyKey(),
-//					loadDescription.getFormat(),
-//					loadDescription.getFriendlyName(),
-//					descSB.toString(), // description
-//					loadDescription.getGtCode(),
-//					(gtLoader.getMatrixStrand() != null) ? gtLoader.getMatrixStrand() : loadDescription.getStrand(),
-//					gtLoader.isHasDictionary(),
-//					getDataSet().getSampleInfos().size(),
-//					getDataSet().getMarkerMetadatas().size(),
-//					chrSetMap.size(),
-//					loadDescription.getGtDirPath());
-//
-//			ncfile = matrixFactory.getNetCDFHandler();
-//
-//			// create the file
-//			ncfile.create();
-//			log.trace("Done creating netCDF handle: " + ncfile.toString());
-//			//</editor-fold>
-//
-//			//<editor-fold defaultstate="expanded" desc="WRITE MATRIX METADATA">
-//			// WRITE SAMPLESET TO MATRIX FROM SAMPLES LIST
-//			ArrayChar.D2 samplesD2 = org.gwaspi.netCDF.operations.Utils.writeCollectionToD2ArrayChar(sampleKeys, cNetCDF.Strides.STRIDE_SAMPLE_NAME);
-//
-//			int[] sampleOrig = new int[] {0, 0};
-//			ncfile.write(cNetCDF.Variables.VAR_SAMPLESET, sampleOrig, samplesD2);
-//			samplesD2 = null;
-//			log.info("Done writing SampleSet to matrix");
-//
-//			// WRITE RSID & MARKERID METADATA FROM METADATAMap
-//			ArrayChar.D2 markersD2 = org.gwaspi.netCDF.operations.Utils.writeValuesToD2ArrayChar(getDataSet().getMarkerMetadatas().values(), MarkerMetadata.TO_RS_ID, cNetCDF.Strides.STRIDE_MARKER_NAME);
-//
-//			int[] markersOrig = new int[] {0, 0};
-//			ncfile.write(cNetCDF.Variables.VAR_MARKERS_RSID, markersOrig, markersD2);
-//
-//			markersD2 = org.gwaspi.netCDF.operations.Utils.writeValuesToD2ArrayChar(getDataSet().getMarkerMetadatas().values(), MarkerMetadata.TO_MARKER_ID, cNetCDF.Strides.STRIDE_MARKER_NAME);
-//			ncfile.write(cNetCDF.Variables.VAR_MARKERSET, markersOrig, markersD2);
-//			log.info("Done writing MarkerId and RsId to matrix");
-//
-//			// WRITE CHROMOSOME METADATA FROM ANNOTATION FILE
-//			// Chromosome location for each marker
-//			markersD2 = org.gwaspi.netCDF.operations.Utils.writeValuesToD2ArrayChar(getDataSet().getMarkerMetadatas().values(), MarkerMetadata.TO_CHR, cNetCDF.Strides.STRIDE_CHR);
-//			ncfile.write(cNetCDF.Variables.VAR_MARKERS_CHR, markersOrig, markersD2);
-//			log.info("Done writing chromosomes to matrix");
-//
-//			// Set of chromosomes found in matrix along with number of markersinfo
-//			org.gwaspi.netCDF.operations.Utils.saveObjectsToStringToMatrix(ncfile, chrSetMap.keySet(), cNetCDF.Variables.VAR_CHR_IN_MATRIX, 8);
-//
-//			// Number of marker per chromosome & max pos for each chromosome
-//			int[] columns = new int[] {0, 1, 2, 3};
-//			org.gwaspi.netCDF.operations.Utils.saveChromosomeInfosD2ToWrMatrix(ncfile, chrSetMap.values(), columns, cNetCDF.Variables.VAR_CHR_INFO);
-//
-//
-//			// WRITE POSITION METADATA FROM ANNOTATION FILE
-//			//markersD2 = org.gwaspi.netCDF.operations.Utils.writeValuesToD2ArrayChar(sortedMarkerSetMap, 3, cNetCDF.Strides.STRIDE_POS);
-//			ArrayInt.D1 markersPosD1 = org.gwaspi.netCDF.operations.Utils.writeValuesToD1ArrayInt(getDataSet().getMarkerMetadatas().values(), MarkerMetadata.TO_POS);
-//			int[] posOrig = new int[1];
-//			ncfile.write(cNetCDF.Variables.VAR_MARKERS_POS, posOrig, markersPosD1);
-//			log.info("Done writing positions to matrix");
-//
-//			// WRITE CUSTOM ALLELES METADATA FROM ANNOTATION FILE
-//			if (gtLoader.getMarkersD2Variables() != null) {
-//				markersD2 = org.gwaspi.netCDF.operations.Utils.writeValuesToD2ArrayChar(getDataSet().getMarkerMetadatas().values(), gtLoader.getBaseDictPropertyExtractor(), cNetCDF.Strides.STRIDE_GT);
-//				ncfile.write(gtLoader.getMarkersD2Variables(), markersOrig, markersD2);
-//				log.info("Done writing forward alleles to matrix");
-//			}
-//
-//			// WRITE GT STRAND FROM ANNOTATION FILE
-//			int[] gtOrig = new int[] {0, 0};
-//			if (gtLoader.isHasStrandInfo()) {
-//				// TODO Strand info is buggy in Hapmap bulk download!
-//				markersD2 = org.gwaspi.netCDF.operations.Utils.writeValuesToD2ArrayChar(getDataSet().getMarkerMetadatas().values(), MarkerMetadata.TO_STRAND, cNetCDF.Strides.STRIDE_STRAND);
-//			} else {
-//				String strandFlag = gtLoader.getStrandFlag(loadDescription);
-//				markersD2 = org.gwaspi.netCDF.operations.Utils.writeSingleValueToD2ArrayChar(strandFlag, cNetCDF.Strides.STRIDE_STRAND, getDataSet().getMarkerMetadatas().size());
-//			}
-//
-//			ncfile.write(cNetCDF.Variables.VAR_GT_STRAND, gtOrig, markersD2);
-//			markersD2 = null;
-//			log.info("Done writing strand info to matrix");
-//			//</editor-fold>
-//		} catch (InvalidRangeException ex) {
-//			throw new IOException(ex);
-//		}
+	protected MatrixFactory createMatrixFactory() throws IOException {
+
+		// CREATE netCDF-3 FILE
+		StringBuilder descSB = new StringBuilder(Text.Matrix.descriptionHeader1);
+		descSB.append(org.gwaspi.global.Utils.getShortDateTimeAsString());
+		if (!loadDescription.getDescription().isEmpty()) {
+			descSB.append("\nDescription: ");
+			descSB.append(loadDescription.getDescription());
+			descSB.append("\n");
+		}
+//		descSB.append("\nStrand: ");
+//		descSB.append(strand);
+//		descSB.append("\nGenotype encoding: ");
+//		descSB.append(gtCode);
+		descSB.append("\n");
+		descSB.append("Markers: ").append(getDataSet().getMarkerMetadatas().size());
+		descSB.append(", Samples: ").append(getDataSet().getSampleInfos().size());
+		descSB.append("\n");
+		descSB.append(Text.Matrix.descriptionHeader2);
+		descSB.append(loadDescription.getFormat().toString());
+		descSB.append("\n");
+		descSB.append(Text.Matrix.descriptionHeader3);
+		descSB.append("\n");
+		gtLoader.addAdditionalBigDescriptionProperties(descSB, loadDescription);
+		if (new File(loadDescription.getSampleFilePath()).exists()) {
+			descSB.append(loadDescription.getSampleFilePath()); // the FAM file, in case of PLink Binary
+			descSB.append(" (Sample Info file)\n");
+		}
+
+		// RETRIEVE CHROMOSOMES INFO
+		Map<ChromosomeKey, ChromosomeInfo> chromosomeInfo = ChromosomeUtils.aggregateChromosomeInfo(getDataSet().getMarkerMetadatas(), 2, 3);
+
+		try {
+			return new MatrixFactory(
+					loadDescription.getStudyKey(),
+					loadDescription.getFormat(),
+					loadDescription.getFriendlyName(),
+					descSB.toString(), // description
+					loadDescription.getGtCode(),
+					(gtLoader.getMatrixStrand() != null) ? gtLoader.getMatrixStrand() : loadDescription.getStrand(),
+					gtLoader.isHasDictionary(),
+					getDataSet().getSampleInfos().size(),
+					getDataSet().getMarkerMetadatas().size(),
+					chromosomeInfo.size(),
+					loadDescription.getGtDirPath());
+		} catch (InvalidRangeException ex) {
+			throw new IOException(ex);
+		}
 	}
 
 	@Override

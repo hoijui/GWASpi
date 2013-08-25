@@ -71,7 +71,7 @@ public class MatrixDataExtractor {
 	private Map<MarkerKey, byte[]> wrMarkerIdSetMap;
 	private Map<SampleKey, char[]> rdSampleSetMap;
 	private Map<SampleKey, Integer> wrSampleSetMap;
-	private Map<ChromosomeKey, ChromosomeInfo> rdChrInfoSetMap;
+	private Map<ChromosomeKey, ChromosomeInfo> rdChromosomeInfo;
 
 	/**
 	 * This constructor to extract data from Matrix a by passing a variable and
@@ -184,7 +184,7 @@ public class MatrixDataExtractor {
 		// RETRIEVE CHROMOSOMES INFO
 		this.rdMarkerSet.fillMarkerSetMapWithChrAndPos();
 		Map<MarkerKey, MarkerMetadata> sortedChrAndPos = org.gwaspi.global.Utils.createOrderedMap(this.wrMarkerIdSetMap, this.rdMarkerSet.getMarkerMetadata());
-		this.rdChrInfoSetMap = ChromosomeUtils.aggregateChromosomeInfo(sortedChrAndPos, 0, 1);
+		this.rdChromosomeInfo = ChromosomeUtils.aggregateChromosomeInfo(sortedChrAndPos, 0, 1);
 		//</editor-fold>
 
 		//<editor-fold defaultstate="expanded" desc="SAMPLESET PICKING">
@@ -325,7 +325,7 @@ public class MatrixDataExtractor {
 						rdMatrixMetadata.getHasDictionray(), // has dictionary?
 						wrSampleSetMap.size(),
 						wrMarkerIdSetMap.size(),
-						rdChrInfoSetMap.size(),
+						rdChromosomeInfo.size(),
 						rdMatrixKey, // Orig matrixId 1
 						null); // Orig matrixId 2
 
@@ -362,10 +362,10 @@ public class MatrixDataExtractor {
 				NetCdfUtils.saveCharMapValueToWrMatrix(wrNcFile, sortedMarkerChrs.values(), cNetCDF.Variables.VAR_MARKERS_CHR, cNetCDF.Strides.STRIDE_CHR);
 
 				// Set of chromosomes found in matrix along with number of markersinfo
-				NetCdfUtils.saveObjectsToStringToMatrix(wrNcFile, rdChrInfoSetMap.keySet(), cNetCDF.Variables.VAR_CHR_IN_MATRIX, 8);
+				NetCdfUtils.saveObjectsToStringToMatrix(wrNcFile, rdChromosomeInfo.keySet(), cNetCDF.Variables.VAR_CHR_IN_MATRIX, 8);
 				// Number of marker per chromosome & max pos for each chromosome
 				int[] columns = new int[] {0, 1, 2, 3};
-				NetCdfUtils.saveChromosomeInfosD2ToWrMatrix(wrNcFile, rdChrInfoSetMap.values(), columns, cNetCDF.Variables.VAR_CHR_INFO);
+				NetCdfUtils.saveChromosomeInfosD2ToWrMatrix(wrNcFile, rdChromosomeInfo.values(), columns, cNetCDF.Variables.VAR_CHR_INFO);
 
 				// MARKERSET POSITION
 				rdMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_POS);

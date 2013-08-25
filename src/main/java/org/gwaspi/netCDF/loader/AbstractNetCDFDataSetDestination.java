@@ -87,61 +87,23 @@ public abstract class AbstractNetCDFDataSetDestination extends AbstractDataSetDe
 		SampleInfoList.insertSampleInfos(getDataSet().getSampleInfos());
 	}
 
+	protected abstract MatrixFactory createMatrixFactory() throws IOException;
+
 	@Override
 	public void finishedLoadingMarkerMetadatas() throws IOException {
 
-		// CREATE netCDF-3 FILE
-		StringBuilder descSB = new StringBuilder(Text.Matrix.descriptionHeader1);
-		descSB.append(org.gwaspi.global.Utils.getShortDateTimeAsString());
-		if (!loadDescription.getDescription().isEmpty()) {
-			descSB.append("\nDescription: ");
-			descSB.append(loadDescription.getDescription());
-			descSB.append("\n");
-		}
-//		descSB.append("\nStrand: ");
-//		descSB.append(strand);
-//		descSB.append("\nGenotype encoding: ");
-//		descSB.append(gtCode);
-		descSB.append("\n");
-		descSB.append("Markers: ").append(getDataSet().getMarkerMetadatas().size());
-		descSB.append(", Samples: ").append(getDataSet().getSampleInfos().size());
-		descSB.append("\n");
-		descSB.append(Text.Matrix.descriptionHeader2);
-		descSB.append(loadDescription.getFormat().toString());
-		descSB.append("\n");
-		descSB.append(Text.Matrix.descriptionHeader3);
-		descSB.append("\n");
-		gtLoader.addAdditionalBigDescriptionProperties(descSB, loadDescription);
-		if (new File(loadDescription.getSampleFilePath()).exists()) {
-			descSB.append(loadDescription.getSampleFilePath()); // the FAM file, in case of PLink Binary
-			descSB.append(" (Sample Info file)\n");
-		}
-
-		// RETRIEVE CHROMOSOMES INFO
-		Map<ChromosomeKey, ChromosomeInfo> chrInfo = ChromosomeUtils.aggregateChromosomeInfo(getDataSet().getMarkerMetadatas(), 2, 3);
-
 		try {
-			matrixFactory = new MatrixFactory(
-					loadDescription.getStudyKey(),
-					loadDescription.getFormat(),
-					loadDescription.getFriendlyName(),
-					descSB.toString(), // description
-					loadDescription.getGtCode(),
-					(gtLoader.getMatrixStrand() != null) ? gtLoader.getMatrixStrand() : loadDescription.getStrand(),
-					gtLoader.isHasDictionary(),
-					getDataSet().getSampleInfos().size(),
-					getDataSet().getMarkerMetadatas().size(),
-					chrInfo.size(),
-					loadDescription.getGtDirPath());
+			matrixFactory = createMatrixFactory();
 
 			// create the NetCDF file
 			ncfile = matrixFactory.getNetCDFHandler();
 			ncfile.create();
 			log.trace("Done creating netCDF handle: " + ncfile.toString());
 
+			Collection<SampleInfo> sampleInfos = getDataSet().getSampleInfos();
 			List<SampleKey> sampleKeys = AbstractNetCDFDataSetDestination.extractKeys(sampleInfos);
 			saveSamplesMatadata(sampleKeys, ncfile);
-			saveMarkersMatadata(getDataSet().getMarkerMetadatas(), chrInfo, ncfile);
+			saveMarkersMatadata(getDataSet().getMarkerMetadatas(), chromosomeInfo, ncfile);
 		} catch (InvalidRangeException ex) {
 			throw new IOException(ex);
 		}

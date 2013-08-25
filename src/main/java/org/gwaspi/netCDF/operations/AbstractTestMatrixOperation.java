@@ -107,7 +107,7 @@ public abstract class AbstractTestMatrixOperation implements MatrixOperation {
 			// retrieve chromosome info
 			rdMarkerSet.fillMarkerSetMapWithChrAndPos();
 			MarkerSet.replaceWithValuesFrom(wrMarkerSetMap, rdMarkerSet.getMarkerMetadata());
-			Map<ChromosomeKey, ChromosomeInfo> rdChrInfoSetMap = ChromosomeUtils.aggregateChromosomeInfo(wrMarkerSetMap, 0, 1);
+			Map<ChromosomeKey, ChromosomeInfo> chromosomeInfo = ChromosomeUtils.aggregateChromosomeInfo(wrMarkerSetMap, 0, 1);
 
 			NetcdfFileWriteable wrOPNcFile = null;
 			try {
@@ -118,7 +118,7 @@ public abstract class AbstractTestMatrixOperation implements MatrixOperation {
 						testName + " on " + markerCensusOP.getFriendlyName() + "\n" + rdCensusOPMetadata.getDescription() + "\nHardy-Weinberg threshold: " + Report_Analysis.FORMAT_SCIENTIFIC.format(hwThreshold), // description
 						wrMarkerSetMap.size(),
 						rdCensusOPMetadata.getImplicitSetSize(),
-						rdChrInfoSetMap.size(),
+						chromosomeInfo.size(),
 						testType,
 						rdCensusOPMetadata.getParentMatrixKey(), // Parent matrixId
 						markerCensusOP.getId()); // Parent operationId
@@ -147,10 +147,10 @@ public abstract class AbstractTestMatrixOperation implements MatrixOperation {
 
 				// WRITE CHROMOSOME INFO
 				// Set of chromosomes found in matrix along with number of markersinfo
-				NetCdfUtils.saveObjectsToStringToMatrix(wrOPNcFile, rdChrInfoSetMap.keySet(), cNetCDF.Variables.VAR_CHR_IN_MATRIX, 8);
+				NetCdfUtils.saveObjectsToStringToMatrix(wrOPNcFile, chromosomeInfo.keySet(), cNetCDF.Variables.VAR_CHR_IN_MATRIX, 8);
 				// Number of marker per chromosome & max pos for each chromosome
 				int[] columns = new int[] {0, 1, 2, 3};
-				NetCdfUtils.saveChromosomeInfosD2ToWrMatrix(wrOPNcFile, rdChrInfoSetMap.values(), columns, cNetCDF.Variables.VAR_CHR_INFO);
+				NetCdfUtils.saveChromosomeInfosD2ToWrMatrix(wrOPNcFile, chromosomeInfo.values(), columns, cNetCDF.Variables.VAR_CHR_INFO);
 				//</editor-fold>
 
 				//<editor-fold defaultstate="expanded" desc="GET CENSUS & PERFORM TESTS">
