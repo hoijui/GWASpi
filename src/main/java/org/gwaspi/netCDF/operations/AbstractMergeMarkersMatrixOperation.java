@@ -187,6 +187,8 @@ public abstract class AbstractMergeMarkersMatrixOperation extends AbstractMergeM
 					rdMatrix1Key, // Parent matrixId 1
 					rdMatrix2Key); // Parent matrixId 2
 
+			GenotypeEncoding genotypeEncoding1 = rdMatrix1Metadata.getGenotypeEncoding();
+
 			rdMarkerSet1.initFullMarkerIdSetMap();
 			rdMarkerSet2.initFullMarkerIdSetMap();
 			Map<MarkerKey, char[]> combinedMarkerRSIDs = new LinkedHashMap<MarkerKey, char[]>();
@@ -204,6 +206,8 @@ public abstract class AbstractMergeMarkersMatrixOperation extends AbstractMergeM
 				combinedMarkerBasesDicts.putAll(rdMarkerSet1.getMarkerIdSetMapCharArray());
 				rdMarkerSet2.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_BASES_DICT);
 				combinedMarkerBasesDicts.putAll(rdMarkerSet2.getMarkerIdSetMapCharArray());
+
+				combinedMarkerBasesDicts is used in the next function, get it there;
 			}
 
 			Map<MarkerKey, char[]> combinedMarkerGTStrands = new LinkedHashMap<MarkerKey, char[]>();
@@ -230,7 +234,7 @@ public abstract class AbstractMergeMarkersMatrixOperation extends AbstractMergeM
 			wrNcFile.write(cNetCDF.Variables.GLOB_GTENCODING, origin, guessedGTCodeAC);
 
 			descSB.append("\nGenotype encoding: ");
-			descSB.append(rdMatrix1Metadata.getGenotypeEncoding().toString());
+			descSB.append(genotypeEncoding1.toString());
 
 			resultMatrixKey = matrixFactory.getResultMatrixKey();
 
@@ -243,8 +247,8 @@ public abstract class AbstractMergeMarkersMatrixOperation extends AbstractMergeM
 			rdNcFile2.close();
 
 			// CHECK FOR MISMATCHES
-			if (rdMatrix1Metadata.getGenotypeEncoding().equals(GenotypeEncoding.ACGT0)
-					|| rdMatrix1Metadata.getGenotypeEncoding().equals(GenotypeEncoding.O1234))
+			if (genotypeEncoding1.equals(GenotypeEncoding.ACGT0)
+					|| genotypeEncoding1.equals(GenotypeEncoding.O1234))
 			{
 				double[] mismatchState = checkForMismatches(resultMatrixKey); // mismatchCount, mismatchRatio
 				if (mismatchState[1] > 0.01) {

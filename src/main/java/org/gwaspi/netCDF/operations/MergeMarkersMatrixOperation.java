@@ -23,6 +23,7 @@ import java.util.Map;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.DataSetSource;
+import org.gwaspi.model.GenotypesList;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.SamplesKeysSource;
@@ -51,7 +52,7 @@ public class MergeMarkersMatrixOperation extends AbstractMergeMarkersMatrixOpera
 		Map<SampleKey, int[]> wrSampleSetMap = getSampleSetWithIndicesMap(dataSetSource1.getSamplesKeysSource(), dataSetSource2.getSamplesKeysSource());
 		Map<SampleKey, byte[]> theSamples = rdSampleSetMap1;
 
-		final int numSamples = rdMatrix1Metadata.getSampleSetSize(); // Keep rdMatrix1Metadata from Matrix1. SampleSet is constant
+		final int numSamples = dataSetSource1.getSamplesKeysSource().size(); // Keep rdMatrix1Metadata from Matrix1. SampleSet is constant
 		final String humanReadableMethodName = Text.Trafo.mergeMarkersOnly;
 		final String methodDescription = Text.Trafo.mergeMethodMarkerJoin;
 
@@ -75,31 +76,33 @@ public class MergeMarkersMatrixOperation extends AbstractMergeMarkersMatrixOpera
 		// Get SampleId index from each Matrix
 		// Iterate through wrSampleSetMap
 		for (int[] sampleIndices : wrSampleSetMap.values()) { // position[rdPos matrix 1, rdPos matrix 2]
-			// Read from Matrix1
-			rdMarkerSet1.fillWith(cNetCDF.Defaults.DEFAULT_GT);
-			rdMarkerSet1.fillGTsForCurrentSampleIntoInitMap(sampleIndices[0]);
+			final int readDataSet1SampleIndex = sampleIndices[0];
+			final int readDataSet2SampleIndex = sampleIndices[1];
 
-			// Read from Matrix2
-			rdMarkerSet2.fillWith(cNetCDF.Defaults.DEFAULT_GT);
-			rdMarkerSet2.fillGTsForCurrentSampleIntoInitMap(sampleIndices[1]);
+			GenotypesList dataSet1SampleGenotypes = dataSetSource1.getSamplesGenotypesSource().get(readDataSet1SampleIndex);
+			GenotypesList dataSet2SampleGenotypes = dataSetSource2.getSamplesGenotypesSource().get(readDataSet2SampleIndex);
 
 			// Fill wrSortedMingledMarkerMap with matrix 1+2 Genotypes
 			Map<MarkerKey, byte[]> wrComboSortedMarkerGTs = new LinkedHashMap<MarkerKey, byte[]>(wrComboSortedMarkerSetMap.size());
 			for (Map.Entry<MarkerKey, ?> markerEntry : wrComboSortedMarkerSetMap.entrySet()) {
 				MarkerKey markerKey = markerEntry.getKey();
-				byte[] genotype = cNetCDF.Defaults.DEFAULT_GT;
-				if (rdMarkerSet1.getMarkerIdSetMapByteArray().containsKey(markerKey)) {
-					genotype = rdMarkerSet1.getMarkerIdSetMapByteArray().get(markerKey);
-				}
-				if (rdMarkerSet2.getMarkerIdSetMapByteArray().containsKey(markerKey)) {
-					genotype = rdMarkerSet2.getMarkerIdSetMapByteArray().get(markerKey);
+				byte[] genotype;
+				final int dataSet1MarkerIndex = dataSetSource1.getMarkersKeysSource().indexOf(markerKey);
+				if (dataSet1MarkerIndex >= 0) {
+					genotype = dataSet1SampleGenotypes.get(dataSet1MarkerIndex);
+				} else {
+					final int dataSet2MarkerIndex = dataSetSource2.getMarkersKeysSource().indexOf(markerKey);
+					if (dataSet2MarkerIndex >= 0) {
+						genotype = dataSet2SampleGenotypes.get(dataSet2MarkerIndex);
+					} else {
+						genotype = cNetCDF.Defaults.DEFAULT_GT;
+					}
 				}
 
 				wrComboSortedMarkerGTs.put(markerKey, genotype);
 			}
 
-			// Write wrMarkerIdSetMap to A3 ArrayChar and save to wrMatrix
-			Utils.saveSingleSampleGTsToMatrix(wrNcFile, wrComboSortedMarkerGTs.values(), sampleIndices[0]);
+			dataSetDestination.addSampleGTAlleles(readDataSet1SampleIndex, wrComboSortedMarkerGTs.values());
 		}
 	}
 
