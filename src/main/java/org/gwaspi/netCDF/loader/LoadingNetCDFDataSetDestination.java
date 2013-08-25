@@ -22,14 +22,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import org.gwaspi.constants.cImport.ImportFormat;
 import org.gwaspi.global.Text;
-import org.gwaspi.model.ChromosomeInfo;
-import org.gwaspi.model.ChromosomeKey;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleKey;
-import org.gwaspi.netCDF.matrices.ChromosomeUtils;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -97,9 +93,6 @@ public class LoadingNetCDFDataSetDestination extends AbstractNetCDFDataSetDestin
 			descSB.append(" (Sample Info file)\n");
 		}
 
-		// RETRIEVE CHROMOSOMES INFO
-		Map<ChromosomeKey, ChromosomeInfo> chromosomeInfo = ChromosomeUtils.aggregateChromosomeInfo(getDataSet().getMarkerMetadatas(), 2, 3);
-
 		try {
 			return new MatrixFactory(
 					loadDescription.getStudyKey(),
@@ -111,7 +104,7 @@ public class LoadingNetCDFDataSetDestination extends AbstractNetCDFDataSetDestin
 					gtLoader.isHasDictionary(),
 					getDataSet().getSampleInfos().size(),
 					getDataSet().getMarkerMetadatas().size(),
-					chromosomeInfo.size(),
+					getDataSet().getChromosomeInfos().size(),
 					loadDescription.getGtDirPath());
 		} catch (InvalidRangeException ex) {
 			throw new IOException(ex);

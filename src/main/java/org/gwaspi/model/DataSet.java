@@ -17,6 +17,7 @@
 
 package org.gwaspi.model;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -25,19 +26,23 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import org.gwaspi.netCDF.matrices.ChromosomeUtils;
 
 /**
  * Holds a whole (raw) dataset in memory.
  */
 public class DataSet {
 
+	private MatrixMetadata matrixMetadata;
 	private final Collection<SampleInfo> sampleInfos;
 	private final Map<MarkerKey, MarkerMetadata> markerMetadatas;
 //	private List<List<byte[]>> samplesGTs;
 	private List<List<byte[]>> markersGTs;
+	private Map<ChromosomeKey, ChromosomeInfo> chromosomeInfo;
 
 	public DataSet() {
 
+		this.matrixMetadata = null;
 		// NOTE We use LinkedHashSet to:
 		//   - preserve insertion order of the first insertion;
 		//     for example: first dummies get inserted, as compleete set,
@@ -50,6 +55,15 @@ public class DataSet {
 		this.markerMetadatas = new LinkedHashMap<MarkerKey, MarkerMetadata>();
 //		this.samplesGTs = null;
 		this.markersGTs = null;
+		this.chromosomeInfo = null;
+	}
+
+	public void setMatrixMetadata(MatrixMetadata matrixMetadata) {
+		this.matrixMetadata = matrixMetadata;
+	}
+
+	public MatrixMetadata getMatrixMetadata() {
+		return matrixMetadata;
 	}
 
 	/**
@@ -147,5 +161,13 @@ public class DataSet {
 		for (byte[] newMarkerGTs : newMarkersGTs) {
 			markerGTs.set(sampleIndex++, newMarkerGTs);
 		}
+	}
+
+	public void extractChromosomeInfos() throws IOException {
+		chromosomeInfo = ChromosomeUtils.aggregateChromosomeInfo(getMarkerMetadatas(), 2, 3);
+	}
+
+	public Map<ChromosomeKey, ChromosomeInfo> getChromosomeInfos() {
+		return chromosomeInfo;
 	}
 }

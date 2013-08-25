@@ -63,67 +63,12 @@ public abstract class AbstractMergeMarkersMatrixOperation extends AbstractMergeM
 				dataSetDestination);
 	}
 
-//	public static LoadingNetCDFDataSetDestination createNetCdfDataSetDestination() {
-//
-//		LoadingNetCDFDataSetDestination netCDFSaverSamplesReceiver = null;
-////		netCDFSaverSamplesReceiver.init();
-////		try {
-//			// CREATE netCDF-3 FILE
-//			boolean hasDictionary = false;
-//			if (rdMatrix1Metadata.getHasDictionray() == rdMatrix2Metadata.getHasDictionray()) {
-//				hasDictionary = rdMatrix1Metadata.getHasDictionray();
-//			}
-//			GenotypeEncoding gtEncoding = GenotypeEncoding.UNKNOWN;
-//			if (rdMatrix1Metadata.getGenotypeEncoding().equals(rdMatrix2Metadata.getGenotypeEncoding())) {
-//				gtEncoding = rdMatrix1Metadata.getGenotypeEncoding();
-//			}
-//			ImportFormat technology = ImportFormat.UNKNOWN;
-//			if (rdMatrix1Metadata.getTechnology().equals(rdMatrix2Metadata.getTechnology())) {
-//				technology = rdMatrix1Metadata.getTechnology();
-//			}
-//
-//			StringBuilder descSB = new StringBuilder(Text.Matrix.descriptionHeader1);
-//			descSB.append(org.gwaspi.global.NetCdfUtils.getShortDateTimeAsString());
-//			descSB.append("\n");
-//			descSB.append("Markers: ").append(wrComboSortedMarkerSetMap.size()).append(", Samples: ").append(numSamples);
-//			descSB.append("\n");
-//			descSB.append(Text.Trafo.mergedFrom);
-//			descSB.append("\nMX-");
-//			descSB.append(rdMatrix1Metadata.getMatrixId());
-//			descSB.append(" - ");
-//			descSB.append(rdMatrix1Metadata.getMatrixFriendlyName());
-//			descSB.append("\nMX-");
-//			descSB.append(rdMatrix2Metadata.getMatrixId());
-//			descSB.append(" - ");
-//			descSB.append(rdMatrix2Metadata.getMatrixFriendlyName());
-//			descSB.append("\n\n");
-//			descSB.append("Merge Method - ");
-//			descSB.append(humanReadableMethodName);
-//			descSB.append(":\n");
-//			descSB.append(methodDescription);
-//
-//			MatrixFactory wrMatrixHandler = new MatrixFactory(
-//					technology, // technology
-//					wrMatrixFriendlyName,
-//					wrMatrixDescription + "\n\n" + descSB.toString(), // description
-//					gtEncoding, // GT encoding
-//					rdMatrix1Metadata.getStrand(),
-//					hasDictionary, // has dictionary?
-//					numSamples,
-//					wrComboSortedMarkerSetMap.size(), // Use comboed wrSortedMingledMarkerMap as MarkerSet
-//					chrInfo.size(),
-//					rdMatrix1Key, // Parent matrixId 1
-//					rdMatrix2Key); // Parent matrixId 2
-//
-//			return netCDFSaverSamplesReceiver;
-//	}
-
 	/**
 	 * Mingles markers and keeps samples constant.
 	 */
 	protected MatrixKey mergeMatrices(
 			Map<SampleKey, int[]> wrSampleSetMap,
-			Map<SampleKey, ?> theSamples,
+			Collection<SampleKey> sampleKeys,
 			final int numSamples,
 			final String humanReadableMethodName,
 			final String methodDescription)
@@ -222,7 +167,7 @@ public abstract class AbstractMergeMarkersMatrixOperation extends AbstractMergeM
 			wrNcFile.create();
 			log.trace("Done creating netCDF handle: " + wrNcFile.toString());
 
-			saveSamplesMatadata(theSamples.keySet(), wrNcFile);
+			saveSamplesMatadata(sampleKeys, wrNcFile);
 			saveMarkersMatadata(wrComboSortedMarkerSetMap, chromosomeInfo, wrNcFile);
 
 			writeGenotypes(wrNcFile, wrSampleSetMap, combinedMarkerGTStrands, rdSampleSetMap1, rdSampleSetMap2);

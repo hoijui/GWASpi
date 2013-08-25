@@ -306,10 +306,6 @@ public class MatrixFactory {
 		return ncfile;
 	}
 
-	public MatrixMetadata getMatrixMetaData() {
-		return matrixMetaData;
-	}
-
 	public static String generateMatrixNetCDFNameByDate() {
 		String matrixName = "GT_";
 		matrixName += org.gwaspi.global.Utils.getShortDateTimeForFileName();

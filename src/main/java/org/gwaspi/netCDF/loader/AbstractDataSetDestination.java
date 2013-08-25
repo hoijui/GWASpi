@@ -76,6 +76,7 @@ public abstract class AbstractDataSetDestination implements DataSetDestination {
 
 	@Override
 	public void finishedLoadingMarkerMetadatas() throws IOException {
+		dataSet.extractChromosomeInfos();
 	}
 
 	@Override

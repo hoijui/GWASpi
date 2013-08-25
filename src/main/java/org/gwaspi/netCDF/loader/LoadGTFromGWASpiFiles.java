@@ -306,13 +306,13 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 		descSB.append("Genotype encoding: ");
 		descSB.append(guessedGTCode);
 
-		MatrixMetadata matrixMetaData = matrixFactory.getMatrixMetaData();
+		MatrixMetadata matrixMetaData = matrixFactory.getResultMatrixMetadata();
 		matrixMetaData.setDescription(descSB.toString());
 		MatricesList.updateMatrix(matrixMetaData);
 
 		// CLOSE FILE
 		ncfile.close();
-		result = matrixFactory.getMatrixMetaData().getMatrixId();
+		result = matrixFactory.getResultMatrixMetadata().getMatrixId();
 
 		AbstractLoadGTFromFiles.logAsWhole(
 				startTime,

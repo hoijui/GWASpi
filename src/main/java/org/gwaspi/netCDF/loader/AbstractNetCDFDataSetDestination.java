@@ -17,14 +17,12 @@
 
 package org.gwaspi.netCDF.loader;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import org.gwaspi.constants.cNetCDF;
-import org.gwaspi.global.Text;
 import org.gwaspi.gui.StartGWASpi;
 import org.gwaspi.model.ChromosomeInfo;
 import org.gwaspi.model.ChromosomeKey;
@@ -36,7 +34,6 @@ import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleInfoList;
 import org.gwaspi.model.SampleKey;
-import org.gwaspi.netCDF.matrices.ChromosomeUtils;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.gwaspi.netCDF.operations.NetCdfUtils;
 import org.slf4j.Logger;
@@ -95,6 +92,8 @@ public abstract class AbstractNetCDFDataSetDestination extends AbstractDataSetDe
 		try {
 			matrixFactory = createMatrixFactory();
 
+			getDataSet().setMatrixMetadata(matrixFactory.getResultMatrixMetadata());
+
 			// create the NetCDF file
 			ncfile = matrixFactory.getNetCDFHandler();
 			ncfile.create();
@@ -103,7 +102,7 @@ public abstract class AbstractNetCDFDataSetDestination extends AbstractDataSetDe
 			Collection<SampleInfo> sampleInfos = getDataSet().getSampleInfos();
 			List<SampleKey> sampleKeys = AbstractNetCDFDataSetDestination.extractKeys(sampleInfos);
 			saveSamplesMatadata(sampleKeys, ncfile);
-			saveMarkersMatadata(getDataSet().getMarkerMetadatas(), chromosomeInfo, ncfile);
+			saveMarkersMatadata(getDataSet().getMarkerMetadatas(), getDataSet().getChromosomeInfos(), ncfile);
 		} catch (InvalidRangeException ex) {
 			throw new IOException(ex);
 		}
@@ -118,7 +117,7 @@ public abstract class AbstractNetCDFDataSetDestination extends AbstractDataSetDe
 		log.info("Done writing SampleSet to matrix");
 	}
 
-	private static void saveMarkersMatadata(Map<MarkerKey, MarkerMetadata> markerMetadatas, Map<ChromosomeKey, ChromosomeInfo> chrInfo, NetcdfFileWriteable ncfile) throws IOException, InvalidRangeException {
+	private static void saveMarkersMatadata(Map<MarkerKey, MarkerMetadata> markerMetadatas, Map<ChromosomeKey, ChromosomeInfo> chromosomeInfo, NetcdfFileWriteable ncfile) throws IOException, InvalidRangeException {
 
 		// WRITE RSID & MARKERID METADATA FROM METADATAMap
 		ArrayChar.D2 markersD2 = NetCdfUtils.writeValuesToD2ArrayChar(markerMetadatas.values(), MarkerMetadata.TO_RS_ID, cNetCDF.Strides.STRIDE_MARKER_NAME);
@@ -136,10 +135,10 @@ public abstract class AbstractNetCDFDataSetDestination extends AbstractDataSetDe
 		log.info("Done writing chromosomes to matrix");
 
 		// Set of chromosomes found in matrix along with number of markersinfo
-		NetCdfUtils.saveObjectsToStringToMatrix(ncfile, chrInfo.keySet(), cNetCDF.Variables.VAR_CHR_IN_MATRIX, 8);
+		NetCdfUtils.saveObjectsToStringToMatrix(ncfile, chromosomeInfo.keySet(), cNetCDF.Variables.VAR_CHR_IN_MATRIX, 8);
 		// Number of marker per chromosome & max pos for each chromosome
 		int[] columns = new int[] {0, 1, 2, 3};
-		NetCdfUtils.saveChromosomeInfosD2ToWrMatrix(ncfile, chrInfo.values(), columns, cNetCDF.Variables.VAR_CHR_INFO);
+		NetCdfUtils.saveChromosomeInfosD2ToWrMatrix(ncfile, chromosomeInfo.values(), columns, cNetCDF.Variables.VAR_CHR_INFO);
 
 		// WRITE POSITION METADATA FROM ANNOTATION FILE
 		//markersD2 = NetCdfUtils.writeValuesToD2ArrayChar(sortedMarkerSetMap, 3, cNetCDF.Strides.STRIDE_POS);
@@ -265,7 +264,7 @@ public abstract class AbstractNetCDFDataSetDestination extends AbstractDataSetDe
 			int[] origin = new int[] {0, 0};
 			ncfile.write(cNetCDF.Variables.GLOB_GTENCODING, origin, guessedGTCodeAC);
 
-			MatrixMetadata matrixMetaData = matrixFactory.getMatrixMetaData();
+			MatrixMetadata matrixMetaData = matrixFactory.getResultMatrixMetadata();
 			StringBuilder descSB = new StringBuilder(matrixMetaData.getDescription());
 			descSB.append("Genotype encoding: ");
 			descSB.append(getGuessedGTCode());

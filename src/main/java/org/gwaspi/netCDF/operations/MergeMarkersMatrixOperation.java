@@ -50,7 +50,7 @@ public class MergeMarkersMatrixOperation extends AbstractMergeMarkersMatrixOpera
 
 		// Get combo SampleSet with position[] (wrPos, rdMatrixNb, rdPos)
 		Map<SampleKey, int[]> wrSampleSetMap = getSampleSetWithIndicesMap(dataSetSource1.getSamplesKeysSource(), dataSetSource2.getSamplesKeysSource());
-		Map<SampleKey, byte[]> theSamples = rdSampleSetMap1;
+		SamplesKeysSource sampleKeys = dataSetSource1.getSamplesKeysSource();
 
 		final int numSamples = dataSetSource1.getSamplesKeysSource().size(); // Keep rdMatrix1Metadata from Matrix1. SampleSet is constant
 		final String humanReadableMethodName = Text.Trafo.mergeMarkersOnly;
@@ -58,7 +58,7 @@ public class MergeMarkersMatrixOperation extends AbstractMergeMarkersMatrixOpera
 
 		return mergeMatrices(
 				wrSampleSetMap,
-				theSamples,
+				sampleKeys,
 				numSamples,
 				humanReadableMethodName,
 				methodDescription).getMatrixId();
