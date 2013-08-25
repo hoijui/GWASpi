@@ -21,8 +21,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Set;
+import org.gwaspi.netCDF.operations.NetCdfUtils;
 
 /**
  * A simple, ArrayList based implementation of GenotypesList.
@@ -34,7 +34,7 @@ public class ArrayGenotypesList extends ArrayList<byte[]> implements GenotypesLi
 		public GenotypesList createGenotypesList(Collection<byte[]> rawGenotypes) {
 
 			// HACK We should/could probably get this list from the QA report, instead of generating it here
-			Set<byte[]> possibleGenotypes = org.gwaspi.netCDF.operations.Utils.extractUniqueGenotypesOrdered(rawGenotypes);
+			Set<byte[]> possibleGenotypes = NetCdfUtils.extractUniqueGenotypesOrdered(rawGenotypes);
 			return new ArrayGenotypesList(rawGenotypes, possibleGenotypes);
 		}
 	};

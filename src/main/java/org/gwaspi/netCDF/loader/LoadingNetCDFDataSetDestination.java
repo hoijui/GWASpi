@@ -73,7 +73,7 @@ public class LoadingNetCDFDataSetDestination extends AbstractNetCDFDataSetDestin
 	}
 
 	@Override
-	public void init() throws Exception {
+	public void init() throws IOException {
 		super.init();
 
 		startTime = org.gwaspi.global.Utils.getMediumDateTimeAsString();
@@ -204,7 +204,7 @@ public class LoadingNetCDFDataSetDestination extends AbstractNetCDFDataSetDestin
 	}
 
 	@Override
-	public void finishedLoadingAlleles() throws Exception {
+	public void finishedLoadingAlleles() throws IOException {
 		super.finishedLoadingAlleles();
 
 		logAsWhole(

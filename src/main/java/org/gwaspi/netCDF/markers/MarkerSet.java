@@ -37,6 +37,7 @@ import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SamplesGenotypesSource;
+import org.gwaspi.netCDF.operations.NetCdfUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.ArrayByte;
@@ -127,12 +128,12 @@ public class MarkerSet extends AbstractList<GenotypesList> implements SamplesGen
 	}
 
 	private static <IV> Map<MarkerKey, IV> wrapToMarkerKeyMap(ArrayByte.D2 markersAC) {
-		Map<String, IV> markerIdAlleles = org.gwaspi.netCDF.operations.Utils.writeD2ArrayByteToMapKeys(markersAC);
+		Map<String, IV> markerIdAlleles = NetCdfUtils.writeD2ArrayByteToMapKeys(markersAC);
 		return wrapToMarkerKeyMap(markerIdAlleles);
 	}
 
 	private static <IV> Map<MarkerKey, IV> wrapToMarkerKeyMap(ArrayChar.D2 markersAC, IV commonValue) {
-		Map<String, IV> markerIdAlleles = org.gwaspi.netCDF.operations.Utils.writeD2ArrayCharToMapKeys(markersAC, commonValue);
+		Map<String, IV> markerIdAlleles = NetCdfUtils.writeD2ArrayCharToMapKeys(markersAC, commonValue);
 		return wrapToMarkerKeyMap(markerIdAlleles);
 	}
 	private static <IV> Map<MarkerKey, IV> wrapToMarkerKeyMap(ArrayChar.D2 markersAC) {
@@ -222,7 +223,7 @@ public class MarkerSet extends AbstractList<GenotypesList> implements SamplesGen
 			try {
 				if (dataType == DataType.INT) {
 					ArrayInt.D2 chrSetAI = (ArrayInt.D2) var.read("(0:" + (varShape[0] - 1) + ":1, 0:3:1)");
-					org.gwaspi.netCDF.operations.Utils.writeD2ArrayIntToChromosomeInfoMapValues(chrSetAI, chrInfoMap);
+					NetCdfUtils.writeD2ArrayIntToChromosomeInfoMapValues(chrSetAI, chrInfoMap);
 				}
 			} catch (IOException ex) {
 				log.error("Cannot read data", ex);
@@ -298,7 +299,7 @@ public class MarkerSet extends AbstractList<GenotypesList> implements SamplesGen
 
 				if (reducer == 1) {
 					ArrayByte.D2 gt_ACD2 = (ArrayByte.D2) gt_ACD3.reduce();
-					org.gwaspi.netCDF.operations.Utils.writeD2ArrayByteToMapValues(gt_ACD2, (Map<MarkerKey, byte[]>) markerIdSetMap);
+					NetCdfUtils.writeD2ArrayByteToMapValues(gt_ACD2, (Map<MarkerKey, byte[]>) markerIdSetMap);
 				} else {
 					throw new IllegalStateException();
 				}
@@ -336,26 +337,26 @@ public class MarkerSet extends AbstractList<GenotypesList> implements SamplesGen
 			try {
 				if ((dataType == DataType.CHAR) && (varShape.length == 2)) {
 					ArrayChar.D2 markerSetAC = (ArrayChar.D2) var.read(netCdfReadStr);
-					org.gwaspi.netCDF.operations.Utils.writeD2ArrayCharToMapValues(markerSetAC, (Map<MarkerKey, char[]>) markerIdSetMap);
+					NetCdfUtils.writeD2ArrayCharToMapValues(markerSetAC, (Map<MarkerKey, char[]>) markerIdSetMap);
 				}
 				if (dataType == DataType.DOUBLE) {
 					if (varShape.length == 1) {
 						ArrayDouble.D1 markerSetAF = (ArrayDouble.D1) var.read(netCdfReadStr);
-						org.gwaspi.netCDF.operations.Utils.writeD1ArrayDoubleToMapValues(markerSetAF, (Map<MarkerKey, Double>) markerIdSetMap);
+						NetCdfUtils.writeD1ArrayDoubleToMapValues(markerSetAF, (Map<MarkerKey, Double>) markerIdSetMap);
 					}
 					if (varShape.length == 2) {
 						ArrayDouble.D2 markerSetAF = (ArrayDouble.D2) var.read(netCdfReadStr);
-						org.gwaspi.netCDF.operations.Utils.writeD2ArrayDoubleToMapValues(markerSetAF, (Map<MarkerKey, double[]>) markerIdSetMap);
+						NetCdfUtils.writeD2ArrayDoubleToMapValues(markerSetAF, (Map<MarkerKey, double[]>) markerIdSetMap);
 					}
 				}
 				if (dataType == DataType.INT) {
 					if (varShape.length == 1) {
 						ArrayInt.D1 markerSetAD = (ArrayInt.D1) var.read(netCdfReadStr);
-						org.gwaspi.netCDF.operations.Utils.writeD1ArrayIntToMapValues(markerSetAD, (Map<MarkerKey, Integer>) markerIdSetMap);
+						NetCdfUtils.writeD1ArrayIntToMapValues(markerSetAD, (Map<MarkerKey, Integer>) markerIdSetMap);
 					}
 					if (varShape.length == 2) {
 						ArrayInt.D2 markerSetAD = (ArrayInt.D2) var.read(netCdfReadStr);
-						org.gwaspi.netCDF.operations.Utils.writeD2ArrayIntToMapValues(markerSetAD, (Map<MarkerKey, int[]>) markerIdSetMap);
+						NetCdfUtils.writeD2ArrayIntToMapValues(markerSetAD, (Map<MarkerKey, int[]>) markerIdSetMap);
 					}
 				}
 			} catch (IOException ex) {
@@ -391,7 +392,7 @@ public class MarkerSet extends AbstractList<GenotypesList> implements SamplesGen
 					String netCdfReadStr = netCdfReadStrBldr.toString();
 
 					ArrayChar.D2 markerSetAC = (ArrayChar.D2) var.read(netCdfReadStr);
-					org.gwaspi.netCDF.operations.Utils.writeD2ArrayCharToMapValues(markerSetAC, (Map<MarkerKey, char[]>) markerIdSetMap);
+					NetCdfUtils.writeD2ArrayCharToMapValues(markerSetAC, (Map<MarkerKey, char[]>) markerIdSetMap);
 				}
 			} catch (IOException ex) {
 				log.error("Cannot read data", ex);

@@ -76,7 +76,7 @@ public class AbstractOperationSet<K, V> {
 
 	//<editor-fold defaultstate="expanded" desc="OPERATION-SET FETCHERS">
 	private static <T, V> Map<T, V> wrapToKeyMap(ArrayChar.D2 markersOrSamplesAC, KeyFactory<T> keyFactory) {
-		Map<String, V> keyStrs = org.gwaspi.netCDF.operations.Utils.writeD2ArrayCharToMapKeys(markersOrSamplesAC, null);
+		Map<String, V> keyStrs = NetCdfUtils.writeD2ArrayCharToMapKeys(markersOrSamplesAC, null);
 		Map<T, V> reparsedData = new LinkedHashMap<T, V>();
 		for (Map.Entry<String, V> entry : keyStrs.entrySet()) {
 			reparsedData.put(keyFactory.decode(entry.getKey()), entry.getValue());
@@ -214,24 +214,24 @@ public class AbstractOperationSet<K, V> {
 			opSetSize = varShape[0];
 			if ((dataType == DataType.CHAR) && (varShape.length == 2)) {
 				ArrayChar.D2 markerSetAC = (ArrayChar.D2) var.read("(0:" + (opSetSize - 1) + ":1, 0:" + (varShape[1] - 1) + ":1)");
-				org.gwaspi.netCDF.operations.Utils.writeD2ArrayCharToMapValues(markerSetAC, (Map<K, char[]>)opSetMap);
+				NetCdfUtils.writeD2ArrayCharToMapValues(markerSetAC, (Map<K, char[]>)opSetMap);
 			}
 			if (dataType == DataType.DOUBLE) {
 				if (varShape.length == 1) {
 					ArrayDouble.D1 markerSetAF = (ArrayDouble.D1) var.read("(0:" + (opSetSize - 1) + ":1)");
-					org.gwaspi.netCDF.operations.Utils.writeD1ArrayDoubleToMapValues(markerSetAF, (Map<K, Double>)opSetMap);
+					NetCdfUtils.writeD1ArrayDoubleToMapValues(markerSetAF, (Map<K, Double>)opSetMap);
 				} else if (varShape.length == 2) {
 					ArrayDouble.D2 markerSetAF = (ArrayDouble.D2) var.read("(0:" + (opSetSize - 1) + ":1, 0:" + (varShape[1] - 1) + ":1))");
-					org.gwaspi.netCDF.operations.Utils.writeD2ArrayDoubleToMapValues(markerSetAF, (Map<K, double[]>)opSetMap);
+					NetCdfUtils.writeD2ArrayDoubleToMapValues(markerSetAF, (Map<K, double[]>)opSetMap);
 				}
 			}
 			if (dataType == DataType.INT) {
 				if (varShape.length == 1) {
 					ArrayInt.D1 markerSetAD = (ArrayInt.D1) var.read("(0:" + (opSetSize - 1) + ":1)");
-					org.gwaspi.netCDF.operations.Utils.writeD1ArrayIntToMapValues(markerSetAD, (Map<K, Integer>)opSetMap);
+					NetCdfUtils.writeD1ArrayIntToMapValues(markerSetAD, (Map<K, Integer>)opSetMap);
 				} else if (varShape.length == 2) {
 					ArrayInt.D2 markerSetAD = (ArrayInt.D2) var.read("(0:" + (opSetSize - 1) + ":1, 0:" + (varShape[1] - 1) + ":1))");
-					org.gwaspi.netCDF.operations.Utils.writeD2ArrayIntToMapValues(markerSetAD, (Map<K, int[]>)opSetMap);
+					NetCdfUtils.writeD2ArrayIntToMapValues(markerSetAD, (Map<K, int[]>)opSetMap);
 				}
 			}
 		} catch (IOException ex) {
@@ -281,15 +281,15 @@ public class AbstractOperationSet<K, V> {
 		try {
 			if ((dataType == DataType.CHAR) && (varShape.length == 2)) {
 				ArrayChar.D2 markerSetAC = (ArrayChar.D2) var.read("(0:" + (opSetSize - 1) + ":1, 0:" + (varShape[1] - 1) + ":1)");
-				list = org.gwaspi.netCDF.operations.Utils.writeD2ArrayCharToList(markerSetAC);
+				list = NetCdfUtils.writeD2ArrayCharToList(markerSetAC);
 			}
 			if (dataType == DataType.DOUBLE) {
 				if (varShape.length == 1) {
 					ArrayDouble.D1 markerSetAD = (ArrayDouble.D1) var.read("(0:" + (opSetSize - 1) + ":1)");
-					list = org.gwaspi.netCDF.operations.Utils.writeD1ArrayDoubleToList(markerSetAD);
+					list = NetCdfUtils.writeD1ArrayDoubleToList(markerSetAD);
 				} else if (varShape.length == 2) {
 					ArrayDouble.D2 markerSetAD = (ArrayDouble.D2) var.read("(0:" + (opSetSize - 1) + ":1, 0:" + (varShape[1] - 1) + ":1)");
-					list = org.gwaspi.netCDF.operations.Utils.writeD2ArrayDoubleToList(markerSetAD);
+					list = NetCdfUtils.writeD2ArrayDoubleToList(markerSetAD);
 				}
 			}
 		} catch (IOException ex) {

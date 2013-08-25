@@ -14,6 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package org.gwaspi.operations.combi;
 
 import java.util.Collection;
@@ -24,6 +25,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import org.gwaspi.model.Genotype;
+import org.gwaspi.netCDF.operations.NetCdfUtils;
 
 public abstract class EncodingTableBasedGenotypeEncoder implements GenotypeEncoder {
 
@@ -77,7 +79,7 @@ public abstract class EncodingTableBasedGenotypeEncoder implements GenotypeEncod
 			float[][] encodedSamplesMarkers,
 			int mi)
 	{
-		Set<byte[]> possibleGenotypes = org.gwaspi.netCDF.operations.Utils.extractUniqueGenotypesOrdered(
+		Set<byte[]> possibleGenotypes = NetCdfUtils.extractUniqueGenotypesOrdered(
 				rawGenotypes, samplesToKeep);
 
 		// create the encoding table

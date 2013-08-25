@@ -63,7 +63,7 @@ public class MarkerOperationSet<V> extends AbstractOperationSet<MarkerKey, V> {
 			try {
 				if (dataType == DataType.CHAR) {
 					ArrayChar.D2 markerSetAC = (ArrayChar.D2) var.read("(0:" + (varShape[0] - 1) + ":1, 0:7:1)");
-					chrInfoMap = org.gwaspi.netCDF.operations.Utils.writeD2ArrayCharToMapKeys(markerSetAC, null);
+					chrInfoMap = NetCdfUtils.writeD2ArrayCharToMapKeys(markerSetAC, null);
 				}
 			} catch (InvalidRangeException ex) {
 				throw new IOException(ex);
@@ -80,7 +80,7 @@ public class MarkerOperationSet<V> extends AbstractOperationSet<MarkerKey, V> {
 			try {
 				if (dataType == DataType.INT) {
 					ArrayInt.D2 chrSetAI = (ArrayInt.D2) var.read("(0:" + (varShape[0] - 1) + ":1, 0:3:1)");
-					org.gwaspi.netCDF.operations.Utils.writeD2ArrayIntToChromosomeInfoMapValues(chrSetAI, chrInfoMap);
+					NetCdfUtils.writeD2ArrayIntToChromosomeInfoMapValues(chrSetAI, chrInfoMap);
 				}
 			} catch (InvalidRangeException ex) {
 				throw new IOException(ex);

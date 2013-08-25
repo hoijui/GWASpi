@@ -39,13 +39,13 @@ import org.gwaspi.model.Study;
 import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.markers.MarkerSet;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
+import org.gwaspi.netCDF.operations.NetCdfUtils;
 import org.gwaspi.samples.SampleSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.ArrayChar;
 import ucar.ma2.ArrayInt;
 import ucar.ma2.Index;
-import ucar.ma2.InvalidRangeException;
 import ucar.nc2.NetcdfFileWriteable;
 
 /**
@@ -223,7 +223,7 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 
 		//<editor-fold defaultstate="expanded" desc="WRITE MATRIX METADATA">
 		// WRITE SAMPLESET TO MATRIX FROM SAMPLES LIST
-		ArrayChar.D2 samplesD2 = org.gwaspi.netCDF.operations.Utils.writeCollectionToD2ArrayChar(rdSampleSetMap.keySet(), cNetCDF.Strides.STRIDE_SAMPLE_NAME);
+		ArrayChar.D2 samplesD2 = NetCdfUtils.writeCollectionToD2ArrayChar(rdSampleSetMap.keySet(), cNetCDF.Strides.STRIDE_SAMPLE_NAME);
 
 		int[] sampleOrig = new int[] {0, 0};
 		ncfile.write(cNetCDF.Variables.VAR_SAMPLESET, sampleOrig, samplesD2);
@@ -232,37 +232,37 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 
 		// WRITE CHROMOSOME METADATA FROM ANNOTATION FILE
 		// Chromosome location for each marker
-		ArrayChar.D2 markersD2 = org.gwaspi.netCDF.operations.Utils.writeValuesToD2ArrayChar(rdMarkerSetMap.values(), MarkerMetadata.TO_CHR, cNetCDF.Strides.STRIDE_CHR);
+		ArrayChar.D2 markersD2 = NetCdfUtils.writeValuesToD2ArrayChar(rdMarkerSetMap.values(), MarkerMetadata.TO_CHR, cNetCDF.Strides.STRIDE_CHR);
 		int[] markersOrig = new int[] {0, 0};
 		ncfile.write(cNetCDF.Variables.VAR_MARKERS_CHR, markersOrig, markersD2);
 		log.info("Done writing chromosomes to matrix");
 
 		// Set of chromosomes found in matrix along with number of markersinfo
-		org.gwaspi.netCDF.operations.Utils.saveObjectsToStringToMatrix(ncfile, chrSetMap.keySet(), cNetCDF.Variables.VAR_CHR_IN_MATRIX, 8);
+		NetCdfUtils.saveObjectsToStringToMatrix(ncfile, chrSetMap.keySet(), cNetCDF.Variables.VAR_CHR_IN_MATRIX, 8);
 
 		// Number of marker per chromosome & max pos for each chromosome
 		int[] columns = new int[] {0, 1, 2, 3};
-		org.gwaspi.netCDF.operations.Utils.saveChromosomeInfosD2ToWrMatrix(ncfile, chrSetMap.values(), columns, cNetCDF.Variables.VAR_CHR_INFO);
+		NetCdfUtils.saveChromosomeInfosD2ToWrMatrix(ncfile, chrSetMap.values(), columns, cNetCDF.Variables.VAR_CHR_INFO);
 
 
 		// WRITE POSITION METADATA FROM ANNOTATION FILE
-		ArrayInt.D1 markersPosD1 = org.gwaspi.netCDF.operations.Utils.writeValuesToD1ArrayInt(rdMarkerSetMap.values(), MarkerMetadata.TO_POS);
+		ArrayInt.D1 markersPosD1 = NetCdfUtils.writeValuesToD1ArrayInt(rdMarkerSetMap.values(), MarkerMetadata.TO_POS);
 		int[] posOrig = new int[1];
 		ncfile.write(cNetCDF.Variables.VAR_MARKERS_POS, posOrig, markersPosD1);
 		log.info("Done writing positions to matrix");
 
 		// WRITE RSID & MARKERID METADATA FROM METADATAMap
 		rdMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_RSID);
-		markersD2 = org.gwaspi.netCDF.operations.Utils.writeCollectionToD2ArrayChar(rdMarkerSet.getMarkerIdSetMapCharArray().keySet(), cNetCDF.Strides.STRIDE_MARKER_NAME);
+		markersD2 = NetCdfUtils.writeCollectionToD2ArrayChar(rdMarkerSet.getMarkerIdSetMapCharArray().keySet(), cNetCDF.Strides.STRIDE_MARKER_NAME);
 		ncfile.write(cNetCDF.Variables.VAR_MARKERSET, markersOrig, markersD2);
 
-		markersD2 = org.gwaspi.netCDF.operations.Utils.writeCollectionToD2ArrayChar(rdMarkerSet.getMarkerIdSetMapCharArray().values(), cNetCDF.Strides.STRIDE_MARKER_NAME);
+		markersD2 = NetCdfUtils.writeCollectionToD2ArrayChar(rdMarkerSet.getMarkerIdSetMapCharArray().values(), cNetCDF.Strides.STRIDE_MARKER_NAME);
 		ncfile.write(cNetCDF.Variables.VAR_MARKERS_RSID, markersOrig, markersD2);
 		log.info("Done writing MarkerId and RsId to matrix");
 
 		// WRITE GT STRAND FROM ANNOTATION FILE
 		rdMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_GT_STRAND);
-		markersD2 = org.gwaspi.netCDF.operations.Utils.writeCollectionToD2ArrayChar(rdMarkerSet.getMarkerIdSetMapCharArray().values(), cNetCDF.Strides.STRIDE_STRAND);
+		markersD2 = NetCdfUtils.writeCollectionToD2ArrayChar(rdMarkerSet.getMarkerIdSetMapCharArray().values(), cNetCDF.Strides.STRIDE_STRAND);
 		int[] gtOrig = new int[] {0, 0};
 		ncfile.write(cNetCDF.Variables.VAR_GT_STRAND, gtOrig, markersD2);
 		markersD2 = null;
@@ -276,7 +276,7 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 			rdMarkerSet.fillGTsForCurrentSampleIntoInitMap(sampleWrIndex);
 
 			// Write MarkerIdSetMap to A3 ArrayChar and save to wrMatrix
-//			org.gwaspi.netCDF.operations.Utils.saveSingleSampleGTsToMatrix(ncfile, rdMarkerSet.getMarkerIdSetMapByteArray().values(), sampleWrIndex);
+//			NetCdfUtils.saveSingleSampleGTsToMatrix(ncfile, rdMarkerSet.getMarkerIdSetMapByteArray().values(), sampleWrIndex);
 			samplesReceiver.addSampleGTAlleles(sampleWrIndex, rdMarkerSet.getMarkerIdSetMapByteArray().values());
 			sampleWrIndex++;
 			if ((sampleWrIndex == 1) || (sampleWrIndex % 100 == 0)) {

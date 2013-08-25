@@ -34,6 +34,7 @@ import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleInfoList;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.StudyKey;
+import org.gwaspi.netCDF.operations.NetCdfUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.ArrayByte;
@@ -130,7 +131,7 @@ public class SampleSet extends AbstractList<GenotypesList> implements MarkersGen
 
 				ArrayChar.D2 sampleSetAC = (ArrayChar.D2) var.read(netCdfReadStr);
 
-				sampleIdSetMap = org.gwaspi.netCDF.operations.Utils.writeD2ArrayCharToMapSampleKeys(
+				sampleIdSetMap = NetCdfUtils.writeD2ArrayCharToMapSampleKeys(
 						matrixMetadata.getStudyKey(),
 						sampleSetAC,
 						null);
@@ -238,7 +239,7 @@ public class SampleSet extends AbstractList<GenotypesList> implements MarkersGen
 
 				if (reducer == 1) {
 					ArrayByte.D2 gt_ACD2 = (ArrayByte.D2) gt_ACD3.reduce();
-					org.gwaspi.netCDF.operations.Utils.writeD2ArrayByteToMapValues(gt_ACD2, rdBytes);
+					NetCdfUtils.writeD2ArrayByteToMapValues(gt_ACD2, rdBytes);
 				} else {
 					throw new IllegalStateException();
 				}
@@ -278,12 +279,12 @@ public class SampleSet extends AbstractList<GenotypesList> implements MarkersGen
 					String netCdfReadStr = netCdfReadStrBldr.toString();
 
 					ArrayChar.D2 sampleSetAC = (ArrayChar.D2) var.read(netCdfReadStr);
-					org.gwaspi.netCDF.operations.Utils.writeD2ArrayCharToMapValues(sampleSetAC, (Map<SampleKey, char[]>) map);
+					NetCdfUtils.writeD2ArrayCharToMapValues(sampleSetAC, (Map<SampleKey, char[]>) map);
 					sampleIdSetMap = map;
 				}
 				if (dataType == DataType.DOUBLE) {
 					ArrayDouble.D1 sampleSetAF = (ArrayDouble.D1) var.read("(0:" + (sampleSetSize - 1) + ":1");
-					org.gwaspi.netCDF.operations.Utils.writeD1ArrayDoubleToMapValues(sampleSetAF, (Map<SampleKey, Double>) map);
+					NetCdfUtils.writeD1ArrayDoubleToMapValues(sampleSetAF, (Map<SampleKey, Double>) map);
 					sampleIdSetMap = map;
 				}
 			} catch (IOException ex) {
@@ -334,7 +335,7 @@ public class SampleSet extends AbstractList<GenotypesList> implements MarkersGen
 					String netCdfReadStr = netCdfReadStrBldr.toString();
 
 					ArrayChar.D2 sampleSetAC = (ArrayChar.D2) var.read(netCdfReadStr);
-					org.gwaspi.netCDF.operations.Utils.writeD2ArrayCharToMapValues(sampleSetAC, map);
+					NetCdfUtils.writeD2ArrayCharToMapValues(sampleSetAC, map);
 					sampleIdSetMap = map;
 				}
 			} catch (IOException ex) {

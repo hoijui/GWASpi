@@ -139,14 +139,14 @@ public class OP_QASamples implements MatrixOperation {
 
 			//<editor-fold defaultstate="expanded" desc="METADATA WRITER">
 			// SAMPLESET
-			ArrayChar.D2 samplesD2 = Utils.writeCollectionToD2ArrayChar(rdSampleSet.getSampleKeys(), cNetCDF.Strides.STRIDE_SAMPLE_NAME);
+			ArrayChar.D2 samplesD2 = NetCdfUtils.writeCollectionToD2ArrayChar(rdSampleSet.getSampleKeys(), cNetCDF.Strides.STRIDE_SAMPLE_NAME);
 
 			int[] sampleOrig = new int[] {0, 0};
 			wrNcFile.write(cNetCDF.Variables.VAR_OPSET, sampleOrig, samplesD2);
 			log.info("Done writing SampleSet to matrix");
 
 			// WRITE MARKERSET TO MATRIX
-			ArrayChar.D2 markersD2 = Utils.writeCollectionToD2ArrayChar(rdMarkersKeysSource, cNetCDF.Strides.STRIDE_MARKER_NAME);
+			ArrayChar.D2 markersD2 = NetCdfUtils.writeCollectionToD2ArrayChar(rdMarkersKeysSource, cNetCDF.Strides.STRIDE_MARKER_NAME);
 			int[] markersOrig = new int[] {0, 0};
 			wrNcFile.write(cNetCDF.Variables.VAR_IMPLICITSET, markersOrig, markersD2);
 			log.info("Done writing MarkerSet to matrix");
@@ -154,13 +154,13 @@ public class OP_QASamples implements MatrixOperation {
 
 			//<editor-fold defaultstate="expanded" desc="CENSUS DATA WRITER">
 			// MISSING RATIO
-			Utils.saveDoubleMapD1ToWrMatrix(wrNcFile, wrSampleSetMissingRatioMap.values(), cNetCDF.Census.VAR_OP_SAMPLES_MISSINGRAT);
+			NetCdfUtils.saveDoubleMapD1ToWrMatrix(wrNcFile, wrSampleSetMissingRatioMap.values(), cNetCDF.Census.VAR_OP_SAMPLES_MISSINGRAT);
 
 			// MISSING COUNT
-			Utils.saveIntMapD1ToWrMatrix(wrNcFile, wrSampleSetMissingCountMap.values(), cNetCDF.Census.VAR_OP_SAMPLES_MISSINGCOUNT);
+			NetCdfUtils.saveIntMapD1ToWrMatrix(wrNcFile, wrSampleSetMissingCountMap.values(), cNetCDF.Census.VAR_OP_SAMPLES_MISSINGCOUNT);
 
 			// HETEROZYGOSITY RATIO
-			Utils.saveDoubleMapD1ToWrMatrix(wrNcFile, wrSampleSetHetzyRatioMap.values(), cNetCDF.Census.VAR_OP_SAMPLES_HETZYRAT);
+			NetCdfUtils.saveDoubleMapD1ToWrMatrix(wrNcFile, wrSampleSetHetzyRatioMap.values(), cNetCDF.Census.VAR_OP_SAMPLES_HETZYRAT);
 			//</editor-fold>
 
 			resultOpId = wrOPHandler.getResultOPId();

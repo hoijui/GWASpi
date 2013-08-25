@@ -845,17 +845,17 @@ public class OP_MarkerCensus implements MatrixOperation {
 			throws IOException, InvalidRangeException
 	{
 		// MARKERSET MARKERID
-		ArrayChar.D2 markersD2 = Utils.writeCollectionToD2ArrayChar(wrMarkerSetMap.keySet(), cNetCDF.Strides.STRIDE_MARKER_NAME);
+		ArrayChar.D2 markersD2 = NetCdfUtils.writeCollectionToD2ArrayChar(wrMarkerSetMap.keySet(), cNetCDF.Strides.STRIDE_MARKER_NAME);
 		int[] markersOrig = new int[]{0, 0};
 		wrNcFile.write(cNetCDF.Variables.VAR_OPSET, markersOrig, markersD2);
 
 		// MARKERSET RSID
 		rdMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_RSID);
 		Map<MarkerKey, char[]> wrSortedMarkerRsIds = org.gwaspi.global.Utils.createOrderedMap(wrMarkerSetMap, rdMarkerSet.getMarkerIdSetMapCharArray());
-		Utils.saveCharMapValueToWrMatrix(wrNcFile, wrSortedMarkerRsIds.values(), cNetCDF.Variables.VAR_MARKERS_RSID, cNetCDF.Strides.STRIDE_MARKER_NAME);
+		NetCdfUtils.saveCharMapValueToWrMatrix(wrNcFile, wrSortedMarkerRsIds.values(), cNetCDF.Variables.VAR_MARKERS_RSID, cNetCDF.Strides.STRIDE_MARKER_NAME);
 
 		// WRITE SAMPLESET TO MATRIX FROM SAMPLES ARRAYLIST
-		ArrayChar.D2 samplesD2 = org.gwaspi.netCDF.operations.Utils.writeCollectionToD2ArrayChar(wrSampleKeys, cNetCDF.Strides.STRIDE_SAMPLE_NAME);
+		ArrayChar.D2 samplesD2 = NetCdfUtils.writeCollectionToD2ArrayChar(wrSampleKeys, cNetCDF.Strides.STRIDE_SAMPLE_NAME);
 
 		int[] sampleOrig = new int[]{0, 0};
 		wrNcFile.write(cNetCDF.Variables.VAR_IMPLICITSET, sampleOrig, samplesD2);
@@ -870,7 +870,7 @@ public class OP_MarkerCensus implements MatrixOperation {
 			int chunkSize)
 	{
 		// KNOWN ALLELES
-		Utils.saveCharMapToWrMatrix(
+		NetCdfUtils.saveCharMapToWrMatrix(
 				wrNcFile,
 				wrChunkedKnownAllelesMap.values(),
 				cNetCDF.Variables.VAR_ALLELES,
@@ -878,7 +878,7 @@ public class OP_MarkerCensus implements MatrixOperation {
 				countChunks * chunkSize);
 
 		// ALL CENSUS
-		Utils.saveIntMapD2ToWrMatrix(
+		NetCdfUtils.saveIntMapD2ToWrMatrix(
 				wrNcFile,
 				wrChunkedMarkerCensusMap.values(),
 				Census.EXTRACTOR_ALL,
@@ -886,7 +886,7 @@ public class OP_MarkerCensus implements MatrixOperation {
 				countChunks * chunkSize);
 
 		// CASE CENSUS
-		Utils.saveIntMapD2ToWrMatrix(
+		NetCdfUtils.saveIntMapD2ToWrMatrix(
 				wrNcFile,
 				wrChunkedMarkerCensusMap.values(),
 				Census.EXTRACTOR_CASE,
@@ -894,7 +894,7 @@ public class OP_MarkerCensus implements MatrixOperation {
 				countChunks * chunkSize);
 
 		// CONTROL CENSUS
-		Utils.saveIntMapD2ToWrMatrix(
+		NetCdfUtils.saveIntMapD2ToWrMatrix(
 				wrNcFile,
 				wrChunkedMarkerCensusMap.values(),
 				Census.EXTRACTOR_CONTROL,
@@ -902,7 +902,7 @@ public class OP_MarkerCensus implements MatrixOperation {
 				countChunks * chunkSize);
 
 		// ALTERNATE HW CENSUS
-		Utils.saveIntMapD2ToWrMatrix(
+		NetCdfUtils.saveIntMapD2ToWrMatrix(
 				wrNcFile,
 				wrChunkedMarkerCensusMap.values(),
 				Census.EXTRACTOR_ALTERNATE_HW,

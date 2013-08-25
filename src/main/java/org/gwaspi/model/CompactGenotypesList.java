@@ -19,14 +19,13 @@ package org.gwaspi.model;
 
 import java.nio.ByteBuffer;
 import java.util.Arrays;
-import java.util.BitSet;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import org.gwaspi.netCDF.operations.NetCdfUtils;
 
 /**
  * A memory efficient implementation of GenotypesList.
@@ -38,7 +37,7 @@ public class CompactGenotypesList extends java.util.AbstractList<byte[]> impleme
 		public GenotypesList createGenotypesList(Collection<byte[]> rawGenotypes) {
 
 			// HACK We should/could probably get this list from the QA report, instead of generating it here
-			Set<byte[]> possibleGenotypes = org.gwaspi.netCDF.operations.Utils.extractUniqueGenotypesOrdered(rawGenotypes);
+			Set<byte[]> possibleGenotypes = NetCdfUtils.extractUniqueGenotypesOrdered(rawGenotypes);
 			return new CompactGenotypesList(rawGenotypes, possibleGenotypes);
 		}
 	};

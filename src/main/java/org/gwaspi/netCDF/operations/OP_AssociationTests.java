@@ -159,7 +159,7 @@ public class OP_AssociationTests extends AbstractTestMatrixOperation {
 			boxes = new int[] {0, 1, 2, 3};
 			variableName = cNetCDF.Association.VAR_OP_MARKERS_ASGenotypicAssociationTP2OR;
 		}
-		Utils.saveDoubleMapD2ToWrMatrix(wrNcFile, result.values(), boxes, variableName);
+		NetCdfUtils.saveDoubleMapD2ToWrMatrix(wrNcFile, result.values(), boxes, variableName);
 		//</editor-fold>
 	}
 }
