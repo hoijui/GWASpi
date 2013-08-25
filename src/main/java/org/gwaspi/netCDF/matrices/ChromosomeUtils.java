@@ -24,9 +24,9 @@ import org.gwaspi.model.ChromosomeKey;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MarkerMetadata;
 
-public class Utils {
+public class ChromosomeUtils {
 
-	private Utils() {
+	private ChromosomeUtils() {
 	}
 
 	/**

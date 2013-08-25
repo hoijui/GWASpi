@@ -39,6 +39,7 @@ import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.Study;
 import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.markers.MarkerSet;
+import org.gwaspi.netCDF.matrices.ChromosomeUtils;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.gwaspi.netCDF.operations.NetCdfUtils;
 import org.gwaspi.samples.SampleSet;
@@ -200,7 +201,7 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 		log.info("Done initializing sorted MarkerSetMap");
 
 		// RETRIEVE CHROMOSOMES INFO
-		Map<ChromosomeKey, ChromosomeInfo> chrSetMap = org.gwaspi.netCDF.matrices.Utils.aggregateChromosomeInfo(rdMarkerSetMap, 0, 1);
+		Map<ChromosomeKey, ChromosomeInfo> chrSetMap = ChromosomeUtils.aggregateChromosomeInfo(rdMarkerSetMap, 0, 1);
 
 		MatrixFactory matrixFactory = new MatrixFactory(
 				loadDescription.getStudyKey(),

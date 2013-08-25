@@ -39,6 +39,7 @@ import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.netCDF.markers.MarkerSet;
+import org.gwaspi.netCDF.matrices.ChromosomeUtils;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.gwaspi.samples.SampleSet;
 import org.slf4j.Logger;
@@ -183,7 +184,7 @@ public class MatrixDataExtractor {
 		// RETRIEVE CHROMOSOMES INFO
 		this.rdMarkerSet.fillMarkerSetMapWithChrAndPos();
 		Map<MarkerKey, MarkerMetadata> sortedChrAndPos = org.gwaspi.global.Utils.createOrderedMap(this.wrMarkerIdSetMap, this.rdMarkerSet.getMarkerMetadata());
-		this.rdChrInfoSetMap = org.gwaspi.netCDF.matrices.Utils.aggregateChromosomeInfo(sortedChrAndPos, 0, 1);
+		this.rdChrInfoSetMap = ChromosomeUtils.aggregateChromosomeInfo(sortedChrAndPos, 0, 1);
 		//</editor-fold>
 
 		//<editor-fold defaultstate="expanded" desc="SAMPLESET PICKING">

@@ -36,6 +36,7 @@ import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleInfoList;
 import org.gwaspi.model.SampleKey;
+import org.gwaspi.netCDF.matrices.ChromosomeUtils;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.gwaspi.netCDF.operations.NetCdfUtils;
 import org.slf4j.Logger;
@@ -117,7 +118,7 @@ public abstract class AbstractNetCDFDataSetDestination extends AbstractDataSetDe
 		}
 
 		// RETRIEVE CHROMOSOMES INFO
-		Map<ChromosomeKey, ChromosomeInfo> chrInfo = org.gwaspi.netCDF.matrices.Utils.aggregateChromosomeInfo(getDataSet().getMarkerMetadatas(), 2, 3);
+		Map<ChromosomeKey, ChromosomeInfo> chrInfo = ChromosomeUtils.aggregateChromosomeInfo(getDataSet().getMarkerMetadatas(), 2, 3);
 
 		try {
 			matrixFactory = new MatrixFactory(

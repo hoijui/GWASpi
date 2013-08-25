@@ -62,7 +62,7 @@ public class CliExecutor {
 		boolean success = false;
 
 		// GET ALL SCRIPTS CONTAINED IN FILE
-		List<Map<String, String>> scripts = org.gwaspi.cli.Utils.readArgsFromScript(scriptFile);
+		List<Map<String, String>> scripts = ScriptUtils.readArgsFromScript(scriptFile);
 
 		System.out.println("\nScripts in queue: " + scripts.size());
 

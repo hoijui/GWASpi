@@ -27,6 +27,7 @@ import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.SampleKey;
+import org.gwaspi.statistics.StatisticsUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.ArrayChar;
@@ -144,7 +145,7 @@ public class OP_HardyWeinberg implements MatrixOperation {
 		return resultOpId;
 	}
 
-	private void performHardyWeinberg(NetcdfFileWriteable wrNcFile, Map<MarkerKey, int[]> markersContingencyMap, String category) {
+	private void performHardyWeinberg(NetcdfFileWriteable wrNcFile, Map<MarkerKey, int[]> markersContingencyMap, String category) throws IOException {
 		// Iterate through markerset
 		int markerNb = 0;
 		Map<MarkerKey, Double[]> result = new LinkedHashMap<MarkerKey, Double[]>(markersContingencyMap.size());
@@ -157,8 +158,8 @@ public class OP_HardyWeinberg implements MatrixOperation {
 			int sampleNb = obsAA + obsaa + obsAa;
 			double obsHzy = (double) obsAa / sampleNb;
 
-			double fA = org.gwaspi.statistics.Utils.calculatePunnettFrequency(obsAA, obsAa, sampleNb);
-			double fa = org.gwaspi.statistics.Utils.calculatePunnettFrequency(obsaa, obsAa, sampleNb);
+			double fA = StatisticsUtils.calculatePunnettFrequency(obsAA, obsAa, sampleNb);
+			double fa = StatisticsUtils.calculatePunnettFrequency(obsaa, obsAa, sampleNb);
 
 			double pAA = fA * fA;
 			double pAa = 2 * fA * fa;
@@ -213,6 +214,5 @@ public class OP_HardyWeinberg implements MatrixOperation {
 			int[] boxes = new int[] {1, 2};
 			NetCdfUtils.saveDoubleMapD2ToWrMatrix(wrNcFile, result.values(), boxes, cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWHETZY_ALT);
 		}
-		//</editor-fold>
 	}
 }

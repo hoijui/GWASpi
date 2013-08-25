@@ -19,9 +19,9 @@ package org.gwaspi.statistics;
 
 import java.math.BigInteger;
 
-public class Utils {
+public class StatisticsUtils {
 
-	private Utils() {
+	private StatisticsUtils() {
 	}
 
 	public static double calculatePunnettFrequency(int obsAA, int obsAa, int sampleNb) {

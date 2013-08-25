@@ -36,6 +36,7 @@ import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.netCDF.loader.DataSetDestination;
 import org.gwaspi.netCDF.loader.LoadingNetCDFDataSetDestination;
+import org.gwaspi.netCDF.matrices.ChromosomeUtils;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -136,7 +137,7 @@ public abstract class AbstractMergeMarkersMatrixOperation extends AbstractMergeM
 		Map<MarkerKey, MarkerMetadata> wrComboSortedMarkerSetMap = mingleAndSortMarkerSet();
 
 		// RETRIEVE CHROMOSOMES INFO
-		Map<ChromosomeKey, ChromosomeInfo> chrInfo = org.gwaspi.netCDF.matrices.Utils.aggregateChromosomeInfo(wrComboSortedMarkerSetMap, 0, 1);
+		Map<ChromosomeKey, ChromosomeInfo> chrInfo = ChromosomeUtils.aggregateChromosomeInfo(wrComboSortedMarkerSetMap, 0, 1);
 
 		LoadingNetCDFDataSetDestination netCDFSaverSamplesReceiver = null;
 		try {

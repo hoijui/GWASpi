@@ -38,6 +38,7 @@ import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.netCDF.markers.MarkerSet;
+import org.gwaspi.netCDF.matrices.ChromosomeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.ArrayChar;
@@ -106,7 +107,7 @@ public abstract class AbstractTestMatrixOperation implements MatrixOperation {
 			// retrieve chromosome info
 			rdMarkerSet.fillMarkerSetMapWithChrAndPos();
 			MarkerSet.replaceWithValuesFrom(wrMarkerSetMap, rdMarkerSet.getMarkerMetadata());
-			Map<ChromosomeKey, ChromosomeInfo> rdChrInfoSetMap = org.gwaspi.netCDF.matrices.Utils.aggregateChromosomeInfo(wrMarkerSetMap, 0, 1);
+			Map<ChromosomeKey, ChromosomeInfo> rdChrInfoSetMap = ChromosomeUtils.aggregateChromosomeInfo(wrMarkerSetMap, 0, 1);
 
 			NetcdfFileWriteable wrOPNcFile = null;
 			try {
