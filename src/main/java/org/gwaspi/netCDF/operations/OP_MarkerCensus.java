@@ -868,6 +868,7 @@ public class OP_MarkerCensus implements MatrixOperation {
 			Map<MarkerKey, char[]> wrChunkedKnownAllelesMap,
 			int countChunks,
 			int chunkSize)
+			throws IOException
 	{
 		// KNOWN ALLELES
 		NetCdfUtils.saveCharMapToWrMatrix(

@@ -472,6 +472,8 @@ public class SampleSet extends AbstractList<GenotypesList> implements MarkersGen
 	@Override
 	public GenotypesList get(int markerIndex) {
 
+//-				rdSampleSet.readAllSamplesGTsFromCurrentMarkerToMap(rdNcFile, rdSampleSetMap, markerNb);
+//-				for (byte[] tempGT : rdSampleSetMap.values()) {
 		if (sampleIdSetMap == null) {
 			initFullMarkerIdSetMap();
 		}

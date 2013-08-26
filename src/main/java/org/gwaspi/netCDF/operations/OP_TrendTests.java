@@ -17,6 +17,7 @@
 
 package org.gwaspi.netCDF.operations;
 
+import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.gwaspi.constants.cNetCDF;
@@ -54,7 +55,7 @@ public class OP_TrendTests extends AbstractTestMatrixOperation {
 	 * @param wrCtrlMarkerSet
 	 */
 	@Override
-	protected void performTest(NetcdfFileWriteable wrNcFile, Map<MarkerKey, int[]> wrCaseMarkerIdSetMap, Map<MarkerKey, int[]> wrCtrlMarkerSet) {
+	protected void performTest(NetcdfFileWriteable wrNcFile, Map<MarkerKey, int[]> wrCaseMarkerIdSetMap, Map<MarkerKey, int[]> wrCtrlMarkerSet) throws IOException {
 		// Iterate through markerset
 		int markerNb = 0;
 		Map<MarkerKey, Double[]> result = new LinkedHashMap<MarkerKey, Double[]>(wrCaseMarkerIdSetMap.size());

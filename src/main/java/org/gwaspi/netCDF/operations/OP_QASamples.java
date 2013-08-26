@@ -24,6 +24,7 @@ import java.util.Map;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.AlleleBytes;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
+import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.GenotypesList;
 import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.MarkersKeysSource;
@@ -33,7 +34,7 @@ import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.SamplesGenotypesSource;
-import org.gwaspi.netCDF.markers.MarkerSet;
+import org.gwaspi.netCDF.markers.NetCDFDataSetSource;
 import org.gwaspi.samples.SampleSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,6 +56,8 @@ public class OP_QASamples implements MatrixOperation {
 	public int processMatrix() throws IOException {
 		int resultOpId = Integer.MIN_VALUE;
 
+		DataSetSource dataSetSource = new NetCDFDataSetSource(rdMatrixKey);
+
 		Map<SampleKey, Integer> wrSampleSetMissingCountMap = new LinkedHashMap<SampleKey, Integer>();
 		Map<SampleKey, Double> wrSampleSetMissingRatioMap = new LinkedHashMap<SampleKey, Double>();
 		Map<SampleKey, Double> wrSampleSetHetzyRatioMap = new LinkedHashMap<SampleKey, Double>();
@@ -63,12 +66,12 @@ public class OP_QASamples implements MatrixOperation {
 
 //		NetcdfFile rdNcFile = NetcdfFile.open(rdMatrixMetadata.getPathToMatrix());
 
-		SamplesGenotypesSource rdMarkerSet = new MarkerSet(rdMatrixKey);
-		MarkersKeysSource rdMarkersKeysSource = XXX;
+		SamplesGenotypesSource rdMarkerSet = dataSetSource.getSamplesGenotypesSource();
+		MarkersKeysSource rdMarkersKeysSource = dataSetSource.getMarkersKeysSource();
 //		rdMarkerSet.initFullMarkerIdSetMap();
 
 //		MarkersChromosomeInfosSource markersChrInfSrc = rdMarkerSet.getChrInfoSetMap();
-		MarkersMetadataSource markersInfSrc = rdMarkerSet.getChrInfoSetMap();
+		MarkersMetadataSource markersInfSrc = dataSetSource.getMarkersMetadatasSource();
 
 		//Map<String, Object> rdMarkerSetMap = rdMarkerSet.markerIdSetMap; // This to test heap usage of copying locally the Map from markerset
 

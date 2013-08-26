@@ -236,5 +236,5 @@ public abstract class AbstractTestMatrixOperation implements MatrixOperation {
 	 * @param wrCaseMarkerIdSetMap
 	 * @param wrCtrlMarkerSet
 	 */
-	protected abstract void performTest(NetcdfFileWriteable wrNcFile, Map<MarkerKey, int[]> wrCaseMarkerIdSetMap, Map<MarkerKey, int[]> wrCtrlMarkerSet);
+	protected abstract void performTest(NetcdfFileWriteable wrNcFile, Map<MarkerKey, int[]> wrCaseMarkerIdSetMap, Map<MarkerKey, int[]> wrCtrlMarkerSet) throws IOException;
 }
