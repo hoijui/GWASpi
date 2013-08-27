@@ -25,7 +25,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.model.CompactGenotypesList;
 import org.gwaspi.model.GenotypesList;
+import org.gwaspi.model.GenotypesListFactory;
 import org.gwaspi.model.MarkersGenotypesSource;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixKey;
@@ -58,11 +60,15 @@ public class SampleSet extends AbstractList<GenotypesList> implements MarkersGen
 	private final MatrixMetadata matrixMetadata;
 	private Map<SampleKey, ?> sampleIdSetMap;
 	private int sampleSetSize;
+	private NetcdfFile rdNcFile;
+	private GenotypesListFactory genotyesListFactory;
 
 	private SampleSet(MatrixMetadata matrixMetadata) throws IOException {
 		this.matrixMetadata = matrixMetadata;
 		this.sampleSetSize = matrixMetadata.getMarkerSetSize();
 		this.sampleIdSetMap = new LinkedHashMap<SampleKey, Object>();
+		this.rdNcFile = NetcdfFile.open(matrixMetadata.getPathToMatrix()); // HACK most likely not optimal.. this file
+		this.genotyesListFactory = CompactGenotypesList.FACTORY;
 	}
 
 	public SampleSet(MatrixKey matrixKey) throws IOException {
@@ -208,12 +214,20 @@ public class SampleSet extends AbstractList<GenotypesList> implements MarkersGen
 	}
 
 	public static void readAllSamplesGTsFromCurrentMarkerToMap(NetcdfFile rdNcFile, Map<SampleKey, byte[]> rdBytes, int markerNb) throws IOException {
+		readAllSamplesGTsFromCurrentMarker(rdNcFile, rdBytes, markerNb);
+	}
+
+	private static List<byte[]> readAllSamplesGTsFromCurrentMarkerToList(NetcdfFile rdNcFile, int markerNb) throws IOException {
+		return readAllSamplesGTsFromCurrentMarker(rdNcFile, null, markerNb);
+	}
+
+	private static List<byte[]> readAllSamplesGTsFromCurrentMarker(NetcdfFile rdNcFile, Map<SampleKey, byte[]> rdBytes, int markerNb) throws IOException {
 
 		try {
 			Variable genotypes = rdNcFile.findVariable(cNetCDF.Variables.VAR_GENOTYPES);
 
 			if (null == genotypes) {
-				return;
+				return null;
 			}
 			try {
 				int[] varShape = genotypes.getShape();
@@ -239,7 +253,11 @@ public class SampleSet extends AbstractList<GenotypesList> implements MarkersGen
 
 				if (reducer == 1) {
 					ArrayByte.D2 gt_ACD2 = (ArrayByte.D2) gt_ACD3.reduce();
-					NetCdfUtils.writeD2ArrayByteToMapValues(gt_ACD2, rdBytes);
+					if (rdBytes == null) {
+						return NetCdfUtils.writeD2ArrayByteToList(gt_ACD2);
+					} else {
+						NetCdfUtils.writeD2ArrayByteToMapValues(gt_ACD2, rdBytes);
+					}
 				} else {
 					throw new IllegalStateException();
 				}
@@ -249,6 +267,8 @@ public class SampleSet extends AbstractList<GenotypesList> implements MarkersGen
 		} catch (IOException ex) {
 			log.error("Cannot open file", ex);
 		}
+
+		return null;
 	}
 
 	private void fillSampleIdSetMapWithVariable(Map<SampleKey, ?> map, String variable) {
@@ -477,13 +497,12 @@ public class SampleSet extends AbstractList<GenotypesList> implements MarkersGen
 //		if (sampleIdSetMap == null) {
 //			initFullMarkerIdSetMap();
 //		}
+		List<byte[]> markerGenotypes = null;
 		try {
-			Map<SampleKey, byte[]> markerGenotypesMap = XXX:
-			readAllSamplesGTsFromCurrentMarkerToMap(rdNcFile, markerGenotypesMap, markerIndex);
+			markerGenotypes = readAllSamplesGTsFromCurrentMarkerToList(rdNcFile, markerIndex);
 		} catch (IOException ex) {
 			throw new RuntimeException(ex);
 		}
-		Collection<byte[]> markerGenotypes = markerGenotypesMap.values();
 
 		return genotyesListFactory.createGenotypesList(markerGenotypes);
 	}

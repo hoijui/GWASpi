@@ -127,7 +127,7 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 
 	private static Map<SampleKey, Double> encodeAffectionStates(final Map<SampleKey, SampleInfo> sampleInfos, int n) {
 
-		// we use LinkedHashMap to preserve the inut order
+		// we use LinkedHashMap to preserve the input order
 		Map<SampleKey, Double> affectionStates
 				= new LinkedHashMap<SampleKey, Double>(n);
 		// we iterate over sampleKeys now, to get the correct order
@@ -144,11 +144,15 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 		return affectionStates;
 	}
 
-	private static int calcFeatureBytes(int samples, int markers, GenotypeEncoder encoder, byte baseStorageTypeBytes) {
+	private static int calcFeatureBytes(int samples, int dimensions, byte baseStorageTypeBytes) {
 
-		int bytes = samples * markers * encoder.getEncodingFactor() * baseStorageTypeBytes;
+		int bytes = samples * dimensions * baseStorageTypeBytes;
 
 		return bytes;
+	}
+
+	private static int calcFeatureBytes(int samples, int markers, GenotypeEncoder encoder, byte baseStorageTypeBytes) {
+		return calcFeatureBytes(samples, markers * encoder.getEncodingFactor(), baseStorageTypeBytes);
 	}
 
 	private static int calcKernelBytes(int samples) {
@@ -171,6 +175,24 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 
 	private static double bytes2gigaBytes(int bytes) {
 		return bytes / (1024.0 * 1024.0 * 1024.0);
+	}
+
+	private static final String[] MEMORY_SIZE_PREFIXES = new String[] {
+		"K", "M", "G", "T", "E", "P"
+	};
+	private static String bytes2humanReadable(long bytes) {
+
+		String humanReadable = "";
+		long remaining = bytes;
+		int prefixIndex = 0;
+		long reminder;
+		do {
+			reminder = remaining % 1024;
+			remaining = remaining / 1024;
+			humanReadable = reminder + " " + MEMORY_SIZE_PREFIXES[prefixIndex++] + "B" + humanReadable;
+		} while (remaining > 0);
+
+		return humanReadable.toString();
 	}
 
 	private static float[][] encodeSamples(
@@ -208,13 +230,19 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 //		}
 		// NOTE This allocates a LOT of memory!
 		//   We use float instead of double to half the memory,
-		//   because anyway, we have no more then 4 or 5 distinct values anyway,
+		//   because we have no more then 4 or 5 distinct values anyway,
 		//   so we do not need high precission.
-		int featureBytes = nSamplesToKeep * dEncoded * 4;
-		LOG.info("Combi Association Test: allocate memory for features: {} MB",
-				featureBytes / 1024.0 / 1024.0);
-		float[][] encodedSamples = new float[nSamplesToKeep][dEncoded];
-
+		final byte numSingleValueStorageBytes = 4; // float
+		final int featureBytes = calcFeatureBytes(nSamplesToKeep, dEncoded, numSingleValueStorageBytes);
+		final String humanReadableFeaturesMemorySize = bytes2humanReadable(featureBytes);
+		LOG.info("Combi Association Test: allocate memory for features: {}",
+				humanReadableFeaturesMemorySize);
+		float[][] encodedSamples;
+		try {
+			encodedSamples = new float[nSamplesToKeep][dEncoded];
+		} catch (OutOfMemoryError er) {
+			throw new IOException(er);
+		}
 
 //		Map<MarkerKey, Set<Genotype>> uniqueGts
 //				= new LinkedHashMap<MarkerKey, Set<Genotype>>(markerKeys.size());
@@ -832,6 +860,7 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 			Collection<Double> Y,
 			svm_parameter libSvmParameters,
 			String encoderString)
+			throws IOException
 	{
 		LOG.info("Combi Association Test: libSVM problem: create");
 		svm_problem prob = new svm_problem();
@@ -852,13 +881,16 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 			// FEATURES
 //			int libSvmProblemBytes = (n * 8) + ((n * (dSamples + dEncoded)) * 8) + (n * n * (8 + 4 + 8));
 			// KERNEL
-			int libSvmProblemBytes = (n * 8) + (n * n * (8 + 4 + 8));
-
-			int libSvmProblemMBytes = (int) (libSvmProblemBytes / 1024.0 / 1024.0);
-			LOG.info("Combi Association Test: libSVM problem: required memory: ~ {}MB (on a 64bit system)", libSvmProblemMBytes);
+			final int libSvmProblemBytes = (n * 8) + (n * n * (8 + 4 + 8));
+			final String humanReadableLibSvmProblemMemory = bytes2humanReadable(libSvmProblemBytes);
+			LOG.info("Combi Association Test: libSVM problem: required memory: ~ {} (on a 64bit system)", humanReadableLibSvmProblemMemory);
 
 			LOG.info("Combi Association Test: libSVM problem: allocate kernel memory");
-			prob.x = new svm_node[n][1 + n];
+			try {
+				prob.x = new svm_node[n][1 + n];
+			} catch (OutOfMemoryError er) {
+				throw new IOException(er);
+			}
 
 			LOG.info("Combi Association Test: libSVM problem: calculate the kernel");
 			ProgressMonitor calculatingKernelPM = new ProgressMonitor(null, "calculate kernel matrix elements", "", 0, n*n);
