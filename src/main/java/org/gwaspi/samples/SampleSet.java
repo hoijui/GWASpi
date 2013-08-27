@@ -472,18 +472,19 @@ public class SampleSet extends AbstractList<GenotypesList> implements MarkersGen
 	@Override
 	public GenotypesList get(int markerIndex) {
 
-//-				rdSampleSet.readAllSamplesGTsFromCurrentMarkerToMap(rdNcFile, rdSampleSetMap, markerNb);
-//-				for (byte[] tempGT : rdSampleSetMap.values()) {
-		if (sampleIdSetMap == null) {
-			initFullMarkerIdSetMap();
-		}
+//	rdSampleSet.readAllSamplesGTsFromCurrentMarkerToMap(rdNcFile, rdSampleSetMap, markerNb);
+//	for (byte[] tempGT : rdSampleSetMap.values()) {
+//		if (sampleIdSetMap == null) {
+//			initFullMarkerIdSetMap();
+//		}
 		try {
-			fillGTsForCurrentSampleIntoInitMap(markerIndex);
+			Map<SampleKey, byte[]> markerGenotypesMap = XXX:
+			readAllSamplesGTsFromCurrentMarkerToMap(rdNcFile, markerGenotypesMap, markerIndex);
 		} catch (IOException ex) {
 			throw new RuntimeException(ex);
 		}
-		Collection<byte[]> sampleGenotypes = getMarkerIdSetMapByteArray().values();
+		Collection<byte[]> markerGenotypes = markerGenotypesMap.values();
 
-		return genotyesListFactory.createGenotypesList(sampleGenotypes);
+		return genotyesListFactory.createGenotypesList(markerGenotypes);
 	}
 }
