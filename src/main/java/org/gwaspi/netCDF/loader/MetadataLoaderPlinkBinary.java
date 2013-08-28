@@ -28,7 +28,6 @@ import org.gwaspi.constants.cImport;
 import org.gwaspi.constants.cImport.Annotation.Plink_Binary;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
-import org.gwaspi.global.Text;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.StudyKey;
@@ -72,7 +71,7 @@ public class MetadataLoaderPlinkBinary implements MetadataLoader {
 				log.warn(null, ex);
 			}
 
-			// rsId
+			// alleles (bases dictionary)
 			String valValues = entry.getValue();
 //			values = fixPlusAlleles(values);
 
@@ -119,8 +118,8 @@ public class MetadataLoaderPlinkBinary implements MetadataLoader {
 			sbKey.append(cNetCDF.Defaults.TMP_SEPARATOR);
 			sbKey.append(markerId);
 
-			// rsId
-			StringBuilder sbVal = new StringBuilder(); // 0 => markerid
+			// alleles (bases dictionary)
+			StringBuilder sbVal = new StringBuilder();
 			sbVal.append(markerVals[Plink_Binary.bim_allele1].trim());
 			sbVal.append(markerVals[Plink_Binary.bim_allele2].trim());
 

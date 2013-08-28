@@ -79,11 +79,6 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 	}
 
 	@Override
-	public String getMarkersD2Variables() {
-		throw new UnsupportedOperationException("Not supported yet."); // FIXME implement me!
-	}
-
-	@Override
 	public void processData(GenotypesLoadDescription loadDescription, DataSetDestination samplesReceiver)
 			throws Exception
 	{

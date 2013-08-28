@@ -47,14 +47,12 @@ public class LoadGTFromBeagleFiles extends AbstractLoadGTFromFiles {
 		public static final String missing = "0";
 	}
 
-	//<editor-fold defaultstate="expanded" desc="CONSTRUCTORS">
 	public LoadGTFromBeagleFiles()
 	{
 		super(
 				ImportFormat.BEAGLE,
 				StrandType.UNKNOWN,
-				false,
-				null); // disabled, else: cNetCDF.Variables.VAR_MARKERS_BASES_KNOWN
+				false);
 	}
 
 	@Override
@@ -301,5 +299,4 @@ public class LoadGTFromBeagleFiles extends AbstractLoadGTFromFiles {
 //				}
 //			}
 //	}
-	//</editor-fold>
 }

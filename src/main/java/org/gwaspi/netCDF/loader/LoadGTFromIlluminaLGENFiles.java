@@ -53,7 +53,7 @@ public class LoadGTFromIlluminaLGENFiles extends AbstractLoadGTFromFiles impleme
 	}
 
 	public LoadGTFromIlluminaLGENFiles() {
-		super(ImportFormat.Illumina_LGEN, StrandType.PLSMIN, false, null);
+		super(ImportFormat.Illumina_LGEN, StrandType.PLSMIN, false);
 	}
 
 	@Override

@@ -58,7 +58,7 @@ public class LoadGTFromAffyFiles extends AbstractLoadGTFromFiles implements Geno
 	}
 
 	public LoadGTFromAffyFiles() {
-		super(ImportFormat.Affymetrix_GenomeWide6, StrandType.PLSMIN, true, cNetCDF.Variables.VAR_MARKERS_BASES_DICT);
+		super(ImportFormat.Affymetrix_GenomeWide6, StrandType.PLSMIN, true);
 	}
 
 	@Override
@@ -89,11 +89,6 @@ public class LoadGTFromAffyFiles extends AbstractLoadGTFromFiles implements Geno
 				loadDescription.getAnnotationFilePath(),
 				loadDescription.getFormat(),
 				loadDescription.getStudyKey());
-	}
-
-	@Override
-	protected TypeConverter<MarkerMetadata, String> getBaseDictPropertyExtractor() {
-		return MarkerMetadata.TO_ALLELES;
 	}
 
 	@Override

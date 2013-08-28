@@ -42,7 +42,7 @@ public class LoadGTFromPlinkFlatFiles extends AbstractLoadGTFromFiles implements
 			= LoggerFactory.getLogger(LoadGTFromPlinkFlatFiles.class);
 
 	public LoadGTFromPlinkFlatFiles() {
-		super(ImportFormat.PLINK, null, false, null);
+		super(ImportFormat.PLINK, null, false);
 	}
 
 	@Override
@@ -153,7 +153,6 @@ public class LoadGTFromPlinkFlatFiles extends AbstractLoadGTFromFiles implements
 						(byte) (st.nextToken().charAt(0))};
 				allelesMap.put(markerKey, alleles);
 			}
-			st = null;
 
 //			GenotypeEncoding guessedGTCode = getGuessedGTCode();
 //			if (guessedGTCode.equals(cNetCDF.Defaults.GenotypeEncoding.UNKNOWN)

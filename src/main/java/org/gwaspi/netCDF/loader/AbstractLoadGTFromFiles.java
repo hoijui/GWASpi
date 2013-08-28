@@ -30,7 +30,6 @@ import org.gwaspi.constants.cImport.StrandFlags;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
-import org.gwaspi.global.Text;
 import org.gwaspi.global.TypeConverter;
 import org.gwaspi.model.DataSet;
 import org.gwaspi.model.MarkerKey;
@@ -49,20 +48,17 @@ public abstract class AbstractLoadGTFromFiles implements GenotypesLoader {
 	private final ImportFormat format;
 	private final StrandType matrixStrand;
 	private final boolean hasDictionary;
-	private final String markersD2Variables;
 	private GenotypeEncoding guessedGTCode;
 
 	public AbstractLoadGTFromFiles(
 			ImportFormat format,
 			StrandType matrixStrand,
-			boolean hasDictionary,
-			String markersD2Variables
+			boolean hasDictionary
 			)
 	{
 		this.format = format;
 		this.matrixStrand = matrixStrand;
 		this.hasDictionary = hasDictionary;
-		this.markersD2Variables = markersD2Variables;
 		this.guessedGTCode = GenotypeEncoding.UNKNOWN;
 	}
 
@@ -79,11 +75,6 @@ public abstract class AbstractLoadGTFromFiles implements GenotypesLoader {
 	@Override
 	public boolean isHasDictionary() {
 		return hasDictionary;
-	}
-
-	@Override
-	public String getMarkersD2Variables() {
-		return markersD2Variables;
 	}
 
 	public GenotypeEncoding getGuessedGTCode() {
@@ -137,10 +128,6 @@ public abstract class AbstractLoadGTFromFiles implements GenotypesLoader {
 		samplesReceiver.startLoadingMarkerMetadatas();
 		markerSetLoader.loadMarkers(samplesReceiver);
 		samplesReceiver.finishedLoadingMarkerMetadatas();
-	}
-
-	protected TypeConverter<MarkerMetadata, String> getBaseDictPropertyExtractor() {
-		return MarkerMetadata.TO_STRAND;
 	}
 
 	/**

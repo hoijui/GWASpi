@@ -29,7 +29,6 @@ import org.gwaspi.constants.cImport.ImportFormat;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
-import org.gwaspi.global.Text;
 import org.gwaspi.model.DataSet;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.SampleInfo;
@@ -51,7 +50,7 @@ public class LoadGTFromHGDP1Files extends AbstractLoadGTFromFiles implements Gen
 	}
 
 	public LoadGTFromHGDP1Files() {
-		super(ImportFormat.HGDP1, StrandType.UNKNOWN, false, null);
+		super(ImportFormat.HGDP1, StrandType.UNKNOWN, false);
 	}
 
 	@Override

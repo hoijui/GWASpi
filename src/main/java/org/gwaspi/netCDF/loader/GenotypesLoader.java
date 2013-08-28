@@ -36,6 +36,4 @@ public interface GenotypesLoader {
 	StrandType getMatrixStrand();
 
 	boolean isHasDictionary();
-
-	String getMarkersD2Variables();
 }

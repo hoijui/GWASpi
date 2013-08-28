@@ -33,7 +33,6 @@ import org.gwaspi.constants.cImport.ImportFormat;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
-import org.gwaspi.global.Text;
 import org.gwaspi.global.TypeConverter;
 import org.gwaspi.model.DataSet;
 import org.gwaspi.model.MarkerKey;
@@ -69,7 +68,7 @@ public class LoadGTFromHapmapFiles extends AbstractLoadGTFromFiles implements Ge
 	}
 
 	public LoadGTFromHapmapFiles() {
-		super(ImportFormat.HAPMAP, StrandType.FWD, true, cNetCDF.Variables.VAR_MARKERS_BASES_DICT);
+		super(ImportFormat.HAPMAP, StrandType.FWD, true);
 	}
 
 	@Override
@@ -124,11 +123,6 @@ public class LoadGTFromHapmapFiles extends AbstractLoadGTFromFiles implements Ge
 		}
 
 		return gtFilesToImport;
-	}
-
-	@Override
-	protected TypeConverter<MarkerMetadata, String> getBaseDictPropertyExtractor() {
-		return MarkerMetadata.TO_ALLELES;
 	}
 
 	@Override

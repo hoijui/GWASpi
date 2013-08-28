@@ -42,7 +42,7 @@ public class LoadGTFromPlinkBinaryFiles extends AbstractLoadGTFromFiles implemen
 			= LoggerFactory.getLogger(LoadGTFromPlinkBinaryFiles.class);
 
 	public LoadGTFromPlinkBinaryFiles() {
-		super(ImportFormat.PLINK_Binary, null, true, cNetCDF.Variables.VAR_MARKERS_BASES_DICT);
+		super(ImportFormat.PLINK_Binary, null, true);
 
 		setGuessedGTCode(GenotypeEncoding.O12);
 	}
@@ -101,7 +101,7 @@ public class LoadGTFromPlinkBinaryFiles extends AbstractLoadGTFromFiles implemen
 
 		int sampleNb = dataSet.getSampleInfos().size();
 //		int markerNb = bimSamples.size();
-		int bytesPerSNP = 0;
+		int bytesPerSNP;
 		if (sampleNb % 4 == 0) { // Nb OF BYTES IN EACH ROW
 			bytesPerSNP = sampleNb / 4;
 		} else {
@@ -196,7 +196,7 @@ public class LoadGTFromPlinkBinaryFiles extends AbstractLoadGTFromFiles implemen
 	}
 
 	private static int translateBitSet(byte b, int bit) {
-		int result = 0;
+		int result;
 		boolean by = (b & (1 << bit)) != 0;
 		if (by) {
 			result = 1;
