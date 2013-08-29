@@ -111,7 +111,7 @@ public class MergeMarkersMatrixOperation extends AbstractMergeMarkersMatrixOpera
 
 		int rdPos = 0;
 		for (SampleKey key : sampleKeys1) {
-			int[] position = new int[] {rdPos, 0}; // rdPos matrix 1
+			int[] position = new int[] {rdPos, -1}; // rdPos matrix 1
 			resultMap.put(key, position);
 			rdPos++;
 		}

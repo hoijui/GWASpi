@@ -28,12 +28,10 @@ import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.DataSetSource;
-import org.gwaspi.model.GenotypesList;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.MarkersChromosomeInfosSource;
 import org.gwaspi.model.MarkersKeysSource;
-import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.netCDF.loader.DataSetDestination;
@@ -43,8 +41,6 @@ import org.slf4j.LoggerFactory;
 import ucar.ma2.ArrayChar;
 import ucar.ma2.Index;
 import ucar.ma2.InvalidRangeException;
-import ucar.nc2.Attribute;
-import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFileWriteable;
 
 public class MatrixMergeSamples extends AbstractMergeMatrixOperation {
@@ -70,6 +66,72 @@ public class MatrixMergeSamples extends AbstractMergeMatrixOperation {
 			dataSetDestination);
 	}
 
+	private MatrixFactory createMatrixFactory(int numSamples, int numMarkers, int numChromosomes, String matrixFriendlyName, String matrixDescription) throws IOException {
+
+		// Use comboed wrComboSampleSetMap as SampleSet
+		final String humanReadableMethodName = Text.Trafo.mergeSamplesOnly;
+		final String methodDescription = Text.Trafo.mergeMethodSampleJoin;
+
+		MatrixMetadata rdMatrix1Metadata = dataSetSource1.getMatrixMetadata();
+		MatrixMetadata rdMatrix2Metadata = dataSetSource2.getMatrixMetadata();
+
+		boolean hasDictionary = false;
+		if (rdMatrix1Metadata.getHasDictionray() == rdMatrix2Metadata.getHasDictionray()) {
+			hasDictionary = rdMatrix1Metadata.getHasDictionray();
+		}
+		GenotypeEncoding gtEncoding = GenotypeEncoding.UNKNOWN;
+		if (rdMatrix1Metadata.getGenotypeEncoding().equals(rdMatrix2Metadata.getGenotypeEncoding())) {
+			gtEncoding = rdMatrix1Metadata.getGenotypeEncoding();
+		}
+		ImportFormat technology = ImportFormat.UNKNOWN;
+		if (rdMatrix1Metadata.getTechnology().equals(rdMatrix2Metadata.getTechnology())) {
+			technology = rdMatrix1Metadata.getTechnology();
+		}
+
+		StringBuilder description = new StringBuilder();
+		description.append(matrixDescription);
+		description.append("\n\n");
+		description.append(Text.Matrix.descriptionHeader1);
+		description.append(org.gwaspi.global.Utils.getShortDateTimeAsString());
+		description.append("\n");
+		description.append("Markers: ").append(dataSetSource1.getMarkersKeysSource().size());
+		description.append(", Samples: ").append(numSamples);
+		description.append("\n");
+		description.append(Text.Trafo.mergedFrom);
+		description.append("\nMX-");
+		description.append(rdMatrix1Metadata.getMatrixId());
+		description.append(" - ");
+		description.append(rdMatrix1Metadata.getMatrixFriendlyName());
+		description.append("\nMX-");
+		description.append(rdMatrix2Metadata.getMatrixId());
+		description.append(" - ");
+		description.append(rdMatrix2Metadata.getMatrixFriendlyName());
+		description.append("\n\n");
+		description.append("Merge Method - ");
+		description.append(humanReadableMethodName);
+		description.append(":\n");
+		description.append(methodDescription);
+		description.append("\nGenotype encoding: ");
+		description.append(gtEncoding.toString());
+
+		try {
+			return new MatrixFactory(
+					technology, // technology
+					matrixFriendlyName,
+					description.toString(), // description
+					gtEncoding, // GT encoding
+					rdMatrix1Metadata.getStrand(),
+					hasDictionary, // has dictionary?
+					numSamples,
+					numMarkers,
+					numChromosomes,
+					rdMatrix1Key, // Parent matrix 1 key
+					rdMatrix2Key); // Parent matrix 2 key
+		} catch (InvalidRangeException ex) {
+			throw new IOException(ex);
+		}
+	}
+
 	/**
 	 * Appends samples and keeps markers constant.
 	 */
@@ -83,60 +145,15 @@ public class MatrixMergeSamples extends AbstractMergeMatrixOperation {
 
 		// Use comboed wrComboSampleSetMap as SampleSet
 		final int numSamples = theSamples.size();
-		final String humanReadableMethodName = Text.Trafo.mergeSamplesOnly;
-		final String methodDescription = Text.Trafo.mergeMethodSampleJoin;
+		// Keep rdwrMarkerIdSetMap1 from Matrix1. MarkerSet is constant
+		final int numMarkers = rdMarkerSet1.getMarkerSetSize();
 
 		// RETRIEVE CHROMOSOMES INFO
-		MarkersChromosomeInfosSource chrInfo = dataSetSource1.getMarkersChromosomeInfosSource();
+		MarkersChromosomeInfosSource chromosomeInfo = dataSetSource1.getMarkersChromosomeInfosSource();
+
+		MatrixFactory wrMatrixHandler = createMatrixFactory(numSamples, numMarkers, chromosomeInfo.size(), wrMatrixFriendlyName, wrMatrixDescription);
 
 		try {
-			// CREATE netCDF-3 FILE
-			boolean hasDictionary = false;
-			if (rdMatrix1Metadata.getHasDictionray() == rdMatrix2Metadata.getHasDictionray()) {
-				hasDictionary = rdMatrix1Metadata.getHasDictionray();
-			}
-			GenotypeEncoding gtEncoding = GenotypeEncoding.UNKNOWN;
-			if (rdMatrix1Metadata.getGenotypeEncoding().equals(rdMatrix2Metadata.getGenotypeEncoding())) {
-				gtEncoding = rdMatrix1Metadata.getGenotypeEncoding();
-			}
-			ImportFormat technology = ImportFormat.UNKNOWN;
-			if (rdMatrix1Metadata.getTechnology().equals(rdMatrix2Metadata.getTechnology())) {
-				technology = rdMatrix1Metadata.getTechnology();
-			}
-
-			StringBuilder descSB = new StringBuilder(Text.Matrix.descriptionHeader1);
-			descSB.append(org.gwaspi.global.Utils.getShortDateTimeAsString());
-			descSB.append("\n");
-			descSB.append("Markers: ").append(dataSetSource1.getMarkersKeysSource().size()).append(", Samples: ").append(numSamples);
-			descSB.append("\n");
-			descSB.append(Text.Trafo.mergedFrom);
-			descSB.append("\nMX-");
-			descSB.append(rdMatrix1Metadata.getMatrixId());
-			descSB.append(" - ");
-			descSB.append(rdMatrix1Metadata.getMatrixFriendlyName());
-			descSB.append("\nMX-");
-			descSB.append(rdMatrix2Metadata.getMatrixId());
-			descSB.append(" - ");
-			descSB.append(rdMatrix2Metadata.getMatrixFriendlyName());
-			descSB.append("\n\n");
-			descSB.append("Merge Method - ");
-			descSB.append(humanReadableMethodName);
-			descSB.append(":\n");
-			descSB.append(methodDescription);
-
-			MatrixFactory wrMatrixHandler = new MatrixFactory(
-					technology, // technology
-					wrMatrixFriendlyName,
-					wrMatrixDescription + "\n\n" + descSB.toString(), // description
-					gtEncoding, // GT encoding
-					rdMatrix1Metadata.getStrand(),
-					hasDictionary, // has dictionary?
-					numSamples,
-					rdMarkerSet1.getMarkerSetSize(), // Keep rdwrMarkerIdSetMap1 from Matrix1. MarkerSet is constant
-					chrInfo.size(),
-					rdMatrix1Key, // Parent matrixId 1
-					rdMatrix2Key); // Parent matrixId 2
-
 			NetcdfFileWriteable wrNcFile = wrMatrixHandler.getNetCDFHandler();
 			wrNcFile.create();
 			log.trace("Done creating netCDF handle: " + wrNcFile.toString());
@@ -153,26 +170,20 @@ public class MatrixMergeSamples extends AbstractMergeMatrixOperation {
 
 			writeGenotypes(wrComboSampleSetMap.values());
 
+			GenotypeEncoding genotypeEncoding = rdMatrix1Metadata.getGenotypeEncoding();
 			// CLOSE THE FILE AND BY THIS, MAKE IT READ-ONLY
 			// GENOTYPE ENCODING
 			ArrayChar.D2 guessedGTCodeAC = new ArrayChar.D2(1, 8);
 			Index index = guessedGTCodeAC.getIndex();
-			guessedGTCodeAC.setString(index.set(0, 0), rdMatrix1Metadata.getGenotypeEncoding().toString());
+			guessedGTCodeAC.setString(index.set(0, 0), genotypeEncoding.toString());
 			int[] origin = new int[] {0, 0};
 			wrNcFile.write(cNetCDF.Variables.GLOB_GTENCODING, origin, guessedGTCodeAC);
-
-			descSB.append("\nGenotype encoding: ");
-			descSB.append(rdMatrix1Metadata.getGenotypeEncoding());
-
-			MatrixMetadata resultMatrixMetadata = wrMatrixHandler.getResultMatrixMetadata();
-			resultMatrixMetadata.setDescription(descSB.toString());
-			MatricesList.updateMatrix(resultMatrixMetadata);
 
 			resultMatrixId = wrMatrixHandler.getResultMatrixId();
 
 			// CHECK FOR MISMATCHES
-			if (rdMatrix1Metadata.getGenotypeEncoding().equals(GenotypeEncoding.ACGT0)
-					|| rdMatrix1Metadata.getGenotypeEncoding().equals(GenotypeEncoding.O1234))
+			if (genotypeEncoding.equals(GenotypeEncoding.ACGT0)
+					|| genotypeEncoding.equals(GenotypeEncoding.O1234))
 			{
 				double[] mismatchState = checkForMismatches(wrMatrixHandler.getResultMatrixKey()); // mismatchCount, mismatchRatio
 				if (mismatchState[1] > 0.01) {
