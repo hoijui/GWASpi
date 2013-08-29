@@ -50,9 +50,7 @@ public class MatrixExporter {
 		this.rdMatrixKey = rdMatrixKey;
 		rdMatrixMetadata = MatricesList.getMatrixMetadataById(rdMatrixKey);
 
-		MarkerSet rdMarkerSet = new MarkerSet(rdMatrixKey);
-		SampleSet rdSampleSet = new SampleSet(rdMatrixKey);
-		rdDataSetSource = new NetCDFDataSetSource(rdMarkerSet, rdSampleSet);
+		rdDataSetSource = new NetCDFDataSetSource(rdMatrixKey);
 
 		formatters = new EnumMap<ExportFormat, Formatter>(ExportFormat.class);
 		formatters.put(ExportFormat.PLINK, new PlinkFormatter());

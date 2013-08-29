@@ -69,7 +69,7 @@ public class Threaded_FlipStrandMatrix extends CommonRunnable {
 					description,
 					markerIdentifyer,
 					markerFlipFile);
-			int resultMatrixId = flipMatrix.flipGenotypesToNewMatrix();
+			int resultMatrixId = flipMatrix.processMatrix();
 			resultMatrixKey = new MatrixKey(parentMatrixKey.getStudyKey(), resultMatrixId);
 			GWASpiExplorerNodes.insertMatrixNode(resultMatrixKey);
 		}

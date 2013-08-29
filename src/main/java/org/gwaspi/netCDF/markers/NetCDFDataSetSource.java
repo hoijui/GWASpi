@@ -24,7 +24,9 @@ import org.gwaspi.model.MarkersChromosomeInfosSource;
 import org.gwaspi.model.MarkersGenotypesSource;
 import org.gwaspi.model.MarkersKeysSource;
 import org.gwaspi.model.MarkersMetadataSource;
+import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixKey;
+import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SamplesGenotypesSource;
 import org.gwaspi.model.SamplesInfosSource;
 import org.gwaspi.model.SamplesKeysSource;
@@ -35,19 +37,20 @@ import org.gwaspi.samples.SampleSet;
  */
 public class NetCDFDataSetSource implements DataSetSource {
 
+	private final MatrixKey matrixKey;
 	private final MarkerSet markerSet;
 	private final SampleSet sampleSet;
 
-	public NetCDFDataSetSource(MarkerSet markerSet, SampleSet sampleSet) {
+	public NetCDFDataSetSource(MatrixKey matrixKey) throws IOException {
 
-		this.markerSet = markerSet;
-		this.sampleSet = sampleSet;
+		this.matrixKey = matrixKey;
+		this.markerSet = new MarkerSet(matrixKey);
+		this.sampleSet = new SampleSet(matrixKey);
 	}
 
-	public NetCDFDataSetSource(MatrixKey MatrixKey) throws IOException {
-
-		this.markerSet = new MarkerSet(MatrixKey);
-		this.sampleSet = new SampleSet(MatrixKey);
+	@Override
+	public MatrixMetadata getMatrixMetadata() throws IOException {
+		return MatricesList.getMatrixMetadataById(matrixKey);
 	}
 
 	@Override

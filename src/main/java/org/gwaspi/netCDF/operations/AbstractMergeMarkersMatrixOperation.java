@@ -19,6 +19,7 @@ package org.gwaspi.netCDF.operations;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.gwaspi.constants.cImport.ImportFormat;
@@ -30,6 +31,7 @@ import org.gwaspi.model.ChromosomeKey;
 import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MarkerMetadata;
+import org.gwaspi.model.MarkersKeysSource;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
@@ -129,51 +131,76 @@ public abstract class AbstractMergeMarkersMatrixOperation extends AbstractMergeM
 					rdMatrix1Metadata.getStrand(),
 					hasDictionary, // has dictionary?
 					numSamples,
-					wrCombinedSortedMarkersMetadata.size(), // Use comboed wrSortedMingledMarkerMap as MarkerSet
+					wrCombinedSortedMarkersMetadata.size(), // Use combined wrSortedMingledMarkerMap as MarkerSet
 					chromosomeInfo.size(),
 					rdMatrix1Key, // Parent matrixId 1
 					rdMatrix2Key); // Parent matrixId 2
 
 			GenotypeEncoding genotypeEncoding1 = rdMatrix1Metadata.getGenotypeEncoding();
 
-			rdMarkerSet1.initFullMarkerIdSetMap();
-			rdMarkerSet2.initFullMarkerIdSetMap();
-			Map<MarkerKey, char[]> combinedMarkerRSIDs = new LinkedHashMap<MarkerKey, char[]>();
-			rdMarkerSet1.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_RSID);
-			combinedMarkerRSIDs.putAll(rdMarkerSet1.getMarkerIdSetMapCharArray());
-			rdMarkerSet2.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_RSID);
-			combinedMarkerRSIDs.putAll(rdMarkerSet2.getMarkerIdSetMapCharArray());
+			final boolean hasDictionary1 = ((Integer) rdNcFile1.findGlobalAttribute(cNetCDF.Attributes.GLOB_HAS_DICTIONARY).getNumericValue() == 1);
+			final boolean hasDictionary2 = ((Integer) rdNcFile2.findGlobalAttribute(cNetCDF.Attributes.GLOB_HAS_DICTIONARY).getNumericValue() == 1);
+			final boolean hasCombinedDictionary = (hasDictionary1 && hasDictionary2);
 
-			boolean hasDictionary1 = ((Integer) rdNcFile1.findGlobalAttribute(cNetCDF.Attributes.GLOB_HAS_DICTIONARY).getNumericValue() == 1);
-			boolean hasDictionary2 = ((Integer) rdNcFile2.findGlobalAttribute(cNetCDF.Attributes.GLOB_HAS_DICTIONARY).getNumericValue() == 1);
-			boolean hasCombinedDictionary = (hasDictionary1 && hasDictionary2);
-			Map<MarkerKey, char[]> combinedMarkerBasesDicts = null;
+//			rdMarkerSet1.initFullMarkerIdSetMap();
+//			rdMarkerSet2.initFullMarkerIdSetMap();
+
+			Map<MarkerKey, String> combinedMarkerRSIDs = new LinkedHashMap<MarkerKey, String>(wrCombinedSortedMarkersMetadata.size());
+			Map<MarkerKey, String> combinedMarkerBasesDicts = null;
 			if (hasCombinedDictionary) {
-				combinedMarkerBasesDicts = new LinkedHashMap<MarkerKey, char[]>();
-				rdMarkerSet1.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_BASES_DICT);
-				combinedMarkerBasesDicts.putAll(rdMarkerSet1.getMarkerIdSetMapCharArray());
-				rdMarkerSet2.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_BASES_DICT);
-				combinedMarkerBasesDicts.putAll(rdMarkerSet2.getMarkerIdSetMapCharArray());
+				combinedMarkerBasesDicts = new LinkedHashMap<MarkerKey, String>();
+			}
+			Map<MarkerKey, String> combinedMarkerGTStrands = new LinkedHashMap<MarkerKey, String>();
 
-				combinedMarkerBasesDicts is used in the next function, get it there;
+//			rdMarkerSet1.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_RSID);
+//			combinedMarkerRSIDs.putAll(rdMarkerSet1.getMarkerIdSetMapCharArray());
+//			rdMarkerSet2.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_RSID);
+//			combinedMarkerRSIDs.putAll(rdMarkerSet2.getMarkerIdSetMapCharArray());
+
+			Iterator<MarkerKey> markersKeysSource1It = dataSetSource1.getMarkersKeysSource().iterator();
+			for (MarkerMetadata markerMetadata : dataSetSource1.getMarkersMetadatasSource()) {
+				MarkerKey key = markersKeysSource1It.next();
+				combinedMarkerRSIDs.put(key, markerMetadata.getRsId());
+				if (hasCombinedDictionary) {
+					combinedMarkerBasesDicts.put(key, markerMetadata.getAlleles());
+				}
+				combinedMarkerGTStrands.put(key, markerMetadata.getStrand());
+			}
+			Iterator<MarkerKey> markersKeysSource2It = dataSetSource2.getMarkersKeysSource().iterator();
+			for (MarkerMetadata markerMetadata : dataSetSource2.getMarkersMetadatasSource()) {
+				MarkerKey key = markersKeysSource2It.next();
+				combinedMarkerRSIDs.put(key, markerMetadata.getRsId());
+				if (hasCombinedDictionary) {
+					combinedMarkerBasesDicts.put(key, markerMetadata.getAlleles());
+				}
+				combinedMarkerGTStrands.put(key, markerMetadata.getStrand());
 			}
 
-			Map<MarkerKey, char[]> combinedMarkerGTStrands = new LinkedHashMap<MarkerKey, char[]>();
-			rdMarkerSet1.fillInitMapWithVariable(cNetCDF.Variables.VAR_GT_STRAND);
-			combinedMarkerGTStrands.putAll(rdMarkerSet1.getMarkerIdSetMapCharArray());
-			rdMarkerSet2.fillInitMapWithVariable(cNetCDF.Variables.VAR_GT_STRAND);
-			combinedMarkerGTStrands.putAll(rdMarkerSet2.getMarkerIdSetMapCharArray());
+//			Map<MarkerKey, byte[]> combinedMarkerBasesDicts = null;
+//			if (hasCombinedDictionary) {
+//				combinedMarkerBasesDicts = new LinkedHashMap<MarkerKey, byte[]>();
+//				rdMarkerSet1.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_BASES_DICT);
+//				combinedMarkerBasesDicts.putAll(rdMarkerSet1.getMarkerIdSetMapCharArray());
+//				rdMarkerSet2.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_BASES_DICT);
+//				combinedMarkerBasesDicts.putAll(rdMarkerSet2.getMarkerIdSetMapCharArray());
+//			}
+
+//			Map<MarkerKey, String> combinedMarkerGTStrands = new LinkedHashMap<MarkerKey, String>();
+//			rdMarkerSet1.fillInitMapWithVariable(cNetCDF.Variables.VAR_GT_STRAND);
+//			combinedMarkerGTStrands.putAll(rdMarkerSet1.getMarkerIdSetMapCharArray());
+//			rdMarkerSet2.fillInitMapWithVariable(cNetCDF.Variables.VAR_GT_STRAND);
+//			combinedMarkerGTStrands.putAll(rdMarkerSet2.getMarkerIdSetMapCharArray());
 
 			for (Map.Entry<MarkerKey, MarkerMetadata> markerEntry : wrCombinedSortedMarkersMetadata.entrySet()) {
 				MarkerKey markerKey = markerEntry.getKey();
 				MarkerMetadata origMarkerMetadata = markerEntry.getValue();
 				MarkerMetadata newMarkerMetadata = new MarkerMetadata(
 						origMarkerMetadata.getMarkerId(),
-						new String (combinedMarkerRSIDs.get(markerKey)),
+						combinedMarkerRSIDs.get(markerKey),
 						origMarkerMetadata.getChr(),
 						origMarkerMetadata.getPos(),
-						hasCombinedDictionary ? new String (combinedMarkerBasesDicts.get(markerKey)) : origMarkerMetadata.getAlleles(),
-						new String (combinedMarkerGTStrands.get(markerKey)));
+						hasCombinedDictionary ? combinedMarkerBasesDicts.get(markerKey) : origMarkerMetadata.getAlleles(),
+						combinedMarkerGTStrands.get(markerKey));
 				markerEntry.setValue(newMarkerMetadata);
 			}
 
