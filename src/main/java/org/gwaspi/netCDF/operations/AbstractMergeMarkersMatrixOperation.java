@@ -273,7 +273,7 @@ public abstract class AbstractMergeMarkersMatrixOperation extends AbstractMergeM
 	protected abstract void writeGenotypes(
 			NetcdfFileWriteable wrNcFile,
 			Map<SampleKey, int[]> wrSampleSetMap,
-			Map<MarkerKey, ?> wrComboSortedMarkerSetMap,
+			Collection<MarkerKey> wrComboSortedMarkers,
 			Map<SampleKey, byte[]> rdSampleSetMap1,
 			Map<SampleKey, byte[]> rdSampleSetMap2)
 			throws InvalidRangeException, IOException;

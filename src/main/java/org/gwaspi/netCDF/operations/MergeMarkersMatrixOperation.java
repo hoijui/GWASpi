@@ -18,6 +18,7 @@
 package org.gwaspi.netCDF.operations;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.gwaspi.constants.cNetCDF;
@@ -68,7 +69,7 @@ public class MergeMarkersMatrixOperation extends AbstractMergeMarkersMatrixOpera
 	protected void writeGenotypes(
 			NetcdfFileWriteable wrNcFile,
 			Map<SampleKey, int[]> wrSampleSetMap,
-			Map<MarkerKey, ?> wrComboSortedMarkerSetMap,
+			Collection<MarkerKey> wrComboSortedMarkers,
 			Map<SampleKey, byte[]> rdSampleSetMap1,
 			Map<SampleKey, byte[]> rdSampleSetMap2)
 			throws InvalidRangeException, IOException

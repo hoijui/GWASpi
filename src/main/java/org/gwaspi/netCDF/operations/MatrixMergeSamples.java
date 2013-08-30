@@ -32,6 +32,7 @@ import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.MarkersChromosomeInfosSource;
 import org.gwaspi.model.MarkersKeysSource;
+import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.netCDF.loader.DataSetDestination;
@@ -66,7 +67,7 @@ public class MatrixMergeSamples extends AbstractMergeMatrixOperation {
 			dataSetDestination);
 	}
 
-	private MatrixFactory createMatrixFactory(int numSamples, int numMarkers, int numChromosomes, String matrixFriendlyName, String matrixDescription) throws IOException {
+	private MatrixFactory createMatrixFactory(MatrixKey matrix1Key, MatrixKey matrix2Key, int numSamples, int numMarkers, int numChromosomes, String matrixFriendlyName, String matrixDescription) throws IOException {
 
 		// Use comboed wrComboSampleSetMap as SampleSet
 		final String humanReadableMethodName = Text.Trafo.mergeSamplesOnly;
@@ -125,8 +126,8 @@ public class MatrixMergeSamples extends AbstractMergeMatrixOperation {
 					numSamples,
 					numMarkers,
 					numChromosomes,
-					rdMatrix1Key, // Parent matrix 1 key
-					rdMatrix2Key); // Parent matrix 2 key
+					matrix1Key, // Parent matrix 1 key
+					matrix2Key); // Parent matrix 2 key
 		} catch (InvalidRangeException ex) {
 			throw new IOException(ex);
 		}
@@ -140,18 +141,21 @@ public class MatrixMergeSamples extends AbstractMergeMatrixOperation {
 		int resultMatrixId = Integer.MIN_VALUE;
 
 		// Get combo SampleSet with position[] (wrPos, rdMatrixNb, rdPos)
-		Map<SampleKey, int[]> wrComboSampleSetMap = getComboSampleSetWithIndicesArray(dataSetSource1.getSamplesKeysSource(), dataSetSource2.getSamplesKeysSource());
+		Map<SampleKey, int[]> wrComboSampleSetMap
+				= getComboSampleSetWithIndicesArray(
+				dataSetSource1.getSamplesKeysSource(),
+				dataSetSource2.getSamplesKeysSource());
 		Map<SampleKey, ?> theSamples = wrComboSampleSetMap;
 
 		// Use comboed wrComboSampleSetMap as SampleSet
 		final int numSamples = theSamples.size();
 		// Keep rdwrMarkerIdSetMap1 from Matrix1. MarkerSet is constant
-		final int numMarkers = rdMarkerSet1.getMarkerSetSize();
+		final int numMarkers = dataSetSource1.getMarkersKeysSource().size();
 
 		// RETRIEVE CHROMOSOMES INFO
 		MarkersChromosomeInfosSource chromosomeInfo = dataSetSource1.getMarkersChromosomeInfosSource();
 
-		MatrixFactory wrMatrixHandler = createMatrixFactory(numSamples, numMarkers, chromosomeInfo.size(), wrMatrixFriendlyName, wrMatrixDescription);
+		MatrixFactory wrMatrixHandler = createMatrixFactory(rdMatrix1Key, rdMatrix2Key, numSamples, numMarkers, chromosomeInfo.size(), wrMatrixFriendlyName, wrMatrixDescription);
 
 		try {
 			NetcdfFileWriteable wrNcFile = wrMatrixHandler.getNetCDFHandler();

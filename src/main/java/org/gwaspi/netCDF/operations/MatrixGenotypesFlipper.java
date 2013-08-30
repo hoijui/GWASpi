@@ -35,7 +35,6 @@ import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.netCDF.loader.DataSetDestination;
-import org.gwaspi.netCDF.markers.NetCDFDataSetSource;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,85 +48,81 @@ public class MatrixGenotypesFlipper implements MatrixOperation {
 
 	private final Logger log = LoggerFactory.getLogger(MatrixGenotypesFlipper.class);
 
-	private final MatrixKey rdMatrixKey;
-	private final String wrMatrixFriendlyName;
-	private final String wrMatrixDescription;
+	private final DataSetSource dataSetSource;
+	private final DataSetDestination dataSetDestination;
 	private final File flipperFile;
 	private final Set<MarkerKey> markersToFlip;
-	private final DataSetSource rdDataSetSource;
-	private final DataSetDestination dataSetDestination;
 
 	/**
 	 * Use this constructor to extract data from a matrix
 	 * by passing a variable and the criteria to filter items by.
-	 *
-	 * @param rdMatrixKey
-	 * @param wrMatrixFriendlyName
-	 * @param wrMatrixDescription
-	 * @param markerVariable
-	 * @param flipperFile
-	 * @throws IOException
 	 */
 	public MatrixGenotypesFlipper(
-			MatrixKey rdMatrixKey,
-			String wrMatrixFriendlyName,
-			String wrMatrixDescription,
-			String markerVariable,
+			DataSetSource dataSetSource,
+			DataSetDestination dataSetDestination,
 			File flipperFile)
 			throws IOException
 	{
-		// INIT EXTRACTOR OBJECTS
-		this.rdMatrixKey = rdMatrixKey;
-		this.wrMatrixFriendlyName = wrMatrixFriendlyName;
-		this.wrMatrixDescription = wrMatrixDescription;
+		this.dataSetSource = dataSetSource;
+		this.dataSetDestination = dataSetDestination;
 		this.flipperFile = flipperFile;
+		this.markersToFlip = loadMarkerKeys(this.flipperFile);
+	}
 
-		this.rdDataSetSource = new NetCDFDataSetSource(this.rdMatrixKey);
+	/**
+	 * Loads a number of marker keys from a plain text file.
+	 * @return the loaded marker keys
+	 * @throws IOException
+	 */
+	private static Set<MarkerKey> loadMarkerKeys(File flipperFile) throws IOException {
 
-		this.markersToFlip = new HashSet<MarkerKey>();
-		if (this.flipperFile.isFile()) {
-			FileReader fr = new FileReader(this.flipperFile);
+		Set<MarkerKey> markerKeys = new HashSet<MarkerKey>();
+
+		if (flipperFile.isFile()) {
+			FileReader fr = new FileReader(flipperFile);
 			BufferedReader br = new BufferedReader(fr);
 			String line;
 			while ((line = br.readLine()) != null) {
-				this.markersToFlip.add(MarkerKey.valueOf(line));
+				markerKeys.add(MarkerKey.valueOf(line));
 			}
 			br.close();
 		}
+
+		return markerKeys;
 	}
 
-	private MatrixFactory createMatrixFactory() throws IOException {
+	private MatrixFactory createMatrixFactory(MatrixKey matrixKey, String matrixDescription, String matrixFriendlyName) throws IOException {
 
 			StringBuilder description = new StringBuilder();
 			description.append(Text.Matrix.descriptionHeader1);
 			description.append(org.gwaspi.global.Utils.getShortDateTimeAsString());
-			description.append("\nThrough Matrix genotype flipping from parent Matrix MX: ").append(rdDataSetSource.getMatrixMetadata().getMatrixId());
-			description.append(" - ").append(rdDataSetSource.getMatrixMetadata().getMatrixFriendlyName());
+			description.append("\nThrough Matrix genotype flipping from parent Matrix MX: ").append(dataSetSource.getMatrixMetadata().getMatrixId());
+			description.append(" - ").append(dataSetSource.getMatrixMetadata().getMatrixFriendlyName());
 			description.append("\nUsed list of markers to be flipped: ").append(flipperFile.getPath());
-			if (!wrMatrixDescription.isEmpty()) {
+			if (!matrixDescription.isEmpty()) {
 				description.append("\n\nDescription: ");
-				description.append(wrMatrixDescription);
+				description.append(matrixDescription);
 				description.append("\n");
 			}
 			description.append("\nGenotype encoding: ");
-			description.append(rdDataSetSource.getMatrixMetadata().getGenotypeEncoding());
+			description.append(dataSetSource.getMatrixMetadata().getGenotypeEncoding());
 			description.append("\n");
-			description.append("Markers: ").append(rdDataSetSource.getMarkersKeysSource().size());
-			description.append(", Samples: ").append(rdDataSetSource.getSamplesKeysSource().size());
+			description.append("Markers: ").append(dataSetSource.getMarkersKeysSource().size());
+			description.append(", Samples: ").append(dataSetSource.getSamplesKeysSource().size());
 
 		try {
 			return new MatrixFactory(
-					rdDataSetSource.getMatrixMetadata().getTechnology(), // technology
-					wrMatrixFriendlyName,
+					dataSetSource.getMatrixMetadata().getTechnology(), // technology
+					matrixFriendlyName,
 					description.toString(), // description
-					rdDataSetSource.getMatrixMetadata().getGenotypeEncoding(), // Matrix genotype encoding from orig matrix genotype encoding
+					dataSetSource.getMatrixMetadata().getGenotypeEncoding(), // matrix genotype encoding from the original matrix
 					StrandType.valueOf("FLP"), // FIXME this will fail at runtime
-					rdDataSetSource.getMatrixMetadata().getHasDictionray(), // has dictionary?
-					rdDataSetSource.getSamplesKeysSource().size(),
-					rdDataSetSource.getMarkersKeysSource().size(),
-					rdDataSetSource.getMarkersChromosomeInfosSource().size(),
-					rdMatrixKey, // Orig matrixId 1
-					null); // Orig matrixId 2
+					dataSetSource.getMatrixMetadata().getHasDictionray(), // has dictionary?
+					dataSetSource.getSamplesKeysSource().size(),
+					dataSetSource.getMarkersKeysSource().size(),
+					dataSetSource.getMarkersChromosomeInfosSource().size(),
+					matrixKey, // orig/parent matrix 1 key
+					null); // orig/parent matrix 2 key
 		} catch (InvalidRangeException ex) {
 			throw new IOException(ex);
 		}
@@ -137,18 +132,18 @@ public class MatrixGenotypesFlipper implements MatrixOperation {
 	public int processMatrix() throws IOException {
 		int resultMatrixId = Integer.MIN_VALUE;
 
-		MatrixFactory wrMatrixHandler = createMatrixFactory();
+		MatrixFactory wrMatrixHandler = createMatrixFactory(rdMatrixKey, wrMatrixDescription, wrMatrixFriendlyName);
 		try {
 			resultMatrixId = wrMatrixHandler.getResultMatrixId();
 
-			NetcdfFile rdNcFile = NetcdfFile.open(rdDataSetSource.getMatrixMetadata().getPathToMatrix());
+			NetcdfFile rdNcFile = NetcdfFile.open(dataSetSource.getMatrixMetadata().getPathToMatrix());
 			NetcdfFileWriteable wrNcFile = wrMatrixHandler.getNetCDFHandler();
 			wrNcFile.create();
 			log.trace("Done creating netCDF handle: " + wrNcFile.toString());
 
 			// simply copy&paste the sample infos
 			dataSetDestination.startLoadingSampleInfos();
-			for (SampleInfo sampleInfo : rdDataSetSource.getSamplesInfosSource()) {
+			for (SampleInfo sampleInfo : dataSetSource.getSamplesInfosSource()) {
 				dataSetDestination.addSampleInfo(sampleInfo);
 			}
 			dataSetDestination.finishedLoadingSampleInfos();
@@ -157,8 +152,8 @@ public class MatrixGenotypesFlipper implements MatrixOperation {
 			// but flipp dictionary-alleles and strand
 			// of the ones that are selected for flipping
 			dataSetDestination.startLoadingMarkerMetadatas();
-			Iterator<MarkerKey> markerKeysIt = rdDataSetSource.getMarkersKeysSource().iterator();
-			for (MarkerMetadata origMarkerMetadata : rdDataSetSource.getMarkersMetadatasSource()) {
+			Iterator<MarkerKey> markerKeysIt = dataSetSource.getMarkersKeysSource().iterator();
+			for (MarkerMetadata origMarkerMetadata : dataSetSource.getMarkersMetadatasSource()) {
 				MarkerKey markerKey = markerKeysIt.next();
 
 				MarkerMetadata newMarkerMetadata;
@@ -185,9 +180,9 @@ public class MatrixGenotypesFlipper implements MatrixOperation {
 			dataSetDestination.startLoadingAlleles(false);
 			log.info(Text.All.processing);
 			int markerIndex = 0;
-			final GenotypeEncoding gtEncoding = rdDataSetSource.getMatrixMetadata().getGenotypeEncoding();
-			markerKeysIt = rdDataSetSource.getMarkersKeysSource().iterator();
-			for (GenotypesList markerGenotypes : rdDataSetSource.getMarkersGenotypesSource()) {
+			final GenotypeEncoding gtEncoding = dataSetSource.getMatrixMetadata().getGenotypeEncoding();
+			markerKeysIt = dataSetSource.getMarkersKeysSource().iterator();
+			for (GenotypesList markerGenotypes : dataSetSource.getMarkersGenotypesSource()) {
 				MarkerKey markerKey = markerKeysIt.next();
 				if (markersToFlip.contains(markerKey)) {
 					for (byte[] gt : markerGenotypes) {
@@ -201,7 +196,7 @@ public class MatrixGenotypesFlipper implements MatrixOperation {
 				dataSetDestination.addMarkerGTAlleles(markerIndex, markerGenotypes);
 				markerIndex++;
 				if ((markerIndex == 1) || ((markerIndex % 10000) == 0)) {
-					log.info("Markers processed: {} / {}", markerIndex, rdMarkerOrder.size());
+					log.info("Markers processed: {} / {}", markerIndex, dataSetSource.getMarkersGenotypesSource().size());
 				}
 			}
 			dataSetDestination.finishedLoadingAlleles();
