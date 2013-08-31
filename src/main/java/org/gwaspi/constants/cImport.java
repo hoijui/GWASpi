@@ -397,16 +397,6 @@ public class cImport {
 		public static final int age = 9;
 	}
 
-	public static interface StrandFlags {
-
-		public static final String strandPLS = "+";
-		public static final String strandMIN = "-";
-		public static final String strandPLSMIN = "+/-";
-		public static final String strandFWD = "fwd";
-		public static final String strandREV = "rev";
-		public static final String strandUNK = "unk";
-	}
-
 	public static interface Separators {
 
 		public static final String separators_Spaces_rgxp = "[ +]";
