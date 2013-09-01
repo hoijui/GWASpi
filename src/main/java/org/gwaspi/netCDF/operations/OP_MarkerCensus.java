@@ -111,8 +111,7 @@ public class OP_MarkerCensus implements MatrixOperation {
 			rdMarkerSet.initFullMarkerIdSetMap();
 			rdMarkerSet.fillWith(cNetCDF.Defaults.DEFAULT_GT);
 
-			Map<MarkerKey, byte[]> wrMarkerSetMap = new LinkedHashMap<MarkerKey, byte[]>();
-			wrMarkerSetMap.putAll(rdMarkerSet.getMarkerIdSetMapByteArray());
+			Collection<MarkerKey> wrMarkerKeys = new ArrayList<MarkerKey>(rdMarkerSet.getMarkerKeys());
 
 			SampleSet rdSampleSet = new SampleSet(rdMatrixKey);
 			Map<SampleKey, byte[]> rdSampleSetMap = rdSampleSet.getSampleIdSetMapByteArray();
@@ -137,8 +136,8 @@ public class OP_MarkerCensus implements MatrixOperation {
 				OperationFactory wrOPHandler = new OperationFactory(
 						rdMatrixMetadata.getStudyKey(),
 						"Genotypes freq. - " + censusName, // friendly name
-						description + "\nSample missing ratio threshold: " + sampleMissingRatio + "\nSample heterozygosity ratio threshold: " + sampleHetzygRatio + "\nMarker missing ratio threshold: " + markerMissingRatio + "\nDiscard mismatching Markers: " + discardMismatches + "\nMarkers: " + wrMarkerSetMap.size() + "\nSamples: " + wrSampleKeys.size(), // description
-						wrMarkerSetMap.size(),
+						description + "\nSample missing ratio threshold: " + sampleMissingRatio + "\nSample heterozygosity ratio threshold: " + sampleHetzygRatio + "\nMarker missing ratio threshold: " + markerMissingRatio + "\nDiscard mismatching Markers: " + discardMismatches + "\nMarkers: " + wrMarkerKeys.size() + "\nSamples: " + wrSampleKeys.size(), // description
+						wrMarkerKeys.size(),
 						wrSampleKeys.size(),
 						0,
 						opType,
@@ -149,7 +148,7 @@ public class OP_MarkerCensus implements MatrixOperation {
 				wrNcFile.create();
 				log.trace("Done creating netCDF handle: " + wrNcFile.toString());
 
-				writeMetadata(wrNcFile, rdMarkerSet, wrMarkerSetMap, wrSampleKeys);
+				writeMetadata(wrNcFile, rdMarkerSet, wrMarkerKeys, wrSampleKeys);
 
 				//<editor-fold defaultstate="expanded" desc="PROCESSOR">
 				Map<SampleKey, SampleInfo> samplesInfoMap = fetchSampleInfo(
@@ -163,7 +162,7 @@ public class OP_MarkerCensus implements MatrixOperation {
 					int idx = 0;
 					for (Map.Entry<MarkerKey, char[]> entry : rdMarkerSet.getMarkerIdSetMapCharArray().entrySet()) {
 						MarkerKey key = entry.getKey();
-						if (wrMarkerSetMap.containsKey(key)) {
+						if (wrMarkerKeys.contains(key)) {
 							String chr = new String(entry.getValue());
 							Object[] markerInfo = new Object[] {idx, chr};
 							wrMarkerInfos.put(key, markerInfo); // NOTE This value is never used!
@@ -225,7 +224,7 @@ public class OP_MarkerCensus implements MatrixOperation {
 					int markerNb = Integer.parseInt(markerInfo[0].toString());
 					String markerChr = markerInfo[1].toString();
 
-					rdSampleSet.readAllSamplesGTsFromCurrentMarkerToMap(rdNcFile, rdSampleSetMap, markerNb);
+					SampleSet.readAllSamplesGTsFromCurrentMarkerToMap(rdNcFile, rdSampleSetMap, markerNb);
 					for (SampleKey sampleKey : wrSampleKeys) {
 						SampleInfo sampleInfo = samplesInfoMap.get(sampleKey);
 
@@ -840,18 +839,18 @@ public class OP_MarkerCensus implements MatrixOperation {
 	private void writeMetadata(
 			NetcdfFileWriteable wrNcFile,
 			MarkerSet rdMarkerSet,
-			Map<MarkerKey, byte[]> wrMarkerSetMap,
+			Collection<MarkerKey> wrMarkerKeys,
 			Collection<SampleKey> wrSampleKeys)
 			throws IOException, InvalidRangeException
 	{
 		// MARKERSET MARKERID
-		ArrayChar.D2 markersD2 = NetCdfUtils.writeCollectionToD2ArrayChar(wrMarkerSetMap.keySet(), cNetCDF.Strides.STRIDE_MARKER_NAME);
+		ArrayChar.D2 markersD2 = NetCdfUtils.writeCollectionToD2ArrayChar(wrMarkerKeys, cNetCDF.Strides.STRIDE_MARKER_NAME);
 		int[] markersOrig = new int[]{0, 0};
 		wrNcFile.write(cNetCDF.Variables.VAR_OPSET, markersOrig, markersD2);
 
 		// MARKERSET RSID
 		rdMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_RSID);
-		Map<MarkerKey, char[]> wrSortedMarkerRsIds = org.gwaspi.global.Utils.createOrderedMap(wrMarkerSetMap, rdMarkerSet.getMarkerIdSetMapCharArray());
+		Map<MarkerKey, char[]> wrSortedMarkerRsIds = org.gwaspi.global.Utils.createOrderedMap(wrMarkerKeys, rdMarkerSet.getMarkerIdSetMapCharArray());
 		NetCdfUtils.saveCharMapValueToWrMatrix(wrNcFile, wrSortedMarkerRsIds.values(), cNetCDF.Variables.VAR_MARKERS_RSID, cNetCDF.Strides.STRIDE_MARKER_NAME);
 
 		// WRITE SAMPLESET TO MATRIX FROM SAMPLES ARRAYLIST

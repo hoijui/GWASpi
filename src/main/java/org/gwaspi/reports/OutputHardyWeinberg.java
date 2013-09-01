@@ -19,6 +19,7 @@ package org.gwaspi.reports;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -74,18 +75,14 @@ public class OutputHardyWeinberg {
 	}
 
 	protected static boolean processSortedHardyWeinbergReport(OperationKey operationKey, String reportName) throws IOException {
+
 		boolean result;
 
 		try {
-			Map<MarkerKey, Double> unsortedMarkerIdHWPval_ALTMap = GatherHardyWeinbergData.loadHWPval_ALT(operationKey);
-			Map<MarkerKey, Double> sortingMarkerSetMap = org.gwaspi.global.Utils.createMapSortedByValue(unsortedMarkerIdHWPval_ALTMap);
-			if (unsortedMarkerIdHWPval_ALTMap != null) {
-				unsortedMarkerIdHWPval_ALTMap.clear();
-			}
-
-			// STORE HW VALUES FOR LATER
-			Map<MarkerKey, Double> storeHWPval_ALTMap = new LinkedHashMap<MarkerKey, Double>();
-			storeHWPval_ALTMap.putAll(sortingMarkerSetMap);
+			Map<MarkerKey, Double> unsortedMarkerKeyHWPval = GatherHardyWeinbergData.loadHWPval_ALT(operationKey);
+			Map<MarkerKey, Double> sortedByHWPval = org.gwaspi.global.Utils.createMapSortedByValue(unsortedMarkerKeyHWPval);
+			unsortedMarkerKeyHWPval.clear(); // "garbage collection"
+			Collection<MarkerKey> sortedMarkerKeys = sortedByHWPval.keySet();
 
 			// GET MARKER INFO
 			String sep = cExport.separator_REPORTS;
@@ -99,17 +96,17 @@ public class OutputHardyWeinberg {
 
 			// WRITE MARKERSET RSID
 			rdInfoMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_RSID);
-			Map<MarkerKey, char[]> sortedMarkerRSIDs = org.gwaspi.global.Utils.createOrderedMap(sortingMarkerSetMap, rdInfoMarkerSet.getMarkerIdSetMapCharArray());
+			Map<MarkerKey, char[]> sortedMarkerRSIDs = org.gwaspi.global.Utils.createOrderedMap(sortedMarkerKeys, rdInfoMarkerSet.getMarkerIdSetMapCharArray());
 			ReportWriter.writeFirstColumnToReport(reportPath, reportName, header, sortedMarkerRSIDs, true);
 
 			// WRITE MARKERSET CHROMOSOME
 			rdInfoMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
-			Map<MarkerKey, char[]> sortedMarkerCHRs = org.gwaspi.global.Utils.createOrderedMap(sortingMarkerSetMap, rdInfoMarkerSet.getMarkerIdSetMapCharArray());
+			Map<MarkerKey, char[]> sortedMarkerCHRs = org.gwaspi.global.Utils.createOrderedMap(sortedMarkerKeys, rdInfoMarkerSet.getMarkerIdSetMapCharArray());
 			ReportWriter.appendColumnToReport(reportPath, reportName, sortedMarkerCHRs, false, false);
 
 			// WRITE MARKERSET POS
 			rdInfoMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_POS);
-			Map<MarkerKey, Integer> sortedMarkerPos = org.gwaspi.global.Utils.createOrderedMap(sortingMarkerSetMap, rdInfoMarkerSet.getMarkerIdSetMapInteger());
+			Map<MarkerKey, Integer> sortedMarkerPos = org.gwaspi.global.Utils.createOrderedMap(sortedMarkerKeys, rdInfoMarkerSet.getMarkerIdSetMapInteger());
 			ReportWriter.appendColumnToReport(reportPath, reportName, sortedMarkerPos, false, false);
 
 			// WRITE KNOWN ALLELES FROM QA
@@ -122,7 +119,7 @@ public class OutputHardyWeinberg {
 					markersQAopKey = OperationKey.valueOf(op);
 				}
 			}
-			Map<MarkerKey, String> sortedMarkerAlleles = new LinkedHashMap<MarkerKey, String>(sortingMarkerSetMap.size());
+			Map<MarkerKey, String> sortedMarkerAlleles = new LinkedHashMap<MarkerKey, String>(sortedMarkerKeys.size());
 			if (markersQAopKey != null) {
 				OperationMetadata qaMetadata = OperationsList.getOperation(markersQAopKey);
 				NetcdfFile qaNcFile = NetcdfFile.open(qaMetadata.getPathToMatrix());
@@ -145,18 +142,15 @@ public class OutputHardyWeinberg {
 					entry.setValue(minorAllele + sep + new String(opMarkerSetMap.get(entry.getKey())));
 				}
 			}
-			sortedMarkerAlleles = org.gwaspi.global.Utils.createOrderedMap(sortingMarkerSetMap, sortedMarkerAlleles); // XXX probably not required?
+			sortedMarkerAlleles = org.gwaspi.global.Utils.createOrderedMap(sortedMarkerKeys, sortedMarkerAlleles); // XXX probably not required?
 			ReportWriter.appendColumnToReport(reportPath, reportName, sortedMarkerAlleles, false, false);
 
 			// WRITE HW PVAL
-			ReportWriter.appendColumnToReport(reportPath, reportName, storeHWPval_ALTMap, false, false);
-			if (storeHWPval_ALTMap != null) {
-				storeHWPval_ALTMap.clear();
-			}
+			ReportWriter.appendColumnToReport(reportPath, reportName, sortedByHWPval, false, false);
 
 			// WRITE HW HETZY ARRAY
 			Map<MarkerKey, Double> markerIdHWHETZY_CTRLMap = GatherHardyWeinbergData.loadHWHETZY_ALT(operationKey);
-			Map<MarkerKey, Double> sortedHWHETZYCTRLs = org.gwaspi.global.Utils.createOrderedMap(sortingMarkerSetMap, markerIdHWHETZY_CTRLMap);
+			Map<MarkerKey, Double> sortedHWHETZYCTRLs = org.gwaspi.global.Utils.createOrderedMap(sortedMarkerKeys, markerIdHWHETZY_CTRLMap);
 			ReportWriter.appendColumnToReport(reportPath, reportName, sortedHWHETZYCTRLs, true, false);
 
 			result = true;

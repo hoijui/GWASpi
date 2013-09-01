@@ -38,11 +38,7 @@ import org.gwaspi.netCDF.loader.DataSetDestination;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.ma2.ArrayChar;
-import ucar.ma2.Index;
 import ucar.ma2.InvalidRangeException;
-import ucar.nc2.NetcdfFile;
-import ucar.nc2.NetcdfFileWriteable;
 
 public class MatrixGenotypesFlipper implements MatrixOperation {
 
@@ -133,89 +129,69 @@ public class MatrixGenotypesFlipper implements MatrixOperation {
 		int resultMatrixId = Integer.MIN_VALUE;
 
 		MatrixFactory wrMatrixHandler = createMatrixFactory(rdMatrixKey, wrMatrixDescription, wrMatrixFriendlyName);
-		try {
-			resultMatrixId = wrMatrixHandler.getResultMatrixId();
+		resultMatrixId = wrMatrixHandler.getResultMatrixId();
 
-			NetcdfFile rdNcFile = NetcdfFile.open(dataSetSource.getMatrixMetadata().getPathToMatrix());
-			NetcdfFileWriteable wrNcFile = wrMatrixHandler.getNetCDFHandler();
-			wrNcFile.create();
-			log.trace("Done creating netCDF handle: " + wrNcFile.toString());
-
-			// simply copy&paste the sample infos
-			dataSetDestination.startLoadingSampleInfos();
-			for (SampleInfo sampleInfo : dataSetSource.getSamplesInfosSource()) {
-				dataSetDestination.addSampleInfo(sampleInfo);
-			}
-			dataSetDestination.finishedLoadingSampleInfos();
-
-			// copy&paste the marker metadata aswell,
-			// but flipp dictionary-alleles and strand
-			// of the ones that are selected for flipping
-			dataSetDestination.startLoadingMarkerMetadatas();
-			Iterator<MarkerKey> markerKeysIt = dataSetSource.getMarkersKeysSource().iterator();
-			for (MarkerMetadata origMarkerMetadata : dataSetSource.getMarkersMetadatasSource()) {
-				MarkerKey markerKey = markerKeysIt.next();
-
-				MarkerMetadata newMarkerMetadata;
-				if (markersToFlip.contains(markerKey)) {
-					String alleles = flipDictionaryAlleles(origMarkerMetadata.getAlleles());
-					String strand = flipStranding(origMarkerMetadata.getStrand());
-
-					newMarkerMetadata = new MarkerMetadata(
-							origMarkerMetadata.getMarkerId(),
-							origMarkerMetadata.getRsId(),
-							origMarkerMetadata.getChr(),
-							origMarkerMetadata.getPos(),
-							alleles,
-							strand);
-				} else {
-					newMarkerMetadata = origMarkerMetadata;
-				}
-				dataSetDestination.addMarkerMetadata(newMarkerMetadata);
-			}
-			dataSetDestination.finishedLoadingMarkerMetadatas();
-
-
-			// WRITE GENOTYPES
-			dataSetDestination.startLoadingAlleles(false);
-			log.info(Text.All.processing);
-			int markerIndex = 0;
-			final GenotypeEncoding gtEncoding = dataSetSource.getMatrixMetadata().getGenotypeEncoding();
-			markerKeysIt = dataSetSource.getMarkersKeysSource().iterator();
-			for (GenotypesList markerGenotypes : dataSetSource.getMarkersGenotypesSource()) {
-				MarkerKey markerKey = markerKeysIt.next();
-				if (markersToFlip.contains(markerKey)) {
-					for (byte[] gt : markerGenotypes) {
-						// we deal with references here, so we change the value
-						// in the map. no need to explicitly write it back.
-						flipGenotypes(gt, gtEncoding);
-					}
-				}
-
-				// Write rdMarkerIdSetMap to A3 ArrayChar and save to wrMatrix
-				dataSetDestination.addMarkerGTAlleles(markerIndex, markerGenotypes);
-				markerIndex++;
-				if ((markerIndex == 1) || ((markerIndex % 10000) == 0)) {
-					log.info("Markers processed: {} / {}", markerIndex, dataSetSource.getMarkersGenotypesSource().size());
-				}
-			}
-			dataSetDestination.finishedLoadingAlleles();
-
-			// TODO this should be done in the NetCDFDataSetDestination. it should already have the gtEncoding through the matrixFactory, or matrixMetadata
-			GenotypeEncoding genotypeEncoding = rdMatrixMetadata.getGenotypeEncoding();
-			// CLOSE THE FILE AND BY THIS, MAKE IT READ-ONLY
-			// GENOTYPE ENCODING
-			ArrayChar.D2 guessedGTCodeAC = new ArrayChar.D2(1, 8);
-			Index index = guessedGTCodeAC.getIndex();
-			guessedGTCodeAC.setString(index.set(0, 0), genotypeEncoding.toString());
-			int[] origin = new int[] {0, 0};
-			wrNcFile.write(cNetCDF.Variables.GLOB_GTENCODING, origin, guessedGTCodeAC);
-			wrNcFile.close();
-
-			org.gwaspi.global.Utils.sysoutCompleted("Genotype Flipping to new Matrix");
-		} catch (InvalidRangeException ex) {
-			throw new IOException(ex);
+		// simply copy&paste the sample infos
+		dataSetDestination.startLoadingSampleInfos();
+		for (SampleInfo sampleInfo : dataSetSource.getSamplesInfosSource()) {
+			dataSetDestination.addSampleInfo(sampleInfo);
 		}
+		dataSetDestination.finishedLoadingSampleInfos();
+
+		// copy&paste the marker metadata aswell,
+		// but flipp dictionary-alleles and strand
+		// of the ones that are selected for flipping
+		dataSetDestination.startLoadingMarkerMetadatas();
+		Iterator<MarkerKey> markerKeysIt = dataSetSource.getMarkersKeysSource().iterator();
+		for (MarkerMetadata origMarkerMetadata : dataSetSource.getMarkersMetadatasSource()) {
+			MarkerKey markerKey = markerKeysIt.next();
+
+			MarkerMetadata newMarkerMetadata;
+			if (markersToFlip.contains(markerKey)) {
+				String alleles = flipDictionaryAlleles(origMarkerMetadata.getAlleles());
+				String strand = flipStranding(origMarkerMetadata.getStrand());
+
+				newMarkerMetadata = new MarkerMetadata(
+						origMarkerMetadata.getMarkerId(),
+						origMarkerMetadata.getRsId(),
+						origMarkerMetadata.getChr(),
+						origMarkerMetadata.getPos(),
+						alleles,
+						strand);
+			} else {
+				newMarkerMetadata = origMarkerMetadata;
+			}
+			dataSetDestination.addMarkerMetadata(newMarkerMetadata);
+		}
+		dataSetDestination.finishedLoadingMarkerMetadatas();
+
+
+		// WRITE GENOTYPES
+		dataSetDestination.startLoadingAlleles(false);
+		log.info(Text.All.processing);
+		int markerIndex = 0;
+		final GenotypeEncoding gtEncoding = dataSetSource.getMatrixMetadata().getGenotypeEncoding();
+		markerKeysIt = dataSetSource.getMarkersKeysSource().iterator();
+		for (GenotypesList markerGenotypes : dataSetSource.getMarkersGenotypesSource()) {
+			MarkerKey markerKey = markerKeysIt.next();
+			if (markersToFlip.contains(markerKey)) {
+				for (byte[] gt : markerGenotypes) {
+					// we deal with references here, so we change the value
+					// in the map. no need to explicitly write it back.
+					flipGenotypes(gt, gtEncoding);
+				}
+			}
+
+			// Write rdMarkerIdSetMap to A3 ArrayChar and save to wrMatrix
+			dataSetDestination.addMarkerGTAlleles(markerIndex, markerGenotypes);
+			markerIndex++;
+			if ((markerIndex == 1) || ((markerIndex % 10000) == 0)) {
+				log.info("Markers processed: {} / {}", markerIndex, dataSetSource.getMarkersGenotypesSource().size());
+			}
+		}
+		dataSetDestination.finishedLoadingAlleles();
+
+		org.gwaspi.global.Utils.sysoutCompleted("Genotype Flipping to new Matrix");
 
 		return resultMatrixId;
 	}

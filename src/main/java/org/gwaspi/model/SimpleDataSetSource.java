@@ -17,11 +17,15 @@
 
 package org.gwaspi.model;
 
+
+import java.io.IOException;
+
 /**
  * TODO
  */
 public class SimpleDataSetSource implements DataSetSource {
 
+	private MatrixMetadata matrixMetadata;
 	private MarkersGenotypesSource markersGenotypesSource;
 	private MarkersMetadataSource markersMetadatasSource;
 	private MarkersChromosomeInfosSource markersChromosomeInfosSource;
@@ -29,6 +33,16 @@ public class SimpleDataSetSource implements DataSetSource {
 	private SamplesGenotypesSource samplesGenotypesSource;
 	private SamplesInfosSource samplesInfosSource;
 	private SamplesKeysSource samplesKeysSource;
+
+
+	@Override
+	public MatrixMetadata getMatrixMetadata() throws IOException {
+		return matrixMetadata;
+	}
+
+	public void setMatrixMetadata(MatrixMetadata matrixMetadata) {
+		this.matrixMetadata = matrixMetadata;
+	}
 
 	@Override
 	public MarkersGenotypesSource getMarkersGenotypesSource() {

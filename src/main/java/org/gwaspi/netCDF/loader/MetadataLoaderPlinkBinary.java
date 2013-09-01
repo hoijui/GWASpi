@@ -51,6 +51,11 @@ public class MetadataLoaderPlinkBinary implements MetadataLoader {
 	}
 
 	@Override
+	public boolean isHasStrandInfo() {
+		return false;
+	}
+
+	@Override
 	public void loadMarkers(DataSetDestination samplesReceiver) throws Exception {
 
 		String startTime = org.gwaspi.global.Utils.getMediumDateTimeAsString();

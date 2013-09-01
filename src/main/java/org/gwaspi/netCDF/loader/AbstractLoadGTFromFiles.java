@@ -26,7 +26,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import org.gwaspi.constants.cImport.ImportFormat;
-import org.gwaspi.constants.cImport.StrandFlags;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
@@ -93,29 +92,20 @@ public abstract class AbstractLoadGTFromFiles implements GenotypesLoader {
 	}
 
 	/**
+	 * Returns the strand flag that applies to all markers of the data set.
+	 * This value only makes sense if the format does not supply
+	 * a per marker strand.
 	 * @see #isHasStrandInfo
 	 */
 	protected String getStrandFlag(GenotypesLoadDescription loadDescription) {
 
 		String strandFlag;
 
-		switch (loadDescription.getStrand()) {
-			case PLUS:
-				strandFlag = StrandFlags.strandPLS;
-				break;
-			case MINUS:
-				strandFlag = StrandFlags.strandMIN;
-				break;
-			case FWD:
-				strandFlag = StrandFlags.strandFWD;
-				break;
-			case REV:
-				strandFlag = StrandFlags.strandREV;
-				break;
-			default:
-				strandFlag = StrandFlags.strandUNK;
-				break;
+		StrandType strand = loadDescription.getStrand();
+		if (strand == StrandType.FWDREV) {
+			strand = StrandType.UNKNOWN;
 		}
+		strandFlag = strand.toString();
 
 		return strandFlag;
 	}
@@ -137,6 +127,10 @@ public abstract class AbstractLoadGTFromFiles implements GenotypesLoader {
 	 */
 	protected boolean isHasStrandInfo() {
 		return false;
+//		MetadataLoader markerSetLoader = createMetaDataLoader(loadDescription);
+//		samplesReceiver.startLoadingMarkerMetadatas();
+//		markerSetLoader.loadMarkers(samplesReceiver);
+//		samplesReceiver.finishedLoadingMarkerMetadatas();
 	}
 
 	//<editor-fold defaultstate="expanded" desc="PROCESS GENOTYPES">

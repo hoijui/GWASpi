@@ -19,6 +19,8 @@ package org.gwaspi.reports;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -92,26 +94,17 @@ public class OutputQAMarkers {
 
 		try {
 			Map<MarkerKey, Double> unsortedMarkerIdMissingRatMap = GatherQAMarkersData.loadMarkerQAMissingRatio(operationKey);
-			Map<MarkerKey, Double> sortedMarkerIdMissingRatMap = org.gwaspi.global.Utils.createMapSortedByValueDescending(unsortedMarkerIdMissingRatMap);
-			if (unsortedMarkerIdMissingRatMap != null) {
-				unsortedMarkerIdMissingRatMap.clear();
-			}
+			Map<MarkerKey, Double> sortedMarkerKeyMissingRatio = org.gwaspi.global.Utils.createMapSortedByValueDescending(unsortedMarkerIdMissingRatMap);
+			unsortedMarkerIdMissingRatMap.clear(); // "garbage collection"
 
-			// PREPARE SORTING Map & STORE QA VALUES FOR LATER
-			Map<MarkerKey, Double> sortingMarkerSetMap = new LinkedHashMap<MarkerKey, Double>();
-			Map<MarkerKey, Double> storedMissingRatMap = new LinkedHashMap<MarkerKey, Double>();
-			if (sortedMarkerIdMissingRatMap != null) {
-				for (Map.Entry<MarkerKey, Double> entry : sortedMarkerIdMissingRatMap.entrySet()) {
-					MarkerKey key = entry.getKey();
-					double missingValue = entry.getValue();
-					if (missingValue > 0) {
-						storedMissingRatMap.put(key, missingValue);
-						sortingMarkerSetMap.put(key, missingValue);
-					}
+			// FILTER THE SORTED MAP
+			Iterator<Map.Entry<MarkerKey, Double>> sortedMarkerKeyMissingRatioIt = sortedMarkerKeyMissingRatio.entrySet().iterator();
+			while (sortedMarkerKeyMissingRatioIt.hasNext()) {
+				if (sortedMarkerKeyMissingRatioIt.next().getValue() <= 0.0) {
+					sortedMarkerKeyMissingRatioIt.remove();
 				}
-
-				sortedMarkerIdMissingRatMap.clear();
 			}
+			Collection<MarkerKey> sortedMarkerKeys = sortedMarkerKeyMissingRatio.keySet();
 
 			String sep = cExport.separator_REPORTS;
 			OperationMetadata rdOPMetadata = OperationsList.getOperation(operationKey);
@@ -124,17 +117,17 @@ public class OutputQAMarkers {
 
 			// WRITE MARKERSET RSID
 			rdInfoMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_RSID);
-			Map<MarkerKey, char[]> sortedMarkerRSIDs = org.gwaspi.global.Utils.createOrderedMap(sortingMarkerSetMap, rdInfoMarkerSet.getMarkerIdSetMapCharArray());
+			Map<MarkerKey, char[]> sortedMarkerRSIDs = org.gwaspi.global.Utils.createOrderedMap(sortedMarkerKeys, rdInfoMarkerSet.getMarkerIdSetMapCharArray());
 			ReportWriter.writeFirstColumnToReport(reportPath, reportName, header, sortedMarkerRSIDs, true);
 
 			// WRITE MARKERSET CHROMOSOME
 			rdInfoMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
-			Map<MarkerKey, char[]> sortedMarkerCHRs = org.gwaspi.global.Utils.createOrderedMap(sortingMarkerSetMap, rdInfoMarkerSet.getMarkerIdSetMapCharArray());
+			Map<MarkerKey, char[]> sortedMarkerCHRs = org.gwaspi.global.Utils.createOrderedMap(sortedMarkerKeys, rdInfoMarkerSet.getMarkerIdSetMapCharArray());
 			ReportWriter.appendColumnToReport(reportPath, reportName, sortedMarkerCHRs, false, false);
 
 			// WRITE MARKERSET POS
 			rdInfoMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_POS);
-			Map<MarkerKey, Integer> sortedMarkerPos = org.gwaspi.global.Utils.createOrderedMap(sortingMarkerSetMap, rdInfoMarkerSet.getMarkerIdSetMapInteger());
+			Map<MarkerKey, Integer> sortedMarkerPos = org.gwaspi.global.Utils.createOrderedMap(sortedMarkerKeys, rdInfoMarkerSet.getMarkerIdSetMapInteger());
 			ReportWriter.appendColumnToReport(reportPath, reportName, sortedMarkerPos, false, false);
 
 			// WRITE KNOWN ALLELES FROM QA
@@ -147,7 +140,7 @@ public class OutputQAMarkers {
 					markersQAopKey = OperationKey.valueOf(op);
 				}
 			}
-			Map<MarkerKey, String> sortedMarkerAlleles = new LinkedHashMap<MarkerKey, String>(sortingMarkerSetMap.size());
+			Map<MarkerKey, String> sortedMarkerAlleles = new LinkedHashMap<MarkerKey, String>(sortedMarkerKeyMissingRatio.size());
 			if (markersQAopKey != null) {
 				OperationMetadata qaMetadata = OperationsList.getOperation(markersQAopKey);
 				NetcdfFile qaNcFile = NetcdfFile.open(qaMetadata.getPathToMatrix());
@@ -170,14 +163,11 @@ public class OutputQAMarkers {
 					entry.setValue(minorAllele + sep + new String(opMarkerSetMap.get(entry.getKey())));
 				}
 			}
-			sortedMarkerAlleles = org.gwaspi.global.Utils.createOrderedMap(sortingMarkerSetMap, sortedMarkerAlleles); // XXX probably not required?
+			sortedMarkerAlleles = org.gwaspi.global.Utils.createOrderedMap(sortedMarkerKeys, sortedMarkerAlleles); // XXX probably not required?
 			ReportWriter.appendColumnToReport(reportPath, reportName, sortedMarkerAlleles, false, false);
 
 			// WRITE QA MISSINGNESS RATIO
-			ReportWriter.appendColumnToReport(reportPath, reportName, storedMissingRatMap, false, false);
-			if (storedMissingRatMap != null) {
-				storedMissingRatMap.clear();
-			}
+			ReportWriter.appendColumnToReport(reportPath, reportName, sortedMarkerKeyMissingRatio, false, false);
 
 			result = true;
 		} catch (IOException ex) {
@@ -192,23 +182,16 @@ public class OutputQAMarkers {
 		boolean result;
 
 		try {
-			Map<MarkerKey, Integer> unsortedMarkerIdMismatchStateMap = GatherQAMarkersData.loadMarkerQAMismatchState(operationKey);
-			Map<MarkerKey, Integer> sortingMarkerSetMap = new LinkedHashMap<MarkerKey, Integer>();
-			if (unsortedMarkerIdMismatchStateMap != null) {
-				for (Map.Entry<MarkerKey, Integer> entry : unsortedMarkerIdMismatchStateMap.entrySet()) {
-					MarkerKey key = entry.getKey();
-					int mismatchState = entry.getValue();
-					if (mismatchState > 0) {
-						sortingMarkerSetMap.put(key, mismatchState);
-					}
+			Map<MarkerKey, Integer> unsortedMarkerKeyMismatchState = GatherQAMarkersData.loadMarkerQAMismatchState(operationKey);
+
+			// FILTER THE UNSORTED MAP
+			Iterator<Map.Entry<MarkerKey, Integer>> unsortedMarkerKeyMismatchStateIt = unsortedMarkerKeyMismatchState.entrySet().iterator();
+			while (unsortedMarkerKeyMismatchStateIt.hasNext()) {
+				if (unsortedMarkerKeyMismatchStateIt.next().getValue() <= 0) {
+					unsortedMarkerKeyMismatchStateIt.remove();
 				}
-
-				unsortedMarkerIdMismatchStateMap.clear();
 			}
-
-			// STORE MISMATCH STATE FOR LATER
-			Map<MarkerKey, Integer> storedMismatchStateMap = new LinkedHashMap<MarkerKey, Integer>();
-			storedMismatchStateMap.putAll(sortingMarkerSetMap);
+			Collection<MarkerKey> unsortedMarkerKeys = unsortedMarkerKeyMismatchState.keySet();
 
 			String sep = cExport.separator_REPORTS;
 			OperationMetadata rdOPMetadata = OperationsList.getOperation(operationKey);
@@ -221,17 +204,17 @@ public class OutputQAMarkers {
 
 			// WRITE MARKERSET RSID
 			rdInfoMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_RSID);
-			Map<MarkerKey, char[]> sortedMarkerRSIDs = org.gwaspi.global.Utils.createOrderedMap(sortingMarkerSetMap, rdInfoMarkerSet.getMarkerIdSetMapCharArray());
+			Map<MarkerKey, char[]> sortedMarkerRSIDs = org.gwaspi.global.Utils.createOrderedMap(unsortedMarkerKeys, rdInfoMarkerSet.getMarkerIdSetMapCharArray());
 			ReportWriter.writeFirstColumnToReport(reportPath, reportName, header, sortedMarkerRSIDs, true);
 
 			// WRITE MARKERSET CHROMOSOME
 			rdInfoMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
-			Map<MarkerKey, char[]> sortedMarkerCHRs = org.gwaspi.global.Utils.createOrderedMap(sortingMarkerSetMap, rdInfoMarkerSet.getMarkerIdSetMapCharArray());
+			Map<MarkerKey, char[]> sortedMarkerCHRs = org.gwaspi.global.Utils.createOrderedMap(unsortedMarkerKeys, rdInfoMarkerSet.getMarkerIdSetMapCharArray());
 			ReportWriter.appendColumnToReport(reportPath, reportName, sortedMarkerCHRs, false, true);
 
 			// WRITE MARKERSET POS
 			rdInfoMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_POS);
-			Map<MarkerKey, Integer> sortedMarkerPos = org.gwaspi.global.Utils.createOrderedMap(sortingMarkerSetMap, rdInfoMarkerSet.getMarkerIdSetMapInteger());
+			Map<MarkerKey, Integer> sortedMarkerPos = org.gwaspi.global.Utils.createOrderedMap(unsortedMarkerKeys, rdInfoMarkerSet.getMarkerIdSetMapInteger());
 			ReportWriter.appendColumnToReport(reportPath, reportName, sortedMarkerPos, false, false);
 
 			// WRITE KNOWN ALLELES FROM QA
@@ -244,7 +227,7 @@ public class OutputQAMarkers {
 					markersQAopKey = OperationKey.valueOf(op);
 				}
 			}
-			Map<MarkerKey, String> sortedMarkerAlleles = new LinkedHashMap<MarkerKey, String>(sortingMarkerSetMap.size());
+			Map<MarkerKey, String> sortedMarkerAlleles = new LinkedHashMap<MarkerKey, String>(unsortedMarkerKeys.size());
 			if (markersQAopKey != null) {
 				OperationMetadata qaMetadata = OperationsList.getOperation(markersQAopKey);
 				NetcdfFile qaNcFile = NetcdfFile.open(qaMetadata.getPathToMatrix());
@@ -267,14 +250,11 @@ public class OutputQAMarkers {
 					entry.setValue(minorAllele + sep + new String(opMarkerSetMap.get(entry.getKey())));
 				}
 			}
-			sortedMarkerAlleles = org.gwaspi.global.Utils.createOrderedMap(sortingMarkerSetMap, sortedMarkerAlleles); // XXX probably not required?
+			sortedMarkerAlleles = org.gwaspi.global.Utils.createOrderedMap(unsortedMarkerKeys, sortedMarkerAlleles); // XXX probably not required?
 			ReportWriter.appendColumnToReport(reportPath, reportName, sortedMarkerAlleles, false, false);
 
 			// WRITE QA MISMATCH STATE
-			ReportWriter.appendColumnToReport(reportPath, reportName, storedMismatchStateMap, false, false);
-			if (storedMismatchStateMap != null) {
-				storedMismatchStateMap.clear();
-			}
+			ReportWriter.appendColumnToReport(reportPath, reportName, unsortedMarkerKeyMismatchState, false, false);
 
 			result = true;
 		} catch (IOException ex) {

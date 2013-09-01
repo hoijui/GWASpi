@@ -91,8 +91,9 @@ public abstract class AbstractNetCDFDataSetDestination extends AbstractDataSetDe
 
 		try {
 			matrixFactory = createMatrixFactory();
+			MatrixMetadata resultMatrixMetadata = matrixFactory.getResultMatrixMetadata();
 
-			getDataSet().setMatrixMetadata(matrixFactory.getResultMatrixMetadata());
+			getDataSet().setMatrixMetadata(resultMatrixMetadata);
 
 			// create the NetCDF file
 			ncfile = matrixFactory.getNetCDFHandler();
@@ -103,7 +104,7 @@ public abstract class AbstractNetCDFDataSetDestination extends AbstractDataSetDe
 			List<SampleKey> sampleKeys = AbstractNetCDFDataSetDestination.extractKeys(sampleInfos);
 			saveSamplesMatadata(sampleKeys, ncfile);
 
-			boolean hasDictionary = gtLoader.isHasDictionary();
+			boolean hasDictionary = resultMatrixMetadata.getHasDictionray();
 			String strandFlag;
 			if (gtLoader.isHasStrandInfo()) {
 				strandFlag = null;

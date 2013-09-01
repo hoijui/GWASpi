@@ -79,41 +79,13 @@ public class LoadGTFromPlinkFlatFiles extends AbstractLoadGTFromFiles implements
 	}
 
 	@Override
-//	protected void loadGenotypes(
-//			GenotypesLoadDescription loadDescription,
-//			Collection<SampleInfo> sampleInfos,
-//			Map<MarkerKey, MarkerMetadata> markerSetMap,
-//			NetcdfFileWriteable ncfile,
-//			List<SampleKey> sampleKeys,
-//			GenotypeEncoding guessedGTCode)
-//			throws IOException, InvalidRangeException
-//	{
 	protected void loadGenotypes(
 			GenotypesLoadDescription loadDescription,
 			DataSetDestination samplesReceiver)
 			throws Exception
 	{
 		Map<MarkerKey, byte[]> mapMarkerSetMap = MetadataLoaderPlink.parseOrigMapFile(loadDescription.getGtDirPath());
-//		loadPedGenotypes(
-//				loadDescription.getStudyKey(),
-//				new File(loadDescription.getAnnotationFilePath()),
-//				ncfile,
-//				markerSetMap.keySet(),
-//				mapMarkerSetMap,
-//				sampleKeys,
-//				guessedGTCode);
-//	}
-//
-//	public void loadPedGenotypes(
-//			StudyKey studyKey,
-//			File file,
-//			NetcdfFileWriteable ncfile,
-//			Collection<MarkerKey> wrMarkerKeys,
-//			Map<MarkerKey, ?> mapMarkerSetMap,
-//			List<SampleKey> sampleKeys,
-//			GenotypeEncoding guessedGTCode)
-//			throws IOException, InvalidRangeException
-//	{
+
 		File file = new File(loadDescription.getAnnotationFilePath());
 		FileReader inputFileReader = new FileReader(file);
 		BufferedReader inputBufferReader = new BufferedReader(inputFileReader);

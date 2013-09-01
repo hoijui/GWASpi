@@ -175,11 +175,11 @@ public class MatrixTranslator {
 					// Get alleles from read matrix
 					rdMarkerSet.fillGTsForCurrentSampleIntoInitMap(sampleIndex);
 					// Send to be translated
-					wrMarkerIdSetMap = rdMarkerSet.getMarkerIdSetMapByteArray();
-					translateCurrentSampleAB12AllelesMap(wrMarkerIdSetMap, rdMatrixGTCode, dictionnaryMap);
+					Map<MarkerKey, byte[]> markerGTs = rdMarkerSet.getMarkerIdSetMapByteArray();
+					translateCurrentSampleAB12AllelesMap(markerGTs, rdMatrixGTCode, dictionnaryMap);
 
 					// Write wrMarkerIdSetMap to A3 ArrayChar and save to wrMatrix
-					NetCdfUtils.saveSingleSampleGTsToMatrix(wrNcFile, wrMarkerIdSetMap.values(), sampleIndex);
+					NetCdfUtils.saveSingleSampleGTsToMatrix(wrNcFile, markerGTs.values(), sampleIndex);
 
 					if (sampleIndex % 100 == 0) {
 						log.info("Samples translated: {}", sampleIndex);
@@ -307,11 +307,11 @@ public class MatrixTranslator {
 					// Get alleles from read matrix
 					rdMarkerSet.fillGTsForCurrentSampleIntoInitMap(sampleIndex);
 					// Send to be translated
-					wrMarkerIdSetMap = rdMarkerSet.getMarkerIdSetMapByteArray();
-					translateCurrentSample1234AllelesMap(wrMarkerIdSetMap, markerStrandsMap.keySet());
+					Map<MarkerKey, byte[]> markerGTs = rdMarkerSet.getMarkerIdSetMapByteArray();
+					translateCurrentSample1234AllelesMap(markerGTs, markerStrandsMap.keySet());
 
 					// Write wrMarkerIdSetMap to A3 ArrayChar and save to wrMatrix
-					NetCdfUtils.saveSingleSampleGTsToMatrix(wrNcFile, wrMarkerIdSetMap.values(), sampleIndex);
+					NetCdfUtils.saveSingleSampleGTsToMatrix(wrNcFile, markerGTs.values(), sampleIndex);
 
 					if (sampleIndex % 100 == 0) {
 						log.info("Samples translated: {}", sampleIndex);

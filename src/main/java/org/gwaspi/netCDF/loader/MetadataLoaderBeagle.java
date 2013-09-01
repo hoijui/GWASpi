@@ -27,7 +27,6 @@ import org.gwaspi.constants.cImport;
 import org.gwaspi.constants.cImport.Annotation.Beagle_Standard;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
-import org.gwaspi.global.Text;
 import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.StudyKey;
 import org.slf4j.Logger;
@@ -49,6 +48,11 @@ public class MetadataLoaderBeagle implements MetadataLoader {
 		this.chr = chr;
 		this.strand = strand;
 		this.studyKey = studyKey;
+	}
+
+	@Override
+	public boolean isHasStrandInfo() {
+		return false;
 	}
 
 	@Override

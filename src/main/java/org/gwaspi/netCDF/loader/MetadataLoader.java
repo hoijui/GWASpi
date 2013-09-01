@@ -19,5 +19,12 @@ package org.gwaspi.netCDF.loader;
 
 public interface MetadataLoader {
 
+	/**
+	 * Indicates whether each marker may have a separate strand info,
+	 * or all of them share the same.
+	 * @return true if each marker may have a separate strand info
+	 */
+	boolean isHasStrandInfo();
+
 	void loadMarkers(DataSetDestination samplesReceiver) throws Exception;
 }

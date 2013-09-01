@@ -27,7 +27,6 @@ import org.gwaspi.constants.cImport;
 import org.gwaspi.constants.cImport.Annotation.HapmapGT_Standard;
 import org.gwaspi.constants.cImport.ImportFormat;
 import org.gwaspi.constants.cNetCDF;
-import org.gwaspi.global.Text;
 import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.StudyKey;
 import org.slf4j.Logger;
@@ -51,6 +50,11 @@ public class MetadataLoaderHapmap implements MetadataLoader {
 		this.hapmapPath = hapmapPath;
 		this.studyKey = studyKey;
 		this.format = format;
+	}
+
+	@Override
+	public boolean isHasStrandInfo() {
+		return true;
 	}
 
 	@Override

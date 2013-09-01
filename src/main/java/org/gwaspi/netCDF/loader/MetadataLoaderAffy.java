@@ -26,7 +26,6 @@ import java.util.TreeMap;
 import org.gwaspi.constants.cImport.Annotation.Affymetrix_GenomeWide6;
 import org.gwaspi.constants.cImport.ImportFormat;
 import org.gwaspi.constants.cNetCDF;
-import org.gwaspi.global.Text;
 import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.StudyKey;
 import org.slf4j.Logger;
@@ -49,6 +48,11 @@ public class MetadataLoaderAffy implements MetadataLoader {
 		this.annotationPath = annotationPath;
 		this.studyKey = studyKey;
 		this.format = format;
+	}
+
+	@Override
+	public boolean isHasStrandInfo() {
+		return true;
 	}
 
 	@Override

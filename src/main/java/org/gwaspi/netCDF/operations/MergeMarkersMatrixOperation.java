@@ -84,9 +84,8 @@ public class MergeMarkersMatrixOperation extends AbstractMergeMarkersMatrixOpera
 			GenotypesList dataSet2SampleGenotypes = dataSetSource2.getSamplesGenotypesSource().get(readDataSet2SampleIndex);
 
 			// Fill wrSortedMingledMarkerMap with matrix 1+2 Genotypes
-			Map<MarkerKey, byte[]> wrComboSortedMarkerGTs = new LinkedHashMap<MarkerKey, byte[]>(wrComboSortedMarkerSetMap.size());
-			for (Map.Entry<MarkerKey, ?> markerEntry : wrComboSortedMarkerSetMap.entrySet()) {
-				MarkerKey markerKey = markerEntry.getKey();
+			Map<MarkerKey, byte[]> wrComboSortedMarkerGTs = new LinkedHashMap<MarkerKey, byte[]>(wrComboSortedMarkers.size());
+			for (MarkerKey markerKey : wrComboSortedMarkers) {
 				byte[] genotype;
 				final int dataSet1MarkerIndex = dataSetSource1.getMarkersKeysSource().indexOf(markerKey);
 				if (dataSet1MarkerIndex >= 0) {

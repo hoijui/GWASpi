@@ -92,10 +92,10 @@ public abstract class AbstractTestMatrixOperation implements MatrixOperation {
 			rdCaseMarkerSet.getOpSetMap(); // without this, we get an NPE later on
 			Map<MarkerKey, char[]> rdCtrlMarkerIdSetMap = rdCtrlMarkerSet.getOpSetMap();
 
-			Map<MarkerKey, MarkerMetadata> wrMarkerSetMap = new LinkedHashMap<MarkerKey, MarkerMetadata>();
+			Map<MarkerKey, MarkerMetadata> wrMarkerMetadata = new LinkedHashMap<MarkerKey, MarkerMetadata>();
 			for (MarkerKey key : rdCtrlMarkerIdSetMap.keySet()) {
 				if (!toBeExcluded.contains(key)) {
-					wrMarkerSetMap.put(key, null);
+					wrMarkerMetadata.put(key, null);
 				}
 			}
 
@@ -106,8 +106,8 @@ public abstract class AbstractTestMatrixOperation implements MatrixOperation {
 
 			// retrieve chromosome info
 			rdMarkerSet.fillMarkerSetMapWithChrAndPos();
-			MarkerSet.replaceWithValuesFrom(wrMarkerSetMap, rdMarkerSet.getMarkerMetadata());
-			Map<ChromosomeKey, ChromosomeInfo> chromosomeInfo = ChromosomeUtils.aggregateChromosomeInfo(wrMarkerSetMap, 0, 1);
+			MarkerSet.replaceWithValuesFrom(wrMarkerMetadata, rdMarkerSet.getMarkerMetadata());
+			Map<ChromosomeKey, ChromosomeInfo> chromosomeInfo = ChromosomeUtils.aggregateChromosomeInfo(wrMarkerMetadata, 0, 1);
 
 			NetcdfFileWriteable wrOPNcFile = null;
 			try {
@@ -116,7 +116,7 @@ public abstract class AbstractTestMatrixOperation implements MatrixOperation {
 						rdCensusOPMetadata.getStudyKey(),
 						testName, // friendly name
 						testName + " on " + markerCensusOP.getFriendlyName() + "\n" + rdCensusOPMetadata.getDescription() + "\nHardy-Weinberg threshold: " + Report_Analysis.FORMAT_SCIENTIFIC.format(hwThreshold), // description
-						wrMarkerSetMap.size(),
+						wrMarkerMetadata.size(),
 						rdCensusOPMetadata.getImplicitSetSize(),
 						chromosomeInfo.size(),
 						testType,
@@ -129,13 +129,13 @@ public abstract class AbstractTestMatrixOperation implements MatrixOperation {
 
 				//<editor-fold defaultstate="expanded" desc="METADATA WRITER">
 				// MARKERSET MARKERID
-				ArrayChar.D2 markersD2 = NetCdfUtils.writeCollectionToD2ArrayChar(wrMarkerSetMap.keySet(), cNetCDF.Strides.STRIDE_MARKER_NAME);
+				ArrayChar.D2 markersD2 = NetCdfUtils.writeCollectionToD2ArrayChar(wrMarkerMetadata.keySet(), cNetCDF.Strides.STRIDE_MARKER_NAME);
 				int[] markersOrig = new int[]{0, 0};
 				wrOPNcFile.write(cNetCDF.Variables.VAR_OPSET, markersOrig, markersD2);
 
 				// MARKERSET RSID
 				Map<MarkerKey, char[]> rdCaseMarkerIdSetMap = rdCaseMarkerSet.fillOpSetMapWithVariable(rdOPNcFile, cNetCDF.Variables.VAR_MARKERS_RSID);
-				Map<MarkerKey, char[]> sortedCaseMarkerIds = org.gwaspi.global.Utils.createOrderedMap(wrMarkerSetMap, rdCaseMarkerIdSetMap);
+				Map<MarkerKey, char[]> sortedCaseMarkerIds = org.gwaspi.global.Utils.createOrderedMap(wrMarkerMetadata.keySet(), rdCaseMarkerIdSetMap);
 				NetCdfUtils.saveCharMapValueToWrMatrix(wrOPNcFile, sortedCaseMarkerIds.values(), cNetCDF.Variables.VAR_MARKERS_RSID, cNetCDF.Strides.STRIDE_MARKER_NAME);
 
 				// WRITE SAMPLESET TO MATRIX FROM SAMPLES ARRAYLIST
