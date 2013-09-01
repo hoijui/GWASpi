@@ -86,6 +86,10 @@ public abstract class AbstractNetCDFDataSetDestination extends AbstractDataSetDe
 
 	protected abstract MatrixFactory createMatrixFactory() throws IOException;
 
+	protected abstract boolean isHasStrandInfo();
+
+	protected abstract String getStrandFlag();
+
 	@Override
 	public void finishedLoadingMarkerMetadatas() throws IOException {
 
@@ -106,10 +110,10 @@ public abstract class AbstractNetCDFDataSetDestination extends AbstractDataSetDe
 
 			boolean hasDictionary = resultMatrixMetadata.getHasDictionray();
 			String strandFlag;
-			if (gtLoader.isHasStrandInfo()) {
+			if (isHasStrandInfo()) {
 				strandFlag = null;
 			} else {
-				strandFlag = gtLoader.getStrandFlag(loadDescription);
+				strandFlag = getStrandFlag();
 			}
 			saveMarkersMatadata(getDataSet().getMarkerMetadatas(), getDataSet().getChromosomeInfos(), hasDictionary, strandFlag, ncfile);
 		} catch (InvalidRangeException ex) {

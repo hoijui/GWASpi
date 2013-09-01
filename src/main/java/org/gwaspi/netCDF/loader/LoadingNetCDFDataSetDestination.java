@@ -100,7 +100,9 @@ public class LoadingNetCDFDataSetDestination extends AbstractNetCDFDataSetDestin
 					loadDescription.getFriendlyName(),
 					descSB.toString(), // description
 					loadDescription.getGtCode(),
-					(gtLoader.getMatrixStrand() != null) ? gtLoader.getMatrixStrand() : loadDescription.getStrand(),
+					(gtLoader.getMatrixStrand() != null)
+							? gtLoader.getMatrixStrand()
+							: loadDescription.getStrand(),
 					gtLoader.isHasDictionary(),
 					getDataSet().getSampleInfos().size(),
 					getDataSet().getMarkerMetadatas().size(),
@@ -109,6 +111,24 @@ public class LoadingNetCDFDataSetDestination extends AbstractNetCDFDataSetDestin
 		} catch (InvalidRangeException ex) {
 			throw new IOException(ex);
 		}
+	}
+
+	@Override
+	protected boolean isHasStrandInfo() {
+		return gtLoader.isHasStrandInfo();
+	}
+
+	@Override
+	protected String getStrandFlag() {
+
+		String strandFlag;
+		if (gtLoader.isHasStrandInfo()) {
+			strandFlag = null;
+		} else {
+			strandFlag = gtLoader.getStrandFlag(loadDescription);
+		}
+
+		return strandFlag;
 	}
 
 	@Override
