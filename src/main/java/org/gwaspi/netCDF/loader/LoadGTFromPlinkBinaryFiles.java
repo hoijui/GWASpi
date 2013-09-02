@@ -42,7 +42,7 @@ public class LoadGTFromPlinkBinaryFiles extends AbstractLoadGTFromFiles implemen
 			= LoggerFactory.getLogger(LoadGTFromPlinkBinaryFiles.class);
 
 	public LoadGTFromPlinkBinaryFiles() {
-		super(ImportFormat.PLINK_Binary, null, true);
+		super(new MetadataLoaderPlinkBinary(), ImportFormat.PLINK_Binary, null, true);
 
 		setGuessedGTCode(GenotypeEncoding.O12);
 	}
@@ -65,15 +65,6 @@ public class LoadGTFromPlinkBinaryFiles extends AbstractLoadGTFromFiles implemen
 		descSB.append(" (BIM file)\n");
 		descSB.append(loadDescription.getGtDirPath());
 		descSB.append(" (BED file)\n");
-	}
-
-	@Override
-	protected MetadataLoader createMetaDataLoader(GenotypesLoadDescription loadDescription) {
-
-		return new MetadataLoaderPlinkBinary(
-				loadDescription.getAnnotationFilePath(),
-				loadDescription.getStrand(),
-				loadDescription.getStudyKey());
 	}
 
 	@Override

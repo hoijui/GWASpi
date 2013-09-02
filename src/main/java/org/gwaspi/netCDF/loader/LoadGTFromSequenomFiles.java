@@ -50,7 +50,7 @@ public class LoadGTFromSequenomFiles extends AbstractLoadGTFromFiles implements 
 	}
 
 	public LoadGTFromSequenomFiles() {
-		super(ImportFormat.Sequenom, StrandType.PLSMIN, false);
+		super(new MetadataLoaderSequenom(), ImportFormat.Sequenom, StrandType.PLSMIN, false);
 	}
 
 	@Override
@@ -73,14 +73,6 @@ public class LoadGTFromSequenomFiles extends AbstractLoadGTFromFiles implements 
 		descSB.append("\n");
 		descSB.append(loadDescription.getAnnotationFilePath());
 		descSB.append(" (Annotation file)\n");
-	}
-
-	@Override
-	protected MetadataLoader createMetaDataLoader(GenotypesLoadDescription loadDescription) {
-
-		return new MetadataLoaderSequenom(
-				loadDescription.getAnnotationFilePath(),
-				loadDescription.getStudyKey());
 	}
 
 	@Override

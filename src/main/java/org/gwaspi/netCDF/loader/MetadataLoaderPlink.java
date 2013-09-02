@@ -38,13 +38,7 @@ public class MetadataLoaderPlink implements MetadataLoader {
 	private final Logger log
 			= LoggerFactory.getLogger(MetadataLoaderPlink.class);
 
-	private final String mapPath;
-	private final StudyKey studyKey;
-
-	public MetadataLoaderPlink(String mapPath, StudyKey studyKey) {
-
-		this.mapPath = mapPath;
-		this.studyKey = studyKey;
+	public MetadataLoaderPlink() {
 	}
 
 	@Override
@@ -74,11 +68,19 @@ public class MetadataLoaderPlink implements MetadataLoader {
 //	}
 
 	@Override
-	public void loadMarkers(DataSetDestination samplesReceiver) throws Exception {
+	public void loadMarkers(DataSetDestination samplesReceiver, GenotypesLoadDescription loadDescription) throws Exception {
+		loadMarkers(
+				samplesReceiver,
+				loadDescription.getGtDirPath(),
+				loadDescription.getStudyKey());
+	}
+
+	private void loadMarkers(DataSetDestination samplesReceiver, String mapPath, StudyKey studyKey) throws Exception {
 
 		String startTime = org.gwaspi.global.Utils.getMediumDateTimeAsString();
 
-		SortedMap<String, String> tempTM = parseAndSortMapFile(); // chr, markerId, genetic distance, position
+		// chr, markerId, genetic distance, position
+		SortedMap<String, String> tempTM = parseAndSortMapFile(mapPath);
 
 		org.gwaspi.global.Utils.sysoutStart("initilaizing Marker info");
 		log.info("parse raw data into marker metadata objects");
@@ -112,7 +114,7 @@ public class MetadataLoaderPlink implements MetadataLoader {
 		logAsWhole(startTime, mapPath, description, studyKey.getId());
 	}
 
-	private SortedMap<String, String> parseAndSortMapFile() throws IOException {
+	private SortedMap<String, String> parseAndSortMapFile(String mapPath) throws IOException {
 
 		FileReader fr = new FileReader(mapPath);
 		BufferedReader inputMapBR = new BufferedReader(fr);

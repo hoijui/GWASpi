@@ -37,15 +37,7 @@ public class MetadataLoaderHGDP1 implements MetadataLoader {
 	private final Logger log
 			= LoggerFactory.getLogger(MetadataLoaderHGDP1.class);
 
-	private final String markerFilePath;
-	private final StrandType strand;
-	private final StudyKey studyKey;
-
-	public MetadataLoaderHGDP1(String mapPath, StrandType strand, StudyKey studyKey) {
-
-		this.markerFilePath = mapPath;
-		this.studyKey = studyKey;
-		this.strand = strand;
+	public MetadataLoaderHGDP1() {
 	}
 
 	@Override
@@ -54,11 +46,19 @@ public class MetadataLoaderHGDP1 implements MetadataLoader {
 	}
 
 	@Override
-	public void loadMarkers(DataSetDestination samplesReceiver) throws Exception {
+	public void loadMarkers(DataSetDestination samplesReceiver, GenotypesLoadDescription loadDescription) throws Exception {
+		loadMarkers(
+				samplesReceiver,
+				loadDescription.getAnnotationFilePath(),
+				loadDescription.getStrand(),
+				loadDescription.getStudyKey());
+	}
+
+	private void loadMarkers(DataSetDestination samplesReceiver, String markerFilePath, StrandType strand, StudyKey studyKey) throws Exception {
 
 		String startTime = org.gwaspi.global.Utils.getMediumDateTimeAsString();
 
-		SortedMap<String, String> tempTM = parseAndSortMarkerFile(); // chr, markerId, genetic distance, position
+		SortedMap<String, String> tempTM = parseAndSortMarkerFile(markerFilePath); // chr, markerId, genetic distance, position
 
 		org.gwaspi.global.Utils.sysoutStart("initilaizing Marker info");
 		log.info("parse raw data into marker metadata objects");
@@ -92,7 +92,7 @@ public class MetadataLoaderHGDP1 implements MetadataLoader {
 	/**
 	 * Parses the marker file.
 	 */
-	private SortedMap<String, String> parseAndSortMarkerFile() throws IOException {
+	private SortedMap<String, String> parseAndSortMarkerFile(String markerFilePath) throws IOException {
 
 		FileReader fr = new FileReader(markerFilePath);
 		BufferedReader inputMapBR = new BufferedReader(fr);

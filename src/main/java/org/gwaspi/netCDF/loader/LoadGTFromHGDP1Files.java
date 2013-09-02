@@ -50,7 +50,7 @@ public class LoadGTFromHGDP1Files extends AbstractLoadGTFromFiles implements Gen
 	}
 
 	public LoadGTFromHGDP1Files() {
-		super(ImportFormat.HGDP1, StrandType.UNKNOWN, false);
+		super(new MetadataLoaderHGDP1(), ImportFormat.HGDP1, StrandType.UNKNOWN, false);
 	}
 
 	@Override
@@ -74,14 +74,6 @@ public class LoadGTFromHGDP1Files extends AbstractLoadGTFromFiles implements Gen
 	}
 
 	@Override
-	protected MetadataLoader createMetaDataLoader(GenotypesLoadDescription loadDescription) {
-
-		return new MetadataLoaderHGDP1(
-				loadDescription.getAnnotationFilePath(),
-				loadDescription.getStrand(),
-				loadDescription.getStudyKey());
-	}
-
 	protected void loadGenotypes(
 			GenotypesLoadDescription loadDescription,
 			DataSetDestination samplesReceiver)

@@ -119,8 +119,8 @@ public abstract class AbstractMergeMarkersMatrixOperation extends AbstractMergeM
 					numSamples,
 					numMarkers,
 					numChromosomes,
-					rdMatrix1Key, // Parent matrix 1 key
-					rdMatrix2Key); // Parent matrix 2 key
+					rdMatrix1Metadata.getKey(), // Parent matrix 1 key
+					rdMatrix2Metadata.getKey()); // Parent matrix 2 key
 		} catch (InvalidRangeException ex) {
 			throw new IOException(ex);
 		}
@@ -142,9 +142,6 @@ public abstract class AbstractMergeMarkersMatrixOperation extends AbstractMergeM
 		MatrixMetadata rdMatrix1Metadata = dataSetSource1.getMatrixMetadata();
 		MatrixMetadata rdMatrix2Metadata = dataSetSource2.getMatrixMetadata();
 
-		NetcdfFile rdNcFile1 = NetcdfFile.open(rdMatrix1Metadata.getPathToMatrix());
-		NetcdfFile rdNcFile2 = NetcdfFile.open(rdMatrix2Metadata.getPathToMatrix());
-
 		Map<MarkerKey, MarkerMetadata> wrCombinedSortedMarkersMetadata = mingleAndSortMarkerSet();
 
 		// RETRIEVE CHROMOSOMES INFO
@@ -159,9 +156,7 @@ public abstract class AbstractMergeMarkersMatrixOperation extends AbstractMergeM
 
 			GenotypeEncoding genotypeEncoding1 = rdMatrix1Metadata.getGenotypeEncoding();
 
-			final boolean hasDictionary1 = ((Integer) rdNcFile1.findGlobalAttribute(cNetCDF.Attributes.GLOB_HAS_DICTIONARY).getNumericValue() == 1);
-			final boolean hasDictionary2 = ((Integer) rdNcFile2.findGlobalAttribute(cNetCDF.Attributes.GLOB_HAS_DICTIONARY).getNumericValue() == 1);
-			final boolean hasCombinedDictionary = (hasDictionary1 && hasDictionary2);
+			final boolean hasCombinedDictionary = (rdMatrix1Metadata.getHasDictionray() && rdMatrix2Metadata.getHasDictionray());
 
 //			rdMarkerSet1.initFullMarkerIdSetMap();
 //			rdMarkerSet2.initFullMarkerIdSetMap();
@@ -234,19 +229,9 @@ public abstract class AbstractMergeMarkersMatrixOperation extends AbstractMergeM
 
 			writeGenotypes(wrNcFile, wrSampleSetMap, wrCombinedSortedMarkersMetadata, rdSampleSetMap1, rdSampleSetMap2);
 
-			// CLOSE THE FILE AND BY THIS, MAKE IT READ-ONLY
-			// GENOTYPE ENCODING
-			ArrayChar.D2 guessedGTCodeAC = new ArrayChar.D2(1, 8);
-			Index index = guessedGTCodeAC.getIndex();
-			guessedGTCodeAC.setString(index.set(0, 0), rdMatrix1Metadata.getGenotypeEncoding().toString());
-			int[] origin = new int[] {0, 0};
-			wrNcFile.write(cNetCDF.Variables.GLOB_GTENCODING, origin, guessedGTCodeAC);
+			wrNcFile.close();
 
 			resultMatrixKey = matrixFactory.getResultMatrixKey();
-
-			wrNcFile.close();
-			rdNcFile1.close();
-			rdNcFile2.close();
 
 			// CHECK FOR MISMATCHES
 			if (genotypeEncoding1.equals(GenotypeEncoding.ACGT0)

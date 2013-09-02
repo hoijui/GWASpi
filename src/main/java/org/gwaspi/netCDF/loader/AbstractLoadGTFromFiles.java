@@ -42,17 +42,20 @@ public abstract class AbstractLoadGTFromFiles implements GenotypesLoader {
 	private final Logger log
 			= LoggerFactory.getLogger(AbstractLoadGTFromFiles.class);
 
+	private final MetadataLoader markerSetMetadataLoader;
 	private final ImportFormat format;
 	private final StrandType matrixStrand;
 	private final boolean hasDictionary;
 	private GenotypeEncoding guessedGTCode;
 
 	public AbstractLoadGTFromFiles(
+			MetadataLoader markerSetMetadataLoader,
 			ImportFormat format,
 			StrandType matrixStrand,
 			boolean hasDictionary
 			)
 	{
+		this.markerSetMetadataLoader = markerSetMetadataLoader;
 		this.format = format;
 		this.matrixStrand = matrixStrand;
 		this.hasDictionary = hasDictionary;
@@ -85,8 +88,6 @@ public abstract class AbstractLoadGTFromFiles implements GenotypesLoader {
 	protected void addAdditionalBigDescriptionProperties(StringBuilder descSB, GenotypesLoadDescription loadDescription) {
 	}
 
-	protected abstract MetadataLoader createMetaDataLoader(GenotypesLoadDescription loadDescription);
-
 	protected boolean isLoadAllelePerSample() {
 		return true;
 	}
@@ -110,11 +111,10 @@ public abstract class AbstractLoadGTFromFiles implements GenotypesLoader {
 		return strandFlag;
 	}
 
-	protected void loadMarkerMetadata(GenotypesLoadDescription loadDescription, DataSetDestination samplesReceiver) throws Exception {
+	private void loadMarkerMetadata(GenotypesLoadDescription loadDescription, DataSetDestination samplesReceiver) throws Exception {
 
-		MetadataLoader markerSetLoader = createMetaDataLoader(loadDescription);
 		samplesReceiver.startLoadingMarkerMetadatas();
-		markerSetLoader.loadMarkers(samplesReceiver);
+		markerSetMetadataLoader.loadMarkers(samplesReceiver, loadDescription);
 		samplesReceiver.finishedLoadingMarkerMetadatas();
 	}
 

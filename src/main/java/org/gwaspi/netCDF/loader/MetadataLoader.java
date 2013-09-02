@@ -26,5 +26,5 @@ public interface MetadataLoader {
 	 */
 	boolean isHasStrandInfo();
 
-	void loadMarkers(DataSetDestination samplesReceiver) throws Exception;
+	void loadMarkers(DataSetDestination samplesReceiver, GenotypesLoadDescription loadDescription) throws Exception;
 }

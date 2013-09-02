@@ -53,7 +53,7 @@ public class LoadGTFromIlluminaLGENFiles extends AbstractLoadGTFromFiles impleme
 	}
 
 	public LoadGTFromIlluminaLGENFiles() {
-		super(ImportFormat.Illumina_LGEN, StrandType.PLSMIN, false);
+		super(new MetadataLoaderIlluminaLGEN(), ImportFormat.Illumina_LGEN, StrandType.PLSMIN, false);
 	}
 
 	@Override
@@ -75,14 +75,6 @@ public class LoadGTFromIlluminaLGENFiles extends AbstractLoadGTFromFiles impleme
 		descSB.append("\n");
 		descSB.append(loadDescription.getAnnotationFilePath());
 		descSB.append(" (Annotation file)\n");
-	}
-
-	@Override
-	protected MetadataLoader createMetaDataLoader(GenotypesLoadDescription loadDescription) {
-
-		return new MetadataLoaderIlluminaLGEN(
-				loadDescription.getAnnotationFilePath(),
-				loadDescription.getStudyKey());
 	}
 
 	@Override

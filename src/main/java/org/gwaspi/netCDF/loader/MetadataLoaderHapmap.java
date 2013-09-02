@@ -18,6 +18,7 @@
 package org.gwaspi.netCDF.loader;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Map;
@@ -41,15 +42,7 @@ public class MetadataLoaderHapmap implements MetadataLoader {
 	private final Logger log
 			= LoggerFactory.getLogger(MetadataLoaderHapmap.class);
 
-	private final String hapmapPath;
-	private final StudyKey studyKey;
-	private final ImportFormat format;
-
-	public MetadataLoaderHapmap(String hapmapPath, ImportFormat format, StudyKey studyKey) {
-
-		this.hapmapPath = hapmapPath;
-		this.studyKey = studyKey;
-		this.format = format;
+	public MetadataLoaderHapmap() {
 	}
 
 	@Override
@@ -58,11 +51,24 @@ public class MetadataLoaderHapmap implements MetadataLoader {
 	}
 
 	@Override
-	public void loadMarkers(DataSetDestination samplesReceiver) throws Exception {
+	public void loadMarkers(DataSetDestination samplesReceiver, GenotypesLoadDescription loadDescription) throws Exception {
+
+		File[] gtFilesToImport = LoadGTFromHapmapFiles.extractGTFilesToImport(loadDescription);
+		for (int i = 0; i < gtFilesToImport.length; i++) {
+			loadMarkers(
+					samplesReceiver,
+					gtFilesToImport[i].getPath(),
+					loadDescription.getFormat(),
+					loadDescription.getStudyKey());
+		}
+	}
+
+	private void loadMarkers(DataSetDestination samplesReceiver, String hapmapPath, ImportFormat format, StudyKey studyKey) throws Exception {
 
 		String startTime = org.gwaspi.global.Utils.getMediumDateTimeAsString();
 
-		SortedMap<String, String> tempTM = parseAnnotationBRFile(); // rsId, alleles [A/T], chr, pos, strand, genome_build, center, protLSID, assayLSID, panelLSID, QC_code, ensue GTs by SampleId
+		// rsId, alleles [A/T], chr, pos, strand, genome_build, center, protLSID, assayLSID, panelLSID, QC_code, ensue GTs by SampleId
+		SortedMap<String, String> tempTM = parseAnnotationBRFile(hapmapPath);
 
 		org.gwaspi.global.Utils.sysoutStart("initilaizing Marker info");
 		log.info("parse raw data into marker metadata objects");
@@ -93,7 +99,7 @@ public class MetadataLoaderHapmap implements MetadataLoader {
 		MetadataLoaderPlink.logAsWhole(startTime, hapmapPath, description, studyKey.getId());
 	}
 
-	private SortedMap<String, String> parseAnnotationBRFile() throws IOException {
+	private SortedMap<String, String> parseAnnotationBRFile(String hapmapPath) throws IOException {
 
 		FileReader fr = new FileReader(hapmapPath);
 		BufferedReader inputAnnotationBr = new BufferedReader(fr);

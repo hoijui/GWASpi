@@ -31,11 +31,8 @@ import org.gwaspi.constants.cImport.ImportFormat;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
-import org.gwaspi.global.Text;
-import org.gwaspi.global.TypeConverter;
 import org.gwaspi.model.DataSet;
 import org.gwaspi.model.MarkerKey;
-import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.StudyKey;
 import org.slf4j.Logger;
@@ -58,7 +55,7 @@ public class LoadGTFromAffyFiles extends AbstractLoadGTFromFiles implements Geno
 	}
 
 	public LoadGTFromAffyFiles() {
-		super(ImportFormat.Affymetrix_GenomeWide6, StrandType.PLSMIN, true);
+		super(new MetadataLoaderAffy(), ImportFormat.Affymetrix_GenomeWide6, StrandType.PLSMIN, true);
 	}
 
 	@Override
@@ -80,15 +77,6 @@ public class LoadGTFromAffyFiles extends AbstractLoadGTFromFiles implements Geno
 		descSB.append("\n");
 		descSB.append(loadDescription.getAnnotationFilePath());
 		descSB.append(" (Annotation file)\n");
-	}
-
-	@Override
-	protected MetadataLoader createMetaDataLoader(GenotypesLoadDescription loadDescription) {
-
-		return new MetadataLoaderAffy(
-				loadDescription.getAnnotationFilePath(),
-				loadDescription.getFormat(),
-				loadDescription.getStudyKey());
 	}
 
 	@Override
@@ -206,9 +194,7 @@ public class LoadGTFromAffyFiles extends AbstractLoadGTFromFiles implements Geno
 			byte[] value = tempMarkerSet.containsKey(key) ? tempMarkerSet.get(key) : cNetCDF.Defaults.DEFAULT_GT;
 			sortedAlleles.put(key, value);
 		}
-		if (tempMarkerSet != null) {
-			tempMarkerSet.clear();
-		}
+		tempMarkerSet.clear();
 
 		GenotypeEncoding guessedGTCode = getGuessedGTCode();
 		if (guessedGTCode.equals(GenotypeEncoding.UNKNOWN)

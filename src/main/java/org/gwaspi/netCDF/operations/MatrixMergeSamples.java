@@ -67,7 +67,7 @@ public class MatrixMergeSamples extends AbstractMergeMatrixOperation {
 			dataSetDestination);
 	}
 
-	private MatrixFactory createMatrixFactory(MatrixKey matrix1Key, MatrixKey matrix2Key, int numSamples, int numMarkers, int numChromosomes, String matrixFriendlyName, String matrixDescription) throws IOException {
+	private MatrixFactory createMatrixFactory(int numSamples, int numMarkers, int numChromosomes, String matrixFriendlyName, String matrixDescription) throws IOException {
 
 		// Use comboed wrComboSampleSetMap as SampleSet
 		final String humanReadableMethodName = Text.Trafo.mergeSamplesOnly;
@@ -126,8 +126,8 @@ public class MatrixMergeSamples extends AbstractMergeMatrixOperation {
 					numSamples,
 					numMarkers,
 					numChromosomes,
-					matrix1Key, // Parent matrix 1 key
-					matrix2Key); // Parent matrix 2 key
+					dataSetSource1.getMatrixMetadata().getKey(), // Parent matrix 1 key
+					dataSetSource2.getMatrixMetadata().getKey()); // Parent matrix 2 key
 		} catch (InvalidRangeException ex) {
 			throw new IOException(ex);
 		}
@@ -155,7 +155,7 @@ public class MatrixMergeSamples extends AbstractMergeMatrixOperation {
 		// RETRIEVE CHROMOSOMES INFO
 		MarkersChromosomeInfosSource chromosomeInfo = dataSetSource1.getMarkersChromosomeInfosSource();
 
-		MatrixFactory wrMatrixHandler = createMatrixFactory(rdMatrix1Key, rdMatrix2Key, numSamples, numMarkers, chromosomeInfo.size(), wrMatrixFriendlyName, wrMatrixDescription);
+		MatrixFactory wrMatrixHandler = createMatrixFactory(numSamples, numMarkers, chromosomeInfo.size(), wrMatrixFriendlyName, wrMatrixDescription);
 
 		try {
 			NetcdfFileWriteable wrNcFile = wrMatrixHandler.getNetCDFHandler();

@@ -42,7 +42,7 @@ public class LoadGTFromPlinkFlatFiles extends AbstractLoadGTFromFiles implements
 			= LoggerFactory.getLogger(LoadGTFromPlinkFlatFiles.class);
 
 	public LoadGTFromPlinkFlatFiles() {
-		super(ImportFormat.PLINK, null, false);
+		super(new MetadataLoaderPlink(), ImportFormat.PLINK, null, false);
 	}
 
 	@Override
@@ -68,14 +68,6 @@ public class LoadGTFromPlinkFlatFiles extends AbstractLoadGTFromFiles implements
 			descSB.append(loadDescription.getSampleFilePath());
 			descSB.append(" (Sample Info file)\n");
 		}
-	}
-
-	@Override
-	protected MetadataLoader createMetaDataLoader(GenotypesLoadDescription loadDescription) {
-
-		return new MetadataLoaderPlink(
-				loadDescription.getGtDirPath(),
-				loadDescription.getStudyKey());
 	}
 
 	@Override

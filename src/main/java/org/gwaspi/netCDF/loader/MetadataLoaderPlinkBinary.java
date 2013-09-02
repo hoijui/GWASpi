@@ -39,15 +39,7 @@ public class MetadataLoaderPlinkBinary implements MetadataLoader {
 	private final Logger log
 			= LoggerFactory.getLogger(MetadataLoaderPlinkBinary.class);
 
-	private final String bimPath;
-	private final StrandType strand;
-	private final StudyKey studyKey;
-
-	public MetadataLoaderPlinkBinary(String bimPath, StrandType strand, StudyKey studyKey) {
-
-		this.bimPath = bimPath;
-		this.studyKey = studyKey;
-		this.strand = strand;
+	public MetadataLoaderPlinkBinary() {
 	}
 
 	@Override
@@ -56,11 +48,20 @@ public class MetadataLoaderPlinkBinary implements MetadataLoader {
 	}
 
 	@Override
-	public void loadMarkers(DataSetDestination samplesReceiver) throws Exception {
+	public void loadMarkers(DataSetDestination samplesReceiver, GenotypesLoadDescription loadDescription) throws Exception {
+		loadMarkers(
+				samplesReceiver,
+				loadDescription.getAnnotationFilePath(),
+				loadDescription.getStrand(),
+				loadDescription.getStudyKey());
+	}
+
+	private void loadMarkers(DataSetDestination samplesReceiver, String bimPath, StrandType strand, StudyKey studyKey) throws Exception {
 
 		String startTime = org.gwaspi.global.Utils.getMediumDateTimeAsString();
 
-		SortedMap<String, String> tempTM = parseAndSortBimFile(); // chr, markerId, genetic distance, position
+		// chr, markerId, genetic distance, position
+		SortedMap<String, String> tempTM = parseAndSortBimFile(bimPath);
 
 		org.gwaspi.global.Utils.sysoutStart("initilaizing Marker info");
 		log.info("parse raw data into marker metadata objects");
@@ -98,7 +99,7 @@ public class MetadataLoaderPlinkBinary implements MetadataLoader {
 		MetadataLoaderPlink.logAsWhole(startTime, bimPath, description, studyKey.getId());
 	}
 
-	private SortedMap<String, String> parseAndSortBimFile() throws IOException {
+	private SortedMap<String, String> parseAndSortBimFile(String bimPath) throws IOException {
 
 		FileReader fr = new FileReader(bimPath);
 		BufferedReader inputMapBR = new BufferedReader(fr);

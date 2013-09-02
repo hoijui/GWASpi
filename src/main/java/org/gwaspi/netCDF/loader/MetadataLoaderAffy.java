@@ -39,15 +39,7 @@ public class MetadataLoaderAffy implements MetadataLoader {
 	/** Duplicate SNPs to be removed */
 	private static final SNPBlacklist snpBlackList = new SNPBlacklist();
 
-	private String annotationPath;
-	private StudyKey studyKey;
-	private ImportFormat format;
-
-	public MetadataLoaderAffy(String annotationPath, ImportFormat format, StudyKey studyKey) {
-
-		this.annotationPath = annotationPath;
-		this.studyKey = studyKey;
-		this.format = format;
+	public MetadataLoaderAffy() {
 	}
 
 	@Override
@@ -56,11 +48,20 @@ public class MetadataLoaderAffy implements MetadataLoader {
 	}
 
 	@Override
-	public void loadMarkers(DataSetDestination samplesReceiver) throws Exception {
+	public void loadMarkers(DataSetDestination samplesReceiver, GenotypesLoadDescription loadDescription) throws Exception {
+		loadMarkers(
+				samplesReceiver,
+				loadDescription.getAnnotationFilePath(),
+				loadDescription.getFormat(),
+				loadDescription.getStudyKey());
+	}
+
+	private void loadMarkers(DataSetDestination samplesReceiver, String annotationPath, ImportFormat format, StudyKey studyKey) throws Exception {
 
 		String startTime = org.gwaspi.global.Utils.getMediumDateTimeAsString();
 
-		SortedMap<String, String> tempTM = parseAnnotationBRFile(); // affyId, rsId,chr,pseudo-autosomal,pos, strand, alleles, plus-alleles
+		// affyId, rsId,chr,pseudo-autosomal,pos, strand, alleles, plus-alleles
+		SortedMap<String, String> tempTM = parseAnnotationBRFile(annotationPath);
 
 		org.gwaspi.global.Utils.sysoutStart("initilaizing Marker info");
 		log.info("parse raw data into marker metadata objects");
@@ -98,7 +99,7 @@ public class MetadataLoaderAffy implements MetadataLoader {
 		MetadataLoaderPlink.logAsWhole(startTime, annotationPath, description, studyKey.getId());
 	}
 
-	private SortedMap<String, String> parseAnnotationBRFile() throws IOException {
+	private SortedMap<String, String> parseAnnotationBRFile(String annotationPath) throws IOException {
 		FileReader fr = new FileReader(annotationPath);
 		BufferedReader inputAnnotationBr = new BufferedReader(fr);
 		SortedMap<String, String> sortedMetadataTM = new TreeMap<String, String>(new ComparatorChrAutPosMarkerIdAsc());

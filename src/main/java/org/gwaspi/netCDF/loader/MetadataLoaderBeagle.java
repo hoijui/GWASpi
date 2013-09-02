@@ -37,30 +37,26 @@ public class MetadataLoaderBeagle implements MetadataLoader {
 	private final Logger log
 			= LoggerFactory.getLogger(MetadataLoaderBeagle.class);
 
-	private final String markerFilePath;
-	private final String chr;
-	private final StrandType strand;
-	private final StudyKey studyKey;
-
-	public MetadataLoaderBeagle(String mapPath, String chr, StrandType strand, StudyKey studyKey) {
-
-		this.markerFilePath = mapPath;
-		this.chr = chr;
-		this.strand = strand;
-		this.studyKey = studyKey;
-	}
-
 	@Override
 	public boolean isHasStrandInfo() {
 		return false;
 	}
 
 	@Override
-	public void loadMarkers(DataSetDestination samplesReceiver) throws Exception {
+	public void loadMarkers(DataSetDestination samplesReceiver, GenotypesLoadDescription loadDescription) throws Exception {
+		loadMarkers(
+				samplesReceiver,
+				loadDescription.getAnnotationFilePath(),
+				loadDescription.getChromosome(),
+				loadDescription.getStrand(),
+				loadDescription.getStudyKey());
+	}
+
+	private void loadMarkers(DataSetDestination samplesReceiver, String markerFilePath, String chr, StrandType strand, StudyKey studyKey) throws Exception {
 
 		String startTime = org.gwaspi.global.Utils.getMediumDateTimeAsString();
 
-		SortedMap<String, String> tempTM = parseAndSortMarkerFile(); // chr, markerId, genetic distance, position
+		SortedMap<String, String> tempTM = parseAndSortMarkerFile(markerFilePath, chr); // chr, markerId, genetic distance, position
 
 		org.gwaspi.global.Utils.sysoutStart("initilaizing Marker info");
 		log.info("parse raw data into marker metadata objects");
@@ -93,7 +89,7 @@ public class MetadataLoaderBeagle implements MetadataLoader {
 		MetadataLoaderPlink.logAsWhole(startTime, markerFilePath, description, studyKey.getId());
 	}
 
-	private SortedMap<String, String> parseAndSortMarkerFile() throws IOException {
+	private SortedMap<String, String> parseAndSortMarkerFile(String markerFilePath, String chr) throws IOException {
 		FileReader fr = new FileReader(markerFilePath);
 		BufferedReader inputMapBR = new BufferedReader(fr);
 		SortedMap<String, String> sortedMetadataTM = new TreeMap<String, String>(new ComparatorChrAutPosMarkerIdAsc());
