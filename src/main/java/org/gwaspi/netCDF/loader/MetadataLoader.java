@@ -17,14 +17,27 @@
 
 package org.gwaspi.netCDF.loader;
 
+import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
+
 public interface MetadataLoader {
 
 	/**
 	 * Indicates whether each marker may have a separate strand info,
 	 * or all of them share the same.
+	 * If false, then a global one has to be provided.
+	 * If true, then the MarkerMetadata has to have strand info set;
+	 * the ctor to set it has to be used, or a setter, if one exists.
 	 * @return true if each marker may have a separate strand info
 	 */
 	boolean isHasStrandInfo();
+
+	/**
+	 * @return the strand that is always used for markers in this format,
+	 *   or <code>null</code>, if the format is used with different
+	 *   strand flags.
+	 */
+	StrandType getFixedStrandFlag();
 
 	void loadMarkers(DataSetDestination samplesReceiver, GenotypesLoadDescription loadDescription) throws Exception;
 }

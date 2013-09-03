@@ -120,6 +120,28 @@ public class GenotypesLoadDescription {
 		return strand;
 	}
 
+	/**
+	 * Returns the strand flag that applies to all markers of the data set.
+	 * This value only makes sense if the format does not supply
+	 * a per marker strand.
+	 * @see MetadataLoader#isHasStrandInfo
+	 */
+	public String getStrandFlag() {
+
+		String strandFlag;
+
+		StrandType localStrand = getStrand();
+		// NOTE This if statement may not make sense,
+		//   it was only introduced to lead to exactly
+		//   the same strand-flag as the old code
+		if (localStrand == StrandType.FWDREV) {
+			localStrand = StrandType.UNKNOWN;
+		}
+		strandFlag = localStrand.toString();
+
+		return strandFlag;
+	}
+
 	public String getChromosome() {
 		return chromosome;
 	}

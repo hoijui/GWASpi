@@ -165,7 +165,6 @@ public class MatrixGenotypesFlipper implements MatrixOperation {
 		}
 		dataSetDestination.finishedLoadingMarkerMetadatas();
 
-
 		// WRITE GENOTYPES
 		dataSetDestination.startLoadingAlleles(false);
 		log.info(Text.All.processing);

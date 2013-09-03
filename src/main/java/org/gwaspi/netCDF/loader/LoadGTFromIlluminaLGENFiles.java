@@ -78,11 +78,6 @@ public class LoadGTFromIlluminaLGENFiles extends AbstractLoadGTFromFiles impleme
 	}
 
 	@Override
-	protected String getStrandFlag(GenotypesLoadDescription loadDescription) {
-		return cNetCDF.Defaults.StrandType.FWD.toString();
-	}
-
-	@Override
 	protected void loadGenotypes(
 			GenotypesLoadDescription loadDescription,
 			DataSetDestination samplesReceiver)

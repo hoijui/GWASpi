@@ -48,15 +48,19 @@ public class MetadataLoaderPlinkBinary implements MetadataLoader {
 	}
 
 	@Override
+	public StrandType getFixedStrandFlag() {
+		return null;
+	}
+
+	@Override
 	public void loadMarkers(DataSetDestination samplesReceiver, GenotypesLoadDescription loadDescription) throws Exception {
 		loadMarkers(
 				samplesReceiver,
 				loadDescription.getAnnotationFilePath(),
-				loadDescription.getStrand(),
 				loadDescription.getStudyKey());
 	}
 
-	private void loadMarkers(DataSetDestination samplesReceiver, String bimPath, StrandType strand, StudyKey studyKey) throws Exception {
+	private void loadMarkers(DataSetDestination samplesReceiver, String bimPath, StudyKey studyKey) throws Exception {
 
 		String startTime = org.gwaspi.global.Utils.getMediumDateTimeAsString();
 

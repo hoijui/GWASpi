@@ -46,15 +46,19 @@ public class MetadataLoaderHGDP1 implements MetadataLoader {
 	}
 
 	@Override
+	public StrandType getFixedStrandFlag() {
+		return null;
+	}
+
+	@Override
 	public void loadMarkers(DataSetDestination samplesReceiver, GenotypesLoadDescription loadDescription) throws Exception {
 		loadMarkers(
 				samplesReceiver,
 				loadDescription.getAnnotationFilePath(),
-				loadDescription.getStrand(),
 				loadDescription.getStudyKey());
 	}
 
-	private void loadMarkers(DataSetDestination samplesReceiver, String markerFilePath, StrandType strand, StudyKey studyKey) throws Exception {
+	private void loadMarkers(DataSetDestination samplesReceiver, String markerFilePath, StudyKey studyKey) throws Exception {
 
 		String startTime = org.gwaspi.global.Utils.getMediumDateTimeAsString();
 

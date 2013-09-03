@@ -22,8 +22,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import org.gwaspi.constants.cImport.ImportFormat;
-import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.DataSetSource;
@@ -105,41 +103,13 @@ public class MatrixGenotypesFlipperNetCDFDataSetDestination extends AbstractNetC
 	}
 
 	@Override
-	protected boolean isHasStrandInfo() {
-		return gtLoader.isHasStrandInfo();
-	}
-
-	@Override
 	protected String getStrandFlag() {
-
-		String strandFlag;
-		if (gtLoader.isHasStrandInfo()) {
-			strandFlag = null;
-		} else {
-			strandFlag = gtLoader.getStrandFlag(loadDescription);
-		}
-
-		return strandFlag;
-	}
-
-	@Override
-	public void finishedLoadingAlleles() throws IOException {
-		super.finishedLoadingAlleles();
-
-		logAsWhole(
-				startTime,
-				loadDescription.getStudyKey().getId(),
-				loadDescription.getGtDirPath(),
-				loadDescription.getFormat(),
-				loadDescription.getFriendlyName(),
-				loadDescription.getDescription());
-
-		org.gwaspi.global.Utils.sysoutCompleted("writing Genotypes to Matrix");
+		return null;
 	}
 
 	@Override
 	protected String getGuessedGTCode() {
-		return gtLoader.getGuessedGTCode().toString();
+		return dataSetSource.getMatrixMetadata().getGenotypeEncoding().toString();
 	}
 
 	static List<SampleKey> extractKeys(Collection<SampleInfo> sampleInfos) {

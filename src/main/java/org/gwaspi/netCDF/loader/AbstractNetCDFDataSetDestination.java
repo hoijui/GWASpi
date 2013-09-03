@@ -86,8 +86,10 @@ public abstract class AbstractNetCDFDataSetDestination extends AbstractDataSetDe
 
 	protected abstract MatrixFactory createMatrixFactory() throws IOException;
 
-	protected abstract boolean isHasStrandInfo();
-
+	/**
+	 * @return the strand-flag applicable to all markers,
+	 *   or <code>null</code>, if each marker has a separate strand-flag
+	 */
 	protected abstract String getStrandFlag();
 
 	@Override
@@ -109,13 +111,7 @@ public abstract class AbstractNetCDFDataSetDestination extends AbstractDataSetDe
 			saveSamplesMatadata(sampleKeys, ncfile);
 
 			boolean hasDictionary = resultMatrixMetadata.getHasDictionray();
-			String strandFlag;
-			if (isHasStrandInfo()) {
-				strandFlag = null;
-			} else {
-				strandFlag = getStrandFlag();
-			}
-			saveMarkersMatadata(getDataSet().getMarkerMetadatas(), getDataSet().getChromosomeInfos(), hasDictionary, strandFlag, ncfile);
+			saveMarkersMatadata(getDataSet().getMarkerMetadatas(), getDataSet().getChromosomeInfos(), hasDictionary, getStrandFlag(), ncfile);
 		} catch (InvalidRangeException ex) {
 			throw new IOException(ex);
 		}
@@ -291,6 +287,8 @@ public abstract class AbstractNetCDFDataSetDestination extends AbstractDataSetDe
 		} catch (InvalidRangeException ex) {
 			throw new IOException(ex);
 		}
+
+		org.gwaspi.global.Utils.sysoutCompleted("writing Genotypes to Matrix");
 	}
 
 	protected abstract String getGuessedGTCode();

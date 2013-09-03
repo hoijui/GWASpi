@@ -100,7 +100,7 @@ public class LoadingNetCDFDataSetDestination extends AbstractNetCDFDataSetDestin
 					loadDescription.getFriendlyName(),
 					descSB.toString(), // description
 					loadDescription.getGtCode(),
-					(gtLoader.getMatrixStrand() != null)
+					(gtLoader.getMatrixStrand() != null) // NOTE getMatrixStrand() is only used here!
 							? gtLoader.getMatrixStrand()
 							: loadDescription.getStrand(),
 					gtLoader.isHasDictionary(),
@@ -114,18 +114,15 @@ public class LoadingNetCDFDataSetDestination extends AbstractNetCDFDataSetDestin
 	}
 
 	@Override
-	protected boolean isHasStrandInfo() {
-		return gtLoader.isHasStrandInfo();
-	}
-
-	@Override
 	protected String getStrandFlag() {
 
 		String strandFlag;
-		if (gtLoader.isHasStrandInfo()) {
+		if (gtLoader.getMetadataLoader().isHasStrandInfo()) { // NOTE ... and here!
 			strandFlag = null;
+		} else if (gtLoader.getMetadataLoader().getFixedStrandFlag() != null) {
+			strandFlag = gtLoader.getMetadataLoader().getFixedStrandFlag().toString();
 		} else {
-			strandFlag = gtLoader.getStrandFlag(loadDescription);
+			strandFlag = loadDescription.getStrandFlag(); // NOTE getStrandFlag(...) is only used here!
 		}
 
 		return strandFlag;
@@ -142,8 +139,6 @@ public class LoadingNetCDFDataSetDestination extends AbstractNetCDFDataSetDestin
 				loadDescription.getFormat(),
 				loadDescription.getFriendlyName(),
 				loadDescription.getDescription());
-
-		org.gwaspi.global.Utils.sysoutCompleted("writing Genotypes to Matrix");
 	}
 
 	@Override

@@ -72,6 +72,10 @@ public abstract class AbstractLoadGTFromFiles implements GenotypesLoader {
 		return matrixStrand;
 	}
 
+	public MetadataLoader getMetadataLoader() {
+		return markerSetMetadataLoader;
+	}
+
 	@Override
 	public boolean isHasDictionary() {
 		return hasDictionary;
@@ -92,45 +96,11 @@ public abstract class AbstractLoadGTFromFiles implements GenotypesLoader {
 		return true;
 	}
 
-	/**
-	 * Returns the strand flag that applies to all markers of the data set.
-	 * This value only makes sense if the format does not supply
-	 * a per marker strand.
-	 * @see #isHasStrandInfo
-	 */
-	protected String getStrandFlag(GenotypesLoadDescription loadDescription) {
-
-		String strandFlag;
-
-		StrandType strand = loadDescription.getStrand();
-		if (strand == StrandType.FWDREV) {
-			strand = StrandType.UNKNOWN;
-		}
-		strandFlag = strand.toString();
-
-		return strandFlag;
-	}
-
 	private void loadMarkerMetadata(GenotypesLoadDescription loadDescription, DataSetDestination samplesReceiver) throws Exception {
 
 		samplesReceiver.startLoadingMarkerMetadatas();
 		markerSetMetadataLoader.loadMarkers(samplesReceiver, loadDescription);
 		samplesReceiver.finishedLoadingMarkerMetadatas();
-	}
-
-	/**
-	 * Whether each marker loaded has a strand info.
-	 * If false, then a global one has to be provided.
-	 * If true, then the MarkerMetadata has to have strand info set
-	 * (the ctor to set it has to be used, or a setter, if one exists).
-	 * @see #getStrandFlag
-	 */
-	protected boolean isHasStrandInfo() {
-		return false;
-//		MetadataLoader markerSetLoader = createMetaDataLoader(loadDescription);
-//		samplesReceiver.startLoadingMarkerMetadatas();
-//		markerSetLoader.loadMarkers(samplesReceiver);
-//		samplesReceiver.finishedLoadingMarkerMetadatas();
 	}
 
 	//<editor-fold defaultstate="expanded" desc="PROCESS GENOTYPES">

@@ -101,11 +101,6 @@ public class LoadGTFromHapmapFiles extends AbstractLoadGTFromFiles implements Ge
 		return gtFilesToImport;
 	}
 
-	@Override
-	protected boolean isHasStrandInfo() {
-		return false;
-	}
-
 	//<editor-fold defaultstate="expanded" desc="PROCESS GENOTYPES">
 	@Override
 	protected void loadGenotypes(

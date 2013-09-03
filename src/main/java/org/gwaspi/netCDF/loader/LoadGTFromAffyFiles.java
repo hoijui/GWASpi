@@ -80,11 +80,6 @@ public class LoadGTFromAffyFiles extends AbstractLoadGTFromFiles implements Geno
 	}
 
 	@Override
-	protected boolean isHasStrandInfo() {
-		return true;
-	}
-
-	@Override
 	protected void loadGenotypes(
 			GenotypesLoadDescription loadDescription,
 			DataSetDestination samplesReceiver)

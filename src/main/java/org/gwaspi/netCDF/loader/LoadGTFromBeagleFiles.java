@@ -48,11 +48,7 @@ public class LoadGTFromBeagleFiles extends AbstractLoadGTFromFiles {
 	}
 
 	public LoadGTFromBeagleFiles() {
-		super(
-				new MetadataLoaderBeagle(),
-				ImportFormat.BEAGLE,
-				StrandType.UNKNOWN,
-				false);
+		super(new MetadataLoaderBeagle(), ImportFormat.BEAGLE, StrandType.UNKNOWN, false);
 	}
 
 	@Override

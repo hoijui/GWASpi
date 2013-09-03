@@ -43,16 +43,20 @@ public class MetadataLoaderBeagle implements MetadataLoader {
 	}
 
 	@Override
+	public StrandType getFixedStrandFlag() {
+		return null;
+	}
+
+	@Override
 	public void loadMarkers(DataSetDestination samplesReceiver, GenotypesLoadDescription loadDescription) throws Exception {
 		loadMarkers(
 				samplesReceiver,
 				loadDescription.getAnnotationFilePath(),
 				loadDescription.getChromosome(),
-				loadDescription.getStrand(),
 				loadDescription.getStudyKey());
 	}
 
-	private void loadMarkers(DataSetDestination samplesReceiver, String markerFilePath, String chr, StrandType strand, StudyKey studyKey) throws Exception {
+	private void loadMarkers(DataSetDestination samplesReceiver, String markerFilePath, String chr, StudyKey studyKey) throws Exception {
 
 		String startTime = org.gwaspi.global.Utils.getMediumDateTimeAsString();
 
