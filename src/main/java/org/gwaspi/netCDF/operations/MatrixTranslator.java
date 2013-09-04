@@ -71,7 +71,7 @@ public class MatrixTranslator implements MatrixOperation {
 			DataSetSource dataSetSource,
 			String wrMatrixFriendlyName,
 			String wrMatrixDescription)
-			throws IOException, InvalidRangeException
+			throws IOException
 	{
 		// INIT EXTRACTOR OBJECTS
 		this.rdMatrixKey = rdMatrixKey;
@@ -104,10 +104,12 @@ public class MatrixTranslator implements MatrixOperation {
 			MatrixMetadata parentMatrixMetadata = dataSetSource.getMatrixMetadata();
 			GenotypeEncoding genotypeEncoding = parentMatrixMetadata.getGenotypeEncoding();
 			if (!genotypeEncoding.equals(GenotypeEncoding.AB0)
-					&& !genotypeEncoding.equals(GenotypeEncoding.O12))
+					&& !genotypeEncoding.equals(GenotypeEncoding.O12)
+					&& !genotypeEncoding.equals(GenotypeEncoding.O1234))
 			{
-				problemDescription = Text.Trafo.warnNotAB12;
-			} else if (!parentMatrixMetadata.getHasDictionray()) {
+				problemDescription = Text.Trafo.warnNotAB12 +  " & " + Text.Trafo.warnNot1234;
+			} else if (!genotypeEncoding.equals(GenotypeEncoding.O1234)
+					&& !parentMatrixMetadata.getHasDictionray()) {
 				problemDescription = Text.Trafo.warnNoDictionary;
 			}
 		} catch (IOException ex) {
@@ -130,7 +132,10 @@ public class MatrixTranslator implements MatrixOperation {
 		} else if (gtEncoding.equals(GenotypeEncoding.O1234)) {
 			resultMatrixId = translate1234AllelesToACGT();
 		} else {
-			throw new IllegalStateException("Invalid value for gtEncoding: " + gtEncoding);
+			throw new IllegalStateException(
+					"Can not convert genotype-encoding: "
+					+ gtEncoding.toString() + " to "
+					+ GenotypeEncoding.ACGT0.toString());
 		}
 
 		return resultMatrixId;

@@ -313,37 +313,46 @@ public class MatrixTrafoPanel extends JPanel {
 	//<editor-fold defaultstate="expanded" desc="TRAFO">
 	private class TranslateAB12ToACGTAction extends AbstractAction { // FIXME make static
 
-		TranslateAB12ToACGTAction() {
+		TranslateAB12ToACGTAction() throws IOException {
 
 			putValue(NAME, Text.Trafo.htmlTranslate1);
+			MatrixMetadata parentMatrixMetadata = MatricesList.getMatrixMetadataById(parentMatrixKey);
+			GenotypeEncoding genotypeEncoding = parentMatrixMetadata.getGenotypeEncoding();
+			final boolean sourceGTEncodingIsABor12
+					= (genotypeEncoding.equals(GenotypeEncoding.AB0)
+					|| genotypeEncoding.equals(GenotypeEncoding.O12));
+			setEnabled(sourceGTEncodingIsABor12);
+			if (!sourceGTEncodingIsABor12) {
+				putValue(SHORT_DESCRIPTION,
+						"can not translate AB/12 -> ACGT: the source is "
+						+ genotypeEncoding.toString() + " encoded");
+			}
 		}
 
 		@Override
 		public void actionPerformed(ActionEvent evt) {
 			String newMatrixName = checkNewMatrixData();
 			if (!newMatrixName.isEmpty()) {
-					MatrixOperation matrixTranslator = new MatrixTranslator();
 				try {
-					MatrixMetadata parentMatrixMetadata = MatricesList.getMatrixMetadataById(parentMatrixKey);
 					String description = txtA_NewMatrixDescription.getText();
 					if (txtA_NewMatrixDescription.getText().equals(Text.All.optional)) {
 						description = "";
 					}
 
-					if (parentMatrixMetadata.getGenotypeEncoding().equals(GenotypeEncoding.AB0)
-							|| parentMatrixMetadata.getGenotypeEncoding().equals(GenotypeEncoding.O12))
-					{
-						if (parentMatrixMetadata.getHasDictionray()) {
-							MultiOperations.doTranslateAB12ToACGT(
-									parentMatrixKey,
-									cNetCDF.Defaults.GenotypeEncoding.AB0, // No matter if AB or 12, works the same here
-									newMatrixName,
-									description);
-						} else {
-							Dialogs.showWarningDialogue(Text.Trafo.warnNoDictionary);
-						}
+					DataSetSource dataSetSource = new NetCDFDataSetSource(parentMatrixKey);
+					MatrixOperation validationMatrixOperation = new MatrixTranslator(
+								dataSetSource,
+								newMatrixName,
+								description);
+
+					if (validationMatrixOperation.isValid()) {
+						// HACK use doMatrixOperation instead!
+						MultiOperations.doTranslateAB12ToACGT(
+								parentMatrixKey,
+								newMatrixName,
+								description);
 					} else {
-						Dialogs.showWarningDialogue(Text.Trafo.warnNotAB12);
+						Dialogs.showWarningDialogue(validationMatrixOperation.getProblemDescription());
 					}
 				} catch (IOException ex) {
 					log.error(null, ex);
@@ -354,41 +363,20 @@ public class MatrixTrafoPanel extends JPanel {
 		}
 	}
 
-	private class Translate1234ToACGTAction extends AbstractAction { // FIXME make static
+	private class Translate1234ToACGTAction extends TranslateAB12ToACGTAction { // FIXME make static
 
-		Translate1234ToACGTAction() {
+		Translate1234ToACGTAction() throws IOException {
 
 			putValue(NAME, Text.Trafo.htmlTranslate2);
-		}
-
-		@Override
-		public void actionPerformed(ActionEvent evt) {
-			String newMatrixName = checkNewMatrixData();
-			if (!newMatrixName.isEmpty()) {
-					MatrixOperation matrixTranslator = new MatrixTranslator();
-				try {
-					MatrixMetadata parentMatrixMetadata = MatricesList.getMatrixMetadataById(parentMatrixKey);
-
-					String description = txtA_NewMatrixDescription.getText();
-					if (txtA_NewMatrixDescription.getText().equals(Text.All.optional)) {
-						description = "";
-					}
-
-					if (parentMatrixMetadata.getGenotypeEncoding().equals(GenotypeEncoding.O1234)) {
-
-						MultiOperations.doTranslateAB12ToACGT(
-								parentMatrixKey,
-								cNetCDF.Defaults.GenotypeEncoding.O1234,
-								newMatrixName,
-								description);
-					} else {
-						Dialogs.showWarningDialogue(Text.Trafo.warnNot1234);
-					}
-				} catch (IOException ex) {
-					log.error(null, ex);
-				}
-			} else {
-				Dialogs.showWarningDialogue(Text.Matrix.warnInputNewMatrixName);
+			MatrixMetadata parentMatrixMetadata = MatricesList.getMatrixMetadataById(parentMatrixKey);
+			GenotypeEncoding genotypeEncoding = parentMatrixMetadata.getGenotypeEncoding();
+			final boolean sourceGTEncodingIs1234
+					= genotypeEncoding.equals(GenotypeEncoding.O1234);
+			setEnabled(sourceGTEncodingIs1234);
+			if (!sourceGTEncodingIs1234) {
+				putValue(SHORT_DESCRIPTION,
+						"can not translate 1234 -> ACGT: the source is "
+						+ genotypeEncoding.toString() + " encoded");
 			}
 		}
 	}
@@ -418,6 +406,7 @@ public class MatrixTrafoPanel extends JPanel {
 
 					if (validationMatrixOperation.isValid()) {
 						File flipMarkersFile = Dialogs.selectFilesAndDirectoriesDialog(JOptionPane.OK_OPTION);
+						// HACK use doMatrixOperation instead!
 						MultiOperations.doStrandFlipMatrix(
 								parentMatrixKey,
 								cNetCDF.Variables.VAR_MARKERSET,

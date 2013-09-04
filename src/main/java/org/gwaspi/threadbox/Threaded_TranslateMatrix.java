@@ -18,9 +18,11 @@
 package org.gwaspi.threadbox;
 
 import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
+import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.GWASpiExplorerNodes;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
+import org.gwaspi.netCDF.markers.NetCDFDataSetSource;
 import org.gwaspi.netCDF.operations.MatrixTranslator;
 import org.gwaspi.netCDF.operations.OP_QAMarkers;
 import org.gwaspi.netCDF.operations.OP_QASamples;
@@ -30,13 +32,11 @@ import org.slf4j.LoggerFactory;
 public class Threaded_TranslateMatrix extends CommonRunnable {
 
 	private final MatrixKey parentMatrixKey;
-	private final GenotypeEncoding gtEncoding;
 	private final String newMatrixName;
 	private final String description;
 
 	public Threaded_TranslateMatrix(
 			MatrixKey parentMatrixKey,
-			GenotypeEncoding gtEncoding,
 			String newMatrixName,
 			String description)
 	{
@@ -47,7 +47,6 @@ public class Threaded_TranslateMatrix extends CommonRunnable {
 				"Translating Matrix");
 
 		this.parentMatrixKey = parentMatrixKey;
-		this.gtEncoding = gtEncoding;
 		this.newMatrixName = newMatrixName;
 		this.description = description;
 	}
@@ -59,21 +58,13 @@ public class Threaded_TranslateMatrix extends CommonRunnable {
 	protected void runInternal(SwingWorkerItem thisSwi) throws Exception {
 
 		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
+			DataSetSource dataSetSource = new NetCDFDataSetSource(parentMatrixKey);
 			MatrixTranslator matrixTransformer = new MatrixTranslator(
-					parentMatrixKey,
+					dataSetSource,
 					newMatrixName,
 					description);
 
-			int resultMatrixId;
-			if (gtEncoding.equals(GenotypeEncoding.AB0)
-					|| gtEncoding.equals(GenotypeEncoding.O12))
-			{
-				resultMatrixId = matrixTransformer.translateAB12AllelesToACGT();
-			} else if (gtEncoding.equals(GenotypeEncoding.O1234)) {
-				resultMatrixId = matrixTransformer.translate1234AllelesToACGT();
-			} else {
-				throw new IllegalStateException("Invalid value for gtEncoding: " + gtEncoding);
-			}
+			int resultMatrixId = matrixTransformer.processMatrix();
 			MatrixKey resultMatrixKey = new MatrixKey(parentMatrixKey.getStudyKey(), resultMatrixId);
 
 			GWASpiExplorerNodes.insertMatrixNode(resultMatrixKey);

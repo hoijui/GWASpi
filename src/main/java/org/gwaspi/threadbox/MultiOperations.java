@@ -32,6 +32,7 @@ import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.loader.GenotypesLoadDescription;
 import org.gwaspi.netCDF.operations.GWASinOneGOParams;
+import org.gwaspi.netCDF.operations.MatrixOperation;
 import org.gwaspi.operations.combi.CombiTestParams;
 
 public class MultiOperations {
@@ -198,6 +199,16 @@ public class MultiOperations {
 	//</editor-fold>
 
 	//<editor-fold defaultstate="expanded" desc="DATA MANAGEMENT">
+	public static void doMatrixOperation(final MatrixOperation matrixOperation) {
+		CommonRunnable task = new Threaded_MatrixOperation(matrixOperation);
+
+		TaskLockProperties lockProperties = new TaskLockProperties();
+		lockProperties.getStudyIds().add(parentMatrixKey.getStudyId());
+		lockProperties.getMatricesIds().add(parentMatrixKey.getMatrixId());
+
+		queueTask(task, lockProperties);
+	}
+
 	public static void doExtractData(
 			final MatrixKey parentMatrixKey,
 			final String newMatrixName,
@@ -233,13 +244,11 @@ public class MultiOperations {
 
 	public static void doTranslateAB12ToACGT(
 			final MatrixKey parentMatrixKey,
-			final GenotypeEncoding gtEncoding,
 			final String newMatrixName,
 			final String description)
 	{
 		CommonRunnable task = new Threaded_TranslateMatrix(
 				parentMatrixKey,
-				gtEncoding,
 				newMatrixName,
 				description);
 
@@ -320,7 +329,6 @@ public class MultiOperations {
 				parentMatrixKey,
 				newMatrixName,
 				description,
-				markerIdentifyer,
 				markerFlipFile);
 
 		TaskLockProperties lockProperties = new TaskLockProperties();
