@@ -47,9 +47,14 @@ import org.gwaspi.gui.utils.BrowserHelpUrlAction;
 import org.gwaspi.gui.utils.Dialogs;
 import org.gwaspi.gui.utils.HelpURLs;
 import org.gwaspi.gui.utils.LimitedLengthDocument;
+import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
+import org.gwaspi.netCDF.markers.NetCDFDataSetSource;
+import org.gwaspi.netCDF.operations.MatrixGenotypesFlipper;
+import org.gwaspi.netCDF.operations.MatrixOperation;
+import org.gwaspi.netCDF.operations.MatrixTranslator;
 import org.gwaspi.threadbox.MultiOperations;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -317,6 +322,7 @@ public class MatrixTrafoPanel extends JPanel {
 		public void actionPerformed(ActionEvent evt) {
 			String newMatrixName = checkNewMatrixData();
 			if (!newMatrixName.isEmpty()) {
+					MatrixOperation matrixTranslator = new MatrixTranslator();
 				try {
 					MatrixMetadata parentMatrixMetadata = MatricesList.getMatrixMetadataById(parentMatrixKey);
 					String description = txtA_NewMatrixDescription.getText();
@@ -359,6 +365,7 @@ public class MatrixTrafoPanel extends JPanel {
 		public void actionPerformed(ActionEvent evt) {
 			String newMatrixName = checkNewMatrixData();
 			if (!newMatrixName.isEmpty()) {
+					MatrixOperation matrixTranslator = new MatrixTranslator();
 				try {
 					MatrixMetadata parentMatrixMetadata = MatricesList.getMatrixMetadataById(parentMatrixKey);
 
@@ -398,16 +405,18 @@ public class MatrixTrafoPanel extends JPanel {
 			String newMatrixName = checkNewMatrixData();
 			if (!newMatrixName.isEmpty()) {
 				try {
-					MatrixMetadata parentMatrixMetadata = MatricesList.getMatrixMetadataById(parentMatrixKey);
-
 					String description = txtA_NewMatrixDescription.getText();
 					if (txtA_NewMatrixDescription.getText().equals(Text.All.optional)) {
 						description = "";
 					}
 
-					if (parentMatrixMetadata.getGenotypeEncoding().equals(GenotypeEncoding.O1234)
-							|| parentMatrixMetadata.getGenotypeEncoding().equals(GenotypeEncoding.ACGT0)) {
+					DataSetSource dataSetSource = new NetCDFDataSetSource(parentMatrixKey);
+					MatrixOperation validationMatrixOperation = new MatrixGenotypesFlipper(
+								dataSetSource,
+								null,
+								null);
 
+					if (validationMatrixOperation.isValid()) {
 						File flipMarkersFile = Dialogs.selectFilesAndDirectoriesDialog(JOptionPane.OK_OPTION);
 						MultiOperations.doStrandFlipMatrix(
 								parentMatrixKey,
@@ -416,7 +425,7 @@ public class MatrixTrafoPanel extends JPanel {
 								newMatrixName,
 								description);
 					} else {
-						Dialogs.showWarningDialogue(Text.Trafo.warnNotACGTor1234);
+						Dialogs.showWarningDialogue(validationMatrixOperation.getProblemDescription());
 					}
 				} catch (Exception ex) {
 					log.error(null, ex);

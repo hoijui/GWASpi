@@ -68,7 +68,7 @@ public class MatrixTranslator implements MatrixOperation {
 	private final DataSetDestination dataSetDestination;
 
 	public MatrixTranslator(
-			MatrixKey rdMatrixKey,
+			DataSetSource dataSetSource,
 			String wrMatrixFriendlyName,
 			String wrMatrixDescription)
 			throws IOException, InvalidRangeException
@@ -92,33 +92,29 @@ public class MatrixTranslator implements MatrixOperation {
 
 	@Override
 	public boolean isValid() {
-
-		MatrixMetadata parentMatrixMetadata = MatricesList.getMatrixMetadataById(parentMatrixKey);
-		String description = txtA_NewMatrixDescription.getText();
-		if (txtA_NewMatrixDescription.getText().equals(Text.All.optional)) {
-			description = "";
-		}
-
-		if (parentMatrixMetadata.getGenotypeEncoding().equals(GenotypeEncoding.AB0)
-				|| parentMatrixMetadata.getGenotypeEncoding().equals(GenotypeEncoding.O12))
-		{
-			if (parentMatrixMetadata.getHasDictionray()) {
-				MultiOperations.doTranslateAB12ToACGT(
-						parentMatrixKey,
-						cNetCDF.Defaults.GenotypeEncoding.AB0, // No matter if AB or 12, works the same here
-						newMatrixName,
-						description);
-			} else {
-				Dialogs.showWarningDialogue(Text.Trafo.warnNoDictionary);
-			}
-		} else {
-			Dialogs.showWarningDialogue(Text.Trafo.warnNotAB12);
-		}
+		return (getProblemDescription() == null);
 	}
 
 	@Override
 	public String getProblemDescription() {
-		return null;
+
+		String problemDescription = null;
+
+		try {
+			MatrixMetadata parentMatrixMetadata = dataSetSource.getMatrixMetadata();
+			GenotypeEncoding genotypeEncoding = parentMatrixMetadata.getGenotypeEncoding();
+			if (!genotypeEncoding.equals(GenotypeEncoding.AB0)
+					&& !genotypeEncoding.equals(GenotypeEncoding.O12))
+			{
+				problemDescription = Text.Trafo.warnNotAB12;
+			} else if (!parentMatrixMetadata.getHasDictionray()) {
+				problemDescription = Text.Trafo.warnNoDictionary;
+			}
+		} catch (IOException ex) {
+			problemDescription = ex.getMessage();
+		}
+
+		return problemDescription;
 	}
 
 	@Override

@@ -24,17 +24,22 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+import javax.swing.JOptionPane;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
 import org.gwaspi.global.Text;
+import org.gwaspi.gui.utils.Dialogs;
 import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.GenotypesList;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MarkerMetadata;
+import org.gwaspi.model.MatricesList;
+import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.netCDF.loader.DataSetDestination;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
+import org.gwaspi.threadbox.MultiOperations;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.InvalidRangeException;
@@ -130,7 +135,21 @@ public class MatrixGenotypesFlipper implements MatrixOperation {
 
 	@Override
 	public String getProblemDescription() {
-		return null;
+
+		String problemDescription = null;
+
+		try {
+			GenotypeEncoding genotypeEncoding = dataSetSource.getMatrixMetadata().getGenotypeEncoding();
+			if (!genotypeEncoding.equals(GenotypeEncoding.O1234)
+					&& !genotypeEncoding.equals(GenotypeEncoding.ACGT0))
+			{
+				problemDescription = Text.Trafo.warnNotACGTor1234;
+			}
+		} catch (IOException ex) {
+			problemDescription = ex.getMessage();
+		}
+
+		return problemDescription;
 	}
 
 	@Override
