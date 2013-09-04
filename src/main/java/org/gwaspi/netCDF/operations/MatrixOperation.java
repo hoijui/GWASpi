@@ -21,5 +21,28 @@ import java.io.IOException;
 
 public interface MatrixOperation {
 
+	/**
+	 * Whether the operation is valid, given its parameters.
+	 * @return true, if the operation seems to be valid,
+	 *   and may be able to execute properly; false otherwise
+	 */
+	boolean isValid();
+
+	/**
+	 * Returns true, if the operation looks to be valid,
+	 * and may be able to execute properly.
+	 * @return a human readable description of the problem
+	 *   with the given parameters if the operation is invalid;
+	 *   <code>null</code> otherwise
+	 * @see #isValid()
+	 */
+	String getProblemDescription();
+
+	/**
+	 * Execute this operation.
+	 * @return the resulting matrixes ID if the operation succeeded,
+	 *   with the given parameters if the operation is invalid;
+	 *   <code>Integer#MIN_VALUE</code> otherwise
+	 */
 	int processMatrix() throws IOException;
 }

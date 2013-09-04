@@ -25,7 +25,6 @@ import java.util.List;
 import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.DataSetSource;
-import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.netCDF.loader.AbstractNetCDFDataSetDestination;
@@ -45,20 +44,17 @@ public class MatrixGenotypesFlipperNetCDFDataSetDestination extends AbstractNetC
 			= LoggerFactory.getLogger(MatrixGenotypesFlipperNetCDFDataSetDestination.class);
 
 	private final DataSetSource dataSetSource;
-	private final MatrixKey matrixKey;
 	private final String matrixDescription;
 	private final String matrixFriendlyName;
 	private final File flipperFile;
 
 	public MatrixGenotypesFlipperNetCDFDataSetDestination(
 			DataSetSource dataSetSource,
-			MatrixKey matrixKey,
 			String matrixDescription,
 			String matrixFriendlyName,
 			File flipperFile)
 	{
 		this.dataSetSource = dataSetSource;
-		this.matrixKey = matrixKey;
 		this.matrixDescription = matrixDescription;
 		this.matrixFriendlyName = matrixFriendlyName;
 		this.flipperFile = flipperFile;
@@ -95,7 +91,7 @@ public class MatrixGenotypesFlipperNetCDFDataSetDestination extends AbstractNetC
 					dataSetSource.getSamplesKeysSource().size(),
 					dataSetSource.getMarkersKeysSource().size(),
 					dataSetSource.getMarkersChromosomeInfosSource().size(),
-					matrixKey, // orig/parent matrix 1 key
+					dataSetSource.getMatrixMetadata().getKey(), // orig/parent matrix 1 key
 					null); // orig/parent matrix 2 key
 		} catch (InvalidRangeException ex) {
 			throw new IOException(ex);

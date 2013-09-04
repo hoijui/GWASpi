@@ -63,6 +63,16 @@ public abstract class AbstractMergeMarkersMatrixOperation extends AbstractMergeM
 				dataSetDestination);
 	}
 
+	@Override
+	public boolean isValid() {
+		return true;
+	}
+
+	@Override
+	public String getProblemDescription() {
+		return null;
+	}
+
 	private MatrixFactory createMatrixFactory(int numSamples, int numMarkers, int numChromosomes, String matrixFriendlyName, String matrixDescription, String humanReadableMethodName, String methodDescription) throws IOException {
 
 		MatrixMetadata rdMatrix1Metadata = dataSetSource1.getMatrixMetadata();

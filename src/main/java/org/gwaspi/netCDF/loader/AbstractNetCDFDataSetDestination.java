@@ -111,7 +111,7 @@ public abstract class AbstractNetCDFDataSetDestination extends AbstractDataSetDe
 			saveSamplesMatadata(sampleKeys, ncfile);
 
 			boolean hasDictionary = resultMatrixMetadata.getHasDictionray();
-			saveMarkersMatadata(getDataSet().getMarkerMetadatas(), getDataSet().getChromosomeInfos(), hasDictionary, getStrandFlag(), ncfile);
+			saveMarkersMatadata(getDataSet().getMarkerMetadatas().values(), getDataSet().getChromosomeInfos(), hasDictionary, getStrandFlag(), ncfile);
 		} catch (InvalidRangeException ex) {
 			throw new IOException(ex);
 		}
@@ -126,24 +126,24 @@ public abstract class AbstractNetCDFDataSetDestination extends AbstractDataSetDe
 		log.info("Done writing SampleSet to matrix");
 	}
 
-	public static void saveMarkersMatadata(Map<MarkerKey, MarkerMetadata> markerMetadatas, Map<ChromosomeKey, ChromosomeInfo> chromosomeInfo, boolean hasDictionary, String strandFlag, NetcdfFileWriteable wrNcFile) throws IOException, InvalidRangeException {
+	public static void saveMarkersMatadata(Collection<MarkerMetadata> markerMetadatas, Map<ChromosomeKey, ChromosomeInfo> chromosomeInfo, boolean hasDictionary, String strandFlag, NetcdfFileWriteable wrNcFile) throws IOException, InvalidRangeException {
 
 		ArrayChar.D2 markersD2;
 		final int[] markersOrig = new int[] {0, 0};
 
 		// WRITE RSID
-		markersD2 = NetCdfUtils.writeValuesToD2ArrayChar(markerMetadatas.values(), MarkerMetadata.TO_RS_ID, cNetCDF.Strides.STRIDE_MARKER_NAME);
+		markersD2 = NetCdfUtils.writeValuesToD2ArrayChar(markerMetadatas, MarkerMetadata.TO_RS_ID, cNetCDF.Strides.STRIDE_MARKER_NAME);
 		wrNcFile.write(cNetCDF.Variables.VAR_MARKERS_RSID, markersOrig, markersD2);
 		log.info("Done writing RsId to matrix");
 
 		// WRITE MARKERID
-		markersD2 = NetCdfUtils.writeValuesToD2ArrayChar(markerMetadatas.values(), MarkerMetadata.TO_MARKER_ID, cNetCDF.Strides.STRIDE_MARKER_NAME);
+		markersD2 = NetCdfUtils.writeValuesToD2ArrayChar(markerMetadatas, MarkerMetadata.TO_MARKER_ID, cNetCDF.Strides.STRIDE_MARKER_NAME);
 		wrNcFile.write(cNetCDF.Variables.VAR_MARKERSET, markersOrig, markersD2);
 		log.info("Done writing MarkerId to matrix");
 
 		// WRITE CHROMOSOME METADATA FROM ANNOTATION FILE
 		// Chromosome location for each marker
-		markersD2 = NetCdfUtils.writeValuesToD2ArrayChar(markerMetadatas.values(), MarkerMetadata.TO_CHR, cNetCDF.Strides.STRIDE_CHR);
+		markersD2 = NetCdfUtils.writeValuesToD2ArrayChar(markerMetadatas, MarkerMetadata.TO_CHR, cNetCDF.Strides.STRIDE_CHR);
 		wrNcFile.write(cNetCDF.Variables.VAR_MARKERS_CHR, markersOrig, markersD2);
 		log.info("Done writing chromosomes to matrix");
 
@@ -154,14 +154,14 @@ public abstract class AbstractNetCDFDataSetDestination extends AbstractDataSetDe
 		NetCdfUtils.saveChromosomeInfosD2ToWrMatrix(wrNcFile, chromosomeInfo.values(), columns, cNetCDF.Variables.VAR_CHR_INFO);
 
 		// WRITE POSITION METADATA FROM ANNOTATION FILE
-		ArrayInt.D1 markersPosD1 = NetCdfUtils.writeValuesToD1ArrayInt(markerMetadatas.values(), MarkerMetadata.TO_POS);
+		ArrayInt.D1 markersPosD1 = NetCdfUtils.writeValuesToD1ArrayInt(markerMetadatas, MarkerMetadata.TO_POS);
 		int[] posOrig = new int[] {0};
 		wrNcFile.write(cNetCDF.Variables.VAR_MARKERS_POS, posOrig, markersPosD1);
 		log.info("Done writing positions to matrix");
 
 		// WRITE CUSTOM ALLELES METADATA FROM ANNOTATION FILE
 		if (hasDictionary) {
-			markersD2 = NetCdfUtils.writeValuesToD2ArrayChar(markerMetadatas.values(), MarkerMetadata.TO_ALLELES, cNetCDF.Strides.STRIDE_GT);
+			markersD2 = NetCdfUtils.writeValuesToD2ArrayChar(markerMetadatas, MarkerMetadata.TO_ALLELES, cNetCDF.Strides.STRIDE_GT);
 			wrNcFile.write(cNetCDF.Variables.VAR_MARKERS_BASES_DICT, markersOrig, markersD2);
 			log.info("Done writing forward alleles to matrix");
 		}
@@ -170,7 +170,7 @@ public abstract class AbstractNetCDFDataSetDestination extends AbstractDataSetDe
 		int[] gtOrig = new int[] {0, 0};
 		if (strandFlag == null) {
 			// TODO Strand info is buggy in Hapmap bulk download!
-			markersD2 = NetCdfUtils.writeValuesToD2ArrayChar(markerMetadatas.values(), MarkerMetadata.TO_STRAND, cNetCDF.Strides.STRIDE_STRAND);
+			markersD2 = NetCdfUtils.writeValuesToD2ArrayChar(markerMetadatas, MarkerMetadata.TO_STRAND, cNetCDF.Strides.STRIDE_STRAND);
 		} else {
 			markersD2 = NetCdfUtils.writeSingleValueToD2ArrayChar(strandFlag, cNetCDF.Strides.STRIDE_STRAND, markerMetadatas.size());
 		}

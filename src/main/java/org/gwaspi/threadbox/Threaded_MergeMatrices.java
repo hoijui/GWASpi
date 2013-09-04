@@ -26,7 +26,7 @@ public class Threaded_MergeMatrices extends AbstractThreaded_MergeMatrices {
 
 	/**
 	 * Whether to merge all, or only the marked samples
-	 * TODO the second part of the previous sentence needs revising
+	 * TODO the previous sentence needs revising
 	 */
 	private final boolean all;
 

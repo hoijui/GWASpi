@@ -93,6 +93,16 @@ public class OP_MarkerCensus implements MatrixOperation {
 	}
 
 	@Override
+	public boolean isValid() {
+		return true;
+	}
+
+	@Override
+	public String getProblemDescription() {
+		return null;
+	}
+
+	@Override
 	public int processMatrix() throws IOException {
 		int resultOpId = Integer.MIN_VALUE;
 

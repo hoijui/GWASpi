@@ -75,6 +75,16 @@ public abstract class AbstractTestMatrixOperation implements MatrixOperation {
 	}
 
 	@Override
+	public boolean isValid() {
+		return true;
+	}
+
+	@Override
+	public String getProblemDescription() {
+		return null;
+	}
+
+	@Override
 	public int processMatrix() throws IOException {
 		int resultAssocId = Integer.MIN_VALUE;
 

@@ -32,7 +32,6 @@ import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.GenotypesList;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MarkerMetadata;
-import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.netCDF.loader.DataSetDestination;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
@@ -87,7 +86,7 @@ public class MatrixGenotypesFlipper implements MatrixOperation {
 		return markerKeys;
 	}
 
-	private MatrixFactory createMatrixFactory(MatrixKey matrixKey, String matrixDescription, String matrixFriendlyName) throws IOException {
+	public static MatrixFactory createMatrixFactory(DataSetSource dataSetSource, String matrixDescription, String matrixFriendlyName, File flipperFile) throws IOException {
 
 			StringBuilder description = new StringBuilder();
 			description.append(Text.Matrix.descriptionHeader1);
@@ -117,11 +116,21 @@ public class MatrixGenotypesFlipper implements MatrixOperation {
 					dataSetSource.getSamplesKeysSource().size(),
 					dataSetSource.getMarkersKeysSource().size(),
 					dataSetSource.getMarkersChromosomeInfosSource().size(),
-					matrixKey, // orig/parent matrix 1 key
+					dataSetSource.getMatrixMetadata().getKey(), // orig/parent matrix 1 key
 					null); // orig/parent matrix 2 key
 		} catch (InvalidRangeException ex) {
 			throw new IOException(ex);
 		}
+	}
+
+	@Override
+	public boolean isValid() {
+		return true;
+	}
+
+	@Override
+	public String getProblemDescription() {
+		return null;
 	}
 
 	@Override

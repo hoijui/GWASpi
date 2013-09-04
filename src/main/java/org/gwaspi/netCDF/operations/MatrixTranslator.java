@@ -25,16 +25,22 @@ import java.util.Map;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import org.gwaspi.global.Text;
+import org.gwaspi.gui.utils.Dialogs;
 import org.gwaspi.model.ChromosomeInfo;
+import org.gwaspi.model.ChromosomeKey;
+import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.StudyKey;
+import org.gwaspi.netCDF.loader.AbstractNetCDFDataSetDestination;
+import org.gwaspi.netCDF.loader.DataSetDestination;
 import org.gwaspi.netCDF.markers.MarkerSet;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.gwaspi.samples.SampleSet;
+import org.gwaspi.threadbox.MultiOperations;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.ArrayChar;
@@ -43,7 +49,7 @@ import ucar.ma2.InvalidRangeException;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFileWriteable;
 
-public class MatrixTranslator {
+public class MatrixTranslator implements MatrixOperation {
 
 	private final Logger log = LoggerFactory.getLogger(MatrixTranslator.class);
 
@@ -55,8 +61,11 @@ public class MatrixTranslator {
 	private final MarkerSet rdMarkerSet;
 	private final SampleSet rdSampleSet;
 	private Map<MarkerKey, byte[]> wrMarkerIdSetMap;
-	private final Map<MarkerKey, ChromosomeInfo> rdChrInfoSetMap;
+	private final Map<ChromosomeKey, ChromosomeInfo> rdChrInfoSetMap;
 	private final Map<SampleKey, ?> rdSampleSetMap;
+
+	private final DataSetSource dataSetSource;
+	private final DataSetDestination dataSetDestination;
 
 	public MatrixTranslator(
 			MatrixKey rdMatrixKey,
@@ -81,7 +90,57 @@ public class MatrixTranslator {
 		this.rdSampleSetMap = this.rdSampleSet.getSampleIdSetMapByteArray();
 	}
 
-	public int translateAB12AllelesToACGT() throws IOException {
+	@Override
+	public boolean isValid() {
+
+		MatrixMetadata parentMatrixMetadata = MatricesList.getMatrixMetadataById(parentMatrixKey);
+		String description = txtA_NewMatrixDescription.getText();
+		if (txtA_NewMatrixDescription.getText().equals(Text.All.optional)) {
+			description = "";
+		}
+
+		if (parentMatrixMetadata.getGenotypeEncoding().equals(GenotypeEncoding.AB0)
+				|| parentMatrixMetadata.getGenotypeEncoding().equals(GenotypeEncoding.O12))
+		{
+			if (parentMatrixMetadata.getHasDictionray()) {
+				MultiOperations.doTranslateAB12ToACGT(
+						parentMatrixKey,
+						cNetCDF.Defaults.GenotypeEncoding.AB0, // No matter if AB or 12, works the same here
+						newMatrixName,
+						description);
+			} else {
+				Dialogs.showWarningDialogue(Text.Trafo.warnNoDictionary);
+			}
+		} else {
+			Dialogs.showWarningDialogue(Text.Trafo.warnNotAB12);
+		}
+	}
+
+	@Override
+	public String getProblemDescription() {
+		return null;
+	}
+
+	@Override
+	public int processMatrix() throws IOException {
+
+		int resultMatrixId;
+
+		GenotypeEncoding gtEncoding = dataSetSource.getMatrixMetadata().getGenotypeEncoding();
+		if (gtEncoding.equals(GenotypeEncoding.AB0)
+				|| gtEncoding.equals(GenotypeEncoding.O12))
+		{
+			resultMatrixId = translateAB12AllelesToACGT();
+		} else if (gtEncoding.equals(GenotypeEncoding.O1234)) {
+			resultMatrixId = translate1234AllelesToACGT();
+		} else {
+			throw new IllegalStateException("Invalid value for gtEncoding: " + gtEncoding);
+		}
+
+		return resultMatrixId;
+	}
+
+	private int translateAB12AllelesToACGT() throws IOException {
 		int result = Integer.MIN_VALUE;
 		String translationMethodDesc = "AB0 or 012 to ACGT0 using the parent's dictionnary";
 
@@ -93,7 +152,8 @@ public class MatrixTranslator {
 				// CREATE netCDF-3 FILE
 				StringBuilder descSB = new StringBuilder(Text.Matrix.descriptionHeader1);
 				descSB.append(org.gwaspi.global.Utils.getShortDateTimeAsString());
-				descSB.append("\nThrough Matrix translation from parent Matrix MX: ").append(rdMatrixKey.getMatrixId()).append(" - ").append(rdMatrixMetadata.getMatrixFriendlyName());
+				descSB.append("\nThrough Matrix translation from parent Matrix MX: ").append(rdMatrixKey.getMatrixId());
+				descSB.append(" - ").append(rdMatrixMetadata.getMatrixFriendlyName());
 				descSB.append("\nTranslation method: ").append(translationMethodDesc);
 				if (!wrMatrixDescription.isEmpty()) {
 					descSB.append("\n\nDescription: ");
@@ -103,7 +163,8 @@ public class MatrixTranslator {
 				descSB.append("\nGenotype encoding: ");
 				descSB.append(GenotypeEncoding.ACGT0.toString());
 				descSB.append("\n");
-				descSB.append("Markers: ").append(rdMatrixMetadata.getMarkerSetSize()).append(", Samples: ").append(rdMatrixMetadata.getSampleSetSize());
+				descSB.append("Markers: ").append(rdMatrixMetadata.getMarkerSetSize());
+				descSB.append(", Samples: ").append(rdMatrixMetadata.getSampleSetSize());
 
 				MatrixFactory wrMatrixHandler = new MatrixFactory(
 						rdMatrixMetadata.getTechnology(), // technology
@@ -124,52 +185,15 @@ public class MatrixTranslator {
 
 				//<editor-fold defaultstate="expanded" desc="METADATA WRITER">
 				// WRITING METADATA TO MATRIX
-
-				// SAMPLESET
-				ArrayChar.D2 samplesD2 = NetCdfUtils.writeCollectionToD2ArrayChar(rdSampleSetMap.keySet(), cNetCDF.Strides.STRIDE_SAMPLE_NAME);
-
-				int[] sampleOrig = new int[] {0, 0};
-				wrNcFile.write(cNetCDF.Variables.VAR_SAMPLESET, sampleOrig, samplesD2);
-				log.info("Done writing SampleSet to matrix");
-
-				// MARKERSET MARKERID
-				ArrayChar.D2 markersD2 = NetCdfUtils.writeCollectionToD2ArrayChar(rdMarkerSet.getMarkerKeys(), cNetCDF.Strides.STRIDE_MARKER_NAME);
-				int[] markersOrig = new int[] {0, 0};
-				wrNcFile.write(cNetCDF.Variables.VAR_MARKERSET, markersOrig, markersD2);
-
-				// MARKERSET RSID
-				rdMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_RSID);
-				NetCdfUtils.saveCharMapValueToWrMatrix(wrNcFile, rdMarkerSet.getMarkerIdSetMapCharArray().values(), cNetCDF.Variables.VAR_MARKERS_RSID, cNetCDF.Strides.STRIDE_MARKER_NAME);
-
-				// MARKERSET CHROMOSOME
-				rdMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
-				NetCdfUtils.saveCharMapValueToWrMatrix(wrNcFile, rdMarkerSet.getMarkerIdSetMapCharArray().values(), cNetCDF.Variables.VAR_MARKERS_CHR, cNetCDF.Strides.STRIDE_CHR);
-
-				// Set of chromosomes found in matrix along with number of markersinfo
-				NetCdfUtils.saveObjectsToStringToMatrix(wrNcFile, rdChrInfoSetMap.keySet(), cNetCDF.Variables.VAR_CHR_IN_MATRIX, 8);
-				// Number of marker per chromosome & max pos for each chromosome
-				int[] columns = new int[] {0, 1, 2, 3};
-				NetCdfUtils.saveChromosomeInfosD2ToWrMatrix(wrNcFile, rdChrInfoSetMap.values(), columns, cNetCDF.Variables.VAR_CHR_INFO);
-
-				// MARKERSET POSITION
-				rdMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_POS);
-				NetCdfUtils.saveIntMapD1ToWrMatrix(wrNcFile, rdMarkerSet.getMarkerIdSetMapInteger().values(), cNetCDF.Variables.VAR_MARKERS_POS);
-
-				// MARKERSET DICTIONARY ALLELES
-				rdMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_BASES_DICT);
-				Map<MarkerKey, char[]> sortedBasesDicts = org.gwaspi.global.Utils.createOrderedMap(wrMarkerIdSetMap, rdMarkerSet.getMarkerIdSetMapCharArray());
-				NetCdfUtils.saveCharMapValueToWrMatrix(wrNcFile, sortedBasesDicts.values(), cNetCDF.Variables.VAR_MARKERS_BASES_DICT, cNetCDF.Strides.STRIDE_GT);
-
-				// GENOTYPE STRAND
-				rdMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_GT_STRAND);
-				NetCdfUtils.saveCharMapValueToWrMatrix(wrNcFile, rdMarkerSet.getMarkerIdSetMapCharArray().values(), cNetCDF.Variables.VAR_GT_STRAND, cNetCDF.Strides.STRIDE_STRAND);
-				//</editor-fold>
+				AbstractNetCDFDataSetDestination.saveSamplesMatadata(rdSampleSetMap.keySet(), wrNcFile);
+				AbstractNetCDFDataSetDestination.saveMarkersMatadata(dataSetSource.getMarkersMetadatasSource(), rdChrInfoSetMap, true, null, wrNcFile);
 
 				//<editor-fold defaultstate="expanded" desc="GENOTYPES WRITER">
 				// Get correct bases dictionary for translation
 				Map<MarkerKey, char[]> dictionnaryMap = rdMarkerSet.getDictionaryBases();
 
 				// Iterate through Samples, use Sample item position to read all Markers GTs from rdMarkerIdSetMap.
+				dataSetDestination.startLoadingAlleles(false);
 				int sampleIndex = 0;
 				for (int i = 0; i < rdSampleSetMap.size(); i++) {
 					// Get alleles from read matrix
@@ -179,7 +203,7 @@ public class MatrixTranslator {
 					translateCurrentSampleAB12AllelesMap(markerGTs, rdMatrixGTCode, dictionnaryMap);
 
 					// Write wrMarkerIdSetMap to A3 ArrayChar and save to wrMatrix
-					NetCdfUtils.saveSingleSampleGTsToMatrix(wrNcFile, markerGTs.values(), sampleIndex);
+					dataSetDestination.addSampleGTAlleles(sampleIndex, markerGTs.values());
 
 					if (sampleIndex % 100 == 0) {
 						log.info("Samples translated: {}", sampleIndex);
@@ -187,6 +211,7 @@ public class MatrixTranslator {
 					sampleIndex++;
 				}
 				log.info("Total Samples translated: {}", sampleIndex);
+				dataSetDestination.finishedLoadingAlleles();
 				//</editor-fold>
 
 				// CLOSE THE FILE AND BY THIS, MAKE IT READ-ONLY
@@ -218,7 +243,7 @@ public class MatrixTranslator {
 	}
 
 	// TODO Test translate1234AllelesToACGT
-	public int translate1234AllelesToACGT() throws IOException, InvalidRangeException {
+	public int translate1234AllelesToACGT() throws IOException {
 		int result = Integer.MIN_VALUE;
 		String translationMethodDesc = "O1234 to ACGT0 using 0=0, 1=A, 2=C, 3=G, 4=T";
 
@@ -298,9 +323,6 @@ public class MatrixTranslator {
 
 				//<editor-fold defaultstate="expanded" desc="GENOTYPES WRITER">
 				// Get correct strand of each marker for newStrand translation
-				Map<MarkerKey, Object> markerStrandsMap = new LinkedHashMap<MarkerKey, Object>();
-				markerStrandsMap.putAll(rdChrInfoSetMap); // XXX was rdSampleSetMap instead of rdChrInfoSetMap before; but that one had the wrong type -> bug; but is this the right set (with MarkerKey's as keys)?
-
 				// Iterate through Samples, use Sample item position to read all Markers GTs from rdMarkerIdSetMap.
 				int sampleIndex = 0;
 				for (int i = 0; i < rdSampleSetMap.size(); i++) {
@@ -308,7 +330,7 @@ public class MatrixTranslator {
 					rdMarkerSet.fillGTsForCurrentSampleIntoInitMap(sampleIndex);
 					// Send to be translated
 					Map<MarkerKey, byte[]> markerGTs = rdMarkerSet.getMarkerIdSetMapByteArray();
-					translateCurrentSample1234AllelesMap(markerGTs, markerStrandsMap.keySet());
+					translateCurrentSample1234AllelesMap(markerGTs, rdMarkerSet.getMarkerKeys());
 
 					// Write wrMarkerIdSetMap to A3 ArrayChar and save to wrMatrix
 					NetCdfUtils.saveSingleSampleGTsToMatrix(wrNcFile, markerGTs.values(), sampleIndex);
