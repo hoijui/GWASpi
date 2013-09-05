@@ -50,7 +50,10 @@ import ucar.ma2.InvalidRangeException;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFileWriteable;
 
-public class MatrixDataExtractor {
+/**
+ * Extracts Genotypes to a new matrix.
+ */
+public class MatrixDataExtractor implements MatrixOperation {
 
 	private final Logger log = LoggerFactory.getLogger(MatrixDataExtractor.class);
 
@@ -260,7 +263,18 @@ public class MatrixDataExtractor {
 		//</editor-fold>
 	}
 
-	public int extractGenotypesToNewMatrix() throws IOException {
+	@Override
+	public boolean isValid() {
+		return true;
+	}
+
+	@Override
+	public String getProblemDescription() {
+		return null;
+	}
+
+	@Override
+	public int processMatrix() throws IOException {
 		int resultMatrixId = Integer.MIN_VALUE;
 
 		if (wrSampleSetMap.size() > 0 && wrMarkerKeys.size() > 0) {

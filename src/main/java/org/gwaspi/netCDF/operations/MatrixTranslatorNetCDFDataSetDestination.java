@@ -17,9 +17,8 @@
 
 package org.gwaspi.netCDF.operations;
 
-import java.io.File;
 import java.io.IOException;
-import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
+import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.MatrixMetadata;
@@ -29,26 +28,23 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.InvalidRangeException;
 
-public class MatrixGenotypesFlipperNetCDFDataSetDestination extends AbstractNetCDFDataSetDestination {
+public class MatrixTranslatorNetCDFDataSetDestination extends AbstractNetCDFDataSetDestination {
 
 	private final Logger log
-			= LoggerFactory.getLogger(MatrixGenotypesFlipperNetCDFDataSetDestination.class);
+			= LoggerFactory.getLogger(MatrixTranslatorNetCDFDataSetDestination.class);
 
 	private final DataSetSource dataSetSource;
 	private final String matrixDescription;
 	private final String matrixFriendlyName;
-	private final File flipperFile;
 
-	public MatrixGenotypesFlipperNetCDFDataSetDestination(
+	public MatrixTranslatorNetCDFDataSetDestination(
 			DataSetSource dataSetSource,
 			String matrixDescription,
-			String matrixFriendlyName,
-			File flipperFile)
+			String matrixFriendlyName)
 	{
 		this.dataSetSource = dataSetSource;
 		this.matrixDescription = matrixDescription;
 		this.matrixFriendlyName = matrixFriendlyName;
-		this.flipperFile = flipperFile;
 	}
 
 	@Override
@@ -56,36 +52,50 @@ public class MatrixGenotypesFlipperNetCDFDataSetDestination extends AbstractNetC
 
 		MatrixMetadata sourceMatrixMetadata = dataSetSource.getMatrixMetadata();
 
-		StringBuilder description = new StringBuilder();
-		description.append(Text.Matrix.descriptionHeader1);
+		GenotypeEncoding gtEncoding = sourceMatrixMetadata.getGenotypeEncoding();
+		String translationMethodDesc;
+		if (gtEncoding.equals(GenotypeEncoding.AB0)
+				|| gtEncoding.equals(GenotypeEncoding.O12))
+		{
+			translationMethodDesc = "AB0 or 012 to ACGT0 using the parent's dictionnary";
+		} else if (gtEncoding.equals(GenotypeEncoding.O1234)) {
+			translationMethodDesc = "O1234 to ACGT0 using 0=0, 1=A, 2=C, 3=G, 4=T";
+		} else {
+			throw new IllegalStateException(
+					"Can not convert genotype-encoding: "
+					+ gtEncoding.toString() + " to "
+					+ GenotypeEncoding.ACGT0.toString());
+		}
+
+		StringBuilder description = new StringBuilder(Text.Matrix.descriptionHeader1);
 		description.append(org.gwaspi.global.Utils.getShortDateTimeAsString());
-		description.append("\nThrough Matrix genotype flipping from parent Matrix MX: ").append(sourceMatrixMetadata.getMatrixId());
+		description.append("\nThrough Matrix translation from parent Matrix MX: ").append(sourceMatrixMetadata.getMatrixId());
 		description.append(" - ").append(sourceMatrixMetadata.getMatrixFriendlyName());
-		description.append("\nUsed list of markers to be flipped: ").append(flipperFile.getPath());
+		description.append("\nTranslation method: ").append(translationMethodDesc);
 		if (!matrixDescription.isEmpty()) {
 			description.append("\n\nDescription: ");
 			description.append(matrixDescription);
 			description.append("\n");
 		}
 		description.append("\nGenotype encoding: ");
-		description.append(sourceMatrixMetadata.getGenotypeEncoding());
+		description.append(GenotypeEncoding.ACGT0.toString());
 		description.append("\n");
-		description.append("Markers: ").append(dataSetSource.getMarkersKeysSource().size());
-		description.append(", Samples: ").append(dataSetSource.getSamplesKeysSource().size());
+		description.append("Markers: ").append(sourceMatrixMetadata.getMarkerSetSize());
+		description.append(", Samples: ").append(sourceMatrixMetadata.getSampleSetSize());
 
 		try {
 			return new MatrixFactory(
 					sourceMatrixMetadata.getTechnology(), // technology
 					matrixFriendlyName,
 					description.toString(), // description
-					sourceMatrixMetadata.getGenotypeEncoding(), // matrix genotype encoding from the original matrix
-					StrandType.valueOf("FLP"), // FIXME this will fail at runtime
+					GenotypeEncoding.ACGT0, // New matrix genotype encoding
+					sourceMatrixMetadata.getStrand(),
 					sourceMatrixMetadata.getHasDictionray(), // has dictionary?
 					dataSetSource.getSamplesKeysSource().size(),
 					dataSetSource.getMarkersKeysSource().size(),
 					dataSetSource.getMarkersChromosomeInfosSource().size(),
 					sourceMatrixMetadata.getKey(), // orig/parent matrix 1 key
-					null); // orig/parent matrix 2 key
+					null); // Orig matrixId 2
 		} catch (InvalidRangeException ex) {
 			throw new IOException(ex);
 		}
@@ -98,10 +108,6 @@ public class MatrixGenotypesFlipperNetCDFDataSetDestination extends AbstractNetC
 
 	@Override
 	protected String getGuessedGTCode() {
-		try {
-			return dataSetSource.getMatrixMetadata().getGenotypeEncoding().toString();
-		} catch (IOException ex) {
-			throw new RuntimeException(ex);
-		}
+		return GenotypeEncoding.ACGT0.toString();
 	}
 }

@@ -28,6 +28,7 @@ import java.util.Set;
 import org.gwaspi.constants.cImport.ImportFormat;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.model.ChromosomeInfo;
+import org.gwaspi.model.ChromosomeKey;
 import org.gwaspi.model.CompactGenotypesList;
 import org.gwaspi.model.GenotypesList;
 import org.gwaspi.model.GenotypesListFactory;
@@ -126,18 +127,31 @@ public class MarkerSet extends AbstractList<GenotypesList> implements SamplesGen
 		}
 		return reparsedData;
 	}
-
 	private static <IV> Map<MarkerKey, IV> wrapToMarkerKeyMap(ArrayByte.D2 markersAC) {
 		Map<String, IV> markerIdAlleles = NetCdfUtils.writeD2ArrayByteToMapKeys(markersAC);
 		return wrapToMarkerKeyMap(markerIdAlleles);
 	}
-
 	private static <IV> Map<MarkerKey, IV> wrapToMarkerKeyMap(ArrayChar.D2 markersAC, IV commonValue) {
 		Map<String, IV> markerIdAlleles = NetCdfUtils.writeD2ArrayCharToMapKeys(markersAC, commonValue);
 		return wrapToMarkerKeyMap(markerIdAlleles);
 	}
 	private static <IV> Map<MarkerKey, IV> wrapToMarkerKeyMap(ArrayChar.D2 markersAC) {
 		return wrapToMarkerKeyMap(markersAC, null);
+	}
+
+	private static <IV> Map<ChromosomeKey, IV> wrapToChromosomeKeyMap(Map<String, IV> chromosomeInfos) {
+		Map<ChromosomeKey, IV> reparsedData = new LinkedHashMap<ChromosomeKey, IV>();
+		for (Map.Entry<String, IV> entry : chromosomeInfos.entrySet()) {
+			reparsedData.put(ChromosomeKey.valueOf(entry.getKey()), entry.getValue());
+		}
+		return reparsedData;
+	}
+	private static <IV> Map<ChromosomeKey, IV> wrapToChromosomeKeyMap(ArrayChar.D2 markersAC, IV commonValue) {
+		Map<String, IV> markerIdAlleles = NetCdfUtils.writeD2ArrayCharToMapKeys(markersAC, commonValue);
+		return wrapToChromosomeKeyMap(markerIdAlleles);
+	}
+	private static <IV> Map<ChromosomeKey, IV> wrapToChromosomeKeyMap(ArrayChar.D2 markersAC) {
+		return wrapToChromosomeKeyMap(markersAC, null);
 	}
 
 	public void initMarkerIdSetMap(int startMkInd, int endMkIdx) {
@@ -192,9 +206,9 @@ public class MarkerSet extends AbstractList<GenotypesList> implements SamplesGen
      * This Method is safe to return an independent Map.
 	 * The size of this Map is very small.
 	 */
-	public Map<MarkerKey, ChromosomeInfo> getChrInfoSetMap() {
+	public Map<ChromosomeKey, ChromosomeInfo> getChrInfoSetMap() {
 
-		Map<MarkerKey, ChromosomeInfo> chrInfoMap = new LinkedHashMap<MarkerKey, ChromosomeInfo>();
+		Map<ChromosomeKey, ChromosomeInfo> chrInfoMap = new LinkedHashMap<ChromosomeKey, ChromosomeInfo>();
 
 		// GET NAMES OF CHROMOSOMES
 		Variable var = ncfile.findVariable(cNetCDF.Variables.VAR_CHR_IN_MATRIX);
@@ -204,7 +218,7 @@ public class MarkerSet extends AbstractList<GenotypesList> implements SamplesGen
 			try {
 				if (dataType == DataType.CHAR) {
 					ArrayChar.D2 markerSetAC = (ArrayChar.D2) var.read("(0:" + (varShape[0] - 1) + ":1, 0:7:1)");
-					chrInfoMap = wrapToMarkerKeyMap(markerSetAC);
+					chrInfoMap = wrapToChromosomeKeyMap(markerSetAC);
 				}
 			} catch (IOException ex) {
 				log.error("Cannot read data", ex);

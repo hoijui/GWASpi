@@ -83,6 +83,16 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 	}
 
 	@Override
+	public boolean isValid() {
+		return true;
+	}
+
+	@Override
+	public String getProblemDescription() {
+		return null;
+	}
+
+	@Override
 	public int processMatrix() throws IOException {
 
 		LOG.info("Combi Association Test: start");

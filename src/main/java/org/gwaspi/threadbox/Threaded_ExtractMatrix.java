@@ -98,7 +98,7 @@ public class Threaded_ExtractMatrix extends CommonRunnable {
 					Integer.MIN_VALUE, // Filter pos, not used now
 					markerCriteriaFile,
 					sampleCriteriaFile);
-			int resultMatrixId = exMatrix.extractGenotypesToNewMatrix();
+			int resultMatrixId = exMatrix.processMatrix();
 			resultMatrixKey = new MatrixKey(parentMatrixKey.getStudyKey(), resultMatrixId);
 			GWASpiExplorerNodes.insertMatrixNode(resultMatrixKey);
 		}

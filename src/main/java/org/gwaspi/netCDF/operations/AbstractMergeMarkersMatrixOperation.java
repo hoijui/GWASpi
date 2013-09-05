@@ -23,7 +23,6 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.gwaspi.constants.cImport.ImportFormat;
-import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.ChromosomeInfo;
@@ -41,10 +40,7 @@ import org.gwaspi.netCDF.matrices.ChromosomeUtils;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.ma2.ArrayChar;
-import ucar.ma2.Index;
 import ucar.ma2.InvalidRangeException;
-import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFileWriteable;
 
 public abstract class AbstractMergeMarkersMatrixOperation extends AbstractMergeMatrixOperation {
@@ -73,12 +69,12 @@ public abstract class AbstractMergeMarkersMatrixOperation extends AbstractMergeM
 		return null;
 	}
 
+	// NOTE there is a duplicate of this function in MatrixMergeSamples
 	private MatrixFactory createMatrixFactory(int numSamples, int numMarkers, int numChromosomes, String matrixFriendlyName, String matrixDescription, String humanReadableMethodName, String methodDescription) throws IOException {
 
 		MatrixMetadata rdMatrix1Metadata = dataSetSource1.getMatrixMetadata();
 		MatrixMetadata rdMatrix2Metadata = dataSetSource2.getMatrixMetadata();
 
-		// CREATE netCDF-3 FILE
 		boolean hasDictionary = false;
 		if (rdMatrix1Metadata.getHasDictionray() == rdMatrix2Metadata.getHasDictionray()) {
 			hasDictionary = rdMatrix1Metadata.getHasDictionray();
@@ -235,7 +231,7 @@ public abstract class AbstractMergeMarkersMatrixOperation extends AbstractMergeM
 			log.trace("Done creating netCDF handle: " + wrNcFile.toString());
 
 			AbstractNetCDFDataSetDestination.saveSamplesMatadata(sampleKeys, wrNcFile);
-			AbstractNetCDFDataSetDestination.saveMarkersMatadata(wrCombinedSortedMarkersMetadata, chromosomeInfo, hasCombinedDictionary, null, wrNcFile);
+			AbstractNetCDFDataSetDestination.saveMarkersMatadata(wrCombinedSortedMarkersMetadata.values(), chromosomeInfo, hasCombinedDictionary, null, wrNcFile);
 
 			writeGenotypes(wrNcFile, wrSampleSetMap, wrCombinedSortedMarkersMetadata, rdSampleSetMap1, rdSampleSetMap2);
 

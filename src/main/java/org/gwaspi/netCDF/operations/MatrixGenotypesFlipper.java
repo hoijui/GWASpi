@@ -24,22 +24,17 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
-import javax.swing.JOptionPane;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
 import org.gwaspi.global.Text;
-import org.gwaspi.gui.utils.Dialogs;
 import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.GenotypesList;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MarkerMetadata;
-import org.gwaspi.model.MatricesList;
-import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.netCDF.loader.DataSetDestination;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
-import org.gwaspi.threadbox.MultiOperations;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.InvalidRangeException;
@@ -91,43 +86,6 @@ public class MatrixGenotypesFlipper implements MatrixOperation {
 		return markerKeys;
 	}
 
-	public static MatrixFactory createMatrixFactory(DataSetSource dataSetSource, String matrixDescription, String matrixFriendlyName, File flipperFile) throws IOException {
-
-			StringBuilder description = new StringBuilder();
-			description.append(Text.Matrix.descriptionHeader1);
-			description.append(org.gwaspi.global.Utils.getShortDateTimeAsString());
-			description.append("\nThrough Matrix genotype flipping from parent Matrix MX: ").append(dataSetSource.getMatrixMetadata().getMatrixId());
-			description.append(" - ").append(dataSetSource.getMatrixMetadata().getMatrixFriendlyName());
-			description.append("\nUsed list of markers to be flipped: ").append(flipperFile.getPath());
-			if (!matrixDescription.isEmpty()) {
-				description.append("\n\nDescription: ");
-				description.append(matrixDescription);
-				description.append("\n");
-			}
-			description.append("\nGenotype encoding: ");
-			description.append(dataSetSource.getMatrixMetadata().getGenotypeEncoding());
-			description.append("\n");
-			description.append("Markers: ").append(dataSetSource.getMarkersKeysSource().size());
-			description.append(", Samples: ").append(dataSetSource.getSamplesKeysSource().size());
-
-		try {
-			return new MatrixFactory(
-					dataSetSource.getMatrixMetadata().getTechnology(), // technology
-					matrixFriendlyName,
-					description.toString(), // description
-					dataSetSource.getMatrixMetadata().getGenotypeEncoding(), // matrix genotype encoding from the original matrix
-					StrandType.valueOf("FLP"), // FIXME this will fail at runtime
-					dataSetSource.getMatrixMetadata().getHasDictionray(), // has dictionary?
-					dataSetSource.getSamplesKeysSource().size(),
-					dataSetSource.getMarkersKeysSource().size(),
-					dataSetSource.getMarkersChromosomeInfosSource().size(),
-					dataSetSource.getMatrixMetadata().getKey(), // orig/parent matrix 1 key
-					null); // orig/parent matrix 2 key
-		} catch (InvalidRangeException ex) {
-			throw new IOException(ex);
-		}
-	}
-
 	@Override
 	public boolean isValid() {
 		return true;
@@ -155,9 +113,6 @@ public class MatrixGenotypesFlipper implements MatrixOperation {
 	@Override
 	public int processMatrix() throws IOException {
 		int resultMatrixId = Integer.MIN_VALUE;
-
-		MatrixFactory wrMatrixHandler = createMatrixFactory(rdMatrixKey, wrMatrixDescription, wrMatrixFriendlyName);
-		resultMatrixId = wrMatrixHandler.getResultMatrixId();
 
 		// simply copy&paste the sample infos
 		dataSetDestination.startLoadingSampleInfos();

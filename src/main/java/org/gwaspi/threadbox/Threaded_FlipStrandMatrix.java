@@ -72,8 +72,8 @@ public class Threaded_FlipStrandMatrix extends CommonRunnable {
 					parentDataSetSource,
 					dataSetDestination,
 					markerFlipFile);
-			int resultMatrixId = flipMatrix.processMatrix();
-			resultMatrixKey = new MatrixKey(parentDataSetSource.getMatrixMetadata().getKey().getStudyKey(), resultMatrixId);
+			flipMatrix.processMatrix();
+			resultMatrixKey = dataSetDestination.getResultMatrixKey();
 			GWASpiExplorerNodes.insertMatrixNode(resultMatrixKey);
 		}
 

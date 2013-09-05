@@ -32,7 +32,6 @@ import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.MarkersChromosomeInfosSource;
 import org.gwaspi.model.MarkersKeysSource;
-import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.netCDF.loader.DataSetDestination;
@@ -67,11 +66,18 @@ public class MatrixMergeSamples extends AbstractMergeMatrixOperation {
 			dataSetDestination);
 	}
 
-	private MatrixFactory createMatrixFactory(int numSamples, int numMarkers, int numChromosomes, String matrixFriendlyName, String matrixDescription) throws IOException {
+	@Override
+	public boolean isValid() {
+		return true;
+	}
 
-		// Use comboed wrComboSampleSetMap as SampleSet
-		final String humanReadableMethodName = Text.Trafo.mergeSamplesOnly;
-		final String methodDescription = Text.Trafo.mergeMethodSampleJoin;
+	@Override
+	public String getProblemDescription() {
+		return null;
+	}
+
+	// NOTE there is a duplicate of this function in AbstractMergeMarkersMatrixOperation
+	private MatrixFactory createMatrixFactory(int numSamples, int numMarkers, int numChromosomes, String matrixFriendlyName, String matrixDescription, String humanReadableMethodName, String methodDescription) throws IOException {
 
 		MatrixMetadata rdMatrix1Metadata = dataSetSource1.getMatrixMetadata();
 		MatrixMetadata rdMatrix2Metadata = dataSetSource2.getMatrixMetadata();
@@ -95,7 +101,7 @@ public class MatrixMergeSamples extends AbstractMergeMatrixOperation {
 		description.append(Text.Matrix.descriptionHeader1);
 		description.append(org.gwaspi.global.Utils.getShortDateTimeAsString());
 		description.append("\n");
-		description.append("Markers: ").append(dataSetSource1.getMarkersKeysSource().size());
+		description.append("Markers: ").append(numMarkers);
 		description.append(", Samples: ").append(numSamples);
 		description.append("\n");
 		description.append(Text.Trafo.mergedFrom);
@@ -126,8 +132,8 @@ public class MatrixMergeSamples extends AbstractMergeMatrixOperation {
 					numSamples,
 					numMarkers,
 					numChromosomes,
-					dataSetSource1.getMatrixMetadata().getKey(), // Parent matrix 1 key
-					dataSetSource2.getMatrixMetadata().getKey()); // Parent matrix 2 key
+					rdMatrix1Metadata.getKey(), // Parent matrix 1 key
+					rdMatrix2Metadata.getKey()); // Parent matrix 2 key
 		} catch (InvalidRangeException ex) {
 			throw new IOException(ex);
 		}
@@ -155,7 +161,10 @@ public class MatrixMergeSamples extends AbstractMergeMatrixOperation {
 		// RETRIEVE CHROMOSOMES INFO
 		MarkersChromosomeInfosSource chromosomeInfo = dataSetSource1.getMarkersChromosomeInfosSource();
 
-		MatrixFactory wrMatrixHandler = createMatrixFactory(numSamples, numMarkers, chromosomeInfo.size(), wrMatrixFriendlyName, wrMatrixDescription);
+		// Use comboed wrComboSampleSetMap as SampleSet
+		final String humanReadableMethodName = Text.Trafo.mergeSamplesOnly;
+		final String methodDescription = Text.Trafo.mergeMethodSampleJoin;
+		MatrixFactory wrMatrixHandler = createMatrixFactory(numSamples, numMarkers, chromosomeInfo.size(), wrMatrixFriendlyName, wrMatrixDescription, humanReadableMethodName, methodDescription);
 
 		try {
 			NetcdfFileWriteable wrNcFile = wrMatrixHandler.getNetCDFHandler();

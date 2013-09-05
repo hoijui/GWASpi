@@ -408,7 +408,7 @@ public class MatrixTrafoPanel extends JPanel {
 						File flipMarkersFile = Dialogs.selectFilesAndDirectoriesDialog(JOptionPane.OK_OPTION);
 						// HACK use doMatrixOperation instead!
 						MultiOperations.doStrandFlipMatrix(
-								parentMatrixKey,
+								dataSetSource,
 								cNetCDF.Variables.VAR_MARKERSET,
 								flipMarkersFile,
 								newMatrixName,
