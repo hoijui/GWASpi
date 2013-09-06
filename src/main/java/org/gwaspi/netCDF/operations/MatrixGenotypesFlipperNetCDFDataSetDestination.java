@@ -19,6 +19,7 @@ package org.gwaspi.netCDF.operations;
 
 import java.io.File;
 import java.io.IOException;
+import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.DataSetSource;
@@ -97,9 +98,9 @@ public class MatrixGenotypesFlipperNetCDFDataSetDestination extends AbstractNetC
 	}
 
 	@Override
-	protected String getGuessedGTCode() {
+	protected GenotypeEncoding getGuessedGTCode() {
 		try {
-			return dataSetSource.getMatrixMetadata().getGenotypeEncoding().toString();
+			return dataSetSource.getMatrixMetadata().getGenotypeEncoding();
 		} catch (IOException ex) {
 			throw new RuntimeException(ex);
 		}

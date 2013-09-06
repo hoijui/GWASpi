@@ -23,10 +23,10 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import org.gwaspi.gui.StartGWASpi;
 import org.gwaspi.model.ChromosomeInfo;
 import org.gwaspi.model.ChromosomeKey;
-import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixKey;
@@ -270,14 +270,14 @@ public abstract class AbstractNetCDFDataSetDestination extends AbstractDataSetDe
 			// GUESS GENOTYPE ENCODING
 			ArrayChar.D2 guessedGTCodeAC = new ArrayChar.D2(1, 8);
 			Index index = guessedGTCodeAC.getIndex();
-			guessedGTCodeAC.setString(index.set(0, 0), getGuessedGTCode());
+			guessedGTCodeAC.setString(index.set(0, 0), getGuessedGTCode().toString());
 			int[] origin = new int[] {0, 0};
 			ncfile.write(cNetCDF.Variables.GLOB_GTENCODING, origin, guessedGTCodeAC);
 
 			MatrixMetadata matrixMetaData = matrixFactory.getResultMatrixMetadata();
 			StringBuilder descSB = new StringBuilder(matrixMetaData.getDescription());
 			descSB.append("Genotype encoding: ");
-			descSB.append(getGuessedGTCode());
+			descSB.append(getGuessedGTCode().toString());
 			matrixMetaData.setDescription(descSB.toString());
 			MatricesList.updateMatrix(matrixMetaData);
 
@@ -291,7 +291,7 @@ public abstract class AbstractNetCDFDataSetDestination extends AbstractDataSetDe
 		org.gwaspi.global.Utils.sysoutCompleted("writing Genotypes to Matrix");
 	}
 
-	protected abstract String getGuessedGTCode();
+	protected abstract GenotypeEncoding getGuessedGTCode();
 
 	@Override
 	public void done() throws IOException {

@@ -107,7 +107,7 @@ public class MatrixTranslatorNetCDFDataSetDestination extends AbstractNetCDFData
 	}
 
 	@Override
-	protected String getGuessedGTCode() {
-		return GenotypeEncoding.ACGT0.toString();
+	protected GenotypeEncoding getGuessedGTCode() {
+		return GenotypeEncoding.ACGT0;
 	}
 }
