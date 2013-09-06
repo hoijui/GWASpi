@@ -342,8 +342,7 @@ public class MatrixTrafoPanel extends JPanel {
 					DataSetSource dataSetSource = new NetCDFDataSetSource(parentMatrixKey);
 					MatrixOperation validationMatrixOperation = new MatrixTranslator(
 								dataSetSource,
-								newMatrixName,
-								description);
+								null);
 
 					if (validationMatrixOperation.isValid()) {
 						// HACK use doMatrixOperation instead!
@@ -408,7 +407,7 @@ public class MatrixTrafoPanel extends JPanel {
 						File flipMarkersFile = Dialogs.selectFilesAndDirectoriesDialog(JOptionPane.OK_OPTION);
 						// HACK use doMatrixOperation instead!
 						MultiOperations.doStrandFlipMatrix(
-								dataSetSource,
+								parentMatrixKey,
 								cNetCDF.Variables.VAR_MARKERSET,
 								flipMarkersFile,
 								newMatrixName,

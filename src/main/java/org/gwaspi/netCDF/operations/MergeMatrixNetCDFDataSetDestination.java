@@ -55,60 +55,25 @@ public class MergeMatrixNetCDFDataSetDestination extends AbstractNetCDFDataSetDe
 		this.matrixFriendlyName = matrixFriendlyName;
 		this.humanReadableMethodName = humanReadableMethodName;
 		this.methodDescription = methodDescription;
+//
+//		if () {
+//			this.humanReadableMethodName = Text.Trafo.mergeAll;
+//			this.methodDescription = Text.Trafo.mergeMethodMergeAll;
+//		} else if () {
+//			this.humanReadableMethodName = Text.Trafo.mergeMarkersOnly;
+//			this.methodDescription = Text.Trafo.mergeMethodMarkerJoin;
+//		} else {
+//			this.humanReadableMethodName = Text.Trafo.mergeSamplesOnly;
+//			this.methodDescription = Text.Trafo.mergeMethodSampleJoin;
+//		}
 	}
 
 	@Override
 	protected MatrixFactory createMatrixFactory() throws IOException {
-//
-//		MatrixMetadata sourceMatrixMetadata = dataSetSource.getMatrixMetadata();
-//
-//		GenotypeEncoding gtEncoding = sourceMatrixMetadata.getGenotypeEncoding();
-//		String translationMethodDesc;
-//		if (gtEncoding.equals(GenotypeEncoding.AB0)
-//				|| gtEncoding.equals(GenotypeEncoding.O12))
-//		{
-//			translationMethodDesc = "AB0 or 012 to ACGT0 using the parent's dictionnary";
-//		} else if (gtEncoding.equals(GenotypeEncoding.O1234)) {
-//			translationMethodDesc = "O1234 to ACGT0 using 0=0, 1=A, 2=C, 3=G, 4=T";
-//		} else {
-//			throw new IllegalStateException(
-//					"Can not convert genotype-encoding: "
-//					+ gtEncoding.toString() + " to "
-//					+ GenotypeEncoding.ACGT0.toString());
-//		}
-//
-//		StringBuilder description = new StringBuilder(Text.Matrix.descriptionHeader1);
-//		description.append(org.gwaspi.global.Utils.getShortDateTimeAsString());
-//		description.append("\nThrough Matrix translation from parent Matrix MX: ").append(sourceMatrixMetadata.getMatrixId());
-//		description.append(" - ").append(sourceMatrixMetadata.getMatrixFriendlyName());
-//		description.append("\nTranslation method: ").append(translationMethodDesc);
-//		if (!matrixDescription.isEmpty()) {
-//			description.append("\n\nDescription: ");
-//			description.append(matrixDescription);
-//			description.append("\n");
-//		}
-//		description.append("\nGenotype encoding: ");
-//		description.append(GenotypeEncoding.ACGT0.toString());
-//		description.append("\n");
-//		description.append("Markers: ").append(sourceMatrixMetadata.getMarkerSetSize());
-//		description.append(", Samples: ").append(sourceMatrixMetadata.getSampleSetSize());
-//
-//		try {
-//			return new MatrixFactory(
-//					sourceMatrixMetadata.getTechnology(), // technology
-//					matrixFriendlyName,
-//					description.toString(), // description
-//					GenotypeEncoding.ACGT0, // New matrix genotype encoding
-//					sourceMatrixMetadata.getStrand(),
-//					sourceMatrixMetadata.getHasDictionray(), // has dictionary?
-//					dataSetSource.getSamplesKeysSource().size(),
-//					dataSetSource.getMarkersKeysSource().size(),
-//					dataSetSource.getMarkersChromosomeInfosSource().size(),
-//					sourceMatrixMetadata.getKey(), // orig/parent matrix 1 key
-//					null); // Orig matrixId 2
-//		} catch (InvalidRangeException ex) {
-//			throw new IOException(ex);
-//		}
+
+		final int numMarkers = getDataSet().getMarkerMetadatas().size();
+		final int numSamples = getDataSet().getSampleInfos().size();
+		final int numChromosomes = getDataSet().getChromosomeInfos().size();
 
 		final MatrixMetadata rdMatrix1Metadata = dataSetSource1.getMatrixMetadata();
 		final MatrixMetadata rdMatrix2Metadata = dataSetSource2.getMatrixMetadata();

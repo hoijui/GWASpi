@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import org.gwaspi.constants.cImport.ImportFormat;
+import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleKey;
@@ -66,31 +67,34 @@ public class LoadingNetCDFDataSetDestination extends AbstractNetCDFDataSetDestin
 	@Override
 	protected MatrixFactory createMatrixFactory() throws IOException {
 
-		// CREATE netCDF-3 FILE
-		StringBuilder descSB = new StringBuilder(Text.Matrix.descriptionHeader1);
-		descSB.append(org.gwaspi.global.Utils.getShortDateTimeAsString());
+		final int numMarkers = getDataSet().getMarkerMetadatas().size();
+		final int numSamples = getDataSet().getSampleInfos().size();
+		final int numChromosomes = getDataSet().getChromosomeInfos().size();
+
+		StringBuilder description = new StringBuilder(Text.Matrix.descriptionHeader1);
+		description.append(org.gwaspi.global.Utils.getShortDateTimeAsString());
 		if (!loadDescription.getDescription().isEmpty()) {
-			descSB.append("\nDescription: ");
-			descSB.append(loadDescription.getDescription());
-			descSB.append("\n");
+			description.append("\nDescription: ");
+			description.append(loadDescription.getDescription());
+			description.append("\n");
 		}
-//		descSB.append("\nStrand: ");
-//		descSB.append(strand);
-//		descSB.append("\nGenotype encoding: ");
-//		descSB.append(gtCode);
-		descSB.append("\n");
-		descSB.append("Markers: ").append(getDataSet().getMarkerMetadatas().size());
-		descSB.append(", Samples: ").append(getDataSet().getSampleInfos().size());
-		descSB.append("\n");
-		descSB.append(Text.Matrix.descriptionHeader2);
-		descSB.append(loadDescription.getFormat().toString());
-		descSB.append("\n");
-		descSB.append(Text.Matrix.descriptionHeader3);
-		descSB.append("\n");
-		gtLoader.addAdditionalBigDescriptionProperties(descSB, loadDescription);
+//		description.append("\nStrand: ");
+//		description.append(strand);
+//		description.append("\nGenotype encoding: ");
+//		description.append(gtCode);
+		description.append("\n");
+		description.append("Markers: ").append(numMarkers);
+		description.append(", Samples: ").append(numSamples);
+		description.append("\n");
+		description.append(Text.Matrix.descriptionHeader2);
+		description.append(loadDescription.getFormat().toString());
+		description.append("\n");
+		description.append(Text.Matrix.descriptionHeader3);
+		description.append("\n");
+		gtLoader.addAdditionalBigDescriptionProperties(description, loadDescription);
 		if (new File(loadDescription.getSampleFilePath()).exists()) {
-			descSB.append(loadDescription.getSampleFilePath()); // the FAM file, in case of PLink Binary
-			descSB.append(" (Sample Info file)\n");
+			description.append(loadDescription.getSampleFilePath()); // the FAM file, in case of PLink Binary
+			description.append(" (Sample Info file)\n");
 		}
 
 		try {
@@ -98,15 +102,15 @@ public class LoadingNetCDFDataSetDestination extends AbstractNetCDFDataSetDestin
 					loadDescription.getStudyKey(),
 					loadDescription.getFormat(),
 					loadDescription.getFriendlyName(),
-					descSB.toString(), // description
+					description.toString(), // description
 					loadDescription.getGtCode(),
 					(gtLoader.getMatrixStrand() != null) // NOTE getMatrixStrand() is only used here!
 							? gtLoader.getMatrixStrand()
 							: loadDescription.getStrand(),
 					gtLoader.isHasDictionary(),
-					getDataSet().getSampleInfos().size(),
-					getDataSet().getMarkerMetadatas().size(),
-					getDataSet().getChromosomeInfos().size(),
+					numSamples,
+					numMarkers,
+					numChromosomes,
 					loadDescription.getGtDirPath());
 		} catch (InvalidRangeException ex) {
 			throw new IOException(ex);
@@ -142,8 +146,8 @@ public class LoadingNetCDFDataSetDestination extends AbstractNetCDFDataSetDestin
 	}
 
 	@Override
-	protected String getGuessedGTCode() {
-		return gtLoader.getGuessedGTCode().toString();
+	protected GenotypeEncoding getGuessedGTCode() {
+		return gtLoader.getGuessedGTCode();
 	}
 
 	private static void logAsWhole(String startTime, int studyId, String dirPath, ImportFormat format, String matrixName, String description) throws IOException {

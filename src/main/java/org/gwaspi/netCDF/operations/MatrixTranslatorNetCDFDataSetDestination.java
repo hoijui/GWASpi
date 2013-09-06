@@ -50,6 +50,10 @@ public class MatrixTranslatorNetCDFDataSetDestination extends AbstractNetCDFData
 	@Override
 	protected MatrixFactory createMatrixFactory() throws IOException {
 
+		final int numMarkers = getDataSet().getMarkerMetadatas().size();
+		final int numSamples = getDataSet().getSampleInfos().size();
+		final int numChromosomes = getDataSet().getChromosomeInfos().size();
+
 		MatrixMetadata sourceMatrixMetadata = dataSetSource.getMatrixMetadata();
 
 		GenotypeEncoding gtEncoding = sourceMatrixMetadata.getGenotypeEncoding();
@@ -80,8 +84,8 @@ public class MatrixTranslatorNetCDFDataSetDestination extends AbstractNetCDFData
 		description.append("\nGenotype encoding: ");
 		description.append(GenotypeEncoding.ACGT0.toString());
 		description.append("\n");
-		description.append("Markers: ").append(sourceMatrixMetadata.getMarkerSetSize());
-		description.append(", Samples: ").append(sourceMatrixMetadata.getSampleSetSize());
+		description.append("Markers: ").append(numMarkers);
+		description.append(", Samples: ").append(numSamples);
 
 		try {
 			return new MatrixFactory(
@@ -91,9 +95,9 @@ public class MatrixTranslatorNetCDFDataSetDestination extends AbstractNetCDFData
 					GenotypeEncoding.ACGT0, // New matrix genotype encoding
 					sourceMatrixMetadata.getStrand(),
 					sourceMatrixMetadata.getHasDictionray(), // has dictionary?
-					dataSetSource.getSamplesKeysSource().size(),
-					dataSetSource.getMarkersKeysSource().size(),
-					dataSetSource.getMarkersChromosomeInfosSource().size(),
+					numSamples,
+					numMarkers,
+					numChromosomes,
 					sourceMatrixMetadata.getKey(), // orig/parent matrix 1 key
 					null); // Orig matrixId 2
 		} catch (InvalidRangeException ex) {

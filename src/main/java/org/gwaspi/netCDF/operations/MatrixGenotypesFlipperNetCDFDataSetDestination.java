@@ -55,6 +55,10 @@ public class MatrixGenotypesFlipperNetCDFDataSetDestination extends AbstractNetC
 	@Override
 	protected MatrixFactory createMatrixFactory() throws IOException {
 
+		final int numMarkers = getDataSet().getMarkerMetadatas().size();
+		final int numSamples = getDataSet().getSampleInfos().size();
+		final int numChromosomes = getDataSet().getChromosomeInfos().size();
+
 		MatrixMetadata sourceMatrixMetadata = dataSetSource.getMatrixMetadata();
 
 		StringBuilder description = new StringBuilder();
@@ -71,8 +75,8 @@ public class MatrixGenotypesFlipperNetCDFDataSetDestination extends AbstractNetC
 		description.append("\nGenotype encoding: ");
 		description.append(sourceMatrixMetadata.getGenotypeEncoding());
 		description.append("\n");
-		description.append("Markers: ").append(dataSetSource.getMarkersKeysSource().size());
-		description.append(", Samples: ").append(dataSetSource.getSamplesKeysSource().size());
+		description.append("Markers: ").append(numMarkers);
+		description.append(", Samples: ").append(numSamples);
 
 		try {
 			return new MatrixFactory(
@@ -82,9 +86,9 @@ public class MatrixGenotypesFlipperNetCDFDataSetDestination extends AbstractNetC
 					sourceMatrixMetadata.getGenotypeEncoding(), // matrix genotype encoding from the original matrix
 					StrandType.valueOf("FLP"), // FIXME this will fail at runtime
 					sourceMatrixMetadata.getHasDictionray(), // has dictionary?
-					dataSetSource.getSamplesKeysSource().size(),
-					dataSetSource.getMarkersKeysSource().size(),
-					dataSetSource.getMarkersChromosomeInfosSource().size(),
+					numSamples,
+					numMarkers,
+					numChromosomes,
 					sourceMatrixMetadata.getKey(), // orig/parent matrix 1 key
 					null); // orig/parent matrix 2 key
 		} catch (InvalidRangeException ex) {

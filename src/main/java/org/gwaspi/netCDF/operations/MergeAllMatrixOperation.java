@@ -30,8 +30,6 @@ import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MarkersKeysSource;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.netCDF.loader.DataSetDestination;
-import ucar.ma2.InvalidRangeException;
-import ucar.nc2.NetcdfFileWriteable;
 
 public class MergeAllMatrixOperation extends AbstractMergeMarkersMatrixOperation {
 
@@ -39,7 +37,7 @@ public class MergeAllMatrixOperation extends AbstractMergeMarkersMatrixOperation
 			DataSetSource dataSetSource1,
 			DataSetSource dataSetSource2,
 			DataSetDestination dataSetDestination)
-			throws IOException, InvalidRangeException
+			throws IOException
 	{
 		super(
 				dataSetSource1,
@@ -71,7 +69,6 @@ public class MergeAllMatrixOperation extends AbstractMergeMarkersMatrixOperation
 
 	@Override
 	protected void writeGenotypes(
-			NetcdfFileWriteable wrNcFile,
 			Map<SampleKey, int[]> wrSampleSetMap,
 			Collection<MarkerKey> wrComboSortedMarkers,
 			Map<SampleKey, byte[]> rdSampleSetMap1,
@@ -123,7 +120,7 @@ public class MergeAllMatrixOperation extends AbstractMergeMarkersMatrixOperation
 				wrComboSortedMarkerGTs.add(genotype);
 			}
 
-			dataSetDestination.addSampleGTAlleles(wrSampleIndex, wrComboSortedMarkerGTs);
+			addSampleGTAlleles(wrSampleIndex, wrComboSortedMarkerGTs);
 			wrSampleIndex++;
 		}
 	}

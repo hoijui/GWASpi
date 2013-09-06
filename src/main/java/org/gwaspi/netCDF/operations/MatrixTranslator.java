@@ -21,25 +21,16 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.Map;
-import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.constants.cNetCDF.Defaults.AlleleBytes;
 import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import org.gwaspi.global.Text;
-import org.gwaspi.model.ChromosomeInfo;
-import org.gwaspi.model.ChromosomeKey;
 import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.GenotypesList;
 import org.gwaspi.model.MarkerKey;
-import org.gwaspi.model.MatricesList;
-import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
-import org.gwaspi.model.SampleKey;
-import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.loader.AbstractNetCDFDataSetDestination;
 import org.gwaspi.netCDF.loader.DataSetDestination;
-import org.gwaspi.netCDF.markers.MarkerSet;
-import org.gwaspi.samples.SampleSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,21 +60,21 @@ public class MatrixTranslator implements MatrixOperation {
 		this.dataSetSource = dataSetSource;
 		this.dataSetDestination = dataSetDestination;
 
-		// INIT EXTRACTOR OBJECTS
-		this.rdMatrixKey = rdMatrixKey;
-		this.rdMatrixMetadata = MatricesList.getMatrixMetadataById(this.rdMatrixKey);
-		this.wrMatrixId = Integer.MIN_VALUE;
-		this.wrMatrixFriendlyName = wrMatrixFriendlyName;
-		this.wrMatrixDescription = wrMatrixDescription;
-
-		this.rdMarkerSet = new MarkerSet(this.rdMatrixKey);
-		this.rdMarkerSet.initFullMarkerIdSetMap();
-
-		this.wrMarkerIdSetMap = new LinkedHashMap<MarkerKey, byte[]>();
-		this.rdChrInfoSetMap = this.rdMarkerSet.getChrInfoSetMap();
-
-		this.rdSampleSet = new SampleSet(this.rdMatrixKey);
-		this.rdSampleSetMap = this.rdSampleSet.getSampleIdSetMapByteArray();
+//		// INIT EXTRACTOR OBJECTS
+//		this.rdMatrixKey = rdMatrixKey;
+//		this.rdMatrixMetadata = MatricesList.getMatrixMetadataById(this.rdMatrixKey);
+//		this.wrMatrixId = Integer.MIN_VALUE;
+//		this.wrMatrixFriendlyName = wrMatrixFriendlyName;
+//		this.wrMatrixDescription = wrMatrixDescription;
+//
+//		this.rdMarkerSet = new MarkerSet(this.rdMatrixKey);
+//		this.rdMarkerSet.initFullMarkerIdSetMap();
+//
+//		this.wrMarkerIdSetMap = new LinkedHashMap<MarkerKey, byte[]>();
+//		this.rdChrInfoSetMap = this.rdMarkerSet.getChrInfoSetMap();
+//
+//		this.rdSampleSet = new SampleSet(this.rdMatrixKey);
+//		this.rdSampleSetMap = this.rdSampleSet.getSampleIdSetMapByteArray();
 	}
 
 	@Override
@@ -145,11 +136,11 @@ public class MatrixTranslator implements MatrixOperation {
 			// METADATA WRITER
 			// WRITING METADATA TO MATRIX
 			AbstractNetCDFDataSetDestination.saveSamplesMatadata(rdSampleSetMap.keySet(), wrNcFile);
-			AbstractNetCDFDataSetDestination.saveMarkersMatadata(dataSetSource.getMarkersMetadatasSource(), rdChrInfoSetMap, true, null, wrNcFile);
+			AbstractNetCDFDataSetDestination.saveMarkersMatadata(dataSetSource.getMarkersMetadatasSource(), dataSetSource.getMarkersChromosomeInfosSource(), true, null, wrNcFile);
 
 			// GENOTYPES WRITER
 			// Get correct bases dictionary for translation
-			Map<MarkerKey, char[]> dictionnaries = rdMarkerSet.getDictionaryBases();
+			Map<MarkerKey, byte[]> dictionnaries = rdMarkerSet.getDictionaryBases();
 
 			// Iterate through Samples, use Sample item position to read all Markers GTs from rdMarkerIdSetMap.
 			dataSetDestination.startLoadingAlleles(false);
@@ -175,7 +166,7 @@ public class MatrixTranslator implements MatrixOperation {
 			Iterator<MarkerKey> markersKeysSourceIt = dataSetSource.getMarkersKeysSource().iterator();
 			for (GenotypesList markerGenotypes : dataSetSource.getMarkersGenotypesSource()) {
 				MarkerKey markerKey = markersKeysSourceIt.next();
-				char[] dictionary = dictionnaries.get(markerKey);
+				byte[] dictionary = dictionnaries.get(markerKey);
 				Collection<byte[]> translatedGTs = translateCurrentMarkerAB12AllelesMap(markerGenotypes, rdMatrixGTCode, dictionary);
 
 				// Write wrMarkerIdSetMap to A3 ArrayChar and save to wrMatrix
@@ -195,7 +186,7 @@ public class MatrixTranslator implements MatrixOperation {
 		return result;
 	}
 
-	// TODO Test translate1234AllelesToACGT
+	// TODO Test this method
 	private int translate1234AllelesToACGT() throws IOException {
 		int result = Integer.MIN_VALUE;
 
@@ -235,83 +226,52 @@ public class MatrixTranslator implements MatrixOperation {
 		return result;
 	}
 
-	private static void translateCurrentSampleAB12AllelesMap(Map<MarkerKey, byte[]> codedMap, GenotypeEncoding rdMatrixType, Map<MarkerKey, char[]> dictionaryMap) {
-		byte alleleA;
-		byte alleleB;
+	private void translateCurrentSampleAB12AllelesMap(Map<MarkerKey, byte[]> codedMap, GenotypeEncoding sourceGenotypeEncoding, Map<MarkerKey, byte[]> dictionaryMap) {
 
-		switch (rdMatrixType) {
+		final byte alleleA;
+		final byte alleleB;
+		switch (sourceGenotypeEncoding) {
 			case AB0:
-				alleleA = cNetCDF.Defaults.AlleleBytes.A;
-				alleleB = cNetCDF.Defaults.AlleleBytes.B;
-				// Iterate through all markers
-				for (Map.Entry<MarkerKey, byte[]> entry : codedMap.entrySet()) {
-					MarkerKey markerKey = entry.getKey();
-					char[] basesDict = dictionaryMap.get(markerKey);
-					byte[] codedAlleles = entry.getValue();
-					byte[] transAlleles = new byte[2];
-
-					if (codedAlleles[0] == alleleA) {
-						transAlleles[0] = (byte) basesDict[0];
-					} else if (codedAlleles[0] == alleleB) {
-						transAlleles[0] = (byte) basesDict[1];
-					} else {
-						transAlleles[0] = cNetCDF.Defaults.AlleleBytes._0;
-					}
-
-					if (codedAlleles[1] == alleleA) {
-						transAlleles[1] = (byte) basesDict[0];
-					} else if (codedAlleles[1] == alleleB) {
-						transAlleles[1] = (byte) basesDict[1];
-					} else {
-						transAlleles[1] = cNetCDF.Defaults.AlleleBytes._0;
-					}
-
-					entry.setValue(transAlleles);
-				}
+				alleleA = AlleleBytes.A;
+				alleleB = AlleleBytes.B;
 				break;
 			case O12:
-				alleleA = cNetCDF.Defaults.AlleleBytes._1;
-				alleleB = cNetCDF.Defaults.AlleleBytes._2;
-
-				// Iterate through all markers
-				for (Map.Entry<MarkerKey, byte[]> entry : codedMap.entrySet()) {
-					MarkerKey markerKey = entry.getKey();
-					char[] basesDict = dictionaryMap.get(markerKey);
-					byte[] codedAlleles = entry.getValue();
-					byte[] transAlleles = new byte[2];
-
-					if (codedAlleles[0] == alleleA) {
-						transAlleles[0] = (byte) basesDict[0];
-					} else if (codedAlleles[0] == alleleB) {
-						transAlleles[0] = (byte) basesDict[1];
-					} else {
-						transAlleles[0] = cNetCDF.Defaults.AlleleBytes._0;
-					}
-
-					if (codedAlleles[1] == alleleA) {
-						transAlleles[1] = (byte) basesDict[0];
-					} else if (codedAlleles[1] == alleleB) {
-						transAlleles[1] = (byte) basesDict[1];
-					} else {
-						transAlleles[0] = cNetCDF.Defaults.AlleleBytes._0;
-					}
-
-					entry.setValue(transAlleles);
-				}
+				alleleA = AlleleBytes._1;
+				alleleB = AlleleBytes._2;
 				break;
 			default:
-				break;
+				throw new IllegalStateException("Unsupported source genotype encoding " + sourceGenotypeEncoding.toString());
+		}
+
+		// Iterate through all markers
+		for (Map.Entry<MarkerKey, byte[]> entry : codedMap.entrySet()) {
+			MarkerKey markerKey = entry.getKey();
+			byte[] basesDict = dictionaryMap.get(markerKey);
+			byte[] codedAlleles = entry.getValue();
+			byte[] transAlleles = new byte[2];
+
+			for (int ai = 0; ai < codedAlleles.length; ai++) {
+				if (codedAlleles[ai] == alleleA) {
+					transAlleles[ai] = basesDict[0];
+				} else if (codedAlleles[ai] == alleleB) {
+					transAlleles[ai] = basesDict[1];
+				} else {
+					transAlleles[ai] = AlleleBytes._0;
+				}
+			}
+
+			entry.setValue(transAlleles);
 		}
 	}
 
 	private static void translateCurrentSample1234AllelesMap(Map<MarkerKey, byte[]> codedMap, Collection<MarkerKey> markerStrands) {
 
 		Map<Byte, Byte> dictionary = new HashMap<Byte, Byte>();
-		dictionary.put(cNetCDF.Defaults.AlleleBytes._0, cNetCDF.Defaults.AlleleBytes._0);
-		dictionary.put(cNetCDF.Defaults.AlleleBytes._1, cNetCDF.Defaults.AlleleBytes.A);
-		dictionary.put(cNetCDF.Defaults.AlleleBytes._2, cNetCDF.Defaults.AlleleBytes.C);
-		dictionary.put(cNetCDF.Defaults.AlleleBytes._3, cNetCDF.Defaults.AlleleBytes.G);
-		dictionary.put(cNetCDF.Defaults.AlleleBytes._4, cNetCDF.Defaults.AlleleBytes.T);
+		dictionary.put(AlleleBytes._0, AlleleBytes._0);
+		dictionary.put(AlleleBytes._1, AlleleBytes.A);
+		dictionary.put(AlleleBytes._2, AlleleBytes.C);
+		dictionary.put(AlleleBytes._3, AlleleBytes.G);
+		dictionary.put(AlleleBytes._4, AlleleBytes.T);
 
 		// Iterate through all markers
 		for (MarkerKey markerKey : markerStrands) {

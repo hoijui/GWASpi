@@ -17,13 +17,14 @@
 
 package org.gwaspi.threadbox;
 
-import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.GWASpiExplorerNodes;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
+import org.gwaspi.netCDF.loader.AbstractNetCDFDataSetDestination;
 import org.gwaspi.netCDF.markers.NetCDFDataSetSource;
 import org.gwaspi.netCDF.operations.MatrixTranslator;
+import org.gwaspi.netCDF.operations.MatrixTranslatorNetCDFDataSetDestination;
 import org.gwaspi.netCDF.operations.OP_QAMarkers;
 import org.gwaspi.netCDF.operations.OP_QASamples;
 import org.slf4j.Logger;
@@ -59,13 +60,17 @@ public class Threaded_TranslateMatrix extends CommonRunnable {
 
 		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
 			DataSetSource dataSetSource = new NetCDFDataSetSource(parentMatrixKey);
-			MatrixTranslator matrixTransformer = new MatrixTranslator(
+			AbstractNetCDFDataSetDestination dataSetDestination
+					= new MatrixTranslatorNetCDFDataSetDestination(
 					dataSetSource,
 					newMatrixName,
 					description);
+			MatrixTranslator matrixTransformer = new MatrixTranslator(
+					dataSetSource,
+					dataSetDestination);
 
-			int resultMatrixId = matrixTransformer.processMatrix();
-			MatrixKey resultMatrixKey = new MatrixKey(parentMatrixKey.getStudyKey(), resultMatrixId);
+			matrixTransformer.processMatrix();
+			MatrixKey resultMatrixKey = dataSetDestination.getResultMatrixKey();
 
 			GWASpiExplorerNodes.insertMatrixNode(resultMatrixKey);
 

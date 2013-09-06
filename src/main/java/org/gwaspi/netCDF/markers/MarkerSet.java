@@ -549,7 +549,9 @@ public class MarkerSet extends AbstractList<GenotypesList> implements SamplesGen
 	 * HELPER GETS DICTIONARY OF CURRENT MATRIX. IS CONCURRENT TO INSTANTIATED Map
 	 */
 	public Map<MarkerKey, char[]> getDictionaryBases() throws IOException {
-		Map<MarkerKey, char[]> dictionnary = new LinkedHashMap<MarkerKey, char[]>();
+
+		Map<MarkerKey, char[]> dictionary = new LinkedHashMap<MarkerKey, char[]>();
+
 		try {
 			Variable varBasesDict = ncfile.findVariable(cNetCDF.Variables.VAR_MARKERS_BASES_DICT);
 			if (null != varBasesDict) {
@@ -566,13 +568,14 @@ public class MarkerSet extends AbstractList<GenotypesList> implements SamplesGen
 					for (int j = 0; j < dictShape[1]; j++) {
 						alleles.append(dictAlleles_ACD2.getChar(index.set(i, j)));
 					}
-					dictionnary.put(key, alleles.toString().trim().toCharArray());
+					dictionary.put(key, alleles.toString().trim().toCharArray());
 				}
 			}
 		} catch (InvalidRangeException ex) {
-			log.error("Cannot read data", ex);
+			throw new IOException("Cannot read data", ex);
 		}
-		return dictionnary;
+
+		return dictionary;
 	}
 	//</editor-fold>
 

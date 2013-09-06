@@ -18,6 +18,7 @@
 package org.gwaspi.threadbox;
 
 import java.io.File;
+import java.io.IOException;
 import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.GWASpiExplorerNodes;
 import org.gwaspi.model.MatrixKey;
@@ -41,12 +42,14 @@ public class Threaded_FlipStrandMatrix extends CommonRunnable {
 			String newMatrixName,
 			String description,
 			File markerFlipFile)
+			throws IOException
 	{
 		super(
 				"Flip Strand Matrix",
 				"Flipping Genotypes",
 				"Flip Strand Matrix ID: " + parentDataSetSource.getMatrixMetadata().getKey().getMatrixId(),
 				"Extracting");
+
 
 		this.parentDataSetSource = parentDataSetSource;
 		this.newMatrixName = newMatrixName;

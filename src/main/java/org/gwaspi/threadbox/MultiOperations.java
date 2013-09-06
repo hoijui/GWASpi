@@ -31,6 +31,7 @@ import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.loader.GenotypesLoadDescription;
+import org.gwaspi.netCDF.markers.NetCDFDataSetSource;
 import org.gwaspi.netCDF.operations.GWASinOneGOParams;
 import org.gwaspi.netCDF.operations.MatrixOperation;
 import org.gwaspi.operations.combi.CombiTestParams;
@@ -200,13 +201,14 @@ public class MultiOperations {
 
 	//<editor-fold defaultstate="expanded" desc="DATA MANAGEMENT">
 	public static void doMatrixOperation(final MatrixOperation matrixOperation) {
-		CommonRunnable task = new Threaded_MatrixOperation(matrixOperation);
-
-		TaskLockProperties lockProperties = new TaskLockProperties();
-		lockProperties.getStudyIds().add(parentMatrixKey.getStudyId());
-		lockProperties.getMatricesIds().add(parentMatrixKey.getMatrixId());
-
-		queueTask(task, lockProperties);
+		throw new UnsupportedOperationException("implement (and use) me!"); // TODO
+//		CommonRunnable task = new Threaded_MatrixOperation(matrixOperation);
+//
+//		TaskLockProperties lockProperties = new TaskLockProperties();
+//		lockProperties.getStudyIds().add(parentMatrixKey.getStudyId());
+//		lockProperties.getMatricesIds().add(parentMatrixKey.getMatrixId());
+//
+//		queueTask(task, lockProperties);
 	}
 
 	public static void doExtractData(
@@ -288,7 +290,8 @@ public class MultiOperations {
 				parentMatrixKey2,
 				newMatrixName,
 				description,
-				all);
+				false,
+				!all);
 
 		TaskLockProperties lockProperties = new TaskLockProperties();
 		lockProperties.getStudyIds().add(parentMatrixKey1.getStudyKey().getId());
@@ -304,11 +307,13 @@ public class MultiOperations {
 			final String newMatrixName,
 			final String description)
 	{
-		CommonRunnable task = new Threaded_MergeMatricesAddSamples(
+		CommonRunnable task = new Threaded_MergeMatrices(
 				parentMatrixKey1,
 				parentMatrixKey2,
 				newMatrixName,
-				description);
+				description,
+				true,
+				false);
 
 		TaskLockProperties lockProperties = new TaskLockProperties();
 		lockProperties.getStudyIds().add(parentMatrixKey1.getStudyKey().getId());
@@ -319,23 +324,28 @@ public class MultiOperations {
 	}
 
 	public static void doStrandFlipMatrix(
-			final DataSetSource dataSetSource,
+			final MatrixKey parentMatrixKey,
 			final String markerIdentifyer,
 			final File markerFlipFile,
 			final String newMatrixName,
 			final String description)
 	{
-		CommonRunnable task = new Threaded_FlipStrandMatrix(
-				dataSetSource,
-				newMatrixName,
-				description,
-				markerFlipFile);
+		try {
+			DataSetSource dataSetSource = new NetCDFDataSetSource(parentMatrixKey);
+			CommonRunnable task = new Threaded_FlipStrandMatrix(
+					dataSetSource,
+					newMatrixName,
+					description,
+					markerFlipFile);
 
-		TaskLockProperties lockProperties = new TaskLockProperties();
-		lockProperties.getStudyIds().add(parentMatrixKey.getStudyKey().getId());
-		lockProperties.getMatricesIds().add(parentMatrixKey.getMatrixId());
+			TaskLockProperties lockProperties = new TaskLockProperties();
+			lockProperties.getStudyIds().add(parentMatrixKey.getStudyKey().getId());
+			lockProperties.getMatricesIds().add(parentMatrixKey.getMatrixId());
 
-		queueTask(task, lockProperties);
+			queueTask(task, lockProperties);
+		} catch (IOException ex) {
+			throw new RuntimeException(ex);
+		}
 	}
 
 	public static void updateSampleInfo(

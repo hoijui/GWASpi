@@ -18,8 +18,13 @@
 package org.gwaspi.netCDF.operations;
 
 import java.io.IOException;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.Map;
+import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import org.gwaspi.model.DataSetSource;
@@ -96,6 +101,58 @@ public abstract class AbstractMergeMatrixOperation implements MatrixOperation {
 		return result;
 	}
 
+	/**
+	 * With the help of this, we perform on-the-fly mismatch checking,
+	 * while we are storing sample genotypes.
+	 */
+	private Collection<Set<Byte>> perMarkerAlleles;
+	private int numSamples;
+	private int mismatchCount;
+	private double mismatchRatio;
+
+	protected void initiateGenotypesMismatchChecking(int numMarkers) {
+
+		perMarkerAlleles = new LinkedList<Set<Byte>>();
+		for (int mi = 0; mi < numMarkers; mi++) {
+			perMarkerAlleles.add(new HashSet<Byte>());
+		}
+	}
+
+	protected void addSampleGTAlleles(int sampleIndex, Collection<byte[]> sampleAlleles) throws IOException {
+
+		// assemble per marker alleles
+		Iterator<Set<Byte>> perMarkerAllelesIt = perMarkerAlleles.iterator();
+		for (byte[] bs : sampleAlleles) {
+			Set<Byte> markerAllele = perMarkerAllelesIt.next();
+			for (byte allele : bs) {
+				markerAllele.add(allele);
+			}
+		}
+
+		dataSetDestination.addSampleGTAlleles(sampleIndex, sampleAlleles);
+	}
+
+	protected void finalizeGenotypesMismatchChecking() {
+
+		mismatchCount = 0;
+		for (Set<Byte> markerAllele : perMarkerAlleles) {
+			// remove the invalid allele 0
+			markerAllele.remove((byte) 0);
+
+			if (markerAllele.size() > 2) {
+				mismatchCount++;
+			}
+		}
+
+		mismatchRatio = (double) mismatchCount / numSamples;
+	}
+
+//	protected void addMarkerGTAlleles(int markerIndex, Collection<byte[]> markerAlleles) throws IOException {
+//		// TODO check for mismatches!
+//		XXX;
+//		dataSetDestination.addMarkerGTAlleles(markerIndex, markerAlleles);
+//	}
+
 	protected static Map<SampleKey, int[]> getComboSampleSetWithIndicesArray(SamplesKeysSource sampleKeys1, SamplesKeysSource sampleKeys2) {
 		Map<SampleKey, int[]> resultMap = new LinkedHashMap<SampleKey, int[]>();
 
@@ -117,7 +174,7 @@ public abstract class AbstractMergeMatrixOperation implements MatrixOperation {
 				position[0] = 2; // rdMatrixNb
 				position[1] = rdPos; // rdPos
 			} else {
-				position = new int[]{2, rdPos, wrPos}; // rdMatrixNb, rdPos, wrPos
+				position = new int[] {2, rdPos, wrPos}; // rdMatrixNb, rdPos, wrPos
 			}
 
 			resultMap.put(key, position);
@@ -135,27 +192,19 @@ public abstract class AbstractMergeMatrixOperation implements MatrixOperation {
 		int markerNb = 0;
 		int mismatchCount = 0;
 		for (GenotypesList markerGenotypes : dataSetSource.getMarkersGenotypesSource()) {
-			Map<Byte, Integer> knownAlleles = new LinkedHashMap<Byte, Integer>();
-
-			// Iterate through sampleSet
+			Set<Byte> knownAlleles = new HashSet<Byte>();
 			for (byte[] tempGT : markerGenotypes) {
-				// Gather alleles different from 0 into a list of known alleles and count the number of appearences
-				if (tempGT[0] != ((byte) '0')) {
-					int tempCount = 0;
-					if (knownAlleles.containsKey(tempGT[0])) {
-						tempCount = knownAlleles.get(tempGT[0]);
-					}
-					knownAlleles.put(tempGT[0], tempCount + 1);
-				}
-				if (tempGT[1] != ((byte) '0')) {
-					int tempCount = 0;
-					if (knownAlleles.containsKey(tempGT[1])) {
-						tempCount = knownAlleles.get(tempGT[1]);
-					}
-					knownAlleles.put(tempGT[1], tempCount + 1);
+				// Gather alleles into a list of known alleles
+				// and count the number of appearences
+				for (byte allele : tempGT) {
+					knownAlleles.add(allele);
 				}
 			}
+			// we are not interested in the "invalid" allele 0
+			knownAlleles.remove((byte) '0');
 
+			// if we have more then two different alleles per marker,
+			// something is wrong
 			if (knownAlleles.size() > 2) {
 				mismatchCount++;
 			}

@@ -29,8 +29,6 @@ import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.SamplesKeysSource;
 import org.gwaspi.netCDF.loader.DataSetDestination;
-import ucar.ma2.InvalidRangeException;
-import ucar.nc2.NetcdfFileWriteable;
 
 public class MergeMarkersMatrixOperation extends AbstractMergeMarkersMatrixOperation {
 
@@ -38,7 +36,7 @@ public class MergeMarkersMatrixOperation extends AbstractMergeMarkersMatrixOpera
 			DataSetSource dataSetSource1,
 			DataSetSource dataSetSource2,
 			DataSetDestination dataSetDestination)
-			throws IOException, InvalidRangeException
+			throws IOException
 	{
 		super(
 				dataSetSource1,
@@ -67,12 +65,11 @@ public class MergeMarkersMatrixOperation extends AbstractMergeMarkersMatrixOpera
 
 	@Override
 	protected void writeGenotypes(
-			NetcdfFileWriteable wrNcFile,
 			Map<SampleKey, int[]> wrSampleSetMap,
 			Collection<MarkerKey> wrComboSortedMarkers,
 			Map<SampleKey, byte[]> rdSampleSetMap1,
 			Map<SampleKey, byte[]> rdSampleSetMap2)
-			throws InvalidRangeException, IOException
+			throws IOException
 	{
 		// Get SampleId index from each Matrix
 		// Iterate through wrSampleSetMap
@@ -102,7 +99,7 @@ public class MergeMarkersMatrixOperation extends AbstractMergeMarkersMatrixOpera
 				wrComboSortedMarkerGTs.put(markerKey, genotype);
 			}
 
-			dataSetDestination.addSampleGTAlleles(readDataSet1SampleIndex, wrComboSortedMarkerGTs.values());
+			addSampleGTAlleles(readDataSet1SampleIndex, wrComboSortedMarkerGTs.values());
 		}
 	}
 
