@@ -59,12 +59,14 @@ public class MergeAllMatrixOperation extends AbstractMergeMarkersMatrixOperation
 		final String humanReadableMethodName = Text.Trafo.mergeAll;
 		final String methodDescription = Text.Trafo.mergeMethodMergeAll;
 
-		return mergeMatrices(
+		mergeMatrices(
 				wrSampleSetMap,
 				theSamples.keySet(),
 				numSamples,
 				humanReadableMethodName,
-				methodDescription).getMatrixId();
+				methodDescription);
+
+		return Integer.MIN_VALUE;
 	}
 
 	@Override

@@ -22,7 +22,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import org.gwaspi.model.ChromosomeInfo;
 import org.gwaspi.model.ChromosomeKey;
 import org.gwaspi.model.DataSetSource;
@@ -66,7 +65,7 @@ public abstract class AbstractMergeMarkersMatrixOperation extends AbstractMergeM
 	/**
 	 * Mingles markers and keeps samples constant.
 	 */
-	protected MatrixKey mergeMatrices(
+	protected void mergeMatrices(
 			Map<SampleKey, int[]> wrSampleSetMap,
 			Collection<SampleKey> sampleKeys,
 			final int numSamples,
@@ -84,12 +83,12 @@ public abstract class AbstractMergeMarkersMatrixOperation extends AbstractMergeM
 		// RETRIEVE CHROMOSOMES INFO
 		Map<ChromosomeKey, ChromosomeInfo> chromosomeInfo = ChromosomeUtils.aggregateChromosomeInfo(wrCombinedSortedMarkersMetadata, 0, 1);
 
-		GenotypeEncoding genotypeEncoding1 = rdMatrix1Metadata.getGenotypeEncoding();
+//		GenotypeEncoding genotypeEncoding1 = rdMatrix1Metadata.getGenotypeEncoding();
 
 		final boolean hasCombinedDictionary = (rdMatrix1Metadata.getHasDictionray() && rdMatrix2Metadata.getHasDictionray());
 
-//			rdMarkerSet1.initFullMarkerIdSetMap();
-//			rdMarkerSet2.initFullMarkerIdSetMap();
+//		rdMarkerSet1.initFullMarkerIdSetMap();
+//		rdMarkerSet2.initFullMarkerIdSetMap();
 
 		Map<MarkerKey, String> combinedMarkerRSIDs = new LinkedHashMap<MarkerKey, String>(wrCombinedSortedMarkersMetadata.size());
 		Map<MarkerKey, String> combinedMarkerBasesDicts = null;
@@ -98,10 +97,10 @@ public abstract class AbstractMergeMarkersMatrixOperation extends AbstractMergeM
 		}
 		Map<MarkerKey, String> combinedMarkerGTStrands = new LinkedHashMap<MarkerKey, String>();
 
-//			rdMarkerSet1.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_RSID);
-//			combinedMarkerRSIDs.putAll(rdMarkerSet1.getMarkerIdSetMapCharArray());
-//			rdMarkerSet2.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_RSID);
-//			combinedMarkerRSIDs.putAll(rdMarkerSet2.getMarkerIdSetMapCharArray());
+//		rdMarkerSet1.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_RSID);
+//		combinedMarkerRSIDs.putAll(rdMarkerSet1.getMarkerIdSetMapCharArray());
+//		rdMarkerSet2.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_RSID);
+//		combinedMarkerRSIDs.putAll(rdMarkerSet2.getMarkerIdSetMapCharArray());
 
 		Iterator<MarkerKey> markersKeysSource1It = dataSetSource1.getMarkersKeysSource().iterator();
 		for (MarkerMetadata markerMetadata : dataSetSource1.getMarkersMetadatasSource()) {
@@ -122,20 +121,20 @@ public abstract class AbstractMergeMarkersMatrixOperation extends AbstractMergeM
 			combinedMarkerGTStrands.put(key, markerMetadata.getStrand());
 		}
 
-//			Map<MarkerKey, byte[]> combinedMarkerBasesDicts = null;
-//			if (hasCombinedDictionary) {
-//				combinedMarkerBasesDicts = new LinkedHashMap<MarkerKey, byte[]>();
-//				rdMarkerSet1.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_BASES_DICT);
-//				combinedMarkerBasesDicts.putAll(rdMarkerSet1.getMarkerIdSetMapCharArray());
-//				rdMarkerSet2.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_BASES_DICT);
-//				combinedMarkerBasesDicts.putAll(rdMarkerSet2.getMarkerIdSetMapCharArray());
-//			}
-
-//			Map<MarkerKey, String> combinedMarkerGTStrands = new LinkedHashMap<MarkerKey, String>();
-//			rdMarkerSet1.fillInitMapWithVariable(cNetCDF.Variables.VAR_GT_STRAND);
-//			combinedMarkerGTStrands.putAll(rdMarkerSet1.getMarkerIdSetMapCharArray());
-//			rdMarkerSet2.fillInitMapWithVariable(cNetCDF.Variables.VAR_GT_STRAND);
-//			combinedMarkerGTStrands.putAll(rdMarkerSet2.getMarkerIdSetMapCharArray());
+//		Map<MarkerKey, byte[]> combinedMarkerBasesDicts = null;
+//		if (hasCombinedDictionary) {
+//			combinedMarkerBasesDicts = new LinkedHashMap<MarkerKey, byte[]>();
+//			rdMarkerSet1.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_BASES_DICT);
+//			combinedMarkerBasesDicts.putAll(rdMarkerSet1.getMarkerIdSetMapCharArray());
+//			rdMarkerSet2.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_BASES_DICT);
+//			combinedMarkerBasesDicts.putAll(rdMarkerSet2.getMarkerIdSetMapCharArray());
+//		}
+//
+//		Map<MarkerKey, String> combinedMarkerGTStrands = new LinkedHashMap<MarkerKey, String>();
+//		rdMarkerSet1.fillInitMapWithVariable(cNetCDF.Variables.VAR_GT_STRAND);
+//		combinedMarkerGTStrands.putAll(rdMarkerSet1.getMarkerIdSetMapCharArray());
+//		rdMarkerSet2.fillInitMapWithVariable(cNetCDF.Variables.VAR_GT_STRAND);
+//		combinedMarkerGTStrands.putAll(rdMarkerSet2.getMarkerIdSetMapCharArray());
 
 		for (Map.Entry<MarkerKey, MarkerMetadata> markerEntry : wrCombinedSortedMarkersMetadata.entrySet()) {
 			MarkerKey markerKey = markerEntry.getKey();
@@ -150,30 +149,12 @@ public abstract class AbstractMergeMarkersMatrixOperation extends AbstractMergeM
 			markerEntry.setValue(newMarkerMetadata);
 		}
 
-		AbstractNetCDFDataSetDestination.saveSamplesMatadata(sampleKeys, wrNcFile);
-		AbstractNetCDFDataSetDestination.saveMarkersMatadata(wrCombinedSortedMarkersMetadata.values(), chromosomeInfo, hasCombinedDictionary, null, wrNcFile);
+		AbstractNetCDFDataSetDestination.saveSamplesMetadata(sampleKeys, wrNcFile);
+		AbstractNetCDFDataSetDestination.saveMarkersMetadata(wrCombinedSortedMarkersMetadata.values(), chromosomeInfo, hasCombinedDictionary, null, wrNcFile);
 
 		writeGenotypesMeta(wrSampleSetMap, wrCombinedSortedMarkersMetadata, rdSampleSetMap1, rdSampleSetMap2);
 
-		resultMatrixKey = matrixFactory.getResultMatrixKey();
-
-		// CHECK FOR MISMATCHES
-		if (genotypeEncoding1.equals(GenotypeEncoding.ACGT0)
-				|| genotypeEncoding1.equals(GenotypeEncoding.O1234))
-		{
-			double[] mismatchState = checkForMismatches(resultMatrixKey); // mismatchCount, mismatchRatio
-			if (mismatchState[1] > 0.01) {
-				log.warn("");
-				log.warn("Mismatch ratio is bigger than 1% ({}%)!", (mismatchState[1] * 100));
-				log.warn("There might be an issue with strand positioning of your genotypes!");
-				log.warn("");
-				//resultMatrixId = new int[] {wrMatrixHandler.getResultMatrixId(),-4};  // The threshold of acceptable mismatching genotypes has been crossed
-			}
-		}
-
 		org.gwaspi.global.Utils.sysoutCompleted("extraction to new Matrix");
-
-		return resultMatrixKey;
 	}
 
 	protected void writeGenotypesMeta(
@@ -184,7 +165,9 @@ public abstract class AbstractMergeMarkersMatrixOperation extends AbstractMergeM
 			throws IOException
 	{
 		initiateGenotypesMismatchChecking(wrComboSortedMarkers.size());
-		writeGenotypesMeta(wrSampleSetMap, wrComboSortedMarkers, rdSampleSetMap1, rdSampleSetMap2);
+		writeGenotypes(wrSampleSetMap, wrComboSortedMarkers, rdSampleSetMap1, rdSampleSetMap2);
+		finalizeGenotypesMismatchChecking();
+		validateMissingRatio();
 	}
 
 	protected abstract void writeGenotypes(

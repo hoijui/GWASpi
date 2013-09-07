@@ -135,7 +135,7 @@ public class MatrixTranslator implements MatrixOperation {
 		if (!rdMatrixGTCode.equals(GenotypeEncoding.ACGT0)) { // Has not yet been translated
 			// METADATA WRITER
 			// WRITING METADATA TO MATRIX
-			AbstractNetCDFDataSetDestination.saveSamplesMatadata(rdSampleSetMap.keySet(), wrNcFile);
+			AbstractNetCDFDataSetDestination.saveSamplesMetadata(rdSampleSetMap.keySet(), wrNcFile);
 			AbstractNetCDFDataSetDestination.saveMarkersMatadata(dataSetSource.getMarkersMetadatasSource(), dataSetSource.getMarkersChromosomeInfosSource(), true, null, wrNcFile);
 
 			// GENOTYPES WRITER
@@ -194,7 +194,7 @@ public class MatrixTranslator implements MatrixOperation {
 		if (!rdMatrixGTCode.equals(GenotypeEncoding.ACGT0)) { // Has not yet been translated
 			// METADATA WRITER
 			// WRITING METADATA TO MATRIX
-			AbstractNetCDFDataSetDestination.saveSamplesMatadata(rdSampleSetMap.keySet(), wrNcFile);
+			AbstractNetCDFDataSetDestination.saveSamplesMetadata(rdSampleSetMap.keySet(), wrNcFile);
 			AbstractNetCDFDataSetDestination.saveMarkersMatadata(dataSetSource.getMarkersMetadatasSource(), rdChrInfoSetMap, true, null, wrNcFile);
 
 			//<editor-fold defaultstate="expanded" desc="GENOTYPES WRITER">

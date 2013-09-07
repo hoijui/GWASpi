@@ -19,8 +19,10 @@ package org.gwaspi.netCDF.markers;
 import java.io.IOException;
 import java.util.ArrayList;
 import org.gwaspi.model.ChromosomeInfo;
+import org.gwaspi.model.ChromosomeKey;
 import org.gwaspi.model.DataSetSource;
-import org.gwaspi.model.MarkersChromosomeInfosSource;
+import org.gwaspi.model.ChromosomesInfosSource;
+import org.gwaspi.model.ChromosomesKeysSource;
 import org.gwaspi.model.MarkersGenotypesSource;
 import org.gwaspi.model.MarkersKeysSource;
 import org.gwaspi.model.MarkersMetadataSource;
@@ -63,12 +65,24 @@ public class NetCDFDataSetSource implements DataSetSource {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
-	private static final class NetCdfMarkersChromosomeInfosSource extends ArrayList<ChromosomeInfo> implements MarkersChromosomeInfosSource {
+	private static final class NetCdfChromosomesKeysSource extends ArrayList<ChromosomeKey> implements ChromosomesKeysSource {
+	}
+
+	private static final class NetCdfChromosomesInfosSource extends ArrayList<ChromosomeInfo> implements ChromosomesInfosSource {
 	}
 
 	@Override
-	public MarkersChromosomeInfosSource getMarkersChromosomeInfosSource() {
-		NetCdfMarkersChromosomeInfosSource chrInfSrc = new NetCdfMarkersChromosomeInfosSource();
+	public ChromosomesKeysSource getChromosomesKeysSource() {
+		NetCdfChromosomesKeysSource chrInfSrc = new NetCdfChromosomesKeysSource();
+		markerSet.initFullMarkerIdSetMap(); // XXX may not always be required
+		chrInfSrc.addAll(markerSet.getChrInfoSetMap().keySet());
+
+		return chrInfSrc;
+	}
+
+	@Override
+	public ChromosomesInfosSource getChromosomesInfosSource() {
+		NetCdfChromosomesInfosSource chrInfSrc = new NetCdfChromosomesInfosSource();
 		markerSet.initFullMarkerIdSetMap(); // XXX may not always be required
 		chrInfSrc.addAll(markerSet.getChrInfoSetMap().values());
 

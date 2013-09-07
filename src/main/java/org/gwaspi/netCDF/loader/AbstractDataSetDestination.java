@@ -19,10 +19,14 @@ package org.gwaspi.netCDF.loader;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Map;
+import org.gwaspi.model.ChromosomeInfo;
+import org.gwaspi.model.ChromosomeKey;
 import org.gwaspi.model.DataSet;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.SampleInfo;
+import org.gwaspi.netCDF.matrices.ChromosomeUtils;
 
 /**
  * TODO
@@ -76,7 +80,29 @@ public abstract class AbstractDataSetDestination implements DataSetDestination {
 
 	@Override
 	public void finishedLoadingMarkerMetadatas() throws IOException {
-		dataSet.extractChromosomeInfos();
+	}
+
+	public void extractChromosomeInfos() throws IOException {
+
+		Map<ChromosomeKey, ChromosomeInfo> chromosomeInfo = ChromosomeUtils.aggregateChromosomeInfo(dataSet.getMarkerMetadatas(), 2, 3);
+		startLoadingChromosomeMetadatas();
+		for (Map.Entry<ChromosomeKey, ChromosomeInfo> chromosomeInfoEntry : chromosomeInfo.entrySet()) {
+			addChromosomeMetadata(chromosomeInfoEntry.getKey(), chromosomeInfoEntry.getValue());
+		}
+		finishedLoadingChromosomeMetadatas();
+	}
+
+	@Override
+	public void startLoadingChromosomeMetadatas() throws IOException {
+	}
+
+	@Override
+	public void addChromosomeMetadata(ChromosomeKey chromosomeKey, ChromosomeInfo chromosomeInfo) throws IOException {
+		dataSet.getChromosomeInfos().put(chromosomeKey, chromosomeInfo);
+	}
+
+	@Override
+	public void finishedLoadingChromosomeMetadatas() throws IOException {
 	}
 
 	@Override

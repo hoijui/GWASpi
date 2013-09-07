@@ -55,12 +55,14 @@ public class MergeMarkersMatrixOperation extends AbstractMergeMarkersMatrixOpera
 		final String humanReadableMethodName = Text.Trafo.mergeMarkersOnly;
 		final String methodDescription = Text.Trafo.mergeMethodMarkerJoin;
 
-		return mergeMatrices(
+		mergeMatrices(
 				wrSampleSetMap,
 				sampleKeys,
 				numSamples,
 				humanReadableMethodName,
-				methodDescription).getMatrixId();
+				methodDescription);
+
+		return Integer.MIN_VALUE;
 	}
 
 	@Override

@@ -28,7 +28,8 @@ public class SimpleDataSetSource implements DataSetSource {
 	private MatrixMetadata matrixMetadata;
 	private MarkersGenotypesSource markersGenotypesSource;
 	private MarkersMetadataSource markersMetadatasSource;
-	private MarkersChromosomeInfosSource markersChromosomeInfosSource;
+	private ChromosomesKeysSource chromosomesKeysSource;
+	private ChromosomesInfosSource chromosomesInfosSource;
 	private MarkersKeysSource markersKeysSource;
 	private SamplesGenotypesSource samplesGenotypesSource;
 	private SamplesInfosSource samplesInfosSource;
@@ -63,12 +64,21 @@ public class SimpleDataSetSource implements DataSetSource {
 	}
 
 	@Override
-	public MarkersChromosomeInfosSource getMarkersChromosomeInfosSource() {
-		return markersChromosomeInfosSource;
+	public ChromosomesKeysSource getChromosomesKeysSource() {
+		return chromosomesKeysSource;
 	}
 
-	public void setMarkersChromosomeInfosSource(MarkersChromosomeInfosSource markersChromosomeInfosSource) {
-		this.markersChromosomeInfosSource = markersChromosomeInfosSource;
+	public void setChromosomesKeysSource(ChromosomesKeysSource chromosomesKeysSource) {
+		this.chromosomesKeysSource = chromosomesKeysSource;
+	}
+
+	@Override
+	public ChromosomesInfosSource getChromosomesInfosSource() {
+		return chromosomesInfosSource;
+	}
+
+	public void setChromosomesInfosSource(ChromosomesInfosSource chromosomesInfosSource) {
+		this.chromosomesInfosSource = chromosomesInfosSource;
 	}
 
 	@Override

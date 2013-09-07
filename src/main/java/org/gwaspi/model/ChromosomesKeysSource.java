@@ -17,28 +17,10 @@
 
 package org.gwaspi.model;
 
-import java.io.IOException;
+import java.util.List;
 
 /**
  * TODO
  */
-public interface DataSetSource {
-
-	MatrixMetadata getMatrixMetadata() throws IOException;
-
-	MarkersGenotypesSource getMarkersGenotypesSource();
-
-	MarkersMetadataSource getMarkersMetadatasSource();
-
-	MarkersKeysSource getMarkersKeysSource();
-
-	ChromosomesKeysSource getChromosomesKeysSource();
-
-	ChromosomesInfosSource getChromosomesInfosSource();
-
-	SamplesGenotypesSource getSamplesGenotypesSource();
-
-	SamplesInfosSource getSamplesInfosSource();
-
-	SamplesKeysSource getSamplesKeysSource();
+public interface ChromosomesKeysSource extends List<ChromosomeKey> {
 }

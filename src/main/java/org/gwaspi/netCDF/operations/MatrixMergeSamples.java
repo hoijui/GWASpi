@@ -21,14 +21,16 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import org.gwaspi.constants.cNetCDF;
-import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
+import org.gwaspi.model.ChromosomeInfo;
+import org.gwaspi.model.ChromosomeKey;
 import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MarkerMetadata;
-import org.gwaspi.model.MarkersChromosomeInfosSource;
+import org.gwaspi.model.ChromosomesInfosSource;
 import org.gwaspi.model.MarkersKeysSource;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.netCDF.loader.DataSetDestination;
@@ -87,38 +89,27 @@ public class MatrixMergeSamples extends AbstractMergeMatrixOperation {
 		// Keep rdwrMarkerIdSetMap1 from Matrix1. MarkerSet is constant
 		final int numMarkers = dataSetSource1.getMarkersKeysSource().size();
 
-		// RETRIEVE CHROMOSOMES INFO
-		MarkersChromosomeInfosSource chromosomeInfo = dataSetSource1.getMarkersChromosomeInfosSource();
-
 		// NOTE We do not need to safe the sample-info again,
 		//   cause it is already stored in the study
 		//   from the two matrices we are merging
-//		for (SampleKey sampleKey : theSamples.keySet()) {
-//			dataSetDestination.addSampleInfo(sampleKey);
-//		}
+		// FIXME the above only applies to NetCDF!
+		for (SampleKey sampleKey : theSamples.keySet()) {
+			dataSetDestination.addSampleInfo(sampleKey);
+		}
 
 		// copy & paste the marker-metadata from matrix 1
 		for (MarkerMetadata markerMetadata : dataSetSource1.getMarkersMetadatasSource()) {
 			dataSetDestination.addMarkerMetadata(markerMetadata);
 		}
 
-		writeGenotypesMeta(wrComboSampleSetMap.values());
-
-		GenotypeEncoding genotypeEncoding = rdMatrix1Metadata.getGenotypeEncoding();
-
-		// CHECK FOR MISMATCHES
-		if (genotypeEncoding.equals(GenotypeEncoding.ACGT0)
-				|| genotypeEncoding.equals(GenotypeEncoding.O1234))
-		{
-			double[] mismatchState = checkForMismatches(wrMatrixHandler.getResultMatrixKey()); // mismatchCount, mismatchRatio
-			if (mismatchState[1] > 0.01) {
-				log.warn("");
-				log.warn("Mismatch ratio is bigger than 1% ({}%)!", (mismatchState[1] * 100));
-				log.warn("There might be an issue with strand positioning of your genotypes!");
-				log.warn("");
-				//resultMatrixId = new int[] {wrMatrixHandler.getResultMatrixId(),-4};  // The threshold of acceptable mismatching genotypes has been crossed
-			}
+		// RETRIEVE CHROMOSOMES INFO
+		Iterator<ChromosomeInfo> chromosomesInfosIt = dataSetSource1.getChromosomesInfosSource().iterator();
+		for (ChromosomeKey chromosomeKey : dataSetSource1.getChromosomesKeysSource()) {
+			ChromosomeInfo chromosomeInfo = chromosomesInfosIt.next();
+			dataSetDestination.addChromosomeMetadata(chromosomeKey, chromosomeInfo);
 		}
+
+		writeGenotypesMeta(wrComboSampleSetMap.values());
 
 		org.gwaspi.global.Utils.sysoutCompleted("extraction to new Matrix");
 
@@ -129,7 +120,9 @@ public class MatrixMergeSamples extends AbstractMergeMatrixOperation {
 			throws IOException
 	{
 		initiateGenotypesMismatchChecking(dataSetSource1.getMarkersKeysSource().size());
-		writeGenotypesMeta(wrComboSampleSetMap);
+		writeGenotypes(wrComboSampleSetMap);
+		finalizeGenotypesMismatchChecking();
+		validateMissingRatio();
 	}
 
 	private void writeGenotypes(Collection<int[]> wrComboSampleSetMap)

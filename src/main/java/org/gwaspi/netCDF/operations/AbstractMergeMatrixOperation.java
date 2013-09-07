@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.ExtendedMarkerKey;
 import org.gwaspi.model.GenotypesList;
@@ -110,22 +111,31 @@ public abstract class AbstractMergeMatrixOperation implements MatrixOperation {
 	private int mismatchCount;
 	private double mismatchRatio;
 
-	protected void initiateGenotypesMismatchChecking(int numMarkers) {
+	protected void initiateGenotypesMismatchChecking(int numMarkers) throws IOException {
 
-		perMarkerAlleles = new LinkedList<Set<Byte>>();
-		for (int mi = 0; mi < numMarkers; mi++) {
-			perMarkerAlleles.add(new HashSet<Byte>());
+		GenotypeEncoding genotypeEncoding = dataSetSource1.getMatrixMetadata().getGenotypeEncoding();
+		if (genotypeEncoding.equals(GenotypeEncoding.ACGT0)
+				|| genotypeEncoding.equals(GenotypeEncoding.O1234))
+		{
+			perMarkerAlleles = new LinkedList<Set<Byte>>();
+			for (int mi = 0; mi < numMarkers; mi++) {
+				perMarkerAlleles.add(new HashSet<Byte>());
+			}
+		} else {
+			perMarkerAlleles = null;
 		}
 	}
 
 	protected void addSampleGTAlleles(int sampleIndex, Collection<byte[]> sampleAlleles) throws IOException {
 
-		// assemble per marker alleles
-		Iterator<Set<Byte>> perMarkerAllelesIt = perMarkerAlleles.iterator();
-		for (byte[] bs : sampleAlleles) {
-			Set<Byte> markerAllele = perMarkerAllelesIt.next();
-			for (byte allele : bs) {
-				markerAllele.add(allele);
+		if (perMarkerAlleles != null) {
+			// assemble per marker alleles
+			Iterator<Set<Byte>> perMarkerAllelesIt = perMarkerAlleles.iterator();
+			for (byte[] bs : sampleAlleles) {
+				Set<Byte> markerAllele = perMarkerAllelesIt.next();
+				for (byte allele : bs) {
+					markerAllele.add(allele);
+				}
 			}
 		}
 
@@ -135,16 +145,39 @@ public abstract class AbstractMergeMatrixOperation implements MatrixOperation {
 	protected void finalizeGenotypesMismatchChecking() {
 
 		mismatchCount = 0;
-		for (Set<Byte> markerAllele : perMarkerAlleles) {
-			// remove the invalid allele 0
-			markerAllele.remove((byte) 0);
+		mismatchRatio = 0.0;
+		if (perMarkerAlleles != null) {
+			for (Set<Byte> markerAllele : perMarkerAlleles) {
+				// remove the invalid allele 0
+				markerAllele.remove((byte) 0);
 
-			if (markerAllele.size() > 2) {
-				mismatchCount++;
+				if (markerAllele.size() > 2) {
+					mismatchCount++;
+				}
 			}
-		}
 
-		mismatchRatio = (double) mismatchCount / numSamples;
+			mismatchRatio = (double) mismatchCount / numSamples;
+		}
+	}
+
+	protected void validateMissingRatio() {
+
+		// CHECK FOR MISMATCHES
+		if (getMismatchRatio() > 0.01) {
+			log.warn("");
+			log.warn("Mismatch ratio is bigger than 1% ({}%)!", (getMismatchRatio() * 100));
+			log.warn("There might be an issue with strand positioning of your genotypes!");
+			log.warn("");
+			//resultMatrixId = new int[] {wrMatrixHandler.getResultMatrixId(),-4};  // The threshold of acceptable mismatching genotypes has been crossed
+		}
+	}
+
+	protected int getMissingCount() {
+		return mismatchCount;
+	}
+
+	protected double getMismatchRatio() {
+		return mismatchRatio;
 	}
 
 //	protected void addMarkerGTAlleles(int markerIndex, Collection<byte[]> markerAlleles) throws IOException {

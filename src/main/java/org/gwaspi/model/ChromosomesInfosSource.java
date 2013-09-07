@@ -22,5 +22,5 @@ import java.util.List;
 /**
  * TODO
  */
-public interface MarkersChromosomeInfosSource extends List<ChromosomeInfo> {
+public interface ChromosomesInfosSource extends List<ChromosomeInfo> {
 }

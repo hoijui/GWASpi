@@ -133,6 +133,13 @@ public class LoadingNetCDFDataSetDestination extends AbstractNetCDFDataSetDestin
 	}
 
 	@Override
+	public void finishedLoadingMarkerMetadatas() throws IOException {
+		super.finishedLoadingMarkerMetadatas();
+		
+		extractChromosomeInfos();
+	}
+
+	@Override
 	public void finishedLoadingAlleles() throws IOException {
 		super.finishedLoadingAlleles();
 

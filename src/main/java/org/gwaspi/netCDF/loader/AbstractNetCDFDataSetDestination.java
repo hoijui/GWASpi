@@ -81,6 +81,8 @@ public abstract class AbstractNetCDFDataSetDestination extends AbstractDataSetDe
 
 	@Override
 	public void finishedLoadingSampleInfos() throws IOException {
+		super.finishedLoadingSampleInfos();
+
 		SampleInfoList.insertSampleInfos(getDataSet().getSampleInfos());
 	}
 
@@ -94,6 +96,7 @@ public abstract class AbstractNetCDFDataSetDestination extends AbstractDataSetDe
 
 	@Override
 	public void finishedLoadingMarkerMetadatas() throws IOException {
+		super.finishedLoadingMarkerMetadatas();
 
 		try {
 			matrixFactory = createMatrixFactory();
@@ -108,16 +111,27 @@ public abstract class AbstractNetCDFDataSetDestination extends AbstractDataSetDe
 
 			Collection<SampleInfo> sampleInfos = getDataSet().getSampleInfos();
 			List<SampleKey> sampleKeys = AbstractNetCDFDataSetDestination.extractKeys(sampleInfos);
-			saveSamplesMatadata(sampleKeys, ncfile);
+			saveSamplesMetadata(sampleKeys, ncfile);
 
 			boolean hasDictionary = resultMatrixMetadata.getHasDictionray();
-			saveMarkersMatadata(getDataSet().getMarkerMetadatas().values(), getDataSet().getChromosomeInfos(), hasDictionary, getStrandFlag(), ncfile);
+			saveMarkersMetadata(getDataSet().getMarkerMetadatas().values(), hasDictionary, getStrandFlag(), ncfile);
 		} catch (InvalidRangeException ex) {
 			throw new IOException(ex);
 		}
 	}
 
-	public static void saveSamplesMatadata(Collection<SampleKey> sampleKeys, NetcdfFileWriteable ncfile) throws IOException, InvalidRangeException {
+	@Override
+	public void finishedLoadingChromosomeMetadatas() throws IOException {
+		super.finishedLoadingChromosomeMetadatas();
+
+		try {
+			saveChromosomeMetadata(getDataSet().getChromosomeInfos(), ncfile);
+		} catch (InvalidRangeException ex) {
+			throw new IOException(ex);
+		}
+	}
+
+	private static void saveSamplesMetadata(Collection<SampleKey> sampleKeys, NetcdfFileWriteable ncfile) throws IOException, InvalidRangeException {
 
 		// WRITE SAMPLESET TO MATRIX FROM SAMPLES LIST
 		ArrayChar.D2 samplesD2 = NetCdfUtils.writeCollectionToD2ArrayChar(sampleKeys, cNetCDF.Strides.STRIDE_SAMPLE_NAME);
@@ -126,7 +140,7 @@ public abstract class AbstractNetCDFDataSetDestination extends AbstractDataSetDe
 		log.info("Done writing SampleSet to matrix");
 	}
 
-	public static void saveMarkersMatadata(Collection<MarkerMetadata> markerMetadatas, Map<ChromosomeKey, ChromosomeInfo> chromosomeInfo, boolean hasDictionary, String strandFlag, NetcdfFileWriteable wrNcFile) throws IOException, InvalidRangeException {
+	private static void saveMarkersMetadata(Collection<MarkerMetadata> markerMetadatas, boolean hasDictionary, String strandFlag, NetcdfFileWriteable wrNcFile) throws IOException, InvalidRangeException {
 
 		ArrayChar.D2 markersD2;
 		final int[] markersOrig = new int[] {0, 0};
@@ -146,12 +160,6 @@ public abstract class AbstractNetCDFDataSetDestination extends AbstractDataSetDe
 		markersD2 = NetCdfUtils.writeValuesToD2ArrayChar(markerMetadatas, MarkerMetadata.TO_CHR, cNetCDF.Strides.STRIDE_CHR);
 		wrNcFile.write(cNetCDF.Variables.VAR_MARKERS_CHR, markersOrig, markersD2);
 		log.info("Done writing chromosomes to matrix");
-
-		// Set of chromosomes found in matrix along with number of markersinfo
-		NetCdfUtils.saveObjectsToStringToMatrix(wrNcFile, chromosomeInfo.keySet(), cNetCDF.Variables.VAR_CHR_IN_MATRIX, 8);
-		// Number of marker per chromosome & max pos for each chromosome
-		int[] columns = new int[] {0, 1, 2, 3};
-		NetCdfUtils.saveChromosomeInfosD2ToWrMatrix(wrNcFile, chromosomeInfo.values(), columns, cNetCDF.Variables.VAR_CHR_INFO);
 
 		// WRITE POSITION METADATA FROM ANNOTATION FILE
 		ArrayInt.D1 markersPosD1 = NetCdfUtils.writeValuesToD1ArrayInt(markerMetadatas, MarkerMetadata.TO_POS);
@@ -176,6 +184,16 @@ public abstract class AbstractNetCDFDataSetDestination extends AbstractDataSetDe
 		}
 		wrNcFile.write(cNetCDF.Variables.VAR_GT_STRAND, gtOrig, markersD2);
 		log.info("Done writing strand info to matrix");
+	}
+
+	private static void saveChromosomeMetadata(Map<ChromosomeKey, ChromosomeInfo> chromosomeInfo, NetcdfFileWriteable wrNcFile) throws IOException, InvalidRangeException {
+
+		// Set of chromosomes found in matrix along with number of markersinfo
+		NetCdfUtils.saveObjectsToStringToMatrix(wrNcFile, chromosomeInfo.keySet(), cNetCDF.Variables.VAR_CHR_IN_MATRIX, 8);
+		// Number of marker per chromosome & max pos for each chromosome
+		int[] columns = new int[] {0, 1, 2, 3};
+		NetCdfUtils.saveChromosomeInfosD2ToWrMatrix(wrNcFile, chromosomeInfo.values(), columns, cNetCDF.Variables.VAR_CHR_INFO);
+		log.info("Done writing chromosome infos");
 	}
 
 	@Override

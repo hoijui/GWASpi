@@ -19,6 +19,8 @@ package org.gwaspi.netCDF.loader;
 
 import java.io.IOException;
 import java.util.Collection;
+import org.gwaspi.model.ChromosomeInfo;
+import org.gwaspi.model.ChromosomeKey;
 import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.SampleInfo;
 
@@ -47,6 +49,10 @@ public interface DataSetDestination {
 	void startLoadingMarkerMetadatas() throws IOException;
 	void addMarkerMetadata(MarkerMetadata markerMetadata) throws IOException;
 	void finishedLoadingMarkerMetadatas() throws IOException;
+
+	void startLoadingChromosomeMetadatas() throws IOException;
+	void addChromosomeMetadata(ChromosomeKey chromosomeKey, ChromosomeInfo chromosomeInfo) throws IOException;
+	void finishedLoadingChromosomeMetadatas() throws IOException;
 
 	void startLoadingAlleles(boolean perSample) throws IOException;
 	/**
