@@ -52,8 +52,8 @@ public class OutputTrendTest {
 	private OutputTrendTest() {
 	}
 
-	public static boolean writeReportsForTrendTestData(OperationKey operationKey) throws IOException {
-		boolean result = false;
+	public static void writeReportsForTrendTestData(OperationKey operationKey) throws IOException {
+
 		OperationMetadata op = OperationsList.getOperation(operationKey);
 
 		org.gwaspi.global.Utils.createFolder(new File(Study.constructReportsPath(op.getStudyKey())));
@@ -62,55 +62,48 @@ public class OutputTrendTest {
 		String manhattanName = prefix + "manhtt";
 
 		log.info("Start saving trend test");
-		if (writeManhattanPlotFromTrendTestData(operationKey, manhattanName, 4000, 500)) {
-			result = true;
-			ReportsList.insertRPMetadata(new Report(
-					Integer.MIN_VALUE,
-					"Trend Test Manhattan Plot",
-					manhattanName + ".png",
-					OPType.MANHATTANPLOT,
-					operationKey,
-					"Trend Test Manhattan Plot",
-					op.getStudyKey()));
-			log.info("Saved Manhattan Plot in reports folder");
-		}
+		writeManhattanPlotFromTrendTestData(operationKey, manhattanName, 4000, 500);
+		ReportsList.insertRPMetadata(new Report(
+				Integer.MIN_VALUE,
+				"Trend Test Manhattan Plot",
+				manhattanName + ".png",
+				OPType.MANHATTANPLOT,
+				operationKey,
+				"Trend Test Manhattan Plot",
+				op.getStudyKey()));
+		log.info("Saved Manhattan Plot in reports folder");
+
 		//String qqName = "qq_"+outName;
 		String qqName = prefix + "qq";
-		if (result && writeQQPlotFromTrendTestData(operationKey, qqName, 500, 500)) {
-			result = true;
-			ReportsList.insertRPMetadata(new Report(
-					Integer.MIN_VALUE,
-					"Trend Test QQ Plot",
-					qqName + ".png",
-					OPType.QQPLOT,
-					operationKey,
-					"Trend Test QQ Plot",
-					op.getStudyKey()));
+		writeQQPlotFromTrendTestData(operationKey, qqName, 500, 500);
+		ReportsList.insertRPMetadata(new Report(
+				Integer.MIN_VALUE,
+				"Trend Test QQ Plot",
+				qqName + ".png",
+				OPType.QQPLOT,
+				operationKey,
+				"Trend Test QQ Plot",
+				op.getStudyKey()));
+		log.info("Saved Trend Test QQ Plot in reports folder");
 
-			log.info("Saved Trend Test QQ Plot in reports folder");
-		}
 		//String assocName = "assoc_"+outName;
 		String assocName = prefix;
-		if (result && createSortedTrendTestReport(operationKey, assocName)) {
-			result = true;
-			ReportsList.insertRPMetadata(new Report(
-					Integer.MIN_VALUE,
-					"Trend Tests Values",
-					assocName + ".txt",
-					OPType.TRENDTEST,
-					operationKey,
-					"Trend Tests Values",
-					op.getStudyKey()));
+		createSortedTrendTestReport(operationKey, assocName);
+		ReportsList.insertRPMetadata(new Report(
+				Integer.MIN_VALUE,
+				"Trend Tests Values",
+				assocName + ".txt",
+				OPType.TRENDTEST,
+				operationKey,
+				"Trend Tests Values",
+				op.getStudyKey()));
 
-			org.gwaspi.global.Utils.sysoutCompleted("Trend Test Reports & Charts");
-		}
-
-		return result;
+		org.gwaspi.global.Utils.sysoutCompleted("Trend Test Reports & Charts");
 	}
 
-	public static boolean writeManhattanPlotFromTrendTestData(OperationKey operationKey, String outName, int width, int height) throws IOException {
-		boolean result = false;
-		//Generating XY scatter plot with loaded data
+	public static void writeManhattanPlotFromTrendTestData(OperationKey operationKey, String outName, int width, int height) throws IOException {
+
+		// Generating XY scatter plot with loaded data
 		CombinedRangeXYPlot combinedPlot = GenericReportGenerator.buildManhattanPlot(operationKey, cNetCDF.Association.VAR_OP_MARKERS_ASTrendTestTP);
 
 		JFreeChart chart = new JFreeChart("P value", JFreeChart.DEFAULT_TITLE_FONT, combinedPlot, true);
@@ -137,17 +130,14 @@ public class OutputTrendTest {
 					chart,
 					picWidth,
 					height);
-			result = true;
 		} catch (IOException ex) {
-			log.error("Problem occurred creating chart", ex);
+			throw new IOException("Problem occurred creating chart", ex);
 		}
-
-		return result;
 	}
 
-	public static boolean writeQQPlotFromTrendTestData(OperationKey operationKey, String outName, int width, int height) throws IOException {
-		boolean result = false;
-		//Generating XY scatter plot with loaded data
+	public static void writeQQPlotFromTrendTestData(OperationKey operationKey, String outName, int width, int height) throws IOException {
+
+		// Generating XY scatter plot with loaded data
 		XYPlot qqPlot = GenericReportGenerator.buildQQPlot(operationKey, cNetCDF.Association.VAR_OP_MARKERS_ASTrendTestTP, 1);
 
 		JFreeChart chart = new JFreeChart("X² QQ", JFreeChart.DEFAULT_TITLE_FONT, qqPlot, true);
@@ -159,99 +149,86 @@ public class OutputTrendTest {
 					chart,
 					width,
 					height);
-			result = true;
 		} catch (IOException ex) {
-			log.error("Problem occurred creating chart", ex);
+			throw new IOException("Problem occurred creating chart", ex);
 		}
-
-		return result;
 	}
 
-	public static boolean createSortedTrendTestReport(OperationKey operationKey, String reportName) throws IOException {
-		boolean result;
+	public static void createSortedTrendTestReport(OperationKey operationKey, String reportName) throws IOException {
 
-		try {
-			Map<MarkerKey, double[]> unsortedMarkerIdTrendTestValsMap = GenericReportGenerator.getAnalysisVarData(operationKey, cNetCDF.Association.VAR_OP_MARKERS_ASTrendTestTP);
-			Map<MarkerKey, Double> unsortedMarkerIdPvalMap = new LinkedHashMap<MarkerKey, Double>(unsortedMarkerIdTrendTestValsMap.size());
-			for (Map.Entry<MarkerKey, double[]> entry : unsortedMarkerIdTrendTestValsMap.entrySet()) {
-				double[] values = entry.getValue();
-				unsortedMarkerIdPvalMap.put(entry.getKey(), values[1]);
-			}
-			Collection<MarkerKey> sortedMarkerKeys = org.gwaspi.global.Utils.createMapSortedByValue(unsortedMarkerIdPvalMap).keySet();
-			unsortedMarkerIdTrendTestValsMap.clear(); // "garbage collection"
-			unsortedMarkerIdPvalMap.clear(); // "garbage collection"
-
-			String sep = cExport.separator_REPORTS;
-			OperationMetadata rdOPMetadata = OperationsList.getOperation(operationKey);
-			MarkerSet rdInfoMarkerSet = new MarkerSet(operationKey.getParentMatrixKey());
-			rdInfoMarkerSet.initFullMarkerIdSetMap();
-
-			// WRITE HEADER OF FILE
-			String header = "MarkerID\trsID\tChr\tPosition\tMin. Allele\tMaj. Allele\tTrend-Test\tPval\n";
-			String reportNameExt = reportName + ".txt";
-			String reportPath = Study.constructReportsPath(rdOPMetadata.getStudyKey());
-
-			// WRITE MARKERSET RSID
-			rdInfoMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_RSID);
-			Map<MarkerKey, char[]> sortedMarkerRSIDs = org.gwaspi.global.Utils.createOrderedMap(sortedMarkerKeys, rdInfoMarkerSet.getMarkerIdSetMapCharArray());
-			ReportWriter.writeFirstColumnToReport(reportPath, reportNameExt, header, sortedMarkerRSIDs, true);
-
-			// WRITE MARKERSET CHROMOSOME
-			rdInfoMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
-			Map<MarkerKey, char[]> sortedMarkerCHRs = org.gwaspi.global.Utils.createOrderedMap(sortedMarkerKeys, rdInfoMarkerSet.getMarkerIdSetMapCharArray());
-			ReportWriter.appendColumnToReport(reportPath, reportNameExt, sortedMarkerCHRs, false, false);
-
-			// WRITE MARKERSET POS
-			rdInfoMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_POS);
-			Map<MarkerKey, Integer> sortedMarkerPos = org.gwaspi.global.Utils.createOrderedMap(sortedMarkerKeys, rdInfoMarkerSet.getMarkerIdSetMapInteger());
-			ReportWriter.appendColumnToReport(reportPath, reportNameExt, sortedMarkerPos, false, false);
-
-			// WRITE KNOWN ALLELES FROM QA
-			// get MARKER_QA Operation
-			List<OperationMetadata> operations = OperationsList.getOperationsList(rdOPMetadata.getParentMatrixKey());
-			OperationKey markersQAopKey = null;
-			for (int i = 0; i < operations.size(); i++) {
-				OperationMetadata op = operations.get(i);
-				if (op.getType().equals(OPType.MARKER_QA)) {
-					markersQAopKey = OperationKey.valueOf(op);
-				}
-			}
-			Map<MarkerKey, String> sortedMarkerAlleles = new LinkedHashMap<MarkerKey, String>(sortedMarkerKeys.size());
-			if (markersQAopKey != null) {
-				OperationMetadata qaMetadata = OperationsList.getOperation(markersQAopKey);
-				NetcdfFile qaNcFile = NetcdfFile.open(qaMetadata.getPathToMatrix());
-
-				MarkerOperationSet rdOperationSet = new MarkerOperationSet(markersQAopKey);
-				Map<MarkerKey, char[]> opMarkerSetMap = rdOperationSet.getOpSetMap();
-
-				// MINOR ALLELE
-				opMarkerSetMap = rdOperationSet.fillOpSetMapWithVariable(qaNcFile, cNetCDF.Census.VAR_OP_MARKERS_MINALLELES);
-				for (MarkerKey key : rdInfoMarkerSet.getMarkerKeys()) {
-					char[] minorAllele = opMarkerSetMap.get(key);
-					sortedMarkerAlleles.put(key, new String(minorAllele));
-				}
-
-				// MAJOR ALLELE
-				AbstractOperationSet.fillMapWithDefaultValue(opMarkerSetMap, new char[0]);
-				opMarkerSetMap = rdOperationSet.fillOpSetMapWithVariable(qaNcFile, cNetCDF.Census.VAR_OP_MARKERS_MAJALLELES);
-				for (Map.Entry<MarkerKey, String> entry : sortedMarkerAlleles.entrySet()) {
-					String minorAllele = entry.getValue();
-					entry.setValue(minorAllele + sep + new String(opMarkerSetMap.get(entry.getKey())));
-				}
-			}
-			sortedMarkerAlleles = org.gwaspi.global.Utils.createOrderedMap(sortedMarkerKeys, sortedMarkerAlleles); // XXX probably not required?
-			ReportWriter.appendColumnToReport(reportPath, reportNameExt, sortedMarkerAlleles, false, false);
-
-			// WRITE TREND TEST VALUES
-			Map<MarkerKey, double[]> sortedTrendTestVals = org.gwaspi.global.Utils.createOrderedMap(sortedMarkerKeys, unsortedMarkerIdTrendTestValsMap);
-			ReportWriter.appendColumnToReport(reportPath, reportNameExt, sortedTrendTestVals, true, false);
-
-			result = true;
-		} catch (IOException ex) {
-			result = false;
-			log.warn(null, ex);
+		Map<MarkerKey, double[]> unsortedMarkerIdTrendTestValsMap = GenericReportGenerator.getAnalysisVarData(operationKey, cNetCDF.Association.VAR_OP_MARKERS_ASTrendTestTP);
+		Map<MarkerKey, Double> unsortedMarkerIdPvalMap = new LinkedHashMap<MarkerKey, Double>(unsortedMarkerIdTrendTestValsMap.size());
+		for (Map.Entry<MarkerKey, double[]> entry : unsortedMarkerIdTrendTestValsMap.entrySet()) {
+			double[] values = entry.getValue();
+			unsortedMarkerIdPvalMap.put(entry.getKey(), values[1]);
 		}
+		Collection<MarkerKey> sortedMarkerKeys = org.gwaspi.global.Utils.createMapSortedByValue(unsortedMarkerIdPvalMap).keySet();
+		unsortedMarkerIdTrendTestValsMap.clear(); // "garbage collection"
+		unsortedMarkerIdPvalMap.clear(); // "garbage collection"
 
-		return result;
+		String sep = cExport.separator_REPORTS;
+		OperationMetadata rdOPMetadata = OperationsList.getOperation(operationKey);
+		MarkerSet rdInfoMarkerSet = new MarkerSet(operationKey.getParentMatrixKey());
+		rdInfoMarkerSet.initFullMarkerIdSetMap();
+
+		// WRITE HEADER OF FILE
+		String header = "MarkerID\trsID\tChr\tPosition\tMin. Allele\tMaj. Allele\tTrend-Test\tPval\n";
+		String reportNameExt = reportName + ".txt";
+		String reportPath = Study.constructReportsPath(rdOPMetadata.getStudyKey());
+
+		// WRITE MARKERSET RSID
+		rdInfoMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_RSID);
+		Map<MarkerKey, char[]> sortedMarkerRSIDs = org.gwaspi.global.Utils.createOrderedMap(sortedMarkerKeys, rdInfoMarkerSet.getMarkerIdSetMapCharArray());
+		ReportWriter.writeFirstColumnToReport(reportPath, reportNameExt, header, sortedMarkerRSIDs, true);
+
+		// WRITE MARKERSET CHROMOSOME
+		rdInfoMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
+		Map<MarkerKey, char[]> sortedMarkerCHRs = org.gwaspi.global.Utils.createOrderedMap(sortedMarkerKeys, rdInfoMarkerSet.getMarkerIdSetMapCharArray());
+		ReportWriter.appendColumnToReport(reportPath, reportNameExt, sortedMarkerCHRs, false, false);
+
+		// WRITE MARKERSET POS
+		rdInfoMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_POS);
+		Map<MarkerKey, Integer> sortedMarkerPos = org.gwaspi.global.Utils.createOrderedMap(sortedMarkerKeys, rdInfoMarkerSet.getMarkerIdSetMapInteger());
+		ReportWriter.appendColumnToReport(reportPath, reportNameExt, sortedMarkerPos, false, false);
+
+		// WRITE KNOWN ALLELES FROM QA
+		// get MARKER_QA Operation
+		List<OperationMetadata> operations = OperationsList.getOperationsList(rdOPMetadata.getParentMatrixKey());
+		OperationKey markersQAopKey = null;
+		for (int i = 0; i < operations.size(); i++) {
+			OperationMetadata op = operations.get(i);
+			if (op.getType().equals(OPType.MARKER_QA)) {
+				markersQAopKey = OperationKey.valueOf(op);
+			}
+		}
+		Map<MarkerKey, String> sortedMarkerAlleles = new LinkedHashMap<MarkerKey, String>(sortedMarkerKeys.size());
+		if (markersQAopKey != null) {
+			OperationMetadata qaMetadata = OperationsList.getOperation(markersQAopKey);
+			NetcdfFile qaNcFile = NetcdfFile.open(qaMetadata.getPathToMatrix());
+
+			MarkerOperationSet rdOperationSet = new MarkerOperationSet(markersQAopKey);
+			Map<MarkerKey, char[]> opMarkerSetMap = rdOperationSet.getOpSetMap();
+
+			// MINOR ALLELE
+			opMarkerSetMap = rdOperationSet.fillOpSetMapWithVariable(qaNcFile, cNetCDF.Census.VAR_OP_MARKERS_MINALLELES);
+			for (MarkerKey key : rdInfoMarkerSet.getMarkerKeys()) {
+				char[] minorAllele = opMarkerSetMap.get(key);
+				sortedMarkerAlleles.put(key, new String(minorAllele));
+			}
+
+			// MAJOR ALLELE
+			AbstractOperationSet.fillMapWithDefaultValue(opMarkerSetMap, new char[0]);
+			opMarkerSetMap = rdOperationSet.fillOpSetMapWithVariable(qaNcFile, cNetCDF.Census.VAR_OP_MARKERS_MAJALLELES);
+			for (Map.Entry<MarkerKey, String> entry : sortedMarkerAlleles.entrySet()) {
+				String minorAllele = entry.getValue();
+				entry.setValue(minorAllele + sep + new String(opMarkerSetMap.get(entry.getKey())));
+			}
+		}
+		sortedMarkerAlleles = org.gwaspi.global.Utils.createOrderedMap(sortedMarkerKeys, sortedMarkerAlleles); // XXX probably not required?
+		ReportWriter.appendColumnToReport(reportPath, reportNameExt, sortedMarkerAlleles, false, false);
+
+		// WRITE TREND TEST VALUES
+		Map<MarkerKey, double[]> sortedTrendTestVals = org.gwaspi.global.Utils.createOrderedMap(sortedMarkerKeys, unsortedMarkerIdTrendTestValsMap);
+		ReportWriter.appendColumnToReport(reportPath, reportNameExt, sortedTrendTestVals, true, false);
 	}
 }

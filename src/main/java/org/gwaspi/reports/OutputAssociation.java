@@ -69,8 +69,8 @@ public class OutputAssociation {
 		this.header = "MarkerID\trsID\tChr\tPosition\tMin. Allele\tMaj. Allele\tX²\tPval\t" + (allelic ? "OR" : "OR-AA/aa\tOR-Aa/aa") + "\n"; // FIXME
 	}
 
-	public boolean writeReportsForAssociationData(OperationKey operationKey) throws IOException {
-		boolean result = false;
+	public void writeReportsForAssociationData(OperationKey operationKey) throws IOException {
+
 		OperationMetadata op = OperationsList.getOperation(operationKey);
 
 		org.gwaspi.global.Utils.createFolder(new File(Study.constructReportsPath(op.getStudyKey())));
@@ -79,8 +79,8 @@ public class OutputAssociation {
 		String manhattanName = prefix + "manhtt";
 
 		log.info("Start saving {} test", testName);
-		if (!combi && writeManhattanPlotFromAssociationData(operationKey, manhattanName, 4000, 500)) {
-			result = true;
+		writeManhattanPlotFromAssociationData(operationKey, manhattanName, 4000, 500);
+		if (!combi) {
 			ReportsList.insertRPMetadata(new Report(
 					Integer.MIN_VALUE,
 					testName + " assoc. Manhattan Plot",
@@ -91,10 +91,11 @@ public class OutputAssociation {
 					op.getStudyKey()));
 			log.info("Saved " + testName + " Association Manhattan Plot in reports folder");
 		}
+
 		//String qqName = "qq_" + outName;
 		String qqName = prefix + "qq";
-		if (result && !combi && writeQQPlotFromAssociationData(operationKey, qqName, 500, 500)) {
-			result = true;
+		writeQQPlotFromAssociationData(operationKey, qqName, 500, 500);
+		if (!combi) {
 			ReportsList.insertRPMetadata(new Report(
 					Integer.MIN_VALUE,
 					testName + " assoc. QQ Plot",
@@ -103,30 +104,25 @@ public class OutputAssociation {
 					operationKey,
 					testName + " Association QQ Plot",
 					op.getStudyKey()));
-
 			log.info("Saved {} Association QQ Plot in reports folder", testName);
 		}
+
 		//String assocName = "assoc_"+outName;
 		String assocName = prefix;
-		if (result && createSortedAssociationReport(operationKey, assocName)) {
-			result = true;
-			ReportsList.insertRPMetadata(new Report(
-					Integer.MIN_VALUE,
-					testName + " Association Tests Values",
-					assocName + ".txt",
-					testType,
-					operationKey,
-					testName + " Association Tests Values",
-					op.getStudyKey()));
-
-			org.gwaspi.global.Utils.sysoutCompleted(testName + " Association Reports & Charts");
-		}
-
-		return result;
+		createSortedAssociationReport(operationKey, assocName);
+		ReportsList.insertRPMetadata(new Report(
+				Integer.MIN_VALUE,
+				testName + " Association Tests Values",
+				assocName + ".txt",
+				testType,
+				operationKey,
+				testName + " Association Tests Values",
+				op.getStudyKey()));
+		org.gwaspi.global.Utils.sysoutCompleted(testName + " Association Reports & Charts");
 	}
 
-	private boolean writeManhattanPlotFromAssociationData(OperationKey operationKey, String outName, int width, int height) throws IOException {
-		boolean result = false;
+	private void writeManhattanPlotFromAssociationData(OperationKey operationKey, String outName, int width, int height) throws IOException {
+
 		// Generating XY scatter plot with loaded data
 		CombinedRangeXYPlot combinedPlot = GenericReportGenerator.buildManhattanPlot(operationKey, variableName);
 
@@ -154,16 +150,13 @@ public class OutputAssociation {
 					chart,
 					picWidth,
 					height);
-			result = true;
 		} catch (IOException ex) {
-			log.error("Problem occurred creating chart", ex);
+			throw new IOException("Problem occurred creating chart", ex);
 		}
-
-		return result;
 	}
 
-	private boolean writeQQPlotFromAssociationData(OperationKey operationKey, String outName, int width, int height) throws IOException {
-		boolean result = false;
+	private void writeQQPlotFromAssociationData(OperationKey operationKey, String outName, int width, int height) throws IOException {
+
 		// Generating XY scatter plot with loaded data
 		XYPlot qqPlot = GenericReportGenerator.buildQQPlot(operationKey, variableName, qqPlotDof);
 
@@ -177,97 +170,84 @@ public class OutputAssociation {
 					chart,
 					width,
 					height);
-			result = true;
 		} catch (IOException ex) {
-			log.error("Problem occurred creating chart", ex);
+			throw new IOException("Problem occurred creating chart", ex);
 		}
-
-		return result;
 	}
 
-	private boolean createSortedAssociationReport(OperationKey operationKey, String reportName) throws IOException {
-		boolean result;
+	private void createSortedAssociationReport(OperationKey operationKey, String reportName) throws IOException {
 
-		try {
-			Map<MarkerKey, double[]> unsortedMarkerIdAssocValsMap = GenericReportGenerator.getAnalysisVarData(operationKey, variableName);
-			Map<MarkerKey, Double> unsortedMarkerIdPvalMap = new LinkedHashMap<MarkerKey, Double>();
-			for (Map.Entry<MarkerKey, double[]> entry : unsortedMarkerIdAssocValsMap.entrySet()) {
-				double[] values = entry.getValue();
-				unsortedMarkerIdPvalMap.put(entry.getKey(), values[1]);
-			}
-			Collection<MarkerKey> sortedMarkerKeys = org.gwaspi.global.Utils.createMapSortedByValue(unsortedMarkerIdPvalMap).keySet();
-			unsortedMarkerIdPvalMap.clear(); // "garbage collection"
-
-			String sep = cExport.separator_REPORTS;
-			OperationMetadata rdOPMetadata = OperationsList.getOperation(operationKey);
-			MarkerSet rdInfoMarkerSet = new MarkerSet(operationKey.getParentMatrixKey());
-			rdInfoMarkerSet.initFullMarkerIdSetMap();
-
-			// WRITE HEADER OF FILE
-			String reportNameExt = reportName + ".txt";
-			String reportPath = Study.constructReportsPath(rdOPMetadata.getStudyKey());
-
-			// WRITE MARKERSET RSID
-			rdInfoMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_RSID);
-			Map<MarkerKey, char[]> sortedMarkerRSIDs = org.gwaspi.global.Utils.createOrderedMap(sortedMarkerKeys, rdInfoMarkerSet.getMarkerIdSetMapCharArray());
-			ReportWriter.writeFirstColumnToReport(reportPath, reportNameExt, header, sortedMarkerRSIDs, true);
-
-			// WRITE MARKERSET CHROMOSOME
-			rdInfoMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
-			Map<MarkerKey, char[]> sortedMarkerCHRs = org.gwaspi.global.Utils.createOrderedMap(sortedMarkerKeys, rdInfoMarkerSet.getMarkerIdSetMapCharArray());
-			ReportWriter.appendColumnToReport(reportPath, reportNameExt, sortedMarkerCHRs, false, false);
-
-			// WRITE MARKERSET POS
-			rdInfoMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_POS);
-			Map<MarkerKey, Integer> sortedMarkerPos = org.gwaspi.global.Utils.createOrderedMap(sortedMarkerKeys, rdInfoMarkerSet.getMarkerIdSetMapInteger());
-			ReportWriter.appendColumnToReport(reportPath, reportNameExt, sortedMarkerPos, false, false);
-
-			// WRITE KNOWN ALLELES FROM QA
-			// get MARKER_QA Operation
-			List<OperationMetadata> operations = OperationsList.getOperationsList(rdOPMetadata.getParentMatrixKey());
-			OperationKey markersQAopKey = null;
-			for (int i = 0; i < operations.size(); i++) {
-				OperationMetadata op = operations.get(i);
-				if (op.getType().equals(OPType.MARKER_QA)) {
-					markersQAopKey = OperationKey.valueOf(op);
-				}
-			}
-			Map<MarkerKey, String> sortedMarkerAlleles = new LinkedHashMap<MarkerKey, String>(sortedMarkerKeys.size());
-			if (markersQAopKey != null) {
-				OperationMetadata qaMetadata = OperationsList.getOperation(markersQAopKey);
-				NetcdfFile qaNcFile = NetcdfFile.open(qaMetadata.getPathToMatrix());
-
-				MarkerOperationSet rdOperationSet = new MarkerOperationSet(markersQAopKey);
-				Map<MarkerKey, char[]> opMarkerSetMap = rdOperationSet.getOpSetMap();
-
-				// MINOR ALLELE
-				opMarkerSetMap = rdOperationSet.fillOpSetMapWithVariable(qaNcFile, cNetCDF.Census.VAR_OP_MARKERS_MINALLELES);
-				for (MarkerKey key : rdInfoMarkerSet.getMarkerKeys()) {
-					char[] minorAllele = opMarkerSetMap.get(key);
-					sortedMarkerAlleles.put(key, new String(minorAllele));
-				}
-
-				// MAJOR ALLELE
-				AbstractOperationSet.fillMapWithDefaultValue(opMarkerSetMap, new char[0]);
-				opMarkerSetMap = rdOperationSet.fillOpSetMapWithVariable(qaNcFile, cNetCDF.Census.VAR_OP_MARKERS_MAJALLELES);
-				for (Map.Entry<MarkerKey, String> entry : sortedMarkerAlleles.entrySet()) {
-					String minorAllele = entry.getValue();
-					entry.setValue(minorAllele + sep + new String(opMarkerSetMap.get(entry.getKey())));
-				}
-			}
-			sortedMarkerAlleles = org.gwaspi.global.Utils.createOrderedMap(sortedMarkerKeys, sortedMarkerAlleles); // XXX probably not required?
-			ReportWriter.appendColumnToReport(reportPath, reportNameExt, sortedMarkerAlleles, false, false);
-
-			// WRITE DATA TO REPORT
-			Map<MarkerKey, double[]> sortedMarkerAssocVals = org.gwaspi.global.Utils.createOrderedMap(sortedMarkerKeys, unsortedMarkerIdAssocValsMap);
-			ReportWriter.appendColumnToReport(reportPath, reportNameExt, sortedMarkerAssocVals, true, false);
-
-			result = true;
-		} catch (IOException ex) {
-			result = false;
-			log.warn(null, ex);
+		Map<MarkerKey, double[]> unsortedMarkerIdAssocValsMap = GenericReportGenerator.getAnalysisVarData(operationKey, variableName);
+		Map<MarkerKey, Double> unsortedMarkerIdPvalMap = new LinkedHashMap<MarkerKey, Double>();
+		for (Map.Entry<MarkerKey, double[]> entry : unsortedMarkerIdAssocValsMap.entrySet()) {
+			double[] values = entry.getValue();
+			unsortedMarkerIdPvalMap.put(entry.getKey(), values[1]);
 		}
+		Collection<MarkerKey> sortedMarkerKeys = org.gwaspi.global.Utils.createMapSortedByValue(unsortedMarkerIdPvalMap).keySet();
+		unsortedMarkerIdPvalMap.clear(); // "garbage collection"
 
-		return result;
+		String sep = cExport.separator_REPORTS;
+		OperationMetadata rdOPMetadata = OperationsList.getOperation(operationKey);
+		MarkerSet rdInfoMarkerSet = new MarkerSet(operationKey.getParentMatrixKey());
+		rdInfoMarkerSet.initFullMarkerIdSetMap();
+
+		// WRITE HEADER OF FILE
+		String reportNameExt = reportName + ".txt";
+		String reportPath = Study.constructReportsPath(rdOPMetadata.getStudyKey());
+
+		// WRITE MARKERSET RSID
+		rdInfoMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_RSID);
+		Map<MarkerKey, char[]> sortedMarkerRSIDs = org.gwaspi.global.Utils.createOrderedMap(sortedMarkerKeys, rdInfoMarkerSet.getMarkerIdSetMapCharArray());
+		ReportWriter.writeFirstColumnToReport(reportPath, reportNameExt, header, sortedMarkerRSIDs, true);
+
+		// WRITE MARKERSET CHROMOSOME
+		rdInfoMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
+		Map<MarkerKey, char[]> sortedMarkerCHRs = org.gwaspi.global.Utils.createOrderedMap(sortedMarkerKeys, rdInfoMarkerSet.getMarkerIdSetMapCharArray());
+		ReportWriter.appendColumnToReport(reportPath, reportNameExt, sortedMarkerCHRs, false, false);
+
+		// WRITE MARKERSET POS
+		rdInfoMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_POS);
+		Map<MarkerKey, Integer> sortedMarkerPos = org.gwaspi.global.Utils.createOrderedMap(sortedMarkerKeys, rdInfoMarkerSet.getMarkerIdSetMapInteger());
+		ReportWriter.appendColumnToReport(reportPath, reportNameExt, sortedMarkerPos, false, false);
+
+		// WRITE KNOWN ALLELES FROM QA
+		// get MARKER_QA Operation
+		List<OperationMetadata> operations = OperationsList.getOperationsList(rdOPMetadata.getParentMatrixKey());
+		OperationKey markersQAopKey = null;
+		for (int i = 0; i < operations.size(); i++) {
+			OperationMetadata op = operations.get(i);
+			if (op.getType().equals(OPType.MARKER_QA)) {
+				markersQAopKey = OperationKey.valueOf(op);
+			}
+		}
+		Map<MarkerKey, String> sortedMarkerAlleles = new LinkedHashMap<MarkerKey, String>(sortedMarkerKeys.size());
+		if (markersQAopKey != null) {
+			OperationMetadata qaMetadata = OperationsList.getOperation(markersQAopKey);
+			NetcdfFile qaNcFile = NetcdfFile.open(qaMetadata.getPathToMatrix());
+
+			MarkerOperationSet rdOperationSet = new MarkerOperationSet(markersQAopKey);
+			Map<MarkerKey, char[]> opMarkerSetMap = rdOperationSet.getOpSetMap();
+
+			// MINOR ALLELE
+			opMarkerSetMap = rdOperationSet.fillOpSetMapWithVariable(qaNcFile, cNetCDF.Census.VAR_OP_MARKERS_MINALLELES);
+			for (MarkerKey key : rdInfoMarkerSet.getMarkerKeys()) {
+				char[] minorAllele = opMarkerSetMap.get(key);
+				sortedMarkerAlleles.put(key, new String(minorAllele));
+			}
+
+			// MAJOR ALLELE
+			AbstractOperationSet.fillMapWithDefaultValue(opMarkerSetMap, new char[0]);
+			opMarkerSetMap = rdOperationSet.fillOpSetMapWithVariable(qaNcFile, cNetCDF.Census.VAR_OP_MARKERS_MAJALLELES);
+			for (Map.Entry<MarkerKey, String> entry : sortedMarkerAlleles.entrySet()) {
+				String minorAllele = entry.getValue();
+				entry.setValue(minorAllele + sep + new String(opMarkerSetMap.get(entry.getKey())));
+			}
+		}
+		sortedMarkerAlleles = org.gwaspi.global.Utils.createOrderedMap(sortedMarkerKeys, sortedMarkerAlleles); // XXX probably not required?
+		ReportWriter.appendColumnToReport(reportPath, reportNameExt, sortedMarkerAlleles, false, false);
+
+		// WRITE DATA TO REPORT
+		Map<MarkerKey, double[]> sortedMarkerAssocVals = org.gwaspi.global.Utils.createOrderedMap(sortedMarkerKeys, unsortedMarkerIdAssocValsMap);
+		ReportWriter.appendColumnToReport(reportPath, reportNameExt, sortedMarkerAssocVals, true, false);
 	}
 }
