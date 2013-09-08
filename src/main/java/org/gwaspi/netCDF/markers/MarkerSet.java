@@ -546,7 +546,8 @@ public class MarkerSet extends AbstractList<GenotypesList> implements SamplesGen
 	}
 
 	/**
-	 * HELPER GETS DICTIONARY OF CURRENT MATRIX. IS CONCURRENT TO INSTANTIATED Map
+	 * HELPER GETS DICTIONARY OF CURRENT MATRIX. IS CONCURRENT TO INSTANTIATED Map.
+	 * @deprecated unused
 	 */
 	public Map<MarkerKey, char[]> getDictionaryBases() throws IOException {
 

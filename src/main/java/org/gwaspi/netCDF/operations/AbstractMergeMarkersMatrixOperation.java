@@ -30,7 +30,6 @@ import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleKey;
-import org.gwaspi.netCDF.loader.AbstractNetCDFDataSetDestination;
 import org.gwaspi.netCDF.loader.DataSetDestination;
 import org.gwaspi.netCDF.matrices.ChromosomeUtils;
 import org.slf4j.Logger;
@@ -149,31 +148,42 @@ public abstract class AbstractMergeMarkersMatrixOperation extends AbstractMergeM
 			markerEntry.setValue(newMarkerMetadata);
 		}
 
-		AbstractNetCDFDataSetDestination.saveSamplesMetadata(sampleKeys, wrNcFile);
-		AbstractNetCDFDataSetDestination.saveMarkersMetadata(wrCombinedSortedMarkersMetadata.values(), chromosomeInfo, hasCombinedDictionary, null, wrNcFile);
+		// NOTE We do not need to safe the sample-info again,
+		//   cause it is already stored in the study
+		//   from the two matrices we are merging
+		// FIXME the above only applies to NetCDF!
+		for (SampleKey sampleKey : sampleKeys) {
+			dataSetDestination.addSampleInfo(sampleKey);
+		}
 
-		writeGenotypesMeta(wrSampleSetMap, wrCombinedSortedMarkersMetadata, rdSampleSetMap1, rdSampleSetMap2);
+		// copy & paste the marker-metadata from matrix 1
+		for (MarkerMetadata markerMetadata : wrCombinedSortedMarkersMetadata.values()) {
+			dataSetDestination.addMarkerMetadata(markerMetadata);
+		}
+
+		// RETRIEVE CHROMOSOMES INFO
+		for (Map.Entry<ChromosomeKey, ChromosomeInfo> chromosomeEntry : chromosomeInfo.entrySet()) {
+			dataSetDestination.addChromosomeMetadata(chromosomeEntry.getKey(), chromosomeEntry.getValue());
+		}
+
+		writeGenotypesMeta(wrSampleSetMap, wrCombinedSortedMarkersMetadata.keySet());
 
 		org.gwaspi.global.Utils.sysoutCompleted("extraction to new Matrix");
 	}
 
 	protected void writeGenotypesMeta(
 			Map<SampleKey, int[]> wrSampleSetMap,
-			Collection<MarkerKey> wrComboSortedMarkers,
-			Map<SampleKey, byte[]> rdSampleSetMap1,
-			Map<SampleKey, byte[]> rdSampleSetMap2)
+			Collection<MarkerKey> wrComboSortedMarkers)
 			throws IOException
 	{
 		initiateGenotypesMismatchChecking(wrComboSortedMarkers.size());
-		writeGenotypes(wrSampleSetMap, wrComboSortedMarkers, rdSampleSetMap1, rdSampleSetMap2);
+		writeGenotypes(wrSampleSetMap, wrComboSortedMarkers);
 		finalizeGenotypesMismatchChecking();
 		validateMissingRatio();
 	}
 
 	protected abstract void writeGenotypes(
 			Map<SampleKey, int[]> wrSampleSetMap,
-			Collection<MarkerKey> wrComboSortedMarkers,
-			Map<SampleKey, byte[]> rdSampleSetMap1,
-			Map<SampleKey, byte[]> rdSampleSetMap2)
+			Collection<MarkerKey> wrComboSortedMarkers)
 			throws IOException;
 }

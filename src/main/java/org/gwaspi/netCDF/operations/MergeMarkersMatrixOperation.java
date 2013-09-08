@@ -68,9 +68,7 @@ public class MergeMarkersMatrixOperation extends AbstractMergeMarkersMatrixOpera
 	@Override
 	protected void writeGenotypes(
 			Map<SampleKey, int[]> wrSampleSetMap,
-			Collection<MarkerKey> wrComboSortedMarkers,
-			Map<SampleKey, byte[]> rdSampleSetMap1,
-			Map<SampleKey, byte[]> rdSampleSetMap2)
+			Collection<MarkerKey> wrComboSortedMarkers)
 			throws IOException
 	{
 		// Get SampleId index from each Matrix

@@ -25,11 +25,15 @@ import java.util.Map;
 import org.gwaspi.constants.cNetCDF.Defaults.AlleleBytes;
 import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import org.gwaspi.global.Text;
+import org.gwaspi.model.ChromosomeInfo;
+import org.gwaspi.model.ChromosomeKey;
 import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.GenotypesList;
 import org.gwaspi.model.MarkerKey;
+import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.MatrixMetadata;
-import org.gwaspi.netCDF.loader.AbstractNetCDFDataSetDestination;
+import org.gwaspi.model.SampleInfo;
+import org.gwaspi.model.SampleKey;
 import org.gwaspi.netCDF.loader.DataSetDestination;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,6 +55,7 @@ public class MatrixTranslator implements MatrixOperation {
 
 	private final DataSetSource dataSetSource;
 	private final DataSetDestination dataSetDestination;
+	private final boolean translateBySamples; // ... or markers
 
 	public MatrixTranslator(
 			DataSetSource dataSetSource,
@@ -59,22 +64,7 @@ public class MatrixTranslator implements MatrixOperation {
 	{
 		this.dataSetSource = dataSetSource;
 		this.dataSetDestination = dataSetDestination;
-
-//		// INIT EXTRACTOR OBJECTS
-//		this.rdMatrixKey = rdMatrixKey;
-//		this.rdMatrixMetadata = MatricesList.getMatrixMetadataById(this.rdMatrixKey);
-//		this.wrMatrixId = Integer.MIN_VALUE;
-//		this.wrMatrixFriendlyName = wrMatrixFriendlyName;
-//		this.wrMatrixDescription = wrMatrixDescription;
-//
-//		this.rdMarkerSet = new MarkerSet(this.rdMatrixKey);
-//		this.rdMarkerSet.initFullMarkerIdSetMap();
-//
-//		this.wrMarkerIdSetMap = new LinkedHashMap<MarkerKey, byte[]>();
-//		this.rdChrInfoSetMap = this.rdMarkerSet.getChrInfoSetMap();
-//
-//		this.rdSampleSet = new SampleSet(this.rdMatrixKey);
-//		this.rdSampleSetMap = this.rdSampleSet.getSampleIdSetMapByteArray();
+		this.translateBySamples = true;
 	}
 
 	@Override
@@ -109,15 +99,176 @@ public class MatrixTranslator implements MatrixOperation {
 	@Override
 	public int processMatrix() throws IOException {
 
-		int resultMatrixId;
+		int resultMatrixId = Integer.MIN_VALUE;
 
-		GenotypeEncoding gtEncoding = dataSetSource.getMatrixMetadata().getGenotypeEncoding();
+		translateToACGT();
+
+		return resultMatrixId;
+	}
+
+	private static interface GenotypeTranslator {
+
+		Collection<byte[]> translateBySamples(SampleKey sampleKey, GenotypesList sampleGenotypes) throws IOException;
+		Collection<byte[]> translateByMarkers(MarkerKey markerKey, GenotypesList markerGenotypes) throws IOException;
+	}
+
+	private static class AB12ToACGTGenotypeTranslator implements GenotypeTranslator {
+
+		private final Map<MarkerKey, byte[]> dictionnaries;
+		private final DataSetSource dataSetSource;
+		private final byte alleleA;
+		private final byte alleleB;
+
+		public AB12ToACGTGenotypeTranslator(DataSetSource dataSetSource) throws IOException {
+
+			// Get correct bases dictionary for translation
+			this.dictionnaries = getDictionaryBases(dataSetSource);
+			this.dataSetSource = dataSetSource;
+
+			GenotypeEncoding sourceGenotypeEncoding = dataSetSource.getMatrixMetadata().getGenotypeEncoding();
+			switch (sourceGenotypeEncoding) {
+				case AB0:
+					this.alleleA = AlleleBytes.A;
+					this.alleleB = AlleleBytes.B;
+					break;
+				case O12:
+					this.alleleA = AlleleBytes._1;
+					this.alleleB = AlleleBytes._2;
+					break;
+				default:
+					throw new IllegalStateException("Unsupported source genotype encoding " + sourceGenotypeEncoding.toString());
+			}
+		}
+
+		private static Map<MarkerKey, byte[]> getDictionaryBases(DataSetSource dataSetSource) throws IOException {
+
+			Map<MarkerKey, byte[]> dictionary = new HashMap<MarkerKey, byte[]>();
+
+			Iterator<MarkerMetadata> markersMetadatasIt = dataSetSource.getMarkersMetadatasSource().iterator();
+			for (MarkerKey markerKey : dataSetSource.getMarkersKeysSource()) {
+				MarkerMetadata markerMetadata = markersMetadatasIt.next();
+				dictionary.put(markerKey, markerMetadata.getAlleles().getBytes());
+			}
+
+			return dictionary;
+		}
+
+		@Override
+		public Collection<byte[]> translateBySamples(SampleKey sampleKey, GenotypesList sampleGenotypes) throws IOException {
+			// Iterate through all markers
+			Iterator<byte[]> sampleGenotypesIt = sampleGenotypes.iterator();
+			Iterator<MarkerKey> markersKeysIt = dataSetSource.getMarkersKeysSource().iterator();
+			int si = 0;
+			for (MarkerKey markerKey : dataSetSource.getMarkersKeysSource()) {
+				byte[] codedAlleles = sampleGenotypesIt.next();
+//				final MarkerKey markerKey = markersKeysIt.next();
+				final byte[] basesDict = dictionnaries.get(markerKey);
+				byte[] transAlleles = new byte[2];
+
+				for (int ai = 0; ai < codedAlleles.length; ai++) { // ai = {0, 1}
+					if (codedAlleles[ai] == alleleA) {
+						transAlleles[ai] = basesDict[0];
+					} else if (codedAlleles[ai] == alleleB) {
+						transAlleles[ai] = basesDict[1];
+					} else {
+						transAlleles[ai] = AlleleBytes._0;
+					}
+				}
+
+//				codedAlleles[0] = transAlleles[0];
+//				codedAlleles[1] = transAlleles[1];
+				sampleGenotypes.set(si, transAlleles);
+				si++;
+			}
+
+			return sampleGenotypes;
+		}
+
+		@Override
+		public Collection<byte[]> translateByMarkers(MarkerKey markerKey, GenotypesList markerGenotypes) throws IOException {
+			final byte[] basesDict = dictionnaries.get(markerKey);
+
+			int mi = 0;
+			for (byte[] codedAlleles : markerGenotypes) {
+				byte[] transAlleles = new byte[2];
+
+				for (int ai = 0; ai < codedAlleles.length; ai++) { // ai = {0, 1}
+					if (codedAlleles[ai] == alleleA) {
+						transAlleles[ai] = basesDict[0];
+					} else if (codedAlleles[ai] == alleleB) {
+						transAlleles[ai] = basesDict[1];
+					} else {
+						transAlleles[ai] = AlleleBytes._0;
+					}
+				}
+
+//				codedAlleles[0] = transAlleles[0];
+//				codedAlleles[1] = transAlleles[1];
+				markerGenotypes.set(mi, transAlleles);
+				mi++;
+			}
+
+			return markerGenotypes;
+		}
+	}
+
+
+	private static class One234ToACGTGenotypeTranslator implements GenotypeTranslator {
+
+		private static final Map<Byte, Byte> dictionary;
+		static {
+			dictionary = new HashMap<Byte, Byte>();
+			dictionary.put(AlleleBytes._0, AlleleBytes._0);
+			dictionary.put(AlleleBytes._1, AlleleBytes.A);
+			dictionary.put(AlleleBytes._2, AlleleBytes.C);
+			dictionary.put(AlleleBytes._3, AlleleBytes.G);
+			dictionary.put(AlleleBytes._4, AlleleBytes.T);
+		}
+
+		private final DataSetSource dataSetSource;
+
+		public One234ToACGTGenotypeTranslator(DataSetSource dataSetSource) {
+			this.dataSetSource = dataSetSource;
+		}
+
+		@Override
+		public Collection<byte[]> translateBySamples(SampleKey sampleKey, GenotypesList sampleGenotypes) throws IOException {
+			return translate(sampleGenotypes);
+		}
+
+		public Collection<byte[]> translateByMarkers(MarkerKey markerKey, GenotypesList markerGenotypes) throws IOException {
+			return translate(markerGenotypes);
+		}
+
+		private static Collection<byte[]> translate(GenotypesList genotypes) throws IOException {
+
+			int li = 0;
+			for (byte[] codedAlleles : genotypes) {
+				byte[] transAlleles = new byte[2];
+				transAlleles[0] = dictionary.get(codedAlleles[0]);
+				transAlleles[1] = dictionary.get(codedAlleles[1]);
+
+				genotypes.set(li, transAlleles);
+				li++;
+			}
+
+			return genotypes;
+		}
+	}
+
+
+
+	private void translateToACGT() throws IOException {
+
+		final GenotypeEncoding gtEncoding = dataSetSource.getMatrixMetadata().getGenotypeEncoding();
+
+		GenotypeTranslator genotypeTranslator;
 		if (gtEncoding.equals(GenotypeEncoding.AB0)
 				|| gtEncoding.equals(GenotypeEncoding.O12))
 		{
-			resultMatrixId = translateAB12AllelesToACGT();
+			genotypeTranslator = new AB12ToACGTGenotypeTranslator(dataSetSource);
 		} else if (gtEncoding.equals(GenotypeEncoding.O1234)) {
-			resultMatrixId = translate1234AllelesToACGT();
+			genotypeTranslator = new One234ToACGTGenotypeTranslator(dataSetSource);
 		} else {
 			throw new IllegalStateException(
 					"Can not convert genotype-encoding: "
@@ -125,51 +276,49 @@ public class MatrixTranslator implements MatrixOperation {
 					+ GenotypeEncoding.ACGT0.toString());
 		}
 
-		return resultMatrixId;
-	}
+		// METADATA WRITER
+		// WRITING METADATA TO MATRIX
+		for (SampleInfo sampleInfo : dataSetSource.getSamplesInfosSource()) {
+			dataSetDestination.addSampleInfo(sampleInfo);
+		}
 
-	private int translateAB12AllelesToACGT() throws IOException {
-		int result = Integer.MIN_VALUE;
+		// copy & paste the marker-metadata from matrix 1
+		for (MarkerMetadata markerMetadata : dataSetSource.getMarkersMetadatasSource()) {
+			dataSetDestination.addMarkerMetadata(markerMetadata);
+		}
 
-		GenotypeEncoding rdMatrixGTCode = dataSetSource.getMatrixMetadata().getGenotypeEncoding();
-		if (!rdMatrixGTCode.equals(GenotypeEncoding.ACGT0)) { // Has not yet been translated
-			// METADATA WRITER
-			// WRITING METADATA TO MATRIX
-			AbstractNetCDFDataSetDestination.saveSamplesMetadata(rdSampleSetMap.keySet(), wrNcFile);
-			AbstractNetCDFDataSetDestination.saveMarkersMatadata(dataSetSource.getMarkersMetadatasSource(), dataSetSource.getMarkersChromosomeInfosSource(), true, null, wrNcFile);
+		// RETRIEVE CHROMOSOMES INFO
+		Iterator<ChromosomeInfo> chromosomesInfosIt = dataSetSource.getChromosomesInfosSource().iterator();
+		for (ChromosomeKey chromosomeKey : dataSetSource.getChromosomesKeysSource()) {
+			ChromosomeInfo chromosomeInfo = chromosomesInfosIt.next();
+			dataSetDestination.addChromosomeMetadata(chromosomeKey, chromosomeInfo);
+		}
 
-			// GENOTYPES WRITER
-			// Get correct bases dictionary for translation
-			Map<MarkerKey, byte[]> dictionnaries = rdMarkerSet.getDictionaryBases();
+		// GENOTYPES WRITER
+		// Iterate through Samples, use Sample item position to read all Markers GTs from rdMarkerIdSetMap.
+		dataSetDestination.startLoadingAlleles(translateBySamples);
+		if (translateBySamples) {
+			int sampleIndex = 0;
+			Iterator<SampleKey> samplesKeysSourceIt = dataSetSource.getSamplesKeysSource().iterator();
+			for (GenotypesList sampleGenotypes : dataSetSource.getSamplesGenotypesSource()) {
+				SampleKey sampleKey = samplesKeysSourceIt.next();
+				Collection<byte[]> translatedGTs = genotypeTranslator.translateBySamples(sampleKey, sampleGenotypes);
 
-			// Iterate through Samples, use Sample item position to read all Markers GTs from rdMarkerIdSetMap.
-			dataSetDestination.startLoadingAlleles(false);
-//			int sampleIndex = 0;
-//			for (int i = 0; i < rdSampleSetMap.size(); i++) {
-//				// Get alleles from read matrix
-//				rdMarkerSet.fillGTsForCurrentSampleIntoInitMap(sampleIndex);
-//				// Send to be translated
-//				Map<MarkerKey, byte[]> markerGTs = rdMarkerSet.getMarkerIdSetMapByteArray();
-//				dataSetSource.getMarkersKeysSource();
-//				translateCurrentSampleAB12AllelesMap(markerGTs, rdMatrixGTCode, dictionnaryMap);
-//
-//				// Write wrMarkerIdSetMap to A3 ArrayChar and save to wrMatrix
-//				dataSetDestination.addSampleGTAlleles(sampleIndex, markerGTs.values());
-//
-//				if (sampleIndex % 100 == 0) {
-//					log.info("Samples translated: {}", sampleIndex);
-//				}
-//				sampleIndex++;
-//			}
-//			log.info("Total Samples translated: {}", sampleIndex);
+				dataSetDestination.addSampleGTAlleles(sampleIndex, translatedGTs);
+
+				if (sampleIndex % 100 == 0) {
+					log.info("Samples translated: {}", sampleIndex);
+				}
+				sampleIndex++;
+			}
+			log.info("Total Samples translated: {}", sampleIndex);
+		} else {
 			int markerIndex = 0;
 			Iterator<MarkerKey> markersKeysSourceIt = dataSetSource.getMarkersKeysSource().iterator();
 			for (GenotypesList markerGenotypes : dataSetSource.getMarkersGenotypesSource()) {
 				MarkerKey markerKey = markersKeysSourceIt.next();
-				byte[] dictionary = dictionnaries.get(markerKey);
-				Collection<byte[]> translatedGTs = translateCurrentMarkerAB12AllelesMap(markerGenotypes, rdMatrixGTCode, dictionary);
+				Collection<byte[]> translatedGTs = genotypeTranslator.translateByMarkers(markerKey, markerGenotypes);
 
-				// Write wrMarkerIdSetMap to A3 ArrayChar and save to wrMatrix
 				dataSetDestination.addMarkerGTAlleles(markerIndex, translatedGTs);
 
 				if (markerIndex % 100 == 0) {
@@ -178,110 +327,9 @@ public class MatrixTranslator implements MatrixOperation {
 				markerIndex++;
 			}
 			log.info("Total Samples translated: {}", markerIndex);
-			dataSetDestination.finishedLoadingAlleles();
-
-			org.gwaspi.global.Utils.sysoutCompleted("Translation");
 		}
+		dataSetDestination.finishedLoadingAlleles();
 
-		return result;
-	}
-
-	// TODO Test this method
-	private int translate1234AllelesToACGT() throws IOException {
-		int result = Integer.MIN_VALUE;
-
-		GenotypeEncoding rdMatrixGTCode = rdMatrixMetadata.getGenotypeEncoding();
-		if (!rdMatrixGTCode.equals(GenotypeEncoding.ACGT0)) { // Has not yet been translated
-			// METADATA WRITER
-			// WRITING METADATA TO MATRIX
-			AbstractNetCDFDataSetDestination.saveSamplesMetadata(rdSampleSetMap.keySet(), wrNcFile);
-			AbstractNetCDFDataSetDestination.saveMarkersMatadata(dataSetSource.getMarkersMetadatasSource(), rdChrInfoSetMap, true, null, wrNcFile);
-
-			//<editor-fold defaultstate="expanded" desc="GENOTYPES WRITER">
-			// Get correct strand of each marker for newStrand translation
-			// Iterate through Samples, use Sample item position to read all Markers GTs from rdMarkerIdSetMap.
-			dataSetDestination.startLoadingAlleles(false);
-			int sampleIndex = 0;
-			for (int i = 0; i < rdSampleSetMap.size(); i++) {
-				// Get alleles from read matrix
-				rdMarkerSet.fillGTsForCurrentSampleIntoInitMap(sampleIndex);
-				// Send to be translated
-				Map<MarkerKey, byte[]> markerGTs = rdMarkerSet.getMarkerIdSetMapByteArray();
-				translateCurrentSample1234AllelesMap(markerGTs, rdMarkerSet.getMarkerKeys());
-
-				// Write wrMarkerIdSetMap to A3 ArrayChar and save to wrMatrix
-				dataSetDestination.addSampleGTAlleles(sampleIndex, markerGTs.values());
-
-				if (sampleIndex % 100 == 0) {
-					log.info("Samples translated: {}", sampleIndex);
-				}
-				sampleIndex++;
-			}
-			log.info("Total Samples translated: {}", sampleIndex);
-			dataSetDestination.finishedLoadingAlleles();
-
-			org.gwaspi.global.Utils.sysoutCompleted("Translation");
-		}
-
-		return result;
-	}
-
-	private void translateCurrentSampleAB12AllelesMap(Map<MarkerKey, byte[]> codedMap, GenotypeEncoding sourceGenotypeEncoding, Map<MarkerKey, byte[]> dictionaryMap) {
-
-		final byte alleleA;
-		final byte alleleB;
-		switch (sourceGenotypeEncoding) {
-			case AB0:
-				alleleA = AlleleBytes.A;
-				alleleB = AlleleBytes.B;
-				break;
-			case O12:
-				alleleA = AlleleBytes._1;
-				alleleB = AlleleBytes._2;
-				break;
-			default:
-				throw new IllegalStateException("Unsupported source genotype encoding " + sourceGenotypeEncoding.toString());
-		}
-
-		// Iterate through all markers
-		for (Map.Entry<MarkerKey, byte[]> entry : codedMap.entrySet()) {
-			MarkerKey markerKey = entry.getKey();
-			byte[] basesDict = dictionaryMap.get(markerKey);
-			byte[] codedAlleles = entry.getValue();
-			byte[] transAlleles = new byte[2];
-
-			for (int ai = 0; ai < codedAlleles.length; ai++) {
-				if (codedAlleles[ai] == alleleA) {
-					transAlleles[ai] = basesDict[0];
-				} else if (codedAlleles[ai] == alleleB) {
-					transAlleles[ai] = basesDict[1];
-				} else {
-					transAlleles[ai] = AlleleBytes._0;
-				}
-			}
-
-			entry.setValue(transAlleles);
-		}
-	}
-
-	private static void translateCurrentSample1234AllelesMap(Map<MarkerKey, byte[]> codedMap, Collection<MarkerKey> markerStrands) {
-
-		Map<Byte, Byte> dictionary = new HashMap<Byte, Byte>();
-		dictionary.put(AlleleBytes._0, AlleleBytes._0);
-		dictionary.put(AlleleBytes._1, AlleleBytes.A);
-		dictionary.put(AlleleBytes._2, AlleleBytes.C);
-		dictionary.put(AlleleBytes._3, AlleleBytes.G);
-		dictionary.put(AlleleBytes._4, AlleleBytes.T);
-
-		// Iterate through all markers
-		for (MarkerKey markerKey : markerStrands) {
-			byte[] codedAlleles = codedMap.get(markerKey);
-
-			byte[] transAlleles = new byte[2];
-			transAlleles[0] = dictionary.get(codedAlleles[0]);
-			transAlleles[1] = dictionary.get(codedAlleles[1]);
-
-			codedMap.put(markerKey, transAlleles);
-		}
+		org.gwaspi.global.Utils.sysoutCompleted("Translation");
 	}
 }
