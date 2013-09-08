@@ -49,16 +49,15 @@ public class MergeMarkersMatrixOperation extends AbstractMergeMarkersMatrixOpera
 
 		// Get combo SampleSet with position[] (wrPos, rdMatrixNb, rdPos)
 		Map<SampleKey, int[]> wrSampleSetMap = getSampleSetWithIndicesMap(dataSetSource1.getSamplesKeysSource(), dataSetSource2.getSamplesKeysSource());
+		// Keep rdMatrix1Metadata from Matrix1. SampleSet is constant
 		SamplesKeysSource sampleKeys = dataSetSource1.getSamplesKeysSource();
 
-		final int numSamples = dataSetSource1.getSamplesKeysSource().size(); // Keep rdMatrix1Metadata from Matrix1. SampleSet is constant
 		final String humanReadableMethodName = Text.Trafo.mergeMarkersOnly;
 		final String methodDescription = Text.Trafo.mergeMethodMarkerJoin;
 
 		mergeMatrices(
 				wrSampleSetMap,
 				sampleKeys,
-				numSamples,
 				humanReadableMethodName,
 				methodDescription);
 
@@ -73,6 +72,7 @@ public class MergeMarkersMatrixOperation extends AbstractMergeMarkersMatrixOpera
 	{
 		// Get SampleId index from each Matrix
 		// Iterate through wrSampleSetMap
+		dataSetDestination.startLoadingAlleles(true);
 		for (int[] sampleIndices : wrSampleSetMap.values()) { // position[rdPos matrix 1, rdPos matrix 2]
 			final int readDataSet1SampleIndex = sampleIndices[0];
 			final int readDataSet2SampleIndex = sampleIndices[1];
@@ -101,6 +101,7 @@ public class MergeMarkersMatrixOperation extends AbstractMergeMarkersMatrixOpera
 
 			addSampleGTAlleles(readDataSet1SampleIndex, wrComboSortedMarkerGTs.values());
 		}
+		dataSetDestination.finishedLoadingAlleles();
 	}
 
 	private static Map<SampleKey, int[]> getSampleSetWithIndicesMap(SamplesKeysSource sampleKeys1, SamplesKeysSource sampleKeys2) {

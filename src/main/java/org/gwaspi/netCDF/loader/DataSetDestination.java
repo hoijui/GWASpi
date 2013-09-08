@@ -21,8 +21,10 @@ import java.io.IOException;
 import java.util.Collection;
 import org.gwaspi.model.ChromosomeInfo;
 import org.gwaspi.model.ChromosomeKey;
+import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.SampleInfo;
+import org.gwaspi.model.SampleKey;
 
 /**
  * Is the receiving end of a whole data-set loading process.
@@ -42,12 +44,14 @@ public interface DataSetDestination {
 	void startLoadingDummySampleInfos() throws IOException;
 	void finishedLoadingDummySampleInfos() throws IOException;
 
-	void startLoadingSampleInfos() throws IOException;
+	void startLoadingSampleInfos(boolean storeOnlyKeys) throws IOException;
 	void addSampleInfo(SampleInfo sampleInfo) throws IOException;
+	void addSampleKey(SampleKey sampleKey) throws IOException;
 	void finishedLoadingSampleInfos() throws IOException;
 
-	void startLoadingMarkerMetadatas() throws IOException;
+	void startLoadingMarkerMetadatas(boolean storeOnlyKeys) throws IOException;
 	void addMarkerMetadata(MarkerMetadata markerMetadata) throws IOException;
+	void addMarkerKey(MarkerKey markerKey) throws IOException;
 	void finishedLoadingMarkerMetadatas() throws IOException;
 
 	void startLoadingChromosomeMetadatas() throws IOException;

@@ -24,9 +24,8 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
-import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.constants.cNetCDF.Defaults.AlleleBytes;
 import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
-import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.GenotypesList;
@@ -34,10 +33,8 @@ import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.netCDF.loader.DataSetDestination;
-import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.ma2.InvalidRangeException;
 
 public class MatrixGenotypesFlipper implements MatrixOperation {
 
@@ -115,7 +112,7 @@ public class MatrixGenotypesFlipper implements MatrixOperation {
 		int resultMatrixId = Integer.MIN_VALUE;
 
 		// simply copy&paste the sample infos
-		dataSetDestination.startLoadingSampleInfos();
+		dataSetDestination.startLoadingSampleInfos(true);
 		for (SampleInfo sampleInfo : dataSetSource.getSamplesInfosSource()) {
 			dataSetDestination.addSampleInfo(sampleInfo);
 		}
@@ -124,7 +121,7 @@ public class MatrixGenotypesFlipper implements MatrixOperation {
 		// copy&paste the marker metadata aswell,
 		// but flipp dictionary-alleles and strand
 		// of the ones that are selected for flipping
-		dataSetDestination.startLoadingMarkerMetadatas();
+		dataSetDestination.startLoadingMarkerMetadatas(false);
 		Iterator<MarkerKey> markerKeysIt = dataSetSource.getMarkersKeysSource().iterator();
 		for (MarkerMetadata origMarkerMetadata : dataSetSource.getMarkersMetadatasSource()) {
 			MarkerKey markerKey = markerKeysIt.next();
@@ -204,30 +201,30 @@ public class MatrixGenotypesFlipper implements MatrixOperation {
 	private static void flipGenotypes(byte[] gt, GenotypeEncoding gtEncoding) {
 		byte[] result = gt;
 
-		if (gtEncoding.equals(cNetCDF.Defaults.GenotypeEncoding.ACGT0)) {
+		if (gtEncoding.equals(GenotypeEncoding.ACGT0)) {
 			for (int i = 0; i < gt.length; i++) {
-				if (gt[i] == cNetCDF.Defaults.AlleleBytes.A) {
-					result[i] = cNetCDF.Defaults.AlleleBytes.T;
-				} else if (gt[i] == cNetCDF.Defaults.AlleleBytes.C) {
-					result[i] = cNetCDF.Defaults.AlleleBytes.G;
-				} else if (gt[i] == cNetCDF.Defaults.AlleleBytes.G) {
-					result[i] = cNetCDF.Defaults.AlleleBytes.C;
-				} else if (gt[i] == cNetCDF.Defaults.AlleleBytes.T) {
-					result[i] = cNetCDF.Defaults.AlleleBytes.A;
+				if (gt[i] == AlleleBytes.A) {
+					result[i] = AlleleBytes.T;
+				} else if (gt[i] == AlleleBytes.C) {
+					result[i] = AlleleBytes.G;
+				} else if (gt[i] == AlleleBytes.G) {
+					result[i] = AlleleBytes.C;
+				} else if (gt[i] == AlleleBytes.T) {
+					result[i] = AlleleBytes.A;
 				}
 			}
 		}
 
-		if (gtEncoding.equals(cNetCDF.Defaults.GenotypeEncoding.O1234)) {
+		if (gtEncoding.equals(GenotypeEncoding.O1234)) {
 			for (int i = 0; i < gt.length; i++) {
-				if (gt[i] == cNetCDF.Defaults.AlleleBytes._1) {
-					result[i] = cNetCDF.Defaults.AlleleBytes._4;
-				} else if (gt[i] == cNetCDF.Defaults.AlleleBytes._2) {
-					result[i] = cNetCDF.Defaults.AlleleBytes._3;
-				} else if (gt[i] == cNetCDF.Defaults.AlleleBytes._3) {
-					result[i] = cNetCDF.Defaults.AlleleBytes._2;
-				} else if (gt[i] == cNetCDF.Defaults.AlleleBytes._4) {
-					result[i] = cNetCDF.Defaults.AlleleBytes._1;
+				if (gt[i] == AlleleBytes._1) {
+					result[i] = AlleleBytes._4;
+				} else if (gt[i] == AlleleBytes._2) {
+					result[i] = AlleleBytes._3;
+				} else if (gt[i] == AlleleBytes._3) {
+					result[i] = AlleleBytes._2;
+				} else if (gt[i] == AlleleBytes._4) {
+					result[i] = AlleleBytes._1;
 				}
 			}
 		}

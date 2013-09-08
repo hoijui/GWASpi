@@ -55,14 +55,12 @@ public class MergeAllMatrixOperation extends AbstractMergeMarkersMatrixOperation
 		Map<SampleKey, int[]> wrSampleSetMap = getComboSampleSetWithIndicesArray(dataSetSource1.getSamplesKeysSource(), dataSetSource2.getSamplesKeysSource());
 		Map<SampleKey, ?> theSamples = wrSampleSetMap;
 
-		final int numSamples = wrSampleSetMap.size(); // Comboed SampleSet
 		final String humanReadableMethodName = Text.Trafo.mergeAll;
 		final String methodDescription = Text.Trafo.mergeMethodMergeAll;
 
 		mergeMatrices(
 				wrSampleSetMap,
 				theSamples.keySet(),
-				numSamples,
 				humanReadableMethodName,
 				methodDescription);
 
@@ -87,6 +85,7 @@ public class MergeAllMatrixOperation extends AbstractMergeMarkersMatrixOperation
 
 		// Get SampleId index from each Matrix
 		// Iterate through wrSampleSetMap
+		dataSetDestination.startLoadingAlleles(true);
 		int wrSampleIndex = 0;
 		for (Map.Entry<SampleKey, int[]> entry : wrSampleSetMap.entrySet()) {
 			int[] rdSampleIndices = entry.getValue(); // position[rdPos matrix 1, rdPos matrix 2]
@@ -123,5 +122,6 @@ public class MergeAllMatrixOperation extends AbstractMergeMarkersMatrixOperation
 			addSampleGTAlleles(wrSampleIndex, wrComboSortedMarkerGTs);
 			wrSampleIndex++;
 		}
+		dataSetDestination.finishedLoadingAlleles();
 	}
 }

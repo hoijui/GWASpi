@@ -88,27 +88,37 @@ public class MatrixMergeSamples extends AbstractMergeMatrixOperation {
 		// Keep rdwrMarkerIdSetMap1 from Matrix1. MarkerSet is constant
 		final int numMarkers = dataSetSource1.getMarkersKeysSource().size();
 
+		dataSetDestination.init();
+
 		// NOTE We do not need to safe the sample-info again,
 		//   cause it is already stored in the study
 		//   from the two matrices we are merging
-		// FIXME the above only applies to NetCDF!
+		// NOTE the above only applies to NetCDF?
+		dataSetDestination.startLoadingSampleInfos(true);
 		for (SampleKey sampleKey : theSamples.keySet()) {
-			dataSetDestination.addSampleInfo(sampleKey);
+			dataSetDestination.addSampleKey(sampleKey);
 		}
+		dataSetDestination.finishedLoadingSampleInfos();
 
 		// copy & paste the marker-metadata from matrix 1
+		dataSetDestination.startLoadingMarkerMetadatas(true);
 		for (MarkerMetadata markerMetadata : dataSetSource1.getMarkersMetadatasSource()) {
 			dataSetDestination.addMarkerMetadata(markerMetadata);
 		}
+		dataSetDestination.finishedLoadingMarkerMetadatas();
 
 		// RETRIEVE CHROMOSOMES INFO
+		dataSetDestination.startLoadingChromosomeMetadatas();
 		Iterator<ChromosomeInfo> chromosomesInfosIt = dataSetSource1.getChromosomesInfosSource().iterator();
 		for (ChromosomeKey chromosomeKey : dataSetSource1.getChromosomesKeysSource()) {
 			ChromosomeInfo chromosomeInfo = chromosomesInfosIt.next();
 			dataSetDestination.addChromosomeMetadata(chromosomeKey, chromosomeInfo);
 		}
+		dataSetDestination.finishedLoadingChromosomeMetadatas();
 
 		writeGenotypesMeta(wrComboSampleSetMap.values());
+
+		dataSetDestination.done();
 
 		org.gwaspi.global.Utils.sysoutCompleted("extraction to new Matrix");
 
@@ -127,7 +137,9 @@ public class MatrixMergeSamples extends AbstractMergeMatrixOperation {
 	private void writeGenotypes(Collection<int[]> wrComboSampleSetMap)
 			throws IOException
 	{
-		// Iterate through wrSampleSetMap, use item position to read correct sample GTs into rdMarkerIdSetMap.
+		// Iterate through wrSampleSetMap, use item position to read
+		// the correct sample GTs into rdMarkerIdSetMap.
+		dataSetDestination.startLoadingAlleles(true);
 		for (int[] sampleIndices : wrComboSampleSetMap) { // Next SampleId
 			// sampleIndices: Next position[rdMatrixNb, rdPos, wrPos] to read/write
 			final int dataSetIndices = sampleIndices[0];
@@ -162,5 +174,6 @@ public class MatrixMergeSamples extends AbstractMergeMatrixOperation {
 
 			addSampleGTAlleles(writeSampleIndices, readSampleGenotypes);
 		}
+		dataSetDestination.finishedLoadingAlleles();
 	}
 }

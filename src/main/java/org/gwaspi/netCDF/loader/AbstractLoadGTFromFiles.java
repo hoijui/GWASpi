@@ -98,7 +98,7 @@ public abstract class AbstractLoadGTFromFiles implements GenotypesLoader {
 
 	private void loadMarkerMetadata(GenotypesLoadDescription loadDescription, DataSetDestination samplesReceiver) throws Exception {
 
-		samplesReceiver.startLoadingMarkerMetadatas();
+		samplesReceiver.startLoadingMarkerMetadatas(false);
 		markerSetMetadataLoader.loadMarkers(samplesReceiver, loadDescription);
 		samplesReceiver.finishedLoadingMarkerMetadatas();
 	}

@@ -67,7 +67,6 @@ public abstract class AbstractMergeMarkersMatrixOperation extends AbstractMergeM
 	protected void mergeMatrices(
 			Map<SampleKey, int[]> wrSampleSetMap,
 			Collection<SampleKey> sampleKeys,
-			final int numSamples,
 			final String humanReadableMethodName,
 			final String methodDescription)
 			throws IOException
@@ -148,25 +147,35 @@ public abstract class AbstractMergeMarkersMatrixOperation extends AbstractMergeM
 			markerEntry.setValue(newMarkerMetadata);
 		}
 
+		dataSetDestination.init();
+
 		// NOTE We do not need to safe the sample-info again,
 		//   cause it is already stored in the study
 		//   from the two matrices we are merging
 		// FIXME the above only applies to NetCDF!
+		dataSetDestination.startLoadingSampleInfos(true);
 		for (SampleKey sampleKey : sampleKeys) {
-			dataSetDestination.addSampleInfo(sampleKey);
+			dataSetDestination.addSampleKey(sampleKey);
 		}
+		dataSetDestination.finishedLoadingSampleInfos();
 
 		// copy & paste the marker-metadata from matrix 1
+		dataSetDestination.startLoadingMarkerMetadatas(false);
 		for (MarkerMetadata markerMetadata : wrCombinedSortedMarkersMetadata.values()) {
 			dataSetDestination.addMarkerMetadata(markerMetadata);
 		}
+		dataSetDestination.finishedLoadingMarkerMetadatas();
 
 		// RETRIEVE CHROMOSOMES INFO
+		dataSetDestination.startLoadingChromosomeMetadatas();
 		for (Map.Entry<ChromosomeKey, ChromosomeInfo> chromosomeEntry : chromosomeInfo.entrySet()) {
 			dataSetDestination.addChromosomeMetadata(chromosomeEntry.getKey(), chromosomeEntry.getValue());
 		}
+		dataSetDestination.finishedLoadingChromosomeMetadatas();
 
 		writeGenotypesMeta(wrSampleSetMap, wrCombinedSortedMarkersMetadata.keySet());
+
+		dataSetDestination.done();
 
 		org.gwaspi.global.Utils.sysoutCompleted("extraction to new Matrix");
 	}
