@@ -42,7 +42,6 @@ import org.gwaspi.model.SampleKey;
 import org.gwaspi.reports.GatherQAMarkersData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.nc2.NetcdfFile;
 
 public class PlinkBinaryFormatter implements Formatter {
 
@@ -83,15 +82,14 @@ public class PlinkBinaryFormatter implements Formatter {
 		}
 
 		boolean result = false;
-		NetcdfFile rdNcFile = NetcdfFile.open(rdMatrixMetadata.getPathToMatrix());
 		String sep = cExport.separator_PLINK;
 
 		// ALLELES
 		List<OperationMetadata> operations = OperationsList.getOperationsList(MatrixKey.valueOf(rdMatrixMetadata));
 		OperationKey markersQAOpKey = OperationsList.getIdOfLastOperationTypeOccurance(operations, OPType.MARKER_QA);
 
-		Map<MarkerKey, char[]> minorAllelesMap = GatherQAMarkersData.loadMarkerQAMinorAlleles(markersQAOpKey);
-		Map<MarkerKey, char[]> majorAllelesMap = GatherQAMarkersData.loadMarkerQAMajorAlleles(markersQAOpKey);
+		Map<MarkerKey, byte[]> minorAllelesMap = GatherQAMarkersData.loadMarkerQAMinorAlleles(markersQAOpKey);
+		Map<MarkerKey, byte[]> majorAllelesMap = GatherQAMarkersData.loadMarkerQAMajorAlleles(markersQAOpKey);
 		Map<MarkerKey, Double> minorAlleleFreqMap = GatherQAMarkersData.loadMarkerQAMinorAlleleFrequency(markersQAOpKey);
 
 		//<editor-fold defaultstate="expanded" desc="BIM FILE">
@@ -124,13 +122,13 @@ public class PlinkBinaryFormatter implements Formatter {
 				String minorAllele = new String(minorAllelesMap.get(key));
 				String majorAllele = new String(majorAllelesMap.get(key));
 				Double minAlleleFreq = minorAlleleFreqMap.get(key);
-				if (minAlleleFreq == 0.5) { // IF BOTH ALLELES ARE EQUALLY COMMON, USE ALPHABETICAL ORDER
+				if (minAlleleFreq == 0.5 && majorAllele.compareTo(majorAllele) > 0) { // IF BOTH ALLELES ARE EQUALLY COMMON, USE ALPHABETICAL ORDER
 					String tmpMinorAllele = majorAllele;
 					majorAllele = minorAllele;
 					minorAllele = tmpMinorAllele;
 
-					majorAllelesMap.put(key, majorAllele.toCharArray());
-					minorAllelesMap.put(key, minorAllele.toCharArray());
+					majorAllelesMap.put(key, majorAllele.getBytes());
+					minorAllelesMap.put(key, minorAllele.getBytes());
 				}
 				bimBW.write(sep);
 				bimBW.write(minorAllele);

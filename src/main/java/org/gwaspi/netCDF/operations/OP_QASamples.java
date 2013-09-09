@@ -144,7 +144,14 @@ public class OP_QASamples implements MatrixOperation {
 					0,
 					OPType.SAMPLE_QA,
 					rdMatrixKey, // Parent matrixId
-					-1);                            // Parent operationId
+					-1); // Parent operationId
+
+			// wrNcFile will contain:
+			// - cNetCDF.Variables.VAR_OPSET: (String, key.getSampleId() + " " + key.getFamilyId()) sample keys
+			// - cNetCDF.Variables.VAR_IMPLICITSET: (String, key.getId()) marker keys
+			// - cNetCDF.Census.VAR_OP_SAMPLES_MISSINGRAT: (double) missing ratio for each sample
+			// - cNetCDF.Census.VAR_OP_SAMPLES_MISSINGCOUNT: (int) missing count for each sample
+			// - cNetCDF.Census.VAR_OP_SAMPLES_HETZYRAT: (double) heterozygosity ratio for each sample
 
 			wrNcFile = wrOPHandler.getNetCDFHandler();
 			wrNcFile.create();
@@ -153,7 +160,6 @@ public class OP_QASamples implements MatrixOperation {
 			//<editor-fold defaultstate="expanded" desc="METADATA WRITER">
 			// SAMPLESET
 			ArrayChar.D2 samplesD2 = NetCdfUtils.writeCollectionToD2ArrayChar(rdSampleSet.getSampleKeys(), cNetCDF.Strides.STRIDE_SAMPLE_NAME);
-
 			int[] sampleOrig = new int[] {0, 0};
 			wrNcFile.write(cNetCDF.Variables.VAR_OPSET, sampleOrig, samplesD2);
 			log.info("Done writing SampleSet to matrix");

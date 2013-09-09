@@ -38,7 +38,6 @@ import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleKey;
-import org.gwaspi.netCDF.operations.AbstractOperationSet;
 import org.gwaspi.netCDF.operations.MarkerOperationSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -198,12 +197,12 @@ class BeagleFormatter implements Formatter {
 				}
 			}
 
-			Map<MarkerKey, char[]> opQaMarkersAllelesMaj = null;
-			Map<MarkerKey, char[]> opQaMarkersAllelesMin = null;
+			Map<MarkerKey, byte[]> opQaMarkersAllelesMaj = null;
+			Map<MarkerKey, byte[]> opQaMarkersAllelesMin = null;
 			if (markersQAopKey != null) {
 				OperationMetadata qaMetadata = OperationsList.getOperation(markersQAopKey);
 				NetcdfFile qaNcFile = NetcdfFile.open(qaMetadata.getPathToMatrix());
-				MarkerOperationSet<char[]> rdOperationSet = new MarkerOperationSet<char[]>(markersQAopKey);
+				MarkerOperationSet<byte[]> rdOperationSet = new MarkerOperationSet<byte[]>(markersQAopKey);
 
 				// MAJOR ALLELE
 				/*opQaMarkersAllelesMaj = */rdOperationSet.getOpSetMap();
@@ -228,9 +227,9 @@ class BeagleFormatter implements Formatter {
 				if (markersQAopKey != null) {
 					MarkerKey markerKey = markersKeysIt.next();
 					markerBW.write(sep);
-					markerBW.write(opQaMarkersAllelesMaj.get(markerKey));
+					markerBW.write((char) opQaMarkersAllelesMaj.get(markerKey)[0]);
 					markerBW.write(sep);
-					markerBW.write(opQaMarkersAllelesMin.get(markerKey));
+					markerBW.write((char) opQaMarkersAllelesMin.get(markerKey)[0]);
 				}
 
 				markerBW.write('\n');

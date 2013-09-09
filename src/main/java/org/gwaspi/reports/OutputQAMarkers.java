@@ -137,17 +137,17 @@ public class OutputQAMarkers {
 			NetcdfFile qaNcFile = NetcdfFile.open(qaMetadata.getPathToMatrix());
 
 			MarkerOperationSet rdOperationSet = new MarkerOperationSet(markersQAopKey);
-			Map<MarkerKey, char[]> opMarkerSetMap = rdOperationSet.getOpSetMap();
+			Map<MarkerKey, byte[]> opMarkerSetMap = rdOperationSet.getOpSetMap();
 
 			// MINOR ALLELE
 			opMarkerSetMap = rdOperationSet.fillOpSetMapWithVariable(qaNcFile, cNetCDF.Census.VAR_OP_MARKERS_MINALLELES);
 			for (MarkerKey key : rdInfoMarkerSet.getMarkerKeys()) {
-				char[] minorAllele = opMarkerSetMap.get(key);
+				byte[] minorAllele = opMarkerSetMap.get(key);
 				sortedMarkerAlleles.put(key, new String(minorAllele));
 			}
 
 			// MAJOR ALLELE
-			AbstractOperationSet.fillMapWithDefaultValue(opMarkerSetMap, new char[0]);
+			AbstractOperationSet.fillMapWithDefaultValue(opMarkerSetMap, new byte[0]);
 			opMarkerSetMap = rdOperationSet.fillOpSetMapWithVariable(qaNcFile, cNetCDF.Census.VAR_OP_MARKERS_MAJALLELES);
 			for (Map.Entry<MarkerKey, String> entry : sortedMarkerAlleles.entrySet()) {
 				String minorAllele = entry.getValue();
@@ -214,17 +214,17 @@ public class OutputQAMarkers {
 			NetcdfFile qaNcFile = NetcdfFile.open(qaMetadata.getPathToMatrix());
 
 			MarkerOperationSet rdOperationSet = new MarkerOperationSet(markersQAopKey);
-			Map<MarkerKey, char[]> opMarkerSetMap = rdOperationSet.getOpSetMap();
+			Map<MarkerKey, byte[]> opMarkerSetMap = rdOperationSet.getOpSetMap();
 
 			// MINOR ALLELE
 			opMarkerSetMap = rdOperationSet.fillOpSetMapWithVariable(qaNcFile, cNetCDF.Census.VAR_OP_MARKERS_MINALLELES);
 			for (MarkerKey key : rdInfoMarkerSet.getMarkerKeys()) {
-				char[] minorAllele = opMarkerSetMap.get(key);
+				byte[] minorAllele = opMarkerSetMap.get(key);
 				sortedMarkerAlleles.put(key, new String(minorAllele));
 			}
 
 			// MAJOR ALLELE
-			AbstractOperationSet.fillMapWithDefaultValue(opMarkerSetMap, new char[0]);
+			AbstractOperationSet.fillMapWithDefaultValue(opMarkerSetMap, new byte[0]);
 			opMarkerSetMap = rdOperationSet.fillOpSetMapWithVariable(qaNcFile, cNetCDF.Census.VAR_OP_MARKERS_MAJALLELES);
 			for (Map.Entry<MarkerKey, String> entry : sortedMarkerAlleles.entrySet()) {
 				String minorAllele = entry.getValue();

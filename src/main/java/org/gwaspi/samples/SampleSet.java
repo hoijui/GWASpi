@@ -141,14 +141,9 @@ public class SampleSet extends AbstractList<GenotypesList> implements MarkersGen
 						matrixMetadata.getStudyKey(),
 						sampleSetAC,
 						null);
-			} catch (IOException ex) {
-				log.error("Cannot read data", ex);
 			} catch (InvalidRangeException ex) {
-				log.error("Cannot read data", ex);
+				throw new IOException("Cannot read data", ex);
 			}
-
-		} catch (IOException ex) {
-			log.error("Cannot open file", ex);
 		} finally {
 			if (null != ncfile) {
 				try {
@@ -223,57 +218,53 @@ public class SampleSet extends AbstractList<GenotypesList> implements MarkersGen
 
 	private static List<byte[]> readAllSamplesGTsFromCurrentMarker(NetcdfFile rdNcFile, Map<SampleKey, byte[]> rdBytes, int markerNb) throws IOException {
 
+		Variable genotypes = rdNcFile.findVariable(cNetCDF.Variables.VAR_GENOTYPES);
+
+		if (null == genotypes) {
+			return null;
+		}
 		try {
-			Variable genotypes = rdNcFile.findVariable(cNetCDF.Variables.VAR_GENOTYPES);
+			int[] varShape = genotypes.getShape();
 
-			if (null == genotypes) {
-				return null;
-			}
-			try {
-				int[] varShape = genotypes.getShape();
+			Dimension sampleSetDim = rdNcFile.findDimension(cNetCDF.Dimensions.DIM_SAMPLESET);
 
-				Dimension sampleSetDim = rdNcFile.findDimension(cNetCDF.Dimensions.DIM_SAMPLESET);
-
-				String netCdfReadStr = constructNetCDFReadStr(sampleSetDim, markerNb, varShape[2]);
+			String netCdfReadStr = constructNetCDFReadStr(sampleSetDim, markerNb, varShape[2]);
 
 //				ArrayByte.D3 gt_ACD3 = (ArrayByte.D3) genotypes.read(netCdfReadStr);
-				ArrayByte.D3 gt_ACD3 = readGTs(genotypes, netCdfReadStr);
+			ArrayByte.D3 gt_ACD3 = readGTs(genotypes, netCdfReadStr);
 
-				int[] shp = gt_ACD3.getShape();
-				int reducer = 0;
-				if (shp[0] == 1) {
-					reducer++;
-				}
-				if (shp[1] == 1) {
-					reducer++;
-				}
-				if (shp[2] == 1) {
-					reducer++;
-				}
-
-				if (reducer == 1) {
-					ArrayByte.D2 gt_ACD2 = (ArrayByte.D2) gt_ACD3.reduce();
-					if (rdBytes == null) {
-						return NetCdfUtils.writeD2ArrayByteToList(gt_ACD2);
-					} else {
-						NetCdfUtils.writeD2ArrayByteToMapValues(gt_ACD2, rdBytes);
-					}
-				} else {
-					throw new IllegalStateException();
-				}
-			} catch (InvalidRangeException ex) {
-				log.error("Cannot read data", ex);
+			int[] shp = gt_ACD3.getShape();
+			int reducer = 0;
+			if (shp[0] == 1) {
+				reducer++;
 			}
-		} catch (IOException ex) {
-			log.error("Cannot open file", ex);
+			if (shp[1] == 1) {
+				reducer++;
+			}
+			if (shp[2] == 1) {
+				reducer++;
+			}
+
+			if (reducer == 1) {
+				ArrayByte.D2 gt_ACD2 = (ArrayByte.D2) gt_ACD3.reduce();
+				if (rdBytes == null) {
+					return NetCdfUtils.writeD2ArrayByteToList(gt_ACD2);
+				} else {
+					NetCdfUtils.writeD2ArrayByteToMapValues(gt_ACD2, rdBytes);
+				}
+			} else {
+				throw new IllegalStateException();
+			}
+		} catch (InvalidRangeException ex) {
+			throw new IOException("Cannot read data", ex);
 		}
 
 		return null;
 	}
 
-	private void fillSampleIdSetMapWithVariable(Map<SampleKey, ?> map, String variable) {
-		NetcdfFile ncfile = null;
+	private void fillSampleIdSetMapWithVariable(Map<SampleKey, ?> map, String variable) throws IOException {
 
+		NetcdfFile ncfile = null;
 		try {
 			ncfile = NetcdfFile.open(matrixMetadata.getPathToMatrix());
 			Variable var = ncfile.findVariable(variable);
@@ -307,13 +298,9 @@ public class SampleSet extends AbstractList<GenotypesList> implements MarkersGen
 					NetCdfUtils.writeD1ArrayDoubleToMapValues(sampleSetAF, (Map<SampleKey, Double>) map);
 					sampleIdSetMap = map;
 				}
-			} catch (IOException ex) {
-				log.error("Cannot read data", ex);
 			} catch (InvalidRangeException ex) {
-				log.error("Cannot read data", ex);
+				throw new IOException("Cannot read data", ex);
 			}
-		} catch (IOException ex) {
-			log.error("Cannot open file", ex);
 		} finally {
 			if (null != ncfile) {
 				try {
@@ -325,9 +312,9 @@ public class SampleSet extends AbstractList<GenotypesList> implements MarkersGen
 		}
 	}
 
-	private void fillSampleIdSetMapWithFilterVariable(Map<SampleKey, char[]> map, String variable, int filterPos) {
-		NetcdfFile ncfile = null;
+	private void fillSampleIdSetMapWithFilterVariable(Map<SampleKey, char[]> map, String variable, int filterPos) throws IOException {
 
+		NetcdfFile ncfile = null;
 		try {
 			ncfile = NetcdfFile.open(matrixMetadata.getPathToMatrix());
 			Variable var = ncfile.findVariable(variable);
@@ -358,13 +345,9 @@ public class SampleSet extends AbstractList<GenotypesList> implements MarkersGen
 					NetCdfUtils.writeD2ArrayCharToMapValues(sampleSetAC, map);
 					sampleIdSetMap = map;
 				}
-			} catch (IOException ex) {
-				log.error("Cannot read data", ex);
 			} catch (InvalidRangeException ex) {
-				log.error("Cannot read data", ex);
+				throw new IOException("Cannot read data", ex);
 			}
-		} catch (IOException ex) {
-			log.error("Cannot open file", ex);
 		} finally {
 			if (null != ncfile) {
 				try {
@@ -412,7 +395,7 @@ public class SampleSet extends AbstractList<GenotypesList> implements MarkersGen
 		return returnMap;
 	}
 
-	public <V> Map<SampleKey, Integer> pickValidSampleSetItemsByNetCDFValue(Map<SampleKey, V> map, String variable, Set<V> criteria, boolean include) {
+	public <V> Map<SampleKey, Integer> pickValidSampleSetItemsByNetCDFValue(Map<SampleKey, V> map, String variable, Set<V> criteria, boolean include) throws IOException {
 		Map<SampleKey, Integer> returnMap = new LinkedHashMap<SampleKey, Integer>();
 		fillSampleIdSetMapWithVariable(map, variable);
 
@@ -436,7 +419,7 @@ public class SampleSet extends AbstractList<GenotypesList> implements MarkersGen
 		return returnMap;
 	}
 
-	public Map<SampleKey, Integer> pickValidSampleSetItemsByNetCDFFilter(Map<SampleKey, char[]> map, String variable, int fiterPos, Set<char[]> criteria, boolean include) {
+	public Map<SampleKey, Integer> pickValidSampleSetItemsByNetCDFFilter(Map<SampleKey, char[]> map, String variable, int fiterPos, Set<char[]> criteria, boolean include) throws IOException {
 		Map<SampleKey, Integer> returnMap = new LinkedHashMap<SampleKey, Integer>();
 		fillSampleIdSetMapWithFilterVariable(map, variable, fiterPos);
 
@@ -492,11 +475,11 @@ public class SampleSet extends AbstractList<GenotypesList> implements MarkersGen
 	@Override
 	public GenotypesList get(int markerIndex) {
 
-//	rdSampleSet.readAllSamplesGTsFromCurrentMarkerToMap(rdNcFile, rdSampleSetMap, markerNb);
-//	for (byte[] tempGT : rdSampleSetMap.values()) {
-//		if (sampleIdSetMap == null) {
-//			initFullMarkerIdSetMap();
-//		}
+//		rdSampleSet.readAllSamplesGTsFromCurrentMarkerToMap(rdNcFile, rdSampleSetMap, markerNb);
+//		for (byte[] tempGT : rdSampleSetMap.values()) {
+//			if (sampleIdSetMap == null) {
+//				initFullMarkerIdSetMap();
+//			}
 		List<byte[]> markerGenotypes = null;
 		try {
 			markerGenotypes = readAllSamplesGTsFromCurrentMarkerToList(rdNcFile, markerIndex);

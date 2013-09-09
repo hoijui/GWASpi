@@ -27,12 +27,9 @@ import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.Study;
-import org.gwaspi.netCDF.markers.MarkerSet;
 import org.gwaspi.netCDF.markers.NetCDFDataSetSource;
-import org.gwaspi.samples.SampleSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.ma2.InvalidRangeException;
 
 public class MatrixExporter {
 
@@ -43,7 +40,7 @@ public class MatrixExporter {
 	private final DataSetSource rdDataSetSource;
 	private final Map<ExportFormat, Formatter> formatters;
 
-	public MatrixExporter(MatrixKey rdMatrixKey) throws IOException, InvalidRangeException {
+	public MatrixExporter(MatrixKey rdMatrixKey) throws IOException {
 
 		// INIT EXTRACTOR OBJECTS
 

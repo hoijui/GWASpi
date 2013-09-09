@@ -30,7 +30,6 @@ import org.gwaspi.operations.combi.CombiTestMatrixOperation;
 import org.gwaspi.operations.combi.CombiTestParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.ma2.InvalidRangeException;
 
 public class OperationManager {
 
@@ -49,7 +48,7 @@ public class OperationManager {
 			double sampleMissingRatio,
 			double sampleHetzygRatio,
 			String censusName)
-			throws IOException, InvalidRangeException
+			throws IOException
 	{
 		org.gwaspi.global.Utils.sysoutStart("Genotypes Frequency Count by Affection");
 
@@ -81,7 +80,7 @@ public class OperationManager {
 			double sampleHetzygRatio,
 			String censusName,
 			File phenoFile)
-			throws IOException, InvalidRangeException
+			throws IOException
 	{
 		org.gwaspi.global.Utils.sysoutStart("Genotypes Frequency Count using " + phenoFile.getName());
 
@@ -103,7 +102,7 @@ public class OperationManager {
 		return new OperationKey(rdMatrixKey, resultOpId);
 	}
 
-	public static OperationKey performHardyWeinberg(OperationKey censusOpKey, String hwName) throws IOException, InvalidRangeException {
+	public static OperationKey performHardyWeinberg(OperationKey censusOpKey, String hwName) throws IOException {
 		int resultOpId; // Integer.MIN_VALUE
 		OperationMetadata censusOP = OperationsList.getOperation(censusOpKey);
 
@@ -125,7 +124,7 @@ public class OperationManager {
 			OperationKey hwOpKey,
 			double hwThreshold,
 			boolean allelic)
-			throws IOException, InvalidRangeException
+			throws IOException
 	{
 		int resultOpId; // Integer.MIN_VALUE
 
@@ -146,7 +145,7 @@ public class OperationManager {
 	}
 
 	public static OperationKey performCleanCombiTest(CombiTestParams params)
-			throws IOException, InvalidRangeException
+			throws IOException
 	{
 		int resultOpId; // Integer.MIN_VALUE
 
@@ -164,7 +163,7 @@ public class OperationManager {
 			OperationKey censusOpKey,
 			OperationKey hwOpKey,
 			double hwThreshold)
-			throws IOException, InvalidRangeException
+			throws IOException
 	{
 		int resultOpId; // Integer.MIN_VALUE
 

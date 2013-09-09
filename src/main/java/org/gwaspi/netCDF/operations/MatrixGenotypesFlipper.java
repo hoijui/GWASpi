@@ -27,11 +27,14 @@ import java.util.Set;
 import org.gwaspi.constants.cNetCDF.Defaults.AlleleBytes;
 import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import org.gwaspi.global.Text;
+import org.gwaspi.model.ChromosomeInfo;
+import org.gwaspi.model.ChromosomeKey;
 import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.GenotypesList;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.SampleInfo;
+import org.gwaspi.model.SampleKey;
 import org.gwaspi.netCDF.loader.DataSetDestination;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -109,12 +112,16 @@ public class MatrixGenotypesFlipper implements MatrixOperation {
 
 	@Override
 	public int processMatrix() throws IOException {
+
 		int resultMatrixId = Integer.MIN_VALUE;
 
 		// simply copy&paste the sample infos
 		dataSetDestination.startLoadingSampleInfos(true);
-		for (SampleInfo sampleInfo : dataSetSource.getSamplesInfosSource()) {
-			dataSetDestination.addSampleInfo(sampleInfo);
+//		for (SampleInfo sampleInfo : dataSetSource.getSamplesInfosSource()) {
+//			dataSetDestination.addSampleInfo(sampleInfo);
+//		}
+		for (SampleKey sampleKey : dataSetSource.getSamplesKeysSource()) {
+			dataSetDestination.addSampleKey(sampleKey);
 		}
 		dataSetDestination.finishedLoadingSampleInfos();
 
@@ -144,6 +151,15 @@ public class MatrixGenotypesFlipper implements MatrixOperation {
 			dataSetDestination.addMarkerMetadata(newMarkerMetadata);
 		}
 		dataSetDestination.finishedLoadingMarkerMetadatas();
+
+		// simply copy&paste the chromosomes infos
+		dataSetDestination.startLoadingChromosomeMetadatas();
+		Iterator<ChromosomeInfo> chromosomesInfosIt = dataSetSource.getChromosomesInfosSource().iterator();
+		for (ChromosomeKey chromosomeKey : dataSetSource.getChromosomesKeysSource()) {
+			ChromosomeInfo chromosomeInfo = chromosomesInfosIt.next();
+			dataSetDestination.addChromosomeMetadata(chromosomeKey, chromosomeInfo);
+		}
+		dataSetDestination.finishedLoadingChromosomeMetadatas();
 
 		// WRITE GENOTYPES
 		dataSetDestination.startLoadingAlleles(false);

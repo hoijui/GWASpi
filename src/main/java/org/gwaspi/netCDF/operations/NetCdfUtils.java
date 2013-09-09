@@ -83,6 +83,17 @@ public class NetCdfUtils {
 		}
 	}
 
+	public static <V> void saveByteMapItemToWrMatrix(NetcdfFileWriteable wrNcFile, Collection<V> wrMap, String variable, TypeConverter<V, Byte> typeConverter, int varStride) throws IOException {
+
+		ArrayByte.D2 markersD2 = writeValuesToD2ArrayByte(wrMap, typeConverter, varStride);
+		try {
+			wrNcFile.write(variable, ORIGIN_D2, markersD2);
+			log.info("Done writing {}", variable);
+		} catch (Exception ex) {
+			throw new IOException("Failed writing " + variable + " to netCDF file " + wrNcFile.toString(), ex);
+		}
+	}
+
 	//<editor-fold defaultstate="expanded" desc="GENOTYPE SAVERS">
 	public static void saveSingleSampleGTsToMatrix(NetcdfFileWriteable wrNcFile, Collection<byte[]> values, int sampleIndex) throws IOException {
 
@@ -323,6 +334,20 @@ public class NetCdfUtils {
 		}
 
 		return charArray;
+	}
+
+	public static <V> ArrayByte.D2 writeValuesToD2ArrayByte(Collection<V> values, TypeConverter<V, Byte> valueToStringConverter, int stride) {
+
+		ArrayByte.D2 byteArray = new ArrayByte.D2(values.size(), stride);
+		Index index = byteArray.getIndex();
+		int count = 0;
+		for (V value : values) {
+			Byte byteValue = valueToStringConverter.convert(value);
+			byteArray.setByte(index.set(count, 0), byteValue);
+			count++;
+		}
+
+		return byteArray;
 	}
 	//</editor-fold>
 
