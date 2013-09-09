@@ -132,11 +132,6 @@ public class MatrixDataExtractor implements MatrixOperation {
 		this.rdSampleSetMap = this.rdSampleSet.getSampleIdSetMapCharArray();
 
 		//<editor-fold defaultstate="expanded" desc="MARKERSET PICKING">
-		this.markerPickerCriteria = new StringBuilder();
-		for (Object value : markerCriteria) {
-			this.markerPickerCriteria.append(value.toString());
-			this.markerPickerCriteria.append(",");
-		}
 
 		// Pick markerId by criteria file
 		if (!markerPickerFile.toString().isEmpty() && markerPickerFile.isFile()) {
@@ -152,10 +147,13 @@ public class MatrixDataExtractor implements MatrixOperation {
 				} else {
 					((Set<char[]>) markerCriteria).add(l.toCharArray());
 				}
-				this.markerPickerCriteria.append(l);
-				this.markerPickerCriteria.append(",");
 			}
 			br.close();
+		}
+		this.markerPickerCriteria = new StringBuilder();
+		for (Object value : markerCriteria) {
+			this.markerPickerCriteria.append(value.toString());
+			this.markerPickerCriteria.append(",");
 		}
 
 		switch (markerPickCase) {
