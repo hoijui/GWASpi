@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
@@ -38,17 +39,18 @@ import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleKey;
+import org.gwaspi.netCDF.loader.DataSetDestination;
 import org.gwaspi.netCDF.markers.MarkerSet;
 import org.gwaspi.netCDF.matrices.ChromosomeUtils;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.gwaspi.samples.SampleSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.ma2.ArrayChar;
-import ucar.ma2.Index;
-import ucar.ma2.InvalidRangeException;
-import ucar.nc2.NetcdfFile;
-import ucar.nc2.NetcdfFileWriteable;
+//import ucar.ma2.ArrayChar;
+//import ucar.ma2.Index;
+//import ucar.ma2.InvalidRangeException;
+//import ucar.nc2.NetcdfFile;
+//import ucar.nc2.NetcdfFileWriteable;
 
 /**
  * Extracts Genotypes to a new matrix.
@@ -108,7 +110,7 @@ public class MatrixDataExtractor implements MatrixOperation {
 			int sampleFilterPos,
 			File markerPickerFile,
 			File samplePickerFile)
-			throws IOException, InvalidRangeException
+			throws IOException
 	{
 		// INIT EXTRACTOR OBJECTS
 		this.markerPickCase = markerPickCase;
@@ -275,7 +277,10 @@ public class MatrixDataExtractor implements MatrixOperation {
 
 	@Override
 	public int processMatrix() throws IOException {
+
 		int resultMatrixId = Integer.MIN_VALUE;
+
+		DataSetDestination dataSetDestination = null; XXX;
 
 		if (wrSampleSetMap.size() > 0 && wrMarkerKeys.size() > 0) {
 			try {
@@ -341,7 +346,40 @@ public class MatrixDataExtractor implements MatrixOperation {
 
 				resultMatrixId = wrMatrixHandler.getResultMatrixId();
 
-				NetcdfFile rdNcFile = NetcdfFile.open(rdMatrixMetadata.getPathToMatrix());
+
+
+
+
+				dataSetDestination.init();
+
+				// simply copy&paste the sample infos
+				dataSetDestination.startLoadingSampleInfos(true);
+				for (SampleKey sampleKey : wrSampleSetMap.keySet()) {
+					dataSetDestination.addSampleKey(sampleKey);
+				}
+				dataSetDestination.finishedLoadingSampleInfos();
+
+				// use the to be extracted markers metadata only
+				dataSetDestination.startLoadingMarkerMetadatas(true); // FIXME This is not yet supported. we may have to read the whole marker metadatas from dataSetSource, and wrtie them to dataSetDestination
+				for (MarkerKey markerKey : wrMarkerKeys) {
+					dataSetDestination.addMarkerKey(markerKey);
+				}
+				dataSetDestination.finishedLoadingMarkerMetadatas();
+
+				// simply copy&paste the chromosomes infos
+				dataSetDestination.startLoadingChromosomeMetadatas();
+				Iterator<ChromosomeInfo> chromosomesInfosIt = dataSetSource.getChromosomesInfosSource().iterator();
+				for (ChromosomeKey chromosomeKey : dataSetSource.getChromosomesKeysSource()) {
+					ChromosomeInfo chromosomeInfo = chromosomesInfosIt.next();
+					dataSetDestination.addChromosomeMetadata(chromosomeKey, chromosomeInfo);
+				}
+				dataSetDestination.finishedLoadingChromosomeMetadatas();
+
+
+
+
+
+
 				NetcdfFileWriteable wrNcFile = wrMatrixHandler.getNetCDFHandler();
 				wrNcFile.create();
 				log.trace("Done creating netCDF handle: " + wrNcFile.toString());
@@ -349,50 +387,51 @@ public class MatrixDataExtractor implements MatrixOperation {
 				//<editor-fold defaultstate="expanded" desc="METADATA WRITER">
 				// WRITING METADATA TO MATRIX
 
-				// SAMPLESET
-				ArrayChar.D2 samplesD2 = NetCdfUtils.writeCollectionToD2ArrayChar(wrSampleSetMap.keySet(), cNetCDF.Strides.STRIDE_SAMPLE_NAME);
+//				// SAMPLESET
+//				ArrayChar.D2 samplesD2 = NetCdfUtils.writeCollectionToD2ArrayChar(wrSampleSetMap.keySet(), cNetCDF.Strides.STRIDE_SAMPLE_NAME);
+//				int[] sampleOrig = new int[]{0, 0};
+//				wrNcFile.write(cNetCDF.Variables.VAR_SAMPLESET, sampleOrig, samplesD2);
+//				log.info("Done writing SampleSet to matrix");
 
-				int[] sampleOrig = new int[]{0, 0};
-				wrNcFile.write(cNetCDF.Variables.VAR_SAMPLESET, sampleOrig, samplesD2);
-				log.info("Done writing SampleSet to matrix");
+//				// MARKERSET MARKERID
+//				ArrayChar.D2 markersD2 = NetCdfUtils.writeCollectionToD2ArrayChar(wrMarkerKeys, cNetCDF.Strides.STRIDE_MARKER_NAME);
+//				int[] markersOrig = new int[]{0, 0};
+//				wrNcFile.write(cNetCDF.Variables.VAR_MARKERSET, markersOrig, markersD2);
+//
+//				// MARKERSET RSID
+//				rdMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_RSID);
+//				Map<MarkerKey, char[]> sortedMarkerRSIDs = org.gwaspi.global.Utils.createOrderedMap(wrMarkerKeys, rdMarkerSet.getMarkerIdSetMapCharArray());
+//				NetCdfUtils.saveCharMapValueToWrMatrix(wrNcFile, sortedMarkerRSIDs.values(), cNetCDF.Variables.VAR_MARKERS_RSID, cNetCDF.Strides.STRIDE_MARKER_NAME);
+//
+//				// MARKERSET CHROMOSOME
+//				rdMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
+//				Map<MarkerKey, char[]> sortedMarkerChrs = org.gwaspi.global.Utils.createOrderedMap(wrMarkerKeys, rdMarkerSet.getMarkerIdSetMapCharArray());
+//				NetCdfUtils.saveCharMapValueToWrMatrix(wrNcFile, sortedMarkerChrs.values(), cNetCDF.Variables.VAR_MARKERS_CHR, cNetCDF.Strides.STRIDE_CHR);
+//
+////				// Set of chromosomes found in matrix along with number of markersinfo
+////				NetCdfUtils.saveObjectsToStringToMatrix(wrNcFile, rdChromosomeInfo.keySet(), cNetCDF.Variables.VAR_CHR_IN_MATRIX, 8);
+////				// Number of marker per chromosome & max pos for each chromosome
+////				int[] columns = new int[] {0, 1, 2, 3};
+////				NetCdfUtils.saveChromosomeInfosD2ToWrMatrix(wrNcFile, rdChromosomeInfo.values(), columns, cNetCDF.Variables.VAR_CHR_INFO);
+//
+//				// MARKERSET POSITION
+//				rdMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_POS);
+//				Map<MarkerKey, Integer> sortedMarkerPos = org.gwaspi.global.Utils.createOrderedMap(wrMarkerKeys, rdMarkerSet.getMarkerIdSetMapInteger());
+//				//Utils.saveCharMapValueToWrMatrix(wrNcFile, wrMarkerIdSetMap, cNetCDF.Variables.VAR_MARKERS_POS, cNetCDF.Strides.STRIDE_POS);
+//				NetCdfUtils.saveIntMapD1ToWrMatrix(wrNcFile, sortedMarkerPos.values(), cNetCDF.Variables.VAR_MARKERS_POS);
+//
+//				// MARKERSET DICTIONARY ALLELES
+//				rdMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_BASES_DICT);
+//				Map<MarkerKey, char[]> sortedMarkerBasesDicts = org.gwaspi.global.Utils.createOrderedMap(wrMarkerKeys, rdMarkerSet.getMarkerIdSetMapCharArray());
+//				NetCdfUtils.saveCharMapValueToWrMatrix(wrNcFile, sortedMarkerBasesDicts.values(), cNetCDF.Variables.VAR_MARKERS_BASES_DICT, cNetCDF.Strides.STRIDE_GT);
+//
+//				// GENOTYPE STRAND
+//				rdMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_GT_STRAND);
+//				Map<MarkerKey, char[]> sortedMarkerGTStrands = org.gwaspi.global.Utils.createOrderedMap(wrMarkerKeys, rdMarkerSet.getMarkerIdSetMapCharArray());
+//				NetCdfUtils.saveCharMapValueToWrMatrix(wrNcFile, sortedMarkerGTStrands.values(), cNetCDF.Variables.VAR_GT_STRAND, 3);
+//				//</editor-fold>
 
-				// MARKERSET MARKERID
-				ArrayChar.D2 markersD2 = NetCdfUtils.writeCollectionToD2ArrayChar(wrMarkerKeys, cNetCDF.Strides.STRIDE_MARKER_NAME);
-				int[] markersOrig = new int[]{0, 0};
-				wrNcFile.write(cNetCDF.Variables.VAR_MARKERSET, markersOrig, markersD2);
 
-				// MARKERSET RSID
-				rdMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_RSID);
-				Map<MarkerKey, char[]> sortedMarkerRSIDs = org.gwaspi.global.Utils.createOrderedMap(wrMarkerKeys, rdMarkerSet.getMarkerIdSetMapCharArray());
-				NetCdfUtils.saveCharMapValueToWrMatrix(wrNcFile, sortedMarkerRSIDs.values(), cNetCDF.Variables.VAR_MARKERS_RSID, cNetCDF.Strides.STRIDE_MARKER_NAME);
-
-				// MARKERSET CHROMOSOME
-				rdMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
-				Map<MarkerKey, char[]> sortedMarkerChrs = org.gwaspi.global.Utils.createOrderedMap(wrMarkerKeys, rdMarkerSet.getMarkerIdSetMapCharArray());
-				NetCdfUtils.saveCharMapValueToWrMatrix(wrNcFile, sortedMarkerChrs.values(), cNetCDF.Variables.VAR_MARKERS_CHR, cNetCDF.Strides.STRIDE_CHR);
-
-				// Set of chromosomes found in matrix along with number of markersinfo
-				NetCdfUtils.saveObjectsToStringToMatrix(wrNcFile, rdChromosomeInfo.keySet(), cNetCDF.Variables.VAR_CHR_IN_MATRIX, 8);
-				// Number of marker per chromosome & max pos for each chromosome
-				int[] columns = new int[] {0, 1, 2, 3};
-				NetCdfUtils.saveChromosomeInfosD2ToWrMatrix(wrNcFile, rdChromosomeInfo.values(), columns, cNetCDF.Variables.VAR_CHR_INFO);
-
-				// MARKERSET POSITION
-				rdMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_POS);
-				Map<MarkerKey, Integer> sortedMarkerPos = org.gwaspi.global.Utils.createOrderedMap(wrMarkerKeys, rdMarkerSet.getMarkerIdSetMapInteger());
-				//Utils.saveCharMapValueToWrMatrix(wrNcFile, wrMarkerIdSetMap, cNetCDF.Variables.VAR_MARKERS_POS, cNetCDF.Strides.STRIDE_POS);
-				NetCdfUtils.saveIntMapD1ToWrMatrix(wrNcFile, sortedMarkerPos.values(), cNetCDF.Variables.VAR_MARKERS_POS);
-
-				// MARKERSET DICTIONARY ALLELES
-				rdMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_BASES_DICT);
-				Map<MarkerKey, char[]> sortedMarkerBasesDicts = org.gwaspi.global.Utils.createOrderedMap(wrMarkerKeys, rdMarkerSet.getMarkerIdSetMapCharArray());
-				NetCdfUtils.saveCharMapValueToWrMatrix(wrNcFile, sortedMarkerBasesDicts.values(), cNetCDF.Variables.VAR_MARKERS_BASES_DICT, cNetCDF.Strides.STRIDE_GT);
-
-				// GENOTYPE STRAND
-				rdMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_GT_STRAND);
-				Map<MarkerKey, char[]> sortedMarkerGTStrands = org.gwaspi.global.Utils.createOrderedMap(wrMarkerKeys, rdMarkerSet.getMarkerIdSetMapCharArray());
-				NetCdfUtils.saveCharMapValueToWrMatrix(wrNcFile, sortedMarkerGTStrands.values(), cNetCDF.Variables.VAR_GT_STRAND, 3);
-				//</editor-fold>
 
 				//<editor-fold defaultstate="expanded" desc="GENOTYPES WRITER">
 				// Iterate through wrSampleSetMap, use item position to read correct sample GTs into rdMarkerIdSetMap.
@@ -411,6 +450,8 @@ public class MatrixDataExtractor implements MatrixOperation {
 					}
 				}
 				//</editor-fold>
+
+
 
 				// CLOSE THE FILE AND BY THIS, MAKE IT READ-ONLY
 				// GENOTYPE ENCODING
