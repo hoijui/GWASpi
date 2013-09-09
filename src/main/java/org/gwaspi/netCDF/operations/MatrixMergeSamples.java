@@ -101,7 +101,7 @@ public class MatrixMergeSamples extends AbstractMergeMatrixOperation {
 		dataSetDestination.finishedLoadingSampleInfos();
 
 		// copy & paste the marker-metadata from matrix 1
-		dataSetDestination.startLoadingMarkerMetadatas(true);
+		dataSetDestination.startLoadingMarkerMetadatas(false); // FIXME could be true!
 		for (MarkerMetadata markerMetadata : dataSetSource1.getMarkersMetadatasSource()) {
 			dataSetDestination.addMarkerMetadata(markerMetadata);
 		}

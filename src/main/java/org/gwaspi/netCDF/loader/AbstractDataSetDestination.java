@@ -26,6 +26,7 @@ import org.gwaspi.model.DataSet;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.SampleInfo;
+import org.gwaspi.model.SampleInfoList;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.netCDF.matrices.ChromosomeUtils;
 
@@ -63,6 +64,8 @@ public abstract class AbstractDataSetDestination implements DataSetDestination {
 
 	@Override
 	public void addSampleKey(SampleKey sampleKey) throws IOException {
+
+		SampleInfo sampleInfo = SampleInfoList.getSample(sampleKey);
 		dataSet.getSampleInfos().add(sampleInfo);
 	}
 
@@ -81,7 +84,10 @@ public abstract class AbstractDataSetDestination implements DataSetDestination {
 
 	@Override
 	public void addMarkerKey(MarkerKey markerKey) throws IOException {
-		dataSet.getMarkerMetadatas().put(markerKey, markerMetadata);
+
+		throw new UnsupportedOperationException("Not yet implemented (was not in use when first introduced)");
+//		MarkerMetadata markerMetadata = Matrix.getSample(markerKey);
+//		dataSet.getMarkerMetadatas().put(markerKey, markerMetadata);
 	}
 
 	@Override
