@@ -21,21 +21,16 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Map;
-import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import org.gwaspi.constants.cNetCDF.Defaults.SetMarkerPickCase;
 import org.gwaspi.constants.cNetCDF.Defaults.SetSamplePickCase;
-import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.MarkerKey;
-import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.netCDF.loader.AbstractNetCDFDataSetDestination;
-import org.gwaspi.netCDF.markers.MarkerSet;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
-import org.gwaspi.samples.SampleSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.InvalidRangeException;
@@ -50,15 +45,12 @@ public class MatrixDataExtractorNetCDFDataSetDestination extends AbstractNetCDFD
 	private final String matrixFriendlyName;
 
 
-	private MatrixKey rdMatrixKey;
 	private File markerCriteriaFile;
 	private File sampleCriteriaFile;
 	private SetMarkerPickCase markerPickCase;
 	private String markerPickerVar;
-	private StringBuilder markerPickerCriteria;
 	private SetSamplePickCase samplePickCase;
 	private String samplePickerVar;
-	private StringBuilder samplePickerCriteria;
 	private Collection<MarkerKey> wrMarkerKeys;
 	private Map<SampleKey, Integer> wrSampleSetMap;
 
@@ -85,6 +77,20 @@ public class MatrixDataExtractorNetCDFDataSetDestination extends AbstractNetCDFD
 		final int numChromosomes = getDataSet().getChromosomeInfos().size();
 
 		MatrixMetadata sourceMatrixMetadata = dataSetSource.getMatrixMetadata();
+
+		MatrixDataExtractor matrixDataExtractor = null; XXX;
+
+		StringBuilder markerPickerCriteria = new StringBuilder();
+		for (Object value : matrixDataExtractor.getFullMarkerCriteria()) {
+			markerPickerCriteria.append(value.toString());
+			markerPickerCriteria.append(",");
+		}
+
+		StringBuilder samplePickerCriteria = new StringBuilder();
+		for (Object value : matrixDataExtractor.getFullSampleCriteria()) {
+			samplePickerCriteria.append(value.toString());
+			samplePickerCriteria.append(",");
+		}
 
 //		StringBuilder description = new StringBuilder();
 //		description.append(Text.Matrix.descriptionHeader1);
