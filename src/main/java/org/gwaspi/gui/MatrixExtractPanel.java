@@ -250,7 +250,8 @@ public class MatrixExtractPanel extends JPanel {
 
 
 		lbl_MarkersVariable.setText(Text.Trafo.variable);
-		String[] markerPickerVars = new String[]{markerPickerTable.get(0)[0].toString(),
+		String[] markerPickerVars = new String[] {
+			markerPickerTable.get(0)[0].toString(),
 			markerPickerTable.get(1)[0].toString(),
 			markerPickerTable.get(2)[0].toString(),
 			markerPickerTable.get(3)[0].toString(),
