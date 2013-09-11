@@ -67,7 +67,6 @@ public class MatrixDataExtractor implements MatrixOperation {
 	 * and the ones read from the marker criteria file.
 	 */
 	private Set fullMarkerCriteria;
-	private File markerCriteriaFile;
 	private SetMarkerPickCase markerPickCase;
 	private String markerPickerVar;
 	/**
@@ -75,7 +74,6 @@ public class MatrixDataExtractor implements MatrixOperation {
 	 * and the ones read from the sample criteria file.
 	 */
 	private Set fullSampleCriteria;
-	private File sampleCriteriaFile;
 	private SetSamplePickCase samplePickCase;
 	private String samplePickerVar;
 	private final int sampleFilterPos;
@@ -119,8 +117,6 @@ public class MatrixDataExtractor implements MatrixOperation {
 		this.markerPickerVar = markerPickerVar;
 		this.samplePickCase = samplePickCase;
 		this.samplePickerVar = samplePickerVar;
-		this.markerCriteriaFile = markerPickerFile;
-		this.sampleCriteriaFile = samplePickerFile;
 		this.sampleFilterPos = sampleFilterPos;
 
 		this.rdMatrixKey = rdMatrixKey;
@@ -211,17 +207,19 @@ public class MatrixDataExtractor implements MatrixOperation {
 		switch (markerPickCase) {
 			case MARKERS_INCLUDE_BY_NETCDF_CRITERIA:
 				// Pick by netCDF field value and criteria
-				wrMarkerKeys = rdMarkerSet.pickValidMarkerSetItemsByValue(markerPickerVar, (Set<char[]>) markerCriteria, true).keySet();
+				rdMarkerSet.fillInitMapWithVariable(markerPickerVar);
+				wrMarkerKeys = pickValidMarkerSetItemsByValue(rdMarkerSet.getMarkerIdSetMapCharArray(), (Set<char[]>) markerCriteria, true).keySet();
 				break;
 			case MARKERS_EXCLUDE_BY_NETCDF_CRITERIA:
 				// Exclude by netCDF field value and criteria
-				wrMarkerKeys = rdMarkerSet.pickValidMarkerSetItemsByValue(markerPickerVar, (Set<char[]>) markerCriteria, false).keySet();
+				rdMarkerSet.fillInitMapWithVariable(markerPickerVar);
+				wrMarkerKeys = pickValidMarkerSetItemsByValue(rdMarkerSet.getMarkerIdSetMapCharArray(), (Set<char[]>) markerCriteria, false).keySet();
 				break;
 			case MARKERS_INCLUDE_BY_ID:
-				wrMarkerKeys = rdMarkerSet.pickValidMarkerSetItemsByKey((Set<MarkerKey>) markerCriteria, true).keySet();
+				wrMarkerKeys = pickValidMarkerSetItemsByKey(rdMarkerSet.getMarkerIdSetMapCharArray(), (Set<MarkerKey>) markerCriteria, true).keySet();
 				break;
 			case MARKERS_EXCLUDE_BY_ID:
-				wrMarkerKeys = rdMarkerSet.pickValidMarkerSetItemsByKey((Set<MarkerKey>) markerCriteria, false).keySet();
+				wrMarkerKeys = pickValidMarkerSetItemsByKey(rdMarkerSet.getMarkerIdSetMapCharArray(), (Set<MarkerKey>) markerCriteria, false).keySet();
 				break;
 			case ALL_MARKERS:
 			default:
@@ -498,6 +496,60 @@ public class MatrixDataExtractor implements MatrixOperation {
 					}
 				}
 				pickCounter++;
+			}
+		}
+
+		return returnMap;
+	}
+
+	/**
+	 * THESE Maps DO NOT CONTAIN SAME ITEMS AS INIT Map.
+	 * RETURN Map OK
+	 */
+	private static <V> Map<MarkerKey, V> pickValidMarkerSetItemsByValue(Map<MarkerKey, V> markerKeyValues, Set<V> criteria, boolean includes) {
+
+		Map<MarkerKey, V> returnMap = new LinkedHashMap<MarkerKey, V>();
+
+		if (includes) {
+			for (Map.Entry<MarkerKey, V> entry : markerKeyValues.entrySet()) {
+				MarkerKey key = entry.getKey();
+				V value = entry.getValue();
+				if (criteria.contains(value)) {
+					returnMap.put(key, value);
+				}
+			}
+		} else {
+			for (Map.Entry<MarkerKey, V> entry : markerKeyValues.entrySet()) {
+				MarkerKey key = entry.getKey();
+				V value = entry.getValue();
+				if (!criteria.contains(value)) {
+					returnMap.put(key, value);
+				}
+			}
+		}
+
+		return returnMap;
+	}
+
+	private static <V> Map<MarkerKey, V> pickValidMarkerSetItemsByKey(Map<MarkerKey, V> markerKeyValues, Set<MarkerKey> criteria, boolean includes) {
+
+		Map<MarkerKey, V> returnMap = new LinkedHashMap<MarkerKey, V>();
+
+		if (includes) {
+			for (Map.Entry<MarkerKey, V> entry : markerKeyValues.entrySet()) {
+				MarkerKey key = entry.getKey();
+				V value = entry.getValue();
+				if (criteria.contains(key)) {
+					returnMap.put(key, value);
+				}
+			}
+		} else {
+			for (Map.Entry<MarkerKey, V> entry : markerKeyValues.entrySet()) {
+				MarkerKey key = entry.getKey();
+				V value = entry.getValue();
+				if (!criteria.contains(key)) {
+					returnMap.put(key, value);
+				}
 			}
 		}
 
