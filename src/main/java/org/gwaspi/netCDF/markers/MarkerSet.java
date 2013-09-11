@@ -582,15 +582,21 @@ public class MarkerSet extends AbstractList<GenotypesList> implements SamplesGen
 
 	//<editor-fold defaultstate="expanded" desc="MARKERSET PICKERS">
 	/**
+	 * Used only in MatrixDataExtractor.
 	 * THESE Maps DO NOT CONTAIN SAME ITEMS AS INIT Map.
 	 * RETURN Map OK
 	 */
 	public <V> Map<MarkerKey, V> pickValidMarkerSetItemsByValue(String variable, Set<V> criteria, boolean includes) {
+
+		fillInitMapWithVariable(variable);
+		return pickValidMarkerSetItemsByValue((Map<MarkerKey, V>) markerIdSetMap, criteria, includes);
+	}
+	private static <V> Map<MarkerKey, V> pickValidMarkerSetItemsByValue(Map<MarkerKey, V> markerKeyValues, Set<V> criteria, boolean includes) {
+
 		Map<MarkerKey, V> returnMap = new LinkedHashMap<MarkerKey, V>();
-		this.fillInitMapWithVariable(variable);
 
 		if (includes) {
-			for (Map.Entry<MarkerKey, V> entry : ((Map<MarkerKey, V>) markerIdSetMap).entrySet()) {
+			for (Map.Entry<MarkerKey, V> entry : markerKeyValues.entrySet()) {
 				MarkerKey key = entry.getKey();
 				V value = entry.getValue();
 				if (criteria.contains(value)) {
@@ -598,7 +604,7 @@ public class MarkerSet extends AbstractList<GenotypesList> implements SamplesGen
 				}
 			}
 		} else {
-			for (Map.Entry<MarkerKey, V> entry : ((Map<MarkerKey, V>) markerIdSetMap).entrySet()) {
+			for (Map.Entry<MarkerKey, V> entry : markerKeyValues.entrySet()) {
 				MarkerKey key = entry.getKey();
 				V value = entry.getValue();
 				if (!criteria.contains(value)) {
@@ -610,11 +616,16 @@ public class MarkerSet extends AbstractList<GenotypesList> implements SamplesGen
 		return returnMap;
 	}
 
+	/** Used only in MatrixDataExtractor. */
 	public <V> Map<MarkerKey, V> pickValidMarkerSetItemsByKey(Set<MarkerKey> criteria, boolean includes) {
+		return pickValidMarkerSetItemsByKey((Map<MarkerKey, V>) markerIdSetMap, criteria, includes);
+	}
+	private static <V> Map<MarkerKey, V> pickValidMarkerSetItemsByKey(Map<MarkerKey, V> markerKeyValues, Set<MarkerKey> criteria, boolean includes) {
+
 		Map<MarkerKey, V> returnMap = new LinkedHashMap<MarkerKey, V>();
 
 		if (includes) {
-			for (Map.Entry<MarkerKey, V> entry : ((Map<MarkerKey, V>) markerIdSetMap).entrySet()) {
+			for (Map.Entry<MarkerKey, V> entry : markerKeyValues.entrySet()) {
 				MarkerKey key = entry.getKey();
 				V value = entry.getValue();
 				if (criteria.contains(key)) {
@@ -622,7 +633,7 @@ public class MarkerSet extends AbstractList<GenotypesList> implements SamplesGen
 				}
 			}
 		} else {
-			for (Map.Entry<MarkerKey, V> entry : ((Map<MarkerKey, V>) markerIdSetMap).entrySet()) {
+			for (Map.Entry<MarkerKey, V> entry : markerKeyValues.entrySet()) {
 				MarkerKey key = entry.getKey();
 				V value = entry.getValue();
 				if (!criteria.contains(key)) {

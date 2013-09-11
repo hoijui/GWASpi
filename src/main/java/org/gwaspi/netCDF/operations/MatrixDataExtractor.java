@@ -101,8 +101,6 @@ public class MatrixDataExtractor implements MatrixOperation {
 	 */
 	public MatrixDataExtractor(
 			MatrixKey rdMatrixKey,
-			String wrMatrixFriendlyName,
-			String wrMatrixDescription,
 			SetMarkerPickCase markerPickCase,
 			SetSamplePickCase samplePickCase,
 			String markerPickerVar,
@@ -240,7 +238,7 @@ public class MatrixDataExtractor implements MatrixOperation {
 	/**
 	 * @return key & index in the original set for all picked markers.
 	 */
-	private static Map<SampleKey, Integer> pickSamples(SetSamplePickCase samplePickCase, SampleSet rdSampleSet, Set sampleCriteria, String samplePickerVar, StudyKey studyKey, int sampleFilterPos) throws IOException {
+	private static Map<SampleKey, Integer> pickSamples(SetSamplePickCase samplePickCase, DataSetSource dataSetSource, SampleSet rdSampleSet, Set sampleCriteria, String samplePickerVar, StudyKey studyKey, int sampleFilterPos) throws IOException {
 
 		Map<SampleKey, ?> rdSampleSetMap = rdSampleSet.getSampleIdSetMapCharArray();
 
@@ -256,25 +254,29 @@ public class MatrixDataExtractor implements MatrixOperation {
 				break;
 			case SAMPLES_INCLUDE_BY_NETCDF_FILTER:
 				// USE cNetCDF Filter Data and criteria
-				pickedSamples = rdSampleSet.pickValidSampleSetItemsByNetCDFFilter((Map<SampleKey, char[]>) rdSampleSetMap, samplePickerVar, sampleFilterPos, sampleCriteria, true);
+				rdSampleSet.fillSampleIdSetMapWithFilterVariable((Map<SampleKey, char[]>) rdSampleSetMap, samplePickerVar, sampleFilterPos);
+				pickedSamples = pickValidSampleSetItemsByNetCDFFilter((Map<SampleKey, char[]>) rdSampleSetMap, sampleCriteria, true);
 				break;
 			case SAMPLES_EXCLUDE_BY_NETCDF_FILTER:
 				// USE cNetCDF Filter Data and criteria
-				pickedSamples = rdSampleSet.pickValidSampleSetItemsByNetCDFFilter((Map<SampleKey, char[]>) rdSampleSetMap, samplePickerVar, sampleFilterPos, sampleCriteria, false);
+				rdSampleSet.fillSampleIdSetMapWithFilterVariable((Map<SampleKey, char[]>) rdSampleSetMap, samplePickerVar, sampleFilterPos);
+				pickedSamples = pickValidSampleSetItemsByNetCDFFilter((Map<SampleKey, char[]>) rdSampleSetMap, sampleCriteria, false);
 				break;
 			case SAMPLES_INCLUDE_BY_NETCDF_CRITERIA:
 				// USE cNetCDF Value and criteria
-				pickedSamples = rdSampleSet.pickValidSampleSetItemsByNetCDFValue(rdSampleSetMap, samplePickerVar, sampleCriteria, true);
+				rdSampleSet.fillSampleIdSetMapWithVariable(rdSampleSetMap, samplePickerVar);
+				pickedSamples = pickValidSampleSetItemsByNetCDFValue(rdSampleSetMap, sampleCriteria, true);
 				break;
 			case SAMPLES_EXCLUDE_BY_NETCDF_CRITERIA:
 				// USE cNetCDF Value and criteria
-				pickedSamples = rdSampleSet.pickValidSampleSetItemsByNetCDFValue(rdSampleSetMap, samplePickerVar, sampleCriteria, false);
+				rdSampleSet.fillSampleIdSetMapWithVariable(rdSampleSetMap, samplePickerVar);
+				pickedSamples = pickValidSampleSetItemsByNetCDFValue(rdSampleSetMap, sampleCriteria, false);
 				break;
 			case SAMPLES_INCLUDE_BY_ID:
-				pickedSamples = SampleSet.pickValidSampleSetItemsByNetCDFKey(rdSampleSetMap.keySet(), (Set<SampleKey>) sampleCriteria, true);
+				pickedSamples = pickValidSampleSetItemsByNetCDFKey(rdSampleSetMap.keySet(), (Set<SampleKey>) sampleCriteria, true);
 				break;
 			case SAMPLES_EXCLUDE_BY_ID:
-				pickedSamples = SampleSet.pickValidSampleSetItemsByNetCDFKey(rdSampleSetMap.keySet(), (Set<SampleKey>) sampleCriteria, false);
+				pickedSamples = pickValidSampleSetItemsByNetCDFKey(rdSampleSetMap.keySet(), (Set<SampleKey>) sampleCriteria, false);
 				break;
 			case SAMPLES_INCLUDE_BY_DB_FIELD:
 				// USE DB DATA
@@ -338,7 +340,7 @@ public class MatrixDataExtractor implements MatrixOperation {
 		// SAMPLESET PICKING
 		SampleSet rdSampleSet = new SampleSet(this.rdMatrixKey);
 		// Contains key & index in the original set for all to be extracted samples.
-		Map<SampleKey, Integer> wrSampleSetMap = pickSamples(samplePickCase, rdSampleSet, fullSampleCriteria, samplePickerVar, rdMatrixKey.getStudyKey(), sampleFilterPos);
+		Map<SampleKey, Integer> wrSampleSetMap = pickSamples(samplePickCase, dataSetSource, rdSampleSet, fullSampleCriteria, samplePickerVar, rdMatrixKey.getStudyKey(), sampleFilterPos);
 		if (wrSampleSetMap.isEmpty()) {
 			// XXX maybe we should instead trhow an IOException?
 			Dialogs.showWarningDialogue(Text.Trafo.criteriaReturnsNoResults);
@@ -346,72 +348,6 @@ public class MatrixDataExtractor implements MatrixOperation {
 		}
 
 		if (wrSampleSetMap.size() > 0 && wrMarkers.size() > 0) {
-//				// CREATE netCDF-3 FILE
-//				StringBuilder descSB = new StringBuilder(Text.Matrix.descriptionHeader1);
-//				descSB.append(org.gwaspi.global.Utils.getShortDateTimeAsString());
-//				descSB.append("\nThrough Matrix extraction from parent Matrix MX: ").append(rdMatrixMetadata.getMatrixId()).append(" - ").append(rdMatrixMetadata.getMatrixFriendlyName());
-//
-//				descSB.append("\nMarker Filter Variable: ");
-//				String pickPrefix = "All Markers";
-//				if (markerPickCase.toString().contains("EXCLUDE")) {
-//					pickPrefix = "Exclude by ";
-//				} else if (markerPickCase.toString().contains("INCLUDE")) {
-//					pickPrefix = "Include by ";
-//				}
-//				descSB.append(pickPrefix).append(markerPickerVar.replaceAll("_", " ").toUpperCase());
-//				if (markerCriteriaFile.isFile()) {
-//					descSB.append("\nMarker Criteria File: ");
-//					descSB.append(markerCriteriaFile.getPath());
-//				} else if (!pickPrefix.equals("All Markers")) {
-//					descSB.append("\nMarker Criteria: ");
-//					descSB.append(markerPickerCriteria.deleteCharAt(markerPickerCriteria.length() - 1));
-//				}
-//
-//				descSB.append("\nSample Filter Variable: ");
-//				pickPrefix = "All Samples";
-//				if (samplePickCase.toString().contains("EXCLUDE")) {
-//					pickPrefix = "Exclude by ";
-//				} else if (samplePickCase.toString().contains("INCLUDE")) {
-//					pickPrefix = "Include by ";
-//				}
-//				descSB.append(pickPrefix).append(samplePickerVar.replaceAll("_", " ").toUpperCase());
-//				if (sampleCriteriaFile.isFile()) {
-//					descSB.append("\nSample Criteria File: ");
-//					descSB.append(sampleCriteriaFile.getPath());
-//				} else if (!pickPrefix.equals("All Samples")) {
-//					descSB.append("\nSample Criteria: ");
-//					descSB.append(samplePickerCriteria.deleteCharAt(samplePickerCriteria.length() - 1));
-//				}
-//
-//				if (!wrMatrixDescription.isEmpty()) {
-//					descSB.append("\n\nDescription: ");
-//					descSB.append(wrMatrixDescription);
-//					descSB.append("\n");
-//				}
-////				descSB.append("\nGenotype encoding: ");
-////				descSB.append(rdMatrixMetadata.getGenotypeEncoding());
-//				descSB.append("\n");
-//				descSB.append("Markers: ").append(wrMarkers.size()).append(", Samples: ").append(wrSampleSetMap.size());
-//
-//				MatrixFactory wrMatrixHandler = new MatrixFactory(
-//						rdMatrixMetadata.getTechnology(), // technology
-//						wrMatrixFriendlyName,
-//						descSB.toString(), // description
-//						rdMatrixMetadata.getGenotypeEncoding(), // Matrix genotype encoding from orig matrix genotype encoding
-//						rdMatrixMetadata.getStrand(),
-//						rdMatrixMetadata.getHasDictionray(), // has dictionary?
-//						wrSampleSetMap.size(),
-//						wrMarkers.size(),
-//						rdChromosomeInfo.size(),
-//						rdMatrixKey, // Orig matrixId 1
-//						null); // Orig matrixId 2
-//
-//				resultMatrixId = wrMatrixHandler.getResultMatrixId();
-
-
-
-
-
 			dataSetDestination.init();
 
 			// use only the selected sample infos
@@ -432,79 +368,8 @@ public class MatrixDataExtractor implements MatrixOperation {
 			// NOTE just let the auto-extraction of chromosomes from the markers metadatas kick in
 
 
-
-
-
-
-//				NetcdfFileWriteable wrNcFile = wrMatrixHandler.getNetCDFHandler();
-//				wrNcFile.create();
-//				log.trace("Done creating netCDF handle: " + wrNcFile.toString());
-
-				//<editor-fold defaultstate="expanded" desc="METADATA WRITER">
-				// WRITING METADATA TO MATRIX
-
-//				// SAMPLESET
-//				ArrayChar.D2 samplesD2 = NetCdfUtils.writeCollectionToD2ArrayChar(wrSampleSetMap.keySet(), cNetCDF.Strides.STRIDE_SAMPLE_NAME);
-//				int[] sampleOrig = new int[]{0, 0};
-//				wrNcFile.write(cNetCDF.Variables.VAR_SAMPLESET, sampleOrig, samplesD2);
-//				log.info("Done writing SampleSet to matrix");
-
-//				// MARKERSET MARKERID
-//				ArrayChar.D2 markersD2 = NetCdfUtils.writeCollectionToD2ArrayChar(wrMarkerKeys, cNetCDF.Strides.STRIDE_MARKER_NAME);
-//				int[] markersOrig = new int[]{0, 0};
-//				wrNcFile.write(cNetCDF.Variables.VAR_MARKERSET, markersOrig, markersD2);
-//
-//				// MARKERSET RSID
-//				rdMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_RSID);
-//				Map<MarkerKey, char[]> sortedMarkerRSIDs = org.gwaspi.global.Utils.createOrderedMap(wrMarkerKeys, rdMarkerSet.getMarkerIdSetMapCharArray());
-//				NetCdfUtils.saveCharMapValueToWrMatrix(wrNcFile, sortedMarkerRSIDs.values(), cNetCDF.Variables.VAR_MARKERS_RSID, cNetCDF.Strides.STRIDE_MARKER_NAME);
-//
-//				// MARKERSET CHROMOSOME
-//				rdMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
-//				Map<MarkerKey, char[]> sortedMarkerChrs = org.gwaspi.global.Utils.createOrderedMap(wrMarkerKeys, rdMarkerSet.getMarkerIdSetMapCharArray());
-//				NetCdfUtils.saveCharMapValueToWrMatrix(wrNcFile, sortedMarkerChrs.values(), cNetCDF.Variables.VAR_MARKERS_CHR, cNetCDF.Strides.STRIDE_CHR);
-//
-////				// Set of chromosomes found in matrix along with number of markersinfo
-////				NetCdfUtils.saveObjectsToStringToMatrix(wrNcFile, rdChromosomeInfo.keySet(), cNetCDF.Variables.VAR_CHR_IN_MATRIX, 8);
-////				// Number of marker per chromosome & max pos for each chromosome
-////				int[] columns = new int[] {0, 1, 2, 3};
-////				NetCdfUtils.saveChromosomeInfosD2ToWrMatrix(wrNcFile, rdChromosomeInfo.values(), columns, cNetCDF.Variables.VAR_CHR_INFO);
-//
-//				// MARKERSET POSITION
-//				rdMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_POS);
-//				Map<MarkerKey, Integer> sortedMarkerPos = org.gwaspi.global.Utils.createOrderedMap(wrMarkerKeys, rdMarkerSet.getMarkerIdSetMapInteger());
-//				//Utils.saveCharMapValueToWrMatrix(wrNcFile, wrMarkerIdSetMap, cNetCDF.Variables.VAR_MARKERS_POS, cNetCDF.Strides.STRIDE_POS);
-//				NetCdfUtils.saveIntMapD1ToWrMatrix(wrNcFile, sortedMarkerPos.values(), cNetCDF.Variables.VAR_MARKERS_POS);
-//
-//				// MARKERSET DICTIONARY ALLELES
-//				rdMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_BASES_DICT);
-//				Map<MarkerKey, char[]> sortedMarkerBasesDicts = org.gwaspi.global.Utils.createOrderedMap(wrMarkerKeys, rdMarkerSet.getMarkerIdSetMapCharArray());
-//				NetCdfUtils.saveCharMapValueToWrMatrix(wrNcFile, sortedMarkerBasesDicts.values(), cNetCDF.Variables.VAR_MARKERS_BASES_DICT, cNetCDF.Strides.STRIDE_GT);
-//
-//				// GENOTYPE STRAND
-//				rdMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_GT_STRAND);
-//				Map<MarkerKey, char[]> sortedMarkerGTStrands = org.gwaspi.global.Utils.createOrderedMap(wrMarkerKeys, rdMarkerSet.getMarkerIdSetMapCharArray());
-//				NetCdfUtils.saveCharMapValueToWrMatrix(wrNcFile, sortedMarkerGTStrands.values(), cNetCDF.Variables.VAR_GT_STRAND, 3);
-//				//</editor-fold>
-
-
-
 			// GENOTYPES WRITER
 			// Iterate through wrSampleSetMap, use item position to read correct sample GTs into rdMarkerIdSetMap.
-//				int sampleWrIndex = 0;
-//				for (Integer rdSampleIndices : wrSampleSetMap.values()) {
-//					// Iterate through wrMarkerIdSetMap, get the correct GT from rdMarkerIdSetMap
-//					rdMarkerSet.fillGTsForCurrentSampleIntoInitMap(rdSampleIndices);
-////					rdMarkerSet.fillGTsForCurrentSampleIntoInitMap(sampleWrPos);
-//					Map<MarkerKey, byte[]> sortedRdPos = org.gwaspi.global.Utils.createOrderedMap(wrMarkerKeys, rdMarkerSet.getMarkerIdSetMapByteArray());
-//
-//					// Write wrMarkerIdSetMap to A3 ArrayChar and save to wrMatrix
-//					NetCdfUtils.saveSingleSampleGTsToMatrix(wrNcFile, sortedRdPos.values(), sampleWrIndex);
-//					sampleWrIndex++;
-//					if ((sampleWrIndex == 1) || ((sampleWrIndex % 100) == 0)) {
-//						log.info("Samples copied: {} / {}", sampleWrIndex, wrSampleSetMap.size());
-//					}
-//				}
 
 			SamplesGenotypesSource samplesGenotypesSource = dataSetSource.getSamplesGenotypesSource();
 			int sampleWrIndex = 0;
@@ -524,30 +389,82 @@ public class MatrixDataExtractor implements MatrixOperation {
 
 			dataSetDestination.done();
 
-
-
-//				// CLOSE THE FILE AND BY THIS, MAKE IT READ-ONLY
-//				// GENOTYPE ENCODING
-//				ArrayChar.D2 guessedGTCodeAC = new ArrayChar.D2(1, 8);
-//				Index index = guessedGTCodeAC.getIndex();
-//				guessedGTCodeAC.setString(index.set(0, 0), rdMatrixMetadata.getGenotypeEncoding().toString());
-//				int[] origin = new int[] {0, 0};
-//				wrNcFile.write(cNetCDF.Variables.GLOB_GTENCODING, origin, guessedGTCodeAC);
-//
-//				descSB.append("\nGenotype encoding: ");
-//				descSB.append(rdMatrixMetadata.getGenotypeEncoding());
-//
-//				MatrixMetadata resultMatrixMetadata = wrMatrixHandler.getResultMatrixMetadata();
-//				resultMatrixMetadata.setDescription(descSB.toString());
-//				MatricesList.updateMatrix(resultMatrixMetadata);
-
-//				wrNcFile.close();
-
 			org.gwaspi.global.Utils.sysoutCompleted("Extraction to new Matrix");
 		} else {
 			Dialogs.showWarningDialogue(Text.Trafo.criteriaReturnsNoResults);
 		}
 
 		return resultMatrixId;
+	}
+
+	private static Map<SampleKey, Integer> pickValidSampleSetItemsByNetCDFKey(Set<SampleKey> sampleKeys, Set<SampleKey> criteria, boolean include) throws IOException {
+		Map<SampleKey, Integer> returnMap = new LinkedHashMap<SampleKey, Integer>();
+
+		int pickCounter = 0;
+		if (include) {
+			for (SampleKey key : sampleKeys) {
+				if (criteria.contains(key)) {
+					returnMap.put(key, pickCounter);
+				}
+				pickCounter++;
+			}
+		} else {
+			for (SampleKey key : sampleKeys) {
+				if (!criteria.contains(key)) {
+					returnMap.put(key, pickCounter);
+				}
+				pickCounter++;
+			}
+		}
+
+		return returnMap;
+	}
+
+	private static <V> Map<SampleKey, Integer> pickValidSampleSetItemsByNetCDFValue(Map<SampleKey, V> map, Set<V> criteria, boolean include) throws IOException {
+
+		Map<SampleKey, Integer> returnMap = new LinkedHashMap<SampleKey, Integer>();
+
+		int pickCounter = 0;
+		if (include) {
+			for (Map.Entry<SampleKey, V> entry : map.entrySet()) {
+				if (criteria.contains(entry.getValue())) {
+					returnMap.put(entry.getKey(), pickCounter);
+				}
+				pickCounter++;
+			}
+		} else {
+			for (Map.Entry<SampleKey, V> entry : map.entrySet()) {
+				if (!criteria.contains(entry.getValue())) {
+					returnMap.put(entry.getKey(), pickCounter);
+				}
+				pickCounter++;
+			}
+		}
+
+		return returnMap;
+	}
+
+	private static Map<SampleKey, Integer> pickValidSampleSetItemsByNetCDFFilter(Map<SampleKey, char[]> map, Set<char[]> criteria, boolean include) throws IOException {
+
+		Map<SampleKey, Integer> returnMap = new LinkedHashMap<SampleKey, Integer>();
+
+		int pickCounter = 0;
+		if (include) {
+			for (Map.Entry<SampleKey, char[]> entry : map.entrySet()) {
+				if (criteria.contains(entry.getValue())) { // FIXME bad comparison of arrays (should check individual entries)
+					returnMap.put(entry.getKey(), pickCounter);
+				}
+				pickCounter++;
+			}
+		} else {
+			for (Map.Entry<SampleKey, char[]> entry : map.entrySet()) {
+				if (!criteria.contains(entry.getValue())) { // FIXME bad comparison of arrays (should check individual entries)
+					returnMap.put(entry.getKey(), pickCounter);
+				}
+				pickCounter++;
+			}
+		}
+
+		return returnMap;
 	}
 }

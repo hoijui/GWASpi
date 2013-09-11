@@ -19,16 +19,12 @@ package org.gwaspi.netCDF.operations;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Collection;
-import java.util.Map;
 import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import org.gwaspi.constants.cNetCDF.Defaults.SetMarkerPickCase;
 import org.gwaspi.constants.cNetCDF.Defaults.SetSamplePickCase;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.DataSetSource;
-import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MatrixMetadata;
-import org.gwaspi.model.SampleKey;
 import org.gwaspi.netCDF.loader.AbstractNetCDFDataSetDestination;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.slf4j.Logger;
@@ -44,16 +40,12 @@ public class MatrixDataExtractorNetCDFDataSetDestination extends AbstractNetCDFD
 	private final String matrixDescription;
 	private final String matrixFriendlyName;
 
-
 	private File markerCriteriaFile;
 	private File sampleCriteriaFile;
 	private SetMarkerPickCase markerPickCase;
 	private String markerPickerVar;
 	private SetSamplePickCase samplePickCase;
 	private String samplePickerVar;
-	private Collection<MarkerKey> wrMarkerKeys;
-	private Map<SampleKey, Integer> wrSampleSetMap;
-
 
 	public MatrixDataExtractorNetCDFDataSetDestination(
 			DataSetSource dataSetSource,
@@ -91,44 +83,6 @@ public class MatrixDataExtractorNetCDFDataSetDestination extends AbstractNetCDFD
 			samplePickerCriteria.append(value.toString());
 			samplePickerCriteria.append(",");
 		}
-
-//		StringBuilder description = new StringBuilder();
-//		description.append(Text.Matrix.descriptionHeader1);
-//		description.append(org.gwaspi.global.Utils.getShortDateTimeAsString());
-//		description.append("\nThrough Matrix genotype flipping from parent Matrix MX: ").append(sourceMatrixMetadata.getMatrixId());
-//		description.append(" - ").append(sourceMatrixMetadata.getMatrixFriendlyName());
-//		description.append("\nUsed list of markers to be flipped: ").append(flipperFile.getPath());
-//		if (!matrixDescription.isEmpty()) {
-//			description.append("\n\nDescription: ");
-//			description.append(matrixDescription);
-//			description.append("\n");
-//		}
-//		description.append("\nGenotype encoding: ");
-//		description.append(sourceMatrixMetadata.getGenotypeEncoding());
-//		description.append("\n");
-//		description.append("Markers: ").append(numMarkers);
-//		description.append(", Samples: ").append(numSamples);
-//
-//		try {
-//			return new MatrixFactory(
-//					sourceMatrixMetadata.getTechnology(), // technology
-//					matrixFriendlyName,
-//					description.toString(), // description
-//					sourceMatrixMetadata.getGenotypeEncoding(), // matrix genotype encoding from the original matrix
-//					StrandType.valueOf("FLP"), // FIXME this will fail at runtime
-//					sourceMatrixMetadata.getHasDictionray(), // has dictionary?
-//					numSamples,
-//					numMarkers,
-//					numChromosomes,
-//					sourceMatrixMetadata.getKey(), // orig/parent matrix 1 key
-//					null); // orig/parent matrix 2 key
-//		} catch (InvalidRangeException ex) {
-//			throw new IOException(ex);
-//		}
-
-
-
-
 
 		if (numSamples == 0) {
 			throw new IllegalStateException("No samples selected for extraction");
@@ -181,8 +135,8 @@ public class MatrixDataExtractorNetCDFDataSetDestination extends AbstractNetCDFD
 //		description.append("\nGenotype encoding: ");
 //		description.append(rdMatrixMetadata.getGenotypeEncoding());
 		description.append("\n");
-		description.append("Markers: ").append(wrMarkerKeys.size());
-		description.append(", Samples: ").append(wrSampleSetMap.size());
+		description.append("Markers: ").append(numMarkers);
+		description.append(", Samples: ").append(numSamples);
 
 		try {
 			return new MatrixFactory(

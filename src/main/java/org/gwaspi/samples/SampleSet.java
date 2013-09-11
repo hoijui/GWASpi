@@ -19,7 +19,6 @@ package org.gwaspi.samples;
 
 import java.io.IOException;
 import java.util.AbstractList;
-import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -262,7 +261,7 @@ public class SampleSet extends AbstractList<GenotypesList> implements MarkersGen
 		return null;
 	}
 
-	private void fillSampleIdSetMapWithVariable(Map<SampleKey, ?> map, String variable) throws IOException {
+	public void fillSampleIdSetMapWithVariable(Map<SampleKey, ?> map, String variable) throws IOException {
 
 		NetcdfFile ncfile = null;
 		try {
@@ -312,7 +311,7 @@ public class SampleSet extends AbstractList<GenotypesList> implements MarkersGen
 		}
 	}
 
-	private void fillSampleIdSetMapWithFilterVariable(Map<SampleKey, char[]> map, String variable, int filterPos) throws IOException {
+	public void fillSampleIdSetMapWithFilterVariable(Map<SampleKey, char[]> map, String variable, int filterPos) throws IOException {
 
 		NetcdfFile ncfile = null;
 		try {
@@ -361,6 +360,7 @@ public class SampleSet extends AbstractList<GenotypesList> implements MarkersGen
 	//</editor-fold>
 
 	//<editor-fold defaultstate="expanded" desc="SAMPLESET PICKERS">
+	/** Used only in MatrixDataExtractor. */
 	public static Map<SampleKey, Integer> pickValidSampleSetItemsByDBField(StudyKey studyKey, Set<SampleKey> sampleKeys, String dbField, Set<?> criteria, boolean include) throws IOException {
 		Map<SampleKey, Integer> returnMap = new LinkedHashMap<SampleKey, Integer>();
 		List<SampleInfo> sampleInfos = SampleInfoList.getAllSampleInfoFromDBByPoolID(studyKey);
@@ -387,77 +387,6 @@ public class SampleSet extends AbstractList<GenotypesList> implements MarkersGen
 					{
 						returnMap.put(key, pickCounter);
 					}
-				}
-				pickCounter++;
-			}
-		}
-
-		return returnMap;
-	}
-
-	public <V> Map<SampleKey, Integer> pickValidSampleSetItemsByNetCDFValue(Map<SampleKey, V> map, String variable, Set<V> criteria, boolean include) throws IOException {
-		Map<SampleKey, Integer> returnMap = new LinkedHashMap<SampleKey, Integer>();
-		fillSampleIdSetMapWithVariable(map, variable);
-
-		int pickCounter = 0;
-		if (include) {
-			for (Map.Entry<SampleKey, V> entry : map.entrySet()) {
-				if (criteria.contains(entry.getValue())) {
-					returnMap.put(entry.getKey(), pickCounter);
-				}
-				pickCounter++;
-			}
-		} else {
-			for (Map.Entry<SampleKey, V> entry : map.entrySet()) {
-				if (!criteria.contains(entry.getValue())) {
-					returnMap.put(entry.getKey(), pickCounter);
-				}
-				pickCounter++;
-			}
-		}
-
-		return returnMap;
-	}
-
-	public Map<SampleKey, Integer> pickValidSampleSetItemsByNetCDFFilter(Map<SampleKey, char[]> map, String variable, int fiterPos, Set<char[]> criteria, boolean include) throws IOException {
-		Map<SampleKey, Integer> returnMap = new LinkedHashMap<SampleKey, Integer>();
-		fillSampleIdSetMapWithFilterVariable(map, variable, fiterPos);
-
-		int pickCounter = 0;
-		if (include) {
-			for (Map.Entry<SampleKey, char[]> entry : map.entrySet()) {
-				if (criteria.contains(entry.getValue())) { // FIXME bad comparison of arrays (should check individual entries)
-					returnMap.put(entry.getKey(), pickCounter);
-				}
-				pickCounter++;
-			}
-		} else {
-			for (Map.Entry<SampleKey, char[]> entry : map.entrySet()) {
-				if (!criteria.contains(entry.getValue())) { // FIXME bad comparison of arrays (should check individual entries)
-					returnMap.put(entry.getKey(), pickCounter);
-				}
-				pickCounter++;
-			}
-		}
-
-		return returnMap;
-	}
-
-	public static Map<SampleKey, Integer> pickValidSampleSetItemsByNetCDFKey(Set<SampleKey> sampleKeys, Set<SampleKey> criteria, boolean include) throws IOException {
-		Map<SampleKey, Integer> returnMap = new LinkedHashMap<SampleKey, Integer>();
-
-		int pickCounter = 0;
-		if (include) {
-			for (SampleKey key : sampleKeys) {
-				if (criteria.contains(key)) {
-					returnMap.put(key, pickCounter);
-				}
-				pickCounter++;
-			}
-		} else {
-			for (SampleKey key : sampleKeys) {
-				if (!criteria.contains(key)) {
-					returnMap.put(key, pickCounter);
 				}
 				pickCounter++;
 			}
