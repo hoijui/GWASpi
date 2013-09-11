@@ -359,43 +359,6 @@ public class SampleSet extends AbstractList<GenotypesList> implements MarkersGen
 	}
 	//</editor-fold>
 
-	//<editor-fold defaultstate="expanded" desc="SAMPLESET PICKERS">
-	/** Used only in MatrixDataExtractor. */
-	public static Map<SampleKey, Integer> pickValidSampleSetItemsByDBField(StudyKey studyKey, Set<SampleKey> sampleKeys, String dbField, Set<?> criteria, boolean include) throws IOException {
-		Map<SampleKey, Integer> returnMap = new LinkedHashMap<SampleKey, Integer>();
-		List<SampleInfo> sampleInfos = SampleInfoList.getAllSampleInfoFromDBByPoolID(studyKey);
-
-		int pickCounter = 0;
-		if (include) {
-			for (SampleKey key : sampleKeys) {
-				// loop through rows of result set
-				for (SampleInfo sampleInfo : sampleInfos) {
-					if (sampleInfo.getKey().equals(key)
-							&& criteria.contains(sampleInfo.getField(dbField).toString()))
-					{
-						returnMap.put(key, pickCounter);
-					}
-				}
-				pickCounter++;
-			}
-		} else {
-			for (SampleKey key : sampleKeys) {
-				// loop through rows of result set
-				for (SampleInfo sampleInfo : sampleInfos) {
-					if (sampleInfo.getKey().equals(key)
-							&& !criteria.contains(sampleInfo.getField(dbField).toString()))
-					{
-						returnMap.put(key, pickCounter);
-					}
-				}
-				pickCounter++;
-			}
-		}
-
-		return returnMap;
-	}
-	//</editor-fold>
-
 	@Override
 	public int size() {
 		return sampleIdSetMap.size();

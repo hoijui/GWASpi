@@ -38,6 +38,8 @@ import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.GenotypesList;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MatrixKey;
+import org.gwaspi.model.SampleInfo;
+import org.gwaspi.model.SampleInfoList;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.SamplesGenotypesSource;
 import org.gwaspi.model.StudyKey;
@@ -280,11 +282,11 @@ public class MatrixDataExtractor implements MatrixOperation {
 				break;
 			case SAMPLES_INCLUDE_BY_DB_FIELD:
 				// USE DB DATA
-				pickedSamples = SampleSet.pickValidSampleSetItemsByDBField(studyKey, rdSampleSetMap.keySet(), samplePickerVar, sampleCriteria, true);
+				pickedSamples = pickValidSampleSetItemsByDBField(studyKey, rdSampleSetMap.keySet(), samplePickerVar, sampleCriteria, true);
 				break;
 			case SAMPLES_EXCLUDE_BY_DB_FIELD:
 				// USE DB DATA
-				pickedSamples = SampleSet.pickValidSampleSetItemsByDBField(studyKey, rdSampleSetMap.keySet(), samplePickerVar, sampleCriteria, false);
+				pickedSamples = pickValidSampleSetItemsByDBField(studyKey, rdSampleSetMap.keySet(), samplePickerVar, sampleCriteria, false);
 				break;
 			default:
 				int j = 0;
@@ -460,6 +462,40 @@ public class MatrixDataExtractor implements MatrixOperation {
 			for (Map.Entry<SampleKey, char[]> entry : map.entrySet()) {
 				if (!criteria.contains(entry.getValue())) { // FIXME bad comparison of arrays (should check individual entries)
 					returnMap.put(entry.getKey(), pickCounter);
+				}
+				pickCounter++;
+			}
+		}
+
+		return returnMap;
+	}
+
+	public static Map<SampleKey, Integer> pickValidSampleSetItemsByDBField(StudyKey studyKey, Set<SampleKey> sampleKeys, String dbField, Set<?> criteria, boolean include) throws IOException {
+		Map<SampleKey, Integer> returnMap = new LinkedHashMap<SampleKey, Integer>();
+		List<SampleInfo> sampleInfos = SampleInfoList.getAllSampleInfoFromDBByPoolID(studyKey);
+
+		int pickCounter = 0;
+		if (include) {
+			for (SampleKey key : sampleKeys) {
+				// loop through rows of result set
+				for (SampleInfo sampleInfo : sampleInfos) {
+					if (sampleInfo.getKey().equals(key)
+							&& criteria.contains(sampleInfo.getField(dbField).toString()))
+					{
+						returnMap.put(key, pickCounter);
+					}
+				}
+				pickCounter++;
+			}
+		} else {
+			for (SampleKey key : sampleKeys) {
+				// loop through rows of result set
+				for (SampleInfo sampleInfo : sampleInfos) {
+					if (sampleInfo.getKey().equals(key)
+							&& !criteria.contains(sampleInfo.getField(dbField).toString()))
+					{
+						returnMap.put(key, pickCounter);
+					}
 				}
 				pickCounter++;
 			}
