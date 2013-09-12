@@ -273,10 +273,10 @@ public class MatrixDataExtractor implements MatrixOperation {
 				pickedSamples = pickValidSampleSetItemsByNetCDFValue(rdSampleSetMap, sampleCriteria, false);
 				break;
 			case SAMPLES_INCLUDE_BY_ID:
-				pickedSamples = pickValidSampleSetItemsByNetCDFKey(rdSampleSetMap.keySet(), (Set<SampleKey>) sampleCriteria, true);
+				pickedSamples = pickKeysByCriteria(rdSampleSetMap.keySet(), (Set<SampleKey>) sampleCriteria, true);
 				break;
 			case SAMPLES_EXCLUDE_BY_ID:
-				pickedSamples = pickValidSampleSetItemsByNetCDFKey(rdSampleSetMap.keySet(), (Set<SampleKey>) sampleCriteria, false);
+				pickedSamples = pickKeysByCriteria(rdSampleSetMap.keySet(), (Set<SampleKey>) sampleCriteria, false);
 				break;
 			case SAMPLES_INCLUDE_BY_DB_FIELD:
 				// USE DB DATA
@@ -397,7 +397,8 @@ public class MatrixDataExtractor implements MatrixOperation {
 		return resultMatrixId;
 	}
 
-	private static Map<SampleKey, Integer> pickValidSampleSetItemsByNetCDFKey(Set<SampleKey> sampleKeys, Set<SampleKey> criteria, boolean include) throws IOException {
+	private static Map<SampleKey, Integer> pickKeysByCriteria(Set<SampleKey> sampleKeys, Set<SampleKey> criteria, boolean include) throws IOException {
+
 		Map<SampleKey, Integer> returnMap = new LinkedHashMap<SampleKey, Integer>();
 
 		int pickCounter = 0;
@@ -554,5 +555,60 @@ public class MatrixDataExtractor implements MatrixOperation {
 		}
 
 		return returnMap;
+	}
+
+
+	/**
+	 * @param include whether this is an include or an exclude picker.
+	 */
+	public <K> Map<K, Integer> pick(Collection<K> input, Collection<K> criteria, boolean include) {
+
+		Map<K, Integer> result = new LinkedHashMap<K, Integer>();
+
+		int originalIndex = 0;
+		if (include) {
+			for (K key : input) {
+				if (criteria.contains(key)) {
+					result.put(key, originalIndex);
+				}
+				originalIndex++;
+			}
+		} else {
+			for (K key : input) {
+				if (!criteria.contains(key)) {
+					result.put(key, originalIndex);
+				}
+				originalIndex++;
+			}
+		}
+
+		return result;
+	}
+
+	/**
+	 * @param include whether this is an include or an exclude picker.
+	 */
+	public <K, V> Map<K, Integer> pick(Map<K, V> input, Collection<V> criteria, boolean include) {
+
+		Map<K, Integer> result = new LinkedHashMap<K, Integer>();
+
+		int originalIndex = 0;
+		if (include) {
+			for (Map.Entry<K, V> entry : input.entrySet()) {
+				if (criteria.contains(entry.getValue())) {
+					result.put(entry.getKey(), originalIndex);
+				}
+				originalIndex++;
+			}
+		} else {
+			for (Map.Entry<K, V> entry : input.entrySet()) {
+				if (!criteria.contains(entry.getValue())) {
+					result.put(entry.getKey(), originalIndex);
+				}
+				originalIndex++;
+			}
+		}
+
+		return result;
 	}
 }
