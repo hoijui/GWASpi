@@ -81,6 +81,119 @@ public class MatrixDataExtractor implements MatrixOperation {
 	private final DataSetSource dataSetSource;
 	private final DataSetDestination dataSetDestination;
 
+	private static interface Picker<K> {
+
+		Map<K, Integer> pick(DataSetSource dataSetSource);
+	}
+
+	private static abstract class AbstractKeyPicker<K> implements Picker<K> {
+
+		private final Collection<K> criteria;
+		private final boolean include;
+
+		/**
+		 * @param include whether this is an include or an exclude picker.
+		 */
+		AbstractKeyPicker(Collection<K> criteria, boolean include) {
+
+			this.criteria = criteria;
+			this.include = include;
+		}
+
+		abstract Collection<K> getInputKeys(DataSetSource dataSetSource);
+
+		@Override
+		public Map<K, Integer> pick(DataSetSource dataSetSource) {
+
+			Map<K, Integer> result = new LinkedHashMap<K, Integer>();
+
+			int originalIndex = 0;
+			if (include) {
+				for (K inputKey : getInputKeys()) {
+					if (criteria.contains(inputKey)) {
+						result.put(inputKey, originalIndex);
+					}
+					originalIndex++;
+				}
+			} else {
+				for (K inputKey : getInputKeys()) {
+					if (!criteria.contains(inputKey)) {
+						result.put(inputKey, originalIndex);
+					}
+					originalIndex++;
+				}
+			}
+
+			return result;
+		}
+	}
+
+	private static class SampleKeyPicker extends AbstractKeyPicker<SampleKey> {
+
+		SampleKeyPicker(Collection<SampleKey> criteria, boolean include) {
+			super(criteria, include);
+		}
+
+		@Override
+		public Collection<SampleKey> getInputKeys(DataSetSource dataSetSource) {
+			return dataSetSource.getSamplesKeysSource();
+		}
+	}
+
+	private static class MarkerKeyPicker extends AbstractKeyPicker<MarkerKey> {
+
+		MarkerKeyPicker(Collection<MarkerKey> criteria, boolean include) {
+			super(criteria, include);
+		}
+
+		@Override
+		public Collection<MarkerKey> getInputKeys(DataSetSource dataSetSource) {
+			return dataSetSource.getMarkersKeysSource();
+		}
+	}
+
+	private static abstract class AbstractValuePicker<K, V, M> implements Picker<K> {
+
+		private final Collection<M> criteria;
+		private final boolean include;
+
+		/**
+		 * @param include whether this is an include or an exclude picker.
+		 */
+		AbstractValuePicker(Collection<M> criteria, boolean include) {
+
+			this.criteria = criteria;
+			this.include = include;
+		}
+
+		abstract M extract(V currentObject);
+
+		@Override
+		public Map<K, Integer> pick(DataSetSource dataSetSource) {
+
+			Map<K, Integer> result = new LinkedHashMap<K, Integer>();
+
+			int originalIndex = 0;
+			if (include) {
+				for (Map.Entry<K, V> entry : input.entrySet()) {
+					if (criteria.contains(extract(entry.getValue()))) {
+						result.put(entry.getKey(), originalIndex);
+					}
+					originalIndex++;
+				}
+			} else {
+				for (Map.Entry<K, V> entry : input.entrySet()) {
+					if (!criteria.contains(extract(entry.getValue()))) {
+						result.put(entry.getKey(), originalIndex);
+					}
+					originalIndex++;
+				}
+			}
+
+			return result;
+		}
+	}
+
 	/**
 	 * This constructor to extract data from Matrix a by passing a variable and
 	 * the criteria to filter items by.
