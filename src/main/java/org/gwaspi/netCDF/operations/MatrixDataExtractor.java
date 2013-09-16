@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -33,10 +34,12 @@ import org.gwaspi.constants.cDBSamples;
 import org.gwaspi.constants.cNetCDF.Defaults.SetMarkerPickCase;
 import org.gwaspi.constants.cNetCDF.Defaults.SetSamplePickCase;
 import org.gwaspi.global.Text;
+import org.gwaspi.global.TypeConverter;
 import org.gwaspi.gui.utils.Dialogs;
 import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.GenotypesList;
 import org.gwaspi.model.MarkerKey;
+import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleInfoList;
@@ -48,11 +51,6 @@ import org.gwaspi.netCDF.markers.MarkerSet;
 import org.gwaspi.samples.SampleSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-//import ucar.ma2.ArrayChar;
-//import ucar.ma2.Index;
-//import ucar.ma2.InvalidRangeException;
-//import ucar.nc2.NetcdfFile;
-//import ucar.nc2.NetcdfFileWriteable;
 
 /**
  * Extracts Genotypes to a new matrix.
@@ -109,14 +107,14 @@ public class MatrixDataExtractor implements MatrixOperation {
 
 			int originalIndex = 0;
 			if (include) {
-				for (K inputKey : getInputKeys()) {
+				for (K inputKey : getInputKeys(dataSetSource)) {
 					if (criteria.contains(inputKey)) {
 						result.put(inputKey, originalIndex);
 					}
 					originalIndex++;
 				}
 			} else {
-				for (K inputKey : getInputKeys()) {
+				for (K inputKey : getInputKeys(dataSetSource)) {
 					if (!criteria.contains(inputKey)) {
 						result.put(inputKey, originalIndex);
 					}
@@ -155,18 +153,21 @@ public class MatrixDataExtractor implements MatrixOperation {
 	private static abstract class AbstractValuePicker<K, V, M> implements Picker<K> {
 
 		private final Collection<M> criteria;
+		private final TypeConverter<V, M> typeConverter;
 		private final boolean include;
 
 		/**
 		 * @param include whether this is an include or an exclude picker.
 		 */
-		AbstractValuePicker(Collection<M> criteria, boolean include) {
+		AbstractValuePicker(Collection<M> criteria, TypeConverter<V, M> typeConverter, boolean include) {
 
 			this.criteria = criteria;
+			this.typeConverter = typeConverter;
 			this.include = include;
 		}
 
-		abstract M extract(V currentObject);
+		abstract Collection<K> getInputKeys(DataSetSource dataSetSource);
+		abstract Collection<V> getInputValues(DataSetSource dataSetSource);
 
 		@Override
 		public Map<K, Integer> pick(DataSetSource dataSetSource) {
@@ -174,17 +175,20 @@ public class MatrixDataExtractor implements MatrixOperation {
 			Map<K, Integer> result = new LinkedHashMap<K, Integer>();
 
 			int originalIndex = 0;
+			Iterator<K> keysIt = getInputKeys(dataSetSource).iterator();
 			if (include) {
-				for (Map.Entry<K, V> entry : input.entrySet()) {
-					if (criteria.contains(extract(entry.getValue()))) {
-						result.put(entry.getKey(), originalIndex);
+				for (V value : getInputValues(dataSetSource)) {
+					K key = keysIt.next();
+					if (criteria.contains(typeConverter.convert(value))) {
+						result.put(key, originalIndex);
 					}
 					originalIndex++;
 				}
 			} else {
-				for (Map.Entry<K, V> entry : input.entrySet()) {
-					if (!criteria.contains(extract(entry.getValue()))) {
-						result.put(entry.getKey(), originalIndex);
+				for (V value : getInputValues(dataSetSource)) {
+					K key = keysIt.next();
+					if (!criteria.contains(typeConverter.convert(value))) {
+						result.put(key, originalIndex);
 					}
 					originalIndex++;
 				}
@@ -194,23 +198,43 @@ public class MatrixDataExtractor implements MatrixOperation {
 		}
 	}
 
+	private abstract static class AbstractMarkerValuePicker<M> extends AbstractValuePicker<MarkerKey, MarkerMetadata, M> {
+
+		AbstractMarkerValuePicker(Collection<M> criteria, TypeConverter<MarkerMetadata, M> typeConverter, boolean include) {
+			super(criteria, typeConverter, include);
+		}
+
+		@Override
+		public Collection<MarkerKey> getInputKeys(DataSetSource dataSetSource) {
+			return dataSetSource.getMarkersKeysSource();
+		}
+
+		@Override
+		public Collection<MarkerMetadata> getInputValues(DataSetSource dataSetSource) {
+			return dataSetSource.getMarkersMetadatasSource();
+		}
+	}
+
+	private abstract static class NetCdfVariableMarkerValuePicker<M> extends AbstractMarkerValuePicker<M> {
+
+		NetCdfVariableMarkerValuePicker(Collection<M> criteria, boolean include) {
+			super(criteria, include);
+		}
+
+		@Override
+		public Collection<MarkerKey> getInputKeys(DataSetSource dataSetSource) {
+			return dataSetSource.getMarkersKeysSource();
+		}
+
+		@Override
+		public Collection<MarkerMetadata> getInputValues(DataSetSource dataSetSource) {
+			return dataSetSource.getMarkersMetadatasSource();
+		}
+	}
+
 	/**
 	 * This constructor to extract data from Matrix a by passing a variable and
 	 * the criteria to filter items by.
-	 *
-	 * @param rdMatrixKey
-	 * @param wrMatrixFriendlyName
-	 * @param wrMatrixDescription
-	 * @param markerPickCase
-	 * @param samplePickCase
-	 * @param markerPickerVar
-	 * @param samplePickerVar
-	 * @param markerCriteria
-	 * @param sampleCriteria
-	 * @param sampleFilterPos
-	 * @param markerPickerFile
-	 * @param samplePickerFile
-	 * @throws IOException
 	 */
 	public MatrixDataExtractor(
 			MatrixKey rdMatrixKey,
