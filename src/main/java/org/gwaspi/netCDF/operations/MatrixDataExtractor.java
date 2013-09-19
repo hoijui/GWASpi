@@ -23,6 +23,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -33,6 +34,7 @@ import java.util.Set;
 import org.gwaspi.constants.cDBSamples;
 import org.gwaspi.constants.cNetCDF.Defaults.SetMarkerPickCase;
 import org.gwaspi.constants.cNetCDF.Defaults.SetSamplePickCase;
+import org.gwaspi.constants.cNetCDF.Variables;
 import org.gwaspi.global.Text;
 import org.gwaspi.global.TypeConverter;
 import org.gwaspi.gui.utils.Dialogs;
@@ -47,8 +49,8 @@ import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.SamplesGenotypesSource;
 import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.loader.DataSetDestination;
-import org.gwaspi.netCDF.markers.MarkerSet;
-import org.gwaspi.samples.SampleSet;
+//import org.gwaspi.netCDF.markers.MarkerSet;
+//import org.gwaspi.samples.SampleSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -217,18 +219,50 @@ public class MatrixDataExtractor implements MatrixOperation {
 
 	private abstract static class NetCdfVariableMarkerValuePicker<M> extends AbstractMarkerValuePicker<M> {
 
-		NetCdfVariableMarkerValuePicker(Collection<M> criteria, boolean include) {
-			super(criteria, include);
+		private static final Map<String, TypeConverter<MarkerMetadata, ?>> typeConverters;
+		static {
+			typeConverters = new HashMap<String, TypeConverter<MarkerMetadata, ?>>();
+			typeConverters.put(Variables.VAR_MARKERSET, MarkerMetadata.TO_MARKER_ID);
+			typeConverters.put(Variables.VAR_MARKERS_RSID, MarkerMetadata.TO_RS_ID);
+			typeConverters.put(Variables.VAR_MARKERS_BASES_DICT, MarkerMetadata.TO_ALLELES);
+			typeConverters.put(Variables.VAR_MARKERS_CHR, MarkerMetadata.TO_CHR);
+			typeConverters.put(Variables.VAR_MARKERS_POS, MarkerMetadata.TO_POS);
+		}
+
+		NetCdfVariableMarkerValuePicker(Collection<M> criteria, String variable, boolean include) {
+			super(criteria, (TypeConverter<MarkerMetadata, M>) typeConverters.get(variable), include);
+		}
+	}
+
+	private abstract static class AbstractSampleValuePicker<M> extends AbstractValuePicker<SampleKey, SampleInfo, M> {
+
+		AbstractSampleValuePicker(Collection<M> criteria, TypeConverter<SampleInfo, M> typeConverter, boolean include) {
+			super(criteria, typeConverter, include);
 		}
 
 		@Override
-		public Collection<MarkerKey> getInputKeys(DataSetSource dataSetSource) {
-			return dataSetSource.getMarkersKeysSource();
+		public Collection<SampleKey> getInputKeys(DataSetSource dataSetSource) {
+			return dataSetSource.getSamplesKeysSource();
 		}
 
 		@Override
-		public Collection<MarkerMetadata> getInputValues(DataSetSource dataSetSource) {
-			return dataSetSource.getMarkersMetadatasSource();
+		public Collection<SampleInfo> getInputValues(DataSetSource dataSetSource) {
+			return dataSetSource.getSamplesInfosSource();
+		}
+	}
+
+	private abstract static class NetCdfVariableSampleValuePicker<M> extends AbstractSampleValuePicker<M> {
+
+		private static final Map<String, TypeConverter<SampleInfo, ?>> typeConverters;
+		static {
+			typeConverters = new HashMap<String, TypeConverter<SampleInfo, ?>>();
+			typeConverters.put(Variables.VAR_SAMPLESET, SampleInfo.TO_SAMPLE_ID);
+			typeConverters.put(Variables.VAR_SAMPLES_AFFECTION, SampleInfo.TO_AFFECTION);
+			typeConverters.put(Variables.VAR_SAMPLES_SEX, SampleInfo.TO_SEX);
+		}
+
+		NetCdfVariableSampleValuePicker(Collection<M> criteria, String variable, boolean include) {
+			super(criteria, (TypeConverter<SampleInfo, M>) typeConverters.get(variable), include);
 		}
 	}
 
@@ -479,57 +513,53 @@ public class MatrixDataExtractor implements MatrixOperation {
 		// Contains key & index in the original set for all to be extracted samples.
 		Map<SampleKey, Integer> wrSampleSetMap = pickSamples(samplePickCase, dataSetSource, rdSampleSet, fullSampleCriteria, samplePickerVar, rdMatrixKey.getStudyKey(), sampleFilterPos);
 		if (wrSampleSetMap.isEmpty()) {
-			// XXX maybe we should instead trhow an IOException?
+			// XXX maybe we should instead throw an IOException?
 			Dialogs.showWarningDialogue(Text.Trafo.criteriaReturnsNoResults);
 			return resultMatrixId;
 		}
 
-		if (wrSampleSetMap.size() > 0 && wrMarkers.size() > 0) {
-			dataSetDestination.init();
+		dataSetDestination.init();
 
-			// use only the selected sample infos
-			dataSetDestination.startLoadingSampleInfos(true);
-			for (SampleKey sampleKey : wrSampleSetMap.keySet()) {
-				dataSetDestination.addSampleKey(sampleKey);
-			}
-			dataSetDestination.finishedLoadingSampleInfos();
-
-			// use only the selected markers metadata
-			dataSetDestination.startLoadingMarkerMetadatas(true); // FIXME This is not yet supported. we may have to read the whole marker metadatas from dataSetSource, and wrtie them to dataSetDestination
-			for (MarkerKey markerKey : wrMarkers.keySet()) {
-				dataSetDestination.addMarkerKey(markerKey);
-			}
-			dataSetDestination.finishedLoadingMarkerMetadatas();
-
-			// chromosomes infos
-			// NOTE just let the auto-extraction of chromosomes from the markers metadatas kick in
-
-
-			// GENOTYPES WRITER
-			// Iterate through wrSampleSetMap, use item position to read correct sample GTs into rdMarkerIdSetMap.
-
-			SamplesGenotypesSource samplesGenotypesSource = dataSetSource.getSamplesGenotypesSource();
-			int sampleWrIndex = 0;
-			for (int rdSampleIndex : wrSampleSetMap.values()) {
-				GenotypesList sampleGenotypes = samplesGenotypesSource.get(rdSampleIndex);
-				List<byte[]> wrSampleGenotypes = new ArrayList<byte[]>(wrMarkers.size());
-				for (int rdMarkerIndex : wrMarkers.values()) {
-					wrSampleGenotypes.add(sampleGenotypes.get(rdMarkerIndex));
-				}
-
-				dataSetDestination.addSampleGTAlleles(sampleWrIndex, wrSampleGenotypes);
-				sampleWrIndex++;
-				if ((sampleWrIndex == 1) || ((sampleWrIndex % 100) == 0)) {
-					log.info("Samples copied: {} / {}", sampleWrIndex, wrSampleSetMap.size());
-				}
-			}
-
-			dataSetDestination.done();
-
-			org.gwaspi.global.Utils.sysoutCompleted("Extraction to new Matrix");
-		} else {
-			Dialogs.showWarningDialogue(Text.Trafo.criteriaReturnsNoResults);
+		// use only the selected sample infos
+		dataSetDestination.startLoadingSampleInfos(true);
+		for (SampleKey sampleKey : wrSampleSetMap.keySet()) {
+			dataSetDestination.addSampleKey(sampleKey);
 		}
+		dataSetDestination.finishedLoadingSampleInfos();
+
+		// use only the selected markers metadata
+		dataSetDestination.startLoadingMarkerMetadatas(true); // FIXME This is not yet supported. we may have to read the whole marker metadatas from dataSetSource, and wrtie them to dataSetDestination
+		for (MarkerKey markerKey : wrMarkers.keySet()) {
+			dataSetDestination.addMarkerKey(markerKey);
+		}
+		dataSetDestination.finishedLoadingMarkerMetadatas();
+
+		// chromosomes infos
+		// NOTE just let the auto-extraction of chromosomes from the markers metadatas kick in
+
+
+		// GENOTYPES WRITER
+		// Iterate through wrSampleSetMap, use item position to read correct sample GTs into rdMarkerIdSetMap.
+
+		SamplesGenotypesSource samplesGenotypesSource = dataSetSource.getSamplesGenotypesSource();
+		int sampleWrIndex = 0;
+		for (int rdSampleIndex : wrSampleSetMap.values()) {
+			GenotypesList sampleGenotypes = samplesGenotypesSource.get(rdSampleIndex);
+			List<byte[]> wrSampleGenotypes = new ArrayList<byte[]>(wrMarkers.size());
+			for (int rdMarkerIndex : wrMarkers.values()) {
+				wrSampleGenotypes.add(sampleGenotypes.get(rdMarkerIndex));
+			}
+
+			dataSetDestination.addSampleGTAlleles(sampleWrIndex, wrSampleGenotypes);
+			sampleWrIndex++;
+			if ((sampleWrIndex == 1) || ((sampleWrIndex % 100) == 0)) {
+				log.info("Samples copied: {} / {}", sampleWrIndex, wrSampleSetMap.size());
+			}
+		}
+
+		dataSetDestination.done();
+
+		org.gwaspi.global.Utils.sysoutCompleted("Extraction to new Matrix");
 
 		return resultMatrixId;
 	}

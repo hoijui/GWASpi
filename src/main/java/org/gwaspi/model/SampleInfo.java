@@ -27,6 +27,7 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.gwaspi.constants.cDBSamples;
+import org.gwaspi.global.TypeConverter;
 
 @Entity
 @Table(name = "sampleInfo")
@@ -43,6 +44,51 @@ import org.gwaspi.constants.cDBSamples;
 		query = "DELETE FROM SampleInfo s WHERE s.studyId = :studyId"),
 })
 public class SampleInfo implements Comparable<SampleInfo>, Serializable {
+
+	public static final TypeConverter<SampleInfo, SampleKey> TO_SAMPLE_KEY
+			= new TypeConverter<SampleInfo, SampleKey>()
+	{
+		@Override
+		public SampleKey convert(SampleInfo from) {
+			return SampleKey.valueOf(from);
+		}
+	};
+
+	public static final TypeConverter<SampleInfo, String> TO_SAMPLE_ID
+			= new TypeConverter<SampleInfo, String>()
+	{
+		@Override
+		public String convert(SampleInfo from) {
+			return from.getSampleId();
+		}
+	};
+
+	public static final TypeConverter<SampleInfo, String> TO_FAMILY_ID
+			= new TypeConverter<SampleInfo, String>()
+	{
+		@Override
+		public String convert(SampleInfo from) {
+			return from.getFamilyId();
+		}
+	};
+
+	public static final TypeConverter<SampleInfo, Affection> TO_AFFECTION
+			= new TypeConverter<SampleInfo, Affection>()
+	{
+		@Override
+		public Affection convert(SampleInfo from) {
+			return from.getAffection();
+		}
+	};
+
+	public static final TypeConverter<SampleInfo, Sex> TO_SEX
+			= new TypeConverter<SampleInfo, Sex>()
+	{
+		@Override
+		public Sex convert(SampleInfo from) {
+			return from.getSex();
+		}
+	};
 
 	public static enum Sex {
 		UNKNOWN,
