@@ -34,6 +34,12 @@ import org.gwaspi.global.TypeConverter;
 @IdClass(SampleKey.class)
 @NamedQueries({
 	@NamedQuery(
+		name = "sampleInfo_listKeys",
+		query = "SELECT s.studyId, s.sampleId, s.familyId FROM MatrixMetadata s"),
+	@NamedQuery(
+		name = "sampleInfo_listKeysByStudyId",
+		query = "SELECT s.studyId, s.sampleId, s.familyId FROM MatrixMetadata s WHERE s.studyId = :studyId"),
+	@NamedQuery(
 		name = "sampleInfo_listByStudyId",
 		query = "SELECT s FROM SampleInfo s WHERE s.studyId = :studyId"),
 	@NamedQuery(

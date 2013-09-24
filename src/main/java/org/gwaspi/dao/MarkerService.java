@@ -21,28 +21,23 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import org.gwaspi.model.SampleInfo;
-import org.gwaspi.model.SampleKey;
-import org.gwaspi.model.StudyKey;
+import org.gwaspi.model.MarkerKey;
+import org.gwaspi.model.MarkerMetadata;
+import org.gwaspi.model.MatrixKey;
 
-public interface SampleInfoService {
+public interface MarkerService {
 
-	SampleInfo getSample(SampleKey key) throws IOException;
+	List<MarkerKey> getMatrixKeys(MatrixKey matrixKey) throws IOException;
 
-	List<SampleKey> getSampleKeys() throws IOException;
+	MarkerMetadata getMarker(MatrixKey matrixKey, MarkerKey key) throws IOException;
 
-	List<SampleKey> getSampleKeys(StudyKey studyKey) throws IOException;
+	List<MarkerMetadata> getMarkers(MatrixKey matrixKey) throws IOException;
 
-	List<SampleInfo> getSamples() throws IOException;
+	<T> Map<MarkerKey, Integer> pickMarkers(MatrixKey matrixKey, String variable, Collection<T> criteria, boolean include) throws IOException;
 
-	List<SampleInfo> getSamples(StudyKey studyKey) throws IOException;
+	<T> Collection<T> getMarkersVariable(MatrixKey matrixKey, String variable, boolean include) throws IOException;
 
-	/**
-	 * @return picked samples keys and indices in the original/full set of samples of the study
-	 */
-	<T> Map<SampleKey, Integer> pickSamples(StudyKey studyKey, String variable, Collection<T> criteria, boolean include) throws IOException;
+	void deleteMarkers(MatrixKey matrixKey) throws IOException;
 
-	void deleteSamples(StudyKey studyKey) throws IOException;
-
-	void insertSamples(Collection<SampleInfo> sampleInfos) throws IOException;
+	void insertMarkers(Collection<MarkerMetadata> markerMetadatas) throws IOException;
 }

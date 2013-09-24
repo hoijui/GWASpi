@@ -224,24 +224,29 @@ public class MultiOperations {
 			final File markerCriteriaFile,
 			final File sampleCriteriaFile)
 	{
-		CommonRunnable task = new Threaded_ExtractMatrix(
-				parentMatrixKey,
-				newMatrixName,
-				description,
-				markerPickCase,
-				samplePickCase,
-				markerPickVar,
-				samplePickVar,
-				markerCriteria,
-				sampleCriteria,
-				markerCriteriaFile,
-				sampleCriteriaFile);
+		try {
+			DataSetSource dataSetSource = new NetCDFDataSetSource(parentMatrixKey);
+			CommonRunnable task = new Threaded_ExtractMatrix(
+					dataSetSource,
+					newMatrixName,
+					description,
+					markerPickCase,
+					samplePickCase,
+					markerPickVar,
+					samplePickVar,
+					markerCriteria,
+					sampleCriteria,
+					markerCriteriaFile,
+					sampleCriteriaFile);
 
-		TaskLockProperties lockProperties = new TaskLockProperties();
-		lockProperties.getStudyIds().add(parentMatrixKey.getStudyId());
-		lockProperties.getMatricesIds().add(parentMatrixKey.getMatrixId());
+			TaskLockProperties lockProperties = new TaskLockProperties();
+			lockProperties.getStudyIds().add(parentMatrixKey.getStudyId());
+			lockProperties.getMatricesIds().add(parentMatrixKey.getMatrixId());
 
-		queueTask(task, lockProperties);
+			queueTask(task, lockProperties);
+		} catch (IOException ex) {
+			throw new RuntimeException(ex);
+		}
 	}
 
 	public static void doTranslateAB12ToACGT(

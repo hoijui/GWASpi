@@ -31,8 +31,6 @@ import org.gwaspi.model.MarkersGenotypesSource;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
-import org.gwaspi.model.SampleInfo;
-import org.gwaspi.model.SampleInfoList;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.operations.NetCdfUtils;
@@ -311,6 +309,7 @@ public class SampleSet extends AbstractList<GenotypesList> implements MarkersGen
 		}
 	}
 
+	/** @deprecate unused. was used in MatrixDataExtractor */
 	public void fillSampleIdSetMapWithFilterVariable(Map<SampleKey, char[]> map, String variable, int filterPos) throws IOException {
 
 		NetcdfFile ncfile = null;

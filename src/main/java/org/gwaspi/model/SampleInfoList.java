@@ -20,6 +20,7 @@ package org.gwaspi.model;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import org.gwaspi.dao.SampleInfoService;
 import org.gwaspi.dao.jpa.JPASampleInfoService;
 
@@ -44,6 +45,10 @@ public class SampleInfoList {
 
 	public static SampleInfo getSample(SampleKey key) throws IOException {
 		return sampleInfoService.getSample(key);
+	}
+
+	public static <T> Map<SampleKey, Integer> pickSamples(StudyKey studyKey, String variable, Collection<T> criteria, boolean include) throws IOException {
+		return sampleInfoService.pickSamples(studyKey, variable, criteria, include);
 	}
 
 	public static void deleteSamples(StudyKey studyKey) throws IOException {

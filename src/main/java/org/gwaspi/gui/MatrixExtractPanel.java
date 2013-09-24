@@ -28,7 +28,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
@@ -45,9 +44,7 @@ import javax.swing.LayoutStyle;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.border.TitledBorder;
-import org.gwaspi.constants.cDBSamples;
 import org.gwaspi.constants.cImport;
-import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.SetMarkerPickCase;
 import org.gwaspi.constants.cNetCDF.Defaults.SetSamplePickCase;
 import org.gwaspi.global.Text;
@@ -70,10 +67,31 @@ public class MatrixExtractPanel extends JPanel {
 	private static final Logger log
 			= LoggerFactory.getLogger(MatrixExtractPanel.class);
 
-	// Variables declaration - do not modify
+	/**
+	 * These must match the DB fields == SampleInfo property names.
+	 */
+	private static final String[] PICKABLE_SAMPLE_FIELDS = new String[] {
+		"affection",
+		"age",
+		"category",
+		"disease",
+		"familyID",
+		"population",
+		"sampleID",
+		"sex"
+	};
+	/**
+	 * These must match the DB fields == MarkerMetadata property names.
+	 */
+	private static final String[] PICKABLE_MARKER_FIELDS = new String[] {
+		"chr",
+		"markerId",
+		"rsId"
+	};
+
 	private final MatrixKey parentMatrixKey;
-	private final List<Object[]> markerPickerTable = new ArrayList<Object[]>();
-	private final List<Object[]> samplePickerTable = new ArrayList<Object[]>();
+	private final List<Object[]> markerPickerTable;
+	private final List<Object[]> samplePickerTable;
 	private final JButton btn_Back;
 	private final JButton btn_Go;
 	private final JButton btn_Help;
@@ -103,78 +121,78 @@ public class MatrixExtractPanel extends JPanel {
 	private final JTextField txt_MarkersCriteriaFile;
 	private final JTextField txt_NewMatrixName;
 	private final JTextField txt_SamplesCriteriaFile;
-	// End of variables declaration
 
 	public MatrixExtractPanel(MatrixKey parentMatrixKey, String newMatrixName, String newMatrixDesc) throws IOException {
 
 		this.parentMatrixKey = parentMatrixKey;
 		MatrixMetadata matrixMetadata = MatricesList.getMatrixMetadataById(parentMatrixKey);
 
-		pnl_NameAndDesc = new JPanel();
-		lbl_ParentMatrix = new JLabel();
-		lbl_ParentMatrixName = new JLabel();
-		lbl_NewMatrixName = new JLabel();
-		txt_NewMatrixName = new JTextField(newMatrixName);
-		scrl_NewMatrixDescription = new JScrollPane();
-		txtA_NewMatrixDescription = new JTextArea(newMatrixDesc);
-		pnl_MarkerZone = new JPanel();
-		lbl_MarkersVariable = new JLabel();
-		cmb_MarkersVariable = new JComboBox();
-		btn_Help = new JButton();
-		lbl_MarkersCriteria = new JLabel();
-		scrl_MarkersCriteria = new JScrollPane();
-		txtA_MarkersCriteria = new JTextArea();
-		lbl_MarkersCriteriaFile = new JLabel();
-		txt_MarkersCriteriaFile = new JTextField();
-		btn_MarkersCriteriaBrowse = new JButton();
-		pnl_SampleZone = new JPanel();
-		lbl_SamplesVariable = new JLabel();
-		cmb_SamplesVariable = new JComboBox();
-		lbl_SamplesCriteria = new JLabel();
-		scrl_SamplesCriteria = new JScrollPane();
-		txtA_SamplesCriteria = new JTextArea();
-		lbl_SamplesCriteriaFile = new JLabel();
-		txt_SamplesCriteriaFile = new JTextField();
-		btn_SamplesCriteriaBrowse = new JButton();
-		pnl_Footer = new JPanel();
-		btn_Back = new JButton();
-		btn_Go = new JButton();
+		this.markerPickerTable = new ArrayList<Object[]>();
+		this.samplePickerTable = new ArrayList<Object[]>();
+		this.pnl_NameAndDesc = new JPanel();
+		this.lbl_ParentMatrix = new JLabel();
+		this.lbl_ParentMatrixName = new JLabel();
+		this.lbl_NewMatrixName = new JLabel();
+		this.txt_NewMatrixName = new JTextField(newMatrixName);
+		this.scrl_NewMatrixDescription = new JScrollPane();
+		this.txtA_NewMatrixDescription = new JTextArea(newMatrixDesc);
+		this.pnl_MarkerZone = new JPanel();
+		this.lbl_MarkersVariable = new JLabel();
+		this.cmb_MarkersVariable = new JComboBox();
+		this.btn_Help = new JButton();
+		this.lbl_MarkersCriteria = new JLabel();
+		this.scrl_MarkersCriteria = new JScrollPane();
+		this.txtA_MarkersCriteria = new JTextArea();
+		this.lbl_MarkersCriteriaFile = new JLabel();
+		this.txt_MarkersCriteriaFile = new JTextField();
+		this.btn_MarkersCriteriaBrowse = new JButton();
+		this.pnl_SampleZone = new JPanel();
+		this.lbl_SamplesVariable = new JLabel();
+		this.cmb_SamplesVariable = new JComboBox();
+		this.lbl_SamplesCriteria = new JLabel();
+		this.scrl_SamplesCriteria = new JScrollPane();
+		this.txtA_SamplesCriteria = new JTextArea();
+		this.lbl_SamplesCriteriaFile = new JLabel();
+		this.txt_SamplesCriteriaFile = new JTextField();
+		this.btn_SamplesCriteriaBrowse = new JButton();
+		this.pnl_Footer = new JPanel();
+		this.btn_Back = new JButton();
+		this.btn_Go = new JButton();
 
 		setBorder(BorderFactory.createTitledBorder(null, Text.Trafo.extractData, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("FreeSans", 1, 18))); // NOI18N
 
-		markerPickerTable.add(new Object[]{"All Markers", SetMarkerPickCase.ALL_MARKERS, null});
-		markerPickerTable.add(new Object[]{"Exclude by Chromosomes", SetMarkerPickCase.MARKERS_EXCLUDE_BY_NETCDF_CRITERIA, cNetCDF.Variables.VAR_MARKERS_CHR});
-		markerPickerTable.add(new Object[]{"Exclude by MarkerId", SetMarkerPickCase.MARKERS_EXCLUDE_BY_NETCDF_CRITERIA, cNetCDF.Variables.VAR_MARKERSET});
-		markerPickerTable.add(new Object[]{"Exclude by RsId", SetMarkerPickCase.MARKERS_EXCLUDE_BY_NETCDF_CRITERIA, cNetCDF.Variables.VAR_MARKERS_RSID});
-		markerPickerTable.add(new Object[]{"Include by Chromosomes", SetMarkerPickCase.MARKERS_INCLUDE_BY_NETCDF_CRITERIA, cNetCDF.Variables.VAR_MARKERS_CHR});
-		markerPickerTable.add(new Object[]{"Include by MarkerId", SetMarkerPickCase.MARKERS_INCLUDE_BY_NETCDF_CRITERIA, cNetCDF.Variables.VAR_MARKERSET});
-		markerPickerTable.add(new Object[]{"Include by RsId", SetMarkerPickCase.MARKERS_INCLUDE_BY_NETCDF_CRITERIA, cNetCDF.Variables.VAR_MARKERS_RSID});
-
+		markerPickerTable.add(new Object[] {"All Markers", SetMarkerPickCase.ALL_MARKERS, null});
+		for (String pickableMarkerField : PICKABLE_MARKER_FIELDS) {
+			markerPickerTable.add(new Object[] {
+				"Exclude by " + pickableMarkerField,
+				SetMarkerPickCase.MARKERS_EXCLUDE_BY_NETCDF_CRITERIA,
+				pickableMarkerField});
+		}
+		for (String pickableMarkerField : PICKABLE_MARKER_FIELDS) {
+			markerPickerTable.add(new Object[] {
+				"Include by " + pickableMarkerField,
+				SetMarkerPickCase.MARKERS_INCLUDE_BY_NETCDF_CRITERIA,
+				pickableMarkerField});
+		}
 		//markerPickerTable.add(new Object[]{"Exclude by Position Window", SetMarkerPickCase.MARKERS_EXCLUDE_BY_NETCDF_CRITERIA, cNetCDF.Variables.VAR_MARKERS_POS});
 		//markerPickerTable.add(new Object[]{"Exclude by Strand", SetMarkerPickCase.MARKERS_EXCLUDE_BY_NETCDF_CRITERIA, cNetCDF.Variables.VAR_GT_STRAND});
 		//markerPickerTable.add(new Object[]{"Include by Position Window", SetMarkerPickCase.MARKERS_INCLUDE_BY_NETCDF_CRITERIA, cNetCDF.Variables.VAR_MARKERS_POS});
 		//markerPickerTable.add(new Object[]{"Include by Strand", SetMarkerPickCase.MARKERS_INCLUDE_BY_NETCDF_CRITERIA, cNetCDF.Variables.VAR_GT_STRAND});
 
 
-		samplePickerTable.add(new Object[]{"All Samples", SetSamplePickCase.ALL_SAMPLES, null});
-		samplePickerTable.add(new Object[]{"Exclude by Affection", SetSamplePickCase.SAMPLES_EXCLUDE_BY_DB_FIELD, cDBSamples.f_AFFECTION});
-		samplePickerTable.add(new Object[]{"Exclude by Age", SetSamplePickCase.SAMPLES_EXCLUDE_BY_DB_FIELD, cDBSamples.f_AGE});
-		samplePickerTable.add(new Object[]{"Exclude by Category", SetSamplePickCase.SAMPLES_EXCLUDE_BY_DB_FIELD, cDBSamples.f_CATEGORY});
-		samplePickerTable.add(new Object[]{"Exclude by Disease", SetSamplePickCase.SAMPLES_EXCLUDE_BY_DB_FIELD, cDBSamples.f_DISEASE});
-		samplePickerTable.add(new Object[]{"Exclude by FamilyID", SetSamplePickCase.SAMPLES_EXCLUDE_BY_DB_FIELD, cDBSamples.f_FAMILY_ID});
-		samplePickerTable.add(new Object[]{"Exclude by Population", SetSamplePickCase.SAMPLES_EXCLUDE_BY_DB_FIELD, cDBSamples.f_POPULATION});
-		samplePickerTable.add(new Object[]{"Exclude by SampleID", SetSamplePickCase.SAMPLES_EXCLUDE_BY_DB_FIELD, cDBSamples.f_SAMPLE_ID});
-		samplePickerTable.add(new Object[]{"Exclude by Sex", SetSamplePickCase.SAMPLES_EXCLUDE_BY_DB_FIELD, cDBSamples.f_SEX});
-
-		samplePickerTable.add(new Object[]{"Include by Affection", SetSamplePickCase.SAMPLES_INCLUDE_BY_DB_FIELD, cDBSamples.f_AFFECTION});
-		samplePickerTable.add(new Object[]{"Include by Age", SetSamplePickCase.SAMPLES_INCLUDE_BY_DB_FIELD, cDBSamples.f_AGE});
-		samplePickerTable.add(new Object[]{"Include by Category", SetSamplePickCase.SAMPLES_INCLUDE_BY_DB_FIELD, cDBSamples.f_CATEGORY});
-		samplePickerTable.add(new Object[]{"Include by Disease", SetSamplePickCase.SAMPLES_INCLUDE_BY_DB_FIELD, cDBSamples.f_DISEASE});
-		samplePickerTable.add(new Object[]{"Include by FamilyID", SetSamplePickCase.SAMPLES_INCLUDE_BY_DB_FIELD, cDBSamples.f_FAMILY_ID});
-		samplePickerTable.add(new Object[]{"Include by Population", SetSamplePickCase.SAMPLES_INCLUDE_BY_DB_FIELD, cDBSamples.f_POPULATION});
-		samplePickerTable.add(new Object[]{"Include by SampleID", SetSamplePickCase.SAMPLES_INCLUDE_BY_DB_FIELD, cDBSamples.f_SAMPLE_ID});
-		samplePickerTable.add(new Object[]{"Include by Sex", SetSamplePickCase.SAMPLES_INCLUDE_BY_DB_FIELD, cDBSamples.f_SEX});
-
+		samplePickerTable.add(new Object[] {"All Samples", SetSamplePickCase.ALL_SAMPLES, null});
+		for (String pickableSampleField : PICKABLE_SAMPLE_FIELDS) {
+			samplePickerTable.add(new Object[] {
+				"Exclude by " + pickableSampleField,
+				SetSamplePickCase.SAMPLES_EXCLUDE_BY_DB_FIELD,
+				pickableSampleField});
+		}
+		for (String pickableSampleField : PICKABLE_SAMPLE_FIELDS) {
+			samplePickerTable.add(new Object[] {
+				"Include by " + pickableSampleField,
+				SetSamplePickCase.SAMPLES_INCLUDE_BY_DB_FIELD,
+				pickableSampleField});
+		}
 
 		pnl_NameAndDesc.setBorder(BorderFactory.createTitledBorder(null, Text.Trafo.extratedMatrixDetails, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("DejaVu Sans", 1, 13))); // NOI18N
 		pnl_MarkerZone.setBorder(BorderFactory.createTitledBorder(null, Text.Trafo.markerSelectZone, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("DejaVu Sans", 1, 13))); // NOI18N
@@ -585,14 +603,14 @@ public class MatrixExtractPanel extends JPanel {
 					String[] sVals = mi_sample_criteria.split(cImport.Separators.separators_CommaSpaceTabLf_rgxp);
 					for (String sampleCrit : sVals) {
 						if (!sampleCrit.isEmpty()) {
-							if ((samplePickCase == SetSamplePickCase.SAMPLES_INCLUDE_BY_ID)
-									|| (samplePickCase == SetSamplePickCase.SAMPLES_EXCLUDE_BY_ID))
-							{
-								sampleCriteria.add(SampleKey.valueOf(
-										parentMatrixKey.getStudyKey(), sampleCrit));
-							} else {
+//							if ((samplePickCase == SetSamplePickCase.SAMPLES_INCLUDE_BY_ID)
+//									|| (samplePickCase == SetSamplePickCase.SAMPLES_EXCLUDE_BY_ID))
+//							{
+//								sampleCriteria.add(SampleKey.valueOf(
+//										parentMatrixKey.getStudyKey(), sampleCrit));
+//							} else {
 								sampleCriteria.add(sampleCrit.toCharArray());
-							}
+//							}
 						}
 					}
 

@@ -21,11 +21,13 @@ import java.io.File;
 import java.util.Set;
 import org.gwaspi.constants.cNetCDF.Defaults.SetMarkerPickCase;
 import org.gwaspi.constants.cNetCDF.Defaults.SetSamplePickCase;
+import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.GWASpiExplorerNodes;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.netCDF.operations.MatrixDataExtractor;
+import org.gwaspi.netCDF.operations.MatrixDataExtractorNetCDFDataSetDestination;
 import org.gwaspi.netCDF.operations.OP_QAMarkers;
 import org.gwaspi.netCDF.operations.OP_QASamples;
 import org.slf4j.Logger;
@@ -33,8 +35,7 @@ import org.slf4j.LoggerFactory;
 
 public class Threaded_ExtractMatrix extends CommonRunnable {
 
-	private MatrixKey resultMatrixKey;
-	private final MatrixKey parentMatrixKey;
+	private final DataSetSource dataSetSource;
 	private final String newMatrixName;
 	private final String description;
 	private final SetMarkerPickCase markerPickCase;
@@ -47,7 +48,7 @@ public class Threaded_ExtractMatrix extends CommonRunnable {
 	private final File sampleCriteriaFile;
 
 	public Threaded_ExtractMatrix(
-			MatrixKey parentMatrixKey,
+			DataSetSource dataSetSource,
 			String newMatrixName,
 			String description,
 			SetMarkerPickCase markerPickCase,
@@ -65,7 +66,7 @@ public class Threaded_ExtractMatrix extends CommonRunnable {
 				"Data Extract: " + newMatrixName,
 				"Extracting");
 
-		this.parentMatrixKey = parentMatrixKey;
+		this.dataSetSource = dataSetSource;
 		this.newMatrixName = newMatrixName;
 		this.description = description;
 		this.markerPickCase = markerPickCase;
@@ -84,11 +85,23 @@ public class Threaded_ExtractMatrix extends CommonRunnable {
 
 	protected void runInternal(SwingWorkerItem thisSwi) throws Exception {
 
+		MatrixKey resultMatrixKey = null;
+
 		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
-			MatrixDataExtractor exMatrix = new MatrixDataExtractor(
-					parentMatrixKey,
-					newMatrixName,
+			MatrixDataExtractorNetCDFDataSetDestination dataSetDestination
+					= new MatrixDataExtractorNetCDFDataSetDestination(
+					dataSetSource,
 					description,
+					newMatrixName,
+					markerCriteriaFile,
+					sampleCriteriaFile,
+					markerPickCase,
+					markerPickVar,
+					samplePickCase,
+					samplePickVar);
+			MatrixDataExtractor exMatrix = new MatrixDataExtractor(
+					dataSetSource,
+					dataSetDestination,
 					markerPickCase,
 					samplePickCase,
 					markerPickVar,
@@ -98,8 +111,9 @@ public class Threaded_ExtractMatrix extends CommonRunnable {
 					Integer.MIN_VALUE, // Filter pos, not used now
 					markerCriteriaFile,
 					sampleCriteriaFile);
-			int resultMatrixId = exMatrix.processMatrix();
-			resultMatrixKey = new MatrixKey(parentMatrixKey.getStudyKey(), resultMatrixId);
+			dataSetDestination.setMatrixDataExtractor(exMatrix); // HACK!
+			exMatrix.processMatrix();
+			resultMatrixKey = dataSetDestination.getResultMatrixKey();
 			GWASpiExplorerNodes.insertMatrixNode(resultMatrixKey);
 		}
 

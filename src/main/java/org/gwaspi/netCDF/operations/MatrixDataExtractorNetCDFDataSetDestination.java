@@ -39,23 +39,38 @@ public class MatrixDataExtractorNetCDFDataSetDestination extends AbstractNetCDFD
 	private final DataSetSource dataSetSource;
 	private final String matrixDescription;
 	private final String matrixFriendlyName;
+	private final File markerCriteriaFile;
+	private final File sampleCriteriaFile;
+	private final SetMarkerPickCase markerPickCase;
+	private final String markerPickerVar;
+	private final SetSamplePickCase samplePickCase;
+	private final String samplePickerVar;
 
-	private File markerCriteriaFile;
-	private File sampleCriteriaFile;
-	private SetMarkerPickCase markerPickCase;
-	private String markerPickerVar;
-	private SetSamplePickCase samplePickCase;
-	private String samplePickerVar;
+	/**
+	 * HACK This field should not exist.
+	 */
+	private MatrixDataExtractor matrixDataExtractor = null;
 
 	public MatrixDataExtractorNetCDFDataSetDestination(
 			DataSetSource dataSetSource,
 			String matrixDescription,
 			String matrixFriendlyName,
-			File flipperFile)
+			File markerCriteriaFile,
+			File sampleCriteriaFile,
+			SetMarkerPickCase markerPickCase,
+			String markerPickerVar,
+			SetSamplePickCase samplePickCase,
+			String samplePickerVar)
 	{
 		this.dataSetSource = dataSetSource;
 		this.matrixDescription = matrixDescription;
 		this.matrixFriendlyName = matrixFriendlyName;
+		this.markerCriteriaFile = markerCriteriaFile;
+		this.sampleCriteriaFile = sampleCriteriaFile;
+		this.markerPickCase = markerPickCase;
+		this.markerPickerVar = markerPickerVar;
+		this.samplePickCase = samplePickCase;
+		this.samplePickerVar = samplePickerVar;
 	}
 
 	@Override
@@ -69,8 +84,6 @@ public class MatrixDataExtractorNetCDFDataSetDestination extends AbstractNetCDFD
 		final int numChromosomes = getDataSet().getChromosomeInfos().size();
 
 		MatrixMetadata sourceMatrixMetadata = dataSetSource.getMatrixMetadata();
-
-		MatrixDataExtractor matrixDataExtractor = null; XXX;
 
 		StringBuilder markerPickerCriteria = new StringBuilder();
 		for (Object value : matrixDataExtractor.getFullMarkerCriteria()) {
@@ -168,5 +181,12 @@ public class MatrixDataExtractorNetCDFDataSetDestination extends AbstractNetCDFD
 		} catch (IOException ex) {
 			throw new RuntimeException(ex);
 		}
+	}
+
+	/**
+	 * HACK This method should not exist.
+	 */
+	public void setMatrixDataExtractor(MatrixDataExtractor matrixDataExtractor) {
+		this.matrixDataExtractor = matrixDataExtractor;
 	}
 }
