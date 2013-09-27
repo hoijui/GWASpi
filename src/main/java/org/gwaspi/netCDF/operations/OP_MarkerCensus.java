@@ -154,6 +154,16 @@ public class OP_MarkerCensus implements MatrixOperation {
 						rdMatrixKey, // Parent matrixId
 						-1); // Parent operationId
 
+				// what will be written to the operation NetCDF file (wrNcFile):
+				// - Variables.VAR_OPSET: [Collection<MarkerKey>]
+				// - Variables.VAR_MARKERS_RSID: [Collection<String>]
+				// - Variables.VAR_IMPLICITSET: [Collection<SampleKey>]
+				// - Variables.VAR_ALLELES: known alleles [Collection<char[]>]
+				// - Census.VAR_OP_MARKERS_CENSUSALL: marker census - all [Collection<Census.all<== int[]>>]
+				// - Census.VAR_OP_MARKERS_CENSUSCASE: marker census - case [Collection<Census.case>]
+				// - Census.VAR_OP_MARKERS_CENSUSCTRL: marker census - control [Collection<Census.control>]
+				// - Census.VAR_OP_MARKERS_CENSUSHW: marker census - alternate hardy-weinberg [Collection<Census.altHW>]
+
 				wrNcFile = wrOPHandler.getNetCDFHandler();
 				wrNcFile.create();
 				log.trace("Done creating netCDF handle: " + wrNcFile.toString());
@@ -865,7 +875,6 @@ public class OP_MarkerCensus implements MatrixOperation {
 
 		// WRITE SAMPLESET TO MATRIX FROM SAMPLES ARRAYLIST
 		ArrayChar.D2 samplesD2 = NetCdfUtils.writeCollectionToD2ArrayChar(wrSampleKeys, cNetCDF.Strides.STRIDE_SAMPLE_NAME);
-
 		int[] sampleOrig = new int[]{0, 0};
 		wrNcFile.write(cNetCDF.Variables.VAR_IMPLICITSET, sampleOrig, samplesD2);
 		log.info("Done writing Sample Set to operation");

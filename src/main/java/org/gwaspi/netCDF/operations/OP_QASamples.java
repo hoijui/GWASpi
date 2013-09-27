@@ -146,7 +146,7 @@ public class OP_QASamples implements MatrixOperation {
 					rdMatrixKey, // Parent matrixId
 					-1); // Parent operationId
 
-			// wrNcFile will contain:
+			// what will be written to the operation NetCDF file (wrNcFile):
 			// - cNetCDF.Variables.VAR_OPSET: (String, key.getSampleId() + " " + key.getFamilyId()) sample keys
 			// - cNetCDF.Variables.VAR_IMPLICITSET: (String, key.getId()) marker keys
 			// - cNetCDF.Census.VAR_OP_SAMPLES_MISSINGRAT: (double) missing ratio for each sample

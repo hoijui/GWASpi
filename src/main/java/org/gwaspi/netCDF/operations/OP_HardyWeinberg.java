@@ -84,6 +84,15 @@ public class OP_HardyWeinberg implements MatrixOperation {
 					markerCensusOPKey.getParentMatrixKey(), // Parent matrixId
 					markerCensusOPKey.getId()); // Parent operationId
 
+			// what will be written to the operation NetCDF file (wrNcFile):
+			// - Variables.VAR_OPSET: [Collection<MarkerKey>]
+			// - Variables.VAR_MARKERS_RSID: [Collection<String>]
+			// - Variables.VAR_IMPLICITSET: [Collection<SampleKey>]
+			// - HardyWeinberg.VAR_OP_MARKERS_HWPval_CTRL: Control P-Value [Double[1]]
+			// - HardyWeinberg.VAR_OP_MARKERS_HWHETZY_CTRL: Control Obs Hetzy & Exp Hetzy [Double[2]]
+			// - HardyWeinberg.VAR_OP_MARKERS_HWPval_ALT: Hardy-Weinberg Alternative P-Value [Double[1]]
+			// - HardyWeinberg.VAR_OP_MARKERS_HWHETZY_ALT: Hardy-Weinberg Alternative Obs Hetzy & Exp Hetzy [Double[2]]
+
 			wrNcFile = wrOPHandler.getNetCDFHandler();
 			wrNcFile.create();
 			log.trace("Done creating netCDF handle: " + wrNcFile.toString());
@@ -100,7 +109,6 @@ public class OP_HardyWeinberg implements MatrixOperation {
 
 			// WRITE SAMPLESET TO MATRIX FROM SAMPLES ARRAYLIST
 			ArrayChar.D2 samplesD2 = NetCdfUtils.writeCollectionToD2ArrayChar(rdSampleSetMap.keySet(), cNetCDF.Strides.STRIDE_SAMPLE_NAME);
-
 			int[] sampleOrig = new int[] {0, 0};
 			wrNcFile.write(cNetCDF.Variables.VAR_IMPLICITSET, sampleOrig, samplesD2);
 			log.info("Done writing SampleSet to matrix");
