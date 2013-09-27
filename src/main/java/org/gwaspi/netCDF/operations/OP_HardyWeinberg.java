@@ -219,18 +219,22 @@ public class OP_HardyWeinberg implements MatrixOperation {
 //			NetCdfUtils.saveArrayDoubleD2ToWrMatrix(wrNcFile, markersContingencyMap, boxes, cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWHETZY_CASE);
 //		}
 
-		// CONTROL SAMPLES
-		if (category.equals("CTRL")) {
-			NetCdfUtils.saveDoubleMapItemD1ToWrMatrix(wrNcFile, result.values(), 0, cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWPval_CTRL);
-			int[] boxes = new int[] {1, 2};
-			NetCdfUtils.saveDoubleMapD2ToWrMatrix(wrNcFile, result.values(), boxes, cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWHETZY_CTRL);
-		}
 
-		// HW-ALT SAMPLES
-		if (category.equals("HW-ALT")) {
-			NetCdfUtils.saveDoubleMapItemD1ToWrMatrix(wrNcFile, result.values(), 0, cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWPval_ALT);
-			int[] boxes = new int[] {1, 2};
-			NetCdfUtils.saveDoubleMapD2ToWrMatrix(wrNcFile, result.values(), boxes, cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWHETZY_ALT);
+		String varPval;
+		String varHetzy;
+		if (category.equals("CTRL")) {
+			// CONTROL SAMPLES
+			varPval = cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWPval_CTRL;
+			varHetzy = cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWHETZY_CTRL;
+		} else if (category.equals("HW-ALT")) {
+			// HW-ALT SAMPLES
+			varPval = cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWPval_ALT;
+			varHetzy = cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWHETZY_ALT;
+		} else {
+			throw new IllegalArgumentException("unknown cathegory: " + category);
 		}
+		NetCdfUtils.saveDoubleMapItemD1ToWrMatrix(wrNcFile, result.values(), 0, varPval);
+		int[] boxes = new int[] {1, 2};
+		NetCdfUtils.saveDoubleMapD2ToWrMatrix(wrNcFile, result.values(), boxes, varHetzy);
 	}
 }
