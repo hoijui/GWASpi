@@ -133,6 +133,18 @@ public abstract class AbstractTestMatrixOperation implements MatrixOperation {
 						rdCensusOPMetadata.getParentMatrixKey(), // Parent matrixId
 						markerCensusOP.getId()); // Parent operationId
 
+				// what will be written to the operation NetCDF file (wrOPNcFile):
+				// - Variables.VAR_OPSET: wrMarkerMetadata.keySet() [Collection<MarkerKey>]
+				// - Variables.VAR_MARKERS_RSID: markers RS ID from the rd marker census opertion, sorted by wrMarkerMetadata.keySet() [Collection<String>]
+				// - Variables.VAR_IMPLICITSET: "implicit set", rdSampleSetMap.keySet(), original sample keys [Collection<SampleKey>]
+				// - Variables.VAR_CHR_IN_MATRIX: chromosomeInfo.keySet() [Collection<ChromosomeKey>]
+				// - Variables.VAR_CHR_INFO: chromosomeInfo.values() [Collection<ChromosomeInfo>]
+				// switch (test-type) {
+				//   case "allelic association test": Association.VAR_OP_MARKERS_ASAllelicAssociationTPOR: {T, P-Value, OR} [Double[3]]
+				//   case "genotypic association test": Association.VAR_OP_MARKERS_ASGenotypicAssociationTP2OR: {T, P-Value, OR-1, OR-2} [Double[4]]
+				//   case "trend test": Association.VAR_OP_MARKERS_ASTrendTestTP: {T, P-Value} [Double[2]]
+				// }
+
 				wrOPNcFile = wrOPHandler.getNetCDFHandler();
 				wrOPNcFile.create();
 				log.trace("Done creating netCDF handle: " + wrOPNcFile.toString());
@@ -148,9 +160,8 @@ public abstract class AbstractTestMatrixOperation implements MatrixOperation {
 				Map<MarkerKey, char[]> sortedCaseMarkerIds = org.gwaspi.global.Utils.createOrderedMap(wrMarkerMetadata.keySet(), rdCaseMarkerIdSetMap);
 				NetCdfUtils.saveCharMapValueToWrMatrix(wrOPNcFile, sortedCaseMarkerIds.values(), cNetCDF.Variables.VAR_MARKERS_RSID, cNetCDF.Strides.STRIDE_MARKER_NAME);
 
-				// WRITE SAMPLESET TO MATRIX FROM SAMPLES ARRAYLIST
+				// WRITE SAMPLESET TO MATRIX FROM SAMPLES
 				ArrayChar.D2 samplesD2 = NetCdfUtils.writeCollectionToD2ArrayChar(rdSampleSetMap.keySet(), cNetCDF.Strides.STRIDE_SAMPLE_NAME);
-
 				int[] sampleOrig = new int[] {0, 0};
 				wrOPNcFile.write(cNetCDF.Variables.VAR_IMPLICITSET, sampleOrig, samplesD2);
 				log.info("Done writing SampleSet to matrix");

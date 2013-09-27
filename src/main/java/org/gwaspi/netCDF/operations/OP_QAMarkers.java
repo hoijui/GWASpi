@@ -191,7 +191,7 @@ public class OP_QAMarkers implements MatrixOperation {
 					rdMatrixKey, // Parent matrixId
 					-1); // Parent operationId
 
-			// wrNcFile will contain:
+			// what will be written to the operation NetCDF file (wrNcFile):
 			// - cNetCDF.Variables.VAR_OPSET: (String, key.getId()) marker keys
 			// - cNetCDF.Variables.VAR_MARKERS_RSID: (String) marker RS-IDs
 			// - cNetCDF.Variables.VAR_IMPLICITSET: (String, key.getSampleId() + " " + key.getFamilyId()) sample keys
