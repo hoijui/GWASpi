@@ -185,7 +185,7 @@ public class OperationFactory {
 		return opMetaData;
 	}
 
-	public static NetcdfFileWriteable generateNetcdfMarkerQAHandler(
+	private static NetcdfFileWriteable generateNetcdfMarkerQAHandler(
 			StudyKey studyKey,
 			String resultOPName,
 			String description,
@@ -271,7 +271,7 @@ public class OperationFactory {
 		return ncfile;
 	}
 
-	public static NetcdfFileWriteable generateNetcdfSampleQAHandler(
+	private static NetcdfFileWriteable generateNetcdfSampleQAHandler(
 			StudyKey studyKey,
 			String matrixName,
 			String description,
@@ -333,7 +333,7 @@ public class OperationFactory {
 
 	}
 
-	public static NetcdfFileWriteable generateNetcdfCensusHandler(
+	private static NetcdfFileWriteable generateNetcdfCensusHandler(
 			StudyKey studyKey,
 			String matrixName,
 			String description,
@@ -422,7 +422,7 @@ public class OperationFactory {
 		return ncfile;
 	}
 
-	public static NetcdfFileWriteable generateNetcdfHardyWeinbergHandler(
+	private static NetcdfFileWriteable generateNetcdfHardyWeinbergHandler(
 			StudyKey studyKey,
 			String matrixName,
 			String description,
@@ -497,7 +497,7 @@ public class OperationFactory {
 		return ncfile;
 	}
 
-	public static NetcdfFileWriteable generateNetcdfAssociationHandler(
+	private static NetcdfFileWriteable generateNetcdfAssociationHandler(
 			StudyKey studyKey,
 			String matrixName,
 			String description,
@@ -598,7 +598,7 @@ public class OperationFactory {
 		return ncfile;
 	}
 
-	public static NetcdfFileWriteable generateNetcdfTrendTestHandler(
+	private static NetcdfFileWriteable generateNetcdfTrendTestHandler(
 			StudyKey studyKey,
 			String matrixName,
 			String description,
