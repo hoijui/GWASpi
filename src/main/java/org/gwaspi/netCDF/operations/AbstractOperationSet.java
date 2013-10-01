@@ -47,27 +47,14 @@ public class AbstractOperationSet<K, V> {
 	private final KeyFactory<K> keyFactory;
 	private final OperationKey operationKey;
 	private final OperationMetadata opMetadata;
-	private int opSetSize;
-	private int implicitSetSize;
 	private Map<K, V> opSetMap;
 
 	public AbstractOperationSet(OperationKey operationKey, KeyFactory<K> keyFactory) throws IOException {
 
 		this.operationKey = operationKey;
-		this.opSetSize = 0;
-		this.implicitSetSize = 0;
 		this.opMetadata = OperationsList.getOperation(operationKey);
-		this.opSetSize = opMetadata.getOpSetSize();
 		this.opSetMap = null;
 		this.keyFactory = keyFactory;
-	}
-
-	public int getOpSetSize() {
-		return opSetSize;
-	}
-
-	public int getImplicitSetSize() {
-		return implicitSetSize;
 	}
 
 	protected OperationMetadata getOperationMetadata() {
@@ -99,7 +86,7 @@ public class AbstractOperationSet<K, V> {
 			int[] varShape = var.getShape();
 
 			try {
-				opSetSize = varShape[0];
+				int opSetSize = varShape[0];
 
 				if (dataType == DataType.CHAR) {
 					ArrayChar.D2 markerSetAC = (ArrayChar.D2) var.read("(0:" + (opSetSize - 1) + ":1, 0:" + (varShape[1] - 1) + ":1)");
@@ -139,7 +126,7 @@ public class AbstractOperationSet<K, V> {
 			int[] varShape = var.getShape();
 
 			try {
-				opSetSize = varShape[0];
+				int opSetSize = varShape[0];
 				if (dataType == DataType.CHAR) {
 					ArrayChar.D2 markerSetAC = (ArrayChar.D2) var.read("(0:" + (opSetSize - 1) + ":1, 0:" + (varShape[1] - 1) + ":1)");
 					opRsIdSetMap = wrapToKeyMap(markerSetAC, keyFactory);
@@ -176,7 +163,7 @@ public class AbstractOperationSet<K, V> {
 
 			int[] varShape = var.getShape();
 			try {
-				implicitSetSize = varShape[0];
+				int implicitSetSize = varShape[0];
 				ArrayChar.D2 sampleSetAC = (ArrayChar.D2) var.read("(0:" + (implicitSetSize - 1) + ":1, 0:" + (varShape[1] - 1) + ":1)");
 
 				implicitSetMap = wrapToKeyMap(sampleSetAC, new SampleKeyFactory(operationKey.getParentMatrixKey().getStudyKey()));
@@ -211,7 +198,7 @@ public class AbstractOperationSet<K, V> {
 		DataType dataType = var.getDataType();
 		int[] varShape = var.getShape();
 		try {
-			opSetSize = varShape[0];
+			int opSetSize = varShape[0];
 			if ((dataType == DataType.CHAR) && (varShape.length == 2)) {
 				ArrayChar.D2 markerSetAC = (ArrayChar.D2) var.read("(0:" + (opSetSize - 1) + ":1, 0:" + (varShape[1] - 1) + ":1)");
 				NetCdfUtils.writeD2ArrayCharToMapValues(markerSetAC, (Map<K, char[]>)opSetMap);
@@ -275,7 +262,7 @@ public class AbstractOperationSet<K, V> {
 
 		DataType dataType = var.getDataType();
 		int[] varShape = var.getShape();
-		opSetSize = varShape[0];
+		int opSetSize = varShape[0];
 		((ArrayList) list).ensureCapacity(opSetSize);
 
 		try {
