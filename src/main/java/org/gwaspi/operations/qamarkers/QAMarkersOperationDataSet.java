@@ -19,6 +19,7 @@ package org.gwaspi.operations.qamarkers;
 
 import java.io.IOException;
 import java.util.Collection;
+import org.gwaspi.model.Census;
 import org.gwaspi.operations.OperationDataSet;
 
 public interface QAMarkersOperationDataSet extends OperationDataSet {
@@ -38,40 +39,51 @@ public interface QAMarkersOperationDataSet extends OperationDataSet {
 	void setMarkerMismatchStates(Collection<Boolean> markerMismatchStates) throws IOException;
 
 	/**
-	 * @param markerMajorAlleles
-	 *   the dictionary allele 1 values, one per marker in this operation
-	 * NetCDF variable: Census.VAR_OP_MARKERS_MAJALLELES
+	 * @param markerKnownAlleles
+	 *   the dictionary allele 1 and 2 values and their frequencies, one such set per marker in this operation
+	 * NetCDF variable:
+	 * - Census.VAR_OP_MARKERS_MAJALLELES
+	 * - Census.VAR_OP_MARKERS_MAJALLELEFRQ
+	 * - Census.VAR_OP_MARKERS_MINALLELES
+	 * - Census.VAR_OP_MARKERS_MINALLELEFRQ
 	 */
-	void setMarkerMajorAlleles(Collection<Byte> markerMajorAlleles) throws IOException;
+	void setMarkerKnownAlleles(Collection<OrderedAlleles> markerKnownAlleles) throws IOException;
 
-	/**
-	 * @param markerMajorAllelesFrequencies
-	 *   the frequency of dictionary allele 1 in all the alleles for any given marker  in this operation
-	 * NetCDF variable: Census.VAR_OP_MARKERS_MAJALLELEFRQ
-	 */
-	void setMarkerMajorAlleleFrequencies(Collection<Double> markerMajorAllelesFrequencies) throws IOException;
-
-	/**
-	 * @param markerMinorAlleles
-	 *   the dictionary allele 2 values, one per marker in this operation
-	 * NetCDF variable: Census.VAR_OP_MARKERS_MINALLELES
-	 */
-	void setMarkerMinorAlleles(Collection<Byte> markerMinorAlleles) throws IOException;
-
-	/**
-	 * @param markerMinorAllelesFrequencies
-	 *   the frequency of dictionary allele 2 in all the alleles for any given marker in this operation
-	 * NetCDF variable: Census.VAR_OP_MARKERS_MINALLELEFRQ
-	 */
-	void setMarkerMinorAlleleFrequencies(Collection<Double> markerMinorAllelesFrequencies) throws IOException;
-
+//	/**
+//	 * @param markerMajorAlleles
+//	 *   the dictionary allele 1 values, one per marker in this operation
+//	 * NetCDF variable: Census.VAR_OP_MARKERS_MAJALLELES
+//	 */
+//	void setMarkerMajorAlleles(Collection<Byte> markerMajorAlleles) throws IOException;
+//
+//	/**
+//	 * @param markerMajorAllelesFrequencies
+//	 *   the frequency of dictionary allele 1 in all the alleles for any given marker  in this operation
+//	 * NetCDF variable: Census.VAR_OP_MARKERS_MAJALLELEFRQ
+//	 */
+//	void setMarkerMajorAlleleFrequencies(Collection<Double> markerMajorAllelesFrequencies) throws IOException;
+//
+//	/**
+//	 * @param markerMinorAlleles
+//	 *   the dictionary allele 2 values, one per marker in this operation
+//	 * NetCDF variable: Census.VAR_OP_MARKERS_MINALLELES
+//	 */
+//	void setMarkerMinorAlleles(Collection<Byte> markerMinorAlleles) throws IOException;
+//
+//	/**
+//	 * @param markerMinorAllelesFrequencies
+//	 *   the frequency of dictionary allele 2 in all the alleles for any given marker in this operation
+//	 * NetCDF variable: Census.VAR_OP_MARKERS_MINALLELEFRQ
+//	 */
+//	void setMarkerMinorAlleleFrequencies(Collection<Double> markerMinorAllelesFrequencies) throws IOException;
 
 	/**
 	 * @param markerCensusAll
 	 *   int[4]: allele-AA, allele-Aa, allele-aa, missing-count for each marker in this operation
 	 * NetCDF variable: Census.VAR_OP_MARKERS_CENSUSALL
 	 */
-	void setMarkerCensusAll(Collection<int[]> markerCensusAll) throws IOException;
+//	void setMarkerCensusAll(Collection<int[]> markerCensusAll) throws IOException;
+	void setMarkerCensusAll(Collection<Census> markerCensusAll) throws IOException;
 
 	Collection<QAMarkersOperationEntry> getEntries();
 }

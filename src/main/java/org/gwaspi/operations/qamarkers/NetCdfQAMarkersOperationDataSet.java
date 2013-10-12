@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
+import org.gwaspi.model.Census;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.netCDF.operations.NetCdfUtils;
@@ -76,12 +77,14 @@ public class NetCdfQAMarkersOperationDataSet extends AbstractNetCdfOperationData
 		}
 	}
 
+	@Override
 	public void setMarkerMissingRatios(Collection<Double> markerMissingRatios) throws IOException {
 
 		ensureNcFile();
 		NetCdfUtils.saveDoubleMapD1ToWrMatrix(getNetCdfWriteFile(), markerMissingRatios, cNetCDF.Census.VAR_OP_MARKERS_MISSINGRAT);
 	}
 
+	@Override
 	public void setMarkerMismatchStates(Collection<Boolean> markerMismatchStates) throws IOException {
 
 		Collection<Integer> markerMismatchIntegerStates
@@ -95,43 +98,22 @@ public class NetCdfQAMarkersOperationDataSet extends AbstractNetCdfOperationData
 		NetCdfUtils.saveIntMapD1ToWrMatrix(getNetCdfWriteFile(), markerMismatchIntegerStates, cNetCDF.Census.VAR_OP_MARKERS_MISMATCHSTATE);
 	}
 
-	public void setMarkerKnownAlleles(Collection<OrderedAllele> markerMajorAlleles) throws IOException {
+	@Override
+	public void setMarkerKnownAlleles(Collection<OrderedAlleles> markerKnownAlleles) throws IOException {
 
-			//Utils.saveCharMapValueToWrMatrix(wrNcFile, wrMarkerSetKnownAllelesMap, cNetCDF.Census.VAR_OP_MARKERS_KNOWNALLELES, cNetCDF.Strides.STRIDE_GT);
-			NetCdfUtils.saveByteMapItemToWrMatrix(wrNcFile, wrMarkerSetKnownAllelesMap.values(), cNetCDF.Census.VAR_OP_MARKERS_MAJALLELES, OP_QAMarkers.OrderedAlleles.TO_ALLELE_1, cNetCDF.Strides.STRIDE_GT / 2);
-			NetCdfUtils.saveDoubleMapItemD1ToWrMatrix(wrNcFile, wrMarkerSetKnownAllelesMap.values(), OP_QAMarkers.OrderedAlleles.TO_ALLELE_1_FREQ, cNetCDF.Census.VAR_OP_MARKERS_MAJALLELEFRQ);
-			NetCdfUtils.saveByteMapItemToWrMatrix(wrNcFile, wrMarkerSetKnownAllelesMap.values(), cNetCDF.Census.VAR_OP_MARKERS_MINALLELES, OP_QAMarkers.OrderedAlleles.TO_ALLELE_2, cNetCDF.Strides.STRIDE_GT / 2);
-			NetCdfUtils.saveDoubleMapItemD1ToWrMatrix(wrNcFile, wrMarkerSetKnownAllelesMap.values(), OP_QAMarkers.OrderedAlleles.TO_ALLELE_2_FREQ, cNetCDF.Census.VAR_OP_MARKERS_MINALLELEFRQ);
+		//Utils.saveCharMapValueToWrMatrix(wrNcFile, wrMarkerSetKnownAllelesMap, cNetCDF.Census.VAR_OP_MARKERS_KNOWNALLELES, cNetCDF.Strides.STRIDE_GT);
+		NetCdfUtils.saveByteMapItemToWrMatrix(getNetCdfWriteFile(), markerKnownAlleles, cNetCDF.Census.VAR_OP_MARKERS_MAJALLELES, OrderedAlleles.TO_ALLELE_1, cNetCDF.Strides.STRIDE_GT / 2);
+		NetCdfUtils.saveDoubleMapItemD1ToWrMatrix(getNetCdfWriteFile(), markerKnownAlleles, OrderedAlleles.TO_ALLELE_1_FREQ, cNetCDF.Census.VAR_OP_MARKERS_MAJALLELEFRQ);
+		NetCdfUtils.saveByteMapItemToWrMatrix(getNetCdfWriteFile(), markerKnownAlleles, cNetCDF.Census.VAR_OP_MARKERS_MINALLELES, OrderedAlleles.TO_ALLELE_2, cNetCDF.Strides.STRIDE_GT / 2);
+		NetCdfUtils.saveDoubleMapItemD1ToWrMatrix(getNetCdfWriteFile(), markerKnownAlleles, OrderedAlleles.TO_ALLELE_2_FREQ, cNetCDF.Census.VAR_OP_MARKERS_MINALLELEFRQ);
 	}
 
-	public void setMarkerMajorAlleles(Collection<Byte> markerMajorAlleles) throws IOException {
-
-		XXX;
+	@Override
+	public void setMarkerCensusAll(Collection<Census> markerCensusAll) throws IOException {
+		NetCdfUtils.saveIntMapD2ToWrMatrix(getNetCdfWriteFile(), markerCensusAll, Census.EXTRACTOR_ALL, cNetCDF.Census.VAR_OP_MARKERS_CENSUSALL);
 	}
 
-	public void setMarkerMajorAlleleFrequencies(Collection<Double> markerMajorAllelesFrequencies) throws IOException {
-
-		ensureNcFile();
-		NetCdfUtils.saveDoubleMapD1ToWrMatrix(getNetCdfWriteFile(), markerMissingRatios, cNetCDF.Census.VAR_OP_MARKERS_MISSINGRAT);
-	}
-
-	public void setMarkerMinorAlleles(Collection<Byte> markerMinorAlleles) throws IOException {
-
-		ensureNcFile();
-		NetCdfUtils.saveDoubleMapD1ToWrMatrix(getNetCdfWriteFile(), markerMissingRatios, cNetCDF.Census.VAR_OP_MARKERS_MISSINGRAT);
-	}
-
-	public void setMarkerMinorAlleleFrequencies(Collection<Double> markerMinorAllelesFrequencies) throws IOException {
-
-		ensureNcFile();
-		NetCdfUtils.saveDoubleMapD1ToWrMatrix(getNetCdfWriteFile(), markerMissingRatios, cNetCDF.Census.VAR_OP_MARKERS_MISSINGRAT);
-	}
-
-	public void setMarkerCensusAll(Collection<int[]> markerCensusAll) throws IOException {
-
-		throw new UnsupportedOperationException("Use .");
-	}
-
+	@Override
 	public Collection<QAMarkersOperationEntry> getEntries() {
 		throw new UnsupportedOperationException("Not supported yet."); // TODO
 	}
