@@ -37,13 +37,16 @@ import org.gwaspi.model.SampleInfo.Sex;
 import org.gwaspi.model.SampleInfoList;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.netCDF.markers.MarkerSet;
+import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
+import org.gwaspi.operations.qamarkers.NetCdfQAMarkersOperationDataSet;
+import org.gwaspi.operations.qamarkers.QAMarkersOperationDataSet;
 import org.gwaspi.samples.SampleSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.ma2.ArrayChar;
-import ucar.ma2.InvalidRangeException;
-import ucar.nc2.NetcdfFile;
-import ucar.nc2.NetcdfFileWriteable;
+//import ucar.ma2.ArrayChar;
+//import ucar.ma2.InvalidRangeException;
+//import ucar.nc2.NetcdfFile;
+//import ucar.nc2.NetcdfFileWriteable;
 
 public class OP_QAMarkers implements MatrixOperation {
 
@@ -157,7 +160,7 @@ public class OP_QAMarkers implements MatrixOperation {
 	public int processMatrix() throws IOException {
 		int resultOpId = Integer.MIN_VALUE;
 
-		Map<MarkerKey, Integer> wrMarkerSetMismatchStateMap = new LinkedHashMap<MarkerKey, Integer>();
+		Map<MarkerKey, Boolean> wrMarkerMismatches = new LinkedHashMap<MarkerKey, Boolean>();
 		Map<MarkerKey, Census> wrMarkerSetCensusMap = new LinkedHashMap<MarkerKey, Census>();
 		Map<MarkerKey, Double> wrMarkerSetMissingRatioMap = new LinkedHashMap<MarkerKey, Double>();
 		Map<MarkerKey, OrderedAlleles> wrMarkerSetKnownAllelesMap = new LinkedHashMap<MarkerKey, OrderedAlleles>();
@@ -173,39 +176,13 @@ public class OP_QAMarkers implements MatrixOperation {
 		SampleSet rdSampleSet = new SampleSet(rdMatrixKey);
 		Map<SampleKey, byte[]> rdSampleSetMap = rdSampleSet.getSampleIdSetMapByteArray();
 
-		NetcdfFileWriteable wrNcFile = null;
 		try {
-			// CREATE netCDF-3 FILE
-			String description = "Marker Quality Assurance on "
-					+ rdMatrixMetadata.getMatrixFriendlyName()
-					+ "\nMarkers: " + rdMarkerSet.getMarkerKeys().size()
-					+ "\nStarted at: " + org.gwaspi.global.Utils.getShortDateTimeAsString();
-			OperationFactory wrOPHandler = new OperationFactory(
-					rdMatrixMetadata.getStudyKey(),
-					"Marker QA", // friendly name
-					description, // description
-					rdMarkerSet.getMarkerKeys().size(),
-					rdSampleSetMap.size(),
-					0,
-					OPType.MARKER_QA,
-					rdMatrixKey, // Parent matrixId
-					-1); // Parent operationId
+			QAMarkersOperationDataSet dataSet = new NetCdfQAMarkersOperationDataSet(); // HACK
+			((AbstractNetCdfOperationDataSet) dataSet).setReadMatrixKey(rdMatrixKey); // HACK
+			((AbstractNetCdfOperationDataSet) dataSet).setNumMarkers(rdMarkerSet.getMarkerKeys().size()); // HACK
+			((AbstractNetCdfOperationDataSet) dataSet).setNumSamples(rdSampleSetMap.size()); // HACK
 
-			// what will be written to the operation NetCDF file (wrNcFile):
-			// - cNetCDF.Variables.VAR_OPSET: (String, key.getId()) marker keys
-			// - cNetCDF.Variables.VAR_MARKERS_RSID: (String) marker RS-IDs
-			// - cNetCDF.Variables.VAR_IMPLICITSET: (String, key.getSampleId() + " " + key.getFamilyId()) sample keys
-			// - cNetCDF.Census.VAR_OP_MARKERS_MISSINGRAT: (double) missing ratio for each marker
-			// - cNetCDF.Census.VAR_OP_MARKERS_MISMATCHSTATE: (int) mismatch state for each marker
-			// - cNetCDF.Census.VAR_OP_MARKERS_MAJALLELES: (byte) dictionary allele 1 for each marker
-			// - cNetCDF.Census.VAR_OP_MARKERS_MAJALLELEFRQ: (double) frequency of dictionary allele 1 in all the alleles for any given marker
-			// - cNetCDF.Census.VAR_OP_MARKERS_MINALLELES: (byte) dictionary allele 2 for each marker
-			// - cNetCDF.Census.VAR_OP_MARKERS_MINALLELEFRQ: (double) frequency of dictionary allele 2 in all the alleles for any given marker
-			// - cNetCDF.Census.VAR_OP_MARKERS_CENSUSALL: ({int, int, int, int}) allele-AA, allele-Aa, allele-aa, missing-count for each marker
 
-			wrNcFile = wrOPHandler.getNetCDFHandler();
-			wrNcFile.create();
-			log.trace("Done creating netCDF handle: " + wrNcFile.toString());
 
 			//<editor-fold defaultstate="expanded" desc="METADATA WRITER">
 			// MARKERSET MARKERID
@@ -431,7 +408,7 @@ public class OP_QAMarkers implements MatrixOperation {
 							missingCount); // all
 
 					wrMarkerSetCensusMap.put(markerKey, census);
-					wrMarkerSetMismatchStateMap.put(markerKey, cNetCDF.Defaults.DEFAULT_MISMATCH_NO);
+					wrMarkerMismatches.put(markerKey, cNetCDF.Defaults.MISMATCH_NO);
 
 					// NOTE This was checking for <code>== null</code>
 					//   (which was never the case)
@@ -451,7 +428,7 @@ public class OP_QAMarkers implements MatrixOperation {
 					wrMarkerSetKnownAllelesMap.put(markerKey, orderedAlleles);
 				} else {
 					wrMarkerSetCensusMap.put(markerKey, new Census());
-					wrMarkerSetMismatchStateMap.put(markerKey, cNetCDF.Defaults.DEFAULT_MISMATCH_YES);
+					wrMarkerMismatches.put(markerKey, cNetCDF.Defaults.MISMATCH_YES);
 
 					orderedAlleles = new OrderedAlleles();
 					wrMarkerSetKnownAllelesMap.put(markerKey, orderedAlleles);
@@ -467,12 +444,16 @@ public class OP_QAMarkers implements MatrixOperation {
 			}
 			//</editor-fold>
 
+			dataSet.setMarkerMissingRatios(wrMarkerSetMissingRatioMap.values());
+			dataSet.setMarkerMismatchStates(wrMarkerMismatches.values());
+			dataSet.setMarkerKnownAlleles(wrMarkerSetKnownAllelesMap.values());
+
 			//<editor-fold defaultstate="expanded" desc="QA DATA WRITER">
 			// MISSING RATIO
 			NetCdfUtils.saveDoubleMapD1ToWrMatrix(wrNcFile, wrMarkerSetMissingRatioMap.values(), cNetCDF.Census.VAR_OP_MARKERS_MISSINGRAT);
 
 			// MISMATCH STATE
-			NetCdfUtils.saveIntMapD1ToWrMatrix(wrNcFile, wrMarkerSetMismatchStateMap.values(), cNetCDF.Census.VAR_OP_MARKERS_MISMATCHSTATE);
+			NetCdfUtils.saveIntMapD1ToWrMatrix(wrNcFile, wrMarkerMismatches.values(), cNetCDF.Census.VAR_OP_MARKERS_MISMATCHSTATE);
 
 			// KNOWN ALLELES
 			//Utils.saveCharMapValueToWrMatrix(wrNcFile, wrMarkerSetKnownAllelesMap, cNetCDF.Census.VAR_OP_MARKERS_KNOWNALLELES, cNetCDF.Strides.STRIDE_GT);

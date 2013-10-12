@@ -163,6 +163,8 @@ public class cNetCDF {
 		public static final String DEFAULT_HW = "Hardy-Weinberg";
 		public static final int DEFAULT_MISMATCH_YES = 1;
 		public static final int DEFAULT_MISMATCH_NO = 0;
+		public static final boolean MISMATCH_YES = true;
+		public static final boolean MISMATCH_NO = false;
 
 		public static class AlleleBytes {
 
