@@ -15,9 +15,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.gwaspi.global;
+package org.gwaspi.operations.allelicassociationtest;
 
-public interface TypeConverter<F, T> {
+import org.gwaspi.model.MarkerKey;
+import org.gwaspi.operations.trendtest.DefaultTrendTestOperationEntry;
 
-	T convert(F from);
+public class DefaultAllelicAssociationOperationEntry extends DefaultTrendTestOperationEntry implements AllelicAssociationTestOperationEntry {
+
+	private final double or;
+
+	public DefaultAllelicAssociationOperationEntry(MarkerKey key, int index, double t, double p, double or) {
+		super(key, index, t, p);
+
+		this.or = or;
+	}
+
+	@Override
+	public double getOR() {
+		return or;
+	}
 }

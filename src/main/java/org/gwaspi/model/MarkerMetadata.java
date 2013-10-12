@@ -19,60 +19,60 @@ package org.gwaspi.model;
 
 
 import java.io.Serializable;
-import org.gwaspi.global.TypeConverter;
+import org.gwaspi.global.Extractor;
 
 public class MarkerMetadata implements Serializable, Comparable<MarkerMetadata> {
 
-	public static final TypeConverter<MarkerMetadata, String> TO_MARKER_ID
-			= new TypeConverter<MarkerMetadata, String>()
+	public static final Extractor<MarkerMetadata, String> TO_MARKER_ID
+			= new Extractor<MarkerMetadata, String>()
 	{
 		@Override
-		public String convert(MarkerMetadata from) {
+		public String extract(MarkerMetadata from) {
 			return from.getMarkerId();
 		}
 	};
 
-	public static final TypeConverter<MarkerMetadata, String> TO_RS_ID
-			= new TypeConverter<MarkerMetadata, String>()
+	public static final Extractor<MarkerMetadata, String> TO_RS_ID
+			= new Extractor<MarkerMetadata, String>()
 	{
 		@Override
-		public String convert(MarkerMetadata from) {
+		public String extract(MarkerMetadata from) {
 			return from.getRsId();
 		}
 	};
 
-	public static final TypeConverter<MarkerMetadata, String> TO_CHR
-			= new TypeConverter<MarkerMetadata, String>()
+	public static final Extractor<MarkerMetadata, String> TO_CHR
+			= new Extractor<MarkerMetadata, String>()
 	{
 		@Override
-		public String convert(MarkerMetadata from) {
+		public String extract(MarkerMetadata from) {
 			return from.getChr();
 		}
 	};
 
-	public static final TypeConverter<MarkerMetadata, Integer> TO_POS
-			= new TypeConverter<MarkerMetadata, Integer>()
+	public static final Extractor<MarkerMetadata, Integer> TO_POS
+			= new Extractor<MarkerMetadata, Integer>()
 	{
 		@Override
-		public Integer convert(MarkerMetadata from) {
+		public Integer extract(MarkerMetadata from) {
 			return from.getPos();
 		}
 	};
 
-	public static final TypeConverter<MarkerMetadata, String> TO_ALLELES
-			= new TypeConverter<MarkerMetadata, String>()
+	public static final Extractor<MarkerMetadata, String> TO_ALLELES
+			= new Extractor<MarkerMetadata, String>()
 	{
 		@Override
-		public String convert(MarkerMetadata from) {
+		public String extract(MarkerMetadata from) {
 			return from.getAlleles();
 		}
 	};
 
-	public static final TypeConverter<MarkerMetadata, String> TO_STRAND
-			= new TypeConverter<MarkerMetadata, String>()
+	public static final Extractor<MarkerMetadata, String> TO_STRAND
+			= new Extractor<MarkerMetadata, String>()
 	{
 		@Override
-		public String convert(MarkerMetadata from) {
+		public String extract(MarkerMetadata from) {
 			return from.getStrand();
 		}
 	};

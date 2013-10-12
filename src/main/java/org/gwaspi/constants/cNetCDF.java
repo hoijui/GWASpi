@@ -63,6 +63,7 @@ public class cNetCDF {
 		public static final String VAR_MARKERSET = "marker_id";
 		public static final String VAR_MARKERS_RSID = "marker_rsId";
 		public static final String VAR_MARKERS_CHR = "marker_chromosome";
+		public static final String VAR_CHR_IN_MATRIX_IDX = "chr_in_matrix_idx";
 		public static final String VAR_CHR_IN_MATRIX = "chr_in_matrix";
 		public static final String VAR_CHR_INFO = "chr_info";
 		public static final String VAR_MARKERS_POS = "marker_position";
@@ -81,7 +82,9 @@ public class cNetCDF {
 		public static final String VAR_SAMPLES_AFFECTION = "sample_affection";
 		public static final String VAR_SAMPLES_FILTERS = "sample_filters";
 		//OPERATION VARS
+		public static final String VAR_OPSET_IDX = "opset_idx";
 		public static final String VAR_OPSET = "opset";
+		public static final String VAR_IMPLICITSET_IDX = "implicitset_idx";
 		public static final String VAR_IMPLICITSET = "implicitset";
 		//GT VARS
 		public static final String VAR_GENOTYPES = "genotypes";
@@ -96,6 +99,10 @@ public class cNetCDF {
 	//<editor-fold defaultstate="expanded" desc="OPERATION & ANALYSIS VARS">
 	public static class Census {
 
+		public static final String VAR_OP_MARKERS_CENSUSALL_IDX = "OP_markers_censusall_idx";
+		public static final String VAR_OP_MARKERS_CENSUSCASE_IDX = "OP_markers_censuscase_idx";
+		public static final String VAR_OP_MARKERS_CENSUSCTRL_IDX = "OP_markers_censusctrl_idx";
+		public static final String VAR_OP_MARKERS_CENSUSHW_IDX = "OP_markers_censushw_idx";
 		public static final String VAR_OP_MARKERS_CENSUSALL = "OP_markers_censusall";
 		public static final String VAR_OP_MARKERS_CENSUSCASE = "OP_markers_censuscase";
 		public static final String VAR_OP_MARKERS_CENSUSCTRL = "OP_markers_censusctrl";
@@ -121,10 +128,18 @@ public class cNetCDF {
 		public static final String VAR_OP_MARKERS_HWPval_CASE = "OP_markers_hwpval_case";
 		public static final String VAR_OP_MARKERS_HWPval_CTRL = "OP_markers_hwpval_ctrl";
 		public static final String VAR_OP_MARKERS_HWPval_ALT = "OP_markers_hwpval_alt";
-		public static final String VAR_OP_MARKERS_HWHETZY_ALL = "OP_markers_hwhetzy_all"; // [OBSERVED, EXPECTED]
-		public static final String VAR_OP_MARKERS_HWHETZY_CASE = "OP_markers_hwhetzy_case"; // [OBSERVED, EXPECTED]
-		public static final String VAR_OP_MARKERS_HWHETZY_CTRL = "OP_markers_hwhetzy_ctrl"; // [OBSERVED, EXPECTED]
-		public static final String VAR_OP_MARKERS_HWHETZY_ALT = "OP_markers_hwhetzy_alt"; // [OBSERVED, EXPECTED]
+		/** @deprecated */ public static final String VAR_OP_MARKERS_HWHETZY_ALL = "OP_markers_hwhetzy_all"; // [OBSERVED, EXPECTED]
+		/** @deprecated */ public static final String VAR_OP_MARKERS_HWHETZY_CASE = "OP_markers_hwhetzy_case"; // [OBSERVED, EXPECTED]
+		/** @deprecated */ public static final String VAR_OP_MARKERS_HWHETZY_CTRL = "OP_markers_hwhetzy_ctrl"; // [OBSERVED, EXPECTED]
+		/** @deprecated */ public static final String VAR_OP_MARKERS_HWHETZY_ALT = "OP_markers_hwhetzy_alt"; // [OBSERVED, EXPECTED]
+		public static final String VAR_OP_MARKERS_HWHETZYOBS_ALL = "OP_markers_hwhetzyobs_all";
+		public static final String VAR_OP_MARKERS_HWHETZYOBS_CASE = "OP_markers_hwhetzyobs_case";
+		public static final String VAR_OP_MARKERS_HWHETZYOBS_CTRL = "OP_markers_hwhetzyobs_ctrl";
+		public static final String VAR_OP_MARKERS_HWHETZYOBS_ALT = "OP_markers_hwhetzyexp_alt";
+		public static final String VAR_OP_MARKERS_HWHETZYEXP_ALL = "OP_markers_hwhetzyexp_all";
+		public static final String VAR_OP_MARKERS_HWHETZYEXP_CASE = "OP_markers_hwhetzyexp_case";
+		public static final String VAR_OP_MARKERS_HWHETZYEXP_CTRL = "OP_markers_hwhetzyexp_ctrl";
+		public static final String VAR_OP_MARKERS_HWHETZYEXP_ALT = "OP_markers_hwhetzyexp_alt";
 
 		private HardyWeinberg() {
 		}
@@ -132,9 +147,16 @@ public class cNetCDF {
 
 	public static class Association {
 
+		/** @deprecated was used before the grand storage restructure. now: {T, P} */
 		public static final String VAR_OP_MARKERS_ASTrendTestTP = "OP_markers_as_cochranarmitageTP";
+		/** @deprecated was used before the grand storage restructure. now: {T, P, OR, OR2} */
 		public static final String VAR_OP_MARKERS_ASGenotypicAssociationTP2OR = "OP_markers_as_gnotypTP";
+		/** @deprecated was used before the grand storage restructure. now: {T, P, OR} */
 		public static final String VAR_OP_MARKERS_ASAllelicAssociationTPOR = "OP_markers_as_allelicTPOR";
+		public static final String VAR_OP_MARKERS_T = "OP_markers_T";
+		public static final String VAR_OP_MARKERS_P = "OP_markers_P";
+		public static final String VAR_OP_MARKERS_OR = "OP_markers_OR";
+		public static final String VAR_OP_MARKERS_OR2 = "OP_markers_OR2";
 
 		private Association() {
 		}
@@ -163,6 +185,8 @@ public class cNetCDF {
 		public static final String DEFAULT_HW = "Hardy-Weinberg";
 		public static final int DEFAULT_MISMATCH_YES = 1;
 		public static final int DEFAULT_MISMATCH_NO = 0;
+		public static final boolean MISMATCH_YES = true;
+		public static final boolean MISMATCH_NO = false;
 
 		public static class AlleleBytes {
 

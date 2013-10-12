@@ -20,31 +20,35 @@ package org.gwaspi.reports;
 import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
-import java.util.Collection;
-import java.util.LinkedHashMap;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import org.gwaspi.constants.cExport;
-import org.gwaspi.constants.cNetCDF;
-import org.gwaspi.constants.cNetCDF.Association;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
-import org.gwaspi.model.MarkerKey;
+import org.gwaspi.global.Extractor;
+import org.gwaspi.global.Utils;
+import org.gwaspi.model.DataSetSource;
+import org.gwaspi.model.MarkerMetadata;
+import org.gwaspi.model.MarkersMetadataSource;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.Report;
 import org.gwaspi.model.ReportsList;
 import org.gwaspi.model.Study;
-import org.gwaspi.netCDF.markers.MarkerSet;
-import org.gwaspi.netCDF.operations.AbstractOperationSet;
-import org.gwaspi.netCDF.operations.MarkerOperationSet;
+import org.gwaspi.netCDF.matrices.MatrixFactory;
+import org.gwaspi.netCDF.operations.OperationFactory;
+import org.gwaspi.operations.OperationDataSet;
+import org.gwaspi.operations.allelicassociationtest.AllelicAssociationTestOperationEntry;
+import org.gwaspi.operations.genotypicassociationtest.GenotypicAssociationTestOperationEntry;
+import org.gwaspi.operations.qamarkers.QAMarkersOperationDataSet;
+import org.gwaspi.operations.trendtest.TrendTestOperationEntry;
 import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.CombinedRangeXYPlot;
 import org.jfree.chart.plot.XYPlot;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.nc2.NetcdfFile;
 
 public class OutputAssociation {
 
@@ -52,26 +56,23 @@ public class OutputAssociation {
 
 	private final OPType testType;
 	private final String testName;
-	private final String variableName;
 	private final int qqPlotDof;
 	private final String header;
+	private final boolean allelic;
 	private final boolean combi = false;
 
 	public OutputAssociation(boolean allelic) {
 
 		this.testType = (combi ? OPType.COMBI_ASSOC_TEST : (allelic ? OPType.ALLELICTEST : OPType.GENOTYPICTEST));
 		this.testName = (allelic ? "Allelic" : "Genotypic") + (combi ? " Combi" : "");
-		this.variableName = (combi ? Association.VAR_OP_MARKERS_ASGenotypicAssociationTP2OR // FIXME
-				: (allelic
-				? Association.VAR_OP_MARKERS_ASAllelicAssociationTPOR
-				: Association.VAR_OP_MARKERS_ASGenotypicAssociationTP2OR));
 		this.qqPlotDof = allelic ? 1 : 2; // FIXME
+		this.allelic = allelic;
 		this.header = "MarkerID\trsID\tChr\tPosition\tMin. Allele\tMaj. Allele\tX²\tPval\t" + (allelic ? "OR" : "OR-AA/aa\tOR-Aa/aa") + "\n"; // FIXME
 	}
 
-	public void writeReportsForAssociationData(OperationKey operationKey) throws IOException {
+	public void writeReportsForAssociationData(OperationKey assocTestOpKey) throws IOException {
 
-		OperationMetadata op = OperationsList.getOperation(operationKey);
+		OperationMetadata op = OperationsList.getOperation(assocTestOpKey);
 
 		org.gwaspi.global.Utils.createFolder(new File(Study.constructReportsPath(op.getStudyKey())));
 		//String manhattanName = "mnhtt_" + outName;
@@ -79,14 +80,14 @@ public class OutputAssociation {
 		String manhattanName = prefix + "manhtt";
 
 		log.info("Start saving {} test", testName);
-		writeManhattanPlotFromAssociationData(operationKey, manhattanName, 4000, 500);
+		writeManhattanPlotFromAssociationData(assocTestOpKey, manhattanName, 4000, 500);
 		if (!combi) {
 			ReportsList.insertRPMetadata(new Report(
 					Integer.MIN_VALUE,
 					testName + " assoc. Manhattan Plot",
 					manhattanName + ".png",
 					OPType.MANHATTANPLOT,
-					operationKey,
+					assocTestOpKey,
 					testName + " Association Manhattan Plot",
 					op.getStudyKey()));
 			log.info("Saved " + testName + " Association Manhattan Plot in reports folder");
@@ -94,14 +95,14 @@ public class OutputAssociation {
 
 		//String qqName = "qq_" + outName;
 		String qqName = prefix + "qq";
-		writeQQPlotFromAssociationData(operationKey, qqName, 500, 500);
+		writeQQPlotFromAssociationData(assocTestOpKey, qqName, 500, 500);
 		if (!combi) {
 			ReportsList.insertRPMetadata(new Report(
 					Integer.MIN_VALUE,
 					testName + " assoc. QQ Plot",
 					qqName + ".png",
 					OPType.QQPLOT,
-					operationKey,
+					assocTestOpKey,
 					testName + " Association QQ Plot",
 					op.getStudyKey()));
 			log.info("Saved {} Association QQ Plot in reports folder", testName);
@@ -109,29 +110,29 @@ public class OutputAssociation {
 
 		//String assocName = "assoc_"+outName;
 		String assocName = prefix;
-		createSortedAssociationReport(operationKey, assocName);
+		createSortedAssociationReport(assocTestOpKey, assocName);
 		ReportsList.insertRPMetadata(new Report(
 				Integer.MIN_VALUE,
 				testName + " Association Tests Values",
 				assocName + ".txt",
 				testType,
-				operationKey,
+				assocTestOpKey,
 				testName + " Association Tests Values",
 				op.getStudyKey()));
 		org.gwaspi.global.Utils.sysoutCompleted(testName + " Association Reports & Charts");
 	}
 
-	private void writeManhattanPlotFromAssociationData(OperationKey operationKey, String outName, int width, int height) throws IOException {
+	private void writeManhattanPlotFromAssociationData(OperationKey assocTestOpKey, String outName, int width, int height) throws IOException {
 
 		// Generating XY scatter plot with loaded data
-		CombinedRangeXYPlot combinedPlot = GenericReportGenerator.buildManhattanPlot(operationKey, variableName);
+		CombinedRangeXYPlot combinedPlot = GenericReportGenerator.buildManhattanPlot(assocTestOpKey);
 
 		JFreeChart chart = new JFreeChart("P value", JFreeChart.DEFAULT_TITLE_FONT, combinedPlot, true);
 
 		// CHART BACKGROUD COLOR
 		chart.setBackgroundPaint(Color.getHSBColor(0.1f, 0.1f, 1.0f)); // Hue, saturation, brightness
 
-		OperationMetadata rdOPMetadata = OperationsList.getOperation(operationKey);
+		OperationMetadata rdOPMetadata = OperationsList.getOperation(assocTestOpKey);
 		int pointNb = rdOPMetadata.getOpSetSize();
 		int picWidth = 4000;
 		if (pointNb < 1000) {
@@ -144,7 +145,7 @@ public class OutputAssociation {
 			picWidth = 2000;
 		}
 
-		String imagePath = Study.constructReportsPath(operationKey.getParentMatrixKey().getStudyKey()) + outName + ".png";
+		String imagePath = Study.constructReportsPath(assocTestOpKey.getParentMatrixKey().getStudyKey()) + outName + ".png";
 		try {
 			ChartUtilities.saveChartAsPNG(new File(imagePath),
 					chart,
@@ -158,7 +159,7 @@ public class OutputAssociation {
 	private void writeQQPlotFromAssociationData(OperationKey operationKey, String outName, int width, int height) throws IOException {
 
 		// Generating XY scatter plot with loaded data
-		XYPlot qqPlot = GenericReportGenerator.buildQQPlot(operationKey, variableName, qqPlotDof);
+		XYPlot qqPlot = GenericReportGenerator.buildQQPlot(operationKey, qqPlotDof);
 
 		JFreeChart chart = new JFreeChart("X² QQ", JFreeChart.DEFAULT_TITLE_FONT, qqPlot, true);
 
@@ -175,40 +176,35 @@ public class OutputAssociation {
 		}
 	}
 
-	private void createSortedAssociationReport(OperationKey operationKey, String reportName) throws IOException {
+	private void createSortedAssociationReport(OperationKey assocTestOpKey, String reportName) throws IOException {
 
-		Map<MarkerKey, double[]> unsortedMarkerIdAssocValsMap = GenericReportGenerator.getAnalysisVarData(operationKey, variableName);
-		Map<MarkerKey, Double> unsortedMarkerIdPvalMap = new LinkedHashMap<MarkerKey, Double>();
-		for (Map.Entry<MarkerKey, double[]> entry : unsortedMarkerIdAssocValsMap.entrySet()) {
-			double[] values = entry.getValue();
-			unsortedMarkerIdPvalMap.put(entry.getKey(), values[1]);
+		OperationDataSet<? extends TrendTestOperationEntry> testOperationDataSet = OperationFactory.generateOperationDataSet(assocTestOpKey);
+		List<? extends TrendTestOperationEntry> testOperationEntries = (List) testOperationDataSet.getEntries(); // HACK This might not be a List!
+		Collections.sort(testOperationEntries, new TrendTestOperationEntry.PValueComparator());
+
+		List<Integer> sortedOrigIndices = new ArrayList<Integer>(testOperationEntries.size());
+		for (TrendTestOperationEntry trendTestOperationEntry : testOperationEntries) {
+			sortedOrigIndices.add(trendTestOperationEntry.getIndex());
 		}
-		Collection<MarkerKey> sortedMarkerKeys = org.gwaspi.global.Utils.createMapSortedByValue(unsortedMarkerIdPvalMap).keySet();
-		unsortedMarkerIdPvalMap.clear(); // "garbage collection"
 
 		String sep = cExport.separator_REPORTS;
-		OperationMetadata rdOPMetadata = OperationsList.getOperation(operationKey);
-		MarkerSet rdInfoMarkerSet = new MarkerSet(operationKey.getParentMatrixKey());
-		rdInfoMarkerSet.initFullMarkerIdSetMap();
+		OperationMetadata rdOPMetadata = OperationsList.getOperation(assocTestOpKey);
+		DataSetSource matrixDataSetSource = MatrixFactory.generateMatrixDataSetSource(assocTestOpKey.getParentMatrixKey());
+		MarkersMetadataSource markersMetadatas = matrixDataSetSource.getMarkersMetadatasSource();
+		List<MarkerMetadata> orderedMarkersMetadatas = Utils.createIndicesOrderedList(sortedOrigIndices, markersMetadatas);
 
 		// WRITE HEADER OF FILE
-		String reportNameExt = reportName + ".txt";
+		reportName = reportName + ".txt";
 		String reportPath = Study.constructReportsPath(rdOPMetadata.getStudyKey());
 
 		// WRITE MARKERSET RSID
-		rdInfoMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_RSID);
-		Map<MarkerKey, char[]> sortedMarkerRSIDs = org.gwaspi.global.Utils.createOrderedMap(sortedMarkerKeys, rdInfoMarkerSet.getMarkerIdSetMapCharArray());
-		ReportWriter.writeFirstColumnToReport(reportPath, reportNameExt, header, sortedMarkerRSIDs, true);
+		ReportWriter.writeFirstColumnToReport(reportPath, reportName, header, orderedMarkersMetadatas, null, MarkerMetadata.TO_RS_ID);
 
 		// WRITE MARKERSET CHROMOSOME
-		rdInfoMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
-		Map<MarkerKey, char[]> sortedMarkerCHRs = org.gwaspi.global.Utils.createOrderedMap(sortedMarkerKeys, rdInfoMarkerSet.getMarkerIdSetMapCharArray());
-		ReportWriter.appendColumnToReport(reportPath, reportNameExt, sortedMarkerCHRs, false, false);
+		ReportWriter.appendColumnToReport(reportPath, reportName, orderedMarkersMetadatas, null, MarkerMetadata.TO_CHR);
 
 		// WRITE MARKERSET POS
-		rdInfoMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_POS);
-		Map<MarkerKey, Integer> sortedMarkerPos = org.gwaspi.global.Utils.createOrderedMap(sortedMarkerKeys, rdInfoMarkerSet.getMarkerIdSetMapInteger());
-		ReportWriter.appendColumnToReport(reportPath, reportNameExt, sortedMarkerPos, false, false);
+		ReportWriter.appendColumnToReport(reportPath, reportName, orderedMarkersMetadatas, null, new Extractor.ToStringMetaExtractor(MarkerMetadata.TO_POS));
 
 		// WRITE KNOWN ALLELES FROM QA
 		// get MARKER_QA Operation
@@ -220,34 +216,24 @@ public class OutputAssociation {
 				markersQAopKey = OperationKey.valueOf(op);
 			}
 		}
-		Map<MarkerKey, String> sortedMarkerAlleles = new LinkedHashMap<MarkerKey, String>(sortedMarkerKeys.size());
-		if (markersQAopKey != null) {
-			OperationMetadata qaMetadata = OperationsList.getOperation(markersQAopKey);
-			NetcdfFile qaNcFile = NetcdfFile.open(qaMetadata.getPathToMatrix());
-
-			MarkerOperationSet rdOperationSet = new MarkerOperationSet(markersQAopKey);
-			Map<MarkerKey, byte[]> opMarkerSetMap = rdOperationSet.getOpSetMap();
-
-			// MINOR ALLELE
-			opMarkerSetMap = rdOperationSet.fillOpSetMapWithVariable(qaNcFile, cNetCDF.Census.VAR_OP_MARKERS_MINALLELES);
-			for (MarkerKey key : rdInfoMarkerSet.getMarkerKeys()) {
-				byte[] minorAllele = opMarkerSetMap.get(key);
-				sortedMarkerAlleles.put(key, new String(minorAllele));
-			}
-
-			// MAJOR ALLELE
-			AbstractOperationSet.fillMapWithDefaultValue(opMarkerSetMap, new byte[0]);
-			opMarkerSetMap = rdOperationSet.fillOpSetMapWithVariable(qaNcFile, cNetCDF.Census.VAR_OP_MARKERS_MAJALLELES);
-			for (Map.Entry<MarkerKey, String> entry : sortedMarkerAlleles.entrySet()) {
-				String minorAllele = entry.getValue();
-				entry.setValue(minorAllele + sep + new String(opMarkerSetMap.get(entry.getKey())));
-			}
+		QAMarkersOperationDataSet qaMarkersOperationDataSet = (QAMarkersOperationDataSet) OperationFactory.generateOperationDataSet(markersQAopKey);
+		List<Byte> knownMinorAlleles = (List) qaMarkersOperationDataSet.getKnownMinorAllele(-1, -1); // HACK might not be a List!
+		List<Byte> knownMajorAlleles = (List) qaMarkersOperationDataSet.getKnownMajorAllele(-1, -1); // HACK might not be a List!
+		List<String> sortedMarkerAlleles = new ArrayList<String>(sortedOrigIndices.size());
+		for (Integer origIndices : sortedOrigIndices) {
+			final char knownMinorAllele = (char) (byte) knownMinorAlleles.get(origIndices);
+			final char knownMajorAllele = (char) (byte) knownMajorAlleles.get(origIndices);
+			String concatenatedValue = knownMinorAllele + sep + knownMajorAllele;
+			sortedMarkerAlleles.add(concatenatedValue);
 		}
-		sortedMarkerAlleles = org.gwaspi.global.Utils.createOrderedMap(sortedMarkerKeys, sortedMarkerAlleles); // XXX probably not required?
-		ReportWriter.appendColumnToReport(reportPath, reportNameExt, sortedMarkerAlleles, false, false);
+		ReportWriter.appendColumnToReport(reportPath, reportName, sortedMarkerAlleles, null, new Extractor.ToStringExtractor());
 
 		// WRITE DATA TO REPORT
-		Map<MarkerKey, double[]> sortedMarkerAssocVals = org.gwaspi.global.Utils.createOrderedMap(sortedMarkerKeys, unsortedMarkerIdAssocValsMap);
-		ReportWriter.appendColumnToReport(reportPath, reportNameExt, sortedMarkerAssocVals, true, false);
+		ReportWriter.appendColumnToReport(reportPath, reportName, testOperationEntries, null, new Extractor.ToStringMetaExtractor(TrendTestOperationEntry.TO_T));
+		ReportWriter.appendColumnToReport(reportPath, reportName, testOperationEntries, null, new Extractor.ToStringMetaExtractor(TrendTestOperationEntry.TO_P));
+		ReportWriter.appendColumnToReport(reportPath, reportName, testOperationEntries, null, new Extractor.ToStringMetaExtractor(AllelicAssociationTestOperationEntry.TO_OR));
+		if (!allelic) {
+			ReportWriter.appendColumnToReport(reportPath, reportName, testOperationEntries, null, new Extractor.ToStringMetaExtractor(GenotypicAssociationTestOperationEntry.TO_OR2));
+		}
 	}
 }

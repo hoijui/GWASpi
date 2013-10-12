@@ -21,11 +21,12 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import org.gwaspi.constants.cExport;
-import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.GenotypesList;
@@ -38,10 +39,10 @@ import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleKey;
-import org.gwaspi.netCDF.operations.MarkerOperationSet;
+import org.gwaspi.netCDF.operations.OperationFactory;
+import org.gwaspi.operations.qamarkers.QAMarkersOperationDataSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.nc2.NetcdfFile;
 
 class BeagleFormatter implements Formatter {
 
@@ -197,21 +198,24 @@ class BeagleFormatter implements Formatter {
 				}
 			}
 
-			Map<MarkerKey, byte[]> opQaMarkersAllelesMaj = null;
-			Map<MarkerKey, byte[]> opQaMarkersAllelesMin = null;
+			Map<MarkerKey, Byte> opQaMarkersAllelesMaj = null;
+			Map<MarkerKey, Byte> opQaMarkersAllelesMin = null;
 			if (markersQAopKey != null) {
-				OperationMetadata qaMetadata = OperationsList.getOperation(markersQAopKey);
-				NetcdfFile qaNcFile = NetcdfFile.open(qaMetadata.getPathToMatrix());
-				MarkerOperationSet<byte[]> rdOperationSet = new MarkerOperationSet<byte[]>(markersQAopKey);
+				QAMarkersOperationDataSet qaMarkersOpDS = (QAMarkersOperationDataSet) OperationFactory.generateOperationDataSet(markersQAopKey);
+				Map<Integer, MarkerKey> markers = qaMarkersOpDS.getMarkers();
+				Collection<Byte> knownMajorAllele = qaMarkersOpDS.getKnownMajorAllele(-1, -1);
+				Collection<Byte> knownMinorAllele = qaMarkersOpDS.getKnownMinorAllele(-1, -1);
 
-				// MAJOR ALLELE
-				/*opQaMarkersAllelesMaj = */rdOperationSet.getOpSetMap();
-				opQaMarkersAllelesMaj = rdOperationSet.fillOpSetMapWithVariable(qaNcFile, cNetCDF.Census.VAR_OP_MARKERS_MAJALLELES);
-
-				// MINOR ALLELE
-				/*opQaMarkersAllelesMin = */rdOperationSet.getOpSetMap();
-				opQaMarkersAllelesMin = rdOperationSet.fillOpSetMapWithVariable(qaNcFile, cNetCDF.Census.VAR_OP_MARKERS_MINALLELES);
+				opQaMarkersAllelesMaj = new LinkedHashMap<MarkerKey, Byte>();
+				opQaMarkersAllelesMin = new LinkedHashMap<MarkerKey, Byte>();
+				Iterator<Byte> knownMajorAlleleIt = knownMajorAllele.iterator();
+				Iterator<Byte> knownMinorAlleleIt = knownMinorAllele.iterator();
+				for (MarkerKey markerKey : markers.values()) {
+					opQaMarkersAllelesMaj.put(markerKey, knownMajorAlleleIt.next());
+					opQaMarkersAllelesMin.put(markerKey, knownMinorAlleleIt.next());
+				}
 			}
+
 			// MARKER files
 			//     rs# or snp identifier
 			//     Base-pair position (bp units)
@@ -227,9 +231,9 @@ class BeagleFormatter implements Formatter {
 				if (markersQAopKey != null) {
 					MarkerKey markerKey = markersKeysIt.next();
 					markerBW.write(sep);
-					markerBW.write((char) opQaMarkersAllelesMaj.get(markerKey)[0]);
+					markerBW.write((char) (byte) opQaMarkersAllelesMaj.get(markerKey));
 					markerBW.write(sep);
-					markerBW.write((char) opQaMarkersAllelesMin.get(markerKey)[0]);
+					markerBW.write((char) (byte) opQaMarkersAllelesMin.get(markerKey));
 				}
 
 				markerBW.write('\n');

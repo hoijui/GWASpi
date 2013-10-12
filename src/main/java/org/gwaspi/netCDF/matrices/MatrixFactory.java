@@ -26,11 +26,13 @@ import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
 import org.gwaspi.global.Config;
+import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.Study;
 import org.gwaspi.model.StudyKey;
+import org.gwaspi.netCDF.markers.NetCDFDataSetSource;
 import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.Dimension;
@@ -318,5 +320,14 @@ public class MatrixFactory {
 
 //		matrixName = matrixName.substring(0, matrixName.length() - 3); // Remove "CET" from name
 		return matrixName;
+	}
+
+	public static DataSetSource generateMatrixDataSetSource(MatrixKey matrixKey) {
+
+		try {
+			return new NetCDFDataSetSource(matrixKey);
+		} catch (IOException ex) {
+			throw new RuntimeException(ex);
+		}
 	}
 }

@@ -24,8 +24,8 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.io.File;
 import java.io.IOException;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.AbstractAction;
 import javax.swing.GroupLayout;
 import javax.swing.ImageIcon;
@@ -42,13 +42,15 @@ import org.gwaspi.gui.MatrixAnalysePanel;
 import org.gwaspi.gui.utils.CursorUtils;
 import org.gwaspi.gui.utils.Dialogs;
 import org.gwaspi.model.ChromosomeInfo;
+import org.gwaspi.model.ChromosomeKey;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.Study;
 import org.gwaspi.model.StudyKey;
-import org.gwaspi.netCDF.operations.MarkerOperationSet;
+import org.gwaspi.netCDF.operations.OperationFactory;
+import org.gwaspi.operations.OperationDataSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,19 +69,20 @@ public final class ManhattanChartDisplay extends JPanel {
 	private JButton btn_Save;
 	private JButton btn_Back;
 	private OperationKey operationKey;
-	private Map<String, ChromosomeInfo> chrSetInfoMap = new LinkedHashMap<String, ChromosomeInfo>();
-	private String chr = "";
+	private List<ChromosomeKey> chrKeys;
+	private List<ChromosomeInfo> chrInfos;
+	private ChromosomeKey chr = new ChromosomeKey("");
 	private int chartWidth = 0;
 	private int chrPlotWidth = 0;
 	private int chrPlotWidthPad = 0;
-	private int padLeft = 64; // Pixel padding to the left of graph
-	private int padGap = 9; // Pixel padding between chromosome plots
+	private final int padLeft = 64; // Pixel padding to the left of graph
+	private final int padGap = 9; // Pixel padding between chromosome plots
 	// End of variables declaration
 
-	public ManhattanChartDisplay(final String chartPath, OperationKey operationKey) {
+	public ManhattanChartDisplay(final String chartPath, OperationKey testOpKey) {
 		fired = false;
-		initManhattanChartDisplay(chartPath, operationKey);
-		initChromosmesMap(operationKey.getParentMatrixKey().getStudyKey(), chartPath);
+		initManhattanChartDisplay(chartPath, testOpKey);
+		initChromosmesMap(testOpKey.getParentMatrixKey().getStudyKey(), chartPath);
 	}
 
 	private void initManhattanChartDisplay(final String chartPath, final OperationKey operationKey) {
@@ -101,16 +104,11 @@ public final class ManhattanChartDisplay extends JPanel {
 							pnl_Chart.setCursor(CursorUtils.WAIT_CURSOR);
 
 							Object[] selectedSliceInfo = getChrSliceInfo(mouseX);
-//							sliceInfo[0] = chrNb;
-//							sliceInfo[1] = chr;
-//							sliceInfo[2] = sliceNb;
-//							sliceInfo[3] = startPhysPos;
-//							sliceInfo[4] = defaultSlotsNb;
 
 							GWASpiExplorerPanel.getSingleton().setPnl_Content(new ManhattanPlotZoom(
 									ManhattanChartDisplay.this,
 									operationKey,
-									selectedSliceInfo[1].toString(),
+									(ChromosomeKey) selectedSliceInfo[1],
 									(Long) selectedSliceInfo[3], // startPhysPos
 									(Long) selectedSliceInfo[4], // physPos window
 									100));
@@ -129,7 +127,7 @@ public final class ManhattanChartDisplay extends JPanel {
 				if (mouseX > padLeft) {
 					Object[] sliceInfo = getChrSliceInfo(mouseX);
 
-					label.setToolTipText("<html>Zoom on chr " + sliceInfo[1].toString()
+					label.setToolTipText("<html>Zoom on chr " + ((ChromosomeKey) sliceInfo[1]).getChromosome()
 							+ "<br>position " + sliceInfo[3] + " to " + ((Long) sliceInfo[3] + (Long) sliceInfo[4])
 							+ "</html>");
 				}
@@ -229,12 +227,13 @@ public final class ManhattanChartDisplay extends JPanel {
 		}
 
 		try {
-			MarkerOperationSet opSet = new MarkerOperationSet(operationKey);
-			chrSetInfoMap = opSet.getChrInfoSetMap();
+			OperationDataSet opDS = OperationFactory.generateOperationDataSet(operationKey);
+			chrKeys = new ArrayList<ChromosomeKey>(opDS.getChromosomes().values());
+			chrInfos = (List) opDS.getChromosomeInfos();
 
 			// CHECK HOW MANY CHR HAVE PLOTS (ANY MARKERS?)
 			int chrPlotNb = 0;
-			for (ChromosomeInfo chrInfo : chrSetInfoMap.values()) {
+			for (ChromosomeInfo chrInfo : chrInfos) {
 				if (chrInfo.getMarkerCount() > 0) {
 					chrPlotNb++;
 				}
@@ -291,17 +290,12 @@ public final class ManhattanChartDisplay extends JPanel {
 
 	private ChromosomeInfo getChrInfo(int pxXposNoLeftPad) {
 
-		int selectedChrMap = Math.round((float) pxXposNoLeftPad / chrPlotWidthPad);
+		final int selectedChrMap = Math.round((float) pxXposNoLeftPad / chrPlotWidthPad);
 
 		ChromosomeInfo chrInfo = new ChromosomeInfo();
-		int i = 0;
-		for (Map.Entry<String, ChromosomeInfo> entry : chrSetInfoMap.entrySet()) {
-			if ((i > selectedChrMap) || (i >= chrSetInfoMap.size())) {
-				break;
-			}
-			chr = entry.getKey();
-			chrInfo = entry.getValue(); // Nb of markers, first physical position, last physical position, start index number in MarkerSet,
-			i++;
+		if (selectedChrMap < chrInfos.size()) {
+			chr = chrKeys.get(selectedChrMap);
+			chrInfo = chrInfos.get(selectedChrMap);
 		}
 
 		return chrInfo;
@@ -346,7 +340,7 @@ public final class ManhattanChartDisplay extends JPanel {
 
 	private static class BackToTableAction extends AbstractAction {
 
-		private OperationKey operationKey;
+		private final OperationKey operationKey;
 
 		BackToTableAction(OperationKey operationKey) {
 

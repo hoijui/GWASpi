@@ -25,6 +25,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -34,15 +35,21 @@ import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.global.Config;
 import org.gwaspi.gui.reports.ManhattanPlotZoom;
 import org.gwaspi.gui.reports.SampleQAHetzygPlotZoom;
+import org.gwaspi.model.ChromosomeKey;
+import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MarkerMetadata;
+import org.gwaspi.model.MarkersMetadataSource;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.netCDF.markers.MarkerSet;
-import org.gwaspi.netCDF.operations.MarkerOperationSet;
-import org.gwaspi.netCDF.operations.SampleOperationSet;
+import org.gwaspi.netCDF.markers.NetCDFDataSetSource;
+import org.gwaspi.netCDF.operations.OperationFactory;
+import org.gwaspi.operations.qasamples.QASamplesOperationDataSet;
+import org.gwaspi.operations.trendtest.CommonTestOperationDataSet;
+import org.gwaspi.operations.trendtest.TrendTestOperationEntry;
 import org.gwaspi.statistics.Chisquare;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
@@ -63,7 +70,6 @@ import org.jfree.ui.RectangleAnchor;
 import org.jfree.ui.TextAnchor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.nc2.NetcdfFile;
 
 public class GenericReportGenerator {
 
@@ -93,9 +99,51 @@ public class GenericReportGenerator {
 	}
 
 	//<editor-fold defaultstate="expanded" desc="ASSOCIATION CHARTS">
-	public static CombinedRangeXYPlot buildManhattanPlot(OperationKey operationKey, String netCDFVar) throws IOException {
+	/**
+	 * @return a map with values in the Object[]
+	 *   = {Chromosome, position, P-Value}
+	 */
+	private static Map<MarkerKey, Object[]> assembleManhattenPlotData(OperationKey testOpKey) throws IOException {
 
-		//<editor-fold defaultstate="expanded" desc="PLOT DEFAULTS">
+		Map<MarkerKey, Object[]> markerKeyChrPosPVal;
+
+		// XXX Should we possibly use only the markers from the test operation, instead of all the ones in the parent matrix, as it is done in getManhattanZoomByChrAndPos, forther down?
+		DataSetSource parentMatrixSource = new NetCDFDataSetSource(testOpKey.getParentMatrixKey());
+		MarkersMetadataSource markersMetadatasSource = parentMatrixSource.getMarkersMetadatasSource();
+		markerKeyChrPosPVal = new LinkedHashMap<MarkerKey, Object[]>(markersMetadatasSource.size());
+		for (MarkerMetadata markerMetadata : markersMetadatasSource) {
+			MarkerKey markerKey = MarkerKey.valueOf(markerMetadata);
+			Object[] data = new Object[] {
+				markerMetadata.getChr(),
+				markerMetadata.getPos(),
+				null // P-Value, will be filled in later on (not for all markers though)
+			};
+			markerKeyChrPosPVal.put(markerKey, data);
+		}
+
+//		long snpNumber = rdInfoMarkerSet.getMarkerSetSize();
+//		if (snpNumber < 250000) {
+//			hetzyThreshold = 0.5 / snpNumber;  // (0.05 / 10^6 SNPs => 5*10^(-7))
+//		}
+
+		CommonTestOperationDataSet<? extends TrendTestOperationEntry> testOpDS = (CommonTestOperationDataSet<? extends TrendTestOperationEntry>) OperationFactory.generateOperationDataSet(testOpKey);
+		Map<Integer, MarkerKey> testOpMarkers = testOpDS.getMarkers();
+		Iterator<MarkerKey> testOpMarkerKeysIt = testOpMarkers.values().iterator();
+		Collection<Double> ps = testOpDS.getPs(-1, -1);
+		for (Double pValue : ps) {
+			MarkerKey markerKey = testOpMarkerKeysIt.next();
+//			if (!Double.isNaN(pValue) && !Double.isInfinite(pValue)) {
+			if (!pValue.isNaN() && !pValue.isInfinite()) { // Ignore NaN Pvalues
+				markerKeyChrPosPVal.get(markerKey)[2] = pValue;
+			}
+		}
+
+		return markerKeyChrPosPVal;
+	}
+
+	public static CombinedRangeXYPlot buildManhattanPlot(OperationKey testOpKey) throws IOException {
+
+		// PLOT DEFAULTS
 		double threshold = Double.parseDouble(Config.getConfigValue(
 				PLOT_MANHATTAN_THRESHOLD_CONFIG,
 				String.valueOf(PLOT_MANHATTAN_THRESHOLD_DEFAULT)));
@@ -108,67 +156,8 @@ public class GenericReportGenerator {
 		Color main = Config.getConfigColor(
 				PLOT_MANHATTAN_MAIN_CONFIG,
 				PLOT_MANHATTAN_MAIN_DEFAULT);
-		//</editor-fold>
 
-		Map<MarkerKey, Object[]> dataSetMap = new LinkedHashMap<MarkerKey, Object[]>();
-		OperationMetadata rdOPMetadata = OperationsList.getOperation(operationKey);
-
-		//<editor-fold defaultstate="expanded" desc="GET POSITION DATA">
-		MarkerSet rdInfoMarkerSet = new MarkerSet(operationKey.getParentMatrixKey());
-		rdInfoMarkerSet.initFullMarkerIdSetMap();
-
-//		long snpNumber = rdInfoMarkerSet.getMarkerSetSize();
-//		if (snpNumber < 250000) {
-//			hetzyThreshold = 0.5 / snpNumber;  // (0.05 / 10^6 SNPs => 5*10^(-7))
-//		}
-
-		rdInfoMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
-		for (Map.Entry<MarkerKey, char[]> entry : rdInfoMarkerSet.getMarkerIdSetMapCharArray().entrySet()) {
-			MarkerKey key = entry.getKey();
-			String chr = new String(entry.getValue());
-			Object[] data = new Object[3]; // CHR, POS, PVAL
-			data[0] = chr;
-			dataSetMap.put(key, data);
-		}
-
-		rdInfoMarkerSet.fillWith(0);
-		rdInfoMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_POS);
-		if (rdInfoMarkerSet.getMarkerIdSetMapInteger() != null) {
-			for (Map.Entry<MarkerKey, Integer> entry : rdInfoMarkerSet.getMarkerIdSetMapInteger().entrySet()) {
-				MarkerKey key = entry.getKey();
-				Object[] data = dataSetMap.get(key); // CHR, POS, PVAL
-				int pos = entry.getValue();
-				data[1] = pos;
-				dataSetMap.put(key, data);
-			}
-
-			rdInfoMarkerSet.getMarkerIdSetMapInteger().clear();
-		}
-		//</editor-fold>
-
-		//<editor-fold defaultstate="expanded" desc="GET Pval">
-		NetcdfFile assocNcFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());
-		MarkerOperationSet rdAssocMarkerSet = new MarkerOperationSet(operationKey);
-		Map<MarkerKey, double[]> rdAssocMarkerSetMap = rdAssocMarkerSet.getOpSetMap();
-		rdAssocMarkerSetMap = rdAssocMarkerSet.fillOpSetMapWithVariable(assocNcFile, netCDFVar);
-		assocNcFile.close();
-
-		if (rdAssocMarkerSetMap != null) {
-			for (Map.Entry<MarkerKey, double[]> entry : rdAssocMarkerSetMap.entrySet()) {
-				MarkerKey key = entry.getKey();
-				Object[] data = dataSetMap.get(key); // CHR, POS, PVAL
-
-				double[] value = entry.getValue();
-				Double pval = (Double) value[1];  // PVAL
-				if (!Double.isNaN(pval) && !Double.isInfinite(pval)) { // Ignore NaN Pvalues
-					data[2] = pval;
-					dataSetMap.put(key, data);
-				}
-			}
-
-			rdAssocMarkerSetMap.clear();
-		}
-		//</editor-fold>
+		Map<MarkerKey, Object[]> markerKeyChrPosPVal = assembleManhattenPlotData(testOpKey);
 
 		XYSeriesCollection currChrSC = new XYSeriesCollection();
 
@@ -182,7 +171,7 @@ public class GenericReportGenerator {
 		// Subdividing points into sub-XYSeries, per chromosome
 		String currChr = "";
 		Map<String, MarkerKey> labeler = new LinkedHashMap<String, MarkerKey>(); // FIXME This is unused, was a global static var before (also private though), was the data added here actually used somewhere? (i think not)
-		for (Map.Entry<MarkerKey, Object[]> entry : dataSetMap.entrySet()) {
+		for (Map.Entry<MarkerKey, Object[]> entry : markerKeyChrPosPVal.entrySet()) {
 			MarkerKey markerKey = entry.getKey();
 			Object[] data = entry.getValue(); //CHR, POS, PVAL
 
@@ -223,6 +212,7 @@ public class GenericReportGenerator {
 	}
 
 	private static void appendToCombinedRangeManhattanPlot(CombinedRangeXYPlot combinedPlot, String chromosome, XYSeriesCollection currChrSC, boolean showlables, double threshold, Color background, Color backgroundAlternative, Color main) {
+
 		XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer(false, true);
 
 		// Set dot shape of the currently appended Series
@@ -298,7 +288,22 @@ public class GenericReportGenerator {
 		combinedPlot.add(subplot, 1);
 	}
 
-	public static XYPlot buildQQPlot(OperationKey operationKey, String netCDFVar, int df) throws IOException {
+	private static List<Double> assembleQQPlotData(OperationKey testOpKey) throws IOException {
+
+		CommonTestOperationDataSet testOpDS = (CommonTestOperationDataSet) OperationFactory.generateOperationDataSet(testOpKey);
+		Collection<Double> chiSqrVals = testOpDS.getTs(-1, -1);
+		List<Double> obsChiSqrVals = new ArrayList<Double>(chiSqrVals.size());
+		for (Double chiSqr : chiSqrVals) {
+			if (!Double.isNaN(chiSqr) && !Double.isInfinite(chiSqr)) {
+				obsChiSqrVals.add(chiSqr);
+			}
+		}
+		Collections.sort(obsChiSqrVals);
+
+		return obsChiSqrVals;
+	}
+
+	public static XYPlot buildQQPlot(OperationKey testOpKey, int df) throws IOException {
 
 		if (df != 1 && df != 2) {
 			throw new IllegalArgumentException("Only df = 1 or 2 is supported; it is " + df);
@@ -319,21 +324,8 @@ public class GenericReportGenerator {
 				PLOT_QQ_MU_DEFAULT);
 		//</editor-fold>
 
-		OperationMetadata rdOPMetadata = OperationsList.getOperation(operationKey);
-
 		//<editor-fold defaultstate="expanded" desc="GET X^2">
-		NetcdfFile assocNcFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());
-		MarkerOperationSet rdAssocMarkerSet = new MarkerOperationSet(operationKey);
-
-		List<double[]> gntypAssocChiSqrVals = rdAssocMarkerSet.getListWithVariable(assocNcFile, netCDFVar);
-		List<Double> obsChiSqrVals = new ArrayList<Double>();
-		for (double[] vals : gntypAssocChiSqrVals) {
-			Double chiSqr = (Double) vals[0];
-			if (!Double.isNaN(chiSqr) && !Double.isInfinite(chiSqr)) {
-				obsChiSqrVals.add(chiSqr);
-			}
-		}
-		Collections.sort(obsChiSqrVals);
+		List<Double> obsChiSqrVals = assembleQQPlotData(testOpKey);
 
 		int N = obsChiSqrVals.size();
 		List<Double> expChiSqrDist;
@@ -343,8 +335,6 @@ public class GenericReportGenerator {
 			expChiSqrDist = Chisquare.getChiSquareDistributionDf2(N, 1.0f);
 		}
 		Collections.sort(expChiSqrDist);
-
-		assocNcFile.close();
 		//</editor-fold>
 
 		//<editor-fold defaultstate="expanded" desc="GET CONFIDENCE BOUNDARY">
@@ -432,32 +422,20 @@ public class GenericReportGenerator {
 
 	public static XYDataset getManhattanZoomByChrAndPos(
 			ManhattanPlotZoom manhattanPlotZoom,
-			OperationKey operationKey,
-			String netCDFVar,
-			String chr,
-			String markerId,
+			OperationKey testOpKey,
+			ChromosomeKey chr,
+			MarkerKey markerKey,
 			long requestedPhysPos,
 			long requestedPosWindow)
 	{
 		XYDataset resultXYDataset = null;
 
 		try {
-			Map<MarkerKey, Object[]> dataSetMap = new LinkedHashMap<MarkerKey, Object[]>();
-			OperationMetadata rdOPMetadata = OperationsList.getOperation(operationKey);
-
-			NetcdfFile assocNcFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());
-			MarkerOperationSet rdAssocMarkerSet = new MarkerOperationSet(operationKey);
-			Map<MarkerKey, double[]> rdAssocMarkerSetMap = rdAssocMarkerSet.getOpSetMap();
-
-			MarkerSet rdInfoMarkerSet = new MarkerSet(operationKey.getParentMatrixKey());
-			rdInfoMarkerSet.initFullMarkerIdSetMap();
-			rdInfoMarkerSet.fillMarkerSetMapWithChrAndPos();
-
 			// ESTIMATE WINDOW SIZE
 			Long minPosition;
 			Long middlePosition;
 			Long maxPosition;
-			if (markerId == null) {
+			if (markerKey == null) {
 				minPosition = requestedPhysPos;
 				middlePosition = Math.round(minPosition + (double) requestedPosWindow / 2);
 				maxPosition = minPosition + requestedPosWindow;
@@ -467,45 +445,44 @@ public class GenericReportGenerator {
 				maxPosition = minPosition + requestedPosWindow;
 			}
 
-			// CUT READ-Map TO SIZE
-			for (Map.Entry<MarkerKey, ?> entry : rdAssocMarkerSetMap.entrySet()) {
-				MarkerKey key = entry.getKey();
-				MarkerMetadata chrInfo = rdInfoMarkerSet.getMarkerMetadata().get(key);
-				Object[] plotInfo = new Object[3];
-				if (chrInfo.getChr().equals(chr)
-						&& (chrInfo.getPos() >= minPosition)
-						&& (chrInfo.getPos() <= maxPosition))
+			Map<MarkerKey, Object[]> markerKeyChrPosPVal;
+
+			DataSetSource parentMatrixSource = new NetCDFDataSetSource(testOpKey.getParentMatrixKey());
+			MarkersMetadataSource markersMetadatasSource = parentMatrixSource.getMarkersMetadatasSource();
+
+			CommonTestOperationDataSet<? extends TrendTestOperationEntry> testOpDS = (CommonTestOperationDataSet<? extends TrendTestOperationEntry>) OperationFactory.generateOperationDataSet(testOpKey);
+			Map<Integer, MarkerKey> testOpMarkers = testOpDS.getMarkers();
+			Iterator<Double> psIt = testOpDS.getPs(-1, -1).iterator();
+			markerKeyChrPosPVal = new LinkedHashMap<MarkerKey, Object[]>(testOpMarkers.size());
+			for (Map.Entry<Integer, MarkerKey> marker : testOpMarkers.entrySet()) {
+				int markerOrigIndex = marker.getKey();
+				Double pValue = psIt.next();
+				MarkerMetadata markerMetadata = markersMetadatasSource.get(markerOrigIndex);
+				String curChr = markerMetadata.getChr();
+				int curPos = markerMetadata.getPos();
+				if (!curChr.equals(chr.toString())
+						|| (curPos >= minPosition)
+						|| (curPos <= maxPosition))
 				{
-					plotInfo[0] = chrInfo.getChr();
-					plotInfo[1] = chrInfo.getPos();
-					dataSetMap.put(key, plotInfo);
+					continue;
 				}
-			}
-
-			//<editor-fold defaultstate="expanded" desc="GET Pval">
-			rdAssocMarkerSetMap = rdAssocMarkerSet.fillOpSetMapWithVariable(assocNcFile, netCDFVar);
-			assocNcFile.close();
-			if (rdAssocMarkerSetMap != null) {
-				for (Map.Entry<MarkerKey, Object[]> entry : dataSetMap.entrySet()) {
-					MarkerKey key = entry.getKey();
-					Object[] data = entry.getValue(); // CHR, POS, PVAL
-					double[] value = rdAssocMarkerSetMap.get(key);
-					Double pval = (Double) value[1]; // PVAL
-					if (!Double.isNaN(pval) && !Double.isInfinite(pval)) { // Ignore NaN Pvalues
-						data[2] = pval;
-						entry.setValue(data);
-					}
+				if (pValue.isNaN() || pValue.isInfinite()) { // Ignore NaN Pvalues
+					pValue = null;
 				}
-
-				rdAssocMarkerSetMap.clear();
+				MarkerKey curMmarkerKey = marker.getValue();
+				Object[] data = new Object[] {
+					markerMetadata.getChr(),
+					markerMetadata.getPos(),
+					pValue
+				};
+				markerKeyChrPosPVal.put(curMmarkerKey, data);
 			}
-			//</editor-fold>
 
 			//<editor-fold defaultstate="expanded" desc="BUILD XYDataset">
 			XYSeries dataSeries = new XYSeries("");
 
 			Map<String, MarkerKey> labeler = new LinkedHashMap<String, MarkerKey>();
-			for (Map.Entry<MarkerKey, Object[]> entry : dataSetMap.entrySet()) {
+			for (Map.Entry<MarkerKey, Object[]> entry : markerKeyChrPosPVal.entrySet()) {
 				MarkerKey tmpMarker = entry.getKey();
 				Object[] data = entry.getValue(); // CHR, POS, PVAL
 
@@ -534,195 +511,213 @@ public class GenericReportGenerator {
 		return resultXYDataset;
 	}
 
-	/**
-	 * This getManhattanZoomByMarkerIdOrIdx has now been deprecated in favor of
-	 * getManhattanZoomByChrAndPos
-	 *
-	 * @deprecated Use getManhattanZoomByChrAndPos instead
-	 */
-	public static XYDataset getManhattanZoomByMarkerIdOrIdx(
-			ManhattanPlotZoom manhattanPlotZoom,
-			OperationKey operationKey,
-			String netCDFVar,
-			MarkerKey origMarkerKey,
-			int startIdxPos,
-			int requestedSetSize)
-	{
-		XYDataset resultXYDataset = null;
-
-		try {
-			Map<MarkerKey, Object[]> dataSetMap = new LinkedHashMap<MarkerKey, Object[]>();
-			OperationMetadata rdOPMetadata = OperationsList.getOperation(operationKey);
-
-			NetcdfFile assocNcFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());
-			MarkerOperationSet rdAssocMarkerSet = new MarkerOperationSet(operationKey);
-			Map<MarkerKey, double[]> rdAssocMarkerSetMap = rdAssocMarkerSet.getOpSetMap();
-
-			//<editor-fold defaultstate="expanded" desc="GET POSITION DATA">
-			MarkerSet rdInfoMarkerSet = new MarkerSet(operationKey.getParentMatrixKey());
-			rdInfoMarkerSet.initFullMarkerIdSetMap();
-
-
-			// ESTIMATE WINDOW SIZE
-			Integer minPosition = 0;
-			Integer middlePosition = requestedSetSize / 2;
-			Integer maxPosition = requestedSetSize;
-
-			minPosition = startIdxPos;
-			middlePosition = Math.round((float) (minPosition + requestedSetSize) / 2);
-			maxPosition = minPosition + requestedSetSize;
-
-			if (rdAssocMarkerSetMap.size() < maxPosition) {
-				requestedSetSize = rdAssocMarkerSetMap.size();
-				minPosition = 0;
-				middlePosition = Math.round((float) requestedSetSize / 2);
-				maxPosition = requestedSetSize;
-			} else {
-				Iterator it = rdAssocMarkerSetMap.keySet().iterator();
-				if (startIdxPos == Integer.MIN_VALUE) { // USE MARKERID TO LOCATE CENTER
-					boolean goOn = true;
-					int i = 0;
-					while (goOn && i < rdAssocMarkerSetMap.size()) {
-						Object key = it.next();
-						if (key.equals(origMarkerKey)) {
-							minPosition = i - Math.round((float) requestedSetSize / 2);
-							if (minPosition < 0) {
-								minPosition = 0;
-							}
-
-							middlePosition = i;
-
-							maxPosition = i + Math.round((float) requestedSetSize / 2);
-							if (maxPosition > rdAssocMarkerSetMap.size()) {
-								maxPosition = rdAssocMarkerSetMap.size();
-							}
-							goOn = false;
-						}
-						i++;
-					}
-
-				}
-			}
-
-			// CUT READ-Map TO SIZE
-			boolean goOn = true;
-			int i = 0;
-			Iterator<MarkerKey> it = rdAssocMarkerSetMap.keySet().iterator();
-			while (goOn && i < rdAssocMarkerSetMap.size()) {
-				MarkerKey key = it.next();
-				if (i >= minPosition && i <= maxPosition) {
-					dataSetMap.put(key, null);
-					if (i == middlePosition) { // MAKE SURE WE KNOW WHAT MARKER-ID IS IN THE MIDDLE
-						origMarkerKey = key;
-					}
-				}
-				if (i > maxPosition) {
-					goOn = false;
-				}
-				i++;
-			}
-
-			// GET MARKER CHR & POS INFO
-			rdInfoMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
-			// First check for same chromosome data
-			String validateChr = new String(rdInfoMarkerSet.getMarkerIdSetMapCharArray().get(origMarkerKey));
-			manhattanPlotZoom.setCenterPhysPos((long) minPosition);
-
-			for (Map.Entry<MarkerKey, Object[]> entry : dataSetMap.entrySet()) {
-				MarkerKey key = entry.getKey();
-				String chr = new String(rdInfoMarkerSet.getMarkerIdSetMapCharArray().get(key));
-				Object[] data = new Object[3]; // CHR, POS, PVAL
-				data[0] = chr;
-				entry.setValue(data);
-			}
-
-			rdInfoMarkerSet.fillWith(0);
-			rdInfoMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_POS);
-			for (Map.Entry<MarkerKey, Object[]> entry : dataSetMap.entrySet()) {
-				MarkerKey key = entry.getKey();
-				Object[] data = entry.getValue(); // CHR, POS, PVAL
-				int pos = rdInfoMarkerSet.getMarkerIdSetMapInteger().get(key);
-				data[1] = pos;
-				entry.setValue(data);
-			}
-			if (rdInfoMarkerSet.getMarkerIdSetMapInteger() != null) {
-				rdInfoMarkerSet.getMarkerIdSetMapInteger().clear();
-			}
-			//</editor-fold>
-
-			//<editor-fold defaultstate="expanded" desc="GET Pval">
-			rdAssocMarkerSetMap = rdAssocMarkerSet.fillOpSetMapWithVariable(assocNcFile, netCDFVar);
-			for (Map.Entry<MarkerKey, Object[]> entry : dataSetMap.entrySet()) {
-				MarkerKey key = entry.getKey();
-				Object[] data = entry.getValue(); // CHR, POS, PVAL
-				double[] value = rdAssocMarkerSetMap.get(key);
-				Double pval = (Double) value[1]; // PVAL
-				if (!Double.isNaN(pval) && !Double.isInfinite(pval)) { // Ignore NaN Pvalues
-					data[2] = pval;
-					entry.setValue(data);
-				}
-			}
-			assocNcFile.close();
-			if (rdAssocMarkerSetMap != null) {
-				rdAssocMarkerSetMap.clear();
-			}
-			//</editor-fold>
-
-			//<editor-fold defaultstate="expanded" desc="BUILD XYDataset">
-			XYSeries dataSeries = new XYSeries("");
-
-			Map<String, MarkerKey> labeler = new LinkedHashMap<String, MarkerKey>();
-			for (Map.Entry<MarkerKey, Object[]> entry : dataSetMap.entrySet()) {
-				MarkerKey tmpMarker = entry.getKey();
-				Object[] data = entry.getValue(); //CHR, POS, PVAL
-
-				String chr = data[0].toString();
-				int position = (Integer) data[1];
-
-				if (data[2] != null && validateChr.equals(chr)) { // Check for same chromosome data before adding
-					double pVal = (Double) data[2]; // Is allready free of NaN
-					if (pVal < 1 && pVal != Double.POSITIVE_INFINITY && pVal != Double.NEGATIVE_INFINITY) {
-						dataSeries.add(position, pVal);
-						labeler.put(chr + "_" + position, tmpMarker);
-						//labelerHM.put(key,"");
-					}
-				}
-			}
-			long snpNumber = labeler.size();
-			manhattanPlotZoom.setLabelerMap(labeler);
-
-			dataSeries.setDescription("Zoom on " + origMarkerKey + ", window size: " + snpNumber);
-
-			resultXYDataset = new XYSeriesCollection(dataSeries);
-			//</editor-fold>
-		} catch (IOException ex) {
-			log.error(null, ex);
-		}
-
-		return resultXYDataset;
-	}
+//	/**
+//	 * This getManhattanZoomByMarkerIdOrIdx has now been deprecated in favor of
+//	 * getManhattanZoomByChrAndPos
+//	 *
+//	 * @deprecated Use getManhattanZoomByChrAndPos instead
+//	 */
+//	public static XYDataset getManhattanZoomByMarkerIdOrIdx(
+//			ManhattanPlotZoom manhattanPlotZoom,
+//			OperationKey testOpKey,
+//			MarkerKey origMarkerKey,
+//			int startIdxPos,
+//			int requestedSetSize)
+//	{
+//		XYDataset resultXYDataset = null;
+//
+//		try {
+////			OperationMetadata rdOPMetadata = OperationsList.getOperation(testOpKey);
+//
+//			DataSetSource parentMatrixSource = new NetCDFDataSetSource(testOpKey.getParentMatrixKey());
+//			CommonTestOperationDataSet<? extends TrendTestOperationEntry> testOpDS = (CommonTestOperationDataSet<? extends TrendTestOperationEntry>) OperationFactory.generateOperationDataSet(testOpKey);
+//			MarkersMetadataSource markersMetadatasSource = parentMatrixSource.getMarkersMetadatasSource();
+//			Map<MarkerKey, Object[]> markerKeyChrPosPVal = new LinkedHashMap<MarkerKey, Object[]>(markersMetadatasSource.size());
+//			for (MarkerMetadata markerMetadata : markersMetadatasSource) {
+//				MarkerKey markerKey = MarkerKey.valueOf(markerMetadata);
+//				Object[] data = new Object[] {
+//					markerMetadata.getChr(),
+//					markerMetadata.getPos(),
+//					null // P-Value, will be filled in later on (not for all markers though)
+//				};
+//				markerKeyChrPosPVal.put(markerKey, data);
+//			}
+////			Map<Integer, MarkerKey> testOpMarkers = testOpDS.getMarkers();
+////			Iterator<MarkerKey> testOpMarkerKeysIt = testOpMarkers.values().iterator();
+////			Collection<Double> ps = testOpDS.getPs(-1, -1);
+////			for (Double pValue : ps) {
+////				MarkerKey curKey = testOpMarkerKeysIt.next();
+////			}
+//
+////			NetcdfFile assocNcFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());
+////			MarkerOperationSet rdAssocMarkerSet = new MarkerOperationSet(testOpKey);
+////			Map<MarkerKey, double[]> rdAssocMarkerSetMap = rdAssocMarkerSet.getOpSetMap();
+//
+//			//<editor-fold defaultstate="expanded" desc="GET POSITION DATA">
+//			MarkerSet rdInfoMarkerSet = new MarkerSet(testOpKey.getParentMatrixKey());
+//			rdInfoMarkerSet.initFullMarkerIdSetMap();
+//
+//			// ESTIMATE WINDOW SIZE
+//			Integer minPosition = 0;
+//			Integer middlePosition = requestedSetSize / 2;
+//			Integer maxPosition = requestedSetSize;
+//
+//			minPosition = startIdxPos;
+//			middlePosition = Math.round((float) (minPosition + requestedSetSize) / 2);
+//			maxPosition = minPosition + requestedSetSize;
+//
+//			if (testOpMarkers.size() < maxPosition) {
+//				requestedSetSize = testOpMarkers.size();
+//				minPosition = 0;
+//				middlePosition = Math.round((float) requestedSetSize / 2);
+//				maxPosition = requestedSetSize;
+//			} else {
+//				Iterator<MarkerKey> keyIt = rdAssocMarkerSetMap.keySet().iterator();
+//				if (startIdxPos == Integer.MIN_VALUE) { // USE MARKERID TO LOCATE CENTER
+//					boolean goOn = true;
+//					int i = 0;
+//					while (goOn && i < testOpMarkers.size()) {
+//						MarkerKey key = keyIt.next();
+//						if (key.equals(origMarkerKey)) {
+//							minPosition = i - Math.round((float) requestedSetSize / 2);
+//							if (minPosition < 0) {
+//								minPosition = 0;
+//							}
+//
+//							middlePosition = i;
+//
+//							maxPosition = i + Math.round((float) requestedSetSize / 2);
+//							if (maxPosition > testOpMarkers.size()) {
+//								maxPosition = testOpMarkers.size();
+//							}
+//							goOn = false;
+//						}
+//						i++;
+//					}
+//
+//				}
+//			}
+//
+//			// CUT READ-Map TO SIZE
+//			boolean goOn = true;
+//			int i = 0;
+//			Iterator<MarkerKey> keyIt = rdAssocMarkerSetMap.keySet().iterator();
+//			while (goOn && i < testOpMarkers.size()) {
+//				MarkerKey key = keyIt.next();
+//				if (i >= minPosition && i <= maxPosition) {
+//					markerKeyChrPosPVal.put(key, null);
+//					if (i == middlePosition) { // MAKE SURE WE KNOW WHAT MARKER-ID IS IN THE MIDDLE
+//						origMarkerKey = key;
+//					}
+//				}
+//				if (i > maxPosition) {
+//					goOn = false;
+//				}
+//				i++;
+//			}
+//
+//			// GET MARKER CHR & POS INFO
+//			rdInfoMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
+//			// First check for same chromosome data
+//			String validateChr = new String(rdInfoMarkerSet.getMarkerIdSetMapCharArray().get(origMarkerKey));
+//			manhattanPlotZoom.setCenterPhysPos((long) minPosition);
+//
+//			for (Map.Entry<MarkerKey, Object[]> entry : markerKeyChrPosPVal.entrySet()) {
+//				MarkerKey key = entry.getKey();
+//				String chr = new String(rdInfoMarkerSet.getMarkerIdSetMapCharArray().get(key));
+//				Object[] data = new Object[3]; // CHR, POS, PVAL
+//				data[0] = chr;
+//				entry.setValue(data);
+//			}
+//
+//			rdInfoMarkerSet.fillWith(0);
+//			rdInfoMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_POS);
+//			for (Map.Entry<MarkerKey, Object[]> entry : markerKeyChrPosPVal.entrySet()) {
+//				MarkerKey key = entry.getKey();
+//				Object[] data = entry.getValue(); // CHR, POS, PVAL
+//				int pos = rdInfoMarkerSet.getMarkerIdSetMapInteger().get(key);
+//				data[1] = pos;
+//				entry.setValue(data);
+//			}
+//			if (rdInfoMarkerSet.getMarkerIdSetMapInteger() != null) {
+//				rdInfoMarkerSet.getMarkerIdSetMapInteger().clear();
+//			}
+//			//</editor-fold>
+//
+//			//<editor-fold defaultstate="expanded" desc="GET Pval">
+//			rdAssocMarkerSetMap = rdAssocMarkerSet.fillOpSetMapWithVariable(assocNcFile, netCDFVar);
+//			for (Map.Entry<MarkerKey, Object[]> entry : markerKeyChrPosPVal.entrySet()) {
+//				MarkerKey key = entry.getKey();
+//				Object[] data = entry.getValue(); // CHR, POS, PVAL
+//				double[] value = rdAssocMarkerSetMap.get(key);
+//				Double pval = (Double) value[1]; // PVAL
+//				if (!Double.isNaN(pval) && !Double.isInfinite(pval)) { // Ignore NaN Pvalues
+//					data[2] = pval;
+//					entry.setValue(data);
+//				}
+//			}
+//			assocNcFile.close();
+//			if (rdAssocMarkerSetMap != null) {
+//				rdAssocMarkerSetMap.clear();
+//			}
+//			//</editor-fold>
+//
+//			//<editor-fold defaultstate="expanded" desc="BUILD XYDataset">
+//			XYSeries dataSeries = new XYSeries("");
+//
+//			Map<String, MarkerKey> labeler = new LinkedHashMap<String, MarkerKey>();
+//			for (Map.Entry<MarkerKey, Object[]> entry : markerKeyChrPosPVal.entrySet()) {
+//				MarkerKey tmpMarker = entry.getKey();
+//				Object[] data = entry.getValue(); //CHR, POS, PVAL
+//
+//				String chr = data[0].toString();
+//				int position = (Integer) data[1];
+//
+//				if (data[2] != null && validateChr.equals(chr)) { // Check for same chromosome data before adding
+//					double pVal = (Double) data[2]; // Is allready free of NaN
+//					if (pVal < 1 && pVal != Double.POSITIVE_INFINITY && pVal != Double.NEGATIVE_INFINITY) {
+//						dataSeries.add(position, pVal);
+//						labeler.put(chr + "_" + position, tmpMarker);
+//						//labelerHM.put(key,"");
+//					}
+//				}
+//			}
+//			long snpNumber = labeler.size();
+//			manhattanPlotZoom.setLabelerMap(labeler);
+//
+//			dataSeries.setDescription("Zoom on " + origMarkerKey + ", window size: " + snpNumber);
+//
+//			resultXYDataset = new XYSeriesCollection(dataSeries);
+//			//</editor-fold>
+//		} catch (IOException ex) {
+//			log.error(null, ex);
+//		}
+//
+//		return resultXYDataset;
+//	}
 	//</editor-fold>
 
 	//<editor-fold defaultstate="expanded" desc="SAMPLE-QA PLOTS">
 	public static XYDataset getSampleHetzygDataset(SampleQAHetzygPlotZoom sampleQAHetzygPlotZoom, OperationKey operationKey) throws IOException {
-		XYDataset resultXYDataset;
-		OperationMetadata rdOPMetadata = OperationsList.getOperation(operationKey);
-		NetcdfFile sampleQANcFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());
-		SampleOperationSet rdSampleQAOPSet = new SampleOperationSet(operationKey);
 
-		Map<SampleKey, ?> sampleSetMap = rdSampleQAOPSet.getOpSetMap();
-		List<Double> hetzygVals = rdSampleQAOPSet.getListWithVariable(sampleQANcFile, cNetCDF.Census.VAR_OP_SAMPLES_HETZYRAT);
-		List<Double> missingratVals = rdSampleQAOPSet.getListWithVariable(sampleQANcFile, cNetCDF.Census.VAR_OP_SAMPLES_MISSINGRAT);
+		XYDataset resultXYDataset;
+
+		QASamplesOperationDataSet qaSamplesOpDS = (QASamplesOperationDataSet) OperationFactory.generateOperationDataSet(operationKey);
+
+		OperationMetadata rdOPMetadata = OperationsList.getOperation(operationKey);
+
+		Map<Integer, SampleKey> samples = qaSamplesOpDS.getSamples();
+		List<Double> hetzyRatios = (List) qaSamplesOpDS.getHetzyRatios(-1, -1);
+		List<Double> missingRatios = (List) qaSamplesOpDS.getMissingRatios(-1, -1);
 
 		//<editor-fold defaultstate="expanded" desc="BUILD XYDataset">
 		XYSeries dataSeries = new XYSeries("");
 
 		int count = 0;
 		Map<String, SampleKey> samplesLabeler = new LinkedHashMap<String, SampleKey>();
-		for (Map.Entry<SampleKey, ?> entry : sampleSetMap.entrySet()) {
-			SampleKey tmpSampleKey = entry.getKey();
-			double tmpHetzyVal = hetzygVals.get(count);
-			double tmpMissratVal = missingratVals.get(count);
+		for (SampleKey tmpSampleKey : samples.values()) {
+			double tmpHetzyVal = hetzyRatios.get(count);
+			double tmpMissratVal = missingRatios.get(count);
 			if (Double.isNaN(tmpHetzyVal) || Double.isInfinite(tmpHetzyVal)) {
 				tmpHetzyVal = 0;
 			}
@@ -746,23 +741,8 @@ public class GenericReportGenerator {
 	//</editor-fold>
 
 	//<editor-fold defaultstate="expanded" desc="HELPERS">
-	public static Map<MarkerKey, double[]> getAnalysisVarData(OperationKey operationKey, String netCDFVar) throws IOException {
-
-		OperationMetadata rdOPMetadata = OperationsList.getOperation(operationKey);
-
-
-		NetcdfFile assocNcFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());
-		MarkerOperationSet rdAssocMarkerSet = new MarkerOperationSet(operationKey);
-		Map<MarkerKey, double[]> rdAssocMarkerSetMap = rdAssocMarkerSet.getOpSetMap();
-		rdAssocMarkerSetMap = rdAssocMarkerSet.fillOpSetMapWithVariable(assocNcFile, netCDFVar);
-
-		assocNcFile.close();
-		return rdAssocMarkerSetMap;
-	}
-
 	public static Map<MarkerKey, Object[]> getMarkerSetChrAndPos(OperationKey operationKey) throws IOException {
 		Map<MarkerKey, Object[]> dataSetMap = new LinkedHashMap<MarkerKey, Object[]>();
-		OperationMetadata rdOPMetadata = OperationsList.getOperation(operationKey);
 
 		//<editor-fold defaultstate="expanded" desc="GET POSITION DATA">
 		MarkerSet rdInfoMarkerSet = new MarkerSet(operationKey.getParentMatrixKey());

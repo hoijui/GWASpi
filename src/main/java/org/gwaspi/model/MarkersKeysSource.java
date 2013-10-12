@@ -18,9 +18,12 @@
 package org.gwaspi.model;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * TODO
  */
 public interface MarkersKeysSource extends List<MarkerKey> {
+
+	Map<Integer, MarkerKey> getIndicesMap();
 }

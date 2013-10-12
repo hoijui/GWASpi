@@ -17,6 +17,7 @@
 
 package org.gwaspi.netCDF.operations;
 
+import java.awt.Dimension;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -34,27 +35,38 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.ArrayChar;
 import ucar.ma2.ArrayDouble;
-import ucar.ma2.ArrayInt;
 import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 
-public class AbstractOperationSet<K, V> {
+public abstract class AbstractOperationSet<K, V> {
 
 	private static final Logger log = LoggerFactory.getLogger(AbstractOperationSet.class);
 
 	private final KeyFactory<K> keyFactory;
 	private final OperationKey operationKey;
 	private final OperationMetadata opMetadata;
+	private final int opIndexFrom;
+	private final int opIndexTo;
 	private Map<K, V> opSetMap;
 
 	public AbstractOperationSet(OperationKey operationKey, KeyFactory<K> keyFactory) throws IOException {
+		this(operationKey, keyFactory, -1, -1);
+	}
+
+	public AbstractOperationSet(OperationKey operationKey, KeyFactory<K> keyFactory, int opIndexFrom, int opIndexTo) throws IOException {
 
 		this.operationKey = operationKey;
 		this.opMetadata = OperationsList.getOperation(operationKey);
 		this.opSetMap = null;
 		this.keyFactory = keyFactory;
+		this.opIndexFrom = opIndexFrom;
+		this.opIndexTo = opIndexTo;
+	}
+
+	protected OperationKey getOperationKey() {
+		return operationKey;
 	}
 
 	protected OperationMetadata getOperationMetadata() {
@@ -72,8 +84,8 @@ public class AbstractOperationSet<K, V> {
 	}
 
 	public Map<K, V> getOpSetMap() {
-		NetcdfFile ncfile = null;
 
+		NetcdfFile ncfile = null;
 		try {
 			ncfile = NetcdfFile.open(opMetadata.getPathToMatrix());
 			Variable var = ncfile.findVariable(cNetCDF.Variables.VAR_OPSET);
@@ -86,10 +98,14 @@ public class AbstractOperationSet<K, V> {
 			int[] varShape = var.getShape();
 
 			try {
-				int opSetSize = varShape[0];
+				final int opSetSize = varShape[0];
+				Dimension fromTo = new Dimension(opIndexFrom, opIndexTo);
+				NetCdfUtils.checkDimensions(opSetSize, fromTo);
+				final int from = fromTo.width;
+				final int to = fromTo.height;
 
 				if (dataType == DataType.CHAR) {
-					ArrayChar.D2 markerSetAC = (ArrayChar.D2) var.read("(0:" + (opSetSize - 1) + ":1, 0:" + (varShape[1] - 1) + ":1)");
+					ArrayChar.D2 markerSetAC = (ArrayChar.D2) var.read("(" + from + ":" + to + ":1, 0:" + (varShape[1] - 1) + ":1)");
 					opSetMap = wrapToKeyMap(markerSetAC, keyFactory);
 				}
 			} catch (InvalidRangeException ex) {
@@ -110,120 +126,93 @@ public class AbstractOperationSet<K, V> {
 		return opSetMap;
 	}
 
-	public Map<K, V> getMarkerRsIdSetMap() {
-		NetcdfFile ncfile = null;
-		Map<K, V> opRsIdSetMap = new LinkedHashMap<K, V>();
+//	public Map<K, V> getMarkerRsIdSetMap() {
+//
+//		NetcdfFile ncfile = null;
+//		Map<K, V> opRsIdSetMap = new LinkedHashMap<K, V>();
+//		try {
+//			ncfile = NetcdfFile.open(opMetadata.getPathToMatrix());
+//			Variable var = ncfile.findVariable(cNetCDF.Variables.VAR_MARKERS_RSID);
+//
+//			if (null == var) {
+//				return null;
+//			}
+//
+//			DataType dataType = var.getDataType();
+//			int[] varShape = var.getShape();
+//
+//			try {
+//				final int opSetSize = varShape[0];
+//				Dimension fromTo = new Dimension(opIndexFrom, opIndexTo);
+//				NetCdfUtils.checkDimensions(opSetSize, fromTo);
+//				final int from = fromTo.width;
+//				final int to = fromTo.height;
+//
+//				if (dataType == DataType.CHAR) {
+//					ArrayChar.D2 markerSetAC = (ArrayChar.D2) var.read("(" + from + ":" + to + ":1, 0:" + (varShape[1] - 1) + ":1)");
+//					opRsIdSetMap = wrapToKeyMap(markerSetAC, keyFactory);
+//				}
+//			} catch (InvalidRangeException ex) {
+//				throw new IOException(ex);
+//			}
+//		} catch (IOException ex) {
+//			log.error("Cannot open file", ex);
+//		} finally {
+//			if (null != ncfile) {
+//				try {
+//					ncfile.close();
+//				} catch (IOException ex) {
+//					log.warn("Cannot close file", ex);
+//				}
+//			}
+//		}
+//
+//		return opRsIdSetMap;
+//	}
 
-		try {
-			ncfile = NetcdfFile.open(opMetadata.getPathToMatrix());
-			Variable var = ncfile.findVariable(cNetCDF.Variables.VAR_MARKERS_RSID);
-
-			if (null == var) {
-				return null;
-			}
-
-			DataType dataType = var.getDataType();
-			int[] varShape = var.getShape();
-
-			try {
-				int opSetSize = varShape[0];
-				if (dataType == DataType.CHAR) {
-					ArrayChar.D2 markerSetAC = (ArrayChar.D2) var.read("(0:" + (opSetSize - 1) + ":1, 0:" + (varShape[1] - 1) + ":1)");
-					opRsIdSetMap = wrapToKeyMap(markerSetAC, keyFactory);
-				}
-			} catch (InvalidRangeException ex) {
-				throw new IOException(ex);
-			}
-		} catch (IOException ex) {
-			log.error("Cannot open file", ex);
-		} finally {
-			if (null != ncfile) {
-				try {
-					ncfile.close();
-				} catch (IOException ex) {
-					log.warn("Cannot close file", ex);
-				}
-			}
-		}
-
-		return opRsIdSetMap;
-	}
-
-	public Map<SampleKey, V> getImplicitSetMap() {
-		NetcdfFile ncfile = null;
-		Map<SampleKey, V> implicitSetMap = new LinkedHashMap<SampleKey, V>();
-
-		try {
-			ncfile = NetcdfFile.open(opMetadata.getPathToMatrix());
-			Variable var = ncfile.findVariable(cNetCDF.Variables.VAR_IMPLICITSET);
-
-			if (null == var) {
-				return null;
-			}
-
-			int[] varShape = var.getShape();
-			try {
-				int implicitSetSize = varShape[0];
-				ArrayChar.D2 sampleSetAC = (ArrayChar.D2) var.read("(0:" + (implicitSetSize - 1) + ":1, 0:" + (varShape[1] - 1) + ":1)");
-
-				implicitSetMap = wrapToKeyMap(sampleSetAC, new SampleKeyFactory(operationKey.getParentMatrixKey().getStudyKey()));
-			} catch (InvalidRangeException ex) {
-				throw new IOException(ex);
-			}
-		} catch (IOException ex) {
-			log.error("Cannot open file", ex);
-		} finally {
-			if (null != ncfile) {
-				try {
-					ncfile.close();
-				} catch (IOException ex) {
-					log.warn("Cannot close file", ex);
-				}
-			}
-		}
-
-		return implicitSetMap;
-	}
+//	public Map<SampleKey, V> getImplicitSetMap() {
+//
+//		NetcdfFile ncfile = null;
+//		Map<SampleKey, V> implicitSetMap = new LinkedHashMap<SampleKey, V>();
+//		try {
+//			ncfile = NetcdfFile.open(opMetadata.getPathToMatrix());
+//			Variable var = ncfile.findVariable(cNetCDF.Variables.VAR_IMPLICITSET);
+//
+//			if (null == var) {
+//				return null;
+//			}
+//
+//			final int[] varShape = var.getShape();
+//			try {
+//				final int implicitSetSize = varShape[0];
+//				ArrayChar.D2 sampleSetAC = (ArrayChar.D2) var.read("(0:" + (implicitSetSize - 1) + ":1, 0:" + (varShape[1] - 1) + ":1)");
+//
+//				implicitSetMap = wrapToKeyMap(sampleSetAC, new SampleKeyFactory(operationKey.getParentMatrixKey().getStudyKey()));
+//			} catch (InvalidRangeException ex) {
+//				throw new IOException(ex);
+//			}
+//		} catch (IOException ex) {
+//			log.error("Cannot open file", ex);
+//		} finally {
+//			if (null != ncfile) {
+//				try {
+//					ncfile.close();
+//				} catch (IOException ex) {
+//					log.warn("Cannot close file", ex);
+//				}
+//			}
+//		}
+//
+//		return implicitSetMap;
+//	}
 	//</editor-fold>
 
 	//<editor-fold defaultstate="expanded" desc="OPERATION-SET FILLERS">
 	public Map<K, V> fillOpSetMapWithVariable(NetcdfFile ncfile, String variable) {
 
-		Variable var = ncfile.findVariable(variable);
-
-		if (null == var) {
-			return null;
-		}
-
-		DataType dataType = var.getDataType();
-		int[] varShape = var.getShape();
 		try {
-			int opSetSize = varShape[0];
-			if ((dataType == DataType.CHAR) && (varShape.length == 2)) {
-				ArrayChar.D2 markerSetAC = (ArrayChar.D2) var.read("(0:" + (opSetSize - 1) + ":1, 0:" + (varShape[1] - 1) + ":1)");
-				NetCdfUtils.writeD2ArrayCharToMapValues(markerSetAC, (Map<K, char[]>)opSetMap);
-			}
-			if (dataType == DataType.DOUBLE) {
-				if (varShape.length == 1) {
-					ArrayDouble.D1 markerSetAF = (ArrayDouble.D1) var.read("(0:" + (opSetSize - 1) + ":1)");
-					NetCdfUtils.writeD1ArrayDoubleToMapValues(markerSetAF, (Map<K, Double>)opSetMap);
-				} else if (varShape.length == 2) {
-					ArrayDouble.D2 markerSetAF = (ArrayDouble.D2) var.read("(0:" + (opSetSize - 1) + ":1, 0:" + (varShape[1] - 1) + ":1))");
-					NetCdfUtils.writeD2ArrayDoubleToMapValues(markerSetAF, (Map<K, double[]>)opSetMap);
-				}
-			}
-			if (dataType == DataType.INT) {
-				if (varShape.length == 1) {
-					ArrayInt.D1 markerSetAD = (ArrayInt.D1) var.read("(0:" + (opSetSize - 1) + ":1)");
-					NetCdfUtils.writeD1ArrayIntToMapValues(markerSetAD, (Map<K, Integer>)opSetMap);
-				} else if (varShape.length == 2) {
-					ArrayInt.D2 markerSetAD = (ArrayInt.D2) var.read("(0:" + (opSetSize - 1) + ":1, 0:" + (varShape[1] - 1) + ":1))");
-					NetCdfUtils.writeD2ArrayIntToMapValues(markerSetAD, (Map<K, int[]>)opSetMap);
-				}
-			}
+			NetCdfUtils.readVariable(ncfile, variable, -1, -1, null, opSetMap);
 		} catch (IOException ex) {
-			log.error("Cannot read data", ex);
-		} catch (InvalidRangeException ex) {
 			log.error("Cannot read data", ex);
 		}
 
@@ -261,21 +250,34 @@ public class AbstractOperationSet<K, V> {
 		}
 
 		DataType dataType = var.getDataType();
-		int[] varShape = var.getShape();
-		int opSetSize = varShape[0];
-		((ArrayList) list).ensureCapacity(opSetSize);
+		final int[] varShape = var.getShape();
+		final int opSetSize = varShape[0];
+		Dimension fromTo = new Dimension(opIndexFrom, opIndexTo);
+		NetCdfUtils.checkDimensions(opSetSize, fromTo);
+		final int from = fromTo.width;
+		final int to = fromTo.height;
+		String fetchVarStr;
+		if (varShape.length == 1) {
+			fetchVarStr = "(" + from + ":" + to + ":1)";
+		} else if (varShape.length == 2) {
+			fetchVarStr = "(" + from + ":" + to + ":1, 0:" + (varShape[1] - 1) + ":1)";
+		} else {
+			throw new IllegalArgumentException();
+		}
+
+		((ArrayList) list).ensureCapacity(from - to);
 
 		try {
 			if ((dataType == DataType.CHAR) && (varShape.length == 2)) {
-				ArrayChar.D2 markerSetAC = (ArrayChar.D2) var.read("(0:" + (opSetSize - 1) + ":1, 0:" + (varShape[1] - 1) + ":1)");
+				ArrayChar.D2 markerSetAC = (ArrayChar.D2) var.read(fetchVarStr);
 				list = NetCdfUtils.writeD2ArrayCharToList(markerSetAC);
 			}
 			if (dataType == DataType.DOUBLE) {
 				if (varShape.length == 1) {
-					ArrayDouble.D1 markerSetAD = (ArrayDouble.D1) var.read("(0:" + (opSetSize - 1) + ":1)");
+					ArrayDouble.D1 markerSetAD = (ArrayDouble.D1) var.read(fetchVarStr);
 					list = NetCdfUtils.writeD1ArrayDoubleToList(markerSetAD);
 				} else if (varShape.length == 2) {
-					ArrayDouble.D2 markerSetAD = (ArrayDouble.D2) var.read("(0:" + (opSetSize - 1) + ":1, 0:" + (varShape[1] - 1) + ":1)");
+					ArrayDouble.D2 markerSetAD = (ArrayDouble.D2) var.read(fetchVarStr);
 					list = NetCdfUtils.writeD2ArrayDoubleToList(markerSetAD);
 				}
 			}
@@ -301,7 +303,7 @@ public class AbstractOperationSet<K, V> {
 //		try {
 //			opSetSize = varShape[0];
 //			if ((dataType == DataType.CHAR) && (varShape.length == 2)) {
-//				ArrayChar.D2 markerSetAC = (ArrayChar.D2) var.read("(0:" + (opSetSize - 1) + ":1, 0:" + (varShape[1] - 1) + ":1)");
+//				ArrayChar.D2 markerSetAC = (ArrayChar.D2) var.read("(0:" + (opSetSize - 1) + ":1, 0:" + (varShape[1] - 1) + ":1)"); // FIXME needs to use from and to!
 //
 //				int[] shape = markerSetAC.getShape();
 //				Index index = markerSetAC.getIndex();

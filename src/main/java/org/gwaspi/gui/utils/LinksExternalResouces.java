@@ -17,6 +17,8 @@
 
 package org.gwaspi.gui.utils;
 
+import org.gwaspi.model.ChromosomeKey;
+
 public class LinksExternalResouces {
 
 	private LinksExternalResouces() {
@@ -93,7 +95,7 @@ public class LinksExternalResouces {
 		return LINKS_DB[idx][2].contains("rsId");
 	}
 
-	public static String getResourceLink(int idx, String chr, String rsId, Long position) {
+	public static String getResourceLink(int idx, ChromosomeKey chr, String rsId, Long position) {
 		String baseUrl = getLinkURL(idx);
 
 		Long startPos = (position - 1000);
@@ -102,7 +104,7 @@ public class LinksExternalResouces {
 			startPos = 0L;
 		}
 
-		String processedURL = baseUrl.replace("$chr$", chr);
+		String processedURL = baseUrl.replace("$chr$", chr.getChromosome());
 		processedURL = processedURL.replace("$rsId$", rsId);
 		processedURL = processedURL.replace("$pos-middle$", position.toString());
 		processedURL = processedURL.replace("$pos-start$", startPos.toString());

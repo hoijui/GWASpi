@@ -21,9 +21,7 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.AlleleBytes;
-import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.GenotypesList;
 import org.gwaspi.model.MarkerMetadata;
@@ -35,12 +33,12 @@ import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.SamplesGenotypesSource;
 import org.gwaspi.netCDF.markers.NetCDFDataSetSource;
+import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
+import org.gwaspi.operations.qasamples.NetCdfQASamplesOperationDataSet;
+import org.gwaspi.operations.qasamples.QASamplesOperationDataSet;
 import org.gwaspi.samples.SampleSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.ma2.ArrayChar;
-import ucar.ma2.InvalidRangeException;
-import ucar.nc2.NetcdfFileWriteable;
 
 public class OP_QASamples implements MatrixOperation {
 
@@ -71,8 +69,6 @@ public class OP_QASamples implements MatrixOperation {
 		Map<SampleKey, Integer> wrSampleSetMissingCountMap = new LinkedHashMap<SampleKey, Integer>();
 		Map<SampleKey, Double> wrSampleSetMissingRatioMap = new LinkedHashMap<SampleKey, Double>();
 		Map<SampleKey, Double> wrSampleSetHetzyRatioMap = new LinkedHashMap<SampleKey, Double>();
-
-		MatrixMetadata rdMatrixMetadata = MatricesList.getMatrixMetadataById(rdMatrixKey);
 
 //		NetcdfFile rdNcFile = NetcdfFile.open(rdMatrixMetadata.getPathToMatrix());
 
@@ -130,61 +126,27 @@ public class OP_QASamples implements MatrixOperation {
 			}
 		}
 
-		// Write census, missing-ratio and mismatches to netCDF
-		NetcdfFileWriteable wrNcFile = null;
 		try {
-			// CREATE netCDF-3 FILE
+			MatrixMetadata rdMatrixMetadata = MatricesList.getMatrixMetadataById(rdMatrixKey);
 
-			OperationFactory wrOPHandler = new OperationFactory(
-					rdMatrixMetadata.getStudyKey(),
-					"Sample QA", //friendly name
-					"Sample census on " + rdMatrixMetadata.getMatrixFriendlyName() + "\nSamples: " + wrSampleSetMissingCountMap.size(), //description
-					wrSampleSetMissingCountMap.size(),
-					rdMatrixMetadata.getMarkerSetSize(),
-					0,
-					OPType.SAMPLE_QA,
-					rdMatrixKey, // Parent matrixId
-					-1); // Parent operationId
+			QASamplesOperationDataSet dataSet = new NetCdfQASamplesOperationDataSet(); // HACK
+			((AbstractNetCdfOperationDataSet) dataSet).setReadMatrixKey(rdMatrixKey); // HACK
+			((AbstractNetCdfOperationDataSet) dataSet).setNumMarkers(rdMatrixMetadata.getMarkerSetSize()); // HACK
+			((AbstractNetCdfOperationDataSet) dataSet).setNumSamples(wrSampleSetMissingCountMap.size()); // HACK
 
-			// what will be written to the operation NetCDF file (wrNcFile):
-			// - cNetCDF.Variables.VAR_OPSET: (String, key.getSampleId() + " " + key.getFamilyId()) sample keys
-			// - cNetCDF.Variables.VAR_IMPLICITSET: (String, key.getId()) marker keys
-			// - cNetCDF.Census.VAR_OP_SAMPLES_MISSINGRAT: (double) missing ratio for each sample
-			// - cNetCDF.Census.VAR_OP_SAMPLES_MISSINGCOUNT: (int) missing count for each sample
-			// - cNetCDF.Census.VAR_OP_SAMPLES_HETZYRAT: (double) heterozygosity ratio for each sample
+//			dataSet.setSamples(rdSampleSet.getSampleKeys());
+//			dataSet.setMarkers(rdMarkersKeysSource);
+//			Map<ChromosomeKey, ChromosomeInfo> chromosomeInfo = rdMarkerSet.getChrInfoSetMap();
+//			dataSet.setChromosomes(chromosomeInfo.keySet(), chromosomeInfo.values());
+			((AbstractNetCdfOperationDataSet) dataSet).setUseAllSamplesFromParent(true);
+			((AbstractNetCdfOperationDataSet) dataSet).setUseAllMarkersFromParent(true);
+			((AbstractNetCdfOperationDataSet) dataSet).setUseAllChromosomesFromParent(true);
 
-			wrNcFile = wrOPHandler.getNetCDFHandler();
-			wrNcFile.create();
-			log.trace("Done creating netCDF handle: " + wrNcFile.toString());
+			dataSet.setMissingRatios(wrSampleSetMissingRatioMap.values());
+			dataSet.setMissingCounts(wrSampleSetMissingCountMap.values());
+			dataSet.setHetzyRatios(wrSampleSetHetzyRatioMap.values());
 
-			//<editor-fold defaultstate="expanded" desc="METADATA WRITER">
-			// SAMPLESET
-			ArrayChar.D2 samplesD2 = NetCdfUtils.writeCollectionToD2ArrayChar(rdSampleSet.getSampleKeys(), cNetCDF.Strides.STRIDE_SAMPLE_NAME);
-			int[] sampleOrig = new int[] {0, 0};
-			wrNcFile.write(cNetCDF.Variables.VAR_OPSET, sampleOrig, samplesD2);
-			log.info("Done writing SampleSet to matrix");
-
-			// WRITE MARKERSET TO MATRIX
-			ArrayChar.D2 markersD2 = NetCdfUtils.writeCollectionToD2ArrayChar(rdMarkersKeysSource, cNetCDF.Strides.STRIDE_MARKER_NAME);
-			int[] markersOrig = new int[] {0, 0};
-			wrNcFile.write(cNetCDF.Variables.VAR_IMPLICITSET, markersOrig, markersD2);
-			log.info("Done writing MarkerSet to matrix");
-			//</editor-fold>
-
-			//<editor-fold defaultstate="expanded" desc="CENSUS DATA WRITER">
-			// MISSING RATIO
-			NetCdfUtils.saveDoubleMapD1ToWrMatrix(wrNcFile, wrSampleSetMissingRatioMap.values(), cNetCDF.Census.VAR_OP_SAMPLES_MISSINGRAT);
-
-			// MISSING COUNT
-			NetCdfUtils.saveIntMapD1ToWrMatrix(wrNcFile, wrSampleSetMissingCountMap.values(), cNetCDF.Census.VAR_OP_SAMPLES_MISSINGCOUNT);
-
-			// HETEROZYGOSITY RATIO
-			NetCdfUtils.saveDoubleMapD1ToWrMatrix(wrNcFile, wrSampleSetHetzyRatioMap.values(), cNetCDF.Census.VAR_OP_SAMPLES_HETZYRAT);
-			//</editor-fold>
-
-			resultOpId = wrOPHandler.getResultOPId();
-		} catch (InvalidRangeException ex) {
-			throw new IOException(ex);
+			resultOpId = ((AbstractNetCdfOperationDataSet) dataSet).getOperationKey().getId(); // HACK
 		} finally {
 //			if (null != rdNcFile) {
 //				try {
@@ -193,13 +155,6 @@ public class OP_QASamples implements MatrixOperation {
 //					log.warn("Cannot close file " + rdNcFile, ex);
 //				}
 //			}
-			if (null != wrNcFile) {
-				try {
-					wrNcFile.close();
-				} catch (IOException ex) {
-					log.warn("Cannot close file " + wrNcFile, ex);
-				}
-			}
 
 			org.gwaspi.global.Utils.sysoutCompleted("Sample QA");
 		}

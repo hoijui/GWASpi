@@ -17,6 +17,7 @@
 
 package org.gwaspi.netCDF.operations;
 
+import java.awt.Dimension;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -30,20 +31,25 @@ import java.util.Set;
 import java.util.TreeMap;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.global.EnumeratedValueExtractor;
-import org.gwaspi.global.TypeConverter;
+import org.gwaspi.global.Extractor;
 import org.gwaspi.model.ChromosomeInfo;
 import org.gwaspi.model.Genotype;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.StudyKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ucar.ma2.Array;
+import ucar.ma2.ArrayBoolean;
 import ucar.ma2.ArrayByte;
 import ucar.ma2.ArrayChar;
 import ucar.ma2.ArrayDouble;
 import ucar.ma2.ArrayInt;
+import ucar.ma2.DataType;
 import ucar.ma2.Index;
 import ucar.ma2.InvalidRangeException;
+import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFileWriteable;
+import ucar.nc2.Variable;
 
 public class NetCdfUtils {
 
@@ -72,7 +78,7 @@ public class NetCdfUtils {
 		saveCharMapToWrMatrix(wrNcFile, wrMap, variable, varStride, 0);
 	}
 
-	public static <V> void saveCharMapItemToWrMatrix(NetcdfFileWriteable wrNcFile, Collection<V> wrMap, String variable, TypeConverter<V, String> typeConverter, int varStride) throws IOException {
+	public static <V> void saveCharMapItemToWrMatrix(NetcdfFileWriteable wrNcFile, Collection<V> wrMap, String variable, Extractor<V, String> typeConverter, int varStride) throws IOException {
 
 		ArrayChar.D2 markersD2 = writeValuesToD2ArrayChar(wrMap, typeConverter, varStride);
 		try {
@@ -83,7 +89,7 @@ public class NetCdfUtils {
 		}
 	}
 
-	public static <V> void saveByteMapItemToWrMatrix(NetcdfFileWriteable wrNcFile, Collection<V> wrMap, String variable, TypeConverter<V, Byte> typeConverter, int varStride) throws IOException {
+	public static <V> void saveByteMapItemToWrMatrix(NetcdfFileWriteable wrNcFile, Collection<V> wrMap, String variable, Extractor<V, Byte> typeConverter, int varStride) throws IOException {
 
 		ArrayByte.D2 markersD2 = writeValuesToD2ArrayByte(wrMap, typeConverter, varStride);
 		try {
@@ -127,9 +133,9 @@ public class NetCdfUtils {
 
 	public static void saveDoubleMapItemD1ToWrMatrix(NetcdfFileWriteable wrNcFile, Collection<Double[]> wrMap, final int itemNb, String variable) throws IOException {
 
-		TypeConverter<Double[], Double> typeConverter = new TypeConverter<Double[], Double>() {
+		Extractor<Double[], Double> typeConverter = new Extractor<Double[], Double>() {
 			@Override
-			public Double convert(Double[] from) {
+			public Double extract(Double[] from) {
 				return from[itemNb];
 			}
 		};
@@ -137,7 +143,7 @@ public class NetCdfUtils {
 		saveDoubleMapItemD1ToWrMatrix(wrNcFile, wrMap, typeConverter, variable);
 	}
 
-	public static <V> void saveDoubleMapItemD1ToWrMatrix(NetcdfFileWriteable wrNcFile, Collection<V> wrMap, TypeConverter<V, Double> typeConverter, String variable) throws IOException {
+	public static <V> void saveDoubleMapItemD1ToWrMatrix(NetcdfFileWriteable wrNcFile, Collection<V> wrMap, Extractor<V, Double> typeConverter, String variable) throws IOException {
 
 		ArrayDouble.D1 arrayDouble = NetCdfUtils.writeValuesToD1ArrayDouble(wrMap, typeConverter);
 		try {
@@ -233,6 +239,32 @@ public class NetCdfUtils {
 			throw new IOException("Failed writing " + variable + " to netCDF file " + wrNcFile.toString(), ex);
 		}
 	}
+
+	public static void saveBooleansD1ToWrMatrix(
+			NetcdfFileWriteable wrNcFile,
+			Collection<Boolean> values,
+			String variable,
+			int offset)
+			throws IOException
+	{
+		ArrayBoolean.D1 arrayBoolean = NetCdfUtils.writeValuesToD1ArrayBoolean(values);
+		int[] originD1 = new int[] {offset};
+		try {
+			wrNcFile.write(variable, originD1, arrayBoolean);
+			log.info("Done writing {}", variable);
+		} catch (Exception ex) {
+			throw new IOException("Failed writing " + variable + " to netCDF file " + wrNcFile.toString(), ex);
+		}
+	}
+
+	public static void saveBooleansD1ToWrMatrix(
+			NetcdfFileWriteable wrNcFile,
+			Collection<Boolean> values,
+			String variable)
+			throws IOException
+	{
+		saveBooleansD1ToWrMatrix(wrNcFile, values, variable, 0);
+	}
 	//</editor-fold>
 
 	//<editor-fold defaultstate="expanded" desc="D2 SAVERS">
@@ -312,37 +344,51 @@ public class NetCdfUtils {
 		Index ima = charArray.getIndex();
 		int i = 0;
 		for (Object value : values) {
-			if (value.toString().length() >= 2 && value.toString().charAt(1) == '[') {
+			String strValue = value.toString();
+			if (strValue.length() >= 2 && strValue.charAt(1) == '[') {
 				throw new RuntimeException(".. this means, we should use org.gwaspi.global.Utils.toMeaningfullRep() in the line below, instead of toString()");
 			}
-			charArray.setString(ima.set(i, 0), value.toString().trim());
+			charArray.setString(ima.set(i, 0), strValue.trim());
 			i++;
 		}
 
 		return charArray;
 	}
 
-	public static <V> ArrayChar.D2 writeValuesToD2ArrayChar(Collection<V> values, TypeConverter<V, String> valueToStringConverter, int stride) {
+	public static <V> ArrayChar.D2 writeValuesToD2ArrayChar(Collection<V> values, Extractor<V, String> valueToStringConverter, int stride) {
 
 		ArrayChar.D2 charArray = new ArrayChar.D2(values.size(), stride);
 		Index index = charArray.getIndex();
 		int count = 0;
 		for (V value : values) {
-			String strValue = valueToStringConverter.convert(value);
+			String strValue = valueToStringConverter.extract(value);
 			charArray.setString(index.set(count, 0), strValue.trim());
 			count++;
 		}
 
 		return charArray;
 	}
+//	public static <V> ArrayChar.D1 writeValuesToD1ArrayChar(Collection<V> values, Extractor<V, String> valueToStringConverter, int stride) {
+//
+//		ArrayChar.D1 charArray = new ArrayChar.D1(values.size(), stride);
+//		Index index = charArray.getIndex();
+//		int count = 0;
+//		for (V value : values) {
+//			String strValue = valueToStringConverter.extract(value);
+//			charArray.setString(index.set(count), strValue.trim());
+//			count++;
+//		}
+//
+//		return charArray;
+//	}
 
-	public static <V> ArrayByte.D2 writeValuesToD2ArrayByte(Collection<V> values, TypeConverter<V, Byte> valueToStringConverter, int stride) {
+	public static <V> ArrayByte.D2 writeValuesToD2ArrayByte(Collection<V> values, Extractor<V, Byte> valueToStringConverter, int stride) {
 
 		ArrayByte.D2 byteArray = new ArrayByte.D2(values.size(), stride);
 		Index index = byteArray.getIndex();
 		int count = 0;
 		for (V value : values) {
-			Byte byteValue = valueToStringConverter.convert(value);
+			Byte byteValue = valueToStringConverter.extract(value);
 			byteArray.setByte(index.set(count, 0), byteValue);
 			count++;
 		}
@@ -365,13 +411,13 @@ public class NetCdfUtils {
 		return doubleArray;
 	}
 
-	private static <V> ArrayDouble.D1 writeValuesToD1ArrayDouble(Collection<V> values, TypeConverter<V, Double> typeConverter) {
+	private static <V> ArrayDouble.D1 writeValuesToD1ArrayDouble(Collection<V> values, Extractor<V, Double> typeConverter) {
 
 		ArrayDouble.D1 doubleArray = new ArrayDouble.D1(values.size());
 		Index index = doubleArray.getIndex();
 		int count = 0;
 		for (V value : values) {
-			doubleArray.setDouble(index.set(count), typeConverter.convert(value));
+			doubleArray.setDouble(index.set(count), typeConverter.extract(value));
 			count++;
 		}
 
@@ -408,13 +454,26 @@ public class NetCdfUtils {
 		return intArray;
 	}
 
-	public static <V> ArrayInt.D1 writeValuesToD1ArrayInt(Collection<V> values, TypeConverter<V, Integer> valueToIntegerConverter) {
+	public static ArrayBoolean.D1 writeValuesToD1ArrayBoolean(Collection<Boolean> values) {
+
+		ArrayBoolean.D1 booleanArray = new ArrayBoolean.D1(values.size());
+		Index index = booleanArray.getIndex();
+		int count = 0;
+		for (Boolean value : values) {
+			booleanArray.setBoolean(index.set(count), value);
+			count++;
+		}
+
+		return booleanArray;
+	}
+
+	public static <V> ArrayInt.D1 writeValuesToD1ArrayInt(Collection<V> values, Extractor<V, Integer> valueToIntegerConverter) {
 
 		ArrayInt.D1 intArray = new ArrayInt.D1(values.size());
 		Index index = intArray.getIndex();
 		int count = 0;
 		for (V value : values) {
-			intArray.setInt(index.set(count), valueToIntegerConverter.convert(value));
+			intArray.setInt(index.set(count), valueToIntegerConverter.extract(value));
 			count++;
 		}
 
@@ -744,21 +803,129 @@ public class NetCdfUtils {
 	}
 	//</editor-fold>
 
-	//<editor-fold defaultstate="expanded" desc="ArrayByte.D1">
-	public static <K> void writeD1ArrayByteToMapValues(ArrayByte inputArray, Map<K, char[]> map) {
+//	public static <K> void writeD1ArrayByteToMapValues(ArrayByte inputArray, Map<K, Byte> map) {
+//
+//		int i = 0;
+//		for (Map.Entry<K, Byte> entry : map.entrySet()) {
+//			entry.setValue(inputArray.getByte(i++));
+//			i++;
+//		}
+//	}
+//
+//	public static <K> void writeD1ArrayByteToMapValues(ArrayChar inputArray, Map<K, Character> map) {
+//
+//		int i = 0;
+//		for (Map.Entry<K, Character> entry : map.entrySet()) {
+//			entry.setValue(inputArray.getChar(i++));
+//		}
+//	}
 
-		StringBuilder value = new StringBuilder("");
-		Index index = inputArray.getIndex();
+	public static <K, V> void writeD1ArrayToMapValues(Array from, Map<K, V> to) {
 
-		int[] shape = inputArray.getShape();
-		Iterator<K> it = map.keySet().iterator();
-		K key = it.next();
-		for (int j = 0; j < shape[0]; j++) {
-			value.append(inputArray.getChar(index.set(j)));
+//		int[] shape = from.getShape();
+		Index index = from.getIndex();
+
+		int i = 0;
+		if (from instanceof ArrayByte) {
+			for (Map.Entry<K, Byte> entry : ((Map<K, Byte>) to).entrySet()) {
+				entry.setValue(((ArrayByte) from).getByte(index.set(i++)));
+			}
+		} else if (from instanceof ArrayChar) {
+			for (Map.Entry<K, Character> entry : ((Map<K, Character>) to).entrySet()) {
+				entry.setValue(((ArrayChar) from).getChar(index.set(i++)));
+			}
+		} else if (from instanceof ArrayDouble) {
+			for (Map.Entry<K, Double> entry : ((Map<K, Double>) to).entrySet()) {
+				entry.setValue(((ArrayDouble) from).getDouble(index.set(i++)));
+			}
+		} else if (from instanceof ArrayInt) {
+			for (Map.Entry<K, Integer> entry : ((Map<K, Integer>) to).entrySet()) {
+				entry.setValue(((ArrayInt) from).getInt(index.set(i++)));
+			}
+		} else if (from instanceof ArrayBoolean) {
+			for (Map.Entry<K, Boolean> entry : ((Map<K, Boolean>) to).entrySet()) {
+				entry.setValue(((ArrayBoolean) from).getBoolean(index.set(i++)));
+			}
+		} else {
+			throw new UnsupportedOperationException();
 		}
-		map.put(key, value.toString().trim().toCharArray());
 	}
-	//</editor-fold>
+
+	public static <K, V> void writeD2ArrayToMapValues(Array from, Map<K, V> to) {
+
+		int[] shape = from.getShape();
+		Iterator<Entry<K, V>> entries = to.entrySet().iterator();
+		for (int i = 0; i < (shape[0] * shape[1]); i = i + shape[1]) {
+			ArrayInt wrValuesArray = new ArrayInt(new int[] {1, shape[1]});
+			ArrayInt.D2.arraycopy(from, i, wrValuesArray, 0, shape[1]);
+			entries.next().setValue((V) wrValuesArray.copyTo1DJavaArray());
+		}
+	}
+
+
+	public static <V> void writeD1ArrayToCollection(Array from, Collection<V> to) {
+
+//		Long expectedSize = input.getSize();
+		int[] shape = from.getShape();
+		final int size = shape[0]; //|| expectedSize;
+		if (to instanceof ArrayList) {
+			((ArrayList<V>) to).ensureCapacity(size);
+		}
+
+		Index index = from.getIndex();
+		if (from instanceof ArrayByte) {
+			for (int i = 0; i < size; i++) {
+				((Collection<Byte>) to).add(from.getByte(index.set(i)));
+			}
+		} else if (from instanceof ArrayChar) {
+			for (int i = 0; i < size; i++) {
+				((Collection<Character>) to).add(from.getChar(index.set(i)));
+			}
+		} else if (from instanceof ArrayDouble) {
+			for (int i = 0; i < size; i++) {
+				((Collection<Double>) to).add(from.getDouble(index.set(i)));
+			}
+		} else if (from instanceof ArrayInt) {
+			for (int i = 0; i < size; i++) {
+				((Collection<Integer>) to).add(from.getInt(index.set(i)));
+			}
+		} else if (from instanceof ArrayBoolean) {
+			for (int i = 0; i < size; i++) {
+				((Collection<Boolean>) to).add(from.getBoolean(index.set(i)));
+			}
+		} else {
+			throw new UnsupportedOperationException();
+		}
+	}
+
+	public static <V> void writeD2ArrayToCollection(Array from, Collection<V> to) {
+
+		int[] shape = from.getShape();
+		final int size = shape[0];
+		if (to instanceof ArrayList) {
+			((ArrayList<V>) to).ensureCapacity(size);
+		}
+		final int[] dimensions = new int[] {1, shape[1]};
+
+		Array tmpArray;
+		if (from instanceof ArrayByte) {
+			tmpArray = new ArrayByte(dimensions);
+		} else if (from instanceof ArrayChar) {
+			tmpArray = new ArrayChar(dimensions);
+		} else if (from instanceof ArrayDouble) {
+			tmpArray = new ArrayDouble(dimensions);
+		} else if (from instanceof ArrayInt) {
+			tmpArray = new ArrayInt(dimensions);
+		} else if (from instanceof ArrayBoolean) {
+			tmpArray = new ArrayBoolean(dimensions);
+		} else {
+			throw new UnsupportedOperationException();
+		}
+		for (int i = 0; i < size; i++) {
+			ArrayByte.D2.arraycopy(from, i * shape[1], tmpArray, 0, shape[1]);
+			to.add((V) tmpArray.copyTo1DJavaArray());
+		}
+	}
 	//</editor-fold>
 
 
@@ -790,5 +957,236 @@ public class NetCdfUtils {
 //		Collections.sort(uniqueGenotypes); // NOTE not required, because we use TreeMap
 
 		return uniqueGenotypes;
+	}
+
+	public static void checkDimensions(int maxSize, Dimension dimension) {
+
+		if (dimension.width == -1) {
+			dimension.width = 0;
+		}
+		if (dimension.height == -1) {
+			dimension.height = maxSize - 1;
+		}
+		if ((dimension.width < 0) || (dimension.width > maxSize)) {
+			throw new IllegalArgumentException();
+		}
+		if ((dimension.height < 0) || (dimension.height > maxSize)) {
+			throw new IllegalArgumentException();
+		}
+		if (dimension.height < dimension.width) {
+			throw new IllegalArgumentException();
+		}
+	}
+
+//	public static <R> void readVariable(NetcdfFile ncFile, String variableName, int indexFrom, int indexTo, Collection<R> targetCollection, Value) throws IOException {
+//		XXX;
+//	}
+
+	public static void readVariable(NetcdfFile ncFile, String variableName, int indexFrom, int indexTo, Collection<?> targetCollection, Map<?, ?> targetValuesMap) throws IOException {
+		readVariable(ncFile, variableName, indexFrom, indexTo, targetCollection, targetValuesMap, null);
+	}
+
+	public static void readVariable(NetcdfFile ncFile, String variableName, int indexFrom, int indexTo, Collection<?> targetCollection, Map<?, ?> targetValuesMap, Map<?, ?> targetKeysMap) throws IOException {
+
+		Variable var = ncFile.findVariable(variableName);
+
+		int numSetTargetContainers = 0;
+		if (targetCollection != null) {
+			numSetTargetContainers++;
+		}
+		if (targetValuesMap != null) {
+			numSetTargetContainers++;
+		}
+		if (targetKeysMap != null) {
+			numSetTargetContainers++;
+			throw new UnsupportedOperationException("is also filling values, not keys!");
+		}
+		if ((var == null) || (numSetTargetContainers != 1)) {
+			throw new IllegalArgumentException();
+		}
+
+		DataType dataType = var.getDataType();
+		final int[] varShape = var.getShape();
+		try {
+			final int opSetSize = varShape[0];
+			Dimension fromTo = new Dimension(indexFrom, indexTo);
+			checkDimensions(opSetSize, fromTo);
+			final int from = fromTo.width;
+			final int to = fromTo.height;
+			String fetchVarStr;
+			if (varShape.length == 1) {
+				fetchVarStr = "(" + from + ":" + to + ":1)";
+			} else if (varShape.length == 2) {
+				fetchVarStr = "(" + from + ":" + to + ":1, 0:" + (varShape[1] - 1) + ":1)";
+			} else {
+				throw new IllegalArgumentException();
+			}
+
+			if (targetCollection != null) {
+				if ((dataType == DataType.BYTE)) {
+					if (varShape.length == 1) {
+						ArrayByte.D1 markerSetAC = (ArrayByte.D1) var.read(fetchVarStr);
+						NetCdfUtils.writeD1ArrayToCollection(markerSetAC, (Collection<Byte>)targetCollection);
+					} else if (varShape.length == 2) {
+						ArrayByte.D2 markerSetAC = (ArrayByte.D2) var.read(fetchVarStr);
+						NetCdfUtils.writeD2ArrayToCollection(markerSetAC, (Collection<byte[]>)targetCollection);
+					} else {
+						throw new UnsupportedOperationException();
+					}
+				} else if ((dataType == DataType.CHAR)) {
+					if (varShape.length == 1) {
+						ArrayChar.D1 markerSetAC = (ArrayChar.D1) var.read(fetchVarStr);
+						NetCdfUtils.writeD1ArrayToCollection(markerSetAC, (Collection<Character>)targetCollection);
+					} else if (varShape.length == 2) {
+						ArrayChar.D2 markerSetAC = (ArrayChar.D2) var.read(fetchVarStr);
+						NetCdfUtils.writeD2ArrayToCollection(markerSetAC, (Collection<char[]>)targetCollection);
+					} else {
+						throw new UnsupportedOperationException();
+					}
+				} else if (dataType == DataType.DOUBLE) {
+					if (varShape.length == 1) {
+						ArrayDouble.D1 markerSetAF = (ArrayDouble.D1) var.read(fetchVarStr);
+						NetCdfUtils.writeD1ArrayToCollection(markerSetAF, (Collection<Double>)targetCollection);
+					} else if (varShape.length == 2) {
+						ArrayDouble.D2 markerSetAF = (ArrayDouble.D2) var.read(fetchVarStr);
+						NetCdfUtils.writeD2ArrayToCollection(markerSetAF, (Collection<double[]>)targetCollection);
+					} else {
+						throw new UnsupportedOperationException();
+					}
+				} else if (dataType == DataType.INT) {
+					if (varShape.length == 1) {
+						ArrayInt.D1 markerSetAD = (ArrayInt.D1) var.read(fetchVarStr);
+						NetCdfUtils.writeD1ArrayToCollection(markerSetAD, (Collection<Integer>)targetCollection);
+					} else if (varShape.length == 2) {
+						ArrayInt.D2 markerSetAD = (ArrayInt.D2) var.read(fetchVarStr);
+						NetCdfUtils.writeD2ArrayToCollection(markerSetAD, (Collection<int[]>)targetCollection);
+					} else {
+						throw new UnsupportedOperationException();
+					}
+				} else if (dataType == DataType.BOOLEAN) {
+					if (varShape.length == 1) {
+						ArrayBoolean.D1 markerSetAD = (ArrayBoolean.D1) var.read(fetchVarStr);
+						NetCdfUtils.writeD1ArrayToCollection(markerSetAD, (Collection<Boolean>)targetCollection);
+					} else if (varShape.length == 2) {
+						ArrayBoolean.D2 markerSetAD = (ArrayBoolean.D2) var.read(fetchVarStr);
+						NetCdfUtils.writeD2ArrayToCollection(markerSetAD, (Collection<boolean[]>)targetCollection);
+					} else {
+						throw new UnsupportedOperationException();
+					}
+				} else {
+					throw new UnsupportedOperationException();
+				}
+			} else if (targetValuesMap != null) {
+				if ((dataType == DataType.BYTE)) {
+					if (varShape.length == 1) {
+						ArrayByte.D1 markerSetAC = (ArrayByte.D1) var.read(fetchVarStr);
+						NetCdfUtils.writeD1ArrayToMapValues(markerSetAC, (Map<?, Byte>)targetValuesMap);
+					} else if (varShape.length == 2) {
+						ArrayByte.D2 markerSetAC = (ArrayByte.D2) var.read(fetchVarStr);
+						NetCdfUtils.writeD2ArrayByteToMapValues(markerSetAC, (Map<?, byte[]>)targetValuesMap);
+					} else {
+						throw new UnsupportedOperationException();
+					}
+				} else if ((dataType == DataType.CHAR)) {
+					if (varShape.length == 1) {
+						ArrayChar.D1 markerSetAC = (ArrayChar.D1) var.read(fetchVarStr);
+						NetCdfUtils.writeD1ArrayToMapValues(markerSetAC, (Map<?, Character>)targetValuesMap);
+					} else if (varShape.length == 2) {
+						ArrayChar.D2 markerSetAC = (ArrayChar.D2) var.read(fetchVarStr);
+						NetCdfUtils.writeD2ArrayCharToMapValues(markerSetAC, (Map<?, char[]>)targetValuesMap);
+					} else {
+						throw new UnsupportedOperationException();
+					}
+				} else if (dataType == DataType.DOUBLE) {
+					if (varShape.length == 1) {
+						ArrayDouble.D1 markerSetAF = (ArrayDouble.D1) var.read(fetchVarStr);
+						NetCdfUtils.writeD1ArrayDoubleToMapValues(markerSetAF, (Map<?, Double>)targetValuesMap);
+					} else if (varShape.length == 2) {
+						ArrayDouble.D2 markerSetAF = (ArrayDouble.D2) var.read(fetchVarStr);
+						NetCdfUtils.writeD2ArrayDoubleToMapValues(markerSetAF, (Map<?, double[]>)targetValuesMap);
+					} else {
+						throw new UnsupportedOperationException();
+					}
+				} else if (dataType == DataType.INT) {
+					if (varShape.length == 1) {
+						ArrayInt.D1 markerSetAD = (ArrayInt.D1) var.read(fetchVarStr);
+						NetCdfUtils.writeD1ArrayIntToMapValues(markerSetAD, (Map<?, Integer>)targetValuesMap);
+					} else if (varShape.length == 2) {
+						ArrayInt.D2 markerSetAD = (ArrayInt.D2) var.read(fetchVarStr);
+						NetCdfUtils.writeD2ArrayIntToMapValues(markerSetAD, (Map<?, int[]>)targetValuesMap);
+					} else {
+						throw new UnsupportedOperationException();
+					}
+				} else if (dataType == DataType.BOOLEAN) {
+					if (varShape.length == 1) {
+						ArrayBoolean.D1 markerSetAD = (ArrayBoolean.D1) var.read(fetchVarStr);
+						NetCdfUtils.writeD1ArrayToMapValues(markerSetAD, (Map<?, Boolean>)targetValuesMap);
+					} else if (varShape.length == 2) {
+						ArrayBoolean.D2 markerSetAD = (ArrayBoolean.D2) var.read(fetchVarStr);
+						NetCdfUtils.writeD2ArrayToMapValues(markerSetAD, (Map<?, boolean[]>)targetValuesMap);
+					} else {
+						throw new UnsupportedOperationException();
+					}
+				} else {
+					throw new UnsupportedOperationException();
+				}
+			} else {
+				if ((dataType == DataType.BYTE)) {
+					if (varShape.length == 1) {
+						ArrayByte.D1 markerSetAC = (ArrayByte.D1) var.read(fetchVarStr);
+						NetCdfUtils.writeD1ArrayToMapValues(markerSetAC, (Map<?, Byte>)targetKeysMap);
+					} else if (varShape.length == 2) {
+						ArrayByte.D2 markerSetAC = (ArrayByte.D2) var.read(fetchVarStr);
+						NetCdfUtils.writeD2ArrayByteToMapValues(markerSetAC, (Map<?, byte[]>)targetKeysMap);
+					} else {
+						throw new UnsupportedOperationException();
+					}
+				} else if ((dataType == DataType.CHAR)) {
+					if (varShape.length == 1) {
+						ArrayChar.D1 markerSetAC = (ArrayChar.D1) var.read(fetchVarStr);
+						NetCdfUtils.writeD1ArrayToMapValues(markerSetAC, (Map<?, Character>)targetKeysMap);
+					} else if (varShape.length == 2) {
+						ArrayChar.D2 markerSetAC = (ArrayChar.D2) var.read(fetchVarStr);
+						NetCdfUtils.writeD2ArrayCharToMapValues(markerSetAC, (Map<?, char[]>)targetKeysMap);
+					} else {
+						throw new UnsupportedOperationException();
+					}
+				} else if (dataType == DataType.DOUBLE) {
+					if (varShape.length == 1) {
+						ArrayDouble.D1 markerSetAF = (ArrayDouble.D1) var.read(fetchVarStr);
+						NetCdfUtils.writeD1ArrayDoubleToMapValues(markerSetAF, (Map<?, Double>)targetKeysMap);
+					} else if (varShape.length == 2) {
+						ArrayDouble.D2 markerSetAF = (ArrayDouble.D2) var.read(fetchVarStr);
+						NetCdfUtils.writeD2ArrayDoubleToMapValues(markerSetAF, (Map<?, double[]>)targetKeysMap);
+					} else {
+						throw new UnsupportedOperationException();
+					}
+				} else if (dataType == DataType.INT) {
+					if (varShape.length == 1) {
+						ArrayInt.D1 markerSetAD = (ArrayInt.D1) var.read(fetchVarStr);
+						NetCdfUtils.writeD1ArrayIntToMapValues(markerSetAD, (Map<?, Integer>)targetKeysMap);
+					} else if (varShape.length == 2) {
+						ArrayInt.D2 markerSetAD = (ArrayInt.D2) var.read(fetchVarStr);
+						NetCdfUtils.writeD2ArrayIntToMapValues(markerSetAD, (Map<?, int[]>)targetKeysMap);
+					} else {
+						throw new UnsupportedOperationException();
+					}
+				} else if (dataType == DataType.BOOLEAN) {
+					if (varShape.length == 1) {
+						ArrayBoolean.D1 markerSetAD = (ArrayBoolean.D1) var.read(fetchVarStr);
+						NetCdfUtils.writeD1ArrayToMapValues(markerSetAD, (Map<?, Boolean>)targetKeysMap);
+					} else if (varShape.length == 2) {
+						ArrayBoolean.D2 markerSetAD = (ArrayBoolean.D2) var.read(fetchVarStr);
+						NetCdfUtils.writeD2ArrayToMapValues(markerSetAD, (Map<?, boolean[]>)targetKeysMap);
+					} else {
+						throw new UnsupportedOperationException();
+					}
+				} else {
+					throw new UnsupportedOperationException();
+				}
+			}
+		} catch (InvalidRangeException ex) {
+			throw new IOException(ex);
+		}
 	}
 }

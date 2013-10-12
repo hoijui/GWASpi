@@ -42,7 +42,6 @@ import javax.swing.JScrollPane;
 import javax.swing.LayoutStyle;
 import javax.swing.SwingConstants;
 import javax.swing.border.TitledBorder;
-import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.global.Config;
 import org.gwaspi.global.Text;
@@ -52,6 +51,7 @@ import org.gwaspi.gui.utils.CursorUtils;
 import org.gwaspi.gui.utils.Dialogs;
 import org.gwaspi.gui.utils.LinksExternalResouces;
 import org.gwaspi.gui.utils.URLInDefaultBrowser;
+import org.gwaspi.model.ChromosomeKey;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixMetadata;
@@ -98,14 +98,14 @@ public final class ManhattanPlotZoom extends JPanel {
 	/** roughly 2000MB needed per 100.000 plotted markers */
 	public static final int MARKERS_NUM_DEFAULT = (int) Math.round(100000 * ((double) StartGWASpi.maxHeapSize / 2000));
 
-	private final OperationKey operationKey;
+	private final OperationKey testOpKey;
 	private OperationMetadata op;
 	private Map<String, MarkerKey> labeler;
 	private MatrixMetadata rdMatrixMetadata;
-	private String origMarkerId;
-	private final String origChr;
-	private String currentMarkerId;
-	private final String currentChr;
+	private MarkerKey origMarkerKey;
+	private final ChromosomeKey origChr;
+	private MarkerKey currentMarkerKey;
+	private final ChromosomeKey currentChr;
 	private final Integer nRows;
 	private long centerPhysPos;
 	private long startPhysPos;
@@ -139,13 +139,13 @@ public final class ManhattanPlotZoom extends JPanel {
 	public ManhattanPlotZoom(
 			ManhattanChartDisplay parent,
 			OperationKey operationKey,
-			String chr,
+			ChromosomeKey chr,
 			long startPhysPos,
 			long requestedPosWindow,
 			Integer nRows)
 	{
 		this.parent = parent;
-		this.operationKey = operationKey;
+		this.testOpKey = operationKey;
 		this.currentChr = chr;
 		this.origChr = chr;
 		this.nRows = nRows;
@@ -158,16 +158,16 @@ public final class ManhattanPlotZoom extends JPanel {
 	}
 
 	public ManhattanPlotZoom(
-			OperationKey operationKey,
-			String chr,
-			String markerId,
+			OperationKey testOpKey,
+			ChromosomeKey chr,
+			MarkerKey markerId,
 			long centerPhysPos,
 			long requestedSetSize,
 			Integer nRows)
 	{
-		this.operationKey = operationKey;
-		this.currentMarkerId = markerId;
-		this.origMarkerId = markerId;
+		this.testOpKey = testOpKey;
+		this.currentMarkerKey = markerId;
+		this.origMarkerKey = markerId;
 		this.currentChr = chr;
 		this.origChr = chr;
 		this.nRows = nRows;
@@ -180,8 +180,8 @@ public final class ManhattanPlotZoom extends JPanel {
 	public void initChart(boolean usePhysicalPosition) {
 
 		try {
-			this.op = OperationsList.getOperation(operationKey);
-			this.rdMatrixMetadata = MatricesList.getMatrixMetadataById(operationKey.getParentMatrixKey());
+			this.op = OperationsList.getOperation(testOpKey);
+			this.rdMatrixMetadata = MatricesList.getMatrixMetadataById(testOpKey.getParentMatrixKey());
 
 //			OperationSet rdAssocMarkerSet = new OperationSet(this.rdOPMetadata.getStudyKey(), this.opId);
 //			this.labelerMap = rdAssocMarkerSet.getOpSetMap();
@@ -205,22 +205,22 @@ public final class ManhattanPlotZoom extends JPanel {
 		}
 		//</editor-fold>
 
+		final MarkerKey toUseMarkerKey;
+		final long toUseRequestedPosWindow;
 		if (usePhysicalPosition) {
-			initXYDataset = getXYDataSetByPhysPos(
-					this,
-					operationKey,
-					origChr,
-					startPhysPos,
-					requestedPosWindow);
+			toUseMarkerKey = null;
+			toUseRequestedPosWindow = requestedPosWindow;
 		} else {
-			initXYDataset = getXYDataSetByMarkerIdAndPhysPos(
-					this,
-					operationKey,
-					origChr,
-					currentMarkerId,
-					centerPhysPos,
-					requestedSetSize);
+			toUseMarkerKey = currentMarkerKey;
+			toUseRequestedPosWindow = requestedSetSize; // XXX should this be requestedPosWindow instead?
 		}
+		initXYDataset = GenericReportGenerator.getManhattanZoomByChrAndPos(
+				this,
+				testOpKey,
+				origChr,
+				toUseMarkerKey,
+				startPhysPos,
+				toUseRequestedPosWindow);
 
 //		slid_Tracker = new JSlider();
 
@@ -252,14 +252,16 @@ public final class ManhattanPlotZoom extends JPanel {
 							Dialogs.showWarningDialogue(Text.Reports.warnExternalResource);
 						} else {
 							String rsId = tooltip.substring(6, tooltip.indexOf('<', 6));
-							URLInDefaultBrowser.browseGenericURL(LinksExternalResouces.getResourceLink(cmb_SearchDB.getSelectedIndex(),
+							URLInDefaultBrowser.browseGenericURL(LinksExternalResouces.getResourceLink(
+									cmb_SearchDB.getSelectedIndex(),
 									currentChr, // chr
 									rsId, // rsId
 									chartX) // pos
 									);
 						}
 					} else { // THE SELECTED EXTERNAL RESOURCE ONLY NEEDS CHR+POS INFO
-						URLInDefaultBrowser.browseGenericURL(LinksExternalResouces.getResourceLink(cmb_SearchDB.getSelectedIndex(),
+						URLInDefaultBrowser.browseGenericURL(LinksExternalResouces.getResourceLink(
+								cmb_SearchDB.getSelectedIndex(),
 								currentChr, // chr
 								"", // rsId
 								chartX) // pos
@@ -303,8 +305,8 @@ public final class ManhattanPlotZoom extends JPanel {
 //		pnl_Tracker = new JPanel();
 //		slid_Tracker = new JSlider();
 
-		String titlePlot = ": " + origMarkerId + " - Chr" + currentChr;
-		if (origMarkerId == null) {
+		String titlePlot = ": " + origMarkerKey.toString() + " - Chr" + currentChr;
+		if (origMarkerKey == null) {
 			titlePlot = ": Chr" + currentChr + " - Pos: " + startPhysPos + " to " + (startPhysPos + requestedPosWindow);
 		}
 
@@ -405,7 +407,7 @@ public final class ManhattanPlotZoom extends JPanel {
 
 		btn_Save.setAction(new SaveAsAction());
 
-		btn_Reset.setAction(new ResetAction(operationKey));
+		btn_Reset.setAction(new ResetAction(testOpKey));
 
 		btn_Back.setAction(new BackToTableAction());
 
@@ -512,133 +514,9 @@ public final class ManhattanPlotZoom extends JPanel {
 	}
 
 	// <editor-fold defaultstate="expanded" desc="CHART GENERATOR">
-	private XYDataset getXYDataSetByPhysPos(
-			ManhattanPlotZoom manhattanPlotZoom,
-			OperationKey operationKey,
-			String _origChr,
-			long _startPhysPos,
-			long _requestedPosWindow)
-	{
-		XYDataset xyd = null;
-		if (op.getOperationType().equals(OPType.ALLELICTEST)) {
-			xyd = GenericReportGenerator.getManhattanZoomByChrAndPos(
-					manhattanPlotZoom,
-					operationKey,
-					cNetCDF.Association.VAR_OP_MARKERS_ASAllelicAssociationTPOR,
-					_origChr,
-					null,
-					_startPhysPos,
-					_requestedPosWindow);
-		} else if (op.getOperationType().equals(OPType.GENOTYPICTEST)) {
-			xyd = GenericReportGenerator.getManhattanZoomByChrAndPos(
-					manhattanPlotZoom,
-					operationKey,
-					cNetCDF.Association.VAR_OP_MARKERS_ASGenotypicAssociationTP2OR,
-					_origChr,
-					null,
-					_startPhysPos,
-					_requestedPosWindow);
-		} else if (op.getOperationType().equals(OPType.TRENDTEST)) {
-			xyd = GenericReportGenerator.getManhattanZoomByChrAndPos(
-					manhattanPlotZoom,
-					operationKey,
-					cNetCDF.Association.VAR_OP_MARKERS_ASTrendTestTP,
-					_origChr,
-					null,
-					_startPhysPos,
-					_requestedPosWindow);
-		}
-
-		return xyd;
-	}
-
-	private XYDataset getXYDataSetByMarkerIdAndPhysPos(
-			ManhattanPlotZoom manhattanPlotZoom,
-			OperationKey operationKey,
-			String _origChr,
-			String _markerId,
-			long _centerPhysPos,
-			long _requestedPosWindow)
-	{
-		XYDataset xyd = null;
-		if (op.getOperationType().equals(OPType.ALLELICTEST)) {
-			xyd = GenericReportGenerator.getManhattanZoomByChrAndPos(
-					manhattanPlotZoom,
-					operationKey,
-					cNetCDF.Association.VAR_OP_MARKERS_ASAllelicAssociationTPOR,
-					_origChr,
-					_markerId,
-					_centerPhysPos,
-					_requestedPosWindow);
-		} else if (op.getOperationType().equals(OPType.GENOTYPICTEST)) {
-			xyd = GenericReportGenerator.getManhattanZoomByChrAndPos(
-					manhattanPlotZoom,
-					operationKey,
-					cNetCDF.Association.VAR_OP_MARKERS_ASGenotypicAssociationTP2OR,
-					_origChr,
-					_markerId,
-					_centerPhysPos,
-					_requestedPosWindow);
-		} else if (op.getOperationType().equals(OPType.TRENDTEST)) {
-			xyd = GenericReportGenerator.getManhattanZoomByChrAndPos(
-					manhattanPlotZoom,
-					operationKey,
-					cNetCDF.Association.VAR_OP_MARKERS_ASTrendTestTP,
-					_origChr,
-					_markerId,
-					_centerPhysPos,
-					_requestedPosWindow);
-		}
-
-		return xyd;
-	}
-
-	/**
-	 * This getXYDataSetByMarkerIdAndIdx has now been deprecated in favor of
-	 * getXYDataSetByMarkerIdAndPhysPos
-	 *
-	 * @deprecated Use getXYDataSetByMarkerIdAndPhysPos instead
-	 */
-	XYDataset getXYDataSetByMarkerIdAndIdx(
-			ManhattanPlotZoom manhattanPlotZoom,
-			OperationKey operationKey,
-			String _origChr,
-			MarkerKey _markerKey,
-			int _centerPhysPos,
-			int _requestedSetSize)
-	{
-		XYDataset xyd = null;
-		if (op.getOperationType().equals(OPType.ALLELICTEST)) {
-			xyd = GenericReportGenerator.getManhattanZoomByMarkerIdOrIdx(
-					manhattanPlotZoom,
-					operationKey,
-					cNetCDF.Association.VAR_OP_MARKERS_ASAllelicAssociationTPOR,
-					_markerKey,
-					_centerPhysPos,
-					_requestedSetSize);
-		} else if (op.getOperationType().equals(OPType.GENOTYPICTEST)) {
-			xyd = GenericReportGenerator.getManhattanZoomByMarkerIdOrIdx(
-					manhattanPlotZoom,
-					operationKey,
-					cNetCDF.Association.VAR_OP_MARKERS_ASGenotypicAssociationTP2OR,
-					_markerKey,
-					_centerPhysPos,
-					_requestedSetSize);
-		} else if (op.getOperationType().equals(OPType.TRENDTEST)) {
-			xyd = GenericReportGenerator.getManhattanZoomByMarkerIdOrIdx(
-					manhattanPlotZoom,
-					operationKey,
-					cNetCDF.Association.VAR_OP_MARKERS_ASTrendTestTP,
-					_markerKey,
-					_centerPhysPos,
-					_requestedSetSize);
-		}
-
-		return xyd;
-	}
-
-	private JFreeChart createChart(XYDataset dataset, String chr) {
-		JFreeChart chart = ChartFactory.createScatterPlot(null,
+	private JFreeChart createChart(XYDataset dataset, ChromosomeKey chr) {
+		JFreeChart chart = ChartFactory.createScatterPlot(
+				null,
 				"",
 				"P value",
 				dataset,
@@ -758,10 +636,10 @@ public final class ManhattanPlotZoom extends JPanel {
 	private class MyXYToolTipGenerator extends StandardXYToolTipGenerator
 			implements XYToolTipGenerator
 	{
-		private String chr;
+		private final ChromosomeKey chr;
 
-		MyXYToolTipGenerator(String _chr) {
-			this.chr = _chr;
+		MyXYToolTipGenerator(ChromosomeKey chr) {
+			this.chr = chr;
 		}
 
 		@Override
@@ -770,7 +648,7 @@ public final class ManhattanPlotZoom extends JPanel {
 			double position = dataset.getXValue(series, item);
 			double pValue = dataset.getYValue(series, item);
 
-			String chrPos = chr + "_" + Report_Analysis.FORMAT_INTEGER.format(position);
+			String chrPos = chr.getChromosome() + "_" + Report_Analysis.FORMAT_INTEGER.format(position);
 			if (getLabelerMap().containsKey(chrPos)) {
 				toolTip.append(getLabelerMap().get(chrPos));
 				toolTip.append("<br>");
@@ -786,8 +664,8 @@ public final class ManhattanPlotZoom extends JPanel {
 	private class MySeriesItemLabelGenerator extends AbstractXYItemLabelGenerator
 			implements XYItemLabelGenerator
 	{
-		private double threshold;
-		private String chr;
+		private final double threshold;
+		private final ChromosomeKey chr;
 
 		/**
 		 * Creates a new generator that only displays labels that are greater
@@ -795,9 +673,9 @@ public final class ManhattanPlotZoom extends JPanel {
 		 *
 		 * @param threshold the threshold value.
 		 */
-		MySeriesItemLabelGenerator(double threshold, String _chr) {
+		MySeriesItemLabelGenerator(double threshold, ChromosomeKey chr) {
 			this.threshold = threshold;
-			this.chr = _chr;
+			this.chr = chr;
 		}
 
 		/**
@@ -817,7 +695,7 @@ public final class ManhattanPlotZoom extends JPanel {
 			int position = (int) dataset.getXValue(series, item);
 			if (pValue != null) {
 				double pV = pValue.doubleValue();
-				StringBuilder chrPos = new StringBuilder(chr);
+				StringBuilder chrPos = new StringBuilder(chr.getChromosome());
 				chrPos.append("_");
 				chrPos.append(position);
 				if (pV < this.threshold) {
@@ -826,7 +704,7 @@ public final class ManhattanPlotZoom extends JPanel {
 
 					//result = value.toString().substring(0, 4); // could apply formatting here
 				}
-				if (getLabelerMap().get(chrPos.toString()).toString().equals(origMarkerId)) {
+				if (getLabelerMap().get(chrPos.toString()).toString().equals(origMarkerKey)) {
 					rsLabel = getLabelerMap().get(chrPos.toString()).toString();
 					rsLabel = "◄ " + rsLabel;
 				}
@@ -854,7 +732,7 @@ public final class ManhattanPlotZoom extends JPanel {
 
 	private class ResetAction extends AbstractAction {
 
-		private OperationKey operationKey;
+		private final OperationKey operationKey;
 
 		ResetAction(OperationKey operationKey) {
 
@@ -886,14 +764,12 @@ public final class ManhattanPlotZoom extends JPanel {
 		@Override
 		public void actionPerformed(ActionEvent evt) {
 			try {
-				File newFile = new File(Dialogs.selectDirectoryDialog(JOptionPane.OK_OPTION).getPath() + "/zoom_" + origMarkerId + ".png");
+				File newFile = new File(Dialogs.selectDirectoryDialog(JOptionPane.OK_OPTION).getPath() + "/zoom_" + origMarkerKey + ".png");
 				ChartUtilities.saveChartAsPNG(newFile, zoomChart, scrl_Chart.getWidth(), scrl_Chart.getHeight());
 			} catch (IOException ex) {
 				log.error(null, ex);
 			} catch (NullPointerException ex) {
 				//Dialogs.showWarningDialogue("A table saving error has occurred");
-				log.error(null, ex);
-			} catch (Exception ex) {
 				log.error(null, ex);
 			}
 		}

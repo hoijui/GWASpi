@@ -23,14 +23,14 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import org.gwaspi.constants.cExport;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.GenotypesList;
-import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
@@ -39,7 +39,8 @@ import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleKey;
-import org.gwaspi.reports.GatherQAMarkersData;
+import org.gwaspi.netCDF.operations.OperationFactory;
+import org.gwaspi.operations.qamarkers.QAMarkersOperationDataSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -84,13 +85,24 @@ public class PlinkBinaryFormatter implements Formatter {
 		boolean result = false;
 		String sep = cExport.separator_PLINK;
 
+		MatrixKey parentMatrix = MatrixKey.valueOf(rdMatrixMetadata);
+
 		// ALLELES
-		List<OperationMetadata> operations = OperationsList.getOperationsList(MatrixKey.valueOf(rdMatrixMetadata));
+		List<OperationMetadata> operations = OperationsList.getOperationsList(parentMatrix);
 		OperationKey markersQAOpKey = OperationsList.getIdOfLastOperationTypeOccurance(operations, OPType.MARKER_QA);
 
-		Map<MarkerKey, byte[]> minorAllelesMap = GatherQAMarkersData.loadMarkerQAMinorAlleles(markersQAOpKey);
-		Map<MarkerKey, byte[]> majorAllelesMap = GatherQAMarkersData.loadMarkerQAMajorAlleles(markersQAOpKey);
-		Map<MarkerKey, Double> minorAlleleFreqMap = GatherQAMarkersData.loadMarkerQAMinorAlleleFrequency(markersQAOpKey);
+		QAMarkersOperationDataSet qaMarkersOpDS = (QAMarkersOperationDataSet) OperationFactory.generateOperationDataSet(markersQAOpKey);
+
+		Collection<MarkerMetadata> markersMetadata = dataSetSource.getMarkersMetadatasSource();
+		// NOTE We can use these from the Markers-QA-Operation directly,
+		//   assuming the same indices as with the parent matrix,
+		//   because the Markers-QA-Operation uses all markers
+		//   of the parent matrix.
+		Collection<Byte> minorAllelesCol = qaMarkersOpDS.getKnownMinorAllele(-1, -1);
+		List<Byte> minorAlleles = (minorAllelesCol instanceof List) ? ((List) minorAllelesCol) : new ArrayList<Byte>(minorAllelesCol);
+		Collection<Double> minorAllelesFrequencies = qaMarkersOpDS.getKnownMinorAlleleFrequencies(-1, -1);
+		Collection<Byte> majorAllelesCol = qaMarkersOpDS.getKnownMajorAllele(-1, -1);
+		List<Byte> majorAlleles = (majorAllelesCol instanceof List) ? ((List) majorAllelesCol) : new ArrayList<Byte>(majorAllelesCol);
 
 		//<editor-fold defaultstate="expanded" desc="BIM FILE">
 		File bimFile = new File(exportDir.getPath(),
@@ -108,7 +120,9 @@ public class PlinkBinaryFormatter implements Formatter {
 			//     Allele 1
 			//     Allele 2
 
-			for (MarkerMetadata curMarkerMetadata : dataSetSource.getMarkersMetadatasSource()) {
+			int markerIndex = 0;
+			Iterator<Double> minorAllelesFrequenciesIt = minorAllelesFrequencies.iterator();
+			for (MarkerMetadata curMarkerMetadata : markersMetadata) {
 				bimBW.write(curMarkerMetadata.getChr());
 				bimBW.write(sep);
 				bimBW.write(curMarkerMetadata.getRsId()); // XXX Maybe has to be marker-id instead?
@@ -117,25 +131,26 @@ public class PlinkBinaryFormatter implements Formatter {
 				bimBW.write(sep);
 				bimBW.write(Integer.toString(curMarkerMetadata.getPos())); // NOTE This conversion is required, because Writer#write(int) actually writes a char, not the int value.
 
-				// HACK from here on, make nicer! (and unuse NetCDF)
-				MarkerKey key = MarkerKey.valueOf(curMarkerMetadata);
-				String minorAllele = new String(minorAllelesMap.get(key));
-				String majorAllele = new String(majorAllelesMap.get(key));
-				Double minAlleleFreq = minorAlleleFreqMap.get(key);
-				if (minAlleleFreq == 0.5 && majorAllele.compareTo(majorAllele) > 0) { // IF BOTH ALLELES ARE EQUALLY COMMON, USE ALPHABETICAL ORDER
-					String tmpMinorAllele = majorAllele;
+				Byte minorAllele = minorAlleles.get(markerIndex);
+				Byte majorAllele = majorAlleles.get(markerIndex);
+				Double minAlleleFreq = minorAllelesFrequenciesIt.next();
+				if ((minAlleleFreq == 0.5) && (majorAllele.compareTo(majorAllele) > 0)) {
+					// if both alleles are equally common, use alphabetic order
+					Byte tmpMinorAllele = majorAllele;
 					majorAllele = minorAllele;
 					minorAllele = tmpMinorAllele;
 
-					majorAllelesMap.put(key, majorAllele.getBytes());
-					minorAllelesMap.put(key, minorAllele.getBytes());
+					majorAlleles.set(markerIndex, majorAllele);
+					minorAlleles.set(markerIndex, minorAllele);
 				}
+
 				bimBW.write(sep);
-				bimBW.write(minorAllele);
+				bimBW.write((char) (byte) minorAllele);
 				bimBW.write(sep);
-				bimBW.write(majorAllele);
+				bimBW.write((char) (byte) majorAllele);
 
 				bimBW.write('\n');
+				markerIndex++;
 			}
 
 			org.gwaspi.global.Utils.sysoutCompleted("Completed exporting BIM file to " + bimFile.getAbsolutePath());
@@ -173,14 +188,13 @@ public class PlinkBinaryFormatter implements Formatter {
 			bedBW.writeByte(27); // TODO document magic number
 			bedBW.writeByte(1); // mode SNP-major
 
-			int markerNb = 0;
 			int byteCount = 0;
 			byte[] wrBytes = new byte[byteChunkSize];
 			// ITERATE THROUGH ALL MARKERS, ONE SAMPLESET AT A TIME
 			Iterator<GenotypesList> markersGenotypesIt = dataSetSource.getMarkersGenotypesSource().iterator();
-			for (MarkerKey markerKey : dataSetSource.getMarkersKeysSource()) {
-				String tmpMinorAllele = new String(minorAllelesMap.get(markerKey));
-				String tmpMajorAllele = new String(majorAllelesMap.get(markerKey));
+			for (int markerIndex = 0; markerIndex < nbOfMarkers; markerIndex++) {
+				byte tmpMinorAllele = minorAlleles.get(markerIndex);
+				byte tmpMajorAllele = majorAlleles.get(markerIndex);
 
 				for (Iterator<byte[]> rdSampleGts = markersGenotypesIt.next().iterator(); rdSampleGts.hasNext();) {
 					// ONE BYTE AT A TIME (4 SAMPLES)
@@ -197,7 +211,8 @@ public class PlinkBinaryFormatter implements Formatter {
 					int number = Integer.parseInt(tetraGTs.toString(), 2);
 					byte[] tetraGT = new byte[] {(byte) number};
 
-					System.arraycopy(tetraGT,
+					System.arraycopy(
+							tetraGT,
 							0,
 							wrBytes,
 							byteCount,
@@ -213,8 +228,6 @@ public class PlinkBinaryFormatter implements Formatter {
 						byteCount = 0;
 					}
 				}
-
-				markerNb++;
 			}
 
 			// WRITE LAST BITES TO FILE
@@ -292,34 +305,34 @@ public class PlinkBinaryFormatter implements Formatter {
 		return result;
 	}
 
-	private static byte[] translateTo00011011Byte(byte[] tempGT, String tmpMinorAllele, String tmpMajorAllele) {
+	private static byte[] translateTo00011011Byte(byte[] tempGT, byte tmpMinorAllele, byte tmpMajorAllele) {
+
 		byte[] result;
+
 		if (tempGT[0] == 48
 				|| tempGT[1] == 48) {
 			// SOME MISSING ALLELES => SET ALL TO MISSING
 			result = new byte[]{1, 0};
 		} else {
-			String allele1 = new String(tempGT, 0, 1);
-			String allele2 = new String(tempGT, 1, 1);
-
-			if (allele1.equals(tmpMinorAllele)) {
-				if (allele2.equals(tmpMinorAllele)) {
+			if (tempGT[0] == tmpMinorAllele) {
+				if (tempGT[1] == tmpMinorAllele) {
 					// HOMOZYGOUS FOR MINOR ALLELE
-					result = new byte[]{0, 0};
+					result = new byte[] {0, 0};
 				} else {
 					// HETEROZYGOUS
-					result = new byte[]{0, 1};
+					result = new byte[] {0, 1};
 				}
 			} else {
-				if (allele2.equals(tmpMajorAllele)) {
+				if (tempGT[1] == tmpMajorAllele) {
 					// HOMOZYGOUS FOR MAJOR ALLELE
-					result = new byte[]{1, 1};
+					result = new byte[] {1, 1};
 				} else {
 					// HETEROZYGOUS
-					result = new byte[]{0, 1};
+					result = new byte[] {0, 1};
 				}
 			}
 		}
+
 		return result;
 	}
 }

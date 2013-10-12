@@ -27,7 +27,7 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.gwaspi.constants.cDBSamples;
-import org.gwaspi.global.TypeConverter;
+import org.gwaspi.global.Extractor;
 
 @Entity
 @Table(name = "sampleInfo")
@@ -51,47 +51,47 @@ import org.gwaspi.global.TypeConverter;
 })
 public class SampleInfo implements Comparable<SampleInfo>, Serializable {
 
-	public static final TypeConverter<SampleInfo, SampleKey> TO_SAMPLE_KEY
-			= new TypeConverter<SampleInfo, SampleKey>()
+	public static final Extractor<SampleInfo, SampleKey> TO_SAMPLE_KEY
+			= new Extractor<SampleInfo, SampleKey>()
 	{
 		@Override
-		public SampleKey convert(SampleInfo from) {
+		public SampleKey extract(SampleInfo from) {
 			return SampleKey.valueOf(from);
 		}
 	};
 
-	public static final TypeConverter<SampleInfo, String> TO_SAMPLE_ID
-			= new TypeConverter<SampleInfo, String>()
+	public static final Extractor<SampleInfo, String> TO_SAMPLE_ID
+			= new Extractor<SampleInfo, String>()
 	{
 		@Override
-		public String convert(SampleInfo from) {
+		public String extract(SampleInfo from) {
 			return from.getSampleId();
 		}
 	};
 
-	public static final TypeConverter<SampleInfo, String> TO_FAMILY_ID
-			= new TypeConverter<SampleInfo, String>()
+	public static final Extractor<SampleInfo, String> TO_FAMILY_ID
+			= new Extractor<SampleInfo, String>()
 	{
 		@Override
-		public String convert(SampleInfo from) {
+		public String extract(SampleInfo from) {
 			return from.getFamilyId();
 		}
 	};
 
-	public static final TypeConverter<SampleInfo, Affection> TO_AFFECTION
-			= new TypeConverter<SampleInfo, Affection>()
+	public static final Extractor<SampleInfo, Affection> TO_AFFECTION
+			= new Extractor<SampleInfo, Affection>()
 	{
 		@Override
-		public Affection convert(SampleInfo from) {
+		public Affection extract(SampleInfo from) {
 			return from.getAffection();
 		}
 	};
 
-	public static final TypeConverter<SampleInfo, Sex> TO_SEX
-			= new TypeConverter<SampleInfo, Sex>()
+	public static final Extractor<SampleInfo, Sex> TO_SEX
+			= new Extractor<SampleInfo, Sex>()
 	{
 		@Override
-		public Sex convert(SampleInfo from) {
+		public Sex extract(SampleInfo from) {
 			return from.getSex();
 		}
 	};
