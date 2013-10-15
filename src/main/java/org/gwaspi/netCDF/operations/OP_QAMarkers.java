@@ -26,6 +26,8 @@ import java.util.Map;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.AlleleBytes;
 import org.gwaspi.model.Census;
+import org.gwaspi.model.DataSetSource;
+import org.gwaspi.model.GenotypesList;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixKey;
@@ -35,6 +37,7 @@ import org.gwaspi.model.SampleInfo.Sex;
 import org.gwaspi.model.SampleInfoList;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.netCDF.markers.MarkerSet;
+import org.gwaspi.netCDF.markers.NetCDFDataSetSource;
 import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
 import org.gwaspi.operations.qamarkers.NetCdfQAMarkersOperationDataSet;
 import org.gwaspi.operations.qamarkers.OrderedAlleles;
@@ -42,10 +45,6 @@ import org.gwaspi.operations.qamarkers.QAMarkersOperationDataSet;
 import org.gwaspi.samples.SampleSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-//import ucar.ma2.ArrayChar;
-//import ucar.ma2.InvalidRangeException;
-//import ucar.nc2.NetcdfFile;
-//import ucar.nc2.NetcdfFileWriteable;
 
 public class OP_QAMarkers implements MatrixOperation {
 
@@ -78,13 +77,12 @@ public class OP_QAMarkers implements MatrixOperation {
 
 		MatrixMetadata rdMatrixMetadata = MatricesList.getMatrixMetadataById(rdMatrixKey);
 
-		NetcdfFile rdNcFile = NetcdfFile.open(rdMatrixMetadata.getPathToMatrix());
-
 		MarkerSet rdMarkerSet = new MarkerSet(rdMatrixKey);
 		rdMarkerSet.initFullMarkerIdSetMap();
 		//Map<String, Object> rdMarkerSetMap = rdMarkerSet.markerIdSetMap; // This to test heap usage of copying locally the Map from markerset
 
 		SampleSet rdSampleSet = new SampleSet(rdMatrixKey);
+		DataSetSource rdDataSetSource = new NetCDFDataSetSource(rdMatrixKey);
 		Map<SampleKey, byte[]> rdSampleSetMap = rdSampleSet.getSampleIdSetMapByteArray();
 
 		try {
@@ -114,24 +112,30 @@ public class OP_QAMarkers implements MatrixOperation {
 
 			// Iterate through markerset, take it marker by marker
 			int markerNb = 0;
+			Iterator<GenotypesList> markersGenotypesSourceIt = rdDataSetSource.getMarkersGenotypesSource().iterator();
 			for (MarkerKey markerKey : rdMarkerSet.getMarkerKeys()) {
+				GenotypesList markerGenotypes = markersGenotypesSourceIt.next();
 				Map<Byte, Float> knownAlleles = new LinkedHashMap<Byte, Float>();
 				Map<Short, Float> allSamplesGTsTable = new LinkedHashMap<Short, Float>();
 				Map<String, Integer> allSamplesContingencyTable = new LinkedHashMap<String, Integer>();
 				Integer missingCount = 0;
 
 				// Get a sampleset-full of GTs
-				rdSampleSet.readAllSamplesGTsFromCurrentMarkerToMap(rdNcFile, rdSampleSetMap, markerNb);
-				for (Map.Entry<SampleKey, byte[]> sampleEntry : rdSampleSetMap.entrySet()) {
-					SampleKey sampleKey = sampleEntry.getKey();
+				byte[] tempGT = new byte[2];
+				Iterator<byte[]> markerGenotypesIt = markerGenotypes.iterator();
+				for (SampleKey sampleKey : rdDataSetSource.getSamplesKeysSource()) {
+					byte[] genotype = markerGenotypesIt.next();
 
 					//<editor-fold defaultstate="expanded" desc="THE DECIDER">
-					CensusDecision decision = CensusDecision.getDecisionByChrAndSex(new String(sampleEntry.getValue()), samplesInfoMap.get(sampleKey));
+					CensusDecision decision = CensusDecision.getDecisionByChrAndSex(new String(genotype), samplesInfoMap.get(sampleKey));
 					//</editor-fold>
 
 					//<editor-fold defaultstate="expanded" desc="SUMMING SAMPLESET GENOTYPES">
 					float counter = 1;
-					byte[] tempGT = sampleEntry.getValue();
+//					byte[] tempGT = genotype;
+//					byte[] tempGT = genotype.clone();
+					tempGT[0] = genotype[0];
+					tempGT[1] = genotype[1];
 					// Gather alleles different from 0 into a list of known alleles and count the number of appearences
 					// 48 is byte for 0
 					// 65 is byte for A
@@ -346,17 +350,7 @@ public class OP_QAMarkers implements MatrixOperation {
 			dataSet.setMarkerCensusAll(wrMarkerSetCensusMap.values());
 
 			resultOpId = ((AbstractNetCdfOperationDataSet) dataSet).getResultOperationId(); // HACK
-		} catch (InvalidRangeException ex) {
-			throw new IOException(ex);
 		} finally {
-//			if (null != rdNcFile) {
-//				try {
-//					rdNcFile.close();
-//				} catch (IOException ex) {
-//					log.warn("Cannot close file " + rdNcFile, ex);
-//				}
-//			}
-//
 			org.gwaspi.global.Utils.sysoutCompleted("Marker QA");
 		}
 

@@ -51,10 +51,10 @@ import org.gwaspi.netCDF.markers.MarkerSet;
 import org.gwaspi.samples.SampleSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.ma2.ArrayChar;
-import ucar.ma2.InvalidRangeException;
-import ucar.nc2.NetcdfFile;
-import ucar.nc2.NetcdfFileWriteable;
+//import ucar.ma2.ArrayChar;
+//import ucar.ma2.InvalidRangeException;
+//import ucar.nc2.NetcdfFile;
+//import ucar.nc2.NetcdfFileWriteable;
 
 public class OP_MarkerCensus implements MatrixOperation {
 
@@ -135,24 +135,26 @@ public class OP_MarkerCensus implements MatrixOperation {
 
 			NetcdfFileWriteable wrNcFile = null;
 			try {
-				// CREATE netCDF-3 FILE
-				cNetCDF.Defaults.OPType opType = cNetCDF.Defaults.OPType.MARKER_CENSUS_BY_AFFECTION;
 
-				String description = "Genotype frequency count -" + censusName + "- on " + rdMatrixMetadata.getMatrixFriendlyName();
-				if (phenoFile != null) {
-					description += "\nCase/Control status read from file: " + phenoFile.getPath();
-					opType = cNetCDF.Defaults.OPType.MARKER_CENSUS_BY_PHENOTYPE;
-				}
-				OperationFactory wrOPHandler = new OperationFactory(
-						rdMatrixMetadata.getStudyKey(),
-						"Genotypes freq. - " + censusName, // friendly name
-						description + "\nSample missing ratio threshold: " + sampleMissingRatio + "\nSample heterozygosity ratio threshold: " + sampleHetzygRatio + "\nMarker missing ratio threshold: " + markerMissingRatio + "\nDiscard mismatching Markers: " + discardMismatches + "\nMarkers: " + wrMarkerKeys.size() + "\nSamples: " + wrSampleKeys.size(), // description
-						wrMarkerKeys.size(),
-						wrSampleKeys.size(),
-						0,
-						opType,
-						rdMatrixKey, // Parent matrixId
-						-1); // Parent operationId
+
+//				// CREATE netCDF-3 FILE
+//				cNetCDF.Defaults.OPType opType = cNetCDF.Defaults.OPType.MARKER_CENSUS_BY_AFFECTION;
+//
+//				String description = "Genotype frequency count -" + censusName + "- on " + rdMatrixMetadata.getMatrixFriendlyName();
+//				if (phenoFile != null) {
+//					description += "\nCase/Control status read from file: " + phenoFile.getPath();
+//					opType = cNetCDF.Defaults.OPType.MARKER_CENSUS_BY_PHENOTYPE;
+//				}
+//				OperationFactory wrOPHandler = new OperationFactory(
+//						rdMatrixMetadata.getStudyKey(),
+//						"Genotypes freq. - " + censusName, // friendly name
+//						description + "\nSample missing ratio threshold: " + sampleMissingRatio + "\nSample heterozygosity ratio threshold: " + sampleHetzygRatio + "\nMarker missing ratio threshold: " + markerMissingRatio + "\nDiscard mismatching Markers: " + discardMismatches + "\nMarkers: " + wrMarkerKeys.size() + "\nSamples: " + wrSampleKeys.size(), // description
+//						wrMarkerKeys.size(),
+//						wrSampleKeys.size(),
+//						0,
+//						opType,
+//						rdMatrixKey, // Parent matrixId
+//						-1); // Parent operationId
 
 				// what will be written to the operation NetCDF file (wrNcFile):
 				// - Variables.VAR_OPSET: [Collection<MarkerKey>]

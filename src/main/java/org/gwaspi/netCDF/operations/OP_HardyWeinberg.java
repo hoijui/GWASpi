@@ -27,13 +27,16 @@ import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.SampleKey;
+import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
+import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationDataSet;
+import org.gwaspi.operations.hardyweinberg.NetCdfHardyWeinbergOperationDataSet;
 import org.gwaspi.statistics.StatisticsUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.ma2.ArrayChar;
-import ucar.ma2.InvalidRangeException;
-import ucar.nc2.NetcdfFile;
-import ucar.nc2.NetcdfFileWriteable;
+//import ucar.ma2.ArrayChar;
+//import ucar.ma2.InvalidRangeException;
+//import ucar.nc2.NetcdfFile;
+//import ucar.nc2.NetcdfFileWriteable;
 
 public class OP_HardyWeinberg implements MatrixOperation {
 
@@ -71,18 +74,26 @@ public class OP_HardyWeinberg implements MatrixOperation {
 
 		NetcdfFileWriteable wrNcFile = null;
 		try {
-			// CREATE netCDF-3 FILE
+			HardyWeinbergOperationDataSet dataSet = new NetCdfHardyWeinbergOperationDataSet(); // HACK
+			((AbstractNetCdfOperationDataSet) dataSet).setReadMatrixKey(rdMatrixKey); // HACK
+			((AbstractNetCdfOperationDataSet) dataSet).setNumMarkers(rdMarkerSetMap.size()); // HACK
+			((AbstractNetCdfOperationDataSet) dataSet).setNumSamples(rdSampleSetMap.size()); // HACK
 
-			OperationFactory wrOPHandler = new OperationFactory(
-					markerCensusOPKey.getParentMatrixKey().getStudyKey(),
-					"Hardy-Weinberg_" + censusName, // friendly name
-					"Hardy-Weinberg test on Samples marked as controls (only females for the X chromosome)\nMarkers: " + rdMarkerSetMap.size() + "\nSamples: " + rdSampleSetMap.size(), //description
-					rdMarkerSetMap.size(),
-					rdSampleSetMap.size(),
-					0,
-					OPType.HARDY_WEINBERG,
-					markerCensusOPKey.getParentMatrixKey(), // Parent matrixId
-					markerCensusOPKey.getId()); // Parent operationId
+			dataSet.setMarkers(rdMarkerSet.getMarkerKeys());
+			dataSet.setSamples(rdSampleSetMap.keySet());
+			dataSet.setChromosomes(rdMarkerSet.getChrInfoSetMap().keySet());
+
+//
+//			OperationFactory wrOPHandler = new OperationFactory(
+//					markerCensusOPKey.getParentMatrixKey().getStudyKey(),
+//					"Hardy-Weinberg_" + censusName, // friendly name
+//					"Hardy-Weinberg test on Samples marked as controls (only females for the X chromosome)\nMarkers: " + rdMarkerSetMap.size() + "\nSamples: " + rdSampleSetMap.size(), //description
+//					rdMarkerSetMap.size(),
+//					rdSampleSetMap.size(),
+//					0,
+//					OPType.HARDY_WEINBERG,
+//					markerCensusOPKey.getParentMatrixKey(), // Parent matrixId
+//					markerCensusOPKey.getId()); // Parent operationId
 
 			// what will be written to the operation NetCDF file (wrNcFile):
 			// - Variables.VAR_OPSET: [Collection<MarkerKey>]
