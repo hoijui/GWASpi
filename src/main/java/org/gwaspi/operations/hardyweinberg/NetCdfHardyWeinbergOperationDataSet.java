@@ -42,7 +42,7 @@ public class NetCdfHardyWeinbergOperationDataSet extends AbstractNetCdfOperation
 	// - HardyWeinberg.VAR_OP_MARKERS_HWPval_ALT: Hardy-Weinberg Alternative P-Value [Double[1]]
 	// - HardyWeinberg.VAR_OP_MARKERS_HWHETZY_ALT: Hardy-Weinberg Alternative Obs Hetzy & Exp Hetzy [Double[2]]
 
-	private final Logger log = LoggerFactory.getLogger(NetCdfMarkerCensusOperationDataSet.class);
+	private final Logger log = LoggerFactory.getLogger(NetCdfHardyWeinbergOperationDataSet.class);
 
 	public NetCdfHardyWeinbergOperationDataSet() {
 		super(true);
@@ -56,8 +56,8 @@ public class NetCdfHardyWeinbergOperationDataSet extends AbstractNetCdfOperation
 					markerCensusOPKey.getParentMatrixKey().getStudyKey(),
 					"Hardy-Weinberg_" + censusName, // friendly name
 					"Hardy-Weinberg test on Samples marked as controls (only females for the X chromosome)"
-					+ "\nMarkers: " + getNumMarkers() + ""
-					+ "\nSamples: " + getNumSamples(), // description
+						+ "\nMarkers: " + getNumMarkers() + ""
+						+ "\nSamples: " + getNumSamples(), // description
 					getNumMarkers(),
 					getNumSamples(),
 					0,

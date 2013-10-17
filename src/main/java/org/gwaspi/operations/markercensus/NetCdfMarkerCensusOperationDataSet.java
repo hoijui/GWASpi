@@ -65,14 +65,19 @@ public class NetCdfMarkerCensusOperationDataSet extends AbstractNetCdfOperationD
 			return new OperationFactory(
 					rdMatrixMetadata.getStudyKey(),
 					"Genotypes freq. - " + censusName, // friendly name
-					description + "\nSample missing ratio threshold: " + sampleMissingRatio + "\nSample heterozygosity ratio threshold: " + sampleHetzygRatio + "\nMarker missing ratio threshold: " + markerMissingRatio + "\nDiscard mismatching Markers: " + discardMismatches + "\nMarkers: " + wrMarkerKeys.size() + "\nSamples: " + wrSampleKeys.size(), // description
-					wrMarkerKeys.size(),
-					wrSampleKeys.size(),
+					description
+						+ "\nSample missing ratio threshold: " + sampleMissingRatio
+						+ "\nSample heterozygosity ratio threshold: " + sampleHetzygRatio
+						+ "\nMarker missing ratio threshold: " + markerMissingRatio
+						+ "\nDiscard mismatching Markers: " + discardMismatches
+						+ "\nMarkers: " + getNumMarkers()
+						+ "\nSamples: " + getNumSamples(), // description
+					getNumMarkers(),
+					getNumSamples(),
 					0,
 					opType,
 					rdMatrixKey, // Parent matrixId
 					-1); // Parent operationId
-
 		} catch (InvalidRangeException ex) {
 			throw new IOException(ex);
 		}
