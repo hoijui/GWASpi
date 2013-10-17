@@ -21,11 +21,8 @@ import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.gwaspi.constants.cNetCDF;
-import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.OperationKey;
-import org.gwaspi.model.OperationMetadata;
-import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
 import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationDataSet;
@@ -65,14 +62,13 @@ public class OP_HardyWeinberg implements MatrixOperation {
 	public int processMatrix() throws IOException {
 		int resultOpId = Integer.MIN_VALUE;
 
-		OperationMetadata rdOPMetadata = OperationsList.getOperationMetadata(markerCensusOPKey.getId());
-		NetcdfFile rdNcFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());
+//		OperationMetadata rdOPMetadata = OperationsList.getOperationMetadata(markerCensusOPKey.getId());
+//		NetcdfFile rdNcFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());
 
 		MarkerOperationSet rdOperationSet = new MarkerOperationSet(markerCensusOPKey);
 		Map<MarkerKey, char[]> rdMarkerSetMap = rdOperationSet.getOpSetMap();
 		Map<SampleKey, ?> rdSampleSetMap = rdOperationSet.getImplicitSetMap();
 
-		NetcdfFileWriteable wrNcFile = null;
 		try {
 			HardyWeinbergOperationDataSet dataSet = new NetCdfHardyWeinbergOperationDataSet(); // HACK
 			((AbstractNetCdfOperationDataSet) dataSet).setReadMatrixKey(rdMatrixKey); // HACK
@@ -83,7 +79,6 @@ public class OP_HardyWeinberg implements MatrixOperation {
 			dataSet.setSamples(rdSampleSetMap.keySet());
 			dataSet.setChromosomes(rdMarkerSet.getChrInfoSetMap().keySet());
 
-//
 //			OperationFactory wrOPHandler = new OperationFactory(
 //					markerCensusOPKey.getParentMatrixKey().getStudyKey(),
 //					"Hardy-Weinberg_" + censusName, // friendly name
@@ -104,26 +99,22 @@ public class OP_HardyWeinberg implements MatrixOperation {
 			// - HardyWeinberg.VAR_OP_MARKERS_HWPval_ALT: Hardy-Weinberg Alternative P-Value [Double[1]]
 			// - HardyWeinberg.VAR_OP_MARKERS_HWHETZY_ALT: Hardy-Weinberg Alternative Obs Hetzy & Exp Hetzy [Double[2]]
 
-			wrNcFile = wrOPHandler.getNetCDFHandler();
-			wrNcFile.create();
-			log.trace("Done creating netCDF handle: " + wrNcFile.toString());
-
-			//<editor-fold defaultstate="expanded" desc="METADATA WRITER">
-			// MARKERSET MARKERID
-			ArrayChar.D2 markersD2 = NetCdfUtils.writeCollectionToD2ArrayChar(rdMarkerSetMap.keySet(), cNetCDF.Strides.STRIDE_MARKER_NAME);
-			int[] markersOrig = new int[] {0, 0};
-			wrNcFile.write(cNetCDF.Variables.VAR_OPSET, markersOrig, markersD2);
-
-			// MARKERSET RSID
-			rdMarkerSetMap = rdOperationSet.fillOpSetMapWithVariable(rdNcFile, cNetCDF.Variables.VAR_MARKERS_RSID);
-			NetCdfUtils.saveCharMapValueToWrMatrix(wrNcFile, rdMarkerSetMap.values(), cNetCDF.Variables.VAR_MARKERS_RSID, cNetCDF.Strides.STRIDE_MARKER_NAME);
-
-			// WRITE SAMPLESET TO MATRIX FROM SAMPLES ARRAYLIST
-			ArrayChar.D2 samplesD2 = NetCdfUtils.writeCollectionToD2ArrayChar(rdSampleSetMap.keySet(), cNetCDF.Strides.STRIDE_SAMPLE_NAME);
-			int[] sampleOrig = new int[] {0, 0};
-			wrNcFile.write(cNetCDF.Variables.VAR_IMPLICITSET, sampleOrig, samplesD2);
-			log.info("Done writing SampleSet to matrix");
-			//</editor-fold>
+//			//<editor-fold defaultstate="expanded" desc="METADATA WRITER">
+//			// MARKERSET MARKERID
+//			ArrayChar.D2 markersD2 = NetCdfUtils.writeCollectionToD2ArrayChar(rdMarkerSetMap.keySet(), cNetCDF.Strides.STRIDE_MARKER_NAME);
+//			int[] markersOrig = new int[] {0, 0};
+//			wrNcFile.write(cNetCDF.Variables.VAR_OPSET, markersOrig, markersD2);
+//
+//			// MARKERSET RSID
+//			rdMarkerSetMap = rdOperationSet.fillOpSetMapWithVariable(rdNcFile, cNetCDF.Variables.VAR_MARKERS_RSID);
+//			NetCdfUtils.saveCharMapValueToWrMatrix(wrNcFile, rdMarkerSetMap.values(), cNetCDF.Variables.VAR_MARKERS_RSID, cNetCDF.Strides.STRIDE_MARKER_NAME);
+//
+//			// WRITE SAMPLESET TO MATRIX FROM SAMPLES ARRAYLIST
+//			ArrayChar.D2 samplesD2 = NetCdfUtils.writeCollectionToD2ArrayChar(rdSampleSetMap.keySet(), cNetCDF.Strides.STRIDE_SAMPLE_NAME);
+//			int[] sampleOrig = new int[] {0, 0};
+//			wrNcFile.write(cNetCDF.Variables.VAR_IMPLICITSET, sampleOrig, samplesD2);
+//			log.info("Done writing SampleSet to matrix");
+//			//</editor-fold>
 
 			//<editor-fold defaultstate="expanded" desc="GET CENSUS & PERFORM HW">
 			Map<MarkerKey, int[]> markersCensus;
@@ -141,30 +132,23 @@ public class OP_HardyWeinberg implements MatrixOperation {
 			log.info("Perform Hardy-Weinberg test (Control)");
 			rdOperationSet.fillOpSetMapWithDefaultValue(new int[0]); // PURGE
 			markersCensus = rdOperationSet.fillOpSetMapWithVariable(rdNcFile, cNetCDF.Census.VAR_OP_MARKERS_CENSUSCTRL);
-			performHardyWeinberg(wrNcFile, markersCensus, "CTRL");
+			performHardyWeinberg(dataSet, markersCensus, "CTRL");
 
 			// PROCESS ALTERNATE HW SAMPLES
 			log.info("Perform Hardy-Weinberg test (HW-ALT)");
 			rdOperationSet.fillOpSetMapWithDefaultValue(new int[0]); // PURGE
 			markersCensus = rdOperationSet.fillOpSetMapWithVariable(rdNcFile, cNetCDF.Census.VAR_OP_MARKERS_CENSUSHW);
-			performHardyWeinberg(wrNcFile, markersCensus, "HW-ALT");
+			performHardyWeinberg(dataSet, markersCensus, "HW-ALT");
 			//</editor-fold>
 
-			resultOpId = wrOPHandler.getResultOPId();
+			resultOpId = ((AbstractNetCdfOperationDataSet) dataSet).getResultOperationId(); // HACK
 			org.gwaspi.global.Utils.sysoutCompleted("Hardy-Weinberg Equilibrium Test");
-		} catch (InvalidRangeException ex) {
-			throw new IOException(ex);
+//		} catch (InvalidRangeException ex) {
+//			throw new IOException(ex);
 		} finally {
 			if (rdNcFile != null) {
 				try {
 					rdNcFile.close();
-				} catch (IOException ex) {
-					log.warn("Cannot close file", ex);
-				}
-			}
-			if (wrNcFile != null) {
-				try {
-					wrNcFile.close();
 				} catch (IOException ex) {
 					log.warn("Cannot close file", ex);
 				}
@@ -174,7 +158,7 @@ public class OP_HardyWeinberg implements MatrixOperation {
 		return resultOpId;
 	}
 
-	private void performHardyWeinberg(NetcdfFileWriteable wrNcFile, Map<MarkerKey, int[]> markersContingencyMap, String category) throws IOException {
+	private void performHardyWeinberg(HardyWeinbergOperationDataSet dataSet, Map<MarkerKey, int[]> markersContingencyMap, String category) throws IOException {
 		// Iterate through markerset
 		int markerNb = 0;
 		Map<MarkerKey, Double[]> result = new LinkedHashMap<MarkerKey, Double[]>(markersContingencyMap.size());
@@ -229,7 +213,6 @@ public class OP_HardyWeinberg implements MatrixOperation {
 //			int[] boxes = new int[]{1,2};
 //			NetCdfUtils.saveArrayDoubleD2ToWrMatrix(wrNcFile, markersContingencyMap, boxes, cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWHETZY_CASE);
 //		}
-
 
 		String varPval;
 		String varHetzy;

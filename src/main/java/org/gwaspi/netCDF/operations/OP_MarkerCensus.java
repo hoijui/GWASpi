@@ -48,6 +48,9 @@ import org.gwaspi.model.SampleInfoList;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.markers.MarkerSet;
+import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
+import org.gwaspi.operations.markercensus.MarkerCensusOperationDataSet;
+import org.gwaspi.operations.markercensus.NetCdfMarkerCensusOperationDataSet;
 import org.gwaspi.samples.SampleSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -121,8 +124,6 @@ public class OP_MarkerCensus implements MatrixOperation {
 			rdMarkerSet.initFullMarkerIdSetMap();
 			rdMarkerSet.fillWith(cNetCDF.Defaults.DEFAULT_GT);
 
-			Collection<MarkerKey> wrMarkerKeys = new ArrayList<MarkerKey>(rdMarkerSet.getMarkerKeys());
-
 			SampleSet rdSampleSet = new SampleSet(rdMatrixKey);
 			Map<SampleKey, byte[]> rdSampleSetMap = rdSampleSet.getSampleIdSetMapByteArray();
 			Collection<SampleKey> wrSampleKeys = new HashSet<SampleKey>(); // XXX Should this be a List instead, to preserve order?
@@ -133,8 +134,18 @@ public class OP_MarkerCensus implements MatrixOperation {
 			}
 			//</editor-fold>
 
-			NetcdfFileWriteable wrNcFile = null;
+//			NetcdfFileWriteable wrNcFile = null;
 			try {
+				Collection<MarkerKey> wrMarkerKeys = new ArrayList<MarkerKey>(rdMarkerSet.getMarkerKeys()); // XXX should be removable, as wr is same as rd, we could just use rd
+
+				MarkerCensusOperationDataSet dataSet = new NetCdfMarkerCensusOperationDataSet(); // HACK
+				((AbstractNetCdfOperationDataSet) dataSet).setReadMatrixKey(rdMatrixKey); // HACK
+				((AbstractNetCdfOperationDataSet) dataSet).setNumMarkers(wrMarkerKeys.size()); // HACK
+				((AbstractNetCdfOperationDataSet) dataSet).setNumSamples(wrSampleKeys.size()); // HACK
+
+				dataSet.setMarkers(wrMarkerKeys);
+				dataSet.setSamples(wrSampleKeys);
+				dataSet.setChromosomes(rdMarkerSet.getChrInfoSetMap().keySet()); // XXX NOTE possible casue rd == wr, see above
 
 
 //				// CREATE netCDF-3 FILE
@@ -166,11 +177,11 @@ public class OP_MarkerCensus implements MatrixOperation {
 				// - Census.VAR_OP_MARKERS_CENSUSCTRL: marker census - control [Collection<Census.control>]
 				// - Census.VAR_OP_MARKERS_CENSUSHW: marker census - alternate hardy-weinberg [Collection<Census.altHW>]
 
-				wrNcFile = wrOPHandler.getNetCDFHandler();
-				wrNcFile.create();
-				log.trace("Done creating netCDF handle: " + wrNcFile.toString());
+//				wrNcFile = wrOPHandler.getNetCDFHandler();
+//				wrNcFile.create();
+//				log.trace("Done creating netCDF handle: " + wrNcFile.toString());
 
-				writeMetadata(wrNcFile, rdMarkerSet, wrMarkerKeys, wrSampleKeys);
+				writeMetadata(dataSet, rdMarkerSet, wrMarkerKeys, wrSampleKeys);
 
 				//<editor-fold defaultstate="expanded" desc="PROCESSOR">
 				Map<SampleKey, SampleInfo> samplesInfoMap = fetchSampleInfo(
@@ -215,7 +226,7 @@ public class OP_MarkerCensus implements MatrixOperation {
 						if (countMarkers > 0) {
 							// CENSUS DATA WRITER
 							censusDataWriter(
-									wrNcFile,
+									dataSet,
 									wrChunkedMarkerCensusMap,
 									wrChunkedKnownAllelesMap,
 									countChunks,
@@ -410,26 +421,19 @@ public class OP_MarkerCensus implements MatrixOperation {
 
 				// LAST CENSUS DATA WRITER
 				censusDataWriter(
-						wrNcFile,
+						dataSet,
 						wrChunkedMarkerCensusMap,
 						wrChunkedKnownAllelesMap,
 						countChunks,
 						chunkSize);
 
-				resultOpId = wrOPHandler.getResultOPId();
-			} catch (InvalidRangeException ex) {
-				throw new IOException(ex);
+			resultOpId = ((AbstractNetCdfOperationDataSet) dataSet).getResultOperationId(); // HACK
+//			} catch (InvalidRangeException ex) {
+//				throw new IOException(ex);
 			} finally {
 				if (rdNcFile != null) {
 					try {
 						rdNcFile.close();
-					} catch (IOException ex) {
-						log.warn("Cannot close file", ex);
-					}
-				}
-				if (wrNcFile != null) {
-					try {
-						wrNcFile.close();
 					} catch (IOException ex) {
 						log.warn("Cannot close file", ex);
 					}
@@ -859,11 +863,11 @@ public class OP_MarkerCensus implements MatrixOperation {
 	}
 
 	private void writeMetadata(
-			NetcdfFileWriteable wrNcFile,
+			MarkerCensusOperationDataSet dataSet,
 			MarkerSet rdMarkerSet,
 			Collection<MarkerKey> wrMarkerKeys,
 			Collection<SampleKey> wrSampleKeys)
-			throws IOException, InvalidRangeException
+			throws IOException
 	{
 		// MARKERSET MARKERID
 		ArrayChar.D2 markersD2 = NetCdfUtils.writeCollectionToD2ArrayChar(wrMarkerKeys, cNetCDF.Strides.STRIDE_MARKER_NAME);
@@ -883,7 +887,7 @@ public class OP_MarkerCensus implements MatrixOperation {
 	}
 
 	private static void censusDataWriter(
-			NetcdfFileWriteable wrNcFile,
+			MarkerCensusOperationDataSet dataSet,
 			Map<MarkerKey, Census> wrChunkedMarkerCensusMap,
 			Map<MarkerKey, char[]> wrChunkedKnownAllelesMap,
 			int countChunks,
