@@ -15,21 +15,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.gwaspi.operations.allelicassociationtest;
+package org.gwaspi.operations;
 
-import java.util.Collection;
-import org.gwaspi.operations.trendtest.TrendTestOperationDataSet;
+public abstract class AbstractOperationDataEntry<OK> implements OperationDataEntry<OK> {
 
-public interface AllelicAssociationTestsOperationDataSet extends TrendTestOperationDataSet {
+	private OK key;
 
-	/**
-	 * @param markerORs
-	 *   the OR values, one per marker in this operation
-	 * NetCDF variable:
-	 * - Association.VAR_OP_MARKERS_ASAllelicAssociationTPOR [2]
-	 * - Association.VAR_OP_MARKERS_ASGenotypicAssociationTP2OR [2]
-	 */
-	void setORs(Collection<Double> markerORs);
+	public AbstractOperationDataEntry(OK key) {
 
-	Collection<Double> getMarkerORs();
+		this.key = key;
+	}
+
+	@Override
+	public OK getKey() {
+		return key;
+	}
 }

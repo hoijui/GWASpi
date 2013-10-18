@@ -39,12 +39,14 @@ import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.netCDF.markers.MarkerSet;
 import org.gwaspi.netCDF.matrices.ChromosomeUtils;
+import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
+import org.gwaspi.operations.OperationDataSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.ma2.ArrayChar;
-import ucar.ma2.InvalidRangeException;
-import ucar.nc2.NetcdfFile;
-import ucar.nc2.NetcdfFileWriteable;
+//import ucar.ma2.ArrayChar;
+//import ucar.ma2.InvalidRangeException;
+//import ucar.nc2.NetcdfFile;
+//import ucar.nc2.NetcdfFileWriteable;
 
 public abstract class AbstractTestMatrixOperation implements MatrixOperation {
 
@@ -121,11 +123,23 @@ public abstract class AbstractTestMatrixOperation implements MatrixOperation {
 
 			NetcdfFileWriteable wrOPNcFile = null;
 			try {
+				QAMarkersOperationDataSet dataSet = new NetCdfQAMarkersOperationDataSet(); // HACK
+				((AbstractNetCdfOperationDataSet) dataSet).setReadMatrixKey(rdMatrixKey); // HACK
+				((AbstractNetCdfOperationDataSet) dataSet).setNumMarkers(wrMarkerMetadata.size()); // HACK
+				((AbstractNetCdfOperationDataSet) dataSet).setNumSamples(rdCensusOPMetadata.getImplicitSetSize()); // HACK
+				((AbstractNetCdfOperationDataSet) dataSet).setNumChromosomes(chromosomeInfo.size()); // HACK
+
+				dataSet.setMarkers(xxx);
+				dataSet.setSamples(xxx);
+				dataSet.setChromosomes(xxx);
+
 				// CREATE netCDF-3 FILE
 				OperationFactory wrOPHandler = new OperationFactory(
 						rdCensusOPMetadata.getStudyKey(),
 						testName, // friendly name
-						testName + " on " + markerCensusOP.getFriendlyName() + "\n" + rdCensusOPMetadata.getDescription() + "\nHardy-Weinberg threshold: " + Report_Analysis.FORMAT_SCIENTIFIC.format(hwThreshold), // description
+						testName + " on " + markerCensusOP.getFriendlyName()
+							+ "\n" + rdCensusOPMetadata.getDescription()
+							+ "\nHardy-Weinberg threshold: " + Report_Analysis.FORMAT_SCIENTIFIC.format(hwThreshold), // description
 						wrMarkerMetadata.size(),
 						rdCensusOPMetadata.getImplicitSetSize(),
 						chromosomeInfo.size(),
@@ -188,8 +202,6 @@ public abstract class AbstractTestMatrixOperation implements MatrixOperation {
 				//</editor-fold>
 
 				resultAssocId = wrOPHandler.getResultOPId();
-			} catch (InvalidRangeException ex) {
-				throw new IOException(ex);
 			} finally {
 				try {
 					if (rdOPNcFile != null) {
@@ -257,5 +269,5 @@ public abstract class AbstractTestMatrixOperation implements MatrixOperation {
 	 * @param wrCaseMarkerIdSetMap
 	 * @param wrCtrlMarkerSet
 	 */
-	protected abstract void performTest(NetcdfFileWriteable wrNcFile, Map<MarkerKey, int[]> wrCaseMarkerIdSetMap, Map<MarkerKey, int[]> wrCtrlMarkerSet) throws IOException;
+	protected abstract void performTest(OperationDataSet dataSet, Map<MarkerKey, int[]> wrCaseMarkerIdSetMap, Map<MarkerKey, int[]> wrCtrlMarkerSet) throws IOException;
 }

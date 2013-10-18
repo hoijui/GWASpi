@@ -17,31 +17,13 @@
 
 package org.gwaspi.operations.trendtest;
 
+import java.io.IOException;
 import java.util.Collection;
 import org.gwaspi.operations.OperationDataSet;
 
-public interface TrendTestsOperationDataSet extends OperationDataSet {
+public interface TrendTestOperationDataSet extends OperationDataSet {
 
-	/**
-	 * @param markerTs
-	 *   the T values, one per marker in this operation
-	 * NetCDF variable:
-	 * - Association.VAR_OP_MARKERS_ASTrendTestTP [0]
-	 * - Association.VAR_OP_MARKERS_ASAllelicAssociationTPOR [0]
-	 * - Association.VAR_OP_MARKERS_ASGenotypicAssociationTP2OR [0]
-	 */
-	void setMarkerTs(Collection<Double> markerTs);
+	void addEntry(TrendTestOperationEntry entry) throws IOException;
 
-	/**
-	 * @param markerPs
-	 *   the P values, one per marker in this operation
-	 * NetCDF variable:
-	 * - Association.VAR_OP_MARKERS_ASTrendTestTP [1]
-	 * - Association.VAR_OP_MARKERS_ASAllelicAssociationTPOR [1]
-	 * - Association.VAR_OP_MARKERS_ASGenotypicAssociationTP2OR [1]
-	 */
-	void setMarkerPs(Collection<Double> markerPs);
-
-	Collection<Double> getMarkerTs();
-	Collection<Double> getMarkerPs();
+	Collection<TrendTestOperationEntry> getEntries() throws IOException;
 }

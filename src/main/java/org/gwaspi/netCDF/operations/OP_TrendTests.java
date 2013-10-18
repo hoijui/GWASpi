@@ -25,9 +25,13 @@ import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationMetadata;
+import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
+import org.gwaspi.operations.OperationDataSet;
+import org.gwaspi.operations.trendtest.DefaultTrendTestOperationEntry;
+import org.gwaspi.operations.trendtest.TrendTestOperationDataSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.nc2.NetcdfFileWriteable;
+//import ucar.nc2.NetcdfFileWriteable;
 
 public class OP_TrendTests extends AbstractTestMatrixOperation {
 
@@ -50,15 +54,18 @@ public class OP_TrendTests extends AbstractTestMatrixOperation {
 
 	/**
 	 * Performs the Cochran-Armitage Trend Test.
-	 * @param wrNcFile
+	 * @param dataSet
 	 * @param wrCaseMarkerIdSetMap
 	 * @param wrCtrlMarkerSet
 	 */
 	@Override
-	protected void performTest(NetcdfFileWriteable wrNcFile, Map<MarkerKey, int[]> wrCaseMarkerIdSetMap, Map<MarkerKey, int[]> wrCtrlMarkerSet) throws IOException {
+	protected void performTest(OperationDataSet dataSet, Map<MarkerKey, int[]> wrCaseMarkerIdSetMap, Map<MarkerKey, int[]> wrCtrlMarkerSet) throws IOException {
+
+		TrendTestOperationDataSet trendTestDataSet = (TrendTestOperationDataSet) dataSet;
+		((AbstractNetCdfOperationDataSet) dataSet).setNumMarkers(wrCaseMarkerIdSetMap.size()); // HACK
+
 		// Iterate through markerset
 		int markerNb = 0;
-		Map<MarkerKey, Double[]> result = new LinkedHashMap<MarkerKey, Double[]>(wrCaseMarkerIdSetMap.size());
 		for (Map.Entry<MarkerKey, int[]> entry : wrCaseMarkerIdSetMap.entrySet()) {
 			MarkerKey markerKey = entry.getKey();
 
@@ -78,20 +85,12 @@ public class OP_TrendTests extends AbstractTestMatrixOperation {
 			double armitageT = org.gwaspi.statistics.Associations.calculateChocranArmitageTrendTest(caseAA, caseAa, caseaa, ctrlAA, ctrlAa, ctrlaa, 2); //Model 2, codominant
 			double armitagePval = org.gwaspi.statistics.Pvalue.calculatePvalueFromChiSqr(armitageT, 1);  // 1 Degree of freedom
 
-			Double[] store = new Double[7]; // FIXME should be 2, not 7
-			store[0] = armitageT;
-			store[1] = armitagePval;
-			result.put(markerKey, store); // store P-value and stuff
+			trendTestDataSet.addEntry(new DefaultTrendTestOperationEntry(markerKey, armitageT, armitagePval));
 
 			markerNb++;
 			if (markerNb % 100000 == 0) {
 				log.info("Processed {} markers", markerNb);
 			}
 		}
-
-		//<editor-fold defaultstate="expanded" desc="TREND-TEST DATA WRITER">
-		int[] boxes = new int[] {0, 1};
-		NetCdfUtils.saveDoubleMapD2ToWrMatrix(wrNcFile, result.values(), boxes, cNetCDF.Association.VAR_OP_MARKERS_ASTrendTestTP);
-		//</editor-fold>
 	}
 }

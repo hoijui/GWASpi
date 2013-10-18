@@ -25,6 +25,7 @@ import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationMetadata;
+import org.gwaspi.operations.OperationDataSet;
 import org.gwaspi.statistics.Associations;
 import org.gwaspi.statistics.Pvalue;
 import org.slf4j.Logger;
@@ -61,12 +62,13 @@ public class OP_AssociationTests extends AbstractTestMatrixOperation {
 
 	/**
 	 * Performs the Allelic or Genotypic Association Tests.
-	 * @param wrNcFile
+	 * @param dataSet
 	 * @param wrCaseMarkerIdSetMap
 	 * @param wrCtrlMarkerSet
 	 */
 	@Override
-	protected void performTest(NetcdfFileWriteable wrNcFile, Map<MarkerKey, int[]> wrCaseMarkerIdSetMap, Map<MarkerKey, int[]> wrCtrlMarkerSet) throws IOException {
+	protected void performTest(OperationDataSet dataSet, Map<MarkerKey, int[]> wrCaseMarkerIdSetMap, Map<MarkerKey, int[]> wrCtrlMarkerSet) throws IOException {
+
 		// Iterate through markerset
 		int markerNb = 0;
 		Map<MarkerKey, Double[]> result = new LinkedHashMap<MarkerKey, Double[]>(wrCaseMarkerIdSetMap.size());
