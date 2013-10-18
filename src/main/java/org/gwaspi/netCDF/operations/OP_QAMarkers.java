@@ -26,6 +26,8 @@ import java.util.Map;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.AlleleBytes;
 import org.gwaspi.model.Census;
+import org.gwaspi.model.ChromosomeInfo;
+import org.gwaspi.model.ChromosomeKey;
 import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.GenotypesList;
 import org.gwaspi.model.MarkerKey;
@@ -93,7 +95,8 @@ public class OP_QAMarkers implements MatrixOperation {
 
 			dataSet.setMarkers(rdMarkerSet.getMarkerKeys());
 			dataSet.setSamples(rdSampleSetMap.keySet());
-			dataSet.setChromosomes(rdMarkerSet.getChrInfoSetMap().keySet());
+			Map<ChromosomeKey, ChromosomeInfo> chromosomeInfo = rdMarkerSet.getChrInfoSetMap();
+			dataSet.setChromosomes(chromosomeInfo.keySet(), chromosomeInfo.values());
 
 			//<editor-fold defaultstate="expanded" desc="PROCESSOR">
 			// INIT MARKER AND SAMPLE INFO

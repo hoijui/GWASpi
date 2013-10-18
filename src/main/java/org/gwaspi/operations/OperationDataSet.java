@@ -18,7 +18,9 @@
 package org.gwaspi.operations;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Map;
+import org.gwaspi.model.ChromosomeInfo;
 import org.gwaspi.model.ChromosomeKey;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.SampleKey;
@@ -42,9 +44,11 @@ public interface OperationDataSet {
 	/**
 	 * @param matrixIndexChromosomeKeys
 	 *   the indices in the matrix, and the values (copied) of the chromosome keys
-	 * NetCDF variable: Variables.VAR_CHR_IN_MATRIX
+	 * NetCDF variable:
+	 * - Variables.VAR_CHR_IN_MATRIX [ChromosomeKey]
+	 * - Variables.VAR_CHR_INFO [ChromosomeKey]
 	 */
-	void setChromosomes(Map<Integer, ChromosomeKey> matrixIndexChromosomeKeys) throws IOException;
+	void setChromosomes(Map<Integer, ChromosomeKey> matrixIndexChromosomeKeys, Collection<ChromosomeInfo> chromosomeInfos) throws IOException;
 
 	Map<Integer, SampleKey> getSamples() throws IOException;
 	Map<Integer, MarkerKey> getMarkers() throws IOException;

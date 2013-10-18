@@ -18,8 +18,10 @@
 package org.gwaspi.operations;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Map;
 import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.model.ChromosomeInfo;
 import org.gwaspi.model.ChromosomeKey;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MatrixKey;
@@ -41,6 +43,7 @@ public abstract class AbstractNetCdfOperationDataSet implements OperationDataSet
 	private MatrixKey rdMatrixKey = null;
 	private int numMarkers = -1;
 	private int numSamples = -1;
+	private int numChromosomes = -1;
 	private NetcdfFileWriteable wrNcFile = null;
 	private OperationFactory operationFactory = null;
 
@@ -72,6 +75,14 @@ public abstract class AbstractNetCdfOperationDataSet implements OperationDataSet
 		return numSamples;
 	}
 
+	public void setNumChromosomes(int numChromosomes) {
+		this.numChromosomes = numChromosomes;
+	}
+
+	protected int getNumChromosomes() {
+		return numChromosomes;
+	}
+
 	protected NetcdfFileWriteable getNetCdfWriteFile() {
 		return wrNcFile;
 	}
@@ -98,7 +109,7 @@ public abstract class AbstractNetCdfOperationDataSet implements OperationDataSet
 	}
 
 
-	protected void write(NetcdfFileWriteable ncFile, String varName, int[] origin, Array values) throws java.io.IOException {
+	protected void write(NetcdfFileWriteable ncFile, String varName, int[] origin, Array values) throws IOException {
 
 		try {
 			ensureNcFile();
@@ -147,8 +158,13 @@ public abstract class AbstractNetCdfOperationDataSet implements OperationDataSet
 	}
 
 	@Override
-	public void setChromosomes(Map<Integer, ChromosomeKey> matrixIndexChromosomeKeys) throws IOException {
-		XXX;
+	public void setChromosomes(Map<Integer, ChromosomeKey> matrixIndexChromosomeKeys, Collection<ChromosomeInfo> chromosomeInfos) throws IOException {
+
+		// Set of chromosomes found in matrix along with number of markersinfo
+		NetCdfUtils.saveObjectsToStringToMatrix(wrNcFile, matrixIndexChromosomeKeys.values(), cNetCDF.Variables.VAR_CHR_IN_MATRIX, 8);
+		// Number of marker per chromosome & max pos for each chromosome
+		int[] columns = new int[] {0, 1, 2, 3};
+		NetCdfUtils.saveChromosomeInfosD2ToWrMatrix(wrNcFile, chromosomeInfos, columns, cNetCDF.Variables.VAR_CHR_INFO);
 	}
 
 	@Override

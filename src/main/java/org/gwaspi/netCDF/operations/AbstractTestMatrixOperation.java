@@ -25,7 +25,6 @@ import java.util.Map;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.global.Text;
-import org.gwaspi.gui.reports.Report_Analysis;
 import org.gwaspi.model.ChromosomeInfo;
 import org.gwaspi.model.ChromosomeKey;
 import org.gwaspi.model.MarkerKey;
@@ -41,6 +40,8 @@ import org.gwaspi.netCDF.markers.MarkerSet;
 import org.gwaspi.netCDF.matrices.ChromosomeUtils;
 import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
 import org.gwaspi.operations.OperationDataSet;
+import org.gwaspi.operations.trendtest.AbstractNetCdfTestOperationDataSet;
+import org.gwaspi.operations.trendtest.NetCdfTrendTestOperationDataSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 //import ucar.ma2.ArrayChar;
@@ -121,31 +122,43 @@ public abstract class AbstractTestMatrixOperation implements MatrixOperation {
 			MarkerSet.replaceWithValuesFrom(wrMarkerMetadata, rdMarkerSet.getMarkerMetadata());
 			Map<ChromosomeKey, ChromosomeInfo> chromosomeInfo = ChromosomeUtils.aggregateChromosomeInfo(wrMarkerMetadata, 0, 1);
 
-			NetcdfFileWriteable wrOPNcFile = null;
 			try {
-				QAMarkersOperationDataSet dataSet = new NetCdfQAMarkersOperationDataSet(); // HACK
+				AbstractNetCdfTestOperationDataSet dataSet; // HACK
+				switch (testType) {
+					case ALLELICTEST:
+						dataSet = new NetCdfAllelicAssociationTestOperationDataSet();
+						break;
+					case GENOTYPICTEST:
+						dataSet = new NetCdfGenotypicAssociationTestOperationDataSet();
+						break;
+					case TRENDTEST:
+						dataSet = new NetCdfTrendTestOperationDataSet();
+						break;
+					default:
+						throw new IllegalArgumentException();
+				} // HACK
 				((AbstractNetCdfOperationDataSet) dataSet).setReadMatrixKey(rdMatrixKey); // HACK
 				((AbstractNetCdfOperationDataSet) dataSet).setNumMarkers(wrMarkerMetadata.size()); // HACK
 				((AbstractNetCdfOperationDataSet) dataSet).setNumSamples(rdCensusOPMetadata.getImplicitSetSize()); // HACK
 				((AbstractNetCdfOperationDataSet) dataSet).setNumChromosomes(chromosomeInfo.size()); // HACK
 
-				dataSet.setMarkers(xxx);
-				dataSet.setSamples(xxx);
-				dataSet.setChromosomes(xxx);
+				dataSet.setMarkers(wrMarkerMetadata.keySet());
+				dataSet.setSamples(rdSampleSetMap.keySet());
+				dataSet.setChromosomes(chromosomeInfo);
 
-				// CREATE netCDF-3 FILE
-				OperationFactory wrOPHandler = new OperationFactory(
-						rdCensusOPMetadata.getStudyKey(),
-						testName, // friendly name
-						testName + " on " + markerCensusOP.getFriendlyName()
-							+ "\n" + rdCensusOPMetadata.getDescription()
-							+ "\nHardy-Weinberg threshold: " + Report_Analysis.FORMAT_SCIENTIFIC.format(hwThreshold), // description
-						wrMarkerMetadata.size(),
-						rdCensusOPMetadata.getImplicitSetSize(),
-						chromosomeInfo.size(),
-						testType,
-						rdCensusOPMetadata.getParentMatrixKey(), // Parent matrixId
-						markerCensusOP.getId()); // Parent operationId
+//				// CREATE netCDF-3 FILE
+//				OperationFactory wrOPHandler = new OperationFactory(
+//						rdCensusOPMetadata.getStudyKey(),
+//						testName, // friendly name
+//						testName + " on " + markerCensusOP.getFriendlyName()
+//							+ "\n" + rdCensusOPMetadata.getDescription()
+//							+ "\nHardy-Weinberg threshold: " + Report_Analysis.FORMAT_SCIENTIFIC.format(hwThreshold), // description
+//						wrMarkerMetadata.size(),
+//						rdCensusOPMetadata.getImplicitSetSize(),
+//						chromosomeInfo.size(),
+//						testType,
+//						rdCensusOPMetadata.getParentMatrixKey(), // Parent matrixId
+//						markerCensusOP.getId()); // Parent operationId
 
 				// what will be written to the operation NetCDF file (wrOPNcFile):
 				// - Variables.VAR_OPSET: wrMarkerMetadata.keySet() [Collection<MarkerKey>]
@@ -159,15 +172,11 @@ public abstract class AbstractTestMatrixOperation implements MatrixOperation {
 				//   case "trend test": Association.VAR_OP_MARKERS_ASTrendTestTP: {T, P-Value} [Double[2]]
 				// }
 
-				wrOPNcFile = wrOPHandler.getNetCDFHandler();
-				wrOPNcFile.create();
-				log.trace("Done creating netCDF handle: " + wrOPNcFile.toString());
-
 				//<editor-fold defaultstate="expanded" desc="METADATA WRITER">
 				// MARKERSET MARKERID
-				ArrayChar.D2 markersD2 = NetCdfUtils.writeCollectionToD2ArrayChar(wrMarkerMetadata.keySet(), cNetCDF.Strides.STRIDE_MARKER_NAME);
-				int[] markersOrig = new int[]{0, 0};
-				wrOPNcFile.write(cNetCDF.Variables.VAR_OPSET, markersOrig, markersD2);
+//				ArrayChar.D2 markersD2 = NetCdfUtils.writeCollectionToD2ArrayChar(wrMarkerMetadata.keySet(), cNetCDF.Strides.STRIDE_MARKER_NAME);
+//				int[] markersOrig = new int[]{0, 0};
+//				wrOPNcFile.write(cNetCDF.Variables.VAR_OPSET, markersOrig, markersD2);
 
 				// MARKERSET RSID
 				Map<MarkerKey, char[]> rdCaseMarkerIdSetMap = rdCaseMarkerSet.fillOpSetMapWithVariable(rdOPNcFile, cNetCDF.Variables.VAR_MARKERS_RSID);
@@ -175,18 +184,18 @@ public abstract class AbstractTestMatrixOperation implements MatrixOperation {
 				NetCdfUtils.saveCharMapValueToWrMatrix(wrOPNcFile, sortedCaseMarkerIds.values(), cNetCDF.Variables.VAR_MARKERS_RSID, cNetCDF.Strides.STRIDE_MARKER_NAME);
 
 				// WRITE SAMPLESET TO MATRIX FROM SAMPLES
-				ArrayChar.D2 samplesD2 = NetCdfUtils.writeCollectionToD2ArrayChar(rdSampleSetMap.keySet(), cNetCDF.Strides.STRIDE_SAMPLE_NAME);
-				int[] sampleOrig = new int[] {0, 0};
-				wrOPNcFile.write(cNetCDF.Variables.VAR_IMPLICITSET, sampleOrig, samplesD2);
-				log.info("Done writing SampleSet to matrix");
+//				ArrayChar.D2 samplesD2 = NetCdfUtils.writeCollectionToD2ArrayChar(rdSampleSetMap.keySet(), cNetCDF.Strides.STRIDE_SAMPLE_NAME);
+//				int[] sampleOrig = new int[] {0, 0};
+//				wrOPNcFile.write(cNetCDF.Variables.VAR_IMPLICITSET, sampleOrig, samplesD2);
+//				log.info("Done writing SampleSet to matrix");
 
-				// WRITE CHROMOSOME INFO
-				// Set of chromosomes found in matrix along with number of markersinfo
-				NetCdfUtils.saveObjectsToStringToMatrix(wrOPNcFile, chromosomeInfo.keySet(), cNetCDF.Variables.VAR_CHR_IN_MATRIX, 8);
-				// Number of marker per chromosome & max pos for each chromosome
-				int[] columns = new int[] {0, 1, 2, 3};
-				NetCdfUtils.saveChromosomeInfosD2ToWrMatrix(wrOPNcFile, chromosomeInfo.values(), columns, cNetCDF.Variables.VAR_CHR_INFO);
-				//</editor-fold>
+//				// WRITE CHROMOSOME INFO
+//				// Set of chromosomes found in matrix along with number of markersinfo
+//				NetCdfUtils.saveObjectsToStringToMatrix(wrOPNcFile, chromosomeInfo.keySet(), cNetCDF.Variables.VAR_CHR_IN_MATRIX, 8);
+//				// Number of marker per chromosome & max pos for each chromosome
+//				int[] columns = new int[] {0, 1, 2, 3};
+//				NetCdfUtils.saveChromosomeInfosD2ToWrMatrix(wrOPNcFile, chromosomeInfo.values(), columns, cNetCDF.Variables.VAR_CHR_INFO);
+//				//</editor-fold>
 
 				//<editor-fold defaultstate="expanded" desc="GET CENSUS & PERFORM TESTS">
 				// CLEAN Maps FROM MARKERS THAT FAILED THE HARDY WEINBERG THRESHOLD
@@ -197,18 +206,15 @@ public abstract class AbstractTestMatrixOperation implements MatrixOperation {
 				Map<MarkerKey, int[]> wrCtrlMarkerSet = filter(rdMarkerCensusCtrls, toBeExcluded);
 
 				org.gwaspi.global.Utils.sysoutStart(testName);
-				performTest(wrOPNcFile, wrCaseMarkerIdSetMap, wrCtrlMarkerSet);
+				performTest(dataSet, wrCaseMarkerIdSetMap, wrCtrlMarkerSet);
 				org.gwaspi.global.Utils.sysoutCompleted(testName);
 				//</editor-fold>
 
-				resultAssocId = wrOPHandler.getResultOPId();
+				resultOpId = ((AbstractNetCdfOperationDataSet) dataSet).getResultOperationId(); // HACK
 			} finally {
 				try {
 					if (rdOPNcFile != null) {
 						rdOPNcFile.close();
-					}
-					if (wrOPNcFile != null) {
-						wrOPNcFile.close();
 					}
 				} catch (IOException ex) {
 					log.warn("Cannot close file", ex);

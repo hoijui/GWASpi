@@ -17,15 +17,10 @@
 
 package org.gwaspi.operations.trendtest;
 
-import org.gwaspi.operations.qasamples.*;
 import java.io.IOException;
-import java.util.Collection;
-import org.gwaspi.constants.cNetCDF;
-import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.gui.reports.Report_Analysis;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixMetadata;
-import org.gwaspi.netCDF.operations.NetCdfUtils;
 import org.gwaspi.netCDF.operations.OperationFactory;
 import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
 import org.slf4j.Logger;
@@ -33,6 +28,17 @@ import org.slf4j.LoggerFactory;
 import ucar.ma2.InvalidRangeException;
 
 public abstract class AbstractNetCdfTestOperationDataSet extends AbstractNetCdfOperationDataSet {
+
+	// - Variables.VAR_OPSET: wrMarkerMetadata.keySet() [Collection<MarkerKey>]
+	// - Variables.VAR_MARKERS_RSID: markers RS ID from the rd marker census opertion, sorted by wrMarkerMetadata.keySet() [Collection<String>]
+	// - Variables.VAR_IMPLICITSET: "implicit set", rdSampleSetMap.keySet(), original sample keys [Collection<SampleKey>]
+	// - Variables.VAR_CHR_IN_MATRIX: chromosomeInfo.keySet() [Collection<ChromosomeKey>]
+	// - Variables.VAR_CHR_INFO: chromosomeInfo.values() [Collection<ChromosomeInfo>]
+	// switch (test-type) {
+	//   case "allelic association test": Association.VAR_OP_MARKERS_ASAllelicAssociationTPOR: {T, P-Value, OR} [Double[3]]
+	//   case "genotypic association test": Association.VAR_OP_MARKERS_ASGenotypicAssociationTP2OR: {T, P-Value, OR-1, OR-2} [Double[4]]
+	//   case "trend test": Association.VAR_OP_MARKERS_ASTrendTestTP: {T, P-Value} [Double[2]]
+	// }
 
 	private final Logger log = LoggerFactory.getLogger(AbstractNetCdfTestOperationDataSet.class);
 
@@ -59,9 +65,9 @@ public abstract class AbstractNetCdfTestOperationDataSet extends AbstractNetCdfO
 					testName + " on " + markerCensusOP.getFriendlyName()
 						+ "\n" + rdCensusOPMetadata.getDescription()
 						+ "\nHardy-Weinberg threshold: " + Report_Analysis.FORMAT_SCIENTIFIC.format(hwThreshold), // description
-					wrMarkerMetadata.size(),
-					rdCensusOPMetadata.getImplicitSetSize(),
-					chromosomeInfo.size(),
+					getNumMarkers(),
+					getNumSamples(),
+					getNumChromosomes(),
 					testType,
 					rdCensusOPMetadata.getParentMatrixKey(), // Parent matrixId
 					markerCensusOP.getId()); // Parent operationId
