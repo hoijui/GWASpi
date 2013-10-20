@@ -18,17 +18,25 @@
 package org.gwaspi.operations.qasamples;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
+import java.util.Map;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixMetadata;
+import org.gwaspi.model.OperationMetadata;
+import org.gwaspi.model.OperationsList;
+import org.gwaspi.model.SampleKey;
 import org.gwaspi.netCDF.operations.NetCdfUtils;
 import org.gwaspi.netCDF.operations.OperationFactory;
+import org.gwaspi.netCDF.operations.SampleOperationSet;
 import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.InvalidRangeException;
+import ucar.nc2.NetcdfFile;
 
 public class NetCdfQASamplesOperationDataSet extends AbstractNetCdfOperationDataSet implements QASamplesOperationDataSet {
 
@@ -69,21 +77,87 @@ public class NetCdfQASamplesOperationDataSet extends AbstractNetCdfOperationData
 
 	@Override
 	public void setSampleMissingRatios(Collection<Double> sampleMissingRatios) throws IOException {
+
+		ensureNcFile();
 		NetCdfUtils.saveDoubleMapD1ToWrMatrix(getNetCdfWriteFile(), sampleMissingRatios, cNetCDF.Census.VAR_OP_SAMPLES_MISSINGRAT);
 	}
 
 	@Override
 	public void setSampleMissingCount(Collection<Integer> sampleMissingCount) throws IOException {
+
+		ensureNcFile();
 		NetCdfUtils.saveIntMapD1ToWrMatrix(getNetCdfWriteFile(), sampleMissingCount, cNetCDF.Census.VAR_OP_SAMPLES_MISSINGCOUNT);
 	}
 
 	@Override
 	public void setSampleHetzyRatios(Collection<Double> sampleHetzyRatios) throws IOException {
+
+		ensureNcFile();
 		NetCdfUtils.saveDoubleMapD1ToWrMatrix(getNetCdfWriteFile(), sampleHetzyRatios, cNetCDF.Census.VAR_OP_SAMPLES_HETZYRAT);
+	}
+
+	@Override
+	public Collection<Double> getSampleMissingRatios() throws IOException {
+
+		OperationMetadata rdOPMetadata = OperationsList.getOperation(operationKey);
+
+		SampleOperationSet rdInfoSampleSet = new SampleOperationSet(operationKey);
+		Map<SampleKey, Double> rdMatrixSampleSetMap = rdInfoSampleSet.getOpSetMap();
+
+		NetcdfFile ncFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());
+		rdMatrixSampleSetMap = rdInfoSampleSet.fillOpSetMapWithVariable(ncFile, cNetCDF.Census.VAR_OP_SAMPLES_MISSINGRAT);
+
+		ncFile.close();
+		return rdMatrixSampleSetMap.values();
+	}
+
+	@Override
+	public Collection<Integer> getSampleMissingCount() throws IOException {
+
+//		OperationMetadata rdOPMetadata = OperationsList.getOperation(operationKey);
+
+		SampleOperationSet rdInfoSampleSet = new SampleOperationSet(operationKey);
+		Map<SampleKey, Integer> rdMatrixSampleSetMap = rdInfoSampleSet.getOpSetMap();
+
+//		NetcdfFile ncFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());
+		NetcdfFile ncFile = getNetCdfWriteFile();
+		rdMatrixSampleSetMap = rdInfoSampleSet.fillOpSetMapWithVariable(ncFile, cNetCDF.Census.VAR_OP_SAMPLES_MISSINGCOUNT);
+
+		ncFile.close();
+		return rdMatrixSampleSetMap.values();
+	}
+
+	@Override
+	public Collection<Double> getSampleHetzyRatios() throws IOException {
+
+		OperationMetadata rdOPMetadata = OperationsList.getOperation(operationKey);
+
+		SampleOperationSet rdInfoSampleSet = new SampleOperationSet(operationKey);
+		Map<SampleKey, Double> rdMatrixSampleSetMap = rdInfoSampleSet.getOpSetMap();
+
+		NetcdfFile ncFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());
+		rdMatrixSampleSetMap = rdInfoSampleSet.fillOpSetMapWithVariable(ncFile, cNetCDF.Census.VAR_OP_SAMPLES_HETZYRAT);
+
+		ncFile.close();
+		return rdMatrixSampleSetMap.values();
 	}
 
 	@Override
 	public Collection<QASamplesOperationEntry> getEntries() throws IOException {
 
+		Collection<Double> sampleMissingRatios = getSampleMissingRatios();
+		Collection<Integer> sampleMissingCount = getSampleMissingCount();
+		Collection<Double> sampleHetzyRatios = getSampleHetzyRatios();
+
+		Collection<QASamplesOperationEntry> entries
+				= new ArrayList<QASamplesOperationEntry>(sampleMissingRatios.size());
+		Iterator<Integer> sampleMissingCountIt = sampleMissingCount.iterator();
+		Iterator<Double> sampleHetzyRatiosIt = sampleHetzyRatios.iterator();
+		for (Double sampleMissingRatio : sampleMissingRatios) {
+			SampleKey sampleKey = XXX;
+			entries.add(new DefaultQASamplesOperationEntry(sampleKey, sampleMissingRatio, sampleMissingCountIt.next(), sampleHetzyRatiosIt.next()));
+		}
+
+		return entries;
 	}
 }

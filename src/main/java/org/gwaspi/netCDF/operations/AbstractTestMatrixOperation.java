@@ -141,6 +141,9 @@ public abstract class AbstractTestMatrixOperation implements MatrixOperation {
 				((AbstractNetCdfOperationDataSet) dataSet).setNumMarkers(wrMarkerMetadata.size()); // HACK
 				((AbstractNetCdfOperationDataSet) dataSet).setNumSamples(rdCensusOPMetadata.getImplicitSetSize()); // HACK
 				((AbstractNetCdfOperationDataSet) dataSet).setNumChromosomes(chromosomeInfo.size()); // HACK
+				dataSet.setMarkerCensusOPKey(markerCensusOPKey); // HACK
+				dataSet.setTestType(testType); // HACK
+				dataSet.setTestName(testName); // HACK
 
 				dataSet.setMarkers(wrMarkerMetadata.keySet());
 				dataSet.setSamples(rdSampleSetMap.keySet());

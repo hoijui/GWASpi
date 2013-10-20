@@ -34,12 +34,12 @@ import ucar.ma2.InvalidRangeException;
 
 public class NetCdfTrendTestOperationDataSet extends AbstractNetCdfTestOperationDataSet implements TrendTestOperationDataSet {
 
-	XXX;
-	// - cNetCDF.Variables.VAR_OPSET: (String, key.getSampleId() + " " + key.getFamilyId()) sample keys
-	// - cNetCDF.Variables.VAR_IMPLICITSET: (String, key.getId()) marker keys
-	// - cNetCDF.Census.VAR_OP_SAMPLES_MISSINGRAT: (double) missing ratio for each sample
-	// - cNetCDF.Census.VAR_OP_SAMPLES_MISSINGCOUNT: (int) missing count for each sample
-	// - cNetCDF.Census.VAR_OP_SAMPLES_HETZYRAT: (double) heterozygosity ratio for each sample
+	// - Variables.VAR_OPSET: wrMarkerMetadata.keySet() [Collection<MarkerKey>]
+	// - Variables.VAR_MARKERS_RSID: markers RS ID from the rd marker census opertion, sorted by wrMarkerMetadata.keySet() [Collection<String>]
+	// - Variables.VAR_IMPLICITSET: "implicit set", rdSampleSetMap.keySet(), original sample keys [Collection<SampleKey>]
+	// - Variables.VAR_CHR_IN_MATRIX: chromosomeInfo.keySet() [Collection<ChromosomeKey>]
+	// - Variables.VAR_CHR_INFO: chromosomeInfo.values() [Collection<ChromosomeInfo>]
+	// - Association.VAR_OP_MARKERS_ASTrendTestTP: {T, P-Value} [Double[2]]
 
 	private final Logger log = LoggerFactory.getLogger(NetCdfTrendTestOperationDataSet.class);
 
@@ -48,12 +48,11 @@ public class NetCdfTrendTestOperationDataSet extends AbstractNetCdfTestOperation
 
 	public void addEntry(TrendTestOperationEntry entry) throws IOException {
 
-		//<editor-fold defaultstate="expanded" desc="TREND-TEST DATA WRITER">
+		// NOTE result = double[2];
 		int[] boxes = new int[] {0, 1};
-		NetCdfUtils.saveDoubleMapD2ToWrMatrix(wrNcFile, result.values(), boxes, cNetCDF.Association.VAR_OP_MARKERS_ASTrendTestTP);
-		//</editor-fold>
+		NetCdfUtils.saveDoubleMapD2ToWrMatrix(getNetCdfWriteFile(), result.values(), boxes, cNetCDF.Association.VAR_OP_MARKERS_ASTrendTestTP);
 
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		throw new UnsupportedOperationException("Not supported yet."); // TODO
 	}
 
 	public Collection<TrendTestOperationEntry> getEntries() throws IOException {

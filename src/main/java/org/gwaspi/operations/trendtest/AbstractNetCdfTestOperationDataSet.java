@@ -18,9 +18,11 @@
 package org.gwaspi.operations.trendtest;
 
 import java.io.IOException;
+import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.gui.reports.Report_Analysis;
-import org.gwaspi.model.MatricesList;
-import org.gwaspi.model.MatrixMetadata;
+import org.gwaspi.model.OperationKey;
+import org.gwaspi.model.OperationMetadata;
+import org.gwaspi.model.OperationsList;
 import org.gwaspi.netCDF.operations.OperationFactory;
 import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
 import org.slf4j.Logger;
@@ -42,34 +44,54 @@ public abstract class AbstractNetCdfTestOperationDataSet extends AbstractNetCdfO
 
 	private final Logger log = LoggerFactory.getLogger(AbstractNetCdfTestOperationDataSet.class);
 
+	private OperationKey markerCensusOPKey;
+	private double hardyWeinbergThreshold;
 	private String testName;
+	private OPType testType;
 
 	public AbstractNetCdfTestOperationDataSet() {
 		super(true);
+
+		this.markerCensusOPKey = null;
+		this.hardyWeinbergThreshold = Double.MIN_VALUE;
+		this.testName = null;
+		this.testType = null;
+	}
+
+	public void setMarkerCensusOPKey(OperationKey markerCensusOPKey) {
+		this.markerCensusOPKey = markerCensusOPKey;
 	}
 
 	public void setTestName(String testName) {
 		this.testName = testName;
 	}
 
+	public void setTestType(OPType testType) {
+		this.testType = testType;
+	}
+
+	public void setHardyWeinbergThreshold(double hardyWeinbergThreshold) {
+		this.hardyWeinbergThreshold = hardyWeinbergThreshold;
+	}
+
 	@Override
 	protected OperationFactory createOperationFactory() throws IOException {
 
 		try {
-			MatrixMetadata rdMatrixMetadata = MatricesList.getMatrixMetadataById(getReadMatrixKey());
+			OperationMetadata markerCensusOP = OperationsList.getOperation(markerCensusOPKey);
 
 			// CREATE netCDF-3 FILE
 			return new OperationFactory(
-					rdCensusOPMetadata.getStudyKey(),
+					markerCensusOP.getStudyKey(),
 					testName, // friendly name
 					testName + " on " + markerCensusOP.getFriendlyName()
-						+ "\n" + rdCensusOPMetadata.getDescription()
-						+ "\nHardy-Weinberg threshold: " + Report_Analysis.FORMAT_SCIENTIFIC.format(hwThreshold), // description
+						+ "\n" + markerCensusOP.getDescription()
+						+ "\nHardy-Weinberg threshold: " + Report_Analysis.FORMAT_SCIENTIFIC.format(hardyWeinbergThreshold), // description
 					getNumMarkers(),
 					getNumSamples(),
 					getNumChromosomes(),
 					testType,
-					rdCensusOPMetadata.getParentMatrixKey(), // Parent matrixId
+					markerCensusOP.getParentMatrixKey(), // Parent matrixId
 					markerCensusOP.getId()); // Parent operationId
 		} catch (InvalidRangeException ex) {
 			throw new IOException(ex);
