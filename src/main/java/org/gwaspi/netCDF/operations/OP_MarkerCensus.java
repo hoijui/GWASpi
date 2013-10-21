@@ -34,6 +34,8 @@ import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.AlleleBytes;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.Census;
+import org.gwaspi.model.DataSetSource;
+import org.gwaspi.model.GenotypesList;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixKey;
@@ -118,14 +120,14 @@ public class OP_MarkerCensus implements MatrixOperation {
 			//<editor-fold defaultstate="expanded" desc="PURGE Maps">
 			MatrixMetadata rdMatrixMetadata = MatricesList.getMatrixMetadataById(rdMatrixKey);
 
-			NetcdfFile rdNcFile = NetcdfFile.open(rdMatrixMetadata.getPathToMatrix());
+			DataSetSource dataSetSource = rdMatrixKey;
 
 			MarkerSet rdMarkerSet = new MarkerSet(rdMatrixKey);
 			rdMarkerSet.initFullMarkerIdSetMap();
 			rdMarkerSet.fillWith(cNetCDF.Defaults.DEFAULT_GT);
 
 			SampleSet rdSampleSet = new SampleSet(rdMatrixKey);
-			Map<SampleKey, byte[]> rdSampleSetMap = rdSampleSet.getSampleIdSetMapByteArray();
+//			Map<SampleKey, byte[]> rdSampleSetMap = rdSampleSet.getSampleIdSetMapByteArray();
 			Collection<SampleKey> wrSampleKeys = new HashSet<SampleKey>(); // XXX Should this be a List instead, to preserve order?
 			for (SampleKey key : rdSampleSetMap.keySet()) {
 				if (!excludeSampleSetMap.containsKey(key)) {
@@ -220,6 +222,7 @@ public class OP_MarkerCensus implements MatrixOperation {
 
 				Map<MarkerKey, Census> wrChunkedMarkerCensusMap = new LinkedHashMap<MarkerKey, Census>();
 				Map<MarkerKey, char[]> wrChunkedKnownAllelesMap = new LinkedHashMap<MarkerKey, char[]>();
+				Iterator<GenotypesList> markersGTsIt = dataSetSource.getMarkersGenotypesSource().iterator();
 				for (Map.Entry<MarkerKey, ?> entry : wrMarkerInfos.entrySet()) {
 					MarkerKey markerKey = entry.getKey();
 					if (countMarkers % chunkSize == 0) {
@@ -257,8 +260,8 @@ public class OP_MarkerCensus implements MatrixOperation {
 					int markerNb = Integer.parseInt(markerInfo[0].toString());
 					String markerChr = markerInfo[1].toString();
 
-					SampleSet.readAllSamplesGTsFromCurrentMarkerToMap(rdNcFile, rdSampleSetMap, markerNb);
-					for (SampleKey sampleKey : wrSampleKeys) {
+					Iterator<byte[]> markerGTsIt = markersGTsIt.next().iterator();
+					for (SampleKey sampleKey : dataSetSource.getSamplesKeysSource()) {
 						SampleInfo sampleInfo = samplesInfoMap.get(sampleKey);
 
 						//<editor-fold defaultstate="expanded" desc="THE DECIDER">
@@ -271,7 +274,7 @@ public class OP_MarkerCensus implements MatrixOperation {
 						//</editor-fold>
 
 						// SUMMING SAMPLESET GENOTYPES
-						byte[] tempGT = rdSampleSetMap.get(sampleKey);
+						byte[] tempGT = markerGTsIt.next();
 						missingCount = summingSampleSetGenotypes(
 								tempGT,
 								decision,
@@ -431,14 +434,6 @@ public class OP_MarkerCensus implements MatrixOperation {
 //			} catch (InvalidRangeException ex) {
 //				throw new IOException(ex);
 			} finally {
-				if (rdNcFile != null) {
-					try {
-						rdNcFile.close();
-					} catch (IOException ex) {
-						log.warn("Cannot close file", ex);
-					}
-				}
-
 				org.gwaspi.global.Utils.sysoutCompleted("Genotype Frequency Count");
 			}
 		} else {

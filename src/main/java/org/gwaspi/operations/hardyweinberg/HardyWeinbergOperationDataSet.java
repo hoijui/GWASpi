@@ -27,12 +27,18 @@ public interface HardyWeinbergOperationDataSet extends OperationDataSet {
 	// - Variables.VAR_OPSET: [Collection<MarkerKey>]
 	// - Variables.VAR_MARKERS_RSID: [Collection<String>]
 	// - Variables.VAR_IMPLICITSET: [Collection<SampleKey>]
-	// - Variables.VAR_ALLELES: known alleles [Collection<char[]>]
-	// - Census.VAR_OP_MARKERS_CENSUSALL: marker census - all [Collection<Census.all<== int[]>>]
-	// - Census.VAR_OP_MARKERS_CENSUSCASE: marker census - case [Collection<Census.case>]
-	// - Census.VAR_OP_MARKERS_CENSUSCTRL: marker census - control [Collection<Census.control>]
-	// - Census.VAR_OP_MARKERS_CENSUSHW: marker census - alternate hardy-weinberg [Collection<Census.altHW>]
+	// - HardyWeinberg.VAR_OP_MARKERS_HWPval_CTRL: Control P-Value [Double[1]]
+	// - HardyWeinberg.VAR_OP_MARKERS_HWHETZY_CTRL: Control Obs Hetzy & Exp Hetzy [Double[2]]
+	// - HardyWeinberg.VAR_OP_MARKERS_HWPval_ALT: Hardy-Weinberg Alternative P-Value [Double[1]]
+	// - HardyWeinberg.VAR_OP_MARKERS_HWHETZY_ALT: Hardy-Weinberg Alternative Obs Hetzy & Exp Hetzy [Double[2]]
 
+
+	/**
+	 * @param markerKnownAlleles
+	 *   the marker missing ratio values, one per marker in this operation
+	 * NetCDF variable: Variables.VAR_ALLELES
+	 */
+	void addMarkerValues(double pvalue, double obsHzy, double expHzy) throws IOException;
 
 	/**
 	 * XXX maybe should be moved to super class?
