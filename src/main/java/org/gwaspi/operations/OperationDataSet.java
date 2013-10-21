@@ -25,7 +25,7 @@ import org.gwaspi.model.ChromosomeKey;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.SampleKey;
 
-public interface OperationDataSet {
+public interface OperationDataSet<ET> {
 
 	/**
 	 * @param matrixIndexSampleKeys
@@ -53,4 +53,13 @@ public interface OperationDataSet {
 	Map<Integer, SampleKey> getSamples() throws IOException;
 	Map<Integer, MarkerKey> getMarkers() throws IOException;
 	Map<Integer, ChromosomeKey> getChromosomes() throws IOException;
+
+	/**
+	 *
+	 * @param from start index (inclusive), or -1 for the start
+	 * @param to end index (exclusive), or -1 for the end
+	 * @return
+	 * @throws IOException
+	 */
+	Collection<ET> getEntries(int from, int to) throws IOException;
 }

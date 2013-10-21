@@ -17,20 +17,12 @@
 
 package org.gwaspi.operations.trendtest;
 
-import org.gwaspi.operations.qasamples.*;
 import java.io.IOException;
 import java.util.Collection;
 import org.gwaspi.constants.cNetCDF;
-import org.gwaspi.constants.cNetCDF.Defaults.OPType;
-import org.gwaspi.gui.reports.Report_Analysis;
-import org.gwaspi.model.MatricesList;
-import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.netCDF.operations.NetCdfUtils;
-import org.gwaspi.netCDF.operations.OperationFactory;
-import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.ma2.InvalidRangeException;
 
 public class NetCdfTrendTestOperationDataSet extends AbstractNetCdfTestOperationDataSet implements TrendTestOperationDataSet {
 
@@ -55,7 +47,8 @@ public class NetCdfTrendTestOperationDataSet extends AbstractNetCdfTestOperation
 		throw new UnsupportedOperationException("Not supported yet."); // TODO
 	}
 
-	public Collection<TrendTestOperationEntry> getEntries() throws IOException {
+	@Override
+	public Collection<TrendTestOperationEntry> getEntries(int from, int to) throws IOException {
 		throw new UnsupportedOperationException("Not supported yet."); // TODO
 	}
 }

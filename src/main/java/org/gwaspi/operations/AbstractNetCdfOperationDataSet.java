@@ -25,6 +25,7 @@ import org.gwaspi.model.ChromosomeInfo;
 import org.gwaspi.model.ChromosomeKey;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MatrixKey;
+import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.netCDF.operations.NetCdfUtils;
 import org.gwaspi.netCDF.operations.OperationFactory;
@@ -104,10 +105,9 @@ public abstract class AbstractNetCdfOperationDataSet implements OperationDataSet
 		}
 	}
 
-	public int getResultOperationId() {
-		return operationFactory.getResultOPId();
+	public OperationKey getResultOperationKey() {
+		return operationFactory.getResultOperationKey();
 	}
-
 
 	protected void write(NetcdfFileWriteable ncFile, String varName, int[] origin, Array values) throws IOException {
 

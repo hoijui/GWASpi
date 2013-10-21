@@ -18,12 +18,9 @@
 package org.gwaspi.operations.trendtest;
 
 import java.io.IOException;
-import java.util.Collection;
 import org.gwaspi.operations.OperationDataSet;
 
-public interface TrendTestOperationDataSet extends OperationDataSet {
+public interface TrendTestOperationDataSet extends OperationDataSet<TrendTestOperationEntry> {
 
 	void addEntry(TrendTestOperationEntry entry) throws IOException;
-
-	Collection<TrendTestOperationEntry> getEntries() throws IOException;
 }

@@ -30,7 +30,6 @@ import org.gwaspi.statistics.Associations;
 import org.gwaspi.statistics.Pvalue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.nc2.NetcdfFileWriteable;
 
 public class OP_AssociationTests extends AbstractTestMatrixOperation {
 

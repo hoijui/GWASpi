@@ -24,6 +24,7 @@ import java.util.List;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.model.MatrixKey;
+import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.Study;
@@ -43,7 +44,7 @@ public class OperationFactory {
 	private NetcdfFileWriteable netCDFHandler = null;
 	private String resultOPnetCDFName = "";
 	private String resultOPType = "";
-	private int resultOPId = Integer.MIN_VALUE;
+	private OperationKey resultOperationKey = null;
 	private OperationMetadata opMetaData = null;
 
 	/**
@@ -161,7 +162,7 @@ public class OperationFactory {
 
 		opMetaData = OperationsList.getOperationMetadata(resultOPnetCDFName);
 
-		resultOPId = opMetaData.getOPId();
+		resultOperationKey = new OperationKey(parentMatrixKey, opMetaData.getOPId());
 	}
 
 	// ACCESSORS
@@ -178,7 +179,11 @@ public class OperationFactory {
 	}
 
 	public int getResultOPId() {
-		return resultOPId;
+		return resultOperationKey.getId();
+	}
+
+	public OperationKey getResultOperationKey() {
+		return resultOperationKey;
 	}
 
 	public OperationMetadata getResultOPMetadata() {
