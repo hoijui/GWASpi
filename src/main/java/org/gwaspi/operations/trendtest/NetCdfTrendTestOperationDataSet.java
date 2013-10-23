@@ -21,10 +21,8 @@ import java.io.IOException;
 import java.util.Collection;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.netCDF.operations.NetCdfUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-public class NetCdfTrendTestOperationDataSet extends AbstractNetCdfTestOperationDataSet implements TrendTestOperationDataSet {
+public class NetCdfTrendTestOperationDataSet extends AbstractNetCdfTestOperationDataSet<TrendTestOperationEntry> implements TrendTestOperationDataSet {
 
 	// - Variables.VAR_OPSET: wrMarkerMetadata.keySet() [Collection<MarkerKey>]
 	// - Variables.VAR_MARKERS_RSID: markers RS ID from the rd marker census opertion, sorted by wrMarkerMetadata.keySet() [Collection<String>]
@@ -32,8 +30,6 @@ public class NetCdfTrendTestOperationDataSet extends AbstractNetCdfTestOperation
 	// - Variables.VAR_CHR_IN_MATRIX: chromosomeInfo.keySet() [Collection<ChromosomeKey>]
 	// - Variables.VAR_CHR_INFO: chromosomeInfo.values() [Collection<ChromosomeInfo>]
 	// - Association.VAR_OP_MARKERS_ASTrendTestTP: {T, P-Value} [Double[2]]
-
-	private final Logger log = LoggerFactory.getLogger(NetCdfTrendTestOperationDataSet.class);
 
 	public NetCdfTrendTestOperationDataSet() {
 	}

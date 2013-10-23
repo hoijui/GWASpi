@@ -42,6 +42,10 @@ public class MarkerOperationSet<V> extends AbstractOperationSet<MarkerKey, V> {
 		super(operationKey, MarkerKey.KEY_FACTORY);
 	}
 
+	public MarkerOperationSet(OperationKey operationKey, int from, int to) throws IOException {
+		super(operationKey, MarkerKey.KEY_FACTORY, from, to);
+	}
+
 	//<editor-fold defaultstate="expanded" desc="CHROMOSOME INFO">
 	public Map<String, ChromosomeInfo> getChrInfoSetMap() {
 		NetcdfFile ncfile = null;

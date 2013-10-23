@@ -22,7 +22,7 @@ import java.util.Collection;
 import org.gwaspi.model.Census;
 import org.gwaspi.operations.OperationDataSet;
 
-public interface MarkerCensusOperationDataSet extends OperationDataSet {
+public interface MarkerCensusOperationDataSet extends OperationDataSet<MarkerCensusOperationEntry> {
 
 	// - Variables.VAR_OPSET: [Collection<MarkerKey>]
 	// - Variables.VAR_MARKERS_RSID: [Collection<String>]

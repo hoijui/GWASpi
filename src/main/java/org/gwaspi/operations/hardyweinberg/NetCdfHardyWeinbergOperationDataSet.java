@@ -106,7 +106,12 @@ public class NetCdfHardyWeinbergOperationDataSet extends AbstractNetCdfOperation
 	}
 
 	@Override
-	public Collection<HardyWeinbergOperationEntry> getEntries(int from, int to) {
+	public void addMarkerHWValues(double pValue, double obsHzy, double expHzy, boolean caseOrAlt) throws IOException {
+		throw new UnsupportedOperationException("Not supported yet."); // TODO
+	}
+
+	@Override
+	public Collection<HardyWeinbergOperationEntry> getEntries(int from, int to) throws IOException {
 		throw new UnsupportedOperationException("Not supported yet."); // TODO
 	}
 }

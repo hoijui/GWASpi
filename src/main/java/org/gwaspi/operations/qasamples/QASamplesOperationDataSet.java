@@ -21,7 +21,7 @@ import java.io.IOException;
 import java.util.Collection;
 import org.gwaspi.operations.OperationDataSet;
 
-public interface QASamplesOperationDataSet extends OperationDataSet {
+public interface QASamplesOperationDataSet extends OperationDataSet<QASamplesOperationEntry> {
 
 	// - cNetCDF.Variables.VAR_OPSET: (String, key.getSampleId() + " " + key.getFamilyId()) sample keys
 	// - cNetCDF.Variables.VAR_IMPLICITSET: (String, key.getId()) marker keys
@@ -49,6 +49,4 @@ public interface QASamplesOperationDataSet extends OperationDataSet {
 	 * NetCDF variable: Census.VAR_OP_SAMPLES_HETZYRAT
 	 */
 	void setSampleHetzyRatios(Collection<Double> sampleHetzyRatios) throws IOException;
-
-	Collection<QASamplesOperationEntry> getEntries() throws IOException;
 }

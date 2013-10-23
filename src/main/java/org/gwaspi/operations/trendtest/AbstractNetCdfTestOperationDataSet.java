@@ -29,7 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.InvalidRangeException;
 
-public abstract class AbstractNetCdfTestOperationDataSet extends AbstractNetCdfOperationDataSet {
+public abstract class AbstractNetCdfTestOperationDataSet<ET> extends AbstractNetCdfOperationDataSet<ET> {
 
 	// - Variables.VAR_OPSET: wrMarkerMetadata.keySet() [Collection<MarkerKey>]
 	// - Variables.VAR_MARKERS_RSID: markers RS ID from the rd marker census opertion, sorted by wrMarkerMetadata.keySet() [Collection<String>]

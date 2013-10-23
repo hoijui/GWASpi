@@ -27,4 +27,8 @@ public class SampleOperationSet<V> extends AbstractOperationSet<SampleKey, V> {
 	public SampleOperationSet(OperationKey operationKey) throws IOException {
 		super(operationKey, new SampleKeyFactory(operationKey.getParentMatrixKey().getStudyKey()));
 	}
+
+	public SampleOperationSet(OperationKey operationKey, int from, int to) throws IOException {
+		super(operationKey, new SampleKeyFactory(operationKey.getParentMatrixKey().getStudyKey()), from, to);
+	}
 }

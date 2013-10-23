@@ -30,7 +30,6 @@ public interface HardyWeinbergOperationDataSet extends OperationDataSet<HardyWei
 	// - HardyWeinberg.VAR_OP_MARKERS_HWPval_ALT: Hardy-Weinberg Alternative P-Value [Double[1]]
 	// - HardyWeinberg.VAR_OP_MARKERS_HWHETZY_ALT: Hardy-Weinberg Alternative Obs Hetzy & Exp Hetzy [Double[2]]
 
-
 	/**
 	 * @param pValue P-Value
 	 *   NetCDF variables:
