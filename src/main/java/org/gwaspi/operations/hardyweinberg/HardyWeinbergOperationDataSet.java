@@ -18,11 +18,9 @@
 package org.gwaspi.operations.hardyweinberg;
 
 import java.io.IOException;
-import java.util.Collection;
-import org.gwaspi.model.Census;
 import org.gwaspi.operations.OperationDataSet;
 
-public interface HardyWeinbergOperationDataSet extends OperationDataSet {
+public interface HardyWeinbergOperationDataSet extends OperationDataSet<HardyWeinbergOperationEntry> {
 
 	// - Variables.VAR_OPSET: [Collection<MarkerKey>]
 	// - Variables.VAR_MARKERS_RSID: [Collection<String>]
@@ -34,73 +32,19 @@ public interface HardyWeinbergOperationDataSet extends OperationDataSet {
 
 
 	/**
-	 * @param markerKnownAlleles
-	 *   the marker missing ratio values, one per marker in this operation
-	 * NetCDF variable: Variables.VAR_ALLELES
+	 * @param pValue P-Value
+	 *   NetCDF variables:
+	 *   - HardyWeinberg.VAR_OP_MARKERS_HWPval_CTRL
+	 *   - HardyWeinberg.VAR_OP_MARKERS_HWPval_ALT
+	 * @param obsHzy Hardy-Weinberg Obs Hetzy
+	 *   NetCDF variables:
+	 *   - HardyWeinberg.VAR_OP_MARKERS_HWHETZY_CTRL [0] Control
+	 *   - HardyWeinberg.VAR_OP_MARKERS_HWHETZY_ALT  [0] Alternative
+	 * @param expHzy Hardy-Weinberg Exp Hetzy
+	 *   - HardyWeinberg.VAR_OP_MARKERS_HWHETZY_CTRL [1] Control
+	 *   - HardyWeinberg.VAR_OP_MARKERS_HWHETZY_ALT  [1] Alternative
+	 * @param caseOrAlt whether the to be added marker values denote a case
+	 *   or an alternative/control entry
 	 */
-	void addMarkerValues(double pvalue, double obsHzy, double expHzy) throws IOException;
-
-	/**
-	 * XXX maybe should be moved to super class?
-	 * @param markerKnownAlleles
-	 *   the marker missing ratio values, one per marker in this operation
-	 * NetCDF variable: Variables.VAR_ALLELES
-	 */
-	void setMarkerKnownAlleles(Collection<byte[]> markerKnownAlleles) throws IOException;
-
-	/**
-	 * @param markerMismatchStates
-	 *   whether there is a mismatch (true) or not (false), one per marker in this operation
-	 * NetCDF variable: Census.VAR_OP_MARKERS_CENSUSALL
-	 */
-	void setMarkerMismatchStates(Collection<Boolean> markerMismatchStates) throws IOException;
-
-	/**
-	 * @param markerKnownAlleles
-	 *   the dictionary allele 1 and 2 values and their frequencies, one such set per marker in this operation
-	 * NetCDF variable:
-	 * - Census.VAR_OP_MARKERS_MAJALLELES
-	 * - Census.VAR_OP_MARKERS_MAJALLELEFRQ
-	 * - Census.VAR_OP_MARKERS_MINALLELES
-	 * - Census.VAR_OP_MARKERS_MINALLELEFRQ
-	 */
-	void setMarkerKnownAlleles(Collection<OrderedAlleles> markerKnownAlleles) throws IOException;
-
-//	/**
-//	 * @param markerMajorAlleles
-//	 *   the dictionary allele 1 values, one per marker in this operation
-//	 * NetCDF variable: Census.VAR_OP_MARKERS_MAJALLELES
-//	 */
-//	void setMarkerMajorAlleles(Collection<Byte> markerMajorAlleles) throws IOException;
-//
-//	/**
-//	 * @param markerMajorAllelesFrequencies
-//	 *   the frequency of dictionary allele 1 in all the alleles for any given marker  in this operation
-//	 * NetCDF variable: Census.VAR_OP_MARKERS_MAJALLELEFRQ
-//	 */
-//	void setMarkerMajorAlleleFrequencies(Collection<Double> markerMajorAllelesFrequencies) throws IOException;
-//
-//	/**
-//	 * @param markerMinorAlleles
-//	 *   the dictionary allele 2 values, one per marker in this operation
-//	 * NetCDF variable: Census.VAR_OP_MARKERS_MINALLELES
-//	 */
-//	void setMarkerMinorAlleles(Collection<Byte> markerMinorAlleles) throws IOException;
-//
-//	/**
-//	 * @param markerMinorAllelesFrequencies
-//	 *   the frequency of dictionary allele 2 in all the alleles for any given marker in this operation
-//	 * NetCDF variable: Census.VAR_OP_MARKERS_MINALLELEFRQ
-//	 */
-//	void setMarkerMinorAlleleFrequencies(Collection<Double> markerMinorAllelesFrequencies) throws IOException;
-
-	/**
-	 * @param markerCensusAll
-	 *   int[4]: allele-AA, allele-Aa, allele-aa, missing-count for each marker in this operation
-	 * NetCDF variable: Census.VAR_OP_MARKERS_CENSUSALL
-	 */
-//	void setMarkerCensusAll(Collection<int[]> markerCensusAll) throws IOException;
-	void setMarkerCensusAll(Collection<Census> markerCensusAll) throws IOException;
-
-	Collection<QAMarkersOperationEntry> getEntries();
+	void addMarkerHWValues(double pValue, double obsHzy, double expHzy, boolean caseOrAlt) throws IOException;
 }

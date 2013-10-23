@@ -32,7 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.InvalidRangeException;
 
-public class NetCdfHardyWeinbergOperationDataSet extends AbstractNetCdfOperationDataSet implements HardyWeinbergOperationDataSet {
+public class NetCdfHardyWeinbergOperationDataSet extends AbstractNetCdfOperationDataSet<HardyWeinbergOperationEntry> implements HardyWeinbergOperationDataSet {
 
 	// - Variables.VAR_OPSET: [Collection<MarkerKey>]
 	// - Variables.VAR_MARKERS_RSID: [Collection<String>]
@@ -106,7 +106,7 @@ public class NetCdfHardyWeinbergOperationDataSet extends AbstractNetCdfOperation
 	}
 
 	@Override
-	public Collection<QAMarkersOperationEntry> getEntries() {
+	public Collection<HardyWeinbergOperationEntry> getEntries(int from, int to) {
 		throw new UnsupportedOperationException("Not supported yet."); // TODO
 	}
 }

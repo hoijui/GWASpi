@@ -95,6 +95,4 @@ public interface MarkerCensusOperationDataSet extends OperationDataSet {
 	 */
 //	void setMarkerCensusAll(Collection<int[]> markerCensusAll) throws IOException;
 	void setMarkerCensusAll(Collection<Census> markerCensusAll) throws IOException;
-
-	Collection<QAMarkersOperationEntry> getEntries();
 }

@@ -36,7 +36,7 @@ import ucar.ma2.ArrayChar;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.NetcdfFileWriteable;
 
-public abstract class AbstractNetCdfOperationDataSet implements OperationDataSet {
+public abstract class AbstractNetCdfOperationDataSet<ET> implements OperationDataSet<ET> {
 
 	private final Logger log = LoggerFactory.getLogger(AbstractNetCdfOperationDataSet.class);
 
@@ -169,16 +169,16 @@ public abstract class AbstractNetCdfOperationDataSet implements OperationDataSet
 
 	@Override
 	public Map<Integer, SampleKey> getSamples() throws IOException {
-
+		return XXX;
 	}
 
 	@Override
 	public Map<Integer, MarkerKey> getMarkers() throws IOException {
-
+		return XXX;
 	}
 
 	@Override
 	public Map<Integer, ChromosomeKey> getChromosomes() throws IOException {
-
+		return XXX;
 	}
 }
