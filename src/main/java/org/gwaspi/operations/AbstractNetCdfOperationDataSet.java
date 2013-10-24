@@ -68,12 +68,20 @@ public abstract class AbstractNetCdfOperationDataSet<ET> implements OperationDat
 		return numMarkers;
 	}
 
+	public void setUseAllMarkers(MatrixKey matrixKey) {
+		xxx; // TODO make a map with
+	}
+
 	public void setNumSamples(int numSamples) {
 		this.numSamples = numSamples;
 	}
 
 	protected int getNumSamples() {
 		return numSamples;
+	}
+
+	public void setUseAllSamples(MatrixKey matrixKey) {
+		xxx;
 	}
 
 	public void setNumChromosomes(int numChromosomes) {

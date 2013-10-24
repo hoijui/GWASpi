@@ -17,12 +17,11 @@
 
 package org.gwaspi.operations.markercensus;
 
-import java.io.IOException;
-import java.util.Collection;
 import org.gwaspi.model.Census;
-import org.gwaspi.operations.OperationDataSet;
+import org.gwaspi.model.MarkerKey;
+import org.gwaspi.operations.OperationDataEntry;
 
-public interface MarkerCensusOperationDataSet extends OperationDataSet<MarkerCensusOperationEntry> {
+public interface MarkerCensusOperationEntry extends OperationDataEntry<MarkerKey> {
 
 	// - Variables.VAR_OPSET: [Collection<MarkerKey>]
 	// - Variables.VAR_MARKERS_RSID: [Collection<String>]
@@ -34,10 +33,10 @@ public interface MarkerCensusOperationDataSet extends OperationDataSet<MarkerCen
 	// - Census.VAR_OP_MARKERS_CENSUSHW: marker census - alternate hardy-weinberg [Collection<Census.altHW>]
 
 	/**
-	 * @param markerCensusAll
+	 * @return all census info:
 	 *   int[4]: allele-AA, allele-Aa, allele-aa, missing-count for each marker in this operation
 	 * NetCDF variable: Census.VAR_OP_MARKERS_CENSUSALL
 	 */
-//	void setMarkerCensusAll(Collection<int[]> markerCensusAll) throws IOException;
-	void setMarkerCensusAll(Collection<Census> markerCensusAll) throws IOException;
+//	int[] getCensusAll();
+	Census getCensusAll();
 }

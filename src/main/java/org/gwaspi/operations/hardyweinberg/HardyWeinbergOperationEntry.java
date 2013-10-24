@@ -17,28 +17,41 @@
 
 package org.gwaspi.operations.hardyweinberg;
 
-import org.gwaspi.operations.trendtest.*;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.operations.OperationDataEntry;
-import org.gwaspi.model.SampleKey;
 
 public interface HardyWeinbergOperationEntry extends OperationDataEntry<MarkerKey> {
 
 	/**
-	 * @return the markers T value
-	 * NetCDF variable:
-	 * - Association.VAR_OP_MARKERS_ASTrendTestTP [0]
-	 * - Association.VAR_OP_MARKERS_ASAllelicAssociationTPOR [0]
-	 * - Association.VAR_OP_MARKERS_ASGenotypicAssociationTP2OR [0]
-	 */
-	double getT();
-
-	/**
-	 * @return the markers P value
-	 * NetCDF variable:
-	 * - Association.VAR_OP_MARKERS_ASTrendTestTP [1]
-	 * - Association.VAR_OP_MARKERS_ASAllelicAssociationTPOR [1]
-	 * - Association.VAR_OP_MARKERS_ASGenotypicAssociationTP2OR [1]
+	 * @return P-Value
+	 *   NetCDF variables:
+	 *   - HardyWeinberg.VAR_OP_MARKERS_HWPval_CTRL
+	 *   - HardyWeinberg.VAR_OP_MARKERS_HWPval_ALT
+	 * @see #isControl()
 	 */
 	double getP();
+
+	/**
+	 * @return Obs Hetzy
+	 *   NetCDF variables:
+	 *   - HardyWeinberg.VAR_OP_MARKERS_HWHETZY_CTRL [0] Control
+	 *   - HardyWeinberg.VAR_OP_MARKERS_HWHETZY_ALT  [0] Alternate
+	 * @see #isControl()
+	 */
+	double getObsHzy();
+
+	/**
+	 * @return Hardy-Weinberg Exp Hetzy
+	 *   NetCDF variables:
+	 *   - HardyWeinberg.VAR_OP_MARKERS_HWHETZY_CTRL [1] Control
+	 *   - HardyWeinberg.VAR_OP_MARKERS_HWHETZY_ALT  [1] Alternate
+	 * @see #isControl()
+	 */
+	double getExpHzy();
+
+	/**
+	 * @return whether this marker values denote a control
+	 *   or an alternate entry
+	 */
+	boolean isControl();
 }

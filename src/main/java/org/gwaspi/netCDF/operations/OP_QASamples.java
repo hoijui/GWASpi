@@ -33,6 +33,7 @@ import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.SamplesGenotypesSource;
 import org.gwaspi.netCDF.markers.NetCDFDataSetSource;
+import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
 import org.gwaspi.operations.qasamples.NetCdfQASamplesOperationDataSet;
 import org.gwaspi.operations.qasamples.QASamplesOperationDataSet;
 import org.gwaspi.samples.SampleSet;
@@ -129,12 +130,15 @@ public class OP_QASamples implements MatrixOperation {
 			MatrixMetadata rdMatrixMetadata = MatricesList.getMatrixMetadataById(rdMatrixKey);
 
 			QASamplesOperationDataSet dataSet = new NetCdfQASamplesOperationDataSet(); // HACK
-			((NetCdfQASamplesOperationDataSet) dataSet).setReadMatrixKey(rdMatrixKey); // HACK
-			((NetCdfQASamplesOperationDataSet) dataSet).setNumMarkers(rdMatrixMetadata.getMarkerSetSize()); // HACK
-			((NetCdfQASamplesOperationDataSet) dataSet).setNumSamples(wrSampleSetMissingCountMap.size()); // HACK
+			((AbstractNetCdfOperationDataSet) dataSet).setReadMatrixKey(rdMatrixKey); // HACK
+			((AbstractNetCdfOperationDataSet) dataSet).setNumMarkers(rdMatrixMetadata.getMarkerSetSize()); // HACK
+			((AbstractNetCdfOperationDataSet) dataSet).setNumSamples(wrSampleSetMissingCountMap.size()); // HACK
 
-			dataSet.setSamples(rdSampleSet.getSampleKeys());
-			dataSet.setMarkers(rdMarkersKeysSource);
+//			dataSet.setSamples(rdSampleSet.getSampleKeys());
+//			dataSet.setMarkers(rdMarkersKeysSource);
+			((AbstractNetCdfOperationDataSet) dataSet).setUseAllSamples(rdMatrixKey);
+			((AbstractNetCdfOperationDataSet) dataSet).setUseAllMarkers(rdMatrixKey);
+			((AbstractNetCdfOperationDataSet) dataSet).setUseAllChromosome(rdMatrixKey);
 
 			dataSet.setSampleMissingRatios(wrSampleSetMissingRatioMap.values());
 			dataSet.setSampleMissingCount(wrSampleSetMissingCountMap.values());

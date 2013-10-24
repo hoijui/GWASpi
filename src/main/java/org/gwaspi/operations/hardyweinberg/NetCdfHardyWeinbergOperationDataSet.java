@@ -18,18 +18,12 @@
 package org.gwaspi.operations.hardyweinberg;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
-import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
-import org.gwaspi.model.Census;
-import org.gwaspi.model.MatricesList;
-import org.gwaspi.model.MatrixMetadata;
+import org.gwaspi.model.OperationKey;
 import org.gwaspi.netCDF.operations.NetCdfUtils;
 import org.gwaspi.netCDF.operations.OperationFactory;
 import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import ucar.ma2.InvalidRangeException;
 
 public class NetCdfHardyWeinbergOperationDataSet extends AbstractNetCdfOperationDataSet<HardyWeinbergOperationEntry> implements HardyWeinbergOperationDataSet {
@@ -42,7 +36,8 @@ public class NetCdfHardyWeinbergOperationDataSet extends AbstractNetCdfOperation
 	// - HardyWeinberg.VAR_OP_MARKERS_HWPval_ALT: Hardy-Weinberg Alternative P-Value [Double[1]]
 	// - HardyWeinberg.VAR_OP_MARKERS_HWHETZY_ALT: Hardy-Weinberg Alternative Obs Hetzy & Exp Hetzy [Double[2]]
 
-	private final Logger log = LoggerFactory.getLogger(NetCdfHardyWeinbergOperationDataSet.class);
+	private String hardyWeinbergName = null;
+	private OperationKey markerCensusOperationKey = null;
 
 	public NetCdfHardyWeinbergOperationDataSet() {
 		super(true);
@@ -53,8 +48,8 @@ public class NetCdfHardyWeinbergOperationDataSet extends AbstractNetCdfOperation
 
 		try {
 			return new OperationFactory(
-					markerCensusOPKey.getParentMatrixKey().getStudyKey(),
-					"Hardy-Weinberg_" + censusName, // friendly name
+					markerCensusOperationKey.getParentMatrixKey().getStudyKey(),
+					"Hardy-Weinberg_" + hardyWeinbergName, // friendly name
 					"Hardy-Weinberg test on Samples marked as controls (only females for the X chromosome)"
 						+ "\nMarkers: " + getNumMarkers() + ""
 						+ "\nSamples: " + getNumSamples(), // description
@@ -62,56 +57,35 @@ public class NetCdfHardyWeinbergOperationDataSet extends AbstractNetCdfOperation
 					getNumSamples(),
 					0,
 					OPType.HARDY_WEINBERG,
-					markerCensusOPKey.getParentMatrixKey(), // Parent matrixId
-					markerCensusOPKey.getId()); // Parent operationId
+					markerCensusOperationKey.getParentMatrixKey(), // Parent matrixId
+					markerCensusOperationKey.getId()); // Parent operationId
 		} catch (InvalidRangeException ex) {
 			throw new IOException(ex);
 		}
 	}
 
 	@Override
-	public void setMarkerMissingRatios(Collection<Double> markerMissingRatios) throws IOException {
-
-		ensureNcFile();
-		NetCdfUtils.saveDoubleMapD1ToWrMatrix(getNetCdfWriteFile(), markerMissingRatios, cNetCDF.Census.VAR_OP_MARKERS_MISSINGRAT);
+	public void setHardyWeinbergName(String hardyWeinbergName) {
+		this.hardyWeinbergName = hardyWeinbergName;
 	}
 
 	@Override
-	public void setMarkerMismatchStates(Collection<Boolean> markerMismatchStates) throws IOException {
-
-		Collection<Integer> markerMismatchIntegerStates
-				= new ArrayList<Integer>(markerMismatchStates.size()); // XXX not sooooo nice! maybe use a converter while writing (saves memory)
-		for (boolean mismatch : markerMismatchStates) {
-			markerMismatchIntegerStates.add(mismatch
-					? cNetCDF.Defaults.DEFAULT_MISMATCH_YES
-					: cNetCDF.Defaults.DEFAULT_MISMATCH_NO);
-		}
-		ensureNcFile();
-		NetCdfUtils.saveIntMapD1ToWrMatrix(getNetCdfWriteFile(), markerMismatchIntegerStates, cNetCDF.Census.VAR_OP_MARKERS_MISMATCHSTATE);
+	public void setMarkerCensusOperationKey(OperationKey markerCensusOperationKey) {
+		this.markerCensusOperationKey = markerCensusOperationKey;
 	}
 
 	@Override
-	public void setMarkerKnownAlleles(Collection<OrderedAlleles> markerKnownAlleles) throws IOException {
+	public void addEntry(HardyWeinbergOperationEntry entry) throws IOException {
 
-		//Utils.saveCharMapValueToWrMatrix(wrNcFile, wrMarkerSetKnownAllelesMap, cNetCDF.Census.VAR_OP_MARKERS_KNOWNALLELES, cNetCDF.Strides.STRIDE_GT);
-		NetCdfUtils.saveByteMapItemToWrMatrix(getNetCdfWriteFile(), markerKnownAlleles, cNetCDF.Census.VAR_OP_MARKERS_MAJALLELES, OrderedAlleles.TO_ALLELE_1, cNetCDF.Strides.STRIDE_GT / 2);
-		NetCdfUtils.saveDoubleMapItemD1ToWrMatrix(getNetCdfWriteFile(), markerKnownAlleles, OrderedAlleles.TO_ALLELE_1_FREQ, cNetCDF.Census.VAR_OP_MARKERS_MAJALLELEFRQ);
-		NetCdfUtils.saveByteMapItemToWrMatrix(getNetCdfWriteFile(), markerKnownAlleles, cNetCDF.Census.VAR_OP_MARKERS_MINALLELES, OrderedAlleles.TO_ALLELE_2, cNetCDF.Strides.STRIDE_GT / 2);
-		NetCdfUtils.saveDoubleMapItemD1ToWrMatrix(getNetCdfWriteFile(), markerKnownAlleles, OrderedAlleles.TO_ALLELE_2_FREQ, cNetCDF.Census.VAR_OP_MARKERS_MINALLELEFRQ);
-	}
-
-	@Override
-	public void setMarkerCensusAll(Collection<Census> markerCensusAll) throws IOException {
-		NetCdfUtils.saveIntMapD2ToWrMatrix(getNetCdfWriteFile(), markerCensusAll, Census.EXTRACTOR_ALL, cNetCDF.Census.VAR_OP_MARKERS_CENSUSALL);
-	}
-
-	@Override
-	public void addMarkerHWValues(double pValue, double obsHzy, double expHzy, boolean caseOrAlt) throws IOException {
+		NetCdfUtils.saveDoubleMapItemD1ToWrMatrix(wrNcFile, result.values(), 0, varPval);
+		int[] boxes = new int[] {1, 2};
+		NetCdfUtils.saveDoubleMapD2ToWrMatrix(wrNcFile, result.values(), boxes, varHetzy);
 		throw new UnsupportedOperationException("Not supported yet."); // TODO
 	}
 
 	@Override
 	public Collection<HardyWeinbergOperationEntry> getEntries(int from, int to) throws IOException {
+		XXX;
 		throw new UnsupportedOperationException("Not supported yet."); // TODO
 	}
 }

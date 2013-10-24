@@ -32,7 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.InvalidRangeException;
 
-public class NetCdfMarkerCensusOperationDataSet extends AbstractNetCdfOperationDataSet implements MarkerCensusOperationDataSet {
+public class NetCdfMarkerCensusOperationDataSet extends AbstractNetCdfOperationDataSet<MarkersCensusOperationEntry> implements MarkerCensusOperationDataSet {
 
 	// - Variables.VAR_OPSET: [Collection<MarkerKey>]
 	// - Variables.VAR_MARKERS_RSID: [Collection<String>]
@@ -120,7 +120,22 @@ public class NetCdfMarkerCensusOperationDataSet extends AbstractNetCdfOperationD
 	}
 
 	@Override
-	public Collection<QAMarkersOperationEntry> getEntries() {
+	public Collection<MarkersCensusOperationEntry> getEntries(int from, int to) {
+
+
+		// PROCESS CONTROL SAMPLES
+		log.info("Perform Hardy-Weinberg test (Control)");
+		rdOperationSet.fillOpSetMapWithDefaultValue(new int[0]); // PURGE
+		markersCensus = rdOperationSet.fillOpSetMapWithVariable(rdNcFile, cNetCDF.Census.VAR_OP_MARKERS_CENSUSCTRL);
+		performHardyWeinberg(dataSet, markersCensus, true);
+
+		// PROCESS ALTERNATE HW SAMPLES
+		log.info("Perform Hardy-Weinberg test (HW-ALT)");
+		rdOperationSet.fillOpSetMapWithDefaultValue(new int[0]); // PURGE
+		markersCensus = rdOperationSet.fillOpSetMapWithVariable(rdNcFile, cNetCDF.Census.VAR_OP_MARKERS_CENSUSHW);
+		performHardyWeinberg(dataSet, markersCensus, false);
+		//</editor-fold>
+
 		throw new UnsupportedOperationException("Not supported yet."); // TODO
 	}
 }

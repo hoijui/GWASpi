@@ -26,11 +26,8 @@ import org.gwaspi.model.Census;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.netCDF.operations.NetCdfUtils;
-import org.gwaspi.netCDF.operations.OP_QAMarkers;
 import org.gwaspi.netCDF.operations.OperationFactory;
 import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import ucar.ma2.InvalidRangeException;
 
 public class NetCdfQAMarkersOperationDataSet extends AbstractNetCdfOperationDataSet implements QAMarkersOperationDataSet {
@@ -45,8 +42,6 @@ public class NetCdfQAMarkersOperationDataSet extends AbstractNetCdfOperationData
 	// - cNetCDF.Census.VAR_OP_MARKERS_MINALLELES: (byte) dictionary allele 2 for each marker
 	// - cNetCDF.Census.VAR_OP_MARKERS_MINALLELEFRQ: (double) frequency of dictionary allele 2 in all the alleles for any given marker
 	// - cNetCDF.Census.VAR_OP_MARKERS_CENSUSALL: ({int, int, int, int}) allele-AA, allele-Aa, allele-aa, missing-count for each marker
-
-	private final Logger log = LoggerFactory.getLogger(NetCdfQAMarkersOperationDataSet.class);
 
 	public NetCdfQAMarkersOperationDataSet() {
 		super(true);

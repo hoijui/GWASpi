@@ -221,7 +221,7 @@ public class OP_MarkerCensus implements MatrixOperation {
 				int countChunks = 0;
 
 				Map<MarkerKey, Census> wrChunkedMarkerCensusMap = new LinkedHashMap<MarkerKey, Census>();
-				Map<MarkerKey, char[]> wrChunkedKnownAllelesMap = new LinkedHashMap<MarkerKey, char[]>();
+				Map<MarkerKey, byte[]> wrChunkedKnownAllelesMap = new LinkedHashMap<MarkerKey, byte[]>();
 				Iterator<GenotypesList> markersGTsIt = dataSetSource.getMarkersGenotypesSource().iterator();
 				for (Map.Entry<MarkerKey, ?> entry : wrMarkerInfos.entrySet()) {
 					MarkerKey markerKey = entry.getKey();
@@ -238,7 +238,7 @@ public class OP_MarkerCensus implements MatrixOperation {
 							countChunks++;
 						}
 						wrChunkedMarkerCensusMap = new LinkedHashMap<MarkerKey, Census>();
-						wrChunkedKnownAllelesMap = new LinkedHashMap<MarkerKey, char[]>();
+						wrChunkedKnownAllelesMap = new LinkedHashMap<MarkerKey, byte[]>();
 						System.gc(); // Try to garbage collect here
 					}
 					wrChunkedMarkerCensusMap.put(markerKey, new Census()); // XXX This might be unrequired (would only, possibly make sense in case of an exception, but even then still only marginally, and with code modifications)
@@ -409,11 +409,11 @@ public class OP_MarkerCensus implements MatrixOperation {
 							alleles = new byte[] {allele1, allele1};
 						}
 
-						wrChunkedKnownAllelesMap.put(markerKey, new String(alleles).toCharArray());
+						wrChunkedKnownAllelesMap.put(markerKey, alleles);
 					} else {
 						// MISMATCHES FOUND
 						wrChunkedMarkerCensusMap.put(markerKey, new Census());
-						wrChunkedKnownAllelesMap.put(markerKey, "00".toCharArray());
+						wrChunkedKnownAllelesMap.put(markerKey, "00".getBytes());
 					}
 
 					if (markerNb != 0 && markerNb % 100000 == 0) {
@@ -884,7 +884,7 @@ public class OP_MarkerCensus implements MatrixOperation {
 	private static void censusDataWriter(
 			MarkerCensusOperationDataSet dataSet,
 			Map<MarkerKey, Census> wrChunkedMarkerCensusMap,
-			Map<MarkerKey, char[]> wrChunkedKnownAllelesMap,
+			Map<MarkerKey, byte[]> wrChunkedKnownAllelesMap,
 			int countChunks,
 			int chunkSize)
 			throws IOException

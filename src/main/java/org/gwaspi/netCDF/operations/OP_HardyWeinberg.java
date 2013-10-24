@@ -25,7 +25,9 @@ import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
+import org.gwaspi.operations.hardyweinberg.DefaultHardyWeinbergOperationEntry;
 import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationDataSet;
+import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationEntry;
 import org.gwaspi.operations.hardyweinberg.NetCdfHardyWeinbergOperationDataSet;
 import org.gwaspi.statistics.StatisticsUtils;
 import org.slf4j.Logger;
@@ -40,12 +42,12 @@ public class OP_HardyWeinberg implements MatrixOperation {
 	private final Logger log = LoggerFactory.getLogger(OP_HardyWeinberg.class);
 
 	private final OperationKey markerCensusOPKey;
-	private final String censusName;
+	private final String hwName;
 
-	public OP_HardyWeinberg(OperationKey markerCensusOPKey, String censusName) {
+	public OP_HardyWeinberg(OperationKey markerCensusOPKey, String hwName) {
 
 		this.markerCensusOPKey = markerCensusOPKey;
-		this.censusName = censusName;
+		this.hwName = hwName;
 	}
 
 	@Override
@@ -74,6 +76,9 @@ public class OP_HardyWeinberg implements MatrixOperation {
 			((AbstractNetCdfOperationDataSet) dataSet).setReadMatrixKey(rdMatrixKey); // HACK
 			((AbstractNetCdfOperationDataSet) dataSet).setNumMarkers(rdMarkerSetMap.size()); // HACK
 			((AbstractNetCdfOperationDataSet) dataSet).setNumSamples(rdSampleSetMap.size()); // HACK
+
+			((HardyWeinbergOperationDataSet) dataSet).setHardyWeinbergName(hwName); // HACK
+			((HardyWeinbergOperationDataSet) dataSet).setMarkerCensusOperationKey(markerCensusOPKey); // HACK
 
 			dataSet.setMarkers(rdMarkerSet.getMarkerKeys());
 			dataSet.setSamples(rdSampleSetMap.keySet());
@@ -132,13 +137,13 @@ public class OP_HardyWeinberg implements MatrixOperation {
 			log.info("Perform Hardy-Weinberg test (Control)");
 			rdOperationSet.fillOpSetMapWithDefaultValue(new int[0]); // PURGE
 			markersCensus = rdOperationSet.fillOpSetMapWithVariable(rdNcFile, cNetCDF.Census.VAR_OP_MARKERS_CENSUSCTRL);
-			performHardyWeinberg(dataSet, markersCensus, "CTRL");
+			performHardyWeinberg(dataSet, markersCensus, true);
 
 			// PROCESS ALTERNATE HW SAMPLES
 			log.info("Perform Hardy-Weinberg test (HW-ALT)");
 			rdOperationSet.fillOpSetMapWithDefaultValue(new int[0]); // PURGE
 			markersCensus = rdOperationSet.fillOpSetMapWithVariable(rdNcFile, cNetCDF.Census.VAR_OP_MARKERS_CENSUSHW);
-			performHardyWeinberg(dataSet, markersCensus, "HW-ALT");
+			performHardyWeinberg(dataSet, markersCensus, false);
 			//</editor-fold>
 
 			resultOpId = ((AbstractNetCdfOperationDataSet) dataSet).getResultOperationId(); // HACK
@@ -158,10 +163,26 @@ public class OP_HardyWeinberg implements MatrixOperation {
 		return resultOpId;
 	}
 
-	private void performHardyWeinberg(HardyWeinbergOperationDataSet dataSet, Map<MarkerKey, int[]> markersContingencyMap, String category) throws IOException {
+	private void performHardyWeinberg(HardyWeinbergOperationDataSet dataSet, Map<MarkerKey, int[]> markersContingencyMap, boolean categoryControl) throws IOException {
+
+		final String category;
+		final String varPval;
+		final String varHetzy;
+		if (categoryControl) {
+			// CONTROL SAMPLES
+			category = "CTRL";
+			varPval = cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWPval_CTRL;
+			varHetzy = cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWHETZY_CTRL;
+		} else {
+			// HW-ALT SAMPLES
+			category = "HW-ALT";
+			varPval = cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWPval_ALT;
+			varHetzy = cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWHETZY_ALT;
+		}
+
 		// Iterate through markerset
 		int markerNb = 0;
-		Map<MarkerKey, Double[]> result = new LinkedHashMap<MarkerKey, Double[]>(markersContingencyMap.size());
+//		Map<MarkerKey, Double[]> result = new LinkedHashMap<MarkerKey, Double[]>(markersContingencyMap.size());
 		for (Map.Entry<MarkerKey, int[]> entry : markersContingencyMap.entrySet()) {
 			// HARDY-WEINBERG
 			int[] contingencyTable = entry.getValue();
@@ -186,11 +207,13 @@ public class OP_HardyWeinberg implements MatrixOperation {
 			double chiSQ = org.gwaspi.statistics.Chisquare.calculateHWChiSquare(obsAA, expAA, obsAa, expAa, obsaa, expaa);
 			double pvalue = org.gwaspi.statistics.Pvalue.calculatePvalueFromChiSqr(chiSQ, 1);
 
-			Double[] store = new Double[3];
-			store[0] = pvalue;
-			store[1] = obsHzy;
-			store[2] = expHzy;
-			result.put(entry.getKey(), store); // store P-value
+			HardyWeinbergOperationEntry hwEntry = new DefaultHardyWeinbergOperationEntry(entry.getKey(), pvalue, obsHzy, expHzy, categoryControl);
+			dataSet.addEntry(hwEntry);
+//			Double[] store = new Double[3];
+//			store[0] = pvalue;
+//			store[1] = obsHzy;
+//			store[2] = expHzy;
+//			result.put(entry.getKey(), store); // store P-value
 
 			markerNb++;
 			if (markerNb % 100000 == 0) {
@@ -214,21 +237,8 @@ public class OP_HardyWeinberg implements MatrixOperation {
 //			NetCdfUtils.saveArrayDoubleD2ToWrMatrix(wrNcFile, markersContingencyMap, boxes, cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWHETZY_CASE);
 //		}
 
-		String varPval;
-		String varHetzy;
-		if (category.equals("CTRL")) {
-			// CONTROL SAMPLES
-			varPval = cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWPval_CTRL;
-			varHetzy = cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWHETZY_CTRL;
-		} else if (category.equals("HW-ALT")) {
-			// HW-ALT SAMPLES
-			varPval = cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWPval_ALT;
-			varHetzy = cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWHETZY_ALT;
-		} else {
-			throw new IllegalArgumentException("unknown cathegory: " + category);
-		}
-		NetCdfUtils.saveDoubleMapItemD1ToWrMatrix(wrNcFile, result.values(), 0, varPval);
-		int[] boxes = new int[] {1, 2};
-		NetCdfUtils.saveDoubleMapD2ToWrMatrix(wrNcFile, result.values(), boxes, varHetzy);
+//		NetCdfUtils.saveDoubleMapItemD1ToWrMatrix(wrNcFile, result.values(), 0, varPval);
+//		int[] boxes = new int[] {1, 2};
+//		NetCdfUtils.saveDoubleMapD2ToWrMatrix(wrNcFile, result.values(), boxes, varHetzy);
 	}
 }
