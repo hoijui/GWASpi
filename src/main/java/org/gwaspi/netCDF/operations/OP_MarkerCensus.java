@@ -430,7 +430,7 @@ public class OP_MarkerCensus implements MatrixOperation {
 						countChunks,
 						chunkSize);
 
-			resultOpId = ((AbstractNetCdfOperationDataSet) dataSet).getResultOperationId(); // HACK
+			resultOpId = ((AbstractNetCdfOperationDataSet) dataSet).getResultOperationKey().getId(); // HACK
 //			} catch (InvalidRangeException ex) {
 //				throw new IOException(ex);
 			} finally {

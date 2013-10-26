@@ -92,6 +92,10 @@ public abstract class AbstractNetCdfOperationDataSet<ET> implements OperationDat
 		return numChromosomes;
 	}
 
+	public void setUseAllChromosomes(MatrixKey matrixKey) {
+		xxx;
+	}
+
 	protected NetcdfFileWriteable getNetCdfWriteFile() {
 		return wrNcFile;
 	}

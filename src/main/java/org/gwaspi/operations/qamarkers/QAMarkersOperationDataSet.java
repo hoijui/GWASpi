@@ -85,5 +85,7 @@ public interface QAMarkersOperationDataSet extends OperationDataSet {
 //	void setMarkerCensusAll(Collection<int[]> markerCensusAll) throws IOException;
 	void setMarkerCensusAll(Collection<Census> markerCensusAll) throws IOException;
 
-	Collection<QAMarkersOperationEntry> getEntries();
+	Collection<Boolean> getMismatchStates();
+
+	Collection<Double> getMissingRatio();
 }

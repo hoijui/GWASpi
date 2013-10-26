@@ -93,10 +93,13 @@ public class OP_QAMarkers implements MatrixOperation {
 			((AbstractNetCdfOperationDataSet) dataSet).setNumMarkers(rdMarkerSet.getMarkerKeys().size()); // HACK
 			((AbstractNetCdfOperationDataSet) dataSet).setNumSamples(rdSampleSetMap.size()); // HACK
 
-			dataSet.setMarkers(rdMarkerSet.getMarkerKeys());
-			dataSet.setSamples(rdSampleSetMap.keySet());
-			Map<ChromosomeKey, ChromosomeInfo> chromosomeInfo = rdMarkerSet.getChrInfoSetMap();
-			dataSet.setChromosomes(chromosomeInfo.keySet(), chromosomeInfo.values());
+//			dataSet.setMarkers(rdMarkerSet.getMarkerKeys());
+//			dataSet.setSamples(rdSampleSetMap.keySet());
+//			Map<ChromosomeKey, ChromosomeInfo> chromosomeInfo = rdMarkerSet.getChrInfoSetMap();
+//			dataSet.setChromosomes(chromosomeInfo.keySet(), chromosomeInfo.values());
+			((AbstractNetCdfOperationDataSet) dataSet).setUseAllSamples(rdMatrixKey);
+			((AbstractNetCdfOperationDataSet) dataSet).setUseAllMarkers(rdMatrixKey);
+			((AbstractNetCdfOperationDataSet) dataSet).setUseAllChromosomes(rdMatrixKey);
 
 			//<editor-fold defaultstate="expanded" desc="PROCESSOR">
 			// INIT MARKER AND SAMPLE INFO
@@ -352,7 +355,7 @@ public class OP_QAMarkers implements MatrixOperation {
 			dataSet.setMarkerKnownAlleles(wrMarkerSetKnownAllelesMap.values());
 			dataSet.setMarkerCensusAll(wrMarkerSetCensusMap.values());
 
-			resultOpId = ((AbstractNetCdfOperationDataSet) dataSet).getResultOperationId(); // HACK
+			resultOpId = ((AbstractNetCdfOperationDataSet) dataSet).getResultOperationKey().getId(); // HACK
 		} finally {
 			org.gwaspi.global.Utils.sysoutCompleted("Marker QA");
 		}

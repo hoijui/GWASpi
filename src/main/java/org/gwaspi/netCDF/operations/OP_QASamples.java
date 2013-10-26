@@ -136,15 +136,17 @@ public class OP_QASamples implements MatrixOperation {
 
 //			dataSet.setSamples(rdSampleSet.getSampleKeys());
 //			dataSet.setMarkers(rdMarkersKeysSource);
+//			Map<ChromosomeKey, ChromosomeInfo> chromosomeInfo = rdMarkerSet.getChrInfoSetMap();
+//			dataSet.setChromosomes(chromosomeInfo.keySet(), chromosomeInfo.values());
 			((AbstractNetCdfOperationDataSet) dataSet).setUseAllSamples(rdMatrixKey);
 			((AbstractNetCdfOperationDataSet) dataSet).setUseAllMarkers(rdMatrixKey);
-			((AbstractNetCdfOperationDataSet) dataSet).setUseAllChromosome(rdMatrixKey);
+			((AbstractNetCdfOperationDataSet) dataSet).setUseAllChromosomes(rdMatrixKey);
 
 			dataSet.setSampleMissingRatios(wrSampleSetMissingRatioMap.values());
 			dataSet.setSampleMissingCount(wrSampleSetMissingCountMap.values());
 			dataSet.setSampleHetzyRatios(wrSampleSetHetzyRatioMap.values());
 
-			resultOpId = ((NetCdfQASamplesOperationDataSet) dataSet).getResultOperationId(); // HACK
+			resultOpId = ((AbstractNetCdfOperationDataSet) dataSet).getResultOperationKey().getId(); // HACK
 		} finally {
 //			if (null != rdNcFile) {
 //				try {
