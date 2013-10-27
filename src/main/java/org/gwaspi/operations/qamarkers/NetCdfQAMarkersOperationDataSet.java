@@ -20,9 +20,11 @@ package org.gwaspi.operations.qamarkers;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Map;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.model.Census;
+import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.netCDF.operations.NetCdfUtils;
@@ -112,8 +114,42 @@ public class NetCdfQAMarkersOperationDataSet extends AbstractNetCdfOperationData
 	}
 
 	@Override
-	public Collection<QAMarkersOperationEntry> getEntries() {
+	public Collection<QAMarkersOperationEntry> getEntries(int from, int to) {
 		XXX;
 		throw new UnsupportedOperationException("Not supported yet."); // TODO
+	}
+
+	@Override
+	Collection<Boolean> getMismatchStates() {
+		XXX;
+		throw new UnsupportedOperationException("Not supported yet."); // TODO
+
+		// EXCLUDE MARKER BY MISMATCH STATE
+		if (discardMismatches) {
+			Map<MarkerKey, Integer> rdQAMarkerSetMapMismatchStates = rdQAMarkerSet.fillOpSetMapWithVariable(rdMarkerQANcFile, cNetCDF.Census.VAR_OP_MARKERS_MISMATCHSTATE);
+			for (Map.Entry<MarkerKey, Integer> entry : rdQAMarkerSetMapMismatchStates.entrySet()) {
+				MarkerKey key = entry.getKey();
+				Integer value = entry.getValue();
+				if (value.equals(cNetCDF.Defaults.DEFAULT_MISMATCH_YES)) {
+					excludeMarkerSetMap.put(key, value);
+				}
+			}
+		}
+	}
+
+	@Override
+	Collection<Double> getMissingRatio() {
+		XXX;
+		throw new UnsupportedOperationException("Not supported yet."); // TODO
+
+		// EXCLUDE MARKER BY MISSING RATIO
+		Map<MarkerKey, Double> rdQAMarkerSetMapMissingRat = rdQAMarkerSet.fillOpSetMapWithVariable(rdMarkerQANcFile, cNetCDF.Census.VAR_OP_MARKERS_MISSINGRAT);
+		for (Map.Entry<MarkerKey, Double> entry : rdQAMarkerSetMapMissingRat.entrySet()) {
+			MarkerKey key = entry.getKey();
+			Double value = entry.getValue();
+			if (value > markerMissingRatio) {
+				excludeMarkerSetMap.put(key, value);
+			}
+		}
 	}
 }
