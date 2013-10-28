@@ -84,15 +84,15 @@ public class NetCdfQAMarkersOperationDataSet extends AbstractNetCdfOperationData
 	@Override
 	public void setMarkerMismatchStates(Collection<Boolean> markerMismatchStates) throws IOException {
 
-		Collection<Integer> markerMismatchIntegerStates
-				= new ArrayList<Integer>(markerMismatchStates.size()); // XXX not sooooo nice! maybe use a converter while writing (saves memory)
-		for (boolean mismatch : markerMismatchStates) {
-			markerMismatchIntegerStates.add(mismatch
-					? cNetCDF.Defaults.DEFAULT_MISMATCH_YES
-					: cNetCDF.Defaults.DEFAULT_MISMATCH_NO);
-		}
+//		Collection<Integer> markerMismatchIntegerStates
+//				= new ArrayList<Integer>(markerMismatchStates.size()); // XXX not sooooo nice! maybe use a converter while writing (saves memory)
+//		for (boolean mismatch : markerMismatchStates) {
+//			markerMismatchIntegerStates.add(mismatch
+//					? cNetCDF.Defaults.DEFAULT_MISMATCH_YES
+//					: cNetCDF.Defaults.DEFAULT_MISMATCH_NO);
+//		}
 		ensureNcFile();
-		NetCdfUtils.saveIntMapD1ToWrMatrix(getNetCdfWriteFile(), markerMismatchIntegerStates, cNetCDF.Census.VAR_OP_MARKERS_MISMATCHSTATE);
+		NetCdfUtils.saveBooleansD1ToWrMatrix(getNetCdfWriteFile(), markerMismatchStates, cNetCDF.Census.VAR_OP_MARKERS_MISMATCHSTATE);
 	}
 
 	@Override
@@ -120,30 +120,30 @@ public class NetCdfQAMarkersOperationDataSet extends AbstractNetCdfOperationData
 	}
 
 	@Override
-	Collection<Boolean> getMismatchStates() {
+	public Collection<Boolean> getMismatchStates() {
 		XXX;
 		throw new UnsupportedOperationException("Not supported yet."); // TODO
 
 		// EXCLUDE MARKER BY MISMATCH STATE
-		if (discardMismatches) {
-			Map<MarkerKey, Integer> rdQAMarkerSetMapMismatchStates = rdQAMarkerSet.fillOpSetMapWithVariable(rdMarkerQANcFile, cNetCDF.Census.VAR_OP_MARKERS_MISMATCHSTATE);
-			for (Map.Entry<MarkerKey, Integer> entry : rdQAMarkerSetMapMismatchStates.entrySet()) {
-				MarkerKey key = entry.getKey();
-				Integer value = entry.getValue();
-				if (value.equals(cNetCDF.Defaults.DEFAULT_MISMATCH_YES)) {
-					excludeMarkerSetMap.put(key, value);
-				}
+		Map<MarkerKey, Integer> rdQAMarkerSetMapMismatchStates
+				= rdQAMarkerSet.fillOpSetMapWithVariable(rdMarkerQANcFile, cNetCDF.Census.VAR_OP_MARKERS_MISMATCHSTATE);
+		for (Map.Entry<MarkerKey, Integer> entry : rdQAMarkerSetMapMismatchStates.entrySet()) {
+			MarkerKey key = entry.getKey();
+			Integer value = entry.getValue();
+			if (value.equals(cNetCDF.Defaults.DEFAULT_MISMATCH_YES)) {
+				excludeMarkerSetMap.put(key, value);
 			}
 		}
 	}
 
 	@Override
-	Collection<Double> getMissingRatio() {
+	public Collection<Double> getMissingRatio() {
 		XXX;
 		throw new UnsupportedOperationException("Not supported yet."); // TODO
 
 		// EXCLUDE MARKER BY MISSING RATIO
-		Map<MarkerKey, Double> rdQAMarkerSetMapMissingRat = rdQAMarkerSet.fillOpSetMapWithVariable(rdMarkerQANcFile, cNetCDF.Census.VAR_OP_MARKERS_MISSINGRAT);
+		Map<MarkerKey, Double> rdQAMarkerSetMapMissingRat
+				= rdQAMarkerSet.fillOpSetMapWithVariable(rdMarkerQANcFile, cNetCDF.Census.VAR_OP_MARKERS_MISSINGRAT);
 		for (Map.Entry<MarkerKey, Double> entry : rdQAMarkerSetMapMissingRat.entrySet()) {
 			MarkerKey key = entry.getKey();
 			Double value = entry.getValue();
