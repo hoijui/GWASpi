@@ -808,7 +808,7 @@ public class NetCdfUtils {
 
 	public static <K, V> void writeD1ArrayToMapValues(Array from, Map<K, V> to) {
 
-		int[] shape = from.getShape();
+//		int[] shape = from.getShape();
 		Index index = from.getIndex();
 
 		int i = 0;
@@ -837,17 +837,14 @@ public class NetCdfUtils {
 		}
 	}
 
-	public static <K> void writeD2ArrayToMapValues(ArrayInt.D2 from, Map<K, V> to) {
+	public static <K, V> void writeD2ArrayToMapValues(Array from, Map<K, V> to) {
 
 		int[] shape = from.getShape();
-		Iterator<Entry<K, int[]>> entries = to.entrySet().iterator();
-
+		Iterator<Entry<K, V>> entries = to.entrySet().iterator();
 		for (int i = 0; i < (shape[0] * shape[1]); i = i + shape[1]) {
-			ArrayInt wrIntArray = new ArrayInt(new int[] {1, shape[1]});
-			ArrayInt.D2.arraycopy(from, i, wrIntArray, 0, shape[1]);
-			int[] values = (int[]) wrIntArray.copyTo1DJavaArray();
-
-			entries.next().setValue(values);
+			ArrayInt wrValuesArray = new ArrayInt(new int[] {1, shape[1]});
+			ArrayInt.D2.arraycopy(from, i, wrValuesArray, 0, shape[1]);
+			entries.next().setValue((V) wrValuesArray.copyTo1DJavaArray());
 		}
 	}
 
@@ -1095,7 +1092,7 @@ public class NetCdfUtils {
 						NetCdfUtils.writeD1ArrayToMapValues(markerSetAD, (Map<?, Boolean>)targetMap);
 					} else if (varShape.length == 2) {
 						ArrayBoolean.D2 markerSetAD = (ArrayBoolean.D2) var.read(fetchVarStr);
-						NetCdfUtils.writeD2ArrayBooleanToMapValues(markerSetAD, (Map<?, boolean[]>)targetMap);
+						NetCdfUtils.writeD2ArrayToMapValues(markerSetAD, (Map<?, boolean[]>)targetMap);
 					} else {
 						throw new UnsupportedOperationException();
 					}

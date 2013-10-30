@@ -18,7 +18,6 @@
 package org.gwaspi.operations.qamarkers;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 import org.gwaspi.constants.cNetCDF;
