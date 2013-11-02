@@ -100,6 +100,10 @@ public abstract class AbstractNetCdfOperationDataSet<ET> implements OperationDat
 		return wrNcFile;
 	}
 
+	protected NetcdfFileWriteable getNetCdfReadFile() {
+		return wrNcFile;
+	}
+
 	protected OperationFactory getOperationFactory() {
 		return operationFactory;
 	}
