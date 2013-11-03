@@ -46,5 +46,6 @@ public class NetCdfTrendTestOperationDataSet extends AbstractNetCdfTestOperation
 	@Override
 	public Collection<TrendTestOperationEntry> getEntries(int from, int to) throws IOException {
 		throw new UnsupportedOperationException("Not supported yet."); // TODO
+		XXX;
 	}
 }

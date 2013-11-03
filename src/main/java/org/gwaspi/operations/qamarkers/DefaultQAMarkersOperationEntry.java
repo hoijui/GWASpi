@@ -23,7 +23,7 @@ import org.gwaspi.operations.AbstractOperationDataEntry;
 public class DefaultQAMarkersOperationEntry extends AbstractOperationDataEntry<MarkerKey> implements QAMarkersOperationEntry {
 
 	private final double missingRatio;
-	private final int mismatchState;
+	private final boolean mismatchState;
 	private final byte majorAllele;
 	private final double majorAlleleFrequency;
 	private final byte minorAllele;
@@ -36,7 +36,7 @@ public class DefaultQAMarkersOperationEntry extends AbstractOperationDataEntry<M
 	public DefaultQAMarkersOperationEntry(
 			MarkerKey key,
 			double missingRatio,
-			int mismatchState,
+			boolean mismatchState,
 			byte majorAllele,
 			double majorAlleleFrequency,
 			byte minorAllele,
@@ -66,7 +66,7 @@ public class DefaultQAMarkersOperationEntry extends AbstractOperationDataEntry<M
 	}
 
 	@Override
-	public int getMismatchState() {
+	public boolean getMismatchState() {
 		return mismatchState;
 	}
 

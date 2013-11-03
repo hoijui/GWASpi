@@ -22,7 +22,7 @@ import java.util.Collection;
 import org.gwaspi.model.Census;
 import org.gwaspi.operations.OperationDataSet;
 
-public interface QAMarkersOperationDataSet extends OperationDataSet {
+public interface QAMarkersOperationDataSet extends OperationDataSet<QAMarkersOperationEntry> {
 
 	/**
 	 * @param markerMissingRatios

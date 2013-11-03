@@ -28,11 +28,9 @@ import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.netCDF.operations.NetCdfUtils;
 import org.gwaspi.netCDF.operations.OperationFactory;
 import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import ucar.ma2.InvalidRangeException;
 
-public class NetCdfMarkerCensusOperationDataSet extends AbstractNetCdfOperationDataSet<MarkersCensusOperationEntry> implements MarkerCensusOperationDataSet {
+public class NetCdfMarkerCensusOperationDataSet extends AbstractNetCdfOperationDataSet<MarkerCensusOperationEntry> implements MarkerCensusOperationDataSet {
 
 	// - Variables.VAR_OPSET: [Collection<MarkerKey>]
 	// - Variables.VAR_MARKERS_RSID: [Collection<String>]
@@ -42,8 +40,6 @@ public class NetCdfMarkerCensusOperationDataSet extends AbstractNetCdfOperationD
 	// - Census.VAR_OP_MARKERS_CENSUSCASE: marker census - case [Collection<Census.case>]
 	// - Census.VAR_OP_MARKERS_CENSUSCTRL: marker census - control [Collection<Census.control>]
 	// - Census.VAR_OP_MARKERS_CENSUSHW: marker census - alternate hardy-weinberg [Collection<Census.altHW>]
-
-	private final Logger log = LoggerFactory.getLogger(NetCdfMarkerCensusOperationDataSet.class);
 
 	public NetCdfMarkerCensusOperationDataSet() {
 		super(true);
@@ -120,7 +116,7 @@ public class NetCdfMarkerCensusOperationDataSet extends AbstractNetCdfOperationD
 	}
 
 	@Override
-	public Collection<MarkersCensusOperationEntry> getEntries(int from, int to) {
+	public Collection<MarkerCensusOperationEntry> getEntries(int from, int to) {
 
 
 		// PROCESS CONTROL SAMPLES

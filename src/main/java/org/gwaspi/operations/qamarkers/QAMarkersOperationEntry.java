@@ -32,7 +32,7 @@ public interface QAMarkersOperationEntry extends OperationDataEntry<MarkerKey> {
 	 * @return
 	 * NetCDF variable: cNetCDF.Census.VAR_OP_MARKERS_MISMATCHSTATE
 	 */
-	int getMismatchState();
+	boolean getMismatchState();
 
 	/**
 	 * @return dictionary allele 1 of this marker

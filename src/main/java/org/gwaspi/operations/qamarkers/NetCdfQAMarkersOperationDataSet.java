@@ -20,17 +20,21 @@ package org.gwaspi.operations.qamarkers;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
+import java.util.Map;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.model.Census;
+import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixMetadata;
+import org.gwaspi.netCDF.operations.MarkerOperationSet;
 import org.gwaspi.netCDF.operations.NetCdfUtils;
 import org.gwaspi.netCDF.operations.OperationFactory;
 import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
 import ucar.ma2.InvalidRangeException;
 
-public class NetCdfQAMarkersOperationDataSet extends AbstractNetCdfOperationDataSet implements QAMarkersOperationDataSet {
+public class NetCdfQAMarkersOperationDataSet extends AbstractNetCdfOperationDataSet<QAMarkersOperationEntry> implements QAMarkersOperationDataSet {
 
 	// - cNetCDF.Variables.VAR_OPSET: (String, key.getId()) marker keys
 	// - cNetCDF.Variables.VAR_MARKERS_RSID: (String) marker RS-IDs
@@ -111,17 +115,76 @@ public class NetCdfQAMarkersOperationDataSet extends AbstractNetCdfOperationData
 		NetCdfUtils.saveIntMapD2ToWrMatrix(getNetCdfWriteFile(), markerCensusAll, Census.EXTRACTOR_ALL, cNetCDF.Census.VAR_OP_MARKERS_CENSUSALL);
 	}
 
+
+	public Collection<Boolean> getMismatchStates(int from, int to) throws IOException {
+
+		Collection<Boolean> mismatchStates = new ArrayList<Boolean>(0);
+		NetCdfUtils.readVariable(getNetCdfReadFile(), cNetCDF.Census.VAR_OP_MARKERS_MISMATCHSTATE, from, to, mismatchStates, null);
+
+		return mismatchStates;
+	}
+
+	public Collection<Double> getMissingRatio(int from, int to) throws IOException {
+
+		Collection<Double> missingRatios = new ArrayList<Double>(0);
+		NetCdfUtils.readVariable(getNetCdfReadFile(), cNetCDF.Census.VAR_OP_MARKERS_MISSINGRAT, from, to, missingRatios, null);
+
+		return missingRatios;
+	}
+
 	@Override
 	public Collection<QAMarkersOperationEntry> getEntries(int from, int to) throws IOException {
-		XXX;
-		throw new UnsupportedOperationException("Not supported yet."); // TODO
+
+		MarkerOperationSet rdMarkersSet = new MarkerOperationSet(getResultOperationKey(), from, to);
+		Map<MarkerKey, ?> rdMarkers = rdMarkersSet.getOpSetMap();
+
+		Collection<Double> missingRatios = getMissingRatio(from, to);
+		Collection<Boolean> mismatchStates = getMismatchStates(from, to);
+
+		Collection<Byte> knownMajorAllele = new ArrayList<Byte>(0);
+		NetCdfUtils.readVariable(getNetCdfReadFile(), cNetCDF.Census.VAR_OP_MARKERS_MAJALLELES, from, to, knownMajorAllele, null);
+		Collection<Double> knownMajorAlleleFreq = new ArrayList<Double>(0);
+		NetCdfUtils.readVariable(getNetCdfReadFile(), cNetCDF.Census.VAR_OP_MARKERS_MAJALLELEFRQ, from, to, knownMajorAlleleFreq, null);
+		Collection<Byte> knownMinorAllele = new ArrayList<Byte>(0);
+		NetCdfUtils.readVariable(getNetCdfReadFile(), cNetCDF.Census.VAR_OP_MARKERS_MINALLELES, from, to, knownMinorAllele, null);
+		Collection<Double> knownMinorAlleleFreq = new ArrayList<Double>(0);
+		NetCdfUtils.readVariable(getNetCdfReadFile(), cNetCDF.Census.VAR_OP_MARKERS_MINALLELEFRQ, from, to, knownMinorAlleleFreq, null);
+
+		Collection<int[]> censusAll = new ArrayList<int[]>(0);
+		NetCdfUtils.readVariable(getNetCdfReadFile(), cNetCDF.Census.VAR_OP_MARKERS_CENSUSALL, from, to, censusAll, null);
+
+		Collection<QAMarkersOperationEntry> entries
+				= new ArrayList<QAMarkersOperationEntry>(missingRatios.size());
+		Iterator<Double> missingRatioIt = missingRatios.iterator();
+		Iterator<Boolean> mismatchStatesIt = mismatchStates.iterator();
+		Iterator<Byte> knownMajorAlleleIt = knownMajorAllele.iterator();
+		Iterator<Double> knownMajorAlleleFreqIt = knownMajorAlleleFreq.iterator();
+		Iterator<Byte> knownMinorAlleleIt = knownMinorAllele.iterator();
+		Iterator<Double> knownMinorAlleleFreqIt = knownMinorAlleleFreq.iterator();
+		Iterator<int[]> censusAllIt = censusAll.iterator();
+		for (MarkerKey markerKey : rdMarkers.keySet()) {
+			int[] censusAllValues = censusAllIt.next();
+			entries.add(new DefaultQAMarkersOperationEntry(
+					markerKey,
+					missingRatioIt.next(),
+					mismatchStatesIt.next(),
+					knownMajorAlleleIt.next(),
+					knownMajorAlleleFreqIt.next(),
+					knownMinorAlleleIt.next(),
+					knownMinorAlleleFreqIt.next(),
+					censusAllValues[0],
+					censusAllValues[1],
+					censusAllValues[2],
+					censusAllValues[3]));
+		}
+
+		return entries;
 	}
 
 	@Override
 	public Collection<Boolean> getMismatchStates() throws IOException {
 
-		Collection<Boolean> mismatchStates = new ArrayList<Boolean>(0);
-		NetCdfUtils.readVariable(getNetCdfReadFile(), cNetCDF.Census.VAR_OP_MARKERS_MISMATCHSTATE, -1, -1, mismatchStates, null);
+		Collection<Boolean> mismatchStates = getMismatchStates(-1, -1);
 //		// EXCLUDE MARKER BY MISMATCH STATE
 //		Map<MarkerKey, Integer> rdQAMarkerSetMapMismatchStates
 //				= rdQAMarkerSet.fillOpSetMapWithVariable(rdMarkerQANcFile, cNetCDF.Census.VAR_OP_MARKERS_MISMATCHSTATE);
@@ -139,8 +202,7 @@ public class NetCdfQAMarkersOperationDataSet extends AbstractNetCdfOperationData
 	@Override
 	public Collection<Double> getMissingRatio() throws IOException {
 
-		Collection<Double> missingRatios = new ArrayList<Double>(0);
-		NetCdfUtils.readVariable(getNetCdfReadFile(), cNetCDF.Census.VAR_OP_MARKERS_MISSINGRAT, -1, -1, missingRatios, null);
+		Collection<Double> missingRatios = getMissingRatio(-1, -1);
 //		// EXCLUDE MARKER BY MISSING RATIO
 //		Map<MarkerKey, Double> rdQAMarkerSetMapMissingRat
 //				= rdQAMarkerSet.fillOpSetMapWithVariable(rdMarkerQANcFile, cNetCDF.Census.VAR_OP_MARKERS_MISSINGRAT);
