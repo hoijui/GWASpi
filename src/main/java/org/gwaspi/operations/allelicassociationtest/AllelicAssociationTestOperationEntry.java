@@ -15,24 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.gwaspi.operations.genotypicassociationtest;
+package org.gwaspi.operations.allelicassociationtest;
 
-import java.io.IOException;
-import java.util.Collection;
-import org.gwaspi.operations.OperationDataSet;
+import org.gwaspi.operations.trendtest.TrendTestOperationEntry;
 
-public interface GenotypicAssociationTestsOperationDataSet extends OperationDataSet<GenotypicAssociationTestOperationEntry> {
+public interface AllelicAssociationTestOperationEntry extends TrendTestOperationEntry {
 
-//	/**
-//	 * @param markerOR2s
-//	 *   the OR 2 values, one per marker in this operation
-//	 * NetCDF variable:
-//	 * - Association.VAR_OP_MARKERS_ASGenotypicAssociationTP2OR [3]
-//	 * - Association.VAR_OP_MARKERS_OR2
-//	 */
-//	void setOR2s(Collection<Double> markerOR2s);
-
-	void addEntry(GenotypicAssociationTestOperationEntry entry) throws IOException;
-
-	Collection<Double> getMarkerOR2s();
+	/**
+	 * @return the markers OR value
+	 * NetCDF variable:
+	 * - Association.VAR_OP_MARKERS_ASAllelicAssociationTPOR [2]
+	 * - Association.VAR_OP_MARKERS_ASGenotypicAssociationTP2OR [2]
+	 * - Association.VAR_OP_MARKERS_OR
+	 */
+	double getOR();
 }

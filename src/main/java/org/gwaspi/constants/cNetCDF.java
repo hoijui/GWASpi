@@ -132,9 +132,16 @@ public class cNetCDF {
 
 	public static class Association {
 
+		/** @deprecated was used before the grand storage restructure. now: {T, P} */
 		public static final String VAR_OP_MARKERS_ASTrendTestTP = "OP_markers_as_cochranarmitageTP";
+		/** @deprecated was used before the grand storage restructure. now: {T, P, OR, OR2} */
 		public static final String VAR_OP_MARKERS_ASGenotypicAssociationTP2OR = "OP_markers_as_gnotypTP";
+		/** @deprecated was used before the grand storage restructure. now: {T, P, OR} */
 		public static final String VAR_OP_MARKERS_ASAllelicAssociationTPOR = "OP_markers_as_allelicTPOR";
+		public static final String VAR_OP_MARKERS_T = "OP_markers_T";
+		public static final String VAR_OP_MARKERS_P = "OP_markers_P";
+		public static final String VAR_OP_MARKERS_OR = "OP_markers_OR";
+		public static final String VAR_OP_MARKERS_OR2 = "OP_markers_OR2";
 
 		private Association() {
 		}

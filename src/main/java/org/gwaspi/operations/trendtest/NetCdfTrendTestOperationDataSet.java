@@ -18,9 +18,18 @@
 package org.gwaspi.operations.trendtest;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.Queue;
 import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.model.MarkerKey;
+import org.gwaspi.netCDF.operations.MarkerOperationSet;
 import org.gwaspi.netCDF.operations.NetCdfUtils;
+import ucar.ma2.ArrayDouble;
+import ucar.ma2.InvalidRangeException;
 
 public class NetCdfTrendTestOperationDataSet extends AbstractNetCdfTestOperationDataSet<TrendTestOperationEntry> implements TrendTestOperationDataSet {
 
@@ -31,21 +40,64 @@ public class NetCdfTrendTestOperationDataSet extends AbstractNetCdfTestOperation
 	// - Variables.VAR_CHR_INFO: chromosomeInfo.values() [Collection<ChromosomeInfo>]
 	// - Association.VAR_OP_MARKERS_ASTrendTestTP: {T, P-Value} [Double[2]]
 
+	private final Queue<TrendTestOperationEntry> writeBuffer;
+	private int alreadyWritten;
+
 	public NetCdfTrendTestOperationDataSet() {
+
+		this.writeBuffer = new LinkedList<TrendTestOperationEntry>();
+		this.alreadyWritten = 0;
 	}
 
 	public void addEntry(TrendTestOperationEntry entry) throws IOException {
 
-		// NOTE result = double[2];
-		int[] boxes = new int[] {0, 1};
-		NetCdfUtils.saveDoubleMapD2ToWrMatrix(getNetCdfWriteFile(), result.values(), boxes, cNetCDF.Association.VAR_OP_MARKERS_ASTrendTestTP);
+		writeBuffer.add(entry);
 
-		throw new UnsupportedOperationException("Not supported yet."); // TODO
+		if (writeBuffer.size() >= 10) { // HACK magic value
+			writeEntries();
+		}
+	}
+
+	private void writeEntries() throws IOException {
+
+		int[] origin = new int[] {alreadyWritten};
+		ArrayDouble.D1 netCdfTs = new ArrayDouble.D1(writeBuffer.size());
+		ArrayDouble.D1 netCdfPs = new ArrayDouble.D1(writeBuffer.size());
+		int index = 0;
+		for (TrendTestOperationEntry entry : writeBuffer) {
+			netCdfTs.setDouble(netCdfTs.getIndex().set(index), entry.getT());
+			netCdfPs.setDouble(netCdfPs.getIndex().set(index), entry.getP());
+			index++;
+		}
+		try {
+			getNetCdfWriteFile().write(cNetCDF.Association.VAR_OP_MARKERS_T, origin, netCdfTs);
+			getNetCdfWriteFile().write(cNetCDF.Association.VAR_OP_MARKERS_P, origin, netCdfPs);
+			alreadyWritten += writeBuffer.size();
+			writeBuffer.clear();
+		} catch (InvalidRangeException ex) {
+			throw new IOException(ex);
+		}
 	}
 
 	@Override
 	public Collection<TrendTestOperationEntry> getEntries(int from, int to) throws IOException {
-		throw new UnsupportedOperationException("Not supported yet."); // TODO
-		XXX;
+
+		MarkerOperationSet rdMarkersSet = new MarkerOperationSet(getResultOperationKey(), from, to);
+		Map<MarkerKey, ?> rdMarkers = rdMarkersSet.getOpSetMap();
+
+		Collection<Double> ts = new ArrayList<Double>(0);
+		NetCdfUtils.readVariable(getNetCdfReadFile(), cNetCDF.Association.VAR_OP_MARKERS_T, from, to, ts, null);
+		Collection<Double> ps = new ArrayList<Double>(0);
+		NetCdfUtils.readVariable(getNetCdfReadFile(), cNetCDF.Association.VAR_OP_MARKERS_P, from, to, ps, null);
+
+		Collection<TrendTestOperationEntry> entries
+				= new ArrayList<TrendTestOperationEntry>(ts.size());
+		Iterator<Double> tsIt = ts.iterator();
+		Iterator<Double> psIt = ps.iterator();
+		for (MarkerKey markerKey : rdMarkers.keySet()) {
+			entries.add(new DefaultTrendTestOperationEntry(markerKey, tsIt.next(), psIt.next()));
+		}
+
+		return entries;
 	}
 }

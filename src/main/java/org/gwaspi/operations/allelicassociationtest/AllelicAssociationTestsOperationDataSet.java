@@ -17,19 +17,25 @@
 
 package org.gwaspi.operations.allelicassociationtest;
 
+import java.io.IOException;
 import java.util.Collection;
+import org.gwaspi.operations.OperationDataSet;
 import org.gwaspi.operations.trendtest.TrendTestOperationDataSet;
+import org.gwaspi.operations.trendtest.TrendTestOperationEntry;
 
-public interface AllelicAssociationTestsOperationDataSet extends TrendTestOperationDataSet {
+public interface AllelicAssociationTestsOperationDataSet extends OperationDataSet<AllelicAssociationTestOperationEntry> {
 
-	/**
-	 * @param markerORs
-	 *   the OR values, one per marker in this operation
-	 * NetCDF variable:
-	 * - Association.VAR_OP_MARKERS_ASAllelicAssociationTPOR [2]
-	 * - Association.VAR_OP_MARKERS_ASGenotypicAssociationTP2OR [2]
-	 */
-	void setORs(Collection<Double> markerORs);
+//	/**
+//	 * @param markerORs
+//	 *   the OR values, one per marker in this operation
+//	 * NetCDF variable:
+//	 * - Association.VAR_OP_MARKERS_ASAllelicAssociationTPOR [2]
+//	 * - Association.VAR_OP_MARKERS_ASGenotypicAssociationTP2OR [2]
+//	 * - Association.VAR_OP_MARKERS_OR
+//	 */
+//	void setORs(Collection<Double> markerORs);
+
+	void addEntry(AllelicAssociationTestOperationEntry entry) throws IOException;
 
 	Collection<Double> getMarkerORs();
 }

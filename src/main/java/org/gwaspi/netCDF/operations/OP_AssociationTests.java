@@ -18,14 +18,17 @@
 package org.gwaspi.netCDF.operations;
 
 import java.io.IOException;
-import java.util.LinkedHashMap;
 import java.util.Map;
-import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationMetadata;
+import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
 import org.gwaspi.operations.OperationDataSet;
+import org.gwaspi.operations.allelicassociationtest.AllelicAssociationTestsOperationDataSet;
+import org.gwaspi.operations.allelicassociationtest.DefaultAllelicAssociationOperationEntry;
+import org.gwaspi.operations.genotypicassociationtest.DefaultGenotypicAssociationOperationEntry;
+import org.gwaspi.operations.genotypicassociationtest.GenotypicAssociationTestsOperationDataSet;
 import org.gwaspi.statistics.Associations;
 import org.gwaspi.statistics.Pvalue;
 import org.slf4j.Logger;
@@ -68,9 +71,10 @@ public class OP_AssociationTests extends AbstractTestMatrixOperation {
 	@Override
 	protected void performTest(OperationDataSet dataSet, Map<MarkerKey, int[]> wrCaseMarkerIdSetMap, Map<MarkerKey, int[]> wrCtrlMarkerSet) throws IOException {
 
+		((AbstractNetCdfOperationDataSet) dataSet).setNumMarkers(wrCaseMarkerIdSetMap.size()); // HACK
+
 		// Iterate through markerset
 		int markerNb = 0;
-		Map<MarkerKey, Double[]> result = new LinkedHashMap<MarkerKey, Double[]>(wrCaseMarkerIdSetMap.size());
 		for (Map.Entry<MarkerKey, int[]> entry : wrCaseMarkerIdSetMap.entrySet()) {
 			MarkerKey markerKey = entry.getKey();
 
@@ -88,7 +92,6 @@ public class OP_AssociationTests extends AbstractTestMatrixOperation {
 			int ctrlaa = ctrlCntgTable[2];
 			int ctrlTot = ctrlAA + ctrlaa + ctrlAa;
 
-			Double[] store;
 			if (allelic) {
 				// allelic test
 				int sampleNb = caseTot + ctrlTot;
@@ -113,10 +116,8 @@ public class OP_AssociationTests extends AbstractTestMatrixOperation {
 						ctrlAa,
 						ctrlaa);
 
-				store = new Double[3];
-				store[0] = allelicT;
-				store[1] = allelicPval;
-				store[2] = allelicOR;
+				AllelicAssociationTestsOperationDataSet allelicAssociationDataSet = (AllelicAssociationTestsOperationDataSet) dataSet;
+				allelicAssociationDataSet.addEntry(new DefaultAllelicAssociationOperationEntry(markerKey, allelicT, allelicPval, allelicOR));
 			} else {
 				// genotypic test
 				double gntypT = Associations.calculateGenotypicAssociationChiSquare(
@@ -137,31 +138,14 @@ public class OP_AssociationTests extends AbstractTestMatrixOperation {
 						ctrlAa,
 						ctrlaa);
 
-				store = new Double[4];
-				store[0] = gntypT;
-				store[1] = gntypPval;
-				store[2] = gntypOR[0];
-				store[3] = gntypOR[1];
+				GenotypicAssociationTestsOperationDataSet genotypicAssociationDataSet = (GenotypicAssociationTestsOperationDataSet) dataSet;
+				genotypicAssociationDataSet.addEntry(new DefaultGenotypicAssociationOperationEntry(markerKey, gntypT, gntypPval, gntypOR[0], gntypOR[1]));
 			}
-			result.put(markerKey, store); // store P-value and stuff
 
 			markerNb++;
 			if (markerNb % 100000 == 0) {
 				log.info("Processed {} markers", markerNb);
 			}
 		}
-
-		//<editor-fold defaultstate="expanded" desc="ALLELICTEST DATA WRITER">
-		int[] boxes;
-		String variableName;
-		if (allelic) {
-			boxes = new int[] {0, 1, 2};
-			variableName = cNetCDF.Association.VAR_OP_MARKERS_ASAllelicAssociationTPOR;
-		} else {
-			boxes = new int[] {0, 1, 2, 3};
-			variableName = cNetCDF.Association.VAR_OP_MARKERS_ASGenotypicAssociationTP2OR;
-		}
-		NetCdfUtils.saveDoubleMapD2ToWrMatrix(wrNcFile, result.values(), boxes, variableName);
-		//</editor-fold>
 	}
 }

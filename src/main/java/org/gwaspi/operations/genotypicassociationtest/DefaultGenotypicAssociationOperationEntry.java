@@ -17,22 +17,21 @@
 
 package org.gwaspi.operations.genotypicassociationtest;
 
-import java.io.IOException;
-import java.util.Collection;
-import org.gwaspi.operations.OperationDataSet;
+import org.gwaspi.operations.allelicassociationtest.DefaultAllelicAssociationOperationEntry;
+import org.gwaspi.model.MarkerKey;
 
-public interface GenotypicAssociationTestsOperationDataSet extends OperationDataSet<GenotypicAssociationTestOperationEntry> {
+public class DefaultGenotypicAssociationOperationEntry extends DefaultAllelicAssociationOperationEntry implements GenotypicAssociationTestOperationEntry {
 
-//	/**
-//	 * @param markerOR2s
-//	 *   the OR 2 values, one per marker in this operation
-//	 * NetCDF variable:
-//	 * - Association.VAR_OP_MARKERS_ASGenotypicAssociationTP2OR [3]
-//	 * - Association.VAR_OP_MARKERS_OR2
-//	 */
-//	void setOR2s(Collection<Double> markerOR2s);
+	private final double or2;
 
-	void addEntry(GenotypicAssociationTestOperationEntry entry) throws IOException;
+	public DefaultGenotypicAssociationOperationEntry(MarkerKey key, double t, double p, double or, double or2) {
+		super(key, t, p, or);
 
-	Collection<Double> getMarkerOR2s();
+		this.or2 = or2;
+	}
+
+	@Override
+	public double getOR2() {
+		return or2;
+	}
 }
