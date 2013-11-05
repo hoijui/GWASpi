@@ -19,11 +19,14 @@ package org.gwaspi.operations.hardyweinberg;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.LinkedList;
+import java.util.Queue;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.netCDF.operations.NetCdfUtils;
 import org.gwaspi.netCDF.operations.OperationFactory;
 import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
+import org.gwaspi.operations.trendtest.TrendTestOperationEntry;
 import ucar.ma2.InvalidRangeException;
 
 public class NetCdfHardyWeinbergOperationDataSet extends AbstractNetCdfOperationDataSet<HardyWeinbergOperationEntry> implements HardyWeinbergOperationDataSet {
@@ -36,11 +39,18 @@ public class NetCdfHardyWeinbergOperationDataSet extends AbstractNetCdfOperation
 	// - HardyWeinberg.VAR_OP_MARKERS_HWPval_ALT: Hardy-Weinberg Alternative P-Value [Double[1]]
 	// - HardyWeinberg.VAR_OP_MARKERS_HWHETZY_ALT: Hardy-Weinberg Alternative Obs Hetzy & Exp Hetzy [Double[2]]
 
-	private String hardyWeinbergName = null;
-	private OperationKey markerCensusOperationKey = null;
+	private final Queue<HardyWeinbergOperationEntry> writeBuffer;
+	private int alreadyWritten;
+	private String hardyWeinbergName;
+	private OperationKey markerCensusOperationKey;
 
 	public NetCdfHardyWeinbergOperationDataSet() {
 		super(true);
+
+		this.writeBuffer = new LinkedList<TrendTestOperationEntry>();
+		this.alreadyWritten = 0;
+		this.hardyWeinbergName = null;
+		this.markerCensusOperationKey = null;
 	}
 
 	@Override
@@ -77,10 +87,36 @@ public class NetCdfHardyWeinbergOperationDataSet extends AbstractNetCdfOperation
 	@Override
 	public void addEntry(HardyWeinbergOperationEntry entry) throws IOException {
 
-		NetCdfUtils.saveDoubleMapItemD1ToWrMatrix(wrNcFile, result.values(), 0, varPval);
-		int[] boxes = new int[] {1, 2};
-		NetCdfUtils.saveDoubleMapD2ToWrMatrix(wrNcFile, result.values(), boxes, varHetzy);
-		throw new UnsupportedOperationException("Not supported yet."); // TODO
+//		NetCdfUtils.saveDoubleMapItemD1ToWrMatrix(wrNcFile, result.values(), 0, varPval);
+//		int[] boxes = new int[] {1, 2};
+//		NetCdfUtils.saveDoubleMapD2ToWrMatrix(wrNcFile, result.values(), boxes, varHetzy);
+//		throw new UnsupportedOperationException("Not supported yet."); // TODO
+		writeBuffer.add(entry);
+
+		if (writeBuffer.size() >= 10) { // HACK magic value
+			writeEntries();
+		}
+	}
+
+	private void writeEntries() throws IOException {
+
+		int[] origin = new int[] {alreadyWritten};
+		ArrayDouble.D1 netCdfTs = new ArrayDouble.D1(writeBuffer.size());
+		ArrayDouble.D1 netCdfPs = new ArrayDouble.D1(writeBuffer.size());
+		int index = 0;
+		for (TrendTestOperationEntry entry : writeBuffer) {
+			netCdfTs.setDouble(netCdfTs.getIndex().set(index), entry.getT());
+			netCdfPs.setDouble(netCdfPs.getIndex().set(index), entry.getP());
+			index++;
+		}
+		try {
+			getNetCdfWriteFile().write(cNetCDF.Association.VAR_OP_MARKERS_T, origin, netCdfTs);
+			getNetCdfWriteFile().write(cNetCDF.Association.VAR_OP_MARKERS_P, origin, netCdfPs);
+			alreadyWritten += writeBuffer.size();
+			writeBuffer.clear();
+		} catch (InvalidRangeException ex) {
+			throw new IOException(ex);
+		}
 	}
 
 	@Override

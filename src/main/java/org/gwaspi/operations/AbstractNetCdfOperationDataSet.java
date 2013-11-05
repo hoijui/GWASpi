@@ -19,7 +19,9 @@ package org.gwaspi.operations;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.Map;
+import java.util.Queue;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.model.ChromosomeInfo;
 import org.gwaspi.model.ChromosomeKey;
@@ -29,6 +31,8 @@ import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.netCDF.operations.NetCdfUtils;
 import org.gwaspi.netCDF.operations.OperationFactory;
+import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationEntry;
+import org.gwaspi.operations.trendtest.TrendTestOperationEntry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
@@ -41,15 +45,32 @@ public abstract class AbstractNetCdfOperationDataSet<ET> implements OperationDat
 	private final Logger log = LoggerFactory.getLogger(AbstractNetCdfOperationDataSet.class);
 
 	private final boolean markersOperationSet;
-	private MatrixKey rdMatrixKey = null;
-	private int numMarkers = -1;
-	private int numSamples = -1;
-	private int numChromosomes = -1;
-	private NetcdfFileWriteable wrNcFile = null;
-	private OperationFactory operationFactory = null;
+	private MatrixKey rdMatrixKey;
+	private int numMarkers;
+	private int numSamples;
+	private int numChromosomes;
+	private NetcdfFileWriteable wrNcFile;
+	private OperationFactory operationFactory;
+	private final Queue<ET> writeBuffer;
+	private int alreadyWritten;
+	private int entriesWriteBufferSize;
+
+	public AbstractNetCdfOperationDataSet(boolean markersOperationSet, int entriesWriteBufferSize) {
+
+		this.markersOperationSet = markersOperationSet;
+		this.rdMatrixKey = null;
+		this.numMarkers = -1;
+		this.numSamples = -1;
+		this.numChromosomes = -1;
+		this.wrNcFile = null;
+		this.operationFactory = null;
+		this.writeBuffer = new LinkedList<ET>();
+		this.alreadyWritten = 0;
+		this.entriesWriteBufferSize = entriesWriteBufferSize;
+	}
 
 	public AbstractNetCdfOperationDataSet(boolean markersOperationSet) {
-		this.markersOperationSet = markersOperationSet;
+		this(markersOperationSet, 10);
 	}
 
 	public void setReadMatrixKey(MatrixKey rdMatrixKey) {
@@ -197,4 +218,25 @@ public abstract class AbstractNetCdfOperationDataSet<ET> implements OperationDat
 	public Map<Integer, ChromosomeKey> getChromosomes() throws IOException {
 		return XXX;
 	}
+
+	public void addEntry(ET entry) throws IOException {
+
+		writeBuffer.add(entry);
+
+		if (writeBuffer.size() >= entriesWriteBufferSize) {
+
+	try {
+		getNetCdfWriteFile().write(cNetCDF.Association.VAR_OP_MARKERS_T, origin, netCdfTs);
+		getNetCdfWriteFile().write(cNetCDF.Association.VAR_OP_MARKERS_P, origin, netCdfPs);
+		alreadyWritten += writeBuffer.size();
+		writeBuffer.clear();
+	} catch (InvalidRangeException ex) {
+		throw new IOException(ex);
+	}
+
+			writeEntries(alreadyWritten, writeBuffer);
+		}
+	}
+
+	protected abstract void writeEntries(int alreadyWritten, Queue<ET> writeBuffer) throws IOException;
 }

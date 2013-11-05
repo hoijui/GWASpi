@@ -40,25 +40,10 @@ public class NetCdfTrendTestOperationDataSet extends AbstractNetCdfTestOperation
 	// - Variables.VAR_CHR_INFO: chromosomeInfo.values() [Collection<ChromosomeInfo>]
 	// - Association.VAR_OP_MARKERS_ASTrendTestTP: {T, P-Value} [Double[2]]
 
-	private final Queue<TrendTestOperationEntry> writeBuffer;
-	private int alreadyWritten;
-
 	public NetCdfTrendTestOperationDataSet() {
-
-		this.writeBuffer = new LinkedList<TrendTestOperationEntry>();
-		this.alreadyWritten = 0;
 	}
 
-	public void addEntry(TrendTestOperationEntry entry) throws IOException {
-
-		writeBuffer.add(entry);
-
-		if (writeBuffer.size() >= 10) { // HACK magic value
-			writeEntries();
-		}
-	}
-
-	private void writeEntries() throws IOException {
+	protected void writeEntries(int alreadyWritten, Queue<TrendTestOperationEntry> writeBuffer) throws IOException {
 
 		int[] origin = new int[] {alreadyWritten};
 		ArrayDouble.D1 netCdfTs = new ArrayDouble.D1(writeBuffer.size());
