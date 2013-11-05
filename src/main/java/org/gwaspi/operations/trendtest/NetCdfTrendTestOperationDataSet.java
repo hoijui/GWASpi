@@ -45,6 +45,7 @@ public class NetCdfTrendTestOperationDataSet extends AbstractNetCdfTestOperation
 	private ArrayDouble.D1 netCdfTs;
 	private ArrayDouble.D1 netCdfPs;
 
+	@Override
 	protected void writeEntries(int alreadyWritten, Queue<TrendTestOperationEntry> writeBuffer) throws IOException {
 
 		int[] origin = new int[] {alreadyWritten};

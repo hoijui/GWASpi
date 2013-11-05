@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Queue;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.model.MatricesList;
@@ -140,5 +141,10 @@ public class NetCdfQASamplesOperationDataSet extends AbstractNetCdfOperationData
 		}
 
 		return entries;
+	}
+
+	@Override
+	protected void writeEntries(int alreadyWritten, Queue<QASamplesOperationEntry> writeBuffer) throws IOException {
+		throw new UnsupportedOperationException("Not supported by this implementation.");
 	}
 }

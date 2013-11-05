@@ -25,15 +25,20 @@ public class DefaultHardyWeinbergOperationEntry extends AbstractOperationDataEnt
 	private final double pValue;
 	private final double obsHzy;
 	private final double expHzy;
-	private final boolean control;
+	private final Category category;
 
-	public DefaultHardyWeinbergOperationEntry(MarkerKey key, double pValue, double obsHzy, double expHzy, boolean control) {
+	public DefaultHardyWeinbergOperationEntry(MarkerKey key, Category category, double pValue, double obsHzy, double expHzy) {
 		super(key);
 
+		this.category = category;
 		this.pValue = pValue;
 		this.obsHzy = obsHzy;
 		this.expHzy = expHzy;
-		this.control = control;
+	}
+
+	@Override
+	public Category getCategory() {
+		return category;
 	}
 
 	@Override
@@ -49,10 +54,5 @@ public class DefaultHardyWeinbergOperationEntry extends AbstractOperationDataEnt
 	@Override
 	public double getExpHzy() {
 		return expHzy;
-	}
-
-	@Override
-	public boolean isControl() {
-		return control;
 	}
 }

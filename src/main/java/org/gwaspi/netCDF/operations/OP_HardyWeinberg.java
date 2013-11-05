@@ -165,17 +165,17 @@ public class OP_HardyWeinberg implements MatrixOperation {
 
 	private void performHardyWeinberg(HardyWeinbergOperationDataSet dataSet, Map<MarkerKey, int[]> markersContingencyMap, boolean categoryControl) throws IOException {
 
-		final String category;
+		final String categoryName;
 		final String varPval;
 		final String varHetzy;
 		if (categoryControl) {
 			// CONTROL SAMPLES
-			category = "CTRL";
+			categoryName = "CTRL";
 			varPval = cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWPval_CTRL;
 			varHetzy = cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWHETZY_CTRL;
 		} else {
 			// HW-ALT SAMPLES
-			category = "HW-ALT";
+			categoryName = "HW-ALT";
 			varPval = cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWPval_ALT;
 			varHetzy = cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWHETZY_ALT;
 		}
@@ -207,7 +207,10 @@ public class OP_HardyWeinberg implements MatrixOperation {
 			double chiSQ = org.gwaspi.statistics.Chisquare.calculateHWChiSquare(obsAA, expAA, obsAa, expAa, obsaa, expaa);
 			double pvalue = org.gwaspi.statistics.Pvalue.calculatePvalueFromChiSqr(chiSQ, 1);
 
-			HardyWeinbergOperationEntry hwEntry = new DefaultHardyWeinbergOperationEntry(entry.getKey(), pvalue, obsHzy, expHzy, categoryControl);
+			HardyWeinbergOperationEntry.Category category = categoryControl
+					? HardyWeinbergOperationEntry.Category.CONTROL
+					: HardyWeinbergOperationEntry.Category.ALTERNATE;
+			HardyWeinbergOperationEntry hwEntry = new DefaultHardyWeinbergOperationEntry(entry.getKey(), category, pvalue, obsHzy, expHzy);
 			dataSet.addEntry(hwEntry);
 //			Double[] store = new Double[3];
 //			store[0] = pvalue;
@@ -217,10 +220,10 @@ public class OP_HardyWeinberg implements MatrixOperation {
 
 			markerNb++;
 			if (markerNb % 100000 == 0) {
-				log.info("Processed {} markers on category {}", markerNb, category);
+				log.info("Processed {} markers on category {}", markerNb, categoryName);
 			}
 		}
-		log.info("Processed {} markers on category: {}", markerNb, category);
+		log.info("Processed {} markers on category: {}", markerNb, categoryName);
 
 		//<editor-fold defaultstate="expanded" desc="HARDY-WEINBERG DATA WRITER">
 //		// ALL SAMPLES

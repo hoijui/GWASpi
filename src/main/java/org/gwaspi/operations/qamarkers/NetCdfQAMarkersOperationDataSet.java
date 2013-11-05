@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Queue;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.model.Census;
@@ -32,6 +33,7 @@ import org.gwaspi.netCDF.operations.MarkerOperationSet;
 import org.gwaspi.netCDF.operations.NetCdfUtils;
 import org.gwaspi.netCDF.operations.OperationFactory;
 import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
+import org.gwaspi.operations.qasamples.QASamplesOperationEntry;
 import ucar.ma2.InvalidRangeException;
 
 public class NetCdfQAMarkersOperationDataSet extends AbstractNetCdfOperationDataSet<QAMarkersOperationEntry> implements QAMarkersOperationDataSet {
@@ -215,5 +217,10 @@ public class NetCdfQAMarkersOperationDataSet extends AbstractNetCdfOperationData
 //		}
 
 		return missingRatios;
+	}
+
+	@Override
+	protected void writeEntries(int alreadyWritten, Queue<QAMarkersOperationEntry> writeBuffer) throws IOException {
+		throw new UnsupportedOperationException("Not supported by this implementation.");
 	}
 }

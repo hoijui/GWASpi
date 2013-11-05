@@ -22,36 +22,42 @@ import org.gwaspi.operations.OperationDataEntry;
 
 public interface HardyWeinbergOperationEntry extends OperationDataEntry<MarkerKey> {
 
+	public static enum Category {
+		ALL,
+		CASE,
+		CONTROL,
+		ALTERNATE;
+	}
+
+	/**
+	 * @return what category this marker belongs to
+	 */
+	Category getCategory();
+
 	/**
 	 * @return P-Value
 	 *   NetCDF variables:
 	 *   - HardyWeinberg.VAR_OP_MARKERS_HWPval_CTRL
 	 *   - HardyWeinberg.VAR_OP_MARKERS_HWPval_ALT
-	 * @see #isControl()
+	 * @see #getCategory()
 	 */
 	double getP();
 
 	/**
-	 * @return Obs Hetzy
+	 * @return Observed Hetzy
 	 *   NetCDF variables:
 	 *   - HardyWeinberg.VAR_OP_MARKERS_HWHETZY_CTRL [0] Control
 	 *   - HardyWeinberg.VAR_OP_MARKERS_HWHETZY_ALT  [0] Alternate
-	 * @see #isControl()
+	 * @see #getCategory()
 	 */
 	double getObsHzy();
 
 	/**
-	 * @return Hardy-Weinberg Exp Hetzy
+	 * @return Hardy-Weinberg Expected Hetzy
 	 *   NetCDF variables:
 	 *   - HardyWeinberg.VAR_OP_MARKERS_HWHETZY_CTRL [1] Control
 	 *   - HardyWeinberg.VAR_OP_MARKERS_HWHETZY_ALT  [1] Alternate
-	 * @see #isControl()
+	 * @see #getCategory()
 	 */
 	double getExpHzy();
-
-	/**
-	 * @return whether this marker values denote a control
-	 *   or an alternate entry
-	 */
-	boolean isControl();
 }
