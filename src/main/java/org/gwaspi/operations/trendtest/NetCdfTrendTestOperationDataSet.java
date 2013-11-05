@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Queue;
 import org.gwaspi.constants.cNetCDF;
@@ -43,11 +42,18 @@ public class NetCdfTrendTestOperationDataSet extends AbstractNetCdfTestOperation
 	public NetCdfTrendTestOperationDataSet() {
 	}
 
+	private ArrayDouble.D1 netCdfTs;
+	private ArrayDouble.D1 netCdfPs;
+
 	protected void writeEntries(int alreadyWritten, Queue<TrendTestOperationEntry> writeBuffer) throws IOException {
 
 		int[] origin = new int[] {alreadyWritten};
-		ArrayDouble.D1 netCdfTs = new ArrayDouble.D1(writeBuffer.size());
-		ArrayDouble.D1 netCdfPs = new ArrayDouble.D1(writeBuffer.size());
+		if (netCdfTs == null) {
+			// only create once, and reuse later on
+			// NOTE This might be bad for multi-threading in a later stage
+			netCdfTs = new ArrayDouble.D1(writeBuffer.size());
+			netCdfPs = new ArrayDouble.D1(writeBuffer.size());
+		}
 		int index = 0;
 		for (TrendTestOperationEntry entry : writeBuffer) {
 			netCdfTs.setDouble(netCdfTs.getIndex().set(index), entry.getT());
@@ -57,8 +63,6 @@ public class NetCdfTrendTestOperationDataSet extends AbstractNetCdfTestOperation
 		try {
 			getNetCdfWriteFile().write(cNetCDF.Association.VAR_OP_MARKERS_T, origin, netCdfTs);
 			getNetCdfWriteFile().write(cNetCDF.Association.VAR_OP_MARKERS_P, origin, netCdfPs);
-			alreadyWritten += writeBuffer.size();
-			writeBuffer.clear();
 		} catch (InvalidRangeException ex) {
 			throw new IOException(ex);
 		}

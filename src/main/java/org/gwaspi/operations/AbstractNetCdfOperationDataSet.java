@@ -31,8 +31,6 @@ import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.netCDF.operations.NetCdfUtils;
 import org.gwaspi.netCDF.operations.OperationFactory;
-import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationEntry;
-import org.gwaspi.operations.trendtest.TrendTestOperationEntry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
@@ -224,17 +222,9 @@ public abstract class AbstractNetCdfOperationDataSet<ET> implements OperationDat
 		writeBuffer.add(entry);
 
 		if (writeBuffer.size() >= entriesWriteBufferSize) {
-
-	try {
-		getNetCdfWriteFile().write(cNetCDF.Association.VAR_OP_MARKERS_T, origin, netCdfTs);
-		getNetCdfWriteFile().write(cNetCDF.Association.VAR_OP_MARKERS_P, origin, netCdfPs);
-		alreadyWritten += writeBuffer.size();
-		writeBuffer.clear();
-	} catch (InvalidRangeException ex) {
-		throw new IOException(ex);
-	}
-
 			writeEntries(alreadyWritten, writeBuffer);
+			alreadyWritten += writeBuffer.size();
+			writeBuffer.clear();
 		}
 	}
 
