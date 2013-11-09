@@ -33,7 +33,6 @@ import org.gwaspi.netCDF.operations.MarkerOperationSet;
 import org.gwaspi.netCDF.operations.NetCdfUtils;
 import org.gwaspi.netCDF.operations.OperationFactory;
 import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
-import org.gwaspi.operations.qasamples.QASamplesOperationEntry;
 import ucar.ma2.InvalidRangeException;
 
 public class NetCdfQAMarkersOperationDataSet extends AbstractNetCdfOperationDataSet<QAMarkersOperationEntry> implements QAMarkersOperationDataSet {
@@ -221,6 +220,7 @@ public class NetCdfQAMarkersOperationDataSet extends AbstractNetCdfOperationData
 
 	@Override
 	protected void writeEntries(int alreadyWritten, Queue<QAMarkersOperationEntry> writeBuffer) throws IOException {
+		XXX;
 		throw new UnsupportedOperationException("Not supported by this implementation.");
 	}
 }

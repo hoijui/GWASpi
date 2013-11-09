@@ -144,10 +144,16 @@ public class OP_MarkerCensus implements MatrixOperation {
 				((AbstractNetCdfOperationDataSet) dataSet).setReadMatrixKey(rdMatrixKey); // HACK
 				((AbstractNetCdfOperationDataSet) dataSet).setNumMarkers(wrMarkerKeys.size()); // HACK
 				((AbstractNetCdfOperationDataSet) dataSet).setNumSamples(wrSampleKeys.size()); // HACK
+				((NetCdfMarkerCensusOperationDataSet) dataSet).setCensusName(censusName); // HACK
+				((NetCdfMarkerCensusOperationDataSet) dataSet).setPhenoFile(phenoFile); // HACK
+				((NetCdfMarkerCensusOperationDataSet) dataSet).setSampleMissingRatio(sampleMissingRatio);// HACK
+				((NetCdfMarkerCensusOperationDataSet) dataSet).setSampleHetzygRatio(sampleHetzygRatio); // HACK
+				((NetCdfMarkerCensusOperationDataSet) dataSet).setMarkerMissingRatio(markerMissingRatio); // HACK
+				((NetCdfMarkerCensusOperationDataSet) dataSet).setDiscardMismatches(discardMismatches); // HACK
 
 				dataSet.setMarkers(wrMarkerKeys);
 				dataSet.setSamples(wrSampleKeys);
-				dataSet.setChromosomes(rdMarkerSet.getChrInfoSetMap().keySet()); // XXX NOTE possible casue rd == wr, see above
+				dataSet.setChromosomes(rdMarkerSet.getChrInfoSetMap().keySet()); // XXX NOTE possible cause rd == wr, see above
 
 
 //				// CREATE netCDF-3 FILE

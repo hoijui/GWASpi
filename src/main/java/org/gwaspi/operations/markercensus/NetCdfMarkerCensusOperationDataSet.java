@@ -17,6 +17,7 @@
 
 package org.gwaspi.operations.markercensus;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -41,8 +42,39 @@ public class NetCdfMarkerCensusOperationDataSet extends AbstractNetCdfOperationD
 	// - Census.VAR_OP_MARKERS_CENSUSCTRL: marker census - control [Collection<Census.control>]
 	// - Census.VAR_OP_MARKERS_CENSUSHW: marker census - alternate hardy-weinberg [Collection<Census.altHW>]
 
+	private String censusName;
+	private File phenoFile;
+	private double sampleMissingRatio;
+	private double sampleHetzygRatio;
+	private double markerMissingRatio;
+	private boolean discardMismatches;
+
 	public NetCdfMarkerCensusOperationDataSet() {
 		super(true);
+	}
+
+	public void setPhenoFile(File phenoFile) {
+		this.phenoFile = phenoFile;
+	}
+
+	public void setCensusName(String censusName) {
+		this.censusName = censusName;
+	}
+
+	public void setSampleMissingRatio(double sampleMissingRatio) {
+		this.sampleMissingRatio = sampleMissingRatio;
+	}
+
+	public void setSampleHetzygRatio(double sampleHetzygRatio) {
+		this.sampleHetzygRatio = sampleHetzygRatio;
+	}
+
+	public void setMarkerMissingRatio(double markerMissingRatio) {
+		this.markerMissingRatio = markerMissingRatio;
+	}
+
+	public void setDiscardMismatches(boolean discardMismatches) {
+		this.discardMismatches = discardMismatches;
 	}
 
 	@Override

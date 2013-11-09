@@ -18,14 +18,18 @@
 package org.gwaspi.operations.hardyweinberg;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Queue;
-import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
+import org.gwaspi.constants.cNetCDF.HardyWeinberg;
+import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.OperationKey;
+import org.gwaspi.netCDF.operations.MarkerOperationSet;
 import org.gwaspi.netCDF.operations.NetCdfUtils;
 import org.gwaspi.netCDF.operations.OperationFactory;
 import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
@@ -128,31 +132,59 @@ public class NetCdfHardyWeinbergOperationDataSet extends AbstractNetCdfOperation
 
 	private ArrayDouble.D1 netCdfPs;
 	private ArrayDouble.D1 netCdfObsHetzys;
-	private ArrayDouble.D1 netCdfObsHetzys;
+	private ArrayDouble.D1 netCdfExpHetzys;
 
 	@Override
 	protected void writeEntries(int alreadyWritten, Queue<HardyWeinbergOperationEntry> writeBuffer) throws IOException {
 
 		int[] origin = new int[] {alreadyWritten};
-		if (netCdfTs == null) {
+		if (netCdfPs == null) {
 			// only create once, and reuse later on
 			// NOTE This might be bad for multi-threading in a later stage
-			netCdfTs = new ArrayDouble.D1(writeBuffer.size());
 			netCdfPs = new ArrayDouble.D1(writeBuffer.size());
+			netCdfObsHetzys = new ArrayDouble.D1(writeBuffer.size());
+			netCdfExpHetzys = new ArrayDouble.D1(writeBuffer.size());
 		}
 		int index = 0;
 		for (HardyWeinbergOperationEntry entry : writeBuffer) {
-			netCdfTs.setDouble(netCdfTs.getIndex().set(index), entry.getT());
 			netCdfPs.setDouble(netCdfPs.getIndex().set(index), entry.getP());
+			netCdfObsHetzys.setDouble(netCdfObsHetzys.getIndex().set(index), entry.getObsHzy());
+			netCdfExpHetzys.setDouble(netCdfExpHetzys.getIndex().set(index), entry.getExpHzy());
 			index++;
 		}
-	// - HardyWeinberg.VAR_OP_MARKERS_HWPval_CTRL: Control P-Value [Double[1]]
-	// - HardyWeinberg.VAR_OP_MARKERS_HWHETZY_CTRL: Control Obs Hetzy & Exp Hetzy [Double[2]]
-	// - HardyWeinberg.VAR_OP_MARKERS_HWPval_ALT: Hardy-Weinberg Alternative P-Value [Double[1]]
-	// - HardyWeinberg.VAR_OP_MARKERS_HWHETZY_ALT: Hardy-Weinberg Alternative Obs Hetzy & Exp Hetzy [Double[2]]
+		String varP;
+		String varObsHtz;
+		String varExpHtz;
+		HardyWeinbergOperationEntry.Category category
+				= writeBuffer.element().getCategory();
+		switch (category) {
+			case ALL:
+				varP = HardyWeinberg.VAR_OP_MARKERS_HWPval_ALL;
+				varObsHtz = HardyWeinberg.VAR_OP_MARKERS_HWHETZYOBS_ALL;
+				varExpHtz = HardyWeinberg.VAR_OP_MARKERS_HWHETZYEXP_ALL;
+				break;
+			case CASE:
+				varP = HardyWeinberg.VAR_OP_MARKERS_HWPval_CASE;
+				varObsHtz = HardyWeinberg.VAR_OP_MARKERS_HWHETZYOBS_CASE;
+				varExpHtz = HardyWeinberg.VAR_OP_MARKERS_HWHETZYEXP_CASE;
+				break;
+			case CONTROL:
+				varP = HardyWeinberg.VAR_OP_MARKERS_HWPval_CTRL;
+				varObsHtz = HardyWeinberg.VAR_OP_MARKERS_HWHETZYOBS_CTRL;
+				varExpHtz = HardyWeinberg.VAR_OP_MARKERS_HWHETZYEXP_CTRL;
+				break;
+			case ALTERNATE:
+				varP = HardyWeinberg.VAR_OP_MARKERS_HWPval_ALT;
+				varObsHtz = HardyWeinberg.VAR_OP_MARKERS_HWHETZYOBS_ALT;
+				varExpHtz = HardyWeinberg.VAR_OP_MARKERS_HWHETZYEXP_ALT;
+				break;
+			default:
+				throw new IOException("invalid category: " + category);
+		}
 		try {
-			getNetCdfWriteFile().write(cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWPval_CTRL, origin, netCdfTs);
-			getNetCdfWriteFile().write(cNetCDF.Association.VAR_OP_MARKERS_P, origin, netCdfPs);
+			getNetCdfWriteFile().write(varP, origin, netCdfPs);
+			getNetCdfWriteFile().write(varObsHtz, origin, netCdfObsHetzys);
+			getNetCdfWriteFile().write(varExpHtz, origin, netCdfExpHetzys);
 		} catch (InvalidRangeException ex) {
 			throw new IOException(ex);
 		}
@@ -160,7 +192,57 @@ public class NetCdfHardyWeinbergOperationDataSet extends AbstractNetCdfOperation
 
 	@Override
 	public Collection<HardyWeinbergOperationEntry> getEntries(int from, int to) throws IOException {
-		XXX;
-		throw new UnsupportedOperationException("Not supported yet."); // TODO
+
+		String varP;
+		String varObsHtz;
+		String varExpHtz;
+		HardyWeinbergOperationEntry.Category category = ??? which one of the 4???;
+		switch (category) {
+			case ALL:
+				varP = HardyWeinberg.VAR_OP_MARKERS_HWPval_ALL;
+				varObsHtz = HardyWeinberg.VAR_OP_MARKERS_HWHETZYOBS_ALL;
+				varExpHtz = HardyWeinberg.VAR_OP_MARKERS_HWHETZYEXP_ALL;
+				break;
+			case CASE:
+				varP = HardyWeinberg.VAR_OP_MARKERS_HWPval_CASE;
+				varObsHtz = HardyWeinberg.VAR_OP_MARKERS_HWHETZYOBS_CASE;
+				varExpHtz = HardyWeinberg.VAR_OP_MARKERS_HWHETZYEXP_CASE;
+				break;
+			case CONTROL:
+				varP = HardyWeinberg.VAR_OP_MARKERS_HWPval_CTRL;
+				varObsHtz = HardyWeinberg.VAR_OP_MARKERS_HWHETZYOBS_CTRL;
+				varExpHtz = HardyWeinberg.VAR_OP_MARKERS_HWHETZYEXP_CTRL;
+				break;
+			case ALTERNATE:
+				varP = HardyWeinberg.VAR_OP_MARKERS_HWPval_ALT;
+				varObsHtz = HardyWeinberg.VAR_OP_MARKERS_HWHETZYOBS_ALT;
+				varExpHtz = HardyWeinberg.VAR_OP_MARKERS_HWHETZYEXP_ALT;
+				break;
+			default:
+				throw new IOException("invalid category: " + category);
+		}
+
+		MarkerOperationSet rdMarkersSet = new MarkerOperationSet(getResultOperationKey(), from, to);
+		Map<MarkerKey, ?> rdMarkers = rdMarkersSet.getOpSetMap();
+
+		Collection<Double> ps = new ArrayList<Double>(0);
+		NetCdfUtils.readVariable(getNetCdfReadFile(), varP, from, to, ps, null);
+
+		Collection<Double> hwObsHetzys = new ArrayList<Double>(0);
+		NetCdfUtils.readVariable(getNetCdfReadFile(), varObsHtz, from, to, hwObsHetzys, null);
+
+		Collection<Double> hwExpHetzys = new ArrayList<Double>(0);
+		NetCdfUtils.readVariable(getNetCdfReadFile(), varExpHtz, from, to, hwExpHetzys, null);
+
+		Collection<HardyWeinbergOperationEntry> entries
+				= new ArrayList<HardyWeinbergOperationEntry>(ps.size());
+		Iterator<Double> psIt = ps.iterator();
+		Iterator<Double> hwObsHetzysIt = hwObsHetzys.iterator();
+		Iterator<Double> hwExpHetzysIt = hwExpHetzys.iterator();
+		for (MarkerKey markerKey : rdMarkers.keySet()) {
+			entries.add(new DefaultHardyWeinbergOperationEntry(markerKey, category, psIt.next(), hwObsHetzysIt.next(), hwExpHetzysIt.next()));
+		}
+
+		return entries;
 	}
 }

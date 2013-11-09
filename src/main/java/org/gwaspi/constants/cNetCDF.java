@@ -121,10 +121,18 @@ public class cNetCDF {
 		public static final String VAR_OP_MARKERS_HWPval_CASE = "OP_markers_hwpval_case";
 		public static final String VAR_OP_MARKERS_HWPval_CTRL = "OP_markers_hwpval_ctrl";
 		public static final String VAR_OP_MARKERS_HWPval_ALT = "OP_markers_hwpval_alt";
-		public static final String VAR_OP_MARKERS_HWHETZY_ALL = "OP_markers_hwhetzy_all"; // [OBSERVED, EXPECTED]
-		public static final String VAR_OP_MARKERS_HWHETZY_CASE = "OP_markers_hwhetzy_case"; // [OBSERVED, EXPECTED]
-		public static final String VAR_OP_MARKERS_HWHETZY_CTRL = "OP_markers_hwhetzy_ctrl"; // [OBSERVED, EXPECTED]
-		public static final String VAR_OP_MARKERS_HWHETZY_ALT = "OP_markers_hwhetzy_alt"; // [OBSERVED, EXPECTED]
+		/** @deprecated */ public static final String VAR_OP_MARKERS_HWHETZY_ALL = "OP_markers_hwhetzy_all"; // [OBSERVED, EXPECTED]
+		/** @deprecated */ public static final String VAR_OP_MARKERS_HWHETZY_CASE = "OP_markers_hwhetzy_case"; // [OBSERVED, EXPECTED]
+		/** @deprecated */ public static final String VAR_OP_MARKERS_HWHETZY_CTRL = "OP_markers_hwhetzy_ctrl"; // [OBSERVED, EXPECTED]
+		/** @deprecated */ public static final String VAR_OP_MARKERS_HWHETZY_ALT = "OP_markers_hwhetzy_alt"; // [OBSERVED, EXPECTED]
+		public static final String VAR_OP_MARKERS_HWHETZYOBS_ALL = "OP_markers_hwhetzyobs_all";
+		public static final String VAR_OP_MARKERS_HWHETZYOBS_CASE = "OP_markers_hwhetzyobs_case";
+		public static final String VAR_OP_MARKERS_HWHETZYOBS_CTRL = "OP_markers_hwhetzyobs_ctrl";
+		public static final String VAR_OP_MARKERS_HWHETZYOBS_ALT = "OP_markers_hwhetzyexp_alt";
+		public static final String VAR_OP_MARKERS_HWHETZYEXP_ALL = "OP_markers_hwhetzyexp_all";
+		public static final String VAR_OP_MARKERS_HWHETZYEXP_CASE = "OP_markers_hwhetzyexp_case";
+		public static final String VAR_OP_MARKERS_HWHETZYEXP_CTRL = "OP_markers_hwhetzyexp_ctrl";
+		public static final String VAR_OP_MARKERS_HWHETZYEXP_ALT = "OP_markers_hwhetzyexp_alt";
 
 		private HardyWeinberg() {
 		}
