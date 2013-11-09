@@ -19,7 +19,9 @@ package org.gwaspi.operations.hardyweinberg;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.EnumMap;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Queue;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
@@ -42,12 +44,17 @@ public class NetCdfHardyWeinbergOperationDataSet extends AbstractNetCdfOperation
 
 	private String hardyWeinbergName;
 	private OperationKey markerCensusOperationKey;
+	private final Map<HardyWeinbergOperationEntry.Category, EntryBuffer<HardyWeinbergOperationEntry>> writeBuffers;
 
 	public NetCdfHardyWeinbergOperationDataSet() {
 		super(true);
 
 		this.hardyWeinbergName = null;
 		this.markerCensusOperationKey = null;
+		this.writeBuffers = new EnumMap<HardyWeinbergOperationEntry.Category, EntryBuffer<HardyWeinbergOperationEntry>>(HardyWeinbergOperationEntry.Category.class);
+		for (HardyWeinbergOperationEntry.Category category : HardyWeinbergOperationEntry.Category.values()) {
+			writeBuffers.put(category, new EntryBuffer<HardyWeinbergOperationEntry>());
+		}
 	}
 
 	@Override
@@ -81,18 +88,41 @@ public class NetCdfHardyWeinbergOperationDataSet extends AbstractNetCdfOperation
 		this.markerCensusOperationKey = markerCensusOperationKey;
 	}
 
-	private final Queue<HardyWeinbergOperationEntry> writeBuffer;
-	private int alreadyWritten;
+	private static final class EntryBuffer<ET> {
+
+		private final Queue<ET> entries;
+		private int alreadyWritten;
+
+		EntryBuffer() {
+
+			this.entries = new LinkedList<ET>();
+			alreadyWritten = 0;
+		}
+
+		public Queue<ET> getEntries() {
+			return entries;
+		}
+
+		public int getAlreadyWritten() {
+			return alreadyWritten;
+		}
+
+		public void setAlreadyWritten(int alreadyWritten) {
+			this.alreadyWritten = alreadyWritten;
+		}
+	}
 
 	@Override
 	public void addEntry(HardyWeinbergOperationEntry entry) throws IOException {
 
-		writeBuffer.add(entry);
+		EntryBuffer<HardyWeinbergOperationEntry> buffer = writeBuffers.get(entry.getCategory());
 
-		if (writeBuffer.size() >= entriesWriteBufferSize) {
-			writeEntries(alreadyWritten, writeBuffer);
-			alreadyWritten += writeBuffer.size();
-			writeBuffer.clear();
+		buffer.getEntries().add(entry);
+
+		if (buffer.getEntries().size() >= getEntriesWriteBufferSize()) {
+			writeEntries(buffer.getAlreadyWritten(), buffer.getEntries());
+			buffer.setAlreadyWritten(buffer.getAlreadyWritten() + buffer.getEntries().size());
+			buffer.getEntries().clear();
 		}
 	}
 

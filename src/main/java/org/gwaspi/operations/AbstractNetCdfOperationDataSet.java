@@ -71,6 +71,10 @@ public abstract class AbstractNetCdfOperationDataSet<ET> implements OperationDat
 		this(markersOperationSet, 10);
 	}
 
+	protected int getEntriesWriteBufferSize() {
+		return entriesWriteBufferSize;
+	}
+
 	public void setReadMatrixKey(MatrixKey rdMatrixKey) {
 		this.rdMatrixKey = rdMatrixKey;
 	}
