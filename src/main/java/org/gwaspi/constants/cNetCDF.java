@@ -63,6 +63,7 @@ public class cNetCDF {
 		public static final String VAR_MARKERSET = "marker_id";
 		public static final String VAR_MARKERS_RSID = "marker_rsId";
 		public static final String VAR_MARKERS_CHR = "marker_chromosome";
+		public static final String VAR_CHR_IN_MATRIX_IDX = "chr_in_matrix_idx";
 		public static final String VAR_CHR_IN_MATRIX = "chr_in_matrix";
 		public static final String VAR_CHR_INFO = "chr_info";
 		public static final String VAR_MARKERS_POS = "marker_position";
@@ -81,7 +82,9 @@ public class cNetCDF {
 		public static final String VAR_SAMPLES_AFFECTION = "sample_affection";
 		public static final String VAR_SAMPLES_FILTERS = "sample_filters";
 		//OPERATION VARS
+		public static final String VAR_OPSET_IDX = "opset_idx";
 		public static final String VAR_OPSET = "opset";
+		public static final String VAR_IMPLICITSET_IDX = "implicitset_idx";
 		public static final String VAR_IMPLICITSET = "implicitset";
 		//GT VARS
 		public static final String VAR_GENOTYPES = "genotypes";

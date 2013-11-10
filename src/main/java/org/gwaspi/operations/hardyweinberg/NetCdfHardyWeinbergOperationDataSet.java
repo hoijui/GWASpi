@@ -192,11 +192,14 @@ public class NetCdfHardyWeinbergOperationDataSet extends AbstractNetCdfOperation
 
 	@Override
 	public Collection<HardyWeinbergOperationEntry> getEntries(int from, int to) throws IOException {
+		return getEntries(HardyWeinbergOperationEntry.Category.ALL, from, to);
+	}
+
+	public Collection<HardyWeinbergOperationEntry> getEntries(HardyWeinbergOperationEntry.Category category, int from, int to) throws IOException {
 
 		String varP;
 		String varObsHtz;
 		String varExpHtz;
-		HardyWeinbergOperationEntry.Category category = ??? which one of the 4???;
 		switch (category) {
 			case ALL:
 				varP = HardyWeinberg.VAR_OP_MARKERS_HWPval_ALL;

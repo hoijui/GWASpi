@@ -35,6 +35,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
 import ucar.ma2.ArrayChar;
+import ucar.ma2.ArrayInt;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.NetcdfFileWriteable;
 
@@ -166,32 +167,56 @@ public abstract class AbstractNetCdfOperationDataSet<ET> implements OperationDat
 		}
 	}
 
+	private String getIndexVar(boolean markers) {
+
+		final String varName;
+		if (markersOperationSet == markers) {
+			varName = cNetCDF.Variables.VAR_OPSET_IDX;
+		} else {
+			varName = cNetCDF.Variables.VAR_IMPLICITSET_IDX;
+		}
+
+		return varName;
+	}
+
+	private String getNameVar(boolean markers) {
+
+		final String varName;
+		if (markersOperationSet == markers) {
+			varName = cNetCDF.Variables.VAR_OPSET;
+		} else {
+			varName = cNetCDF.Variables.VAR_IMPLICITSET;
+		}
+
+		return varName;
+	}
+
 	@Override
 	public void setSamples(Map<Integer, SampleKey> matrixIndexSampleKeys) throws IOException {
 
-		ArrayChar.D2 samplesD2 = NetCdfUtils.writeCollectionToD2ArrayChar(matrixIndexSampleKeys.values(), cNetCDF.Strides.STRIDE_SAMPLE_NAME);
-		int[] sampleOrig = new int[] {0, 0};
-		String varName;
-		if (markersOperationSet) {
-			varName = cNetCDF.Variables.VAR_IMPLICITSET;
-		} else {
-			varName = cNetCDF.Variables.VAR_OPSET;
-		}
-		write(wrNcFile, varName, sampleOrig, samplesD2);
+		ArrayInt.D1 sampleIdxsD1 = NetCdfUtils.writeValuesToD1ArrayInt(matrixIndexSampleKeys.keySet());
+		final int[] sampleIdxOrig = new int[] {0};
+		final String varIdx = getIndexVar(false);
+		write(wrNcFile, varIdx, sampleIdxOrig, sampleIdxsD1);
+
+		ArrayChar.D2 sampleKeysD2 = NetCdfUtils.writeCollectionToD2ArrayChar(matrixIndexSampleKeys.values(), cNetCDF.Strides.STRIDE_SAMPLE_NAME);
+		final int[] sampleOrig = new int[] {0, 0};
+		final String varName = getNameVar(false);
+		write(wrNcFile, varName, sampleOrig, sampleKeysD2);
 		log.info("Done writing SampleSet to matrix");
 	}
 
 	@Override
 	public void setMarkers(Map<Integer, MarkerKey> matrixIndexMarkerKeys) throws IOException {
 
+		ArrayInt.D1 markerIdxsD1 = NetCdfUtils.writeValuesToD1ArrayInt(matrixIndexMarkerKeys.keySet());
+		final int[] markerIdxOrig = new int[] {0};
+		final String varIdx = getIndexVar(true);
+		write(wrNcFile, varIdx, markerIdxOrig, markerIdxsD1);
+
 		ArrayChar.D2 markersD2 = NetCdfUtils.writeCollectionToD2ArrayChar(matrixIndexMarkerKeys.values(), cNetCDF.Strides.STRIDE_MARKER_NAME);
 		int[] markersOrig = new int[] {0, 0};
-		String varName;
-		if (markersOperationSet) {
-			varName = cNetCDF.Variables.VAR_OPSET;
-		} else {
-			varName = cNetCDF.Variables.VAR_IMPLICITSET;
-		}
+		final String varName = getNameVar(true);
 		write(wrNcFile, varName, markersOrig, markersD2);
 		log.info("Done writing MarkerSet to matrix");
 	}
@@ -199,8 +224,10 @@ public abstract class AbstractNetCdfOperationDataSet<ET> implements OperationDat
 	@Override
 	public void setChromosomes(Map<Integer, ChromosomeKey> matrixIndexChromosomeKeys, Collection<ChromosomeInfo> chromosomeInfos) throws IOException {
 
-		// Set of chromosomes found in matrix along with number of markersinfo
-		NetCdfUtils.saveObjectsToStringToMatrix(wrNcFile, matrixIndexChromosomeKeys.values(), cNetCDF.Variables.VAR_CHR_IN_MATRIX, 8);
+		// Set of chromosomes found in matrix - index in the original set of chromosomes
+		NetCdfUtils.saveIntMapD1ToWrMatrix(wrNcFile, matrixIndexChromosomeKeys.keySet(), cNetCDF.Variables.VAR_CHR_IN_MATRIX_IDX);
+		// Set of chromosomes found in matrix - key of the chromosome
+		NetCdfUtils.saveObjectsToStringToMatrix(wrNcFile, matrixIndexChromosomeKeys.values(), cNetCDF.Variables.VAR_CHR_IN_MATRIX, cNetCDF.Strides.STRIDE_CHR);
 		// Number of marker per chromosome & max pos for each chromosome
 		int[] columns = new int[] {0, 1, 2, 3};
 		NetCdfUtils.saveChromosomeInfosD2ToWrMatrix(wrNcFile, chromosomeInfos, columns, cNetCDF.Variables.VAR_CHR_INFO);
@@ -208,11 +235,20 @@ public abstract class AbstractNetCdfOperationDataSet<ET> implements OperationDat
 
 	@Override
 	public Map<Integer, SampleKey> getSamples() throws IOException {
+
+		final String varIdx = getIndexVar(false);
+		NetCdfUtils.readVariable(wrNcFile, varIdx, -1, -1, null, null);
+
+		final String varName = getNameVar(false);
+		NetCdfUtils.readVariable(wrNcFile, varName, -1, -1, null, null);
+
 		return XXX;
 	}
 
 	@Override
 	public Map<Integer, MarkerKey> getMarkers() throws IOException {
+
+		final String varName = getNameVar(true);
 		return XXX;
 	}
 

@@ -344,10 +344,11 @@ public class NetCdfUtils {
 		Index ima = charArray.getIndex();
 		int i = 0;
 		for (Object value : values) {
-			if (value.toString().length() >= 2 && value.toString().charAt(1) == '[') {
+			String strValue = value.toString();
+			if (strValue.length() >= 2 && strValue.charAt(1) == '[') {
 				throw new RuntimeException(".. this means, we should use org.gwaspi.global.Utils.toMeaningfullRep() in the line below, instead of toString()");
 			}
-			charArray.setString(ima.set(i, 0), value.toString().trim());
+			charArray.setString(ima.set(i, 0), strValue.trim());
 			i++;
 		}
 
@@ -367,6 +368,19 @@ public class NetCdfUtils {
 
 		return charArray;
 	}
+//	public static <V> ArrayChar.D1 writeValuesToD1ArrayChar(Collection<V> values, TypeConverter<V, String> valueToStringConverter, int stride) {
+//
+//		ArrayChar.D1 charArray = new ArrayChar.D1(values.size(), stride);
+//		Index index = charArray.getIndex();
+//		int count = 0;
+//		for (V value : values) {
+//			String strValue = valueToStringConverter.convert(value);
+//			charArray.setString(index.set(count), strValue.trim());
+//			count++;
+//		}
+//
+//		return charArray;
+//	}
 
 	public static <V> ArrayByte.D2 writeValuesToD2ArrayByte(Collection<V> values, TypeConverter<V, Byte> valueToStringConverter, int stride) {
 

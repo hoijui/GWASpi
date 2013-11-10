@@ -189,7 +189,7 @@ public abstract class AbstractNetCDFDataSetDestination extends AbstractDataSetDe
 	private static void saveChromosomeMetadata(Map<ChromosomeKey, ChromosomeInfo> chromosomeInfo, NetcdfFileWriteable wrNcFile) throws IOException, InvalidRangeException {
 
 		// Set of chromosomes found in matrix along with number of markersinfo
-		NetCdfUtils.saveObjectsToStringToMatrix(wrNcFile, chromosomeInfo.keySet(), cNetCDF.Variables.VAR_CHR_IN_MATRIX, 8);
+		NetCdfUtils.saveObjectsToStringToMatrix(wrNcFile, chromosomeInfo.keySet(), cNetCDF.Variables.VAR_CHR_IN_MATRIX, cNetCDF.Strides.STRIDE_CHR);
 		// Number of marker per chromosome & max pos for each chromosome
 		int[] columns = new int[] {0, 1, 2, 3};
 		NetCdfUtils.saveChromosomeInfosD2ToWrMatrix(wrNcFile, chromosomeInfo.values(), columns, cNetCDF.Variables.VAR_CHR_INFO);
