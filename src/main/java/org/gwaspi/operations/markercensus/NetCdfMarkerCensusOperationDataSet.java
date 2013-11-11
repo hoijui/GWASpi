@@ -19,8 +19,8 @@ package org.gwaspi.operations.markercensus;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Queue;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.model.Census;
@@ -29,6 +29,8 @@ import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.netCDF.operations.NetCdfUtils;
 import org.gwaspi.netCDF.operations.OperationFactory;
 import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
+import ucar.ma2.ArrayInt;
+import ucar.ma2.Index;
 import ucar.ma2.InvalidRangeException;
 
 public class NetCdfMarkerCensusOperationDataSet extends AbstractNetCdfOperationDataSet<MarkerCensusOperationEntry> implements MarkerCensusOperationDataSet {
@@ -104,42 +106,11 @@ public class NetCdfMarkerCensusOperationDataSet extends AbstractNetCdfOperationD
 					getNumSamples(),
 					0,
 					opType,
-					rdMatrixKey, // Parent matrixId
+					getReadMatrixKey(), // Parent matrixId
 					-1); // Parent operationId
 		} catch (InvalidRangeException ex) {
 			throw new IOException(ex);
 		}
-	}
-
-	@Override
-	public void setMarkerMissingRatios(Collection<Double> markerMissingRatios) throws IOException {
-
-		ensureNcFile();
-		NetCdfUtils.saveDoubleMapD1ToWrMatrix(getNetCdfWriteFile(), markerMissingRatios, cNetCDF.Census.VAR_OP_MARKERS_MISSINGRAT);
-	}
-
-	@Override
-	public void setMarkerMismatchStates(Collection<Boolean> markerMismatchStates) throws IOException {
-
-		Collection<Integer> markerMismatchIntegerStates
-				= new ArrayList<Integer>(markerMismatchStates.size()); // XXX not sooooo nice! maybe use a converter while writing (saves memory)
-		for (boolean mismatch : markerMismatchStates) {
-			markerMismatchIntegerStates.add(mismatch
-					? cNetCDF.Defaults.DEFAULT_MISMATCH_YES
-					: cNetCDF.Defaults.DEFAULT_MISMATCH_NO);
-		}
-		ensureNcFile();
-		NetCdfUtils.saveIntMapD1ToWrMatrix(getNetCdfWriteFile(), markerMismatchIntegerStates, cNetCDF.Census.VAR_OP_MARKERS_MISMATCHSTATE);
-	}
-
-	@Override
-	public void setMarkerKnownAlleles(Collection<OrderedAlleles> markerKnownAlleles) throws IOException {
-
-		//Utils.saveCharMapValueToWrMatrix(wrNcFile, wrMarkerSetKnownAllelesMap, cNetCDF.Census.VAR_OP_MARKERS_KNOWNALLELES, cNetCDF.Strides.STRIDE_GT);
-		NetCdfUtils.saveByteMapItemToWrMatrix(getNetCdfWriteFile(), markerKnownAlleles, cNetCDF.Census.VAR_OP_MARKERS_MAJALLELES, OrderedAlleles.TO_ALLELE_1, cNetCDF.Strides.STRIDE_GT / 2);
-		NetCdfUtils.saveDoubleMapItemD1ToWrMatrix(getNetCdfWriteFile(), markerKnownAlleles, OrderedAlleles.TO_ALLELE_1_FREQ, cNetCDF.Census.VAR_OP_MARKERS_MAJALLELEFRQ);
-		NetCdfUtils.saveByteMapItemToWrMatrix(getNetCdfWriteFile(), markerKnownAlleles, cNetCDF.Census.VAR_OP_MARKERS_MINALLELES, OrderedAlleles.TO_ALLELE_2, cNetCDF.Strides.STRIDE_GT / 2);
-		NetCdfUtils.saveDoubleMapItemD1ToWrMatrix(getNetCdfWriteFile(), markerKnownAlleles, OrderedAlleles.TO_ALLELE_2_FREQ, cNetCDF.Census.VAR_OP_MARKERS_MINALLELEFRQ);
 	}
 
 	@Override
@@ -149,7 +120,6 @@ public class NetCdfMarkerCensusOperationDataSet extends AbstractNetCdfOperationD
 
 	@Override
 	public Collection<MarkerCensusOperationEntry> getEntries(int from, int to) {
-
 
 		// PROCESS CONTROL SAMPLES
 		log.info("Perform Hardy-Weinberg test (Control)");
@@ -165,5 +135,38 @@ public class NetCdfMarkerCensusOperationDataSet extends AbstractNetCdfOperationD
 		//</editor-fold>
 
 		throw new UnsupportedOperationException("Not supported yet."); // TODO
+	}
+
+	private ArrayInt.D2 netCdfCensusAlls;
+
+	@Override
+	protected void writeEntries(int alreadyWritten, Queue<MarkerCensusOperationEntry> writeBuffer) throws IOException {
+
+		int[] origin = new int[] {alreadyWritten};
+		if (netCdfCensusAlls == null) {
+			// only create once, and reuse later on
+			// NOTE This might be bad for multi-threading in a later stage
+			netCdfCensusAlls = new ArrayInt.D2(writeBuffer.size(), 4);
+		}
+		int index = 0;
+		for (MarkerCensusOperationEntry entry : writeBuffer) {
+			Census censusAll = entry.getCensusAll();
+			Index indexObj = netCdfCensusAlls.getIndex().set(index);
+			netCdfCensusAlls.setInt(indexObj.set(index, 0), censusAll.);
+			netCdfObsHetzys.setDouble(netCdfObsHetzys.getIndex().set(index), entry.getObsHzy());
+			netCdfExpHetzys.setDouble(netCdfExpHetzys.getIndex().set(index), entry.getExpHzy());
+			index++;
+		}
+
+		try {
+			getNetCdfWriteFile().write(varP, origin, netCdfPs);
+			getNetCdfWriteFile().write(varObsHtz, origin, netCdfObsHetzys);
+			getNetCdfWriteFile().write(varExpHtz, origin, netCdfExpHetzys);
+		} catch (InvalidRangeException ex) {
+			throw new IOException(ex);
+		}
+
+
+		throw new UnsupportedOperationException("Not supported yet.");
 	}
 }
