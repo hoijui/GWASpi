@@ -136,7 +136,7 @@ public class NetCdfQAMarkersOperationDataSet extends AbstractNetCdfOperationData
 	@Override
 	public Collection<QAMarkersOperationEntry> getEntries(int from, int to) throws IOException {
 
-		MarkerOperationSet rdMarkersSet = new MarkerOperationSet(getResultOperationKey(), from, to);
+		MarkerOperationSet rdMarkersSet = new MarkerOperationSet(getOperationKey(), from, to);
 		Map<MarkerKey, ?> rdMarkers = rdMarkersSet.getOpSetMap();
 
 		Collection<Double> missingRatios = getMissingRatio(from, to);

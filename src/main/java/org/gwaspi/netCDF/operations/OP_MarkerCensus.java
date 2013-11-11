@@ -23,6 +23,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -51,16 +52,15 @@ import org.gwaspi.model.SampleInfoList;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.markers.MarkerSet;
+import org.gwaspi.netCDF.markers.NetCDFDataSetSource;
 import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
 import org.gwaspi.operations.markercensus.MarkerCensusOperationDataSet;
 import org.gwaspi.operations.markercensus.NetCdfMarkerCensusOperationDataSet;
+import org.gwaspi.operations.qamarkers.NetCdfQAMarkersOperationDataSet;
+import org.gwaspi.operations.qamarkers.QAMarkersOperationDataSet;
 import org.gwaspi.samples.SampleSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-//import ucar.ma2.ArrayChar;
-//import ucar.ma2.InvalidRangeException;
-//import ucar.nc2.NetcdfFile;
-//import ucar.nc2.NetcdfFileWriteable;
 
 public class OP_MarkerCensus implements MatrixOperation {
 
@@ -121,7 +121,7 @@ public class OP_MarkerCensus implements MatrixOperation {
 			//<editor-fold defaultstate="expanded" desc="PURGE Maps">
 			MatrixMetadata rdMatrixMetadata = MatricesList.getMatrixMetadataById(rdMatrixKey);
 
-			DataSetSource dataSetSource = rdMatrixKey;
+			DataSetSource dataSetSource = new NetCDFDataSetSource(rdMatrixKey);
 
 			MarkerSet rdMarkerSet = new MarkerSet(rdMatrixKey);
 			rdMarkerSet.initFullMarkerIdSetMap();
@@ -129,11 +129,13 @@ public class OP_MarkerCensus implements MatrixOperation {
 
 			SampleSet rdSampleSet = new SampleSet(rdMatrixKey);
 //			Map<SampleKey, byte[]> rdSampleSetMap = rdSampleSet.getSampleIdSetMapByteArray();
-			Collection<SampleKey> wrSampleKeys = new HashSet<SampleKey>(); // XXX Should this be a List instead, to preserve order?
+			Map<Integer, SampleKey> wrSampleKeys = new LinkedHashMap<Integer, SampleKey>(); // XXX Should this be a List instead, to preserve order?
+			int sampleIndex = 0;
 			for (SampleKey key : rdSampleSetMap.keySet()) {
 				if (!excludeSampleSetMap.containsKey(key)) {
-					wrSampleKeys.add(key);
+					wrSampleKeys.put(sampleIndex, key);
 				}
+				sampleIndex++;
 			}
 			//</editor-fold>
 
@@ -152,10 +154,9 @@ public class OP_MarkerCensus implements MatrixOperation {
 				((NetCdfMarkerCensusOperationDataSet) dataSet).setMarkerMissingRatio(markerMissingRatio); // HACK
 				((NetCdfMarkerCensusOperationDataSet) dataSet).setDiscardMismatches(discardMismatches); // HACK
 
-				dataSet.setMarkers(wrMarkerKeys);
+				((AbstractNetCdfOperationDataSet) dataSet).setUseAllMarkers(rdMatrixKey);
 				dataSet.setSamples(wrSampleKeys);
-				dataSet.setChromosomes(rdMarkerSet.getChrInfoSetMap().keySet()); // XXX NOTE possible cause rd == wr, see above
-
+				((AbstractNetCdfOperationDataSet) dataSet).setUseAllChromosomes(rdMatrixKey);
 
 //				// CREATE netCDF-3 FILE
 //				cNetCDF.Defaults.OPType opType = cNetCDF.Defaults.OPType.MARKER_CENSUS_BY_AFFECTION;
@@ -190,7 +191,7 @@ public class OP_MarkerCensus implements MatrixOperation {
 //				wrNcFile.create();
 //				log.trace("Done creating netCDF handle: " + wrNcFile.toString());
 
-				writeMetadata(dataSet, rdMarkerSet, wrMarkerKeys, wrSampleKeys);
+//				writeMetadata(dataSet, rdMarkerSet, wrMarkerKeys, wrSampleKeys);
 
 				//<editor-fold defaultstate="expanded" desc="PROCESSOR">
 				Map<SampleKey, SampleInfo> samplesInfoMap = fetchSampleInfo(
@@ -299,43 +300,43 @@ public class OP_MarkerCensus implements MatrixOperation {
 					if (knownAlleles.size() <= 2) {
 						// Check if there are mismatches in alleles
 
-						List<Integer> AAnumValsAL = new ArrayList<Integer>();
-						List<Integer> AanumValsAL = new ArrayList<Integer>();
-						List<Integer> aanumValsAL = new ArrayList<Integer>();
+						List<Integer> AAnumVals = new ArrayList<Integer>();
+						List<Integer> AanumVals = new ArrayList<Integer>();
+						List<Integer> aanumVals = new ArrayList<Integer>();
 
 						knowYourAlleles(
 								knownAlleles,
-								AAnumValsAL,
-								AanumValsAL,
-								aanumValsAL);
+								AAnumVals,
+								AanumVals,
+								aanumVals);
 
-						contingencyAllSamples(
-								allSamplesGTsTable,
+						contingencyCensusSamples(
 								allSamplesContingencyTable,
-								AAnumValsAL,
-								AanumValsAL,
-								aanumValsAL);
+								allSamplesGTsTable,
+								AAnumVals,
+								AanumVals,
+								aanumVals);
 
-						contingencyCaseSamples(
+						contingencyCensusSamples(
 								caseSamplesContingencyTable,
 								caseSamplesGTsTable,
-								AAnumValsAL,
-								AanumValsAL,
-								aanumValsAL);
+								AAnumVals,
+								AanumVals,
+								aanumVals);
 
-						contingencyCtrlSamples(
+						contingencyCensusSamples(
 								ctrlSamplesContingencyTable,
 								ctrlSamplesGTsTable,
-								AAnumValsAL,
-								AanumValsAL,
-								aanumValsAL);
+								AAnumVals,
+								AanumVals,
+								aanumVals);
 
-						contingencyHWSamples(
+						contingencyCensusSamples(
 								hwSamplesContingencyTable,
 								hwSamplesGTsTable,
-								AAnumValsAL,
-								AanumValsAL,
-								aanumValsAL);
+								AAnumVals,
+								AanumVals,
+								aanumVals);
 
 						// CENSUS
 						int obsAllAA = 0;
@@ -487,130 +488,7 @@ public class OP_MarkerCensus implements MatrixOperation {
 		}
 	}
 
-	private void contingencyAllSamples(
-			Map<Integer, Float> allSamplesGTsTable,
-			Map<String, Integer> allSamplesContingencyTable,
-			List<Integer> AAnumValsAL,
-			List<Integer> AanumValsAL,
-			List<Integer> aanumValsAL)
-	{
-		for (Map.Entry<Integer, Float> samplesEntry : allSamplesGTsTable.entrySet()) {
-			Integer key = samplesEntry.getKey();
-			Integer value = Math.round(samplesEntry.getValue());
-
-			if (AAnumValsAL.contains(key)) {
-				// compare to all possible character values of AA
-				// ALL CENSUS
-				int tempCount = 0;
-				if (allSamplesContingencyTable.containsKey("AA")) {
-					tempCount = allSamplesContingencyTable.get("AA");
-				}
-				allSamplesContingencyTable.put("AA", tempCount + value);
-			}
-			if (AanumValsAL.contains(key)) {
-				// compare to all possible character values of Aa
-				// ALL CENSUS
-				int tempCount = 0;
-				if (allSamplesContingencyTable.containsKey("Aa")) {
-					tempCount = allSamplesContingencyTable.get("Aa");
-				}
-				allSamplesContingencyTable.put("Aa", tempCount + value);
-			}
-			if (aanumValsAL.contains(key)) {
-				// compare to all possible character values of aa
-				// ALL CENSUS
-				int tempCount = 0;
-				if (allSamplesContingencyTable.containsKey("aa")) {
-					tempCount = allSamplesContingencyTable.get("aa");
-				}
-				allSamplesContingencyTable.put("aa", tempCount + value);
-			}
-		}
-	}
-
-	private void contingencyCaseSamples(
-			Map<String, Integer> caseSamplesContingencyTable,
-			Map<Integer, Float> caseSamplesGTsTable,
-			List<Integer> AAnumValsAL,
-			List<Integer> AanumValsAL,
-			List<Integer> aanumValsAL)
-	{
-		for (Map.Entry<Integer, Float> samplesEntry : caseSamplesGTsTable.entrySet()) {
-			Integer key = samplesEntry.getKey();
-			Integer value = Math.round(samplesEntry.getValue());
-
-			if (AAnumValsAL.contains(key)) {
-				// compare to all possible character values of AA
-				// ALL CENSUS
-				int tempCount = 0;
-				if (caseSamplesContingencyTable.containsKey("AA")) {
-					tempCount = caseSamplesContingencyTable.get("AA");
-				}
-				caseSamplesContingencyTable.put("AA", tempCount + value);
-			}
-			if (AanumValsAL.contains(key)) {
-				// compare to all possible character values of Aa
-				// ALL CENSUS
-				int tempCount = 0;
-				if (caseSamplesContingencyTable.containsKey("Aa")) {
-					tempCount = caseSamplesContingencyTable.get("Aa");
-				}
-				caseSamplesContingencyTable.put("Aa", tempCount + value);
-			}
-			if (aanumValsAL.contains(key)) {
-				// compare to all possible character values of aa
-				// ALL CENSUS
-				int tempCount = 0;
-				if (caseSamplesContingencyTable.containsKey("aa")) {
-					tempCount = caseSamplesContingencyTable.get("aa");
-				}
-				caseSamplesContingencyTable.put("aa", tempCount + value);
-			}
-		}
-	}
-
-	private void contingencyCtrlSamples(
-			Map<String, Integer> ctrlSamplesContingencyTable,
-			Map<Integer, Float> ctrlSamplesGTsTable,
-			List<Integer> AAnumValsAL,
-			List<Integer> AanumValsAL,
-			List<Integer> aanumValsAL)
-	{
-		for (Map.Entry<Integer, Float> samplesEntry : ctrlSamplesGTsTable.entrySet()) {
-			Integer key = samplesEntry.getKey();
-			Integer value = Math.round(samplesEntry.getValue());
-
-			if (AAnumValsAL.contains(key)) {
-				// compare to all possible character values of AA
-				// ALL CENSUS
-				int tempCount = 0;
-				if (ctrlSamplesContingencyTable.containsKey("AA")) {
-					tempCount = ctrlSamplesContingencyTable.get("AA");
-				}
-				ctrlSamplesContingencyTable.put("AA", tempCount + value);
-			}
-			if (AanumValsAL.contains(key)) {
-				// compare to all possible character values of Aa
-				// ALL CENSUS
-				int tempCount = 0;
-				if (ctrlSamplesContingencyTable.containsKey("Aa")) {
-					tempCount = ctrlSamplesContingencyTable.get("Aa");
-				}
-				ctrlSamplesContingencyTable.put("Aa", tempCount + value);
-			}
-			if (aanumValsAL.contains(key)) {
-				// compare to all possible character values of aa
-				// ALL CENSUS
-				int tempCount = 0;
-				if (ctrlSamplesContingencyTable.containsKey("aa")) {
-					tempCount = ctrlSamplesContingencyTable.get("aa");
-				}
-				ctrlSamplesContingencyTable.put("aa", tempCount + value);
-			}
-		}
-	}
-
-	private void contingencyHWSamples(
+	private static void contingencyCensusSamples(
 			Map<String, Integer> hwSamplesContingencyTable,
 			Map<Integer, Float> hwSamplesGTsTable,
 			List<Integer> AAnumValsAL,
@@ -659,10 +537,16 @@ public class OP_MarkerCensus implements MatrixOperation {
 			Map<SampleKey, Double> excludeSampleSetMap)
 			throws IOException
 	{
-		OperationMetadata markerQAMetadata = OperationsList.getOperationMetadata(markerQAOP.getId());
+		OperationKey markerQAOPKey = OperationKey.valueOf(markerQAOP);
+		OperatisonKey sampleQAOPKey = OperationKey.valueOf(sampleQAOP);
+
+		QAMarkersOperationDataSet qaMarkersOperationDataSet = new NetCdfQAMarkersOperationDataSet(markerQAOPKey);
+
+
+		OperationMetadata markerQAMetadata = markerQAOP;
 		NetcdfFile rdMarkerQANcFile = NetcdfFile.open(markerQAMetadata.getPathToMatrix());
 
-		OperationMetadata sampleQAMetadata = OperationsList.getOperationMetadata(sampleQAOP.getId());
+		OperationMetadata sampleQAMetadata = sampleQAOP;
 		NetcdfFile rdSampleQANcFile = NetcdfFile.open(sampleQAMetadata.getPathToMatrix());
 
 		MarkerOperationSet rdQAMarkerSet = new MarkerOperationSet(OperationKey.valueOf(markerQAMetadata));
@@ -856,29 +740,29 @@ public class OP_MarkerCensus implements MatrixOperation {
 		return samplesInfoMap;
 	}
 
-	private void writeMetadata(
-			MarkerCensusOperationDataSet dataSet,
-			MarkerSet rdMarkerSet,
-			Collection<MarkerKey> wrMarkerKeys,
-			Collection<SampleKey> wrSampleKeys)
-			throws IOException
-	{
-		// MARKERSET MARKERID
-		ArrayChar.D2 markersD2 = NetCdfUtils.writeCollectionToD2ArrayChar(wrMarkerKeys, cNetCDF.Strides.STRIDE_MARKER_NAME);
-		int[] markersOrig = new int[]{0, 0};
-		wrNcFile.write(cNetCDF.Variables.VAR_OPSET, markersOrig, markersD2);
+//	private void writeMetadata(
+//			MarkerCensusOperationDataSet dataSet,
+//			MarkerSet rdMarkerSet,
+//			Collection<MarkerKey> wrMarkerKeys,
+//			Collection<SampleKey> wrSampleKeys)
+//			throws IOException
+//	{
+//		// MARKERSET MARKERID
+//		ArrayChar.D2 markersD2 = NetCdfUtils.writeCollectionToD2ArrayChar(wrMarkerKeys, cNetCDF.Strides.STRIDE_MARKER_NAME);
+//		int[] markersOrig = new int[]{0, 0};
+//		wrNcFile.write(cNetCDF.Variables.VAR_OPSET, markersOrig, markersD2);
+//
+//		// MARKERSET RSID
+//		rdMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_RSID);
+//		Map<MarkerKey, char[]> wrSortedMarkerRsIds = org.gwaspi.global.Utils.createOrderedMap(wrMarkerKeys, rdMarkerSet.getMarkerIdSetMapCharArray());
+//		NetCdfUtils.saveCharMapValueToWrMatrix(wrNcFile, wrSortedMarkerRsIds.values(), cNetCDF.Variables.VAR_MARKERS_RSID, cNetCDF.Strides.STRIDE_MARKER_NAME);
 
-		// MARKERSET RSID
-		rdMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_RSID);
-		Map<MarkerKey, char[]> wrSortedMarkerRsIds = org.gwaspi.global.Utils.createOrderedMap(wrMarkerKeys, rdMarkerSet.getMarkerIdSetMapCharArray());
-		NetCdfUtils.saveCharMapValueToWrMatrix(wrNcFile, wrSortedMarkerRsIds.values(), cNetCDF.Variables.VAR_MARKERS_RSID, cNetCDF.Strides.STRIDE_MARKER_NAME);
-
-		// WRITE SAMPLESET TO MATRIX FROM SAMPLES ARRAYLIST
-		ArrayChar.D2 samplesD2 = NetCdfUtils.writeCollectionToD2ArrayChar(wrSampleKeys, cNetCDF.Strides.STRIDE_SAMPLE_NAME);
-		int[] sampleOrig = new int[]{0, 0};
-		wrNcFile.write(cNetCDF.Variables.VAR_IMPLICITSET, sampleOrig, samplesD2);
-		log.info("Done writing Sample Set to operation");
-	}
+//		// WRITE SAMPLESET TO MATRIX FROM SAMPLES ARRAYLIST
+//		ArrayChar.D2 samplesD2 = NetCdfUtils.writeCollectionToD2ArrayChar(wrSampleKeys, cNetCDF.Strides.STRIDE_SAMPLE_NAME);
+//		int[] sampleOrig = new int[]{0, 0};
+//		wrNcFile.write(cNetCDF.Variables.VAR_IMPLICITSET, sampleOrig, samplesD2);
+//		log.info("Done writing Sample Set to operation");
+//	}
 
 	private static void censusDataWriter(
 			MarkerCensusOperationDataSet dataSet,

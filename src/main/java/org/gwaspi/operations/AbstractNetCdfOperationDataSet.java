@@ -50,6 +50,7 @@ public abstract class AbstractNetCdfOperationDataSet<ET> implements OperationDat
 	private int numChromosomes;
 	private NetcdfFileWriteable wrNcFile;
 	private OperationFactory operationFactory;
+	private OperationKey operationKey;
 	private final Queue<ET> writeBuffer;
 	private int alreadyWritten;
 	private int entriesWriteBufferSize;
@@ -147,6 +148,10 @@ public abstract class AbstractNetCdfOperationDataSet<ET> implements OperationDat
 
 	public OperationKey getResultOperationKey() {
 		return operationFactory.getResultOperationKey();
+	}
+
+	public OperationKey getOperationKey() {XX;
+		return operationKey;
 	}
 
 	protected void write(NetcdfFileWriteable ncFile, String varName, int[] origin, Array values) throws IOException {
