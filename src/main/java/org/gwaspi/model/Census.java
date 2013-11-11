@@ -23,7 +23,7 @@ import java.util.NoSuchElementException;
  */
 public class Census {
 
-	private static final class AllCensusExtractor extends AbstractObjectEnumeratedValueExtractor<Census> {
+	private static final class CensusExtractor4 extends AbstractObjectEnumeratedValueExtractor<Census> {
 
 		@Override
 		public int getNumberOfValues() {
@@ -33,16 +33,16 @@ public class Census {
 		@Override
 		public Integer extractIndex(Census object, int extractIndex) {
 			switch (extractIndex) {
-				case 0: return object.getAllAA();
-				case 1: return object.getAllAa();
-				case 2: return object.getAllaa();
+				case 0: return object.getAA();
+				case 1: return object.getAa();
+				case 2: return object.getaa();
 				case 3: return object.getMissingCount();
 				default: throw new NoSuchElementException();
 			}
 		}
 	}
 
-	private static final class CaseCensusExtractor extends AbstractObjectEnumeratedValueExtractor<Census> {
+	private static final class CensusExtractor3 extends AbstractObjectEnumeratedValueExtractor<Census> {
 
 		@Override
 		public int getNumberOfValues() {
@@ -52,162 +52,51 @@ public class Census {
 		@Override
 		public Integer extractIndex(Census object, int extractIndex) {
 			switch (extractIndex) {
-				case 0: return object.getCaseAA();
-				case 1: return object.getCaseAa();
-				case 2: return object.getCaseaa();
+				case 0: return object.getAA();
+				case 1: return object.getAa();
+				case 2: return object.getaa();
 				default: throw new NoSuchElementException();
 			}
 		}
 	}
 
-	private static final class ControlCensusExtractor extends AbstractObjectEnumeratedValueExtractor<Census> {
+	public static final AbstractObjectEnumeratedValueExtractor<Census> EXTRACTOR_3 = new CensusExtractor3();
+	public static final AbstractObjectEnumeratedValueExtractor<Census> EXTRACTOR_4 = new CensusExtractor4();
 
-		@Override
-		public int getNumberOfValues() {
-			return 3;
-		}
-
-		@Override
-		public Integer extractIndex(Census object, int extractIndex) {
-			switch (extractIndex) {
-				case 0: return object.getControlAA();
-				case 1: return object.getControlAa();
-				case 2: return object.getControlaa();
-				default: throw new NoSuchElementException();
-			}
-		}
-	}
-
-	private static final class AlternateHWCensusExtractor extends AbstractObjectEnumeratedValueExtractor<Census> {
-
-		@Override
-		public int getNumberOfValues() {
-			return 3;
-		}
-
-		@Override
-		public Integer extractIndex(Census object, int extractIndex) {
-			switch (extractIndex) {
-				case 0: return object.getHwAA();
-				case 1: return object.getHwAa();
-				case 2: return object.getHwaa();
-				default: throw new NoSuchElementException();
-			}
-		}
-	}
-
-	public static final AbstractObjectEnumeratedValueExtractor<Census> EXTRACTOR_ALL = new AllCensusExtractor();
-	public static final AbstractObjectEnumeratedValueExtractor<Census> EXTRACTOR_CASE = new CaseCensusExtractor();
-	public static final AbstractObjectEnumeratedValueExtractor<Census> EXTRACTOR_CONTROL = new ControlCensusExtractor();
-	public static final AbstractObjectEnumeratedValueExtractor<Census> EXTRACTOR_ALTERNATE_HW = new AlternateHWCensusExtractor();
-
-	private final int allAA; // all
-	private final int allAa; // all
-	private final int allaa; // all
-	private final int missingCount; // all
-	private final int caseAA; // case
-	private final int caseAa; // case
-	private final int caseaa; // case
-	private final int controlAA; // control
-	private final int controlAa; // control
-	private final int controlaa; // control
-	private final int hwAA; // HW samples
-	private final int hwAa; // HW samples
-	private final int hwaa; // HW samples
+	private final int AA;
+	private final int Aa;
+	private final int aa;
+	private final int missingCount;
 
 	public Census(
-			int allAA,
-			int allAa,
-			int allaa,
-			int missingCount,
-			int caseAA,
-			int caseAa,
-			int caseaa,
-			int controlAA,
-			int controlAa,
-			int controlaa,
-			int hwAA,
-			int hwAa,
-			int hwaa)
-	{
-		this.allAA = allAA;
-		this.allAa = allAa;
-		this.allaa = allaa;
-		this.missingCount = missingCount;
-		this.caseAA = caseAA;
-		this.caseAa = caseAa;
-		this.caseaa = caseaa;
-		this.controlAA = controlAA;
-		this.controlAa = controlAa;
-		this.controlaa = controlaa;
-		this.hwAA = hwAA;
-		this.hwAa = hwAa;
-		this.hwaa = hwaa;
-	}
-
-	public Census(
-			int allAA,
-			int allAa,
-			int allaa,
+			int AA,
+			int Aa,
+			int aa,
 			int missingCount)
 	{
-		this(allAA, allAa, allaa, missingCount, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+		this.AA = AA;
+		this.Aa = Aa;
+		this.aa = aa;
+		this.missingCount = missingCount;
 	}
 
 	public Census() {
 		this(0, 0, 0, 0);
 	}
 
-	public int getAllAA() {
-		return allAA;
+	public int getAA() {
+		return AA;
 	}
 
-	public int getAllAa() {
-		return allAa;
+	public int getAa() {
+		return Aa;
 	}
 
-	public int getAllaa() {
-		return allaa;
+	public int getaa() {
+		return aa;
 	}
 
 	public int getMissingCount() {
 		return missingCount;
 	}
-
-	public int getCaseAA() {
-		return caseAA;
-	}
-
-	public int getCaseAa() {
-		return caseAa;
-	}
-
-	public int getCaseaa() {
-		return caseaa;
-	}
-
-	public int getControlAA() {
-		return controlAA;
-	}
-
-	public int getControlAa() {
-		return controlAa;
-	}
-
-	public int getControlaa() {
-		return controlaa;
-	}
-
-	public int getHwAA() {
-		return hwAA;
-	}
-
-	public int getHwAa() {
-		return hwAa;
-	}
-
-	public int getHwaa() {
-		return hwaa;
-	}
-
 }

@@ -18,6 +18,7 @@
 package org.gwaspi.operations.markercensus;
 
 import org.gwaspi.model.Census;
+import org.gwaspi.model.CensusFull;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.operations.OperationDataEntry;
 
@@ -38,5 +39,5 @@ public interface MarkerCensusOperationEntry extends OperationDataEntry<MarkerKey
 	 * NetCDF variable: Census.VAR_OP_MARKERS_CENSUSALL
 	 */
 //	int[] getCensusAll();
-	Census getCensusAll();
+	CensusFull getCensus();
 }
