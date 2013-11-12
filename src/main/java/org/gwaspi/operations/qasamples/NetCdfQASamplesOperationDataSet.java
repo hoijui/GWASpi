@@ -124,7 +124,7 @@ public class NetCdfQASamplesOperationDataSet extends AbstractNetCdfOperationData
 	@Override
 	public Collection<QASamplesOperationEntry> getEntries(int from, int to) throws IOException {
 
-		SampleOperationSet rdSampleSet = new SampleOperationSet(getResultOperationKey(), from, to);
+		SampleOperationSet rdSampleSet = new SampleOperationSet(getOperationKey(), from, to);
 		Map<SampleKey, ?> rdSamples = rdSampleSet.getOpSetMap();
 
 		Collection<Double> missingRatios = getSampleMissingRatios(from, to);

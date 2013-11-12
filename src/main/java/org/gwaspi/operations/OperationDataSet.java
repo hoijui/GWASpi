@@ -62,4 +62,6 @@ public interface OperationDataSet<ET> {
 	 * @throws IOException
 	 */
 	Collection<ET> getEntries(int from, int to) throws IOException;
+
+	Collection<ET> getEntries() throws IOException;
 }

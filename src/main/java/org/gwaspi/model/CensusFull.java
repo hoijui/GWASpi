@@ -35,11 +35,13 @@ public class CensusFull {
 
 		@Override
 		public Integer extractIndex(CensusFull object, int extractIndex) {
+
+			Census census = object.getCategoryCensus().get(Category.ALL);
 			switch (extractIndex) {
-				case 0: return object.getAllAA();
-				case 1: return object.getAllAa();
-				case 2: return object.getAllaa();
-				case 3: return object.getMissingCount();
+				case 0: return census.getAA();
+				case 1: return census.getAa();
+				case 2: return census.getaa();
+				case 3: return census.getMissingCount();
 				default: throw new NoSuchElementException();
 			}
 		}
@@ -54,10 +56,12 @@ public class CensusFull {
 
 		@Override
 		public Integer extractIndex(CensusFull object, int extractIndex) {
+
+			Census census = object.getCategoryCensus().get(Category.CASE);
 			switch (extractIndex) {
-				case 0: return object.getCaseAA();
-				case 1: return object.getCaseAa();
-				case 2: return object.getCaseaa();
+				case 0: return census.getAA();
+				case 1: return census.getAa();
+				case 2: return census.getaa();
 				default: throw new NoSuchElementException();
 			}
 		}
@@ -72,10 +76,12 @@ public class CensusFull {
 
 		@Override
 		public Integer extractIndex(CensusFull object, int extractIndex) {
+
+			Census census = object.getCategoryCensus().get(Category.CONTROL);
 			switch (extractIndex) {
-				case 0: return object.getControlAA();
-				case 1: return object.getControlAa();
-				case 2: return object.getControlaa();
+				case 0: return census.getAA();
+				case 1: return census.getAa();
+				case 2: return census.getaa();
 				default: throw new NoSuchElementException();
 			}
 		}
@@ -90,10 +96,12 @@ public class CensusFull {
 
 		@Override
 		public Integer extractIndex(CensusFull object, int extractIndex) {
+
+			Census census = object.getCategoryCensus().get(Category.ALTERNATE);
 			switch (extractIndex) {
-				case 0: return object.getHwAA();
-				case 1: return object.getHwAa();
-				case 2: return object.getHwaa();
+				case 0: return census.getAA();
+				case 1: return census.getAa();
+				case 2: return census.getaa();
 				default: throw new NoSuchElementException();
 			}
 		}

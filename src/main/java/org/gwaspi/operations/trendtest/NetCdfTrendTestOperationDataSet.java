@@ -72,7 +72,7 @@ public class NetCdfTrendTestOperationDataSet extends AbstractNetCdfTestOperation
 	@Override
 	public Collection<TrendTestOperationEntry> getEntries(int from, int to) throws IOException {
 
-		MarkerOperationSet rdMarkersSet = new MarkerOperationSet(getResultOperationKey(), from, to);
+		MarkerOperationSet rdMarkersSet = new MarkerOperationSet(getOperationKey(), from, to);
 		Map<MarkerKey, ?> rdMarkers = rdMarkersSet.getOpSetMap();
 
 		Collection<Double> ts = new ArrayList<Double>(0);

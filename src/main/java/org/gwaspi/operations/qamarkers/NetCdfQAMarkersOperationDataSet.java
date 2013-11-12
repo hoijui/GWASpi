@@ -113,7 +113,7 @@ public class NetCdfQAMarkersOperationDataSet extends AbstractNetCdfOperationData
 	public void setMarkerCensusAll(Collection<Census> markerCensusAll) throws IOException {
 
 		ensureNcFile();
-		NetCdfUtils.saveIntMapD2ToWrMatrix(getNetCdfWriteFile(), markerCensusAll, Census.EXTRACTOR_ALL, cNetCDF.Census.VAR_OP_MARKERS_CENSUSALL);
+		NetCdfUtils.saveIntMapD2ToWrMatrix(getNetCdfWriteFile(), markerCensusAll, Census.EXTRACTOR_4, cNetCDF.Census.VAR_OP_MARKERS_CENSUSALL);
 	}
 
 

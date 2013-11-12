@@ -17,22 +17,22 @@
 
 package org.gwaspi.operations.markercensus;
 
-import org.gwaspi.model.Census;
+import org.gwaspi.model.CensusFull;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.operations.AbstractOperationDataEntry;
 
 public class DefaultMarkerCensusOperationEntry extends AbstractOperationDataEntry<MarkerKey> implements MarkerCensusOperationEntry {
 
-	private final Census census;
+	private final CensusFull census;
 
-	public DefaultMarkerCensusOperationEntry(MarkerKey key, Census census) {
+	public DefaultMarkerCensusOperationEntry(MarkerKey key, CensusFull census) {
 		super(key);
 
 		this.census = census;
 	}
 
 	@Override
-	public Census getCensusAll() {
+	public CensusFull getCensus() {
 		return census;
 	}
 }

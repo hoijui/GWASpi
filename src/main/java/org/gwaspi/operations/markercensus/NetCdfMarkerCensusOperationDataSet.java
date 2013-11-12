@@ -26,6 +26,7 @@ import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.model.Census;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixMetadata;
+import org.gwaspi.model.OperationKey;
 import org.gwaspi.netCDF.operations.NetCdfUtils;
 import org.gwaspi.netCDF.operations.OperationFactory;
 import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
@@ -51,8 +52,12 @@ public class NetCdfMarkerCensusOperationDataSet extends AbstractNetCdfOperationD
 	private double markerMissingRatio;
 	private boolean discardMismatches;
 
+	public NetCdfMarkerCensusOperationDataSet(OperationKey operationKey) {
+		super(true, operationKey);
+	}
+
 	public NetCdfMarkerCensusOperationDataSet() {
-		super(true);
+		this(null);
 	}
 
 	public void setPhenoFile(File phenoFile) {

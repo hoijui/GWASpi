@@ -225,7 +225,7 @@ public class NetCdfHardyWeinbergOperationDataSet extends AbstractNetCdfOperation
 				throw new IOException("invalid category: " + category);
 		}
 
-		MarkerOperationSet rdMarkersSet = new MarkerOperationSet(getResultOperationKey(), from, to);
+		MarkerOperationSet rdMarkersSet = new MarkerOperationSet(getOperationKey(), from, to);
 		Map<MarkerKey, ?> rdMarkers = rdMarkersSet.getOpSetMap();
 
 		Collection<Double> ps = new ArrayList<Double>(0);

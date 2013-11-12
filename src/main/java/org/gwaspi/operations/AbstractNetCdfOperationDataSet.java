@@ -43,6 +43,7 @@ public abstract class AbstractNetCdfOperationDataSet<ET> implements OperationDat
 
 	private final Logger log = LoggerFactory.getLogger(AbstractNetCdfOperationDataSet.class);
 
+	private OperationKey operationKey;
 	private final boolean markersOperationSet;
 	private MatrixKey rdMatrixKey;
 	private int numMarkers;
@@ -55,8 +56,9 @@ public abstract class AbstractNetCdfOperationDataSet<ET> implements OperationDat
 	private int alreadyWritten;
 	private int entriesWriteBufferSize;
 
-	public AbstractNetCdfOperationDataSet(boolean markersOperationSet, int entriesWriteBufferSize) {
+	public AbstractNetCdfOperationDataSet(boolean markersOperationSet, OperationKey operationKey, int entriesWriteBufferSize) {
 
+		this.operationKey = operationKey;
 		this.markersOperationSet = markersOperationSet;
 		this.rdMatrixKey = null;
 		this.numMarkers = -1;
@@ -69,8 +71,12 @@ public abstract class AbstractNetCdfOperationDataSet<ET> implements OperationDat
 		this.entriesWriteBufferSize = entriesWriteBufferSize;
 	}
 
+	public AbstractNetCdfOperationDataSet(boolean markersOperationSet, OperationKey operationKey) {
+		this(markersOperationSet, operationKey, 10);
+	}
+
 	public AbstractNetCdfOperationDataSet(boolean markersOperationSet) {
-		this(markersOperationSet, 10);
+		this(markersOperationSet, null);
 	}
 
 	protected int getEntriesWriteBufferSize() {
@@ -146,8 +152,13 @@ public abstract class AbstractNetCdfOperationDataSet<ET> implements OperationDat
 		}
 	}
 
-	public OperationKey getResultOperationKey() {
-		return operationFactory.getResultOperationKey();
+	public OperationKey getOperationKey() {
+
+		if (operationKey == null) {
+			operationKey = operationFactory.getResultOperationKey();
+		}
+
+		return operationKey;
 	}
 
 	public OperationKey getOperationKey() {XX;
@@ -274,4 +285,9 @@ public abstract class AbstractNetCdfOperationDataSet<ET> implements OperationDat
 	}
 
 	protected abstract void writeEntries(int alreadyWritten, Queue<ET> writeBuffer) throws IOException;
+
+	@Override
+	public Collection<ET> getEntries() throws IOException {
+		return getEntries(-1, -1);
+	}
 }

@@ -146,7 +146,7 @@ public class OP_QASamples implements MatrixOperation {
 			dataSet.setSampleMissingCount(wrSampleSetMissingCountMap.values());
 			dataSet.setSampleHetzyRatios(wrSampleSetHetzyRatioMap.values());
 
-			resultOpId = ((AbstractNetCdfOperationDataSet) dataSet).getResultOperationKey().getId(); // HACK
+			resultOpId = ((AbstractNetCdfOperationDataSet) dataSet).getOperationKey().getId(); // HACK
 		} finally {
 //			if (null != rdNcFile) {
 //				try {
