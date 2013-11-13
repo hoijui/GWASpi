@@ -23,8 +23,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -61,10 +59,6 @@ import org.gwaspi.operations.qamarkers.QAMarkersOperationDataSet;
 import org.gwaspi.samples.SampleSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-//import ucar.ma2.ArrayChar;
-//import ucar.ma2.InvalidRangeException;
-//import ucar.nc2.NetcdfFile;
-//import ucar.nc2.NetcdfFileWriteable;
 
 public class OP_MarkerCensus implements MatrixOperation {
 
@@ -125,7 +119,7 @@ public class OP_MarkerCensus implements MatrixOperation {
 			//<editor-fold defaultstate="expanded" desc="PURGE Maps">
 			MatrixMetadata rdMatrixMetadata = MatricesList.getMatrixMetadataById(rdMatrixKey);
 
-			DataSetSource dataSetSource = rdMatrixKey;
+			DataSetSource dataSetSource = new NetCDFDataSetSource(rdMatrixKey);
 
 			MarkerSet rdMarkerSet = new MarkerSet(rdMatrixKey);
 			rdMarkerSet.initFullMarkerIdSetMap();
@@ -492,130 +486,7 @@ public class OP_MarkerCensus implements MatrixOperation {
 		}
 	}
 
-	private void contingencyAllSamples(
-			Map<Integer, Float> allSamplesGTsTable,
-			Map<String, Integer> allSamplesContingencyTable,
-			List<Integer> AAnumValsAL,
-			List<Integer> AanumValsAL,
-			List<Integer> aanumValsAL)
-	{
-		for (Map.Entry<Integer, Float> samplesEntry : allSamplesGTsTable.entrySet()) {
-			Integer key = samplesEntry.getKey();
-			Integer value = Math.round(samplesEntry.getValue());
-
-			if (AAnumValsAL.contains(key)) {
-				// compare to all possible character values of AA
-				// ALL CENSUS
-				int tempCount = 0;
-				if (allSamplesContingencyTable.containsKey("AA")) {
-					tempCount = allSamplesContingencyTable.get("AA");
-				}
-				allSamplesContingencyTable.put("AA", tempCount + value);
-			}
-			if (AanumValsAL.contains(key)) {
-				// compare to all possible character values of Aa
-				// ALL CENSUS
-				int tempCount = 0;
-				if (allSamplesContingencyTable.containsKey("Aa")) {
-					tempCount = allSamplesContingencyTable.get("Aa");
-				}
-				allSamplesContingencyTable.put("Aa", tempCount + value);
-			}
-			if (aanumValsAL.contains(key)) {
-				// compare to all possible character values of aa
-				// ALL CENSUS
-				int tempCount = 0;
-				if (allSamplesContingencyTable.containsKey("aa")) {
-					tempCount = allSamplesContingencyTable.get("aa");
-				}
-				allSamplesContingencyTable.put("aa", tempCount + value);
-			}
-		}
-	}
-
-	private void contingencyCaseSamples(
-			Map<String, Integer> caseSamplesContingencyTable,
-			Map<Integer, Float> caseSamplesGTsTable,
-			List<Integer> AAnumValsAL,
-			List<Integer> AanumValsAL,
-			List<Integer> aanumValsAL)
-	{
-		for (Map.Entry<Integer, Float> samplesEntry : caseSamplesGTsTable.entrySet()) {
-			Integer key = samplesEntry.getKey();
-			Integer value = Math.round(samplesEntry.getValue());
-
-			if (AAnumValsAL.contains(key)) {
-				// compare to all possible character values of AA
-				// ALL CENSUS
-				int tempCount = 0;
-				if (caseSamplesContingencyTable.containsKey("AA")) {
-					tempCount = caseSamplesContingencyTable.get("AA");
-				}
-				caseSamplesContingencyTable.put("AA", tempCount + value);
-			}
-			if (AanumValsAL.contains(key)) {
-				// compare to all possible character values of Aa
-				// ALL CENSUS
-				int tempCount = 0;
-				if (caseSamplesContingencyTable.containsKey("Aa")) {
-					tempCount = caseSamplesContingencyTable.get("Aa");
-				}
-				caseSamplesContingencyTable.put("Aa", tempCount + value);
-			}
-			if (aanumValsAL.contains(key)) {
-				// compare to all possible character values of aa
-				// ALL CENSUS
-				int tempCount = 0;
-				if (caseSamplesContingencyTable.containsKey("aa")) {
-					tempCount = caseSamplesContingencyTable.get("aa");
-				}
-				caseSamplesContingencyTable.put("aa", tempCount + value);
-			}
-		}
-	}
-
-	private void contingencyCtrlSamples(
-			Map<String, Integer> ctrlSamplesContingencyTable,
-			Map<Integer, Float> ctrlSamplesGTsTable,
-			List<Integer> AAnumValsAL,
-			List<Integer> AanumValsAL,
-			List<Integer> aanumValsAL)
-	{
-		for (Map.Entry<Integer, Float> samplesEntry : ctrlSamplesGTsTable.entrySet()) {
-			Integer key = samplesEntry.getKey();
-			Integer value = Math.round(samplesEntry.getValue());
-
-			if (AAnumValsAL.contains(key)) {
-				// compare to all possible character values of AA
-				// ALL CENSUS
-				int tempCount = 0;
-				if (ctrlSamplesContingencyTable.containsKey("AA")) {
-					tempCount = ctrlSamplesContingencyTable.get("AA");
-				}
-				ctrlSamplesContingencyTable.put("AA", tempCount + value);
-			}
-			if (AanumValsAL.contains(key)) {
-				// compare to all possible character values of Aa
-				// ALL CENSUS
-				int tempCount = 0;
-				if (ctrlSamplesContingencyTable.containsKey("Aa")) {
-					tempCount = ctrlSamplesContingencyTable.get("Aa");
-				}
-				ctrlSamplesContingencyTable.put("Aa", tempCount + value);
-			}
-			if (aanumValsAL.contains(key)) {
-				// compare to all possible character values of aa
-				// ALL CENSUS
-				int tempCount = 0;
-				if (ctrlSamplesContingencyTable.containsKey("aa")) {
-					tempCount = ctrlSamplesContingencyTable.get("aa");
-				}
-				ctrlSamplesContingencyTable.put("aa", tempCount + value);
-			}
-		}
-	}
-
-	private void contingencyHWSamples(
+	private static void contingencyCensusSamples(
 			Map<String, Integer> hwSamplesContingencyTable,
 			Map<Integer, Float> hwSamplesGTsTable,
 			List<Integer> AAnumValsAL,

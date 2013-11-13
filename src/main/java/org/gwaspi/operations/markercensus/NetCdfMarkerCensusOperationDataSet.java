@@ -20,6 +20,9 @@ package org.gwaspi.operations.markercensus;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.EnumMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Queue;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
@@ -30,6 +33,9 @@ import org.gwaspi.model.OperationKey;
 import org.gwaspi.netCDF.operations.NetCdfUtils;
 import org.gwaspi.netCDF.operations.OperationFactory;
 import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
+import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationEntry;
+import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationEntry.Category;
+import ucar.ma2.ArrayByte;
 import ucar.ma2.ArrayInt;
 import ucar.ma2.Index;
 import ucar.ma2.InvalidRangeException;
@@ -142,28 +148,56 @@ public class NetCdfMarkerCensusOperationDataSet extends AbstractNetCdfOperationD
 		throw new UnsupportedOperationException("Not supported yet."); // TODO
 	}
 
+	private ArrayByte.D2 netCdfKnownAlleles;
 	private ArrayInt.D2 netCdfCensusAlls;
+	private ArrayInt.D2 netCdfCensusesRest;
 
 	@Override
 	protected void writeEntries(int alreadyWritten, Queue<MarkerCensusOperationEntry> writeBuffer) throws IOException {
 
-		int[] origin = new int[] {alreadyWritten};
+		int[] origin = new int[] {alreadyWritten, 0};
 		if (netCdfCensusAlls == null) {
 			// only create once, and reuse later on
 			// NOTE This might be bad for multi-threading in a later stage
+			netCdfKnownAlleles = new ArrayByte.D2(writeBuffer.size(), 1);
 			netCdfCensusAlls = new ArrayInt.D2(writeBuffer.size(), 4);
+			netCdfCensusesRest = new ArrayInt.D2(writeBuffer.size(), 3);
 		}
 		int index = 0;
-		for (MarkerCensusOperationEntry entry : writeBuffer) {
-			Census censusAll = entry.getCensusAll();
-			Index indexObj = netCdfCensusAlls.getIndex().set(index);
-			netCdfCensusAlls.setInt(indexObj.set(index, 0), censusAll.);
-			netCdfObsHetzys.setDouble(netCdfObsHetzys.getIndex().set(index), entry.getObsHzy());
-			netCdfExpHetzys.setDouble(netCdfExpHetzys.getIndex().set(index), entry.getExpHzy());
-			index++;
-		}
-
 		try {
+			for (MarkerCensusOperationEntry entry : writeBuffer) {
+				// TODO known allele
+				Census censusAll = entry.getCensus().getCategoryCensus().get(Category.ALL);
+				Index indexObj = netCdfCensusAlls.getIndex().set(index);
+				netCdfCensusAlls.setInt(indexObj.set(index, 0), censusAll.getAA());
+				netCdfCensusAlls.setInt(indexObj.set(index, 1), censusAll.getAa());
+				netCdfCensusAlls.setInt(indexObj.set(index, 2), censusAll.getaa());
+				netCdfCensusAlls.setInt(indexObj.set(index, 3), censusAll.getMissingCount());
+				getNetCdfWriteFile().write(cNetCDF.Census.VAR_OP_MARKERS_CENSUSALL, origin, netCdfCensusAlls);
+
+
+				Census censusAll = entry.getCensus().getCategoryCensus().get(Category.ALL);
+				Index indexObj = netCdfCensusAlls.getIndex().set(index);
+				netCdfCensusAlls.setInt(indexObj.set(index, 0), censusAll.getAA());
+				netCdfCensusAlls.setInt(indexObj.set(index, 1), censusAll.getAa());
+				netCdfCensusAlls.setInt(indexObj.set(index, 2), censusAll.getaa());
+				netCdfCensusAlls.setInt(indexObj.set(index, 3), censusAll.getMissingCount());
+				getNetCdfWriteFile().write(cNetCDF.Census.VAR_OP_MARKERS_CENSUSALL, origin, netCdfCensusAlls);
+
+				Map<Category, String> categoryNetCdfVarName = new EnumMap<Category, String>(Category.class);
+				categoryNetCdfVarName.put(Category.CASE, cNetCDF.Census.VAR_OP_MARKERS_CENSUSCASE);
+				categoryNetCdfVarName.put(Category.CONTROL, cNetCDF.Census.VAR_OP_MARKERS_CENSUSCTRL);
+				categoryNetCdfVarName.put(Category.ALTERNATE, cNetCDF.Census.VAR_OP_MARKERS_CENSUSHW);
+				for (Map.Entry<Category, String> censusEntry : categoryNetCdfVarName.entrySet()) {
+					Census census = entry.getCensus().getCategoryCensus().get(censusEntry.getKey());
+					netCdfCensusesRest.setInt(indexObj.set(index, 0), census.getAA());
+					netCdfCensusesRest.setInt(indexObj.set(index, 1), census.getAa());
+					netCdfCensusesRest.setInt(indexObj.set(index, 2), census.getaa());
+					getNetCdfWriteFile().write(censusEntry.getValue(), origin, netCdfCensusesRest);
+				}
+				index++;
+			}
+
 			getNetCdfWriteFile().write(varP, origin, netCdfPs);
 			getNetCdfWriteFile().write(varObsHtz, origin, netCdfObsHetzys);
 			getNetCdfWriteFile().write(varExpHtz, origin, netCdfExpHetzys);

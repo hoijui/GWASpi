@@ -29,6 +29,7 @@ import org.gwaspi.model.Census;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixMetadata;
+import org.gwaspi.model.OperationKey;
 import org.gwaspi.netCDF.operations.MarkerOperationSet;
 import org.gwaspi.netCDF.operations.NetCdfUtils;
 import org.gwaspi.netCDF.operations.OperationFactory;
@@ -48,8 +49,12 @@ public class NetCdfQAMarkersOperationDataSet extends AbstractNetCdfOperationData
 	// - cNetCDF.Census.VAR_OP_MARKERS_MINALLELEFRQ: (double) frequency of dictionary allele 2 in all the alleles for any given marker
 	// - cNetCDF.Census.VAR_OP_MARKERS_CENSUSALL: ({int, int, int, int}) allele-AA, allele-Aa, allele-aa, missing-count for each marker
 
+	public NetCdfQAMarkersOperationDataSet(OperationKey operationKey) {
+		super(true, operationKey);
+	}
+
 	public NetCdfQAMarkersOperationDataSet() {
-		super(true);
+		this(null);
 	}
 
 	@Override

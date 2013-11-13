@@ -27,6 +27,7 @@ import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixMetadata;
+import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.netCDF.operations.NetCdfUtils;
 import org.gwaspi.netCDF.operations.OperationFactory;
@@ -42,8 +43,12 @@ public class NetCdfQASamplesOperationDataSet extends AbstractNetCdfOperationData
 	// - cNetCDF.Census.VAR_OP_SAMPLES_MISSINGCOUNT: (int) missing count for each sample
 	// - cNetCDF.Census.VAR_OP_SAMPLES_HETZYRAT: (double) heterozygosity ratio for each sample
 
+	public NetCdfQASamplesOperationDataSet(OperationKey operationKey) {
+		super(false, operationKey);
+	}
+
 	public NetCdfQASamplesOperationDataSet() {
-		super(false);
+		this(null);
 	}
 
 	@Override
