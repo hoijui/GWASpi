@@ -30,4 +30,9 @@ public interface OperationDataEntry<OK> {
 	 * @return the (operation/main-)key of this data entry
 	 */
 	OK getKey();
+
+	/**
+	 * @return the index of this entry in the original data-set
+	 */
+	int getIndex();
 }

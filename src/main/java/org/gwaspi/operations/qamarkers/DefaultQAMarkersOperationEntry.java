@@ -35,6 +35,7 @@ public class DefaultQAMarkersOperationEntry extends AbstractOperationDataEntry<M
 
 	public DefaultQAMarkersOperationEntry(
 			MarkerKey key,
+			int index,
 			double missingRatio,
 			boolean mismatchState,
 			byte majorAllele,
@@ -46,7 +47,7 @@ public class DefaultQAMarkersOperationEntry extends AbstractOperationDataEntry<M
 			int alleleaa,
 			int missingCount)
 	{
-		super(key);
+		super(key, index);
 
 		this.missingRatio = missingRatio;
 		this.mismatchState = mismatchState;

@@ -130,7 +130,7 @@ public class NetCdfQASamplesOperationDataSet extends AbstractNetCdfOperationData
 	public Collection<QASamplesOperationEntry> getEntries(int from, int to) throws IOException {
 
 		SampleOperationSet rdSampleSet = new SampleOperationSet(getOperationKey(), from, to);
-		Map<SampleKey, ?> rdSamples = rdSampleSet.getOpSetMap();
+		Map<SampleKey, Integer> rdSamples = rdSampleSet.getOpSetMap();
 
 		Collection<Double> missingRatios = getSampleMissingRatios(from, to);
 		Collection<Integer> missingCount = getSampleMissingCount(from, to);
@@ -140,7 +140,7 @@ public class NetCdfQASamplesOperationDataSet extends AbstractNetCdfOperationData
 				= new ArrayList<QASamplesOperationEntry>(missingRatios.size());
 		Iterator<Double> missingRatioIt = missingRatios.iterator();
 		Iterator<Integer> missingCountIt = missingCount.iterator();
-		Iterator<Double> hetzyRatiosIt = hetzyRatios.iterator();
+		for (Map.Entry<MarkerKey, Integer> markerKeyIndex : rdMarkers.entrySet()) {t = hetzyRatios.iterator();
 		for (SampleKey sampleKey : rdSamples.keySet()) {
 			entries.add(new DefaultQASamplesOperationEntry(sampleKey, missingRatioIt.next(), missingCountIt.next(), hetzyRatiosIt.next()));
 		}

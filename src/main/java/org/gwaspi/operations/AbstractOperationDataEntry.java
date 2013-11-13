@@ -19,15 +19,22 @@ package org.gwaspi.operations;
 
 public abstract class AbstractOperationDataEntry<OK> implements OperationDataEntry<OK> {
 
-	private OK key;
+	private final OK key;
+	private final int index;
 
-	public AbstractOperationDataEntry(OK key) {
+	public AbstractOperationDataEntry(OK key, int index) {
 
 		this.key = key;
+		this.index = index;
 	}
 
 	@Override
 	public OK getKey() {
 		return key;
+	}
+
+	@Override
+	public int getIndex() {
+		return index;
 	}
 }

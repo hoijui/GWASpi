@@ -24,8 +24,8 @@ public class DefaultAllelicAssociationOperationEntry extends DefaultTrendTestOpe
 
 	private final double or;
 
-	public DefaultAllelicAssociationOperationEntry(MarkerKey key, double t, double p, double or) {
-		super(key, t, p);
+	public DefaultAllelicAssociationOperationEntry(MarkerKey key, int index, double t, double p, double or) {
+		super(key, index, t, p);
 
 		this.or = or;
 	}

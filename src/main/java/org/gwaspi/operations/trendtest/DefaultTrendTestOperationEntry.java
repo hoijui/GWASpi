@@ -25,8 +25,8 @@ public class DefaultTrendTestOperationEntry extends AbstractOperationDataEntry<M
 	private final double t;
 	private final double p;
 
-	public DefaultTrendTestOperationEntry(MarkerKey key, double t, double p) {
-		super(key);
+	public DefaultTrendTestOperationEntry(MarkerKey key, int index, double t, double p) {
+		super(key, index);
 
 		this.t = t;
 		this.p = p;

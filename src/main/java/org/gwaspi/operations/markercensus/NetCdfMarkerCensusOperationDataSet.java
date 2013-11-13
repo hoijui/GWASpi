@@ -159,7 +159,7 @@ public class NetCdfMarkerCensusOperationDataSet extends AbstractNetCdfOperationD
 		if (netCdfCensusAlls == null) {
 			// only create once, and reuse later on
 			// NOTE This might be bad for multi-threading in a later stage
-			netCdfKnownAlleles = new ArrayByte.D2(writeBuffer.size(), 1);
+			netCdfKnownAlleles = new ArrayByte.D2(writeBuffer.size(), cNetCDF.Strides.STRIDE_GT);
 			netCdfCensusAlls = new ArrayInt.D2(writeBuffer.size(), 4);
 			netCdfCensusesRest = new ArrayInt.D2(writeBuffer.size(), 3);
 		}

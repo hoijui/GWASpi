@@ -26,8 +26,8 @@ public class DefaultQASamplesOperationEntry extends AbstractOperationDataEntry<S
 	private final int missingCount;
 	private final double hetzyRatio;
 
-	public DefaultQASamplesOperationEntry(SampleKey key, double missingRatio, int missingCount, double hetzyRatio) {
-		super(key);
+	public DefaultQASamplesOperationEntry(SampleKey key, int index, double missingRatio, int missingCount, double hetzyRatio) {
+		super(key, index);
 
 		this.missingRatio = missingRatio;
 		this.missingCount = missingCount;

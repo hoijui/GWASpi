@@ -56,6 +56,8 @@ import org.gwaspi.operations.markercensus.MarkerCensusOperationDataSet;
 import org.gwaspi.operations.markercensus.NetCdfMarkerCensusOperationDataSet;
 import org.gwaspi.operations.qamarkers.NetCdfQAMarkersOperationDataSet;
 import org.gwaspi.operations.qamarkers.QAMarkersOperationDataSet;
+import org.gwaspi.operations.qasamples.NetCdfQASamplesOperationDataSet;
+import org.gwaspi.operations.qasamples.QASamplesOperationDataSet;
 import org.gwaspi.samples.SampleSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -536,21 +538,21 @@ public class OP_MarkerCensus implements MatrixOperation {
 			throws IOException
 	{
 		OperationKey markerQAOPKey = OperationKey.valueOf(markerQAOP);
-		OperatisonKey sampleQAOPKey = OperationKey.valueOf(sampleQAOP);
+		OperationKey sampleQAOPKey = OperationKey.valueOf(sampleQAOP);
 
 		QAMarkersOperationDataSet qaMarkersOperationDataSet = new NetCdfQAMarkersOperationDataSet(markerQAOPKey);
+		QASamplesOperationDataSet qaSamplesOperationDataSet = new NetCdfQASamplesOperationDataSet(sampleQAOPKey);
 
+//		OperationMetadata markerQAMetadata = OperationsList.getOperationMetadata(markerQAOP.getId());
+//		NetcdfFile rdMarkerQANcFile = NetcdfFile.open(markerQAMetadata.getPathToMatrix());
 
-		OperationMetadata markerQAMetadata = OperationsList.getOperationMetadata(markerQAOP.getId());
-		NetcdfFile rdMarkerQANcFile = NetcdfFile.open(markerQAMetadata.getPathToMatrix());
+//		OperationMetadata sampleQAMetadata = OperationsList.getOperationMetadata(sampleQAOP.getId());
+//		NetcdfFile rdSampleQANcFile = NetcdfFile.open(sampleQAMetadata.getPathToMatrix());
 
-		OperationMetadata sampleQAMetadata = OperationsList.getOperationMetadata(sampleQAOP.getId());
-		NetcdfFile rdSampleQANcFile = NetcdfFile.open(sampleQAMetadata.getPathToMatrix());
-
-		MarkerOperationSet rdQAMarkerSet = new MarkerOperationSet(OperationKey.valueOf(markerQAMetadata));
-		SampleOperationSet rdQASampleSet = new SampleOperationSet(OperationKey.valueOf(sampleQAMetadata));
-		Map<MarkerKey, ?> rdQAMarkerSetMap = rdQAMarkerSet.getOpSetMap();
-		Map<SampleKey, ?> rdQASampleSetMap = rdQASampleSet.getOpSetMap();
+//		MarkerOperationSet rdQAMarkerSet = new MarkerOperationSet(OperationKey.valueOf(markerQAMetadata));
+//		SampleOperationSet rdQASampleSet = new SampleOperationSet(OperationKey.valueOf(sampleQAMetadata));
+//		Map<MarkerKey, ?> rdQAMarkerSetMap = rdQAMarkerSet.getOpSetMap();
+//		Map<SampleKey, ?> rdQASampleSetMap = rdQASampleSet.getOpSetMap();
 		Map<MarkerKey, Object> excludeMarkerSetMap = new LinkedHashMap<MarkerKey, Object>();
 		excludeSampleSetMap.clear();
 
@@ -559,11 +561,12 @@ public class OP_MarkerCensus implements MatrixOperation {
 
 		// EXCLUDE MARKER BY MISMATCH STATE
 		if (discardMismatches) {
-			Map<MarkerKey, Integer> rdQAMarkerSetMapMismatchStates = rdQAMarkerSet.fillOpSetMapWithVariable(rdMarkerQANcFile, cNetCDF.Census.VAR_OP_MARKERS_MISMATCHSTATE);
+			Iterator<Boolean> mismatchStatesIt = qaMarkersOperationDataSet.getMismatchStates().iterator();
+//			Map<MarkerKey, Integer> rdQAMarkerSetMapMismatchStates = rdQAMarkerSet.fillOpSetMapWithVariable(rdMarkerQANcFile, cNetCDF.Census.VAR_OP_MARKERS_MISMATCHSTATE);
 			for (Map.Entry<MarkerKey, Integer> entry : rdQAMarkerSetMapMismatchStates.entrySet()) {
 				MarkerKey key = entry.getKey();
 				Integer value = entry.getValue();
-				if (value.equals(cNetCDF.Defaults.DEFAULT_MISMATCH_YES)) {
+				if (mismatchStatesIt.next()) {
 					excludeMarkerSetMap.put(key, value);
 				}
 			}

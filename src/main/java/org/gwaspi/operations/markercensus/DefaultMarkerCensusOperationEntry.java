@@ -25,8 +25,8 @@ public class DefaultMarkerCensusOperationEntry extends AbstractOperationDataEntr
 
 	private final CensusFull census;
 
-	public DefaultMarkerCensusOperationEntry(MarkerKey key, CensusFull census) {
-		super(key);
+	public DefaultMarkerCensusOperationEntry(MarkerKey key, int index, CensusFull census) {
+		super(key, index);
 
 		this.census = census;
 	}

@@ -27,8 +27,8 @@ public class DefaultHardyWeinbergOperationEntry extends AbstractOperationDataEnt
 	private final double expHzy;
 	private final Category category;
 
-	public DefaultHardyWeinbergOperationEntry(MarkerKey key, Category category, double pValue, double obsHzy, double expHzy) {
-		super(key);
+	public DefaultHardyWeinbergOperationEntry(MarkerKey key, int index, Category category, double pValue, double obsHzy, double expHzy) {
+		super(key, index);
 
 		this.category = category;
 		this.pValue = pValue;

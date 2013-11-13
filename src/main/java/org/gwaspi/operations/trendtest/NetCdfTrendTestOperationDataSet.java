@@ -73,7 +73,7 @@ public class NetCdfTrendTestOperationDataSet extends AbstractNetCdfTestOperation
 	public Collection<TrendTestOperationEntry> getEntries(int from, int to) throws IOException {
 
 		MarkerOperationSet rdMarkersSet = new MarkerOperationSet(getOperationKey(), from, to);
-		Map<MarkerKey, ?> rdMarkers = rdMarkersSet.getOpSetMap();
+		Map<MarkerKey, Integer> rdMarkers = rdMarkersSet.getOpSetMap();
 
 		Collection<Double> ts = new ArrayList<Double>(0);
 		NetCdfUtils.readVariable(getNetCdfReadFile(), cNetCDF.Association.VAR_OP_MARKERS_T, from, to, ts, null);
@@ -84,8 +84,8 @@ public class NetCdfTrendTestOperationDataSet extends AbstractNetCdfTestOperation
 				= new ArrayList<TrendTestOperationEntry>(ts.size());
 		Iterator<Double> tsIt = ts.iterator();
 		Iterator<Double> psIt = ps.iterator();
-		for (MarkerKey markerKey : rdMarkers.keySet()) {
-			entries.add(new DefaultTrendTestOperationEntry(markerKey, tsIt.next(), psIt.next()));
+		for (Map.Entry<MarkerKey, Integer> markerKeyIndex : rdMarkers.entrySet()) {
+			entries.add(new DefaultTrendTestOperationEntry(markerKeyIndex.getKey(), markerKeyIndex.getValue(), tsIt.next(), psIt.next()));
 		}
 
 		return entries;

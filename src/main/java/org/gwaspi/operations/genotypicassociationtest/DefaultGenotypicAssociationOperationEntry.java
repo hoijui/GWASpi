@@ -24,8 +24,8 @@ public class DefaultGenotypicAssociationOperationEntry extends DefaultAllelicAss
 
 	private final double or2;
 
-	public DefaultGenotypicAssociationOperationEntry(MarkerKey key, double t, double p, double or, double or2) {
-		super(key, t, p, or);
+	public DefaultGenotypicAssociationOperationEntry(MarkerKey key, int index, double t, double p, double or, double or2) {
+		super(key, index, t, p, or);
 
 		this.or2 = or2;
 	}
