@@ -32,6 +32,8 @@ public interface MarkerCensusOperationEntry extends OperationDataEntry<MarkerKey
 	// - Census.VAR_OP_MARKERS_CENSUSCTRL: marker census - control [Collection<Census.control>]
 	// - Census.VAR_OP_MARKERS_CENSUSHW: marker census - alternate hardy-weinberg [Collection<Census.altHW>]
 
+	byte[] getKnownAlleles();
+
 	/**
 	 * @return all census info:
 	 *   int[4]: allele-AA, allele-Aa, allele-aa, missing-count for each marker in this operation

@@ -23,12 +23,19 @@ import org.gwaspi.operations.AbstractOperationDataEntry;
 
 public class DefaultMarkerCensusOperationEntry extends AbstractOperationDataEntry<MarkerKey> implements MarkerCensusOperationEntry {
 
+	private final byte[] knownAlleles;
 	private final CensusFull census;
 
-	public DefaultMarkerCensusOperationEntry(MarkerKey key, int index, CensusFull census) {
+	public DefaultMarkerCensusOperationEntry(MarkerKey key, int index, byte[] knownAlleles, CensusFull census) {
 		super(key, index);
 
+		this.knownAlleles = knownAlleles;
 		this.census = census;
+	}
+
+	@Override
+	public byte[] getKnownAlleles() {
+		return knownAlleles;
 	}
 
 	@Override

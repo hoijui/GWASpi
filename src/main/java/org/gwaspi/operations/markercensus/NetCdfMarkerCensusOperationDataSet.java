@@ -21,7 +21,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.EnumMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Queue;
 import org.gwaspi.constants.cNetCDF;
@@ -166,18 +165,17 @@ public class NetCdfMarkerCensusOperationDataSet extends AbstractNetCdfOperationD
 		int index = 0;
 		try {
 			for (MarkerCensusOperationEntry entry : writeBuffer) {
-				// TODO known allele
-				Census censusAll = entry.getCensus().getCategoryCensus().get(Category.ALL);
-				Index indexObj = netCdfCensusAlls.getIndex().set(index);
-				netCdfCensusAlls.setInt(indexObj.set(index, 0), censusAll.getAA());
-				netCdfCensusAlls.setInt(indexObj.set(index, 1), censusAll.getAa());
-				netCdfCensusAlls.setInt(indexObj.set(index, 2), censusAll.getaa());
-				netCdfCensusAlls.setInt(indexObj.set(index, 3), censusAll.getMissingCount());
-				getNetCdfWriteFile().write(cNetCDF.Census.VAR_OP_MARKERS_CENSUSALL, origin, netCdfCensusAlls);
+				Index indexObj;
+
+				byte[] knownAlleles = entry.getKnownAlleles();
+				indexObj = netCdfKnownAlleles.getIndex().set(index);
+				netCdfKnownAlleles.setInt(indexObj.set(index, 0), knownAlleles[0]);
+				netCdfKnownAlleles.setInt(indexObj.set(index, 1), knownAlleles[1]);
+				getNetCdfWriteFile().write(cNetCDF.Variables.VAR_ALLELES, origin, netCdfKnownAlleles);
 
 
 				Census censusAll = entry.getCensus().getCategoryCensus().get(Category.ALL);
-				Index indexObj = netCdfCensusAlls.getIndex().set(index);
+				indexObj = netCdfCensusAlls.getIndex().set(index);
 				netCdfCensusAlls.setInt(indexObj.set(index, 0), censusAll.getAA());
 				netCdfCensusAlls.setInt(indexObj.set(index, 1), censusAll.getAa());
 				netCdfCensusAlls.setInt(indexObj.set(index, 2), censusAll.getaa());
@@ -190,6 +188,7 @@ public class NetCdfMarkerCensusOperationDataSet extends AbstractNetCdfOperationD
 				categoryNetCdfVarName.put(Category.ALTERNATE, cNetCDF.Census.VAR_OP_MARKERS_CENSUSHW);
 				for (Map.Entry<Category, String> censusEntry : categoryNetCdfVarName.entrySet()) {
 					Census census = entry.getCensus().getCategoryCensus().get(censusEntry.getKey());
+					indexObj = netCdfCensusesRest.getIndex().set(index);
 					netCdfCensusesRest.setInt(indexObj.set(index, 0), census.getAA());
 					netCdfCensusesRest.setInt(indexObj.set(index, 1), census.getAa());
 					netCdfCensusesRest.setInt(indexObj.set(index, 2), census.getaa());
@@ -197,10 +196,6 @@ public class NetCdfMarkerCensusOperationDataSet extends AbstractNetCdfOperationD
 				}
 				index++;
 			}
-
-			getNetCdfWriteFile().write(varP, origin, netCdfPs);
-			getNetCdfWriteFile().write(varObsHtz, origin, netCdfObsHetzys);
-			getNetCdfWriteFile().write(varExpHtz, origin, netCdfExpHetzys);
 		} catch (InvalidRangeException ex) {
 			throw new IOException(ex);
 		}
