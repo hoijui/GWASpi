@@ -140,9 +140,14 @@ public class NetCdfQASamplesOperationDataSet extends AbstractNetCdfOperationData
 				= new ArrayList<QASamplesOperationEntry>(missingRatios.size());
 		Iterator<Double> missingRatioIt = missingRatios.iterator();
 		Iterator<Integer> missingCountIt = missingCount.iterator();
-		for (Map.Entry<MarkerKey, Integer> markerKeyIndex : rdMarkers.entrySet()) {t = hetzyRatios.iterator();
-		for (SampleKey sampleKey : rdSamples.keySet()) {
-			entries.add(new DefaultQASamplesOperationEntry(sampleKey, missingRatioIt.next(), missingCountIt.next(), hetzyRatiosIt.next()));
+		Iterator<Double> hetzyRatiosIt = hetzyRatios.iterator();
+		for (Map.Entry<SampleKey, Integer> sampleKeyIndex : rdSamples.entrySet()) {
+			entries.add(new DefaultQASamplesOperationEntry(
+					sampleKeyIndex.getKey(),
+					sampleKeyIndex.getValue(),
+					missingRatioIt.next(),
+					missingCountIt.next(),
+					hetzyRatiosIt.next()));
 		}
 
 		return entries;

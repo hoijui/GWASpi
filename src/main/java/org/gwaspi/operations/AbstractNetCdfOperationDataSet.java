@@ -43,7 +43,6 @@ public abstract class AbstractNetCdfOperationDataSet<ET> implements OperationDat
 
 	private final Logger log = LoggerFactory.getLogger(AbstractNetCdfOperationDataSet.class);
 
-	private OperationKey operationKey;
 	private final boolean markersOperationSet;
 	private MatrixKey rdMatrixKey;
 	private int numMarkers;
@@ -158,10 +157,6 @@ public abstract class AbstractNetCdfOperationDataSet<ET> implements OperationDat
 			operationKey = operationFactory.getResultOperationKey();
 		}
 
-		return operationKey;
-	}
-
-	public OperationKey getOperationKey() {XX;
 		return operationKey;
 	}
 

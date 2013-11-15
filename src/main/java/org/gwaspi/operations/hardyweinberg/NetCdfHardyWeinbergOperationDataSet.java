@@ -226,7 +226,7 @@ public class NetCdfHardyWeinbergOperationDataSet extends AbstractNetCdfOperation
 		}
 
 		MarkerOperationSet rdMarkersSet = new MarkerOperationSet(getOperationKey(), from, to);
-		Map<MarkerKey, ?> rdMarkers = rdMarkersSet.getOpSetMap();
+		Map<MarkerKey, Integer> rdMarkers = rdMarkersSet.getOpSetMap();
 
 		Collection<Double> ps = new ArrayList<Double>(0);
 		NetCdfUtils.readVariable(getNetCdfReadFile(), varP, from, to, ps, null);
@@ -242,8 +242,14 @@ public class NetCdfHardyWeinbergOperationDataSet extends AbstractNetCdfOperation
 		Iterator<Double> psIt = ps.iterator();
 		Iterator<Double> hwObsHetzysIt = hwObsHetzys.iterator();
 		Iterator<Double> hwExpHetzysIt = hwExpHetzys.iterator();
-		for (MarkerKey markerKey : rdMarkers.keySet()) {
-			entries.add(new DefaultHardyWeinbergOperationEntry(markerKey, category, psIt.next(), hwObsHetzysIt.next(), hwExpHetzysIt.next()));
+		for (Map.Entry<MarkerKey, Integer> keysIndices : rdMarkers.entrySet()) {
+			entries.add(new DefaultHardyWeinbergOperationEntry(
+					keysIndices.getKey(),
+					keysIndices.getValue(),
+					category,
+					psIt.next(),
+					hwObsHetzysIt.next(),
+					hwExpHetzysIt.next()));
 		}
 
 		return entries;
