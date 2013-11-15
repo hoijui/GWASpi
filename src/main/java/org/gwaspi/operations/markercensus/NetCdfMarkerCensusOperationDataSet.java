@@ -58,11 +58,25 @@ public class NetCdfMarkerCensusOperationDataSet extends AbstractNetCdfOperationD
 	private boolean discardMismatches;
 
 	public NetCdfMarkerCensusOperationDataSet(OperationKey operationKey) {
-		super(true, operationKey);
+		super(true, operationKey, calculateEntriesWriteBufferSize());
 	}
 
 	public NetCdfMarkerCensusOperationDataSet() {
 		this(null);
+	}
+
+
+	private static int calculateEntriesWriteBufferSize() {
+
+		int chunkSize = Math.round((float)org.gwaspi.gui.StartGWASpi.maxProcessMarkers / 4);
+		if (chunkSize > 500000) {
+			chunkSize = 500000; // We want to keep things manageable for RAM
+		}
+		if (chunkSize < 10000 && org.gwaspi.gui.StartGWASpi.maxProcessMarkers > 10000) {
+			chunkSize = 10000; // But keep Map size sensible
+		}
+
+		return chunkSize;
 	}
 
 	public void setPhenoFile(File phenoFile) {

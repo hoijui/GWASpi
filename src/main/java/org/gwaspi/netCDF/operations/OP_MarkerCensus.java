@@ -42,7 +42,6 @@ import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
-import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleInfo.Affection;
 import org.gwaspi.model.SampleInfo.Sex;
@@ -52,6 +51,7 @@ import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.markers.MarkerSet;
 import org.gwaspi.netCDF.markers.NetCDFDataSetSource;
 import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
+import org.gwaspi.operations.markercensus.DefaultMarkerCensusOperationEntry;
 import org.gwaspi.operations.markercensus.MarkerCensusOperationDataSet;
 import org.gwaspi.operations.markercensus.NetCdfMarkerCensusOperationDataSet;
 import org.gwaspi.operations.qamarkers.NetCdfQAMarkersOperationDataSet;
@@ -195,7 +195,7 @@ public class OP_MarkerCensus implements MatrixOperation {
 
 				//<editor-fold defaultstate="expanded" desc="PROCESSOR">
 				Map<SampleKey, SampleInfo> samplesInfoMap = fetchSampleInfo(
-						rdMatrixMetadata.getStudyKey(), rdMatrixMetadata, wrSampleKeys);
+						rdMatrixMetadata.getStudyKey(), rdMatrixMetadata, wrSampleKeys.values());
 
 				// Iterate through markerset, take it marker by marker
 				rdMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
@@ -217,40 +217,42 @@ public class OP_MarkerCensus implements MatrixOperation {
 				}
 
 				log.info("Start Census testing markers");
+//
+//				int countMarkers = 0;
+//				int chunkSize = Math.round((float)org.gwaspi.gui.StartGWASpi.maxProcessMarkers / 4);
+//				if (chunkSize > 500000) {
+//					chunkSize = 500000; // We want to keep things manageable for RAM
+//				}
+//				if (chunkSize < 10000 && org.gwaspi.gui.StartGWASpi.maxProcessMarkers > 10000) {
+//					chunkSize = 10000; // But keep Map size sensible
+//				}
+//				int countChunks = 0;
 
-				int countMarkers = 0;
-				int chunkSize = Math.round((float)org.gwaspi.gui.StartGWASpi.maxProcessMarkers / 4);
-				if (chunkSize > 500000) {
-					chunkSize = 500000; // We want to keep things manageable for RAM
-				}
-				if (chunkSize < 10000 && org.gwaspi.gui.StartGWASpi.maxProcessMarkers > 10000) {
-					chunkSize = 10000; // But keep Map size sensible
-				}
-				int countChunks = 0;
-
-				Map<MarkerKey, CensusFull> wrChunkedMarkerCensusMap = new LinkedHashMap<MarkerKey, CensusFull>();
-				Map<MarkerKey, byte[]> wrChunkedKnownAllelesMap = new LinkedHashMap<MarkerKey, byte[]>();
+//				Map<MarkerKey, CensusFull> wrChunkedMarkerCensusMap = new LinkedHashMap<MarkerKey, CensusFull>();
+//				Map<MarkerKey, byte[]> wrChunkedKnownAllelesMap = new LinkedHashMap<MarkerKey, byte[]>();
 				Iterator<GenotypesList> markersGTsIt = dataSetSource.getMarkersGenotypesSource().iterator();
-				for (Map.Entry<MarkerKey, ?> entry : wrMarkerInfos.entrySet()) {
-					MarkerKey markerKey = entry.getKey();
-					if (countMarkers % chunkSize == 0) {
-						if (countMarkers > 0) {
-							// CENSUS DATA WRITER
-							censusDataWriter(
-									dataSet,
-									wrChunkedMarkerCensusMap,
-									wrChunkedKnownAllelesMap,
-									countChunks,
-									chunkSize);
-
-							countChunks++;
-						}
-						wrChunkedMarkerCensusMap = new LinkedHashMap<MarkerKey, CensusFull>();
-						wrChunkedKnownAllelesMap = new LinkedHashMap<MarkerKey, byte[]>();
-						System.gc(); // Try to garbage collect here
-					}
-					wrChunkedMarkerCensusMap.put(markerKey, new CensusFull()); // XXX This might be unrequired (would only, possibly make sense in case of an exception, but even then still only marginally, and with code modifications)
-					countMarkers++;
+				for (Map.Entry<MarkerKey, Object[]> entry : wrMarkerInfos.entrySet()) {
+					final MarkerKey markerKey = entry.getKey();
+					final int markerOrigIndex = (Integer) entry.getValue()[0];
+					final String markerChr = (String) entry.getValue()[1];
+//					if (countMarkers % chunkSize == 0) {
+//						if (countMarkers > 0) {
+//							// CENSUS DATA WRITER
+//							censusDataWriter(
+//									dataSet,
+//									wrChunkedMarkerCensusMap,
+//									wrChunkedKnownAllelesMap,
+//									countChunks,
+//									chunkSize);
+//
+//							countChunks++;
+//						}
+//						wrChunkedMarkerCensusMap = new LinkedHashMap<MarkerKey, CensusFull>();
+//						wrChunkedKnownAllelesMap = new LinkedHashMap<MarkerKey, byte[]>();
+//						System.gc(); // Try to garbage collect here
+//					}
+//					wrChunkedMarkerCensusMap.put(markerKey, new CensusFull()); // XXX This might be unrequired (would only, possibly make sense in case of an exception, but even then still only marginally, and with code modifications)
+//					countMarkers++;
 
 					Map<Byte, Float> knownAlleles = new LinkedHashMap<Byte, Float>();
 					Map<Integer, Float> allSamplesGTsTable = new LinkedHashMap<Integer, Float>();
@@ -264,10 +266,6 @@ public class OP_MarkerCensus implements MatrixOperation {
 					Integer missingCount = 0;
 
 					// Get a sample-set full of GTs
-					Object[] markerInfo = (Object[]) entry.getValue();
-					int markerNb = Integer.parseInt(markerInfo[0].toString());
-					String markerChr = markerInfo[1].toString();
-
 					Iterator<byte[]> markerGTsIt = markersGTsIt.next().iterator();
 					for (SampleKey sampleKey : dataSetSource.getSamplesKeysSource()) {
 						SampleInfo sampleInfo = samplesInfoMap.get(sampleKey);
@@ -296,6 +294,8 @@ public class OP_MarkerCensus implements MatrixOperation {
 								missingCount);
 					}
 
+					byte[] alleles;
+					CensusFull censusFull;
 					// AFFECTION ALLELE CENSUS + MISMATCH STATE + MISSINGNESS
 					if (knownAlleles.size() <= 2) {
 						// Check if there are mismatches in alleles
@@ -388,16 +388,14 @@ public class OP_MarkerCensus implements MatrixOperation {
 							obsHwaa = hwSamplesContingencyTable.get("aa");
 						}
 
-						CensusFull census = new CensusFull(
+						censusFull = new CensusFull(
 								new Census(obsAllAA, obsAllAa, obsAllaa, missingCount), // all
 								new Census(obsCaseAA, obsCaseAa, obsCaseaa, -1), // case
 								new Census(obsCntrlAA, obsCntrlAa, obsCntrlaa, -1), // control
 								new Census(obsHwAA, obsHwAa, obsHwaa, -1) // alternate HW samples
 								);
 
-						wrChunkedMarkerCensusMap.put(markerKey, census);
-
-						byte[] alleles = cNetCDF.Defaults.DEFAULT_GT;
+						alleles = cNetCDF.Defaults.DEFAULT_GT;
 						Iterator<Byte> knit = knownAlleles.keySet().iterator();
 						if (knownAlleles.size() == 2) {
 							Byte allele1 = knit.next();
@@ -408,27 +406,28 @@ public class OP_MarkerCensus implements MatrixOperation {
 							Byte allele1 = knit.next();
 							alleles = new byte[] {allele1, allele1};
 						}
-
-						wrChunkedKnownAllelesMap.put(markerKey, alleles);
 					} else {
 						// MISMATCHES FOUND
-						wrChunkedMarkerCensusMap.put(markerKey, new CensusFull());
-						wrChunkedKnownAllelesMap.put(markerKey, "00".getBytes());
+						censusFull = new CensusFull();
+						alleles = "00".getBytes();
 					}
 
-					if (markerNb != 0 && markerNb % 100000 == 0) {
-						log.info("Processed markers: {}", markerNb);
+					((NetCdfMarkerCensusOperationDataSet) dataSet).addEntry(new DefaultMarkerCensusOperationEntry(
+							markerKey, markerOrigIndex, alleles, censusFull));
+
+					if (markerOrigIndex != 0 && markerOrigIndex % 100000 == 0) {
+						log.info("Processed markers: {}", markerOrigIndex);
 					}
 				}
 				//</editor-fold>
 
-				// LAST CENSUS DATA WRITER
-				censusDataWriter(
-						dataSet,
-						wrChunkedMarkerCensusMap,
-						wrChunkedKnownAllelesMap,
-						countChunks,
-						chunkSize);
+//				// LAST CENSUS DATA WRITER
+//				censusDataWriter(
+//						dataSet,
+//						wrChunkedMarkerCensusMap,
+//						wrChunkedKnownAllelesMap,
+//						countChunks,
+//						chunkSize);
 
 			resultOpId = ((AbstractNetCdfOperationDataSet) dataSet).getOperationKey().getId(); // HACK
 //			} catch (InvalidRangeException ex) {
