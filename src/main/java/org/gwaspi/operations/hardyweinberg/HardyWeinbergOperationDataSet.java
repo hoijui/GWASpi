@@ -18,6 +18,7 @@
 package org.gwaspi.operations.hardyweinberg;
 
 import java.io.IOException;
+import java.util.Collection;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.operations.OperationDataSet;
 
@@ -52,4 +53,6 @@ public interface HardyWeinbergOperationDataSet extends OperationDataSet<HardyWei
 	void setHardyWeinbergName(String hwName);
 
 	void setMarkerCensusOperationKey(OperationKey markerCensusOPKey);
+
+	Collection<HardyWeinbergOperationEntry> getEntriesControl();
 }

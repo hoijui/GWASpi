@@ -50,8 +50,8 @@ public class NetCdfHardyWeinbergOperationDataSet extends AbstractNetCdfOperation
 	private OperationKey markerCensusOperationKey;
 	private final Map<HardyWeinbergOperationEntry.Category, EntryBuffer<HardyWeinbergOperationEntry>> writeBuffers;
 
-	public NetCdfHardyWeinbergOperationDataSet() {
-		super(true);
+	public NetCdfHardyWeinbergOperationDataSet(OperationKey operationKey) {
+		super(true, operationKey);
 
 		this.hardyWeinbergName = null;
 		this.markerCensusOperationKey = null;
@@ -59,6 +59,10 @@ public class NetCdfHardyWeinbergOperationDataSet extends AbstractNetCdfOperation
 		for (HardyWeinbergOperationEntry.Category category : HardyWeinbergOperationEntry.Category.values()) {
 			writeBuffers.put(category, new EntryBuffer<HardyWeinbergOperationEntry>());
 		}
+	}
+
+	public NetCdfHardyWeinbergOperationDataSet() {
+		this(null);
 	}
 
 	@Override

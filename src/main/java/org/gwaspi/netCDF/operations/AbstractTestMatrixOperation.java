@@ -40,6 +40,10 @@ import org.gwaspi.netCDF.markers.MarkerSet;
 import org.gwaspi.netCDF.matrices.ChromosomeUtils;
 import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
 import org.gwaspi.operations.OperationDataSet;
+import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationDataSet;
+import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationEntry;
+import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationEntry.Category;
+import org.gwaspi.operations.hardyweinberg.NetCdfHardyWeinbergOperationDataSet;
 import org.gwaspi.operations.trendtest.AbstractNetCdfTestOperationDataSet;
 import org.gwaspi.operations.trendtest.NetCdfTrendTestOperationDataSet;
 import org.slf4j.Logger;
@@ -246,27 +250,37 @@ public abstract class AbstractTestMatrixOperation implements MatrixOperation {
 		return filtered;
 	}
 
-	static boolean excludeMarkersByHW(OperationMetadata hwOP, double hwThreshold, Collection<MarkerKey> excludeMarkerSetMap) throws IOException {
+	static boolean excludeMarkersByHW(OperationMetadata hwOP, double hwPValueThreshold, Collection<MarkerKey> excludeMarkerSetMap) throws IOException {
 
 		excludeMarkerSetMap.clear();
 		int totalMarkerNb = 0;
 
 		if (hwOP != null) {
-			NetcdfFile rdHWNcFile = NetcdfFile.open(hwOP.getPathToMatrix());
-			MarkerOperationSet rdHWOperationSet = new MarkerOperationSet(OperationKey.valueOf(hwOP));
-			Map<MarkerKey, Double> rdHWMarkerSetMap = rdHWOperationSet.getOpSetMap();
-			totalMarkerNb = rdHWMarkerSetMap.size();
+			HardyWeinbergOperationDataSet hardyWeinbergOperationDataSet
+					= new NetCdfHardyWeinbergOperationDataSet(OperationKey.valueOf(hwOP));
+//			NetcdfFile rdHWNcFile = NetcdfFile.open(hwOP.getPathToMatrix());
+//			MarkerOperationSet rdHWOperationSet = new MarkerOperationSet(OperationKey.valueOf(hwOP));
+//			Map<MarkerKey, Double> rdHWMarkerSetMap = rdHWOperationSet.getOpSetMap();
+//			totalMarkerNb = rdHWMarkerSetMap.size();
 
 			// EXCLUDE MARKER BY HARDY WEINBERG THRESHOLD
-			rdHWMarkerSetMap = rdHWOperationSet.fillOpSetMapWithVariable(rdHWNcFile, cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWPval_CTRL);
-			totalMarkerNb = rdHWMarkerSetMap.size();
-			for (Map.Entry<MarkerKey, Double> entry : rdHWMarkerSetMap.entrySet()) {
-				double value = entry.getValue();
-				if (value < hwThreshold) {
-					excludeMarkerSetMap.add(entry.getKey());
+//			rdHWMarkerSetMap = rdHWOperationSet.fillOpSetMapWithVariable(rdHWNcFile, cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWPval_CTRL);
+//			totalMarkerNb = rdHWMarkerSetMap.size();
+			Collection<HardyWeinbergOperationEntry> hwEntriesControl = hardyWeinbergOperationDataSet.getEntriesControl();
+			totalMarkerNb = hwEntriesControl.size();
+			for (HardyWeinbergOperationEntry hardyWeinbergOperationEntry : hwEntriesControl) {
+				double pValue = hardyWeinbergOperationEntry.getP();
+				if (pValue < hwPValueThreshold) {
+					excludeMarkerSetMap.add(hardyWeinbergOperationEntry.getKey());
 				}
 			}
-			rdHWNcFile.close();
+//			for (Map.Entry<MarkerKey, Double> entry : rdHWMarkerSetMap.entrySet()) {
+//				double pValue = entry.getValue();
+//				if (pValue < hwPValueThreshold) {
+//					excludeMarkerSetMap.add(entry.getKey());
+//				}
+//			}
+//			rdHWNcFile.close();
 		}
 
 		return (excludeMarkerSetMap.size() < totalMarkerNb);

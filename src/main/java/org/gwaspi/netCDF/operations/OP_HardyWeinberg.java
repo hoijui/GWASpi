@@ -221,7 +221,7 @@ public class OP_HardyWeinberg implements MatrixOperation {
 			double chiSQ = org.gwaspi.statistics.Chisquare.calculateHWChiSquare(obsAA, expAA, obsAa, expAa, obsaa, expaa);
 			double pvalue = org.gwaspi.statistics.Pvalue.calculatePvalueFromChiSqr(chiSQ, 1);
 
-			HardyWeinbergOperationEntry hwEntry = new DefaultHardyWeinbergOperationEntry(entry.getKey(), category, pvalue, obsHzy, expHzy);
+			HardyWeinbergOperationEntry hwEntry = new DefaultHardyWeinbergOperationEntry(entry.getKey(), entry.getIndex(), category, pvalue, obsHzy, expHzy);
 			dataSet.addEntry(hwEntry);
 //			Double[] store = new Double[3];
 //			store[0] = pvalue;
