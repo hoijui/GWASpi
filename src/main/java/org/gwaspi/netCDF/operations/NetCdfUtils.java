@@ -978,13 +978,26 @@ public class NetCdfUtils {
 		}
 	}
 
-	public static void readVariable(NetcdfFile ncFile, String variableName, int indexFrom, int indexTo, Collection<?> targetCollection, Map<?, ?> targetMap) throws IOException {
+	public static void readVariable(NetcdfFile ncFile, String variableName, int indexFrom, int indexTo, Collection<?> targetCollection, Map<?, ?> targetValuesMap) throws IOException {
+		readVariable(ncFile, variableName, indexFrom, indexTo, targetCollection, targetValuesMap, null);
+	}
+
+	public static void readVariable(NetcdfFile ncFile, String variableName, int indexFrom, int indexTo, Collection<?> targetCollection, Map<?, ?> targetValuesMap, Map<?, ?> targetKeysMap) throws IOException {
 
 		Variable var = ncFile.findVariable(variableName);
 
-		if ((var == null)
-				|| ((targetCollection == null) == (targetMap == null)))
-		{
+		int numSetTargetContainers = 0;
+		if (targetCollection != null) {
+			numSetTargetContainers++;
+		}
+		if (targetValuesMap != null) {
+			numSetTargetContainers++;
+		}
+		if (targetKeysMap != null) {
+			numSetTargetContainers++;
+			throw new UnsupportedOperationException("is also filling values, not keys!");
+		}
+		if ((var == null) || (numSetTargetContainers != 1)) {
 			throw new IllegalArgumentException();
 		}
 
@@ -1059,54 +1072,108 @@ public class NetCdfUtils {
 				} else {
 					throw new UnsupportedOperationException();
 				}
-			} else {
+			} else if (targetValuesMap != null) {
 				if ((dataType == DataType.BYTE)) {
 					if (varShape.length == 1) {
 						ArrayByte.D1 markerSetAC = (ArrayByte.D1) var.read(fetchVarStr);
-						NetCdfUtils.writeD1ArrayToMapValues(markerSetAC, (Map<?, Byte>)targetMap);
+						NetCdfUtils.writeD1ArrayToMapValues(markerSetAC, (Map<?, Byte>)targetValuesMap);
 					} else if (varShape.length == 2) {
 						ArrayByte.D2 markerSetAC = (ArrayByte.D2) var.read(fetchVarStr);
-						NetCdfUtils.writeD2ArrayByteToMapValues(markerSetAC, (Map<?, byte[]>)targetMap);
+						NetCdfUtils.writeD2ArrayByteToMapValues(markerSetAC, (Map<?, byte[]>)targetValuesMap);
 					} else {
 						throw new UnsupportedOperationException();
 					}
 				} else if ((dataType == DataType.CHAR)) {
 					if (varShape.length == 1) {
 						ArrayChar.D1 markerSetAC = (ArrayChar.D1) var.read(fetchVarStr);
-						NetCdfUtils.writeD1ArrayToMapValues(markerSetAC, (Map<?, Character>)targetMap);
+						NetCdfUtils.writeD1ArrayToMapValues(markerSetAC, (Map<?, Character>)targetValuesMap);
 					} else if (varShape.length == 2) {
 						ArrayChar.D2 markerSetAC = (ArrayChar.D2) var.read(fetchVarStr);
-						NetCdfUtils.writeD2ArrayCharToMapValues(markerSetAC, (Map<?, char[]>)targetMap);
+						NetCdfUtils.writeD2ArrayCharToMapValues(markerSetAC, (Map<?, char[]>)targetValuesMap);
 					} else {
 						throw new UnsupportedOperationException();
 					}
 				} else if (dataType == DataType.DOUBLE) {
 					if (varShape.length == 1) {
 						ArrayDouble.D1 markerSetAF = (ArrayDouble.D1) var.read(fetchVarStr);
-						NetCdfUtils.writeD1ArrayDoubleToMapValues(markerSetAF, (Map<?, Double>)targetMap);
+						NetCdfUtils.writeD1ArrayDoubleToMapValues(markerSetAF, (Map<?, Double>)targetValuesMap);
 					} else if (varShape.length == 2) {
 						ArrayDouble.D2 markerSetAF = (ArrayDouble.D2) var.read(fetchVarStr);
-						NetCdfUtils.writeD2ArrayDoubleToMapValues(markerSetAF, (Map<?, double[]>)targetMap);
+						NetCdfUtils.writeD2ArrayDoubleToMapValues(markerSetAF, (Map<?, double[]>)targetValuesMap);
 					} else {
 						throw new UnsupportedOperationException();
 					}
 				} else if (dataType == DataType.INT) {
 					if (varShape.length == 1) {
 						ArrayInt.D1 markerSetAD = (ArrayInt.D1) var.read(fetchVarStr);
-						NetCdfUtils.writeD1ArrayIntToMapValues(markerSetAD, (Map<?, Integer>)targetMap);
+						NetCdfUtils.writeD1ArrayIntToMapValues(markerSetAD, (Map<?, Integer>)targetValuesMap);
 					} else if (varShape.length == 2) {
 						ArrayInt.D2 markerSetAD = (ArrayInt.D2) var.read(fetchVarStr);
-						NetCdfUtils.writeD2ArrayIntToMapValues(markerSetAD, (Map<?, int[]>)targetMap);
+						NetCdfUtils.writeD2ArrayIntToMapValues(markerSetAD, (Map<?, int[]>)targetValuesMap);
 					} else {
 						throw new UnsupportedOperationException();
 					}
 				} else if (dataType == DataType.BOOLEAN) {
 					if (varShape.length == 1) {
 						ArrayBoolean.D1 markerSetAD = (ArrayBoolean.D1) var.read(fetchVarStr);
-						NetCdfUtils.writeD1ArrayToMapValues(markerSetAD, (Map<?, Boolean>)targetMap);
+						NetCdfUtils.writeD1ArrayToMapValues(markerSetAD, (Map<?, Boolean>)targetValuesMap);
 					} else if (varShape.length == 2) {
 						ArrayBoolean.D2 markerSetAD = (ArrayBoolean.D2) var.read(fetchVarStr);
-						NetCdfUtils.writeD2ArrayToMapValues(markerSetAD, (Map<?, boolean[]>)targetMap);
+						NetCdfUtils.writeD2ArrayToMapValues(markerSetAD, (Map<?, boolean[]>)targetValuesMap);
+					} else {
+						throw new UnsupportedOperationException();
+					}
+				} else {
+					throw new UnsupportedOperationException();
+				}
+			} else {
+				if ((dataType == DataType.BYTE)) {
+					if (varShape.length == 1) {
+						ArrayByte.D1 markerSetAC = (ArrayByte.D1) var.read(fetchVarStr);
+						NetCdfUtils.writeD1ArrayToMapValues(markerSetAC, (Map<?, Byte>)targetKeysMap);
+					} else if (varShape.length == 2) {
+						ArrayByte.D2 markerSetAC = (ArrayByte.D2) var.read(fetchVarStr);
+						NetCdfUtils.writeD2ArrayByteToMapValues(markerSetAC, (Map<?, byte[]>)targetKeysMap);
+					} else {
+						throw new UnsupportedOperationException();
+					}
+				} else if ((dataType == DataType.CHAR)) {
+					if (varShape.length == 1) {
+						ArrayChar.D1 markerSetAC = (ArrayChar.D1) var.read(fetchVarStr);
+						NetCdfUtils.writeD1ArrayToMapValues(markerSetAC, (Map<?, Character>)targetKeysMap);
+					} else if (varShape.length == 2) {
+						ArrayChar.D2 markerSetAC = (ArrayChar.D2) var.read(fetchVarStr);
+						NetCdfUtils.writeD2ArrayCharToMapValues(markerSetAC, (Map<?, char[]>)targetKeysMap);
+					} else {
+						throw new UnsupportedOperationException();
+					}
+				} else if (dataType == DataType.DOUBLE) {
+					if (varShape.length == 1) {
+						ArrayDouble.D1 markerSetAF = (ArrayDouble.D1) var.read(fetchVarStr);
+						NetCdfUtils.writeD1ArrayDoubleToMapValues(markerSetAF, (Map<?, Double>)targetKeysMap);
+					} else if (varShape.length == 2) {
+						ArrayDouble.D2 markerSetAF = (ArrayDouble.D2) var.read(fetchVarStr);
+						NetCdfUtils.writeD2ArrayDoubleToMapValues(markerSetAF, (Map<?, double[]>)targetKeysMap);
+					} else {
+						throw new UnsupportedOperationException();
+					}
+				} else if (dataType == DataType.INT) {
+					if (varShape.length == 1) {
+						ArrayInt.D1 markerSetAD = (ArrayInt.D1) var.read(fetchVarStr);
+						NetCdfUtils.writeD1ArrayIntToMapValues(markerSetAD, (Map<?, Integer>)targetKeysMap);
+					} else if (varShape.length == 2) {
+						ArrayInt.D2 markerSetAD = (ArrayInt.D2) var.read(fetchVarStr);
+						NetCdfUtils.writeD2ArrayIntToMapValues(markerSetAD, (Map<?, int[]>)targetKeysMap);
+					} else {
+						throw new UnsupportedOperationException();
+					}
+				} else if (dataType == DataType.BOOLEAN) {
+					if (varShape.length == 1) {
+						ArrayBoolean.D1 markerSetAD = (ArrayBoolean.D1) var.read(fetchVarStr);
+						NetCdfUtils.writeD1ArrayToMapValues(markerSetAD, (Map<?, Boolean>)targetKeysMap);
+					} else if (varShape.length == 2) {
+						ArrayBoolean.D2 markerSetAD = (ArrayBoolean.D2) var.read(fetchVarStr);
+						NetCdfUtils.writeD2ArrayToMapValues(markerSetAD, (Map<?, boolean[]>)targetKeysMap);
 					} else {
 						throw new UnsupportedOperationException();
 					}

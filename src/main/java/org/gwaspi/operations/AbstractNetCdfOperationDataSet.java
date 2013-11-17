@@ -18,7 +18,9 @@
 package org.gwaspi.operations;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Queue;
@@ -29,6 +31,7 @@ import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.SampleKey;
+import org.gwaspi.model.SampleKeyFactory;
 import org.gwaspi.netCDF.operations.NetCdfUtils;
 import org.gwaspi.netCDF.operations.OperationFactory;
 import org.slf4j.Logger;
@@ -247,13 +250,19 @@ public abstract class AbstractNetCdfOperationDataSet<ET> implements OperationDat
 	@Override
 	public Map<Integer, SampleKey> getSamples() throws IOException {
 
+		Collection<Integer> origIndices = new ArrayList<Integer>(0);
 		final String varIdx = getIndexVar(false);
-		NetCdfUtils.readVariable(wrNcFile, varIdx, -1, -1, null, null);
+		NetCdfUtils.readVariable(wrNcFile, varIdx, -1, -1, origIndices, null);
+
+		Map<Integer, SampleKey> samples = new LinkedHashMap<Integer, SampleKey>(origIndices.size());
+		for (Integer origIndex : origIndices) {
+			samples.put(origIndex, null);
+		}
 
 		final String varName = getNameVar(false);
-		NetCdfUtils.readVariable(wrNcFile, varName, -1, -1, null, null);
+		NetCdfUtils.readVariable(wrNcFile, varName, -1, -1, null, samples XXX);
 
-		return XXX;
+		return samples;
 	}
 
 	@Override

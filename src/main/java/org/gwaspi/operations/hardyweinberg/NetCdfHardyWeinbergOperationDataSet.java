@@ -96,6 +96,10 @@ public class NetCdfHardyWeinbergOperationDataSet extends AbstractNetCdfOperation
 		this.markerCensusOperationKey = markerCensusOperationKey;
 	}
 
+	public Collection<HardyWeinbergOperationEntry> getEntriesControl() {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
 	private static final class EntryBuffer<ET> {
 
 		private final Queue<ET> entries;
