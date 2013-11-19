@@ -34,6 +34,9 @@ import org.gwaspi.netCDF.operations.MarkerOperationSet;
 import org.gwaspi.netCDF.operations.NetCdfUtils;
 import org.gwaspi.netCDF.operations.OperationFactory;
 import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
+import ucar.ma2.ArrayByte;
+import ucar.ma2.ArrayDouble;
+import ucar.ma2.ArrayInt;
 import ucar.ma2.InvalidRangeException;
 
 public class NetCdfQAMarkersOperationDataSet extends AbstractNetCdfOperationDataSet<QAMarkersOperationEntry> implements QAMarkersOperationDataSet {
@@ -48,6 +51,12 @@ public class NetCdfQAMarkersOperationDataSet extends AbstractNetCdfOperationData
 	// - cNetCDF.Census.VAR_OP_MARKERS_MINALLELES: (byte) dictionary allele 2 for each marker
 	// - cNetCDF.Census.VAR_OP_MARKERS_MINALLELEFRQ: (double) frequency of dictionary allele 2 in all the alleles for any given marker
 	// - cNetCDF.Census.VAR_OP_MARKERS_CENSUSALL: ({int, int, int, int}) allele-AA, allele-Aa, allele-aa, missing-count for each marker
+
+	private ArrayByte.D1 netCdfMajorAlleles;
+	private ArrayDouble.D1 netCdfMajorAllelesFrequencies;
+	private ArrayByte.D1 netCdfMinorAlleles;
+	private ArrayDouble.D1 netCdfMinorAllelesFrequencies;
+	private ArrayInt.D2 netCdfCensusAlls;
 
 	public NetCdfQAMarkersOperationDataSet(OperationKey operationKey) {
 		super(true, operationKey);
@@ -121,7 +130,7 @@ public class NetCdfQAMarkersOperationDataSet extends AbstractNetCdfOperationData
 		NetCdfUtils.saveIntMapD2ToWrMatrix(getNetCdfWriteFile(), markerCensusAll, Census.EXTRACTOR_4, cNetCDF.Census.VAR_OP_MARKERS_CENSUSALL);
 	}
 
-
+	@Override
 	public Collection<Boolean> getMismatchStates(int from, int to) throws IOException {
 
 		Collection<Boolean> mismatchStates = new ArrayList<Boolean>(0);
@@ -130,12 +139,58 @@ public class NetCdfQAMarkersOperationDataSet extends AbstractNetCdfOperationData
 		return mismatchStates;
 	}
 
+	@Override
 	public Collection<Double> getMissingRatio(int from, int to) throws IOException {
 
 		Collection<Double> missingRatios = new ArrayList<Double>(0);
 		NetCdfUtils.readVariable(getNetCdfReadFile(), cNetCDF.Census.VAR_OP_MARKERS_MISSINGRAT, from, to, missingRatios, null);
 
 		return missingRatios;
+	}
+
+	@Override
+	public Collection<Byte> getKnownMajorAllele(int from, int to) throws IOException {
+
+		Collection<Byte> knownMajorAllele = new ArrayList<Byte>(0);
+		NetCdfUtils.readVariable(getNetCdfReadFile(), cNetCDF.Census.VAR_OP_MARKERS_MAJALLELES, from, to, knownMajorAllele, null);
+
+		return knownMajorAllele;
+	}
+
+	@Override
+	public Collection<Double> getKnownMajorAlleleFrequencies(int from, int to) throws IOException {
+
+		Collection<Double> knownMajorAlleleFreq = new ArrayList<Double>(0);
+		NetCdfUtils.readVariable(getNetCdfReadFile(), cNetCDF.Census.VAR_OP_MARKERS_MAJALLELEFRQ, from, to, knownMajorAlleleFreq, null);
+
+		return knownMajorAlleleFreq;
+	}
+
+	@Override
+	public Collection<Byte> getKnownMinorAllele(int from, int to) throws IOException {
+
+		Collection<Byte> knownMinorAllele = new ArrayList<Byte>(0);
+		NetCdfUtils.readVariable(getNetCdfReadFile(), cNetCDF.Census.VAR_OP_MARKERS_MINALLELES, from, to, knownMinorAllele, null);
+
+		return knownMinorAllele;
+	}
+
+	@Override
+	public Collection<Double> getKnownMinorAlleleFrequencies(int from, int to) throws IOException {
+
+		Collection<Double> knownMinorAlleleFreq = new ArrayList<Double>(0);
+		NetCdfUtils.readVariable(getNetCdfReadFile(), cNetCDF.Census.VAR_OP_MARKERS_MINALLELEFRQ, from, to, knownMinorAlleleFreq, null);
+
+		return knownMinorAlleleFreq;
+	}
+
+	@Override
+	public Collection<int[]> getCensusAll(int from, int to) throws IOException {
+
+		Collection<int[]> censusAll = new ArrayList<int[]>(0);
+		NetCdfUtils.readVariable(getNetCdfReadFile(), cNetCDF.Census.VAR_OP_MARKERS_CENSUSALL, from, to, censusAll, null);
+
+		return censusAll;
 	}
 
 	@Override
@@ -147,17 +202,11 @@ public class NetCdfQAMarkersOperationDataSet extends AbstractNetCdfOperationData
 		Collection<Double> missingRatios = getMissingRatio(from, to);
 		Collection<Boolean> mismatchStates = getMismatchStates(from, to);
 
-		Collection<Byte> knownMajorAllele = new ArrayList<Byte>(0);
-		NetCdfUtils.readVariable(getNetCdfReadFile(), cNetCDF.Census.VAR_OP_MARKERS_MAJALLELES, from, to, knownMajorAllele, null);
-		Collection<Double> knownMajorAlleleFreq = new ArrayList<Double>(0);
-		NetCdfUtils.readVariable(getNetCdfReadFile(), cNetCDF.Census.VAR_OP_MARKERS_MAJALLELEFRQ, from, to, knownMajorAlleleFreq, null);
-		Collection<Byte> knownMinorAllele = new ArrayList<Byte>(0);
-		NetCdfUtils.readVariable(getNetCdfReadFile(), cNetCDF.Census.VAR_OP_MARKERS_MINALLELES, from, to, knownMinorAllele, null);
-		Collection<Double> knownMinorAlleleFreq = new ArrayList<Double>(0);
-		NetCdfUtils.readVariable(getNetCdfReadFile(), cNetCDF.Census.VAR_OP_MARKERS_MINALLELEFRQ, from, to, knownMinorAlleleFreq, null);
-
-		Collection<int[]> censusAll = new ArrayList<int[]>(0);
-		NetCdfUtils.readVariable(getNetCdfReadFile(), cNetCDF.Census.VAR_OP_MARKERS_CENSUSALL, from, to, censusAll, null);
+		Collection<Byte> knownMajorAllele = getKnownMajorAllele(from, to);
+		Collection<Double> knownMajorAlleleFreq = getKnownMajorAlleleFrequencies(from, to);
+		Collection<Byte> knownMinorAllele = getKnownMinorAllele(from, to);
+		Collection<Double> knownMinorAlleleFreq = getKnownMinorAlleleFrequencies(from, to);
+		Collection<int[]> censusAll = getCensusAll(from, to);
 
 		Collection<QAMarkersOperationEntry> entries
 				= new ArrayList<QAMarkersOperationEntry>(missingRatios.size());
@@ -168,8 +217,6 @@ public class NetCdfQAMarkersOperationDataSet extends AbstractNetCdfOperationData
 		Iterator<Byte> knownMinorAlleleIt = knownMinorAllele.iterator();
 		Iterator<Double> knownMinorAlleleFreqIt = knownMinorAlleleFreq.iterator();
 		Iterator<int[]> censusAllIt = censusAll.iterator();
-
-
 		for (Map.Entry<MarkerKey, Integer> keysIndices : rdMarkers.entrySet()) {
 			int[] censusAllValues = censusAllIt.next();
 			entries.add(new DefaultQAMarkersOperationEntry(
@@ -228,7 +275,37 @@ public class NetCdfQAMarkersOperationDataSet extends AbstractNetCdfOperationData
 
 	@Override
 	protected void writeEntries(int alreadyWritten, Queue<QAMarkersOperationEntry> writeBuffer) throws IOException {
-		XXX;
-		throw new UnsupportedOperationException("Not supported by this implementation.");
+
+		int[] origin = new int[] {alreadyWritten};
+		if (netCdfMajorAlleles == null) {
+			// only create once, and reuse later on
+			// NOTE This might be bad for multi-threading in a later stage
+			netCdfMajorAlleles = new ArrayByte.D1(writeBuffer.size());
+			netCdfMajorAllelesFrequencies = new ArrayDouble.D1(writeBuffer.size());
+			netCdfMinorAlleles = new ArrayByte.D1(writeBuffer.size());
+			netCdfMinorAllelesFrequencies = new ArrayDouble.D1(writeBuffer.size());
+			netCdfCensusAlls = new ArrayInt.D2(writeBuffer.size(), 4);
+		}
+		int index = 0;
+		for (QAMarkersOperationEntry entry : writeBuffer) {
+			netCdfMajorAlleles.setByte(netCdfMajorAlleles.getIndex().set(index), entry.getMajorAllele());
+			netCdfMajorAllelesFrequencies.setDouble(netCdfMajorAllelesFrequencies.getIndex().set(index), entry.getMajorAlleleFrequency());
+			netCdfMinorAlleles.setByte(netCdfMinorAlleles.getIndex().set(index), entry.getMinorAllele());
+			netCdfMinorAllelesFrequencies.setDouble(netCdfMinorAllelesFrequencies.getIndex().set(index), entry.getMinorAlleleFrequency());
+			netCdfCensusAlls.setInt(netCdfCensusAlls.getIndex().set(index, 0), entry.getAlleleAA());
+			netCdfCensusAlls.setInt(netCdfCensusAlls.getIndex().set(index, 1), entry.getAlleleAa());
+			netCdfCensusAlls.setInt(netCdfCensusAlls.getIndex().set(index, 1), entry.getAlleleaa());
+			netCdfCensusAlls.setInt(netCdfCensusAlls.getIndex().set(index, 2), entry.getMissingCount());
+			index++;
+		}
+		try {
+			getNetCdfWriteFile().write(cNetCDF.Census.VAR_OP_MARKERS_MAJALLELES, origin, netCdfMajorAlleles);
+			getNetCdfWriteFile().write(cNetCDF.Census.VAR_OP_MARKERS_MAJALLELEFRQ, origin, netCdfMajorAllelesFrequencies);
+			getNetCdfWriteFile().write(cNetCDF.Census.VAR_OP_MARKERS_MINALLELES, origin, netCdfMinorAlleles);
+			getNetCdfWriteFile().write(cNetCDF.Census.VAR_OP_MARKERS_MINALLELEFRQ, origin, netCdfMinorAllelesFrequencies);
+			getNetCdfWriteFile().write(cNetCDF.Census.VAR_OP_MARKERS_CENSUSALL, origin, netCdfCensusAlls);
+		} catch (InvalidRangeException ex) {
+			throw new IOException(ex);
+		}
 	}
 }

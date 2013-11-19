@@ -33,6 +33,9 @@ import org.gwaspi.netCDF.operations.NetCdfUtils;
 import org.gwaspi.netCDF.operations.OperationFactory;
 import org.gwaspi.netCDF.operations.SampleOperationSet;
 import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
+import org.gwaspi.operations.trendtest.TrendTestOperationEntry;
+import ucar.ma2.ArrayDouble;
+import ucar.ma2.ArrayInt;
 import ucar.ma2.InvalidRangeException;
 
 public class NetCdfQASamplesOperationDataSet extends AbstractNetCdfOperationDataSet<QASamplesOperationEntry> implements QASamplesOperationDataSet {
@@ -42,6 +45,10 @@ public class NetCdfQASamplesOperationDataSet extends AbstractNetCdfOperationData
 	// - cNetCDF.Census.VAR_OP_SAMPLES_MISSINGRAT: (double) missing ratio for each sample
 	// - cNetCDF.Census.VAR_OP_SAMPLES_MISSINGCOUNT: (int) missing count for each sample
 	// - cNetCDF.Census.VAR_OP_SAMPLES_HETZYRAT: (double) heterozygosity ratio for each sample
+
+	private ArrayDouble.D1 netCdfMissingRatios;
+	private ArrayInt.D1 netCdfMissingCounts;
+	private ArrayDouble.D1 netCdfHetzyRatios;
 
 	public NetCdfQASamplesOperationDataSet(OperationKey operationKey) {
 		super(false, operationKey);
@@ -95,6 +102,7 @@ public class NetCdfQASamplesOperationDataSet extends AbstractNetCdfOperationData
 		NetCdfUtils.saveDoubleMapD1ToWrMatrix(getNetCdfWriteFile(), sampleHetzyRatios, cNetCDF.Census.VAR_OP_SAMPLES_HETZYRAT);
 	}
 
+	@Override
 	public Collection<Double> getSampleMissingRatios(int from, int to) throws IOException {
 
 		Collection<Double> missingRatios = new ArrayList<Double>(0);
@@ -110,6 +118,7 @@ public class NetCdfQASamplesOperationDataSet extends AbstractNetCdfOperationData
 		return missingRatios;
 	}
 
+	@Override
 	public Collection<Integer> getSampleMissingCount(int from, int to) throws IOException {
 
 		Collection<Integer> missingCount = new ArrayList<Integer>(0);
@@ -118,6 +127,7 @@ public class NetCdfQASamplesOperationDataSet extends AbstractNetCdfOperationData
 		return missingCount;
 	}
 
+	@Override
 	public Collection<Double> getSampleHetzyRatios(int from, int to) throws IOException {
 
 		Collection<Double> hetzyRatios = new ArrayList<Double>(0);
@@ -155,6 +165,28 @@ public class NetCdfQASamplesOperationDataSet extends AbstractNetCdfOperationData
 
 	@Override
 	protected void writeEntries(int alreadyWritten, Queue<QASamplesOperationEntry> writeBuffer) throws IOException {
-		throw new UnsupportedOperationException("Not supported by this implementation.");
+
+		int[] origin = new int[] {alreadyWritten};
+		if (netCdfMissingRatios == null) {
+			// only create once, and reuse later on
+			// NOTE This might be bad for multi-threading in a later stage
+			netCdfMissingRatios = new ArrayDouble.D1(writeBuffer.size());
+			netCdfMissingCounts = new ArrayInt.D1(writeBuffer.size());
+			netCdfHetzyRatios = new ArrayDouble.D1(writeBuffer.size());
+		}
+		int index = 0;
+		for (QASamplesOperationEntry entry : writeBuffer) {
+			netCdfMissingRatios.setDouble(netCdfMissingRatios.getIndex().set(index), entry.getMissingRatio());
+			netCdfMissingCounts.setInt(netCdfMissingCounts.getIndex().set(index), entry.getMissingCount());
+			netCdfHetzyRatios.setDouble(netCdfHetzyRatios.getIndex().set(index), entry.getHetzyRatio());
+			index++;
+		}
+		try {
+			getNetCdfWriteFile().write(cNetCDF.Census.VAR_OP_SAMPLES_MISSINGRAT, origin, netCdfMissingRatios);
+			getNetCdfWriteFile().write(cNetCDF.Census.VAR_OP_SAMPLES_MISSINGCOUNT, origin, netCdfMissingCounts);
+			getNetCdfWriteFile().write(cNetCDF.Census.VAR_OP_SAMPLES_HETZYRAT, origin, netCdfHetzyRatios);
+		} catch (InvalidRangeException ex) {
+			throw new IOException(ex);
+		}
 	}
 }

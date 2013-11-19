@@ -99,6 +99,10 @@ public class cNetCDF {
 	//<editor-fold defaultstate="expanded" desc="OPERATION & ANALYSIS VARS">
 	public static class Census {
 
+		public static final String VAR_OP_MARKERS_CENSUSALL_IDX = "OP_markers_censusall_idx";
+		public static final String VAR_OP_MARKERS_CENSUSCASE_IDX = "OP_markers_censuscase_idx";
+		public static final String VAR_OP_MARKERS_CENSUSCTRL_IDX = "OP_markers_censusctrl_idx";
+		public static final String VAR_OP_MARKERS_CENSUSHW_IDX = "OP_markers_censushw_idx";
 		public static final String VAR_OP_MARKERS_CENSUSALL = "OP_markers_censusall";
 		public static final String VAR_OP_MARKERS_CENSUSCASE = "OP_markers_censuscase";
 		public static final String VAR_OP_MARKERS_CENSUSCTRL = "OP_markers_censusctrl";

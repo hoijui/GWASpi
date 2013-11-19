@@ -18,10 +18,11 @@
 package org.gwaspi.netCDF.operations;
 
 import java.io.IOException;
-import java.util.LinkedHashMap;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.Map;
-import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
+import org.gwaspi.model.Census;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationMetadata;
@@ -54,38 +55,39 @@ public class OP_TrendTests extends AbstractTestMatrixOperation {
 
 	/**
 	 * Performs the Cochran-Armitage Trend Test.
-	 * @param dataSet
-	 * @param wrCaseMarkerIdSetMap
-	 * @param wrCtrlMarkerSet
 	 */
 	@Override
-	protected void performTest(OperationDataSet dataSet, Map<MarkerKey, int[]> wrCaseMarkerIdSetMap, Map<MarkerKey, int[]> wrCtrlMarkerSet) throws IOException {
-
+	protected void performTest(
+			OperationDataSet dataSet,
+			Map<Integer, MarkerKey> caseMarkersOrigIndexKey,
+			Map<Integer, Census> caseMarkersOrigIndexCensus,
+			Map<Integer, MarkerKey> ctrlMarkersOrigIndexKey,
+			Map<Integer, Census> ctrlMarkersOrigIndexCensus) throws IOException
+	{
 		TrendTestOperationDataSet trendTestDataSet = (TrendTestOperationDataSet) dataSet;
-		((AbstractNetCdfOperationDataSet) dataSet).setNumMarkers(wrCaseMarkerIdSetMap.size()); // HACK
+		((AbstractNetCdfOperationDataSet) dataSet).setNumMarkers(caseMarkersOrigIndexKey.size()); // HACK
 
 		// Iterate through markerset
 		int markerNb = 0;
-		for (Map.Entry<MarkerKey, int[]> entry : wrCaseMarkerIdSetMap.entrySet()) {
-			MarkerKey markerKey = entry.getKey();
-
-			int[] caseCntgTable = entry.getValue();
-			int[] ctrlCntgTable = wrCtrlMarkerSet.get(markerKey);
-
-			// INIT VALUES
-			int caseAA = caseCntgTable[0];
-			int caseAa = caseCntgTable[1];
-			int caseaa = caseCntgTable[2];
-
-			int ctrlAA = ctrlCntgTable[0];
-			int ctrlAa = ctrlCntgTable[1];
-			int ctrlaa = ctrlCntgTable[2];
+		Iterator<Census> caseMarkerCensusIt = caseMarkersOrigIndexCensus.values().iterator();
+		for (Map.Entry<Integer, MarkerKey> caseMarkerOrigIndexKey : caseMarkersOrigIndexKey.entrySet()) {
+			Integer origIndex = caseMarkerOrigIndexKey.getKey();
+			MarkerKey markerKey = caseMarkerOrigIndexKey.getValue();
+			Census caseCensus = caseMarkerCensusIt.next();
+			Census ctrlCensus = ctrlMarkersOrigIndexCensus.get(origIndex);
 
 			// COCHRAN ARMITAGE TREND TEST
-			double armitageT = org.gwaspi.statistics.Associations.calculateChocranArmitageTrendTest(caseAA, caseAa, caseaa, ctrlAA, ctrlAa, ctrlaa, 2); //Model 2, codominant
+			double armitageT = org.gwaspi.statistics.Associations.calculateChocranArmitageTrendTest(
+					caseCensus.getAA(), caseCensus.getAa(), caseCensus.getaa(),
+					ctrlCensus.getAA(), ctrlCensus.getAa(), ctrlCensus.getaa(),
+					2); // Model 2, codominant
 			double armitagePval = org.gwaspi.statistics.Pvalue.calculatePvalueFromChiSqr(armitageT, 1);  // 1 Degree of freedom
 
-			trendTestDataSet.addEntry(new DefaultTrendTestOperationEntry(markerKey, armitageT, armitagePval));
+			trendTestDataSet.addEntry(new DefaultTrendTestOperationEntry(
+					markerKey,
+					origIndex,
+					armitageT,
+					armitagePval));
 
 			markerNb++;
 			if (markerNb % 100000 == 0) {

@@ -80,6 +80,17 @@ public class Census {
 		this.missingCount = missingCount;
 	}
 
+	/**
+	 * @param values {AA, Aa, aa, missingCount} or {AA, Aa, aa}
+	 */
+	public Census(int[] values) {
+
+		this.AA = values[0];
+		this.Aa = values[1];
+		this.aa = values[2];
+		this.missingCount = (values.length > 3) ? values[3] : -1;
+	}
+
 	public Census() {
 		this(0, 0, 0, 0);
 	}

@@ -443,19 +443,19 @@ public class OP_MarkerCensus implements MatrixOperation {
 		return resultOpId;
 	}
 
-	private void knowYourAlleles(
+	private static void knowYourAlleles(
 			Map<Byte, Float> knownAlleles,
-			List<Integer> AAnumValsAL,
-			List<Integer> AanumValsAL,
-			List<Integer> aanumValsAL)
+			List<Integer> AAnumVals,
+			List<Integer> AanumVals,
+			List<Integer> aanumVals)
 	{
 		Iterator<Byte> itKnAll = knownAlleles.keySet().iterator();
 		if (knownAlleles.size() == 1) {
 			// Homozygote (AA or aa)
 			byte key = itKnAll.next();
 			int intAllele1 = (int) key;
-			AAnumValsAL.add(intAllele1); // Single A
-			AAnumValsAL.add(intAllele1 * 2); // Double AA
+			AAnumVals.add(intAllele1); // Single A
+			AAnumVals.add(intAllele1 * 2); // Double AA
 		}
 		if (knownAlleles.size() == 2) {
 			// Heterezygote (AA, Aa or aa)
@@ -468,21 +468,21 @@ public class OP_MarkerCensus implements MatrixOperation {
 
 			if (countA >= countB) {
 				// Finding out what allele is major and minor
-				AAnumValsAL.add(intAllele1);
-				AAnumValsAL.add(intAllele1 * 2);
+				AAnumVals.add(intAllele1);
+				AAnumVals.add(intAllele1 * 2);
 
-				aanumValsAL.add(intAllele2);
-				aanumValsAL.add(intAllele2 * 2);
+				aanumVals.add(intAllele2);
+				aanumVals.add(intAllele2 * 2);
 
-				AanumValsAL.add(intAllele1 + intAllele2);
+				AanumVals.add(intAllele1 + intAllele2);
 			} else {
-				AAnumValsAL.add(intAllele2);
-				AAnumValsAL.add(intAllele2 * 2);
+				AAnumVals.add(intAllele2);
+				AAnumVals.add(intAllele2 * 2);
 
-				aanumValsAL.add(intAllele1);
-				aanumValsAL.add(intAllele1 * 2);
+				aanumVals.add(intAllele1);
+				aanumVals.add(intAllele1 * 2);
 
-				AanumValsAL.add(intAllele1 + intAllele2);
+				AanumVals.add(intAllele1 + intAllele2);
 			}
 		}
 	}
@@ -490,15 +490,15 @@ public class OP_MarkerCensus implements MatrixOperation {
 	private static void contingencyCensusSamples(
 			Map<String, Integer> hwSamplesContingencyTable,
 			Map<Integer, Float> hwSamplesGTsTable,
-			List<Integer> AAnumValsAL,
-			List<Integer> AanumValsAL,
-			List<Integer> aanumValsAL)
+			List<Integer> AAnumVals,
+			List<Integer> AanumVals,
+			List<Integer> aanumVals)
 	{
 		for (Map.Entry<Integer, Float> samplesEntry : hwSamplesGTsTable.entrySet()) {
 			Integer key = samplesEntry.getKey();
 			Integer value = Math.round(samplesEntry.getValue());
 
-			if (AAnumValsAL.contains(key)) {
+			if (AAnumVals.contains(key)) {
 				// compare to all possible character values of AA
 				// HW CENSUS
 				int tempCount = 0;
@@ -507,7 +507,7 @@ public class OP_MarkerCensus implements MatrixOperation {
 				}
 				hwSamplesContingencyTable.put("AA", tempCount + value);
 			}
-			if (AanumValsAL.contains(key)) {
+			if (AanumVals.contains(key)) {
 				// compare to all possible character values of Aa
 				// HW CENSUS
 				int tempCount = 0;
@@ -516,7 +516,7 @@ public class OP_MarkerCensus implements MatrixOperation {
 				}
 				hwSamplesContingencyTable.put("Aa", tempCount + value);
 			}
-			if (aanumValsAL.contains(key)) {
+			if (aanumVals.contains(key)) {
 				// compare to all possible character values of aa
 				// HW CENSUS
 				int tempCount = 0;
@@ -764,52 +764,52 @@ public class OP_MarkerCensus implements MatrixOperation {
 //		log.info("Done writing Sample Set to operation");
 //	}
 
-	private static void censusDataWriter(
-			MarkerCensusOperationDataSet dataSet,
-			Map<MarkerKey, CensusFull> wrChunkedMarkerCensusMap,
-			Map<MarkerKey, byte[]> wrChunkedKnownAllelesMap,
-			int countChunks,
-			int chunkSize)
-			throws IOException
-	{
-		// KNOWN ALLELES
-		NetCdfUtils.saveCharMapToWrMatrix(
-				wrNcFile,
-				wrChunkedKnownAllelesMap.values(),
-				cNetCDF.Variables.VAR_ALLELES,
-				cNetCDF.Strides.STRIDE_GT,
-				countChunks * chunkSize);
-
-		// ALL CENSUS
-		NetCdfUtils.saveIntMapD2ToWrMatrix(
-				wrNcFile,
-				wrChunkedMarkerCensusMap.values(),
-				CensusFull.EXTRACTOR_ALL,
-				cNetCDF.Census.VAR_OP_MARKERS_CENSUSALL,
-				countChunks * chunkSize);
-
-		// CASE CENSUS
-		NetCdfUtils.saveIntMapD2ToWrMatrix(
-				wrNcFile,
-				wrChunkedMarkerCensusMap.values(),
-				CensusFull.EXTRACTOR_CASE,
-				cNetCDF.Census.VAR_OP_MARKERS_CENSUSCASE,
-				countChunks * chunkSize);
-
-		// CONTROL CENSUS
-		NetCdfUtils.saveIntMapD2ToWrMatrix(
-				wrNcFile,
-				wrChunkedMarkerCensusMap.values(),
-				CensusFull.EXTRACTOR_CONTROL,
-				cNetCDF.Census.VAR_OP_MARKERS_CENSUSCTRL,
-				countChunks * chunkSize);
-
-		// ALTERNATE HW CENSUS
-		NetCdfUtils.saveIntMapD2ToWrMatrix(
-				wrNcFile,
-				wrChunkedMarkerCensusMap.values(),
-				CensusFull.EXTRACTOR_ALTERNATE_HW,
-				cNetCDF.Census.VAR_OP_MARKERS_CENSUSHW,
-				countChunks * chunkSize);
-	}
+//	private static void censusDataWriter(
+//			MarkerCensusOperationDataSet dataSet,
+//			Map<MarkerKey, CensusFull> wrChunkedMarkerCensusMap,
+//			Map<MarkerKey, byte[]> wrChunkedKnownAllelesMap,
+//			int countChunks,
+//			int chunkSize)
+//			throws IOException
+//	{
+//		// KNOWN ALLELES
+//		NetCdfUtils.saveCharMapToWrMatrix(
+//				wrNcFile,
+//				wrChunkedKnownAllelesMap.values(),
+//				cNetCDF.Variables.VAR_ALLELES,
+//				cNetCDF.Strides.STRIDE_GT,
+//				countChunks * chunkSize);
+//
+//		// ALL CENSUS
+//		NetCdfUtils.saveIntMapD2ToWrMatrix(
+//				wrNcFile,
+//				wrChunkedMarkerCensusMap.values(),
+//				CensusFull.EXTRACTOR_ALL,
+//				cNetCDF.Census.VAR_OP_MARKERS_CENSUSALL,
+//				countChunks * chunkSize);
+//
+//		// CASE CENSUS
+//		NetCdfUtils.saveIntMapD2ToWrMatrix(
+//				wrNcFile,
+//				wrChunkedMarkerCensusMap.values(),
+//				CensusFull.EXTRACTOR_CASE,
+//				cNetCDF.Census.VAR_OP_MARKERS_CENSUSCASE,
+//				countChunks * chunkSize);
+//
+//		// CONTROL CENSUS
+//		NetCdfUtils.saveIntMapD2ToWrMatrix(
+//				wrNcFile,
+//				wrChunkedMarkerCensusMap.values(),
+//				CensusFull.EXTRACTOR_CONTROL,
+//				cNetCDF.Census.VAR_OP_MARKERS_CENSUSCTRL,
+//				countChunks * chunkSize);
+//
+//		// ALTERNATE HW CENSUS
+//		NetCdfUtils.saveIntMapD2ToWrMatrix(
+//				wrNcFile,
+//				wrChunkedMarkerCensusMap.values(),
+//				CensusFull.EXTRACTOR_ALTERNATE_HW,
+//				cNetCDF.Census.VAR_OP_MARKERS_CENSUSHW,
+//				countChunks * chunkSize);
+//	}
 }

@@ -25,6 +25,7 @@ import java.util.Map;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.global.Text;
+import org.gwaspi.model.Census;
 import org.gwaspi.model.ChromosomeInfo;
 import org.gwaspi.model.ChromosomeKey;
 import org.gwaspi.model.MarkerKey;
@@ -44,6 +45,8 @@ import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationDataSet;
 import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationEntry;
 import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationEntry.Category;
 import org.gwaspi.operations.hardyweinberg.NetCdfHardyWeinbergOperationDataSet;
+import org.gwaspi.operations.markercensus.MarkerCensusOperationDataSet;
+import org.gwaspi.operations.markercensus.NetCdfMarkerCensusOperationDataSet;
 import org.gwaspi.operations.trendtest.AbstractNetCdfTestOperationDataSet;
 import org.gwaspi.operations.trendtest.NetCdfTrendTestOperationDataSet;
 import org.slf4j.Logger;
@@ -93,7 +96,7 @@ public abstract class AbstractTestMatrixOperation implements MatrixOperation {
 
 	@Override
 	public int processMatrix() throws IOException {
-		int resultAssocId = Integer.MIN_VALUE;
+		int resultOpId = Integer.MIN_VALUE;
 
 		Collection<MarkerKey> toBeExcluded = new HashSet<MarkerKey>();
 		boolean dataLeft = excludeMarkersByHW(hwOP, hwThreshold, toBeExcluded);
@@ -102,6 +105,7 @@ public abstract class AbstractTestMatrixOperation implements MatrixOperation {
 			OperationKey markerCensusOPKey = OperationKey.valueOf(markerCensusOP);
 			OperationMetadata rdCensusOPMetadata = OperationsList.getOperation(markerCensusOPKey);
 			NetcdfFile rdOPNcFile = NetcdfFile.open(rdCensusOPMetadata.getPathToMatrix());
+			MarkerCensusOperationDataSet rdMarkerCensusOperationDataSet = new NetCdfMarkerCensusOperationDataSet(markerCensusOPKey);
 
 			MarkerOperationSet rdCaseMarkerSet = new MarkerOperationSet(markerCensusOPKey);
 			MarkerOperationSet rdCtrlMarkerSet = new MarkerOperationSet(markerCensusOPKey);
@@ -190,6 +194,20 @@ public abstract class AbstractTestMatrixOperation implements MatrixOperation {
 				Map<MarkerKey, char[]> sortedCaseMarkerIds = org.gwaspi.global.Utils.createOrderedMap(wrMarkerMetadata.keySet(), rdCaseMarkerIdSetMap);
 				NetCdfUtils.saveCharMapValueToWrMatrix(wrOPNcFile, sortedCaseMarkerIds.values(), cNetCDF.Variables.VAR_MARKERS_RSID, cNetCDF.Strides.STRIDE_MARKER_NAME);
 
+				Map<Integer, MarkerKey> censusOpMarkers = rdMarkerCensusOperationDataSet.getMarkers();
+
+				Collection<Integer> censusMarkerIndicesCase = rdMarkerCensusOperationDataSet.getCensusMarkerIndices(Category.CASE);
+				Map<Integer, MarkerKey> rdCaseMarkerKeys = filter(censusOpMarkers, censusMarkerIndicesCase);
+				Map<Integer, MarkerKey> wrCaseMarkerKeysFiltered = filterByValues(rdCaseMarkerKeys, toBeExcluded);
+				Map<Integer, Census> rdCaseMarkerCensuses = rdMarkerCensusOperationDataSet.getCensus(Category.CASE, -1, -1);
+				Map<Integer, Census> wrCaseMarkerCensusesFiltered = filter(rdCaseMarkerCensuses, wrCaseMarkerKeysFiltered.keySet());XXX;
+
+				Collection<Integer> censusMarkerIndicesCtrl = rdMarkerCensusOperationDataSet.getCensusMarkerIndices(Category.CONTROL);
+				Map<Integer, MarkerKey> rdCtrlMarkerKeys = filter(censusOpMarkers, censusMarkerIndicesCtrl);
+				Map<Integer, MarkerKey> wrCtrlMarkerKeysFiltered = filterByValues(rdCtrlMarkerKeys, toBeExcluded);
+				Map<Integer, Census> rdCtrlMarkerCensuses = rdMarkerCensusOperationDataSet.getCensus(Category.CONTROL, -1, -1);
+				Map<Integer, Census> wrCtrlMarkerCensusesFiltered = filter(rdCtrlMarkerCensuses, wrCtrlMarkerKeysFiltered.keySet());XXX;
+
 				// WRITE SAMPLESET TO MATRIX FROM SAMPLES
 //				ArrayChar.D2 samplesD2 = NetCdfUtils.writeCollectionToD2ArrayChar(rdSampleSetMap.keySet(), cNetCDF.Strides.STRIDE_SAMPLE_NAME);
 //				int[] sampleOrig = new int[] {0, 0};
@@ -213,11 +231,14 @@ public abstract class AbstractTestMatrixOperation implements MatrixOperation {
 				Map<MarkerKey, int[]> wrCtrlMarkerSet = filter(rdMarkerCensusCtrls, toBeExcluded);
 
 				org.gwaspi.global.Utils.sysoutStart(testName);
-				performTest(dataSet, wrCaseMarkerIdSetMap, wrCtrlMarkerSet);
+				performTest(dataSet,
+						wrCaseMarkerKeysFiltered, wrCaseMarkerCensusesFiltered,
+						wrCtrlMarkerKeysFiltered, wrCtrlMarkerCensusesFiltered
+				);
 				org.gwaspi.global.Utils.sysoutCompleted(testName);
 				//</editor-fold>
 
-				resultOpId = ((AbstractNetCdfOperationDataSet) dataSet).getResultOperationId(); // HACK
+				resultOpId = ((AbstractNetCdfOperationDataSet) dataSet).getOperationKey().getId(); // HACK
 			} finally {
 				try {
 					if (rdOPNcFile != null) {
@@ -231,7 +252,7 @@ public abstract class AbstractTestMatrixOperation implements MatrixOperation {
 			log.warn(Text.Operation.warnNoDataLeftAfterPicking);
 		}
 
-		return resultAssocId;
+		return resultOpId;
 	}
 
 	private static <K, V> Map<K, V> filter(Map<K, V> toBeFiltered, Collection<K> toBeExcluded) {
@@ -243,6 +264,22 @@ public abstract class AbstractTestMatrixOperation implements MatrixOperation {
 
 				if (!toBeExcluded.contains(key)) {
 					filtered.put(key, entry.getValue());
+				}
+			}
+		}
+
+		return filtered;
+	}
+
+	private static <K, V> Map<K, V> filterByValues(Map<K, V> toBeFiltered, Collection<V> toBeExcluded) {
+
+		Map<K, V> filtered = new LinkedHashMap<K, V>();
+		if (toBeFiltered != null) {
+			for (Map.Entry<K, V> entry : toBeFiltered.entrySet()) {
+				V value = entry.getValue();
+
+				if (!toBeExcluded.contains(value)) {
+					filtered.put(entry.getKey(), value);
 				}
 			}
 		}
@@ -288,9 +325,11 @@ public abstract class AbstractTestMatrixOperation implements MatrixOperation {
 
 	/**
 	 * Performs actual Test.
-	 * @param wrNcFile
-	 * @param wrCaseMarkerIdSetMap
-	 * @param wrCtrlMarkerSet
 	 */
-	protected abstract void performTest(OperationDataSet dataSet, Map<MarkerKey, int[]> wrCaseMarkerIdSetMap, Map<MarkerKey, int[]> wrCtrlMarkerSet) throws IOException;
+	protected abstract void performTest(
+			OperationDataSet dataSet,
+			Map<Integer, MarkerKey> caseMarkersOrigIndexKey,
+			Map<Integer, Census> caseMarkersOrigIndexCensus,
+			Map<Integer, MarkerKey> ctrlMarkersOrigIndexKey,
+			Map<Integer, Census> ctrlMarkersOrigIndexCensus) throws IOException;
 }

@@ -959,7 +959,7 @@ public class NetCdfUtils {
 		return uniqueGenotypes;
 	}
 
-	private static void checkDimensions(int maxSize, Dimension dimension) {
+	public static void checkDimensions(int maxSize, Dimension dimension) {
 
 		if (dimension.width == -1) {
 			dimension.width = 0;
@@ -977,6 +977,10 @@ public class NetCdfUtils {
 			throw new IllegalArgumentException();
 		}
 	}
+
+//	public static <R> void readVariable(NetcdfFile ncFile, String variableName, int indexFrom, int indexTo, Collection<R> targetCollection, Value) throws IOException {
+//		XXX;
+//	}
 
 	public static void readVariable(NetcdfFile ncFile, String variableName, int indexFrom, int indexTo, Collection<?> targetCollection, Map<?, ?> targetValuesMap) throws IOException {
 		readVariable(ncFile, variableName, indexFrom, indexTo, targetCollection, targetValuesMap, null);

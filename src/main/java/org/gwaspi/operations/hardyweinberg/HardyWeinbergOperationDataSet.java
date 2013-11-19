@@ -54,5 +54,9 @@ public interface HardyWeinbergOperationDataSet extends OperationDataSet<HardyWei
 
 	void setMarkerCensusOperationKey(OperationKey markerCensusOPKey);
 
-	Collection<HardyWeinbergOperationEntry> getEntriesControl();
+	Collection<HardyWeinbergOperationEntry> getEntriesControl() throws IOException;
+
+	Collection<Double> getPs(HardyWeinbergOperationEntry.Category category, int from, int to) throws IOException;
+	Collection<Double> getHwHetzyObses(HardyWeinbergOperationEntry.Category category, int from, int to) throws IOException;
+	Collection<Double> getHwHetzyExps(HardyWeinbergOperationEntry.Category category, int from, int to) throws IOException;
 }

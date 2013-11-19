@@ -35,7 +35,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.ArrayChar;
 import ucar.ma2.ArrayDouble;
-import ucar.ma2.ArrayInt;
 import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.NetcdfFile;
@@ -97,7 +96,7 @@ public class AbstractOperationSet<K, V> {
 			try {
 				final int opSetSize = varShape[0];
 				Dimension fromTo = new Dimension(opIndexFrom, opIndexTo);
-				checkDimension(opSetSize, fromTo);
+				NetCdfUtils.checkDimensions(opSetSize, fromTo);
 				final int from = fromTo.width;
 				final int to = fromTo.height;
 
@@ -141,7 +140,7 @@ public class AbstractOperationSet<K, V> {
 			try {
 				final int opSetSize = varShape[0];
 				Dimension fromTo = new Dimension(opIndexFrom, opIndexTo);
-				checkDimension(opSetSize, fromTo);
+				NetCdfUtils.checkDimensions(opSetSize, fromTo);
 				final int from = fromTo.width;
 				final int to = fromTo.height;
 
@@ -250,7 +249,7 @@ public class AbstractOperationSet<K, V> {
 		final int[] varShape = var.getShape();
 		final int opSetSize = varShape[0];
 		Dimension fromTo = new Dimension(opIndexFrom, opIndexTo);
-		checkDimension(opSetSize, fromTo);
+		NetCdfUtils.checkDimensions(opSetSize, fromTo);
 		final int from = fromTo.width;
 		final int to = fromTo.height;
 		String fetchVarStr;

@@ -39,11 +39,11 @@ public class NetCdfTrendTestOperationDataSet extends AbstractNetCdfTestOperation
 	// - Variables.VAR_CHR_INFO: chromosomeInfo.values() [Collection<ChromosomeInfo>]
 	// - Association.VAR_OP_MARKERS_ASTrendTestTP: {T, P-Value} [Double[2]]
 
-	public NetCdfTrendTestOperationDataSet() {
-	}
-
 	private ArrayDouble.D1 netCdfTs;
 	private ArrayDouble.D1 netCdfPs;
+
+	public NetCdfTrendTestOperationDataSet() {
+	}
 
 	@Override
 	protected void writeEntries(int alreadyWritten, Queue<TrendTestOperationEntry> writeBuffer) throws IOException {
@@ -70,22 +70,42 @@ public class NetCdfTrendTestOperationDataSet extends AbstractNetCdfTestOperation
 	}
 
 	@Override
+	public Collection<Double> getTs(int from, int to) throws IOException {
+
+		Collection<Double> ts = new ArrayList<Double>(0);
+		NetCdfUtils.readVariable(getNetCdfReadFile(), cNetCDF.Association.VAR_OP_MARKERS_T, from, to, ts, null);
+
+		return ts;
+	}
+
+	@Override
+	public Collection<Double> getPs(int from, int to) throws IOException {
+
+		Collection<Double> ps = new ArrayList<Double>(0);
+		NetCdfUtils.readVariable(getNetCdfReadFile(), cNetCDF.Association.VAR_OP_MARKERS_P, from, to, ps, null);
+
+		return ps;
+	}
+
+	@Override
 	public Collection<TrendTestOperationEntry> getEntries(int from, int to) throws IOException {
 
 		MarkerOperationSet rdMarkersSet = new MarkerOperationSet(getOperationKey(), from, to);
 		Map<MarkerKey, Integer> rdMarkers = rdMarkersSet.getOpSetMap();
 
-		Collection<Double> ts = new ArrayList<Double>(0);
-		NetCdfUtils.readVariable(getNetCdfReadFile(), cNetCDF.Association.VAR_OP_MARKERS_T, from, to, ts, null);
-		Collection<Double> ps = new ArrayList<Double>(0);
-		NetCdfUtils.readVariable(getNetCdfReadFile(), cNetCDF.Association.VAR_OP_MARKERS_P, from, to, ps, null);
+		Collection<Double> ts = getTs(from, to);
+		Collection<Double> ps = getPs(from, to);
 
 		Collection<TrendTestOperationEntry> entries
 				= new ArrayList<TrendTestOperationEntry>(ts.size());
 		Iterator<Double> tsIt = ts.iterator();
 		Iterator<Double> psIt = ps.iterator();
 		for (Map.Entry<MarkerKey, Integer> markerKeyIndex : rdMarkers.entrySet()) {
-			entries.add(new DefaultTrendTestOperationEntry(markerKeyIndex.getKey(), markerKeyIndex.getValue(), tsIt.next(), psIt.next()));
+			entries.add(new DefaultTrendTestOperationEntry(
+					markerKeyIndex.getKey(),
+					markerKeyIndex.getValue(),
+					tsIt.next(),
+					psIt.next()));
 		}
 
 		return entries;

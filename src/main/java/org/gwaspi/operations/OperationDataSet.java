@@ -53,6 +53,7 @@ public interface OperationDataSet<ET> {
 	Map<Integer, SampleKey> getSamples() throws IOException;
 	Map<Integer, MarkerKey> getMarkers() throws IOException;
 	Map<Integer, ChromosomeKey> getChromosomes() throws IOException;
+	Collection<ChromosomeInfo> getChromosomeInfos() throws IOException;
 
 	/**
 	 *

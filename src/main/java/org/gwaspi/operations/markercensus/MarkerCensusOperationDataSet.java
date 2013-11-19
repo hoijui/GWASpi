@@ -19,8 +19,10 @@ package org.gwaspi.operations.markercensus;
 
 import java.io.IOException;
 import java.util.Collection;
-import org.gwaspi.model.CensusFull;
+import java.util.Map;
+import org.gwaspi.model.Census;
 import org.gwaspi.operations.OperationDataSet;
+import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationEntry.Category;
 
 public interface MarkerCensusOperationDataSet extends OperationDataSet<MarkerCensusOperationEntry> {
 
@@ -33,11 +35,16 @@ public interface MarkerCensusOperationDataSet extends OperationDataSet<MarkerCen
 	// - Census.VAR_OP_MARKERS_CENSUSCTRL: marker census - control [Collection<Census.control>]
 	// - Census.VAR_OP_MARKERS_CENSUSHW: marker census - alternate hardy-weinberg [Collection<Census.altHW>]
 
-	/**
-	 * @param markerCensus
-	 *   int[4]: allele-AA, allele-Aa, allele-aa, missing-count for each marker in this operation
-	 * NetCDF variable: Census.VAR_OP_MARKERS_CENSUSALL
-	 */
-//	void setMarkerCensusAll(Collection<int[]> markerCensusAll) throws IOException;
-	void setMarkerCensus(Collection<CensusFull> markerCensus) throws IOException;
+//	/**
+//	 * @param markerCensus
+//	 *   int[4]: allele-AA, allele-Aa, allele-aa, missing-count for each marker in this operation
+//	 * NetCDF variable: Census.VAR_OP_MARKERS_CENSUSALL
+//	 */
+////	void setMarkerCensusAll(Collection<int[]> markerCensusAll) throws IOException;
+//	void setMarkerCensus(Collection<CensusFull> markerCensus) throws IOException;
+
+	Collection<Integer> getCensusMarkerIndices(Category category) throws IOException;
+
+	Collection<byte[]> getKnownAlleles(int from, int to) throws IOException;
+	Map<Integer, Census> getCensus(Category category, int from, int to) throws IOException;
 }

@@ -18,8 +18,11 @@
 package org.gwaspi.operations.qamarkers;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
+import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.model.Census;
+import org.gwaspi.netCDF.operations.NetCdfUtils;
 import org.gwaspi.operations.OperationDataSet;
 
 public interface QAMarkersOperationDataSet extends OperationDataSet<QAMarkersOperationEntry> {
@@ -86,6 +89,13 @@ public interface QAMarkersOperationDataSet extends OperationDataSet<QAMarkersOpe
 	void setMarkerCensusAll(Collection<Census> markerCensusAll) throws IOException;
 
 	Collection<Boolean> getMismatchStates() throws IOException;
-
 	Collection<Double> getMissingRatio() throws IOException;
+
+	Collection<Boolean> getMismatchStates(int from, int to) throws IOException;
+	Collection<Double> getMissingRatio(int from, int to) throws IOException;
+	Collection<Byte> getKnownMajorAllele(int from, int to) throws IOException;
+	Collection<Double> getKnownMajorAlleleFrequencies(int from, int to) throws IOException;
+	Collection<Byte> getKnownMinorAllele(int from, int to) throws IOException;
+	Collection<Double> getKnownMinorAlleleFrequencies(int from, int to) throws IOException;
+	Collection<int[]> getCensusAll(int from, int to) throws IOException;
 }

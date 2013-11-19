@@ -18,7 +18,10 @@
 package org.gwaspi.operations.qasamples;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
+import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.netCDF.operations.NetCdfUtils;
 import org.gwaspi.operations.OperationDataSet;
 
 public interface QASamplesOperationDataSet extends OperationDataSet<QASamplesOperationEntry> {
@@ -49,4 +52,8 @@ public interface QASamplesOperationDataSet extends OperationDataSet<QASamplesOpe
 	 * NetCDF variable: Census.VAR_OP_SAMPLES_HETZYRAT
 	 */
 	void setSampleHetzyRatios(Collection<Double> sampleHetzyRatios) throws IOException;
+
+	Collection<Double> getSampleMissingRatios(int from, int to) throws IOException;
+	Collection<Integer> getSampleMissingCount(int from, int to) throws IOException;
+	Collection<Double> getSampleHetzyRatios(int from, int to) throws IOException;
 }

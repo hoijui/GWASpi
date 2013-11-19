@@ -18,8 +18,10 @@
 package org.gwaspi.netCDF.operations;
 
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.Map;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
+import org.gwaspi.model.Census;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationMetadata;
@@ -69,34 +71,40 @@ public class OP_AssociationTests extends AbstractTestMatrixOperation {
 	 * @param wrCtrlMarkerSet
 	 */
 	@Override
-	protected void performTest(OperationDataSet dataSet, Map<MarkerKey, int[]> wrCaseMarkerIdSetMap, Map<MarkerKey, int[]> wrCtrlMarkerSet) throws IOException {
-
-		((AbstractNetCdfOperationDataSet) dataSet).setNumMarkers(wrCaseMarkerIdSetMap.size()); // HACK
+	protected void performTest(
+			OperationDataSet dataSet,
+			Map<Integer, MarkerKey> caseMarkersOrigIndexKey,
+			Map<Integer, Census> caseMarkersOrigIndexCensus,
+			Map<Integer, MarkerKey> ctrlMarkersOrigIndexKey,
+			Map<Integer, Census> ctrlMarkersOrigIndexCensus) throws IOException
+	{
+		((AbstractNetCdfOperationDataSet) dataSet).setNumMarkers(caseMarkersOrigIndexKey.size()); // HACK
 
 		// Iterate through markerset
 		int markerNb = 0;
-		for (Map.Entry<MarkerKey, int[]> entry : wrCaseMarkerIdSetMap.entrySet()) {
-			MarkerKey markerKey = entry.getKey();
-
-			int[] caseCntgTable = entry.getValue();
-			int[] ctrlCntgTable = wrCtrlMarkerSet.get(markerKey);
+		Iterator<Census> caseMarkerCensusIt = caseMarkersOrigIndexCensus.values().iterator();
+		for (Map.Entry<Integer, MarkerKey> caseMarkerOrigIndexKey : caseMarkersOrigIndexKey.entrySet()) {
+			Integer origIndex = caseMarkerOrigIndexKey.getKey();
+			MarkerKey markerKey = caseMarkerOrigIndexKey.getValue();
+			Census caseCensus = caseMarkerCensusIt.next();
+			Census ctrlCensus = ctrlMarkersOrigIndexCensus.get(origIndex);
 
 			// INIT VALUES
-			int caseAA = caseCntgTable[0];
-			int caseAa = caseCntgTable[1];
-			int caseaa = caseCntgTable[2];
-			int caseTot = caseAA + caseaa + caseAa;
+			final int caseAA = caseCensus.getAA();
+			final int caseAa = caseCensus.getAa();
+			final int caseaa = caseCensus.getaa();
+			final int caseTot = caseAA + caseaa + caseAa;
 
-			int ctrlAA = ctrlCntgTable[0];
-			int ctrlAa = ctrlCntgTable[1];
-			int ctrlaa = ctrlCntgTable[2];
-			int ctrlTot = ctrlAA + ctrlaa + ctrlAa;
+			final int ctrlAA = ctrlCensus.getAA();
+			final int ctrlAa = ctrlCensus.getAa();
+			final int ctrlaa = ctrlCensus.getaa();
+			final int ctrlTot = ctrlAA + ctrlaa + ctrlAa;
 
 			if (allelic) {
 				// allelic test
-				int sampleNb = caseTot + ctrlTot;
+				final int sampleNb = caseTot + ctrlTot;
 
-				double allelicT = Associations.calculateAllelicAssociationChiSquare(
+				final double allelicT = Associations.calculateAllelicAssociationChiSquare(
 						sampleNb,
 						caseAA,
 						caseAa,
@@ -106,9 +114,9 @@ public class OP_AssociationTests extends AbstractTestMatrixOperation {
 						ctrlAa,
 						ctrlaa,
 						ctrlTot);
-				double allelicPval = Pvalue.calculatePvalueFromChiSqr(allelicT, 1);
+				final double allelicPval = Pvalue.calculatePvalueFromChiSqr(allelicT, 1);
 
-				double allelicOR = Associations.calculateAllelicAssociationOR(
+				final double allelicOR = Associations.calculateAllelicAssociationOR(
 						caseAA,
 						caseAa,
 						caseaa,
@@ -117,10 +125,15 @@ public class OP_AssociationTests extends AbstractTestMatrixOperation {
 						ctrlaa);
 
 				AllelicAssociationTestsOperationDataSet allelicAssociationDataSet = (AllelicAssociationTestsOperationDataSet) dataSet;
-				allelicAssociationDataSet.addEntry(new DefaultAllelicAssociationOperationEntry(markerKey, allelicT, allelicPval, allelicOR));
+				allelicAssociationDataSet.addEntry(new DefaultAllelicAssociationOperationEntry(
+						markerKey,
+						origIndex,
+						allelicT,
+						allelicPval,
+						allelicOR));
 			} else {
 				// genotypic test
-				double gntypT = Associations.calculateGenotypicAssociationChiSquare(
+				final double gntypT = Associations.calculateGenotypicAssociationChiSquare(
 						caseAA,
 						caseAa,
 						caseaa,
@@ -129,8 +142,8 @@ public class OP_AssociationTests extends AbstractTestMatrixOperation {
 						ctrlAa,
 						ctrlaa,
 						ctrlTot);
-				double gntypPval = Pvalue.calculatePvalueFromChiSqr(gntypT, 2);
-				double[] gntypOR = Associations.calculateGenotypicAssociationOR(
+				final double gntypPval = Pvalue.calculatePvalueFromChiSqr(gntypT, 2);
+				final double[] gntypOR = Associations.calculateGenotypicAssociationOR(
 						caseAA,
 						caseAa,
 						caseaa,
@@ -139,7 +152,13 @@ public class OP_AssociationTests extends AbstractTestMatrixOperation {
 						ctrlaa);
 
 				GenotypicAssociationTestsOperationDataSet genotypicAssociationDataSet = (GenotypicAssociationTestsOperationDataSet) dataSet;
-				genotypicAssociationDataSet.addEntry(new DefaultGenotypicAssociationOperationEntry(markerKey, gntypT, gntypPval, gntypOR[0], gntypOR[1]));
+				genotypicAssociationDataSet.addEntry(new DefaultGenotypicAssociationOperationEntry(
+						markerKey,
+						origIndex,
+						gntypT,
+						gntypPval,
+						gntypOR[0],
+						gntypOR[1]));
 			}
 
 			markerNb++;
