@@ -316,7 +316,7 @@ public abstract class AbstractNetCdfOperationDataSet<ET> implements OperationDat
 			}
 		} else if (rdOperationKey != null) {
 			// load the list of samples from the parent operation
-			OperationDataSet parentOperationDataSet = new NetCdfBaseOperationDataSet(rdOperationKey);
+			OperationDataSet parentOperationDataSet = new BaseNetCdfOperationDataSet(rdOperationKey);
 			samples = parentOperationDataSet.getSamples();
 		} else {
 			// load the list of samples from the parent matrix

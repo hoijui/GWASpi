@@ -154,9 +154,9 @@ public class OP_MarkerCensus implements MatrixOperation {
 				((NetCdfMarkerCensusOperationDataSet) dataSet).setMarkerMissingRatio(markerMissingRatio); // HACK
 				((NetCdfMarkerCensusOperationDataSet) dataSet).setDiscardMismatches(discardMismatches); // HACK
 
-				((AbstractNetCdfOperationDataSet) dataSet).setUseAllMarkersFromParent(rdMatrixKey);
+				((AbstractNetCdfOperationDataSet) dataSet).setUseAllMarkersFromParent(true);
 				dataSet.setSamples(wrSampleKeys);
-				((AbstractNetCdfOperationDataSet) dataSet).setUseAllChromosomesFromParent(rdMatrixKey);
+				((AbstractNetCdfOperationDataSet) dataSet).setUseAllChromosomesFromParent(true);
 
 //				// CREATE netCDF-3 FILE
 //				cNetCDF.Defaults.OPType opType = cNetCDF.Defaults.OPType.MARKER_CENSUS_BY_AFFECTION;
@@ -555,9 +555,6 @@ public class OP_MarkerCensus implements MatrixOperation {
 		Map<MarkerKey, Object> excludeMarkerSetMap = new LinkedHashMap<MarkerKey, Object>();
 		excludeSampleSetMap.clear();
 
-		int totalSampleNb = rdQASampleSetMap.size();
-		int totalMarkerNb = rdQAMarkerSetMap.size();
-
 		// EXCLUDE MARKER BY MISMATCH STATE
 		if (discardMismatches) {
 			Iterator<Boolean> mismatchStatesIt = qaMarkersOperationDataSet.getMismatchStates().iterator();
@@ -607,6 +604,9 @@ public class OP_MarkerCensus implements MatrixOperation {
 
 		rdSampleQANcFile.close();
 		rdMarkerQANcFile.close();
+
+		final int totalSampleNb = rdQASampleSetMap.size();
+		final int totalMarkerNb = rdQAMarkerSetMap.size();
 
 		return ((excludeSampleSetMap.size() < totalSampleNb)
 				&& (excludeMarkerSetMap.size() < totalMarkerNb));

@@ -20,7 +20,6 @@ package org.gwaspi.netCDF.operations;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Map;
-import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.model.Census;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.OperationKey;
@@ -37,10 +36,6 @@ import org.gwaspi.operations.markercensus.NetCdfMarkerCensusOperationDataSet;
 import org.gwaspi.statistics.StatisticsUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-//import ucar.ma2.ArrayChar;
-//import ucar.ma2.InvalidRangeException;
-//import ucar.nc2.NetcdfFile;
-//import ucar.nc2.NetcdfFileWriteable;
 
 public class OP_HardyWeinberg implements MatrixOperation {
 
@@ -174,8 +169,8 @@ public class OP_HardyWeinberg implements MatrixOperation {
 	private void performHardyWeinberg(HardyWeinbergOperationDataSet dataSet, Collection<MarkerCensusOperationEntry> markersContingencyMap, Category category) throws IOException {
 
 		final String categoryName;
-		final String varPval;
-		final String varHetzy;
+//		final String varPval;
+//		final String varHetzy;
 		switch(category) {
 			default:
 			case ALL:
@@ -184,14 +179,14 @@ public class OP_HardyWeinberg implements MatrixOperation {
 			case CONTROL:
 				// CONTROL SAMPLES
 				categoryName = "CTRL";
-				varPval = cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWPval_CTRL;
-				varHetzy = cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWHETZY_CTRL;
+//				varPval = cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWPval_CTRL;
+//				varHetzy = cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWHETZY_CTRL;
 				break;
 			case ALTERNATE:
 				// HW-ALT SAMPLES
 				categoryName = "HW-ALT";
-				varPval = cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWPval_ALT;
-				varHetzy = cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWHETZY_ALT;
+//				varPval = cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWPval_ALT;
+//				varHetzy = cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWHETZY_ALT;
 				break;
 		}
 
