@@ -28,14 +28,20 @@ import java.util.Queue;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.model.ChromosomeInfo;
 import org.gwaspi.model.ChromosomeKey;
+import org.gwaspi.model.ChromosomesKeysSource;
+import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MarkerKeyFactory;
+import org.gwaspi.model.MarkersKeysSource;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.SampleKeyFactory;
+import org.gwaspi.model.SamplesKeysSource;
+import org.gwaspi.netCDF.markers.NetCDFDataSetSource;
 import org.gwaspi.netCDF.operations.NetCdfUtils;
 import org.gwaspi.netCDF.operations.OperationFactory;
+import org.gwaspi.operations.qamarkers.NetCdfQAMarkersOperationDataSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
@@ -50,12 +56,13 @@ public abstract class AbstractNetCdfOperationDataSet<ET> implements OperationDat
 
 	private final boolean markersOperationSet;
 	private MatrixKey rdMatrixKey;
+	private OperationKey rdOperationKey;
 	private int numMarkers;
 	private int numSamples;
 	private int numChromosomes;
-	private MatrixKey useAllMarkersFromThisMatrix;
-	private MatrixKey useAllSamplesFromThisMatrix;
-	private MatrixKey useAllChromosomesFromThisMatrix;
+	private boolean useAllMarkersFromParent;
+	private boolean useAllSamplesFromParent;
+	private boolean useAllChromosomesFromParent;
 	private NetcdfFileWriteable wrNcFile;
 	private OperationFactory operationFactory;
 	private OperationKey operationKey;
@@ -68,12 +75,13 @@ public abstract class AbstractNetCdfOperationDataSet<ET> implements OperationDat
 		this.operationKey = operationKey;
 		this.markersOperationSet = markersOperationSet;
 		this.rdMatrixKey = null;
+		this.rdOperationKey = null;
 		this.numMarkers = -1;
 		this.numSamples = -1;
 		this.numChromosomes = -1;
-		this.useAllMarkersFromThisMatrix = null;
-		this.useAllSamplesFromThisMatrix = null;
-		this.useAllChromosomesFromThisMatrix = null;
+		this.useAllMarkersFromParent = false;
+		this.useAllSamplesFromParent = false;
+		this.useAllChromosomesFromParent = false;
 		this.wrNcFile = null;
 		this.operationFactory = null;
 		this.writeBuffer = new LinkedList<ET>();
@@ -101,6 +109,14 @@ public abstract class AbstractNetCdfOperationDataSet<ET> implements OperationDat
 		return rdMatrixKey;
 	}
 
+	public void setReadOperationKey(OperationKey rdOperationKey) {
+		this.rdOperationKey = rdOperationKey;
+	}
+
+	protected OperationKey getReadOperationKey() {
+		return rdOperationKey;
+	}
+
 	public void setNumMarkers(int numMarkers) {
 		this.numMarkers = numMarkers;
 	}
@@ -109,8 +125,15 @@ public abstract class AbstractNetCdfOperationDataSet<ET> implements OperationDat
 		return numMarkers;
 	}
 
-	public void setUseAllMarkers(MatrixKey matrixKey) {
-		this.useAllMarkersFromThisMatrix = matrixKey;
+	/**
+	 * @param useAll
+	 *   if true, we will use all the markers from the parent operation,
+	 *   if this operation has one, or from the parent matrix otherwise.
+	 *   If false, we will store/retrieve/manage a separate list of markers
+	 *   for this operation.
+	 */
+	public void setUseAllMarkersFromParent(boolean useAll) {
+		this.useAllMarkersFromParent = useAll;
 	}
 
 	public void setNumSamples(int numSamples) {
@@ -121,8 +144,15 @@ public abstract class AbstractNetCdfOperationDataSet<ET> implements OperationDat
 		return numSamples;
 	}
 
-	public void setUseAllSamples(MatrixKey matrixKey) {
-		this.useAllSamplesFromThisMatrix = matrixKey;
+	/**
+	 * @param useAll
+	 *   if true, we will use all the samples from the parent operation,
+	 *   if this operation has one, or from the parent matrix otherwise.
+	 *   If false, we will store/retrieve/manage a separate list of samples
+	 *   for this operation.
+	 */
+	public void setUseAllSamplesFromParent(boolean useAll) {
+		this.useAllSamplesFromParent = useAll;
 	}
 
 	public void setNumChromosomes(int numChromosomes) {
@@ -133,8 +163,15 @@ public abstract class AbstractNetCdfOperationDataSet<ET> implements OperationDat
 		return numChromosomes;
 	}
 
-	public void setUseAllChromosomes(MatrixKey matrixKey) {
-		this.useAllChromosomesFromThisMatrix = matrixKey;
+	/**
+	 * @param useAll
+	 *   if true, we will use all the chromosomes from the parent operation,
+	 *   if this operation has one, or from the parent matrix otherwise.
+	 *   If false, we will store/retrieve/manage a separate list of chromosomes
+	 *   for this operation.
+	 */
+	public void setUseAllChromosomesFromParent(boolean useAll) {
+		this.useAllChromosomesFromParent = useAll;
 	}
 
 	protected NetcdfFileWriteable getNetCdfWriteFile() {
@@ -258,24 +295,39 @@ public abstract class AbstractNetCdfOperationDataSet<ET> implements OperationDat
 	@Override
 	public Map<Integer, SampleKey> getSamples() throws IOException {
 
-		Collection<Integer> origIndices = new ArrayList<Integer>(0);
-		Collection<String> keys = new ArrayList<String>(0);
+		Map<Integer, SampleKey> samples;
 
-		if (useAllSamplesFromThisMatrix == null) {
+		if (!useAllSamplesFromParent) {
+			Collection<Integer> origIndices = new ArrayList<Integer>(0);
+			Collection<String> keys = new ArrayList<String>(0);
+
+			// load our separately managed/stored list of samples
 			final String varIdx = getIndexVar(false);
 			NetCdfUtils.readVariable(getNetCdfReadFile(), varIdx, -1, -1, origIndices, null);
 
 			final String varName = getNameVar(false);
 			NetCdfUtils.readVariable(getNetCdfReadFile(), varName, -1, -1, keys, null);
-		} else {
-			XXX;
-		}
 
-		Map<Integer, SampleKey> samples = new LinkedHashMap<Integer, SampleKey>(origIndices.size());
-		Iterator<String> keysIt = keys.iterator();
-		SampleKeyFactory sampleKeyFactory = new SampleKeyFactory(getReadMatrixKey().getStudyKey());
-		for (Integer origIndex : origIndices) {
-			samples.put(origIndex, sampleKeyFactory.decode(keysIt.next()));
+			samples = new LinkedHashMap<Integer, SampleKey>(origIndices.size());
+			Iterator<String> keysIt = keys.iterator();
+			SampleKeyFactory sampleKeyFactory = new SampleKeyFactory(getReadMatrixKey().getStudyKey());
+			for (Integer origIndex : origIndices) {
+				samples.put(origIndex, sampleKeyFactory.decode(keysIt.next()));
+			}
+		} else if (rdOperationKey != null) {
+			// load the list of samples from the parent operation
+			OperationDataSet parentOperationDataSet = new NetCdfBaseOperationDataSet(rdOperationKey);
+			samples = parentOperationDataSet.getSamples();
+		} else {
+			// load the list of samples from the parent matrix
+			DataSetSource parentMatrixDataSet = new NetCDFDataSetSource(rdMatrixKey);
+			SamplesKeysSource samplesKeys = parentMatrixDataSet.getSamplesKeysSource();
+
+			samples = new LinkedHashMap<Integer, SampleKey>(samplesKeys.size());
+			int origIndex = 0;
+			for (SampleKey sampleKey : samplesKeys) {
+				samples.put(origIndex++, sampleKey);
+			}
 		}
 
 		return samples;
@@ -284,25 +336,39 @@ public abstract class AbstractNetCdfOperationDataSet<ET> implements OperationDat
 	@Override
 	public Map<Integer, MarkerKey> getMarkers() throws IOException {
 
-		Collection<Integer> origIndices = new ArrayList<Integer>(0);
-		Collection<String> keys = new ArrayList<String>(0);
+		Map<Integer, MarkerKey> markers;
 
-		if (useAllMarkersFromThisMatrix == null) {
+		if (!useAllMarkersFromParent) {
+			Collection<Integer> origIndices = new ArrayList<Integer>(0);
+			Collection<String> keys = new ArrayList<String>(0);
+
+			// load our separately managed/stored list of markers
 			final String varIdx = getIndexVar(true);
 			NetCdfUtils.readVariable(getNetCdfReadFile(), varIdx, -1, -1, origIndices, null);
 
 			final String varName = getNameVar(true);
 			NetCdfUtils.readVariable(getNetCdfReadFile(), varName, -1, -1, keys, null);
+
+			markers = new LinkedHashMap<Integer, MarkerKey>(origIndices.size());
+			Iterator<String> keysIt = keys.iterator();
+			MarkerKeyFactory markerKeyFactory = new MarkerKeyFactory();
+			for (Integer origIndex : origIndices) {
+				markers.put(origIndex, markerKeyFactory.decode(keysIt.next()));
+			}
+		} else if (rdOperationKey != null) {
+			// load the list of samples from the parent operation
+			OperationDataSet parentOperationDataSet = new NetCdfBaseOperationDataSet(rdOperationKey);
+			markers = parentOperationDataSet.getMarkers();
 		} else {
+			// load the list of samples from the parent matrix
+			DataSetSource parentMatrixDataSet = new NetCDFDataSetSource(rdMatrixKey);
+			MarkersKeysSource markersKeys = parentMatrixDataSet.getMarkersKeysSource();
 
-			XXX;
-		}
-
-		Map<Integer, MarkerKey> markers = new LinkedHashMap<Integer, MarkerKey>(origIndices.size());
-		Iterator<String> keysIt = keys.iterator();
-		MarkerKeyFactory markerKeyFactory = new MarkerKeyFactory();
-		for (Integer origIndex : origIndices) {
-			markers.put(origIndex, markerKeyFactory.decode(keysIt.next()));
+			markers = new LinkedHashMap<Integer, MarkerKey>(markersKeys.size());
+			int origIndex = 0;
+			for (MarkerKey markerKey : markersKeys) {
+				markers.put(origIndex++, markerKey);
+			}
 		}
 
 		return markers;
@@ -311,23 +377,38 @@ public abstract class AbstractNetCdfOperationDataSet<ET> implements OperationDat
 	@Override
 	public Map<Integer, ChromosomeKey> getChromosomes() throws IOException {
 
-		Collection<Integer> origIndices = new ArrayList<Integer>(0);
-		Collection<String> keys = new ArrayList<String>(0);
+		Map<Integer, ChromosomeKey> chromosomes;
 
-		if (useAllChromosomesFromThisMatrix == null) {
+		if (!useAllChromosomesFromParent) {
+			Collection<Integer> origIndices = new ArrayList<Integer>(0);
+			Collection<String> keys = new ArrayList<String>(0);
+
+			// load our separately managed/stored list of chromosomes
 			final String varIdx = cNetCDF.Variables.VAR_CHR_IN_MATRIX_IDX;
 			NetCdfUtils.readVariable(getNetCdfReadFile(), varIdx, -1, -1, origIndices, null);
 
 			final String varName = cNetCDF.Variables.VAR_CHR_IN_MATRIX;
 			NetCdfUtils.readVariable(getNetCdfReadFile(), varName, -1, -1, keys, null);
-		} else {
-			XXX;
-		}
 
-		Map<Integer, ChromosomeKey> chromosomes = new LinkedHashMap<Integer, ChromosomeKey>(origIndices.size());
-		Iterator<String> keysIt = keys.iterator();
-		for (Integer origIndex : origIndices) {
-			chromosomes.put(origIndex, new ChromosomeKey(keysIt.next()));
+			chromosomes = new LinkedHashMap<Integer, ChromosomeKey>(origIndices.size());
+			Iterator<String> keysIt = keys.iterator();
+			for (Integer origIndex : origIndices) {
+				chromosomes.put(origIndex, new ChromosomeKey(keysIt.next()));
+			}
+		} else if (rdOperationKey != null) {
+			// load the list of samples from the parent operation
+			OperationDataSet parentOperationDataSet = new NetCdfBaseOperationDataSet(rdOperationKey);
+			chromosomes = parentOperationDataSet.getChromosomes();
+		} else {
+			// load the list of samples from the parent matrix
+			DataSetSource parentMatrixDataSet = new NetCDFDataSetSource(rdMatrixKey);
+			ChromosomesKeysSource chromosomesKeys = parentMatrixDataSet.getChromosomesKeysSource();
+
+			chromosomes = new LinkedHashMap<Integer, ChromosomeKey>(chromosomesKeys.size());
+			int origIndex = 0;
+			for (ChromosomeKey chromosomeKey : chromosomesKeys) {
+				chromosomes.put(origIndex++, chromosomeKey);
+			}
 		}
 
 		return chromosomes;
@@ -335,7 +416,7 @@ public abstract class AbstractNetCdfOperationDataSet<ET> implements OperationDat
 
 	@Override
 	public Collection<ChromosomeInfo> getChromosomeInfos() throws IOException {
-
+vvv;
 		Collection<int[]> chromosomeInfosRaw = new ArrayList<int[]>(0);
 		final String varInfo = cNetCDF.Variables.VAR_CHR_INFO;
 		NetCdfUtils.readVariable(getNetCdfReadFile(), varInfo, -1, -1, chromosomeInfosRaw, null);

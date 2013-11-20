@@ -97,9 +97,9 @@ public class OP_QAMarkers implements MatrixOperation {
 //			dataSet.setSamples(rdSampleSetMap.keySet());
 //			Map<ChromosomeKey, ChromosomeInfo> chromosomeInfo = rdMarkerSet.getChrInfoSetMap();
 //			dataSet.setChromosomes(chromosomeInfo.keySet(), chromosomeInfo.values());
-			((AbstractNetCdfOperationDataSet) dataSet).setUseAllSamples(rdMatrixKey);
-			((AbstractNetCdfOperationDataSet) dataSet).setUseAllMarkers(rdMatrixKey);
-			((AbstractNetCdfOperationDataSet) dataSet).setUseAllChromosomes(rdMatrixKey);
+			((AbstractNetCdfOperationDataSet) dataSet).setUseAllSamplesFromParent(true);
+			((AbstractNetCdfOperationDataSet) dataSet).setUseAllMarkersFromParent(true);
+			((AbstractNetCdfOperationDataSet) dataSet).setUseAllChromosomesFromParent(true);
 
 			//<editor-fold defaultstate="expanded" desc="PROCESSOR">
 			// INIT MARKER AND SAMPLE INFO

@@ -154,9 +154,9 @@ public class OP_MarkerCensus implements MatrixOperation {
 				((NetCdfMarkerCensusOperationDataSet) dataSet).setMarkerMissingRatio(markerMissingRatio); // HACK
 				((NetCdfMarkerCensusOperationDataSet) dataSet).setDiscardMismatches(discardMismatches); // HACK
 
-				((AbstractNetCdfOperationDataSet) dataSet).setUseAllMarkers(rdMatrixKey);
+				((AbstractNetCdfOperationDataSet) dataSet).setUseAllMarkersFromParent(rdMatrixKey);
 				dataSet.setSamples(wrSampleKeys);
-				((AbstractNetCdfOperationDataSet) dataSet).setUseAllChromosomes(rdMatrixKey);
+				((AbstractNetCdfOperationDataSet) dataSet).setUseAllChromosomesFromParent(rdMatrixKey);
 
 //				// CREATE netCDF-3 FILE
 //				cNetCDF.Defaults.OPType opType = cNetCDF.Defaults.OPType.MARKER_CENSUS_BY_AFFECTION;
