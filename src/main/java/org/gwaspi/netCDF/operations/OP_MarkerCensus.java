@@ -58,7 +58,6 @@ import org.gwaspi.operations.qamarkers.NetCdfQAMarkersOperationDataSet;
 import org.gwaspi.operations.qamarkers.QAMarkersOperationDataSet;
 import org.gwaspi.operations.qasamples.NetCdfQASamplesOperationDataSet;
 import org.gwaspi.operations.qasamples.QASamplesOperationDataSet;
-import org.gwaspi.samples.SampleSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -112,8 +111,12 @@ public class OP_MarkerCensus implements MatrixOperation {
 	public int processMatrix() throws IOException {
 		int resultOpId = Integer.MIN_VALUE;
 
-		Map<SampleKey, Double> excludeSampleSetMap = new LinkedHashMap<SampleKey, Double>();
-		boolean dataRemaining = pickingMarkersAndSamplesFromQA(excludeSampleSetMap);
+		Map<Integer, SampleKey> excludeSamplesOrigIndexAndKey = new LinkedHashMap<Integer, SampleKey>();
+		boolean dataRemaining = pickingMarkersAndSamplesFromQA(
+				excludeSamplesOrigIndexAndKey,
+				null,
+				null,
+				null);
 
 		if (dataRemaining) {
 			// THERE IS DATA LEFT TO PROCESS AFTER PICKING
@@ -127,15 +130,15 @@ public class OP_MarkerCensus implements MatrixOperation {
 			rdMarkerSet.initFullMarkerIdSetMap();
 			rdMarkerSet.fillWith(cNetCDF.Defaults.DEFAULT_GT);
 
-			SampleSet rdSampleSet = new SampleSet(rdMatrixKey);
+			OperationKey sampleQAOPKey = OperationKey.valueOf(sampleQAOP);
+//			SampleSet rdSampleSet = new SampleSet(rdMatrixKey);
 //			Map<SampleKey, byte[]> rdSampleSetMap = rdSampleSet.getSampleIdSetMapByteArray();
-			Map<Integer, SampleKey> wrSampleKeys = new LinkedHashMap<Integer, SampleKey>(); // XXX Should this be a List instead, to preserve order?
-			int sampleIndex = 0;
-			for (SampleKey key : rdSampleSetMap.keySet()) {
-				if (!excludeSampleSetMap.containsKey(key)) {
-					wrSampleKeys.put(sampleIndex, key);
+			Map<Integer, SampleKey> wrSampleKeys = new LinkedHashMap<Integer, SampleKey>();
+			QASamplesOperationDataSet qaSamplesOperationDataSet = new NetCdfQASamplesOperationDataSet(sampleQAOPKey);
+			for (Map.Entry<Integer, SampleKey> qaSampleOrigIndexKey : qaSamplesOperationDataSet.getSamples().entrySet()) {
+				if (!excludeSamplesOrigIndexAndKey.containsKey(qaSampleOrigIndexKey.getKey())) {
+					wrSampleKeys.put(qaSampleOrigIndexKey.getKey(), qaSampleOrigIndexKey.getValue());
 				}
-				sampleIndex++;
 			}
 			//</editor-fold>
 
@@ -533,7 +536,10 @@ public class OP_MarkerCensus implements MatrixOperation {
 	 * @return true if there is data left after picking, false otherwise
 	 */
 	private boolean pickingMarkersAndSamplesFromQA(
-			Map<SampleKey, Double> excludeSampleSetMap)
+			Map<Integer, SampleKey> excludeSamplesOrigIndexAndKey,
+			Map<Integer, Double> excludeSampleValue,
+			Map<Integer, MarkerKey> excludeMarkersOrigIndexAndKey,
+			Map<Integer, Object> excludeMarkersValue)
 			throws IOException
 	{
 		OperationKey markerQAOPKey = OperationKey.valueOf(markerQAOP);
@@ -552,64 +558,100 @@ public class OP_MarkerCensus implements MatrixOperation {
 //		SampleOperationSet rdQASampleSet = new SampleOperationSet(OperationKey.valueOf(sampleQAMetadata));
 //		Map<MarkerKey, ?> rdQAMarkerSetMap = rdQAMarkerSet.getOpSetMap();
 //		Map<SampleKey, ?> rdQASampleSetMap = rdQASampleSet.getOpSetMap();
-		Map<MarkerKey, Object> excludeMarkerSetMap = new LinkedHashMap<MarkerKey, Object>();
-		excludeSampleSetMap.clear();
+//		Map<MarkerKey, Object> excludeMarkerSetMap = new LinkedHashMap<MarkerKey, Object>();
 
-		// EXCLUDE MARKER BY MISMATCH STATE
-		if (discardMismatches) {
-			Iterator<Boolean> mismatchStatesIt = qaMarkersOperationDataSet.getMismatchStates().iterator();
-//			Map<MarkerKey, Integer> rdQAMarkerSetMapMismatchStates = rdQAMarkerSet.fillOpSetMapWithVariable(rdMarkerQANcFile, cNetCDF.Census.VAR_OP_MARKERS_MISMATCHSTATE);
-			for (Map.Entry<MarkerKey, Integer> entry : rdQAMarkerSetMapMismatchStates.entrySet()) {
-				MarkerKey key = entry.getKey();
-				Integer value = entry.getValue();
-				if (mismatchStatesIt.next()) {
-					excludeMarkerSetMap.put(key, value);
+		final int excludedMarkerNb;
+		if (excludeMarkersOrigIndexAndKey != null) {
+//			excludeMarkersOrigIndexAndKey.clear();
+//			excludeMarkersValue.clear();
+
+			// EXCLUDE MARKER BY MISMATCH STATE
+			if (discardMismatches) {
+				Iterator<Boolean> mismatchStatesIt = qaMarkersOperationDataSet.getMismatchStates().iterator();
+	//			Map<MarkerKey, Integer> rdQAMarkerSetMapMismatchStates = rdQAMarkerSet.fillOpSetMapWithVariable(rdMarkerQANcFile, cNetCDF.Census.VAR_OP_MARKERS_MISMATCHSTATE);
+				for (Map.Entry<Integer, MarkerKey> qaMarkerOrigIndexKey : qaMarkersOperationDataSet.getMarkers().entrySet()) {
+					MarkerKey key = qaMarkerOrigIndexKey.getValue();
+					Boolean mismatchState = mismatchStatesIt.next();
+					Integer origIndex = qaMarkerOrigIndexKey.getKey();
+					if (mismatchState) {
+						excludeMarkersOrigIndexAndKey.put(origIndex, key);
+						if (excludeMarkersValue != null) {
+							excludeMarkersValue.put(origIndex, mismatchState);
+						}
+					}
 				}
 			}
-		}
 
-		// EXCLUDE MARKER BY MISSING RATIO
-		Map<MarkerKey, Double> rdQAMarkerSetMapMissingRat = rdQAMarkerSet.fillOpSetMapWithVariable(rdMarkerQANcFile, cNetCDF.Census.VAR_OP_MARKERS_MISSINGRAT);
-		for (Map.Entry<MarkerKey, Double> entry : rdQAMarkerSetMapMissingRat.entrySet()) {
-			MarkerKey key = entry.getKey();
-			Double value = entry.getValue();
-			if (value > markerMissingRatio) {
-				excludeMarkerSetMap.put(key, value);
-			}
-		}
-
-		// EXCLUDE SAMPLE BY MISSING RATIO
-		Map<SampleKey, Double> rdQASampleSetMapMissingRat = rdQASampleSet.fillOpSetMapWithVariable(rdSampleQANcFile, cNetCDF.Census.VAR_OP_SAMPLES_MISSINGRAT);
-		if (rdQASampleSetMapMissingRat != null) {
-			for (Map.Entry<SampleKey, Double> entry : rdQASampleSetMapMissingRat.entrySet()) {
-				SampleKey key = entry.getKey();
-				double value = entry.getValue();
-				if (value > sampleMissingRatio) {
-					excludeSampleSetMap.put(key, value);
+			// EXCLUDE MARKER BY MISSING RATIO
+			Iterator<Double> missingRatioIt = qaMarkersOperationDataSet.getMissingRatio().iterator();
+//			Map<MarkerKey, Double> rdQAMarkerSetMapMissingRat = rdQAMarkerSet.fillOpSetMapWithVariable(rdMarkerQANcFile, cNetCDF.Census.VAR_OP_MARKERS_MISSINGRAT);
+			for (Map.Entry<Integer, MarkerKey> qaMarkerOrigIndexKey : qaMarkersOperationDataSet.getMarkers().entrySet()) {
+				MarkerKey key = qaMarkerOrigIndexKey.getValue();
+				Double missingRatio = missingRatioIt.next();
+				Integer origIndex = qaMarkerOrigIndexKey.getKey();
+				if (missingRatio > markerMissingRatio) {
+					excludeMarkersOrigIndexAndKey.put(origIndex, key);
+					if (excludeMarkersValue != null) {
+						excludeMarkersValue.put(origIndex, missingRatio);
+					}
 				}
 			}
+			excludedMarkerNb = excludeMarkersOrigIndexAndKey.size();
+		} else {
+			excludedMarkerNb = 0;
 		}
 
-		// EXCLUDE SAMPLE BY HETEROZYGOSITY RATIO
-		Map<SampleKey, Double> rdQASampleSetMapHetzyRat = rdQASampleSet.fillOpSetMapWithVariable(rdSampleQANcFile, cNetCDF.Census.VAR_OP_SAMPLES_HETZYRAT);
-		if (rdQASampleSetMapHetzyRat != null) {
-			for (Map.Entry<SampleKey, Double> entry : rdQASampleSetMapHetzyRat.entrySet()) {
-				SampleKey key = entry.getKey();
-				double value = entry.getValue();
-				if (value > sampleHetzygRatio) {
-					excludeSampleSetMap.put(key, value);
+		final int excludedSampleNb;
+		if (excludeSamplesOrigIndexAndKey != null) {
+//			excludeSamplesOrigIndexAndKey.clear();
+//			excludeSampleValue.clear();
+
+			// EXCLUDE SAMPLE BY MISSING RATIO
+			Iterator<Double> missingRatioIt = qaSamplesOperationDataSet.getSampleMissingRatios(-1, -1).iterator();
+//			Map<SampleKey, Double> rdQASampleSetMapMissingRat = rdQASampleSet.fillOpSetMapWithVariable(rdSampleQANcFile, cNetCDF.Census.VAR_OP_SAMPLES_MISSINGRAT);
+			if (missingRatioIt != null) {
+				for (Map.Entry<Integer, SampleKey> qaSampleOrigIndexKey : qaSamplesOperationDataSet.getSamples().entrySet()) {
+					SampleKey key = qaSampleOrigIndexKey.getValue();
+					Double missingRatio = missingRatioIt.next();
+					Integer origIndex = qaSampleOrigIndexKey.getKey();
+					if (missingRatio > sampleMissingRatio) {
+						excludeSamplesOrigIndexAndKey.put(origIndex, key);
+						if (excludeSampleValue != null) {
+							excludeSampleValue.put(origIndex, missingRatio);
+						}
+					}
 				}
 			}
+
+			// EXCLUDE SAMPLE BY HETEROZYGOSITY RATIO
+			Iterator<Double> hetzyRatioIt = qaSamplesOperationDataSet.getSampleHetzyRatios(-1, -1).iterator();
+//			Map<SampleKey, Double> rdQASampleSetMapHetzyRat = rdQASampleSet.fillOpSetMapWithVariable(rdSampleQANcFile, cNetCDF.Census.VAR_OP_SAMPLES_HETZYRAT);
+			if (hetzyRatioIt != null) {
+				for (Map.Entry<Integer, SampleKey> qaSampleOrigIndexKey : qaSamplesOperationDataSet.getSamples().entrySet()) {
+					SampleKey key = qaSampleOrigIndexKey.getValue();
+					Double hetzyRatio = hetzyRatioIt.next();
+					Integer origIndex = qaSampleOrigIndexKey.getKey();
+					if (hetzyRatio > sampleHetzygRatio) {
+						excludeSamplesOrigIndexAndKey.put(origIndex, key);
+						if (excludeSampleValue != null) {
+							excludeSampleValue.put(origIndex, hetzyRatio);
+						}
+					}
+				}
+			}
+			excludedSampleNb = excludeSamplesOrigIndexAndKey.size();
+		} else {
+			excludedSampleNb = 0;
 		}
 
-		rdSampleQANcFile.close();
-		rdMarkerQANcFile.close();
+//		rdSampleQANcFile.close();
+//		rdMarkerQANcFile.close();
 
-		final int totalSampleNb = rdQASampleSetMap.size();
-		final int totalMarkerNb = rdQAMarkerSetMap.size();
+		final int totalSampleNb = qaSamplesOperationDataSet.getSamples().size();
+		final int totalMarkerNb = qaMarkersOperationDataSet.getMarkers().size();
 
-		return ((excludeSampleSetMap.size() < totalSampleNb)
-				&& (excludeMarkerSetMap.size() < totalMarkerNb));
+		return ((excludedSampleNb < totalSampleNb)
+				&& (excludedMarkerNb < totalMarkerNb));
 	}
 
 	static int summingSampleSetGenotypes(
