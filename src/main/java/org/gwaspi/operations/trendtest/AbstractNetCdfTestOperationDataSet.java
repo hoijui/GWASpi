@@ -49,13 +49,17 @@ public abstract class AbstractNetCdfTestOperationDataSet<ET> extends AbstractNet
 	private String testName;
 	private OPType testType;
 
-	public AbstractNetCdfTestOperationDataSet() {
-		super(true);
+	public AbstractNetCdfTestOperationDataSet(OperationKey operationKey) {
+		super(true, operationKey);
 
 		this.markerCensusOPKey = null;
 		this.hardyWeinbergThreshold = Double.MIN_VALUE;
 		this.testName = null;
 		this.testType = null;
+	}
+
+	public AbstractNetCdfTestOperationDataSet() {
+		this(null);
 	}
 
 	public void setMarkerCensusOPKey(OperationKey markerCensusOPKey) {

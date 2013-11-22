@@ -67,22 +67,25 @@ public class OP_HardyWeinberg implements MatrixOperation {
 //		OperationMetadata rdOPMetadata = OperationsList.getOperationMetadata(markerCensusOPKey.getId());
 //		NetcdfFile rdNcFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());
 
+//		MarkerCensusOperationDataSet rdmarkerCensusOpDS
+//				= new NetCdfMarkerCensusOperationDataSet(markerCensusOPKey);
+
 		MarkerOperationSet rdOperationSet = new MarkerOperationSet(markerCensusOPKey);
 		Map<MarkerKey, char[]> rdMarkerSetMap = rdOperationSet.getOpSetMap();
 		Map<SampleKey, ?> rdSampleSetMap = rdOperationSet.getImplicitSetMap();
 
 		try {
 			HardyWeinbergOperationDataSet dataSet = new NetCdfHardyWeinbergOperationDataSet(); // HACK
-			((AbstractNetCdfOperationDataSet) dataSet).setReadMatrixKey(rdMatrixKey); // HACK
+			((AbstractNetCdfOperationDataSet) dataSet).setReadOperationKey(markerCensusOPKey); // HACK
 			((AbstractNetCdfOperationDataSet) dataSet).setNumMarkers(rdMarkerSetMap.size()); // HACK
 			((AbstractNetCdfOperationDataSet) dataSet).setNumSamples(rdSampleSetMap.size()); // HACK
 
-			((HardyWeinbergOperationDataSet) dataSet).setHardyWeinbergName(hwName); // HACK
-			((HardyWeinbergOperationDataSet) dataSet).setMarkerCensusOperationKey(markerCensusOPKey); // HACK
+			dataSet.setHardyWeinbergName(hwName); // HACK
+			dataSet.setMarkerCensusOperationKey(markerCensusOPKey); // HACK
 
-			dataSet.setMarkers(rdMarkerSet.getMarkerKeys());
-			dataSet.setSamples(rdSampleSetMap.keySet());
-			dataSet.setChromosomes(rdMarkerSet.getChrInfoSetMap().keySet());
+			((AbstractNetCdfOperationDataSet) dataSet).setUseAllMarkersFromParent(true);
+			((AbstractNetCdfOperationDataSet) dataSet).setUseAllSamplesFromParent(true);
+			((AbstractNetCdfOperationDataSet) dataSet).setUseAllChromosomesFromParent(true);
 
 //			OperationFactory wrOPHandler = new OperationFactory(
 //					markerCensusOPKey.getParentMatrixKey().getStudyKey(),

@@ -41,7 +41,6 @@ import org.gwaspi.model.SamplesKeysSource;
 import org.gwaspi.netCDF.markers.NetCDFDataSetSource;
 import org.gwaspi.netCDF.operations.NetCdfUtils;
 import org.gwaspi.netCDF.operations.OperationFactory;
-import org.gwaspi.operations.qamarkers.NetCdfQAMarkersOperationDataSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
@@ -110,6 +109,8 @@ public abstract class AbstractNetCdfOperationDataSet<ET> implements OperationDat
 	}
 
 	public void setReadOperationKey(OperationKey rdOperationKey) {
+
+		this.rdMatrixKey = rdOperationKey.getParentMatrixKey();
 		this.rdOperationKey = rdOperationKey;
 	}
 
@@ -316,7 +317,7 @@ public abstract class AbstractNetCdfOperationDataSet<ET> implements OperationDat
 			}
 		} else if (rdOperationKey != null) {
 			// load the list of samples from the parent operation
-			OperationDataSet parentOperationDataSet = new BaseNetCdfOperationDataSet(rdOperationKey);
+			OperationDataSet parentOperationDataSet = OperationFactory.generateOperationDataSet(rdOperationKey);
 			samples = parentOperationDataSet.getSamples();
 		} else {
 			// load the list of samples from the parent matrix
@@ -357,7 +358,7 @@ public abstract class AbstractNetCdfOperationDataSet<ET> implements OperationDat
 			}
 		} else if (rdOperationKey != null) {
 			// load the list of samples from the parent operation
-			OperationDataSet parentOperationDataSet = new NetCdfBaseOperationDataSet(rdOperationKey);
+			OperationDataSet parentOperationDataSet = OperationFactory.generateOperationDataSet(rdOperationKey);
 			markers = parentOperationDataSet.getMarkers();
 		} else {
 			// load the list of samples from the parent matrix
@@ -397,7 +398,7 @@ public abstract class AbstractNetCdfOperationDataSet<ET> implements OperationDat
 			}
 		} else if (rdOperationKey != null) {
 			// load the list of samples from the parent operation
-			OperationDataSet parentOperationDataSet = new NetCdfBaseOperationDataSet(rdOperationKey);
+			OperationDataSet parentOperationDataSet = OperationFactory.generateOperationDataSet(rdOperationKey);
 			chromosomes = parentOperationDataSet.getChromosomes();
 		} else {
 			// load the list of samples from the parent matrix
@@ -416,18 +417,30 @@ public abstract class AbstractNetCdfOperationDataSet<ET> implements OperationDat
 
 	@Override
 	public Collection<ChromosomeInfo> getChromosomeInfos() throws IOException {
-vvv;
-		Collection<int[]> chromosomeInfosRaw = new ArrayList<int[]>(0);
-		final String varInfo = cNetCDF.Variables.VAR_CHR_INFO;
-		NetCdfUtils.readVariable(getNetCdfReadFile(), varInfo, -1, -1, chromosomeInfosRaw, null);
 
-		Collection<ChromosomeInfo> chromosomeInfos = new ArrayList<ChromosomeInfo>(chromosomeInfosRaw.size());
-		for (int[] infoRaw : chromosomeInfosRaw) {
-			chromosomeInfos.add(new ChromosomeInfo(
-					infoRaw[0],
-					infoRaw[1],
-					infoRaw[2],
-					infoRaw[3]));
+		Collection<ChromosomeInfo> chromosomeInfos;
+
+		if (!useAllChromosomesFromParent) {
+			Collection<int[]> chromosomeInfosRaw = new ArrayList<int[]>(0);
+			final String varInfo = cNetCDF.Variables.VAR_CHR_INFO;
+			NetCdfUtils.readVariable(getNetCdfReadFile(), varInfo, -1, -1, chromosomeInfosRaw, null);
+
+			chromosomeInfos = new ArrayList<ChromosomeInfo>(chromosomeInfosRaw.size());
+			for (int[] infoRaw : chromosomeInfosRaw) {
+				chromosomeInfos.add(new ChromosomeInfo(
+						infoRaw[0],
+						infoRaw[1],
+						infoRaw[2],
+						infoRaw[3]));
+			}
+		} else if (rdOperationKey != null) {
+			// load the list of samples from the parent operation
+			OperationDataSet parentOperationDataSet = OperationFactory.generateOperationDataSet(rdOperationKey);
+			chromosomeInfos = parentOperationDataSet.getChromosomeInfos();
+		} else {
+			// load the list of samples from the parent matrix
+			DataSetSource parentMatrixDataSet = new NetCDFDataSetSource(rdMatrixKey);
+			chromosomeInfos = parentMatrixDataSet.getChromosomesInfosSource();
 		}
 
 		return chromosomeInfos;

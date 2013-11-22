@@ -22,23 +22,16 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.Census;
-import org.gwaspi.model.ChromosomeInfo;
-import org.gwaspi.model.ChromosomeKey;
 import org.gwaspi.model.MarkerKey;
-import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
-import org.gwaspi.model.OperationsList;
-import org.gwaspi.model.SampleKey;
 import org.gwaspi.netCDF.markers.MarkerSet;
-import org.gwaspi.netCDF.matrices.ChromosomeUtils;
 import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
 import org.gwaspi.operations.OperationDataSet;
 import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationDataSet;
@@ -46,15 +39,9 @@ import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationEntry;
 import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationEntry.Category;
 import org.gwaspi.operations.hardyweinberg.NetCdfHardyWeinbergOperationDataSet;
 import org.gwaspi.operations.markercensus.MarkerCensusOperationDataSet;
-import org.gwaspi.operations.markercensus.NetCdfMarkerCensusOperationDataSet;
 import org.gwaspi.operations.trendtest.AbstractNetCdfTestOperationDataSet;
-import org.gwaspi.operations.trendtest.NetCdfTrendTestOperationDataSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-//import ucar.ma2.ArrayChar;
-//import ucar.ma2.InvalidRangeException;
-//import ucar.nc2.NetcdfFile;
-//import ucar.nc2.NetcdfFileWriteable;
 
 public abstract class AbstractTestMatrixOperation implements MatrixOperation {
 
@@ -103,59 +90,53 @@ public abstract class AbstractTestMatrixOperation implements MatrixOperation {
 
 		if (dataLeft) { // CHECK IF THERE IS ANY DATA LEFT TO PROCESS AFTER PICKING
 			OperationKey markerCensusOPKey = OperationKey.valueOf(markerCensusOP);
-			OperationMetadata rdCensusOPMetadata = OperationsList.getOperation(markerCensusOPKey);
-			NetcdfFile rdOPNcFile = NetcdfFile.open(rdCensusOPMetadata.getPathToMatrix());
-			MarkerCensusOperationDataSet rdMarkerCensusOperationDataSet = new NetCdfMarkerCensusOperationDataSet(markerCensusOPKey);
+			MarkerCensusOperationDataSet rdMarkerCensusOperationDataSet = (MarkerCensusOperationDataSet) OperationFactory.generateOperationDataSet(markerCensusOPKey);
+//			OperationMetadata rdCensusOPMetadata = OperationsList.getOperation(markerCensusOPKey);
+			OperationMetadata rdCensusOPMetadata = markerCensusOP;
+//			NetcdfFile rdOPNcFile = NetcdfFile.open(rdCensusOPMetadata.getPathToMatrix());
 
-			MarkerOperationSet rdCaseMarkerSet = new MarkerOperationSet(markerCensusOPKey);
-			MarkerOperationSet rdCtrlMarkerSet = new MarkerOperationSet(markerCensusOPKey);
-			Map<SampleKey, ?> rdSampleSetMap = rdCaseMarkerSet.getImplicitSetMap();
-			rdCaseMarkerSet.getOpSetMap(); // without this, we get an NPE later on
-			Map<MarkerKey, char[]> rdCtrlMarkerIdSetMap = rdCtrlMarkerSet.getOpSetMap();
-
-			Map<MarkerKey, MarkerMetadata> wrMarkerMetadata = new LinkedHashMap<MarkerKey, MarkerMetadata>();
-			for (MarkerKey key : rdCtrlMarkerIdSetMap.keySet()) {
-				if (!toBeExcluded.contains(key)) {
-					wrMarkerMetadata.put(key, null);
-				}
-			}
+//			MarkerOperationSet rdCaseMarkerSet = new MarkerOperationSet(markerCensusOPKey);
+//			MarkerOperationSet rdCtrlMarkerSet = new MarkerOperationSet(markerCensusOPKey);
+////			Map<SampleKey, ?> rdSampleSetMap = rdCaseMarkerSet.getImplicitSetMap();
+//			rdCaseMarkerSet.getOpSetMap(); // without this, we get an NPE later on
+//			Map<MarkerKey, ?> rdCtrlMarkerIdSetMap = rdCtrlMarkerSet.getOpSetMap();
+//
+//			Map<MarkerKey, MarkerMetadata> wrMarkerMetadata = new LinkedHashMap<MarkerKey, MarkerMetadata>();
+//			for (MarkerKey key : rdCtrlMarkerIdSetMap.keySet()) {
+//				if (!toBeExcluded.contains(key)) {
+//					wrMarkerMetadata.put(key, null);
+//				}
+//			}
 
 			// GATHER INFO FROM ORIGINAL MATRIX
 			MatrixMetadata parentMatrixMetadata = MatricesList.getMatrixMetadataById(markerCensusOP.getParentMatrixKey());
 			MarkerSet rdMarkerSet = new MarkerSet(MatrixKey.valueOf(parentMatrixMetadata));
 			rdMarkerSet.initFullMarkerIdSetMap();
 
-			// retrieve chromosome info
-			rdMarkerSet.fillMarkerSetMapWithChrAndPos();
-			MarkerSet.replaceWithValuesFrom(wrMarkerMetadata, rdMarkerSet.getMarkerMetadata());
-			Map<ChromosomeKey, ChromosomeInfo> chromosomeInfo = ChromosomeUtils.aggregateChromosomeInfo(wrMarkerMetadata, 0, 1);
+//			// retrieve chromosome info
+//			rdMarkerSet.fillMarkerSetMapWithChrAndPos();
+//			MarkerSet.replaceWithValuesFrom(wrMarkerMetadata, rdMarkerSet.getMarkerMetadata());
+//			Map<ChromosomeKey, ChromosomeInfo> chromosomeInfo = ChromosomeUtils.aggregateChromosomeInfo(wrMarkerMetadata, 0, 1);
 
 			try {
-				AbstractNetCdfTestOperationDataSet dataSet; // HACK
-				switch (testType) {
-					case ALLELICTEST:
-						dataSet = new NetCdfAllelicAssociationTestOperationDataSet();
-						break;
-					case GENOTYPICTEST:
-						dataSet = new NetCdfGenotypicAssociationTestOperationDataSet();
-						break;
-					case TRENDTEST:
-						dataSet = new NetCdfTrendTestOperationDataSet();
-						break;
-					default:
-						throw new IllegalArgumentException();
-				} // HACK
-				((AbstractNetCdfOperationDataSet) dataSet).setReadMatrixKey(rdMatrixKey); // HACK
-				((AbstractNetCdfOperationDataSet) dataSet).setNumMarkers(wrMarkerMetadata.size()); // HACK
-				((AbstractNetCdfOperationDataSet) dataSet).setNumSamples(rdCensusOPMetadata.getImplicitSetSize()); // HACK
-				((AbstractNetCdfOperationDataSet) dataSet).setNumChromosomes(chromosomeInfo.size()); // HACK
+				AbstractNetCdfTestOperationDataSet dataSet = (AbstractNetCdfTestOperationDataSet) OperationFactory.generateOperationDataSet(testType); // HACK
+//				((AbstractNetCdfOperationDataSet) dataSet).setReadMatrixKey(rdMatrixKey); // HACK
+				((AbstractNetCdfOperationDataSet) dataSet).setReadOperationKey(markerCensusOPKey); // HACK
+//				((AbstractNetCdfOperationDataSet) dataSet).setNumMarkers(wrMarkerMetadata.size()); // HACK
+//				((AbstractNetCdfOperationDataSet) dataSet).setNumSamples(rdCensusOPMetadata.getImplicitSetSize()); // HACK
+//				((AbstractNetCdfOperationDataSet) dataSet).setNumChromosomes(chromosomeInfo.size()); // HACK
+				((AbstractNetCdfOperationDataSet) dataSet).setNumMarkers(rdMarkerCensusOperationDataSet.getMarkers().size()); // HACK
+				((AbstractNetCdfOperationDataSet) dataSet).setNumSamples(rdMarkerCensusOperationDataSet.getSamples().size()); // HACK
+				((AbstractNetCdfOperationDataSet) dataSet).setNumChromosomes(rdMarkerCensusOperationDataSet.getChromosomes().size()); // HACK
 				dataSet.setMarkerCensusOPKey(markerCensusOPKey); // HACK
 				dataSet.setTestType(testType); // HACK
 				dataSet.setTestName(testName); // HACK
 
-				dataSet.setMarkers(wrMarkerMetadata.keySet());
-				dataSet.setSamples(rdSampleSetMap.keySet());
-				dataSet.setChromosomes(chromosomeInfo);
+//				dataSet.setMarkers(wrMarkerMetadata.keySet());
+				dataSet.setUseAllMarkersFromParent(true);
+				dataSet.setUseAllSamplesFromParent(true);
+//				dataSet.setChromosomes(chromosomeInfo);
+				dataSet.setUseAllChromosomesFromParent(true);
 
 //				// CREATE netCDF-3 FILE
 //				OperationFactory wrOPHandler = new OperationFactory(
@@ -189,10 +170,10 @@ public abstract class AbstractTestMatrixOperation implements MatrixOperation {
 //				int[] markersOrig = new int[]{0, 0};
 //				wrOPNcFile.write(cNetCDF.Variables.VAR_OPSET, markersOrig, markersD2);
 
-				// MARKERSET RSID
-				Map<MarkerKey, char[]> rdCaseMarkerIdSetMap = rdCaseMarkerSet.fillOpSetMapWithVariable(rdOPNcFile, cNetCDF.Variables.VAR_MARKERS_RSID);
-				Map<MarkerKey, char[]> sortedCaseMarkerIds = org.gwaspi.global.Utils.createOrderedMap(wrMarkerMetadata.keySet(), rdCaseMarkerIdSetMap);
-				NetCdfUtils.saveCharMapValueToWrMatrix(wrOPNcFile, sortedCaseMarkerIds.values(), cNetCDF.Variables.VAR_MARKERS_RSID, cNetCDF.Strides.STRIDE_MARKER_NAME);
+//				// MARKERSET RSID
+//				Map<MarkerKey, char[]> rdCaseMarkerIdSetMap = rdCaseMarkerSet.fillOpSetMapWithVariable(rdOPNcFile, cNetCDF.Variables.VAR_MARKERS_RSID);
+//				Map<MarkerKey, char[]> sortedCaseMarkerIds = org.gwaspi.global.Utils.createOrderedMap(wrMarkerMetadata.keySet(), rdCaseMarkerIdSetMap);
+//				NetCdfUtils.saveCharMapValueToWrMatrix(wrOPNcFile, sortedCaseMarkerIds.values(), cNetCDF.Variables.VAR_MARKERS_RSID, cNetCDF.Strides.STRIDE_MARKER_NAME);
 
 				Map<Integer, MarkerKey> censusOpMarkers = rdMarkerCensusOperationDataSet.getMarkers();
 
@@ -200,13 +181,13 @@ public abstract class AbstractTestMatrixOperation implements MatrixOperation {
 				Map<Integer, MarkerKey> rdCaseMarkerKeys = filter(censusOpMarkers, censusMarkerIndicesCase);
 				Map<Integer, MarkerKey> wrCaseMarkerKeysFiltered = filterByValues(rdCaseMarkerKeys, toBeExcluded);
 				Map<Integer, Census> rdCaseMarkerCensuses = rdMarkerCensusOperationDataSet.getCensus(Category.CASE, -1, -1);
-				Map<Integer, Census> wrCaseMarkerCensusesFiltered = filter(rdCaseMarkerCensuses, wrCaseMarkerKeysFiltered.keySet());XXX;
+				Map<Integer, Census> wrCaseMarkerCensusesFiltered = filter(rdCaseMarkerCensuses, wrCaseMarkerKeysFiltered.keySet()); // XXX ... i have marked this for re-thinking or the lie, but can not remember why :/
 
 				Collection<Integer> censusMarkerIndicesCtrl = rdMarkerCensusOperationDataSet.getCensusMarkerIndices(Category.CONTROL);
 				Map<Integer, MarkerKey> rdCtrlMarkerKeys = filter(censusOpMarkers, censusMarkerIndicesCtrl);
 				Map<Integer, MarkerKey> wrCtrlMarkerKeysFiltered = filterByValues(rdCtrlMarkerKeys, toBeExcluded);
 				Map<Integer, Census> rdCtrlMarkerCensuses = rdMarkerCensusOperationDataSet.getCensus(Category.CONTROL, -1, -1);
-				Map<Integer, Census> wrCtrlMarkerCensusesFiltered = filter(rdCtrlMarkerCensuses, wrCtrlMarkerKeysFiltered.keySet());XXX;
+				Map<Integer, Census> wrCtrlMarkerCensusesFiltered = filter(rdCtrlMarkerCensuses, wrCtrlMarkerKeysFiltered.keySet()); // XXX ... i have marked this for re-thinking or the lie, but can not remember why :/
 
 				// WRITE SAMPLESET TO MATRIX FROM SAMPLES
 //				ArrayChar.D2 samplesD2 = NetCdfUtils.writeCollectionToD2ArrayChar(rdSampleSetMap.keySet(), cNetCDF.Strides.STRIDE_SAMPLE_NAME);
@@ -224,11 +205,11 @@ public abstract class AbstractTestMatrixOperation implements MatrixOperation {
 
 				//<editor-fold defaultstate="expanded" desc="GET CENSUS & PERFORM TESTS">
 				// CLEAN Maps FROM MARKERS THAT FAILED THE HARDY WEINBERG THRESHOLD
-				Map<MarkerKey, int[]> rdMarkerCensusCases = rdCaseMarkerSet.fillOpSetMapWithVariable(rdOPNcFile, cNetCDF.Census.VAR_OP_MARKERS_CENSUSCASE);
-				Map<MarkerKey, int[]> wrCaseMarkerIdSetMap = filter(rdMarkerCensusCases, toBeExcluded);
-
-				Map<MarkerKey, int[]> rdMarkerCensusCtrls = rdCtrlMarkerSet.fillOpSetMapWithVariable(rdOPNcFile, cNetCDF.Census.VAR_OP_MARKERS_CENSUSCTRL);
-				Map<MarkerKey, int[]> wrCtrlMarkerSet = filter(rdMarkerCensusCtrls, toBeExcluded);
+//				Map<MarkerKey, int[]> rdMarkerCensusCases = rdCaseMarkerSet.fillOpSetMapWithVariable(rdOPNcFile, cNetCDF.Census.VAR_OP_MARKERS_CENSUSCASE);
+//				Map<MarkerKey, int[]> wrCaseMarkerIdSetMap = filter(rdMarkerCensusCases, toBeExcluded);
+//
+//				Map<MarkerKey, int[]> rdMarkerCensusCtrls = rdCtrlMarkerSet.fillOpSetMapWithVariable(rdOPNcFile, cNetCDF.Census.VAR_OP_MARKERS_CENSUSCTRL);
+//				Map<MarkerKey, int[]> wrCtrlMarkerSet = filter(rdMarkerCensusCtrls, toBeExcluded);
 
 				org.gwaspi.global.Utils.sysoutStart(testName);
 				performTest(dataSet,
@@ -240,13 +221,13 @@ public abstract class AbstractTestMatrixOperation implements MatrixOperation {
 
 				resultOpId = ((AbstractNetCdfOperationDataSet) dataSet).getOperationKey().getId(); // HACK
 			} finally {
-				try {
-					if (rdOPNcFile != null) {
-						rdOPNcFile.close();
-					}
-				} catch (IOException ex) {
-					log.warn("Cannot close file", ex);
-				}
+//				try {
+//					if (rdOPNcFile != null) {
+//						rdOPNcFile.close();
+//					}
+//				} catch (IOException ex) {
+//					log.warn("Cannot close file", ex);
+//				}
 			}
 		} else { // NO DATA LEFT AFTER THRESHOLD FILTER PICKING
 			log.warn(Text.Operation.warnNoDataLeftAfterPicking);

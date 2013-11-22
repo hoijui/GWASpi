@@ -30,6 +30,14 @@ import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.Study;
 import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
+import org.gwaspi.operations.OperationDataSet;
+import org.gwaspi.operations.allelicassociationtest.NetCdfAllelicAssociationTestsOperationDataSet;
+import org.gwaspi.operations.genotypicassociationtest.NetCdfGenotypicAssociationTestsOperationDataSet;
+import org.gwaspi.operations.hardyweinberg.NetCdfHardyWeinbergOperationDataSet;
+import org.gwaspi.operations.markercensus.NetCdfMarkerCensusOperationDataSet;
+import org.gwaspi.operations.qamarkers.NetCdfQAMarkersOperationDataSet;
+import org.gwaspi.operations.qasamples.NetCdfQASamplesOperationDataSet;
+import org.gwaspi.operations.trendtest.NetCdfTrendTestOperationDataSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.DataType;
@@ -188,6 +196,69 @@ public class OperationFactory {
 
 	public OperationMetadata getResultOPMetadata() {
 		return opMetaData;
+	}
+
+	/**
+	 * Creates a new OperationDataSet for the specified type.
+	 * @param operationType
+	 * @return
+	 * @throws IOException
+	 */
+	public static OperationDataSet generateOperationDataSet(OPType operationType) throws IOException {
+		return generateOperationDataSet(operationType, null);
+	}
+
+	public static OperationDataSet generateOperationDataSet(OperationKey operationKey) throws IOException {
+
+		OperationMetadata operationMetadata = OperationsList.getOperation(operationKey);
+		OPType operationType = operationMetadata.getOperationType();
+
+		return generateOperationDataSet(operationType, operationKey);
+	}
+
+	private static OperationDataSet generateOperationDataSet(OPType operationType, OperationKey operationKey) throws IOException {
+
+		OperationDataSet operationDataSet;
+
+		boolean useNetCdf = true;
+		if (useNetCdf) {
+			switch (operationType) {
+				case SAMPLE_QA:
+					operationDataSet = new NetCdfQASamplesOperationDataSet(operationKey);
+					break;
+				case MARKER_QA:
+					operationDataSet = new NetCdfQAMarkersOperationDataSet(operationKey);
+					break;
+				case MARKER_CENSUS_BY_AFFECTION:
+				case MARKER_CENSUS_BY_PHENOTYPE:
+					operationDataSet = new NetCdfMarkerCensusOperationDataSet(operationKey);
+					break;
+				case HARDY_WEINBERG:
+					operationDataSet = new NetCdfHardyWeinbergOperationDataSet(operationKey);
+					break;
+				case ALLELICTEST:
+					operationDataSet = new NetCdfAllelicAssociationTestsOperationDataSet(operationKey);
+					break;
+				case GENOTYPICTEST:
+					operationDataSet = new NetCdfGenotypicAssociationTestsOperationDataSet(operationKey);
+					break;
+				case COMBI_ASSOC_TEST:
+					operationDataSet = new NetCdfComb(operationKey);
+					break;
+				case TRENDTEST:
+					operationDataSet = new NetCdfTrendTestOperationDataSet(operationKey);
+					break;
+				default:
+				case SAMPLE_HTZYPLOT:
+				case MANHATTANPLOT:
+				case QQPLOT:
+					throw new IllegalArgumentException("This operation type is invalid, or has no data-attached");
+			}
+		} else {
+			throw new UnsupportedOperationException("Not yet implemented!");
+		}
+
+		return operationDataSet;
 	}
 
 	private static NetcdfFileWriteable generateNetcdfMarkerQAHandler(

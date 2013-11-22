@@ -34,5 +34,8 @@ public interface GenotypicAssociationTestsOperationDataSet extends OperationData
 
 	void addEntry(GenotypicAssociationTestOperationEntry entry) throws IOException;
 
-	Collection<Double> getMarkerOR2s();
+	Collection<Double> getTs(int from, int to) throws IOException;
+	Collection<Double> getPs(int from, int to) throws IOException;
+	Collection<Double> getORs(int from, int to) throws IOException;
+	Collection<Double> getOR2s(int from, int to) throws IOException;
 }
