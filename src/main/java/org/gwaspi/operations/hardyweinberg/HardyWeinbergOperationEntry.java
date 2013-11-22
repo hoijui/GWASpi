@@ -17,6 +17,9 @@
 
 package org.gwaspi.operations.hardyweinberg;
 
+import java.util.Comparator;
+import java.util.Map;
+import org.gwaspi.global.Extractor;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.operations.OperationDataEntry;
 
@@ -28,6 +31,51 @@ public interface HardyWeinbergOperationEntry extends OperationDataEntry<MarkerKe
 		CONTROL,
 		ALTERNATE;
 	}
+
+	static class PValueComparator implements Comparator<HardyWeinbergOperationEntry> {
+
+		@Override
+		public int compare(HardyWeinbergOperationEntry e1, HardyWeinbergOperationEntry e2) {
+			return (int) Math.signum(e1.getP() - e1.getP());
+		}
+	}
+	public static final Comparator<HardyWeinbergOperationEntry> P_VALUE_COMPARATOR = new PValueComparator();
+
+	public static final Extractor<HardyWeinbergOperationEntry, Category> CATEGORY_EXTRACTOR
+			= new Extractor<HardyWeinbergOperationEntry, Category>() {
+
+				@Override
+				public Category extract(HardyWeinbergOperationEntry object) {
+					return object.getCategory();
+				}
+			};
+
+	public static final Extractor<HardyWeinbergOperationEntry, Double> P_VALUE_EXTRACTOR
+			= new Extractor<HardyWeinbergOperationEntry, Double>() {
+
+				@Override
+				public Double extract(HardyWeinbergOperationEntry object) {
+					return object.getP();
+				}
+			};
+
+	public static final Extractor<HardyWeinbergOperationEntry, Double> HETZY_OBSERVED_EXTRACTOR
+			= new Extractor<HardyWeinbergOperationEntry, Double>() {
+
+				@Override
+				public Double extract(HardyWeinbergOperationEntry object) {
+					return object.getObsHzy();
+				}
+			};
+
+	public static final Extractor<HardyWeinbergOperationEntry, Double> HETZY_EXPECTED_EXTRACTOR
+			= new Extractor<HardyWeinbergOperationEntry, Double>() {
+
+				@Override
+				public Double extract(HardyWeinbergOperationEntry object) {
+					return object.getExpHzy();
+				}
+			};
 
 	/**
 	 * @return what category this marker belongs to

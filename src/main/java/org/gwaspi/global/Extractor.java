@@ -21,5 +21,19 @@ package org.gwaspi.global;
  */
 public interface Extractor<IV, OV> {
 
+	public static class ToStringMetaExtractor<IV, M> implements Extractor<IV, String> {
+
+		private final Extractor<IV, M> preExtractor;
+
+		public ToStringMetaExtractor(Extractor<IV, M> preExtractor) {
+			this.preExtractor = preExtractor;
+		}
+
+		@Override
+		public String extract(IV object) {
+			return preExtractor.extract(object).toString();
+		}
+	}
+
 	OV extract(IV object);
 }

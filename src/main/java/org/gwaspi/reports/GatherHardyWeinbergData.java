@@ -25,56 +25,56 @@ import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.netCDF.operations.MarkerOperationSet;
-import ucar.nc2.NetcdfFile;
+//import ucar.nc2.NetcdfFile;
 
 public class GatherHardyWeinbergData {
 
 	private GatherHardyWeinbergData() {
 	}
-
-	public static Map<MarkerKey, Double> loadHWPval_ALT(OperationKey operationKey) throws IOException {
-		return loadHWVar(operationKey, cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWPval_ALT);
-	}
-
-	public static Map<MarkerKey, Double> loadHWPval_ALL(OperationKey operationKey) throws IOException {
-		return loadHWVar(operationKey, cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWPval_ALL);
-	}
-
-	public static Map<MarkerKey, Double> loadHWPval_CASE(OperationKey operationKey) throws IOException {
-		return loadHWVar(operationKey, cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWPval_CASE);
-	}
-
-	public static Map<MarkerKey, Double> loadHWPval_CTRL(OperationKey operationKey) throws IOException {
-		return loadHWVar(operationKey, cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWPval_CTRL);
-	}
-
-	public static Map<MarkerKey, Double> loadHWHETZY_ALT(OperationKey operationKey) throws IOException {
-		return loadHWVar(operationKey, cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWHETZY_ALT);
-	}
-
-	public static Map<MarkerKey, Double> loadHWHETZY_ALL(OperationKey operationKey) throws IOException {
-		return loadHWVar(operationKey, cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWHETZY_ALL);
-	}
-
-	public static Map<MarkerKey, Double> loadHWHETZY_CASE(OperationKey operationKey) throws IOException {
-		return loadHWVar(operationKey, cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWHETZY_CASE);
-	}
-
-	public static Map<MarkerKey, Double> loadHWHETZY_CTRL(OperationKey operationKey) throws IOException {
-		return loadHWVar(operationKey, cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWHETZY_CTRL);
-	}
-
-	private static Map<MarkerKey, Double> loadHWVar(OperationKey operationKey, String variableName) throws IOException {
-
-		OperationMetadata rdOPMetadata = OperationsList.getOperation(operationKey);
-
-		MarkerOperationSet rdInfoMarkerSet = new MarkerOperationSet(operationKey);
-		Map<MarkerKey, Double> rdMatrixMarkerSetMap = rdInfoMarkerSet.getOpSetMap();
-
-		NetcdfFile assocNcFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());
-		rdMatrixMarkerSetMap = rdInfoMarkerSet.fillOpSetMapWithVariable(assocNcFile, variableName);
-
-		assocNcFile.close();
-		return rdMatrixMarkerSetMap;
-	}
+//
+//	public static Map<MarkerKey, Double> loadHWPval_ALT(OperationKey operationKey) throws IOException {
+//		return loadHWVar(operationKey, cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWPval_ALT);
+//	}
+//
+//	public static Map<MarkerKey, Double> loadHWPval_ALL(OperationKey operationKey) throws IOException {
+//		return loadHWVar(operationKey, cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWPval_ALL);
+//	}
+//
+//	public static Map<MarkerKey, Double> loadHWPval_CASE(OperationKey operationKey) throws IOException {
+//		return loadHWVar(operationKey, cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWPval_CASE);
+//	}
+//
+//	public static Map<MarkerKey, Double> loadHWPval_CTRL(OperationKey operationKey) throws IOException {
+//		return loadHWVar(operationKey, cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWPval_CTRL);
+//	}
+//
+//	public static Map<MarkerKey, Double> loadHWHETZY_ALT(OperationKey operationKey) throws IOException {
+//		return loadHWVar(operationKey, cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWHETZY_ALT);
+//	}
+//
+//	public static Map<MarkerKey, Double> loadHWHETZY_ALL(OperationKey operationKey) throws IOException {
+//		return loadHWVar(operationKey, cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWHETZY_ALL);
+//	}
+//
+//	public static Map<MarkerKey, Double> loadHWHETZY_CASE(OperationKey operationKey) throws IOException {
+//		return loadHWVar(operationKey, cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWHETZY_CASE);
+//	}
+//
+//	public static Map<MarkerKey, Double> loadHWHETZY_CTRL(OperationKey operationKey) throws IOException {
+//		return loadHWVar(operationKey, cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWHETZY_CTRL);
+//	}
+//
+//	private static Map<MarkerKey, Double> loadHWVar(OperationKey operationKey, String variableName) throws IOException {
+//
+//		OperationMetadata rdOPMetadata = OperationsList.getOperation(operationKey);
+//
+//		MarkerOperationSet rdInfoMarkerSet = new MarkerOperationSet(operationKey);
+//		Map<MarkerKey, Double> rdMatrixMarkerSetMap = rdInfoMarkerSet.getOpSetMap();
+//
+//		NetcdfFile assocNcFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());
+//		rdMatrixMarkerSetMap = rdInfoMarkerSet.fillOpSetMapWithVariable(assocNcFile, variableName);
+//
+//		assocNcFile.close();
+//		return rdMatrixMarkerSetMap;
+//	}
 }

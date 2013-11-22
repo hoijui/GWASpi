@@ -27,16 +27,57 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import org.gwaspi.constants.cExport;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.gwaspi.global.Extractor;
 
 public class ReportWriter {
 
-	private static final Logger log = LoggerFactory.getLogger(ReportWriter.class);
+	private static final String SEP = cExport.separator_REPORTS;
+
+	private static class MapArrayValueExtractor<K, V> implements Extractor<Entry<K, V>, String> {
+
+		@Override
+		public String extract(Entry<K, V> object) {
+
+			StringBuilder strVal = new StringBuilder();
+			if (object.getValue() instanceof double[]) {
+				double[] value = (double[]) object.getValue();
+				for (Double v : value) {
+					strVal.append(SEP);
+					strVal.append(v.toString());
+				}
+			}
+			if (object.getValue() instanceof int[]) {
+				int[] value = (int[]) object.getValue();
+				for (Integer v : value) {
+					strVal.append(SEP);
+					strVal.append(v.toString());
+				}
+			}
+
+			return strVal.toString();
+		}
+	}
+
+	private static class MapValueExtractor<K, V> implements Extractor<Entry<K, V>, String> {
+
+		@Override
+		public String extract(Entry<K, V> object) {
+			return SEP + org.gwaspi.global.Utils.toMeaningfullRep(object.getValue());
+		}
+	}
+
+	private static class MapKeyExtractor<K, V> implements Extractor<Entry<K, V>, String> {
+
+		@Override
+		public String extract(Entry<K, V> object) {
+			return object.getKey().toString();
+		}
+	}
 
 	private ReportWriter() {
 	}
@@ -75,11 +116,37 @@ public class ReportWriter {
 		return appendResult;
 	}
 
-	protected static <K, V> boolean appendColumnToReport(String reportPath,
+	protected static <K, V> boolean appendColumnToReport(
+			String reportPath,
 			String reportName,
 			Map<K, V> map,
 			boolean isArray,
-			boolean withKey) throws IOException {
+			boolean withKey) throws IOException
+	{
+		Extractor<Entry<K, V>, String> valueExtractor;
+		if (isArray) {
+			valueExtractor = new MapArrayValueExtractor<K, V>();
+		} else {
+			valueExtractor = new MapValueExtractor<K, V>();
+		}
+
+		Extractor<Entry<K, V>, String> keyExtractor;
+		if (withKey) {
+			keyExtractor = new MapKeyExtractor<K, V>();
+		} else {
+			keyExtractor = null;
+		}
+
+		return appendColumnToReport(reportPath, reportName, map.entrySet(), keyExtractor, valueExtractor);
+	}
+
+	protected static <S> boolean appendColumnToReport(
+			String reportPath,
+			String reportName,
+			Collection<S> readContent,
+			Extractor<S, String> keyExtractor,
+			Extractor<S, String> valueExtractor) throws IOException
+	{
 		boolean appendResult = false;
 
 		String tempFile = reportPath + "tmp.rep";
@@ -91,10 +158,12 @@ public class ReportWriter {
 		FileWriter tempFW = new FileWriter(tempFile);
 		BufferedWriter tempBW = new BufferedWriter(tempFW);
 
+		final boolean withKey = (keyExtractor != null);
+
 		String l;
 		int count = 0;
 		String sep = cExport.separator_REPORTS;
-		Iterator<Entry<K, V>> it = map.entrySet().iterator();
+		Iterator<S> readContentIt = readContent.iterator();
 		while ((l = inputBR.readLine()) != null) {
 			if (count == 0) {
 				tempBW.append(l);
@@ -103,36 +172,15 @@ public class ReportWriter {
 				StringBuilder sb = new StringBuilder();
 				sb.append(l);
 
-				Entry<K, V> entry = it.next();
-				String key = entry.getKey().toString();
-				if (isArray) {
-					if (withKey) {
-						sb.append(sep);
-						sb.append(key);
-					}
+				S readEntry = readContentIt.next();
 
-					if (entry.getValue() instanceof double[]) {
-						double[] value = (double[]) entry.getValue();
-						for (Double v : value) {
-							sb.append(sep);
-							sb.append(v.toString());
-						}
-					}
-					if (entry.getValue() instanceof int[]) {
-						int[] value = (int[]) entry.getValue();
-						for (Integer v : value) {
-							sb.append(sep);
-							sb.append(v.toString());
-						}
-					}
-				} else {
-					if (withKey) {
-						sb.append(sep);
-						sb.append(key.toString());
-					}
+				if (withKey) {
+					String key = keyExtractor.extract(readEntry);
 					sb.append(sep);
-					sb.append(org.gwaspi.global.Utils.toMeaningfullRep(entry.getValue()));
+					sb.append(key);
 				}
+				String value = valueExtractor.extract(readEntry);
+				sb.append(value);
 
 				sb.append("\n");
 				tempBW.append(sb);

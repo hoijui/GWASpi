@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -39,6 +40,8 @@ import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleKey;
+import org.gwaspi.netCDF.operations.OperationFactory;
+import org.gwaspi.operations.qamarkers.QAMarkersOperationDataSet;
 import org.gwaspi.reports.GatherQAMarkersData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -88,9 +91,15 @@ public class PlinkBinaryFormatter implements Formatter {
 		List<OperationMetadata> operations = OperationsList.getOperationsList(MatrixKey.valueOf(rdMatrixMetadata));
 		OperationKey markersQAOpKey = OperationsList.getIdOfLastOperationTypeOccurance(operations, OPType.MARKER_QA);
 
-		Map<MarkerKey, byte[]> minorAllelesMap = GatherQAMarkersData.loadMarkerQAMinorAlleles(markersQAOpKey);
-		Map<MarkerKey, byte[]> majorAllelesMap = GatherQAMarkersData.loadMarkerQAMajorAlleles(markersQAOpKey);
-		Map<MarkerKey, Double> minorAlleleFreqMap = GatherQAMarkersData.loadMarkerQAMinorAlleleFrequency(markersQAOpKey);
+
+		QAMarkersOperationDataSet qaMarkersOpDS = (QAMarkersOperationDataSet) OperationFactory.generateOperationDataSet(markersQAOpKey);
+		Map<Integer, MarkerKey> markers = qaMarkersOpDS.getMarkers();
+		Collection<Byte> knownMinorAllele = qaMarkersOpDS.getKnownMinorAllele(-1, -1);
+		Collection<Double> knownMinorAlleleFrequencies = qaMarkersOpDS.getKnownMinorAlleleFrequencies(-1, -1);
+		Collection<Byte> knownMajorAllele = qaMarkersOpDS.getKnownMajorAllele(-1, -1);
+//		Map<MarkerKey, byte[]> minorAllelesMap = GatherQAMarkersData.loadMarkerQAMinorAlleles(markersQAOpKey);
+//		Map<MarkerKey, byte[]> majorAllelesMap = GatherQAMarkersData.loadMarkerQAMajorAlleles(markersQAOpKey);
+//		Map<MarkerKey, Double> minorAlleleFreqMap = GatherQAMarkersData.loadMarkerQAMinorAlleleFrequency(markersQAOpKey);
 
 		//<editor-fold defaultstate="expanded" desc="BIM FILE">
 		File bimFile = new File(exportDir.getPath(),

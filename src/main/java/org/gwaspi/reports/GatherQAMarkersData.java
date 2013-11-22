@@ -25,7 +25,7 @@ import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.netCDF.operations.MarkerOperationSet;
-import ucar.nc2.NetcdfFile;
+//import ucar.nc2.NetcdfFile;
 
 public class GatherQAMarkersData {
 
