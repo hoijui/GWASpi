@@ -159,7 +159,7 @@ public class OutputHardyWeinberg {
 //				byte[] minorAllele = opMarkerSetMap.get(key);
 //				sortedMarkerAlleles.put(key, new String(minorAllele));
 				Byte minorAllele = opQaMarkersAllelesMin.get(key);
-				sortedMarkerAlleles.put(key, minorAllele.toString());
+				sortedMarkerAlleles.put(key, "" + (char) (byte) minorAllele);
 			}
 
 			// MAJOR ALLELE
@@ -169,8 +169,11 @@ public class OutputHardyWeinberg {
 				String minorAllele = entry.getValue();
 //				entry.setValue(minorAllele + sep + new String(opMarkerSetMap.get(entry.getKey())));
 				Byte majorAllele = opQaMarkersAllelesMaj.get(entry.getKey());
-				String majorAlleleStr = (majorAllele != null) ? majorAllele.toString() : "";
-				entry.setValue(minorAllele + sep + majorAlleleStr);
+				String newValue = minorAllele + sep;
+				if (majorAllele != null) {
+					newValue += (char) (byte) majorAllele;
+				}
+				entry.setValue(newValue);
 			}
 		}
 		sortedMarkerAlleles = org.gwaspi.global.Utils.createOrderedMap(sortedMarkerKeys, sortedMarkerAlleles); // XXX probably not required?
