@@ -82,28 +82,28 @@ public class NetCdfQASamplesOperationDataSet extends AbstractNetCdfOperationData
 	}
 
 	@Override
-	public void setSampleMissingRatios(Collection<Double> sampleMissingRatios) throws IOException {
+	public void setMissingRatios(Collection<Double> sampleMissingRatios) throws IOException {
 
 		ensureNcFile();
 		NetCdfUtils.saveDoubleMapD1ToWrMatrix(getNetCdfWriteFile(), sampleMissingRatios, cNetCDF.Census.VAR_OP_SAMPLES_MISSINGRAT);
 	}
 
 	@Override
-	public void setSampleMissingCount(Collection<Integer> sampleMissingCount) throws IOException {
+	public void setMissingCounts(Collection<Integer> sampleMissingCount) throws IOException {
 
 		ensureNcFile();
 		NetCdfUtils.saveIntMapD1ToWrMatrix(getNetCdfWriteFile(), sampleMissingCount, cNetCDF.Census.VAR_OP_SAMPLES_MISSINGCOUNT);
 	}
 
 	@Override
-	public void setSampleHetzyRatios(Collection<Double> sampleHetzyRatios) throws IOException {
+	public void setHetzyRatios(Collection<Double> sampleHetzyRatios) throws IOException {
 
 		ensureNcFile();
 		NetCdfUtils.saveDoubleMapD1ToWrMatrix(getNetCdfWriteFile(), sampleHetzyRatios, cNetCDF.Census.VAR_OP_SAMPLES_HETZYRAT);
 	}
 
 	@Override
-	public Collection<Double> getSampleMissingRatios(int from, int to) throws IOException {
+	public Collection<Double> getMissingRatios(int from, int to) throws IOException {
 
 		Collection<Double> missingRatios = new ArrayList<Double>(0);
 		NetCdfUtils.readVariable(getNetCdfReadFile(), cNetCDF.Census.VAR_OP_SAMPLES_MISSINGRAT, from, to, missingRatios, null);
@@ -119,7 +119,7 @@ public class NetCdfQASamplesOperationDataSet extends AbstractNetCdfOperationData
 	}
 
 	@Override
-	public Collection<Integer> getSampleMissingCount(int from, int to) throws IOException {
+	public Collection<Integer> getMissingCounts(int from, int to) throws IOException {
 
 		Collection<Integer> missingCount = new ArrayList<Integer>(0);
 		NetCdfUtils.readVariable(getNetCdfReadFile(), cNetCDF.Census.VAR_OP_SAMPLES_MISSINGCOUNT, from, to, missingCount, null);
@@ -128,7 +128,7 @@ public class NetCdfQASamplesOperationDataSet extends AbstractNetCdfOperationData
 	}
 
 	@Override
-	public Collection<Double> getSampleHetzyRatios(int from, int to) throws IOException {
+	public Collection<Double> getHetzyRatios(int from, int to) throws IOException {
 
 		Collection<Double> hetzyRatios = new ArrayList<Double>(0);
 		NetCdfUtils.readVariable(getNetCdfReadFile(), cNetCDF.Census.VAR_OP_SAMPLES_HETZYRAT, from, to, hetzyRatios, null);
@@ -142,9 +142,9 @@ public class NetCdfQASamplesOperationDataSet extends AbstractNetCdfOperationData
 		SampleOperationSet rdSampleSet = new SampleOperationSet(getOperationKey(), from, to);
 		Map<SampleKey, Integer> rdSamples = rdSampleSet.getOpSetMap();
 
-		Collection<Double> missingRatios = getSampleMissingRatios(from, to);
-		Collection<Integer> missingCount = getSampleMissingCount(from, to);
-		Collection<Double> hetzyRatios = getSampleHetzyRatios(from, to);
+		Collection<Double> missingRatios = getMissingRatios(from, to);
+		Collection<Integer> missingCount = getMissingCounts(from, to);
+		Collection<Double> hetzyRatios = getHetzyRatios(from, to);
 
 		Collection<QASamplesOperationEntry> entries
 				= new ArrayList<QASamplesOperationEntry>(missingRatios.size());

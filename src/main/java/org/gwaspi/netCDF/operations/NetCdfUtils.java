@@ -31,7 +31,7 @@ import java.util.Set;
 import java.util.TreeMap;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.global.EnumeratedValueExtractor;
-import org.gwaspi.global.TypeConverter;
+import org.gwaspi.global.Extractor;
 import org.gwaspi.model.ChromosomeInfo;
 import org.gwaspi.model.Genotype;
 import org.gwaspi.model.SampleKey;
@@ -78,7 +78,7 @@ public class NetCdfUtils {
 		saveCharMapToWrMatrix(wrNcFile, wrMap, variable, varStride, 0);
 	}
 
-	public static <V> void saveCharMapItemToWrMatrix(NetcdfFileWriteable wrNcFile, Collection<V> wrMap, String variable, TypeConverter<V, String> typeConverter, int varStride) throws IOException {
+	public static <V> void saveCharMapItemToWrMatrix(NetcdfFileWriteable wrNcFile, Collection<V> wrMap, String variable, Extractor<V, String> typeConverter, int varStride) throws IOException {
 
 		ArrayChar.D2 markersD2 = writeValuesToD2ArrayChar(wrMap, typeConverter, varStride);
 		try {
@@ -89,7 +89,7 @@ public class NetCdfUtils {
 		}
 	}
 
-	public static <V> void saveByteMapItemToWrMatrix(NetcdfFileWriteable wrNcFile, Collection<V> wrMap, String variable, TypeConverter<V, Byte> typeConverter, int varStride) throws IOException {
+	public static <V> void saveByteMapItemToWrMatrix(NetcdfFileWriteable wrNcFile, Collection<V> wrMap, String variable, Extractor<V, Byte> typeConverter, int varStride) throws IOException {
 
 		ArrayByte.D2 markersD2 = writeValuesToD2ArrayByte(wrMap, typeConverter, varStride);
 		try {
@@ -133,9 +133,9 @@ public class NetCdfUtils {
 
 	public static void saveDoubleMapItemD1ToWrMatrix(NetcdfFileWriteable wrNcFile, Collection<Double[]> wrMap, final int itemNb, String variable) throws IOException {
 
-		TypeConverter<Double[], Double> typeConverter = new TypeConverter<Double[], Double>() {
+		Extractor<Double[], Double> typeConverter = new Extractor<Double[], Double>() {
 			@Override
-			public Double convert(Double[] from) {
+			public Double extract(Double[] from) {
 				return from[itemNb];
 			}
 		};
@@ -143,7 +143,7 @@ public class NetCdfUtils {
 		saveDoubleMapItemD1ToWrMatrix(wrNcFile, wrMap, typeConverter, variable);
 	}
 
-	public static <V> void saveDoubleMapItemD1ToWrMatrix(NetcdfFileWriteable wrNcFile, Collection<V> wrMap, TypeConverter<V, Double> typeConverter, String variable) throws IOException {
+	public static <V> void saveDoubleMapItemD1ToWrMatrix(NetcdfFileWriteable wrNcFile, Collection<V> wrMap, Extractor<V, Double> typeConverter, String variable) throws IOException {
 
 		ArrayDouble.D1 arrayDouble = NetCdfUtils.writeValuesToD1ArrayDouble(wrMap, typeConverter);
 		try {
@@ -355,26 +355,26 @@ public class NetCdfUtils {
 		return charArray;
 	}
 
-	public static <V> ArrayChar.D2 writeValuesToD2ArrayChar(Collection<V> values, TypeConverter<V, String> valueToStringConverter, int stride) {
+	public static <V> ArrayChar.D2 writeValuesToD2ArrayChar(Collection<V> values, Extractor<V, String> valueToStringConverter, int stride) {
 
 		ArrayChar.D2 charArray = new ArrayChar.D2(values.size(), stride);
 		Index index = charArray.getIndex();
 		int count = 0;
 		for (V value : values) {
-			String strValue = valueToStringConverter.convert(value);
+			String strValue = valueToStringConverter.extract(value);
 			charArray.setString(index.set(count, 0), strValue.trim());
 			count++;
 		}
 
 		return charArray;
 	}
-//	public static <V> ArrayChar.D1 writeValuesToD1ArrayChar(Collection<V> values, TypeConverter<V, String> valueToStringConverter, int stride) {
+//	public static <V> ArrayChar.D1 writeValuesToD1ArrayChar(Collection<V> values, Extractor<V, String> valueToStringConverter, int stride) {
 //
 //		ArrayChar.D1 charArray = new ArrayChar.D1(values.size(), stride);
 //		Index index = charArray.getIndex();
 //		int count = 0;
 //		for (V value : values) {
-//			String strValue = valueToStringConverter.convert(value);
+//			String strValue = valueToStringConverter.extract(value);
 //			charArray.setString(index.set(count), strValue.trim());
 //			count++;
 //		}
@@ -382,13 +382,13 @@ public class NetCdfUtils {
 //		return charArray;
 //	}
 
-	public static <V> ArrayByte.D2 writeValuesToD2ArrayByte(Collection<V> values, TypeConverter<V, Byte> valueToStringConverter, int stride) {
+	public static <V> ArrayByte.D2 writeValuesToD2ArrayByte(Collection<V> values, Extractor<V, Byte> valueToStringConverter, int stride) {
 
 		ArrayByte.D2 byteArray = new ArrayByte.D2(values.size(), stride);
 		Index index = byteArray.getIndex();
 		int count = 0;
 		for (V value : values) {
-			Byte byteValue = valueToStringConverter.convert(value);
+			Byte byteValue = valueToStringConverter.extract(value);
 			byteArray.setByte(index.set(count, 0), byteValue);
 			count++;
 		}
@@ -411,13 +411,13 @@ public class NetCdfUtils {
 		return doubleArray;
 	}
 
-	private static <V> ArrayDouble.D1 writeValuesToD1ArrayDouble(Collection<V> values, TypeConverter<V, Double> typeConverter) {
+	private static <V> ArrayDouble.D1 writeValuesToD1ArrayDouble(Collection<V> values, Extractor<V, Double> typeConverter) {
 
 		ArrayDouble.D1 doubleArray = new ArrayDouble.D1(values.size());
 		Index index = doubleArray.getIndex();
 		int count = 0;
 		for (V value : values) {
-			doubleArray.setDouble(index.set(count), typeConverter.convert(value));
+			doubleArray.setDouble(index.set(count), typeConverter.extract(value));
 			count++;
 		}
 
@@ -467,13 +467,13 @@ public class NetCdfUtils {
 		return booleanArray;
 	}
 
-	public static <V> ArrayInt.D1 writeValuesToD1ArrayInt(Collection<V> values, TypeConverter<V, Integer> valueToIntegerConverter) {
+	public static <V> ArrayInt.D1 writeValuesToD1ArrayInt(Collection<V> values, Extractor<V, Integer> valueToIntegerConverter) {
 
 		ArrayInt.D1 intArray = new ArrayInt.D1(values.size());
 		Index index = intArray.getIndex();
 		int count = 0;
 		for (V value : values) {
-			intArray.setInt(index.set(count), valueToIntegerConverter.convert(value));
+			intArray.setInt(index.set(count), valueToIntegerConverter.extract(value));
 			count++;
 		}
 

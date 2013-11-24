@@ -607,7 +607,7 @@ public class OP_MarkerCensus implements MatrixOperation {
 //			excludeSampleValue.clear();
 
 			// EXCLUDE SAMPLE BY MISSING RATIO
-			Iterator<Double> missingRatioIt = qaSamplesOperationDataSet.getSampleMissingRatios(-1, -1).iterator();
+			Iterator<Double> missingRatioIt = qaSamplesOperationDataSet.getMissingRatios(-1, -1).iterator();
 //			Map<SampleKey, Double> rdQASampleSetMapMissingRat = rdQASampleSet.fillOpSetMapWithVariable(rdSampleQANcFile, cNetCDF.Census.VAR_OP_SAMPLES_MISSINGRAT);
 			if (missingRatioIt != null) {
 				for (Map.Entry<Integer, SampleKey> qaSampleOrigIndexKey : qaSamplesOperationDataSet.getSamples().entrySet()) {
@@ -624,7 +624,7 @@ public class OP_MarkerCensus implements MatrixOperation {
 			}
 
 			// EXCLUDE SAMPLE BY HETEROZYGOSITY RATIO
-			Iterator<Double> hetzyRatioIt = qaSamplesOperationDataSet.getSampleHetzyRatios(-1, -1).iterator();
+			Iterator<Double> hetzyRatioIt = qaSamplesOperationDataSet.getHetzyRatios(-1, -1).iterator();
 //			Map<SampleKey, Double> rdQASampleSetMapHetzyRat = rdQASampleSet.fillOpSetMapWithVariable(rdSampleQANcFile, cNetCDF.Census.VAR_OP_SAMPLES_HETZYRAT);
 			if (hetzyRatioIt != null) {
 				for (Map.Entry<Integer, SampleKey> qaSampleOrigIndexKey : qaSamplesOperationDataSet.getSamples().entrySet()) {

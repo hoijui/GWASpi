@@ -29,6 +29,7 @@ import java.nio.channels.FileChannel;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
@@ -541,6 +542,34 @@ public class Utils {
 
 
 	//<editor-fold defaultstate="expanded" desc="Collections methods">
+	/**
+	 * Creates a new list with the order of entries equal to the order
+	 * of entries in the collection 'order',
+	 * regarding the indices of the collection 'values',
+	 * and the values copied from the collection 'values'.
+	 */
+	public static <V> List<V> createIndicesOrderedList(final Collection<Integer> order, final Collection<V> values) {
+
+		List<V> result = new ArrayList<V>(order.size());
+
+		if (values instanceof List) {
+			List<V> valuesList = (List<V>) values;
+			for (Integer orderIndex : order) {
+				result.add(valuesList.get(orderIndex));
+			}
+		} else {
+			int curIndex = 0;
+			for (V value : values) {
+				if (order.contains(curIndex)) {
+					result.add(value);
+				}
+				curIndex++;
+			}
+		}
+
+		return result;
+	}
+
 	/**
 	 * Creates a new map, with the order of entries equal to the order
 	 * of entries in the Map order (regarding the keys),

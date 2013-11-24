@@ -17,42 +17,42 @@
 
 package org.gwaspi.operations.qamarkers;
 
-import org.gwaspi.global.TypeConverter;
+import org.gwaspi.global.Extractor;
 
 public class OrderedAlleles {
 
-	public static final TypeConverter<OrderedAlleles, Byte> TO_ALLELE_1
-			= new TypeConverter<OrderedAlleles, Byte>()
+	public static final Extractor<OrderedAlleles, Byte> TO_ALLELE_1
+			= new Extractor<OrderedAlleles, Byte>()
 	{
 		@Override
-		public Byte convert(OrderedAlleles from) {
+		public Byte extract(OrderedAlleles from) {
 			return from.getAllele1();
 		}
 	};
 
-	public static final TypeConverter<OrderedAlleles, Double> TO_ALLELE_1_FREQ
-			= new TypeConverter<OrderedAlleles, Double>()
+	public static final Extractor<OrderedAlleles, Double> TO_ALLELE_1_FREQ
+			= new Extractor<OrderedAlleles, Double>()
 	{
 		@Override
-		public Double convert(OrderedAlleles from) {
+		public Double extract(OrderedAlleles from) {
 			return from.getAllele1Freq();
 		}
 	};
 
-	public static final TypeConverter<OrderedAlleles, Byte> TO_ALLELE_2
-			= new TypeConverter<OrderedAlleles, Byte>()
+	public static final Extractor<OrderedAlleles, Byte> TO_ALLELE_2
+			= new Extractor<OrderedAlleles, Byte>()
 	{
 		@Override
-		public Byte convert(OrderedAlleles from) {
+		public Byte extract(OrderedAlleles from) {
 			return from.getAllele2();
 		}
 	};
 
-	public static final TypeConverter<OrderedAlleles, Double> TO_ALLELE_2_FREQ
-			= new TypeConverter<OrderedAlleles, Double>()
+	public static final Extractor<OrderedAlleles, Double> TO_ALLELE_2_FREQ
+			= new Extractor<OrderedAlleles, Double>()
 	{
 		@Override
-		public Double convert(OrderedAlleles from) {
+		public Double extract(OrderedAlleles from) {
 			return from.getAllele2Freq();
 		}
 	};

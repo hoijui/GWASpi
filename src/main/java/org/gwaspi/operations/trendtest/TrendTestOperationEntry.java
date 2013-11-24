@@ -17,11 +17,38 @@
 
 package org.gwaspi.operations.trendtest;
 
+import java.util.Comparator;
+import org.gwaspi.global.Extractor;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.operations.OperationDataEntry;
-import org.gwaspi.model.SampleKey;
 
 public interface TrendTestOperationEntry extends OperationDataEntry<MarkerKey> {
+
+	public static class PValueComparator implements Comparator<TrendTestOperationEntry> {
+
+		@Override
+		public int compare(TrendTestOperationEntry entry1, TrendTestOperationEntry entry2) {
+			return (int) Math.signum(entry1.getP()- entry2.getP());
+		}
+	}
+
+	public static final Extractor<TrendTestOperationEntry, Double> TO_T
+			= new Extractor<TrendTestOperationEntry, Double>()
+	{
+		@Override
+		public Double extract(TrendTestOperationEntry from) {
+			return from.getT();
+		}
+	};
+
+	public static final Extractor<TrendTestOperationEntry, Double> TO_P
+			= new Extractor<TrendTestOperationEntry, Double>()
+	{
+		@Override
+		public Double extract(TrendTestOperationEntry from) {
+			return from.getP();
+		}
+	};
 
 	/**
 	 * @return the markers T value

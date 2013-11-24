@@ -36,7 +36,7 @@ import org.gwaspi.constants.cNetCDF.Defaults.SetMarkerPickCase;
 import org.gwaspi.constants.cNetCDF.Defaults.SetSamplePickCase;
 import org.gwaspi.constants.cNetCDF.Variables;
 import org.gwaspi.global.Text;
-import org.gwaspi.global.TypeConverter;
+import org.gwaspi.global.Extractor;
 import org.gwaspi.gui.utils.Dialogs;
 import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.GenotypesList;
@@ -156,13 +156,13 @@ public class MatrixDataExtractor implements MatrixOperation {
 	private static abstract class AbstractValuePicker<K, V, M> implements Picker<K> {
 
 		private final Collection<M> criteria;
-		private final TypeConverter<V, M> typeConverter;
+		private final Extractor<V, M> typeConverter;
 		private final boolean include;
 
 		/**
 		 * @param include whether this is an include or an exclude picker.
 		 */
-		AbstractValuePicker(Collection<M> criteria, TypeConverter<V, M> typeConverter, boolean include) {
+		AbstractValuePicker(Collection<M> criteria, Extractor<V, M> typeConverter, boolean include) {
 
 			this.criteria = criteria;
 			this.typeConverter = typeConverter;
@@ -182,7 +182,7 @@ public class MatrixDataExtractor implements MatrixOperation {
 			if (include) {
 				for (V value : getInputValues(dataSetSource)) {
 					K key = keysIt.next();
-					if (criteria.contains(typeConverter.convert(value))) {
+					if (criteria.contains(typeConverter.extract(value))) {
 						result.put(key, originalIndex);
 					}
 					originalIndex++;
@@ -190,7 +190,7 @@ public class MatrixDataExtractor implements MatrixOperation {
 			} else {
 				for (V value : getInputValues(dataSetSource)) {
 					K key = keysIt.next();
-					if (!criteria.contains(typeConverter.convert(value))) {
+					if (!criteria.contains(typeConverter.extract(value))) {
 						result.put(key, originalIndex);
 					}
 					originalIndex++;
@@ -203,7 +203,7 @@ public class MatrixDataExtractor implements MatrixOperation {
 
 	private abstract static class AbstractMarkerValuePicker<M> extends AbstractValuePicker<MarkerKey, MarkerMetadata, M> {
 
-		AbstractMarkerValuePicker(Collection<M> criteria, TypeConverter<MarkerMetadata, M> typeConverter, boolean include) {
+		AbstractMarkerValuePicker(Collection<M> criteria, Extractor<MarkerMetadata, M> typeConverter, boolean include) {
 			super(criteria, typeConverter, include);
 		}
 
@@ -220,9 +220,9 @@ public class MatrixDataExtractor implements MatrixOperation {
 
 	private static class NetCdfVariableMarkerValuePicker<M> extends AbstractMarkerValuePicker<M> {
 
-		private static final Map<String, TypeConverter<MarkerMetadata, ?>> typeConverters;
+		private static final Map<String, Extractor<MarkerMetadata, ?>> typeConverters;
 		static {
-			typeConverters = new HashMap<String, TypeConverter<MarkerMetadata, ?>>();
+			typeConverters = new HashMap<String, Extractor<MarkerMetadata, ?>>();
 			typeConverters.put(Variables.VAR_MARKERSET, MarkerMetadata.TO_MARKER_ID);
 			typeConverters.put(Variables.VAR_MARKERS_RSID, MarkerMetadata.TO_RS_ID);
 			typeConverters.put(Variables.VAR_MARKERS_BASES_DICT, MarkerMetadata.TO_ALLELES);
@@ -231,13 +231,13 @@ public class MatrixDataExtractor implements MatrixOperation {
 		}
 
 		NetCdfVariableMarkerValuePicker(Collection<M> criteria, String variable, boolean include) {
-			super(criteria, (TypeConverter<MarkerMetadata, M>) typeConverters.get(variable), include);
+			super(criteria, (Extractor<MarkerMetadata, M>) typeConverters.get(variable), include);
 		}
 	}
 
 	private abstract static class AbstractSampleValuePicker<M> extends AbstractValuePicker<SampleKey, SampleInfo, M> {
 
-		AbstractSampleValuePicker(Collection<M> criteria, TypeConverter<SampleInfo, M> typeConverter, boolean include) {
+		AbstractSampleValuePicker(Collection<M> criteria, Extractor<SampleInfo, M> typeConverter, boolean include) {
 			super(criteria, typeConverter, include);
 		}
 
@@ -254,16 +254,16 @@ public class MatrixDataExtractor implements MatrixOperation {
 
 	private abstract static class NetCdfVariableSampleValuePicker<M> extends AbstractSampleValuePicker<M> {
 
-		private static final Map<String, TypeConverter<SampleInfo, ?>> typeConverters;
+		private static final Map<String, Extractor<SampleInfo, ?>> typeConverters;
 		static {
-			typeConverters = new HashMap<String, TypeConverter<SampleInfo, ?>>();
+			typeConverters = new HashMap<String, Extractor<SampleInfo, ?>>();
 			typeConverters.put(Variables.VAR_SAMPLESET, SampleInfo.TO_SAMPLE_ID);
 			typeConverters.put(Variables.VAR_SAMPLES_AFFECTION, SampleInfo.TO_AFFECTION);
 			typeConverters.put(Variables.VAR_SAMPLES_SEX, SampleInfo.TO_SEX);
 		}
 
 		NetCdfVariableSampleValuePicker(Collection<M> criteria, String variable, boolean include) {
-			super(criteria, (TypeConverter<SampleInfo, M>) typeConverters.get(variable), include);
+			super(criteria, (Extractor<SampleInfo, M>) typeConverters.get(variable), include);
 		}
 	}
 

@@ -142,9 +142,9 @@ public class OP_QASamples implements MatrixOperation {
 			((AbstractNetCdfOperationDataSet) dataSet).setUseAllMarkersFromParent(true);
 			((AbstractNetCdfOperationDataSet) dataSet).setUseAllChromosomesFromParent(true);
 
-			dataSet.setSampleMissingRatios(wrSampleSetMissingRatioMap.values());
-			dataSet.setSampleMissingCount(wrSampleSetMissingCountMap.values());
-			dataSet.setSampleHetzyRatios(wrSampleSetHetzyRatioMap.values());
+			dataSet.setMissingRatios(wrSampleSetMissingRatioMap.values());
+			dataSet.setMissingCounts(wrSampleSetMissingCountMap.values());
+			dataSet.setHetzyRatios(wrSampleSetHetzyRatioMap.values());
 
 			resultOpId = ((AbstractNetCdfOperationDataSet) dataSet).getOperationKey().getId(); // HACK
 		} finally {

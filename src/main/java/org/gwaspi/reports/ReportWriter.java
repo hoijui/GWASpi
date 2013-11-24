@@ -87,7 +87,27 @@ public class ReportWriter {
 			String reportName,
 			String header,
 			Map<K, V> map,
-			boolean withKey)
+			boolean withKey) throws IOException
+	{
+		Extractor<Entry<K, V>, String> valueExtractor = new MapValueExtractor<K, V>();
+
+		Extractor<Entry<K, V>, String> keyExtractor;
+		if (withKey) {
+			keyExtractor = new MapKeyExtractor<K, V>();
+		} else {
+			keyExtractor = null;
+		}
+
+		return writeFirstColumnToReport(reportPath, reportName, header, map.entrySet(), keyExtractor, valueExtractor);
+	}
+
+	protected static <S> boolean writeFirstColumnToReport(
+			String reportPath,
+			String reportName,
+			String header,
+			Collection<S> readContent,
+			Extractor<S, String> keyExtractor,
+			Extractor<S, String> valueExtractor)
 			throws IOException
 	{
 		boolean appendResult = false;
@@ -95,16 +115,21 @@ public class ReportWriter {
 		FileWriter outputFW = new FileWriter(reportPath + reportName);
 		BufferedWriter outputBW = new BufferedWriter(outputFW);
 
+		final boolean withKey = (keyExtractor != null);
+
 		String sep = cExport.separator_REPORTS;
 		outputBW.append(header);
 
-		for (Map.Entry<K, V> entry : map.entrySet()) {
+		for (S entry : readContent) {
 			StringBuilder sb = new StringBuilder();
+			String value = valueExtractor.extract(entry);
 			if (withKey) {
-				sb.append(entry.getKey().toString());
-				sb.append(sep);
+				sb.append(keyExtractor.extract(entry));
+			} else {
+				// cut off the initial separator from the value
+				value = value.substring(sep.length());
 			}
-			sb.append(org.gwaspi.global.Utils.toMeaningfullRep(entry.getValue()));
+			sb.append(value);
 
 			sb.append("\n");
 			outputBW.append(sb);

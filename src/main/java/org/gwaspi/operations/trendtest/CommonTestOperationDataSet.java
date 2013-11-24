@@ -15,9 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.gwaspi.global;
+package org.gwaspi.operations.trendtest;
 
-public interface TypeConverter<F, T> {
+import java.io.IOException;
+import java.util.Collection;
+import org.gwaspi.operations.OperationDataSet;
 
-	T convert(F from);
+public interface CommonTestOperationDataSet<ET extends TrendTestOperationEntry> extends OperationDataSet<ET> {
 }

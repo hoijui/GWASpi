@@ -17,46 +17,46 @@
 
 package org.gwaspi.reports;
 
-import java.io.IOException;
-import java.util.Map;
-import org.gwaspi.constants.cNetCDF;
-import org.gwaspi.model.OperationKey;
-import org.gwaspi.model.OperationMetadata;
-import org.gwaspi.model.OperationsList;
-import org.gwaspi.model.SampleKey;
-import org.gwaspi.netCDF.operations.SampleOperationSet;
-import ucar.nc2.NetcdfFile;
+//import java.io.IOException;
+//import java.util.Map;
+//import org.gwaspi.constants.cNetCDF;
+//import org.gwaspi.model.OperationKey;
+//import org.gwaspi.model.OperationMetadata;
+//import org.gwaspi.model.OperationsList;
+//import org.gwaspi.model.SampleKey;
+//import org.gwaspi.netCDF.operations.SampleOperationSet;
+//import ucar.nc2.NetcdfFile;
 
 public class GatherQASamplesData {
 
 	private GatherQASamplesData() {
 	}
 
-	public static Map<SampleKey, Double> loadSamplesQAMissingRatio(OperationKey operationKey) throws IOException {
-
-		OperationMetadata rdOPMetadata = OperationsList.getOperation(operationKey);
-
-		SampleOperationSet rdInfoSampleSet = new SampleOperationSet(operationKey);
-		Map<SampleKey, Double> rdMatrixSampleSetMap = rdInfoSampleSet.getOpSetMap();
-
-		NetcdfFile ncFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());
-		rdMatrixSampleSetMap = rdInfoSampleSet.fillOpSetMapWithVariable(ncFile, cNetCDF.Census.VAR_OP_SAMPLES_MISSINGRAT);
-
-		ncFile.close();
-		return rdMatrixSampleSetMap;
-	}
-
-	public static Map<SampleKey, Double> loadSamplesQAHetZygRatio(OperationKey operationKey) throws IOException {
-
-		OperationMetadata rdOPMetadata = OperationsList.getOperation(operationKey);
-
-		SampleOperationSet rdInfoSampleSet = new SampleOperationSet(operationKey);
-		Map<SampleKey, Double> rdMatrixSampleSetMap = rdInfoSampleSet.getOpSetMap();
-
-		NetcdfFile ncFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());
-		rdMatrixSampleSetMap = rdInfoSampleSet.fillOpSetMapWithVariable(ncFile, cNetCDF.Census.VAR_OP_SAMPLES_HETZYRAT);
-
-		ncFile.close();
-		return rdMatrixSampleSetMap;
-	}
+//	public static Map<SampleKey, Double> loadSamplesQAMissingRatio(OperationKey operationKey) throws IOException {
+//
+//		OperationMetadata rdOPMetadata = OperationsList.getOperation(operationKey);
+//
+//		SampleOperationSet rdInfoSampleSet = new SampleOperationSet(operationKey);
+//		Map<SampleKey, Double> rdMatrixSampleSetMap = rdInfoSampleSet.getOpSetMap();
+//
+//		NetcdfFile ncFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());
+//		rdMatrixSampleSetMap = rdInfoSampleSet.fillOpSetMapWithVariable(ncFile, cNetCDF.Census.VAR_OP_SAMPLES_MISSINGRAT);
+//
+//		ncFile.close();
+//		return rdMatrixSampleSetMap;
+//	}
+//
+//	public static Map<SampleKey, Double> loadSamplesQAHetZygRatio(OperationKey operationKey) throws IOException {
+//
+//		OperationMetadata rdOPMetadata = OperationsList.getOperation(operationKey);
+//
+//		SampleOperationSet rdInfoSampleSet = new SampleOperationSet(operationKey);
+//		Map<SampleKey, Double> rdMatrixSampleSetMap = rdInfoSampleSet.getOpSetMap();
+//
+//		NetcdfFile ncFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());
+//		rdMatrixSampleSetMap = rdInfoSampleSet.fillOpSetMapWithVariable(ncFile, cNetCDF.Census.VAR_OP_SAMPLES_HETZYRAT);
+//
+//		ncFile.close();
+//		return rdMatrixSampleSetMap;
+//	}
 }

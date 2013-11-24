@@ -17,9 +17,19 @@
 
 package org.gwaspi.operations.genotypicassociationtest;
 
+import org.gwaspi.global.Extractor;
 import org.gwaspi.operations.allelicassociationtest.AllelicAssociationTestOperationEntry;
 
 public interface GenotypicAssociationTestOperationEntry extends AllelicAssociationTestOperationEntry {
+
+	public static final Extractor<GenotypicAssociationTestOperationEntry, Double> TO_OR2
+			= new Extractor<GenotypicAssociationTestOperationEntry, Double>()
+	{
+		@Override
+		public Double extract(GenotypicAssociationTestOperationEntry from) {
+			return from.getOR2();
+		}
+	};
 
 	/**
 	 * @return the markers OR2 value
