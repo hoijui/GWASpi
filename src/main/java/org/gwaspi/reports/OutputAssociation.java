@@ -128,17 +128,17 @@ public class OutputAssociation {
 		org.gwaspi.global.Utils.sysoutCompleted(testName + " Association Reports & Charts");
 	}
 
-	private void writeManhattanPlotFromAssociationData(OperationKey operationKey, String outName, int width, int height) throws IOException {
+	private void writeManhattanPlotFromAssociationData(OperationKey assocTestOpKey, String outName, int width, int height) throws IOException {
 
 		// Generating XY scatter plot with loaded data
-		CombinedRangeXYPlot combinedPlot = GenericReportGenerator.buildManhattanPlot(operationKey, variableName);
+		CombinedRangeXYPlot combinedPlot = GenericReportGenerator.buildManhattanPlot(assocTestOpKey, variableName);
 
 		JFreeChart chart = new JFreeChart("P value", JFreeChart.DEFAULT_TITLE_FONT, combinedPlot, true);
 
 		// CHART BACKGROUD COLOR
 		chart.setBackgroundPaint(Color.getHSBColor(0.1f, 0.1f, 1.0f)); // Hue, saturation, brightness
 
-		OperationMetadata rdOPMetadata = OperationsList.getOperation(operationKey);
+		OperationMetadata rdOPMetadata = OperationsList.getOperation(assocTestOpKey);
 		int pointNb = rdOPMetadata.getOpSetSize();
 		int picWidth = 4000;
 		if (pointNb < 1000) {
@@ -151,7 +151,7 @@ public class OutputAssociation {
 			picWidth = 2000;
 		}
 
-		String imagePath = Study.constructReportsPath(operationKey.getParentMatrixKey().getStudyKey()) + outName + ".png";
+		String imagePath = Study.constructReportsPath(assocTestOpKey.getParentMatrixKey().getStudyKey()) + outName + ".png";
 		try {
 			ChartUtilities.saveChartAsPNG(new File(imagePath),
 					chart,

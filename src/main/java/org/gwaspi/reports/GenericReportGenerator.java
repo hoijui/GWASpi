@@ -25,6 +25,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -42,7 +43,11 @@ import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.netCDF.markers.MarkerSet;
 import org.gwaspi.netCDF.operations.MarkerOperationSet;
+import org.gwaspi.netCDF.operations.OperationFactory;
 import org.gwaspi.netCDF.operations.SampleOperationSet;
+import org.gwaspi.operations.OperationDataSet;
+import org.gwaspi.operations.trendtest.CommonTestOperationDataSet;
+import org.gwaspi.operations.trendtest.TrendTestOperationEntry;
 import org.gwaspi.statistics.Chisquare;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
@@ -92,28 +97,13 @@ public class GenericReportGenerator {
 	}
 
 	//<editor-fold defaultstate="expanded" desc="ASSOCIATION CHARTS">
-	public static CombinedRangeXYPlot buildManhattanPlot(OperationKey operationKey, String netCDFVar) throws IOException {
-
-		//<editor-fold defaultstate="expanded" desc="PLOT DEFAULTS">
-		double threshold = Double.parseDouble(Config.getConfigValue(
-				PLOT_MANHATTAN_THRESHOLD_CONFIG,
-				String.valueOf(PLOT_MANHATTAN_THRESHOLD_DEFAULT)));
-		Color background = Config.getConfigColor(
-				PLOT_MANHATTAN_BACKGROUND_CONFIG,
-				PLOT_MANHATTAN_BACKGROUND_DEFAULT);
-		Color backgroundAlternative = Config.getConfigColor(
-				PLOT_MANHATTAN_BACKGROUND_ALTERNATIVE_CONFIG,
-				PLOT_MANHATTAN_BACKGROUND_ALTERNATIVE_DEFAULT);
-		Color main = Config.getConfigColor(
-				PLOT_MANHATTAN_MAIN_CONFIG,
-				PLOT_MANHATTAN_MAIN_DEFAULT);
-		//</editor-fold>
+	private static Map<MarkerKey, Object[]> assembleManhattenPlotData(OperationKey testOpKey, String netCDFVar) throws IOException {
 
 		Map<MarkerKey, Object[]> dataSetMap = new LinkedHashMap<MarkerKey, Object[]>();
-		OperationMetadata rdOPMetadata = OperationsList.getOperation(operationKey);
+		OperationMetadata rdOPMetadata = OperationsList.getOperation(testOpKey);
 
 		//<editor-fold defaultstate="expanded" desc="GET POSITION DATA">
-		MarkerSet rdInfoMarkerSet = new MarkerSet(operationKey.getParentMatrixKey());
+		MarkerSet rdInfoMarkerSet = new MarkerSet(testOpKey.getParentMatrixKey());
 		rdInfoMarkerSet.initFullMarkerIdSetMap();
 
 //		long snpNumber = rdInfoMarkerSet.getMarkerSetSize();
@@ -147,7 +137,7 @@ public class GenericReportGenerator {
 
 		//<editor-fold defaultstate="expanded" desc="GET Pval">
 		NetcdfFile assocNcFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());
-		MarkerOperationSet rdAssocMarkerSet = new MarkerOperationSet(operationKey);
+		MarkerOperationSet rdAssocMarkerSet = new MarkerOperationSet(testOpKey);
 		Map<MarkerKey, double[]> rdAssocMarkerSetMap = rdAssocMarkerSet.getOpSetMap();
 		rdAssocMarkerSetMap = rdAssocMarkerSet.fillOpSetMapWithVariable(assocNcFile, netCDFVar);
 		assocNcFile.close();
@@ -168,6 +158,28 @@ public class GenericReportGenerator {
 			rdAssocMarkerSetMap.clear();
 		}
 		//</editor-fold>
+
+		return dataSetMap;
+	}
+
+	public static CombinedRangeXYPlot buildManhattanPlot(OperationKey testOpKey, String netCDFVar) throws IOException {
+
+		//<editor-fold defaultstate="expanded" desc="PLOT DEFAULTS">
+		double threshold = Double.parseDouble(Config.getConfigValue(
+				PLOT_MANHATTAN_THRESHOLD_CONFIG,
+				String.valueOf(PLOT_MANHATTAN_THRESHOLD_DEFAULT)));
+		Color background = Config.getConfigColor(
+				PLOT_MANHATTAN_BACKGROUND_CONFIG,
+				PLOT_MANHATTAN_BACKGROUND_DEFAULT);
+		Color backgroundAlternative = Config.getConfigColor(
+				PLOT_MANHATTAN_BACKGROUND_ALTERNATIVE_CONFIG,
+				PLOT_MANHATTAN_BACKGROUND_ALTERNATIVE_DEFAULT);
+		Color main = Config.getConfigColor(
+				PLOT_MANHATTAN_MAIN_CONFIG,
+				PLOT_MANHATTAN_MAIN_DEFAULT);
+		//</editor-fold>
+
+		Map<MarkerKey, Object[]> dataSetMap = assembleManhattenPlotData(testOpKey, netCDFVar);
 
 		XYSeriesCollection currChrSC = new XYSeriesCollection();
 
@@ -222,6 +234,7 @@ public class GenericReportGenerator {
 	}
 
 	private static void appendToCombinedRangeManhattanPlot(CombinedRangeXYPlot combinedPlot, String chromosome, XYSeriesCollection currChrSC, boolean showlables, double threshold, Color background, Color backgroundAlternative, Color main) {
+
 		XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer(false, true);
 
 		// Set dot shape of the currently appended Series
@@ -297,7 +310,22 @@ public class GenericReportGenerator {
 		combinedPlot.add(subplot, 1);
 	}
 
-	public static XYPlot buildQQPlot(OperationKey operationKey, String netCDFVar, int df) throws IOException {
+	private static List<Double> assembleQQPlotData(OperationKey testOpKey) throws IOException {
+
+		CommonTestOperationDataSet testOpDS = (CommonTestOperationDataSet) OperationFactory.generateOperationDataSet(testOpKey);
+		Collection<Double> chiSqrVals = testOpDS.getTs(-1, -1);
+		List<Double> obsChiSqrVals = new ArrayList<Double>(chiSqrVals.size());
+		for (Double chiSqr : chiSqrVals) {
+			if (!Double.isNaN(chiSqr) && !Double.isInfinite(chiSqr)) {
+				obsChiSqrVals.add(chiSqr);
+			}
+		}
+		Collections.sort(obsChiSqrVals);
+
+		return obsChiSqrVals;
+	}
+
+	public static XYPlot buildQQPlot(OperationKey testOpKey, int df) throws IOException {
 
 		if (df != 1 && df != 2) {
 			throw new IllegalArgumentException("Only df = 1 or 2 is supported; it is " + df);
@@ -318,21 +346,8 @@ public class GenericReportGenerator {
 				PLOT_QQ_MU_DEFAULT);
 		//</editor-fold>
 
-		OperationMetadata rdOPMetadata = OperationsList.getOperation(operationKey);
-
 		//<editor-fold defaultstate="expanded" desc="GET X^2">
-		NetcdfFile assocNcFile = NetcdfFile.open(rdOPMetadata.getPathToMatrix());
-		MarkerOperationSet rdAssocMarkerSet = new MarkerOperationSet(operationKey);
-
-		List<double[]> gntypAssocChiSqrVals = rdAssocMarkerSet.getListWithVariable(assocNcFile, netCDFVar);
-		List<Double> obsChiSqrVals = new ArrayList<Double>();
-		for (double[] vals : gntypAssocChiSqrVals) {
-			Double chiSqr = (Double) vals[0];
-			if (!Double.isNaN(chiSqr) && !Double.isInfinite(chiSqr)) {
-				obsChiSqrVals.add(chiSqr);
-			}
-		}
-		Collections.sort(obsChiSqrVals);
+		List<Double> obsChiSqrVals = assembleQQPlotData(testOpKey);
 
 		int N = obsChiSqrVals.size();
 		List<Double> expChiSqrDist;
@@ -342,8 +357,6 @@ public class GenericReportGenerator {
 			expChiSqrDist = Chisquare.getChiSquareDistributionDf2(N, 1.0f);
 		}
 		Collections.sort(expChiSqrDist);
-
-		assocNcFile.close();
 		//</editor-fold>
 
 		//<editor-fold defaultstate="expanded" desc="GET CONFIDENCE BOUNDARY">

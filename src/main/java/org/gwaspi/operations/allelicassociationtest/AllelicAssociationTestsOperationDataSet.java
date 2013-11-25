@@ -20,8 +20,9 @@ package org.gwaspi.operations.allelicassociationtest;
 import java.io.IOException;
 import java.util.Collection;
 import org.gwaspi.operations.OperationDataSet;
+import org.gwaspi.operations.trendtest.CommonTestOperationDataSet;
 
-public interface AllelicAssociationTestsOperationDataSet extends OperationDataSet<AllelicAssociationTestOperationEntry> {
+public interface AllelicAssociationTestsOperationDataSet extends CommonTestOperationDataSet<AllelicAssociationTestOperationEntry> {
 
 //	/**
 //	 * @param markerORs
@@ -35,7 +36,5 @@ public interface AllelicAssociationTestsOperationDataSet extends OperationDataSe
 
 	void addEntry(AllelicAssociationTestOperationEntry entry) throws IOException;
 
-	Collection<Double> getTs(int from, int to) throws IOException;
-	Collection<Double> getPs(int from, int to) throws IOException;
 	Collection<Double> getORs(int from, int to) throws IOException;
 }

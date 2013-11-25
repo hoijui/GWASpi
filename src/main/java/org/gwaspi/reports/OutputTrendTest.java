@@ -114,17 +114,17 @@ public class OutputTrendTest {
 		org.gwaspi.global.Utils.sysoutCompleted("Trend Test Reports & Charts");
 	}
 
-	public static void writeManhattanPlotFromTrendTestData(OperationKey operationKey, String outName, int width, int height) throws IOException {
+	public static void writeManhattanPlotFromTrendTestData(OperationKey trendTestOpKey, String outName, int width, int height) throws IOException {
 
 		// Generating XY scatter plot with loaded data
-		CombinedRangeXYPlot combinedPlot = GenericReportGenerator.buildManhattanPlot(operationKey, cNetCDF.Association.VAR_OP_MARKERS_ASTrendTestTP);
+		CombinedRangeXYPlot combinedPlot = GenericReportGenerator.buildManhattanPlot(trendTestOpKey, cNetCDF.Association.VAR_OP_MARKERS_ASTrendTestTP);
 
 		JFreeChart chart = new JFreeChart("P value", JFreeChart.DEFAULT_TITLE_FONT, combinedPlot, true);
 
 		//CHART BACKGROUD COLOR
 		chart.setBackgroundPaint(Color.getHSBColor(0.1f, 0.1f, 1.0f)); //Hue, saturation, brightness
 
-		OperationMetadata rdOPMetadata = OperationsList.getOperation(operationKey);
+		OperationMetadata rdOPMetadata = OperationsList.getOperation(trendTestOpKey);
 		int pointNb = rdOPMetadata.getOpSetSize();
 		int picWidth = 4000;
 		if (pointNb < 1000) {

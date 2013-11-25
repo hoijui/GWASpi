@@ -22,4 +22,7 @@ import java.util.Collection;
 import org.gwaspi.operations.OperationDataSet;
 
 public interface CommonTestOperationDataSet<ET extends TrendTestOperationEntry> extends OperationDataSet<ET> {
+
+	Collection<Double> getTs(int from, int to) throws IOException;
+	Collection<Double> getPs(int from, int to) throws IOException;
 }

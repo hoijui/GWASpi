@@ -51,7 +51,7 @@ public interface TrendTestOperationEntry extends OperationDataEntry<MarkerKey> {
 	};
 
 	/**
-	 * @return the markers T value
+	 * @return the markers T value (also known as: Chi-Square / X^2)
 	 * NetCDF variable:
 	 * - Association.VAR_OP_MARKERS_ASTrendTestTP [0]
 	 * - Association.VAR_OP_MARKERS_ASAllelicAssociationTPOR [0]
