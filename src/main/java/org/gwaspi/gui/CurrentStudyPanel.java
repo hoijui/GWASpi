@@ -17,8 +17,10 @@
 
 package org.gwaspi.gui;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.io.File;
@@ -58,60 +60,59 @@ import org.slf4j.LoggerFactory;
 public class CurrentStudyPanel extends JPanel {
 
 	private static final Logger log = LoggerFactory.getLogger(CurrentStudyPanel.class);
+	private static final Color DANGER_RED = new Color(242, 138, 121);
 
 	// Variables declaration // TODO remove all of these comments
-	private final Study study;
-	private final JButton btn_DeleteMatrix;
-	private final JButton btn_LoadGenotypes;
-	private final JButton btn_UpdateSampleInfo;
-	private final JButton btn_SaveDesc;
-	private final JButton btn_DeleteStudy;
-	private final JPanel pnl_MatrixTable;
-	private final JPanel pnl_StudyDesc;
-	private final JPanel pnl_Footer;
-	private final JButton btn_Back;
-	private final JButton btn_Help;
-	private final JScrollPane scrl_Desc;
-	private final JScrollPane scrl_MatrixTable;
-	private final JTable tbl_MatrixTable;
-	private final JTextArea txtA_StudyDesc;
 	// End of variables declaration
+
+	private static class JMatrixTable extends JTable {
+
+		@Override
+		public boolean isCellEditable(int row, int col) {
+			return false; // Renders column 0 uneditable.
+		}
+
+		@Override
+		public Component prepareRenderer(TableCellRenderer renderer, int rowIndex, int vColIndex) {
+			Component c = super.prepareRenderer(renderer, rowIndex, vColIndex);
+			if (c instanceof JComponent && getValueAt(rowIndex, vColIndex) != null) {
+				JComponent jc = (JComponent) c;
+				jc.setToolTipText("<html>" + getValueAt(rowIndex, vColIndex).toString().replaceAll("\n", "<br>") + "</html>");
+			}
+			return c;
+		}
+	}
 
 	public CurrentStudyPanel(StudyKey studyKey) throws IOException {
 
-		study = StudyList.getStudy(studyKey);
+		Study study = StudyList.getStudy(studyKey);
 
-		pnl_StudyDesc = new JPanel();
-		scrl_Desc = new JScrollPane();
-		txtA_StudyDesc = new JTextArea();
-		btn_LoadGenotypes = new JButton();
-		btn_UpdateSampleInfo = new JButton();
-		btn_SaveDesc = new JButton();
-		btn_DeleteStudy = new JButton();
-		pnl_MatrixTable = new JPanel();
-		pnl_Footer = new JPanel();
-		btn_Help = new JButton();
-		btn_Back = new JButton();
-		scrl_MatrixTable = new JScrollPane();
-		tbl_MatrixTable = new JTable() {
-			@Override
-			public boolean isCellEditable(int row, int col) {
-				return false; //Renders column 0 uneditable.
-			}
+		JPanel pnl_StudyDesc = new JPanel();
+		JScrollPane scrl_Desc = new JScrollPane();
+		JTextArea txtA_StudyDesc = new JTextArea();
+		JPanel pnl_StudyDescButtons = new JPanel();
+		JButton btn_DeleteStudy = new JButton();
+		JButton btn_LoadGenotypes = new JButton();
+		JButton btn_UpdateSampleInfo = new JButton();
+		JButton btn_SaveDesc = new JButton();
+		JPanel pnl_MatrixTable = new JPanel();
+		JPanel pnl_MatrixTableButtons = new JPanel();
+		JScrollPane scrl_MatrixTable = new JScrollPane();
+		JTable tbl_MatrixTable = new JMatrixTable();
+		JButton btn_DeleteMatrix = new JButton();
+		JPanel pnl_Footer = new JPanel();
+		JButton btn_Help = new JButton();
+		JButton btn_Back = new JButton();
 
-			@Override
-			public Component prepareRenderer(TableCellRenderer renderer, int rowIndex, int vColIndex) {
-				Component c = super.prepareRenderer(renderer, rowIndex, vColIndex);
-				if (c instanceof JComponent && getValueAt(rowIndex, vColIndex) != null) {
-					JComponent jc = (JComponent) c;
-					jc.setToolTipText("<html>" + getValueAt(rowIndex, vColIndex).toString().replaceAll("\n", "<br>") + "</html>");
-				}
-				return c;
-			}
-		};
 		tbl_MatrixTable.setDefaultRenderer(Object.class, new RowRendererDefault());
 
-		btn_DeleteMatrix = new JButton();
+		btn_SaveDesc.setAction(new SaveDescriptionAction(study, txtA_StudyDesc));
+		btn_DeleteStudy.setAction(new DeleteStudyAction(studyKey, this));
+		btn_UpdateSampleInfo.setAction(new LoadSampleInfoAction(study));
+		btn_LoadGenotypes.setAction(new LoadGenotypesAction(study));
+		btn_DeleteMatrix.setAction(new DeleteMatrixAction(studyKey, this, tbl_MatrixTable));
+		btn_Back.setAction(new BackAction());
+		btn_Help.setAction(new BrowserHelpUrlAction(HelpURLs.QryURL.currentStudy));
 
 		setBorder(BorderFactory.createTitledBorder(null, Text.Study.study, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("FreeSans", 1, 18))); // NOI18N
 
@@ -122,20 +123,11 @@ public class CurrentStudyPanel extends JPanel {
 		txtA_StudyDesc.setText(study.getDescription().toString());
 		scrl_Desc.setViewportView(txtA_StudyDesc);
 
-		btn_SaveDesc.setAction(new SaveDescriptionAction(study, txtA_StudyDesc));
-
-		btn_DeleteStudy.setAction(new DeleteStudyAction(studyKey, this));
-
-		btn_UpdateSampleInfo.setAction(new LoadSampleInfoAction(study));
-
-		btn_LoadGenotypes.setAction(new LoadGenotypesAction(study));
-
 		pnl_MatrixTable.setBorder(BorderFactory.createTitledBorder(null, Text.Matrix.matrices, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("DejaVu Sans", 1, 13))); // NOI18N
 		tbl_MatrixTable.setModel(new MatricesTableModel(MatricesList.getMatricesTable(StudyKey.valueOf(study))));
 		scrl_MatrixTable.setViewportView(tbl_MatrixTable);
 
-		btn_DeleteMatrix.setAction(new DeleteMatrixAction(studyKey, this, tbl_MatrixTable));
-		btn_DeleteMatrix.setBackground(new Color(242, 138, 121));
+		btn_DeleteMatrix.setBackground(DANGER_RED);
 
 		//<editor-fold defaultstate="expanded" desc="LAYOUT STUDY">
 		GroupLayout pnl_StudyDescLayout = new GroupLayout(pnl_StudyDesc);
@@ -194,49 +186,55 @@ public class CurrentStudyPanel extends JPanel {
 		//</editor-fold>
 
 		//<editor-fold defaultstate="expanded" desc="FOOTER">
-		btn_Back.setAction(new BackAction());
-		btn_Help.setAction(new BrowserHelpUrlAction(HelpURLs.QryURL.currentStudy));
-		GroupLayout pnl_FooterLayout = new GroupLayout(pnl_Footer);
-		pnl_Footer.setLayout(pnl_FooterLayout);
-		pnl_FooterLayout.setHorizontalGroup(
-				pnl_FooterLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-				.addGroup(pnl_FooterLayout.createSequentialGroup()
-				.addComponent(btn_Back, GroupLayout.PREFERRED_SIZE, 94, GroupLayout.PREFERRED_SIZE)
-				.addGap(18, 437, Short.MAX_VALUE)
-				.addComponent(btn_Help)));
-
-		pnl_FooterLayout.linkSize(SwingConstants.HORIZONTAL, new Component[]{btn_Back, btn_Help});
-		pnl_FooterLayout.setVerticalGroup(
-				pnl_FooterLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-				.addGroup(pnl_FooterLayout.createSequentialGroup()
-				.addContainerGap(0, Short.MAX_VALUE)
-				.addGroup(pnl_FooterLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-				.addComponent(btn_Back)
-				.addComponent(btn_Help))));
+		FlowLayout lyt_Footer = new FlowLayout();
+		pnl_Footer.setLayout(lyt_Footer);
+		pnl_Footer.add(btn_Back);
+		pnl_Footer.add(btn_Help);
+//		GroupLayout pnl_FooterLayout = new GroupLayout(pnl_Footer);
+//		pnl_Footer.setLayout(pnl_FooterLayout);
+//		pnl_FooterLayout.setHorizontalGroup(
+//				pnl_FooterLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+//				.addGroup(pnl_FooterLayout.createSequentialGroup()
+//				.addComponent(btn_Back, GroupLayout.PREFERRED_SIZE, 94, GroupLayout.PREFERRED_SIZE)
+//				.addGap(18, 437, Short.MAX_VALUE)
+//				.addComponent(btn_Help)));
+//
+//		pnl_FooterLayout.linkSize(SwingConstants.HORIZONTAL, new Component[]{btn_Back, btn_Help});
+//		pnl_FooterLayout.setVerticalGroup(
+//				pnl_FooterLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+//				.addGroup(pnl_FooterLayout.createSequentialGroup()
+//				.addContainerGap(0, Short.MAX_VALUE)
+//				.addGroup(pnl_FooterLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+//				.addComponent(btn_Back)
+//				.addComponent(btn_Help))));
 		//</editor-fold>
 
 		// <editor-fold defaultstate="expanded" desc="LAYOUT">
-		GroupLayout layout = new GroupLayout(this);
-		this.setLayout(layout);
-		layout.setHorizontalGroup(
-				layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-				.addGroup(GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-				.addContainerGap()
-				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.TRAILING)
-				.addComponent(pnl_Footer, GroupLayout.Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-				.addComponent(pnl_MatrixTable, GroupLayout.Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-				.addComponent(pnl_StudyDesc, GroupLayout.Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-				.addContainerGap()));
-		layout.setVerticalGroup(
-				layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-				.addGroup(layout.createSequentialGroup()
-				.addContainerGap()
-				.addComponent(pnl_StudyDesc, GroupLayout.PREFERRED_SIZE, 243, GroupLayout.PREFERRED_SIZE)
-				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-				.addComponent(pnl_MatrixTable, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-				.addComponent(pnl_Footer, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-				.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)));
+		this.setLayout(new BorderLayout());
+		this.add(pnl_StudyDesc, BorderLayout.NORTH);
+		this.add(pnl_MatrixTable, BorderLayout.CENTER);
+		this.add(pnl_Footer, BorderLayout.SOUTH);
+//		GroupLayout layout = new GroupLayout(this);
+//		this.setLayout(layout);
+//		layout.setHorizontalGroup(
+//				layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+//				.addGroup(GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+//				.addContainerGap()
+//				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.TRAILING)
+//				.addComponent(pnl_Footer, GroupLayout.Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+//				.addComponent(pnl_MatrixTable, GroupLayout.Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+//				.addComponent(pnl_StudyDesc, GroupLayout.Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+//				.addContainerGap()));
+//		layout.setVerticalGroup(
+//				layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+//				.addGroup(layout.createSequentialGroup()
+//				.addContainerGap()
+//				.addComponent(pnl_StudyDesc, GroupLayout.PREFERRED_SIZE, 243, GroupLayout.PREFERRED_SIZE)
+//				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+//				.addComponent(pnl_MatrixTable, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+//				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+//				.addComponent(pnl_Footer, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+//				.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)));
 		// </editor-fold>
 	}
 
