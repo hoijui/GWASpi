@@ -18,12 +18,10 @@
 package org.gwaspi.gui;
 
 import java.awt.Component;
-import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
 import java.util.List;
 import javax.swing.AbstractAction;
-import javax.swing.BorderFactory;
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -34,8 +32,6 @@ import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.LayoutStyle;
 import javax.swing.SwingConstants;
-import javax.swing.border.TitledBorder;
-import javax.swing.table.TableCellRenderer;
 import org.gwaspi.constants.cDBSamples;
 import org.gwaspi.constants.cExport;
 import org.gwaspi.constants.cExport.ExportFormat;
@@ -78,7 +74,6 @@ public class CurrentMatrixPanel extends JPanel {
 	private final JButton btn_SaveDesc;
 	private final JPanel pnl_Spacer;
 	private final JPanel pnl_Buttons;
-	private final JPanel pnl_Footer;
 	private final JPanel pnl_MatrixDesc;
 	private final JPanel pnl_NewOperation;
 	private final JScrollPane scrl_MatrixDesc;
@@ -98,22 +93,7 @@ public class CurrentMatrixPanel extends JPanel {
 		btn_DeleteMatrix = new JButton();
 		btn_SaveDesc = new JButton();
 		scrl_MatrixOperations = new JScrollPane();
-		tbl_MatrixOperations = new JTable() {
-			@Override
-			public boolean isCellEditable(int row, int col) {
-				return false; // Renders column 0 uneditable.
-			}
-
-			@Override
-			public Component prepareRenderer(TableCellRenderer renderer, int rowIndex, int vColIndex) {
-				Component c = super.prepareRenderer(renderer, rowIndex, vColIndex);
-				if (c instanceof JComponent && getValueAt(rowIndex, vColIndex) != null) {
-					JComponent jc = (JComponent) c;
-					jc.setToolTipText("<html>" + getValueAt(rowIndex, vColIndex).toString().replaceAll("\n", "<br>") + "</html>");
-				}
-				return c;
-			}
-		};
+		tbl_MatrixOperations = new MatrixTable();
 		tbl_MatrixOperations.setDefaultRenderer(Object.class, new RowRendererDefault());
 
 		btn_DeleteOperation = new JButton();
@@ -126,40 +106,23 @@ public class CurrentMatrixPanel extends JPanel {
 		btn_Operation1_6 = new JButton();
 		pnl_Spacer = new JPanel();
 		pnl_Buttons = new JPanel();
-		pnl_Footer = new JPanel();
 		btn_Back = new JButton();
 		btn_Help = new JButton();
 
-		setBorder(BorderFactory.createTitledBorder(null, Text.Matrix.matrix, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("FreeSans", 1, 18))); // NOI18N
+		setBorder(GWASpiExplorerPanel.createMainTitledBorder(Text.Matrix.matrix)); // NOI18N
 
-
-		pnl_MatrixDesc.setBorder(BorderFactory.createTitledBorder(null, Text.Matrix.currentMatrix + " " + matrixMetadata.getMatrixFriendlyName() + ", " + Text.Matrix.matrixID + ": mx" + matrix.getMatrixId(), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("DejaVu Sans", 1, 13))); // NOI18N
+		pnl_MatrixDesc.setBorder(GWASpiExplorerPanel.createRegularTitledBorder(Text.Matrix.currentMatrix + " " + matrixMetadata.getMatrixFriendlyName() + ", " + Text.Matrix.matrixID + ": mx" + matrix.getMatrixId())); // NOI18N
 		txtA_MatrixDesc.setColumns(20);
 		txtA_MatrixDesc.setRows(5);
-		txtA_MatrixDesc.setBorder(BorderFactory.createTitledBorder(null, Text.All.description, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("DejaVu Sans", 1, 13))); // NOI18N
+		txtA_MatrixDesc.setBorder(GWASpiExplorerPanel.createMainTitledBorder(Text.All.description)); // NOI18N
 		txtA_MatrixDesc.setDocument(new LimitedLengthDocument(1999));
 		txtA_MatrixDesc.setText(matrixMetadata.getDescription());
 		scrl_MatrixDesc.setViewportView(txtA_MatrixDesc);
-		btn_DeleteMatrix.setAction(new DeleteMatrixAction(matrix, this));
-		btn_SaveDesc.setAction(new SaveDescriptionAction(matrix, txtA_MatrixDesc));
 
 		tbl_MatrixOperations.setModel(new OperationsTableModel(OperationsList.getOperationsTable(matrixKey)));
 		scrl_MatrixOperations.setViewportView(tbl_MatrixOperations);
-		btn_DeleteOperation.setAction(new MatrixAnalysePanel.DeleteOperationAction(null, this, matrix, tbl_MatrixOperations));
 
-
-		pnl_NewOperation.setBorder(BorderFactory.createTitledBorder(null, Text.Operation.newOperation, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("DejaVu Sans", 1, 13))); // NOI18N
-		btn_Operation1_1.setAction(new AnalyseDataAction(matrix));
-
-		btn_Operation1_2.setAction(new ExtractMatrixAction(matrix));
-
-		btn_Operation1_3.setAction(new MergeMatricesAction(matrix));
-
-		btn_Operation1_4.setAction(new ExportMatrixAction(matrix));
-
-		btn_Operation1_5.setAction(new TransformMatrixAction(matrix));
-
-		btn_Operation1_6.setAction(new TranslateMatricesAction(matrix));
+		pnl_NewOperation.setBorder(GWASpiExplorerPanel.createRegularTitledBorder( Text.Operation.newOperation)); // NOI18N
 
 		// <editor-fold defaultstate="expanded" desc="LAYOUT MATRIX DESCRIPTION">
 		GroupLayout pnl_MatrixDescLayout = new GroupLayout(pnl_MatrixDesc);
@@ -263,29 +226,9 @@ public class CurrentMatrixPanel extends JPanel {
 				.addContainerGap()));
 		//</editor-fold>
 
-		//<editor-fold defaultstate="expanded" desc="FOOTER">
-		btn_Back.setAction(new BackAction(matrix));
-		btn_Help.setAction(new BrowserHelpUrlAction(HelpURLs.QryURL.currentMatrix));
-
-		GroupLayout pnl_FooterLayout = new GroupLayout(pnl_Footer);
-		pnl_Footer.setLayout(pnl_FooterLayout);
-		pnl_FooterLayout.setHorizontalGroup(
-				pnl_FooterLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-				.addGroup(pnl_FooterLayout.createSequentialGroup()
-				.addComponent(btn_Back, GroupLayout.PREFERRED_SIZE, 94, GroupLayout.PREFERRED_SIZE)
-				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, 692, Short.MAX_VALUE)
-				.addComponent(btn_Help)));
-
-		pnl_FooterLayout.linkSize(SwingConstants.HORIZONTAL, new Component[]{btn_Back, btn_Help});
-
-		pnl_FooterLayout.setVerticalGroup(
-				pnl_FooterLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-				.addGroup(pnl_FooterLayout.createSequentialGroup()
-				.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-				.addGroup(pnl_FooterLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-				.addComponent(btn_Back)
-				.addComponent(btn_Help))));
-		//</editor-fold>
+		JPanel pnl_Footer = GWASpiExplorerPanel.createButtonsPanel(
+				new JComponent[] {btn_Back},
+				new JComponent[] {btn_Help});
 
 		GroupLayout layout = new GroupLayout(this);
 		this.setLayout(layout);
@@ -313,6 +256,18 @@ public class CurrentMatrixPanel extends JPanel {
 				.addComponent(pnl_Footer, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 				.addContainerGap()));
 		// </editor-fold>
+
+		btn_DeleteMatrix.setAction(new DeleteMatrixAction(matrix, this));
+		btn_SaveDesc.setAction(new SaveDescriptionAction(matrix, txtA_MatrixDesc));
+		btn_DeleteOperation.setAction(new MatrixAnalysePanel.DeleteOperationAction(null, this, matrix, tbl_MatrixOperations));
+		btn_Operation1_1.setAction(new AnalyseDataAction(matrix));
+		btn_Operation1_2.setAction(new ExtractMatrixAction(matrix));
+		btn_Operation1_3.setAction(new MergeMatricesAction(matrix));
+		btn_Operation1_4.setAction(new ExportMatrixAction(matrix));
+		btn_Operation1_5.setAction(new TransformMatrixAction(matrix));
+		btn_Operation1_6.setAction(new TranslateMatricesAction(matrix));
+		btn_Back.setAction(new BackAction(matrix));
+		btn_Help.setAction(new BrowserHelpUrlAction(HelpURLs.QryURL.currentMatrix));
 	}
 
 	//<editor-fold defaultstate="expanded" desc="HELPERS">
