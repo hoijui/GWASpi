@@ -21,20 +21,13 @@ import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import org.gwaspi.constants.cExport;
-import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.global.Extractor;
 import org.gwaspi.global.Utils;
 import org.gwaspi.model.DataSetSource;
-import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.MarkersMetadataSource;
 import org.gwaspi.model.OperationKey;
@@ -43,10 +36,7 @@ import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.Report;
 import org.gwaspi.model.ReportsList;
 import org.gwaspi.model.Study;
-import org.gwaspi.netCDF.markers.MarkerSet;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
-import org.gwaspi.netCDF.operations.AbstractOperationSet;
-import org.gwaspi.netCDF.operations.MarkerOperationSet;
 import org.gwaspi.netCDF.operations.OperationFactory;
 import org.gwaspi.operations.qamarkers.QAMarkersOperationDataSet;
 import org.gwaspi.operations.trendtest.TrendTestOperationDataSet;
@@ -117,7 +107,7 @@ public class OutputTrendTest {
 	public static void writeManhattanPlotFromTrendTestData(OperationKey trendTestOpKey, String outName, int width, int height) throws IOException {
 
 		// Generating XY scatter plot with loaded data
-		CombinedRangeXYPlot combinedPlot = GenericReportGenerator.buildManhattanPlot(trendTestOpKey, cNetCDF.Association.VAR_OP_MARKERS_ASTrendTestTP);
+		CombinedRangeXYPlot combinedPlot = GenericReportGenerator.buildManhattanPlot(trendTestOpKey);
 
 		JFreeChart chart = new JFreeChart("P value", JFreeChart.DEFAULT_TITLE_FONT, combinedPlot, true);
 
@@ -148,14 +138,14 @@ public class OutputTrendTest {
 		}
 	}
 
-	public static void writeQQPlotFromTrendTestData(OperationKey operationKey, String outName, int width, int height) throws IOException {
+	public static void writeQQPlotFromTrendTestData(OperationKey testOpKey, String outName, int width, int height) throws IOException {
 
 		// Generating XY scatter plot with loaded data
-		XYPlot qqPlot = GenericReportGenerator.buildQQPlot(operationKey, cNetCDF.Association.VAR_OP_MARKERS_ASTrendTestTP, 1);
+		XYPlot qqPlot = GenericReportGenerator.buildQQPlot(testOpKey, 1);
 
 		JFreeChart chart = new JFreeChart("X² QQ", JFreeChart.DEFAULT_TITLE_FONT, qqPlot, true);
 
-		OperationMetadata rdOPMetadata = OperationsList.getOperation(operationKey);
+		OperationMetadata rdOPMetadata = OperationsList.getOperation(testOpKey);
 		String imagePath = Study.constructReportsPath(rdOPMetadata.getStudyKey()) + outName + ".png";
 		try {
 			ChartUtilities.saveChartAsPNG(new File(imagePath),

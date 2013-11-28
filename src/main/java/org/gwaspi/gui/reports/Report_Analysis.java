@@ -73,6 +73,8 @@ import org.gwaspi.gui.utils.LinksExternalResouces;
 import org.gwaspi.gui.utils.RowRendererDefault;
 import org.gwaspi.gui.utils.URLInDefaultBrowser;
 import org.gwaspi.model.ChromosomeInfo;
+import org.gwaspi.model.ChromosomeKey;
+import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
@@ -93,8 +95,8 @@ public abstract class Report_Analysis extends JPanel {
 	public static final DecimalFormat FORMAT_INTEGER = new DecimalFormat("#");
 
 	// Variables declaration - do not modify
-	private final OperationKey operationKey;
-	protected Map<String, ChromosomeInfo> chrSetInfoMap;
+	private final OperationKey testOpKey;
+	protected Map<ChromosomeKey, ChromosomeInfo> chrSetInfoMap;
 	protected File reportFile;
 	private JButton btn_Get;
 	private JButton btn_Save;
@@ -112,17 +114,17 @@ public abstract class Report_Analysis extends JPanel {
 	private JFormattedTextField txt_PvalThreshold;
 	// End of variables declaration
 
-	protected Report_Analysis(final OperationKey operationKey, final String analysisFileName, final Integer nRows) {
+	protected Report_Analysis(final OperationKey testOpKey, final String analysisFileName, final Integer nRows) {
 
-		this.operationKey = operationKey;
-		this.chrSetInfoMap = new LinkedHashMap<String, ChromosomeInfo>();
+		this.testOpKey = testOpKey;
+		this.chrSetInfoMap = new LinkedHashMap<ChromosomeKey, ChromosomeInfo>();
 
 		String reportName = GWASpiExplorerPanel.getSingleton().getTree().getLastSelectedPathComponent().toString();
 		reportName = reportName.substring(reportName.indexOf('-') + 2);
 
 		String reportPath = "";
 		try {
-			reportPath = Study.constructReportsPath(operationKey.getParentMatrixKey().getStudyKey());
+			reportPath = Study.constructReportsPath(testOpKey.getParentMatrixKey().getStudyKey());
 		} catch (IOException ex) {
 			log.error(null, ex);
 		}
@@ -241,9 +243,9 @@ public abstract class Report_Analysis extends JPanel {
 		scrl_ReportTable.setViewportView(tbl_ReportTable);
 
 		//<editor-fold defaultstate="expanded" desc="FOOTER">
-		btn_Save.setAction(new SaveAsAction(operationKey.getParentMatrixKey().getStudyKey(), analysisFileName, tbl_ReportTable, txt_NRows, 3));
+		btn_Save.setAction(new SaveAsAction(testOpKey.getParentMatrixKey().getStudyKey(), analysisFileName, tbl_ReportTable, txt_NRows, 3));
 
-		btn_Back.setAction(new BackAction(operationKey));
+		btn_Back.setAction(new BackAction(testOpKey));
 
 		btn_Help.setAction(new BrowserHelpUrlAction(HelpURLs.QryURL.assocReport));
 
@@ -316,7 +318,8 @@ public abstract class Report_Analysis extends JPanel {
 					if (colIndex == getZoomColumnIndex()) { // Zoom
 						setCursor(CursorUtils.WAIT_CURSOR);
 						long markerPhysPos = (Long) tbl_ReportTable.getValueAt(rowIndex, 3); // marker physical position in chromosome
-						String chr = tbl_ReportTable.getValueAt(rowIndex, 2).toString(); // Chromosome
+						MarkerKey markerKey = (MarkerKey) tbl_ReportTable.getValueAt(rowIndex, 0);
+						ChromosomeKey chr = (ChromosomeKey) tbl_ReportTable.getValueAt(rowIndex, 2);
 
 						ChromosomeInfo chrInfo = chrSetInfoMap.get(chr);
 						int nbMarkers = chrInfo.getMarkerCount();
@@ -326,19 +329,20 @@ public abstract class Report_Analysis extends JPanel {
 						int requestedWindowSize = Math.abs((int) Math.round(ManhattanPlotZoom.MARKERS_NUM_DEFAULT / avgMarkersPerPhysPos));
 
 						GWASpiExplorerPanel.getSingleton().setPnl_Content(new ManhattanPlotZoom(
-								operationKey,
+								testOpKey,
 								chr,
-								tbl_ReportTable.getValueAt(rowIndex, 0).toString(), // MarkerID
+								markerKey,
 								markerPhysPos,
 								requestedWindowSize, // requested window size in phys positions
 								((Number) txt_NRows.getValue()).intValue()));
 						GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
 					}
 					if (colIndex == getExternalResourceColumnIndex()) { // Show selected resource database
-						URLInDefaultBrowser.browseGenericURL(LinksExternalResouces.getResourceLink(cmb_SearchDB.getSelectedIndex(),
-								tbl_ReportTable.getValueAt(rowIndex, 2).toString(), //chr
-								tbl_ReportTable.getValueAt(rowIndex, 1).toString(), //rsId
-								(Long) tbl_ReportTable.getValueAt(rowIndex, 3)) //pos
+						URLInDefaultBrowser.browseGenericURL(LinksExternalResouces.getResourceLink(
+								cmb_SearchDB.getSelectedIndex(),
+								(ChromosomeKey) tbl_ReportTable.getValueAt(rowIndex, 2), // chr
+								tbl_ReportTable.getValueAt(rowIndex, 1).toString(), // rsId
+								(Long) tbl_ReportTable.getValueAt(rowIndex, 3)) // pos
 								);
 					}
 				} catch (IOException ex) {
@@ -373,8 +377,7 @@ public abstract class Report_Analysis extends JPanel {
 	protected abstract Object[] parseRow(String[] cVals);
 
 	protected final void initChrSetInfo() throws IOException {
-		MarkerOperationSet opSet = new MarkerOperationSet(operationKey);
-		// Nb of markers, first physical position, last physical position, start index number in MarkerSet,
+		MarkerOperationSet opSet = new MarkerOperationSet(testOpKey);
 		chrSetInfoMap = opSet.getChrInfoSetMap();
 	}
 
@@ -390,7 +393,7 @@ public abstract class Report_Analysis extends JPanel {
 				inputBufferReader = new BufferedReader(inputFileReader);
 
 				// Getting data from file and subdividing to series all points by chromosome
-				final List<Object[]> tableRowAL = new ArrayList<Object[]>();
+				final List<Object[]> tableRows = new ArrayList<Object[]>();
 				String header = inputBufferReader.readLine();
 				int count = 0;
 				while (count < getRowsNb) {
@@ -403,14 +406,14 @@ public abstract class Report_Analysis extends JPanel {
 
 					Object[] row = parseRow(cVals);
 
-					tableRowAL.add(row);
+					tableRows.add(row);
 					count++;
 				}
 				inputBufferReader.close();
 
-				Object[][] tableMatrix = new Object[tableRowAL.size()][11];
-				for (int i = 0; i < tableRowAL.size(); i++) {
-					tableMatrix[i] = tableRowAL.get(i);
+				Object[][] tableMatrix = new Object[tableRows.size()][11];
+				for (int i = 0; i < tableRows.size(); i++) {
+					tableMatrix[i] = tableRows.get(i);
 				}
 
 				TableModel model = new DefaultTableModel(tableMatrix, getColumns());

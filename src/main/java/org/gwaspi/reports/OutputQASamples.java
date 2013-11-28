@@ -52,8 +52,8 @@ public class OutputQASamples {
 	private OutputQASamples() {
 	}
 
-	public static boolean writeReportsForQASamplesData(OperationKey operationKey, boolean newReport) throws IOException {
-		OperationMetadata op = OperationsList.getOperation(operationKey);
+	public static boolean writeReportsForQASamplesData(OperationKey sampleQAOpKey, boolean newReport) throws IOException {
+		OperationMetadata op = OperationsList.getOperation(sampleQAOpKey);
 
 		org.gwaspi.global.Utils.createFolder(new File(Study.constructReportsPath(op.getStudyKey())));
 		reportPath = Study.constructReportsPath(op.getStudyKey());
@@ -61,16 +61,15 @@ public class OutputQASamples {
 		String prefix = ReportsList.getReportNamePrefix(op);
 		sampleMissOutName = prefix + "samplmissing.txt";
 
+		createSortedSampleMissingnessReport(sampleQAOpKey, sampleMissOutName, op.getStudyKey());
 
-		if (createSortedSampleMissingnessReport(operationKey, sampleMissOutName, op.getStudyKey())
-				&& newReport)
-		{
+		if (newReport) {
 			ReportsList.insertRPMetadata(new Report(
 					Integer.MIN_VALUE,
 					"Sample Missingness Table",
 					sampleMissOutName,
 					OPType.SAMPLE_QA,
-					operationKey,
+					sampleQAOpKey,
 					"Sample Missingness Table",
 					op.getStudyKey()));
 
@@ -85,7 +84,7 @@ public class OutputQASamples {
 				"Sample Heterozygosity vs Missingness Plot",
 				sampleMissOutName,
 				OPType.SAMPLE_HTZYPLOT,
-				operationKey,
+				sampleQAOpKey,
 				"Sample Heterozygosity vs Missingness Plot",
 				op.getStudyKey()));
 

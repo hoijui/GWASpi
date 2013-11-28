@@ -86,22 +86,26 @@ public final class SampleQAHetzygPlotZoom extends JPanel {
 	public static final String PLOT_SAMPLEQA_MISSING_THRESHOLD_CONFIG = "CHART_SAMPLEQA_MISSING_THRESHOLD";
 	public static final double PLOT_SAMPLEQA_MISSING_THRESHOLD_DEFAULT = 0.5;
 
-	private OperationKey operationKey;
+	private final OperationKey operationKey;
 	private OperationMetadata rdOPMetadata;
 	private Map<String, SampleKey> labeler;
 	private MatrixMetadata rdMatrixMetadata;
 	private String currentMarkerId;
 	private long centerPhysPos;
 	private long startPhysPos;
-	private int defaultMarkerNb = (int) Math.round(100000 * ((double) StartGWASpi.maxHeapSize / 2000)); // roughly 2000MB needed per 100.000 plotted markers
+	/**
+	 * roughly 2000MB needed per 100.000 plotted markers
+	 */
+	private static final int DEFAULT_NUM_MARKERS
+			= (int) Math.round(100000 * ((double) StartGWASpi.maxHeapSize / 2000));
 	private XYDataset initXYDataset;
 	private JFreeChart zoomChart;
 	private ChartPanel zoomPanel;
 	private Double hetzyThreshold = 0.015;
 	private Double missingThreshold = 0.5;
-	private Color manhattan_back = Color.getHSBColor(0.1f, 0.0f, 0.9f);
-	private Color manhattan_backalt = Color.getHSBColor(0.1f, 0.0f, 0.85f);
-	private Color manhattan_dot = Color.red;
+	private static final Color manhattan_back = Color.getHSBColor(0.1f, 0.0f, 0.9f);
+	private static final Color manhattan_backalt = Color.getHSBColor(0.1f, 0.0f, 0.85f);
+	private static final Color manhattan_dot = Color.red;
 	// Variables declaration - do not modify
 	private JButton btn_Reset;
 	private JButton btn_Save;
@@ -128,12 +132,8 @@ public final class SampleQAHetzygPlotZoom extends JPanel {
 
 		this.operationKey = operationKey;
 
-		try {
-			rdOPMetadata = OperationsList.getOperation(this.operationKey);
-			rdMatrixMetadata = MatricesList.getMatrixMetadataById(operationKey.getParentMatrixKey());
-		} catch (IOException ex) {
-			log.error(null, ex);
-		}
+		rdOPMetadata = OperationsList.getOperation(this.operationKey);
+		rdMatrixMetadata = MatricesList.getMatrixMetadataById(operationKey.getParentMatrixKey());
 
 		initChart();
 
@@ -328,7 +328,7 @@ public final class SampleQAHetzygPlotZoom extends JPanel {
 	}
 
 	// <editor-fold defaultstate="expanded" desc="CHART GENERATOR">
-	XYDataset getSampleHetzygDataset(OperationKey operationKey) throws IOException {
+	private XYDataset getSampleHetzygDataset(OperationKey operationKey) throws IOException {
 
 		XYDataset xyd = GenericReportGenerator.getSampleHetzygDataset(this, operationKey);
 		return xyd;
@@ -490,8 +490,8 @@ public final class SampleQAHetzygPlotZoom extends JPanel {
 	private class MySeriesItemLabelGenerator extends AbstractXYItemLabelGenerator
 			implements XYItemLabelGenerator {
 
-		private double hetzygThreshold;
-		private double missingThreshold;
+		private final double hetzygThreshold;
+		private final double missingThreshold;
 
 		/**
 		 * Creates a new generator that only displays labels that are greater
@@ -550,6 +550,7 @@ public final class SampleQAHetzygPlotZoom extends JPanel {
 
 		@Override
 		public void actionPerformed(ActionEvent evt) {
+
 			try {
 				hetzyThreshold = Double.parseDouble(txt_hetzy.getText());
 				missingThreshold = Double.parseDouble(txt_missing.getText());
@@ -557,7 +558,7 @@ public final class SampleQAHetzygPlotZoom extends JPanel {
 				Config.setConfigValue("CHART_SAMPLEQA_MISSING_THRESHOLD", missingThreshold.toString());
 				GWASpiExplorerPanel.getSingleton().setPnl_Content(new SampleQAHetzygPlotZoom(operationKey));
 				GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
-			} catch (Exception ex) {
+			} catch (IOException ex) {
 				log.warn(Text.App.warnMustBeNumeric, ex);
 				Dialogs.showWarningDialogue(Text.App.warnMustBeNumeric);
 			}
@@ -573,6 +574,7 @@ public final class SampleQAHetzygPlotZoom extends JPanel {
 
 		@Override
 		public void actionPerformed(ActionEvent evt) {
+
 			try {
 				GWASpiExplorerPanel.getSingleton().setPnl_Content(new SampleQAHetzygPlotZoom(operationKey));
 				GWASpiExplorerPanel.getSingleton().getScrl_Content().setViewportView(GWASpiExplorerPanel.getSingleton().getPnl_Content());
@@ -598,8 +600,6 @@ public final class SampleQAHetzygPlotZoom extends JPanel {
 				log.error(null, ex);
 			} catch (NullPointerException ex) {
 				//Dialogs.showWarningDialogue("A table saving error has occurred");
-				log.error(null, ex);
-			} catch (Exception ex) {
 				log.error(null, ex);
 			}
 		}

@@ -118,11 +118,13 @@ public abstract class AbstractNetCdfOperationDataSet<ET> implements OperationDat
 		return rdOperationKey;
 	}
 
+	@Override
 	public void setNumMarkers(int numMarkers) {
 		this.numMarkers = numMarkers;
 	}
 
-	protected int getNumMarkers() {
+	@Override
+	public int getNumMarkers() {
 		return numMarkers;
 	}
 
@@ -137,11 +139,13 @@ public abstract class AbstractNetCdfOperationDataSet<ET> implements OperationDat
 		this.useAllMarkersFromParent = useAll;
 	}
 
+	@Override
 	public void setNumSamples(int numSamples) {
 		this.numSamples = numSamples;
 	}
 
-	protected int getNumSamples() {
+	@Override
+	public int getNumSamples() {
 		return numSamples;
 	}
 
@@ -156,11 +160,13 @@ public abstract class AbstractNetCdfOperationDataSet<ET> implements OperationDat
 		this.useAllSamplesFromParent = useAll;
 	}
 
+	@Override
 	public void setNumChromosomes(int numChromosomes) {
 		this.numChromosomes = numChromosomes;
 	}
 
-	protected int getNumChromosomes() {
+	@Override
+	public int getNumChromosomes() {
 		return numChromosomes;
 	}
 

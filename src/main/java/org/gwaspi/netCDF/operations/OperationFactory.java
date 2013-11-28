@@ -243,8 +243,10 @@ public class OperationFactory {
 					operationDataSet = new NetCdfGenotypicAssociationTestsOperationDataSet(operationKey);
 					break;
 				case COMBI_ASSOC_TEST:
-					operationDataSet = new NetCdfComb(operationKey);
-					break;
+					// FIXME
+					throw new UnsupportedOperationException("create and implement the class mentioned in hte comment below");
+//					operationDataSet = new NetCdfComb(operationKey);
+//					break;
 				case TRENDTEST:
 					operationDataSet = new NetCdfTrendTestOperationDataSet(operationKey);
 					break;

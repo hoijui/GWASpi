@@ -20,6 +20,8 @@ package org.gwaspi.gui.reports;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.utils.RowRendererDefault;
 import org.gwaspi.gui.utils.RowRendererTrendTestWithZoomQueryDB;
+import org.gwaspi.model.ChromosomeKey;
+import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.OperationKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,9 +67,9 @@ public final class Report_AnalysisTrendTestImpl extends Report_Analysis {
 
 		Object[] row = new Object[getColumns().length];
 
-		String markerId = cVals[0];
+		MarkerKey markerKey = new MarkerKey(cVals[0]);
 		String rsId = cVals[1];
-		String chr = cVals[2];
+		ChromosomeKey chr = new ChromosomeKey(cVals[2]);
 		long position = Long.parseLong(cVals[3]);
 		String minAllele = cVals[4];
 		String majAllele = cVals[5];
@@ -75,7 +77,7 @@ public final class Report_AnalysisTrendTestImpl extends Report_Analysis {
 		Double pVal = cVals[7] != null ? Double.parseDouble(cVals[7]) : Double.NaN;
 
 		int col = 0;
-		row[col++] = markerId;
+		row[col++] = markerKey;
 		row[col++] = rsId;
 		row[col++] = chr;
 		row[col++] = position;

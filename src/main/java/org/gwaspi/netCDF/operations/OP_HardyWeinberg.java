@@ -19,11 +19,8 @@ package org.gwaspi.netCDF.operations;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.Map;
 import org.gwaspi.model.Census;
-import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.OperationKey;
-import org.gwaspi.model.SampleKey;
 import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
 import org.gwaspi.operations.hardyweinberg.DefaultHardyWeinbergOperationEntry;
 import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationDataSet;
@@ -70,15 +67,14 @@ public class OP_HardyWeinberg implements MatrixOperation {
 //		MarkerCensusOperationDataSet rdmarkerCensusOpDS
 //				= new NetCdfMarkerCensusOperationDataSet(markerCensusOPKey);
 
-		MarkerOperationSet rdOperationSet = new MarkerOperationSet(markerCensusOPKey);
-		Map<MarkerKey, char[]> rdMarkerSetMap = rdOperationSet.getOpSetMap();
-		Map<SampleKey, ?> rdSampleSetMap = rdOperationSet.getImplicitSetMap();
+		MarkerCensusOperationDataSet markerCensusOperationDataSet = new NetCdfMarkerCensusOperationDataSet(markerCensusOPKey);
 
 		try {
 			HardyWeinbergOperationDataSet dataSet = new NetCdfHardyWeinbergOperationDataSet(); // HACK
 			((AbstractNetCdfOperationDataSet) dataSet).setReadOperationKey(markerCensusOPKey); // HACK
-			((AbstractNetCdfOperationDataSet) dataSet).setNumMarkers(rdMarkerSetMap.size()); // HACK
-			((AbstractNetCdfOperationDataSet) dataSet).setNumSamples(rdSampleSetMap.size()); // HACK
+			dataSet.setNumMarkers(markerCensusOperationDataSet.getNumMarkers());
+			dataSet.setNumChromosomes(markerCensusOperationDataSet.getNumChromosomes());
+			dataSet.setNumSamples(markerCensusOperationDataSet.getNumSamples());
 
 			dataSet.setHardyWeinbergName(hwName); // HACK
 			dataSet.setMarkerCensusOperationKey(markerCensusOPKey); // HACK
@@ -127,7 +123,6 @@ public class OP_HardyWeinberg implements MatrixOperation {
 
 			//<editor-fold defaultstate="expanded" desc="GET CENSUS & PERFORM HW">
 //			Map<MarkerKey, int[]> markersCensus;
-			MarkerCensusOperationDataSet markerCensusOperationDataSet = new NetCdfMarkerCensusOperationDataSet(markerCensusOPKey);
 			Collection<MarkerCensusOperationEntry> markersCensus = markerCensusOperationDataSet.getEntries();
 //			// PROCESS ALL SAMPLES
 //			rdOperationSet.fillOpSetMapWithDefaultValue(new int[0]); // PURGE

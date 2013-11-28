@@ -27,6 +27,10 @@ import org.gwaspi.model.SampleKey;
 
 public interface OperationDataSet<ET> {
 
+	void setNumSamples(int numSamples) throws IOException;
+	void setNumMarkers(int numMarkers) throws IOException;
+	void setNumChromosomes(int numChromosomes) throws IOException;
+
 	/**
 	 * @param matrixIndexSampleKeys
 	 *   the indices in the matrix, and the values (copied) of the sample keys
@@ -49,6 +53,10 @@ public interface OperationDataSet<ET> {
 	 * - Variables.VAR_CHR_INFO [ChromosomeKey]
 	 */
 	void setChromosomes(Map<Integer, ChromosomeKey> matrixIndexChromosomeKeys, Collection<ChromosomeInfo> chromosomeInfos) throws IOException;
+
+	int getNumSamples() throws IOException;
+	int getNumMarkers() throws IOException;
+	int getNumChromosomes() throws IOException;
 
 	Map<Integer, SampleKey> getSamples() throws IOException;
 	Map<Integer, MarkerKey> getMarkers() throws IOException;

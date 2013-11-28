@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import org.gwaspi.constants.cExport;
-import org.gwaspi.constants.cNetCDF.Association;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.global.Extractor;
 import org.gwaspi.global.Utils;
@@ -57,7 +56,6 @@ public class OutputAssociation {
 
 	private final OPType testType;
 	private final String testName;
-	private final String variableName;
 	private final int qqPlotDof;
 	private final String header;
 	private final boolean allelic;
@@ -67,10 +65,6 @@ public class OutputAssociation {
 
 		this.testType = (combi ? OPType.COMBI_ASSOC_TEST : (allelic ? OPType.ALLELICTEST : OPType.GENOTYPICTEST));
 		this.testName = (allelic ? "Allelic" : "Genotypic") + (combi ? " Combi" : "");
-		this.variableName = (combi ? Association.VAR_OP_MARKERS_ASGenotypicAssociationTP2OR // FIXME
-				: (allelic
-				? Association.VAR_OP_MARKERS_ASAllelicAssociationTPOR
-				: Association.VAR_OP_MARKERS_ASGenotypicAssociationTP2OR));
 		this.qqPlotDof = allelic ? 1 : 2; // FIXME
 		this.allelic = allelic;
 		this.header = "MarkerID\trsID\tChr\tPosition\tMin. Allele\tMaj. Allele\tX²\tPval\t" + (allelic ? "OR" : "OR-AA/aa\tOR-Aa/aa") + "\n"; // FIXME
@@ -131,7 +125,7 @@ public class OutputAssociation {
 	private void writeManhattanPlotFromAssociationData(OperationKey assocTestOpKey, String outName, int width, int height) throws IOException {
 
 		// Generating XY scatter plot with loaded data
-		CombinedRangeXYPlot combinedPlot = GenericReportGenerator.buildManhattanPlot(assocTestOpKey, variableName);
+		CombinedRangeXYPlot combinedPlot = GenericReportGenerator.buildManhattanPlot(assocTestOpKey);
 
 		JFreeChart chart = new JFreeChart("P value", JFreeChart.DEFAULT_TITLE_FONT, combinedPlot, true);
 
@@ -165,7 +159,7 @@ public class OutputAssociation {
 	private void writeQQPlotFromAssociationData(OperationKey operationKey, String outName, int width, int height) throws IOException {
 
 		// Generating XY scatter plot with loaded data
-		XYPlot qqPlot = GenericReportGenerator.buildQQPlot(operationKey, variableName, qqPlotDof);
+		XYPlot qqPlot = GenericReportGenerator.buildQQPlot(operationKey, qqPlotDof);
 
 		JFreeChart chart = new JFreeChart("X² QQ", JFreeChart.DEFAULT_TITLE_FONT, qqPlot, true);
 

@@ -137,11 +137,11 @@ public class SampleInfo implements Comparable<SampleInfo>, Serializable {
 	 *   1 affected
 	 */
 	public static enum Affection {
-		/** Undefined / Missing */Undefined / Missing */
+		/** Undefined / Missing */
 		UNKNOWN,
-		/** Control */Control */
+		/** Control */
 		UNAFFECTED,
-		/** Case */Case */
+		/** Case */
 		AFFECTED;
 
 		/** Parse by the PLINK standard */
