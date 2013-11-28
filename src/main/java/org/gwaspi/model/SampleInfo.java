@@ -438,7 +438,7 @@ public class SampleInfo implements Comparable<SampleInfo>, Serializable {
 
 	/**
 	 * Sets the unique study identification number.
-	 * @param id the study-id to set
+	 * @param sampleId the sample-id to set
 	 */
 	public void setSampleId(String sampleId) {
 		this.key = new SampleKey(
