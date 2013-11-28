@@ -35,10 +35,10 @@ import org.gwaspi.global.Extractor;
 @NamedQueries({
 	@NamedQuery(
 		name = "sampleInfo_listKeys",
-		query = "SELECT s.studyId, s.sampleId, s.familyId FROM MatrixMetadata s"),
+		query = "SELECT s.studyId, s.sampleId, s.familyId FROM SampleInfo s"),
 	@NamedQuery(
 		name = "sampleInfo_listKeysByStudyId",
-		query = "SELECT s.studyId, s.sampleId, s.familyId FROM MatrixMetadata s WHERE s.studyId = :studyId"),
+		query = "SELECT s.studyId, s.sampleId, s.familyId FROM SampleInfo s WHERE s.studyId = :studyId"),
 	@NamedQuery(
 		name = "sampleInfo_listByStudyId",
 		query = "SELECT s FROM SampleInfo s WHERE s.studyId = :studyId"),
