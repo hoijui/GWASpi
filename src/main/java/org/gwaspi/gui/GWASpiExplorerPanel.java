@@ -17,16 +17,25 @@
 
 package org.gwaspi.gui;
 
+import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Insets;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
+import javax.swing.BorderFactory;
 import javax.swing.GroupLayout;
+import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTree;
+import javax.swing.border.Border;
+import javax.swing.border.CompoundBorder;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.TitledBorder;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 import org.gwaspi.global.Config;
@@ -39,6 +48,10 @@ public class GWASpiExplorerPanel extends JPanel {
 
 	private static final Logger log
 			= LoggerFactory.getLogger(GWASpiExplorerPanel.class);
+	private static final Font TITLE_FONT_REGULAR = new Font("DejaVu Sans", 1, 13); // NOI18N
+	private static final Font TITLE_FONT_MAIN = new Font("FreeSans", 1, 18); // NOI18N
+	private static final int GAP_BUTTONS_H = 18;
+	private static final int GAP_BUTTONS_V = 5;
 
 	// Variables declaration - do not modify
 	private JTree tree;
@@ -57,28 +70,15 @@ public class GWASpiExplorerPanel extends JPanel {
 		scrl_Content = new JScrollPane();
 		pnl_Content = new JPanel();
 
-		scrl_Tree.setMinimumSize(new Dimension(200, 600));
+		scrl_Tree.setMinimumSize(new Dimension(200, 150));
 		scrl_Tree.setPreferredSize(new Dimension(200, 600));
 		splt_MoapiPanel.setLeftComponent(scrl_Tree);
 
 		initContentPanel();
 
-		//<editor-fold defaultstate="expanded" desc="LAYOUT">
-		GroupLayout layout = new GroupLayout(this);
+		BorderLayout layout = new BorderLayout();
 		this.setLayout(layout);
-		layout.setHorizontalGroup(
-				layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-				.addGroup(layout.createSequentialGroup()
-				.addContainerGap()
-				.addComponent(splt_MoapiPanel, GroupLayout.DEFAULT_SIZE, 1035, Short.MAX_VALUE)
-				.addContainerGap()));
-		layout.setVerticalGroup(
-				layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-				.addGroup(layout.createSequentialGroup()
-				.addContainerGap()
-				.addComponent(splt_MoapiPanel, GroupLayout.DEFAULT_SIZE, 600, Short.MAX_VALUE)
-				.addContainerGap()));
-		//</editor-fold>
+		this.add(splt_MoapiPanel, BorderLayout.CENTER);
 	}
 
 	public static GWASpiExplorerPanel getSingleton() {
@@ -96,7 +96,100 @@ public class GWASpiExplorerPanel extends JPanel {
 		return singleton;
 	}
 
+	public static Border createRegularTitledBorder(String title) {
+		return createTitledBorder(title, TITLE_FONT_REGULAR, new Insets(0, 10, 5, 10));
+	}
+
+	public static Border createMainTitledBorder(String title) {
+		return createTitledBorder(title, TITLE_FONT_MAIN, new Insets(15, 10, 15, 10));
+	}
+
+	private static Border createTitledBorder(String title, Font font, Insets innerborderInsets) {
+
+		return new CompoundBorder(
+				BorderFactory.createTitledBorder(
+						null,
+						title,
+						TitledBorder.DEFAULT_JUSTIFICATION,
+						TitledBorder.DEFAULT_POSITION,
+						font),
+				new EmptyBorder(innerborderInsets));
+	}
+
+	public static JPanel createButtonsPanel(JComponent component0) {
+		return createButtonsPanel(new JComponent[] {component0}, null);
+	}
+
+	public static JPanel createButtonsPanel(JComponent component0, JComponent component1) {
+		return createButtonsPanel(new JComponent[] {component0, component1}, null);
+	}
+
+	public static JPanel createButtonsPanel(JComponent component0, JComponent component1, JComponent component2) {
+		return createButtonsPanel(new JComponent[] {component0, component1, component2}, null);
+	}
+
+	public static JPanel createButtonsPanel(JComponent[] leadingComponents) {
+		return createButtonsPanel(leadingComponents, null);
+	}
+
+	public static JPanel createButtonsPanel(JComponent[] leadingComponents, JComponent[] trailingComponents) {
+
+		JPanel main = new JPanel();
+		main.setLayout(new BorderLayout(GAP_BUTTONS_H, GAP_BUTTONS_V));
+
+		if ((leadingComponents != null) && (leadingComponents.length > 0)) {
+			JPanel subPanel = new JPanel();
+			GroupLayout layout = new GroupLayout(subPanel);
+			subPanel.setLayout(layout);
+
+			GroupLayout.SequentialGroup horizontalG = layout.createSequentialGroup();
+			horizontalG.addComponent(leadingComponents[0]);
+			for (int lci = 1; lci < leadingComponents.length; lci++) {
+				horizontalG.addGap(GAP_BUTTONS_H);
+				horizontalG.addComponent(leadingComponents[lci]);
+			}
+			layout.setHorizontalGroup(horizontalG);
+
+			GroupLayout.ParallelGroup verticalG = layout.createParallelGroup();
+			verticalG.addComponent(leadingComponents[0]);
+			for (int lci = 1; lci < leadingComponents.length; lci++) {
+				verticalG.addGap(GAP_BUTTONS_V);
+				verticalG.addComponent(leadingComponents[lci]);
+			}
+			layout.setVerticalGroup(verticalG);
+
+			main.add(subPanel, BorderLayout.WEST);
+		}
+
+		if ((trailingComponents != null) && (trailingComponents.length > 0)) {
+			JPanel subPanel = new JPanel();
+			GroupLayout layout = new GroupLayout(subPanel);
+			subPanel.setLayout(layout);
+
+			GroupLayout.SequentialGroup horizontalG = layout.createSequentialGroup();
+			horizontalG.addComponent(trailingComponents[0]);
+			for (int lci = 1; lci < trailingComponents.length; lci++) {
+				horizontalG.addGap(GAP_BUTTONS_H);
+				horizontalG.addComponent(trailingComponents[lci]);
+			}
+			layout.setHorizontalGroup(horizontalG);
+
+			GroupLayout.ParallelGroup verticalLeadingG = layout.createParallelGroup();
+			verticalLeadingG.addComponent(trailingComponents[0]);
+			for (int lci = 1; lci < trailingComponents.length; lci++) {
+				verticalLeadingG.addGap(GAP_BUTTONS_V);
+				verticalLeadingG.addComponent(trailingComponents[lci]);
+			}
+			layout.setVerticalGroup(verticalLeadingG);
+
+			main.add(subPanel, BorderLayout.EAST);
+		}
+
+		return main;
+	}
+
 	public void refreshContentPanel() {
+
 		try {
 			String lastSelectedNode = Config.getConfigValue(Config.PROPERTY_LAST_SELECTED_NODE, "0");
 			tree.setSelectionPath(null);
