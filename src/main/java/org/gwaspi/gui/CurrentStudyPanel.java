@@ -33,7 +33,6 @@ import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.table.TableCellRenderer;
 import org.gwaspi.global.Text;
 import org.gwaspi.global.Utils;
 import org.gwaspi.gui.utils.BrowserHelpUrlAction;
@@ -62,25 +61,6 @@ public class CurrentStudyPanel extends JPanel {
 	// Variables declaration // TODO remove all of these comments
 	// End of variables declaration
 
-	private static class JMatrixTable extends JTable {
-
-		@Override
-		public boolean isCellEditable(int row, int col) {
-			return false; // Renders column 0 uneditable.
-		}
-
-		@Override
-		public Component prepareRenderer(TableCellRenderer renderer, int rowIndex, int vColIndex) {
-
-			Component c = super.prepareRenderer(renderer, rowIndex, vColIndex);
-			if (c instanceof JComponent && getValueAt(rowIndex, vColIndex) != null) {
-				JComponent jc = (JComponent) c;
-				jc.setToolTipText("<html>" + getValueAt(rowIndex, vColIndex).toString().replaceAll("\n", "<br>") + "</html>");
-			}
-			return c;
-		}
-	}
-
 	public CurrentStudyPanel(StudyKey studyKey) throws IOException {
 
 		Study study = StudyList.getStudy(studyKey);
@@ -89,7 +69,7 @@ public class CurrentStudyPanel extends JPanel {
 		JScrollPane scrl_Desc = new JScrollPane();
 		JTextArea txtA_StudyDesc = new JTextArea();
 		pnl_StudyDesc.setBorder(GWASpiExplorerPanel.createRegularTitledBorder(createTitle(study)));
-		txtA_StudyDesc.setBorder(GWASpiExplorerPanel.createRegularTitledBorder(Text.All.description));
+		txtA_StudyDesc.setBorder(GWASpiExplorerPanel.createRegularTitledBorder(Text.All.description)); // NOI18N
 		txtA_StudyDesc.setColumns(20);
 		txtA_StudyDesc.setRows(5);
 		txtA_StudyDesc.setText(study.getDescription());
@@ -107,9 +87,9 @@ public class CurrentStudyPanel extends JPanel {
 
 		JPanel pnl_MatrixTable = new JPanel();
 		JScrollPane scrl_MatrixTable = new JScrollPane();
-		JTable tbl_MatrixTable = new JMatrixTable();
+		JTable tbl_MatrixTable = new MatrixTable();
 		JButton btn_DeleteMatrix = new JButton();
-		pnl_MatrixTable.setBorder(GWASpiExplorerPanel.createRegularTitledBorder(Text.Matrix.matrices));
+		pnl_MatrixTable.setBorder(GWASpiExplorerPanel.createRegularTitledBorder(Text.Matrix.matrices)); // NOI18N
 		tbl_MatrixTable.setModel(new MatricesTableModel(MatricesList.getMatricesTable(studyKey)));
 		tbl_MatrixTable.setDefaultRenderer(Object.class, new RowRendererDefault());
 		scrl_MatrixTable.setViewportView(tbl_MatrixTable);
@@ -121,9 +101,11 @@ public class CurrentStudyPanel extends JPanel {
 
 		JButton btn_Help = new JButton();
 		JButton btn_Back = new JButton();
-		JPanel pnl_Footer = GWASpiExplorerPanel.createButtonsPanel(btn_Help, btn_Back);
+		JPanel pnl_Footer = GWASpiExplorerPanel.createButtonsPanel(
+				new JComponent[] {btn_Back},
+				new JComponent[] {btn_Help});
 
-		setBorder(GWASpiExplorerPanel.createMainTitledBorder(Text.Study.study));
+		setBorder(GWASpiExplorerPanel.createMainTitledBorder(Text.Study.study)); // NOI18N
 		this.setLayout(new BorderLayout(GAP, GAP));
 		this.add(pnl_StudyDesc, BorderLayout.NORTH);
 		this.add(pnl_MatrixTable, BorderLayout.CENTER);
@@ -139,7 +121,7 @@ public class CurrentStudyPanel extends JPanel {
 	}
 
 	private static String createTitle(Study study) {
-		return Text.Study.currentStudy + " " + study.getName() + ", StudyID: STUDY_" + study.getId();
+		return Text.Study.currentStudy + " " + study.getName() + ", StudyID: STUDY_" + study.getId(); // NOI18N
 	}
 
 	private static class SaveDescriptionAction extends AbstractAction {
