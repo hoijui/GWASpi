@@ -26,6 +26,8 @@ import javax.persistence.Transient;
  */
 public class OperationKey implements Comparable<OperationKey>, Serializable {
 
+	private static final String NAME_UNKNOWN = "<operation-name-unknown>";
+
 	private MatrixKey parentMatrixKey;
 	private int id;
 
@@ -100,15 +102,27 @@ public class OperationKey implements Comparable<OperationKey>, Serializable {
 		return strRep.toString();
 	}
 
+	/**
+	 * This function accesses the storage system,
+	 * but guarantees to also work if the operation is not available there,
+	 * or an other problem occurs.
+	 */
 	public String fetchName() {
 
 		String operationName;
 
+
+		OperationMetadata operation = null;
 		try {
-			OperationMetadata operation = OperationsList.getOperation(this);
-			operationName = operation.getFriendlyName();
+			operation = OperationsList.getOperation(this);
 		} catch (IOException ex) {
-			operationName = "<operation-name-unknown>";
+			// do nothing, as operation will be null
+		}
+
+		if (operation == null) {
+			operationName = NAME_UNKNOWN;
+		} else {
+			operationName = operation.getFriendlyName();
 		}
 
 		return operationName;

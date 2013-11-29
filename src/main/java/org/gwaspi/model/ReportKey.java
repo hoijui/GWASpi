@@ -26,6 +26,8 @@ import javax.persistence.Transient;
  */
 public class ReportKey implements Comparable<ReportKey>, Serializable {
 
+	private static final String NAME_UNKNOWN = "<report-name-unknown>";
+
 	private StudyKey studyKey;
 	private int parentMatrixId;
 	private int parentOperationId;
@@ -122,15 +124,26 @@ public class ReportKey implements Comparable<ReportKey>, Serializable {
 		return strRep.toString();
 	}
 
+	/**
+	 * This function accesses the storage system,
+	 * but guarantees to also work if the report is not available there,
+	 * or an other problem occurs.
+	 */
 	public String fetchName() {
 
 		String reportName;
 
+		Report report = null;
 		try {
-			Report report = ReportsList.getReport(this);
-			reportName = report.getFriendlyName();
+			report = ReportsList.getReport(this);
 		} catch (IOException ex) {
-			reportName = "<report-name-unknown>";
+			// do nothing, as report will be null
+		}
+
+		if (report == null) {
+			reportName = NAME_UNKNOWN;
+		} else {
+			reportName = report.getFriendlyName();
 		}
 
 		return reportName;

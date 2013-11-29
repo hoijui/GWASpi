@@ -24,6 +24,8 @@ import java.io.Serializable;
  */
 public class StudyKey implements Comparable<StudyKey>, Serializable {
 
+	private static final String NAME_UNKNOWN = "<study-name-unknown>";
+
 	private int id;
 
 	public StudyKey(int id) {
@@ -36,6 +38,7 @@ public class StudyKey implements Comparable<StudyKey>, Serializable {
 
 	@Override
 	public boolean equals(Object obj) {
+
 		if (obj == null) {
 			return false;
 		}
@@ -83,15 +86,26 @@ public class StudyKey implements Comparable<StudyKey>, Serializable {
 		return strRep.toString();
 	}
 
+	/**
+	 * This function accesses the storage system,
+	 * but guarantees to also work if the study is not available there,
+	 * or an other problem occurs.
+	 */
 	public String fetchName() {
 
 		String studyName;
 
+		Study study = null;
 		try {
-			Study study = StudyList.getStudy(this);
-			studyName = study.getName();
+			study = StudyList.getStudy(this);
 		} catch (IOException ex) {
-			studyName = "<study-name-unknown>";
+			// do nothing, as study will be null
+		}
+
+		if (study == null) {
+			studyName = NAME_UNKNOWN;
+		} else {
+			studyName = study.getName();
 		}
 
 		return studyName;
