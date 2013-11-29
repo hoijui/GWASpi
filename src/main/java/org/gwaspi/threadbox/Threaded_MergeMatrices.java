@@ -21,7 +21,7 @@ import org.gwaspi.global.Text;
 import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.netCDF.loader.AbstractNetCDFDataSetDestination;
-import org.gwaspi.netCDF.markers.NetCDFDataSetSource;
+import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.gwaspi.netCDF.operations.MatrixMergeSamples;
 import org.gwaspi.netCDF.operations.MatrixOperation;
 import org.gwaspi.netCDF.operations.MergeAllMatrixOperation;
@@ -58,8 +58,8 @@ public class Threaded_MergeMatrices extends AbstractThreaded_MergeMatrices {
 	@Override
 	protected MatrixOperation createMatrixOperation() throws Exception {
 
-		final DataSetSource dataSetSource1 = new NetCDFDataSetSource(parentMatrixKey1);
-		final DataSetSource dataSetSource2 = new NetCDFDataSetSource(parentMatrixKey2);
+		final DataSetSource dataSetSource1 = MatrixFactory.generateMatrixDataSetSource(parentMatrixKey1);
+		final DataSetSource dataSetSource2 = MatrixFactory.generateMatrixDataSetSource(parentMatrixKey2);
 
 		final String humanReadableMethodName;
 		final String methodDescription;

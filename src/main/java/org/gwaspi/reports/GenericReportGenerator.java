@@ -44,8 +44,8 @@ import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.SampleKey;
+import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.gwaspi.netCDF.markers.MarkerSet;
-import org.gwaspi.netCDF.markers.NetCDFDataSetSource;
 import org.gwaspi.netCDF.operations.OperationFactory;
 import org.gwaspi.operations.qasamples.QASamplesOperationDataSet;
 import org.gwaspi.operations.trendtest.CommonTestOperationDataSet;
@@ -108,7 +108,7 @@ public class GenericReportGenerator {
 		Map<MarkerKey, Object[]> markerKeyChrPosPVal;
 
 		// XXX Should we possibly use only the markers from the test operation, instead of all the ones in the parent matrix, as it is done in getManhattanZoomByChrAndPos, forther down?
-		DataSetSource parentMatrixSource = new NetCDFDataSetSource(testOpKey.getParentMatrixKey());
+		DataSetSource parentMatrixSource = MatrixFactory.generateMatrixDataSetSource(testOpKey.getParentMatrixKey());
 		MarkersMetadataSource markersMetadatasSource = parentMatrixSource.getMarkersMetadatasSource();
 		markerKeyChrPosPVal = new LinkedHashMap<MarkerKey, Object[]>(markersMetadatasSource.size());
 		for (MarkerMetadata markerMetadata : markersMetadatasSource) {
@@ -447,7 +447,7 @@ public class GenericReportGenerator {
 
 			Map<MarkerKey, Object[]> markerKeyChrPosPVal;
 
-			DataSetSource parentMatrixSource = new NetCDFDataSetSource(testOpKey.getParentMatrixKey());
+			DataSetSource parentMatrixSource = MatrixFactory.generateMatrixDataSetSource(testOpKey.getParentMatrixKey());
 			MarkersMetadataSource markersMetadatasSource = parentMatrixSource.getMarkersMetadatasSource();
 
 			CommonTestOperationDataSet<? extends TrendTestOperationEntry> testOpDS = (CommonTestOperationDataSet<? extends TrendTestOperationEntry>) OperationFactory.generateOperationDataSet(testOpKey);
@@ -529,7 +529,7 @@ public class GenericReportGenerator {
 //		try {
 ////			OperationMetadata rdOPMetadata = OperationsList.getOperation(testOpKey);
 //
-//			DataSetSource parentMatrixSource = new NetCDFDataSetSource(testOpKey.getParentMatrixKey());
+//			DataSetSource parentMatrixSource = MatrixFactory.generateMatrixDataSetSource(testOpKey.getParentMatrixKey());
 //			CommonTestOperationDataSet<? extends TrendTestOperationEntry> testOpDS = (CommonTestOperationDataSet<? extends TrendTestOperationEntry>) OperationFactory.generateOperationDataSet(testOpKey);
 //			MarkersMetadataSource markersMetadatasSource = parentMatrixSource.getMarkersMetadatasSource();
 //			Map<MarkerKey, Object[]> markerKeyChrPosPVal = new LinkedHashMap<MarkerKey, Object[]>(markersMetadatasSource.size());

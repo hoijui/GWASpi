@@ -38,8 +38,8 @@ import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleInfo.Sex;
 import org.gwaspi.model.SampleInfoList;
 import org.gwaspi.model.SampleKey;
+import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.gwaspi.netCDF.markers.MarkerSet;
-import org.gwaspi.netCDF.markers.NetCDFDataSetSource;
 import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
 import org.gwaspi.operations.qamarkers.NetCdfQAMarkersOperationDataSet;
 import org.gwaspi.operations.qamarkers.OrderedAlleles;
@@ -84,7 +84,7 @@ public class OP_QAMarkers implements MatrixOperation {
 		//Map<String, Object> rdMarkerSetMap = rdMarkerSet.markerIdSetMap; // This to test heap usage of copying locally the Map from markerset
 
 		SampleSet rdSampleSet = new SampleSet(rdMatrixKey);
-		DataSetSource rdDataSetSource = new NetCDFDataSetSource(rdMatrixKey);
+		DataSetSource rdDataSetSource = MatrixFactory.generateMatrixDataSetSource(rdMatrixKey);
 		Map<SampleKey, byte[]> rdSampleSetMap = rdSampleSet.getSampleIdSetMapByteArray();
 
 		try {
