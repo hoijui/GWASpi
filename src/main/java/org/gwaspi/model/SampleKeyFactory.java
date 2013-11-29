@@ -30,6 +30,7 @@ public final class SampleKeyFactory implements KeyFactory<SampleKey> {
 	}
 
 	public static SampleKey decodeStatic(StudyKey studyKey, String keyStr) {
+		
 		SampleKey key = null;
 
 		String[] parts = keyStr.split(" ", 3);

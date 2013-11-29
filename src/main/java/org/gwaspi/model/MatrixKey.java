@@ -25,6 +25,8 @@ import javax.persistence.Transient;
  */
 public class MatrixKey implements Comparable<MatrixKey>, Serializable {
 
+	private static final String NAME_UNKNOWN = "<matrix-name-unknown>";
+
 	private StudyKey studyKey;
 	private int matrixId;
 
@@ -105,15 +107,26 @@ public class MatrixKey implements Comparable<MatrixKey>, Serializable {
 		return strRep.toString();
 	}
 
+	/**
+	 * This function accesses the storage system,
+	 * but guarantees to also work if the matrix is not available there,
+	 * or an other problem occurs.
+	 */
 	public String fetchName() {
 
 		String matrixName;
 
+		MatrixMetadata matrix = null;
 		try {
-			MatrixMetadata matrix = MatricesList.getMatrixMetadataById(this);
-			matrixName = matrix.getMatrixFriendlyName();
+			matrix = MatricesList.getMatrixMetadataById(this);
 		} catch (IOException ex) {
-			matrixName = "<matrix-name-unknown>";
+			// do nothing, as matrix will be null
+		}
+
+		if (matrix == null) {
+			matrixName = NAME_UNKNOWN;
+		} else {
+			matrixName = matrix.getMatrixFriendlyName();
 		}
 
 		return matrixName;
