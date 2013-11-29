@@ -38,7 +38,7 @@ import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.SampleKeyFactory;
 import org.gwaspi.model.SamplesKeysSource;
-import org.gwaspi.netCDF.markers.NetCDFDataSetSource;
+import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.gwaspi.netCDF.operations.NetCdfUtils;
 import org.gwaspi.netCDF.operations.OperationFactory;
 import org.slf4j.Logger;
@@ -327,7 +327,7 @@ public abstract class AbstractNetCdfOperationDataSet<ET> implements OperationDat
 			samples = parentOperationDataSet.getSamples();
 		} else {
 			// load the list of samples from the parent matrix
-			DataSetSource parentMatrixDataSet = new NetCDFDataSetSource(rdMatrixKey);
+			DataSetSource parentMatrixDataSet = MatrixFactory.generateMatrixDataSetSource(rdMatrixKey);
 			SamplesKeysSource samplesKeys = parentMatrixDataSet.getSamplesKeysSource();
 
 			samples = new LinkedHashMap<Integer, SampleKey>(samplesKeys.size());
@@ -368,7 +368,7 @@ public abstract class AbstractNetCdfOperationDataSet<ET> implements OperationDat
 			markers = parentOperationDataSet.getMarkers();
 		} else {
 			// load the list of samples from the parent matrix
-			DataSetSource parentMatrixDataSet = new NetCDFDataSetSource(rdMatrixKey);
+			DataSetSource parentMatrixDataSet = MatrixFactory.generateMatrixDataSetSource(rdMatrixKey);
 			MarkersKeysSource markersKeys = parentMatrixDataSet.getMarkersKeysSource();
 
 			markers = new LinkedHashMap<Integer, MarkerKey>(markersKeys.size());
@@ -408,7 +408,7 @@ public abstract class AbstractNetCdfOperationDataSet<ET> implements OperationDat
 			chromosomes = parentOperationDataSet.getChromosomes();
 		} else {
 			// load the list of samples from the parent matrix
-			DataSetSource parentMatrixDataSet = new NetCDFDataSetSource(rdMatrixKey);
+			DataSetSource parentMatrixDataSet = MatrixFactory.generateMatrixDataSetSource(rdMatrixKey);
 			ChromosomesKeysSource chromosomesKeys = parentMatrixDataSet.getChromosomesKeysSource();
 
 			chromosomes = new LinkedHashMap<Integer, ChromosomeKey>(chromosomesKeys.size());
@@ -445,7 +445,7 @@ public abstract class AbstractNetCdfOperationDataSet<ET> implements OperationDat
 			chromosomeInfos = parentOperationDataSet.getChromosomeInfos();
 		} else {
 			// load the list of samples from the parent matrix
-			DataSetSource parentMatrixDataSet = new NetCDFDataSetSource(rdMatrixKey);
+			DataSetSource parentMatrixDataSet = MatrixFactory.generateMatrixDataSetSource(rdMatrixKey);
 			chromosomeInfos = parentMatrixDataSet.getChromosomesInfosSource();
 		}
 

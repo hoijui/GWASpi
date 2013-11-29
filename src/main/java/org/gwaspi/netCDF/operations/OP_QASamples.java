@@ -32,7 +32,7 @@ import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.SamplesGenotypesSource;
-import org.gwaspi.netCDF.markers.NetCDFDataSetSource;
+import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
 import org.gwaspi.operations.qasamples.NetCdfQASamplesOperationDataSet;
 import org.gwaspi.operations.qasamples.QASamplesOperationDataSet;
@@ -64,7 +64,7 @@ public class OP_QASamples implements MatrixOperation {
 	public int processMatrix() throws IOException {
 		int resultOpId = Integer.MIN_VALUE;
 
-		DataSetSource dataSetSource = new NetCDFDataSetSource(rdMatrixKey);
+		DataSetSource dataSetSource = MatrixFactory.generateMatrixDataSetSource(rdMatrixKey);
 
 		Map<SampleKey, Integer> wrSampleSetMissingCountMap = new LinkedHashMap<SampleKey, Integer>();
 		Map<SampleKey, Double> wrSampleSetMissingRatioMap = new LinkedHashMap<SampleKey, Double>();

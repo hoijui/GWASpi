@@ -31,7 +31,7 @@ import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.loader.GenotypesLoadDescription;
-import org.gwaspi.netCDF.markers.NetCDFDataSetSource;
+import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.gwaspi.netCDF.operations.GWASinOneGOParams;
 import org.gwaspi.netCDF.operations.MatrixOperation;
 import org.gwaspi.operations.combi.CombiTestParams;
@@ -224,8 +224,8 @@ public class MultiOperations {
 			final File markerCriteriaFile,
 			final File sampleCriteriaFile)
 	{
-		try {
-			DataSetSource dataSetSource = new NetCDFDataSetSource(parentMatrixKey);
+//		try {
+			DataSetSource dataSetSource = MatrixFactory.generateMatrixDataSetSource(parentMatrixKey);
 			CommonRunnable task = new Threaded_ExtractMatrix(
 					dataSetSource,
 					newMatrixName,
@@ -244,9 +244,9 @@ public class MultiOperations {
 			lockProperties.getMatricesIds().add(parentMatrixKey.getMatrixId());
 
 			queueTask(task, lockProperties);
-		} catch (IOException ex) {
-			throw new RuntimeException(ex);
-		}
+//		} catch (IOException ex) {
+//			throw new RuntimeException(ex);
+//		}
 	}
 
 	public static void doTranslateAB12ToACGT(
@@ -336,7 +336,7 @@ public class MultiOperations {
 			final String description)
 	{
 		try {
-			DataSetSource dataSetSource = new NetCDFDataSetSource(parentMatrixKey);
+			DataSetSource dataSetSource = MatrixFactory.generateMatrixDataSetSource(parentMatrixKey);
 			CommonRunnable task = new Threaded_FlipStrandMatrix(
 					dataSetSource,
 					newMatrixName,

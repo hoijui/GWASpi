@@ -51,7 +51,7 @@ import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
-import org.gwaspi.netCDF.markers.NetCDFDataSetSource;
+import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.gwaspi.netCDF.operations.MatrixGenotypesFlipper;
 import org.gwaspi.netCDF.operations.MatrixOperation;
 import org.gwaspi.netCDF.operations.MatrixTranslator;
@@ -339,7 +339,7 @@ public class MatrixTrafoPanel extends JPanel {
 						description = "";
 					}
 
-					DataSetSource dataSetSource = new NetCDFDataSetSource(parentMatrixKey);
+					DataSetSource dataSetSource = MatrixFactory.generateMatrixDataSetSource(parentMatrixKey);
 					MatrixOperation validationMatrixOperation = new MatrixTranslator(
 								dataSetSource,
 								null);
@@ -389,6 +389,7 @@ public class MatrixTrafoPanel extends JPanel {
 
 		@Override
 		public void actionPerformed(ActionEvent evt) {
+
 			String newMatrixName = checkNewMatrixData();
 			if (!newMatrixName.isEmpty()) {
 				try {
@@ -397,7 +398,7 @@ public class MatrixTrafoPanel extends JPanel {
 						description = "";
 					}
 
-					DataSetSource dataSetSource = new NetCDFDataSetSource(parentMatrixKey);
+					DataSetSource dataSetSource = MatrixFactory.generateMatrixDataSetSource(parentMatrixKey);
 					MatrixOperation validationMatrixOperation = new MatrixGenotypesFlipper(
 								dataSetSource,
 								null,
@@ -415,7 +416,7 @@ public class MatrixTrafoPanel extends JPanel {
 					} else {
 						Dialogs.showWarningDialogue(validationMatrixOperation.getProblemDescription());
 					}
-				} catch (Exception ex) {
+				} catch (IOException ex) {
 					log.error(null, ex);
 				}
 			} else {
@@ -428,7 +429,7 @@ public class MatrixTrafoPanel extends JPanel {
 	//<editor-fold defaultstate="expanded" desc="HELPERS">
 	private static class BackAction extends AbstractAction {
 
-		private MatrixKey parentMatrix;
+		private final MatrixKey parentMatrix;
 
 		BackAction(MatrixKey parentMatrix) {
 

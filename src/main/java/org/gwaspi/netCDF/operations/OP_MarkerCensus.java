@@ -49,7 +49,7 @@ import org.gwaspi.model.SampleInfoList;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.markers.MarkerSet;
-import org.gwaspi.netCDF.markers.NetCDFDataSetSource;
+import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
 import org.gwaspi.operations.markercensus.DefaultMarkerCensusOperationEntry;
 import org.gwaspi.operations.markercensus.MarkerCensusOperationDataSet;
@@ -124,7 +124,7 @@ public class OP_MarkerCensus implements MatrixOperation {
 			//<editor-fold defaultstate="expanded" desc="PURGE Maps">
 			MatrixMetadata rdMatrixMetadata = MatricesList.getMatrixMetadataById(rdMatrixKey);
 
-			DataSetSource dataSetSource = new NetCDFDataSetSource(rdMatrixKey);
+			DataSetSource dataSetSource = MatrixFactory.generateMatrixDataSetSource(rdMatrixKey);
 
 			MarkerSet rdMarkerSet = new MarkerSet(rdMatrixKey);
 			rdMarkerSet.initFullMarkerIdSetMap();

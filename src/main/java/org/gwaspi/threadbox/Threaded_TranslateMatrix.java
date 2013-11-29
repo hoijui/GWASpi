@@ -22,7 +22,7 @@ import org.gwaspi.model.GWASpiExplorerNodes;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.netCDF.loader.AbstractNetCDFDataSetDestination;
-import org.gwaspi.netCDF.markers.NetCDFDataSetSource;
+import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.gwaspi.netCDF.operations.MatrixTranslator;
 import org.gwaspi.netCDF.operations.MatrixTranslatorNetCDFDataSetDestination;
 import org.gwaspi.netCDF.operations.OP_QAMarkers;
@@ -59,7 +59,7 @@ public class Threaded_TranslateMatrix extends CommonRunnable {
 	protected void runInternal(SwingWorkerItem thisSwi) throws Exception {
 
 		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
-			DataSetSource dataSetSource = new NetCDFDataSetSource(parentMatrixKey);
+			DataSetSource dataSetSource = MatrixFactory.generateMatrixDataSetSource(parentMatrixKey);
 			AbstractNetCDFDataSetDestination dataSetDestination
 					= new MatrixTranslatorNetCDFDataSetDestination(
 					dataSetSource,
