@@ -45,8 +45,8 @@ public final class MatricesList {
 		return matrixService.getMatrices(studyKey);
 	}
 
-	public static void insertMatrixMetadata(MatrixMetadata matrixMetadata) throws IOException {
-		matrixService.insertMatrix(matrixMetadata);
+	public static MatrixKey insertMatrixMetadata(MatrixMetadata matrixMetadata) throws IOException {
+		return matrixService.insertMatrix(matrixMetadata);
 	}
 
 	public static void deleteMatrix(MatrixKey matrixKey, boolean deleteReports) throws IOException {

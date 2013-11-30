@@ -33,6 +33,7 @@ import org.gwaspi.model.DataSet;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.MatricesList;
+import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleKey;
@@ -171,7 +172,7 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 			generateNewGWASpiDBversionMatrix(loadDescription, samplesReceiver, importMatrixMetadata);
 		}
 
-		importMatrixMetadata = MatricesList.getMatrixMetadataByNetCDFname(importMatrixMetadata.getMatrixNetCDFName());
+//		importMatrixMetadata = MatricesList.getMatrixMetadataById(MatrixKey.valueOf(importMatrixMetadata));
 		}
 	}
 

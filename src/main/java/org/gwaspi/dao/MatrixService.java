@@ -41,7 +41,7 @@ public interface MatrixService {
 	 */
 	MatrixMetadata getMatrix(String netCDFpath, StudyKey studyKey, String name) throws IOException;
 
-	void insertMatrix(MatrixMetadata matrixMetadata) throws IOException;
+	MatrixKey insertMatrix(MatrixMetadata matrixMetadata) throws IOException;
 
 	void deleteMatrix(MatrixKey matrixKey, boolean deleteReports) throws IOException;
 

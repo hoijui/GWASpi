@@ -181,7 +181,7 @@ public class JPAMatrixService implements MatrixService {
 	}
 
 	@Override
-	public void insertMatrix(MatrixMetadata matrixMetadata) throws IOException {
+	public MatrixKey insertMatrix(MatrixMetadata matrixMetadata) throws IOException {
 
 		EntityManager em = null;
 		try {
@@ -199,6 +199,8 @@ public class JPAMatrixService implements MatrixService {
 		} finally {
 			close(em);
 		}
+
+		return MatrixKey.valueOf(matrixMetadata);
 	}
 
 	@Override

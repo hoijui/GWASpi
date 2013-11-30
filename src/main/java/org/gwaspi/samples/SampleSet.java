@@ -72,8 +72,17 @@ public class SampleSet extends AbstractList<GenotypesList> implements MarkersGen
 		this(MatricesList.getMatrixMetadataById(matrixKey));
 	}
 
+	/**
+	 * @deprecated we should get rid of this!
+	 */
 	public SampleSet(StudyKey studyKey, String netCDFName) throws IOException {
-		this(MatricesList.getMatrixMetadataByNetCDFname(netCDFName));
+//		this(MatricesList.getMatrixMetadataByNetCDFname(netCDFName));
+
+		this.matrixMetadata = null;
+		this.sampleSetSize = 0;
+		this.sampleIdSetMap = new LinkedHashMap<SampleKey, Object>();
+		this.rdNcFile = null;
+		this.genotyesListFactory = CompactGenotypesList.FACTORY;
 	}
 
 	public SampleSet(StudyKey studyKey, String netCDFPath, String netCDFName) throws IOException {

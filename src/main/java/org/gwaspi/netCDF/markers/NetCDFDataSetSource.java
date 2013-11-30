@@ -14,6 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package org.gwaspi.netCDF.markers;
 
 import java.io.IOException;
@@ -52,7 +53,7 @@ public class NetCDFDataSetSource implements DataSetSource {
 
 	@Override
 	public MatrixMetadata getMatrixMetadata() throws IOException {
-		return MatricesList.getMatrixMetadataById(matrixKey);
+		return MatricesList.getMatrixMetadataById(matrixKey);XXX;
 	}
 
 	@Override

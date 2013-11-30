@@ -81,7 +81,7 @@ public class MatrixFactory {
 			}
 			netCDFHandler.setFill(true);
 
-			MatricesList.insertMatrixMetadata(new MatrixMetadata(
+			MatrixMetadata tmpMatrixMetaData = new MatrixMetadata(
 					friendlyName,
 					resultMatrixName,
 					description,
@@ -89,11 +89,9 @@ public class MatrixFactory {
 					origMatrix1Key.getStudyKey(),
 					origMatrix1Key.getMatrixId(),
 					origMatrix2Key.getMatrixId(),
-					inputLocation));
-
-			matrixMetaData = MatricesList.getMatrixMetadataByNetCDFname(resultMatrixName);
-
-			resultMatrixKey = MatrixKey.valueOf(matrixMetaData);
+					inputLocation);
+			resultMatrixKey = MatricesList.insertMatrixMetadata(tmpMatrixMetaData);
+			matrixMetaData = tmpMatrixMetaData;
 		} else {
 			throw new IllegalArgumentException();
 		}
