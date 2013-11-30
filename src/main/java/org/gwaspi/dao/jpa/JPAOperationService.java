@@ -35,8 +35,8 @@ import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.ReportsList;
 import org.gwaspi.model.Study;
 import org.gwaspi.model.StudyKey;
-import ucar.nc2.Dimension;
-import ucar.nc2.NetcdfFile;
+//import ucar.nc2.Dimension;
+//import ucar.nc2.NetcdfFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -43,11 +43,11 @@ import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.ma2.ArrayChar;
-import ucar.ma2.InvalidRangeException;
-import ucar.nc2.Dimension;
-import ucar.nc2.NetcdfFile;
-import ucar.nc2.Variable;
+//import ucar.ma2.ArrayChar;
+//import ucar.ma2.InvalidRangeException;
+//import ucar.nc2.Dimension;
+//import ucar.nc2.NetcdfFile;
+//import ucar.nc2.Variable;
 
 /**
  * JPA implementation of a matrix service.
@@ -124,8 +124,8 @@ public class JPAMatrixService implements MatrixService {
 						new StudyKey((Integer) matrixKeyParts[0]),
 						(Integer) matrixKeyParts[1]));
 			}
-		} catch (Exception ex) {
-			LOG.error("Failed fetching all matrices", ex);
+//		} catch (Exception ex) {
+//			LOG.error("Failed fetching all matrices", ex);
 		} finally {
 			close(em);
 		}
@@ -148,8 +148,8 @@ public class JPAMatrixService implements MatrixService {
 			for (Integer matrixId : matricesIds) {
 				matrices.add(new MatrixKey(studyKey, matrixId));
 			}
-		} catch (Exception ex) {
-			LOG.error("Failed fetching all matrices", ex);
+//		} catch (Exception ex) {
+//			LOG.error("Failed fetching all matrices", ex);
 		} finally {
 			close(em);
 		}
@@ -171,8 +171,8 @@ public class JPAMatrixService implements MatrixService {
 			for (int i = 0; i < matricesMetadata.size(); i++) {
 				matricesMetadata.set(i, completeMatricesTable(matricesMetadata.get(i)));
 			}
-		} catch (Exception ex) {
-			LOG.error("Failed fetching all matrices-metadata", ex);
+//		} catch (IOException ex) {
+//			LOG.error("Failed fetching all matrices-metadata", ex);
 		} finally {
 			close(em);
 		}
@@ -193,9 +193,9 @@ public class JPAMatrixService implements MatrixService {
 				em.merge(matrixMetadata);
 			}
 			commit(em);
-		} catch (Exception ex) {
-			LOG.error("Failed adding a matrix-metadata", ex);
-			rollback(em);
+//		} catch (Exception ex) {
+//			LOG.error("Failed adding a matrix-metadata", ex);
+//			rollback(em);
 		} finally {
 			close(em);
 		}
