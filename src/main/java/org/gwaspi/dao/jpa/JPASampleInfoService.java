@@ -182,10 +182,16 @@ public class JPASampleInfoService implements SampleInfoService {
 			em = open();
 			sampleInfo = em.find(SampleInfo.class, key);
 		} catch (Exception ex) {
-			throw new IOException("Failed fetching sample-info: " + key.toString(), ex);
+			throw new IOException("Failed fetching sample-info: \"" + key.getStudyId() + "\" / \"" + key.getSampleId() + "\" / \"" + key.getFamilyId() + "\"", ex);
 		} finally {
 			close(em);
 		}
+                if (sampleInfo == null) {
+                    System.err.println("XXX searched sample key: \"" + key.getStudyId() + "\" / \"" + key.getSampleId() + "\" / \"" + key.getFamilyId() + "\"");
+                    for (SampleKey curKey : getSampleKeys()) {
+                        System.err.println("XXX sample key in DB: \"" + curKey.getStudyId() + "\" / \"" + curKey.getSampleId() + "\" / \"" + curKey.getFamilyId() + "\"");
+                    }
+                }
 
 		return sampleInfo;
 	}
@@ -199,7 +205,7 @@ public class JPASampleInfoService implements SampleInfoService {
 		try {
 			em = open();
 			Query query;
-			if (variable.equals(Variables.VAR_SAMPLESET)) { // sample ID
+			if (variable.equals(Variables.VAR_SAMPLE_KEY)) { // sample ID
 				query = em.createNamedQuery("sampleInfo_listSampleIds");
 			} else if (variable.equals(Variables.VAR_SAMPLES_AFFECTION)) {
 				query = em.createNamedQuery("sampleInfo_listSampleAffections");

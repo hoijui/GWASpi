@@ -79,7 +79,7 @@ public class TestAssociationTestScripts extends AbstractTestScripts {
 		for (OperationMetadata operationMetadata : operationsTable) {
 			log.info("\toperation id: {}, name: \"{}\"",
 					operationMetadata.getId(),
-					operationMetadata.getOPName());
+					operationMetadata.getName());
 		}
 	}
 

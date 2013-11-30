@@ -109,7 +109,7 @@ public class LoadGTFromHapmapFiles extends AbstractLoadGTFromFiles implements Ge
 			throws Exception
 	{
 		// HACK
-		DataSet dataSet = ((InMemorySamplesReceiver) samplesReceiver).getDataSet();
+		DataSet dataSet = ((AbstractDataSetDestination) samplesReceiver).getDataSet();
 
 		Collection<SampleInfo> sampleInfos = new ArrayList<SampleInfo>(dataSet.getSampleInfos());
 

@@ -147,6 +147,7 @@ public class OP_HardyWeinberg implements MatrixOperation {
 			performHardyWeinberg(dataSet, markersCensus, Category.ALTERNATE);
 			//</editor-fold>
 
+			dataSet.finnishWriting();
 			resultOpId = ((AbstractNetCdfOperationDataSet) dataSet).getOperationKey().getId(); // HACK
 			org.gwaspi.global.Utils.sysoutCompleted("Hardy-Weinberg Equilibrium Test");
 //		} catch (InvalidRangeException ex) {

@@ -52,12 +52,12 @@ import org.gwaspi.gui.utils.BrowserHelpUrlAction;
 import org.gwaspi.gui.utils.Dialogs;
 import org.gwaspi.gui.utils.HelpURLs;
 import org.gwaspi.gui.utils.LimitedLengthDocument;
+import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
-import org.gwaspi.model.SampleKey;
-import org.gwaspi.netCDF.markers.MarkerSet;
+import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.gwaspi.threadbox.MultiOperations;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -199,7 +199,7 @@ public class MatrixExtractPanel extends JPanel {
 		pnl_SampleZone.setBorder(BorderFactory.createTitledBorder(null, Text.Trafo.sampleSelectZone, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("DejaVu Sans", 1, 13))); // NOI18N
 
 		lbl_ParentMatrix.setText(Text.Matrix.parentMatrix);
-		lbl_ParentMatrixName.setText(matrixMetadata.getMatrixFriendlyName());
+		lbl_ParentMatrixName.setText(matrixMetadata.getFriendlyName());
 		lbl_NewMatrixName.setText(Text.Matrix.newMatrixName);
 		txt_NewMatrixName.setDocument(new LimitedLengthDocument(63));
 		txtA_NewMatrixDescription.setColumns(20);
@@ -278,7 +278,7 @@ public class MatrixExtractPanel extends JPanel {
 			markerPickerTable.get(6)[0].toString()};
 		cmb_MarkersVariable.setModel(new DefaultComboBoxModel(markerPickerVars));
 		// PREFILL CRITERIA TXT WITH CHROMOSOME CODES IF NECESSARY
-		cmb_MarkersVariable.setAction(new MarkersVariableAction(parentMatrixKey));
+		cmb_MarkersVariable.setAction(new MarkersVariableAction(parentMatrixKey, txtA_MarkersCriteria));
 
 		lbl_MarkersCriteria.setText(Text.Trafo.criteria);
 		txtA_MarkersCriteria.setColumns(20);
@@ -697,33 +697,46 @@ public class MatrixExtractPanel extends JPanel {
 		}
 	}
 
-	private class MarkersVariableAction extends AbstractAction { // FIXME make static
+	private static class MarkersVariableAction extends AbstractAction { // FIXME make static
 
-		private final Set<MarkerKey> markerKeys;
+		private final MatrixKey parentMatrixKey;
+		private final JTextArea txtA_MarkersCriteria;
 
-		MarkersVariableAction(MatrixKey parentMatrixKey) throws IOException {
+		MarkersVariableAction(MatrixKey parentMatrixKey, JTextArea txtA_MarkersCriteria) throws IOException {
 
-			MarkerSet parentMarkerSet = new MarkerSet(parentMatrixKey);
-			markerKeys = parentMarkerSet.getMarkerKeys();
-
+			this.parentMatrixKey = parentMatrixKey;
+			this.txtA_MarkersCriteria = txtA_MarkersCriteria;
 			putValue(NAME, Text.Trafo.variable);
+		}
+
+		private static String createMarkerIdsList(DataSetSource dataSetSource) throws IOException {
+
+			StringBuilder markerIdsList = new StringBuilder();
+			for (MarkerKey key : dataSetSource.getMarkersKeysSource()) {
+				markerIdsList.append(key.getMarkerId());
+				markerIdsList.append(",");
+			}
+			markerIdsList.deleteCharAt(markerIdsList.length() - 1);
+
+			return markerIdsList.toString();
 		}
 
 		@Override
 		public void actionPerformed(ActionEvent evt) {
 
+			JComboBox cmb_MarkersVariable = (JComboBox) evt.getSource();
 			final int selectedIndex = cmb_MarkersVariable.getSelectedIndex();
 			if (selectedIndex == 1 || selectedIndex == 4) {
 				// Chromosome variables
-
-				StringBuilder sb = new StringBuilder();
-				for (MarkerKey key : markerKeys) {
-					sb.append(key.getMarkerId());
-					sb.append(",");
+				// NOTE The here created String (list of marker IDs) may easily be 10MB+ large!
+				DataSetSource dataSetSource = MatrixFactory.generateMatrixDataSetSource(parentMatrixKey);
+				String markerIdsList;
+				try {
+					markerIdsList = createMarkerIdsList(dataSetSource);
+					txtA_MarkersCriteria.setText(markerIdsList);
+				} catch (IOException ex) {
+					log.error("Failed to create list of marker IDs", ex);
 				}
-				sb.deleteCharAt(sb.length() - 1);
-
-				txtA_MarkersCriteria.setText(sb.toString());
 			}
 		}
 	}

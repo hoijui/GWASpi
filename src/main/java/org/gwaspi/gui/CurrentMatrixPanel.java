@@ -111,7 +111,7 @@ public class CurrentMatrixPanel extends JPanel {
 
 		setBorder(GWASpiExplorerPanel.createMainTitledBorder(Text.Matrix.matrix)); // NOI18N
 
-		pnl_MatrixDesc.setBorder(GWASpiExplorerPanel.createRegularTitledBorder(Text.Matrix.currentMatrix + " " + matrixMetadata.getMatrixFriendlyName() + ", " + Text.Matrix.matrixID + ": mx" + matrix.getMatrixId())); // NOI18N
+		pnl_MatrixDesc.setBorder(GWASpiExplorerPanel.createRegularTitledBorder(Text.Matrix.currentMatrix + " " + matrixMetadata.getFriendlyName() + ", " + Text.Matrix.matrixID + ": mx" + matrix.getMatrixId())); // NOI18N
 		txtA_MatrixDesc.setColumns(20);
 		txtA_MatrixDesc.setRows(5);
 		txtA_MatrixDesc.setBorder(GWASpiExplorerPanel.createMainTitledBorder(Text.All.description)); // NOI18N
@@ -408,6 +408,9 @@ public class CurrentMatrixPanel extends JPanel {
 
 			this.matrix = matrix;
 			putValue(NAME, Text.Trafo.translateMatrix);
+
+			putValue(SHORT_DESCRIPTION, "Not yet implemented!");
+			setEnabled(false);
 		}
 
 		@Override
@@ -416,7 +419,7 @@ public class CurrentMatrixPanel extends JPanel {
 			} catch (Exception ex) {
 				log.error(null, ex);
 			}
-			throw new UnsupportedOperationException("Not yet implemented!");
+			throw new UnsupportedOperationException("Not yet implemented!"); // TODO implement!
 		}
 	}
 

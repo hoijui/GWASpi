@@ -17,6 +17,7 @@
 
 package org.gwaspi.samples;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.AbstractList;
 import java.util.LinkedHashMap;
@@ -33,6 +34,7 @@ import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.StudyKey;
+import org.gwaspi.netCDF.markers.NetCDFDataSetSource;
 import org.gwaspi.netCDF.operations.NetCdfUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,11 +62,12 @@ public class SampleSet extends AbstractList<GenotypesList> implements MarkersGen
 	private NetcdfFile rdNcFile;
 	private GenotypesListFactory genotyesListFactory;
 
-	private SampleSet(MatrixMetadata matrixMetadata) throws IOException {
+	public SampleSet(MatrixMetadata matrixMetadata) throws IOException {
+		
 		this.matrixMetadata = matrixMetadata;
-		this.sampleSetSize = matrixMetadata.getMarkerSetSize();
+		this.sampleSetSize = matrixMetadata.getNumMarkers();
 		this.sampleIdSetMap = new LinkedHashMap<SampleKey, Object>();
-		this.rdNcFile = NetcdfFile.open(matrixMetadata.getPathToMatrix()); // HACK most likely not optimal.. this file
+		this.rdNcFile = NetcdfFile.open(MatrixMetadata.generatePathToNetCdfFile(matrixMetadata).getAbsolutePath()); // HACK most likely not optimal.. this file
 		this.genotyesListFactory = CompactGenotypesList.FACTORY;
 	}
 
@@ -72,12 +75,21 @@ public class SampleSet extends AbstractList<GenotypesList> implements MarkersGen
 		this(MatricesList.getMatrixMetadataById(matrixKey));
 	}
 
+	/**
+	 * @deprecated we should get rid of this!
+	 */
 	public SampleSet(StudyKey studyKey, String netCDFName) throws IOException {
-		this(MatricesList.getMatrixMetadataByNetCDFname(netCDFName));
+//		this(MatricesList.getMatrixMetadataByNetCDFname(netCDFName));
+
+		this.matrixMetadata = null;
+		this.sampleSetSize = 0;
+		this.sampleIdSetMap = new LinkedHashMap<SampleKey, Object>();
+		this.rdNcFile = null;
+		this.genotyesListFactory = CompactGenotypesList.FACTORY;
 	}
 
 	public SampleSet(StudyKey studyKey, String netCDFPath, String netCDFName) throws IOException {
-		this(MatricesList.getMatrixMetadata(netCDFPath, studyKey, netCDFName));
+		this(NetCDFDataSetSource.loadMatrixMetadata(studyKey, new File(netCDFPath), netCDFName));
 	}
 
 	// ACCESSORS
@@ -91,7 +103,7 @@ public class SampleSet extends AbstractList<GenotypesList> implements MarkersGen
 
 	//<editor-fold defaultstate="expanded" desc="SAMPLESET FETCHERS">
 	private Map<SampleKey, ?> getSampleIdSetMap() throws IOException {
-		return getSampleIdSetMap(matrixMetadata.getPathToMatrix());
+		return getSampleIdSetMap(MatrixMetadata.generatePathToNetCdfFile(matrixMetadata).getAbsolutePath());
 	}
 
 	public Map<SampleKey, char[]> getSampleIdSetMapCharArray() throws IOException {
@@ -111,7 +123,7 @@ public class SampleSet extends AbstractList<GenotypesList> implements MarkersGen
 
 		try {
 			ncfile = NetcdfFile.open(matrixImportPath);
-			Variable var = ncfile.findVariable(cNetCDF.Variables.VAR_SAMPLESET);
+			Variable var = ncfile.findVariable(cNetCDF.Variables.VAR_SAMPLE_KEY);
 
 			if (null == var) {
 				return null;
@@ -263,7 +275,7 @@ public class SampleSet extends AbstractList<GenotypesList> implements MarkersGen
 
 		NetcdfFile ncfile = null;
 		try {
-			ncfile = NetcdfFile.open(matrixMetadata.getPathToMatrix());
+			ncfile = NetcdfFile.open(MatrixMetadata.generatePathToNetCdfFile(matrixMetadata).getAbsolutePath());
 			Variable var = ncfile.findVariable(variable);
 
 			if (null == var) {
@@ -314,7 +326,7 @@ public class SampleSet extends AbstractList<GenotypesList> implements MarkersGen
 
 		NetcdfFile ncfile = null;
 		try {
-			ncfile = NetcdfFile.open(matrixMetadata.getPathToMatrix());
+			ncfile = NetcdfFile.open(MatrixMetadata.generatePathToNetCdfFile(matrixMetadata).getAbsolutePath());
 			Variable var = ncfile.findVariable(variable);
 
 			if (null == var) {

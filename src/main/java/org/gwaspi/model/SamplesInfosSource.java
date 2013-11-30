@@ -17,10 +17,43 @@
 
 package org.gwaspi.model;
 
+import java.io.IOException;
 import java.util.List;
+import org.gwaspi.model.SampleInfo.Affection;
+import org.gwaspi.model.SampleInfo.Sex;
 
 /**
  * TODO
  */
 public interface SamplesInfosSource extends List<SampleInfo> {
+
+	List<SampleInfo> getRange(int from, int to) throws IOException;
+
+	List<SampleKey> getSampleKeys() throws IOException;
+	List<Integer> getOrderIds() throws IOException;
+	List<String> getFathers() throws IOException;
+	List<String> getMothers() throws IOException;
+	List<Sex> getSexes() throws IOException;
+	List<Affection> getAffections() throws IOException;
+	List<String> getCategoriess() throws IOException;
+	List<String> getDiseases() throws IOException;
+	List<String> getPopulations() throws IOException;
+	List<Integer> getAges() throws IOException;
+	List<String> getFilters() throws IOException;
+	List<Integer> getApproveds() throws IOException;
+	List<Integer> getStatuses() throws IOException;
+
+	List<SampleKey> getSampleKeys(int from, int to) throws IOException;
+	List<Integer> getOrderIds(int from, int to) throws IOException;
+	List<String> getFathers(int from, int to) throws IOException;
+	List<String> getMothers(int from, int to) throws IOException;
+	List<Sex> getSexes(int from, int to) throws IOException;
+	List<Affection> getAffections(int from, int to) throws IOException;
+	List<String> getCategoriess(int from, int to) throws IOException;
+	List<String> getDiseases(int from, int to) throws IOException;
+	List<String> getPopulations(int from, int to) throws IOException;
+	List<Integer> getAges(int from, int to) throws IOException;
+	List<String> getFilters(int from, int to) throws IOException;
+	List<Integer> getApproveds(int from, int to) throws IOException;
+	List<Integer> getStatuses(int from, int to) throws IOException;
 }

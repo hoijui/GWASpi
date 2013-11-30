@@ -78,7 +78,7 @@ public class OP_AssociationTests extends AbstractTestMatrixOperation {
 			Map<Integer, MarkerKey> ctrlMarkersOrigIndexKey,
 			Map<Integer, Census> ctrlMarkersOrigIndexCensus) throws IOException
 	{
-		((AbstractNetCdfOperationDataSet) dataSet).setNumMarkers(caseMarkersOrigIndexKey.size()); // HACK
+//		((AbstractNetCdfOperationDataSet) dataSet).setNumMarkers(caseMarkersOrigIndexKey.size()); // HACK
 
 		// Iterate through markerset
 		int markerNb = 0;

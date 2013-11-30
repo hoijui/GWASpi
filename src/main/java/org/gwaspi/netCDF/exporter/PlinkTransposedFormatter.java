@@ -56,7 +56,7 @@ public class PlinkTransposedFormatter implements Formatter {
 		BufferedWriter tpedBW = null;
 		try {
 			FileWriter tpedFW = new FileWriter(new File(exportDir.getPath(),
-					rdMatrixMetadata.getMatrixFriendlyName() + ".tped"));
+					rdMatrixMetadata.getFriendlyName() + ".tped"));
 			tpedBW = new BufferedWriter(tpedFW);
 			// TPED files:
 			// chromosome (1-22, X(23), Y(24), XY(25), MT(26) or 0 if unplaced)
@@ -99,7 +99,7 @@ public class PlinkTransposedFormatter implements Formatter {
 		BufferedWriter tfamBW = null;
 		try {
 			FileWriter tfamFW = new FileWriter(new File(exportDir.getPath(),
-					rdMatrixMetadata.getMatrixFriendlyName() + ".tfam"));
+					rdMatrixMetadata.getFriendlyName() + ".tfam"));
 			tfamBW = new BufferedWriter(tfamFW);
 
 			// Iterate through all samples

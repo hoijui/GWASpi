@@ -18,16 +18,17 @@
 package org.gwaspi.operations.trendtest;
 
 import java.io.IOException;
+import java.util.List;
+import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.gui.reports.Report_Analysis;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
-import org.gwaspi.netCDF.operations.OperationFactory;
 import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import ucar.ma2.InvalidRangeException;
+import ucar.ma2.DataType;
+import ucar.nc2.Dimension;
+import ucar.nc2.NetcdfFileWriteable;
 
 public abstract class AbstractNetCdfTestOperationDataSet<ET> extends AbstractNetCdfOperationDataSet<ET> {
 
@@ -41,8 +42,6 @@ public abstract class AbstractNetCdfTestOperationDataSet<ET> extends AbstractNet
 	//   case "genotypic association test": Association.VAR_OP_MARKERS_ASGenotypicAssociationTP2OR: {T, P-Value, OR-1, OR-2} [Double[4]]
 	//   case "trend test": Association.VAR_OP_MARKERS_ASTrendTestTP: {T, P-Value} [Double[2]]
 	// }
-
-	private final Logger log = LoggerFactory.getLogger(AbstractNetCdfTestOperationDataSet.class);
 
 	private OperationKey markerCensusOPKey;
 	private double hardyWeinbergThreshold;
@@ -79,26 +78,46 @@ public abstract class AbstractNetCdfTestOperationDataSet<ET> extends AbstractNet
 	}
 
 	@Override
-	protected OperationFactory createOperationFactory() throws IOException {
+	protected void supplementNetCdfHandler(
+			NetcdfFileWriteable ncFile,
+			OperationMetadata operationMetadata,
+			List<Dimension> markersSpace,
+			List<Dimension> chromosomesSpace,
+			List<Dimension> samplesSpace)
+			throws IOException
+	{
+		final OPType opType = operationMetadata.getOperationType();
 
-		try {
-			OperationMetadata markerCensusOP = OperationsList.getOperation(markerCensusOPKey);
-
-			// CREATE netCDF-3 FILE
-			return new OperationFactory(
-					markerCensusOP.getStudyKey(),
-					testName, // friendly name
-					testName + " on " + markerCensusOP.getFriendlyName()
-						+ "\n" + markerCensusOP.getDescription()
-						+ "\nHardy-Weinberg threshold: " + Report_Analysis.FORMAT_SCIENTIFIC.format(hardyWeinbergThreshold), // description
-					getNumMarkers(),
-					getNumSamples(),
-					getNumChromosomes(),
-					testType,
-					markerCensusOP.getParentMatrixKey(), // Parent matrixId
-					markerCensusOP.getId()); // Parent operationId
-		} catch (InvalidRangeException ex) {
-			throw new IOException(ex);
+		// Define Variables
+		ncFile.addVariable(cNetCDF.Association.VAR_OP_MARKERS_T, DataType.DOUBLE, markersSpace);
+		ncFile.addVariable(cNetCDF.Association.VAR_OP_MARKERS_P, DataType.DOUBLE, markersSpace);
+		if ((opType == OPType.ALLELICTEST) || (opType == OPType.GENOTYPICTEST)) {
+			ncFile.addVariable(cNetCDF.Association.VAR_OP_MARKERS_OR, DataType.DOUBLE, markersSpace);
+			if (opType == OPType.GENOTYPICTEST) {
+				ncFile.addVariable(cNetCDF.Association.VAR_OP_MARKERS_OR2, DataType.DOUBLE, markersSpace);
+			}
 		}
+		if (opType == OPType.COMBI_ASSOC_TEST) {
+			// TODO FIXME What is stored for the combi test?
+		}
+	}
+
+	@Override
+	protected OperationMetadata createOperationMetadata() throws IOException {
+
+		OperationMetadata markerCensusOP = OperationsList.getOperation(markerCensusOPKey);
+
+		return new OperationMetadata(
+				markerCensusOP.getParentMatrixKey(), // parent matrix
+				markerCensusOP.getId(), // parent operation ID
+				testName, // friendly name
+				testName + " on " + markerCensusOP.getFriendlyName()
+						+ "\n" + markerCensusOP.getDescription()
+						+ "\nHardy-Weinberg threshold: "
+						+ Report_Analysis.FORMAT_SCIENTIFIC.format(hardyWeinbergThreshold), // description
+				testType,
+				getNumMarkers(),
+				getNumSamples(),
+				getNumChromosomes());
 	}
 }

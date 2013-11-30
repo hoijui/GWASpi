@@ -274,7 +274,7 @@ public class Dialogs {
 			mn.append("SID: ");
 			mn.append(matrixMetadata.getStudyKey().getId());
 			mn.append(" - MX: ");
-			mn.append(matrixMetadata.getMatrixFriendlyName());
+			mn.append(matrixMetadata.getFriendlyName());
 			matrixNames.add(mn.toString());
 			matrixIDs.add(matrixMetadata.getMatrixId());
 		}

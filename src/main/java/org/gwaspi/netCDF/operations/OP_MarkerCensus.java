@@ -48,15 +48,12 @@ import org.gwaspi.model.SampleInfo.Sex;
 import org.gwaspi.model.SampleInfoList;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.StudyKey;
-import org.gwaspi.netCDF.markers.MarkerSet;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
 import org.gwaspi.operations.markercensus.DefaultMarkerCensusOperationEntry;
 import org.gwaspi.operations.markercensus.MarkerCensusOperationDataSet;
 import org.gwaspi.operations.markercensus.NetCdfMarkerCensusOperationDataSet;
-import org.gwaspi.operations.qamarkers.NetCdfQAMarkersOperationDataSet;
 import org.gwaspi.operations.qamarkers.QAMarkersOperationDataSet;
-import org.gwaspi.operations.qasamples.NetCdfQASamplesOperationDataSet;
 import org.gwaspi.operations.qasamples.QASamplesOperationDataSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -126,15 +123,15 @@ public class OP_MarkerCensus implements MatrixOperation {
 
 			DataSetSource dataSetSource = MatrixFactory.generateMatrixDataSetSource(rdMatrixKey);
 
-			MarkerSet rdMarkerSet = new MarkerSet(rdMatrixKey);
-			rdMarkerSet.initFullMarkerIdSetMap();
-			rdMarkerSet.fillWith(cNetCDF.Defaults.DEFAULT_GT);
+//			MarkerSet rdMarkerSet = new MarkerSet(rdMatrixKey);
+//			rdMarkerSet.initFullMarkerIdSetMap();
+//			rdMarkerSet.fillWith(cNetCDF.Defaults.DEFAULT_GT);
 
 			OperationKey sampleQAOPKey = OperationKey.valueOf(sampleQAOP);
 //			SampleSet rdSampleSet = new SampleSet(rdMatrixKey);
 //			Map<SampleKey, byte[]> rdSampleSetMap = rdSampleSet.getSampleIdSetMapByteArray();
 			Map<Integer, SampleKey> wrSampleKeys = new LinkedHashMap<Integer, SampleKey>();
-			QASamplesOperationDataSet qaSamplesOperationDataSet = new NetCdfQASamplesOperationDataSet(sampleQAOPKey);
+			QASamplesOperationDataSet qaSamplesOperationDataSet = (QASamplesOperationDataSet) OperationFactory.generateOperationDataSet(sampleQAOPKey);
 			for (Map.Entry<Integer, SampleKey> qaSampleOrigIndexKey : qaSamplesOperationDataSet.getSamples().entrySet()) {
 				if (!excludeSamplesOrigIndexAndKey.containsKey(qaSampleOrigIndexKey.getKey())) {
 					wrSampleKeys.put(qaSampleOrigIndexKey.getKey(), qaSampleOrigIndexKey.getValue());
@@ -144,11 +141,9 @@ public class OP_MarkerCensus implements MatrixOperation {
 
 //			NetcdfFileWriteable wrNcFile = null;
 			try {
-				Collection<MarkerKey> wrMarkerKeys = new ArrayList<MarkerKey>(rdMarkerSet.getMarkerKeys()); // XXX should be removable, as wr is same as rd, we could just use rd
-
 				MarkerCensusOperationDataSet dataSet = new NetCdfMarkerCensusOperationDataSet(); // HACK
 				((AbstractNetCdfOperationDataSet) dataSet).setReadMatrixKey(rdMatrixKey); // HACK
-				((AbstractNetCdfOperationDataSet) dataSet).setNumMarkers(wrMarkerKeys.size()); // HACK
+				((AbstractNetCdfOperationDataSet) dataSet).setNumMarkers(dataSetSource.getNumMarkers()); // HACK
 				((AbstractNetCdfOperationDataSet) dataSet).setNumSamples(wrSampleKeys.size()); // HACK
 				((NetCdfMarkerCensusOperationDataSet) dataSet).setCensusName(censusName); // HACK
 				((NetCdfMarkerCensusOperationDataSet) dataSet).setPhenoFile(phenoFile); // HACK
@@ -164,7 +159,7 @@ public class OP_MarkerCensus implements MatrixOperation {
 //				// CREATE netCDF-3 FILE
 //				cNetCDF.Defaults.OPType opType = cNetCDF.Defaults.OPType.MARKER_CENSUS_BY_AFFECTION;
 //
-//				String description = "Genotype frequency count -" + censusName + "- on " + rdMatrixMetadata.getMatrixFriendlyName();
+//				String description = "Genotype frequency count -" + censusName + "- on " + rdMatrixMetadata.getFriendlyName();
 //				if (phenoFile != null) {
 //					description += "\nCase/Control status read from file: " + phenoFile.getPath();
 //					opType = cNetCDF.Defaults.OPType.MARKER_CENSUS_BY_PHENOTYPE;
@@ -201,23 +196,25 @@ public class OP_MarkerCensus implements MatrixOperation {
 						rdMatrixMetadata.getStudyKey(), rdMatrixMetadata, wrSampleKeys.values());
 
 				// Iterate through markerset, take it marker by marker
-				rdMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
+//				rdMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);XXX;
 				// INIT wrSampleSetMap with indexing order and chromosome info
-				Map<MarkerKey, Object[]> wrMarkerInfos = new LinkedHashMap<MarkerKey, Object[]>();
-				if (rdMarkerSet.getMarkerIdSetMapCharArray() != null) {
-					int idx = 0;
-					for (Map.Entry<MarkerKey, char[]> entry : rdMarkerSet.getMarkerIdSetMapCharArray().entrySet()) {
-						MarkerKey key = entry.getKey();
-						if (wrMarkerKeys.contains(key)) {
-							String chr = new String(entry.getValue());
-							Object[] markerInfo = new Object[] {idx, chr};
-							wrMarkerInfos.put(key, markerInfo); // NOTE This value is never used!
-						}
-						idx++;
-					}
-
-					rdMarkerSet.getMarkerIdSetMapCharArray().clear();
-				}
+//				Map<MarkerKey, Object[]> wrMarkerInfos = new LinkedHashMap<MarkerKey, Object[]>();
+////				if (rdMarkerSet.getMarkerIdSetMapCharArray() != null) {
+//					int idx = 0;
+//				Iterator<String> markerChromosomesIt = dataSetSource.getMarkersMetadatasSource().getChromosomes().iterator();
+//					for (MarkerKey key : dataSetSource.getMarkersKeysSource()) {
+//						String chr = markerChromosomesIt.next();
+////						MarkerKey key = entry.getKey();
+//						if (wrMarkerKeys.contains(key)) {
+////							String chr = new String(entry.getValue());
+//							Object[] markerInfo = new Object[] {idx, chr};
+//							wrMarkerInfos.put(key, markerInfo); // NOTE This value is never used!
+//						}
+//						idx++;
+//					}
+//
+////					rdMarkerSet.getMarkerIdSetMapCharArray().clear();
+////				}
 
 				log.info("Start Census testing markers");
 //
@@ -234,10 +231,15 @@ public class OP_MarkerCensus implements MatrixOperation {
 //				Map<MarkerKey, CensusFull> wrChunkedMarkerCensusMap = new LinkedHashMap<MarkerKey, CensusFull>();
 //				Map<MarkerKey, byte[]> wrChunkedKnownAllelesMap = new LinkedHashMap<MarkerKey, byte[]>();
 				Iterator<GenotypesList> markersGTsIt = dataSetSource.getMarkersGenotypesSource().iterator();
-				for (Map.Entry<MarkerKey, Object[]> entry : wrMarkerInfos.entrySet()) {
-					final MarkerKey markerKey = entry.getKey();
-					final int markerOrigIndex = (Integer) entry.getValue()[0];
-					final String markerChr = (String) entry.getValue()[1];
+				int idx = 0;
+//				for (Map.Entry<MarkerKey, Object[]> entry : wrMarkerInfos.entrySet()) {
+//					final MarkerKey markerKey = entry.getKey();
+//					final int markerOrigIndex = (Integer) entry.getValue()[0];
+//					final String markerChr = (String) entry.getValue()[1];
+				Iterator<String> markerChromosomesIt = dataSetSource.getMarkersMetadatasSource().getChromosomes().iterator();
+				for (final MarkerKey markerKey : dataSetSource.getMarkersKeysSource()) {
+					final int markerOrigIndex = idx++;
+					final String markerChr = markerChromosomesIt.next();
 //					if (countMarkers % chunkSize == 0) {
 //						if (countMarkers > 0) {
 //							// CENSUS DATA WRITER
@@ -432,6 +434,7 @@ public class OP_MarkerCensus implements MatrixOperation {
 //						countChunks,
 //						chunkSize);
 
+			dataSet.finnishWriting();
 			resultOpId = ((AbstractNetCdfOperationDataSet) dataSet).getOperationKey().getId(); // HACK
 //			} catch (InvalidRangeException ex) {
 //				throw new IOException(ex);
@@ -545,8 +548,8 @@ public class OP_MarkerCensus implements MatrixOperation {
 		OperationKey markerQAOPKey = OperationKey.valueOf(markerQAOP);
 		OperationKey sampleQAOPKey = OperationKey.valueOf(sampleQAOP);
 
-		QAMarkersOperationDataSet qaMarkersOperationDataSet = new NetCdfQAMarkersOperationDataSet(markerQAOPKey);
-		QASamplesOperationDataSet qaSamplesOperationDataSet = new NetCdfQASamplesOperationDataSet(sampleQAOPKey);
+		QAMarkersOperationDataSet qaMarkersOperationDataSet = (QAMarkersOperationDataSet) OperationFactory.generateOperationDataSet(markerQAOPKey);
+		QASamplesOperationDataSet qaSamplesOperationDataSet = (QASamplesOperationDataSet) OperationFactory.generateOperationDataSet(sampleQAOPKey);
 
 //		OperationMetadata markerQAMetadata = OperationsList.getOperationMetadata(markerQAOP.getId());
 //		NetcdfFile rdMarkerQANcFile = NetcdfFile.open(markerQAMetadata.getPathToMatrix());

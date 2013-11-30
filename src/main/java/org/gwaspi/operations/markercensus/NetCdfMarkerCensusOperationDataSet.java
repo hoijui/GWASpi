@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.EnumMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import org.gwaspi.constants.cNetCDF;
@@ -34,15 +35,18 @@ import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.OperationKey;
+import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.netCDF.operations.MarkerOperationSet;
 import org.gwaspi.netCDF.operations.NetCdfUtils;
-import org.gwaspi.netCDF.operations.OperationFactory;
 import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
 import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationEntry.Category;
 import ucar.ma2.ArrayByte;
 import ucar.ma2.ArrayInt;
+import ucar.ma2.DataType;
 import ucar.ma2.Index;
 import ucar.ma2.InvalidRangeException;
+import ucar.nc2.Dimension;
+import ucar.nc2.NetcdfFileWriteable;
 
 public class NetCdfMarkerCensusOperationDataSet extends AbstractNetCdfOperationDataSet<MarkerCensusOperationEntry> implements MarkerCensusOperationDataSet {
 
@@ -112,37 +116,81 @@ public class NetCdfMarkerCensusOperationDataSet extends AbstractNetCdfOperationD
 	}
 
 	@Override
-	protected OperationFactory createOperationFactory() throws IOException {
+	protected void supplementNetCdfHandler(
+			NetcdfFileWriteable ncFile,
+			OperationMetadata operationMetadata,
+			List<Dimension> markersSpace,
+			List<Dimension> chromosomesSpace,
+			List<Dimension> samplesSpace)
+			throws IOException
+	{
+		final int gtStride = cNetCDF.Strides.STRIDE_GT;
 
-		try {
-			MatrixMetadata rdMatrixMetadata = MatricesList.getMatrixMetadataById(getReadMatrixKey());
+		// dimensions
+		Dimension markersDim = markersSpace.get(0);
+		Dimension boxes3Dim = ncFile.addDimension(cNetCDF.Dimensions.DIM_3BOXES, 3);
+		Dimension boxes4Dim = ncFile.addDimension(cNetCDF.Dimensions.DIM_4BOXES, 4);
+		Dimension gtStrideDim = ncFile.addDimension(cNetCDF.Dimensions.DIM_GTSTRIDE, gtStride);
+		Dimension dim4 = ncFile.addDimension(cNetCDF.Dimensions.DIM_4, 4);
 
-			OPType opType = OPType.MARKER_CENSUS_BY_AFFECTION;
+		// OP SPACES
+		List<Dimension> markers3Space = new ArrayList<Dimension>(2);
+		markers3Space.add(markersDim);
+		markers3Space.add(boxes3Dim);
 
-			String description = "Genotype frequency count -" + censusName + "- on " + rdMatrixMetadata.getMatrixFriendlyName();
-			if (phenoFile != null) {
-				description += "\nCase/Control status read from file: " + phenoFile.getPath();
-				opType = OPType.MARKER_CENSUS_BY_PHENOTYPE;
-			}
-			return new OperationFactory(
-					rdMatrixMetadata.getStudyKey(),
-					"Genotypes freq. - " + censusName, // friendly name
-					description
-						+ "\nSample missing ratio threshold: " + sampleMissingRatio
-						+ "\nSample heterozygosity ratio threshold: " + sampleHetzygRatio
-						+ "\nMarker missing ratio threshold: " + markerMissingRatio
-						+ "\nDiscard mismatching Markers: " + discardMismatches
-						+ "\nMarkers: " + getNumMarkers()
-						+ "\nSamples: " + getNumSamples(), // description
-					getNumMarkers(),
-					getNumSamples(),
-					0,
-					opType,
-					getReadMatrixKey(), // Parent matrixId
-					-1); // Parent operationId
-		} catch (InvalidRangeException ex) {
-			throw new IOException(ex);
+		List<Dimension> markers4Space = new ArrayList<Dimension>(2);
+		markers4Space.add(markersDim);
+		markers4Space.add(boxes4Dim);
+
+		// MARKER SPACES
+		List<Dimension> markersPropertySpace4 = new ArrayList<Dimension>(2);
+		markersPropertySpace4.add(markersDim);
+		markersPropertySpace4.add(dim4);
+
+		// ALLELES SPACES
+		List<Dimension> allelesSpace = new ArrayList<Dimension>(2);
+		allelesSpace.add(markersDim);
+		allelesSpace.add(gtStrideDim);
+
+		// Define OP Variables
+		ncFile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_CENSUSALL, DataType.INT, markers4Space);
+		ncFile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_CENSUSCASE, DataType.INT, markers3Space);
+		ncFile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_CENSUSCTRL, DataType.INT, markers3Space);
+		ncFile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_CENSUSHW, DataType.INT, markers3Space);
+
+		// Define Genotype Variables
+		ncFile.addVariable(cNetCDF.Variables.VAR_ALLELES, DataType.CHAR, allelesSpace);
+		ncFile.addVariable(cNetCDF.Variables.VAR_GT_STRAND, DataType.CHAR, markersPropertySpace4);
+	}
+
+	@Override
+	protected OperationMetadata createOperationMetadata() throws IOException {
+
+		MatrixMetadata rdMatrixMetadata = MatricesList.getMatrixMetadataById(getReadMatrixKey());
+
+		OPType opType = OPType.MARKER_CENSUS_BY_AFFECTION;
+
+		String description = "Genotype frequency count -" + censusName + "- on " + rdMatrixMetadata.getFriendlyName();
+		if (phenoFile != null) {
+			description += "\nCase/Control status read from file: " + phenoFile.getPath();
+			opType = OPType.MARKER_CENSUS_BY_PHENOTYPE;
 		}
+
+		return new OperationMetadata(
+				getReadMatrixKey(), // parent matrix
+				OperationKey.NULL_ID, // parent operation ID
+				"Genotypes freq. - " + censusName, // friendly name
+				description
+					+ "\nSample missing ratio threshold: " + sampleMissingRatio
+					+ "\nSample heterozygosity ratio threshold: " + sampleHetzygRatio
+					+ "\nMarker missing ratio threshold: " + markerMissingRatio
+					+ "\nDiscard mismatching Markers: " + discardMismatches
+					+ "\nMarkers: " + getNumMarkers()
+					+ "\nSamples: " + getNumSamples(), // description
+				opType,
+				getNumMarkers(),
+				getNumSamples(),
+				getNumChromosomes());
 	}
 
 //	@Override

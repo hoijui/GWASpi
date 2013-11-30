@@ -82,7 +82,7 @@ public class LoadGTFromSequenomFiles extends AbstractLoadGTFromFiles implements 
 			throws Exception
 	{
 		// HACK
-		DataSet dataSet = ((InMemorySamplesReceiver) samplesReceiver).getDataSet();
+		DataSet dataSet = ((AbstractDataSetDestination) samplesReceiver).getDataSet();
 
 		File[] gtFilesToImport = org.gwaspi.global.Utils.listFiles(loadDescription.getGtDirPath());
 //		File gtFileToImport = new File(gtDirPath);

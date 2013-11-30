@@ -18,6 +18,8 @@
 package org.gwaspi.model;
 
 
+import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.Date;
 import javax.persistence.Column;
@@ -33,6 +35,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
+import org.gwaspi.netCDF.matrices.MatrixFactory;
 
 @Entity
 @Table(name = "operationMetadata")
@@ -42,8 +45,8 @@ import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 		name = "operationMetadata_fetchById",
 		query = "SELECT om FROM OperationMetadata om WHERE om.id = :id"),
 	@NamedQuery(
-		name = "operationMetadata_fetchByNetCDFName",
-		query = "SELECT om FROM OperationMetadata om WHERE om.matrixCDFName = :netCDFName"),
+		name = "operationMetadata_listByFriendlyName",
+		query = "SELECT om.studyId, om.parentMatrixId, om.id FROM OperationMetadata om WHERE om.name = :name"),
 	@NamedQuery(
 		name = "operationMetadata_listByParentMatrixId",
 		query = "SELECT om FROM OperationMetadata om WHERE om.parentMatrixId = :parentMatrixId"),
@@ -60,56 +63,107 @@ import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 public class OperationMetadata implements Serializable {
 
 	private OperationKey key;
-	private String opName; // == Operation.friendlyName
-	private String netCDFName;
+	private String name; // == Operation.friendlyName == OperationMetadata.opName
+	private String simpleName;
 	private OPType gtCode; // == Operation.type
 	private int parentOperationId;
 	private String description;
-	private String pathToMatrix;
 	private int opSetSize;
 	private int implicitSetSize;
+	private int numChromosomes;
 	private Date creationDate;
 
 	protected OperationMetadata() {
 
 		this.key = new OperationKey();
 		this.parentOperationId = Integer.MIN_VALUE;
-		this.opName = "";
-		this.netCDFName = "";
+		this.name = "";
+		this.simpleName = "";
 		this.description = "";
-		this.pathToMatrix = "";
 		this.gtCode = null;
 		this.opSetSize = Integer.MIN_VALUE;
 		this.implicitSetSize = Integer.MIN_VALUE;
 		this.creationDate = new Date();
 	}
 
+//	/**
+//	 * Full constructor, used when restoring from a storage backend.
+//	 */
+//	public OperationMetadata(
+//			int id,
+//			MatrixKey parentMatrixKey,
+//			int parentOperationId,
+//			String name,
+//			String simpleName,
+//			String description,
+//			OPType gtCode,
+//			int opSetSize,
+//			int implicitSetSize,
+//			int numChromosomes,
+//			Date creationDate
+//			)
+//	{
+//		this.key = new OperationKey(parentMatrixKey, id);
+//		this.parentOperationId = parentOperationId;
+//		this.name = name;
+//		this.simpleName = simpleName;
+//		this.description = description;
+//		this.gtCode = gtCode;
+//		this.opSetSize = opSetSize;
+//		this.implicitSetSize = implicitSetSize;
+//		this.numChromosomes = numChromosomes;
+//		this.creationDate = (creationDate == null)
+//				? null : (Date) creationDate.clone();
+//	}
+
+	/**
+	 * TODO
+	 */
 	public OperationMetadata(
-			int id,
 			MatrixKey parentMatrixKey,
 			int parentOperationId,
-			String opName,
-			String netCDFName,
+			String name,
 			String description,
-			String pathToMatrix,
 			OPType gtCode,
 			int opSetSize,
 			int implicitSetSize,
-			Date creationDate
+			int numChromosomes
 			)
 	{
-		this.key = new OperationKey(parentMatrixKey, id);
+		this.key = new OperationKey(parentMatrixKey, Integer.MIN_VALUE);
 		this.parentOperationId = parentOperationId;
-		this.opName = opName;
-		this.netCDFName = netCDFName;
+		this.name = name;
 		this.description = description;
-		this.pathToMatrix = pathToMatrix;
 		this.gtCode = gtCode;
 		this.opSetSize = opSetSize;
 		this.implicitSetSize = implicitSetSize;
-		this.creationDate = (creationDate == null)
-				? null : (Date) creationDate.clone();
+		this.numChromosomes = numChromosomes;
+		this.creationDate =  new Date();
+		this.simpleName = gtCode.name() + "_" + MatrixFactory.generateMatrixNetCDFNameByDate(creationDate);
 	}
+
+//	/**
+//	 * Constructor to be used when creating a new operation,
+//	 * that will be completed later on.
+//	 */
+//	public OperationMetadata(
+//			MatrixKey parentMatrixKey,
+//			int parentOperationId,
+//			String name,
+//			String description,
+//			OPType gtCode
+//			)
+//	{
+//		this(
+//				parentMatrixKey,
+//				parentOperationId,
+//				name,
+//				description,
+//				gtCode,
+//				Integer.MIN_VALUE,
+//				Integer.MIN_VALUE,
+//				Integer.MIN_VALUE);
+//	}
 
 	@Override
 	public boolean equals(Object obj) {
@@ -209,46 +263,50 @@ public class OperationMetadata implements Serializable {
 		return key.getParentMatrixKey().getStudyKey();
 	}
 
+	/**
+	 * A human eye friendly name.
+	 * @return a string matching with any characters
+	 */
 	@Column(
-		name       = "opName",
+		name       = "name",
 		length     = 127,
 		unique     = false,
-		nullable   = false,
+		nullable   = true,
 		insertable = true,
 		updatable  = false
 		)
-	public String getOPName() {
-		return opName;
+	public String getName() {
+		return name;
 	}
 
-	protected void setOPName(String opName) {
-		this.opName = opName;
+	protected void setName(String opName) {
+		this.name = opName;
 	}
 
 	@Transient
 	public String getFriendlyName() {
-		return getOPName();
+		return getName();
 	}
 
+	/**
+	 * A simple, (generally) unique machine friendly name for this operation,
+	 * to be used for storage file names, for example.
+	 * @return a string matching "[0-9a-zA-Z_:.]+"
+	 */
 	@Column(
-		name       = "netCDFName",
+		name       = "simpleName",
 		length     = 255,
 		unique     = false,
-		nullable   = false,
+		nullable   = true,
 		insertable = true,
 		updatable  = false
 		)
-	public String getMatrixCDFName() {
-		return netCDFName;
+	public String getSimpleName() {
+		return simpleName;
 	}
 
-	protected void setMatrixCDFName(String netCDFName) {
-		this.netCDFName = netCDFName;
-	}
-
-	@Transient
-	public String getNetCDFName() {
-		return getMatrixCDFName();
+	protected void setSimpleName(String simpleName) {
+		this.simpleName = simpleName;
 	}
 
 	@Column(
@@ -271,22 +329,19 @@ public class OperationMetadata implements Serializable {
 		return getGenotypeCode();
 	}
 
-	@Transient
+	@Column(
+		name       = "opSetSize",
+		unique     = false,
+		nullable   = true,
+		insertable = true,
+		updatable  = false
+		)
 	public int getOpSetSize() {
 		return opSetSize;
 	}
 
 	public void setOpSetSize(int opSetSize) {
 		this.opSetSize = opSetSize;
-	}
-
-	@Transient
-	public String getPathToMatrix() {
-		return pathToMatrix;
-	}
-
-	public void setPathToMatrix(String pathToMatrix) {
-		this.pathToMatrix = pathToMatrix;
 	}
 
 	@Column(
@@ -326,13 +381,34 @@ public class OperationMetadata implements Serializable {
 		return new OperationKey(getParentMatrixKey(), getParentOperationId());
 	}
 
-	@Transient
+	@Column(
+		name       = "implicitSetSize",
+		unique     = false,
+		nullable   = true,
+		insertable = true,
+		updatable  = false
+		)
 	public int getImplicitSetSize() {
 		return implicitSetSize;
 	}
 
 	public void setImplicitSetSize(int implicitSetSize) {
 		this.implicitSetSize = implicitSetSize;
+	}
+
+	@Column(
+		name       = "numChromosomes",
+		unique     = false,
+		nullable   = true,
+		insertable = true,
+		updatable  = false
+		)
+	public int getNumChromosomes() {
+		return numChromosomes;
+	}
+
+	public void setNumChromosomes(int numChromosomes) {
+		this.numChromosomes = numChromosomes;
 	}
 
 	@Temporal(TemporalType.DATE)
@@ -354,5 +430,11 @@ public class OperationMetadata implements Serializable {
 	@Transient
 	public OPType getType() {
 		return getGenotypeCode();
+	}
+
+	public static File generatePathToNetCdfFile(OperationMetadata operation) throws IOException {
+
+		String genotypesFolder = Study.constructGTPath(operation.getStudyKey());
+		return new File(genotypesFolder, operation.getSimpleName() + ".nc");
 	}
 }

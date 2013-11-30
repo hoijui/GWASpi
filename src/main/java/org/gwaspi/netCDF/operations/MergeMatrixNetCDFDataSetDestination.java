@@ -24,15 +24,8 @@ import org.gwaspi.global.Text;
 import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.netCDF.loader.AbstractNetCDFDataSetDestination;
-import org.gwaspi.netCDF.matrices.MatrixFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import ucar.ma2.InvalidRangeException;
 
 public class MergeMatrixNetCDFDataSetDestination extends AbstractNetCDFDataSetDestination {
-
-	private final Logger log
-			= LoggerFactory.getLogger(MergeMatrixNetCDFDataSetDestination.class);
 
 	private final DataSetSource dataSetSource1;
 	private final DataSetSource dataSetSource2;
@@ -69,7 +62,7 @@ public class MergeMatrixNetCDFDataSetDestination extends AbstractNetCDFDataSetDe
 	}
 
 	@Override
-	protected MatrixFactory createMatrixFactory() throws IOException {
+	protected MatrixMetadata createMatrixMetadata() throws IOException {
 
 		final int numMarkers = getDataSet().getMarkerMetadatas().size();
 		final int numSamples = getDataSet().getSampleInfos().size();
@@ -98,11 +91,11 @@ public class MergeMatrixNetCDFDataSetDestination extends AbstractNetCDFDataSetDe
 		description.append("\nMX-");
 		description.append(rdMatrix1Metadata.getMatrixId());
 		description.append(" - ");
-		description.append(rdMatrix1Metadata.getMatrixFriendlyName());
+		description.append(rdMatrix1Metadata.getFriendlyName());
 		description.append("\nMX-");
 		description.append(rdMatrix2Metadata.getMatrixId());
 		description.append(" - ");
-		description.append(rdMatrix2Metadata.getMatrixFriendlyName());
+		description.append(rdMatrix2Metadata.getFriendlyName());
 		description.append("\n\n");
 		description.append("Merge Method - ");
 		description.append(humanReadableMethodName);
@@ -111,22 +104,19 @@ public class MergeMatrixNetCDFDataSetDestination extends AbstractNetCDFDataSetDe
 		description.append("\nGenotype encoding: ");
 		description.append(gtEncoding.toString());
 
-		try {
-			return new MatrixFactory(
-					technology, // technology
-					matrixFriendlyName,
-					description.toString(), // description
-					gtEncoding, // GT encoding
-					rdMatrix1Metadata.getStrand(),
-					hasDictionary, // has dictionary?
-					numSamples,
-					numMarkers,
-					numChromosomes,
-					rdMatrix1Metadata.getKey(), // Parent matrix 1 key
-					rdMatrix2Metadata.getKey()); // Parent matrix 2 key
-		} catch (InvalidRangeException ex) {
-			throw new IOException(ex);
-		}
+		return new MatrixMetadata(
+				rdMatrix1Metadata.getStudyKey(),
+				matrixFriendlyName,
+				technology,
+				description.toString(),
+				gtEncoding,
+				rdMatrix1Metadata.getStrand(),
+				hasDictionary,
+				numMarkers,
+				numSamples,
+				numChromosomes,
+				rdMatrix1Metadata.getKey().getMatrixId(), // Parent matrix 1 key
+				rdMatrix2Metadata.getKey().getMatrixId()); // Parent matrix 2 key
 	}
 
 	@Override

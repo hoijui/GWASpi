@@ -18,7 +18,7 @@
 package org.gwaspi.model;
 
 import java.util.List;
-import java.util.Map;
+//import java.util.Map;
 
 /**
  * Allows to read the genotypes matrix, sample by sample.

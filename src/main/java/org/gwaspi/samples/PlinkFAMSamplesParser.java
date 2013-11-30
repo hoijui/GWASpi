@@ -24,13 +24,8 @@ import org.gwaspi.constants.cImport;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.loader.DataSetDestination;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class PlinkFAMSamplesParser implements SamplesParser {
-
-	private static final Logger log
-			= LoggerFactory.getLogger(PlinkFAMSamplesParser.class);
 
 	@Override
 	public void scanSampleInfo(StudyKey studyKey, String sampleInfoPath, DataSetDestination samplesReceiver) throws Exception {
@@ -38,7 +33,6 @@ public class PlinkFAMSamplesParser implements SamplesParser {
 		FileReader inputFileReader = new FileReader(new File(sampleInfoPath));
 		BufferedReader inputBufferReader = new BufferedReader(inputFileReader);
 
-		int numSamples = 0;
 		while (inputBufferReader.ready()) {
 			String l = inputBufferReader.readLine();
 			String[] cVals = l.split(cImport.Separators.separators_CommaSpaceTab_rgxp);
@@ -59,14 +53,8 @@ public class PlinkFAMSamplesParser implements SamplesParser {
 					affection
 					);
 			samplesReceiver.addSampleInfo(sampleInfo);
-			numSamples++;
-
-			if (numSamples % 100 == 0) {
-				log.info("Parsed {} Samples for info...", numSamples);
-			}
 		}
 
 		inputBufferReader.close();
-		inputFileReader.close();
 	}
 }

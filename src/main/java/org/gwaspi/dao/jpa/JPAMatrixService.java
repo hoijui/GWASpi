@@ -21,17 +21,12 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceException;
 import javax.persistence.Query;
-import org.gwaspi.constants.cImport.ImportFormat;
-import org.gwaspi.constants.cNetCDF;
-import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
-import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
 import org.gwaspi.dao.MatrixService;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
@@ -40,14 +35,8 @@ import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.ReportsList;
 import org.gwaspi.model.Study;
 import org.gwaspi.model.StudyKey;
-import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.ma2.ArrayChar;
-import ucar.ma2.InvalidRangeException;
-import ucar.nc2.Dimension;
-import ucar.nc2.NetcdfFile;
-import ucar.nc2.Variable;
 
 /**
  * JPA implementation of a matrix service.
@@ -109,6 +98,18 @@ public class JPAMatrixService implements MatrixService {
 		}
 	}
 
+	private static List<MatrixKey> convertFieldsToMatrixKeys(List<Object[]> studyIdMatrixIds) {
+
+		List<MatrixKey> matrices = new ArrayList<MatrixKey>(studyIdMatrixIds.size());
+		for (Object[] matrixKeyParts : studyIdMatrixIds) {
+			matrices.add(new MatrixKey(
+					new StudyKey((Integer) matrixKeyParts[0]),
+					(Integer) matrixKeyParts[1]));
+		}
+
+		return matrices;
+	}
+
 	@Override
 	public List<MatrixKey> getMatrixKeys() throws IOException {
 
@@ -118,14 +119,9 @@ public class JPAMatrixService implements MatrixService {
 		try {
 			em = open();
 			List<Object[]> matricesKeyParts = em.createNamedQuery("matrixMetadata_listKeys").getResultList();
-			matrices = new ArrayList<MatrixKey>(matricesKeyParts.size());
-			for (Object[] matrixKeyParts : matricesKeyParts) {
-				matrices.add(new MatrixKey(
-						new StudyKey((Integer) matrixKeyParts[0]),
-						(Integer) matrixKeyParts[1]));
-			}
-		} catch (Exception ex) {
-			LOG.error("Failed fetching all matrices", ex);
+			matrices = convertFieldsToMatrixKeys(matricesKeyParts);
+//		} catch (Exception ex) {
+//			LOG.error("Failed fetching all matrices", ex);
 		} finally {
 			close(em);
 		}
@@ -148,8 +144,8 @@ public class JPAMatrixService implements MatrixService {
 			for (Integer matrixId : matricesIds) {
 				matrices.add(new MatrixKey(studyKey, matrixId));
 			}
-		} catch (Exception ex) {
-			LOG.error("Failed fetching all matrices", ex);
+//		} catch (Exception ex) {
+//			LOG.error("Failed fetching all matrices", ex);
 		} finally {
 			close(em);
 		}
@@ -168,11 +164,8 @@ public class JPAMatrixService implements MatrixService {
 			Query query = em.createNamedQuery("matrixMetadata_listByStudyId");
 			query.setParameter("studyId", studyKey.getId());
 			matricesMetadata = query.getResultList();
-			for (int i = 0; i < matricesMetadata.size(); i++) {
-				matricesMetadata.set(i, completeMatricesTable(matricesMetadata.get(i)));
-			}
-		} catch (Exception ex) {
-			LOG.error("Failed fetching all matrices-metadata", ex);
+//		} catch (IOException ex) {
+//			LOG.error("Failed fetching all matrices-metadata", ex);
 		} finally {
 			close(em);
 		}
@@ -181,7 +174,7 @@ public class JPAMatrixService implements MatrixService {
 	}
 
 	@Override
-	public void insertMatrix(MatrixMetadata matrixMetadata) throws IOException {
+	public MatrixKey insertMatrix(MatrixMetadata matrixMetadata) throws IOException {
 
 		EntityManager em = null;
 		try {
@@ -193,12 +186,14 @@ public class JPAMatrixService implements MatrixService {
 				em.merge(matrixMetadata);
 			}
 			commit(em);
-		} catch (Exception ex) {
-			LOG.error("Failed adding a matrix-metadata", ex);
-			rollback(em);
+//		} catch (Exception ex) {
+//			LOG.error("Failed adding a matrix-metadata", ex);
+//			rollback(em);
 		} finally {
 			close(em);
 		}
+
+		return MatrixKey.valueOf(matrixMetadata);
 	}
 
 	@Override
@@ -232,19 +227,19 @@ public class JPAMatrixService implements MatrixService {
 		// DELETE OPERATION netCDFs FROM THIS MATRIX
 		List<OperationMetadata> operations = OperationsList.getOperationsList(matrixKey);
 		for (OperationMetadata op : operations) {
-			File opFile = new File(genotypesFolder + op.getMatrixCDFName()+ ".nc");
-			org.gwaspi.global.Utils.tryToDeleteFile(opFile);
+			org.gwaspi.global.Utils.tryToDeleteFile(OperationMetadata.generatePathToNetCdfFile(op));
 		}
 
 		ReportsList.deleteReportByMatrixId(matrixKey);
 
 		// DELETE MATRIX NETCDF FILE
-		File matrixFile = new File(genotypesFolder + matrixMetadata.getMatrixNetCDFName() + ".nc");
+		File matrixFile = MatrixMetadata.generatePathToNetCdfFile(matrixMetadata);
 		org.gwaspi.global.Utils.tryToDeleteFile(matrixFile);
 	}
 
 	@Override
 	public void updateMatrix(MatrixMetadata matrixMetadata) throws IOException {
+
 		EntityManager em = null;
 		try {
 			em = open();
@@ -269,8 +264,7 @@ public class JPAMatrixService implements MatrixService {
 			em = open();
 			Query query = em.createNamedQuery("matrixMetadata_fetchById");
 			query.setParameter("id", matrixKey.getMatrixId());
-			MatrixMetadata matrixMetadataTmp = (MatrixMetadata) query.getSingleResult();
-			matrixMetadata = completeMatricesTable(matrixMetadataTmp);
+			matrixMetadata = (MatrixMetadata) query.getSingleResult();
 		} catch (NoResultException ex) {
 			LOG.error("Failed fetching matrix-metadata by id: " + matrixKey.toRawIdString()
 					+ " (id not found)", ex);
@@ -294,127 +288,48 @@ public class JPAMatrixService implements MatrixService {
 	}
 
 	@Override
-	public MatrixMetadata getMatrix(String netCDFName) throws IOException {
+	public List<MatrixKey> getMatrixKeysBySimpleName(String simpleName) throws IOException {
 
-		MatrixMetadata matrixMetadata = null;
+		List<MatrixKey> matrices = Collections.EMPTY_LIST;
 
 		EntityManager em = null;
 		try {
 			em = open();
-			Query query = em.createNamedQuery("matrixMetadata_fetchByNetCDFName");
-			query.setParameter("netCDFName", netCDFName);
-			matrixMetadata = (MatrixMetadata) query.getSingleResult();
-			matrixMetadata = completeMatricesTable(matrixMetadata);
+			Query query = em.createNamedQuery("matrixMetadata_listKeysBySimpleName");
+			query.setParameter("simpleName", simpleName);
+			matrices = convertFieldsToMatrixKeys(query.getResultList());
 		} catch (NoResultException ex) {
-			LOG.error("Failed fetching matrix-metadata by netCDFname: " + netCDFName
+			LOG.error("Failed fetching matrix-keys by simple name: " + simpleName
 					+ " (id not found)", ex);
 		} catch (Exception ex) {
-			LOG.error("Failed fetching matrix-metadata by netCDFname: " + netCDFName, ex);
+			LOG.error("Failed fetching matrix-keys by simple name: " + simpleName, ex);
 		} finally {
 			close(em);
 		}
 
-		return matrixMetadata;
+		return matrices;
 	}
 
 	@Override
-	public MatrixMetadata getMatrix(String netCDFpath, StudyKey studyKey, String newMatrixName) throws IOException {
+	public List<MatrixKey> getMatrixKeysByName(String friendlyName) throws IOException {
 
-		int matrixId = Integer.MIN_VALUE;
-		String matrixFriendlyName = newMatrixName;
-		String matrixNetCDFName = MatrixFactory.generateMatrixNetCDFNameByDate();
-		String description = "";
-		String matrixType = "";
-		Date creationDate = null;
+		List<MatrixKey> matrices = Collections.EMPTY_LIST;
 
-		String pathToMatrix = netCDFpath;
-		return loadMatrixMetadataFromFile(matrixId, matrixFriendlyName, matrixNetCDFName, studyKey, pathToMatrix, description, matrixType, creationDate);
-	}
-
-	private static MatrixMetadata completeMatricesTable(MatrixMetadata toCompleteMatrixMetadata) throws IOException {
-		String pathToStudy = Study.constructGTPath(toCompleteMatrixMetadata.getKey().getStudyKey());
-		String pathToMatrix = pathToStudy + toCompleteMatrixMetadata.getMatrixNetCDFName() + ".nc";
-		return loadMatrixMetadataFromFile(
-				toCompleteMatrixMetadata.getMatrixId(),
-				toCompleteMatrixMetadata.getMatrixFriendlyName(),
-				toCompleteMatrixMetadata.getMatrixNetCDFName(),
-				new StudyKey(toCompleteMatrixMetadata.getStudyId()),
-				pathToMatrix,
-				toCompleteMatrixMetadata.getDescription(),
-				toCompleteMatrixMetadata.getMatrixType(),
-				toCompleteMatrixMetadata.getCreationDate());
-	}
-
-	private static MatrixMetadata loadMatrixMetadataFromFile(int matrixId, String matrixFriendlyName, String matrixNetCDFName, StudyKey studyKey, String pathToMatrix, String description, String matrixType, Date creationDate) throws IOException {
-
-		String gwaspiDBVersion = "";
-		ImportFormat technology = ImportFormat.UNKNOWN;
-		GenotypeEncoding gtEncoding = GenotypeEncoding.UNKNOWN;
-		StrandType strand = StrandType.UNKNOWN;
-		boolean hasDictionray = false;
-		int markerSetSize = Integer.MIN_VALUE;
-		int sampleSetSize = Integer.MIN_VALUE;
-
-		NetcdfFile ncfile = null;
-		if (new File(pathToMatrix).exists()) {
-			try {
-				ncfile = NetcdfFile.open(pathToMatrix);
-
-				technology = ImportFormat.compareTo(ncfile.findGlobalAttribute(cNetCDF.Attributes.GLOB_TECHNOLOGY).getStringValue());
-				try {
-					gwaspiDBVersion = ncfile.findGlobalAttribute(cNetCDF.Attributes.GLOB_GWASPIDB_VERSION).getStringValue();
-				} catch (Exception ex) {
-					LOG.error(null, ex);
-				}
-
-				Variable var = ncfile.findVariable(cNetCDF.Variables.GLOB_GTENCODING);
-				if (var != null) {
-					try {
-						ArrayChar.D2 gtCodeAC = (ArrayChar.D2) var.read("(0:0:1, 0:7:1)");
-//						gtEncoding = GenotypeEncoding.valueOf(gtCodeAC.getString(0));
-						gtEncoding = GenotypeEncoding.compareTo(gtCodeAC.getString(0)); // HACK, the above was used before
-					} catch (InvalidRangeException ex) {
-						LOG.error(null, ex);
-					}
-				}
-
-				strand = StrandType.valueOf(ncfile.findGlobalAttribute(cNetCDF.Attributes.GLOB_STRAND).getStringValue());
-				hasDictionray = ((Integer) ncfile.findGlobalAttribute(cNetCDF.Attributes.GLOB_HAS_DICTIONARY).getNumericValue() != 0);
-
-				Dimension markerSetDim = ncfile.findDimension(cNetCDF.Dimensions.DIM_MARKERSET);
-				markerSetSize = markerSetDim.getLength();
-
-				Dimension sampleSetDim = ncfile.findDimension(cNetCDF.Dimensions.DIM_SAMPLESET);
-				sampleSetSize = sampleSetDim.getLength();
-			} catch (IOException ex) {
-				LOG.error("Cannot open file: " + ncfile, ex);
-			} finally {
-				if (null != ncfile) {
-					try {
-						ncfile.close();
-					} catch (IOException ex) {
-						LOG.warn("Cannot close file: " + ncfile, ex);
-					}
-				}
-			}
+		EntityManager em = null;
+		try {
+			em = open();
+			Query query = em.createNamedQuery("matrixMetadata_listKeysByFriendlyName");
+			query.setParameter("friendlyName", friendlyName);
+			matrices = convertFieldsToMatrixKeys(query.getResultList());
+		} catch (NoResultException ex) {
+			LOG.error("Failed fetching matrix-keys by friendly name: " + friendlyName
+					+ " (id not found)", ex);
+		} catch (Exception ex) {
+			LOG.error("Failed fetching matrix-keys by friendly name: " + friendlyName, ex);
+		} finally {
+			close(em);
 		}
 
-		MatrixMetadata matrixMetadata = new MatrixMetadata(
-			new MatrixKey(studyKey, matrixId),
-			matrixFriendlyName,
-			matrixNetCDFName,
-			pathToMatrix,
-			technology,
-			gwaspiDBVersion,
-			description,
-			gtEncoding,
-			strand,
-			hasDictionray,
-			markerSetSize,
-			sampleSetSize,
-			matrixType,
-			creationDate);
-
-		return matrixMetadata;
+		return matrices;
 	}
 }

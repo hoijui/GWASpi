@@ -24,7 +24,6 @@ import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.netCDF.loader.GenotypesLoadDescription;
-import org.gwaspi.netCDF.loader.InMemorySamplesReceiver;
 import org.gwaspi.netCDF.loader.LoadManager;
 import org.gwaspi.netCDF.loader.LoadingNetCDFDataSetDestination;
 import org.gwaspi.netCDF.loader.SampleInfoCollectorSwitch;

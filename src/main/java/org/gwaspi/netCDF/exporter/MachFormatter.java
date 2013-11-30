@@ -64,7 +64,7 @@ public class MachFormatter implements Formatter {
 		String tmpChr = "";
 		int start = 0;
 		int end = 0;
-		String dataSetName = rdMatrixMetadata.getMatrixFriendlyName();
+		String dataSetName = rdMatrixMetadata.getFriendlyName();
 		List<String> chrMarkerRsIds = new LinkedList<String>();
 		for (MarkerMetadata value : dataSetSource.getMarkersMetadatasSource()) {
 			String chr = value.getChr();

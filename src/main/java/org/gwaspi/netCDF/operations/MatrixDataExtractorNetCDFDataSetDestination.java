@@ -24,17 +24,11 @@ import org.gwaspi.constants.cNetCDF.Defaults.SetMarkerPickCase;
 import org.gwaspi.constants.cNetCDF.Defaults.SetSamplePickCase;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.DataSetSource;
+import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.netCDF.loader.AbstractNetCDFDataSetDestination;
-import org.gwaspi.netCDF.matrices.MatrixFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import ucar.ma2.InvalidRangeException;
 
 public class MatrixDataExtractorNetCDFDataSetDestination extends AbstractNetCDFDataSetDestination {
-
-	private final Logger log
-			= LoggerFactory.getLogger(MatrixDataExtractorNetCDFDataSetDestination.class);
 
 	private final DataSetSource dataSetSource;
 	private final String matrixDescription;
@@ -74,7 +68,7 @@ public class MatrixDataExtractorNetCDFDataSetDestination extends AbstractNetCDFD
 	}
 
 	@Override
-	protected MatrixFactory createMatrixFactory() throws IOException {
+	protected MatrixMetadata createMatrixMetadata() throws IOException {
 
 //		wrSampleSetMap.size();
 //		wrMarkerKeys.size()
@@ -106,7 +100,7 @@ public class MatrixDataExtractorNetCDFDataSetDestination extends AbstractNetCDFD
 
 		StringBuilder description = new StringBuilder(Text.Matrix.descriptionHeader1);
 		description.append(org.gwaspi.global.Utils.getShortDateTimeAsString());
-		description.append("\nThrough Matrix extraction from parent Matrix MX: ").append(sourceMatrixMetadata.getMatrixId()).append(" - ").append(sourceMatrixMetadata.getMatrixFriendlyName());
+		description.append("\nThrough Matrix extraction from parent Matrix MX: ").append(sourceMatrixMetadata.getMatrixId()).append(" - ").append(sourceMatrixMetadata.getFriendlyName());
 
 		description.append("\nMarker Filter Variable: ");
 		String pickPrefix = "All Markers";
@@ -151,22 +145,19 @@ public class MatrixDataExtractorNetCDFDataSetDestination extends AbstractNetCDFD
 		description.append("Markers: ").append(numMarkers);
 		description.append(", Samples: ").append(numSamples);
 
-		try {
-			return new MatrixFactory(
-					sourceMatrixMetadata.getTechnology(), // technology
-					matrixFriendlyName,
-					description.toString(), // description
-					sourceMatrixMetadata.getGenotypeEncoding(), // matrix genotype encoding from the original matrix
-					sourceMatrixMetadata.getStrand(),
-					sourceMatrixMetadata.getHasDictionary(), // has dictionary?
-					numSamples,
-					numMarkers,
-					numChromosomes,
-					sourceMatrixMetadata.getKey(), // orig/parent matrix 1 key
-					null); // orig/parent matrix 2 key
-		} catch (InvalidRangeException ex) {
-			throw new IOException(ex);
-		}
+		return new MatrixMetadata(
+				sourceMatrixMetadata.getStudyKey(),
+				matrixFriendlyName,
+				sourceMatrixMetadata.getTechnology(),
+				description.toString(),
+				sourceMatrixMetadata.getGenotypeEncoding(), // matrix genotype encoding from the original matrix
+				sourceMatrixMetadata.getStrand(),
+				sourceMatrixMetadata.getHasDictionary(), // has dictionary?
+				numMarkers,
+				numSamples,
+				numChromosomes,
+				sourceMatrixMetadata.getKey().getMatrixId(), // orig/parent matrix 1 key
+				MatrixKey.NULL_ID); // orig/parent matrix 2 key
 	}
 
 	@Override

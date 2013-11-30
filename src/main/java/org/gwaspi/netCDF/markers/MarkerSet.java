@@ -78,8 +78,8 @@ public class MarkerSet extends AbstractList<GenotypesList> implements SamplesGen
 	public MarkerSet(MatrixMetadata matrixMetadata) throws IOException {
 
 		this.technology = matrixMetadata.getTechnology();
-		this.markerSetSize = matrixMetadata.getMarkerSetSize();
-		this.ncfile = NetcdfFile.open(matrixMetadata.getPathToMatrix());
+		this.markerSetSize = matrixMetadata.getNumMarkers();
+		this.ncfile = NetcdfFile.open(MatrixMetadata.generatePathToNetCdfFile(matrixMetadata).getAbsolutePath());
 		this.startMkIdx = 0;
 		this.endMkIdx = Integer.MIN_VALUE;
 		this.markerIdSetMap = null;

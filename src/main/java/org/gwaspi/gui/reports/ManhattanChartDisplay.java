@@ -26,6 +26,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import javax.swing.AbstractAction;
 import javax.swing.GroupLayout;
 import javax.swing.ImageIcon;
@@ -50,7 +51,6 @@ import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.Study;
 import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.operations.OperationFactory;
-import org.gwaspi.operations.OperationDataSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,14 +64,13 @@ public final class ManhattanChartDisplay extends JPanel {
 	private JPanel pnl_Footer;
 	private JScrollPane scrl_Chart;
 //	private ManhattanPlotImageLabel label = new ManhattanPlotImageLabel();
-	private JLabel label = new JLabel();
+	private final JLabel label;
 	private boolean fired;
 	private JButton btn_Save;
 	private JButton btn_Back;
 	private OperationKey operationKey;
-	private List<ChromosomeKey> chrKeys;
-	private List<ChromosomeInfo> chrInfos;
-	private ChromosomeKey chr = new ChromosomeKey("");
+	private List<ChromosomeKey> chromosomeKeys;
+	private List<ChromosomeInfo> chromosomeInfos;
 	private int chartWidth = 0;
 	private int chrPlotWidth = 0;
 	private int chrPlotWidthPad = 0;
@@ -80,7 +79,12 @@ public final class ManhattanChartDisplay extends JPanel {
 	// End of variables declaration
 
 	public ManhattanChartDisplay(final String chartPath, OperationKey testOpKey) {
-		fired = false;
+
+		this.label = new JLabel();
+		this.chromosomeKeys = null;
+		this.chromosomeInfos = null;
+		this.fired = false;
+
 		initManhattanChartDisplay(chartPath, testOpKey);
 		initChromosmesMap(testOpKey.getParentMatrixKey().getStudyKey(), chartPath);
 	}
@@ -227,13 +231,13 @@ public final class ManhattanChartDisplay extends JPanel {
 		}
 
 		try {
-			OperationDataSet opDS = OperationFactory.generateOperationDataSet(operationKey);
-			chrKeys = new ArrayList<ChromosomeKey>(opDS.getChromosomes().values());
-			chrInfos = (List) opDS.getChromosomeInfos();
+			Map<ChromosomeKey, ChromosomeInfo> chromosomes = OperationFactory.extractChromosomeKeysAndInfos(operationKey);
+			chromosomeKeys = new ArrayList<ChromosomeKey>(chromosomes.keySet());
+			chromosomeInfos = new ArrayList<ChromosomeInfo>(chromosomes.values());
 
 			// CHECK HOW MANY CHR HAVE PLOTS (ANY MARKERS?)
 			int chrPlotNb = 0;
-			for (ChromosomeInfo chrInfo : chrInfos) {
+			for (ChromosomeInfo chrInfo : chromosomeInfos) {
 				if (chrInfo.getMarkerCount() > 0) {
 					chrPlotNb++;
 				}
@@ -254,7 +258,9 @@ public final class ManhattanChartDisplay extends JPanel {
 
 		int pxXposNoLeftPad = pxXpos - padLeft;
 
-		ChromosomeInfo chrInfo = getChrInfo(pxXposNoLeftPad);
+		Object[] chromosomeAtPos = getChrInfo(pxXposNoLeftPad);
+		ChromosomeKey chr = (ChromosomeKey) chromosomeAtPos[0];
+		ChromosomeInfo chrInfo = (ChromosomeInfo) chromosomeAtPos[1];
 
 		int nbMarkers = chrInfo.getMarkerCount();
 		int startPhysPos = chrInfo.getFirstPos();
@@ -288,17 +294,21 @@ public final class ManhattanChartDisplay extends JPanel {
 		return sliceInfo;
 	}
 
-	private ChromosomeInfo getChrInfo(int pxXposNoLeftPad) {
+	private Object[] getChrInfo(int pxXposNoLeftPad) {
 
 		final int selectedChrMap = Math.round((float) pxXposNoLeftPad / chrPlotWidthPad);
 
-		ChromosomeInfo chrInfo = new ChromosomeInfo();
-		if (selectedChrMap < chrInfos.size()) {
-			chr = chrKeys.get(selectedChrMap);
-			chrInfo = chrInfos.get(selectedChrMap);
+		ChromosomeKey chrKey;
+		ChromosomeInfo chrInfo;
+		if (selectedChrMap < chromosomeKeys.size()) {
+			chrKey = chromosomeKeys.get(selectedChrMap);
+			chrInfo = chromosomeInfos.get(selectedChrMap);
+		} else {
+			chrKey = new ChromosomeKey("");
+			chrInfo = new ChromosomeInfo();
 		}
 
-		return chrInfo;
+		return new Object[] {chrKey, chrInfo};
 	}
 
 	public boolean isFired() {

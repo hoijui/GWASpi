@@ -17,7 +17,6 @@
 
 package org.gwaspi.operations.genotypicassociationtest;
 
-import org.gwaspi.operations.trendtest.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -29,6 +28,7 @@ import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.netCDF.operations.MarkerOperationSet;
 import org.gwaspi.netCDF.operations.NetCdfUtils;
+import org.gwaspi.operations.trendtest.AbstractNetCdfTestOperationDataSet;
 import ucar.ma2.ArrayDouble;
 import ucar.ma2.InvalidRangeException;
 

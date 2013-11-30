@@ -144,7 +144,7 @@ public class GWASpiExplorerNodes {
 					matrixMetadata.getStudyId(),
 					matrixKey.getMatrixId(),
 					Text.App.treeMatrix,
-					"MX: " + matrixKey.getMatrixId() + " - " + matrixMetadata.getMatrixFriendlyName(),
+					"MX: " + matrixKey.getMatrixId() + " - " + matrixMetadata.getFriendlyName(),
 					matrixKey));
 		} catch (IOException ex) {
 			log.error(null, ex);
@@ -318,7 +318,7 @@ public class GWASpiExplorerNodes {
 
 			// GET MATRIX
 			MatrixMetadata matrixMetadata = MatricesList.getMatrixMetadataById(operationKey.getParentMatrixKey());
-			TreePath parentPath = GWASpiExplorerPanel.getSingleton().getTree().getNextMatch("MX: " + operationKey.getParentMatrixId() + " - " + matrixMetadata.getMatrixFriendlyName(), 0, Position.Bias.Forward);
+			TreePath parentPath = GWASpiExplorerPanel.getSingleton().getTree().getNextMatch("MX: " + operationKey.getParentMatrixId() + " - " + matrixMetadata.getFriendlyName(), 0, Position.Bias.Forward);
 
 			DefaultMutableTreeNode newNode = createOperationTreeNode(operationKey);
 

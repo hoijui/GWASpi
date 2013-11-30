@@ -80,7 +80,7 @@ public class LoadGTFromHGDP1Files extends AbstractLoadGTFromFiles implements Gen
 			throws Exception
 	{
 		// HACK
-		DataSet dataSet = ((InMemorySamplesReceiver) samplesReceiver).getDataSet();
+		DataSet dataSet = ((AbstractDataSetDestination) samplesReceiver).getDataSet();
 
 		int sampleIndex = 0;
 		for (SampleInfo sampleInfo : dataSet.getSampleInfos()) {

@@ -18,6 +18,7 @@
 package org.gwaspi.model;
 
 import java.nio.ByteBuffer;
+import java.util.AbstractList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -30,7 +31,7 @@ import org.gwaspi.netCDF.operations.NetCdfUtils;
 /**
  * A memory efficient implementation of GenotypesList.
  */
-public class CompactGenotypesList extends java.util.AbstractList<byte[]> implements GenotypesList {
+public class CompactGenotypesList extends AbstractList<byte[]> implements GenotypesList {
 
 	public static final GenotypesListFactory FACTORY = new GenotypesListFactory() {
 		@Override
@@ -92,8 +93,8 @@ public class CompactGenotypesList extends java.util.AbstractList<byte[]> impleme
 	{
 		this.size = size;
 		this.genotypeSize = genotypeSize;
-		int tmpMove = 8 - this.genotypeSize;
-		this.compactGenotypeMask = (byte) (0xFF << tmpMove >> tmpMove);
+		final byte tmpMove = (byte) (8 - this.genotypeSize);
+		this.compactGenotypeMask = calcByteBitMask(tmpMove);
 		this.encodingTable = encodingTable;
 		this.decodingTable = decodingTable;
 		this.compactGenotypes = compactGenotypes;
@@ -106,17 +107,23 @@ public class CompactGenotypesList extends java.util.AbstractList<byte[]> impleme
 		this.size = originalGenotypes.size();
 		this.possibleGenotypes = Collections.unmodifiableSet(new LinkedHashSet<byte[]>(possibleGenotypes));
 		this.genotypeSize = calcGenotypeBits(possibleGenotypes.size());
-		int tmpMove = 8 - this.genotypeSize;
-		this.compactGenotypeMask = (byte) (0xFF << tmpMove >> tmpMove);
+		final byte tmpMove = (byte) (8 - this.genotypeSize);
+		this.compactGenotypeMask = calcByteBitMask((byte) genotypeSize);
 //		this.encodingTable = new byte[this.genotypeSize];
 		this.encodingTable = new HashMap<Integer, Byte>(possibleGenotypes.size());
 		this.decodingTable = new byte[possibleGenotypes.size()][2];
 		int numStorageBytes = calcStorageBytes((long) originalGenotypes.size() * this.genotypeSize);
+		if (numStorageBytes == 0) {
+			// We always have to store at least one value.
+			// This can be seen as a constant,
+			// if all genotypes have the same value.
+			numStorageBytes = 1;
+		}
 //		this.compactGenotypes = new byte[numStorageBytes];
 		this.compactGenotypes = ByteBuffer.allocateDirect(numStorageBytes);
 //		this.compactGenotypes = new ArrayList<Byte>(numStorageBytes);
 
-		// create the encoding- and decoding tables
+		// create the encoding and decoding tables
 		byte compactForm = 0x00;
 		for (byte[] possibleGenotype : possibleGenotypes) {
 			int gtHashCode = Genotype.hashCode(possibleGenotype);
@@ -130,10 +137,15 @@ public class CompactGenotypesList extends java.util.AbstractList<byte[]> impleme
 //		int byteIndex = 0;
 		int firstBitIndex = 0;
 		byte curByte = 0x00;
+		// Indicates whether there is data in curByte
+		// that is not yet stored in compactGenotypes.
+		boolean unstoredData = false;
 		for (byte[] originalGenotype : originalGenotypes) {
 			int gtHashCode = Genotype.hashCode(originalGenotype);
 			compactForm = this.encodingTable.get(gtHashCode);
 			curByte += compactForm << firstBitIndex;
+			unstoredData = true;
+
 			if ((firstBitIndex + this.genotypeSize) > 7) {
 				// we need the next byte too
 				compactGenotypes.put(curByte);
@@ -141,9 +153,33 @@ public class CompactGenotypesList extends java.util.AbstractList<byte[]> impleme
 				curByte = 0x00;
 				curByte += compactForm << (firstBitIndex - 8);
 				firstBitIndex -= 8;
+				unstoredData = false;
 			}
 			firstBitIndex += this.genotypeSize;
 		}
+		if (unstoredData) {
+			compactGenotypes.put(curByte);
+			unstoredData = false;
+		}
+	}
+
+	public static byte calcByteBitMask(byte numBits) {
+		return (byte) ~((0xFF >>> numBits) << numBits);
+	}
+
+	public static String byteToBitString(byte value) {
+
+		// make sure we get all the leading zeros
+		final int bigValue = 0x100 | value;
+
+		// convert to binary string
+		String valueBitsStr = Integer.toBinaryString(bigValue);
+
+		// remove all but the last 8 bits representations
+		// (integer is 32bit, byte is 8bit)
+		valueBitsStr = valueBitsStr.substring(valueBitsStr.length() - Byte.SIZE);
+
+		return valueBitsStr;
 	}
 
 	@Override
@@ -166,25 +202,52 @@ public class CompactGenotypesList extends java.util.AbstractList<byte[]> impleme
 	 * to store the given number of bits.
 	 */
 	public static int calcStorageBytes(long numBits) {
-		return (int) ((numBits + 7) / 8);
+		return (int) ((numBits + 7L) / 8L);
 	}
 
 
 	@Override
 	public byte[] get(int index) {
 
-		long firstBitIndex = (long) index * genotypeSize;
-		int firstByteIndex = (int) (firstBitIndex / 8);
-		byte firstBitLocalIndex = (byte) (firstBitIndex % 8);
-		byte theByte = compactGenotypes.get(firstByteIndex);
-		byte compactValue = (byte) (theByte >> firstBitLocalIndex); // XXX Java fail!
-		if (firstBitLocalIndex + genotypeSize > 7) {
-			theByte = compactGenotypes.get(firstByteIndex + 1);
-			compactValue += theByte >> (firstBitLocalIndex - 8);
+long firstBitIndex = -1;
+int firstByteIndex = -1;
+byte firstBitLocalIndex = -1;
+byte storedByte = -1;
+byte compactValue = -1;
+try {
+		firstBitIndex = (long) index * genotypeSize;
+		firstByteIndex = (int) (firstBitIndex / 8);
+		firstBitLocalIndex = (byte) (firstBitIndex % 8);
+		storedByte = compactGenotypes.get(firstByteIndex);
+		compactValue = (byte) ((storedByte & 0xFF) >>> firstBitLocalIndex); // XXX Java fail!
+		if ((firstBitLocalIndex + genotypeSize - 1) > 7) {
+//System.err.println("UUU test_1: " + byteToBitString((byte) -47) + " (" + ((byte) -47) + ")");
+//System.err.println("UUU test_2: " + byteToBitString((byte) (-47 >> 5)) + " (" + ((byte) (-47 >> 5)) + ")");
+//System.err.println("UUU test_3: " + byteToBitString((byte) (-47 >>> 5)) + " (" + ((byte) (-47 >>> 5)) + ")");
+
+//System.err.println("VVV storedByte " + byteToBitString(storedByte) + " (" + storedByte + ")");
+			storedByte = compactGenotypes.get(firstByteIndex + 1);
+//System.err.println("VVV compactValue " + byteToBitString(compactValue) + " (" + compactValue + ")");
+			compactValue += (storedByte & 0xFF) >>> (firstBitLocalIndex - 8);
 		}
+//System.err.println("WWW compactValue " + byteToBitString(compactValue) + " (" + compactValue + ")");
 		compactValue &= compactGenotypeMask;
 
 		return Arrays.copyOf(decodingTable[compactValue], 2);
+} catch (Exception ex) {
+	System.err.println("XXX failed to get element " + index + " from list of size " + size);
+	System.err.println("XXX firstBitIndex " + firstBitIndex);
+	System.err.println("XXX firstByteIndex " + firstByteIndex);
+	System.err.println("XXX firstBitLocalIndex " + firstBitLocalIndex);
+	System.err.println("XXX storedByte " + byteToBitString(storedByte) + " (" + storedByte + ")");
+	System.err.println("XXX compactGenotypes " + compactGenotypes.capacity());
+	System.err.println("XXX decodingTable " + decodingTable.length);
+	System.err.println("XXX compactValue " + byteToBitString(compactValue) + " (" + compactValue + ")");
+	System.err.println("XXX genotypeSize " + genotypeSize);
+	System.err.println("XXX compactGenotypeMask " + byteToBitString(compactGenotypeMask) + " (" + compactGenotypeMask + ")");
+	ex.printStackTrace();
+	throw new RuntimeException(ex);
+}
 	}
 
 	@Override

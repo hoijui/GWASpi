@@ -68,7 +68,7 @@ public class DumpNCMatrix {
 		}
 
 		// GET SAMPLESET
-		var = ncfile.findVariable(cNetCDF.Variables.VAR_SAMPLESET);
+		var = ncfile.findVariable(cNetCDF.Variables.VAR_SAMPLE_KEY);
 		varShape = var.getShape();
 		Dimension markerSetDim = ncfile.findDimension(cNetCDF.Dimensions.DIM_SAMPLESET);
 

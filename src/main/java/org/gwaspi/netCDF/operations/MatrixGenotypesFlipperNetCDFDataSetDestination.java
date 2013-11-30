@@ -23,17 +23,11 @@ import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.DataSetSource;
+import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.netCDF.loader.AbstractNetCDFDataSetDestination;
-import org.gwaspi.netCDF.matrices.MatrixFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import ucar.ma2.InvalidRangeException;
 
 public class MatrixGenotypesFlipperNetCDFDataSetDestination extends AbstractNetCDFDataSetDestination {
-
-	private final Logger log
-			= LoggerFactory.getLogger(MatrixGenotypesFlipperNetCDFDataSetDestination.class);
 
 	private final DataSetSource dataSetSource;
 	private final String matrixDescription;
@@ -53,7 +47,7 @@ public class MatrixGenotypesFlipperNetCDFDataSetDestination extends AbstractNetC
 	}
 
 	@Override
-	protected MatrixFactory createMatrixFactory() throws IOException {
+	protected MatrixMetadata createMatrixMetadata() throws IOException {
 
 		final int numMarkers = getDataSet().getMarkerMetadatas().size();
 		final int numSamples = getDataSet().getSampleInfos().size();
@@ -65,7 +59,7 @@ public class MatrixGenotypesFlipperNetCDFDataSetDestination extends AbstractNetC
 		description.append(Text.Matrix.descriptionHeader1);
 		description.append(org.gwaspi.global.Utils.getShortDateTimeAsString());
 		description.append("\nThrough Matrix genotype flipping from parent Matrix MX: ").append(sourceMatrixMetadata.getMatrixId());
-		description.append(" - ").append(sourceMatrixMetadata.getMatrixFriendlyName());
+		description.append(" - ").append(sourceMatrixMetadata.getFriendlyName());
 		description.append("\nUsed list of markers to be flipped: ").append(flipperFile.getPath());
 		if (!matrixDescription.isEmpty()) {
 			description.append("\n\nDescription: ");
@@ -78,22 +72,19 @@ public class MatrixGenotypesFlipperNetCDFDataSetDestination extends AbstractNetC
 		description.append("Markers: ").append(numMarkers);
 		description.append(", Samples: ").append(numSamples);
 
-		try {
-			return new MatrixFactory(
-					sourceMatrixMetadata.getTechnology(), // technology
-					matrixFriendlyName,
-					description.toString(), // description
-					sourceMatrixMetadata.getGenotypeEncoding(), // matrix genotype encoding from the original matrix
-					StrandType.valueOf("FLP"), // FIXME this will fail at runtime
-					sourceMatrixMetadata.getHasDictionary(), // has dictionary?
-					numSamples,
-					numMarkers,
-					numChromosomes,
-					sourceMatrixMetadata.getKey(), // orig/parent matrix 1 key
-					null); // orig/parent matrix 2 key
-		} catch (InvalidRangeException ex) {
-			throw new IOException(ex);
-		}
+		return new MatrixMetadata(
+				sourceMatrixMetadata.getStudyKey(),
+				matrixFriendlyName,
+				sourceMatrixMetadata.getTechnology(),
+				description.toString(),
+				sourceMatrixMetadata.getGenotypeEncoding(), // matrix genotype encoding from the original matrix
+				StrandType.fromString("FLP"), // FIXME this will fail at runtime
+				sourceMatrixMetadata.getHasDictionary(), // has dictionary?
+				numMarkers,
+				numSamples,
+				numChromosomes,
+				sourceMatrixMetadata.getKey().getMatrixId(), // orig/parent matrix 1 key
+				MatrixKey.NULL_ID); // orig/parent matrix 2 key
 	}
 
 	@Override

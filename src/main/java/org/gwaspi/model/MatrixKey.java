@@ -25,6 +25,8 @@ import javax.persistence.Transient;
  */
 public class MatrixKey implements Comparable<MatrixKey>, Serializable {
 
+	public static final int NULL_ID = -1;
+
 	private static final String NAME_UNKNOWN = "<matrix-name-unknown>";
 
 	private StudyKey studyKey;
@@ -126,7 +128,7 @@ public class MatrixKey implements Comparable<MatrixKey>, Serializable {
 		if (matrix == null) {
 			matrixName = NAME_UNKNOWN;
 		} else {
-			matrixName = matrix.getMatrixFriendlyName();
+			matrixName = matrix.getFriendlyName();
 		}
 
 		return matrixName;

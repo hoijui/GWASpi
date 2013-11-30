@@ -36,7 +36,6 @@ import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
 import org.gwaspi.operations.qasamples.NetCdfQASamplesOperationDataSet;
 import org.gwaspi.operations.qasamples.QASamplesOperationDataSet;
-import org.gwaspi.samples.SampleSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,8 +71,8 @@ public class OP_QASamples implements MatrixOperation {
 
 //		NetcdfFile rdNcFile = NetcdfFile.open(rdMatrixMetadata.getPathToMatrix());
 
-		SamplesGenotypesSource rdMarkerSet = dataSetSource.getSamplesGenotypesSource();
-		MarkersKeysSource rdMarkersKeysSource = dataSetSource.getMarkersKeysSource();
+		SamplesGenotypesSource samplesGenotypes = dataSetSource.getSamplesGenotypesSource();
+//		MarkersKeysSource rdMarkersKeysSource = dataSetSource.getMarkersKeysSource();
 //		rdMarkerSet.initFullMarkerIdSetMap();
 
 //		MarkersChromosomeInfosSource markersChrInfSrc = rdMarkerSet.getChrInfoSetMap();
@@ -81,18 +80,18 @@ public class OP_QASamples implements MatrixOperation {
 
 		//Map<String, Object> rdMarkerSetMap = rdMarkerSet.markerIdSetMap; // This to test heap usage of copying locally the Map from markerset
 
-		SampleSet rdSampleSet = new SampleSet(rdMatrixKey);
+int numMarkers = dataSetSource.getNumMarkers();
 
 		// Iterate through samples
-		int sampleNb = 0;
-		Iterator<GenotypesList> samplesGenotypesIt = rdMarkerSet.iterator();
-		for (SampleKey sampleKey : rdSampleSet.getSampleKeys()) {
-			Integer missingCount = 0;
-			Integer heterozygCount = 0;
+		int sampleIndex = 0;
+		Iterator<GenotypesList> samplesGenotypesIt = samplesGenotypes.iterator();
+		for (SampleKey sampleKey : dataSetSource.getSamplesKeysSource()) {
+			int missingCount = 0;
+			int heterozygCount = 0;
 
 			// Iterate through markerset
 			GenotypesList sampleGenotypes = samplesGenotypesIt.next();
-			int markerIndex = 0;
+//			int markerIndex = 0;
 			Iterator<MarkerMetadata> markersInfSrcIt = markersInfSrc.iterator();
 			for (byte[] tempGT : sampleGenotypes) {
 				if (tempGT[0] == AlleleBytes._0 && tempGT[1] == AlleleBytes._0) {
@@ -109,20 +108,20 @@ public class OP_QASamples implements MatrixOperation {
 				{
 					heterozygCount++;
 				}
-				markerIndex++;
+//				markerIndex++;
 			}
 
 			wrSampleSetMissingCountMap.put(sampleKey, missingCount);
 
-			double missingRatio = (double) missingCount / markersInfSrc.size();
+			double missingRatio = (double) missingCount / dataSetSource.getNumMarkers();
 			wrSampleSetMissingRatioMap.put(sampleKey, missingRatio);
-			double heterozygRatio = (double) heterozygCount / (markersInfSrc.size() - missingCount);
+			double heterozygRatio = (double) heterozygCount / (dataSetSource.getNumMarkers() - missingCount);
 			wrSampleSetHetzyRatioMap.put(sampleKey, heterozygRatio);
 
-			sampleNb++;
+			sampleIndex++;
 
-			if (sampleNb % 100 == 0) {
-				log.info("Processed samples: {}", sampleNb);
+			if (sampleIndex % 100 == 0) {
+				log.info("Processed samples: {}", sampleIndex);
 			}
 		}
 
@@ -131,7 +130,7 @@ public class OP_QASamples implements MatrixOperation {
 
 			QASamplesOperationDataSet dataSet = new NetCdfQASamplesOperationDataSet(); // HACK
 			((AbstractNetCdfOperationDataSet) dataSet).setReadMatrixKey(rdMatrixKey); // HACK
-			((AbstractNetCdfOperationDataSet) dataSet).setNumMarkers(rdMatrixMetadata.getMarkerSetSize()); // HACK
+			((AbstractNetCdfOperationDataSet) dataSet).setNumMarkers(rdMatrixMetadata.getNumMarkers()); // HACK
 			((AbstractNetCdfOperationDataSet) dataSet).setNumSamples(wrSampleSetMissingCountMap.size()); // HACK
 
 //			dataSet.setSamples(rdSampleSet.getSampleKeys());
@@ -142,10 +141,11 @@ public class OP_QASamples implements MatrixOperation {
 			((AbstractNetCdfOperationDataSet) dataSet).setUseAllMarkersFromParent(true);
 			((AbstractNetCdfOperationDataSet) dataSet).setUseAllChromosomesFromParent(true);
 
-			dataSet.setMissingRatios(wrSampleSetMissingRatioMap.values());
 			dataSet.setMissingCounts(wrSampleSetMissingCountMap.values());
+			dataSet.setMissingRatios(wrSampleSetMissingRatioMap.values());
 			dataSet.setHetzyRatios(wrSampleSetHetzyRatioMap.values());
 
+			dataSet.finnishWriting();
 			resultOpId = ((AbstractNetCdfOperationDataSet) dataSet).getOperationKey().getId(); // HACK
 		} finally {
 //			if (null != rdNcFile) {

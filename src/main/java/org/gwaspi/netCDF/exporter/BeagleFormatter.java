@@ -67,7 +67,7 @@ class BeagleFormatter implements Formatter {
 		BufferedWriter beagleBW = null;
 		try {
 			FileWriter beagleFW = new FileWriter(new File(exportDir.getPath(),
-					rdMatrixMetadata.getMatrixFriendlyName() + ".beagle"));
+					rdMatrixMetadata.getFriendlyName() + ".beagle"));
 			beagleBW = new BufferedWriter(beagleFW);
 
 			// BEAGLE files:
@@ -185,7 +185,7 @@ class BeagleFormatter implements Formatter {
 		BufferedWriter markerBW = null;
 		try {
 			FileWriter markerFW = new FileWriter(new File(exportDir.getPath(),
-					rdMatrixMetadata.getMatrixFriendlyName() + ".markers"));
+					rdMatrixMetadata.getFriendlyName() + ".markers"));
 			markerBW = new BufferedWriter(markerFW);
 
 			// get MARKER_QA Operation

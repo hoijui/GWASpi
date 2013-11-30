@@ -24,21 +24,27 @@ import java.io.IOException;
  */
 public interface DataSetSource {
 
+	int getNumMarkers() throws IOException;
+
 	MatrixMetadata getMatrixMetadata() throws IOException;
 
-	MarkersGenotypesSource getMarkersGenotypesSource();
+	MarkersGenotypesSource getMarkersGenotypesSource() throws IOException;
 
-	MarkersMetadataSource getMarkersMetadatasSource();
+	MarkersMetadataSource getMarkersMetadatasSource() throws IOException;
 
-	MarkersKeysSource getMarkersKeysSource();
+	MarkersKeysSource getMarkersKeysSource() throws IOException;
 
-	ChromosomesKeysSource getChromosomesKeysSource();
+	int getNumChromosomes() throws IOException;
 
-	ChromosomesInfosSource getChromosomesInfosSource();
+	ChromosomesKeysSource getChromosomesKeysSource() throws IOException;
 
-	SamplesGenotypesSource getSamplesGenotypesSource();
+	ChromosomesInfosSource getChromosomesInfosSource() throws IOException;
 
-	SamplesInfosSource getSamplesInfosSource();
+	int getNumSamples() throws IOException;
 
-	SamplesKeysSource getSamplesKeysSource();
+	SamplesGenotypesSource getSamplesGenotypesSource() throws IOException;
+
+	SamplesInfosSource getSamplesInfosSource() throws IOException;
+
+	SamplesKeysSource getSamplesKeysSource() throws IOException;
 }

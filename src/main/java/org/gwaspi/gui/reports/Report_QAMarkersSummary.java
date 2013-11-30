@@ -107,7 +107,6 @@ public class Report_QAMarkersSummary extends JPanel {
 
 		pnl_Summary = new JPanel();
 		txt_NRows = new JFormattedTextField();
-		txt_NRows.setInputVerifier(new IntegerInputVerifier());
 		txt_NRows.addFocusListener(new FocusAdapter() {
 			@Override
 			public void focusGained(FocusEvent evt) {
@@ -139,22 +138,8 @@ public class Report_QAMarkersSummary extends JPanel {
 
 		pnl_Summary.setBorder(BorderFactory.createTitledBorder(Text.Reports.summary));
 
-		final Action loadReportAction = new LoadReportAction(reportFile, tbl_ReportTable, txt_NRows, qaValue);
-
-		txt_NRows.setValue(Integer.valueOf(100));
 		txt_NRows.setHorizontalAlignment(JFormattedTextField.TRAILING);
-		txt_NRows.addKeyListener(new KeyAdapter() {
-			@Override
-			public void keyReleased(KeyEvent e) {
-				int key = e.getKeyChar();
-				if (key == KeyEvent.VK_ENTER) {
-					loadReportAction.actionPerformed(null);
-				}
-			}
-		});
 		lbl_suffix1.setText(nRowsSuffix);
-
-		btn_Get.setAction(loadReportAction);
 
 		//<editor-fold defaultstate="expanded" desc="LAYOUT1">
 		GroupLayout pnl_SummaryLayout = new GroupLayout(pnl_Summary);
@@ -179,20 +164,9 @@ public class Report_QAMarkersSummary extends JPanel {
 				.addContainerGap()));
 		//</editor-fold>
 
-		tbl_ReportTable.setModel(new DefaultTableModel(
-				new Object[][]{
-					{null, null, null, "Go!"}
-				},
-				new String[]{"", "", "", ""}));
 		scrl_ReportTable.setViewportView(tbl_ReportTable);
 
 		//<editor-fold defaultstate="expanded" desc="FOOTER">
-		btn_Save.setAction(new Report_Analysis.SaveAsAction(studyKey, _qaFileName, tbl_ReportTable, txt_NRows));
-
-		btn_Back.setAction(new BackAction(operationKey));
-
-		btn_Help.setAction(new BrowserHelpUrlAction(HelpURLs.QryURL.markerQAreport));
-
 		GroupLayout pnl_FooterLayout = new GroupLayout(pnl_Footer);
 		pnl_Footer.setLayout(pnl_FooterLayout);
 		pnl_FooterLayout.setHorizontalGroup(
@@ -205,9 +179,7 @@ public class Report_QAMarkersSummary extends JPanel {
 				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, 321, Short.MAX_VALUE)
 				.addComponent(btn_Save, GroupLayout.PREFERRED_SIZE, 125, GroupLayout.PREFERRED_SIZE)
 				.addContainerGap()));
-
 		pnl_FooterLayout.linkSize(SwingConstants.HORIZONTAL, new Component[]{btn_Back, btn_Help});
-
 		pnl_FooterLayout.setVerticalGroup(
 				pnl_FooterLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
 				.addGroup(pnl_FooterLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
@@ -239,6 +211,31 @@ public class Report_QAMarkersSummary extends JPanel {
 				.addContainerGap()));
 		//</editor-fold>
 
+		txt_NRows.setInputVerifier(new IntegerInputVerifier());
+		txt_NRows.setValue(Integer.valueOf(100));
+
+		tbl_ReportTable.setModel(new DefaultTableModel(
+				new Object[][]{
+					{null, null, null, "Go!"}
+				},
+				new String[]{"", "", "", ""}));
+
+		final Action loadReportAction = new LoadReportAction(reportFile, tbl_ReportTable, txt_NRows, qaValue);
+
+		btn_Save.setAction(new Report_Analysis.SaveAsAction(studyKey, _qaFileName, tbl_ReportTable, txt_NRows));
+		btn_Back.setAction(new BackAction(operationKey));
+		btn_Help.setAction(new BrowserHelpUrlAction(HelpURLs.QryURL.markerQAreport));
+		txt_NRows.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyReleased(KeyEvent e) {
+				int key = e.getKeyChar();
+				if (key == KeyEvent.VK_ENTER) {
+					loadReportAction.actionPerformed(null);
+				}
+			}
+		});
+		btn_Get.setAction(loadReportAction);
+
 		loadReportAction.actionPerformed(null);
 	}
 
@@ -267,6 +264,7 @@ public class Report_QAMarkersSummary extends JPanel {
 
 		@Override
 		public void actionPerformed(ActionEvent evt) {
+
 			FileReader inputFileReader = null;
 			BufferedReader inputBufferReader = null;
 			try {

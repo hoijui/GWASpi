@@ -27,18 +27,20 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import org.gwaspi.constants.cExport;
-import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.global.Extractor;
 import org.gwaspi.global.Text;
+import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.MarkerKey;
+import org.gwaspi.model.MarkerMetadata;
+import org.gwaspi.model.MarkersMetadataSource;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.Report;
 import org.gwaspi.model.ReportsList;
 import org.gwaspi.model.Study;
-import org.gwaspi.netCDF.markers.MarkerSet;
+import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.gwaspi.netCDF.operations.OperationFactory;
 import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationDataSet;
 import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationEntry;
@@ -94,27 +96,34 @@ public class OutputHardyWeinberg {
 		// GET MARKER INFO
 		String sep = cExport.separator_REPORTS;
 		OperationMetadata rdOPMetadata = OperationsList.getOperation(operationKey);
-		MarkerSet rdInfoMarkerSet = new MarkerSet(operationKey.getParentMatrixKey());
-		rdInfoMarkerSet.initFullMarkerIdSetMap();
+		DataSetSource dataSetSource = MatrixFactory.generateMatrixDataSetSource(operationKey.getParentMatrixKey());
+//		MarkerSet rdInfoMarkerSet = new MarkerSet(operationKey.getParentMatrixKey());
+//		rdInfoMarkerSet.initFullMarkerIdSetMap();
 
 		// WRITE HEADER OF FILE
 		String header = "MarkerID\trsID\tChr\tPosition\tMin_Allele\tMaj_Allele\t" + Text.Reports.hwPval + Text.Reports.CTRL + "\t" + Text.Reports.hwObsHetzy + Text.Reports.CTRL + "\t" + Text.Reports.hwExpHetzy + Text.Reports.CTRL + "\n";
 		String reportPath = Study.constructReportsPath(rdOPMetadata.getStudyKey());
 
-		// WRITE MARKERSET RSID
-		rdInfoMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_RSID);
-		Map<MarkerKey, char[]> sortedMarkerRSIDs = org.gwaspi.global.Utils.createOrderedMap(sortedMarkerKeys, rdInfoMarkerSet.getMarkerIdSetMapCharArray());
-		ReportWriter.writeFirstColumnToReport(reportPath, reportName, header, sortedMarkerRSIDs, true);
+		MarkersMetadataSource markersMetadatasSource = dataSetSource.getMarkersMetadatasSource();
+
+		// WRITE MARKERS ID & RSID
+		ReportWriter.writeFirstColumnToReport(reportPath, reportName, header, markersMetadatasSource, null, MarkerMetadata.TO_MARKER_ID);
+		ReportWriter.appendColumnToReport(reportPath, reportName, markersMetadatasSource, null, MarkerMetadata.TO_RS_ID);
+//		rdInfoMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_RSID);
+//		Map<MarkerKey, char[]> sortedMarkerRSIDs = org.gwaspi.global.Utils.createOrderedMap(sortedMarkerKeys, rdInfoMarkerSet.getMarkerIdSetMapCharArray());
+//		ReportWriter.writeFirstColumnToReport(reportPath, reportName, header, sortedMarkerRSIDs, true);
 
 		// WRITE MARKERSET CHROMOSOME
-		rdInfoMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
-		Map<MarkerKey, char[]> sortedMarkerCHRs = org.gwaspi.global.Utils.createOrderedMap(sortedMarkerKeys, rdInfoMarkerSet.getMarkerIdSetMapCharArray());
-		ReportWriter.appendColumnToReport(reportPath, reportName, sortedMarkerCHRs, false, false);
+		ReportWriter.appendColumnToReport(reportPath, reportName, markersMetadatasSource.getChromosomes(), null, new Extractor.ToStringExtractor());
+//		rdInfoMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
+//		Map<MarkerKey, char[]> sortedMarkerCHRs = org.gwaspi.global.Utils.createOrderedMap(sortedMarkerKeys, rdInfoMarkerSet.getMarkerIdSetMapCharArray());
+//		ReportWriter.appendColumnToReport(reportPath, reportName, sortedMarkerCHRs, false, false);
 
 		// WRITE MARKERSET POS
-		rdInfoMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_POS);
-		Map<MarkerKey, Integer> sortedMarkerPos = org.gwaspi.global.Utils.createOrderedMap(sortedMarkerKeys, rdInfoMarkerSet.getMarkerIdSetMapInteger());
-		ReportWriter.appendColumnToReport(reportPath, reportName, sortedMarkerPos, false, false);
+		ReportWriter.appendColumnToReport(reportPath, reportName, markersMetadatasSource.getPositions(), null, new Extractor.ToStringExtractor());
+//		rdInfoMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_POS);
+//		Map<MarkerKey, Integer> sortedMarkerPos = org.gwaspi.global.Utils.createOrderedMap(sortedMarkerKeys, rdInfoMarkerSet.getMarkerIdSetMapInteger());
+//		ReportWriter.appendColumnToReport(reportPath, reportName, sortedMarkerPos, false, false);
 
 		// WRITE KNOWN ALLELES FROM QA
 		// get MARKER_QA Operation
@@ -155,7 +164,7 @@ public class OutputHardyWeinberg {
 
 			// MINOR ALLELE
 //			opMarkerSetMap = rdOperationSet.fillOpSetMapWithVariable(qaNcFile, cNetCDF.Census.VAR_OP_MARKERS_MINALLELES);
-			for (MarkerKey key : rdInfoMarkerSet.getMarkerKeys()) {
+			for (MarkerKey key : dataSetSource.getMarkersKeysSource()) {
 //				byte[] minorAllele = opMarkerSetMap.get(key);
 //				sortedMarkerAlleles.put(key, new String(minorAllele));
 				Byte minorAllele = opQaMarkersAllelesMin.get(key);

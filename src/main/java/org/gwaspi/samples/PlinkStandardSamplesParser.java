@@ -24,13 +24,8 @@ import org.gwaspi.constants.cImport;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.loader.DataSetDestination;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class PlinkStandardSamplesParser implements SamplesParser {
-
-	private static final Logger log
-			= LoggerFactory.getLogger(PlinkStandardSamplesParser.class);
 
 	@Override
 	public void scanSampleInfo(StudyKey studyKey, String sampleInfoPath, DataSetDestination samplesReceiver) throws Exception {
@@ -42,87 +37,71 @@ public class PlinkStandardSamplesParser implements SamplesParser {
 		inputFileReader = new FileReader(sampleFile);
 		inputBufferReader = new BufferedReader(inputFileReader);
 
-		char[] chunker = new char[300];
-		inputBufferReader.read(chunker, 0, 300);
-		if (String.valueOf(chunker).contains("\n")) { // SHORT PED FILE
+		// First, we want to find out whether we have long lines
+		// in our PED file (we have one sample per line)
+		final int maxNumCharsShortLine = 300;
+		char[] chunker = new char[maxNumCharsShortLine];
+		int readChars = inputBufferReader.read(chunker, 0, chunker.length);
+		String line = String.valueOf(chunker, 0, readChars);
+		final boolean shortPed = line.contains("\n");
+
+		if (shortPed) {
+			// Start reading the file from the beginning again
 			inputBufferReader.close();
-			inputFileReader.close();
 			inputFileReader = new FileReader(sampleFile);
 			inputBufferReader = new BufferedReader(inputFileReader);
+		}
 
-			int numSamples = 0;
-			while (inputBufferReader.ready()) {
-				String l = inputBufferReader.readLine();
-				SampleInfo sampleInfo;
-				if (chunker.length > 0) {
-					String[] cVals = l.split(cImport.Separators.separators_CommaSpaceTab_rgxp, 10);
-					String sexStr = cVals[cImport.Annotation.Plink_Standard.ped_sex];
-					sexStr = sexStr.equals("-9") ? "0" : sexStr;
-					String affectionStr = cVals[cImport.Annotation.Plink_Standard.ped_affection];
-					affectionStr = affectionStr.equals("-9") ? "0" : affectionStr;
-					SampleInfo.Sex sex = SampleInfo.Sex.parse(sexStr);
-					SampleInfo.Affection affection = SampleInfo.Affection.parse(affectionStr);
-					sampleInfo = new SampleInfo(
-							studyKey,
-							cVals[cImport.Annotation.Plink_Standard.ped_sampleId],
-							cVals[cImport.Annotation.Plink_Standard.ped_familyId],
-							cVals[cImport.Annotation.Plink_Standard.ped_fatherId],
-							cVals[cImport.Annotation.Plink_Standard.ped_motherId],
-							sex,
-							affection
-							);
-				} else {
-					sampleInfo = new SampleInfo();
+		int sampleIndex = 0;
+		while (inputBufferReader.ready()) {
+			// Read a line.
+			// If we have short lines, we simply always read the whole line.
+			// If we have long lines, we just read the first NUM_CHARS_SHORT_LINE
+			// characters of each line.
+			// NUM_CHARS_SHORT_LINE has to be large enough to contain
+			// all the sample info, but not too large, so we will not read too much.
+			if (shortPed) {
+				line = inputBufferReader.readLine();
+			} else {
+				// This has sucked out 1 week of my life and caused many grey hairs! (by Fernando(?))
+				if (sampleIndex != 0) { // make sure we also process the first line
+					readChars = inputBufferReader.read(chunker, 0, chunker.length);
+					line = (readChars == -1) ? null : String.valueOf(chunker, 0, readChars);
 				}
-				samplesReceiver.addSampleInfo(sampleInfo);
-				numSamples++;
-
-				if (numSamples % 100 == 0) {
-					log.info("Parsed {} Samples for info...", numSamples);
+				if (readChars == chunker.length) {
+					// There is stuff left at the end of the line
+					// -> Read rest of line and discard it
+					inputBufferReader.readLine();
 				}
 			}
-		} else { // LONG PED FILE
-			// This has sucked out 1 week of my life and caused many grey hairs!
-			int numSamples = 0;
-			while (inputBufferReader.ready()) {
-				if (numSamples != 0) {
-					chunker = new char[300];
-					inputBufferReader.read(chunker, 0, 300); // Read a sizable but conrolled chunk of data into memory
-				}
 
-				SampleInfo sampleInfo;
-				if (chunker.length > 0) {
-					String[] cVals = String.valueOf(chunker).split(cImport.Separators.separators_CommaSpaceTab_rgxp, 10);
-					String sexStr = cVals[cImport.Annotation.Plink_Standard.ped_sex];
-					sexStr = sexStr.equals("-9") ? "0" : sexStr;
-					String affectionStr = cVals[cImport.Annotation.Plink_Standard.ped_affection];
-					affectionStr = affectionStr.equals("-9") ? "0" : affectionStr;
-					SampleInfo.Sex sex = SampleInfo.Sex.parse(sexStr);
-					SampleInfo.Affection affection = SampleInfo.Affection.parse(affectionStr);
-					sampleInfo = new SampleInfo(
-							studyKey,
-							cVals[cImport.Annotation.Plink_Standard.ped_sampleId],
-							cVals[cImport.Annotation.Plink_Standard.ped_familyId],
-							cVals[cImport.Annotation.Plink_Standard.ped_fatherId],
-							cVals[cImport.Annotation.Plink_Standard.ped_motherId],
-							sex,
-							affection
-							);
-				} else {
-					sampleInfo = new SampleInfo();
-				}
-				inputBufferReader.readLine(); // Read rest of line and discard it...
-
-				samplesReceiver.addSampleInfo(sampleInfo);
-				numSamples++;
-
-				if (numSamples % 100 == 0) {
-					log.info("Parsed {} Samples for info...", numSamples);
-				}
+			// Parse the line.
+			SampleInfo sampleInfo;
+			if (line != null) {
+				String[] cVals = line.split(cImport.Separators.separators_CommaSpaceTab_rgxp, 10);
+				String sexStr = cVals[cImport.Annotation.Plink_Standard.ped_sex];
+				sexStr = sexStr.equals("-9") ? "0" : sexStr;
+				String affectionStr = cVals[cImport.Annotation.Plink_Standard.ped_affection];
+				affectionStr = affectionStr.equals("-9") ? "0" : affectionStr;
+				SampleInfo.Sex sex = SampleInfo.Sex.parse(sexStr);
+				SampleInfo.Affection affection = SampleInfo.Affection.parse(affectionStr);
+				sampleInfo = new SampleInfo(
+						studyKey,
+						cVals[cImport.Annotation.Plink_Standard.ped_sampleId],
+						cVals[cImport.Annotation.Plink_Standard.ped_familyId],
+						cVals[cImport.Annotation.Plink_Standard.ped_fatherId],
+						cVals[cImport.Annotation.Plink_Standard.ped_motherId],
+						sex,
+						affection
+						);
+			} else {
+				sampleInfo = new SampleInfo();
 			}
+
+			samplesReceiver.addSampleInfo(sampleInfo);
+			sampleIndex++;
 		}
 
 		inputBufferReader.close();
-		inputFileReader.close();
 	}
 }

@@ -25,8 +25,8 @@ import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
-import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.dao.OperationService;
 import org.gwaspi.model.MatrixKey;
@@ -35,8 +35,6 @@ import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.ReportsList;
 import org.gwaspi.model.Study;
 import org.gwaspi.model.StudyKey;
-import ucar.nc2.Dimension;
-import ucar.nc2.NetcdfFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -109,7 +107,6 @@ public class JPAOperationService implements OperationService {
 		try {
 			em = open();
 			operationMetadata = em.find(OperationMetadata.class, operationKey);
-			operationMetadata = completeOperationMetadata(operationMetadata);
 		} catch (Exception ex) {
 			throw new IOException("Failed fetching a operation-metadata by id: " + operationKey, ex);
 		} finally {
@@ -130,7 +127,6 @@ public class JPAOperationService implements OperationService {
 			Query query = em.createNamedQuery("operationMetadata_fetchById");
 			query.setParameter("id", operationId);
 			operationMetadata = (OperationMetadata) query.getSingleResult();
-			operationMetadata = completeOperationMetadata(operationMetadata);
 		} catch (NoResultException ex) {
 			LOG.error("Failed fetching a operation-metadata by id: " + operationId
 					+ " (id not found)", ex);
@@ -200,10 +196,6 @@ public class JPAOperationService implements OperationService {
 					"operationMetadata_listByParentMatrixId");
 			query.setParameter("parentMatrixId", parentMatrixKey.getMatrixId());
 			operationsMetadata = query.getResultList();
-
-			for (int i = 0; i < operationsMetadata.size(); i++) {
-				operationsMetadata.set(i, completeOperationMetadata(operationsMetadata.get(i)));
-			}
 		} catch (Exception ex) {
 			LOG.error("Failed fetching operation-metadata", ex);
 		} finally {
@@ -232,10 +224,6 @@ public class JPAOperationService implements OperationService {
 			query.setParameter("parentMatrixId", operationKey.getParentMatrixId());
 			query.setParameter("parentOperationId", operationKey.getId());
 			operationsMetadata.addAll(query.getResultList());
-
-			for (int i = 0; i < operationsMetadata.size(); i++) {
-				operationsMetadata.set(i, completeOperationMetadata(operationsMetadata.get(i)));
-			}
 		} catch (Exception ex) {
 			LOG.error("Failed fetching operation-metadata", ex);
 		} finally {
@@ -278,9 +266,7 @@ public class JPAOperationService implements OperationService {
 			if (!operations.isEmpty()) {
 				operations.add(op);
 				for (int i = 0; i < operations.size(); i++) {
-					String pathToStudy = Study.constructGTPath(studyKey);
-					File matrixOPFile = new File(pathToStudy + operations.get(i).getNetCDFName() + ".nc");
-					org.gwaspi.global.Utils.tryToDeleteFile(matrixOPFile);
+					org.gwaspi.global.Utils.tryToDeleteFile(OperationMetadata.generatePathToNetCdfFile(operations.get(i)));
 					if (deleteReports) {
 						ReportsList.deleteReportByOperationId(operations.get(i).getId());
 					}
@@ -308,9 +294,7 @@ public class JPAOperationService implements OperationService {
 					}
 				}
 			} else {
-				String pathToStudy = Study.constructGTPath(studyKey);
-				File matrixOPFile = new File(pathToStudy + op.getNetCDFName() + ".nc");
-				org.gwaspi.global.Utils.tryToDeleteFile(matrixOPFile);
+				org.gwaspi.global.Utils.tryToDeleteFile(OperationMetadata.generatePathToNetCdfFile(op));
 				if (deleteReports) {
 					ReportsList.deleteReportByOperationId(opId);
 				}
@@ -360,66 +344,85 @@ public class JPAOperationService implements OperationService {
 		}
 	}
 
-	@Override
-	public OperationMetadata getOperation(String netCDFName) throws IOException {
+	private static List<OperationKey> convertFieldsToOperationKeys(List<Object[]> studyIdMatrixIdOperationIds) {
 
-		OperationMetadata operationMetadata = null;
+		List<OperationKey> operations = new ArrayList<OperationKey>(studyIdMatrixIdOperationIds.size());
+		for (Object[] operationKeyParts : studyIdMatrixIdOperationIds) {
+			operations.add(
+					new OperationKey(
+							new MatrixKey(
+									new StudyKey((Integer) operationKeyParts[0]),
+									(Integer) operationKeyParts[1]),
+							(Integer) operationKeyParts[2]));
+		}
+
+		return operations;
+	}
+
+	@Override
+	public List<OperationKey> getOperationKeysByName(String operationName) throws IOException {
+
+		List<OperationKey> operations = Collections.EMPTY_LIST;
 
 		EntityManager em = null;
 		try {
 			em = open();
 			Query query = em.createNamedQuery(
-					"operationMetadata_fetchByNetCDFName");
-			query.setParameter("netCDFName", netCDFName);
-			operationMetadata = (OperationMetadata) query.getSingleResult();
-			operationMetadata = completeOperationMetadata(operationMetadata);
+					"operationMetadata_listByFriendlyName");
+			query.setParameter("name", operationName);
+			operations = convertFieldsToOperationKeys(query.getResultList());
 		} catch (NoResultException ex) {
-			LOG.error("Failed fetching a operation-metadata by netCDF-name: " + netCDFName
+			LOG.error("Failed fetching operation-keys operation-name: " + operationName
 					+ " (id not found)", ex);
 		} catch (Exception ex) {
-			LOG.error("Failed fetching a operation-metadata by netCDF-name: " + netCDFName, ex);
+			LOG.error("Failed fetching operation-keys operation-name: " + operationName, ex);
 		} finally {
 			close(em);
 		}
 
-		return operationMetadata;
+		return operations;
 	}
 
-	public static OperationMetadata completeOperationMetadata(OperationMetadata toComplete) throws IOException {
-
-		int opSetSize = Integer.MIN_VALUE;
-		int implicitSetSize = Integer.MIN_VALUE;
-
-		String pathToStudy = Study.constructGTPath(new StudyKey(toComplete.getStudyId()));
-		String pathToMatrix = pathToStudy + toComplete.getMatrixCDFName() + ".nc";
-		if (new File(pathToMatrix).exists()) {
-			NetcdfFile ncfile = null;
-			try {
-				ncfile = NetcdfFile.open(pathToMatrix);
-//				gtCode = ncfile.findGlobalAttribute(cNetCDF.Attributes.GLOB_GTCODE).getStringValue();
-
-				Dimension markerSetDim = ncfile.findDimension(cNetCDF.Dimensions.DIM_OPSET);
-				opSetSize = markerSetDim.getLength();
-
-				Dimension implicitDim = ncfile.findDimension(cNetCDF.Dimensions.DIM_IMPLICITSET);
-				implicitSetSize = implicitDim.getLength();
-			} catch (IOException ex) {
-				LOG.error("Cannot open file: " + pathToMatrix, ex);
-			} finally {
-				if (null != ncfile) {
-					try {
-						ncfile.close();
-					} catch (IOException ex) {
-						LOG.warn("Cannot close file: " + ncfile.getLocation(), ex);
-					}
-				}
-			}
-		}
-
-		toComplete.setPathToMatrix(pathToMatrix);
-		toComplete.setOpSetSize(opSetSize);
-		toComplete.setImplicitSetSize(implicitSetSize);
-
-		return toComplete;
-	}
+//	/**
+//	 * loads:
+//	 * - int opSetSize = cNetCDF.Dimensions.DIM_OPSET
+//	 * - int implicitDim = cNetCDF.Dimensions.DIM_IMPLICITSET
+//	 */
+//	public static OperationMetadata completeOperationMetadata(OperationMetadata toComplete) throws IOException {
+//
+//		int opSetSize = Integer.MIN_VALUE;
+//		int implicitSetSize = Integer.MIN_VALUE;
+//
+//		String pathToStudy = Study.constructGTPath(new StudyKey(toComplete.getStudyId()));
+//		String pathToMatrix = pathToStudy + toComplete.getMatrixCDFName() + ".nc";
+//		if (new File(pathToMatrix).exists()) {
+//			NetcdfFile ncfile = null;
+//			try {
+//				ncfile = NetcdfFile.open(pathToMatrix);
+////				gtCode = ncfile.findGlobalAttribute(cNetCDF.Attributes.GLOB_GTCODE).getStringValue();
+//
+//				Dimension markerSetDim = ncfile.findDimension(cNetCDF.Dimensions.DIM_OPSET);
+//				opSetSize = markerSetDim.getLength();
+//
+//				Dimension implicitDim = ncfile.findDimension(cNetCDF.Dimensions.DIM_IMPLICITSET);
+//				implicitSetSize = implicitDim.getLength();
+//			} catch (IOException ex) {
+//				LOG.error("Cannot open file: " + pathToMatrix, ex);
+//			} finally {
+//				if (null != ncfile) {
+//					try {
+//						ncfile.close();
+//					} catch (IOException ex) {
+//						LOG.warn("Cannot close file: " + ncfile.getLocation(), ex);
+//					}
+//				}
+//			}
+//		}
+//
+//		toComplete.setPathToMatrix(pathToMatrix);
+//		toComplete.setOpSetSize(opSetSize);
+//		toComplete.setImplicitSetSize(implicitSetSize);
+//
+//		return toComplete;
+//	}
 }

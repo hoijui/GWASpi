@@ -21,17 +21,11 @@ import java.io.IOException;
 import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.DataSetSource;
+import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.netCDF.loader.AbstractNetCDFDataSetDestination;
-import org.gwaspi.netCDF.matrices.MatrixFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import ucar.ma2.InvalidRangeException;
 
 public class MatrixTranslatorNetCDFDataSetDestination extends AbstractNetCDFDataSetDestination {
-
-	private final Logger log
-			= LoggerFactory.getLogger(MatrixTranslatorNetCDFDataSetDestination.class);
 
 	private final DataSetSource dataSetSource;
 	private final String matrixDescription;
@@ -48,7 +42,7 @@ public class MatrixTranslatorNetCDFDataSetDestination extends AbstractNetCDFData
 	}
 
 	@Override
-	protected MatrixFactory createMatrixFactory() throws IOException {
+	protected MatrixMetadata createMatrixMetadata() throws IOException {
 
 		final int numMarkers = getDataSet().getMarkerMetadatas().size();
 		final int numSamples = getDataSet().getSampleInfos().size();
@@ -74,7 +68,7 @@ public class MatrixTranslatorNetCDFDataSetDestination extends AbstractNetCDFData
 		StringBuilder description = new StringBuilder(Text.Matrix.descriptionHeader1);
 		description.append(org.gwaspi.global.Utils.getShortDateTimeAsString());
 		description.append("\nThrough Matrix translation from parent Matrix MX: ").append(sourceMatrixMetadata.getMatrixId());
-		description.append(" - ").append(sourceMatrixMetadata.getMatrixFriendlyName());
+		description.append(" - ").append(sourceMatrixMetadata.getFriendlyName());
 		description.append("\nTranslation method: ").append(translationMethodDesc);
 		if (!matrixDescription.isEmpty()) {
 			description.append("\n\nDescription: ");
@@ -87,22 +81,19 @@ public class MatrixTranslatorNetCDFDataSetDestination extends AbstractNetCDFData
 		description.append("Markers: ").append(numMarkers);
 		description.append(", Samples: ").append(numSamples);
 
-		try {
-			return new MatrixFactory(
-					sourceMatrixMetadata.getTechnology(), // technology
-					matrixFriendlyName,
-					description.toString(), // description
-					GenotypeEncoding.ACGT0, // New matrix genotype encoding
-					sourceMatrixMetadata.getStrand(),
-					sourceMatrixMetadata.getHasDictionary(), // has dictionary?
-					numSamples,
-					numMarkers,
-					numChromosomes,
-					sourceMatrixMetadata.getKey(), // orig/parent matrix 1 key
-					null); // Orig matrixId 2
-		} catch (InvalidRangeException ex) {
-			throw new IOException(ex);
-		}
+		return new MatrixMetadata(
+				sourceMatrixMetadata.getStudyKey(),
+				matrixFriendlyName,
+				sourceMatrixMetadata.getTechnology(),
+				description.toString(),
+				GenotypeEncoding.ACGT0, // New matrix genotype encoding
+				sourceMatrixMetadata.getStrand(),
+				sourceMatrixMetadata.getHasDictionary(),
+				numMarkers,
+				numSamples,
+				numChromosomes,
+				sourceMatrixMetadata.getKey().getMatrixId(), // orig/parent matrix 1 key
+				MatrixKey.NULL_ID); // Orig matrixId 2
 	}
 
 	@Override

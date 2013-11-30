@@ -24,6 +24,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import org.junit.ComparisonFailure;
 import org.junit.Test;
 
 /**
@@ -31,6 +32,31 @@ import org.junit.Test;
  * @author hardy
  */
 public class TestCompactGenotypesList {
+
+	@Test
+	public void testCalcByteBitMask() {
+
+		testCompareBitmasks((byte) 0, (byte) 0x00, CompactGenotypesList.calcByteBitMask((byte) 0));
+		testCompareBitmasks((byte) 1, (byte) 0x01, CompactGenotypesList.calcByteBitMask((byte) 1));
+		testCompareBitmasks((byte) 2, (byte) 0x03, CompactGenotypesList.calcByteBitMask((byte) 2));
+		testCompareBitmasks((byte) 3, (byte) 0x07, CompactGenotypesList.calcByteBitMask((byte) 3));
+		testCompareBitmasks((byte) 4, (byte) 0x0F, CompactGenotypesList.calcByteBitMask((byte) 4));
+		testCompareBitmasks((byte) 5, (byte) 0x1F, CompactGenotypesList.calcByteBitMask((byte) 5));
+		testCompareBitmasks((byte) 6, (byte) 0x3F, CompactGenotypesList.calcByteBitMask((byte) 6));
+		testCompareBitmasks((byte) 7, (byte) 0x7F, CompactGenotypesList.calcByteBitMask((byte) 7));
+		testCompareBitmasks((byte) 8, (byte) 0xFF, CompactGenotypesList.calcByteBitMask((byte) 8));
+	}
+
+	private static void testCompareBitmasks(byte numBits, byte expected, byte actual) {
+
+		if (expected != actual) {
+			throw new ComparisonFailure(
+					"Generated wrong bit mask for " + numBits + " bits",
+					CompactGenotypesList.byteToBitString(expected),
+					CompactGenotypesList.byteToBitString(actual)
+			);
+		}
+	}
 
 	@Test
 	public void testAllSame() {
@@ -46,7 +72,32 @@ public class TestCompactGenotypesList {
 	}
 
 	@Test
-	public void testFullMarker() {
+	public void testFullMarkerAllBitsUsed() {
+
+		// 4 different values -> 2 bits per value
+		// 8 values -> 2*8 bits = 2 Bytes of storage required
+		// We use this to check that there is no problem
+		// if storage bytes are fully used.
+
+		List<byte[]> originalGenotypes = new ArrayList<byte[]>();
+		originalGenotypes.add(new byte[] {'A', 'A'});
+		originalGenotypes.add(new byte[] {'A', 'T'});
+		originalGenotypes.add(new byte[] {'T', 'A'});
+		originalGenotypes.add(new byte[] {'T', 'T'});
+		originalGenotypes.add(new byte[] {'A', 'A'});
+		originalGenotypes.add(new byte[] {'A', 'T'});
+		originalGenotypes.add(new byte[] {'T', 'A'});
+
+		test(originalGenotypes);
+	}
+
+	@Test
+	public void testFullMarkerUnusedBits() {
+
+		// 5 different values -> 3 bits per value
+		// 10 values -> 3*10 bits = 4- Bytes of storage required
+		// We use this to check that there is no problem
+		// if storage bytes are not fully used.
 
 		List<byte[]> originalGenotypes = new ArrayList<byte[]>();
 		originalGenotypes.add(new byte[] {'A', 'A'});
@@ -63,7 +114,7 @@ public class TestCompactGenotypesList {
 		test(originalGenotypes);
 	}
 
-	private void test(List<byte[]> originalGenotypes) {
+	private static void test(List<byte[]> originalGenotypes) {
 
 		Collection<byte[]> possibleGenotypes = extractUniqueValues(originalGenotypes);
 
@@ -85,18 +136,26 @@ public class TestCompactGenotypesList {
 		for (byte[] originalValue : originalValues) {
 			byte[] resultValue = resultIt.next();
 			if (resultValue.length != originalValue.length) {
-				throw new RuntimeException("Different length in original ("
+				throw new ComparisonFailure(
+						"Different length in original ("
 						+ originalValue.length + ") and resulting ("
 						+ resultValue.length + ") value at index "
-						+ index + " / " + originalValues.size());
+						+ index + " / " + originalValues.size(),
+						String.valueOf(originalValue.length),
+						String.valueOf(resultValue.length)
+				);
 			}
 			int arrInd = 0;
 			for (byte origVal : originalValue) {
 				if (resultValue[arrInd] != origVal) {
-					throw new RuntimeException("Different value in original ("
+					throw new ComparisonFailure(
+							"Different value in original ("
 							+ (char) origVal + ") and resulting ("
 							+ (char) resultValue[arrInd] + ") value at index "
-							+ arrInd + " / " + originalValue.length);
+							+ arrInd + " / " + originalValue.length,
+							String.valueOf((char) origVal),
+							String.valueOf((char) resultValue[arrInd])
+					);
 				}
 				arrInd++;
 			}

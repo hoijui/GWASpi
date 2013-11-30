@@ -17,10 +17,27 @@
 
 package org.gwaspi.model;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
  * TODO
  */
 public interface MarkersMetadataSource extends List<MarkerMetadata> {
+
+	List<MarkerMetadata> getRange(int from, int to) throws IOException;
+
+	List<String> getMarkerIds() throws IOException;
+	List<String> getRsIds() throws IOException;
+	List<String> getChromosomes() throws IOException;
+	List<Integer> getPositions() throws IOException;
+	List<String> getAlleles() throws IOException;
+	List<String> getStrands() throws IOException;
+
+	List<String> getMarkerIds(int from, int to) throws IOException;
+	List<String> getRsIds(int from, int to) throws IOException;
+	List<String> getChromosomes(int from, int to) throws IOException;
+	List<Integer> getPositions(int from, int to) throws IOException;
+	List<String> getAlleles(int from, int to) throws IOException;
+	List<String> getStrands(int from, int to) throws IOException;
 }

@@ -113,7 +113,7 @@ public class MatrixMarkerQAPanel extends JPanel {
 					: currentOP.getDescription());
 		} else {
 			pnl_MatrixDesc.setBorder(BorderFactory.createTitledBorder(null,
-					Text.Matrix.matrix + ": " + parentMatrixMetadata.getMatrixFriendlyName(),
+					Text.Matrix.matrix + ": " + parentMatrixMetadata.getFriendlyName(),
 					TitledBorder.DEFAULT_JUSTIFICATION,
 					TitledBorder.DEFAULT_POSITION,
 					new Font("DejaVu Sans", 1, 13))); // NOI18N

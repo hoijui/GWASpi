@@ -24,19 +24,24 @@ import java.util.Collections;
 import java.util.EnumMap;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Queue;
+import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.constants.cNetCDF.HardyWeinberg;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.OperationKey;
+import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.netCDF.operations.MarkerOperationSet;
 import org.gwaspi.netCDF.operations.NetCdfUtils;
-import org.gwaspi.netCDF.operations.OperationFactory;
 import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
 import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationEntry.Category;
 import ucar.ma2.ArrayDouble;
+import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
+import ucar.nc2.Dimension;
+import ucar.nc2.NetcdfFileWriteable;
 
 public class NetCdfHardyWeinbergOperationDataSet extends AbstractNetCdfOperationDataSet<HardyWeinbergOperationEntry> implements HardyWeinbergOperationDataSet {
 
@@ -99,24 +104,45 @@ public class NetCdfHardyWeinbergOperationDataSet extends AbstractNetCdfOperation
 	}
 
 	@Override
-	protected OperationFactory createOperationFactory() throws IOException {
+	protected void supplementNetCdfHandler(
+			NetcdfFileWriteable ncFile,
+			OperationMetadata operationMetadata,
+			List<Dimension> markersSpace,
+			List<Dimension> chromosomesSpace,
+			List<Dimension> samplesSpace)
+			throws IOException
+	{
+		// Define OP Variables
+//		ncfile.addVariable(cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWPval_ALL, DataType.DOUBLE, markersSpace);
+//		ncfile.addVariable(cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWPval_CASE, DataType.DOUBLE, markersSpace);
+		ncFile.addVariable(cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWPval_CTRL, DataType.DOUBLE, markersSpace);
+		ncFile.addVariable(cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWPval_ALT, DataType.DOUBLE, markersSpace);
 
-		try {
-			return new OperationFactory(
-					markerCensusOperationKey.getParentMatrixKey().getStudyKey(),
-					"Hardy-Weinberg_" + hardyWeinbergName, // friendly name
-					"Hardy-Weinberg test on Samples marked as controls (only females for the X chromosome)"
-						+ "\nMarkers: " + getNumMarkers() + ""
-						+ "\nSamples: " + getNumSamples(), // description
-					getNumMarkers(),
-					getNumSamples(),
-					0,
-					OPType.HARDY_WEINBERG,
-					markerCensusOperationKey.getParentMatrixKey(), // Parent matrixId
-					markerCensusOperationKey.getId()); // Parent operationId
-		} catch (InvalidRangeException ex) {
-			throw new IOException(ex);
-		}
+//		ncfile.addVariable(cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWHETZYOBS_ALL, DataType.DOUBLE, markersSpace);
+//		ncfile.addVariable(cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWHETZYOBS_CASE, DataType.DOUBLE, markersSpace);
+		ncFile.addVariable(cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWHETZYOBS_CTRL, DataType.DOUBLE, markersSpace);
+		ncFile.addVariable(cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWHETZYOBS_ALT, DataType.DOUBLE, markersSpace);
+
+//		ncfile.addVariable(cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWHETZYEXP_ALL, DataType.DOUBLE, markersSpace);
+//		ncfile.addVariable(cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWHETZYEXP_CASE, DataType.DOUBLE, markersSpace);
+		ncFile.addVariable(cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWHETZYEXP_CTRL, DataType.DOUBLE, markersSpace);
+		ncFile.addVariable(cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWHETZYEXP_ALT, DataType.DOUBLE, markersSpace);
+	}
+
+	@Override
+	protected OperationMetadata createOperationMetadata() throws IOException {
+
+		return new OperationMetadata(
+				markerCensusOperationKey.getParentMatrixKey(), // parent matrixId
+				markerCensusOperationKey.getId(), // parent operationId
+				"Hardy-Weinberg_" + hardyWeinbergName, // friendly name
+				"Hardy-Weinberg test on Samples marked as controls (only females for the X chromosome)"
+					+ "\nMarkers: " + getNumMarkers() + ""
+					+ "\nSamples: " + getNumSamples(), // description
+				OPType.HARDY_WEINBERG, // operationType
+				getNumMarkers(),
+				getNumSamples(),
+				getNumChromosomes());
 	}
 
 	@Override
@@ -129,8 +155,9 @@ public class NetCdfHardyWeinbergOperationDataSet extends AbstractNetCdfOperation
 		this.markerCensusOperationKey = markerCensusOperationKey;
 	}
 
-	public Collection<HardyWeinbergOperationEntry> getEntriesControl() {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	@Override
+	public Collection<HardyWeinbergOperationEntry> getEntriesControl() throws IOException {
+		return getEntries(Category.CONTROL, -1, -1);
 	}
 
 	private static final class EntryBuffer<ET> {

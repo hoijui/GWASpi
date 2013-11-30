@@ -132,7 +132,8 @@ public class OutputQASamples {
 			String category = sampleInfo.getCategory();
 			String desease = sampleInfo.getDisease();
 			String population = sampleInfo.getPopulation();
-			String age = String.valueOf((sampleInfo.getAge() == 0) ? -1 : sampleInfo.getAge());
+//			String age = String.valueOf((sampleInfo.getAge() == 0) ? -1 : sampleInfo.getAge());
+			String age = String.valueOf(sampleInfo.getAge());
 
 			StringBuilder sb = new StringBuilder();
 			sb.append(familyId);

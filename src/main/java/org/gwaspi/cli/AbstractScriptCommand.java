@@ -23,7 +23,6 @@ import java.util.Map;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixKey;
-import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
@@ -109,8 +108,8 @@ abstract class AbstractScriptCommand implements ScriptCommand {
 			int matrixId = Integer.parseInt(idValue);
 			return new MatrixKey(studyKey, matrixId);
 		} else {
-			MatrixMetadata matrixMetadata = MatricesList.getMatrixMetadataByNetCDFname(nameValue);
-			return new MatrixKey(studyKey, matrixMetadata.getMatrixId());
+			List<MatrixKey> matrixKeysByName = MatricesList.getMatrixKeysByName(nameValue);
+			return matrixKeysByName.isEmpty() ? null : matrixKeysByName.get(0);
 		}
 	}
 
@@ -129,8 +128,8 @@ abstract class AbstractScriptCommand implements ScriptCommand {
 			int operationId = Integer.parseInt(idValue);
 			return new OperationKey(parentMatrixKey, operationId);
 		} else {
-			OperationMetadata operationMetadata = OperationsList.getOperationMetadata(nameValue);
-			return OperationKey.valueOf(operationMetadata);
+			List<OperationKey> operationKeysByName = OperationsList.getOperationKeysByName(nameValue);
+			return operationKeysByName.isEmpty() ? null : operationKeysByName.get(0);
 		}
 	}
 

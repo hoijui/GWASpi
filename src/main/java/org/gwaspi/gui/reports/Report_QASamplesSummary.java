@@ -143,22 +143,9 @@ public class Report_QASamplesSummary extends JPanel {
 
 		pnl_Summary.setBorder(BorderFactory.createTitledBorder(Text.Reports.summary));
 
-		final Action loadReportAction = new LoadReportAction(reportFile, tbl_ReportTable, txt_NRows);
-
-		txt_NRows.setText("100");
 		txt_NRows.setHorizontalAlignment(JTextField.TRAILING);
-		txt_NRows.addKeyListener(new KeyAdapter() {
-			@Override
-			public void keyReleased(KeyEvent e) {
-				int key = e.getKeyChar();
-				if (key == KeyEvent.VK_ENTER) {
-					loadReportAction.actionPerformed(null);
-				}
-			}
-		});
-		lbl_suffix1.setText("Samples by most significant Missing Ratios");
 
-		btn_Get.setAction(loadReportAction);
+		lbl_suffix1.setText("Samples by most significant Missing Ratios");
 
 		//<editor-fold defaultstate="expanded" desc="LAYOUT1">
 		GroupLayout pnl_SummaryLayout = new GroupLayout(pnl_Summary);
@@ -183,20 +170,9 @@ public class Report_QASamplesSummary extends JPanel {
 				.addContainerGap()));
 		//</editor-fold>
 
-		tbl_ReportTable.setModel(new DefaultTableModel(
-				new Object[][]{
-					{null, null, null, "Go!"}
-				},
-				new String[]{"", "", "", ""}));
 		scrl_ReportTable.setViewportView(tbl_ReportTable);
 
 		//<editor-fold defaultstate="expanded" desc="FOOTER">
-		btn_Save.setAction(new SaveAsAction(operationKey.getParentMatrixKey().getStudyKey(), qaFileName, tbl_ReportTable, txt_NRows));
-
-		btn_Back.setAction(new Report_Analysis.BackAction(this.operationKey));
-
-		btn_Help.setAction(new BrowserHelpUrlAction(HelpURLs.QryURL.sampleQAreport));
-
 		GroupLayout pnl_FooterLayout = new GroupLayout(pnl_Footer);
 		pnl_Footer.setLayout(pnl_FooterLayout);
 		pnl_FooterLayout.setHorizontalGroup(
@@ -209,9 +185,7 @@ public class Report_QASamplesSummary extends JPanel {
 				.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, 321, Short.MAX_VALUE)
 				.addComponent(btn_Save, GroupLayout.PREFERRED_SIZE, 125, GroupLayout.PREFERRED_SIZE)
 				.addContainerGap()));
-
 		pnl_FooterLayout.linkSize(SwingConstants.HORIZONTAL, new Component[]{btn_Back, btn_Help});
-
 		pnl_FooterLayout.setVerticalGroup(
 				pnl_FooterLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
 				.addGroup(pnl_FooterLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
@@ -243,6 +217,28 @@ public class Report_QASamplesSummary extends JPanel {
 				.addContainerGap()));
 		//</editor-fold>
 
+		final Action loadReportAction = new LoadReportAction(reportFile, tbl_ReportTable, txt_NRows);
+
+		txt_NRows.setText("100");
+		txt_NRows.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyReleased(KeyEvent e) {
+				int key = e.getKeyChar();
+				if (key == KeyEvent.VK_ENTER) {
+					loadReportAction.actionPerformed(null);
+				}
+			}
+		});
+		btn_Get.setAction(loadReportAction);
+		tbl_ReportTable.setModel(new DefaultTableModel(
+				new Object[][]{
+					{null, null, null, "Go!"}
+				},
+				new String[]{"", "", "", ""}));
+		btn_Save.setAction(new SaveAsAction(operationKey.getParentMatrixKey().getStudyKey(), qaFileName, tbl_ReportTable, txt_NRows));
+		btn_Back.setAction(new Report_Analysis.BackAction(this.operationKey));
+		btn_Help.setAction(new BrowserHelpUrlAction(HelpURLs.QryURL.sampleQAreport));
+
 		loadReportAction.actionPerformed(null);
 	}
 
@@ -262,6 +258,7 @@ public class Report_QASamplesSummary extends JPanel {
 
 		@Override
 		public void actionPerformed(ActionEvent evt) {
+
 			FileReader inputFileReader = null;
 			BufferedReader inputBufferReader = null;
 			try {

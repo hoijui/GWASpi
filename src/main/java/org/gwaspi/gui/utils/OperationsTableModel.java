@@ -39,7 +39,7 @@ public class OperationsTableModel extends DefaultTableModel {
 		for (OperationMetadata operation : operations) {
 			int column = 0;
 			setValueAt(operation.getOPId(), row, column++);
-			setValueAt(operation.getOPName(), row, column++);
+			setValueAt(operation.getName(), row, column++);
 			setValueAt(operation.getDescription(), row, column++);
 			setValueAt(operation.getCreationDate(), row, column++);
 			row++;

@@ -45,8 +45,8 @@ public final class MatricesList {
 		return matrixService.getMatrices(studyKey);
 	}
 
-	public static void insertMatrixMetadata(MatrixMetadata matrixMetadata) throws IOException {
-		matrixService.insertMatrix(matrixMetadata);
+	public static MatrixKey insertMatrixMetadata(MatrixMetadata matrixMetadata) throws IOException {
+		return matrixService.insertMatrix(matrixMetadata);
 	}
 
 	public static void deleteMatrix(MatrixKey matrixKey, boolean deleteReports) throws IOException {
@@ -61,11 +61,11 @@ public final class MatricesList {
 		return matrixService.getMatrix(matrixKey);
 	}
 
-	public static MatrixMetadata getMatrixMetadataByNetCDFname(String netCDFname) throws IOException {
-		return matrixService.getMatrix(netCDFname);
+	public static List<MatrixKey> getMatrixKeysBySimpleName(String simpleName) throws IOException {
+		return matrixService.getMatrixKeysBySimpleName(simpleName);
 	}
 
-	public static MatrixMetadata getMatrixMetadata(String netCDFpath, StudyKey studyKey, String newMatrixName) throws IOException {
-		return matrixService.getMatrix(netCDFpath, studyKey, newMatrixName);
+	public static List<MatrixKey> getMatrixKeysByName(String friendlyName) throws IOException {
+		return matrixService.getMatrixKeysByName(friendlyName);
 	}
 }

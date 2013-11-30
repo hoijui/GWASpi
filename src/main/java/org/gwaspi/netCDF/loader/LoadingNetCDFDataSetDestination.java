@@ -17,7 +17,6 @@
 
 package org.gwaspi.netCDF.loader;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -25,12 +24,9 @@ import java.util.List;
 import org.gwaspi.constants.cImport.ImportFormat;
 import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import org.gwaspi.global.Text;
+import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleKey;
-import org.gwaspi.netCDF.matrices.MatrixFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import ucar.ma2.InvalidRangeException;
 
 /**
  * Used when loading a data-set from an external source
@@ -38,9 +34,6 @@ import ucar.ma2.InvalidRangeException;
  * For example, from a set of PLink files.
  */
 public class LoadingNetCDFDataSetDestination extends AbstractNetCDFDataSetDestination {
-
-	private final Logger log
-			= LoggerFactory.getLogger(LoadingNetCDFDataSetDestination.class);
 
 	private String startTime;
 	private final GenotypesLoadDescription loadDescription;
@@ -65,7 +58,7 @@ public class LoadingNetCDFDataSetDestination extends AbstractNetCDFDataSetDestin
 	}
 
 	@Override
-	protected MatrixFactory createMatrixFactory() throws IOException {
+	protected MatrixMetadata createMatrixMetadata() throws IOException {
 
 		final int numMarkers = getDataSet().getMarkerMetadatas().size();
 		final int numSamples = getDataSet().getSampleInfos().size();
@@ -92,29 +85,25 @@ public class LoadingNetCDFDataSetDestination extends AbstractNetCDFDataSetDestin
 		description.append(Text.Matrix.descriptionHeader3);
 		description.append("\n");
 		gtLoader.addAdditionalBigDescriptionProperties(description, loadDescription);
-		if (new File(loadDescription.getSampleFilePath()).exists()) {
-			description.append(loadDescription.getSampleFilePath()); // the FAM file, in case of PLink Binary
-			description.append(" (Sample Info file)\n");
-		}
+//		if (new File(loadDescription.getSampleFilePath()).exists()) {
+//			description.append(loadDescription.getSampleFilePath()); // the FAM file, in case of PLink Binary
+//			description.append(" (Sample Info file)\n");
+//		}
 
-		try {
-			return new MatrixFactory(
-					loadDescription.getStudyKey(),
-					loadDescription.getFormat(),
-					loadDescription.getFriendlyName(),
-					description.toString(), // description
-					loadDescription.getGtCode(),
-					(gtLoader.getMatrixStrand() != null) // NOTE getMatrixStrand() is only used here!
-							? gtLoader.getMatrixStrand()
-							: loadDescription.getStrand(),
-					gtLoader.isHasDictionary(),
-					numSamples,
-					numMarkers,
-					numChromosomes,
-					loadDescription.getGtDirPath());
-		} catch (InvalidRangeException ex) {
-			throw new IOException(ex);
-		}
+		return new MatrixMetadata(
+				loadDescription.getStudyKey(),
+				loadDescription.getFriendlyName(),
+				loadDescription.getFormat(),
+				description.toString(), // description
+				loadDescription.getGtCode(),
+				(gtLoader.getMatrixStrand() != null) // NOTE getMatrixStrand() is only used here!
+						? gtLoader.getMatrixStrand()
+						: loadDescription.getStrand(),
+				gtLoader.isHasDictionary(),
+				numMarkers,
+				numSamples,
+				numChromosomes,
+				loadDescription.getGtDirPath());
 	}
 
 	@Override
@@ -135,7 +124,7 @@ public class LoadingNetCDFDataSetDestination extends AbstractNetCDFDataSetDestin
 	@Override
 	public void finishedLoadingMarkerMetadatas() throws IOException {
 		super.finishedLoadingMarkerMetadatas();
-		
+
 		extractChromosomeInfos();
 	}
 

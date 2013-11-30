@@ -106,7 +106,7 @@ public class PlinkBinaryFormatter implements Formatter {
 
 		//<editor-fold defaultstate="expanded" desc="BIM FILE">
 		File bimFile = new File(exportDir.getPath(),
-				rdMatrixMetadata.getMatrixFriendlyName() + ".bim");
+				rdMatrixMetadata.getFriendlyName() + ".bim");
 		BufferedWriter bimBW = null;
 		try {
 			FileWriter mapFW = new FileWriter(bimFile);
@@ -174,7 +174,7 @@ public class PlinkBinaryFormatter implements Formatter {
 
 		// Create an output stream to the file.
 		File bedFile = new File(exportDir.getPath(),
-				rdMatrixMetadata.getMatrixFriendlyName() + ".bed");
+				rdMatrixMetadata.getFriendlyName() + ".bed");
 		DataOutputStream bedBW = null;
 		try {
 			FileOutputStream bedFW = new FileOutputStream(bedFile);
@@ -243,7 +243,7 @@ public class PlinkBinaryFormatter implements Formatter {
 
 		//<editor-fold defaultstate="expanded" desc="FAM FILE">
 		File famFile = new File(exportDir.getPath(),
-				rdMatrixMetadata.getMatrixFriendlyName() + ".fam");
+				rdMatrixMetadata.getFriendlyName() + ".fam");
 		BufferedWriter tfamBW = null;
 		try {
 			FileWriter tfamFW = new FileWriter(famFile);

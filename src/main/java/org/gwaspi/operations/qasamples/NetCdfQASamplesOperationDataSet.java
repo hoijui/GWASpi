@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import org.gwaspi.constants.cNetCDF;
@@ -28,14 +29,17 @@ import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.OperationKey;
+import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.netCDF.operations.NetCdfUtils;
-import org.gwaspi.netCDF.operations.OperationFactory;
 import org.gwaspi.netCDF.operations.SampleOperationSet;
 import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
 import ucar.ma2.ArrayDouble;
 import ucar.ma2.ArrayInt;
+import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
+import ucar.nc2.Dimension;
+import ucar.nc2.NetcdfFileWriteable;
 
 public class NetCdfQASamplesOperationDataSet extends AbstractNetCdfOperationDataSet<QASamplesOperationEntry> implements QASamplesOperationDataSet {
 
@@ -58,46 +62,49 @@ public class NetCdfQASamplesOperationDataSet extends AbstractNetCdfOperationData
 	}
 
 	@Override
-	protected OperationFactory createOperationFactory() throws IOException {
+	protected void supplementNetCdfHandler(
+			NetcdfFileWriteable ncFile,
+			OperationMetadata operationMetadata,
+			List<Dimension> markersSpace,
+			List<Dimension> chromosomesSpace,
+			List<Dimension> samplesSpace)
+			throws IOException
+	{
+		// Define Variables
+		ncFile.addVariable(cNetCDF.Census.VAR_OP_SAMPLES_MISSINGRAT, DataType.DOUBLE, samplesSpace);
+		ncFile.addVariable(cNetCDF.Census.VAR_OP_SAMPLES_MISSINGCOUNT, DataType.INT, samplesSpace);
+		ncFile.addVariable(cNetCDF.Census.VAR_OP_SAMPLES_HETZYRAT, DataType.DOUBLE, samplesSpace);
+	}
 
-		try {
-			MatrixMetadata rdMatrixMetadata = MatricesList.getMatrixMetadataById(getReadMatrixKey());
+	@Override
+	protected OperationMetadata createOperationMetadata() throws IOException {
 
-			// CREATE netCDF-3 FILE
-			return new OperationFactory(
-					rdMatrixMetadata.getStudyKey(),
-					"Sample QA", // friendly name
-					"Sample census on " + rdMatrixMetadata.getMatrixFriendlyName()
-							+ "\nSamples: " + getNumSamples(), // description
-					getNumSamples(),
-					getNumMarkers(),
-					0,
-					OPType.SAMPLE_QA,
-					getReadMatrixKey(), // Parent matrixId
-					-1); // Parent operationId
-		} catch (InvalidRangeException ex) {
-			throw new IOException(ex);
-		}
+		MatrixMetadata rdMatrixMetadata = MatricesList.getMatrixMetadataById(getReadMatrixKey());
+
+		return new OperationMetadata(
+				getReadMatrixKey(), // parent matrix
+				OperationKey.NULL_ID, // parent operation ID
+				"Sample QA", // friendly name
+				"Sample census on " + rdMatrixMetadata.getFriendlyName()
+						+ "\nSamples: " + getNumSamples(), // description
+				OPType.SAMPLE_QA,
+				getNumSamples(),
+				getNumMarkers(),
+				getNumChromosomes());
 	}
 
 	@Override
 	public void setMissingRatios(Collection<Double> sampleMissingRatios) throws IOException {
-
-		ensureNcFile();
 		NetCdfUtils.saveDoubleMapD1ToWrMatrix(getNetCdfWriteFile(), sampleMissingRatios, cNetCDF.Census.VAR_OP_SAMPLES_MISSINGRAT);
 	}
 
 	@Override
 	public void setMissingCounts(Collection<Integer> sampleMissingCount) throws IOException {
-
-		ensureNcFile();
 		NetCdfUtils.saveIntMapD1ToWrMatrix(getNetCdfWriteFile(), sampleMissingCount, cNetCDF.Census.VAR_OP_SAMPLES_MISSINGCOUNT);
 	}
 
 	@Override
 	public void setHetzyRatios(Collection<Double> sampleHetzyRatios) throws IOException {
-
-		ensureNcFile();
 		NetCdfUtils.saveDoubleMapD1ToWrMatrix(getNetCdfWriteFile(), sampleHetzyRatios, cNetCDF.Census.VAR_OP_SAMPLES_HETZYRAT);
 	}
 

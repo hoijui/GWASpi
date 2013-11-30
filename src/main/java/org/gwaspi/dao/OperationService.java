@@ -30,7 +30,7 @@ public interface OperationService {
 
 	OperationMetadata getOperation(OperationKey operationKey) throws IOException;
 
-	OperationMetadata getOperation(String netCDFname) throws IOException;
+	List<OperationKey> getOperationKeysByName(String operationFriendlyName) throws IOException;
 
 	List<OperationMetadata> getOperations(int parentMatrixId, int parentOpId) throws IOException;
 

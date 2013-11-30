@@ -42,23 +42,9 @@ public class HGDP1SamplesParser implements SamplesParser {
 		String[] sampleIds = sampleIdHeader.split(cImport.Separators.separators_SpaceTab_rgxp);
 		for (int i = 1; i < sampleIds.length; i++) {
 			String sampleId = sampleIds[i];
-			SampleInfo sampleInfo = new SampleInfo( // XXX use a ctor with less args?
-					Integer.MIN_VALUE,
-					sampleId,
-					"0",
-					"0",
-					"0",
-					SampleInfo.Sex.UNKNOWN,
-					SampleInfo.Affection.UNKNOWN,
-					"0",
-					"0",
-					"0",
-					0,
-					"",
+			SampleInfo sampleInfo = new SampleInfo(
 					studyKey,
-					Integer.MIN_VALUE,
-					Integer.MIN_VALUE
-					);
+					sampleId);
 			samplesReceiver.addSampleInfo(sampleInfo);
 		}
 

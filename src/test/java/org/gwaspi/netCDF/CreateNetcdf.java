@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
 import ucar.ma2.*;
 import ucar.nc2.*;
 
@@ -117,7 +118,7 @@ public class CreateNetcdf {
 
 		// Define Genotype Variables
 		ncfile.addVariable("genotypes", DataType.CHAR, dims);
-		ncfile.addVariableAttribute("genotypes", cNetCDF.Attributes.GLOB_STRAND, "+/-");
+		ncfile.addVariableAttribute("genotypes", cNetCDF.Attributes.GLOB_STRAND, StrandType.PLSMIN.toString());
 
 		// add global attributes
 		ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_STUDY, studyId);

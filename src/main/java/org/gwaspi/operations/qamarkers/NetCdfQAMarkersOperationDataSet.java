@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import org.gwaspi.constants.cNetCDF;
@@ -30,14 +31,17 @@ import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.OperationKey;
+import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.netCDF.operations.MarkerOperationSet;
 import org.gwaspi.netCDF.operations.NetCdfUtils;
-import org.gwaspi.netCDF.operations.OperationFactory;
 import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
 import ucar.ma2.ArrayByte;
 import ucar.ma2.ArrayDouble;
 import ucar.ma2.ArrayInt;
+import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
+import ucar.nc2.Dimension;
+import ucar.nc2.NetcdfFileWriteable;
 
 public class NetCdfQAMarkersOperationDataSet extends AbstractNetCdfOperationDataSet<QAMarkersOperationEntry> implements QAMarkersOperationDataSet {
 
@@ -67,75 +71,119 @@ public class NetCdfQAMarkersOperationDataSet extends AbstractNetCdfOperationData
 	}
 
 	@Override
-	protected OperationFactory createOperationFactory() throws IOException {
+	protected void supplementNetCdfHandler(
+			NetcdfFileWriteable ncFile,
+			OperationMetadata operationMetadata,
+			List<Dimension> markersSpace,
+			List<Dimension> chromosomesSpace,
+			List<Dimension> samplesSpace)
+			throws IOException
+	{
+		final int gtStride = cNetCDF.Strides.STRIDE_GT;
 
-		try {
-			MatrixMetadata rdMatrixMetadata = MatricesList.getMatrixMetadataById(getReadMatrixKey());
+		// dimensions
+		Dimension markersDim = markersSpace.get(0);
+		Dimension boxes4Dim = ncFile.addDimension(cNetCDF.Dimensions.DIM_4BOXES, 4);
+		Dimension alleleStrideDim = ncFile.addDimension(cNetCDF.Dimensions.DIM_GTSTRIDE, gtStride / 2);
+		Dimension dim4 = ncFile.addDimension(cNetCDF.Dimensions.DIM_4, 4);
 
-			String description = "Marker Quality Assurance on "
-					+ rdMatrixMetadata.getMatrixFriendlyName()
-					+ "\nMarkers: " + getNumMarkers()
-					+ "\nStarted at: " + org.gwaspi.global.Utils.getShortDateTimeAsString();
-			return new OperationFactory(
-					rdMatrixMetadata.getStudyKey(),
-					"Marker QA", // friendly name
-					description, // description
-					getNumMarkers(),
-					getNumSamples(),
-					0,
-					OPType.MARKER_QA,
-					getReadMatrixKey(), // Parent matrixId
-					-1); // Parent operationId
-		} catch (InvalidRangeException ex) {
-			throw new IOException(ex);
-		}
+		// MARKER SPACES
+		List<Dimension> markers4Space = new ArrayList<Dimension>(2);
+		markers4Space.add(markersDim);
+		markers4Space.add(boxes4Dim);
+
+		List<Dimension> markerPropertySpace4 = new ArrayList<Dimension>(2);
+		markerPropertySpace4.add(markersDim);
+		markerPropertySpace4.add(dim4);
+
+		// ALLELES SPACES
+		List<Dimension> allelesSpace = new ArrayList<Dimension>(2);
+		allelesSpace.add(markersDim);
+		allelesSpace.add(alleleStrideDim);
+
+		// Define OP Variables
+		ncFile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_CENSUSALL, DataType.INT, markers4Space);
+		ncFile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_MISSINGRAT, DataType.DOUBLE, markersSpace);
+		ncFile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_MISMATCHSTATE, DataType.INT, markersSpace);
+
+		// Define Genotype Variables
+		//ncfile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_KNOWNALLELES, DataType.CHAR, allelesSpace);
+		ncFile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_MINALLELES, DataType.BYTE, markersSpace);
+		ncFile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_MINALLELEFRQ, DataType.DOUBLE, markersSpace);
+		ncFile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_MAJALLELES, DataType.BYTE, markersSpace);
+		ncFile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_MAJALLELEFRQ, DataType.DOUBLE, markersSpace);
+		ncFile.addVariable(cNetCDF.Variables.VAR_GT_STRAND, DataType.CHAR, markerPropertySpace4);
+	}
+
+	@Override
+	protected OperationMetadata createOperationMetadata() throws IOException {
+
+		MatrixMetadata rdMatrixMetadata = MatricesList.getMatrixMetadataById(getReadMatrixKey());
+
+		String description = "Marker Quality Assurance on "
+				+ rdMatrixMetadata.getFriendlyName()
+				+ "\nMarkers: " + getNumMarkers()
+				+ "\nStarted at: " + org.gwaspi.global.Utils.getShortDateTimeAsString();
+
+		return new OperationMetadata(
+				getReadMatrixKey(), // parent matrix
+				OperationKey.NULL_ID, // parent operation ID
+				"Marker QA", // friendly name
+				description, // description
+				OPType.MARKER_QA,
+				getNumMarkers(),
+				getNumSamples(),
+				getNumChromosomes());
 	}
 
 	@Override
 	public void setMarkerMissingRatios(Collection<Double> markerMissingRatios) throws IOException {
-
-		ensureNcFile();
 		NetCdfUtils.saveDoubleMapD1ToWrMatrix(getNetCdfWriteFile(), markerMissingRatios, cNetCDF.Census.VAR_OP_MARKERS_MISSINGRAT);
 	}
 
 	@Override
 	public void setMarkerMismatchStates(Collection<Boolean> markerMismatchStates) throws IOException {
+		
+		// we can not use this, as NetCDF does not support writing boolean arrays :/
+//		NetCdfUtils.saveBooleansD1ToWrMatrix(getNetCdfWriteFile(), markerMismatchStates, cNetCDF.Census.VAR_OP_MARKERS_MISMATCHSTATE);
 
-//		Collection<Integer> markerMismatchIntegerStates
-//				= new ArrayList<Integer>(markerMismatchStates.size()); // XXX not sooooo nice! maybe use a converter while writing (saves memory)
-//		for (boolean mismatch : markerMismatchStates) {
-//			markerMismatchIntegerStates.add(mismatch
-//					? cNetCDF.Defaults.DEFAULT_MISMATCH_YES
-//					: cNetCDF.Defaults.DEFAULT_MISMATCH_NO);
-//		}
-		ensureNcFile();
-		NetCdfUtils.saveBooleansD1ToWrMatrix(getNetCdfWriteFile(), markerMismatchStates, cNetCDF.Census.VAR_OP_MARKERS_MISMATCHSTATE);
+		Collection<Integer> markerMismatchIntegerStates
+				= new ArrayList<Integer>(markerMismatchStates.size()); // XXX not sooooo nice! maybe use a converter while writing (saves memory)
+		for (boolean mismatch : markerMismatchStates) {
+			markerMismatchIntegerStates.add(mismatch
+					? cNetCDF.Defaults.DEFAULT_MISMATCH_YES
+					: cNetCDF.Defaults.DEFAULT_MISMATCH_NO);
+		}
+		NetCdfUtils.saveIntMapD1ToWrMatrix(getNetCdfWriteFile(), markerMismatchIntegerStates, cNetCDF.Census.VAR_OP_MARKERS_MISMATCHSTATE);
 	}
 
 	@Override
 	public void setMarkerKnownAlleles(Collection<OrderedAlleles> markerKnownAlleles) throws IOException {
 
-		ensureNcFile();
+		NetcdfFileWriteable netCdfWriteFile = getNetCdfWriteFile();
 		//Utils.saveCharMapValueToWrMatrix(wrNcFile, wrMarkerSetKnownAllelesMap, cNetCDF.Census.VAR_OP_MARKERS_KNOWNALLELES, cNetCDF.Strides.STRIDE_GT);
-		NetCdfUtils.saveByteMapItemToWrMatrix(getNetCdfWriteFile(), markerKnownAlleles, cNetCDF.Census.VAR_OP_MARKERS_MAJALLELES, OrderedAlleles.TO_ALLELE_1, cNetCDF.Strides.STRIDE_GT / 2);
-		NetCdfUtils.saveDoubleMapItemD1ToWrMatrix(getNetCdfWriteFile(), markerKnownAlleles, OrderedAlleles.TO_ALLELE_1_FREQ, cNetCDF.Census.VAR_OP_MARKERS_MAJALLELEFRQ);
-		NetCdfUtils.saveByteMapItemToWrMatrix(getNetCdfWriteFile(), markerKnownAlleles, cNetCDF.Census.VAR_OP_MARKERS_MINALLELES, OrderedAlleles.TO_ALLELE_2, cNetCDF.Strides.STRIDE_GT / 2);
-		NetCdfUtils.saveDoubleMapItemD1ToWrMatrix(getNetCdfWriteFile(), markerKnownAlleles, OrderedAlleles.TO_ALLELE_2_FREQ, cNetCDF.Census.VAR_OP_MARKERS_MINALLELEFRQ);
+		NetCdfUtils.saveByteMapItemToWrMatrix(netCdfWriteFile, markerKnownAlleles, cNetCDF.Census.VAR_OP_MARKERS_MAJALLELES, OrderedAlleles.TO_ALLELE_1, cNetCDF.Strides.STRIDE_GT / 2);
+		NetCdfUtils.saveDoubleMapItemD1ToWrMatrix(netCdfWriteFile, markerKnownAlleles, OrderedAlleles.TO_ALLELE_1_FREQ, cNetCDF.Census.VAR_OP_MARKERS_MAJALLELEFRQ);
+		NetCdfUtils.saveByteMapItemToWrMatrix(netCdfWriteFile, markerKnownAlleles, cNetCDF.Census.VAR_OP_MARKERS_MINALLELES, OrderedAlleles.TO_ALLELE_2, cNetCDF.Strides.STRIDE_GT / 2);
+		NetCdfUtils.saveDoubleMapItemD1ToWrMatrix(netCdfWriteFile, markerKnownAlleles, OrderedAlleles.TO_ALLELE_2_FREQ, cNetCDF.Census.VAR_OP_MARKERS_MINALLELEFRQ);
 	}
 
 	@Override
 	public void setMarkerCensusAll(Collection<Census> markerCensusAll) throws IOException {
-
-		ensureNcFile();
 		NetCdfUtils.saveIntMapD2ToWrMatrix(getNetCdfWriteFile(), markerCensusAll, Census.EXTRACTOR_4, cNetCDF.Census.VAR_OP_MARKERS_CENSUSALL);
 	}
 
 	@Override
 	public Collection<Boolean> getMismatchStates(int from, int to) throws IOException {
 
-		Collection<Boolean> mismatchStates = new ArrayList<Boolean>(0);
-		NetCdfUtils.readVariable(getNetCdfReadFile(), cNetCDF.Census.VAR_OP_MARKERS_MISMATCHSTATE, from, to, mismatchStates, null);
+		Collection<Integer> mismatchIntegerStates = new ArrayList<Integer>(0);
+		NetCdfUtils.readVariable(getNetCdfReadFile(), cNetCDF.Census.VAR_OP_MARKERS_MISMATCHSTATE, from, to, mismatchIntegerStates, null);
 
+		Collection<Boolean> mismatchStates = new ArrayList<Boolean>(0);
+		for (Integer mismatchIntegerState : mismatchIntegerStates) {
+			mismatchStates.add(mismatchIntegerState == cNetCDF.Defaults.DEFAULT_MISMATCH_YES);
+		}
+		
 		return mismatchStates;
 	}
 

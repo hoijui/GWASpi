@@ -17,17 +17,27 @@
 
 package org.gwaspi.constants;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class cNetCDF {
 
 	public static class Attributes {
 
+		public static final String GLOB_FRIENDLY_NAME = "friendly_name";
 		public static final String GLOB_STUDY = "study";
 		public static final String GLOB_TECHNOLOGY = "technology";
 		public static final String GLOB_GWASPIDB_VERSION = "gwaspi_db_version";
 		public static final String GLOB_DESCRIPTION = "description";
 		public static final String GLOB_STRAND = "strand";
 		public static final String LENGTH = "length";
-		public static final String GLOB_HAS_DICTIONARY = "glob_has_dictionnary";
+		public static final String GLOB_HAS_DICTIONARY = "glob_has_dictionary";
+		public static final String GLOB_MATRIX_TYPE = "matrix_type";
+		public static final String GLOB_CREATION_DATE = "creation_date";
+
+		public static final String GLOB_USE_ALL_MARKERS = "use_all_markers";
+		public static final String GLOB_USE_ALL_CHROMOSOMES = "use_all_chromosomes";
+		public static final String GLOB_USE_ALL_SAMPLES = "use_all_samples";
 
 		private Attributes() {
 		}
@@ -58,8 +68,8 @@ public class cNetCDF {
 	}
 
 	public static class Variables {
-		// MARKER VARS
 
+		// MARKER VARS
 		public static final String VAR_MARKERSET = "marker_id";
 		public static final String VAR_MARKERS_RSID = "marker_rsId";
 		public static final String VAR_MARKERS_CHR = "marker_chromosome";
@@ -76,17 +86,27 @@ public class cNetCDF {
 		public static final String VAR_MARKERS_PROP8 = "marker_property_8";
 		public static final String VAR_MARKERS_PROP16 = "marker_property_16";
 		public static final String VAR_MARKERS_PROP32 = "marker_property_32";
-		//SAMPLE VARS
-		public static final String VAR_SAMPLESET = "sample_id";
+		// SAMPLE VARS
+		public static final String VAR_SAMPLE_KEY = "sample_id";
+		public static final String VAR_SAMPLE_ORDER_ID = "sample_orderId";
+		public static final String VAR_SAMPLE_FATHER = "sample_father";
+		public static final String VAR_SAMPLE_MOTHER = "sample_mother";
 		public static final String VAR_SAMPLES_SEX = "sample_sex";
 		public static final String VAR_SAMPLES_AFFECTION = "sample_affection";
-		public static final String VAR_SAMPLES_FILTERS = "sample_filters";
-		//OPERATION VARS
+		public static final String VAR_SAMPLE_CATEGORY = "sample_category";
+		public static final String VAR_SAMPLE_DISEASE = "sample_disease";
+		public static final String VAR_SAMPLE_POPULATION = "sample_population";
+		public static final String VAR_SAMPLE_AGE = "sample_age";
+		public static final String VAR_SAMPLE_FILTER = "sample_filter";
+		public static final String VAR_SAMPLE_APPROVED = "sample_approved";
+		public static final String VAR_SAMPLE_STATUS = "sample_status";
+//		public static final String VAR_SAMPLES_FILTERS = "sample_filters";
+		// OPERATION VARS
 		public static final String VAR_OPSET_IDX = "opset_idx";
 		public static final String VAR_OPSET = "opset";
 		public static final String VAR_IMPLICITSET_IDX = "implicitset_idx";
 		public static final String VAR_IMPLICITSET = "implicitset";
-		//GT VARS
+		// GT VARS
 		public static final String VAR_GENOTYPES = "genotypes";
 		public static final String VAR_GT_STRAND = "genotype_strand";
 		public static final String VAR_ALLELES = "alleles";
@@ -163,6 +183,12 @@ public class cNetCDF {
 	}
 	//</editor-fold>
 
+	/**
+	 * "Stride" in NetCDF means (for what we care),
+	 * the max number of characters that may be used in a string
+	 * (actually char[], while NetCDF supports string as well).
+	 * Though more precisely, it is not just for char[], but all kind of arrays.
+	 */
 	public static class Strides {
 
 		public static final int STRIDE_GT = 2;
@@ -233,12 +259,29 @@ public class cNetCDF {
 			FWDREV("fwdrev"),
 			UNKNOWN("unk");
 
+			private static final Map<String, StrandType> STR_REP_TO_TYPE;
+			static {
+				STR_REP_TO_TYPE = new HashMap<String, StrandType>();
+				for (StrandType strandType : values()) {
+					STR_REP_TO_TYPE.put(strandType.toString(), strandType);
+				}
+			}
+
 			public static StrandType compareTo(String str) {
 				try {
 					return valueOf(str);
 				} catch (Exception ex) {
 					return null;
 				}
+			}
+
+			public static StrandType fromString(String strandStr) {
+
+				if ((strandStr == null) || strandStr.isEmpty()) {
+					return null;
+				}
+
+				return STR_REP_TO_TYPE.get(strandStr);
 			}
 
 			private final String strRep;
@@ -252,7 +295,8 @@ public class cNetCDF {
 				return strRep;
 			}
 		}
-		public static final String[] Chromosomes = new String[]{
+
+		public static final String[] Chromosomes = new String[] {
 			"1", "2", "3", "4", "5", "6", "7", "8", "9", "10",
 			"11", "12", "13", "14", "15", "16", "17", "18", "19", "20",
 			"21", "22", "X", "Y", "XY", "MT"};
