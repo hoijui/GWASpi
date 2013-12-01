@@ -296,17 +296,17 @@ public class JPAMatrixService implements MatrixService {
 	}
 
 	@Override
-	public MatrixMetadata getMatrix(String netCDFName) throws IOException {
+	public MatrixKey getMatrixKeyByName(String netCDFName) throws IOException {
 
-		MatrixMetadata matrixMetadata = null;
+		MatrixKey matrixKey = null;
 
 		EntityManager em = null;
 		try {
 			em = open();
 			Query query = em.createNamedQuery("matrixMetadata_fetchByNetCDFName");
 			query.setParameter("netCDFName", netCDFName);
-			matrixMetadata = (MatrixMetadata) query.getSingleResult();
-			matrixMetadata = completeMatricesTable(matrixMetadata);
+			matrixKey = (MatrixMetadata) query.getSingleResult();
+			matrixKey = completeMatricesTable(matrixKey);
 		} catch (NoResultException ex) {
 			LOG.error("Failed fetching matrix-metadata by netCDFname: " + netCDFName
 					+ " (id not found)", ex);
@@ -316,7 +316,7 @@ public class JPAMatrixService implements MatrixService {
 			close(em);
 		}
 
-		return matrixMetadata;
+		return matrixKey;
 	}
 
 	@Override
