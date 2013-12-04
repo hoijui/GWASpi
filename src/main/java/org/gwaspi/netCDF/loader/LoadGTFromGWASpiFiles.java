@@ -332,7 +332,7 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 			}
 
 			File origFile = new File(importMatrixPath);
-			File newFile = new File(pathToStudy + "/" + newMatrixCDFName + ".nc");
+			File newFile = new File(pathToStudy, newMatrixCDFName + ".nc");
 			if (origFile.exists()) {
 				org.gwaspi.global.Utils.copyFile(origFile, newFile);
 			}

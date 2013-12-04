@@ -110,7 +110,7 @@ public abstract class AbstractNetCDFDataSetDestination extends AbstractDataSetDe
 			log.trace("Done creating netCDF handle: " + ncfile.toString());
 
 			Collection<SampleInfo> sampleInfos = getDataSet().getSampleInfos();
-			List<SampleKey> sampleKeys = AbstractNetCDFDataSetDestination.extractKeys(sampleInfos);
+			List<SampleKey> sampleKeys = extractKeys(sampleInfos);
 			saveSamplesMetadata(sampleKeys, ncfile);
 
 			boolean hasDictionary = resultMatrixMetadata.getHasDictionray();
