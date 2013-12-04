@@ -283,11 +283,11 @@
 			<artifactId>libsvm</artifactId>
 			<version>3.13-SNAPSHOT</version>
 		</dependency>
-		<!--<dependency>
+		<!----><dependency>
 			<groupId>edu.ucar</groupId>
 			<artifactId>netcdf</artifactId>
 			<version>4.2-min</version>
-		</dependency>-->
+		</dependency>
 		<dependency>
 			<groupId>org.apache.derby</groupId>
 			<artifactId>derby</artifactId>
