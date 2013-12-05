@@ -43,8 +43,11 @@ import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
 		name = "matrixMetadata_fetchById",
 		query = "SELECT mm FROM MatrixMetadata mm WHERE mm.matrixId = :id"),
 	@NamedQuery(
-		name = "matrixMetadata_fetchByNetCDFName",
-		query = "SELECT mm FROM MatrixMetadata mm WHERE mm.matrixNetCDFName = :netCDFName"),
+		name = "matrixMetadata_listKeysByNetCDFName",
+		query = "SELECT mm.studyId, mm.matrixId FROM MatrixMetadata mm WHERE mm.matrixNetCDFName = :netCDFName"),
+	@NamedQuery(
+		name = "matrixMetadata_listKeysByFriendlyName",
+		query = "SELECT mm.studyId, mm.matrixId FROM MatrixMetadata mm WHERE mm.matrixFriendlyName = :matrixFriendlyName"),
 	@NamedQuery(
 		name = "matrixMetadata_listKeys",
 		query = "SELECT mm.studyId, mm.matrixId FROM MatrixMetadata mm"),

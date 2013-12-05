@@ -31,11 +31,14 @@ public interface MatrixService {
 
 	MatrixMetadata getMatrix(MatrixKey matrixKey) throws IOException;
 
-	MatrixKey getMatrixKeyByName(String netCDFname) throws IOException;
+	List<MatrixKey> getMatrixKeysByNetCdfName(String netCDFName) throws IOException;
+
+	List<MatrixKey> getMatrixKeysByName(String matrixFriendlyName) throws IOException;
 
 	List<MatrixMetadata> getMatrices(StudyKey studyKey) throws IOException;
 
     /**
+	 * @deprecated
 	 * This Method used to import GWASpi matrix from an external file.
 	 * The size of this Map is very small.
 	 */

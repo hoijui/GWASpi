@@ -109,6 +109,18 @@ public class JPAMatrixService implements MatrixService {
 		}
 	}
 
+	private static List<MatrixKey> convertFieldsToMatrixKeys(List<Object[]> studyIdMatrixIds) {
+
+		List<MatrixKey> matrices = new ArrayList<MatrixKey>(studyIdMatrixIds.size());
+		for (Object[] matrixKeyParts : studyIdMatrixIds) {
+			matrices.add(new MatrixKey(
+					new StudyKey((Integer) matrixKeyParts[0]),
+					(Integer) matrixKeyParts[1]));
+		}
+
+		return matrices;
+	}
+
 	@Override
 	public List<MatrixKey> getMatrixKeys() throws IOException {
 
@@ -118,12 +130,7 @@ public class JPAMatrixService implements MatrixService {
 		try {
 			em = open();
 			List<Object[]> matricesKeyParts = em.createNamedQuery("matrixMetadata_listKeys").getResultList();
-			matrices = new ArrayList<MatrixKey>(matricesKeyParts.size());
-			for (Object[] matrixKeyParts : matricesKeyParts) {
-				matrices.add(new MatrixKey(
-						new StudyKey((Integer) matrixKeyParts[0]),
-						(Integer) matrixKeyParts[1]));
-			}
+			matrices = convertFieldsToMatrixKeys(matricesKeyParts);
 //		} catch (Exception ex) {
 //			LOG.error("Failed fetching all matrices", ex);
 		} finally {
@@ -247,6 +254,7 @@ public class JPAMatrixService implements MatrixService {
 
 	@Override
 	public void updateMatrix(MatrixMetadata matrixMetadata) throws IOException {
+
 		EntityManager em = null;
 		try {
 			em = open();
@@ -296,29 +304,54 @@ public class JPAMatrixService implements MatrixService {
 	}
 
 	@Override
-	public MatrixKey getMatrixKeyByName(String netCDFName) throws IOException {
+	public List<MatrixKey> getMatrixKeysByNetCdfName(String netCDFName) throws IOException {
 
-		MatrixKey matrixKey = null;
+		List<MatrixKey> matrices = Collections.EMPTY_LIST;
 
 		EntityManager em = null;
 		try {
 			em = open();
-			Query query = em.createNamedQuery("matrixMetadata_fetchByNetCDFName");
+			Query query = em.createNamedQuery("matrixMetadata_listKeysByNetCDFName");
 			query.setParameter("netCDFName", netCDFName);
-			matrixKey = (MatrixMetadata) query.getSingleResult();
-			matrixKey = completeMatricesTable(matrixKey);
+			matrices = convertFieldsToMatrixKeys(query.getResultList());
 		} catch (NoResultException ex) {
-			LOG.error("Failed fetching matrix-metadata by netCDFname: " + netCDFName
+			LOG.error("Failed fetching matrix-keys by netCDFname: " + netCDFName
 					+ " (id not found)", ex);
 		} catch (Exception ex) {
-			LOG.error("Failed fetching matrix-metadata by netCDFname: " + netCDFName, ex);
+			LOG.error("Failed fetching matrix-keys by netCDFname: " + netCDFName, ex);
 		} finally {
 			close(em);
 		}
 
-		return matrixKey;
+		return matrices;
 	}
 
+	@Override
+	public List<MatrixKey> getMatrixKeysByName(String matrixFriendlyName) throws IOException {
+
+		List<MatrixKey> matrices = Collections.EMPTY_LIST;
+
+		EntityManager em = null;
+		try {
+			em = open();
+			Query query = em.createNamedQuery("matrixMetadata_listKeysByFriendlyName");
+			query.setParameter("matrixFriendlyName", matrixFriendlyName);
+			matrices = convertFieldsToMatrixKeys(query.getResultList());
+		} catch (NoResultException ex) {
+			LOG.error("Failed fetching matrix-keys by matrixFriendlyName: " + matrixFriendlyName
+					+ " (id not found)", ex);
+		} catch (Exception ex) {
+			LOG.error("Failed fetching matrix-keys by matrixFriendlyName: " + matrixFriendlyName, ex);
+		} finally {
+			close(em);
+		}
+
+		return matrices;
+	}
+
+	/**
+	 * @deprecated move this to NetCDFDataSetSource
+	 */
 	@Override
 	public MatrixMetadata getMatrix(String netCDFpath, StudyKey studyKey, String newMatrixName) throws IOException {
 
@@ -347,6 +380,16 @@ public class JPAMatrixService implements MatrixService {
 				toCompleteMatrixMetadata.getCreationDate());
 	}
 
+	/**
+	 * loads:
+	 * - ImportFormat technology = cNetCDF.Attributes.GLOB_TECHNOLOGY
+	 * - String gwaspiDBVersion = cNetCDF.Attributes.GLOB_GWASPIDB_VERSION
+	 * - GenotypeEncoding gtEncoding = cNetCDF.Variables.GLOB_GTENCODING
+	 * - StrandType strand = cNetCDF.Attributes.GLOB_STRAND
+	 * - boolean hasDictionray = cNetCDF.Attributes.GLOB_HAS_DICTIONARY
+	 * - int markerSetSize = cNetCDF.Dimensions.DIM_MARKERSET
+	 * - int sampleSetSize = cNetCDF.Dimensions.DIM_SAMPLESET
+	 */
 	private static MatrixMetadata loadMatrixMetadataFromFile(int matrixId, String matrixFriendlyName, String matrixNetCDFName, StudyKey studyKey, String pathToMatrix, String description, String matrixType, Date creationDate) throws IOException {
 
 		String gwaspiDBVersion = "";

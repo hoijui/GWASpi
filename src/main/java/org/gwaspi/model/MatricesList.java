@@ -61,8 +61,12 @@ public final class MatricesList {
 		return matrixService.getMatrix(matrixKey);
 	}
 
-	public static MatrixKey getMatrixMetadataByNetCDFname(String netCDFname) throws IOException {
-		return matrixService.getMatrixKeyByName(netCDFname);
+	public static List<MatrixKey> getMatrixKeysByNetCdfName(String netCDFname) throws IOException {
+		return matrixService.getMatrixKeysByNetCdfName(netCDFname);
+	}
+
+	public static List<MatrixKey> getMatrixKeysByName(String matrixFriendlyName) throws IOException {
+		return matrixService.getMatrixKeysByName(matrixFriendlyName);
 	}
 
 	public static MatrixMetadata getMatrixMetadata(String netCDFpath, StudyKey studyKey, String newMatrixName) throws IOException {
