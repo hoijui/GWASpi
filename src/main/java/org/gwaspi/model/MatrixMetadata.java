@@ -80,6 +80,14 @@ public class MatrixMetadata implements Serializable {
 	private int parent2MatrixId;
 	private String inputLocation;
 	private Date creationDate;
+//	 * - ImportFormat technology = cNetCDF.Attributes.GLOB_TECHNOLOGY
+//	 * - String gwaspiDBVersion = cNetCDF.Attributes.GLOB_GWASPIDB_VERSION
+//	 * - GenotypeEncoding gtEncoding = cNetCDF.Variables.GLOB_GTENCODING
+//	 * - StrandType strand = cNetCDF.Attributes.GLOB_STRAND
+//	 * - boolean hasDictionray = cNetCDF.Attributes.GLOB_HAS_DICTIONARY
+
+//	 * - int markerSetSize = cNetCDF.Dimensions.DIM_MARKERSET
+//	 * - int sampleSetSize = cNetCDF.Dimensions.DIM_SAMPLESET
 
 	protected MatrixMetadata() {
 
@@ -288,7 +296,13 @@ public class MatrixMetadata implements Serializable {
 		this.gtEncoding = gtEncoding;
 	}
 
-	@Transient
+	@Column(
+		name       = "markerSetSize",
+		unique     = false,
+		nullable   = false,
+		insertable = true,
+		updatable  = false
+		)
 	public int getMarkerSetSize() {
 		return markerSetSize;
 	}
@@ -304,7 +318,6 @@ public class MatrixMetadata implements Serializable {
 		insertable = true,
 		updatable  = false
 		)
-	@Transient
 	public int getSampleSetSize() {
 		return sampleSetSize;
 	}

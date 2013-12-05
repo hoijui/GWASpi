@@ -64,6 +64,16 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 	public LoadGTFromGWASpiFiles() {
 	}
 
+//	@Override
+//	protected void addAdditionalBigDescriptionProperties(StringBuilder description, GenotypesLoadDescription loadDescription) {
+//		super.addAdditionalBigDescriptionProperties(description, loadDescription); // XXX uncomment!
+//
+//		description.append(loadDescription.getGtDirPath());
+//		description.append(" (Matrix file)\n");
+//		description.append(loadDescription.getSampleFilePath());
+//		description.append(" (Sample Info file)\n");
+//	}
+
 	@Override
 	public ImportFormat getFormat() {
 		return ImportFormat.GWASpi;
