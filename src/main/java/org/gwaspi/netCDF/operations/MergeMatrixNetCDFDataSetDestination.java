@@ -78,7 +78,7 @@ public class MergeMatrixNetCDFDataSetDestination extends AbstractNetCDFDataSetDe
 		final MatrixMetadata rdMatrix1Metadata = dataSetSource1.getMatrixMetadata();
 		final MatrixMetadata rdMatrix2Metadata = dataSetSource2.getMatrixMetadata();
 
-		final boolean hasDictionary = (rdMatrix1Metadata.getHasDictionray() && rdMatrix2Metadata.getHasDictionray());
+		final boolean hasDictionary = (rdMatrix1Metadata.getHasDictionary() && rdMatrix2Metadata.getHasDictionary());
 		final GenotypeEncoding gtEncoding = getGuessedGTCode();
 		ImportFormat technology = ImportFormat.UNKNOWN;
 		if (rdMatrix1Metadata.getTechnology().equals(rdMatrix2Metadata.getTechnology())) {

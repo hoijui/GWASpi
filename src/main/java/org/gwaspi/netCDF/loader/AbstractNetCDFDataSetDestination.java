@@ -113,7 +113,7 @@ public abstract class AbstractNetCDFDataSetDestination extends AbstractDataSetDe
 			List<SampleKey> sampleKeys = extractKeys(sampleInfos);
 			saveSamplesMetadata(sampleKeys, ncfile);
 
-			boolean hasDictionary = resultMatrixMetadata.getHasDictionray();
+			boolean hasDictionary = resultMatrixMetadata.getHasDictionary();
 			saveMarkersMetadata(getDataSet().getMarkerMetadatas().values(), hasDictionary, getStrandFlag(), ncfile);
 		} catch (InvalidRangeException ex) {
 			throw new IOException(ex);

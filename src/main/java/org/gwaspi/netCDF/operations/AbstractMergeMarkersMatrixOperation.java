@@ -83,7 +83,7 @@ public abstract class AbstractMergeMarkersMatrixOperation extends AbstractMergeM
 
 //		GenotypeEncoding genotypeEncoding1 = rdMatrix1Metadata.getGenotypeEncoding();
 
-		final boolean hasCombinedDictionary = (rdMatrix1Metadata.getHasDictionray() && rdMatrix2Metadata.getHasDictionray());
+		final boolean hasCombinedDictionary = (rdMatrix1Metadata.getHasDictionary() && rdMatrix2Metadata.getHasDictionary());
 
 //		rdMarkerSet1.initFullMarkerIdSetMap();
 //		rdMarkerSet2.initFullMarkerIdSetMap();
