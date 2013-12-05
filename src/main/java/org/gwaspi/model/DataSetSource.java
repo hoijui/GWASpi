@@ -24,6 +24,8 @@ import java.io.IOException;
  */
 public interface DataSetSource {
 
+	int getNumMarkers();
+
 	MatrixMetadata getMatrixMetadata() throws IOException;
 
 	MarkersGenotypesSource getMarkersGenotypesSource();
@@ -32,9 +34,13 @@ public interface DataSetSource {
 
 	MarkersKeysSource getMarkersKeysSource();
 
+	int getNumChromosomes();
+
 	ChromosomesKeysSource getChromosomesKeysSource();
 
 	ChromosomesInfosSource getChromosomesInfosSource();
+
+	int getNumSamples();
 
 	SamplesGenotypesSource getSamplesGenotypesSource();
 

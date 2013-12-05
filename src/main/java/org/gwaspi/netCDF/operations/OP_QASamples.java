@@ -36,7 +36,6 @@ import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
 import org.gwaspi.operations.qasamples.NetCdfQASamplesOperationDataSet;
 import org.gwaspi.operations.qasamples.QASamplesOperationDataSet;
-import org.gwaspi.samples.SampleSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -81,12 +80,10 @@ public class OP_QASamples implements MatrixOperation {
 
 		//Map<String, Object> rdMarkerSetMap = rdMarkerSet.markerIdSetMap; // This to test heap usage of copying locally the Map from markerset
 
-		SampleSet rdSampleSet = new SampleSet(rdMatrixKey);
-
 		// Iterate through samples
 		int sampleNb = 0;
 		Iterator<GenotypesList> samplesGenotypesIt = rdMarkerSet.iterator();
-		for (SampleKey sampleKey : rdSampleSet.getSampleKeys()) {
+		for (SampleKey sampleKey : dataSetSource.getSamplesKeysSource()) {
 			Integer missingCount = 0;
 			Integer heterozygCount = 0;
 

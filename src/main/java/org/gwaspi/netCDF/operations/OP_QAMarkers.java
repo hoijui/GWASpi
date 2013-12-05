@@ -26,8 +26,6 @@ import java.util.Map;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.AlleleBytes;
 import org.gwaspi.model.Census;
-import org.gwaspi.model.ChromosomeInfo;
-import org.gwaspi.model.ChromosomeKey;
 import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.GenotypesList;
 import org.gwaspi.model.MarkerKey;
@@ -38,13 +36,12 @@ import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleInfo.Sex;
 import org.gwaspi.model.SampleInfoList;
 import org.gwaspi.model.SampleKey;
+import org.gwaspi.model.SamplesKeysSource;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
-import org.gwaspi.netCDF.markers.MarkerSet;
 import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
 import org.gwaspi.operations.qamarkers.NetCdfQAMarkersOperationDataSet;
 import org.gwaspi.operations.qamarkers.OrderedAlleles;
 import org.gwaspi.operations.qamarkers.QAMarkersOperationDataSet;
-import org.gwaspi.samples.SampleSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,7 +49,7 @@ public class OP_QAMarkers implements MatrixOperation {
 
 	private final Logger log = LoggerFactory.getLogger(OP_QAMarkers.class);
 
-	private MatrixKey rdMatrixKey;
+	private final MatrixKey rdMatrixKey;
 
 	public OP_QAMarkers(MatrixKey rdMatrixKey) {
 		this.rdMatrixKey = rdMatrixKey;
@@ -79,19 +76,19 @@ public class OP_QAMarkers implements MatrixOperation {
 
 		MatrixMetadata rdMatrixMetadata = MatricesList.getMatrixMetadataById(rdMatrixKey);
 
-		MarkerSet rdMarkerSet = new MarkerSet(rdMatrixKey);
-		rdMarkerSet.initFullMarkerIdSetMap();
+//		MarkerSet rdMarkerSet = new MarkerSet(rdMatrixKey);
+//		rdMarkerSet.initFullMarkerIdSetMap();
 		//Map<String, Object> rdMarkerSetMap = rdMarkerSet.markerIdSetMap; // This to test heap usage of copying locally the Map from markerset
 
-		SampleSet rdSampleSet = new SampleSet(rdMatrixKey);
+//		SampleSet rdSampleSet = new SampleSet(rdMatrixKey);
 		DataSetSource rdDataSetSource = MatrixFactory.generateMatrixDataSetSource(rdMatrixKey);
-		Map<SampleKey, byte[]> rdSampleSetMap = rdSampleSet.getSampleIdSetMapByteArray();
+//		Map<SampleKey, byte[]> rdSampleSetMap = rdSampleSet.getSampleIdSetMapByteArray();
 
 		try {
 			QAMarkersOperationDataSet dataSet = new NetCdfQAMarkersOperationDataSet(); // HACK
 			((AbstractNetCdfOperationDataSet) dataSet).setReadMatrixKey(rdMatrixKey); // HACK
-			((AbstractNetCdfOperationDataSet) dataSet).setNumMarkers(rdMarkerSet.getMarkerKeys().size()); // HACK
-			((AbstractNetCdfOperationDataSet) dataSet).setNumSamples(rdSampleSetMap.size()); // HACK
+			((AbstractNetCdfOperationDataSet) dataSet).setNumMarkers(rdDataSetSource.getNumMarkers()); // HACK
+			((AbstractNetCdfOperationDataSet) dataSet).setNumSamples(rdDataSetSource.getNumSamples()); // HACK
 
 //			dataSet.setMarkers(rdMarkerSet.getMarkerKeys());
 //			dataSet.setSamples(rdSampleSetMap.keySet());
@@ -103,13 +100,14 @@ public class OP_QAMarkers implements MatrixOperation {
 
 			//<editor-fold defaultstate="expanded" desc="PROCESSOR">
 			// INIT MARKER AND SAMPLE INFO
-			rdMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
+//			rdMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
 
 			List<SampleInfo> sampleInfos = SampleInfoList.getAllSampleInfoFromDBByPoolID(rdMatrixMetadata.getStudyKey());
 			Map<SampleKey, Sex> samplesInfoMap = new LinkedHashMap<SampleKey, Sex>();
+			SamplesKeysSource rdSampleKeys = rdDataSetSource.getSamplesKeysSource();
 			for (SampleInfo sampleInfo : sampleInfos) {
 				SampleKey tempSampleId = sampleInfo.getKey();
-				if (rdSampleSetMap.containsKey(tempSampleId)) {
+				if (rdSampleKeys.contains(tempSampleId)) {
 					Sex sex = sampleInfo.getSex();
 					samplesInfoMap.put(tempSampleId, sex);
 				}
@@ -119,7 +117,7 @@ public class OP_QAMarkers implements MatrixOperation {
 			// Iterate through markerset, take it marker by marker
 			int markerNb = 0;
 			Iterator<GenotypesList> markersGenotypesSourceIt = rdDataSetSource.getMarkersGenotypesSource().iterator();
-			for (MarkerKey markerKey : rdMarkerSet.getMarkerKeys()) {
+			for (MarkerKey markerKey : rdDataSetSource.getMarkersKeysSource()) {
 				GenotypesList markerGenotypes = markersGenotypesSourceIt.next();
 				Map<Byte, Float> knownAlleles = new LinkedHashMap<Byte, Float>();
 				Map<Short, Float> allSamplesGTsTable = new LinkedHashMap<Short, Float>();
@@ -340,12 +338,12 @@ public class OP_QAMarkers implements MatrixOperation {
 					wrMarkerSetKnownAllelesMap.put(markerKey, orderedAlleles);
 				}
 
-				double missingRatio = (double) missingCount / rdSampleSet.getSampleSetSize();
+				double missingRatio = (double) missingCount / rdDataSetSource.getNumSamples();
 				wrMarkerSetMissingRatioMap.put(markerKey, missingRatio);
 
 				markerNb++;
 				if ((markerNb == 1) || (markerNb % 10000 == 0)) {
-					log.info("Processed markers: {} / {}", markerNb, rdMarkerSet.size());
+					log.info("Processed markers: {} / {}", markerNb, rdDataSetSource.getNumMarkers());
 				}
 			}
 			//</editor-fold>

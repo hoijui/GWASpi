@@ -28,6 +28,7 @@ import java.util.Set;
 import org.gwaspi.constants.cImport;
 import org.gwaspi.constants.cImport.Annotation.GWASpi;
 import org.gwaspi.constants.cImport.ImportFormat;
+import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
@@ -36,6 +37,7 @@ import org.gwaspi.model.SampleInfoList;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.loader.DataSetDestination;
+import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,22 +66,24 @@ public class SamplesParserManager {
 
 	//<editor-fold defaultstate="expanded" desc="DB SAMPLE INFO PROVIDERS">
 	public static Set<SampleInfo.Affection> getDBAffectionStates(MatrixKey matrixKey) {
-		Set<SampleInfo.Affection> resultHS = EnumSet.noneOf(SampleInfo.Affection.class);
+
+		Set<SampleInfo.Affection> affections = EnumSet.noneOf(SampleInfo.Affection.class);
+
 		try {
 			MatrixMetadata rdMatrixMetadata = MatricesList.getMatrixMetadataById(matrixKey);
 			log.info("Getting Sample Affection info for: {}",
 					rdMatrixMetadata.getMatrixFriendlyName());
-			SampleSet rdSampleSet = new SampleSet(matrixKey);
-			for (SampleKey key : rdSampleSet.getSampleKeys()) {
+			DataSetSource rdDataSetSource = MatrixFactory.generateMatrixDataSetSource(matrixKey);
+			for (SampleKey key : rdDataSetSource.getSamplesKeysSource()) {
 				SampleInfo sampleInfo = SampleInfoList.getSample(key);
 				if (sampleInfo != null) {
-					resultHS.add(sampleInfo.getAffection());
+					affections.add(sampleInfo.getAffection());
 				}
 			}
 		} catch (IOException ex) {
 			log.error(null, ex);
 		}
-		return resultHS;
+		return affections;
 	}
 	//</editor-fold>
 

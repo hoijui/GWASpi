@@ -27,14 +27,9 @@ import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.Study;
-import org.gwaspi.netCDF.markers.MarkerSet;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class MatrixExporter {
-
-	private final Logger log = LoggerFactory.getLogger(MachFormatter.class);
 
 	private final MatrixKey rdMatrixKey;
 	private final MatrixMetadata rdMatrixMetadata;

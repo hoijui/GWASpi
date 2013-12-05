@@ -126,9 +126,9 @@ public class OP_MarkerCensus implements MatrixOperation {
 
 			DataSetSource dataSetSource = MatrixFactory.generateMatrixDataSetSource(rdMatrixKey);
 
-			MarkerSet rdMarkerSet = new MarkerSet(rdMatrixKey);
-			rdMarkerSet.initFullMarkerIdSetMap();
-			rdMarkerSet.fillWith(cNetCDF.Defaults.DEFAULT_GT);
+//			MarkerSet rdMarkerSet = new MarkerSet(rdMatrixKey);
+//			rdMarkerSet.initFullMarkerIdSetMap();
+//			rdMarkerSet.fillWith(cNetCDF.Defaults.DEFAULT_GT);
 
 			OperationKey sampleQAOPKey = OperationKey.valueOf(sampleQAOP);
 //			SampleSet rdSampleSet = new SampleSet(rdMatrixKey);
@@ -144,11 +144,9 @@ public class OP_MarkerCensus implements MatrixOperation {
 
 //			NetcdfFileWriteable wrNcFile = null;
 			try {
-				Collection<MarkerKey> wrMarkerKeys = new ArrayList<MarkerKey>(rdMarkerSet.getMarkerKeys()); // XXX should be removable, as wr is same as rd, we could just use rd
-
 				MarkerCensusOperationDataSet dataSet = new NetCdfMarkerCensusOperationDataSet(); // HACK
 				((AbstractNetCdfOperationDataSet) dataSet).setReadMatrixKey(rdMatrixKey); // HACK
-				((AbstractNetCdfOperationDataSet) dataSet).setNumMarkers(wrMarkerKeys.size()); // HACK
+				((AbstractNetCdfOperationDataSet) dataSet).setNumMarkers(dataSetSource.getNumMarkers()); // HACK
 				((AbstractNetCdfOperationDataSet) dataSet).setNumSamples(wrSampleKeys.size()); // HACK
 				((NetCdfMarkerCensusOperationDataSet) dataSet).setCensusName(censusName); // HACK
 				((NetCdfMarkerCensusOperationDataSet) dataSet).setPhenoFile(phenoFile); // HACK

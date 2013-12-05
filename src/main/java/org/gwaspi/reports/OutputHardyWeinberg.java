@@ -31,6 +31,7 @@ import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.global.Extractor;
 import org.gwaspi.global.Text;
+import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
@@ -39,6 +40,7 @@ import org.gwaspi.model.Report;
 import org.gwaspi.model.ReportsList;
 import org.gwaspi.model.Study;
 import org.gwaspi.netCDF.markers.MarkerSet;
+import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.gwaspi.netCDF.operations.OperationFactory;
 import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationDataSet;
 import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationEntry;
@@ -94,14 +96,16 @@ public class OutputHardyWeinberg {
 		// GET MARKER INFO
 		String sep = cExport.separator_REPORTS;
 		OperationMetadata rdOPMetadata = OperationsList.getOperation(operationKey);
-		MarkerSet rdInfoMarkerSet = new MarkerSet(operationKey.getParentMatrixKey());
-		rdInfoMarkerSet.initFullMarkerIdSetMap();
+		DataSetSource dataSetSource = MatrixFactory.generateMatrixDataSetSource(operationKey.getParentMatrixKey());
+//		MarkerSet rdInfoMarkerSet = new MarkerSet(operationKey.getParentMatrixKey());
+//		rdInfoMarkerSet.initFullMarkerIdSetMap();
 
 		// WRITE HEADER OF FILE
 		String header = "MarkerID\trsID\tChr\tPosition\tMin_Allele\tMaj_Allele\t" + Text.Reports.hwPval + Text.Reports.CTRL + "\t" + Text.Reports.hwObsHetzy + Text.Reports.CTRL + "\t" + Text.Reports.hwExpHetzy + Text.Reports.CTRL + "\n";
 		String reportPath = Study.constructReportsPath(rdOPMetadata.getStudyKey());
 
 		// WRITE MARKERSET RSID
+		dataSetSource.;
 		rdInfoMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_RSID);
 		Map<MarkerKey, char[]> sortedMarkerRSIDs = org.gwaspi.global.Utils.createOrderedMap(sortedMarkerKeys, rdInfoMarkerSet.getMarkerIdSetMapCharArray());
 		ReportWriter.writeFirstColumnToReport(reportPath, reportName, header, sortedMarkerRSIDs, true);

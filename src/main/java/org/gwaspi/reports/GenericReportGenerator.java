@@ -745,9 +745,10 @@ public class GenericReportGenerator {
 		Map<MarkerKey, Object[]> dataSetMap = new LinkedHashMap<MarkerKey, Object[]>();
 
 		//<editor-fold defaultstate="expanded" desc="GET POSITION DATA">
-		MarkerSet rdInfoMarkerSet = new MarkerSet(operationKey.getParentMatrixKey());
-		rdInfoMarkerSet.initFullMarkerIdSetMap();
-		rdInfoMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
+		DataSetSource dataSetSource = MatrixFactory.generateMatrixDataSetSource(operationKey.getParentMatrixKey());
+//		MarkerSet rdInfoMarkerSet = new MarkerSet(operationKey.getParentMatrixKey());
+//		rdInfoMarkerSet.initFullMarkerIdSetMap();
+//		rdInfoMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
 		if (rdInfoMarkerSet.getMarkerIdSetMapCharArray() != null) {
 			for (Map.Entry<MarkerKey, char[]> entry : rdInfoMarkerSet.getMarkerIdSetMapCharArray().entrySet()) {
 				MarkerKey key = entry.getKey();

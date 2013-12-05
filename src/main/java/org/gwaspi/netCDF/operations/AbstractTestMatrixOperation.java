@@ -31,7 +31,6 @@ import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
-import org.gwaspi.netCDF.markers.MarkerSet;
 import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
 import org.gwaspi.operations.OperationDataSet;
 import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationDataSet;
@@ -92,7 +91,7 @@ public abstract class AbstractTestMatrixOperation implements MatrixOperation {
 			OperationKey markerCensusOPKey = OperationKey.valueOf(markerCensusOP);
 			MarkerCensusOperationDataSet rdMarkerCensusOperationDataSet = (MarkerCensusOperationDataSet) OperationFactory.generateOperationDataSet(markerCensusOPKey);
 //			OperationMetadata rdCensusOPMetadata = OperationsList.getOperation(markerCensusOPKey);
-			OperationMetadata rdCensusOPMetadata = markerCensusOP;
+//			OperationMetadata rdCensusOPMetadata = markerCensusOP;
 //			NetcdfFile rdOPNcFile = NetcdfFile.open(rdCensusOPMetadata.getPathToMatrix());
 
 //			MarkerOperationSet rdCaseMarkerSet = new MarkerOperationSet(markerCensusOPKey);
@@ -110,8 +109,8 @@ public abstract class AbstractTestMatrixOperation implements MatrixOperation {
 
 			// GATHER INFO FROM ORIGINAL MATRIX
 			MatrixMetadata parentMatrixMetadata = MatricesList.getMatrixMetadataById(markerCensusOP.getParentMatrixKey());
-			MarkerSet rdMarkerSet = new MarkerSet(MatrixKey.valueOf(parentMatrixMetadata));
-			rdMarkerSet.initFullMarkerIdSetMap();
+//			MarkerSet rdMarkerSet = new MarkerSet(MatrixKey.valueOf(parentMatrixMetadata));
+//			rdMarkerSet.initFullMarkerIdSetMap();
 
 //			// retrieve chromosome info
 //			rdMarkerSet.fillMarkerSetMapWithChrAndPos();
