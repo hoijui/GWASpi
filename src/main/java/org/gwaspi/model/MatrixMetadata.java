@@ -80,14 +80,6 @@ public class MatrixMetadata implements Serializable {
 	private int parent2MatrixId;
 	private String inputLocation;
 	private Date creationDate;
-//	 * - ImportFormat technology = cNetCDF.Attributes.GLOB_TECHNOLOGY
-//	 * - String gwaspiDBVersion = cNetCDF.Attributes.GLOB_GWASPIDB_VERSION
-//	 * - GenotypeEncoding gtEncoding = cNetCDF.Variables.GLOB_GTENCODING
-//	 * - StrandType strand = cNetCDF.Attributes.GLOB_STRAND
-//	 * - boolean hasDictionray = cNetCDF.Attributes.GLOB_HAS_DICTIONARY
-
-//	 * - int markerSetSize = cNetCDF.Dimensions.DIM_MARKERSET
-//	 * - int sampleSetSize = cNetCDF.Dimensions.DIM_SAMPLESET
 
 	protected MatrixMetadata() {
 
@@ -200,7 +192,13 @@ public class MatrixMetadata implements Serializable {
 		return hash;
 	}
 
-	@Transient
+	@Column(
+		name       = "hasDictionary",
+		unique     = false,
+		nullable   = false,
+		insertable = true,
+		updatable  = true
+		)
 	public boolean getHasDictionary() {
 		return hasDictionary;
 	}
@@ -269,7 +267,13 @@ public class MatrixMetadata implements Serializable {
 		this.matrixFriendlyName = matrixFriendlyName;
 	}
 
-	@Transient
+	@Column(
+		name       = "technology",
+		unique     = false,
+		nullable   = false,
+		insertable = true,
+		updatable  = false
+		)
 	public ImportFormat getTechnology() {
 		return technology;
 	}
@@ -278,7 +282,13 @@ public class MatrixMetadata implements Serializable {
 		this.technology = technology;
 	}
 
-	@Transient
+	@Column(
+		name       = "gwaspiDBVersion",
+		unique     = false,
+		nullable   = false,
+		insertable = true,
+		updatable  = true
+		)
 	public String getGwaspiDBVersion() {
 		return gwaspiDBVersion;
 	}
@@ -287,7 +297,13 @@ public class MatrixMetadata implements Serializable {
 		this.gwaspiDBVersion = gwaspiDBVersion;
 	}
 
-	@Transient
+	@Column(
+		name       = "gtEncoding",
+		unique     = false,
+		nullable   = false,
+		insertable = true,
+		updatable  = false
+		)
 	public GenotypeEncoding getGenotypeEncoding() {
 		return gtEncoding;
 	}
@@ -335,7 +351,13 @@ public class MatrixMetadata implements Serializable {
 		this.pathToMatrix = pathToMatrix;
 	}
 
-	@Transient
+	@Column(
+		name       = "strand",
+		unique     = false,
+		nullable   = false,
+		insertable = true,
+		updatable  = false
+		)
 	public StrandType getStrand() {
 		return strand;
 	}

@@ -40,6 +40,7 @@ import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.Study;
 import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.markers.MarkerSet;
+import org.gwaspi.netCDF.markers.NetCDFDataSetSource;
 import org.gwaspi.netCDF.matrices.ChromosomeUtils;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.gwaspi.netCDF.operations.NetCdfUtils;
@@ -126,7 +127,7 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 			log.info("Warning!\nSome Samples in the imported genotypes are not described in the Sample Info file!\nData will not be imported!");
 		}
 
-		MatrixMetadata importMatrixMetadata = MatricesList.getMatrixMetadata(
+		MatrixMetadata importMatrixMetadata = NetCDFDataSetSource.getMatrix(
 				loadDescription.getGtDirPath(),
 				loadDescription.getStudyKey(),
 				loadDescription.getFriendlyName());

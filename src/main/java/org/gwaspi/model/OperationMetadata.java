@@ -42,8 +42,8 @@ import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 		name = "operationMetadata_fetchById",
 		query = "SELECT om FROM OperationMetadata om WHERE om.id = :id"),
 	@NamedQuery(
-		name = "operationMetadata_fetchByNetCDFName",
-		query = "SELECT om FROM OperationMetadata om WHERE om.matrixCDFName = :netCDFName"),
+		name = "operationMetadata_listByFriendlyName",
+		query = "SELECT om.studyId, om.parentMatrixId, om.id FROM OperationMetadata om WHERE om.name = :name"),
 	@NamedQuery(
 		name = "operationMetadata_listByParentMatrixId",
 		query = "SELECT om FROM OperationMetadata om WHERE om.parentMatrixId = :parentMatrixId"),
@@ -60,7 +60,7 @@ import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 public class OperationMetadata implements Serializable {
 
 	private OperationKey key;
-	private String opName; // == Operation.friendlyName
+	private String name; // == Operation.friendlyName == OperationMetadata.opName
 	private String netCDFName;
 	private OPType gtCode; // == Operation.type
 	private int parentOperationId;
@@ -74,7 +74,7 @@ public class OperationMetadata implements Serializable {
 
 		this.key = new OperationKey();
 		this.parentOperationId = Integer.MIN_VALUE;
-		this.opName = "";
+		this.name = "";
 		this.netCDFName = "";
 		this.description = "";
 		this.pathToMatrix = "";
@@ -100,7 +100,7 @@ public class OperationMetadata implements Serializable {
 	{
 		this.key = new OperationKey(parentMatrixKey, id);
 		this.parentOperationId = parentOperationId;
-		this.opName = opName;
+		this.name = opName;
 		this.netCDFName = netCDFName;
 		this.description = description;
 		this.pathToMatrix = pathToMatrix;
@@ -210,24 +210,24 @@ public class OperationMetadata implements Serializable {
 	}
 
 	@Column(
-		name       = "opName",
+		name       = "name",
 		length     = 127,
 		unique     = false,
 		nullable   = false,
 		insertable = true,
 		updatable  = false
 		)
-	public String getOPName() {
-		return opName;
+	public String getName() {
+		return name;
 	}
 
-	protected void setOPName(String opName) {
-		this.opName = opName;
+	protected void setName(String opName) {
+		this.name = opName;
 	}
 
 	@Transient
 	public String getFriendlyName() {
-		return getOPName();
+		return getName();
 	}
 
 	@Column(
@@ -271,7 +271,13 @@ public class OperationMetadata implements Serializable {
 		return getGenotypeCode();
 	}
 
-	@Transient
+	@Column(
+		name       = "opSetSize",
+		unique     = false,
+		nullable   = true,
+		insertable = true,
+		updatable  = false
+		)
 	public int getOpSetSize() {
 		return opSetSize;
 	}
@@ -326,7 +332,13 @@ public class OperationMetadata implements Serializable {
 		return new OperationKey(getParentMatrixKey(), getParentOperationId());
 	}
 
-	@Transient
+	@Column(
+		name       = "implicitSetSize",
+		unique     = false,
+		nullable   = true,
+		insertable = true,
+		updatable  = false
+		)
 	public int getImplicitSetSize() {
 		return implicitSetSize;
 	}

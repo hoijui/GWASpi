@@ -37,13 +37,6 @@ public interface MatrixService {
 
 	List<MatrixMetadata> getMatrices(StudyKey studyKey) throws IOException;
 
-    /**
-	 * @deprecated
-	 * This Method used to import GWASpi matrix from an external file.
-	 * The size of this Map is very small.
-	 */
-	MatrixMetadata getMatrix(String netCDFpath, StudyKey studyKey, String name) throws IOException;
-
 	MatrixKey insertMatrix(MatrixMetadata matrixMetadata) throws IOException;
 
 	void deleteMatrix(MatrixKey matrixKey, boolean deleteReports) throws IOException;

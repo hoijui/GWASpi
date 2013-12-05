@@ -154,7 +154,7 @@ public class OperationFactory {
 				throw new IllegalArgumentException("invalid OPType: " + opType);
 		}
 
-		OperationsList.insertOPMetadata(new OperationMetadata(
+		resultOperationKey = OperationsList.insertOPMetadata(new OperationMetadata(
 				Integer.MIN_VALUE,
 				parentMatrixKey,
 				parentOperationId,
@@ -168,9 +168,7 @@ public class OperationFactory {
 				null
 				));
 
-		opMetaData = OperationsList.getOperationMetadata(resultOPnetCDFName);
-
-		resultOperationKey = new OperationKey(parentMatrixKey, opMetaData.getOPId());
+		opMetaData = OperationsList.getOperation(resultOperationKey);
 	}
 
 	// ACCESSORS

@@ -72,8 +72,8 @@ public class OperationsList {
 		return result;
 	}
 
-	public static void insertOPMetadata(OperationMetadata operationMetadata) throws IOException {
-		operationService.insertOperation(operationMetadata);
+	public static OperationKey insertOPMetadata(OperationMetadata operationMetadata) throws IOException {
+		return operationService.insertOperation(operationMetadata);
 	}
 
 	public static void deleteOperationBranch(OperationKey operationKey, boolean deleteReports) throws IOException {
@@ -83,7 +83,8 @@ public class OperationsList {
 	public static OperationMetadata getOperationMetadata(int opId) throws IOException {
 		return operationService.getOperation(opId);
 	}
-	public static OperationMetadata getOperationMetadata(String netCDFname) throws IOException {
-		return operationService.getOperation(netCDFname);
+
+	public static List<OperationKey> getOperationKeysByName(String operationFriendlyName) throws IOException {
+		return operationService.getOperationKeysByName(operationFriendlyName);
 	}
 }

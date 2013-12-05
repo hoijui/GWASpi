@@ -33,10 +33,10 @@ import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.Study;
 import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.markers.NetCDFDataSetSource;
-//import ucar.ma2.DataType;
+import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
-//import ucar.nc2.Dimension;
-//import ucar.nc2.NetcdfFileWriteable;
+import ucar.nc2.Dimension;
+import ucar.nc2.NetcdfFileWriteable;
 
 public class MatrixFactory {
 

@@ -33,6 +33,7 @@ import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.StudyKey;
+import org.gwaspi.netCDF.markers.NetCDFDataSetSource;
 import org.gwaspi.netCDF.operations.NetCdfUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -86,7 +87,7 @@ public class SampleSet extends AbstractList<GenotypesList> implements MarkersGen
 	}
 
 	public SampleSet(StudyKey studyKey, String netCDFPath, String netCDFName) throws IOException {
-		this(MatricesList.getMatrixMetadata(netCDFPath, studyKey, netCDFName));
+		this(NetCDFDataSetSource.getMatrix(netCDFPath, studyKey, netCDFName));
 	}
 
 	// ACCESSORS

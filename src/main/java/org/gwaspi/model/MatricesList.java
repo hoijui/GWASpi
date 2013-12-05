@@ -68,8 +68,4 @@ public final class MatricesList {
 	public static List<MatrixKey> getMatrixKeysByName(String matrixFriendlyName) throws IOException {
 		return matrixService.getMatrixKeysByName(matrixFriendlyName);
 	}
-
-	public static MatrixMetadata getMatrixMetadata(String netCDFpath, StudyKey studyKey, String newMatrixName) throws IOException {
-		return matrixService.getMatrix(netCDFpath, studyKey, newMatrixName);
-	}
 }
