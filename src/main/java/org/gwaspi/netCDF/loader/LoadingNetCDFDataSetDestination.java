@@ -92,10 +92,10 @@ public class LoadingNetCDFDataSetDestination extends AbstractNetCDFDataSetDestin
 		description.append(Text.Matrix.descriptionHeader3);
 		description.append("\n");
 		gtLoader.addAdditionalBigDescriptionProperties(description, loadDescription);
-		if (new File(loadDescription.getSampleFilePath()).exists()) {
-			description.append(loadDescription.getSampleFilePath()); // the FAM file, in case of PLink Binary
-			description.append(" (Sample Info file)\n");
-		}
+//		if (new File(loadDescription.getSampleFilePath()).exists()) {
+//			description.append(loadDescription.getSampleFilePath()); // the FAM file, in case of PLink Binary
+//			description.append(" (Sample Info file)\n");
+//		}
 
 		try {
 			return new MatrixFactory(
@@ -135,7 +135,7 @@ public class LoadingNetCDFDataSetDestination extends AbstractNetCDFDataSetDestin
 	@Override
 	public void finishedLoadingMarkerMetadatas() throws IOException {
 		super.finishedLoadingMarkerMetadatas();
-		
+
 		extractChromosomeInfos();
 	}
 
