@@ -72,7 +72,7 @@ public class MatrixMetadata implements Serializable {
 	private String description;
 	private GenotypeEncoding gtEncoding;
 	private StrandType strand;
-	private boolean hasDictionray;
+	private boolean hasDictionary;
 	private int markerSetSize;
 	private int sampleSetSize;
 	private String matrixType; // matrix_type VARCHAR(32) NOT NULL
@@ -100,7 +100,7 @@ public class MatrixMetadata implements Serializable {
 		this.description = "";
 		this.gtEncoding = null;
 		this.strand = null;
-		this.hasDictionray = false;
+		this.hasDictionary = false;
 		this.markerSetSize = Integer.MIN_VALUE;
 		this.sampleSetSize = Integer.MIN_VALUE;
 		this.matrixType = "";
@@ -130,7 +130,7 @@ public class MatrixMetadata implements Serializable {
 		this.description = description;
 		this.gtEncoding = gtEncoding;
 		this.strand = null;
-		this.hasDictionray = false;
+		this.hasDictionary = false;
 		this.markerSetSize = Integer.MIN_VALUE;
 		this.sampleSetSize = Integer.MIN_VALUE;
 		this.matrixType = "";
@@ -165,7 +165,7 @@ public class MatrixMetadata implements Serializable {
 		this.description = description;
 		this.gtEncoding = gtEncoding;
 		this.strand = strand;
-		this.hasDictionray = hasDictionray;
+		this.hasDictionary = hasDictionray;
 		this.markerSetSize = markerSetSize;
 		this.sampleSetSize = sampleSetSize;
 		this.matrixType = matrixType;
@@ -201,12 +201,12 @@ public class MatrixMetadata implements Serializable {
 	}
 
 	@Transient
-	public boolean getHasDictionray() { // FIXME spelling mistake
-		return hasDictionray;
+	public boolean getHasDictionary() {
+		return hasDictionary;
 	}
 
-	public void setHasDictionray(boolean hasDictionray) {
-		this.hasDictionray = hasDictionray;
+	public void setHasDictionary(boolean hasDictionary) {
+		this.hasDictionary = hasDictionary;
 	}
 
 	@Id

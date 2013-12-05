@@ -85,7 +85,7 @@ public class MatrixGenotypesFlipperNetCDFDataSetDestination extends AbstractNetC
 					description.toString(), // description
 					sourceMatrixMetadata.getGenotypeEncoding(), // matrix genotype encoding from the original matrix
 					StrandType.valueOf("FLP"), // FIXME this will fail at runtime
-					sourceMatrixMetadata.getHasDictionray(), // has dictionary?
+					sourceMatrixMetadata.getHasDictionary(), // has dictionary?
 					numSamples,
 					numMarkers,
 					numChromosomes,

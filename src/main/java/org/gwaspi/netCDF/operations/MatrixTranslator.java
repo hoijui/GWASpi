@@ -86,7 +86,7 @@ public class MatrixTranslator implements MatrixOperation {
 			{
 				problemDescription = Text.Trafo.warnNotAB12 +  " & " + Text.Trafo.warnNot1234;
 			} else if (!genotypeEncoding.equals(GenotypeEncoding.O1234)
-					&& !parentMatrixMetadata.getHasDictionray()) {
+					&& !parentMatrixMetadata.getHasDictionary()) {
 				problemDescription = Text.Trafo.warnNoDictionary;
 			}
 		} catch (IOException ex) {

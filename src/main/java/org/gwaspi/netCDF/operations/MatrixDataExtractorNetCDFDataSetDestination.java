@@ -158,7 +158,7 @@ public class MatrixDataExtractorNetCDFDataSetDestination extends AbstractNetCDFD
 					description.toString(), // description
 					sourceMatrixMetadata.getGenotypeEncoding(), // matrix genotype encoding from the original matrix
 					sourceMatrixMetadata.getStrand(),
-					sourceMatrixMetadata.getHasDictionray(), // has dictionary?
+					sourceMatrixMetadata.getHasDictionary(), // has dictionary?
 					numSamples,
 					numMarkers,
 					numChromosomes,
