@@ -121,42 +121,42 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 				loadDescription.getStudyKey(),
 				loadDescription.getFriendlyName());
 
-		// CREATE netCDF-3 FILE
-		StringBuilder descSB = new StringBuilder(Text.Matrix.descriptionHeader1);
-		descSB.append(org.gwaspi.global.Utils.getShortDateTimeAsString());
-		if (!loadDescription.getDescription().isEmpty()) {
-			descSB.append("\nDescription: ");
-			descSB.append(loadDescription.getDescription());
-			descSB.append("\n");
-		}
-//		descSB.append("\nStrand: ");
-//		descSB.append(strand);
-//		descSB.append("\nGenotype encoding: ");
-//		descSB.append(importMatrixMetadata.getGenotypeEncoding());
-		descSB.append("\n");
-		descSB.append("Technology: ");
-		descSB.append(importMatrixMetadata.getTechnology());
-		descSB.append("\n");
-		descSB.append("Markers: ").append(importMatrixMetadata.getMarkerSetSize());
-		descSB.append(", Samples: ").append(importMatrixMetadata.getSampleSetSize());
-		descSB.append("\n");
-		descSB.append(Text.Matrix.descriptionHeader2);
-		descSB.append(loadDescription.getFormat().toString());
-		descSB.append("\n");
-		descSB.append(Text.Matrix.descriptionHeader3);
-		descSB.append("\n");
-		descSB.append(loadDescription.getGtDirPath());
-		descSB.append(" (Matrix file)\n");
-		descSB.append(loadDescription.getSampleFilePath());
-		descSB.append(" (Sample Info file)\n");
-
 		if (importMatrixMetadata.getGwaspiDBVersion().equals(Config.getConfigValue(Config.PROPERTY_CURRENT_GWASPIDB_VERSION, null))) {
+			// CREATE netCDF-3 FILE
+			StringBuilder description = new StringBuilder(Text.Matrix.descriptionHeader1);
+			description.append(org.gwaspi.global.Utils.getShortDateTimeAsString());
+			if (!loadDescription.getDescription().isEmpty()) {
+				description.append("\nDescription: ");
+				description.append(loadDescription.getDescription());
+				description.append("\n");
+			}
+//			description.append("\nStrand: ");
+//			description.append(strand);
+//			description.append("\nGenotype encoding: ");
+//			description.append(importMatrixMetadata.getGenotypeEncoding());
+			description.append("\n");
+			description.append("Technology: ");
+			description.append(importMatrixMetadata.getTechnology());
+			description.append("\n");
+			description.append("Markers: ").append(importMatrixMetadata.getMarkerSetSize());
+			description.append(", Samples: ").append(importMatrixMetadata.getSampleSetSize());
+			description.append("\n");
+			description.append(Text.Matrix.descriptionHeader2);
+			description.append(loadDescription.getFormat().toString());
+			description.append("\n");
+			description.append(Text.Matrix.descriptionHeader3);
+			description.append("\n");
+			description.append(loadDescription.getGtDirPath());
+			description.append(" (Matrix file)\n");
+			description.append(loadDescription.getSampleFilePath());
+			description.append(" (Sample Info file)\n");
+
 			// COMPARE DATABASE VERSIONS
 			if (!testExcessSamplesInMatrix) {
 				MatricesList.insertMatrixMetadata(new MatrixMetadata(
 						loadDescription.getFriendlyName(),
 						importMatrixMetadata.getMatrixNetCDFName(),
-						descSB.toString(), // description
+						description.toString(), // description
 						importMatrixMetadata.getGenotypeEncoding(),
 						loadDescription.getStudyKey(),
 						Integer.MIN_VALUE,
@@ -203,7 +203,7 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 				loadDescription.getStudyKey(),
 				loadDescription.getFormat(),
 				loadDescription.getFriendlyName(),
-				importMatrixMetadata.getDescription(), //description
+				importMatrixMetadata.getDescription(), // description
 				importMatrixMetadata.getGenotypeEncoding(),
 				importMatrixMetadata.getStrand(),
 				isHasDictionary(),
@@ -241,7 +241,6 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 		// Number of marker per chromosome & max pos for each chromosome
 		int[] columns = new int[] {0, 1, 2, 3};
 		NetCdfUtils.saveChromosomeInfosD2ToWrMatrix(ncfile, chromosomeInfo.values(), columns, cNetCDF.Variables.VAR_CHR_INFO);
-
 
 		// WRITE POSITION METADATA FROM ANNOTATION FILE
 		ArrayInt.D1 markersPosD1 = NetCdfUtils.writeValuesToD1ArrayInt(rdMarkerSetMap.values(), MarkerMetadata.TO_POS);
@@ -298,12 +297,12 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 		int[] origin = new int[]{0, 0};
 		ncfile.write(cNetCDF.Variables.GLOB_GTENCODING, origin, guessedGTCodeAC);
 
-		StringBuilder descSB = new StringBuilder(loadDescription.getDescription());
-		descSB.append("Genotype encoding: ");
-		descSB.append(guessedGTCode);
+		StringBuilder description = new StringBuilder(loadDescription.getDescription());
+		description.append("Genotype encoding: ");
+		description.append(guessedGTCode);
 
 		MatrixMetadata matrixMetaData = matrixFactory.getResultMatrixMetadata();
-		matrixMetaData.setDescription(descSB.toString());
+		matrixMetaData.setDescription(description.toString());
 		MatricesList.updateMatrix(matrixMetaData);
 
 		// CLOSE FILE
