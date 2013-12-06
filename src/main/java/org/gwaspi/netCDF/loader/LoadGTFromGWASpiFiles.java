@@ -30,8 +30,10 @@ import org.gwaspi.gui.utils.Dialogs;
 import org.gwaspi.model.ChromosomeInfo;
 import org.gwaspi.model.ChromosomeKey;
 import org.gwaspi.model.DataSet;
+import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MarkerMetadata;
+import org.gwaspi.model.MarkersMetadataSource;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
@@ -180,6 +182,7 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 					loadDescription.getGtDirPath(),
 					importMatrixMetadata.getMatrixNetCDFName());
 		} else {
+			new NetCDFDataSetSource();
 			generateNewGWASpiDBversionMatrix(loadDescription, samplesReceiver, importMatrixMetadata);
 		}
 
@@ -194,10 +197,13 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 		String startTime = org.gwaspi.global.Utils.getMediumDateTimeAsString();
 
 		//<editor-fold defaultstate="expanded" desc="CREATE MARKERSET & NETCDF">
-		MarkerSet rdMarkerSet = new MarkerSet(importMatrixMetadata);
-		rdMarkerSet.initFullMarkerIdSetMap();
-		rdMarkerSet.fillMarkerSetMapWithChrAndPos();
-		Map<MarkerKey, MarkerMetadata> rdMarkerSetMap = rdMarkerSet.getMarkerMetadata();
+		MatrixKey importMatrixKey = MatrixKey.valueOf(importMatrixMetadata);
+		DataSetSource dataSetSource = null; // HACK use importMatrixKey and its NEtCDF source!;
+//		MarkerSet rdMarkerSet = new MarkerSet(importMatrixMetadata);
+//		rdMarkerSet.initFullMarkerIdSetMap();
+//		rdMarkerSet.fillMarkerSetMapWithChrAndPos();
+//		Map<MarkerKey, MarkerMetadata> rdMarkerSetMap = rdMarkerSet.getMarkerMetadata();
+		MarkersMetadataSource markersMetadatasSource = dataSetSource.getMarkersMetadatasSource();
 
 		SampleSet rdSampleSet = new SampleSet(
 				importMatrixMetadata.getStudyKey(),
@@ -219,7 +225,7 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 				importMatrixMetadata.getStrand(),
 				isHasDictionary(),
 				rdSampleSetMap.size(),
-				rdMarkerSetMap.size(),
+				dataSetSource.getNumMarkers(),
 				chromosomeInfo.size(),
 				loadDescription.getGtDirPath());
 
@@ -233,7 +239,6 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 		//<editor-fold defaultstate="expanded" desc="WRITE MATRIX METADATA">
 		// WRITE SAMPLESET TO MATRIX FROM SAMPLES LIST
 		ArrayChar.D2 samplesD2 = NetCdfUtils.writeCollectionToD2ArrayChar(rdSampleSetMap.keySet(), cNetCDF.Strides.STRIDE_SAMPLE_NAME);
-
 		int[] sampleOrig = new int[] {0, 0};
 		ncfile.write(cNetCDF.Variables.VAR_SAMPLESET, sampleOrig, samplesD2);
 		samplesD2 = null;
@@ -241,20 +246,18 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 
 		// WRITE CHROMOSOME METADATA FROM ANNOTATION FILE
 		// Chromosome location for each marker
-		ArrayChar.D2 markersD2 = NetCdfUtils.writeValuesToD2ArrayChar(rdMarkerSetMap.values(), MarkerMetadata.TO_CHR, cNetCDF.Strides.STRIDE_CHR);
+		ArrayChar.D2 markersD2 = NetCdfUtils.writeValuesToD2ArrayChar(markersMetadatasSource, MarkerMetadata.TO_CHR, cNetCDF.Strides.STRIDE_CHR);
 		int[] markersOrig = new int[] {0, 0};
 		ncfile.write(cNetCDF.Variables.VAR_MARKERS_CHR, markersOrig, markersD2);
 		log.info("Done writing chromosomes to matrix");
-
 		// Set of chromosomes found in matrix along with number of markersinfo
 		NetCdfUtils.saveObjectsToStringToMatrix(ncfile, chromosomeInfo.keySet(), cNetCDF.Variables.VAR_CHR_IN_MATRIX, cNetCDF.Strides.STRIDE_CHR);
-
 		// Number of marker per chromosome & max pos for each chromosome
 		int[] columns = new int[] {0, 1, 2, 3};
 		NetCdfUtils.saveChromosomeInfosD2ToWrMatrix(ncfile, chromosomeInfo.values(), columns, cNetCDF.Variables.VAR_CHR_INFO);
 
 		// WRITE POSITION METADATA FROM ANNOTATION FILE
-		ArrayInt.D1 markersPosD1 = NetCdfUtils.writeValuesToD1ArrayInt(rdMarkerSetMap.values(), MarkerMetadata.TO_POS);
+		ArrayInt.D1 markersPosD1 = NetCdfUtils.writeValuesToD1ArrayInt(markersMetadatasSource, MarkerMetadata.TO_POS);
 		int[] posOrig = new int[1];
 		ncfile.write(cNetCDF.Variables.VAR_MARKERS_POS, posOrig, markersPosD1);
 		log.info("Done writing positions to matrix");

@@ -39,7 +39,6 @@ import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.Report;
 import org.gwaspi.model.ReportsList;
 import org.gwaspi.model.Study;
-import org.gwaspi.netCDF.markers.MarkerSet;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.gwaspi.netCDF.operations.OperationFactory;
 import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationDataSet;

@@ -45,7 +45,6 @@ import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
-import org.gwaspi.netCDF.markers.MarkerSet;
 import org.gwaspi.netCDF.operations.OperationFactory;
 import org.gwaspi.operations.qasamples.QASamplesOperationDataSet;
 import org.gwaspi.operations.trendtest.CommonTestOperationDataSet;
@@ -749,7 +748,7 @@ public class GenericReportGenerator {
 //		MarkerSet rdInfoMarkerSet = new MarkerSet(operationKey.getParentMatrixKey());
 //		rdInfoMarkerSet.initFullMarkerIdSetMap();
 //		rdInfoMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
-		if (rdInfoMarkerSet.getMarkerIdSetMapCharArray() != null) {
+		if (rdInfoMarkerSet.getMarkerIdSetMapCharArray() != null) {XXX;
 			for (Map.Entry<MarkerKey, char[]> entry : rdInfoMarkerSet.getMarkerIdSetMapCharArray().entrySet()) {
 				MarkerKey key = entry.getKey();
 				String chr = new String(entry.getValue());

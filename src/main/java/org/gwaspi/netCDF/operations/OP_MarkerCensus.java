@@ -48,7 +48,6 @@ import org.gwaspi.model.SampleInfo.Sex;
 import org.gwaspi.model.SampleInfoList;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.StudyKey;
-import org.gwaspi.netCDF.markers.MarkerSet;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
 import org.gwaspi.operations.markercensus.DefaultMarkerCensusOperationEntry;
@@ -199,7 +198,7 @@ public class OP_MarkerCensus implements MatrixOperation {
 						rdMatrixMetadata.getStudyKey(), rdMatrixMetadata, wrSampleKeys.values());
 
 				// Iterate through markerset, take it marker by marker
-				rdMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
+				rdMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);XXX;
 				// INIT wrSampleSetMap with indexing order and chromosome info
 				Map<MarkerKey, Object[]> wrMarkerInfos = new LinkedHashMap<MarkerKey, Object[]>();
 				if (rdMarkerSet.getMarkerIdSetMapCharArray() != null) {

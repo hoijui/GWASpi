@@ -40,10 +40,10 @@ import org.gwaspi.operations.qasamples.NetCdfQASamplesOperationDataSet;
 import org.gwaspi.operations.trendtest.NetCdfTrendTestOperationDataSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.ma2.DataType;
-import ucar.ma2.InvalidRangeException;
-import ucar.nc2.Dimension;
-import ucar.nc2.NetcdfFileWriteable;
+//import ucar.ma2.DataType;
+//import ucar.ma2.InvalidRangeException;
+//import ucar.nc2.Dimension;
+//import ucar.nc2.NetcdfFileWriteable;
 
 public class OperationFactory {
 
