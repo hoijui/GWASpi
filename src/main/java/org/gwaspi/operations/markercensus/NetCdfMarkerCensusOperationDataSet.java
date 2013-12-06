@@ -114,35 +114,31 @@ public class NetCdfMarkerCensusOperationDataSet extends AbstractNetCdfOperationD
 	@Override
 	protected OperationFactory createOperationFactory() throws IOException {
 
-		try {
-			MatrixMetadata rdMatrixMetadata = MatricesList.getMatrixMetadataById(getReadMatrixKey());
+		MatrixMetadata rdMatrixMetadata = MatricesList.getMatrixMetadataById(getReadMatrixKey());
 
-			OPType opType = OPType.MARKER_CENSUS_BY_AFFECTION;
+		OPType opType = OPType.MARKER_CENSUS_BY_AFFECTION;
 
-			String description = "Genotype frequency count -" + censusName + "- on " + rdMatrixMetadata.getMatrixFriendlyName();
-			if (phenoFile != null) {
-				description += "\nCase/Control status read from file: " + phenoFile.getPath();
-				opType = OPType.MARKER_CENSUS_BY_PHENOTYPE;
-			}
-			return new OperationFactory(
-					rdMatrixMetadata.getStudyKey(),
-					"Genotypes freq. - " + censusName, // friendly name
-					description
-						+ "\nSample missing ratio threshold: " + sampleMissingRatio
-						+ "\nSample heterozygosity ratio threshold: " + sampleHetzygRatio
-						+ "\nMarker missing ratio threshold: " + markerMissingRatio
-						+ "\nDiscard mismatching Markers: " + discardMismatches
-						+ "\nMarkers: " + getNumMarkers()
-						+ "\nSamples: " + getNumSamples(), // description
-					getNumMarkers(),
-					getNumSamples(),
-					0,
-					opType,
-					getReadMatrixKey(), // Parent matrixId
-					-1); // Parent operationId
-		} catch (InvalidRangeException ex) {
-			throw new IOException(ex);
+		String description = "Genotype frequency count -" + censusName + "- on " + rdMatrixMetadata.getMatrixFriendlyName();
+		if (phenoFile != null) {
+			description += "\nCase/Control status read from file: " + phenoFile.getPath();
+			opType = OPType.MARKER_CENSUS_BY_PHENOTYPE;
 		}
+		return new OperationFactory(
+				rdMatrixMetadata.getStudyKey(),
+				"Genotypes freq. - " + censusName, // friendly name
+				description
+					+ "\nSample missing ratio threshold: " + sampleMissingRatio
+					+ "\nSample heterozygosity ratio threshold: " + sampleHetzygRatio
+					+ "\nMarker missing ratio threshold: " + markerMissingRatio
+					+ "\nDiscard mismatching Markers: " + discardMismatches
+					+ "\nMarkers: " + getNumMarkers()
+					+ "\nSamples: " + getNumSamples(), // description
+				getNumMarkers(),
+				getNumSamples(),
+				0,
+				opType,
+				getReadMatrixKey(), // Parent matrixId
+				-1); // Parent operationId
 	}
 
 //	@Override

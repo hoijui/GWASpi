@@ -198,23 +198,25 @@ public class OP_MarkerCensus implements MatrixOperation {
 						rdMatrixMetadata.getStudyKey(), rdMatrixMetadata, wrSampleKeys.values());
 
 				// Iterate through markerset, take it marker by marker
-				rdMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);XXX;
+//				rdMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);XXX;
 				// INIT wrSampleSetMap with indexing order and chromosome info
-				Map<MarkerKey, Object[]> wrMarkerInfos = new LinkedHashMap<MarkerKey, Object[]>();
-				if (rdMarkerSet.getMarkerIdSetMapCharArray() != null) {
-					int idx = 0;
-					for (Map.Entry<MarkerKey, char[]> entry : rdMarkerSet.getMarkerIdSetMapCharArray().entrySet()) {
-						MarkerKey key = entry.getKey();
-						if (wrMarkerKeys.contains(key)) {
-							String chr = new String(entry.getValue());
-							Object[] markerInfo = new Object[] {idx, chr};
-							wrMarkerInfos.put(key, markerInfo); // NOTE This value is never used!
-						}
-						idx++;
-					}
-
-					rdMarkerSet.getMarkerIdSetMapCharArray().clear();
-				}
+//				Map<MarkerKey, Object[]> wrMarkerInfos = new LinkedHashMap<MarkerKey, Object[]>();
+////				if (rdMarkerSet.getMarkerIdSetMapCharArray() != null) {
+//					int idx = 0;
+//				Iterator<String> markerChromosomesIt = dataSetSource.getMarkersMetadatasSource().getChromosomes().iterator();
+//					for (MarkerKey key : dataSetSource.getMarkersKeysSource()) {
+//						String chr = markerChromosomesIt.next();
+////						MarkerKey key = entry.getKey();
+//						if (wrMarkerKeys.contains(key)) {
+////							String chr = new String(entry.getValue());
+//							Object[] markerInfo = new Object[] {idx, chr};
+//							wrMarkerInfos.put(key, markerInfo); // NOTE This value is never used!
+//						}
+//						idx++;
+//					}
+//
+////					rdMarkerSet.getMarkerIdSetMapCharArray().clear();
+////				}
 
 				log.info("Start Census testing markers");
 //
@@ -231,10 +233,15 @@ public class OP_MarkerCensus implements MatrixOperation {
 //				Map<MarkerKey, CensusFull> wrChunkedMarkerCensusMap = new LinkedHashMap<MarkerKey, CensusFull>();
 //				Map<MarkerKey, byte[]> wrChunkedKnownAllelesMap = new LinkedHashMap<MarkerKey, byte[]>();
 				Iterator<GenotypesList> markersGTsIt = dataSetSource.getMarkersGenotypesSource().iterator();
-				for (Map.Entry<MarkerKey, Object[]> entry : wrMarkerInfos.entrySet()) {
-					final MarkerKey markerKey = entry.getKey();
-					final int markerOrigIndex = (Integer) entry.getValue()[0];
-					final String markerChr = (String) entry.getValue()[1];
+				int idx = 0;
+//				for (Map.Entry<MarkerKey, Object[]> entry : wrMarkerInfos.entrySet()) {
+//					final MarkerKey markerKey = entry.getKey();
+//					final int markerOrigIndex = (Integer) entry.getValue()[0];
+//					final String markerChr = (String) entry.getValue()[1];
+				Iterator<String> markerChromosomesIt = dataSetSource.getMarkersMetadatasSource().getChromosomes().iterator();
+				for (final MarkerKey markerKey : dataSetSource.getMarkersKeysSource()) {
+					final int markerOrigIndex = idx++;
+					final String markerChr = markerChromosomesIt.next();
 //					if (countMarkers % chunkSize == 0) {
 //						if (countMarkers > 0) {
 //							// CENSUS DATA WRITER

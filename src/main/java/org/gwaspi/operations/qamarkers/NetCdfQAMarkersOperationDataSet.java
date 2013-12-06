@@ -69,26 +69,22 @@ public class NetCdfQAMarkersOperationDataSet extends AbstractNetCdfOperationData
 	@Override
 	protected OperationFactory createOperationFactory() throws IOException {
 
-		try {
-			MatrixMetadata rdMatrixMetadata = MatricesList.getMatrixMetadataById(getReadMatrixKey());
+		MatrixMetadata rdMatrixMetadata = MatricesList.getMatrixMetadataById(getReadMatrixKey());
 
-			String description = "Marker Quality Assurance on "
-					+ rdMatrixMetadata.getMatrixFriendlyName()
-					+ "\nMarkers: " + getNumMarkers()
-					+ "\nStarted at: " + org.gwaspi.global.Utils.getShortDateTimeAsString();
-			return new OperationFactory(
-					rdMatrixMetadata.getStudyKey(),
-					"Marker QA", // friendly name
-					description, // description
-					getNumMarkers(),
-					getNumSamples(),
-					0,
-					OPType.MARKER_QA,
-					getReadMatrixKey(), // Parent matrixId
-					-1); // Parent operationId
-		} catch (InvalidRangeException ex) {
-			throw new IOException(ex);
-		}
+		String description = "Marker Quality Assurance on "
+				+ rdMatrixMetadata.getMatrixFriendlyName()
+				+ "\nMarkers: " + getNumMarkers()
+				+ "\nStarted at: " + org.gwaspi.global.Utils.getShortDateTimeAsString();
+		return new OperationFactory(
+				rdMatrixMetadata.getStudyKey(),
+				"Marker QA", // friendly name
+				description, // description
+				getNumMarkers(),
+				getNumSamples(),
+				0,
+				OPType.MARKER_QA,
+				getReadMatrixKey(), // Parent matrixId
+				-1); // Parent operationId
 	}
 
 	@Override

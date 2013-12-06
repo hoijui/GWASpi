@@ -23,4 +23,8 @@ import java.util.List;
  * TODO
  */
 public interface MarkersMetadataSource extends List<MarkerMetadata> {
+
+	List<String> getRsIds();
+	List<String> getChromosomes();
+	List<Integer> getPositions();
 }

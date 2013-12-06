@@ -60,24 +60,19 @@ public class NetCdfQASamplesOperationDataSet extends AbstractNetCdfOperationData
 	@Override
 	protected OperationFactory createOperationFactory() throws IOException {
 
-		try {
-			MatrixMetadata rdMatrixMetadata = MatricesList.getMatrixMetadataById(getReadMatrixKey());
+		MatrixMetadata rdMatrixMetadata = MatricesList.getMatrixMetadataById(getReadMatrixKey());
 
-			// CREATE netCDF-3 FILE
-			return new OperationFactory(
-					rdMatrixMetadata.getStudyKey(),
-					"Sample QA", // friendly name
-					"Sample census on " + rdMatrixMetadata.getMatrixFriendlyName()
-							+ "\nSamples: " + getNumSamples(), // description
-					getNumSamples(),
-					getNumMarkers(),
-					0,
-					OPType.SAMPLE_QA,
-					getReadMatrixKey(), // Parent matrixId
-					-1); // Parent operationId
-		} catch (InvalidRangeException ex) {
-			throw new IOException(ex);
-		}
+		return new OperationFactory(
+				rdMatrixMetadata.getStudyKey(),
+				"Sample QA", // friendly name
+				"Sample census on " + rdMatrixMetadata.getMatrixFriendlyName()
+						+ "\nSamples: " + getNumSamples(), // description
+				getNumSamples(),
+				getNumMarkers(),
+				0,
+				OPType.SAMPLE_QA,
+				getReadMatrixKey(), // Parent matrixId
+				-1); // Parent operationId
 	}
 
 	@Override

@@ -101,22 +101,18 @@ public class NetCdfHardyWeinbergOperationDataSet extends AbstractNetCdfOperation
 	@Override
 	protected OperationFactory createOperationFactory() throws IOException {
 
-		try {
-			return new OperationFactory(
-					markerCensusOperationKey.getParentMatrixKey().getStudyKey(),
-					"Hardy-Weinberg_" + hardyWeinbergName, // friendly name
-					"Hardy-Weinberg test on Samples marked as controls (only females for the X chromosome)"
-						+ "\nMarkers: " + getNumMarkers() + ""
-						+ "\nSamples: " + getNumSamples(), // description
-					getNumMarkers(),
-					getNumSamples(),
-					0,
-					OPType.HARDY_WEINBERG,
-					markerCensusOperationKey.getParentMatrixKey(), // Parent matrixId
-					markerCensusOperationKey.getId()); // Parent operationId
-		} catch (InvalidRangeException ex) {
-			throw new IOException(ex);
-		}
+		return new OperationFactory(
+				markerCensusOperationKey.getParentMatrixKey().getStudyKey(),
+				"Hardy-Weinberg_" + hardyWeinbergName, // friendly name
+				"Hardy-Weinberg test on Samples marked as controls (only females for the X chromosome)"
+					+ "\nMarkers: " + getNumMarkers() + ""
+					+ "\nSamples: " + getNumSamples(), // description
+				getNumMarkers(),
+				getNumSamples(),
+				0,
+				OPType.HARDY_WEINBERG,
+				markerCensusOperationKey.getParentMatrixKey(), // Parent matrixId
+				markerCensusOperationKey.getId()); // Parent operationId
 	}
 
 	@Override

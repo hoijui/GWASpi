@@ -58,9 +58,10 @@ public class MatrixFactory {
 			MatrixKey origMatrix1Key,
 			MatrixKey origMatrix2Key,
 			String inputLocation)
-			throws InvalidRangeException, IOException
+			throws IOException
 	{
 		if (samplesDimSize > 0 && markerDimSize > 0) {
+			try {
 			resultMatrixName = generateMatrixNetCDFNameByDate();
 			netCDFHandler = generateNetcdfHandler(
 					origMatrix1Key.getStudyKey(),
@@ -92,6 +93,9 @@ public class MatrixFactory {
 					inputLocation);
 			resultMatrixKey = MatricesList.insertMatrixMetadata(tmpMatrixMetaData);
 			matrixMetaData = tmpMatrixMetaData;
+			} catch (InvalidRangeException ex) {
+				throw new IOException(ex);
+			}
 		} else {
 			throw new IllegalArgumentException();
 		}
@@ -112,7 +116,7 @@ public class MatrixFactory {
 			int chrDimSize,
 			MatrixKey origMatrixKey1,
 			MatrixKey origMatrixKey2)
-			throws InvalidRangeException, IOException
+			throws IOException
 	{
 		this(
 				technology,
@@ -144,7 +148,7 @@ public class MatrixFactory {
 			int markerDimSize,
 			int chrDimSize,
 			String dataLocation)
-			throws InvalidRangeException, IOException
+			throws IOException
 	{
 		this(
 				technology,

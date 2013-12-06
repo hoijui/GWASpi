@@ -40,10 +40,10 @@ import org.gwaspi.operations.qasamples.NetCdfQASamplesOperationDataSet;
 import org.gwaspi.operations.trendtest.NetCdfTrendTestOperationDataSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-//import ucar.ma2.DataType;
-//import ucar.ma2.InvalidRangeException;
-//import ucar.nc2.Dimension;
-//import ucar.nc2.NetcdfFileWriteable;
+import ucar.ma2.DataType;
+import ucar.ma2.InvalidRangeException;
+import ucar.nc2.Dimension;
+import ucar.nc2.NetcdfFileWriteable;
 
 public class OperationFactory {
 
@@ -68,11 +68,12 @@ public class OperationFactory {
 			OPType opType,
 			MatrixKey parentMatrixKey,
 			int parentOperationId)
-			throws InvalidRangeException, IOException
+			throws IOException
 	{
+		try {
 		// OPERATION CASE SELECTOR
 		resultOPnetCDFName = opType.name() + "_" + MatrixFactory.generateMatrixNetCDFNameByDate();
-		switch (opType) {
+		switch (opType) {XXX; // move all this to the individual destinations
 			case MARKER_QA:
 				//resultOPnetCDFName = OPType + "_" + rdMatrixMetadata.getMatrixCDFName();
 				netCDFHandler = generateNetcdfMarkerQAHandler(
@@ -169,6 +170,9 @@ public class OperationFactory {
 				));
 
 		opMetaData = OperationsList.getOperation(resultOperationKey);
+		} catch (InvalidRangeException ex) {
+			throw new IOException(ex);
+		}
 	}
 
 	// ACCESSORS

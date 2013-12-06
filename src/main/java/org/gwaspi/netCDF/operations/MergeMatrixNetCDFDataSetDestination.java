@@ -25,14 +25,8 @@ import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.netCDF.loader.AbstractNetCDFDataSetDestination;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import ucar.ma2.InvalidRangeException;
 
 public class MergeMatrixNetCDFDataSetDestination extends AbstractNetCDFDataSetDestination {
-
-	private final Logger log
-			= LoggerFactory.getLogger(MergeMatrixNetCDFDataSetDestination.class);
 
 	private final DataSetSource dataSetSource1;
 	private final DataSetSource dataSetSource2;
@@ -111,22 +105,18 @@ public class MergeMatrixNetCDFDataSetDestination extends AbstractNetCDFDataSetDe
 		description.append("\nGenotype encoding: ");
 		description.append(gtEncoding.toString());
 
-		try {
-			return new MatrixFactory(
-					technology, // technology
-					matrixFriendlyName,
-					description.toString(), // description
-					gtEncoding, // GT encoding
-					rdMatrix1Metadata.getStrand(),
-					hasDictionary, // has dictionary?
-					numSamples,
-					numMarkers,
-					numChromosomes,
-					rdMatrix1Metadata.getKey(), // Parent matrix 1 key
-					rdMatrix2Metadata.getKey()); // Parent matrix 2 key
-		} catch (InvalidRangeException ex) {
-			throw new IOException(ex);
-		}
+		return new MatrixFactory(
+				technology, // technology
+				matrixFriendlyName,
+				description.toString(), // description
+				gtEncoding, // GT encoding
+				rdMatrix1Metadata.getStrand(),
+				hasDictionary, // has dictionary?
+				numSamples,
+				numMarkers,
+				numChromosomes,
+				rdMatrix1Metadata.getKey(), // Parent matrix 1 key
+				rdMatrix2Metadata.getKey()); // Parent matrix 2 key
 	}
 
 	@Override

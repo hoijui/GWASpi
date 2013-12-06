@@ -31,7 +31,6 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.global.Config;
 import org.gwaspi.gui.reports.ManhattanPlotZoom;
 import org.gwaspi.gui.reports.SampleQAHetzygPlotZoom;
@@ -432,14 +431,12 @@ public class GenericReportGenerator {
 		try {
 			// ESTIMATE WINDOW SIZE
 			Long minPosition;
-			Long middlePosition;
 			Long maxPosition;
 			if (markerKey == null) {
 				minPosition = requestedPhysPos;
-				middlePosition = Math.round(minPosition + (double) requestedPosWindow / 2);
 				maxPosition = minPosition + requestedPosWindow;
 			} else {
-				middlePosition = requestedPhysPos;
+				final Long middlePosition = requestedPhysPos;
 				minPosition = Math.round(middlePosition - (double) requestedPosWindow / 2);
 				maxPosition = minPosition + requestedPosWindow;
 			}
@@ -740,38 +737,37 @@ public class GenericReportGenerator {
 	//</editor-fold>
 
 	//<editor-fold defaultstate="expanded" desc="HELPERS">
-	public static Map<MarkerKey, Object[]> getMarkerSetChrAndPos(OperationKey operationKey) throws IOException {
-		Map<MarkerKey, Object[]> dataSetMap = new LinkedHashMap<MarkerKey, Object[]>();
-
-		//<editor-fold defaultstate="expanded" desc="GET POSITION DATA">
-		DataSetSource dataSetSource = MatrixFactory.generateMatrixDataSetSource(operationKey.getParentMatrixKey());
-//		MarkerSet rdInfoMarkerSet = new MarkerSet(operationKey.getParentMatrixKey());
-//		rdInfoMarkerSet.initFullMarkerIdSetMap();
-//		rdInfoMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
-		if (rdInfoMarkerSet.getMarkerIdSetMapCharArray() != null) {XXX;
-			for (Map.Entry<MarkerKey, char[]> entry : rdInfoMarkerSet.getMarkerIdSetMapCharArray().entrySet()) {
-				MarkerKey key = entry.getKey();
-				String chr = new String(entry.getValue());
-				Object[] data = new Object[2]; // CHR, POS
-				data[0] = chr;
-				dataSetMap.put(key, data);
-			}
-
-			rdInfoMarkerSet.fillWith(0);
-			rdInfoMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_POS);
-			for (Map.Entry<MarkerKey, Integer> entry : rdInfoMarkerSet.getMarkerIdSetMapInteger().entrySet()) {
-				MarkerKey key = entry.getKey();
-				Object[] data = dataSetMap.get(key); //CHR, POS
-				int pos = entry.getValue();
-				data[1] = pos;
-				dataSetMap.put(key, data);
-			}
-
-			rdInfoMarkerSet.getMarkerIdSetMapInteger().clear();
-		}
-		//</editor-fold>
-
-		return dataSetMap;
-	}
+//	public static Map<MarkerKey, Object[]> getMarkerSetChrAndPos(OperationKey operationKey) throws IOException {
+//		Map<MarkerKey, Object[]> dataSetMap = new LinkedHashMap<MarkerKey, Object[]>();
+//
+//		DataSetSource dataSetSource = MatrixFactory.generateMatrixDataSetSource(operationKey.getParentMatrixKey());
+//		MarkersMetadataSource markersMetadatasSource = dataSetSource.getMarkersMetadatasSource();
+////		MarkerSet rdInfoMarkerSet = new MarkerSet(operationKey.getParentMatrixKey());
+////		rdInfoMarkerSet.initFullMarkerIdSetMap();
+////		rdInfoMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
+//		if (rdInfoMarkerSet.getMarkerIdSetMapCharArray() != null) {XXX;
+//			for (Map.Entry<MarkerKey, char[]> entry : rdInfoMarkerSet.getMarkerIdSetMapCharArray().entrySet()) {
+//				MarkerKey key = entry.getKey();
+//				String chr = new String(entry.getValue());
+//				Object[] data = new Object[2]; // CHR, POS
+//				data[0] = chr;
+//				dataSetMap.put(key, data);
+//			}
+//
+//			rdInfoMarkerSet.fillWith(0);
+//			rdInfoMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_POS);
+//			for (Map.Entry<MarkerKey, Integer> entry : rdInfoMarkerSet.getMarkerIdSetMapInteger().entrySet()) {
+//				MarkerKey key = entry.getKey();
+//				Object[] data = dataSetMap.get(key); // CHR, POS
+//				int pos = entry.getValue();
+//				data[1] = pos;
+//				dataSetMap.put(key, data);
+//			}
+//
+//			rdInfoMarkerSet.getMarkerIdSetMapInteger().clear();
+//		}
+//
+//		return dataSetMap;
+//	}
 	//</editor-fold>
 }

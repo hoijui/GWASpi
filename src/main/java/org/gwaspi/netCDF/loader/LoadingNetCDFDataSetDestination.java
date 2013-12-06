@@ -17,7 +17,6 @@
 
 package org.gwaspi.netCDF.loader;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -28,9 +27,6 @@ import org.gwaspi.global.Text;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import ucar.ma2.InvalidRangeException;
 
 /**
  * Used when loading a data-set from an external source
@@ -38,9 +34,6 @@ import ucar.ma2.InvalidRangeException;
  * For example, from a set of PLink files.
  */
 public class LoadingNetCDFDataSetDestination extends AbstractNetCDFDataSetDestination {
-
-	private final Logger log
-			= LoggerFactory.getLogger(LoadingNetCDFDataSetDestination.class);
 
 	private String startTime;
 	private final GenotypesLoadDescription loadDescription;
@@ -97,24 +90,20 @@ public class LoadingNetCDFDataSetDestination extends AbstractNetCDFDataSetDestin
 //			description.append(" (Sample Info file)\n");
 //		}
 
-		try {
-			return new MatrixFactory(
-					loadDescription.getStudyKey(),
-					loadDescription.getFormat(),
-					loadDescription.getFriendlyName(),
-					description.toString(), // description
-					loadDescription.getGtCode(),
-					(gtLoader.getMatrixStrand() != null) // NOTE getMatrixStrand() is only used here!
-							? gtLoader.getMatrixStrand()
-							: loadDescription.getStrand(),
-					gtLoader.isHasDictionary(),
-					numSamples,
-					numMarkers,
-					numChromosomes,
-					loadDescription.getGtDirPath());
-		} catch (InvalidRangeException ex) {
-			throw new IOException(ex);
-		}
+		return new MatrixFactory(
+				loadDescription.getStudyKey(),
+				loadDescription.getFormat(),
+				loadDescription.getFriendlyName(),
+				description.toString(), // description
+				loadDescription.getGtCode(),
+				(gtLoader.getMatrixStrand() != null) // NOTE getMatrixStrand() is only used here!
+						? gtLoader.getMatrixStrand()
+						: loadDescription.getStrand(),
+				gtLoader.isHasDictionary(),
+				numSamples,
+				numMarkers,
+				numChromosomes,
+				loadDescription.getGtDirPath());
 	}
 
 	@Override

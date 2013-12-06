@@ -26,14 +26,8 @@ import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.netCDF.loader.AbstractNetCDFDataSetDestination;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import ucar.ma2.InvalidRangeException;
 
 public class MatrixGenotypesFlipperNetCDFDataSetDestination extends AbstractNetCDFDataSetDestination {
-
-	private final Logger log
-			= LoggerFactory.getLogger(MatrixGenotypesFlipperNetCDFDataSetDestination.class);
 
 	private final DataSetSource dataSetSource;
 	private final String matrixDescription;
@@ -78,22 +72,18 @@ public class MatrixGenotypesFlipperNetCDFDataSetDestination extends AbstractNetC
 		description.append("Markers: ").append(numMarkers);
 		description.append(", Samples: ").append(numSamples);
 
-		try {
-			return new MatrixFactory(
-					sourceMatrixMetadata.getTechnology(), // technology
-					matrixFriendlyName,
-					description.toString(), // description
-					sourceMatrixMetadata.getGenotypeEncoding(), // matrix genotype encoding from the original matrix
-					StrandType.valueOf("FLP"), // FIXME this will fail at runtime
-					sourceMatrixMetadata.getHasDictionary(), // has dictionary?
-					numSamples,
-					numMarkers,
-					numChromosomes,
-					sourceMatrixMetadata.getKey(), // orig/parent matrix 1 key
-					null); // orig/parent matrix 2 key
-		} catch (InvalidRangeException ex) {
-			throw new IOException(ex);
-		}
+		return new MatrixFactory(
+				sourceMatrixMetadata.getTechnology(), // technology
+				matrixFriendlyName,
+				description.toString(), // description
+				sourceMatrixMetadata.getGenotypeEncoding(), // matrix genotype encoding from the original matrix
+				StrandType.valueOf("FLP"), // FIXME this will fail at runtime
+				sourceMatrixMetadata.getHasDictionary(), // has dictionary?
+				numSamples,
+				numMarkers,
+				numChromosomes,
+				sourceMatrixMetadata.getKey(), // orig/parent matrix 1 key
+				null); // orig/parent matrix 2 key
 	}
 
 	@Override

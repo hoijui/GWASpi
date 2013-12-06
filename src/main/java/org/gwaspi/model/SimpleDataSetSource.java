@@ -35,6 +35,10 @@ public class SimpleDataSetSource implements DataSetSource {
 	private SamplesInfosSource samplesInfosSource;
 	private SamplesKeysSource samplesKeysSource;
 
+	@Override
+	public int getNumMarkers() {
+		return (markersKeysSource == null) ? 0 : markersKeysSource.size();
+	}
 
 	@Override
 	public MatrixMetadata getMatrixMetadata() throws IOException {
@@ -64,6 +68,11 @@ public class SimpleDataSetSource implements DataSetSource {
 	}
 
 	@Override
+	public int getNumChromosomes() {
+		return (chromosomesKeysSource == null) ? 0 : chromosomesKeysSource.size();
+	}
+
+	@Override
 	public ChromosomesKeysSource getChromosomesKeysSource() {
 		return chromosomesKeysSource;
 	}
@@ -88,6 +97,11 @@ public class SimpleDataSetSource implements DataSetSource {
 
 	public void setMarkersKeysSource(MarkersKeysSource markersKeysSource) {
 		this.markersKeysSource = markersKeysSource;
+	}
+
+	@Override
+	public int getNumSamples() {
+		return (samplesKeysSource == null) ? 0 : samplesKeysSource.size();
 	}
 
 	@Override

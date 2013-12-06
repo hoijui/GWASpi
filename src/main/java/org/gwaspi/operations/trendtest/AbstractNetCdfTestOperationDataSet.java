@@ -25,9 +25,6 @@ import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.netCDF.operations.OperationFactory;
 import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import ucar.ma2.InvalidRangeException;
 
 public abstract class AbstractNetCdfTestOperationDataSet<ET> extends AbstractNetCdfOperationDataSet<ET> {
 
@@ -41,8 +38,6 @@ public abstract class AbstractNetCdfTestOperationDataSet<ET> extends AbstractNet
 	//   case "genotypic association test": Association.VAR_OP_MARKERS_ASGenotypicAssociationTP2OR: {T, P-Value, OR-1, OR-2} [Double[4]]
 	//   case "trend test": Association.VAR_OP_MARKERS_ASTrendTestTP: {T, P-Value} [Double[2]]
 	// }
-
-	private final Logger log = LoggerFactory.getLogger(AbstractNetCdfTestOperationDataSet.class);
 
 	private OperationKey markerCensusOPKey;
 	private double hardyWeinbergThreshold;
@@ -81,24 +76,19 @@ public abstract class AbstractNetCdfTestOperationDataSet<ET> extends AbstractNet
 	@Override
 	protected OperationFactory createOperationFactory() throws IOException {
 
-		try {
-			OperationMetadata markerCensusOP = OperationsList.getOperation(markerCensusOPKey);
+		OperationMetadata markerCensusOP = OperationsList.getOperation(markerCensusOPKey);
 
-			// CREATE netCDF-3 FILE
-			return new OperationFactory(
-					markerCensusOP.getStudyKey(),
-					testName, // friendly name
-					testName + " on " + markerCensusOP.getFriendlyName()
-						+ "\n" + markerCensusOP.getDescription()
-						+ "\nHardy-Weinberg threshold: " + Report_Analysis.FORMAT_SCIENTIFIC.format(hardyWeinbergThreshold), // description
-					getNumMarkers(),
-					getNumSamples(),
-					getNumChromosomes(),
-					testType,
-					markerCensusOP.getParentMatrixKey(), // Parent matrixId
-					markerCensusOP.getId()); // Parent operationId
-		} catch (InvalidRangeException ex) {
-			throw new IOException(ex);
-		}
+		return new OperationFactory(
+				markerCensusOP.getStudyKey(),
+				testName, // friendly name
+				testName + " on " + markerCensusOP.getFriendlyName()
+					+ "\n" + markerCensusOP.getDescription()
+					+ "\nHardy-Weinberg threshold: " + Report_Analysis.FORMAT_SCIENTIFIC.format(hardyWeinbergThreshold), // description
+				getNumMarkers(),
+				getNumSamples(),
+				getNumChromosomes(),
+				testType,
+				markerCensusOP.getParentMatrixKey(), // Parent matrixId
+				markerCensusOP.getId()); // Parent operationId
 	}
 }
