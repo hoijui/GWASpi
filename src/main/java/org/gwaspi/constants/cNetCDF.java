@@ -27,7 +27,7 @@ public class cNetCDF {
 		public static final String GLOB_DESCRIPTION = "description";
 		public static final String GLOB_STRAND = "strand";
 		public static final String LENGTH = "length";
-		public static final String GLOB_HAS_DICTIONARY = "glob_has_dictionnary";
+		public static final String GLOB_HAS_DICTIONARY = "glob_has_dictionary";
 
 		private Attributes() {
 		}
@@ -58,8 +58,8 @@ public class cNetCDF {
 	}
 
 	public static class Variables {
-		// MARKER VARS
 
+		// MARKER VARS
 		public static final String VAR_MARKERSET = "marker_id";
 		public static final String VAR_MARKERS_RSID = "marker_rsId";
 		public static final String VAR_MARKERS_CHR = "marker_chromosome";
@@ -76,17 +76,17 @@ public class cNetCDF {
 		public static final String VAR_MARKERS_PROP8 = "marker_property_8";
 		public static final String VAR_MARKERS_PROP16 = "marker_property_16";
 		public static final String VAR_MARKERS_PROP32 = "marker_property_32";
-		//SAMPLE VARS
+		// SAMPLE VARS
 		public static final String VAR_SAMPLESET = "sample_id";
 		public static final String VAR_SAMPLES_SEX = "sample_sex";
 		public static final String VAR_SAMPLES_AFFECTION = "sample_affection";
 		public static final String VAR_SAMPLES_FILTERS = "sample_filters";
-		//OPERATION VARS
+		// OPERATION VARS
 		public static final String VAR_OPSET_IDX = "opset_idx";
 		public static final String VAR_OPSET = "opset";
 		public static final String VAR_IMPLICITSET_IDX = "implicitset_idx";
 		public static final String VAR_IMPLICITSET = "implicitset";
-		//GT VARS
+		// GT VARS
 		public static final String VAR_GENOTYPES = "genotypes";
 		public static final String VAR_GT_STRAND = "genotype_strand";
 		public static final String VAR_ALLELES = "alleles";

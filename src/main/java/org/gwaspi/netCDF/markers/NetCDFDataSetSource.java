@@ -205,6 +205,47 @@ public class NetCDFDataSetSource implements DataSetSource {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
+	@Override
+	public int getNumMarkers() {
+		return getDimension(cNetCDF.Dimensions.DIM_MARKERSET);
+	}
+
+	@Override
+	public int getNumChromosomes() {
+		return getDimension(cNetCDF.Dimensions.DIM_CHRSET);
+	}
+
+	@Override
+	public int getNumSamples() {
+		return getDimension(cNetCDF.Dimensions.DIM_SAMPLESET);
+	}
+
+	private int getDimension(String dimensionVar) throws IOException {
+
+		int dimension = Integer.MIN_VALUE;
+
+		NetcdfFile ncfile = null;
+		if (new File(pathToMatrix).exists()) {
+			try {
+				ncfile = NetcdfFile.open(pathToMatrix);
+
+				Dimension setDim = ncfile.findDimension(dimensionVar);
+				dimension = setDim.getLength();
+			} finally {
+				if (null != ncfile) {
+					try {
+						ncfile.close();
+					} catch (IOException ex) {
+						LOG.warn("Cannot close file: " + ncfile, ex);
+					}
+				}
+			}
+		}
+
+		return dimension;
+	}
+
+
 	private static final class NetCdfChromosomesKeysSource extends ArrayList<ChromosomeKey> implements ChromosomesKeysSource {
 	}
 
