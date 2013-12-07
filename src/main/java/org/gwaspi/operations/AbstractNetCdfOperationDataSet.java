@@ -67,7 +67,7 @@ public abstract class AbstractNetCdfOperationDataSet<ET> implements OperationDat
 	private boolean useAllSamplesFromParent;
 	private boolean useAllChromosomesFromParent;
 	private NetcdfFileWriteable wrNcFile;
-	private OperationFactory operationFactory;
+//	private OperationFactory operationFactory;
 	private OperationKey operationKey;
 	private final Queue<ET> writeBuffer;
 	private int alreadyWritten;
@@ -86,7 +86,7 @@ public abstract class AbstractNetCdfOperationDataSet<ET> implements OperationDat
 		this.useAllSamplesFromParent = false;
 		this.useAllChromosomesFromParent = false;
 		this.wrNcFile = null;
-		this.operationFactory = null;
+//		this.operationFactory = null;
 		this.writeBuffer = new LinkedList<ET>();
 		this.alreadyWritten = 0;
 		this.entriesWriteBufferSize = entriesWriteBufferSize;
@@ -193,9 +193,9 @@ public abstract class AbstractNetCdfOperationDataSet<ET> implements OperationDat
 		return wrNcFile;
 	}
 
-	protected OperationFactory getOperationFactory() {
-		return operationFactory;
-	}
+//	protected OperationFactory getOperationFactory() {
+//		return operationFactory;
+//	}
 
 	protected abstract NetcdfFileWriteable generateNetCdfHandler(
 			StudyKey studyKey,
@@ -214,7 +214,6 @@ public abstract class AbstractNetCdfOperationDataSet<ET> implements OperationDat
 		if (wrNcFile == null) {
 
 			resultOPnetCDFName = opType.name() + "_" + MatrixFactory.generateMatrixNetCDFNameByDate();
-			generateNetCdfHandler(null, null, null, OPType.QQPLOT, numMarkers, numMarkers, numSamples)
 
 			resultOperationKey = OperationsList.insertOPMetadata(new OperationMetadata(
 					Integer.MIN_VALUE,
@@ -232,8 +231,8 @@ public abstract class AbstractNetCdfOperationDataSet<ET> implements OperationDat
 
 			opMetaData = OperationsList.getOperation(resultOperationKey);
 
-
 			operationFactory = createOperationFactory();
+			NetcdfFileWriteable generateNetCdfHandler = generateNetCdfHandler(null, null, null, OPType.QQPLOT, numMarkers, numMarkers, numSamples);
 
 			wrNcFile = operationFactory.getNetCDFHandler();
 			wrNcFile.create();
