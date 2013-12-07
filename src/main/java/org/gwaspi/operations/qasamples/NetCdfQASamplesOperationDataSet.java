@@ -17,10 +17,12 @@
 
 package org.gwaspi.operations.qasamples;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import org.gwaspi.constants.cNetCDF;
@@ -29,13 +31,18 @@ import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.SampleKey;
+import org.gwaspi.model.Study;
+import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.operations.NetCdfUtils;
 import org.gwaspi.netCDF.operations.OperationFactory;
 import org.gwaspi.netCDF.operations.SampleOperationSet;
 import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
 import ucar.ma2.ArrayDouble;
 import ucar.ma2.ArrayInt;
+import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
+import ucar.nc2.Dimension;
+import ucar.nc2.NetcdfFileWriteable;
 
 public class NetCdfQASamplesOperationDataSet extends AbstractNetCdfOperationDataSet<QASamplesOperationEntry> implements QASamplesOperationDataSet {
 
@@ -55,6 +62,63 @@ public class NetCdfQASamplesOperationDataSet extends AbstractNetCdfOperationData
 
 	public NetCdfQASamplesOperationDataSet() {
 		this(null);
+	}
+
+	@Override
+	public NetcdfFileWriteable generateNetCdfHandler(
+			StudyKey studyKey,
+			String resultOPName,
+			String description,
+			OPType opType,
+			int markerSetSize,
+			int sampleSetSize,
+			int chrSetSize)
+			throws IOException
+	{
+		File pathToStudy = new File(Study.constructGTPath(studyKey));
+		if (!pathToStudy.exists()) {
+			org.gwaspi.global.Utils.createFolder(pathToStudy);
+		}
+
+		File writeFile = new File(pathToStudy, resultOPName + ".nc");
+		NetcdfFileWriteable ncfile = NetcdfFileWriteable.createNew(writeFile.getAbsolutePath(), false);
+
+		// global attributes
+		int sampleStride = cNetCDF.Strides.STRIDE_SAMPLE_NAME;
+		int markerStride = cNetCDF.Strides.STRIDE_MARKER_NAME;
+
+		ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_STUDY, studyKey.getId());
+		ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_DESCRIPTION, description);
+
+		// dimensions
+		Dimension sampleSetDim = ncfile.addDimension(cNetCDF.Dimensions.DIM_OPSET, sampleSetSize);
+		Dimension implicitSetDim = ncfile.addDimension(cNetCDF.Dimensions.DIM_IMPLICITSET, markerSetSize);
+		Dimension sampleStrideDim = ncfile.addDimension(cNetCDF.Dimensions.DIM_SAMPLESTRIDE, sampleStride);
+		Dimension markerStrideDim = ncfile.addDimension(cNetCDF.Dimensions.DIM_MARKERSTRIDE, markerStride);
+
+		// OP SPACES
+		List<Dimension> OP1Space = new ArrayList<Dimension>();
+		OP1Space.add(sampleSetDim);
+
+		// SAMPLE SPACES
+		List<Dimension> sampleSetSpace = new ArrayList<Dimension>();
+		sampleSetSpace.add(sampleSetDim);
+		sampleSetSpace.add(sampleStrideDim);
+
+		// MARKER SPACES
+		List<Dimension> markerSetSpace = new ArrayList<Dimension>();
+		markerSetSpace.add(implicitSetDim);
+		markerSetSpace.add(markerStrideDim);
+
+		// Define OP Variables
+		ncfile.addVariable(cNetCDF.Variables.VAR_OPSET, DataType.CHAR, sampleSetSpace);
+		ncfile.addVariable(cNetCDF.Variables.VAR_IMPLICITSET, DataType.CHAR, markerSetSpace);
+		ncfile.addVariable(cNetCDF.Census.VAR_OP_SAMPLES_MISSINGRAT, DataType.DOUBLE, OP1Space);
+		ncfile.addVariable(cNetCDF.Census.VAR_OP_SAMPLES_MISSINGCOUNT, DataType.INT, OP1Space);
+		ncfile.addVariable(cNetCDF.Census.VAR_OP_SAMPLES_HETZYRAT, DataType.DOUBLE, OP1Space);
+		ncfile.addVariableAttribute(cNetCDF.Variables.VAR_OPSET, cNetCDF.Attributes.LENGTH, sampleSetSize);
+
+		return ncfile;
 	}
 
 	@Override

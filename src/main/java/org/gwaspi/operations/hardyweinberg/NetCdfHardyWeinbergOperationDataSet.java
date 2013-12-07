@@ -17,6 +17,7 @@
 
 package org.gwaspi.operations.hardyweinberg;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -24,19 +25,26 @@ import java.util.Collections;
 import java.util.EnumMap;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Queue;
+import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.constants.cNetCDF.HardyWeinberg;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.OperationKey;
+import org.gwaspi.model.Study;
+import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.operations.MarkerOperationSet;
 import org.gwaspi.netCDF.operations.NetCdfUtils;
 import org.gwaspi.netCDF.operations.OperationFactory;
 import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
 import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationEntry.Category;
 import ucar.ma2.ArrayDouble;
+import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
+import ucar.nc2.Dimension;
+import ucar.nc2.NetcdfFileWriteable;
 
 public class NetCdfHardyWeinbergOperationDataSet extends AbstractNetCdfOperationDataSet<HardyWeinbergOperationEntry> implements HardyWeinbergOperationDataSet {
 
@@ -96,6 +104,78 @@ public class NetCdfHardyWeinbergOperationDataSet extends AbstractNetCdfOperation
 
 	public NetCdfHardyWeinbergOperationDataSet() {
 		this(null);
+	}
+
+	@Override
+	public NetcdfFileWriteable generateNetCdfHandler(
+			StudyKey studyKey,
+			String resultOPName,
+			String description,
+			OPType opType,
+			int markerSetSize,
+			int sampleSetSize,
+			int chrSetSize)
+			throws IOException
+	{
+		File pathToStudy = new File(Study.constructGTPath(studyKey));
+		if (!pathToStudy.exists()) {
+			org.gwaspi.global.Utils.createFolder(pathToStudy);
+		}
+
+		int markerStride = cNetCDF.Strides.STRIDE_MARKER_NAME;
+		int sampleStride = cNetCDF.Strides.STRIDE_SAMPLE_NAME;
+
+//		File writeFile = new File(pathToStudy, resultOPName + ".nc");
+		File writeFile = new File(pathToStudy, matrixName + ".nc");
+		NetcdfFileWriteable ncfile = NetcdfFileWriteable.createNew(writeFile.getAbsolutePath(), false);
+
+		// global attributes
+		ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_STUDY, studyKey.getId());
+		ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_DESCRIPTION, description);
+
+		// dimensions
+		Dimension setDim = ncfile.addDimension(cNetCDF.Dimensions.DIM_OPSET, markerSetSize);
+		Dimension implicitSetDim = ncfile.addDimension(cNetCDF.Dimensions.DIM_IMPLICITSET, sampleSetSize);
+		Dimension markerStrideDim = ncfile.addDimension(cNetCDF.Dimensions.DIM_MARKERSTRIDE, markerStride);
+		Dimension sampleStrideDim = ncfile.addDimension(cNetCDF.Dimensions.DIM_SAMPLESTRIDE, sampleStride);
+		Dimension boxesDim = ncfile.addDimension(cNetCDF.Dimensions.DIM_4BOXES, 2);
+
+		// OP SPACES
+		List<Dimension> OP1Space = new ArrayList<Dimension>();
+		OP1Space.add(setDim);
+
+		List<Dimension> OP2Space = new ArrayList<Dimension>();
+		OP2Space.add(setDim);
+		OP2Space.add(boxesDim);
+
+		// MARKER SPACES
+		List<Dimension> markerNameSpace = new ArrayList<Dimension>();
+		markerNameSpace.add(setDim);
+		markerNameSpace.add(markerStrideDim);
+
+		// SAMPLE SPACES
+		List<Dimension> sampleSetSpace = new ArrayList<Dimension>();
+		sampleSetSpace.add(implicitSetDim);
+		sampleSetSpace.add(sampleStrideDim);
+
+		// Define OP Variables
+		ncfile.addVariable(cNetCDF.Variables.VAR_OPSET, DataType.CHAR, markerNameSpace);
+		ncfile.addVariable(cNetCDF.Variables.VAR_MARKERS_RSID, DataType.CHAR, markerNameSpace);
+		ncfile.addVariable(cNetCDF.Variables.VAR_IMPLICITSET, DataType.CHAR, sampleSetSpace);
+
+//		ncfile.addVariable(cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWPval_ALL, DataType.DOUBLE, OP1Space);
+//		ncfile.addVariable(cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWPval_CASE, DataType.DOUBLE, OP1Space);
+		ncfile.addVariable(cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWPval_CTRL, DataType.DOUBLE, OP1Space);
+		ncfile.addVariable(cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWPval_ALT, DataType.DOUBLE, OP1Space);
+
+//		ncfile.addVariable(cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWHETZY_ALL, DataType.DOUBLE, OP2Space);
+//		ncfile.addVariable(cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWHETZY_CASE, DataType.DOUBLE, OP2Space);
+		ncfile.addVariable(cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWHETZY_CTRL, DataType.DOUBLE, OP2Space);
+		ncfile.addVariable(cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWHETZY_ALT, DataType.DOUBLE, OP2Space);
+
+		ncfile.addVariableAttribute(cNetCDF.Variables.VAR_OPSET, cNetCDF.Attributes.LENGTH, markerSetSize);
+
+		return ncfile;
 	}
 
 	@Override

@@ -26,6 +26,7 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Queue;
 import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.model.ChromosomeInfo;
 import org.gwaspi.model.ChromosomeKey;
 import org.gwaspi.model.ChromosomesKeysSource;
@@ -35,9 +36,12 @@ import org.gwaspi.model.MarkerKeyFactory;
 import org.gwaspi.model.MarkersKeysSource;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
+import org.gwaspi.model.OperationMetadata;
+import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.SampleKeyFactory;
 import org.gwaspi.model.SamplesKeysSource;
+import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.gwaspi.netCDF.operations.NetCdfUtils;
 import org.gwaspi.netCDF.operations.OperationFactory;
@@ -193,11 +197,42 @@ public abstract class AbstractNetCdfOperationDataSet<ET> implements OperationDat
 		return operationFactory;
 	}
 
+	protected abstract NetcdfFileWriteable generateNetCdfHandler(
+			StudyKey studyKey,
+			String resultOPName,
+			String description,
+			OPType opType,
+			int markerSetSize,
+			int sampleSetSize,
+			int chrSetSize)
+			throws IOException;
+
 	protected abstract OperationFactory createOperationFactory() throws IOException;
 
 	protected void ensureNcFile() throws IOException {
 
 		if (wrNcFile == null) {
+
+			resultOPnetCDFName = opType.name() + "_" + MatrixFactory.generateMatrixNetCDFNameByDate();
+			generateNetCdfHandler(null, null, null, OPType.QQPLOT, numMarkers, numMarkers, numSamples)
+
+			resultOperationKey = OperationsList.insertOPMetadata(new OperationMetadata(
+					Integer.MIN_VALUE,
+					parentMatrixKey,
+					parentOperationId,
+					friendlyName,
+					resultOPnetCDFName,
+					description,
+					"",
+					opType,
+					Integer.MIN_VALUE,
+					Integer.MIN_VALUE,
+					null
+					));
+
+			opMetaData = OperationsList.getOperation(resultOperationKey);
+
+
 			operationFactory = createOperationFactory();
 
 			wrNcFile = operationFactory.getNetCDFHandler();
