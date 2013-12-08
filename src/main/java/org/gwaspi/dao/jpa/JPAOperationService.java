@@ -266,9 +266,7 @@ public class JPAOperationService implements OperationService {
 			if (!operations.isEmpty()) {
 				operations.add(op);
 				for (int i = 0; i < operations.size(); i++) {
-					String pathToStudy = Study.constructGTPath(studyKey);
-					File matrixOPFile = new File(pathToStudy + operations.get(i).getNetCDFName() + ".nc");
-					org.gwaspi.global.Utils.tryToDeleteFile(matrixOPFile);
+					org.gwaspi.global.Utils.tryToDeleteFile(OperationMetadata.generatePathToNetCdfFile(operations.get(i)));
 					if (deleteReports) {
 						ReportsList.deleteReportByOperationId(operations.get(i).getId());
 					}
@@ -296,9 +294,7 @@ public class JPAOperationService implements OperationService {
 					}
 				}
 			} else {
-				String pathToStudy = Study.constructGTPath(studyKey);
-				File matrixOPFile = new File(pathToStudy + op.getNetCDFName() + ".nc");
-				org.gwaspi.global.Utils.tryToDeleteFile(matrixOPFile);
+				org.gwaspi.global.Utils.tryToDeleteFile(OperationMetadata.generatePathToNetCdfFile(op));
 				if (deleteReports) {
 					ReportsList.deleteReportByOperationId(opId);
 				}

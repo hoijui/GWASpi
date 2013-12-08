@@ -227,8 +227,7 @@ public class JPAMatrixService implements MatrixService {
 		// DELETE OPERATION netCDFs FROM THIS MATRIX
 		List<OperationMetadata> operations = OperationsList.getOperationsList(matrixKey);
 		for (OperationMetadata op : operations) {
-			File opFile = new File(genotypesFolder + op.getMatrixCDFName()+ ".nc");
-			org.gwaspi.global.Utils.tryToDeleteFile(opFile);
+			org.gwaspi.global.Utils.tryToDeleteFile(OperationMetadata.generatePathToNetCdfFile(op));
 		}
 
 		ReportsList.deleteReportByMatrixId(matrixKey);

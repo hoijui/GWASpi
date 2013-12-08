@@ -37,7 +37,6 @@ import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SamplesGenotypesSource;
 import org.gwaspi.model.SamplesInfosSource;
 import org.gwaspi.model.SamplesKeysSource;
-import org.gwaspi.model.Study;
 import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.gwaspi.samples.SampleSet;
@@ -90,19 +89,19 @@ public class NetCDFDataSetSource implements DataSetSource {
 		return loadMatrixMetadataFromFile(matrixId, matrixFriendlyName, matrixNetCDFName, studyKey, pathToMatrix, description, matrixType, creationDate);
 	}
 
-	private static MatrixMetadata completeMatricesTable(MatrixMetadata toCompleteMatrixMetadata) throws IOException {
-		String pathToStudy = Study.constructGTPath(toCompleteMatrixMetadata.getKey().getStudyKey());
-		String pathToMatrix = pathToStudy + toCompleteMatrixMetadata.getMatrixNetCDFName() + ".nc";
-		return loadMatrixMetadataFromFile(
-				toCompleteMatrixMetadata.getMatrixId(),
-				toCompleteMatrixMetadata.getMatrixFriendlyName(),
-				toCompleteMatrixMetadata.getMatrixNetCDFName(),
-				new StudyKey(toCompleteMatrixMetadata.getStudyId()),
-				pathToMatrix,
-				toCompleteMatrixMetadata.getDescription(),
-				toCompleteMatrixMetadata.getMatrixType(),
-				toCompleteMatrixMetadata.getCreationDate());
-	}
+//	private static MatrixMetadata completeMatricesTable(MatrixMetadata toCompleteMatrixMetadata) throws IOException {
+//		String pathToStudy = Study.constructGTPath(toCompleteMatrixMetadata.getKey().getStudyKey());
+//		String pathToMatrix = pathToStudy + toCompleteMatrixMetadata.getMatrixNetCDFName() + ".nc";
+//		return loadMatrixMetadataFromFile(
+//				toCompleteMatrixMetadata.getMatrixId(),
+//				toCompleteMatrixMetadata.getMatrixFriendlyName(),
+//				toCompleteMatrixMetadata.getMatrixNetCDFName(),
+//				new StudyKey(toCompleteMatrixMetadata.getStudyId()),
+//				pathToMatrix,
+//				toCompleteMatrixMetadata.getDescription(),
+//				toCompleteMatrixMetadata.getMatrixType(),
+//				toCompleteMatrixMetadata.getCreationDate());
+//	}
 
 	/**
 	 * loads:

@@ -17,6 +17,7 @@
 
 package org.gwaspi.operations;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -41,6 +42,7 @@ import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.SampleKeyFactory;
 import org.gwaspi.model.SamplesKeysSource;
+import org.gwaspi.model.Study;
 import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.gwaspi.netCDF.operations.NetCdfUtils;
@@ -209,24 +211,15 @@ public abstract class AbstractNetCdfOperationDataSet<ET> implements OperationDat
 
 	protected abstract OperationFactory createOperationFactory() throws IOException;
 
-	protected void ensureNcFile() throws IOException {
+	protected NetcdfFileWriteable ensureNcFile() throws IOException {
 
 		if (wrNcFile == null) {
-
-			resultOPnetCDFName = opType.name() + "_" + MatrixFactory.generateMatrixNetCDFNameByDate();
-
 			resultOperationKey = OperationsList.insertOPMetadata(new OperationMetadata(
-					Integer.MIN_VALUE,
-					parentMatrixKey,
-					parentOperationId,
+					rdMatrixKey,
+					rdOperationKey,
 					friendlyName,
-					resultOPnetCDFName,
 					description,
-					"",
-					opType,
-					Integer.MIN_VALUE,
-					Integer.MIN_VALUE,
-					null
+					opType
 					));
 
 			opMetaData = OperationsList.getOperation(resultOperationKey);
@@ -238,6 +231,16 @@ public abstract class AbstractNetCdfOperationDataSet<ET> implements OperationDat
 			wrNcFile.create();
 			log.trace("Done creating netCDF handle: " + wrNcFile.toString());
 		}
+
+		File writeFile = OperationMetadata.generatePathToNetCdfFile(opMetaData);
+		File containingFolder = writeFile.getParentFile();
+		if (!containingFolder.exists()) {
+			org.gwaspi.global.Utils.createFolder(containingFolder);
+		}
+
+		NetcdfFileWriteable ncfile = NetcdfFileWriteable.createNew(writeFile.getAbsolutePath(), false);
+
+		return ncfile;XXX; //really create new, above?
 	}
 
 	public OperationKey getOperationKey() {

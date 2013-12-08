@@ -29,8 +29,6 @@ import org.gwaspi.model.KeyFactory;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
-import org.gwaspi.model.SampleKey;
-import org.gwaspi.model.SampleKeyFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.ArrayChar;
@@ -46,7 +44,6 @@ public abstract class AbstractOperationSet<K, V> {
 
 	private final KeyFactory<K> keyFactory;
 	private final OperationKey operationKey;
-	private final OperationMetadata opMetadata;
 	private final int opIndexFrom;
 	private final int opIndexTo;
 	private Map<K, V> opSetMap;
@@ -58,7 +55,6 @@ public abstract class AbstractOperationSet<K, V> {
 	public AbstractOperationSet(OperationKey operationKey, KeyFactory<K> keyFactory, int opIndexFrom, int opIndexTo) throws IOException {
 
 		this.operationKey = operationKey;
-		this.opMetadata = OperationsList.getOperation(operationKey);
 		this.opSetMap = null;
 		this.keyFactory = keyFactory;
 		this.opIndexFrom = opIndexFrom;
@@ -67,10 +63,6 @@ public abstract class AbstractOperationSet<K, V> {
 
 	protected OperationKey getOperationKey() {
 		return operationKey;
-	}
-
-	protected OperationMetadata getOperationMetadata() {
-		return opMetadata;
 	}
 
 	//<editor-fold defaultstate="expanded" desc="OPERATION-SET FETCHERS">
@@ -87,7 +79,8 @@ public abstract class AbstractOperationSet<K, V> {
 
 		NetcdfFile ncfile = null;
 		try {
-			ncfile = NetcdfFile.open(opMetadata.getPathToMatrix());
+			OperationMetadata opMetadata = OperationsList.getOperation(operationKey);
+			ncfile = NetcdfFile.open(OperationMetadata.generatePathToNetCdfFile(opMetadata).getAbsolutePath());
 			Variable var = ncfile.findVariable(cNetCDF.Variables.VAR_OPSET);
 
 			if (null == var) {

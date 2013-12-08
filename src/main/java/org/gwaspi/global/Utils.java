@@ -268,8 +268,13 @@ public class Utils {
 	public static String getShortDateTimeForFileName() {
 
 		Date now = new Date();
-		String dateOut = shortDateFormatter.format(now);
-		dateOut = dateOut + longTimeFormatter.format(now);
+		return getShortDateTimeForFileName(now);
+	}
+
+	public static String getShortDateTimeForFileName(Date date) {
+
+		String dateOut = shortDateFormatter.format(date);
+		dateOut = dateOut + longTimeFormatter.format(date);
 
 		return dateOut;
 	}

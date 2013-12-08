@@ -20,6 +20,7 @@ package org.gwaspi.netCDF.matrices;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import org.gwaspi.constants.cImport.ImportFormat;
 import org.gwaspi.constants.cNetCDF;
@@ -312,15 +313,16 @@ public class MatrixFactory {
 		return ncfile;
 	}
 
-	public static String generateMatrixNetCDFNameByDate() {
+	public static String generateMatrixNetCDFNameByDate(Date date) {
+
 		String matrixName = "GT_";
-		matrixName += org.gwaspi.global.Utils.getShortDateTimeForFileName();
+		matrixName += org.gwaspi.global.Utils.getShortDateTimeForFileName(date);
 		matrixName = matrixName.replace(":", "");
 		matrixName = matrixName.replace(" ", "");
 		matrixName = matrixName.replace("/", "");
 //		matrixName = matrixName.replaceAll("[a-zA-Z]", "");
-
 //		matrixName = matrixName.substring(0, matrixName.length() - 3); // Remove "CET" from name
+
 		return matrixName;
 	}
 
