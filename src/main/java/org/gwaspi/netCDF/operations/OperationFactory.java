@@ -19,12 +19,9 @@ package org.gwaspi.netCDF.operations;
 
 import java.io.IOException;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
-import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
-import org.gwaspi.model.StudyKey;
-import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.gwaspi.operations.OperationDataSet;
 import org.gwaspi.operations.allelicassociationtest.NetCdfAllelicAssociationTestsOperationDataSet;
 import org.gwaspi.operations.genotypicassociationtest.NetCdfGenotypicAssociationTestsOperationDataSet;
@@ -33,80 +30,76 @@ import org.gwaspi.operations.markercensus.NetCdfMarkerCensusOperationDataSet;
 import org.gwaspi.operations.qamarkers.NetCdfQAMarkersOperationDataSet;
 import org.gwaspi.operations.qasamples.NetCdfQASamplesOperationDataSet;
 import org.gwaspi.operations.trendtest.NetCdfTrendTestOperationDataSet;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import ucar.ma2.InvalidRangeException;
-import ucar.nc2.NetcdfFileWriteable;
 
 public class OperationFactory {
 
-	private static final Logger log = LoggerFactory.getLogger(OperationFactory.class);
+//	private static final Logger log = LoggerFactory.getLogger(OperationFactory.class);
 
-	private NetcdfFileWriteable netCDFHandler = null;
-	private String resultOPnetCDFName = "";
-	private OperationKey resultOperationKey = null;
-	private OperationMetadata opMetaData = null;
+//	private NetcdfFileWriteable netCDFHandler = null;
+//	private String resultOPnetCDFName = "";
+//	private OperationKey resultOperationKey = null;
+//	private OperationMetadata opMetaData = null;
 
-	/**
-	 * To use with matrix input.
-	 */
-	public OperationFactory(
-			StudyKey studyKey,
-			String friendlyName,
-			String description,
-			int opSetSize,
-			int implicitSetSize,
-			int chrSetSize,
-			OPType opType,
-			MatrixKey parentMatrixKey,
-			int parentOperationId)
-			throws IOException
-	{
-		try {
-		// OPERATION CASE SELECTOR
-		resultOPnetCDFName = opType.name() + "_" + MatrixFactory.generateMatrixNetCDFNameByDate();
+//	/**
+//	 * To use with matrix input.
+//	 */
+//	public OperationFactory(
+//			StudyKey studyKey,
+//			String friendlyName,
+//			String description,
+//			int opSetSize,
+//			int implicitSetSize,
+//			int chrSetSize,
+//			OPType opType,
+//			MatrixKey parentMatrixKey,
+//			int parentOperationId)
+//			throws IOException
+//	{
+//		try {
+//		// OPERATION CASE SELECTOR
+//		resultOPnetCDFName = opType.name() + "_" + MatrixFactory.generateMatrixNetCDFNameByDate();
+//
+//
+//		resultOperationKey = OperationsList.insertOPMetadata(new OperationMetadata(
+//				Integer.MIN_VALUE,
+//				parentMatrixKey,
+//				parentOperationId,
+//				friendlyName,
+//				resultOPnetCDFName,
+//				description,
+//				"",
+//				opType,
+//				Integer.MIN_VALUE,
+//				Integer.MIN_VALUE,
+//				null
+//				));
+//
+//		opMetaData = OperationsList.getOperation(resultOperationKey);
+//		} catch (InvalidRangeException ex) {
+//			throw new IOException(ex);
+//		}
+//	}
 
-
-		resultOperationKey = OperationsList.insertOPMetadata(new OperationMetadata(
-				Integer.MIN_VALUE,
-				parentMatrixKey,
-				parentOperationId,
-				friendlyName,
-				resultOPnetCDFName,
-				description,
-				"",
-				opType,
-				Integer.MIN_VALUE,
-				Integer.MIN_VALUE,
-				null
-				));
-
-		opMetaData = OperationsList.getOperation(resultOperationKey);
-		} catch (InvalidRangeException ex) {
-			throw new IOException(ex);
-		}
-	}
-
-	// ACCESSORS
-	public NetcdfFileWriteable getNetCDFHandler() {
-		return netCDFHandler;
-	}
-
-	public String getResultOPName() {
-		return resultOPnetCDFName;
-	}
-
-	public int getResultOPId() {
-		return resultOperationKey.getId();
-	}
-
-	public OperationKey getResultOperationKey() {
-		return resultOperationKey;
-	}
-
-	public OperationMetadata getResultOPMetadata() {
-		return opMetaData;
-	}
+//	// ACCESSORS
+//	public NetcdfFileWriteable getNetCDFHandler() {
+//		return netCDFHandler;
+//	}
+//
+//	public String getResultOPName() {
+//		return resultOPnetCDFName;
+//	}
+//
+//	public int getResultOPId() {
+//		return resultOperationKey.getId();
+//	}
+//
+//	public OperationKey getResultOperationKey() {
+//		return resultOperationKey;
+//	}
+//
+//	public OperationMetadata getResultOPMetadata() {
+//		return opMetaData;
+//	}
 
 	/**
 	 * Creates a new OperationDataSet for the specified type.
