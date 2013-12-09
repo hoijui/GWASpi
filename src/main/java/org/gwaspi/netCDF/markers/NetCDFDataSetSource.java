@@ -56,35 +56,38 @@ public class NetCDFDataSetSource implements DataSetSource {
 	private static final Logger LOG
 			= LoggerFactory.getLogger(NetCDFDataSetSource.class);
 
-	private final MatrixKey matrixKey;
-	private final MarkerSet markerSet;
-	private final SampleSet sampleSet;
+	private final File netCDFpath;
+	private MatrixMetadata matrixMetadata;
+//	private MatrixKey matrixKey;
+//	private MarkerSet markerSet;
+//	private SampleSet sampleSet;
 
-	public NetCDFDataSetSource(MatrixKey matrixKey) throws IOException {
+//	public NetCDFDataSetSource(MatrixKey matrixKey) throws IOException {
+//
+//		this.netCDFpath = null;
+//		this.matrixKey = matrixKey;
+//		this.markerSet = new MarkerSet(matrixKey);
+//		this.sampleSet = new SampleSet(matrixKey);
+//	}
 
-		this.matrixKey = matrixKey;
-		this.markerSet = new MarkerSet(matrixKey);
-		this.sampleSet = new SampleSet(matrixKey);
+	public NetCDFDataSetSource(File netCDFpath) throws IOException {
+
+		this.netCDFpath = netCDFpath;
+		this.matrixMetadata = null;
+//		this.markerSet = new MarkerSet(matrixKey);
+//		this.sampleSet = new SampleSet(matrixKey);
 	}
 
-	public NetCDFDataSetSource(String netCDFpath) throws IOException {
+	private void ensureMatrixMetadata() throws IOException {
 
-		this.matrixKey = matrixKey;
-		this.markerSet = new MarkerSet(matrixKey);
-		this.sampleSet = new SampleSet(matrixKey);
+		if (matrixMetadata == null) {
+			matrixMetadata = loadMatrixMetadata(netCDFpath);
+		}
 	}
 
 	@Override
 	public MatrixMetadata getMatrixMetadata() throws IOException {
 		return getMatrix(matrixKey / netCDFpath);
-	}
-
-    /**
-	 * This Method used to import GWASpi matrix from an external file.
-	 * The size of this Map is very small.
-	 */
-	public static MatrixMetadata getMatrix(File netCDFFile, StudyKey studyKey, String newMatrixFriendlyName) throws IOException {
-		return loadMatrixMetadataFromFile(studyKey, netCDFFile, newMatrixFriendlyName);
 	}
 
 //	private static MatrixMetadata completeMatricesTable(MatrixMetadata toCompleteMatrixMetadata) throws IOException {
@@ -101,19 +104,15 @@ public class NetCDFDataSetSource implements DataSetSource {
 //				toCompleteMatrixMetadata.getCreationDate());
 //	}
 
-	/**
-	 * loads:
-	 * - ImportFormat technology = cNetCDF.Attributes.GLOB_TECHNOLOGY
-	 * - String gwaspiDBVersion = cNetCDF.Attributes.GLOB_GWASPIDB_VERSION
-	 * - GenotypeEncoding gtEncoding = cNetCDF.Variables.GLOB_GTENCODING
-	 * - StrandType strand = cNetCDF.Attributes.GLOB_STRAND
-	 * - boolean hasDictionray = cNetCDF.Attributes.GLOB_HAS_DICTIONARY
-	 * - int markerSetSize = cNetCDF.Dimensions.DIM_MARKERSET
-	 * - int sampleSetSize = cNetCDF.Dimensions.DIM_SAMPLESET
+    /**
+	 * This method loads all the matrix meta-data
+	 * from a GWASpi NetCdf file ("*.nc") that contains matrix data.
+	 * @param newMatrixFriendlyName may be null
 	 */
-	private static MatrixMetadata loadMatrixMetadataFromFile(
+	public static MatrixMetadata getMatrix(
 			StudyKey studyKey,
-			File netCDFFile)
+			File netCDFFile,
+			String newMatrixFriendlyName)
 			throws IOException
 	{
 		String friendlyName = "";
@@ -201,10 +200,13 @@ public class NetCDFDataSetSource implements DataSetSource {
 			}
 		}
 
+		String simpleName = netCDFFile.getName();
+		simpleName = simpleName.substring(0, simpleName.lastIndexOf('.') - 1); // cut off the '.nc' file extension
+
 		MatrixMetadata matrixMetadata = new MatrixMetadata(
 			new MatrixKey(studyKey, Integer.MIN_VALUE),
 			friendlyName,
-			netCDFFile.getAbsolutePath(), // FIXME we need only simpleName here, not the path, and we might want to ommit the old one anyway, and generate it instead
+			simpleName,
 			technology,
 			gwaspiDBVersion,
 			description,
@@ -222,6 +224,10 @@ public class NetCDFDataSetSource implements DataSetSource {
 
 	@Override
 	public MarkersGenotypesSource getMarkersGenotypesSource() {
+
+	private MatrixKey matrixKey;
+	private MarkerSet markerSet;
+	private SampleSet sampleSet;
 		return sampleSet;
 	}
 
