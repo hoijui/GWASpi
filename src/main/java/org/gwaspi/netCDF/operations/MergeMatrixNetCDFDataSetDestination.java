@@ -92,11 +92,11 @@ public class MergeMatrixNetCDFDataSetDestination extends AbstractNetCDFDataSetDe
 		description.append("\nMX-");
 		description.append(rdMatrix1Metadata.getMatrixId());
 		description.append(" - ");
-		description.append(rdMatrix1Metadata.getMatrixFriendlyName());
+		description.append(rdMatrix1Metadata.getFriendlyName());
 		description.append("\nMX-");
 		description.append(rdMatrix2Metadata.getMatrixId());
 		description.append(" - ");
-		description.append(rdMatrix2Metadata.getMatrixFriendlyName());
+		description.append(rdMatrix2Metadata.getFriendlyName());
 		description.append("\n\n");
 		description.append("Merge Method - ");
 		description.append(humanReadableMethodName);

@@ -162,7 +162,7 @@ public class NetCdfQAMarkersOperationDataSet extends AbstractNetCdfOperationData
 		MatrixMetadata rdMatrixMetadata = MatricesList.getMatrixMetadataById(getReadMatrixKey());
 
 		String description = "Marker Quality Assurance on "
-				+ rdMatrixMetadata.getMatrixFriendlyName()
+				+ rdMatrixMetadata.getFriendlyName()
 				+ "\nMarkers: " + getNumMarkers()
 				+ "\nStarted at: " + org.gwaspi.global.Utils.getShortDateTimeAsString();
 		return new OperationFactory(

@@ -55,7 +55,7 @@ public class SpreadsheetFormatter implements Formatter {
 		BufferedWriter pedBW = null;
 		try {
 			FileWriter pedFW = new FileWriter(new File(exportDir.getPath(),
-					rdMatrixMetadata.getMatrixFriendlyName() + ".csv"));
+					rdMatrixMetadata.getFriendlyName() + ".csv"));
 			pedBW = new BufferedWriter(pedFW);
 
 			// HEADER CONTAINING MARKER IDs

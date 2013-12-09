@@ -17,6 +17,8 @@
 
 package org.gwaspi.model;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.Date;
 import javax.persistence.Column;
@@ -34,6 +36,7 @@ import javax.persistence.Transient;
 import org.gwaspi.constants.cImport.ImportFormat;
 import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
+import static org.gwaspi.netCDF.matrices.MatrixFactory.generateMatrixNetCDFNameByDate;
 
 @Entity
 @Table(name = "matrixMetadata")
@@ -43,11 +46,11 @@ import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
 		name = "matrixMetadata_fetchById",
 		query = "SELECT mm FROM MatrixMetadata mm WHERE mm.matrixId = :id"),
 	@NamedQuery(
-		name = "matrixMetadata_listKeysByNetCDFName",
-		query = "SELECT mm.studyId, mm.matrixId FROM MatrixMetadata mm WHERE mm.matrixNetCDFName = :netCDFName"),
+		name = "matrixMetadata_listKeysBySimpleName",
+		query = "SELECT mm.studyId, mm.matrixId FROM MatrixMetadata mm WHERE mm.simpleName = :simpleName"),
 	@NamedQuery(
 		name = "matrixMetadata_listKeysByFriendlyName",
-		query = "SELECT mm.studyId, mm.matrixId FROM MatrixMetadata mm WHERE mm.matrixFriendlyName = :matrixFriendlyName"),
+		query = "SELECT mm.studyId, mm.matrixId FROM MatrixMetadata mm WHERE mm.friendlyName = :friendlyName"),
 	@NamedQuery(
 		name = "matrixMetadata_listKeys",
 		query = "SELECT mm.studyId, mm.matrixId FROM MatrixMetadata mm"),
@@ -64,17 +67,17 @@ import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
 public class MatrixMetadata implements Serializable {
 
 	private MatrixKey key;
-	private String matrixFriendlyName;
-	private String matrixNetCDFName;
-	private String pathToMatrix;
+	private String friendlyName;
+	private String simpleName;
 	private ImportFormat technology;
 	private String gwaspiDBVersion;
 	private String description;
 	private GenotypeEncoding gtEncoding;
 	private StrandType strand;
 	private boolean hasDictionary;
-	private int markerSetSize;
-	private int sampleSetSize;
+	private int numMarkers;
+	private int numSamples;
+	private int numChromosomes;
 	private String matrixType; // matrix_type VARCHAR(32) NOT NULL
 	private int parent1MatrixId;
 	private int parent2MatrixId;
@@ -84,27 +87,27 @@ public class MatrixMetadata implements Serializable {
 	protected MatrixMetadata() {
 
 		this.key = new MatrixKey(new StudyKey(Integer.MIN_VALUE), Integer.MIN_VALUE);
-		this.matrixFriendlyName = "";
-		this.matrixNetCDFName = "";
-		this.pathToMatrix = "";
+		this.friendlyName = "";
 		this.technology = ImportFormat.UNKNOWN;
 		this.gwaspiDBVersion = "";
 		this.description = "";
 		this.gtEncoding = null;
 		this.strand = null;
 		this.hasDictionary = false;
-		this.markerSetSize = Integer.MIN_VALUE;
-		this.sampleSetSize = Integer.MIN_VALUE;
+		this.numMarkers = Integer.MIN_VALUE;
+		this.numSamples = Integer.MIN_VALUE;
+		this.numChromosomes = Integer.MIN_VALUE;
 		this.matrixType = "";
 		this.parent1MatrixId = -1;
 		this.parent2MatrixId = -1;
 		this.inputLocation = "";
 		this.creationDate = new Date();
+		this.simpleName = generateMatrixNetCDFNameByDate(this.creationDate);
 	}
 
 	public MatrixMetadata(
 			String matrixFriendlyName,
-			String matrixNetCDFName,
+			String simpleName,
 			String description,
 			GenotypeEncoding gtEncoding,
 			StudyKey studyKey,
@@ -114,58 +117,58 @@ public class MatrixMetadata implements Serializable {
 			)
 	{
 		this.key = new MatrixKey(studyKey, Integer.MIN_VALUE);
-		this.matrixFriendlyName = matrixFriendlyName;
-		this.matrixNetCDFName = matrixNetCDFName;
-		this.pathToMatrix = "";
+		this.friendlyName = matrixFriendlyName;
 		this.technology = ImportFormat.UNKNOWN;
 		this.gwaspiDBVersion = "";
 		this.description = description;
 		this.gtEncoding = gtEncoding;
 		this.strand = null;
 		this.hasDictionary = false;
-		this.markerSetSize = Integer.MIN_VALUE;
-		this.sampleSetSize = Integer.MIN_VALUE;
+		this.numMarkers = Integer.MIN_VALUE;
+		this.numSamples = Integer.MIN_VALUE;
+		this.numChromosomes = Integer.MIN_VALUE;
 		this.matrixType = "";
 		this.parent1MatrixId = parent1MatrixId;
 		this.parent2MatrixId = parent2MatrixId;
 		this.inputLocation = inputLocation;
 		this.creationDate = new Date();
+		this.simpleName = generateMatrixNetCDFNameByDate(this.creationDate);
 	}
 
 	public MatrixMetadata(
 			MatrixKey key,
-			String matrixFriendlyName,
-			String matrixNetCDFName,
-			String pathToMatrix,
+			String friendlyName,
+			String simpleName,
 			ImportFormat technology,
 			String gwaspiDBVersion,
 			String description,
 			GenotypeEncoding gtEncoding,
 			StrandType strand,
 			boolean hasDictionray,
-			int markerSetSize,
-			int sampleSetSize,
+			int numMarkers,
+			int numSamples,
+			int numChromosomes,
 			String matrixType,
 			Date creationDate)
 	{
 		this.key = key;
-		this.matrixFriendlyName = matrixFriendlyName;
-		this.matrixNetCDFName = matrixNetCDFName;
-		this.pathToMatrix = pathToMatrix;
+		this.friendlyName = friendlyName;
+		this.simpleName = simpleName;
 		this.technology = technology;
 		this.gwaspiDBVersion = gwaspiDBVersion;
 		this.description = description;
 		this.gtEncoding = gtEncoding;
 		this.strand = strand;
 		this.hasDictionary = hasDictionray;
-		this.markerSetSize = markerSetSize;
-		this.sampleSetSize = sampleSetSize;
+		this.numMarkers = numMarkers;
+		this.numSamples = numSamples;
+		this.numChromosomes = numChromosomes;
 		this.matrixType = matrixType;
 		this.parent1MatrixId = -1;
 		this.parent2MatrixId = -1;
 		this.inputLocation = "";
 		this.creationDate = (creationDate == null)
-				? null
+				? null // XXX should we aybe use new Date() or new Date(0) here?
 				: (Date) creationDate.clone();
 	}
 
@@ -251,20 +254,45 @@ public class MatrixMetadata implements Serializable {
 		return key.getStudyKey();
 	}
 
+	/**
+	 * A human eye friendly name.
+	 * @return a string matching with any characters
+	 */
 	@Column(
-		name       = "matrixFriendlyName",
+		name       = "friendlyName",
 		length     = 255,
 		unique     = true,
 		nullable   = false,
 		insertable = true,
 		updatable  = false
 		)
-	public String getMatrixFriendlyName() {
-		return matrixFriendlyName;
+	public String getFriendlyName() {
+		return friendlyName;
 	}
 
-	protected void setMatrixFriendlyName(String matrixFriendlyName) {
-		this.matrixFriendlyName = matrixFriendlyName;
+	protected void setFriendlyName(String friendlyName) {
+		this.friendlyName = friendlyName;
+	}
+
+	/**
+	 * A simple, (generally) unique machine friendly name for this matrix,
+	 * to be used for storage file names, for example.
+	 * @return a string matching "[0-9a-zA-Z_:.]+"
+	 */
+	@Column(
+		name       = "simpleName",
+		length     = 255,
+		unique     = false,
+		nullable   = false,
+		insertable = true,
+		updatable  = false
+		)
+	public String getSimpleName() {
+		return simpleName;
+	}
+
+	protected void setSimpleName(String simpleName) {
+		this.simpleName = simpleName;
 	}
 
 	@Column(
@@ -313,42 +341,48 @@ public class MatrixMetadata implements Serializable {
 	}
 
 	@Column(
-		name       = "markerSetSize",
+		name       = "numMarkers",
 		unique     = false,
 		nullable   = false,
 		insertable = true,
 		updatable  = false
 		)
-	public int getMarkerSetSize() {
-		return markerSetSize;
+	public int getNumMarkers() {
+		return numMarkers;
 	}
 
-	public void setMarkerSetSize(int markerSetSize) {
-		this.markerSetSize = markerSetSize;
+	public void setNumMarkers(int numMarkers) {
+		this.numMarkers = numMarkers;
 	}
 
 	@Column(
-		name       = "sampleSetSize",
+		name       = "numSamples",
 		unique     = false,
 		nullable   = false,
 		insertable = true,
 		updatable  = false
 		)
-	public int getSampleSetSize() {
-		return sampleSetSize;
+	public int getNumSamples() {
+		return numSamples;
 	}
 
-	public void setSampleSetSize(int sampleSetSize) {
-		this.sampleSetSize = sampleSetSize;
+	public void setNumSamples(int numSamples) {
+		this.numSamples = numSamples;
 	}
 
-	@Transient
-	public String getPathToMatrix() {
-		return pathToMatrix;
+	@Column(
+		name       = "numChromosomes",
+		unique     = false,
+		nullable   = false,
+		insertable = true,
+		updatable  = false
+		)
+	public int getNumChromosomes() {
+		return numChromosomes;
 	}
 
-	public void setPathToMatrix(String pathToMatrix) {
-		this.pathToMatrix = pathToMatrix;
+	public void setNumChromosomes(int numChromosomes) {
+		this.numChromosomes = numChromosomes;
 	}
 
 	@Column(
@@ -380,22 +414,6 @@ public class MatrixMetadata implements Serializable {
 
 	public void setDescription(String description) {
 		this.description = description;
-	}
-
-	@Column(
-		name       = "matrixNetCDFName",
-		length     = 255,
-		unique     = true,
-		nullable   = false,
-		insertable = true,
-		updatable  = false
-		)
-	public String getMatrixNetCDFName() {
-		return matrixNetCDFName;
-	}
-
-	protected void setMatrixNetCDFName(String matrixNetCDFName) {
-		this.matrixNetCDFName = matrixNetCDFName;
 	}
 
 	@Column(
@@ -474,5 +492,11 @@ public class MatrixMetadata implements Serializable {
 
 	protected void setCreationDate(Date creationDate) {
 		this.creationDate = creationDate;
+	}
+
+	public static File generatePathToNetCdfFile(MatrixMetadata matrix) throws IOException {
+
+		String genotypesFolder = Study.constructGTPath(matrix.getStudyKey());
+		return new File(genotypesFolder, matrix.getSimpleName() + ".nc");
 	}
 }

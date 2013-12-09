@@ -594,7 +594,7 @@ public final class SampleQAHetzygPlotZoom extends JPanel {
 		@Override
 		public void actionPerformed(ActionEvent evt) {
 			try {
-				File newFile = new File(Dialogs.selectDirectoryDialog(JOptionPane.OK_OPTION).getPath() + "/SampleQA_hetzyg-missingrat_" + Utils.stripNonAlphaNumeric(rdMatrixMetadata.getMatrixFriendlyName()) + ".png");
+				File newFile = new File(Dialogs.selectDirectoryDialog(JOptionPane.OK_OPTION).getPath() + "/SampleQA_hetzyg-missingrat_" + Utils.stripNonAlphaNumeric(rdMatrixMetadata.getFriendlyName()) + ".png");
 				ChartUtilities.saveChartAsPNG(newFile, zoomChart, scrl_Chart.getWidth(), scrl_Chart.getHeight());
 			} catch (IOException ex) {
 				log.error(null, ex);

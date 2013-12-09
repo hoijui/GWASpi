@@ -68,7 +68,7 @@ public class MatrixTranslatorNetCDFDataSetDestination extends AbstractNetCDFData
 		StringBuilder description = new StringBuilder(Text.Matrix.descriptionHeader1);
 		description.append(org.gwaspi.global.Utils.getShortDateTimeAsString());
 		description.append("\nThrough Matrix translation from parent Matrix MX: ").append(sourceMatrixMetadata.getMatrixId());
-		description.append(" - ").append(sourceMatrixMetadata.getMatrixFriendlyName());
+		description.append(" - ").append(sourceMatrixMetadata.getFriendlyName());
 		description.append("\nTranslation method: ").append(translationMethodDesc);
 		if (!matrixDescription.isEmpty()) {
 			description.append("\n\nDescription: ");

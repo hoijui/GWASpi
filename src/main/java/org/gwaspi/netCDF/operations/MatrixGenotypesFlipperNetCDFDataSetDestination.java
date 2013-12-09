@@ -59,7 +59,7 @@ public class MatrixGenotypesFlipperNetCDFDataSetDestination extends AbstractNetC
 		description.append(Text.Matrix.descriptionHeader1);
 		description.append(org.gwaspi.global.Utils.getShortDateTimeAsString());
 		description.append("\nThrough Matrix genotype flipping from parent Matrix MX: ").append(sourceMatrixMetadata.getMatrixId());
-		description.append(" - ").append(sourceMatrixMetadata.getMatrixFriendlyName());
+		description.append(" - ").append(sourceMatrixMetadata.getFriendlyName());
 		description.append("\nUsed list of markers to be flipped: ").append(flipperFile.getPath());
 		if (!matrixDescription.isEmpty()) {
 			description.append("\n\nDescription: ");

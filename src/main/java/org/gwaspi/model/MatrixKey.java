@@ -126,7 +126,7 @@ public class MatrixKey implements Comparable<MatrixKey>, Serializable {
 		if (matrix == null) {
 			matrixName = NAME_UNKNOWN;
 		} else {
-			matrixName = matrix.getMatrixFriendlyName();
+			matrixName = matrix.getFriendlyName();
 		}
 
 		return matrixName;

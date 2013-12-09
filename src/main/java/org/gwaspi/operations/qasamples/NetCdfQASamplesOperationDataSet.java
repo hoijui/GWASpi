@@ -129,7 +129,7 @@ public class NetCdfQASamplesOperationDataSet extends AbstractNetCdfOperationData
 		return new OperationFactory(
 				rdMatrixMetadata.getStudyKey(),
 				"Sample QA", // friendly name
-				"Sample census on " + rdMatrixMetadata.getMatrixFriendlyName()
+				"Sample census on " + rdMatrixMetadata.getFriendlyName()
 						+ "\nSamples: " + getNumSamples(), // description
 				getNumSamples(),
 				getNumMarkers(),

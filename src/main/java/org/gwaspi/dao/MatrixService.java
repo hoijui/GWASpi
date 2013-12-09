@@ -31,9 +31,9 @@ public interface MatrixService {
 
 	MatrixMetadata getMatrix(MatrixKey matrixKey) throws IOException;
 
-	List<MatrixKey> getMatrixKeysByNetCdfName(String netCDFName) throws IOException;
+	List<MatrixKey> getMatrixKeysBySimpleName(String simpleNamer) throws IOException;
 
-	List<MatrixKey> getMatrixKeysByName(String matrixFriendlyName) throws IOException;
+	List<MatrixKey> getMatrixKeysByName(String friendlyName) throws IOException;
 
 	List<MatrixMetadata> getMatrices(StudyKey studyKey) throws IOException;
 

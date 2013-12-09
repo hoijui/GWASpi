@@ -233,7 +233,7 @@ public class JPAMatrixService implements MatrixService {
 		ReportsList.deleteReportByMatrixId(matrixKey);
 
 		// DELETE MATRIX NETCDF FILE
-		File matrixFile = new File(genotypesFolder + matrixMetadata.getMatrixNetCDFName() + ".nc");
+		File matrixFile = MatrixMetadata.generatePathToNetCdfFile(matrixMetadata);
 		org.gwaspi.global.Utils.tryToDeleteFile(matrixFile);
 	}
 
@@ -288,21 +288,21 @@ public class JPAMatrixService implements MatrixService {
 	}
 
 	@Override
-	public List<MatrixKey> getMatrixKeysByNetCdfName(String netCDFName) throws IOException {
+	public List<MatrixKey> getMatrixKeysBySimpleName(String simpleName) throws IOException {
 
 		List<MatrixKey> matrices = Collections.EMPTY_LIST;
 
 		EntityManager em = null;
 		try {
 			em = open();
-			Query query = em.createNamedQuery("matrixMetadata_listKeysByNetCDFName");
-			query.setParameter("netCDFName", netCDFName);
+			Query query = em.createNamedQuery("matrixMetadata_listKeysBySimpleName");
+			query.setParameter("simpleName", simpleName);
 			matrices = convertFieldsToMatrixKeys(query.getResultList());
 		} catch (NoResultException ex) {
-			LOG.error("Failed fetching matrix-keys by netCDFname: " + netCDFName
+			LOG.error("Failed fetching matrix-keys by simple name: " + simpleName
 					+ " (id not found)", ex);
 		} catch (Exception ex) {
-			LOG.error("Failed fetching matrix-keys by netCDFname: " + netCDFName, ex);
+			LOG.error("Failed fetching matrix-keys by simple name: " + simpleName, ex);
 		} finally {
 			close(em);
 		}
@@ -311,7 +311,7 @@ public class JPAMatrixService implements MatrixService {
 	}
 
 	@Override
-	public List<MatrixKey> getMatrixKeysByName(String matrixFriendlyName) throws IOException {
+	public List<MatrixKey> getMatrixKeysByName(String friendlyName) throws IOException {
 
 		List<MatrixKey> matrices = Collections.EMPTY_LIST;
 
@@ -319,13 +319,13 @@ public class JPAMatrixService implements MatrixService {
 		try {
 			em = open();
 			Query query = em.createNamedQuery("matrixMetadata_listKeysByFriendlyName");
-			query.setParameter("matrixFriendlyName", matrixFriendlyName);
+			query.setParameter("friendlyName", friendlyName);
 			matrices = convertFieldsToMatrixKeys(query.getResultList());
 		} catch (NoResultException ex) {
-			LOG.error("Failed fetching matrix-keys by matrixFriendlyName: " + matrixFriendlyName
+			LOG.error("Failed fetching matrix-keys by friendly name: " + friendlyName
 					+ " (id not found)", ex);
 		} catch (Exception ex) {
-			LOG.error("Failed fetching matrix-keys by matrixFriendlyName: " + matrixFriendlyName, ex);
+			LOG.error("Failed fetching matrix-keys by friendly name: " + friendlyName, ex);
 		} finally {
 			close(em);
 		}

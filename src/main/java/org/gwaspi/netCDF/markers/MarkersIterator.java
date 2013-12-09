@@ -54,7 +54,7 @@ public class MarkersIterator implements
 
 		MatrixMetadata rdMatrixMetadata = MatricesList.getMatrixMetadataById(
 				this.markersIterable.getMatrixKey());
-		netCdfFile = NetcdfFile.open(rdMatrixMetadata.getPathToMatrix());
+		netCdfFile = NetcdfFile.open(MatrixMetadata.generatePathToNetCdfFile(rdMatrixMetadata).getAbsolutePath());
 
 		totalMarkers = markersIterable.getMarkerKeys().size();
 		MarkersIterable.Excluder<MarkerKey> excluder = markersIterable.getExcluder();

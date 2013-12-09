@@ -76,24 +76,15 @@ public class NetCDFDataSetSource implements DataSetSource {
 
 	@Override
 	public MatrixMetadata getMatrixMetadata() throws IOException {
-		return getMatrix(matrixKey);
+		return getMatrix(matrixKey / netCDFpath);
 	}
 
     /**
 	 * This Method used to import GWASpi matrix from an external file.
 	 * The size of this Map is very small.
 	 */
-	private static MatrixMetadata getMatrix(String netCDFpath, StudyKey studyKey, String newMatrixName) throws IOException {
-
-		int matrixId = Integer.MIN_VALUE;
-		String matrixFriendlyName = newMatrixName;
-		String matrixNetCDFName = MatrixFactory.generateMatrixNetCDFNameByDate();
-		String description = "";
-		String matrixType = "";
-		Date creationDate = null;
-
-		String pathToMatrix = netCDFpath;
-		return loadMatrixMetadataFromFile(matrixId, matrixFriendlyName, matrixNetCDFName, studyKey, pathToMatrix, description, matrixType, creationDate);
+	public static MatrixMetadata getMatrix(File netCDFFile, StudyKey studyKey, String newMatrixFriendlyName) throws IOException {
+		return loadMatrixMetadataFromFile(studyKey, netCDFFile, newMatrixFriendlyName);
 	}
 
 //	private static MatrixMetadata completeMatricesTable(MatrixMetadata toCompleteMatrixMetadata) throws IOException {
@@ -101,7 +92,7 @@ public class NetCDFDataSetSource implements DataSetSource {
 //		String pathToMatrix = pathToStudy + toCompleteMatrixMetadata.getMatrixNetCDFName() + ".nc";
 //		return loadMatrixMetadataFromFile(
 //				toCompleteMatrixMetadata.getMatrixId(),
-//				toCompleteMatrixMetadata.getMatrixFriendlyName(),
+//				toCompleteMatrixMetadata.getFriendlyName(),
 //				toCompleteMatrixMetadata.getMatrixNetCDFName(),
 //				new StudyKey(toCompleteMatrixMetadata.getStudyId()),
 //				pathToMatrix,
@@ -121,29 +112,42 @@ public class NetCDFDataSetSource implements DataSetSource {
 	 * - int sampleSetSize = cNetCDF.Dimensions.DIM_SAMPLESET
 	 */
 	private static MatrixMetadata loadMatrixMetadataFromFile(
-			int matrixId,
-			String matrixFriendlyName,
-			String matrixNetCDFName,
 			StudyKey studyKey,
-			String pathToMatrix,
-			String description,
-			String matrixType,
-			Date creationDate) throws IOException
+			File netCDFFile)
+			throws IOException
 	{
+		String friendlyName = "";
+		String description = "";
 		String gwaspiDBVersion = "";
 		cImport.ImportFormat technology = cImport.ImportFormat.UNKNOWN;
 		cNetCDF.Defaults.GenotypeEncoding gtEncoding = cNetCDF.Defaults.GenotypeEncoding.UNKNOWN;
 		cNetCDF.Defaults.StrandType strand = cNetCDF.Defaults.StrandType.UNKNOWN;
 		boolean hasDictionray = false;
-		int markerSetSize = Integer.MIN_VALUE;
-		int sampleSetSize = Integer.MIN_VALUE;
+		int numMarkers = Integer.MIN_VALUE;
+		int numSamples = Integer.MIN_VALUE;
+		int numChromosomes = Integer.MIN_VALUE;
+		String matrixType = null;
+		Date creationDate = null;
 
 		NetcdfFile ncfile = null;
-		if (new File(pathToMatrix).exists()) {
+		if (netCDFFile.exists()) {
 			try {
-				ncfile = NetcdfFile.open(pathToMatrix);
+				ncfile = NetcdfFile.open(netCDFFile.getAbsolutePath());
+
+				try {
+					friendlyName = ncfile.findGlobalAttribute(cNetCDF.Attributes.GLOB_FRIENDLY_NAME).getStringValue();
+				} catch (Exception ex) {
+					LOG.error("No friendly name stored in matrix NetCDF file: " + netCDFFile.getAbsolutePath(), ex);
+				}
+
+				try {
+					description = ncfile.findGlobalAttribute(cNetCDF.Attributes.GLOB_DESCRIPTION).getStringValue();
+				} catch (Exception ex) {
+					LOG.error("No description stored in matrix NetCDF file: " + netCDFFile.getAbsolutePath(), ex);
+				}
 
 				technology = cImport.ImportFormat.compareTo(ncfile.findGlobalAttribute(cNetCDF.Attributes.GLOB_TECHNOLOGY).getStringValue());
+
 				try {
 					gwaspiDBVersion = ncfile.findGlobalAttribute(cNetCDF.Attributes.GLOB_GWASPIDB_VERSION).getStringValue();
 				} catch (Exception ex) {
@@ -164,11 +168,26 @@ public class NetCDFDataSetSource implements DataSetSource {
 				strand = cNetCDF.Defaults.StrandType.valueOf(ncfile.findGlobalAttribute(cNetCDF.Attributes.GLOB_STRAND).getStringValue());
 				hasDictionray = ((Integer) ncfile.findGlobalAttribute(cNetCDF.Attributes.GLOB_HAS_DICTIONARY).getNumericValue() != 0);
 
-				Dimension markerSetDim = ncfile.findDimension(cNetCDF.Dimensions.DIM_MARKERSET);
-				markerSetSize = markerSetDim.getLength();
+				Dimension markersDim = ncfile.findDimension(cNetCDF.Dimensions.DIM_MARKERSET);
+				numMarkers = markersDim.getLength();
 
-				Dimension sampleSetDim = ncfile.findDimension(cNetCDF.Dimensions.DIM_SAMPLESET);
-				sampleSetSize = sampleSetDim.getLength();
+				Dimension samplesDim = ncfile.findDimension(cNetCDF.Dimensions.DIM_SAMPLESET);
+				numSamples = samplesDim.getLength();
+
+				Dimension chromosomesDim = ncfile.findDimension(cNetCDF.Dimensions.DIM_SAMPLESET);
+				numChromosomes = chromosomesDim.getLength();
+
+				try {
+					matrixType = ncfile.findGlobalAttribute(cNetCDF.Attributes.GLOB_MATRIX_TYPE).getStringValue();
+				} catch (Exception ex) {
+					LOG.error("No description stored in matrix NetCDF file: " + netCDFFile.getAbsolutePath(), ex);
+				}
+
+				try {
+					creationDate = new Date(ncfile.findGlobalAttribute(cNetCDF.Attributes.GLOB_CREATION_DATE).getNumericValue().longValue());
+				} catch (Exception ex) {
+					LOG.error("No friendly name stored in matrix NetCDF file: " + netCDFFile.getAbsolutePath(), ex);
+				}
 			} catch (IOException ex) {
 				LOG.error("Cannot open file: " + ncfile, ex);
 			} finally {
@@ -183,18 +202,18 @@ public class NetCDFDataSetSource implements DataSetSource {
 		}
 
 		MatrixMetadata matrixMetadata = new MatrixMetadata(
-			new MatrixKey(studyKey, matrixId),
-			matrixFriendlyName,
-			matrixNetCDFName,
-			pathToMatrix,
+			new MatrixKey(studyKey, Integer.MIN_VALUE),
+			friendlyName,
+			netCDFFile.getAbsolutePath(), // FIXME we need only simpleName here, not the path, and we might want to ommit the old one anyway, and generate it instead
 			technology,
 			gwaspiDBVersion,
 			description,
 			gtEncoding,
 			strand,
 			hasDictionray,
-			markerSetSize,
-			sampleSetSize,
+			numMarkers,
+			numSamples,
+			numChromosomes,
 			matrixType,
 			creationDate);
 

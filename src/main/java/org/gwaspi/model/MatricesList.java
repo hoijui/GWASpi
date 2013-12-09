@@ -61,11 +61,11 @@ public final class MatricesList {
 		return matrixService.getMatrix(matrixKey);
 	}
 
-	public static List<MatrixKey> getMatrixKeysByNetCdfName(String netCDFname) throws IOException {
-		return matrixService.getMatrixKeysByNetCdfName(netCDFname);
+	public static List<MatrixKey> getMatrixKeysBySimpleName(String simpleName) throws IOException {
+		return matrixService.getMatrixKeysBySimpleName(simpleName);
 	}
 
-	public static List<MatrixKey> getMatrixKeysByName(String matrixFriendlyName) throws IOException {
-		return matrixService.getMatrixKeysByName(matrixFriendlyName);
+	public static List<MatrixKey> getMatrixKeysByName(String friendlyName) throws IOException {
+		return matrixService.getMatrixKeysByName(friendlyName);
 	}
 }

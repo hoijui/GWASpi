@@ -236,6 +236,10 @@ public class OperationMetadata implements Serializable {
 		return key.getParentMatrixKey().getStudyKey();
 	}
 
+	/**
+	 * A human eye friendly name.
+	 * @return a string matching with any characters
+	 */
 	@Column(
 		name       = "name",
 		length     = 127,

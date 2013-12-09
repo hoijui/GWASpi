@@ -161,7 +161,7 @@ public class OP_MarkerCensus implements MatrixOperation {
 //				// CREATE netCDF-3 FILE
 //				cNetCDF.Defaults.OPType opType = cNetCDF.Defaults.OPType.MARKER_CENSUS_BY_AFFECTION;
 //
-//				String description = "Genotype frequency count -" + censusName + "- on " + rdMatrixMetadata.getMatrixFriendlyName();
+//				String description = "Genotype frequency count -" + censusName + "- on " + rdMatrixMetadata.getFriendlyName();
 //				if (phenoFile != null) {
 //					description += "\nCase/Control status read from file: " + phenoFile.getPath();
 //					opType = cNetCDF.Defaults.OPType.MARKER_CENSUS_BY_PHENOTYPE;

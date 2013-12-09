@@ -128,7 +128,7 @@ public class OP_QASamples implements MatrixOperation {
 
 			QASamplesOperationDataSet dataSet = new NetCdfQASamplesOperationDataSet(); // HACK
 			((AbstractNetCdfOperationDataSet) dataSet).setReadMatrixKey(rdMatrixKey); // HACK
-			((AbstractNetCdfOperationDataSet) dataSet).setNumMarkers(rdMatrixMetadata.getMarkerSetSize()); // HACK
+			((AbstractNetCdfOperationDataSet) dataSet).setNumMarkers(rdMatrixMetadata.getNumMarkers()); // HACK
 			((AbstractNetCdfOperationDataSet) dataSet).setNumSamples(wrSampleSetMissingCountMap.size()); // HACK
 
 //			dataSet.setSamples(rdSampleSet.getSampleKeys());

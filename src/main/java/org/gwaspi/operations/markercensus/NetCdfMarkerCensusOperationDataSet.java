@@ -210,7 +210,7 @@ public class NetCdfMarkerCensusOperationDataSet extends AbstractNetCdfOperationD
 
 		OPType opType = OPType.MARKER_CENSUS_BY_AFFECTION;
 
-		String description = "Genotype frequency count -" + censusName + "- on " + rdMatrixMetadata.getMatrixFriendlyName();
+		String description = "Genotype frequency count -" + censusName + "- on " + rdMatrixMetadata.getFriendlyName();
 		if (phenoFile != null) {
 			description += "\nCase/Control status read from file: " + phenoFile.getPath();
 			opType = OPType.MARKER_CENSUS_BY_PHENOTYPE;

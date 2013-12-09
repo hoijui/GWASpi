@@ -41,10 +41,10 @@ import ucar.nc2.NetcdfFileWriteable;
 
 public class MatrixFactory {
 
-	private final NetcdfFileWriteable netCDFHandler;
-	private final String resultMatrixName;
-	private final MatrixKey resultMatrixKey;
-	private final MatrixMetadata matrixMetaData;
+//	private final NetcdfFileWriteable netCDFHandler;
+//	private final String resultMatrixName;
+//	private final MatrixKey resultMatrixKey;
+//	private final MatrixMetadata matrixMetaData;
 
 	private MatrixFactory(
 			ImportFormat technology,
@@ -63,10 +63,19 @@ public class MatrixFactory {
 	{
 		if (samplesDimSize > 0 && markerDimSize > 0) {
 			try {
-			resultMatrixName = generateMatrixNetCDFNameByDate();
-			netCDFHandler = generateNetcdfHandler(
+			MatrixMetadata tmpMatrixMetaData = new MatrixMetadata(
+					friendlyName,
+					description,
+					matrixType,
 					origMatrix1Key.getStudyKey(),
-					resultMatrixName,
+					origMatrix1Key.getMatrixId(),
+					origMatrix2Key.getMatrixId(),
+					inputLocation);
+
+//			resultMatrixName = generateMatrixNetCDFNameByDate();
+			NetcdfFileWriteable netCDFHandler = generateNetcdfHandler(
+					origMatrix1Key.getStudyKey(),
+					tmpMatrixMetaData.getSimpleName(),
 					technology,
 					description,
 					matrixType,
@@ -83,15 +92,6 @@ public class MatrixFactory {
 			}
 			netCDFHandler.setFill(true);
 
-			MatrixMetadata tmpMatrixMetaData = new MatrixMetadata(
-					friendlyName,
-					resultMatrixName,
-					description,
-					matrixType,
-					origMatrix1Key.getStudyKey(),
-					origMatrix1Key.getMatrixId(),
-					origMatrix2Key.getMatrixId(),
-					inputLocation);
 			resultMatrixKey = MatricesList.insertMatrixMetadata(tmpMatrixMetaData);
 			matrixMetaData = tmpMatrixMetaData;
 			} catch (InvalidRangeException ex) {
@@ -200,7 +200,8 @@ public class MatrixFactory {
 			boolean hasDictionary,
 			int sampleSetSize,
 			int markerSetSize,
-			int chrSetSize)
+			int chrSetSize,
+			MatrixMetadata matrixMetadata)
 			throws InvalidRangeException, IOException
 	{
 		// CREATE netCDF-3 FILE
@@ -214,17 +215,20 @@ public class MatrixFactory {
 		int sampleStride = cNetCDF.Strides.STRIDE_SAMPLE_NAME;
 //		int strandStride = cNetCDF.Strides.STRIDE_STRAND;
 
-		File writeFile = new File(pathToStudy, matrixName + ".nc");
+		File writeFile = new File(pathToStudy, matrixName + ".nc"); XXX;
 		NetcdfFileWriteable ncfile = NetcdfFileWriteable.createNew(writeFile.getAbsolutePath(), false);
 
 		// global attributes
 		ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_STUDY, studyKey.getId());
+		ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_FRIENDLY_NAME, matrixName.toString());
 		ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_TECHNOLOGY, technology.toString());
 		String versionNb = Config.getConfigValue(Config.PROPERTY_CURRENT_GWASPIDB_VERSION, null);
 		ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_GWASPIDB_VERSION, versionNb);
 		ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_DESCRIPTION, description);
 		ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_STRAND, strand.toString());
 		ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_HAS_DICTIONARY, hasDictionary ? 1 : 0);
+		ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_MATRIX_TYPE, matrixMetadata.getMatrixType());
+		ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_CREATION_DATE, matrixMetadata.getCreationDate().getTime());
 
 		// dimensions
 		Dimension samplesDim = ncfile.addDimension(cNetCDF.Dimensions.DIM_SAMPLESET, 0, true, true, false);

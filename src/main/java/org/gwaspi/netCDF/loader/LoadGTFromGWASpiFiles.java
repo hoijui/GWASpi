@@ -151,8 +151,8 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 			description.append("Technology: ");
 			description.append(importMatrixMetadata.getTechnology());
 			description.append("\n");
-			description.append("Markers: ").append(importMatrixMetadata.getMarkerSetSize());
-			description.append(", Samples: ").append(importMatrixMetadata.getSampleSetSize());
+			description.append("Markers: ").append(importMatrixMetadata.getNumMarkers());
+			description.append(", Samples: ").append(importMatrixMetadata.getNumSamples());
 			description.append("\n");
 			description.append(Text.Matrix.descriptionHeader2);
 			description.append(loadDescription.getFormat().toString());
@@ -168,7 +168,7 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 			if (!testExcessSamplesInMatrix) {
 				MatricesList.insertMatrixMetadata(new MatrixMetadata(
 						loadDescription.getFriendlyName(),
-						importMatrixMetadata.getMatrixNetCDFName(),
+						importMatrixMetadata.getSimpleName(),
 						description.toString(), // description
 						importMatrixMetadata.getGenotypeEncoding(),
 						loadDescription.getStudyKey(),
@@ -180,7 +180,7 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 			copyMatrixToGenotypesFolder(
 					loadDescription.getStudyKey(),
 					loadDescription.getGtDirPath(),
-					importMatrixMetadata.getMatrixNetCDFName());
+					MatrixMetadata.generatePathToNetCdfFile(importMatrixMetadata));
 		} else {
 			new NetCDFDataSetSource();
 			generateNewGWASpiDBversionMatrix(loadDescription, samplesReceiver, importMatrixMetadata);
@@ -208,7 +208,7 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 		SampleSet rdSampleSet = new SampleSet(
 				importMatrixMetadata.getStudyKey(),
 				loadDescription.getGtDirPath(),
-				importMatrixMetadata.getMatrixNetCDFName());
+				importMatrixMetadata.getSimpleName());
 		Map<SampleKey, byte[]> rdSampleSetMap = rdSampleSet.getSampleIdSetMapByteArray();
 
 		log.info("Done initializing sorted MarkerSetMap");
@@ -338,7 +338,7 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 	//</editor-fold>
 
 	//<editor-fold defaultstate="expanded" desc="HELPER METHODS">
-	private void copyMatrixToGenotypesFolder(StudyKey studyKey, String importMatrixPath, String newMatrixCDFName) {
+	private void copyMatrixToGenotypesFolder(StudyKey studyKey, String importMatrixPath, File newMatrixCDFFile) {
 		try {
 			File pathToStudy = new File(Study.constructGTPath(studyKey));
 			if (!pathToStudy.exists()) {
@@ -346,7 +346,7 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 			}
 
 			File origFile = new File(importMatrixPath);
-			File newFile = new File(pathToStudy, newMatrixCDFName + ".nc");
+			File newFile = newMatrixCDFFile;
 			if (origFile.exists()) {
 				org.gwaspi.global.Utils.copyFile(origFile, newFile);
 			}

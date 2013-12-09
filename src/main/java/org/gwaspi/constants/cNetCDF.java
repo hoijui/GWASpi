@@ -21,6 +21,7 @@ public class cNetCDF {
 
 	public static class Attributes {
 
+		public static final String GLOB_FRIENDLY_NAME = "friendly_name";
 		public static final String GLOB_STUDY = "study";
 		public static final String GLOB_TECHNOLOGY = "technology";
 		public static final String GLOB_GWASPIDB_VERSION = "gwaspi_db_version";
@@ -28,6 +29,8 @@ public class cNetCDF {
 		public static final String GLOB_STRAND = "strand";
 		public static final String LENGTH = "length";
 		public static final String GLOB_HAS_DICTIONARY = "glob_has_dictionary";
+		public static final String GLOB_MATRIX_TYPE = "matrix_type";
+		public static final String GLOB_CREATION_DATE = "creation_date";
 
 		private Attributes() {
 		}

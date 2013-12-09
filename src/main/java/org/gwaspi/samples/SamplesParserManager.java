@@ -72,7 +72,7 @@ public class SamplesParserManager {
 		try {
 			MatrixMetadata rdMatrixMetadata = MatricesList.getMatrixMetadataById(matrixKey);
 			log.info("Getting Sample Affection info for: {}",
-					rdMatrixMetadata.getMatrixFriendlyName());
+					rdMatrixMetadata.getFriendlyName());
 			DataSetSource rdDataSetSource = MatrixFactory.generateMatrixDataSetSource(matrixKey);
 			for (SampleKey key : rdDataSetSource.getSamplesKeysSource()) {
 				SampleInfo sampleInfo = SampleInfoList.getSample(key);

@@ -199,7 +199,7 @@ public class MatrixExtractPanel extends JPanel {
 		pnl_SampleZone.setBorder(BorderFactory.createTitledBorder(null, Text.Trafo.sampleSelectZone, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("DejaVu Sans", 1, 13))); // NOI18N
 
 		lbl_ParentMatrix.setText(Text.Matrix.parentMatrix);
-		lbl_ParentMatrixName.setText(matrixMetadata.getMatrixFriendlyName());
+		lbl_ParentMatrixName.setText(matrixMetadata.getFriendlyName());
 		lbl_NewMatrixName.setText(Text.Matrix.newMatrixName);
 		txt_NewMatrixName.setDocument(new LimitedLengthDocument(63));
 		txtA_NewMatrixDescription.setColumns(20);

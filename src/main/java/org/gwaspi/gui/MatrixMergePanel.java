@@ -118,7 +118,7 @@ public class MatrixMergePanel extends JPanel {
 
 		setBorder(BorderFactory.createTitledBorder(null, Text.Trafo.mergeMatrices, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("FreeSans", 1, 18))); // NOI18N
 
-		pnl_ParentMatrixDesc.setBorder(BorderFactory.createTitledBorder(null, Text.Matrix.parentMatrix + " " + parentMatrixMetadata.getMatrixFriendlyName(), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("DejaVu Sans", 1, 13))); // NOI18N
+		pnl_ParentMatrixDesc.setBorder(BorderFactory.createTitledBorder(null, Text.Matrix.parentMatrix + " " + parentMatrixMetadata.getFriendlyName(), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("DejaVu Sans", 1, 13))); // NOI18N
 		txtA_ParentMatrixDesc.setColumns(20);
 		txtA_ParentMatrixDesc.setRows(5);
 		txtA_ParentMatrixDesc.setBorder(BorderFactory.createTitledBorder(Text.All.description));
@@ -482,7 +482,7 @@ public class MatrixMergePanel extends JPanel {
 				sb.append(" - MX: ");
 				sb.append(currentMatrix.getMatrixId());
 				sb.append(" - ");
-				sb.append(currentMatrix.getMatrixFriendlyName());
+				sb.append(currentMatrix.getFriendlyName());
 
 				Object[] matrixItem = new Object[2];
 				matrixItem[0] = currentMatrix.getMatrixId();

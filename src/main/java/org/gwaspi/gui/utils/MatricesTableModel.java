@@ -39,7 +39,7 @@ public class MatricesTableModel extends DefaultTableModel {
 		for (MatrixMetadata matrix : matrices) {
 			int column = 0;
 			setValueAt(matrix.getMatrixId(), row, column++);
-			setValueAt(matrix.getMatrixFriendlyName(), row, column++);
+			setValueAt(matrix.getFriendlyName(), row, column++);
 			setValueAt(matrix.getDescription(), row, column++);
 			setValueAt(matrix.getCreationDate(), row, column++);
 			row++;

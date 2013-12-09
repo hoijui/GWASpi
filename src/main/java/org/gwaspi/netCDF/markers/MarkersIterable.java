@@ -85,7 +85,7 @@ public class MarkersIterable implements
 						+ hwOperationKey.toString());
 			}
 
-			NetcdfFile rdHWNcFile = NetcdfFile.open(hwOP.getPathToMatrix());
+			NetcdfFile rdHWNcFile = NetcdfFile.open(OperationMetadata.generatePathToNetCdfFile(hwOP).getAbsolutePath());
 			MarkerOperationSet rdHWOperationSet = new MarkerOperationSet(OperationKey.valueOf(hwOP));
 			Map<MarkerKey, Double> rdHWMarkers = rdHWOperationSet.getOpSetMap();
 

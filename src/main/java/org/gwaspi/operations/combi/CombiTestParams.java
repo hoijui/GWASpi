@@ -128,7 +128,7 @@ public class CombiTestParams {
 		try {
 			matrixMetadata = MatricesList.getMatrixMetadataById(matrixKey);
 			if (matrixMetadata != null) {
-				total = matrixMetadata.getMarkerSetSize();
+				total = matrixMetadata.getNumMarkers();
 			}
 		} catch (IOException ex) {
 			LOG.debug("Failed to fetch the total number of markers", ex);

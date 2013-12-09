@@ -57,7 +57,7 @@ public class PlinkFormatter implements Formatter {
 		BufferedWriter pedBW = null;
 		try {
 			FileWriter pedFW = new FileWriter(new File(exportDir.getPath(),
-					rdMatrixMetadata.getMatrixFriendlyName() + ".ped"));
+					rdMatrixMetadata.getFriendlyName() + ".ped"));
 			pedBW = new BufferedWriter(pedFW);
 
 			// Iterate through all samples
@@ -121,7 +121,7 @@ public class PlinkFormatter implements Formatter {
 		BufferedWriter mapBW = null;
 		try {
 			FileWriter mapFW = new FileWriter(new File(exportDir.getPath(),
-					rdMatrixMetadata.getMatrixFriendlyName() + ".map"));
+					rdMatrixMetadata.getFriendlyName() + ".map"));
 			mapBW = new BufferedWriter(mapFW);
 
 			// MAP files

@@ -110,7 +110,7 @@ public class MatrixTrafoPanel extends JPanel {
 
 		setBorder(BorderFactory.createTitledBorder(null, Text.Trafo.transformMatrix, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("FreeSans", 1, 18))); // NOI18N
 
-		pnl_ParentMatrixDesc.setBorder(BorderFactory.createTitledBorder(null, Text.Matrix.parentMatrix + " " + parentMatrixMetadata.getMatrixFriendlyName(), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("DejaVu Sans", 1, 13))); // NOI18N
+		pnl_ParentMatrixDesc.setBorder(BorderFactory.createTitledBorder(null, Text.Matrix.parentMatrix + " " + parentMatrixMetadata.getFriendlyName(), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("DejaVu Sans", 1, 13))); // NOI18N
 		txtA_ParentMatrixDesc.setColumns(20);
 		txtA_ParentMatrixDesc.setRows(5);
 		txtA_ParentMatrixDesc.setBorder(BorderFactory.createTitledBorder(Text.All.description));
