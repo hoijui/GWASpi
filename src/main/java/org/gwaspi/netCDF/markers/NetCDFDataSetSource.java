@@ -67,16 +67,23 @@ public class NetCDFDataSetSource implements DataSetSource {
 		this.sampleSet = new SampleSet(matrixKey);
 	}
 
+	public NetCDFDataSetSource(String netCDFpath) throws IOException {
+
+		this.matrixKey = matrixKey;
+		this.markerSet = new MarkerSet(matrixKey);
+		this.sampleSet = new SampleSet(matrixKey);
+	}
+
 	@Override
 	public MatrixMetadata getMatrixMetadata() throws IOException {
-		return MatricesList.getMatrixMetadataById(matrixKey);
+		return getMatrix(matrixKey);
 	}
 
     /**
 	 * This Method used to import GWASpi matrix from an external file.
 	 * The size of this Map is very small.
 	 */
-	public static MatrixMetadata getMatrix(String netCDFpath, StudyKey studyKey, String newMatrixName) throws IOException {
+	private static MatrixMetadata getMatrix(String netCDFpath, StudyKey studyKey, String newMatrixName) throws IOException {
 
 		int matrixId = Integer.MIN_VALUE;
 		String matrixFriendlyName = newMatrixName;
@@ -224,19 +231,17 @@ public class NetCDFDataSetSource implements DataSetSource {
 		int dimension = Integer.MIN_VALUE;
 
 		NetcdfFile ncfile = null;
-		if (new File(pathToMatrix).exists()) {
-			try {
-				ncfile = NetcdfFile.open(pathToMatrix);
+		try {
+			ncfile = NetcdfFile.open(pathToMatrix);
 
-				Dimension setDim = ncfile.findDimension(dimensionVar);
-				dimension = setDim.getLength();
-			} finally {
-				if (null != ncfile) {
-					try {
-						ncfile.close();
-					} catch (IOException ex) {
-						LOG.warn("Cannot close file: " + ncfile, ex);
-					}
+			Dimension setDim = ncfile.findDimension(dimensionVar);
+			dimension = setDim.getLength();
+		} finally {
+			if (null != ncfile) {
+				try {
+					ncfile.close();
+				} catch (IOException ex) {
+					LOG.warn("Cannot close file: " + ncfile, ex);
 				}
 			}
 		}
