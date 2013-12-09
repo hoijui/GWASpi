@@ -205,17 +205,17 @@ public class NetCDFDataSetSource implements DataSetSource {
 	}
 
 	@Override
-	public int getNumMarkers() {
+	public int getNumMarkers() throws IOException {
 		return getDimension(cNetCDF.Dimensions.DIM_MARKERSET);
 	}
 
 	@Override
-	public int getNumChromosomes() {
+	public int getNumChromosomes() throws IOException {
 		return getDimension(cNetCDF.Dimensions.DIM_CHRSET);
 	}
 
 	@Override
-	public int getNumSamples() {
+	public int getNumSamples() throws IOException {
 		return getDimension(cNetCDF.Dimensions.DIM_SAMPLESET);
 	}
 
