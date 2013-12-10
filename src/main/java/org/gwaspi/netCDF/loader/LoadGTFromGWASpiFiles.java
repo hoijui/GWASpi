@@ -31,7 +31,6 @@ import org.gwaspi.model.ChromosomeInfo;
 import org.gwaspi.model.ChromosomeKey;
 import org.gwaspi.model.DataSet;
 import org.gwaspi.model.DataSetSource;
-import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.MarkersMetadataSource;
 import org.gwaspi.model.MatricesList;
@@ -41,10 +40,8 @@ import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.Study;
 import org.gwaspi.model.StudyKey;
-import org.gwaspi.netCDF.markers.MarkerSet;
 import org.gwaspi.netCDF.markers.NetCDFDataSetSource;
 import org.gwaspi.netCDF.matrices.ChromosomeUtils;
-import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.gwaspi.netCDF.operations.NetCdfUtils;
 import org.gwaspi.samples.SampleSet;
 import org.slf4j.Logger;
@@ -134,7 +131,9 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 				new File(loadDescription.getGtDirPath()),
 				loadDescription.getFriendlyName());
 
-		if (importMatrixMetadata.getGwaspiDBVersion().equals(Config.getConfigValue(Config.PROPERTY_CURRENT_GWASPIDB_VERSION, null))) {
+		final String currentGwaspiDbVersion= Config.getConfigValue(
+				Config.PROPERTY_CURRENT_GWASPIDB_VERSION, null);
+		if (importMatrixMetadata.getGwaspiDBVersion().equals(currentGwaspiDbVersion)) {
 			// COMPARE DATABASE VERSIONS
 			if (!testExcessSamplesInMatrix) {
 				StringBuilder description = new StringBuilder(Text.Matrix.descriptionHeader1);
@@ -166,13 +165,10 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 				description.append(" (Sample Info file)\n");
 				MatricesList.insertMatrixMetadata(new MatrixMetadata(
 						loadDescription.getFriendlyName(),
-						importMatrixMetadata.getSimpleName(), // XXX here is the problem!
+//						importMatrixMetadata.getSimpleName(), // XXX here is the problem!
 						description.toString(),
 						importMatrixMetadata.getGenotypeEncoding(),
-						loadDescription.getStudyKey(),
-						Integer.MIN_VALUE,
-						Integer.MIN_VALUE,
-						""
+						loadDescription.getStudyKey()
 						));
 			}
 			copyMatrixToGenotypesFolder(
@@ -180,6 +176,9 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 					loadDescription.getGtDirPath(),
 					MatrixMetadata.generatePathToNetCdfFile(importMatrixMetadata));
 		} else {
+			// if the source has a different GWASpi-DB version
+			// then what we currently run/use,
+			// make a total read & write run
 			generateNewGWASpiDBversionMatrix(loadDescription, samplesReceiver, importMatrixMetadata);
 		}
 

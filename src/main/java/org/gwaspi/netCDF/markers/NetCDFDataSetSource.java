@@ -19,8 +19,14 @@ package org.gwaspi.netCDF.markers;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.AbstractList;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import org.gwaspi.constants.cImport;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.model.ChromosomeInfo;
@@ -28,6 +34,9 @@ import org.gwaspi.model.ChromosomeKey;
 import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.ChromosomesInfosSource;
 import org.gwaspi.model.ChromosomesKeysSource;
+import org.gwaspi.model.MarkerKey;
+import org.gwaspi.model.MarkerKeyFactory;
+import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.MarkersGenotypesSource;
 import org.gwaspi.model.MarkersKeysSource;
 import org.gwaspi.model.MarkersMetadataSource;
@@ -37,6 +46,7 @@ import org.gwaspi.model.SamplesGenotypesSource;
 import org.gwaspi.model.SamplesInfosSource;
 import org.gwaspi.model.SamplesKeysSource;
 import org.gwaspi.model.StudyKey;
+import org.gwaspi.netCDF.operations.NetCdfUtils;
 import org.gwaspi.samples.SampleSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,6 +66,7 @@ public class NetCDFDataSetSource implements DataSetSource {
 
 	private final StudyKey studyKey;
 	private final File netCDFpath;
+	private NetcdfFile rdNetCdfFile;
 	private MatrixKey matrixKey;
 	private MatrixMetadata matrixMetadata;
 //	private MatrixKey matrixKey;
@@ -74,13 +85,22 @@ public class NetCDFDataSetSource implements DataSetSource {
 
 		this.studyKey = studyKey;
 		this.netCDFpath = netCDFpath;
+		this.rdNetCdfFile = null;
 		this.matrixKey = null;
 		this.matrixMetadata = null;
+	}
+
+	private void ensureReadNetCdfFile() throws IOException {
+
+		if (rdNetCdfFile == null) {
+			rdNetCdfFile = NetcdfFile.open(netCDFpath.getAbsolutePath());
+		}
 	}
 
 	private void ensureMatrixMetadata() throws IOException {
 
 		if (matrixMetadata == null) {
+			ensureReadNetCdfFile();
 			matrixMetadata = loadMatrixMetadata(studyKey, netCDFpath, null);
 			matrixKey = MatrixKey.valueOf(matrixMetadata);
 		}
@@ -118,6 +138,16 @@ public class NetCDFDataSetSource implements DataSetSource {
 			String newMatrixFriendlyName)
 			throws IOException
 	{
+		NetcdfFile ncFile = NetcdfFile.open(netCDFFile.getAbsolutePath());
+		return loadMatrixMetadata(studyKey, ncFile, newMatrixFriendlyName);
+	}
+
+	public static MatrixMetadata loadMatrixMetadata(
+			StudyKey studyKey,
+			NetcdfFile netCDFFile,
+			String newMatrixFriendlyName)
+			throws IOException
+	{
 		String friendlyName = "";
 		String description = "";
 		String gwaspiDBVersion = "";
@@ -131,79 +161,74 @@ public class NetCDFDataSetSource implements DataSetSource {
 		String matrixType = null;
 		Date creationDate = null;
 
-		NetcdfFile ncfile = null;
-		if (netCDFFile.exists()) {
+		try {
 			try {
-				ncfile = NetcdfFile.open(netCDFFile.getAbsolutePath());
+				friendlyName = netCDFFile.findGlobalAttribute(cNetCDF.Attributes.GLOB_FRIENDLY_NAME).getStringValue();
+			} catch (Exception ex) {
+				LOG.error("No friendly name stored in matrix NetCDF file: " + netCDFFile.getLocation(), ex);
+			}
 
+			try {
+				description = netCDFFile.findGlobalAttribute(cNetCDF.Attributes.GLOB_DESCRIPTION).getStringValue();
+			} catch (Exception ex) {
+				LOG.error("No description stored in matrix NetCDF file: " + netCDFFile.getLocation(), ex);
+			}
+
+			technology = cImport.ImportFormat.compareTo(netCDFFile.findGlobalAttribute(cNetCDF.Attributes.GLOB_TECHNOLOGY).getStringValue());
+
+			try {
+				gwaspiDBVersion = netCDFFile.findGlobalAttribute(cNetCDF.Attributes.GLOB_GWASPIDB_VERSION).getStringValue();
+			} catch (Exception ex) {
+				LOG.error(null, ex);
+			}
+
+			Variable var = netCDFFile.findVariable(cNetCDF.Variables.GLOB_GTENCODING);
+			if (var != null) {
 				try {
-					friendlyName = ncfile.findGlobalAttribute(cNetCDF.Attributes.GLOB_FRIENDLY_NAME).getStringValue();
-				} catch (Exception ex) {
-					LOG.error("No friendly name stored in matrix NetCDF file: " + netCDFFile.getAbsolutePath(), ex);
-				}
-
-				try {
-					description = ncfile.findGlobalAttribute(cNetCDF.Attributes.GLOB_DESCRIPTION).getStringValue();
-				} catch (Exception ex) {
-					LOG.error("No description stored in matrix NetCDF file: " + netCDFFile.getAbsolutePath(), ex);
-				}
-
-				technology = cImport.ImportFormat.compareTo(ncfile.findGlobalAttribute(cNetCDF.Attributes.GLOB_TECHNOLOGY).getStringValue());
-
-				try {
-					gwaspiDBVersion = ncfile.findGlobalAttribute(cNetCDF.Attributes.GLOB_GWASPIDB_VERSION).getStringValue();
-				} catch (Exception ex) {
+					ArrayChar.D2 gtCodeAC = (ArrayChar.D2) var.read("(0:0:1, 0:7:1)");
+//						gtEncoding = GenotypeEncoding.valueOf(gtCodeAC.getString(0));
+					gtEncoding = cNetCDF.Defaults.GenotypeEncoding.compareTo(gtCodeAC.getString(0)); // HACK, the above was used before
+				} catch (InvalidRangeException ex) {
 					LOG.error(null, ex);
 				}
+			}
 
-				Variable var = ncfile.findVariable(cNetCDF.Variables.GLOB_GTENCODING);
-				if (var != null) {
-					try {
-						ArrayChar.D2 gtCodeAC = (ArrayChar.D2) var.read("(0:0:1, 0:7:1)");
-//						gtEncoding = GenotypeEncoding.valueOf(gtCodeAC.getString(0));
-						gtEncoding = cNetCDF.Defaults.GenotypeEncoding.compareTo(gtCodeAC.getString(0)); // HACK, the above was used before
-					} catch (InvalidRangeException ex) {
-						LOG.error(null, ex);
-					}
-				}
+			strand = cNetCDF.Defaults.StrandType.valueOf(netCDFFile.findGlobalAttribute(cNetCDF.Attributes.GLOB_STRAND).getStringValue());
+			hasDictionray = ((Integer) netCDFFile.findGlobalAttribute(cNetCDF.Attributes.GLOB_HAS_DICTIONARY).getNumericValue() != 0);
 
-				strand = cNetCDF.Defaults.StrandType.valueOf(ncfile.findGlobalAttribute(cNetCDF.Attributes.GLOB_STRAND).getStringValue());
-				hasDictionray = ((Integer) ncfile.findGlobalAttribute(cNetCDF.Attributes.GLOB_HAS_DICTIONARY).getNumericValue() != 0);
+			Dimension markersDim = netCDFFile.findDimension(cNetCDF.Dimensions.DIM_MARKERSET);
+			numMarkers = markersDim.getLength();
 
-				Dimension markersDim = ncfile.findDimension(cNetCDF.Dimensions.DIM_MARKERSET);
-				numMarkers = markersDim.getLength();
+			Dimension samplesDim = netCDFFile.findDimension(cNetCDF.Dimensions.DIM_SAMPLESET);
+			numSamples = samplesDim.getLength();
 
-				Dimension samplesDim = ncfile.findDimension(cNetCDF.Dimensions.DIM_SAMPLESET);
-				numSamples = samplesDim.getLength();
+			Dimension chromosomesDim = netCDFFile.findDimension(cNetCDF.Dimensions.DIM_SAMPLESET);
+			numChromosomes = chromosomesDim.getLength();
 
-				Dimension chromosomesDim = ncfile.findDimension(cNetCDF.Dimensions.DIM_SAMPLESET);
-				numChromosomes = chromosomesDim.getLength();
+			try {
+				matrixType = netCDFFile.findGlobalAttribute(cNetCDF.Attributes.GLOB_MATRIX_TYPE).getStringValue();
+			} catch (Exception ex) {
+				LOG.error("No description stored in matrix NetCDF file: " + netCDFFile.getLocation(), ex);
+			}
 
+			try {
+				creationDate = new Date(netCDFFile.findGlobalAttribute(cNetCDF.Attributes.GLOB_CREATION_DATE).getNumericValue().longValue());
+			} catch (Exception ex) {
+				LOG.error("No friendly name stored in matrix NetCDF file: " + netCDFFile.getLocation(), ex);
+			}
+		} catch (IOException ex) {
+			LOG.error("Cannot open file: " + netCDFFile, ex);
+		} finally {
+			if (null != netCDFFile) {
 				try {
-					matrixType = ncfile.findGlobalAttribute(cNetCDF.Attributes.GLOB_MATRIX_TYPE).getStringValue();
-				} catch (Exception ex) {
-					LOG.error("No description stored in matrix NetCDF file: " + netCDFFile.getAbsolutePath(), ex);
-				}
-
-				try {
-					creationDate = new Date(ncfile.findGlobalAttribute(cNetCDF.Attributes.GLOB_CREATION_DATE).getNumericValue().longValue());
-				} catch (Exception ex) {
-					LOG.error("No friendly name stored in matrix NetCDF file: " + netCDFFile.getAbsolutePath(), ex);
-				}
-			} catch (IOException ex) {
-				LOG.error("Cannot open file: " + ncfile, ex);
-			} finally {
-				if (null != ncfile) {
-					try {
-						ncfile.close();
-					} catch (IOException ex) {
-						LOG.warn("Cannot close file: " + ncfile, ex);
-					}
+					netCDFFile.close();
+				} catch (IOException ex) {
+					LOG.warn("Cannot close file: " + netCDFFile, ex);
 				}
 			}
 		}
 
-		String simpleName = netCDFFile.getName();
+		String simpleName = new File(netCDFFile.getLocation()).getName();
 		simpleName = simpleName.substring(0, simpleName.lastIndexOf('.') - 1); // cut off the '.nc' file extension
 
 		MatrixMetadata matrixMetadata = new MatrixMetadata(
@@ -235,7 +260,141 @@ public class NetCDFDataSetSource implements DataSetSource {
 
 	@Override
 	public MarkersMetadataSource getMarkersMetadatasSource() throws IOException {
-		throw new UnsupportedOperationException("Not supported yet."); XXX;
+
+		ensureReadNetCdfFile();
+		return new NetCdfMarkersMetadataSource(rdNetCdfFile);
+	}
+
+	private static class NetCdfMarkersMetadataSource extends AbstractList<MarkerMetadata> implements MarkersMetadataSource {
+
+		private static final int DEFAULT_CHUNK_SIZE = 50;
+		private final NetcdfFile rdNetCdfFile;
+		private int loadedChunkNumber;
+		private List<MarkerMetadata> loadedChunk;
+
+		NetCdfMarkersMetadataSource(NetcdfFile rdNetCdfFile) {
+
+			this.rdNetCdfFile = rdNetCdfFile;
+			this.loadedChunkNumber = -1;
+			this.loadedChunk = null;
+		}
+
+		private <VT> List<VT> readVar(String varName, int from, int to) throws IOException {
+
+			List<VT> values = new ArrayList<VT>(0);
+			NetCdfUtils.readVariable(rdNetCdfFile, varName, from, to, values, null);
+			return values;
+		}
+
+		@Override
+		public MarkerMetadata get(int index) {
+
+			final int chunkNumber = index / DEFAULT_CHUNK_SIZE;
+			final int inChunkPosition = index % DEFAULT_CHUNK_SIZE;
+
+			if (chunkNumber != loadedChunkNumber) {
+				try {
+					loadedChunk = getRange(chunkNumber, chunkNumber + DEFAULT_CHUNK_SIZE);
+					loadedChunkNumber = chunkNumber;
+				} catch (IOException ex) {
+					throw new RuntimeException(ex);
+				}
+			}
+
+			return loadedChunk.get(inChunkPosition);
+		}
+
+		@Override
+		public int size() {
+
+			Dimension dim = rdNetCdfFile.findDimension(cNetCDF.Dimensions.DIM_MARKERSET);
+			return dim.getLength();
+		}
+
+		@Override
+		public List<MarkerMetadata> getRange(int from, int to) throws IOException {
+
+			List<MarkerMetadata> values = new ArrayList<MarkerMetadata>(to - from);
+
+			List<String> markerIdsIt = getMarkerIds(from, to);
+			Iterator<String> rsIdsIt = getRsIds(from, to).iterator();
+			Iterator<String> chromosomesIt = getChromosomes(from, to).iterator();
+			Iterator<Integer> positionsIt = getPositions(from, to).iterator();
+			Iterator<String> allelesIt = getAlleles(from, to).iterator();
+			Iterator<String> strandsIt = getStrands(from, to).iterator();
+			for (String markerId : markerIdsIt) {
+				values.add(new MarkerMetadata(
+						markerId,
+						rsIdsIt.next(),
+						chromosomesIt.next(),
+						positionsIt.next(),
+						allelesIt.next(),
+						strandsIt.next()
+				));
+			}
+
+			return values;
+		}
+
+		@Override
+		public List<String> getMarkerIds() throws IOException {
+			return getMarkerIds(-1, -1);
+		}
+
+		@Override
+		public List<String> getRsIds() throws IOException {
+			return getRsIds(-1, -1);
+		}
+
+		@Override
+		public List<String> getChromosomes() throws IOException {
+			return getChromosomes(-1, -1);
+		}
+
+		@Override
+		public List<Integer> getPositions() throws IOException {
+			return getPositions(-1, -1);
+		}
+
+		@Override
+		public List<String> getAlleles() throws IOException {
+			return getAlleles(-1, -1);
+		}
+
+		@Override
+		public List<String> getStrands() throws IOException {
+			return getStrands(-1, -1);
+		}
+
+		@Override
+		public List<String> getMarkerIds(int from, int to) throws IOException {
+			return readVar(cNetCDF.Variables.VAR_MARKERSET, from, to);
+		}
+
+		@Override
+		public List<String> getRsIds(int from, int to) throws IOException {
+			return readVar(cNetCDF.Variables.VAR_MARKERS_RSID, from, to);
+		}
+
+		@Override
+		public List<String> getChromosomes(int from, int to) throws IOException {
+			return readVar(cNetCDF.Variables.VAR_MARKERS_CHR, from, to);
+		}
+
+		@Override
+		public List<Integer> getPositions(int from, int to) throws IOException {
+			return readVar(cNetCDF.Variables.VAR_MARKERS_POS, from, to);
+		}
+
+		@Override
+		public List<String> getAlleles(int from, int to) throws IOException {
+			return readVar(cNetCDF.Variables.VAR_MARKERS_BASES_DICT, from, to);
+		}
+
+		@Override
+		public List<String> getStrands(int from, int to) throws IOException {
+			return readVar(cNetCDF.Variables.VAR_GT_STRAND, from, to);
+		}
 	}
 
 	@Override
@@ -315,9 +474,94 @@ public class NetCDFDataSetSource implements DataSetSource {
 		return chrInfSrc;
 	}
 
+	private static class NetCdfMarkersKeysSource extends AbstractList<MarkerKey> implements MarkersKeysSource {
+
+		private static final int DEFAULT_CHUNK_SIZE = 200;
+		private final NetcdfFile rdNetCdfFile;
+		private int loadedChunkNumber;
+		private List<MarkerKey> loadedChunk;
+
+		NetCdfMarkersKeysSource(NetcdfFile rdNetCdfFile) {
+
+			this.rdNetCdfFile = rdNetCdfFile;
+			this.loadedChunkNumber = -1;
+			this.loadedChunk = null;
+		}
+
+		private <VT> List<VT> readVar(String varName, int from, int to) throws IOException {
+
+			List<VT> values = new ArrayList<VT>(0);
+			NetCdfUtils.readVariable(rdNetCdfFile, varName, from, to, values, null);
+			return values;
+		}
+
+		@Override
+		public MarkerKey get(int index) {
+
+			final int chunkNumber = index / DEFAULT_CHUNK_SIZE;
+			final int inChunkPosition = index % DEFAULT_CHUNK_SIZE;
+
+			if (chunkNumber != loadedChunkNumber) {
+				try {
+					loadedChunk = getRange(chunkNumber, chunkNumber + DEFAULT_CHUNK_SIZE);
+					loadedChunkNumber = chunkNumber;
+				} catch (IOException ex) {
+					throw new RuntimeException(ex);
+				}
+			}
+
+			return loadedChunk.get(inChunkPosition);
+		}
+
+		@Override
+		public int size() {
+
+			Dimension dim = rdNetCdfFile.findDimension(cNetCDF.Dimensions.DIM_MARKERSET);
+			return dim.getLength();
+		}
+
+		@Override
+		public Map<Integer, MarkerKey> getIndicesMap() throws IOException {
+			return getIndicesMap(-1, -1);
+		}
+
+		@Override
+		public List<MarkerKey> getRange(int from, int to) throws IOException {
+
+			List<MarkerKey> markers;
+
+			List<String> keys = readVar(cNetCDF.Variables.VAR_MARKERSET, from, to);
+
+			markers = new ArrayList<MarkerKey>(keys.size());
+			MarkerKeyFactory markerKeyFactory = new MarkerKeyFactory();
+			for (String encodedKey : keys) {
+				markers.add(markerKeyFactory.decode(encodedKey));
+			}
+
+			return markers;
+		}
+
+		@Override
+		public Map<Integer, MarkerKey> getIndicesMap(int from, int to) throws IOException {
+
+			Map<Integer, MarkerKey> markers;
+
+			List<String> keys = readVar(cNetCDF.Variables.VAR_MARKERSET, from, to);
+
+			markers = new LinkedHashMap<Integer, MarkerKey>(keys.size());
+			int index = (from >= 0) ? from : 0;
+			MarkerKeyFactory markerKeyFactory = new MarkerKeyFactory();
+			for (String encodedKey : keys) {
+				markers.put(index++, markerKeyFactory.decode(encodedKey));
+			}
+
+			return markers;
+		}
+	}
+
 	@Override
 	public MarkersKeysSource getMarkersKeysSource() throws IOException {
-		throw new UnsupportedOperationException("Not supported yet."); XXX;
+		return new NetCdfMarkersKeysSource(rdNetCdfFile);
 	}
 
 	@Override

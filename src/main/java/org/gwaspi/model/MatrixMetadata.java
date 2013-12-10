@@ -156,10 +156,7 @@ public class MatrixMetadata implements Serializable {
 			String friendlyName,
 			String description,
 			GenotypeEncoding gtEncoding,
-			StudyKey studyKey,
-			int parent1MatrixId,
-			int parent2MatrixId,
-			String inputLocation
+			StudyKey studyKey
 			)
 	{
 		this.key = new MatrixKey(studyKey, Integer.MIN_VALUE);
@@ -174,9 +171,9 @@ public class MatrixMetadata implements Serializable {
 		this.numSamples = Integer.MIN_VALUE;
 		this.numChromosomes = Integer.MIN_VALUE;
 		this.matrixType = "";
-		this.parent1MatrixId = parent1MatrixId;
-		this.parent2MatrixId = parent2MatrixId;
-		this.inputLocation = inputLocation;
+		this.parent1MatrixId = Integer.MIN_VALUE;
+		this.parent2MatrixId = Integer.MIN_VALUE;
+		this.inputLocation = "";
 		this.creationDate = new Date();
 		this.simpleName = generateMatrixNetCDFNameByDate(this.creationDate);
 	}
