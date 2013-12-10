@@ -26,7 +26,6 @@ import org.gwaspi.global.Text;
 import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.netCDF.loader.AbstractNetCDFDataSetDestination;
-import org.gwaspi.netCDF.matrices.MatrixFactory;
 
 public class MatrixDataExtractorNetCDFDataSetDestination extends AbstractNetCDFDataSetDestination {
 
@@ -68,7 +67,7 @@ public class MatrixDataExtractorNetCDFDataSetDestination extends AbstractNetCDFD
 	}
 
 	@Override
-	protected MatrixFactory createMatrixFactory() throws IOException {
+	protected MatrixMetadata createMatrixMetadata() throws IOException {
 
 //		wrSampleSetMap.size();
 //		wrMarkerKeys.size()
@@ -145,18 +144,19 @@ public class MatrixDataExtractorNetCDFDataSetDestination extends AbstractNetCDFD
 		description.append("Markers: ").append(numMarkers);
 		description.append(", Samples: ").append(numSamples);
 
-		return new MatrixFactory(
-				sourceMatrixMetadata.getTechnology(), // technology
+		return new MatrixMetadata(
+				sourceMatrixMetadata.getStudyKey(),
 				matrixFriendlyName,
-				description.toString(), // description
+				sourceMatrixMetadata.getTechnology(),
+				description.toString(),
 				sourceMatrixMetadata.getGenotypeEncoding(), // matrix genotype encoding from the original matrix
 				sourceMatrixMetadata.getStrand(),
 				sourceMatrixMetadata.getHasDictionary(), // has dictionary?
 				numSamples,
 				numMarkers,
 				numChromosomes,
-				sourceMatrixMetadata.getKey(), // orig/parent matrix 1 key
-				null); // orig/parent matrix 2 key
+				sourceMatrixMetadata.getKey().getMatrixId(), // orig/parent matrix 1 key
+				-1); // orig/parent matrix 2 key
 	}
 
 	@Override

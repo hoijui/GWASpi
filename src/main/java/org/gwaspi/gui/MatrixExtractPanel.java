@@ -709,7 +709,7 @@ public class MatrixExtractPanel extends JPanel {
 			putValue(NAME, Text.Trafo.variable);
 		}
 
-		private static String createMarkerIdsList(DataSetSource dataSetSource) {
+		private static String createMarkerIdsList(DataSetSource dataSetSource) throws IOException {
 
 			StringBuilder markerIdsList = new StringBuilder();
 			for (MarkerKey key : dataSetSource.getMarkersKeysSource()) {
@@ -730,7 +730,13 @@ public class MatrixExtractPanel extends JPanel {
 				// Chromosome variables
 				// NOTE The here created String (list of marker IDs) may easily be 10MB+ large!
 				DataSetSource dataSetSource = MatrixFactory.generateMatrixDataSetSource(parentMatrixKey);
-				txtA_MarkersCriteria.setText(createMarkerIdsList(dataSetSource));
+				String markerIdsList;
+				try {
+					markerIdsList = createMarkerIdsList(dataSetSource);
+					txtA_MarkersCriteria.setText(markerIdsList);
+				} catch (IOException ex) {
+					log.error("Failed to create list of marker IDs", ex);
+				}
 			}
 		}
 	}

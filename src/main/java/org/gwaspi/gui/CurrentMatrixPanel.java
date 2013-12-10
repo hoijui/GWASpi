@@ -408,6 +408,9 @@ public class CurrentMatrixPanel extends JPanel {
 
 			this.matrix = matrix;
 			putValue(NAME, Text.Trafo.translateMatrix);
+
+			putValue(SHORT_DESCRIPTION, "Not yet implemented!");
+			setEnabled(false);
 		}
 
 		@Override
@@ -416,7 +419,7 @@ public class CurrentMatrixPanel extends JPanel {
 			} catch (Exception ex) {
 				log.error(null, ex);
 			}
-			throw new UnsupportedOperationException("Not yet implemented!");
+			throw new UnsupportedOperationException("Not yet implemented!"); // TODO implement!
 		}
 	}
 

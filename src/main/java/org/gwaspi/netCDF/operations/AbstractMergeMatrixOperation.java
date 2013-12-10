@@ -69,7 +69,7 @@ public abstract class AbstractMergeMatrixOperation implements MatrixOperation {
 		return workMap;
 	}
 
-	protected SortedMap<ExtendedMarkerKey, MarkerKey> mingleAndSortMarkerSetRaw() {
+	protected SortedMap<ExtendedMarkerKey, MarkerKey> mingleAndSortMarkerSetRaw() throws IOException {
 
 		Map<MarkerKey, ExtendedMarkerKey> workMap = getMatrixMapWithChrAndPosAndMarkerId(dataSetSource1.getMarkersMetadatasSource());
 		workMap.putAll(getMatrixMapWithChrAndPosAndMarkerId(dataSetSource2.getMarkersMetadatasSource()));
@@ -83,7 +83,7 @@ public abstract class AbstractMergeMatrixOperation implements MatrixOperation {
 		return sorted;
 	}
 
-	protected Map<MarkerKey, MarkerMetadata> mingleAndSortMarkerSet() {
+	protected Map<MarkerKey, MarkerMetadata> mingleAndSortMarkerSet() throws IOException {
 
 		SortedMap<ExtendedMarkerKey, MarkerKey> sorted = mingleAndSortMarkerSetRaw();
 

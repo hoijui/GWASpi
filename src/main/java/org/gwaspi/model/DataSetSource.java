@@ -28,23 +28,23 @@ public interface DataSetSource {
 
 	MatrixMetadata getMatrixMetadata() throws IOException;
 
-	MarkersGenotypesSource getMarkersGenotypesSource();
+	MarkersGenotypesSource getMarkersGenotypesSource() throws IOException;
 
-	MarkersMetadataSource getMarkersMetadatasSource();
+	MarkersMetadataSource getMarkersMetadatasSource() throws IOException;
 
-	MarkersKeysSource getMarkersKeysSource();
+	MarkersKeysSource getMarkersKeysSource() throws IOException;
 
 	int getNumChromosomes() throws IOException;
 
-	ChromosomesKeysSource getChromosomesKeysSource();
+	ChromosomesKeysSource getChromosomesKeysSource() throws IOException;
 
-	ChromosomesInfosSource getChromosomesInfosSource();
+	ChromosomesInfosSource getChromosomesInfosSource() throws IOException;
 
 	int getNumSamples() throws IOException;
 
-	SamplesGenotypesSource getSamplesGenotypesSource();
+	SamplesGenotypesSource getSamplesGenotypesSource() throws IOException;
 
-	SamplesInfosSource getSamplesInfosSource();
+	SamplesInfosSource getSamplesInfosSource() throws IOException;
 
-	SamplesKeysSource getSamplesKeysSource();
+	SamplesKeysSource getSamplesKeysSource() throws IOException;
 }

@@ -36,6 +36,7 @@ import javax.persistence.Transient;
 import org.gwaspi.constants.cImport.ImportFormat;
 import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
+import org.gwaspi.global.Config;
 import static org.gwaspi.netCDF.matrices.MatrixFactory.generateMatrixNetCDFNameByDate;
 
 @Entity
@@ -105,9 +106,54 @@ public class MatrixMetadata implements Serializable {
 		this.simpleName = generateMatrixNetCDFNameByDate(this.creationDate);
 	}
 
+	/**
+	 * Full constructor, setting everything directly.
+	 */
 	public MatrixMetadata(
-			String matrixFriendlyName,
+			MatrixKey key,
+			String friendlyName,
 			String simpleName,
+			ImportFormat technology,
+			String gwaspiDBVersion,
+			String description,
+			GenotypeEncoding gtEncoding,
+			StrandType strand,
+			boolean hasDictionary,
+			int numMarkers,
+			int numSamples,
+			int numChromosomes,
+			String matrixType,
+			Date creationDate,
+			int parent1MatrixId,
+			int parent2MatrixId,
+			String inputLocation)
+	{
+		this.key = key;
+		this.friendlyName = friendlyName;
+		this.simpleName = simpleName;
+		this.technology = technology;
+		this.gwaspiDBVersion = gwaspiDBVersion;
+		this.description = description;
+		this.gtEncoding = gtEncoding;
+		this.strand = strand;
+		this.hasDictionary = hasDictionary;
+		this.numMarkers = numMarkers;
+		this.numSamples = numSamples;
+		this.numChromosomes = numChromosomes;
+		this.matrixType = matrixType;
+		this.parent1MatrixId = parent1MatrixId;
+		this.parent2MatrixId = parent2MatrixId;
+		this.inputLocation = inputLocation;
+		this.creationDate = (creationDate == null)
+				? null // XXX should we maybe use new Date() or new Date(0) here?
+				: (Date) creationDate.clone();
+	}
+
+	/**
+	 * TODO
+	 */
+	public MatrixMetadata(
+			String friendlyName,
 			String description,
 			GenotypeEncoding gtEncoding,
 			StudyKey studyKey,
@@ -117,7 +163,7 @@ public class MatrixMetadata implements Serializable {
 			)
 	{
 		this.key = new MatrixKey(studyKey, Integer.MIN_VALUE);
-		this.friendlyName = matrixFriendlyName;
+		this.friendlyName = friendlyName;
 		this.technology = ImportFormat.UNKNOWN;
 		this.gwaspiDBVersion = "";
 		this.description = description;
@@ -135,6 +181,128 @@ public class MatrixMetadata implements Serializable {
 		this.simpleName = generateMatrixNetCDFNameByDate(this.creationDate);
 	}
 
+	/**
+	 * Helper constructor, because a technicality problem
+	 * with the creation date.
+	 */
+	private MatrixMetadata(
+			StudyKey studyKey,
+			String friendlyName,
+			ImportFormat technology,
+			String description,
+			GenotypeEncoding gtEncoding,
+			StrandType strand,
+			boolean hasDictionary,
+			int numMarkers,
+			int numSamples,
+			int numChromosomes,
+			String matrixType,
+			Date creationDate,
+			int parent1MatrixId,
+			int parent2MatrixId,
+			String inputLocation)
+			throws IOException
+	{
+		this(
+				new MatrixKey(studyKey, Integer.MIN_VALUE), // key
+				friendlyName,
+				generateMatrixNetCDFNameByDate(creationDate), // simpleName
+				technology,
+				Config.getConfigValue(Config.PROPERTY_CURRENT_GWASPIDB_VERSION, null), // gwaspiDBVersion
+				description,
+				gtEncoding,
+				strand,
+				hasDictionary,
+				numMarkers,
+				numSamples,
+				numChromosomes,
+				matrixType,
+				creationDate,
+				parent1MatrixId,
+				parent2MatrixId,
+				inputLocation);
+	}
+
+	/**
+	 * Used when creating a new matrix, comprised of other matrices.
+	 * When invoking this, the matrix does not yet have an ID.
+	 * It should be inserted into the DB,
+	 * and at that moment receive a unique ID.
+	 */
+	public MatrixMetadata(
+			StudyKey studyKey,
+			String friendlyName,
+			ImportFormat technology,
+			String description,
+			GenotypeEncoding gtEncoding,
+			StrandType strand,
+			boolean hasDictionary,
+			int numMarkers,
+			int numSamples,
+			int numChromosomes,
+			int parent1MatrixId,
+			int parent2MatrixId)
+			throws IOException
+	{
+		this(
+				studyKey,
+				friendlyName,
+				technology,
+				description,
+				gtEncoding,
+				strand,
+				hasDictionary,
+				numMarkers,
+				numSamples,
+				numChromosomes,
+				"", // matrixType
+				new Date(), // creationDate
+				parent1MatrixId,
+				parent2MatrixId,
+				"Result of the matrix with ID: " + parent1MatrixId);
+	}
+
+	/**
+	 * Used when creating a new matrix, loading the data from an other format.
+	 * When invoking this, the matrix does not yet have an ID.
+	 * It should be inserted into the DB,
+	 * and at that moment receive a unique ID.
+	 */
+	public MatrixMetadata(
+			StudyKey studyKey,
+			String friendlyName,
+			ImportFormat technology,
+			String description,
+			GenotypeEncoding gtEncoding,
+			StrandType strand,
+			boolean hasDictionary,
+			int numMarkers,
+			int numSamples,
+			int numChromosomes,
+			String matrixType)
+			throws IOException
+	{
+		this(
+				studyKey,
+				friendlyName,
+				technology,
+				description,
+				gtEncoding,
+				strand,
+				hasDictionary,
+				numMarkers,
+				numSamples,
+				numChromosomes,
+				matrixType,
+				new Date(), // creationDate
+				-1, // parent1MatrixId
+				-1, // parent2MatrixId
+				""); // inputLocation
+	}
+
+	/**
+	 * Used when loading the matrix from a net-CDF source.
+	 */
 	public MatrixMetadata(
 			MatrixKey key,
 			String friendlyName,
@@ -144,32 +312,31 @@ public class MatrixMetadata implements Serializable {
 			String description,
 			GenotypeEncoding gtEncoding,
 			StrandType strand,
-			boolean hasDictionray,
+			boolean hasDictionary,
 			int numMarkers,
 			int numSamples,
 			int numChromosomes,
 			String matrixType,
 			Date creationDate)
 	{
-		this.key = key;
-		this.friendlyName = friendlyName;
-		this.simpleName = simpleName;
-		this.technology = technology;
-		this.gwaspiDBVersion = gwaspiDBVersion;
-		this.description = description;
-		this.gtEncoding = gtEncoding;
-		this.strand = strand;
-		this.hasDictionary = hasDictionray;
-		this.numMarkers = numMarkers;
-		this.numSamples = numSamples;
-		this.numChromosomes = numChromosomes;
-		this.matrixType = matrixType;
-		this.parent1MatrixId = -1;
-		this.parent2MatrixId = -1;
-		this.inputLocation = "";
-		this.creationDate = (creationDate == null)
-				? null // XXX should we aybe use new Date() or new Date(0) here?
-				: (Date) creationDate.clone();
+		this(
+				key,
+				friendlyName,
+				simpleName,
+				technology,
+				gwaspiDBVersion,
+				description,
+				gtEncoding,
+				strand,
+				hasDictionary,
+				numMarkers,
+				numSamples,
+				numChromosomes,
+				matrixType,
+				creationDate,
+				-1, // parent1MatrixId
+				-1, // parent2MatrixId
+				""); // inputLocation
 	}
 
 	@Override

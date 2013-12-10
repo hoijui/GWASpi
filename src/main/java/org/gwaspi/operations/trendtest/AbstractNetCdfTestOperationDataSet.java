@@ -17,7 +17,6 @@
 
 package org.gwaspi.operations.trendtest;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,12 +26,8 @@ import org.gwaspi.gui.reports.Report_Analysis;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
-import org.gwaspi.model.Study;
-import org.gwaspi.model.StudyKey;
-import org.gwaspi.netCDF.operations.OperationFactory;
 import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
 import ucar.ma2.DataType;
-import ucar.ma2.InvalidRangeException;
 import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFileWriteable;
 
@@ -85,57 +80,45 @@ public abstract class AbstractNetCdfTestOperationDataSet<ET> extends AbstractNet
 
 	@Override
 	public NetcdfFileWriteable generateNetCdfHandler(
-			StudyKey studyKey,
-			String resultOPName,
-			String description,
-			OPType opType,
-			int markerSetSize,
-			int sampleSetSize,
-			int chrSetSize)
+			OperationMetadata operationMetadata)
 			throws IOException
 	{
-		File pathToStudy = new File(Study.constructGTPath(studyKey));
-		if (!pathToStudy.exists()) {
-			org.gwaspi.global.Utils.createFolder(pathToStudy);
-		}
-
 		final int boxDimensions;
 		final String boxDimensionsName;
 		final String ncVariableName;
-		if (opType == OPType.TRENDTEST) {
+		if (operationMetadata.getOperationType() == OPType.TRENDTEST) {
 			boxDimensions = 2;
 			boxDimensionsName = cNetCDF.Dimensions.DIM_2BOXES;
 			ncVariableName = cNetCDF.Association.VAR_OP_MARKERS_ASTrendTestTP;
-		} else if (opType == OPType.ALLELICTEST) {
+		} else if (operationMetadata.getOperationType() == OPType.ALLELICTEST) {
 			boxDimensions = 3;
 			boxDimensionsName = cNetCDF.Dimensions.DIM_3BOXES;
 			ncVariableName = cNetCDF.Association.VAR_OP_MARKERS_ASAllelicAssociationTPOR;
-		} else if (opType == OPType.GENOTYPICTEST) {
+		} else if (operationMetadata.getOperationType() == OPType.GENOTYPICTEST) {
 			boxDimensions = 4;
 			boxDimensionsName = cNetCDF.Dimensions.DIM_4BOXES;
 			ncVariableName = cNetCDF.Association.VAR_OP_MARKERS_ASGenotypicAssociationTP2OR;
-		} else if (opType == OPType.COMBI_ASSOC_TEST) {
+		} else if (operationMetadata.getOperationType() == OPType.COMBI_ASSOC_TEST) {
 			boxDimensions = 4; // FIXME
 			boxDimensionsName = cNetCDF.Dimensions.DIM_4BOXES; // FIXME
 			ncVariableName = cNetCDF.Association.VAR_OP_MARKERS_ASGenotypicAssociationTP2OR; // FIXME
 		} else {
-			throw new IOException("Unsupported operation type " + opType.name());
+			throw new IOException("Unsupported operation type " + operationMetadata.getOperationType().name());
 		}
 
-		int markerStride = cNetCDF.Strides.STRIDE_MARKER_NAME;
-		int sampleStride = cNetCDF.Strides.STRIDE_SAMPLE_NAME;
+		final int markerStride = cNetCDF.Strides.STRIDE_MARKER_NAME;
+		final int sampleStride = cNetCDF.Strides.STRIDE_SAMPLE_NAME;
 
-		File writeFile = new File(pathToStudy, resultOPName + ".nc");
-		NetcdfFileWriteable ncfile = NetcdfFileWriteable.createNew(writeFile.getAbsolutePath(), false);
+		NetcdfFileWriteable ncfile = createNetCdfFile(operationMetadata);
 
 		// global attributes
-		ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_STUDY, studyKey.getId());
-		ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_DESCRIPTION, description);
+		ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_STUDY, operationMetadata.getStudyId());
+		ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_DESCRIPTION, operationMetadata.getDescription());
 
 		// dimensions
-		Dimension setDim = ncfile.addDimension(cNetCDF.Dimensions.DIM_OPSET, markerSetSize);
-		Dimension implicitSetDim = ncfile.addDimension(cNetCDF.Dimensions.DIM_IMPLICITSET, sampleSetSize);
-		Dimension chrSetDim = ncfile.addDimension(cNetCDF.Dimensions.DIM_CHRSET, chrSetSize);
+		Dimension setDim = ncfile.addDimension(cNetCDF.Dimensions.DIM_OPSET, operationMetadata.getOpSetSize());
+		Dimension implicitSetDim = ncfile.addDimension(cNetCDF.Dimensions.DIM_IMPLICITSET, operationMetadata.getImplicitSetSize());
+		Dimension chrSetDim = ncfile.addDimension(cNetCDF.Dimensions.DIM_CHRSET, operationMetadata.getNumChromosomes());
 		Dimension markerStrideDim = ncfile.addDimension(cNetCDF.Dimensions.DIM_MARKERSTRIDE, markerStride);
 		Dimension sampleStrideDim = ncfile.addDimension(cNetCDF.Dimensions.DIM_SAMPLESTRIDE, sampleStride);
 		Dimension boxDim = ncfile.addDimension(boxDimensionsName, boxDimensions);
@@ -177,27 +160,27 @@ public abstract class AbstractNetCdfTestOperationDataSet<ET> extends AbstractNet
 
 		ncfile.addVariable(ncVariableName, DataType.DOUBLE, opSpace);
 
-		ncfile.addVariableAttribute(cNetCDF.Variables.VAR_OPSET, cNetCDF.Attributes.LENGTH, markerSetSize);
+		ncfile.addVariableAttribute(cNetCDF.Variables.VAR_OPSET, cNetCDF.Attributes.LENGTH, operationMetadata.getOpSetSize());
 
 		return ncfile;
 	}
 
 	@Override
-	protected OperationFactory createOperationFactory() throws IOException {
+	protected OperationMetadata createOperationMetadata() throws IOException {
 
 		OperationMetadata markerCensusOP = OperationsList.getOperation(markerCensusOPKey);
 
-		return new OperationFactory(
-				markerCensusOP.getStudyKey(),
+		return new OperationMetadata(
+				markerCensusOP.getParentMatrixKey(), // parent matrix
+				markerCensusOP.getId(), // parent operation ID
 				testName, // friendly name
 				testName + " on " + markerCensusOP.getFriendlyName()
-					+ "\n" + markerCensusOP.getDescription()
-					+ "\nHardy-Weinberg threshold: " + Report_Analysis.FORMAT_SCIENTIFIC.format(hardyWeinbergThreshold), // description
+						+ "\n" + markerCensusOP.getDescription()
+						+ "\nHardy-Weinberg threshold: "
+						+ Report_Analysis.FORMAT_SCIENTIFIC.format(hardyWeinbergThreshold), // description
+				testType,
 				getNumMarkers(),
 				getNumSamples(),
-				getNumChromosomes(),
-				testType,
-				markerCensusOP.getParentMatrixKey(), // Parent matrixId
-				markerCensusOP.getId()); // Parent operationId
+				getNumChromosomes());
 	}
 }

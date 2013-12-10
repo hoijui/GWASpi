@@ -24,7 +24,6 @@ import org.gwaspi.global.Text;
 import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.netCDF.loader.AbstractNetCDFDataSetDestination;
-import org.gwaspi.netCDF.matrices.MatrixFactory;
 
 public class MergeMatrixNetCDFDataSetDestination extends AbstractNetCDFDataSetDestination {
 
@@ -63,7 +62,7 @@ public class MergeMatrixNetCDFDataSetDestination extends AbstractNetCDFDataSetDe
 	}
 
 	@Override
-	protected MatrixFactory createMatrixFactory() throws IOException {
+	protected MatrixMetadata createMatrixMetadata() throws IOException {
 
 		final int numMarkers = getDataSet().getMarkerMetadatas().size();
 		final int numSamples = getDataSet().getSampleInfos().size();
@@ -105,18 +104,19 @@ public class MergeMatrixNetCDFDataSetDestination extends AbstractNetCDFDataSetDe
 		description.append("\nGenotype encoding: ");
 		description.append(gtEncoding.toString());
 
-		return new MatrixFactory(
-				technology, // technology
+		return new MatrixMetadata(
+				rdMatrix1Metadata.getStudyKey(),
 				matrixFriendlyName,
-				description.toString(), // description
-				gtEncoding, // GT encoding
+				technology,
+				description.toString(),
+				gtEncoding,
 				rdMatrix1Metadata.getStrand(),
-				hasDictionary, // has dictionary?
+				hasDictionary,
 				numSamples,
 				numMarkers,
 				numChromosomes,
-				rdMatrix1Metadata.getKey(), // Parent matrix 1 key
-				rdMatrix2Metadata.getKey()); // Parent matrix 2 key
+				rdMatrix1Metadata.getKey().getMatrixId(), // Parent matrix 1 key
+				rdMatrix2Metadata.getKey().getMatrixId()); // Parent matrix 2 key
 	}
 
 	@Override

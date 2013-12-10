@@ -35,11 +35,9 @@ import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.OperationKey;
-import org.gwaspi.model.Study;
-import org.gwaspi.model.StudyKey;
+import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.netCDF.operations.MarkerOperationSet;
 import org.gwaspi.netCDF.operations.NetCdfUtils;
-import org.gwaspi.netCDF.operations.OperationFactory;
 import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
 import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationEntry.Category;
 import ucar.ma2.ArrayByte;
@@ -119,35 +117,22 @@ public class NetCdfMarkerCensusOperationDataSet extends AbstractNetCdfOperationD
 
 	@Override
 	public NetcdfFileWriteable generateNetCdfHandler(
-			StudyKey studyKey,
-			String resultOPName,
-			String description,
-			OPType opType,
-			int markerSetSize,
-			int sampleSetSize,
-			int chrSetSize)
+			OperationMetadata operationMetadata)
 			throws IOException
 	{
-		File pathToStudy = new File(Study.constructGTPath(studyKey));
-		if (!pathToStudy.exists()) {
-			org.gwaspi.global.Utils.createFolder(pathToStudy);
-		}
+		final int gtStride = cNetCDF.Strides.STRIDE_GT;
+		final int markerStride = cNetCDF.Strides.STRIDE_MARKER_NAME;
+		final int sampleStride = cNetCDF.Strides.STRIDE_SAMPLE_NAME;
 
-		int gtStride = cNetCDF.Strides.STRIDE_GT;
-		int markerStride = cNetCDF.Strides.STRIDE_MARKER_NAME;
-		int sampleStride = cNetCDF.Strides.STRIDE_SAMPLE_NAME;
-
-
-		File writeFile = new File(pathToStudy, resultOPName + ".nc");
-		NetcdfFileWriteable ncfile = NetcdfFileWriteable.createNew(writeFile.getAbsolutePath(), false);
+		NetcdfFileWriteable ncfile = createNetCdfFile(operationMetadata);
 
 		// global attributes
-		ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_STUDY, studyKey.getId());
-		ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_DESCRIPTION, description);
+		ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_STUDY, operationMetadata.getStudyId());
+		ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_DESCRIPTION, operationMetadata.getDescription());
 
 		// dimensions
-		Dimension markerSetDim = ncfile.addDimension(cNetCDF.Dimensions.DIM_OPSET, markerSetSize);
-		Dimension implicitSetDim = ncfile.addDimension(cNetCDF.Dimensions.DIM_IMPLICITSET, sampleSetSize);
+		Dimension markerSetDim = ncfile.addDimension(cNetCDF.Dimensions.DIM_OPSET, operationMetadata.getOpSetSize());
+		Dimension implicitSetDim = ncfile.addDimension(cNetCDF.Dimensions.DIM_IMPLICITSET, operationMetadata.getImplicitSetSize());
 		Dimension boxes3Dim = ncfile.addDimension(cNetCDF.Dimensions.DIM_3BOXES, 3);
 		Dimension boxes4Dim = ncfile.addDimension(cNetCDF.Dimensions.DIM_4BOXES, 4);
 		Dimension markerStrideDim = ncfile.addDimension(cNetCDF.Dimensions.DIM_MARKERSTRIDE, markerStride);
@@ -194,7 +179,7 @@ public class NetCdfMarkerCensusOperationDataSet extends AbstractNetCdfOperationD
 		ncfile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_CENSUSCASE, DataType.INT, OP2x3Space);
 		ncfile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_CENSUSCTRL, DataType.INT, OP2x3Space);
 		ncfile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_CENSUSHW, DataType.INT, OP2x3Space);
-		ncfile.addVariableAttribute(cNetCDF.Variables.VAR_OPSET, cNetCDF.Attributes.LENGTH, markerSetSize);
+		ncfile.addVariableAttribute(cNetCDF.Variables.VAR_OPSET, cNetCDF.Attributes.LENGTH, operationMetadata.getOpSetSize());
 
 		// Define Genotype Variables
 		ncfile.addVariable(cNetCDF.Variables.VAR_ALLELES, DataType.CHAR, allelesSpace);
@@ -204,7 +189,7 @@ public class NetCdfMarkerCensusOperationDataSet extends AbstractNetCdfOperationD
 	}
 
 	@Override
-	protected OperationFactory createOperationFactory() throws IOException {
+	protected OperationMetadata createOperationMetadata() throws IOException {
 
 		MatrixMetadata rdMatrixMetadata = MatricesList.getMatrixMetadataById(getReadMatrixKey());
 
@@ -215,8 +200,10 @@ public class NetCdfMarkerCensusOperationDataSet extends AbstractNetCdfOperationD
 			description += "\nCase/Control status read from file: " + phenoFile.getPath();
 			opType = OPType.MARKER_CENSUS_BY_PHENOTYPE;
 		}
-		return new OperationFactory(
-				rdMatrixMetadata.getStudyKey(),
+
+		return new OperationMetadata(
+				getReadMatrixKey(), // parent matrix
+				OperationKey.NULL_ID, // parent operation ID
 				"Genotypes freq. - " + censusName, // friendly name
 				description
 					+ "\nSample missing ratio threshold: " + sampleMissingRatio
@@ -225,12 +212,10 @@ public class NetCdfMarkerCensusOperationDataSet extends AbstractNetCdfOperationD
 					+ "\nDiscard mismatching Markers: " + discardMismatches
 					+ "\nMarkers: " + getNumMarkers()
 					+ "\nSamples: " + getNumSamples(), // description
+				opType,
 				getNumMarkers(),
 				getNumSamples(),
-				0,
-				opType,
-				getReadMatrixKey(), // Parent matrixId
-				-1); // Parent operationId
+				getNumChromosomes());
 	}
 
 //	@Override

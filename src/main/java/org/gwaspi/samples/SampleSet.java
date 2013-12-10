@@ -17,6 +17,7 @@
 
 package org.gwaspi.samples;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.AbstractList;
 import java.util.LinkedHashMap;
@@ -62,6 +63,7 @@ public class SampleSet extends AbstractList<GenotypesList> implements MarkersGen
 	private GenotypesListFactory genotyesListFactory;
 
 	private SampleSet(MatrixMetadata matrixMetadata) throws IOException {
+		
 		this.matrixMetadata = matrixMetadata;
 		this.sampleSetSize = matrixMetadata.getNumMarkers();
 		this.sampleIdSetMap = new LinkedHashMap<SampleKey, Object>();
@@ -87,7 +89,7 @@ public class SampleSet extends AbstractList<GenotypesList> implements MarkersGen
 	}
 
 	public SampleSet(StudyKey studyKey, String netCDFPath, String netCDFName) throws IOException {
-		this(NetCDFDataSetSource.getMatrix(netCDFPath, studyKey, netCDFName));
+		this(NetCDFDataSetSource.loadMatrixMetadata(studyKey, new File(netCDFPath), netCDFName));
 	}
 
 	// ACCESSORS

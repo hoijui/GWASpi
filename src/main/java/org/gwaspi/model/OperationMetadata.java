@@ -70,6 +70,7 @@ public class OperationMetadata implements Serializable {
 	private String description;
 	private int opSetSize;
 	private int implicitSetSize;
+	private int numChromosomes;
 	private Date creationDate;
 
 	protected OperationMetadata() {
@@ -85,58 +86,84 @@ public class OperationMetadata implements Serializable {
 		this.creationDate = new Date();
 	}
 
+//	/**
+//	 * Full constructor, used when restoring from a storage backend.
+//	 */
+//	public OperationMetadata(
+//			int id,
+//			MatrixKey parentMatrixKey,
+//			int parentOperationId,
+//			String name,
+//			String simpleName,
+//			String description,
+//			OPType gtCode,
+//			int opSetSize,
+//			int implicitSetSize,
+//			int numChromosomes,
+//			Date creationDate
+//			)
+//	{
+//		this.key = new OperationKey(parentMatrixKey, id);
+//		this.parentOperationId = parentOperationId;
+//		this.name = name;
+//		this.simpleName = simpleName;
+//		this.description = description;
+//		this.gtCode = gtCode;
+//		this.opSetSize = opSetSize;
+//		this.implicitSetSize = implicitSetSize;
+//		this.numChromosomes = numChromosomes;
+//		this.creationDate = (creationDate == null)
+//				? null : (Date) creationDate.clone();
+//	}
+
 	/**
-	 * Constructor to be used when creating a new operation,
-	 * that will be completed later on.
-	 * @param parentMatrixKey
-	 * @param parentOperationId
-	 * @param opName
-	 * @param description
-	 * @param gtCode
+	 * TODO
 	 */
 	public OperationMetadata(
 			MatrixKey parentMatrixKey,
 			int parentOperationId,
-			String opName,
-			String description,
-			OPType gtCode
-			)
-	{
-		this.key = new OperationKey(parentMatrixKey, Integer.MIN_VALUE);
-		this.parentOperationId = parentOperationId;
-		this.name = opName;
-		this.description = description;
-		this.gtCode = gtCode;
-		this.opSetSize = Integer.MIN_VALUE;
-		this.implicitSetSize = Integer.MIN_VALUE;
-		this.creationDate = new Date();
-		this.simpleName = gtCode.name() + "_" + MatrixFactory.generateMatrixNetCDFNameByDate(creationDate);
-	}
-
-	public OperationMetadata(
-			int id,
-			MatrixKey parentMatrixKey,
-			int parentOperationId,
-			String opName,
-			String simpleName,
+			String name,
 			String description,
 			OPType gtCode,
 			int opSetSize,
 			int implicitSetSize,
-			Date creationDate
+			int numChromosomes
 			)
 	{
-		this.key = new OperationKey(parentMatrixKey, id);
+		this.key = new OperationKey(parentMatrixKey, Integer.MIN_VALUE);
 		this.parentOperationId = parentOperationId;
-		this.name = opName;
-		this.simpleName = simpleName;
+		this.name = name;
 		this.description = description;
 		this.gtCode = gtCode;
 		this.opSetSize = opSetSize;
 		this.implicitSetSize = implicitSetSize;
-		this.creationDate = (creationDate == null)
-				? null : (Date) creationDate.clone();
+		this.numChromosomes = numChromosomes;
+		this.creationDate =  new Date();
+		this.simpleName = gtCode.name() + "_" + MatrixFactory.generateMatrixNetCDFNameByDate(creationDate);
 	}
+
+//	/**
+//	 * Constructor to be used when creating a new operation,
+//	 * that will be completed later on.
+//	 */
+//	public OperationMetadata(
+//			MatrixKey parentMatrixKey,
+//			int parentOperationId,
+//			String name,
+//			String description,
+//			OPType gtCode
+//			)
+//	{
+//		this(
+//				parentMatrixKey,
+//				parentOperationId,
+//				name,
+//				description,
+//				gtCode,
+//				Integer.MIN_VALUE,
+//				Integer.MIN_VALUE,
+//				Integer.MIN_VALUE);
+//	}
 
 	@Override
 	public boolean equals(Object obj) {
@@ -367,6 +394,21 @@ public class OperationMetadata implements Serializable {
 
 	public void setImplicitSetSize(int implicitSetSize) {
 		this.implicitSetSize = implicitSetSize;
+	}
+
+	@Column(
+		name       = "numChromosomes",
+		unique     = false,
+		nullable   = true,
+		insertable = true,
+		updatable  = false
+		)
+	public int getNumChromosomes() {
+		return numChromosomes;
+	}
+
+	public void setNumChromosomes(int numChromosomes) {
+		this.numChromosomes = numChromosomes;
 	}
 
 	@Temporal(TemporalType.DATE)

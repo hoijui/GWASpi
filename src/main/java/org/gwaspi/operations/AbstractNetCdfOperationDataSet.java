@@ -27,7 +27,6 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Queue;
 import org.gwaspi.constants.cNetCDF;
-import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.model.ChromosomeInfo;
 import org.gwaspi.model.ChromosomeKey;
 import org.gwaspi.model.ChromosomesKeysSource;
@@ -42,7 +41,6 @@ import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.SampleKeyFactory;
 import org.gwaspi.model.SamplesKeysSource;
-import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.gwaspi.netCDF.operations.NetCdfUtils;
 import org.gwaspi.netCDF.operations.OperationFactory;
@@ -68,7 +66,7 @@ public abstract class AbstractNetCdfOperationDataSet<ET> implements OperationDat
 	private boolean useAllSamplesFromParent;
 	private boolean useAllChromosomesFromParent;
 	private NetcdfFileWriteable wrNcFile;
-//	private OperationFactory operationFactory;
+	private OperationMetadata operationMetadata;
 	private OperationKey operationKey;
 	private final Queue<ET> writeBuffer;
 	private int alreadyWritten;
@@ -87,7 +85,7 @@ public abstract class AbstractNetCdfOperationDataSet<ET> implements OperationDat
 		this.useAllSamplesFromParent = false;
 		this.useAllChromosomesFromParent = false;
 		this.wrNcFile = null;
-//		this.operationFactory = null;
+		this.operationMetadata = null;
 		this.writeBuffer = new LinkedList<ET>();
 		this.alreadyWritten = 0;
 		this.entriesWriteBufferSize = entriesWriteBufferSize;
@@ -198,55 +196,67 @@ public abstract class AbstractNetCdfOperationDataSet<ET> implements OperationDat
 //		return operationFactory;
 //	}
 
-	protected abstract NetcdfFileWriteable generateNetCdfHandler(
-			StudyKey studyKey,
-			String resultOPName,
-			String description,
-			OPType opType,
-			int markerSetSize,
-			int sampleSetSize,
-			int chrSetSize)
-			throws IOException;
+	protected final NetcdfFileWriteable createNetCdfFile(
+			OperationMetadata operationMetadata)
+			throws IOException
+	{
+		File writeFile = OperationMetadata.generatePathToNetCdfFile(operationMetadata);
+		File parentFolder = writeFile.getParentFile();
+		if (!parentFolder.exists()) {
+			org.gwaspi.global.Utils.createFolder(parentFolder);
+		}
+		NetcdfFileWriteable ncfile = NetcdfFileWriteable.createNew(writeFile.getAbsolutePath(), false);
 
-	protected abstract OperationFactory createOperationFactory() throws IOException;
+		return ncfile;
+	}
+
+	protected abstract OperationMetadata createOperationMetadata() throws IOException;
+
+	protected abstract NetcdfFileWriteable generateNetCdfHandler(
+			OperationMetadata operationMetadata)
+			throws IOException;
 
 	protected NetcdfFileWriteable ensureNcFile() throws IOException {
 
 		if (wrNcFile == null) {
-			resultOperationKey = OperationsList.insertOPMetadata(new OperationMetadata(
-					rdMatrixKey,
-					rdOperationKey,
-					friendlyName,
-					description,
-					opType
-					));
+			if (operationMetadata == null) {
+				operationMetadata = createOperationMetadata();
+				operationKey = OperationsList.insertOPMetadata(operationMetadata);
+			}
 
-			opMetaData = OperationsList.getOperation(resultOperationKey);
-
-			operationFactory = createOperationFactory();
-			NetcdfFileWriteable generateNetCdfHandler = generateNetCdfHandler(null, null, null, OPType.QQPLOT, numMarkers, numMarkers, numSamples);
-
-			wrNcFile = operationFactory.getNetCDFHandler();
+//			resultOperationKey = OperationsList.insertOPMetadata(new OperationMetadata(
+//					rdMatrixKey,
+//					rdOperationKey,
+//					friendlyName,
+//					description,
+//					opType
+//					));
+//
+//			opMetaData = OperationsList.getOperation(resultOperationKey);
+//
+//			operationFactory = createOperationFactory();
+//			wrNcFile = operationFactory.getNetCDFHandler();
+			wrNcFile = generateNetCdfHandler(operationMetadata);
 			wrNcFile.create();
 			log.trace("Done creating netCDF handle: " + wrNcFile.toString());
 		}
 
-		File writeFile = OperationMetadata.generatePathToNetCdfFile(opMetaData);
-		File containingFolder = writeFile.getParentFile();
-		if (!containingFolder.exists()) {
-			org.gwaspi.global.Utils.createFolder(containingFolder);
-		}
+//		File writeFile = OperationMetadata.generatePathToNetCdfFile(opMetaData);
+//		File containingFolder = writeFile.getParentFile();
+//		if (!containingFolder.exists()) {
+//			org.gwaspi.global.Utils.createFolder(containingFolder);
+//		}
+//
+//		NetcdfFileWriteable ncfile = NetcdfFileWriteable.createNew(writeFile.getAbsolutePath(), false);
 
-		NetcdfFileWriteable ncfile = NetcdfFileWriteable.createNew(writeFile.getAbsolutePath(), false);
-
-		return ncfile;XXX; //really create new, above?
+		return wrNcFile;
 	}
 
 	public OperationKey getOperationKey() {
 
-		if (operationKey == null) {
-			operationKey = operationFactory.getResultOperationKey();
-		}
+//		if (operationKey == null) {
+//			ensureNcFile();
+//		}
 
 		return operationKey;
 	}

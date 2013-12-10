@@ -33,6 +33,8 @@ import org.gwaspi.operations.trendtest.NetCdfTrendTestOperationDataSet;
 
 public class OperationFactory {
 
+	private OperationFactory() {}
+
 //	private static final Logger log = LoggerFactory.getLogger(OperationFactory.class);
 
 //	private NetcdfFileWriteable netCDFHandler = null;

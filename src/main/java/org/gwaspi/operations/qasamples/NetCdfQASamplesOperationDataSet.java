@@ -17,7 +17,6 @@
 
 package org.gwaspi.operations.qasamples;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -30,11 +29,9 @@ import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.OperationKey;
+import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.SampleKey;
-import org.gwaspi.model.Study;
-import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.operations.NetCdfUtils;
-import org.gwaspi.netCDF.operations.OperationFactory;
 import org.gwaspi.netCDF.operations.SampleOperationSet;
 import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
 import ucar.ma2.ArrayDouble;
@@ -66,33 +63,21 @@ public class NetCdfQASamplesOperationDataSet extends AbstractNetCdfOperationData
 
 	@Override
 	public NetcdfFileWriteable generateNetCdfHandler(
-			StudyKey studyKey,
-			String resultOPName,
-			String description,
-			OPType opType,
-			int markerSetSize,
-			int sampleSetSize,
-			int chrSetSize)
+			OperationMetadata operationMetadata)
 			throws IOException
 	{
-		File pathToStudy = new File(Study.constructGTPath(studyKey));
-		if (!pathToStudy.exists()) {
-			org.gwaspi.global.Utils.createFolder(pathToStudy);
-		}
+		final int sampleStride = cNetCDF.Strides.STRIDE_SAMPLE_NAME;
+		final int markerStride = cNetCDF.Strides.STRIDE_MARKER_NAME;
 
-		File writeFile = new File(pathToStudy, resultOPName + ".nc");
-		NetcdfFileWriteable ncfile = NetcdfFileWriteable.createNew(writeFile.getAbsolutePath(), false);
+		NetcdfFileWriteable ncfile = createNetCdfFile(operationMetadata);
 
 		// global attributes
-		int sampleStride = cNetCDF.Strides.STRIDE_SAMPLE_NAME;
-		int markerStride = cNetCDF.Strides.STRIDE_MARKER_NAME;
-
-		ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_STUDY, studyKey.getId());
-		ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_DESCRIPTION, description);
+		ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_STUDY, operationMetadata.getStudyId());
+		ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_DESCRIPTION, operationMetadata.getDescription());
 
 		// dimensions
-		Dimension sampleSetDim = ncfile.addDimension(cNetCDF.Dimensions.DIM_OPSET, sampleSetSize);
-		Dimension implicitSetDim = ncfile.addDimension(cNetCDF.Dimensions.DIM_IMPLICITSET, markerSetSize);
+		Dimension sampleSetDim = ncfile.addDimension(cNetCDF.Dimensions.DIM_OPSET, operationMetadata.getOpSetSize());
+		Dimension implicitSetDim = ncfile.addDimension(cNetCDF.Dimensions.DIM_IMPLICITSET, operationMetadata.getImplicitSetSize());
 		Dimension sampleStrideDim = ncfile.addDimension(cNetCDF.Dimensions.DIM_SAMPLESTRIDE, sampleStride);
 		Dimension markerStrideDim = ncfile.addDimension(cNetCDF.Dimensions.DIM_MARKERSTRIDE, markerStride);
 
@@ -116,27 +101,26 @@ public class NetCdfQASamplesOperationDataSet extends AbstractNetCdfOperationData
 		ncfile.addVariable(cNetCDF.Census.VAR_OP_SAMPLES_MISSINGRAT, DataType.DOUBLE, OP1Space);
 		ncfile.addVariable(cNetCDF.Census.VAR_OP_SAMPLES_MISSINGCOUNT, DataType.INT, OP1Space);
 		ncfile.addVariable(cNetCDF.Census.VAR_OP_SAMPLES_HETZYRAT, DataType.DOUBLE, OP1Space);
-		ncfile.addVariableAttribute(cNetCDF.Variables.VAR_OPSET, cNetCDF.Attributes.LENGTH, sampleSetSize);
+		ncfile.addVariableAttribute(cNetCDF.Variables.VAR_OPSET, cNetCDF.Attributes.LENGTH, operationMetadata.getOpSetSize());
 
 		return ncfile;
 	}
 
 	@Override
-	protected OperationFactory createOperationFactory() throws IOException {
+	protected OperationMetadata createOperationMetadata() throws IOException {
 
 		MatrixMetadata rdMatrixMetadata = MatricesList.getMatrixMetadataById(getReadMatrixKey());
 
-		return new OperationFactory(
-				rdMatrixMetadata.getStudyKey(),
+		return new OperationMetadata(
+				getReadMatrixKey(), // parent matrix
+				OperationKey.NULL_ID, // parent operation ID
 				"Sample QA", // friendly name
 				"Sample census on " + rdMatrixMetadata.getFriendlyName()
 						+ "\nSamples: " + getNumSamples(), // description
+				OPType.SAMPLE_QA,
 				getNumSamples(),
 				getNumMarkers(),
-				0,
-				OPType.SAMPLE_QA,
-				getReadMatrixKey(), // Parent matrixId
-				-1); // Parent operationId
+				getNumChromosomes());
 	}
 
 	@Override

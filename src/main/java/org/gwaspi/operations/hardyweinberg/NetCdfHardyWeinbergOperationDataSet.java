@@ -17,7 +17,6 @@
 
 package org.gwaspi.operations.hardyweinberg;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -33,11 +32,9 @@ import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.constants.cNetCDF.HardyWeinberg;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.OperationKey;
-import org.gwaspi.model.Study;
-import org.gwaspi.model.StudyKey;
+import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.netCDF.operations.MarkerOperationSet;
 import org.gwaspi.netCDF.operations.NetCdfUtils;
-import org.gwaspi.netCDF.operations.OperationFactory;
 import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
 import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationEntry.Category;
 import ucar.ma2.ArrayDouble;
@@ -108,34 +105,21 @@ public class NetCdfHardyWeinbergOperationDataSet extends AbstractNetCdfOperation
 
 	@Override
 	public NetcdfFileWriteable generateNetCdfHandler(
-			StudyKey studyKey,
-			String resultOPName,
-			String description,
-			OPType opType,
-			int markerSetSize,
-			int sampleSetSize,
-			int chrSetSize)
+			OperationMetadata operationMetadata)
 			throws IOException
 	{
-		File pathToStudy = new File(Study.constructGTPath(studyKey));
-		if (!pathToStudy.exists()) {
-			org.gwaspi.global.Utils.createFolder(pathToStudy);
-		}
+		final int markerStride = cNetCDF.Strides.STRIDE_MARKER_NAME;
+		final int sampleStride = cNetCDF.Strides.STRIDE_SAMPLE_NAME;
 
-		int markerStride = cNetCDF.Strides.STRIDE_MARKER_NAME;
-		int sampleStride = cNetCDF.Strides.STRIDE_SAMPLE_NAME;
-
-//		File writeFile = new File(pathToStudy, resultOPName + ".nc");
-		File writeFile = new File(pathToStudy, matrixName + ".nc");
-		NetcdfFileWriteable ncfile = NetcdfFileWriteable.createNew(writeFile.getAbsolutePath(), false);
+		NetcdfFileWriteable ncfile = createNetCdfFile(operationMetadata);
 
 		// global attributes
-		ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_STUDY, studyKey.getId());
-		ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_DESCRIPTION, description);
+		ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_STUDY, operationMetadata.getStudyId());
+		ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_DESCRIPTION, operationMetadata.getDescription());
 
 		// dimensions
-		Dimension setDim = ncfile.addDimension(cNetCDF.Dimensions.DIM_OPSET, markerSetSize);
-		Dimension implicitSetDim = ncfile.addDimension(cNetCDF.Dimensions.DIM_IMPLICITSET, sampleSetSize);
+		Dimension setDim = ncfile.addDimension(cNetCDF.Dimensions.DIM_OPSET, operationMetadata.getOpSetSize());
+		Dimension implicitSetDim = ncfile.addDimension(cNetCDF.Dimensions.DIM_IMPLICITSET, operationMetadata.getImplicitSetSize());
 		Dimension markerStrideDim = ncfile.addDimension(cNetCDF.Dimensions.DIM_MARKERSTRIDE, markerStride);
 		Dimension sampleStrideDim = ncfile.addDimension(cNetCDF.Dimensions.DIM_SAMPLESTRIDE, sampleStride);
 		Dimension boxesDim = ncfile.addDimension(cNetCDF.Dimensions.DIM_4BOXES, 2);
@@ -173,26 +157,25 @@ public class NetCdfHardyWeinbergOperationDataSet extends AbstractNetCdfOperation
 		ncfile.addVariable(cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWHETZY_CTRL, DataType.DOUBLE, OP2Space);
 		ncfile.addVariable(cNetCDF.HardyWeinberg.VAR_OP_MARKERS_HWHETZY_ALT, DataType.DOUBLE, OP2Space);
 
-		ncfile.addVariableAttribute(cNetCDF.Variables.VAR_OPSET, cNetCDF.Attributes.LENGTH, markerSetSize);
+		ncfile.addVariableAttribute(cNetCDF.Variables.VAR_OPSET, cNetCDF.Attributes.LENGTH, operationMetadata.getOpSetSize());
 
 		return ncfile;
 	}
 
 	@Override
-	protected OperationFactory createOperationFactory() throws IOException {
+	protected OperationMetadata createOperationMetadata() throws IOException {
 
-		return new OperationFactory(
-				markerCensusOperationKey.getParentMatrixKey().getStudyKey(),
+		return new OperationMetadata(
+				markerCensusOperationKey.getParentMatrixKey(), // parent matrixId
+				markerCensusOperationKey.getId(), // parent operationId
 				"Hardy-Weinberg_" + hardyWeinbergName, // friendly name
 				"Hardy-Weinberg test on Samples marked as controls (only females for the X chromosome)"
 					+ "\nMarkers: " + getNumMarkers() + ""
 					+ "\nSamples: " + getNumSamples(), // description
+				OPType.HARDY_WEINBERG, // operationType
 				getNumMarkers(),
 				getNumSamples(),
-				0,
-				OPType.HARDY_WEINBERG,
-				markerCensusOperationKey.getParentMatrixKey(), // Parent matrixId
-				markerCensusOperationKey.getId()); // Parent operationId
+				getNumChromosomes());
 	}
 
 	@Override
@@ -206,7 +189,7 @@ public class NetCdfHardyWeinbergOperationDataSet extends AbstractNetCdfOperation
 	}
 
 	public Collection<HardyWeinbergOperationEntry> getEntriesControl() {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		throw new UnsupportedOperationException("Not supported yet."); XXX;
 	}
 
 	private static final class EntryBuffer<ET> {

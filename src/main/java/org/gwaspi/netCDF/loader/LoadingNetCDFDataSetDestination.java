@@ -24,9 +24,9 @@ import java.util.List;
 import org.gwaspi.constants.cImport.ImportFormat;
 import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import org.gwaspi.global.Text;
+import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleKey;
-import org.gwaspi.netCDF.matrices.MatrixFactory;
 
 /**
  * Used when loading a data-set from an external source
@@ -58,7 +58,7 @@ public class LoadingNetCDFDataSetDestination extends AbstractNetCDFDataSetDestin
 	}
 
 	@Override
-	protected MatrixFactory createMatrixFactory() throws IOException {
+	protected MatrixMetadata createMatrixMetadata() throws IOException {
 
 		final int numMarkers = getDataSet().getMarkerMetadatas().size();
 		final int numSamples = getDataSet().getSampleInfos().size();
@@ -90,10 +90,10 @@ public class LoadingNetCDFDataSetDestination extends AbstractNetCDFDataSetDestin
 //			description.append(" (Sample Info file)\n");
 //		}
 
-		return new MatrixFactory(
+		return new MatrixMetadata(
 				loadDescription.getStudyKey(),
-				loadDescription.getFormat(),
 				loadDescription.getFriendlyName(),
+				loadDescription.getFormat(),
 				description.toString(), // description
 				loadDescription.getGtCode(),
 				(gtLoader.getMatrixStrand() != null) // NOTE getMatrixStrand() is only used here!

@@ -17,6 +17,7 @@
 
 package org.gwaspi.netCDF.loader;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -24,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
+import org.gwaspi.global.Config;
 import org.gwaspi.gui.StartGWASpi;
 import org.gwaspi.model.ChromosomeInfo;
 import org.gwaspi.model.ChromosomeKey;
@@ -34,15 +36,16 @@ import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleInfoList;
 import org.gwaspi.model.SampleKey;
-import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.gwaspi.netCDF.operations.NetCdfUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.ArrayByte;
 import ucar.ma2.ArrayChar;
 import ucar.ma2.ArrayInt;
+import ucar.ma2.DataType;
 import ucar.ma2.Index;
 import ucar.ma2.InvalidRangeException;
+import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFileWriteable;
 
 public abstract class AbstractNetCDFDataSetDestination extends AbstractDataSetDestination {
@@ -53,7 +56,7 @@ public abstract class AbstractNetCDFDataSetDestination extends AbstractDataSetDe
 	private MatrixKey resultMatrixKey;
 //	private int curAlleleSampleIndex;
 	private int curAllelesMarkerIndex;
-	private MatrixFactory matrixFactory;
+	private MatrixMetadata matrixMetadata;
 	private NetcdfFileWriteable ncfile;
 	private Boolean alleleLoadPerSample;
 	/** This is only used when alleleLoadPerSample == FALSE */
@@ -75,7 +78,6 @@ public abstract class AbstractNetCDFDataSetDestination extends AbstractDataSetDe
 
 	@Override
 	public void init() throws IOException {
-
 		resultMatrixKey = null;
 	}
 
@@ -86,7 +88,7 @@ public abstract class AbstractNetCDFDataSetDestination extends AbstractDataSetDe
 		SampleInfoList.insertSampleInfos(getDataSet().getSampleInfos());
 	}
 
-	protected abstract MatrixFactory createMatrixFactory() throws IOException;
+	protected abstract MatrixMetadata createMatrixMetadata() throws IOException;
 
 	/**
 	 * @return the strand-flag applicable to all markers,
@@ -94,18 +96,149 @@ public abstract class AbstractNetCDFDataSetDestination extends AbstractDataSetDe
 	 */
 	protected abstract String getStrandFlag();
 
+	public static NetcdfFileWriteable generateNetcdfHandler(MatrixMetadata matrixMetadata)
+			throws InvalidRangeException, IOException
+	{
+		int gtStride = cNetCDF.Strides.STRIDE_GT;
+		int markerStride = cNetCDF.Strides.STRIDE_MARKER_NAME;
+		int sampleStride = cNetCDF.Strides.STRIDE_SAMPLE_NAME;
+//		int strandStride = cNetCDF.Strides.STRIDE_STRAND;
+
+		File writeFile = MatrixMetadata.generatePathToNetCdfFile(matrixMetadata);
+		File writeFileParentFolder = writeFile.getParentFile();
+		if (!writeFileParentFolder.exists()) {
+			org.gwaspi.global.Utils.createFolder(writeFileParentFolder);
+		}
+		NetcdfFileWriteable ncfile = NetcdfFileWriteable.createNew(writeFile.getAbsolutePath(), false);
+
+		// global attributes
+		ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_STUDY, matrixMetadata.getStudyKey().getId());
+		ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_FRIENDLY_NAME, matrixMetadata.getFriendlyName().toString());
+		ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_TECHNOLOGY, matrixMetadata.getTechnology().toString());
+		String versionNb = Config.getConfigValue(Config.PROPERTY_CURRENT_GWASPIDB_VERSION, null);
+		ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_GWASPIDB_VERSION, versionNb);
+		ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_DESCRIPTION, matrixMetadata.getDescription());
+		ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_STRAND, matrixMetadata.getStrand().toString());
+		ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_HAS_DICTIONARY, matrixMetadata.getHasDictionary() ? 1 : 0);
+		ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_MATRIX_TYPE, matrixMetadata.getMatrixType());
+		ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_CREATION_DATE, matrixMetadata.getCreationDate().getTime());
+
+		// dimensions
+		Dimension samplesDim = ncfile.addDimension(cNetCDF.Dimensions.DIM_SAMPLESET, 0, true, true, false);
+		Dimension markersDim = ncfile.addDimension(cNetCDF.Dimensions.DIM_MARKERSET, matrixMetadata.getNumMarkers());
+		Dimension chrSetDim = ncfile.addDimension(cNetCDF.Dimensions.DIM_CHRSET, matrixMetadata.getNumChromosomes());
+		Dimension gtStrideDim = ncfile.addDimension(cNetCDF.Dimensions.DIM_GTSTRIDE, gtStride);
+		Dimension markerStrideDim = ncfile.addDimension(cNetCDF.Dimensions.DIM_MARKERSTRIDE, markerStride);
+		Dimension sampleStrideDim = ncfile.addDimension(cNetCDF.Dimensions.DIM_SAMPLESTRIDE, sampleStride);
+//		Dimension dim32 = ncfile.addDimension(cNetCDF.Dimensions.DIM_32, 32);
+//		Dimension dim16 = ncfile.addDimension(cNetCDF.Dimensions.DIM_16, 16);
+		Dimension dim8 = ncfile.addDimension(cNetCDF.Dimensions.DIM_8, 8);
+		Dimension dim4 = ncfile.addDimension(cNetCDF.Dimensions.DIM_4, 4);
+		Dimension dim2 = ncfile.addDimension(cNetCDF.Dimensions.DIM_2, 2);
+		Dimension dim1 = ncfile.addDimension(cNetCDF.Dimensions.DIM_1, 1);
+
+		// GENOTYPE SPACES
+		List<Dimension> genotypeSpace = new ArrayList<Dimension>();
+		genotypeSpace.add(samplesDim);
+		genotypeSpace.add(markersDim);
+		genotypeSpace.add(gtStrideDim);
+
+		// MARKER SPACES
+		List<Dimension> markerNameSpace = new ArrayList<Dimension>();
+		markerNameSpace.add(markersDim);
+		markerNameSpace.add(markerStrideDim);
+
+		List<Dimension> markerPositionSpace = new ArrayList<Dimension>();
+		markerPositionSpace.add(markersDim);
+
+		List<Dimension> markerPropertySpace8 = new ArrayList<Dimension>();
+		markerPropertySpace8.add(markersDim);
+		markerPropertySpace8.add(dim8);
+
+		List<Dimension> markerPropertySpace4 = new ArrayList<Dimension>();
+		markerPropertySpace4.add(markersDim);
+		markerPropertySpace4.add(dim4);
+
+		List<Dimension> markerPropertySpace2 = new ArrayList<Dimension>();
+		markerPropertySpace2.add(markersDim);
+		markerPropertySpace2.add(dim2);
+
+		// CHROMOSOME SPACES
+		List<Dimension> chrSetSpace = new ArrayList<Dimension>();
+		chrSetSpace.add(chrSetDim);
+		chrSetSpace.add(dim8);
+
+		List<Dimension> chrInfoSpace = new ArrayList<Dimension>();
+		chrInfoSpace.add(chrSetDim);
+		chrInfoSpace.add(dim4);
+
+		// SAMPLE SPACES
+		List<Dimension> sampleSetSpace = new ArrayList<Dimension>();
+		sampleSetSpace.add(samplesDim);
+		sampleSetSpace.add(sampleStrideDim);
+
+		// OTHER SPACES
+		List<Dimension> gtEncodingSpace = new ArrayList<Dimension>();
+		gtEncodingSpace.add(dim1);
+		gtEncodingSpace.add(dim8);
+
+		// Define Marker Variables
+		ncfile.addVariable(cNetCDF.Variables.VAR_MARKERSET, DataType.CHAR, markerNameSpace);
+		ncfile.addVariableAttribute(cNetCDF.Variables.VAR_MARKERSET, cNetCDF.Attributes.LENGTH, matrixMetadata.getNumMarkers());
+
+		ncfile.addVariable(cNetCDF.Variables.VAR_MARKERS_RSID, DataType.CHAR, markerNameSpace);
+		ncfile.addVariable(cNetCDF.Variables.VAR_MARKERS_CHR, DataType.CHAR, markerPropertySpace8);
+		ncfile.addVariable(cNetCDF.Variables.VAR_MARKERS_POS, DataType.INT, markerPositionSpace);
+		ncfile.addVariable(cNetCDF.Variables.VAR_MARKERS_BASES_DICT, DataType.CHAR, markerPropertySpace2);
+
+		// Define Chromosome Variables
+		ncfile.addVariable(cNetCDF.Variables.VAR_CHR_IN_MATRIX, DataType.CHAR, chrSetSpace);
+		ncfile.addVariable(cNetCDF.Variables.VAR_CHR_INFO, DataType.INT, chrInfoSpace);
+
+		// Define Sample Variables
+		ncfile.addVariable(cNetCDF.Variables.VAR_SAMPLESET, DataType.CHAR, sampleSetSpace);
+		ncfile.addVariableAttribute(cNetCDF.Variables.VAR_SAMPLESET, cNetCDF.Attributes.LENGTH, matrixMetadata.getNumSamples());
+
+		// Define Genotype Variables
+		ncfile.addVariable(cNetCDF.Variables.VAR_GENOTYPES, DataType.BYTE, genotypeSpace);
+		ncfile.addVariableAttribute(cNetCDF.Variables.VAR_GENOTYPES, cNetCDF.Attributes.GLOB_STRAND, "");
+		ncfile.addVariable(cNetCDF.Variables.VAR_GT_STRAND, DataType.CHAR, markerPropertySpace4);
+
+		// ENCODING VARIABLE
+		ncfile.addVariable(cNetCDF.Variables.GLOB_GTENCODING, DataType.CHAR, gtEncodingSpace);
+
+		// CHECK IF JVM IS 32/64 bits to use LFS or not
+		int JVMbits = Integer.parseInt(System.getProperty("sun.arch.data.model", "32"));
+		if (JVMbits == 64) {
+			ncfile.setLargeFile(true);
+		}
+		ncfile.setFill(true);
+
+		return ncfile;
+	}
+
 	@Override
 	public void finishedLoadingMarkerMetadatas() throws IOException {
 		super.finishedLoadingMarkerMetadatas();
 
 		try {
-			matrixFactory = createMatrixFactory();
-			MatrixMetadata resultMatrixMetadata = matrixFactory.getResultMatrixMetadata();
+			matrixMetadata = createMatrixMetadata();
 
-			getDataSet().setMatrixMetadata(resultMatrixMetadata);
+			if ((matrixMetadata.getNumSamples() > 0)
+					&& (matrixMetadata.getNumMarkers() > 0))
+			{
+				throw new IllegalArgumentException();
+			}
+
+			resultMatrixKey = MatricesList.insertMatrixMetadata(matrixMetadata);
+			try {
+				ncfile = generateNetcdfHandler(matrixMetadata);
+			} catch (InvalidRangeException ex) {
+				throw new IOException(ex);
+			}
+			getDataSet().setMatrixMetadata(matrixMetadata);
 
 			// create the NetCDF file
-			ncfile = matrixFactory.getNetCDFHandler();
 			ncfile.create();
 			log.trace("Done creating netCDF handle: " + ncfile.toString());
 
@@ -113,7 +246,7 @@ public abstract class AbstractNetCDFDataSetDestination extends AbstractDataSetDe
 			List<SampleKey> sampleKeys = extractKeys(sampleInfos);
 			saveSamplesMetadata(sampleKeys, ncfile);
 
-			boolean hasDictionary = resultMatrixMetadata.getHasDictionary();
+			boolean hasDictionary = matrixMetadata.getHasDictionary();
 			saveMarkersMetadata(getDataSet().getMarkerMetadatas().values(), hasDictionary, getStrandFlag(), ncfile);
 		} catch (InvalidRangeException ex) {
 			throw new IOException(ex);
@@ -292,16 +425,15 @@ public abstract class AbstractNetCDFDataSetDestination extends AbstractDataSetDe
 			int[] origin = new int[] {0, 0};
 			ncfile.write(cNetCDF.Variables.GLOB_GTENCODING, origin, guessedGTCodeAC);
 
-			MatrixMetadata matrixMetaData = matrixFactory.getResultMatrixMetadata();
-			StringBuilder descSB = new StringBuilder(matrixMetaData.getDescription());
-			descSB.append("Genotype encoding: ");
-			descSB.append(getGuessedGTCode().toString());
-			matrixMetaData.setDescription(descSB.toString());
-			MatricesList.updateMatrix(matrixMetaData);
+			StringBuilder description = new StringBuilder(matrixMetadata.getDescription());
+			description.append("Genotype encoding: ");
+			description.append(getGuessedGTCode().toString());
+			matrixMetadata.setDescription(description.toString());
+			MatricesList.updateMatrix(matrixMetadata);
 
 			// CLOSE FILE
 			ncfile.close();
-			resultMatrixKey = MatrixKey.valueOf(matrixMetaData);
+//			resultMatrixKey = MatrixKey.valueOf(matrixMetadata);
 		} catch (InvalidRangeException ex) {
 			throw new IOException(ex);
 		}

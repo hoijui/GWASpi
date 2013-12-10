@@ -31,14 +31,12 @@ import org.gwaspi.model.ChromosomesKeysSource;
 import org.gwaspi.model.MarkersGenotypesSource;
 import org.gwaspi.model.MarkersKeysSource;
 import org.gwaspi.model.MarkersMetadataSource;
-import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SamplesGenotypesSource;
 import org.gwaspi.model.SamplesInfosSource;
 import org.gwaspi.model.SamplesKeysSource;
 import org.gwaspi.model.StudyKey;
-import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.gwaspi.samples.SampleSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,7 +54,9 @@ public class NetCDFDataSetSource implements DataSetSource {
 	private static final Logger LOG
 			= LoggerFactory.getLogger(NetCDFDataSetSource.class);
 
+	private final StudyKey studyKey;
 	private final File netCDFpath;
+	private MatrixKey matrixKey;
 	private MatrixMetadata matrixMetadata;
 //	private MatrixKey matrixKey;
 //	private MarkerSet markerSet;
@@ -70,24 +70,27 @@ public class NetCDFDataSetSource implements DataSetSource {
 //		this.sampleSet = new SampleSet(matrixKey);
 //	}
 
-	public NetCDFDataSetSource(File netCDFpath) throws IOException {
+	public NetCDFDataSetSource(StudyKey studyKey, File netCDFpath) throws IOException {
 
+		this.studyKey = studyKey;
 		this.netCDFpath = netCDFpath;
+		this.matrixKey = null;
 		this.matrixMetadata = null;
-//		this.markerSet = new MarkerSet(matrixKey);
-//		this.sampleSet = new SampleSet(matrixKey);
 	}
 
 	private void ensureMatrixMetadata() throws IOException {
 
 		if (matrixMetadata == null) {
-			matrixMetadata = loadMatrixMetadata(netCDFpath);
+			matrixMetadata = loadMatrixMetadata(studyKey, netCDFpath, null);
+			matrixKey = MatrixKey.valueOf(matrixMetadata);
 		}
 	}
 
 	@Override
 	public MatrixMetadata getMatrixMetadata() throws IOException {
-		return getMatrix(matrixKey / netCDFpath);
+
+		ensureMatrixMetadata();
+		return matrixMetadata;
 	}
 
 //	private static MatrixMetadata completeMatricesTable(MatrixMetadata toCompleteMatrixMetadata) throws IOException {
@@ -109,7 +112,7 @@ public class NetCDFDataSetSource implements DataSetSource {
 	 * from a GWASpi NetCdf file ("*.nc") that contains matrix data.
 	 * @param newMatrixFriendlyName may be null
 	 */
-	public static MatrixMetadata getMatrix(
+	public static MatrixMetadata loadMatrixMetadata(
 			StudyKey studyKey,
 			File netCDFFile,
 			String newMatrixFriendlyName)
@@ -223,56 +226,61 @@ public class NetCDFDataSetSource implements DataSetSource {
 	}
 
 	@Override
-	public MarkersGenotypesSource getMarkersGenotypesSource() {
+	public MarkersGenotypesSource getMarkersGenotypesSource() throws IOException {
 
-	private MatrixKey matrixKey;
-	private MarkerSet markerSet;
-	private SampleSet sampleSet;
-		return sampleSet;
+//		return sampleSet;
+		ensureMatrixMetadata();
+		return new SampleSet(matrixKey);
 	}
 
 	@Override
-	public MarkersMetadataSource getMarkersMetadatasSource() {
-		throw new UnsupportedOperationException("Not supported yet.");
+	public MarkersMetadataSource getMarkersMetadatasSource() throws IOException {
+		throw new UnsupportedOperationException("Not supported yet."); XXX;
 	}
 
 	@Override
 	public int getNumMarkers() throws IOException {
-		return getDimension(cNetCDF.Dimensions.DIM_MARKERSET);
+
+		ensureMatrixMetadata();
+		return matrixMetadata.getNumMarkers();
 	}
 
 	@Override
 	public int getNumChromosomes() throws IOException {
-		return getDimension(cNetCDF.Dimensions.DIM_CHRSET);
+
+		ensureMatrixMetadata();
+		return matrixMetadata.getNumChromosomes();
 	}
 
 	@Override
 	public int getNumSamples() throws IOException {
-		return getDimension(cNetCDF.Dimensions.DIM_SAMPLESET);
+
+		ensureMatrixMetadata();
+		return matrixMetadata.getNumSamples();
 	}
 
-	private int getDimension(String dimensionVar) throws IOException {
-
-		int dimension = Integer.MIN_VALUE;
-
-		NetcdfFile ncfile = null;
-		try {
-			ncfile = NetcdfFile.open(pathToMatrix);
-
-			Dimension setDim = ncfile.findDimension(dimensionVar);
-			dimension = setDim.getLength();
-		} finally {
-			if (null != ncfile) {
-				try {
-					ncfile.close();
-				} catch (IOException ex) {
-					LOG.warn("Cannot close file: " + ncfile, ex);
-				}
-			}
-		}
-
-		return dimension;
-	}
+//	private int getDimension(String dimensionVar) throws IOException {
+//
+//		int dimension = Integer.MIN_VALUE;
+//
+//		NetcdfFile ncfile = null;
+//		try {
+//			ncfile = NetcdfFile.open(pathToMatrix);
+//
+//			Dimension setDim = ncfile.findDimension(dimensionVar);
+//			dimension = setDim.getLength();
+//		} finally {
+//			if (null != ncfile) {
+//				try {
+//					ncfile.close();
+//				} catch (IOException ex) {
+//					LOG.warn("Cannot close file: " + ncfile, ex);
+//				}
+//			}
+//		}
+//
+//		return dimension;
+//	}
 
 
 	private static final class NetCdfChromosomesKeysSource extends ArrayList<ChromosomeKey> implements ChromosomesKeysSource {
@@ -282,7 +290,11 @@ public class NetCDFDataSetSource implements DataSetSource {
 	}
 
 	@Override
-	public ChromosomesKeysSource getChromosomesKeysSource() {
+	public ChromosomesKeysSource getChromosomesKeysSource() throws IOException {
+
+		ensureMatrixMetadata();
+		MarkerSet markerSet = new MarkerSet(matrixKey);
+
 		NetCdfChromosomesKeysSource chrInfSrc = new NetCdfChromosomesKeysSource();
 		markerSet.initFullMarkerIdSetMap(); // XXX may not always be required
 		chrInfSrc.addAll(markerSet.getChrInfoSetMap().keySet());
@@ -291,7 +303,11 @@ public class NetCDFDataSetSource implements DataSetSource {
 	}
 
 	@Override
-	public ChromosomesInfosSource getChromosomesInfosSource() {
+	public ChromosomesInfosSource getChromosomesInfosSource() throws IOException {
+
+		ensureMatrixMetadata();
+		MarkerSet markerSet = new MarkerSet(matrixKey);
+
 		NetCdfChromosomesInfosSource chrInfSrc = new NetCdfChromosomesInfosSource();
 		markerSet.initFullMarkerIdSetMap(); // XXX may not always be required
 		chrInfSrc.addAll(markerSet.getChrInfoSetMap().values());
@@ -300,22 +316,24 @@ public class NetCDFDataSetSource implements DataSetSource {
 	}
 
 	@Override
-	public MarkersKeysSource getMarkersKeysSource() {
-		throw new UnsupportedOperationException("Not supported yet.");
+	public MarkersKeysSource getMarkersKeysSource() throws IOException {
+		throw new UnsupportedOperationException("Not supported yet."); XXX;
 	}
 
 	@Override
-	public SamplesGenotypesSource getSamplesGenotypesSource() {
-		return markerSet;
+	public SamplesGenotypesSource getSamplesGenotypesSource() throws IOException {
+
+		ensureMatrixMetadata();
+		return new MarkerSet(matrixKey);
 	}
 
 	@Override
-	public SamplesInfosSource getSamplesInfosSource() {
-		throw new UnsupportedOperationException("Not supported yet.");
+	public SamplesInfosSource getSamplesInfosSource() throws IOException {
+		throw new UnsupportedOperationException("Not supported yet."); XXX;
 	}
 
 	@Override
-	public SamplesKeysSource getSamplesKeysSource() {
-		throw new UnsupportedOperationException("Not supported yet.");
+	public SamplesKeysSource getSamplesKeysSource() throws IOException {
+		throw new UnsupportedOperationException("Not supported yet."); XXX;
 	}
 }

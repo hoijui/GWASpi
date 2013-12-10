@@ -25,7 +25,6 @@ import org.gwaspi.global.Text;
 import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.netCDF.loader.AbstractNetCDFDataSetDestination;
-import org.gwaspi.netCDF.matrices.MatrixFactory;
 
 public class MatrixGenotypesFlipperNetCDFDataSetDestination extends AbstractNetCDFDataSetDestination {
 
@@ -47,7 +46,7 @@ public class MatrixGenotypesFlipperNetCDFDataSetDestination extends AbstractNetC
 	}
 
 	@Override
-	protected MatrixFactory createMatrixFactory() throws IOException {
+	protected MatrixMetadata createMatrixMetadata() throws IOException {
 
 		final int numMarkers = getDataSet().getMarkerMetadatas().size();
 		final int numSamples = getDataSet().getSampleInfos().size();
@@ -72,18 +71,19 @@ public class MatrixGenotypesFlipperNetCDFDataSetDestination extends AbstractNetC
 		description.append("Markers: ").append(numMarkers);
 		description.append(", Samples: ").append(numSamples);
 
-		return new MatrixFactory(
-				sourceMatrixMetadata.getTechnology(), // technology
+		return new MatrixMetadata(
+				sourceMatrixMetadata.getStudyKey(),
 				matrixFriendlyName,
-				description.toString(), // description
+				sourceMatrixMetadata.getTechnology(),
+				description.toString(),
 				sourceMatrixMetadata.getGenotypeEncoding(), // matrix genotype encoding from the original matrix
 				StrandType.valueOf("FLP"), // FIXME this will fail at runtime
 				sourceMatrixMetadata.getHasDictionary(), // has dictionary?
 				numSamples,
 				numMarkers,
 				numChromosomes,
-				sourceMatrixMetadata.getKey(), // orig/parent matrix 1 key
-				null); // orig/parent matrix 2 key
+				sourceMatrixMetadata.getKey().getMatrixId(), // orig/parent matrix 1 key
+				-1); // orig/parent matrix 2 key
 	}
 
 	@Override

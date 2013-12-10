@@ -17,7 +17,6 @@
 
 package org.gwaspi.operations.qamarkers;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -32,11 +31,9 @@ import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.OperationKey;
-import org.gwaspi.model.Study;
-import org.gwaspi.model.StudyKey;
+import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.netCDF.operations.MarkerOperationSet;
 import org.gwaspi.netCDF.operations.NetCdfUtils;
-import org.gwaspi.netCDF.operations.OperationFactory;
 import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
 import ucar.ma2.ArrayByte;
 import ucar.ma2.ArrayDouble;
@@ -75,34 +72,22 @@ public class NetCdfQAMarkersOperationDataSet extends AbstractNetCdfOperationData
 
 	@Override
 	public NetcdfFileWriteable generateNetCdfHandler(
-			StudyKey studyKey,
-			String resultOPName,
-			String description,
-			OPType opType,
-			int markerSetSize,
-			int sampleSetSize,
-			int chrSetSize)
+			OperationMetadata operationMetadata)
 			throws IOException
 	{
-		File pathToStudy = new File(Study.constructGTPath(studyKey));
-		if (!pathToStudy.exists()) {
-			org.gwaspi.global.Utils.createFolder(pathToStudy);
-		}
+		final int gtStride = cNetCDF.Strides.STRIDE_GT;
+		final int markerStride = cNetCDF.Strides.STRIDE_MARKER_NAME;
+		final int sampleStride = cNetCDF.Strides.STRIDE_SAMPLE_NAME;
 
-		int gtStride = cNetCDF.Strides.STRIDE_GT;
-		int markerStride = cNetCDF.Strides.STRIDE_MARKER_NAME;
-		int sampleStride = cNetCDF.Strides.STRIDE_SAMPLE_NAME;
-
-		File writeFile = new File(pathToStudy, resultOPName + ".nc");
-		NetcdfFileWriteable ncfile = NetcdfFileWriteable.createNew(writeFile.getAbsolutePath(), false);
+		NetcdfFileWriteable ncfile = createNetCdfFile(operationMetadata);
 
 		// global attributes
-		ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_STUDY, studyKey.getId());
-		ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_DESCRIPTION, description);
+		ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_STUDY, operationMetadata.getStudyId());
+		ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_DESCRIPTION, operationMetadata.getDescription());
 
 		// dimensions
-		Dimension markerSetDim = ncfile.addDimension(cNetCDF.Dimensions.DIM_OPSET, markerSetSize);
-		Dimension implicitSetDim = ncfile.addDimension(cNetCDF.Dimensions.DIM_IMPLICITSET, sampleSetSize);
+		Dimension markerSetDim = ncfile.addDimension(cNetCDF.Dimensions.DIM_OPSET, operationMetadata.getOpSetSize());
+		Dimension implicitSetDim = ncfile.addDimension(cNetCDF.Dimensions.DIM_IMPLICITSET, operationMetadata.getImplicitSetSize());
 		Dimension boxes4Dim = ncfile.addDimension(cNetCDF.Dimensions.DIM_4BOXES, 4);
 		Dimension markerStrideDim = ncfile.addDimension(cNetCDF.Dimensions.DIM_MARKERSTRIDE, markerStride);
 		Dimension sampleStrideDim = ncfile.addDimension(cNetCDF.Dimensions.DIM_SAMPLESTRIDE, sampleStride);
@@ -143,7 +128,7 @@ public class NetCdfQAMarkersOperationDataSet extends AbstractNetCdfOperationData
 		ncfile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_CENSUSALL, DataType.INT, OP2x4Space);
 		ncfile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_MISSINGRAT, DataType.DOUBLE, OP1Space);
 		ncfile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_MISMATCHSTATE, DataType.INT, OP1Space);
-		ncfile.addVariableAttribute(cNetCDF.Variables.VAR_OPSET, cNetCDF.Attributes.LENGTH, markerSetSize);
+		ncfile.addVariableAttribute(cNetCDF.Variables.VAR_OPSET, cNetCDF.Attributes.LENGTH, operationMetadata.getOpSetSize());
 
 		// Define Genotype Variables
 		//ncfile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_KNOWNALLELES, DataType.CHAR, allelesSpace);
@@ -157,7 +142,7 @@ public class NetCdfQAMarkersOperationDataSet extends AbstractNetCdfOperationData
 	}
 
 	@Override
-	protected OperationFactory createOperationFactory() throws IOException {
+	protected OperationMetadata createOperationMetadata() throws IOException {
 
 		MatrixMetadata rdMatrixMetadata = MatricesList.getMatrixMetadataById(getReadMatrixKey());
 
@@ -165,16 +150,16 @@ public class NetCdfQAMarkersOperationDataSet extends AbstractNetCdfOperationData
 				+ rdMatrixMetadata.getFriendlyName()
 				+ "\nMarkers: " + getNumMarkers()
 				+ "\nStarted at: " + org.gwaspi.global.Utils.getShortDateTimeAsString();
-		return new OperationFactory(
-				rdMatrixMetadata.getStudyKey(),
+
+		return new OperationMetadata(
+				getReadMatrixKey(), // parent matrix
+				OperationKey.NULL_ID, // parent operation ID
 				"Marker QA", // friendly name
 				description, // description
+				OPType.MARKER_QA,
 				getNumMarkers(),
 				getNumSamples(),
-				0,
-				OPType.MARKER_QA,
-				getReadMatrixKey(), // Parent matrixId
-				-1); // Parent operationId
+				getNumChromosomes());
 	}
 
 	@Override
