@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -44,6 +45,8 @@ import org.gwaspi.model.MarkersMetadataSource;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleInfo;
+import org.gwaspi.model.SampleInfo.Affection;
+import org.gwaspi.model.SampleInfo.Sex;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.SampleKeyFactory;
 import org.gwaspi.model.SamplesGenotypesSource;
@@ -580,44 +583,265 @@ public class NetCDFDataSetSource implements DataSetSource {
 		return new MarkerSet(matrixKey);
 	}
 
-	private static class NetCdfSamplesInfosSource extends LinkedList<SampleInfo> implements SamplesInfosSource {
+//	private static class NetCdfSamplesInfosSource extends LinkedList<SampleInfo> implements SamplesInfosSource {
+//
+//	}
 
+	private static class NetCdfSamplesInfosSource extends AbstractList<SampleInfo> implements SamplesInfosSource {
+
+		private static final int DEFAULT_CHUNK_SIZE = 50;
+		private final StudyKey studyKey;
+		private final NetcdfFile rdNetCdfFile;
+		private int loadedChunkNumber;
+		private List<SampleInfo> loadedChunk;
+
+		NetCdfSamplesInfosSource(StudyKey studyKey, NetcdfFile rdNetCdfFile) {
+
+			this.studyKey = studyKey;
+			this.rdNetCdfFile = rdNetCdfFile;
+			this.loadedChunkNumber = -1;
+			this.loadedChunk = null;
+		}
+
+		private <VT> List<VT> readVar(String varName, int from, int to) throws IOException {
+
+			List<VT> values = new ArrayList<VT>(0);
+			NetCdfUtils.readVariable(rdNetCdfFile, varName, from, to, values, null);
+			return values;
+		}
+
+		@Override
+		public SampleInfo get(int index) {
+
+			final int chunkNumber = index / DEFAULT_CHUNK_SIZE;
+			final int inChunkPosition = index % DEFAULT_CHUNK_SIZE;
+
+			if (chunkNumber != loadedChunkNumber) {
+				try {
+					loadedChunk = getRange(chunkNumber, chunkNumber + DEFAULT_CHUNK_SIZE);
+					loadedChunkNumber = chunkNumber;
+				} catch (IOException ex) {
+					throw new RuntimeException(ex);
+				}
+			}
+
+			return loadedChunk.get(inChunkPosition);
+		}
+
+		@Override
+		public int size() {
+
+			Dimension dim = rdNetCdfFile.findDimension(cNetCDF.Dimensions.DIM_SAMPLESET);
+			return dim.getLength();
+		}
+
+		@Override
+		public List<SampleInfo> getRange(int from, int to) throws IOException {
+
+			List<SampleInfo> values = new ArrayList<SampleInfo>(to - from);
+
+			List<SampleKey> sampleKeys = getSampleKeys(from, to);
+			Iterator<Integer> orderIdsIt = getOrderIds(from, to).iterator();
+			Iterator<String> fathersIt = getFathers(from, to).iterator();
+			Iterator<String> mothersIt = getMothers(from, to).iterator();
+			Iterator<Sex> sexesIt = getSexes(from, to).iterator();
+			Iterator<Affection> affectionsIt = getAffections(from, to).iterator();
+			Iterator<String> categoriesIt = getCategoriess(from, to).iterator();
+			Iterator<String> diseasesIt = getDiseases(from, to).iterator();
+			Iterator<String> populationsIt = getPopulations(from, to).iterator();
+			Iterator<Integer> agesIt = getAges(from, to).iterator();
+			Iterator<String> filtersIt = getFilters(from, to).iterator();
+			Iterator<Integer> approvedsIt = getApproveds(from, to).iterator();
+			Iterator<Integer> statusesIt = getStatuses(from, to).iterator();
+			for (SampleKey sampleKey : sampleKeys) {
+				values.add(new SampleInfo(
+						studyKey,
+						sampleKey.getSampleId(),
+						sampleKey.getFamilyId(),
+						orderIdsIt.next(),
+						fathersIt.next(),
+						mothersIt.next(),
+						sexesIt.next(),
+						affectionsIt.next(),
+						categoriesIt.next(),
+						diseasesIt.next(),
+						populationsIt.next(),
+						agesIt.next(),
+						filtersIt.next(),
+						approvedsIt.next(),
+						statusesIt.next()
+				));
+			}
+
+			return values;
+		}
+
+		@Override
+		public List<SampleKey> getSampleKeys() throws IOException {
+			return getSampleKeys(-1, -1);
+		}
+
+		@Override
+		public List<Integer> getOrderIds() throws IOException {
+			return getOrderIds(-1, -1);
+		}
+
+		@Override
+		public List<String> getFathers() throws IOException {
+			return getFathers(-1, -1);
+		}
+
+		@Override
+		public List<String> getMothers() throws IOException {
+			return getMothers(-1, -1);
+		}
+
+		@Override
+		public List<SampleInfo.Sex> getSexes() throws IOException {
+			return getSexes(-1, -1);
+		}
+
+		@Override
+		public List<SampleInfo.Affection> getAffections() throws IOException {
+			return getAffections(-1, -1);
+		}
+
+		@Override
+		public List<String> getCategoriess() throws IOException {
+			return getCategoriess(-1, -1);
+		}
+
+		@Override
+		public List<String> getDiseases() throws IOException {
+			return getDiseases(-1, -1);
+		}
+
+		@Override
+		public List<String> getPopulations() throws IOException {
+			return getPopulations(-1, -1);
+		}
+
+		@Override
+		public List<Integer> getAges() throws IOException {
+			return getAges(-1, -1);
+		}
+
+		@Override
+		public List<String> getFilters() throws IOException {
+			return getFilters(-1, -1);
+		}
+
+		@Override
+		public List<Integer> getApproveds() throws IOException {
+			return getApproveds(-1, -1);
+		}
+
+		@Override
+		public List<Integer> getStatuses() throws IOException {
+			return getStatuses(-1, -1);
+		}
+
+		@Override
+		public List<SampleKey> getSampleKeys(int from, int to) throws IOException {
+			return readVar(cNetCDF.Variables.VAR_SAMPLE_KEY, from, to);
+		}
+
+		@Override
+		public List<Integer> getOrderIds(int from, int to) throws IOException {
+			return readVar(cNetCDF.Variables.VAR_SAMPLE_ORDER_ID, from, to);
+		}
+
+		@Override
+		public List<String> getFathers(int from, int to) throws IOException {
+			return readVar(cNetCDF.Variables.VAR_SAMPLE_FATHER, from, to);
+		}
+
+		@Override
+		public List<String> getMothers(int from, int to) throws IOException {
+			return readVar(cNetCDF.Variables.VAR_SAMPLE_MOTHER, from, to);
+		}
+
+		@Override
+		public List<SampleInfo.Sex> getSexes(int from, int to) throws IOException {
+			return readVar(cNetCDF.Variables.VAR_SAMPLES_SEX, from, to);
+		}
+
+		@Override
+		public List<SampleInfo.Affection> getAffections(int from, int to) throws IOException {
+			return readVar(cNetCDF.Variables.VAR_SAMPLES_AFFECTION, from, to);
+		}
+
+		@Override
+		public List<String> getCategoriess(int from, int to) throws IOException {
+			return readVar(cNetCDF.Variables.VAR_SAMPLE_CATEGORY, from, to);
+		}
+
+		@Override
+		public List<String> getDiseases(int from, int to) throws IOException {
+			return readVar(cNetCDF.Variables.VAR_SAMPLE_DISEASE, from, to);
+		}
+
+		@Override
+		public List<String> getPopulations(int from, int to) throws IOException {
+			return readVar(cNetCDF.Variables.VAR_SAMPLE_POPULATION, from, to);
+		}
+
+		@Override
+		public List<Integer> getAges(int from, int to) throws IOException {
+			return readVar(cNetCDF.Variables.VAR_SAMPLE_AGE, from, to);
+		}
+
+		@Override
+		public List<String> getFilters(int from, int to) throws IOException {
+			return readVar(cNetCDF.Variables.VAR_SAMPLE_FILTER, from, to);
+		}
+
+		@Override
+		public List<Integer> getApproveds(int from, int to) throws IOException {
+			return readVar(cNetCDF.Variables.VAR_SAMPLE_APPROVED, from, to);
+		}
+
+		@Override
+		public List<Integer> getStatuses(int from, int to) throws IOException {
+			return readVar(cNetCDF.Variables.VAR_SAMPLE_STATUS, from, to);
+		}
 	}
+
 
 	@Override
 	public SamplesInfosSource getSamplesInfosSource() throws IOException {
 
-		// HACK all stuff down here is hacky!
-		final NetCdfSamplesInfosSource samplesInfosSource = new NetCdfSamplesInfosSource();
-		DataSetDestination tmpDataSetDestination = new DataSetDestination() {
+//		// HACK all stuff down here is hacky!
+//		final NetCdfSamplesInfosSource samplesInfosSource = new NetCdfSamplesInfosSource();
+//		DataSetDestination tmpDataSetDestination = new DataSetDestination() {
+//
+//			public void init() throws IOException {}
+//			public void startLoadingDummySampleInfos() throws IOException {}
+//			public void finishedLoadingDummySampleInfos() throws IOException {}
+//			public void startLoadingSampleInfos(boolean storeOnlyKeys) throws IOException {}
+//
+//			public void addSampleInfo(SampleInfo sampleInfo) throws IOException {
+//				samplesInfosSource.add(sampleInfo);
+//			}
+//
+//			public void addSampleKey(SampleKey sampleKey) throws IOException {}
+//			public void finishedLoadingSampleInfos() throws IOException {}
+//			public void startLoadingMarkerMetadatas(boolean storeOnlyKeys) throws IOException {}
+//			public void addMarkerMetadata(MarkerMetadata markerMetadata) throws IOException {}
+//			public void addMarkerKey(MarkerKey markerKey) throws IOException {}
+//			public void finishedLoadingMarkerMetadatas() throws IOException {}
+//			public void startLoadingChromosomeMetadatas() throws IOException {}
+//			public void addChromosomeMetadata(ChromosomeKey chromosomeKey, ChromosomeInfo chromosomeInfo) throws IOException {}
+//			public void finishedLoadingChromosomeMetadatas() throws IOException {}
+//			public void startLoadingAlleles(boolean perSample) throws IOException {}
+//			public void addSampleGTAlleles(int sampleIndex, Collection<byte[]> sampleAlleles) throws IOException {}
+//			public void addMarkerGTAlleles(int markerIndex, Collection<byte[]> markerAlleles) throws IOException {}
+//			public void finishedLoadingAlleles() throws IOException {}
+//			public void done() throws IOException {}
+//		};
+//		SamplesParserManager.scanSampleInfo(studyKey, cImport.ImportFormat.GWASpi, gtPath, tmpDataSetDestination);
 
-			public void init() throws IOException {}
-			public void startLoadingDummySampleInfos() throws IOException {}
-			public void finishedLoadingDummySampleInfos() throws IOException {}
-			public void startLoadingSampleInfos(boolean storeOnlyKeys) throws IOException {}
-
-			public void addSampleInfo(SampleInfo sampleInfo) throws IOException {
-				samplesInfosSource.add(sampleInfo);
-			}
-
-			public void addSampleKey(SampleKey sampleKey) throws IOException {}
-			public void finishedLoadingSampleInfos() throws IOException {}
-			public void startLoadingMarkerMetadatas(boolean storeOnlyKeys) throws IOException {}
-			public void addMarkerMetadata(MarkerMetadata markerMetadata) throws IOException {}
-			public void addMarkerKey(MarkerKey markerKey) throws IOException {}
-			public void finishedLoadingMarkerMetadatas() throws IOException {}
-			public void startLoadingChromosomeMetadatas() throws IOException {}
-			public void addChromosomeMetadata(ChromosomeKey chromosomeKey, ChromosomeInfo chromosomeInfo) throws IOException {}
-			public void finishedLoadingChromosomeMetadatas() throws IOException {}
-			public void startLoadingAlleles(boolean perSample) throws IOException {}
-			public void addSampleGTAlleles(int sampleIndex, Collection<byte[]> sampleAlleles) throws IOException {}
-			public void addMarkerGTAlleles(int markerIndex, Collection<byte[]> markerAlleles) throws IOException {}
-			public void finishedLoadingAlleles() throws IOException {}
-			public void done() throws IOException {}
-		};
-		SamplesParserManager.scanSampleInfo(studyKey, cImport.ImportFormat.GWASpi, gtPath, tmpDataSetDestination);
-
-		return samplesInfosSource;
+		return new NetCdfSamplesInfosSource(rdNetCdfFile);
 	}
 
 	private static class NetCdfSamplesKeysSource extends AbstractList<SampleKey> implements SamplesKeysSource {

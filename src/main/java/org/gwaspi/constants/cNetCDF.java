@@ -81,25 +81,18 @@ public class cNetCDF {
 		public static final String VAR_MARKERS_PROP32 = "marker_property_32";
 		// SAMPLE VARS
 		public static final String VAR_SAMPLE_KEY = "sample_id";
+		public static final String VAR_SAMPLE_ORDER_ID = "sample_orderId";
+		public static final String VAR_SAMPLE_FATHER = "sample_father";
+		public static final String VAR_SAMPLE_MOTHER = "sample_mother";
 		public static final String VAR_SAMPLES_SEX = "sample_sex";
 		public static final String VAR_SAMPLES_AFFECTION = "sample_affection";
-
-
-	private SampleKey key;
-	private int orderId;
-	private String fatherId;
-	private String motherId;
-	private Sex sex;
-	private Affection affection;
-	private String category;
-	private String disease;
-	private String population;
-	private int age;
-	private String filter;
-	private int approved;
-	private int status;
-
-
+		public static final String VAR_SAMPLE_CATEGORY = "sample_category";
+		public static final String VAR_SAMPLE_DISEASE = "sample_disease";
+		public static final String VAR_SAMPLE_POPULATION = "sample_population";
+		public static final String VAR_SAMPLE_AGE = "sample_age";
+		public static final String VAR_SAMPLE_FILTER = "sample_filter";
+		public static final String VAR_SAMPLE_APPROVED = "sample_approved";
+		public static final String VAR_SAMPLE_STATUS = "sample_status";
 //		public static final String VAR_SAMPLES_FILTERS = "sample_filters";
 		// OPERATION VARS
 		public static final String VAR_OPSET_IDX = "opset_idx";
