@@ -84,7 +84,7 @@ public class MatrixDataExtractor implements MatrixOperation {
 
 	private static interface Picker<K> {
 
-		Map<K, Integer> pick(DataSetSource dataSetSource);
+		Map<K, Integer> pick(DataSetSource dataSetSource) throws IOException;
 	}
 
 	private static abstract class AbstractKeyPicker<K> implements Picker<K> {
@@ -101,10 +101,10 @@ public class MatrixDataExtractor implements MatrixOperation {
 			this.include = include;
 		}
 
-		abstract Collection<K> getInputKeys(DataSetSource dataSetSource);
+		abstract Collection<K> getInputKeys(DataSetSource dataSetSource) throws IOException;
 
 		@Override
-		public Map<K, Integer> pick(DataSetSource dataSetSource) {
+		public Map<K, Integer> pick(DataSetSource dataSetSource) throws IOException {
 
 			Map<K, Integer> result = new LinkedHashMap<K, Integer>();
 
@@ -136,7 +136,7 @@ public class MatrixDataExtractor implements MatrixOperation {
 		}
 
 		@Override
-		public Collection<SampleKey> getInputKeys(DataSetSource dataSetSource) {
+		public Collection<SampleKey> getInputKeys(DataSetSource dataSetSource) throws IOException {
 			return dataSetSource.getSamplesKeysSource();
 		}
 	}
@@ -148,7 +148,7 @@ public class MatrixDataExtractor implements MatrixOperation {
 		}
 
 		@Override
-		public Collection<MarkerKey> getInputKeys(DataSetSource dataSetSource) {
+		public Collection<MarkerKey> getInputKeys(DataSetSource dataSetSource) throws IOException {
 			return dataSetSource.getMarkersKeysSource();
 		}
 	}
@@ -169,11 +169,11 @@ public class MatrixDataExtractor implements MatrixOperation {
 			this.include = include;
 		}
 
-		abstract Collection<K> getInputKeys(DataSetSource dataSetSource);
-		abstract Collection<V> getInputValues(DataSetSource dataSetSource);
+		abstract Collection<K> getInputKeys(DataSetSource dataSetSource) throws IOException;
+		abstract Collection<V> getInputValues(DataSetSource dataSetSource) throws IOException;
 
 		@Override
-		public Map<K, Integer> pick(DataSetSource dataSetSource) {
+		public Map<K, Integer> pick(DataSetSource dataSetSource) throws IOException {
 
 			Map<K, Integer> result = new LinkedHashMap<K, Integer>();
 
@@ -208,12 +208,12 @@ public class MatrixDataExtractor implements MatrixOperation {
 		}
 
 		@Override
-		public Collection<MarkerKey> getInputKeys(DataSetSource dataSetSource) {
+		public Collection<MarkerKey> getInputKeys(DataSetSource dataSetSource) throws IOException {
 			return dataSetSource.getMarkersKeysSource();
 		}
 
 		@Override
-		public Collection<MarkerMetadata> getInputValues(DataSetSource dataSetSource) {
+		public Collection<MarkerMetadata> getInputValues(DataSetSource dataSetSource) throws IOException {
 			return dataSetSource.getMarkersMetadatasSource();
 		}
 	}
@@ -242,30 +242,30 @@ public class MatrixDataExtractor implements MatrixOperation {
 		}
 
 		@Override
-		public Collection<SampleKey> getInputKeys(DataSetSource dataSetSource) {
+		public Collection<SampleKey> getInputKeys(DataSetSource dataSetSource) throws IOException {
 			return dataSetSource.getSamplesKeysSource();
 		}
 
 		@Override
-		public Collection<SampleInfo> getInputValues(DataSetSource dataSetSource) {
+		public Collection<SampleInfo> getInputValues(DataSetSource dataSetSource) throws IOException {
 			return dataSetSource.getSamplesInfosSource();
 		}
 	}
 
-	private abstract static class NetCdfVariableSampleValuePicker<M> extends AbstractSampleValuePicker<M> {
-
-		private static final Map<String, Extractor<SampleInfo, ?>> typeConverters;
-		static {
-			typeConverters = new HashMap<String, Extractor<SampleInfo, ?>>();
-			typeConverters.put(Variables.VAR_SAMPLESET, SampleInfo.TO_SAMPLE_ID);
-			typeConverters.put(Variables.VAR_SAMPLES_AFFECTION, SampleInfo.TO_AFFECTION);
-			typeConverters.put(Variables.VAR_SAMPLES_SEX, SampleInfo.TO_SEX);
-		}
-
-		NetCdfVariableSampleValuePicker(Collection<M> criteria, String variable, boolean include) {
-			super(criteria, (Extractor<SampleInfo, M>) typeConverters.get(variable), include);
-		}
-	}
+//	private abstract static class NetCdfVariableSampleValuePicker<M> extends AbstractSampleValuePicker<M> {
+//
+//		private static final Map<String, Extractor<SampleInfo, ?>> typeConverters;
+//		static {
+//			typeConverters = new HashMap<String, Extractor<SampleInfo, ?>>();
+//			typeConverters.put(Variables.VAR_SAMPLE_KEY, SampleInfo.TO_SAMPLE_ID);
+//			typeConverters.put(Variables.VAR_SAMPLES_AFFECTION, SampleInfo.TO_AFFECTION);
+//			typeConverters.put(Variables.VAR_SAMPLES_SEX, SampleInfo.TO_SEX);
+//		}
+//
+//		NetCdfVariableSampleValuePicker(Collection<M> criteria, String variable, boolean include) {
+//			super(criteria, (Extractor<SampleInfo, M>) typeConverters.get(variable), include);
+//		}
+//	}
 
 	/**
 	 * This constructor to extract data from Matrix a by passing a variable and
@@ -373,7 +373,7 @@ public class MatrixDataExtractor implements MatrixOperation {
 	/**
 	 * @return key & index in the original set for all picked markers.
 	 */
-	private static Map<MarkerKey, Integer> pickMarkers(SetMarkerPickCase markerPickCase, DataSetSource dataSetSource/*, MarkerSet rdMarkerSet*/, Set markerCriteria, String markerPickerVar) {
+	private static Map<MarkerKey, Integer> pickMarkers(SetMarkerPickCase markerPickCase, DataSetSource dataSetSource/*, MarkerSet rdMarkerSet*/, Set markerCriteria, String markerPickerVar) throws IOException {
 
 		Map<MarkerKey, Integer> wrMarkers;
 		switch (markerPickCase) {

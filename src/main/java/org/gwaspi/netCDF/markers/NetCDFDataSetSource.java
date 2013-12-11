@@ -25,6 +25,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import org.gwaspi.constants.cImport;
@@ -42,12 +43,18 @@ import org.gwaspi.model.MarkersKeysSource;
 import org.gwaspi.model.MarkersMetadataSource;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
+import org.gwaspi.model.SampleInfo;
+import org.gwaspi.model.SampleKey;
+import org.gwaspi.model.SampleKeyFactory;
 import org.gwaspi.model.SamplesGenotypesSource;
 import org.gwaspi.model.SamplesInfosSource;
 import org.gwaspi.model.SamplesKeysSource;
 import org.gwaspi.model.StudyKey;
+import org.gwaspi.netCDF.loader.DataSetDestination;
 import org.gwaspi.netCDF.operations.NetCdfUtils;
+import org.gwaspi.samples.GwaspiSamplesParser;
 import org.gwaspi.samples.SampleSet;
+import org.gwaspi.samples.SamplesParserManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.ArrayChar;
@@ -561,6 +568,8 @@ public class NetCDFDataSetSource implements DataSetSource {
 
 	@Override
 	public MarkersKeysSource getMarkersKeysSource() throws IOException {
+
+		ensureReadNetCdfFile();
 		return new NetCdfMarkersKeysSource(rdNetCdfFile);
 	}
 
@@ -571,13 +580,131 @@ public class NetCDFDataSetSource implements DataSetSource {
 		return new MarkerSet(matrixKey);
 	}
 
+	private static class NetCdfSamplesInfosSource extends LinkedList<SampleInfo> implements SamplesInfosSource {
+
+	}
+
 	@Override
 	public SamplesInfosSource getSamplesInfosSource() throws IOException {
-		throw new UnsupportedOperationException("Not supported yet."); XXX;
+
+		// HACK all stuff down here is hacky!
+		final NetCdfSamplesInfosSource samplesInfosSource = new NetCdfSamplesInfosSource();
+		DataSetDestination tmpDataSetDestination = new DataSetDestination() {
+
+			public void init() throws IOException {}
+			public void startLoadingDummySampleInfos() throws IOException {}
+			public void finishedLoadingDummySampleInfos() throws IOException {}
+			public void startLoadingSampleInfos(boolean storeOnlyKeys) throws IOException {}
+
+			public void addSampleInfo(SampleInfo sampleInfo) throws IOException {
+				samplesInfosSource.add(sampleInfo);
+			}
+
+			public void addSampleKey(SampleKey sampleKey) throws IOException {}
+			public void finishedLoadingSampleInfos() throws IOException {}
+			public void startLoadingMarkerMetadatas(boolean storeOnlyKeys) throws IOException {}
+			public void addMarkerMetadata(MarkerMetadata markerMetadata) throws IOException {}
+			public void addMarkerKey(MarkerKey markerKey) throws IOException {}
+			public void finishedLoadingMarkerMetadatas() throws IOException {}
+			public void startLoadingChromosomeMetadatas() throws IOException {}
+			public void addChromosomeMetadata(ChromosomeKey chromosomeKey, ChromosomeInfo chromosomeInfo) throws IOException {}
+			public void finishedLoadingChromosomeMetadatas() throws IOException {}
+			public void startLoadingAlleles(boolean perSample) throws IOException {}
+			public void addSampleGTAlleles(int sampleIndex, Collection<byte[]> sampleAlleles) throws IOException {}
+			public void addMarkerGTAlleles(int markerIndex, Collection<byte[]> markerAlleles) throws IOException {}
+			public void finishedLoadingAlleles() throws IOException {}
+			public void done() throws IOException {}
+		};
+		SamplesParserManager.scanSampleInfo(studyKey, cImport.ImportFormat.GWASpi, gtPath, tmpDataSetDestination);
+
+		return samplesInfosSource;
+	}
+
+	private static class NetCdfSamplesKeysSource extends AbstractList<SampleKey> implements SamplesKeysSource {
+
+		private static final int DEFAULT_CHUNK_SIZE = 200;
+
+		private final StudyKey studyKey;
+		private final NetcdfFile rdNetCdfFile;
+		private int loadedChunkNumber;
+		private List<SampleKey> loadedChunk;
+
+		NetCdfSamplesKeysSource(StudyKey studyKey, NetcdfFile rdNetCdfFile) {
+
+			this.studyKey = studyKey;
+			this.rdNetCdfFile = rdNetCdfFile;
+			this.loadedChunkNumber = -1;
+			this.loadedChunk = null;
+		}
+
+		private <VT> List<VT> readVar(String varName, int from, int to) throws IOException {
+
+			List<VT> values = new ArrayList<VT>(0);
+			NetCdfUtils.readVariable(rdNetCdfFile, varName, from, to, values, null);
+			return values;
+		}
+
+		@Override
+		public SampleKey get(int index) {
+
+			final int chunkNumber = index / DEFAULT_CHUNK_SIZE;
+			final int inChunkPosition = index % DEFAULT_CHUNK_SIZE;
+
+			if (chunkNumber != loadedChunkNumber) {
+				try {
+					loadedChunk = getRange(chunkNumber, chunkNumber + DEFAULT_CHUNK_SIZE);
+					loadedChunkNumber = chunkNumber;
+				} catch (IOException ex) {
+					throw new RuntimeException(ex);
+				}
+			}
+
+			return loadedChunk.get(inChunkPosition);
+		}
+
+		@Override
+		public int size() {
+
+			Dimension dim = rdNetCdfFile.findDimension(cNetCDF.Dimensions.DIM_SAMPLESET);
+			return dim.getLength();
+		}
+
+		public List<SampleKey> getRange(int from, int to) throws IOException {
+
+			List<SampleKey> samples;
+
+			List<String> keys = readVar(cNetCDF.Variables.VAR_SAMPLE_KEY, from, to);
+
+			samples = new ArrayList<SampleKey>(keys.size());
+			SampleKeyFactory sampleKeyFactory = new SampleKeyFactory(studyKey);
+			for (String encodedKey : keys) {
+				samples.add(sampleKeyFactory.decode(encodedKey));
+			}
+
+			return samples;
+		}
+
+		public Map<Integer, SampleKey> getIndicesMap(int from, int to) throws IOException {
+
+			Map<Integer, SampleKey> samples;
+
+			List<String> keys = readVar(cNetCDF.Variables.VAR_MARKERSET, from, to);
+
+			samples = new LinkedHashMap<Integer, SampleKey>(keys.size());
+			int index = (from >= 0) ? from : 0;
+			SampleKeyFactory sampleKeyFactory = new SampleKeyFactory(studyKey);
+			for (String encodedKey : keys) {
+				samples.put(index++, sampleKeyFactory.decode(encodedKey));
+			}
+
+			return samples;
+		}
 	}
 
 	@Override
 	public SamplesKeysSource getSamplesKeysSource() throws IOException {
-		throw new UnsupportedOperationException("Not supported yet."); XXX;
+
+		ensureReadNetCdfFile();
+		return new NetCdfSamplesKeysSource(studyKey, rdNetCdfFile);
 	}
 }

@@ -123,7 +123,7 @@ public class SampleSet extends AbstractList<GenotypesList> implements MarkersGen
 
 		try {
 			ncfile = NetcdfFile.open(matrixImportPath);
-			Variable var = ncfile.findVariable(cNetCDF.Variables.VAR_SAMPLESET);
+			Variable var = ncfile.findVariable(cNetCDF.Variables.VAR_SAMPLE_KEY);
 
 			if (null == var) {
 				return null;

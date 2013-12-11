@@ -236,7 +236,7 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 		// WRITE SAMPLESET TO MATRIX FROM SAMPLES LIST
 		ArrayChar.D2 samplesD2 = NetCdfUtils.writeCollectionToD2ArrayChar(rdSampleSetMap.keySet(), cNetCDF.Strides.STRIDE_SAMPLE_NAME);
 		int[] sampleOrig = new int[] {0, 0};
-		ncfile.write(cNetCDF.Variables.VAR_SAMPLESET, sampleOrig, samplesD2);
+		ncfile.write(cNetCDF.Variables.VAR_SAMPLE_KEY, sampleOrig, samplesD2);
 		samplesD2 = null;
 		log.info("Done writing SampleSet to matrix");
 

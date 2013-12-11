@@ -92,7 +92,8 @@ public class SamplesParserManager {
 	}
 
 	public static Set<SampleInfo.Affection> scanSampleInfoAffectionStates(String sampleInfoPath) throws IOException {
-		Set<SampleInfo.Affection> resultHS = EnumSet.noneOf(SampleInfo.Affection.class);
+
+		Set<SampleInfo.Affection> result = EnumSet.noneOf(SampleInfo.Affection.class);
 
 		File sampleFile = new File(sampleInfoPath);
 		FileReader inputFileReader = new FileReader(sampleFile);
@@ -102,11 +103,11 @@ public class SamplesParserManager {
 		String l;
 		while ((l = inputBufferReader.readLine()) != null) {
 			String[] cVals = l.split(cImport.Separators.separators_CommaSpaceTab_rgxp);
-			resultHS.add(SampleInfo.Affection.parse(cVals[GWASpi.affection]));
+			result.add(SampleInfo.Affection.parse(cVals[GWASpi.affection]));
 		}
 
 		inputBufferReader.close();
 
-		return resultHS;
+		return result;
 	}
 }

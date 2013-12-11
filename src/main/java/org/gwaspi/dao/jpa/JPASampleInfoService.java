@@ -199,7 +199,7 @@ public class JPASampleInfoService implements SampleInfoService {
 		try {
 			em = open();
 			Query query;
-			if (variable.equals(Variables.VAR_SAMPLESET)) { // sample ID
+			if (variable.equals(Variables.VAR_SAMPLE_KEY)) { // sample ID
 				query = em.createNamedQuery("sampleInfo_listSampleIds");
 			} else if (variable.equals(Variables.VAR_SAMPLES_AFFECTION)) {
 				query = em.createNamedQuery("sampleInfo_listSampleAffections");

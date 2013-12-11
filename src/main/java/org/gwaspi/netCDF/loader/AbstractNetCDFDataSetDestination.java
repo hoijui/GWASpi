@@ -196,8 +196,8 @@ public abstract class AbstractNetCDFDataSetDestination extends AbstractDataSetDe
 		ncfile.addVariable(cNetCDF.Variables.VAR_CHR_INFO, DataType.INT, chrInfoSpace);
 
 		// Define Sample Variables
-		ncfile.addVariable(cNetCDF.Variables.VAR_SAMPLESET, DataType.CHAR, sampleSetSpace);
-		ncfile.addVariableAttribute(cNetCDF.Variables.VAR_SAMPLESET, cNetCDF.Attributes.LENGTH, matrixMetadata.getNumSamples());
+		ncfile.addVariable(cNetCDF.Variables.VAR_SAMPLE_KEY, DataType.CHAR, sampleSetSpace);
+		ncfile.addVariableAttribute(cNetCDF.Variables.VAR_SAMPLE_KEY, cNetCDF.Attributes.LENGTH, matrixMetadata.getNumSamples());
 
 		// Define Genotype Variables
 		ncfile.addVariable(cNetCDF.Variables.VAR_GENOTYPES, DataType.BYTE, genotypeSpace);
@@ -269,7 +269,7 @@ public abstract class AbstractNetCDFDataSetDestination extends AbstractDataSetDe
 		// WRITE SAMPLESET TO MATRIX FROM SAMPLES LIST
 		ArrayChar.D2 samplesD2 = NetCdfUtils.writeCollectionToD2ArrayChar(sampleKeys, cNetCDF.Strides.STRIDE_SAMPLE_NAME);
 		int[] sampleOrig = new int[] {0, 0};
-		ncfile.write(cNetCDF.Variables.VAR_SAMPLESET, sampleOrig, samplesD2);
+		ncfile.write(cNetCDF.Variables.VAR_SAMPLE_KEY, sampleOrig, samplesD2);
 		log.info("Done writing SampleSet to matrix");
 	}
 
