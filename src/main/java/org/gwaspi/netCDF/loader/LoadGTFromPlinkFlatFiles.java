@@ -57,16 +57,16 @@ public class LoadGTFromPlinkFlatFiles extends AbstractLoadGTFromFiles implements
 	}
 
 	@Override
-	protected void addAdditionalBigDescriptionProperties(StringBuilder descSB, GenotypesLoadDescription loadDescription) {
-		super.addAdditionalBigDescriptionProperties(descSB, loadDescription);
+	protected void addAdditionalBigDescriptionProperties(StringBuilder description, GenotypesLoadDescription loadDescription) {
+		super.addAdditionalBigDescriptionProperties(description, loadDescription);
 
-		descSB.append(loadDescription.getGtDirPath());
-		descSB.append(" (MAP file)\n");
-		descSB.append(loadDescription.getAnnotationFilePath());
-		descSB.append(" (PED file)\n");
+		description.append(loadDescription.getGtDirPath());
+		description.append(" (MAP file)\n");
+		description.append(loadDescription.getAnnotationFilePath());
+		description.append(" (PED file)\n");
 		if (new File(loadDescription.getSampleFilePath()).exists()) {
-			descSB.append(loadDescription.getSampleFilePath());
-			descSB.append(" (Sample Info file)\n");
+			description.append(loadDescription.getSampleFilePath());
+			description.append(" (Sample Info file)\n");
 		}
 	}
 
@@ -82,8 +82,7 @@ public class LoadGTFromPlinkFlatFiles extends AbstractLoadGTFromFiles implements
 		FileReader inputFileReader = new FileReader(file);
 		BufferedReader inputBufferReader = new BufferedReader(inputFileReader);
 
-		// HACK
-		DataSet dataSet = ((InMemorySamplesReceiver) samplesReceiver).getDataSet();
+		DataSet dataSet = ((InMemorySamplesReceiver) samplesReceiver).getDataSet(); // HACK
 
 		List<SampleKey> sampleKeys = AbstractLoadGTFromFiles.extractKeys(dataSet.getSampleInfos());
 

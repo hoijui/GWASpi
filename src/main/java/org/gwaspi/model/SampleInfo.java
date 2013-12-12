@@ -336,9 +336,10 @@ public class SampleInfo implements Comparable<SampleInfo>, Serializable {
 	}
 
 	public SampleInfo(
-			int orderId,
+			StudyKey studyKey,
 			String sampleId,
 			String familyId,
+			int orderId,
 			String fatherId,
 			String motherId,
 			Sex sex,
@@ -348,10 +349,10 @@ public class SampleInfo implements Comparable<SampleInfo>, Serializable {
 			String population,
 			int age,
 			String filter,
-			StudyKey studyKey,
 			int approved,
 			int status)
 	{
+		this.key = new SampleKey(studyKey, sampleId, familyId);
 		this.orderId = orderId;
 		this.fatherId = fatherId;
 		this.motherId = motherId;
@@ -364,7 +365,6 @@ public class SampleInfo implements Comparable<SampleInfo>, Serializable {
 		this.filter = filter;
 		this.approved = approved;
 		this.status = status;
-		this.key = new SampleKey(studyKey, sampleId, familyId);
 	}
 
 	@Override

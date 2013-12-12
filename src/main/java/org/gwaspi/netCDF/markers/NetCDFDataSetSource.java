@@ -21,12 +21,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.AbstractList;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
-import java.util.iterator;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import org.gwaspi.constants.cImport;
@@ -53,11 +50,8 @@ import org.gwaspi.model.SamplesGenotypesSource;
 import org.gwaspi.model.SamplesInfosSource;
 import org.gwaspi.model.SamplesKeysSource;
 import org.gwaspi.model.StudyKey;
-import org.gwaspi.netCDF.loader.DataSetDestination;
 import org.gwaspi.netCDF.operations.NetCdfUtils;
-import org.gwaspi.samples.GwaspiSamplesParser;
 import org.gwaspi.samples.SampleSet;
-import org.gwaspi.samples.SamplesParserManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.ArrayChar;
@@ -841,7 +835,7 @@ public class NetCDFDataSetSource implements DataSetSource {
 //		};
 //		SamplesParserManager.scanSampleInfo(studyKey, cImport.ImportFormat.GWASpi, gtPath, tmpDataSetDestination);
 
-		return new NetCdfSamplesInfosSource(rdNetCdfFile);
+		return new NetCdfSamplesInfosSource(studyKey, rdNetCdfFile);
 	}
 
 	private static class NetCdfSamplesKeysSource extends AbstractList<SampleKey> implements SamplesKeysSource {

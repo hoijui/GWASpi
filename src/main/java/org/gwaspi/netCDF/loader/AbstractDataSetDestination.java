@@ -85,8 +85,10 @@ public abstract class AbstractDataSetDestination implements DataSetDestination {
 	@Override
 	public void addMarkerKey(MarkerKey markerKey) throws IOException {
 
-		XXX;
-		throw new UnsupportedOperationException("Not yet implemented (was not in use when first introduced)");
+		// we simply ignore this, and rely on #addMarkerMetadata() receiving
+		// the correct order aswell, and we just extract the keys there
+//		XXX;
+//		throw new UnsupportedOperationException("Not yet implemented (was not in use when first introduced)");
 //		MarkerMetadata markerMetadata = Matrix.getSample(markerKey);
 //		dataSet.getMarkerMetadatas().put(markerKey, markerMetadata);
 	}
@@ -127,15 +129,15 @@ public abstract class AbstractDataSetDestination implements DataSetDestination {
 	public void startLoadingAlleles(boolean perSample) throws IOException {
 	}
 
-	@Override
-	public void addSampleGTAlleles(int sampleIndex, Collection<byte[]> sampleAlleles) throws IOException {
-		throw new UnsupportedOperationException(); XXX;
-	}
-
-	@Override
-	public void addMarkerGTAlleles(int markerIndex, Collection<byte[]> markerAlleles) throws IOException {
-		throw new UnsupportedOperationException(); XXX;
-	}
+//	@Override
+//	public void addSampleGTAlleles(int sampleIndex, Collection<byte[]> sampleAlleles) throws IOException {
+//		throw new UnsupportedOperationException(); XXX;
+//	}
+//
+//	@Override
+//	public void addMarkerGTAlleles(int markerIndex, Collection<byte[]> markerAlleles) throws IOException {
+//		throw new UnsupportedOperationException(); XXX;
+//	}
 
 	@Override
 	public void finishedLoadingAlleles() throws IOException {

@@ -84,9 +84,10 @@ public class Utils {
 			}
 
 			sampleInfo = new SampleInfo(
-					baseSampleInfo.getOrderId(),
+					baseSampleInfo.getStudyKey(),
 					key.getSampleId(),
 					familyId,
+					baseSampleInfo.getOrderId(),
 					fatherId,
 					motherId,
 					sex,
@@ -96,7 +97,6 @@ public class Utils {
 					population,
 					age,
 					baseSampleInfo.getFilter(),
-					baseSampleInfo.getStudyKey(),
 					baseSampleInfo.getApproved(),
 					baseSampleInfo.getStatus());
 		}

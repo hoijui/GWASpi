@@ -199,11 +199,14 @@ public class Report_AnalysisPanel extends JPanel {
 		BackAction() {
 
 			putValue(NAME, Text.All.Back);
+
+			putValue(SHORT_DESCRIPTION, "Not yet implemented in code");
+			setEnabled(false);
 		}
 
 		@Override
 		public void actionPerformed(ActionEvent evt) {
-			throw new UnsupportedOperationException("Not yet implemented!"); XXX;
+			throw new UnsupportedOperationException("Not yet implemented!"); // TODO
 		}
 	}
 	//</editor-fold>

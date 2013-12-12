@@ -19,6 +19,7 @@ package org.gwaspi.netCDF.loader;
 
 import java.io.File;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.Map;
 import org.gwaspi.constants.cImport.ImportFormat;
 import org.gwaspi.constants.cNetCDF;
@@ -31,6 +32,7 @@ import org.gwaspi.model.ChromosomeInfo;
 import org.gwaspi.model.ChromosomeKey;
 import org.gwaspi.model.DataSet;
 import org.gwaspi.model.DataSetSource;
+import org.gwaspi.model.GenotypesList;
 import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.MarkersMetadataSource;
 import org.gwaspi.model.MatricesList;
@@ -38,6 +40,7 @@ import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleKey;
+import org.gwaspi.model.SamplesGenotypesSource;
 import org.gwaspi.model.Study;
 import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.markers.NetCDFDataSetSource;
@@ -193,131 +196,135 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 		String startTime = org.gwaspi.global.Utils.getMediumDateTimeAsString();
 
 		//<editor-fold defaultstate="expanded" desc="CREATE MARKERSET & NETCDF">
-		MatrixKey importMatrixKey = MatrixKey.valueOf(importMatrixMetadata);
+//		MatrixKey importMatrixKey = MatrixKey.valueOf(importMatrixMetadata);
 		DataSetSource dataSetSource = new NetCDFDataSetSource(loadDescription.getStudyKey(), new File(loadDescription.getGtDirPath()));
 //		MarkerSet rdMarkerSet = new MarkerSet(importMatrixMetadata);
 //		rdMarkerSet.initFullMarkerIdSetMap();
 //		rdMarkerSet.fillMarkerSetMapWithChrAndPos();
 //		Map<MarkerKey, MarkerMetadata> rdMarkerSetMap = rdMarkerSet.getMarkerMetadata();
-		MarkersMetadataSource markersMetadatasSource = dataSetSource.getMarkersMetadatasSource();
+//		MarkersMetadataSource markersMetadatasSource = dataSetSource.getMarkersMetadatasSource();
+//
+//		SampleSet rdSampleSet = new SampleSet(
+//				importMatrixMetadata.getStudyKey(),
+//				loadDescription.getGtDirPath(),
+//				importMatrixMetadata.getSimpleName());
+//		Map<SampleKey, byte[]> rdSampleSetMap = rdSampleSet.getSampleIdSetMapByteArray();
+//
+//		log.info("Done initializing sorted MarkerSetMap");
+//
+//		// RETRIEVE CHROMOSOMES INFO
+//		Map<ChromosomeKey, ChromosomeInfo> chromosomeInfo = ChromosomeUtils.aggregateChromosomeInfo(rdMarkerSetMap, 0, 1);
 
-		SampleSet rdSampleSet = new SampleSet(
-				importMatrixMetadata.getStudyKey(),
-				loadDescription.getGtDirPath(),
-				importMatrixMetadata.getSimpleName());
-		Map<SampleKey, byte[]> rdSampleSetMap = rdSampleSet.getSampleIdSetMapByteArray();
+//		MatrixMetadata matrixMetadata = new MatrixMetadata(
+//				loadDescription.getStudyKey(),
+//				loadDescription.getFriendlyName(),
+//				loadDescription.getFormat(),
+//				importMatrixMetadata.getDescription(), // description
+//				importMatrixMetadata.getGenotypeEncoding(),
+//				importMatrixMetadata.getStrand(),
+//				isHasDictionary(),
+//				rdSampleSetMap.size(),
+//				dataSetSource.getNumMarkers(),
+//				chromosomeInfo.size(),
+//				loadDescription.getGtDirPath());
 
-		log.info("Done initializing sorted MarkerSetMap");
-
-		// RETRIEVE CHROMOSOMES INFO
-		Map<ChromosomeKey, ChromosomeInfo> chromosomeInfo = ChromosomeUtils.aggregateChromosomeInfo(rdMarkerSetMap, 0, 1);
-
-		MatrixMetadata matrixMetadata = new MatrixMetadata(
-				loadDescription.getStudyKey(),
-				loadDescription.getFriendlyName(),
-				loadDescription.getFormat(),
-				importMatrixMetadata.getDescription(), // description
-				importMatrixMetadata.getGenotypeEncoding(),
-				importMatrixMetadata.getStrand(),
-				isHasDictionary(),
-				rdSampleSetMap.size(),
-				dataSetSource.getNumMarkers(),
-				chromosomeInfo.size(),
-				loadDescription.getGtDirPath());
-
-		NetcdfFileWriteable ncfile = AbstractNetCDFDataSetDestination.generateNetcdfHandler(matrixMetadata);
-
-		// create the file
-		ncfile.create();
-		log.trace("Done creating netCDF handle: " + ncfile.toString());
-		//</editor-fold>
-
-		//<editor-fold defaultstate="expanded" desc="WRITE MATRIX METADATA">
-		// WRITE SAMPLESET TO MATRIX FROM SAMPLES LIST
-		ArrayChar.D2 samplesD2 = NetCdfUtils.writeCollectionToD2ArrayChar(rdSampleSetMap.keySet(), cNetCDF.Strides.STRIDE_SAMPLE_NAME);
-		int[] sampleOrig = new int[] {0, 0};
-		ncfile.write(cNetCDF.Variables.VAR_SAMPLE_KEY, sampleOrig, samplesD2);
-		samplesD2 = null;
-		log.info("Done writing SampleSet to matrix");
-
-		// WRITE CHROMOSOME METADATA FROM ANNOTATION FILE
-		// Chromosome location for each marker
-		ArrayChar.D2 markersD2 = NetCdfUtils.writeValuesToD2ArrayChar(markersMetadatasSource, MarkerMetadata.TO_CHR, cNetCDF.Strides.STRIDE_CHR);
-		int[] markersOrig = new int[] {0, 0};
-		ncfile.write(cNetCDF.Variables.VAR_MARKERS_CHR, markersOrig, markersD2);
-		log.info("Done writing chromosomes to matrix");
-		// Set of chromosomes found in matrix along with number of markersinfo
-		NetCdfUtils.saveObjectsToStringToMatrix(ncfile, chromosomeInfo.keySet(), cNetCDF.Variables.VAR_CHR_IN_MATRIX, cNetCDF.Strides.STRIDE_CHR);
-		// Number of marker per chromosome & max pos for each chromosome
-		int[] columns = new int[] {0, 1, 2, 3};
-		NetCdfUtils.saveChromosomeInfosD2ToWrMatrix(ncfile, chromosomeInfo.values(), columns, cNetCDF.Variables.VAR_CHR_INFO);
-
-		// WRITE POSITION METADATA FROM ANNOTATION FILE
-		ArrayInt.D1 markersPosD1 = NetCdfUtils.writeValuesToD1ArrayInt(markersMetadatasSource, MarkerMetadata.TO_POS);
-		int[] posOrig = new int[1];
-		ncfile.write(cNetCDF.Variables.VAR_MARKERS_POS, posOrig, markersPosD1);
-		log.info("Done writing positions to matrix");
-
-		// WRITE RSID & MARKERID METADATA FROM METADATAMap
-		rdMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_RSID);
-		markersD2 = NetCdfUtils.writeCollectionToD2ArrayChar(rdMarkerSet.getMarkerIdSetMapCharArray().keySet(), cNetCDF.Strides.STRIDE_MARKER_NAME);
-		ncfile.write(cNetCDF.Variables.VAR_MARKERSET, markersOrig, markersD2);
-
-		markersD2 = NetCdfUtils.writeCollectionToD2ArrayChar(rdMarkerSet.getMarkerIdSetMapCharArray().values(), cNetCDF.Strides.STRIDE_MARKER_NAME);
-		ncfile.write(cNetCDF.Variables.VAR_MARKERS_RSID, markersOrig, markersD2);
-		log.info("Done writing MarkerId and RsId to matrix");
-
-		// WRITE GT STRAND FROM ANNOTATION FILE
-		rdMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_GT_STRAND);
-		markersD2 = NetCdfUtils.writeCollectionToD2ArrayChar(rdMarkerSet.getMarkerIdSetMapCharArray().values(), cNetCDF.Strides.STRIDE_STRAND);
-		int[] gtOrig = new int[] {0, 0};
-		ncfile.write(cNetCDF.Variables.VAR_GT_STRAND, gtOrig, markersD2);
-		markersD2 = null;
-		log.info("Done writing strand info to matrix");
-		//</editor-fold>
+//		NetcdfFileWriteable ncfile = AbstractNetCDFDataSetDestination.generateNetcdfHandler(matrixMetadata);
+//
+//		// create the file
+//		ncfile.create();
+//		log.trace("Done creating netCDF handle: " + ncfile.toString());
+//		//</editor-fold>
+//
+//		//<editor-fold defaultstate="expanded" desc="WRITE MATRIX METADATA">
+//		// WRITE SAMPLESET TO MATRIX FROM SAMPLES LIST
+//		ArrayChar.D2 samplesD2 = NetCdfUtils.writeCollectionToD2ArrayChar(rdSampleSetMap.keySet(), cNetCDF.Strides.STRIDE_SAMPLE_NAME);
+//		int[] sampleOrig = new int[] {0, 0};
+//		ncfile.write(cNetCDF.Variables.VAR_SAMPLE_KEY, sampleOrig, samplesD2);
+//		samplesD2 = null;
+//		log.info("Done writing SampleSet to matrix");
+//
+//		// WRITE CHROMOSOME METADATA FROM ANNOTATION FILE
+//		// Chromosome location for each marker
+//		ArrayChar.D2 markersD2 = NetCdfUtils.writeValuesToD2ArrayChar(markersMetadatasSource, MarkerMetadata.TO_CHR, cNetCDF.Strides.STRIDE_CHR);
+//		int[] markersOrig = new int[] {0, 0};
+//		ncfile.write(cNetCDF.Variables.VAR_MARKERS_CHR, markersOrig, markersD2);
+//		log.info("Done writing chromosomes to matrix");
+//		// Set of chromosomes found in matrix along with number of markersinfo
+//		NetCdfUtils.saveObjectsToStringToMatrix(ncfile, chromosomeInfo.keySet(), cNetCDF.Variables.VAR_CHR_IN_MATRIX, cNetCDF.Strides.STRIDE_CHR);
+//		// Number of marker per chromosome & max pos for each chromosome
+//		int[] columns = new int[] {0, 1, 2, 3};
+//		NetCdfUtils.saveChromosomeInfosD2ToWrMatrix(ncfile, chromosomeInfo.values(), columns, cNetCDF.Variables.VAR_CHR_INFO);
+//
+//		// WRITE POSITION METADATA FROM ANNOTATION FILE
+//		ArrayInt.D1 markersPosD1 = NetCdfUtils.writeValuesToD1ArrayInt(markersMetadatasSource, MarkerMetadata.TO_POS);
+//		int[] posOrig = new int[1];
+//		ncfile.write(cNetCDF.Variables.VAR_MARKERS_POS, posOrig, markersPosD1);
+//		log.info("Done writing positions to matrix");
+//
+//		// WRITE RSID & MARKERID METADATA FROM METADATAMap
+//		rdMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_RSID);
+//		markersD2 = NetCdfUtils.writeCollectionToD2ArrayChar(rdMarkerSet.getMarkerIdSetMapCharArray().keySet(), cNetCDF.Strides.STRIDE_MARKER_NAME);
+//		ncfile.write(cNetCDF.Variables.VAR_MARKERSET, markersOrig, markersD2);
+//
+//		markersD2 = NetCdfUtils.writeCollectionToD2ArrayChar(rdMarkerSet.getMarkerIdSetMapCharArray().values(), cNetCDF.Strides.STRIDE_MARKER_NAME);
+//		ncfile.write(cNetCDF.Variables.VAR_MARKERS_RSID, markersOrig, markersD2);
+//		log.info("Done writing MarkerId and RsId to matrix");
+//
+//		// WRITE GT STRAND FROM ANNOTATION FILE
+//		rdMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_GT_STRAND);
+//		markersD2 = NetCdfUtils.writeCollectionToD2ArrayChar(rdMarkerSet.getMarkerIdSetMapCharArray().values(), cNetCDF.Strides.STRIDE_STRAND);
+//		int[] gtOrig = new int[] {0, 0};
+//		ncfile.write(cNetCDF.Variables.VAR_GT_STRAND, gtOrig, markersD2);
+//		markersD2 = null;
+//		log.info("Done writing strand info to matrix");
+//		//</editor-fold>
 
 		//<editor-fold defaultstate="expanded" desc="GENOTYPES WRITER">
 		//Iterate through rdSampleSetMap, use item position to read correct sample GTs into rdMarkerIdSetMap.
+		SamplesGenotypesSource rdSamplesGenotypesSource = dataSetSource.getSamplesGenotypesSource();
+//		Iterator<GenotypesList> rdSamplesGenotypesSourceIt = rdSamplesGenotypesSource.iterator();
+//		for (int sampleWrIndex = 0; sampleWrIndex < rdSampleSetMap.size(); sampleWrIndex++) {
 		int sampleWrIndex = 0;
-		for (int i = 0; i < rdSampleSetMap.size(); i++) {
-			rdMarkerSet.fillGTsForCurrentSampleIntoInitMap(sampleWrIndex);
+		for (GenotypesList genotypesList : rdSamplesGenotypesSource) {
+//			rdMarkerSet.fillGTsForCurrentSampleIntoInitMap(sampleWrIndex);
 
 			// Write MarkerIdSetMap to A3 ArrayChar and save to wrMatrix
 //			NetCdfUtils.saveSingleSampleGTsToMatrix(ncfile, rdMarkerSet.getMarkerIdSetMapByteArray().values(), sampleWrIndex);
-			samplesReceiver.addSampleGTAlleles(sampleWrIndex, rdMarkerSet.getMarkerIdSetMapByteArray().values());
+//			samplesReceiver.addSampleGTAlleles(sampleWrIndex, rdMarkerSet.getMarkerIdSetMapByteArray().values());
+			samplesReceiver.addSampleGTAlleles(sampleWrIndex, genotypesList);
 			sampleWrIndex++;
 			if ((sampleWrIndex == 1) || (sampleWrIndex % 100 == 0)) {
 				log.info("Done processing sample {} / {}", sampleWrIndex,
-						rdSampleSetMap.size());
+						dataSetSource.getNumSamples());
 			}
 		}
 		//</editor-fold>
 
-		// CLOSE THE FILE AND BY THIS, MAKE IT READ-ONLY
-		GenotypeEncoding guessedGTCode = GenotypeEncoding.UNKNOWN;
-		// GUESS GENOTYPE ENCODING
-		if (guessedGTCode.equals(cNetCDF.Defaults.GenotypeEncoding.UNKNOWN)
-				|| guessedGTCode.equals(cNetCDF.Defaults.GenotypeEncoding.O12)) {
-			guessedGTCode = Utils.detectGTEncoding(rdMarkerSet.getMarkerIdSetMapByteArray().values());
-		}
-
-		ArrayChar.D2 guessedGTCodeAC = new ArrayChar.D2(1, 8);
-		Index index = guessedGTCodeAC.getIndex();
-		guessedGTCodeAC.setString(index.set(0, 0), guessedGTCode.toString().trim());
-		int[] origin = new int[]{0, 0};
-		ncfile.write(cNetCDF.Variables.GLOB_GTENCODING, origin, guessedGTCodeAC);
-
-		StringBuilder description = new StringBuilder(loadDescription.getDescription());
-		description.append("Genotype encoding: ");
-		description.append(guessedGTCode);
-
-		MatrixMetadata matrixMetaData = matrixFactory.getResultMatrixMetadata();
-		matrixMetaData.setDescription(description.toString());
-		MatricesList.updateMatrix(matrixMetaData);
-
-		// CLOSE FILE
-		ncfile.close();
-		result = matrixFactory.getResultMatrixMetadata().getMatrixId();
+//		// CLOSE THE FILE AND BY THIS, MAKE IT READ-ONLY
+//		GenotypeEncoding guessedGTCode = GenotypeEncoding.UNKNOWN;
+//		// GUESS GENOTYPE ENCODING
+//		if (guessedGTCode.equals(cNetCDF.Defaults.GenotypeEncoding.UNKNOWN)
+//				|| guessedGTCode.equals(cNetCDF.Defaults.GenotypeEncoding.O12)) {
+//			guessedGTCode = Utils.detectGTEncoding(rdMarkerSet.getMarkerIdSetMapByteArray().values());
+//		}
+//
+//		ArrayChar.D2 guessedGTCodeAC = new ArrayChar.D2(1, 8);
+//		Index index = guessedGTCodeAC.getIndex();
+//		guessedGTCodeAC.setString(index.set(0, 0), guessedGTCode.toString().trim());
+//		int[] origin = new int[]{0, 0};
+//		ncfile.write(cNetCDF.Variables.GLOB_GTENCODING, origin, guessedGTCodeAC);
+//
+//		StringBuilder description = new StringBuilder(loadDescription.getDescription());
+//		description.append("Genotype encoding: ");
+//		description.append(guessedGTCode);
+//
+//		MatrixMetadata matrixMetaData = matrixFactory.getResultMatrixMetadata();
+//		matrixMetaData.setDescription(description.toString());
+//		MatricesList.updateMatrix(matrixMetaData);
+//
+//		// CLOSE FILE
+//		ncfile.close();
+//		result = matrixFactory.getResultMatrixMetadata().getMatrixId();
 
 		AbstractLoadGTFromFiles.logAsWhole(
 				startTime,

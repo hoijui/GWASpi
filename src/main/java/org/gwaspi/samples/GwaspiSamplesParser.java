@@ -53,9 +53,10 @@ public class GwaspiSamplesParser implements SamplesParser {
 					i++;
 				}
 				SampleInfo sampleInfo = new SampleInfo(
-						Integer.MIN_VALUE,
+						studyKey,
 						cVals[cImport.Annotation.GWASpi.sampleId],
 						cVals[cImport.Annotation.GWASpi.familyId],
+						Integer.MIN_VALUE,
 						cVals[cImport.Annotation.GWASpi.fatherId],
 						cVals[cImport.Annotation.GWASpi.motherId],
 						SampleInfo.Sex.parse(cVals[cImport.Annotation.GWASpi.sex]),
@@ -65,7 +66,6 @@ public class GwaspiSamplesParser implements SamplesParser {
 						cVals[cImport.Annotation.GWASpi.population],
 						Integer.parseInt(cVals[cImport.Annotation.GWASpi.age]),
 						"",
-						studyKey,
 						Integer.MIN_VALUE,
 						Integer.MIN_VALUE
 						);
