@@ -271,7 +271,7 @@ public class OperationMetadata implements Serializable {
 		name       = "name",
 		length     = 127,
 		unique     = false,
-		nullable   = false,
+		nullable   = true,
 		insertable = true,
 		updatable  = false
 		)
@@ -297,7 +297,7 @@ public class OperationMetadata implements Serializable {
 		name       = "simpleName",
 		length     = 255,
 		unique     = false,
-		nullable   = false,
+		nullable   = true,
 		insertable = true,
 		updatable  = false
 		)

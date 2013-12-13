@@ -276,7 +276,7 @@ public class MatrixMetadata implements Serializable {
 			int numMarkers,
 			int numSamples,
 			int numChromosomes,
-			String matrixType)
+			String inputLocation)
 			throws IOException
 	{
 		this(
@@ -290,11 +290,11 @@ public class MatrixMetadata implements Serializable {
 				numMarkers,
 				numSamples,
 				numChromosomes,
-				matrixType,
+				"", // matrixType
 				new Date(), // creationDate
 				-1, // parent1MatrixId
 				-1, // parent2MatrixId
-				""); // inputLocation
+				inputLocation);
 	}
 
 	/**
@@ -362,7 +362,7 @@ public class MatrixMetadata implements Serializable {
 	@Column(
 		name       = "hasDictionary",
 		unique     = false,
-		nullable   = false,
+		nullable   = true,
 		insertable = true,
 		updatable  = true
 		)
@@ -426,7 +426,7 @@ public class MatrixMetadata implements Serializable {
 		name       = "friendlyName",
 		length     = 255,
 		unique     = true,
-		nullable   = false,
+		nullable   = true,
 		insertable = true,
 		updatable  = false
 		)
@@ -447,7 +447,7 @@ public class MatrixMetadata implements Serializable {
 		name       = "simpleName",
 		length     = 255,
 		unique     = false,
-		nullable   = false,
+		nullable   = true,
 		insertable = true,
 		updatable  = false
 		)
@@ -462,7 +462,7 @@ public class MatrixMetadata implements Serializable {
 	@Column(
 		name       = "technology",
 		unique     = false,
-		nullable   = false,
+		nullable   = true,
 		insertable = true,
 		updatable  = false
 		)
@@ -477,7 +477,7 @@ public class MatrixMetadata implements Serializable {
 	@Column(
 		name       = "gwaspiDBVersion",
 		unique     = false,
-		nullable   = false,
+		nullable   = true,
 		insertable = true,
 		updatable  = true
 		)
@@ -492,7 +492,7 @@ public class MatrixMetadata implements Serializable {
 	@Column(
 		name       = "gtEncoding",
 		unique     = false,
-		nullable   = false,
+		nullable   = true,
 		insertable = true,
 		updatable  = false
 		)
@@ -507,7 +507,7 @@ public class MatrixMetadata implements Serializable {
 	@Column(
 		name       = "numMarkers",
 		unique     = false,
-		nullable   = false,
+		nullable   = true,
 		insertable = true,
 		updatable  = false
 		)
@@ -522,7 +522,7 @@ public class MatrixMetadata implements Serializable {
 	@Column(
 		name       = "numSamples",
 		unique     = false,
-		nullable   = false,
+		nullable   = true,
 		insertable = true,
 		updatable  = false
 		)
@@ -537,7 +537,7 @@ public class MatrixMetadata implements Serializable {
 	@Column(
 		name       = "numChromosomes",
 		unique     = false,
-		nullable   = false,
+		nullable   = true,
 		insertable = true,
 		updatable  = false
 		)
@@ -552,7 +552,7 @@ public class MatrixMetadata implements Serializable {
 	@Column(
 		name       = "strand",
 		unique     = false,
-		nullable   = false,
+		nullable   = true,
 		insertable = true,
 		updatable  = false
 		)
@@ -568,7 +568,7 @@ public class MatrixMetadata implements Serializable {
 		name       = "description",
 		length     = 1023,
 		unique     = false,
-		nullable   = false,
+		nullable   = true,
 		insertable = true,
 		updatable  = false
 		)
@@ -584,7 +584,7 @@ public class MatrixMetadata implements Serializable {
 		name       = "matrixType",
 		length     = 31,
 		unique     = false,
-		nullable   = false,
+		nullable   = true,
 		insertable = true,
 		updatable  = false
 		)
@@ -599,11 +599,11 @@ public class MatrixMetadata implements Serializable {
 	@Column(
 		name       = "parent1MatrixId",
 		unique     = false,
-		nullable   = false,
+		nullable   = true,
 		insertable = true,
 		updatable  = false
 		)
-	public int getParent1MatrixId() {
+	public Integer getParent1MatrixId() {
 		return parent1MatrixId;
 	}
 
@@ -614,11 +614,11 @@ public class MatrixMetadata implements Serializable {
 	@Column(
 		name       = "parent2MatrixId",
 		unique     = false,
-		nullable   = false,
+		nullable   = true,
 		insertable = true,
 		updatable  = false
 		)
-	public int getParent2MatrixId() {
+	public Integer getParent2MatrixId() {
 		return parent2MatrixId;
 	}
 
@@ -630,7 +630,7 @@ public class MatrixMetadata implements Serializable {
 		name       = "inputLocation",
 		length     = 1023,
 		unique     = false,
-		nullable   = false,
+		nullable   = true,
 		insertable = true,
 		updatable  = false
 		)

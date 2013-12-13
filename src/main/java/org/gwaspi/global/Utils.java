@@ -126,10 +126,11 @@ public class Utils {
 	 * If a deletion fails, the method stops attempting to delete and returns false.
 	 */
 	public static boolean deleteFolder(File dir) {
+
 		if (dir.isDirectory()) {
 			String[] children = dir.list();
-			for (int i = 0; i < children.length; i++) {
-				boolean success = deleteFolder(new File(dir, children[i]));
+			for (String child : children) {
+				boolean success = deleteFolder(new File(dir, child));
 				if (!success) {
 					return false;
 				}
@@ -212,10 +213,9 @@ public class Utils {
 			}
 			// get a listing of files...
 			String[] list = src.list();
-			// copy all the files in the list.
-			for (int i = 0; i < list.length; i++) {
-				File dest1 = new File(dest, list[i]);
-				File src1 = new File(src, list[i]);
+			for (String listEntry : list) {
+				File dest1 = new File(dest, listEntry);
+				File src1 = new File(src, listEntry);
 				copyFileRecursive(src1, dest1);
 			}
 		} else {
@@ -383,8 +383,14 @@ public class Utils {
 //		}
 	}
 
+	/**
+	 * FIXME This is actually only checking for a network connection,
+	 * not for internet connection.
+	 */
 	public static boolean checkInternetConnection() {
+
 		boolean isConnected = false;
+
 		try {
 			Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
 			while (interfaces.hasMoreElements()) {
@@ -399,7 +405,7 @@ public class Utils {
 
 //		try {
 //			InetAddress address = InetAddress.getByName("java.sun.com");
-//			if(address != null){
+//			if (address != null) {
 //				isConnected = true;
 //			}
 //		} catch (UnknownHostException ex) {

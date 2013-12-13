@@ -361,6 +361,7 @@ public class Config {
 	}
 
 	public static void checkUpdates() throws IOException, ParseException, ParserConfigurationException, SAXException, URISyntaxException {
+
 		if (Utils.checkInternetConnection()) {
 			Document localDom = getLocalVersionDom();
 
@@ -371,7 +372,15 @@ public class Config {
 				setConfigValue(PROPERTY_CURRENT_GWASPIDB_VERSION, XMLParser.getTextValue(localElements.get(0), "GWASpi_DB_Version"));
 
 				URL remoteVersionPath = new URL(cGlobal.REMOTE_VERSION_XML);
-				Document remoteDom = XMLParser.parseXmlFile(remoteVersionPath.toURI().toString());
+				Document remoteDom = null;
+				try {
+					remoteDom = XMLParser.parseXmlFile(remoteVersionPath.toURI().toString());
+				} catch (Exception ex) {
+					// NOTE actually, UnknownHostException will be thrown here,
+					//   if we fail to connect to www.gwaspi.org,
+					//   but java claims it can not be thrown :/
+					log.warn("Failed to parse version info file", ex);
+				}
 
 				if (remoteDom != null) { // Found remote version info
 					// Retrieve data from XML files

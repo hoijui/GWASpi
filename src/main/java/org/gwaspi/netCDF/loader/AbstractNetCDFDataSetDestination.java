@@ -224,10 +224,11 @@ public abstract class AbstractNetCDFDataSetDestination extends AbstractDataSetDe
 		try {
 			matrixMetadata = createMatrixMetadata();
 
-			if ((matrixMetadata.getNumSamples() > 0)
-					&& (matrixMetadata.getNumMarkers() > 0))
-			{
-				throw new IllegalArgumentException();
+			if (matrixMetadata.getNumSamples() <= 0) {
+				throw new RuntimeException("No samples loaded");
+			}
+			if (matrixMetadata.getNumMarkers() <= 0) {
+				throw new RuntimeException("No markers loaded");
 			}
 
 			resultMatrixKey = MatricesList.insertMatrixMetadata(matrixMetadata);
