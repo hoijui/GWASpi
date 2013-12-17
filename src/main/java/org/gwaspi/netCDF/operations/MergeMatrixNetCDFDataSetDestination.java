@@ -112,8 +112,8 @@ public class MergeMatrixNetCDFDataSetDestination extends AbstractNetCDFDataSetDe
 				gtEncoding,
 				rdMatrix1Metadata.getStrand(),
 				hasDictionary,
-				numSamples,
 				numMarkers,
+				numSamples,
 				numChromosomes,
 				rdMatrix1Metadata.getKey().getMatrixId(), // Parent matrix 1 key
 				rdMatrix2Metadata.getKey().getMatrixId()); // Parent matrix 2 key

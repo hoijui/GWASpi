@@ -67,11 +67,14 @@ public abstract class AbstractOperationSet<K, V> {
 
 	//<editor-fold defaultstate="expanded" desc="OPERATION-SET FETCHERS">
 	private static <T, V> Map<T, V> wrapToKeyMap(ArrayChar.D2 markersOrSamplesAC, KeyFactory<T> keyFactory) {
+
 		Map<String, V> keyStrs = NetCdfUtils.writeD2ArrayCharToMapKeys(markersOrSamplesAC, null);
+
 		Map<T, V> reparsedData = new LinkedHashMap<T, V>();
 		for (Map.Entry<String, V> entry : keyStrs.entrySet()) {
 			reparsedData.put(keyFactory.decode(entry.getKey()), entry.getValue());
 		}
+
 		return reparsedData;
 	}
 

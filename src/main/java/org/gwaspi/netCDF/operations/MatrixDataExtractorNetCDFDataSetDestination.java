@@ -24,6 +24,7 @@ import org.gwaspi.constants.cNetCDF.Defaults.SetMarkerPickCase;
 import org.gwaspi.constants.cNetCDF.Defaults.SetSamplePickCase;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.DataSetSource;
+import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.netCDF.loader.AbstractNetCDFDataSetDestination;
 
@@ -152,11 +153,11 @@ public class MatrixDataExtractorNetCDFDataSetDestination extends AbstractNetCDFD
 				sourceMatrixMetadata.getGenotypeEncoding(), // matrix genotype encoding from the original matrix
 				sourceMatrixMetadata.getStrand(),
 				sourceMatrixMetadata.getHasDictionary(), // has dictionary?
-				numSamples,
 				numMarkers,
+				numSamples,
 				numChromosomes,
 				sourceMatrixMetadata.getKey().getMatrixId(), // orig/parent matrix 1 key
-				-1); // orig/parent matrix 2 key
+				MatrixKey.NULL_ID); // orig/parent matrix 2 key
 	}
 
 	@Override

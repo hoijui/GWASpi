@@ -18,7 +18,6 @@
 package org.gwaspi.operations.trendtest;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
@@ -79,90 +78,28 @@ public abstract class AbstractNetCdfTestOperationDataSet<ET> extends AbstractNet
 	}
 
 	@Override
-	public NetcdfFileWriteable generateNetCdfHandler(
-			OperationMetadata operationMetadata)
+	protected void supplementNetCdfHandler(
+			NetcdfFileWriteable ncFile,
+			OperationMetadata operationMetadata,
+			List<Dimension> markersSpace,
+			List<Dimension> chromosomesSpace,
+			List<Dimension> samplesSpace)
 			throws IOException
 	{
-		final int boxDimensions;
-		final String boxDimensionsName;
-		final String ncVariableName;
-		if (operationMetadata.getOperationType() == OPType.TRENDTEST) {
-			boxDimensions = 2;
-			boxDimensionsName = cNetCDF.Dimensions.DIM_2BOXES;
-			ncVariableName = cNetCDF.Association.VAR_OP_MARKERS_ASTrendTestTP;
-		} else if (operationMetadata.getOperationType() == OPType.ALLELICTEST) {
-			boxDimensions = 3;
-			boxDimensionsName = cNetCDF.Dimensions.DIM_3BOXES;
-			ncVariableName = cNetCDF.Association.VAR_OP_MARKERS_ASAllelicAssociationTPOR;
-		} else if (operationMetadata.getOperationType() == OPType.GENOTYPICTEST) {
-			boxDimensions = 4;
-			boxDimensionsName = cNetCDF.Dimensions.DIM_4BOXES;
-			ncVariableName = cNetCDF.Association.VAR_OP_MARKERS_ASGenotypicAssociationTP2OR;
-		} else if (operationMetadata.getOperationType() == OPType.COMBI_ASSOC_TEST) {
-			boxDimensions = 4; // FIXME
-			boxDimensionsName = cNetCDF.Dimensions.DIM_4BOXES; // FIXME
-			ncVariableName = cNetCDF.Association.VAR_OP_MARKERS_ASGenotypicAssociationTP2OR; // FIXME
-		} else {
-			throw new IOException("Unsupported operation type " + operationMetadata.getOperationType().name());
+		final OPType opType = operationMetadata.getOperationType();
+
+		// Define Variables
+		ncFile.addVariable(cNetCDF.Association.VAR_OP_MARKERS_T, DataType.DOUBLE, markersSpace);
+		ncFile.addVariable(cNetCDF.Association.VAR_OP_MARKERS_P, DataType.DOUBLE, markersSpace);
+		if ((opType == OPType.ALLELICTEST) || (opType == OPType.GENOTYPICTEST)) {
+			ncFile.addVariable(cNetCDF.Association.VAR_OP_MARKERS_OR, DataType.DOUBLE, markersSpace);
+			if (opType == OPType.GENOTYPICTEST) {
+				ncFile.addVariable(cNetCDF.Association.VAR_OP_MARKERS_OR2, DataType.DOUBLE, markersSpace);
+			}
 		}
-
-		final int markerStride = cNetCDF.Strides.STRIDE_MARKER_NAME;
-		final int sampleStride = cNetCDF.Strides.STRIDE_SAMPLE_NAME;
-
-		NetcdfFileWriteable ncfile = createNetCdfFile(operationMetadata);
-
-		// global attributes
-		ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_STUDY, operationMetadata.getStudyId());
-		ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_DESCRIPTION, operationMetadata.getDescription());
-
-		// dimensions
-		Dimension setDim = ncfile.addDimension(cNetCDF.Dimensions.DIM_OPSET, operationMetadata.getOpSetSize());
-		Dimension implicitSetDim = ncfile.addDimension(cNetCDF.Dimensions.DIM_IMPLICITSET, operationMetadata.getImplicitSetSize());
-		Dimension chrSetDim = ncfile.addDimension(cNetCDF.Dimensions.DIM_CHRSET, operationMetadata.getNumChromosomes());
-		Dimension markerStrideDim = ncfile.addDimension(cNetCDF.Dimensions.DIM_MARKERSTRIDE, markerStride);
-		Dimension sampleStrideDim = ncfile.addDimension(cNetCDF.Dimensions.DIM_SAMPLESTRIDE, sampleStride);
-		Dimension boxDim = ncfile.addDimension(boxDimensionsName, boxDimensions);
-		Dimension dim8 = ncfile.addDimension(cNetCDF.Dimensions.DIM_8, 8);
-		Dimension dim4 = ncfile.addDimension(cNetCDF.Dimensions.DIM_4, 4);
-
-		// OP SPACES
-		List<Dimension> opSpace = new ArrayList<Dimension>();
-		opSpace.add(setDim);
-		opSpace.add(boxDim);
-
-		// MARKER SPACES
-		List<Dimension> markerNameSpace = new ArrayList<Dimension>();
-		markerNameSpace.add(setDim);
-		markerNameSpace.add(markerStrideDim);
-
-		// CHROMOSOME SPACES
-		List<Dimension> chrSetSpace = new ArrayList<Dimension>();
-		chrSetSpace.add(chrSetDim);
-		chrSetSpace.add(dim8);
-
-		List<Dimension> chrInfoSpace = new ArrayList<Dimension>();
-		chrInfoSpace.add(chrSetDim);
-		chrInfoSpace.add(dim4);
-
-		// SAMPLE SPACES
-		List<Dimension> sampleSetSpace = new ArrayList<Dimension>();
-		sampleSetSpace.add(implicitSetDim);
-		sampleSetSpace.add(sampleStrideDim);
-
-		// Define OP Variables
-		ncfile.addVariable(cNetCDF.Variables.VAR_OPSET, DataType.CHAR, markerNameSpace);
-		ncfile.addVariable(cNetCDF.Variables.VAR_MARKERS_RSID, DataType.CHAR, markerNameSpace);
-		ncfile.addVariable(cNetCDF.Variables.VAR_IMPLICITSET, DataType.CHAR, sampleSetSpace);
-
-		// Define Chromosome Variables
-		ncfile.addVariable(cNetCDF.Variables.VAR_CHR_IN_MATRIX, DataType.CHAR, chrSetSpace);
-		ncfile.addVariable(cNetCDF.Variables.VAR_CHR_INFO, DataType.INT, chrInfoSpace);
-
-		ncfile.addVariable(ncVariableName, DataType.DOUBLE, opSpace);
-
-		ncfile.addVariableAttribute(cNetCDF.Variables.VAR_OPSET, cNetCDF.Attributes.LENGTH, operationMetadata.getOpSetSize());
-
-		return ncfile;
+		if (opType == OPType.COMBI_ASSOC_TEST) {
+			// TODO FIXME What is stored for the combi test?
+		}
 	}
 
 	@Override

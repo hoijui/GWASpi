@@ -71,74 +71,48 @@ public class NetCdfQAMarkersOperationDataSet extends AbstractNetCdfOperationData
 	}
 
 	@Override
-	public NetcdfFileWriteable generateNetCdfHandler(
-			OperationMetadata operationMetadata)
+	protected void supplementNetCdfHandler(
+			NetcdfFileWriteable ncFile,
+			OperationMetadata operationMetadata,
+			List<Dimension> markersSpace,
+			List<Dimension> chromosomesSpace,
+			List<Dimension> samplesSpace)
 			throws IOException
 	{
 		final int gtStride = cNetCDF.Strides.STRIDE_GT;
-		final int markerStride = cNetCDF.Strides.STRIDE_MARKER_NAME;
-		final int sampleStride = cNetCDF.Strides.STRIDE_SAMPLE_NAME;
-
-		NetcdfFileWriteable ncfile = createNetCdfFile(operationMetadata);
-
-		// global attributes
-		ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_STUDY, operationMetadata.getStudyId());
-		ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_DESCRIPTION, operationMetadata.getDescription());
 
 		// dimensions
-		Dimension markerSetDim = ncfile.addDimension(cNetCDF.Dimensions.DIM_OPSET, operationMetadata.getOpSetSize());
-		Dimension implicitSetDim = ncfile.addDimension(cNetCDF.Dimensions.DIM_IMPLICITSET, operationMetadata.getImplicitSetSize());
-		Dimension boxes4Dim = ncfile.addDimension(cNetCDF.Dimensions.DIM_4BOXES, 4);
-		Dimension markerStrideDim = ncfile.addDimension(cNetCDF.Dimensions.DIM_MARKERSTRIDE, markerStride);
-		Dimension sampleStrideDim = ncfile.addDimension(cNetCDF.Dimensions.DIM_SAMPLESTRIDE, sampleStride);
-		Dimension alleleStrideDim = ncfile.addDimension(cNetCDF.Dimensions.DIM_GTSTRIDE, gtStride / 2);
-		Dimension dim4 = ncfile.addDimension(cNetCDF.Dimensions.DIM_4, 4);
-
-		// OP SPACES
-		List<Dimension> OP1Space = new ArrayList<Dimension>();
-		OP1Space.add(markerSetDim);
-
-		List<Dimension> OP2x4Space = new ArrayList<Dimension>();
-		OP2x4Space.add(markerSetDim);
-		OP2x4Space.add(boxes4Dim);
+		Dimension markersDim = markersSpace.get(0);
+		Dimension boxes4Dim = ncFile.addDimension(cNetCDF.Dimensions.DIM_4BOXES, 4);
+		Dimension alleleStrideDim = ncFile.addDimension(cNetCDF.Dimensions.DIM_GTSTRIDE, gtStride / 2);
+		Dimension dim4 = ncFile.addDimension(cNetCDF.Dimensions.DIM_4, 4);
 
 		// MARKER SPACES
-		List<Dimension> markerNameSpace = new ArrayList<Dimension>();
-		markerNameSpace.add(markerSetDim);
-		markerNameSpace.add(markerStrideDim);
+		List<Dimension> markers4Space = new ArrayList<Dimension>(2);
+		markers4Space.add(markersDim);
+		markers4Space.add(boxes4Dim);
 
-		List<Dimension> markerPropertySpace4 = new ArrayList<Dimension>();
-		markerPropertySpace4.add(markerSetDim);
+		List<Dimension> markerPropertySpace4 = new ArrayList<Dimension>(2);
+		markerPropertySpace4.add(markersDim);
 		markerPropertySpace4.add(dim4);
 
-		// SAMPLE SPACES
-		List<Dimension> sampleSetSpace = new ArrayList<Dimension>();
-		sampleSetSpace.add(implicitSetDim);
-		sampleSetSpace.add(sampleStrideDim);
-
 		// ALLELES SPACES
-		List<Dimension> allelesSpace = new ArrayList<Dimension>();
-		allelesSpace.add(markerSetDim);
+		List<Dimension> allelesSpace = new ArrayList<Dimension>(2);
+		allelesSpace.add(markersDim);
 		allelesSpace.add(alleleStrideDim);
 
 		// Define OP Variables
-		ncfile.addVariable(cNetCDF.Variables.VAR_OPSET, DataType.CHAR, markerNameSpace);
-		ncfile.addVariable(cNetCDF.Variables.VAR_MARKERS_RSID, DataType.CHAR, markerNameSpace);
-		ncfile.addVariable(cNetCDF.Variables.VAR_IMPLICITSET, DataType.CHAR, sampleSetSpace);
-		ncfile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_CENSUSALL, DataType.INT, OP2x4Space);
-		ncfile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_MISSINGRAT, DataType.DOUBLE, OP1Space);
-		ncfile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_MISMATCHSTATE, DataType.INT, OP1Space);
-		ncfile.addVariableAttribute(cNetCDF.Variables.VAR_OPSET, cNetCDF.Attributes.LENGTH, operationMetadata.getOpSetSize());
+		ncFile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_CENSUSALL, DataType.INT, markers4Space);
+		ncFile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_MISSINGRAT, DataType.DOUBLE, markersSpace);
+		ncFile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_MISMATCHSTATE, DataType.INT, markersSpace);
 
 		// Define Genotype Variables
 		//ncfile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_KNOWNALLELES, DataType.CHAR, allelesSpace);
-		ncfile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_MINALLELES, DataType.BYTE, allelesSpace);
-		ncfile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_MINALLELEFRQ, DataType.DOUBLE, OP1Space);
-		ncfile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_MAJALLELES, DataType.BYTE, allelesSpace);
-		ncfile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_MAJALLELEFRQ, DataType.DOUBLE, OP1Space);
-		ncfile.addVariable(cNetCDF.Variables.VAR_GT_STRAND, DataType.CHAR, markerPropertySpace4);
-
-		return ncfile;
+		ncFile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_MINALLELES, DataType.BYTE, allelesSpace);
+		ncFile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_MINALLELEFRQ, DataType.DOUBLE, markersSpace);
+		ncFile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_MAJALLELES, DataType.BYTE, allelesSpace);
+		ncFile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_MAJALLELEFRQ, DataType.DOUBLE, markersSpace);
+		ncFile.addVariable(cNetCDF.Variables.VAR_GT_STRAND, DataType.CHAR, markerPropertySpace4);
 	}
 
 	@Override
@@ -164,8 +138,6 @@ public class NetCdfQAMarkersOperationDataSet extends AbstractNetCdfOperationData
 
 	@Override
 	public void setMarkerMissingRatios(Collection<Double> markerMissingRatios) throws IOException {
-
-		ensureNcFile();
 		NetCdfUtils.saveDoubleMapD1ToWrMatrix(getNetCdfWriteFile(), markerMissingRatios, cNetCDF.Census.VAR_OP_MARKERS_MISSINGRAT);
 	}
 
@@ -179,25 +151,22 @@ public class NetCdfQAMarkersOperationDataSet extends AbstractNetCdfOperationData
 //					? cNetCDF.Defaults.DEFAULT_MISMATCH_YES
 //					: cNetCDF.Defaults.DEFAULT_MISMATCH_NO);
 //		}
-		ensureNcFile();
 		NetCdfUtils.saveBooleansD1ToWrMatrix(getNetCdfWriteFile(), markerMismatchStates, cNetCDF.Census.VAR_OP_MARKERS_MISMATCHSTATE);
 	}
 
 	@Override
 	public void setMarkerKnownAlleles(Collection<OrderedAlleles> markerKnownAlleles) throws IOException {
 
-		ensureNcFile();
+		NetcdfFileWriteable netCdfWriteFile = getNetCdfWriteFile();
 		//Utils.saveCharMapValueToWrMatrix(wrNcFile, wrMarkerSetKnownAllelesMap, cNetCDF.Census.VAR_OP_MARKERS_KNOWNALLELES, cNetCDF.Strides.STRIDE_GT);
-		NetCdfUtils.saveByteMapItemToWrMatrix(getNetCdfWriteFile(), markerKnownAlleles, cNetCDF.Census.VAR_OP_MARKERS_MAJALLELES, OrderedAlleles.TO_ALLELE_1, cNetCDF.Strides.STRIDE_GT / 2);
-		NetCdfUtils.saveDoubleMapItemD1ToWrMatrix(getNetCdfWriteFile(), markerKnownAlleles, OrderedAlleles.TO_ALLELE_1_FREQ, cNetCDF.Census.VAR_OP_MARKERS_MAJALLELEFRQ);
-		NetCdfUtils.saveByteMapItemToWrMatrix(getNetCdfWriteFile(), markerKnownAlleles, cNetCDF.Census.VAR_OP_MARKERS_MINALLELES, OrderedAlleles.TO_ALLELE_2, cNetCDF.Strides.STRIDE_GT / 2);
-		NetCdfUtils.saveDoubleMapItemD1ToWrMatrix(getNetCdfWriteFile(), markerKnownAlleles, OrderedAlleles.TO_ALLELE_2_FREQ, cNetCDF.Census.VAR_OP_MARKERS_MINALLELEFRQ);
+		NetCdfUtils.saveByteMapItemToWrMatrix(netCdfWriteFile, markerKnownAlleles, cNetCDF.Census.VAR_OP_MARKERS_MAJALLELES, OrderedAlleles.TO_ALLELE_1, cNetCDF.Strides.STRIDE_GT / 2);
+		NetCdfUtils.saveDoubleMapItemD1ToWrMatrix(netCdfWriteFile, markerKnownAlleles, OrderedAlleles.TO_ALLELE_1_FREQ, cNetCDF.Census.VAR_OP_MARKERS_MAJALLELEFRQ);
+		NetCdfUtils.saveByteMapItemToWrMatrix(netCdfWriteFile, markerKnownAlleles, cNetCDF.Census.VAR_OP_MARKERS_MINALLELES, OrderedAlleles.TO_ALLELE_2, cNetCDF.Strides.STRIDE_GT / 2);
+		NetCdfUtils.saveDoubleMapItemD1ToWrMatrix(netCdfWriteFile, markerKnownAlleles, OrderedAlleles.TO_ALLELE_2_FREQ, cNetCDF.Census.VAR_OP_MARKERS_MINALLELEFRQ);
 	}
 
 	@Override
 	public void setMarkerCensusAll(Collection<Census> markerCensusAll) throws IOException {
-
-		ensureNcFile();
 		NetCdfUtils.saveIntMapD2ToWrMatrix(getNetCdfWriteFile(), markerCensusAll, Census.EXTRACTOR_4, cNetCDF.Census.VAR_OP_MARKERS_CENSUSALL);
 	}
 

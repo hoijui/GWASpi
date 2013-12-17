@@ -52,7 +52,7 @@ public interface OperationDataSet<ET> {
 	 * - Variables.VAR_CHR_IN_MATRIX [ChromosomeKey]
 	 * - Variables.VAR_CHR_INFO [ChromosomeKey]
 	 */
-	void setChromosomes(Map<Integer, ChromosomeKey> matrixIndexChromosomeKeys, Collection<ChromosomeInfo> chromosomeInfos) throws IOException;
+	void setChromosomes(Map<Integer, ChromosomeKey> matrixIndexChromosomeKeys/*, Collection<ChromosomeInfo> chromosomeInfos*/) throws IOException;
 
 	int getNumSamples() throws IOException;
 	int getNumMarkers() throws IOException;
@@ -61,7 +61,6 @@ public interface OperationDataSet<ET> {
 	Map<Integer, SampleKey> getSamples() throws IOException;
 	Map<Integer, MarkerKey> getMarkers() throws IOException;
 	Map<Integer, ChromosomeKey> getChromosomes() throws IOException;
-	Collection<ChromosomeInfo> getChromosomeInfos() throws IOException;
 
 	/**
 	 *

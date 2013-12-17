@@ -86,7 +86,7 @@ public class LoadGTFromAffyFiles extends AbstractLoadGTFromFiles implements Geno
 			throws Exception
 	{
 		// HACK
-		DataSet dataSet = ((InMemorySamplesReceiver) samplesReceiver).getDataSet();
+		DataSet dataSet = ((AbstractDataSetDestination) samplesReceiver).getDataSet();
 
 		// PURGE alleles
 		Map<MarkerKey, byte[]> alleles = AbstractLoadGTFromFiles.fillMap(dataSet.getMarkerMetadatas().keySet(), cNetCDF.Defaults.DEFAULT_GT);

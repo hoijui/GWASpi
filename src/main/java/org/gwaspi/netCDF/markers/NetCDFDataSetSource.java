@@ -19,15 +19,16 @@ package org.gwaspi.netCDF.markers;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import org.gwaspi.constants.cImport;
+import org.gwaspi.constants.cImport.ImportFormat;
 import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
+import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
 import org.gwaspi.model.ChromosomeInfo;
 import org.gwaspi.model.ChromosomeKey;
 import org.gwaspi.model.DataSetSource;
@@ -50,7 +51,6 @@ import org.gwaspi.model.SamplesGenotypesSource;
 import org.gwaspi.model.SamplesInfosSource;
 import org.gwaspi.model.SamplesKeysSource;
 import org.gwaspi.model.StudyKey;
-import org.gwaspi.netCDF.operations.NetCdfUtils;
 import org.gwaspi.samples.SampleSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -155,9 +155,9 @@ public class NetCDFDataSetSource implements DataSetSource {
 		String friendlyName = "";
 		String description = "";
 		String gwaspiDBVersion = "";
-		cImport.ImportFormat technology = cImport.ImportFormat.UNKNOWN;
-		cNetCDF.Defaults.GenotypeEncoding gtEncoding = cNetCDF.Defaults.GenotypeEncoding.UNKNOWN;
-		cNetCDF.Defaults.StrandType strand = cNetCDF.Defaults.StrandType.UNKNOWN;
+		ImportFormat technology = ImportFormat.UNKNOWN;
+		GenotypeEncoding gtEncoding = GenotypeEncoding.UNKNOWN;
+		StrandType strand = StrandType.UNKNOWN;
 		boolean hasDictionray = false;
 		int numMarkers = Integer.MIN_VALUE;
 		int numSamples = Integer.MIN_VALUE;
@@ -178,7 +178,7 @@ public class NetCDFDataSetSource implements DataSetSource {
 				LOG.error("No description stored in matrix NetCDF file: " + netCDFFile.getLocation(), ex);
 			}
 
-			technology = cImport.ImportFormat.compareTo(netCDFFile.findGlobalAttribute(cNetCDF.Attributes.GLOB_TECHNOLOGY).getStringValue());
+			technology = ImportFormat.compareTo(netCDFFile.findGlobalAttribute(cNetCDF.Attributes.GLOB_TECHNOLOGY).getStringValue());
 
 			try {
 				gwaspiDBVersion = netCDFFile.findGlobalAttribute(cNetCDF.Attributes.GLOB_GWASPIDB_VERSION).getStringValue();
@@ -190,14 +190,15 @@ public class NetCDFDataSetSource implements DataSetSource {
 			if (var != null) {
 				try {
 					ArrayChar.D2 gtCodeAC = (ArrayChar.D2) var.read("(0:0:1, 0:7:1)");
-//						gtEncoding = GenotypeEncoding.valueOf(gtCodeAC.getString(0));
-					gtEncoding = cNetCDF.Defaults.GenotypeEncoding.compareTo(gtCodeAC.getString(0)); // HACK, the above was used before
+//					gtEncoding = GenotypeEncoding.valueOf(gtCodeAC.getString(0));
+					gtEncoding = GenotypeEncoding.compareTo(gtCodeAC.getString(0)); // HACK, the above was used before
 				} catch (InvalidRangeException ex) {
 					LOG.error(null, ex);
 				}
 			}
 
-			strand = cNetCDF.Defaults.StrandType.valueOf(netCDFFile.findGlobalAttribute(cNetCDF.Attributes.GLOB_STRAND).getStringValue());
+			String strandStr = netCDFFile.findGlobalAttribute(cNetCDF.Attributes.GLOB_STRAND).getStringValue();
+			strand = StrandType.fromString(strandStr);
 			hasDictionray = ((Integer) netCDFFile.findGlobalAttribute(cNetCDF.Attributes.GLOB_HAS_DICTIONARY).getNumericValue() != 0);
 
 			Dimension markersDim = netCDFFile.findDimension(cNetCDF.Dimensions.DIM_MARKERSET);
@@ -216,7 +217,7 @@ public class NetCDFDataSetSource implements DataSetSource {
 			}
 
 			try {
-				creationDate = new Date(netCDFFile.findGlobalAttribute(cNetCDF.Attributes.GLOB_CREATION_DATE).getNumericValue().longValue());
+				creationDate = new Date(Long.parseLong(netCDFFile.findGlobalAttribute(cNetCDF.Attributes.GLOB_CREATION_DATE).getStringValue()));
 			} catch (Exception ex) {
 				LOG.error("No friendly name stored in matrix NetCDF file: " + netCDFFile.getLocation(), ex);
 			}
@@ -233,7 +234,7 @@ public class NetCDFDataSetSource implements DataSetSource {
 		}
 
 		String simpleName = new File(netCDFFile.getLocation()).getName();
-		simpleName = simpleName.substring(0, simpleName.lastIndexOf('.') - 1); // cut off the '.nc' file extension
+		simpleName = simpleName.substring(0, simpleName.lastIndexOf('.')); // cut off the '.nc' file extension
 
 		MatrixMetadata matrixMetadata = new MatrixMetadata(
 			new MatrixKey(studyKey, Integer.MIN_VALUE),
@@ -259,7 +260,7 @@ public class NetCDFDataSetSource implements DataSetSource {
 
 //		return sampleSet;
 		ensureMatrixMetadata();
-		return new SampleSet(matrixKey);
+		return new SampleSet(matrixMetadata);
 	}
 
 	@Override
@@ -269,50 +270,12 @@ public class NetCDFDataSetSource implements DataSetSource {
 		return new NetCdfMarkersMetadataSource(rdNetCdfFile);
 	}
 
-	private static class NetCdfMarkersMetadataSource extends AbstractList<MarkerMetadata> implements MarkersMetadataSource {
+	private static class NetCdfMarkersMetadataSource extends AbstractListSource<MarkerMetadata> implements MarkersMetadataSource {
 
 		private static final int DEFAULT_CHUNK_SIZE = 50;
-		private final NetcdfFile rdNetCdfFile;
-		private int loadedChunkNumber;
-		private List<MarkerMetadata> loadedChunk;
 
 		NetCdfMarkersMetadataSource(NetcdfFile rdNetCdfFile) {
-
-			this.rdNetCdfFile = rdNetCdfFile;
-			this.loadedChunkNumber = -1;
-			this.loadedChunk = null;
-		}
-
-		private <VT> List<VT> readVar(String varName, int from, int to) throws IOException {
-
-			List<VT> values = new ArrayList<VT>(0);
-			NetCdfUtils.readVariable(rdNetCdfFile, varName, from, to, values, null);
-			return values;
-		}
-
-		@Override
-		public MarkerMetadata get(int index) {
-
-			final int chunkNumber = index / DEFAULT_CHUNK_SIZE;
-			final int inChunkPosition = index % DEFAULT_CHUNK_SIZE;
-
-			if (chunkNumber != loadedChunkNumber) {
-				try {
-					loadedChunk = getRange(chunkNumber, chunkNumber + DEFAULT_CHUNK_SIZE);
-					loadedChunkNumber = chunkNumber;
-				} catch (IOException ex) {
-					throw new RuntimeException(ex);
-				}
-			}
-
-			return loadedChunk.get(inChunkPosition);
-		}
-
-		@Override
-		public int size() {
-
-			Dimension dim = rdNetCdfFile.findDimension(cNetCDF.Dimensions.DIM_MARKERSET);
-			return dim.getLength();
+			super(rdNetCdfFile, DEFAULT_CHUNK_SIZE, cNetCDF.Dimensions.DIM_MARKERSET);
 		}
 
 		@Override
@@ -456,7 +419,7 @@ public class NetCDFDataSetSource implements DataSetSource {
 	public ChromosomesKeysSource getChromosomesKeysSource() throws IOException {
 
 		ensureMatrixMetadata();
-		MarkerSet markerSet = new MarkerSet(matrixKey);
+		MarkerSet markerSet = new MarkerSet(matrixMetadata);
 
 		NetCdfChromosomesKeysSource chrInfSrc = new NetCdfChromosomesKeysSource();
 		markerSet.initFullMarkerIdSetMap(); // XXX may not always be required
@@ -469,7 +432,7 @@ public class NetCDFDataSetSource implements DataSetSource {
 	public ChromosomesInfosSource getChromosomesInfosSource() throws IOException {
 
 		ensureMatrixMetadata();
-		MarkerSet markerSet = new MarkerSet(matrixKey);
+		MarkerSet markerSet = new MarkerSet(matrixMetadata);
 
 		NetCdfChromosomesInfosSource chrInfSrc = new NetCdfChromosomesInfosSource();
 		markerSet.initFullMarkerIdSetMap(); // XXX may not always be required
@@ -478,50 +441,12 @@ public class NetCDFDataSetSource implements DataSetSource {
 		return chrInfSrc;
 	}
 
-	private static class NetCdfMarkersKeysSource extends AbstractList<MarkerKey> implements MarkersKeysSource {
+	private static class NetCdfMarkersKeysSource extends AbstractListSource<MarkerKey> implements MarkersKeysSource {
 
 		private static final int DEFAULT_CHUNK_SIZE = 200;
-		private final NetcdfFile rdNetCdfFile;
-		private int loadedChunkNumber;
-		private List<MarkerKey> loadedChunk;
 
 		NetCdfMarkersKeysSource(NetcdfFile rdNetCdfFile) {
-
-			this.rdNetCdfFile = rdNetCdfFile;
-			this.loadedChunkNumber = -1;
-			this.loadedChunk = null;
-		}
-
-		private <VT> List<VT> readVar(String varName, int from, int to) throws IOException {
-
-			List<VT> values = new ArrayList<VT>(0);
-			NetCdfUtils.readVariable(rdNetCdfFile, varName, from, to, values, null);
-			return values;
-		}
-
-		@Override
-		public MarkerKey get(int index) {
-
-			final int chunkNumber = index / DEFAULT_CHUNK_SIZE;
-			final int inChunkPosition = index % DEFAULT_CHUNK_SIZE;
-
-			if (chunkNumber != loadedChunkNumber) {
-				try {
-					loadedChunk = getRange(chunkNumber, chunkNumber + DEFAULT_CHUNK_SIZE);
-					loadedChunkNumber = chunkNumber;
-				} catch (IOException ex) {
-					throw new RuntimeException(ex);
-				}
-			}
-
-			return loadedChunk.get(inChunkPosition);
-		}
-
-		@Override
-		public int size() {
-
-			Dimension dim = rdNetCdfFile.findDimension(cNetCDF.Dimensions.DIM_MARKERSET);
-			return dim.getLength();
+			super(rdNetCdfFile, DEFAULT_CHUNK_SIZE, cNetCDF.Dimensions.DIM_MARKERSET);
 		}
 
 		@Override
@@ -574,59 +499,23 @@ public class NetCDFDataSetSource implements DataSetSource {
 	public SamplesGenotypesSource getSamplesGenotypesSource() throws IOException {
 
 		ensureMatrixMetadata();
-		return new MarkerSet(matrixKey);
+		return new MarkerSet(matrixMetadata);
 	}
 
 //	private static class NetCdfSamplesInfosSource extends LinkedList<SampleInfo> implements SamplesInfosSource {
 //
 //	}
 
-	private static class NetCdfSamplesInfosSource extends AbstractList<SampleInfo> implements SamplesInfosSource {
+	private static class NetCdfSamplesInfosSource extends AbstractListSource<SampleInfo> implements SamplesInfosSource {
 
 		private static final int DEFAULT_CHUNK_SIZE = 50;
+
 		private final StudyKey studyKey;
-		private final NetcdfFile rdNetCdfFile;
-		private int loadedChunkNumber;
-		private List<SampleInfo> loadedChunk;
 
 		NetCdfSamplesInfosSource(StudyKey studyKey, NetcdfFile rdNetCdfFile) {
+			super(rdNetCdfFile, DEFAULT_CHUNK_SIZE, cNetCDF.Dimensions.DIM_SAMPLESET);
 
 			this.studyKey = studyKey;
-			this.rdNetCdfFile = rdNetCdfFile;
-			this.loadedChunkNumber = -1;
-			this.loadedChunk = null;
-		}
-
-		private <VT> List<VT> readVar(String varName, int from, int to) throws IOException {
-
-			List<VT> values = new ArrayList<VT>(0);
-			NetCdfUtils.readVariable(rdNetCdfFile, varName, from, to, values, null);
-			return values;
-		}
-
-		@Override
-		public SampleInfo get(int index) {
-
-			final int chunkNumber = index / DEFAULT_CHUNK_SIZE;
-			final int inChunkPosition = index % DEFAULT_CHUNK_SIZE;
-
-			if (chunkNumber != loadedChunkNumber) {
-				try {
-					loadedChunk = getRange(chunkNumber, chunkNumber + DEFAULT_CHUNK_SIZE);
-					loadedChunkNumber = chunkNumber;
-				} catch (IOException ex) {
-					throw new RuntimeException(ex);
-				}
-			}
-
-			return loadedChunk.get(inChunkPosition);
-		}
-
-		@Override
-		public int size() {
-
-			Dimension dim = rdNetCdfFile.findDimension(cNetCDF.Dimensions.DIM_SAMPLESET);
-			return dim.getLength();
 		}
 
 		@Override
@@ -833,60 +722,24 @@ public class NetCDFDataSetSource implements DataSetSource {
 //			public void finishedLoadingAlleles() throws IOException {}
 //			public void done() throws IOException {}
 //		};
-//		SamplesParserManager.scanSampleInfo(studyKey, cImport.ImportFormat.GWASpi, gtPath, tmpDataSetDestination);
+//		SamplesParserManager.scanSampleInfo(studyKey, ImportFormat.GWASpi, gtPath, tmpDataSetDestination);
 
 		return new NetCdfSamplesInfosSource(studyKey, rdNetCdfFile);
 	}
 
-	private static class NetCdfSamplesKeysSource extends AbstractList<SampleKey> implements SamplesKeysSource {
+	private static class NetCdfSamplesKeysSource extends AbstractListSource<SampleKey> implements SamplesKeysSource {
 
 		private static final int DEFAULT_CHUNK_SIZE = 200;
 
 		private final StudyKey studyKey;
-		private final NetcdfFile rdNetCdfFile;
-		private int loadedChunkNumber;
-		private List<SampleKey> loadedChunk;
 
 		NetCdfSamplesKeysSource(StudyKey studyKey, NetcdfFile rdNetCdfFile) {
+			super(rdNetCdfFile, DEFAULT_CHUNK_SIZE, cNetCDF.Dimensions.DIM_SAMPLESET);
 
 			this.studyKey = studyKey;
-			this.rdNetCdfFile = rdNetCdfFile;
-			this.loadedChunkNumber = -1;
-			this.loadedChunk = null;
-		}
-
-		private <VT> List<VT> readVar(String varName, int from, int to) throws IOException {
-
-			List<VT> values = new ArrayList<VT>(0);
-			NetCdfUtils.readVariable(rdNetCdfFile, varName, from, to, values, null);
-			return values;
 		}
 
 		@Override
-		public SampleKey get(int index) {
-
-			final int chunkNumber = index / DEFAULT_CHUNK_SIZE;
-			final int inChunkPosition = index % DEFAULT_CHUNK_SIZE;
-
-			if (chunkNumber != loadedChunkNumber) {
-				try {
-					loadedChunk = getRange(chunkNumber, chunkNumber + DEFAULT_CHUNK_SIZE);
-					loadedChunkNumber = chunkNumber;
-				} catch (IOException ex) {
-					throw new RuntimeException(ex);
-				}
-			}
-
-			return loadedChunk.get(inChunkPosition);
-		}
-
-		@Override
-		public int size() {
-
-			Dimension dim = rdNetCdfFile.findDimension(cNetCDF.Dimensions.DIM_SAMPLESET);
-			return dim.getLength();
-		}
-
 		public List<SampleKey> getRange(int from, int to) throws IOException {
 
 			List<SampleKey> samples;

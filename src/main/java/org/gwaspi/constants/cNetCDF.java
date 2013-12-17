@@ -17,6 +17,9 @@
 
 package org.gwaspi.constants;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class cNetCDF {
 
 	public static class Attributes {
@@ -176,6 +179,12 @@ public class cNetCDF {
 	}
 	//</editor-fold>
 
+	/**
+	 * "Stride" in NetCDF means (for what we care),
+	 * the max number of characters that may be used in a string
+	 * (actually char[], while NetCDF supports string as well).
+	 * Though more precisely, it is not just for char[], but all kind of arrays.
+	 */
 	public static class Strides {
 
 		public static final int STRIDE_GT = 2;
@@ -246,12 +255,29 @@ public class cNetCDF {
 			FWDREV("fwdrev"),
 			UNKNOWN("unk");
 
+			private static final Map<String, StrandType> STR_REP_TO_TYPE;
+			static {
+				STR_REP_TO_TYPE = new HashMap<String, StrandType>();
+				for (StrandType strandType : values()) {
+					STR_REP_TO_TYPE.put(strandType.toString(), strandType);
+				}
+			}
+
 			public static StrandType compareTo(String str) {
 				try {
 					return valueOf(str);
 				} catch (Exception ex) {
 					return null;
 				}
+			}
+
+			public static StrandType fromString(String strandStr) {
+
+				if ((strandStr == null) || strandStr.isEmpty()) {
+					return null;
+				}
+
+				return STR_REP_TO_TYPE.get(strandStr);
 			}
 
 			private final String strRep;
@@ -265,7 +291,8 @@ public class cNetCDF {
 				return strRep;
 			}
 		}
-		public static final String[] Chromosomes = new String[]{
+
+		public static final String[] Chromosomes = new String[] {
 			"1", "2", "3", "4", "5", "6", "7", "8", "9", "10",
 			"11", "12", "13", "14", "15", "16", "17", "18", "19", "20",
 			"21", "22", "X", "Y", "XY", "MT"};

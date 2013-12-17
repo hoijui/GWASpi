@@ -82,7 +82,7 @@ public class LoadGTFromPlinkFlatFiles extends AbstractLoadGTFromFiles implements
 		FileReader inputFileReader = new FileReader(file);
 		BufferedReader inputBufferReader = new BufferedReader(inputFileReader);
 
-		DataSet dataSet = ((InMemorySamplesReceiver) samplesReceiver).getDataSet(); // HACK
+		DataSet dataSet = ((AbstractDataSetDestination) samplesReceiver).getDataSet(); // HACK
 
 		List<SampleKey> sampleKeys = AbstractLoadGTFromFiles.extractKeys(dataSet.getSampleInfos());
 

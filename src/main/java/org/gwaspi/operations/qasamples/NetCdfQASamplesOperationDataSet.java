@@ -62,48 +62,18 @@ public class NetCdfQASamplesOperationDataSet extends AbstractNetCdfOperationData
 	}
 
 	@Override
-	public NetcdfFileWriteable generateNetCdfHandler(
-			OperationMetadata operationMetadata)
+	protected void supplementNetCdfHandler(
+			NetcdfFileWriteable ncFile,
+			OperationMetadata operationMetadata,
+			List<Dimension> markersSpace,
+			List<Dimension> chromosomesSpace,
+			List<Dimension> samplesSpace)
 			throws IOException
 	{
-		final int sampleStride = cNetCDF.Strides.STRIDE_SAMPLE_NAME;
-		final int markerStride = cNetCDF.Strides.STRIDE_MARKER_NAME;
-
-		NetcdfFileWriteable ncfile = createNetCdfFile(operationMetadata);
-
-		// global attributes
-		ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_STUDY, operationMetadata.getStudyId());
-		ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_DESCRIPTION, operationMetadata.getDescription());
-
-		// dimensions
-		Dimension sampleSetDim = ncfile.addDimension(cNetCDF.Dimensions.DIM_OPSET, operationMetadata.getOpSetSize());
-		Dimension implicitSetDim = ncfile.addDimension(cNetCDF.Dimensions.DIM_IMPLICITSET, operationMetadata.getImplicitSetSize());
-		Dimension sampleStrideDim = ncfile.addDimension(cNetCDF.Dimensions.DIM_SAMPLESTRIDE, sampleStride);
-		Dimension markerStrideDim = ncfile.addDimension(cNetCDF.Dimensions.DIM_MARKERSTRIDE, markerStride);
-
-		// OP SPACES
-		List<Dimension> OP1Space = new ArrayList<Dimension>();
-		OP1Space.add(sampleSetDim);
-
-		// SAMPLE SPACES
-		List<Dimension> sampleSetSpace = new ArrayList<Dimension>();
-		sampleSetSpace.add(sampleSetDim);
-		sampleSetSpace.add(sampleStrideDim);
-
-		// MARKER SPACES
-		List<Dimension> markerSetSpace = new ArrayList<Dimension>();
-		markerSetSpace.add(implicitSetDim);
-		markerSetSpace.add(markerStrideDim);
-
-		// Define OP Variables
-		ncfile.addVariable(cNetCDF.Variables.VAR_OPSET, DataType.CHAR, sampleSetSpace);
-		ncfile.addVariable(cNetCDF.Variables.VAR_IMPLICITSET, DataType.CHAR, markerSetSpace);
-		ncfile.addVariable(cNetCDF.Census.VAR_OP_SAMPLES_MISSINGRAT, DataType.DOUBLE, OP1Space);
-		ncfile.addVariable(cNetCDF.Census.VAR_OP_SAMPLES_MISSINGCOUNT, DataType.INT, OP1Space);
-		ncfile.addVariable(cNetCDF.Census.VAR_OP_SAMPLES_HETZYRAT, DataType.DOUBLE, OP1Space);
-		ncfile.addVariableAttribute(cNetCDF.Variables.VAR_OPSET, cNetCDF.Attributes.LENGTH, operationMetadata.getOpSetSize());
-
-		return ncfile;
+		// Define Variables
+		ncFile.addVariable(cNetCDF.Census.VAR_OP_SAMPLES_MISSINGRAT, DataType.DOUBLE, samplesSpace);
+		ncFile.addVariable(cNetCDF.Census.VAR_OP_SAMPLES_MISSINGCOUNT, DataType.INT, samplesSpace);
+		ncFile.addVariable(cNetCDF.Census.VAR_OP_SAMPLES_HETZYRAT, DataType.DOUBLE, samplesSpace);
 	}
 
 	@Override
@@ -125,22 +95,16 @@ public class NetCdfQASamplesOperationDataSet extends AbstractNetCdfOperationData
 
 	@Override
 	public void setMissingRatios(Collection<Double> sampleMissingRatios) throws IOException {
-
-		ensureNcFile();
 		NetCdfUtils.saveDoubleMapD1ToWrMatrix(getNetCdfWriteFile(), sampleMissingRatios, cNetCDF.Census.VAR_OP_SAMPLES_MISSINGRAT);
 	}
 
 	@Override
 	public void setMissingCounts(Collection<Integer> sampleMissingCount) throws IOException {
-
-		ensureNcFile();
 		NetCdfUtils.saveIntMapD1ToWrMatrix(getNetCdfWriteFile(), sampleMissingCount, cNetCDF.Census.VAR_OP_SAMPLES_MISSINGCOUNT);
 	}
 
 	@Override
 	public void setHetzyRatios(Collection<Double> sampleHetzyRatios) throws IOException {
-
-		ensureNcFile();
 		NetCdfUtils.saveDoubleMapD1ToWrMatrix(getNetCdfWriteFile(), sampleHetzyRatios, cNetCDF.Census.VAR_OP_SAMPLES_HETZYRAT);
 	}
 

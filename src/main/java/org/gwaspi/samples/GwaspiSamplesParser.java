@@ -24,13 +24,8 @@ import org.gwaspi.constants.cImport;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.loader.DataSetDestination;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class GwaspiSamplesParser implements SamplesParser {
-
-	private static final Logger log
-			= LoggerFactory.getLogger(GwaspiSamplesParser.class);
 
 	@Override
 	public void scanSampleInfo(StudyKey studyKey, String sampleInfoPath, DataSetDestination samplesReceiver) throws Exception {
@@ -41,10 +36,10 @@ public class GwaspiSamplesParser implements SamplesParser {
 		inputFileReader = new FileReader(sampleFile);
 		inputBufferReader = new BufferedReader(inputFileReader);
 
-		int count = 0;
+		int sampleIndex = 0;
 		while (inputBufferReader.ready()) {
 			String[] cVals = new String[10];
-			if (count == 0) {
+			if (sampleIndex == 0) {
 				inputBufferReader.readLine(); // Skip header
 			} else {
 				int i = 0;
@@ -72,13 +67,9 @@ public class GwaspiSamplesParser implements SamplesParser {
 				samplesReceiver.addSampleInfo(sampleInfo);
 			}
 
-			count++;
-			if (count % 100 == 0) {
-				log.info("Parsed {} Samples for info...", count);
-			}
+			sampleIndex++;
 		}
 
 		inputBufferReader.close();
-		inputFileReader.close();
 	}
 }

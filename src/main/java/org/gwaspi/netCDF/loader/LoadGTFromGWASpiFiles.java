@@ -99,7 +99,7 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 		String startTime = org.gwaspi.global.Utils.getMediumDateTimeAsString();
 
 		// HACK
-		DataSet dataSet = ((InMemorySamplesReceiver) samplesReceiver).getDataSet();
+		DataSet dataSet = ((AbstractDataSetDestination) samplesReceiver).getDataSet();
 
 		if (new File(loadDescription.getGtDirPath()).exists()) {
 		SampleSet matrixSampleSet = new SampleSet(loadDescription.getStudyKey(), "");

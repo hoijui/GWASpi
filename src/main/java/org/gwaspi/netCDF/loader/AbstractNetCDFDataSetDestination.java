@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
+import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
 import org.gwaspi.global.Config;
 import org.gwaspi.gui.StartGWASpi;
 import org.gwaspi.model.ChromosomeInfo;
@@ -96,6 +97,19 @@ public abstract class AbstractNetCDFDataSetDestination extends AbstractDataSetDe
 	 */
 	protected abstract String getStrandFlag();
 
+	private static Dimension generatePossiblyVarDimension(NetcdfFileWriteable ncFile, String varName, int size) {
+
+		final Dimension dimension;
+
+		if (size <= 0) {
+			dimension = ncFile.addDimension(varName, 0, true, true, false);
+		} else {
+			dimension = ncFile.addDimension(varName, size);
+		}
+
+		return dimension;
+	}
+
 	public static NetcdfFileWriteable generateNetcdfHandler(MatrixMetadata matrixMetadata)
 			throws InvalidRangeException, IOException
 	{
@@ -121,12 +135,16 @@ public abstract class AbstractNetCDFDataSetDestination extends AbstractDataSetDe
 		ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_STRAND, matrixMetadata.getStrand().toString());
 		ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_HAS_DICTIONARY, matrixMetadata.getHasDictionary() ? 1 : 0);
 		ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_MATRIX_TYPE, matrixMetadata.getMatrixType());
-		ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_CREATION_DATE, matrixMetadata.getCreationDate().getTime());
+		// NOTE We save the date as string,
+		//   because NetCDF fails with long
+		//   (though it is suposed to suppoert it),
+		//   and we use the number representation to be Locale independent
+		ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_CREATION_DATE, String.valueOf(matrixMetadata.getCreationDate().getTime()));
 
 		// dimensions
-		Dimension samplesDim = ncfile.addDimension(cNetCDF.Dimensions.DIM_SAMPLESET, 0, true, true, false);
-		Dimension markersDim = ncfile.addDimension(cNetCDF.Dimensions.DIM_MARKERSET, matrixMetadata.getNumMarkers());
-		Dimension chrSetDim = ncfile.addDimension(cNetCDF.Dimensions.DIM_CHRSET, matrixMetadata.getNumChromosomes());
+		Dimension samplesDim = generatePossiblyVarDimension(ncfile, cNetCDF.Dimensions.DIM_SAMPLESET, matrixMetadata.getNumSamples());
+		Dimension markersDim = generatePossiblyVarDimension(ncfile, cNetCDF.Dimensions.DIM_MARKERSET, matrixMetadata.getNumMarkers());
+		Dimension chrSetDim = generatePossiblyVarDimension(ncfile, cNetCDF.Dimensions.DIM_CHRSET, matrixMetadata.getNumChromosomes());
 		Dimension gtStrideDim = ncfile.addDimension(cNetCDF.Dimensions.DIM_GTSTRIDE, gtStride);
 		Dimension markerStrideDim = ncfile.addDimension(cNetCDF.Dimensions.DIM_MARKERSTRIDE, markerStride);
 		Dimension sampleStrideDim = ncfile.addDimension(cNetCDF.Dimensions.DIM_SAMPLESTRIDE, sampleStride);
@@ -138,70 +156,70 @@ public abstract class AbstractNetCDFDataSetDestination extends AbstractDataSetDe
 		Dimension dim1 = ncfile.addDimension(cNetCDF.Dimensions.DIM_1, 1);
 
 		// GENOTYPE SPACES
-		List<Dimension> genotypeSpace = new ArrayList<Dimension>();
+		List<Dimension> genotypeSpace = new ArrayList<Dimension>(3);
 		genotypeSpace.add(samplesDim);
 		genotypeSpace.add(markersDim);
 		genotypeSpace.add(gtStrideDim);
 
 		// MARKER SPACES
-		List<Dimension> markerNameSpace = new ArrayList<Dimension>();
-		markerNameSpace.add(markersDim);
-		markerNameSpace.add(markerStrideDim);
+		List<Dimension> markersSpace = new ArrayList<Dimension>(1);
+		markersSpace.add(markersDim);
 
-		List<Dimension> markerPositionSpace = new ArrayList<Dimension>();
-		markerPositionSpace.add(markersDim);
+		List<Dimension> markersNameSpace = new ArrayList<Dimension>(2);
+		markersNameSpace.add(markersDim);
+		markersNameSpace.add(markerStrideDim);
 
-		List<Dimension> markerPropertySpace8 = new ArrayList<Dimension>();
+		List<Dimension> markerPropertySpace8 = new ArrayList<Dimension>(2);
 		markerPropertySpace8.add(markersDim);
 		markerPropertySpace8.add(dim8);
 
-		List<Dimension> markerPropertySpace4 = new ArrayList<Dimension>();
+		List<Dimension> markerPropertySpace4 = new ArrayList<Dimension>(2);
 		markerPropertySpace4.add(markersDim);
 		markerPropertySpace4.add(dim4);
 
-		List<Dimension> markerPropertySpace2 = new ArrayList<Dimension>();
+		List<Dimension> markerPropertySpace2 = new ArrayList<Dimension>(2);
 		markerPropertySpace2.add(markersDim);
 		markerPropertySpace2.add(dim2);
 
 		// CHROMOSOME SPACES
-		List<Dimension> chrSetSpace = new ArrayList<Dimension>();
-		chrSetSpace.add(chrSetDim);
-		chrSetSpace.add(dim8);
+		List<Dimension> chromosomesNameSpace = new ArrayList<Dimension>(2);
+		chromosomesNameSpace.add(chrSetDim);
+		chromosomesNameSpace.add(dim8);
 
-		List<Dimension> chrInfoSpace = new ArrayList<Dimension>();
-		chrInfoSpace.add(chrSetDim);
-		chrInfoSpace.add(dim4);
+		List<Dimension> chromosomesInfoSpace = new ArrayList<Dimension>(2);
+		chromosomesInfoSpace.add(chrSetDim);
+		chromosomesInfoSpace.add(dim4);
 
 		// SAMPLE SPACES
-		List<Dimension> sampleSetSpace = new ArrayList<Dimension>();
-		sampleSetSpace.add(samplesDim);
-		sampleSetSpace.add(sampleStrideDim);
+		List<Dimension> sampleNameSpace = new ArrayList<Dimension>(2);
+		sampleNameSpace.add(samplesDim);
+		sampleNameSpace.add(sampleStrideDim);
 
 		// OTHER SPACES
-		List<Dimension> gtEncodingSpace = new ArrayList<Dimension>();
+		List<Dimension> gtEncodingSpace = new ArrayList<Dimension>(2);
 		gtEncodingSpace.add(dim1);
 		gtEncodingSpace.add(dim8);
 
 		// Define Marker Variables
-		ncfile.addVariable(cNetCDF.Variables.VAR_MARKERSET, DataType.CHAR, markerNameSpace);
-		ncfile.addVariableAttribute(cNetCDF.Variables.VAR_MARKERSET, cNetCDF.Attributes.LENGTH, matrixMetadata.getNumMarkers());
+		ncfile.addVariable(cNetCDF.Variables.VAR_MARKERSET, DataType.CHAR, markersNameSpace);
+//		ncfile.addVariableAttribute(cNetCDF.Variables.VAR_MARKERSET, cNetCDF.Attributes.LENGTH, matrixMetadata.getNumMarkers()); // NOTE not required, as it can be read from th edimensions directly, which is also more reliable
 
-		ncfile.addVariable(cNetCDF.Variables.VAR_MARKERS_RSID, DataType.CHAR, markerNameSpace);
+		ncfile.addVariable(cNetCDF.Variables.VAR_MARKERS_RSID, DataType.CHAR, markersNameSpace);
 		ncfile.addVariable(cNetCDF.Variables.VAR_MARKERS_CHR, DataType.CHAR, markerPropertySpace8);
-		ncfile.addVariable(cNetCDF.Variables.VAR_MARKERS_POS, DataType.INT, markerPositionSpace);
+		ncfile.addVariable(cNetCDF.Variables.VAR_MARKERS_POS, DataType.INT, markersSpace);
 		ncfile.addVariable(cNetCDF.Variables.VAR_MARKERS_BASES_DICT, DataType.CHAR, markerPropertySpace2);
 
 		// Define Chromosome Variables
-		ncfile.addVariable(cNetCDF.Variables.VAR_CHR_IN_MATRIX, DataType.CHAR, chrSetSpace);
-		ncfile.addVariable(cNetCDF.Variables.VAR_CHR_INFO, DataType.INT, chrInfoSpace);
+		ncfile.addVariable(cNetCDF.Variables.VAR_CHR_IN_MATRIX, DataType.CHAR, chromosomesNameSpace);
+		ncfile.addVariable(cNetCDF.Variables.VAR_CHR_INFO, DataType.INT, chromosomesInfoSpace);
 
 		// Define Sample Variables
-		ncfile.addVariable(cNetCDF.Variables.VAR_SAMPLE_KEY, DataType.CHAR, sampleSetSpace);
-		ncfile.addVariableAttribute(cNetCDF.Variables.VAR_SAMPLE_KEY, cNetCDF.Attributes.LENGTH, matrixMetadata.getNumSamples());
+		ncfile.addVariable(cNetCDF.Variables.VAR_SAMPLE_KEY, DataType.CHAR, sampleNameSpace);
+//		ncfile.addVariableAttribute(cNetCDF.Variables.VAR_SAMPLE_KEY, cNetCDF.Attributes.LENGTH, matrixMetadata.getNumSamples()); // NOTE not required, as it can be read from th edimensions directly, which is also more reliable
 
 		// Define Genotype Variables
 		ncfile.addVariable(cNetCDF.Variables.VAR_GENOTYPES, DataType.BYTE, genotypeSpace);
-		ncfile.addVariableAttribute(cNetCDF.Variables.VAR_GENOTYPES, cNetCDF.Attributes.GLOB_STRAND, "");
+		ncfile.addVariableAttribute(cNetCDF.Variables.VAR_GENOTYPES, cNetCDF.Attributes.GLOB_STRAND, StrandType.UNKNOWN.toString());
 		ncfile.addVariable(cNetCDF.Variables.VAR_GT_STRAND, DataType.CHAR, markerPropertySpace4);
 
 		// ENCODING VARIABLE

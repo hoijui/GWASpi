@@ -23,6 +23,7 @@ import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.DataSetSource;
+import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.netCDF.loader.AbstractNetCDFDataSetDestination;
 
@@ -77,13 +78,13 @@ public class MatrixGenotypesFlipperNetCDFDataSetDestination extends AbstractNetC
 				sourceMatrixMetadata.getTechnology(),
 				description.toString(),
 				sourceMatrixMetadata.getGenotypeEncoding(), // matrix genotype encoding from the original matrix
-				StrandType.valueOf("FLP"), // FIXME this will fail at runtime
+				StrandType.fromString("FLP"), // FIXME this will fail at runtime
 				sourceMatrixMetadata.getHasDictionary(), // has dictionary?
-				numSamples,
 				numMarkers,
+				numSamples,
 				numChromosomes,
 				sourceMatrixMetadata.getKey().getMatrixId(), // orig/parent matrix 1 key
-				-1); // orig/parent matrix 2 key
+				MatrixKey.NULL_ID); // orig/parent matrix 2 key
 	}
 
 	@Override

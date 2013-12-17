@@ -40,7 +40,7 @@ import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ZipTwoWaySaverSamplesReceiver extends InMemorySamplesReceiver {
+public class ZipTwoWaySaverSamplesReceiver extends AbstractDataSetDestination {
 
 	private final Logger log
 			= LoggerFactory.getLogger(ZipTwoWaySaverSamplesReceiver.class);

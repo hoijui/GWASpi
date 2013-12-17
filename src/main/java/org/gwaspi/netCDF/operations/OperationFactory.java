@@ -18,10 +18,17 @@
 package org.gwaspi.netCDF.operations;
 
 import java.io.IOException;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
+import org.gwaspi.model.ChromosomeInfo;
+import org.gwaspi.model.ChromosomeKey;
+import org.gwaspi.model.ChromosomesInfosSource;
+import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
+import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.gwaspi.operations.OperationDataSet;
 import org.gwaspi.operations.allelicassociationtest.NetCdfAllelicAssociationTestsOperationDataSet;
 import org.gwaspi.operations.genotypicassociationtest.NetCdfGenotypicAssociationTestsOperationDataSet;
@@ -166,5 +173,23 @@ public class OperationFactory {
 		}
 
 		return operationDataSet;
+	}
+
+	public static Map<ChromosomeKey, ChromosomeInfo> extractChromosomeKeysAndInfos(OperationKey operationKey) throws IOException {
+
+		Map<ChromosomeKey, ChromosomeInfo> chromosomes;
+
+		OperationDataSet opDS = OperationFactory.generateOperationDataSet(operationKey);
+		Map<Integer, ChromosomeKey> chromosomeKeys = opDS.getChromosomes();
+
+		DataSetSource matrixDS = MatrixFactory.generateMatrixDataSetSource(operationKey.getParentMatrixKey());
+		ChromosomesInfosSource matrixChromosomesInfos = matrixDS.getChromosomesInfosSource();
+
+		chromosomes = new LinkedHashMap<ChromosomeKey, ChromosomeInfo>(chromosomeKeys.size());
+		for (Map.Entry<Integer, ChromosomeKey> chromosomeKey : chromosomeKeys.entrySet()) {
+			chromosomes.put(chromosomeKey.getValue(), matrixChromosomesInfos.get(chromosomeKey.getKey()));
+		}
+
+		return chromosomes;
 	}
 }

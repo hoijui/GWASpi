@@ -29,11 +29,16 @@ import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleInfoList;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.netCDF.matrices.ChromosomeUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * TODO
  */
 public abstract class AbstractDataSetDestination implements DataSetDestination {
+
+	private static final Logger log
+			= LoggerFactory.getLogger(AbstractDataSetDestination.class);
 
 	private final DataSet dataSet;
 
@@ -71,11 +76,22 @@ public abstract class AbstractDataSetDestination implements DataSetDestination {
 
 	@Override
 	public void addSampleInfo(SampleInfo sampleInfo) throws IOException {
-		dataSet.getSampleInfos().add(sampleInfo);
+
+		Collection<SampleInfo> sampleInfos = dataSet.getSampleInfos();
+		sampleInfos.add(sampleInfo);
+
+		if ((sampleInfos.size() % 100) == 0) {
+			logParsedSampleInfos();
+		}
+	}
+
+	private void logParsedSampleInfos() {
+		log.info("Parsed {} Samples for info...", dataSet.getSampleInfos().size());
 	}
 
 	@Override
 	public void finishedLoadingSampleInfos() throws IOException {
+		logParsedSampleInfos();
 	}
 
 	@Override

@@ -100,8 +100,8 @@ public class LoadingNetCDFDataSetDestination extends AbstractNetCDFDataSetDestin
 						? gtLoader.getMatrixStrand()
 						: loadDescription.getStrand(),
 				gtLoader.isHasDictionary(),
-				numSamples,
 				numMarkers,
+				numSamples,
 				numChromosomes,
 				loadDescription.getGtDirPath());
 	}

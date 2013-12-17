@@ -116,76 +116,51 @@ public class NetCdfMarkerCensusOperationDataSet extends AbstractNetCdfOperationD
 	}
 
 	@Override
-	public NetcdfFileWriteable generateNetCdfHandler(
-			OperationMetadata operationMetadata)
+	protected void supplementNetCdfHandler(
+			NetcdfFileWriteable ncFile,
+			OperationMetadata operationMetadata,
+			List<Dimension> markersSpace,
+			List<Dimension> chromosomesSpace,
+			List<Dimension> samplesSpace)
 			throws IOException
 	{
 		final int gtStride = cNetCDF.Strides.STRIDE_GT;
-		final int markerStride = cNetCDF.Strides.STRIDE_MARKER_NAME;
-		final int sampleStride = cNetCDF.Strides.STRIDE_SAMPLE_NAME;
-
-		NetcdfFileWriteable ncfile = createNetCdfFile(operationMetadata);
-
-		// global attributes
-		ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_STUDY, operationMetadata.getStudyId());
-		ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_DESCRIPTION, operationMetadata.getDescription());
 
 		// dimensions
-		Dimension markerSetDim = ncfile.addDimension(cNetCDF.Dimensions.DIM_OPSET, operationMetadata.getOpSetSize());
-		Dimension implicitSetDim = ncfile.addDimension(cNetCDF.Dimensions.DIM_IMPLICITSET, operationMetadata.getImplicitSetSize());
-		Dimension boxes3Dim = ncfile.addDimension(cNetCDF.Dimensions.DIM_3BOXES, 3);
-		Dimension boxes4Dim = ncfile.addDimension(cNetCDF.Dimensions.DIM_4BOXES, 4);
-		Dimension markerStrideDim = ncfile.addDimension(cNetCDF.Dimensions.DIM_MARKERSTRIDE, markerStride);
-		Dimension sampleStrideDim = ncfile.addDimension(cNetCDF.Dimensions.DIM_SAMPLESTRIDE, sampleStride);
-		Dimension gtStrideDim = ncfile.addDimension(cNetCDF.Dimensions.DIM_GTSTRIDE, gtStride);
-		Dimension dim4 = ncfile.addDimension(cNetCDF.Dimensions.DIM_4, 4);
+		Dimension markersDim = markersSpace.get(0);
+		Dimension boxes3Dim = ncFile.addDimension(cNetCDF.Dimensions.DIM_3BOXES, 3);
+		Dimension boxes4Dim = ncFile.addDimension(cNetCDF.Dimensions.DIM_4BOXES, 4);
+		Dimension gtStrideDim = ncFile.addDimension(cNetCDF.Dimensions.DIM_GTSTRIDE, gtStride);
+		Dimension dim4 = ncFile.addDimension(cNetCDF.Dimensions.DIM_4, 4);
 
 		// OP SPACES
-		List<Dimension> OP1Space = new ArrayList<Dimension>();
-		OP1Space.add(markerSetDim);
+		List<Dimension> markers3Space = new ArrayList<Dimension>(2);
+		markers3Space.add(markersDim);
+		markers3Space.add(boxes3Dim);
 
-		List<Dimension> OP2x3Space = new ArrayList<Dimension>();
-		OP2x3Space.add(markerSetDim);
-		OP2x3Space.add(boxes3Dim);
-
-		List<Dimension> OP2x4Space = new ArrayList<Dimension>();
-		OP2x4Space.add(markerSetDim);
-		OP2x4Space.add(boxes4Dim);
+		List<Dimension> markers4Space = new ArrayList<Dimension>(2);
+		markers4Space.add(markersDim);
+		markers4Space.add(boxes4Dim);
 
 		// MARKER SPACES
-		List<Dimension> markerNameSpace = new ArrayList<Dimension>();
-		markerNameSpace.add(markerSetDim);
-		markerNameSpace.add(markerStrideDim);
-
-		List<Dimension> markerPropertySpace4 = new ArrayList<Dimension>();
-		markerPropertySpace4.add(markerSetDim);
-		markerPropertySpace4.add(dim4);
-
-		// SAMPLE SPACES
-		List<Dimension> sampleSetSpace = new ArrayList<Dimension>();
-		sampleSetSpace.add(implicitSetDim);
-		sampleSetSpace.add(sampleStrideDim);
+		List<Dimension> markersPropertySpace4 = new ArrayList<Dimension>(2);
+		markersPropertySpace4.add(markersDim);
+		markersPropertySpace4.add(dim4);
 
 		// ALLELES SPACES
-		List<Dimension> allelesSpace = new ArrayList<Dimension>();
-		allelesSpace.add(markerSetDim);
+		List<Dimension> allelesSpace = new ArrayList<Dimension>(2);
+		allelesSpace.add(markersDim);
 		allelesSpace.add(gtStrideDim);
 
 		// Define OP Variables
-		ncfile.addVariable(cNetCDF.Variables.VAR_OPSET, DataType.CHAR, markerNameSpace);
-		ncfile.addVariable(cNetCDF.Variables.VAR_MARKERS_RSID, DataType.CHAR, markerNameSpace);
-		ncfile.addVariable(cNetCDF.Variables.VAR_IMPLICITSET, DataType.CHAR, sampleSetSpace);
-		ncfile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_CENSUSALL, DataType.INT, OP2x4Space);
-		ncfile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_CENSUSCASE, DataType.INT, OP2x3Space);
-		ncfile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_CENSUSCTRL, DataType.INT, OP2x3Space);
-		ncfile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_CENSUSHW, DataType.INT, OP2x3Space);
-		ncfile.addVariableAttribute(cNetCDF.Variables.VAR_OPSET, cNetCDF.Attributes.LENGTH, operationMetadata.getOpSetSize());
+		ncFile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_CENSUSALL, DataType.INT, markers4Space);
+		ncFile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_CENSUSCASE, DataType.INT, markers3Space);
+		ncFile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_CENSUSCTRL, DataType.INT, markers3Space);
+		ncFile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_CENSUSHW, DataType.INT, markers3Space);
 
 		// Define Genotype Variables
-		ncfile.addVariable(cNetCDF.Variables.VAR_ALLELES, DataType.CHAR, allelesSpace);
-		ncfile.addVariable(cNetCDF.Variables.VAR_GT_STRAND, DataType.CHAR, markerPropertySpace4);
-
-		return ncfile;
+		ncFile.addVariable(cNetCDF.Variables.VAR_ALLELES, DataType.CHAR, allelesSpace);
+		ncFile.addVariable(cNetCDF.Variables.VAR_GT_STRAND, DataType.CHAR, markersPropertySpace4);
 	}
 
 	@Override

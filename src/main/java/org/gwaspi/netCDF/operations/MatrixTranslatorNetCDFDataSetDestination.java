@@ -21,6 +21,7 @@ import java.io.IOException;
 import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.DataSetSource;
+import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.netCDF.loader.AbstractNetCDFDataSetDestination;
 
@@ -88,11 +89,11 @@ public class MatrixTranslatorNetCDFDataSetDestination extends AbstractNetCDFData
 				GenotypeEncoding.ACGT0, // New matrix genotype encoding
 				sourceMatrixMetadata.getStrand(),
 				sourceMatrixMetadata.getHasDictionary(),
-				numSamples,
 				numMarkers,
+				numSamples,
 				numChromosomes,
 				sourceMatrixMetadata.getKey().getMatrixId(), // orig/parent matrix 1 key
-				-1); // Orig matrixId 2
+				MatrixKey.NULL_ID); // Orig matrixId 2
 	}
 
 	@Override

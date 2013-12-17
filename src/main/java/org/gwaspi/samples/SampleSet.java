@@ -62,7 +62,7 @@ public class SampleSet extends AbstractList<GenotypesList> implements MarkersGen
 	private NetcdfFile rdNcFile;
 	private GenotypesListFactory genotyesListFactory;
 
-	private SampleSet(MatrixMetadata matrixMetadata) throws IOException {
+	public SampleSet(MatrixMetadata matrixMetadata) throws IOException {
 		
 		this.matrixMetadata = matrixMetadata;
 		this.sampleSetSize = matrixMetadata.getNumMarkers();

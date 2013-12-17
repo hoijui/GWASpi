@@ -127,7 +127,7 @@ public abstract class AbstractLoadGTFromFiles implements GenotypesLoader {
 		}
 		int sampleIndex = 0;
 		// HACK
-		DataSet dataSet = ((InMemorySamplesReceiver) samplesReceiver).getDataSet();
+		DataSet dataSet = ((AbstractDataSetDestination) samplesReceiver).getDataSet();
 		for (SampleInfo sampleInfo : dataSet.getSampleInfos()) {
 			// PURGE MarkerIdMap
 			Map<MarkerKey, byte[]> alleles = fillMap(dataSet.getMarkerMetadatas().keySet(), cNetCDF.Defaults.DEFAULT_GT);

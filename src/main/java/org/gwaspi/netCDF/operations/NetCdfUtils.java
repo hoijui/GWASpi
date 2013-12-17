@@ -921,9 +921,18 @@ public class NetCdfUtils {
 		} else {
 			throw new UnsupportedOperationException();
 		}
-		for (int i = 0; i < size; i++) {
-			ArrayByte.D2.arraycopy(from, i * shape[1], tmpArray, 0, shape[1]);
-			to.add((V) tmpArray.copyTo1DJavaArray());
+
+		if (from instanceof ArrayChar) {
+			for (int i = 0; i < size; i++) {
+				ArrayByte.D2.arraycopy(from, i * shape[1], tmpArray, 0, shape[1]);
+				char[] charArray = (char[]) tmpArray.copyTo1DJavaArray();
+				to.add((V) String.valueOf(charArray));
+			}
+		} else {
+			for (int i = 0; i < size; i++) {
+				ArrayByte.D2.arraycopy(from, i * shape[1], tmpArray, 0, shape[1]);
+				to.add((V) tmpArray.copyTo1DJavaArray());
+			}
 		}
 	}
 	//</editor-fold>
@@ -968,13 +977,13 @@ public class NetCdfUtils {
 			dimension.height = maxSize - 1;
 		}
 		if ((dimension.width < 0) || (dimension.width > maxSize)) {
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException("Dimension width not in range [" + 0 + ", " + maxSize + "]: " + dimension.width);
 		}
 		if ((dimension.height < 0) || (dimension.height > maxSize)) {
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException("Dimension height not in range [" + 0 + ", " + maxSize + "]: " + dimension.height);
 		}
 		if (dimension.height < dimension.width) {
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException("Dimension height (is " + dimension.height + ") should be smaller then width (" + dimension.width + ")");
 		}
 	}
 
@@ -1001,8 +1010,11 @@ public class NetCdfUtils {
 			numSetTargetContainers++;
 			throw new UnsupportedOperationException("is also filling values, not keys!");
 		}
-		if ((var == null) || (numSetTargetContainers != 1)) {
-			throw new IllegalArgumentException();
+		if (var == null) {
+			throw new IllegalArgumentException("Variable \"" + variableName + "\" not found in Net-CDF file: " + ncFile.getLocation());
+		}
+		if (numSetTargetContainers != 1) {
+			throw new IllegalArgumentException("Exactly one target container has to be specified, but " + numSetTargetContainers + " were");
 		}
 
 		DataType dataType = var.getDataType();
@@ -1039,7 +1051,8 @@ public class NetCdfUtils {
 						NetCdfUtils.writeD1ArrayToCollection(markerSetAC, (Collection<Character>)targetCollection);
 					} else if (varShape.length == 2) {
 						ArrayChar.D2 markerSetAC = (ArrayChar.D2) var.read(fetchVarStr);
-						NetCdfUtils.writeD2ArrayToCollection(markerSetAC, (Collection<char[]>)targetCollection);
+//						NetCdfUtils.writeD2ArrayToCollection(markerSetAC, (Collection<char[]>)targetCollection);
+						NetCdfUtils.writeD2ArrayToCollection(markerSetAC, (Collection<String>)targetCollection);
 					} else {
 						throw new UnsupportedOperationException();
 					}
