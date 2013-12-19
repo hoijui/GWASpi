@@ -926,7 +926,9 @@ public class NetCdfUtils {
 			for (int i = 0; i < size; i++) {
 				ArrayByte.D2.arraycopy(from, i * shape[1], tmpArray, 0, shape[1]);
 				char[] charArray = (char[]) tmpArray.copyTo1DJavaArray();
-				to.add((V) String.valueOf(charArray));
+				String strValue = String.valueOf(charArray);
+				to.add((V) strValue); // XXX; uses all 64 chars, not just up to \0
+//				new ch.qos.logback.classic.encoder.PatternLayoutEncoder()
 			}
 		} else {
 			for (int i = 0; i < size; i++) {
