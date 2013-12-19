@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import org.gwaspi.constants.cNetCDF;
-import org.gwaspi.model.ChromosomeInfo;
 import org.gwaspi.model.ChromosomeKey;
 import org.gwaspi.model.ChromosomesKeysSource;
 import org.gwaspi.model.DataSetSource;
@@ -63,12 +62,12 @@ public abstract class AbstractNetCdfOperationDataSet<ET> implements OperationDat
 	private final boolean markersOperationSet;
 	private MatrixKey rdMatrixKey;
 	private OperationKey rdOperationKey;
-	private int numMarkers;
-	private int numSamples;
-	private int numChromosomes;
-	private boolean useAllMarkersFromParent;
-	private boolean useAllSamplesFromParent;
-	private boolean useAllChromosomesFromParent;
+	private Integer numMarkers;
+	private Integer numSamples;
+	private Integer numChromosomes;
+	private Boolean useAllMarkersFromParent;
+	private Boolean useAllSamplesFromParent;
+	private Boolean useAllChromosomesFromParent;
 	private NetcdfFile readNcFile;
 	private NetcdfFileWriteable writeNcFile;
 	private OperationMetadata operationMetadata;
@@ -81,14 +80,14 @@ public abstract class AbstractNetCdfOperationDataSet<ET> implements OperationDat
 
 		this.operationKey = operationKey;
 		this.markersOperationSet = markersOperationSet;
-		this.rdMatrixKey = null;
+		this.rdMatrixKey = (operationKey == null) ? null : operationKey.getParentMatrixKey();
 		this.rdOperationKey = null;
-		this.numMarkers = -1;
-		this.numSamples = -1;
-		this.numChromosomes = -1;
-		this.useAllMarkersFromParent = false;
-		this.useAllSamplesFromParent = false;
-		this.useAllChromosomesFromParent = false;
+		this.numMarkers = null;
+		this.numSamples = null;
+		this.numChromosomes = null;
+		this.useAllMarkersFromParent = null;
+		this.useAllSamplesFromParent = null;
+		this.useAllChromosomesFromParent = null;
 		this.writeNcFile = null;
 		this.operationMetadata = null;
 		this.writeBuffer = new LinkedList<ET>();
@@ -132,7 +131,16 @@ public abstract class AbstractNetCdfOperationDataSet<ET> implements OperationDat
 	}
 
 	@Override
-	public int getNumMarkers() {
+	public int getNumMarkers() throws IOException {
+
+		if (numMarkers == null) {
+			if (getUseAllSamplesFromParent()) {
+				numMarkers = MatrixFactory.generateMatrixDataSetSource(getReadMatrixKey()).getNumMarkers();
+			} else {
+				numMarkers = getNetCdfReadFile().findDimension(getIndexVar(true)).getLength();
+			}
+		}
+
 		return numMarkers;
 	}
 
@@ -147,13 +155,31 @@ public abstract class AbstractNetCdfOperationDataSet<ET> implements OperationDat
 		this.useAllMarkersFromParent = useAll;
 	}
 
+	public boolean getUseAllMarkersFromParent() throws IOException {
+
+		if (useAllMarkersFromParent == null) {
+			useAllMarkersFromParent = (getNetCdfReadFile().findGlobalAttribute(cNetCDF.Attributes.GLOB_USE_ALL_MARKERS).getNumericValue().intValue() != 0);
+		}
+
+		return useAllMarkersFromParent;
+	}
+
 	@Override
 	public void setNumSamples(int numSamples) {
 		this.numSamples = numSamples;
 	}
 
 	@Override
-	public int getNumSamples() {
+	public int getNumSamples() throws IOException {
+
+		if (numSamples == null) {
+			if (getUseAllSamplesFromParent()) {
+				numSamples = MatrixFactory.generateMatrixDataSetSource(getReadMatrixKey()).getNumSamples();
+			} else {
+				numSamples = getNetCdfReadFile().findDimension(getIndexVar(false)).getLength();
+			}
+		}
+
 		return numSamples;
 	}
 
@@ -168,13 +194,31 @@ public abstract class AbstractNetCdfOperationDataSet<ET> implements OperationDat
 		this.useAllSamplesFromParent = useAll;
 	}
 
+	public boolean getUseAllSamplesFromParent() throws IOException {
+
+		if (useAllSamplesFromParent == null) {
+			useAllSamplesFromParent = (getNetCdfReadFile().findGlobalAttribute(cNetCDF.Attributes.GLOB_USE_ALL_SAMPLES).getNumericValue().intValue() != 0);
+		}
+
+		return useAllSamplesFromParent;
+	}
+
 	@Override
 	public void setNumChromosomes(int numChromosomes) {
 		this.numChromosomes = numChromosomes;
 	}
 
 	@Override
-	public int getNumChromosomes() {
+	public int getNumChromosomes() throws IOException {
+
+		if (numChromosomes == null) {
+			if (getUseAllChromosomesFromParent()) {
+				numChromosomes = MatrixFactory.generateMatrixDataSetSource(getReadMatrixKey()).getNumChromosomes();
+			} else {
+				numChromosomes = getNetCdfReadFile().findDimension(cNetCDF.Variables.VAR_CHR_IN_MATRIX_IDX).getLength();
+			}
+		}
+
 		return numChromosomes;
 	}
 
@@ -187,6 +231,15 @@ public abstract class AbstractNetCdfOperationDataSet<ET> implements OperationDat
 	 */
 	public void setUseAllChromosomesFromParent(boolean useAll) {
 		this.useAllChromosomesFromParent = useAll;
+	}
+
+	public boolean getUseAllChromosomesFromParent() throws IOException {
+
+		if (useAllChromosomesFromParent == null) {
+			useAllChromosomesFromParent = (getNetCdfReadFile().findGlobalAttribute(cNetCDF.Attributes.GLOB_USE_ALL_CHROMOSOMES).getNumericValue().intValue() != 0);
+		}
+
+		return useAllChromosomesFromParent;
 	}
 
 	protected NetcdfFileWriteable getNetCdfWriteFile() throws IOException {
@@ -207,7 +260,7 @@ public abstract class AbstractNetCdfOperationDataSet<ET> implements OperationDat
 //		return operationFactory;
 //	}
 
-	protected final NetcdfFileWriteable createNetCdfFile(
+	private NetcdfFileWriteable createNetCdfFile(
 			OperationMetadata operationMetadata)
 			throws IOException
 	{
@@ -243,63 +296,91 @@ public abstract class AbstractNetCdfOperationDataSet<ET> implements OperationDat
 		// global attributes
 		ncFile.addGlobalAttribute(cNetCDF.Attributes.GLOB_STUDY, operationMetadata.getStudyId());
 		ncFile.addGlobalAttribute(cNetCDF.Attributes.GLOB_DESCRIPTION, operationMetadata.getDescription());
+		final boolean useAllParentMarkers = getUseAllMarkersFromParent();
+		ncFile.addGlobalAttribute(cNetCDF.Attributes.GLOB_USE_ALL_MARKERS, useAllParentMarkers ? 1 : 0);
+		final boolean useAllParentChromosomes = getUseAllChromosomesFromParent();
+		ncFile.addGlobalAttribute(cNetCDF.Attributes.GLOB_USE_ALL_CHROMOSOMES, useAllParentChromosomes ? 1 : 0);
+		final boolean useAllParentSamples = getUseAllSamplesFromParent();
+		ncFile.addGlobalAttribute(cNetCDF.Attributes.GLOB_USE_ALL_SAMPLES, useAllParentSamples ? 1 : 0);
+		// FIXME quite some more global attributes missing here (all of OperationMetadata)!
 
 		// dimensions
-		Dimension setDim = ncFile.addDimension(cNetCDF.Dimensions.DIM_OPSET, operationMetadata.getOpSetSize());
+		Dimension opSetDim = ncFile.addDimension(cNetCDF.Dimensions.DIM_OPSET, operationMetadata.getOpSetSize());
 		Dimension implicitSetDim = ncFile.addDimension(cNetCDF.Dimensions.DIM_IMPLICITSET, operationMetadata.getImplicitSetSize());
-		Dimension chrSetDim = ncFile.addDimension(cNetCDF.Dimensions.DIM_CHRSET, operationMetadata.getNumChromosomes());
-		Dimension markerStrideDim = ncFile.addDimension(cNetCDF.Dimensions.DIM_MARKERSTRIDE, markerStride);
-		Dimension sampleStrideDim = ncFile.addDimension(cNetCDF.Dimensions.DIM_SAMPLESTRIDE, sampleStride);
+
+		final Dimension markersDim;
+		final Dimension samplesDim;
+		if (markersOperationSet) {
+			markersDim = opSetDim;
+			samplesDim = implicitSetDim;
+		} else {
+			markersDim = implicitSetDim;
+			samplesDim = opSetDim;
+		}
+		Dimension chromosomesDim = ncFile.addDimension(cNetCDF.Dimensions.DIM_CHRSET, operationMetadata.getNumChromosomes());
+		Dimension markersNameDim = ncFile.addDimension(cNetCDF.Dimensions.DIM_MARKERSTRIDE, markerStride);
+		Dimension samplesNameDim = ncFile.addDimension(cNetCDF.Dimensions.DIM_SAMPLESTRIDE, sampleStride);
 		Dimension dim8 = ncFile.addDimension(cNetCDF.Dimensions.DIM_8, 8);
 
 		// MARKER SPACES
 		List<Dimension> markersSpace = new ArrayList<Dimension>(1);
-		markersSpace.add(setDim);
+		markersSpace.add(markersDim);
 
 		List<Dimension> markersNameSpace = new ArrayList<Dimension>(2);
-		markersNameSpace.add(setDim);
-		markersNameSpace.add(markerStrideDim);
+		markersNameSpace.add(markersDim);
+		markersNameSpace.add(markersNameDim);
 
 		// CHROMOSOME SPACES
 		List<Dimension> chromosomesSpace = new ArrayList<Dimension>(1);
-		chromosomesSpace.add(chrSetDim);
+		chromosomesSpace.add(chromosomesDim);
 
 		List<Dimension> chromosomesNameSpace = new ArrayList<Dimension>(2);
-		chromosomesNameSpace.add(chrSetDim);
+		chromosomesNameSpace.add(chromosomesDim);
 		chromosomesNameSpace.add(dim8);
 
 		// SAMPLE SPACES
 		List<Dimension> samplesSpace = new ArrayList<Dimension>(1);
-		samplesSpace.add(implicitSetDim);
+		samplesSpace.add(samplesDim);
 
 		List<Dimension> samplesNameSpace = new ArrayList<Dimension>(2);
-		samplesNameSpace.add(implicitSetDim);
-		samplesNameSpace.add(sampleStrideDim);
+		samplesNameSpace.add(samplesDim);
+		samplesNameSpace.add(samplesNameDim);
 
 		// Define Variables
-		XXX; // TODO use the useAll*FromParent variables!
-		List<Dimension> opSpace;
-		List<Dimension> opNameSpace;
-		List<Dimension> implSpace;
-		List<Dimension> implNameSpace;
+		final boolean opUseAll;
+		final List<Dimension> opSpace;
+		final List<Dimension> opNameSpace;
+		final boolean implUseAll;
+		final List<Dimension> implSpace;
+		final List<Dimension> implNameSpace;
 		if (markersOperationSet) {
+			opUseAll = useAllParentMarkers;
 			opSpace = markersSpace;
 			opNameSpace = markersNameSpace;
+			implUseAll = useAllParentSamples;
 			implSpace = samplesSpace;
 			implNameSpace = samplesNameSpace;
 		} else {
+			opUseAll = useAllParentSamples;
 			opSpace = samplesSpace;
 			opNameSpace = samplesNameSpace;
+			implUseAll = useAllParentMarkers;
 			implSpace = markersSpace;
 			implNameSpace = markersNameSpace;
 		}
-		ncFile.addVariable(cNetCDF.Variables.VAR_OPSET_IDX, DataType.INT, opSpace);
-		ncFile.addVariable(cNetCDF.Variables.VAR_OPSET, DataType.CHAR, opNameSpace);
-		ncFile.addVariable(cNetCDF.Variables.VAR_IMPLICITSET_IDX, DataType.INT, implSpace);
-		ncFile.addVariable(cNetCDF.Variables.VAR_IMPLICITSET, DataType.CHAR, implNameSpace);
+		if (!opUseAll) {
+			ncFile.addVariable(cNetCDF.Variables.VAR_OPSET_IDX, DataType.INT, opSpace);
+			ncFile.addVariable(cNetCDF.Variables.VAR_OPSET, DataType.CHAR, opNameSpace);
+		}
+		if (!implUseAll) {
+			ncFile.addVariable(cNetCDF.Variables.VAR_IMPLICITSET_IDX, DataType.INT, implSpace);
+			ncFile.addVariable(cNetCDF.Variables.VAR_IMPLICITSET, DataType.CHAR, implNameSpace);
+		}
 //		ncfile.addVariable(cNetCDF.Variables.VAR_MARKERS_RSID, DataType.CHAR, markerNameSpace); // always get these from the parent matrix
-		ncFile.addVariable(cNetCDF.Variables.VAR_CHR_IN_MATRIX_IDX, DataType.INT, chromosomesSpace);
-		ncFile.addVariable(cNetCDF.Variables.VAR_CHR_IN_MATRIX, DataType.CHAR, chromosomesNameSpace);
+		if (!useAllParentChromosomes) {
+			ncFile.addVariable(cNetCDF.Variables.VAR_CHR_IN_MATRIX_IDX, DataType.INT, chromosomesSpace);
+			ncFile.addVariable(cNetCDF.Variables.VAR_CHR_IN_MATRIX, DataType.CHAR, chromosomesNameSpace);
+		}
 
 		supplementNetCdfHandler(ncFile, operationMetadata, markersSpace, chromosomesSpace, samplesSpace);
 
@@ -464,7 +545,7 @@ public abstract class AbstractNetCdfOperationDataSet<ET> implements OperationDat
 
 		Map<Integer, SampleKey> samples;
 
-		if (!useAllSamplesFromParent) {
+		if (!getUseAllSamplesFromParent()) {
 			Collection<Integer> origIndices = new ArrayList<Integer>(0);
 			Collection<String> keys = new ArrayList<String>(0);
 
@@ -487,7 +568,7 @@ public abstract class AbstractNetCdfOperationDataSet<ET> implements OperationDat
 			samples = parentOperationDataSet.getSamples();
 		} else {
 			// load the list of samples from the parent matrix
-			DataSetSource parentMatrixDataSet = MatrixFactory.generateMatrixDataSetSource(rdMatrixKey);
+			DataSetSource parentMatrixDataSet = MatrixFactory.generateMatrixDataSetSource(getReadMatrixKey());
 			SamplesKeysSource samplesKeys = parentMatrixDataSet.getSamplesKeysSource();
 
 			samples = new LinkedHashMap<Integer, SampleKey>(samplesKeys.size());
@@ -505,7 +586,7 @@ public abstract class AbstractNetCdfOperationDataSet<ET> implements OperationDat
 
 		Map<Integer, MarkerKey> markers;
 
-		if (!useAllMarkersFromParent) {
+		if (!getUseAllMarkersFromParent()) {
 			Collection<Integer> origIndices = new ArrayList<Integer>(0);
 			Collection<String> keys = new ArrayList<String>(0);
 
@@ -546,7 +627,7 @@ public abstract class AbstractNetCdfOperationDataSet<ET> implements OperationDat
 
 		Map<Integer, ChromosomeKey> chromosomes;
 
-		if (!useAllChromosomesFromParent) {
+		if (!getUseAllChromosomesFromParent()) {
 			Collection<Integer> origIndices = new ArrayList<Integer>(0);
 			Collection<String> keys = new ArrayList<String>(0);
 
@@ -579,37 +660,6 @@ public abstract class AbstractNetCdfOperationDataSet<ET> implements OperationDat
 		}
 
 		return chromosomes;
-	}
-
-	@Override
-	public Collection<ChromosomeInfo> getChromosomeInfos() throws IOException {
-
-		Collection<ChromosomeInfo> chromosomeInfos;
-
-		if (!useAllChromosomesFromParent) {
-			Collection<int[]> chromosomeInfosRaw = new ArrayList<int[]>(0);
-			final String varInfo = cNetCDF.Variables.VAR_CHR_INFO;
-			NetCdfUtils.readVariable(getNetCdfReadFile(), varInfo, -1, -1, chromosomeInfosRaw, null);
-
-			chromosomeInfos = new ArrayList<ChromosomeInfo>(chromosomeInfosRaw.size());
-			for (int[] infoRaw : chromosomeInfosRaw) {
-				chromosomeInfos.add(new ChromosomeInfo(
-						infoRaw[0],
-						infoRaw[1],
-						infoRaw[2],
-						infoRaw[3]));
-			}
-		} else if (rdOperationKey != null) {
-			// load the list of samples from the parent operation
-			OperationDataSet parentOperationDataSet = OperationFactory.generateOperationDataSet(rdOperationKey);
-			chromosomeInfos = parentOperationDataSet.getChromosomeInfos();
-		} else {
-			// load the list of samples from the parent matrix
-			DataSetSource parentMatrixDataSet = MatrixFactory.generateMatrixDataSetSource(rdMatrixKey);
-			chromosomeInfos = parentMatrixDataSet.getChromosomesInfosSource();
-		}
-
-		return chromosomeInfos;
 	}
 
 	public void addEntry(ET entry) throws IOException {

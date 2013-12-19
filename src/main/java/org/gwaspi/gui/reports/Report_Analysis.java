@@ -81,7 +81,6 @@ import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.Study;
 import org.gwaspi.model.StudyKey;
-import org.gwaspi.netCDF.operations.MarkerOperationSet;
 import org.gwaspi.netCDF.operations.OperationFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

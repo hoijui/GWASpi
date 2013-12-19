@@ -409,36 +409,80 @@ public class NetCDFDataSetSource implements DataSetSource {
 //	}
 
 
-	private static final class NetCdfChromosomesKeysSource extends ArrayList<ChromosomeKey> implements ChromosomesKeysSource {
-	}
+	private static final class NetCdfChromosomesKeysSource extends AbstractListSource<ChromosomeKey> implements ChromosomesKeysSource {
 
-	private static final class NetCdfChromosomesInfosSource extends ArrayList<ChromosomeInfo> implements ChromosomesInfosSource {
+		/**
+		 * As we have max 23 chromosomes, in general,
+		 * this constant does not really matter;
+		 * though it should be at least 23.
+		 */
+		private static final int DEFAULT_CHUNK_SIZE = 100;
+
+		NetCdfChromosomesKeysSource(NetcdfFile rdNetCdfFile) {
+			super(rdNetCdfFile, DEFAULT_CHUNK_SIZE, cNetCDF.Dimensions.DIM_CHRSET);
+		}
+
+		@Override
+		public List<ChromosomeKey> getRange(int from, int to) throws IOException {
+
+			List<ChromosomeKey> chromosomes;
+
+			List<String> keys = readVar(cNetCDF.Variables.VAR_CHR_IN_MATRIX, from, to);
+
+			chromosomes = new ArrayList<ChromosomeKey>(keys.size());
+			for (String encodedKey : keys) {
+				chromosomes.add(ChromosomeKey.valueOf(encodedKey));
+			}
+
+			return chromosomes;
+		}
 	}
 
 	@Override
 	public ChromosomesKeysSource getChromosomesKeysSource() throws IOException {
 
-		ensureMatrixMetadata();
-		MarkerSet markerSet = new MarkerSet(matrixMetadata);
+		ensureReadNetCdfFile();
+		return new NetCdfChromosomesKeysSource(rdNetCdfFile);
+	}
 
-		NetCdfChromosomesKeysSource chrInfSrc = new NetCdfChromosomesKeysSource();
-		markerSet.initFullMarkerIdSetMap(); // XXX may not always be required
-		chrInfSrc.addAll(markerSet.getChrInfoSetMap().keySet());
+	private static final class NetCdfChromosomesInfosSource extends AbstractListSource<ChromosomeInfo> implements ChromosomesInfosSource {
 
-		return chrInfSrc;
+		/**
+		 * As we have max 23 chromosomes, in general,
+		 * this constant does not really matter;
+		 * though it should be at least 23.
+		 */
+		private static final int DEFAULT_CHUNK_SIZE = 100;
+
+		NetCdfChromosomesInfosSource(NetcdfFile rdNetCdfFile) {
+			super(rdNetCdfFile, DEFAULT_CHUNK_SIZE, cNetCDF.Dimensions.DIM_CHRSET);
+		}
+
+		@Override
+		public List<ChromosomeInfo> getRange(int from, int to) throws IOException {
+
+			List<ChromosomeInfo> chromosomes;
+
+			List<int[]> chromosomeInfosRaw = readVar(cNetCDF.Variables.VAR_CHR_INFO, from, to);
+
+			chromosomes = new ArrayList<ChromosomeInfo>(chromosomeInfosRaw.size());
+			for (int[] infoRaw : chromosomeInfosRaw) {
+				chromosomes.add(new ChromosomeInfo(
+						infoRaw[0],
+						infoRaw[1],
+						infoRaw[2],
+						infoRaw[3]));
+			}
+
+			return chromosomes;
+		}
 	}
 
 	@Override
 	public ChromosomesInfosSource getChromosomesInfosSource() throws IOException {
 
-		ensureMatrixMetadata();
-		MarkerSet markerSet = new MarkerSet(matrixMetadata);
-
-		NetCdfChromosomesInfosSource chrInfSrc = new NetCdfChromosomesInfosSource();
-		markerSet.initFullMarkerIdSetMap(); // XXX may not always be required
-		chrInfSrc.addAll(markerSet.getChrInfoSetMap().values());
-
-		return chrInfSrc;
+		ensureReadNetCdfFile();
+		return new NetCdfChromosomesInfosSource(rdNetCdfFile);
 	}
 
 	private static class NetCdfMarkersKeysSource extends AbstractListSource<MarkerKey> implements MarkersKeysSource {
@@ -501,10 +545,6 @@ public class NetCDFDataSetSource implements DataSetSource {
 		ensureMatrixMetadata();
 		return new MarkerSet(matrixMetadata);
 	}
-
-//	private static class NetCdfSamplesInfosSource extends LinkedList<SampleInfo> implements SamplesInfosSource {
-//
-//	}
 
 	private static class NetCdfSamplesInfosSource extends AbstractListSource<SampleInfo> implements SamplesInfosSource {
 
@@ -693,37 +733,6 @@ public class NetCDFDataSetSource implements DataSetSource {
 
 	@Override
 	public SamplesInfosSource getSamplesInfosSource() throws IOException {
-
-//		// HACK all stuff down here is hacky!
-//		final NetCdfSamplesInfosSource samplesInfosSource = new NetCdfSamplesInfosSource();
-//		DataSetDestination tmpDataSetDestination = new DataSetDestination() {
-//
-//			public void init() throws IOException {}
-//			public void startLoadingDummySampleInfos() throws IOException {}
-//			public void finishedLoadingDummySampleInfos() throws IOException {}
-//			public void startLoadingSampleInfos(boolean storeOnlyKeys) throws IOException {}
-//
-//			public void addSampleInfo(SampleInfo sampleInfo) throws IOException {
-//				samplesInfosSource.add(sampleInfo);
-//			}
-//
-//			public void addSampleKey(SampleKey sampleKey) throws IOException {}
-//			public void finishedLoadingSampleInfos() throws IOException {}
-//			public void startLoadingMarkerMetadatas(boolean storeOnlyKeys) throws IOException {}
-//			public void addMarkerMetadata(MarkerMetadata markerMetadata) throws IOException {}
-//			public void addMarkerKey(MarkerKey markerKey) throws IOException {}
-//			public void finishedLoadingMarkerMetadatas() throws IOException {}
-//			public void startLoadingChromosomeMetadatas() throws IOException {}
-//			public void addChromosomeMetadata(ChromosomeKey chromosomeKey, ChromosomeInfo chromosomeInfo) throws IOException {}
-//			public void finishedLoadingChromosomeMetadatas() throws IOException {}
-//			public void startLoadingAlleles(boolean perSample) throws IOException {}
-//			public void addSampleGTAlleles(int sampleIndex, Collection<byte[]> sampleAlleles) throws IOException {}
-//			public void addMarkerGTAlleles(int markerIndex, Collection<byte[]> markerAlleles) throws IOException {}
-//			public void finishedLoadingAlleles() throws IOException {}
-//			public void done() throws IOException {}
-//		};
-//		SamplesParserManager.scanSampleInfo(studyKey, ImportFormat.GWASpi, gtPath, tmpDataSetDestination);
-
 		return new NetCdfSamplesInfosSource(studyKey, rdNetCdfFile);
 	}
 

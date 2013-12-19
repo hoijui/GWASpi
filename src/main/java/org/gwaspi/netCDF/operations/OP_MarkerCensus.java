@@ -53,9 +53,7 @@ import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
 import org.gwaspi.operations.markercensus.DefaultMarkerCensusOperationEntry;
 import org.gwaspi.operations.markercensus.MarkerCensusOperationDataSet;
 import org.gwaspi.operations.markercensus.NetCdfMarkerCensusOperationDataSet;
-import org.gwaspi.operations.qamarkers.NetCdfQAMarkersOperationDataSet;
 import org.gwaspi.operations.qamarkers.QAMarkersOperationDataSet;
-import org.gwaspi.operations.qasamples.NetCdfQASamplesOperationDataSet;
 import org.gwaspi.operations.qasamples.QASamplesOperationDataSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -133,7 +131,7 @@ public class OP_MarkerCensus implements MatrixOperation {
 //			SampleSet rdSampleSet = new SampleSet(rdMatrixKey);
 //			Map<SampleKey, byte[]> rdSampleSetMap = rdSampleSet.getSampleIdSetMapByteArray();
 			Map<Integer, SampleKey> wrSampleKeys = new LinkedHashMap<Integer, SampleKey>();
-			QASamplesOperationDataSet qaSamplesOperationDataSet = new NetCdfQASamplesOperationDataSet(sampleQAOPKey);
+			QASamplesOperationDataSet qaSamplesOperationDataSet = (QASamplesOperationDataSet) OperationFactory.generateOperationDataSet(sampleQAOPKey);
 			for (Map.Entry<Integer, SampleKey> qaSampleOrigIndexKey : qaSamplesOperationDataSet.getSamples().entrySet()) {
 				if (!excludeSamplesOrigIndexAndKey.containsKey(qaSampleOrigIndexKey.getKey())) {
 					wrSampleKeys.put(qaSampleOrigIndexKey.getKey(), qaSampleOrigIndexKey.getValue());
@@ -549,8 +547,8 @@ public class OP_MarkerCensus implements MatrixOperation {
 		OperationKey markerQAOPKey = OperationKey.valueOf(markerQAOP);
 		OperationKey sampleQAOPKey = OperationKey.valueOf(sampleQAOP);
 
-		QAMarkersOperationDataSet qaMarkersOperationDataSet = new NetCdfQAMarkersOperationDataSet(markerQAOPKey);
-		QASamplesOperationDataSet qaSamplesOperationDataSet = new NetCdfQASamplesOperationDataSet(sampleQAOPKey);
+		QAMarkersOperationDataSet qaMarkersOperationDataSet = (QAMarkersOperationDataSet) OperationFactory.generateOperationDataSet(markerQAOPKey);
+		QASamplesOperationDataSet qaSamplesOperationDataSet = (QASamplesOperationDataSet) OperationFactory.generateOperationDataSet(sampleQAOPKey);
 
 //		OperationMetadata markerQAMetadata = OperationsList.getOperationMetadata(markerQAOP.getId());
 //		NetcdfFile rdMarkerQANcFile = NetcdfFile.open(markerQAMetadata.getPathToMatrix());

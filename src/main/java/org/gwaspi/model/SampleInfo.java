@@ -729,4 +729,9 @@ public class SampleInfo implements Comparable<SampleInfo>, Serializable {
 			return null;
 		}
 	}
+
+	@Override
+	public String toString() {
+		return "SampleInfo[" + getKey().toString() + "]";
+	}
 }

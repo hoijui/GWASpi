@@ -35,6 +35,10 @@ public class cNetCDF {
 		public static final String GLOB_MATRIX_TYPE = "matrix_type";
 		public static final String GLOB_CREATION_DATE = "creation_date";
 
+		public static final String GLOB_USE_ALL_MARKERS = "use_all_markers";
+		public static final String GLOB_USE_ALL_CHROMOSOMES = "use_all_chromosomes";
+		public static final String GLOB_USE_ALL_SAMPLES = "use_all_samples";
+
 		private Attributes() {
 		}
 	}
