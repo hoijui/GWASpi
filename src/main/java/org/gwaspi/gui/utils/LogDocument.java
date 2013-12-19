@@ -37,9 +37,9 @@ public class LogDocument extends PlainDocument {
 
 	private static class LogBackAppender extends AppenderBase<ILoggingEvent> {
 
+		private final ByteArrayOutputStream buffer;
+		private final Document target;
 		private Encoder<ILoggingEvent> encoder;
-		private ByteArrayOutputStream buffer;
-		private Document target;
 
 		LogBackAppender(Document target) {
 
