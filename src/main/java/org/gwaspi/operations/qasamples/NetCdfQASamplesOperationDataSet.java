@@ -32,7 +32,6 @@ import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.netCDF.operations.NetCdfUtils;
-import org.gwaspi.netCDF.operations.SampleOperationSet;
 import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
 import ucar.ma2.ArrayDouble;
 import ucar.ma2.ArrayInt;
@@ -145,8 +144,9 @@ public class NetCdfQASamplesOperationDataSet extends AbstractNetCdfOperationData
 	@Override
 	public Collection<QASamplesOperationEntry> getEntries(int from, int to) throws IOException {
 
-		SampleOperationSet rdSampleSet = new SampleOperationSet(getOperationKey(), from, to);
-		Map<SampleKey, Integer> rdSamples = rdSampleSet.getOpSetMap();
+//		SampleOperationSet rdSampleSet = new SampleOperationSet(getOperationKey(), from, to);
+//		Map<SampleKey, Integer> rdSamples = rdSampleSet.getOpSetMap();
+		Map<Integer, SampleKey> samplesKeys = getSamples();
 
 		Collection<Double> missingRatios = getMissingRatios(from, to);
 		Collection<Integer> missingCount = getMissingCounts(from, to);
@@ -157,10 +157,11 @@ public class NetCdfQASamplesOperationDataSet extends AbstractNetCdfOperationData
 		Iterator<Double> missingRatioIt = missingRatios.iterator();
 		Iterator<Integer> missingCountIt = missingCount.iterator();
 		Iterator<Double> hetzyRatiosIt = hetzyRatios.iterator();
-		for (Map.Entry<SampleKey, Integer> sampleKeyIndex : rdSamples.entrySet()) {
+//		for (Map.Entry<SampleKey, Integer> sampleKeyIndex : rdSamples.entrySet()) {
+		for (Map.Entry<Integer, SampleKey> origIndicesAndKey : samplesKeys.entrySet()) {
 			entries.add(new DefaultQASamplesOperationEntry(
-					sampleKeyIndex.getKey(),
-					sampleKeyIndex.getValue(),
+					origIndicesAndKey.getValue(),
+					origIndicesAndKey.getKey(),
 					missingRatioIt.next(),
 					missingCountIt.next(),
 					hetzyRatiosIt.next()));

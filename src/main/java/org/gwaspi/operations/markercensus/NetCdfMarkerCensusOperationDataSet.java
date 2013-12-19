@@ -36,7 +36,6 @@ import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
-import org.gwaspi.netCDF.operations.MarkerOperationSet;
 import org.gwaspi.netCDF.operations.NetCdfUtils;
 import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
 import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationEntry.Category;
@@ -254,9 +253,7 @@ public class NetCdfMarkerCensusOperationDataSet extends AbstractNetCdfOperationD
 	@Override
 	public Collection<MarkerCensusOperationEntry> getEntries(int from, int to) throws IOException {
 
-		MarkerOperationSet rdMarkersSet = new MarkerOperationSet(getOperationKey(), from, to);
-		Map<MarkerKey, Integer> rdMarkers = rdMarkersSet.getOpSetMap();
-
+		Map<Integer, MarkerKey> markersKeys = getMarkers();
 		Collection<byte[]> knownAlleles = getKnownAlleles(from, to);
 //		Collection<Census> censusesAll = getCensus(Category.ALL, from, to);
 //		Collection<Census> censusesCase = getCensus(Category.CASE, from, to);
@@ -266,10 +263,10 @@ public class NetCdfMarkerCensusOperationDataSet extends AbstractNetCdfOperationD
 		Collection<MarkerCensusOperationEntry> entries
 				= new ArrayList<MarkerCensusOperationEntry>(knownAlleles.size());
 		Iterator<byte[]> knownAllelesIt = knownAlleles.iterator();
-		for (Map.Entry<MarkerKey, Integer> keysIndices : rdMarkers.entrySet()) {
-			Integer origIndex = keysIndices.getValue();
+		for (Map.Entry<Integer, MarkerKey> origIndicesAndKey : markersKeys.entrySet()) {
+			Integer origIndex = origIndicesAndKey.getKey();
 			entries.add(new DefaultMarkerCensusOperationEntry(
-					keysIndices.getKey(),
+					origIndicesAndKey.getValue(),
 					origIndex,
 					knownAllelesIt.next(),
 					new CensusFull(

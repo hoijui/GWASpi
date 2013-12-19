@@ -267,9 +267,7 @@ public class NetCdfHardyWeinbergOperationDataSet extends AbstractNetCdfOperation
 
 	public Collection<HardyWeinbergOperationEntry> getEntries(Category category, int from, int to) throws IOException {
 
-		MarkerOperationSet rdMarkersSet = new MarkerOperationSet(getOperationKey(), from, to);
-		Map<MarkerKey, Integer> rdMarkers = rdMarkersSet.getOpSetMap();
-
+		Map<Integer, MarkerKey> markersKeys = getMarkers();
 		Collection<Double> ps = getPs(category, from, to);
 		Collection<Double> hwObsHetzys = getHwHetzyObses(category, from, to);
 		Collection<Double> hwExpHetzys = getHwHetzyExps(category, from, to);
@@ -279,10 +277,10 @@ public class NetCdfHardyWeinbergOperationDataSet extends AbstractNetCdfOperation
 		Iterator<Double> psIt = ps.iterator();
 		Iterator<Double> hwObsHetzysIt = hwObsHetzys.iterator();
 		Iterator<Double> hwExpHetzysIt = hwExpHetzys.iterator();
-		for (Map.Entry<MarkerKey, Integer> keysIndices : rdMarkers.entrySet()) {
+		for (Map.Entry<Integer, MarkerKey> origIndicesAndKey : markersKeys.entrySet()) {
 			entries.add(new DefaultHardyWeinbergOperationEntry(
-					keysIndices.getKey(),
-					keysIndices.getValue(),
+					origIndicesAndKey.getValue(),
+					origIndicesAndKey.getKey(),
 					category,
 					psIt.next(),
 					hwObsHetzysIt.next(),
