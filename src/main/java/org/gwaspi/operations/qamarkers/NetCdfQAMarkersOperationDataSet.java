@@ -236,8 +236,9 @@ public class NetCdfQAMarkersOperationDataSet extends AbstractNetCdfOperationData
 	@Override
 	public Collection<QAMarkersOperationEntry> getEntries(int from, int to) throws IOException {
 
-		MarkerOperationSet rdMarkersSet = new MarkerOperationSet(getOperationKey(), from, to);
-		Map<MarkerKey, Integer> rdMarkers = rdMarkersSet.getOpSetMap();
+//		MarkerOperationSet rdMarkersSet = new MarkerOperationSet(getOperationKey(), from, to);
+//		Map<MarkerKey, Integer> rdMarkers = rdMarkersSet.getOpSetMap();
+		Map<Integer, MarkerKey> markersKeys = getMarkers();
 
 		Collection<Double> missingRatios = getMissingRatio(from, to);
 		Collection<Boolean> mismatchStates = getMismatchStates(from, to);
@@ -257,11 +258,12 @@ public class NetCdfQAMarkersOperationDataSet extends AbstractNetCdfOperationData
 		Iterator<Byte> knownMinorAlleleIt = knownMinorAllele.iterator();
 		Iterator<Double> knownMinorAlleleFreqIt = knownMinorAlleleFreq.iterator();
 		Iterator<int[]> censusAllIt = censusAll.iterator();
-		for (Map.Entry<MarkerKey, Integer> keysIndices : rdMarkers.entrySet()) {
+//		for (Map.Entry<MarkerKey, Integer> keysIndices : rdMarkers.entrySet()) {
+		for (Map.Entry<Integer, MarkerKey> origIndicesAndKey : markersKeys.entrySet()) {
 			int[] censusAllValues = censusAllIt.next();
 			entries.add(new DefaultQAMarkersOperationEntry(
-					keysIndices.getKey(),
-					keysIndices.getValue(),
+					origIndicesAndKey.getValue(),
+					origIndicesAndKey.getKey(),
 					missingRatioIt.next(),
 					mismatchStatesIt.next(),
 					knownMajorAlleleIt.next(),
