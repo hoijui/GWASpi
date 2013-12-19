@@ -64,18 +64,19 @@ public class ProcessTab extends JPanel {
 	private static final Logger log = LoggerFactory.getLogger(MatrixAnalysePanel.class);
 
 	// Variables declaration - do not modify
-	private JPanel pnl_Logo;
-	private JLabel lbl_Logo;
-	private JPanel pnl_Orverview;
-	private JPanel pnl_ProcessLog;
-	private JScrollPane scrl_Overview;
-	private JScrollPane scrl_ProcessLog;
-	private JTextArea txtA_ProcessLog;
-	private JButton btn_Save;
+	private final JPanel pnl_Logo;
+	private final JLabel lbl_Logo;
+	private final JPanel pnl_Orverview;
+	private final JPanel pnl_ProcessLog;
+	private final JScrollPane scrl_Overview;
+	private final JScrollPane scrl_ProcessLog;
+	private final JTextArea txtA_ProcessLog;
+	private final JButton btn_Save;
 	private static ProcessTab singleton = null;
 	// End of variables declaration
 
 	private ProcessTab() {
+
 		pnl_Orverview = new JPanel();
 		scrl_Overview = new JScrollPane();
 
@@ -189,6 +190,7 @@ public class ProcessTab extends JPanel {
 	}
 
 	public void updateProcessOverview() {
+
 		if (StartGWASpi.guiMode) {
 			final JTable tmpTable = new JTable() {
 				@Override
@@ -240,7 +242,8 @@ public class ProcessTab extends JPanel {
 		}
 	}
 
-	protected Object[][] buildProcessTableModel() {
+	private Object[][] buildProcessTableModel() {
+
 		List<SwingWorkerItem> swingWorkerItemsAL = SwingWorkerItemList.getItems();
 		List<SwingDeleterItem> swingDeleterItemsAL = SwingDeleterItemList.getItems();
 
@@ -296,25 +299,29 @@ public class ProcessTab extends JPanel {
 	}
 
 	public void toggleBusyLogo() {
-		List<SwingWorkerItem> swingWorkerItemsAL = SwingWorkerItemList.getItems();
+
+		List<SwingWorkerItem> swingWorkerItems = SwingWorkerItemList.getItems();
 		int count = 0;
 		boolean idle = true;
-		while (count < swingWorkerItemsAL.size()) {
-			QueueState queueState = swingWorkerItemsAL.get(count).getQueueState();
+		while (count < swingWorkerItems.size()) {
+			QueueState queueState = swingWorkerItems.get(count).getQueueState();
 			if (!queueState.equals(QueueState.DONE)
 					&& !queueState.equals(QueueState.ABORT)
 					&& !queueState.equals(QueueState.ERROR)) {
 				idle = false;
-			} else {
-				idle = true;
+//			} else {
+//				idle = true;
 			}
 			count++;
 		}
 
-		URL logoPath = ProcessTab.class.getResource("/img/logo/logo_busy.gif");
+		final String logoResourcePath;
 		if (idle) {
-			logoPath = ProcessTab.class.getResource("/img/logo/logo_stopped.png");
+			logoResourcePath = "/img/logo/logo_stopped.png";
+		} else {
+			logoResourcePath = "/img/logo/logo_busy.gif";
 		}
+		URL logoPath = ProcessTab.class.getResource(logoResourcePath);
 		Icon logo = new ImageIcon(logoPath);
 
 		lbl_Logo.setIcon(logo);
@@ -328,7 +335,7 @@ public class ProcessTab extends JPanel {
 
 	private static class SaveAsAction extends AbstractAction {
 
-		private JTextArea processLog;
+		private final JTextArea processLog;
 
 		SaveAsAction(JTextArea processLog) {
 
@@ -338,15 +345,13 @@ public class ProcessTab extends JPanel {
 
 		@Override
 		public void actionPerformed(ActionEvent evt) {
+
 			FileWriter writer = null;
 			try {
-				File newFile = new File(Dialogs.selectDirectoryDialog(JOptionPane.OK_OPTION).getPath() + "/process.log");
+				File newFile = new File(Dialogs.selectDirectoryDialog(JOptionPane.OK_OPTION).getPath(), "process.log");
 				writer = new FileWriter(newFile);
 				writer.write(processLog.getText());
-				writer.flush();
 			} catch (IOException ex) {
-				log.error(null, ex);
-			} catch (Exception ex) {
 				log.error(null, ex);
 			} finally {
 				if (writer != null) {
@@ -364,6 +369,7 @@ public class ProcessTab extends JPanel {
 	 * Method to change cursor based on some arbitrary rule.
 	 */
 	private void displayColumnCursor(MouseEvent me, JTable table) {
+
 		Point p = me.getPoint();
 		int column = table.columnAtPoint(p);
 		String columnName = table.getColumnName(column);
