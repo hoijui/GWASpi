@@ -91,9 +91,9 @@ public class NetCdfUtils {
 
 	public static <V> void saveByteMapItemToWrMatrix(NetcdfFileWriteable wrNcFile, Collection<V> wrMap, String variable, Extractor<V, Byte> typeConverter, int varStride) throws IOException {
 
-		ArrayByte.D2 markersD2 = writeValuesToD2ArrayByte(wrMap, typeConverter, varStride);
+		ArrayByte.D1 markersD1 = writeValuesToD1ArrayByte(wrMap, typeConverter, varStride);
 		try {
-			wrNcFile.write(variable, ORIGIN_D2, markersD2);
+			wrNcFile.write(variable, ORIGIN_D2, markersD1);
 			log.info("Done writing {}", variable);
 		} catch (Exception ex) {
 			throw new IOException("Failed writing " + variable + " to netCDF file " + wrNcFile.toString(), ex);
@@ -240,6 +240,9 @@ public class NetCdfUtils {
 		}
 	}
 
+	/**
+	 * @deprecated NetCDF does not support writing boolean arrays :/
+	 */
 	public static void saveBooleansD1ToWrMatrix(
 			NetcdfFileWriteable wrNcFile,
 			Collection<Boolean> values,
@@ -247,16 +250,20 @@ public class NetCdfUtils {
 			int offset)
 			throws IOException
 	{
-		ArrayBoolean.D1 arrayBoolean = NetCdfUtils.writeValuesToD1ArrayBoolean(values);
-		int[] originD1 = new int[] {offset};
-		try {
-			wrNcFile.write(variable, originD1, arrayBoolean);
-			log.info("Done writing {}", variable);
-		} catch (Exception ex) {
-			throw new IOException("Failed writing " + variable + " to netCDF file " + wrNcFile.toString(), ex);
-		}
+		throw new UnsupportedOperationException("NetCDF does not support writing boolean arrays :/");
+//		ArrayBoolean.D1 arrayBoolean = NetCdfUtils.writeValuesToD1ArrayBoolean(values);
+//		int[] originD1 = new int[] {offset};
+//		try {
+//			wrNcFile.write(variable, originD1, arrayBoolean);
+//			log.info("Done writing {}", variable);
+//		} catch (Exception ex) {
+//			throw new IOException("Failed writing " + variable + " to netCDF file " + wrNcFile.toString(), ex);
+//		}
 	}
 
+	/**
+	 * @deprecated NetCDF does not support writing boolean arrays :/
+	 */
 	public static void saveBooleansD1ToWrMatrix(
 			NetcdfFileWriteable wrNcFile,
 			Collection<Boolean> values,
@@ -381,6 +388,33 @@ public class NetCdfUtils {
 //
 //		return charArray;
 //	}
+	
+//	public static ArrayByte.D1 writeValuesToD1ArrayByte(Collection<Byte> values) {
+//
+//		ArrayByte.D1 ncArray = new ArrayByte.D1(values.size());
+//		Index index = ncArray.getIndex();
+//		int count = 0;
+//		for (Byte value : values) {
+//			ncArray.setByte(index.set(count), value);
+//			count++;
+//		}
+//
+//		return ncArray;
+//	}
+
+	public static <V> ArrayByte.D1 writeValuesToD1ArrayByte(Collection<V> values, Extractor<V, Byte> valueToStringConverter, int stride) {
+
+		ArrayByte.D1 byteArray = new ArrayByte.D1(values.size());
+		Index index = byteArray.getIndex();
+		int count = 0;
+		for (V value : values) {
+			Byte byteValue = valueToStringConverter.extract(value);
+			byteArray.setByte(index.set(count), byteValue);
+			count++;
+		}
+
+		return byteArray;
+	}
 
 	public static <V> ArrayByte.D2 writeValuesToD2ArrayByte(Collection<V> values, Extractor<V, Byte> valueToStringConverter, int stride) {
 
@@ -454,6 +488,9 @@ public class NetCdfUtils {
 		return intArray;
 	}
 
+	/**
+	 * @deprecated NetCDF does not support writing boolean arrays :/
+	 */
 	public static ArrayBoolean.D1 writeValuesToD1ArrayBoolean(Collection<Boolean> values) {
 
 		ArrayBoolean.D1 booleanArray = new ArrayBoolean.D1(values.size());
@@ -926,8 +963,9 @@ public class NetCdfUtils {
 			for (int i = 0; i < size; i++) {
 				ArrayByte.D2.arraycopy(from, i * shape[1], tmpArray, 0, shape[1]);
 				char[] charArray = (char[]) tmpArray.copyTo1DJavaArray();
-				String strValue = String.valueOf(charArray);
-				to.add((V) strValue); // XXX; uses all 64 chars, not just up to \0
+				String strValue = String.valueOf(charArray); // XXX; // uses all 64 chars, not just up to \0
+				strValue = strValue.trim();
+				to.add((V) strValue);
 //				new ch.qos.logback.classic.encoder.PatternLayoutEncoder()
 			}
 		} else {

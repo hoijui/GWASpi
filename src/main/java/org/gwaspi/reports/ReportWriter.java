@@ -40,6 +40,13 @@ public class ReportWriter {
 
 	private static class MapArrayValueExtractor<K, V> implements Extractor<Entry<K, V>, String> {
 
+		private final boolean prefixSeparator;
+
+		public MapArrayValueExtractor(boolean prefixSeparator) {
+
+			this.prefixSeparator = prefixSeparator;
+		}
+
 		@Override
 		public String extract(Entry<K, V> object) {
 
@@ -59,15 +66,26 @@ public class ReportWriter {
 				}
 			}
 
+			if (!prefixSeparator && (strVal.length() > 0)) {
+				strVal.delete(0, SEP.length());
+			}
+
 			return strVal.toString();
 		}
 	}
 
 	private static class MapValueExtractor<K, V> implements Extractor<Entry<K, V>, String> {
 
+		private final String separatorPrefix;
+
+		public MapValueExtractor(boolean prefixSeparator) {
+
+			this.separatorPrefix = prefixSeparator ? SEP : "";
+		}
+
 		@Override
 		public String extract(Entry<K, V> object) {
-			return SEP + org.gwaspi.global.Utils.toMeaningfullRep(object.getValue());
+			return separatorPrefix + org.gwaspi.global.Utils.toMeaningfullRep(object.getValue());
 		}
 	}
 
@@ -89,7 +107,7 @@ public class ReportWriter {
 			Map<K, V> map,
 			boolean withKey) throws IOException
 	{
-		Extractor<Entry<K, V>, String> valueExtractor = new MapValueExtractor<K, V>();
+		Extractor<Entry<K, V>, String> valueExtractor = new MapValueExtractor<K, V>(false);
 
 		Extractor<Entry<K, V>, String> keyExtractor;
 		if (withKey) {
@@ -125,10 +143,16 @@ public class ReportWriter {
 			String value = valueExtractor.extract(entry);
 			if (withKey) {
 				sb.append(keyExtractor.extract(entry));
-			} else {
-				// cut off the initial separator from the value
-				value = value.substring(sep.length());
+				sb.append(sep);
 			}
+//			else {
+//				// cut off the initial separator from the value
+//				try {
+//				value = value.substring(sep.length());
+//				} catch (Exception ex) {
+//					throw new RuntimeException(ex);
+//				}
+//			}
 			sb.append(value);
 
 			sb.append("\n");
@@ -150,9 +174,9 @@ public class ReportWriter {
 	{
 		Extractor<Entry<K, V>, String> valueExtractor;
 		if (isArray) {
-			valueExtractor = new MapArrayValueExtractor<K, V>();
+			valueExtractor = new MapArrayValueExtractor<K, V>(false);
 		} else {
-			valueExtractor = new MapValueExtractor<K, V>();
+			valueExtractor = new MapValueExtractor<K, V>(false);
 		}
 
 		Extractor<Entry<K, V>, String> keyExtractor;
@@ -199,10 +223,11 @@ public class ReportWriter {
 
 				S readEntry = readContentIt.next();
 
+				sb.append(sep);
 				if (withKey) {
 					String key = keyExtractor.extract(readEntry);
-					sb.append(sep);
 					sb.append(key);
+					sb.append(sep);
 				}
 				String value = valueExtractor.extract(readEntry);
 				sb.append(value);

@@ -182,10 +182,16 @@ public class JPASampleInfoService implements SampleInfoService {
 			em = open();
 			sampleInfo = em.find(SampleInfo.class, key);
 		} catch (Exception ex) {
-			throw new IOException("Failed fetching sample-info: " + key.toString(), ex);
+			throw new IOException("Failed fetching sample-info: \"" + key.getStudyId() + "\" / \"" + key.getSampleId() + "\" / \"" + key.getFamilyId() + "\"", ex);
 		} finally {
 			close(em);
 		}
+                if (sampleInfo == null) {
+                    System.err.println("XXX searched sample key: \"" + key.getStudyId() + "\" / \"" + key.getSampleId() + "\" / \"" + key.getFamilyId() + "\"");
+                    for (SampleKey curKey : getSampleKeys()) {
+                        System.err.println("XXX sample key in DB: \"" + curKey.getStudyId() + "\" / \"" + curKey.getSampleId() + "\" / \"" + curKey.getFamilyId() + "\"");
+                    }
+                }
 
 		return sampleInfo;
 	}

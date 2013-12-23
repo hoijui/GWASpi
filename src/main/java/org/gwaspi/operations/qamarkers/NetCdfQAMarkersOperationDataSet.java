@@ -108,9 +108,9 @@ public class NetCdfQAMarkersOperationDataSet extends AbstractNetCdfOperationData
 
 		// Define Genotype Variables
 		//ncfile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_KNOWNALLELES, DataType.CHAR, allelesSpace);
-		ncFile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_MINALLELES, DataType.BYTE, allelesSpace);
+		ncFile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_MINALLELES, DataType.BYTE, markersSpace);
 		ncFile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_MINALLELEFRQ, DataType.DOUBLE, markersSpace);
-		ncFile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_MAJALLELES, DataType.BYTE, allelesSpace);
+		ncFile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_MAJALLELES, DataType.BYTE, markersSpace);
 		ncFile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_MAJALLELEFRQ, DataType.DOUBLE, markersSpace);
 		ncFile.addVariable(cNetCDF.Variables.VAR_GT_STRAND, DataType.CHAR, markerPropertySpace4);
 	}
@@ -143,15 +143,18 @@ public class NetCdfQAMarkersOperationDataSet extends AbstractNetCdfOperationData
 
 	@Override
 	public void setMarkerMismatchStates(Collection<Boolean> markerMismatchStates) throws IOException {
+		
+		// we can not use this, as NetCDF does not support writing boolean arrays :/
+//		NetCdfUtils.saveBooleansD1ToWrMatrix(getNetCdfWriteFile(), markerMismatchStates, cNetCDF.Census.VAR_OP_MARKERS_MISMATCHSTATE);
 
-//		Collection<Integer> markerMismatchIntegerStates
-//				= new ArrayList<Integer>(markerMismatchStates.size()); // XXX not sooooo nice! maybe use a converter while writing (saves memory)
-//		for (boolean mismatch : markerMismatchStates) {
-//			markerMismatchIntegerStates.add(mismatch
-//					? cNetCDF.Defaults.DEFAULT_MISMATCH_YES
-//					: cNetCDF.Defaults.DEFAULT_MISMATCH_NO);
-//		}
-		NetCdfUtils.saveBooleansD1ToWrMatrix(getNetCdfWriteFile(), markerMismatchStates, cNetCDF.Census.VAR_OP_MARKERS_MISMATCHSTATE);
+		Collection<Integer> markerMismatchIntegerStates
+				= new ArrayList<Integer>(markerMismatchStates.size()); // XXX not sooooo nice! maybe use a converter while writing (saves memory)
+		for (boolean mismatch : markerMismatchStates) {
+			markerMismatchIntegerStates.add(mismatch
+					? cNetCDF.Defaults.DEFAULT_MISMATCH_YES
+					: cNetCDF.Defaults.DEFAULT_MISMATCH_NO);
+		}
+		NetCdfUtils.saveIntMapD1ToWrMatrix(getNetCdfWriteFile(), markerMismatchIntegerStates, cNetCDF.Census.VAR_OP_MARKERS_MISMATCHSTATE);
 	}
 
 	@Override
@@ -173,9 +176,14 @@ public class NetCdfQAMarkersOperationDataSet extends AbstractNetCdfOperationData
 	@Override
 	public Collection<Boolean> getMismatchStates(int from, int to) throws IOException {
 
-		Collection<Boolean> mismatchStates = new ArrayList<Boolean>(0);
-		NetCdfUtils.readVariable(getNetCdfReadFile(), cNetCDF.Census.VAR_OP_MARKERS_MISMATCHSTATE, from, to, mismatchStates, null);
+		Collection<Integer> mismatchIntegerStates = new ArrayList<Integer>(0);
+		NetCdfUtils.readVariable(getNetCdfReadFile(), cNetCDF.Census.VAR_OP_MARKERS_MISMATCHSTATE, from, to, mismatchIntegerStates, null);
 
+		Collection<Boolean> mismatchStates = new ArrayList<Boolean>(0);
+		for (Integer mismatchIntegerState : mismatchIntegerStates) {
+			mismatchStates.add(mismatchIntegerState == cNetCDF.Defaults.DEFAULT_MISMATCH_YES);
+		}
+		
 		return mismatchStates;
 	}
 

@@ -137,7 +137,7 @@ public class PlinkFormatter implements Formatter {
 				mapBW.write(sep);
 				mapBW.write('0'); // DEFAULT GENETIC DISTANCE
 				mapBW.write(sep);
-				mapBW.write(curMarkerMetadata.getPos());
+				mapBW.write(String.valueOf(curMarkerMetadata.getPos()));
 				mapBW.write('\n');
 			}
 
