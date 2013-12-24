@@ -434,6 +434,7 @@ public class OP_MarkerCensus implements MatrixOperation {
 //						countChunks,
 //						chunkSize);
 
+			dataSet.finnishWriting();
 			resultOpId = ((AbstractNetCdfOperationDataSet) dataSet).getOperationKey().getId(); // HACK
 //			} catch (InvalidRangeException ex) {
 //				throw new IOException(ex);

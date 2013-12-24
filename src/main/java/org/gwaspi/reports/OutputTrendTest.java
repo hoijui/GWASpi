@@ -179,8 +179,9 @@ public class OutputTrendTest {
 		reportName = reportName + ".txt";
 		String reportPath = Study.constructReportsPath(rdOPMetadata.getStudyKey());
 
-		// WRITE MARKERSET RSID
-		ReportWriter.writeFirstColumnToReport(reportPath, reportName, header, orderedMarkersMetadatas, null, MarkerMetadata.TO_RS_ID);
+		// WRITE MARKERS ID & RSID
+		ReportWriter.writeFirstColumnToReport(reportPath, reportName, header, orderedMarkersMetadatas, null, MarkerMetadata.TO_MARKER_ID);
+		ReportWriter.appendColumnToReport(reportPath, reportName, orderedMarkersMetadatas, null, MarkerMetadata.TO_RS_ID);
 
 		// WRITE MARKERSET CHROMOSOME
 		ReportWriter.appendColumnToReport(reportPath, reportName, orderedMarkersMetadatas, null, MarkerMetadata.TO_CHR);

@@ -353,6 +353,7 @@ public class OP_QAMarkers implements MatrixOperation {
 			dataSet.setMarkerKnownAlleles(wrMarkerSetKnownAllelesMap.values());
 			dataSet.setMarkerCensusAll(wrMarkerSetCensusMap.values());
 
+			dataSet.finnishWriting();
 			resultOpId = ((AbstractNetCdfOperationDataSet) dataSet).getOperationKey().getId(); // HACK
 		} finally {
 			org.gwaspi.global.Utils.sysoutCompleted("Marker QA");

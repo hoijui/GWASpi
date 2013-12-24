@@ -218,6 +218,7 @@ public abstract class AbstractTestMatrixOperation implements MatrixOperation {
 				org.gwaspi.global.Utils.sysoutCompleted(testName);
 				//</editor-fold>
 
+				dataSet.finnishWriting();
 				resultOpId = ((AbstractNetCdfOperationDataSet) dataSet).getOperationKey().getId(); // HACK
 			} finally {
 //				try {

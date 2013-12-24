@@ -304,7 +304,7 @@ public class SampleInfo implements Comparable<SampleInfo>, Serializable {
 		this.category = "";
 		this.disease = "";
 		this.population = "";
-		this.age = Integer.MIN_VALUE;
+		this.age = 0;
 		this.filter = "";
 		this.approved = 0;
 		this.status = 0;

@@ -32,6 +32,7 @@ import org.gwaspi.global.Extractor;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.MarkerKey;
+import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.MarkersMetadataSource;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
@@ -105,8 +106,9 @@ public class OutputHardyWeinberg {
 
 		MarkersMetadataSource markersMetadatasSource = dataSetSource.getMarkersMetadatasSource();
 
-		// WRITE MARKERSET RSID
-		ReportWriter.writeFirstColumnToReport(reportPath, reportName, header, markersMetadatasSource.getRsIds(), null, new Extractor.ToStringExtractor());
+		// WRITE MARKERS ID & RSID
+		ReportWriter.writeFirstColumnToReport(reportPath, reportName, header, markersMetadatasSource, null, MarkerMetadata.TO_MARKER_ID);
+		ReportWriter.appendColumnToReport(reportPath, reportName, markersMetadatasSource, null, MarkerMetadata.TO_RS_ID);
 //		rdInfoMarkerSet.fillInitMapWithVariable(cNetCDF.Variables.VAR_MARKERS_RSID);
 //		Map<MarkerKey, char[]> sortedMarkerRSIDs = org.gwaspi.global.Utils.createOrderedMap(sortedMarkerKeys, rdInfoMarkerSet.getMarkerIdSetMapCharArray());
 //		ReportWriter.writeFirstColumnToReport(reportPath, reportName, header, sortedMarkerRSIDs, true);

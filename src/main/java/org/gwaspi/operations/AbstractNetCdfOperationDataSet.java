@@ -249,6 +249,15 @@ public abstract class AbstractNetCdfOperationDataSet<ET> implements OperationDat
 		return writeNcFile;
 	}
 
+	@Override
+	public void finnishWriting() throws IOException {
+
+		if (writeNcFile != null) {
+			writeNcFile.close();
+			writeNcFile = null;
+		}
+	}
+
 	protected NetcdfFile getNetCdfReadFile() throws IOException {
 
 		ensureReadNcFile();

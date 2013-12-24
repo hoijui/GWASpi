@@ -20,7 +20,6 @@ package org.gwaspi.operations;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Map;
-import org.gwaspi.model.ChromosomeInfo;
 import org.gwaspi.model.ChromosomeKey;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.SampleKey;
@@ -53,6 +52,8 @@ public interface OperationDataSet<ET> {
 	 * - Variables.VAR_CHR_INFO [ChromosomeKey]
 	 */
 	void setChromosomes(Map<Integer, ChromosomeKey> matrixIndexChromosomeKeys/*, Collection<ChromosomeInfo> chromosomeInfos*/) throws IOException;
+
+	void finnishWriting() throws IOException;
 
 	int getNumSamples() throws IOException;
 	int getNumMarkers() throws IOException;
