@@ -325,7 +325,7 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 		return encodedSamples;
 	}
 
-	private static final File TMP_RAW_DATA_FILE = new File(System.getProperty("user.home") + "/Projects/GWASpi/repos/GWASpi/rawDataTmp.ser");
+	private static final File TMP_RAW_DATA_FILE = new File(System.getProperty("user.home") + "/Projects/GWASpi/repos/GWASpi/rawDataTmp.ser"); // HACK
 
 	private static void storeForEncoding(MarkersIterable markersIterable, Map<SampleKey, SampleInfo> sampleInfos, int dSamples, int dEncoded, int n) {
 
@@ -345,8 +345,8 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 			oos.writeObject((Integer) dEncoded);
 			oos.writeObject((Integer) n);
 			oos.close();
-		} catch (Exception e) {
-			e.printStackTrace();
+		} catch (Exception ex) {
+			ex.printStackTrace();
 		}
 	}
 
