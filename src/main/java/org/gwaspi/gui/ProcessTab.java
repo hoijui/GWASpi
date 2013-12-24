@@ -348,7 +348,11 @@ public class ProcessTab extends JPanel {
 
 			FileWriter writer = null;
 			try {
-				File newFile = new File(Dialogs.selectDirectoryDialog(JOptionPane.OK_OPTION).getPath(), "process.log");
+				File selectedPath = Dialogs.selectDirectoryDialog(JOptionPane.OK_OPTION);
+				if (selectedPath == null) {
+					return;
+				}
+				File newFile = new File(selectedPath, "process.log");
 				writer = new FileWriter(newFile);
 				writer.write(processLog.getText());
 			} catch (IOException ex) {
