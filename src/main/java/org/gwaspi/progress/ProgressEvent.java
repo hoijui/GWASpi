@@ -17,10 +17,26 @@
 
 package org.gwaspi.progress;
 
+import java.util.EventObject;
+
 /**
- *
- * @author hardy
+ * TODO
  */
-class ProgressEvent {
+public class ProgressEvent<ST> extends EventObject {
+
+	/**
+	 * Wall Clock Time passed since the start of the 
+	 */
+	private final long time;
+	private final int intervalIndex;
+	private final ST currentState;
+
+	public ProgressEvent(Object source, long time, int intervalIndex, ST currentState) {
+		super(source);
+
+		this.time = time;
+		this.intervalIndex = intervalIndex;
+		this.currentState = currentState;
+	}
 
 }

@@ -18,9 +18,9 @@
 package org.gwaspi.progress;
 
 /**
- *
- * @author hardy
+ * TODO
  */
-public class ProgressListener {
+public interface ProgressListener {
 
+	void progressOccured(ProgressEvent evt);
 }
