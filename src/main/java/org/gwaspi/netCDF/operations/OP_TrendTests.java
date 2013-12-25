@@ -18,7 +18,6 @@
 package org.gwaspi.netCDF.operations;
 
 import java.io.IOException;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
@@ -32,7 +31,6 @@ import org.gwaspi.operations.trendtest.DefaultTrendTestOperationEntry;
 import org.gwaspi.operations.trendtest.TrendTestOperationDataSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-//import ucar.nc2.NetcdfFileWriteable;
 
 public class OP_TrendTests extends AbstractTestMatrixOperation {
 
@@ -62,7 +60,8 @@ public class OP_TrendTests extends AbstractTestMatrixOperation {
 			Map<Integer, MarkerKey> caseMarkersOrigIndexKey,
 			Map<Integer, Census> caseMarkersOrigIndexCensus,
 			Map<Integer, MarkerKey> ctrlMarkersOrigIndexKey,
-			Map<Integer, Census> ctrlMarkersOrigIndexCensus) throws IOException
+			Map<Integer, Census> ctrlMarkersOrigIndexCensus)
+			throws IOException
 	{
 		TrendTestOperationDataSet trendTestDataSet = (TrendTestOperationDataSet) dataSet;
 		((AbstractNetCdfOperationDataSet) dataSet).setNumMarkers(caseMarkersOrigIndexKey.size()); // HACK
