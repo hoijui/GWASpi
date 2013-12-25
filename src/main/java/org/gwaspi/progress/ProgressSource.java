@@ -17,26 +17,9 @@
 
 package org.gwaspi.progress;
 
-import java.util.EventListener;
-
 /**
- * Is interested in {@link ProgressEvent}'s of (a) processes(es).
+ * Produces {@link ProgressEvent}'s.
+ * This is basically a process/task which can be run.
  */
-public interface ProgressListener<ST> extends EventListener {
-
-	/**
-	 * Signals that the process started.
-	 */
-	void processStarted();
-
-	/**
-	 * Signals that the process advanced.
-	 * @param evt contains details about the current state of progress.
-	 */
-	void progressHappened(ProgressEvent<ST> evt);
-
-	/**
-	 * Signals that the process ended.
-	 */
-	void processFinished();
+public interface ProgressSource<ST> {
 }

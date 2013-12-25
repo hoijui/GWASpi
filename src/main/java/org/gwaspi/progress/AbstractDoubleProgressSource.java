@@ -17,26 +17,22 @@
 
 package org.gwaspi.progress;
 
-import java.util.EventListener;
+public class AbstractDoubleProgressSource extends AbstractProgressSource<Double> {
 
-/**
- * Is interested in {@link ProgressEvent}'s of (a) processes(es).
- */
-public interface ProgressListener<ST> extends EventListener {
+	private final Double startState;
+	private final Double endState;
+	private final Double difference;
 
-	/**
-	 * Signals that the process started.
-	 */
-	void processStarted();
+	protected AbstractDoubleProgressSource(Double startState, Double endState) {
 
-	/**
-	 * Signals that the process advanced.
-	 * @param evt contains details about the current state of progress.
-	 */
-	void progressHappened(ProgressEvent<ST> evt);
+		this.startState = startState;
+		this.endState = endState;
+		this.difference = (endState - startState);
+	}
 
-	/**
-	 * Signals that the process ended.
-	 */
-	void processFinished();
+	protected void fireProgressHappened(Double currentState) {
+
+		final Double completionFraction = (currentState - startState) / difference;
+		fireProgressHappened(completionFraction, currentState);
+	}
 }
