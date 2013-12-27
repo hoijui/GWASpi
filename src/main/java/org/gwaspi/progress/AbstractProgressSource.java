@@ -41,6 +41,10 @@ public class AbstractProgressSource<ST> implements ProgressSource<ST> {
 		this(null);
 	}
 
+	protected int getNextEventIndex() {
+		return nextEventIndex;
+	}
+
 	@Override
 	public Integer getNumIntervalls() {
 		return numInterfalls;

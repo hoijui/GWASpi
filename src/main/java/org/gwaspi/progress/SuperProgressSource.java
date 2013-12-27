@@ -18,15 +18,15 @@
 package org.gwaspi.progress;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 public class SuperProgressSource extends AbstractProgressSource<Double> {
 
 	private final Map<ProgressSource, Double> subProgressSourcesAndWeights;
-	private final Map<ProgressSource, Double> subProgressSourcesAndLastProgress;
+	private final Map<ProgressSource, Double> subProgressSourcesAndLastCompletionFraction;
 	private final ProgressListener progressListener;
+	private final double lastCompletionFraction;
 
 	private class SubProgressListener implements ProgressListener {
 
@@ -39,11 +39,13 @@ public class SuperProgressSource extends AbstractProgressSource<Double> {
 		@Override
 		public void progressHappened(ProgressEvent evt) {
 
-			Double completionFraction = evt.getCompletionFraction();
-			if (completionFraction != null) {
+			Double currentSubCompletionFraction = evt.getCompletionFraction();
+			if (currentSubCompletionFraction != null) {
 				ProgressSource progressSource = (ProgressSource) evt.getSource();
-				double progressSurplus = completionFraction * subProgressSourcesAndWeights.get(progressSource);
-				fireAdditionalProgressHappened(progressSurplus);
+				final double weight = subProgressSourcesAndWeights.get(progressSource);
+				double lastSubCompletionFraction = subProgressSourcesAndLastCompletionFraction.get(progressSource);
+				fireAdditionalProgressHappened((currentSubCompletionFraction - lastSubCompletionFraction) * weight);
+				subProgressSourcesAndLastCompletionFraction.put(progressSource, currentSubCompletionFraction);
 			}
 		}
 
@@ -58,11 +60,13 @@ public class SuperProgressSource extends AbstractProgressSource<Double> {
 		super(calculateNumIntervalls(subProgressSourcesAndWeights));
 
 		this.subProgressSourcesAndWeights = subProgressSourcesAndWeights;
-		this.subProgressSourcesAndLastProgress = new HashMap<ProgressSource, Double>();
+		this.subProgressSourcesAndLastCompletionFraction = new HashMap<ProgressSource, Double>();
 		this.progressListener = new SubProgressListener();
+		this.lastCompletionFraction = 0.0;
 
 		for (ProgressSource progressSource : subProgressSourcesAndWeights.keySet()) {
-			progressSource.addProgressListener(progressListener);  
+			progressSource.addProgressListener(progressListener);
+			subProgressSourcesAndLastCompletionFraction.put(progressSource, 0.0);
 		}
 	}
 
@@ -97,9 +101,9 @@ public class SuperProgressSource extends AbstractProgressSource<Double> {
 		return numIntervalls;
 	}
 
-	protected void fireProgressHappened(Double currentState) {
+	private void fireAdditionalProgressHappened(Double additionalCompletionFraction) {
 
-		final Double completionFraction = (currentState - startState) / difference;
-		fireProgressHappened(completionFraction, currentState);
+		final double newCompletionFraction = lastCompletionFraction + additionalCompletionFraction;
+		fireProgressHappened(newCompletionFraction, newCompletionFraction);
 	}
 }
