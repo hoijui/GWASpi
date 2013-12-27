@@ -23,35 +23,57 @@ import java.util.List;
 public class AbstractProgressSource<ST> implements ProgressSource<ST> {
 
 	private final List<ProgressListener> progressListeners;
+	private final Integer numInterfalls;
 	private long startTime;
 	private long endTime;
 	private int nextEventIndex;
 
-	protected AbstractProgressSource() {
+	protected AbstractProgressSource(Integer numInterfalls) {
 
 		this.progressListeners = new ArrayList<ProgressListener>(1);
+		this.numInterfalls = numInterfalls;
 		this.nextEventIndex = 0;
 		this.startTime = -1;
 		this.endTime = -1;
 	}
 
+	protected AbstractProgressSource() {
+		this(null);
+	}
+
+	@Override
+	public Integer getNumIntervalls() {
+		return numInterfalls;
+	}
+
+	@Override
 	public void addProgressListener(ProgressListener lst) {
 		progressListeners.add(lst);
 	}
 
+	@Override
 	public void removeProgressListener(ProgressListener lst) {
 		progressListeners.remove(lst);
 	}
 
+	@Override
 	public List<ProgressListener> getProgressListeners() {
 		return progressListeners;
 	}
 
-	protected void fireProgressStarted() {
+	protected void fireProcessStarted() {
 
 		startTime = System.currentTimeMillis();
 		for (ProgressListener progressListener : progressListeners) {
 			progressListener.processStarted();
+		}
+	}
+
+	protected void fireProcessInitialized() {
+
+		startTime = System.currentTimeMillis();
+		for (ProgressListener progressListener : progressListeners) {
+			progressListener.processInitialized();
 		}
 	}
 
@@ -74,11 +96,19 @@ public class AbstractProgressSource<ST> implements ProgressSource<ST> {
 		nextEventIndex++;
 	}
 
-	protected void fireProgressFinished() {
+	protected void fireProcessEnded() {
 
 		endTime = System.currentTimeMillis();
 		for (ProgressListener progressListener : progressListeners) {
-			progressListener.processFinished();
+			progressListener.processEnded();
+		}
+	}
+
+	protected void fireProcessFinalized() {
+
+		endTime = System.currentTimeMillis();
+		for (ProgressListener progressListener : progressListeners) {
+			progressListener.processFinalized();
 		}
 	}
 }

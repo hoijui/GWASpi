@@ -21,13 +21,20 @@ import java.util.EventListener;
 
 /**
  * Is interested in {@link ProgressEvent}'s of (a) processes(es).
+ * @param <ST> the status type
  */
 public interface ProgressListener<ST> extends EventListener {
 
 	/**
-	 * Signals that the process started.
+	 * Signals that the process started with the initialization phase,
+	 * if there is one.
 	 */
 	void processStarted();
+
+	/**
+	 * Signals that the main process phase started.
+	 */
+	void processInitialized();
 
 	/**
 	 * Signals that the process advanced.
@@ -36,7 +43,12 @@ public interface ProgressListener<ST> extends EventListener {
 	void progressHappened(ProgressEvent<ST> evt);
 
 	/**
-	 * Signals that the process ended.
+	 * Signals that the main phase of the process ended.
 	 */
-	void processFinished();
+	void processEnded();
+
+	/**
+	 * Signals that the process finished completely.
+	 */
+	void processFinalized();
 }

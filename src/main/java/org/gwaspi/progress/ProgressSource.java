@@ -17,9 +17,26 @@
 
 package org.gwaspi.progress;
 
+import java.util.List;
+
 /**
  * Produces {@link ProgressEvent}'s.
  * This is basically a process/task which can be run.
+ * @param <ST> the status type
  */
 public interface ProgressSource<ST> {
+
+	/**
+	 * Returns the number of total progress intervals this source produces,
+	 * if it is known.
+	 * @return number of progress intervals produced,
+	 *   or <code>null</code>, if unknown.
+	 */
+	Integer getNumIntervalls();
+
+	void addProgressListener(ProgressListener lst);
+
+	void removeProgressListener(ProgressListener lst);
+
+	List<ProgressListener> getProgressListeners();
 }
