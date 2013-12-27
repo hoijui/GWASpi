@@ -33,13 +33,8 @@ import org.gwaspi.model.DataSet;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.StudyKey;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class LoadGTFromPlinkFlatFiles extends AbstractLoadGTFromFiles implements GenotypesLoader {
-
-	private final Logger log
-			= LoggerFactory.getLogger(LoadGTFromPlinkFlatFiles.class);
 
 	public LoadGTFromPlinkFlatFiles() {
 		super(new MetadataLoaderPlink(), ImportFormat.PLINK, null, false);
