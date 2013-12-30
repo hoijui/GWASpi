@@ -15,17 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.gwaspi.model;
+package org.gwaspi.operations.combi;
 
-import java.util.List;
+import org.gwaspi.model.MarkerKey;
+import org.gwaspi.operations.OperationDataEntry;
 
-/**
- * Allows to read the genotypes matrix, marker by marker.
- * Each list of genotypes is #samples long.
- * The map has an ordered iterator.
- * Not all Map operations are supported by all implementations,
- * and some might be unbearably slow.
- */
-//public interface MarkersGenotypesSource extends Map<MarkerKey, GenotypesList> {
-public interface MarkersGenotypesSource extends List<GenotypesList> {
+public interface CombiTestOperationEntry extends OperationDataEntry<MarkerKey> {
+
+	/**
+	 * @return the (SVM) weight for this marker
+	 *   NetCDF variables:
+	 *   - {@link Combi.VAR_OP_MARKERS_WEIGHT}
+	 */
+	double getWeight();
 }

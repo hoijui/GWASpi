@@ -22,12 +22,11 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.gwaspi.constants.cImport;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.StudyKey;
-import org.gwaspi.operations.combi.CombiTestMatrixOperation;
+import org.gwaspi.operations.combi.Util;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
@@ -117,9 +116,9 @@ public class TestAssociationTestScripts extends AbstractTestScripts {
 
 		File logFile = new File(setup.getTmpDir(), "log_test_combiAssociation_" + mapFileName + "_" + pedFileName + ".txt");
 
-		CombiTestMatrixOperation.EXAMPLE_TEST = true; // HACK
+		Util.EXAMPLE_TEST = true; // HACK
 		startGWASpi(createArgs(scriptFile.getAbsolutePath(), logFile.getAbsolutePath()));
-		CombiTestMatrixOperation.EXAMPLE_TEST = false; // HACK
+		Util.EXAMPLE_TEST = false; // HACK
 
 		log.info("Run Combi Association Test ({}, {}) DONE.", mapFileName, pedFileName);
 	}

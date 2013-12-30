@@ -15,17 +15,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.gwaspi.model;
+package org.gwaspi.operations.combi;
 
+import java.io.IOException;
 import java.util.List;
+import org.gwaspi.model.OperationKey;
+import org.gwaspi.operations.OperationDataSet;
 
-/**
- * Allows to read the genotypes matrix, marker by marker.
- * Each list of genotypes is #samples long.
- * The map has an ordered iterator.
- * Not all Map operations are supported by all implementations,
- * and some might be unbearably slow.
- */
-//public interface MarkersGenotypesSource extends Map<MarkerKey, GenotypesList> {
-public interface MarkersGenotypesSource extends List<GenotypesList> {
+public interface CombiTestOperationDataSet extends OperationDataSet<CombiTestOperationEntry> {
+
+	// - {@link Combi.VAR_OP_MARKERS_WEIGHT}: Combi test result weights (importance of the individual markers)
+
+	void addEntry(CombiTestOperationEntry entry) throws IOException;
+
+//	void setHardyWeinbergOperationKey(OperationKey hwOpKey);
+
+	List<Double> getWeights() throws IOException;
+
+	List<Double> getWeights(int from, int to) throws IOException;
 }
