@@ -41,8 +41,9 @@ import libsvm.svm_problem;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.Genotype;
+import org.gwaspi.model.GenotypesList;
 import org.gwaspi.model.MarkerKey;
-import org.gwaspi.model.MatricesList;
+import org.gwaspi.model.MarkersGenotypesSource;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleInfo.Affection;
 import org.gwaspi.model.SampleKey;
@@ -50,7 +51,6 @@ import org.gwaspi.model.SamplesInfosSource;
 import org.gwaspi.model.SamplesKeysSource;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.gwaspi.netCDF.operations.AbstractTestMatrixOperation;
-//import org.gwaspi.netCDF.markers.MarkersIterable;
 import org.gwaspi.netCDF.operations.MatrixOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -109,11 +109,14 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 
 		if (dataLeft) {
 			DataSetSource parentMatrixDataSetSource = MatrixFactory.generateMatrixDataSetSource(params.getMatrixKey());
-			Map<Integer, MarkerKey> wrMarkerKeysFiltered = AbstractTestMatrixOperation.filterByValues(parentMatrixDataSetSource.getMarkersKeysSource().getIndicesMap(), toBeExcluded);
+			Map<Integer, MarkerKey> wrMarkersFiltered = AbstractTestMatrixOperation.filterByValues(parentMatrixDataSetSource.getMarkersKeysSource().getIndicesMap(), toBeExcluded);
+			ArrayList<MarkerKey> wrMarkerKeysFiltered = new ArrayList<MarkerKey>(wrMarkersFiltered.values());
 
 			SamplesKeysSource samplesKeysSource = parentMatrixDataSetSource.getSamplesKeysSource();
 			SamplesInfosSource samplesInfosSource = parentMatrixDataSetSource.getSamplesInfosSource();
 //			Map<SampleKey, SampleInfo> sampleInfos = markersIterable.getSampleInfos();
+
+			MarkersGenotypesSource markersGenotypesSource = parentMatrixDataSetSource.getMarkersGenotypesSource();
 
 			// dimensions of the samples(-space) == #markers (== #SNPs)
 //			int dSamples = markersIterable.getMarkerKeys().size() - excluder.getTotalExcluded();
@@ -134,9 +137,9 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 			LOG.info("Combi Association Test: #SVM-dimensions: " + dEncoded);
 
 			if (EXAMPLE_TEST) { // HACK
-				storeForEncoding(wrMarkerKeysFiltered, samplesInfosSource, dSamples, dEncoded, n);
+				storeForEncoding(wrMarkerKeysFiltered, samplesKeysSource, samplesInfosSource, markersGenotypesSource, dSamples, dEncoded, n);
 			} else {
-				return runEncodingAndSVM(wrMarkerKeysFiltered, samplesInfosSource, dSamples, dEncoded, n, params.getEncoder());
+				return runEncodingAndSVM(wrMarkerKeysFiltered, samplesKeysSource, samplesInfosSource, markersGenotypesSource, dSamples, dEncoded, n, params.getEncoder());
 			}
 		} else { // NO DATA LEFT AFTER THRESHOLD FILTER PICKING
 			LOG.warn(Text.Operation.warnNoDataLeftAfterPicking);
@@ -145,13 +148,13 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 		return Integer.MIN_VALUE; // FIXME return correct value here
 	}
 
-	private static Map<SampleKey, Double> encodeAffectionStates(final Map<SampleKey, SampleInfo> sampleInfos, int n) {
+	private static Map<SampleKey, Double> encodeAffectionStates(final List<SampleInfo> sampleInfos, int n) {
 
 		// we use LinkedHashMap to preserve the input order
 		Map<SampleKey, Double> affectionStates
 				= new LinkedHashMap<SampleKey, Double>(n);
 		// we iterate over sampleKeys now, to get the correct order
-		for (SampleInfo sampleInfo : sampleInfos.values()) {
+		for (SampleInfo sampleInfo : sampleInfos) {
 			Affection affection = sampleInfo.getAffection();
 			if (affection == Affection.UNKNOWN) {
 //				throw new RuntimeException("Should we filter this out beforehand?");
@@ -165,9 +168,9 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 	}
 
 	private static float[][] encodeSamples(
-			Iterable<Map.Entry<MarkerKey, Map<SampleKey, byte[]>>> markerSamplesIterable,
+			List<GenotypesList> markerGTs,
 //			Set<SampleKey> sampleKeys, // NOTE needs to be well ordered!
-			Map<SampleKey, SampleInfo> sampleInfos, // NOTE needs to be well ordered!
+			List<SampleInfo> sampleInfos, // NOTE needs to be well ordered!
 			GenotypeEncoder encoder,
 			int dSamples,
 			int dEncoded,
@@ -182,7 +185,7 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 		// HACK maybe hacky, cause we should have filtered it out earlier? (i(robin) think not)
 		int nSamplesToKeep = 0;
 		List<Boolean> samplesToKeep = new ArrayList<Boolean>(n);
-		for (SampleInfo sampleInfo : sampleInfos.values()) {
+		for (SampleInfo sampleInfo : sampleInfos) {
 			if (sampleInfo.getAffection() == Affection.UNKNOWN) {
 				samplesToKeep.add(Boolean.FALSE);
 			} else  {
@@ -221,8 +224,7 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 //		Set<Genotype> unique = new LinkedHashSet<Genotype>(4);
 //		List<Genotype> uniqueList = new ArrayList<Genotype>(4);
 		ProgressMonitor encodingMarkersPM = new ProgressMonitor(null, "encoding markers", "", 0, dSamples);
-		for (Map.Entry<MarkerKey, Map<SampleKey, byte[]>> markerSamples : markerSamplesIterable) {
-			Map<SampleKey, byte[]> samples = markerSamples.getValue();
+		for (List<byte[]> gtsForOneMarker : markerGTs) {
 //			LOG.debug("");
 //			StringBuilder debugOut = new StringBuilder();
 //			debugOut.append("marker ").append(mi).append("\n");
@@ -264,7 +266,7 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 
 			// encode all samples for this marker
 //			encoder.encodeGenotypes(uniqueList, all, encodedSamples, mi);
-			encoder.encodeGenotypes(samples.values(), samplesToKeep, encodedSamples, mi);
+			encoder.encodeGenotypes(gtsForOneMarker, samplesToKeep, encodedSamples, mi);
 
 			mi++;
 
@@ -289,9 +291,12 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 	private static void storeForEncoding(
 //			MarkersIterable markersIterable,
 //			DataSetSource dataSetSource,
-			Iterable<Map.Entry<Integer, MarkerKey>> markers,
-			Iterable<List<byte[]>> markerGenotypes,
-			Map<SampleKey, SampleInfo> sampleInfos,
+//			Iterable<Map.Entry<Integer, MarkerKey>> markers,
+			List<MarkerKey> markers,
+//			Map<SampleKey, SampleInfo> sampleInfos,
+			List<SampleKey> samples,
+			List<SampleInfo> sampleInfs,
+			List<GenotypesList> markerGTs,
 			int dSamples,
 			int dEncoded,
 			int n)
@@ -307,8 +312,12 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 //		List<SampleKey> sampleKeys = new ArrayList<SampleKey>(dataSetSource.getSamplesKeysSource());
 //		List<List<byte[]>> markerGenotypes = new ArrayList<List<byte[]>>(dataSetSource.getMarkersGenotypesSource().get(0));
 		List<MarkerKey> markerKeys = new ArrayList<MarkerKey>(markers);
-		List<SampleKey> sampleKeys = new ArrayList<SampleKey>(sampleInfos.keySet());
-		List<List<byte[]>> markerGenotypes = new ArrayList<List<byte[]>>(markerGenotypes);
+		List<SampleKey> sampleKeys = new ArrayList<SampleKey>(samples);
+		List<SampleInfo> sampleInfos = new ArrayList<SampleInfo>(sampleInfs);
+		List<List<byte[]>> markerGenotypes = new ArrayList<List<byte[]>>(markerGTs.size());
+		for (GenotypesList mGTs : markerGTs) {
+			markerGenotypes.add(new ArrayList<byte[]>(mGTs));
+		}
 
 		try {
 			FileOutputStream fout = new FileOutputStream(TMP_RAW_DATA_FILE);
@@ -316,6 +325,7 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 //			oos.writeObject(loadedMatrixSamples);
 			oos.writeObject(markerKeys);
 			oos.writeObject(sampleKeys);
+			oos.writeObject(sampleInfos);
 			oos.writeObject(markerGenotypes);
 			oos.writeObject(sampleInfos);
 			oos.writeObject((Integer) dSamples);
@@ -433,9 +443,14 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 	}
 
 	private static int runEncodingAndSVM_PRECOMPUTED(
-			Iterable<Map.Entry<MarkerKey, Map<SampleKey, byte[]>>> matrixSamples,
-//			Map<MarkerKey, Map<SampleKey, byte[]>> matrixSamples,
-			Map<SampleKey, SampleInfo> sampleInfos,
+//			MarkersIterable markersIterable,
+//			DataSetSource dataSetSource,
+//			Iterable<Map.Entry<Integer, MarkerKey>> markers,
+			List<MarkerKey> markers,
+//			Map<SampleKey, SampleInfo> sampleInfos,
+			List<SampleKey> samples,
+			List<SampleInfo> sampleInfos,
+			List<GenotypesList> markerGTs,
 			int dSamples,
 			int dEncoded,
 			int n,
@@ -473,7 +488,7 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 			List<SampleKey> usedSamples = new ArrayList<SampleKey>(sampleInfos.size());
 //			Map<SampleKey, List<Double>> encodedSamples = encodeSamples(
 			float[][] encodedSamples = encodeSamples(
-					matrixSamples,
+					markerGTs,
 //					sampleInfos.keySet(),
 					sampleInfos,
 					genotypeEncoder,
@@ -524,17 +539,20 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 	}
 
 	private static int runEncodingAndSVM(
-//			Iterable<Map.Entry<MarkerKey, Map<SampleKey, byte[]>>> matrixSamples,
-//			Map<MarkerKey, Map<SampleKey, byte[]>> matrixSamples,
-			Iterable<Map.Entry<Integer, MarkerKey>> markers,
-			Iterable<List<byte[]>> markerGenotypes,
-			Map<SampleKey, SampleInfo> sampleInfos,
+//			MarkersIterable markersIterable,
+//			DataSetSource dataSetSource,
+//			Iterable<Map.Entry<Integer, MarkerKey>> markers,
+			List<MarkerKey> markers,
+//			Map<SampleKey, SampleInfo> sampleInfos,
+			List<SampleKey> samples,
+			List<SampleInfo> sampleInfs,
+			List<GenotypesList> markerGTs,
 			int dSamples,
 			int dEncoded,
 			int n,
 			GenotypeEncoder genotypeEncoder)
 	{
-		return runEncodingAndSVM_PRECOMPUTED(matrixSamples, sampleInfos, dSamples, dEncoded, n, genotypeEncoder);
+		return runEncodingAndSVM_PRECOMPUTED(markers, samples, sampleInfs, markerGTs, dSamples, dEncoded, n, genotypeEncoder);
 	}
 
 	private static void whiten(float[][] x) {

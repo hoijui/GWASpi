@@ -18,7 +18,6 @@
 package org.gwaspi.model;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * Allows to read the genotypes matrix, marker by marker.
