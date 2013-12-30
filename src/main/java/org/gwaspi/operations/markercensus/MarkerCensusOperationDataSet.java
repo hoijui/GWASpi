@@ -17,6 +17,7 @@
 
 package org.gwaspi.operations.markercensus;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Map;
@@ -43,8 +44,17 @@ public interface MarkerCensusOperationDataSet extends OperationDataSet<MarkerCen
 ////	void setMarkerCensusAll(Collection<int[]> markerCensusAll) throws IOException;
 //	void setMarkerCensus(Collection<CensusFull> markerCensus) throws IOException;
 
+	void setPhenoFile(File phenoFile);
+	void setCensusName(String censusName);
+	void setSampleMissingRatio(double sampleMissingRatio);
+	void setSampleHetzygRatio(double sampleHetzygRatio);
+	void setMarkerMissingRatio(double markerMissingRatio);
+	void setDiscardMismatches(boolean discardMismatches);
+
 	Collection<Integer> getCensusMarkerIndices(Category category) throws IOException;
 
 	Collection<byte[]> getKnownAlleles(int from, int to) throws IOException;
 	Map<Integer, Census> getCensus(Category category, int from, int to) throws IOException;
+
+	void addEntry(MarkerCensusOperationEntry entry) throws IOException;
 }

@@ -24,8 +24,7 @@ import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.model.Census;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MatrixKey;
-import org.gwaspi.model.OperationMetadata;
-import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
+import org.gwaspi.model.OperationKey;
 import org.gwaspi.operations.OperationDataSet;
 import org.gwaspi.operations.allelicassociationtest.AllelicAssociationTestsOperationDataSet;
 import org.gwaspi.operations.allelicassociationtest.DefaultAllelicAssociationOperationEntry;
@@ -48,15 +47,15 @@ public class OP_AssociationTests extends AbstractTestMatrixOperation {
 
 	public OP_AssociationTests(
 			MatrixKey rdMatrixKey,
-			OperationMetadata markerCensusOP,
-			OperationMetadata hwOP,
+			OperationKey markerCensusOPKey,
+			OperationKey hwOPKey,
 			double hwThreshold,
 			boolean allelic)
 	{
 		super(
 			rdMatrixKey,
-			markerCensusOP,
-			hwOP,
+			markerCensusOPKey,
+			hwOPKey,
 			hwThreshold,
 			(allelic ? "Allelic" : "Genotypic") + " Association Test",
 			allelic ? OPType.ALLELICTEST : OPType.GENOTYPICTEST);

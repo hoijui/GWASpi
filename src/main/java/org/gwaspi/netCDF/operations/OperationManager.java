@@ -130,13 +130,10 @@ public class OperationManager {
 
 		org.gwaspi.global.Utils.sysoutStart(" " + (allelic ? "Allelic" : "Genotypic") + " Association Test using QA and HW thresholds");
 
-		OperationMetadata markerCensusOP = OperationsList.getOperation(censusOpKey);
-		OperationMetadata hwOP = OperationsList.getOperation(hwOpKey);
-
 		AbstractTestMatrixOperation testOperation = new OP_AssociationTests(
 				rdMatrixKey,
-				markerCensusOP,
-				hwOP,
+				censusOpKey,
+				hwOpKey,
 				hwThreshold,
 				allelic);
 		resultOpId = testOperation.processMatrix();
@@ -169,15 +166,11 @@ public class OperationManager {
 
 		org.gwaspi.global.Utils.sysoutStart("Cochran-Armitage Trend Test using QA and HW thresholds");
 
-		OperationMetadata markerCensusOP = OperationsList.getOperation(censusOpKey);
-		OperationMetadata hwOP = OperationsList.getOperation(hwOpKey);
-
 		resultOpId = new OP_TrendTests(
 				rdMatrixKey,
-				markerCensusOP,
-				hwOP,
+				censusOpKey,
+				hwOpKey,
 				hwThreshold).processMatrix();
-
 
 		return new OperationKey(censusOpKey.getParentMatrixKey(), resultOpId);
 	}

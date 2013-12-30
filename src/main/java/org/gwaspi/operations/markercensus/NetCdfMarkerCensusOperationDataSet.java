@@ -76,7 +76,6 @@ public class NetCdfMarkerCensusOperationDataSet extends AbstractNetCdfOperationD
 		this(null);
 	}
 
-
 	private static int calculateEntriesWriteBufferSize() {
 
 		int chunkSize = Math.round((float)org.gwaspi.gui.StartGWASpi.maxProcessMarkers / 4);
