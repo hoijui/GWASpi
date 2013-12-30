@@ -30,7 +30,6 @@ import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.OperationKey;
-import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
 import org.gwaspi.operations.OperationDataSet;
 import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationDataSet;
@@ -48,23 +47,23 @@ public abstract class AbstractTestMatrixOperation implements MatrixOperation {
 			= LoggerFactory.getLogger(AbstractTestMatrixOperation.class);
 
 	private final MatrixKey rdMatrixKey;
-	private final OperationMetadata markerCensusOP;
-	private final OperationMetadata hwOP;
+	private final OperationKey markerCensusOPKey;
+	private final OperationKey hwOPKey;
 	private final double hwThreshold;
 	private final String testName;
 	private final OPType testType;
 
 	public AbstractTestMatrixOperation(
 			MatrixKey rdMatrixKey,
-			OperationMetadata markerCensusOP,
-			OperationMetadata hwOP,
+			OperationKey markerCensusOPKey,
+			OperationKey hwOPKey,
 			double hwThreshold,
 			String testName,
 			OPType testType)
 	{
 		this.rdMatrixKey = rdMatrixKey;
-		this.markerCensusOP = markerCensusOP;
-		this.hwOP = hwOP;
+		this.markerCensusOPKey = markerCensusOPKey;
+		this.hwOPKey = hwOPKey;
 		this.hwThreshold = hwThreshold;
 		this.testName = testName;
 		this.testType = testType;
@@ -85,10 +84,9 @@ public abstract class AbstractTestMatrixOperation implements MatrixOperation {
 		int resultOpId = Integer.MIN_VALUE;
 
 		Collection<MarkerKey> toBeExcluded = new HashSet<MarkerKey>();
-		boolean dataLeft = excludeMarkersByHW(hwOP, hwThreshold, toBeExcluded);
+		boolean dataLeft = excludeMarkersByHW(hwOPKey, hwThreshold, toBeExcluded);
 
 		if (dataLeft) { // CHECK IF THERE IS ANY DATA LEFT TO PROCESS AFTER PICKING
-			OperationKey markerCensusOPKey = OperationKey.valueOf(markerCensusOP);
 			MarkerCensusOperationDataSet rdMarkerCensusOperationDataSet = (MarkerCensusOperationDataSet) OperationFactory.generateOperationDataSet(markerCensusOPKey);
 //			OperationMetadata rdCensusOPMetadata = OperationsList.getOperation(markerCensusOPKey);
 //			OperationMetadata rdCensusOPMetadata = markerCensusOP;
@@ -108,7 +106,7 @@ public abstract class AbstractTestMatrixOperation implements MatrixOperation {
 //			}
 
 			// GATHER INFO FROM ORIGINAL MATRIX
-			MatrixMetadata parentMatrixMetadata = MatricesList.getMatrixMetadataById(markerCensusOP.getParentMatrixKey());
+			MatrixMetadata parentMatrixMetadata = MatricesList.getMatrixMetadataById(markerCensusOPKey.getParentMatrixKey());
 //			MarkerSet rdMarkerSet = new MarkerSet(MatrixKey.valueOf(parentMatrixMetadata));
 //			rdMarkerSet.initFullMarkerIdSetMap();
 
@@ -252,7 +250,7 @@ public abstract class AbstractTestMatrixOperation implements MatrixOperation {
 		return filtered;
 	}
 
-	private static <K, V> Map<K, V> filterByValues(Map<K, V> toBeFiltered, Collection<V> toBeExcluded) {
+	public static <K, V> Map<K, V> filterByValues(Map<K, V> toBeFiltered, Collection<V> toBeExcluded) {
 
 		Map<K, V> filtered = new LinkedHashMap<K, V>();
 		if (toBeFiltered != null) {
@@ -268,14 +266,14 @@ public abstract class AbstractTestMatrixOperation implements MatrixOperation {
 		return filtered;
 	}
 
-	static boolean excludeMarkersByHW(OperationMetadata hwOP, double hwPValueThreshold, Collection<MarkerKey> excludeMarkerSetMap) throws IOException {
+	public static boolean excludeMarkersByHW(OperationKey hwOPKey, double hwPValueThreshold, Collection<MarkerKey> excludeMarkerSetMap) throws IOException {
 
 		excludeMarkerSetMap.clear();
 		int totalMarkerNb = 0;
 
-		if (hwOP != null) {
+		if (hwOPKey != null) {
 			HardyWeinbergOperationDataSet hardyWeinbergOperationDataSet
-					= new NetCdfHardyWeinbergOperationDataSet(OperationKey.valueOf(hwOP));
+					= new NetCdfHardyWeinbergOperationDataSet(hwOPKey);
 //			NetcdfFile rdHWNcFile = NetcdfFile.open(hwOP.getPathToMatrix());
 //			MarkerOperationSet rdHWOperationSet = new MarkerOperationSet(OperationKey.valueOf(hwOP));
 //			Map<MarkerKey, Double> rdHWMarkerSetMap = rdHWOperationSet.getOpSetMap();
@@ -305,7 +303,7 @@ public abstract class AbstractTestMatrixOperation implements MatrixOperation {
 	}
 
 	/**
-	 * Performs actual Test.
+	 * Performs the actual Test.
 	 */
 	protected abstract void performTest(
 			OperationDataSet dataSet,

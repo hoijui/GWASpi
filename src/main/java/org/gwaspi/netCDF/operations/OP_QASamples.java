@@ -22,10 +22,10 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.gwaspi.constants.cNetCDF.Defaults.AlleleBytes;
+import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.GenotypesList;
 import org.gwaspi.model.MarkerMetadata;
-import org.gwaspi.model.MarkersKeysSource;
 import org.gwaspi.model.MarkersMetadataSource;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixKey;
@@ -34,7 +34,6 @@ import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.SamplesGenotypesSource;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
-import org.gwaspi.operations.qasamples.NetCdfQASamplesOperationDataSet;
 import org.gwaspi.operations.qasamples.QASamplesOperationDataSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -128,7 +127,7 @@ int numMarkers = dataSetSource.getNumMarkers();
 		try {
 			MatrixMetadata rdMatrixMetadata = MatricesList.getMatrixMetadataById(rdMatrixKey);
 
-			QASamplesOperationDataSet dataSet = new NetCdfQASamplesOperationDataSet(); // HACK
+			QASamplesOperationDataSet dataSet = (QASamplesOperationDataSet) OperationFactory.generateOperationDataSet(OPType.SAMPLE_QA); // HACK
 			((AbstractNetCdfOperationDataSet) dataSet).setReadMatrixKey(rdMatrixKey); // HACK
 			((AbstractNetCdfOperationDataSet) dataSet).setNumMarkers(rdMatrixMetadata.getNumMarkers()); // HACK
 			((AbstractNetCdfOperationDataSet) dataSet).setNumSamples(wrSampleSetMissingCountMap.size()); // HACK

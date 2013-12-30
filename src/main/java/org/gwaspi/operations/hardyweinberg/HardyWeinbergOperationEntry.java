@@ -18,7 +18,6 @@
 package org.gwaspi.operations.hardyweinberg;
 
 import java.util.Comparator;
-import java.util.Map;
 import org.gwaspi.global.Extractor;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.operations.OperationDataEntry;

@@ -19,6 +19,8 @@ package org.gwaspi.netCDF.operations;
 
 import java.io.IOException;
 import java.util.Collection;
+import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.model.Census;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
@@ -70,7 +72,7 @@ public class OP_HardyWeinberg implements MatrixOperation {
 		MarkerCensusOperationDataSet markerCensusOperationDataSet = new NetCdfMarkerCensusOperationDataSet(markerCensusOPKey);
 
 		try {
-			HardyWeinbergOperationDataSet dataSet = new NetCdfHardyWeinbergOperationDataSet(); // HACK
+			HardyWeinbergOperationDataSet dataSet = (HardyWeinbergOperationDataSet) OperationFactory.generateOperationDataSet(OPType.HARDY_WEINBERG); // HACK
 			((AbstractNetCdfOperationDataSet) dataSet).setReadOperationKey(markerCensusOPKey); // HACK
 			dataSet.setNumMarkers(markerCensusOperationDataSet.getNumMarkers());
 			dataSet.setNumChromosomes(markerCensusOperationDataSet.getNumChromosomes());

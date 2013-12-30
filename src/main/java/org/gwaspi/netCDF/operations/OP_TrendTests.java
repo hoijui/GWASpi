@@ -24,7 +24,7 @@ import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.model.Census;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MatrixKey;
-import org.gwaspi.model.OperationMetadata;
+import org.gwaspi.model.OperationKey;
 import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
 import org.gwaspi.operations.OperationDataSet;
 import org.gwaspi.operations.trendtest.DefaultTrendTestOperationEntry;
@@ -38,14 +38,14 @@ public class OP_TrendTests extends AbstractTestMatrixOperation {
 
 	public OP_TrendTests(
 			MatrixKey rdMatrixKey,
-			OperationMetadata markerCensusOP,
-			OperationMetadata hwOP,
+			OperationKey markerCensusOPKey,
+			OperationKey hwOPKey,
 			double hwThreshold)
 	{
 		super(
 			rdMatrixKey,
-			markerCensusOP,
-			hwOP,
+			markerCensusOPKey,
+			hwOPKey,
 			hwThreshold,
 			"Cochran-Armitage Trend Test",
 			OPType.TRENDTEST);

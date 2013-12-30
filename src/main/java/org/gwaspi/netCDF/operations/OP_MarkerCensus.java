@@ -31,6 +31,7 @@ import org.gwaspi.constants.cImport;
 import org.gwaspi.constants.cImport.Annotation.GWASpi;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.AlleleBytes;
+import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.Census;
 import org.gwaspi.model.CensusFull;
@@ -52,7 +53,6 @@ import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
 import org.gwaspi.operations.markercensus.DefaultMarkerCensusOperationEntry;
 import org.gwaspi.operations.markercensus.MarkerCensusOperationDataSet;
-import org.gwaspi.operations.markercensus.NetCdfMarkerCensusOperationDataSet;
 import org.gwaspi.operations.qamarkers.QAMarkersOperationDataSet;
 import org.gwaspi.operations.qasamples.QASamplesOperationDataSet;
 import org.slf4j.Logger;
@@ -141,16 +141,16 @@ public class OP_MarkerCensus implements MatrixOperation {
 
 //			NetcdfFileWriteable wrNcFile = null;
 			try {
-				MarkerCensusOperationDataSet dataSet = new NetCdfMarkerCensusOperationDataSet(); // HACK
+				MarkerCensusOperationDataSet dataSet = (MarkerCensusOperationDataSet) OperationFactory.generateOperationDataSet(OPType.MARKER_CENSUS_BY_AFFECTION); // HACK
 				((AbstractNetCdfOperationDataSet) dataSet).setReadMatrixKey(rdMatrixKey); // HACK
 				((AbstractNetCdfOperationDataSet) dataSet).setNumMarkers(dataSetSource.getNumMarkers()); // HACK
 				((AbstractNetCdfOperationDataSet) dataSet).setNumSamples(wrSampleKeys.size()); // HACK
-				((NetCdfMarkerCensusOperationDataSet) dataSet).setCensusName(censusName); // HACK
-				((NetCdfMarkerCensusOperationDataSet) dataSet).setPhenoFile(phenoFile); // HACK
-				((NetCdfMarkerCensusOperationDataSet) dataSet).setSampleMissingRatio(sampleMissingRatio);// HACK
-				((NetCdfMarkerCensusOperationDataSet) dataSet).setSampleHetzygRatio(sampleHetzygRatio); // HACK
-				((NetCdfMarkerCensusOperationDataSet) dataSet).setMarkerMissingRatio(markerMissingRatio); // HACK
-				((NetCdfMarkerCensusOperationDataSet) dataSet).setDiscardMismatches(discardMismatches); // HACK
+				dataSet.setCensusName(censusName); // HACK
+				dataSet.setPhenoFile(phenoFile); // HACK
+				dataSet.setSampleMissingRatio(sampleMissingRatio);// HACK
+				dataSet.setSampleHetzygRatio(sampleHetzygRatio); // HACK
+				dataSet.setMarkerMissingRatio(markerMissingRatio); // HACK
+				dataSet.setDiscardMismatches(discardMismatches); // HACK
 
 				((AbstractNetCdfOperationDataSet) dataSet).setUseAllMarkersFromParent(true);
 				dataSet.setSamples(wrSampleKeys);
@@ -417,7 +417,7 @@ public class OP_MarkerCensus implements MatrixOperation {
 						alleles = "00".getBytes();
 					}
 
-					((NetCdfMarkerCensusOperationDataSet) dataSet).addEntry(new DefaultMarkerCensusOperationEntry(
+					dataSet.addEntry(new DefaultMarkerCensusOperationEntry(
 							markerKey, markerOrigIndex, alleles, censusFull));
 
 					if (markerOrigIndex != 0 && markerOrigIndex % 100000 == 0) {
