@@ -19,10 +19,19 @@ package org.gwaspi.operations.combi;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import org.gwaspi.model.GenotypesList;
+import org.gwaspi.model.MarkerKey;
+import org.gwaspi.model.SampleInfo;
+import org.gwaspi.model.SampleInfo.Affection;
+import org.gwaspi.model.SampleKey;
 
 public class Util {
 
@@ -305,5 +314,118 @@ public class Util {
 //		wnew = cumsum(wnew);
 //		wnew = (wnew(k+1:end) - wnew(1:end-k)).^(1/p);
 //		wnew = wnew ./ (k.^(1/p));
+	}
+
+
+
+
+
+
+	private static final File TMP_RAW_DATA_FILE = new File(System.getProperty("user.home") + "/Projects/GWASpi/repos/GWASpi/rawDataTmp.ser"); // HACK
+
+	private static void storeForEncoding(
+//			MarkersIterable markersIterable,
+//			DataSetSource dataSetSource,
+//			Iterable<Map.Entry<Integer, MarkerKey>> markers,
+			List<MarkerKey> markers,
+//			Map<SampleKey, SampleInfo> sampleInfos,
+			List<SampleKey> samples,
+			List<SampleInfo.Affection> sampleAffecs,
+			List<GenotypesList> markerGTs,
+			int dSamples,
+			int dEncoded,
+			int n)
+			throws IOException
+	{
+//		// we use LinkedHashMap to preserve the inut order
+//		Map<MarkerKey, Map<SampleKey, byte[]>> loadedMatrixSamples
+//				= new LinkedHashMap<MarkerKey, Map<SampleKey, byte[]>>(dSamples);
+//		for (Map.Entry<MarkerKey, Map<SampleKey, byte[]>> markerSamples : markersIterable) {
+//			loadedMatrixSamples.put(markerSamples.getKey(), markerSamples.getValue());
+//		}
+//		List<MarkerKey> markerKeys = new ArrayList<MarkerKey>(dataSetSource.getMarkersKeysSource());
+//		List<SampleKey> sampleKeys = new ArrayList<SampleKey>(dataSetSource.getSamplesKeysSource());
+//		List<List<byte[]>> markerGenotypes = new ArrayList<List<byte[]>>(dataSetSource.getMarkersGenotypesSource().get(0));
+		List<MarkerKey> markerKeys = new ArrayList<MarkerKey>(markers);
+		List<SampleKey> sampleKeys = new ArrayList<SampleKey>(samples);
+		List<SampleInfo.Affection> sampleAffections = new ArrayList<SampleInfo.Affection>(sampleAffecs);
+		List<List<byte[]>> markerGenotypes = new ArrayList<List<byte[]>>(markerGTs.size());
+		for (GenotypesList mGTs : markerGTs) {
+			markerGenotypes.add(new ArrayList<byte[]>(mGTs));
+		}
+
+		try {
+			FileOutputStream fout = new FileOutputStream(TMP_RAW_DATA_FILE);
+			ObjectOutputStream oos = new ObjectOutputStream(fout);
+
+			oos.writeObject((Integer) dSamples);
+			oos.writeObject((Integer) dEncoded);
+			oos.writeObject((Integer) n);
+
+//			oos.writeObject(loadedMatrixSamples);
+			oos.writeObject(markerKeys);
+			oos.writeObject(sampleKeys);
+			oos.writeObject(sampleAffections);
+			oos.writeObject(markerGenotypes);
+
+			oos.close();
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+	}
+
+	private static void runEncodingAndSVM(GenotypeEncoder genotypeEncoder) {
+
+		int dSamples;
+		int dEncoded;
+		int n;
+
+		List<MarkerKey> markerKeys;
+		List<SampleKey> sampleKeys;
+		List<Affection> sampleAffections;
+		List<List<byte[]>> markerGenotypes;
+		try {
+			FileInputStream fin = new FileInputStream(TMP_RAW_DATA_FILE);
+			ObjectInputStream ois = new ObjectInputStream(fin);
+
+			dSamples = (Integer) ois.readObject();
+			dEncoded = (Integer) ois.readObject();
+			n = (Integer) ois.readObject();
+
+			markerKeys = (List<MarkerKey>) ois.readObject();
+			sampleKeys = (List<SampleKey>) ois.readObject();
+			sampleAffections = (List<Affection>) ois.readObject();
+			markerGenotypes = (List<List<byte[]>>) ois.readObject();
+
+			ois.close();
+
+			CombiTestMatrixOperation.runEncodingAndSVM(markerKeys, sampleKeys, sampleAffections, markerGenotypes, dSamples, dEncoded, n, genotypeEncoder);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+	}
+
+	public static boolean EXAMPLE_TEST = false; // HACK
+
+	public static void main(String[] args) {
+
+		EXAMPLE_TEST = true;
+//
+//		GenotypeEncoder genotypeEncoder = AllelicGenotypeEncoder.SINGLETON; // TODO
+//		GenotypeEncoder genotypeEncoder = GenotypicGenotypeEncoder.SINGLETON; // TODO
+		GenotypeEncoder genotypeEncoder = NominalGenotypeEncoder.SINGLETON; // TODO
+
+//		runSVM(genotypeEncoder);
+
+		runEncodingAndSVM(genotypeEncoder); // FIXME
+
+//		List<List<Double>> X = new ArrayList<List<Double>>(2);
+//		X.add(Arrays.asList(new Double[] {1.0, 0.0}));
+//		X.add(Arrays.asList(new Double[] {0.0, 1.0}));
+//		List<Double> Y = new ArrayList<Double>(2);
+//		Y.add(1.0);
+//		Y.add(-1.0);
+//		runSVM(X, Y, genotypeEncoder, null);
+		EXAMPLE_TEST = false;
 	}
 }
