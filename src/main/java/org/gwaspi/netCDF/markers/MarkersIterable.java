@@ -114,6 +114,22 @@ public class MarkersIterable implements
 
 	}
 
+	public static class NoneExcluder implements Excluder<MarkerKey> {
+
+		@Override
+		public void init() throws IOException {		}
+
+		@Override
+		public int getTotalExcluded() {
+			return 0;
+		}
+
+		@Override
+		public boolean isExcluded(MarkerKey object) {
+			return false;
+		}
+	}
+
 	private final MatrixKey matrixKey;
 	private final Excluder<MarkerKey> excluder;
 	private final SampleSet sampleSet;
