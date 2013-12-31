@@ -17,12 +17,16 @@
 
 package org.gwaspi.threadbox;
 
+import java.io.IOException;
+import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.GWASpiExplorerNodes;
 import org.gwaspi.model.MatrixKey;
-import org.gwaspi.model.OperationKey;
+import org.gwaspi.netCDF.loader.AbstractNetCDFDataSetDestination;
+import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.gwaspi.netCDF.operations.MatrixOperation;
 import org.gwaspi.netCDF.operations.OP_QAMarkers;
 import org.gwaspi.netCDF.operations.OP_QASamples;
+import org.gwaspi.netCDF.operations.OperationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,37 +60,41 @@ public abstract class AbstractThreaded_MergeMatrices extends CommonRunnable {
 		return LoggerFactory.getLogger(AbstractThreaded_MergeMatrices.class);
 	}
 
-	protected abstract MatrixOperation createMatrixOperation() throws Exception;
+	protected abstract AbstractNetCDFDataSetDestination createMatrixDataSetDestination(
+			DataSetSource dataSetSource1,
+			DataSetSource dataSetSource2)
+			throws IOException;
+
+	protected abstract MatrixOperation createMatrixOperation(
+			DataSetSource dataSetSource1,
+			DataSetSource dataSetSource2,
+			AbstractNetCDFDataSetDestination dataSetDestination)
+			throws IOException;
 
 	@Override
 	protected void runInternal(SwingWorkerItem thisSwi) throws Exception {
 
 		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
-			final MatrixOperation joinMatrices = createMatrixOperation();
+			final DataSetSource dataSetSource1 = MatrixFactory.generateMatrixDataSetSource(parentMatrixKey1);
+			final DataSetSource dataSetSource2 = MatrixFactory.generateMatrixDataSetSource(parentMatrixKey2);
 
-			final int resultMatrixId = joinMatrices.processMatrix();
-			final MatrixKey resultMatrixKey = new MatrixKey(
-					parentMatrixKey1.getStudyKey(),
-					resultMatrixId);
+			final AbstractNetCDFDataSetDestination dataSetDestination = createMatrixDataSetDestination(dataSetSource1, dataSetSource2);
+			final MatrixOperation joinMatrices = createMatrixOperation(dataSetSource1, dataSetSource2, dataSetDestination);
+
+			joinMatrices.processMatrix();
+
+			final MatrixKey resultMatrixKey = dataSetDestination.getResultMatrixKey();
 			GWASpiExplorerNodes.insertMatrixNode(resultMatrixKey);
 
 			if (!thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
 				return;
 			}
-			int sampleQAOpId = new OP_QASamples(resultMatrixKey).processMatrix();
-			OperationKey sampleQAOpKey = new OperationKey(resultMatrixKey, sampleQAOpId);
-			GWASpiExplorerNodes.insertOperationUnderMatrixNode(sampleQAOpKey);
-			org.gwaspi.reports.OutputQASamples.writeReportsForQASamplesData(sampleQAOpKey, true);
-			GWASpiExplorerNodes.insertReportsUnderOperationNode(sampleQAOpKey);
+			OperationManager.performQASamplesOperationAndCreateReports(new OP_QASamples(resultMatrixKey));
 
 			if (!thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
 				return;
 			}
-			int markersQAOpId = new OP_QAMarkers(resultMatrixKey).processMatrix();
-			OperationKey markersQAOpKey = new OperationKey(resultMatrixKey, markersQAOpId);
-			GWASpiExplorerNodes.insertOperationUnderMatrixNode(markersQAOpKey);
-			org.gwaspi.reports.OutputQAMarkers.writeReportsForQAMarkersData(markersQAOpKey);
-			GWASpiExplorerNodes.insertReportsUnderOperationNode(markersQAOpKey);
+			OperationManager.performQAMarkersOperationAndCreateReports(new OP_QAMarkers(resultMatrixKey));
 			MultiOperations.printCompleted("Matrix Quality Control");
 		}
 	}

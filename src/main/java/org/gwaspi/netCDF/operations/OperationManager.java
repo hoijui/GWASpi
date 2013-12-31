@@ -22,12 +22,17 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
+import org.gwaspi.model.GWASpiExplorerNodes;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.operations.combi.CombiTestMatrixOperation;
 import org.gwaspi.operations.combi.CombiTestParams;
+import org.gwaspi.reports.OutputHardyWeinberg;
+import org.gwaspi.reports.OutputQAMarkers;
+import org.gwaspi.reports.OutputQASamples;
+import org.gwaspi.reports.OutputTest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,22 +57,22 @@ public class OperationManager {
 	{
 		org.gwaspi.global.Utils.sysoutStart("Genotypes Frequency Count by Affection");
 
-		int resultOpId; // Integer.MIN_VALUE
-		OperationMetadata sampleQAOP = OperationsList.getOperation(samplesQAOpKey);
-		OperationMetadata markerQAOP = OperationsList.getOperation(markersQAOpKey);
-
-		resultOpId = new OP_MarkerCensus(
+		MatrixOperation operation = new OP_MarkerCensus(
 				rdMatrixKey,
 				censusName,
-				sampleQAOP,
+				samplesQAOpKey,
 				sampleMissingRatio,
 				sampleHetzygRatio,
-				markerQAOP,
+				markersQAOpKey,
 				discardMismatches,
 				markerMissingRatio,
-				null).processMatrix();
+				null);
 
-		return new OperationKey(rdMatrixKey, resultOpId);
+		int resultOpId = operation.processMatrix();
+
+		OperationKey operationKey = new OperationKey(rdMatrixKey, resultOpId);
+
+		return operationKey;
 	}
 
 	public static OperationKey censusCleanMatrixMarkersByPhenotypeFile(
@@ -84,97 +89,117 @@ public class OperationManager {
 	{
 		org.gwaspi.global.Utils.sysoutStart("Genotypes Frequency Count using " + phenoFile.getName());
 
-		int resultOpId; // Integer.MIN_VALUE
-		OperationMetadata sampleQAOP = OperationsList.getOperation(samplesQAOpKey);
-		OperationMetadata markerQAOP = OperationsList.getOperation(markersQAOpKey);
-
-		resultOpId = new OP_MarkerCensus(
+		MatrixOperation operation = new OP_MarkerCensus(
 				rdMatrixKey,
 				censusName,
-				sampleQAOP,
+				samplesQAOpKey,
 				sampleMissingRatio,
 				sampleHetzygRatio,
-				markerQAOP,
+				markersQAOpKey,
 				discardMismatches,
 				markerMissingRatio,
-				phenoFile).processMatrix();
+				phenoFile);
 
-		return new OperationKey(rdMatrixKey, resultOpId);
+		int resultOpId = operation.processMatrix();
+
+		OperationKey operationKey = new OperationKey(rdMatrixKey, resultOpId);
+
+		return operationKey;
 	}
 
 	public static OperationKey performHardyWeinberg(OperationKey censusOpKey, String hwName) throws IOException {
-		int resultOpId; // Integer.MIN_VALUE
-		OperationMetadata censusOP = OperationsList.getOperation(censusOpKey);
 
 		org.gwaspi.global.Utils.sysoutStart("Hardy-Weinberg");
 
-		resultOpId = new OP_HardyWeinberg(censusOpKey, hwName).processMatrix();
+		MatrixOperation operation = new OP_HardyWeinberg(censusOpKey, hwName);
+
+		int resultOpId = operation.processMatrix();
+
 		OperationKey operationKey = new OperationKey(censusOpKey.getParentMatrixKey(), resultOpId);
 
-		org.gwaspi.reports.OutputHardyWeinberg.writeReportsForMarkersHWData(operationKey);
+		OutputHardyWeinberg.writeReportsForMarkersHWData(operationKey);
 
 		return operationKey;
 	}
 	//</editor-fold>
 
 	//<editor-fold defaultstate="expanded" desc="ANALYSIS">
-	public static OperationKey performCleanAssociationTests(
-			MatrixKey rdMatrixKey,
+	public static OperationKey performCleanTests(
 			OperationKey censusOpKey,
 			OperationKey hwOpKey,
 			double hwThreshold,
-			boolean allelic)
+			OPType testType)
 			throws IOException
 	{
-		int resultOpId; // Integer.MIN_VALUE
+		org.gwaspi.global.Utils.sysoutStart(OutputTest.createTestName(testType) + " Test using QA and HW thresholds");
 
-		org.gwaspi.global.Utils.sysoutStart(" " + (allelic ? "Allelic" : "Genotypic") + " Association Test using QA and HW thresholds");
+		final MatrixOperation operation;
+		if (testType == OPType.TRENDTEST) {
+			operation = new OP_TrendTests(
+					censusOpKey,
+					hwOpKey,
+					hwThreshold);
+		} else {
+			operation = new OP_AssociationTests(
+					censusOpKey,
+					hwOpKey,
+					hwThreshold,
+					testType);
+		}
 
-		AbstractTestMatrixOperation testOperation = new OP_AssociationTests(
-				rdMatrixKey,
-				censusOpKey,
-				hwOpKey,
-				hwThreshold,
-				allelic);
-		resultOpId = testOperation.processMatrix();
+		int resultOpId = operation.processMatrix();
 
-		return new OperationKey(censusOpKey.getParentMatrixKey(), resultOpId);
+		OperationKey operationKey = new OperationKey(censusOpKey.getParentMatrixKey(), resultOpId);
+
+		return operationKey;
 	}
 
 	public static OperationKey performCleanCombiTest(CombiTestParams params)
 			throws IOException
 	{
-		int resultOpId; // Integer.MIN_VALUE
-
 		org.gwaspi.global.Utils.sysoutStart(" Combi Association Test");
 
-		CombiTestMatrixOperation testOperation
-				= new CombiTestMatrixOperation(params);
-		resultOpId = testOperation.processMatrix();
+		MatrixOperation operation = new CombiTestMatrixOperation(params);
 
-		return new OperationKey(params.getMatrixKey(), resultOpId);
-	}
+		int resultOpId = operation.processMatrix();
 
-	public static OperationKey performCleanTrendTests(
-			MatrixKey rdMatrixKey,
-			OperationKey censusOpKey,
-			OperationKey hwOpKey,
-			double hwThreshold)
-			throws IOException
-	{
-		int resultOpId; // Integer.MIN_VALUE
+		OperationKey operationKey = new OperationKey(params.getMatrixKey(), resultOpId);
 
-		org.gwaspi.global.Utils.sysoutStart("Cochran-Armitage Trend Test using QA and HW thresholds");
-
-		resultOpId = new OP_TrendTests(
-				rdMatrixKey,
-				censusOpKey,
-				hwOpKey,
-				hwThreshold).processMatrix();
-
-		return new OperationKey(censusOpKey.getParentMatrixKey(), resultOpId);
+		return operationKey;
 	}
 	//</editor-fold>
+
+	public static OperationKey performQASamplesOperationAndCreateReports(
+			OP_QASamples operation)
+			throws IOException
+	{
+		int samplesQAOpId = operation.processMatrix();
+
+		OperationKey samplesQAOpKey = new OperationKey(operation.getParentMatrixKey(), samplesQAOpId);
+
+		GWASpiExplorerNodes.insertOperationUnderMatrixNode(samplesQAOpKey);
+
+		OutputQASamples.writeReportsForQASamplesData(samplesQAOpKey, true);
+		GWASpiExplorerNodes.insertReportsUnderOperationNode(samplesQAOpKey);
+
+		return samplesQAOpKey;
+	}
+
+	public static OperationKey performQAMarkersOperationAndCreateReports(
+			OP_QAMarkers operation)
+			throws IOException
+	{
+		int markersQAOpId = operation.processMatrix();
+
+		OperationKey markersQAOpKey = new OperationKey(operation.getParentMatrixKey(), markersQAOpId);
+
+		GWASpiExplorerNodes.insertOperationUnderMatrixNode(markersQAOpKey);
+
+		OutputQAMarkers.writeReportsForQAMarkersData(markersQAOpKey);
+		GWASpiExplorerNodes.insertReportsUnderOperationNode(markersQAOpKey);
+
+		return markersQAOpKey;
+	}
 
 	//<editor-fold defaultstate="expanded" desc="OPERATIONS METADATA">
 	public static List<OPType> checkForNecessaryOperations(final List<OPType> necessaryOPs, MatrixKey matrixKey) {
@@ -237,12 +262,15 @@ public class OperationManager {
 		return nonoOPs;
 	}
 
-	public static List<OPType> checkForBlackListedOperations(List<OPType> blackListOPs, int matrixId, int opId) {
+	/**
+	 * @deprected unused
+	 */
+	public static List<OPType> checkForBlackListedOperations(List<OPType> blackListOPs, OperationKey operationKey) {
 
 		List<OPType> nonoOPs = new ArrayList<OPType>();
 
 		try {
-			List<OperationMetadata> chkOperations = OperationsList.getOperationsList(matrixId, opId);
+			List<OperationMetadata> chkOperations = OperationsList.getOperations(operationKey);
 
 			for (OperationMetadata operation : chkOperations) {
 				OPType type = operation.getOperationType();

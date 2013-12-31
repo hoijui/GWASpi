@@ -20,48 +20,47 @@ package org.gwaspi.threadbox;
 import java.util.List;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.model.GWASpiExplorerNodes;
-import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.netCDF.operations.GWASinOneGOParams;
 import org.gwaspi.netCDF.operations.OperationManager;
-import org.gwaspi.reports.OutputTrendTest;
+import org.gwaspi.reports.OutputTest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Threaded_TrendTest extends CommonRunnable {
+public class Threaded_Test extends CommonRunnable {
 
-	private final MatrixKey matrixKey;
 	private final OperationKey censusOpKey;
 	private final OperationKey hwOpKey;
 	private final GWASinOneGOParams gwasParams;
+	private final OPType testType;
 
-	public Threaded_TrendTest(
-			MatrixKey matrixKey,
+	public Threaded_Test(
 			OperationKey censusOpKey,
 			OperationKey hwOpKey,
-			GWASinOneGOParams gwasParams)
+			GWASinOneGOParams gwasParams,
+			OPType testType)
 	{
 		super(
-				"Cochran-Armitage Trend Test",
-				"Cochran-Armitage Trend Test",
-				"Cochran-Armitage Trend Test on Matrix ID: " + matrixKey.getMatrixId(),
-				"Cochran-Armitage Trend Test");
+				OutputTest.createTestName(testType) + " Test",
+				OutputTest.createTestName(testType) + " Test",
+				OutputTest.createTestName(testType) + " Test on Matrix ID: " + censusOpKey.getParentMatrixKey().getMatrixId(),
+				OutputTest.createTestName(testType) + " Test");
 
-		this.matrixKey = matrixKey;
+		this.testType = testType;
 		this.censusOpKey = censusOpKey;
 		this.hwOpKey = hwOpKey;
 		this.gwasParams = gwasParams;
 	}
 
 	protected Logger createLog() {
-		return LoggerFactory.getLogger(Threaded_TrendTest.class);
+		return LoggerFactory.getLogger(Threaded_Test.class);
 	}
 
 	protected void runInternal(SwingWorkerItem thisSwi) throws Exception {
 
-		List<OperationMetadata> operations = OperationsList.getOperationsList(matrixKey);
+		List<OperationMetadata> operations = OperationsList.getOperationsList(censusOpKey.getParentMatrixKey());
 		OperationKey markersQAOpKey = OperationsList.getIdOfLastOperationTypeOccurance(operations, OPType.MARKER_QA);
 
 		if (!gwasParams.isDiscardMarkerByMisRat()) {
@@ -77,26 +76,25 @@ public class Threaded_TrendTest extends CommonRunnable {
 			gwasParams.setDiscardSampleHetzyRatVal(1);
 		}
 
-		// TREND-TEST (needs newMatrixId, censusOpId, pickedMarkerSet, pickedSampleSet)
-
+		// TEST (needs newMatrixId, censusOpId, pickedMarkerSet, pickedSampleSet)
 		OperationMetadata markerQAMetadata = OperationsList.getOperation(markersQAOpKey);
 
 		if (gwasParams.isDiscardMarkerHWCalc()) {
-			gwasParams.setDiscardMarkerHWTreshold(0.05 / markerQAMetadata.getOpSetSize());
+			gwasParams.setDiscardMarkerHWTreshold(0.05 / markerQAMetadata.getNumMarkers());
 		}
 
 		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
-			OperationKey trendTestOpKey = OperationManager.performCleanTrendTests(
-					matrixKey,
+			OperationKey testOpKey = OperationManager.performCleanTests(
 					censusOpKey,
 					hwOpKey,
-					gwasParams.getDiscardMarkerHWTreshold());
-			GWASpiExplorerNodes.insertSubOperationUnderOperationNode(censusOpKey, trendTestOpKey);
+					gwasParams.getDiscardMarkerHWTreshold(),
+					testType);
+			GWASpiExplorerNodes.insertSubOperationUnderOperationNode(censusOpKey, testOpKey);
 
 			// Make Reports (needs newMatrixId, QAopId, AssocOpId)
-			if (trendTestOpKey != null) {
-				OutputTrendTest.writeReportsForTrendTestData(trendTestOpKey);
-				GWASpiExplorerNodes.insertReportsUnderOperationNode(trendTestOpKey);
+			if (testOpKey != null) {
+				new OutputTest(testOpKey, testType).writeReportsForTestData();
+				GWASpiExplorerNodes.insertReportsUnderOperationNode(testOpKey);
 			}
 		}
 	}

@@ -51,6 +51,8 @@ import org.gwaspi.global.Extractor;
 })
 public class SampleInfo implements Comparable<SampleInfo>, Serializable {
 
+	public static final int ORDER_NULL_ID = -1; // alternatively: Integer.MIN_VALUE
+
 	public static final Extractor<SampleInfo, SampleKey> TO_SAMPLE_KEY
 			= new Extractor<SampleInfo, SampleKey>()
 	{
@@ -143,6 +145,15 @@ public class SampleInfo implements Comparable<SampleInfo>, Serializable {
 		UNAFFECTED,
 		/** Case */
 		AFFECTED;
+
+		/**
+		 * Returns whether the supplied affection is valid for testing,
+		 * which requires it to be either affected or unaffected.
+		 */
+		public static boolean isValid(Affection affection) {
+//			return ((affection != null) && (affection != UNKNOWN));
+			return ((affection == AFFECTED) || (affection == UNAFFECTED));
+		}
 
 		/** Parse by the PLINK standard */
 		public static Affection parse(String affectionStr) {
@@ -268,7 +279,7 @@ public class SampleInfo implements Comparable<SampleInfo>, Serializable {
 
 	public SampleInfo() {
 
-		this.orderId = Integer.MIN_VALUE;
+		this.orderId = ORDER_NULL_ID;
 		this.fatherId = "0";
 		this.motherId = "0";
 		this.sex = Sex.UNKNOWN;
@@ -280,7 +291,7 @@ public class SampleInfo implements Comparable<SampleInfo>, Serializable {
 		this.filter = "";
 		this.approved = 0;
 		this.status = 0;
-		this.key = new SampleKey(new StudyKey(Integer.MIN_VALUE), "0", "0");
+		this.key = new SampleKey(new StudyKey(StudyKey.NULL_ID), "0", "0");
 	}
 
 	public SampleInfo(StudyKey studyKey, String sampleId) {
@@ -296,7 +307,7 @@ public class SampleInfo implements Comparable<SampleInfo>, Serializable {
 			Sex sex,
 			Affection affection)
 	{
-		this.orderId = Integer.MIN_VALUE;
+		this.orderId = ORDER_NULL_ID;
 		this.fatherId = "";
 		this.motherId = "";
 		this.sex = sex;
@@ -320,7 +331,7 @@ public class SampleInfo implements Comparable<SampleInfo>, Serializable {
 			Sex sex,
 			Affection affection)
 	{
-		this.orderId = Integer.MIN_VALUE;
+		this.orderId = ORDER_NULL_ID;
 		this.fatherId = fatherId;
 		this.motherId = motherId;
 		this.sex = sex;

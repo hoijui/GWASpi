@@ -17,7 +17,6 @@
 
 package org.gwaspi.model;
 
-
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
@@ -42,25 +41,25 @@ import org.gwaspi.netCDF.matrices.MatrixFactory;
 @IdClass(OperationKey.class)
 @NamedQueries({
 	@NamedQuery(
-		name = "operationMetadata_fetchById",
-		query = "SELECT om FROM OperationMetadata om WHERE om.id = :id"),
+		name = "operationMetadata_listByStudyIdFriendlyName",
+		query = "SELECT om.studyId, om.parentMatrixId, om.id FROM OperationMetadata om WHERE om.studyId = :studyId AND om.name = :name"),
 	@NamedQuery(
-		name = "operationMetadata_listByFriendlyName",
-		query = "SELECT om.studyId, om.parentMatrixId, om.id FROM OperationMetadata om WHERE om.name = :name"),
+		name = "operationMetadata_listByStudyIdParentMatrixIdOperationId",
+		query = "SELECT om FROM OperationMetadata om WHERE om.studyId = :studyId AND om.parentMatrixId = :parentMatrixId AND om.id = :operationId"),
 	@NamedQuery(
-		name = "operationMetadata_listByParentMatrixId",
-		query = "SELECT om FROM OperationMetadata om WHERE om.parentMatrixId = :parentMatrixId"),
+		name = "operationMetadata_listByStudyIdParentMatrixId",
+		query = "SELECT om FROM OperationMetadata om WHERE om.studyId = :studyId AND om.parentMatrixId = :parentMatrixId"),
 	@NamedQuery(
-		name = "operationMetadata_listByParentMatrixIdOperationId",
-		query = "SELECT om FROM OperationMetadata om WHERE om.parentMatrixId = :parentMatrixId AND om.id = :operationId"),
+		name = "operationMetadata_listByStudyIdParentMatrixIdOperationType",
+		query = "SELECT om FROM OperationMetadata om WHERE om.studyId = :studyId AND om.parentMatrixId = :parentMatrixId AND om.genotypeCode = :operationType"),
 	@NamedQuery(
-		name = "operationMetadata_listByParentMatrixIdParentOperationId",
-		query = "SELECT om FROM OperationMetadata om WHERE om.parentMatrixId = :parentMatrixId AND om.parentOperationId = :parentOperationId"),
+		name = "operationMetadata_listByStudyIdParentMatrixIdParentOperationId",
+		query = "SELECT om FROM OperationMetadata om WHERE om.studyId = :studyId AND om.parentMatrixId = :parentMatrixId AND om.parentOperationId = :parentOperationId"),
 	@NamedQuery(
-		name = "operationMetadata_listByParentMatrixIdParentOperationIdOperationType",
-		query = "SELECT om FROM OperationMetadata om WHERE om.parentMatrixId = :parentMatrixId AND om.parentOperationId = :parentOperationId AND om.genotypeCode = :operationType"),
+		name = "operationMetadata_listByStudyIdParentMatrixIdParentOperationIdOperationType",
+		query = "SELECT om FROM OperationMetadata om WHERE om.studyId = :studyId AND om.parentMatrixId = :parentMatrixId AND om.parentOperationId = :parentOperationId AND om.genotypeCode = :operationType"),
 })
-public class OperationMetadata implements Serializable {
+public class OperationMetadata implements DataSetMetadata, Serializable {
 
 	private OperationKey key;
 	private String name; // == Operation.friendlyName == OperationMetadata.opName
@@ -71,18 +70,20 @@ public class OperationMetadata implements Serializable {
 	private int opSetSize;
 	private int implicitSetSize;
 	private int numChromosomes;
+	private boolean opSetMarkers;
 	private Date creationDate;
 
 	protected OperationMetadata() {
 
 		this.key = new OperationKey();
-		this.parentOperationId = Integer.MIN_VALUE;
+		this.parentOperationId = OperationKey.NULL_ID;
 		this.name = "";
 		this.simpleName = "";
 		this.description = "";
 		this.gtCode = null;
 		this.opSetSize = Integer.MIN_VALUE;
 		this.implicitSetSize = Integer.MIN_VALUE;
+		this.opSetMarkers = true;
 		this.creationDate = new Date();
 	}
 
@@ -116,29 +117,28 @@ public class OperationMetadata implements Serializable {
 //				? null : (Date) creationDate.clone();
 //	}
 
-	/**
-	 * TODO
-	 */
 	public OperationMetadata(
-			MatrixKey parentMatrixKey,
-			int parentOperationId,
+			DataSetKey parent,
 			String name,
 			String description,
 			OPType gtCode,
 			int opSetSize,
 			int implicitSetSize,
-			int numChromosomes
+			int numChromosomes,
+			boolean opSetMarkers
 			)
 	{
-		this.key = new OperationKey(parentMatrixKey, Integer.MIN_VALUE);
-		this.parentOperationId = parentOperationId;
+		final MatrixKey origin = parent.isMatrix() ? parent.getMatrixParent() : parent.getOperationParent().getParentMatrixKey();
+		this.key = new OperationKey(origin, OperationKey.NULL_ID);
+		this.parentOperationId = parent.isOperation() ? parent.getOperationParent().getId() : OperationKey.NULL_ID;
 		this.name = name;
 		this.description = description;
 		this.gtCode = gtCode;
 		this.opSetSize = opSetSize;
 		this.implicitSetSize = implicitSetSize;
 		this.numChromosomes = numChromosomes;
-		this.creationDate =  new Date();
+		this.opSetMarkers = opSetMarkers;
+		this.creationDate = new Date();
 		this.simpleName = gtCode.name() + "_" + MatrixFactory.generateMatrixNetCDFNameByDate(creationDate);
 	}
 
@@ -165,6 +165,36 @@ public class OperationMetadata implements Serializable {
 //				Integer.MIN_VALUE);
 //	}
 
+	@Transient
+	@Override
+	public boolean isOrigin() {
+		return false;
+	}
+
+	@Transient
+	@Override
+	public MatrixKey getOrigin() {
+		return key.getParentMatrixKey();
+	}
+
+	@Transient
+	@Override
+	public DataSetKey getDataSetKey() {
+		return new DataSetKey(key);
+	}
+
+	@Transient
+	@Override
+	public int getNumMarkers() {
+		return isOpSetMarkers() ? getOpSetSize() : getImplicitSetSize();
+	}
+
+	@Transient
+	@Override
+	public int getNumSamples() {
+		return isOpSetMarkers() ? getImplicitSetSize() : getOpSetSize();
+	}
+
 	@Override
 	public boolean equals(Object obj) {
 		if (obj == null) {
@@ -190,6 +220,22 @@ public class OperationMetadata implements Serializable {
 		hash = 29 * hash + this.getParentMatrixId();
 		hash = 29 * hash + this.getOPId();
 		return hash;
+	}
+
+	@Transient
+	public boolean isWithOperationParent() {
+		return (getParentOperationId() != OperationKey.NULL_ID);
+	}
+
+	@Transient
+	@Override
+	public DataSetKey getParent() {
+
+		if (isWithOperationParent()) {
+			return new DataSetKey(getParentOperationKey());
+		} else {
+			return new DataSetKey(getParentMatrixKey());
+		}
 	}
 
 	@Id
@@ -284,6 +330,7 @@ public class OperationMetadata implements Serializable {
 	}
 
 	@Transient
+	@Override
 	public String getFriendlyName() {
 		return getName();
 	}
@@ -301,6 +348,7 @@ public class OperationMetadata implements Serializable {
 		insertable = true,
 		updatable  = false
 		)
+	@Override
 	public String getSimpleName() {
 		return simpleName;
 	}
@@ -352,6 +400,7 @@ public class OperationMetadata implements Serializable {
 		insertable = true,
 		updatable  = false
 		)
+	@Override
 	public String getDescription() {
 		return description;
 	}
@@ -403,12 +452,28 @@ public class OperationMetadata implements Serializable {
 		insertable = true,
 		updatable  = false
 		)
+	@Override
 	public int getNumChromosomes() {
 		return numChromosomes;
 	}
 
 	public void setNumChromosomes(int numChromosomes) {
 		this.numChromosomes = numChromosomes;
+	}
+
+	@Column(
+		name       = "opSetMarkers",
+		unique     = false,
+		nullable   = false,
+		insertable = true,
+		updatable  = false
+		)
+	public boolean isOpSetMarkers() {
+		return opSetMarkers;
+	}
+
+	public void setOpSetMarkers(boolean opSetMarkers) {
+		this.opSetMarkers = opSetMarkers;
 	}
 
 	@Temporal(TemporalType.DATE)
@@ -419,6 +484,7 @@ public class OperationMetadata implements Serializable {
 		insertable = true,
 		updatable  = false
 		)
+	@Override
 	public Date getCreationDate() {
 		return (creationDate == null) ? null : (Date) creationDate.clone();
 	}

@@ -17,10 +17,8 @@
 
 package org.gwaspi.model;
 
-import java.util.List;
-
 /**
  * TODO
  */
-public interface SamplesKeysSource extends List<SampleKey> {
+public interface SamplesKeysSource extends AbstractKeysSource<SampleKey> {
 }

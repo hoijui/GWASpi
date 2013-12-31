@@ -18,11 +18,8 @@
 package org.gwaspi.operations.qamarkers;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
-import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.model.Census;
-import org.gwaspi.netCDF.operations.NetCdfUtils;
 import org.gwaspi.operations.OperationDataSet;
 
 public interface QAMarkersOperationDataSet extends OperationDataSet<QAMarkersOperationEntry> {

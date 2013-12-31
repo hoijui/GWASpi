@@ -33,7 +33,7 @@ import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.GenotypesList;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MarkerMetadata;
-import org.gwaspi.model.SampleInfo;
+import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.netCDF.loader.DataSetDestination;
 import org.slf4j.Logger;
@@ -62,6 +62,11 @@ public class MatrixGenotypesFlipper implements MatrixOperation {
 		this.dataSetDestination = dataSetDestination;
 		this.flipperFile = flipperFile;
 		this.markersToFlip = loadMarkerKeys(this.flipperFile);
+	}
+
+	@Override
+	public boolean isCreatingResultMatrix() {
+		return true;
 	}
 
 	/**
@@ -113,7 +118,7 @@ public class MatrixGenotypesFlipper implements MatrixOperation {
 	@Override
 	public int processMatrix() throws IOException {
 
-		int resultMatrixId = Integer.MIN_VALUE;
+		int resultMatrixId = MatrixKey.NULL_ID;
 
 		// simply copy&paste the sample infos
 		dataSetDestination.startLoadingSampleInfos(true);

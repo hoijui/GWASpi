@@ -125,7 +125,7 @@ public class GenericReportGenerator {
 //		}
 
 		CommonTestOperationDataSet<? extends TrendTestOperationEntry> testOpDS = (CommonTestOperationDataSet<? extends TrendTestOperationEntry>) OperationFactory.generateOperationDataSet(testOpKey);
-		Map<Integer, MarkerKey> testOpMarkers = testOpDS.getMarkers();
+		Map<Integer, MarkerKey> testOpMarkers = testOpDS.getMarkersKeysSource().getIndicesMap();
 		Iterator<MarkerKey> testOpMarkerKeysIt = testOpMarkers.values().iterator();
 		Collection<Double> ps = testOpDS.getPs(-1, -1);
 		for (Double pValue : ps) {
@@ -447,7 +447,7 @@ public class GenericReportGenerator {
 			MarkersMetadataSource markersMetadatasSource = parentMatrixSource.getMarkersMetadatasSource();
 
 			CommonTestOperationDataSet<? extends TrendTestOperationEntry> testOpDS = (CommonTestOperationDataSet<? extends TrendTestOperationEntry>) OperationFactory.generateOperationDataSet(testOpKey);
-			Map<Integer, MarkerKey> testOpMarkers = testOpDS.getMarkers();
+			Map<Integer, MarkerKey> testOpMarkers = testOpDS.getMarkersKeysSource().getIndicesMap();
 			Iterator<Double> psIt = testOpDS.getPs(-1, -1).iterator();
 			markerKeyChrPosPVal = new LinkedHashMap<MarkerKey, Object[]>(testOpMarkers.size());
 			for (Map.Entry<Integer, MarkerKey> marker : testOpMarkers.entrySet()) {
@@ -702,7 +702,7 @@ public class GenericReportGenerator {
 
 		OperationMetadata rdOPMetadata = OperationsList.getOperation(operationKey);
 
-		Map<Integer, SampleKey> samples = qaSamplesOpDS.getSamples();
+		Map<Integer, SampleKey> samples = qaSamplesOpDS.getSamplesKeysSource().getIndicesMap();
 		List<Double> hetzyRatios = (List) qaSamplesOpDS.getHetzyRatios(-1, -1);
 		List<Double> missingRatios = (List) qaSamplesOpDS.getMissingRatios(-1, -1);
 

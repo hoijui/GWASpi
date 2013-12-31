@@ -26,6 +26,8 @@ import org.gwaspi.model.OperationKey;
 import org.gwaspi.netCDF.operations.OP_QAMarkers;
 import org.gwaspi.netCDF.operations.OP_QASamples;
 import org.gwaspi.netCDF.operations.OperationManager;
+import org.gwaspi.reports.OutputQAMarkers;
+import org.gwaspi.reports.OutputQASamples;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,18 +59,10 @@ public class Threaded_MatrixQA extends CommonRunnable {
 
 		if (missingOPsAL.size() > 0) {
 			if (missingOPsAL.contains(OPType.SAMPLE_QA)) {
-				int sampleQAOpId = new OP_QASamples(matrixKey).processMatrix();
-				OperationKey sampleQAOpKey = new OperationKey(matrixKey, sampleQAOpId);
-				GWASpiExplorerNodes.insertOperationUnderMatrixNode(sampleQAOpKey);
-				org.gwaspi.reports.OutputQASamples.writeReportsForQASamplesData(sampleQAOpKey, true);
-				GWASpiExplorerNodes.insertReportsUnderOperationNode(sampleQAOpKey);
+				OperationManager.performQASamplesOperationAndCreateReports(new OP_QASamples(matrixKey));
 			}
 			if (missingOPsAL.contains(OPType.MARKER_QA)) {
-				int markersQAOpId = new OP_QAMarkers(matrixKey).processMatrix();
-				OperationKey markersQAOpKey = new OperationKey(matrixKey, markersQAOpId);
-				GWASpiExplorerNodes.insertOperationUnderMatrixNode(markersQAOpKey);
-				org.gwaspi.reports.OutputQAMarkers.writeReportsForQAMarkersData(markersQAOpKey);
-				GWASpiExplorerNodes.insertReportsUnderOperationNode(markersQAOpKey);
+				OperationManager.performQAMarkersOperationAndCreateReports(new OP_QAMarkers(matrixKey));
 			}
 			MultiOperations.printCompleted("Matrix Quality Control");
 		}

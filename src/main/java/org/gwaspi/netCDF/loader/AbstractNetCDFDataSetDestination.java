@@ -127,6 +127,7 @@ public abstract class AbstractNetCDFDataSetDestination extends AbstractDataSetDe
 
 		// global attributes
 		ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_STUDY, matrixMetadata.getStudyKey().getId());
+		ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_MATRIX_ID, matrixMetadata.getMatrixId());
 		ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_FRIENDLY_NAME, matrixMetadata.getFriendlyName().toString());
 		ncfile.addGlobalAttribute(cNetCDF.Attributes.GLOB_TECHNOLOGY, matrixMetadata.getTechnology().toString());
 		String versionNb = Config.getConfigValue(Config.PROPERTY_CURRENT_GWASPIDB_VERSION, null);
@@ -238,6 +239,8 @@ public abstract class AbstractNetCDFDataSetDestination extends AbstractDataSetDe
 	@Override
 	public void finishedLoadingMarkerMetadatas() throws IOException {
 		super.finishedLoadingMarkerMetadatas();
+	}
+	private void storeSamplesAndMarkersMetadata() throws IOException {
 
 		try {
 			matrixMetadata = createMatrixMetadata();
@@ -276,11 +279,8 @@ public abstract class AbstractNetCDFDataSetDestination extends AbstractDataSetDe
 	public void finishedLoadingChromosomeMetadatas() throws IOException {
 		super.finishedLoadingChromosomeMetadatas();
 
-		try {
-			saveChromosomeMetadata(getDataSet().getChromosomeInfos(), ncfile);
-		} catch (InvalidRangeException ex) {
-			throw new IOException(ex);
-		}
+		storeSamplesAndMarkersMetadata();
+		saveChromosomeMetadata(getDataSet().getChromosomeInfos(), ncfile);
 	}
 
 	private static void saveSamplesMetadata(Collection<SampleKey> sampleKeys, NetcdfFileWriteable ncfile) throws IOException, InvalidRangeException {
@@ -338,7 +338,7 @@ public abstract class AbstractNetCDFDataSetDestination extends AbstractDataSetDe
 		log.info("Done writing strand info to matrix");
 	}
 
-	private static void saveChromosomeMetadata(Map<ChromosomeKey, ChromosomeInfo> chromosomeInfo, NetcdfFileWriteable wrNcFile) throws IOException, InvalidRangeException {
+	private static void saveChromosomeMetadata(Map<ChromosomeKey, ChromosomeInfo> chromosomeInfo, NetcdfFileWriteable wrNcFile) throws IOException {
 
 		// Set of chromosomes found in matrix along with number of markersinfo
 		NetCdfUtils.saveObjectsToStringToMatrix(wrNcFile, chromosomeInfo.keySet(), cNetCDF.Variables.VAR_CHR_IN_MATRIX, cNetCDF.Strides.STRIDE_CHR);

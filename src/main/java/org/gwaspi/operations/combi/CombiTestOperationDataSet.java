@@ -19,7 +19,6 @@ package org.gwaspi.operations.combi;
 
 import java.io.IOException;
 import java.util.List;
-import org.gwaspi.model.OperationKey;
 import org.gwaspi.operations.OperationDataSet;
 
 public interface CombiTestOperationDataSet extends OperationDataSet<CombiTestOperationEntry> {
@@ -29,6 +28,8 @@ public interface CombiTestOperationDataSet extends OperationDataSet<CombiTestOpe
 	void addEntry(CombiTestOperationEntry entry) throws IOException;
 
 //	void setHardyWeinbergOperationKey(OperationKey hwOpKey);
+
+	void setWeights(List<Double> weights) throws IOException;
 
 	List<Double> getWeights() throws IOException;
 

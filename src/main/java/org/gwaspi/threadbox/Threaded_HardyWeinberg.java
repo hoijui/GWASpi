@@ -50,7 +50,7 @@ public class Threaded_HardyWeinberg extends CommonRunnable {
 		// HW ON GENOTYPE FREQ.
 		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)
 				&& (censusOpKey != null)
-				&& (censusOpKey.getId() != Integer.MIN_VALUE))
+				&& (censusOpKey.getId() != OperationKey.NULL_ID))
 		{
 			OperationKey hwOpKey = OperationManager.performHardyWeinberg(censusOpKey, cNetCDF.Defaults.DEFAULT_AFFECTION);
 			GWASpiExplorerNodes.insertSubOperationUnderOperationNode(censusOpKey, hwOpKey);

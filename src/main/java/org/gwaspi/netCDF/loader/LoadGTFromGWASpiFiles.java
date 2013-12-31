@@ -19,40 +19,28 @@ package org.gwaspi.netCDF.loader;
 
 import java.io.File;
 import java.util.Collection;
-import java.util.Iterator;
-import java.util.Map;
 import org.gwaspi.constants.cImport.ImportFormat;
-import org.gwaspi.constants.cNetCDF;
-import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
 import org.gwaspi.global.Config;
 import org.gwaspi.global.Text;
 import org.gwaspi.gui.utils.Dialogs;
-import org.gwaspi.model.ChromosomeInfo;
-import org.gwaspi.model.ChromosomeKey;
 import org.gwaspi.model.DataSet;
 import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.GenotypesList;
-import org.gwaspi.model.MarkerMetadata;
-import org.gwaspi.model.MarkersMetadataSource;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.SamplesGenotypesSource;
+import org.gwaspi.model.SamplesKeysSource;
 import org.gwaspi.model.Study;
 import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.markers.NetCDFDataSetSource;
-import org.gwaspi.netCDF.matrices.ChromosomeUtils;
-import org.gwaspi.netCDF.operations.NetCdfUtils;
-import org.gwaspi.samples.SampleSet;
+import org.gwaspi.netCDF.markers.NetCdfSamplesKeysSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.ma2.ArrayChar;
-import ucar.ma2.ArrayInt;
-import ucar.ma2.Index;
-import ucar.nc2.NetcdfFileWriteable;
+import ucar.nc2.NetcdfFile;
 
 /**
  * Loads genotypes from GWASpi's own file format.
@@ -102,13 +90,13 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 		DataSet dataSet = ((AbstractDataSetDestination) samplesReceiver).getDataSet();
 
 		if (new File(loadDescription.getGtDirPath()).exists()) {
-		SampleSet matrixSampleSet = new SampleSet(loadDescription.getStudyKey(), "");
-		Map<SampleKey, byte[]> matrixSampleSetMap = matrixSampleSet.getSampleIdSetMapByteArray(loadDescription.getGtDirPath());
+		NetcdfFile gwaspiStorageFile = NetcdfFile.open(loadDescription.getGtDirPath());
+		SamplesKeysSource samplesKeysSource = NetCdfSamplesKeysSource.createForMatrix(loadDescription.getStudyKey(), gwaspiStorageFile);
 
 		boolean testExcessSamplesInMatrix = false;
 		boolean testExcessSamplesInFile = false;
 		Collection<SampleKey> sampleKeys = AbstractLoadGTFromFiles.extractKeys(dataSet.getSampleInfos());
-		for (SampleKey key : matrixSampleSetMap.keySet()) {
+		for (SampleKey key : samplesKeysSource) {
 			if (!sampleKeys.contains(key)) {
 				testExcessSamplesInMatrix = true;
 				break;
@@ -116,7 +104,7 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 		}
 
 		for (SampleInfo sampleInfo : dataSet.getSampleInfos()) {
-			if (!matrixSampleSetMap.containsKey(sampleInfo.getKey())) {
+			if (!samplesKeysSource.contains(sampleInfo.getKey())) {
 				testExcessSamplesInFile = true;
 				break;
 			}
@@ -130,9 +118,10 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 		}
 
 		MatrixMetadata importMatrixMetadata = NetCDFDataSetSource.loadMatrixMetadata(
-				loadDescription.getStudyKey(),
 				new File(loadDescription.getGtDirPath()),
-				loadDescription.getFriendlyName());
+				loadDescription.getFriendlyName(),
+				loadDescription.getStudyKey(),
+				null);
 
 		final String currentGwaspiDbVersion= Config.getConfigValue(
 				Config.PROPERTY_CURRENT_GWASPIDB_VERSION, null);
@@ -192,12 +181,12 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 	private int generateNewGWASpiDBversionMatrix(GenotypesLoadDescription loadDescription, DataSetDestination samplesReceiver, MatrixMetadata importMatrixMetadata)
 			throws Exception
 	{
-		int result = Integer.MIN_VALUE;
+		int result = MatrixKey.NULL_ID;
 		String startTime = org.gwaspi.global.Utils.getMediumDateTimeAsString();
 
 		//<editor-fold defaultstate="expanded" desc="CREATE MARKERSET & NETCDF">
 //		MatrixKey importMatrixKey = MatrixKey.valueOf(importMatrixMetadata);
-		DataSetSource dataSetSource = new NetCDFDataSetSource(loadDescription.getStudyKey(), new File(loadDescription.getGtDirPath()));
+		DataSetSource dataSetSource = new NetCDFDataSetSource(new File(loadDescription.getGtDirPath()), loadDescription.getStudyKey());
 //		MarkerSet rdMarkerSet = new MarkerSet(importMatrixMetadata);
 //		rdMarkerSet.initFullMarkerIdSetMap();
 //		rdMarkerSet.fillMarkerSetMapWithChrAndPos();

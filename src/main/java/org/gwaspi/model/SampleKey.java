@@ -29,6 +29,8 @@ import javax.persistence.Transient;
  */
 public class SampleKey implements Comparable<SampleKey>, Serializable {
 
+	public static final String SAMPLE_NULL_ID = "-1";
+
 	/**
 	 * This one is used as the default value if no family-ID is available.
 	 * This is the case in the Affymetrix and Beagle formats, for example.

@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Set;
 import org.gwaspi.constants.cExport.ExportFormat;
+import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.constants.cNetCDF.Defaults.SetMarkerPickCase;
 import org.gwaspi.constants.cNetCDF.Defaults.SetSamplePickCase;
 import org.gwaspi.gui.GWASpiExplorerPanel;
@@ -136,19 +137,19 @@ public class MultiOperations {
 	}
 
 	/** LOAD & GWAS */
-	public static void doAssociationTest(
-			final MatrixKey matrixKey,
+	public static void doTest(
 			final OperationKey censusOPKey,
 			final OperationKey hwOPKey,
 			final GWASinOneGOParams gwasParams,
-			final boolean allelic)
+			final OPType testType)
 	{
-		CommonRunnable task = new Threaded_Association(
-				matrixKey,
+		CommonRunnable task = new Threaded_Test(
 				censusOPKey,
 				hwOPKey,
 				gwasParams,
-				allelic);
+				testType);
+
+		final MatrixKey matrixKey = censusOPKey.getParentMatrixKey();
 
 		TaskLockProperties lockProperties = new TaskLockProperties();
 		lockProperties.getStudyIds().add(matrixKey.getStudyId());
@@ -172,28 +173,6 @@ public class MultiOperations {
 //		}
 		lockProperties.getStudyIds().add(params.getMatrixKey().getStudyId());
 		lockProperties.getMatricesIds().add(params.getMatrixKey().getMatrixId());
-
-		queueTask(task, lockProperties);
-	}
-
-	/** LOAD & GWAS */
-	public static void doTrendTest(
-			final MatrixKey matrixKey,
-			final OperationKey censusOPKey,
-			final OperationKey hwOPKey,
-			final GWASinOneGOParams gwasParams)
-	{
-		CommonRunnable task = new Threaded_TrendTest(
-				matrixKey,
-				censusOPKey,
-				hwOPKey,
-				gwasParams);
-
-		TaskLockProperties lockProperties = new TaskLockProperties();
-		lockProperties.getStudyIds().add(matrixKey.getStudyId());
-		lockProperties.getMatricesIds().add(matrixKey.getMatrixId());
-		lockProperties.getOperationsIds().add(censusOPKey.getId());
-		lockProperties.getOperationsIds().add(hwOPKey.getId());
 
 		queueTask(task, lockProperties);
 	}

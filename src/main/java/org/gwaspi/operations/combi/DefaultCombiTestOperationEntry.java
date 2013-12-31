@@ -18,35 +18,20 @@
 package org.gwaspi.operations.combi;
 
 import org.gwaspi.model.MarkerKey;
-import org.gwaspi.model.SampleKey;
 import org.gwaspi.operations.AbstractOperationDataEntry;
 
 public class DefaultCombiTestOperationEntry extends AbstractOperationDataEntry<MarkerKey> implements CombiTestOperationEntry {
 
-	private final double missingRatio;
-	private final int missingCount;
-	private final double hetzyRatio;
+	private final double weight;
 
-	public DefaultCombiTestOperationEntry(SampleKey key, int index, double missingRatio, int missingCount, double hetzyRatio) {
+	public DefaultCombiTestOperationEntry(MarkerKey key, int index, double weight) {
 		super(key, index);
 
-		this.missingRatio = missingRatio;
-		this.missingCount = missingCount;
-		this.hetzyRatio = hetzyRatio;
+		this.weight = weight;
 	}
 
 	@Override
-	public double getMissingRatio() {
-		return missingRatio;
-	}
-
-	@Override
-	public int getMissingCount() {
-		return missingCount;
-	}
-
-	@Override
-	public double getHetzyRatio() {
-		return hetzyRatio;
+	public double getWeight() {
+		return weight;
 	}
 }

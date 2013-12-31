@@ -47,6 +47,7 @@ import ucar.ma2.ArrayInt;
 import ucar.ma2.DataType;
 import ucar.ma2.Index;
 import ucar.ma2.InvalidRangeException;
+import ucar.ma2.Range;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFileWriteable;
 import ucar.nc2.Variable;
@@ -388,7 +389,7 @@ public class NetCdfUtils {
 //
 //		return charArray;
 //	}
-	
+
 //	public static ArrayByte.D1 writeValuesToD1ArrayByte(Collection<Byte> values) {
 //
 //		ArrayByte.D1 ncArray = new ArrayByte.D1(values.size());
@@ -838,6 +839,22 @@ public class NetCdfUtils {
 
 		return als;
 	}
+//
+//	public static List<byte[]> writeD2Array2ndDimByteToList(ArrayByte inputArray) {
+//
+//		Long expectedSize = inputArray.getSize();
+//		List<byte[]> als = new ArrayList<byte[]>(expectedSize.intValue());
+//
+//		int[] shape = inputArray.getShape();
+//		for (int j = 0; j < shape[1]; j++) {
+//			ArrayByte wrArray = new ArrayByte(new int[] {1, shape[1]});
+//			ArrayByte.D2.arraycopy(inputArray, j * shape[1], wrArray, 0, shape[1]); XXX;
+//			byte[] values = (byte[]) wrArray.copyTo1DJavaArray();
+//			als.add(values);
+//		}
+//
+//		return als;
+//	}
 	//</editor-fold>
 
 //	public static <K> void writeD1ArrayByteToMapValues(ArrayByte inputArray, Map<K, Byte> map) {
@@ -975,6 +992,26 @@ public class NetCdfUtils {
 			}
 		}
 	}
+//
+//	public static <RT, IT extends List<RT>> void writeD3ArrayToCollection(Array from, Collection<IT> to, Extractor<List<RT>, IT> innerListFactory) throws IOException {
+//
+//		try {
+//			int[] shp = from.getShape();
+//			List<Range> ranges = new ArrayList<Range>(3);
+//			ranges.add(new Range(0, 0));
+//			ranges.add(new Range(0, shp[1] - 1));
+//			ranges.add(new Range(0, shp[2] - 1));
+//			for (int r0 = 0; r0 < shp[0]; r0++) {
+//				ranges.set(0, new Range(r0, r0));
+//				ArrayByte.D2 gt_ACD2 = (ArrayByte.D2) from.section(ranges);
+//				List<byte[]> rawList = NetCdfUtils.writeD2ArrayByteToList(gt_ACD2);
+//				IT innerList = innerListFactory.extract(rawList);
+//				to.add(innerList);
+//			}
+//		} catch (InvalidRangeException ex) {
+//			log.error("Cannot read data", ex);
+//		}
+//	}
 	//</editor-fold>
 
 
@@ -993,6 +1030,21 @@ public class NetCdfUtils {
 //		Collections.sort(uniqueGenotypes); // NOTE not required, because we use TreeMap
 
 		return uniqueGenotypes;
+	}
+
+	public static <VT> List<VT> includeOnlyIndices(
+			final List<VT> values,
+			final List<Integer> indicesToInclude)
+	{
+		if (values.size() == indicesToInclude.size()) {
+			return values;
+		} else {
+			List<VT> selected = new ArrayList<VT>(indicesToInclude.size());
+			for (Integer indexToSelect : indicesToInclude) {
+				selected.add(values.get(indexToSelect));
+			}
+			return selected;
+		}
 	}
 
 	public static Set<byte[]> extractUniqueGenotypesOrdered(
@@ -1082,6 +1134,9 @@ public class NetCdfUtils {
 					} else if (varShape.length == 2) {
 						ArrayByte.D2 markerSetAC = (ArrayByte.D2) var.read(fetchVarStr);
 						NetCdfUtils.writeD2ArrayToCollection(markerSetAC, (Collection<byte[]>)targetCollection);
+//					} else if (varShape.length == 3) {
+//						ArrayByte.D3 markerSetAC = (ArrayByte.D3) var.read(fetchVarStr);
+//						NetCdfUtils.writeD3ArrayToCollection(markerSetAC, (Collection<Collection<byte[]>>)targetCollection);
 					} else {
 						throw new UnsupportedOperationException();
 					}

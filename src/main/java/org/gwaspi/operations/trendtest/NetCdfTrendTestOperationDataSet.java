@@ -21,15 +21,18 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.MarkerKey;
+import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
-import org.gwaspi.netCDF.operations.MarkerOperationSet;
 import org.gwaspi.netCDF.operations.NetCdfUtils;
 import ucar.ma2.ArrayDouble;
 import ucar.ma2.InvalidRangeException;
+import ucar.ma2.Range;
 
 public class NetCdfTrendTestOperationDataSet extends AbstractNetCdfTestOperationDataSet<TrendTestOperationEntry> implements TrendTestOperationDataSet {
 
@@ -43,12 +46,12 @@ public class NetCdfTrendTestOperationDataSet extends AbstractNetCdfTestOperation
 	private ArrayDouble.D1 netCdfTs;
 	private ArrayDouble.D1 netCdfPs;
 
-	public NetCdfTrendTestOperationDataSet(OperationKey operationKey) {
-		super(operationKey);
+	public NetCdfTrendTestOperationDataSet(MatrixKey origin, DataSetKey parent, OperationKey operationKey) {
+		super(origin, parent, operationKey);
 	}
 
-	public NetCdfTrendTestOperationDataSet() {
-		this(null);
+	public NetCdfTrendTestOperationDataSet(MatrixKey origin, DataSetKey parent) {
+		this(origin, parent, null);
 	}
 
 	@Override
@@ -60,6 +63,17 @@ public class NetCdfTrendTestOperationDataSet extends AbstractNetCdfTestOperation
 			// NOTE This might be bad for multi-threading in a later stage
 			netCdfTs = new ArrayDouble.D1(writeBuffer.size());
 			netCdfPs = new ArrayDouble.D1(writeBuffer.size());
+		} else if (writeBuffer.size() < netCdfTs.getShape()[0]) {
+			// we end up here at the end of the processing, if, for example,
+			// we have a buffer size of 10, but only 7 items are left to be written
+			List<Range> reducedRange1D = new ArrayList<Range>(1);
+			reducedRange1D.add(new Range(writeBuffer.size()));
+			try {
+				netCdfTs = (ArrayDouble.D1) netCdfTs.sectionNoReduce(reducedRange1D);
+				netCdfPs = (ArrayDouble.D1) netCdfPs.sectionNoReduce(reducedRange1D);
+			} catch (InvalidRangeException ex) {
+				throw new IOException(ex);
+			}
 		}
 		int index = 0;
 		for (TrendTestOperationEntry entry : writeBuffer) {
@@ -96,7 +110,7 @@ public class NetCdfTrendTestOperationDataSet extends AbstractNetCdfTestOperation
 	@Override
 	public Collection<TrendTestOperationEntry> getEntries(int from, int to) throws IOException {
 
-		Map<Integer, MarkerKey> markersKeys = getMarkers();
+		Map<Integer, MarkerKey> markersKeys = getMarkersKeysSource().getIndicesMap(from, to);
 		Collection<Double> ts = getTs(from, to);
 		Collection<Double> ps = getPs(from, to);
 

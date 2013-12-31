@@ -67,6 +67,7 @@ import org.gwaspi.netCDF.operations.GWASinOneGOParams;
 import org.gwaspi.netCDF.operations.OperationManager;
 import org.gwaspi.operations.combi.CombiTestParams;
 import org.gwaspi.operations.combi.CombiTestParamsGUI;
+import org.gwaspi.reports.OutputTest;
 import org.gwaspi.samples.SamplesParserManager;
 import org.gwaspi.threadbox.MultiOperations;
 import org.gwaspi.threadbox.SwingWorkerItemList;
@@ -214,13 +215,13 @@ public class MatrixAnalysePanel extends JPanel {
 		genFreqAndHWAction.setEnabled(currentOP == null);
 		btn_1_2.setAction(genFreqAndHWAction);
 
-		btn_1_3.setAction(new AssociationTestsAction(parentMatrixKey, gwasParams, currentOP, this, true, false));
+		btn_1_3.setAction(new AssociationTestsAction(parentMatrixKey, gwasParams, currentOP, this, OPType.ALLELICTEST));
 
-		btn_1_4.setAction(new AssociationTestsAction(parentMatrixKey, gwasParams, currentOP, this, false, false));
+		btn_1_4.setAction(new AssociationTestsAction(parentMatrixKey, gwasParams, currentOP, this, OPType.GENOTYPICTEST));
 
-		btn_1_5.setAction(new TrendTestsAction(parentMatrixKey, gwasParams, currentOP));
+		btn_1_5.setAction(new AssociationTestsAction(parentMatrixKey, gwasParams, currentOP, this, OPType.TRENDTEST));
 
-		btn_1_6.setAction(new AssociationTestsAction(parentMatrixKey, gwasParams, currentOP, this, true, true));
+		btn_1_6.setAction(new AssociationTestsAction(parentMatrixKey, gwasParams, currentOP, this, OPType.COMBI_ASSOC_TEST));
 
 		//<editor-fold defaultstate="expanded" desc="LAYOUT BUTTONS">
 		GroupLayout pnl_SpacerLayout = new GroupLayout(pnl_Spacer);
@@ -315,33 +316,26 @@ public class MatrixAnalysePanel extends JPanel {
 		private final MatrixKey parentMatrixKey;
 		private GWASinOneGOParams gwasParams;
 		private final OperationMetadata currentOP;
-		private final boolean allelic;
-		private final boolean combi;
+		private final OPType testType;
 		private final String testName;
-		private final String testNameHtml;
 		private final Component dialogParent;
 
-		AssociationTestsAction(MatrixKey parentMatrixKey, GWASinOneGOParams gwasParams, OperationMetadata currentOP, Component dialogParent, boolean allelic, boolean combi) {
+		AssociationTestsAction(MatrixKey parentMatrixKey, GWASinOneGOParams gwasParams, OperationMetadata currentOP, Component dialogParent, OPType testType) {
 
 			this.parentMatrixKey = parentMatrixKey;
 			this.gwasParams = gwasParams;
 			this.currentOP = currentOP;
-			this.allelic = allelic;
-			this.combi = combi;
-			if (combi) {
-				this.testName = "Combi Association Test";
-				this.testNameHtml = "<html><div align='center'>Combi Association Test<div></html>";
-			} else {
-				this.testName = (allelic ?  Text.Operation.allelicAssocTest : Text.Operation.genoAssocTest);
-				this.testNameHtml = (allelic ? Text.Operation.htmlAllelicAssocTest : Text.Operation.htmlGenotypicTest);
-			}
+			this.testType = testType;
+			this.testName = OutputTest.createTestName(testType) + " Test";
 			this.dialogParent = dialogParent;
+
+			final String testNameHtml = "<html><div align='center'>" + testName + "<div></html>";
 			putValue(NAME, testNameHtml);
 		}
 
 		public static OperationKey evaluateCensusOPId(OperationMetadata currentOP, MatrixKey parentMatrixKey) throws IOException {
 
-			int censusOPId = Integer.MIN_VALUE;
+			int censusOPId = OperationKey.NULL_ID;
 
 			if (currentOP != null) {
 				censusOPId = currentOP.getId();
@@ -412,7 +406,7 @@ public class MatrixAnalysePanel extends JPanel {
 
 						OperationKey hwOPKey = null;
 						// GET HW OPERATION
-						List<OperationMetadata> hwOperations = OperationsList.getOperationsList(parentMatrixKey.getMatrixId(), censusOPKey.getId(), OPType.HARDY_WEINBERG);
+						List<OperationMetadata> hwOperations = OperationsList.getOperationsList(censusOPKey, OPType.HARDY_WEINBERG);
 						for (OperationMetadata currentHWop : hwOperations) {
 							// REQUEST WHICH HW TO USE
 							// FIXME this looks strange.. just use the last one?
@@ -425,9 +419,10 @@ public class MatrixAnalysePanel extends JPanel {
 
 						CombiTestParams combiTestParams = null;
 						if (reProceed) {
-							if (combi) {
+							if (testType == OPType.COMBI_ASSOC_TEST) {
 								combiTestParams = new CombiTestParams(
 										parentMatrixKey,
+										censusOPKey,
 										hwOPKey
 										);
 								combiTestParams = CombiTestParamsGUI.chooseCombiTestParams(dialogParent, combiTestParams);
@@ -446,15 +441,14 @@ public class MatrixAnalysePanel extends JPanel {
 							if (reProceed && censusOPKey != null && hwOPKey != null) {
 
 								// >>>>>> START THREADING HERE <<<<<<<
-								if (combi) {
+								if (testType == OPType.COMBI_ASSOC_TEST) {
 									MultiOperations.doCombiTest(combiTestParams);
 								} else {
-									MultiOperations.doAssociationTest(
-											parentMatrixKey,
+									MultiOperations.doTest(
 											censusOPKey,
 											hwOPKey,
 											gwasParams,
-											allelic);
+											testType);
 								}
 							}
 						}
@@ -463,110 +457,6 @@ public class MatrixAnalysePanel extends JPanel {
 					Dialogs.showInfoDialogue(Text.Operation.warnAffectionMissing);
 				}
 			} catch (IOException ex) {
-				log.error(Text.Operation.warnOperationError, ex);
-				Dialogs.showWarningDialogue(Text.Operation.warnOperationError);
-			}
-		}
-	}
-
-	private static class TrendTestsAction extends AbstractAction {
-
-		private final MatrixKey parentMatrixKey;
-		private GWASinOneGOParams gwasParams;
-		private final OperationMetadata currentOP;
-
-		TrendTestsAction(MatrixKey parentMatrixKey, GWASinOneGOParams gwasParams, OperationMetadata currentOP) {
-
-			this.parentMatrixKey = parentMatrixKey;
-			this.gwasParams = gwasParams;
-			this.currentOP = currentOP;
-			putValue(NAME, Text.Operation.htmlTrendTest);
-		}
-
-		@Override
-		public void actionPerformed(ActionEvent evt) {
-			try {
-				OperationKey censusOPKey = AssociationTestsAction.evaluateCensusOPId(currentOP, parentMatrixKey);
-				OperationKey hwOPKey = null;
-
-				StartGWASpi.mainGUIFrame.setCursor(CursorUtils.WAIT_CURSOR);
-				Set<SampleInfo.Affection> affectionStates = SamplesParserManager.getDBAffectionStates(parentMatrixKey);
-				StartGWASpi.mainGUIFrame.setCursor(CursorUtils.DEFAULT_CURSOR);
-
-				if (affectionStates.contains(SampleInfo.Affection.UNAFFECTED)
-						&& affectionStates.contains(SampleInfo.Affection.AFFECTED))
-				{
-					List<OPType> necessaryOPs = new ArrayList<OPType>();
-					necessaryOPs.add(OPType.SAMPLE_QA);
-					necessaryOPs.add(OPType.MARKER_QA);
-					necessaryOPs.add(OPType.MARKER_CENSUS_BY_PHENOTYPE);
-					necessaryOPs.add(OPType.MARKER_CENSUS_BY_AFFECTION);
-					necessaryOPs.add(OPType.HARDY_WEINBERG);
-					List<OPType> missingOPs = OperationManager.checkForNecessaryOperations(necessaryOPs, parentMatrixKey);
-
-					// WHAT TO DO IF OPs ARE MISSING
-					boolean performTest = true;
-					if (missingOPs.size() > 0) {
-						if (missingOPs.contains(OPType.SAMPLE_QA)
-								|| missingOPs.contains(OPType.MARKER_QA))
-						{
-							Dialogs.showWarningDialogue("Before performing a " + Text.Operation.trendTest + " you must launch\n a '" + Text.Operation.GTFreqAndHW + "' first or perform a '" + Text.Operation.gwasInOneGo + "' instead.");
-							MultiOperations.doMatrixQAs(parentMatrixKey);
-							performTest = false;
-						} else if (missingOPs.contains(OPType.MARKER_CENSUS_BY_AFFECTION)
-								&& missingOPs.contains(OPType.MARKER_CENSUS_BY_PHENOTYPE))
-						{
-							Dialogs.showWarningDialogue("Before performing a " + Text.Operation.trendTest + " you must launch\n a '" + Text.Operation.GTFreqAndHW + "' first or perform a '" + Text.Operation.gwasInOneGo + "' instead.");
-							performTest = false;
-						} else if (missingOPs.contains(OPType.HARDY_WEINBERG)
-								&& !(missingOPs.contains(OPType.MARKER_CENSUS_BY_AFFECTION)
-								&& missingOPs.contains(OPType.MARKER_CENSUS_BY_PHENOTYPE)))
-						{
-							Dialogs.showWarningDialogue("Before performing a " + Text.Operation.trendTest + " you must launch\n a '" + Text.Operation.hardyWeiberg + "' first or perform a '" + Text.Operation.gwasInOneGo + "' instead.");
-							MultiOperations.doHardyWeinberg(censusOPKey);
-							performTest = false;
-						}
-					}
-
-					// DO TEST
-					if (performTest) {
-						boolean reProceed = true;
-						if (censusOPKey == null) {
-							reProceed = false;
-						}
-
-						if (reProceed) {
-							gwasParams = new MoreAssocInfo().showMoreInfo();
-						}
-
-						if (gwasParams.isProceed()) {
-							ProcessTab.getSingleton().showTab();
-							// GET HW OPERATION
-							List<OperationMetadata> hwOperations = OperationsList.getOperationsList(parentMatrixKey.getMatrixId(), censusOPKey.getId(), OPType.HARDY_WEINBERG);
-							for (OperationMetadata currentHWop : hwOperations) {
-								// REQUEST WHICH HW TO USE
-								if (currentHWop != null) {
-									hwOPKey = OperationKey.valueOf(currentHWop);
-								} else {
-									reProceed = false;
-								}
-							}
-
-							if (reProceed && censusOPKey != null && hwOPKey != null) {
-
-								// >>>>>> START THREADING HERE <<<<<<<
-								MultiOperations.doTrendTest(
-										parentMatrixKey,
-										censusOPKey,
-										hwOPKey,
-										gwasParams);
-							}
-						}
-					}
-				} else {
-					Dialogs.showInfoDialogue(Text.Operation.warnAffectionMissing);
-				}
-			} catch (Exception ex) {
 				log.error(Text.Operation.warnOperationError, ex);
 				Dialogs.showWarningDialogue(Text.Operation.warnOperationError);
 			}

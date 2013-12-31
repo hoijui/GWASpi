@@ -50,8 +50,6 @@ import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.SamplesGenotypesSource;
 import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.loader.DataSetDestination;
-//import org.gwaspi.netCDF.markers.MarkerSet;
-//import org.gwaspi.samples.SampleSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,16 +65,16 @@ public class MatrixDataExtractor implements MatrixOperation {
 	 * All the criteria to pick markers, including the directly supplied ones,
 	 * and the ones read from the marker criteria file.
 	 */
-	private Set fullMarkerCriteria;
-	private SetMarkerPickCase markerPickCase;
-	private String markerPickerVar;
+	private final Set fullMarkerCriteria;
+	private final SetMarkerPickCase markerPickCase;
+	private final String markerPickerVar;
 	/**
 	 * All the criteria to pick samples, including the directly supplied ones,
 	 * and the ones read from the sample criteria file.
 	 */
-	private Set fullSampleCriteria;
-	private SetSamplePickCase samplePickCase;
-	private String samplePickerVar;
+	private final Set fullSampleCriteria;
+	private final SetSamplePickCase samplePickCase;
+	private final String samplePickerVar;
 	private final int sampleFilterPos;
 
 	private final DataSetSource dataSetSource;
@@ -305,6 +303,11 @@ public class MatrixDataExtractor implements MatrixOperation {
 		this.fullSampleCriteria.addAll(parseSamplePickerFile(samplePickerFile, samplePickCase, samplePickerVar, rdMatrixKey.getStudyKey()));
 	}
 
+	@Override
+	public boolean isCreatingResultMatrix() {
+		return true; // XXX We might want to change this in the future, as this could be converted to create only an operation, instead of a full new matrix
+	}
+
 	public static Collection<?> parseMarkerPickerFile(File markerPickerFile, SetMarkerPickCase markerPickCase) throws IOException {
 
 		Collection<?> markerCriteria = new LinkedList();
@@ -492,7 +495,7 @@ public class MatrixDataExtractor implements MatrixOperation {
 	@Override
 	public int processMatrix() throws IOException {
 
-		int resultMatrixId = Integer.MIN_VALUE;
+		int resultMatrixId = MatrixKey.NULL_ID;
 
 		// MARKERSET PICKING
 //		MarkerSet rdMarkerSet = new MarkerSet(this.rdMatrixKey);

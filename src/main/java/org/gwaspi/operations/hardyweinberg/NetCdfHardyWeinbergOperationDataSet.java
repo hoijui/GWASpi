@@ -30,16 +30,18 @@ import java.util.Queue;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.constants.cNetCDF.HardyWeinberg;
+import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.MarkerKey;
+import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
-import org.gwaspi.netCDF.operations.MarkerOperationSet;
 import org.gwaspi.netCDF.operations.NetCdfUtils;
 import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
 import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationEntry.Category;
 import ucar.ma2.ArrayDouble;
 import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
+import ucar.ma2.Range;
 import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFileWriteable;
 
@@ -88,8 +90,8 @@ public class NetCdfHardyWeinbergOperationDataSet extends AbstractNetCdfOperation
 	private ArrayDouble.D1 netCdfObsHetzys;
 	private ArrayDouble.D1 netCdfExpHetzys;
 
-	public NetCdfHardyWeinbergOperationDataSet(OperationKey operationKey) {
-		super(true, operationKey);
+	public NetCdfHardyWeinbergOperationDataSet(MatrixKey origin, DataSetKey parent, OperationKey operationKey) {
+		super(true, origin, parent, operationKey);
 
 		this.hardyWeinbergName = null;
 		this.markerCensusOperationKey = null;
@@ -99,8 +101,8 @@ public class NetCdfHardyWeinbergOperationDataSet extends AbstractNetCdfOperation
 		}
 	}
 
-	public NetCdfHardyWeinbergOperationDataSet() {
-		this(null);
+	public NetCdfHardyWeinbergOperationDataSet(MatrixKey origin, DataSetKey parent) {
+		this(origin, parent, null);
 	}
 
 	@Override
@@ -133,8 +135,7 @@ public class NetCdfHardyWeinbergOperationDataSet extends AbstractNetCdfOperation
 	protected OperationMetadata createOperationMetadata() throws IOException {
 
 		return new OperationMetadata(
-				markerCensusOperationKey.getParentMatrixKey(), // parent matrixId
-				markerCensusOperationKey.getId(), // parent operationId
+				new DataSetKey(markerCensusOperationKey), // parent data set
 				"Hardy-Weinberg_" + hardyWeinbergName, // friendly name
 				"Hardy-Weinberg test on Samples marked as controls (only females for the X chromosome)"
 					+ "\nMarkers: " + getNumMarkers() + ""
@@ -142,7 +143,8 @@ public class NetCdfHardyWeinbergOperationDataSet extends AbstractNetCdfOperation
 				OPType.HARDY_WEINBERG, // operationType
 				getNumMarkers(),
 				getNumSamples(),
-				getNumChromosomes());
+				getNumChromosomes(),
+				isMarkersOperationSet());
 	}
 
 	@Override
@@ -191,11 +193,25 @@ public class NetCdfHardyWeinbergOperationDataSet extends AbstractNetCdfOperation
 
 		buffer.getEntries().add(entry);
 
-		if (buffer.getEntries().size() >= getEntriesWriteBufferSize()) {
-			writeEntries(buffer.getAlreadyWritten(), buffer.getEntries());
-			buffer.setAlreadyWritten(buffer.getAlreadyWritten() + buffer.getEntries().size());
-			buffer.getEntries().clear();
+		final int maxSingleWriteBufferSize = getEntriesWriteBufferSize() / writeBuffers.size();
+		if (buffer.getEntries().size() >= maxSingleWriteBufferSize) {
+			buffer.setAlreadyWritten(writeEntriesBuffer(buffer.getAlreadyWritten(), buffer.getEntries(), entry.getCategory().name() + " "));
+//			writeEntries(buffer.getAlreadyWritten(), buffer.getEntries());
+//			buffer.setAlreadyWritten(buffer.getAlreadyWritten() + buffer.getEntries().size());
+//			buffer.getEntries().clear();
 		}
+	}
+
+	@Override
+	public void finnishWriting() throws IOException {
+
+		for (Map.Entry<HardyWeinbergOperationEntry.Category, EntryBuffer<HardyWeinbergOperationEntry>> writeBuffer : writeBuffers.entrySet()) {
+			final HardyWeinbergOperationEntry.Category category = writeBuffer.getKey();
+			final EntryBuffer<HardyWeinbergOperationEntry> buffer = writeBuffer.getValue();
+			buffer.setAlreadyWritten(writeEntriesBuffer(buffer.getAlreadyWritten(), buffer.getEntries(), category.name() + " "));
+		}
+
+		super.finnishWriting();
 	}
 
 	@Override
@@ -208,6 +224,18 @@ public class NetCdfHardyWeinbergOperationDataSet extends AbstractNetCdfOperation
 			netCdfPs = new ArrayDouble.D1(writeBuffer.size());
 			netCdfObsHetzys = new ArrayDouble.D1(writeBuffer.size());
 			netCdfExpHetzys = new ArrayDouble.D1(writeBuffer.size());
+		} else if (writeBuffer.size() < netCdfPs.getShape()[0]) {
+			// we end up here at the end of the processing, if, for example,
+			// we have a buffer size of 10, but only 7 items are left to be written
+			List<Range> reducedRange1D = new ArrayList<Range>(1);
+			reducedRange1D.add(new Range(writeBuffer.size()));
+			try {
+				netCdfPs = (ArrayDouble.D1) netCdfPs.sectionNoReduce(reducedRange1D);
+				netCdfObsHetzys = (ArrayDouble.D1) netCdfObsHetzys.sectionNoReduce(reducedRange1D);
+				netCdfExpHetzys = (ArrayDouble.D1) netCdfExpHetzys.sectionNoReduce(reducedRange1D);
+			} catch (InvalidRangeException ex) {
+				throw new IOException(ex);
+			}
 		}
 		int index = 0;
 		for (HardyWeinbergOperationEntry entry : writeBuffer) {
@@ -267,7 +295,7 @@ public class NetCdfHardyWeinbergOperationDataSet extends AbstractNetCdfOperation
 
 	public Collection<HardyWeinbergOperationEntry> getEntries(Category category, int from, int to) throws IOException {
 
-		Map<Integer, MarkerKey> markersKeys = getMarkers();
+		Map<Integer, MarkerKey> markersKeys = getMarkersKeysSource().getIndicesMap(from, to);
 		Collection<Double> ps = getPs(category, from, to);
 		Collection<Double> hwObsHetzys = getHwHetzyObses(category, from, to);
 		Collection<Double> hwExpHetzys = getHwHetzyExps(category, from, to);

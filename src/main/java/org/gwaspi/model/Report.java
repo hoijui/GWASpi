@@ -35,23 +35,17 @@ import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 @IdClass(ReportKey.class)
 @NamedQueries({
 	@NamedQuery(
-		name = "report_fetchById",
-		query = "SELECT r FROM Report r WHERE r.id = :id"),
+		name = "report_fetchByStudyIdParentMatrixId",
+		query = "SELECT r FROM Report r WHERE r.studyId = :studyId AND r.parentMatrixId = :parentMatrixId"),
 	@NamedQuery(
-		name = "report_fetchByParentOperationId",
-		query = "SELECT r FROM Report r WHERE r.parentOperationId = :parentOperationId"),
+		name = "report_fetchByStudyIdParentMatrixIdParentOperationId",
+		query = "SELECT r FROM Report r WHERE r.studyId = :studyId AND r.parentMatrixId = :parentMatrixId AND r.parentOperationId = :parentOperationId"),
 	@NamedQuery(
-		name = "report_fetchByParentMatrixId",
-		query = "SELECT r FROM Report r WHERE r.parentMatrixId = :parentMatrixId"),
+		name = "report_deleteByStudyIdParentMatrixId",
+		query = "DELETE FROM Report r WHERE r.studyId = :studyId AND r.parentMatrixId = :parentMatrixId"),
 	@NamedQuery(
-		name = "report_fetchByParentMatrixIdParentOperationId",
-		query = "SELECT r FROM Report r WHERE r.parentMatrixId = :parentMatrixId AND r.parentOperationId = :parentOperationId"),
-	@NamedQuery(
-		name = "report_deleteByParentMatrixId",
-		query = "DELETE FROM Report r WHERE r.parentMatrixId = :parentMatrixId"),
-	@NamedQuery(
-		name = "report_deleteByParentOperationId",
-		query = "DELETE FROM Report r WHERE r.parentOperationId = :parentOperationId"),
+		name = "report_deleteByStudyIdParentMatrixIdParentOperationId",
+		query = "DELETE FROM Report r WHERE r.studyId = :studyId AND r.parentMatrixId = :parentMatrixId AND r.parentOperationId = :parentOperationId"),
 })
 public class Report implements Serializable {
 
@@ -67,7 +61,7 @@ public class Report implements Serializable {
 
 	protected Report() {
 
-		this.key = new ReportKey(new StudyKey(Integer.MIN_VALUE), Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE);
+		this.key = new ReportKey(new StudyKey(StudyKey.NULL_ID), MatrixKey.NULL_ID, OperationKey.NULL_ID, ReportKey.NULL_ID);
 		this.friendlyName = "";
 		this.fileName = "";
 		this.type = null;
@@ -88,6 +82,24 @@ public class Report implements Serializable {
 		this.fileName = fileName;
 		this.type = type;
 		this.description = description;
+	}
+
+	public Report(
+			String friendlyName,
+			String fileName,
+			OPType type,
+			OperationKey parentOpKey,
+			String description,
+			StudyKey studyKey)
+	{
+		this(
+				ReportKey.NULL_ID,
+				friendlyName,
+				fileName,
+				type,
+				parentOpKey,
+				description,
+				studyKey);
 	}
 
 	@Override

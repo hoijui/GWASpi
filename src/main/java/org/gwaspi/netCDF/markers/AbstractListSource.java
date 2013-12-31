@@ -34,17 +34,33 @@ public abstract class AbstractListSource<VT> extends AbstractList<VT> {
 
 	private final int chunkSize;
 	private final String varNameDimension;
+	private List<Integer> originalIndices;
+	private Integer size;
 	private final NetcdfFile rdNetCdfFile;
 	private int loadedChunkNumber;
 	private List<VT> loadedChunk;
 
-	AbstractListSource(NetcdfFile rdNetCdfFile, int chunkSize, String varNameDimension) {
+	private AbstractListSource(NetcdfFile rdNetCdfFile, int chunkSize, List<Integer> originalIndices, String varNameDimension) {
 
 		this.chunkSize = chunkSize;
 		this.varNameDimension = varNameDimension;
+		this.originalIndices = originalIndices;
+		this.size = (originalIndices == null) ? null : originalIndices.size();
 		this.rdNetCdfFile = rdNetCdfFile;
 		this.loadedChunkNumber = -1;
 		this.loadedChunk = null;
+	}
+
+	AbstractListSource(NetcdfFile rdNetCdfFile, int chunkSize, String varNameDimension) {
+		this(rdNetCdfFile, chunkSize, null, varNameDimension);
+	}
+
+	AbstractListSource(NetcdfFile rdNetCdfFile, int chunkSize, List<Integer> originalIndices) {
+		this(rdNetCdfFile, chunkSize, originalIndices, null);
+	}
+
+	protected NetcdfFile getReadNetCdfFile() {
+		return rdNetCdfFile;
 	}
 
 	protected <LVT> List<LVT> readVar(String varName, int from, int to) throws IOException {
@@ -57,17 +73,28 @@ public abstract class AbstractListSource<VT> extends AbstractList<VT> {
 	@Override
 	public VT get(int index) {
 
+		final int rawIndex;
+		if (originalIndices == null) {
+			rawIndex = index;
+		} else {
+			rawIndex = originalIndices.get(index);
+		}
+
+		return getRaw(rawIndex);
+	}
+
+	private VT getRaw(int index) {
+
 		final int chunkNumber = index / chunkSize;
 		final int inChunkPosition = index % chunkSize;
 
 		if (chunkNumber != loadedChunkNumber) {
 			try {
-				final int size = size();
-//				if (index >= size) {
+//				if (index >= size()) {
 //					throw new IndexOutOfBoundsException();
 //				}
 				final int itemsBefore = chunkNumber * chunkSize;
-				final int itemsInAndAfter = size - itemsBefore;
+				final int itemsInAndAfter = size() - itemsBefore;
 				final int curChunkSize = Math.min(chunkSize, itemsInAndAfter);
 				loadedChunk = getRange(itemsBefore, itemsBefore + curChunkSize - 1);
 				loadedChunkNumber = chunkNumber;
@@ -82,8 +109,12 @@ public abstract class AbstractListSource<VT> extends AbstractList<VT> {
 	@Override
 	public int size() {
 
-		Dimension dim = rdNetCdfFile.findDimension(varNameDimension);
-		return dim.getLength();
+		if (size == null) {
+			Dimension dim = rdNetCdfFile.findDimension(varNameDimension);
+			size =  dim.getLength();
+		}
+
+		return size;
 	}
 
 	protected abstract List<VT> getRange(int from, int to) throws IOException;

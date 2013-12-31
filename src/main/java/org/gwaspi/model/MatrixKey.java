@@ -25,7 +25,7 @@ import javax.persistence.Transient;
  */
 public class MatrixKey implements Comparable<MatrixKey>, Serializable {
 
-	public static final int NULL_ID = -1;
+	public static final int NULL_ID = -1; // alternatively: Integer.MIN_VALUE
 
 	private static final String NAME_UNKNOWN = "<matrix-name-unknown>";
 
@@ -39,7 +39,7 @@ public class MatrixKey implements Comparable<MatrixKey>, Serializable {
 	}
 
 	protected MatrixKey() {
-		this(null, Integer.MIN_VALUE);
+		this(null, NULL_ID);
 	}
 
 	public static MatrixKey valueOf(MatrixMetadata matrix) {

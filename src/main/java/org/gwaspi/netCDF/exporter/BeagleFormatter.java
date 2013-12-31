@@ -202,7 +202,7 @@ class BeagleFormatter implements Formatter {
 			Map<MarkerKey, Byte> opQaMarkersAllelesMin = null;
 			if (markersQAopKey != null) {
 				QAMarkersOperationDataSet qaMarkersOpDS = (QAMarkersOperationDataSet) OperationFactory.generateOperationDataSet(markersQAopKey);
-				Map<Integer, MarkerKey> markers = qaMarkersOpDS.getMarkers();
+				Map<Integer, MarkerKey> markers = qaMarkersOpDS.getMarkersKeysSource().getIndicesMap();
 				Collection<Byte> knownMajorAllele = qaMarkersOpDS.getKnownMajorAllele(-1, -1);
 				Collection<Byte> knownMinorAllele = qaMarkersOpDS.getKnownMinorAllele(-1, -1);
 

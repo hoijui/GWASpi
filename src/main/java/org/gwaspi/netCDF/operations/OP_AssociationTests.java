@@ -23,19 +23,20 @@ import java.util.Map;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.model.Census;
 import org.gwaspi.model.MarkerKey;
-import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.operations.OperationDataSet;
 import org.gwaspi.operations.allelicassociationtest.AllelicAssociationTestsOperationDataSet;
 import org.gwaspi.operations.allelicassociationtest.DefaultAllelicAssociationOperationEntry;
 import org.gwaspi.operations.genotypicassociationtest.DefaultGenotypicAssociationOperationEntry;
 import org.gwaspi.operations.genotypicassociationtest.GenotypicAssociationTestsOperationDataSet;
+import org.gwaspi.operations.trendtest.CommonTestOperationDataSet;
+import org.gwaspi.reports.OutputTest;
 import org.gwaspi.statistics.Associations;
 import org.gwaspi.statistics.Pvalue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class OP_AssociationTests extends AbstractTestMatrixOperation {
+public class OP_AssociationTests extends AbstractTestMatrixOperation<CommonTestOperationDataSet> {
 
 	private final Logger log
 			= LoggerFactory.getLogger(OP_AssociationTests.class);
@@ -43,24 +44,30 @@ public class OP_AssociationTests extends AbstractTestMatrixOperation {
 	/**
 	 * Whether we are to perform allelic or genotypic association tests.
 	 */
-	private final boolean allelic;
+	private final OPType testType;
 
 	public OP_AssociationTests(
-			MatrixKey rdMatrixKey,
 			OperationKey markerCensusOPKey,
 			OperationKey hwOPKey,
 			double hwThreshold,
-			boolean allelic)
+			OPType testType)
 	{
 		super(
-			rdMatrixKey,
 			markerCensusOPKey,
 			hwOPKey,
 			hwThreshold,
-			(allelic ? "Allelic" : "Genotypic") + " Association Test",
-			allelic ? OPType.ALLELICTEST : OPType.GENOTYPICTEST);
+			OutputTest.createTestName(testType) + " Test");
 
-		this.allelic = allelic;
+		this.testType = testType;
+	}
+
+	@Override
+	public OPType getType() {
+		return testType;
+	}
+
+	private boolean isAllelic() {
+		return (testType == OPType.ALLELICTEST);
 	}
 
 	/**
@@ -75,7 +82,8 @@ public class OP_AssociationTests extends AbstractTestMatrixOperation {
 			Map<Integer, MarkerKey> caseMarkersOrigIndexKey,
 			Map<Integer, Census> caseMarkersOrigIndexCensus,
 			Map<Integer, MarkerKey> ctrlMarkersOrigIndexKey,
-			Map<Integer, Census> ctrlMarkersOrigIndexCensus) throws IOException
+			Map<Integer, Census> ctrlMarkersOrigIndexCensus)
+			throws IOException
 	{
 //		((AbstractNetCdfOperationDataSet) dataSet).setNumMarkers(caseMarkersOrigIndexKey.size()); // HACK
 
@@ -99,7 +107,7 @@ public class OP_AssociationTests extends AbstractTestMatrixOperation {
 			final int ctrlaa = ctrlCensus.getaa();
 			final int ctrlTot = ctrlAA + ctrlaa + ctrlAa;
 
-			if (allelic) {
+			if (isAllelic()) {
 				// allelic test
 				final int sampleNb = caseTot + ctrlTot;
 

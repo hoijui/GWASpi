@@ -38,18 +38,15 @@ import org.gwaspi.model.CensusFull;
 import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.GenotypesList;
 import org.gwaspi.model.MarkerKey;
-import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.OperationKey;
-import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleInfo.Affection;
 import org.gwaspi.model.SampleInfo.Sex;
 import org.gwaspi.model.SampleInfoList;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.StudyKey;
-import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
 import org.gwaspi.operations.markercensus.DefaultMarkerCensusOperationEntry;
 import org.gwaspi.operations.markercensus.MarkerCensusOperationDataSet;
@@ -58,40 +55,45 @@ import org.gwaspi.operations.qasamples.QASamplesOperationDataSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class OP_MarkerCensus implements MatrixOperation {
+public class OP_MarkerCensus extends AbstractOperation<MarkerCensusOperationDataSet> {
 
 	private final Logger log = LoggerFactory.getLogger(OP_MarkerCensus.class);
 
-	private final MatrixKey rdMatrixKey;
 	private final String censusName;
-	private final OperationMetadata sampleQAOP;
+	private final OperationKey sampleQAOPKey;
 	private final double sampleMissingRatio;
 	private final double sampleHetzygRatio;
-	private final OperationMetadata markerQAOP;
+	private final OperationKey markerQAOPKey;
 	private final boolean discardMismatches;
 	private final double markerMissingRatio;
 	private final File phenoFile;
 
 	public OP_MarkerCensus(
-			MatrixKey rdMatrixKey,
+			MatrixKey parent,
 			String censusName,
-			OperationMetadata sampleQAOP,
+			OperationKey sampleQAOPKey,
 			double sampleMissingRatio,
 			double sampleHetzygRatio,
-			OperationMetadata markerQAOP,
+			OperationKey markerQAOPKey,
 			boolean discardMismatches,
 			double markerMissingRatio,
 			File phenoFile)
 	{
-		this.rdMatrixKey = rdMatrixKey;
+		super(parent);
+
 		this.censusName = censusName;
-		this.sampleQAOP = sampleQAOP;
+		this.sampleQAOPKey = sampleQAOPKey;
 		this.sampleMissingRatio = sampleMissingRatio;
 		this.sampleHetzygRatio = sampleHetzygRatio;
-		this.markerQAOP = markerQAOP;
+		this.markerQAOPKey = markerQAOPKey;
 		this.discardMismatches = discardMismatches;
 		this.markerMissingRatio = markerMissingRatio;
 		this.phenoFile = phenoFile;
+	}
+
+	@Override
+	public OPType getType() {
+		return OPType.MARKER_CENSUS_BY_AFFECTION;
 	}
 
 	@Override
@@ -106,6 +108,7 @@ public class OP_MarkerCensus implements MatrixOperation {
 
 	@Override
 	public int processMatrix() throws IOException {
+
 		int resultOpId = Integer.MIN_VALUE;
 
 		Map<Integer, SampleKey> excludeSamplesOrigIndexAndKey = new LinkedHashMap<Integer, SampleKey>();
@@ -119,20 +122,19 @@ public class OP_MarkerCensus implements MatrixOperation {
 			// THERE IS DATA LEFT TO PROCESS AFTER PICKING
 
 			//<editor-fold defaultstate="expanded" desc="PURGE Maps">
-			MatrixMetadata rdMatrixMetadata = MatricesList.getMatrixMetadataById(rdMatrixKey);
+			MatrixMetadata rdMatrixMetadata = getParentMatrixMetadata();
 
-			DataSetSource dataSetSource = MatrixFactory.generateMatrixDataSetSource(rdMatrixKey);
+			DataSetSource dataSetSource = getParentDataSetSource();
 
 //			MarkerSet rdMarkerSet = new MarkerSet(rdMatrixKey);
 //			rdMarkerSet.initFullMarkerIdSetMap();
 //			rdMarkerSet.fillWith(cNetCDF.Defaults.DEFAULT_GT);
 
-			OperationKey sampleQAOPKey = OperationKey.valueOf(sampleQAOP);
 //			SampleSet rdSampleSet = new SampleSet(rdMatrixKey);
 //			Map<SampleKey, byte[]> rdSampleSetMap = rdSampleSet.getSampleIdSetMapByteArray();
 			Map<Integer, SampleKey> wrSampleKeys = new LinkedHashMap<Integer, SampleKey>();
 			QASamplesOperationDataSet qaSamplesOperationDataSet = (QASamplesOperationDataSet) OperationFactory.generateOperationDataSet(sampleQAOPKey);
-			for (Map.Entry<Integer, SampleKey> qaSampleOrigIndexKey : qaSamplesOperationDataSet.getSamples().entrySet()) {
+			for (Map.Entry<Integer, SampleKey> qaSampleOrigIndexKey : qaSamplesOperationDataSet.getSamplesKeysSource().getIndicesMap().entrySet()) {
 				if (!excludeSamplesOrigIndexAndKey.containsKey(qaSampleOrigIndexKey.getKey())) {
 					wrSampleKeys.put(qaSampleOrigIndexKey.getKey(), qaSampleOrigIndexKey.getValue());
 				}
@@ -141,9 +143,9 @@ public class OP_MarkerCensus implements MatrixOperation {
 
 //			NetcdfFileWriteable wrNcFile = null;
 			try {
-				MarkerCensusOperationDataSet dataSet = (MarkerCensusOperationDataSet) OperationFactory.generateOperationDataSet(OPType.MARKER_CENSUS_BY_AFFECTION); // HACK
-				((AbstractNetCdfOperationDataSet) dataSet).setReadMatrixKey(rdMatrixKey); // HACK
+				MarkerCensusOperationDataSet dataSet = generateFreshOperationDataSet();
 				((AbstractNetCdfOperationDataSet) dataSet).setNumMarkers(dataSetSource.getNumMarkers()); // HACK
+				((AbstractNetCdfOperationDataSet) dataSet).setNumChromosomes(dataSetSource.getNumChromosomes()); // HACK
 				((AbstractNetCdfOperationDataSet) dataSet).setNumSamples(wrSampleKeys.size()); // HACK
 				dataSet.setCensusName(censusName); // HACK
 				dataSet.setPhenoFile(phenoFile); // HACK
@@ -152,9 +154,11 @@ public class OP_MarkerCensus implements MatrixOperation {
 				dataSet.setMarkerMissingRatio(markerMissingRatio); // HACK
 				dataSet.setDiscardMismatches(discardMismatches); // HACK
 
-				((AbstractNetCdfOperationDataSet) dataSet).setUseAllMarkersFromParent(true);
+//				((AbstractNetCdfOperationDataSet) dataSet).setUseAllMarkersFromParent(true);
+//				((AbstractNetCdfOperationDataSet) dataSet).setUseAllChromosomesFromParent(true);
+//				((AbstractNetCdfOperationDataSet) dataSet).setUseAllSamplesFromParent(false);
+
 				dataSet.setSamples(wrSampleKeys);
-				((AbstractNetCdfOperationDataSet) dataSet).setUseAllChromosomesFromParent(true);
 
 //				// CREATE netCDF-3 FILE
 //				cNetCDF.Defaults.OPType opType = cNetCDF.Defaults.OPType.MARKER_CENSUS_BY_AFFECTION;
@@ -419,10 +423,6 @@ public class OP_MarkerCensus implements MatrixOperation {
 
 					dataSet.addEntry(new DefaultMarkerCensusOperationEntry(
 							markerKey, markerOrigIndex, alleles, censusFull));
-
-					if (markerOrigIndex != 0 && markerOrigIndex % 100000 == 0) {
-						log.info("Processed markers: {}", markerOrigIndex);
-					}
 				}
 				//</editor-fold>
 
@@ -545,9 +545,6 @@ public class OP_MarkerCensus implements MatrixOperation {
 			Map<Integer, Object> excludeMarkersValue)
 			throws IOException
 	{
-		OperationKey markerQAOPKey = OperationKey.valueOf(markerQAOP);
-		OperationKey sampleQAOPKey = OperationKey.valueOf(sampleQAOP);
-
 		QAMarkersOperationDataSet qaMarkersOperationDataSet = (QAMarkersOperationDataSet) OperationFactory.generateOperationDataSet(markerQAOPKey);
 		QASamplesOperationDataSet qaSamplesOperationDataSet = (QASamplesOperationDataSet) OperationFactory.generateOperationDataSet(sampleQAOPKey);
 
@@ -572,7 +569,7 @@ public class OP_MarkerCensus implements MatrixOperation {
 			if (discardMismatches) {
 				Iterator<Boolean> mismatchStatesIt = qaMarkersOperationDataSet.getMismatchStates().iterator();
 	//			Map<MarkerKey, Integer> rdQAMarkerSetMapMismatchStates = rdQAMarkerSet.fillOpSetMapWithVariable(rdMarkerQANcFile, cNetCDF.Census.VAR_OP_MARKERS_MISMATCHSTATE);
-				for (Map.Entry<Integer, MarkerKey> qaMarkerOrigIndexKey : qaMarkersOperationDataSet.getMarkers().entrySet()) {
+				for (Map.Entry<Integer, MarkerKey> qaMarkerOrigIndexKey : qaMarkersOperationDataSet.getMarkersKeysSource().getIndicesMap().entrySet()) {
 					MarkerKey key = qaMarkerOrigIndexKey.getValue();
 					Boolean mismatchState = mismatchStatesIt.next();
 					Integer origIndex = qaMarkerOrigIndexKey.getKey();
@@ -588,7 +585,7 @@ public class OP_MarkerCensus implements MatrixOperation {
 			// EXCLUDE MARKER BY MISSING RATIO
 			Iterator<Double> missingRatioIt = qaMarkersOperationDataSet.getMissingRatio().iterator();
 //			Map<MarkerKey, Double> rdQAMarkerSetMapMissingRat = rdQAMarkerSet.fillOpSetMapWithVariable(rdMarkerQANcFile, cNetCDF.Census.VAR_OP_MARKERS_MISSINGRAT);
-			for (Map.Entry<Integer, MarkerKey> qaMarkerOrigIndexKey : qaMarkersOperationDataSet.getMarkers().entrySet()) {
+			for (Map.Entry<Integer, MarkerKey> qaMarkerOrigIndexKey : qaMarkersOperationDataSet.getMarkersKeysSource().getIndicesMap().entrySet()) {
 				MarkerKey key = qaMarkerOrigIndexKey.getValue();
 				Double missingRatio = missingRatioIt.next();
 				Integer origIndex = qaMarkerOrigIndexKey.getKey();
@@ -613,7 +610,7 @@ public class OP_MarkerCensus implements MatrixOperation {
 			Iterator<Double> missingRatioIt = qaSamplesOperationDataSet.getMissingRatios(-1, -1).iterator();
 //			Map<SampleKey, Double> rdQASampleSetMapMissingRat = rdQASampleSet.fillOpSetMapWithVariable(rdSampleQANcFile, cNetCDF.Census.VAR_OP_SAMPLES_MISSINGRAT);
 			if (missingRatioIt != null) {
-				for (Map.Entry<Integer, SampleKey> qaSampleOrigIndexKey : qaSamplesOperationDataSet.getSamples().entrySet()) {
+				for (Map.Entry<Integer, SampleKey> qaSampleOrigIndexKey : qaSamplesOperationDataSet.getSamplesKeysSource().getIndicesMap().entrySet()) {
 					SampleKey key = qaSampleOrigIndexKey.getValue();
 					Double missingRatio = missingRatioIt.next();
 					Integer origIndex = qaSampleOrigIndexKey.getKey();
@@ -630,7 +627,7 @@ public class OP_MarkerCensus implements MatrixOperation {
 			Iterator<Double> hetzyRatioIt = qaSamplesOperationDataSet.getHetzyRatios(-1, -1).iterator();
 //			Map<SampleKey, Double> rdQASampleSetMapHetzyRat = rdQASampleSet.fillOpSetMapWithVariable(rdSampleQANcFile, cNetCDF.Census.VAR_OP_SAMPLES_HETZYRAT);
 			if (hetzyRatioIt != null) {
-				for (Map.Entry<Integer, SampleKey> qaSampleOrigIndexKey : qaSamplesOperationDataSet.getSamples().entrySet()) {
+				for (Map.Entry<Integer, SampleKey> qaSampleOrigIndexKey : qaSamplesOperationDataSet.getSamplesKeysSource().getIndicesMap().entrySet()) {
 					SampleKey key = qaSampleOrigIndexKey.getValue();
 					Double hetzyRatio = hetzyRatioIt.next();
 					Integer origIndex = qaSampleOrigIndexKey.getKey();
@@ -650,8 +647,8 @@ public class OP_MarkerCensus implements MatrixOperation {
 //		rdSampleQANcFile.close();
 //		rdMarkerQANcFile.close();
 
-		final int totalSampleNb = qaSamplesOperationDataSet.getSamples().size();
-		final int totalMarkerNb = qaMarkersOperationDataSet.getMarkers().size();
+		final int totalSampleNb = qaSamplesOperationDataSet.getNumSamples();
+		final int totalMarkerNb = qaMarkersOperationDataSet.getNumMarkers();
 
 		return ((excludedSampleNb < totalSampleNb)
 				&& (excludedMarkerNb < totalMarkerNb));
@@ -740,7 +737,7 @@ public class OP_MarkerCensus implements MatrixOperation {
 			throws IOException
 	{
 		Map<SampleKey, SampleInfo> samplesInfoMap = new LinkedHashMap<SampleKey, SampleInfo>();
-		List<SampleInfo> sampleInfos = SampleInfoList.getAllSampleInfoFromDBByPoolID(rdMatrixMetadata.getStudyKey());
+		List<SampleInfo> sampleInfos = SampleInfoList.getAllSampleInfoFromDBByPoolID(rdMatrixMetadata.getStudyKey()); // XXX can probably be replaced by dataSetSource.getSampleInfosSource()
 		if (phenoFile == null) {
 			for (SampleInfo sampleInfo : sampleInfos) {
 				SampleKey tempSampleKey = sampleInfo.getKey();

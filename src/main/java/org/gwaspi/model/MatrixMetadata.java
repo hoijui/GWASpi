@@ -65,7 +65,7 @@ import static org.gwaspi.netCDF.matrices.MatrixFactory.generateMatrixNetCDFNameB
 		name = "matrixMetadata_listByStudyId",
 		query = "SELECT mm FROM MatrixMetadata mm WHERE mm.studyId = :studyId"),
 })
-public class MatrixMetadata implements Serializable {
+public class MatrixMetadata implements DataSetMetadata, Serializable {
 
 	private MatrixKey key;
 	private String friendlyName;
@@ -87,7 +87,7 @@ public class MatrixMetadata implements Serializable {
 
 	protected MatrixMetadata() {
 
-		this.key = new MatrixKey(new StudyKey(Integer.MIN_VALUE), Integer.MIN_VALUE);
+		this.key = new MatrixKey(new StudyKey(StudyKey.NULL_ID), MatrixKey.NULL_ID);
 		this.friendlyName = "";
 		this.technology = ImportFormat.UNKNOWN;
 		this.gwaspiDBVersion = "";
@@ -149,9 +149,6 @@ public class MatrixMetadata implements Serializable {
 				: (Date) creationDate.clone();
 	}
 
-	/**
-	 * TODO
-	 */
 	public MatrixMetadata(
 			String friendlyName,
 			String description,
@@ -159,7 +156,7 @@ public class MatrixMetadata implements Serializable {
 			StudyKey studyKey
 			)
 	{
-		this.key = new MatrixKey(studyKey, Integer.MIN_VALUE);
+		this.key = new MatrixKey(studyKey, MatrixKey.NULL_ID);
 		this.friendlyName = friendlyName;
 		this.technology = ImportFormat.UNKNOWN;
 		this.gwaspiDBVersion = "";
@@ -171,8 +168,8 @@ public class MatrixMetadata implements Serializable {
 		this.numSamples = Integer.MIN_VALUE;
 		this.numChromosomes = Integer.MIN_VALUE;
 		this.matrixType = "";
-		this.parent1MatrixId = Integer.MIN_VALUE;
-		this.parent2MatrixId = Integer.MIN_VALUE;
+		this.parent1MatrixId = MatrixKey.NULL_ID;
+		this.parent2MatrixId = MatrixKey.NULL_ID;
 		this.inputLocation = "";
 		this.creationDate = new Date();
 		this.simpleName = generateMatrixNetCDFNameByDate(this.creationDate);
@@ -201,7 +198,7 @@ public class MatrixMetadata implements Serializable {
 			throws IOException
 	{
 		this(
-				new MatrixKey(studyKey, Integer.MIN_VALUE), // key
+				new MatrixKey(studyKey, MatrixKey.NULL_ID), // key
 				friendlyName,
 				generateMatrixNetCDFNameByDate(creationDate), // simpleName
 				technology,
@@ -292,8 +289,8 @@ public class MatrixMetadata implements Serializable {
 				numChromosomes,
 				"", // matrixType
 				new Date(), // creationDate
-				-1, // parent1MatrixId
-				-1, // parent2MatrixId
+				MatrixKey.NULL_ID, // parent1MatrixId
+				MatrixKey.NULL_ID, // parent2MatrixId
 				inputLocation);
 	}
 
@@ -331,8 +328,8 @@ public class MatrixMetadata implements Serializable {
 				numChromosomes,
 				matrixType,
 				creationDate,
-				-1, // parent1MatrixId
-				-1, // parent2MatrixId
+				MatrixKey.NULL_ID, // parent1MatrixId
+				MatrixKey.NULL_ID, // parent2MatrixId
 				""); // inputLocation
 	}
 
@@ -395,6 +392,26 @@ public class MatrixMetadata implements Serializable {
 	@Transient
 	public MatrixKey getKey() {
 		return key;
+	}
+
+	@Transient
+	public DataSetKey getDataSetKey() {
+		return new DataSetKey(getKey());
+	}
+
+	@Transient
+	public boolean isOrigin() {
+		return true;
+	}
+
+	@Transient
+	public MatrixKey getOrigin() {
+		return getKey();
+	}
+
+	@Transient
+	public DataSetKey getParent() {
+		return null;
 	}
 
 	@Id

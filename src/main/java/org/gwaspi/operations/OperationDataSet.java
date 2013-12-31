@@ -21,10 +21,13 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Map;
 import org.gwaspi.model.ChromosomeKey;
+import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.SampleKey;
 
-public interface OperationDataSet<ET> {
+public interface OperationDataSet<ET> extends DataSetSource {
+	
+	boolean isMarkersOperationSet();
 
 	void setNumSamples(int numSamples) throws IOException;
 	void setNumMarkers(int numMarkers) throws IOException;
@@ -55,13 +58,28 @@ public interface OperationDataSet<ET> {
 
 	void finnishWriting() throws IOException;
 
-	int getNumSamples() throws IOException;
-	int getNumMarkers() throws IOException;
-	int getNumChromosomes() throws IOException;
+	/**
+	 * Returns the immediate parent data-source to this one.
+	 * @return the parent data-source to this one,
+	 *   or <code>null</code>, if it is the root source (a matrix)
+	 * @throws IOException
+	 */
+	DataSetSource getParentDataSetSource() throws IOException;
 
-	Map<Integer, SampleKey> getSamples() throws IOException;
-	Map<Integer, MarkerKey> getMarkers() throws IOException;
-	Map<Integer, ChromosomeKey> getChromosomes() throws IOException;
+	/**
+	 * Returns the original data-source to this one.
+	 * @return the original data-source to this one (a matrix)
+	 * @throws IOException
+	 */
+	DataSetSource getRootDataSetSource() throws IOException;
+
+//	int getNumSamples() throws IOException;
+//	int getNumMarkers() throws IOException;
+//	int getNumChromosomes() throws IOException;
+//
+//	Map<Integer, SampleKey> getSamples() throws IOException;
+//	Map<Integer, MarkerKey> getMarkers() throws IOException;
+//	Map<Integer, ChromosomeKey> getChromosomes() throws IOException;
 
 	/**
 	 *

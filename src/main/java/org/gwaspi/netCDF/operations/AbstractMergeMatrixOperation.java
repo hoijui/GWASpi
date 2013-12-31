@@ -59,6 +59,11 @@ public abstract class AbstractMergeMatrixOperation implements MatrixOperation {
 		this.dataSetDestination = dataSetDestination;
 	}
 
+	@Override
+	public boolean isCreatingResultMatrix() {
+		return true;
+	}
+
 	private static Map<MarkerKey, ExtendedMarkerKey> getMatrixMapWithChrAndPosAndMarkerId(MarkersMetadataSource markersMetadataSource) {
 
 		Map<MarkerKey, ExtendedMarkerKey> workMap = new LinkedHashMap<MarkerKey, ExtendedMarkerKey>(markersMetadataSource.size());

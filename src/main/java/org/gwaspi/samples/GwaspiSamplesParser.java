@@ -51,7 +51,7 @@ public class GwaspiSamplesParser implements SamplesParser {
 						studyKey,
 						cVals[cImport.Annotation.GWASpi.sampleId],
 						cVals[cImport.Annotation.GWASpi.familyId],
-						Integer.MIN_VALUE,
+						SampleInfo.ORDER_NULL_ID,
 						cVals[cImport.Annotation.GWASpi.fatherId],
 						cVals[cImport.Annotation.GWASpi.motherId],
 						SampleInfo.Sex.parse(cVals[cImport.Annotation.GWASpi.sex]),

@@ -285,9 +285,9 @@ public class Text {
 		public static final String GTFreqAndHWFriendlyName = "Type in a name for this Genotype frequency count";
 		public static final String htmlPerformHW = "<html><div align='center'>Perfom Hardy-Weinberg equilibrium test<div></html>";
 		//public static final String htmlAllelicAssocTest = "<html><div align='center'>Perform Allelic, Genotypic &<br>Armitage Trend Tests<div></html>";
-		public static final String htmlAllelicAssocTest = "<html><div align='center'>Allelic Association Test<div></html>";
-		public static final String htmlGenotypicTest = "<html><div align='center'>Genotypic Association Test<div></html>";
-		public static final String htmlTrendTest = "<html><div align='center'>Cochran-Armitage Trend Test<div></html>";
+//		public static final String htmlAllelicAssocTest = "<html><div align='center'>Allelic Association Test<div></html>";
+//		public static final String htmlGenotypicTest = "<html><div align='center'>Genotypic Association Test<div></html>";
+//		public static final String htmlTrendTest = "<html><div align='center'>Cochran-Armitage Trend Test<div></html>";
 		public static final String htmlBlank = "<html><div align='center'><div></html>";
 		public static final String warnQABeforeAnything = "You must perform a Samples & Markers Quality Assurance before making a GWAS!";
 		public static final String warnOperationsMissing = "Some neccesary previous Operations are missing!";
@@ -305,9 +305,9 @@ public class Text {
 		public static final String qaData = "QA Data";
 		public static final String confirmDelete1 = "Do you really want to delete the selected Operation(s)?";
 		public static final String confirmDelete2 = "?\nThis action cannot be undone!";
-		public static final String allelicAssocTest = "Allelic Association Test";
-		public static final String genoAssocTest = "Genotypic Association Test";
-		public static final String trendTest = "Cochran-Armitage Trend Test";
+//		public static final String allelicAssocTest = "Allelic Association Test";
+//		public static final String genoAssocTest = "Genotypic Association Test";
+//		public static final String trendTest = "Cochran-Armitage Trend Test";
 		public static final String chosePhenotype = "Affection or Phenotype File";
 		public static final String genotypeFreqAndHW = "Do you want to use current Case/Conrol Affection info from the Samples DB\nor update the Samples DB Affection from an external Sample Info file?";
 		public static final String htmlCurrentAffectionFromDB = "<html><div align='center'> Current Case/Control <br> Affection from DB </div></html>";

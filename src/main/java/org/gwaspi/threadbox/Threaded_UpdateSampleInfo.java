@@ -67,13 +67,13 @@ public class Threaded_UpdateSampleInfo extends CommonRunnable {
 		// DO NOT! Write new reports of SAMPLE QA
 //		OperationsList opList = new OperationsList(matrix.getMatrixId());
 //		List<Operation> opAL = opList.operationsListAL;
-//		int qaOpId = Integer.MIN_VALUE;
+//		int qaOpId = OperationKey.NULL_ID;
 //		for (int i = 0; i < opAL.size(); i++) {
 //			if (opAL.get(i).getOperationType().equals(OPType.SAMPLE_QA)) {
 //				qaOpId = opAL.get(i).getOperationId();
 //			}
 //		}
-//		if (qaOpId != Integer.MIN_VALUE) {
+//		if (qaOpId != OperationKey.NULL_ID) {
 //			org.gwaspi.reports.OutputQASamples.writeReportsForQASamplesData(qaOpId, false);
 //		}
 

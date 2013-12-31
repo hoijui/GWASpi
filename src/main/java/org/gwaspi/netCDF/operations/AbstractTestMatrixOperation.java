@@ -22,51 +22,43 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.Census;
 import org.gwaspi.model.MarkerKey;
-import org.gwaspi.model.MatricesList;
-import org.gwaspi.model.MatrixKey;
-import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
 import org.gwaspi.operations.OperationDataSet;
 import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationDataSet;
 import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationEntry;
 import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationEntry.Category;
-import org.gwaspi.operations.hardyweinberg.NetCdfHardyWeinbergOperationDataSet;
 import org.gwaspi.operations.markercensus.MarkerCensusOperationDataSet;
 import org.gwaspi.operations.trendtest.AbstractNetCdfTestOperationDataSet;
+import org.gwaspi.operations.trendtest.CommonTestOperationDataSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class AbstractTestMatrixOperation implements MatrixOperation {
+public abstract class AbstractTestMatrixOperation<DST extends CommonTestOperationDataSet> extends AbstractOperation<DST> {
 
 	private final Logger log
 			= LoggerFactory.getLogger(AbstractTestMatrixOperation.class);
 
-	private final MatrixKey rdMatrixKey;
 	private final OperationKey markerCensusOPKey;
 	private final OperationKey hwOPKey;
 	private final double hwThreshold;
 	private final String testName;
-	private final OPType testType;
 
 	public AbstractTestMatrixOperation(
-			MatrixKey rdMatrixKey,
 			OperationKey markerCensusOPKey,
 			OperationKey hwOPKey,
 			double hwThreshold,
-			String testName,
-			OPType testType)
+			String testName)
 	{
-		this.rdMatrixKey = rdMatrixKey;
+		super(hwOPKey);
+
 		this.markerCensusOPKey = markerCensusOPKey;
 		this.hwOPKey = hwOPKey;
 		this.hwThreshold = hwThreshold;
 		this.testName = testName;
-		this.testType = testType;
 	}
 
 	@Override
@@ -81,7 +73,8 @@ public abstract class AbstractTestMatrixOperation implements MatrixOperation {
 
 	@Override
 	public int processMatrix() throws IOException {
-		int resultOpId = Integer.MIN_VALUE;
+
+		int resultOpId = OperationKey.NULL_ID;
 
 		Collection<MarkerKey> toBeExcluded = new HashSet<MarkerKey>();
 		boolean dataLeft = excludeMarkersByHW(hwOPKey, hwThreshold, toBeExcluded);
@@ -106,7 +99,7 @@ public abstract class AbstractTestMatrixOperation implements MatrixOperation {
 //			}
 
 			// GATHER INFO FROM ORIGINAL MATRIX
-			MatrixMetadata parentMatrixMetadata = MatricesList.getMatrixMetadataById(markerCensusOPKey.getParentMatrixKey());
+//			MatrixMetadata parentMatrixMetadata = MatricesList.getMatrixMetadataById(markerCensusOPKey.getParentMatrixKey());
 //			MarkerSet rdMarkerSet = new MarkerSet(MatrixKey.valueOf(parentMatrixMetadata));
 //			rdMarkerSet.initFullMarkerIdSetMap();
 
@@ -116,24 +109,24 @@ public abstract class AbstractTestMatrixOperation implements MatrixOperation {
 //			Map<ChromosomeKey, ChromosomeInfo> chromosomeInfo = ChromosomeUtils.aggregateChromosomeInfo(wrMarkerMetadata, 0, 1);
 
 			try {
-				AbstractNetCdfTestOperationDataSet dataSet = (AbstractNetCdfTestOperationDataSet) OperationFactory.generateOperationDataSet(testType); // HACK
-//				((AbstractNetCdfOperationDataSet) dataSet).setReadMatrixKey(rdMatrixKey); // HACK
-				((AbstractNetCdfOperationDataSet) dataSet).setReadOperationKey(markerCensusOPKey); // HACK
+				AbstractNetCdfTestOperationDataSet dataSet = (AbstractNetCdfTestOperationDataSet) generateFreshOperationDataSet(); // HACK
+//				((AbstractNetCdfOperationDataSet) dataSet).setReadOperationKey(markerCensusOPKey); // HACK
 //				((AbstractNetCdfOperationDataSet) dataSet).setNumMarkers(wrMarkerMetadata.size()); // HACK
 //				((AbstractNetCdfOperationDataSet) dataSet).setNumSamples(rdCensusOPMetadata.getImplicitSetSize()); // HACK
 //				((AbstractNetCdfOperationDataSet) dataSet).setNumChromosomes(chromosomeInfo.size()); // HACK
-				((AbstractNetCdfOperationDataSet) dataSet).setNumMarkers(rdMarkerCensusOperationDataSet.getMarkers().size()); // HACK
-				((AbstractNetCdfOperationDataSet) dataSet).setNumSamples(rdMarkerCensusOperationDataSet.getSamples().size()); // HACK
-				((AbstractNetCdfOperationDataSet) dataSet).setNumChromosomes(rdMarkerCensusOperationDataSet.getChromosomes().size()); // HACK
+				((AbstractNetCdfOperationDataSet) dataSet).setNumMarkers(rdMarkerCensusOperationDataSet.getNumMarkers()); // HACK
+				((AbstractNetCdfOperationDataSet) dataSet).setNumSamples(rdMarkerCensusOperationDataSet.getNumSamples()); // HACK
+				((AbstractNetCdfOperationDataSet) dataSet).setNumChromosomes(rdMarkerCensusOperationDataSet.getNumChromosomes()); // HACK
 				dataSet.setMarkerCensusOPKey(markerCensusOPKey); // HACK
-				dataSet.setTestType(testType); // HACK
+				dataSet.setTestType(getType()); // HACK
 				dataSet.setTestName(testName); // HACK
 
 //				dataSet.setMarkers(wrMarkerMetadata.keySet());
-				dataSet.setUseAllMarkersFromParent(true);
-				dataSet.setUseAllSamplesFromParent(true);
 //				dataSet.setChromosomes(chromosomeInfo);
-				dataSet.setUseAllChromosomesFromParent(true);
+
+//				dataSet.setUseAllMarkersFromParent(true);
+//				dataSet.setUseAllSamplesFromParent(true);
+//				dataSet.setUseAllChromosomesFromParent(true);
 
 //				// CREATE netCDF-3 FILE
 //				OperationFactory wrOPHandler = new OperationFactory(
@@ -172,7 +165,7 @@ public abstract class AbstractTestMatrixOperation implements MatrixOperation {
 //				Map<MarkerKey, char[]> sortedCaseMarkerIds = org.gwaspi.global.Utils.createOrderedMap(wrMarkerMetadata.keySet(), rdCaseMarkerIdSetMap);
 //				NetCdfUtils.saveCharMapValueToWrMatrix(wrOPNcFile, sortedCaseMarkerIds.values(), cNetCDF.Variables.VAR_MARKERS_RSID, cNetCDF.Strides.STRIDE_MARKER_NAME);
 
-				Map<Integer, MarkerKey> censusOpMarkers = rdMarkerCensusOperationDataSet.getMarkers();
+				Map<Integer, MarkerKey> censusOpMarkers = rdMarkerCensusOperationDataSet.getMarkersKeysSource().getIndicesMap();
 
 				Collection<Integer> censusMarkerIndicesCase = rdMarkerCensusOperationDataSet.getCensusMarkerIndices(Category.CASE);
 				Map<Integer, MarkerKey> rdCaseMarkerKeys = filter(censusOpMarkers, censusMarkerIndicesCase);
@@ -272,8 +265,7 @@ public abstract class AbstractTestMatrixOperation implements MatrixOperation {
 		int totalMarkerNb = 0;
 
 		if (hwOPKey != null) {
-			HardyWeinbergOperationDataSet hardyWeinbergOperationDataSet
-					= new NetCdfHardyWeinbergOperationDataSet(hwOPKey);
+			HardyWeinbergOperationDataSet hardyWeinbergOperationDataSet = (HardyWeinbergOperationDataSet) OperationFactory.generateOperationDataSet(hwOPKey);
 //			NetcdfFile rdHWNcFile = NetcdfFile.open(hwOP.getPathToMatrix());
 //			MarkerOperationSet rdHWOperationSet = new MarkerOperationSet(OperationKey.valueOf(hwOP));
 //			Map<MarkerKey, Double> rdHWMarkerSetMap = rdHWOperationSet.getOpSetMap();

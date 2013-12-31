@@ -33,6 +33,7 @@ import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
+import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleInfo.Sex;
 import org.gwaspi.model.SampleInfoList;
@@ -40,19 +41,28 @@ import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.SamplesKeysSource;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
+import org.gwaspi.operations.AbstractOperationDataSet;
+import org.gwaspi.operations.qamarkers.DefaultQAMarkersOperationEntry;
 import org.gwaspi.operations.qamarkers.OrderedAlleles;
 import org.gwaspi.operations.qamarkers.QAMarkersOperationDataSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class OP_QAMarkers implements MatrixOperation {
+public class OP_QAMarkers extends AbstractOperation<QAMarkersOperationDataSet> {
 
 	private final Logger log = LoggerFactory.getLogger(OP_QAMarkers.class);
 
-	private final MatrixKey rdMatrixKey;
+	public OP_QAMarkers(MatrixKey parent) {
+		super(parent);
+	}
 
-	public OP_QAMarkers(MatrixKey rdMatrixKey) {
-		this.rdMatrixKey = rdMatrixKey;
+	public OP_QAMarkers(OperationKey parent) {
+		super(parent);
+	}
+
+	@Override
+	public OPType getType() {
+		return OPType.MARKER_QA;
 	}
 
 	@Override
@@ -67,36 +77,33 @@ public class OP_QAMarkers implements MatrixOperation {
 
 	@Override
 	public int processMatrix() throws IOException {
+
 		int resultOpId = Integer.MIN_VALUE;
 
-		Map<MarkerKey, Boolean> wrMarkerMismatches = new LinkedHashMap<MarkerKey, Boolean>();
-		Map<MarkerKey, Census> wrMarkerSetCensusMap = new LinkedHashMap<MarkerKey, Census>();
-		Map<MarkerKey, Double> wrMarkerSetMissingRatioMap = new LinkedHashMap<MarkerKey, Double>();
-		Map<MarkerKey, OrderedAlleles> wrMarkerSetKnownAllelesMap = new LinkedHashMap<MarkerKey, OrderedAlleles>();
-
-		MatrixMetadata rdMatrixMetadata = MatricesList.getMatrixMetadataById(rdMatrixKey);
+		MatrixMetadata rdMatrixMetadata = getParentMatrixMetadata();
 
 //		MarkerSet rdMarkerSet = new MarkerSet(rdMatrixKey);
 //		rdMarkerSet.initFullMarkerIdSetMap();
 		//Map<String, Object> rdMarkerSetMap = rdMarkerSet.markerIdSetMap; // This to test heap usage of copying locally the Map from markerset
 
 //		SampleSet rdSampleSet = new SampleSet(rdMatrixKey);
-		DataSetSource rdDataSetSource = MatrixFactory.generateMatrixDataSetSource(rdMatrixKey);
+		DataSetSource rdDataSetSource = getParentDataSetSource();
 //		Map<SampleKey, byte[]> rdSampleSetMap = rdSampleSet.getSampleIdSetMapByteArray();
 
 		try {
-			QAMarkersOperationDataSet dataSet = (QAMarkersOperationDataSet) OperationFactory.generateOperationDataSet(OPType.MARKER_QA); // HACK
-			((AbstractNetCdfOperationDataSet) dataSet).setReadMatrixKey(rdMatrixKey); // HACK
+			QAMarkersOperationDataSet dataSet = generateFreshOperationDataSet();
 			((AbstractNetCdfOperationDataSet) dataSet).setNumMarkers(rdDataSetSource.getNumMarkers()); // HACK
+			((AbstractNetCdfOperationDataSet) dataSet).setNumChromosomes(rdDataSetSource.getNumChromosomes()); // HACK
 			((AbstractNetCdfOperationDataSet) dataSet).setNumSamples(rdDataSetSource.getNumSamples()); // HACK
 
 //			dataSet.setMarkers(rdMarkerSet.getMarkerKeys());
 //			dataSet.setSamples(rdSampleSetMap.keySet());
 //			Map<ChromosomeKey, ChromosomeInfo> chromosomeInfo = rdMarkerSet.getChrInfoSetMap();
 //			dataSet.setChromosomes(chromosomeInfo.keySet(), chromosomeInfo.values());
-			((AbstractNetCdfOperationDataSet) dataSet).setUseAllSamplesFromParent(true);
-			((AbstractNetCdfOperationDataSet) dataSet).setUseAllMarkersFromParent(true);
-			((AbstractNetCdfOperationDataSet) dataSet).setUseAllChromosomesFromParent(true);
+
+//			((AbstractNetCdfOperationDataSet) dataSet).setUseAllSamplesFromParent(true);
+//			((AbstractNetCdfOperationDataSet) dataSet).setUseAllMarkersFromParent(true);
+//			((AbstractNetCdfOperationDataSet) dataSet).setUseAllChromosomesFromParent(true);
 
 			//<editor-fold defaultstate="expanded" desc="PROCESSOR">
 			// INIT MARKER AND SAMPLE INFO
@@ -115,11 +122,12 @@ public class OP_QAMarkers implements MatrixOperation {
 			sampleInfos.clear();
 
 			// Iterate through markerset, take it marker by marker
-			int markerNb = 0;
 			Iterator<GenotypesList> markersGenotypesSourceIt = rdDataSetSource.getMarkersGenotypesSource().iterator();
-			for (MarkerKey markerKey : rdDataSetSource.getMarkersKeysSource()) {
+			for (Map.Entry<Integer, MarkerKey> markerOrigIndexKey : rdDataSetSource.getMarkersKeysSource().getIndicesMap().entrySet()) {
+				final int markerOrigIndex = markerOrigIndexKey.getKey();
+				final MarkerKey markerKey = markerOrigIndexKey.getValue();
 				GenotypesList markerGenotypes = markersGenotypesSourceIt.next();
-				Map<Byte, Float> knownAlleles = new LinkedHashMap<Byte, Float>();
+				Map<Byte, Float> tmpKnownAlleles = new LinkedHashMap<Byte, Float>();
 				Map<Short, Float> allSamplesGTsTable = new LinkedHashMap<Short, Float>();
 				Map<String, Integer> allSamplesContingencyTable = new LinkedHashMap<String, Integer>();
 				Integer missingCount = 0;
@@ -149,17 +157,17 @@ public class OP_QAMarkers implements MatrixOperation {
 
 					if (tempGT[0] != AlleleBytes._0) {
 						float tempCount = 0;
-						if (knownAlleles.containsKey(tempGT[0])) {
-							tempCount = knownAlleles.get(tempGT[0]);
+						if (tmpKnownAlleles.containsKey(tempGT[0])) {
+							tempCount = tmpKnownAlleles.get(tempGT[0]);
 						}
-						knownAlleles.put(tempGT[0], tempCount + counter);
+						tmpKnownAlleles.put(tempGT[0], tempCount + counter);
 					}
 					if (tempGT[1] != AlleleBytes._0) {
 						float tempCount = 0;
-						if (knownAlleles.containsKey(tempGT[1])) {
-							tempCount = knownAlleles.get(tempGT[1]);
+						if (tmpKnownAlleles.containsKey(tempGT[1])) {
+							tempCount = tmpKnownAlleles.get(tempGT[1]);
 						}
-						knownAlleles.put(tempGT[1], tempCount + counter);
+						tmpKnownAlleles.put(tempGT[1], tempCount + counter);
 					}
 					if ((tempGT[0] == AlleleBytes._0)
 							&& (tempGT[1] == AlleleBytes._0)
@@ -179,20 +187,23 @@ public class OP_QAMarkers implements MatrixOperation {
 				}
 
 				// ALLELE CENSUS + MISMATCH STATE + MISSINGNESS
+				final Boolean mismatches;
+				final Census census;
+				final Double missingRatio;
+				final OrderedAlleles knownAlleles;
 
 				OrderedAlleles orderedAlleles = null;
-				if (knownAlleles.size() <= 2) { // Check if there are mismatches in alleles
-
+				if (tmpKnownAlleles.size() <= 2) { // Check if there are mismatches in alleles
 					//<editor-fold defaultstate="expanded" desc="KNOW YOUR ALLELES">
 					List<Integer> intAA = new ArrayList<Integer>();
 					List<Integer> intAa = new ArrayList<Integer>();
 					List<Integer> intaa = new ArrayList<Integer>();
 
-					Iterator<Byte> itKnAll = knownAlleles.keySet().iterator();
-					if (knownAlleles.isEmpty()) {
+					Iterator<Byte> itKnAll = tmpKnownAlleles.keySet().iterator();
+					if (tmpKnownAlleles.isEmpty()) {
 						// Completely missing (00)
 						orderedAlleles = new OrderedAlleles();
-					} else if (knownAlleles.size() == 1) {
+					} else if (tmpKnownAlleles.size() == 1) {
 						// Homozygote (AA or aa)
 						final byte byteAllele1 = itKnAll.next();
 						final byte byteAllele2 = '0';
@@ -205,13 +216,13 @@ public class OP_QAMarkers implements MatrixOperation {
 								1.0,
 								byteAllele2
 								);
-					} else if (knownAlleles.size() == 2) {
+					} else if (tmpKnownAlleles.size() == 2) {
 						// Heterezygote (contains mix of AA, Aa or aa)
 						final byte byteAllele1 = itKnAll.next();
-						final int countAllele1 = Math.round(knownAlleles.get(byteAllele1));
+						final int countAllele1 = Math.round(tmpKnownAlleles.get(byteAllele1));
 						final int intAllele1 = byteAllele1;
 						final byte byteAllele2 = itKnAll.next();
-						final int countAllele2 = Math.round(knownAlleles.get(byteAllele2));
+						final int countAllele2 = Math.round(tmpKnownAlleles.get(byteAllele2));
 						final int intAllele2 = byteAllele2;
 						final int totAlleles = countAllele1 + countAllele2;
 
@@ -247,7 +258,7 @@ public class OP_QAMarkers implements MatrixOperation {
 						}
 					} else {
 						throw new IOException("More then 2 known alleles ("
-								+ knownAlleles.size() + ")");
+								+ tmpKnownAlleles.size() + ")");
 					}
 					//</editor-fold>
 
@@ -305,14 +316,13 @@ public class OP_QAMarkers implements MatrixOperation {
 						obsAllaa = allSamplesContingencyTable.get("aa");
 					}
 
-					Census census = new Census(
+					census = new Census(
 							obsAllAA, // all
 							obsAllAa, // all
 							obsAllaa, // all
 							missingCount); // all
 
-					wrMarkerSetCensusMap.put(markerKey, census);
-					wrMarkerMismatches.put(markerKey, cNetCDF.Defaults.MISMATCH_NO);
+					mismatches = cNetCDF.Defaults.MISMATCH_NO;
 
 					// NOTE This was checking for <code>== null</code>
 					//   (which was never the case)
@@ -329,29 +339,33 @@ public class OP_QAMarkers implements MatrixOperation {
 						orderedAlleles.setAllele2(orderedAlleles.getAllele1());
 					}
 
-					wrMarkerSetKnownAllelesMap.put(markerKey, orderedAlleles);
+					knownAlleles = orderedAlleles;
 				} else {
-					wrMarkerSetCensusMap.put(markerKey, new Census());
-					wrMarkerMismatches.put(markerKey, cNetCDF.Defaults.MISMATCH_YES);
+					census = new Census();
+					mismatches = cNetCDF.Defaults.MISMATCH_YES;
 
 					orderedAlleles = new OrderedAlleles();
-					wrMarkerSetKnownAllelesMap.put(markerKey, orderedAlleles);
+					knownAlleles = orderedAlleles;
 				}
 
-				double missingRatio = (double) missingCount / rdDataSetSource.getNumSamples();
-				wrMarkerSetMissingRatioMap.put(markerKey, missingRatio);
+				missingRatio = (double) missingCount / rdDataSetSource.getNumSamples();
 
-				markerNb++;
-				if ((markerNb == 1) || (markerNb % 10000 == 0)) {
-					log.info("Processed markers: {} / {}", markerNb, rdDataSetSource.getNumMarkers());
-				}
+				((AbstractOperationDataSet) dataSet).addEntry(new DefaultQAMarkersOperationEntry(
+						markerKey,
+						markerOrigIndex,
+						missingRatio,
+						mismatches,
+						knownAlleles.getAllele1(),
+						knownAlleles.getAllele1Freq(),
+						knownAlleles.getAllele2(),
+						knownAlleles.getAllele2Freq(),
+						census.getAA(),
+						census.getAa(),
+						census.getaa(),
+						census.getMissingCount()
+				));
 			}
 			//</editor-fold>
-
-			dataSet.setMarkerMissingRatios(wrMarkerSetMissingRatioMap.values());
-			dataSet.setMarkerMismatchStates(wrMarkerMismatches.values());
-			dataSet.setMarkerKnownAlleles(wrMarkerSetKnownAllelesMap.values());
-			dataSet.setMarkerCensusAll(wrMarkerSetCensusMap.values());
 
 			dataSet.finnishWriting();
 			resultOpId = ((AbstractNetCdfOperationDataSet) dataSet).getOperationKey().getId(); // HACK

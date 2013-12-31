@@ -36,7 +36,7 @@ public class DataSet {
 	private final Map<MarkerKey, MarkerMetadata> markerMetadatas;
 //	private List<List<byte[]>> samplesGTs;
 	private List<List<byte[]>> markersGTs;
-	private Map<ChromosomeKey, ChromosomeInfo> chromosomeInfo;
+	private final Map<ChromosomeKey, ChromosomeInfo> chromosomeInfo;
 
 	public DataSet() {
 

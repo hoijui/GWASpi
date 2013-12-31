@@ -31,19 +31,23 @@ import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.model.Census;
 import org.gwaspi.model.CensusFull;
+import org.gwaspi.model.DataSetKey;
+import org.gwaspi.model.DataSetMetadata;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MatricesList;
-import org.gwaspi.model.MatrixMetadata;
+import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.netCDF.operations.NetCdfUtils;
 import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
 import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationEntry.Category;
 import ucar.ma2.ArrayByte;
+import ucar.ma2.ArrayDouble;
 import ucar.ma2.ArrayInt;
 import ucar.ma2.DataType;
 import ucar.ma2.Index;
 import ucar.ma2.InvalidRangeException;
+import ucar.ma2.Range;
 import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFileWriteable;
 
@@ -68,15 +72,19 @@ public class NetCdfMarkerCensusOperationDataSet extends AbstractNetCdfOperationD
 	private ArrayInt.D2 netCdfCensusAlls;
 	private ArrayInt.D2 netCdfCensusesRest;
 
-	public NetCdfMarkerCensusOperationDataSet(OperationKey operationKey) {
-		super(true, operationKey, calculateEntriesWriteBufferSize());
+	public NetCdfMarkerCensusOperationDataSet(MatrixKey origin, DataSetKey parent, OperationKey operationKey) {
+		super(true, origin, parent, operationKey);
 	}
 
-	public NetCdfMarkerCensusOperationDataSet() {
-		this(null);
+	public NetCdfMarkerCensusOperationDataSet(MatrixKey origin, DataSetKey parent) {
+		this(origin, parent, null);
 	}
 
-	private static int calculateEntriesWriteBufferSize() {
+	/**
+	 * Was used in the ctor before!
+	 * @see #getDefaultEntriesWriteBufferSize(boolean)
+	 */
+	private static int getDefaultEntriesWriteBufferSize() {
 
 		int chunkSize = Math.round((float)org.gwaspi.gui.StartGWASpi.maxProcessMarkers / 4);
 		if (chunkSize > 500000) {
@@ -151,32 +159,35 @@ public class NetCdfMarkerCensusOperationDataSet extends AbstractNetCdfOperationD
 		allelesSpace.add(gtStrideDim);
 
 		// Define OP Variables
+		ncFile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_CENSUSALL_IDX, DataType.INT, markersSpace);
+		ncFile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_CENSUSCASE_IDX, DataType.INT, markersSpace);
+		ncFile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_CENSUSCTRL_IDX, DataType.INT, markersSpace);
+		ncFile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_CENSUSHW_IDX, DataType.INT, markersSpace);
 		ncFile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_CENSUSALL, DataType.INT, markers4Space);
 		ncFile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_CENSUSCASE, DataType.INT, markers3Space);
 		ncFile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_CENSUSCTRL, DataType.INT, markers3Space);
 		ncFile.addVariable(cNetCDF.Census.VAR_OP_MARKERS_CENSUSHW, DataType.INT, markers3Space);
 
 		// Define Genotype Variables
-		ncFile.addVariable(cNetCDF.Variables.VAR_ALLELES, DataType.CHAR, allelesSpace);
+		ncFile.addVariable(cNetCDF.Variables.VAR_ALLELES, DataType.BYTE, allelesSpace);
 		ncFile.addVariable(cNetCDF.Variables.VAR_GT_STRAND, DataType.CHAR, markersPropertySpace4);
 	}
 
 	@Override
 	protected OperationMetadata createOperationMetadata() throws IOException {
 
-		MatrixMetadata rdMatrixMetadata = MatricesList.getMatrixMetadataById(getReadMatrixKey());
+		DataSetMetadata rdDataSetMetadata = MatricesList.getDataSetMetadata(getParent());
 
 		OPType opType = OPType.MARKER_CENSUS_BY_AFFECTION;
 
-		String description = "Genotype frequency count -" + censusName + "- on " + rdMatrixMetadata.getFriendlyName();
+		String description = "Genotype frequency count -" + censusName + "- on " + rdDataSetMetadata.getFriendlyName();
 		if (phenoFile != null) {
 			description += "\nCase/Control status read from file: " + phenoFile.getPath();
 			opType = OPType.MARKER_CENSUS_BY_PHENOTYPE;
 		}
 
 		return new OperationMetadata(
-				getReadMatrixKey(), // parent matrix
-				OperationKey.NULL_ID, // parent operation ID
+				getParent(), // parent data set
 				"Genotypes freq. - " + censusName, // friendly name
 				description
 					+ "\nSample missing ratio threshold: " + sampleMissingRatio
@@ -188,7 +199,8 @@ public class NetCdfMarkerCensusOperationDataSet extends AbstractNetCdfOperationD
 				opType,
 				getNumMarkers(),
 				getNumSamples(),
-				getNumChromosomes());
+				getNumChromosomes(),
+				isMarkersOperationSet());
 	}
 
 //	@Override
@@ -252,7 +264,7 @@ public class NetCdfMarkerCensusOperationDataSet extends AbstractNetCdfOperationD
 	@Override
 	public Collection<MarkerCensusOperationEntry> getEntries(int from, int to) throws IOException {
 
-		Map<Integer, MarkerKey> markersKeys = getMarkers();
+		Map<Integer, MarkerKey> markersKeys = getMarkersKeysSource().getIndicesMap(from, to);
 		Collection<byte[]> knownAlleles = getKnownAlleles(from, to);
 //		Collection<Census> censusesAll = getCensus(Category.ALL, from, to);
 //		Collection<Census> censusesCase = getCensus(Category.CASE, from, to);
@@ -262,6 +274,8 @@ public class NetCdfMarkerCensusOperationDataSet extends AbstractNetCdfOperationD
 		Collection<MarkerCensusOperationEntry> entries
 				= new ArrayList<MarkerCensusOperationEntry>(knownAlleles.size());
 		Iterator<byte[]> knownAllelesIt = knownAlleles.iterator();
+		Iterator<Census> censusesControlIt = censusesControl.values().iterator();
+		Iterator<Census> censusesAlternateIt = censusesAlternate.values().iterator();
 		for (Map.Entry<Integer, MarkerKey> origIndicesAndKey : markersKeys.entrySet()) {
 			Integer origIndex = origIndicesAndKey.getKey();
 			entries.add(new DefaultMarkerCensusOperationEntry(
@@ -271,8 +285,8 @@ public class NetCdfMarkerCensusOperationDataSet extends AbstractNetCdfOperationD
 					new CensusFull(
 							null, // XXX
 							null, // XXX
-							censusesControl.get(origIndex),
-							censusesAlternate.get(origIndex))));
+							censusesControlIt.next(),
+							censusesAlternateIt.next())));
 		}
 
 		return entries;
@@ -288,6 +302,19 @@ public class NetCdfMarkerCensusOperationDataSet extends AbstractNetCdfOperationD
 			netCdfKnownAlleles = new ArrayByte.D2(writeBuffer.size(), cNetCDF.Strides.STRIDE_GT);
 			netCdfCensusAlls = new ArrayInt.D2(writeBuffer.size(), 4);
 			netCdfCensusesRest = new ArrayInt.D2(writeBuffer.size(), 3);
+		} else if (writeBuffer.size() < netCdfKnownAlleles.getShape()[0]) {
+			// we end up here at the end of the processing, if, for example,
+			// we have a buffer size of 10, but only 7 items are left to be written
+			List<Range> reducedRange2D = new ArrayList<Range>(2);
+			reducedRange2D.add(new Range(writeBuffer.size()));
+			reducedRange2D.add(null); // use full range
+			try {
+				netCdfKnownAlleles = (ArrayByte.D2) netCdfKnownAlleles.sectionNoReduce(reducedRange2D);
+				netCdfCensusAlls = (ArrayInt.D2) netCdfCensusAlls.sectionNoReduce(reducedRange2D);
+				netCdfCensusesRest = (ArrayInt.D2) netCdfCensusesRest.sectionNoReduce(reducedRange2D);
+			} catch (InvalidRangeException ex) {
+				throw new IOException(ex);
+			}
 		}
 		int index = 0;
 		try {

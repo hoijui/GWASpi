@@ -78,7 +78,8 @@ public class CombiTestScriptCommand extends AbstractScriptCommand {
 		if (studyExists) {
 			MatrixKey matrixKey = fetchMatrixKey(args, studyKey, "matrix-id", "matrix-name");
 
-			OperationKey censusOperationKey = fetchOperationKey(args, matrixKey, "census-operation-id", "census-operation-name");
+//			OperationKey censusOperationKey = fetchOperationKey(args, matrixKey, "census-operation-id", "census-operation-name");
+			OperationKey censusOperationKey = fetchOperationKey(args, matrixKey, "gtfreq-id", "gtfreq-name");
 
 			OperationKey hwOperationKey = fetchOperationKey(args, matrixKey, "hw-operation-id", "hw-operation-name");
 			double hwThreshold = Double.parseDouble(args.get("hw-threshold"));
@@ -98,7 +99,7 @@ public class CombiTestScriptCommand extends AbstractScriptCommand {
 
 			CombiTestParams params = new CombiTestParams(
 					matrixKey,
-//					censusOperationKey,
+					censusOperationKey,
 					hwOperationKey,
 					hwThreshold,
 					genotypeEncoder,

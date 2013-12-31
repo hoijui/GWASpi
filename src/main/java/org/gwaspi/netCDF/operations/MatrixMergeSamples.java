@@ -31,6 +31,7 @@ import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.MarkersKeysSource;
+import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.netCDF.loader.DataSetDestination;
 import org.slf4j.Logger;
@@ -74,7 +75,8 @@ public class MatrixMergeSamples extends AbstractMergeMatrixOperation {
 	 */
 	@Override
 	public int processMatrix() throws IOException {
-		int resultMatrixId = Integer.MIN_VALUE;
+
+		int resultMatrixId = MatrixKey.NULL_ID;
 
 		// Get combo SampleSet with position[] (wrPos, rdMatrixNb, rdPos)
 		Map<SampleKey, int[]> wrComboSampleSetMap

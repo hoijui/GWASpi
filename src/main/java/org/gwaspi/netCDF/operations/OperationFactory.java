@@ -24,11 +24,14 @@ import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.model.ChromosomeInfo;
 import org.gwaspi.model.ChromosomeKey;
 import org.gwaspi.model.ChromosomesInfosSource;
+import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.DataSetSource;
+import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
+import org.gwaspi.operations.AbstractOperationDataSet;
 import org.gwaspi.operations.OperationDataSet;
 import org.gwaspi.operations.allelicassociationtest.NetCdfAllelicAssociationTestsOperationDataSet;
 import org.gwaspi.operations.genotypicassociationtest.NetCdfGenotypicAssociationTestsOperationDataSet;
@@ -70,7 +73,7 @@ public class OperationFactory {
 //
 //
 //		resultOperationKey = OperationsList.insertOPMetadata(new OperationMetadata(
-//				Integer.MIN_VALUE,
+//				OperationKey.NULL_ID,
 //				parentMatrixKey,
 //				parentOperationId,
 //				friendlyName,
@@ -113,11 +116,13 @@ public class OperationFactory {
 	/**
 	 * Creates a new OperationDataSet for the specified type.
 	 * @param operationType
+	 * @param origin
+	 * @param parent
 	 * @return
 	 * @throws IOException
 	 */
-	public static OperationDataSet generateOperationDataSet(OPType operationType) throws IOException {
-		return generateOperationDataSet(operationType, null);
+	public static OperationDataSet generateOperationDataSet(OPType operationType, MatrixKey origin, DataSetKey parent) throws IOException {
+		return generateOperationDataSet(operationType, null, origin, parent);
 	}
 
 	public static OperationDataSet generateOperationDataSet(OperationKey operationKey) throws IOException {
@@ -125,34 +130,34 @@ public class OperationFactory {
 		OperationMetadata operationMetadata = OperationsList.getOperation(operationKey);
 		OPType operationType = operationMetadata.getOperationType();
 
-		return generateOperationDataSet(operationType, operationKey);
+		return generateOperationDataSet(operationType, operationKey, operationKey.getParentMatrixKey(), operationMetadata.getParent());
 	}
 
-	private static OperationDataSet generateOperationDataSet(OPType operationType, OperationKey operationKey) throws IOException {
+	private static OperationDataSet generateOperationDataSet(OPType operationType, OperationKey operationKey, MatrixKey origin, DataSetKey parent) throws IOException {
 
-		OperationDataSet operationDataSet;
+		AbstractOperationDataSet operationDataSet;
 
 		boolean useNetCdf = true;
 		if (useNetCdf) {
 			switch (operationType) {
 				case SAMPLE_QA:
-					operationDataSet = new NetCdfQASamplesOperationDataSet(operationKey);
+					operationDataSet = new NetCdfQASamplesOperationDataSet(origin, parent, operationKey);
 					break;
 				case MARKER_QA:
-					operationDataSet = new NetCdfQAMarkersOperationDataSet(operationKey);
+					operationDataSet = new NetCdfQAMarkersOperationDataSet(origin, parent, operationKey);
 					break;
 				case MARKER_CENSUS_BY_AFFECTION:
 				case MARKER_CENSUS_BY_PHENOTYPE:
-					operationDataSet = new NetCdfMarkerCensusOperationDataSet(operationKey);
+					operationDataSet = new NetCdfMarkerCensusOperationDataSet(origin, parent, operationKey);
 					break;
 				case HARDY_WEINBERG:
-					operationDataSet = new NetCdfHardyWeinbergOperationDataSet(operationKey);
+					operationDataSet = new NetCdfHardyWeinbergOperationDataSet(origin, parent, operationKey);
 					break;
 				case ALLELICTEST:
-					operationDataSet = new NetCdfAllelicAssociationTestsOperationDataSet(operationKey);
+					operationDataSet = new NetCdfAllelicAssociationTestsOperationDataSet(origin, parent, operationKey);
 					break;
 				case GENOTYPICTEST:
-					operationDataSet = new NetCdfGenotypicAssociationTestsOperationDataSet(operationKey);
+					operationDataSet = new NetCdfGenotypicAssociationTestsOperationDataSet(origin, parent, operationKey);
 					break;
 				case COMBI_ASSOC_TEST:
 					// FIXME
@@ -160,7 +165,7 @@ public class OperationFactory {
 //					operationDataSet = new NetCdfComb(operationKey);
 //					break;
 				case TRENDTEST:
-					operationDataSet = new NetCdfTrendTestOperationDataSet(operationKey);
+					operationDataSet = new NetCdfTrendTestOperationDataSet(origin, parent, operationKey);
 					break;
 				default:
 				case SAMPLE_HTZYPLOT:
@@ -180,7 +185,7 @@ public class OperationFactory {
 		Map<ChromosomeKey, ChromosomeInfo> chromosomes;
 
 		OperationDataSet opDS = OperationFactory.generateOperationDataSet(operationKey);
-		Map<Integer, ChromosomeKey> chromosomeKeys = opDS.getChromosomes();
+		Map<Integer, ChromosomeKey> chromosomeKeys = opDS.getChromosomesKeysSource().getIndicesMap();
 
 		DataSetSource matrixDS = MatrixFactory.generateMatrixDataSetSource(operationKey.getParentMatrixKey());
 		ChromosomesInfosSource matrixChromosomesInfos = matrixDS.getChromosomesInfosSource();

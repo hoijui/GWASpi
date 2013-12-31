@@ -117,7 +117,7 @@ public class SwingDeleterItemList {
 						currentSdi.setStartTime(org.gwaspi.global.Utils.getShortDateTimeAsString());
 						currentSdi.setQueueState(QueueState.PROCESSING);
 
-						ReportsList.deleteReportByMatrixId(currentSdi.getMatrixKey());
+						ReportsList.deleteReportByMatrixKey(currentSdi.getMatrixKey());
 						MultiOperations.printCompleted("deleting Reports from Matrix ID: " + currentSdi.getMatrixKey());
 
 						flagCurrentItemDeleted();

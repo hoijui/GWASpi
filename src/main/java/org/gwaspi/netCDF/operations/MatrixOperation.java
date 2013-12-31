@@ -39,6 +39,13 @@ public interface MatrixOperation {
 	String getProblemDescription();
 
 	/**
+	 * Returns whether this creates a matrix or an operation as result.
+	 * @return <code>true</code> if this creates a matrix,
+	 *   <code>true</code> if this creates an operation
+	 */
+	boolean isCreatingResultMatrix();
+
+	/**
 	 * Execute this operation.
 	 * @return the resulting matrixes ID if the operation succeeded,
 	 *   with the given parameters if the operation is invalid;

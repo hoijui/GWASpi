@@ -23,6 +23,8 @@ import java.io.Serializable;
  */
 public class IdNameKey implements Comparable<IdNameKey>, Serializable {
 
+	public static final int NULL_ID = -1; // alternatively: Integer.MIN_VALUE
+
 	private final int id;
 	private final String name;
 
@@ -32,7 +34,7 @@ public class IdNameKey implements Comparable<IdNameKey>, Serializable {
 	}
 
 	public IdNameKey(String name) {
-		this.id = Integer.MIN_VALUE;
+		this.id = NULL_ID;
 		this.name = name;
 	}
 
@@ -45,7 +47,7 @@ public class IdNameKey implements Comparable<IdNameKey>, Serializable {
 	}
 
 	public boolean isSpecifiedById() {
-		return id != Integer.MIN_VALUE;
+		return (id != NULL_ID);
 	}
 
 	public boolean isSpecifiedByName() {

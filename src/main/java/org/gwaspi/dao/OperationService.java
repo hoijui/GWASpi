@@ -23,22 +23,50 @@ import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
+import org.gwaspi.model.StudyKey;
 
 public interface OperationService {
 
-	OperationMetadata getOperation(int operationId) throws IOException;
-
 	OperationMetadata getOperation(OperationKey operationKey) throws IOException;
 
-	List<OperationKey> getOperationKeysByName(String operationFriendlyName) throws IOException;
+	List<OperationKey> getOperationKeysByName(StudyKey studyKey, String operationFriendlyName) throws IOException;
 
-	List<OperationMetadata> getOperations(int parentMatrixId, int parentOpId) throws IOException;
+	/**
+	 * Returns operations that have the given origin.
+	 * @param origin
+	 * @return
+	 * @throws IOException
+	 */
+	List<OperationMetadata> getOperations(MatrixKey origin) throws IOException;
 
-	List<OperationMetadata> getOperations(int parentMatrixId, int parentOpId, OPType opType) throws IOException;
+	/**
+	 * Returns operations that have the given origin and are of the given type.
+	 * @param origin
+	 * @param opType
+	 * @return
+	 * @throws IOException
+	 */
+	List<OperationMetadata> getOperations(MatrixKey origin, OPType opType) throws IOException;
 
-	List<OperationMetadata> getOperations(MatrixKey parentMatrixKey) throws IOException;
+	/**
+	 * Returns operations that have the given parent.
+	 * @param parent
+	 * @return
+	 * @throws IOException
+	 */
+	List<OperationMetadata> getOperations(OperationKey parent) throws IOException;
 
-	List<OperationMetadata> getOperationAndSubOperations(OperationKey operationKey) throws IOException;
+	/**
+	 * Returns operations that have the given parent and are of the given type.
+	 * @param origin
+	 * @param parent
+	 * @param opType
+	 * @return
+	 * @throws IOException
+	 */
+	List<OperationMetadata> getOperations(OperationKey parent, OPType opType) throws IOException;
+
+	List<OperationMetadata> getOperationAndSubOperations(OperationKey rootOperationKey) throws IOException;
 
 	OperationKey insertOperation(OperationMetadata operationMetadata) throws IOException;
 

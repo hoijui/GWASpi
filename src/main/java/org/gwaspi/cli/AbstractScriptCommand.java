@@ -128,7 +128,7 @@ abstract class AbstractScriptCommand implements ScriptCommand {
 			int operationId = Integer.parseInt(idValue);
 			return new OperationKey(parentMatrixKey, operationId);
 		} else {
-			List<OperationKey> operationKeysByName = OperationsList.getOperationKeysByName(nameValue);
+			List<OperationKey> operationKeysByName = OperationsList.getOperationKeysByName(parentMatrixKey.getStudyKey(), nameValue);
 			return operationKeysByName.isEmpty() ? null : operationKeysByName.get(0);
 		}
 	}
@@ -138,7 +138,7 @@ abstract class AbstractScriptCommand implements ScriptCommand {
 	 * @param studyIdStr the study ID parameter as given on the command-line
 	 * @param allowNew if true, then we create a new study,
 	 *   if <code>studyIdStr.contains("New Study")</code>
-	 * @return the study ID or Integer.MIN_VALUE, in case of a problem.
+	 * @return the study ID or {@link StudyKey#NULL_ID}, in case of a problem.
 	 */
 	protected static StudyKey prepareStudy(String studyIdStr, boolean allowNew) throws IOException {
 

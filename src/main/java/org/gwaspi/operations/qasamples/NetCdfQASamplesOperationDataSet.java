@@ -26,8 +26,10 @@ import java.util.Map;
 import java.util.Queue;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
+import org.gwaspi.model.DataSetKey;
+import org.gwaspi.model.DataSetMetadata;
 import org.gwaspi.model.MatricesList;
-import org.gwaspi.model.MatrixMetadata;
+import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.SampleKey;
@@ -37,6 +39,7 @@ import ucar.ma2.ArrayDouble;
 import ucar.ma2.ArrayInt;
 import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
+import ucar.ma2.Range;
 import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFileWriteable;
 
@@ -52,12 +55,12 @@ public class NetCdfQASamplesOperationDataSet extends AbstractNetCdfOperationData
 	private ArrayInt.D1 netCdfMissingCounts;
 	private ArrayDouble.D1 netCdfHetzyRatios;
 
-	public NetCdfQASamplesOperationDataSet(OperationKey operationKey) {
-		super(false, operationKey);
+	public NetCdfQASamplesOperationDataSet(MatrixKey origin, DataSetKey parent, OperationKey operationKey) {
+		super(false, origin, parent, operationKey);
 	}
 
-	public NetCdfQASamplesOperationDataSet() {
-		this(null);
+	public NetCdfQASamplesOperationDataSet(MatrixKey origin, DataSetKey parent) {
+		this(origin, parent, null);
 	}
 
 	@Override
@@ -78,18 +81,18 @@ public class NetCdfQASamplesOperationDataSet extends AbstractNetCdfOperationData
 	@Override
 	protected OperationMetadata createOperationMetadata() throws IOException {
 
-		MatrixMetadata rdMatrixMetadata = MatricesList.getMatrixMetadataById(getReadMatrixKey());
+		DataSetMetadata rdDataSetMetadata = MatricesList.getDataSetMetadata(getParent());
 
 		return new OperationMetadata(
-				getReadMatrixKey(), // parent matrix
-				OperationKey.NULL_ID, // parent operation ID
+				getParent(), // parent data set
 				"Sample QA", // friendly name
-				"Sample census on " + rdMatrixMetadata.getFriendlyName()
+				"Sample census on " + rdDataSetMetadata.getFriendlyName()
 						+ "\nSamples: " + getNumSamples(), // description
 				OPType.SAMPLE_QA,
 				getNumSamples(),
 				getNumMarkers(),
-				getNumChromosomes());
+				getNumChromosomes(),
+				isMarkersOperationSet());
 	}
 
 	@Override
@@ -146,7 +149,7 @@ public class NetCdfQASamplesOperationDataSet extends AbstractNetCdfOperationData
 
 //		SampleOperationSet rdSampleSet = new SampleOperationSet(getOperationKey(), from, to);
 //		Map<SampleKey, Integer> rdSamples = rdSampleSet.getOpSetMap();
-		Map<Integer, SampleKey> samplesKeys = getSamples();
+		Map<Integer, SampleKey> samplesKeys = getSamplesKeysSource().getIndicesMap(from, to);
 
 		Collection<Double> missingRatios = getMissingRatios(from, to);
 		Collection<Integer> missingCount = getMissingCounts(from, to);
@@ -180,6 +183,18 @@ public class NetCdfQASamplesOperationDataSet extends AbstractNetCdfOperationData
 			netCdfMissingRatios = new ArrayDouble.D1(writeBuffer.size());
 			netCdfMissingCounts = new ArrayInt.D1(writeBuffer.size());
 			netCdfHetzyRatios = new ArrayDouble.D1(writeBuffer.size());
+		} else if (writeBuffer.size() < netCdfMissingRatios.getShape()[0]) {
+			// we end up here at the end of the processing, if, for example,
+			// we have a buffer size of 10, but only 7 items are left to be written
+			List<Range> reducedRange1D = new ArrayList<Range>(1);
+			reducedRange1D.add(new Range(writeBuffer.size()));
+			try {
+				netCdfMissingRatios = (ArrayDouble.D1) netCdfMissingRatios.sectionNoReduce(reducedRange1D);
+				netCdfMissingCounts = (ArrayInt.D1) netCdfMissingCounts.sectionNoReduce(reducedRange1D);
+				netCdfHetzyRatios = (ArrayDouble.D1) netCdfHetzyRatios.sectionNoReduce(reducedRange1D);
+			} catch (InvalidRangeException ex) {
+				throw new IOException(ex);
+			}
 		}
 		int index = 0;
 		for (QASamplesOperationEntry entry : writeBuffer) {

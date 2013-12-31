@@ -79,6 +79,9 @@ public class CombiTestParamsGUI extends JPanel {
 	private final JLabel parentMatrixLabel;
 	private final JTextField parentMatrixValue;
 
+	private final JLabel censusOperationLabel; // TODO This is not yet setup correctly! see hw stuff below for example!
+	private final JComboBox censusOperationValue;
+
 	private final JLabel hwOperationLabel;
 	private final JComboBox hwOperationValue;
 
@@ -121,6 +124,9 @@ public class CombiTestParamsGUI extends JPanel {
 		// init the GUI components
 		this.parentMatrixLabel = new JLabel();
 		this.parentMatrixValue = new JTextField();
+
+		this.censusOperationLabel = new JLabel();
+		this.censusOperationValue = new JComboBox();
 
 		this.hwOperationLabel = new JLabel();
 		this.hwOperationValue = new JComboBox();
@@ -180,6 +186,7 @@ public class CombiTestParamsGUI extends JPanel {
 
 		Map<JLabel, JComponent> labelsAndComponents = new LinkedHashMap<JLabel, JComponent>();
 		labelsAndComponents.put(parentMatrixLabel, parentMatrixValue);
+		labelsAndComponents.put(censusOperationLabel, censusOperationValue);
 		labelsAndComponents.put(hwOperationLabel, hwOperationValue);
 		labelsAndComponents.put(hwThresholdLabel, hwThresholdP);
 		labelsAndComponents.put(genotypeEncoderLabel, genotypeEncoderP);
@@ -358,6 +365,7 @@ public class CombiTestParamsGUI extends JPanel {
 
 		CombiTestParams combiTestParams = new CombiTestParams(
 				originalCombiTestParams.getMatrixKey(), // cause it is not editable
+				(OperationKey) censusOperationValue.getSelectedItem(),
 				(OperationKey) hwOperationValue.getSelectedItem(),
 				(Double) hwThresholdValue.getValue(),
 				(GenotypeEncoder) genotypeEncoderValue.getSelectedItem(),

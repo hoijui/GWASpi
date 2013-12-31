@@ -30,6 +30,7 @@ import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.Report;
+import org.gwaspi.model.ReportKey;
 import org.gwaspi.model.ReportsList;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleKey;
@@ -65,7 +66,6 @@ public class OutputQASamples {
 
 		if (newReport) {
 			ReportsList.insertRPMetadata(new Report(
-					Integer.MIN_VALUE,
 					"Sample Missingness Table",
 					sampleMissOutName,
 					OPType.SAMPLE_QA,
@@ -80,7 +80,6 @@ public class OutputQASamples {
 //		if (createSampleHetzygPlot(opId, samplMissOutName, 500, 500)) {
 //			if (newReport) {
 		ReportsList.insertRPMetadata(new Report(
-				Integer.MIN_VALUE,
 				"Sample Heterozygosity vs Missingness Plot",
 				sampleMissOutName,
 				OPType.SAMPLE_HTZYPLOT,

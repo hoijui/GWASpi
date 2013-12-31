@@ -35,6 +35,7 @@ public class CombiTestParams {
 	 * Which matrix to operate on (read from).
 	 */
 	private final MatrixKey matrixKey;
+	private final OperationKey censusOperationKey;
 	private final OperationKey hardyWeinbergOperationKey;
 	private final double hardyWeinbergThreshold;
 	private final GenotypeEncoder encoder;
@@ -57,6 +58,7 @@ public class CombiTestParams {
 
 	public CombiTestParams(
 			MatrixKey matrixKey,
+			OperationKey censusOperationKey,
 			OperationKey hardyWeinbergOperationKey,
 			Double hardyWeinbergThreshold,
 			GenotypeEncoder encoder,
@@ -66,6 +68,7 @@ public class CombiTestParams {
 			String resultMatrixName)
 	{
 		this.matrixKey = matrixKey;
+		this.censusOperationKey = censusOperationKey;
 		this.hardyWeinbergOperationKey = hardyWeinbergOperationKey;
 		this.hardyWeinbergThreshold = (hardyWeinbergThreshold == null)
 				? getHardyWeinbergThresholdDefault()
@@ -107,10 +110,12 @@ public class CombiTestParams {
 
 	public CombiTestParams(
 			MatrixKey matrixKey,
+			OperationKey censusOperationKey,
 			OperationKey hardyWeinbergOperationKey)
 	{
 		this(
 				matrixKey,
+				censusOperationKey,
 				hardyWeinbergOperationKey,
 				null,
 				null,
@@ -139,6 +144,10 @@ public class CombiTestParams {
 
 	public MatrixKey getMatrixKey() {
 		return matrixKey;
+	}
+
+	public OperationKey getCensusOperationKey() {
+		return censusOperationKey;
 	}
 
 	public OperationKey getHardyWeinbergOperationKey() {

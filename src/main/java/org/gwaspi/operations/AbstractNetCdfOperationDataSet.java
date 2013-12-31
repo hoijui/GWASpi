@@ -20,30 +20,33 @@ package org.gwaspi.operations;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Queue;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.model.ChromosomeKey;
+import org.gwaspi.model.ChromosomesInfosSource;
 import org.gwaspi.model.ChromosomesKeysSource;
-import org.gwaspi.model.DataSetSource;
+import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.MarkerKey;
-import org.gwaspi.model.MarkerKeyFactory;
+import org.gwaspi.model.MarkersGenotypesSource;
 import org.gwaspi.model.MarkersKeysSource;
+import org.gwaspi.model.MarkersMetadataSource;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
-import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.SampleKey;
-import org.gwaspi.model.SampleKeyFactory;
+import org.gwaspi.model.SamplesGenotypesSource;
+import org.gwaspi.model.SamplesInfosSource;
 import org.gwaspi.model.SamplesKeysSource;
-import org.gwaspi.netCDF.matrices.MatrixFactory;
+import org.gwaspi.netCDF.markers.NetCdfChromosomesInfosSource;
+import org.gwaspi.netCDF.markers.NetCdfChromosomesKeysSource;
+import org.gwaspi.netCDF.markers.NetCdfMarkersGenotypesSource;
+import org.gwaspi.netCDF.markers.NetCdfMarkersKeysSource;
+import org.gwaspi.netCDF.markers.NetCdfMarkersMetadataSource;
+import org.gwaspi.netCDF.markers.NetCdfSamplesGenotypesSource;
+import org.gwaspi.netCDF.markers.NetCdfSamplesInfosSource;
+import org.gwaspi.netCDF.markers.NetCdfSamplesKeysSource;
 import org.gwaspi.netCDF.operations.NetCdfUtils;
-import org.gwaspi.netCDF.operations.OperationFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
@@ -55,93 +58,74 @@ import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFileWriteable;
 
-public abstract class AbstractNetCdfOperationDataSet<ET> implements OperationDataSet<ET> {
+public abstract class AbstractNetCdfOperationDataSet<ET> extends AbstractOperationDataSet<ET> {
 
 	private final Logger log = LoggerFactory.getLogger(AbstractNetCdfOperationDataSet.class);
 
-	private final boolean markersOperationSet;
-	private MatrixKey rdMatrixKey;
-	private OperationKey rdOperationKey;
-	private Integer numMarkers;
-	private Integer numSamples;
-	private Integer numChromosomes;
+//	private Integer numMarkers;
+//	private Integer numSamples;
+//	private Integer numChromosomes;
 	private Boolean useAllMarkersFromParent;
 	private Boolean useAllSamplesFromParent;
 	private Boolean useAllChromosomesFromParent;
 	private NetcdfFile readNcFile;
 	private NetcdfFileWriteable writeNcFile;
-	private OperationMetadata operationMetadata;
-	private OperationKey operationKey;
-	private final Queue<ET> writeBuffer;
-	private int alreadyWritten;
-	private int entriesWriteBufferSize;
 
-	public AbstractNetCdfOperationDataSet(boolean markersOperationSet, OperationKey operationKey, int entriesWriteBufferSize) {
+	public AbstractNetCdfOperationDataSet(
+			boolean markersOperationSet,
+			MatrixKey origin,
+			DataSetKey parent,
+			OperationKey operationKey,
+			int entriesWriteBufferSize)
+	{
+		super(markersOperationSet, origin, parent, operationKey, entriesWriteBufferSize);
 
-		this.operationKey = operationKey;
-		this.markersOperationSet = markersOperationSet;
-		this.rdMatrixKey = (operationKey == null) ? null : operationKey.getParentMatrixKey();
-		this.rdOperationKey = null;
-		this.numMarkers = null;
-		this.numSamples = null;
-		this.numChromosomes = null;
+//		this.numMarkers = null;
+//		this.numSamples = null;
+//		this.numChromosomes = null;
 		this.useAllMarkersFromParent = null;
 		this.useAllSamplesFromParent = null;
 		this.useAllChromosomesFromParent = null;
+		this.readNcFile = null;
 		this.writeNcFile = null;
-		this.operationMetadata = null;
-		this.writeBuffer = new LinkedList<ET>();
-		this.alreadyWritten = 0;
-		this.entriesWriteBufferSize = entriesWriteBufferSize;
 	}
 
-	public AbstractNetCdfOperationDataSet(boolean markersOperationSet, OperationKey operationKey) {
-		this(markersOperationSet, operationKey, 10);
+	public AbstractNetCdfOperationDataSet(
+			boolean markersOperationSet,
+			MatrixKey origin,
+			DataSetKey parent,
+			OperationKey operationKey)
+	{
+		this(markersOperationSet, origin, parent, operationKey, getDefaultEntriesWriteBufferSize(markersOperationSet));
 	}
 
-	public AbstractNetCdfOperationDataSet(boolean markersOperationSet) {
-		this(markersOperationSet, null);
-	}
-
-	protected int getEntriesWriteBufferSize() {
-		return entriesWriteBufferSize;
-	}
-
-	public void setReadMatrixKey(MatrixKey rdMatrixKey) {
-		this.rdMatrixKey = rdMatrixKey;
-	}
-
-	protected MatrixKey getReadMatrixKey() {
-		return rdMatrixKey;
-	}
-
-	public void setReadOperationKey(OperationKey rdOperationKey) {
-
-		this.rdMatrixKey = rdOperationKey.getParentMatrixKey();
-		this.rdOperationKey = rdOperationKey;
-	}
-
-	protected OperationKey getReadOperationKey() {
-		return rdOperationKey;
+	public AbstractNetCdfOperationDataSet(
+			boolean markersOperationSet,
+			MatrixKey origin,
+			DataSetKey parent)
+	{
+		this(markersOperationSet, origin, parent, null);
 	}
 
 	@Override
-	public void setNumMarkers(int numMarkers) {
-		this.numMarkers = numMarkers;
+	protected MarkersGenotypesSource getMarkersGenotypesSourceRaw() throws IOException {
+		return NetCdfMarkersGenotypesSource.createForOperation(
+				readNcFile,
+				getMarkersKeysSource().getIndices(),
+				getSamplesKeysSource().getIndices());
 	}
 
 	@Override
-	public int getNumMarkers() throws IOException {
+	protected SamplesGenotypesSource getSamplesGenotypesSourceRaw() throws IOException {
+		return NetCdfSamplesGenotypesSource.createForOperation(
+				readNcFile,
+				getSamplesKeysSource().getIndices(),
+				getMarkersKeysSource().getIndices());
+	}
 
-		if (numMarkers == null) {
-			if (getUseAllSamplesFromParent()) {
-				numMarkers = MatrixFactory.generateMatrixDataSetSource(getReadMatrixKey()).getNumMarkers();
-			} else {
-				numMarkers = getNetCdfReadFile().findDimension(getIndexVar(true)).getLength();
-			}
-		}
-
-		return numMarkers;
+	@Override
+	protected int getNumMarkersRaw() throws IOException {
+		return getNetCdfReadFile().findDimension(getIndexVar(true)).getLength();
 	}
 
 	/**
@@ -151,11 +135,13 @@ public abstract class AbstractNetCdfOperationDataSet<ET> implements OperationDat
 	 *   If false, we will store/retrieve/manage a separate list of markers
 	 *   for this operation.
 	 */
-	public void setUseAllMarkersFromParent(boolean useAll) {
+	@Override
+	protected void setUseAllMarkersFromParent(boolean useAll) {
 		this.useAllMarkersFromParent = useAll;
 	}
 
-	public boolean getUseAllMarkersFromParent() throws IOException {
+	@Override
+	protected boolean getUseAllMarkersFromParent() throws IOException {
 
 		if (useAllMarkersFromParent == null) {
 			useAllMarkersFromParent = (getNetCdfReadFile().findGlobalAttribute(cNetCDF.Attributes.GLOB_USE_ALL_MARKERS).getNumericValue().intValue() != 0);
@@ -165,22 +151,8 @@ public abstract class AbstractNetCdfOperationDataSet<ET> implements OperationDat
 	}
 
 	@Override
-	public void setNumSamples(int numSamples) {
-		this.numSamples = numSamples;
-	}
-
-	@Override
-	public int getNumSamples() throws IOException {
-
-		if (numSamples == null) {
-			if (getUseAllSamplesFromParent()) {
-				numSamples = MatrixFactory.generateMatrixDataSetSource(getReadMatrixKey()).getNumSamples();
-			} else {
-				numSamples = getNetCdfReadFile().findDimension(getIndexVar(false)).getLength();
-			}
-		}
-
-		return numSamples;
+	protected int getNumSamplesRaw() throws IOException {
+		return getNetCdfReadFile().findDimension(getIndexVar(false)).getLength();
 	}
 
 	/**
@@ -190,11 +162,13 @@ public abstract class AbstractNetCdfOperationDataSet<ET> implements OperationDat
 	 *   If false, we will store/retrieve/manage a separate list of samples
 	 *   for this operation.
 	 */
-	public void setUseAllSamplesFromParent(boolean useAll) {
+	@Override
+	protected void setUseAllSamplesFromParent(boolean useAll) {
 		this.useAllSamplesFromParent = useAll;
 	}
 
-	public boolean getUseAllSamplesFromParent() throws IOException {
+	@Override
+	protected boolean getUseAllSamplesFromParent() throws IOException {
 
 		if (useAllSamplesFromParent == null) {
 			useAllSamplesFromParent = (getNetCdfReadFile().findGlobalAttribute(cNetCDF.Attributes.GLOB_USE_ALL_SAMPLES).getNumericValue().intValue() != 0);
@@ -204,22 +178,8 @@ public abstract class AbstractNetCdfOperationDataSet<ET> implements OperationDat
 	}
 
 	@Override
-	public void setNumChromosomes(int numChromosomes) {
-		this.numChromosomes = numChromosomes;
-	}
-
-	@Override
-	public int getNumChromosomes() throws IOException {
-
-		if (numChromosomes == null) {
-			if (getUseAllChromosomesFromParent()) {
-				numChromosomes = MatrixFactory.generateMatrixDataSetSource(getReadMatrixKey()).getNumChromosomes();
-			} else {
-				numChromosomes = getNetCdfReadFile().findDimension(cNetCDF.Variables.VAR_CHR_IN_MATRIX_IDX).getLength();
-			}
-		}
-
-		return numChromosomes;
+	protected int getNumChromosomesRaw() throws IOException {
+		return getNetCdfReadFile().findDimension(cNetCDF.Variables.VAR_CHR_IN_MATRIX_IDX).getLength();
 	}
 
 	/**
@@ -229,11 +189,13 @@ public abstract class AbstractNetCdfOperationDataSet<ET> implements OperationDat
 	 *   If false, we will store/retrieve/manage a separate list of chromosomes
 	 *   for this operation.
 	 */
-	public void setUseAllChromosomesFromParent(boolean useAll) {
+	@Override
+	protected void setUseAllChromosomesFromParent(boolean useAll) {
 		this.useAllChromosomesFromParent = useAll;
 	}
 
-	public boolean getUseAllChromosomesFromParent() throws IOException {
+	@Override
+	protected boolean getUseAllChromosomesFromParent() throws IOException {
 
 		if (useAllChromosomesFromParent == null) {
 			useAllChromosomesFromParent = (getNetCdfReadFile().findGlobalAttribute(cNetCDF.Attributes.GLOB_USE_ALL_CHROMOSOMES).getNumericValue().intValue() != 0);
@@ -251,6 +213,7 @@ public abstract class AbstractNetCdfOperationDataSet<ET> implements OperationDat
 
 	@Override
 	public void finnishWriting() throws IOException {
+		super.finnishWriting();
 
 		if (writeNcFile != null) {
 			writeNcFile.close();
@@ -265,10 +228,6 @@ public abstract class AbstractNetCdfOperationDataSet<ET> implements OperationDat
 		return readNcFile;
 	}
 
-//	protected OperationFactory getOperationFactory() {
-//		return operationFactory;
-//	}
-
 	private NetcdfFileWriteable createNetCdfFile(
 			OperationMetadata operationMetadata)
 			throws IOException
@@ -282,8 +241,6 @@ public abstract class AbstractNetCdfOperationDataSet<ET> implements OperationDat
 
 		return ncfile;
 	}
-
-	protected abstract OperationMetadata createOperationMetadata() throws IOException;
 
 	protected abstract void supplementNetCdfHandler(
 			NetcdfFileWriteable ncFile,
@@ -319,7 +276,7 @@ public abstract class AbstractNetCdfOperationDataSet<ET> implements OperationDat
 
 		final Dimension markersDim;
 		final Dimension samplesDim;
-		if (markersOperationSet) {
+		if (isMarkersOperationSet()) {
 			markersDim = opSetDim;
 			samplesDim = implicitSetDim;
 		} else {
@@ -362,7 +319,7 @@ public abstract class AbstractNetCdfOperationDataSet<ET> implements OperationDat
 		final boolean implUseAll;
 		final List<Dimension> implSpace;
 		final List<Dimension> implNameSpace;
-		if (markersOperationSet) {
+		if (isMarkersOperationSet()) {
 			opUseAll = useAllParentMarkers;
 			opSpace = markersSpace;
 			opNameSpace = markersNameSpace;
@@ -401,10 +358,7 @@ public abstract class AbstractNetCdfOperationDataSet<ET> implements OperationDat
 	private NetcdfFileWriteable ensureWriteNcFile() throws IOException {
 
 		if (writeNcFile == null) {
-			if (operationMetadata == null) {
-				operationMetadata = createOperationMetadata();
-				operationKey = OperationsList.insertOPMetadata(operationMetadata);
-			}
+			OperationMetadata operationMetadata = getOperationMetadata();
 
 //			resultOperationKey = OperationsList.insertOPMetadata(new OperationMetadata(
 //					rdMatrixKey,
@@ -437,9 +391,7 @@ public abstract class AbstractNetCdfOperationDataSet<ET> implements OperationDat
 	private NetcdfFile ensureReadNcFile() throws IOException {
 
 		if (readNcFile == null) {
-			if (operationMetadata == null) {
-				operationMetadata = OperationsList.getOperation(operationKey);
-			}
+			OperationMetadata operationMetadata = getOperationMetadata();
 
 			File readFile = OperationMetadata.generatePathToNetCdfFile(operationMetadata);
 			readNcFile = NetcdfFile.open(readFile.getAbsolutePath());
@@ -454,15 +406,6 @@ public abstract class AbstractNetCdfOperationDataSet<ET> implements OperationDat
 //		NetcdfFileWriteable ncfile = NetcdfFileWriteable.createNew(writeFile.getAbsolutePath(), false);
 
 		return readNcFile;
-	}
-
-	public OperationKey getOperationKey() {
-
-//		if (operationKey == null) {
-//			ensureNcFile();
-//		}
-
-		return operationKey;
 	}
 
 	protected void write(NetcdfFileWriteable ncFile, String varName, int[] origin, Array values) throws IOException {
@@ -486,7 +429,7 @@ public abstract class AbstractNetCdfOperationDataSet<ET> implements OperationDat
 	private String getIndexVar(boolean markers) {
 
 		final String varName;
-		if (markersOperationSet == markers) {
+		if (isMarkersOperationSet() == markers) {
 			varName = cNetCDF.Variables.VAR_OPSET_IDX;
 		} else {
 			varName = cNetCDF.Variables.VAR_IMPLICITSET_IDX;
@@ -498,7 +441,7 @@ public abstract class AbstractNetCdfOperationDataSet<ET> implements OperationDat
 	private String getNameVar(boolean markers) {
 
 		final String varName;
-		if (markersOperationSet == markers) {
+		if (isMarkersOperationSet() == markers) {
 			varName = cNetCDF.Variables.VAR_OPSET;
 		} else {
 			varName = cNetCDF.Variables.VAR_IMPLICITSET;
@@ -510,182 +453,78 @@ public abstract class AbstractNetCdfOperationDataSet<ET> implements OperationDat
 	@Override
 	public void setSamples(Map<Integer, SampleKey> matrixIndexSampleKeys) throws IOException {
 
-		ArrayInt.D1 sampleIdxsD1 = NetCdfUtils.writeValuesToD1ArrayInt(matrixIndexSampleKeys.keySet());
-		final int[] sampleIdxOrig = new int[] {0};
-		final String varIdx = getIndexVar(false);
-		write(getNetCdfWriteFile(), varIdx, sampleIdxOrig, sampleIdxsD1);
+		if (!getUseAllSamplesFromParent()) {
+			ArrayInt.D1 sampleIdxsD1 = NetCdfUtils.writeValuesToD1ArrayInt(matrixIndexSampleKeys.keySet());
+			final int[] sampleIdxOrig = new int[] {0};
+			final String varIdx = getIndexVar(false);
+			write(getNetCdfWriteFile(), varIdx, sampleIdxOrig, sampleIdxsD1);
 
-		ArrayChar.D2 sampleKeysD2 = NetCdfUtils.writeCollectionToD2ArrayChar(matrixIndexSampleKeys.values(), cNetCDF.Strides.STRIDE_SAMPLE_NAME);
-		final int[] sampleOrig = new int[] {0, 0};
-		final String varName = getNameVar(false);
-		write(getNetCdfWriteFile(), varName, sampleOrig, sampleKeysD2);
-		log.info("Done writing SampleSet to matrix");
+			ArrayChar.D2 sampleKeysD2 = NetCdfUtils.writeCollectionToD2ArrayChar(matrixIndexSampleKeys.values(), cNetCDF.Strides.STRIDE_SAMPLE_NAME);
+			final int[] sampleOrig = new int[] {0, 0};
+			final String varName = getNameVar(false);
+			write(getNetCdfWriteFile(), varName, sampleOrig, sampleKeysD2);
+			log.info("Done writing SampleSet to matrix");
+		}
 	}
 
 	@Override
 	public void setMarkers(Map<Integer, MarkerKey> matrixIndexMarkerKeys) throws IOException {
 
-		ArrayInt.D1 markerIdxsD1 = NetCdfUtils.writeValuesToD1ArrayInt(matrixIndexMarkerKeys.keySet());
-		final int[] markerIdxOrig = new int[] {0};
-		final String varIdx = getIndexVar(true);
-		write(getNetCdfWriteFile(), varIdx, markerIdxOrig, markerIdxsD1);
+		if (!getUseAllMarkersFromParent()) {
+			ArrayInt.D1 markerIdxsD1 = NetCdfUtils.writeValuesToD1ArrayInt(matrixIndexMarkerKeys.keySet());
+			final int[] markerIdxOrig = new int[] {0};
+			final String varIdx = getIndexVar(true);
+			write(getNetCdfWriteFile(), varIdx, markerIdxOrig, markerIdxsD1);
 
-		ArrayChar.D2 markersD2 = NetCdfUtils.writeCollectionToD2ArrayChar(matrixIndexMarkerKeys.values(), cNetCDF.Strides.STRIDE_MARKER_NAME);
-		int[] markersOrig = new int[] {0, 0};
-		final String varName = getNameVar(true);
-		write(getNetCdfWriteFile(), varName, markersOrig, markersD2);
-		log.info("Done writing MarkerSet to matrix");
+			ArrayChar.D2 markersD2 = NetCdfUtils.writeCollectionToD2ArrayChar(matrixIndexMarkerKeys.values(), cNetCDF.Strides.STRIDE_MARKER_NAME);
+			int[] markersOrig = new int[] {0, 0};
+			final String varName = getNameVar(true);
+			write(getNetCdfWriteFile(), varName, markersOrig, markersD2);
+			log.info("Done writing MarkerSet to matrix");
+		}
 	}
 
 	@Override
 	public void setChromosomes(Map<Integer, ChromosomeKey> matrixIndexChromosomeKeys/*, Collection<ChromosomeInfo> chromosomeInfos*/) throws IOException {
 
-		// Set of chromosomes found in matrix - index in the original set of chromosomes
-		NetCdfUtils.saveIntMapD1ToWrMatrix(getNetCdfWriteFile(), matrixIndexChromosomeKeys.keySet(), cNetCDF.Variables.VAR_CHR_IN_MATRIX_IDX);
-		// Set of chromosomes found in matrix - key of the chromosome
-		NetCdfUtils.saveObjectsToStringToMatrix(getNetCdfWriteFile(), matrixIndexChromosomeKeys.values(), cNetCDF.Variables.VAR_CHR_IN_MATRIX, cNetCDF.Strides.STRIDE_CHR);
-//		// Number of marker per chromosome & max pos for each chromosome
-//		int[] columns = new int[] {0, 1, 2, 3};
-//		NetCdfUtils.saveChromosomeInfosD2ToWrMatrix(getNetCdfWriteFile(), chromosomeInfos, columns, cNetCDF.Variables.VAR_CHR_INFO);
-	}
-
-	@Override
-	public Map<Integer, SampleKey> getSamples() throws IOException {
-
-		Map<Integer, SampleKey> samples;
-
-		if (!getUseAllSamplesFromParent()) {
-			Collection<Integer> origIndices = new ArrayList<Integer>(0);
-			Collection<String> keys = new ArrayList<String>(0);
-
-			// load our separately managed/stored list of samples
-			final String varIdx = getIndexVar(false);
-			NetCdfUtils.readVariable(getNetCdfReadFile(), varIdx, -1, -1, origIndices, null);
-
-			final String varName = getNameVar(false);
-			NetCdfUtils.readVariable(getNetCdfReadFile(), varName, -1, -1, keys, null);
-
-			samples = new LinkedHashMap<Integer, SampleKey>(origIndices.size());
-			Iterator<String> keysIt = keys.iterator();
-			SampleKeyFactory sampleKeyFactory = new SampleKeyFactory(getReadMatrixKey().getStudyKey());
-			for (Integer origIndex : origIndices) {
-				samples.put(origIndex, sampleKeyFactory.decode(keysIt.next()));
-			}
-		} else if (rdOperationKey != null) {
-			// load the list of samples from the parent operation
-			OperationDataSet parentOperationDataSet = OperationFactory.generateOperationDataSet(rdOperationKey);
-			samples = parentOperationDataSet.getSamples();
-		} else {
-			// load the list of samples from the parent matrix
-			DataSetSource parentMatrixDataSet = MatrixFactory.generateMatrixDataSetSource(getReadMatrixKey());
-			SamplesKeysSource samplesKeys = parentMatrixDataSet.getSamplesKeysSource();
-
-			samples = new LinkedHashMap<Integer, SampleKey>(samplesKeys.size());
-			int origIndex = 0;
-			for (SampleKey sampleKey : samplesKeys) {
-				samples.put(origIndex++, sampleKey);
-			}
-		}
-
-		return samples;
-	}
-
-	@Override
-	public Map<Integer, MarkerKey> getMarkers() throws IOException {
-
-		Map<Integer, MarkerKey> markers;
-
-		if (!getUseAllMarkersFromParent()) {
-			Collection<Integer> origIndices = new ArrayList<Integer>(0);
-			Collection<String> keys = new ArrayList<String>(0);
-
-			// load our separately managed/stored list of markers
-			final String varIdx = getIndexVar(true);
-			NetCdfUtils.readVariable(getNetCdfReadFile(), varIdx, -1, -1, origIndices, null);
-
-			final String varName = getNameVar(true);
-			NetCdfUtils.readVariable(getNetCdfReadFile(), varName, -1, -1, keys, null);
-
-			markers = new LinkedHashMap<Integer, MarkerKey>(origIndices.size());
-			Iterator<String> keysIt = keys.iterator();
-			MarkerKeyFactory markerKeyFactory = new MarkerKeyFactory();
-			for (Integer origIndex : origIndices) {
-				markers.put(origIndex, markerKeyFactory.decode(keysIt.next()));
-			}
-		} else if (rdOperationKey != null) {
-			// load the list of samples from the parent operation
-			OperationDataSet parentOperationDataSet = OperationFactory.generateOperationDataSet(rdOperationKey);
-			markers = parentOperationDataSet.getMarkers();
-		} else {
-			// load the list of samples from the parent matrix
-			DataSetSource parentMatrixDataSet = MatrixFactory.generateMatrixDataSetSource(rdMatrixKey);
-			MarkersKeysSource markersKeys = parentMatrixDataSet.getMarkersKeysSource();
-
-			markers = new LinkedHashMap<Integer, MarkerKey>(markersKeys.size());
-			int origIndex = 0;
-			for (MarkerKey markerKey : markersKeys) {
-				markers.put(origIndex++, markerKey);
-			}
-		}
-
-		return markers;
-	}
-
-	@Override
-	public Map<Integer, ChromosomeKey> getChromosomes() throws IOException {
-
-		Map<Integer, ChromosomeKey> chromosomes;
-
 		if (!getUseAllChromosomesFromParent()) {
-			Collection<Integer> origIndices = new ArrayList<Integer>(0);
-			Collection<String> keys = new ArrayList<String>(0);
-
-			// load our separately managed/stored list of chromosomes
-			final String varIdx = cNetCDF.Variables.VAR_CHR_IN_MATRIX_IDX;
-			NetCdfUtils.readVariable(getNetCdfReadFile(), varIdx, -1, -1, origIndices, null);
-
-			final String varName = cNetCDF.Variables.VAR_CHR_IN_MATRIX;
-			NetCdfUtils.readVariable(getNetCdfReadFile(), varName, -1, -1, keys, null);
-
-			chromosomes = new LinkedHashMap<Integer, ChromosomeKey>(origIndices.size());
-			Iterator<String> keysIt = keys.iterator();
-			for (Integer origIndex : origIndices) {
-				chromosomes.put(origIndex, new ChromosomeKey(keysIt.next()));
-			}
-		} else if (rdOperationKey != null) {
-			// load the list of samples from the parent operation
-			OperationDataSet parentOperationDataSet = OperationFactory.generateOperationDataSet(rdOperationKey);
-			chromosomes = parentOperationDataSet.getChromosomes();
-		} else {
-			// load the list of samples from the parent matrix
-			DataSetSource parentMatrixDataSet = MatrixFactory.generateMatrixDataSetSource(rdMatrixKey);
-			ChromosomesKeysSource chromosomesKeys = parentMatrixDataSet.getChromosomesKeysSource();
-
-			chromosomes = new LinkedHashMap<Integer, ChromosomeKey>(chromosomesKeys.size());
-			int origIndex = 0;
-			for (ChromosomeKey chromosomeKey : chromosomesKeys) {
-				chromosomes.put(origIndex++, chromosomeKey);
-			}
-		}
-
-		return chromosomes;
-	}
-
-	public void addEntry(ET entry) throws IOException {
-
-		writeBuffer.add(entry);
-
-		if (writeBuffer.size() >= entriesWriteBufferSize) {
-			writeEntries(alreadyWritten, writeBuffer);
-			alreadyWritten += writeBuffer.size();
-			writeBuffer.clear();
+			// Set of chromosomes found in matrix - index in the original set of chromosomes
+			NetCdfUtils.saveIntMapD1ToWrMatrix(getNetCdfWriteFile(), matrixIndexChromosomeKeys.keySet(), cNetCDF.Variables.VAR_CHR_IN_MATRIX_IDX);
+			// Set of chromosomes found in matrix - key of the chromosome
+			NetCdfUtils.saveObjectsToStringToMatrix(getNetCdfWriteFile(), matrixIndexChromosomeKeys.values(), cNetCDF.Variables.VAR_CHR_IN_MATRIX, cNetCDF.Strides.STRIDE_CHR);
+//			// Number of marker per chromosome & max pos for each chromosome
+//			int[] columns = new int[] {0, 1, 2, 3};
+//			NetCdfUtils.saveChromosomeInfosD2ToWrMatrix(getNetCdfWriteFile(), chromosomeInfos, columns, cNetCDF.Variables.VAR_CHR_INFO);
 		}
 	}
-
-	protected abstract void writeEntries(int alreadyWritten, Queue<ET> writeBuffer) throws IOException;
 
 	@Override
-	public Collection<ET> getEntries() throws IOException {
-		return getEntries(-1, -1);
+	public SamplesKeysSource getSamplesKeysSourceRaw() throws IOException {
+		return NetCdfSamplesKeysSource.createForOperation(getOrigin().getStudyKey(), getNetCdfReadFile(), isMarkersOperationSet());
+	}
+
+	@Override
+	public SamplesInfosSource getSamplesInfosSource() throws IOException {
+		return NetCdfSamplesInfosSource.createForOperation(getOrigin().getStudyKey(), getNetCdfReadFile(), getSamplesKeysSourceRaw().getIndices());
+	}
+
+	@Override
+	public MarkersKeysSource getMarkersKeysSourceRaw() throws IOException {
+		return NetCdfMarkersKeysSource.createForOperation(getNetCdfReadFile(), isMarkersOperationSet());
+	}
+
+	@Override
+	public MarkersMetadataSource getMarkersMetadatasSource() throws IOException {
+		return NetCdfMarkersMetadataSource.createForOperation(getNetCdfReadFile(), getMarkersKeysSourceRaw().getIndices());
+	}
+
+	@Override
+	public ChromosomesKeysSource getChromosomesKeysSourceRaw() throws IOException {
+		return NetCdfChromosomesKeysSource.createForOperation(getNetCdfReadFile(), isMarkersOperationSet());
+	}
+
+	@Override
+	public ChromosomesInfosSource getChromosomesInfosSource() throws IOException {
+		return NetCdfChromosomesInfosSource.createForOperation(getNetCdfReadFile(), getChromosomesKeysSourceRaw().getIndices());
 	}
 }

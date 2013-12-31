@@ -27,12 +27,13 @@ import java.util.Queue;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.model.Census;
+import org.gwaspi.model.DataSetKey;
+import org.gwaspi.model.DataSetMetadata;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MatricesList;
-import org.gwaspi.model.MatrixMetadata;
+import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
-import org.gwaspi.netCDF.operations.MarkerOperationSet;
 import org.gwaspi.netCDF.operations.NetCdfUtils;
 import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
 import ucar.ma2.ArrayByte;
@@ -40,6 +41,7 @@ import ucar.ma2.ArrayDouble;
 import ucar.ma2.ArrayInt;
 import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
+import ucar.ma2.Range;
 import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFileWriteable;
 
@@ -62,12 +64,12 @@ public class NetCdfQAMarkersOperationDataSet extends AbstractNetCdfOperationData
 	private ArrayDouble.D1 netCdfMinorAllelesFrequencies;
 	private ArrayInt.D2 netCdfCensusAlls;
 
-	public NetCdfQAMarkersOperationDataSet(OperationKey operationKey) {
-		super(true, operationKey);
+	public NetCdfQAMarkersOperationDataSet(MatrixKey origin, DataSetKey parent, OperationKey operationKey) {
+		super(true, origin, parent, operationKey);
 	}
 
-	public NetCdfQAMarkersOperationDataSet() {
-		this(null);
+	public NetCdfQAMarkersOperationDataSet(MatrixKey origin, DataSetKey parent) {
+		this(origin, parent, null);
 	}
 
 	@Override
@@ -118,22 +120,22 @@ public class NetCdfQAMarkersOperationDataSet extends AbstractNetCdfOperationData
 	@Override
 	protected OperationMetadata createOperationMetadata() throws IOException {
 
-		MatrixMetadata rdMatrixMetadata = MatricesList.getMatrixMetadataById(getReadMatrixKey());
+		DataSetMetadata rdDataSetMetadata = MatricesList.getDataSetMetadata(getParent());
 
 		String description = "Marker Quality Assurance on "
-				+ rdMatrixMetadata.getFriendlyName()
+				+ rdDataSetMetadata.getFriendlyName()
 				+ "\nMarkers: " + getNumMarkers()
 				+ "\nStarted at: " + org.gwaspi.global.Utils.getShortDateTimeAsString();
 
 		return new OperationMetadata(
-				getReadMatrixKey(), // parent matrix
-				OperationKey.NULL_ID, // parent operation ID
+				getParent(), // parent data set
 				"Marker QA", // friendly name
 				description, // description
 				OPType.MARKER_QA,
 				getNumMarkers(),
 				getNumSamples(),
-				getNumChromosomes());
+				getNumChromosomes(),
+				isMarkersOperationSet());
 	}
 
 	@Override
@@ -143,7 +145,7 @@ public class NetCdfQAMarkersOperationDataSet extends AbstractNetCdfOperationData
 
 	@Override
 	public void setMarkerMismatchStates(Collection<Boolean> markerMismatchStates) throws IOException {
-		
+
 		// we can not use this, as NetCDF does not support writing boolean arrays :/
 //		NetCdfUtils.saveBooleansD1ToWrMatrix(getNetCdfWriteFile(), markerMismatchStates, cNetCDF.Census.VAR_OP_MARKERS_MISMATCHSTATE);
 
@@ -183,7 +185,7 @@ public class NetCdfQAMarkersOperationDataSet extends AbstractNetCdfOperationData
 		for (Integer mismatchIntegerState : mismatchIntegerStates) {
 			mismatchStates.add(mismatchIntegerState == cNetCDF.Defaults.DEFAULT_MISMATCH_YES);
 		}
-		
+
 		return mismatchStates;
 	}
 
@@ -246,7 +248,7 @@ public class NetCdfQAMarkersOperationDataSet extends AbstractNetCdfOperationData
 
 //		MarkerOperationSet rdMarkersSet = new MarkerOperationSet(getOperationKey(), from, to);
 //		Map<MarkerKey, Integer> rdMarkers = rdMarkersSet.getOpSetMap();
-		Map<Integer, MarkerKey> markersKeys = getMarkers();
+		Map<Integer, MarkerKey> markersKeys = getMarkersKeysSource().getIndicesMap(from, to);
 
 		Collection<Double> missingRatios = getMissingRatio(from, to);
 		Collection<Boolean> mismatchStates = getMismatchStates(from, to);
@@ -327,6 +329,7 @@ public class NetCdfQAMarkersOperationDataSet extends AbstractNetCdfOperationData
 	protected void writeEntries(int alreadyWritten, Queue<QAMarkersOperationEntry> writeBuffer) throws IOException {
 
 		int[] origin = new int[] {alreadyWritten};
+		int[] origin2D = new int[] {alreadyWritten, 0};
 		if (netCdfMajorAlleles == null) {
 			// only create once, and reuse later on
 			// NOTE This might be bad for multi-threading in a later stage
@@ -335,6 +338,23 @@ public class NetCdfQAMarkersOperationDataSet extends AbstractNetCdfOperationData
 			netCdfMinorAlleles = new ArrayByte.D1(writeBuffer.size());
 			netCdfMinorAllelesFrequencies = new ArrayDouble.D1(writeBuffer.size());
 			netCdfCensusAlls = new ArrayInt.D2(writeBuffer.size(), 4);
+		} else if (writeBuffer.size() < netCdfMajorAlleles.getShape()[0]) {
+			// we end up here at the end of the processing, if, for example,
+			// we have a buffer size of 10, but only 7 items are left to be written
+			List<Range> reducedRange1D = new ArrayList<Range>(1);
+			reducedRange1D.add(new Range(writeBuffer.size()));
+			List<Range> reducedRange2D = new ArrayList<Range>(2);
+			reducedRange2D.add(new Range(writeBuffer.size()));
+			reducedRange2D.add(null); // use full range
+			try {
+				netCdfMajorAlleles = (ArrayByte.D1) netCdfMajorAlleles.sectionNoReduce(reducedRange1D);
+				netCdfMajorAllelesFrequencies = (ArrayDouble.D1) netCdfMajorAllelesFrequencies.sectionNoReduce(reducedRange1D);
+				netCdfMinorAlleles = (ArrayByte.D1) netCdfMinorAlleles.sectionNoReduce(reducedRange1D);
+				netCdfMinorAllelesFrequencies = (ArrayDouble.D1) netCdfMinorAllelesFrequencies.sectionNoReduce(reducedRange1D);
+				netCdfCensusAlls = (ArrayInt.D2) netCdfCensusAlls.sectionNoReduce(reducedRange2D);
+			} catch (InvalidRangeException ex) {
+				throw new IOException(ex);
+			}
 		}
 		int index = 0;
 		for (QAMarkersOperationEntry entry : writeBuffer) {
@@ -344,16 +364,17 @@ public class NetCdfQAMarkersOperationDataSet extends AbstractNetCdfOperationData
 			netCdfMinorAllelesFrequencies.setDouble(netCdfMinorAllelesFrequencies.getIndex().set(index), entry.getMinorAlleleFrequency());
 			netCdfCensusAlls.setInt(netCdfCensusAlls.getIndex().set(index, 0), entry.getAlleleAA());
 			netCdfCensusAlls.setInt(netCdfCensusAlls.getIndex().set(index, 1), entry.getAlleleAa());
-			netCdfCensusAlls.setInt(netCdfCensusAlls.getIndex().set(index, 1), entry.getAlleleaa());
-			netCdfCensusAlls.setInt(netCdfCensusAlls.getIndex().set(index, 2), entry.getMissingCount());
+			netCdfCensusAlls.setInt(netCdfCensusAlls.getIndex().set(index, 2), entry.getAlleleaa());
+			netCdfCensusAlls.setInt(netCdfCensusAlls.getIndex().set(index, 3), entry.getMissingCount());
 			index++;
 		}
+System.err.println("XXXXXX NetCdfQAMarkersOperationDataSet: getNumMarkers(): " + getNumMarkers() + " / alreadyWritten: " + alreadyWritten + " / index: " + index + " / writeBuffer.size(): " + writeBuffer.size());
 		try {
 			getNetCdfWriteFile().write(cNetCDF.Census.VAR_OP_MARKERS_MAJALLELES, origin, netCdfMajorAlleles);
 			getNetCdfWriteFile().write(cNetCDF.Census.VAR_OP_MARKERS_MAJALLELEFRQ, origin, netCdfMajorAllelesFrequencies);
 			getNetCdfWriteFile().write(cNetCDF.Census.VAR_OP_MARKERS_MINALLELES, origin, netCdfMinorAlleles);
 			getNetCdfWriteFile().write(cNetCDF.Census.VAR_OP_MARKERS_MINALLELEFRQ, origin, netCdfMinorAllelesFrequencies);
-			getNetCdfWriteFile().write(cNetCDF.Census.VAR_OP_MARKERS_CENSUSALL, origin, netCdfCensusAlls);
+			getNetCdfWriteFile().write(cNetCDF.Census.VAR_OP_MARKERS_CENSUSALL, origin2D, netCdfCensusAlls);
 		} catch (InvalidRangeException ex) {
 			throw new IOException(ex);
 		}

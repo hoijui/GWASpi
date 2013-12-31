@@ -24,6 +24,7 @@ public class cNetCDF {
 
 	public static class Attributes {
 
+		public static final String GLOB_MATRIX_ID = "matrix_id";
 		public static final String GLOB_FRIENDLY_NAME = "friendly_name";
 		public static final String GLOB_STUDY = "study";
 		public static final String GLOB_TECHNOLOGY = "technology";

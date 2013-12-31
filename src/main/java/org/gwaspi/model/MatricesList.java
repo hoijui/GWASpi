@@ -61,6 +61,15 @@ public final class MatricesList {
 		return matrixService.getMatrix(matrixKey);
 	}
 
+	public static DataSetMetadata getDataSetMetadata(DataSetKey key) throws IOException {
+
+		if (key.isMatrix()) {
+			return getMatrixMetadataById(key.getMatrixParent());
+		} else {
+			return OperationsList.getOperation(key.getOperationParent());
+		}
+	}
+
 	public static List<MatrixKey> getMatrixKeysBySimpleName(String simpleName) throws IOException {
 		return matrixService.getMatrixKeysBySimpleName(simpleName);
 	}

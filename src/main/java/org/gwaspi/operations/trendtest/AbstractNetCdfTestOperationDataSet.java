@@ -22,6 +22,8 @@ import java.util.List;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.gui.reports.Report_Analysis;
+import org.gwaspi.model.DataSetKey;
+import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
@@ -48,8 +50,8 @@ public abstract class AbstractNetCdfTestOperationDataSet<ET> extends AbstractNet
 	private String testName;
 	private OPType testType;
 
-	public AbstractNetCdfTestOperationDataSet(OperationKey operationKey) {
-		super(true, operationKey);
+	public AbstractNetCdfTestOperationDataSet(MatrixKey origin, DataSetKey parent, OperationKey operationKey) {
+		super(true, origin, parent, operationKey);
 
 		this.markerCensusOPKey = null;
 		this.hardyWeinbergThreshold = Double.MIN_VALUE;
@@ -57,8 +59,8 @@ public abstract class AbstractNetCdfTestOperationDataSet<ET> extends AbstractNet
 		this.testType = null;
 	}
 
-	public AbstractNetCdfTestOperationDataSet() {
-		this(null);
+	public AbstractNetCdfTestOperationDataSet(MatrixKey origin, DataSetKey parent) {
+		this(origin, parent, null);
 	}
 
 	public void setMarkerCensusOPKey(OperationKey markerCensusOPKey) {
@@ -108,8 +110,7 @@ public abstract class AbstractNetCdfTestOperationDataSet<ET> extends AbstractNet
 		OperationMetadata markerCensusOP = OperationsList.getOperation(markerCensusOPKey);
 
 		return new OperationMetadata(
-				markerCensusOP.getParentMatrixKey(), // parent matrix
-				markerCensusOP.getId(), // parent operation ID
+				new DataSetKey(markerCensusOPKey), // parent data set
 				testName, // friendly name
 				testName + " on " + markerCensusOP.getFriendlyName()
 						+ "\n" + markerCensusOP.getDescription()
@@ -118,6 +119,7 @@ public abstract class AbstractNetCdfTestOperationDataSet<ET> extends AbstractNet
 				testType,
 				getNumMarkers(),
 				getNumSamples(),
-				getNumChromosomes());
+				getNumChromosomes(),
+				isMarkersOperationSet());
 	}
 }

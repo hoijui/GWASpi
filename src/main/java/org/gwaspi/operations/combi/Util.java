@@ -331,7 +331,7 @@ public class Util {
 			List<MarkerKey> markers,
 //			Map<SampleKey, SampleInfo> sampleInfos,
 			List<SampleKey> samples,
-			List<SampleInfo.Affection> sampleAffecs,
+			List<Affection> sampleAffecs,
 			List<GenotypesList> markerGTs,
 			int dSamples,
 			int dEncoded,
@@ -356,7 +356,7 @@ public class Util {
 		List<SampleInfo.Affection> sampleAffections = new ArrayList<SampleInfo.Affection>(sampleAffecs);
 		List<GenotypesList> markerGenotypes = new ArrayList<GenotypesList>(markerGTs.size());
 		for (GenotypesList mGTs : markerGTs) {
-			markerGenotypes.add(CompactGenotypesList.FACTORY.createGenotypesList(mGTs));
+			markerGenotypes.add(CompactGenotypesList.FACTORY.extract(mGTs));
 		}
 
 		try {

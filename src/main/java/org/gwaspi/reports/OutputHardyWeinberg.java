@@ -38,6 +38,7 @@ import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.Report;
+import org.gwaspi.model.ReportKey;
 import org.gwaspi.model.ReportsList;
 import org.gwaspi.model.Study;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
@@ -68,7 +69,6 @@ public class OutputHardyWeinberg {
 
 		processSortedHardyWeinbergReport(operationKey, hwOutName);
 		ReportsList.insertRPMetadata(new Report(
-				Integer.MIN_VALUE,
 				"Hardy Weinberg Table",
 				hwOutName,
 				OPType.HARDY_WEINBERG,
@@ -140,7 +140,7 @@ public class OutputHardyWeinberg {
 
 		if (markersQAopKey != null) {
 			QAMarkersOperationDataSet qaMarkersOpDS = (QAMarkersOperationDataSet) OperationFactory.generateOperationDataSet(markersQAopKey);
-			Map<Integer, MarkerKey> markers = qaMarkersOpDS.getMarkers();
+			Map<Integer, MarkerKey> markers = qaMarkersOpDS.getMarkersKeysSource().getIndicesMap();
 			Collection<Byte> knownMajorAllele = qaMarkersOpDS.getKnownMajorAllele(-1, -1);
 			Collection<Byte> knownMinorAllele = qaMarkersOpDS.getKnownMinorAllele(-1, -1);
 

@@ -30,10 +30,37 @@ import org.gwaspi.netCDF.operations.GWASinOneGOParams;
 import org.gwaspi.netCDF.operations.OperationManager;
 import org.gwaspi.threadbox.MultiOperations;
 
-class TrendTestScriptCommand extends AbstractScriptCommand {
+class TestScriptCommand extends AbstractScriptCommand {
 
-	TrendTestScriptCommand() {
-		super("trend_test");
+	private final OPType testType;
+
+	TestScriptCommand(OPType testType) {
+		super(createCommandName(testType));
+
+		this.testType = testType;
+	}
+
+	private static String createCommandName(OPType testType) {
+
+		final String commandName;
+		switch (testType) {
+			case ALLELICTEST:
+				commandName = "allelic_association";
+				break;
+			case GENOTYPICTEST:
+				commandName = "genotypic_association";
+				break;
+			case COMBI_ASSOC_TEST:
+				commandName = "combi_association";
+				break;
+			case TRENDTEST:
+				commandName = "trend_test";
+				break;
+			default:
+				throw new IllegalArgumentException("Not a supported test type: " + testType.toString());
+		}
+
+		return commandName;
 	}
 
 	@Override
@@ -45,7 +72,7 @@ class TrendTestScriptCommand extends AbstractScriptCommand {
 		# Usage: java -Xms1500m -Xmx2500m -jar GWASpi.jar script scriptFile [log org.gwaspi.cli.log]
 		data-dir=/media/data/GWASpi
 		[script]
-		0.command=trend_test
+		0.command=allelic_association # or "genotypic_association" or "trend_test"
 		1.study-id=1
 		2.matrix-id=8
 		3.gtfreq-id=46
@@ -71,9 +98,9 @@ class TrendTestScriptCommand extends AbstractScriptCommand {
 			int hwId = Integer.parseInt(args.get("hw-id")); // Parent Hardy-Weinberg operation Id
 			OperationKey hwKey = new OperationKey(matrixKey, hwId);
 
-			gwasParams.setPerformAllelicTests(false);
-			gwasParams.setPerformGenotypicTests(false);
-			gwasParams.setPerformTrendTests(true);
+			gwasParams.setPerformAllelicTests(testType == OPType.ALLELICTEST);
+			gwasParams.setPerformGenotypicTests(testType == OPType.GENOTYPICTEST);
+			gwasParams.setPerformTrendTests(testType == OPType.TRENDTEST);
 
 			gwasParams.setDiscardGTMismatches(true);
 			gwasParams.setDiscardMarkerHWCalc(Boolean.parseBoolean(args.get("calculate-discard-threshold-for-HW")));
@@ -86,21 +113,21 @@ class TrendTestScriptCommand extends AbstractScriptCommand {
 			necessaryOPs.add(OPType.MARKER_QA);
 			List<OPType> missingOPs = OperationManager.checkForNecessaryOperations(necessaryOPs, matrixKey);
 
-			// QA BLOCK
+			// QA block
 			if (gwasParams.isProceed() && missingOPs.size() > 0) {
 				gwasParams.setProceed(false);
 				System.out.println(Text.Operation.warnQABeforeAnything + "\n" + Text.Operation.willPerformOperation);
 				MultiOperations.doMatrixQAs(matrixKey);
 			}
 
-			// TRend TEST BLOCK
+			// test block
 			if (gwasParams.isProceed()) {
 				System.out.println(Text.All.processing);
-				MultiOperations.doTrendTest(
-						matrixKey,
+				MultiOperations.doTest(
 						gtFreqKey,
 						hwKey,
-						gwasParams);
+						gwasParams,
+						testType);
 				return true;
 			}
 		}

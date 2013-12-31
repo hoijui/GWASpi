@@ -31,6 +31,7 @@ import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.GenotypesList;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MarkerMetadata;
+import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleKey;
@@ -68,6 +69,11 @@ public class MatrixTranslator implements MatrixOperation {
 	}
 
 	@Override
+	public boolean isCreatingResultMatrix() {
+		return true;
+	}
+
+	@Override
 	public boolean isValid() {
 		return (getProblemDescription() == null);
 	}
@@ -99,7 +105,7 @@ public class MatrixTranslator implements MatrixOperation {
 	@Override
 	public int processMatrix() throws IOException {
 
-		int resultMatrixId = Integer.MIN_VALUE;
+		int resultMatrixId = MatrixKey.NULL_ID;
 
 		translateToACGT();
 
