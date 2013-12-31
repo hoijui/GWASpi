@@ -27,6 +27,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import org.gwaspi.model.CompactGenotypesList;
 import org.gwaspi.model.GenotypesList;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.SampleInfo;
@@ -323,7 +324,7 @@ public class Util {
 
 	private static final File TMP_RAW_DATA_FILE = new File(System.getProperty("user.home") + "/Projects/GWASpi/repos/GWASpi/rawDataTmp.ser"); // HACK
 
-	private static void storeForEncoding(
+	static void storeForEncoding(
 //			MarkersIterable markersIterable,
 //			DataSetSource dataSetSource,
 //			Iterable<Map.Entry<Integer, MarkerKey>> markers,
@@ -337,6 +338,10 @@ public class Util {
 			int n)
 			throws IOException
 	{
+		if (!EXAMPLE_TEST) {
+			return;
+		}
+
 //		// we use LinkedHashMap to preserve the inut order
 //		Map<MarkerKey, Map<SampleKey, byte[]>> loadedMatrixSamples
 //				= new LinkedHashMap<MarkerKey, Map<SampleKey, byte[]>>(dSamples);
@@ -349,9 +354,9 @@ public class Util {
 		List<MarkerKey> markerKeys = new ArrayList<MarkerKey>(markers);
 		List<SampleKey> sampleKeys = new ArrayList<SampleKey>(samples);
 		List<SampleInfo.Affection> sampleAffections = new ArrayList<SampleInfo.Affection>(sampleAffecs);
-		List<List<byte[]>> markerGenotypes = new ArrayList<List<byte[]>>(markerGTs.size());
+		List<GenotypesList> markerGenotypes = new ArrayList<GenotypesList>(markerGTs.size());
 		for (GenotypesList mGTs : markerGTs) {
-			markerGenotypes.add(new ArrayList<byte[]>(mGTs));
+			markerGenotypes.add(CompactGenotypesList.FACTORY.createGenotypesList(mGTs));
 		}
 
 		try {
@@ -383,7 +388,7 @@ public class Util {
 		List<MarkerKey> markerKeys;
 		List<SampleKey> sampleKeys;
 		List<Affection> sampleAffections;
-		List<List<byte[]>> markerGenotypes;
+		List<GenotypesList> markerGenotypes;
 		try {
 			FileInputStream fin = new FileInputStream(TMP_RAW_DATA_FILE);
 			ObjectInputStream ois = new ObjectInputStream(fin);
@@ -395,7 +400,7 @@ public class Util {
 			markerKeys = (List<MarkerKey>) ois.readObject();
 			sampleKeys = (List<SampleKey>) ois.readObject();
 			sampleAffections = (List<Affection>) ois.readObject();
-			markerGenotypes = (List<List<byte[]>>) ois.readObject();
+			markerGenotypes = (List<GenotypesList>) ois.readObject();
 
 			ois.close();
 

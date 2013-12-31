@@ -28,7 +28,7 @@ public interface CombiTestOperationDataSet extends OperationDataSet<CombiTestOpe
 
 	void addEntry(CombiTestOperationEntry entry) throws IOException;
 
-	void setHardyWeinbergOperationKey(OperationKey hwOpKey);
+//	void setHardyWeinbergOperationKey(OperationKey hwOpKey);
 
 	List<Double> getWeights() throws IOException;
 

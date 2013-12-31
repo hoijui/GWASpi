@@ -111,22 +111,21 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 //			try {
 				CombiTestOperationDataSet dataSet = (CombiTestOperationDataSet) OperationFactory.generateOperationDataSet(OPType.COMBI_ASSOC_TEST); // HACK
 //				((AbstractNetCdfOperationDataSet) dataSet).setReadMatrixKey(rdMatrixKey); // HACK
-				((AbstractNetCdfOperationDataSet) dataSet).setReadOperationKey(markerCensusOPKey); // HACK
+//				((AbstractNetCdfOperationDataSet) dataSet).setReadOperationKey(markerCensusOPKey); // HACK
+				((AbstractNetCdfOperationDataSet) dataSet).setReadOperationKey(params.getHardyWeinbergOperationKey()); // HACK
 //				((AbstractNetCdfOperationDataSet) dataSet).setNumMarkers(wrMarkerMetadata.size()); // HACK
 //				((AbstractNetCdfOperationDataSet) dataSet).setNumSamples(rdCensusOPMetadata.getImplicitSetSize()); // HACK
 //				((AbstractNetCdfOperationDataSet) dataSet).setNumChromosomes(chromosomeInfo.size()); // HACK
-				((AbstractNetCdfOperationDataSet) dataSet).setNumMarkers(rdMarkerCensusOperationDataSet.getMarkers().size()); // HACK
-				((AbstractNetCdfOperationDataSet) dataSet).setNumSamples(rdMarkerCensusOperationDataSet.getSamples().size()); // HACK
-				((AbstractNetCdfOperationDataSet) dataSet).setNumChromosomes(rdMarkerCensusOperationDataSet.getChromosomes().size()); // HACK
-				dataSet.setMarkerCensusOPKey(markerCensusOPKey); // HACK
-				dataSet.setTestType(testType); // HACK
-				dataSet.setTestName(testName); // HACK
+				((AbstractNetCdfOperationDataSet) dataSet).setNumMarkers(params.getMarkersToKeep()); // HACK
+//				((AbstractNetCdfOperationDataSet) dataSet).setNumSamples(parentMatrixDataSetSource.getNumSamples()); // HACK
+				((AbstractNetCdfOperationDataSet) dataSet).setNumChromosomes(-1); // <- unknonw // HACK
+//				dataSet.setHardyWeinbergOperationKey(params.getHardyWeinbergOperationKey()); // HACK
 
 //				dataSet.setMarkers(wrMarkerMetadata.keySet());
-				dataSet.setUseAllMarkersFromParent(true);
-				dataSet.setUseAllSamplesFromParent(true);
+				((AbstractNetCdfOperationDataSet) dataSet).setUseAllMarkersFromParent(false);
+				((AbstractNetCdfOperationDataSet) dataSet).setUseAllSamplesFromParent(false);
 //				dataSet.setChromosomes(chromosomeInfo);
-				dataSet.setUseAllChromosomesFromParent(true);
+				((AbstractNetCdfOperationDataSet) dataSet).setUseAllChromosomesFromParent(false);
 
 
 
@@ -153,20 +152,20 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 				}
 			}
 
+			((AbstractNetCdfOperationDataSet) dataSet).setNumSamples(n);
+			((AbstractNetCdfOperationDataSet) dataSet).setUseAllSamplesFromParent(n == sampleAffections.size()); // HACK
+
+
 			LOG.info("Combi Association Test: #samples: " + n);
 			LOG.info("Combi Association Test: #markers: " + dSamples);
 			LOG.info("Combi Association Test: #SVM-dimensions: " + dEncoded);
 
-			if (EXAMPLE_TEST) { // HACK
-				storeForEncoding(wrMarkerKeysFiltered, samplesKeysSource, sampleAffections, markersGenotypesSource, dSamples, dEncoded, n);
-			} else {
-				return runEncodingAndSVM(wrMarkerKeysFiltered, samplesKeysSource, sampleAffections, markersGenotypesSource, dSamples, dEncoded, n, params.getEncoder());
-			}
+			Util.storeForEncoding(wrMarkerKeysFiltered, samplesKeysSource, sampleAffections, markersGenotypesSource, dSamples, dEncoded, n); // HACK
+			return runEncodingAndSVM(dataSet, wrMarkerKeysFiltered, samplesKeysSource, sampleAffections, markersGenotypesSource, dSamples, dEncoded, n, params.getEncoder());
 		} else { // NO DATA LEFT AFTER THRESHOLD FILTER PICKING
 			LOG.warn(Text.Operation.warnNoDataLeftAfterPicking);
+			return Integer.MIN_VALUE;
 		}
-
-		return Integer.MIN_VALUE; // FIXME return correct value here
 	}
 
 	private static Map<SampleKey, Double> encodeAffectionStates(final List<SampleKey> sampleKeys, final List<Affection> sampleAffections, int n) {
@@ -309,6 +308,7 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 	}
 
 	private static int runEncodingAndSVM_LINEAR_KERNEL(
+			CombiTestOperationDataSet dataSet,
 //			MarkersIterable markersIterable,
 //			DataSetSource dataSetSource,
 //			Iterable<Map.Entry<Integer, MarkerKey>> markers,
@@ -387,7 +387,7 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 //				}
 //			}
 
-			return runSVM(libSvmProblem, genotypeEncoder, encoderString);
+			return runSVM(dataSet, libSvmProblem, genotypeEncoder, encoderString);
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
@@ -396,6 +396,7 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 	}
 
 	private static int runEncodingAndSVM_PRECOMPUTED(
+			CombiTestOperationDataSet dataSet,
 //			MarkersIterable markersIterable,
 //			DataSetSource dataSetSource,
 //			Iterable<Map.Entry<Integer, MarkerKey>> markers,
@@ -483,7 +484,7 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 					libSvmParameters,
 					null);
 
-			return runSVM(libSvmProblem, genotypeEncoder, encoderString);
+			return runSVM(dataSet, libSvmProblem, genotypeEncoder, encoderString);
 //			return Integer.MIN_VALUE; // FIXME
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -492,7 +493,8 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 		return Integer.MIN_VALUE;
 	}
 
-	private static int runEncodingAndSVM(
+	static int runEncodingAndSVM(
+			CombiTestOperationDataSet dataSet,
 //			MarkersIterable markersIterable,
 //			DataSetSource dataSetSource,
 //			Iterable<Map.Entry<Integer, MarkerKey>> markers,
@@ -500,13 +502,13 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 //			Map<SampleKey, SampleInfo> sampleInfos,
 			List<SampleKey> samples,
 			List<Affection> sampleAffections,
-			List<List<byte[]>> markerGTs,
+			List<GenotypesList> markerGTs,
 			int dSamples,
 			int dEncoded,
 			int n,
 			GenotypeEncoder genotypeEncoder)
 	{
-		return runEncodingAndSVM_PRECOMPUTED(markers, samples, sampleAffections, markerGTs, dSamples, dEncoded, n, genotypeEncoder);
+		return runEncodingAndSVM_PRECOMPUTED(dataSet, markers, samples, sampleAffections, markerGTs, dSamples, dEncoded, n, genotypeEncoder);
 	}
 
 	private static void whiten(float[][] x) {
@@ -1177,7 +1179,7 @@ LOG.debug("calculateOriginalSpaceWeights: " + xs.length);
 
 //	private static int runSVM(Map<SampleKey, List<Double>> X, Map<SampleKey, Double> Y, GenotypeEncoder genotypeEncoder) {
 //	private static int runSVM(List<List<Double>> X, List<Double> Y, GenotypeEncoder genotypeEncoder, String encoderString) {
-	private static int runSVM(svm_problem libSvmProblem, GenotypeEncoder genotypeEncoder, String encoderString) {
+	private static int runSVM(CombiTestOperationDataSet dataSet, svm_problem libSvmProblem, GenotypeEncoder genotypeEncoder, String encoderString) {
 
 //		int dEncoded = X.iterator().next().size();
 //		int dSamples = dEncoded / genotypeEncoder.getEncodingFactor();
@@ -1351,7 +1353,8 @@ LOG.debug("calculateOriginalSpaceWeights: " + xs.length);
 		LOG.debug("Combi Association Test: filtered weights: " + weightsFiltered);
 
 		// TODO sort the weights (should already be absolute?)
-		// TODO write stuff to a matrix (maybethe list of important markers?)
+		// TODO write stuff to a matrix (maybe the list of important markers?)
+		dataSet.addEntry(null);
 
 		return Integer.MIN_VALUE;
 	}
