@@ -101,7 +101,8 @@ public class CompactGenotypesList extends AbstractList<byte[]> implements Genoty
 		this.possibleGenotypes = possibleGenotypes;
 	}
 
-	public CompactGenotypesList(Collection<byte[]> originalGenotypes,
+	public CompactGenotypesList(
+			Collection<byte[]> originalGenotypes,
 			Collection<byte[]> possibleGenotypes)
 	{
 		this.size = originalGenotypes.size();
