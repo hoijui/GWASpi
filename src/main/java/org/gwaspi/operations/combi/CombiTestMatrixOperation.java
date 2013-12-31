@@ -1354,7 +1354,7 @@ LOG.debug("calculateOriginalSpaceWeights: " + xs.length);
 
 		// TODO sort the weights (should already be absolute?)
 		// TODO write stuff to a matrix (maybe the list of important markers?)
-		dataSet.addEntry(null);
+		dataSet.addEntry(new DefaultCombiTestOperationEntry(null, n, n));XXX;
 
 		return Integer.MIN_VALUE;
 	}
