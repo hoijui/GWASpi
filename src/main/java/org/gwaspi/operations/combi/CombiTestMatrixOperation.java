@@ -161,7 +161,20 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 			LOG.info("Combi Association Test: #SVM-dimensions: " + dEncoded);
 
 			Util.storeForEncoding(wrMarkerKeysFiltered, samplesKeysSource, sampleAffections, markersGenotypesSource, dSamples, dEncoded, n); // HACK
-			return runEncodingAndSVM(dataSet, wrMarkerKeysFiltered, samplesKeysSource, sampleAffections, markersGenotypesSource, dSamples, dEncoded, n, params.getEncoder());
+			List<Double> weights = runEncodingAndSVM(/*wrMarkerKeysFiltered,*/ samplesKeysSource, sampleAffections, markersGenotypesSource, dSamples, dEncoded, n, params.getEncoder());
+
+			// TODO sort the weights (should already be absolute?)
+			// TODO write stuff to a matrix (maybe the list of important markers?)
+
+			Iterator<Integer> markerOrigIndicesIt = markerOrigIndices.iterator();
+			Iterator<MarkerKey> markerKeysIt = markerKeys.iterator();
+			for (Double weight : weights) {
+				dataSet.addEntry(new DefaultCombiTestOperationEntry(
+						markerKeysIt.next(),
+						markerOrigIndicesIt.next(),
+						weight));
+			}
+	//		dataSet.setWeights(weightsFiltered);
 		} else { // NO DATA LEFT AFTER THRESHOLD FILTER PICKING
 			LOG.warn(Text.Operation.warnNoDataLeftAfterPicking);
 			return Integer.MIN_VALUE;
@@ -307,12 +320,13 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 		return encodedSamples;
 	}
 
-	private static int runEncodingAndSVM_LINEAR_KERNEL(
-			CombiTestOperationDataSet dataSet,
+	private static List<Double> runEncodingAndSVM_LINEAR_KERNEL(
+//			CombiTestOperationDataSet dataSet,
 //			MarkersIterable markersIterable,
 //			DataSetSource dataSetSource,
 //			Iterable<Map.Entry<Integer, MarkerKey>> markers,
-			List<MarkerKey> markerKeys,
+//			List<Integer> markerOrigIndices,
+//			List<MarkerKey> markerKeys,
 //			Map<SampleKey, SampleInfo> sampleInfos,
 			List<SampleKey> sampleKeys,
 			List<Affection> sampleAffections,
@@ -387,20 +401,20 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 //				}
 //			}
 
-			return runSVM(dataSet, libSvmProblem, genotypeEncoder, encoderString);
+			return runSVM(libSvmProblem, genotypeEncoder, encoderString);
 		} catch (Exception ex) {
 			ex.printStackTrace();
+			return null;
 		}
-
-		return Integer.MIN_VALUE;
 	}
 
-	private static int runEncodingAndSVM_PRECOMPUTED(
-			CombiTestOperationDataSet dataSet,
+	private static List<Double> runEncodingAndSVM_PRECOMPUTED(
+//			CombiTestOperationDataSet dataSet,
 //			MarkersIterable markersIterable,
 //			DataSetSource dataSetSource,
 //			Iterable<Map.Entry<Integer, MarkerKey>> markers,
-			List<MarkerKey> markers,
+//			List<Integer> markerOrigIndices,
+//			List<MarkerKey> markerKeys,
 //			Map<SampleKey, SampleInfo> sampleInfos,
 			List<SampleKey> sampleKeys,
 			List<Affection> sampleAffections,
@@ -484,21 +498,21 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 					libSvmParameters,
 					null);
 
-			return runSVM(dataSet, libSvmProblem, genotypeEncoder, encoderString);
+			return runSVM(libSvmProblem, genotypeEncoder, encoderString);
 //			return Integer.MIN_VALUE; // FIXME
 		} catch (Exception ex) {
 			ex.printStackTrace();
+			return null;
 		}
-
-		return Integer.MIN_VALUE;
 	}
 
-	static int runEncodingAndSVM(
-			CombiTestOperationDataSet dataSet,
+	static List<Double> runEncodingAndSVM(
+//			CombiTestOperationDataSet dataSet,
 //			MarkersIterable markersIterable,
 //			DataSetSource dataSetSource,
 //			Iterable<Map.Entry<Integer, MarkerKey>> markers,
-			List<MarkerKey> markers,
+//			List<Integer> markerOrigIndices,
+//			List<MarkerKey> markerKeys,
 //			Map<SampleKey, SampleInfo> sampleInfos,
 			List<SampleKey> samples,
 			List<Affection> sampleAffections,
@@ -508,7 +522,7 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 			int n,
 			GenotypeEncoder genotypeEncoder)
 	{
-		return runEncodingAndSVM_PRECOMPUTED(dataSet, markers, samples, sampleAffections, markerGTs, dSamples, dEncoded, n, genotypeEncoder);
+		return runEncodingAndSVM_PRECOMPUTED(samples, sampleAffections, markerGTs, dSamples, dEncoded, n, genotypeEncoder);
 	}
 
 	private static void whiten(float[][] x) {
@@ -1179,8 +1193,14 @@ LOG.debug("calculateOriginalSpaceWeights: " + xs.length);
 
 //	private static int runSVM(Map<SampleKey, List<Double>> X, Map<SampleKey, Double> Y, GenotypeEncoder genotypeEncoder) {
 //	private static int runSVM(List<List<Double>> X, List<Double> Y, GenotypeEncoder genotypeEncoder, String encoderString) {
-	private static int runSVM(CombiTestOperationDataSet dataSet, svm_problem libSvmProblem, GenotypeEncoder genotypeEncoder, String encoderString) {
-
+	private static List<Double> runSVM(
+//			CombiTestOperationDataSet dataSet,
+//			List<Integer> markerOrigIndices,
+//			List<MarkerKey> markerKeys,
+			svm_problem libSvmProblem,
+			GenotypeEncoder genotypeEncoder,
+			String encoderString)
+	{
 //		int dEncoded = X.iterator().next().size();
 //		int dSamples = dEncoded / genotypeEncoder.getEncodingFactor();
 //		int n = X.size();
@@ -1352,10 +1372,6 @@ LOG.debug("calculateOriginalSpaceWeights: " + xs.length);
 		}
 		LOG.debug("Combi Association Test: filtered weights: " + weightsFiltered);
 
-		// TODO sort the weights (should already be absolute?)
-		// TODO write stuff to a matrix (maybe the list of important markers?)
-		dataSet.addEntry(new DefaultCombiTestOperationEntry(null, n, n));XXX;
-
-		return Integer.MIN_VALUE;
+		return weightsFiltered;
 	}
 }
