@@ -79,8 +79,14 @@ public abstract class EncodingTableBasedGenotypeEncoder implements GenotypeEncod
 			float[][] encodedSamplesMarkers,
 			int mi)
 	{
-		Set<byte[]> possibleGenotypes = NetCdfUtils.extractUniqueGenotypesOrdered(
+		Set<byte[]> possibleGenotypes;
+		if (samplesToKeep == null) {
+			possibleGenotypes = NetCdfUtils.extractUniqueGenotypesOrdered(
+				rawGenotypes);
+		} else {
+			possibleGenotypes = NetCdfUtils.extractUniqueGenotypesOrdered(
 				rawGenotypes, samplesToKeep);
+		}
 
 		// create the encoding table
 		Map<Integer, List<Float>> encodingTable
@@ -114,24 +120,37 @@ public abstract class EncodingTableBasedGenotypeEncoder implements GenotypeEncod
 //				libSvmProblem.x[di][mi].value = 0.0;
 //			}
 
-			for (int di = 0; di < encodedSamplesMarkers.length; di++) {
-				encodedSamplesMarkers[di][mi] = 0.0f;
+			for (float[] encodedSamplesMarker : encodedSamplesMarkers) {
+				encodedSamplesMarker[mi] = 0.0f;
 			}
 		} else {
 			// encode
 //			Collection<List<Double>> encodedGTValues = encodedGenotypes.values();
 //			Iterator<List<Double>> encodedIt = encodedGTValues.iterator();
 			int di = 0;
-			Iterator<Boolean> keep = samplesToKeep.iterator();
-			for (byte[] genotype : rawGenotypes) {
-				if (keep.next().booleanValue()) {
+			if (samplesToKeep == null) {
+				for (byte[] genotype : rawGenotypes) {
 //					List<Double> encodedValues = encodedIt.next();
 					List<Float> encodedGT = encodingTable.get(Genotype.hashCode(genotype));
 //					encodedValues.addAll(encodedGT);
 					for (Float encVal : encodedGT) {
 //						libSvmProblem.x[di][mi].value = encVal;
 
-						encodedSamplesMarkers[di][mi] = encVal.floatValue();
+						encodedSamplesMarkers[di++][mi] = encVal.floatValue();
+					}
+				}
+			} else {
+				Iterator<Boolean> keep = samplesToKeep.iterator();
+				for (byte[] genotype : rawGenotypes) {
+					if (keep.next().booleanValue()) {
+//						List<Double> encodedValues = encodedIt.next();
+						List<Float> encodedGT = encodingTable.get(Genotype.hashCode(genotype));
+//						encodedValues.addAll(encodedGT);
+						for (Float encVal : encodedGT) {
+//							libSvmProblem.x[di][mi].value = encVal;
+
+							encodedSamplesMarkers[di++][mi] = encVal.floatValue();
+						}
 					}
 				}
 			}

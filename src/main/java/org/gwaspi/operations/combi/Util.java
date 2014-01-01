@@ -331,7 +331,7 @@ public class Util {
 			List<MarkerKey> markers,
 //			Map<SampleKey, SampleInfo> sampleInfos,
 			List<SampleKey> samples,
-			List<SampleInfo.Affection> sampleAffecs,
+			List<Affection> sampleAffecs,
 			List<GenotypesList> markerGTs,
 			int dSamples,
 			int dEncoded,

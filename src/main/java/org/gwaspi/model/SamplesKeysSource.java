@@ -17,10 +17,18 @@
 
 package org.gwaspi.model;
 
+import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 /**
  * TODO
  */
 public interface SamplesKeysSource extends List<SampleKey> {
+
+	List<SampleKey> getRange(int from, int to) throws IOException;
+
+	Map<Integer, SampleKey> getIndicesMap() throws IOException;
+
+	Map<Integer, SampleKey> getIndicesMap(int from, int to) throws IOException;
 }

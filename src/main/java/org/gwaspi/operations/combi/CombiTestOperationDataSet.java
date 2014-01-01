@@ -30,6 +30,8 @@ public interface CombiTestOperationDataSet extends OperationDataSet<CombiTestOpe
 
 //	void setHardyWeinbergOperationKey(OperationKey hwOpKey);
 
+	void setWeights(List<Double> weights) throws IOException;
+
 	List<Double> getWeights() throws IOException;
 
 	List<Double> getWeights(int from, int to) throws IOException;

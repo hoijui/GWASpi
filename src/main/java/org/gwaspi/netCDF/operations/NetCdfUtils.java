@@ -388,7 +388,7 @@ public class NetCdfUtils {
 //
 //		return charArray;
 //	}
-	
+
 //	public static ArrayByte.D1 writeValuesToD1ArrayByte(Collection<Byte> values) {
 //
 //		ArrayByte.D1 ncArray = new ArrayByte.D1(values.size());

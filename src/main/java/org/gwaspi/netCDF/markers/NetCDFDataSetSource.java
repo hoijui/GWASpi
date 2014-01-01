@@ -764,6 +764,12 @@ public class NetCDFDataSetSource implements DataSetSource {
 			return samples;
 		}
 
+		@Override
+		public Map<Integer, SampleKey> getIndicesMap() throws IOException {
+			return getIndicesMap(-1, -1);
+		}
+
+		@Override
 		public Map<Integer, SampleKey> getIndicesMap(int from, int to) throws IOException {
 
 			Map<Integer, SampleKey> samples;

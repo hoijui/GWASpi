@@ -144,6 +144,15 @@ public class SampleInfo implements Comparable<SampleInfo>, Serializable {
 		/** Case */
 		AFFECTED;
 
+		/**
+		 * Returns whether the supplied affection is valid for testing,
+		 * which requires it to be either affected or unaffected.
+		 */
+		public static boolean isValid(Affection affection) {
+//			return ((affection != null) && (affection != UNKNOWN));
+			return ((affection == AFFECTED) || (affection == UNAFFECTED));
+		}
+
 		/** Parse by the PLINK standard */
 		public static Affection parse(String affectionStr) {
 			return parse(affectionStr, false);

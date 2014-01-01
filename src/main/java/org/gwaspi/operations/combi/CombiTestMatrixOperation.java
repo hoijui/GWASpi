@@ -130,7 +130,8 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 
 
 			Map<Integer, MarkerKey> wrMarkersFiltered = AbstractTestMatrixOperation.filterByValues(parentMatrixDataSetSource.getMarkersKeysSource().getIndicesMap(), toBeExcluded);
-			ArrayList<MarkerKey> wrMarkerKeysFiltered = new ArrayList<MarkerKey>(wrMarkersFiltered.values());
+			ArrayList<MarkerKey> markerKeys = new ArrayList<MarkerKey>(wrMarkersFiltered.values());
+			dataSet.setMarkers(wrMarkersFiltered);
 
 			SamplesKeysSource samplesKeysSource = parentMatrixDataSetSource.getSamplesKeysSource();
 			List<Affection> sampleAffections = parentMatrixDataSetSource.getSamplesInfosSource().getAffections();
@@ -140,41 +141,73 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 
 			// dimensions of the samples(-space) == #markers (== #SNPs)
 //			int dSamples = markersIterable.getMarkerKeys().size() - excluder.getTotalExcluded();
-			int dSamples = wrMarkerKeysFiltered.size() - toBeExcluded.size();
+			int dSamples = markerKeys.size() - toBeExcluded.size();
 			// dimensions of the encoded samples(-space) == #markers * encoding-factor
 			int dEncoded = dSamples * params.getEncoder().getEncodingFactor();
 	//		int n = sampleInfos.size();
-			int n = 0;
+//			int n = 0;
+//			// only count samples with a valid affection
+//			for (Affection sampleAffection : sampleAffections) {
+//				if (Affection.isValid(sampleAffection)) {
+//					n++;
+//				}
+//			}
+			int nSamplesToKeep = 0;
 			// only count samples with a valid affection
+			Map<Integer, SampleKey> validSamplesOrigIndicesAndKey = new LinkedHashMap<Integer, SampleKey>(parentMatrixDataSetSource.getNumSamples());
+			List<Affection> validSampleAffections = new ArrayList<Affection>(parentMatrixDataSetSource.getNumSamples());
+			Iterator<Map.Entry<Integer, SampleKey>> samplesIt = samplesKeysSource.getIndicesMap().entrySet().iterator();
+//			List<Boolean> samplesToKeep = new ArrayList<Boolean>(n);
 			for (Affection sampleAffection : sampleAffections) {
-				if (sampleAffection != Affection.UNKNOWN) {
-					n++;
+				Map.Entry<Integer, SampleKey> sample = samplesIt.next();
+				if (Affection.isValid(sampleAffection)) {
+					nSamplesToKeep++;
+					validSamplesOrigIndicesAndKey.put(sample.getKey(), sample.getValue());
 				}
+//				if (sampleAffection == Affection.UNKNOWN) {
+//					samplesToKeep.add(Boolean.FALSE);
+//				} else  {
+//					nSamplesToKeep++;
+//					samplesToKeep.add(Boolean.TRUE);
+//				}
 			}
+			final int n = nSamplesToKeep;
+			if (validSampleAffections instanceof ArrayList) {
+				((ArrayList) validSampleAffections).trimToSize();
+			}
+			ArrayList<SampleKey> samplesKeys = new ArrayList<SampleKey>(validSamplesOrigIndicesAndKey.values());
 
-			((AbstractNetCdfOperationDataSet) dataSet).setNumSamples(n);
-			((AbstractNetCdfOperationDataSet) dataSet).setUseAllSamplesFromParent(n == sampleAffections.size()); // HACK
+			final boolean useAllSamplesFromParent = (n == parentMatrixDataSetSource.getNumSamples());
+
+			dataSet.setNumSamples(n);
+			((AbstractNetCdfOperationDataSet) dataSet).setUseAllSamplesFromParent(useAllSamplesFromParent); // HACK
+			if (!useAllSamplesFromParent) {
+				dataSet.setSamples(validSamplesOrigIndicesAndKey);
+
+			}
 
 
 			LOG.info("Combi Association Test: #samples: " + n);
 			LOG.info("Combi Association Test: #markers: " + dSamples);
 			LOG.info("Combi Association Test: #SVM-dimensions: " + dEncoded);
 
-			Util.storeForEncoding(wrMarkerKeysFiltered, samplesKeysSource, sampleAffections, markersGenotypesSource, dSamples, dEncoded, n); // HACK
-			List<Double> weights = runEncodingAndSVM(/*wrMarkerKeysFiltered,*/ samplesKeysSource, sampleAffections, markersGenotypesSource, dSamples, dEncoded, n, params.getEncoder());
+			Util.storeForEncoding(markerKeys, samplesKeys, sampleAffections, markersGenotypesSource, dSamples, dEncoded, n); // HACK
+			List<Double> weights = runEncodingAndSVM(markerKeys, samplesKeys, sampleAffections, markersGenotypesSource, dSamples, dEncoded, n, params.getEncoder());
 
 			// TODO sort the weights (should already be absolute?)
 			// TODO write stuff to a matrix (maybe the list of important markers?)
 
-			Iterator<Integer> markerOrigIndicesIt = markerOrigIndices.iterator();
-			Iterator<MarkerKey> markerKeysIt = markerKeys.iterator();
-			for (Double weight : weights) {
-				dataSet.addEntry(new DefaultCombiTestOperationEntry(
-						markerKeysIt.next(),
-						markerOrigIndicesIt.next(),
-						weight));
-			}
-	//		dataSet.setWeights(weightsFiltered);
+//			Iterator<Integer> markerOrigIndicesIt = markerOrigIndices.iterator();
+//			Iterator<MarkerKey> markerKeysIt = markerKeys.iterator();
+//			for (Double weight : weights) {
+//				dataSet.addEntry(new DefaultCombiTestOperationEntry(
+//						markerKeysIt.next(),
+//						markerOrigIndicesIt.next(),
+//						weight));
+//			}
+			dataSet.setWeights(weights);
+
+			return ((AbstractNetCdfOperationDataSet) dataSet).getOperationKey().getId(); // HACK
 		} else { // NO DATA LEFT AFTER THRESHOLD FILTER PICKING
 			LOG.warn(Text.Operation.warnNoDataLeftAfterPicking);
 			return Integer.MIN_VALUE;
@@ -190,10 +223,10 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 		Iterator<SampleKey> sampleKeysIt = sampleKeys.iterator();
 		for (Affection sampleAffection : sampleAffections) {
 			SampleKey key = sampleKeysIt.next();
-			if (sampleAffection == Affection.UNKNOWN) {
-//				throw new RuntimeException("Should we filter this out beforehand?");
-				continue; // HACK maybe hacky, cause we should have filtered it out earlier? (i(robin) currently think it is ok here)
-			}
+			// NOTE
+			//   We ensured earlier already,
+			//   that we have only affected & unaffected samples,
+			//   no unknown ones.
 			Double encodedDisease = sampleAffection.equals(Affection.AFFECTED) ? 1.0 : -1.0; // XXX or should it be 0.0 instead of -1.0?
 			affectionStates.put(key, encodedDisease);
 		}
@@ -215,18 +248,19 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 //		LOG.debug("samples:");
 //		Set<SampleKey> sampleKeys = sampleInfos.keySet();// NOTE needs to be well ordered!
 
-		// evaluate which samples to keep
-		// HACK maybe hacky, cause we should have filtered it out earlier? (i(robin) think not)
-		int nSamplesToKeep = 0;
-		List<Boolean> samplesToKeep = new ArrayList<Boolean>(n);
-		for (Affection sampleAffection : sampleAffections) {
-			if (sampleAffection == Affection.UNKNOWN) {
-				samplesToKeep.add(Boolean.FALSE);
-			} else  {
-				nSamplesToKeep++;
-				samplesToKeep.add(Boolean.TRUE);
-			}
-		}
+//		// evaluate which samples to keep
+//		// HACK maybe hacky, cause we should have filtered it out earlier? (i(robin) think not)
+//		int nSamplesToKeep = 0;
+//		List<Boolean> samplesToKeep = new ArrayList<Boolean>(n);
+//		for (Affection sampleAffection : sampleAffections) {
+//			if (sampleAffection == Affection.UNKNOWN) {
+//				samplesToKeep.add(Boolean.FALSE);
+//			} else  {
+//				nSamplesToKeep++;
+//				samplesToKeep.add(Boolean.TRUE);
+//			}
+//		}
+		final int nSamplesToKeep = n;
 
 		// we use LinkedHashMap to preserve the inut order
 //		Map<SampleKey, List<Double>> encodedSamples
@@ -243,7 +277,7 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 		final String humanReadableFeaturesMemorySize = Util.bytes2humanReadable(featureBytes);
 		LOG.info("Combi Association Test: allocate memory for features: {}",
 				humanReadableFeaturesMemorySize);
-		float[][] encodedSamples;
+		float[][] encodedSamples; // This is basically the (encoded) feature-map, as will be fed to the SVM
 		try {
 			encodedSamples = new float[nSamplesToKeep][dEncoded];
 		} catch (OutOfMemoryError er) {
@@ -300,7 +334,7 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 
 			// encode all samples for this marker
 //			encoder.encodeGenotypes(uniqueList, all, encodedSamples, mi);
-			encoder.encodeGenotypes(gtsForOneMarker, samplesToKeep, encodedSamples, mi);
+			encoder.encodeGenotypes(gtsForOneMarker, /*samplesToKeep*/null, encodedSamples, mi); XXX;
 
 			mi++;
 
@@ -326,7 +360,7 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 //			DataSetSource dataSetSource,
 //			Iterable<Map.Entry<Integer, MarkerKey>> markers,
 //			List<Integer> markerOrigIndices,
-//			List<MarkerKey> markerKeys,
+			List<MarkerKey> markerKeys,
 //			Map<SampleKey, SampleInfo> sampleInfos,
 			List<SampleKey> sampleKeys,
 			List<Affection> sampleAffections,
@@ -414,7 +448,7 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 //			DataSetSource dataSetSource,
 //			Iterable<Map.Entry<Integer, MarkerKey>> markers,
 //			List<Integer> markerOrigIndices,
-//			List<MarkerKey> markerKeys,
+			List<MarkerKey> markerKeys,
 //			Map<SampleKey, SampleInfo> sampleInfos,
 			List<SampleKey> sampleKeys,
 			List<Affection> sampleAffections,
@@ -512,9 +546,9 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 //			DataSetSource dataSetSource,
 //			Iterable<Map.Entry<Integer, MarkerKey>> markers,
 //			List<Integer> markerOrigIndices,
-//			List<MarkerKey> markerKeys,
+			List<MarkerKey> markerKeys,
 //			Map<SampleKey, SampleInfo> sampleInfos,
-			List<SampleKey> samples,
+			List<SampleKey> sampleKeys,
 			List<Affection> sampleAffections,
 			List<GenotypesList> markerGTs,
 			int dSamples,
@@ -522,7 +556,11 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 			int n,
 			GenotypeEncoder genotypeEncoder)
 	{
-		return runEncodingAndSVM_PRECOMPUTED(samples, sampleAffections, markerGTs, dSamples, dEncoded, n, genotypeEncoder);
+		if (1 == 0) {
+			return runEncodingAndSVM_LINEAR_KERNEL(markerKeys, sampleKeys, sampleAffections, markerGTs, dSamples, dEncoded, n, genotypeEncoder);
+		} else {
+			return runEncodingAndSVM_PRECOMPUTED(markerKeys, sampleKeys, sampleAffections, markerGTs, dSamples, dEncoded, n, genotypeEncoder);
+		}
 	}
 
 	private static void whiten(float[][] x) {
