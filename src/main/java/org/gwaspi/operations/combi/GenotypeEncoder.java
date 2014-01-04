@@ -23,14 +23,15 @@ import java.util.List;
  * Encodes genotypes into values suitable for SVM input,
  * and decodes the weights (result of the SVM training)
  * into a usable format again.
+ * May be
  */
 public interface GenotypeEncoder {
 
 //	int calculateEncodedGenotypeVectorSize(int oldSize);
 
 	/**
-	 * Encodes the genotypes for one sample into values suitable
-	 * for SVM input.
+	 * Encodes the genotypes for one marker (== one data-point for the SVM)
+	 * into values suitable for SVM input.
 	 * @param possibleGenotypes input, one up to three entries
 	 *   per genotype(-pair) per marker, for example:
 	 *   <code>
@@ -62,7 +63,8 @@ public interface GenotypeEncoder {
 	void encodeGenotypes(
 			final Collection<byte[]> rawGenotypes,
 			final List<Boolean> samplesToKeep,
-			float[][] encodedSamplesMarkers,
+//			float[][] encodedSamplesMarkers,
+			SamplesMarkersStorage<Float> encodedSamplesMarkers,
 			int markerIndex);
 
 

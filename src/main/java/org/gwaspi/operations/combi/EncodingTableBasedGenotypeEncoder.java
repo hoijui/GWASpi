@@ -76,7 +76,8 @@ public abstract class EncodingTableBasedGenotypeEncoder implements GenotypeEncod
 	public void encodeGenotypes(
 			final Collection<byte[]> rawGenotypes,
 			final List<Boolean> samplesToKeep,
-			float[][] encodedSamplesMarkers,
+//			float[][] encodedSamplesMarkers,
+			SamplesMarkersStorage<Float> encodedSamplesMarkers,
 			int mi)
 	{
 		Set<byte[]> possibleGenotypes;
@@ -100,6 +101,7 @@ public abstract class EncodingTableBasedGenotypeEncoder implements GenotypeEncod
 //			System.err.println();
 //		}
 
+		encodedSamplesMarkers.startStoringMarker(mi);
 		if (possibleGenotypes.size() - (
 				possibleGenotypes.contains(Genotype.INVALID.hashCode())
 				? 1 : 0) == 1)
@@ -120,41 +122,39 @@ public abstract class EncodingTableBasedGenotypeEncoder implements GenotypeEncod
 //				libSvmProblem.x[di][mi].value = 0.0;
 //			}
 
-			for (float[] encodedSamplesMarker : encodedSamplesMarkers) {
-				encodedSamplesMarker[mi] = 0.0f;
+//			for (float[] encodedSamplesMarker : encodedSamplesMarkers) {
+//				encodedSamplesMarker[mi] = 0.0f;
+//			}
+			for (int si = 0; si < encodedSamplesMarkers.getNumSamples(); si++) {
+				encodedSamplesMarkers.setSampleValue(si, 0.0f);
 			}
 		} else {
 			// encode
-//			Collection<List<Double>> encodedGTValues = encodedGenotypes.values();
-//			Iterator<List<Double>> encodedIt = encodedGTValues.iterator();
-			int di = 0;
+			int si = 0;
 			if (samplesToKeep == null) {
+				// include all samples
 				for (byte[] genotype : rawGenotypes) {
-//					List<Double> encodedValues = encodedIt.next();
 					List<Float> encodedGT = encodingTable.get(Genotype.hashCode(genotype));
-//					encodedValues.addAll(encodedGT);
 					for (Float encVal : encodedGT) {
-//						libSvmProblem.x[di][mi].value = encVal;
-
-						encodedSamplesMarkers[di++][mi] = encVal.floatValue();
+//						encodedSamplesMarkers[si++][mi] = encVal.floatValue();
+						encodedSamplesMarkers.setSampleValue(si++, encVal.floatValue());
 					}
 				}
 			} else {
+				// include only samples in samplesToKeep
 				Iterator<Boolean> keep = samplesToKeep.iterator();
 				for (byte[] genotype : rawGenotypes) {
 					if (keep.next().booleanValue()) {
-//						List<Double> encodedValues = encodedIt.next();
 						List<Float> encodedGT = encodingTable.get(Genotype.hashCode(genotype));
-//						encodedValues.addAll(encodedGT);
 						for (Float encVal : encodedGT) {
-//							libSvmProblem.x[di][mi].value = encVal;
-
-							encodedSamplesMarkers[di++][mi] = encVal.floatValue();
+//							encodedSamplesMarkers[si++][mi] = encVal.floatValue();
+							encodedSamplesMarkers.setSampleValue(si++, encVal.floatValue());
 						}
 					}
 				}
 			}
 		}
+		encodedSamplesMarkers.endStoringMarker();
 	}
 
 	private double norm2(List<Double> numbers) {
