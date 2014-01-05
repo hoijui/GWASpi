@@ -19,37 +19,53 @@ package org.gwaspi.operations.combi;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * TODO
  */
-class MeanCalculatorSamplesMarkersStorage extends AbstractSamplesMarkersStorage<byte[]> {
+class MeanCalculatorSamplesMarkersStorage extends AbstractSamplesMarkersStorage<Float> {
 
-	private final GenotypeEncoder encoder;
-	private final SamplesMarkersStorage<Float> receiver;
+	private final String sampleMeansCacheKey;
+	private final String markerMeansCacheKey;
+	private final List<Double> sampleSums;
+	private final List<Double> markerSums;
+	private int currentSampleIndex;
 	private int currentMarkerIndex;
-	private final List<byte[]> currentValues;
+	private double currentSampleSum;
+	private double currentMarkerSum;
 
-	public MeanCalculatorSamplesMarkersStorage(int numSamples, int numMarkers, SamplesMarkersStorage<Float> receiver, GenotypeEncoder encoder) {
-		super(numSamples, numMarkers);
+	public MeanCalculatorSamplesMarkersStorage(
+			int numSamples,
+			int numMarkers,
+			final Map<String, Object> cache,
+			String sampleMeansCacheKey,
+			String markerMeansCacheKey)
+	{
+		super(numSamples, numMarkers, cache);
 
-		this.encoder = encoder;
-		this.receiver = receiver;
-		this.currentValues = new ArrayList<byte[]>(numSamples);
-	}
-
-	private static void throwSampleStorageNotSupported() {
-		throw new UnsupportedOperationException("We need marker by marker; can not deal with sample by sample");
+		this.sampleMeansCacheKey = sampleMeansCacheKey;
+		this.markerMeansCacheKey = markerMeansCacheKey;
+		this.sampleSums = (sampleMeansCacheKey == null) ? null : new ArrayList<Double>(numSamples);
+		this.markerSums = (markerMeansCacheKey == null) ? null : new ArrayList<Double>(numMarkers);
+		this.currentSampleIndex = -1;
+		this.currentMarkerIndex = -1;
 	}
 
 	@Override
 	public void startStoringSample(int sampleIndex) {
-		throwSampleStorageNotSupported();
+		currentSampleIndex = sampleIndex;
 	}
 
 	@Override
-	public void setMarkerValue(int markerIndex, byte[] value) {
-		throwSampleStorageNotSupported();
+	public void setMarkerValue(int markerIndex, Float value) {
+
+		if (sampleSums != null) {
+			sampleSums.set(currentSampleIndex, sampleSums.get(currentSampleIndex) + value);
+		}
+		if (sampleSums != null) {
+			sampleSums.set(currentSampleIndex, sampleSums.get(currentSampleIndex) + value);
+		}
 	}
 
 	@Override
