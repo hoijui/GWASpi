@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Map;
 import org.gwaspi.model.ChromosomeKey;
+import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.SampleKey;
 
@@ -55,13 +56,15 @@ public interface OperationDataSet<ET> {
 
 	void finnishWriting() throws IOException;
 
-	int getNumSamples() throws IOException;
-	int getNumMarkers() throws IOException;
-	int getNumChromosomes() throws IOException;
+	DataSetSource getDataSetSource() throws IOException;
 
-	Map<Integer, SampleKey> getSamples() throws IOException;
-	Map<Integer, MarkerKey> getMarkers() throws IOException;
-	Map<Integer, ChromosomeKey> getChromosomes() throws IOException;
+//	int getNumSamples() throws IOException;
+//	int getNumMarkers() throws IOException;
+//	int getNumChromosomes() throws IOException;
+//
+//	Map<Integer, SampleKey> getSamples() throws IOException;
+//	Map<Integer, MarkerKey> getMarkers() throws IOException;
+//	Map<Integer, ChromosomeKey> getChromosomes() throws IOException;
 
 	/**
 	 *

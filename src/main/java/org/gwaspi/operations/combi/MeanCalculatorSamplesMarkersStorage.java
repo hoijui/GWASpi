@@ -44,6 +44,13 @@ class MeanCalculatorSamplesMarkersStorage extends AbstractSamplesMarkersStorage<
 	{
 		super(numSamples, numMarkers, cache);
 
+		XXX;
+		// we don't need any of this (storage stuff? at least the whitening thing)
+		// we will "whiten" the encoding table directly, using statistics of how many AA, Aa, aA, aa we have
+		// these statistics come either directly from the QAMarkers operation, if we are using all samples,
+		// or we first have to generate them separately
+		// (maybe by using a QAMarkers operation on a subset of the data? -> NO! too much trouble! create statistics "manually")
+
 		this.sampleMeansCacheKey = sampleMeansCacheKey;
 		this.markerMeansCacheKey = markerMeansCacheKey;
 		this.sampleSums = (sampleMeansCacheKey == null) ? null : new ArrayList<Double>(numSamples);
