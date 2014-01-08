@@ -31,7 +31,6 @@ import org.gwaspi.model.MarkersKeysSource;
 import org.gwaspi.model.MarkersMetadataSource;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
-import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.SamplesInfosSource;
 import org.gwaspi.model.SamplesKeysSource;
@@ -239,8 +238,6 @@ public abstract class AbstractNetCdfOperationDataSet<ET> extends AbstractOperati
 		return ncfile;
 	}
 
-	protected abstract OperationMetadata createOperationMetadata() throws IOException;
-
 	protected abstract void supplementNetCdfHandler(
 			NetcdfFileWriteable ncFile,
 			OperationMetadata operationMetadata,
@@ -357,10 +354,7 @@ public abstract class AbstractNetCdfOperationDataSet<ET> extends AbstractOperati
 	private NetcdfFileWriteable ensureWriteNcFile() throws IOException {
 
 		if (writeNcFile == null) {
-			if (operationMetadata == null) {
-				operationMetadata = createOperationMetadata();
-				operationKey = OperationsList.insertOPMetadata(operationMetadata);
-			}
+			OperationMetadata operationMetadata = getOperationMetadata();
 
 //			resultOperationKey = OperationsList.insertOPMetadata(new OperationMetadata(
 //					rdMatrixKey,
@@ -393,9 +387,7 @@ public abstract class AbstractNetCdfOperationDataSet<ET> extends AbstractOperati
 	private NetcdfFile ensureReadNcFile() throws IOException {
 
 		if (readNcFile == null) {
-			if (operationMetadata == null) {
-				operationMetadata = OperationsList.getOperation(operationKey);
-			}
+			OperationMetadata operationMetadata = getOperationMetadata();
 
 			File readFile = OperationMetadata.generatePathToNetCdfFile(operationMetadata);
 			readNcFile = NetcdfFile.open(readFile.getAbsolutePath());

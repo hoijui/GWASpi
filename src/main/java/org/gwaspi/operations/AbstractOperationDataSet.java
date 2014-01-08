@@ -26,6 +26,7 @@ import org.gwaspi.model.MarkersKeysSource;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
+import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.SamplesKeysSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -84,6 +85,22 @@ public abstract class AbstractOperationDataSet<ET> implements OperationDataSet<E
 	@Override
 	public boolean isMarkersOperationSet() {
 		return markersOperationSet;
+	}
+
+	protected abstract OperationMetadata createOperationMetadata() throws IOException;
+
+	protected OperationMetadata getOperationMetadata() throws IOException {
+
+		if (operationMetadata == null) {
+			if (operationKey == null) {
+				operationMetadata = createOperationMetadata();
+				operationKey = OperationsList.insertOPMetadata(operationMetadata);
+			} else {
+				operationMetadata = OperationsList.getOperation(operationKey);
+			}
+		}
+
+		return operationMetadata;
 	}
 
 	protected int getEntriesWriteBufferSize() {
@@ -188,8 +205,6 @@ public abstract class AbstractOperationDataSet<ET> implements OperationDataSet<E
 	protected abstract void setUseAllChromosomesFromParent(boolean useAll) throws IOException;
 
 	protected abstract boolean getUseAllChromosomesFromParent() throws IOException;
-
-	protected abstract OperationMetadata createOperationMetadata() throws IOException;
 
 	public OperationKey getOperationKey() {
 		return operationKey;
