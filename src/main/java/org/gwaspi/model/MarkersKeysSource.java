@@ -17,18 +17,8 @@
 
 package org.gwaspi.model;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-
 /**
  * TODO
  */
-public interface MarkersKeysSource extends List<MarkerKey> {
-
-	List<MarkerKey> getRange(int from, int to) throws IOException;
-
-	Map<Integer, MarkerKey> getIndicesMap() throws IOException;
-
-	Map<Integer, MarkerKey> getIndicesMap(int from, int to) throws IOException;
+public interface MarkersKeysSource extends AbstractKeysSource<MarkerKey> {
 }

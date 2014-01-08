@@ -17,8 +17,32 @@
 
 package org.gwaspi.model;
 
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+
 /**
  * TODO
  */
-public interface SamplesKeysSource extends AbstractKeysSource<SampleKey> {
+public interface AbstractKeysSource<VT> extends List<VT> {
+
+	List<VT> getRange(int from, int to) throws IOException;
+
+	/**
+	 * Returns the indices of the elements in the original matrix
+	 * @return original indices
+	 * @throws IOException implementation dependent
+	 */
+	List<Integer> getIndices() throws IOException;
+
+	/**
+	 * Returns the indices of the elements in the original matrix
+	 * @return original indices
+	 * @throws IOException implementation dependent
+	 */
+	List<Integer> getIndices(int from, int to) throws IOException;
+
+	Map<Integer, VT> getIndicesMap() throws IOException;
+
+	Map<Integer, VT> getIndicesMap(int from, int to) throws IOException;
 }

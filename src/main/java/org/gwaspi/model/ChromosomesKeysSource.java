@@ -17,10 +17,8 @@
 
 package org.gwaspi.model;
 
-import java.util.List;
-
 /**
  * TODO
  */
-public interface ChromosomesKeysSource extends List<ChromosomeKey> {
+public interface ChromosomesKeysSource extends AbstractKeysSource<ChromosomeKey> {
 }

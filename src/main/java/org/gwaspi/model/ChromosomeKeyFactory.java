@@ -17,8 +17,15 @@
 
 package org.gwaspi.model;
 
-/**
- * TODO
- */
-public interface SamplesKeysSource extends AbstractKeysSource<SampleKey> {
+public final class ChromosomeKeyFactory implements KeyFactory<ChromosomeKey> {
+
+	@Override
+	public String encode(ChromosomeKey key) {
+		return key.getChromosome();
+	}
+
+	@Override
+	public ChromosomeKey decode(String keyStr) {
+		return ChromosomeKey.valueOf(keyStr);
+	}
 }
