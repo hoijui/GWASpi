@@ -51,7 +51,6 @@ import org.gwaspi.model.SamplesGenotypesSource;
 import org.gwaspi.model.SamplesInfosSource;
 import org.gwaspi.model.SamplesKeysSource;
 import org.gwaspi.model.StudyKey;
-import org.gwaspi.samples.SampleSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.ArrayChar;
@@ -260,7 +259,7 @@ public class NetCDFDataSetSource implements DataSetSource {
 
 //		return sampleSet;
 		ensureMatrixMetadata();
-		return new SampleSet(matrixMetadata);
+		return new NetCdfMarkersGenotypesSource(matrixMetadata);
 	}
 
 	@Override
@@ -316,7 +315,7 @@ public class NetCDFDataSetSource implements DataSetSource {
 	public SamplesGenotypesSource getSamplesGenotypesSource() throws IOException {
 
 		ensureMatrixMetadata();
-		return new MarkerSet(matrixMetadata);
+		return new NetCdfSamplesGenotypesSource(matrixMetadata);
 	}
 
 	@Override

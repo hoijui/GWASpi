@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.gwaspi.samples;
+package org.gwaspi.netCDF.markers;
 
 import java.io.File;
 import java.io.IOException;
@@ -50,10 +50,10 @@ import ucar.nc2.Variable;
 /**
  * TODO move to package org.gwaspi.model and create a SampleService
  */
-public class SampleSet extends AbstractList<GenotypesList> implements MarkersGenotypesSource {
+public class NetCdfMarkersGenotypesSource extends AbstractListSource<GenotypesList> implements MarkersGenotypesSource {
 
 	private static final Logger log
-			= LoggerFactory.getLogger(SampleSet.class);
+			= LoggerFactory.getLogger(NetCdfMarkersGenotypesSource.class);
 
 	// SAMPLESET_MEATADATA
 	private final MatrixMetadata matrixMetadata;
@@ -62,8 +62,8 @@ public class SampleSet extends AbstractList<GenotypesList> implements MarkersGen
 	private NetcdfFile rdNcFile;
 	private GenotypesListFactory genotyesListFactory;
 
-	public SampleSet(MatrixMetadata matrixMetadata) throws IOException {
-		
+	public NetCdfMarkersGenotypesSource(MatrixMetadata matrixMetadata) throws IOException {
+
 		this.matrixMetadata = matrixMetadata;
 		this.sampleSetSize = matrixMetadata.getNumMarkers();
 		this.sampleIdSetMap = new LinkedHashMap<SampleKey, Object>();
@@ -71,14 +71,14 @@ public class SampleSet extends AbstractList<GenotypesList> implements MarkersGen
 		this.genotyesListFactory = CompactGenotypesList.FACTORY;
 	}
 
-	public SampleSet(MatrixKey matrixKey) throws IOException {
+	public NetCdfMarkersGenotypesSource(MatrixKey matrixKey) throws IOException {
 		this(MatricesList.getMatrixMetadataById(matrixKey));
 	}
 
 	/**
 	 * @deprecated we should get rid of this!
 	 */
-	public SampleSet(StudyKey studyKey, String netCDFName) throws IOException {
+	public NetCdfMarkersGenotypesSource(StudyKey studyKey, String netCDFName) throws IOException {
 //		this(MatricesList.getMatrixMetadataByNetCDFname(netCDFName));
 
 		this.matrixMetadata = null;
@@ -88,7 +88,7 @@ public class SampleSet extends AbstractList<GenotypesList> implements MarkersGen
 		this.genotyesListFactory = CompactGenotypesList.FACTORY;
 	}
 
-	public SampleSet(StudyKey studyKey, String netCDFPath, String netCDFName) throws IOException {
+	public NetCdfMarkersGenotypesSource(StudyKey studyKey, String netCDFPath, String netCDFName) throws IOException {
 		this(NetCDFDataSetSource.loadMatrixMetadata(studyKey, new File(netCDFPath), netCDFName));
 	}
 

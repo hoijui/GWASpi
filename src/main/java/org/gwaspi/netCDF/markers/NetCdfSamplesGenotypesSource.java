@@ -61,10 +61,10 @@ import ucar.nc2.Variable;
  * The matrix netCDF file is opened at creation of the MarkerSet and closed
  * at finalization of the class. No need to pass a netCDF handler anymore.
  */
-public class MarkerSet extends AbstractList<GenotypesList> implements SamplesGenotypesSource {
+public class NetCdfSamplesGenotypesSource extends AbstractListSource<GenotypesList> implements SamplesGenotypesSource {
 
 	private static final Logger log
-			= LoggerFactory.getLogger(MarkerSet.class);
+			= LoggerFactory.getLogger(NetCdfSamplesGenotypesSource.class);
 
 	// MARKERSET_MEATADATA
 	private final ImportFormat technology; // platform
@@ -75,7 +75,7 @@ public class MarkerSet extends AbstractList<GenotypesList> implements SamplesGen
 	private Map<MarkerKey, ?> markerIdSetMap;
 	private GenotypesListFactory genotyesListFactory;
 
-	public MarkerSet(MatrixMetadata matrixMetadata) throws IOException {
+	public NetCdfSamplesGenotypesSource(MatrixMetadata matrixMetadata) throws IOException {
 
 		this.technology = matrixMetadata.getTechnology();
 		this.markerSetSize = matrixMetadata.getNumMarkers();
@@ -86,7 +86,7 @@ public class MarkerSet extends AbstractList<GenotypesList> implements SamplesGen
 		this.genotyesListFactory = CompactGenotypesList.FACTORY;
 	}
 
-	public MarkerSet(MatrixKey matrixKey) throws IOException {
+	public NetCdfSamplesGenotypesSource(MatrixKey matrixKey) throws IOException {
 		this(MatricesList.getMatrixMetadataById(matrixKey));
 	}
 

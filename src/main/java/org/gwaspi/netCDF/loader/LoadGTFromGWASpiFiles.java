@@ -46,7 +46,7 @@ import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.markers.NetCDFDataSetSource;
 import org.gwaspi.netCDF.matrices.ChromosomeUtils;
 import org.gwaspi.netCDF.operations.NetCdfUtils;
-import org.gwaspi.samples.SampleSet;
+import org.gwaspi.netCDF.markers.NetCdfMarkersGenotypesSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.ArrayChar;
@@ -102,7 +102,7 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 		DataSet dataSet = ((AbstractDataSetDestination) samplesReceiver).getDataSet();
 
 		if (new File(loadDescription.getGtDirPath()).exists()) {
-		SampleSet matrixSampleSet = new SampleSet(loadDescription.getStudyKey(), "");
+		NetCdfMarkersGenotypesSource matrixSampleSet = new NetCdfMarkersGenotypesSource(loadDescription.getStudyKey(), "");
 		Map<SampleKey, byte[]> matrixSampleSetMap = matrixSampleSet.getSampleIdSetMapByteArray(loadDescription.getGtDirPath());
 
 		boolean testExcessSamplesInMatrix = false;

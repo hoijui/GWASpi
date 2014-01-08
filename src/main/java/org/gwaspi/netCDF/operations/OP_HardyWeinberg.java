@@ -81,9 +81,9 @@ public class OP_HardyWeinberg implements MatrixOperation {
 			dataSet.setHardyWeinbergName(hwName); // HACK
 			dataSet.setMarkerCensusOperationKey(markerCensusOPKey); // HACK
 
-			((AbstractNetCdfOperationDataSet) dataSet).setUseAllMarkersFromParent(true);
-			((AbstractNetCdfOperationDataSet) dataSet).setUseAllSamplesFromParent(true);
-			((AbstractNetCdfOperationDataSet) dataSet).setUseAllChromosomesFromParent(true);
+//			((AbstractNetCdfOperationDataSet) dataSet).setUseAllMarkersFromParent(true);
+//			((AbstractNetCdfOperationDataSet) dataSet).setUseAllSamplesFromParent(true);
+//			((AbstractNetCdfOperationDataSet) dataSet).setUseAllChromosomesFromParent(true);
 
 //			OperationFactory wrOPHandler = new OperationFactory(
 //					markerCensusOPKey.getParentMatrixKey().getStudyKey(),

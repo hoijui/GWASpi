@@ -35,7 +35,6 @@ import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleInfoList;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.netCDF.operations.MarkerOperationSet;
-import org.gwaspi.samples.SampleSet;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.NetcdfFile;
 
@@ -132,7 +131,7 @@ public class MarkersIterable implements
 
 	private final MatrixKey matrixKey;
 	private final Excluder<MarkerKey> excluder;
-	private final SampleSet sampleSet;
+	private final NetCdfMarkersGenotypesSource sampleSet;
 	private final List<MarkerKey> markerKeys;
 	private final Set<SampleKey> sampleKeys;
 	private final Map<SampleKey, SampleInfo> sampleInfos;
@@ -152,7 +151,7 @@ public class MarkersIterable implements
 			excluder.init();
 		}
 
-		MarkerSet rdMarkerSet = new MarkerSet(matrixKey);
+		NetCdfSamplesGenotypesSource rdMarkerSet = new NetCdfSamplesGenotypesSource(matrixKey);
 		rdMarkerSet.initFullMarkerIdSetMap();
 //		rdMarkerSet.fillGTsForCurrentSampleIntoInitMap(readStudyId);
 //		rdMarkerSet.fillWith(cNetCDF.Defaults.DEFAULT_GT);
@@ -160,7 +159,7 @@ public class MarkersIterable implements
 //		Map<MarkerKey, byte[]> wrMarkerSetMap = new LinkedHashMap<MarkerKey, byte[]>();
 //		wrMarkerSetMap.putAll(rdMarkerSet.getMarkerIdSetMapByteArray());
 
-		this.sampleSet = new SampleSet(matrixKey);
+		this.sampleSet = new NetCdfMarkersGenotypesSource(matrixKey);
 //			samples = sampleSet.getSampleIdSetMapByteArray();
 		this.sampleKeys = sampleSet.getSampleKeys();
 		// This one has to be ordered! (and it is, due to the map being a LinkedHashMap)
@@ -201,7 +200,7 @@ public class MarkersIterable implements
 		return excluder;
 	}
 
-	SampleSet getSampleSet() {
+	NetCdfMarkersGenotypesSource getSampleSet() {
 		return sampleSet;
 	}
 

@@ -180,7 +180,7 @@ public class OperationFactory {
 		Map<ChromosomeKey, ChromosomeInfo> chromosomes;
 
 		OperationDataSet opDS = OperationFactory.generateOperationDataSet(operationKey);
-		Map<Integer, ChromosomeKey> chromosomeKeys = opDS.getChromosomes();
+		Map<Integer, ChromosomeKey> chromosomeKeys = opDS.getChromosomesKeysSource().getIndicesMap();
 
 		DataSetSource matrixDS = MatrixFactory.generateMatrixDataSetSource(operationKey.getParentMatrixKey());
 		ChromosomesInfosSource matrixChromosomesInfos = matrixDS.getChromosomesInfosSource();

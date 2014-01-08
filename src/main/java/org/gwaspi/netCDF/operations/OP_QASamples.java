@@ -130,15 +130,18 @@ int numMarkers = dataSetSource.getNumMarkers();
 			QASamplesOperationDataSet dataSet = (QASamplesOperationDataSet) OperationFactory.generateOperationDataSet(OPType.SAMPLE_QA); // HACK
 			((AbstractNetCdfOperationDataSet) dataSet).setReadMatrixKey(rdMatrixKey); // HACK
 			((AbstractNetCdfOperationDataSet) dataSet).setNumMarkers(rdMatrixMetadata.getNumMarkers()); // HACK
-			((AbstractNetCdfOperationDataSet) dataSet).setNumSamples(wrSampleSetMissingCountMap.size()); // HACK
+			((AbstractNetCdfOperationDataSet) dataSet).setNumChromosomes(rdMatrixMetadata.getNumChromosomes()); // HACK
+//			((AbstractNetCdfOperationDataSet) dataSet).setNumSamples(wrSampleSetMissingCountMap.size()); // HACK
+			((AbstractNetCdfOperationDataSet) dataSet).setNumSamples(rdMatrixMetadata.getNumSamples()); // HACK
 
 //			dataSet.setSamples(rdSampleSet.getSampleKeys());
 //			dataSet.setMarkers(rdMarkersKeysSource);
 //			Map<ChromosomeKey, ChromosomeInfo> chromosomeInfo = rdMarkerSet.getChrInfoSetMap();
 //			dataSet.setChromosomes(chromosomeInfo.keySet(), chromosomeInfo.values());
-			((AbstractNetCdfOperationDataSet) dataSet).setUseAllSamplesFromParent(true);
-			((AbstractNetCdfOperationDataSet) dataSet).setUseAllMarkersFromParent(true);
-			((AbstractNetCdfOperationDataSet) dataSet).setUseAllChromosomesFromParent(true);
+
+//			((AbstractNetCdfOperationDataSet) dataSet).setUseAllSamplesFromParent(true);
+//			((AbstractNetCdfOperationDataSet) dataSet).setUseAllMarkersFromParent(true);
+//			((AbstractNetCdfOperationDataSet) dataSet).setUseAllChromosomesFromParent(true);
 
 			dataSet.setMissingCounts(wrSampleSetMissingCountMap.values());
 			dataSet.setMissingRatios(wrSampleSetMissingRatioMap.values());

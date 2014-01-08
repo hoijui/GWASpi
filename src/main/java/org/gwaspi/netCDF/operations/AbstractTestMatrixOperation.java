@@ -122,18 +122,19 @@ public abstract class AbstractTestMatrixOperation implements MatrixOperation {
 //				((AbstractNetCdfOperationDataSet) dataSet).setNumMarkers(wrMarkerMetadata.size()); // HACK
 //				((AbstractNetCdfOperationDataSet) dataSet).setNumSamples(rdCensusOPMetadata.getImplicitSetSize()); // HACK
 //				((AbstractNetCdfOperationDataSet) dataSet).setNumChromosomes(chromosomeInfo.size()); // HACK
-				((AbstractNetCdfOperationDataSet) dataSet).setNumMarkers(rdMarkerCensusOperationDataSet.getMarkers().size()); // HACK
-				((AbstractNetCdfOperationDataSet) dataSet).setNumSamples(rdMarkerCensusOperationDataSet.getSamples().size()); // HACK
-				((AbstractNetCdfOperationDataSet) dataSet).setNumChromosomes(rdMarkerCensusOperationDataSet.getChromosomes().size()); // HACK
+				((AbstractNetCdfOperationDataSet) dataSet).setNumMarkers(rdMarkerCensusOperationDataSet.getNumMarkers()); // HACK
+				((AbstractNetCdfOperationDataSet) dataSet).setNumSamples(rdMarkerCensusOperationDataSet.getNumSamples()); // HACK
+				((AbstractNetCdfOperationDataSet) dataSet).setNumChromosomes(rdMarkerCensusOperationDataSet.getNumChromosomes()); // HACK
 				dataSet.setMarkerCensusOPKey(markerCensusOPKey); // HACK
 				dataSet.setTestType(testType); // HACK
 				dataSet.setTestName(testName); // HACK
 
 //				dataSet.setMarkers(wrMarkerMetadata.keySet());
-				dataSet.setUseAllMarkersFromParent(true);
-				dataSet.setUseAllSamplesFromParent(true);
 //				dataSet.setChromosomes(chromosomeInfo);
-				dataSet.setUseAllChromosomesFromParent(true);
+
+//				dataSet.setUseAllMarkersFromParent(true);
+//				dataSet.setUseAllSamplesFromParent(true);
+//				dataSet.setUseAllChromosomesFromParent(true);
 
 //				// CREATE netCDF-3 FILE
 //				OperationFactory wrOPHandler = new OperationFactory(
@@ -172,7 +173,7 @@ public abstract class AbstractTestMatrixOperation implements MatrixOperation {
 //				Map<MarkerKey, char[]> sortedCaseMarkerIds = org.gwaspi.global.Utils.createOrderedMap(wrMarkerMetadata.keySet(), rdCaseMarkerIdSetMap);
 //				NetCdfUtils.saveCharMapValueToWrMatrix(wrOPNcFile, sortedCaseMarkerIds.values(), cNetCDF.Variables.VAR_MARKERS_RSID, cNetCDF.Strides.STRIDE_MARKER_NAME);
 
-				Map<Integer, MarkerKey> censusOpMarkers = rdMarkerCensusOperationDataSet.getMarkers();
+				Map<Integer, MarkerKey> censusOpMarkers = rdMarkerCensusOperationDataSet.getMarkersKeysSource().getIndicesMap();
 
 				Collection<Integer> censusMarkerIndicesCase = rdMarkerCensusOperationDataSet.getCensusMarkerIndices(Category.CASE);
 				Map<Integer, MarkerKey> rdCaseMarkerKeys = filter(censusOpMarkers, censusMarkerIndicesCase);

@@ -88,15 +88,17 @@ public class OP_QAMarkers implements MatrixOperation {
 			QAMarkersOperationDataSet dataSet = (QAMarkersOperationDataSet) OperationFactory.generateOperationDataSet(OPType.MARKER_QA); // HACK
 			((AbstractNetCdfOperationDataSet) dataSet).setReadMatrixKey(rdMatrixKey); // HACK
 			((AbstractNetCdfOperationDataSet) dataSet).setNumMarkers(rdDataSetSource.getNumMarkers()); // HACK
+			((AbstractNetCdfOperationDataSet) dataSet).setNumChromosomes(rdDataSetSource.getNumChromosomes()); // HACK
 			((AbstractNetCdfOperationDataSet) dataSet).setNumSamples(rdDataSetSource.getNumSamples()); // HACK
 
 //			dataSet.setMarkers(rdMarkerSet.getMarkerKeys());
 //			dataSet.setSamples(rdSampleSetMap.keySet());
 //			Map<ChromosomeKey, ChromosomeInfo> chromosomeInfo = rdMarkerSet.getChrInfoSetMap();
 //			dataSet.setChromosomes(chromosomeInfo.keySet(), chromosomeInfo.values());
-			((AbstractNetCdfOperationDataSet) dataSet).setUseAllSamplesFromParent(true);
-			((AbstractNetCdfOperationDataSet) dataSet).setUseAllMarkersFromParent(true);
-			((AbstractNetCdfOperationDataSet) dataSet).setUseAllChromosomesFromParent(true);
+
+//			((AbstractNetCdfOperationDataSet) dataSet).setUseAllSamplesFromParent(true);
+//			((AbstractNetCdfOperationDataSet) dataSet).setUseAllMarkersFromParent(true);
+//			((AbstractNetCdfOperationDataSet) dataSet).setUseAllChromosomesFromParent(true);
 
 			//<editor-fold defaultstate="expanded" desc="PROCESSOR">
 			// INIT MARKER AND SAMPLE INFO
