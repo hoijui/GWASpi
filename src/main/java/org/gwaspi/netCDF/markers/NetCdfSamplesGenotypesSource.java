@@ -67,8 +67,7 @@ public class NetCdfSamplesGenotypesSource extends AbstractListSource<GenotypesLi
 			= LoggerFactory.getLogger(NetCdfSamplesGenotypesSource.class);
 
 	// MARKERSET_MEATADATA
-	private final ImportFormat technology; // platform
-	private final int markerSetSize; // probe_nb
+	private final int numMarkers;
 	private final NetcdfFile ncfile;
 	private int startMkIdx;
 	private int endMkIdx;
@@ -77,8 +76,7 @@ public class NetCdfSamplesGenotypesSource extends AbstractListSource<GenotypesLi
 
 	public NetCdfSamplesGenotypesSource(MatrixMetadata matrixMetadata) throws IOException {
 
-		this.technology = matrixMetadata.getTechnology();
-		this.markerSetSize = matrixMetadata.getNumMarkers();
+		this.numMarkers = matrixMetadata.getNumMarkers();
 		this.ncfile = NetcdfFile.open(MatrixMetadata.generatePathToNetCdfFile(matrixMetadata).getAbsolutePath());
 		this.startMkIdx = 0;
 		this.endMkIdx = Integer.MIN_VALUE;
@@ -103,15 +101,6 @@ public class NetCdfSamplesGenotypesSource extends AbstractListSource<GenotypesLi
 		} finally {
 			super.finalize();
 		}
-	}
-
-	// ACCESSORS
-	public ImportFormat getTechnology() {
-		return technology;
-	}
-
-	public int getMarkerSetSize() {
-		return markerSetSize;
 	}
 
 	//<editor-fold defaultstate="expanded" desc="MARKERSET INITILAIZERS">
@@ -169,8 +158,8 @@ public class NetCdfSamplesGenotypesSource extends AbstractListSource<GenotypesLi
 				if (startMkIdx < 0) {
 					startMkIdx = 0;
 				}
-				if (endMkIdx < 0 || endMkIdx >= markerSetSize) {
-					endMkIdx = markerSetSize - 1;
+				if (endMkIdx < 0 || endMkIdx >= numMarkers) {
+					endMkIdx = numMarkers - 1;
 				}
 
 				StringBuilder netCdfReadStrBldr = new StringBuilder(64);
@@ -278,8 +267,8 @@ public class NetCdfSamplesGenotypesSource extends AbstractListSource<GenotypesLi
 				if (startMkIdx < 0) {
 					startMkIdx = 0;
 				}
-				if (endMkIdx < 0 || endMkIdx >= markerSetSize) {
-					endMkIdx = markerSetSize - 1;
+				if (endMkIdx < 0 || endMkIdx >= numMarkers) {
+					endMkIdx = numMarkers - 1;
 				}
 
 				StringBuilder netCdfReadStrBldr = new StringBuilder(64);

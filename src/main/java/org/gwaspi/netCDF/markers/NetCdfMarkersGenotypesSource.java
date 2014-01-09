@@ -19,7 +19,6 @@ package org.gwaspi.netCDF.markers;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.AbstractList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,7 +33,6 @@ import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.StudyKey;
-import org.gwaspi.netCDF.markers.NetCDFDataSetSource;
 import org.gwaspi.netCDF.operations.NetCdfUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,17 +53,16 @@ public class NetCdfMarkersGenotypesSource extends AbstractListSource<GenotypesLi
 	private static final Logger log
 			= LoggerFactory.getLogger(NetCdfMarkersGenotypesSource.class);
 
-	// SAMPLESET_MEATADATA
 	private final MatrixMetadata matrixMetadata;
 	private Map<SampleKey, ?> sampleIdSetMap;
-	private int sampleSetSize;
+	private int numMarkers;
 	private NetcdfFile rdNcFile;
 	private GenotypesListFactory genotyesListFactory;
 
 	public NetCdfMarkersGenotypesSource(MatrixMetadata matrixMetadata) throws IOException {
 
 		this.matrixMetadata = matrixMetadata;
-		this.sampleSetSize = matrixMetadata.getNumMarkers();
+		this.numMarkers = matrixMetadata.getNumMarkers();
 		this.sampleIdSetMap = new LinkedHashMap<SampleKey, Object>();
 		this.rdNcFile = NetcdfFile.open(MatrixMetadata.generatePathToNetCdfFile(matrixMetadata).getAbsolutePath()); // HACK most likely not optimal.. this file
 		this.genotyesListFactory = CompactGenotypesList.FACTORY;
@@ -82,7 +79,7 @@ public class NetCdfMarkersGenotypesSource extends AbstractListSource<GenotypesLi
 //		this(MatricesList.getMatrixMetadataByNetCDFname(netCDFName));
 
 		this.matrixMetadata = null;
-		this.sampleSetSize = 0;
+		this.numMarkers = 0;
 		this.sampleIdSetMap = new LinkedHashMap<SampleKey, Object>();
 		this.rdNcFile = null;
 		this.genotyesListFactory = CompactGenotypesList.FACTORY;
@@ -94,7 +91,7 @@ public class NetCdfMarkersGenotypesSource extends AbstractListSource<GenotypesLi
 
 	// ACCESSORS
 	public int getSampleSetSize() {
-		return sampleSetSize;
+		return numMarkers;
 	}
 
 	public MatrixMetadata getMatrixMetadata(List<String> _sampleSetAL) {
@@ -133,12 +130,12 @@ public class NetCdfMarkersGenotypesSource extends AbstractListSource<GenotypesLi
 			Dimension markerSetDim = ncfile.findDimension(cNetCDF.Dimensions.DIM_SAMPLESET);
 
 			try {
-				sampleSetSize = markerSetDim.getLength();
+				numMarkers = markerSetDim.getLength();
 
 				StringBuilder netCdfReadStrBldr = new StringBuilder(64);
 				netCdfReadStrBldr
 						.append("(0:")
-						.append(sampleSetSize - 1)
+						.append(numMarkers - 1)
 						.append(":1, 0:")
 						.append(varShape[1] - 1)
 						.append(":1)");
@@ -287,12 +284,12 @@ public class NetCdfMarkersGenotypesSource extends AbstractListSource<GenotypesLi
 			Dimension sampleSetDim = ncfile.findDimension(cNetCDF.Dimensions.DIM_SAMPLESET);
 
 			try {
-				sampleSetSize = sampleSetDim.getLength();
+				numMarkers = sampleSetDim.getLength();
 				if (dataType == DataType.CHAR) {
 					StringBuilder netCdfReadStrBldr = new StringBuilder(64);
 					netCdfReadStrBldr
 							.append("(0:")
-							.append(sampleSetSize - 1)
+							.append(numMarkers - 1)
 							.append(":1, 0:")
 							.append(varShape[1] - 1)
 							.append(":1)");
@@ -303,7 +300,7 @@ public class NetCdfMarkersGenotypesSource extends AbstractListSource<GenotypesLi
 					sampleIdSetMap = map;
 				}
 				if (dataType == DataType.DOUBLE) {
-					ArrayDouble.D1 sampleSetAF = (ArrayDouble.D1) var.read("(0:" + (sampleSetSize - 1) + ":1");
+					ArrayDouble.D1 sampleSetAF = (ArrayDouble.D1) var.read("(0:" + (numMarkers - 1) + ":1");
 					NetCdfUtils.writeD1ArrayDoubleToMapValues(sampleSetAF, (Map<SampleKey, Double>) map);
 					sampleIdSetMap = map;
 				}
@@ -338,12 +335,12 @@ public class NetCdfMarkersGenotypesSource extends AbstractListSource<GenotypesLi
 			Dimension sampleSetDim = ncfile.findDimension(cNetCDF.Dimensions.DIM_SAMPLESET);
 
 			try {
-				sampleSetSize = sampleSetDim.getLength();
+				numMarkers = sampleSetDim.getLength();
 				if (dataType == DataType.CHAR) {
 					StringBuilder netCdfReadStrBldr = new StringBuilder(64);
 					netCdfReadStrBldr
 							.append("(0:")
-							.append(sampleSetSize - 1)
+							.append(numMarkers - 1)
 							.append(":1, ")
 							.append(filterPos)
 							.append(":")
