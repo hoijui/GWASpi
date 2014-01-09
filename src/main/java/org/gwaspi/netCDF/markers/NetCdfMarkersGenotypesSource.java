@@ -45,9 +45,6 @@ import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 
-/**
- * TODO move to package org.gwaspi.model and create a SampleService
- */
 public class NetCdfMarkersGenotypesSource extends AbstractListSource<GenotypesList> implements MarkersGenotypesSource {
 
 	private static final Logger log
@@ -90,11 +87,11 @@ public class NetCdfMarkersGenotypesSource extends AbstractListSource<GenotypesLi
 	}
 
 	// ACCESSORS
-	public int getSampleSetSize() {
+	private int getSampleSetSize() {
 		return numMarkers;
 	}
 
-	public MatrixMetadata getMatrixMetadata(List<String> _sampleSetAL) {
+	private MatrixMetadata getMatrixMetadata(List<String> _sampleSetAL) {
 		return matrixMetadata;
 	}
 
@@ -103,15 +100,15 @@ public class NetCdfMarkersGenotypesSource extends AbstractListSource<GenotypesLi
 		return getSampleIdSetMap(MatrixMetadata.generatePathToNetCdfFile(matrixMetadata).getAbsolutePath());
 	}
 
-	public Map<SampleKey, char[]> getSampleIdSetMapCharArray() throws IOException {
+	private Map<SampleKey, char[]> getSampleIdSetMapCharArray() throws IOException {
 		return (Map<SampleKey, char[]>) getSampleIdSetMap();
 	}
 
-	public Map<SampleKey, byte[]> getSampleIdSetMapByteArray() throws IOException {
+	private Map<SampleKey, byte[]> getSampleIdSetMapByteArray() throws IOException {
 		return (Map<SampleKey, byte[]>) getSampleIdSetMap();
 	}
 
-	public Set<SampleKey> getSampleKeys() throws IOException {
+	private Set<SampleKey> getSampleKeys() throws IOException {
 		return getSampleIdSetMap().keySet();
 	}
 
@@ -163,9 +160,9 @@ public class NetCdfMarkersGenotypesSource extends AbstractListSource<GenotypesLi
 		return sampleIdSetMap;
 	}
 
-	public Map<SampleKey, byte[]> getSampleIdSetMapByteArray(String matrixImportPath) throws IOException {
-		return (Map<SampleKey, byte[]>) getSampleIdSetMap(matrixImportPath);
-	}
+//	private Map<SampleKey, byte[]> getSampleIdSetMapByteArray(String matrixImportPath) throws IOException {
+//		return (Map<SampleKey, byte[]>) getSampleIdSetMap(matrixImportPath);
+//	}
 	//</editor-fold>
 
 	//<editor-fold defaultstate="expanded" desc="SAMPLESET FILLERS">
@@ -214,13 +211,13 @@ public class NetCdfMarkersGenotypesSource extends AbstractListSource<GenotypesLi
 		return (ArrayByte.D3) genotypes.read(netCdfReadStr);
 	}
 
-	public static void readAllSamplesGTsFromCurrentMarkerToMap(NetcdfFile rdNcFile, Map<SampleKey, byte[]> rdBytes, int markerNb) throws IOException {
-		readAllSamplesGTsFromCurrentMarker(rdNcFile, rdBytes, markerNb);
-	}
+//	private static void readAllSamplesGTsFromCurrentMarkerToMap(NetcdfFile rdNcFile, Map<SampleKey, byte[]> rdBytes, int markerNb) throws IOException {
+//		readAllSamplesGTsFromCurrentMarker(rdNcFile, rdBytes, markerNb);
+//	}
 
-	private static List<byte[]> readAllSamplesGTsFromCurrentMarkerToList(NetcdfFile rdNcFile, int markerNb) throws IOException {
-		return readAllSamplesGTsFromCurrentMarker(rdNcFile, null, markerNb);
-	}
+//	private static List<byte[]> readAllSamplesGTsFromCurrentMarkerToList(NetcdfFile rdNcFile, int markerNb) throws IOException {
+//		return readAllSamplesGTsFromCurrentMarker(rdNcFile, null, markerNb);
+//	}
 
 	private static List<byte[]> readAllSamplesGTsFromCurrentMarker(NetcdfFile rdNcFile, Map<SampleKey, byte[]> rdBytes, int markerNb) throws IOException {
 
@@ -268,7 +265,7 @@ public class NetCdfMarkersGenotypesSource extends AbstractListSource<GenotypesLi
 		return null;
 	}
 
-	public void fillSampleIdSetMapWithVariable(Map<SampleKey, ?> map, String variable) throws IOException {
+	private void fillSampleIdSetMapWithVariable(Map<SampleKey, ?> map, String variable) throws IOException {
 
 		NetcdfFile ncfile = null;
 		try {
@@ -319,7 +316,7 @@ public class NetCdfMarkersGenotypesSource extends AbstractListSource<GenotypesLi
 	}
 
 	/** @deprecate unused. was used in MatrixDataExtractor */
-	public void fillSampleIdSetMapWithFilterVariable(Map<SampleKey, char[]> map, String variable, int filterPos) throws IOException {
+	private void fillSampleIdSetMapWithFilterVariable(Map<SampleKey, char[]> map, String variable, int filterPos) throws IOException {
 
 		NetcdfFile ncfile = null;
 		try {
@@ -367,26 +364,26 @@ public class NetCdfMarkersGenotypesSource extends AbstractListSource<GenotypesLi
 	}
 	//</editor-fold>
 
-	@Override
-	public int size() {
-		return sampleIdSetMap.size();
-	}
+//	@Override
+//	public int size() {
+//		return sampleIdSetMap.size();
+//	}
 
-	@Override
-	public GenotypesList get(int markerIndex) {
-
-//		rdSampleSet.readAllSamplesGTsFromCurrentMarkerToMap(rdNcFile, rdSampleSetMap, markerNb);
-//		for (byte[] tempGT : rdSampleSetMap.values()) {
-//			if (sampleIdSetMap == null) {
-//				initFullMarkerIdSetMap();
-//			}
-		List<byte[]> markerGenotypes = null;
-		try {
-			markerGenotypes = readAllSamplesGTsFromCurrentMarkerToList(rdNcFile, markerIndex);
-		} catch (IOException ex) {
-			throw new RuntimeException(ex);
-		}
-
-		return genotyesListFactory.createGenotypesList(markerGenotypes);
-	}
+//	@Override
+//	public GenotypesList get(int markerIndex) {
+//
+////		rdSampleSet.readAllSamplesGTsFromCurrentMarkerToMap(rdNcFile, rdSampleSetMap, markerNb);
+////		for (byte[] tempGT : rdSampleSetMap.values()) {
+////			if (sampleIdSetMap == null) {
+////				initFullMarkerIdSetMap();
+////			}
+//		List<byte[]> markerGenotypes = null;
+//		try {
+//			markerGenotypes = readAllSamplesGTsFromCurrentMarkerToList(rdNcFile, markerIndex);
+//		} catch (IOException ex) {
+//			throw new RuntimeException(ex);
+//		}
+//
+//		return genotyesListFactory.createGenotypesList(markerGenotypes);
+//	}
 }

@@ -143,7 +143,7 @@ public class NetCdfQAMarkersOperationDataSet extends AbstractNetCdfOperationData
 
 	@Override
 	public void setMarkerMismatchStates(Collection<Boolean> markerMismatchStates) throws IOException {
-		
+
 		// we can not use this, as NetCDF does not support writing boolean arrays :/
 //		NetCdfUtils.saveBooleansD1ToWrMatrix(getNetCdfWriteFile(), markerMismatchStates, cNetCDF.Census.VAR_OP_MARKERS_MISMATCHSTATE);
 
@@ -183,7 +183,7 @@ public class NetCdfQAMarkersOperationDataSet extends AbstractNetCdfOperationData
 		for (Integer mismatchIntegerState : mismatchIntegerStates) {
 			mismatchStates.add(mismatchIntegerState == cNetCDF.Defaults.DEFAULT_MISMATCH_YES);
 		}
-		
+
 		return mismatchStates;
 	}
 
@@ -246,7 +246,7 @@ public class NetCdfQAMarkersOperationDataSet extends AbstractNetCdfOperationData
 
 //		MarkerOperationSet rdMarkersSet = new MarkerOperationSet(getOperationKey(), from, to);
 //		Map<MarkerKey, Integer> rdMarkers = rdMarkersSet.getOpSetMap();
-		Map<Integer, MarkerKey> markersKeys = getMarkers();
+		Map<Integer, MarkerKey> markersKeys = getMarkersKeysSource().getIndicesMap(from, to)
 
 		Collection<Double> missingRatios = getMissingRatio(from, to);
 		Collection<Boolean> mismatchStates = getMismatchStates(from, to);

@@ -33,7 +33,6 @@ import org.gwaspi.constants.cNetCDF.HardyWeinberg;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
-import org.gwaspi.netCDF.operations.MarkerOperationSet;
 import org.gwaspi.netCDF.operations.NetCdfUtils;
 import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
 import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationEntry.Category;
@@ -267,7 +266,7 @@ public class NetCdfHardyWeinbergOperationDataSet extends AbstractNetCdfOperation
 
 	public Collection<HardyWeinbergOperationEntry> getEntries(Category category, int from, int to) throws IOException {
 
-		Map<Integer, MarkerKey> markersKeys = getMarkers();
+		Map<Integer, MarkerKey> markersKeys = getMarkersKeysSource().getIndicesMap(from, to);
 		Collection<Double> ps = getPs(category, from, to);
 		Collection<Double> hwObsHetzys = getHwHetzyObses(category, from, to);
 		Collection<Double> hwExpHetzys = getHwHetzyExps(category, from, to);

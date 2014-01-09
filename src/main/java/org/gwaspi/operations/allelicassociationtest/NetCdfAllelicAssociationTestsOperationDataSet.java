@@ -27,7 +27,6 @@ import java.util.Queue;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.OperationKey;
-import org.gwaspi.netCDF.operations.MarkerOperationSet;
 import org.gwaspi.netCDF.operations.NetCdfUtils;
 import ucar.ma2.ArrayDouble;
 import ucar.ma2.InvalidRangeException;
@@ -110,7 +109,7 @@ public class NetCdfAllelicAssociationTestsOperationDataSet extends AbstractNetCd
 	@Override
 	public Collection<AllelicAssociationTestOperationEntry> getEntries(int from, int to) throws IOException {
 
-		Map<Integer, MarkerKey> markersKeys = getMarkers();
+		Map<Integer, MarkerKey> markersKeys = getMarkersKeysSource().getIndicesMap(from, to);
 
 		Collection<Double> ts = getTs(from, to);
 		Collection<Double> ps = getPs(from, to);

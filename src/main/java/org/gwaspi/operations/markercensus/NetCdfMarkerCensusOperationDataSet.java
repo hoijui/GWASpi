@@ -252,7 +252,7 @@ public class NetCdfMarkerCensusOperationDataSet extends AbstractNetCdfOperationD
 	@Override
 	public Collection<MarkerCensusOperationEntry> getEntries(int from, int to) throws IOException {
 
-		Map<Integer, MarkerKey> markersKeys = getMarkers();
+		Map<Integer, MarkerKey> markersKeys = getMarkersKeysSource().getIndicesMap(from, to);
 		Collection<byte[]> knownAlleles = getKnownAlleles(from, to);
 //		Collection<Census> censusesAll = getCensus(Category.ALL, from, to);
 //		Collection<Census> censusesCase = getCensus(Category.CASE, from, to);

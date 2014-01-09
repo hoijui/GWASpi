@@ -18,36 +18,26 @@
 package org.gwaspi.netCDF.markers;
 
 import java.io.IOException;
-import java.util.AbstractList;
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import org.gwaspi.constants.cImport.ImportFormat;
 import org.gwaspi.constants.cNetCDF;
-import org.gwaspi.model.ChromosomeInfo;
 import org.gwaspi.model.ChromosomeKey;
 import org.gwaspi.model.CompactGenotypesList;
 import org.gwaspi.model.GenotypesList;
 import org.gwaspi.model.GenotypesListFactory;
 import org.gwaspi.model.MarkerKey;
-import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SamplesGenotypesSource;
+import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.operations.NetCdfUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.ArrayByte;
 import ucar.ma2.ArrayChar;
-import ucar.ma2.ArrayDouble;
-import ucar.ma2.ArrayFloat;
-import ucar.ma2.ArrayInt;
 import ucar.ma2.DataType;
-import ucar.ma2.Index;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
@@ -66,13 +56,28 @@ public class NetCdfSamplesGenotypesSource extends AbstractListSource<GenotypesLi
 	private static final Logger log
 			= LoggerFactory.getLogger(NetCdfSamplesGenotypesSource.class);
 
-	// MARKERSET_MEATADATA
 	private final int numMarkers;
-	private final NetcdfFile ncfile;
+//	private final NetcdfFile ncfile;
 	private int startMkIdx;
 	private int endMkIdx;
 	private Map<MarkerKey, ?> markerIdSetMap;
 	private GenotypesListFactory genotyesListFactory;
+	private static final int DEFAULT_CHUNK_SIZE = 50;
+	private static final int DEFAULT_CHUNK_SIZE_SHATTERED = 1;
+
+	private final StudyKey studyKey;
+
+	private NetCdfSamplesGenotypesSource(StudyKey studyKey, NetcdfFile rdNetCdfFile) {
+		super(rdNetCdfFile, DEFAULT_CHUNK_SIZE, cNetCDF.Dimensions.DIM_SAMPLESET);
+
+		this.studyKey = studyKey;
+	}
+
+	private NetCdfSamplesGenotypesSource(StudyKey studyKey, NetcdfFile rdNetCdfFile, List<Integer> originalIndices) {
+		super(rdNetCdfFile, DEFAULT_CHUNK_SIZE_SHATTERED, originalIndices);
+
+		this.studyKey = studyKey;
+	}
 
 	public NetCdfSamplesGenotypesSource(MatrixMetadata matrixMetadata) throws IOException {
 
@@ -88,26 +93,26 @@ public class NetCdfSamplesGenotypesSource extends AbstractListSource<GenotypesLi
 		this(MatricesList.getMatrixMetadataById(matrixKey));
 	}
 
-	@Override
-	protected void finalize() throws Throwable {
-		try {
-			if (null != ncfile) {
-				try {
-					ncfile.close();
-				} catch (IOException ex) {
-					log.warn("Cannot close netCDF file: " + ncfile.getLocation(), ex);
-				}
-			}
-		} finally {
-			super.finalize();
-		}
-	}
+//	@Override
+//	protected void finalize() throws Throwable {
+//		try {
+//			if (null != ncfile) {
+//				try {
+//					ncfile.close();
+//				} catch (IOException ex) {
+//					log.warn("Cannot close netCDF file: " + ncfile.getLocation(), ex);
+//				}
+//			}
+//		} finally {
+//			super.finalize();
+//		}
+//	}
 
 	//<editor-fold defaultstate="expanded" desc="MARKERSET INITILAIZERS">
 	// USE MARKERID AS KEYS
-	public void initFullMarkerIdSetMap() {
-		initMarkerIdSetMap(0, Integer.MIN_VALUE);
-	}
+//	private void initFullMarkerIdSetMap() {
+//		initMarkerIdSetMap(0, Integer.MIN_VALUE);
+//	}
 
 	private static <IV> Map<MarkerKey, IV> wrapToMarkerKeyMap(Map<String, IV> markerIdAlleles) {
 		Map<MarkerKey, IV> reparsedData = new LinkedHashMap<MarkerKey, IV>();
@@ -143,9 +148,11 @@ public class NetCdfSamplesGenotypesSource extends AbstractListSource<GenotypesLi
 		return wrapToChromosomeKeyMap(markersAC, null);
 	}
 
-	public void initMarkerIdSetMap(int startMkInd, int endMkIdx) {
-		this.startMkIdx = startMkInd;
-		this.endMkIdx = endMkIdx;
+	@Override
+	public List<GenotypesList> getRange(int from, int to) throws IOException {
+
+		this.startMkIdx = from;
+		this.endMkIdx = to;
 
 		Variable var = ncfile.findVariable(cNetCDF.Variables.VAR_MARKERSET);
 
@@ -191,70 +198,77 @@ public class NetCdfSamplesGenotypesSource extends AbstractListSource<GenotypesLi
 	//</editor-fold>
 
 	//<editor-fold defaultstate="expanded" desc="CHROMOSOME INFO">
-	/**
-     * This Method is safe to return an independent Map.
-	 * The size of this Map is very small.
-	 */
-	public Map<ChromosomeKey, ChromosomeInfo> getChrInfoSetMap() {
+//	/**
+//     * This Method is safe to return an independent Map.
+//	 * The size of this Map is very small.
+//	 * @deprecate unused
+//	 */
+//	private Map<ChromosomeKey, ChromosomeInfo> getChrInfoSetMap() {
+//
+//		Map<ChromosomeKey, ChromosomeInfo> chrInfoMap = new LinkedHashMap<ChromosomeKey, ChromosomeInfo>();
+//
+//		// GET NAMES OF CHROMOSOMES
+//		Variable var = ncfile.findVariable(cNetCDF.Variables.VAR_CHR_IN_MATRIX);
+//		if (var != null) {
+//			DataType dataType = var.getDataType();
+//			int[] varShape = var.getShape();
+//			try {
+//				if (dataType == DataType.CHAR) {
+//					ArrayChar.D2 markerSetAC = (ArrayChar.D2) var.read("(0:" + (varShape[0] - 1) + ":1, 0:7:1)");
+//					chrInfoMap = wrapToChromosomeKeyMap(markerSetAC);
+//				}
+//			} catch (IOException ex) {
+//				log.error("Cannot read data", ex);
+//			} catch (InvalidRangeException ex) {
+//				log.error("Cannot read data", ex);
+//			}
+//
+//			// GET INFO FOR EACH CHROMOSOME
+//			var = ncfile.findVariable(cNetCDF.Variables.VAR_CHR_INFO); // Nb of markers, first physical position, last physical position, end index number in MarkerSet
+//			if (null == var) {
+//				return null;
+//			}
+//			dataType = var.getDataType();
+//			varShape = var.getShape();
+//
+//			try {
+//				if (dataType == DataType.INT) {
+//					ArrayInt.D2 chrSetAI = (ArrayInt.D2) var.read("(0:" + (varShape[0] - 1) + ":1, 0:3:1)");
+//					NetCdfUtils.writeD2ArrayIntToChromosomeInfoMapValues(chrSetAI, chrInfoMap);
+//				}
+//			} catch (IOException ex) {
+//				log.error("Cannot read data", ex);
+//			} catch (InvalidRangeException ex) {
+//				log.error("Cannot read data", ex);
+//			}
+//		} else {
+//			return null;
+//		}
+//
+//		return chrInfoMap;
+//	}
 
-		Map<ChromosomeKey, ChromosomeInfo> chrInfoMap = new LinkedHashMap<ChromosomeKey, ChromosomeInfo>();
-
-		// GET NAMES OF CHROMOSOMES
-		Variable var = ncfile.findVariable(cNetCDF.Variables.VAR_CHR_IN_MATRIX);
-		if (var != null) {
-			DataType dataType = var.getDataType();
-			int[] varShape = var.getShape();
-			try {
-				if (dataType == DataType.CHAR) {
-					ArrayChar.D2 markerSetAC = (ArrayChar.D2) var.read("(0:" + (varShape[0] - 1) + ":1, 0:7:1)");
-					chrInfoMap = wrapToChromosomeKeyMap(markerSetAC);
-				}
-			} catch (IOException ex) {
-				log.error("Cannot read data", ex);
-			} catch (InvalidRangeException ex) {
-				log.error("Cannot read data", ex);
-			}
-
-			// GET INFO FOR EACH CHROMOSOME
-			var = ncfile.findVariable(cNetCDF.Variables.VAR_CHR_INFO); // Nb of markers, first physical position, last physical position, end index number in MarkerSet
-			if (null == var) {
-				return null;
-			}
-			dataType = var.getDataType();
-			varShape = var.getShape();
-
-			try {
-				if (dataType == DataType.INT) {
-					ArrayInt.D2 chrSetAI = (ArrayInt.D2) var.read("(0:" + (varShape[0] - 1) + ":1, 0:3:1)");
-					NetCdfUtils.writeD2ArrayIntToChromosomeInfoMapValues(chrSetAI, chrInfoMap);
-				}
-			} catch (IOException ex) {
-				log.error("Cannot read data", ex);
-			} catch (InvalidRangeException ex) {
-				log.error("Cannot read data", ex);
-			}
-		} else {
-			return null;
-		}
-
-		return chrInfoMap;
-	}
-
-	public static MarkerKey getChrByMarkerIndex(Map<MarkerKey, ChromosomeInfo> chrInfoMap, int markerIndex) {
-		MarkerKey result = null;
-		for (Map.Entry<MarkerKey, ChromosomeInfo> entry : chrInfoMap.entrySet()) {
-			MarkerKey markerKey = entry.getKey();
-			ChromosomeInfo value = entry.getValue();
-			if ((markerIndex <= value.getIndex()) && (result == null)) {
-				result = markerKey;
-			}
-		}
-		return result;
-	}
+//	/**
+//	 * @deprecate unused
+//	 */
+//	private static MarkerKey getChrByMarkerIndex(Map<MarkerKey, ChromosomeInfo> chrInfoMap, int markerIndex) {
+//		MarkerKey result = null;
+//		for (Map.Entry<MarkerKey, ChromosomeInfo> entry : chrInfoMap.entrySet()) {
+//			MarkerKey markerKey = entry.getKey();
+//			ChromosomeInfo value = entry.getValue();
+//			if ((markerIndex <= value.getIndex()) && (result == null)) {
+//				result = markerKey;
+//			}
+//		}
+//		return result;
+//	}
 	//</editor-fold>
 
 	//<editor-fold defaultstate="expanded" desc="MARKERSET FILLERS">
-	public void fillGTsForCurrentSampleIntoInitMap(int sampleNb) throws IOException {
+	/**
+	 * @deprecate unused
+	 */
+	private void fillGTsForCurrentSampleIntoInitMap(int sampleNb) throws IOException {
 
 		Variable var = ncfile.findVariable(cNetCDF.Variables.VAR_GENOTYPES);
 
@@ -314,308 +328,313 @@ public class NetCdfSamplesGenotypesSource extends AbstractListSource<GenotypesLi
 		}
 	}
 
-	public void fillInitMapWithVariable(String variable) {
-
-		Variable var = ncfile.findVariable(variable);
-		if (var != null) {
-			DataType dataType = var.getDataType();
-			int[] varShape = var.getShape();
-
-			StringBuilder netCdfReadStrBldr = new StringBuilder(64);
-			netCdfReadStrBldr
-					.append("(")
-					.append(startMkIdx)
-					.append(":")
-					.append(endMkIdx)
-					.append(":1");
-			if (varShape.length == 2) {
-				netCdfReadStrBldr
-						.append(", 0:")
-						.append(varShape[1] - 1)
-						.append(":1");
-			}
-			netCdfReadStrBldr.append(")");
-			String netCdfReadStr = netCdfReadStrBldr.toString();
-
-			try {
-				if ((dataType == DataType.CHAR) && (varShape.length == 2)) {
-					ArrayChar.D2 markerSetAC = (ArrayChar.D2) var.read(netCdfReadStr);
-					NetCdfUtils.writeD2ArrayCharToMapValues(markerSetAC, (Map<MarkerKey, char[]>) markerIdSetMap);
-				}
-				if (dataType == DataType.DOUBLE) {
-					if (varShape.length == 1) {
-						ArrayDouble.D1 markerSetAF = (ArrayDouble.D1) var.read(netCdfReadStr);
-						NetCdfUtils.writeD1ArrayDoubleToMapValues(markerSetAF, (Map<MarkerKey, Double>) markerIdSetMap);
-					}
-					if (varShape.length == 2) {
-						ArrayDouble.D2 markerSetAF = (ArrayDouble.D2) var.read(netCdfReadStr);
-						NetCdfUtils.writeD2ArrayDoubleToMapValues(markerSetAF, (Map<MarkerKey, double[]>) markerIdSetMap);
-					}
-				}
-				if (dataType == DataType.INT) {
-					if (varShape.length == 1) {
-						ArrayInt.D1 markerSetAD = (ArrayInt.D1) var.read(netCdfReadStr);
-						NetCdfUtils.writeD1ArrayIntToMapValues(markerSetAD, (Map<MarkerKey, Integer>) markerIdSetMap);
-					}
-					if (varShape.length == 2) {
-						ArrayInt.D2 markerSetAD = (ArrayInt.D2) var.read(netCdfReadStr);
-						NetCdfUtils.writeD2ArrayIntToMapValues(markerSetAD, (Map<MarkerKey, int[]>) markerIdSetMap);
-					}
-				}
-			} catch (IOException ex) {
-				log.error("Cannot read data", ex);
-			} catch (InvalidRangeException ex) {
-				log.error("Cannot read data", ex);
-			}
-		}
-	}
-
-	/**
-	 * Fills markerIdSetMap with values of type MarkerMetadata,
-	 * with only chr and pos set.
-	 */
-	public void fillMarkerSetMapWithChrAndPos() {
-
-		Variable var = ncfile.findVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
-		if (var != null) {
-			DataType dataType = var.getDataType();
-			int[] varShape = var.getShape();
-
-			try {
-				if ((dataType == DataType.CHAR) && (varShape.length == 2)) {
-					StringBuilder netCdfReadStrBldr = new StringBuilder(64);
-					netCdfReadStrBldr
-							.append("(")
-							.append(startMkIdx)
-							.append(":")
-							.append(endMkIdx)
-							.append(":1, 0:")
-							.append(varShape[1] - 1)
-							.append(":1)");
-					String netCdfReadStr = netCdfReadStrBldr.toString();
-
-					ArrayChar.D2 markerSetAC = (ArrayChar.D2) var.read(netCdfReadStr);
-					NetCdfUtils.writeD2ArrayCharToMapValues(markerSetAC, (Map<MarkerKey, char[]>) markerIdSetMap);
-				}
-			} catch (IOException ex) {
-				log.error("Cannot read data", ex);
-			} catch (InvalidRangeException ex) {
-				log.error("Cannot read data", ex);
-			}
-		}
-
-		var = ncfile.findVariable(cNetCDF.Variables.VAR_MARKERS_POS);
-		if (var != null) {
-			DataType dataType = var.getDataType();
+//	/**
+//	 * @deprecate unused
+//	 */
+//	private void fillInitMapWithVariable(String variable) {
+//
+//		Variable var = ncfile.findVariable(variable);
+//		if (var != null) {
+//			DataType dataType = var.getDataType();
 //			int[] varShape = var.getShape();
+//
+//			StringBuilder netCdfReadStrBldr = new StringBuilder(64);
+//			netCdfReadStrBldr
+//					.append("(")
+//					.append(startMkIdx)
+//					.append(":")
+//					.append(endMkIdx)
+//					.append(":1");
+//			if (varShape.length == 2) {
+//				netCdfReadStrBldr
+//						.append(", 0:")
+//						.append(varShape[1] - 1)
+//						.append(":1");
+//			}
+//			netCdfReadStrBldr.append(")");
+//			String netCdfReadStr = netCdfReadStrBldr.toString();
+//
+//			try {
+//				if ((dataType == DataType.CHAR) && (varShape.length == 2)) {
+//					ArrayChar.D2 markerSetAC = (ArrayChar.D2) var.read(netCdfReadStr);
+//					NetCdfUtils.writeD2ArrayCharToMapValues(markerSetAC, (Map<MarkerKey, char[]>) markerIdSetMap);
+//				}
+//				if (dataType == DataType.DOUBLE) {
+//					if (varShape.length == 1) {
+//						ArrayDouble.D1 markerSetAF = (ArrayDouble.D1) var.read(netCdfReadStr);
+//						NetCdfUtils.writeD1ArrayDoubleToMapValues(markerSetAF, (Map<MarkerKey, Double>) markerIdSetMap);
+//					}
+//					if (varShape.length == 2) {
+//						ArrayDouble.D2 markerSetAF = (ArrayDouble.D2) var.read(netCdfReadStr);
+//						NetCdfUtils.writeD2ArrayDoubleToMapValues(markerSetAF, (Map<MarkerKey, double[]>) markerIdSetMap);
+//					}
+//				}
+//				if (dataType == DataType.INT) {
+//					if (varShape.length == 1) {
+//						ArrayInt.D1 markerSetAD = (ArrayInt.D1) var.read(netCdfReadStr);
+//						NetCdfUtils.writeD1ArrayIntToMapValues(markerSetAD, (Map<MarkerKey, Integer>) markerIdSetMap);
+//					}
+//					if (varShape.length == 2) {
+//						ArrayInt.D2 markerSetAD = (ArrayInt.D2) var.read(netCdfReadStr);
+//						NetCdfUtils.writeD2ArrayIntToMapValues(markerSetAD, (Map<MarkerKey, int[]>) markerIdSetMap);
+//					}
+//				}
+//			} catch (IOException ex) {
+//				log.error("Cannot read data", ex);
+//			} catch (InvalidRangeException ex) {
+//				log.error("Cannot read data", ex);
+//			}
+//		}
+//	}
 
-			try {
-				if (dataType == DataType.INT) {
-					ArrayInt.D1 markerSetAI = (ArrayInt.D1) var.read("(" + startMkIdx + ":" + endMkIdx + ":1)");
+//	/**
+//	 * Fills markerIdSetMap with values of type MarkerMetadata,
+//	 * with only chr and pos set.
+//	 * @deprecate unused
+//	 */
+//	private void fillMarkerSetMapWithChrAndPos() {
+//
+//		Variable var = ncfile.findVariable(cNetCDF.Variables.VAR_MARKERS_CHR);
+//		if (var != null) {
+//			DataType dataType = var.getDataType();
+//			int[] varShape = var.getShape();
+//
+//			try {
+//				if ((dataType == DataType.CHAR) && (varShape.length == 2)) {
+//					StringBuilder netCdfReadStrBldr = new StringBuilder(64);
+//					netCdfReadStrBldr
+//							.append("(")
+//							.append(startMkIdx)
+//							.append(":")
+//							.append(endMkIdx)
+//							.append(":1, 0:")
+//							.append(varShape[1] - 1)
+//							.append(":1)");
+//					String netCdfReadStr = netCdfReadStrBldr.toString();
+//
+//					ArrayChar.D2 markerSetAC = (ArrayChar.D2) var.read(netCdfReadStr);
+//					NetCdfUtils.writeD2ArrayCharToMapValues(markerSetAC, (Map<MarkerKey, char[]>) markerIdSetMap);
+//				}
+//			} catch (IOException ex) {
+//				log.error("Cannot read data", ex);
+//			} catch (InvalidRangeException ex) {
+//				log.error("Cannot read data", ex);
+//			}
+//		}
+//
+//		var = ncfile.findVariable(cNetCDF.Variables.VAR_MARKERS_POS);
+//		if (var != null) {
+//			DataType dataType = var.getDataType();
+////			int[] varShape = var.getShape();
+//
+//			try {
+//				if (dataType == DataType.INT) {
+//					ArrayInt.D1 markerSetAI = (ArrayInt.D1) var.read("(" + startMkIdx + ":" + endMkIdx + ":1)");
+//
+//					int[] shape = markerSetAI.getShape();
+//					Index index = markerSetAI.getIndex();
+//					Iterator<Entry<MarkerKey, Object>> it = ((Map<MarkerKey, Object>) markerIdSetMap).entrySet().iterator();
+//					for (int i = 0; i < shape[0]; i++) {
+//						Entry<MarkerKey, Object> entry = it.next();
+//						MarkerMetadata chrInfo = new MarkerMetadata(
+//								new String((char[]) entry.getValue()), // chr
+//								markerSetAI.getInt(index.set(i))); // pos
+//						entry.setValue(chrInfo);
+//					}
+//				}
+//			} catch (IOException ex) {
+//				log.error("Cannot read data", ex);
+//			} catch (InvalidRangeException ex) {
+//				log.error("Cannot read data", ex);
+//			}
+//		}
+//	}
 
-					int[] shape = markerSetAI.getShape();
-					Index index = markerSetAI.getIndex();
-					Iterator<Entry<MarkerKey, Object>> it = ((Map<MarkerKey, Object>) markerIdSetMap).entrySet().iterator();
-					for (int i = 0; i < shape[0]; i++) {
-						Entry<MarkerKey, Object> entry = it.next();
-						MarkerMetadata chrInfo = new MarkerMetadata(
-								new String((char[]) entry.getValue()), // chr
-								markerSetAI.getInt(index.set(i))); // pos
-						entry.setValue(chrInfo);
-					}
-				}
-			} catch (IOException ex) {
-				log.error("Cannot read data", ex);
-			} catch (InvalidRangeException ex) {
-				log.error("Cannot read data", ex);
-			}
-		}
-	}
-
-	private void fillWith(Object value) {
-		fillWith((Map<MarkerKey, Object>)markerIdSetMap, value);
-	}
-	public void fillWith(char[] value) {
-		fillWith((Object)value);
-	}
-	public void fillWith(byte[] value) {
-		fillWith((Object)value);
-	}
-	public void fillWith(int[] value) {
-		fillWith((Object)value);
-	}
-	public void fillWith(double[] value) {
-		fillWith((Object)value);
-	}
-	public void fillWith(Integer value) {
-		fillWith((Object)value);
-	}
-	public void fillWith(Double value) {
-		fillWith((Object)value);
-	}
-
-	private static <K, V> void fillWith(Map<K, V> map, V defaultVal) {
-
-		for (Map.Entry<K, V> entry : map.entrySet()) {
-			entry.setValue(defaultVal);
-		}
-	}
-
-	// HELPERS TO TRANSFER VALUES FROM ONE Map TO ANOTHER
-	public static <K, V> void replaceWithValuesFrom(Map<K, V> toBeModified, Map<K, V> newValuesSource) {
-
-		for (Map.Entry<K, V> entry : toBeModified.entrySet()) {
-			entry.setValue(newValuesSource.get(entry.getKey()));
-		}
-	}
-
-	// HELPER TO APPEND VALUE TO AN EXISTING Map CHAR VALUE
-	public void appendVariableToMarkerSetMapValue(String variable, String separator) {
-
-		Variable var = ncfile.findVariable(variable);
-		if (var != null) {
-			DataType dataType = var.getDataType();
-			int[] varShape = var.getShape();
-			try {
-				if ((dataType == DataType.CHAR) && (varShape.length == 2)) {
-					ArrayChar.D2 markerSetAC = (ArrayChar.D2) var.read("(" + startMkIdx + ":" + endMkIdx + ":1, 0:" + (varShape[1] - 1) + ":1)");
-
-					int[] shape = markerSetAC.getShape();
-					Index index = markerSetAC.getIndex();
-					Iterator<Entry<MarkerKey, char[]>> it = ((Map<MarkerKey, char[]>) markerIdSetMap).entrySet().iterator();
-					for (int i = 0; i < shape[0]; i++) {
-						Entry<MarkerKey, char[]> entry = it.next();
-						String value = new String(entry.getValue());
-						if (!value.isEmpty()) {
-							value += separator;
-						}
-						StringBuilder newValue = new StringBuilder();
-						for (int j = 0; j < shape[1]; j++) {
-							newValue.append(markerSetAC.getChar(index.set(i, j)));
-						}
-						entry.setValue((value + newValue.toString().trim()).toCharArray());
-					}
-				} else if ((dataType == DataType.FLOAT) && (varShape.length == 1)) {
-					ArrayFloat.D1 markerSetAF = (ArrayFloat.D1) var.read("(" + startMkIdx + ":" + endMkIdx + ":1)");
-
-					int[] shape = markerSetAF.getShape();
-					Index index = markerSetAF.getIndex();
-					Iterator<Entry<MarkerKey, char[]>> it = ((Map<MarkerKey, char[]>) markerIdSetMap).entrySet().iterator();
-					for (int i = 0; i < shape[0]; i++) {
-						Entry<MarkerKey, char[]> entry = it.next();
-						String value = new String(entry.getValue());
-						if (!value.isEmpty()) {
-							value += separator;
-						}
-						Float floatValue = markerSetAF.getFloat(index.set(i));
-						entry.setValue((value + floatValue.toString()).toCharArray());
-					}
-				} else if ((dataType == DataType.INT) && (varShape.length == 1)) {
-					ArrayInt.D1 markerSetAF = (ArrayInt.D1) var.read("(" + startMkIdx + ":" + endMkIdx + ":1)");
-
-					int[] shape = markerSetAF.getShape();
-					Index index = markerSetAF.getIndex();
-					Iterator<Entry<MarkerKey, char[]>> it = ((Map<MarkerKey, char[]>) markerIdSetMap).entrySet().iterator();
-					for (int i = 0; i < shape[0]; i++) {
-						Entry<MarkerKey, char[]> entry = it.next();
-						String value = new String(entry.getValue());
-						if (!value.isEmpty()) {
-							value += separator;
-						}
-						Integer intValue = markerSetAF.getInt(index.set(i));
-						entry.setValue((value + intValue.toString()).toCharArray());
-					}
-				}
-			} catch (IOException ex) {
-				log.error("Cannot read data", ex);
-			} catch (InvalidRangeException ex) {
-				log.error("Cannot read data", ex);
-			}
-		}
-	}
-
-	/**
-	 * HELPER GETS DICTIONARY OF CURRENT MATRIX. IS CONCURRENT TO INSTANTIATED Map.
-	 * @deprecated unused
-	 */
-	public Map<MarkerKey, char[]> getDictionaryBases() throws IOException {
-
-		Map<MarkerKey, char[]> dictionary = new LinkedHashMap<MarkerKey, char[]>();
-
-		try {
-			Variable varBasesDict = ncfile.findVariable(cNetCDF.Variables.VAR_MARKERS_BASES_DICT);
-			if (null != varBasesDict) {
-				int[] dictShape = varBasesDict.getShape();
-
-				ArrayChar.D2 dictAlleles_ACD2 = (ArrayChar.D2) varBasesDict.read("(" + startMkIdx + ":" + endMkIdx + ":1, 0:" + (dictShape[1] - 1) + ":1)");
-
-				Index index = dictAlleles_ACD2.getIndex();
-				Iterator<MarkerKey> it = markerIdSetMap.keySet().iterator();
-				for (int i = 0; i < dictShape[0]; i++) {
-					MarkerKey key = it.next();
-					StringBuilder alleles = new StringBuilder("");
-					// Get Alleles
-					for (int j = 0; j < dictShape[1]; j++) {
-						alleles.append(dictAlleles_ACD2.getChar(index.set(i, j)));
-					}
-					dictionary.put(key, alleles.toString().trim().toCharArray());
-				}
-			}
-		} catch (InvalidRangeException ex) {
-			throw new IOException("Cannot read data", ex);
-		}
-
-		return dictionary;
-	}
+//	private void fillWith(Object value) {
+//		fillWith((Map<MarkerKey, Object>)markerIdSetMap, value);
+//	}
+//	private void fillWith(char[] value) {
+//		fillWith((Object)value);
+//	}
+//	private void fillWith(byte[] value) {
+//		fillWith((Object)value);
+//	}
+//	private void fillWith(int[] value) {
+//		fillWith((Object)value);
+//	}
+//	private void fillWith(double[] value) {
+//		fillWith((Object)value);
+//	}
+//	private void fillWith(Integer value) {
+//		fillWith((Object)value);
+//	}
+//	private void fillWith(Double value) {
+//		fillWith((Object)value);
+//	}
+//
+//	private static <K, V> void fillWith(Map<K, V> map, V defaultVal) {
+//
+//		for (Map.Entry<K, V> entry : map.entrySet()) {
+//			entry.setValue(defaultVal);
+//		}
+//	}
+//
+//	// HELPERS TO TRANSFER VALUES FROM ONE Map TO ANOTHER
+//	private static <K, V> void replaceWithValuesFrom(Map<K, V> toBeModified, Map<K, V> newValuesSource) {
+//
+//		for (Map.Entry<K, V> entry : toBeModified.entrySet()) {
+//			entry.setValue(newValuesSource.get(entry.getKey()));
+//		}
+//	}
+//
+//	// HELPER TO APPEND VALUE TO AN EXISTING Map CHAR VALUE
+//	/** @deprecated unused */
+//	private void appendVariableToMarkerSetMapValue(String variable, String separator) {
+//
+//		Variable var = ncfile.findVariable(variable);
+//		if (var != null) {
+//			DataType dataType = var.getDataType();
+//			int[] varShape = var.getShape();
+//			try {
+//				if ((dataType == DataType.CHAR) && (varShape.length == 2)) {
+//					ArrayChar.D2 markerSetAC = (ArrayChar.D2) var.read("(" + startMkIdx + ":" + endMkIdx + ":1, 0:" + (varShape[1] - 1) + ":1)");
+//
+//					int[] shape = markerSetAC.getShape();
+//					Index index = markerSetAC.getIndex();
+//					Iterator<Entry<MarkerKey, char[]>> it = ((Map<MarkerKey, char[]>) markerIdSetMap).entrySet().iterator();
+//					for (int i = 0; i < shape[0]; i++) {
+//						Entry<MarkerKey, char[]> entry = it.next();
+//						String value = new String(entry.getValue());
+//						if (!value.isEmpty()) {
+//							value += separator;
+//						}
+//						StringBuilder newValue = new StringBuilder();
+//						for (int j = 0; j < shape[1]; j++) {
+//							newValue.append(markerSetAC.getChar(index.set(i, j)));
+//						}
+//						entry.setValue((value + newValue.toString().trim()).toCharArray());
+//					}
+//				} else if ((dataType == DataType.FLOAT) && (varShape.length == 1)) {
+//					ArrayFloat.D1 markerSetAF = (ArrayFloat.D1) var.read("(" + startMkIdx + ":" + endMkIdx + ":1)");
+//
+//					int[] shape = markerSetAF.getShape();
+//					Index index = markerSetAF.getIndex();
+//					Iterator<Entry<MarkerKey, char[]>> it = ((Map<MarkerKey, char[]>) markerIdSetMap).entrySet().iterator();
+//					for (int i = 0; i < shape[0]; i++) {
+//						Entry<MarkerKey, char[]> entry = it.next();
+//						String value = new String(entry.getValue());
+//						if (!value.isEmpty()) {
+//							value += separator;
+//						}
+//						Float floatValue = markerSetAF.getFloat(index.set(i));
+//						entry.setValue((value + floatValue.toString()).toCharArray());
+//					}
+//				} else if ((dataType == DataType.INT) && (varShape.length == 1)) {
+//					ArrayInt.D1 markerSetAF = (ArrayInt.D1) var.read("(" + startMkIdx + ":" + endMkIdx + ":1)");
+//
+//					int[] shape = markerSetAF.getShape();
+//					Index index = markerSetAF.getIndex();
+//					Iterator<Entry<MarkerKey, char[]>> it = ((Map<MarkerKey, char[]>) markerIdSetMap).entrySet().iterator();
+//					for (int i = 0; i < shape[0]; i++) {
+//						Entry<MarkerKey, char[]> entry = it.next();
+//						String value = new String(entry.getValue());
+//						if (!value.isEmpty()) {
+//							value += separator;
+//						}
+//						Integer intValue = markerSetAF.getInt(index.set(i));
+//						entry.setValue((value + intValue.toString()).toCharArray());
+//					}
+//				}
+//			} catch (IOException ex) {
+//				log.error("Cannot read data", ex);
+//			} catch (InvalidRangeException ex) {
+//				log.error("Cannot read data", ex);
+//			}
+//		}
+//	}
+//
+//	/**
+//	 * HELPER GETS DICTIONARY OF CURRENT MATRIX. IS CONCURRENT TO INSTANTIATED Map.
+//	 * @deprecated unused
+//	 */
+//	private Map<MarkerKey, char[]> getDictionaryBases() throws IOException {
+//
+//		Map<MarkerKey, char[]> dictionary = new LinkedHashMap<MarkerKey, char[]>();
+//
+//		try {
+//			Variable varBasesDict = ncfile.findVariable(cNetCDF.Variables.VAR_MARKERS_BASES_DICT);
+//			if (null != varBasesDict) {
+//				int[] dictShape = varBasesDict.getShape();
+//
+//				ArrayChar.D2 dictAlleles_ACD2 = (ArrayChar.D2) varBasesDict.read("(" + startMkIdx + ":" + endMkIdx + ":1, 0:" + (dictShape[1] - 1) + ":1)");
+//
+//				Index index = dictAlleles_ACD2.getIndex();
+//				Iterator<MarkerKey> it = markerIdSetMap.keySet().iterator();
+//				for (int i = 0; i < dictShape[0]; i++) {
+//					MarkerKey key = it.next();
+//					StringBuilder alleles = new StringBuilder("");
+//					// Get Alleles
+//					for (int j = 0; j < dictShape[1]; j++) {
+//						alleles.append(dictAlleles_ACD2.getChar(index.set(i, j)));
+//					}
+//					dictionary.put(key, alleles.toString().trim().toCharArray());
+//				}
+//			}
+//		} catch (InvalidRangeException ex) {
+//			throw new IOException("Cannot read data", ex);
+//		}
+//
+//		return dictionary;
+//	}
 	//</editor-fold>
+//
+//	private <V> Map<MarkerKey, V> getMarkerIdSetMap() {
+//		return ((Map<MarkerKey, V>) markerIdSetMap);
+//	}
 
-	private <V> Map<MarkerKey, V> getMarkerIdSetMap() {
-		return ((Map<MarkerKey, V>) markerIdSetMap);
-	}
-
-	public Map<MarkerKey, byte[]> getMarkerIdSetMapByteArray() {
-		return getMarkerIdSetMap();
-	}
-
-	public Map<MarkerKey, char[]> getMarkerIdSetMapCharArray() {
-		return getMarkerIdSetMap();
-	}
-
-	public Map<MarkerKey, MarkerMetadata> getMarkerMetadata() {
-		return getMarkerIdSetMap();
-	}
-
-	public Map<MarkerKey, Integer> getMarkerIdSetMapInteger() {
-		return getMarkerIdSetMap();
-	}
-
-	public Set<MarkerKey> getMarkerKeys() {
-		return getMarkerIdSetMap().keySet();
-	}
+//	private Map<MarkerKey, byte[]> getMarkerIdSetMapByteArray() {
+//		return getMarkerIdSetMap();
+//	}
+//
+//	private Map<MarkerKey, char[]> getMarkerIdSetMapCharArray() {
+//		return getMarkerIdSetMap();
+//	}
+//
+//	private Map<MarkerKey, MarkerMetadata> getMarkerMetadata() {
+//		return getMarkerIdSetMap();
+//	}
+//
+//	private Map<MarkerKey, Integer> getMarkerIdSetMapInteger() {
+//		return getMarkerIdSetMap();
+//	}
+//
+//	private Set<MarkerKey> getMarkerKeys() {
+//		return getMarkerIdSetMap().keySet();
+//	}
 
 //	@Override
 //	public Iterator<Entry<MarkerKey, GenotypesList>> iterator() { XXX;
 //		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 //	}
 
-	@Override
-	public int size() {
-		return markerIdSetMap.size();
-	}
+//	@Override
+//	public int size() {
+//		return markerIdSetMap.size();
+//	}
 
-	@Override
-	public GenotypesList get(int sampleIndex) {
-
-		if (markerIdSetMap == null) {
-			initFullMarkerIdSetMap();
-		}
-		try {
-			fillGTsForCurrentSampleIntoInitMap(sampleIndex);
-		} catch (IOException ex) {
-			throw new RuntimeException(ex);
-		}
-		Collection<byte[]> sampleGenotypes = getMarkerIdSetMapByteArray().values();
-
-		return genotyesListFactory.createGenotypesList(sampleGenotypes);
-	}
+//	@Override
+//	public GenotypesList get(int sampleIndex) {XXX; // should be implemented by parent already
+//
+//		if (markerIdSetMap == null) {
+//			initFullMarkerIdSetMap();
+//		}
+//		try {
+//			fillGTsForCurrentSampleIntoInitMap(sampleIndex);
+//		} catch (IOException ex) {
+//			throw new RuntimeException(ex);
+//		}
+//		Collection<byte[]> sampleGenotypes = getMarkerIdSetMapByteArray().values();
+//
+//		return genotyesListFactory.createGenotypesList(sampleGenotypes);
+//	}
 }
