@@ -246,7 +246,7 @@ public class NetCdfQAMarkersOperationDataSet extends AbstractNetCdfOperationData
 
 //		MarkerOperationSet rdMarkersSet = new MarkerOperationSet(getOperationKey(), from, to);
 //		Map<MarkerKey, Integer> rdMarkers = rdMarkersSet.getOpSetMap();
-		Map<Integer, MarkerKey> markersKeys = getMarkersKeysSource().getIndicesMap(from, to)
+		Map<Integer, MarkerKey> markersKeys = getMarkersKeysSource().getIndicesMap(from, to);
 
 		Collection<Double> missingRatios = getMissingRatio(from, to);
 		Collection<Boolean> mismatchStates = getMismatchStates(from, to);

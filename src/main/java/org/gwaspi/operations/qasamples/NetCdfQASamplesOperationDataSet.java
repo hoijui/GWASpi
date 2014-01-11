@@ -146,7 +146,7 @@ public class NetCdfQASamplesOperationDataSet extends AbstractNetCdfOperationData
 
 //		SampleOperationSet rdSampleSet = new SampleOperationSet(getOperationKey(), from, to);
 //		Map<SampleKey, Integer> rdSamples = rdSampleSet.getOpSetMap();
-		Map<Integer, SampleKey> samplesKeys = getSamples();
+		Map<Integer, SampleKey> samplesKeys = getSamplesKeysSource().getIndicesMap(from, to);
 
 		Collection<Double> missingRatios = getMissingRatios(from, to);
 		Collection<Integer> missingCount = getMissingCounts(from, to);

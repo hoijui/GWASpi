@@ -87,30 +87,30 @@ public class NetCdfMarkersGenotypesSource extends AbstractListSource<GenotypesLi
 	}
 
 	// ACCESSORS
-	private int getSampleSetSize() {
-		return numMarkers;
-	}
-
-	private MatrixMetadata getMatrixMetadata(List<String> _sampleSetAL) {
-		return matrixMetadata;
-	}
+//	private int getSampleSetSize() {
+//		return numMarkers;
+//	}
+//
+//	private MatrixMetadata getMatrixMetadata(List<String> _sampleSetAL) {
+//		return matrixMetadata;
+//	}
 
 	//<editor-fold defaultstate="expanded" desc="SAMPLESET FETCHERS">
-	private Map<SampleKey, ?> getSampleIdSetMap() throws IOException {
-		return getSampleIdSetMap(MatrixMetadata.generatePathToNetCdfFile(matrixMetadata).getAbsolutePath());
-	}
+//	private Map<SampleKey, ?> getSampleIdSetMap() throws IOException {
+//		return getSampleIdSetMap(MatrixMetadata.generatePathToNetCdfFile(matrixMetadata).getAbsolutePath());
+//	}
 
-	private Map<SampleKey, char[]> getSampleIdSetMapCharArray() throws IOException {
-		return (Map<SampleKey, char[]>) getSampleIdSetMap();
-	}
-
-	private Map<SampleKey, byte[]> getSampleIdSetMapByteArray() throws IOException {
-		return (Map<SampleKey, byte[]>) getSampleIdSetMap();
-	}
-
-	private Set<SampleKey> getSampleKeys() throws IOException {
-		return getSampleIdSetMap().keySet();
-	}
+//	private Map<SampleKey, char[]> getSampleIdSetMapCharArray() throws IOException {
+//		return (Map<SampleKey, char[]>) getSampleIdSetMap();
+//	}
+//
+//	private Map<SampleKey, byte[]> getSampleIdSetMapByteArray() throws IOException {
+//		return (Map<SampleKey, byte[]>) getSampleIdSetMap();
+//	}
+//
+//	private Set<SampleKey> getSampleKeys() throws IOException {
+//		return getSampleIdSetMap().keySet();
+//	}
 
 	private Map<SampleKey, ?> getSampleIdSetMap(String matrixImportPath) throws IOException {
 		NetcdfFile ncfile = null;
@@ -315,54 +315,54 @@ public class NetCdfMarkersGenotypesSource extends AbstractListSource<GenotypesLi
 		}
 	}
 
-	/** @deprecate unused. was used in MatrixDataExtractor */
-	private void fillSampleIdSetMapWithFilterVariable(Map<SampleKey, char[]> map, String variable, int filterPos) throws IOException {
-
-		NetcdfFile ncfile = null;
-		try {
-			ncfile = NetcdfFile.open(MatrixMetadata.generatePathToNetCdfFile(matrixMetadata).getAbsolutePath());
-			Variable var = ncfile.findVariable(variable);
-
-			if (null == var) {
-				return;
-			}
-
-			DataType dataType = var.getDataType();
-//			int[] varShape = var.getShape();
-			Dimension sampleSetDim = ncfile.findDimension(cNetCDF.Dimensions.DIM_SAMPLESET);
-
-			try {
-				numMarkers = sampleSetDim.getLength();
-				if (dataType == DataType.CHAR) {
-					StringBuilder netCdfReadStrBldr = new StringBuilder(64);
-					netCdfReadStrBldr
-							.append("(0:")
-							.append(numMarkers - 1)
-							.append(":1, ")
-							.append(filterPos)
-							.append(":")
-							.append(filterPos)
-							.append(":1)");
-					String netCdfReadStr = netCdfReadStrBldr.toString();
-
-					ArrayChar.D2 sampleSetAC = (ArrayChar.D2) var.read(netCdfReadStr);
-					NetCdfUtils.writeD2ArrayCharToMapValues(sampleSetAC, map);
-					sampleIdSetMap = map;
-				}
-			} catch (InvalidRangeException ex) {
-				throw new IOException("Cannot read data", ex);
-			}
-		} finally {
-			if (null != ncfile) {
-				try {
-					ncfile.close();
-				} catch (IOException ex) {
-					log.warn("Cannot close file", ex);
-				}
-			}
-		}
-	}
-	//</editor-fold>
+//	/** @deprecate unused. was used in MatrixDataExtractor */
+//	private void fillSampleIdSetMapWithFilterVariable(Map<SampleKey, char[]> map, String variable, int filterPos) throws IOException {
+//
+//		NetcdfFile ncfile = null;
+//		try {
+//			ncfile = NetcdfFile.open(MatrixMetadata.generatePathToNetCdfFile(matrixMetadata).getAbsolutePath());
+//			Variable var = ncfile.findVariable(variable);
+//
+//			if (null == var) {
+//				return;
+//			}
+//
+//			DataType dataType = var.getDataType();
+////			int[] varShape = var.getShape();
+//			Dimension sampleSetDim = ncfile.findDimension(cNetCDF.Dimensions.DIM_SAMPLESET);
+//
+//			try {
+//				numMarkers = sampleSetDim.getLength();
+//				if (dataType == DataType.CHAR) {
+//					StringBuilder netCdfReadStrBldr = new StringBuilder(64);
+//					netCdfReadStrBldr
+//							.append("(0:")
+//							.append(numMarkers - 1)
+//							.append(":1, ")
+//							.append(filterPos)
+//							.append(":")
+//							.append(filterPos)
+//							.append(":1)");
+//					String netCdfReadStr = netCdfReadStrBldr.toString();
+//
+//					ArrayChar.D2 sampleSetAC = (ArrayChar.D2) var.read(netCdfReadStr);
+//					NetCdfUtils.writeD2ArrayCharToMapValues(sampleSetAC, map);
+//					sampleIdSetMap = map;
+//				}
+//			} catch (InvalidRangeException ex) {
+//				throw new IOException("Cannot read data", ex);
+//			}
+//		} finally {
+//			if (null != ncfile) {
+//				try {
+//					ncfile.close();
+//				} catch (IOException ex) {
+//					log.warn("Cannot close file", ex);
+//				}
+//			}
+//		}
+//	}
+//	//</editor-fold>
 
 //	@Override
 //	public int size() {

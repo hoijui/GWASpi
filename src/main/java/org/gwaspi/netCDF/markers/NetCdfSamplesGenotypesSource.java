@@ -62,6 +62,7 @@ public class NetCdfSamplesGenotypesSource extends AbstractListSource<GenotypesLi
 	private int endMkIdx;
 	private Map<MarkerKey, ?> markerIdSetMap;
 	private GenotypesListFactory genotyesListFactory;
+
 	private static final int DEFAULT_CHUNK_SIZE = 50;
 	private static final int DEFAULT_CHUNK_SIZE_SHATTERED = 1;
 
@@ -77,6 +78,14 @@ public class NetCdfSamplesGenotypesSource extends AbstractListSource<GenotypesLi
 		super(rdNetCdfFile, DEFAULT_CHUNK_SIZE_SHATTERED, originalIndices);
 
 		this.studyKey = studyKey;
+	}
+
+	public static SamplesGenotypesSource createForMatrix(StudyKey studyKey, NetcdfFile rdNetCdfFile) throws IOException {
+		return new NetCdfSamplesGenotypesSource(studyKey, rdNetCdfFile);
+	}
+
+	public static SamplesGenotypesSource createForOperation(StudyKey studyKey, NetcdfFile rdNetCdfFile, List<Integer> originalIndices) throws IOException {
+		return new NetCdfSamplesGenotypesSource(studyKey, rdNetCdfFile, originalIndices);
 	}
 
 	public NetCdfSamplesGenotypesSource(MatrixMetadata matrixMetadata) throws IOException {
