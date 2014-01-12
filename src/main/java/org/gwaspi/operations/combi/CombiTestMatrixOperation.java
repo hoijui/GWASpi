@@ -47,14 +47,14 @@ import org.gwaspi.model.SampleInfo.Affection;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.SamplesKeysSource;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
+import org.gwaspi.netCDF.operations.AbstractOperation;
 import org.gwaspi.netCDF.operations.AbstractTestMatrixOperation;
-import org.gwaspi.netCDF.operations.MatrixOperation;
 import org.gwaspi.netCDF.operations.OperationFactory;
 import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class CombiTestMatrixOperation implements MatrixOperation {
+public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperationDataSet> {
 
 	private static final Logger LOG
 			= LoggerFactory.getLogger(CombiTestMatrixOperation.class);
@@ -67,8 +67,14 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 	private final CombiTestParams params;
 
 	public CombiTestMatrixOperation(CombiTestParams params) {
+		super();
 
 		this.params = params;
+	}
+
+	@Override
+	public OPType getType() {
+		return OPType.COMBI_ASSOC_TEST;
 	}
 
 	@Override
@@ -107,9 +113,8 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 		if (dataLeft) {
 			DataSetSource parentMatrixDataSetSource = MatrixFactory.generateMatrixDataSetSource(params.getMatrixKey());
 
-
 //			try {
-				CombiTestOperationDataSet dataSet = (CombiTestOperationDataSet) OperationFactory.generateOperationDataSet(OPType.COMBI_ASSOC_TEST); // HACK
+				CombiTestOperationDataSet dataSet = generateFreshOperationDataSet();
 //				((AbstractNetCdfOperationDataSet) dataSet).setReadMatrixKey(rdMatrixKey); // HACK
 //				((AbstractNetCdfOperationDataSet) dataSet).setReadOperationKey(markerCensusOPKey); // HACK
 				((AbstractNetCdfOperationDataSet) dataSet).setReadOperationKey(params.getHardyWeinbergOperationKey()); // HACK

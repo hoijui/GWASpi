@@ -52,17 +52,13 @@ public class OperationManager {
 	{
 		org.gwaspi.global.Utils.sysoutStart("Genotypes Frequency Count by Affection");
 
-		int resultOpId; // Integer.MIN_VALUE
-		OperationMetadata sampleQAOP = OperationsList.getOperation(samplesQAOpKey);
-		OperationMetadata markerQAOP = OperationsList.getOperation(markersQAOpKey);
-
-		resultOpId = new OP_MarkerCensus(
+		int resultOpId = new OP_MarkerCensus(
 				rdMatrixKey,
 				censusName,
-				sampleQAOP,
+				samplesQAOpKey,
 				sampleMissingRatio,
 				sampleHetzygRatio,
-				markerQAOP,
+				markersQAOpKey,
 				discardMismatches,
 				markerMissingRatio,
 				null).processMatrix();
@@ -84,17 +80,13 @@ public class OperationManager {
 	{
 		org.gwaspi.global.Utils.sysoutStart("Genotypes Frequency Count using " + phenoFile.getName());
 
-		int resultOpId; // Integer.MIN_VALUE
-		OperationMetadata sampleQAOP = OperationsList.getOperation(samplesQAOpKey);
-		OperationMetadata markerQAOP = OperationsList.getOperation(markersQAOpKey);
-
-		resultOpId = new OP_MarkerCensus(
+		int resultOpId = new OP_MarkerCensus(
 				rdMatrixKey,
 				censusName,
-				sampleQAOP,
+				samplesQAOpKey,
 				sampleMissingRatio,
 				sampleHetzygRatio,
-				markerQAOP,
+				markersQAOpKey,
 				discardMismatches,
 				markerMissingRatio,
 				phenoFile).processMatrix();
@@ -103,12 +95,10 @@ public class OperationManager {
 	}
 
 	public static OperationKey performHardyWeinberg(OperationKey censusOpKey, String hwName) throws IOException {
-		int resultOpId; // Integer.MIN_VALUE
-		OperationMetadata censusOP = OperationsList.getOperation(censusOpKey);
-
+		
 		org.gwaspi.global.Utils.sysoutStart("Hardy-Weinberg");
 
-		resultOpId = new OP_HardyWeinberg(censusOpKey, hwName).processMatrix();
+		int resultOpId = new OP_HardyWeinberg(censusOpKey, hwName).processMatrix();
 		OperationKey operationKey = new OperationKey(censusOpKey.getParentMatrixKey(), resultOpId);
 
 		org.gwaspi.reports.OutputHardyWeinberg.writeReportsForMarkersHWData(operationKey);
@@ -119,7 +109,6 @@ public class OperationManager {
 
 	//<editor-fold defaultstate="expanded" desc="ANALYSIS">
 	public static OperationKey performCleanAssociationTests(
-			MatrixKey rdMatrixKey,
 			OperationKey censusOpKey,
 			OperationKey hwOpKey,
 			double hwThreshold,
@@ -131,7 +120,6 @@ public class OperationManager {
 		org.gwaspi.global.Utils.sysoutStart(" " + (allelic ? "Allelic" : "Genotypic") + " Association Test using QA and HW thresholds");
 
 		AbstractTestMatrixOperation testOperation = new OP_AssociationTests(
-				rdMatrixKey,
 				censusOpKey,
 				hwOpKey,
 				hwThreshold,

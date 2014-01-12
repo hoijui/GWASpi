@@ -25,6 +25,7 @@ import org.gwaspi.model.ChromosomeInfo;
 import org.gwaspi.model.ChromosomeKey;
 import org.gwaspi.model.ChromosomesInfosSource;
 import org.gwaspi.model.DataSetSource;
+import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
@@ -116,7 +117,10 @@ public class OperationFactory {
 	 * @return
 	 * @throws IOException
 	 */
-	public static OperationDataSet generateOperationDataSet(OPType operationType) throws IOException {
+	public static OperationDataSet generateOperationDataSet(OPType operationType, OperationKey parent) throws IOException {
+		return generateOperationDataSet(operationType, null);
+	}
+	public static OperationDataSet generateOperationDataSet(OPType operationType, MatrixKey parent) throws IOException {
 		return generateOperationDataSet(operationType, null);
 	}
 

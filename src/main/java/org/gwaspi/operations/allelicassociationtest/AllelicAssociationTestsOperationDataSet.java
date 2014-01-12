@@ -19,7 +19,6 @@ package org.gwaspi.operations.allelicassociationtest;
 
 import java.io.IOException;
 import java.util.Collection;
-import org.gwaspi.operations.OperationDataSet;
 import org.gwaspi.operations.trendtest.CommonTestOperationDataSet;
 
 public interface AllelicAssociationTestsOperationDataSet extends CommonTestOperationDataSet<AllelicAssociationTestOperationEntry> {

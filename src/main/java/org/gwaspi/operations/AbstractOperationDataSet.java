@@ -49,6 +49,7 @@ public abstract class AbstractOperationDataSet<ET> implements OperationDataSet<E
 	private final Queue<ET> writeBuffer;
 	private int alreadyWritten;
 	private int entriesWriteBufferSize;
+	private final int numEntriesToLog = 10000;
 
 	public AbstractOperationDataSet(
 			boolean markersOperationSet,
@@ -252,10 +253,29 @@ public abstract class AbstractOperationDataSet<ET> implements OperationDataSet<E
 		writeBuffer.add(entry);
 
 		if (writeBuffer.size() >= entriesWriteBufferSize) {
-			writeEntries(alreadyWritten, writeBuffer);
-			alreadyWritten += writeBuffer.size();
-			writeBuffer.clear();
+			writeCurrentEnriesBuffer();
 		}
+	}
+
+	private void writeCurrentEnriesBuffer() throws IOException {
+
+		final int numWriting = writeBuffer.size();
+		writeEntries(alreadyWritten, writeBuffer);
+		alreadyWritten += numWriting;
+		writeBuffer.clear();
+
+		if (((alreadyWritten % numEntriesToLog) != ((alreadyWritten - numWriting) % numEntriesToLog)) // approximately numEntriesToLog written since last log
+				|| (alreadyWritten == getNumMarkers())) // the final entries
+		{
+			log.info("Processed markers: {} / {}", alreadyWritten, getNumMarkers());
+		}
+
+		writeBuffer.clear();
+	}
+
+	@Override
+	public void finnishWriting() throws IOException {
+		writeCurrentEnriesBuffer();
 	}
 
 	protected abstract void writeEntries(int alreadyWritten, Queue<ET> writeBuffer) throws IOException;

@@ -30,6 +30,7 @@ import org.gwaspi.model.ChromosomesKeysSource;
 import org.gwaspi.model.MarkersGenotypesSource;
 import org.gwaspi.model.MarkersKeysSource;
 import org.gwaspi.model.MarkersMetadataSource;
+import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SamplesGenotypesSource;
@@ -53,30 +54,29 @@ public class NetCDFDataSetSource implements DataSetSource {
 	private static final Logger LOG
 			= LoggerFactory.getLogger(NetCDFDataSetSource.class);
 
-	private final StudyKey studyKey;
 	private final File netCDFpath;
 	private NetcdfFile rdNetCdfFile;
 	private MatrixKey matrixKey;
 	private MatrixMetadata matrixMetadata;
-//	private MatrixKey matrixKey;
-//	private MarkerSet markerSet;
-//	private SampleSet sampleSet;
 
-//	public NetCDFDataSetSource(MatrixKey matrixKey) throws IOException {
-//
-//		this.netCDFpath = null;
-//		this.matrixKey = matrixKey;
-//		this.markerSet = new MarkerSet(matrixKey);
-//		this.sampleSet = new SampleSet(matrixKey);
-//	}
+	public NetCDFDataSetSource(MatrixKey matrixKey) throws IOException {
 
-	public NetCDFDataSetSource(StudyKey studyKey, File netCDFpath) throws IOException {
+		this.matrixKey = matrixKey;
+		this.matrixMetadata = MatricesList.getMatrixMetadataById(matrixKey);
+		this.netCDFpath = MatrixMetadata.generatePathToNetCdfFile(matrixMetadata);
+		this.rdNetCdfFile = null;
+	}
 
-		this.studyKey = studyKey;
+	public NetCDFDataSetSource(File netCDFpath, MatrixKey matrixKey) throws IOException {
+
 		this.netCDFpath = netCDFpath;
 		this.rdNetCdfFile = null;
-		this.matrixKey = null;
+		this.matrixKey = matrixKey;
 		this.matrixMetadata = null;
+	}
+
+	public NetCDFDataSetSource(File netCDFpath) throws IOException {
+		this(netCDFpath, null);
 	}
 
 	private NetcdfFile getReadNetCdfFile() throws IOException {
@@ -96,7 +96,7 @@ public class NetCDFDataSetSource implements DataSetSource {
 
 		if (matrixMetadata == null) {
 			ensureReadNetCdfFile();
-			matrixMetadata = loadMatrixMetadata(studyKey, netCDFpath, null);
+			matrixMetadata = loadMatrixMetadata(netCDFpath);
 			matrixKey = MatrixKey.valueOf(matrixMetadata);
 		}
 	}
@@ -122,27 +122,36 @@ public class NetCDFDataSetSource implements DataSetSource {
 //				toCompleteMatrixMetadata.getCreationDate());
 //	}
 
+	public static MatrixMetadata loadMatrixMetadata(
+			File netCDFFile)
+			throws IOException
+	{
+		return loadMatrixMetadata(netCDFFile, null, null);
+	}
+
     /**
 	 * This method loads all the matrix meta-data
 	 * from a GWASpi NetCdf file ("*.nc") that contains matrix data.
 	 * @param newMatrixFriendlyName may be null
 	 */
 	public static MatrixMetadata loadMatrixMetadata(
-			StudyKey studyKey,
 			File netCDFFile,
-			String newMatrixFriendlyName)
+			String newMatrixFriendlyName,
+			MatrixKey matrixKey)
 			throws IOException
 	{
 		NetcdfFile ncFile = NetcdfFile.open(netCDFFile.getAbsolutePath());
-		return loadMatrixMetadata(studyKey, ncFile, newMatrixFriendlyName);
+		return loadMatrixMetadata(ncFile, newMatrixFriendlyName, matrixKey);
 	}
 
 	public static MatrixMetadata loadMatrixMetadata(
-			StudyKey studyKey,
 			NetcdfFile netCDFFile,
-			String newMatrixFriendlyName)
+			String newMatrixFriendlyName,
+			MatrixKey matrixKey)
 			throws IOException
 	{
+		int studyId = Integer.MIN_VALUE;
+		int matrixId = Integer.MIN_VALUE;
 		String friendlyName = "";
 		String description = "";
 		String gwaspiDBVersion = "";
@@ -157,6 +166,18 @@ public class NetCDFDataSetSource implements DataSetSource {
 		Date creationDate = null;
 
 		try {
+			try {
+				studyId = netCDFFile.findGlobalAttribute(cNetCDF.Attributes.GLOB_STUDY).getNumericValue().intValue();
+			} catch (Exception ex) {
+				LOG.error("No matrix-ID stored in matrix NetCDF file: " + netCDFFile.getLocation(), ex);
+			}
+
+			try {
+				matrixId = netCDFFile.findGlobalAttribute(cNetCDF.Attributes.GLOB_MATRIX_ID).getNumericValue().intValue();
+			} catch (Exception ex) {
+				LOG.error("No matrix-ID stored in matrix NetCDF file: " + netCDFFile.getLocation(), ex);
+			}
+
 			try {
 				friendlyName = netCDFFile.findGlobalAttribute(cNetCDF.Attributes.GLOB_FRIENDLY_NAME).getStringValue();
 			} catch (Exception ex) {
@@ -227,8 +248,13 @@ public class NetCDFDataSetSource implements DataSetSource {
 		String simpleName = new File(netCDFFile.getLocation()).getName();
 		simpleName = simpleName.substring(0, simpleName.lastIndexOf('.')); // cut off the '.nc' file extension
 
+		// Use the values from the NetCDF file only if none were provided!
+		if (matrixKey == null) {
+			matrixKey = new MatrixKey(new StudyKey(studyId), matrixId);
+		}
+
 		MatrixMetadata matrixMetadata = new MatrixMetadata(
-			new MatrixKey(studyKey, Integer.MIN_VALUE),
+			matrixKey,
 			friendlyName,
 			simpleName,
 			technology,
@@ -299,11 +325,15 @@ public class NetCDFDataSetSource implements DataSetSource {
 
 	@Override
 	public SamplesInfosSource getSamplesInfosSource() throws IOException {
-		return NetCdfSamplesInfosSource.createForMatrix(studyKey, getReadNetCdfFile());
+
+		ensureMatrixMetadata();
+		return NetCdfSamplesInfosSource.createForMatrix(matrixKey.getStudyKey(), getReadNetCdfFile());
 	}
 
 	@Override
 	public SamplesKeysSource getSamplesKeysSource() throws IOException {
-		return NetCdfSamplesKeysSource.createForMatrix(studyKey, getReadNetCdfFile());
+
+		ensureMatrixMetadata();
+		return NetCdfSamplesKeysSource.createForMatrix(matrixKey.getStudyKey(), getReadNetCdfFile());
 	}
 }

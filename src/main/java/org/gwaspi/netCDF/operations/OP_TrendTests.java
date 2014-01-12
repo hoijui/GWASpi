@@ -32,7 +32,7 @@ import org.gwaspi.operations.trendtest.TrendTestOperationDataSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class OP_TrendTests extends AbstractTestMatrixOperation {
+public class OP_TrendTests extends AbstractTestMatrixOperation<TrendTestOperationDataSet> {
 
 	private final Logger log = LoggerFactory.getLogger(OP_TrendTests.class);
 
@@ -43,12 +43,15 @@ public class OP_TrendTests extends AbstractTestMatrixOperation {
 			double hwThreshold)
 	{
 		super(
-			rdMatrixKey,
 			markerCensusOPKey,
 			hwOPKey,
 			hwThreshold,
-			"Cochran-Armitage Trend Test",
-			OPType.TRENDTEST);
+			"Cochran-Armitage Trend Test");
+	}
+
+	@Override
+	public OPType getType() {
+		return OPType.TRENDTEST;
 	}
 
 	/**

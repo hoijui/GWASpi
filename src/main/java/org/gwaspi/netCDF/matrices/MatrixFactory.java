@@ -20,9 +20,7 @@ package org.gwaspi.netCDF.matrices;
 import java.io.IOException;
 import java.util.Date;
 import org.gwaspi.model.DataSetSource;
-import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixKey;
-import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.netCDF.markers.NetCDFDataSetSource;
 
 public class MatrixFactory {
@@ -45,8 +43,7 @@ public class MatrixFactory {
 	public static DataSetSource generateMatrixDataSetSource(MatrixKey matrixKey) {
 
 		try {
-			MatrixMetadata matrixMetadata = MatricesList.getMatrixMetadataById(matrixKey);
-			return new NetCDFDataSetSource(matrixMetadata.getStudyKey(), MatrixMetadata.generatePathToNetCdfFile(matrixMetadata)/*, matrixMetadata.getFriendlyName()*/);
+			return new NetCDFDataSetSource(matrixKey);
 		} catch (IOException ex) {
 			throw new RuntimeException(ex);
 		}

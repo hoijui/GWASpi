@@ -27,25 +27,31 @@ import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.GenotypesList;
 import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.MarkersMetadataSource;
-import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
+import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.SamplesGenotypesSource;
-import org.gwaspi.netCDF.matrices.MatrixFactory;
 import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
 import org.gwaspi.operations.qasamples.QASamplesOperationDataSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class OP_QASamples implements MatrixOperation {
+public class OP_QASamples extends AbstractOperation<QASamplesOperationDataSet> {
 
 	private final Logger log = LoggerFactory.getLogger(OP_QASamples.class);
 
-	private final MatrixKey rdMatrixKey;
+	public OP_QASamples(MatrixKey parent) {
+		super(parent);
+	}
 
-	public OP_QASamples(MatrixKey rdMatrixKey) {
-		this.rdMatrixKey = rdMatrixKey;
+	public OP_QASamples(OperationKey parent) {
+		super(parent);
+	}
+
+	@Override
+	public OPType getType() {
+		return OPType.SAMPLE_QA;
 	}
 
 	@Override
@@ -62,7 +68,7 @@ public class OP_QASamples implements MatrixOperation {
 	public int processMatrix() throws IOException {
 		int resultOpId = Integer.MIN_VALUE;
 
-		DataSetSource dataSetSource = MatrixFactory.generateMatrixDataSetSource(rdMatrixKey);
+		DataSetSource dataSetSource = getParentDataSetSource();
 
 		Map<SampleKey, Integer> wrSampleSetMissingCountMap = new LinkedHashMap<SampleKey, Integer>();
 		Map<SampleKey, Double> wrSampleSetMissingRatioMap = new LinkedHashMap<SampleKey, Double>();
@@ -125,10 +131,9 @@ int numMarkers = dataSetSource.getNumMarkers();
 		}
 
 		try {
-			MatrixMetadata rdMatrixMetadata = MatricesList.getMatrixMetadataById(rdMatrixKey);
+			MatrixMetadata rdMatrixMetadata = getParentMatrixMetadata();
 
-			QASamplesOperationDataSet dataSet = (QASamplesOperationDataSet) OperationFactory.generateOperationDataSet(OPType.SAMPLE_QA); // HACK
-			((AbstractNetCdfOperationDataSet) dataSet).setReadMatrixKey(rdMatrixKey); // HACK
+			QASamplesOperationDataSet dataSet = generateFreshOperationDataSet();
 			((AbstractNetCdfOperationDataSet) dataSet).setNumMarkers(rdMatrixMetadata.getNumMarkers()); // HACK
 			((AbstractNetCdfOperationDataSet) dataSet).setNumChromosomes(rdMatrixMetadata.getNumChromosomes()); // HACK
 //			((AbstractNetCdfOperationDataSet) dataSet).setNumSamples(wrSampleSetMissingCountMap.size()); // HACK

@@ -26,9 +26,7 @@ import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.Census;
 import org.gwaspi.model.MarkerKey;
-import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixKey;
-import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
 import org.gwaspi.operations.OperationDataSet;
@@ -38,35 +36,32 @@ import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationEntry.Category;
 import org.gwaspi.operations.hardyweinberg.NetCdfHardyWeinbergOperationDataSet;
 import org.gwaspi.operations.markercensus.MarkerCensusOperationDataSet;
 import org.gwaspi.operations.trendtest.AbstractNetCdfTestOperationDataSet;
+import org.gwaspi.operations.trendtest.CommonTestOperationDataSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class AbstractTestMatrixOperation implements MatrixOperation {
+public abstract class AbstractTestMatrixOperation<DST extends CommonTestOperationDataSet> extends AbstractOperation<DST> {
 
 	private final Logger log
 			= LoggerFactory.getLogger(AbstractTestMatrixOperation.class);
 
-	private final MatrixKey rdMatrixKey;
 	private final OperationKey markerCensusOPKey;
 	private final OperationKey hwOPKey;
 	private final double hwThreshold;
 	private final String testName;
-	private final OPType testType;
 
 	public AbstractTestMatrixOperation(
-			MatrixKey rdMatrixKey,
 			OperationKey markerCensusOPKey,
 			OperationKey hwOPKey,
 			double hwThreshold,
-			String testName,
-			OPType testType)
+			String testName)
 	{
-		this.rdMatrixKey = rdMatrixKey;
+		super(hwOPKey);
+
 		this.markerCensusOPKey = markerCensusOPKey;
 		this.hwOPKey = hwOPKey;
 		this.hwThreshold = hwThreshold;
 		this.testName = testName;
-		this.testType = testType;
 	}
 
 	@Override
@@ -106,7 +101,7 @@ public abstract class AbstractTestMatrixOperation implements MatrixOperation {
 //			}
 
 			// GATHER INFO FROM ORIGINAL MATRIX
-			MatrixMetadata parentMatrixMetadata = MatricesList.getMatrixMetadataById(markerCensusOPKey.getParentMatrixKey());
+//			MatrixMetadata parentMatrixMetadata = MatricesList.getMatrixMetadataById(markerCensusOPKey.getParentMatrixKey());
 //			MarkerSet rdMarkerSet = new MarkerSet(MatrixKey.valueOf(parentMatrixMetadata));
 //			rdMarkerSet.initFullMarkerIdSetMap();
 
@@ -116,9 +111,8 @@ public abstract class AbstractTestMatrixOperation implements MatrixOperation {
 //			Map<ChromosomeKey, ChromosomeInfo> chromosomeInfo = ChromosomeUtils.aggregateChromosomeInfo(wrMarkerMetadata, 0, 1);
 
 			try {
-				AbstractNetCdfTestOperationDataSet dataSet = (AbstractNetCdfTestOperationDataSet) OperationFactory.generateOperationDataSet(testType); // HACK
-//				((AbstractNetCdfOperationDataSet) dataSet).setReadMatrixKey(rdMatrixKey); // HACK
-				((AbstractNetCdfOperationDataSet) dataSet).setReadOperationKey(markerCensusOPKey); // HACK
+				AbstractNetCdfTestOperationDataSet dataSet = (AbstractNetCdfTestOperationDataSet) generateFreshOperationDataSet(); // HACK
+//				((AbstractNetCdfOperationDataSet) dataSet).setReadOperationKey(markerCensusOPKey); // HACK
 //				((AbstractNetCdfOperationDataSet) dataSet).setNumMarkers(wrMarkerMetadata.size()); // HACK
 //				((AbstractNetCdfOperationDataSet) dataSet).setNumSamples(rdCensusOPMetadata.getImplicitSetSize()); // HACK
 //				((AbstractNetCdfOperationDataSet) dataSet).setNumChromosomes(chromosomeInfo.size()); // HACK
@@ -126,7 +120,7 @@ public abstract class AbstractTestMatrixOperation implements MatrixOperation {
 				((AbstractNetCdfOperationDataSet) dataSet).setNumSamples(rdMarkerCensusOperationDataSet.getNumSamples()); // HACK
 				((AbstractNetCdfOperationDataSet) dataSet).setNumChromosomes(rdMarkerCensusOperationDataSet.getNumChromosomes()); // HACK
 				dataSet.setMarkerCensusOPKey(markerCensusOPKey); // HACK
-				dataSet.setTestType(testType); // HACK
+				dataSet.setTestType(getType()); // HACK
 				dataSet.setTestName(testName); // HACK
 
 //				dataSet.setMarkers(wrMarkerMetadata.keySet());

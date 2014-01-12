@@ -19,7 +19,6 @@ package org.gwaspi.operations.combi;
 
 import java.io.IOException;
 import java.util.List;
-import org.gwaspi.model.OperationKey;
 import org.gwaspi.operations.OperationDataSet;
 
 public interface CombiTestOperationDataSet extends OperationDataSet<CombiTestOperationEntry> {

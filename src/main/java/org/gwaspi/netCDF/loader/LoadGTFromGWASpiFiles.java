@@ -117,9 +117,9 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 		}
 
 		MatrixMetadata importMatrixMetadata = NetCDFDataSetSource.loadMatrixMetadata(
-				loadDescription.getStudyKey(),
 				new File(loadDescription.getGtDirPath()),
-				loadDescription.getFriendlyName());
+				loadDescription.getFriendlyName(),
+				loadDescription.getStudyKey());
 
 		final String currentGwaspiDbVersion= Config.getConfigValue(
 				Config.PROPERTY_CURRENT_GWASPIDB_VERSION, null);
@@ -184,7 +184,7 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 
 		//<editor-fold defaultstate="expanded" desc="CREATE MARKERSET & NETCDF">
 //		MatrixKey importMatrixKey = MatrixKey.valueOf(importMatrixMetadata);
-		DataSetSource dataSetSource = new NetCDFDataSetSource(loadDescription.getStudyKey(), new File(loadDescription.getGtDirPath()));
+		DataSetSource dataSetSource = new NetCDFDataSetSource(new File(loadDescription.getGtDirPath()), loadDescription.getStudyKey());
 //		MarkerSet rdMarkerSet = new MarkerSet(importMatrixMetadata);
 //		rdMarkerSet.initFullMarkerIdSetMap();
 //		rdMarkerSet.fillMarkerSetMapWithChrAndPos();

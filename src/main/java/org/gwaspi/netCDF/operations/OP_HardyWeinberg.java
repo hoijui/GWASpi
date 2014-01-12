@@ -19,7 +19,6 @@ package org.gwaspi.netCDF.operations;
 
 import java.io.IOException;
 import java.util.Collection;
-import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.model.Census;
 import org.gwaspi.model.OperationKey;
@@ -28,7 +27,6 @@ import org.gwaspi.operations.hardyweinberg.DefaultHardyWeinbergOperationEntry;
 import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationDataSet;
 import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationEntry;
 import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationEntry.Category;
-import org.gwaspi.operations.hardyweinberg.NetCdfHardyWeinbergOperationDataSet;
 import org.gwaspi.operations.markercensus.MarkerCensusOperationDataSet;
 import org.gwaspi.operations.markercensus.MarkerCensusOperationEntry;
 import org.gwaspi.operations.markercensus.NetCdfMarkerCensusOperationDataSet;
@@ -36,7 +34,7 @@ import org.gwaspi.statistics.StatisticsUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class OP_HardyWeinberg implements MatrixOperation {
+public class OP_HardyWeinberg extends AbstractOperation<HardyWeinbergOperationDataSet> {
 
 	private final Logger log = LoggerFactory.getLogger(OP_HardyWeinberg.class);
 
@@ -44,9 +42,15 @@ public class OP_HardyWeinberg implements MatrixOperation {
 	private final String hwName;
 
 	public OP_HardyWeinberg(OperationKey markerCensusOPKey, String hwName) {
+		super(markerCensusOPKey);
 
 		this.markerCensusOPKey = markerCensusOPKey;
 		this.hwName = hwName;
+	}
+
+	@Override
+	public OPType getType() {
+		return OPType.HARDY_WEINBERG;
 	}
 
 	@Override
@@ -72,7 +76,7 @@ public class OP_HardyWeinberg implements MatrixOperation {
 		MarkerCensusOperationDataSet markerCensusOperationDataSet = new NetCdfMarkerCensusOperationDataSet(markerCensusOPKey);
 
 		try {
-			HardyWeinbergOperationDataSet dataSet = (HardyWeinbergOperationDataSet) OperationFactory.generateOperationDataSet(OPType.HARDY_WEINBERG); // HACK
+			HardyWeinbergOperationDataSet dataSet = generateFreshOperationDataSet();
 			((AbstractNetCdfOperationDataSet) dataSet).setReadOperationKey(markerCensusOPKey); // HACK
 			dataSet.setNumMarkers(markerCensusOperationDataSet.getNumMarkers());
 			dataSet.setNumChromosomes(markerCensusOperationDataSet.getNumChromosomes());
