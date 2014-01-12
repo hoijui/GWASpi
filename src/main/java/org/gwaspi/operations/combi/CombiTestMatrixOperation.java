@@ -117,15 +117,16 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 //				((AbstractNetCdfOperationDataSet) dataSet).setNumSamples(rdCensusOPMetadata.getImplicitSetSize()); // HACK
 //				((AbstractNetCdfOperationDataSet) dataSet).setNumChromosomes(chromosomeInfo.size()); // HACK
 				((AbstractNetCdfOperationDataSet) dataSet).setNumMarkers(params.getMarkersToKeep()); // HACK
-//				((AbstractNetCdfOperationDataSet) dataSet).setNumSamples(parentMatrixDataSetSource.getNumSamples()); // HACK
+//				((AbstractNetCdfOperationDataSet) dataSet).setNumSamples(parentMatrixDataSetSource.getNumSamples()); // NOTE is set later // HACK
 				((AbstractNetCdfOperationDataSet) dataSet).setNumChromosomes(-1); // <- unknonw // HACK
 //				dataSet.setHardyWeinbergOperationKey(params.getHardyWeinbergOperationKey()); // HACK
 
 //				dataSet.setMarkers(wrMarkerMetadata.keySet());
-				((AbstractNetCdfOperationDataSet) dataSet).setUseAllMarkersFromParent(false);
-				((AbstractNetCdfOperationDataSet) dataSet).setUseAllSamplesFromParent(false);
-//				dataSet.setChromosomes(chromosomeInfo);
-				((AbstractNetCdfOperationDataSet) dataSet).setUseAllChromosomesFromParent(false);
+
+//				((AbstractNetCdfOperationDataSet) dataSet).setUseAllMarkersFromParent(false);
+//				((AbstractNetCdfOperationDataSet) dataSet).setUseAllSamplesFromParent(false);
+////				dataSet.setChromosomes(chromosomeInfo);
+//				((AbstractNetCdfOperationDataSet) dataSet).setUseAllChromosomesFromParent(false);
 
 
 
@@ -177,14 +178,13 @@ public class CombiTestMatrixOperation implements MatrixOperation {
 			}
 			ArrayList<SampleKey> samplesKeys = new ArrayList<SampleKey>(validSamplesOrigIndicesAndKey.values());
 
-			final boolean useAllSamplesFromParent = (n == parentMatrixDataSetSource.getNumSamples());
+//			final boolean useAllSamplesFromParent = (n == parentMatrixDataSetSource.getNumSamples());
 
 			dataSet.setNumSamples(n);
-			((AbstractNetCdfOperationDataSet) dataSet).setUseAllSamplesFromParent(useAllSamplesFromParent); // HACK
-			if (!useAllSamplesFromParent) {
+//			((AbstractNetCdfOperationDataSet) dataSet).setUseAllSamplesFromParent(useAllSamplesFromParent); // HACK
+//			if (!useAllSamplesFromParent) {
 				dataSet.setSamples(validSamplesOrigIndicesAndKey);
-
-			}
+//			}
 
 
 			LOG.info("Combi Association Test: #samples: " + n);

@@ -19,7 +19,6 @@ package org.gwaspi.netCDF.loader;
 
 import java.io.File;
 import java.util.Collection;
-import java.util.Map;
 import org.gwaspi.constants.cImport.ImportFormat;
 import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
 import org.gwaspi.global.Config;
@@ -33,12 +32,14 @@ import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.SamplesGenotypesSource;
+import org.gwaspi.model.SamplesKeysSource;
 import org.gwaspi.model.Study;
 import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.markers.NetCDFDataSetSource;
-import org.gwaspi.netCDF.markers.NetCdfMarkersGenotypesSource;
+import org.gwaspi.netCDF.markers.NetCdfSamplesKeysSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ucar.nc2.NetcdfFile;
 
 /**
  * Loads genotypes from GWASpi's own file format.
@@ -88,13 +89,13 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 		DataSet dataSet = ((AbstractDataSetDestination) samplesReceiver).getDataSet();
 
 		if (new File(loadDescription.getGtDirPath()).exists()) {
-		NetCdfMarkersGenotypesSource matrixSampleSet = new NetCdfMarkersGenotypesSource(loadDescription.getStudyKey(), "");
-		Map<SampleKey, byte[]> matrixSampleSetMap = matrixSampleSet.getSampleIdSetMapByteArray(loadDescription.getGtDirPath());
+		NetcdfFile gwaspiStorageFile = NetcdfFile.open(loadDescription.getGtDirPath());
+		SamplesKeysSource samplesKeysSource = NetCdfSamplesKeysSource.createForMatrix(loadDescription.getStudyKey(), gwaspiStorageFile);
 
 		boolean testExcessSamplesInMatrix = false;
 		boolean testExcessSamplesInFile = false;
 		Collection<SampleKey> sampleKeys = AbstractLoadGTFromFiles.extractKeys(dataSet.getSampleInfos());
-		for (SampleKey key : matrixSampleSetMap.keySet()) {
+		for (SampleKey key : samplesKeysSource) {
 			if (!sampleKeys.contains(key)) {
 				testExcessSamplesInMatrix = true;
 				break;
@@ -102,7 +103,7 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 		}
 
 		for (SampleInfo sampleInfo : dataSet.getSampleInfos()) {
-			if (!matrixSampleSetMap.containsKey(sampleInfo.getKey())) {
+			if (!samplesKeysSource.contains(sampleInfo.getKey())) {
 				testExcessSamplesInFile = true;
 				break;
 			}

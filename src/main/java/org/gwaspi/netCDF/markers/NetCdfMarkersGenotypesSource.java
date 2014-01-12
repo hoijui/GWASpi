@@ -17,29 +17,20 @@
 
 package org.gwaspi.netCDF.markers;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.LinkedHashMap;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.model.CompactGenotypesList;
 import org.gwaspi.model.GenotypesList;
 import org.gwaspi.model.GenotypesListFactory;
 import org.gwaspi.model.MarkersGenotypesSource;
-import org.gwaspi.model.MatricesList;
-import org.gwaspi.model.MatrixKey;
-import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleKey;
-import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.operations.NetCdfUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.ArrayByte;
-import ucar.ma2.ArrayChar;
-import ucar.ma2.ArrayDouble;
-import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
@@ -50,40 +41,88 @@ public class NetCdfMarkersGenotypesSource extends AbstractListSource<GenotypesLi
 	private static final Logger log
 			= LoggerFactory.getLogger(NetCdfMarkersGenotypesSource.class);
 
-	private final MatrixMetadata matrixMetadata;
-	private Map<SampleKey, ?> sampleIdSetMap;
-	private int numMarkers;
-	private NetcdfFile rdNcFile;
-	private GenotypesListFactory genotyesListFactory;
+//	private final MatrixMetadata matrixMetadata;
+//	private Map<SampleKey, ?> sampleIdSetMap;
+//	private int numMarkers;
+//	private NetcdfFile rdNcFile;
+//	private GenotypesListFactory genotyesListFactory;
+//
+//	public NetCdfMarkersGenotypesSource(MatrixMetadata matrixMetadata) throws IOException {
+//
+//		this.matrixMetadata = matrixMetadata;
+//		this.numMarkers = matrixMetadata.getNumMarkers();
+//		this.sampleIdSetMap = new LinkedHashMap<SampleKey, Object>();
+//		this.rdNcFile = NetcdfFile.open(MatrixMetadata.generatePathToNetCdfFile(matrixMetadata).getAbsolutePath()); // HACK most likely not optimal.. this file
+//		this.genotyesListFactory = CompactGenotypesList.FACTORY;
+//	}
+//
+//	public NetCdfMarkersGenotypesSource(MatrixKey matrixKey) throws IOException {
+//		this(MatricesList.getMatrixMetadataById(matrixKey));
+//	}
+//
+//	/**
+//	 * @deprecated we should get rid of this!
+//	 */
+//	public NetCdfMarkersGenotypesSource(String netCDFName) throws IOException {
+////		this(MatricesList.getMatrixMetadataByNetCDFname(netCDFName));
+//
+//		this.matrixMetadata = null;
+//		this.numMarkers = 0;
+//		this.sampleIdSetMap = new LinkedHashMap<SampleKey, Object>();
+//		this.rdNcFile = null;
+//		this.genotyesListFactory = CompactGenotypesList.FACTORY;
+//	}
+//
+//	public NetCdfMarkersGenotypesSource(StudyKey studyKey, String netCDFPath, String netCDFName) throws IOException {
+//		this(NetCDFDataSetSource.loadMatrixMetadata(studyKey, new File(netCDFPath), netCDFName));
+//	}
+	private final GenotypesListFactory genotyesListFactory;
 
-	public NetCdfMarkersGenotypesSource(MatrixMetadata matrixMetadata) throws IOException {
+	private static final int DEFAULT_CHUNK_SIZE = 200;
+	private static final int DEFAULT_CHUNK_SIZE_SHATTERED = 1;
 
-		this.matrixMetadata = matrixMetadata;
-		this.numMarkers = matrixMetadata.getNumMarkers();
-		this.sampleIdSetMap = new LinkedHashMap<SampleKey, Object>();
-		this.rdNcFile = NetcdfFile.open(MatrixMetadata.generatePathToNetCdfFile(matrixMetadata).getAbsolutePath()); // HACK most likely not optimal.. this file
+	private NetCdfMarkersGenotypesSource(NetcdfFile rdNetCdfFile) {
+		super(rdNetCdfFile, DEFAULT_CHUNK_SIZE, cNetCDF.Dimensions.DIM_MARKERSET);
+
 		this.genotyesListFactory = CompactGenotypesList.FACTORY;
 	}
 
-	public NetCdfMarkersGenotypesSource(MatrixKey matrixKey) throws IOException {
-		this(MatricesList.getMatrixMetadataById(matrixKey));
-	}
+	private NetCdfMarkersGenotypesSource(NetcdfFile rdNetCdfFile, List<Integer> originalIndices) {
+		super(rdNetCdfFile, DEFAULT_CHUNK_SIZE_SHATTERED, originalIndices);
 
-	/**
-	 * @deprecated we should get rid of this!
-	 */
-	public NetCdfMarkersGenotypesSource(StudyKey studyKey, String netCDFName) throws IOException {
-//		this(MatricesList.getMatrixMetadataByNetCDFname(netCDFName));
-
-		this.matrixMetadata = null;
-		this.numMarkers = 0;
-		this.sampleIdSetMap = new LinkedHashMap<SampleKey, Object>();
-		this.rdNcFile = null;
 		this.genotyesListFactory = CompactGenotypesList.FACTORY;
 	}
 
-	public NetCdfMarkersGenotypesSource(StudyKey studyKey, String netCDFPath, String netCDFName) throws IOException {
-		this(NetCDFDataSetSource.loadMatrixMetadata(studyKey, new File(netCDFPath), netCDFName));
+	public static MarkersGenotypesSource createForMatrix(NetcdfFile rdNetCdfFile) throws IOException {
+		return new NetCdfMarkersGenotypesSource(rdNetCdfFile);
+	}
+
+	public static MarkersGenotypesSource createForOperation(NetcdfFile rdNetCdfFile, List<Integer> originalIndices) throws IOException {
+		return new NetCdfMarkersGenotypesSource(rdNetCdfFile, originalIndices);
+	}
+
+	@Override
+	public List<GenotypesList> getRange(int from, int to) throws IOException {
+		return readSampleGTs(getReadNetCdfFile(), cNetCDF.Variables.VAR_GENOTYPES, from, to);
+	}
+
+	private List<GenotypesList> readSampleGTs(NetcdfFile rdNetCdf, String netCdfVarName, int fromSampleIndex, int toSampleIndex) throws IOException {
+
+		Variable var = rdNetCdf.findVariable(netCdfVarName);
+
+		if (var != null) {
+			List<GenotypesList> values = new ArrayList<GenotypesList>(toSampleIndex - fromSampleIndex);
+
+			for (int mi = 0; mi < var.getShape(1); mi++) {
+				List<byte[]> sampleGTs = NetCdfSamplesGenotypesSource.readSampleGTs(var, -1, -1, mi);
+				GenotypesList genotypesList = genotyesListFactory.createGenotypesList(sampleGTs);
+				values.add(genotypesList);
+			}
+
+			return values;
+		} else {
+			throw new IOException("Variable " + netCdfVarName + " not found in NetCdf file " + rdNetCdf.getLocation());
+		}
 	}
 
 	// ACCESSORS
@@ -112,53 +151,53 @@ public class NetCdfMarkersGenotypesSource extends AbstractListSource<GenotypesLi
 //		return getSampleIdSetMap().keySet();
 //	}
 
-	private Map<SampleKey, ?> getSampleIdSetMap(String matrixImportPath) throws IOException {
-		NetcdfFile ncfile = null;
-
-		try {
-			ncfile = NetcdfFile.open(matrixImportPath);
-			Variable var = ncfile.findVariable(cNetCDF.Variables.VAR_SAMPLE_KEY);
-
-			if (null == var) {
-				return null;
-			}
-
-			int[] varShape = var.getShape();
-			Dimension markerSetDim = ncfile.findDimension(cNetCDF.Dimensions.DIM_SAMPLESET);
-
-			try {
-				numMarkers = markerSetDim.getLength();
-
-				StringBuilder netCdfReadStrBldr = new StringBuilder(64);
-				netCdfReadStrBldr
-						.append("(0:")
-						.append(numMarkers - 1)
-						.append(":1, 0:")
-						.append(varShape[1] - 1)
-						.append(":1)");
-				String netCdfReadStr = netCdfReadStrBldr.toString();
-
-				ArrayChar.D2 sampleSetAC = (ArrayChar.D2) var.read(netCdfReadStr);
-
-				sampleIdSetMap = NetCdfUtils.writeD2ArrayCharToMapSampleKeys(
-						matrixMetadata.getStudyKey(),
-						sampleSetAC,
-						null);
-			} catch (InvalidRangeException ex) {
-				throw new IOException("Cannot read data", ex);
-			}
-		} finally {
-			if (null != ncfile) {
-				try {
-					ncfile.close();
-				} catch (IOException ex) {
-					log.warn("Cannot close file", ex);
-				}
-			}
-		}
-
-		return sampleIdSetMap;
-	}
+//	private Map<SampleKey, ?> getSampleIdSetMap(String matrixImportPath) throws IOException {
+//		NetcdfFile ncfile = null;
+//
+//		try {
+//			ncfile = NetcdfFile.open(matrixImportPath);
+//			Variable var = ncfile.findVariable(cNetCDF.Variables.VAR_SAMPLE_KEY);
+//
+//			if (null == var) {
+//				return null;
+//			}
+//
+//			int[] varShape = var.getShape();
+//			Dimension markerSetDim = ncfile.findDimension(cNetCDF.Dimensions.DIM_SAMPLESET);
+//
+//			try {
+//				numMarkers = markerSetDim.getLength();
+//
+//				StringBuilder netCdfReadStrBldr = new StringBuilder(64);
+//				netCdfReadStrBldr
+//						.append("(0:")
+//						.append(numMarkers - 1)
+//						.append(":1, 0:")
+//						.append(varShape[1] - 1)
+//						.append(":1)");
+//				String netCdfReadStr = netCdfReadStrBldr.toString();
+//
+//				ArrayChar.D2 sampleSetAC = (ArrayChar.D2) var.read(netCdfReadStr);
+//
+//				sampleIdSetMap = NetCdfUtils.writeD2ArrayCharToMapSampleKeys(
+//						matrixMetadata.getStudyKey(),
+//						sampleSetAC,
+//						null);
+//			} catch (InvalidRangeException ex) {
+//				throw new IOException("Cannot read data", ex);
+//			}
+//		} finally {
+//			if (null != ncfile) {
+//				try {
+//					ncfile.close();
+//				} catch (IOException ex) {
+//					log.warn("Cannot close file", ex);
+//				}
+//			}
+//		}
+//
+//		return sampleIdSetMap;
+//	}
 
 //	private Map<SampleKey, byte[]> getSampleIdSetMapByteArray(String matrixImportPath) throws IOException {
 //		return (Map<SampleKey, byte[]>) getSampleIdSetMap(matrixImportPath);
@@ -265,55 +304,55 @@ public class NetCdfMarkersGenotypesSource extends AbstractListSource<GenotypesLi
 		return null;
 	}
 
-	private void fillSampleIdSetMapWithVariable(Map<SampleKey, ?> map, String variable) throws IOException {
-
-		NetcdfFile ncfile = null;
-		try {
-			ncfile = NetcdfFile.open(MatrixMetadata.generatePathToNetCdfFile(matrixMetadata).getAbsolutePath());
-			Variable var = ncfile.findVariable(variable);
-
-			if (null == var) {
-				return;
-			}
-
-			DataType dataType = var.getDataType();
-			int[] varShape = var.getShape();
-			Dimension sampleSetDim = ncfile.findDimension(cNetCDF.Dimensions.DIM_SAMPLESET);
-
-			try {
-				numMarkers = sampleSetDim.getLength();
-				if (dataType == DataType.CHAR) {
-					StringBuilder netCdfReadStrBldr = new StringBuilder(64);
-					netCdfReadStrBldr
-							.append("(0:")
-							.append(numMarkers - 1)
-							.append(":1, 0:")
-							.append(varShape[1] - 1)
-							.append(":1)");
-					String netCdfReadStr = netCdfReadStrBldr.toString();
-
-					ArrayChar.D2 sampleSetAC = (ArrayChar.D2) var.read(netCdfReadStr);
-					NetCdfUtils.writeD2ArrayCharToMapValues(sampleSetAC, (Map<SampleKey, char[]>) map);
-					sampleIdSetMap = map;
-				}
-				if (dataType == DataType.DOUBLE) {
-					ArrayDouble.D1 sampleSetAF = (ArrayDouble.D1) var.read("(0:" + (numMarkers - 1) + ":1");
-					NetCdfUtils.writeD1ArrayDoubleToMapValues(sampleSetAF, (Map<SampleKey, Double>) map);
-					sampleIdSetMap = map;
-				}
-			} catch (InvalidRangeException ex) {
-				throw new IOException("Cannot read data", ex);
-			}
-		} finally {
-			if (null != ncfile) {
-				try {
-					ncfile.close();
-				} catch (IOException ex) {
-					log.warn("Cannot close file", ex);
-				}
-			}
-		}
-	}
+//	private void fillSampleIdSetMapWithVariable(Map<SampleKey, ?> map, String variable) throws IOException {
+//
+//		NetcdfFile ncfile = null;
+//		try {
+//			ncfile = NetcdfFile.open(MatrixMetadata.generatePathToNetCdfFile(matrixMetadata).getAbsolutePath());
+//			Variable var = ncfile.findVariable(variable);
+//
+//			if (null == var) {
+//				return;
+//			}
+//
+//			DataType dataType = var.getDataType();
+//			int[] varShape = var.getShape();
+//			Dimension sampleSetDim = ncfile.findDimension(cNetCDF.Dimensions.DIM_SAMPLESET);
+//
+//			try {
+//				numMarkers = sampleSetDim.getLength();
+//				if (dataType == DataType.CHAR) {
+//					StringBuilder netCdfReadStrBldr = new StringBuilder(64);
+//					netCdfReadStrBldr
+//							.append("(0:")
+//							.append(numMarkers - 1)
+//							.append(":1, 0:")
+//							.append(varShape[1] - 1)
+//							.append(":1)");
+//					String netCdfReadStr = netCdfReadStrBldr.toString();
+//
+//					ArrayChar.D2 sampleSetAC = (ArrayChar.D2) var.read(netCdfReadStr);
+//					NetCdfUtils.writeD2ArrayCharToMapValues(sampleSetAC, (Map<SampleKey, char[]>) map);
+//					sampleIdSetMap = map;
+//				}
+//				if (dataType == DataType.DOUBLE) {
+//					ArrayDouble.D1 sampleSetAF = (ArrayDouble.D1) var.read("(0:" + (numMarkers - 1) + ":1");
+//					NetCdfUtils.writeD1ArrayDoubleToMapValues(sampleSetAF, (Map<SampleKey, Double>) map);
+//					sampleIdSetMap = map;
+//				}
+//			} catch (InvalidRangeException ex) {
+//				throw new IOException("Cannot read data", ex);
+//			}
+//		} finally {
+//			if (null != ncfile) {
+//				try {
+//					ncfile.close();
+//				} catch (IOException ex) {
+//					log.warn("Cannot close file", ex);
+//				}
+//			}
+//		}
+//	}
 
 //	/** @deprecate unused. was used in MatrixDataExtractor */
 //	private void fillSampleIdSetMapWithFilterVariable(Map<SampleKey, char[]> map, String variable, int filterPos) throws IOException {

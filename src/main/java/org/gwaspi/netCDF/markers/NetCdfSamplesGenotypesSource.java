@@ -18,6 +18,8 @@
 package org.gwaspi.netCDF.markers;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,18 +29,14 @@ import org.gwaspi.model.CompactGenotypesList;
 import org.gwaspi.model.GenotypesList;
 import org.gwaspi.model.GenotypesListFactory;
 import org.gwaspi.model.MarkerKey;
-import org.gwaspi.model.MatricesList;
-import org.gwaspi.model.MatrixKey;
-import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SamplesGenotypesSource;
-import org.gwaspi.model.StudyKey;
 import org.gwaspi.netCDF.operations.NetCdfUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.ArrayByte;
 import ucar.ma2.ArrayChar;
-import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
+import ucar.ma2.Range;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 
@@ -56,52 +54,208 @@ public class NetCdfSamplesGenotypesSource extends AbstractListSource<GenotypesLi
 	private static final Logger log
 			= LoggerFactory.getLogger(NetCdfSamplesGenotypesSource.class);
 
-	private final int numMarkers;
+//	private final StudyKey studyKey;
+//	private final int numMarkers;
 //	private final NetcdfFile ncfile;
-	private int startMkIdx;
-	private int endMkIdx;
-	private Map<MarkerKey, ?> markerIdSetMap;
-	private GenotypesListFactory genotyesListFactory;
+//	private int startMkIdx;
+//	private int endMkIdx;
+//	private Map<MarkerKey, ?> markerIdSetMap;
+	private final GenotypesListFactory genotyesListFactory;
 
 	private static final int DEFAULT_CHUNK_SIZE = 50;
 	private static final int DEFAULT_CHUNK_SIZE_SHATTERED = 1;
 
-	private final StudyKey studyKey;
-
-	private NetCdfSamplesGenotypesSource(StudyKey studyKey, NetcdfFile rdNetCdfFile) {
+	private NetCdfSamplesGenotypesSource(NetcdfFile rdNetCdfFile) {
 		super(rdNetCdfFile, DEFAULT_CHUNK_SIZE, cNetCDF.Dimensions.DIM_SAMPLESET);
 
-		this.studyKey = studyKey;
-	}
-
-	private NetCdfSamplesGenotypesSource(StudyKey studyKey, NetcdfFile rdNetCdfFile, List<Integer> originalIndices) {
-		super(rdNetCdfFile, DEFAULT_CHUNK_SIZE_SHATTERED, originalIndices);
-
-		this.studyKey = studyKey;
-	}
-
-	public static SamplesGenotypesSource createForMatrix(StudyKey studyKey, NetcdfFile rdNetCdfFile) throws IOException {
-		return new NetCdfSamplesGenotypesSource(studyKey, rdNetCdfFile);
-	}
-
-	public static SamplesGenotypesSource createForOperation(StudyKey studyKey, NetcdfFile rdNetCdfFile, List<Integer> originalIndices) throws IOException {
-		return new NetCdfSamplesGenotypesSource(studyKey, rdNetCdfFile, originalIndices);
-	}
-
-	public NetCdfSamplesGenotypesSource(MatrixMetadata matrixMetadata) throws IOException {
-
-		this.numMarkers = matrixMetadata.getNumMarkers();
-		this.ncfile = NetcdfFile.open(MatrixMetadata.generatePathToNetCdfFile(matrixMetadata).getAbsolutePath());
-		this.startMkIdx = 0;
-		this.endMkIdx = Integer.MIN_VALUE;
-		this.markerIdSetMap = null;
 		this.genotyesListFactory = CompactGenotypesList.FACTORY;
 	}
 
-	public NetCdfSamplesGenotypesSource(MatrixKey matrixKey) throws IOException {
-		this(MatricesList.getMatrixMetadataById(matrixKey));
+	private NetCdfSamplesGenotypesSource(NetcdfFile rdNetCdfFile, List<Integer> originalIndices) {
+		super(rdNetCdfFile, DEFAULT_CHUNK_SIZE_SHATTERED, originalIndices);
+
+		this.genotyesListFactory = CompactGenotypesList.FACTORY;
 	}
 
+	public static SamplesGenotypesSource createForMatrix(NetcdfFile rdNetCdfFile) throws IOException {
+		return new NetCdfSamplesGenotypesSource(rdNetCdfFile);
+	}
+
+	public static SamplesGenotypesSource createForOperation(NetcdfFile rdNetCdfFile, List<Integer> originalIndices) throws IOException {
+		return new NetCdfSamplesGenotypesSource(rdNetCdfFile, originalIndices);
+	}
+
+	@Override
+	public List<GenotypesList> getRange(int from, int to) throws IOException {
+		return readSampleGTs(getReadNetCdfFile(), cNetCDF.Variables.VAR_GENOTYPES, from, to);
+	}
+
+	private List<GenotypesList> readSampleGTs(NetcdfFile rdNetCdf, String netCdfVarName, int fromSampleIndex, int toSampleIndex) throws IOException {
+
+		Variable var = rdNetCdf.findVariable(netCdfVarName);
+
+		if (var != null) {
+			List<GenotypesList> values = new ArrayList<GenotypesList>(toSampleIndex - fromSampleIndex);
+
+			for (int si = 0; si < var.getShape(0); si++) {
+				List<byte[]> markerGTs = readSampleGTs(var, si, -1, -1);
+				GenotypesList genotypesList = genotyesListFactory.createGenotypesList(markerGTs);
+				values.add(genotypesList);
+			}
+
+			return values;
+		} else {
+			throw new IOException("Variable " + netCdfVarName + " not found in NetCdf file " + rdNetCdf.getLocation());
+		}
+	}
+
+	private static String buildNetCdfReadString(int fromSampleIndex, int toSampleIndex, int fromMarkerIndex, int toMarkerIndex, int numGTs) {
+
+		StringBuilder netCdfReadStr = new StringBuilder(64);
+
+		netCdfReadStr
+				.append("(")
+				.append(fromSampleIndex)
+				.append(":")
+				.append(toSampleIndex)
+				.append(":1, ")
+				.append(fromMarkerIndex)
+				.append(":")
+				.append(toMarkerIndex)
+				.append(":1, " + "0:")
+				.append(numGTs - 1)
+				.append(":1)");
+
+		return netCdfReadStr.toString();
+	}
+
+	static List<byte[]> readSampleGTs(Variable netCdfGTsVar, int sampleIndex, int fromMarkerIndex, int toMarkerIndex) throws IOException {
+
+		final int[] varShape = netCdfGTsVar.getShape();
+
+		if (fromMarkerIndex == -1) {
+			fromMarkerIndex = 0;
+		}
+		if (toMarkerIndex == -1) {
+			toMarkerIndex = varShape[1] - 1;
+		}
+
+		try {
+			String netCdfReadStr = buildNetCdfReadString(sampleIndex, sampleIndex, fromMarkerIndex, toMarkerIndex, varShape[2]);
+			ArrayByte.D3 sampleMarkerGTs = (ArrayByte.D3) netCdfGTsVar.read(netCdfReadStr);
+			ArrayByte.D2 markerGTs = (ArrayByte.D2) sampleMarkerGTs.reduce(0);
+			List<byte[]> rawList = NetCdfUtils.writeD2ArrayByteToList(markerGTs);
+
+			return rawList;
+		} catch (InvalidRangeException ex) {
+			throw new IOException("Cannot read data", ex);
+		}
+	}
+
+	static List<byte[]> readMarkerGTs(Variable netCdfGTsVar, int fromSampleIndex, int toSampleIndex, int markerIndex) throws IOException {
+
+		final int[] varShape = netCdfGTsVar.getShape();
+
+		if (fromSampleIndex == -1) {
+			fromSampleIndex = 0;
+		}
+		if (toSampleIndex == -1) {
+			toSampleIndex = varShape[0] - 1;
+		}
+
+		try {
+			String netCdfReadStr = buildNetCdfReadString(fromSampleIndex, toSampleIndex, markerIndex, markerIndex, varShape[2]);
+			ArrayByte.D3 sampleMarkerGTs = (ArrayByte.D3) netCdfGTsVar.read(netCdfReadStr);
+			ArrayByte.D2 sampleGTs = (ArrayByte.D2) sampleMarkerGTs.reduce(1);
+			List<byte[]> rawList = NetCdfUtils.writeD2ArrayByteToList(sampleGTs);
+
+			return rawList;
+		} catch (InvalidRangeException ex) {
+			throw new IOException("Cannot read data", ex);
+		}
+	}
+
+//	static ArrayByte.D3 readGTs(NetcdfFile rdNetCdf, String netCdfVarName, int fromSampleIndex, int toSampleIndex, int fromMarkerIndex, int toMarkerIndex) throws IOException {
+//
+//		Variable var = rdNetCdf.findVariable(netCdfVarName);
+//
+//		if (var != null) {
+//			int[] varShape = var.getShape();
+//
+//			if (fromSampleIndex == -1) {
+//				fromSampleIndex = 0;
+//			}
+//			if (toSampleIndex == -1) {
+//				toSampleIndex = varShape[0] - 1;
+//			}
+//			if (fromMarkerIndex == -1) {
+//				fromMarkerIndex = 0;
+//			}
+//			if (toMarkerIndex == -1) {
+//				toMarkerIndex = varShape[1] - 1;
+//			}
+//
+//			try {
+//				StringBuilder netCdfReadStrBldr = new StringBuilder(64);
+//				netCdfReadStrBldr
+//						.append("(")
+//						.append(fromSampleIndex)
+//						.append(":")
+//						.append(toSampleIndex)
+//						.append(":1, ")
+//						.append(fromMarkerIndex)
+//						.append(":")
+//						.append(toMarkerIndex)
+//						.append(":1, " + "0:")
+//						.append(varShape[2] - 1)
+//						.append(":1)");
+//				String netCdfReadStr = netCdfReadStrBldr.toString();
+//
+//				ArrayByte.D3 gt_ACD3 = (ArrayByte.D3) var.read(netCdfReadStr);
+//
+//				return gt_ACD3;
+//			} catch (InvalidRangeException ex) {
+//				throw new IOException("Cannot read data", ex);
+//			}
+//		} else {
+//			throw new IOException("Variable " + netCdfVarName + " not found in NetCdf file " + rdNetCdf.getLocation());
+//		}
+//	}
+
+	static void readSampleGTs(ArrayByte.D3 from, Collection<GenotypesList> to, GenotypesListFactory genotyesListFactory) throws IOException {
+
+		try {
+			int[] shp = from.getShape();
+			List<Range> ranges = new ArrayList<Range>(3);
+			ranges.add(new Range(0, 0));
+			ranges.add(new Range(0, shp[1] - 1));
+			ranges.add(new Range(0, shp[2] - 1));
+			for (int r0 = 0; r0 < shp[0]; r0++) {
+				ranges.set(0, new Range(r0, r0));
+				ArrayByte.D2 gt_ACD2 = (ArrayByte.D2) from.section(ranges);
+				List<byte[]> rawList = NetCdfUtils.writeD2ArrayByteToList(gt_ACD2);
+				GenotypesList innerList = genotyesListFactory.createGenotypesList(rawList);
+				to.add(innerList);
+			}
+		} catch (InvalidRangeException ex) {
+			log.error("Cannot read data", ex);
+		}
+	}
+
+//	public NetCdfSamplesGenotypesSource(MatrixMetadata matrixMetadata) throws IOException {
+//
+//		this.numMarkers = matrixMetadata.getNumMarkers();
+//		this.ncfile = NetcdfFile.open(MatrixMetadata.generatePathToNetCdfFile(matrixMetadata).getAbsolutePath());
+//		this.startMkIdx = 0;
+//		this.endMkIdx = Integer.MIN_VALUE;
+//		this.markerIdSetMap = null;
+//		this.genotyesListFactory = CompactGenotypesList.FACTORY;
+//	}
+//
+//	public NetCdfSamplesGenotypesSource(MatrixKey matrixKey) throws IOException {
+//		this(MatricesList.getMatrixMetadataById(matrixKey));
+//	}
+//
 //	@Override
 //	protected void finalize() throws Throwable {
 //		try {
@@ -157,53 +311,53 @@ public class NetCdfSamplesGenotypesSource extends AbstractListSource<GenotypesLi
 		return wrapToChromosomeKeyMap(markersAC, null);
 	}
 
-	@Override
-	public List<GenotypesList> getRange(int from, int to) throws IOException {
-
-		this.startMkIdx = from;
-		this.endMkIdx = to;
-
-		Variable var = ncfile.findVariable(cNetCDF.Variables.VAR_MARKERSET);
-
-		if (var != null) {
-			DataType dataType = var.getDataType();
-			int[] varShape = var.getShape();
-
-			try {
-				// KEEP INDEXES REAL
-				if (startMkIdx < 0) {
-					startMkIdx = 0;
-				}
-				if (endMkIdx < 0 || endMkIdx >= numMarkers) {
-					endMkIdx = numMarkers - 1;
-				}
-
-				StringBuilder netCdfReadStrBldr = new StringBuilder(64);
-				netCdfReadStrBldr
-						.append("(")
-						.append(startMkIdx)
-						.append(":")
-						.append(endMkIdx)
-						.append(":1, 0:")
-						.append(varShape[1] - 1)
-						.append(":1)");
-				String netCdfReadStr = netCdfReadStrBldr.toString();
-
-				if (dataType == DataType.CHAR) {
-					ArrayChar.D2 markerSetAC = (ArrayChar.D2) var.read(netCdfReadStr);
-					markerIdSetMap = wrapToMarkerKeyMap(markerSetAC);
-				}
-				if (dataType == DataType.BYTE) {
-					ArrayByte.D2 markerSetAC = (ArrayByte.D2) var.read(netCdfReadStr);
-					markerIdSetMap = wrapToMarkerKeyMap(markerSetAC);
-				}
-			} catch (IOException ex) {
-				log.error("Cannot read data", ex);
-			} catch (InvalidRangeException ex) {
-				log.error("Cannot read data", ex);
-			}
-		}
-	}
+//	@Override
+//	public List<GenotypesList> getRange(int from, int to) throws IOException {
+//
+//		this.startMkIdx = from;
+//		this.endMkIdx = to;
+//
+//		Variable var = ncfile.findVariable(cNetCDF.Variables.VAR_MARKERSET);
+//
+//		if (var != null) {
+//			DataType dataType = var.getDataType();
+//			int[] varShape = var.getShape();
+//
+//			try {
+//				// KEEP INDEXES REAL
+//				if (startMkIdx < 0) {
+//					startMkIdx = 0;
+//				}
+//				if (endMkIdx < 0 || endMkIdx >= numMarkers) {
+//					endMkIdx = numMarkers - 1;
+//				}
+//
+//				StringBuilder netCdfReadStrBldr = new StringBuilder(64);
+//				netCdfReadStrBldr
+//						.append("(")
+//						.append(startMkIdx)
+//						.append(":")
+//						.append(endMkIdx)
+//						.append(":1, 0:")
+//						.append(varShape[1] - 1)
+//						.append(":1)");
+//				String netCdfReadStr = netCdfReadStrBldr.toString();
+//
+//				if (dataType == DataType.CHAR) {
+//					ArrayChar.D2 markerSetAC = (ArrayChar.D2) var.read(netCdfReadStr);
+//					markerIdSetMap = wrapToMarkerKeyMap(markerSetAC);
+//				}
+//				if (dataType == DataType.BYTE) {
+//					ArrayByte.D2 markerSetAC = (ArrayByte.D2) var.read(netCdfReadStr);
+//					markerIdSetMap = wrapToMarkerKeyMap(markerSetAC);
+//				}
+//			} catch (IOException ex) {
+//				log.error("Cannot read data", ex);
+//			} catch (InvalidRangeException ex) {
+//				log.error("Cannot read data", ex);
+//			}
+//		}
+//	}
 	//</editor-fold>
 
 	//<editor-fold defaultstate="expanded" desc="CHROMOSOME INFO">
@@ -274,68 +428,68 @@ public class NetCdfSamplesGenotypesSource extends AbstractListSource<GenotypesLi
 	//</editor-fold>
 
 	//<editor-fold defaultstate="expanded" desc="MARKERSET FILLERS">
-	/**
-	 * @deprecate unused
-	 */
-	private void fillGTsForCurrentSampleIntoInitMap(int sampleNb) throws IOException {
-
-		Variable var = ncfile.findVariable(cNetCDF.Variables.VAR_GENOTYPES);
-
-		if (var != null) {
-
-			int[] varShape = var.getShape();
-
-			try {
-				// KEEP INDEXES REAL
-				if (startMkIdx < 0) {
-					startMkIdx = 0;
-				}
-				if (endMkIdx < 0 || endMkIdx >= numMarkers) {
-					endMkIdx = numMarkers - 1;
-				}
-
-				StringBuilder netCdfReadStrBldr = new StringBuilder(64);
-				netCdfReadStrBldr
-						.append("(")
-						.append(sampleNb)
-						.append(":")
-						.append(sampleNb)
-						.append(":1, ")
-						.append(startMkIdx)
-						.append(":")
-						.append(endMkIdx)
-						.append(":1, " + "0:")
-						.append(varShape[2] - 1)
-						.append(":1)");
-				String netCdfReadStr = netCdfReadStrBldr.toString();
-
-				ArrayByte.D3 gt_ACD3 = (ArrayByte.D3) var.read(netCdfReadStr);
-
-				int[] shp = gt_ACD3.getShape();
-				int reducer = 0;
-				if (shp[0] == 1) {
-					reducer++;
-				}
-				if (shp[1] == 1) {
-					reducer++;
-				}
-				if (shp[2] == 1) {
-					reducer++;
-				}
-
-				if (reducer == 1) {
-					ArrayByte.D2 gt_ACD2 = (ArrayByte.D2) gt_ACD3.reduce();
-					NetCdfUtils.writeD2ArrayByteToMapValues(gt_ACD2, (Map<MarkerKey, byte[]>) markerIdSetMap);
-				} else {
-					throw new IllegalStateException();
-				}
-			} catch (IOException ex) {
-				log.error("Cannot read data", ex);
-			} catch (InvalidRangeException ex) {
-				log.error("Cannot read data", ex);
-			}
-		}
-	}
+////	/**
+////	 * @deprecate unused
+////	 */
+////	private void fillGTsForCurrentSampleIntoInitMap(int sampleNb) throws IOException {
+////
+////		Variable var = ncfile.findVariable(cNetCDF.Variables.VAR_GENOTYPES);
+////
+////		if (var != null) {
+////
+////			int[] varShape = var.getShape();
+////
+////			try {
+////				// KEEP INDEXES REAL
+////				if (startMkIdx < 0) {
+////					startMkIdx = 0;
+////				}
+////				if (endMkIdx < 0 || endMkIdx >= numMarkers) {
+////					endMkIdx = numMarkers - 1;
+////				}
+////
+////				StringBuilder netCdfReadStrBldr = new StringBuilder(64);
+////				netCdfReadStrBldr
+////						.append("(")
+////						.append(sampleNb)
+////						.append(":")
+////						.append(sampleNb)
+////						.append(":1, ")
+////						.append(startMkIdx)
+////						.append(":")
+////						.append(endMkIdx)
+////						.append(":1, " + "0:")
+////						.append(varShape[2] - 1)
+////						.append(":1)");
+////				String netCdfReadStr = netCdfReadStrBldr.toString();
+////
+////				ArrayByte.D3 gt_ACD3 = (ArrayByte.D3) var.read(netCdfReadStr);
+////
+////				int[] shp = gt_ACD3.getShape();
+////				int reducer = 0;
+////				if (shp[0] == 1) {
+////					reducer++;
+////				}
+////				if (shp[1] == 1) {
+////					reducer++;
+////				}
+////				if (shp[2] == 1) {
+////					reducer++;
+////				}
+////
+////				if (reducer == 1) {
+////					ArrayByte.D2 gt_ACD2 = (ArrayByte.D2) gt_ACD3.reduce();
+////					NetCdfUtils.writeD2ArrayByteToMapValues(gt_ACD2, (Map<MarkerKey, byte[]>) markerIdSetMap);
+////				} else {
+////					throw new IllegalStateException();
+////				}
+////			} catch (IOException ex) {
+////				log.error("Cannot read data", ex);
+////			} catch (InvalidRangeException ex) {
+////				log.error("Cannot read data", ex);
+////			}
+////		}
+////	}
 
 //	/**
 //	 * @deprecate unused

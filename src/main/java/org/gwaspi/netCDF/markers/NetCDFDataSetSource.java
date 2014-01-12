@@ -19,34 +19,19 @@ package org.gwaspi.netCDF.markers;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
 import org.gwaspi.constants.cImport.ImportFormat;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.GenotypeEncoding;
 import org.gwaspi.constants.cNetCDF.Defaults.StrandType;
-import org.gwaspi.model.ChromosomeInfo;
-import org.gwaspi.model.ChromosomeKey;
 import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.ChromosomesInfosSource;
 import org.gwaspi.model.ChromosomesKeysSource;
-import org.gwaspi.model.MarkerKey;
-import org.gwaspi.model.MarkerKeyFactory;
-import org.gwaspi.model.MarkerMetadata;
 import org.gwaspi.model.MarkersGenotypesSource;
 import org.gwaspi.model.MarkersKeysSource;
 import org.gwaspi.model.MarkersMetadataSource;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
-import org.gwaspi.model.SampleInfo;
-import org.gwaspi.model.SampleInfo.Affection;
-import org.gwaspi.model.SampleInfo.Sex;
-import org.gwaspi.model.SampleKey;
-import org.gwaspi.model.SampleKeyFactory;
 import org.gwaspi.model.SamplesGenotypesSource;
 import org.gwaspi.model.SamplesInfosSource;
 import org.gwaspi.model.SamplesKeysSource;
@@ -60,7 +45,8 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 
 /**
- * TODO
+ * TODO add description
+ * TODO rename to MatrixNetCdfDataSetSource
  */
 public class NetCDFDataSetSource implements DataSetSource {
 
@@ -91,6 +77,12 @@ public class NetCDFDataSetSource implements DataSetSource {
 		this.rdNetCdfFile = null;
 		this.matrixKey = null;
 		this.matrixMetadata = null;
+	}
+
+	private NetcdfFile getReadNetCdfFile() throws IOException {
+
+		ensureReadNetCdfFile();
+		return rdNetCdfFile;
 	}
 
 	private void ensureReadNetCdfFile() throws IOException {
@@ -256,17 +248,12 @@ public class NetCDFDataSetSource implements DataSetSource {
 
 	@Override
 	public MarkersGenotypesSource getMarkersGenotypesSource() throws IOException {
-
-//		return sampleSet;
-		ensureMatrixMetadata();
-		return new NetCdfMarkersGenotypesSource(matrixMetadata);
+		return NetCdfMarkersGenotypesSource.createForMatrix(getReadNetCdfFile());
 	}
 
 	@Override
 	public MarkersMetadataSource getMarkersMetadatasSource() throws IOException {
-
-		ensureReadNetCdfFile();
-		return NetCdfMarkersMetadataSource.createForMatrix(rdNetCdfFile);
+		return NetCdfMarkersMetadataSource.createForMatrix(getReadNetCdfFile());
 	}
 
 	@Override
@@ -292,41 +279,31 @@ public class NetCDFDataSetSource implements DataSetSource {
 
 	@Override
 	public ChromosomesKeysSource getChromosomesKeysSource() throws IOException {
-
-		ensureReadNetCdfFile();
-		return NetCdfChromosomesKeysSource.createForMatrix(rdNetCdfFile);
+		return NetCdfChromosomesKeysSource.createForMatrix(getReadNetCdfFile());
 	}
 
 	@Override
 	public ChromosomesInfosSource getChromosomesInfosSource() throws IOException {
-
-		ensureReadNetCdfFile();
-		return NetCdfChromosomesInfosSource.createForMatrix(rdNetCdfFile);
+		return NetCdfChromosomesInfosSource.createForMatrix(getReadNetCdfFile());
 	}
 
 	@Override
 	public MarkersKeysSource getMarkersKeysSource() throws IOException {
-
-		ensureReadNetCdfFile();
-		return NetCdfMarkersKeysSource.createForMatrix(rdNetCdfFile);
+		return NetCdfMarkersKeysSource.createForMatrix(getReadNetCdfFile());
 	}
 
 	@Override
 	public SamplesGenotypesSource getSamplesGenotypesSource() throws IOException {
-
-		ensureMatrixMetadata();
-		return new NetCdfSamplesGenotypesSource(matrixMetadata);
+		return NetCdfSamplesGenotypesSource.createForMatrix(getReadNetCdfFile());
 	}
 
 	@Override
 	public SamplesInfosSource getSamplesInfosSource() throws IOException {
-		return NetCdfSamplesInfosSource.createForMatrix(studyKey, rdNetCdfFile);
+		return NetCdfSamplesInfosSource.createForMatrix(studyKey, getReadNetCdfFile());
 	}
 
 	@Override
 	public SamplesKeysSource getSamplesKeysSource() throws IOException {
-
-		ensureReadNetCdfFile();
-		return NetCdfSamplesKeysSource.createForMatrix(studyKey, rdNetCdfFile);
+		return NetCdfSamplesKeysSource.createForMatrix(studyKey, getReadNetCdfFile());
 	}
 }

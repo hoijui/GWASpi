@@ -59,6 +59,10 @@ public abstract class AbstractListSource<VT> extends AbstractList<VT> {
 		this(rdNetCdfFile, chunkSize, originalIndices, null);
 	}
 
+	protected NetcdfFile getReadNetCdfFile() {
+		return rdNetCdfFile;
+	}
+
 	protected <LVT> List<LVT> readVar(String varName, int from, int to) throws IOException {
 
 		List<LVT> values = new ArrayList<LVT>(0);
