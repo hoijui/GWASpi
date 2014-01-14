@@ -190,7 +190,6 @@ public class Threaded_GWAS extends CommonRunnable {
 			}
 
 			OperationKey assocOpKey = OperationManager.performCleanAssociationTests(
-					matrixKey,
 					censusOpKey,
 					hwOpKey,
 					gwasParams.getDiscardMarkerHWTreshold(),

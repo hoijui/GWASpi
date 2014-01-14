@@ -32,7 +32,6 @@ import org.slf4j.LoggerFactory;
 
 public class Threaded_Association extends CommonRunnable {
 
-	private final MatrixKey matrixKey;
 	private final OperationKey censusOpKey;
 	private final OperationKey hwOpKey;
 	private final GWASinOneGOParams gwasParams;
@@ -51,7 +50,6 @@ public class Threaded_Association extends CommonRunnable {
 				(allelic ? "Allelic" : "Genotypic") + " Association Test on Matrix ID: " + matrixKey,
 				(allelic ? "Allelic" : "Genotypic") + " Association Test");
 
-		this.matrixKey = matrixKey;
 		this.censusOpKey = censusOpKey;
 		this.hwOpKey = hwOpKey;
 		this.gwasParams = gwasParams;
@@ -64,7 +62,7 @@ public class Threaded_Association extends CommonRunnable {
 
 	protected void runInternal(SwingWorkerItem thisSwi) throws Exception {
 
-		List<OperationMetadata> operations = OperationsList.getOperationsList(matrixKey);
+		List<OperationMetadata> operations = OperationsList.getOperationsList(censusOpKey.getParentMatrixKey());
 		OperationKey markersQAOpKey = OperationsList.getIdOfLastOperationTypeOccurance(operations, OPType.MARKER_QA);
 
 		if (!gwasParams.isDiscardMarkerByMisRat()) {
@@ -89,7 +87,6 @@ public class Threaded_Association extends CommonRunnable {
 
 		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
 			OperationKey assocOpKey = OperationManager.performCleanAssociationTests(
-					matrixKey,
 					censusOpKey,
 					hwOpKey,
 					gwasParams.getDiscardMarkerHWTreshold(),
