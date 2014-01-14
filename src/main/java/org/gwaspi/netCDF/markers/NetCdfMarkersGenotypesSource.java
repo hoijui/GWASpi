@@ -97,8 +97,13 @@ public class NetCdfMarkersGenotypesSource extends AbstractListSource<GenotypesLi
 		return new NetCdfMarkersGenotypesSource(rdNetCdfFile);
 	}
 
-	public static MarkersGenotypesSource createForOperation(NetcdfFile rdNetCdfFile, List<Integer> originalIndices) throws IOException {
-		return new NetCdfMarkersGenotypesSource(rdNetCdfFile, originalIndices);
+	public static MarkersGenotypesSource createForOperation(
+			NetcdfFile rdNetCdfFile,
+			List<Integer> originalSamplesIndices,
+			List<Integer> originalMarkersIndices)
+			throws IOException
+	{
+		return new NetCdfMarkersGenotypesSource(rdNetCdfFile, originalSamplesIndices, originalMarkersIndices);
 	}
 
 	@Override

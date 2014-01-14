@@ -40,6 +40,7 @@ import org.gwaspi.model.SamplesInfosSource;
 import org.gwaspi.model.SamplesKeysSource;
 import org.gwaspi.netCDF.markers.NetCdfChromosomesInfosSource;
 import org.gwaspi.netCDF.markers.NetCdfChromosomesKeysSource;
+import org.gwaspi.netCDF.markers.NetCdfMarkersGenotypesSource;
 import org.gwaspi.netCDF.markers.NetCdfMarkersKeysSource;
 import org.gwaspi.netCDF.markers.NetCdfMarkersMetadataSource;
 import org.gwaspi.netCDF.markers.NetCdfSamplesInfosSource;
@@ -95,28 +96,12 @@ public abstract class AbstractNetCdfOperationDataSet<ET> extends AbstractOperati
 	}
 
 	@Override
-	public DataSetSource getParentDataSetSource() throws IOException {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	protected MarkersGenotypesSource getMarkersGenotypesSourceRaw() throws IOException {
+		return NetCdfMarkersGenotypesSource.createForOperation(readNcFile, originalSamplesIndices, originalMarkersIndices);
 	}
 
 	@Override
-	public DataSetSource getRootDataSetSource() throws IOException {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-	}
-
-	@Override
-	public MatrixMetadata getMatrixMetadata() throws IOException {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-	}
-
-	@Override
-	public MarkersGenotypesSource getMarkersGenotypesSource() throws IOException {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-	}
-
-	@Override
-	public SamplesGenotypesSource getSamplesGenotypesSource() throws IOException {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	protected SamplesGenotypesSource getSamplesGenotypesSourceRaw() throws IOException {
 	}
 
 	@Override

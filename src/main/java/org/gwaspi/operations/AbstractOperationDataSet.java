@@ -22,11 +22,15 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Queue;
 import org.gwaspi.model.ChromosomesKeysSource;
+import org.gwaspi.model.DataSetSource;
+import org.gwaspi.model.MarkersGenotypesSource;
 import org.gwaspi.model.MarkersKeysSource;
 import org.gwaspi.model.MatrixKey;
+import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
+import org.gwaspi.model.SamplesGenotypesSource;
 import org.gwaspi.model.SamplesKeysSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -102,6 +106,21 @@ public abstract class AbstractOperationDataSet<ET> implements OperationDataSet<E
 		}
 
 		return operationMetadata;
+	}
+
+	@Override
+	public DataSetSource getParentDataSetSource() throws IOException {XXX;
+		throw new UnsupportedOperationException("Not supported yet."); // TODO
+	}
+
+	@Override
+	public DataSetSource getRootDataSetSource() throws IOException {
+		throw new UnsupportedOperationException("Not supported yet."); // TODO
+	}
+
+	@Override
+	public MatrixMetadata getMatrixMetadata() throws IOException {
+		throw new UnsupportedOperationException("Not supported yet."); // TODO
 	}
 
 	protected int getEntriesWriteBufferSize() {
@@ -244,6 +263,29 @@ public abstract class AbstractOperationDataSet<ET> implements OperationDataSet<E
 			return getParentDataSetSource().getChromosomesKeysSource();
 		} else {
 			return getChromosomesKeysSourceRaw();
+		}
+	}
+	protected abstract MarkersGenotypesSource getMarkersGenotypesSourceRaw() throws IOException;
+
+	@Override
+	public MarkersGenotypesSource getMarkersGenotypesSource() throws IOException {
+
+		if (getUseAllSamplesFromParent() && getUseAllMarkersFromParent()) {
+			return getParentDataSetSource().getMarkersGenotypesSource();
+		} else {
+			return getMarkersGenotypesSourceRaw();
+		}
+	}
+
+	protected abstract SamplesGenotypesSource getSamplesGenotypesSourceRaw() throws IOException;
+
+	@Override
+	public SamplesGenotypesSource getSamplesGenotypesSource() throws IOException {
+
+		if (getUseAllSamplesFromParent() && getUseAllMarkersFromParent()) {
+			return getParentDataSetSource().getSamplesGenotypesSource();
+		} else {
+			return getSamplesGenotypesSourceRaw();
 		}
 	}
 

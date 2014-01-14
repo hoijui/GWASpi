@@ -30,6 +30,7 @@ import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
+import org.gwaspi.operations.AbstractOperationDataSet;
 import org.gwaspi.operations.OperationDataSet;
 import org.gwaspi.operations.allelicassociationtest.NetCdfAllelicAssociationTestsOperationDataSet;
 import org.gwaspi.operations.genotypicassociationtest.NetCdfGenotypicAssociationTestsOperationDataSet;
@@ -114,14 +115,15 @@ public class OperationFactory {
 	/**
 	 * Creates a new OperationDataSet for the specified type.
 	 * @param operationType
+	 * @param parent
 	 * @return
 	 * @throws IOException
 	 */
 	public static OperationDataSet generateOperationDataSet(OPType operationType, OperationKey parent) throws IOException {
-		return generateOperationDataSet(operationType, null);
+		return generateOperationDataSet(operationType, null, null, parent);
 	}
 	public static OperationDataSet generateOperationDataSet(OPType operationType, MatrixKey parent) throws IOException {
-		return generateOperationDataSet(operationType, null);
+		return generateOperationDataSet(operationType, null, parent, null);
 	}
 
 	public static OperationDataSet generateOperationDataSet(OperationKey operationKey) throws IOException {
@@ -132,9 +134,9 @@ public class OperationFactory {
 		return generateOperationDataSet(operationType, operationKey);
 	}
 
-	private static OperationDataSet generateOperationDataSet(OPType operationType, OperationKey operationKey) throws IOException {
+	private static OperationDataSet generateOperationDataSet(OPType operationType, OperationKey operationKey, MatrixKey matrixParent, OperationKey operationParent) throws IOException {
 
-		OperationDataSet operationDataSet;
+		AbstractOperationDataSet operationDataSet;
 
 		boolean useNetCdf = true;
 		if (useNetCdf) {
@@ -172,6 +174,8 @@ public class OperationFactory {
 				case QQPLOT:
 					throw new IllegalArgumentException("This operation type is invalid, or has no data-attached");
 			}
+
+			operationDataSet.set
 		} else {
 			throw new UnsupportedOperationException("Not yet implemented!");
 		}
