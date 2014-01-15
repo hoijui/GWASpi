@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 import org.gwaspi.netCDF.operations.NetCdfUtils;
 
@@ -31,7 +32,7 @@ public class ArrayGenotypesList extends ArrayList<byte[]> implements GenotypesLi
 
 	public static final GenotypesListFactory FACTORY = new GenotypesListFactory() {
 		@Override
-		public GenotypesList createGenotypesList(Collection<byte[]> rawGenotypes) {
+		public GenotypesList extract(List<byte[]> rawGenotypes) {
 
 			// HACK We should/could probably get this list from the QA report, instead of generating it here
 			Set<byte[]> possibleGenotypes = NetCdfUtils.extractUniqueGenotypesOrdered(rawGenotypes);

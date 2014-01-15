@@ -87,10 +87,15 @@ public class NetCdfMarkersGenotypesSource extends AbstractListSource<GenotypesLi
 		this.genotyesListFactory = CompactGenotypesList.FACTORY;
 	}
 
-	private NetCdfMarkersGenotypesSource(NetcdfFile rdNetCdfFile, List<Integer> originalIndices) {
-		super(rdNetCdfFile, DEFAULT_CHUNK_SIZE_SHATTERED, originalIndices);
+	private NetCdfMarkersGenotypesSource(
+			NetcdfFile rdNetCdfFile,
+			List<Integer> originalSamplesIndices,
+			List<Integer> originalMarkersIndices)
+			throws IOException
+	{
+		super(rdNetCdfFile, DEFAULT_CHUNK_SIZE_SHATTERED, originalMarkersIndices);
 
-		this.genotyesListFactory = CompactGenotypesList.FACTORY;
+		this.genotyesListFactory = new CompactGenotypesList.SelectiveIndicesGenotypesListFactory(originalSamplesIndices);
 	}
 
 	public static MarkersGenotypesSource createForMatrix(NetcdfFile rdNetCdfFile) throws IOException {
@@ -120,7 +125,7 @@ public class NetCdfMarkersGenotypesSource extends AbstractListSource<GenotypesLi
 
 			for (int mi = 0; mi < var.getShape(1); mi++) {
 				List<byte[]> sampleGTs = NetCdfSamplesGenotypesSource.readSampleGTs(var, -1, -1, mi);
-				GenotypesList genotypesList = genotyesListFactory.createGenotypesList(sampleGTs);
+				GenotypesList genotypesList = genotyesListFactory.extract(sampleGTs);
 				values.add(genotypesList);
 			}
 

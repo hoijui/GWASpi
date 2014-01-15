@@ -26,12 +26,10 @@ import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.model.ChromosomeKey;
 import org.gwaspi.model.ChromosomesInfosSource;
 import org.gwaspi.model.ChromosomesKeysSource;
-import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MarkersGenotypesSource;
 import org.gwaspi.model.MarkersKeysSource;
 import org.gwaspi.model.MarkersMetadataSource;
-import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.SampleKey;
@@ -43,6 +41,7 @@ import org.gwaspi.netCDF.markers.NetCdfChromosomesKeysSource;
 import org.gwaspi.netCDF.markers.NetCdfMarkersGenotypesSource;
 import org.gwaspi.netCDF.markers.NetCdfMarkersKeysSource;
 import org.gwaspi.netCDF.markers.NetCdfMarkersMetadataSource;
+import org.gwaspi.netCDF.markers.NetCdfSamplesGenotypesSource;
 import org.gwaspi.netCDF.markers.NetCdfSamplesInfosSource;
 import org.gwaspi.netCDF.markers.NetCdfSamplesKeysSource;
 import org.gwaspi.netCDF.operations.NetCdfUtils;
@@ -97,11 +96,18 @@ public abstract class AbstractNetCdfOperationDataSet<ET> extends AbstractOperati
 
 	@Override
 	protected MarkersGenotypesSource getMarkersGenotypesSourceRaw() throws IOException {
-		return NetCdfMarkersGenotypesSource.createForOperation(readNcFile, originalSamplesIndices, originalMarkersIndices);
+		return NetCdfMarkersGenotypesSource.createForOperation(
+				readNcFile,
+				getMarkersKeysSource().getIndices(),
+				getSamplesKeysSource().getIndices());
 	}
 
 	@Override
 	protected SamplesGenotypesSource getSamplesGenotypesSourceRaw() throws IOException {
+		return NetCdfSamplesGenotypesSource.createForOperation(
+				readNcFile,
+				getSamplesKeysSource().getIndices(),
+				getMarkersKeysSource().getIndices());
 	}
 
 	@Override

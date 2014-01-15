@@ -32,6 +32,7 @@ import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.SamplesGenotypesSource;
 import org.gwaspi.model.SamplesKeysSource;
+import org.gwaspi.netCDF.operations.MatrixOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -78,7 +79,10 @@ public abstract class AbstractOperationDataSet<ET> implements OperationDataSet<E
 
 	public AbstractOperationDataSet(
 			boolean markersOperationSet,
-			OperationKey operationKey)
+			OperationKey operationKey,
+//			MatrixKey matrixParent,
+//			OperationKey operationParent)
+			MatrixOperation operation)XXX; // required for getparentdss()
 	{
 		this(markersOperationSet, operationKey, 10);
 	}
@@ -111,6 +115,15 @@ public abstract class AbstractOperationDataSet<ET> implements OperationDataSet<E
 	@Override
 	public DataSetSource getParentDataSetSource() throws IOException {XXX;
 		throw new UnsupportedOperationException("Not supported yet."); // TODO
+
+		if ( == null) {
+			if (operationKey == null) {
+				operationMetadata = createOperationMetadata();
+				operationKey = OperationsList.insertOPMetadata(operationMetadata);
+			} else {
+				operationMetadata = OperationsList.getOperation(operationKey);
+			}
+		}
 	}
 
 	@Override

@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.gwaspi.netCDF.operations.NetCdfUtils;
@@ -35,11 +36,31 @@ public class CompactGenotypesList extends AbstractList<byte[]> implements Genoty
 
 	public static final GenotypesListFactory FACTORY = new GenotypesListFactory() {
 		@Override
-		public GenotypesList createGenotypesList(Collection<byte[]> rawGenotypes) {
+		public GenotypesList extract(List<byte[]> rawGenotypes) {
 
 			// HACK We should/could probably get this list from the QA report, instead of generating it here
 			Set<byte[]> possibleGenotypes = NetCdfUtils.extractUniqueGenotypesOrdered(rawGenotypes);
 			return new CompactGenotypesList(rawGenotypes, possibleGenotypes);
+		}
+	};
+
+	public static class SelectiveIndicesGenotypesListFactory implements GenotypesListFactory {
+
+		private final List<Integer> gtIndicesToSelect;
+
+		public SelectiveIndicesGenotypesListFactory(List<Integer> gtIndicesToSelect) {
+
+			this.gtIndicesToSelect = gtIndicesToSelect;
+		}
+
+		@Override
+		public GenotypesList extract(List<byte[]> rawGenotypes) {
+
+			final List<byte[]> filteredGenotypes = NetCdfUtils.includeOnlyIndices(rawGenotypes, gtIndicesToSelect);
+
+			// HACK We should/could probably get this list from the QA report, instead of generating it here
+			Set<byte[]> possibleGenotypes = NetCdfUtils.extractUniqueGenotypesOrdered(filteredGenotypes);
+			return new CompactGenotypesList(filteredGenotypes, possibleGenotypes);
 		}
 	};
 

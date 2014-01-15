@@ -71,18 +71,18 @@ public class NetCdfSamplesGenotypesSource extends AbstractListSource<GenotypesLi
 		this.genotyesListFactory = CompactGenotypesList.FACTORY;
 	}
 
-	private NetCdfSamplesGenotypesSource(NetcdfFile rdNetCdfFile, List<Integer> originalIndices) {
-		super(rdNetCdfFile, DEFAULT_CHUNK_SIZE_SHATTERED, originalIndices);
+	private NetCdfSamplesGenotypesSource(NetcdfFile rdNetCdfFile, List<Integer> originalSamplesIndices, List<Integer> originalMarkersIndices) {
+		super(rdNetCdfFile, DEFAULT_CHUNK_SIZE_SHATTERED, originalSamplesIndices);
 
-		this.genotyesListFactory = CompactGenotypesList.FACTORY;
+		this.genotyesListFactory = new CompactGenotypesList.SelectiveIndicesGenotypesListFactory(originalMarkersIndices);
 	}
 
 	public static SamplesGenotypesSource createForMatrix(NetcdfFile rdNetCdfFile) throws IOException {
 		return new NetCdfSamplesGenotypesSource(rdNetCdfFile);
 	}
 
-	public static SamplesGenotypesSource createForOperation(NetcdfFile rdNetCdfFile, List<Integer> originalIndices) throws IOException {
-		return new NetCdfSamplesGenotypesSource(rdNetCdfFile, originalIndices);
+	public static SamplesGenotypesSource createForOperation(NetcdfFile rdNetCdfFile, List<Integer> originalSamplesIndices, List<Integer> originalMarkersIndices) throws IOException {
+		return new NetCdfSamplesGenotypesSource(rdNetCdfFile, originalSamplesIndices, originalMarkersIndices);
 	}
 
 	@Override
@@ -99,7 +99,7 @@ public class NetCdfSamplesGenotypesSource extends AbstractListSource<GenotypesLi
 
 			for (int si = 0; si < var.getShape(0); si++) {
 				List<byte[]> markerGTs = readSampleGTs(var, si, -1, -1);
-				GenotypesList genotypesList = genotyesListFactory.createGenotypesList(markerGTs);
+				GenotypesList genotypesList = genotyesListFactory.extract(markerGTs);
 				values.add(genotypesList);
 			}
 
@@ -234,7 +234,7 @@ public class NetCdfSamplesGenotypesSource extends AbstractListSource<GenotypesLi
 				ranges.set(0, new Range(r0, r0));
 				ArrayByte.D2 gt_ACD2 = (ArrayByte.D2) from.section(ranges);
 				List<byte[]> rawList = NetCdfUtils.writeD2ArrayByteToList(gt_ACD2);
-				GenotypesList innerList = genotyesListFactory.createGenotypesList(rawList);
+				GenotypesList innerList = genotyesListFactory.extract(rawList);
 				to.add(innerList);
 			}
 		} catch (InvalidRangeException ex) {

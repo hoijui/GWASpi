@@ -17,9 +17,8 @@
 
 package org.gwaspi.model;
 
-import java.util.Collection;
+import java.util.List;
+import org.gwaspi.global.Extractor;
 
-public interface GenotypesListFactory {
-
-	GenotypesList createGenotypesList(Collection<byte[]> rawGenotypes);
+public interface GenotypesListFactory extends Extractor<List<byte[]>, GenotypesList> {
 }

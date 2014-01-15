@@ -1032,6 +1032,21 @@ public class NetCdfUtils {
 		return uniqueGenotypes;
 	}
 
+	public static <VT> List<VT> includeOnlyIndices(
+			final List<VT> values,
+			final List<Integer> indicesToInclude)
+	{
+		if (values.size() == indicesToInclude.size()) {
+			return values;
+		} else {
+			List<VT> selected = new ArrayList<VT>(indicesToInclude.size());
+			for (Integer indexToSelect : indicesToInclude) {
+				selected.add(values.get(indexToSelect));
+			}
+			return selected;
+		}
+	}
+
 	public static Set<byte[]> extractUniqueGenotypesOrdered(
 			final Collection<byte[]> rawGenotypes)
 	{
