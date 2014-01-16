@@ -180,7 +180,7 @@ public class JPAMatrixService implements MatrixService {
 		try {
 			em = open();
 			begin(em);
-			if (matrixMetadata.getMatrixId() == Integer.MIN_VALUE) {
+			if (matrixMetadata.getMatrixId() == MatrixKey.NULL_ID) {
 				em.persist(matrixMetadata);
 			} else {
 				em.merge(matrixMetadata);

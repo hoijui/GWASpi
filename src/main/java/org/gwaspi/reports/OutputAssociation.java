@@ -34,6 +34,7 @@ import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.Report;
+import org.gwaspi.model.ReportKey;
 import org.gwaspi.model.ReportsList;
 import org.gwaspi.model.Study;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
@@ -83,7 +84,6 @@ public class OutputAssociation {
 		writeManhattanPlotFromAssociationData(assocTestOpKey, manhattanName, 4000, 500);
 		if (!combi) {
 			ReportsList.insertRPMetadata(new Report(
-					Integer.MIN_VALUE,
 					testName + " assoc. Manhattan Plot",
 					manhattanName + ".png",
 					OPType.MANHATTANPLOT,
@@ -98,7 +98,6 @@ public class OutputAssociation {
 		writeQQPlotFromAssociationData(assocTestOpKey, qqName, 500, 500);
 		if (!combi) {
 			ReportsList.insertRPMetadata(new Report(
-					Integer.MIN_VALUE,
 					testName + " assoc. QQ Plot",
 					qqName + ".png",
 					OPType.QQPLOT,
@@ -112,7 +111,6 @@ public class OutputAssociation {
 		String assocName = prefix;
 		createSortedAssociationReport(assocTestOpKey, assocName);
 		ReportsList.insertRPMetadata(new Report(
-				Integer.MIN_VALUE,
 				testName + " Association Tests Values",
 				assocName + ".txt",
 				testType,

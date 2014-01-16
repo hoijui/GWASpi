@@ -22,18 +22,15 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.Census;
 import org.gwaspi.model.MarkerKey;
-import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
 import org.gwaspi.operations.OperationDataSet;
 import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationDataSet;
 import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationEntry;
 import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationEntry.Category;
-import org.gwaspi.operations.hardyweinberg.NetCdfHardyWeinbergOperationDataSet;
 import org.gwaspi.operations.markercensus.MarkerCensusOperationDataSet;
 import org.gwaspi.operations.trendtest.AbstractNetCdfTestOperationDataSet;
 import org.gwaspi.operations.trendtest.CommonTestOperationDataSet;
@@ -76,7 +73,8 @@ public abstract class AbstractTestMatrixOperation<DST extends CommonTestOperatio
 
 	@Override
 	public int processMatrix() throws IOException {
-		int resultOpId = Integer.MIN_VALUE;
+
+		int resultOpId = OperationKey.NULL_ID;
 
 		Collection<MarkerKey> toBeExcluded = new HashSet<MarkerKey>();
 		boolean dataLeft = excludeMarkersByHW(hwOPKey, hwThreshold, toBeExcluded);
@@ -267,8 +265,7 @@ public abstract class AbstractTestMatrixOperation<DST extends CommonTestOperatio
 		int totalMarkerNb = 0;
 
 		if (hwOPKey != null) {
-			HardyWeinbergOperationDataSet hardyWeinbergOperationDataSet
-					= new NetCdfHardyWeinbergOperationDataSet(hwOPKey);
+			HardyWeinbergOperationDataSet hardyWeinbergOperationDataSet = (HardyWeinbergOperationDataSet) OperationFactory.generateOperationDataSet(hwOPKey);
 //			NetcdfFile rdHWNcFile = NetcdfFile.open(hwOP.getPathToMatrix());
 //			MarkerOperationSet rdHWOperationSet = new MarkerOperationSet(OperationKey.valueOf(hwOP));
 //			Map<MarkerKey, Double> rdHWMarkerSetMap = rdHWOperationSet.getOpSetMap();

@@ -55,7 +55,7 @@ public class Threaded_Combi extends CommonRunnable {
 			GWASpiExplorerNodes.insertOperationUnderMatrixNode(assocOpKey);
 
 //			// XXX Make Reports (needs newMatrixId, QAopId, AssocOpId)
-//			if (assocOpId != Integer.MIN_VALUE) {
+//			if (assocOpId != OperationKey.NULL_ID) {
 //				new OutputAssociation(allelic, combi).writeReportsForAssociationData(assocOpId);
 //				GWASpiExplorerNodes.insertReportsUnderOperationNode(assocOpId);
 //			}

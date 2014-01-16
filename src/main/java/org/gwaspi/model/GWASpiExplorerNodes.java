@@ -373,7 +373,7 @@ public class GWASpiExplorerNodes {
 				DefaultMutableTreeNode parentNode = (DefaultMutableTreeNode) parentPath.getLastPathComponent();
 
 				// GET ALL REPORTS UNDER THIS OPERATION
-				List<Report> reportsList = ReportsList.getReportsList(parentOpKey.getId(), Integer.MIN_VALUE);
+				List<Report> reportsList = ReportsList.getReportsList(parentOpKey.getId(), MatrixKey.NULL_ID);
 				for (int n = 0; n < reportsList.size(); n++) {
 					Report rp = reportsList.get(n);
 

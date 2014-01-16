@@ -348,7 +348,7 @@ public final class ManhattanPlotZoom extends JPanel {
 		String lblChr = "Chr ";
 		Long currPos = 0L;
 		lblChr += currentChr;
-		if (centerPhysPos != Integer.MIN_VALUE) {
+		if (centerPhysPos > 0) {
 			currPos = centerPhysPos;
 		} else {
 			currPos = Math.round((double)MARKERS_NUM_DEFAULT / 2);

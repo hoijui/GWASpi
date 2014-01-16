@@ -24,6 +24,8 @@ import java.io.Serializable;
  */
 public class StudyKey implements Comparable<StudyKey>, Serializable {
 
+	public static final int NULL_ID = -1; // alternatively: Integer.MIN_VALUE
+
 	private static final String NAME_UNKNOWN = "<study-name-unknown>";
 
 	private int id;
@@ -33,7 +35,7 @@ public class StudyKey implements Comparable<StudyKey>, Serializable {
 	}
 
 	protected StudyKey() {
-		this(Integer.MIN_VALUE);
+		this(NULL_ID);
 	}
 
 	@Override

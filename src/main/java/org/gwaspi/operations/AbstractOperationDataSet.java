@@ -22,6 +22,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Queue;
 import org.gwaspi.model.ChromosomesKeysSource;
+import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.MarkersGenotypesSource;
 import org.gwaspi.model.MarkersKeysSource;
@@ -32,17 +33,22 @@ import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.SamplesGenotypesSource;
 import org.gwaspi.model.SamplesKeysSource;
-import org.gwaspi.netCDF.operations.MatrixOperation;
+import org.gwaspi.netCDF.matrices.MatrixFactory;
+import org.gwaspi.netCDF.operations.OperationFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public abstract class AbstractOperationDataSet<ET> implements OperationDataSet<ET> {
 
+	protected static final int DEFAULT_ENTRIES_WRITE_BUFFER_SIZE = 10;
+
 	private final Logger log = LoggerFactory.getLogger(AbstractOperationDataSet.class);
 
 	private final boolean markersOperationSet;
-	private MatrixKey rdMatrixKey;
-	private OperationKey rdOperationKey;
+//	private MatrixKey rdMatrixKey;
+//	private OperationKey rdOperationKey;
+	private MatrixKey origin;
+	private DataSetKey parent;
 	private Integer numMarkers;
 	private Integer numSamples;
 	private Integer numChromosomes;
@@ -58,13 +64,18 @@ public abstract class AbstractOperationDataSet<ET> implements OperationDataSet<E
 
 	public AbstractOperationDataSet(
 			boolean markersOperationSet,
+			MatrixKey origin,
+			DataSetKey parent,
 			OperationKey operationKey,
 			int entriesWriteBufferSize)
 	{
+		this.origin = origin;
+//		this.origin = (operationKey == null) ? null : operationKey.getParentMatrixKey();
+		this.parent = parent;
 		this.operationKey = operationKey;
 		this.markersOperationSet = markersOperationSet;
-		this.rdMatrixKey = (operationKey == null) ? null : operationKey.getParentMatrixKey();
-		this.rdOperationKey = null;
+//		this.rdMatrixKey = (operationKey == null) ? null : operationKey.getParentMatrixKey();
+//		this.rdOperationKey = null;
 		this.numMarkers = null;
 		this.numSamples = null;
 		this.numChromosomes = null;
@@ -79,16 +90,28 @@ public abstract class AbstractOperationDataSet<ET> implements OperationDataSet<E
 
 	public AbstractOperationDataSet(
 			boolean markersOperationSet,
-			OperationKey operationKey,
-//			MatrixKey matrixParent,
-//			OperationKey operationParent)
-			MatrixOperation operation)XXX; // required for getparentdss()
+			MatrixKey origin,
+			DataSetKey parent,
+			OperationKey operationKey)
+//			MatrixOperation operation)XXX; // required for getparentdss()
 	{
-		this(markersOperationSet, operationKey, 10);
+		this(markersOperationSet, origin, parent, operationKey, DEFAULT_ENTRIES_WRITE_BUFFER_SIZE);
 	}
 
-	public AbstractOperationDataSet(boolean markersOperationSet) {
-		this(markersOperationSet, null);
+	public AbstractOperationDataSet(
+			boolean markersOperationSet,
+			MatrixKey origin,
+			DataSetKey parent)
+	{
+		this(markersOperationSet, origin, parent, null);
+	}
+
+	protected MatrixKey getOrigin() {
+		return origin;
+	}
+
+	protected DataSetKey getParent() {
+		return parent;
 	}
 
 	@Override
@@ -113,26 +136,26 @@ public abstract class AbstractOperationDataSet<ET> implements OperationDataSet<E
 	}
 
 	@Override
-	public DataSetSource getParentDataSetSource() throws IOException {XXX;
-		throw new UnsupportedOperationException("Not supported yet."); // TODO
+	public DataSetSource getParentDataSetSource() throws IOException {
 
-		if ( == null) {
-			if (operationKey == null) {
-				operationMetadata = createOperationMetadata();
-				operationKey = OperationsList.insertOPMetadata(operationMetadata);
-			} else {
-				operationMetadata = OperationsList.getOperation(operationKey);
-			}
+		final DataSetKey parent = getParent();
+		final DataSetSource dataSetSource;
+		if (parent.isMatrix()) {
+			dataSetSource = MatrixFactory.generateMatrixDataSetSource(parent.getMatrixParent());
+		} else {
+			dataSetSource = OperationFactory.generateOperationDataSet(parent.getOperationParent());
 		}
+
+		return dataSetSource;
 	}
 
 	@Override
 	public DataSetSource getRootDataSetSource() throws IOException {
-		throw new UnsupportedOperationException("Not supported yet."); // TODO
+		return MatrixFactory.generateMatrixDataSetSource(getOrigin());
 	}
 
 	@Override
-	public MatrixMetadata getMatrixMetadata() throws IOException {
+	public MatrixMetadata getMatrixMetadata() throws IOException {XXX;
 		throw new UnsupportedOperationException("Not supported yet."); // TODO
 	}
 
@@ -140,23 +163,23 @@ public abstract class AbstractOperationDataSet<ET> implements OperationDataSet<E
 		return entriesWriteBufferSize;
 	}
 
-	public void setReadMatrixKey(MatrixKey rdMatrixKey) {
-		this.rdMatrixKey = rdMatrixKey;
-	}
-
-	protected MatrixKey getReadMatrixKey() {
-		return rdMatrixKey;
-	}
-
-	public void setReadOperationKey(OperationKey rdOperationKey) {
-
-		this.rdMatrixKey = rdOperationKey.getParentMatrixKey();
-		this.rdOperationKey = rdOperationKey;
-	}
-
-	protected OperationKey getReadOperationKey() {
-		return rdOperationKey;
-	}
+//	public void setReadMatrixKey(MatrixKey rdMatrixKey) {
+//		this.rdMatrixKey = rdMatrixKey;
+//	}
+//
+//	protected MatrixKey getReadMatrixKey() {
+//		return rdMatrixKey;
+//	}
+//
+//	public void setReadOperationKey(OperationKey rdOperationKey) {
+//
+//		this.rdMatrixKey = rdOperationKey.getParentMatrixKey();
+//		this.rdOperationKey = rdOperationKey;
+//	}
+//
+//	protected OperationKey getReadOperationKey() {
+//		return rdOperationKey;
+//	}
 
 	protected abstract int getNumMarkersRaw() throws IOException;
 

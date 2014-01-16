@@ -27,6 +27,7 @@ import javax.persistence.Query;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.dao.ReportService;
 import org.gwaspi.model.MatrixKey;
+import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.Report;
@@ -121,14 +122,14 @@ public class JPAReportService implements ReportService {
 		try {
 			em = open();
 			Query query;
-			if (parentMatrixId == Integer.MIN_VALUE) {
-				if (parentOperationId == Integer.MIN_VALUE) {
+			if (parentMatrixId == MatrixKey.NULL_ID) {
+				if (parentOperationId == OperationKey.NULL_ID) {
 					throw new IllegalArgumentException("You have to specify at least one of either parentOperationId or parentMatrixId");
 				}
 				query = em.createNamedQuery(
 						"report_fetchByParentOperationId");
 				query.setParameter("parentOperationId", parentOperationId);
-			} else if (parentOperationId == Integer.MIN_VALUE) {
+			} else if (parentOperationId == OperationKey.NULL_ID) {
 				query = em.createNamedQuery(
 						"report_fetchByParentMatrixId");
 				query.setParameter("parentMatrixId", parentMatrixId);
@@ -192,7 +193,7 @@ public class JPAReportService implements ReportService {
 		try {
 			em = open();
 			begin(em);
-			if (report.getId() == Integer.MIN_VALUE) {
+			if (report.getId() == ReportKey.NULL_ID) {
 				em.persist(report);
 			} else {
 				em.merge(report);

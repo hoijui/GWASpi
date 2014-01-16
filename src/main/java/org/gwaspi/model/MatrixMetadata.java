@@ -87,7 +87,7 @@ public class MatrixMetadata implements Serializable {
 
 	protected MatrixMetadata() {
 
-		this.key = new MatrixKey(new StudyKey(Integer.MIN_VALUE), Integer.MIN_VALUE);
+		this.key = new MatrixKey(new StudyKey(StudyKey.NULL_ID), MatrixKey.NULL_ID);
 		this.friendlyName = "";
 		this.technology = ImportFormat.UNKNOWN;
 		this.gwaspiDBVersion = "";
@@ -159,7 +159,7 @@ public class MatrixMetadata implements Serializable {
 			StudyKey studyKey
 			)
 	{
-		this.key = new MatrixKey(studyKey, Integer.MIN_VALUE);
+		this.key = new MatrixKey(studyKey, MatrixKey.NULL_ID);
 		this.friendlyName = friendlyName;
 		this.technology = ImportFormat.UNKNOWN;
 		this.gwaspiDBVersion = "";
@@ -171,8 +171,8 @@ public class MatrixMetadata implements Serializable {
 		this.numSamples = Integer.MIN_VALUE;
 		this.numChromosomes = Integer.MIN_VALUE;
 		this.matrixType = "";
-		this.parent1MatrixId = Integer.MIN_VALUE;
-		this.parent2MatrixId = Integer.MIN_VALUE;
+		this.parent1MatrixId = MatrixKey.NULL_ID;
+		this.parent2MatrixId = MatrixKey.NULL_ID;
 		this.inputLocation = "";
 		this.creationDate = new Date();
 		this.simpleName = generateMatrixNetCDFNameByDate(this.creationDate);
@@ -201,7 +201,7 @@ public class MatrixMetadata implements Serializable {
 			throws IOException
 	{
 		this(
-				new MatrixKey(studyKey, Integer.MIN_VALUE), // key
+				new MatrixKey(studyKey, MatrixKey.NULL_ID), // key
 				friendlyName,
 				generateMatrixNetCDFNameByDate(creationDate), // simpleName
 				technology,

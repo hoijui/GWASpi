@@ -22,12 +22,16 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
+import org.gwaspi.model.GWASpiExplorerNodes;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.operations.combi.CombiTestMatrixOperation;
 import org.gwaspi.operations.combi.CombiTestParams;
+import org.gwaspi.reports.OutputHardyWeinberg;
+import org.gwaspi.reports.OutputQAMarkers;
+import org.gwaspi.reports.OutputQASamples;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,7 +56,7 @@ public class OperationManager {
 	{
 		org.gwaspi.global.Utils.sysoutStart("Genotypes Frequency Count by Affection");
 
-		int resultOpId = new OP_MarkerCensus(
+		MatrixOperation operation = new OP_MarkerCensus(
 				rdMatrixKey,
 				censusName,
 				samplesQAOpKey,
@@ -61,9 +65,13 @@ public class OperationManager {
 				markersQAOpKey,
 				discardMismatches,
 				markerMissingRatio,
-				null).processMatrix();
+				null);
 
-		return new OperationKey(rdMatrixKey, resultOpId);
+		int resultOpId = operation.processMatrix();
+
+		OperationKey operationKey = new OperationKey(rdMatrixKey, resultOpId);
+
+		return operationKey;
 	}
 
 	public static OperationKey censusCleanMatrixMarkersByPhenotypeFile(
@@ -80,7 +88,7 @@ public class OperationManager {
 	{
 		org.gwaspi.global.Utils.sysoutStart("Genotypes Frequency Count using " + phenoFile.getName());
 
-		int resultOpId = new OP_MarkerCensus(
+		MatrixOperation operation = new OP_MarkerCensus(
 				rdMatrixKey,
 				censusName,
 				samplesQAOpKey,
@@ -89,19 +97,26 @@ public class OperationManager {
 				markersQAOpKey,
 				discardMismatches,
 				markerMissingRatio,
-				phenoFile).processMatrix();
+				phenoFile);
 
-		return new OperationKey(rdMatrixKey, resultOpId);
+		int resultOpId = operation.processMatrix();
+
+		OperationKey operationKey = new OperationKey(rdMatrixKey, resultOpId);
+
+		return operationKey;
 	}
 
 	public static OperationKey performHardyWeinberg(OperationKey censusOpKey, String hwName) throws IOException {
-		
+
 		org.gwaspi.global.Utils.sysoutStart("Hardy-Weinberg");
 
-		int resultOpId = new OP_HardyWeinberg(censusOpKey, hwName).processMatrix();
+		MatrixOperation operation = new OP_HardyWeinberg(censusOpKey, hwName);
+
+		int resultOpId = operation.processMatrix();
+
 		OperationKey operationKey = new OperationKey(censusOpKey.getParentMatrixKey(), resultOpId);
 
-		org.gwaspi.reports.OutputHardyWeinberg.writeReportsForMarkersHWData(operationKey);
+		OutputHardyWeinberg.writeReportsForMarkersHWData(operationKey);
 
 		return operationKey;
 	}
@@ -115,32 +130,33 @@ public class OperationManager {
 			boolean allelic)
 			throws IOException
 	{
-		int resultOpId; // Integer.MIN_VALUE
-
 		org.gwaspi.global.Utils.sysoutStart(" " + (allelic ? "Allelic" : "Genotypic") + " Association Test using QA and HW thresholds");
 
-		AbstractTestMatrixOperation testOperation = new OP_AssociationTests(
+		MatrixOperation operation = new OP_AssociationTests(
 				censusOpKey,
 				hwOpKey,
 				hwThreshold,
 				allelic);
-		resultOpId = testOperation.processMatrix();
 
-		return new OperationKey(censusOpKey.getParentMatrixKey(), resultOpId);
+		int resultOpId = operation.processMatrix();
+
+		OperationKey operationKey = new OperationKey(censusOpKey.getParentMatrixKey(), resultOpId);
+
+		return operationKey;
 	}
 
 	public static OperationKey performCleanCombiTest(CombiTestParams params)
 			throws IOException
 	{
-		int resultOpId; // Integer.MIN_VALUE
-
 		org.gwaspi.global.Utils.sysoutStart(" Combi Association Test");
 
-		CombiTestMatrixOperation testOperation
-				= new CombiTestMatrixOperation(params);
-		resultOpId = testOperation.processMatrix();
+		MatrixOperation operation = new CombiTestMatrixOperation(params);
 
-		return new OperationKey(params.getMatrixKey(), resultOpId);
+		int resultOpId = operation.processMatrix();
+
+		OperationKey operationKey = new OperationKey(params.getMatrixKey(), resultOpId);
+
+		return operationKey;
 	}
 
 	public static OperationKey performCleanTrendTests(
@@ -150,19 +166,53 @@ public class OperationManager {
 			double hwThreshold)
 			throws IOException
 	{
-		int resultOpId; // Integer.MIN_VALUE
-
 		org.gwaspi.global.Utils.sysoutStart("Cochran-Armitage Trend Test using QA and HW thresholds");
 
-		resultOpId = new OP_TrendTests(
+		MatrixOperation operation = new OP_TrendTests(
 				rdMatrixKey,
 				censusOpKey,
 				hwOpKey,
-				hwThreshold).processMatrix();
+				hwThreshold);
 
-		return new OperationKey(censusOpKey.getParentMatrixKey(), resultOpId);
+		int resultOpId = operation.processMatrix();
+
+		OperationKey operationKey = new OperationKey(censusOpKey.getParentMatrixKey(), resultOpId);
+
+		return operationKey;
 	}
 	//</editor-fold>
+
+	public static OperationKey performQASamplesOperationAndCreateReports(
+			OP_QASamples operation)
+			throws IOException
+	{
+		int samplesQAOpId = operation.processMatrix();
+
+		OperationKey samplesQAOpKey = new OperationKey(operation.getParentMatrixKey(), samplesQAOpId);
+
+		GWASpiExplorerNodes.insertOperationUnderMatrixNode(samplesQAOpKey);
+
+		OutputQASamples.writeReportsForQASamplesData(samplesQAOpKey, true);
+		GWASpiExplorerNodes.insertReportsUnderOperationNode(samplesQAOpKey);
+
+		return samplesQAOpKey;
+	}
+
+	public static OperationKey performQAMarkersOperationAndCreateReports(
+			OP_QAMarkers operation)
+			throws IOException
+	{
+		int markersQAOpId = operation.processMatrix();
+
+		OperationKey markersQAOpKey = new OperationKey(operation.getParentMatrixKey(), markersQAOpId);
+
+		GWASpiExplorerNodes.insertOperationUnderMatrixNode(markersQAOpKey);
+
+		OutputQAMarkers.writeReportsForQAMarkersData(markersQAOpKey);
+		GWASpiExplorerNodes.insertReportsUnderOperationNode(markersQAOpKey);
+
+		return markersQAOpKey;
+	}
 
 	//<editor-fold defaultstate="expanded" desc="OPERATIONS METADATA">
 	public static List<OPType> checkForNecessaryOperations(final List<OPType> necessaryOPs, MatrixKey matrixKey) {

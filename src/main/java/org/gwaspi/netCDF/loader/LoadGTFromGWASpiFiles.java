@@ -28,6 +28,7 @@ import org.gwaspi.model.DataSet;
 import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.GenotypesList;
 import org.gwaspi.model.MatricesList;
+import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.SampleInfo;
 import org.gwaspi.model.SampleKey;
@@ -179,7 +180,7 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 	private int generateNewGWASpiDBversionMatrix(GenotypesLoadDescription loadDescription, DataSetDestination samplesReceiver, MatrixMetadata importMatrixMetadata)
 			throws Exception
 	{
-		int result = Integer.MIN_VALUE;
+		int result = MatrixKey.NULL_ID;
 		String startTime = org.gwaspi.global.Utils.getMediumDateTimeAsString();
 
 		//<editor-fold defaultstate="expanded" desc="CREATE MARKERSET & NETCDF">

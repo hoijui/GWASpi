@@ -26,10 +26,12 @@ import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.model.ChromosomeKey;
 import org.gwaspi.model.ChromosomesInfosSource;
 import org.gwaspi.model.ChromosomesKeysSource;
+import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MarkersGenotypesSource;
 import org.gwaspi.model.MarkersKeysSource;
 import org.gwaspi.model.MarkersMetadataSource;
+import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.SampleKey;
@@ -71,10 +73,12 @@ public abstract class AbstractNetCdfOperationDataSet<ET> extends AbstractOperati
 
 	public AbstractNetCdfOperationDataSet(
 			boolean markersOperationSet,
+			MatrixKey origin,
+			DataSetKey parent,
 			OperationKey operationKey,
 			int entriesWriteBufferSize)
 	{
-		super(markersOperationSet, operationKey, entriesWriteBufferSize);
+		super(markersOperationSet, origin, parent, operationKey, entriesWriteBufferSize);
 
 		this.numMarkers = null;
 		this.numSamples = null;
@@ -86,12 +90,21 @@ public abstract class AbstractNetCdfOperationDataSet<ET> extends AbstractOperati
 		this.writeNcFile = null;
 	}
 
-	public AbstractNetCdfOperationDataSet(boolean markersOperationSet, OperationKey operationKey) {
-		this(markersOperationSet, operationKey, 10);
+	public AbstractNetCdfOperationDataSet(
+			boolean markersOperationSet,
+			MatrixKey origin,
+			DataSetKey parent,
+			OperationKey operationKey)
+	{
+		this(markersOperationSet, origin, parent, operationKey, DEFAULT_ENTRIES_WRITE_BUFFER_SIZE);
 	}
 
-	public AbstractNetCdfOperationDataSet(boolean markersOperationSet) {
-		this(markersOperationSet, null);
+	public AbstractNetCdfOperationDataSet(
+			boolean markersOperationSet,
+			MatrixKey origin,
+			DataSetKey parent)
+	{
+		this(markersOperationSet, origin, parent, null);
 	}
 
 	@Override
@@ -510,12 +523,12 @@ public abstract class AbstractNetCdfOperationDataSet<ET> extends AbstractOperati
 
 	@Override
 	public SamplesKeysSource getSamplesKeysSourceRaw() throws IOException {
-		return NetCdfSamplesKeysSource.createForOperation(getReadMatrixKey().getStudyKey(), getNetCdfReadFile(), isMarkersOperationSet());
+		return NetCdfSamplesKeysSource.createForOperation(getOrigin().getStudyKey(), getNetCdfReadFile(), isMarkersOperationSet());
 	}
 
 	@Override
 	public SamplesInfosSource getSamplesInfosSource() throws IOException {
-		return NetCdfSamplesInfosSource.createForOperation(getReadMatrixKey().getStudyKey(), getNetCdfReadFile(), getSamplesKeysSourceRaw().getIndices());
+		return NetCdfSamplesInfosSource.createForOperation(getOrigin().getStudyKey(), getNetCdfReadFile(), getSamplesKeysSourceRaw().getIndices());
 	}
 
 	@Override

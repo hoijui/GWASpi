@@ -19,6 +19,7 @@ package org.gwaspi.netCDF.operations;
 
 import java.io.IOException;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
+import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixKey;
@@ -29,19 +30,26 @@ import org.gwaspi.operations.OperationDataSet;
 
 public abstract class AbstractOperation<DST extends OperationDataSet> implements MatrixOperation {
 
-	private final MatrixKey matrixParent;
-	private final OperationKey operationParent;
+	private final DataSetKey parent;
+
+	protected AbstractOperation(DataSetKey parent) {
+
+		this.parent = parent;
+	}
 
 	protected AbstractOperation(MatrixKey parent) {
 
-		this.matrixParent = parent;
-		this.operationParent = null;
+		this.parent = new DataSetKey(parent);
 	}
 
 	protected AbstractOperation(OperationKey parent) {
 
-		this.matrixParent = null;
-		this.operationParent = parent;
+		this.parent = new DataSetKey(parent);
+	}
+
+	@Override
+	public boolean isCreatingResultMatrix() {
+		return false;
 	}
 
 	public abstract OPType getType();
@@ -49,10 +57,10 @@ public abstract class AbstractOperation<DST extends OperationDataSet> implements
 	protected DataSetSource getParentDataSetSource() throws IOException {
 
 		final DataSetSource parentDataSetSource;
-		if (matrixParent != null) {
-			parentDataSetSource = MatrixFactory.generateMatrixDataSetSource(matrixParent);
+		if (parent.isMatrix()) {
+			parentDataSetSource = MatrixFactory.generateMatrixDataSetSource(parent.getMatrixParent());
 		} else {
-			parentDataSetSource = OperationFactory.generateOperationDataSet(operationParent);
+			parentDataSetSource = OperationFactory.generateOperationDataSet(parent.getOperationParent());
 		}
 
 		return parentDataSetSource;
@@ -61,10 +69,10 @@ public abstract class AbstractOperation<DST extends OperationDataSet> implements
 	protected MatrixKey getParentMatrixKey() throws IOException {
 
 		final MatrixKey parentMatrixKey;
-		if (matrixParent != null) {
-			parentMatrixKey = matrixParent;
+		if (parent.isMatrix()) {
+			parentMatrixKey = parent.getMatrixParent();
 		} else {
-			parentMatrixKey = operationParent.getParentMatrixKey();
+			parentMatrixKey = parent.getOperationParent().getParentMatrixKey();
 		}
 
 		return parentMatrixKey;
@@ -79,12 +87,7 @@ public abstract class AbstractOperation<DST extends OperationDataSet> implements
 
 	protected DST generateFreshOperationDataSet() throws IOException {
 
-		final DST operationDataSet;
-		if (matrixParent != null) {
-			operationDataSet = (DST) OperationFactory.generateOperationDataSet(getType(), matrixParent);
-		} else {
-			operationDataSet = (DST) OperationFactory.generateOperationDataSet(getType(), operationParent);
-		}
+		final DST operationDataSet = (DST) OperationFactory.generateOperationDataSet(getType(), getParentMatrixKey(), parent);
 
 		return operationDataSet;
 	}

@@ -30,7 +30,9 @@ import java.util.Queue;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.constants.cNetCDF.HardyWeinberg;
+import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.MarkerKey;
+import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.netCDF.operations.NetCdfUtils;
@@ -87,8 +89,8 @@ public class NetCdfHardyWeinbergOperationDataSet extends AbstractNetCdfOperation
 	private ArrayDouble.D1 netCdfObsHetzys;
 	private ArrayDouble.D1 netCdfExpHetzys;
 
-	public NetCdfHardyWeinbergOperationDataSet(OperationKey operationKey) {
-		super(true, operationKey);
+	public NetCdfHardyWeinbergOperationDataSet(MatrixKey origin, DataSetKey parent, OperationKey operationKey) {
+		super(true, operationKey.getParentMatrixKey(), parent, operationKey);
 
 		this.hardyWeinbergName = null;
 		this.markerCensusOperationKey = null;
@@ -98,8 +100,8 @@ public class NetCdfHardyWeinbergOperationDataSet extends AbstractNetCdfOperation
 		}
 	}
 
-	public NetCdfHardyWeinbergOperationDataSet() {
-		this(null);
+	public NetCdfHardyWeinbergOperationDataSet(MatrixKey origin, DataSetKey parent) {
+		this(origin, parent, null);
 	}
 
 	@Override

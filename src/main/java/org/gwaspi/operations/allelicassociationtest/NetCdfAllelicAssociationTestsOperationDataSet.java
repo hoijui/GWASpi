@@ -25,7 +25,9 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Queue;
 import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.MarkerKey;
+import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.netCDF.operations.NetCdfUtils;
 import ucar.ma2.ArrayDouble;
@@ -44,12 +46,12 @@ public class NetCdfAllelicAssociationTestsOperationDataSet extends AbstractNetCd
 	private ArrayDouble.D1 netCdfPs;
 	private ArrayDouble.D1 netCdfORs;
 
-	public NetCdfAllelicAssociationTestsOperationDataSet(OperationKey operationKey) {
-		super(operationKey);
+	public NetCdfAllelicAssociationTestsOperationDataSet(MatrixKey origin, DataSetKey parent, OperationKey operationKey) {
+		super(origin, parent, operationKey);
 	}
 
-	public NetCdfAllelicAssociationTestsOperationDataSet() {
-		this(null);
+	public NetCdfAllelicAssociationTestsOperationDataSet(MatrixKey origin, DataSetKey parent) {
+		this(origin, parent, null);
 	}
 
 	@Override

@@ -67,7 +67,7 @@ public class Report implements Serializable {
 
 	protected Report() {
 
-		this.key = new ReportKey(new StudyKey(Integer.MIN_VALUE), Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE);
+		this.key = new ReportKey(new StudyKey(StudyKey.NULL_ID), MatrixKey.NULL_ID, OperationKey.NULL_ID, ReportKey.NULL_ID);
 		this.friendlyName = "";
 		this.fileName = "";
 		this.type = null;
@@ -88,6 +88,24 @@ public class Report implements Serializable {
 		this.fileName = fileName;
 		this.type = type;
 		this.description = description;
+	}
+
+	public Report(
+			String friendlyName,
+			String fileName,
+			OPType type,
+			OperationKey parentOpKey,
+			String description,
+			StudyKey studyKey)
+	{
+		this(
+				ReportKey.NULL_ID,
+				friendlyName,
+				fileName,
+				type,
+				parentOpKey,
+				description,
+				studyKey);
 	}
 
 	@Override

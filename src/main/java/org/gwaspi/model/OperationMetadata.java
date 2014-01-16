@@ -76,7 +76,7 @@ public class OperationMetadata implements Serializable {
 	protected OperationMetadata() {
 
 		this.key = new OperationKey();
-		this.parentOperationId = Integer.MIN_VALUE;
+		this.parentOperationId = OperationKey.NULL_ID;
 		this.name = "";
 		this.simpleName = "";
 		this.description = "";
@@ -130,7 +130,7 @@ public class OperationMetadata implements Serializable {
 			int numChromosomes
 			)
 	{
-		this.key = new OperationKey(parentMatrixKey, Integer.MIN_VALUE);
+		this.key = new OperationKey(parentMatrixKey, OperationKey.NULL_ID);
 		this.parentOperationId = parentOperationId;
 		this.name = name;
 		this.description = description;
@@ -190,6 +190,21 @@ public class OperationMetadata implements Serializable {
 		hash = 29 * hash + this.getParentMatrixId();
 		hash = 29 * hash + this.getOPId();
 		return hash;
+	}
+
+	@Transient
+	public boolean isWithOperationParent() {
+		return (getParentOperationId() != OperationKey.NULL_ID);
+	}
+
+	@Transient
+	public DataSetKey getParent() {
+
+		if (isWithOperationParent()) {
+			return new DataSetKey(getParentOperationKey());
+		} else {
+			return new DataSetKey(getParentMatrixKey());
+		}
 	}
 
 	@Id

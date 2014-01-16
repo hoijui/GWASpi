@@ -31,8 +31,10 @@ import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.model.Census;
 import org.gwaspi.model.CensusFull;
+import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MatricesList;
+import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
@@ -68,12 +70,12 @@ public class NetCdfMarkerCensusOperationDataSet extends AbstractNetCdfOperationD
 	private ArrayInt.D2 netCdfCensusAlls;
 	private ArrayInt.D2 netCdfCensusesRest;
 
-	public NetCdfMarkerCensusOperationDataSet(OperationKey operationKey) {
-		super(true, operationKey, calculateEntriesWriteBufferSize());
+	public NetCdfMarkerCensusOperationDataSet(MatrixKey origin, DataSetKey parent, OperationKey operationKey) {
+		super(true, origin, parent, operationKey, calculateEntriesWriteBufferSize());
 	}
 
-	public NetCdfMarkerCensusOperationDataSet() {
-		this(null);
+	public NetCdfMarkerCensusOperationDataSet(MatrixKey origin, DataSetKey parent) {
+		this(origin, parent, null);
 	}
 
 	private static int calculateEntriesWriteBufferSize() {

@@ -29,7 +29,6 @@ import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationEntry;
 import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationEntry.Category;
 import org.gwaspi.operations.markercensus.MarkerCensusOperationDataSet;
 import org.gwaspi.operations.markercensus.MarkerCensusOperationEntry;
-import org.gwaspi.operations.markercensus.NetCdfMarkerCensusOperationDataSet;
 import org.gwaspi.statistics.StatisticsUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -73,7 +72,7 @@ public class OP_HardyWeinberg extends AbstractOperation<HardyWeinbergOperationDa
 //		MarkerCensusOperationDataSet rdmarkerCensusOpDS
 //				= new NetCdfMarkerCensusOperationDataSet(markerCensusOPKey);
 
-		MarkerCensusOperationDataSet markerCensusOperationDataSet = new NetCdfMarkerCensusOperationDataSet(markerCensusOPKey);
+		MarkerCensusOperationDataSet markerCensusOperationDataSet = (MarkerCensusOperationDataSet) OperationFactory.generateOperationDataSet(markerCensusOPKey);
 
 		try {
 			HardyWeinbergOperationDataSet dataSet = generateFreshOperationDataSet();

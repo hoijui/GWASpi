@@ -67,13 +67,13 @@ public class MatrixMarkerQAPanel extends JPanel {
 	private final GWASinOneGOParams gwasParams = new GWASinOneGOParams();
 	// End of variables declaration
 
-	public MatrixMarkerQAPanel(MatrixKey parentMatrixKey, int _opId) throws IOException {
+	public MatrixMarkerQAPanel(MatrixKey parentMatrixKey, int opId) throws IOException {
 
 		this.parentMatrixKey = parentMatrixKey;
 		MatrixMetadata parentMatrixMetadata = MatricesList.getMatrixMetadataById(parentMatrixKey);
 
-		if (_opId != Integer.MIN_VALUE) {
-			currentOP = OperationsList.getById(_opId);
+		if (opId != OperationKey.NULL_ID) {
+			currentOP = OperationsList.getById(opId);
 		} else {
 			currentOP = null;
 		}
@@ -102,7 +102,7 @@ public class MatrixMarkerQAPanel extends JPanel {
 				TitledBorder.DEFAULT_JUSTIFICATION,
 				TitledBorder.DEFAULT_POSITION,
 				new Font("DejaVu Sans", 1, 13))); // NOI18N
-		if (_opId != Integer.MIN_VALUE) {
+		if (opId != OperationKey.NULL_ID) {
 			pnl_MatrixDesc.setBorder(BorderFactory.createTitledBorder(null,
 					Text.Operation.operationId + ": "
 					+ ((currentOP == null) ? "<NONE>" : currentOP.getId()),

@@ -28,7 +28,7 @@ public interface ReportService {
 
 	Report getReport(ReportKey reportKey) throws IOException;
 
-	// XXX split into two methods, with either parentOperationId or parentMatrixId param, as we do not allow to fetch by specifying both anyway (on has to be Integer.MIN_VALUE as it works now)
+	// XXX split into two methods, with either parentOperationId or parentMatrixId param, as we do not allow to fetch by specifying both anyway (one has to be Integer.MIN_VALUE as it works now); ADDON: use DataSetKey?
 	List<Report> getReports(int parentOperationId, int parentMatrixId) throws IOException;
 
 	String getReportNamePrefix(OperationMetadata op); // TODO move somewhere else

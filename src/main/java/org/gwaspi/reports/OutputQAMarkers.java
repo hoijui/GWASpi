@@ -36,6 +36,7 @@ import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.Report;
+import org.gwaspi.model.ReportKey;
 import org.gwaspi.model.ReportsList;
 import org.gwaspi.model.Study;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
@@ -63,7 +64,6 @@ public class OutputQAMarkers {
 
 		createSortedMarkerMissingnessReport(operationKey, markMissOutName);
 		ReportsList.insertRPMetadata(new Report(
-				Integer.MIN_VALUE,
 				"Marker Missingness Table",
 				markMissOutName,
 				OPType.MARKER_QA,
@@ -75,7 +75,6 @@ public class OutputQAMarkers {
 		String markMismatchOutName = prefix + "markmismatch.txt";
 		createMarkerMismatchReport(operationKey, markMismatchOutName);
 		ReportsList.insertRPMetadata(new Report(
-				Integer.MIN_VALUE,
 				"Marker Mismatch State Table",
 				markMismatchOutName,
 				OPType.MARKER_QA,

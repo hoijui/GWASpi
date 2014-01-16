@@ -288,7 +288,7 @@ public class Dialogs {
 				matrixNames.toArray(new Object[matrixNames.size()]),
 				0);
 
-		int selectedMatrix = Integer.MIN_VALUE;
+		int selectedMatrix = MatrixKey.NULL_ID;
 		if (selectedRow != null) {
 			selectedMatrix = matrixIDs.get(matrixNames.indexOf(selectedRow));
 		}

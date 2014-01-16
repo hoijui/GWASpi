@@ -138,7 +138,7 @@ public class JPAStudyService implements StudyService {
 		try {
 			em = open();
 			begin(em);
-			if (study.getId() == Integer.MIN_VALUE) {
+			if (study.getId() == StudyKey.NULL_ID) {
 				em.persist(study);
 			} else {
 				throw new IllegalArgumentException("Study was already persisted!");
@@ -207,7 +207,7 @@ public class JPAStudyService implements StudyService {
 		try {
 			em = open();
 			begin(em);
-			if (study.getId() == Integer.MIN_VALUE) {
+			if (study.getId() == StudyKey.NULL_ID) {
 				throw new IllegalArgumentException("Study was not yet persisted!");
 			}
 			em.merge(study);

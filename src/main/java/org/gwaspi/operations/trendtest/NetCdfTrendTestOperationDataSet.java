@@ -24,7 +24,9 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Queue;
 import org.gwaspi.constants.cNetCDF;
+import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.MarkerKey;
+import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.netCDF.operations.NetCdfUtils;
 import ucar.ma2.ArrayDouble;
@@ -42,12 +44,12 @@ public class NetCdfTrendTestOperationDataSet extends AbstractNetCdfTestOperation
 	private ArrayDouble.D1 netCdfTs;
 	private ArrayDouble.D1 netCdfPs;
 
-	public NetCdfTrendTestOperationDataSet(OperationKey operationKey) {
-		super(operationKey);
+	public NetCdfTrendTestOperationDataSet(MatrixKey origin, DataSetKey parent, OperationKey operationKey) {
+		super(origin, parent, operationKey);
 	}
 
-	public NetCdfTrendTestOperationDataSet() {
-		this(null);
+	public NetCdfTrendTestOperationDataSet(MatrixKey origin, DataSetKey parent) {
+		this(origin, parent, null);
 	}
 
 	@Override

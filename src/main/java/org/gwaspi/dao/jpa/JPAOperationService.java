@@ -272,7 +272,7 @@ public class JPAOperationService implements OperationService {
 					}
 
 					EntityManager em = null;
-					int operationId = Integer.MIN_VALUE;
+					int operationId = OperationKey.NULL_ID;
 					try {
 						em = open();
 						begin(em);

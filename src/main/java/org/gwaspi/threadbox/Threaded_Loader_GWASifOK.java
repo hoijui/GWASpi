@@ -97,18 +97,12 @@ public class Threaded_Loader_GWASifOK extends CommonRunnable {
 		//<editor-fold defaultstate="expanded" desc="QA PROCESS">
 		OperationKey samplesQAOpKey = null;
 		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
-			samplesQAOpKey = new OperationKey(matrixKey, new OP_QASamples(matrixKey).processMatrix());
-			GWASpiExplorerNodes.insertOperationUnderMatrixNode(samplesQAOpKey);
-			OutputQASamples.writeReportsForQASamplesData(samplesQAOpKey, true);
-			GWASpiExplorerNodes.insertReportsUnderOperationNode(samplesQAOpKey);
+			OperationManager.performQASamplesOperationAndCreateReports(new OP_QASamples(matrixKey));
 		}
 
 		OperationKey markersQAOpKey = null;
 		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
-			markersQAOpKey = new OperationKey(matrixKey, new OP_QAMarkers(matrixKey).processMatrix());
-			GWASpiExplorerNodes.insertOperationUnderMatrixNode(markersQAOpKey);
-			OutputQAMarkers.writeReportsForQAMarkersData(markersQAOpKey);
-			GWASpiExplorerNodes.insertReportsUnderOperationNode(markersQAOpKey);
+			OperationManager.performQAMarkersOperationAndCreateReports(new OP_QAMarkers(matrixKey));
 			MultiOperations.printCompleted("Matrix Quality Control");
 		}
 		//</editor-fold>

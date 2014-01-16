@@ -67,7 +67,6 @@ public class OutputTrendTest {
 		log.info("Start saving trend test");
 		writeManhattanPlotFromTrendTestData(trendTestOpKey, manhattanName, 4000, 500);
 		ReportsList.insertRPMetadata(new Report(
-				Integer.MIN_VALUE,
 				"Trend Test Manhattan Plot",
 				manhattanName + ".png",
 				OPType.MANHATTANPLOT,
@@ -80,7 +79,6 @@ public class OutputTrendTest {
 		String qqName = prefix + "qq";
 		writeQQPlotFromTrendTestData(trendTestOpKey, qqName, 500, 500);
 		ReportsList.insertRPMetadata(new Report(
-				Integer.MIN_VALUE,
 				"Trend Test QQ Plot",
 				qqName + ".png",
 				OPType.QQPLOT,
@@ -93,7 +91,6 @@ public class OutputTrendTest {
 		String assocName = prefix;
 		createSortedTrendTestReport(trendTestOpKey, assocName);
 		ReportsList.insertRPMetadata(new Report(
-				Integer.MIN_VALUE,
 				"Trend Tests Values",
 				assocName + ".txt",
 				OPType.TRENDTEST,

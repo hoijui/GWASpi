@@ -166,7 +166,7 @@ public class GWASpiExplorer {
 
 						// LOAD REPORTS ON CURRENT SUB-OPERATION
 						if (!subOP.getOperationType().equals(OPType.HARDY_WEINBERG)) { // NOT IF HW
-							List<Report> reportsList = ReportsList.getReportsList(subOP.getId(), Integer.MIN_VALUE);
+							List<Report> reportsList = ReportsList.getReportsList(subOP.getId(), MatrixKey.NULL_ID);
 							for (int n = 0; n < reportsList.size(); n++) {
 								Report rp = reportsList.get(n);
 								if (!rp.getReportType().equals(OPType.ALLELICTEST)
@@ -183,7 +183,7 @@ public class GWASpiExplorer {
 
 					// START TESTING
 					// LOAD REPORTS ON CURRENT OPERATION
-					List<Report> reportsList = ReportsList.getReportsList(currentOP.getId(), Integer.MIN_VALUE);
+					List<Report> reportsList = ReportsList.getReportsList(currentOP.getId(), MatrixKey.NULL_ID);
 					if (!currentOP.getOperationType().equals(OPType.SAMPLE_QA)) { // SAMPLE_QA MUST BE DEALT DIFFERENTLY
 						for (int n = 0; n < reportsList.size(); n++) {
 							DefaultMutableTreeNode reportItem = GWASpiExplorerNodes.createReportTreeNode(ReportKey.valueOf(reportsList.get(n)));

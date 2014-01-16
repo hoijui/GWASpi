@@ -356,7 +356,7 @@ public class Util {
 		List<SampleInfo.Affection> sampleAffections = new ArrayList<SampleInfo.Affection>(sampleAffecs);
 		List<GenotypesList> markerGenotypes = new ArrayList<GenotypesList>(markerGTs.size());
 		for (GenotypesList mGTs : markerGTs) {
-			markerGenotypes.add(CompactGenotypesList.FACTORY.createGenotypesList(mGTs));
+			markerGenotypes.add(CompactGenotypesList.FACTORY.extract(mGTs));
 		}
 
 		try {

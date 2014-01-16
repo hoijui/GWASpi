@@ -65,7 +65,7 @@ public class Study implements Serializable {
 
 	protected Study() {
 
-		this.id = Integer.MIN_VALUE;
+		this.id = StudyKey.NULL_ID;
 		this.name = "";
 		this.description = "";
 		this.studyType = "";
@@ -76,7 +76,7 @@ public class Study implements Serializable {
 
 	public Study(String name, String description) {
 
-		this.id = Integer.MIN_VALUE;
+		this.id = StudyKey.NULL_ID;
 		this.name = name;
 		this.description = description;
 		this.studyType = "";

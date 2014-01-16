@@ -22,11 +22,11 @@ import java.io.IOException;
 import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.GWASpiExplorerNodes;
 import org.gwaspi.model.MatrixKey;
-import org.gwaspi.model.OperationKey;
 import org.gwaspi.netCDF.operations.MatrixGenotypesFlipper;
 import org.gwaspi.netCDF.operations.MatrixGenotypesFlipperNetCDFDataSetDestination;
 import org.gwaspi.netCDF.operations.OP_QAMarkers;
 import org.gwaspi.netCDF.operations.OP_QASamples;
+import org.gwaspi.netCDF.operations.OperationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -81,19 +81,11 @@ public class Threaded_FlipStrandMatrix extends CommonRunnable {
 		}
 
 		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
-			int sampleQAOpId = new OP_QASamples(resultMatrixKey).processMatrix();
-			OperationKey sampleQAOpKey = new OperationKey(resultMatrixKey, sampleQAOpId);
-			GWASpiExplorerNodes.insertOperationUnderMatrixNode(sampleQAOpKey);
-			org.gwaspi.reports.OutputQASamples.writeReportsForQASamplesData(sampleQAOpKey, true);
-			GWASpiExplorerNodes.insertReportsUnderOperationNode(sampleQAOpKey);
+			OperationManager.performQASamplesOperationAndCreateReports(new OP_QASamples(resultMatrixKey));
 		}
 
 		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
-			int markersQAOpId = new OP_QAMarkers(resultMatrixKey).processMatrix();
-			OperationKey markersQAOpKey = new OperationKey(resultMatrixKey, markersQAOpId);
-			GWASpiExplorerNodes.insertOperationUnderMatrixNode(markersQAOpKey);
-			org.gwaspi.reports.OutputQAMarkers.writeReportsForQAMarkersData(markersQAOpKey);
-			GWASpiExplorerNodes.insertReportsUnderOperationNode(markersQAOpKey);
+			OperationManager.performQAMarkersOperationAndCreateReports(new OP_QAMarkers(resultMatrixKey));
 			MultiOperations.printCompleted("Matrix Quality Control");
 		}
 	}

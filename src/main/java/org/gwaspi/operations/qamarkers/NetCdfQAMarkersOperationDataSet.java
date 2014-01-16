@@ -27,8 +27,10 @@ import java.util.Queue;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.model.Census;
+import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MatricesList;
+import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
@@ -61,12 +63,12 @@ public class NetCdfQAMarkersOperationDataSet extends AbstractNetCdfOperationData
 	private ArrayDouble.D1 netCdfMinorAllelesFrequencies;
 	private ArrayInt.D2 netCdfCensusAlls;
 
-	public NetCdfQAMarkersOperationDataSet(OperationKey operationKey) {
-		super(true, operationKey);
+	public NetCdfQAMarkersOperationDataSet(MatrixKey origin, DataSetKey parent, OperationKey operationKey) {
+		super(true, origin, parent, operationKey);
 	}
 
-	public NetCdfQAMarkersOperationDataSet() {
-		this(null);
+	public NetCdfQAMarkersOperationDataSet(MatrixKey origin, DataSetKey parent) {
+		this(origin, parent, null);
 	}
 
 	@Override

@@ -303,6 +303,11 @@ public class MatrixDataExtractor implements MatrixOperation {
 		this.fullSampleCriteria.addAll(parseSamplePickerFile(samplePickerFile, samplePickCase, samplePickerVar, rdMatrixKey.getStudyKey()));
 	}
 
+	@Override
+	public boolean isCreatingResultMatrix() {
+		return true; // XXX We might want to change this in the future, as this could be converted to create only an operation, instead of a full new matrix
+	}
+
 	public static Collection<?> parseMarkerPickerFile(File markerPickerFile, SetMarkerPickCase markerPickCase) throws IOException {
 
 		Collection<?> markerCriteria = new LinkedList();
@@ -490,7 +495,7 @@ public class MatrixDataExtractor implements MatrixOperation {
 	@Override
 	public int processMatrix() throws IOException {
 
-		int resultMatrixId = Integer.MIN_VALUE;
+		int resultMatrixId = MatrixKey.NULL_ID;
 
 		// MARKERSET PICKING
 //		MarkerSet rdMarkerSet = new MarkerSet(this.rdMatrixKey);

@@ -38,6 +38,7 @@ import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.Report;
+import org.gwaspi.model.ReportKey;
 import org.gwaspi.model.ReportsList;
 import org.gwaspi.model.Study;
 import org.gwaspi.netCDF.matrices.MatrixFactory;
@@ -68,7 +69,6 @@ public class OutputHardyWeinberg {
 
 		processSortedHardyWeinbergReport(operationKey, hwOutName);
 		ReportsList.insertRPMetadata(new Report(
-				Integer.MIN_VALUE,
 				"Hardy Weinberg Table",
 				hwOutName,
 				OPType.HARDY_WEINBERG,

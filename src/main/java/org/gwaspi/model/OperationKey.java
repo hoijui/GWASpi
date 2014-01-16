@@ -26,7 +26,7 @@ import javax.persistence.Transient;
  */
 public class OperationKey implements Comparable<OperationKey>, Serializable {
 
-	public static final int NULL_ID = -1;
+	public static final int NULL_ID = -1; // alternatively: Integer.MIN_VALUE
 
 	private static final String NAME_UNKNOWN = "<operation-name-unknown>";
 
@@ -42,9 +42,9 @@ public class OperationKey implements Comparable<OperationKey>, Serializable {
 	protected OperationKey() {
 		this(
 				new MatrixKey(
-				new StudyKey(Integer.MIN_VALUE),
-				Integer.MIN_VALUE),
-				Integer.MIN_VALUE);
+				new StudyKey(StudyKey.NULL_ID),
+				MatrixKey.NULL_ID),
+				NULL_ID);
 	}
 
 	public static OperationKey valueOf(OperationMetadata operation) {

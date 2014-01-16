@@ -17,6 +17,7 @@
 
 package org.gwaspi.threadbox;
 
+import java.io.IOException;
 import org.gwaspi.global.Text;
 import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.MatrixKey;
@@ -56,11 +57,11 @@ public class Threaded_MergeMatrices extends AbstractThreaded_MergeMatrices {
 	}
 
 	@Override
-	protected MatrixOperation createMatrixOperation() throws Exception {
-
-		final DataSetSource dataSetSource1 = MatrixFactory.generateMatrixDataSetSource(parentMatrixKey1);
-		final DataSetSource dataSetSource2 = MatrixFactory.generateMatrixDataSetSource(parentMatrixKey2);
-
+	protected AbstractNetCDFDataSetDestination createMatrixDataSetDestination(
+			DataSetSource dataSetSource1,
+			DataSetSource dataSetSource2)
+			throws IOException
+	{
 		final String humanReadableMethodName;
 		final String methodDescription;
 		if (samples) {
@@ -82,6 +83,16 @@ public class Threaded_MergeMatrices extends AbstractThreaded_MergeMatrices {
 				humanReadableMethodName,
 				methodDescription);
 
+		return dataSetDestination;
+	}
+
+	@Override
+	protected MatrixOperation createMatrixOperation(
+			DataSetSource dataSetSource1,
+			DataSetSource dataSetSource2,
+			AbstractNetCDFDataSetDestination dataSetDestination)
+			throws IOException
+	{
 		final MatrixOperation joinMatrices;
 		if (samples) {
 			joinMatrices = new MatrixMergeSamples(

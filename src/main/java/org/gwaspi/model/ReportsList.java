@@ -37,7 +37,7 @@ public class ReportsList {
 		return reportService.getReport(reportKey);
 	}
 
-	// XXX split into two methods, with either parentOperationId or parentMatrixId param, as we do not allow to fetch by specifying both anyway (on has to be Integer.MIN_VALUE as it works now)
+	// XXX split into two methods, with either parentOperationId or parentMatrixId param, as we do not allow to fetch by specifying both anyway (on has to be (MatrixKey.)NULL_ID as it works now)
 	public static List<Report> getReportsList(int parentOperationId, int parentMatrixId) throws IOException {
 		return reportService.getReports(parentOperationId, parentMatrixId);
 	}

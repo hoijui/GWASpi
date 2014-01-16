@@ -26,7 +26,9 @@ import java.util.Map;
 import java.util.Queue;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
+import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.MatricesList;
+import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
@@ -52,12 +54,12 @@ public class NetCdfQASamplesOperationDataSet extends AbstractNetCdfOperationData
 	private ArrayInt.D1 netCdfMissingCounts;
 	private ArrayDouble.D1 netCdfHetzyRatios;
 
-	public NetCdfQASamplesOperationDataSet(OperationKey operationKey) {
-		super(false, operationKey);
+	public NetCdfQASamplesOperationDataSet(MatrixKey origin, DataSetKey parent, OperationKey operationKey) {
+		super(false, origin, parent, operationKey);
 	}
 
-	public NetCdfQASamplesOperationDataSet() {
-		this(null);
+	public NetCdfQASamplesOperationDataSet(MatrixKey origin, DataSetKey parent) {
+		this(origin, parent, null);
 	}
 
 	@Override

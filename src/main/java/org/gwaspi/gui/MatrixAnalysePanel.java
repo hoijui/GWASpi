@@ -341,7 +341,7 @@ public class MatrixAnalysePanel extends JPanel {
 
 		public static OperationKey evaluateCensusOPId(OperationMetadata currentOP, MatrixKey parentMatrixKey) throws IOException {
 
-			int censusOPId = Integer.MIN_VALUE;
+			int censusOPId = OperationKey.NULL_ID;
 
 			if (currentOP != null) {
 				censusOPId = currentOP.getId();

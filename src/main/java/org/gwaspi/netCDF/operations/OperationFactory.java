@@ -24,6 +24,7 @@ import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.model.ChromosomeInfo;
 import org.gwaspi.model.ChromosomeKey;
 import org.gwaspi.model.ChromosomesInfosSource;
+import org.gwaspi.model.DataSetKey;
 import org.gwaspi.model.DataSetSource;
 import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
@@ -72,7 +73,7 @@ public class OperationFactory {
 //
 //
 //		resultOperationKey = OperationsList.insertOPMetadata(new OperationMetadata(
-//				Integer.MIN_VALUE,
+//				OperationKey.NULL_ID,
 //				parentMatrixKey,
 //				parentOperationId,
 //				friendlyName,
@@ -119,11 +120,8 @@ public class OperationFactory {
 	 * @return
 	 * @throws IOException
 	 */
-	public static OperationDataSet generateOperationDataSet(OPType operationType, OperationKey parent) throws IOException {
-		return generateOperationDataSet(operationType, null, null, parent);
-	}
-	public static OperationDataSet generateOperationDataSet(OPType operationType, MatrixKey parent) throws IOException {
-		return generateOperationDataSet(operationType, null, parent, null);
+	public static OperationDataSet generateOperationDataSet(OPType operationType, MatrixKey origin, DataSetKey parent) throws IOException {
+		return generateOperationDataSet(operationType, null, origin, parent);
 	}
 
 	public static OperationDataSet generateOperationDataSet(OperationKey operationKey) throws IOException {
@@ -131,10 +129,10 @@ public class OperationFactory {
 		OperationMetadata operationMetadata = OperationsList.getOperation(operationKey);
 		OPType operationType = operationMetadata.getOperationType();
 
-		return generateOperationDataSet(operationType, operationKey);
+		return generateOperationDataSet(operationType, operationKey, operationKey.getParentMatrixKey(), operationMetadata.getParent());
 	}
 
-	private static OperationDataSet generateOperationDataSet(OPType operationType, OperationKey operationKey, MatrixKey matrixParent, OperationKey operationParent) throws IOException {
+	private static OperationDataSet generateOperationDataSet(OPType operationType, OperationKey operationKey, MatrixKey origin, DataSetKey parent) throws IOException {
 
 		AbstractOperationDataSet operationDataSet;
 
@@ -142,23 +140,23 @@ public class OperationFactory {
 		if (useNetCdf) {
 			switch (operationType) {
 				case SAMPLE_QA:
-					operationDataSet = new NetCdfQASamplesOperationDataSet(operationKey);
+					operationDataSet = new NetCdfQASamplesOperationDataSet(origin, parent, operationKey);
 					break;
 				case MARKER_QA:
-					operationDataSet = new NetCdfQAMarkersOperationDataSet(operationKey);
+					operationDataSet = new NetCdfQAMarkersOperationDataSet(origin, parent, operationKey);
 					break;
 				case MARKER_CENSUS_BY_AFFECTION:
 				case MARKER_CENSUS_BY_PHENOTYPE:
-					operationDataSet = new NetCdfMarkerCensusOperationDataSet(operationKey);
+					operationDataSet = new NetCdfMarkerCensusOperationDataSet(origin, parent, operationKey);
 					break;
 				case HARDY_WEINBERG:
-					operationDataSet = new NetCdfHardyWeinbergOperationDataSet(operationKey);
+					operationDataSet = new NetCdfHardyWeinbergOperationDataSet(origin, parent, operationKey);
 					break;
 				case ALLELICTEST:
-					operationDataSet = new NetCdfAllelicAssociationTestsOperationDataSet(operationKey);
+					operationDataSet = new NetCdfAllelicAssociationTestsOperationDataSet(origin, parent, operationKey);
 					break;
 				case GENOTYPICTEST:
-					operationDataSet = new NetCdfGenotypicAssociationTestsOperationDataSet(operationKey);
+					operationDataSet = new NetCdfGenotypicAssociationTestsOperationDataSet(origin, parent, operationKey);
 					break;
 				case COMBI_ASSOC_TEST:
 					// FIXME
@@ -166,7 +164,7 @@ public class OperationFactory {
 //					operationDataSet = new NetCdfComb(operationKey);
 //					break;
 				case TRENDTEST:
-					operationDataSet = new NetCdfTrendTestOperationDataSet(operationKey);
+					operationDataSet = new NetCdfTrendTestOperationDataSet(origin, parent, operationKey);
 					break;
 				default:
 				case SAMPLE_HTZYPLOT:
@@ -174,8 +172,6 @@ public class OperationFactory {
 				case QQPLOT:
 					throw new IllegalArgumentException("This operation type is invalid, or has no data-attached");
 			}
-
-			operationDataSet.set
 		} else {
 			throw new UnsupportedOperationException("Not yet implemented!");
 		}

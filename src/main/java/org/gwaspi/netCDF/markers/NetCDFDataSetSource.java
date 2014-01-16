@@ -150,8 +150,8 @@ public class NetCDFDataSetSource implements DataSetSource {
 			MatrixKey matrixKey)
 			throws IOException
 	{
-		int studyId = Integer.MIN_VALUE;
-		int matrixId = Integer.MIN_VALUE;
+		int studyId = StudyKey.NULL_ID;
+		int matrixId = MatrixKey.NULL_ID;
 		String friendlyName = "";
 		String description = "";
 		String gwaspiDBVersion = "";
