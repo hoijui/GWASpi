@@ -65,7 +65,7 @@ import static org.gwaspi.netCDF.matrices.MatrixFactory.generateMatrixNetCDFNameB
 		name = "matrixMetadata_listByStudyId",
 		query = "SELECT mm FROM MatrixMetadata mm WHERE mm.studyId = :studyId"),
 })
-public class MatrixMetadata implements Serializable {
+public class MatrixMetadata implements DataSetMetadata, Serializable {
 
 	private MatrixKey key;
 	private String friendlyName;
@@ -149,9 +149,6 @@ public class MatrixMetadata implements Serializable {
 				: (Date) creationDate.clone();
 	}
 
-	/**
-	 * TODO
-	 */
 	public MatrixMetadata(
 			String friendlyName,
 			String description,
@@ -395,6 +392,26 @@ public class MatrixMetadata implements Serializable {
 	@Transient
 	public MatrixKey getKey() {
 		return key;
+	}
+
+	@Transient
+	public DataSetKey getDataSetKey() {
+		return new DataSetKey(getKey());
+	}
+
+	@Transient
+	public boolean isOrigin() {
+		return true;
+	}
+
+	@Transient
+	public MatrixKey getOrigin() {
+		return getKey();
+	}
+
+	@Transient
+	public DataSetKey getParent() {
+		return null;
 	}
 
 	@Id

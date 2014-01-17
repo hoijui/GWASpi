@@ -82,7 +82,7 @@ public class Threaded_TrendTest extends CommonRunnable {
 		OperationMetadata markerQAMetadata = OperationsList.getOperation(markersQAOpKey);
 
 		if (gwasParams.isDiscardMarkerHWCalc()) {
-			gwasParams.setDiscardMarkerHWTreshold(0.05 / markerQAMetadata.getOpSetSize());
+			gwasParams.setDiscardMarkerHWTreshold(0.05 / markerQAMetadata.getNumMarkers());
 		}
 
 		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {

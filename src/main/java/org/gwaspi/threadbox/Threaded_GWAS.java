@@ -186,7 +186,7 @@ public class Threaded_GWAS extends CommonRunnable {
 			OperationMetadata markerQAMetadata = OperationsList.getOperation(markersQAOpKey);
 
 			if (gwasParams.isDiscardMarkerHWCalc()) {
-				gwasParams.setDiscardMarkerHWTreshold(0.05 / markerQAMetadata.getOpSetSize());
+				gwasParams.setDiscardMarkerHWTreshold(0.05 / markerQAMetadata.getNumMarkers());
 			}
 
 			OperationKey assocOpKey = OperationManager.performCleanAssociationTests(
@@ -212,7 +212,7 @@ public class Threaded_GWAS extends CommonRunnable {
 			OperationMetadata markerQAMetadata = OperationsList.getOperation(markersQAOpKey);
 
 			if (gwasParams.isDiscardMarkerHWCalc()) {
-				gwasParams.setDiscardMarkerHWTreshold(0.05 / markerQAMetadata.getOpSetSize());
+				gwasParams.setDiscardMarkerHWTreshold(0.05 / markerQAMetadata.getNumMarkers());
 			}
 
 			OperationKey trendOpKey = OperationManager.performCleanTrendTests(

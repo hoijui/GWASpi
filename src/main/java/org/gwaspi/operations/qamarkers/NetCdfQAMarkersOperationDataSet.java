@@ -28,10 +28,10 @@ import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.model.Census;
 import org.gwaspi.model.DataSetKey;
+import org.gwaspi.model.DataSetMetadata;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixKey;
-import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.netCDF.operations.NetCdfUtils;
@@ -119,10 +119,10 @@ public class NetCdfQAMarkersOperationDataSet extends AbstractNetCdfOperationData
 	@Override
 	protected OperationMetadata createOperationMetadata() throws IOException {
 
-		MatrixMetadata rdMatrixMetadata = MatricesList.getMatrixMetadataById(getReadMatrixKey());
+		DataSetMetadata rdDataSetMetadata = MatricesList.getMatrixMetadataById(getReadMatrixKey()); XXX; // need a way to fetch DataSetMetadata by DataSetKey
 
 		String description = "Marker Quality Assurance on "
-				+ rdMatrixMetadata.getFriendlyName()
+				+ rdDataSetMetadata.getFriendlyName()
 				+ "\nMarkers: " + getNumMarkers()
 				+ "\nStarted at: " + org.gwaspi.global.Utils.getShortDateTimeAsString();
 

@@ -112,7 +112,7 @@ public class OutputTrendTest {
 		chart.setBackgroundPaint(Color.getHSBColor(0.1f, 0.1f, 1.0f)); //Hue, saturation, brightness
 
 		OperationMetadata rdOPMetadata = OperationsList.getOperation(trendTestOpKey);
-		int pointNb = rdOPMetadata.getOpSetSize();
+		int pointNb = rdOPMetadata.getNumMarkers();
 		int picWidth = 4000;
 		if (pointNb < 1000) {
 			picWidth = 600;

@@ -60,7 +60,7 @@ import org.gwaspi.netCDF.matrices.MatrixFactory;
 		name = "operationMetadata_listByParentMatrixIdParentOperationIdOperationType",
 		query = "SELECT om FROM OperationMetadata om WHERE om.parentMatrixId = :parentMatrixId AND om.parentOperationId = :parentOperationId AND om.genotypeCode = :operationType"),
 })
-public class OperationMetadata implements Serializable {
+public class OperationMetadata implements DataSetMetadata, Serializable {
 
 	private OperationKey key;
 	private String name; // == Operation.friendlyName == OperationMetadata.opName
@@ -116,9 +116,6 @@ public class OperationMetadata implements Serializable {
 //				? null : (Date) creationDate.clone();
 //	}
 
-	/**
-	 * TODO
-	 */
 	public OperationMetadata(
 			MatrixKey parentMatrixKey,
 			int parentOperationId,
@@ -164,6 +161,31 @@ public class OperationMetadata implements Serializable {
 //				Integer.MIN_VALUE,
 //				Integer.MIN_VALUE);
 //	}
+
+	@Transient
+	public boolean isOrigin() {
+		return false;
+	}
+
+	@Transient
+	public MatrixKey getOrigin() {
+		return key.getParentMatrixKey();
+	}
+
+	@Transient
+	public DataSetKey getDataSetKey() {
+		return new DataSetKey(key);
+	}
+
+	@Transient
+	public int getNumMarkers() {
+		XXX;
+	}
+
+	@Transient
+	public int getNumSamples() {
+		XXX;
+	}
 
 	@Override
 	public boolean equals(Object obj) {

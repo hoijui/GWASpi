@@ -76,7 +76,6 @@ public class OP_HardyWeinberg extends AbstractOperation<HardyWeinbergOperationDa
 
 		try {
 			HardyWeinbergOperationDataSet dataSet = generateFreshOperationDataSet();
-			((AbstractNetCdfOperationDataSet) dataSet).setReadOperationKey(markerCensusOPKey); // HACK
 			dataSet.setNumMarkers(markerCensusOperationDataSet.getNumMarkers());
 			dataSet.setNumChromosomes(markerCensusOperationDataSet.getNumChromosomes());
 			dataSet.setNumSamples(markerCensusOperationDataSet.getNumSamples());
