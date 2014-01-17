@@ -110,8 +110,7 @@ public abstract class AbstractNetCdfTestOperationDataSet<ET> extends AbstractNet
 		OperationMetadata markerCensusOP = OperationsList.getOperation(markerCensusOPKey);
 
 		return new OperationMetadata(
-				markerCensusOP.getParentMatrixKey(), // parent matrix
-				markerCensusOP.getId(), // parent operation ID
+				new DataSetKey(markerCensusOPKey), // parent data set
 				testName, // friendly name
 				testName + " on " + markerCensusOP.getFriendlyName()
 						+ "\n" + markerCensusOP.getDescription()
@@ -120,6 +119,7 @@ public abstract class AbstractNetCdfTestOperationDataSet<ET> extends AbstractNet
 				testType,
 				getNumMarkers(),
 				getNumSamples(),
-				getNumChromosomes());
+				getNumChromosomes(),
+				isMarkersOperationSet());
 	}
 }

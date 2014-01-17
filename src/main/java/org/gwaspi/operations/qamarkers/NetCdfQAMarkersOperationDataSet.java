@@ -119,7 +119,7 @@ public class NetCdfQAMarkersOperationDataSet extends AbstractNetCdfOperationData
 	@Override
 	protected OperationMetadata createOperationMetadata() throws IOException {
 
-		DataSetMetadata rdDataSetMetadata = MatricesList.getMatrixMetadataById(getReadMatrixKey()); XXX; // need a way to fetch DataSetMetadata by DataSetKey
+		DataSetMetadata rdDataSetMetadata = MatricesList.getDataSetMetadata(getParent());
 
 		String description = "Marker Quality Assurance on "
 				+ rdDataSetMetadata.getFriendlyName()
@@ -127,14 +127,14 @@ public class NetCdfQAMarkersOperationDataSet extends AbstractNetCdfOperationData
 				+ "\nStarted at: " + org.gwaspi.global.Utils.getShortDateTimeAsString();
 
 		return new OperationMetadata(
-				getReadMatrixKey(), // parent matrix
-				OperationKey.NULL_ID, // parent operation ID
+				getParent(), // parent data set
 				"Marker QA", // friendly name
 				description, // description
 				OPType.MARKER_QA,
 				getNumMarkers(),
 				getNumSamples(),
-				getNumChromosomes());
+				getNumChromosomes(),
+				isMarkersOperationSet());
 	}
 
 	@Override

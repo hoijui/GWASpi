@@ -56,6 +56,7 @@ public class NetCDFDataSetSource implements DataSetSource {
 
 	private final File netCDFpath;
 	private NetcdfFile rdNetCdfFile;
+	private StudyKey studyKey;
 	private MatrixKey matrixKey;
 	private MatrixMetadata matrixMetadata;
 
@@ -71,13 +72,23 @@ public class NetCDFDataSetSource implements DataSetSource {
 
 		this.netCDFpath = netCDFpath;
 		this.rdNetCdfFile = null;
+		this.studyKey = null;
 		this.matrixKey = matrixKey;
 		this.matrixMetadata = null;
 	}
 
-	public NetCDFDataSetSource(File netCDFpath) throws IOException {
-		this(netCDFpath, null);
+	public NetCDFDataSetSource(File netCDFpath, StudyKey studyKey) throws IOException {
+
+		this.netCDFpath = netCDFpath;
+		this.rdNetCdfFile = null;
+		this.studyKey = studyKey;
+		this.matrixKey = null;
+		this.matrixMetadata = null;
 	}
+
+//	public NetCDFDataSetSource(File netCDFpath) throws IOException {
+//		this(netCDFpath, null);
+//	}
 
 	private NetcdfFile getReadNetCdfFile() throws IOException {
 
@@ -96,7 +107,7 @@ public class NetCDFDataSetSource implements DataSetSource {
 
 		if (matrixMetadata == null) {
 			ensureReadNetCdfFile();
-			matrixMetadata = loadMatrixMetadata(netCDFpath);
+			matrixMetadata = loadMatrixMetadata(netCDFpath, null, studyKey, null);
 			matrixKey = MatrixKey.valueOf(matrixMetadata);
 		}
 	}
@@ -126,7 +137,7 @@ public class NetCDFDataSetSource implements DataSetSource {
 			File netCDFFile)
 			throws IOException
 	{
-		return loadMatrixMetadata(netCDFFile, null, null);
+		return loadMatrixMetadata(netCDFFile, null, null, null);
 	}
 
     /**
@@ -137,16 +148,18 @@ public class NetCDFDataSetSource implements DataSetSource {
 	public static MatrixMetadata loadMatrixMetadata(
 			File netCDFFile,
 			String newMatrixFriendlyName,
+			StudyKey studyKey,
 			MatrixKey matrixKey)
 			throws IOException
 	{
 		NetcdfFile ncFile = NetcdfFile.open(netCDFFile.getAbsolutePath());
-		return loadMatrixMetadata(ncFile, newMatrixFriendlyName, matrixKey);
+		return loadMatrixMetadata(ncFile, newMatrixFriendlyName, studyKey, matrixKey);
 	}
 
 	public static MatrixMetadata loadMatrixMetadata(
 			NetcdfFile netCDFFile,
 			String newMatrixFriendlyName,
+			StudyKey studyKey,
 			MatrixKey matrixKey)
 			throws IOException
 	{
@@ -250,7 +263,12 @@ public class NetCDFDataSetSource implements DataSetSource {
 
 		// Use the values from the NetCDF file only if none were provided!
 		if (matrixKey == null) {
-			matrixKey = new MatrixKey(new StudyKey(studyId), matrixId);
+			if (studyKey == null) {
+				studyKey = new StudyKey(studyId);
+				matrixKey = new MatrixKey(studyKey, matrixId);
+			} else {
+				matrixKey = new MatrixKey(studyKey, MatrixKey.NULL_ID);
+			}
 		}
 
 		MatrixMetadata matrixMetadata = new MatrixMetadata(

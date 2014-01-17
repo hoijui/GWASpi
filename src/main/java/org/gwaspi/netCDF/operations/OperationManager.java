@@ -32,6 +32,7 @@ import org.gwaspi.operations.combi.CombiTestParams;
 import org.gwaspi.reports.OutputHardyWeinberg;
 import org.gwaspi.reports.OutputQAMarkers;
 import org.gwaspi.reports.OutputQASamples;
+import org.gwaspi.reports.OutputTest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -123,20 +124,28 @@ public class OperationManager {
 	//</editor-fold>
 
 	//<editor-fold defaultstate="expanded" desc="ANALYSIS">
-	public static OperationKey performCleanAssociationTests(
+	public static OperationKey performCleanTests(
 			OperationKey censusOpKey,
 			OperationKey hwOpKey,
 			double hwThreshold,
-			boolean allelic)
+			OPType testType)
 			throws IOException
 	{
-		org.gwaspi.global.Utils.sysoutStart(" " + (allelic ? "Allelic" : "Genotypic") + " Association Test using QA and HW thresholds");
+		org.gwaspi.global.Utils.sysoutStart(OutputTest.createTestName(testType) + " Test using QA and HW thresholds");
 
-		MatrixOperation operation = new OP_AssociationTests(
-				censusOpKey,
-				hwOpKey,
-				hwThreshold,
-				allelic);
+		final MatrixOperation operation;
+		if (testType == OPType.TRENDTEST) {
+			operation = new OP_TrendTests(
+					censusOpKey,
+					hwOpKey,
+					hwThreshold);
+		} else {
+			operation = new OP_AssociationTests(
+					censusOpKey,
+					hwOpKey,
+					hwThreshold,
+					testType);
+		}
 
 		int resultOpId = operation.processMatrix();
 
@@ -155,28 +164,6 @@ public class OperationManager {
 		int resultOpId = operation.processMatrix();
 
 		OperationKey operationKey = new OperationKey(params.getMatrixKey(), resultOpId);
-
-		return operationKey;
-	}
-
-	public static OperationKey performCleanTrendTests(
-			MatrixKey rdMatrixKey,
-			OperationKey censusOpKey,
-			OperationKey hwOpKey,
-			double hwThreshold)
-			throws IOException
-	{
-		org.gwaspi.global.Utils.sysoutStart("Cochran-Armitage Trend Test using QA and HW thresholds");
-
-		MatrixOperation operation = new OP_TrendTests(
-				rdMatrixKey,
-				censusOpKey,
-				hwOpKey,
-				hwThreshold);
-
-		int resultOpId = operation.processMatrix();
-
-		OperationKey operationKey = new OperationKey(censusOpKey.getParentMatrixKey(), resultOpId);
 
 		return operationKey;
 	}

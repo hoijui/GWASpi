@@ -71,6 +71,7 @@ public class OperationMetadata implements DataSetMetadata, Serializable {
 	private int opSetSize;
 	private int implicitSetSize;
 	private int numChromosomes;
+	private boolean opSetMarkers;
 	private Date creationDate;
 
 	protected OperationMetadata() {
@@ -83,6 +84,7 @@ public class OperationMetadata implements DataSetMetadata, Serializable {
 		this.gtCode = null;
 		this.opSetSize = Integer.MIN_VALUE;
 		this.implicitSetSize = Integer.MIN_VALUE;
+		this.opSetMarkers = true;
 		this.creationDate = new Date();
 	}
 
@@ -117,25 +119,27 @@ public class OperationMetadata implements DataSetMetadata, Serializable {
 //	}
 
 	public OperationMetadata(
-			MatrixKey parentMatrixKey,
-			int parentOperationId,
+			DataSetKey parent,
 			String name,
 			String description,
 			OPType gtCode,
 			int opSetSize,
 			int implicitSetSize,
-			int numChromosomes
+			int numChromosomes,
+			boolean opSetMarkers
 			)
 	{
-		this.key = new OperationKey(parentMatrixKey, OperationKey.NULL_ID);
-		this.parentOperationId = parentOperationId;
+		final MatrixKey origin = parent.isMatrix() ? parent.getMatrixParent() : parent.getOperationParent().getParentMatrixKey();
+		this.key = new OperationKey(origin, OperationKey.NULL_ID);
+		this.parentOperationId = parent.isOperation() ? parent.getOperationParent().getId() : OperationKey.NULL_ID;
 		this.name = name;
 		this.description = description;
 		this.gtCode = gtCode;
 		this.opSetSize = opSetSize;
 		this.implicitSetSize = implicitSetSize;
 		this.numChromosomes = numChromosomes;
-		this.creationDate =  new Date();
+		this.opSetMarkers = opSetMarkers;
+		this.creationDate = new Date();
 		this.simpleName = gtCode.name() + "_" + MatrixFactory.generateMatrixNetCDFNameByDate(creationDate);
 	}
 
@@ -163,28 +167,33 @@ public class OperationMetadata implements DataSetMetadata, Serializable {
 //	}
 
 	@Transient
+	@Override
 	public boolean isOrigin() {
 		return false;
 	}
 
 	@Transient
+	@Override
 	public MatrixKey getOrigin() {
 		return key.getParentMatrixKey();
 	}
 
 	@Transient
+	@Override
 	public DataSetKey getDataSetKey() {
 		return new DataSetKey(key);
 	}
 
 	@Transient
+	@Override
 	public int getNumMarkers() {
-		XXX;
+		return isOpSetMarkers() ? getOpSetSize() : getImplicitSetSize();
 	}
 
 	@Transient
+	@Override
 	public int getNumSamples() {
-		XXX;
+		return isOpSetMarkers() ? getImplicitSetSize() : getOpSetSize();
 	}
 
 	@Override
@@ -220,6 +229,7 @@ public class OperationMetadata implements DataSetMetadata, Serializable {
 	}
 
 	@Transient
+	@Override
 	public DataSetKey getParent() {
 
 		if (isWithOperationParent()) {
@@ -321,6 +331,7 @@ public class OperationMetadata implements DataSetMetadata, Serializable {
 	}
 
 	@Transient
+	@Override
 	public String getFriendlyName() {
 		return getName();
 	}
@@ -338,6 +349,7 @@ public class OperationMetadata implements DataSetMetadata, Serializable {
 		insertable = true,
 		updatable  = false
 		)
+	@Override
 	public String getSimpleName() {
 		return simpleName;
 	}
@@ -389,6 +401,7 @@ public class OperationMetadata implements DataSetMetadata, Serializable {
 		insertable = true,
 		updatable  = false
 		)
+	@Override
 	public String getDescription() {
 		return description;
 	}
@@ -440,12 +453,28 @@ public class OperationMetadata implements DataSetMetadata, Serializable {
 		insertable = true,
 		updatable  = false
 		)
+	@Override
 	public int getNumChromosomes() {
 		return numChromosomes;
 	}
 
 	public void setNumChromosomes(int numChromosomes) {
 		this.numChromosomes = numChromosomes;
+	}
+
+	@Column(
+		name       = "opSetMarkers",
+		unique     = false,
+		nullable   = false,
+		insertable = true,
+		updatable  = false
+		)
+	public boolean isOpSetMarkers() {
+		return opSetMarkers;
+	}
+
+	public void setOpSetMarkers(boolean opSetMarkers) {
+		this.opSetMarkers = opSetMarkers;
 	}
 
 	@Temporal(TemporalType.DATE)
@@ -456,6 +485,7 @@ public class OperationMetadata implements DataSetMetadata, Serializable {
 		insertable = true,
 		updatable  = false
 		)
+	@Override
 	public Date getCreationDate() {
 		return (creationDate == null) ? null : (Date) creationDate.clone();
 	}

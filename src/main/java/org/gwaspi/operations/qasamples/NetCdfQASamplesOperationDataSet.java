@@ -27,9 +27,9 @@ import java.util.Queue;
 import org.gwaspi.constants.cNetCDF;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.model.DataSetKey;
+import org.gwaspi.model.DataSetMetadata;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixKey;
-import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.SampleKey;
@@ -80,18 +80,18 @@ public class NetCdfQASamplesOperationDataSet extends AbstractNetCdfOperationData
 	@Override
 	protected OperationMetadata createOperationMetadata() throws IOException {
 
-		MatrixMetadata rdMatrixMetadata = MatricesList.getMatrixMetadataById(getReadMatrixKey());
+		DataSetMetadata rdDataSetMetadata = MatricesList.getDataSetMetadata(getParent());
 
 		return new OperationMetadata(
-				getReadMatrixKey(), // parent matrix
-				OperationKey.NULL_ID, // parent operation ID
+				getParent(), // parent data set
 				"Sample QA", // friendly name
-				"Sample census on " + rdMatrixMetadata.getFriendlyName()
+				"Sample census on " + rdDataSetMetadata.getFriendlyName()
 						+ "\nSamples: " + getNumSamples(), // description
 				OPType.SAMPLE_QA,
 				getNumSamples(),
 				getNumMarkers(),
-				getNumChromosomes());
+				getNumChromosomes(),
+				isMarkersOperationSet());
 	}
 
 	@Override

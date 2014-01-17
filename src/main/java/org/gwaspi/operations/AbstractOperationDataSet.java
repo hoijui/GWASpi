@@ -155,8 +155,10 @@ public abstract class AbstractOperationDataSet<ET> implements OperationDataSet<E
 	}
 
 	@Override
-	public MatrixMetadata getMatrixMetadata() throws IOException {XXX;
+	public MatrixMetadata getMatrixMetadata() throws IOException {
+
 		throw new UnsupportedOperationException("Not supported yet."); // TODO
+		// ... or maybe just leave like this, cause this method should not be used by OperationDataSet "users"
 	}
 
 	protected int getEntriesWriteBufferSize() {

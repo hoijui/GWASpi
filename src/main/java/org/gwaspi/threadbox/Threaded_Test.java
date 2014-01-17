@@ -20,44 +20,42 @@ package org.gwaspi.threadbox;
 import java.util.List;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.model.GWASpiExplorerNodes;
-import org.gwaspi.model.MatrixKey;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.netCDF.operations.GWASinOneGOParams;
 import org.gwaspi.netCDF.operations.OperationManager;
-import org.gwaspi.reports.OutputAssociation;
+import org.gwaspi.reports.OutputTest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Threaded_Association extends CommonRunnable {
+public class Threaded_Test extends CommonRunnable {
 
 	private final OperationKey censusOpKey;
 	private final OperationKey hwOpKey;
 	private final GWASinOneGOParams gwasParams;
-	private final boolean allelic;
+	private final OPType testType;
 
-	public Threaded_Association(
-			MatrixKey matrixKey,
+	public Threaded_Test(
 			OperationKey censusOpKey,
 			OperationKey hwOpKey,
 			GWASinOneGOParams gwasParams,
-			boolean allelic)
+			OPType testType)
 	{
 		super(
-				(allelic ? "Allelic" : "Genotypic") + " Association Test",
-				(allelic ? "Allelic" : "Genotypic") + " Association Study",
-				(allelic ? "Allelic" : "Genotypic") + " Association Test on Matrix ID: " + matrixKey,
-				(allelic ? "Allelic" : "Genotypic") + " Association Test");
+				OutputTest.createTestName(testType) + " Test",
+				OutputTest.createTestName(testType) + " Test",
+				OutputTest.createTestName(testType) + " Test on Matrix ID: " + censusOpKey.getParentMatrixKey().getMatrixId(),
+				OutputTest.createTestName(testType) + " Test");
 
+		this.testType = testType;
 		this.censusOpKey = censusOpKey;
 		this.hwOpKey = hwOpKey;
 		this.gwasParams = gwasParams;
-		this.allelic = allelic;
 	}
 
 	protected Logger createLog() {
-		return LoggerFactory.getLogger(Threaded_Association.class);
+		return LoggerFactory.getLogger(Threaded_Test.class);
 	}
 
 	protected void runInternal(SwingWorkerItem thisSwi) throws Exception {
@@ -86,17 +84,17 @@ public class Threaded_Association extends CommonRunnable {
 		}
 
 		if (thisSwi.getQueueState().equals(QueueState.PROCESSING)) {
-			OperationKey assocOpKey = OperationManager.performCleanAssociationTests(
+			OperationKey testOpKey = OperationManager.performCleanTests(
 					censusOpKey,
 					hwOpKey,
 					gwasParams.getDiscardMarkerHWTreshold(),
-					allelic);
-			GWASpiExplorerNodes.insertSubOperationUnderOperationNode(censusOpKey, assocOpKey);
+					testType);
+			GWASpiExplorerNodes.insertSubOperationUnderOperationNode(censusOpKey, testOpKey);
 
 			// Make Reports (needs newMatrixId, QAopId, AssocOpId)
-			if (assocOpKey != null) {
-				new OutputAssociation(allelic).writeReportsForAssociationData(assocOpKey);
-				GWASpiExplorerNodes.insertReportsUnderOperationNode(assocOpKey);
+			if (testOpKey != null) {
+				new OutputTest(testOpKey, testType).writeReportsForTestData();
+				GWASpiExplorerNodes.insertReportsUnderOperationNode(testOpKey);
 			}
 		}
 	}

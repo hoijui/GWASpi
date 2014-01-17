@@ -134,8 +134,7 @@ public class NetCdfHardyWeinbergOperationDataSet extends AbstractNetCdfOperation
 	protected OperationMetadata createOperationMetadata() throws IOException {
 
 		return new OperationMetadata(
-				markerCensusOperationKey.getParentMatrixKey(), // parent matrixId
-				markerCensusOperationKey.getId(), // parent operationId
+				new DataSetKey(markerCensusOperationKey), // parent data set
 				"Hardy-Weinberg_" + hardyWeinbergName, // friendly name
 				"Hardy-Weinberg test on Samples marked as controls (only females for the X chromosome)"
 					+ "\nMarkers: " + getNumMarkers() + ""
@@ -143,7 +142,8 @@ public class NetCdfHardyWeinbergOperationDataSet extends AbstractNetCdfOperation
 				OPType.HARDY_WEINBERG, // operationType
 				getNumMarkers(),
 				getNumSamples(),
-				getNumChromosomes());
+				getNumChromosomes(),
+				isMarkersOperationSet());
 	}
 
 	@Override

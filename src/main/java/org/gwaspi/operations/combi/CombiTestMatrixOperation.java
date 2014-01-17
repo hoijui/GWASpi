@@ -67,7 +67,7 @@ public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperati
 	private final CombiTestParams params;
 
 	public CombiTestMatrixOperation(CombiTestParams params) {
-		super();
+		super(params.getHardyWeinbergOperationKey());
 
 		this.params = params;
 	}
@@ -117,7 +117,7 @@ public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperati
 				CombiTestOperationDataSet dataSet = generateFreshOperationDataSet();
 //				((AbstractNetCdfOperationDataSet) dataSet).setReadMatrixKey(rdMatrixKey); // HACK
 //				((AbstractNetCdfOperationDataSet) dataSet).setReadOperationKey(markerCensusOPKey); // HACK
-				((AbstractNetCdfOperationDataSet) dataSet).setReadOperationKey(params.getHardyWeinbergOperationKey()); // HACK
+//				((AbstractNetCdfOperationDataSet) dataSet).setReadOperationKey(params.getHardyWeinbergOperationKey()); // HACK
 //				((AbstractNetCdfOperationDataSet) dataSet).setNumMarkers(wrMarkerMetadata.size()); // HACK
 //				((AbstractNetCdfOperationDataSet) dataSet).setNumSamples(rdCensusOPMetadata.getImplicitSetSize()); // HACK
 //				((AbstractNetCdfOperationDataSet) dataSet).setNumChromosomes(chromosomeInfo.size()); // HACK

@@ -120,7 +120,8 @@ public final class LoadGTFromGWASpiFiles implements GenotypesLoader {
 		MatrixMetadata importMatrixMetadata = NetCDFDataSetSource.loadMatrixMetadata(
 				new File(loadDescription.getGtDirPath()),
 				loadDescription.getFriendlyName(),
-				loadDescription.getStudyKey());
+				loadDescription.getStudyKey(),
+				null);
 
 		final String currentGwaspiDbVersion= Config.getConfigValue(
 				Config.PROPERTY_CURRENT_GWASPIDB_VERSION, null);

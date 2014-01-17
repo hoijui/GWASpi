@@ -42,12 +42,12 @@ import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.OperationsList;
 import org.gwaspi.model.Report;
 import org.gwaspi.model.ReportsList;
+import org.gwaspi.reports.OutputTest;
 import org.gwaspi.threadbox.MultiOperations;
 import org.gwaspi.threadbox.SwingWorkerItemList;
 
 public class Report_AnalysisPanel extends JPanel {
 
-	private final MatrixKey parentMatrixKey;
 	private final OperationMetadata currentOP;
 	// Variables declaration - do not modify
 	private final JButton btn_Back;
@@ -61,7 +61,6 @@ public class Report_AnalysisPanel extends JPanel {
 
 	public Report_AnalysisPanel(final MatrixKey parentMatrixKey, final OperationKey operationKey, final Integer nRows) throws IOException {
 
-		this.parentMatrixKey = parentMatrixKey;
 		if (operationKey != null) {
 			currentOP = OperationsList.getOperation(operationKey);
 		} else {
@@ -78,7 +77,7 @@ public class Report_AnalysisPanel extends JPanel {
 		if (currentOP != null) {
 			setBorder(BorderFactory.createTitledBorder(null, Text.Reports.report + ": " + currentOP.getFriendlyName() + ", OperationID: " + currentOP.getId(), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("FreeSans", 1, 18))); // NOI18N
 		} else {
-			setBorder(BorderFactory.createTitledBorder(null, Text.Operation.allelicAssocTest, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("FreeSans", 1, 18))); // NOI18N
+			setBorder(BorderFactory.createTitledBorder(null, OutputTest.createTestName(currentOP.getType()), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("FreeSans", 1, 18))); // NOI18N
 		}
 
 		//pnl_OperationDesc.setBorder(BorderFactory.createTitledBorder(null, Text.Operation.operation+": "+ tata, OperationID: ", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("DejaVu Sans", 1, 13))); // NOI18N

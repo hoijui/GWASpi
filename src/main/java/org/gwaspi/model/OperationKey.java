@@ -30,7 +30,7 @@ public class OperationKey implements Comparable<OperationKey>, Serializable {
 
 	private static final String NAME_UNKNOWN = "<operation-name-unknown>";
 
-	private MatrixKey parentMatrixKey;
+	private MatrixKey parentMatrixKey; // XXX should be renamed to origin
 	private int id;
 
 	public OperationKey(MatrixKey parentMatrixKey, int id) {

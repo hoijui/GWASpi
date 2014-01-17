@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 
 /**
  * Parses command line parameters and executes them.
@@ -36,12 +37,12 @@ public class CliExecutor {
 		addScriptCommand(tmpScriptCommands, new LoadGenotypesScriptCommand());
 		addScriptCommand(tmpScriptCommands, new LoadGenotypesDoGwasInOneGoScriptCommand());
 		addScriptCommand(tmpScriptCommands, new GwasInOneGoScriptCommand());
-		addScriptCommand(tmpScriptCommands, new AssociationScriptCommand(true));
-		addScriptCommand(tmpScriptCommands, new AssociationScriptCommand(false));
+		addScriptCommand(tmpScriptCommands, new TestScriptCommand(OPType.ALLELICTEST));
+		addScriptCommand(tmpScriptCommands, new TestScriptCommand(OPType.GENOTYPICTEST));
 		addScriptCommand(tmpScriptCommands, new CombiTestScriptCommand());
 		addScriptCommand(tmpScriptCommands, new GenotypeFrequencyHardyWeinbergScriptCommand());
 		addScriptCommand(tmpScriptCommands, new ExportMatrixScriptCommand());
-		addScriptCommand(tmpScriptCommands, new TrendTestScriptCommand());
+		addScriptCommand(tmpScriptCommands, new TestScriptCommand(OPType.TRENDTEST));
 		addScriptCommand(tmpScriptCommands, new UpdateSampleInfoScriptCommand());
 
 		scriptCommands = Collections.unmodifiableMap(tmpScriptCommands);
@@ -50,7 +51,7 @@ public class CliExecutor {
 		commands.put(scriptCommand.getCommandName(), scriptCommand);
 	}
 
-	private File scriptFile;
+	private final File scriptFile;
 
 	public CliExecutor(File scriptFile) {
 

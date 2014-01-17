@@ -35,8 +35,7 @@ import org.gwaspi.model.SampleInfoList;
 import org.gwaspi.netCDF.loader.InMemorySamplesReceiver;
 import org.gwaspi.netCDF.operations.GWASinOneGOParams;
 import org.gwaspi.netCDF.operations.OperationManager;
-import org.gwaspi.reports.OutputAssociation;
-import org.gwaspi.reports.OutputTrendTest;
+import org.gwaspi.reports.OutputTest;
 import org.gwaspi.samples.SamplesParserManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -181,7 +180,8 @@ public class Threaded_GWAS extends CommonRunnable {
 				&& censusOpKey != null
 				&& hwOpKey != null)
 		{
-			boolean allelic = gwasParams.isPerformAllelicTests();
+			final boolean allelic = gwasParams.isPerformAllelicTests();
+			final OPType testType = allelic ? OPType.ALLELICTEST : OPType.GENOTYPICTEST;
 
 			OperationMetadata markerQAMetadata = OperationsList.getOperation(markersQAOpKey);
 
@@ -189,16 +189,16 @@ public class Threaded_GWAS extends CommonRunnable {
 				gwasParams.setDiscardMarkerHWTreshold(0.05 / markerQAMetadata.getNumMarkers());
 			}
 
-			OperationKey assocOpKey = OperationManager.performCleanAssociationTests(
+			OperationKey assocOpKey = OperationManager.performCleanTests(
 					censusOpKey,
 					hwOpKey,
 					gwasParams.getDiscardMarkerHWTreshold(),
-					allelic);
+					testType);
 			GWASpiExplorerNodes.insertSubOperationUnderOperationNode(censusOpKey, assocOpKey);
 
 			// Make Reports (needs newMatrixId, QAopId, AssocOpId)
 			if (assocOpKey != null) {
-				new OutputAssociation(allelic).writeReportsForAssociationData(assocOpKey);
+				new OutputTest(assocOpKey, testType).writeReportsForTestData();
 				GWASpiExplorerNodes.insertReportsUnderOperationNode(assocOpKey);
 			}
 		}
@@ -215,16 +215,16 @@ public class Threaded_GWAS extends CommonRunnable {
 				gwasParams.setDiscardMarkerHWTreshold(0.05 / markerQAMetadata.getNumMarkers());
 			}
 
-			OperationKey trendOpKey = OperationManager.performCleanTrendTests(
-					matrixKey,
+			OperationKey trendOpKey = OperationManager.performCleanTests(
 					censusOpKey,
 					hwOpKey,
-					gwasParams.getDiscardMarkerHWTreshold());
+					gwasParams.getDiscardMarkerHWTreshold(),
+					OPType.TRENDTEST);
 			GWASpiExplorerNodes.insertSubOperationUnderOperationNode(censusOpKey, trendOpKey);
 
 			// Make Reports (needs newMatrixId, QAopId, AssocOpId)
 			if (trendOpKey != null) {
-				OutputTrendTest.writeReportsForTrendTestData(trendOpKey);
+				new OutputTest(trendOpKey, OPType.TRENDTEST).writeReportsForTestData();
 				GWASpiExplorerNodes.insertReportsUnderOperationNode(trendOpKey);
 			}
 		}

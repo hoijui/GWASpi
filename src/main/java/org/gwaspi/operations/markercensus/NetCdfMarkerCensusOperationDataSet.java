@@ -32,10 +32,10 @@ import org.gwaspi.constants.cNetCDF.Defaults.OPType;
 import org.gwaspi.model.Census;
 import org.gwaspi.model.CensusFull;
 import org.gwaspi.model.DataSetKey;
+import org.gwaspi.model.DataSetMetadata;
 import org.gwaspi.model.MarkerKey;
 import org.gwaspi.model.MatricesList;
 import org.gwaspi.model.MatrixKey;
-import org.gwaspi.model.MatrixMetadata;
 import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.netCDF.operations.NetCdfUtils;
@@ -166,19 +166,18 @@ public class NetCdfMarkerCensusOperationDataSet extends AbstractNetCdfOperationD
 	@Override
 	protected OperationMetadata createOperationMetadata() throws IOException {
 
-		MatrixMetadata rdMatrixMetadata = MatricesList.getMatrixMetadataById(getReadMatrixKey());
+		DataSetMetadata rdDataSetMetadata = MatricesList.getDataSetMetadata(getParent());
 
 		OPType opType = OPType.MARKER_CENSUS_BY_AFFECTION;
 
-		String description = "Genotype frequency count -" + censusName + "- on " + rdMatrixMetadata.getFriendlyName();
+		String description = "Genotype frequency count -" + censusName + "- on " + rdDataSetMetadata.getFriendlyName();
 		if (phenoFile != null) {
 			description += "\nCase/Control status read from file: " + phenoFile.getPath();
 			opType = OPType.MARKER_CENSUS_BY_PHENOTYPE;
 		}
 
 		return new OperationMetadata(
-				getReadMatrixKey(), // parent matrix
-				OperationKey.NULL_ID, // parent operation ID
+				getParent(), // parent data set
 				"Genotypes freq. - " + censusName, // friendly name
 				description
 					+ "\nSample missing ratio threshold: " + sampleMissingRatio
@@ -190,7 +189,8 @@ public class NetCdfMarkerCensusOperationDataSet extends AbstractNetCdfOperationD
 				opType,
 				getNumMarkers(),
 				getNumSamples(),
-				getNumChromosomes());
+				getNumChromosomes(),
+				isMarkersOperationSet());
 	}
 
 //	@Override

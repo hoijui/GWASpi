@@ -30,6 +30,7 @@ import org.gwaspi.operations.allelicassociationtest.DefaultAllelicAssociationOpe
 import org.gwaspi.operations.genotypicassociationtest.DefaultGenotypicAssociationOperationEntry;
 import org.gwaspi.operations.genotypicassociationtest.GenotypicAssociationTestsOperationDataSet;
 import org.gwaspi.operations.trendtest.CommonTestOperationDataSet;
+import org.gwaspi.reports.OutputTest;
 import org.gwaspi.statistics.Associations;
 import org.gwaspi.statistics.Pvalue;
 import org.slf4j.Logger;
@@ -43,26 +44,30 @@ public class OP_AssociationTests extends AbstractTestMatrixOperation<CommonTestO
 	/**
 	 * Whether we are to perform allelic or genotypic association tests.
 	 */
-	private final boolean allelic;
+	private final OPType testType;
 
 	public OP_AssociationTests(
 			OperationKey markerCensusOPKey,
 			OperationKey hwOPKey,
 			double hwThreshold,
-			boolean allelic)
+			OPType testType)
 	{
 		super(
 			markerCensusOPKey,
 			hwOPKey,
 			hwThreshold,
-			(allelic ? "Allelic" : "Genotypic") + " Association Test");
+			OutputTest.createTestName(testType) + " Test");
 
-		this.allelic = allelic;
+		this.testType = testType;
 	}
 
 	@Override
 	public OPType getType() {
-		return allelic ? OPType.ALLELICTEST : OPType.GENOTYPICTEST;
+		return testType;
+	}
+
+	private boolean isAllelic() {
+		return (testType == OPType.ALLELICTEST);
 	}
 
 	/**
@@ -102,7 +107,7 @@ public class OP_AssociationTests extends AbstractTestMatrixOperation<CommonTestO
 			final int ctrlaa = ctrlCensus.getaa();
 			final int ctrlTot = ctrlAA + ctrlaa + ctrlAa;
 
-			if (allelic) {
+			if (isAllelic()) {
 				// allelic test
 				final int sampleNb = caseTot + ctrlTot;
 
