@@ -256,7 +256,7 @@ public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperati
 	private static void encodeSamples(
 			List<GenotypesList> markerGTs,
 //			Set<SampleKey> sampleKeys, // NOTE needs to be well ordered!
-			List<Affection> sampleAffections, // NOTE needs to be well ordered!
+//			List<Affection> sampleAffections, // NOTE needs to be well ordered!
 			GenotypeEncoder encoder,
 			int dSamples,
 			int dEncoded,
@@ -508,29 +508,29 @@ public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperati
 
 			LOG.info("Combi Association Test: encode samples");
 			// XXX unused (next lines var)!
-
-			SamplesMarkersStorage<Float> encodedSamples; // This is basically the (encoded) feature-map, that will be fed to the SVM
-			try {
-				// NOTE This allocates a LOT of memory!
-				//   We use float instead of double to half the memory,
-				//   because we have no more then 4 or 5 distinct values anyway,
-				//   so we do not need high precission.
-				encodedSamples = new InMemorySamplesMarkersStorage<Float>(n, dEncoded);
-			} catch (OutOfMemoryError er) {
-				throw new IOException(er);
-			}
-			List<SampleKey> usedSamples = new ArrayList<SampleKey>(sampleKeys.size());
+//
+//			SamplesMarkersStorage<Float> encodedSamples; // This is basically the (encoded) feature-map, that will be fed to the SVM
+//			try {
+//				// NOTE This allocates a LOT of memory!
+//				//   We use float instead of double to half the memory,
+//				//   because we have no more then 4 or 5 distinct values anyway,
+//				//   so we do not need high precission.
+//				encodedSamples = new InMemorySamplesMarkersStorage<Float>(n, dEncoded);
+//			} catch (OutOfMemoryError er) {
+//				throw new IOException(er);
+//			}
+//			List<SampleKey> usedSamples = new ArrayList<SampleKey>(sampleKeys.size());
 //			Map<SampleKey, List<Double>> encodedSamples = encodeSamples(
-			/*float[][] encodedSamples = */encodeSamples(
-					markerGTs,
-//					sampleInfos.keySet(),
-					sampleAffections,
-					genotypeEncoder,
-					dSamples,
-					dEncoded,
-					n,
-					usedSamples,
-					encodedSamples);
+//			/*float[][] encodedSamples = */encodeSamples(
+//					markerGTs,
+////					sampleInfos.keySet(),
+//					sampleAffections,
+//					genotypeEncoder,
+//					dSamples,
+//					dEncoded,
+//					n,
+//					usedSamples,
+//					encodedSamples);
 			LOG.info("Combi Association Test: encode affection states");
 			Map<SampleKey, Double> encodedAffectionStates = encodeAffectionStates(
 					sampleKeys,
@@ -557,10 +557,34 @@ public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperati
 //				}
 //			}
 
-			whiten(encodedSamples);
+			final float[][] kernelMatrix;
+			try {
+				// NOTE This allocates quite some memory!
+				//   We use float instead of double to half the memory,
+				//   this might be subject to change, as in,
+				//   change to use double.
+				kernelMatrix = new float[n][n];
+			} catch (OutOfMemoryError er) {
+				throw new IOException(er);
+			}
+			encodeFeaturesAndCreateKernelMatrix(
+					markerGTs,
+//					sampleInfos.keySet(),
+//					sampleAffections,
+					genotypeEncoder,
+					dSamples,
+					dEncoded,
+					n,
+					kernelMatrix);
+//			whiten(encodedSamples);
 
+//			svm_problem libSvmProblem = createLibSvmProblem(
+//					kernelMatrix,
+//					encodedAffectionStates.values(),
+//					libSvmParameters,
+//					null);
 			svm_problem libSvmProblem = createLibSvmProblem(
-					encodedSamples,
+					kernelMatrix, XXX, // FIXME the method expects the feature matrix, but this is now already the kernel matrix
 					encodedAffectionStates.values(),
 					libSvmParameters,
 					null);
@@ -571,6 +595,66 @@ public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperati
 			ex.printStackTrace();
 			return null;
 		}
+	}
+
+	/**
+	 * Doing all of this in one method, allows us to balance max memory usage
+	 * vs. back-end storage (usually the hard-disc) reads
+	 * @param markerGTs
+	 * @param sampleAffections
+	 * @param encoder
+	 * @param dSamples
+	 * @param dEncoded
+	 * @param n
+	 * @param usedSamples
+	 * @param encodedSamples
+	 * @return
+	 * @throws IOException
+	 */
+	private static List<List<Double>> encodeFeaturesAndCreateKernelMatrix(
+			List<GenotypesList> markerGTs,
+//			Set<SampleKey> sampleKeys, // NOTE needs to be well ordered!
+//			List<Affection> sampleAffections, // NOTE needs to be well ordered!
+			GenotypeEncoder genotypeEncoder,
+			int dSamples,
+			int dEncoded,
+			int n,
+//			List<SampleKey> usedSamples,
+			final float[][] kernelMatrix)
+			throws IOException
+	{
+		// initialize the kernelMatrix
+		// this should not be required, if the aray was just created,
+		// but who knows who will call this function in what way in the future!?
+		for (float[] kernelMatrixRow : kernelMatrix) {
+			for (int ci = 0; ci < kernelMatrixRow.length; ci++) {
+				kernelMatrixRow[ci] = 0.0f;
+			}
+		}
+
+		final int maxChunkMemoryUsage = 1024 * 1024;
+		final int singleEntryMemoryUsage = 2 * 8; // FIXME two doubles.. arbitrary.. investigate
+		final int maxChunkSize = Math.floor((double) maxChunkMemoryUsage / dSamples / singleEntryMemoryUsage);
+		final int numChunks = Math.ceil((double) dSamples / maxChunkSize);
+
+		for (int ci = 0; ci < numChunks; ci++) {
+			final int numMarkersInChunk = xxx;
+			final int firstMarkerIndex = xxx;
+//			final int lastMarkerIndex = firstMarkerIndex - 1 + numMarkersInChunk;
+
+			// encode only a chunk/part of the markers at a time
+			Map<SampleKey, List<Double>> encodedSamples = encodeSamples(
+					markerGTs,
+	//				sampleInfos.keySet(),
+	//				sampleAffections,
+					genotypeEncoder,
+					dSamples,
+					dEncoded,
+					n,
+					encodedSamples);
+		}
+
+		XXX;
 	}
 
 	static List<Double> runEncodingAndSVM(
@@ -598,6 +682,8 @@ public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperati
 
 	/**
 	 * Sets the means to 0, and the variances to 1.
+	 * We need the complete set of samples for this to work,
+	 * but it may be only a subset of the markers, and still work properly.
 	 * @param x [samples][markers]; each marker is a data-point for the SVM
 	 */
 	private static void whiten(float[][] x) {
