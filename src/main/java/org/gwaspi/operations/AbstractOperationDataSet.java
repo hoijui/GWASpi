@@ -52,9 +52,9 @@ public abstract class AbstractOperationDataSet<ET> implements OperationDataSet<E
 	private Integer numMarkers;
 	private Integer numSamples;
 	private Integer numChromosomes;
-	private Boolean useAllMarkersFromParent;
-	private Boolean useAllSamplesFromParent;
-	private Boolean useAllChromosomesFromParent;
+//	private Boolean useAllMarkersFromParent;
+//	private Boolean useAllSamplesFromParent;
+//	private Boolean useAllChromosomesFromParent;
 	private OperationMetadata operationMetadata;
 	private OperationKey operationKey;
 	private final Queue<ET> writeBuffer;
@@ -79,9 +79,9 @@ public abstract class AbstractOperationDataSet<ET> implements OperationDataSet<E
 		this.numMarkers = null;
 		this.numSamples = null;
 		this.numChromosomes = null;
-		this.useAllMarkersFromParent = null;
-		this.useAllSamplesFromParent = null;
-		this.useAllChromosomesFromParent = null;
+//		this.useAllMarkersFromParent = null;
+//		this.useAllSamplesFromParent = null;
+//		this.useAllChromosomesFromParent = null;
 		this.operationMetadata = null;
 		this.writeBuffer = new LinkedList<ET>();
 		this.alreadyWritten = 0;
@@ -183,6 +183,11 @@ public abstract class AbstractOperationDataSet<ET> implements OperationDataSet<E
 //		return rdOperationKey;
 //	}
 
+	@Override
+	public void setNumMarkers(int numMarkers) {
+		this.numMarkers = numMarkers;
+	}
+
 	protected abstract int getNumMarkersRaw() throws IOException;
 
 	@Override
@@ -210,6 +215,11 @@ public abstract class AbstractOperationDataSet<ET> implements OperationDataSet<E
 
 	protected abstract boolean getUseAllMarkersFromParent() throws IOException;
 
+	@Override
+	public void setNumSamples(int numSamples) {
+		this.numSamples = numSamples;
+	}
+
 	protected abstract int getNumSamplesRaw() throws IOException;
 
 	@Override
@@ -236,6 +246,11 @@ public abstract class AbstractOperationDataSet<ET> implements OperationDataSet<E
 	protected abstract void setUseAllSamplesFromParent(boolean useAll) throws IOException;
 
 	protected abstract boolean getUseAllSamplesFromParent() throws IOException;
+
+	@Override
+	public void setNumChromosomes(int numChromosomes) {
+		this.numChromosomes = numChromosomes;
+	}
 
 	protected abstract int getNumChromosomesRaw() throws IOException;
 

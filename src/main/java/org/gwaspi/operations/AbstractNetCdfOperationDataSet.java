@@ -62,9 +62,9 @@ public abstract class AbstractNetCdfOperationDataSet<ET> extends AbstractOperati
 
 	private final Logger log = LoggerFactory.getLogger(AbstractNetCdfOperationDataSet.class);
 
-	private Integer numMarkers;
-	private Integer numSamples;
-	private Integer numChromosomes;
+//	private Integer numMarkers;
+//	private Integer numSamples;
+//	private Integer numChromosomes;
 	private Boolean useAllMarkersFromParent;
 	private Boolean useAllSamplesFromParent;
 	private Boolean useAllChromosomesFromParent;
@@ -80,9 +80,9 @@ public abstract class AbstractNetCdfOperationDataSet<ET> extends AbstractOperati
 	{
 		super(markersOperationSet, origin, parent, operationKey, entriesWriteBufferSize);
 
-		this.numMarkers = null;
-		this.numSamples = null;
-		this.numChromosomes = null;
+//		this.numMarkers = null;
+//		this.numSamples = null;
+//		this.numChromosomes = null;
 		this.useAllMarkersFromParent = null;
 		this.useAllSamplesFromParent = null;
 		this.useAllChromosomesFromParent = null;
@@ -124,18 +124,8 @@ public abstract class AbstractNetCdfOperationDataSet<ET> extends AbstractOperati
 	}
 
 	@Override
-	public void setNumMarkers(int numMarkers) {
-		this.numMarkers = numMarkers;
-	}
-
-	@Override
 	protected int getNumMarkersRaw() throws IOException {
-
-		if (numMarkers == null) {
-			numMarkers = getNetCdfReadFile().findDimension(getIndexVar(true)).getLength();
-		}
-
-		return numMarkers;
+		return getNetCdfReadFile().findDimension(getIndexVar(true)).getLength();
 	}
 
 	/**
@@ -161,18 +151,8 @@ public abstract class AbstractNetCdfOperationDataSet<ET> extends AbstractOperati
 	}
 
 	@Override
-	public void setNumSamples(int numSamples) {
-		this.numSamples = numSamples;
-	}
-
-	@Override
 	protected int getNumSamplesRaw() throws IOException {
-
-		if (numSamples == null) {
-			numSamples = getNetCdfReadFile().findDimension(getIndexVar(false)).getLength();
-		}
-
-		return numSamples;
+		return getNetCdfReadFile().findDimension(getIndexVar(false)).getLength();
 	}
 
 	/**
@@ -198,18 +178,8 @@ public abstract class AbstractNetCdfOperationDataSet<ET> extends AbstractOperati
 	}
 
 	@Override
-	public void setNumChromosomes(int numChromosomes) {
-		this.numChromosomes = numChromosomes;
-	}
-
-	@Override
 	protected int getNumChromosomesRaw() throws IOException {
-
-		if (numChromosomes == null) {
-			numChromosomes = getNetCdfReadFile().findDimension(cNetCDF.Variables.VAR_CHR_IN_MATRIX_IDX).getLength();
-		}
-
-		return numChromosomes;
+		return getNetCdfReadFile().findDimension(cNetCDF.Variables.VAR_CHR_IN_MATRIX_IDX).getLength();
 	}
 
 	/**
