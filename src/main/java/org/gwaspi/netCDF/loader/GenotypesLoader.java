@@ -24,6 +24,9 @@ public interface GenotypesLoader {
 
 	/**
 	 * Process Genotypes
+	 * @param loadDescription
+	 * @param samplesReceiver
+	 * @throws java.lang.Exception
 	 */
 	void processData(GenotypesLoadDescription loadDescription, DataSetDestination samplesReceiver) throws Exception;
 
