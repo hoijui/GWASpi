@@ -328,6 +328,7 @@ public class NetCdfQAMarkersOperationDataSet extends AbstractNetCdfOperationData
 	protected void writeEntries(int alreadyWritten, Queue<QAMarkersOperationEntry> writeBuffer) throws IOException {
 
 		int[] origin = new int[] {alreadyWritten};
+		int[] origin2D = new int[] {alreadyWritten, 0};
 		if (netCdfMajorAlleles == null) {
 			// only create once, and reuse later on
 			// NOTE This might be bad for multi-threading in a later stage
@@ -345,8 +346,8 @@ public class NetCdfQAMarkersOperationDataSet extends AbstractNetCdfOperationData
 			netCdfMinorAllelesFrequencies.setDouble(netCdfMinorAllelesFrequencies.getIndex().set(index), entry.getMinorAlleleFrequency());
 			netCdfCensusAlls.setInt(netCdfCensusAlls.getIndex().set(index, 0), entry.getAlleleAA());
 			netCdfCensusAlls.setInt(netCdfCensusAlls.getIndex().set(index, 1), entry.getAlleleAa());
-			netCdfCensusAlls.setInt(netCdfCensusAlls.getIndex().set(index, 1), entry.getAlleleaa());
-			netCdfCensusAlls.setInt(netCdfCensusAlls.getIndex().set(index, 2), entry.getMissingCount());
+			netCdfCensusAlls.setInt(netCdfCensusAlls.getIndex().set(index, 2), entry.getAlleleaa());
+			netCdfCensusAlls.setInt(netCdfCensusAlls.getIndex().set(index, 3), entry.getMissingCount());
 			index++;
 		}
 		try {
@@ -354,7 +355,7 @@ public class NetCdfQAMarkersOperationDataSet extends AbstractNetCdfOperationData
 			getNetCdfWriteFile().write(cNetCDF.Census.VAR_OP_MARKERS_MAJALLELEFRQ, origin, netCdfMajorAllelesFrequencies);
 			getNetCdfWriteFile().write(cNetCDF.Census.VAR_OP_MARKERS_MINALLELES, origin, netCdfMinorAlleles);
 			getNetCdfWriteFile().write(cNetCDF.Census.VAR_OP_MARKERS_MINALLELEFRQ, origin, netCdfMinorAllelesFrequencies);
-			getNetCdfWriteFile().write(cNetCDF.Census.VAR_OP_MARKERS_CENSUSALL, origin, netCdfCensusAlls);
+			getNetCdfWriteFile().write(cNetCDF.Census.VAR_OP_MARKERS_CENSUSALL, origin2D, netCdfCensusAlls);
 		} catch (InvalidRangeException ex) {
 			throw new IOException(ex);
 		}

@@ -113,18 +113,19 @@ public class NetCdfMarkersGenotypesSource extends AbstractListSource<GenotypesLi
 
 	@Override
 	public List<GenotypesList> getRange(int from, int to) throws IOException {
-		return readSampleGTs(getReadNetCdfFile(), cNetCDF.Variables.VAR_GENOTYPES, from, to);
+		return readMarkerGTs(getReadNetCdfFile(), cNetCDF.Variables.VAR_GENOTYPES, from, to);
 	}
 
-	private List<GenotypesList> readSampleGTs(NetcdfFile rdNetCdf, String netCdfVarName, int fromSampleIndex, int toSampleIndex) throws IOException {
+	private List<GenotypesList> readMarkerGTs(NetcdfFile rdNetCdf, String netCdfVarName, int fromMarkerIndex, int toMarkerIndex) throws IOException {
 
 		Variable var = rdNetCdf.findVariable(netCdfVarName);
 
 		if (var != null) {
-			List<GenotypesList> values = new ArrayList<GenotypesList>(toSampleIndex - fromSampleIndex);
+			List<GenotypesList> values = new ArrayList<GenotypesList>(toMarkerIndex - fromMarkerIndex + 1);
 
-			for (int mi = 0; mi < var.getShape(1); mi++) {
-				List<byte[]> sampleGTs = NetCdfSamplesGenotypesSource.readSampleGTs(var, -1, -1, mi);
+//			for (int mi = 0; mi < var.getShape(1); mi++) {
+			for (int mi = fromMarkerIndex; mi <= toMarkerIndex; mi++) {
+				List<byte[]> sampleGTs = NetCdfSamplesGenotypesSource.readMarkerGTs(var, -1, -1, mi);
 				GenotypesList genotypesList = genotyesListFactory.extract(sampleGTs);
 				values.add(genotypesList);
 			}

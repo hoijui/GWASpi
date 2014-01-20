@@ -213,6 +213,7 @@ public abstract class AbstractNetCdfOperationDataSet<ET> extends AbstractOperati
 
 	@Override
 	public void finnishWriting() throws IOException {
+		super.finnishWriting();
 
 		if (writeNcFile != null) {
 			writeNcFile.close();

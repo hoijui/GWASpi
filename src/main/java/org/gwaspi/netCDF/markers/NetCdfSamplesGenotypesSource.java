@@ -95,9 +95,10 @@ public class NetCdfSamplesGenotypesSource extends AbstractListSource<GenotypesLi
 		Variable var = rdNetCdf.findVariable(netCdfVarName);
 
 		if (var != null) {
-			List<GenotypesList> values = new ArrayList<GenotypesList>(toSampleIndex - fromSampleIndex);
+			List<GenotypesList> values = new ArrayList<GenotypesList>(toSampleIndex - fromSampleIndex + 1);
 
-			for (int si = 0; si < var.getShape(0); si++) {
+//			for (int si = 0; si < var.getShape(0); si++) {
+			for (int si = fromSampleIndex; si <= toSampleIndex; si++) {
 				List<byte[]> markerGTs = readSampleGTs(var, si, -1, -1);
 				GenotypesList genotypesList = genotyesListFactory.extract(markerGTs);
 				values.add(genotypesList);

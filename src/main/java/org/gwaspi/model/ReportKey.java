@@ -51,9 +51,9 @@ public class ReportKey implements Comparable<ReportKey>, Serializable {
 		this.id = id;
 	}
 
-//	protected ReportKey() {
-//		this(new StudyKey(StudyKey.NULL_ID), MatrixKey.NULL_ID, OperationKey.NULL_ID, ReportKey.NULL_ID);
-//	}
+	protected ReportKey() {
+		this(new StudyKey(StudyKey.NULL_ID), MatrixKey.NULL_ID, OperationKey.NULL_ID, ReportKey.NULL_ID);
+	}
 
 	public static ReportKey valueOf(Report report) {
 		return new ReportKey(

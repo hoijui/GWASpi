@@ -373,13 +373,16 @@ public abstract class AbstractOperationDataSet<ET> implements OperationDataSet<E
 		{
 			log.info("Processed markers: {} / {}", alreadyWritten, getNumMarkers());
 		}
-
-		writeBuffer.clear();
 	}
 
 	@Override
 	public void finnishWriting() throws IOException {
+
 		writeCurrentEnriesBuffer();
+
+		// this way, we will write the metadata into the DB
+		getOperationMetadata();
+//		XXX; // TODO check if above works fine!
 	}
 
 	protected abstract void writeEntries(int alreadyWritten, Queue<ET> writeBuffer) throws IOException;
