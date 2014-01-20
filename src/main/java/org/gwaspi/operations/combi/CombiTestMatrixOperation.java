@@ -258,10 +258,12 @@ public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperati
 //			Set<SampleKey> sampleKeys, // NOTE needs to be well ordered!
 //			List<Affection> sampleAffections, // NOTE needs to be well ordered!
 			GenotypeEncoder encoder,
+			final int markerIndexFrom,
+			final int markersChunkSize,
 			int dSamples,
 			int dEncoded,
 			int n,
-			List<SampleKey> usedSamples,
+//			List<SampleKey> usedSamples,
 			final SamplesMarkersStorage<Float> encodedSamples)
 			throws IOException
 	{
@@ -308,12 +310,14 @@ public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperati
 //		Map<MarkerKey, Set<Genotype>> uniqueGts
 //				= new LinkedHashMap<MarkerKey, Set<Genotype>>(markerKeys.size());
 		// collect unique GTs per marker
-		int mi = 0;
 //		List<Genotype> all = new ArrayList<Genotype>(n);
 //		Set<Genotype> unique = new LinkedHashSet<Genotype>(4);
 //		List<Genotype> uniqueList = new ArrayList<Genotype>(4);
-		ProgressMonitor encodingMarkersPM = new ProgressMonitor(null, "encoding markers", "", 0, dSamples);
-		for (List<byte[]> gtsForOneMarker : markerGTs) {
+		ProgressMonitor encodingMarkersPM = new ProgressMonitor(null, "encoding markers chunk", "", 0, dSamples);
+//		int mi = 0;
+//		for (List<byte[]> gtsForOneMarker : markerGTs) {
+		for (int mi = markerIndexFrom; mi < (markerIndexFrom + markersChunkSize); mi++) {
+			List<byte[]> gtsForOneMarker = markerGTs.get(mi);
 //			LOG.debug("");
 //			StringBuilder debugOut = new StringBuilder();
 //			debugOut.append("marker ").append(mi).append("\n");
@@ -357,7 +361,7 @@ public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperati
 //			encoder.encodeGenotypes(uniqueList, all, encodedSamples, mi);
 			encoder.encodeGenotypes(gtsForOneMarker, /*samplesToKeep*/null, encodedSamples, mi);
 
-			mi++;
+//			mi++;
 
 			if ((mi % 50) == 0) {
 				encodingMarkersPM.setProgress(mi);
@@ -584,7 +588,7 @@ public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperati
 //					libSvmParameters,
 //					null);
 			svm_problem libSvmProblem = createLibSvmProblem(
-					kernelMatrix, XXX, // FIXME the method expects the feature matrix, but this is now already the kernel matrix
+					kernelMatrix, // NOTE the method expects the feature matrix, but this is now already the kernel matrix
 					encodedAffectionStates.values(),
 					libSvmParameters,
 					null);
@@ -611,7 +615,8 @@ public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperati
 	 * @return
 	 * @throws IOException
 	 */
-	private static List<List<Double>> encodeFeaturesAndCreateKernelMatrix(
+//	private static List<List<Double>> encodeFeaturesAndCreateKernelMatrix(
+	private static void encodeFeaturesAndCreateKernelMatrix(
 			List<GenotypesList> markerGTs,
 //			Set<SampleKey> sampleKeys, // NOTE needs to be well ordered!
 //			List<Affection> sampleAffections, // NOTE needs to be well ordered!
@@ -632,29 +637,65 @@ public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperati
 			}
 		}
 
+		// max memory usage of this function [bytes]
 		final int maxChunkMemoryUsage = 1024 * 1024;
+		// how much memory does one sample per marker use [bytes]
 		final int singleEntryMemoryUsage = 2 * 8; // FIXME two doubles.. arbitrary.. investigate
-		final int maxChunkSize = Math.floor((double) maxChunkMemoryUsage / dSamples / singleEntryMemoryUsage);
-		final int numChunks = Math.ceil((double) dSamples / maxChunkSize);
+		// how many markers may be loaded at a time, to still fullfill the max memory usage limit
+		final int maxChunkSize = (int) Math.floor((double) maxChunkMemoryUsage / dSamples / singleEntryMemoryUsage);
+		final int maxFeaturesChunkSize = maxChunkSize * genotypeEncoder.getEncodingFactor();
+		// ... which results in this many chunks for the whole data-set
+		final int numChunks = (int) Math.ceil((double) dSamples / maxChunkSize);
+
+		// This is basically a part of the (encoded) feature-map,
+		// that will be used to calculate the kernel matrix
+		InMemorySamplesMarkersStorage<Float> encodedSamplesRawStorage;
+		try {
+			// NOTE This allocates a LOT of memory!
+			//   We use float instead of double to half the memory,
+			//   because we have no more then 4 or 5 distinct values anyway,
+			//   so we do not need high precission.
+			encodedSamplesRawStorage = new InMemorySamplesMarkersStorage<Float>(n, maxFeaturesChunkSize);
+		} catch (OutOfMemoryError er) {
+			throw new IOException(er);
+		}
 
 		for (int ci = 0; ci < numChunks; ci++) {
-			final int numMarkersInChunk = xxx;
-			final int firstMarkerIndex = xxx;
+			final int firstMarkerIndex = ci * maxChunkSize;
+			final int numMarkersInChunk = Math.min(dSamples - firstMarkerIndex, maxChunkSize);
 //			final int lastMarkerIndex = firstMarkerIndex - 1 + numMarkersInChunk;
 
+			SamplesMarkersStorage<Float> encodedSamplesPart = new PartialMarkersInMemorySamplesMarkersStorage<Float>(n, dEncoded, encodedSamplesRawStorage.getCache(), numMarkersInChunk, encodedSamplesRawStorage);
+
 			// encode only a chunk/part of the markers at a time
-			Map<SampleKey, List<Double>> encodedSamples = encodeSamples(
+			// which gives us a part of the feature matrix
+			encodeSamples(
 					markerGTs,
 	//				sampleInfos.keySet(),
 	//				sampleAffections,
 					genotypeEncoder,
+					firstMarkerIndex,
+					numMarkersInChunk,
 					dSamples,
 					dEncoded,
 					n,
-					encodedSamples);
-		}
+					encodedSamplesPart);
 
-		XXX;
+			Float[][] rawStorage = encodedSamplesRawStorage.getStorage();
+			// calculate the part of the kernel matrix defined by
+			// the current chunk of the feature matrix
+//			for (int smi = 0; smi < numMarkersInChunk; smi++) {
+			for (int smi = 0; smi < rawStorage[0].length; smi++) {
+//				final int curMarkerIndex = firstMarkerIndex + smi;
+				for (int krsi = 0; krsi < rawStorage.length; krsi++) { // kernel row sample index
+					final float curRowValue = rawStorage[krsi][smi];
+					for (int krci = 0; krci < rawStorage.length; krci++) { // kernel column sample index
+						final float curColValue = rawStorage[krci][smi];
+						kernelMatrix[krsi][krci] += curRowValue * curColValue;
+					}
+				}
+			}
+		}
 	}
 
 	static List<Double> runEncodingAndSVM(
@@ -757,7 +798,8 @@ public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperati
 
 	private static svm_problem createLibSvmProblem(
 //			List<List<Double>> X,
-			float[][] X,
+//			float[][] X,
+			float[][] K,
 			Collection<Double> Y,
 			svm_parameter libSvmParameters,
 			String encoderString)
@@ -768,7 +810,7 @@ public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperati
 
 //		int dEncoded = X.iterator().next().size();
 //		int n = X.size();
-		int dEncoded = X[0].length;
+//		int dEncoded = X[0].length;
 		int n = Y.size();
 
 		// prepare the features
@@ -805,9 +847,10 @@ public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperati
 
 				for (int s2i = si; s2i < n; s2i++) {
 					double kernelValue = 0.0;
-					for (int di = 0; di < dEncoded; di++) {
-						kernelValue += X[si][di] * X[s2i][di];
-					}
+//					for (int di = 0; di < dEncoded; di++) {
+//						kernelValue += X[si][di] * X[s2i][di];
+//					}
+					kernelValue = K[s2i][si]; // XXX or indices other way around?
 
 					svm_node curNode = new svm_node();
 					curNode.index = 1 + s2i;

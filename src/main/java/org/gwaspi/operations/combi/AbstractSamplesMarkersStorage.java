@@ -31,13 +31,13 @@ abstract class AbstractSamplesMarkersStorage<ST> implements SamplesMarkersStorag
 
 	protected AbstractSamplesMarkersStorage(int numSamples, int numMarkers, Map<String, Object> cache) {
 
-		this.cache = cache;
+		this.cache = (cache == null) ? new HashMap<String, Object>() : cache;
 		this.numSamples = numSamples;
 		this.numMarkers = numMarkers;
 	}
 
 	protected AbstractSamplesMarkersStorage(int numSamples, int numMarkers) {
-		this(numSamples, numMarkers, new HashMap<String, Object>());
+		this(numSamples, numMarkers, null);
 	}
 
 	@Override

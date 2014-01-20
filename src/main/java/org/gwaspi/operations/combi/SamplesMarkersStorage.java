@@ -22,7 +22,7 @@ import java.util.Map;
 /**
  * TODO
  */
-interface SamplesMarkersStorage<ST> {
+public interface SamplesMarkersStorage<ST> {
 
 	/**
 	 * This can be used to store data associated with the data-set.
