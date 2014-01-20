@@ -232,7 +232,7 @@ public class NetCDFDataSetSource implements DataSetSource {
 			Dimension samplesDim = netCDFFile.findDimension(cNetCDF.Dimensions.DIM_SAMPLESET);
 			numSamples = samplesDim.getLength();
 
-			Dimension chromosomesDim = netCDFFile.findDimension(cNetCDF.Dimensions.DIM_SAMPLESET);
+			Dimension chromosomesDim = netCDFFile.findDimension(cNetCDF.Dimensions.DIM_CHRSET);
 			numChromosomes = chromosomesDim.getLength();
 
 			try {

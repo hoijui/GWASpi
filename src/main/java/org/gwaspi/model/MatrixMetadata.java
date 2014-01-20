@@ -289,8 +289,8 @@ public class MatrixMetadata implements DataSetMetadata, Serializable {
 				numChromosomes,
 				"", // matrixType
 				new Date(), // creationDate
-				-1, // parent1MatrixId
-				-1, // parent2MatrixId
+				MatrixKey.NULL_ID, // parent1MatrixId
+				MatrixKey.NULL_ID, // parent2MatrixId
 				inputLocation);
 	}
 
@@ -328,8 +328,8 @@ public class MatrixMetadata implements DataSetMetadata, Serializable {
 				numChromosomes,
 				matrixType,
 				creationDate,
-				-1, // parent1MatrixId
-				-1, // parent2MatrixId
+				MatrixKey.NULL_ID, // parent1MatrixId
+				MatrixKey.NULL_ID, // parent2MatrixId
 				""); // inputLocation
 	}
 

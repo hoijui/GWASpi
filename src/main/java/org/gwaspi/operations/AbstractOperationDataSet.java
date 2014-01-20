@@ -184,8 +184,11 @@ public abstract class AbstractOperationDataSet<ET> implements OperationDataSet<E
 //	}
 
 	@Override
-	public void setNumMarkers(int numMarkers) {
+	public void setNumMarkers(int numMarkers) throws IOException {
+
 		this.numMarkers = numMarkers;
+
+		setUseAllMarkersFromParent(numMarkers == getParentDataSetSource().getNumMarkers());
 	}
 
 	protected abstract int getNumMarkersRaw() throws IOException;
@@ -195,9 +198,9 @@ public abstract class AbstractOperationDataSet<ET> implements OperationDataSet<E
 
 		if (numMarkers == null) {
 			if (getUseAllSamplesFromParent()) {
-				numMarkers = getParentDataSetSource().getNumMarkers();
+				setNumMarkers(getParentDataSetSource().getNumMarkers());
 			} else {
-				numMarkers = getNumMarkersRaw();
+				setNumMarkers(getNumMarkersRaw());
 			}
 		}
 
@@ -216,8 +219,11 @@ public abstract class AbstractOperationDataSet<ET> implements OperationDataSet<E
 	protected abstract boolean getUseAllMarkersFromParent() throws IOException;
 
 	@Override
-	public void setNumSamples(int numSamples) {
+	public void setNumSamples(int numSamples) throws IOException {
+
 		this.numSamples = numSamples;
+
+		setUseAllSamplesFromParent(numSamples == getParentDataSetSource().getNumSamples());
 	}
 
 	protected abstract int getNumSamplesRaw() throws IOException;
@@ -248,8 +254,11 @@ public abstract class AbstractOperationDataSet<ET> implements OperationDataSet<E
 	protected abstract boolean getUseAllSamplesFromParent() throws IOException;
 
 	@Override
-	public void setNumChromosomes(int numChromosomes) {
+	public void setNumChromosomes(int numChromosomes) throws IOException {
+
 		this.numChromosomes = numChromosomes;
+
+		setUseAllChromosomesFromParent(numChromosomes == getParentDataSetSource().getNumChromosomes());
 	}
 
 	protected abstract int getNumChromosomesRaw() throws IOException;
