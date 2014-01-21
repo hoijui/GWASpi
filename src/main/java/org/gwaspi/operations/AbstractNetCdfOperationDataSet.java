@@ -96,7 +96,7 @@ public abstract class AbstractNetCdfOperationDataSet<ET> extends AbstractOperati
 			DataSetKey parent,
 			OperationKey operationKey)
 	{
-		this(markersOperationSet, origin, parent, operationKey, DEFAULT_ENTRIES_WRITE_BUFFER_SIZE);
+		this(markersOperationSet, origin, parent, operationKey, getDefaultEntriesWriteBufferSize(markersOperationSet));
 	}
 
 	public AbstractNetCdfOperationDataSet(

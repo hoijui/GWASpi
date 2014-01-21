@@ -19,7 +19,6 @@ package org.gwaspi.netCDF.operations;
 
 import java.io.IOException;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import org.gwaspi.constants.cNetCDF.Defaults.AlleleBytes;
 import org.gwaspi.constants.cNetCDF.Defaults.OPType;
@@ -33,13 +32,11 @@ import org.gwaspi.model.OperationKey;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.model.SamplesGenotypesSource;
 import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
+import org.gwaspi.operations.AbstractOperationDataSet;
+import org.gwaspi.operations.qasamples.DefaultQASamplesOperationEntry;
 import org.gwaspi.operations.qasamples.QASamplesOperationDataSet;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class OP_QASamples extends AbstractOperation<QASamplesOperationDataSet> {
-
-	private final Logger log = LoggerFactory.getLogger(OP_QASamples.class);
 
 	public OP_QASamples(MatrixKey parent) {
 		super(parent);
@@ -66,13 +63,29 @@ public class OP_QASamples extends AbstractOperation<QASamplesOperationDataSet> {
 
 	@Override
 	public int processMatrix() throws IOException {
-		int resultOpId = Integer.MIN_VALUE;
+
+		int resultOpId;
+
+		org.gwaspi.global.Utils.sysoutStart("Sample QA");
 
 		DataSetSource dataSetSource = getParentDataSetSource();
 
-		Map<SampleKey, Integer> wrSampleSetMissingCountMap = new LinkedHashMap<SampleKey, Integer>();
-		Map<SampleKey, Double> wrSampleSetMissingRatioMap = new LinkedHashMap<SampleKey, Double>();
-		Map<SampleKey, Double> wrSampleSetHetzyRatioMap = new LinkedHashMap<SampleKey, Double>();
+		MatrixMetadata rdMatrixMetadata = getParentMatrixMetadata();
+
+		QASamplesOperationDataSet dataSet = generateFreshOperationDataSet();
+		((AbstractNetCdfOperationDataSet) dataSet).setNumMarkers(rdMatrixMetadata.getNumMarkers()); // HACK
+		((AbstractNetCdfOperationDataSet) dataSet).setNumChromosomes(rdMatrixMetadata.getNumChromosomes()); // HACK
+//		((AbstractNetCdfOperationDataSet) dataSet).setNumSamples(wrSampleSetMissingCountMap.size()); // HACK
+		((AbstractNetCdfOperationDataSet) dataSet).setNumSamples(rdMatrixMetadata.getNumSamples()); // HACK
+
+//		dataSet.setSamples(rdSampleSet.getSampleKeys());
+//		dataSet.setMarkers(rdMarkersKeysSource);
+//		Map<ChromosomeKey, ChromosomeInfo> chromosomeInfo = rdMarkerSet.getChrInfoSetMap();
+//		dataSet.setChromosomes(chromosomeInfo.keySet(), chromosomeInfo.values());
+//
+//		((AbstractNetCdfOperationDataSet) dataSet).setUseAllSamplesFromParent(true);
+//		((AbstractNetCdfOperationDataSet) dataSet).setUseAllMarkersFromParent(true);
+//		((AbstractNetCdfOperationDataSet) dataSet).setUseAllChromosomesFromParent(true);
 
 //		NetcdfFile rdNcFile = NetcdfFile.open(rdMatrixMetadata.getPathToMatrix());
 
@@ -85,12 +98,14 @@ public class OP_QASamples extends AbstractOperation<QASamplesOperationDataSet> {
 
 		//Map<String, Object> rdMarkerSetMap = rdMarkerSet.markerIdSetMap; // This to test heap usage of copying locally the Map from markerset
 
-int numMarkers = dataSetSource.getNumMarkers();
+//int numMarkers = dataSetSource.getNumMarkers();
 
 		// Iterate through samples
-		int sampleIndex = 0;
 		Iterator<GenotypesList> samplesGenotypesIt = samplesGenotypes.iterator();
-		for (SampleKey sampleKey : dataSetSource.getSamplesKeysSource()) {
+		for (Map.Entry<Integer, SampleKey> sampleKeyEntry : dataSetSource.getSamplesKeysSource().getIndicesMap().entrySet()) {
+			final int sampleOrigIndex = sampleKeyEntry.getKey();
+			final SampleKey sampleKey = sampleKeyEntry.getValue();
+
 			int missingCount = 0;
 			int heterozygCount = 0;
 
@@ -116,55 +131,22 @@ int numMarkers = dataSetSource.getNumMarkers();
 //				markerIndex++;
 			}
 
-			wrSampleSetMissingCountMap.put(sampleKey, missingCount);
+			final double missingRatio = (double) missingCount / dataSetSource.getNumMarkers();
+			final double heterozygRatio = (double) heterozygCount / (dataSetSource.getNumMarkers() - missingCount);
 
-			double missingRatio = (double) missingCount / dataSetSource.getNumMarkers();
-			wrSampleSetMissingRatioMap.put(sampleKey, missingRatio);
-			double heterozygRatio = (double) heterozygCount / (dataSetSource.getNumMarkers() - missingCount);
-			wrSampleSetHetzyRatioMap.put(sampleKey, heterozygRatio);
-
-			sampleIndex++;
-
-			if (sampleIndex % 100 == 0) {
-				log.info("Samples QA processed samples: {}", sampleIndex);
-			}
+			((AbstractOperationDataSet) dataSet).addEntry(new DefaultQASamplesOperationEntry(
+					sampleKey,
+					sampleOrigIndex,
+					missingRatio,
+					missingCount,
+					heterozygRatio
+			));
 		}
 
-		try {
-			MatrixMetadata rdMatrixMetadata = getParentMatrixMetadata();
+		dataSet.finnishWriting();
+		resultOpId = ((AbstractNetCdfOperationDataSet) dataSet).getOperationKey().getId(); // HACK
 
-			QASamplesOperationDataSet dataSet = generateFreshOperationDataSet();
-			((AbstractNetCdfOperationDataSet) dataSet).setNumMarkers(rdMatrixMetadata.getNumMarkers()); // HACK
-			((AbstractNetCdfOperationDataSet) dataSet).setNumChromosomes(rdMatrixMetadata.getNumChromosomes()); // HACK
-//			((AbstractNetCdfOperationDataSet) dataSet).setNumSamples(wrSampleSetMissingCountMap.size()); // HACK
-			((AbstractNetCdfOperationDataSet) dataSet).setNumSamples(rdMatrixMetadata.getNumSamples()); // HACK
-
-//			dataSet.setSamples(rdSampleSet.getSampleKeys());
-//			dataSet.setMarkers(rdMarkersKeysSource);
-//			Map<ChromosomeKey, ChromosomeInfo> chromosomeInfo = rdMarkerSet.getChrInfoSetMap();
-//			dataSet.setChromosomes(chromosomeInfo.keySet(), chromosomeInfo.values());
-
-//			((AbstractNetCdfOperationDataSet) dataSet).setUseAllSamplesFromParent(true);
-//			((AbstractNetCdfOperationDataSet) dataSet).setUseAllMarkersFromParent(true);
-//			((AbstractNetCdfOperationDataSet) dataSet).setUseAllChromosomesFromParent(true);
-
-			dataSet.setMissingCounts(wrSampleSetMissingCountMap.values());
-			dataSet.setMissingRatios(wrSampleSetMissingRatioMap.values());
-			dataSet.setHetzyRatios(wrSampleSetHetzyRatioMap.values());
-
-			dataSet.finnishWriting();
-			resultOpId = ((AbstractNetCdfOperationDataSet) dataSet).getOperationKey().getId(); // HACK
-		} finally {
-//			if (null != rdNcFile) {
-//				try {
-//					rdNcFile.close();
-//				} catch (IOException ex) {
-//					log.warn("Cannot close file " + rdNcFile, ex);
-//				}
-//			}
-
-			org.gwaspi.global.Utils.sysoutCompleted("Sample QA");
-		}
+		org.gwaspi.global.Utils.sysoutCompleted("Sample QA");
 
 		return resultOpId;
 	}

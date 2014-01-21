@@ -35,10 +35,12 @@ import org.gwaspi.model.OperationMetadata;
 import org.gwaspi.model.SampleKey;
 import org.gwaspi.netCDF.operations.NetCdfUtils;
 import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
+import ucar.ma2.ArrayByte;
 import ucar.ma2.ArrayDouble;
 import ucar.ma2.ArrayInt;
 import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
+import ucar.ma2.Range;
 import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFileWriteable;
 
@@ -182,6 +184,18 @@ public class NetCdfQASamplesOperationDataSet extends AbstractNetCdfOperationData
 			netCdfMissingRatios = new ArrayDouble.D1(writeBuffer.size());
 			netCdfMissingCounts = new ArrayInt.D1(writeBuffer.size());
 			netCdfHetzyRatios = new ArrayDouble.D1(writeBuffer.size());
+		} else if (writeBuffer.size() < netCdfMissingRatios.getShape()[0]) {
+			// we end up here at the end of the processing, if, for example,
+			// we have a buffer size of 10, but only 7 items are left to be written
+			List<Range> reducedRange1D = new ArrayList<Range>(1);
+			reducedRange1D.add(new Range(writeBuffer.size()));
+			try {
+				netCdfMissingRatios = (ArrayDouble.D1) netCdfMissingRatios.sectionNoReduce(reducedRange1D);
+				netCdfMissingCounts = (ArrayInt.D1) netCdfMissingCounts.sectionNoReduce(reducedRange1D);
+				netCdfHetzyRatios = (ArrayDouble.D1) netCdfHetzyRatios.sectionNoReduce(reducedRange1D);
+			} catch (InvalidRangeException ex) {
+				throw new IOException(ex);
+			}
 		}
 		int index = 0;
 		for (QASamplesOperationEntry entry : writeBuffer) {

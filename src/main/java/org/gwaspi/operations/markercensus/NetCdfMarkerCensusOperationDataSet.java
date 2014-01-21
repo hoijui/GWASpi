@@ -42,10 +42,12 @@ import org.gwaspi.netCDF.operations.NetCdfUtils;
 import org.gwaspi.operations.AbstractNetCdfOperationDataSet;
 import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationEntry.Category;
 import ucar.ma2.ArrayByte;
+import ucar.ma2.ArrayDouble;
 import ucar.ma2.ArrayInt;
 import ucar.ma2.DataType;
 import ucar.ma2.Index;
 import ucar.ma2.InvalidRangeException;
+import ucar.ma2.Range;
 import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFileWriteable;
 
@@ -71,14 +73,18 @@ public class NetCdfMarkerCensusOperationDataSet extends AbstractNetCdfOperationD
 	private ArrayInt.D2 netCdfCensusesRest;
 
 	public NetCdfMarkerCensusOperationDataSet(MatrixKey origin, DataSetKey parent, OperationKey operationKey) {
-		super(true, origin, parent, operationKey, calculateEntriesWriteBufferSize());
+		super(true, origin, parent, operationKey);
 	}
 
 	public NetCdfMarkerCensusOperationDataSet(MatrixKey origin, DataSetKey parent) {
 		this(origin, parent, null);
 	}
 
-	private static int calculateEntriesWriteBufferSize() {
+	/**
+	 * Was used in the ctor before!
+	 * @see #getDefaultEntriesWriteBufferSize(boolean)
+	 */
+	private static int getDefaultEntriesWriteBufferSize() {
 
 		int chunkSize = Math.round((float)org.gwaspi.gui.StartGWASpi.maxProcessMarkers / 4);
 		if (chunkSize > 500000) {
@@ -290,6 +296,19 @@ public class NetCdfMarkerCensusOperationDataSet extends AbstractNetCdfOperationD
 			netCdfKnownAlleles = new ArrayByte.D2(writeBuffer.size(), cNetCDF.Strides.STRIDE_GT);
 			netCdfCensusAlls = new ArrayInt.D2(writeBuffer.size(), 4);
 			netCdfCensusesRest = new ArrayInt.D2(writeBuffer.size(), 3);
+		} else if (writeBuffer.size() < netCdfKnownAlleles.getShape()[0]) {
+			// we end up here at the end of the processing, if, for example,
+			// we have a buffer size of 10, but only 7 items are left to be written
+			List<Range> reducedRange2D = new ArrayList<Range>(2);
+			reducedRange2D.add(new Range(writeBuffer.size()));
+			reducedRange2D.add(null); // use full range
+			try {
+				netCdfKnownAlleles = (ArrayByte.D2) netCdfKnownAlleles.sectionNoReduce(reducedRange2D);
+				netCdfCensusAlls = (ArrayInt.D2) netCdfCensusAlls.sectionNoReduce(reducedRange2D);
+				netCdfCensusesRest = (ArrayInt.D2) netCdfCensusesRest.sectionNoReduce(reducedRange2D);
+			} catch (InvalidRangeException ex) {
+				throw new IOException(ex);
+			}
 		}
 		int index = 0;
 		try {

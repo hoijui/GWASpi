@@ -41,6 +41,7 @@ import org.gwaspi.operations.hardyweinberg.HardyWeinbergOperationEntry.Category;
 import ucar.ma2.ArrayDouble;
 import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
+import ucar.ma2.Range;
 import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFileWriteable;
 
@@ -192,11 +193,25 @@ public class NetCdfHardyWeinbergOperationDataSet extends AbstractNetCdfOperation
 
 		buffer.getEntries().add(entry);
 
-		if (buffer.getEntries().size() >= getEntriesWriteBufferSize()) {
-			writeEntries(buffer.getAlreadyWritten(), buffer.getEntries());
-			buffer.setAlreadyWritten(buffer.getAlreadyWritten() + buffer.getEntries().size());
-			buffer.getEntries().clear();
+		final int maxSingleWriteBufferSize = getEntriesWriteBufferSize() / writeBuffers.size();
+		if (buffer.getEntries().size() >= maxSingleWriteBufferSize) {
+			buffer.setAlreadyWritten(writeEntriesBuffer(buffer.getAlreadyWritten(), buffer.getEntries(), entry.getCategory().name() + " "));
+//			writeEntries(buffer.getAlreadyWritten(), buffer.getEntries());
+//			buffer.setAlreadyWritten(buffer.getAlreadyWritten() + buffer.getEntries().size());
+//			buffer.getEntries().clear();
 		}
+	}
+
+	@Override
+	public void finnishWriting() throws IOException {
+
+		for (Map.Entry<HardyWeinbergOperationEntry.Category, EntryBuffer<HardyWeinbergOperationEntry>> writeBuffer : writeBuffers.entrySet()) {
+			final HardyWeinbergOperationEntry.Category category = writeBuffer.getKey();
+			final EntryBuffer<HardyWeinbergOperationEntry> buffer = writeBuffer.getValue();
+			buffer.setAlreadyWritten(writeEntriesBuffer(buffer.getAlreadyWritten(), buffer.getEntries(), category.name() + " "));
+		}
+
+		super.finnishWriting();
 	}
 
 	@Override
@@ -209,6 +224,18 @@ public class NetCdfHardyWeinbergOperationDataSet extends AbstractNetCdfOperation
 			netCdfPs = new ArrayDouble.D1(writeBuffer.size());
 			netCdfObsHetzys = new ArrayDouble.D1(writeBuffer.size());
 			netCdfExpHetzys = new ArrayDouble.D1(writeBuffer.size());
+		} else if (writeBuffer.size() < netCdfPs.getShape()[0]) {
+			// we end up here at the end of the processing, if, for example,
+			// we have a buffer size of 10, but only 7 items are left to be written
+			List<Range> reducedRange1D = new ArrayList<Range>(1);
+			reducedRange1D.add(new Range(writeBuffer.size()));
+			try {
+				netCdfPs = (ArrayDouble.D1) netCdfPs.sectionNoReduce(reducedRange1D);
+				netCdfObsHetzys = (ArrayDouble.D1) netCdfObsHetzys.sectionNoReduce(reducedRange1D);
+				netCdfExpHetzys = (ArrayDouble.D1) netCdfExpHetzys.sectionNoReduce(reducedRange1D);
+			} catch (InvalidRangeException ex) {
+				throw new IOException(ex);
+			}
 		}
 		int index = 0;
 		for (HardyWeinbergOperationEntry entry : writeBuffer) {

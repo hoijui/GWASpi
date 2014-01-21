@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import org.gwaspi.constants.cNetCDF;
@@ -31,6 +32,7 @@ import org.gwaspi.model.OperationKey;
 import org.gwaspi.netCDF.operations.NetCdfUtils;
 import ucar.ma2.ArrayDouble;
 import ucar.ma2.InvalidRangeException;
+import ucar.ma2.Range;
 
 public class NetCdfTrendTestOperationDataSet extends AbstractNetCdfTestOperationDataSet<TrendTestOperationEntry> implements TrendTestOperationDataSet {
 
@@ -61,6 +63,17 @@ public class NetCdfTrendTestOperationDataSet extends AbstractNetCdfTestOperation
 			// NOTE This might be bad for multi-threading in a later stage
 			netCdfTs = new ArrayDouble.D1(writeBuffer.size());
 			netCdfPs = new ArrayDouble.D1(writeBuffer.size());
+		} else if (writeBuffer.size() < netCdfTs.getShape()[0]) {
+			// we end up here at the end of the processing, if, for example,
+			// we have a buffer size of 10, but only 7 items are left to be written
+			List<Range> reducedRange1D = new ArrayList<Range>(1);
+			reducedRange1D.add(new Range(writeBuffer.size()));
+			try {
+				netCdfTs = (ArrayDouble.D1) netCdfTs.sectionNoReduce(reducedRange1D);
+				netCdfPs = (ArrayDouble.D1) netCdfPs.sectionNoReduce(reducedRange1D);
+			} catch (InvalidRangeException ex) {
+				throw new IOException(ex);
+			}
 		}
 		int index = 0;
 		for (TrendTestOperationEntry entry : writeBuffer) {

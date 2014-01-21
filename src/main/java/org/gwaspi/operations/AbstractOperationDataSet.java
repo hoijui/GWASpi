@@ -40,7 +40,8 @@ import org.slf4j.LoggerFactory;
 
 public abstract class AbstractOperationDataSet<ET> implements OperationDataSet<ET> {
 
-	protected static final int DEFAULT_ENTRIES_WRITE_BUFFER_SIZE = 10;
+	protected static final int DEFAULT_ENTRIES_WRITE_BUFFER_SIZE_MARKERS = 10;
+	protected static final int DEFAULT_ENTRIES_WRITE_BUFFER_SIZE_SAMPLES = 1;
 
 	private final Logger log = LoggerFactory.getLogger(AbstractOperationDataSet.class);
 
@@ -60,7 +61,7 @@ public abstract class AbstractOperationDataSet<ET> implements OperationDataSet<E
 	private final Queue<ET> writeBuffer;
 	private int alreadyWritten;
 	private int entriesWriteBufferSize;
-	private final int numEntriesToLog = 10000;
+	private final int numEntriesToLog;
 
 	public AbstractOperationDataSet(
 			boolean markersOperationSet,
@@ -86,6 +87,7 @@ public abstract class AbstractOperationDataSet<ET> implements OperationDataSet<E
 		this.writeBuffer = new LinkedList<ET>();
 		this.alreadyWritten = 0;
 		this.entriesWriteBufferSize = entriesWriteBufferSize;
+		this.numEntriesToLog = markersOperationSet ? 10000 : 100;
 	}
 
 	public AbstractOperationDataSet(
@@ -93,9 +95,8 @@ public abstract class AbstractOperationDataSet<ET> implements OperationDataSet<E
 			MatrixKey origin,
 			DataSetKey parent,
 			OperationKey operationKey)
-//			MatrixOperation operation)XXX; // required for getparentdss()
 	{
-		this(markersOperationSet, origin, parent, operationKey, DEFAULT_ENTRIES_WRITE_BUFFER_SIZE);
+		this(markersOperationSet, origin, parent, operationKey, getDefaultEntriesWriteBufferSize(markersOperationSet));
 	}
 
 	public AbstractOperationDataSet(
@@ -104,6 +105,16 @@ public abstract class AbstractOperationDataSet<ET> implements OperationDataSet<E
 			DataSetKey parent)
 	{
 		this(markersOperationSet, origin, parent, null);
+	}
+
+	/**
+	 * TODO revise this, for performance reasons.
+	 */
+	protected static int getDefaultEntriesWriteBufferSize(boolean markersOperationSet) {
+
+		return markersOperationSet
+				? DEFAULT_ENTRIES_WRITE_BUFFER_SIZE_MARKERS
+				: DEFAULT_ENTRIES_WRITE_BUFFER_SIZE_SAMPLES;
 	}
 
 	protected MatrixKey getOrigin() {
@@ -182,6 +193,10 @@ public abstract class AbstractOperationDataSet<ET> implements OperationDataSet<E
 //	protected OperationKey getReadOperationKey() {
 //		return rdOperationKey;
 //	}
+
+	public int getNumEntries() throws IOException {
+		return isMarkersOperationSet() ? getNumMarkers() : getNumSamples();
+	}
 
 	@Override
 	public void setNumMarkers(int numMarkers) throws IOException {
@@ -357,32 +372,49 @@ public abstract class AbstractOperationDataSet<ET> implements OperationDataSet<E
 		writeBuffer.add(entry);
 
 		if (writeBuffer.size() >= entriesWriteBufferSize) {
-			writeCurrentEnriesBuffer();
+			writeCurrentEntriesBuffer();
 		}
 	}
 
-	private void writeCurrentEnriesBuffer() throws IOException {
+	protected void writeCurrentEntriesBuffer() throws IOException {
+		alreadyWritten = writeEntriesBuffer(alreadyWritten, writeBuffer, "");
+	}
+
+	protected int writeEntriesBuffer(int alreadyWritten, final Queue<ET> writeBuffer, String additionalWriteLogSpecifier) throws IOException {
+
+		if (writeBuffer.isEmpty()) { // this should not be required
+//			throw new IllegalStateException("We have already written all entries (already written: " + alreadyWritten + ", num entries: " + getNumEntries() + ", write buffer size: " + writeBuffer.size() + ")");
+			return alreadyWritten;
+		}
+		if (alreadyWritten >= getNumEntries()) { // this should not be required
+			throw new IllegalStateException("We have already written all entries (already written: " + alreadyWritten + ", num entries: " + getNumEntries() + ", write buffer size: " + writeBuffer.size() + ")");
+		}
 
 		final int numWriting = writeBuffer.size();
 		writeEntries(alreadyWritten, writeBuffer);
 		alreadyWritten += numWriting;
 		writeBuffer.clear();
 
-		if (((alreadyWritten % numEntriesToLog) != ((alreadyWritten - numWriting) % numEntriesToLog)) // approximately numEntriesToLog written since last log
-				|| (alreadyWritten == getNumMarkers())) // the final entries
+		if (((alreadyWritten / numEntriesToLog) != ((alreadyWritten - numWriting) / numEntriesToLog)) // approximately numEntriesToLog written since last log
+				|| (alreadyWritten == getNumEntries())) // the final entries
 		{
-			log.info("Processed markers: {} / {}", alreadyWritten, getNumMarkers());
+			log.info("Processed {}{}: {} / {}",
+					additionalWriteLogSpecifier,
+					isMarkersOperationSet() ? "markers" : "samples",
+					alreadyWritten,
+					getNumEntries());
 		}
+
+		return alreadyWritten;
 	}
 
 	@Override
 	public void finnishWriting() throws IOException {
 
-		writeCurrentEnriesBuffer();
+		writeCurrentEntriesBuffer();
 
 		// this way, we will write the metadata into the DB
 		getOperationMetadata();
-//		XXX; // TODO check if above works fine!
 	}
 
 	protected abstract void writeEntries(int alreadyWritten, Queue<ET> writeBuffer) throws IOException;

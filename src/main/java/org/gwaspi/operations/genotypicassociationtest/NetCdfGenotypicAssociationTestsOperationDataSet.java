@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import org.gwaspi.constants.cNetCDF;
@@ -32,6 +33,7 @@ import org.gwaspi.netCDF.operations.NetCdfUtils;
 import org.gwaspi.operations.trendtest.AbstractNetCdfTestOperationDataSet;
 import ucar.ma2.ArrayDouble;
 import ucar.ma2.InvalidRangeException;
+import ucar.ma2.Range;
 
 public class NetCdfGenotypicAssociationTestsOperationDataSet extends AbstractNetCdfTestOperationDataSet<GenotypicAssociationTestOperationEntry> implements GenotypicAssociationTestsOperationDataSet {
 
@@ -66,6 +68,19 @@ public class NetCdfGenotypicAssociationTestsOperationDataSet extends AbstractNet
 			netCdfPs = new ArrayDouble.D1(writeBuffer.size());
 			netCdfORs = new ArrayDouble.D1(writeBuffer.size());
 			netCdfOR2s = new ArrayDouble.D1(writeBuffer.size());
+		} else if (writeBuffer.size() < netCdfTs.getShape()[0]) {
+			// we end up here at the end of the processing, if, for example,
+			// we have a buffer size of 10, but only 7 items are left to be written
+			List<Range> reducedRange1D = new ArrayList<Range>(1);
+			reducedRange1D.add(new Range(writeBuffer.size()));
+			try {
+				netCdfTs = (ArrayDouble.D1) netCdfTs.sectionNoReduce(reducedRange1D);
+				netCdfPs = (ArrayDouble.D1) netCdfPs.sectionNoReduce(reducedRange1D);
+				netCdfORs = (ArrayDouble.D1) netCdfORs.sectionNoReduce(reducedRange1D);
+				netCdfOR2s = (ArrayDouble.D1) netCdfOR2s.sectionNoReduce(reducedRange1D);
+			} catch (InvalidRangeException ex) {
+				throw new IOException(ex);
+			}
 		}
 		int index = 0;
 		for (GenotypicAssociationTestOperationEntry entry : writeBuffer) {
