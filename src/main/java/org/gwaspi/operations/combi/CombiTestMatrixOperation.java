@@ -846,11 +846,11 @@ public class CombiTestMatrixOperation extends AbstractOperation<CombiTestOperati
 				prob.x[si][0] = sampleIndexNode;
 
 				for (int s2i = si; s2i < n; s2i++) {
-					double kernelValue = 0.0;
+//					double kernelValue = 0.0;
 //					for (int di = 0; di < dEncoded; di++) {
 //						kernelValue += X[si][di] * X[s2i][di];
 //					}
-					kernelValue = K[s2i][si]; // XXX or indices other way around?
+					final double kernelValue = K[s2i][si]; // XXX or indices other way around?
 
 					svm_node curNode = new svm_node();
 					curNode.index = 1 + s2i;

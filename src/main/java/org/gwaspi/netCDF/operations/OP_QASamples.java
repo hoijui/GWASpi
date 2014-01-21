@@ -126,7 +126,7 @@ int numMarkers = dataSetSource.getNumMarkers();
 			sampleIndex++;
 
 			if (sampleIndex % 100 == 0) {
-				log.info("Processed samples: {}", sampleIndex);
+				log.info("Samples QA processed samples: {}", sampleIndex);
 			}
 		}
 
